@@ -4110,6 +4110,153 @@ void Cmd_MapLog_f( gentity_t *ent )
 
 /*
 =================
+Cmd_Share_f
+=================
+*/
+void Cmd_Share_f( gentity_t *ent )
+{
+	int    i, clientNum = 0, creds = 0;
+	int    clientNums[ MAX_CLIENTS ] = { -1 };
+	char   arg1[ MAX_STRING_TOKENS ];
+	char   arg2[ MAX_STRING_TOKENS ];
+	team_t team;
+
+	if( !ent || !ent->client || ( ent->client->pers.teamSelection == TEAM_NONE ) )
+	{
+		return;
+	}
+
+	team = ent->client->pers.teamSelection;
+	trap_Argv( 1, arg1, sizeof( arg1 ) );
+	trap_Argv( 2, arg2, sizeof( arg2 ) );
+
+	if( arg1[0] ) // target player name is in arg1
+	{
+		//check arg1 is a number
+		for( i = 0; arg1[ i ]; i++ )
+		{
+			if( arg1[ i ] < '0' || arg1[ i ] > '9' )
+			{
+				clientNum = -1;
+				break;
+			}
+		}
+
+		if( clientNum >= 0 )
+		{
+			clientNum = atoi( arg1 );
+		}
+		else if( G_ClientNumbersFromString( arg1, clientNums, ARRAY_LEN( clientNums ) ) == 1 )
+		{
+			// there was one partial name match name was clientNum
+			clientNum = clientNums[ 0 ];
+		}
+		else
+		{
+			// look for an exact name match before bailing out
+			char err[ MAX_STRING_CHARS ];
+
+			clientNum = G_ClientNumberFromString( arg1, err, sizeof( err ) );
+
+			if( clientNum == -1 )
+			{
+				trap_SendServerCommand( ent - g_entities, va( "print \"share: %s\n\"", err ) );
+				return;
+			}
+		}
+	}
+	else // arg1 not set
+	{
+		vec3_t    forward, end;
+		trace_t   tr;
+		gentity_t *traceEnt;
+
+		// trace a teammate
+		AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+		VectorMA( ent->client->ps.origin, 8192 * 16, forward, end );
+
+		trap_Trace( &tr, ent->client->ps.origin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
+		traceEnt = &g_entities[ tr.entityNum ];
+
+		if( tr.fraction < 1.0f && traceEnt->client && traceEnt->client->pers.teamSelection == team )
+		{
+			clientNum = traceEnt - g_entities;
+		}
+		else
+		{
+			trap_SendServerCommand( ent - g_entities, "print \"share: no player to transfer credits to found\n\"" );
+			return;
+		}
+	}
+
+	// verify target player team
+	if( clientNum < 0 || clientNum >= level.maxclients || level.clients[ clientNum ].pers.teamSelection != team )
+	{
+		trap_SendServerCommand( ent - g_entities, "print \"share: that player is not on your team\n\"" );
+		return;
+	}
+
+	if( !arg1[0] || !arg2[0] )
+	{
+		// default credit count
+		if( team == TEAM_HUMANS )
+		{
+			creds = FREEKILL_HUMAN;
+		}
+		else if( team == TEAM_ALIENS )
+		{
+			creds = FREEKILL_ALIEN;
+		}
+	}
+	else
+	{
+		//check arg2 is a number
+		for( i = 0; arg2[ i ]; i++ )
+		{
+			if( arg2[ i ] < '0' || arg2[ i ] > '9' )
+			{
+				trap_SendServerCommand( ent-g_entities,	"print \"Usage: share (name|slot#) (amount)\n\"" );
+				break;
+			}
+		}
+
+		// credit count from parameter
+		creds = atoi( arg2 );
+	}
+
+	// transfer only credits the player really has
+	if( creds > ent->client->ps.persistant[ PERS_CREDIT ] )
+	{
+		creds = ent->client->ps.persistant[ PERS_CREDIT ];
+	}
+
+	// allow transfers only up to the credit/evo limit
+	if( team == TEAM_HUMANS && creds > HUMAN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] )
+	{
+		creds = HUMAN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ];
+	}
+	else if( team == TEAM_ALIENS && creds > ALIEN_MAX_FRAGS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] )
+	{
+		creds = ALIEN_MAX_FRAGS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ];
+	}
+
+	if( creds <= 0 )
+	{
+		trap_SendServerCommand( ent-g_entities,	"print \"share: no credits to transfer\n\"" );
+		return;
+	}
+
+	// transfer credits
+	ent->client->ps.persistant[ PERS_CREDIT ] -= creds;
+	trap_SendServerCommand( ent-g_entities,	va( "print \"share: transferring %d credits to %s.\n\"",
+	                                            creds, level.clients[ clientNum ].pers.netname ) );
+	level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] += creds;
+	trap_SendServerCommand( clientNum, va( "print \"You have received %d credits from %s\"",
+	                                       creds, ent->client->pers.netname ) );
+}
+
+/*
+=================
 Cmd_Test_f
 =================
 */
@@ -4270,6 +4417,7 @@ static const commands_t cmds[] =
 	{ "score",           CMD_INTERMISSION,                    ScoreboardMessage      },
 	{ "sell",            CMD_HUMAN | CMD_ALIVE,               Cmd_Sell_f             },
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
+	{ "share",           CMD_TEAM,                            Cmd_Share_f            },
 	{ "team",            0,                                   Cmd_Team_f             },
 	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
 	{ "test",            CMD_CHEAT,                           Cmd_Test_f             },
