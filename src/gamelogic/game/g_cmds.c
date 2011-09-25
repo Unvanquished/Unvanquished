@@ -2203,7 +2203,7 @@ static qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
 	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
 	BG_ClassBoundingBox( class, toMins, toMaxs, NULL, NULL, NULL );
 
-	VectorCopy( ent->s.origin, newOrigin );
+	VectorCopy( ent->client->ps.origin, newOrigin );
 
 	// find max x/y diff
 	maxHorizGrowth = toMaxs[ 0 ] - fromMaxs[ 0 ];
