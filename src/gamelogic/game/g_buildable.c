@@ -4892,7 +4892,7 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 {
 	log->modelindex = ent->s.modelindex;
-	log->deconstruct = log->deconstruct;
+	log->deconstruct = ent->deconstruct;
 	log->deconstructTime = ent->deconstructTime;
 	log->builtBy = ent->builtBy;
 	VectorCopy( ent->s.pos.trBase, log->origin );
