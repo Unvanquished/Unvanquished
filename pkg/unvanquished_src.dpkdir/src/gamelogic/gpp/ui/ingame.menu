@@ -1,0 +1,140 @@
+#include "ui/menudef.h"
+{
+
+#define BUTT_BAR_X  25
+#define BUTT_BAR_Y  0
+#define BUTT_BAR_W  250
+#define BUTT_BAR_H  56
+#define BUTT_W      (BUTT_BAR_W/4)
+#define BUTT_H      BUTT_BAR_H
+#define BUTT_TEXT_S 20
+
+  assetGlobalDef
+  {
+    font "fonts/cordiaz.ttf" 26        // font
+    smallFont "fonts/cordiaz.ttf" 20        // font
+    bigFont "fonts/cordiaz.ttf" 34        // font
+    cursor "ui/assets/3_cursor3"      // cursor
+    gradientBar "ui/assets/gradientbar2.tga"  // gradient bar
+    itemFocusSound "sound/misc/menu2.wav"   // sound for item getting focus (via keyboard or mouse )
+
+    fadeClamp 1.0         // sets the fadeup alpha
+    fadeCycle 1         // how often fade happens in milliseconds
+    fadeAmount 0.1          // amount to adjust alpha per cycle
+
+    shadowColor 0.1 0.1 0.1 0.25      // shadow color
+  }
+
+
+  \\ INGAME MENU \\
+
+  menuDef
+  {
+    name "ingame"
+    style WINDOW_STYLE_FILLED
+    visible MENU_FALSE
+    fullScreen 0
+    outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
+    rect 0 0 1280 56
+    focusColor 1 .75 0 1
+    disableColor .5 .5 .5 1
+    backColor 0 0 0 1
+    aspectBias ALIGN_LEFT
+
+    onEsc
+    {
+      close ingame;
+    }
+
+    itemDef
+    {
+      name splashmodel
+      rect 0 -10 640 66
+      type ITEM_TYPE_MODEL
+      style WINDOW_STYLE_FILLED
+      asset_model "models/splash/splash_screen.md3"
+      model_fovx 32.0
+      model_fovy 3.8
+      model_angle 180
+      visible MENU_TRUE
+      decoration
+      backcolor 0 0 0 1
+    }
+
+    itemdef
+    {
+      name game
+      text "Game"
+      rect BUTT_BAR_X BUTT_BAR_Y BUTT_W BUTT_H
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .4
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        open ingame_game
+      }
+    }
+
+    itemDef
+    {
+      name options
+      text "Options"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect (BUTT_BAR_X+BUTT_W) BUTT_BAR_Y BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .4
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        open ingame_options
+      }
+    }
+
+    itemDef
+    {
+      name leave
+      text "Help"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect (BUTT_BAR_X+(2*BUTT_W)) BUTT_BAR_Y BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .4
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        open ingame_help
+      }
+    }
+
+    itemDef
+    {
+      name leave
+      text "Exit"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect (BUTT_BAR_X+(3*BUTT_W)) BUTT_BAR_Y BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .4
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        open ingame_leave
+      }
+    }
+  }
+}

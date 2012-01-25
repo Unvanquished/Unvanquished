@@ -1,0 +1,37 @@
+#include "ui/menudef.h"
+
+{
+
+#define W         640
+#define H         480
+
+  menuDef
+  {
+    name "default_hud"
+    fullScreen MENU_FALSE
+    visible MENU_TRUE
+    rect 0 0 W H
+    aspectBias ASPECT_NONE
+
+#define COMMON_HUD_R 1.0
+#define COMMON_HUD_G 1.0
+#define COMMON_HUD_B 1.0
+#include "ui/tremulous_common_hud.h"
+
+    //SPECTATOR TEXT
+    itemDef
+    {
+      name "spectatortext"
+      text "SPECTATOR"
+      rect 200 415 240 25
+      foreColor 1 1 1 1
+      aspectBias ALIGN_CENTER
+      textalign ALIGN_CENTER
+      textvalign VALIGN_TOP
+      visible MENU_TRUE
+      decoration
+      textScale .7
+      textStyle ITEM_TEXTSTYLE_SHADOWED
+    }
+  }
+}

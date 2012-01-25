@@ -1,0 +1,862 @@
+#include "ui/menudef.h"
+
+{
+  \\ INGAME GAME BOX \\
+
+#define W           320
+#define H           310
+#define X           10
+#define Y           60
+#define BORDER      10
+
+#define TOPBUTT_W   80
+#define TOPBUTT_H   30
+
+#define SIDEBUTT_W  50
+#define SIDEBUTT_H  25
+
+#define MAP_X       (SIDEBUTT_W+BORDER)
+#define MAP_Y       ((2*BORDER)+TOPBUTT_H)
+#define MAP_W       124
+#define MAP_H       93
+#define MAPLIST_X   MAP_X
+#define MAPLIST_Y   ((3*BORDER)+TOPBUTT_H+MAP_H)
+#define MAPLIST_W   (W-((2*BORDER)+SIDEBUTT_W))
+#define MAPLIST_H   (H-((4*BORDER)+MAP_H+TOPBUTT_H))
+#define MAPBUTT_X   (MAP_X+MAP_W+BORDER)
+#define MAPBUTT_Y   MAP_Y
+#define MAPBUTT_W   (W-(MAPBUTT_X+BORDER))
+#define MAPBUTT_H   20
+
+#define PBUTT_X     MAP_X
+#define PBUTT_Y     (H-((2*PBUTT_H)+BORDER))
+#define PBUTT_W     (W-((2*BORDER)+SIDEBUTT_W))
+#define PBUTT_H     45
+#define PLIST_X     PBUTT_X
+#define PLIST_Y     ((2*BORDER)+TOPBUTT_H)
+#define PLIST_W     PBUTT_W
+#define PLIST_H     ((H-((4*BORDER)+(2*PBUTT_H)+TOPBUTT_H)))
+
+#define PLAYER_C    0.7
+#define IGN_C       0.15
+#define IGNY_C      0.15
+#define IGNHEAD_H   15
+#define IGNHEAD_Y   ((2*BORDER)+TOPBUTT_H)
+#define IGNBUTT_W   ((W-(2*BORDER))/2)
+#define IGNBUTT_H   25
+#define IGNBUTT_X   BORDER
+#define IGNBUTT_Y   (H-(BORDER+IGNBUTT_H))
+#define IGNORE_W    (W-(2*BORDER))
+#define IGNORE_W2   ((W-(2*BORDER))-15)
+#define IGNORE_H    (H-((4*BORDER)+TOPBUTT_H+IGNHEAD_H+IGNBUTT_H))
+#define IGNORE_X    BORDER
+#define IGNORE_Y    ((2*BORDER)+TOPBUTT_H+IGNHEAD_H)
+#define IGNORE_TOFF 5
+
+#define INFO_Y      ((2*BORDER)+TOPBUTT_H+10)
+#define INFOELEM_H  15
+#define INFO_OFF    (0-(W-90))
+
+  menuDef
+  {
+    name "ingame_game"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
+    rect X Y W H
+    focusColor 1 .75 0 1
+    aspectBias ALIGN_LEFT
+    onopen
+    {
+      uiScript InitIgnoreList;
+      uiScript loadArenas;
+      uiScript loadServerInfo;
+      hide gameGrp;
+      show vote;
+      show mapvote;
+
+      setitemcolor voteBtn       forecolor 0.2 0.2 0.2 1.0;
+      setitemcolor ignoreBtn     forecolor 1.0 1.0 1.0 1.0;
+      setitemcolor infoBtn      forecolor 1.0 1.0 1.0 1.0
+    }
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    //Section menus
+    itemDef
+    {
+      name voteBtn
+      text "Vote"
+      group menuGrp
+      style WINDOW_STYLE_EMPTY
+      rect (W-((3*TOPBUTT_W)+BORDER)) BORDER TOPBUTT_W TOPBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .35
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gameGrp;
+        show vote;
+        show mapvote;
+
+        setitemcolor infoBtn      forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor voteBtn  forecolor 0.2 0.2 0.2 1.0;
+        setitemcolor ignoreBtn    forecolor 1.0 1.0 1.0 1.0
+      }
+    }
+
+    itemDef
+    {
+      name ignoreBtn
+      text "Ignore"
+      group menuGrp
+      style WINDOW_STYLE_EMPTY
+      rect (W-((2*TOPBUTT_W)+BORDER)) BORDER TOPBUTT_W TOPBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .35
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gameGrp;
+        show ignore;
+
+        setitemcolor infoBtn      forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor voteBtn  forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor ignoreBtn    forecolor 0.2 0.2 0.2 1.0
+      }
+    }
+
+    itemDef
+    {
+      name infoBtn
+      text "Info"
+      group menuGrp
+      style WINDOW_STYLE_EMPTY
+      rect (W-((1*TOPBUTT_W)+BORDER)) BORDER TOPBUTT_W TOPBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .35
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gameGrp;
+        show info;
+
+        setitemcolor infoBtn      forecolor 0.2 0.2 0.2 1.0;
+        setitemcolor voteBtn  forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor ignoreBtn    forecolor 1.0 1.0 1.0 1.0
+      }
+    }
+
+
+//////// VOTE
+
+    //Vote menu
+    itemDef
+    {
+      name vote
+      text "Map"
+      group gameGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gameGrp;
+        show mapvote;
+        show vote;
+      }
+    }
+
+    itemDef
+    {
+      name vote
+      text "Players"
+      group gameGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+SIDEBUTT_H) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gameGrp;
+        show playervote;
+        show reasonfield;
+        show vote;
+      }
+    }
+
+    itemDef
+    {
+      name vote
+      text "Team"
+      group gameGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(2*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gameGrp;
+        show teamvote;
+        show reasonfield;
+        show vote;
+      }
+    }
+
+    itemDef
+    {
+      name reasonfield
+      group gameGrp
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Reason:"
+      cvar "ui_reason"
+      maxChars 50
+      rect PBUTT_X (PBUTT_Y+PBUTT_H) PBUTT_W PBUTT_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      textscale .25
+      outlinecolor .2 .2 .2 .5
+      backcolor 0 0 0 0
+      forecolor 1 1 1 1
+      border WINDOW_BORDER_NONE
+      bordercolor 0 0 0 0
+      visible MENU_FALSE
+    }
+
+///// Map Vote
+    itemDef
+    {
+      name mapvote
+      group gameGrp
+      style WINDOW_STYLE_EMPTY
+      ownerdraw UI_SELECTEDMAPPREVIEW
+      rect MAP_X MAP_Y MAP_W MAP_H
+      border WINDOW_BORDER_FULL
+      bordercolor .5 .5 .5 .5
+      visible MENU_FALSE
+    }
+
+    itemDef
+    {
+      name mapvote
+      group gameGrp
+      rect MAPLIST_X MAPLIST_Y MAPLIST_W MAPLIST_H
+      type ITEM_TYPE_LISTBOX
+      style WINDOW_STYLE_EMPTY
+      elementwidth 120
+      elementheight 15
+      textscale .225
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_MAPS
+      border WINDOW_BORDER_FULL
+      bordercolor   0.5 0.5 0.5 0.5
+      forecolor     1   1   1   1
+      backcolor     0.2 0.2 0.2 1
+      outlinecolor  0.1 0.1 0.1 0.5
+      visible MENU_FALSE
+      doubleclick
+      {
+        play "sound/misc/menu1.wav";
+        uiScript voteMap;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name mapvote
+      group gameGrp
+      text "Load Selected Map"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect MAPBUTT_X MAPBUTT_Y MAPBUTT_W MAPBUTT_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript voteMap;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name mapvote
+      group gameGrp
+      text "Load Selected Map Next"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect MAPBUTT_X (MAPBUTT_Y+MAPBUTT_H) MAPBUTT_W MAPBUTT_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript voteNextMap;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name mapvote
+      group gameGrp
+      text "Restart Current Map"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect MAPBUTT_X (MAPBUTT_Y+(2*MAPBUTT_H)) MAPBUTT_W MAPBUTT_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        exec "cmd callvote map_restart";
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name mapvote
+      group gameGrp
+      text "Begin Sudden Death"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect MAPBUTT_X (MAPBUTT_Y+(3*MAPBUTT_H)) MAPBUTT_W MAPBUTT_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        exec "cmd callvote sudden_death";
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name mapvote
+      group gameGrp
+      text "End Match In Draw"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect MAPBUTT_X (MAPBUTT_Y+(4*MAPBUTT_H)) MAPBUTT_W MAPBUTT_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        exec "cmd callvote draw";
+        uiScript closeingame
+      }
+    }
+
+///// Player Vote
+    itemDef
+    {
+      name playervote
+      group gameGrp
+      rect PLIST_X PLIST_Y PLIST_W PLIST_H
+      style WINDOW_STYLE_EMPTY
+      type ITEM_TYPE_LISTBOX
+      elementwidth 120
+      elementheight 15
+      textscale .225
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_PLAYER_LIST
+      border WINDOW_BORDER_FULL
+      bordercolor   0.5 0.5 0.5 0.5
+      forecolor     1   1   1   1
+      backcolor     0.2 0.2 0.2 1
+      outlinecolor  0.1 0.1 0.1 0.5
+      visible MENU_FALSE
+    }
+
+    itemDef
+    {
+      name playervote
+      group gameGrp
+      text "Mute Player"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X PBUTT_Y (PBUTT_W/2) PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript voteMute;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name playervote
+      group gameGrp
+      text "Un-Mute Player"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect (PBUTT_X+(PBUTT_W/2)) PBUTT_Y (PBUTT_W/2) PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript voteUnMute;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name playervote
+      group gameGrp
+      text "Kick Player"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X (PBUTT_Y+(PBUTT_H/2)) PBUTT_W PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript voteKick;
+        uiScript closeingame
+      }
+    }
+
+
+///// Team Vote
+    itemDef
+    {
+      name teamvote
+      group gameGrp
+      rect PLIST_X PLIST_Y PLIST_W PLIST_H
+      style WINDOW_STYLE_EMPTY
+      type ITEM_TYPE_LISTBOX
+      elementwidth 120
+      elementheight 15
+      textscale .225
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_TEAM_LIST
+      border WINDOW_BORDER_FULL
+      bordercolor   0.5 0.5 0.5 0.5
+      forecolor     1   1   1   1
+      backcolor     0.2 0.2 0.2 1
+      outlinecolor  0.1 0.1 0.1 0.5
+      visible MENU_FALSE
+    }
+
+    itemDef
+    {
+      name teamvote
+      group gameGrp
+      text "Kick Teammate"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X PBUTT_Y (PBUTT_W/2) PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript voteTeamKick;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name teamvote
+      group gameGrp
+      text "Deny Building For Teammate"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect (PBUTT_X+(PBUTT_W/2)) PBUTT_Y (PBUTT_W/2) PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript voteTeamDenyBuild;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name teamvote
+      group gameGrp
+      text "Allow Building For Teammate"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect 110 215 150 20
+      rect PBUTT_X (PBUTT_Y+(PBUTT_H/2)) (PBUTT_W/2) PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript voteTeamAllowBuild;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name teamvote
+      group gameGrp
+      text "Admit Defeat"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect (PBUTT_X+(PBUTT_W/2)) (PBUTT_Y+(PBUTT_H/2)) (PBUTT_W/2) PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        exec "cmd callteamvote admitdefeat";
+        uiScript closeingame
+      }
+    }
+
+//////// IGNORE
+    itemDef
+    {
+      name ignore
+      group gameGrp
+      rect IGNORE_X IGNHEAD_Y (PLAYER_C*IGNORE_W2) IGNHEAD_H
+      text "Player Name"
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      textalignx IGNORE_TOFF
+      visible MENU_FALSE
+      type ITEM_TYPE_TEXT
+      textscale .225
+    }
+    itemDef
+    {
+      name ignore
+      group gameGrp
+      rect (IGNORE_X+(PLAYER_C*IGNORE_W2)) IGNHEAD_Y (IGN_C*IGNORE_W2) IGNHEAD_H
+      text "Ignored"
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      visible MENU_FALSE
+      type ITEM_TYPE_TEXT
+      textscale .225
+    }
+    itemDef
+    {
+      name ignore
+      group gameGrp
+      rect (IGNORE_X+((PLAYER_C+IGN_C)*IGNORE_W2)) IGNHEAD_Y (IGNY_C*IGNORE_W2) IGNHEAD_H
+      text "Ignoring You"
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      visible MENU_FALSE
+      type ITEM_TYPE_TEXT
+      textscale .225
+    }
+    itemDef
+    {
+      name ignore
+      group gameGrp
+      rect IGNORE_X IGNORE_Y IGNORE_W IGNORE_H
+      type ITEM_TYPE_LISTBOX
+      style WINDOW_STYLE_EMPTY
+      elementwidth 120
+      elementheight 16
+      textscale .225
+      border WINDOW_BORDER_FULL
+      bordersize 1
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 1
+      backcolor     0.2 0.2 0.2 1
+      outlinecolor  0.1 0.1 0.1 0.5
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_IGNORE_LIST
+      visible MENU_FALSE
+      columns 3
+        IGNORE_TOFF                               ((PLAYER_C*IGNORE_W)-(3*IGNORE_TOFF)) ALIGN_LEFT
+        (IGNORE_TOFF+((PLAYER_C)*IGNORE_W))       ((IGN_C*IGNORE_W)-(3*IGNORE_TOFF))    ALIGN_CENTER
+        (IGNORE_TOFF+((PLAYER_C+IGN_C)*IGNORE_W)) ((IGNY_C*IGNORE_W)-(3*IGNORE_TOFF))   ALIGN_CENTER
+      doubleClick
+      {
+        play "sound/misc/menu1.wav";
+        uiScript ToggleIgnore
+      }
+    }
+
+    itemDef
+    {
+      name ignore
+      text "Ignore Player"
+      group gameGrp
+      style WINDOW_STYLE_EMPTY
+      rect IGNBUTT_X IGNBUTT_Y IGNBUTT_W IGNBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript IgnorePlayer
+      }
+    }
+
+    itemDef
+    {
+      name ignore
+      text "Stop Ignoring Player"
+      group gameGrp
+      style WINDOW_STYLE_EMPTY
+      rect (IGNBUTT_X+IGNBUTT_W) IGNBUTT_Y IGNBUTT_W IGNBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript UnIgnorePlayer
+      }
+    }
+
+//////// INFO
+
+    itemDef
+    {
+      name info
+      group gameGrp
+      rect 0 (INFO_Y+(0*INFOELEM_H)) W INFOELEM_H
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Server Name:"
+      cvar ui_serverinfo_hostname
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx INFO_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      decoration
+    }
+
+    itemDef
+    {
+      name info
+      group gameGrp
+      rect 0 (INFO_Y+(1*INFOELEM_H)) W INFOELEM_H
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Time Limit:"
+      cvar ui_serverinfo_timelimit
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx INFO_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      decoration
+    }
+
+    itemDef
+    {
+      name info
+      group gameGrp
+      rect 0 (INFO_Y+(2*INFOELEM_H)) W INFOELEM_H
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Sudden Death Time:"
+      cvar ui_serverinfo_sd
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx INFO_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      decoration
+    }
+
+    itemDef
+    {
+      name info
+      group gameGrp
+      rect 0 (INFO_Y+(3*INFOELEM_H)) W INFOELEM_H
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Max Clients:"
+      cvar ui_serverinfo_maxclients
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx INFO_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      decoration
+    }
+
+    itemDef
+    {
+      name info
+      group gameGrp
+      rect 0 (INFO_Y+(4*INFOELEM_H)) W INFOELEM_H
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Map Name:"
+      cvar ui_serverinfo_mapname
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx INFO_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      decoration
+    }
+
+    itemDef
+    {
+      name info
+      group gameGrp
+      rect 0 (INFO_Y+(5*INFOELEM_H)) W INFOELEM_H
+      type ITEM_TYPE_YESNO
+      style WINDOW_STYLE_EMPTY
+      text "Lag Correction:"
+      cvar ui_serverinfo_unlagged
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx INFO_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      decoration
+    }
+
+    itemDef
+    {
+      name info
+      group gameGrp
+      rect 0 (INFO_Y+(6*INFOELEM_H)) W INFOELEM_H
+      type ITEM_TYPE_YESNO
+      style WINDOW_STYLE_EMPTY
+      text "Friendly Fire:"
+      textalign ALIGN_RIGHT
+      cvar ui_serverinfo_friendlyFire
+      textvalign VALIGN_CENTER
+      textalignx INFO_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      decoration
+    }
+
+    itemDef
+    {
+      name info
+      group gameGrp
+      rect 0 (INFO_Y+(7*INFOELEM_H)) W INFOELEM_H
+      type ITEM_TYPE_YESNO
+      style WINDOW_STYLE_EMPTY
+      text "Buildable Friendly Fire:"
+      cvar ui_serverinfo_friendlyBuildableFire
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx INFO_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      decoration
+    }
+
+    itemDef
+    {
+      name info
+      group gameGrp
+      rect 0 (INFO_Y+(8*INFOELEM_H)) W INFOELEM_H
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Version:"
+      cvar ui_serverinfo_version
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx INFO_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      decoration
+    }
+  }
+}

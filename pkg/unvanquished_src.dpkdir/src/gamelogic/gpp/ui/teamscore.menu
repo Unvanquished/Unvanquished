@@ -1,0 +1,386 @@
+#include "ui/menudef.h"
+
+{
+  \\ score_menu \\
+
+#define W         500
+#define H         338
+#define BORDER    10
+
+#define TOFF      10
+#define SPEC_W    75
+#define BAR_H     30
+
+#define LLIST_L   0
+#define LLIST_R   (W/2)
+#define RLIST_L   (W/2)
+#define RLIST_R   W
+
+  menuDef
+  {
+    name "teamscore_menu"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    rect (320-(W/2)) (240-(H/2)) W H
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_EMPTY
+
+    // TEAM NAME  //
+
+    itemDef
+    {
+      name teamNameWindow
+      rect 0 0 W BAR_H
+      style WINDOW_STYLE_FILLED
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 1
+      backcolor 0 0 0 .8
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      name alienteamname
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      textalignx TOFF
+      textscale 0.4
+      rect 0 0 (W/3) BAR_H
+      forecolor 1 1 1 1
+      decoration
+      visible MENU_TRUE
+      ownerdraw CG_ALIENS_SCORE_LABEL
+    }
+
+    itemDef
+    {
+      name stagereport
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale 0.33
+      rect (W/3) 0 (W/3) BAR_H
+      forecolor 1 1 1 1
+      decoration
+      visible MENU_TRUE
+      ownerdraw CG_STAGE_REPORT_TEXT
+    }
+
+    itemDef
+    {
+      name humanteamname
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx -TOFF
+      textscale 0.4
+      rect ((2*W)/3) 0 (W/3) BAR_H
+      forecolor 1 1 1 1
+      decoration
+      visible MENU_TRUE
+      ownerdraw CG_HUMANS_SCORE_LABEL
+    }
+
+    //  TEAM BARS  //
+
+    itemDef
+    {
+      name leftteambar
+      rect 0 (BAR_H+BORDER) (W/2) BAR_H
+      style WINDOW_STYLE_FILLED
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 1
+      backcolor 0 0 0 .8
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      name rightteambar
+      rect (W/2) (BAR_H+BORDER) (W/2) BAR_H
+      style WINDOW_STYLE_FILLED
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 1
+      backcolor 0 0 0 .8
+      visible MENU_TRUE
+      decoration
+    }
+
+
+    //  TEAM HEADINGS  //
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Status"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (LLIST_L+10) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Name"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (LLIST_L+50) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Score"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (LLIST_R-95) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Time"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (LLIST_R-55) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Ping"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (LLIST_R-15) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Status"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (RLIST_L+10) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Name"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (RLIST_L+50) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Score"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (RLIST_R-95) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Time"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (RLIST_R-55) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Ping"
+      textscale .33
+      style WINDOW_STYLE_EMPTY
+      rect (RLIST_R-15) (BAR_H+BORDER) 1 BAR_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name leftlist
+      rect 0 ((2*BAR_H)+BORDER) (W/2) (H-((3*BAR_H)+(2*BORDER)))
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 .6
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      bordercolor .5 .5 .5 1
+      forecolor .75 .75 .75 1
+      visible MENU_TRUE
+      type ITEM_TYPE_LISTBOX
+      elementwidth 135
+      elementheight 16
+      textscale .25
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_ALIENTEAM_LIST
+      notselectable
+      noscrollbar
+      columns 7
+        5             15            ALIGN_LEFT
+        21            15            ALIGN_LEFT
+        7             30            ALIGN_LEFT
+        45            ((W/2)-170)   ALIGN_LEFT
+        ((W/2)-120)   20            ALIGN_RIGHT
+        ((W/2)-80)    20            ALIGN_RIGHT
+        ((W/2)-40)    20            ALIGN_RIGHT
+    }
+
+    itemDef
+    {
+      name rightlist
+      rect (W/2) ((2*BAR_H)+BORDER) (W/2) (H-((3*BAR_H)+(2*BORDER)))
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 .6
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      bordercolor .5 .5 .5 1
+      forecolor .75 .75 .75 1
+      visible MENU_TRUE
+      type ITEM_TYPE_LISTBOX
+      elementwidth 135
+      elementheight 16
+      textscale .25
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_HUMANTEAM_LIST
+      notselectable
+      noscrollbar
+      columns 7
+        5             15            ALIGN_LEFT
+        21            15            ALIGN_LEFT
+        7             30            ALIGN_LEFT
+        45            ((W/2)-170)   ALIGN_LEFT
+        ((W/2)-120)   20            ALIGN_RIGHT
+        ((W/2)-80)    20            ALIGN_RIGHT
+        ((W/2)-40)    20            ALIGN_RIGHT
+    }
+
+    //  spectators  //
+
+    itemDef
+    {
+      name window
+      rect 0 (H-BAR_H) W BAR_H
+      style WINDOW_STYLE_FILLED
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      bordercolor .5 .5 .5 1
+      backcolor 0 0 0 .8
+      textscale .33
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      name window
+      text "Spectating:"
+      rect 0 (H-BAR_H) SPEC_W BAR_H
+      style WINDOW_STYLE_FILLED
+      forecolor 1 1 1 1
+      textscale .33
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      textalignx TOFF
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      name window
+      rect SPEC_W (H-BAR_H) (W-SPEC_W) BAR_H
+      style WINDOW_STYLE_FILLED
+      forecolor 1 1 1 1
+      textscale .33
+      textvalign VALIGN_CENTER
+      visible MENU_TRUE
+      ownerdraw CG_SPECTATORS
+      decoration
+    }
+
+    itemDef
+    {
+      name winner
+      type ITEM_TYPE_TEXT
+      rect (W/2) (H+BAR_H) 0 0
+      style WINDOW_STYLE_EMPTY
+      forecolor 1 1 1 1
+      textscale 0.5
+      textalign ALIGN_CENTER
+      textvalign VALIGN_TOP
+      visible MENU_TRUE
+      cvar "ui_winner"
+      decoration
+    }
+  }
+}

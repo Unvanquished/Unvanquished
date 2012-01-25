@@ -1,0 +1,115 @@
+#include "ui/menudef.h"
+
+{
+  \\ CREATE FAVORITE POPUP MENU \\
+
+#define BUTT_W  45
+#define BUTT_H  35
+#define BORDER  10
+#define INPUT_H 20
+#define W       250
+#define H       ((3*BORDER)+(2*INPUT_H)+BUTT_H)
+
+  menuDef
+  {
+    name "createfavorite_popmenu"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    rect (320-(W/2)) (240-(H/2)) W H
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_FILLED
+    border WINDOW_BORDER_FULL
+    popup
+    onESC
+    {
+      close createfavorite_popmenu
+    }
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    // ENTER NAME AND ADDRESS  //
+
+    itemDef
+    {
+      name nameEntry
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      maxchars 40
+      text "Name:"
+      textscale .4
+      cvar "ui_favoriteName"
+      rect BORDER BORDER (W-(2*BORDER)) INPUT_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name addressEntry
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      maxchars 40
+      text "Address:"
+      textscale .4
+      cvar "ui_favoriteAddress"
+      rect BORDER ((2*BORDER)+INPUT_H) (W-(2*BORDER)) INPUT_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name yes
+      text "OK"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect (W-(2*BUTT_W)) (H-BUTT_H) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript CreateFavorite;
+        close createfavorite_popmenu
+      }
+    }
+
+    itemDef
+    {
+      name yes
+      text "Cancel"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect (W-BUTT_W) (H-BUTT_H) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close createfavorite_popmenu
+      }
+    }
+  }
+}

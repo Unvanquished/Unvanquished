@@ -1,0 +1,88 @@
+#include "ui/menudef.h"
+
+{
+
+#define W           420
+#define H           290
+#define X           10
+#define Y           60
+#define BORDER      10
+
+#define LIST_W    140
+#define LIST_H    (H-(2*BORDER))
+#define LIST_X    BORDER
+#define LIST_Y    BORDER
+
+#define INFO_W    (W-((3*BORDER)+LIST_W))
+#define INFO_H    (H-(2*BORDER))
+#define INFO_X    ((2*BORDER)+LIST_W)
+#define INFO_Y    BORDER
+#define INFO_TOFF 6
+
+  menuDef
+  {
+    name "ingame_help"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
+    rect X Y W H
+    focusColor 1 .75 0 1
+    aspectBias ALIGN_LEFT
+    onOpen {
+      setFocus list;
+    }
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name "list"
+      rect LIST_X LIST_Y LIST_W LIST_H
+      type ITEM_TYPE_LISTBOX
+      style WINDOW_STYLE_EMPTY
+      elementwidth 120
+      elementheight 20
+      textscale .33
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_HELP_LIST
+      border WINDOW_BORDER_FULL
+      bordercolor   0.5 0.5 0.5 0.5
+      forecolor     1   1   1   1
+      backcolor     0.2 0.2 0.2 1
+      outlinecolor  0.1 0.1 0.1 0.5
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name infopane
+      ownerdraw UI_HELPINFOPANE
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      style WINDOW_STYLE_EMPTY
+      rect INFO_X INFO_Y INFO_W INFO_H
+      textscale .33
+      textalign ALIGN_LEFT
+      textvalign VALIGN_TOP
+      textalignx INFO_TOFF
+      textaligny INFO_TOFF
+      border WINDOW_BORDER_FULL
+      bordercolor   0.5 0.5 0.5 0.5
+      forecolor     1   1   1   1
+      backcolor     0.2 0.2 0.2 1
+      visible MENU_TRUE
+      decoration
+    }
+  }
+}

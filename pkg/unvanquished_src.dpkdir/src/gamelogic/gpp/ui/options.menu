@@ -1,0 +1,311 @@
+#include "ui/menudef.h"
+
+{
+  \\ FRONT END OPTIONS BOX \\
+
+#define X             0
+#define Y             20
+#define W             250
+#define H             ((10*(ELEM_H+ELEM_GAP))+120)
+#define TOFF_X        (0-(W/2))
+#define ELEM_H        16
+#define ELEM_GAP      4
+#define BUTT_W        35
+#define BUTT_H        35
+#define BORDER        10
+#define RESCOMBO_OFF  8
+
+  menuDef
+  {
+    name "simple_options"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    rect (320-(W/2)) (240-(H/2)) W H
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_FILLED
+    border WINDOW_BORDER_FULL
+    popup
+    onEsc
+    {
+      play "sound/misc/menu1.wav";
+      close simple_options
+    }
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+
+
+    itemDef
+    {
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Name:"
+      cvar "name"
+      maxchars 26
+      rect X Y W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_MULTI
+      text "Video Quality:"
+      cvar "ui_glCustom"
+      cvarFloatList { "High Quality" 0 "Normal" 1 "Fast" 2 "Fastest" 3 "Custom" 4 }
+      rect X (Y+(ELEM_H+ELEM_GAP)) W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript update "ui_glCustom"
+      }
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_TEXT
+      text "Video Mode:"
+      rect X (Y+(2*(ELEM_H+ELEM_GAP))) (W/2) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      rect ((W/2)+RESCOMBO_OFF) (Y+(2*(ELEM_H+ELEM_GAP))) ((W/2)-(2*BORDER)) ELEM_H
+      type ITEM_TYPE_COMBOBOX
+      style WINDOW_STYLE_FILLED
+      elementwidth ((W/2)-(2*BORDER))
+      elementheight ELEM_H
+      dropitems 5
+      textscale .25
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_RESOLUTIONS
+      border WINDOW_BORDER_FULL
+      borderColor 0.5 0.5 0.5 1
+      forecolor 1 1 1 1
+      backcolor 0 0 0 1
+      outlinecolor 0.1 0.1 0.1 0.5
+      visible MENU_TRUE
+      doubleclick
+      {
+        play "sound/misc/menu1.wav";
+      }
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_SLIDER
+      text "Video Brightness:"
+      cvarfloat "r_gamma" 1 .5 2
+      rect X (Y+(3*(ELEM_H+ELEM_GAP))) W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+
+
+    itemDef
+    {
+      type ITEM_TYPE_SLIDER
+      text "Effects Volume:"
+      cvarfloat "s_volume" 0.7 0 1
+      rect X (Y+(4*(ELEM_H+ELEM_GAP))) W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_SLIDER
+      text "Music Volume:"
+      cvarfloat "s_musicvolume" 0.25 0 1
+      rect X (Y+(5*(ELEM_H+ELEM_GAP))) W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_YESNO
+      text "OpenAL Sound:"
+      cvar "s_useOpenAL"
+      rect X (Y+(6*(ELEM_H+ELEM_GAP))) W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+      }
+    }
+
+
+
+    itemDef
+    {
+      type ITEM_TYPE_SLIDER
+      text "Mouse Sensitivity:"
+      cvarfloat "sensitivity" 5 1 30
+      rect X (Y+(7*(ELEM_H+ELEM_GAP))) W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_YESNO
+      text "Invert Mouse:"
+      cvar "ui_mousePitch"
+      rect X (Y+(8*(ELEM_H+ELEM_GAP))) W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript update ui_mousePitch
+      }
+    }
+
+
+
+    itemDef
+    {
+      type ITEM_TYPE_MULTI
+      text "Network Connection:"
+      cvar "rate"
+      cvarFloatList { "<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSL" 25000  }
+      rect X (Y+(9*(ELEM_H+ELEM_GAP))) W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+      }
+    }
+
+    itemDef
+    {
+      type ITEM_TYPE_YESNO
+      text "Allow Auto Download:"
+      cvar "cl_allowDownload"
+      rect X (Y+(10*(ELEM_H+ELEM_GAP))) W ELEM_H
+      textalign ALIGN_RIGHT
+      textalignx TOFF_X
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+      }
+    }
+
+
+    itemDef
+    {
+      text "For further options please use the in-game options menu"
+      type ITEM_TYPE_TEXT
+      style WINDOW_STYLE_EMPTY
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      textscale .25
+      rect 0 (H-60) W 10
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      decoration
+    }
+
+
+    itemDef
+    {
+      text "APPLY"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect (W-(2*BUTT_W)) (H-BUTT_H) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        exec "snd_restart" // includes vid_restart
+      }
+    }
+
+    itemDef
+    {
+      text "OK"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect (W-BUTT_W) (H-BUTT_H) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close simple_options
+      }
+    }
+  }
+}

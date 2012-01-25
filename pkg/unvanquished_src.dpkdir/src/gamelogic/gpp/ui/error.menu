@@ -1,0 +1,102 @@
+#include "ui/menudef.h"
+
+{
+
+#define W         320
+#define H         320
+#define BORDER    10
+
+#define BUTT_H    25
+#define BUTT_W    65
+
+#define INFO_W    (W-(2*BORDER))
+#define INFO_H    (H-((4*BORDER)+(2*BUTT_H)))
+#define INFO_X    BORDER
+#define INFO_Y    ((2*BORDER)+BUTT_H)
+
+  menuDef
+  {
+    name "error_popmenu"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    rect (320-(W/2)) (240-(H/2)) W H
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_FILLED
+    border WINDOW_BORDER_FULL
+    popup
+    onClose { uiScript clearError }
+    onESC
+    {
+      play "sound/misc/menu1.wav";
+      close error_popmenu;
+      open main
+    }
+
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name dropinfo
+      rect BORDER BORDER INFO_W BUTT_H
+      type ITEM_TYPE_TEXT
+      text "Error"
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .4
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      name dropinfo
+      rect INFO_X INFO_Y INFO_W INFO_H
+      type ITEM_TYPE_TEXT
+      style WINDOW_STYLE_FILLED
+      wrapped
+      cvar "com_errorMessage"
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .33
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      name exit
+      text "OK"
+      type ITEM_TYPE_BUTTON
+      textscale .4
+      style WINDOW_STYLE_EMPTY
+      rect (W-(BORDER+BUTT_W)) (H-(BORDER+BUTT_H)) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      backcolor .37 .1 .1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close error_popmenu
+      }
+    }
+  }
+}
+
+

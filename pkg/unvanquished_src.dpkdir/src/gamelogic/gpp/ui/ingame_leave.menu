@@ -1,0 +1,209 @@
+#include "ui/menudef.h"
+
+{
+  \\ INGAME_LEAVE MENU \\
+
+#define X             160
+#define Y             60
+#define W             120
+#define H             100
+
+#define L1_X          0
+#define L1_Y          (H/6)
+#define L1_W          W
+#define L1_H          (H/3)
+#define L2_X          0
+#define L2_Y          (H/2)
+#define L2_W          W
+#define L2_H          (H/3)
+
+  menuDef
+  {
+    name "ingame_leave"
+    visible MENU_TRUE
+    fullScreen 0
+    outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
+    rect X Y W H
+    focusColor 1 .75 0 1
+    aspectBias ALIGN_LEFT
+    onOpen
+    {
+      show grpMenu;
+      hide grpConfirm
+    }
+
+    itemDef
+    {
+      name leave
+      style WINDOW_STYLE_FILLED
+      rect 0 0 W H
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name leave
+      type ITEM_TYPE_BUTTON
+      text "Main Menu"
+      group grpMenu
+      style WINDOW_STYLE_EMPTY
+      rect L1_X L1_Y L1_W L1_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide grpMenu;
+        show leaveConfirm
+      }
+    }
+
+    itemDef
+    {
+      name leave
+      group grpMenu
+      type ITEM_TYPE_BUTTON
+      text "Quit"
+      style WINDOW_STYLE_EMPTY
+      rect L2_X L2_Y L2_W L2_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor  1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide grpMenu;
+        show quitConfirm
+      }
+    }
+
+
+    // CONFIRMS //
+
+
+    itemDef
+    {
+      name leaveConfirm
+      type ITEM_TYPE_TEXT
+      text "Return To Main Menu?"
+      group grpConfirm
+      style WINDOW_STYLE_EMPTY
+      rect L1_X L1_Y L1_W L1_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .25
+      decoration
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name leaveConfirm
+      text "Yes"
+      group grpConfirm
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect L2_X L2_Y (L2_W/2) L2_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript leave
+      }
+    }
+
+    itemDef
+    {
+      name leaveConfirm
+      text "No"
+      group grpConfirm
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect (L2_X+(L2_W/2)) L2_Y (L2_W/2) L2_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu3.wav";
+        hide grpConfirm;
+        show grpMenu
+      }
+    }
+
+    itemDef
+    {
+      name quitConfirm
+      type ITEM_TYPE_TEXT
+      text "Want To Quit Game?"
+      group grpConfirm
+      style WINDOW_STYLE_EMPTY
+      rect L1_X L1_Y L1_W L1_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      decoration
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name quitConfirm
+      text "Yes"
+      group grpConfirm
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect L2_X L2_Y (L2_W/2) L2_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript quit
+      }
+    }
+
+    itemDef
+    {
+      name quitConfirm
+      text "No"
+      group grpConfirm
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect (L2_X+(L2_W/2)) L2_Y (L2_W/2) L2_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu3.wav";
+        hide grpConfirm;
+        show grpMenu
+      }
+    }
+  }
+}

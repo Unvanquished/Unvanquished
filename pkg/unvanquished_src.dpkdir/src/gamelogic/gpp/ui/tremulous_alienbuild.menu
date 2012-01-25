@@ -1,0 +1,136 @@
+#include "ui/menudef.h"
+
+{
+
+#define W         450
+#define H         250
+#define BORDER    10
+
+#define LIST_W    140
+#define LIST_H    (H-(2*BORDER))
+#define LIST_X    BORDER
+#define LIST_Y    BORDER
+
+#define BUTT_H    25
+#define BUTT_W    45
+
+#define INFO_W    (W-((3*BORDER)+LIST_W))
+#define INFO_H    (H-((3*BORDER)+BUTT_H))
+#define INFO_X    ((2*BORDER)+LIST_W)
+#define INFO_Y    BORDER
+#define INFO_TOFF 6
+
+  menuDef
+  {
+    name "tremulous_alienbuild"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    outOfBoundsClick
+    rect (320-(W/2)) (240-(H/2)) W H
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_FILLED
+    popup
+    onOpen { uiScript LoadAlienBuilds; setFocus list }
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name "list"
+      rect LIST_X LIST_Y LIST_W LIST_H
+      type ITEM_TYPE_LISTBOX
+      style WINDOW_STYLE_EMPTY
+      elementwidth 120
+      elementheight 20
+      textscale .33
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_TREMALIENBUILD
+      border WINDOW_BORDER_FULL
+      bordercolor   0.5 0.5 0.5 0.5
+      forecolor     1   1   1   1
+      backcolor     0.2 0.2 0.2 1
+      outlinecolor  0.1 0.1 0.1 0.5
+      visible MENU_TRUE
+      doubleclick
+      {
+        play "sound/misc/menu1.wav";
+        uiScript BuildAlienBuildable;
+        close tremulous_alienbuild
+      }
+    }
+
+    itemDef
+    {
+      name infopane
+      ownerdraw UI_ABUILDINFOPANE
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      style WINDOW_STYLE_EMPTY
+      rect INFO_X INFO_Y INFO_W INFO_H
+      textscale .33
+      textalign ALIGN_LEFT
+      textvalign VALIGN_TOP
+      textalignx INFO_TOFF
+      textaligny INFO_TOFF
+      border WINDOW_BORDER_FULL
+      bordercolor   0.5 0.5 0.5 0.5
+      forecolor     1   1   1   1
+      backcolor     0.2 0.2 0.2 1
+      outlinecolor  0.1 0.1 0.1 0.5
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      name "OKCancel"
+      text "OK"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect (W-((2*BORDER)+(2*BUTT_W))) (H-(BORDER+BUTT_H)) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .4
+      forecolor 1 1 1 1
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript BuildAlienBuildable;
+        close tremulous_alienbuild
+      }
+    }
+
+    itemDef
+    {
+      name "OKCancel"
+      text "Cancel"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect (W-(BORDER+BUTT_W)) (H-(BORDER+BUTT_H)) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .4
+      forecolor 1 1 1 1
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu3.wav";
+        close tremulous_alienbuild
+      }
+    }
+  }
+}
