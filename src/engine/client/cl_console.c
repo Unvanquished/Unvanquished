@@ -958,7 +958,7 @@ void Con_DrawSolidConsole( float frac ) {
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
-	totalwidth = SCR_ConsoleFontStringWidth( Q3_VERSION, i ) + cl_conXOffset->integer-20;
+	totalwidth = SCR_ConsoleFontStringWidth( Q3_VERSION, i ) + cl_conXOffset->integer;
 	if (!scr_conUseOld->integer) {
 		totalwidth += 30;
 	}
@@ -969,7 +969,10 @@ void Con_DrawSolidConsole( float frac ) {
 	
 	// engine string
 	i = strlen( Q3_ENGINE );
-	totalwidth = SCR_ConsoleFontStringWidth( Q3_ENGINE, i ) + cl_conXOffset->integer+10;
+	totalwidth = SCR_ConsoleFontStringWidth( Q3_ENGINE, i ) + cl_conXOffset->integer;
+	if (!scr_conUseOld->integer) {
+		totalwidth += 30;
+	}
 	
 	currentWidthLocation = 0;
 	for (x=0 ; x<i ; x++) {
