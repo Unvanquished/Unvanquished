@@ -1415,7 +1415,7 @@ void R_Register(void)
 	AssertCvarRange(r_mapOverBrightBits, 0, 3, qtrue);
 
 	r_intensity = ri.Cvar_Get("r_intensity", "1", CVAR_LATCH);
-	AssertCvarRange(r_intensity, 0, 1.5, qfalse);
+	AssertCvarRange(r_intensity, 0, 5, qfalse);
 
 	r_singleShader = ri.Cvar_Get("r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH);
 	r_stitchCurves = ri.Cvar_Get("r_stitchCurves", "1", CVAR_CHEAT | CVAR_LATCH);
