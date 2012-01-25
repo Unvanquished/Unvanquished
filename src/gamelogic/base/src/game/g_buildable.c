@@ -2496,8 +2496,8 @@ itemBuildError_t G_itemFits( gentity_t *ent, buildable_t buildable, int distance
     }
 
     //check permission to build here
-    if( tr1.surfaceFlags & SURF_TREM_NOALIENBUILD || tr1.surfaceFlags & SURF_TREM_NOBUILD ||
-        contents & CONTENTS_TREM_NOALIENBUILD || contents & CONTENTS_TREM_NOBUILD )
+    if( tr1.surfaceFlags & SURF_NOALIENBUILD || tr1.surfaceFlags & SURF_NOBUILD ||
+        contents & CONTENTS_NOALIENBUILD || contents & CONTENTS_NOBUILD )
       reason = IBE_PERMISSION;
 
     //look for a hivemind
@@ -2598,8 +2598,8 @@ itemBuildError_t G_itemFits( gentity_t *ent, buildable_t buildable, int distance
     }
 
     //check permission to build here
-    if( tr1.surfaceFlags & SURF_TREM_NOHUMANBUILD || tr1.surfaceFlags & SURF_TREM_NOBUILD ||
-        contents & CONTENTS_TREM_NOHUMANBUILD || contents & CONTENTS_TREM_NOBUILD )
+    if( tr1.surfaceFlags & SURF_NOHUMANBUILD || tr1.surfaceFlags & SURF_NOBUILD ||
+        contents & CONTENTS_NOHUMANBUILD || contents & CONTENTS_NOBUILD )
       reason = IBE_PERMISSION;
 
     //can we only build one of these?
