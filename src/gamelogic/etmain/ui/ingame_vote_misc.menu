@@ -1,0 +1,91 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+//#define WINDOW_WIDTH	128
+#define WINDOW_WIDTH	296
+#define WINDOW_HEIGHT	240
+#define GROUP_NAME		"grpIngameVoteMisc"
+
+// Macros //
+
+#include "ui/menumacros.h"
+
+// Misc Vote Menu //
+
+menuDef {
+	name		"ingame_vote_misc"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+
+	onOpen {
+		//copyCvar g_gametype ui_netgametype ;
+		
+		conditionalScript g_gametype 3	// 3: cvartest
+			( "hide bttn_nextmap ; show bttn_nextcampaign" )
+			( "show bttn_nextmap ; hide bttn_nextcampaign" ) "4" ;
+
+		copyCvar g_gametype ui_voteGameType ;
+
+		conditionalScript ui_voteGameType 3	// 3: cvartest
+			( "setcvar ui_voteGameType 2" )
+			( "clearFocus" ) "4" ;
+
+	}
+
+	onEsc {
+		close ingame_vote_misc ;
+		open ingame_vote
+	}
+
+// Window //
+
+	WINDOW( "MISC", 50)
+
+// Buttons //
+
+	BUTTON( 6, 32, .5*(WINDOW_WIDTH-18), 14, "START MATCH", .24, 11, exec "cmd callvote startmatch"; uiScript closeingame )
+	BUTTONEXT( 6, 50, .5*(WINDOW_WIDTH-18), 14, "RESET MATCH", .24, 11, exec "cmd callvote matchreset"; uiScript closeingame, voteFlag CV_SVF_MATCHRESET )
+	BUTTON( 6, 68, .5*(WINDOW_WIDTH-18), 14, "RESTART MAP", .24, 11, exec "cmd callvote maprestart"; uiScript closeingame )
+	NAMEDBUTTONEXT( bttn_nextmap, 6, 86, .5*(WINDOW_WIDTH-18), 14, "NEXT MAP", .24, 11, exec "cmd callvote nextmap"; uiScript closeingame, settingEnabled CV_SVS_NEXTMAP voteFlag CV_SVF_NEXTMAP )
+	NAMEDBUTTONEXT( bttn_nextcampaign, 6, 86, .5*(WINDOW_WIDTH-18), 14, "NEXT CAMPAIGN", .24, 11, exec "cmd callvote nextmap"; uiScript closeingame, settingEnabled CV_SVS_NEXTMAP voteFlag CV_SVF_NEXTMAP )
+	BUTTONEXT( 6, 104, .5*(WINDOW_WIDTH-18), 14, "ANTI-LAG ON", .24, 11, exec "cmd callvote antilag 1"; uiScript closeingame, settingDisabled CV_SVS_ANTILAG voteFlag CV_SVF_ANTILAG )
+	BUTTONEXT( 6, 104, .5*(WINDOW_WIDTH-18), 14, "ANTI-LAG OFF", .24, 11, exec "cmd callvote antilag 0"; uiScript closeingame, settingEnabled CV_SVS_ANTILAG voteFlag CV_SVF_ANTILAG )
+
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, 32, .5*(WINDOW_WIDTH-18), 14, "XP SHUFFLE", .24, 11, exec "cmd callvote shuffleteamsxp"; uiScript closeingame, voteFlag CV_SVF_SHUFFLETEAMS )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, 50, .5*(WINDOW_WIDTH-18), 14, "SWAP TEAMS", .24, 11, exec "cmd callvote swapteams"; uiScript closeingame, voteFlag CV_SVF_SWAPTEAMS )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, 68, .5*(WINDOW_WIDTH-18), 14, "MUTE SPECS", .24, 11, exec "cmd callvote mutespecs 1"; uiScript closeingame, settingDisabled CV_SVS_MUTESPECS voteFlag CV_SVF_MUTESPECS )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, 68, .5*(WINDOW_WIDTH-18), 14, "UNMUTE SPECS", .24, 11, exec "cmd callvote mutespecs 0"; uiScript closeingame, settingEnabled CV_SVS_MUTESPECS voteFlag CV_SVF_MUTESPECS )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, 86, .5*(WINDOW_WIDTH-18), 14, "FRIENDLY FIRE ON", .24, 11, exec "cmd callvote friendlyfire 1"; uiScript closeingame, settingDisabled CV_SVS_FRIENDLYFIRE voteFlag CV_SVF_FRIENDLYFIRE )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, 86, .5*(WINDOW_WIDTH-18), 14, "FRIENDLY FIRE OFF", .24, 11, exec "cmd callvote friendlyfire 0"; uiScript closeingame, settingEnabled CV_SVS_FRIENDLYFIRE voteFlag CV_SVF_FRIENDLYFIRE )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, 104, .5*(WINDOW_WIDTH-18), 14, "BALANCED TEAMS ON", .24, 11, exec "cmd callvote balancedteams 1"; uiScript closeingame, settingDisabled CV_SVS_BALANCEDTEAMS voteFlag CV_SVF_BALANCEDTEAMS )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, 104, .5*(WINDOW_WIDTH-18), 14, "BALANCED TEAMS OFF", .24, 11, exec "cmd callvote balancedteams 0"; uiScript closeingame, settingEnabled CV_SVS_BALANCEDTEAMS voteFlag CV_SVF_BALANCEDTEAMS )
+
+	BUTTONEXT( 6, 122, WINDOW_WIDTH-12, 14, "COMPETITION SETTINGS", .24, 11, exec "cmd callvote comp"; uiScript closeingame, voteFlag CV_SVF_COMP )
+	BUTTONEXT( 6, 140, WINDOW_WIDTH-12, 14, "PUBLIC SETTINGS", .24, 11, exec "cmd callvote pub"; uiScript closeingame, voteFlag CV_SVF_PUB )
+
+	MULTILEFT( 8, 158+2, .66*(WINDOW_WIDTH-18), 10, "Warmup Damage:", .2, 8, "ui_voteWarmupDamage", cvarFloatList { "None" 0 "Enemies" 1 "Everyone" 2 } voteFlag CV_SVF_WARMUPDAMAGE, "Select the warm-up damage mode to vote on" )
+	NAMEDBUTTONEXT( "bttnextWarmupDamage", 6+.80*(WINDOW_WIDTH-18)+6, 158, .20*(WINDOW_WIDTH-18), 14, "OK", .24, 11, uiScript voteWarmupDamage; uiScript closeingame, voteFlag CV_SVF_WARMUPDAMAGE )
+
+	itemDef {
+		name		"nfleftbackTimelimit:"
+		group		GROUP_NAME
+		rect		$evalfloat(70+6) $evalfloat(176+2) $evalfloat(.66*(WINDOW_WIDTH-18)-70-8) 10
+		style		WINDOW_STYLE_FILLED
+		backcolor	.5 .5 .5 .2
+		visible		1
+		voteFlag	CV_SVF_TIMELIMIT
+		decoration
+	}
+	NUMERICFIELDLEFTEXT( 8, 176+2, .66*(WINDOW_WIDTH-18), 10, "Time Limit:", .2, 8, "ui_voteTimelimit", 6, voteFlag CV_SVF_TIMELIMIT, "Specify a time limit to vote on" )
+	NAMEDBUTTONEXT( "bttnextTimelimit", 6+.80*(WINDOW_WIDTH-18)+6, 176, .20*(WINDOW_WIDTH-18), 14, "OK", .24, 11, uiScript voteTimelimit; uiScript closeingame, voteFlag CV_SVF_TIMELIMIT )
+
+	MULTILEFT( 8, 194+2, .66*(WINDOW_WIDTH-18), 10, "Game Type:", .2, 8, "ui_voteGameType", cvarFloatList { "Single-Map Objective" 2 "Stopwatch" 3 "Last Man Standing" 5 } voteflag CV_SVF_GAMETYPE, "Select the game type to vote on" )
+	NAMEDBUTTONEXT( "bttnextGameType", 6+.80*(WINDOW_WIDTH-18)+6, 194, .20*(WINDOW_WIDTH-18), 14, "OK", .24, 11, uiScript voteGame; uiScript closeingame, voteflag CV_SVF_GAMETYPE )
+
+	BUTTON( 6, WINDOW_HEIGHT-24, WINDOW_WIDTH-12, 18, "BACK", .3, 14, close ingame_vote_misc ; open ingame_vote )
+}

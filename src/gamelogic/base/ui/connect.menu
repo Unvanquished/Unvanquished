@@ -1,0 +1,13 @@
+#include "ui/menudef.h"
+
+{
+  menuDef
+  {
+    name "Connect"
+    background "gfx/2d/load_screen"
+    rect 0 0 640 480
+    fullScreen MENU_FALSE
+    visible MENU_FALSE
+    style WINDOW_STYLE_SHADER
+  }
+}

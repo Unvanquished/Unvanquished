@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+***********************************************************************************************
+(c) 2011 Gavin Pugh http://www.gavpugh.com/ - Released under the open-source zlib license
+***********************************************************************************************
+-->
+
+<!-- Based on script: MSBuild\Microsoft.Cpp\v4.0\1033\cl.xml -->
+
+<Rule Name="CL" PageTemplate="tool" DisplayName="C/C++" SwitchPrefix="-" Order="10" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+  <Rule.Categories>    
+    <Category Name="General" DisplayName="General" />
+    <Category Name="Optimization" DisplayName="Optimization" />
+    <Category Name="Preprocessor" DisplayName="Preprocessor" />
+    <Category Name="Code Generation" DisplayName="Code Generation" />
+    <Category Name="Language" DisplayName="Language" />
+    <Category Name="Output Files" DisplayName="Output Files" />
+    <Category Name="Advanced" DisplayName="Advanced" />
+    <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="ClCompile" Label="" HasConfigurationCondition="true" />
+  </Rule.DataSource>
+
+  <!-- General -->
+  <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="Additional Include Directories" Category="General" Switch="I">
+  </StringListProperty>
+  <BoolProperty Name="GenerateDebugInformation" DisplayName="Generate Debug Info" Category="General" Switch="g">
+  </BoolProperty>  
+  <EnumProperty Name="Warnings" DisplayName="Warnings" Category="General">
+    <EnumValue Name="DisableAllWarnings" DisplayName="Disable All Warnings" Switch="w" />
+    <EnumValue Name="NormalWarnings" DisplayName="Enable Normal Warnings" />
+    <EnumValue Name="AllWarnings" DisplayName="Enable All Warnings" Switch="Wall" />
+  </EnumProperty>  
+  <BoolProperty Name="WarningsAsErrors" DisplayName="Treat Warnings as Errors" Category="General" Switch="Werror">
+  </BoolProperty>
+  <BoolProperty Name="EchoCommandLines" DisplayName="Echo Command Lines" Category="General">
+  </BoolProperty>
+
+  <!-- Optimization -->
+  <EnumProperty Name="OptimizationLevel" DisplayName="Optimization" Category="Optimization">
+    <EnumValue Name="O0" DisplayName="No Optimization" Switch="O0" >
+    </EnumValue>
+    <EnumValue Name="O1" DisplayName="Optimization Flag -O1" Switch="O1">
+    </EnumValue>
+    <EnumValue Name="O2" DisplayName="Optimization Flag -O2" Switch="O2">      
+    </EnumValue>
+    <EnumValue Name="O3" DisplayName="Optimization Flag -O3" Switch="O3">      
+    </EnumValue>
+    <EnumValue Name="Os" DisplayName="Optimize for size" Switch="Os">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="ThumbMode" DisplayName="Thumb Mode" Category="Optimization" Switch="mthumb" ReverseSwitch="marm">
+  </BoolProperty>
+  <BoolProperty Name="StrictAliasing" DisplayName="Strict Aliasing" Category="Optimization" Switch="fstrict-aliasing" ReverseSwitch="fno-strict-aliasing">
+  </BoolProperty>
+  <BoolProperty Name="UnswitchLoops" DisplayName="Unswitch Loops" Category="Optimization" Switch="funswitch-loops">
+  </BoolProperty>
+  <IntProperty Name="InlineLimit" DisplayName="Inline Limit" Category="Optimization" Switch="finline-limit=">
+  </IntProperty>
+  <BoolProperty Name="OmitFramePointer" DisplayName="Omit Frame Pointer" Category="Optimization" Switch="fomit-frame-pointer">
+  </BoolProperty>
+  
+  <!-- Preprocessor -->
+  <StringListProperty Name="PreprocessorDefinitions" DisplayName="Preprocessor Definitions" Category="Preprocessor" Switch="D">
+  </StringListProperty>
+
+  <!-- Code Generation -->
+  <BoolProperty Name="GccExceptionHandling" DisplayName="Enable C++ Exceptions" Category="Code Generation" Switch="fexceptions" ReverseSwitch="fno-exceptions">
+  </BoolProperty>
+  <BoolProperty Name="SoftFloat" DisplayName="Floating-Point In Software" Category="Code Generation" Switch="msoft-float">
+  </BoolProperty>
+  <BoolProperty Name="PositionIndependentCode" DisplayName="Generate Position-Independent Code" Category="Code Generation" Switch="fpic">
+  </BoolProperty>
+  <BoolProperty Name="StackProtector" DisplayName="Stack Protection" Category="Code Generation" Switch="fstack-protector">
+  </BoolProperty>
+
+  <!-- Language -->
+  <BoolProperty Name="RuntimeTypeInfo" DisplayName="Enable Run-Time Type Information" Category="Language"  Switch="frtti" ReverseSwitch="fno-rtti">
+  </BoolProperty>
+  <BoolProperty Name="ShortEnums" DisplayName="Short Enums" Category="Language" Switch="fshort-enums" ReverseSwitch="fno-short-enums">
+  </BoolProperty>
+  
+  <!-- Output Files -->
+  <StringProperty Subtype="file" Name="ObjectFileName" DisplayName="Object File Name" Category="Output Files" Switch="o ">
+  </StringProperty>
+  
+  <!-- Advanced -->
+  <EnumProperty Name="CompileAs" DisplayName="Compile As" Category="Advanced">
+    <EnumValue Name="Default" DisplayName="Default">
+    </EnumValue>
+    <EnumValue Name="CompileAsC" DisplayName="Compile as C Code" Switch="x c">
+    </EnumValue>
+    <EnumValue Name="CompileAsCpp" DisplayName="Compile as C++ Code" Switch="x c++">
+    </EnumValue>
+    <EnumValue Name="CompileAsAsm" DisplayName="Compile as Assembly Code" Switch="x assembler">
+    </EnumValue>
+  </EnumProperty>
+
+  <!-- Hidden -->
+  <StringListProperty Subtype="folder" Name="SystemIncludeDirectories" Category="General" Visible="false" Switch="I">
+  </StringListProperty>
+  <StringListProperty Name="SystemPreprocessorDefinitions" Category="General" Visible="false" Switch="D">
+  </StringListProperty>
+  <EnumProperty Name="Architecture" Category="General" Visible="false">
+    <EnumValue Name="armv5te" Switch="march=armv5te -mtune=xscale">
+    </EnumValue>
+    <EnumValue Name="armv7-a" Switch="march=armv7-a -mtune=xscale">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="IgnoreVaListWarning" Category="General" Visible="false" Switch="Wno-psabi">
+  </BoolProperty>
+
+  <!-- Command Line -->
+  <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options" Category="Command Line">
+  </StringProperty>
+    
+</Rule>

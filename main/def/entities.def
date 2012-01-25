@@ -1,0 +1,1533 @@
+
+/*
+===========================================================================================================
+-----------------------------------------------------------------------------------------------------------
+
+ ET-XreaL/etmain/ entity definition file for the XreaLRadiant
+ 
+------------------------------------------------------------------------------------------------------------
+============================================================================================================
+*/
+
+/*
+============================================================================================================
+
+WorldSpawn Entity
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef worldspawn
+{
+	"editor_color"					"0 0 0"
+	"editor_mins"					"?"
+	"editor_maxs"					"?"
+
+	"editor_usage"					"Only used for the world."
+	
+	"editor_var music"				"music wav file."
+	"editor_var ambientColor"		"RGB value for ambient light color"
+	"editor_var fogColor"			"RGB value for global fog color"
+	"editor_float fogDensity"		"float value for global fog density"
+	"editor_var gravity"			"gravity value for the level."
+	"editor_bool perPolyCollision"	"Per Polygon Collision: when set to 1, collision code will trace against draw surfaces and special collision surfaces."
+	"editor_var gridsize"           "Dynamic Light Granularity: granularity of the lightgrid created by q3map. Value is three integers separated by spaces, representing number of units between grid points in X Y Z. Default gridsize value is 128 128 256. Use larger powers of 2 to reduce BSP size and compile time on very large maps."
+	"editor_var _blocksize"         "BSP Block Size: q3map always splits the BSP tree along the planes X=_blocksize*n and Y=_blocksize*n. Default _blocksize value is 1024. Increase the blocksize using larger powers of 2 to reduce compile times on very large maps with a low structural brush density."
+	"editor_float _lightmapscale"   "Lightmap Scale: Floating point value scaling the resolution of lightmaps on brushes/patches in the world. Can be overridden in func_group (or other entities) (default 1.0)."
+	"editor_var _floodlight"		"Ambient Occlusion: The parameters work as follow: the first three numbers select the color of the lighting. The fourth number sets a distance to trace, and the last number sets the intensity of the floodlight."
+	"editor_var _castshadows"		"Shadow Caster Level: Allows per-entity control over shadow casting. Defaults to 0 on entities, 1 on world. 0 = no shadow casting. 1 = cast shadows on world. > 1 = cast shadows on entities with _rs (or _receiveshadows) with the corresponding value, AND world. Negative values imply same, but DO NOT cast shadows on world."
+	"editor_var _receiveshadows" 	"Shadow Receiver Level: Allows per-entity control over shadow reception. Defaults to 1 on everything (world shadows). 0 = receives NO shadows. > 1 = receive shadows only from corresponding keyed entities (see above) and world. &lt; 1 = receive shadows ONLY from corresponding keyed entities."
+	
+	"spawnclass"					"idWorldspawn"
+	"message"						""
+	"music"							""
+	"ambientColor"					"0 0 0"
+	"fogColor"						"0 0 0"
+	"fogDensity"					"0"
+	"gravity"						"800"
+	"perPolyCollision"				"0"
+	"gridsize"						"0"
+	"_blocksize"					"0"
+	"_lightmapscale"				"1.0"
+	"_floodlight"					"240 240 255 1024 512"
+	"_castshadows"					"0"
+	"_receiveshadows"				"1"
+}
+
+
+/*
+============================================================================================================
+
+Light Entity
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef light
+{
+	"editor_color"					".65 .65 1"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_rotatable"				"1"
+
+	"editor_usage"					"Light source."
+	
+	"editor_material texture"		"light shader to use."
+	"editor_color color"			"light color"
+	"editor_var shaderParm3"		"shaderParm 3"
+	"editor_var shaderParm4"		"shaderParm 4"
+	"editor_var shaderParm5"		"shaderParm 5"
+	"editor_var shaderParm6"		"shaderParm 6"
+	"editor_var shaderParm7"		"shaderParm 7"
+	"editor_var light_radius"		"Boxed Light Radius: overrides the default 300 300 300 box radius."
+	"editor_float light_near"		"Spotlight Near Cip Plane: overrides the default of 1."
+	"editor_float light_far"		"Spotlight Radius: overrides the default 300 unit radius of a spotlight."
+	"editor_float light_fovX"		"Spotlight FOV width angle: overrides the default 90 degrees."
+	"editor_float light_fovY"		"Spotlight FOV height angle: overrides the default 90 degrees."
+	"editor_float light_scale"		"Intensity Multiplier, overrides r_lightScale which has the default 3."
+	"editor_bool noshadows"			"No Shadows, Set this key to 1 to disable shadow casting."
+	"editor_bool noradiosity"		"No Radiosity, Set this key to 1 to disable XMap2 radiosity creation."
+
+	"spawnclass"					"idLight"  // this is required for DarkRadiant
+	
+	"light_radius"					"300 300 300"
+	"light_distance"				"300"
+	"light_near"					"1"
+	"light_far"						"300"
+	"light_fovX"					"90"
+	"light_fovY"					"90"
+	"light_scale"					"3"
+	"noshadows"						"0"
+	"noradiosity"					"0"
+}
+
+
+/*
+============================================================================================================
+
+Info_ Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef info_null
+{
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Used as a positional target for light entities to create a spotlight effect. A target_position can be used instead of this but was kept in Q3A for legacy purposes."
+	
+	"spawnclass"				"idStaticEntity"
+}
+
+entityDef info_notnull
+{
+	"inherit"				"info_null"
+
+	"editor_color"			"0 0.5 0"
+	"editor_mins"			"-8 -8 -8"
+	"editor_maxs"			"8 8 8"
+
+	"editor_usage"			"Used as a positional target for entities that can use directional pointing. A target_position can be used instead of this but was kept in Q3A for legacy purposes."
+	
+	"editor_bool notfree"	"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"	"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"	"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	"editor_bool initial"	"Initial Spawn Point: makes the spawnpoint the initial place for the player to spawn at the beginning of the game."
+
+	"spawnclass"			"idStaticEntity"
+	
+	"notfree"				"0"
+	"notteam"				"0"
+	"notsingle"				"0"
+}
+
+/*
+entityDef info_location
+{
+	"editor_color"			"1 1 0"
+	"editor_mins"			"-4 -4 -4"
+	"editor_maxs"			"4 4 4"
+
+	"editor_usage"			"Place one of these in each door-separated area for naming the gameplay sections"
+	"editor_var name"		"location name for HUD.  Cannot be the same as any other entity in the game."
+	"editor_var location"	"use this when you have two locations with the same name."
+
+	"spawnclass"			"idLocationEntity"
+}
+*/
+
+/*
+entityDef info_locationSeparator
+{
+	"editor_color"			"1 1 0"
+	"editor_mins"			"-16 -16 -16"
+	"editor_maxs"			"16 16 16"
+
+	"editor_usage"			"Touch a vis-portal with this to break location name flood filling without using a door"
+
+	"spawnclass"			"idLocationSeparatorEntity"
+}
+*/
+
+/*
+entityDef info_camp  
+{  
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				""
+	
+	"spawnclass"				"idStaticEntity"
+	
+    "range"                     "0"  //"Range"number of units that the bot can move away from camp entity while camping on it."
+    "weight"                    "0"  //"Weight"number that is compared against the weight assigned to all the other camp spots in the map to determine if a bot chooses to camp there. The value is normalized against all other weight values."
+}
+*/
+
+
+entityDef info_player_intermission
+{    
+	"editor_color"				"1 0 1" 	
+	"editor_mins"				"-16 -16 -16"
+	"editor_maxs"				"16 16 16"
+	"editor_rotatable"			"1"
+	
+	"editor_usage"				"Camera for intermission screen between matches. This also automatically generates the podium for bot arena matches (see Notes). Can be aimed by setting the 'angles' key or targeting an pointing to an aiming entity. Use only one per level."
+	
+	"spawnclass"				"idPlayerStart"
+	
+	"editor_var angles"			"alternate 'pitch, yaw, roll' angles method of aiming intermission camera (default 0 0 0)."
+	"editor_var target"			"point this to an info_notnull or target_position entity to set the camera's pointing angles."
+	"editor_bool axis"			"This intermission point will be used if Axis win the match"
+	"editor_bool allied"		"This intermission point will be used if Allies win the match"
+	
+    "angles"                    "0 0 0"
+    "axis"						"0"
+	"allied"					"0"
+}
+
+entityDef info_train_spline_main
+{
+	"editor_color"			"0 1 0"
+	"editor_mins"			"-8 -8 -8"
+	"editor_maxs"			"8 8 8"
+
+	"editor_usage"			"Defines a main point for a spline curve"
+	
+	"editor_var control"	"sets a control point for this spline"
+	"editor_var controlX"	"(where X is a number greater than or equal to 2) sets additional control points"
+
+	"spawnclass"			"idStaticEntity"
+}
+
+entityDef info_train_spline_control
+{
+	"editor_color"			"1 .5 1"
+	"editor_mins"			"-8 -8 -8"
+	"editor_maxs"			"8 8 8"
+
+	"editor_usage"			"Defines a control point for a spline curve."
+
+	"spawnclass"			"idStaticEntity"
+}
+
+entityDef info_limbo_camera
+{
+	"editor_color"			"0.5 0 0"
+	"editor_mins"			"-8 -8 -8"
+	"editor_maxs"			"8 8 8"
+
+	"editor_usage"			"Target an 'info_notnull' entity EXCEPT for cameras overlooking SPAWNS (which target the 'yellow blob', AKA team_WOLF_objective)."
+	
+	"editor_bool lms_only"	"LMS_ONLY is used for limbo cameras that only appear in LMS mode."
+	"editor_bool all_modes"	"ALL_MODES is used for limbo cameras that appear in all modes including LMS."
+
+	"spawnclass"			"idStaticEntity"
+	"lms_only"				"0"
+	"all_modes"				"0"
+}
+
+
+/*
+============================================================================================================
+
+Player Start Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+/*
+entityDef info_player_start
+{
+	"editor_color"			"1 0 0"
+	"editor_mins"			"-18 -18 -24"
+	"editor_maxs"			"18 18 50"
+	"editor_showangle"		"1"
+
+	"editor_usage"			"Potential spawning position for single player games."
+	
+	"editor_var angle"		"Yaw Angle: direction in which player will look when spawning in the game. Does not apply to bots."
+	"editor_var target"		"this can point at a target_give entity for respawn freebies."
+	"editor_bool nobots"    "when set to 1, bots will never use this spawn point to respawn in the game."
+	"editor_bool nohumans"	"when set to 1, human players will never use this spawn point to respawn in the game."
+	"editor_bool notfree"	"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"	"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"	"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	"editor_bool initial"	"Initial Spawn Point: makes the spawnpoint the initial place for the player to spawn at the beginning of the game."
+
+	"spawnclass"			"idPlayerStart"
+	"angle"					"0"
+    "target"				""
+	"nobots"				"0"
+	"nohumans"				"0"
+	"notfree"				"0"
+	"notteam"				"0"
+	"notsingle"				"0"
+	"initial"               "0"
+}
+*/
+
+entityDef info_player_deathmatch
+{
+	"inherit"				"info_player_start"
+	
+	"editor_color"			"1 0 1"
+	"editor_mins"			"-18 -18 -24"
+	"editor_maxs"			"18 18 50"
+	"editor_showangle"		"1"
+
+	"editor_usage"			"Potential spawning position for deathmatch games.  The first time a player enters the game, they will be at an 'initial' spot."
+	
+	"editor_bool nobots"    "when set to 1, bots will never use this spawn point to respawn in the game."
+	"editor_bool nohumans"	"when set to 1, human players will never use this spawn point to respawn in the game."
+
+	"spawnclass"			"idPlayerStart"
+	"nobots"				"0"
+	"nohumans"				"0"
+}
+
+
+/*
+entityDef info_player_teleport
+{
+	"inherit"					"info_player_start"
+	
+	"editor_color"				"1 0 0"
+	"editor_mins"				"-18 -18 -24"
+	"editor_maxs"				"18 18 50"
+	"editor_showangle"			"1"
+
+	"editor_usage"				"Teleport destination location point for trigger_teleporter entities."
+	
+	"spawnclass"				"idPlayerStart"
+}
+*/
+
+/*
+============================================================================================================
+
+Team Player Start Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef team_CTF_blueplayer
+{    
+	"editor_color"				"0 .2 1" 	
+	"editor_mins"				"-18 -18 -24"
+	"editor_maxs"				"18 18 50"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Initial Blue team spawning position for CTF games. This is where players spawn when they join the Blue team."
+	
+	"spawnclass"				"idPlayerStart"
+    "target"					""
+}
+
+
+entityDef team_CTF_bluespawn 
+{   
+	"editor_color"				"0 .2 1" 	
+	"editor_mins"				"-18 -18 -24"
+	"editor_maxs"				"18 18 50"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Blue team respawning position for CTF games. This is where Blue team players respawn after they get fragged."
+	
+	"spawnclass"				"idPlayerStart"
+    "target"					""
+}
+
+
+entityDef team_CTF_redplayer 
+{   
+	"editor_color"				"1 .2 0" 	
+	"editor_mins"				"-18 -18 -24"
+	"editor_maxs"				"18 18 50"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Initial Red team spawning position for CTF games. This is where players spawn when they join the Red team."
+	
+	"spawnclass"				"idPlayerStart"
+    "target"					""
+}
+
+
+entityDef team_CTF_redspawn 
+{   
+	"editor_color"				"1 .2 0" 	
+	"editor_mins"				"-18 -18 -24"
+	"editor_maxs"				"18 18 50"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Red team respawning position for CTF games. This is where Red team players respawn after they get fragged."
+	
+	"spawnclass"				"idPlayerStart"
+    "target"					""
+}
+
+
+/*
+============================================================================================================
+
+Team Base Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef team_redobelisk  
+{  
+	"editor_color"				"1 .2 0" 
+	"editor_mins"				"16 -16 0"
+	"editor_maxs"				"16 16 88"
+	"editor_showangle"			"1"
+	"model"                     "models/powerups/overload_base.md3"
+	
+	"editor_usage"				"Red team Obelisk. Used for Overload, CTF, Oneflag, and Harvester game types for various functions. Facing needs to be set."
+	"editor_var gametype"		"the valid values are ffa, tournament, single, team, ctf, oneflag, obelisk, harvester. Once a value for this key is set, it will ONLY appear in the listed gametype(s). Separate gametypes by commas."
+	
+	"spawnclass"				"idSpawnableEntity"
+	"gametype"					""
+}
+
+
+entityDef team_blueobelisk  
+{  
+	"editor_color"				"0 .2 1" 
+	"editor_mins"				"16 -16 0"
+	"editor_maxs"				"16 16 88"
+	"editor_showangle"			"1"
+	"model"                     "models/powerups/overload_base.md3"
+	
+	"editor_usage"				"Blue team Obelisk. Used for Overload and Harvester game types. Facing needs to be set."
+	"editor_var gametype"		"the valid values are ffa, tournament, single, team, ctf, oneflag, obelisk, harvester. Once a value for this key is set, it will ONLY appear in the listed gametype(s). Separate gametypes by commas."
+	
+	"spawnclass"				"idSpawnableEntity"
+	"gametype"					""
+}
+
+
+entityDef team_neutralobelisk  
+{  
+	"editor_color"				"1 .2 1" 
+	"editor_mins"				"16 -16 0"
+	"editor_maxs"				"16 16 88"
+	"editor_showangle"			"1"
+	"model"                     "models/powerups/obelisk/obelisk.md3"
+	
+	"editor_usage"				"Neutral Obelisk (Harvester only)."
+	"editor_var gametype"		"the valid values are ffa, tournament, single, team, ctf, oneflag, obelisk, harvester. Once a value for this key is set, it will ONLY appear in the listed gametype(s). Separate gametypes by commas."
+	
+	"spawnclass"				"idSpawnableEntity"	
+    "gametype" 					""
+}
+
+/*
+============================================================================================================
+
+Team Flag Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+
+entityDef team_CTF_redflag
+{  
+	"editor_color"				"1 .2 1" 
+	"editor_mins"				"16 -16 0"
+	"editor_maxs"				"16 16 88"
+	"editor_showangle"			"1"
+	"model"                     "models/flags/r_flag.md3"
+	
+	"editor_usage"				"Red team flag for CTF games."
+	
+	"editor_bool suspended"		"item will spawn where it was placed in map and won't drop to the floor."
+	"editor_var gametype"		"the valid values are ffa, tournament, single, team, ctf, oneflag, obelisk, harvester. Once a value for this key is set, it will ONLY appear in the listed gametype(s). Separate gametypes by commas."
+	
+	"spawnclass"				"idSpawnableEntity"
+	"suspended"					"0"
+    "gametype" 					""
+}
+
+
+entityDef team_CTF_blueflag
+{  
+	"editor_color"				"1 .2 1" 
+	"editor_mins"				"16 -16 0"
+	"editor_maxs"				"16 16 88"
+	"editor_showangle"			"1"
+	"model"                     "models/flags/b_flag.md3"
+	
+	"editor_usage"				"Blue team flag for CTF games."
+	
+	"editor_bool suspended"		"item will spawn where it was placed in map and won't drop to the floor."
+	"editor_var gametype"		"the valid values are ffa, tournament, single, team, ctf, oneflag, obelisk, harvester. Once a value for this key is set, it will ONLY appear in the listed gametype(s). Separate gametypes by commas."
+	
+	"spawnclass"				"idSpawnableEntity"
+	"suspended"					"0"
+    "gametype" 					""
+}
+
+
+entityDef team_CTF_neutralflag
+{  
+	"editor_color"				"1 .2 1" 
+	"editor_mins"				"16 -16 0"
+	"editor_maxs"				"16 16 88"
+	"editor_showangle"			"1"
+	"model"                     "models/flags/n_flag.md3"
+	
+	"editor_usage"				"Neutral flag (One Flag CTF only)"
+	
+	"editor_bool suspended"		"item will spawn where it was placed in map and won't drop to the floor."
+	"editor_var gametype"		"the valid values are ffa, tournament, single, team, ctf, oneflag, obelisk, harvester. Once a value for this key is set, it will ONLY appear in the listed gametype(s). Separate gametypes by commas."
+	
+	"spawnclass"				"idSpawnableEntity"
+	"suspended"					"0"
+    "gametype" 					""
+}
+
+
+entityDef team_WOLF_objective
+{  
+	"editor_color"				"1 1 0.3" 
+	"editor_mins"				"-16 -16 -24"
+	"editor_maxs"				"16 16 32"
+	
+	"editor_usage"				"This marker will be used for computing effective radius for dynamite damage, as well as generating a list of objectives that players can elect to spawn near to in the limbo spawn screen"
+	
+	"editor_var description"	"short text key for objective name that will appear in objective selection in limbo UI."
+	"editor_bool default_axis"	"This spawn region belongs to the Axis at the start of the map"
+	"editor_bool default_allies" "This spawn region belongs to the Alles at the start of the map"
+	
+	"spawnclass"				"idSpawnableEntity"
+	"description"				""
+    "default_axis" 				"1"
+	"default_allies" 			"1"
+}
+
+
+
+/*
+============================================================================================================
+
+Func_ Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef func_explosive 
+{   
+	"editor_color"				"0 .5 .8"
+	
+	"editor_usage"				"Solid entity which will take damage, and be destroyed when it runs out of health. Features various debris effects (including the option of no debris)."
+
+    "editor_var type"		    "The type of debris. Type can be: none, wood, glass, metal, gibs, brick, rock, riles, plaster, fibers, sprite, smoke, gas, fire"
+	"editor_var health"		    "The health of the object. How much damage it can take before it explodes."
+	"editor_var mass3"  		"Mass of the object, mass3 determines the number of larger debris chunks."
+	"editor_var mass2"  		"Mass of the object, mass2 determines the number of medium debris chunks."
+	"editor_var mass1"			"Mass of the object, mass1 determines the number of smaller debris chunks."
+	"editor_var damage"			"Damage done be explosion. (Same as dmg)"
+	"editor_bool notfree"		"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+
+	"spawnclass"				"idSpawnableEntity"
+    "type"					    "none" 
+    "health"					"100"  
+    "mass3"					    "3"  
+    "mass2"						"6"  
+    "mass1"						"10"
+    "damage"					"4"
+    "notfree"					"0"  
+    "notteam"					"0"  
+    "notsingle"                 "0"    
+}
+
+entityDef func_bobbing 
+{   
+	"editor_color"				"0 .5 .8"
+	
+	"editor_usage"				"Solid entity that oscillates back and forth in a linear motion. By default, it will have an amount of displacement in either direction equal to the dimension of the brush in the axis in which it's bobbing. Entity bobs on the Z axis (up-down) by default. It can also emit sound if the noise key is set. Will crush the player when blocked."
+
+	"editor_float speed"		"Amount of time in seconds for one complete oscillation cycle."
+	"editor_float height"		"Sets the amount of travel of the oscillation movement."
+	"editor_float phase"		"Sets the start offset of the oscillation cycle. Values must be 0 &lt; phase &lt; 1. Any integer phase value is the same as no offset."
+	"editor_var noise"			"Path/name of .wav file to play. Use looping sounds only."
+	"editor_var dmg"			"Damage to inflict when blocked."
+	"editor_bool x_axis"		"entity will bob along the X axis."
+	"editor_bool y_axis"		"entity will bob along the Y axis."
+	"editor_bool notfree"		"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+
+	"spawnclass"				"idSpawnableEntity"
+    "speed"						"4"  
+    "height"					"32"  
+    "phase"						"0"  
+    "noise"						""
+    "dmg"						"4"
+    "x_axis"					"0"
+    "y_axis"					"0"
+    "notfree"					"0"  
+    "notteam"					"0"  
+    "notsingle"                 "0"    
+}
+
+
+entityDef func_button
+{    
+	"editor_color"				"0 .5 .8"
+	
+	"editor_usage"				"When a button is touched by a player, it moves in the direction set by the angle key, triggers all its targets, stays pressed by an amount of time set by the wait key, then returns to it's original position where it can be operated again."
+	
+	"editor_float movedir"		"-(up = -1, down = -2)- Determines the direction in which the button will move."
+	"editor_var target"			"All entities with a matching targetname will be triggered."
+	"editor_float speed"		"Speed of button's displacement."
+	"editor_float wait"			"-(default 1, -1 = return immediately)- Number of seconds button stays pressed."
+	"editor_float lip"			"Lip remaining at end of move."
+	"editor_float health"		"If set to any non-zero value, the button must take damage (any amount) to activate."
+	"editor_bool notfree"		"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idSpawnableEntity"
+    "movedir"                   "0"  
+    "target"					"0"  
+    "speed"						"40"  
+    "wait"						"1"  
+    "lip"						"4"  
+    "health"					"0"  
+    "notfree"					"0"  
+    "notteam"					"0"  
+    "notsingle"                 "0"  
+}
+
+
+entityDef func_door 
+{   
+	"editor_color"				"0 .5 .8"
+	
+	"editor_usage"				"Normal sliding door entity. By default, the door will activate when player walks close to it or when damage is inflicted to it."
+	
+	"editor_float movedir"		"-(up = -1, down = -2)- Determines the direction in which the button will move."
+	"editor_float speed"		"Speed of button's displacement."
+	"editor_float wait"			"-(default 1, -1 = return immediately)- Number of seconds button stays pressed."
+	"editor_float lip"			"Lip remaining at end of move."
+	"editor_float health"		"If set to any non-zero value, the button must take damage (any amount) to activate."
+	"editor_var dmg"			"Damage to inflict when blocked."
+	"editor_var team"			"Assign the same team name to multiple doors that should operate together."
+	"editor_bool start_open"	"The door will spawn in the open state and operate in reverse."
+	"editor_bool crusher"		"Door will not reverse direction when blocked and will keep damaging player until he dies or gets out of the way."
+	"editor_bool notfree"		"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	
+	"spawnclass"				"idSpawnableEntity"
+	"movedir"					"0"
+	"speed"						"100"
+	"wait"						"2"
+	"lip"						"8"
+	"health"					"0"
+	"dmg"						"2"
+	"team"						""
+	"start_open"				"0"
+	"crusher"					"0"
+	"notfree"					"0"
+	"notteam"					"0"
+	"notsingle"					"0"
+}
+
+// Dushan
+entityDef func_dynamic {   
+	"editor_color"				"0 .5 .8"
+	"editor_usage"				"Dynamic entity, a rigid body controlled by realtime physics simulation."
+}
+
+entityDef func_group 
+{   
+	"editor_color"				"0 .5 .8"
+	"editor_mins"				"?"
+	"editor_maxs"				"?"
+	
+	"editor_usage"				"This is not an entity as such. It is strictly an editor utility to group world brushes and patches together for convenience (selecting, moving, copying, etc). You cannot group entities with this."
+}
+
+
+entityDef func_pendulum 
+{   
+	"editor_color"				"0 .5 .8"
+	
+	"editor_usage"				"Solid entity that describes a pendulum back and forth rotation movement. Rotates on the X axis by default. Pendulum frequency is a physical constant based on the length of the beam and gravity. Blocking the pendulum instantly kills a player."
+
+	"editor_float speed"		"angle of swing arc in either direction from initial position"
+	"editor_float phase"		"sets the start offset of the swinging cycle. Values must be 0 &lt; phase &lt; 1. Any integer phase value is the same as no offset."
+	"editor_var noise"			"Path/name of .wav file to play. Use looping sounds only."
+	"editor_bool notfree"		"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idSpawnableEntity"
+    "angle"                     "0"  
+    "speed"                     "30"  
+    "phase"                     "0"  
+    "noise"                     ""  
+    "notfree"                   "0"  
+    "notteam"                   "0"  
+    "notsingle"                 "0"  
+}
+
+
+entityDef func_plat  
+{  
+	"editor_color"				"0 .5 .8"
+	
+	"editor_usage"				"Rising platform the player can ride to reach higher places. Plats must always be drawn in the raised position, so they will operate and be lighted correctly but they spawn in the lowered position. The plat will stay in the raised position until the player steps off."
+
+	"editor_float speed"		"Determines how fast the plat moves."
+	"editor_float lip"			"Lip remaining at end of move. Has no effect if height is set."
+	"editor_float height"		"If set, this will determine the total amount of vertical travel of the plat."
+	"editor_float dmg"			"Damage to inflict on player when he blocks operation of plat. Plat will reverse direction when blocked."
+	"editor_bool notfree"		"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idSpawnableEntity"
+	"speed"                     "150"  
+    "lip"                       "16"  
+    "height"                    "0"  
+    "dmg"                       "4"  
+    "notfree"                   "0"  
+    "notteam"                   "0"  
+    "notsingle"                 "0"  
+}
+
+
+entityDef func_rotating 
+{   
+	"editor_color"				"0 .5 .8"
+	
+	"editor_usage"				"Solid entity that rotates continuously. Rotates on the Z axis by default and requires an origin brush. It will always start on in the game and is not targetable."
+
+	"editor_float speed"		"Determines how fast entity rotates."
+	"editor_var noise"			"Path/name of .wav file to play. Use looping sounds only."
+	"editor_bool x_axis"		"entity will rotate along the X axis."
+	"editor_bool y_axis"		"entity will rotate along the Y axis."
+	
+	"spawnclass"				"idSpawnableEntity"
+    "speed"                     "100"  
+    "noise"                     "" 
+    "x_axis"					"0"
+    "y_axis"					"0"
+    "notfree"                   "0"  
+    "notteam"                   "0"  
+    "notsingle"                 "0"
+}
+
+
+entityDef func_static 
+{   
+	"editor_color"				"0 .5 .8"
+	"editor_mins"				"?"
+	"editor_maxs"				"?"
+	
+	"editor_usage"				"Same as misc_model in Q3A."
+	"editor_usage1"				"Static non-solid bspmodel. Can be used for conditional walls and models."
+	
+	"editor_bool forceMeta"			"if 1, XMap2 turns model triangles into planar surfaces so models can be lightmapped."
+	"editor_bool clipModel"			"if 1, XMap2 creates collision brushes for this model."
+	"editor_bool solid"			"if 0, XMap2 adds a "nonsolid" material parameter to it."
+	
+	"spawnclass"				"idStaticEntity"
+	
+	"forceMeta"				"0"
+	"clipModel"				"0"
+	"solid"					"1"
+}
+
+
+entityDef func_timer 
+{   
+	"editor_color"				"0 .5 .8" 
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	
+	"editor_usage"				"Time delay trigger that will continuously fire its targets after a preset time delay. The time delay can also be randomized. When triggered, the timer will toggle on/off."
+	
+	"editor_float wait"			"Delay in seconds between each triggering of its targets."
+	"editor_float random"			"Random time variance in seconds added or subtracted from wait delay."
+	"editor_bool start_on"			"timer will start on in the game and continuously fire its targets."
+	"editor_bool notfree"			"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"			"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"			"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+
+	"spawnclass"				"idSpawnableEntity"
+	"wait"					"1"  
+	"random"				"0"
+	"start_on"				"0"
+	"notfree"				"0"  
+	"notteam"				"0"  
+	"notsingle"				"0"
+}
+
+
+entityDef func_train 
+{   
+	"editor_color"				"0 .5 .8"
+	
+	"editor_usage"				"Trains are moving solids that follow a string of path_corner entities. Trains in Q3A are very basic."
+	"editor_usage1"				"1. Trains always start on in the game."
+	"editor_usage2"				"2. Trains do not damage the played when blocked."
+	"editor_usage3"				"3. Trains cannot emit sound."
+	"editor_usage4"				"4. Trains are not triggerable or toggle-able."
+	"editor_usage5"				"5. Trains cannot be block-stopped just by getting in their way, the player must be wedged between the train and another obstacle to block it."
+	
+	"editor_float speed"			"-(default 100 or overridden by speed value of path)- Speed of displacement of train."
+	"editor_var target"			"This points to the first path_corner of the path which is also the spawn location of the train's origin."
+	"editor_bool notfree"			"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"			"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"			"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+
+	"spawnclass"				"idSpawnableEntity"
+	"speed"					"0"  
+	"target"				"0"  
+	"notfree"				"0"  
+	"notteam"				"0"  
+	"notsingle"				"0"  
+}
+
+
+entityDef func_mover
+{  
+	"editor_color"				"0 .5 .8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Movers are objects meant to be controlled through scripts."
+	
+	"editor_var luaThink"			"Lua Think Function."
+	"editor_bool notfree"			"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"			"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"			"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idSpawnableEntity"
+	"luaThink"				""
+	"notfree"				"0" 
+	"notteam"				"0" 
+	"notsingle"				"0" 
+}
+
+
+entityDef func_teleporter 
+{   
+	"editor_color"				"0 .5 0"
+ 	"editor_mins"				"-8 -8 -8"
+ 	"editor_maxs"				"8 8 8"
+ 	"editor_showangle"			"1"
+ 	
+ 	"editor_usage"				"Activating this will teleport players to the location of this entity. Unlike trigger_teleport, this entity must be activated by a trigger and does NOT allow client prediction of events."
+
+	"editor_bool notfree"			"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"			"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"			"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+ 	
+ 	"spawnclass"				"idSpawnableEntity"
+	"notfree"				"0"
+	"notteam"				"0"
+	"notsingle"				"0"
+}
+
+/*
+============================================================================================================
+
+Misc_ Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef misc_portal_camera 
+{   
+	"editor_color"				"1 .5 .25" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Portal camera. This camera is used to project its view onto a portal surface in the level through the intermediary of a misc_portal_surface entity. Use a target_position entity to set the camera's pointing direction."
+	
+	"editor_bool slowrotate"		"makes the portal camera rotate slowly along the roll axis."
+	"editor_bool fastrotate"		"makes the portal camera rotate faster along the roll axis."
+	"editor_bool notfree"			"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"			"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"			"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idCamera"
+	"slowrotate"				"0"
+	"fastrotate"				"0"
+	"notfree" 				"0" 
+	"notteam" 				"0" 
+	"notsingle"				"0" 
+}
+
+
+entityDef misc_portal_surface  
+{  
+	"editor_color"				"1 .5 .25" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Portal surface indicator. This will 'lock on' the brush face closest to it and identify as a portal. The view displayed on the portal surface is the view of the misc_portal_camera that this entity targets. Also used for mirrors."
+	"editor_usage1"				"The entity must be no farther than 64 units away from the portal surface to lock onto it."
+	"editor_usage2"				"To make a mirror, apply the common/mirror shader to the surface, place this entity near it but don't target a misc_portal_camera."
+	
+	"editor_bool notfree"			"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"			"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"			"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idStaticEntity"
+	"notfree" 				"0"
+	"notteam" 				"0" 
+	"notsingle"				"0" 
+}
+
+
+entityDef misc_teleporter_dest 
+{   
+	"editor_color"				"1 .5 .25" 	
+	"editor_mins"				"-32 -32 -24"
+	"editor_maxs"				"32 32 -16"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Teleport destination location point for trigger_teleporter entities."
+	
+	"editor_bool notfree"			"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"			"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"			"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idStaticEntity"
+	"notfree" 				"0" 
+	"notteam" 				"0" 
+	"notsingle" 				"0" 
+}
+
+
+/*
+============================================================================================================
+
+Path Entity
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef path_corner   
+{ 
+	"editor_color"				".5 .3 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	
+	"editor_usage"				"Path corner entity that func_trains can be made to follow."
+	"editor_usage1"				"Point it to next path_corner in the path."
+	
+	"editor_float speed"			"speed of func_train while moving to the next path corner. This will override the speed value of the train."
+	"editor_float wait"			"number of seconds func_train will pause on path corner before moving to next path corner."
+	"editor_bool notfree"			"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"			"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"			"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idStaticEntity"
+	"speed" 				"0" 
+	"wait" 					"0" 
+	"notfree" 				"0" 
+	"notteam"				"0" 
+	"notsingle" 				"0" 
+}
+
+
+/*
+============================================================================================================
+
+Shooter_ Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+/*
+entityDef shooter_grenade 
+{   
+	"editor_color"				"1 0 .5" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"This will shoot a grenade each time it's triggered. Aiming is done by targeting an info_notnull or target_position entity."
+	
+	"editor_float random"		"random aiming variance in degrees from the straight line to the targeted entity"
+	"editor_bool notfree"		"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idStaticEntity"
+    "random" 					"0" 
+    "notfree" 					"0" 
+    "notteam" 					"0" 
+    "notsingle" 				"0" 
+}
+
+
+entityDef shooter_plasma   
+{ 
+	"editor_color"				"1 0 .5" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"This will shoot a plasma ball each time it's triggered. Aiming is done by targeting an info_notnull or target_position entity."
+	
+	"editor_float random"		"random aiming variance in degrees from the straight line to the targeted entity"
+	"editor_bool notfree"		"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idStaticEntity"
+    "random" 					"0" 
+    "notfree" 					"0" 
+    "notteam" 					"0" 
+    "notsingle" 				"0" 
+}
+
+
+entityDef shooter_rocket 
+{   
+	"editor_color"				"1 0 .5" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"This will shoot a rocket each time it's triggered. Aiming is done by targeting an info_notnull or target_position entity."
+	
+	"editor_float random"		"random aiming variance in degrees from the straight line to the targeted entity"
+	"editor_bool notfree"		"when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idStaticEntity"
+    "random" 					"0" 
+    "notfree" 					"0" 
+    "notteam" 					"0" 
+    "notsingle" 				"0" 
+}
+*/
+
+/*
+============================================================================================================
+
+Target_ Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef target_speaker
+{
+	"editor_color"					"0 .7 .7"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_material"				"textures/common/speaker"
+	
+	"editor_usage"					"Formerly target_speaker. Sound generating entity that plays .wav files. Normal non-looping sounds play each time the target_speaker is triggered. Looping sounds can be set to play by themselves (no activating trigger) or be toggled on/off by a trigger."
+	"editor_displayFolder"			"Sound"
+	
+	"editor_snd s_sound"			"path/name of .wav or .ogg file to play (eg. sound/world/growl1.wav)."
+	"editor_bool s_looping"			"force looping"
+	"editor_bool s_waitfortrigger"	"play on load or play when triggered."
+	"editor_bool s_global"			"sound will play full volume throughout the level."
+	"editor_bool s_activator"		"sound will play only for the player that activated the target."
+	"editor_var wait"				"when set > 0, seconds between triggerings.  time between sounds is wait + or - random"
+	"editor_var random"				"wait variance."
+	"editor_bool notfree"			"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"			"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"			"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"editor_var volume"				"UNSUPPORTED: override shader volume level."
+	"editor_var s_minDistance"		"UNSUPPORTED: override shader minDistance."
+	"editor_var s_maxDistance"		"UNSUPPORTED: override shader maxDistance."
+	"editor_var s_omni"				"UNSUPPORTED: force omnidirectional"
+	"editor_bool s_occlusion"		"UNSUPPORTED: force no portal occlusion"
+	
+	"spawnclass"					"idSound"
+	
+	"noise"							"sound/feedback/hit.wav"
+	"volume"						"255"
+	"s_looping"						"0"
+	"s_waitfortrigger"				"0"
+	"s_global"						"0"
+	
+	"notfree"						"0"
+	"notteam"						"0"
+	"notsingle"						"0"
+}
+
+
+entityDef target_delay  
+{  
+	"editor_color"				"0 .7 .7" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Time delay trigger intermediary. Like a target_relay, this can only be fired by other triggers which will cause it in turn to fire its own targets."
+	
+	"editor_float wait"			"delay in seconds from when this gets triggered to when it fires its own targets."
+	"editor_float random"		"random time variance in seconds added or subtracted from wait delay."
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+    "wait" 						"1"
+    "random" 					"0" 
+    "notfree"					"0" 
+    "notteam" 					"0" 
+    "notsingle" 				"0" 
+}
+
+
+entityDef target_give  
+{  
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"This is used to give ammo, weapons, health or items to the player who activates it."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+    "notfree" 					"0" 
+    "notteam" 					"0" 
+    "notsingle" 				"0" 
+}
+
+
+entityDef target_kill 
+{   
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"This will kill the player who activates the trigger that fires this target."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+    "notfree" 					"0" 
+    "notteam" 					"0" 
+    "notsingle" 				"0" 
+}
+
+
+entityDef target_laser 
+{   
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"When triggered, fires a laser.  You can either set a target or a direction."
+
+	"editor_bool start_on"		"when set, the laser will start on in the game."
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+ 	"start_on"					"0"
+    "notfree" 					"0" 
+    "notteam" 					"0" 
+    "notsingle" 				"0"
+}
+
+
+entityDef target_location 
+{   
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Location marker used by bots and players for team orders and team chat in the course of Teamplay games. The closest target_location in sight is used for the location. If none is in sight, the closest in distance is used."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+    "notfree"					"0" 
+    "notteam"					"0" 
+    "notsingle" 				"0"
+}
+
+
+entityDef target_position
+{	
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Aiming target for entities like light, misc_portal_camera and trigger_push (jump pads) in particular."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+	"notfree" 					"0" 
+    "notteam" 					"0"	
+    "notsingle" 				"0"
+}
+
+
+entityDef target_print 
+{   
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	
+	"editor_usage"				"This will print a message on the center of the screen when triggered. By default, all the clients will see the message."
+	
+	"editor_var message"		"text string to print on screen."
+	"editor_bool red_only"		"only red team players will see the message."
+	"editor_bool blue_only"		"only blue team players will see the message."
+	"editor_bool private"		"only the player that activates the target will see the message."
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+	
+    "message" 					""
+    "red_only"					"0"
+    "blue_only"					"0"
+    "private"					"0"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle" 				"0"
+}
+
+
+entityDef target_push
+{  
+	"editor_color"				".5 .5 .5" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"This can be used to create jump pads and launch ramps. The direction of push can be set by pointing to a target_position or info_notnull entity. Unlike trigger_push, this is NOT client side predicted and must be activated by a trigger."
+	
+	"editor_float speed"		"speed of push (default 1000). Has no effect if entity targets an aiming entity."
+	"editor_bool bouncepad"		"if set, trigger will play bounce noise instead of beep noise when activated (recommended)."
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+	"speed" 					"1000"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle" 				"0"
+}
+
+
+entityDef target_relay  
+{  
+	"editor_color"				"0 .7 .7" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"This can only be activated by other triggers which will cause it in turn to activate its own targets."
+	
+	"editor_bool red_only"		"only red team players can activate trigger."
+	"editor_bool blue_only"		"only blue team players can activate trigger."
+	"editor_bool random"		"only one of the targeted entities will be triggered at random."
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+	"notfree" 					"0"
+    "notteam"					"0"
+    "notsingle" 				"0" 
+}
+
+
+entityDef target_remove_powerups 
+{   
+	"editor_color"				"0 .7 .7" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	
+	"editor_usage"				"This takes away any and all item_* type powerups from player except health and armor (holdable_* items are not taken away either). Must be activated by a button or trigger_multiple entity. The player that activates the trigger will lose any powerup(s) currently in his possession."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+    "notfree" 					"0"
+    "notteam"					"0"
+    "notsingle" 				"0"
+}
+
+
+entityDef target_score  
+{  
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"This is used to automatically give frag points to the player who activates this. A spawn location entity like info_player_* or CTF respawn points can target this entity to give points to the player when he spawns in the game. Or a trigger can also be used to activate this. The activator of the trigger will get the points."
+	
+	"editor_var count"			"number of frag points to give to player (default 1)."
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+    "count" 					"1"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle" 				"0"
+}
+
+
+entityDef target_teleporter
+{    
+	"editor_color"				"0 .5 0" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_showangle"			"1"
+	
+	"editor_usage"				"Activating this will teleport players to the location of the targeted misc_teleporter_dest entity. Unlike trigger_teleport, this entity must be activated by a trigger and does NOT allow client prediction of events."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTarget"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle" 				"0"
+}
+
+
+entityDef target_fx  
+{  
+	"editor_color"				"1 .5 .25" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_rotatable"			"1"
+	
+	"editor_usage"				"Lua scriptable XreaL special effect of any kind. Can be used for particle emitters, lightning bolts or whatever."
+	
+	"editor_var luaThink"		"name of the Lua scripted client game effect that will be called by every thought of this entity."
+	"editor_float wait"			"time in seconds until this entity thinks again (default 0.5, -1 = think once)."
+	"editor_bool start_on"		"effect will loop and initially start on in level (will toggle on/off when triggered)."
+	
+	"spawnclass"				"idTarget"
+	"luaThink" 					""
+    "wait" 						"0.5"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle" 				"0"
+    "start_on" 					"0"
+}
+
+
+
+entityDef target_level_end {
+	"editor_color"			"1 1 0"
+	"editor_mins"			"-8 -8 -8"
+	"editor_maxs"			"8 8 8"
+
+	"editor_usage"			"When triggered, displays end level gui and transfers the player to the next map.  Orient the entity to specify the view during the stats display."
+	"editor_var message"	"the map name to transfer to (for example: johnc/test_box, etc)."
+
+	"spawnclass"			"idTarget_EndLevel"
+	"message"				"0"
+}
+
+
+
+/*
+============================================================================================================
+
+Trigger_ Entities
+____________________________________________________________________________________________________________
+============================================================================================================
+*/
+
+entityDef trigger_flagonly_multiple
+{   
+	"editor_color"				".5 .5 .5" 	
+	
+	"editor_usage"				"Flags can be captured at this trigger (as well as of allied flags)."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"editor_bool red_only"		"When set to 1, players on the Red team can capture Blue flags here."
+	"editor_bool blue_only"		"When set to 1, players on the Blue team can capture Red flags here."
+	
+	"spawnclass"				"idTrigger"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle"					"0"
+}
+
+entityDef trigger_always 
+{   
+	"editor_color"				".5 .5 .5" 	
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	
+	"editor_usage"				"Automatic trigger. It will fire the entities it targets as soon as it spawns in the game."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTrigger"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle"					"0"
+}
+
+
+entityDef trigger_hurt 
+{   
+	"editor_color"				".5 .5 .5"
+	
+	"editor_usage"				"Any player that touches this will be hurt by "dmg" points of damage once per server frame (very fast). A sizzling sound is also played while the player is being hurt."
+	
+	"editor_float dmg"			"number of points of damage inflicted to player per server frame (default 5 - integer values only)."
+	"editor_bool start_off"		"needs to be triggered (toggle) for damage"
+	"editor_bool silent"		"supresses the sizzling sound while player is being hurt."
+	"editor_bool no_protection"	"player will be hurt regardless of protection"
+	"editor_bool slow"			"changes the damage rate to once per second."
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTrigger"
+    "dmg" 						"5"
+    "start_off"					"0"
+    "silent"					"0"
+    "no_protection"				"0"
+    "slow"						"0"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle" 				"0"
+}
+
+
+entityDef trigger_multiple 
+{   
+	"editor_color"				".5 .5 .5"
+	
+	"editor_usage"				"Variable size repeatable trigger. It will fire the entities it targets when touched by player. Can be made to operate like a trigger_once entity by setting the "wait" key to -1. It can also be activated by another trigger that targets it."
+	
+	"editor_float wait"			"time in seconds until trigger becomes re-triggerable after it's been touched (default 0.2, -1 = trigger once)."
+	"editor_float random"		"random time variance in seconds added or subtracted from wait delay."
+	"editor_bool red_only"		"only red team players can activate trigger."
+	"editor_bool blue_only"		"only blue team players can activate trigger."
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTrigger"
+    "wait" 						"0.2"
+    "random" 					"0"
+    "red_only"					"0"
+    "blue_only"					"0"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle" 				"0"
+}
+
+
+entityDef trigger_push 
+{   
+	"editor_color"				".5 .5 .5"
+	
+	"editor_usage"				"This is used to create jump pads and launch ramps. It MUST point to a target_position or info_notnull entity to work. Unlike target_push, this is client side predicted."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTrigger"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle" 				"0"
+}
+
+
+entityDef trigger_teleport
+{    
+	"editor_color"				".5 .5 .5"
+	
+	"editor_usage"				"Touching this will teleport players to the location of the targeted misc_teleporter_dest entity. This entity allows client prediction of events."
+	
+	"editor_bool notfree"		"Hidden For FFA: when set to 1, entity will not spawn in 'Free for all' and 'Tournament' modes."
+	"editor_bool notteam"		"Hidden For Teamplay: when set to 1, entity will not spawn in 'Teamplay' and 'CTF' modes."
+	"editor_bool notsingle"		"Hidden For SP: when set to 1, entity will not spawn in Single Player mode (bot play mode)."
+	
+	"spawnclass"				"idTrigger"
+    "notfree" 					"0"
+    "notteam" 					"0"
+    "notsingle"					"0"
+}
+
+
+
+/*
+____________________________________________________________________________________________________________
+
+End XreaL entity definition file
+____________________________________________________________________________________________________________
+*/
+

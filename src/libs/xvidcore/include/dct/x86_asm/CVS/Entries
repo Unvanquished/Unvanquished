@@ -1,0 +1,7 @@
+/fdct_mmx_ffmpeg.asm/1.8.2.2/Wed Sep 16 17:11:39 2009//Trelease-1_2-branch
+/fdct_mmx_skal.asm/1.10.2.2/Wed Sep 16 17:11:39 2009//Trelease-1_2-branch
+/fdct_sse2_skal.asm/1.10.2.4/Wed Sep 16 17:11:39 2009//Trelease-1_2-branch
+/idct_3dne.asm/1.9.2.2/Wed Sep 16 17:11:39 2009//Trelease-1_2-branch
+/idct_mmx.asm/1.13.2.2/Wed Sep 16 17:11:39 2009//Trelease-1_2-branch
+/idct_sse2_dmitry.asm/1.8.2.3/Wed Sep 16 17:11:39 2009//Trelease-1_2-branch
+D

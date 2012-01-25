@@ -1,0 +1,146 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+#define WINDOW_WIDTH	608
+#define WINDOW_HEIGHT	448
+#define GROUP_NAME		"grpCreditsetpro"
+
+// Macros //
+
+#include "ui/menumacros.h"
+		
+// System Menu //
+
+#ifdef FUI
+#define MAIN_MENU main
+#else
+#define MAIN_MENU etpro_menu_main
+#endif
+	
+menuDef {
+	name		"credits_et260"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+	
+	onESC {
+		close credits_et260 ;
+		open MAIN_MENU
+	}
+
+// Window //
+
+	itemDef {
+		name		"window"
+		group		GROUP_NAME
+		rect		0 0 WINDOW_WIDTH WINDOW_HEIGHT
+		style		WINDOW_STYLE_FILLED
+		backcolor	0 0 0 0.9
+		border		WINDOW_BORDER_FULL
+		bordercolor	.5 .5 .5 .5
+		visible		1
+		decoration
+	}
+	
+// Logo //
+
+	itemDef {
+		name		"logoShadow"
+		rect		$evalfloat(.5*(WINDOW_WIDTH-64)+1) $evalfloat(8+1) 64 64
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/logo_etpro"
+		forecolor	0 0 0 1
+		visible		1
+		decoration
+	}
+
+	itemDef {
+		name		"logo"
+		rect		$evalfloat(.5*(WINDOW_WIDTH-64)-1) $evalfloat(8-1) 64 64
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/logo_etpro"
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	
+	itemDef {
+		name		"headerLogo"
+		group		GROUP_NAME
+		rect		6 80 $evalfloat(WINDOW_WIDTH-12) 16
+		text		"ET 2.60 UPDATE"
+		textfont	UI_FONT_ARIBLK_16
+		textstyle	ITEM_TEXTSTYLE_SHADOWED
+		textscale	.3
+		textalign	ITEM_ALIGN_CENTER
+		textalignx	$evalfloat(.5*(WINDOW_WIDTH-12))
+		textaligny	14
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	
+// Credits Sections //
+#define CREDITS_Y	108
+
+// Programming //
+
+	itemDef {
+		name		"headerProgramming"
+		group		GROUP_NAME
+		rect		6 $evalfloat(CREDITS_Y) $evalfloat(WINDOW_WIDTH-12) 12
+		text		"ET PRO DEVELOPMENT TEAM"
+		textfont	UI_FONT_ARIBLK_16
+		textstyle	ITEM_TEXTSTYLE_SHADOWED
+		textscale	.19
+		textalign	ITEM_ALIGN_CENTER
+		textalignx	$evalfloat(.5*(WINDOW_WIDTH-12))
+		textaligny	10
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+
+	LABELWHITE( 6, CREDITS_Y+16, .5*(WINDOW_WIDTH-24), 10, "Dan 'bani' Hollis", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+16, .5*(WINDOW_WIDTH-24), 10, "Lead Programmer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+28, .5*(WINDOW_WIDTH-24), 10, "Ben 'Rain' Winslow", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+28, .5*(WINDOW_WIDTH-24), 10, "Lead Programmer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+40, .5*(WINDOW_WIDTH-24), 10, "Frederik 'fretn' Delaere", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+40, .5*(WINDOW_WIDTH-24), 10, "Programmer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+52, .5*(WINDOW_WIDTH-24), 10, "Chris 'Zinx' Lais" , .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+52, .5*(WINDOW_WIDTH-24), 10, "Programmer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+64, .5*(WINDOW_WIDTH-24), 10, "Joe 'Majikthise' D.", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+64, .5*(WINDOW_WIDTH-24), 10, "ET Pro Logo", .2, ITEM_ALIGN_LEFT, 0, 8 )
+
+// Media //
+
+	itemDef {
+		name		"headerMedia"
+		group		GROUP_NAME
+		rect		6 $evalfloat(CREDITS_Y+96) $evalfloat(WINDOW_WIDTH-12) 12
+		text		"MAC OS X PORT"
+		textfont	UI_FONT_ARIBLK_16
+		textstyle	ITEM_TEXTSTYLE_SHADOWED
+		textscale	.19
+		textalign	ITEM_ALIGN_CENTER
+		textalignx	$evalfloat(.5*(WINDOW_WIDTH-12))
+		textaligny	10
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+
+	LABELWHITE( 6, CREDITS_Y+112, .5*(WINDOW_WIDTH-24), 10, "Brad Oliver", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+112, .5*(WINDOW_WIDTH-24), 10, "Lead Programmer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+
+	LABELWHITE( 6, CREDITS_Y+300, (WINDOW_WIDTH-24)+12, 10, "Mac OS X is a trademark of Apple Computer, Inc., registered in the U.S. and other countries.", .2, ITEM_ALIGN_CENTER, .5*((WINDOW_WIDTH-24)+12), 8 )
+
+// Buttons //
+
+	BUTTON( 6, WINDOW_HEIGHT-24, .33*(WINDOW_WIDTH-24), 18, "BACK", .3, 14, close credits_et260 ; open MAIN_MENU )
+	BUTTON( 6+.33*(WINDOW_WIDTH-24)+6, WINDOW_HEIGHT-24, .34*(WINDOW_WIDTH-24), 18, "ADDITIONAL", .3, 14, close credits_et260 ; open credits_additional )
+}

@@ -1,0 +1,286 @@
+#include "ui/menudef.h"
+
+{
+  \\ score_menu \\
+
+  menuDef
+  {
+    name "teamscore_menu"
+    visible 0
+    fullscreen 0
+    rect 0 0 640 480
+    focusColor 1 .75 0 1
+    style 0
+    border 1
+
+
+    // GAMETYPE BAR	//
+
+    //	TEAM NAME	//
+
+    itemDef
+    {
+      name teamNameWindow
+      rect 14 78 612 30 
+      style WINDOW_STYLE_FILLED
+      border 1
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 1
+      backcolor 0 0 0 .5
+      visible 1
+      decoration
+    }
+  
+    itemDef
+    {
+      name alienteamname
+      text "Aliens"
+      textalign ITEM_ALIGN_LEFT
+      textscale .5
+      textaligny 26
+      rect 20 78 306 23
+      forecolor 1 1 1 1	 
+      decoration
+      visible 1 	  
+    }
+
+    itemDef
+    {
+      name stagereport
+      align ITEM_ALIGN_CENTER
+      textscale 0.4
+      textaligny 24
+      rect 14 78 612 23
+      forecolor 1 1 1 1	 
+      decoration
+      visible 1
+      ownerdraw CG_STAGE_REPORT_TEXT
+    }
+
+    itemDef
+    {
+      name humanteamname
+      text "Humans"
+      textalign ITEM_ALIGN_RIGHT
+      textscale .5
+      textaligny 26
+      rect 620 78 0 23		 
+      forecolor 1 1 1 1
+      decoration
+      visible 1 	  
+    }
+
+    //	TEAM BARS	//
+	
+    itemDef
+    {
+      name leftteambar
+      rect 14 112 307 25	
+      style WINDOW_STYLE_FILLED
+      border 1
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 1
+      backcolor 0 0 0 .5
+      visible 1
+      decoration
+    }
+
+    itemDef
+    {
+      name rightteambar
+      rect 320 112 306 25	
+      style WINDOW_STYLE_FILLED
+      border 1
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 1
+      backcolor 0 0 0 .5
+      visible 1
+      decoration
+    }
+
+
+    //	TEAM HEADINGS	//
+
+    itemDef
+    {
+      name leftteamheadings
+      text "Status     Name                                        Kills       Time        Ping"
+      textscale .25
+      style 0	
+      rect 25 112 128 30 
+      textalign 0		
+      textalignx 0		// x alignment point for text
+        // use it to offset left/right text from the edge 
+                // or to center the text on a different point
+      textaligny 18        
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible 1 	  
+    }
+    
+    itemDef
+    {
+      name rightteamheadings
+      text "Status     Name                                        Kills       Time        Ping"
+      textscale .25
+      style 0	
+      rect 331 112 128 30 
+      textalign 0		
+      textalignx 0		// x alignment point for text
+        // use it to offset left/right text from the edge 
+                // or to center the text on a different point
+      textaligny 18        
+      backcolor 0 0 0 0
+      forecolor 1 .75 0 1
+      decoration
+      visible 1 	  
+    }
+
+
+    // GRADIENT BACKGROUNDS	//
+
+    itemDef
+    {
+      name window
+      rect 320 142 1 220	
+      style WINDOW_STYLE_FILLED
+      border 1
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 1
+      backcolor 0 0 0 1
+      visible 1
+      decoration
+    }
+
+    itemDef
+    {
+      name window
+      rect 300 142 1 220	
+      style WINDOW_STYLE_FILLED
+      border 1
+      bordercolor .5 .5 .5 1
+      visible 1
+      decoration
+    }
+
+    itemDef
+    {
+      name window
+      rect 606 142 1 220	
+      style WINDOW_STYLE_FILLED
+      border 1
+      bordercolor .5 .5 .5 1
+      visible 1
+      decoration
+    }
+
+
+    //	LIST	//
+
+    itemDef
+    {
+      name leftlist
+      rect 14 142 306 222 
+      forecolor .75 .75 .75 1
+      visible 1 
+      type ITEM_TYPE_LISTBOX
+      elementwidth 135
+      elementheight 20
+      textscale .25
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_ALIENTEAM_LIST
+      notselectable
+      columns 7
+        5   15  1   ITEM_ALIGN_LEFT
+        21  15  1   ITEM_ALIGN_LEFT
+        7   30  5   ITEM_ALIGN_LEFT
+        45  100 24  ITEM_ALIGN_LEFT
+        172 20  4   ITEM_ALIGN_RIGHT
+        209 20  4   ITEM_ALIGN_RIGHT
+        247 20  4   ITEM_ALIGN_RIGHT
+    }
+
+    itemDef 
+    {
+      name rightlist
+      rect 320 142 306 222 	 	     
+      forecolor 1 1 1 1
+      visible 1 
+      type ITEM_TYPE_LISTBOX
+      elementwidth 135
+      elementheight 20
+      textscale .25
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_HUMANTEAM_LIST
+      notselectable
+      columns 7
+        5   15  1   ITEM_ALIGN_LEFT
+        21  15  1   ITEM_ALIGN_LEFT
+        7   30  5   ITEM_ALIGN_LEFT
+        45  100 24  ITEM_ALIGN_LEFT
+        172 20  4   ITEM_ALIGN_RIGHT
+        209 20  4   ITEM_ALIGN_RIGHT
+        247 20  4   ITEM_ALIGN_RIGHT
+    }
+
+
+    //	PLAYER LIST BORDER	//
+
+    itemDef
+    {
+      name window
+      rect 14 141 612 221	
+      style WINDOW_STYLE_EMPTY
+      border 1
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 1
+      backcolor 0 0 0 .5
+      visible 1
+      decoration
+    }
+
+
+    //	spectators	//
+
+    itemDef
+    {
+      name window
+      rect 14 366 612 24	
+      style WINDOW_STYLE_FILLED
+      border 1
+      bordercolor .5 .5 .5 1
+      forecolor 1 1 1 .7
+      backcolor 0 0 0 .5
+      textscale .33
+      visible 1
+      decoration
+    }
+
+    itemDef
+    {
+      name window
+      text "Spectating:"
+      textaligny 20 
+      rect 19 366 82 24	
+      style WINDOW_STYLE_FILLED
+      forecolor 1 1 1 1
+      textscale .33
+      textalignx 3
+      visible 1
+      decoration
+    }
+
+    itemDef
+    {
+      name window
+      rect 100 366 520 24	
+      style WINDOW_STYLE_FILLED
+      forecolor 1 1 1 1
+      textscale .33
+      visible 1
+      ownerdraw CG_SPECTATORS
+      decoration
+    }
+  }
+}

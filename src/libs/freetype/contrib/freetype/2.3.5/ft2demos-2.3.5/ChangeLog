@@ -1,0 +1,1931 @@
+2007-07-02  Werner Lemberg  <wl@gnu.org>
+
+
+	* Version 2.3.5 released.
+	=========================
+
+
+	Tag sources with `VER-2-3-5'.
+
+	* README: Updated.
+
+2007-06-19  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftview.c (usage): Make it more readable.
+
+2007-06-16  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftpatentcheck.c: Renamed to...
+	* src/ftpatchk.c: This.
+	Minor fixes.
+
+	* src/Jamfile (PROGRAMS), Makefile: Updated.
+
+2007-06-10  David Turner  <david@freetype.org>
+
+	Add the new `ftpatentcheck' program; it is a simple wrapper of the
+	new FT_Face_CheckTrueTypePatents function.
+
+	* src/ftpatentcheck.c: New file.
+	* src/Jamfile (PROGRAMS), Makefile: Updated.
+
+2007-06-09  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftgrid.c (Process_Event): Assign usual actions to keys F7-F12.
+	(event_help): Updated.
+	(main): Don't expect a Unicode encoded font -- we are only working
+	with glyph indices currently.
+
+2007-06-01  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.c (FTDemo_Index_To_Bitmap): Initialize `*x_advance'.
+
+2007-05-28  David Turner  <david@freetype.org>
+
+	* src/ftcommon.h: fix compilation warning
+
+	* src/ftview.c: fix size bugs in waterfall mode
+
+2007-05-11  David Turner  <david@freetype.org>
+
+	* src/ftcommon.h, src/ftcommon.c, src/ftview.c, src/ftgrid.c,
+	src/ftstring.c: adapt test programs to use the new
+	FTC_ImageCache_LookupScaler and FTC_SBitCache_LookupScaler
+	functions. This allows you to specify fractional pixel/point
+	sizes on the command line (e.g. ftview 13.5 ~/fonts/*)
+
+2007-05-09  Ryan Hill  <dirtyepic@gentoo.org>
+
+	* Makefile: Fix rules for fttimer which doesn't use graphical
+	output.
+	Fix rule for ftdump to make it work with parallel builds.
+
+2007-04-09  Werner Lemberg  <wl@gnu.org>
+
+
+	* Version 2.3.4 released.
+	=========================
+
+
+	Tag sources with `VER-2-3-4'.
+
+	* README: Updated.
+
+	* src/ftdiff.c (process_event): Handle `?' key.
+
+2007-04-04  Werner Lemberg  <wl@gnu.org>
+
+
+	* Version 2.3.3 released.
+	=========================
+
+
+	Tag sources with `VER-2-3-3'.
+
+	* README: Updated.
+
+2007-04-03  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdiff.c (usage): Make message similar to other ftdemo
+	programs.
+
+2007-04-02  David Turner  <david@freetype.org>
+
+	* graph/win32/grwin32.c (gr_win32_surface_init): Fix the Win32
+	window size computations to properly adjust border thickness and
+	other extras.  Fix by Sébastien Leix <s.leix@sdi.fr>.
+
+	* src/ftdiff.c (render_state_draw): Fix small bug that prevented
+	unhinted rendering from working as expected with embedded bitmaps.
+
+	(adisplay_init): Fix small bug that occurred when the
+	call to grNewSurface() failed.  Reported by Sébastien Leix
+	<s.leix@sdi.fr>.
+
+	(usage): Move up in file.
+
+	(FontFaceRec): New structure.
+	(RenderStateRec): Integrate it.
+	Update all users.
+
+	(render_state_set_files, render_state_set_file): Handle all faces in
+	a multi-face font file.
+
+	(write_message): Handle multi-face font files.
+
+2007-04-01  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdiff.c: Remove compiler warnings.
+	Formatting.
+
+2007-03-30  David Turner  <david@freetype.org>
+
+	Change interface keys to allow you to change settings for a single
+	column only.  Press F1 for details.
+
+	* src/ftdiff.c: Include FT_LCD_FILTER_H.
+	(DisplayMode): Add DISPLAY_MODE_LCD.
+
+	(Display_textFunc): New function pointer.
+	(DisplayRec): Add it.
+
+	(RenderMode): Replace it with...
+	(HintMode): This.  Update all users.
+
+	(render_mode_names): New array.
+
+	(ColumnStateRec): New struct.
+	(RenderStateRec): Use it.
+	(render_state_init): Initialize it.
+
+	(render_state_draw): Pass index as argument.
+	Use ColumnStateRec.
+	Implement sub-pixel positioning for unhinted mode.
+	Add column footers, showing current rendering state.
+
+	(adisplay_draw_glyph): Handle DISPLAY_MODE_LCD.
+	(adisplay_draw_text): New function.
+
+	(event_help): Updated.
+	(process_event): Add many keys to control rendering modes in more
+	detail.
+
+	(main): Updated.
+
+2007-03-28  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdiff.c: Remove many compiler warnings.
+	Fix some typos.
+	Improve and fix help texts.
+	Formatting.
+
+2007-03-26  David Turner  <david@freetype.org>
+
+	* src/ftdiff.c: New proofing program that displays text in three
+	columns: bytecode-hinted, auto-hinted with rsb/lsb delta
+	adjustments, and unhinted/subpixel-positioned.  For comparison
+	purposes.
+
+	* Makefile, Jamfile: Add ftdiff.
+
+2007-03-22  suzuki toshiya  <mpsuzuki@hiroshima-u.ac.jp>
+
+	* src/ftvalid.c (print_usage): Fix a typo in the help message.
+
+2007-03-09  Werner Lemberg  <wl@gnu.org>
+
+
+	* Version 2.3.2 released.
+	=========================
+
+
+	Tag sources with `VER-2-3-2'.
+
+	* README: Updated.
+
+2007-02-14  David Turner  <david@freetype.org>
+
+	* src/ttdebug.c: another refresh of the debugger. Minor improvements
+	to be able to display more useful information during debugging
+
+2007-02-12  David Turner  <david@freetype.org>
+
+	* src/ttdebug.c: refresh the TrueType debugger code
+
+2007-02-06  Alexei Podtelezhnikov  <apodtele@gmail.com>
+
+	* src/ftstring.c (event_render_mode_change): Fix spelling.
+
+2007-01-31  Werner Lemberg  <wl@gnu.org>
+
+
+	* Version 2.3.1 released.
+	=========================
+
+
+	Tag sources with `VER-2-3-1-FINAL'.
+
+	* README: Updated.
+
+2007-01-17  Werner Lemberg  <wl@gnu.org>
+
+
+	* Version 2.3.0 released.
+	=========================
+
+
+	Tag sources with `VER-2-3-0-FINAL'.
+
+2007-01-11  Masatake YAMATO  <jet@gyve.org>
+
+	* src/ftvalid.c (run_ot_validator, run_gx_validator,
+	run_ckern_validator): Return FT_Error value instead of int value.
+	(main): Return value returned from validator's run method.
+	(report_result): Don't show `invalid' message if there is no target
+	table.
+
+2006-12-15  suzuki toshiya  <mpsuzuki@hiroshima-u.ac.jp>
+
+	* mac/ftoldmac.c: Fix conditional macros of FSSpec/FSRef and
+	QuickDraw/ATS functionalities.
+
+2006-12-10  Werner Lemberg  <wl@gnu.org>
+
+	* Makefile (dist): Extract version number from freetype.h.
+
+2006-11-15  David Turner  <david@freetype.org>
+
+	* graph/x11/rules.mk (X11_PATH): Check /usr also.
+	Search for `Xlib.h'.
+
+2006-11-03  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftgrid.c: Fix external function declarations.
+	(event_help): Document `1', `2', and `3' keys.
+	(grid_status_init, grid_status_rescale_initial,
+	grid_status_draw_grid, grid_status_draw_outline, event_grid_reset):
+	s/status/st/, s/error/err/ where appropriate to avoid shadowed
+	variables.
+	(GridStatusRec): Add `const' to `header'.
+	Update all assignments.
+
+	* Makefile: Add ftgrid.
+
+2006-11-02  David Turner  <david@freetype.org>
+
+	Add `B' key to ftgrid for toggling blue zone hinting.
+	Add `1', `2', and `3' keys to dump hints for edges, segments, and
+	points, respectively.
+
+	* src/ftgrid.c: Add some externs.
+	(_af_debug, _af_debug_disable_blue_hints, _af_debug_hints): New
+	global variables.
+	(GridStatusRec): Add `do_blue_hints' variable.
+	(grid_status_init): Set do_blue_hints.
+	(event_help): Updated.
+	(Process_Event): Updated.
+	(main): Set _af_debug.
+
+2006-10-23  Zhe Su  <zsu@novell.com>
+
+	Add a benchmark for the emboldening algorithm.
+
+	* src/ftbench.c: Include FT_SYNTHESIS_H.
+	(FT_BENCH_EMBOLDEN): New enumeration value.
+	(bench_desc): Add `Embolden'.
+	(test_embolden): New function.
+	(main): Add it.
+
+2006-10-23  David Turner   <david@freetype.org>
+
+	* src/ftgrid.c: Make the file compile again.
+
+2006-10-11  suzuki toshiya  <mpsuzuki@hiroshima-u.ac.jp>
+
+	* mac/ftoldmac.c (print_help): Renamed to...
+	(print_help_and_exit): This.  Update callers.
+	Improve the conditionals in source to separate Toolbox QuickDraw and
+	Carbon QuickDraw.
+	(reserveToolBoxQuickDrawFontName, test_face_quickdraw,
+	test_font_list_quickdraw_old, test_font_list_quickdraw,
+	test_font_list_ats): Ditto.
+
+2006-10-11  suzuki toshiya  <mpsuzuki@hiroshima-u.ac.jp>
+
+	* mac/Makefile: Synchronize with the changes of top-level Makefile
+	on 2006-02-01.
+
+2006-09-27  David Turner  <david@freetype.org>
+
+	Add support for LCD color filtering to ftview.
+
+	* src/ftview.c: Include FT_LCD_FILTER_H.
+	(status): Initialize it completely.
+	(main): Call FT_Library_SetLcdFilter.
+
+	* src/ftcommon.c (FT_Demo_Draw_Glyph): Renamed to...
+	(FT_Demo_Draw_Glyph_Color): This.  Add an argument to pass the
+	colour.
+	(FT_Demo_Draw_Glyph): New function, calling
+	FT_Demo_Draw_Glyph_Color.
+
+	* src/ftcommon.h (FT_Demo_Draw_Glyph_Color): New declaration.
+
+	* src/ftgrid.c: New file, implementing an auto-fitter debugger.
+	This is a very preliminary version.  It only compiles with Jam at
+	the moment, and you must have AF_DEBUG defined in your
+	`src/autofit/aftypes.h' file to be able to link it.
+
+	* src/Jamfile (GRAPHIC_PROGRAMS): Add ftgrid.
+
+	* graph/graph.h (grFindColor, grFillHLine, grFillVLine, grFillRect):
+	New declarations.
+
+	* graph/grfill.c: New file which implements `grFillHLine',
+	`grFillVLine', and `grFillRect'.  They are mainly used by the
+	auto-fitter debugger.
+
+	* graph/grobjs.c (grFindColor): New function for the auto-fitter
+	debugger.
+
+	* graph/gblender.c (gblender_set_gamma_table): Set
+	`gamma_ramp_inv[gmax]'.
+
+	* graph/gblender.h (GBLENDER_STAT_HIT, GBLENDER_LOOKUP): Move them
+	up in source file.
+
+	* graph/Jamfile (graph_sources), graph/rules.mk (GRAPH_OBJS): Add
+	`grfill'.
+
+2006-09-11  David Turner  <david@freetype.org>
+
+	Add support for OLPC swizzle simulation (must define SWIZZLE at
+	compile time for this to work).
+
+	* graph/grswizzle.c, graph/grswizzle.h: New files.
+
+	* graph/grdevice.h (gr_swizzle_rbg24): Declare.
+
+	* graph/Jamfile (graph_sources): Add `grswizzle'.
+
+	* graph/win32/grwin32.c [SWIZZLE]: Include `grswizzle.h'.
+	(gr_win32_surface_refresh_rectangle) [SWIZZLE]: Don't call
+	gr_swizzle_rgb24 but gr_rect_swizzle_rgb24.
+	Remove unused variables.
+
+2006-09-01  David Turner  <david@freetype.org>
+
+	Fix various bugs in the glyph blender/blitter.
+
+	* graph/gblcolor.h, graph/gblhbgr.h, graph/gblhrgb.h,
+	graph/gblvbgr.h, graph/gblvrgb.h: Fix off-by-one
+	error.
+
+	* graph/gblender.c (gblender_lookup): Fix computation of key->cells.
+	(gblender_lookup_channel): Fix computation of key->index.
+
+	* graph/win32/grwin32.c: Fix RGB/BGR ordering -- Win32 uses BGR
+	ordering for its 24-bit bitmaps.
+	(SWIZZLE): New macro (set to undefined).
+	(grWin32SurfaceRec): Add `bgrBitmap'.
+	[SWIZZLE]: Add `swizzle_bitmap'.
+	(gr_win32_surface_done) [SWIZZLE]: Handle `swizzle_bitmap'.
+	(gr_win32_surface_refresh_rectangle): Do conversion RGB->BGR.
+	(gr_win32_surface_init): Initialize `bgrBitmap'.
+	[SWIZZLE]: Initialize `swizzle_bitmap'.
+
+2006-07-03  Masatake YAMATO  <jet@gyve.org>
+
+	* src/ftvalid.c (library): Move this global variable to main as a
+	local variable.
+	(print_usage): Introduce function static variable `library'.
+	Add one argument for initializing the static variable.
+	(main): Call print_usage with `library'.
+	(main, else, parse_table_specs, find_validation_flag): Call
+	print_usage with NULL.
+
+2006-06-17  Masatake YAMATO  <jet@gyve.org>
+
+	* src/ftvalid.c: Rearrange code.
+	(library): Make variable having global scope.
+	(OT_VALIDATOR_SYMBOL): Remove.
+	(GX_VALIDATOR_SYMBOL): Remove.
+	(CKERN_VALIDATOR_SYMBOL): Remove.
+	(validator_symbols): Remove.
+	(ValidatorType::LAST_VALIDATE): New enum element used in loop
+	sentinel.
+	(ot_table_spec): Remove const modifier.
+	(gx_table_spec): Remove const modifier.
+	(Validator): New data type.
+	(validators): New variable.
+	(print_usage): Use validators.
+	(report_header, report_result): Use validators.
+	(is_ot_validator_implemented): New function.
+	(is_gx_validator_implemented): New function.
+	(is_ckern_validator_implemented): New function.
+	(run_ckern_validator): Use validators.
+	(main): Initialize library at the beginning of main.
+	Use validators.
+	Report messages and exit if the validator specified by command line
+	is not implemented in libfreetype2 linked to ftvalid.  Suggested by
+	George Williams.
+
+2006-06-09  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.c (FTDemo_Install_Font): Fix index range for MS
+	Symbol.
+
+2006-06-07  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.c (FTDemo_Display_Done, FTDemo_Done): Protect against
+	NULL argument.
+
+	* src/ftview.c (Fatal): New function to finalize FreeType library.
+	This allows to use FreeType's memory debugger in case of errors.
+	s/PanicZ/Fatal/.
+
+2006-06-04  David Turner  <david@freetype.org>
+
+	* src/ftbench.c (main): fixed a subtle memory corruption bug
+	at program exit.  Reported by <luoy.li@gmail.com>.
+
+2006-05-21  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdump.c (Print_Type): Fix type for `module'.  Reported by
+	Mark Wang.
+
+2006-05-17  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.c, src/ftview.c [_WIN32]: Define `strcasecmp' and
+	`snprintf'.
+
+2006-05-17  yi luo  <luoyi.ly@gmail.com>
+
+	* graph/win32/rules.mk: Add support for icl compiler.
+
+	* src/ftcommon.c (strcasecmp): Define to `_stricmp' if not
+	available.
+
+	* src/ftview.c (snprintf): Define to `_snprintf' if not available.
+
+2006-05-12  Werner Lemberg  <wl@gnu.org>
+
+
+	* Version 2.2.1 released.
+	=========================
+
+
+2006-05-10  Werner Lemberg  <wl@gnu.org>
+
+	* Makefile (clean distclean) [no_config_mk]: Fix warning message.
+	(dist): New target to build .tar.bz2, .tar.gz, and .zip bundles.
+	Note that there are still many hard-coded version strings.
+
+2006-05-06  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdump.c (main): Fix compiler warning.
+
+2006-05-02  David Turner <david@freetype.org>
+
+	Add support for font preloading with the `-p' flag, simulating
+	memory-mapped file access.
+
+	* src/ftcommon.h (TFont): New elements `file_address' and
+	`file_size'.
+	(FTDemo_Handle): New element `preload'.
+	(FTDemo_Set_Preload): New prototype.
+
+	* src/ftcommon.c (my_face_requester): Use FT_New_Memory_Face for
+	preloaded font.
+	Handle PFM files also.
+	(FTDemo_Install_Font): Handle preloading (this is, load font into a
+	buffer).
+	(FTDemo_Set_Preload): New function.
+
+	* src/ftview.c (status): Add `preload' field.
+	(parse_cmdline): Handle `-p' command line option.
+	(usage): Updated.
+	(main):
+
+	* src/ftdump.c (main): Add glyph count dump.
+
+2006-04-26  David Turner <david@freetype.org>
+
+
+	* Version 2.2 released.
+	=======================
+
+
+2006-04-24  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftview.c (Render_Stroke): Update parameters in call to
+	FT_Stroker_New.
+
+2006-03-20  David Turner  <david@freetype.org>
+
+	Disable cache statistics dump, since the cache
+	internals are not available anymore.
+	Rename `-l' to `-L'.
+	Add new command line options `-m text' and `-l render_mode'.
+
+	* src/ftview.c (status): Add member `lcd_mode'.
+	(Render_Text): Compensate the additional empty pixels inserted by
+	Draw_Index.
+	Hande number of glyph indices better.
+	(parse_cmdline): Handle `-m' and `-l'.
+	Updated.
+	(usage): Updated.
+	(main): Handle `status.lcd_mode'.
+	Updated.
+	Print cache statistics only conditionally (for FreeType versions
+	lower than 2.2).
+
+2006-03-02  Chia-I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftcommon.c (string_render_prepare): Fix a possible crash.
+
+2006-02-28  suzuki toshiya  <mpsuzuki@hiroshima-u.ac.jp>
+
+	* Makefile: include modules.cfg to reflect module configuration,
+	and ftvalid is built when required stubs (ftgxval and ftotval)
+	are built in libfreetype.
+
+2006-02-27  suzuki toshiya  <mpsuzuki@hiroshima-u.ac.jp>
+
+	* mac/ftoldmac.m68k_far.make.txt, mac/ftoldmac.ppc_classic.make.txt:
+	Update to new header inclusion introduced on 2006-02-16.
+
+2006-02-27  Chia-I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftcommon.c (my_face_requester): Attach the AFM only for PFA
+	and PFB.
+
+2006-02-25  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftbench.c, src/ftcommon.c, src/ftvalid.c: Add proper casts
+	where necessary to allow compilation with C++.
+	Other minor fixes to remove compiler warnings.
+
+2006-02-01  Werner Lemberg  <wl@gnu.org>
+
+	* Makefile (PLATFORM): Define to `unixdev' if PLATFORM=unix and
+	DEVEL_DIR is defined.
+	(BIN_DIR, OBJ_DIR): Replaced with...
+	(BIN_DIR_2, OBJ_DIR_2): New variables, set with `?='.
+	Update all callers.
+	(BIN_DIR): Set also.
+	(COMPILE): Add definition for FT_CONFIG_MODULES_H since we always
+	build with an uninstalled FreeType version.
+	(ftdump.$(SO), ftvalid.$(SO), ftview.$(SO)): Add -DFT2_BUILD_LIBRARY
+	since these programs use internal headers.
+
+	* graph/rules.mk, graph/*/rules.mk: s/OBJ_DIR/OBJ_DIR_2/.
+
+	* src/ftcommon.c (string_render_prepare): Fix compiler warnings.
+
+2006-01-16  Chia-I Wu  <b90201047@ntu.edu.tw>
+
+	Add support for track kerning and a new rendering mode for kerning
+	comparison to ftstring.
+
+	* src/ftcommon.c (my_face_requester): Try to attach the file having
+	the same name as the font, but with suffix `.afm'.
+	(FTDemo_New): Updated.
+	(FTDemo_String_Set_Kerning, FTDemo_String_Set_Vertical): Removed.
+	(string_load): Rewritten.
+	(string_render_prepare): New function.
+	(FTDemo_String_Draw): Rewritten to have more flexibility.  For
+	example, we can now draw the string twice with different kerning
+	modes without reloading the glyphs.
+
+	* src/ftcommon.h (TGlyph): Add more data, mainly taken from
+	FTDemo_Handle structure.
+	(KERNING_DEGREE_XXX): New enumerations.
+	(FTDemo_String_Context): New structure.
+	(FTDemo_Handle): Updated.
+	(FTDemo_String_Set_Kerning, FTDemo_String_Set_Vertical): Removed.
+	(FTDemo_String_Draw): Updated.
+
+	* src/ftstring.c: Updated along with many cleanups.
+	(CELLSTRING_HEIGHT): New macro.
+	(RENDER_MODE_XXX): New enumeration values.
+	(status): Add more fields.
+	(event_help, event_angle_change): Updated.
+	(event_render_mode_change): New function.
+	(Process_Event): Handle `1', `2', and `t' events.
+	Update handling of `g', `k', and `V' events.
+	(error_message): Renamed to...
+	(write_header): This.
+	Display point size and rotation angle.
+	(main): Handle new render mode.
+
+2006-01-12  suzuki toshiya  <mpsuzuki@hiroshima-u.ac.jp>
+
+	Add `ftoldmac' commandline program to test MacOS specific feature:
+	font file access by FSSpec, font file search by old/new QuickDraw,
+	and font name or ATS font name.
+
+	* mac/ftoldmac.c: Added.
+	* mac/Makefile: Unix Makefile for MacOS X.
+	* mac/ftoldmac.m68k_far.make.txt: MPW Makefile skeleton.
+	* mac/ftoldmac.ppc_carbon.make.txt: MPW Makefile skeleton.
+	* mac/ascii2mpw.py: Python script to generate MPW Makefile from
+	the skeletons.
+	* mac/README: Add note about ftoldmac, because ft2demos/mac was
+	originally for demos built by CodeWarrior.
+
+2005-12-08  Chia-I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftview.c (error_message): Renamed to write_header.
+	Also write face size, first glyph index.
+	Write glyph name if available.
+	(main): Updated to use write_header.
+
+2005-12-04  Chia-I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftbench.c: Update copyright date.
+	Use `getopt' from `common.h'.
+
+2005-12-04  Chia-I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftbench.c: Formatting.
+	Make `face' and `charset' local variables.
+	(btest_t): Use `const' qualifier for `title'.
+	(bcharset_t): Change the type of `size' to `FT_Int'.
+	(face_requester, benchmark): Updated because `face' is no longer
+	global.
+	(test_get_char_index, test_cmap_cache, get_charset): Updated because
+	`charset' is no longer global.
+	(main): New variables, `face' and `charset'.
+	Updated because `face' and `charset' are local now.
+	`get_charset' only when perform FT_BENCH_CMAP.
+
+2005-12-02  Chia-I Wu  <b90201047@ntu.edu.tw>
+
+	Overhaul `ftbench.'  Now it can perform tests with arbitrary load
+	flags and render mode.  Testing `Render' instead of `Load + Render',
+	for example, is also possible now.
+
+	* src/ftbench.c: Overhauled.
+
+2005-11-30  Werner Lemberg  <wl@gnu.org>
+
+	Replace flag `-c' with `-v' to indicate verbosity.
+
+	* src/ftdump.c (verbose): New global variable.
+	(usage): Updated.
+	(Print_Charmaps): Only take a single argument.  Update caller.
+	Always show some charmap info.
+	Use `verbose'.
+	(main): Remove verbose_cmap.
+	Handle `-v' instead of `-c'.
+
+	* src/common.c (getopt): s/illegal/invalid/.
+
+2005-11-30  Chia-I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftdump.c (Print_Charmaps): face->charmap might be NULL.
+
+2005-11-30  Chia-I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftdump.c (main): New command line option `c' to show the
+	contents of charmaps.
+	(Print_Charmaps): Take one more argument: `verbose'.
+	(usage): Updated.
+
+2005-11-21  Werner Lemberg  <wl@gnu.org>
+
+	* graph/grinit.c (grDoneDevices): New function.
+
+	* graph/graph.h (grInit, grDone): Remove unused declarations.
+	(grDoneDevices): New declaration.
+
+	* src/ftcommon.c (FTDemo_Display_Done): Call grDoneDevices.
+	(FTDemo_Done): Free `handle'.
+
+	* src/ftmulti.c (main): Call grDoneSurface and grDoneDevices.
+
+2005-11-18  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftvalid.c (run_ot_validator, run_gx_validator,
+	run_ckern_validator): Remove unused variable `memory'.
+
+2005-11-18  suzuki toshiya <mpsuzuki@hiroshima-u.ac.jp>
+
+	* src/ftvalid.c: Use FT_TrueTypeGX_Validate, FT_ClassicKern_Validate
+	and FT_OpenType_Validate instead of FT_FREE (it calls FT_Free_Debug
+	of libfreetype, which is not a public function).
+
+2005-11-16  David Turner  <david@freetype.org>
+
+	* graph/graph.h: Updated.
+
+	* graph/grdevice.c (grSurfaceDone): New function to free surface
+	correctly.  This was commented out previously.
+
+	* graph/x11/grx11.c (gr_x11_device_done): Call XFreeCursor.
+	(gr_x11_surface_done): Call XFreeGC to fix memory leak.
+
+	* src/ftcommon.c (FTDemo_Display_Done): Call `grDoneSurface' instead
+	of `free' to fix memory leak.
+
+	* src/ftbench.c (main): Add the `-c' flag to specify maximum
+	iteration count.  Useful for repeat profiling.
+	(usage): Updated.
+
+2004-09-29  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.c (FT_Demo_Update_Current_Flags): Fix variable
+	shadowing.
+
+2004-09-27  David Turner <david@freetype.org>
+
+	Fix gamma handling, mainly for LCD modes.
+
+	* graph/gblgblit.c (GRGB_TO_RGB565): Protect arguments correctly.
+
+	* graph/gblcolor.h, graph/gblhbgr.h, graph/gblhrgb.h,
+	graph/gblvbgr.h, graph/gblvrgb.h: Call gblender_use_channels.
+
+	* graph/gblender.c (gblender_clear, gblender_reset): Handle blender
+	cache.
+	(gblender_use_channels): New function.
+	(gblender_reset_key): Improve.
+	(gblender_lookup, gblender_lookup_channel): Comment possible call to
+	gblender_reset.
+	Fix computation of `idx'.
+	(gblender_reset_channel_key): Fix computation of `a' and `r'.
+
+	* graph/gblender.h (GBLENDER_SHADE_INDEX): Corrected definition.
+	(gblender_use_channels): New declaration.
+
+	* src/Jamfile: Include ftcommon.c.
+	Fix oder of link libraries.
+
+2004-09-22  David Turner  <david@freetype.org>
+
+	* src/ftcommon.c (FTDemo_Update_Current_Flags): Fix load flags
+	computation to mimic libXft's behaviour.
+
+2005-08-30  Werner Lemberg  <wl@gnu.org>
+
+	* graph/graph.h (grFillRectangle): Comment out -- we don't have an
+	implementation.
+
+2005-08-23  Masatake YAMATO  <jet@gyve.org>
+
+	* src/ftvalid.c: Add gxvalid support.
+	(GX_VALIDATOR_SYMBOL): New definition.
+	(CKERN_VALIDATOR_SYMBOL): New definition.
+	(ValidatorType::GX_VALIDATE): New enum member.
+	(ValidatorType::CKERN_VALIDATE): New enum member.
+	(validator_symbols): Added GX_VALIDATOR_SYMBOL and
+	CKERN_VALIDATOR_SYMBOL.
+	(gx_table_spec): New const.
+	(N_GX_TABLE_SPEC): New definition.
+	(print_usage): Write about gxvalid and ckern valid.
+	(run_gx_validator): New funtion.
+	(list_gx_tables): Ditto.
+	(run_ckern_validator): Ditto.
+	(list_ckern_tables): Ditto.
+	(main): Call new validators.
+
+	* src/ftvalid.c: Following are misc modifications.
+	(report_result): Use printf instead fprintf. Fix incorrect message.
+	(main): Use switch/case instead of if/else
+	when calling per validator funtions.
+	Call FT_Done_Face. Use a loop to set validator.
+	(print_usage): Insert empty line in usage strings.
+	(validator_symbols): Added NULL as the last
+	array element.
+
+2005-07-04  Chia I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftcommon.i: Removed.
+
+	* src/ftgamma.c: Updated to use api provided by ftcommon.c.
+
+	* Makefile: Make ftgamma depend on ftcommon.c.
+	Remove dependency of ftmulti.c on ftcommon.i.
+
+2005-06-17  Werner Lemberg  <wl@gnu.org>
+
+	* Makefile: Update rules for ftview and ftstring which no longer
+	depend on ftcommon.i but on ftcommon.c.
+
+	(LINK_ITEMS, LINK_CMD, LINK_LIBS): New variables.
+	(GRAPH_LINK2): Removed.
+	(COMMON_LINK, GRAPH_LINK): Replace with...
+	(LINK_COMMON, LINK_GRAPH): This.  Use LINK_ITEMS, LINK_CMD, and
+	LINK_LIBS.
+	Update all affected targets.
+	(LINK_NEW): Temporary new link command to handle executables which
+	use ftcommon.c.
+	(FTCOMMON_OBJ): New variable to handle ftcommon.c.
+
+2005-06-17  Chia I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftcommon.c, src/ftcommon.h: New files.
+
+	* src/ftstring.c: Rewritten.
+	Make the function keys more compatible with ftview.c.
+	New key 'V' for vertical rendering.
+
+	* src/ftview.c: Rewritten.
+	Now we can use number keys (i.e. 1, 2, ...) to select rendering mode.
+
+2005-06-08  Werner Lemberg  <wl@gnu.org>
+
+
+	* Version 2.1.10 released.
+	==========================
+
+
+2005-05-26  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i (get_glyph_bitmap, glyph_to_bitmap): Initialize
+	`target->grays' even for FT_PIXEL_MODE_MONO since it is tested in
+	grBlitGlyphToBitmap.
+
+	* graph/x11/grx11.c (gr_x11_surface_init): Initialize
+	`xswa.border_pixel'.
+
+2005-05-25  Chia I Wu  <b90201047@ntu.edu.tw>
+
+	* src/ftcommon.i: Include FT_SYNTHESIS_H.
+	Make `render_mode' an enumeration.
+
+	* src/ftview.c (Render_Embolden): New function.
+	(Process_Event, main): Update to `render_mode' enumeration.
+
+2005-05-23  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftvalid (main) <'v'>: Add cast to make it compile with C++.
+
+2005-04-24  YAMATO Masatake  <jet@gyve.org>
+
+	* src/ftvalid.c: New file.
+
+	* Makefile, src/Jamfile: Add ftvalid.
+
+2005-03-04  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftgamma.c (Render_GammaGrid), src/ftmulti.c
+	(parse_design_coords), src/ftview.c (Render_GammaGrid): Fix compiler
+	warnings.
+
+2005-02-28  David Turner  <david@freetype.org>
+
+	* src/ftbench.c (preload, memory_file, memory_size): New global
+	variables.
+	(bench_open_close): Handle `preload' by using `FT_New_Memory_Face'.
+	(main): Remove `preload', `memory_file', and `memory_size'.
+
+2005-02-23  David Turner  <david@freetype.org>
+
+	* src/ftbench.c (fetch_test, cbox_test): Fix memory leaks.
+
+2005-02-12  Werner Lemberg  <wl@gnu.org>
+
+	Make ft2demos support a separate build directory.
+
+	* Makefile (have_makefile): New variable.  Set if the build
+	directory is the same as the source directory.
+	(GRAPH_DIR): Give full path.
+	(BIN_DIR, OBJ_DIR): Updated.
+	(FT_INCLUDES): Include $(OBJ_BUILD).
+	(LINK) <unix>: Fix path to `libtool'.
+
+	* README: Updated.
+
+2004-12-15  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i (glyph_to_bitmap): Don't convert 1bpp bitmaps.
+
+2004-12-14  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i: Include new FT_BITMAP_H.
+	Remove dead code.
+	(ft_bitmap): New global variable.
+	(init_freetype): Call FT_Bitmap_New.
+	(done_freetype): Call FT_Bitmap_Done.
+	(glyph_to_bitmap, get_glyph_bitmap): Handle 2bpp and 4bpp bitmaps
+	using FT_Bitmap_Convert.
+
+2004-12-12  Steve Hartwell  <shspamsink@comcast.net>
+
+	* graph/grblit.c (blit_mono_to_rgb32): Advance read buffer properly.
+
+2004-11-26  Jouk Jansen <joukj@hrem.stm.tudelft.nl>
+
+	* vms_make.com: Don't assume that the ft2demos package is a
+	subdirectory of freetype2.
+	Fix `ccopt'.
+
+2004-11-19  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftview.c (Render_Waterfall): Handle size as points, not as
+	pixels.
+
+	* src/ftstring.c (layout_glyphs), src/ftmulti.c (LoadChar),
+	src/ftcommon.i (set_current_image_type): Always use
+	FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH.
+
+2004-11-16  Dr. Martin P.J. Zinser  <zinser@decus.de>
+
+	* vms_make.com: Updated to be in sync with vms_make.com from FT2.
+
+2004-10-18  Werner Lemberg  <wl@gnu.org>
+
+	* graph/gblblit.c (gblender_blit_init): Fix blit test.
+
+2004-09-08  Jouk Jansen <joukj@hrem.stm.tudelft.nl>
+
+	* graph/x11/grx11.c [__VMS]: Include vms_x_fix.h.
+
+	* vms_make.com: Updated.
+
+2004-08-29  Werner Lemberg  <wl@gnu.org>
+
+	* graph/gblender.c (gblender_lookup, gblender_lookup_channel):
+	s/index/idx/ to avoid compiler warnings.
+
+2004-08-19  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftstring.c (prepare_text): Handle encoding = 0.
+
+2004-07-14  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i (get_glyph_bitmap): Don't accept a `missing'
+	character with zero or negative width.
+
+2004-07-13  David Turner  <david@freetype.org>
+
+	* graph/x11/grx11.c (gr_x11_device_init): Fix memory leak.
+
+	* src/ftbench.c (bench_cmap_parse): New function, assigned to
+	key `j'.
+	(usage, main): Updated.
+
+	* src/ftcommon.i (install_font_file): Initialize `cmap_index' here.
+	(my_face_requester): Don't initialize `cmap_index'.
+	(glyph_to_bitmap): Add new argument to get glyph reference.
+	(get_glyph_bitmap): Updated.
+
+	* src/ftview.c (Render_Stroke): Increase stroker limit.
+	Fix glyph indices.
+	Fix memory leaks.
+
+2004-06-24  David Turner  <david@freetype.org>
+
+
+	* Version 2.1.9 released.
+	=========================
+
+
+2004-06-24  Werner Lemberg  <wl@gnu.org>
+
+	* Makefile (GRAPH_LINK): Add $(MATH).
+	Remove $(MATH) from link rule for ftstring.
+
+2004-06-23  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftbench.c: Fix compiler warnings.
+	(usage): Updated.
+
+2004-06-23  David Turner  <david@freetype.org>
+
+	* src/ftbench.c (bench_open_close): New benchmark to measure face
+	open/close performance (controlled by the `i' flag for the `-b'
+	command-line option flag).
+	(main): Use it.
+
+2004-06-11  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftstring.c (layout_glyphs): Updated to latest FreeType library
+	changes.
+
+2004-06-03  Werner Lemberg  <wl@gnu.org>
+
+	Add autohinting toggling (using the `f' key) to ftstring.
+	Handle new inter-letter spacing support for autohinting.
+
+	* src/ftstring.c (autohint): New global variable.
+	(layout_glyphs): Handle `autohint' variable.
+	Handle new `lsb_delta' and `rsb_delta' elements of
+	face->glyph->metrics.
+	Remove some dead code.
+	(Help): Updated.
+	(Process_Event): Handle key `f'.
+	Extend key `k'.
+
+2004-05-23  Werner Lemberg  <wl@gnu.org>
+
+	* graph/gblender_blit.c: Renamed to...
+	* graph/gblblit.c: This.
+	Updated to use new include file names.
+	(gblender_blit_init): Change 11th argument to `unsigned char*'
+
+	* graph/gblender_blit.h: Renamed to...
+	* graph/gblblit.h: This.
+	Updated.
+
+	* graph/gblender_blit_any.h: Renamed to...
+	* graph/gblany.h: This.
+	Updated to use new include file names.
+
+	* graph/gblender_blit_hbgr.h: Renamed to...
+	* graph/gblhbgr.h: This.
+
+	* graph/gblender_blit_hrgb.h: Renamed to...
+	* graph/gblhrgb.h: This.
+
+	* graph/gblender_blit_vbgr.h: Renamed to...
+	* graph/gblvbgr.h: This.
+
+	* graph/gblender_blit_vrgb.h: Renamed to...
+	* graph/gblvrgb.h: This.
+
+	* graph/gblender.h (GBLENDER_CHANNEL_VARS): Remove final `;'.
+	* graph/grblit.c: Updated to use new include file names.
+
+	* graph/rules.mk, graph/Jamfile: Updated.
+
+	* Makefile: Build `ftgamma'.
+
+	* src/ftview.c (Render_GammaGrid): Fix compiler warnings.
+	(Help): Updated.
+
+	* src/ftgamma.c: Fix compiler warnings.
+
+2004-05-20  David Turner  <david@freetype.org>
+
+	Adding support for fast gamma-corrected alpha-blending.
+	New test program `ftgamma'.
+
+	* graph/grblit.c: Include gblender_blit.h.
+	(GRAY8): New macro.
+	(blit_gray8_to_555, blit_gray8_to_565, blit_gray8_to_24,
+	blit_lcd8_to_24, blit_lcd28_to_24) [GRAY8]: New functions.
+	(blit_gray8_to_32): New function.
+	(gr_gray8_blitters) [GRAY8]: New function table.
+	(grSetGlyphGamma): New function.
+	(grBlitGlyphToBitmap): Implement blending.
+	* graph/graph.h (grSetGlyphGamma): New declaration.
+
+	* graph/grfont.c, graph/grfont.h (grSetPixelMargin): New function.
+
+	* graph/gblender.c, graph/gblender.h, graph/gblender_blit.c,
+	graph/gblender_blit.h, graph/gblender_blit_any.h,
+	gblender_blit_color.h, gblender_blit_hbgr.h, gblender_blit_hrgb.h,
+	gblender_blit_vbgr.h, gblender_blit_vrgb.h: New files.
+
+	* graph/Jamfile (graph_sources): Add gblender and gblender_bnit.
+	* graph/rules.mk (GRAPH_H, GRAPH_OBJS): Updated.
+
+	* src/ftcommon.i (the_gamma): New global variable.
+	(Init_Display): Call grSetGlyphGamma.
+
+	* src/ftgamma.c: New demo program.
+
+	* src/ftview.c: Include math.h.
+	(Render_GammaGrid): New function.
+	(Help): Updated.
+	(Process_Event): Assign increase and decrease of gamma value to
+	keys `g' and `G'.
+	Assign gamma grid rendering mode to key `K'.
+	(main): Updated.
+
+	* src/Jamfile (LINKLIBS): Add -lm.
+	(GRAPHIC_PROGRAMS): Add ftgamma.c.
+	Add LINKLIBS for all GRAPHIC_PROGRAMS.
+	* vms_make.com: Updated.
+
+2004-05-19  George Williams  <gww@silcom.com>
+
+	* src/ftmulti.c (main): Use default axis values.
+
+2004-05-09  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdump.c (put_unicode_be16): Initialize `ch'.
+
+2004-04-29  Flavio Stanchina  <flavio@stanchina.net>
+
+	Parse SFNT `name' table in ftdump if new option -n is given.
+
+	* src/ftdump.c: Include FT_SFNT_NAMES_H and FT_TRUETYPE_IDS_H.
+	(name_tables): New global variable.
+	(usage): Show -d and -i info conditionally.
+	Add -n info.
+	(platform_id, name_id, put_ascii, put_unicode_be16,
+	Print_Sfnt_Names): New functions.
+	(main): Handle -n.
+
+2004-04-24  George Williams  <gww@silcom.com>
+
+	Add GX var font support to ftmulti.
+	Add command line option `-d' to ftmulti to select design
+	coordinates.
+
+	* src/ftmulti.c: New global variables `requested_pos' and
+	`requested_cnt'.
+	Make `multimaster' a pointer.
+	(parse_design_coords): New function.
+	(Help, usage): Updated.
+	(Process_Event) <do_axis>: Don't use fixed 20 unit steps but a
+	proportional granularity.
+	Use FT_Set_Var_Design_Coordinates instead of
+	FT_Set_MM_Design_Coordinates.
+	(main): Handle new option `-d'.
+	Use FT_Get_MM_Var and FT_Set_Var_Design_Coordinates instead of
+	FT_Get_Multi_Master and FT_Set_MM_Design_Coordinates.
+
+2004-04-23  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i (TFont): Add `cmap_index'.
+	(my_face_requester): Set `font->cmap_index'.
+	(get_glyph_index): Properly set third argument.
+
+2004-04-21  David Turner  <david@freetype.org>
+
+
+	* Version 2.1.8 released.
+	=========================
+
+
+2004-04-10  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftbench.c (cmap_cache_test, main): Use proper cast for
+	`face_id'.
+
+2004-03-26  Ulrich  <ulrich@infopuls.com>
+
+	* graph/x11/grx11.c (grX11DeviceRec): Add `visual' member.
+	(gr_x11_device_init): Directly manipulate `x11dev'.
+	Use XGetVisualInfo.
+	(gr_x11_surface_init): Directly use `x11dev'.
+	Fix other visual selection problems.
+
+2004-03-20  Steve Hartwell  <shspamsink@comcast.net>
+
+	Updated to make it compile with newer MacOS versions.
+
+	* graph/mac: Don't include Windows.h but MacWindows.h.
+	Include SIOUX.h only if __MWERKS__ is defined.
+	(refresh_rectangle): Updated.
+	(listen_event): Remove `theEventMask'.
+	Updated.
+	Make code conditional to __MWERKS__ which is related to SIOUX.
+	(init_surface): Handle gr_pixel_mode_rgb24.
+	Updated.
+
+2004-02-20  Werner Lemberg  <wl@gnu.org>
+
+	Add `light' render mode to ftview (using key `L').
+
+	* src/ftcommon.i (set_current_image_type): Handle
+	FT_LOAD_TARGET_LIGHT.
+	(glyph_to_bitmap, get_glyph_bitmap): Updated.
+	* src/ftview.c (Process_Event): Provide proper header for `light'
+	render mode.
+	(Help): Updated.
+
+2004-02-18  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i: Include FT_CACHE_MANAGER_H and FT_STROKER_H.
+	Don't include obsolete FT_CACHE_* macros.
+	(glyph_to_bitmap): Remove declaration of `error'.
+
+	* src/ftview.c: Don't include FT_CACHE_MANAGER_H.
+	(Render_Stroke): Remove declaration of `error'.
+	Fix other compiler warnings.
+	(Render_Waterfall): Remove declaration of `face'.
+
+2004-01-29  David Turner  <david@freetype.org>
+
+	* src/ftcommon.i (get_glyph_bitmap): Rewritten for new cache code.
+	(glyph_to_bitmap): New function.
+
+	* src/ftview.c (Render_Stroke): New function.
+	(Render_Waterfall): Use FTC_Manager_LookupFace.
+	(Process_Event) <' '>: Provide header text for stroked text.
+	(main): Add Render_Stroke.
+
+2003-12-26  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i (set_current_size): Don't allow values larger than
+	0xFFFF.
+	* src/ftview.c (main): Set `face'.
+	(Render_Waterfall): Don't set `face'.
+	use precomputed value instead.
+	(main): Don't use `face->' but `size->face->'.
+	Use `exit' in case of fatal error.
+	Don't test `face' but `size' for printing error messages.
+	Print proper error message for FT_Err_Invalid_PPem.
+
+2003-12-21  David Turner  <david@freetype.org>
+
+	* graph/graph.h (grPixelMode): Add `gr_pixel_mode_lcd2' and
+	`gr_pixel_mode_lcdv2' modes.
+	(grBlitGlyphToBitmap): Remove `is_bgr' argument.
+	Updated all callers.
+	* graph/grblit.c (blit_mono_to_pal8): Speed up loop.
+	(blit_lcd_to_24, blit_lcdv_to_24): Remove `is_bgr' argument.
+	(blit_lcd2_to_24, blit_lcdv2_to_24): New functions.
+	(compute_clips): Updated.
+	(grBlitGlyphToBitmap): Remove `is_bgr' argument.
+	Use new blitter functions for the two new modes.
+
+	* graph/win32/Jamfile: s/TOOLSET/JAM_TOOLSET/.
+
+	* src/gbench.c, src/gbench.h: New files.
+
+	* src/Jamfile: Handle `gbench'.
+
+	* src/ftbench.c, src/ftcommon.i, src/ftview.c: Updated to use new
+	FreeType cache implementation and new blitter modes.
+
+2003-11-10  Werner Lemberg  <wl@gnu.org>
+
+	Add display of bitmap fonts to ftstring.
+
+	* src/ftstring.c (layout_glyphs): Call FT_Vector_Transform for
+	scalable fonts only.
+	(render_string): Handle bitmap fonts.
+
+2003-11-07  Werner Lemberg  <wl@gnu.org>
+
+
+	* Version 2.1.7 released.
+	=========================
+
+
+2003-11-06  David Turner  <david@freetype.org>
+
+
+	* Version 2.1.6 released.
+	=========================
+
+
+2003-11-01  Werner Lemberg  <wl@gnu.org>
+
+	* src/testname.c: Include ft2build.h.
+
+2003-10-22  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdump.c (usage): Fix typo.
+
+2003-10-17  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftmulti.c (main): Call `FT_Done_Face'.
+
+	* src/ftstring.c (main): Clean up glyph and face objects, then
+	finish FreeType library.
+
+2003-10-10  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftmulti.c (Help): Document all keys.
+	(main): Call FT_Done_FreeType.
+
+2003-09-02  David Turner  <david@freetype.org>
+
+
+	* Version 2.1.5 released.
+	=========================
+
+
+2003-06-30  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdump.c (Print_Fixed): Print all elements of
+	face->available_sizes.
+
+2003-06-17  Werner Lemberg  <wl@gnu.org>
+
+	* src/*.c: s/ft_glyph_format_*/FT_GLYPH_FORMAT_*/.
+	s/ft_pixel_mode_*/FT_PIXEL_MODE_*/.
+	s/ft_glyph_bbox_*/FT_GLYPH_BBOX_*/.
+
+2003-06-16  YAMANO-UCHI Hidetoshi  <mer@din.or.jp>
+
+	* graph/x11/rules.mk (GRAPH_LINK): Add run-time search path on
+	Unix systems.
+
+2003-06-16  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcheckfixedwidth.c: Renamed to...
+	* src/ftchkwd.c: This.
+	* src/testnames.c: Renamed to...
+	* src/testname.c: This.
+	* src/Jamfile, Makefile: Updated.
+
+2003-06-15  Werner Lemberg  <wl@gnu.org>
+
+	* *.mk: Updated and revised to latest changes in FreeType 2.
+
+2003-06-13  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdump.c (Print_Type): Don't emit bbox, ascender, descender,
+	and height for non-scalable fonts.
+
+2003-06-08  Werner Lemberg  <wl@gnu.org>
+
+	* graph/x11/grx11.c (gr_x11_surface_init): Add proper cast in call
+	to grAlloc.
+
+	* src/ftbench.c (main): Add proper cast in call to malloc.
+	Use FT_ENCODING_NONE, not 0.
+
+2003-06-01  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftview.c (Render_Waterfall): Handle fixed-sized fonts better.
+
+2003-05-27  Martin Zinser  <zinser@decus.de>
+
+	* vms_make.com: Handle ftbench.
+
+2003-05-21  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i (install_font_file): Initialize new elements of
+	reallocated `fonts' array with zero bytes.
+
+2003-05-20  Martin Zinser  <zinser@decus.de>
+
+	* descrip.mms: Removed.  Now created by...
+
+	* vms_make.com: New file.
+
+2003-05-19  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i (install_font_file): Use calloc to allocate
+	`fonts'.
+	(done_freetype): Deallocate `fonts'.
+
+2003-04-28  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcheckfixedwidth.c: Remove unused global variables; make
+	global variables local to `main' if possible.
+	Fixed compiler warnings (s/index/idx/).
+
+2003-04-25  Davor Buvinic  <davor@vtr.net>
+
+	* Makefile: Add rules to build ftcheckfixedwidth.
+
+2003-04-24  Anthony Fok  <anthony@thizlinux.com>
+
+	* src/ftcommon.i: Replace `ft_encoding_*' with `FT_ENCODING_*'.
+	(file_suffixes): Add `.otf'.
+	(install_font_file): Set font->num_indices depending on encoding.
+	* src/ftmulti.c, src/ftstring.c, src/fttimer.c, src/ftview.c:
+	Replace `ft_encoding_*' with `FT_ENCODING_*'.
+	* src/testnames.c: Replace `ft_render_mode_mono' with
+	`FT_RENDER_MODE_MONO'.
+
+2003-04-09  David Turner  <david@freetype.org>
+
+	* Jamfile: Set FT2_TOP.
+	* src/ftbench.c (main): Use `long' for `max_bytes'.
+	* src/ftcheckfixidwidth.c: New test program.
+	* src/ftstring.c: (prepare_text): Remove unused variable `codepoint'.
+	(apply_gamma): Fix initialization of `buffer'.
+	* src/ftview.c (Render_Waterfall): Print more characters.
+
+2003-04-08  David Turner  <david@freetype.org>
+
+
+	* Version 2.1.4 released.
+	=========================
+
+
+2002-12-02  Antoine Leca  <Antoine-Freetype@Leca-Marti.org>
+
+	* src/ftstring.c: Use `FT_ENCODING_*' everywhere instead of
+	deprecated lowercase variants.
+	(prepare_text): 'message' for the -m option is now expected to be
+	encoded with UTF-8.  This allows testing of Unicode chars, including
+	non-BMP characters.
+
+2002-12-01  Antoine Leca  <Antoine-Freetype@Leca-Marti.org>
+
+	* graph/win32/rules.mk: Adding link rules for Borland C++.
+
+2002-11-18  David Turner  <david@freetype.org>
+
+
+	* Version 2.1.3 released.
+	=========================
+
+
+2002-11-10  David Turner  <david@freetype.org>
+
+	* src/Jamfile (PROGRAMS): Add `ftcheckfixedwidth'.
+
+2002-09-25  David Turner  <david@freetype.org>
+
+	* graph/win32/grwin32.c: Removing compiler warnings.
+
+	* descrip.mms: Removing 'ftmemchk' and 'testnames' from the list
+	of programs to compile, these are now obsolete.
+
+2002-09-25  Anthony Fok  <anthony@thizlinux.com>
+
+	* src/ftbench.c: The program did perform out-of-bound memory writes
+	with certain fonts containing a buggy charmap.
+
+2002-09-18  Werner Lemberg  <wl@gnu.org>
+
+	Add LCD BGR support.
+
+	* graph/grblit.c (blit_lcd_to_24, blit_lcdv_to_24): Add parameter
+	`is_bgr' to assign color components in reversed order.
+	(grBlitGlyphToBitmap): Add parameter `is_bgr' passed on to
+	`blit_lcd_lcd*'.
+	Updated all callers.
+	Remove unused label.
+	* graph/graph.h, graph/grfont.c: Updated.
+
+	* src/ftcommon.i (set_current_image_type), src/ftview.c (Render_All,
+	Render_Text, Render_Waterfall, Process_Event): Handle LCD modes
+	3 and 4.
+	* src/ftstring.c, src/ftmulti.c: Updated.
+
+	* graph/x11/grx11.c (gr_x11_device_init, gr_x11_surface_init):
+	Remove unused variables.
+	(gr_x11_format_rgb555): Fix typos.
+
+2002-09-08  David Turner  <david@freetype.org>
+
+	Add support for sub-pixel rendering.
+
+	* graph/x11/grx11.c, graph/win32/grwin32.c: Completely rewritten to
+	support 24-bits RGB surfaces.  This is needed to test sub-pixel
+	rendering.
+
+	Note that other drivers haven't been touched yet.  The X11 driver
+	doesn't work with 8-bit displays for now, but a reduced mode will
+	probably be introduced in the near future.
+
+	* graph/graph.h (grPixelMode): Add `gr_pixel_mode_lcd' and
+	`gr_pixel_mode_lcdv'.
+	* graph/grblit.c (compute_clips): Use `gr_pixel_mode_lcd' and
+	`gr_pixel_mode_lcdv'.
+	(compose_pixel_full): New macro.
+	(compose_pixel): Use it.
+	(blit_lcd_to_24, blit_lcdv_to_24): New functions. for RGB-decimated
+	modes (BGR not yet implemented).
+	(gr_color_blitters): Updated.
+	(grBlitGlyphToBitmap): Support new pixel modes.
+
+	* src/Jamfile (PROGRAMS): Don't include fttimer, fttry, and
+	testnames.
+
+	* src/ftbench.c: Updated to latest changes in FreeType library.
+	* src/ftcommon.i (Init_Display): New default mode is
+	`gr_pixel_mode_rgb24'.
+	(set_current_image_type, get_glyph_bitmap): Add support for LCD
+	modes (horizontal and vertical).
+	* src/ftview.c (Render_Waterfall): Call `set_current_size'.
+	(Help): Document new `L' key for cycling through the pixel modes.
+	(Process_Event): Handle `L' key.
+
+2002-08-04  Vincent Caron  <v.caron@zerodeux.net>
+
+	* src/ftcommon.i (Text), src/ftmulti.c (Text): s/jumped/jumps/.
+	* src/ftview.c (Render_Waterfall): Remove unused variable.
+
+2002-07-03  David Turner  <david@freetype.org>
+
+	* src/ftview.c (Render_Waterfall): New function, adding a
+	"waterfall" rendering mode (accessible by cycling modes with the
+	space bar).
+	(Process_Event, main): Use it.
+
+2002-07-01  David Turner  <david@freetype.org>
+
+	* src/ftbench.c: Adding the "-p" option to pre-load font files in
+	memory.  This is a very useful thing to quantify the performance
+	improvements achieved by many of FreeType internal optimizations
+	regarding stream i/o.
+
+	* src/ftstring.c (reset_transform): Fix Werner's incorrect fix.
+
+2002-06-25  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftstring.c (reset_transform): Fix transformation matrix.
+
+2002-06-23  Vincent Caron  <v.caron@zerodeux.net>
+
+	Adding support for gamma-corrected display to ftstring (assigned to
+	`g', F9, and F10 keys).
+
+	* src/ftstring.c (use_gamma, gamma_value, gamma_ramp): New global
+	variables.
+	(init_gamma, apply_gamma, draw_gamma_ramp): New functions.
+	(render_string): Use apply_gamma.
+	(Help): Updated.
+	(Process_Event): Handle `g', F9, and F10 keys.
+	(main): Call init_gamma and draw_gamma_ramp.
+
+2002-06-21  David Turner  <david@freetype.org>
+
+
+	* Version 2.1.2 released.
+	=========================
+
+
+2002-06-14  Werner Lemberg  <wl@gnu.org>
+
+	* Makefile, graph/rules.mk: s/TOP/TOP_DIR/, s/TOP2/TOP_DIR_2/.
+
+2002-06-10  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftbench.c: s/index/idx/.
+	Fixed more gcc compiler warnings.
+
+2002-06-10  David Turner  <david@freetype.org>
+
+	* src/ftbench.c: Removing compiler warnings.
+
+	* src/ttdebug.c: Updating to latest internal changes.
+
+2002-06-09  David Turner  <david@freetype.org>
+
+
+	* Version 2.1.1 released.
+	=========================
+
+
+2002-06-07  David Turner  <david@freetype.org>
+
+	Adding Vincent Caron's benchmark program.
+
+	* src/ftbench.c: New file.
+	* Makefile, src/Jamfile: Updated.
+	Other minor fixes.
+
+	* src/ftview.c (Render_Text): Call get_glyph_index() conditionally.
+
+2002-05-20  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i (get_glyph_bitmap): Use `sbit->num_grays'.
+	Handle `sbit->buffer == 0' correctly.
+
+2002-05-17  Michael Pfeiffer  <michael.pfeiffer@utanet.at>
+
+	* graph/beos/Jamfile: New file.
+
+2002-05-12  Werner Lemberg  <wl@gnu.org>
+
+	* README: Updated.
+
+2002-05-12  Michael Pfeiffer  <michael.pfeiffer@utanet.at>
+
+	* graph/Jamfile: Add support for BeOS.
+
+2002-04-28  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftview.c (Render_Text): Don't call `get_glyph_index'.  This
+	is done in `get_glyph_bitmap'.
+
+	* src/ftstring.c (encoding): New global variable, initialized to
+	`ft_encoding_unicode'.
+	(render_mode): Removed.
+	(make_tag): New utility function (copied from ftcommon.i).
+	(prepare_text): Call `FT_Select_Charmap'.
+	(Process_Event): Don't handle ` '.
+	(main): Add option -e to select encoding.
+	(usage): Document it.
+
+	* src/ftmulti.c (encoding): New global variable.
+	(make_tag): New utility function (copied from ftcommon.i).
+	(main): Add option -e to select encoding.
+	(usage): Document it.
+
+2002-04-28  Martin Zinser  <zinser@decus.de>
+
+	* descrip.mms: Add clean target.
+	Handle compiler options better.
+
+2002-04-17  David Turner  <david@freetype.org>
+
+
+	* Version 2.1.0 released.
+	=========================
+
+
+2002-04-01  Werner Lemberg  <wl@gnu.org>
+
+	* graph/x11/grx11.c: Use `c_class' instead of `class' if compiling
+	with C++.
+	* src/ftcommon.i (encoding): Use `FT_Encoding' type.  Update all
+	using code.
+	(done_glyph_bitmap): Use cast.
+	* src/ftview.c: Updated to changes in `ftcommon.i'.
+	(main): Use cast for `encoding'.
+
+2002-03-30  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftdump.c (Print_Type): Use `%ld' for some fields.
+	* src/testnames.c (main): Exit if no parameter.
+
+2002-03-21  David Turner  <david@freetype.org>
+
+	* graph/grblit.c, graph/win32/grwin32.c, src/common.c,
+	src/ftcommon.i, src/ftdump.c: Getting rid of compiler warnings.
+
+2002-03-08  David Turner  <david@freetype.org>
+
+
+	* Version 2.0.9 released.
+	=========================
+
+
+2002-03-06  David Turner  <david@freetype.org>
+
+	* src/ftdump.c: Added display of ascender/descender/text height.
+
+	* Jamfile: Support the FT2_TOP environment variable to indicate
+	where the FreeType 2 sources are located.  This is very useful for
+	switching between the STABLE and HEAD branches of the library.
+
+2002-03-05  David Turner  <david@freetype.org>
+
+	* src/ftdump.c: Added the display of a font's Postscript name,
+	EM size and global Bbox.  Now supports the debugging mode of
+	2.1.x.
+
+	* src/ftview.c: Minor change to support debugging mode of 2.1.x.
+
+2002-02-14  Detlef Würkner  <tetisoft@apg.lahn.de>
+
+	* src/fttimer.c (ConvertRaster): Handle embedded bitmaps properly.
+	* src/ftstring.c (use_sbits): Default value is no 0.
+	(layout_glyphs): Handle `use_sbits'.
+	(Process_Event): Make friendlier error messages.
+
+2002-02-09  David Turner  <david@freetype.org>
+
+
+	* Version 2.0.8 released.
+	=========================
+
+
+2002-02-02  David Turner  <david@freetype.org>
+
+
+	* Version 2.0.7 released.
+	=========================
+
+
+2002-01-25  Martin Zinser  <zinser@decus.de>
+
+	* src/common.h ([VMS]): Alias stuff specific to getopt.
+	* graph/grinit.c ([DEVICE_X11]): Handle VMS.
+	* descrip.mms: New file for compiling the demo programs with
+	OpenVMS.
+
+2002-01-07  David Turner  <david@freetype.org>
+
+
+	* Version 2.0.6 released.
+	=========================
+
+
+2001-12-31  Werner Lemberg  <wl@gnu.org>
+
+	* graph/x11/rules.mk: Fix typo (wilcard -> wildcard).
+
+2001-12-30  David Turner  <david@freetype.org>
+
+	* README: Updated to version 2.0.6.
+
+	* graph/x11/rules.mk: Updated X11 detection rules: "/usr/X11R6" and
+	"/usr/local/X11R6" are now probed as a fallback.  This allows the
+	test programs to work automatically on Debian Linux systems (which
+	only use "/usr/bin/X11" in the path).
+
+2001-12-21  David Turner  <david@freetype.org>
+
+	* src/ftcommon.i (get_glyph_bitmap): Added a missing error check.
+	Make the function return an error code if necessary.
+	* src/testnames.c (main): Fix typo.
+
+2001-12-15  Werner Lemberg  <wl@gnu.org>
+
+	* Makefile: Add `testnames' program.
+	* src/testnames.c (main): Remove unused variable.
+	First command line parameter is now used as the font to be tested
+	instead of a fixed string.
+
+2001-12-14  David Turner  <david@freetype.org>
+
+	* src/ftstring.c (layout_glyphs): Fix centering bug.
+
+2001-12-12  David Turner  <david@freetype.org>
+
+	* src/testnames.c: New test program.
+
+2001-12-08  David Turner  <david@freetype.org>
+
+	Use new charmap cache.
+
+	* src/ftcommon.i: Include FT_CACHE_CHARMAP_H.
+	(cmap_cache): New global variable.
+	(encoding): Change type to FT_UInt32.
+	(init_freetype): Initialize charmap cache.
+	(get_glyph_index): New function.
+	(get_glyph_bitmap): Use it.
+	Increase pixel dimensions to 48 for sbit cache.
+	Add ftc_image_format_outline flag if not a bitmap glyph.
+	* src/ftview.c: Use `get_glyph_index'.
+
+2001-12-06  David Turner  <david@freetype.org>
+
+	An update to use the new cache manager code.
+
+	* src/ftcommon.i: s/FTC_Image_Cache/FTC_ImageCache/.
+	s/FTC_SBit_Cache/FTC_SBitCache/.
+	s/FTC_Image_Desc/FTC_ImageDesc/.
+	s/image_type/type/.
+	(done_glyph_bitmap): New function.
+	(get_glyph_bitmap): Add new argument.
+	Use sbits cache only of pixel size <= 32.
+	Other fixes.
+	* src/ftview.c (Render_All, Render_Text): Updated to changes in
+	ftcommon.i.
+
+2001-12-05  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftcommon.i, src/ftview.c: s/manager/cache_manager/ to avoid
+	compiler warnings.
+
+2001-12-05  Taiji Yamada  <taiji@aihara.co.jp>
+
+	* src/graph/x11/grx11.c (done_surface): Free and reset color map.
+	(init_surface): Use private colormap if there are no more shared
+	colormap entries.
+
+2001-10-27  David Turner  <david@freetype.org>
+
+	* src/ftcommon.i (use_sbits_cache): Set to 1.
+
+2001-10-26  Leonard Rosenthol  <leonardr@lazerware.com>
+
+	* mac/codewarror/carbonprefix.h: New file to define building
+	the demos Carbonized.
+	* mac/codewarror/ftview.prj: Updated for CW7 and to build a
+	Carbonized version.
+	* mac/getargv.c: Updated to build Carbonized.
+	* mac/ftview_m.c: Updated to build Carbonized.
+
+2001-10-18  David Turner  <david@freetype.org>
+
+	* Jamrules: Define X11_LINKLIBS.
+	* README: Updated.
+	* graph/os2/Jamfile: Define GROS2_PATH and GRAPH_LINKLIBS.
+	* src/Jamfile (PROGRAMS): Add fttry.
+	Fix order of libraries.
+	* src/ftview.c (main): Update cache dump code.
+	* src/ftlint.c (main) [TEST_PSNAMES]: Add some debugging code.
+	* src/fttry.c (main) [DUMP_NAME]: Add some glyph name debugging code.
+
+2001-10-17  David Turner  <david@freetype.org>
+
+
+	* Version 2.0.5 released.
+	=========================
+
+
+2001-09-21  Eric Olson  <eric.olson@sympatico.ca>
+
+	* graph/os2/gros2pm.c: Remove global variable `window_created'.
+	(LOCK): Fix typo.
+	(refresh_rectangle): Use LOCK() and UNLOCK().
+	(init_surface): Don't use `window_created'.
+	Use LOCK() and UNLOCK().
+	(RunPMWindow): Use LOCK() and UNLOCK().
+	Fix typo.
+	Don't use `window_created'.
+	(Message_Process): Allow F9, F10, and others keys to pass through
+	the application.
+	Use LOCK() and UNLOCK().
+
+2001-09-10  Werner Lemberg  <wl@gnu.org>
+
+	* README: Slight update.
+
+2001-08-25  Werner Lemberg  <wl@gnu.org>
+
+	Added CMap support to ftview: The new flag `-e' accepts an encoding
+	tag as defined in freetype.h (e.g. `unic') to select a character
+	map.  Only fonts with a valid character map are selected.
+
+	* src/ftcommon.i: s/num_glyphs/num_indices/.
+	(encoding): New global variable.
+	(make_tag): New function.
+	(install_font_file): If a cmap tag has been specified, load
+	functions only which have a valid cmap.
+	(my_face_requester): Select cmap also if `encoding' is non-zero.
+	(get_glyph_bitmap): Map char index to glyph if `encoding' is
+	non-zero.
+
+	* src/ftview.c: s/first_glyph/first_index/.
+	(Help): Adjust help text.
+	(usage): Document -e switch.
+	(main): Implement -e switch.
+	Adjust `Header'.
+
+
+	* Version 2.0.4 released.
+	=========================
+
+
+2001-06-27  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftmemchk.c: s/memtest/ftmemchk/.
+
+2001-06-27  David Turner  <david@freetype.org>
+
+	* src/ftcommon.i, src/ftmemchk.c: Changes due to the modification of
+	the FT_CALLBACK_DEF macro definition.
+
+2001-06-24  David Turner  <david@freetype.org>
+
+	Renamed the test program "memtest" to "ftmemchk".
+
+	* src/memtest.c: Renamed to ...
+	* src/ftmemchk.c: This file.
+	* Makefile, src/Jamfile: Updated.
+
+
+	* Version 2.0.3 released.
+	=========================
+
+
+2001-05-28  David Turner  <david@freetype.org>
+
+	* Jamfile, src/Jamfile, graph/os2/Jamfile, graph/win32/Jamfile,
+	graph/x11/Jamfile: Updating Jamfiles to correctly link the graphics
+	programs on all platforms with Jam.
+
+	* src/ftstring.c: Removing debugging output.
+
+2001-04-25  David Turner  <david@freetype.org>
+
+	* graph/beos/grbeos.cpp, graph/beos/grbeos.h, graph/beos/rules.mk,
+	graph/grinit.c: added BeOS graphics driver to MiGS.
+
+2001-04-04  Werner Lemberg  <wl@gnu.org>
+
+	* graph/allegro/gralleg.c, graph/mac/grmac.c, graph/os2/gros2pm.c,
+	graph/x11/grx11.c: Don't include system-specific header but
+	`grobjs.h'.
+	* graph/x11/grx11.c: Some structural reorderings.
+	Include `grdevice.h'.
+	* graph/grinit.c: Use subdirectories for #include.
+	* graph/rules.mk, graph/*/rules.mk (DEVICE_INCLUDE): Removed.
+
+	* Jamrules, Jamfile, */Jamfile: Updated.  It now compiles with
+	X11 also (no checking for X header and lib locations yet).
+
+2001-04-04  David Turner  <david@freetype.org>
+
+	* Jamrules, Jamfile, graph/Jamfile, graph/x11/Jamfile,
+	graph/win32/Jamfile, graph/os2/Jamfile, src/Jamfile: Added Jamfiles
+	to build the FreeType 2 demos with Jam.  Be careful, they probably
+	don't work on Unix and OS/2 yet.
+
+2000-03-24  David Turner  <david.turner@freetype.org>
+
+
+	* Version 2.0.2 released.
+	=========================
+
+
+2001-03-23  David Turner  <david@freetype.org>
+
+	* Makefile, src/*.c: Changed to new header inclusion scheme.
+
+2001-03-13  Werner Lemberg  <wl@gnu.org>
+
+	* graph/x11/grx11.c: Increase MAX_PIXEL_MODES to 100.
+
+2001-03-06  Werner Lemberg  <wl@gnu.org>
+
+	* src/memtest.c (my_memory): Add cast to remove C++ compiler error.
+
+2001-02-22  David Turner  <david.turner@freetype.org>
+
+	* src/memtest.c: Fixed the debug memory allocator.  The constant
+	"my_memory" was replaced by a function that allocates a new "memory
+	allocator through "my_alloc()" and returns it.
+
+2001-02-06  James H. Cloos Jr.  <cloos@jhcloos.com>
+
+	* src/ftview.c (Render_Text): Fix rendering of test string.
+
+2001-01-31  Werner Lemberg  <wl@gnu.org>
+
+	* src/ftstring.c (Help): Added `void' type.
+
+2000-12-09  Werner Lemberg  <wl@gnu.org>
+
+	* Makefile: Added $(LDFLAGS) variable for `unix' link target.
+
+2000-12-01  David Turner  <david.turner@freetype.org>
+
+
+	* Version 2.0.1 released.
+	=========================
+
+
+2000-11-09  David Turner  <david@freetype.org>
+
+
+	* Version 2.0 released.
+	=======================
+
+
+Local Variables:
+version-control: never
+coding: utf-8
+End:

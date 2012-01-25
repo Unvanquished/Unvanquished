@@ -1,0 +1,250 @@
+claimed	must do
+=======	=======
+	xxx - gameinfo.dat for etmain is borked
+	xxx - bounds checking run
+	xxx - Command map has some really bizarre problem related to classes
+		(when players are in PVS, iirc.)  I need to look at this
+		and add details to this todo item.
+	xxx - vc project files use multithread flags (/MT,/MTd)
+		they should use singlecaded flags (/ML,/MLd) instead
+		is this due to curl? if so, curl needs to be singlethreaded too.
+
+	done
+	====
+zinx	xxx - switch to libcurl (for linux at least, win32 needs work)
+		libcurl now sets http referer on downloads ("ET://serverip:port")
+bani	xxx - engine eats // on commandline
+etmain	003 - (djbob)players waiting for revive dropped for inactivity
+etmain	006 - (djbob)silent plants next to constructibles exploit
+etmain	013 - (djbob)bug with long names not allowing a client to vote kick from menu
+etmain	056 - (djbob)can't kick players who's names are only a number
+etmain	077 - friendly fire is inverted (?) - fixed in etmain according to rain?
+bani	105 - (rain)end of round ready should not wait on spectators
+bani	173 - print vote string to console when vote is called
+bani	230 - (rain)Garand/K43 ammo exploit
+bani	247 - (rain)intermission ready is broken
+bani	326 - (rain)free ammo via spectators exploit
+zinx	342 - prone bug -> invisible player ( prone into wall )
+bani	345 - (zinx)Medic viewlocking will sometimes snap to non-medics
+bani	377 - (rain)limbo'd players can crash servers via following carriers and disconnecting
+bani	433 - (rain)oversize servercommands crash client
+zinx	508 - if CS_SYSTEMINFO exceeds 1024 it will truncated on map change
+zinx	562 - distancefalloff bug
+zinx	727 - setu ch crashes server
+bani	xxx - (rain)cg_errordecay exploit
+bani	xxx - covops landmine spotting was broken
+bani	xxx - knife isnt antilagged
+bani	xxx - prevent shooting ourselves in the head when prone, firing through a breakable
+bani	xxx - clients can /userinfo and nuke their userinfo from console (among other things)
+bani	xxx - (rain)client disconnect reasons are corrupted
+bani	xxx - (rain)fixed mg42s arent antilagged
+bani	xxx - riflegrenade-through-teamdoor exploit
+bani	113 - g_{axies,allies}mapxp overflows and crashes the server
+bani	470 - (zinx)static mg42s don't hurt props
+bani	402 - (zinx)'complaint dismissed' when player disconnects
+bani	102 - (rain)maxlives adjuster misbehaves on timelimit 0
+bani	xxx - (rain)"Killed by <name>" in endround scoreboard (from quake3)
+bani	xxx - (rain)remove cg_specswing (does nothing)
+bani	xxx - (rain)crosshair names randomly dont work (tunnels in oasis, crypt in resurrection)
+bani	424 - (zinx)client loses prone state after packet loss
+bani	xxx - winning team is cheated of a win when they eliminate opposition <3 sec before round end, and then die themselves
+bani	444 - lms doesnt always end when a team is eliminated
+bani	447 - (fretn)switching weapon during pause shouldn't be possible
+bani	081 - (rain)akimbo weapons and deployed mobile MG42 ignore cg_autoreload
+bani	079 - In Fuel Dump you can plant dynamite and it says "base fortification", but destroys Fuel Dump.
+bani	202 - (rain)pmove and game disagree about weapon charge usage
+bani	309 - (rain)weird radar dynamite bug (both sides can plant dynamite near the truck for no apparent reason, and get XP for defusing it)
+bani	384 - (rain)When all of your team's mines are in use, you can't disarm enemy landmines
+bani	471 - (rain)team landmine count is wrong (you can plant 11 by triggering 10th and planting 11th) and borks defusing team landmines)
+bani	560 - dynamite mis-announcements (announcement planting dynamite near barrier 2, but it doesnt get destroyed)
+bani	512 - players can block dynamite from destroying constructible objectives
+bani	xxx - (rain)LMS sometimes wont show who drew first blood
+bani	xxx - (rain)LMS sometimes wont show how many wins each team has
+bani	xxx - (rain)players who connect after a vote is called get stuck with a vote on their screen through the whole round
+bani	179 - (rain)spectator/limbo cameras slowly 'drift'
+bani	xxx - download redirection notices print repeatedly in engine
+bani	xxx - "//" bug?
+zinx	xxx - security hole allowing clients to override ip (eg setu IP localhost to bypass server passwords)
+bani	xxx - zoom exploit (http://bani.anime.net/banimod/forums/viewtopic.php?t=1661&start=50)
+etmain	xxx - "noammo" click when dropping satchel/landmine/dynamite
+bani	xxx - (rain)luger has greater spread than colt
+bani	275 - (rain)pistol pauses on last shot
+bani	127 - cg_draw2D shouldn't be cheat protected
+bani	255 - (rain)akimbo rapid fire exploit
+rain	xxx - if hostname is exactly 21 chars long with a period in position 9, it was treated as ipx
+rain	xxx - Fixed the overflow when more than MAX_GLOBAL_SERVERS are returned from the master.
+rain	xxx - Fixed sign extension bug in console code that caused high ascii characters in the console to be displayed in the wrong color.
+rain	197 - artillery markers not properly drawn on compass
+rain	xxx - some keys don't work properly (basically, merge my q3keyfix.so into the engine) (linux)
+bani	735 - CG_SHUTDOWN not called on /quit
+bani	xxx - Sys_IsLANAddress is broken (classful nets were abandoned ~10 years ago)
+fretn	xxx - fixed Win32 console key (²) appearing into console after opening it (only for non US keyboards)
+fretn	xxx - make clc_demorecording visible to cgame - CVAR_ROM -> cl_demorecording
+fretn	733 - (rain)'MODS' menu (UI code is still all there, just needs menu)
+fretn	xxx - when PERS_HWEAPON_USE the engine blocked the update of usercmd_t, which can be annoying for mods, I changed this code and moved it to pmove_fixed.c
+bani	xxx - move demo recording status entirely to cgame \o/
+bani	015 - (bani,rain)battery bunker should autoselect spawnpoint when captured
+zinx	xxx - crash renderer with too many stretchpics
+zinx	282 - falling bugfix
+bani	150 - timestamps in logs are fixed width and get truncated
+bani	535 - antilag is busted (server frames, delag headshots)
+bani	212 - (rain)players randomly thrown to spectator upon attaining level 4 skills
+zinx	xxx - arnout: "BTW, did you fix the bug that prevents models from being rendered in the FUI?
+		There are two lines of code that needs swapping iirc
+		Been a while since I looked at it, it's easy to reproduce though,
+		just setup a refdef in the ui module and render a model in it.
+		Some mods do that (Urban Terror, ETF etc)  - at least, in their q3 versions."
+fretn	xxx - fixed hardcoded s_khz in win32
+bani	xxx - remove unneeded memsets
+bani	xxx - NET_OutOfBandData,NET_OutOfBandPbPacket bugfix
+bani	xxx - minor huffman optimizations to Huff_putBit,Huff_getBit,add_bit,get_bit
+fretn	xxx - wavefile recording, wav_record / wav_stoprecord, or set cl_wavefilerecord 1 to start recording from the moment the demo
+		is loaded.
+bani	xxx - (rain)tracemap generation is broken
+		(tracemap generation code which breaks when there's a flat plane at lowest point in a map)
+ttimo	571 - MAX_GLOBAL_SERVERS is 2048 (the master has > 2048 but the client cant get them all because of hardcoded limit, causing client crashes)
+		needs testing!
+zinx	xxx - in_dgamouse 2 to kill built-in acceleration (linux)
+bani	166 - (rain)jump prediction is wrong quite often due to broken anti-bunnyhop
+bani	405 - (rain)doubled events fixed
+bani	xxx - (rain)pistol prediction fixed
+bani	xxx - (rain)fix fps dependency of mg42s
+bani	xxx - wavefile recording _really_ works now.
+rain	202 - fix level 3 engineering taking wrong charge for landmines
+rain	202 - fix field ops using medic charge time for ammo packs
+rain	xxx - fix prediction error when cratering
+bani	215 - (rain)don't allow binocs with mounted mobile MG42/mortar
+bani	218 - (rain)satchel detonator not working right when spectating
+bani	xxx - (rain)Fix the annoying prediction error that occurs when a constructible is finished building.
+zinx	225 - configstring > max_configstrings
+zinx	xxx - raw binary channel for client<->server
+fretn	xxx - s_khz should be latched
+fretn	xxx - wav recording doesnt increment file number
+bani	xxx - pb "haxed cvar" bug caused by engine changing cvar_t value directly
+bani	238 - dynamite on movers shouldnt trigger objectives
+bani	xxx - wav recording doesnt show status
+bani	xxx - wav recording should use proper linux cvars (sndspeed etc)
+bani	xxx - renamed cg_demorecord_statusline to cg_recording_statusline
+bani	xxx - (rain)players "stick" to each other in collisions
+bani	xxx - cvars to simulate packetloss on client(cl_packetloss) and server (sv_packetloss)
+		requires sv_cheats 1
+bani	xxx - cvars to simulate packet latency on client(cl_packetdelay) and server (sv_packetdelay)
+		requires sv_cheats 1
+bani	001 - (rain)re-enable wounded freelook
+bani	254 - (rain)move wounded freelook to cgame
+zinx	xxx - fretn's garbage: http://www.d-e-sign.be/files/et/wtf.jpg (cl_language -1)
+bani	184 - Players_Axis/Players_Allies can get too large and crash server (replace with P=)
+bani	xxx - omg CL_DemoFilename etc sux
+bani	xxx - omg R_ScreenshotFilename, R_ScreenshotFilenameJPEG sux
+fretn	xxx - arnout: "Got another bug for you :)
+		The engine does tolower on all binds, so if you do
+		bind a "say You suck!" and you then press a, it says 'you suck!' in lowercase.
+		Some people have been complaining about that"
+fretn	xxx - allow alternate messages to "server is full" (cvar perhaps?) -> sv_fullmsg		
+bani	245 - revive usually snaps your view
+bani	xxx - Arnout: "One thing we wanted to do is delay snapshot sending
+		while a client is connecting. There is no need to send full
+		snapshots while the client is loading a map, only thing you
+		have to do is a 'keep alive'. (This is what Doom is doing as
+		well) Gordon did a quick implementation of that last year, but
+		couldn't get it working properly (didn't have enough time to
+		play around with it). This would fix all those time out problems
+		for mods with longer level load times."
+zinx	xxx - buddyClients not used, ignoreClients was too small and not using COM_Bit* functions.
+bani    xxx - optimized myftol via lrintf (40% faster, helps RB_CalcDiffuseColor())
+bani    374 - (rain)silent landmines
+fretn   xxx - moved kick code into qagame, mods can choose to use the engine banning system or the qagame one
+bani	xxx - enable build with gcc33 / gcc4 (custom CC/CXX settings)
+bani	xxx - static link libXxf86dga.a, libXxf86vm.a as XFree86 4.2.1 doesnt have it shared     
+bani	274 - (rain)powerups are laggy
+bani	xxx - dynamic shader building - trap_R_LoadDynamicShader( shadername, shadertext )
+		trap_R_LoadDynamicShader( NULL, NULL ) unloads all dynamic shaders
+bani	xxx - allow opening of dm_83 explicitly, and try dm_83 and dm_84 if extension isnt specified
+fretn	xxx - ugh. linux uses sndbits/sndspeed/sndchannels.
+		win32 uses s_khz and is fixed to 16bit stereo.
+		unify?
+fretn	xxx - switch to GT_WOLF if map can't start a campaign?
+fretn	xxx - remove CL_buyNow_f / CL_singlePlayLink_f ?
+fretn	xxx - (rain)Make sure Com_BitSet() with ridiculous bit number is fixed
+		in anim condition code.
+zinx	xxx - curl downloading doesnt appear to handle 404 properly
+fretn	xxx - ref menu expands colors twice
+bani	xxx - (rain)fixed incorrect class determination in CG_PlayerClassForClientinfo()
+fretn,	xxx - rendering to textures trap_R_GetTextureId(), trap_R_RenderToTexture()
+bani
+bani	xxx - (rain)wounded covops could steal uniforms if theyre close enough
+bani	xxx - (rain)level 4 covops knife damage was wrong on wounded players
+bani	328 - skulls would sometimes show in scoreboard for live players
+bani	480 - (rain)disguised covops has laggy health to enemy team
+bani	xxx - support r_swapInterval in Linux
+bani	xxx - fix firstperson tank muzzle origin if drawgun is off
+bani	589 - player can "fire" flamethrower + tank gun with cg_drawgun 0
+bani	xxx - player thrown to soldier class upon attaining level 4 lw/hw skill
+bani	280 - (zinx)make movers predict a continuation rather than a stop (jittery tug on railgun)
+bani	xxx - (rain)CG_AddPMItem breaks on multi-line messages
+bani	xxx - (rain)fix the spectator can-move-partway-through-world weirdness
+fretn	xxx - added cmd clearviewlog, clears the windows console
+bani	xxx - trap_R_Finish so cgame can sync rendering if needed
+zinx	xxx - (rain)> 10 maps in a campaign would crash
+zinx	xxx - campaign count was only checked once per .campaign
+bani	760 - ref kick = "disconnected for unknown reason"
+bani	xxx - (fretn)allow server to redirect clients to other servers when full
+		eg sv_fullmsg "ET://host.to.redirect.to:port"
+bani	xxx - "Unable to load an official pak file" message should show pk3 at the very least.
+bani	xxx - fix the profile.pid madness
+bani	xxx - delete stale profile.pid if client changes fs_game
+bani	xxx - bugtraq 12534 - http://www.securityfocus.com/archive/1/390286
+bani	xxx - players can override crash handling (eg unsafe cvar whining) with com_ignorecrash 1
+bani	xxx - Better debug info for Info_*() infostring functions
+bani	xxx - bounds violation in G_configSet(), should fix ATVI #95
+bani	xxx - (zinx)Added mingw port
+bani	xxx - (zinx/bani)mounted mg42 fired too low
+bani	xxx - (zinx/bani)player hitbox in tank was broken
+bani	xxx - with fps-independent rof code, the mg fired too fast. fixed.
+bani	xxx - removed debug "Closed!" announcement from railgun map script.
+bani	xxx - movers would silently trigger enemy landmines
+
+	optional
+	========
+	xxx - zinx optimized huffman
+	xxx - optimized strncpy
+	xxx - misc renderer bugs
+		<ikkyo> something in the et engine is causing shaders with a single stage to ignore fadeStartTime and fadeEndTime
+		<ikkyo> cause I noticed the thrown away panzerfaust still faded out, but it has a two stage shader
+		<ikkyo> it doesn't fade out correctly though, it kinda changes brightness before it starts to fade. the way I did the gib shader avoids that
+	338 - server-side changes of team, class, and weapon update limbo menu
+		fixes losing weapon on mapchanges, random weapon lossage on skill upgrades, etc.
+	xxx - UI is uselessly reloaded on /quit, which is slow in etmain
+	xxx - Way to remove flags from a cvar and/or remove cvars
+	xxx - pmove_fixed fixes (actual code changes pretty trivial)
+	xxx - ignore ridiculous mouse deltas when re-grabbing like D3 does?
+	xxx - r_fullscreen sometimes gets confused, ET can permanently lose
+		focus (linux)
+	xxx - In serverInfo_t (which is used for the server browser), the
+		server hostname (i.e. sv_hostname) is only
+		MAX_NAME_LENGTH (32) chars wide, which is quite a bit
+		smaller than the server browser displays (especially with
+		colors in the hostname.)  If we change it, though, we need
+		a way to invalidate the old servercache.dat, because it
+		won't be compatible anymore.
+	633 - s_doppler is buggy (can't reproduce this -.-)
+	xxx - fix sound clipping bug (e.g. tank turret)
+	xxx - remove extraneous etconfig.cfg outside of profiles/?
+	xxx - no way to remove temporary bans added with kick/clientkick
+	      (may want to move the kick code into qagame if it's easy to do)
+	xxx - fonts loaded with trap_R_RegisterFont have a broken shader in
+	      the glyphInfo for glyph 0xff
+	xxx - special trace to ignore transparent clipbrushes?
+		(eg the huge invisible brushes around the tree trunks on oasis)
+	xxx - Re-add gibs
+	xxx - Sprint bar doesn't work when spectating or viewing a demo.
+	xxx - Mortar/deployed MG42 angles are screwy when spectating or
+		viewing a demo.
+	xxx - properly pass parameters to pmove instead of kludging it with
+		externs.  current way is wrong and sets a bad example
+		for modders.
+	xxx - fix 8-bit wrapping in weapon heat (see etpro_bg_pmove.c:3321 et al.)
+	xxx - vid_restart often corrupts textures
+	xxx - make MAX_STREAMING_SOUNDS a cvar?
+	xxx - occlusion queries to optimize rendering?
+		see R_AddEntitySurfaces()

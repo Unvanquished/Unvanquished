@@ -1,0 +1,343 @@
+#include "ui/menudef.h"
+
+// team menu
+// 
+// defines from ui_shared.h
+
+{
+  menuDef
+  {
+    name "alien_general_hud"
+    fullScreen MENU_FALSE
+    visible MENU_TRUE
+    rect 0 0 640 480
+
+    //CONSOLE
+    itemDef
+    {
+      name "console"
+      rect 8 8 560 180
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      align ITEM_ALIGN_LEFT
+      textalignx 0
+      textaligny 18
+      textscale 0.4
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_CONSOLE
+    }   
+
+    //TUTORIAL
+    itemDef
+    {
+      name "tutorial"
+      rect 8 250 640 180
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 0.35
+      align ITEM_ALIGN_LEFT
+      textalignx 0
+      textaligny 18
+      textscale 0.3
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_TUTORIAL
+    }   
+
+    //LAGOMETER
+    itemDef
+    {
+      name "lagometer"
+      rect 596 68 32 20
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 0 0 1
+      textscale 0.3
+      textalignx 1
+      textaligny 0.5
+      ownerdraw CG_LAGOMETER
+    }
+
+    //DEMO STATE
+    itemDef
+    {
+      name "demoRecording"
+      rect 596 100 32 32
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 0 0 1
+      textscale 0.3
+      textalignx 1
+      textaligny 0.5
+      ownerdraw CG_DEMO_RECORDING
+      background "ui/assets/neutral/circle.tga"
+    }   
+    itemDef
+    {
+      name "demoPlayback"
+      rect 596 100 32 32
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      textscale 0.3
+      textalignx 1
+      textaligny 0.5
+      ownerdraw CG_DEMO_PLAYBACK
+      background "ui/assets/forwardarrow.tga"
+    }   
+
+    //SELECT
+    itemDef
+    {
+      name "select"
+      rect 240 435 160 32
+      visible 0
+      decoration
+      ownerdraw CG_PLAYER_SELECT
+    }
+
+    //////////////////
+    //STATIC OBJECTS//
+    //////////////////
+
+    //LEFT RING CIRCLE
+    itemDef
+    {
+      name "left-ring-circle"
+      rect 47.5 410 25 25
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/neutral/circle.tga"
+    }
+
+    //LEFT ARM
+    itemDef
+    {
+      name "left-arm"
+      rect 77 404.75 104 52.5
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/alien/left-arm.tga"
+    }   
+
+    //LEFT ARM CIRCLE
+    itemDef
+    {
+      name "left-arm-circle"
+      rect 150 417.5 25 25
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/neutral/circle.tga"
+    }   
+
+    //RIGHT RING CIRCLE
+    itemDef
+    {
+      name "right-ring-circle"
+      rect 567 410 25 25
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/neutral/circle.tga"
+    }
+
+    //RIGHT ARM
+    itemDef
+    {
+      name "right-arm"
+      rect 459 404.75 104 52.5
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/alien/right-arm.tga"
+    }   
+
+    ///////////////////
+    //DYNAMIC OBJECTS//
+    ///////////////////
+
+    //BLOB
+    itemDef
+    {
+      name "blob"
+      rect 479 419 57 18
+      visible 1
+      forecolor 1.0 0.0 0.0 0.5
+      background "ui/assets/alien/tremublob.tga"
+      ownerdraw CG_PLAYER_POISON_BARBS
+    }
+
+    //BOLT
+    itemDef
+    {
+      name "bolt"
+      rect 52.5 412.5 15 20
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.5
+      background "ui/assets/alien/bolt.tga"
+      ownerdraw CG_PLAYER_BOOST_BOLT
+    }
+
+    //CROSS
+    itemDef
+    {
+      name "cross"
+      rect 155 422.5 15 15
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.5
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/neutral/cross.tga"
+    }   
+
+    //LEFT RING
+    itemDef
+    {
+      name "left-ring"
+      rect 7.25 369.5 90.5 106
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.5
+      background "ui/assets/alien/left-ring.tga"
+      ownerdraw CG_PLAYER_BOOSTED
+    }
+
+    //LEFT SPIKES
+    itemDef
+    {
+      name "left-spikes"
+      rect 18.5 381 59 83
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 1.0
+      background "ui/assets/alien/left-spikes.tga"
+      ownerdraw CG_PLAYER_WALLCLIMBING
+    }
+
+    //RIGHT RING
+    itemDef
+    {
+      name "right-ring"
+      rect 542.25 369.5 90.5 106
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.5
+      background "ui/assets/alien/right-ring.tga"
+      ownerdraw CG_PLAYER_BOOSTED
+    }
+
+    //RIGHT SPIKES
+    itemDef
+    {
+      name "right-spikes"
+      rect 562.5 381 59 83
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 1.0
+      background "ui/assets/alien/right-spikes.tga"
+      ownerdraw CG_PLAYER_WALLCLIMBING
+    }
+
+    //HEALTH
+    itemDef
+    {
+      name "health"
+      rect 78.5 421.5 60 15
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 .5
+      ownerdraw CG_PLAYER_HEALTH
+    }
+
+    //ALIEN CLASS ICON
+    itemDef
+    {
+      name "alien-icon"
+      rect 465 417.5 25 25
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 0.6
+      ownerdraw CG_PLAYER_WEAPONICON
+    }
+
+    //ORGANS
+    itemDef
+    {
+      name "organs"
+      rect 570.5 415.95 15 15
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 .5
+      ownerdraw CG_PLAYER_CREDITS_VALUE_NOPAD
+    }
+
+    //FPS
+    itemDef
+    {
+      name "fps"
+      rect 572 8 56 22
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 1
+      align ITEM_ALIGN_RIGHT
+      textalignx 0
+      textaligny 18
+      textscale 0.3
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_FPS
+    }
+
+    //TIMER
+    itemDef
+    {
+      name "timer"
+      rect 572 38 56 22
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1.0 0.0 0.0 1
+      align ITEM_ALIGN_RIGHT
+      textalignx 0
+      textaligny 18
+      textscale 0.3
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_TIMER
+    }      
+    
+    //ALIENSENSE
+    itemDef
+    {
+      name "aliensense"
+      rect 20 20 600 400
+      visible 1
+      decoration
+      ownerdraw CG_PLAYER_ALIEN_SENSE
+    }
+    
+    //PLAYER NAME
+    itemDef  
+    {  
+      name "playername"  
+      rect 200 275 240 25
+      visible 1  
+      decoration  
+      textScale .5
+      ownerdraw CG_PLAYER_CROSSHAIRNAMES
+    }
+  }
+}

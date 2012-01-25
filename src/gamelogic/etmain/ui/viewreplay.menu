@@ -1,0 +1,72 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+//#define WINDOW_WIDTH	400
+#define WINDOW_WIDTH	252
+#define WINDOW_HEIGHT	152
+#define GROUP_NAME		"grpViewReplay"
+
+// Macros //
+
+#include "ui/menumacros.h"
+
+// View Replay Menu //
+	
+menuDef {
+	name		"viewreplay"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+
+	onOpen {
+		uiScript LoadDemos
+	}
+
+	onESC {
+		close viewreplay ;
+		open main
+	}
+
+// Window //
+
+	WINDOW( "REPLAYS", 150 )
+
+// Demo List //
+
+	itemDef {
+		name			"demoList"
+		group			GROUP_NAME
+		rect			6 32 240 90
+		type			ITEM_TYPE_LISTBOX
+		textfont		UI_FONT_COURBD_21
+		textscale		.2
+		textaligny		-3
+		forecolor		.6 .6 .6 1
+		outlinecolor	.5 .5 .5 .4
+		border			WINDOW_BORDER_FULL
+		bordercolor		.1 .1 .1 .5
+		feeder			FEEDER_DEMOS
+		elementtype		LISTBOX_TEXT
+		elementwidth	200
+		elementheight	12
+		columns			1 0 200 33
+		visible			1
+		tooltip			"Select the replay to view or delete"
+		
+		doubleClick {
+			uiScript RunDemo
+		}
+	}
+	
+// Buttons //
+
+	BUTTON( 6, WINDOW_HEIGHT-24, .33*(WINDOW_WIDTH-24), 18, "BACK", .3, 14, close viewreplay ; open main )
+	BUTTON( 6+.33*(WINDOW_WIDTH-24)+6, WINDOW_HEIGHT-24, .34*(WINDOW_WIDTH-24), 18, "DELETE", .3, 14, conditionalScript ValidReplaySelected 2
+																										( "clearFocus ; open viewreplay_delete" )
+																										( "clearFocus" ) )
+	BUTTON( 6+.33*(WINDOW_WIDTH-24)+6+.34*(WINDOW_WIDTH-24)+6, WINDOW_HEIGHT-24, .33*(WINDOW_WIDTH-24), 18, "VIEW", .3, 14, uiScript RunDemo )
+}

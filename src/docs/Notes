@@ -1,0 +1,131 @@
+Developer notes. Just anything odd, interesting etc out of the source goes in here.
+
+24-08-2011 Dusan Jocic <dusanjocic@msn.com>
+	+ Had problem LLVM includes
+
+31-07-2011 Dusan Jocic <dusanjocic@msn.com>
+	+ Added OWAsm project and confituration solutions for VS
+	+ NOTE: ASM game logic still missing from projects (ui, cgame and game)
+
+12-07-2011 Dusan Jocic <dusanjocic@msn.com> 
+	+ Linux build broken again
+
+11-07-2011 Dusan Jocic <dusanjocic@msn.com> 
+	+ NOTE: Omni-bots don't work with x64 build
+	+ Need to compile them as x64 
+
+06-07-2011 Dusan Jocic <dusanjocic@msn.com> 
+	+ Sucessfuly loaded maps from Tremulous, Urban Terror, Q3 and RTCW
+		- Some of them have texture and game logic function missing
+
+02-07-2011 Dusan Jocic <dusanjocic@msn.com> 
+	+ Added possibility to connect to IRC server
+		- cl_authircserver - irc.quakenet.org is IRC Authenticate server 
+		- cl_ircport - 6665 
+		- NOTE: I never successfully connected in chatroom, I dont know is that because I test game in localserver or whatever else,
+				But anyway it say that its connected to IRC server
+	+ Possible that I broke something else with adding this in engine
+
+29-06-2011 Dusan Jocic <dusanjocic@msn.com> 
+	+ TODO: Separate Ruby for Client and Server
+		- Pretty ugly added at this revision
+		- Tested with "Hello World!" and apparently its working
+		- Game need autoexec.rb and msvcrt-ruby18.dll/.so/.dylib to start :)
+
+23-06-2011 Dusan Jocic <dusanjocic@msn.com> 
+	+ OpenWolf is incompatible with mod from ET
+	+ NOTE : Adding more OpenGL extensions DO NOT increase .glsl files compiling
+		- In my test build, .glsl files are compiled in 9-12 seconds
+
+17-06-2011 Dusan Jocic <dusanjocic@msn.com> 
+	+ Btw, client username, password and address are hardcored in g_client
+	+ Extremely ugly at this moment
+
+12-06-2011 Dusan Jocic <dusanjocic@msn.com> 
+	+ Not all maps like Newton physics 
+	+ Maybe its not properly added
+
+23-03-2003	Arnout	<rr2do2@splashdamage.com>
+	+ We can lower the UI memory pool size again - don't forget!
+
+13-02-2003	Gordon	<djbob@splashdamage.com>
+	+ backuppredict is causing the jerky angles when standing on a turning object
+
+06-11-2002	Gordon	<djbob@splashdamage.com>
+	+ The medic revive icon bug where it shows over totally dead people is a 1.4 bug? seen a few reports of people in 1.4 having it.
+
+24-07-2002	Arnout	<rr2do2@splashdamage.com>
+	+ Argh, ttimo did an ugly fix in 1.34 for airstrikes. Fix it properly (store team in airstrike) for xp.
+
+04-07-2002	Gordon	<djbob@splashdamage.com>
+	+ map scripting has no stack, eek, only just noticed
+
+24-05-2002	Gordon	<djbob@splashdamage.com>
+	+ Foot shuffle animation is only available to "machinegun type weapon", why not rifles too, they have the same stance?
+	
+23-05-2002	Gordon	<djbob@splashdamage.com>
+	+ Hmmmm, why has MD3_MAX_LODS been set to 1???
+
+02-05-2002	Arnout	<rr2do2@splashdamage.com>
+	[13:57] (RR2DO2): there is a sorted list of shaders
+	[13:57] (RR2DO2): the way the renderer works is like this
+	[13:58] (RR2DO2): add all drawsurfs as render commands
+	[13:58] (RR2DO2): render the commands
+	[13:58] (RR2DO2): now what happens
+	[13:58] (RR2DO2): during a frame
+	[13:58] (RR2DO2): you send a command to render shader A (Sortindex 600)
+	[13:58] (RR2DO2): then you register shader B (sortindex 300)
+	[13:58] (RR2DO2): this results in sortindex of A to increase to 601
+	[13:59] (RR2DO2): now renderscene gets called
+	[13:59] (RR2DO2): finds a rendercommand for sortindex 600
+	[13:59] (RR2DO2): and renders the polygon with the wrong shader
+	
+	Two possible fixes:
+	
+	[14:01] (TTimo): so registering new shaders should be forbidden when the commands have started being fed already
+	[14:01] (RR2DO2): basically
+	[14:01] (RR2DO2): or it should search for any rendercommands and update them
+
+01-05-2002	Gordon	<djbob@splashdamage.com>
+	+ Head shot detection was pretty buggy, not being able to hit their head unless you hit their bounding box too.
+
+17-04-2002	Gordon	<djbob@splashdamage.com>
+	+ Model loading system..... what else can i say....
+	
+16-04-2002	Gordon	<djbob@splashdamage.com>
+	+ Medic has permenant regen, and uses a powerup field to do it, isnt really needed client side tho, seems rather silly.
+
+11-04-2002	Arnout	<rr2do2@splahdamage.com>
+	+ Models attached to player models are defined in the .skin files.
+
+			Gordon	<dj_bob@ntlworld.com>
+	+ Grenade throwing is partially broken, fortunately, the flaw never pops up in game. 
+	+ A grenade held for the max hold time doesnt remove itself from your ammo, but as grenades are the only ones that have ammo AND can be held for teh max limit, it never really shows, as you instantly frag yourself.
+	
+10-04-2002	Arnout	<rr2do2@splahdamage.com>
+	+ Provide unregister functions to get rid of useles media?
+	
+			Gordon	<dj_bob@ntlworld.com>
+	+ Skeletal anims for weapons, some have them, some dont. Flametrower does, seems odd, but mauser doesnt, odd again, even tho the mauser was set up to use one, guess it just never got made.
+
+09-04-2002	Gordon	<dj_bob@ntlworld.com>
+	+ Remember player weapon anims handled by scripts in models/players folders!
+
+08-04-2002	Arnout	<rr2do2@splashdamage.com>
+	+ For the constructible entities I have to keep track if a player is currently in a trigger_objective_info. The code that does this does not support multiple of those triggers at the same spot.
+
+04-04-2002	Arnout	<rr2do2@splashdamage.com>
+	
+			Gordon	<dj_bob@ntlworld.com>
+	+ Skeletal anims for weapons, some have them, some dont. Flametrower does, seems odd, but mauser doesnt, odd again, even tho the mauser was set up to use one, guess it just never got made.
+	+ Coronas are all serversided, no real reason for this. Move them clientsided if they're not toggled.
+	+ Path_corners are game entities, why? Save on gentity count and put them in their own array. This would shave about 80 entities of mp_tram.
+	+ As for network optimizations, maybe move non toggled speakers clientsided as well?
+
+27-03-2002	Arnout	<rr2do2@splashdamage.com>
+	+ Sapper and Covert Ops only get default weapon.
+	+ Sapper can repair objects with pliers, Engineer can't repair at all as he has no pliers.
+
+26-03-2002	Arnout	<rr2do2@splashdamage.com>
+	+ Engineer in WolfMP gets 2 MP40/Thompson mags.
+	+ Engineer in WolfMP gets 8 grenades when picking up a grenade weapon.

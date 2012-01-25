@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{920db843-bd0d-4343-8816-b8651e6b4e72}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{b6e0f849-508e-4a30-8663-f2befbdbef8a}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Menu Files">
+      <UniqueIdentifier>{feba746d-bf48-4164-91e8-e134ebb72ce6}</UniqueIdentifier>
+      <Extensions>*.menu</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{e041f180-4ac7-46f6-95e5-9de862aea6b5}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\game\bg_campaign.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\bg_classes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game\bg_misc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_atoms.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_gameinfo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_loadpanel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_players.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_shared.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_util.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_api.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\engine\qcommon\q_math.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\engine\qcommon\q_shared.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ui\credits_activision.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\credits_additional.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\credits_idsoftware.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\credits_quit.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\credits_splashdamage.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\global.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\hostgame.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\hostgame_advanced.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\hostgame_advanced_default.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\hostgame_dedicated_warning.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_disconnect.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_main.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_messagemode.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_serverinfo.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_tapout.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_tapoutlms.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_vote.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_vote_disabled.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_vote_map.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_vote_misc.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_vote_misc_refrcon.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_vote_players.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\ingame_vote_players_warn.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\main.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\menus.txt">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\options.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\options_controls.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\options_controls_default.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\options_customise_game.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\options_customise_hud.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\options_system.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\options_system_gamma.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\playonline.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\playonline_connecttoip.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\playonline_disablepb.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\playonline_enablepb.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\playonline_serverinfo.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\popup_autoupdate.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\popup_errormessage.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\popup_errormessage_pb.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\popup_hostgameerrormessage.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\popup_password.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\profile.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\profile_create.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\profile_create_error.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\profile_create_initial.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\profile_delete.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\profile_delete_error.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\profile_rename.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\quit.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\rec_restart.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\vid_confirm.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\vid_restart.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\viewreplay.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\viewreplay_delete.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\wm_ftquickmessage.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\wm_ftquickmessageAlt.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\wm_quickmessage.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="..\..\ui\wm_quickmessageAlt.menu">
+      <Filter>Menu Files</Filter>
+    </None>
+    <None Include="ui.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\game\bg_public.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_local.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_shared.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menumacros.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="keycodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\engine\qcommon\q_shared.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\engine\renderer\tr_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\engine\client\ui_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ui\menudef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

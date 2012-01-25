@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+***********************************************************************************************
+(c) 2011 Gavin Pugh http://www.gavpugh.com/ - Released under the open-source zlib license
+***********************************************************************************************
+-->
+
+<!-- Based on script: MSBuild\Microsoft.Cpp\v4.0\1033\link.xml -->
+
+<Rule Name="Link" PageTemplate="tool" DisplayName="Linker" SwitchPrefix="-" Order="20" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+ 
+  <Rule.Categories>
+    <Category Name="General" DisplayName="General" />
+    <Category Name="Input" DisplayName="Input" />
+    <Category Name="Advanced" DisplayName="Advanced" />
+    <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="Link" Label="" HasConfigurationCondition="true" />
+  </Rule.DataSource>
+  
+  <!-- General -->
+  <StringProperty Subtype="file" Name="OutputFile" DisplayName="Output File" Category="General" Switch="o" Separator=" ">
+  </StringProperty>
+  <StringListProperty Subtype="folder" Name="AdditionalLibraryDirectories" DisplayName="Additional Library Directories" Category="General" Switch="L">
+  </StringListProperty>
+  <BoolProperty Name="LinkLibraryDependencies" DisplayName="Link Library Dependencies" Description="Specifies whether or not library outputs from project dependencies are automatically linked in." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.VCLinkerTool.LinkLibraryDependencies">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="ProjectReference" Label="" HasConfigurationCondition="true" />
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <BoolProperty Name="UseLibraryDependencyInputs" DisplayName="Use Library Dependency Inputs" Description="Specifies whether or not the inputs to the librarian tool are used rather than the library file itself when linking in library outputs of project dependencies." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.VCLinkerTool.UseLibraryDependencyInputs">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="ProjectReference" Label="" HasConfigurationCondition="true" />
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <BoolProperty Name="EchoCommandLines" DisplayName="Echo Command Lines" Category="General">
+  </BoolProperty>
+
+  <!-- Input -->
+  <StringListProperty Subtype="file" Name="AdditionalDependencies" DisplayName="Additional Dependencies" Category="Input">
+  </StringListProperty>
+  <BoolProperty Name="IgnoreAllDefaultLibraries" DisplayName="Ignore All Default Libraries" Category="Input" Switch="nostdlib">
+  </BoolProperty>
+  <StringListProperty Name="AndroidSystemLibs" DisplayName="Android System Libraries" Category="Input" Switch="l">
+  </StringListProperty>
+  <BoolProperty Name="LinkGccLibThumb" DisplayName="Link Against Thumb Version of LibGcc" Category="Input">
+  </BoolProperty>
+
+  <!-- Advanced -->
+  <StringProperty Name="SoName" DisplayName="'soname' Setting" Category="Advanced" Switch="Wl,-soname,">
+  </StringProperty>
+  <BoolProperty Name="ReportUndefinedSymbols" DisplayName="Report Undefined Symbols" Category="Advanced" Switch="Wl,--no-undefined">
+  </BoolProperty>
+
+  <!-- Hidden -->
+  <StringListProperty Subtype="folder" Name="SystemLibraryDirectories" Category="General" Visible="false" Switch="L">
+  </StringListProperty>
+  <BoolProperty Name="GenerateSharedLibrary" Category="General" Visible="false" Switch="shared">
+  </BoolProperty>
+  <BoolProperty Name="NoExecStack" Category="General" Visible="false" Switch="Wl,-z,noexecstack">
+  </BoolProperty>
+  <StringProperty Subtype="folder" Name="RPathLink" Category="General" Visible="false" Switch="Wl,-rpath-link=">
+  </StringProperty>
+  <StringProperty Subtype="folder" Name="SysRootDir" Category="General" Visible="false" Switch="-sysroot=">
+  </StringProperty>
+  <StringListProperty Subtype="file" Name="StlLibs" Category="General" Visible="false">
+  </StringListProperty>
+
+  <!-- Command Line -->
+  <StringProperty Name="AdditionalOptions" DisplayName="Additional Options" Description="Additional Options" Category="Command Line">
+  </StringProperty>
+  
+</Rule>

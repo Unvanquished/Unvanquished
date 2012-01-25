@@ -1,0 +1,77 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		0
+#define WINDOW_Y		0
+#define WINDOW_WIDTH	640
+#define WINDOW_HEIGHT	480
+#define GROUP_NAME		"grpMessageMode"
+
+// Macros //
+
+#include "ui/menumacros.h"
+
+// Ingame MessageMode Menu //
+
+menuDef
+{
+	name		"snipe_goalname"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+	// popup
+	// modal
+
+	onOpen
+	{
+		closeAllOtherMenus ;
+	}
+
+	// note: the omnibot ui only allows one timeout per 'session' the window is open.
+	// default etmain behavior is repeated calls for timeout .. and setting focus here will
+	// probably crash it
+	onTimeout 500
+	{
+		setEditFocus "efleftName:"	// note this depends on the macro + item name
+	}
+
+	onESC
+	{
+
+	}
+
+	onEnter
+	{
+		close snipe_goalname ;
+		exec setGoalName ;
+		open wm_snipegoal_alt ;
+	}
+
+// Subwindows //
+
+#define SUBWINDOW_WIDTH		320
+#define SUBWINDOW_HEIGHT	64
+#define SUBWINDOW_X			.5*(WINDOW_WIDTH-SUBWINDOW_WIDTH)
+#define SUBWINDOW_Y			320	// .5*(WINDOW_HEIGHT-SUBWINDOW_HEIGHT)
+
+	SUBWINDOWBLACK( SUBWINDOW_X, SUBWINDOW_Y, SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT, "^hSET SNIPE GOALNAME" )
+
+	itemDef {
+		name		"efleftbackName:"
+		group		GROUP_NAME
+		rect		$evalfloat((SUBWINDOW_X+4)+24+6) $evalfloat(SUBWINDOW_Y+16) $evalfloat((SUBWINDOW_WIDTH)-8-24-6) $evalfloat(10)
+		style		WINDOW_STYLE_FILLED
+		backcolor	.5 .5 .5 .2
+		visible		1
+		decoration
+	}
+	EDITFIELDLEFT( SUBWINDOW_X+4, SUBWINDOW_Y+16, (SUBWINDOW_WIDTH)-12, 10,
+		"Name:", .2, 8, "cg_genericText" onEsc { close snipe_goalname ; exec "bot goal_delete" ; open wm_snipegoal_alt }, 128, 128, "Enter Snipe GoalName here" )
+
+	BUTTON( SUBWINDOW_X+6, SUBWINDOW_Y+SUBWINDOW_HEIGHT-24, .5*(SUBWINDOW_WIDTH-18), 18,
+		"CANCEL", .3, 14, close snipe_goalname ; exec "bot goal_delete" ; open wm_snipegoal_alt ; )
+	BUTTON( SUBWINDOW_X+6+.5*(SUBWINDOW_WIDTH-18)+6, SUBWINDOW_Y+SUBWINDOW_HEIGHT-24, .5*(SUBWINDOW_WIDTH-18), 18,
+		"CREATE", .3, 14, close snipe_goalname ; exec setGoalName ; open wm_snipegoal_alt ;)
+}

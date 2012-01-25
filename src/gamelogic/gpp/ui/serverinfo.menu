@@ -1,0 +1,112 @@
+#include "ui/menudef.h"
+
+{
+  \\ SERVER INFO POPUP MENU \\
+
+#define W       400
+#define H       300
+#define BUTT_W  45
+#define BUTT_H  35
+#define BORDER  10
+#define LIST_W  (W-(2*BORDER))
+#define LIST_DW (LIST_W-40)
+#define LEFT_C  0.13
+#define RIGHT_C 0.61
+
+  menuDef
+  {
+    name "serverinfo_popmenu"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    rect (320-(W/2)) (240-(H/2)) W H
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_FILLED
+    border WINDOW_BORDER_FULL
+    popup
+    onClose { }
+    onOpen { uiScript ServerStatus }
+    onESC
+    {
+      close serverinfo_popmenu
+    }
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name serverinfo
+      rect BORDER BORDER LIST_W (H-(BUTT_H+BORDER))
+      type ITEM_TYPE_LISTBOX
+      style WINDOW_STYLE_EMPTY
+      elementwidth 120
+      elementheight 16
+      textscale .25
+      border WINDOW_BORDER_FULL
+      bordersize 1
+      bordercolor .5 .5 .5 1
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_SERVERSTATUS
+      notselectable
+      visible MENU_TRUE
+      columns 4
+        0                     ((2*LEFT_C)*LIST_DW) ALIGN_LEFT
+        (LEFT_C*LIST_DW)      (LEFT_C*LIST_DW)     ALIGN_LEFT
+        ((2*LEFT_C)*LIST_DW)  (LEFT_C*LIST_DW)     ALIGN_LEFT
+        ((1-RIGHT_C)*LIST_DW) (RIGHT_C*LIST_DW)    ALIGN_LEFT
+    }
+
+    //  BUTTON  //
+
+    itemDef
+    {
+      name refresh
+      text "Refresh"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect (W-(2*BUTT_W)) (H-BUTT_H) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript ServerStatus
+      }
+    }
+
+    itemDef
+    {
+      name close
+      text "Close"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect (W-BUTT_W) (H-BUTT_H) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close serverinfo_popmenu
+      }
+    }
+  }
+}
+
+

@@ -1,0 +1,443 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{80793EFF-ACAB-4583-B11A-51EF358B0EE9}</ProjectGuid>
+    <RootNamespace>rendererD3D10</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\x32\rendererD3D10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\Debug\rendererD3D10\x64\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\x32\rendererD3D10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\Debug\rendererD3D10\x64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    </LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\rendererD3D10\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\Debug\rendererD3D10\x64\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\rendererD3D10\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\Debug\rendererD3D10\x64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</GenerateManifest>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\debug/ref_gl.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;BUILD_FREETYPE;FT_FREETYPE_H;USE_D3D10;USE_XREAL_RENDERER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\Debug\x32\RendererD3D\rendererd3d.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;SDLd.lib;d3d10.lib;d3dx10d.lib;dxgi.lib;libpng.lib;zlibwapi.lib;freetype.lib;mesaglsl2-win32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../../bin/win32/debug/rendererD3Dx86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\libs\libsdl\libs\x32;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;..\..\libs\libpng\libs\win32;..\..\libs\zlibwapi\lib\x32;..\..\libs\freetype\lib;..\..\libs\glsl-optimizer\lib\x86\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ManifestFile>../../bin/win32/debug/rendererD3Dx86.intermediate.manifest</ManifestFile>
+      <ModuleDefinitionFile>rendererD3D10.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>../../../bin/win32/debug/rendererD3Dx86.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>../../../bin/win32/debug/rendererD3Dx86.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\debug/ref_gl.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\..\debug/ref_gl.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_WIN32;_WIN64;__WIN64__;_WINDOWS;BUILD_FREETYPE;FT_FREETYPE_H;USE_D3D10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;SDLd.lib;d3d10.lib;d3dx10d.lib;dxgi.lib;libpng.lib;zlibwapi.lib;freetype.lib;mesaglsl2-win64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../../bin/win64/debug/rendererD3Dx86_64.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\libs\libsdl\libs\x64;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64;..\..\libs\libpng\libs\win64;..\..\libs\zlibwapi\lib\x64;..\..\libs\freetype\lib\x64;..\..\libs\glsl-optimizer\lib\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ManifestFile>../../bin/win64/debug/rendererD3Dx86_64.intermediate.manifest</ManifestFile>
+      <ModuleDefinitionFile>rendererD3D10.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>../../../bin/win64/debug/rendererD3Dx86_64.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>../../../bin/win64/debug/rendererD3Dx86_64.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <ImportLibrary>
+      </ImportLibrary>
+      <AdditionalOptions>/MACHINE:X64 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\debug/ref_gl.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\release/ref_gl.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include;..\..\libs\freetype\include\freetype2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;BUILD_FREETYPE;FT_FREETYPE_H;USE_D3D10;USE_XREAL_RENDERER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;SDL.lib;d3d10.lib;d3dx10.lib;dxgi.lib;libpng.lib;zlibwapi.lib;freetype.lib;mesaglsl2-win32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../../bin/win32/release/rendererD3Dx86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\libs\libsdl\libs\x32;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;..\..\libs\libpng\libs\win32;..\..\libs\zlibwapi\lib\x32;..\..\libs\freetype\lib;..\..\libs\glsl-optimizer\lib\x86\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>rendererD3D10.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>$(IntDir)$(TargetFileName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ManifestFile>../../bin/win32/release/rendererD3Dx86.intermediate.manifest</ManifestFile>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\release/ref_gl.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\..\release/ref_gl.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;__WIN64__;WIN64;_WINDOWS;BUILD_FREETYPE;FT_FREETYPE_H;USE_D3D10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;SDL.lib;d3d10.lib;d3dx10.lib;dxgi.lib;libpng.lib;zlibwapi.lib;freetype.lib;mesaglsl2-win64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../../bin/win64/release/rendererD3Dx86_64.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\libs\libsdl\libs\x64;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64;..\..\libs\zlibwapi\lib\x64;..\..\libs\freetype\lib\x64;..\..\libs\glsl-optimizer\lib\x64\release;..\..\libs\libpng\libs\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>rendererD3D10.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>$(IntDir)$(TargetFileName).lib</ImportLibrary>
+      <ManifestFile>../../bin/win64/release/rendererD3Dx86_64.intermediate.manifest</ManifestFile>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\release/ref_gl.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\etmain\src\game\q_math.c" />
+    <ClCompile Include="..\..\..\etmain\src\game\q_shared.c" />
+    <ClCompile Include="..\..\libs\jpeg\jaricom.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcapimin.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcapistd.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcarith.c" />
+    <ClCompile Include="..\..\libs\jpeg\jccoefct.c" />
+    <ClCompile Include="..\..\libs\jpeg\jccolor.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcdctmgr.c" />
+    <ClCompile Include="..\..\libs\jpeg\jchuff.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcinit.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcmainct.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcmarker.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcmaster.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcomapi.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcparam.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcprepct.c" />
+    <ClCompile Include="..\..\libs\jpeg\jcsample.c" />
+    <ClCompile Include="..\..\libs\jpeg\jctrans.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdapimin.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdapistd.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdarith.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdatadst.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdatasrc.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdcoefct.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdcolor.c" />
+    <ClCompile Include="..\..\libs\jpeg\jddctmgr.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdhuff.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdinput.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdmainct.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdmarker.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdmaster.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdmerge.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdpostct.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdsample.c" />
+    <ClCompile Include="..\..\libs\jpeg\jdtrans.c" />
+    <ClCompile Include="..\..\libs\jpeg\jerror.c" />
+    <ClCompile Include="..\..\libs\jpeg\jfdctflt.c" />
+    <ClCompile Include="..\..\libs\jpeg\jfdctfst.c" />
+    <ClCompile Include="..\..\libs\jpeg\jfdctint.c" />
+    <ClCompile Include="..\..\libs\jpeg\jidctflt.c" />
+    <ClCompile Include="..\..\libs\jpeg\jidctfst.c" />
+    <ClCompile Include="..\..\libs\jpeg\jidctint.c" />
+    <ClCompile Include="..\..\libs\jpeg\jmemmgr.c" />
+    <ClCompile Include="..\..\libs\jpeg\jmemnobs.c" />
+    <ClCompile Include="..\..\libs\jpeg\jquant1.c" />
+    <ClCompile Include="..\..\libs\jpeg\jquant2.c" />
+    <ClCompile Include="..\..\libs\jpeg\jutils.c" />
+    <ClCompile Include="..\..\libs\openexr\half.cpp" />
+    <ClCompile Include="..\sys\sdl_gamma.c" />
+    <ClCompile Include="..\sys\sdl_vid.c" />
+    <ClCompile Include="tr_animation.c" />
+    <ClCompile Include="tr_animation_mdm.c" />
+    <ClCompile Include="tr_backend_d3d10.cpp" />
+    <ClCompile Include="tr_bsp.c" />
+    <ClCompile Include="tr_cmds.c" />
+    <ClCompile Include="tr_curve.c" />
+    <ClCompile Include="tr_decals.c" />
+    <ClCompile Include="tr_fbo.c" />
+    <ClCompile Include="tr_fog.c" />
+    <ClCompile Include="tr_font.c" />
+    <ClCompile Include="tr_image.c" />
+    <ClCompile Include="tr_image_exr.cpp" />
+    <ClCompile Include="tr_image_jpg.c" />
+    <ClCompile Include="tr_image_png.c" />
+    <ClCompile Include="tr_image_tga.c" />
+    <ClCompile Include="tr_init.cpp" />
+    <ClCompile Include="tr_light.c" />
+    <ClCompile Include="tr_main.c" />
+    <ClCompile Include="tr_marks.c" />
+    <ClCompile Include="tr_mesh.c" />
+    <ClCompile Include="tr_model.c" />
+    <ClCompile Include="tr_model_md3.c" />
+    <ClCompile Include="tr_model_md5.c" />
+    <ClCompile Include="tr_model_mdc.c" />
+    <ClCompile Include="tr_model_mdm.c" />
+    <ClCompile Include="tr_model_psk.c" />
+    <ClCompile Include="tr_model_skel.c" />
+    <ClCompile Include="tr_noise.c" />
+    <ClCompile Include="tr_scene.c" />
+    <ClCompile Include="tr_shade.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="tr_shade_calc.c" />
+    <ClCompile Include="tr_shade_d3d10.cpp" />
+    <ClCompile Include="tr_shader.c" />
+    <ClCompile Include="tr_shadows.c" />
+    <ClCompile Include="tr_skin.c" />
+    <ClCompile Include="tr_sky.cpp" />
+    <ClCompile Include="tr_surface.c" />
+    <ClCompile Include="tr_vbo.c" />
+    <ClCompile Include="tr_world.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\libs\jpeg\jconfig.h" />
+    <ClInclude Include="..\..\libs\jpeg\jdct.h" />
+    <ClInclude Include="..\..\libs\jpeg\jerror.h" />
+    <ClInclude Include="..\..\libs\jpeg\jinclude.h" />
+    <ClInclude Include="..\..\libs\jpeg\jmemsys.h" />
+    <ClInclude Include="..\..\libs\jpeg\jmorecfg.h" />
+    <ClInclude Include="..\..\libs\jpeg\jpegint.h" />
+    <ClInclude Include="..\..\libs\jpeg\jpeglib.h" />
+    <ClInclude Include="..\..\libs\jpeg\jversion.h" />
+    <ClInclude Include="..\..\libs\openexr\eLut.h" />
+    <ClInclude Include="..\..\libs\openexr\half.h" />
+    <ClInclude Include="..\..\libs\openexr\halfLimits.h" />
+    <ClInclude Include="..\..\libs\openexr\toFloat.h" />
+    <ClInclude Include="..\qcommon\q_platform.h" />
+    <ClInclude Include="..\qcommon\q_shared.h" />
+    <ClInclude Include="tr_local.h" />
+    <ClInclude Include="tr_model_skel.h" />
+    <ClInclude Include="tr_public.h" />
+    <ClInclude Include="..\..\..\etmain\src\cgame\tr_types.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\asm\ftola.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ml64  -D idx64=1 -c -Zi "-Fl$(IntDir)%(FileName).lst" "-Fo$(IntDir)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(FileName).obj;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembling...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ml  -c -Zi "-Fl$(IntDir)%(FileName).lst" "-Fo$(IntDir)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(FileName).obj;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Assembling...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Assembling...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ml  -c "-Fl$(IntDir)%(FileName).lst" "-Fo$(IntDir)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(FileName).obj;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ml64  -D idx64=1 -c -Zi "-Fl$(IntDir)%(FileName).lst" "-Fo$(IntDir)%(FileName).obj" "%(FullPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembling...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(FileName).obj;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="rendererD3D10.def" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

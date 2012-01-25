@@ -1,0 +1,111 @@
+#include "ui/menudef.h"
+
+{
+  // PTRC POPUP MENU //
+
+  menuDef
+  {
+    name "ptrc_popmenu"
+    visible 0
+    fullscreen 0
+    rect 140 170 360 140
+    focusColor 1 .75 0 1
+    style 1
+    border 1
+    popup
+    onESC
+    {
+      play "sound/misc/menu1.wav"; 
+      close ptrc_popmenu
+    }
+
+    
+    itemDef
+    {
+      name window
+      rect 0 0 360 140
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible 1
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+
+    // PTRC //
+
+    itemDef
+    {
+      name confirm
+      text "It seems that you disconnected during this game."
+      style 0
+      textscale .4 
+      textstyle 3
+      rect 180 40 0 0
+      textalign ITEM_ALIGN_CENTER
+      decoration
+      forecolor 1 1 1 1
+      visible 1
+    }
+
+    itemDef
+    {
+      name confirm
+      text "Would you like to be restored to your previous state?"
+      style 0
+      textscale .4 
+      textstyle 3
+      rect 180 65 0 0
+      textalign ITEM_ALIGN_CENTER
+      decoration
+      forecolor 1 1 1 1
+      visible 1
+    }
+
+
+    itemDef
+    {
+      name yes
+      text "YES"
+      type 1
+      textscale .25
+      rect 80 96 20 20
+      textalign ITEM_ALIGN_CENTER
+      textalignx 10
+      textaligny 14
+      forecolor 1 1 1 1
+      visible 1
+      action
+      { 
+        play "sound/misc/menu4.wav"; 
+        uiScript PTRCRestore;
+        close ptrc_popmenu 
+      }
+    }
+    
+
+    itemDef
+    {
+      name no
+      text "NO"
+      type 1
+      textscale .25
+      rect 260 96 20 20
+      textalign ITEM_ALIGN_CENTER
+      textalignx 10
+      textaligny 14
+      forecolor 1 1 1 1
+      visible 1
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        close ptrc_popmenu
+      }
+    }
+  }
+}
+
+

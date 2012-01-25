@@ -1,0 +1,136 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		0
+#define WINDOW_Y		0
+#define WINDOW_WIDTH	640
+#define WINDOW_HEIGHT	480
+#define GROUP_NAME		"grpHostgameAdvancedDefault"
+
+// Macros //
+
+#include "ui/menumacros.h"
+		
+// Host Game Advanced Default Menu //
+
+#define DEFAULT_SETTINGS	setcvar sv_hostname "ETHost" ;			\
+							setcvar ui_netGameType 4 ;				\
+							setcvar sv_maxclients 20 ;				\
+							setcvar server_autoconfig 0 ;			\
+							setcvar ui_dedicated 0 ;				\
+							setcvar g_friendlyFire 1 ;				\
+							setcvar g_antilag 1 ;					\
+							setcvar g_maxlives 5 ;					\
+							setcvar g_heavyWeaponRestriction 100 ;	\
+							setcvar g_teamforcebalance 0 ;			\
+							setcvar g_lms_teamforcebalance 0 ;		\							
+							setcvar sv_minping 0 ;					\
+							setcvar sv_maxping 0 ;					\
+							setcvar sv_maxrate 0 ;					\
+							setcvar g_inactivity 0 ;				\
+							setcvar g_spectatorInactivity 0 ;		\
+							setcvar g_doWarmup 0 ;					\
+							setcvar match_minplayers 4 ;			\
+							setcvar match_readypercent 100 ;		\
+							setcvar match_latejoin 1 ;				\
+							setcvar match_mutespecs 0 ;				\
+							setcvar match_warmupDamage 1 ;			\
+							setcvar team_maxplayers 0 ;				\
+							setcvar team_nocontrols 0 ;				\
+							setcvar g_warmup 60 ;					\
+							setcvar g_complaintlimit 6 ;			\
+							setcvar g_ipcomplaintlimit 3 ;			\
+							setcvar ui_userTimeLimit 0 ;			\
+							setcvar ui_userAlliedRespawnTime 0 ;	\
+							setcvar ui_userAxisRespawnTime 0 ;		\
+							setcvar g_alliedmaxlives 0 ;			\
+							setcvar g_axismaxlives 0 ;				\
+							setcvar g_altStopwatchMode 0 ;			\
+							setcvar g_lms_roundlimit 3 ;			\
+							setcvar g_lms_matchlimit 2 ;			\
+							setcvar g_lms_followTeamOnly 1 ;		\
+							setcvar g_lms_lockTeams 0 ;				\
+							setcvar sv_pure 1 ;						\
+							setcvar g_password "none" ;				\
+							setcvar refereePassword "none" ;		\
+							clearcvar rconPassword ;				\
+							setcvar vote_limit 5 ;					\
+							setcvar vote_percent 50 ;				\
+							setcvar vote_allow_comp 1 ;				\
+							setcvar vote_allow_gametype 1 ;			\
+							setcvar vote_allow_kick 1 ;				\
+							setcvar vote_allow_map 1 ;				\
+							setcvar vote_allow_matchreset 1 ;		\
+							setcvar vote_allow_mutespecs 1 ;		\
+							setcvar vote_allow_nextmap 1 ;			\
+							setcvar vote_allow_balancedteams 1 ;	\
+							setcvar vote_allow_pub 1 ;				\
+							setcvar vote_allow_referee 0 ;			\
+							setcvar vote_allow_shuffleteamsxp 1 ;	\
+							setcvar vote_allow_swapteams 1 ;		\
+							setcvar vote_allow_friendlyfire 1 ;		\
+							setcvar vote_allow_timelimit 0 ;		\
+							setcvar vote_allow_warmupdamage 1 ;		\
+							setcvar vote_allow_antilag 1 ;			\
+							setcvar vote_allow_muting 1 ;			\
+							setcvar server_motd0 " ^NEnemy Territory ^7MOTD " ; \
+							clearcvar server_motd1 ;				\
+							clearcvar server_motd2 ;				\
+							clearcvar server_motd3 ;				\
+							clearcvar server_motd4 ;				\
+							setcvar sv_allowDownload 1 ;			\
+							setcvar sv_dl_maxRate 42000 ;			\
+							setcvar sv_wwwDownload 0 ;				\
+							clearcvar sv_wwwBaseUrl ;				\
+	
+menuDef
+{
+	name		"hostgame_advanced_default"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+	popup
+	
+	fadeClamp	0.5
+	
+	onOpen
+	{
+		setitemcolor background backcolor 0 0 0 0 ;
+		fadein background
+	}
+	
+	onESC
+	{
+		close hostgame_advanced_default ;
+		open hostgame_advanced
+	}
+	
+// Background //
+
+	itemDef {
+		name		"background"
+		rect		0 0 640 480
+		style		WINDOW_STYLE_FILLED
+		background	"ui/assets/fadebox.tga"
+		backcolor	0 0 0 0
+		visible		1
+		decoration
+	}
+
+// Subwindows //
+
+#define SUBWINDOW_WIDTH		192
+#define SUBWINDOW_HEIGHT	88
+#define SUBWINDOW_X			.5 * (WINDOW_WIDTH - SUBWINDOW_WIDTH)
+#define SUBWINDOW_Y			.5 * (WINDOW_HEIGHT - SUBWINDOW_HEIGHT)
+
+	SUBWINDOWBLACK( SUBWINDOW_X, SUBWINDOW_Y, SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT, "DEFAULT SERVER SETTINGS" )
+	LABEL( SUBWINDOW_X+2, SUBWINDOW_Y+16, (SUBWINDOW_WIDTH)-8, 10, "Reset server settings to default?", .2, ITEM_ALIGN_CENTER, .5*((SUBWINDOW_WIDTH)-4), 8 )
+	
+	BUTTON( SUBWINDOW_X+6, SUBWINDOW_Y+SUBWINDOW_HEIGHT-24, .5*(SUBWINDOW_WIDTH-18), 18, "YES", .3, 14,
+		close hostgame_advanced_default ; open hostgame_advanced ; DEFAULT_SETTINGS )
+	BUTTON( SUBWINDOW_X+6+.5*(SUBWINDOW_WIDTH-18)+6, SUBWINDOW_Y+SUBWINDOW_HEIGHT-24, .5*(SUBWINDOW_WIDTH-18), 18, "NO", .3, 14,
+		close hostgame_advanced_default ; open hostgame_advanced )
+}

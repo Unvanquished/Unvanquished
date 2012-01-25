@@ -1,0 +1,9 @@
+/README.IJG/1.1/Tue Sep 10 20:39:22 2002//Trelease-1_2-branch
+/fdct.c/1.7/Mon Mar 22 22:36:23 2004//Trelease-1_2-branch
+/fdct.h/1.11/Wed Nov 26 01:04:34 2008//Trelease-1_2-branch
+/idct.c/1.9/Tue Nov 22 10:23:01 2005//Trelease-1_2-branch
+/idct.h/1.13/Wed Nov 26 01:04:34 2008//Trelease-1_2-branch
+/simple_idct.c/1.5/Mon Apr  5 20:36:36 2004//Trelease-1_2-branch
+D/ia64_asm////
+D/ppc_asm////
+D/x86_asm////

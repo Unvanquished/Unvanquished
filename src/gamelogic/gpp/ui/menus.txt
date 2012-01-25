@@ -1,0 +1,21 @@
+// menu defs
+//
+{
+  loadMenu { "ui/main.menu" }
+  loadMenu { "ui/news.menu" }
+  loadMenu { "ui/joinserver.menu" }
+  loadMenu { "ui/options.menu" }
+  loadMenu { "ui/createserver.menu" }
+  loadMenu { "ui/mod.menu" }
+  loadMenu { "ui/demo.menu" }
+  loadMenu { "ui/connect.menu" }
+  loadMenu { "ui/password.menu" }
+  loadMenu { "ui/quit.menu" }
+  loadMenu { "ui/error.menu" }
+  loadMenu { "ui/download.menu" }
+  loadMenu { "ui/drop.menu" }
+  loadMenu { "ui/serverinfo.menu" }
+  loadMenu { "ui/findplayer.menu" }
+  loadMenu { "ui/quitcredit.menu" }
+  loadMenu { "ui/createfavorite.menu" }
+}

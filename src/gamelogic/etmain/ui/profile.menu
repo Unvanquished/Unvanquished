@@ -1,0 +1,86 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+//#define WINDOW_WIDTH	400
+#define WINDOW_WIDTH	376
+#define WINDOW_HEIGHT	152
+#define GROUP_NAME		"grpProfile"
+
+// Macros //
+
+#include "ui/menumacros.h"
+
+// Profile Menu //
+	
+menuDef {
+	name		"profile"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+
+	onOpen {
+		uiScript loadProfiles
+	}
+
+	onESC {
+		close profile ;
+		open main
+	}
+
+// Window //
+
+	WINDOW( "PROFILE", 90 )
+
+// Profile List //
+
+	itemDef {
+		name			"profileList"
+		group			GROUP_NAME
+		rect			6 32 240 90
+		type			ITEM_TYPE_LISTBOX
+		textfont		UI_FONT_COURBD_21
+		textscale		.2
+		textaligny		-3
+		forecolor		.6 .6 .6 1
+		outlinecolor	.5 .5 .5 .2
+		border			WINDOW_BORDER_FULL
+		bordercolor		.1 .1 .1 .5
+		feeder			FEEDER_PROFILES
+		elementtype		LISTBOX_TEXT
+		elementwidth	200
+		elementheight	12
+		columns			1 0 200 33
+		visible			1
+		tooltip			""
+		
+		doubleClick {
+			conditionalscript ui_profile 1
+				// Load the cached servers before the vid_restart (which saves the cached servers),
+				// ui_profile is set so servers will be loaded from profile directory
+				( "close profile ; uiscript clearPID ; uiscript applyProfile ; execwolfconfig 1 ; uiscript loadCachedServers ; exec vid_restart" )
+				( "open profile" )
+		}
+	}
+	
+// Buttons //
+
+	BUTTON( 252, 32, WINDOW_WIDTH-252-6, 14, "CREATE", .24, 11, clearFocus ; open profile_create )
+	BUTTON( 252, 50, WINDOW_WIDTH-252-6, 14, "DELETE", .24, 11, clearFocus ; conditionalscript UIProfileIsActiveProfile 2
+																				( "open profile_delete_error" )
+																				( "open profile_delete" ) )
+	BUTTON( 252, 68, WINDOW_WIDTH-252-6, 14, "RENAME", .24, 11, clearFocus ; open profile_rename )
+	BUTTON( 252, 86, WINDOW_WIDTH-252-6, 14, "SET AS DEFAULT", .24, 11, conditionalscript ui_profile 1
+																			( "uiscript setDefaultProfile" )
+																			( "open profile" ) )
+
+	BUTTON( 6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "BACK", .3, 14, close profile ; open main )
+	BUTTON( 6+.5*(WINDOW_WIDTH-18)+6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "SELECT PROFILE", .3, 14, conditionalscript ui_profile 1
+																												// Load the cached servers before the vid_restart (which saves the cached servers),
+																												// ui_profile is set so servers will be loaded from profile directory
+																												( "close profile ; uiscript clearPID ; uiscript applyProfile ; execwolfconfig 1 ; uiscript loadCachedServers ; exec vid_restart" )
+																												( "open profile" ) )
+}

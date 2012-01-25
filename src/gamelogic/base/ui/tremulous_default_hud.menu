@@ -1,0 +1,149 @@
+#include "ui/menudef.h"
+
+{
+  menuDef
+  {
+    name "default_hud"
+    fullScreen MENU_FALSE
+    visible MENU_TRUE
+    rect 0 0 640 480
+    
+    //CONSOLE
+    itemDef
+    {
+      name "console"
+      rect 8 8 560 180
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      align ITEM_ALIGN_LEFT
+      textalignx 0
+      textaligny 18
+      textscale 0.4
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_CONSOLE
+    }   
+
+    //TUTORIAL
+    itemDef
+    {
+      name "tutorial"
+      rect 8 250 640 180
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 0.35
+      align ITEM_ALIGN_LEFT
+      textalignx 0
+      textaligny 18
+      textscale 0.3
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_TUTORIAL
+    }   
+
+    //FPS
+    itemDef
+    {
+      name "fps"
+      rect 572 8 56 22
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      align ITEM_ALIGN_RIGHT
+      textalignx 0
+      textaligny 18
+      textscale 0.3
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_FPS
+    }   
+    //TIMER
+    itemDef
+    {
+      name "timer"
+      rect 572 38 56 22
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      align ITEM_ALIGN_RIGHT
+      textalignx 0
+      textaligny 18
+      textscale 0.3
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_TIMER
+    }   
+   
+    //SNAPSHOT
+    itemDef
+    {
+      name "snapshot"
+      rect 8 196 200 22
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      align ITEM_ALIGN_RIGHT
+      textalignx 0
+      textaligny 18
+      textscale 0.4
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_SNAPSHOT
+    }   
+    //LAGOMETER
+    itemDef
+    {
+      name "lagometer"
+      rect 596 68 32 20
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      textscale 0.3
+      textalignx 1
+      textaligny 0.5
+      ownerdraw CG_LAGOMETER
+    }   
+    //DEMO STATE
+    itemDef
+    {
+      name "demoRecording"
+      rect 596 100 32 32
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 0 0 1
+      textscale 0.3
+      textalignx 1
+      textaligny 0.5
+      ownerdraw CG_DEMO_RECORDING
+      background "ui/assets/neutral/circle.tga"
+    }   
+    itemDef
+    {
+      name "demoPlayback"
+      rect 596 100 32 32
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      textscale 0.3
+      textalignx 1
+      textaligny 0.5
+      ownerdraw CG_DEMO_PLAYBACK
+      background "ui/assets/forwardarrow.tga"
+    }   
+    
+    //PLAYER NAME
+    itemDef  
+    {  
+      name "playername"  
+      rect 200 275 240 25
+      visible 1  
+      decoration  
+      textScale .5
+      ownerdraw CG_PLAYER_CROSSHAIRNAMES
+    }
+  }
+}

@@ -1,0 +1,167 @@
+#include "ui/menudef.h"
+
+{
+  \\ DOWNLOAD \\
+
+  menuDef
+  {
+    name "download_popmenu"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    rect 158 80 320 320
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_FILLED
+    border WINDOW_BORDER_FULL
+    popup
+    onClose { }
+    onOpen
+    {
+      uiScript loadServerInfo;
+    }
+    onESC
+    {
+      play "sound/misc/menu1.wav";
+      close download_popmenu;
+      uiScript downloadIgnore;
+    }
+
+    itemDef
+    {
+      name window
+      rect 10 15 300 320
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name downloadinfo
+      rect 0 50 320 20
+      type ITEM_TYPE_TEXT
+      text "Download"
+      textalign ALIGN_CENTER
+      textstyle ITEM_TEXTSTYLE_SHADOWEDMORE
+      textscale .333
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      name downloadinfo
+      rect 60 80 200 270
+      type ITEM_TYPE_TEXT
+      style WINDOW_STYLE_FILLED
+      textstyle ITEM_TEXTSTYLE_SHADOWED
+      wrapped
+      cvar "com_downloadPromptText"
+      textalign ALIGN_CENTER
+      textvalign VALIGN_TOP
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      decoration
+    }
+
+
+    //	BUTTON	//
+
+
+    itemDef
+    {
+      name curl
+      text "Download from website"
+      textscale .25
+      group grpControlbutton
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect 60 250 200 15
+      textalign ALIGN_CENTER
+      forecolor 1 1 1 1
+      backcolor .37 .1 .1 1
+      visible MENU_TRUE
+      cvarTest "ui_serverinfo_allowdl"
+      showCvar { 1 5 9 13 }
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close download_popmenu;
+        uiScript downloadCURL;
+      }
+    }
+
+    itemDef
+    {
+      name udp
+      text "Download from server"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      group grpControlbutton
+      style WINDOW_STYLE_EMPTY
+      rect 60 265 200 15
+      textalign ALIGN_CENTER
+      forecolor 1 1 1 1
+      backcolor .37 .1 .1 1
+      visible MENU_TRUE
+      cvarTest "ui_serverinfo_allowdl"
+      showCvar { 1 3 9 11 }
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close download_popmenu;
+        uiScript downloadUDP;
+      }
+    }
+
+    itemDef
+    {
+      name ignore
+      text "Ignore"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      group grpControlbutton
+      style WINDOW_STYLE_EMPTY
+      rect 60 280 200 15
+      textalign ALIGN_CENTER
+      forecolor 1 1 1 1
+      backcolor .37 .1 .1 1
+      visible MENU_TRUE
+      cvarTest "sv_pure"
+      hideCvar { 1 }
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close download_popmenu;
+        uiScript downloadIgnore;
+      }
+    }
+
+    itemDef
+    {
+      name disconnect
+      text "Disconnect"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      group grpControlbutton
+      style WINDOW_STYLE_EMPTY
+      rect 60 295 200 15
+      textalign ALIGN_CENTER
+      forecolor 1 1 1 1
+      backcolor .37 .1 .1 1
+      visible 1
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close download_popmenu;
+        exec "disconnect";
+      }
+    }
+  }
+}

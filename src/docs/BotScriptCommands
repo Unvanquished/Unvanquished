@@ -1,0 +1,1786 @@
+BotScript Commands Listing.
+
+[Author: Ryan Feltrin (ryan@gmistudios.com)]
+
+
+========================================
+Command: Print
+----------------------------------------
+
+Syntax:
+
+	print [/N] <text>
+
+Example:
+
+	print hello world
+	print /1 hello world
+
+The first example prints "hello world" no matter what
+The second example prints "hello world" only if the debug level set
+in the cvar g_scriptDebugLevel (which defaults to 0) is at 1 or higher.
+There is a script (NOT BOT SCRIPT) command: SetDebugLevel that will
+set this debug level.
+
+
+========================================
+Command: SpawnBot
+----------------------------------------
+
+Notes:
+
+	*	Used to spawn bots from scripting system.
+
+	*	Type "spawnbot /?" at the consol to get in-game usage information.
+
+	*	For each parameter, you can specify multiple values using "OR". In
+		this instance, a random selection will be made at run-time, from the
+		listed values.
+
+	*	The name field is used for identification within the scripting system.
+
+	*	All fields are optional.
+
+	*	Weapon field excpects an integer, corresponding to the lookup values
+		used by the internal system.
+
+Syntax:
+
+	SpawnBot [/NAME <name>] [/SKILL <0-4>] [/DELAY <milliseconds>] [/TEAM <AXIS/ALLIES>] [/CLASS <SOLDIER/MEDIC/LIEUTENANT/ENGINEER/COVERTOPS>] [/WEAPON <weaponValue>] [/SPAWNPOINT <targetname>] [/SKIN <skinName>] [/MODEL <modelName>] [/HEAD <headName>] [/SQUAD <squadNumber>]
+
+	<weaponvalue> should obey class restrictions and can be:
+		MP40/THOMPSON/KAR98/CARBINE for engineers
+		MP40/THOMPSON/STEN for officers
+		MP40/THOMPSON/STEN/MAUSER/SNIPERRIFLE/PANZERFAUST/VENOM/FLAMETHROWER/FG42/MOBILE_MG42/BAR for soldiers
+		K43/GARAND/STEN for covertops
+		KNIFE/LUGER for any axis
+		KNIFE/COLT for any allied
+
+	NOTE: <weaponvalue> can also be an int specifying the weapon index used by the function "SetWolfSpawnWeapons"
+	      but it is best to use the text string name.
+
+Example:
+
+	SpawnBot /NAME AxisHeavySoldier /TEAM Axis /WEAPON 4 or 5 or 6 or 7 or 8 /SPAWNPOINT defenceOutpostSpawn2 or defenceOutpostSpawn3 /SKIN multi/body_blueengineer_desert.skin /MODEL xpagent2/body.mds 
+
+Description:
+
+	A new Axis bot is spawned with the given name. The weapon they spawn in
+	with will be selected randomly from the given values. They will spawn
+	in at either "defenceOutpostSpawn2", or "defenceOutpostSpawn3".
+
+
+Parameter descriptions:
+
+	/model lets you spawn the bot with an entirely different model. If you don't
+	specify the body skin (/skin) or head skin (/head), it will look for a body
+	skin called "body_default.skin" and a head skin called "head_default.skin"
+	in the directory where the model was found. You need to specify the mds file
+	of the model. For example:
+
+	spawnbot /model xpagent2/body.mds
+
+	Would load the model in models\players\xpagent2, and would use body skin
+	models\players\xpagent2\body_default.skin and head skin
+	models\players\xpagent2\head_default.skin
+
+	If you want, you can explicitly specify a head skin and/or body skin when
+	using the /model parmameter (i.e. use /head and/or /skin). The
+	explicitly-specified skins will be used in place of the defaults.
+
+	/head lets you spawn a bot with a different head skin. Its use is similar to
+	/model.
+
+	/squad lets you assign the bot to a squad. Similar to the SetSquad command.
+
+	example:
+
+	spawnbot /head xpchachi/chachi_head.skin
+
+	Note that when specifying the filename of a skin or model, the models and
+	skins MUST be under models\players. You do not need to specify the
+	'models\players\ in the pathname, but it will work if you do so.
+
+	/rank rankName - spawn the bot with this rank. You may use either the name or a number, starting with 1 (e.g. Private = 1, PFC = 2). Note:
+			 currently, only allied rank names are implemented. You can still spawn a german bot with rank, but you must either use
+			 the number, or just use the allied name (the bot will display with the german named rank)
+	example:
+
+	spawnbot /rank private
+	spawnbot /rank 4
+
+	/skills s0 s1 s2 s3 s4 s5 s6 - spawn the bot with values for skills s0 - s7. The skills are: s0 = battle sense, s1 = explosives and construction,
+			 s2 = first aid, s3 = signals, s4 = light weapons, s5 = heavy weapons s6 = military intelligence and scoped weapons
+
+	example:
+
+	spawnbot /skills 2 3 4 5 6 3 2
+
+	Note: you MUST specify all the skills
+
+		
+
+
+
+ypedef enum {
+	SK_BATTLE_SENSE,
+	SK_EXPLOSIVES_AND_CONSTRUCTION,
+	SK_FIRST_AID,
+	SK_SIGNALS,
+	SK_LIGHT_WEAPONS,
+	SK_HEAVY_WEAPONS,
+	SK_MILITARY_INTELLIGENCE_AND_SCOPED_WEAPONS,
+	SK_NUM_SKILLS
+
+
+========================================
+Command: Accum
+----------------------------------------
+
+Notes:
+
+	*	Manipulate or use the accum buffers to control script execution.
+
+	*	"Random" command will set the given accum buffer to a random number
+		from 0 to (but not including) the specified value.
+
+	*	Always use the "bitset" for boolean values. This leaves other accum
+		buffers free for counting operations. A limit of 31 bits apply to
+		each buffer.
+
+	*	A limit of 8 accum buffers applies to each character in the game.
+
+Syntax:
+
+	Accum <bufferIndex> <command> <value>
+
+Commands:
+
+	INC						(increment by <value>)
+	DEC						(decrement by <value>)
+	ABORT_IF_LESS_THAN
+	ABORT_IF_GREATER_THAN
+	ABORT_IF_NOT_EQUAL
+	ABORT_IF_EQUAL
+	SET_TO
+	RANDOM
+	BITSET					(enable the bit specified by <value>)
+	BITCLEAR				(disable the bit specified by <value>)
+	ABORT_IF_BITSET
+	ABORT_IF_NOT_BITSET
+	
+Example:
+
+	Accum 0 BITSET 20
+	Accum 0 ABORT_IF_BITSET 20
+
+Description:
+
+	Aborts the current script after the second Accum, since the 20th bit was
+	set in the previous command.
+
+
+========================================
+Command: GlobalAccum
+----------------------------------------
+
+Notes:
+
+	*	Works the same as the "Accum" command, except that all operations
+		are performed on a global accum buffer. This can be used to inform
+		other bots or entities of global events, and have them act accordingly.
+
+Syntax:
+
+	GlobalAccum <bufferIndex> <command> <value>
+
+Commands:
+
+	(see "Accum" above)
+
+Example:
+
+	(In entity scripting)
+
+	allied_obj1	// sea wall
+	{
+		death
+		{
+			GlobalAccum 0 bitset 0
+		}
+	}
+
+	(In bot scripting)
+
+	alliedBot /team allies
+	{
+		spawn
+		{
+			trigger self thinker
+		}
+		trigger thinker
+		{
+			trigger self checkBridgeBlownUp
+			trigger self thinker
+		}
+		trigger checkBridgeBlownUp
+		{
+			GlobalAccum 0 abort_if_not_bitset 0
+			print The bridge has been blown up!!!
+			wait 100	// pause the scripting so "thinker" stops thinking
+		}
+	}
+
+Description:
+
+	When the sea wall is breached, the death event for "allied_obj1" is called,
+	which sets the global accum buffer 0, bit 0. This is then picked up by alliedBot
+	which issues the print message.
+
+
+========================================
+Command: SetAccumToPlayerCount
+----------------------------------------
+
+Notes:
+
+	*	Used to set an accum buffer to the total of a conditional player count.
+
+		Typically used to count players of certain types, so enemy bots can be
+		replinished depending on existing living enemies.
+
+	*	Use pickup names for weapons. Weapons with spaces MUST be wrapped in
+		double-quotes ("), eg. "Grenade Launcher".
+
+	*	Specify multiple weapons using 'OR' to seperate weapon names.
+
+	*	Usually used along with "Accum <n> Abort_If_Less_Than <x>" to conditionally
+		abort a script.
+
+Syntax:
+
+	SetAccumToPlayerCount <accum_index> [[<condition> <value>] [<condition> <value>] ...]
+
+Condition List:
+
+	/TEAM [axis/allies]
+	/CLASS <class name>
+	/WEAPON <pickup name>
+	/WITHIN_RANGE <targetname> <distance>
+
+Example:
+
+	SetAccumToPlayerCount 1 /TEAM axis /CLASS soldier /WEAPON "Mobile MG42" OR Panzerfaust OR Venom OR Flamethrower /WITHIN_RANGE defenceOutpostSpawn1 1024
+	Accum 1 Abort_If_Greater_Than 2
+	SpawnBot /NAME AxisHeavySoldierOutpost1 /TEAM Axis /WEAPON 4 /WEAPON 5 /WEAPON 6 /WEAPON 7 /WEAPON 8 /SPAWNPOINT defenceOutpostSpawn1
+
+Description:
+
+	If the player count, or axis soldiers, with any of the listed weapons, and
+	within 1024 units of spawn point "defenceOutpostSpawn1" drops below 3, then a
+	new	bot is spawned at the given spawn point, with a random selection of the
+	given weapons.
+
+
+========================================
+Command: Wait
+----------------------------------------
+
+Notes:
+
+	*	Scripting stops at this command for duration specified.
+
+Syntax:
+
+	Wait <duration>
+
+
+========================================
+Command: MoveToMarker
+----------------------------------------
+
+Notes:
+
+	*	Execution waits here until the marker is reached.
+
+	*	Best used with ai_marker's, since they are automatically dropped to the ground
+		at level load.
+
+	*	The default movement type is running.
+
+	*	Use /DIRECT if there are pathing issues that make them look wierd. This may
+		require placing more markers, so that the bot always has a direct path to the
+		next marker.
+
+	// Gordon
+	*	Instant: makes the bot get teleported to the position supplied
+
+	* 	Radius: makes the bot only require to get within a certain distance of the psoition
+		supplied, though it will still aim for the centre
+
+Syntax:
+
+	MoveToMarker <targetname> [</movetype> ...] [instant] [radius <distance>]
+
+Movement Types:
+
+	/WALKING
+	/CROUCHING
+	/DIRECT			(move directly towards marker, don't use AAS pathing)
+
+
+========================================
+Command: Trigger
+----------------------------------------
+
+Notes:
+
+	*	Can trigger another bot, or a game entity script.
+
+	*	Can trigger a script within same bot (self), however be careful since if the trigger
+		being called has any "Wait" or "WalkToMarker" type commands, which may cause the
+		script to delay for more than a single frame, the calling trigger will be
+		terminated.
+
+	*	Use "SELF" to trigger a script within the same bot.
+
+	*	Use "GLOBAL" to call given trigger for all other entities and bots.
+
+Syntax:
+
+	Trigger <SELF/GLOBAL/aiName/entityName> <triggerName>
+
+
+Example:
+
+	Trigger axisPanzerBot1 blowUpBridge
+
+Description:
+
+	Calls the "blowUpBridge" trigger for "axisPanzerBot1".
+
+
+Example:
+
+	Trigger GLOBAL playerDeath
+
+Description:
+
+	Calls the "playerDeath" trigger for all other bots and entities.
+
+
+========================================
+Command: Logging
+----------------------------------------
+
+Notes:
+
+	*	Starts logging for this character.
+
+	*	Log file created in root of <gamedir> folder (ie. "main" if not running a game mod)
+
+Syntax:
+
+	Logging <ON/OFF>
+
+
+========================================
+Command: AbortIfWarmup
+----------------------------------------
+
+Notes:
+
+	*	Aborts the current script if the game is currently in warmup mode.
+
+Syntax:
+
+	AbortIfWarmup
+
+
+========================================
+Command: SetAttribute
+----------------------------------------
+
+Notes:
+
+	*	Sets bot attributes.
+	* 	Reaction Time is the time in seconds after spotting an enemy before the bot attacks
+	* 	Aim Accuracy is from 0-1, it modifies how much the enemy successfully hits its target
+	* 	Wimp Factor is from 0-1, it's the likeliness that bots will break and retreat
+
+Syntax:
+
+	SetAttribute <attribName> <value>
+
+Attributes:
+
+	BOT_REACTION_TIME
+	BOT_AIM_ACCURACY
+	BOT_WIMP_FACTOR
+
+========================================
+Command: PlaySound
+----------------------------------------
+
+Notes:
+
+	*	Plays a sound.
+
+	*	Use sound scripts to specify voice channel if required.
+
+Syntax:
+
+	PlaySound <soundName>
+
+
+========================================
+Command: PlaySoundAtPlayer
+----------------------------------------
+
+Notes:
+
+	*	Plays a sound at the location of the player.
+
+	*	Use sound scripts to specify voice channel if required.
+
+Syntax:
+
+	PlaySoundAtPlayer <soundName>
+
+
+========================================
+Command: SetWeapon
+----------------------------------------
+
+Notes:
+
+	*	Sets the weapon type used after next spawn
+
+	*	Use weapon values as per internal 
+	
+	*	Specify "ANY" to stop forcing the weapon type (revert to AI choice) // Gordon: doesnt work
+
+Syntax:
+
+	SetWeapon <ANY/weaponNum>
+
+
+========================================
+Command: SetClass
+----------------------------------------
+
+Notes:
+
+	*	Sets the player class used after next spawn
+
+	*	Specify "ANY" to stop forcing the class (revert to AI choice)
+
+Syntax:
+
+	SetWeapon <ANY/ClassName>
+
+
+========================================
+Command: SetMovementAutonomy
+----------------------------------------
+
+Notes:
+
+	*	Sets the movement state of the AI.
+
+	*	This allows the Bots to move around at various levels of freedom.
+
+Syntax:
+
+	SetMovementAutonomy <DEFAULT/HIGH/MEDIUM/LOW>
+
+
+========================================
+Command: SetWeaponAutonomy
+----------------------------------------
+
+Notes:
+
+	*	Sets the bots weapon autonomy.
+
+	*	This tells the bot when and when not to fire at an enemy.
+
+Syntax:
+
+	SetWeaponAutonomy <DEFAULT/LOW/MEDIUM/HIGH>
+
+
+
+========================================
+Command: FollowLeader
+----------------------------------------
+
+Notes:
+
+	*	Sets the given character as the Bot's leader
+
+	*	The bot will follow the leader until they are dead, the leader
+		orders the bot to do something else, or the duration expires.
+
+	*	If multiple bot's have a matching name, the closest will be
+		used as the leader.
+
+Syntax:
+
+	FollowLeader <botName> <duration/FOREVER>
+
+
+========================================
+Command: Cvar
+----------------------------------------
+
+Notes:
+
+	*	Used much like Accum & GlobalAccum, excpect that operations
+		are performed on the given Consol variable.
+
+	*	All operations are the same as that of Accum.
+
+
+Syntax:
+
+	Cvar <cvarName> <operation> <value>
+
+
+========================================
+Command: MovementAutonomy
+----------------------------------------
+
+Notes:
+
+	*	Provides various operations on movementAutonomy
+
+	*	Similar to Accum, although operand set is more restricted.
+
+
+Syntax:
+
+	MovementAutonomy <operand> <movementAutonomyLevel>
+
+
+Operands:
+
+	Set						(sets the movementAutonomy)
+	Force					(override player setting)
+	Unforce					(stop overriding player setting)
+	Abort_if_greater_than	(abort if the movementAutonomy is greater than given level)
+	Abort_if_less_than		(abort if the movementAutonomy is less than given level)
+
+
+movementAutonomyLevels:
+
+	HIGH
+	MEDIUM
+	LOW
+
+
+========================================
+Command: WeaponAutonomy
+----------------------------------------
+
+Notes:
+
+	*	Provides various operations on weaponAutonomy
+
+	*	Similar to Accum, although operand set is more restricted.
+
+
+Syntax:
+
+	WeaponAutonomy <operand> <weaponAutonomyLevel>
+
+
+Operands:
+
+	Set						(sets the weaponAutonomy)
+	Force					(override player setting)
+	Unforce					(stop overriding player setting)
+	Abort_if_greater_than	(abort if the weaponAutonomy is greater than given level)
+	Abort_if_less_than		(abort if the weaponAutonomy is less than given level)
+
+
+weaponAutonomyLevels:
+
+	HIGH
+	MEDIUM
+	LOW
+
+
+========================================
+Command: MountMG42
+----------------------------------------
+
+Syntax:
+
+	MountMG42 <targetname>
+
+
+
+========================================
+Command: SetHealth
+----------------------------------------
+
+added by Mad Doctor I 8/12/2002
+
+Notes:
+
+	*	Sets health for a bot.
+	*   Note that this can look wonky for your allied bots, as their health is displayed in your team list.
+
+Syntax:
+
+	SetHealth <value>
+
+
+=================
+Command: SetStealthFactor
+=================
+
+Mad Doctor I, 12/26/2002. Add a script function to set the stealth factor of a bot
+
+Notes:
+
+	*	This is between 0 and 1.  Interestingly, 0 == maximum stealth, 1 == maximum NOISE.
+
+Syntax:
+
+	SetStealthFactor <value>
+
+
+
+========================================
+Command: NoTarget
+----------------------------------------
+
+added by Mad Doctor I 8/12/2002
+
+Notes:
+
+	*	Bots will not shoot at this character.
+
+	*	Useful when bots are holding someone hostage
+
+Syntax:
+
+	NoTarget <ON/OFF>
+
+
+========================================
+Command: ResetScript
+----------------------------------------
+
+Notes:
+
+	*	Cancels any OTHER currently running scripts
+
+Syntax:
+
+	ResetScript
+
+
+
+========================================
+Command: FaceAngles
+----------------------------------------
+
+Notes:
+
+	*	Have bot face a particular direction
+
+Syntax:
+
+	FaceAngles <pitch> <yaw> <roll> <duration>
+
+
+========================================
+Command: GotoPlayer
+----------------------------------------
+
+Notes:
+
+	*	Have a bot go to the player's location and then stand there
+
+Syntax:
+
+	GotoPlayer
+
+========================================
+Command: FollowPlayer
+----------------------------------------
+
+Notes:
+
+	*	Have a bot follow the player
+
+Syntax:
+
+	FollowPlayer
+
+
+========================================
+Command: SetHearingRange
+----------------------------------------
+
+added by Mad Doctor I 8/12/2002
+
+Notes:
+
+	*   If any combat is heard within the hearing range (default 1000), they
+	    become ENGAGED (alert state)
+
+Syntax:
+
+	SetHearingRange <floating point value>
+
+========================================
+Command: SetCloseHearingRange
+----------------------------------------
+
+added by Mad Doctor I 10/2002
+
+Notes:
+
+	*   This is the hearing range checked for footsteps
+	*   Bots whose alert state is RELAXED (the default) will have a 
+	    narrower Field of View when looking for targets within this range.  This allows
+		you to sneak up on them.
+
+Syntax:
+
+	SetCloseHearingRange <floating point value>
+
+
+========================================
+Command: SetCoverSequence
+----------------------------------------
+
+added by Mad Doctor I 10/2002
+
+Notes:
+
+	*   Specify the name of the first cover spot in a chain of spots
+		to use for this bot (instead of one started by a 
+		seek_cover_sequence trigger).
+	*	Once you set a sequence for a bot, it will always use that
+		sequence (and not go to ones specified by bot_cover_spot_sequence
+		triggers), unless you call this with NONE as the parameter,
+		which clears the scripted sequence.
+
+Syntax:
+
+	SetCoverSequence <first spot name | NONE>
+
+
+========================================
+Command: SetVisionRange
+----------------------------------------
+
+added by Mad Doctor I 10/23/2002
+
+Notes:
+
+	*   This sets a max vision range in BotFindEnemy.  Keeps guys from charging
+		you from all the way across the map!
+
+Syntax:
+
+	SetVisionRange <floating point value>
+
+========================================
+Command: Bot_ScriptAction_SetFarSeeingRange
+----------------------------------------
+
+added by Mad Doctor I 10/23/2002
+
+Notes:
+
+	*   Enemies who are within this range (but out of actual combat VisionRange as above)
+		will elicit an "Enemy Spotted" from the bot.
+
+Syntax:
+
+	Bot_ScriptAction_SetFarSeeingRange <floating point value>
+
+
+========================================
+Command: SetFieldOfView
+----------------------------------------
+
+added by Mad Doctor I 8/12/2002
+
+Notes:
+
+	*	Axis bots only!
+	*   Axis bots whose alert state is RELAXED (the default) will have a 
+	    narrower Field of View when looking for targets.  This allows
+		you to sneak up on them.
+	*   If any axis bot sees you in front of them in this arc, they become
+	    ENGAGED
+
+Syntax:
+
+	SetFieldOfView <floating point value>
+
+
+
+========================================
+Command: SetAlertState
+----------------------------------------
+
+added by Mad Doctor I 8/12/2002
+
+Updated by Xinbo Kan 1/11/2003
+
+Notes:
+
+	*	Change bot's default animation (standing, walking, etc.) and also affects
+		bot's sounds (and possibly other things as needed)
+	*	Usually, you can leave it to the code to automatically update bot's alert state
+		(which is based on hearing, vision, enemy distance, etc.), but if you 
+		want to change it in the script for any reason, then use it.
+	*	Default alert state is relaxed.
+	*	"engaged" is same as "combat"
+
+Syntax:
+
+	SetAlertState <RELAXED/QUERY/ALERT/COMBAT>
+
+
+
+
+
+========================================
+Command: StandInPlace
+----------------------------------------
+
+added by Mad Doctor I 8/21/2002
+
+Notes:
+
+	*	Forces bot to stop moving.
+
+Syntax:
+
+	StandInPlace
+
+
+
+========================================
+Command: PrintAccum
+----------------------------------------
+
+added by TDF 8/25/2002
+
+Notes:
+
+	* Prints out accum X
+
+Syntax:
+
+	PrintAccum X
+
+========================================
+Command: PrintGlobalAccum
+----------------------------------------
+
+added by TDF 8/25/2002
+
+Notes:
+
+	* Prints out global accum X
+
+Syntax:
+
+	PrintGlobalAccum X
+
+
+========================================
+Command: SetSleepState
+----------------------------------------
+
+added by Mad Doctor I 8/26/2002
+
+Notes:
+
+	*	Forces bot to stop moving.
+
+Syntax:
+
+	SetSleepState [ASLEEP/AWAKE] [/ALL] [BotName]
+
+If there are no parameters, it puts this bot to sleep or wakes it up.
+If the parameter /ALL is used, it puts all bots to sleep or wakes them up.
+If the parameter is the name of another bot, it puts that one to sleep or wakes it up.
+
+
+========================================
+Command: SetCrouch
+----------------------------------------
+
+added by Xinbo Kan 8/27/2002
+
+Notes:
+
+	*	Make the bot to crouch/uncrouch
+
+Syntax:
+
+	SetCrouch [ON/OFF]
+
+SetCrouch ON makes the bot crouch, whether it's standing or moving. SetCrouch OFF
+makes the bot uncrouch (go back to normal). 
+
+
+========================================
+Command: SetProne
+----------------------------------------
+
+added by Xinbo Kan 8/27/2002
+
+Notes:
+
+	*	Make the bot to prone/unprone
+
+Syntax:
+
+	SetProne [ON/OFF]
+
+SetProne ON makes the bot prone. SetProne OFF makes the bot unprone (go back to normal).
+When the bot is proning, it may have trouble moving over obstacles. So be careful where 
+you make the bot prone.
+
+ 
+========================================
+Command: SetDamageRatio
+----------------------------------------
+
+added by Xinbo Kan 8/27/2002
+
+Notes:
+
+	*	Make the bot (and player) take less or more damage depending
+		on the ratio.
+
+Syntax:
+
+	SetDamageRatio <floating number>
+
+Player and bots have a default damage ratio of 1.0f, which makes them take
+the default amount of damage (which itself depends on a lot of factors (hit position, 
+armor, etc.). You can explicitly set the damage ratio to a number other than 1.0f in
+the script. This makes actual damage to it equal <floating number> * original_damage. Note
+that if the resulting damage is less than 1, it will be set to 1. This means you can not
+make the entity completely invulnerable by setting its damage ratio to 0.0f. This behavior
+can easily be changed depending on what we want.
+
+ 
+========================================
+Command: SetDamageDealtRatio
+----------------------------------------
+
+added by Xinbo Kan 12/16/2002
+
+Notes:
+
+	*	Make the bot (and player) inflict a modified amount of damage on the enemy
+	*   The amount of damage on the enemy will be  original_damage * <damageDealtRatio>,
+		subject to other modifiers (including damageRatio of the enemy). Not less than 1.
+
+Syntax:
+
+	SetDamageDealtRatio <floating number>
+
+
+========================================
+Command: RemoveBot
+----------------------------------------
+
+added by TDF 8/27/2002
+
+Notes:
+
+	* Removes a named bot from the game
+
+Syntax:
+
+	RemoveBot botname
+
+
+
+========================================
+Command: BotDebugging
+----------------------------------------
+
+added by TDF 8/27/2002
+
+Notes:
+
+	* turns on bot "thought bubble" debugging
+
+Syntax:
+
+	BotDebugging ON/OFF
+
+
+=========================================
+Command: SetSquad
+-----------------------------------------
+
+Added by Xinbo Kan 10/08/2002
+
+Notes:
+
+	* Assign the bot to a specific squad
+
+Syntax:
+
+	SetSquad <integer 0-19>
+
+
+
+=========================================
+Command: MaxStartingBots 
+-----------------------------------------
+
+Notes:
+	* This number is the maximum number of bots that the player can have on his 
+	team. This MUST be at least this many starting spawnpoints for bots in the 
+	level. This is REQUIRED for each level. Ex: MaxStartingBots 4
+
+	* Must be in spawn section of game_manager entity
+
+Syntax:
+
+	MaxStartingBots num 
+
+=========================================
+Command: PlayerClass 
+-----------------------------------------
+
+Notes:
+	* This is the class that the player will start with. It is optional. 
+	  If you use this command, the player will not be allowed to change
+	  class for this mission. Ex: PlayerClass Medic
+
+	* Must be in spawn section of game_manager entity
+
+Syntax:
+	PlayerClass classname
+
+
+=========================================
+Command: StartingSquad 
+-----------------------------------------
+
+Notes:
+	* If you want to specify the makeup of a suggested starting squad 
+	  for the player, use this optional command. Just give the classes 
+	  that you want (you can have more than one of one type of class). 
+	  The current squad will be populated with the highest-ranking 
+	  members of the bot pool that match those squads. 
+	  Ex: StartingSquad soldier soldier medic engineer
+
+	* Must be in spawn section of game_manager entity
+
+Syntax:
+	StartingSquad class class class ... 
+
+
+=========================================
+Command: ClassRequired 
+-----------------------------------------
+
+Notes:
+
+	* If the players's squad MUST have a member of a certain class, 
+	  you can specify it with this optional command. It should 
+	  agree with the StartingSquad command (if there is one). 
+	  If the player tries to start the mission without at least
+	  one of each class specified here, he will get a warning
+	  dialog and will be given the option to change the squad.
+	  Ex: ClassRequired soldier engineer lieutenant
+
+	* Must be in spawn section of game_manager entity
+
+Syntax:
+	ClassRequired class class class...
+
+
+
+=========================================
+Command: BotPool 
+-----------------------------------------
+
+Notes:
+	* If you want to specify what bots will be available 
+	  in the bot pool from the starting squad screen, 
+	  you should use this command. You specify the
+	  number, rank, and class of bots. You can not 
+	  specify more than 16 bots. For readability, 
+	  you can have multiple BotPool commands (to 
+	  avoid having one really long script line) 
+	  Ex: 
+		BotPool 3 private soldier 2 sergeant soldier 1 major engineer 
+		BotPool 4 Lieutenant Covertops 1 corporal medic
+
+
+Syntax:
+	BotPool num rank class num rank class ...
+
+	
+========================================
+Command: PlayAnim
+----------------------------------------
+
+added by Mad Doctor I September 2002
+
+Notes:
+
+	*	Plays a named animation
+	* 	If you include the keyword NOWEAPON at the end of the param list,
+		then the animation will play with no weapon selected
+	*   nowait can not be used when noweapon is used.
+	*   nowait can be used to play different animations on legs and torso by doing something
+        similar to this:
+
+		playanim talk_1 torso nowait
+		playanim relaxed_walk_2h_1 legs
+
+Syntax:
+
+	playanim <anim name> <legs/torso/both>
+
+Modified by TAT 11/2/2002
+	playanim <anim name> <legs/torso/both> NOWEAPON
+
+Updated by Xinbo Kan 11/19/2002
+	playanim <animation> [legs/torso/both] [NOWEAPON] [HOLDFRAME] [nowait] [numLoops/FOREVER/syncsound <soundname>] [target]
+
+
+========================================
+Command: Cigarette
+----------------------------------------
+
+added by Xinbo Kan 1/9/2003
+
+Notes:
+
+	* Make a cigarette model appear in bot's hand and show smoke coming off the cigarette
+	* Use "cigarette on" immediately before the amb_smoking animation command to
+	  get the timing right.
+
+Syntax:
+
+	Cigarette <on/off>
+
+Example:
+
+		cigarette on
+		PLAYANIM amb_smoking both
+		cigarette off
+
+
+========================================
+Command: ClearAnim
+----------------------------------------
+
+added by Mad Doctor I September 2002
+
+Notes:
+
+	*	Stops any anim playing
+
+Syntax:
+
+	ClearAnim
+
+========================================
+Command: SetFireRate
+----------------------------------------
+
+added by Xinbo Kan, 10/24/2002
+
+Notes:
+
+	*	Sets the firing rate of the bot. For example, a fire rate of 0.5 will make
+		the bot fire 50% as frequently as normal. Note that the decrease in fire rate 
+		is only obvious over the span of more than a few seconds. The bot still fires
+		at normal (maximum) speed in short bursts. 
+
+Syntax:
+
+	SetFireRate <float 0-1>
+
+
+========================================
+Command: SetFireCycleTime
+----------------------------------------
+
+added by Xinbo Kan, 12/19/2002
+
+Notes:
+
+	*   Sets the minimum/maximum fire cycle time. Actual fire cycle time is 
+		a random number between minimum cycle time and maximum cycle time.
+   
+  		during a fire cycle, the bot will fire for a duration equal to 
+		fireRate * cycleTime, and hold fire for the rest of the cycle 
+		(which is equal to (1-fireRate)*cycleTime.)
+
+	*	Use it together with SetFireRate command
+
+	*	If this is not used, default min fire cycle time is 1500, and
+		default max fire cycle time is 2700
+
+Syntax:
+
+	SetFireCycleTime <minimum time in msec> <maximum time in msec>
+
+
+========================================
+Command: SetSpeedCoefficient
+----------------------------------------
+
+added by Mad Doctor I, 11/26/2002
+
+Notes:
+
+	*	Set an individual bot's speed relative to the default.  1 == normal, 0.5 = half, etc.
+
+Syntax:
+
+	SetSpeedCoefficient <float>
+
+
+========================================
+Command: wm_remove_allied_objective 
+----------------------------------------
+
+Added by TDF 10/24/2002
+
+
+Notes:
+	*	Removes the specified objective from the list of allied objectives. Will shift all higher-numbered objectives down.
+
+Syntax: 
+
+	wm_remove_allied_objective <objective_number> 
+
+
+========================================
+Command: SetSelectable
+----------------------------------------
+
+added by TAT 10/28/2002
+
+Notes:
+
+	* Sets whether or not you can select a bot, and if it appears in the UI
+
+Syntax:
+
+	SetSelectable ON/OFF
+
+
+========================================
+Command: GiveMessage
+----------------------------------------
+
+added by Xinbo Kan 10/29/2002
+
+Notes:
+
+	* Give the player message. Message can be interrupted if player is not paying
+	  attention to the bot giving the message (i.e. players looks away or moves too
+	  far). If message is interrupted, bot will call out for the player's attention
+	  and continues the message when he gets the player's attention.
+
+	* Use it together with message segment inside game_manager.
+
+Syntax:
+
+	GiveMessage <message name>
+
+Example:
+
+Bot xyz
+{
+	trigger xyzMeetsPlayer
+	{
+		GiveMessage xyzmessage
+	}
+}
+
+// and the following section should be placed inside game_manager
+
+game_manager
+{
+	.....
+	message xyzmessage
+	{
+		messagesegment sound/multiplayer/allies/xyzspeech_1.wav
+		messagesegment sound/multiplayer/allies/xyzspeech_2.wav
+		messagesegment sound/multiplayer/allies/xyzspeech_3.wav
+		messagesegment sound/multiplayer/allies/xyzspeech_4.wav
+	}
+}
+
+========================================
+Command: SetSkillLevel
+----------------------------------------
+
+added by TAT 11/06/2002
+
+Notes:
+
+	* Sets the level of a skill for a bot or the player, also displays a message
+		to the player about the upgrade.
+	* If used on a bot, the player will get a message telling them about the upgrade
+	* Uses the existing skill system, so BattleSense 1 gives binoculars, for example
+
+Syntax:
+
+	SetSkillLevel [battlesense|explosives|firstaid|signals|lightweapons|heavyweapons|intelligence] [0-5]
+
+
+========================================
+Command: ShowOffscreenCommander
+----------------------------------------
+
+added by TDF 11/11/2002
+
+Notes:
+
+	* Invokes the offscreen commander (talking head). Will talk according to the voice amplitude of client 0. Will disappear after voice amplitude has
+	  been 0 for 1 second
+
+Syntax:
+
+	ShowOffscreenCommander
+
+
+
+
+========================================
+Command: SetActiveWeapon
+----------------------------------------
+
+added by TAT 11/15/2002
+
+Notes:
+
+	* Sets the current weapon for the bot - NOT the weapon that the bot has.
+		If told to switch to a weapon the bot doesn't have, it'll cause an error.
+		Bot will continue using this weapon until out of ammo, or if under player
+		control, if the player orders them to weapon cycle.
+
+Syntax:
+
+	SetActiveWeapon <weaponname>
+	ex.
+		SetActiveWeapon COLT
+		SetActiveWeapon BAR
+
+
+========================================
+Command: SetAmmoAmount
+----------------------------------------
+
+added by TAT 12/14/2002
+
+Notes:
+
+	* Sets how much ammo a bot has for a particular weapon, or how many of a special, like
+		syringes or smoke grenades, that a bot has.
+	* Does not change what actual weapons a bot has, so if you set ammo for COLT, and 
+		the bot has no colt, it will be an error.
+	* Must be called after everything is set up, so put in a wait in the spawn before you
+		call this.
+
+Syntax:
+
+	SetAmmoAmount <weaponname> <amount>
+	ex.
+		SetAmmoAmount SYRINGE 0
+		SetAmmoAmount COLT 8
+
+========================================
+Command: SetCivilian
+----------------------------------------
+
+added by Xinbo Kan 1/6/2003
+
+Notes:
+
+	* Mark a bot as civilian. Cursor turns to no-shoot crosshair when you mouse over
+	  a civilian, and bots from the opposing team will not target a civilian bot.
+	* A civilian bot still sees opposing team as enemy and his "enemysight" script
+	  (if exists) will be fired when he sees an enemy bot/player.
+	* A civilian bot will never try to engage in fighting.
+	* Currently, you must use script to make a civilian bot have no weapon and/or to
+	  make him flee upon enemy sight.
+
+Syntax:
+
+	SetCivilian <yes/no>
+
+
+========================================
+Command: SetBJAnimatedHead
+----------------------------------------
+
+added by TDF 11/18/2002
+
+Notes:
+
+	* Toggles showing BJ's animated head when a PLAYSOUND has been called
+
+Syntax:
+
+	SetBJAnimatedHead ON|OFF
+
+
+========================================
+Command: AddToJournal
+----------------------------------------
+
+added by TDF 11/19/2002
+
+Notes:
+
+	* Adds 'text' to the journal on the mission briefing screen
+
+Syntax:
+
+  AddToJournal <text>
+
+
+========================================
+Command: PlayerAnim
+----------------------------------------
+
+added by Xinbo Kan 11/19/2002
+
+Notes:
+
+	* play the animation on the player. very similar to the PlayAnim for the bots, but
+	  this command should be placed inside the "player" block.
+
+	* [target] is not supported yet.
+
+	* nowait can not be used when noweapon is used.
+
+	* nowait can be used to play different animations on legs and torso by doing something
+      similar to this:
+
+		playeranim talk_1 torso nowait
+		playeranim relaxed_walk_2h_1 legs
+
+Syntax:
+
+	playeranim <animation> [legs/torso/both] [NOWEAPON] [HOLDFRAME] [nowait] [numLoops/FOREVER/syncsound <soundname>]
+
+========================================
+Command: ClearAnim
+----------------------------------------
+
+added by Xinbo Kan 11/20/2002
+
+Notes:
+
+	* Clears the current animation playing on the player. Same as clearanim for bots.
+
+Syntax:
+
+	ClearAnim
+
+=========================================
+Command: StopGameModelAnimAfterLoop
+-----------------------------------------
+
+added by Xinbo Kan 11/19/2002 
+
+Notes:
+
+	* stop the looping animation on the specified misc_gamemodel after it finishes
+	  its current loop
+
+Syntax:
+
+	StopGameModelAnimAfterLoop <targetname of misc_gamemodel>
+
+
+=========================================
+Command: FaceEntity
+-----------------------------------------
+
+added by TAT 11/21/2002 
+
+Notes:
+
+	* causes the bot to face the target entity until shut off or given
+		another order (like MoveToMarker)
+	* don't need targetname when turning off
+	* use "player" as target name to have it face the player
+	* can also use bot script name, or ai marker
+
+Syntax:
+
+	FaceEntity ON|OFF [targetname]
+
+=========================================
+Command: FireAtTarget
+-----------------------------------------
+
+added by TAT 11/21/2002 
+
+Notes:
+
+	* Bot will fire at target entity
+	* NOTE: Bot will NOT make sure they can see the target and move into place
+		to fire, it's mainly for cinematics, if you want someone to fire at
+		someone else in a coldblooded killing sequence or something
+	* duration parameter is optional, if you leave it off, they'll shoot once
+	* Use "player" for targetname to shoot at the player
+	* Can use the name of an info_notnull to shoot at a location
+
+Syntax:
+
+	FireAtTarget <targetname> [duration]
+
+=========================================
+Command: StopSound
+-----------------------------------------
+
+added by Xinbo Kan 11/21/2002
+
+Notes:
+
+	* Stop the sounds that the bot might have been playing
+
+Syntax:
+
+	StopSound
+
+=========================================
+Command: StartLosingCountDown
+-----------------------------------------
+
+added by Xinbo Kan 12/02/2002
+
+Notes:
+
+	*   Start the losing count down for the specified team, which will lose in the time specified
+  		unless ResetLosingCountDown is called before the timer expires. It can also displays an 
+  		optional message.
+	*	Multiple lose conditions may be active at the same time. Use <identifier>
+		to differentiate them so that resetlosingcountdown will reset the right one.
+
+Syntax:
+
+	StartLosingCountDown <allies/axis> <time in seconds> <identifier> [message]
+
+Example:
+
+	StartLosingCountDown allies 30 ramirez "Ramirez must be revived within 30 seconds to continue the mission"
+
+
+=========================================
+Command: ResetLosingCountDown
+-----------------------------------------
+
+added by Xinbo Kan 12/02/2002
+
+Notes:
+
+	*   Reset the losing count down, basicly nullify the effect of StartLosingCountDown.
+
+Syntax:
+
+	ResetLosingCountDown
+
+=========================================
+Command: SetScriptAutonomy
+-----------------------------------------
+
+added by TAT 12/5/2002
+
+Notes:
+
+	* Script autonomy determines how bots will react to an enemy
+	* IgnoreEnemies means they will continue whatever they are doing and
+		never react to an enemy
+	* MaintainScript means they will continue on a MoveToMarker, but will
+		shoot at the enemy while in sight (note: If you have an EnemySight
+		bracket with a ResetScript, that will still stop the MoveToMarker)
+	* NoChase means they will do normal battle code, break out of their current
+		action, weave around, seek cover, but they will not give chase if you
+		move away, and will just stand still when you do.
+	* QuitScript is the current behavior and the default - bots will battle and give
+		chase.
+
+Syntax:
+
+	SetScriptAutonomy <IgnoreEnemies|MaintainScript|NoChase|QuitScript>
+
+=========================================
+Command: MovePlayer
+-----------------------------------------
+
+added by TAT 1/9/2003
+
+Notes:
+	* Instantly zaps a player to the location of an ai marker
+Syntax:
+
+	MovePlayer <aimarkername>
+
+
+=========================================
+Command: mu_start
+-----------------------------------------
+
+added by GS, documented by Xinbo Kan 12/11/2002
+
+Notes:
+	* Starts background music track. 
+	* It will loop forever until stopped or another mu_start is called.
+	* Optional fadeup time.
+
+Syntax:
+	mu_start <musicfile> [fadeuptime]
+
+=========================================
+Command: mu_play
+-----------------------------------------
+
+added by GS, documented by Xinbo Kan 12/11/2002
+
+Notes:
+	* Play the music track once.
+	* Optional fadeup time.
+
+Syntax:
+	mu_play <musicfile> [fadeuptime]
+
+=========================================
+Command: mu_stop
+-----------------------------------------
+
+added by GS, documented by Xinbo Kan 12/11/2002
+
+Notes:
+	* Stop the music track.
+	* Optional fadedown time.
+
+Syntax:
+	mu_stop [fadedowntime]
+
+=========================================
+Command: mu_queue
+-----------------------------------------
+
+added by Xinbo Kan 12/11/2002
+
+Notes:
+	* Kind of similar to mu_start, except it waits until the current music has either
+	  finishes its current loop, or been stopped or faded to 0.
+
+Syntax:
+	mu_queue <musicfile>
+
+=========================================
+Command: mu_fade
+-----------------------------------------
+
+added Xinbo Kan 12/11/2002
+
+Notes:
+	* fade the music to the specified level within the specified time
+	* "mu_fade 0 3000" would have the same effect as "mu_stop 3000"
+
+Syntax:
+	mu_fade <target volume 0.0-1.0> <fadeout time>
+
+
+=======================
+Command: SetPersonToWatchFor
+=======================
+
+Mad Doctor I, 1/16/2003.  
+Specify a particular enemy/friend to look out for.  You need to make a special trigger for when she's spotted, too.
+
+Notes:
+	* Specify the name of a client/bot to look out for (such as DrAleph)
+	* You need a matching "trigger SpottedDrAleph" (where you run together the word "trigger" and the script name
+	  of the guy/gal to watch.
+	* The other bot or client needs to exist when you call this.  The best way to guarantee this
+	  is to put this call in a trigger that is called from the watched guy's spawn scripting
+	* When the watched guy is spotted once, the Spotted trigger will fire and this person will
+	  be removed from the watch list.
+	* When the to-be-watched person dies, you need to call ClearPersonToWatchFor
+
+Syntax:
+
+	SetPersonToWatchFor [targetname]
+
+
+=======================
+Command: ClearPersonToWatchFor
+=======================
+
+Mad Doctor I, 1/16/2003.  
+Remove a particular enemy/friend  from list of people to look out for
+
+Notes:
+	* This can be called from anywhere, but definitely ought to be called from the "lookee's"
+	  death script of anywhere that she's removed from the scripts.
+
+Syntax:
+
+	ClearPersonToWatchFor [targetname]
+
+
+
+
+
+****************************************
+========================================
+bot event list
+	Keep this updated as you add new event
+----------------------------------------
+
+updated by Xinbo Kan, 11/07/2002
+
+Here is a list of bot events (basicly predefined triggers)
+
+	spawn - 
+		called as each character is spawned into the game
+
+	pain <health> - 
+		we've been hurt such that our health has just dropped below <health>
+		for example, "pain 20" will be triggered when health drops from 25 to 15,
+		but not triggered if health drops from 15 to 5.
+
+	death -
+		the bot died
+
+	activate -
+		activated. not sure if this ever applies to bot.
+
+	objective <objective name> -
+		something has occured involving the objective
+
+	respawn -
+		NOT WORKING, respawned at "param" spawnpoint
+
+	enemysight <name (optional)> -
+		Enemy with <name> is sighted.
+
+	revived	-
+		bot was revived by a comrade

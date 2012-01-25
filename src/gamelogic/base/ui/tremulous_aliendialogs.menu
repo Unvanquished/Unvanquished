@@ -1,0 +1,85 @@
+#include "ui/menudef.h"
+
+{
+  menuDef
+  {
+    name "tremulous_alien_dialog"
+    visible 0
+    fullscreen 0
+    outOfBoundsClick
+    rect 185 140 280 190
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_EMPTY
+    popup
+
+    itemDef
+    {
+      name window
+      rect 0 0 280 190
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible 1
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+    
+    itemDef
+    {
+      name alien_dialog
+      text "Error"
+      type ITEM_TYPE_TEXT
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      style WINDOW_STYLE_EMPTY
+      rect 115 10 50 20   
+      textalign ITEM_ALIGN_LEFT
+      textalignx 5
+      textaligny 18
+      textscale .4
+      forecolor 1 1 1 1
+      backcolor .5 0 0 .25
+      visible 1 
+      decoration
+    }
+    
+    itemDef
+    {
+      name alien_dialog
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      style WINDOW_STYLE_EMPTY
+      rect 10 50 250 80   
+      cvar "ui_dialog"
+      autowrapped
+      textalignx 5
+      textaligny 18
+      textscale .33
+      forecolor 1 1 1 1
+      backcolor .5 0 0 .25
+      visible 1 
+      decoration
+    }
+    
+    itemDef
+    {
+      name alien_dialog
+      text "OK"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect 242 150 28 20
+      textalign ITEM_ALIGN_LEFT
+      textalignx 5
+      textaligny 18
+      textscale .4
+      forecolor 1 1 1 1
+      backcolor .5 0 0 .25
+      visible 1 
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        close tremulous_alien_dialog
+      }
+    }
+  }
+}

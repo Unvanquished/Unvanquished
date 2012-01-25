@@ -1,0 +1,81 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+#define WINDOW_WIDTH	325
+#define WINDOW_HEIGHT	250
+#define GROUP_NAME		"grpIngameVoteBotsFun"
+
+// Macros //
+
+#include "ui/menumacros.h"
+		
+// System Menu //
+	
+menuDef {
+	name		"ingame_vote_bots_fun"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+	
+	onESC {
+		close ingame_vote_bots_fun ;
+		open omnibot
+	}
+	
+
+// Window // 
+
+	WINDOW( "^bCheats Menu", 90 )
+	
+// Subwindows //
+
+#define SUBWINDOW_WIDTH		1*(WINDOW_WIDTH-18)
+	
+
+	SLIDER( 8, 48, (SUBWINDOW_WIDTH)-4, 10, "Gravity:", .2, 8, "g_gravity" 0 0 1600, "Set Gravity (800 std)" )
+	CVARFLOATLABEL( 8, 48, (SUBWINDOW_WIDTH)-4, 10, "g_gravity", .2, ITEM_ALIGN_RIGHT, $evalfloat((SUBWINDOW_WIDTH)-4), 8 )
+	
+	SLIDER( 8, 68, (SUBWINDOW_WIDTH)-4, 10, "Player Speed:", .2, 8, "g_speed" 0 0 3000, "Set Player Speed (320 std)" )
+	CVARFLOATLABEL( 8, 68, (SUBWINDOW_WIDTH)-4, 10, "g_speed", .2, ITEM_ALIGN_RIGHT, $evalfloat((SUBWINDOW_WIDTH)-4), 8 )
+
+	SLIDER( 8, 88, (SUBWINDOW_WIDTH)-4, 10, "Game Speed:", .2, 8, "timescale" 0 1 10, "Set Game Speed (1 std)" )
+	CVARFLOATLABEL( 8, 88, (SUBWINDOW_WIDTH)-4, 10, "timescale", .2, ITEM_ALIGN_RIGHT, $evalfloat((SUBWINDOW_WIDTH)-4), 8 )
+
+	BUTTON( 9, 108, .24*(WINDOW_WIDTH-27), 14, "Time 0", .24, 11, exec "timelimit 0" )
+	
+	YESNO( 8, 128, (SUBWINDOW_WIDTH)-4, 10, "Set Cheats:", .2, 8, "sv_cheats", "Set Cheats -needed for Commands below-" )
+	
+
+
+	BUTTON( 9, 148, .24*(WINDOW_WIDTH-27), 14, "God", .24, 11, exec "god; echo ^1Godmode ^5On/Off ^1-Check Console-" )
+	
+	BUTTON( 9+.24*(WINDOW_WIDTH-27)+6, 148, .24*(WINDOW_WIDTH-27), 14, "Give All", .24, 11, exec "give all; echo ^1Give All ^5On/Off ^1-Check Console-" )
+	
+	BUTTON( 9+.50*(WINDOW_WIDTH-27)+6, 148, .24*(WINDOW_WIDTH-27), 14, "Fatigue", .24, 11, exec "nofatigue; echo ^1Unlimited Stamina ^5On/Off ^1-Check Console-" )
+	
+	BUTTON( 9, 168, .24*(WINDOW_WIDTH-27), 14, "No Clip", .24, 11, exec "noclip; echo ^1Noclip ^5On/Off ^1-Check Console-" )
+	
+	BUTTON( 9+.24*(WINDOW_WIDTH-27)+6, 168, .24*(WINDOW_WIDTH-27), 14, "Warp Bot", .24, 11, exec "bot warpbot; echo ^1Warping Bot to Player" )
+	
+	BUTTON( 9+.50*(WINDOW_WIDTH-27)+6, 168, .24*(WINDOW_WIDTH-27), 14, "Skill", .24, 11, exec "give skill; echo ^1Give Skill ^5On ^1-Check Console-" )
+
+	BUTTON( 6, WINDOW_HEIGHT-24, WINDOW_WIDTH-12, 18, "BACK", .3, 14, close ingame_vote_bots_fun ; open omnibot )
+
+	     
+      
+  
+    
+      
+      
+      
+      
+
+	
+	
+
+
+}

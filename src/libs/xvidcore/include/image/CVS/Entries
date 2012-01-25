@@ -1,0 +1,15 @@
+/colorspace.c/1.14.2.1/Mon May 25 08:31:15 2009//Trelease-1_2-branch
+/colorspace.h/1.10/Wed Nov 26 01:04:34 2008//Trelease-1_2-branch
+/font.c/1.7/Tue Nov 22 10:23:01 2005//Trelease-1_2-branch
+/font.h/1.5/Mon Mar 22 22:36:23 2004//Trelease-1_2-branch
+/image.c/1.43.2.1/Mon May 25 08:31:16 2009//Trelease-1_2-branch
+/image.h/1.17/Fri Oct 13 07:38:09 2006//Trelease-1_2-branch
+/interpolate8x8.c/1.15/Tue Sep 13 12:12:15 2005//Trelease-1_2-branch
+/interpolate8x8.h/1.17/Wed Nov 26 01:04:34 2008//Trelease-1_2-branch
+/postprocessing.c/1.5/Thu Nov 27 00:47:03 2008//Trelease-1_2-branch
+/postprocessing.h/1.6/Thu Jul 15 10:08:22 2004//Trelease-1_2-branch
+/qpel.c/1.9/Wed Nov 26 01:04:34 2008//Trelease-1_2-branch
+/qpel.h/1.8/Wed Nov 26 01:04:34 2008//Trelease-1_2-branch
+/reduced.c/1.4/Mon May 31 21:36:23 2004//Trelease-1_2-branch
+/reduced.h/1.4/Wed Nov 26 01:04:34 2008//Trelease-1_2-branch
+D

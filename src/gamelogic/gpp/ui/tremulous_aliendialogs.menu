@@ -1,0 +1,97 @@
+#include "ui/menudef.h"
+
+{
+
+#define W         280
+#define H         190
+#define BORDER    10
+
+#define BUTT_H    25
+#define BUTT_W    45
+
+#define INFO_W    (W-(2*BORDER))
+#define INFO_H    (H-((4*BORDER)+(2*BUTT_H)))
+#define INFO_X    BORDER
+#define INFO_Y    ((2*BORDER)+BUTT_H)
+
+  menuDef
+  {
+    name "tremulous_alien_dialog"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    outOfBoundsClick
+    rect (320-(W/2)) (240-(H/2)) W H
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_EMPTY
+    popup
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name alien_dialog
+      text "Error"
+      type ITEM_TYPE_TEXT
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      style WINDOW_STYLE_EMPTY
+      rect BORDER BORDER INFO_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .4
+      forecolor 1 1 1 1
+      backcolor .5 0 0 .25
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      name alien_dialog
+      type ITEM_TYPE_TEXT
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      style WINDOW_STYLE_EMPTY
+      rect INFO_X INFO_Y INFO_W INFO_H
+      cvar "ui_dialog"
+      wrapped
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .33
+      forecolor 1 1 1 1
+      backcolor .5 0 0 .25
+      visible MENU_TRUE
+      decoration
+    }
+
+    itemDef
+    {
+      name alien_dialog
+      text "OK"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect (W-(BORDER+BUTT_W)) (H-(BORDER+BUTT_H)) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .4
+      forecolor 1 1 1 1
+      backcolor .5 0 0 .25
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close tremulous_alien_dialog
+      }
+    }
+  }
+}

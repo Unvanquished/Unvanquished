@@ -1,0 +1,15 @@
+prefix=c:/devel/target/4baf4f94927a6ca0abcde5c3112e7501
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+giomoduledir=${libdir}/gio/modules
+glib_compile_schemas=${exec_prefix}/bin/glib-compile-schemas
+
+Name: GIO
+Description: glib I/O library
+Version: 2.26.1
+Requires: glib-2.0,gobject-2.0,gmodule-no-export-2.0
+Libs: -L${libdir} -lgio-2.0
+Libs.private: -lz 
+Cflags: 

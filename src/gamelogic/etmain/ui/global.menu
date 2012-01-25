@@ -1,0 +1,115 @@
+#include "ui/menudef.h"
+
+assetGlobalDef {
+	// font
+	font 		UI_FONT_ARIBLK_16 "fonts/ariblk.ttf" 16        // font
+	font 		UI_FONT_ARIBLK_27 "fonts/ariblk.ttf" 27        // font
+	font 		UI_FONT_COURBD_21 "fonts/courbd.ttf" 21        // font	
+	font 		UI_FONT_COURBD_30 "fonts/courbd.ttf" 30        // font	
+	
+	cursor		"ui/assets/3_cursor3"			// cursor	
+	gradientBar "ui/assets/gradientbar1.tga"	// gradient bar
+	
+	itemFocusSound "sound/misc/menu2.wav"		// sound for item getting focus (via keyboard or mouse )
+
+	fadeClamp	1.0							// sets the fadeup alpha
+	fadeCycle	1							// how often fade happens in milliseconds
+	fadeAmount	0.1							// amount to adjust alpha per cycle
+	
+	shadowColor 0.1 0.1 0.1 0.25			// shadow color
+}
+
+menuDef {
+	name		"backgroundmusic"
+	fullScreen	1
+	visible		1
+
+	onOpen {
+		//playlooped "sound/music/menu_main.wav"
+		playlooped "sound/music/menu_server.wav"
+	}
+}
+
+/*menuDef {
+	name		"backgroundmusic_server"
+	fullScreen	1
+	visible		1
+
+	onOpen {
+		playlooped "sound/music/menu_server.wav"
+	}
+}*/
+
+// Backgrounds //
+
+menuDef {
+	name		"background_1"
+	fullScreen	0
+	rect		0 0 640 480
+	visible		0
+						
+	itemDef {
+		name		"colour"
+		rect		0 0 640 480
+		style		WINDOW_STYLE_FILLED
+		backcolor	.70 .63 .49 1
+		visible		1
+		decoration
+	}
+	
+	itemDef {
+		name		"clouds"
+		rect		0 0 640 480
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/et_clouds"
+		visible		1
+		decoration
+	}
+	
+	itemDef {
+		name		"image"
+		rect		120 140 400 200
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/et_logo_huge_dark"
+		visible		1
+		decoration
+	}
+}
+
+menuDef {
+	name		"background_black"
+	fullScreen	0
+	rect		0 0 640 480
+	visible		0
+	
+	itemDef {
+		name		"colour"
+		rect		0 0 640 480
+		style		WINDOW_STYLE_FILLED
+		background	"ui/assets/fadebox.tga"
+		backcolor	0 0 0 0
+		visible		1
+		decoration
+	}
+}
+
+// Fadebox //
+
+menuDef {
+	name		"fadebox_black"
+	fullScreen	0
+	rect		0 0 640 480
+	visible		1
+	alwaysontop
+	
+	itemDef {
+      	name		"fadebox"
+		rect		0 0 640 480
+      	style		WINDOW_STYLE_FILLED
+ 		background	"ui/assets/fadebox.tga"
+		backcolor	0 0 0 0
+      	visible		1 
+		decoration
+	}
+}
+

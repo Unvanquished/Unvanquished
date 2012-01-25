@@ -1,0 +1,331 @@
+#include "ui/menudef.h"
+
+{
+  \\ INGAME_LEAVE MENU \\
+
+  menuDef
+  {
+    name "ingame_leave"
+    visible 1
+    fullScreen 0
+    outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
+    rect 160 56 128 125
+    focusColor 1 .75 0 1
+    onOpen
+    {
+      show grpMenu;
+      hide grpConfirm
+    }
+
+    itemDef
+    {
+      name leave
+      style WINDOW_STYLE_FILLED
+      rect 5 5 107 90 
+      backcolor 0 0 0 1
+      visible 1 
+      decoration
+
+      border WINDOW_BORDER_KCGRADIENT
+      borderSize 2.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name leave
+      text "Main Menu"
+      group grpMenu
+      style WINDOW_STYLE_EMPTY 
+      rect 0 20 128 20 
+      type 1  
+      textalign 1 
+      textalignx 64
+      textaligny 18        
+      textscale .25
+      forecolor 1 1 1 1
+      visible 1 
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        hide grpMenu;
+        show leaveConfirm
+      }
+    }
+
+    itemDef
+    {
+      name leave
+      group grpMenu
+      text "Restart"
+      style WINDOW_STYLE_EMPTY 
+      type 1
+      rect 0 40 128 20   
+      textalign 1 
+      textalignx 65 
+      textaligny 18
+      textscale .25
+      forecolor  1 1 1 1
+      visible 1 
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        hide grpMenu;
+        show restartConfirm
+      }
+    }
+
+    itemDef
+    {
+      name leave
+      group grpMenu
+      type 1
+      text "Quit"
+      style WINDOW_STYLE_EMPTY 
+      rect 0 60 128 20   
+      textalign 1 
+      textalignx 64 
+      textaligny 18
+      textscale .25
+      forecolor  1 1 1 1
+      visible 1 
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        hide grpMenu;
+        show quitConfirm
+      }
+    }
+
+
+    // CONFIRMS //
+
+
+    itemDef
+    {
+      name leaveConfirm
+      text "Exit to"
+      group grpConfirm
+      style WINDOW_STYLE_EMPTY 
+      rect 0 23 128 20   
+      textalign 1 
+      textalignx 64
+      textaligny 18        
+      textscale .25
+      decoration
+      forecolor 1 1 1 1
+      visible 1 
+    }
+
+    itemDef
+    {
+      name leaveConfirm
+      text "Main Menu?"
+      group grpConfirm
+      style WINDOW_STYLE_EMPTY 
+      rect 0 40 128 20   
+      textalign 1 
+      textalignx 64
+      textaligny 18        
+      textscale .25
+      decoration
+      forecolor 1 1 1 1
+      visible 1 
+    }
+
+    itemDef
+    {
+      name leaveConfirm
+      text "Yes"
+      group grpConfirm
+      type 1
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect 18 70 40 20
+      textalign 1
+      textalignx 20
+      textaligny 15
+      forecolor 1 1 1 1
+      visible 1
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        uiScript leave
+      }
+    }
+
+    itemDef
+    {
+      name leaveConfirm
+      text "No"
+      group grpConfirm
+      type 1
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect 70 70 40 20
+      textalign 1
+      textalignx 20
+      textaligny 15
+      forecolor 1 1 1 1
+      visible 1
+      action
+      {
+        play "sound/misc/menu3.wav"; 
+        hide grpConfirm;
+        show grpMenu
+      }
+    }
+
+    itemDef
+    {
+      name restartConfirm
+      text "Want to"
+      group grpConfirm
+      style WINDOW_STYLE_EMPTY 
+      rect 0 23 128 20   
+      textalign 1 
+      textalignx 64
+      textaligny 18        
+      textscale .25
+      decoration
+      forecolor 1 1 1 1
+      visible 1 
+    }
+    
+    itemDef
+    {
+      name restartConfirm
+      text "Restart Map?"
+      group grpConfirm
+      style WINDOW_STYLE_EMPTY 
+      rect 0 40 128 20   
+      textalign 1 
+      textalignx 64
+      textaligny 18        
+      textscale .25
+      decoration
+      forecolor 1 1 1 1
+      visible 1 
+    }
+
+    itemDef
+    {
+      name restartConfirm
+      text "Yes"
+      group grpConfirm
+      type 1
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect 18 70 40 20
+      textalign 1
+      textalignx 20
+      textaligny 15
+      forecolor 1 1 1 1
+      visible 1
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        exec "map_restart";
+        close ingame_leave;
+        close ingame
+      }
+    }
+
+    itemDef
+    {
+      name restartConfirm
+      text "No"
+      group grpConfirm
+      type 1
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect 70 70 40 20
+      textalign 1
+      textalignx 20
+      textaligny 15
+      forecolor 1 1 1 1
+      visible 1
+      action
+      {
+        play "sound/misc/menu3.wav"; 
+        hide grpConfirm;
+        show grpMenu
+      }
+    }
+
+    itemDef
+    {
+      name quitConfirm
+      text "Want to"
+      group grpConfirm
+      style WINDOW_STYLE_EMPTY 
+      rect 0 23 128 20   
+      textalign 1 
+      textalignx 64
+      textaligny 18        
+      textscale .25
+      forecolor 1 1 1 1
+      decoration
+      visible 1 
+    }
+    
+    itemDef
+    {
+      name quitConfirm
+      text "Quit Game?"
+      group grpConfirm
+      style WINDOW_STYLE_EMPTY 
+      rect 0 40 128 20   
+      textalign 1 
+      textalignx 64
+      textaligny 18        
+      textscale .25
+      forecolor 1 1 1 1
+      decoration
+      visible 1 
+    }
+
+    itemDef
+    {
+      name quitConfirm
+      text "Yes"
+      group grpConfirm
+      type 1
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect 18 70 40 20
+      textalign 1
+      textalignx 20
+      textaligny 15
+      forecolor 1 1 1 1
+      visible 1
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        uiScript quit
+      }
+    }
+
+    itemDef
+    {
+      name quitConfirm
+      text "No"
+      group grpConfirm
+      type 1
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect 70 70 40 20
+      textalign 1
+      textalignx 20
+      textaligny 15
+      forecolor 1 1 1 1
+      visible 1
+      action
+      { 
+        play "sound/misc/menu3.wav"; 
+        hide grpConfirm;
+        show grpMenu
+      }
+    }
+  }
+}

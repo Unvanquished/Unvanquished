@@ -1,0 +1,83 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+//#define WINDOW_WIDTH	128
+#define WINDOW_WIDTH	348
+#define WINDOW_HEIGHT	180
+#define GROUP_NAME		"grpIngameVotePlayers"
+
+// Macros //
+
+#include "ui/menumacros.h"
+
+// Players Vote Menu //
+
+menuDef {
+	name		"ingame_vote_players"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+
+	onEsc {
+		close ingame_vote_players ;
+		open ingame_vote
+	}
+
+// Window //
+
+	WINDOW( "MISC", 50)
+
+// Map Selection //
+	
+	itemDef {
+		name			"playerList"
+		group			GROUP_NAME
+		rect			6 32 196 118
+		type			ITEM_TYPE_LISTBOX
+		textfont		UI_FONT_COURBD_21
+		textscale		.2
+		textaligny		-3
+		forecolor		.6 .6 .6 1
+		outlinecolor	.5 .5 .5 .4
+		border			WINDOW_BORDER_FULL
+		bordercolor		.1 .1 .1 .5
+		feeder			FEEDER_PLAYER_LIST
+		elementtype		LISTBOX_TEXT
+		elementwidth	200
+		elementheight	12
+		columns			1 0 200 33
+		visible			1
+	}
+
+// Buttons //
+
+	BUTTONEXT( 208, 32, WINDOW_WIDTH-208-6, 14, "KICK", .24, 11, uiScript voteKick ; uiScript closeingame,  cvarTest "authLevel" showCVar { RL_NONE } voteFlag CV_SVF_KICK )
+	BUTTONEXT( 208, 32, WINDOW_WIDTH-208-6, 14, "KICK", .24, 11, uiScript refKick ; uiScript closeingame,  cvarTest "authLevel" showCVar { RL_REFEREE } )
+	BUTTONEXT( 208, 32, WINDOW_WIDTH-208-6, 14, "KICK", .24, 11, uiScript rconKick ; uiScript closeingame, cvarTest "authLevel" showCVar { RL_RCON } )
+	BUTTONEXT( 208, 50, WINDOW_WIDTH-208-6, 14, "MUTE", .24, 11, uiScript voteMute ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERNOTMUTED cvarTest "authLevel" showCVar { RL_NONE } voteFlag CV_SVF_MUTING )
+	BUTTONEXT( 208, 50, WINDOW_WIDTH-208-6, 14, "MUTE", .24, 11, uiScript refMute ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERNOTMUTED cvarTest "authLevel" showCVar { RL_REFEREE } )
+	BUTTONEXT( 208, 50, WINDOW_WIDTH-208-6, 14, "MUTE", .24, 11, uiScript rconMute ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERNOTMUTED cvarTest "authLevel" showCVar { RL_RCON } voteFlag CV_SVF_MUTING )
+	BUTTONEXT( 208, 50, WINDOW_WIDTH-208-6, 14, "UN-MUTE", .24, 11, uiScript voteUnMute ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERMUTED cvarTest "authLevel" showCVar { RL_NONE } )
+	BUTTONEXT( 208, 50, WINDOW_WIDTH-208-6, 14, "UN-MUTE", .24, 11, uiScript refUnMute ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERMUTED cvarTest "authLevel" showCVar { RL_REFEREE } )
+	BUTTONEXT( 208, 50, WINDOW_WIDTH-208-6, 14, "UN-MUTE", .24, 11, uiScript rconUnMute ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERMUTED cvarTest "authLevel" showCVar { RL_RCON } )
+
+	BUTTONEXT( 208, 68, WINDOW_WIDTH-208-6, 14, "MAKE REFEREE", .24, 11, uiScript voteReferee ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERNOREFEREE cvarTest "authLevel" showCVar { RL_NONE } voteFlag CV_SVF_REFEREE )
+	BUTTONEXT( 208, 68, WINDOW_WIDTH-208-6, 14, "MAKE REFEREE", .24, 11, uiScript refMakeReferee ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERNOREFEREE cvarTest "authLevel" showCVar { RL_REFEREE } )
+	BUTTONEXT( 208, 68, WINDOW_WIDTH-208-6, 14, "MAKE REFEREE", .24, 11, uiScript rconMakeReferee ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERNOREFEREE cvarTest "authLevel" showCVar { RL_RCON } )
+	BUTTONEXT( 208, 68, WINDOW_WIDTH-208-6, 14, "UN-REFEREE", .24, 11, uiScript voteUnReferee ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERREFEREE cvarTest "authLevel" showCVar { RL_NONE } voteFlag CV_SVF_REFEREE )
+	BUTTONEXT( 208, 68, WINDOW_WIDTH-208-6, 14, "UN-REFEREE", .24, 11, uiScript refUnReferee ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERREFEREE cvarTest "authLevel" showCVar { RL_REFEREE } )
+	BUTTONEXT( 208, 68, WINDOW_WIDTH-208-6, 14, "UN-REFEREE", .24, 11, uiScript rconRemoveReferee ; uiScript closeingame, ownerdrawFlag UI_SHOW_PLAYERREFEREE cvarTest "authLevel" showCVar { RL_RCON } )
+	
+	BUTTONEXT( 208, 86, WINDOW_WIDTH-208-6, 14, "MAKE AXIS", .24, 11, uiScript refMakeAxis ; uiScript closeingame, cvarTest "authLevel" showCVar { RL_REFEREE RL_RCON } )
+	BUTTONEXT( 208, 104, WINDOW_WIDTH-208-6, 14, "MAKE ALLIED", .24, 11, uiScript refMakeAllied ; uiScript closeingame, cvarTest "authLevel" showCVar { RL_REFEREE RL_RCON } )
+	BUTTONEXT( 208, 122, WINDOW_WIDTH-208-6, 14, "MAKE SPEC", .24, 11, uiScript refMakeSpec ; uiScript closeingame, cvarTest "authLevel" showCVar { RL_REFEREE RL_RCON } )
+	
+	BUTTONEXT( 208, 140, WINDOW_WIDTH-208-6, 14, "WARN", .24, 11, open ingame_vote_players_warn, cvarTest "authLevel" showCVar { RL_REFEREE RL_RCON } )
+	BUTTONEXT( 208, 152, WINDOW_WIDTH-208-6, 14, "BAN", .24, 11, uiScript rconBan ; uiScript closeingame, cvarTest "authLevel" showCVar { RL_RCON } )
+
+	BUTTON( 6, WINDOW_HEIGHT-24, WINDOW_WIDTH-12, 18, "BACK", .3, 14, close ingame_vote_players ; open ingame_vote )
+}

@@ -1,0 +1,173 @@
+#include "ui/menudef.h"
+
+{
+  \\ FIND PLAYER POPUP MENU \\
+
+#define W         400
+#define H         400
+#define BUTT_W    45
+#define BUTT_H    35
+#define BORDER    10
+#define LIST_W    (W-(2*BORDER))
+#define LIST_DW   (LIST_W-40)
+#define LEFT_C    0.13
+#define RIGHT_C   0.61
+#define SEARCH_H  30
+#define SERVERS_H 105
+
+  menuDef
+  {
+    name "findplayer_popmenu"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    rect (320-(W/2)) (240-(H/2)) W H
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_FILLED
+    border WINDOW_BORDER_FULL
+    popup
+    onClose { }
+    onOpen
+    {
+      uiScript FindPlayer
+    }
+
+    onESC
+    {
+      close findplayer_popmenu
+    }
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name namefield
+      type ITEM_TYPE_EDITFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Name:"
+      cvar "ui_findplayer"
+      maxChars 20
+      rect BORDER BORDER (W-((2*BORDER)+BUTT_W)) SEARCH_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      textscale .3
+      outlinecolor .2 .2 .2 .5
+      backcolor 0 0 0 0
+      forecolor 1 1 1 1
+      border WINDOW_BORDER_NONE
+      bordercolor 0 0 0 0
+      action { ui_script FindPlayer }
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name search
+      text "Search"
+      textscale .25
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect (W-(BORDER+BUTT_W)) BORDER BUTT_W SEARCH_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        ui_script FindPlayer
+      }
+    }
+
+
+    itemDef
+    {
+      name serverNameList
+      rect BORDER ((2*BORDER)+SEARCH_H) LIST_W SERVERS_H
+      type ITEM_TYPE_LISTBOX
+      style WINDOW_STYLE_EMPTY
+      elementwidth 120
+      elementheight 16
+      textscale .25
+      outlinecolor .2 .2 .2 .5
+      border WINDOW_BORDER_FULL
+      bordersize 1
+      bordercolor .5 .5 .5 1
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_FINDPLAYER
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name serverInfoList
+      rect BORDER ((3*BORDER)+SEARCH_H+SERVERS_H) LIST_W (H-(SEARCH_H+SERVERS_H+BUTT_H+(3*BORDER)))
+      type ITEM_TYPE_LISTBOX
+      style WINDOW_STYLE_EMPTY
+      elementwidth 120
+      elementheight 16
+      textscale .25
+      border WINDOW_BORDER_FULL
+      bordersize 1
+      bordercolor .5 .5 .5 1
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_SERVERSTATUS
+      notselectable
+      visible MENU_TRUE
+      columns 4
+        0                     ((2*LEFT_C)*LIST_DW) ALIGN_LEFT
+        (LEFT_C*LIST_DW)      (LEFT_C*LIST_DW)     ALIGN_LEFT
+        ((2*LEFT_C)*LIST_DW)  (LEFT_C*LIST_DW)     ALIGN_LEFT
+        ((1-RIGHT_C)*LIST_DW) (RIGHT_C*LIST_DW)    ALIGN_LEFT
+    }
+
+    //  BUTTON  //
+
+    itemDef
+    {
+      name join
+      text "Join"
+      textscale .25
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect (W-(2*BUTT_W)) (H-BUTT_H) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action { ui_script FoundPlayerJoinServer }
+    }
+
+    itemDef
+    {
+      name close
+      text "Close"
+      textscale .25
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect (W-BUTT_W) (H-BUTT_H) BUTT_W BUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close findplayer_popmenu
+      }
+    }
+  }
+}
+
+

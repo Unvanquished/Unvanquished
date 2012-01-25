@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+***********************************************************************************************
+(c) 2011 Gavin Pugh http://www.gavpugh.com/ - Released under the open-source zlib license
+***********************************************************************************************
+-->
+
+<!-- Based on script: MSBuild\Microsoft.Cpp\v4.0\1033\general.xml -->
+
+<Rule
+      Name="ConfigurationGeneral"
+      DisplayName="General"
+      PageTemplate="generic"
+      Description="General"
+      xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Categories>
+    <Category Name="General" DisplayName="General" Description="General" />
+    <Category Name="ProjectDefaults" DisplayName="Project Defaults" Description="Project Defaults" />
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration" />
+  </Rule.DataSource>
+
+  <!-- General -->
+  <StringProperty Name="OutDir" DisplayName="Output Directory"
+                  Description="Specifies a relative path to the output file directory; can include environment variables."
+                  Category="General" Default="$(SolutionDir)$(Configuration)\"
+                  Subtype="folder"
+                  F1Keyword="VC.Project.VCConfiguration.OutputDirectory">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label="" />
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="IntDir" DisplayName="Intermediate Directory"
+                  Description="Specifies a relative path to the intermediate file directory; can include environment variables."
+                  Category="General" Default="$(Configuration)\"
+                  Subtype="folder"
+                  F1Keyword="VC.Project.VCConfiguration.IntermediateDirectory">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label="" />
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="TargetName" DisplayName="Target Name"
+                  Description="Specifies a file name that this project will generate."
+                  F1Keyword="VC.Project.VCConfiguration.TargetName"
+                  Category="General" Default="$(ProjectName)"
+                  >
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label="" />
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="TargetExt" DisplayName="Target Extension"
+                  Description="Specifies a file extension that this project will generate. (Example: .exe or .dll)"
+                  F1Keyword="VC.Project.VCConfiguration.TargetExt"
+                  Category="General"
+                  >
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label="" />
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringListProperty Name="ExtensionsToDeleteOnClean" DisplayName="Extensions to Delete on Clean"
+                      Description="Semi-colon delimited wildcard specification for which files in the intermediate directory to delete on clean or rebuild."
+                      Category="General" Separator=";"
+                      F1Keyword="VC.Project.VCConfiguration.DeleteExtensionsOnClean">
+                      <StringListProperty.DataSource>
+                            <DataSource Persistence="ProjectFile" Label="" />
+                      </StringListProperty.DataSource>
+  </StringListProperty>
+  <StringProperty Name="BuildLogFile" DisplayName="Build Log File"
+                  Description="Specifies the build log file to write to when build logging is enabled."
+                  F1Keyword="VC.Project.VCConfiguration.BuildLogFile"
+                  Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log"
+                  Subtype="file">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path" />
+                  </StringProperty.DataSource>
+  </StringProperty>
+
+  <EnumProperty Name="PlatformToolset" DisplayName="Platform Toolset" Category="General">
+    <EnumValue Name="arm-linux-androideabi-4.4.3" DisplayName="ARM 4.4.3 Toolchain (arm-linux-androideabi-4.4.3)" />
+    <EnumValue Name="x86-4.4.3" DisplayName="x86 4.4.3 Toolchain (x86-4.4.3)" />
+  </EnumProperty>
+
+  <!-- Project Defaults -->
+  <EnumProperty Name="ConfigurationType" DisplayName="Configuration Type"
+                Description="Specifies the type of output this configuration generates."
+                Category="ProjectDefaults"
+                F1Keyword="VC.Project.VCConfiguration.ConfigurationType">
+    <EnumValue Name="Application" DisplayName="Application (.so -> .apk)" />
+    <EnumValue Name="DynamicLibrary" DisplayName="Dynamic Library (.so)" />
+    <EnumValue Name="StaticLibrary" DisplayName="Static library (.a)" />
+  </EnumProperty>
+  <!-- See: http://developer.android.com/guide/appendix/api-levels.html -->
+  <EnumProperty Name="AndroidAPILevel" DisplayName="Target Android API Level" Category="ProjectDefaults">
+    <EnumValue Name="android-3" DisplayName="Android 1.5 (android-3)" />
+    <EnumValue Name="android-4" DisplayName="Android 1.6 (android-4)" />
+    <EnumValue Name="android-5" DisplayName="Android 2.0 (android-5)" />
+    <EnumValue Name="android-8" DisplayName="Android 2.2 (android-8)" />
+    <EnumValue Name="android-9" DisplayName="Android 2.3 (android-9)" />
+    <EnumValue Name="android-14" DisplayName="Android 4.0 (android-14)" />
+  </EnumProperty>
+  <EnumProperty Name="AndroidArch" DisplayName="Target Architecture" Category="ProjectDefaults">
+    <EnumValue Name="armv5te" DisplayName="ARM Architecture v5te (armv5te)" />
+    <EnumValue Name="armv7-a" DisplayName="ARM Architecture v7-a (armv7-a)" />
+    <EnumValue Name="x86" DisplayName="x86 Architecture (x86)" />
+  </EnumProperty>
+  <EnumProperty Name="AndroidStlType" DisplayName="STL Type" Category="ProjectDefaults">
+    <EnumValue Name="none" DisplayName="No C++ Support">
+    </EnumValue>
+    <EnumValue Name="system" DisplayName="Minimal C++ without STL">
+    </EnumValue>
+    <EnumValue Name="gnustl_static" DisplayName="GNU libstdc++ Static">
+    </EnumValue>
+    <EnumValue Name="gnustl_dynamic" DisplayName="GNU libstdc++ Dynamic">
+    </EnumValue>
+    <EnumValue Name="stlport_static" DisplayName="STLport Static">
+    </EnumValue>
+    <EnumValue Name="stlport_dynamic" DisplayName="STLport Dynamic">
+    </EnumValue>
+  </EnumProperty>
+
+  <!-- Hidden -->
+  <EnumProperty Name="CLRSupport" DisplayName="Common Language Runtime Support"
+                Description="Specifies whether this configuration supports the Common Language Runtime. This is incompatible with some other settings, e.g. runtime checks. See help for /clr family of C++ compiler switches for full list of conflicts."
+                Category="ProjectDefaults"
+                F1Keyword="VC.Project.VCConfiguration.ManagedExtensions"
+                Visible="false">
+    <EnumValue Name="false" DisplayName="No Common Language Runtime Support"
+               Description="No Common Language Runtime Support" />
+    <EnumValue Name="true" DisplayName="Common Language Runtime Support (/clr)"
+               Description="Common Language Runtime Support (/clr)"/>
+    <EnumValue Name="Pure" DisplayName="Pure MSIL Common Language Runtime Support (/clr:pure)"
+               Description="Pure MSIL Common Language Runtime Support (/clr:pure)" />
+    <EnumValue Name="Safe" DisplayName="Safe MSIL Common Language Runtime Support (/clr:safe)"
+               Description="Safe MSIL Common Language Runtime Support (/clr:safe)" />
+    <EnumValue Name="OldSyntax" DisplayName="Common Language Runtime Support, Old Syntax (/clr:oldSyntax)"
+               Description="Common Language Runtime Support, Old Syntax (/clr:oldSyntax)" />
+  </EnumProperty>
+  
+</Rule>

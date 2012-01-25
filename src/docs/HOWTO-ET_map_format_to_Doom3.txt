@@ -1,0 +1,7 @@
+You can convert the .map files from Quake 3 and Enemy Territory to the Doom 3 .map format using ETXMap.
+
+	$ ./ETXMap.exe -fs_basepath .. -map2map -format quake3 ../etmain/maps/yourmap.map
+
+The converted result will be saved as ../etmain/maps/yourmap_converted.map .
+
+

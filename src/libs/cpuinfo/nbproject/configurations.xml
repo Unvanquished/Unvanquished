@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="62">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <df name="cpuinfo" root=".">
+      <df name="MASM">
+      </df>
+      <df name="Windows">
+        <df name="Dependencies">
+          <in>Dependencies.cpp</in>
+          <in>Dependencies.h</in>
+          <in>TestDependencies.cpp</in>
+          <in>Wow64.cpp</in>
+          <in>Wow64.h</in>
+          <in>stdafx.cpp</in>
+          <in>stdafx.h</in>
+          <in>targetver.h</in>
+        </df>
+        <df name="Launch3264">
+          <in>Launch3264.cpp</in>
+        </df>
+        <df name="res">
+        </df>
+        <df name="Test3264">
+          <in>Test3264.cpp</in>
+        </df>
+        <in>Bench.cpp</in>
+        <in>Bench.h</in>
+        <in>TestCPUInfo.cpp</in>
+        <in>TestCPUInfo.h</in>
+        <in>TestCPUInfoDlg.cpp</in>
+        <in>TestCPUInfoDlg.h</in>
+        <in>resource.h</in>
+        <in>stdafx.cpp</in>
+        <in>stdafx.h</in>
+        <in>targetver.h</in>
+      </df>
+      <in>CPUFlags.h</in>
+      <in>CPUInfo.c</in>
+      <in>CPUInfo.h</in>
+      <in>SimpleTestCPUInfo.cpp</in>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+      <itemPath>Makefile-cpuinfo.mk</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile-cpuinfo.mk</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>5</platform>
+      </toolsSet>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>$(MAKE) -f Makefile</buildCommand>
+          <cleanCommand>$(MAKE) -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+        </makeTool>
+      </makefileType>
+      <item path="Windows/TestCPUInfo.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="Windows/TestCPUInfoDlg.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+***********************************************************************************************
+(c) 2011 Gavin Pugh http://www.gavpugh.com/ - Released under the open-source zlib license
+***********************************************************************************************
+-->
+
+<!-- Based on script: MSBuild\Microsoft.Cpp\v4.0\1033\directories.xml -->
+
+<Rule
+      Name="ConfigurationDirectories"
+      DisplayName="VC++ Directories"
+      Order="8"
+      PageTemplate="generic"
+      Description="Tool search directories"
+      xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Categories>
+    <Category Name="VC++" DisplayName="General" Description="Visual C++ Directories" />
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" />
+  </Rule.DataSource>
+
+  <StringListProperty Name="IncludePath" DisplayName="Include Directories"
+                      Description="Path to use when searching for include files while building a VC++ project.  Corresponds to environment variable INCLUDE."
+                      F1Keyword="VC.Project.VCDirectories.IncludePath"
+                      Category="VC++" Separator=";" Subtype="folder" />
+  <StringListProperty Name="LibraryPath" DisplayName="Library Directories"
+                      Description="Path to use when searching for library files while building a VC++ project.  Corresponds to environment variable LIB."
+                      F1Keyword="VC.Project.VCDirectories.LibraryPath"
+                      Category="VC++" Separator=";" Subtype="folder" />
+
+</Rule>

@@ -1,0 +1,135 @@
+#include "ui/menudef.h"
+{
+  assetGlobalDef
+  {
+    font "fonts/cordiaz.ttf" 26        // font
+    smallFont "fonts/cordiaz.ttf" 20        // font
+    bigFont "fonts/cordiaz.ttf" 34        // font
+    cursor "ui/assets/3_cursor3"      // cursor 
+    gradientBar "ui/assets/gradientbar2.tga"  // gradient bar
+    itemFocusSound "sound/misc/menu2.wav"   // sound for item getting focus (via keyboard or mouse )
+  
+    fadeClamp 1.0         // sets the fadeup alpha
+    fadeCycle 1         // how often fade happens in milliseconds
+    fadeAmount 0.1          // amount to adjust alpha per cycle
+
+    shadowColor 0.1 0.1 0.1 0.25      // shadow color
+  }
+                 
+
+  \\ INGAME MENU \\
+
+  menuDef 
+  {
+    name "ingame"
+    style WINDOW_STYLE_FILLED
+    visible 0
+    fullScreen 0
+    outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
+    rect 0 0 640 48 
+    focusColor 1 .75 0 1
+    disableColor .5 .5 .5 1
+    backColor 0 0 0 1
+
+    onEsc
+    {
+      close ingame;
+    }
+    
+    itemDef
+    {
+      name splashmodel
+      rect 0 -10 640 66 
+      type ITEM_TYPE_MODEL
+      style WINDOW_STYLE_FILLED
+      asset_model "models/splash/splash_screen.md3"
+      model_fovx 32.0
+      model_fovy 3.8
+      model_angle 180
+      visible 1
+      decoration
+      backcolor 0 0 0 1
+    }
+
+    itemdef
+    {
+      name about
+      text "About"  
+      rect 35 6 65 40
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      textalign ITEM_ALIGN_CENTER
+      textalignx 32 
+      textaligny 28 
+      textscale .4
+      forecolor 1 1 1 1
+      visible 1
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        open ingame_about
+      }
+    }
+
+    itemDef
+    {
+      name options
+      text "Options"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect 100 6 70 40
+      textalign ITEM_ALIGN_CENTER
+      textalignx 35 
+      textaligny 28 
+      textscale .4
+      forecolor 1 1 1 1
+      visible 1 
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        open ingame_options
+      }
+    }
+
+    itemDef
+    {
+      name vote
+      text "Vote"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      ownerdrawflag UI_SHOW_NOTSPECTATING
+      rect 170 6 50 40
+      textalign ITEM_ALIGN_CENTER
+      textalignx 25 
+      textaligny 28 
+      textscale .4
+      forecolor 1 1 1 1
+      visible 1 
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        open ingame_vote
+      }
+    }
+
+    itemDef
+    {
+      name leave
+      text "Exit"
+      type ITEM_TYPE_BUTTON
+      style WINDOW_STYLE_EMPTY
+      rect 220 6 50 40 
+      textalign ITEM_ALIGN_CENTER
+      textalignx 25 
+      textaligny 28 
+      textscale .4
+      forecolor 1 1 1 1
+      visible 1 
+      action
+      {
+        play "sound/misc/menu1.wav"; 
+        open ingame_leave
+      }
+    }
+  }
+}

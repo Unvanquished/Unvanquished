@@ -1,0 +1,24 @@
+Release 0.4a:
+- Added CHANGELOG.txt to keep track of changes between releases
+- Converted library code to basic ANSI C.
+- Introduced CI_BOOL/CI_TRUE/CI_FALSE to make the code a bit more readable for plain C.
+- Introduced CI_X64 flag to have compiler-specific flags only in the header.
+- Added include files for MASM.
+- Fixed inline asm for gcc, now also works with -fPIC option, and in 64-bit.
+- Dependencies code is now functional, with the exception of SxS support.
+
+Release 0.3a:
+Included sourcecode in this release.
+- Made main library code compatible with gcc (still need to port some of the more obscure assembly routines, not very important unless you plan to run on something with no CPUID instruction).
+- Added Makefile for *nix environments
+- Added Launch3264 project.
+- Added Dependenices project.
+- Added a new simple test program, which is supposed to be console-only and multi-platform.
+- Added README.txt with basic information on the contents and usage.
+
+Release 0.2a:
+Precompiled libraries for 32-bit and 64-bit Windows, and TestCPUInfo binaries included.
+- Fixed a bug with how family/model fields were handled.
+
+Release 0.1a:
+Initial release, just a precompiled library for 32-bit Windows and the required headers.

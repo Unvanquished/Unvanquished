@@ -1,0 +1,11 @@
+prefix=c:/devel/target/4baf4f94927a6ca0abcde5c3112e7501
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: GObject
+Description: GLib Type, Object, Parameter and Signal Library
+Requires: glib-2.0,gthread-2.0
+Version: 2.26.1
+Libs: -L${libdir} -lgobject-2.0
+Cflags:

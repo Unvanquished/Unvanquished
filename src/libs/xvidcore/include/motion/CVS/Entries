@@ -1,0 +1,19 @@
+/estimation.h/1.13/Fri Dec  9 04:39:49 2005//Trelease-1_2-branch
+/estimation_bvop.c/1.25/Sat Feb 25 01:20:41 2006//Trelease-1_2-branch
+/estimation_common.c/1.13/Fri Dec  9 04:39:49 2005//Trelease-1_2-branch
+/estimation_gmc.c/1.5/Sun Dec  5 04:53:01 2004//Trelease-1_2-branch
+/estimation_pvop.c/1.22/Wed Apr 19 15:42:19 2006//Trelease-1_2-branch
+/estimation_rd_based.c/1.14/Fri Dec  9 04:45:35 2005//Trelease-1_2-branch
+/estimation_rd_based_bvop.c/1.10/Fri Dec  9 04:45:35 2005//Trelease-1_2-branch
+/gmc.c/1.9.2.1/Sun Nov 30 16:38:31 2008//Trelease-1_2-branch
+/gmc.h/1.3/Wed Jun 14 21:44:07 2006//Trelease-1_2-branch
+/motion.h/1.24.2.1/Mon May 25 09:03:47 2009//Trelease-1_2-branch
+/motion_comp.c/1.23/Sun Dec  5 13:01:27 2004//Trelease-1_2-branch
+/motion_inlines.h/1.5/Sat Apr 28 16:30:20 2007//Trelease-1_2-branch
+/motion_smp.h/1.5/Wed Nov 26 01:04:34 2008//Trelease-1_2-branch
+/sad.c/1.16/Mon Apr 12 15:49:56 2004//Trelease-1_2-branch
+/sad.h/1.24/Wed Nov 26 01:04:34 2008//Trelease-1_2-branch
+/vop_type_decision.c/1.5/Sun Dec  5 04:53:01 2004//Trelease-1_2-branch
+D/ia64_asm////
+D/ppc_asm////
+D/x86_asm////

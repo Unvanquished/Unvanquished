@@ -1,0 +1,62 @@
+FREETYPE-CONFIG(1)                                          FREETYPE-CONFIG(1)
+
+
+
+NAME
+       freetype-config  --  show  information  about  installed
+       freetype2 libraries
+
+SYNOPSIS
+       freetype-config [--prefix]  [--prefix=PREFIX]   [--exec-
+       prefix]  [--exec-prefix=EPREFIX]  [--version]  [--ftver-
+       sion]  [--libs]  [--libtool]  [--cflags]
+
+DESCRIPTION
+       This manual page documents briefly  the  freetype-config
+       command,
+
+       freetype-config  is  a  program  that  shows information
+       about the installed freetype2 libraries.
+
+OPTIONS
+       The following options are supported:
+
+       --prefix  --prefix=PREFIX
+                 Show the prefix freetype2 was built with.  The
+                 prefix  may be overridden by passing the argu-
+                 ment PREFIX.
+
+       --exec-prefix  --exec-prefix=EPREFIX
+                 Show the executable prefix freetype2 was built
+                 with.  The executable prefix may be overridden
+                 by passing the argument EPREFIX.
+
+       --version Show the  libtool  version  of  the  installed
+                 freetype2.
+
+       --ftversion
+                 Show  the  FreeType  version  of the installed
+                 freetype2.
+
+       --libs    Show the compiler flags  for  linking  to  the
+                 installed freetype2.
+
+       --libtool Show   the   library  name  for  linking  with
+                 libtool.
+
+       --cflags  Show the compiler flags for compiling  against
+                 the installed freetype2.
+
+AUTHOR
+       This    manual    page   was   written   by   #USERNAME#
+       will@debian.org for the Debian system (but may  be  used
+       by  others).   Permission is granted to copy, distribute
+       and/or modify this document under the terms of  the  GNU
+       Free  Documentation  License,  Version  1.1 or any later
+       version published by the Free Software Foundation;  with
+       no Invariant Sections, no Front-Cover Texts and no Back-
+       Cover Texts.
+
+
+
+                                                            FREETYPE-CONFIG(1)

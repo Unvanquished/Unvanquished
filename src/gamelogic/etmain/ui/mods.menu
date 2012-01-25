@@ -1,0 +1,72 @@
+// $Id: mods.menu,v 1.1.2.2 2004/03/14 02:47:52 rain Exp $
+
+// rain - hacked the demo menu into a mods menu
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+//#define WINDOW_WIDTH	400
+#define WINDOW_WIDTH	608
+#define WINDOW_HEIGHT	448
+#define GROUP_NAME		"grpMods"
+
+// Macros //
+
+#include "ui/menumacros.h"
+
+// View Mods Menu //
+	
+menuDef {
+	name		"mods"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+
+	onOpen {
+		uiScript LoadMods
+	}
+
+	onESC {
+		close mods ;
+		open main
+	}
+
+// Window //
+
+	WINDOW( "MODS", 150 )
+
+// Demo List //
+
+	itemDef {
+		name			"modList"
+		group			GROUP_NAME
+		rect			6 32 596 366
+		type			ITEM_TYPE_LISTBOX
+		textfont		UI_FONT_COURBD_21
+		textscale		.2
+		textaligny		-3
+		forecolor		.6 .6 .6 1
+		outlinecolor	.5 .5 .5 .4
+		border			WINDOW_BORDER_FULL
+		bordercolor		.1 .1 .1 .5
+		feeder			FEEDER_MODS
+		elementtype		LISTBOX_TEXT
+		elementwidth	200
+		elementheight	12
+		columns			1 0 200 33
+		visible			1
+		tooltip			"Select the modification to play"
+		
+		doubleClick {
+			uiScript RunMod
+		}
+	}
+	
+// Buttons //
+
+	BUTTON( 6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "BACK", .3, 14, close mods ; open main )
+	BUTTON( 6+.5*(WINDOW_WIDTH-18)+6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "LOAD MOD", .3, 14, uiScript RunMod )
+}

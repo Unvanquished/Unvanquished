@@ -1,0 +1,21 @@
+06/09/03 - by mau (mauricio at xiph.org)
+
+The splayer example is a experimental simple Theora player using SDL and 
+Portaudio for cross platform compatibility. To build the windows version 
+please use the Visual C++ project available at the 
+win32/experimental/splayer directory.
+
+By default this sample  will not be built on Linux, unless Portaudio is 
+properly installed. Follow these steps to install Portaudio:
+
+1) Get portaudio tar package from www.portaudio.com
+2) Uncompress it to a local directory
+3) Run './configure' in the portaudio directory
+4) Run 'make install'
+
+This will install Portaudio libraries in /usr/local/lib, and the Portaudio 
+include file at /usr/local/include. On linux you may need to manually 
+execute 'ldconfig' to rebuild the library cache.
+
+Switch to theora's directory, re-run theora's autogen.sh script to 
+re-generate the appropriate makefiles, and 'make install' to build.

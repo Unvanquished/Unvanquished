@@ -1,0 +1,36 @@
+﻿<!--
+***********************************************************************************************
+(c) 2011 Gavin Pugh http://www.gavpugh.com/ - Released under the open-source zlib license
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <PropertyGroup>
+    
+    <PlatformToolsetVersion>x86-4.4.3</PlatformToolsetVersion>
+
+    <PlatformShortName>x86</PlatformShortName>
+    
+    <!-- Path to gcc prebuilt libs -->
+    <PrebuiltDir>$(AndroidNdkDir)\toolchains\$(PlatformToolsetVersion)\prebuilt\windows</PrebuiltDir>
+    
+    <GccLibPath>$(PrebuiltDir)\lib\gcc\i686-android-linux\4.4.3</GccLibPath>
+    <GccLibPath_Thumb>$(GccLibPath)</GccLibPath_Thumb>
+    <GccLibPath_Arm7>$(GccLibPath)</GccLibPath_Arm7>
+    <GccLibPath_Arm7_Thumb>$(GccLibPath)</GccLibPath_Arm7_Thumb>
+
+    <!-- Path to the GCC compilation tools -->
+    <GccToolsPath>$(AndroidNdkDir)\toolchains\$(PlatformToolsetVersion)\prebuilt\windows\bin</GccToolsPath>
+
+	  <!-- Path to the toolchain includes. Needed for Intellisense. -->
+	  <GccToolchainIncludes>$(PrebuiltDir)\lib\gcc\i686-android-linux\4.4.3\include</GccToolchainIncludes>
+
+    <!-- GCC compilation tool filenames -->
+    <GccCompiler>i686-android-linux-g++.exe</GccCompiler>
+    <GccLinker>i686-android-linux-g++.exe</GccLinker>
+    <GccLibrarian>i686-android-linux-ar.exe</GccLibrarian>
+    
+  </PropertyGroup>
+
+</Project>

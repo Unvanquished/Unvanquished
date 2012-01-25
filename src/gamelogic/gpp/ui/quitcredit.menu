@@ -1,0 +1,410 @@
+#include "ui/menudef.h"
+
+{
+  \\ QUIT CREDIT \\
+
+  menuDef
+  {
+    name "quitCredit"
+    visible MENU_FALSE
+    fullscreen MENU_TRUE
+    rect 0 0 640 480
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_FILLED
+    border WINDOW_BORDER_NONE
+    aspectBias ASPECT_NONE
+    onEsc
+    {
+      uiScript "quit"
+    }
+
+    itemDef
+    {
+      name exitclickbox
+      style WINDOW_STYLE_SHADER
+      rect 0 0 640 480
+      type ITEM_TYPE_BUTTON
+      visible MENU_TRUE
+      backcolor 0 0 0 1
+      background "ui/assets/credits_splash.jpg"
+      action
+      {
+        close quitCredit;
+        uiScript "quit"
+      }
+    }
+
+    itemDef
+    {
+      name topstripe
+      style WINDOW_STYLE_FILLED
+      rect -5 -5 645 64
+      visible MENU_TRUE
+      backcolor 0 0 0 1
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.5
+      borderColor 1 0 0 1
+    }
+
+    itemDef
+    {
+      name bottomstripe
+      style WINDOW_STYLE_FILLED
+      rect -5 416 645 485
+      visible MENU_TRUE
+      backcolor 0 0 0 1
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.5
+      borderColor 1 0 0 1
+    }
+
+    itemDef
+    {
+      name        "creditstitle"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        320 48 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_CENTER
+      textscale   0.75
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "CREDITS"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit1left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 96 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Tim 'Timbo' Angus"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit1right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 96 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Programming and Direction"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit2left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 128 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Nick 'jex' Jansens"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit2right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 128 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Mapping, texturing and 2D artwork"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit3left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 160 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Robin 'OverFlow' Marshall"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit3right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 160 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Modelling, animation and mapping"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit4left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 192 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Jan 'Stannum' van der Weg"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit4right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 192 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Texturing and mapping"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit5left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 224 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Mike 'Veda' McInerney"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit5right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 224 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Modelling, animation and texturing"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit6left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 256 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Gordon 'Godmil' Miller"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit6right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 256 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Mapping"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit7left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 288 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "'Who-[Soup]'"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit7right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 288 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Mapping"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit8left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 320 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Tristan 'jhrx' Blease"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit8right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 320 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Mapping"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit9left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 352 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Paul 'MoP' Greveson"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit9right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 352 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Modelling and texturing"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+
+    itemDef
+    {
+      name        "credit10left"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        10 384 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_LEFT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Chris 'Dolby' McCarthy"
+      forecolor   1 1 1 1
+      backcolor   1 0 0 1
+      visible     1
+      decoration
+    }
+    itemDef
+    {
+      name        "credit10right"
+      group       grpidcredit
+      style       WINDOW_STYLE_EMPTY
+      rect        630 384 1 1
+      type        ITEM_TYPE_TEXT
+      textalign   ALIGN_RIGHT
+      textscale   0.50
+      textstyle   ITEM_TEXTSTYLE_NORMAL
+      text        "Sound"
+      forecolor   1 1 1 1
+      backcolor   0 1 0 1
+      visible     1
+      decoration
+    }
+  }
+}

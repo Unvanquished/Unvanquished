@@ -1,0 +1,60 @@
+﻿<!--
+***********************************************************************************************
+(c) 2011 Gavin Pugh http://www.gavpugh.com/ - Released under the open-source zlib license
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(VCTargetsPath)\Platforms\Android\ImportBefore\*.props" Condition="Exists('$(VCTargetsPath)\Platforms\Android\ImportBefore')" />
+
+  <!-- Bring in defaults for envvars we need -->
+  <Import Project="$(VCTargetsPath)\Platforms\Android\vs-android.EnvVars.props" />
+  
+  <!-- Bring in toolset props afterwards, since it's dependent on the envvars -->
+  <Import Condition="(exists('$(VCTargetsPath)\Platforms\Android\PlatformToolsets\$(PlatformToolset)\Microsoft.Cpp.Android.$(PlatformToolset).props'))" Project="$(VCTargetsPath)\Platforms\Android\PlatformToolsets\$(PlatformToolset)\Microsoft.Cpp.Android.$(PlatformToolset).props"/>
+    
+  <!-- Debugger. TODO: Implement an Android 'debugger' which simply launches the app on the device -->
+  <PropertyGroup>
+    <DebuggerFlavor Condition="'$(DebuggerFlavor)'==''">WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+
+  <!-- Bring in correct tool paths -->
+  <Import Project="$(VCTargetsPath)\Platforms\Android\vs-android.ToolPaths.props" />
+
+  <!-- Default preprocessor defines -->
+  <PropertyGroup>
+    <!-- ndk-build seems to use just the v5 defines for v7. Google though has some people using the _7 and _7A defines... So trying that. -->
+    <ArchDefines Condition="'$(AndroidArch)' == 'armv5te'">__ARM_EABI__;__ARM_ARCH_5__;__ARM_ARCH_5T__;__ARM_ARCH_5E__;__ARM_ARCH_5TE__;</ArchDefines>
+    <ArchDefines Condition="'$(AndroidArch)' == 'armv7-a'">__ARM_EABI__;__ARM_ARCH_7__;__ARM_ARCH_7A__;__ARM_ARCH_5__;__ARM_ARCH_5T__;__ARM_ARCH_5E__;__ARM_ARCH_5TE__;</ArchDefines>
+    <ArchDefines Condition="'$(AndroidArch)' == 'x86'">;</ArchDefines>
+
+    <AndroidDefines>ANDROID_NDK;ANDROID;__ANDROID__;$(ArchDefines);</AndroidDefines>
+  </PropertyGroup>
+  
+  <!-- Couple of things to disable that we don't need for Android -->
+  <PropertyGroup>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <GenerateManifest>false</GenerateManifest>  
+  </PropertyGroup>
+
+  <!-- Settings specific to each build type -->
+  <PropertyGroup Condition="'$(ConfigurationType)' == 'StaticLibrary'">
+    <LibCompiled>true</LibCompiled>
+    <TargetExt>.a</TargetExt>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ConfigurationType)' == 'Application'">
+    <LinkCompiled>true</LinkCompiled>
+    <TargetExt>.so</TargetExt>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ConfigurationType)' == 'DynamicLibrary'">
+    <LinkCompiled>true</LinkCompiled>
+    <TargetExt>.so</TargetExt>
+  </PropertyGroup>
+
+  <!-- Bring in default props for each tool -->
+  <Import Project="$(VCTargetsPath)\Platforms\Android\vs-android.ToolDefaults.props" />
+
+  <Import Project="$(VCTargetsPath)\Platforms\Android\ImportAfter\*.props" Condition="Exists('$(VCTargetsPath)\Platforms\Android\ImportAfter')" />
+</Project>

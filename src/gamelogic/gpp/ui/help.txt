@@ -1,0 +1,135 @@
+{
+  "^3Welcome^7"
+  {
+    "In this section you will find a summary of major changes since 1.1. It is "
+    "not a complete list. In general, all things have been tweaked for balance in "
+    "some way.\n\n"
+    "We hope you enjoy playing. Your support gives us valuable data and "
+    "feedback as we work to bring you Tremulous 1.2. Please report all bugs. Thank "
+    "you."
+  }
+  "Alien Healing"
+  {
+    "The most important change for Alien players to know is that their healing "
+    "rate is slower away from creep. To counter this, healing near Boosters "
+    "and Basilisks is greatly accelerated.\n\n"
+    "Watch the health cross icon on your "
+    "HUD to see what your healing rate is. If the icon glows, you are on "
+    "creep. If you are near a booster or basilisk, you will see two "
+    "(2X healing) or four (3X healing) barbs around the health cross."
+  }
+  "Build-point Changes"
+  {
+    "Structures destroyed by enemy players will not immediately become available "
+    "for reuse, but instead enter a queue. Build points will gradually leave the "
+    "queue to become available again, at a rate proportional to the amount of "
+    "points in the queue.\n\n Repeaters can be built at any stage and come with 20 "
+    "BP that can only be used nearby to facilitate making small outposts. Aliens "
+    "do not have a structure that provides additional buildpoints, but they have 150 "
+    "overall BP to compensate."
+  }
+  "Marked Deconstruction"
+  {
+    "The deconstruction method has changed. Buildables are no longer instantly "
+    "deconstructed. Instead, a deconstruct mark appears on the health bar. "
+    "Go ahead and build a new buildable somewhere else and the old one will "
+    "be removed automatically. Buildables that are about to be removed by "
+    "constructing the selected buildable glow red."
+  }
+  "Alien Buildables"
+  {
+    "Nearly useless in 1.1, Barricades now have more health, are cheaper to "
+    "build, and will shrink to allow Aliens to pass over them. Acid tubes "
+    "will fire from behind barricades, providing a formidable defense. "
+    "Experiment with blocking off hallways and building staged defenses, but "
+    "keep in mind that low ceilings will prevent Tyrants from returning inside "
+    "the base. Hives are also much improved to become worth building in stage 3."
+  }
+  "Human Buildables"
+  {
+    "Turrets now have a small spin up delay before firing, but they have "
+    "increased range and damage output.\n\n"
+    "To protect against small Aliens getting inside "
+    "the base, build Tesla Generators at Stage 3. Tesla Generators no longer "
+    "require the Defense Computer to function. Instead, the Defense Computer "
+    "will automatically repair Human buildables. Tesla Generators can fire "
+    "over turrets. "
+  }
+  "Human Weapons"
+  {
+    "Most of the human projeciles have a small volume now, making them more "
+    "effective against smaller targets.\n"
+    "The Lucifer Cannon projectile can be fired faster but now takes longer "
+    "to charge. You will be able to hear your teammates overcharge "
+    "their Lucifer Cannon.\n"
+    "The Flamer projectile now gains more of the velocity of its wielder, "
+    "making it easier to chase down aliens without burning yourself to a "
+    "crisp. Other weapons also have smaller changes."
+  }
+  "Lag Correction"
+  {
+    "While the Tremulous implementation of Neil Toronto's unlagged is "
+    "becoming widely accepted, we also implement client-side improvements "
+    "not possible in 1.1 servers. For those who insist on leading their "
+    "attacks, setting cg_unlagged to 0 will disable backward reconcilliation "
+    "on your hitscan weapons."
+  }
+  "Sprint"
+  {
+    "The sprint bind has changed from \"boost\" to \"+button8\"; you can bind it "
+    "in the options menu or in the console (\\bind shift +button8). Now, instead "
+    "of tapping the button while moving to start sprinting, just hold it down "
+    "and let go to stop. Alternately, you can change this to a toggle behavior "
+    "with cg_sprintToggle. \n\n"
+  }
+  "Dodge"
+  {
+    "Humans also have a new movement ability: dodge. You can bind it in the "
+    "options menu or the console (\\bind shift +button6). When strafing or "
+    "walking backwards, press the dodge key to make a quick, low jump. You "
+    "can bind this to the same key as sprint in the console with \\bind shift "
+    "\"+button8; +button6\""
+  }
+  "Headshots"
+  {
+    "Headshots on unarmored humans only cause 150% damage. Battlesuit and "
+    "helmet protection have been reduced so headshot damage remains the same."
+  }
+  "Dretch"
+  {
+    "Dretches are slightly faster and can now damage any human structure while it "
+    "is still building, but can no longer damage turrets and teslas that "
+    "have been completed."
+  }
+  "Basilisk"
+  {
+    "Basilisks provide regeneration boosting auras to nearby teammates: 2x "
+    "from regular and 3x from advanced basilisks. Their footsteps are also "
+    "silent for greater stealth."
+  }
+  "Marauder"
+  {
+    "The Adv. Marauder's electric shock damage is no longer split between its "
+    "targets, making it more effective against large groups of humans and "
+    "buildables. Targets are now chosen slightly differently: instead of "
+    "each new chain section originating from the previous target, it will "
+    "originate from the first target."
+  }
+  "Dragoon"
+  {
+    "Advanced dragoons are now available at stage 2. Both dragoons have the "
+    "range of their chomp attacks lowered, but their pounce attacks are much "
+    "more useful. Try to use pounce to pin a human to the wall before chomping."
+  }
+  "Tyrant"
+  {
+    "The Tyrant is now a weaker class as its health has been lowered and "
+    "turret damage is greater. To counter this, Tyrants can charge for longer "
+    "periods of time, hit targets multiple times in a single charge, "
+    "and crush any Humans they land on top of. Trample charge does not "
+    "instantly release when full but can be held for two seconds. Trample "
+    "attacks on a human pinned against a wall are VERY powerful. Use this to "
+    "your advantage. The Tyrant's healing aura has been removed; find a "
+    "booster or a basilisk to heal faster."
+  }
+}

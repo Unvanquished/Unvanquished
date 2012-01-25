@@ -1,0 +1,50 @@
+* FreeType-2.3.5 for Windows *
+==============================
+
+What is it?
+-----------
+FreeType: font engine and rasterizer
+
+Description
+-----------
+FreeType is a software font engine that is designed to be small, efficient, highly customizable and portable while capable of producing high-quality output (glyph images). It can be used in graphics libraries, display servers, font conversion tools, text image generation tools, and many other products as well. Note that FreeType is a font service and doesn't provide APIs to perform higher-level features, like text layout or graphics processing (e.g. colored text rendering, "hollowing", etc.). However, it greatly simplifies these tasks by providing a simple, easy to use and uniform interface to access the content of font files. - FreeType1 is in freetype-1.0 - FreeType2 is in freetype-1.1 / 1.4 - FreeType6 is in freetype-2.0.1 and higher
+	 
+Homepage
+--------
+http://www.freetype.org
+Sources: http://download.savannah.gnu.org/releases/freetype/freetype-2.3.5.tar.gz
+	 
+System
+------
+- Win32, i.e. MS-Windows 95 / 98 / ME / NT / 2000 / XP / 2003 / Vista with msvcrt.dll
+- if msvcrt.dll is not in your Windows/System folder, get it from
+  Microsoft <http://support.microsoft.com/default.aspx?scid=kb;en-us;259403">
+  or by installing Internet Explorer 4.0 or higher
+  <http://www.microsoft.com/windows/ie> 
+- zlib <http://gnuwin32.sourceforge.net/packages/zlib.htm> 
+
+Notes
+-----
+- Bugs and questions on this MS-Windows port: gnuwin32@users.sourceforge.net
+
+Package Availability
+--------------------
+- in: http://gnuwin32.sourceforge.net
+Installation
+------------
+
+Sources
+-------
+- freetype-2.3.5-src.zip
+
+Compilation
+-----------
+The package has been compiled with GNU auto-tools, GNU make, and Mingw
+(GCC for MS-Windows). Any differences from the original sources are given
+in freetype-2.3.5-1-GnuWin32.diffs in freetype-2.3.5-1-src.zip. Libraries needed
+for compilation can be found at the lines starting with 'LIBS = ' in the
+Makefiles. Usually, these are standard libraries provided with Mingw, or
+libraries from the package itself; 'gw32c' refers to the libgw32c package,
+which provides MS-Windows substitutes or stubs for functions normally found in
+Unix. For more information, see: http://gnuwin32.sourceforge.net/compile.html
+and http://gnuwin32.sourceforge.net/packages/libgw32c.htm.

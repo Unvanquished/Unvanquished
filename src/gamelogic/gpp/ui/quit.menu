@@ -1,0 +1,99 @@
+#include "ui/menudef.h"
+
+{
+  \\ QUIT POPUP MENU \\
+
+#define W       120
+#define H       120
+
+  menuDef
+  {
+    name "quit_popmenu"
+    visible MENU_FALSE
+    fullscreen MENU_FALSE
+    rect (320-(W/2)) (240-(H/2)) W H
+    focusColor 1 .75 0 1
+    style WINDOW_STYLE_FILLED
+    border WINDOW_BORDER_FULL
+    popup
+    onESC
+    {
+      play "sound/misc/menu1.wav";
+      close quit_popmenu
+    }
+
+
+    itemDef
+    {
+      name window
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+
+    // QUIT //
+
+    itemDef
+    {
+      name confirm
+      type ITEM_TYPE_TEXT
+      text "Quit Tremulous?"
+      style WINDOW_STYLE_EMPTY
+      textscale .3
+      textstyle WINDOW_STYLE_SHADER
+      rect 0 0 W ((2*H)/3)
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      decoration
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+
+    itemDef
+    {
+      name yes
+      text "YES"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect 0 (H/3) (W/2) ((2*H)/3)
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu4.wav";
+        open quitCredit
+      }
+    }
+
+
+    itemDef
+    {
+      name no
+      text "NO"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect (W/2) (H/3) (W/2) ((2*H)/3)
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        close quit_popmenu
+      }
+    }
+  }
+}
+
+

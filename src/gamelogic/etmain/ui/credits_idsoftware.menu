@@ -1,0 +1,100 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+#define WINDOW_WIDTH	608
+#define WINDOW_HEIGHT	448
+#define GROUP_NAME		"grpCreditsIdSoftware"
+
+// Macros //
+
+#include "ui/menumacros.h"
+		
+// System Menu //
+	
+menuDef {
+	name		"credits_idsoftware"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+	
+	onESC {
+		close credits_idsoftware ;
+		open main
+	}
+
+// Window //
+
+	itemDef {
+		name		"window"
+		group		GROUP_NAME
+		rect		0 0 WINDOW_WIDTH WINDOW_HEIGHT
+		style		WINDOW_STYLE_FILLED
+		backcolor	0 0 0 1
+		border		WINDOW_BORDER_FULL
+		bordercolor	.5 .5 .5 .5
+		visible		1
+		decoration
+	}
+	
+// Logo //
+
+	itemDef {
+		name		"logoShadow"
+		rect		$evalfloat(.5*(WINDOW_WIDTH-64)+1) $evalfloat(8+1) 64 64
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/logo_id"
+		forecolor	0 0 0 1
+		visible		1
+		decoration
+	}
+
+	itemDef {
+		name		"logo"
+		rect		$evalfloat(.5*(WINDOW_WIDTH-64)-1) $evalfloat(8-1) 64 64
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/logo_id"
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	
+	itemDef {
+		name		"headerLogo"
+		group		GROUP_NAME
+		rect		6 80 $evalfloat(WINDOW_WIDTH-12) 16
+		text		"EXECUTIVE PRODUCED BY ID SOFTWARE"
+		textfont	UI_FONT_ARIBLK_16
+		textstyle	ITEM_TEXTSTYLE_SHADOWED
+		textscale	.3
+		textalign	ITEM_ALIGN_CENTER
+		textalignx	$evalfloat(.5*(WINDOW_WIDTH-12))
+		textaligny	14
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	
+// Credits Sections //
+
+#define CREDITS_Y	108
+	
+	LABELWHITE( 6, CREDITS_Y, .5*(WINDOW_WIDTH-24), 10, "Kevin Cloud", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y, .5*(WINDOW_WIDTH-24), 10, "Executive Producer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+12, .5*(WINDOW_WIDTH-24), 10, "Timothee Besset", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+12, .5*(WINDOW_WIDTH-24), 10, "Additional Programming", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	
+// Copyright Notice //
+
+	LABELWHITE( 6, CREDITS_Y+36, WINDOW_WIDTH-12, 10, "Wolfenstein: Enemy Territory is powered by id Software's Quake III Arena (TM) technology.", .2, ITEM_ALIGN_CENTER, (.5*(WINDOW_WIDTH-12)), 8 )
+	LABELWHITE( 6, CREDITS_Y+48, WINDOW_WIDTH-12, 10, "Production, development and technical assistance provided by id Software.", .2, ITEM_ALIGN_CENTER, (.5*(WINDOW_WIDTH-12)), 8 )
+
+// Buttons //
+
+	BUTTON( 6, WINDOW_HEIGHT-24, .33*(WINDOW_WIDTH-24), 18, "BACK", .3, 14, close credits_idsoftware ; open main )
+	BUTTON( 6+.33*(WINDOW_WIDTH-24)+6, WINDOW_HEIGHT-24, .34*(WINDOW_WIDTH-24), 18, "SPLASH DAMAGE", .3, 14, close credits_idsoftware ; open credits_splashdamage )
+	BUTTON( 6+.33*(WINDOW_WIDTH-24)+6+.34*(WINDOW_WIDTH-24)+6, WINDOW_HEIGHT-24, .33*(WINDOW_WIDTH-24), 18, "ACTIVISION", .3, 14, close credits_idsoftware ; open credits_activision )
+}

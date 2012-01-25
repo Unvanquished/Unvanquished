@@ -1,0 +1,129 @@
+#include "ui/menudef.h"
+
+{
+\\ CREATE FAVORITE POPUP MENU \\
+
+  menuDef
+  {
+    name "createfavorite_popmenu"
+    visible 0
+    fullscreen 0
+    rect 204 122 235 235
+    focusColor 1 .75 0 1
+    style 1
+    border 1
+    popup
+    onESC
+    {
+      close createfavorite_popmenu;
+      open joinserver
+    }
+
+    itemDef
+    {
+      name window
+      rect 47 47 144 144
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible 1
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    // ENTER NAME AND ADDRESS	//
+    
+    itemDef
+    {
+      name name
+      text "Name"
+      style 0
+      decoration
+      textscale .3
+      rect 0 61 110 20
+      textalign 1
+      textalignx 117
+      textaligny 16
+      forecolor 1 1 1 1
+      visible 1
+    }
+    
+    itemDef
+    {
+      name nameEntry
+      style 1
+      maxchars 15
+      text ""
+      textscale .25
+      TYPE 4
+      cvar "ui_favoriteName"
+      rect 60 81 120 20
+      textalign 0
+      textalignx 10
+      textaligny 16
+      forecolor 1 1 1 1
+      backcolor .2 .2 .2 .5
+      visible 1
+    }
+
+    itemDef
+    {
+      name address
+      text "IP Address"
+      style 0
+      decoration
+      textscale .3
+      rect 0 111 110 20
+      textalign 1
+      textalignx 117
+      textaligny 16
+      forecolor 1 1 1 1
+      visible 1
+    }
+    
+    itemDef
+    {
+      name addressEntry
+      style 1
+      maxchars 20
+      maxPaintChars 12
+      text ""
+      textscale .25
+      TYPE 4
+      maxchars 21
+      cvar "ui_favoriteAddress"
+      rect 60 131 120 20
+      textalign 0
+      textalignx 10
+      textaligny 16
+      forecolor 1 1 1 1
+      backcolor .2 .2 .2 .5
+      visible 1
+    }
+
+    itemDef
+    {
+      name yes
+      text "Ok"
+      type 1
+      textscale .25
+      style WINDOW_STYLE_EMPTY
+      rect 103 158 30 26
+      textalign 1
+      textalignx 15
+      textaligny 20
+      forecolor 1 1 1 1
+      backcolor .37 .1 .1 1 
+      visible 1
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript CreateFavorite;
+        close createfavorite_popmenu;
+        open joinserver
+      }
+    }
+  }
+}

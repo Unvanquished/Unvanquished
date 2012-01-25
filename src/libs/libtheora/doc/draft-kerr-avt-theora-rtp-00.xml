@@ -1,0 +1,1277 @@
+<?xml version='1.0'?>
+<!DOCTYPE rfc SYSTEM 'rfc2629.dtd'>
+<?rfc toc="yes" ?>
+<?rfc compact='yes'?>
+
+<rfc ipr="full3667" docName="RTP Payload Format for Theora Encoded Video">
+
+<front>
+<title>draft-kerr-avt-theora-rtp-00</title>
+
+<author initials="P" surname="Kerr" fullname="Phil Kerr">
+<organization>Xiph.Org</organization>
+<address>
+<email>phil@plus24.com</email>
+<uri>http://www.xiph.org/</uri>
+</address>
+</author>
+
+<date day="31" month="January" year="2005" />
+
+<area>General</area>
+<workgroup>AVT Working Group</workgroup>
+<keyword>I-D</keyword>
+
+<keyword>Internet-Draft</keyword>
+<keyword>Theora</keyword>
+<keyword>RTP</keyword>
+
+<abstract>
+<t>
+This document describes a RTP payload format for transporting Theora encoded video.  It details the RTP encapsulation mechanism 
+for raw Theora data and configuration headers consisting of the quantization matrices and the Huffman codebooks for the DCT 
+coefficients, and a table of limit values for the deblocking filter.
+</t>
+
+<t>
+Also included within the document are the necessary details for the use of Theora with MIME and Session Description Protocol 
+(SDP).
+</t>
+
+</abstract>
+
+<note title="Editors Note">
+<t>
+All references to RFC XXXX are to be replaced by references to the RFC number of this memo, when published.
+</t>
+</note>
+
+</front>
+
+<middle>
+
+<section anchor="Introduction" title="Introduction">
+<t>
+Theora is a general purpose, lossy video codec. It is based on the VP3.1 video codec produced by On2 Technologies and has been donated to the Xiph.org Foundation.  
+</t>
+
+<t>
+Theora I is a block-based lossy transform codec that utilizes an 8 x 8 Type-II Discrete Cosine Transform and block-based motion 
+compensation.  This places it in the same class of codecs as MPEG-1, MPEG-2, MPEG-4, and H.263. The details of how individual 
+blocks are organized and how DCT coefficients are stored in the bitstream differ substantially from these codecs, however.  Theora 
+supports only intra frames (I frames in MPEG) and inter frames (P frames in MPEG). 
+</t>
+
+<t>
+Theora provides none of its own framing, synchronization, or protection against transmission errors.  Theora is a free-form 
+variable bit rate (VBR) codec, and packets have no minimum size, maximum size, or fixed/expected size.  Theora packets are thus 
+intended to be used with a transport mechanism that provides free-form framing, synchronization, positioning, and error correction 
+in accordance with these design assumptions, such as Ogg <xref target="rfc3533"></xref>. or RTP/AVP <xref target="rfc3550"></xref>. 
+</t>
+
+<t>
+Theora I currently supports progressive video data of arbitrary dimensions at a constant frame rate in one of several YCbCr color 
+spaces. 
+Three different chroma subsampling formats are supported: 4:2:0, 4:2:2, and 4:4:4.  The Theora I format does not support interlaced 
+material, variable frame rates, bit-depths larger than 8 bits per component, nor alternate color spaces such as RGB or arbitrary 
+multi-channel spaces.  Black and white content can be efficiently encoded, however, because the uniform chroma planes compress well.
+</t>
+
+<t>
+Theora is similar to Vorbis audio <xref target="vorbisrtp"></xref> in that it requires the inclusion of the entire probability 
+model for the DCT coefficients and all the quantization parameters in the bitstream headers to be sent ahead of the video data.  It 
+is therefore impossible to decode any frame in the stream without having previously fetched the codec info and codec setup headers, 
+although Theora can initiate decode at an arbitrary intra-frame packet within a bitstream so long as the codec has been initialized 
+with the setup headers.
+</t>
+
+<section anchor="Terminology" title="Terminology">
+
+<t>
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", 
+and "OPTIONAL" in this document are to be interpreted as described in RFC 2119 <xref target="rfc2119"></xref>.
+</t>
+
+</section>
+</section>
+
+<section anchor="Payload Format" title="Payload Format">
+
+<t>
+Each frame of digital video is packetized into one or more RTP packets.  If the data for a complete frame exceeds the network
+MTU, it SHOULD be fragmented into multiple RTP packets, each smaller than the MTU.   A single RTP packet MAY contain 
+data for more than one Theora frame. 
+</t>
+
+<t>
+For RTP based transportation of Theora encoded video the standard RTP header is followed by a 5 octet payload header, then the 
+payload data.  
+</t>
+
+<section anchor="RTP Header" title="RTP Header">
+
+<t>
+The format of the RTP header is specified in <xref target="rfc3550"></xref> and shown in Figure 1.  This payload format uses 
+the fields of the header in a manner consistent with that specification. 
+</t>
+
+<figure anchor="RTP Header Figure" title="RTP Header">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |V=2|P|X|  CC   |M|     PT      |       sequence number         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           timestamp                           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           synchronization source (SSRC) identifier            |
+   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+   |            contributing source (CSRC) identifiers             |
+   |                              ...                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+The RTP header begins with an octet of fields (V, P, X, and CC) to support specialized RTP uses (see <xref target="rfc3550">
+</xref> and <xref target="rfc3551"></xref> for details). For Theora RTP, the following values are used.
+</t>
+
+<t>
+Version (V): 2 bits</t><t>
+This field identifies the version of RTP. The version used by this specification is two (2).
+</t>
+
+<t>
+Padding (P): 1 bit</t><t>
+Padding MAY be used with this payload format according to section 5.1 of <xref target="rfc3550"></xref>.  
+</t>
+
+<t>
+Extension (X): 1 bit</t><t>
+The Extension bit is used in accordance with <xref target="rfc3550"></xref>. 
+</t>
+
+<t>
+CSRC count (CC): 4 bits</t><t>
+The CSRC count is used in accordance with <xref target="rfc3550"></xref>.
+</t>
+
+<t>
+Marker (M): 1 bit</t><t>
+The Marker bit is used in accordance with <xref target="rfc3550"></xref>.
+</t>
+
+<t>
+Payload Type (PT): 7 bits</t><t>
+An RTP profile for a class of applications is expected to assign a payload type for this format, or a dynamically allocated 
+payload type SHOULD be chosen which designates the payload as Theora.
+</t>
+
+<t>
+Sequence number: 16 bits</t><t>
+The sequence number increments by one for each RTP data packet sent, and may be used by the receiver to detect packet loss and
+to restore packet sequence. This field is detailed further in <xref target="rfc3550"></xref>.
+</t>
+
+<t>
+Timestamp: 32 bits</t><t>
+A timestamp representing the sampling time of the first sample of the first Theora packet in the RTP packet.  The clock frequency 
+MUST be set to the sample rate of the encoded video data and is conveyed out-of-band as an SDP attribute.
+</t>
+
+<t>
+SSRC/CSRC identifiers: </t><t>
+These two fields, 32 bits each with one SSRC field and a maximum of 16 CSRC fields, are as defined in 
+<xref target="rfc3550"></xref>.  
+</t>
+
+</section>
+
+<section anchor="Payload Header" title="Payload Header">
+
+<t>
+After the RTP Header section the following five octets are the Payload Header.  
+This header is split into a number of bitfields detailing the format of the following Payload Data packets.
+</t>
+
+<figure anchor="Payload Header Figure" title="Payload Header">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Setup Header Ident                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |C|F|0|0|# pkts.|
+   +-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+Setup Header Ident: 32 bits</t>
+<t>
+This 32 bit field is used to associate the Theora data to a decoding Setup Header. It is created by making a CRC32 checksum 
+of the Setup Header required to decode the particular Theora video stream.
+</t>
+
+<t>
+Continuation (C): 1 bit</t>
+<t>
+Set to one if this is a continuation of a fragmented packet.
+</t>
+
+<t>
+Fragmented (F): 1 bit</t>
+<t>
+Set to one if the payload contains complete packets or if it contains the last fragment of a fragmented packet. 
+</t>
+
+<t>
+The next two bits are currently reserved and MUST be set to 0.
+</t>
+
+<t>
+The last 4 bits are the number of complete packets in this payload.  This provides for a maximum number of 15 Theora 
+packets in the payload.  If the packet contains fragmented data the number of packets MUST be set to 0.
+</t>
+
+</section>
+
+<section anchor="Payload Data" title="Payload Data">
+
+<t>
+Each Theora payload section starts with a three octet header.  The first octet is used to denote what kind of Theora data follows.  
+Then a two octet length header is used to represent the size of the following data payload, followed by the raw Theora data.
+</t>
+
+<figure anchor="Payload Data Figure" title="Payload Data">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |   Data type   |        Payload Length         | Theora Data  ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+The data type octet is used to signify the payload data type.  If the first bit is set to 0, this indicates the payload is 
+Theora video data.
+</t>
+
+<t>
+The following values for the Theora payload type are valid:
+</t>
+<vspace blankLines="1" />
+<list style="empty">
+<t>      0 = Raw Theora data</t>
+<t>      0x80 = Theora Identification header</t>
+<t>      0x81 = Theora Comment header</t>
+<t>      0x82 = Theora Setup header</t>
+</list>
+<vspace blankLines="1" />
+
+<t>
+The Theora packet length header is the length of the Theora data block only and does not count the length octets and payload 
+data type octet.
+</t>
+
+<t>
+The Theora codec uses relatively unstructured raw packets containing binary integer fields of arbitrary width that often do not fall on an octet boundary.  When this happens the bitstream is packed to an octet boundary.  When a Theora encoder produces packets unused space in the last byte of a packet is always zeroed during the encoding process.  Thus, should this unused space be read, it will return binary zeros.
+</t>
+
+<t>
+For payloads which consist of multiple Theora packets the payload data consists of the data type field, the payload length field 
+followed by the payload data for each of the Theora packets in the payload.
+</t>
+
+</section>
+
+<section anchor="Example RTP Packet" title="Example RTP Packet">
+
+<t>
+Here is an example RTP packet containing two Theora packets.
+</t>
+<t>
+RTP Packet Header:
+</t>
+
+<figure anchor="Example RTP Packet Figure" title="Example RTP Packet">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | 2 |0|0|  0    |0|      PT     |       sequence number         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                 timestamp (in sample rate units)              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |          synchronisation source (SSRC) identifier             |
+   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+   |            contributing source (CSRC) identifiers             |
+   |                              ...                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+
+<t>
+Payload Data:
+</t>
+
+<figure anchor="Example Theora Payload Figure" title="Example Theora Payload Packet">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Setup Header Ident                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |0|1|0|0| 2 pks |      0x80     |        Payload Length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                         Theora data                          ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ..    data      |        0      |        Payload Length        ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ..                        Theora data                           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+The payload portion of the packet starts with the 32 bit Setup Header ident field followed by the 8 bit fragment/count fields.  The F 
+bit is set to 1, indicating that this packet contains whole Theora frame data.  The number of whole Theora data packets is set to 
+2.  
+</t>
+
+<t>
+Each of the payload blocks starts with a Data type field, for the first payload this is set to 0x80 indicating it is an 
+Identification header and the second payload is set to 0 indicating it is raw Theora data.  Then the two octet length field is 
+followed by the variable length Theora data.
+</t>
+
+</section>
+</section>
+
+
+<section anchor="Frame Packetizing" title="Frame Packetizing">
+
+<t>
+Each RTP packet contains either one complete Theora packet, one Theora packet fragment, or an integer number of complete Theora 
+packets (up to a max of 15 packets, since the number of packets is defined by a 4 bit value).
+</t>
+
+<t>
+Any Theora data packet that is less than path MTU SHOULD be bundled in the RTP packet with as many Theora packets as will 
+fit, up to a maximum of 15.  Path MTU is detailed in <xref target="rfc1063"></xref> and <xref target="rfc1981"></xref>.
+</t>
+
+<t>
+If a Theora packet is larger than 65535 octets it MUST be fragmented.  A fragmented packet has a zero in the last four bits 
+of the payload header.  Each fragment after the first will also set the Continued (C) bit to one in the payload header.  The 
+RTP packet containing the last fragment of the Theora packet will have the Fragmented (F) bit set to one.  To maintain the 
+correct sequence for fragmented packet reception the timestamp field of fragmented packets MUST be the same as the first 
+packet sent, with the sequence number incremented as normal for the subsequent RTP packets.
+</t>
+
+<section anchor="Example Fragmented Theora Packet" title="Example Fragmented Theora Packet">
+
+<t>
+Here is an example fragmented Theora packet split over three RTP packets.  Each packet contains the standard RTP headers as 
+well as the 5 octet Theora headers.
+</t>
+
+<figure anchor="Example Fragmented Packet (Packet 1)" title="Example Fragmented Packet (Packet 1)">
+<artwork><![CDATA[
+   Packet 1:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |V=2|P|X|  CC   |M|     PT      |           1000                |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                             xxxxx                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           synchronization source (SSRC) identifier            |
+   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+   |            contributing source (CSRC) identifiers             |
+   |                              ...                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Setup Header Ident                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |0|0|0|0|      0|       0       |        Payload Length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                         Theora data                          ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+In this packet the initial sequence number is 1000 and the timestamp is xxxxx.  The Continuation (C) bit is set to one, 
+indicating it is not the continuation of a fragmented bit, and the Fragmentation (F) is set to 0 indicating it is a fragmented 
+packet.  The number of packets field is set to 0, and as the payload is raw Theora data the Theora payload type field is set to 0.
+</t>
+
+<figure anchor="Example Fragmented Packet (Packet 2)" title="Example Fragmented Packet (Packet 2)">
+<artwork><![CDATA[
+   Packet 2:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |V=2|P|X|  CC   |M|     PT      |           1001                |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                             xxxxx                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           synchronization source (SSRC) identifier            |
+   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+   |            contributing source (CSRC) identifiers             |
+   |                              ...                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Setup Header Ident                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |1|0|0|0|      0|       0       |        Payload Length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                         Theora data                          ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+The C bit is set to 1 and the number of packets field is set to 0.  For large Theora fragments there can be several of these type 
+of payload packets.  The maximum packet size SHOULD be no greater than the path MTU, including all RTP and payload headers.  The 
+sequence number has been incremented by one but the timestamp field remains the same as the initial packet.
+</t>
+
+<figure anchor="Example Fragmented Packet (Packet 3)" title="Example Fragmented Packet (Packet 3)">
+<artwork><![CDATA[
+   Packet 3:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |V=2|P|X|  CC   |M|     PT      |           1002                |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                             xxxxx                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           synchronization source (SSRC) identifier            |
+   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+   |            contributing source (CSRC) identifiers             |
+   |                              ...                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Setup Header Ident                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |1|1|0|0|      0|       0       |        Payload Length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                         Theora data                          ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+This is the last Theora fragment packet.  The C and F bits are set and the packet count remains set to 0.  As in the previous 
+packets the timestamp remains set to the first packet in the sequence and the sequence number has been incremented.
+</t>
+
+</section>
+</section>
+
+
+<section anchor="Packet Loss" title="Packet Loss">
+
+<t>
+As there is no error correction within the Theora stream, packet loss will result in a loss of signal.  Packet loss is more of an 
+issue for fragmented Theora packets as the client will have to cope with the handling of the C and F flags.  If we use the 
+fragmented Theora packet example above and the first packet is lost the client SHOULD detect that the next packet has the packet
+count field set to 0 and the C bit is set and MUST drop it.  The next packet, which is the final fragmented packet, SHOULD 
+be dropped in the same manner, or buffered.  Feedback reports on lost and dropped packets MUST be sent back via RTCP.
+</t>
+
+<t>
+If a particular multicast session has a large number of participants care must be taken to prevent an RTCP feedback implosion, 
+<xref target="rtcp-feedback"></xref>, in the event of packet loss from a large number of participants.
+</t>
+
+</section>
+
+<section anchor="Configuration Headers" title="Configuration Headers">
+
+<t>
+To decode a Theora stream three configuration header blocks are needed.  The first header, the Identification Header, indicates 
+the frame dimensions, quality, blocks used and the version of the Theora encoder used.  The second header, the Comment Header, contains stream metadata and the third header, the Setup Header, details which contains dequantization and Huffman tables.
+</t>
+
+<t>
+As the RTP stream may change certain configuration data mid-session there are two different methods for delivering this 
+configuration data to a client, in-band and SDP which is detailed below.  SDP delivery is used to set-up an initial
+state for the client application and in-band is used to change state during the session.  The changes may be due to 
+different metadata or Setup Header as well as different bitrates of the stream.
+</t>
+
+<t>
+Out of the two delivery vectors the use of an SDP attribute to indicate an URI where the configuration and Setup Header data 
+can be obtained is preferred as they can be fetched reliably using TCP.  The in-band Setup Header delivery SHOULD 
+only be used in situations where the link between the client is unidirectional or if the SDP-based information is not available. 
+</t>
+
+<t>
+Synchronizing the configuration and Setup Header to the RTP stream is critical.  The 32 bit Setup Header Ident field is used 
+to indicate when a change in the stream has taken place.  The client application MUST have in advance the correct configuration 
+and Setup Headers and if the client detects a change in the Ident value and does not have this information it MUST NOT 
+decode the raw Theora data.
+</t>
+
+<section anchor="In-band Header Transmission" title="In-band Header Transmission">
+
+<t>
+The three header data blocks are sent in-band with the packet type bits set to match the payload type.  Normally the Setup Header 
+and Identification Header are sent once per session if the stream is an encoding of live video, as typically 
+the encoder state will not change, but the encoder state can change at the boundary of chained Theora video files.  Metadata 
+can be sent at the start as well as any time during the life of the session.  Clients MUST be capable of dealing with periodic 
+re-transmission of the configuration headers.
+</t>
+
+<section anchor="Identification Header" title="Identification Header">
+
+<t>
+The Identification Header is a short header with only a few fields used to declare the stream definitively as Theora and provide detailed information about the format of the fully decoded video data.</t>
+
+<figure anchor="Identification Header Figure" title="Identification Header">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |V=2|P|X|  CC   |M|     PT      |             xxxx              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                             xxxxx                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           synchronization source (SSRC) identifier            |
+   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+   |            contributing source (CSRC) identifiers             |
+   |                              ...                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Setup Header Ident                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |0|1|0|0|      1|     0x80      |        Payload Length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     VMAJ      |     VMIN      |     VREV      |     FMBW      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     FMBW      |              FMBH             |     NSBS      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                     NSBS                      |               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       NBS                             | NMBS  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       NMBS                            | PICW  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |              PICW             |             PICH              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | PICH  |     PICX      |      PICY     |         FRN           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                FRN                    |         FRD           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                FRD                    |         PARN          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         PARN          |               PARD                    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | PARD  |      CS       |PF |             NOMBR                 |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |   NOMBR   |   QUAL    | KFGSHIFT|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+The fields listed above have the following meanings:
+</t>
+
+<vspace blankLines="1" />
+<vspace blankLines="1" />
+<list style="empty">
+<t>      VMAJ     = The major version number.  8 bits.</t>
+<t>      VMIN     = The minor version number.  8 bits.</t>
+<t>      VREV     = The version revision number.  8 bits.</t>
+<t>      FMBW     = The width of the frame in macro blocks.  16 bits.</t>
+<t>      FMBH     = The height of the frame in macro blocks.  16 bits.</t>
+<t>      NSBS     = The total number of super blocks in a frame.  32 bits.</t>
+<t>      NBS      = The total number of blocks in a frame.  36 bits.</t>
+<t>      NMBS     = The total number of macro blocks in a frame.  32 bits.</t>
+<t>      PICW     = The width of the picture region in pixels.  20 bits.</t>
+<t>      PICH     = The height of the picture region in pixels.  20 bits.</t>
+<t>      PICX     = The X offset of the picture region in pixels.  8 bits.</t>
+<t>      PICY     = The Y offset of the picture region in pixels.  8 bits.</t>
+<t>      FRN      = The frame-rate numerator.  32 bits.</t>
+<t>      FRD      = The frame-rate denominator.  32 bits.</t>
+<t>      PARN     = The pixel aspect-ratio numerator.  24 bits.</t>
+<t>      PARD     = The pixel aspect-ratio denominator.  24 bits.</t>
+<t>      CS       = The color space.  8 bits.</t>
+<t>      PF       = The pixel format.  2 bits.</t>
+<t>      NOMBR    = The nominal bitrate of the stream, in bits per second.  24 bits.</t>
+<t>      QUAL     = The quality hint.  6 bits.</t>
+<t>      KFGSHIFT = The amount to shift the key frame number by in the granule position.  5 bits.</t>
+</list>
+<vspace blankLines="1" />
+
+</section>
+
+<section anchor="Comment Header" title="Comment Header">
+
+<t>
+The Theora Comment Header is the second of three header packets that begin a Theora stream. It is meant for short text comments, 
+not arbitrary metadata; arbitrary metadata belongs in a separate logical stream that provides greater structure and machine 
+parseability. The comment field is meant to be used much like someone jotting a quick note on the label of a video. It should be a 
+little information to remember the disc or tape by and explain it to others; a short, to-the-point text note that can be more than 
+a couple words, but isn't going to be more than a short paragraph.</t>
+
+
+<figure anchor="Comment Header Figure" title="Comment Header">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |V=2|P|X|  CC   |M|     PT      |             xxxx              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                             xxxxx                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           synchronization source (SSRC) identifier            |
+   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+   |            contributing source (CSRC) identifiers             |
+   |                              ...                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Setup Header Ident                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |0|1|0|0|      1|     0x81      |        Payload Length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    User comments list length                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       User comment length                     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          User comment                        ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ..                         User comment                         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+]]></artwork>
+</figure>
+
+<t>
+The format for the data takes the form of a 32 bit field denoting the number of user comments.  Each of the user comments is prefixed by a 32 bit length field followed by the comment text encoded in UTF-8.
+</t>
+
+</section>
+
+<section anchor="Setup Header" title="Setup Header">
+
+<t>
+The Theora setup header contains the limit values used to drive the loop filter, the base matrices and scale values used to build the dequantization tables, and the Huffman tables used to unpack the DCT tokens. Because the contents of this header are specific to Theora, no concessions have been made to keep the fields octet-aligned for easy parsing.
+</t>
+
+<figure anchor="Setup Header Figure" title="Setup Header">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |V=2|P|X|  CC   |M|     PT      |             xxxx              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                             xxxxx                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           synchronization source (SSRC) identifier            |
+   +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+   |            contributing source (CSRC) identifiers             |
+   |                              ...                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Setup Header Ident                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |0|1|0|0|      1|     0x82      |        Payload Length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                      Setup Header Length                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                         Setup Header                         ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ..                        Setup Header                          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+
+<section anchor="Setup Header CRC32 Generation" title="Setup Header CRC32 Generation">
+
+<t>
+In order for different implementations of Theora RTP clients and servers to interoperate with each other a common format 
+for the production of the CRC32 hash is required.  The polynomial is X^32+X^26+X^23+X^22+X^16+X^12+X^11+X^10+X^8+X^7+X^5+X^4+X^2+X^1+X^0.
+</t>
+
+<t>
+The following C code function SHOULD be used by implementations, if not then the code responsible for generating the CRC32 
+value MUST use the polynomial function above.
+</t>
+
+<artwork><![CDATA[
+unsigned int crc32 (int length, unsigned char *crcdata)
+{
+    int index, loop;
+    unsigned int byte, crc, mask;
+ 
+    index = 0;
+    crc = 0xFFFFFFFF;
+ 
+    while (index < length) {
+        byte = crcdata [index];
+        crc = crc ^ byte;
+ 
+        for (loop = 7; loop >= 0; loop--) {
+            mask = -(crc & 1);
+            crc = (crc >> 1) ^ (0xEDB88320 & mask);
+        }
+        index++;
+    }
+    return ~crc;
+}
+]]></artwork>
+
+
+</section>
+
+</section>
+</section>
+
+<section anchor="Packed Headers Delivery" title="Packed Headers Delivery"> 
+
+<t>
+As mentioned above the RECOMMENDED delivery vector for Theora configuration data is via an SDP attribute as this retrieval method 
+can be performed using a reliable transport protocol.  
+</t>
+
+<figure anchor="Packed Headers Overview Figure" title="Packed Headers Overview">
+<artwork><![CDATA[
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                     Number of packed headers                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          Packed header                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          Packed header                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+As the RTP headers are not required for this method of delivery the 
+structure of the configuration data is slightly different.  The packed header starts with a 32 bit count field which details the number of packed headers that are contained in the bundle.  Next is the packed header payload for each chained Theora file.
+</t>
+
+<figure anchor="Packed Headers Detail Figure" title="Packed Headers Detail">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                         Header Length                         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Setup Header Ident                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                     Identification Header                    ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ..                    Identification Header                     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                         Comment Header                       ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ..                        Comment Header                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          Setup Header                        ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ..                         Setup Header                         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>The key difference between the in-band format is there is no need for the payload header octet and Setup Header Ident field.  
+Below are examples of the packed headers format.
+</t>
+
+<figure anchor="Packed Identification Header Figure" title="Packed Identification Header">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     VMAJ      |     VMIN      |     VREV      |     FMBW      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     FMBW      |              FMBH             |     NSBS      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                     NSBS                      |               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       NBS                             | NMBS  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       NMBS                            | PICW  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |              PICW             |             PICH              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | PICH  |     PICX      |      PICY     |         FRN           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                FRN                    |         FRD           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                FRD                    |         PARN          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         PARN          |               PARD                    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | PARD  |      CS       |PF |             NOMBR                 |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |   NOMBR   |   QUAL    | KFGSHIFT|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+The alignment of the packed Identification Header is slightly different from the RTP payload type as the payload header is not 
+used.
+</t>
+
+<figure anchor="Packed Comment Header Figure" title="Packed Comment Header">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    User comments list length                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       User comment length                     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          User comment                        ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ..                         User comment                         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+The packed Comment Header also as a slightly different structure to that of the RTP payload type with the payload header not being 
+used.
+
+</t>
+
+<figure anchor="Packed Setup Header Figure" title="Packed Setup Header">
+<artwork><![CDATA[
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                      Setup Header Length                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                         Setup Header                         ..
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ..                        Setup Header                          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+</figure>
+
+<t>
+The packed Setup Header also has a slightly different structure to that of the RTP payload type.  The Setup Header Ident field 
+that is normally part of this structure is moved to the second field of the overall packed structure.
+</t>
+
+<section anchor="Packed Headers IANA Considerations" title="Packed Headers IANA Considerations"> 
+
+<t>
+The following IANA considerations MUST only be applied to the packed headers.
+</t>
+
+<t>
+MIME media type name: video
+</t>
+<t>
+MIME subtype: theora-config
+</t>
+
+<t>
+Required Parameters:</t><t>
+None.
+</t>
+
+<t>
+Optional Parameters: </t><t>
+None.
+</t>
+
+<t>
+Encoding considerations:</t><t>
+This type is only defined for transfer via HTTP as specified in RFC XXXX.
+</t>
+
+<t>
+Security Considerations:</t><t>
+See Section 6 of RFC 3047.
+</t>
+
+<t>
+Interoperability considerations: none
+</t>
+
+<t>
+Published specification:</t>
+<t>See RFC XXXX for details.</t>
+
+<t>
+Applications which use this media type:</t><t>
+Theora encoded video, configuration data.
+</t>
+
+<t>
+Additional information: none
+</t>
+
+<t>
+Person &amp; email address to contact for further information:</t><t>
+Phil Kerr: &lt;phil@plus24.com&gt;
+</t>
+
+<t>
+Intended usage: COMMON
+</t>
+
+<t>Author/Change controller:</t>
+<t>Author: Phil Kerr</t>
+<t>Change controller: IETF AVT Working Group</t>
+
+
+</section>
+</section>
+
+<section anchor="Setup Header Caching" title="Setup Header Caching"> 
+
+<t>
+Setup Header caching allows clients that have previously connected to a stream to re-use the associated Setup Header and 
+configuration data.  When a client receives a Setup Header it may store it locally and can compare the CRC32 key with that of the 
+new stream and begin decoding before it has received any of the headers.
+</t>   
+
+</section>
+
+<section anchor="Loss of Configuration Headers" title="Loss of Configuration Headers"> 
+
+<t>
+Unlike the loss of raw Theora payload data, loss of a configuration header can lead to a situation where it will not be possible 
+to successfully decode the stream.  
+</t>
+
+<t>
+Out of the three headers, loss of either the Setup Header or Identification Headers MUST result in the halting of stream 
+decoding.  Loss of the Comment header SHOULD NOT be regarded as fatal for decoding.  Loss of any of the headers SHOULD be reported 
+to the client as well as a loss report sent via RTCP.
+</t>
+
+</section>
+</section>
+
+
+<section anchor="IANA Considerations" title="IANA Considerations"> 
+
+<t>MIME media type name: video</t>
+
+<t>MIME subtype: theora</t>
+
+<t>Required Parameters:</t>
+
+<t>
+sampling: Determines the chroma subsampling format.
+</t>
+<t>
+width: Determines the number of pixels per line. This is an integer between 1 and 1048561 and MUST be in multiples of 16.
+</t>
+<t>
+height: Determines the number of lines per frame. This is an integer between 1 and 1048561 and MUST be in multiples of 16.
+</t>
+<t>
+header: Indicates the URI of the decoding configuration headers.
+</t>
+
+<t>
+Optional Parameters: </t><t>
+None.
+</t>
+
+<t>
+Encoding considerations:</t><t>
+This type is only defined for transfer via RTP as specified in RFC XXXX.
+</t>
+
+<t>
+Security Considerations:</t><t>
+See Section 6 of RFC 3047.
+</t>
+
+<t>
+Interoperability considerations: none
+</t>
+
+<t>
+Published specification:</t>
+<t>See the Theora documentation <xref target="Theora-spec-ref"></xref> for details.</t>
+
+<t>
+Applications which use this media type:</t><t>
+Video streaming and conferencing tools
+</t>
+
+<t>
+Additional information: none
+</t>
+
+<t>
+Person &amp; email address to contact for further information:</t><t>
+Phil Kerr: &lt;phil@plus24.com&gt;
+</t>
+
+<t>
+Intended usage: COMMON
+</t>
+
+<t>Author/Change controller:</t>
+<t>Author: Phil Kerr</t>
+<t>Change controller: IETF AVT Working Group</t>
+
+<section anchor="Mapping MIME Parameters into SDP" title="Mapping MIME Parameters into SDP"> 
+
+<t>
+The information carried in the MIME media type specification has a specific mapping to fields in the Session Description 
+Protocol (SDP) <xref target="rfc2327"></xref>, which is commonly used to describe RTP sessions.  When SDP is used to specify 
+sessions the mapping are as follows:
+</t>
+
+<vspace blankLines="1" />
+<list style="symbols">
+
+<t>The MIME type ("video") goes in SDP "m=" as the media name.</t>
+<vspace blankLines="1" />
+
+<t>The MIME subtype ("THEORA") goes in SDP "a=rtpmap" as the encoding name.</t>
+<vspace blankLines="1" />
+
+<t>The parameter "rate" also goes in "a=rtpmap" as clock rate.</t>
+<vspace blankLines="1" />
+
+<t>The parameter "channels" also goes in "a=rtpmap" as channel count.</t>
+<vspace blankLines="1" />
+
+<t>The parameter "header" goes in the SDP "a=fmpt" attribute.</t>
+</list>
+
+
+<t>
+If the stream comprises chained Theora files the configuration and Setup Headers for each file SHOULD be packaged together 
+and passed to the client using the headers attribute if all the files to be played are known in advance.  
+</t>
+
+
+<t>Example:</t>
+
+<vspace blankLines="1" />
+
+<list style="empty">
+<t>c=IN IP4/6 </t>
+<t>m=video  RTP/AVP 98</t>
+<t>a=rtpmap:98 theora/90000</t>
+<t>a=fmtp:98 sampling=YCbCr-4:2:2; width=1280; height=720; header=&lt;URI of configuration header&gt;</t>
+</list>
+
+</section> 
+</section>
+
+
+<!--section anchor="IANA Considerations old" title="IANA Considerations old"> 
+
+<t>MIME media type name: video</t>
+
+<t>MIME subtype: theora</t>
+
+<t>Required Parameters:</t>
+
+<t>
+sampling: Determines the chroma subsampling format.
+</t>
+<t>
+width: Determines the number of pixels per line. This is an integer between 1 and 1048561 and MUST be in multiples of 16.
+</t>
+<t>
+height: Determines the number of lines per frame. This is an integer between 1 and 1048561 and MUST be in multiples of 16.
+</t>
+<t>
+header: Indicates the URI of the decoding configuration headers.
+</t>
+
+<t>
+Optional Parameters: </t><t>
+None.
+</t>
+
+<t>
+Encoding considerations:</t><t>
+This type is only defined for transfer via RTP as specified in RFC XXXX.
+</t>
+
+<t>
+Security Considerations:</t><t>
+See Section 6 of RFC 3047.
+</t>
+
+<t>
+Interoperability considerations: none
+</t>
+
+<t>
+Published specification:</t>
+<t>See the Theora documentation <xref target="Theora-spec-ref"></xref> for details.</t>
+
+<t>
+Applications which use this media type:</t><t>
+video streaming and conferencing tools
+</t>
+
+<t>
+Additional information: none
+</t>
+
+<t>
+Person &amp; email address to contact for further information:</t><t>
+Phil Kerr: &lt;phil@plus24.com&gt;
+</t>
+
+<t>
+Intended usage: COMMON
+</t>
+
+<t>Author/Change controller:</t>
+<t>Author: Phil Kerr</t>
+<t>Change controller: IETF AVT Working Group</t>
+
+</section-->
+
+<section anchor="Security Considerations" title="Security Considerations"> 
+<t>
+RTP packets using this payload format are subject to the security considerations discussed in the RTP specification 
+<xref target="rfc3550"></xref>.  This implies that the confidentiality of the media stream is achieved by using
+encryption.  Because the data compression used with this payload format is applied end-to-end, encryption may be performed on the 
+compressed data.  Where the size of a data block is set care MUST be taken to prevent buffer overflows in the client applications.
+</t>
+
+</section> 
+
+<section anchor="Acknowledgments" title="Acknowledgments"> 
+
+<t>
+Thanks to the AVT, Ogg Theora Communities / Xiph.org, Fluendo, Ralph Giles.
+</t>
+
+</section> 
+
+</middle>
+
+<back>
+
+<references title="Normative References">
+
+<reference anchor="rfc3533">
+<front>
+<title>The Ogg Encapsulation Format Version 0</title>
+<author initials="S." surname="Pfeiffer" fullname="Silvia Pfeiffer"></author>
+</front>
+<seriesInfo name="RFC" value="3533" />
+</reference>
+
+<reference anchor="rfc2119">
+<front>
+<title>Key words for use in RFCs to Indicate Requirement Levels </title>
+<author initials="S." surname="Bradner" fullname="Scott Bradner"></author>
+</front>
+<seriesInfo name="RFC" value="2119" />
+</reference>   
+
+<reference anchor="rfc3550">
+<front>
+<title>RTP: A Transport Protocol for real-time applications</title>
+<author initials="H." surname="Schulzrinne" fullname=""></author>
+<author initials="S." surname="Casner" fullname=""></author>
+<author initials="R." surname="Frederick" fullname=""></author>
+<author initials="V." surname="Jacobson" fullname=""></author>
+</front>
+<seriesInfo name="RFC" value="3550" />
+</reference> 
+
+<reference anchor="rfc3551">
+<front>
+<title>RTP Profile for video and Video Conferences with Minimal Control.</title>
+<author initials="H." surname="Schulzrinne" fullname=""></author>
+<author initials="S." surname="Casner" fullname=""></author>
+</front>
+<date month="July" year="2003" />
+<seriesInfo name="RFC" value="3551" />
+</reference> 
+  
+<reference anchor="rfc2327">
+<front>
+<title>SDP: Session Description Protocol</title>
+<author initials="M." surname="Handley" fullname="Mark Handley"></author>
+<author initials="V." surname="Jacobson" fullname="Van Jacobson"></author>
+</front>
+<seriesInfo name="RFC" value="2327" />
+</reference>   
+
+<reference anchor="rfc1063">
+<front>
+<title>Path MTU Discovery</title>
+<author initials="J." surname="Mogul et al." fullname="J. Mogul et al."></author>
+</front>
+<seriesInfo name="RFC" value="1063" />
+</reference>   
+
+<reference anchor="rfc1981">
+<front>
+<title>Path MTU Discovery for IP version 6</title>
+<author initials="J." surname="McCann et al." fullname="J. McCann et al."></author>
+</front>
+<seriesInfo name="RFC" value="1981" />
+</reference>   
+
+<reference anchor="rtcp-feedback">
+<front>
+<title>Extended RTP Profile for RTCP-based Feedback (RTP/AVPF)</title>
+<author initials="J." surname="Ott" fullname="Joerg Ott"></author>
+<author initials="S." surname="Wenger" fullname="Stephan Wenger"></author>
+<author initials="N." surname="Sato" fullname="Noriyuki Sato"></author>
+<author initials="C." surname="Burmeister" fullname="Carsten Burmeister"></author>
+<author initials="J." surname="Rey" fullname="Jose Rey"></author>
+</front>
+<seriesInfo name="Internet Draft" value="(draft-ietf-avt-rtcp-feedback-11: Work in progress)" />
+</reference>   
+
+<reference anchor="vorbisrtp">
+<front>
+<title>RTP Payload Format for Vorbis Encoded Audio - draft-ietf-avt-vorbis-rtp-00</title>
+<author initials="P." surname="Kerr" fullname="P. Kerr"></author>
+</front>
+<seriesInfo name="Internet Draft" value="(Work in progress)" />
+</reference>   
+</references>
+
+
+
+<references title="Informative References">
+<reference anchor="libTheora">
+<front>
+<title>libTheora: Available from the Xiph website, http://www.xiph.org</title>
+</front>
+</reference>   
+
+<reference anchor="Theora-spec-ref">
+<front>
+<title>Ogg Theora I spec:  Codec setup and packet decode.  http://www.xiph.org/ogg/Theora/doc/Theora-spec-ref.html</title>
+</front>
+</reference>   
+  
+  
+</references>
+</back>
+</rfc>

@@ -1,0 +1,186 @@
+	#include "ui/menudef.h"
+
+	#define DEFAULT_TEXT_SCALE 0.25
+
+	#define ORIGIN_QUICKMESSAGE		10 10
+
+	#define QM_MENU_GRADIENT_START_OFFSET
+
+	#define QM_MENU_START( WINDOWNAME )																			\
+																												\
+menuDef {																										\
+	name		WINDOWNAME																						\
+	visible		0																								\
+	fullscreen	0																								\
+	rect		0 100 640 380																					\
+	onOpen		{ setCvar cl_bypassMouseInput "1" }																\
+	onClose		{ setCvar cl_bypassMouseInput "0" }																\
+	onEsc		{ closeAll }																					\
+																												\
+	itemDef {																									\
+		name		"window"																					\
+		rect		0 19 204 136																				\
+		origin		ORIGIN_QUICKMESSAGE																			\
+		style		WINDOW_STYLE_FILLED																			\
+		backcolor	0 0 0 .75																					\
+		border		WINDOW_BORDER_FULL																			\
+		bordercolor	.5 .5 .5 .5																					\
+		visible		1																							\
+		decoration																								\
+	}																											\
+																												\
+	itemDef {																									\
+		name		"windowtitle"																				\
+		rect		$evalfloat((0)+2) $evalfloat((19)+2) $evalfloat((204)-4) 12									\
+		origin		ORIGIN_QUICKMESSAGE																			\
+		text		"MESSAGE"																					\
+		textfont	UI_FONT_ARIBLK_16																			\
+		textscale	.19																							\
+		textalignx	3																							\
+		textaligny	10																							\
+		style		WINDOW_STYLE_FILLED																			\
+		backcolor	.16 .2 .17 .8																				\
+		forecolor	.6 .6 .6 1																					\
+		visible		1																							\
+		decoration																								\
+	}
+
+	#define QM_MENU_END }
+
+	#define QM_MENU_ITEM( WINDOWTEXT, ACTION, KEY, POS )				\
+    itemDef {															\
+		name			"menuitem"##WINDOWTEXT							\
+		rect			6 $evalfloat( 35 + ( 12 * POS )) 128 10			\
+		origin			ORIGIN_QUICKMESSAGE								\
+		type			ITEM_TYPE_TEXT									\
+		text			WINDOWTEXT										\
+		textfont		UI_FONT_COURBD_21								\
+		textstyle		ITEM_TEXTSTYLE_SHADOWED							\
+		textscale		.2												\
+		textaligny		8												\
+		forecolor		.6 .6 .6 1										\
+		visible			1												\
+		decoration														\
+    }																	\
+    execKey KEY { ACTION }
+
+	#define QM_MENU_ITEM_TEAM( WINDOWTEXT, ACTION, KEY, POS )			\
+    itemDef {															\
+		name			"menuitem"##WINDOWTEXT							\
+		rect			6 $evalfloat( 35 + ( 12 * POS )) 128 10			\
+		origin			ORIGIN_QUICKMESSAGE								\
+		type			ITEM_TYPE_TEXT									\
+		text			WINDOWTEXT										\
+		textfont		UI_FONT_COURBD_21								\
+		textstyle		ITEM_TEXTSTYLE_SHADOWED							\
+		textscale		.2												\
+		textaligny		8												\
+		forecolor		.6 .6 .6 1										\
+		visible			1												\
+		decoration														\
+    }																	\
+	execKey KEY { ACTION }
+
+QM_MENU_START( "wm_ftquickmessage" )
+
+	QM_MENU_ITEM_TEAM( 	"S. Statements", 	close wm_ftquickmessage; 		open wm_ftquickstatements, 	"s", 0 )
+	QM_MENU_ITEM_TEAM( 	"R. Requests", 		close wm_ftquickmessage; 		open wm_ftquickrequests, 	"r", 1 )
+	QM_MENU_ITEM_TEAM( 	"C. Commands", 		close wm_ftquickmessage; 		open wm_ftquickcommand, 	"c", 2 )
+	QM_MENU_ITEM_TEAM( 	"T. Talk",		 	close wm_ftquickmessage;	 	open wm_ftquickmisc, 		"t", 3 )
+	QM_MENU_ITEM( 		"G. Global",	 	close wm_ftquickmessage; 		open wm_ftquickglobal, 		"g", 4 )
+	QM_MENU_ITEM_TEAM( 	"F. Function", 		exec "wm_ftsayPlayerClass"; 	close wm_ftquickmessage,	"f", 5 )
+	QM_MENU_ITEM_TEAM( 	"O. Objectives", 	close wm_ftquickmessage; 		open wm_ftquickobjectives, 	"o", 6 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_ftquickstatements" )
+
+	QM_MENU_ITEM_TEAM( "P. Path Cleared.", 		exec "VoiceFireteamChat PathCleared"; 		close wm_ftquickstatements,	"p", 0 )
+	QM_MENU_ITEM_TEAM( "W. Enemy Weak!", 		exec "VoiceFireteamChat EnemyWeak"; 		close wm_ftquickstatements,	"w", 1 )
+	QM_MENU_ITEM_TEAM( "C. All Clear", 			exec "VoiceFireteamChat AllClear"; 			close wm_ftquickstatements,	"c", 2 )
+	QM_MENU_ITEM_TEAM( "I. Incoming", 			exec "VoiceFireteamChat Incoming"; 			close wm_ftquickstatements,	"i", 3 )
+	QM_MENU_ITEM_TEAM( "F. Fire In The Hole!", 	exec "VoiceFireteamChat FireInTheHole";		close wm_ftquickstatements,	"f", 4 )
+	QM_MENU_ITEM_TEAM( "D. I'm Defending.", 	exec "VoiceFireteamChat OnDefense"; 		close wm_ftquickstatements,	"d", 5 )
+	QM_MENU_ITEM_TEAM( "A. I'm Attacking.", 	exec "VoiceFireteamChat OnOffense"; 		close wm_ftquickstatements,	"a", 6 )
+	QM_MENU_ITEM_TEAM( "T. Taking Fire!", 		exec "VoiceFireteamChat TakingFire"; 		close wm_ftquickstatements,	"t", 7 )
+	QM_MENU_ITEM_TEAM( "M. Mines Cleared", 		exec "VoiceFireteamChat MinesCleared"; 		close wm_ftquickstatements,	"m", 8 )
+	QM_MENU_ITEM_TEAM( "E. Enemy Disguised", 	exec "VoiceFireteamChat EnemyDisguised";	close wm_ftquickstatements,	"e", 9 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_ftquickrequests" )
+
+	QM_MENU_ITEM_TEAM( "M. Need Medic!", 		exec "VoiceFireteamChat Medic"; 		close wm_ftquickrequests,	"m", 0 )
+	QM_MENU_ITEM_TEAM( "A. Need Ammo!", 		exec "VoiceFireteamChat NeedAmmo"; 		close wm_ftquickrequests,	"a", 1 )
+	QM_MENU_ITEM_TEAM( "B. Need Backup!", 		exec "VoiceFireteamChat NeedBackup"; 	close wm_ftquickrequests,	"b", 2 )
+	QM_MENU_ITEM_TEAM( "E. Need Engineer!", 	exec "VoiceFireteamChat NeedEngineer"; 	close wm_ftquickrequests,	"e", 3 )
+	QM_MENU_ITEM_TEAM( "C. Cover Me!", 			exec "VoiceFireteamChat CoverMe"; 		close wm_ftquickrequests,	"c", 4 )
+	QM_MENU_ITEM_TEAM( "H. Hold Fire!",			exec "VoiceFireteamChat HoldFire";	 	close wm_ftquickrequests, 	"h", 5 )
+	QM_MENU_ITEM_TEAM( "W. Where To?", 			exec "VoiceFireteamChat WhereTo"; 		close wm_ftquickrequests,	"w", 6 )
+	QM_MENU_ITEM_TEAM( "O. Need Covert Ops!", 	exec "VoiceFireteamChat NeedOps"; 		close wm_ftquickrequests,	"o", 7 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_ftquickcommand" )
+
+	QM_MENU_ITEM_TEAM( "F. Follow Me!", 		exec "VoiceFireteamChat FollowMe"; 			close wm_ftquickcommand, 	"f", 0 )
+	QM_MENU_ITEM_TEAM( "G. Let's Go!", 			exec "VoiceFireteamChat LetsGo"; 			close wm_ftquickcommand, 	"g", 1 )
+	QM_MENU_ITEM_TEAM( "M. Move!", 				exec "VoiceFireteamChat Move"; 				close wm_ftquickcommand, 	"m", 2 )
+	QM_MENU_ITEM_TEAM( "C. Clear The Path!", 	exec "VoiceFireteamChat ClearPath"; 		close wm_ftquickcommand, 	"c", 3 )
+	QM_MENU_ITEM_TEAM( "O. Defend Objective!", 	exec "VoiceFireteamChat DefendObjective"; 	close wm_ftquickcommand, 	"o", 4 )
+	QM_MENU_ITEM_TEAM( "D. Disarm Dynamite!", 	exec "VoiceFireteamChat DisarmDynamite"; 	close wm_ftquickcommand, 	"d", 5 )
+	QM_MENU_ITEM_TEAM( "N. Clear Mines!", 		exec "VoiceFireteamChat ClearMines"; 		close wm_ftquickcommand, 	"n", 6 )
+	QM_MENU_ITEM_TEAM( "R. Reinforce Offense", 	exec "VoiceFireteamChat ReinforceOffense"; 	close wm_ftquickcommand,	"r", 7 )
+	QM_MENU_ITEM_TEAM( "E. Reinforce Defense", 	exec "VoiceFireteamChat ReinforceDefense"; 	close wm_ftquickcommand,	"e", 8 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_ftquickmisc" )
+
+	QM_MENU_ITEM_TEAM( "Y. Yes",			exec "VoiceFireteamChat Affirmative"; 	close wm_ftquickmisc, "y", 0 )
+	QM_MENU_ITEM_TEAM( "N. No",				exec "VoiceFireteamChat Negative"; 		close wm_ftquickmisc, "n", 1 )
+	QM_MENU_ITEM_TEAM( "T. Thanks",			exec "VoiceFireteamChat Thanks"; 		close wm_ftquickmisc, "t", 2 )
+	QM_MENU_ITEM_TEAM( "W. Welcome",		exec "VoiceFireteamChat Welcome"; 		close wm_ftquickmisc, "w", 3 )
+	QM_MENU_ITEM_TEAM( "S. Sorry",			exec "VoiceFireteamChat Sorry"; 		close wm_ftquickmisc, "s", 4 )
+	QM_MENU_ITEM_TEAM( "O. Oops", 			exec "VoiceFireteamChat Oops"; 			close wm_ftquickmisc, "o", 5 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_ftquickglobal" )
+
+	QM_MENU_ITEM( "Y. Yes",				exec "VoiceChat Affirmative"; 	close wm_ftquickglobal, 	"y", 0 )
+	QM_MENU_ITEM( "N. No",				exec "VoiceChat Negative"; 		close wm_ftquickglobal, 	"n", 1 )
+	QM_MENU_ITEM( "W. Enemy Weak",		exec "VoiceChat EnemyWeak";		close wm_ftquickglobal, 	"w", 2 )
+	QM_MENU_ITEM( "H. Hi",				exec "VoiceChat Hi"; 			close wm_ftquickglobal, 	"h", 3 )
+	QM_MENU_ITEM( "B. Bye",				exec "VoiceChat Bye"; 			close wm_ftquickglobal, 	"b", 4 )
+	QM_MENU_ITEM( "S. Great Shot",		exec "VoiceChat GreatShot"; 	close wm_ftquickglobal, 	"s", 5 )
+	QM_MENU_ITEM( "C. Cheer",			exec "VoiceChat Cheer"; 		close wm_ftquickglobal, 	"c", 6 )
+	QM_MENU_ITEM( "G. More Globals",	close wm_ftquickglobal;			open wm_ftquickglobal2, 	"g", 7 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_ftquickglobal2" )
+
+	QM_MENU_ITEM( "T. Thanks",		exec "VoiceChat Thanks";	close wm_ftquickglobal2, 	"t", 0 )
+	QM_MENU_ITEM( "W. Welcome",		exec "VoiceChat Welcome"; 	close wm_ftquickglobal2, 	"w", 1 )
+	QM_MENU_ITEM( "O. Oops",		exec "VoiceChat Oops"; 		close wm_ftquickglobal2, 	"o", 2 )
+	QM_MENU_ITEM( "S. Sorry",		exec "VoiceChat Sorry"; 	close wm_ftquickglobal2, 	"s", 3 )
+	QM_MENU_ITEM( "H. Hold Fire!",	exec "VoiceChat HoldFire";	close wm_ftquickglobal2, 	"h", 4 )
+	QM_MENU_ITEM( "G. Good Game",	exec "VoiceChat GoodGame";	close wm_ftquickglobal2, 	"g", 5 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_ftquickobjectives" )
+
+	QM_MENU_ITEM_TEAM( "A. Command Acknowledged",		exec "VoiceFireteamChat CommandAcknowledged"; 		close wm_ftquickobjectives,	"a", 0 )
+	QM_MENU_ITEM_TEAM( "D. Command Declined",			exec "VoiceFireteamChat CommandDeclined";			close wm_ftquickobjectives,	"d", 1 )
+	QM_MENU_ITEM_TEAM( "C. Command Completed",			exec "VoiceFireteamChat CommandCompleted";			close wm_ftquickobjectives,	"c", 2 )
+	QM_MENU_ITEM_TEAM( "P. Destroy Primary Objective",	exec "VoiceFireteamChat DestroyPrimary"; 			close wm_ftquickobjectives,	"p", 3 )
+	QM_MENU_ITEM_TEAM( "S. Destroy Secondary Objective",	exec "VoiceFireteamChat DestroySecondary";		close wm_ftquickobjectives,	"s", 4 )
+	QM_MENU_ITEM_TEAM( "X. Destroy Construction",		exec "VoiceFireteamChat DestroyConstruction";		close wm_ftquickobjectives,	"x", 5 )
+	QM_MENU_ITEM_TEAM( "M. Commencing Construction",	exec "VoiceFireteamChat ConstructionCommencing";	close wm_ftquickobjectives, "m", 6 )
+	QM_MENU_ITEM_TEAM( "R. Repair Vehicle",				exec "VoiceFireteamChat RepairVehicle";				close wm_ftquickobjectives,	"r", 7 )
+	QM_MENU_ITEM_TEAM( "V. Disable Vehicle",			exec "VoiceFireteamChat DestroyVehicle";			close wm_ftquickobjectives,	"v", 8 )
+	QM_MENU_ITEM_TEAM( "E. Escort Vehicle",				exec "VoiceFireteamChat EscortVehicle";				close wm_ftquickobjectives,	"e", 9 )
+
+QM_MENU_END

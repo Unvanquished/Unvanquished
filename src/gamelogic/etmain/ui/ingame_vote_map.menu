@@ -1,0 +1,94 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+//#define WINDOW_WIDTH	128
+#define WINDOW_WIDTH	252
+#define WINDOW_HEIGHT	180
+#define GROUP_NAME		"grpIngameVoteMap"
+
+// Macros //
+
+#include "ui/menumacros.h"
+
+// Map Vote Menu //
+
+menuDef {
+	name		"ingame_vote_map"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+
+	onOpen {
+		copyCvar g_gametype ui_netgametype ;
+		uiScript loadArenas ;
+		
+		conditionalScript ui_netgametype 3	// 3: cvartest
+			( "hide bttnSelectionMaps ; hide bttnSelectionCampaigns ; hide mapList_maps ; show mapList_campaigns" )
+			( "show bttnSelectionMaps ; show bttnSelectionCampaigns ; show mapList_maps ; hide mapList_campaigns" ) "4" ;
+	}
+
+	onEsc {
+		close ingame_vote_map ;
+		open ingame_vote
+	}
+
+// Window //
+
+	WINDOW( "MAPS", 50)
+
+// Map Selection //
+
+	NAMEDBUTTON( "bttnSelectionMaps", 6, 32, .5*(WINDOW_WIDTH-18), 14, "MAPS", .24, 11, copyCvar g_gametype ui_netgametype )
+	NAMEDBUTTON( "bttnSelectionCampaigns", 6+.5*(WINDOW_WIDTH-18)+6, 32, .5*(WINDOW_WIDTH-18), 14, "CAMPAIGNS", .24, 11, setcvar ui_netgametype 4 )
+
+	itemDef {
+		name			"mapList_maps"
+		group			GROUP_NAME
+		rect			6 48 240 102
+		type			ITEM_TYPE_LISTBOX
+		textfont		UI_FONT_COURBD_21
+		textscale		.2
+		textaligny		-3
+		forecolor		.6 .6 .6 1
+		outlinecolor	.5 .5 .5 .4
+		border			WINDOW_BORDER_FULL
+		bordercolor		.1 .1 .1 .5
+		feeder			FEEDER_ALLMAPS
+		elementtype		LISTBOX_TEXT
+		elementwidth	200
+		elementheight	12
+		columns			1 0 200 33
+		visible			0
+	}
+	
+	itemDef {
+		name			"mapList_campaigns"
+		group			GROUP_NAME
+		rect			6 32 240 118
+		type			ITEM_TYPE_LISTBOX
+		textfont		UI_FONT_COURBD_21
+		textscale		.2
+		textaligny		-3
+		forecolor		.6 .6 .6 1
+		outlinecolor	.5 .5 .5 .4
+		border			WINDOW_BORDER_FULL
+		bordercolor		.1 .1 .1 .5
+		feeder			FEEDER_ALLMAPS
+		elementtype		LISTBOX_TEXT
+		elementwidth	200
+		elementheight	12
+		columns			1 0 200 33
+		visible			0
+	}
+
+// Buttons //
+
+	BUTTON( 6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "BACK", .3, 14, close ingame_vote_map ; open ingame_vote )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "OK", .3, 14, uiScript voteMap ; uiScript closeingame, cvarTest "authLevel" showCVar { RL_NONE } )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "OK", .3, 14, uiScript refMap ; uiScript closeingame, cvarTest "authLevel" showCVar { RL_REFEREE } )
+	BUTTONEXT( 6+.5*(WINDOW_WIDTH-18)+6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "OK", .3, 14, uiScript refMap ; uiScript closeingame, cvarTest "authLevel" showCVar { RL_RCON } )
+}

@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+***********************************************************************************************
+(c) 2011 Gavin Pugh http://www.gavpugh.com/ - Released under the open-source zlib license
+***********************************************************************************************
+-->
+
+<!-- Based on script: MSBuild\Microsoft.Cpp\v4.0\1033\ProjectItemsSchema.xml -->
+<ProjectSchemaDefinitions
+    xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+
+  <ContentType
+      Name="CppCode"
+      DisplayName="C/C++ Code"
+      ItemType="ClCompile">
+  </ContentType>
+
+  <ContentType
+      Name="CppHeader"
+      DisplayName="C/C++ Header"
+      ItemType="ClInclude">
+  </ContentType>
+
+  <ContentType
+      Name="CppClass"
+      DisplayName="C++ Class"
+      ItemType="ClCompile">
+  </ContentType>
+
+  <ContentType
+      Name="CppForm"
+      DisplayName="C++ Form"
+      ItemType="ClCompile">
+  </ContentType>
+
+  <ContentType
+      Name="CppControl"
+      DisplayName="C++ Control"
+      ItemType="ClCompile">
+  </ContentType>
+
+
+  <ContentType
+      Name="Text"
+      DisplayName="Text file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="DEF"
+      DisplayName="DEF file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="Midl"
+      DisplayName="Idl file"
+      ItemType="Midl">
+  </ContentType>
+
+  <ContentType
+      Name="Makefile"
+      DisplayName="Makefile"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="RGS"
+      DisplayName="RGS file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="RC"
+      DisplayName="RC file"
+      ItemType="ResourceCompile">
+  </ContentType>
+
+  <ContentType
+      Name="RC2"
+      DisplayName="RC2 file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="RES"
+      DisplayName="RES file"
+      ItemType="Resource">
+  </ContentType>
+
+  <ContentType
+      Name="XSD"
+      DisplayName="XSD file"
+      ItemType="Xsd">
+  </ContentType>
+
+  <ContentType
+      Name="XML"
+      DisplayName="Xml file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="HTML"
+      DisplayName="Html file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="CSS"
+      DisplayName="Cascading style sheet"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="BMP"
+      DisplayName="Bitmap"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="ICO"
+      DisplayName="Icon"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="Resx"
+      DisplayName="Resx file"
+      ItemType="EmbeddedResource">
+  </ContentType>
+
+  <ContentType
+      Name="Script"
+      DisplayName="Script file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="BSC"
+      DisplayName="Bsc file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="XSX"
+      DisplayName="XSX file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="CppWebService"
+      DisplayName="C++ Web service"
+      ItemType="ClInclude">
+  </ContentType>
+
+  <ContentType
+      Name="Asax"
+      DisplayName="Asax file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="AspPage"
+      DisplayName="ASP page"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="Document"
+      DisplayName="Document"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="Discomap"
+      DisplayName="Discovery file"
+      ItemType="CustomBuild">
+  </ContentType>
+
+  <ContentType
+      Name="CSharpFile"
+      DisplayName="C# file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="ClassDiagram"
+      DisplayName="Class Diagram"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="MHT"
+      DisplayName="MHT file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="CUR"
+      DisplayName="Cursor"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="Manifest"
+      DisplayName="Manifest"
+      ItemType="Manifest">
+  </ContentType>
+
+  <ContentType
+      Name="RDLC"
+      DisplayName="RDLC file"
+      ItemType="None">
+  </ContentType>
+
+  <ContentType
+      Name="OBJ"
+      DisplayName="Object file"
+      ItemType="Object">
+  </ContentType>
+
+  <ContentType
+    Name="LIB"
+    DisplayName="Library file"
+    ItemType="Library">
+  </ContentType>
+
+  <ContentType
+    Name="RSC"
+    DisplayName="Resource"
+    ItemType="Resource">
+  </ContentType>
+
+  <ContentType
+    Name="Licenses"
+    DisplayName="Compiled License"
+    ItemType="_EmbedManagedResourceFile">
+  </ContentType>
+
+  <ItemType Name="ClCompile" DisplayName="C/C++ compiler"/>
+  <ItemType Name="ClInclude" DisplayName="C/C++ header"/>
+  <ItemType Name="Midl" DisplayName="MIDL tool"/>
+  <ItemType Name="ResourceCompile" DisplayName="Resource compiler"/>
+  <ItemType Name="EmbeddedResource" DisplayName="Managed resource compiler"/>
+  <ItemType Name="Xsd" DisplayName="XML Data Generator Tool"/>
+  <ItemType Name="CustomBuild" DisplayName="Custom Build Tool"/>
+  <ItemType Name="None" DisplayName="Does not participate in build"/>
+  <ItemType Name="Resource" DisplayName="Resource"/>
+  <ItemType Name="Object" DisplayName="Object"/>
+  <ItemType Name="Library" DisplayName="Library"/>
+  <ItemType Name="Manifest" DisplayName="Manifest Tool"/>
+  <ItemType Name="_EmbedManagedResourceFile" DisplayName="Compiled Managed Resource"/>
+
+  <FileExtension Name=".cpp" ContentType="CppCode"/>
+  <FileExtension Name=".c" ContentType="CppCode"/>
+  <FileExtension Name=".cc" ContentType="CppCode"/>
+  <FileExtension Name=".cxx" ContentType="CppCode"/>
+
+  <!-- Added just these two lines for vs-android -->
+  <FileExtension Name=".s" ContentType="CppCode"/>
+  <FileExtension Name=".asm" ContentType="CppCode"/>
+
+  <FileExtension Name=".h" ContentType="CppHeader"/>
+  <FileExtension Name=".hpp" ContentType="CppHeader"/>
+  <FileExtension Name=".hxx" ContentType="CppHeader"/>
+
+  <FileExtension Name=".idl" ContentType="Midl"/>
+  <FileExtension Name=".odl" ContentType="Midl"/>
+
+  <FileExtension Name=".asax" ContentType="Asax"/>
+  <FileExtension Name=".asmx" ContentType="HTML"/>
+  <FileExtension Name=".asp" ContentType="AspPage"/>
+  <FileExtension Name=".def" ContentType="DEF"/>
+  <FileExtension Name=".mk" ContentType="MakeFile"/>
+  <FileExtension Name=".mak" ContentType="MakeFile"/>
+  <FileExtension Name=".txt" ContentType="Text"/>
+  <FileExtension Name=".rgs" ContentType="RGS"/>
+  <FileExtension Name=".rc" ContentType="RC"/>
+  <FileExtension Name=".rc2" ContentType="RC2"/>
+  <FileExtension Name=".res" ContentType="RES"/>
+  <FileExtension Name=".resx" ContentType="RESX"/>
+  <FileExtension Name=".html" ContentType="HTML"/>
+  <FileExtension Name=".htm" ContentType="HTML"/>
+  <FileExtension Name=".css" ContentType="CSS"/>
+  <FileExtension Name=".bmp" ContentType="BMP"/>
+  <FileExtension Name=".ico" ContentType="ICO"/>
+  <FileExtension Name=".cur" ContentType="CUR"/>
+  <FileExtension Name=".vbS" ContentType="Script"/>
+  <FileExtension Name=".jS" ContentType="Script"/>
+  <FileExtension Name=".xml" ContentType="XML"/>
+  <FileExtension Name=".xsd" ContentType="XSD"/>
+  <FileExtension Name=".wsdl" ContentType="Discomap"/>
+  <FileExtension Name=".disco" ContentType="Discomap"/>
+  <FileExtension Name=".discomap" ContentType="Discomap"/>
+  <FileExtension Name=".cs" ContentType="CSharpFile"/>
+  <FileExtension Name=".bsc" ContentType="BSC"/>
+  <FileExtension Name=".mht" ContentType="MHT"/>
+  <FileExtension Name=".manifest" ContentType="Manifest"/>
+  <FileExtension Name=".rdlc" ContentType="RDLC"/>
+  <FileExtension Name=".cd" ContentType="ClassDiagram"/>
+  <FileExtension Name=".obj" ContentType="OBJ"/>
+  <FileExtension Name=".lib" ContentType="LIB"/>
+  <FileExtension Name=".rsc" ContentType="RSC"/>
+  <FileExtension Name=".licenses" ContentType="Licenses"/>
+</ProjectSchemaDefinitions>
+

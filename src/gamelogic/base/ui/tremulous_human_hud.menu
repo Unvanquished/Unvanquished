@@ -1,0 +1,445 @@
+#include "ui/menudef.h"
+
+// team menu
+// 
+// defines from ui_shared.h
+
+{
+  menuDef
+  {
+    name "human_hud"
+    fullScreen MENU_FALSE
+    visible MENU_TRUE
+    rect 0 0 640 480
+
+    //CONSOLE
+    itemDef
+    {
+      name "console"
+      rect 8 8 560 180
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      align ITEM_ALIGN_LEFT
+      textalignx 0
+      textaligny 18
+      textscale 0.4
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_CONSOLE
+    }   
+
+    //TUTORIAL
+    itemDef
+    {
+      name "tutorial"
+      rect 8 250 640 180
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 0.35
+      align ITEM_ALIGN_LEFT
+      textalignx 0
+      textaligny 18
+      textscale 0.3
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_TUTORIAL
+    }   
+
+    //LAGOMETER
+    itemDef
+    {
+      name "lagometer"
+      rect 596 68 32 20
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 0 0.8 1 1
+      textscale 0.3
+      textalignx 1
+      textaligny 0.5
+      ownerdraw CG_LAGOMETER
+    }
+
+    //DEMO STATE
+    itemDef
+    {
+      name "demoRecording"
+      rect 596 100 32 32
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 0 0 1
+      textscale 0.3
+      textalignx 1
+      textaligny 0.5
+      ownerdraw CG_DEMO_RECORDING
+      background "ui/assets/neutral/circle.tga"
+    }   
+    itemDef
+    {
+      name "demoPlayback"
+      rect 596 100 32 32
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      textscale 0.3
+      textalignx 1
+      textaligny 0.5
+      ownerdraw CG_DEMO_PLAYBACK
+      background "ui/assets/forwardarrow.tga"
+    }   
+
+    //FPS
+    itemDef
+    {
+      name "fps"
+      rect 572 8 56 22
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 1
+      align ITEM_ALIGN_RIGHT
+      textalignx 0
+      textaligny 18
+      textscale 0.3
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_FPS
+    }   
+    
+    //TIMER
+    itemDef
+    {
+      name "timer"
+      rect 572 38 56 22
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 1
+      align ITEM_ALIGN_RIGHT
+      textalignx 0
+      textaligny 18
+      textscale 0.3
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_TIMER
+    }   
+
+    //SNAPSHOT
+    itemDef
+    {
+      name "snapshot"
+      rect 8 196 200 22
+      style WINDOW_STYLE_EMPTY
+      visible 1
+      decoration
+      forecolor 1 1 1 1
+      align ITEM_ALIGN_RIGHT
+      textalignx 0
+      textaligny 18
+      textscale 0.4
+      textstyle ITEM_TEXTSTYLE_NORMAL
+      ownerdraw CG_SNAPSHOT
+    }
+
+    //////////////////
+    //STATIC OBJECTS//
+    //////////////////
+
+    //LEFT CIRCLE
+    itemDef
+    {
+      name "left-circle"
+      rect 35 417.5 25 25
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/neutral/circle.tga"
+    }   
+
+    //LEFT ARM
+    itemDef
+    {
+      name "left-arm"
+      rect 68.25 420 94.5 35
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/human/left-arm.tga"
+    }   
+
+    //CREDITS LABEL
+    itemDef
+    {
+      name "credits-label"
+      rect 508 403 7 7.5
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/human/credits.tga"
+    }   
+
+    //RIGHT CIRCLE
+    itemDef
+    {
+      name "right-circle"
+      rect 580 417.5 25 25
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/neutral/circle.tga"
+    }   
+
+    //RIGHT ARM
+    itemDef
+    {
+      name "right-arm"
+      rect 477.25 420 94.5 35
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/human/right-arm.tga"
+    }   
+
+    //RIGHT CAP
+    itemDef
+    {
+      name "right-cap"
+      rect 500 400 80 15
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/human/right-cap.tga"
+    }   
+
+    ///////////////////
+    //DYNAMIC OBJECTS//
+    ///////////////////
+
+    //BOLT
+    itemDef
+    {
+      name "bolt"
+      rect 40 420 15 20
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      background "ui/assets/human/bolt.tga"
+      ownerdraw CG_PLAYER_STAMINA_BOLT
+    }   
+
+    //CROSS
+    itemDef
+    {
+      name "cross"
+      rect 137.5 430 15 15
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      background "ui/assets/neutral/cross.tga"
+      ownerdraw CG_PLAYER_HEALTH_CROSS
+    }   
+
+    //STAMINA 1
+    itemDef
+    {
+      name "stamina1"
+      rect 34.5 403.5 9 11.5
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      background "ui/assets/human/stamina1.tga"
+      ownerdraw CG_PLAYER_STAMINA_1
+    }   
+
+    //STAMINA 2
+    itemDef
+    {
+      name "stamina2"
+      rect 24 410.75 11.5 10.5
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      background "ui/assets/human/stamina2.tga"
+      ownerdraw CG_PLAYER_STAMINA_2
+    }   
+
+    //STAMINA 3
+    itemDef
+    {
+      name "stamina3"
+      rect 20.75 423.5 10.5 7
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      background "ui/assets/human/stamina3.tga"
+      ownerdraw CG_PLAYER_STAMINA_3
+    }   
+
+    //STAMINA 4
+    itemDef
+    {
+      name "stamina4"
+      rect 21 402.5 54 55
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      background "ui/assets/human/stamina4.tga"
+      ownerdraw CG_PLAYER_STAMINA_4
+    }   
+
+    //RING
+    itemDef
+    {
+      name "ring"
+    //  rect 20 402.5 55 55  // Guide for Stamina alignment
+      rect 565 402.5 55 55
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      background "ui/assets/human/ring.tga"
+      ownerdraw CG_PLAYER_CLIPS_RING
+    }
+
+    //CREDITS
+    itemDef
+    {
+      name "credits"
+      rect 515 402 45 11.25
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      ownerdraw CG_PLAYER_CREDITS_VALUE
+    }   
+
+    //HEALTH
+    itemDef
+    {
+      name "health"
+      rect 67 430 60 15
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 .5
+      ownerdraw CG_PLAYER_HEALTH
+    }
+
+    //WEAPON ICON
+    itemDef
+    {
+      name "weapon"
+      rect 482.5 425 25 25
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      ownerdraw CG_PLAYER_WEAPONICON
+    }   
+
+    //WEAPON SELECT TEXT  
+    itemDef  
+    {  
+      name "selecttext"  
+      rect 200 300 240 25
+      visible 1  
+      decoration  
+      textScale .5  
+      ownerdraw CG_PLAYER_SELECTTEXT  
+    }
+
+    //AMMO
+    itemDef
+    {
+      name "ammo"
+      rect 494 430 60 15
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 .5
+      ownerdraw CG_PLAYER_AMMO_VALUE
+    }
+
+    //CLIPS
+    itemDef
+    {
+      name "clips"
+      rect 538 423 60 15
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 .5
+      ownerdraw CG_PLAYER_CLIPS_VALUE
+    }
+
+    //BUILD TIMER
+    itemDef
+    {
+      name "buildtimer"
+      rect 580 417.5 25 25
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 .5
+      ownerdraw CG_PLAYER_BUILD_TIMER
+    }
+
+    //USABLE
+    itemDef  
+    {  
+      name "usable"
+      rect 307.5 380 25 25
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 .5
+      background "ui/assets/neutral/use.tga"
+      ownerdraw CG_PLAYER_USABLE_BUILDABLE
+    }
+
+    //SCANNER
+    itemDef
+    {
+      name "scanner"
+      rect 164 340 312 72
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 .5
+      background "ui/assets/human/scanner.tga"
+      ownerdraw CG_PLAYER_HUMAN_SCANNER
+    }
+
+    //INVENTORY
+    itemDef
+    {
+      name "inventory"
+      rect 232.5 425 175 25
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.5
+      ownerdraw CG_PLAYER_SELECT
+    }
+
+    //SELECTED
+    itemDef
+    {
+      name "selected"
+      rect 306 424 27 27
+      visible 1
+      decoration
+      forecolor 0.0 0.8 1.0 0.25
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/neutral/selected.tga"
+    }   
+
+    //PLAYER NAME
+    itemDef  
+    {  
+      name "playername"  
+      rect 200 275 240 25
+      visible 1  
+      decoration  
+      textScale .5
+      ownerdraw CG_PLAYER_CROSSHAIRNAMES
+    }
+  }
+}

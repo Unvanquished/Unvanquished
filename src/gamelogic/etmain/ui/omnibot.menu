@@ -1,0 +1,1060 @@
+	#include "ui/menudef.h"
+
+	#define DEFAULT_TEXT_SCALE 0.25
+	#define ORIGIN_QUICKMESSAGE		10 10
+	#define QM_MENU_GRADIENT_START_OFFSET
+	#define QM_MENU_START( WINDOWNAME )								\
+													\
+menuDef {												\
+	name		WINDOWNAME									\
+	visible		0										\
+	fullscreen	0										\
+	rect		0 100 640 380									\
+	onOpen		{ closeAllOtherMenus ; setCvar cl_bypassMouseInput "1" }			\
+	onClose		{ setCvar cl_bypassMouseInput "0" }						\
+	onEsc		{ closeAll }									\
+													\
+	itemDef {											\
+		name		"window"								\
+		rect		0 19 254 210								\
+		origin		ORIGIN_QUICKMESSAGE							\
+		style		WINDOW_STYLE_FILLED							\
+		backcolor	0 0 0 .75								\
+		border		WINDOW_BORDER_FULL							\
+		bordercolor	.5 .5 .5 .5								\
+		visible		1									\
+		decoration										\
+	}												\
+													\
+	itemDef {											\
+		name		"windowtitle"								\
+		rect		$evalfloat((0)+2) $evalfloat((19)+2) $evalfloat((254)-4) 12		\
+		origin		ORIGIN_QUICKMESSAGE							\
+		text		"^1Omni-Bot Dev Menu System (DMS) for V0.81"				\
+		textfont	UI_FONT_ARIBLK_16							\
+		textscale	.19									\
+		textalignx	3									\
+		textaligny	10									\
+		style		WINDOW_STYLE_FILLED							\
+		backcolor	.16 .2 .17 .8								\
+		forecolor	.6 .6 .6 1								\
+		visible		1									\
+		decoration										\
+	}
+
+	#define QM_MENU_END }
+
+	#define QM_MENU_ITEM( WINDOWTEXT, ACTION, KEY, POS )						\
+	itemDef {											\
+		name			"menuitem"##WINDOWTEXT						\
+		rect			6 $evalfloat( 35 + ( 12 * POS )) 128 10				\
+		origin			ORIGIN_QUICKMESSAGE						\
+		type			ITEM_TYPE_TEXT							\
+		text			WINDOWTEXT							\
+		textfont		UI_FONT_COURBD_21						\
+		textstyle		ITEM_TEXTSTYLE_SHADOWED						\
+		textscale		.2								\
+		textaligny		8								\
+		forecolor		.6 .6 .6 1							\
+		visible			1								\
+		decoration										\
+	}												\
+	execKey KEY { ACTION }
+
+	#define QM_MENU_ITEM_TEAM( WINDOWTEXT, ACTION, KEY, POS )					\
+	itemDef {											\
+		name			"menuitem"##WINDOWTEXT						\
+		rect			6 $evalfloat( 35 + ( 12 * POS )) 128 10				\
+		origin			ORIGIN_QUICKMESSAGE						\
+		type			ITEM_TYPE_TEXT							\
+		text			WINDOWTEXT							\
+		textfont		UI_FONT_COURBD_21						\
+		textstyle		ITEM_TEXTSTYLE_SHADOWED						\
+		textscale		.2								\
+		textaligny		8								\
+		forecolor		.6 .6 .6 1							\
+		visible			1								\
+		decoration										\
+	}												\
+	execKey KEY { ACTION }
+
+QM_MENU_START( "omnibot" )
+
+	QM_MENU_ITEM( "^c 1. Waypoints",				close omnibot;					open wm_waypoints_alt,					"1", 0 )
+	QM_MENU_ITEM( "^o 2. Draw Map Goals",				close omnibot;					open wm_drawgoals_alt,					"2", 1 )
+	QM_MENU_ITEM( "^o 3. Draw Weapon Goals",			close omnibot;					open wm_drawgoals2_alt,					"3", 2 )
+	QM_MENU_ITEM( "^h 4. Create Camp Goals / BotRoles",		close omnibot;					open wm_creategoals2_alt,				"4", 3 )
+	QM_MENU_ITEM( "^h 5. Create Map Goals",				close omnibot;					open wm_creategoals1_alt,				"5", 4 )
+	QM_MENU_ITEM( "^h 6. Create Weapon Goals",			close omnibot;					open wm_creategoals3_alt,				"6", 5 )
+	QM_MENU_ITEM( "^d 7. Edit Goals",				close omnibot;					open wm_editgoals_alt,					"7", 6 )
+	QM_MENU_ITEM( "^d 8. Editing Commands",				close omnibot;					open wm_editcommands_alt,				"8", 7 )
+	QM_MENU_ITEM( "^d 9. Goal Options",				close omnibot;					open wm_goaloptions_alt,				"9", 8 )
+	QM_MENU_ITEM( "^8 0. Omnibot Commands",				close omnibot;					open wm_commands_alt,					"0", 9 )
+	QM_MENU_ITEM( "^8 -. Add Bots",					close omnibot;					open wm_addbots_alt,					"-", 10 )
+	QM_MENU_ITEM( "^b =. Cheats Menu",				close omnibot;					open ingame_vote_bots_fun,				"=", 11 )
+	QM_MENU_ITEM( "^b [. Debug Menu",				close omnibot;					open wm_debug_alt,					"[", 12 )
+	QM_MENU_ITEM( "^b ]. CVAR's Menu",				close omnibot;					open wm_cvars_alt,					"]", 13 )
+	QM_MENU_ITEM( "^7 Z. Close",					close omnibot,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_waypoints_alt" )
+
+	QM_MENU_ITEM( "^c 1. Waypoints On",				exec "bot waypoint_view on";			exec "echo ^oW^9aypoints ^1Visible",			"1", 0 )
+	QM_MENU_ITEM( "^c 2. Waypoints Off",				exec "bot waypoint_view off";			exec "echo ^oW^9aypoints ^1Invisible",			"2", 1 )
+	QM_MENU_ITEM( "^c 3. Setfacing On",				exec "bot waypoint_viewfacing on";		exec "echo ^oF^9acing ^1Visible",			"3", 2 )
+	QM_MENU_ITEM( "^c 4. Setfacing Off",				exec "bot waypoint_viewfacing off";		exec "echo ^oF^9acing ^1Visible",			"4", 3 )
+	QM_MENU_ITEM( "^c 5. Set WP Name",				close wm_waypoints5_alt;			open omnibot_waypointname,				"5", 4 )
+	QM_MENU_ITEM( "^c 6. Waypoint Actions",				close wm_waypoints_alt;				open wm_waypoints2_alt,					"6", 5 )
+	QM_MENU_ITEM( "^c 7. Bot Movement",				close wm_waypoints_alt;				open wm_waypoints3_alt,					"7", 6 )
+	QM_MENU_ITEM( "^c 8. Map Flags",				close wm_waypoints_alt;				open wm_waypoints4_alt,					"8", 7 )
+	QM_MENU_ITEM( "^c 9. Waypoint Radius",				close wm_waypoints_alt;				open wm_waypoints5_alt,					"9", 8 )
+	QM_MENU_ITEM( "^c 0. Save Waypoints",				exec "bot waypoint_save";			exec "echo ^oW^9aypoints ^1Saved",			"0", 9 )
+	QM_MENU_ITEM( "^c -. 1st Stuckage",				exec "bot stuckstart",											"-", 10 )
+	QM_MENU_ITEM( "^c =. Next Stuckage",				exec "bot stucknext",											"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_waypoints_alt;				open omnibot,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_waypoints_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_waypoints2_alt" )
+
+	QM_MENU_ITEM( "^c 1. Add Waypoint",				exec "bot waypoint_add";			exec "echo ^oW^0aypoint ^1added",			"1", 0 )
+	QM_MENU_ITEM( "^c 2. Connect (2-Way)",				exec "bot waypoint_biconnect";			exec "echo ^oW^9aypoint ^1Double-connection",		"2", 1 )
+	QM_MENU_ITEM( "^c 3. Connect (1-Way)",				exec "bot waypoint_connect";			exec "echo ^oW^9aypoint ^oS^0ingle ^oC^0onnection",	"3", 2 )
+	QM_MENU_ITEM( "^c 4. Move Waypoint",				exec "bot waypoint_move";			exec "echo ^1Moving ^oW^9aypoint",			"4", 3 )
+	QM_MENU_ITEM( "^c 5. Delete Waypoint",				exec "bot waypoint_del";			exec "echo ^1Deleting ^oW^9aypoint",			"5", 4 )
+	QM_MENU_ITEM( "^c 6. Set WP Facing",				exec "bot waypoint_setfacing";			exec "echo ^oS^9etfacing ^1Added",			"6", 5 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_waypoints2_alt;			open wm_waypoints_alt,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_waypoints2_alt,										"z", 15 )
+	
+QM_MENU_END
+
+QM_MENU_START( "wm_waypoints3_alt" )
+
+	QM_MENU_ITEM( "^c 1. Climb",					exec "bot waypoint_addflag climb";		exec "echo ^oC^9limb^oF^9lag ^1Added",			"1", 0 )
+	QM_MENU_ITEM( "^c 2. Crouch",					exec "bot waypoint_addflag crouch";		exec "echo ^oC^9rouch ^oF^9lag ^1Added",		"2", 1 )
+	QM_MENU_ITEM( "^c 3. Prone",					exec "bot waypoint_addflag prone";		exec "echo ^oP^9rone ^oF^9lag ^1Added",			"3", 2 )
+	QM_MENU_ITEM( "^c 4. Jump Gap",					exec "bot waypoint_addflag jumpgap";		exec "echo ^oJ^9umpgap ^oF^9lag ^1Added",		"4", 3 )
+	QM_MENU_ITEM( "^c 5. Jump over obstacle",			exec "bot waypoint_addflag jumplow";		exec "echo ^oJ^9umplow ^oF^9lag ^1Added",		"5", 4 )
+	QM_MENU_ITEM( "^c 6. Jump!",					exec "bot waypoint_addflag jump";		exec "echo ^oJ^9ump ^oF^9lag ^1Added",			"6", 5 )
+	QM_MENU_ITEM( "^c 7. Sneak",					exec "bot waypoint_addflag sneak";		exec "echo ^oS^9neak ^oF^9lag ^1Added",			"7", 6 )
+	QM_MENU_ITEM( "^c 8. Sprint",					exec "bot waypoint_addflag sprint";		exec "echo ^oS^9print ^oF^9lag ^1Added",		"8", 7 )
+	QM_MENU_ITEM( "^c 9. Door",					exec "bot waypoint_addflag door";		exec "echo ^oD^9oor ^oF^9lag ^1Added",			"9", 8 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_waypoints3_alt;			open wm_waypoints_alt,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_waypoints3_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_waypoints4_alt" )
+
+	QM_MENU_ITEM( "^c 1. Closed",					exec "bot waypoint_addflag closed";		exec "echo ^1Closed ^oF^9lag ^1Added",			"1", 0 )
+	QM_MENU_ITEM( "^c 2. BlockWall",				exec "bot waypoint_addflag blockwall";		exec "echo ^1Blockwall ^oF^9lag ^1Added",		"2", 1 )
+	QM_MENU_ITEM( "^c 3. BlockBridge",				exec "bot waypoint_addflag blockbridge";	exec "echo ^1Blockbridge ^oF^9lag ^1Added",		"3", 2 )
+	QM_MENU_ITEM( "^c 4. BlockWater",				exec "bot waypoint_addflag blockwater";		exec "echo ^1Blockwater ^oF^9lag ^1Added",		"4", 3 )
+	QM_MENU_ITEM( "^c 5. Allies only",				exec "bot waypoint_addflag allies";		exec "echo ^4Allied ^oW^9aypoint",			"5", 4 )
+	QM_MENU_ITEM( "^c 6. Axis only",				exec "bot waypoint_addflag axis";		exec "echo ^1Axis ^oW^9aypoint",			"6", 5 )
+	QM_MENU_ITEM( "^c 7. Disguise",					exec "bot waypoint_addflag disguise";		exec "echo ^oD^9isguise ^oF^9lag ^1Added",		"7", 6 )
+	QM_MENU_ITEM( "^c 8. Teleport",					exec "bot waypoint_addflag teleport";		exec "echo ^1Teleport ^oF^9lag ^1Added",		"8", 7 )
+	QM_MENU_ITEM( "^c 9. Elevator",					exec "bot waypoint_addflag elevator";		exec "echo ^1Elevator ^oF^9lag ^1Added",		"9", 8 )
+	QM_MENU_ITEM( "^c 0. InWater",					exec "bot waypoint_addflag inwater";		exec "echo ^1Inwater ^oF^9lag ^1Added",			"0", 9 )
+	QM_MENU_ITEM( "^c -. UnderWater",				exec "bot waypoint_addflag underwater";		exec "echo ^1Underwater ^oF^9lag ^1Added",		"-", 10 )
+	QM_MENU_ITEM( "^c =. Fix Water WP Flags",			exec "bot fix_waterwps";			exec "echo ^1Water ^oW^9aypoints ^1Fixed",		"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_waypoints4_alt;			open wm_waypoints_alt,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_waypoints4_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_waypoints5_alt" )
+
+	QM_MENU_ITEM( "^c 1. Set Radius 10",				exec "bot waypoint_setradius 10";		exec "echo ^410 ^0WP^1-^0Units",			"1", 0 )
+	QM_MENU_ITEM( "^c 2. Set Radius 20",				exec "bot waypoint_setradius 20";		exec "echo ^420 ^0WP^1-^0Units",			"2", 1 )
+	QM_MENU_ITEM( "^c 3. Set Radius 35",				exec "bot waypoint_setradius 35";		exec "echo ^435 ^0WP^1-^0Units",			"3", 2 )
+	QM_MENU_ITEM( "^c 4. Set Radius 50",				exec "bot waypoint_setradius 50";		exec "echo ^450 ^0WP^1-^0Units",			"4", 3 )
+	QM_MENU_ITEM( "^c 5. Set Radius 60",				exec "bot waypoint_setradius 60";		exec "echo ^460 ^0WP^1-^0Units",			"5", 4 )
+	QM_MENU_ITEM( "^c 6. Set Radius 75",				exec "bot waypoint_setradius 75";		exec "echo ^475 ^0WP^1-^0Units",			"6", 5 )
+	QM_MENU_ITEM( "^c 7. Set Radius 90",				exec "bot waypoint_setradius 90";		exec "echo ^490 ^0WP^1-^0Units",			"7", 6 )
+	QM_MENU_ITEM( "^c 8. Set Radius 100",				exec "bot waypoint_setradius 100";		exec "echo ^4100 ^0WP^1-^0Units",			"8", 7 )
+	QM_MENU_ITEM( "^c 9. Set Radius 125",				exec "bot waypoint_setradius 125";		exec "echo ^4125 ^0WP^1-^0Units",			"9", 8 )
+	QM_MENU_ITEM( "^c 0. Set Radius 150",				exec "bot waypoint_setradius 150";		exec "echo ^4150 ^0WP^1-^0Units",			"0", 9 )
+	QM_MENU_ITEM( "^c -. Set Radius 200",				exec "bot waypoint_setradius 200";		exec "echo ^4200 ^0WP^1-^0Units",			"-", 10 )
+	QM_MENU_ITEM( "^c =. Set Radius 300",				exec "bot waypoint_setradius 300";		exec "echo ^4300 ^0WP^1-^0Units",			"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_waypoints5_alt;			open wm_waypoints_alt,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_waypoints5_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_drawgoals_alt" )
+
+	QM_MENU_ITEM( "^m 1. Draw all Goals on",			exec "bot draw_goals on",										"1", 0 )
+	QM_MENU_ITEM( "^m 2. Draw all Goals off",			exec "bot draw_goals off",										"2", 1 )
+	QM_MENU_ITEM( "^o 3. Draw Defend Goals",			exec "bot draw_goals on DEFEND.*",									"3", 2 )
+	QM_MENU_ITEM( "^o 4. Draw Attack Goals",			exec "bot draw_goals on ATTACK.*",									"4", 3 )
+	QM_MENU_ITEM( "^o 5. Draw Snipe Goals",				exec "bot draw_goals on SNIPE.*",									"5", 4 )
+	QM_MENU_ITEM( "^o 6. Draw Build Goals",				exec "bot draw_goals on BUILD.*",									"6", 5 )
+	QM_MENU_ITEM( "^o 7. Draw Plant Goals",				exec "bot draw_goals on PLANT_.*";		exec "bot draw_goals on DYNAMITE.*",			"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw Cappoint Goals",			exec "bot draw_goals on CAPPOINT.*",									"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Switch Goals",			exec "bot draw_goals on SWITCH.*",									"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Camp Goals",				exec "bot draw_goals on CAMP.*",									"0", 9 )
+	QM_MENU_ITEM( "^m -. More Map Goals",				close wm_drawgoals_alt;				open wm_drawgoals3_alt,					"-", 10 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_drawgoals_alt;				open omnibot,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_drawgoals_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_drawgoals3_alt" )
+
+	QM_MENU_ITEM( "^m 1. Draw all Goals on",			exec "bot draw_goals on",										"1", 0 )
+	QM_MENU_ITEM( "^m 2. Draw all Goals off",			exec "bot draw_goals off",										"2", 1 )
+	QM_MENU_ITEM( "^o 3. Draw Mover Goals",				exec "bot draw_goals on MOVER.*",									"3", 2 )
+	QM_MENU_ITEM( "^o 4. Draw Escort Goals",			exec "bot draw_goals on ESCORT.*",									"4", 3 )
+	QM_MENU_ITEM( "^o 5. Draw Ride Goals",				exec "bot draw_goals on RIDE.*",									"5", 4 )
+	QM_MENU_ITEM( "^o 6. Draw Mount Goals",				exec "bot draw_goals on MOUNT_.*",									"6", 5 )
+	QM_MENU_ITEM( "^o 7. Draw Route Goals",				exec "bot draw_goals on ROUTE.*",									"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw Checkpoint Goals",			exec "bot draw_goals on CHECKPOINT.*",									"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Health/Ammo Cab Goals",		exec "bot draw_goals on AMMOCAB.*";		exec "bot draw_goals on HEALTHCAB.*",			"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Flag Goals",				exec "bot draw_goals on FLAG.*",									"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_drawgoals3_alt;			open wm_drawgoals_alt,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_drawgoals3_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_drawgoals2_alt" )
+
+	QM_MENU_ITEM( "^n 1. Draw All Goals on",			exec "bot draw_goals on",										"1", 0 )
+	QM_MENU_ITEM( "^n 2. Draw All Goals off",			exec "bot draw_goals off",										"2", 1 )
+	QM_MENU_ITEM( "^o 3. Draw Mount MG42 Goals",			exec "bot draw_goals on MOUNTMG42.*",									"3", 2 )
+	QM_MENU_ITEM( "^o 4. Draw Mobile MG42 Goals",			exec "bot draw_goals on MOBILEMG42.*",									"4", 3 )
+	QM_MENU_ITEM( "^o 5. Draw Repair (MG42) Goals",			exec "bot draw_goals on REPAIR.*",									"5", 4 )
+	QM_MENU_ITEM( "^o 6. Draw Grenade Goals",			exec "bot draw_goals on GRENADE.*",									"6", 5 )
+	QM_MENU_ITEM( "^o 7. Draw Mobile Mortar Goals",			exec "bot draw_goals on MOBILEMORTAR.*",								"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw Mine Goals",				exec "bot draw_goals on PLANTMINE.*",									"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Call Artillery Goals",		exec "bot draw_goals on CALLARTILLERY.*",								"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Artillery S/D Goals",			exec "bot draw_goals on ARTILLERY.*",									"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw Airstrike Goals",			exec "bot draw_goals on AIRSTRIKE.*",									"-", 10 )
+	QM_MENU_ITEM( "^o =. Draw SmokeBomb Goals",			exec "bot draw_goals on SMOKEBOMB.*",									"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_drawgoals2_alt;			open omnibot,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_drawgoals2_alt,										"z", 15 )
+
+QM_MENU_END
+
+
+QM_MENU_START( "wm_creategoals1_alt" )
+
+	QM_MENU_ITEM( "^h 1. Build Goal Menu",				close wm_creategoals1_alt;			open wm_buildgoal_alt,					"1", 0 )
+	QM_MENU_ITEM( "^h 2. Plant Goal Menu",				close wm_creategoals1_alt;			open wm_plantgoal_alt,					"2", 1 )
+	QM_MENU_ITEM( "^h 3. Plant Coverspot Menu",			close wm_creategoals1_alt;			open wm_Coverspotgoal_alt,				"3", 2 )
+	QM_MENU_ITEM( "^h 4. Escort Goal Menu",				close wm_creategoals1_alt;			open wm_escortgoal_alt,					"4", 3 )
+	QM_MENU_ITEM( "^h 5. Ride Goal Menu",				close wm_creategoals1_alt;			open wm_ridegoal_alt,					"5", 4 )
+	QM_MENU_ITEM( "^h 6. Mount Goal Menu",				close wm_creategoals1_alt;			open wm_mountgoal_alt,					"6", 5 )
+	QM_MENU_ITEM( "^h 7. Mover Build Offsets Menu",			close wm_creategoals1_alt;			open wm_moverbuildgoal_alt,				"7", 6 )
+	QM_MENU_ITEM( "^h 8. Switch Goal Menu",				close wm_creategoals1_alt;			open wm_switchgoal_alt,					"8", 7 )
+	QM_MENU_ITEM( "^h 9. Route Goal Menu",				close wm_creategoals1_alt;			open wm_routegoal_alt,					"9", 8 )
+	QM_MENU_ITEM( "^h 0. Create Cappoint Goal",			exec "bot goal_create CAPPOINT";		open cappoint_goalname,					"0", 9 )
+	QM_MENU_ITEM( "^j -. Save Goals",				exec "bot goal_save",											"-", 10 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_creategoals1_alt;			open omnibot,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_creategoals1_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_buildgoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create (Custom) Build Goal",		exec "bot goal_create build";			open build_goalname,					"1", 0 )
+	QM_MENU_ITEM( "^d 2. Draw OIDS",				exec "bot draw_oids",											"2", 1 )
+	QM_MENU_ITEM( "^d 3. Check Trace",				exec "bot goal_setproperty trace",									"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Stance Crouch",			exec "bot goal_setproperty stance crouch",								"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Stance Prone",				exec "bot goal_setproperty stance prone",								"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Stance Stand",				exec "bot goal_setproperty stance stand",								"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Stance Jump (Water Based Goals)",	exec "bot goal_setproperty stance jump",								"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Stance Random",			exec "bot goal_setproperty stance random",								"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Build Goals On",			exec "bot draw_goals on BUILD.*",									"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Build Goals Off",			exec "bot draw_goals off BUILD.*",									"0", 9 )
+	QM_MENU_ITEM( "^j -. Edit Goal (If Needed)",			exec "bot goal_edit",											"-", 10 )
+	QM_MENU_ITEM( "^j =. Finish Goal",				exec "bot goal_finish",											"=", 11 )
+	QM_MENU_ITEM( "^j [. Save Goals",				exec "bot goal_save",											"[", 12 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_buildgoal_alt;				open wm_creategoals1_alt,				"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_buildgoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_plantgoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create (Custom) Plant Goal",		exec "bot goal_create plant";			open plant_goalname,					"1", 0 )
+	QM_MENU_ITEM( "^d 2. Draw OIDS",				exec "bot draw_oids",											"2", 1 )
+	QM_MENU_ITEM( "^d 3. Check Trace",				exec "bot goal_setproperty trace",									"3", 2 )
+	QM_MENU_ITEM( "^h 4. Create (Custom) Dyno Goal",		exec "bot goal_create dynamite";		open plant_goalname,					"4", 3 )
+	QM_MENU_ITEM( "^d 5. Explosive Type Dyno",			exec "bot goal_setproperty etype dyno",									"5", 4 )
+	QM_MENU_ITEM( "^d 6. Explosive Type Satchel ",			exec "bot goal_setproperty etype satchel",								"6", 5 )
+	QM_MENU_ITEM( "^d 7. Explosive Type Both (default)",		exec "bot goal_setproperty etype both",									"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw Plant Goals On",			exec "bot draw_goals on PLANT_.*";		exec "bot draw_goals on DYNAMITE.*",			"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Plant Goals Off",			exec "bot draw_goals off PLANT_.*";		exec "bot draw_goals off DYNAMITE.*",			"9", 8 )
+	QM_MENU_ITEM( "^j 0. Edit Goal (If Needed)",			exec "bot goal_edit",											"0", 9 )
+	QM_MENU_ITEM( "^j -. Finish Goal",				exec "bot goal_finish",											"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",				exec "bot goal_save",											"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_plantgoal_alt;				open wm_creategoals1_alt,				"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_plantgoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_Coverspotgoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Select Plant Goal",			exec "bot goal_edit";				exec "bot goal_echo",					"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Coverspot 0",				exec "bot goal_setproperty coverspot 0",								"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Coverspot 1",				exec "bot goal_setproperty coverspot 1",								"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Coverspot 2",				exec "bot goal_setproperty coverspot 2",								"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Coverspot 3",				exec "bot goal_setproperty coverspot 3",								"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Coverspot Facings",			exec "bot goal_setproperty coverfacing 99",								"6", 5 )
+	QM_MENU_ITEM( "^d 7. Clear Coverspot Facings",			exec "bot goal_setproperty coverfacing clear",								"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Stance Crouch",			exec "bot goal_setproperty coverstance crouch",								"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set Stance Prone",				exec "bot goal_setproperty coverstance prone",								"9", 8 )
+	QM_MENU_ITEM( "^d 0. Set Stance Stand",				exec "bot goal_setproperty coverstance stand",								"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw Plant Goals On",			exec "bot draw_goals on PLANT_.*";		exec "bot draw_goals on DYNAMITE.*",			"-", 10 )
+	QM_MENU_ITEM( "^o =. Draw Plant Goals Off",			exec "bot draw_goals off PLANT_.*";		exec "bot draw_goals off DYNAMITE.*",			"=", 11 )
+	QM_MENU_ITEM( "^j [. Finish Goal",				exec "bot goal_finish",											"[", 12 )
+	QM_MENU_ITEM( "^j ]. Save Goals",				exec "bot goal_save",											"]", 13 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_Coverspotgoal_alt;			open wm_creategoals1_alt,				"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_Coverspotgoal_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_escortgoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Escort Goal",			exec "bot goal_create ESCORT";			open escort_goalname,					"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Vehicle Name",				open escort_target_goalname,										"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Offsets Points",			exec "bot goal_setproperty offset 99",									"3", 2 )
+	QM_MENU_ITEM( "^d 4. Clear Offsets",				exec "bot goal_setproperty offset clear",								"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Optional Buttons",			close wm_escortgoal_alt;			open wm_escortgoal_buttons_alt,				"5", 4 )
+	QM_MENU_ITEM( "^o 6. Draw Escort Goals On",			exec "bot draw_goals on ESCORT.*",									"6", 5 )
+	QM_MENU_ITEM( "^o 7. Draw Escort Goals Off",			exec "bot draw_goals off ESCORT.*",									"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw Mover Goals On",			exec "bot draw_goals on MOVER.*",									"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Mover Goals Off",			exec "bot draw_goals off MOVER.*",									"9", 8 )
+	QM_MENU_ITEM( "^j 0. Edit Goal (If Needed)",			exec "bot goal_edit",											"0", 9 )
+	QM_MENU_ITEM( "^j -. Finish Goal",				exec "bot goal_finish",											"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",				exec "bot goal_save",											"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_escortgoal_alt;			open wm_creategoals1_alt,				"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_escortgoal_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_escortgoal_buttons_alt" )
+
+	QM_MENU_ITEM( "^d 1. Set Button JUMP",				exec "bot goal_setproperty button JUMP",								"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Button CROUCH",			exec "bot goal_setproperty button CROUCH",								"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Button USE",				exec "bot goal_setproperty button USE",									"3", 2 )
+	QM_MENU_ITEM( "^d 4. Clear all Buttons",			exec "bot goal_setproperty button clear",								"4", 3 )
+	QM_MENU_ITEM( "^j 5. Edit Goal (If Needed)",			exec "bot goal_edit",											"5", 4 )
+	QM_MENU_ITEM( "^j 9. Finish Goal",				exec "bot goal_finish",											"9", 8 )
+	QM_MENU_ITEM( "^j 0. Save Goals",				exec "bot goal_save",											"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_escortgoal_buttons_alt;		open wm_escortgoal_alt,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_escortgoal_buttons_alt,									"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_ridegoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Ride Goal",				exec "bot goal_create ride";			open ride_goalname,					"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Vehicle Name",				open ride_target_goalname,										"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Board Points",				exec "bot goal_setproperty board 99",									"3", 2 )
+	QM_MENU_ITEM( "^d 4. Clear Board Points",			exec "bot goal_setproperty board clear",								"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Seat Points",				exec "bot goal_setproperty seat 99",									"5", 4 )
+	QM_MENU_ITEM( "^d 6. Clear Seat Points",			exec "bot goal_setproperty seat clear",									"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Stance Crouch",			exec "bot goal_setproperty stance crouch",								"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Stance Prone",				exec "bot goal_setproperty stance prone",								"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set Stance Stand",				exec "bot goal_setproperty stance stand",								"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Mover/Ride Goals On",			exec "bot draw_goals on RIDE.*";		exec "bot draw_goals on MOVER.*",			"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw Mover/Ride Goals Off",		exec "bot draw_goals off RIDE.*";		exec "bot draw_goals off MOVER.*",			"-", 10 )
+	QM_MENU_ITEM( "^j =. Edit Goal (If Needed)",			exec "bot goal_edit",											"=", 11 )
+	QM_MENU_ITEM( "^j [. Finish Goal",				exec "bot goal_finish",											"[", 12 )
+	QM_MENU_ITEM( "^j ]. Save Goals",				exec "bot goal_save",											"[", 13 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_ridegoal_alt;				open wm_creategoals1_alt,				"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_ridegoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_mountgoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Mount Goal",			exec "bot goal_create MOUNT";			open mount_goalname,					"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Vehicle Name",				open mount_target_goalname,										"2", 1 )
+	QM_MENU_ITEM( "^d 3. Add Offsets",				exec "bot goal_setproperty offset 99",									"3", 2 )
+	QM_MENU_ITEM( "^d 4. Clear Offsets",				exec "bot goal_setproperty offset clear",								"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Aim Opposite",				exec "bot goal_setproperty aim opposite",								"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Aim Position",				exec "bot goal_setproperty aim position",								"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Aim Random",				exec "bot goal_setproperty aim random",									"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Aim Velocity",				exec "bot goal_setproperty aim velocity",								"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Mount/Mover Goals On",		exec "bot draw_goals on MOUNT.*";		exec "bot draw_goals on MOVER.*",			"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Mount/Mover Goals Off",		exec "bot draw_goals off MOUNT.*";		exec "bot draw_goals off MOVER.*",			"0", 9 )
+	QM_MENU_ITEM( "^j -. Edit Goal (If Needed)",			exec "bot goal_edit",											"-", 10 )
+	QM_MENU_ITEM( "^j =. Finish Goal",				exec "bot goal_finish",											"=", 11 )
+	QM_MENU_ITEM( "^j [. Save Goals",				exec "bot goal_save",											"[", 12 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_mountgoal_alt;				open wm_creategoals1_alt,				"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_mountgoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_moverbuildgoal_alt" )
+
+	QM_MENU_ITEM( "^d 1. Select Build Goal 1st",			exec "bot goal_echo";				exec "bot goal_edit",					"1", 0 )
+	QM_MENU_ITEM( "^d 2. Select Mover",				close wm_moverbuildgoal_alt;			open mover_build_goalname,				"2", 1 )
+	QM_MENU_ITEM( "^d 3. Add Offsets",				exec "bot goal_setproperty offset 99",									"3", 2 )
+	QM_MENU_ITEM( "^d 4. Clear Offsets",				exec "bot goal_setproperty offset clear",								"4", 3 )
+	QM_MENU_ITEM( "^o 5. Draw Build Goals On",			exec "bot draw_goals on BUILD.*",									"5", 4 )
+	QM_MENU_ITEM( "^o 6. Draw Build Goals Off",			exec "bot draw_goals off BUILD.*",									"6", 5 )
+	QM_MENU_ITEM( "^o 7. Draw Mover Goals On",			exec "bot draw_goals on MOVER.*",									"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw Mover Goals Off",			exec "bot draw_goals off MOVER.*",									"8", 7 )
+	QM_MENU_ITEM( "^j 9. Finish Goal",				exec "bot goal_finish",											"9", 8 )
+	QM_MENU_ITEM( "^j 0. Save Goals",				exec "bot goal_save",											"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_moverbuildgoal_alt;			open wm_creategoals1_alt,				"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_moverbuildgoal_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_switchgoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Switch Goal",			exec "bot goal_create SWITCH";		exec "bot goal_setproperty aim";	open switch_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^d 2. Edit Aim",					exec "bot goal_edit";			exec "bot goal_setproperty aim";	exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^o 6. Draw Switch Goals On",			exec "bot draw_goals on SWITCH.*",									"6", 5 )
+	QM_MENU_ITEM( "^o 7. Draw Switch Goals Off",			exec "bot draw_goals off SWITCH.*",									"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw Mover Goals On",			exec "bot draw_goals on MOVER.*",									"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Mover Goals Off",			exec "bot draw_goals off MOVER.*",									"9", 8 )
+	QM_MENU_ITEM( "^j 0. Save Goals",				exec "bot goal_save",											"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_switchgoal_alt;		open wm_creategoals1_alt,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_switchgoal_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_routegoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Route Goal",	exec "bot goal_create Route";		open route_goalname,								"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Goal Radius 35",	exec "bot goal_edit";			exec "bot goal_setproperty radius 35";		exec "bot goal_finish",		"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Goal Radius 50",	exec "bot goal_edit";			exec "bot goal_setproperty radius 50";		exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Goal Radius 75",	exec "bot goal_edit";			exec "bot goal_setproperty radius 75";		exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Goal Radius 100",	exec "bot goal_edit";			exec "bot goal_setproperty radius 100";		exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Goal Radius 150",	exec "bot goal_edit";			exec "bot goal_setproperty radius 150";		exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Goal Radius 200",	exec "bot goal_edit";			exec "bot goal_setproperty radius 200";		exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Goal Radius 250",	exec "bot goal_edit";			exec "bot goal_setproperty radius 250";		exec "bot goal_finish",		"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set Goal Radius 300",	exec "bot goal_edit";			exec "bot goal_setproperty radius 300";		exec "bot goal_finish",		"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Route Goals On",	exec "bot draw_goals on ROUTE.*",											"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw Route Goals Off",	exec "bot draw_goals off ROUTE.*",											"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",		exec "bot goal_save",													"=", 11 )
+	QM_MENU_ITEM( "^8 [. Draw Spawns",		exec "bot draw_spawns",													"[", 12 )
+	QM_MENU_ITEM( "^8 ]. Draw RouteGoals",		exec "bot draw_goalroutes on",												"]", 13 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",		close wm_routegoal_alt;			open wm_creategoals1_alt,							"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",			close wm_routegoal_alt,													"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_creategoals2_alt" )
+
+	QM_MENU_ITEM( "^h 1. Attack Goal Menu",				close wm_creategoals2_alt;			open wm_attackgoal_alt,					"1", 0 )
+	QM_MENU_ITEM( "^h 2. Defend Goal Menu",				close wm_creategoals2_alt;			open wm_defendgoal_alt,					"2", 1 )
+	QM_MENU_ITEM( "^h 3. Snipe Goal Menu",				close wm_creategoals2_alt;			open wm_snipegoal_alt,					"3", 2 )
+	QM_MENU_ITEM( "^h 4. Camp Goal Menu",				close wm_creategoals2_alt;			open wm_campgoal_alt,					"4", 3 )
+	QM_MENU_ITEM( "^h 5. Bot Roles Attack/Defend Menu",		close wm_creategoals2_alt;			open wm_botrolesad_alt,					"5", 4 )
+	QM_MENU_ITEM( "^h 6. Bot Roles Others Menu",			close wm_creategoals2_alt;			open wm_botroleso_alt,					"6", 5 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_creategoals2_alt;			open omnibot,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_creategoals2_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_attackgoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Attack Goal",		exec "bot goal_create attack";		exec "bot goal_setproperty facing 0";		open attack_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Stance Crouch",		exec "bot goal_edit";			exec "bot goal_setproperty stance crouch";	exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Stance Prone",			exec "bot goal_edit";			exec "bot goal_setproperty stance prone";	exec "bot goal_finish",	"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Stance Stand",			exec "bot goal_edit";			exec "bot goal_setproperty stance stand";	exec "bot goal_finish",	"4", 3 )
+	QM_MENU_ITEM( "^d 5. Change 1st Facing",		exec "bot goal_edit";			exec "bot goal_setproperty facing 0";		exec "bot goal_finish",	"5", 4 )
+	QM_MENU_ITEM( "^d 6. Add extra Facings",		exec "bot goal_edit";			exec "bot goal_setproperty facing 99";		exec "bot goal_finish",	"6", 5 )
+	QM_MENU_ITEM( "^d 7. Clear Facings",			exec "bot goal_edit";			exec "bot goal_setproperty facing clear";	exec "bot goal_finish",	"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Weapon Panzer/Bazooka",	exec "bot goal_edit";			exec "bot goal_setproperty weapon PANZERFAUST";
+													exec "bot goal_setproperty weapon BAZOOKA";	exec "bot goal_finish",	"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set Weapon Flamethrower",		exec "bot goal_edit";			exec "bot goal_setproperty weapon FLAMETHROWER";exec "bot goal_finish",	"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Attack Goals On",		exec "bot draw_goals on ATTACK.*",										"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw Attack Goals Off",		exec "bot draw_goals off ATTACK.*",										"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",			exec "bot goal_save",												"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_attackgoal_alt;		open wm_creategoals2_alt,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_attackgoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_defendgoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Defend Goal",		exec "bot goal_create defend";		exec "bot goal_setproperty facing 0";		open defend_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Stance Crouch",		exec "bot goal_edit";			exec "bot goal_setproperty stance crouch";	exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Stance Prone",			exec "bot goal_edit";			exec "bot goal_setproperty stance prone";	exec "bot goal_finish",	"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Stance Stand",			exec "bot goal_edit";			exec "bot goal_setproperty stance stand";	exec "bot goal_finish",	"4", 3 )
+	QM_MENU_ITEM( "^d 5. Change 1st Facing",		exec "bot goal_edit";			exec "bot goal_setproperty facing 0";		exec "bot goal_finish",	"5", 4 )
+	QM_MENU_ITEM( "^d 6. Add extra Facings",		exec "bot goal_edit";			exec "bot goal_setproperty facing 99";		exec "bot goal_finish",	"6", 5 )
+	QM_MENU_ITEM( "^d 7. Clear Facings",			exec "bot goal_edit";			exec "bot goal_setproperty facing clear";	exec "bot goal_finish",	"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Weapon Panzer/Bazooka",	exec "bot goal_edit";			exec "bot goal_setproperty weapon PANZERFAUST";
+													exec "bot goal_setproperty weapon BAZOOKA";	exec "bot goal_finish",	"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set Weapon Flamethrower",		exec "bot goal_edit";			exec "bot goal_setproperty weapon FLAMETHROWER";exec "bot goal_finish",	"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Defend Goals On",		exec "bot draw_goals on DEFEND.*",										"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw Defend Goals Off",		exec "bot draw_goals off DEFEND.*",										"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",			exec "bot goal_save",												"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_defendgoal_alt;		open wm_creategoals2_alt,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_defendgoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_snipegoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Snipe Goal",		exec "bot goal_create snipe";		exec "bot goal_setproperty facing 0";		open snipe_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Stance Crouch",		exec "bot goal_edit";			exec "bot goal_setproperty stance crouch";	exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Stance Prone",			exec "bot goal_edit";			exec "bot goal_setproperty stance prone";	exec "bot goal_finish",	"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Stance Stand",			exec "bot goal_edit";			exec "bot goal_setproperty stance stand";	exec "bot goal_finish",	"4", 3 )
+	QM_MENU_ITEM( "^d 5. Change 1st Facing",		exec "bot goal_edit";			exec "bot goal_setproperty facing 0";		exec "bot goal_finish",	"5", 4 )
+	QM_MENU_ITEM( "^d 6. Add extra Facings",		exec "bot goal_edit";			exec "bot goal_setproperty facing 99";		exec "bot goal_finish",	"6", 5 )
+	QM_MENU_ITEM( "^d 7. Clear Facings",			exec "bot goal_edit";			exec "bot goal_setproperty facing clear";	exec "bot goal_finish",	"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw Snipe Goals On",		exec "bot draw_goals on SNIPE.*",										"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Snipe Goals Off",		exec "bot draw_goals off SNIPE.*",										"9", 8 )
+	QM_MENU_ITEM( "^j 0. Save Goals",			exec "bot goal_save",												"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_snipegoal_alt;			open wm_creategoals2_alt,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_snipegoal_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_campgoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Camp Goal",			exec "bot goal_create camp";		exec "bot goal_setproperty facing 0";		open camp_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Stance Crouch",		exec "bot goal_edit";			exec "bot goal_setproperty stance crouch";	exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Stance Prone",			exec "bot goal_edit";			exec "bot goal_setproperty stance prone";	exec "bot goal_finish",	"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Stance Stand",			exec "bot goal_edit";			exec "bot goal_setproperty stance stand";	exec "bot goal_finish", "4", 3 )
+	QM_MENU_ITEM( "^d 5. Change 1st Facing",		exec "bot goal_edit";			exec "bot goal_setproperty facing 0";		exec "bot goal_finish",	"5", 4 )
+	QM_MENU_ITEM( "^d 6. Add extra Facings",		exec "bot goal_edit";			exec "bot goal_setproperty facing 99";		exec "bot goal_finish",	"6", 5 )
+	QM_MENU_ITEM( "^d 7. Clear Facings",			exec "bot goal_edit";			exec "bot goal_setproperty facing clear";	exec "bot goal_finish",	"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Weapon Panzer/Bazooka",	exec "bot goal_edit";			exec "bot goal_setproperty weapon PANZERFAUST";
+													exec "bot goal_setproperty weapon BAZOOKA";	exec "bot goal_finish",	"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set Weapon Flamethrower",		exec "bot goal_edit";			exec "bot goal_setproperty weapon FLAMETHROWER";exec "bot goal_finish",	"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Camp Goals On",		exec "bot draw_goals on CAMP.*",										"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw Camp Goals Off",		exec "bot draw_goals off CAMP.*",										"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",			exec "bot goal_save",												"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_campgoal_alt;			open wm_creategoals2_alt,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_campgoal_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_botrolesad_alt" )
+
+	QM_MENU_ITEM( "^d 1. BotRole Attacker",			exec "bot goal_edit";		exec "bot goal_setproperty roles ATTACKER";		exec "bot goal_finish",	"1", 0 )
+	QM_MENU_ITEM( "^d 2. BotRole Attacker1",		exec "bot goal_edit";		exec "bot goal_setproperty roles ATTACKER1";		exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^d 3. BotRole Attacker2",		exec "bot goal_edit";		exec "bot goal_setproperty roles ATTACKER2";		exec "bot goal_finish",	"3", 2 )
+	QM_MENU_ITEM( "^d 4. BotRole Attacker3",		exec "bot goal_edit";		exec "bot goal_setproperty roles ATTACKER3";		exec "bot goal_finish",	"4", 3 )
+	QM_MENU_ITEM( "^d 5. BotRole OffenseCaptain (Attack)",	exec "bot goal_edit";		exec "bot goal_setproperty roles OFFENSECAPTAIN";	exec "bot goal_finish",	"5", 4 )
+	QM_MENU_ITEM( "^d 6. BotRole Defender",			exec "bot goal_edit";		exec "bot goal_setproperty roles DEFENDER";		exec "bot goal_finish",	"6", 5 )
+	QM_MENU_ITEM( "^d 7. BotRole Defender1",		exec "bot goal_edit";		exec "bot goal_setproperty roles DEFENDER1";		exec "bot goal_finish",	"7", 6 )
+	QM_MENU_ITEM( "^d 8. BotRole Defender2",		exec "bot goal_edit";		exec "bot goal_setproperty roles DEFENDER2";		exec "bot goal_finish",	"8", 7 )
+	QM_MENU_ITEM( "^d 9. BotRole Defender3",		exec "bot goal_edit";		exec "bot goal_setproperty roles DEFENDER3";		exec "bot goal_finish",	"9", 8 )
+	QM_MENU_ITEM( "^d 0. BotRole DefenceCaptain",		exec "bot goal_edit";		exec "bot goal_setproperty roles DEFENSECAPTAIN";	exec "bot goal_finish",	"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw All Goals On",		exec "bot draw_goals on",											"-", 10 )
+	QM_MENU_ITEM( "^o =. Draw All Goals Off",		exec "bot draw_goals off",											"=", 11 )
+	QM_MENU_ITEM( "^j [. Save Goals",			exec "bot goal_save",												"[", 12 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_botrolesad_alt;		open wm_creategoals2_alt,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_botrolesad_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_botroleso_alt" )
+
+	QM_MENU_ITEM( "^d 1. BotRole TeamCaptain",		exec "bot goal_edit";		exec "bot goal_setproperty roles TEAMCAPTAIN";		exec "bot goal_finish",	"1", 0 )
+	QM_MENU_ITEM( "^d 2. BotRole FireTeamCaptain",		exec "bot goal_edit";		exec "bot goal_setproperty roles FIRETEAMCAPTAIN";	exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^d 3. BotRole Ambusher",			exec "bot goal_edit";		exec "bot goal_setproperty roles AMBUSHER";		exec "bot goal_finish",	"3", 2 )
+	QM_MENU_ITEM( "^d 4. BotRole Infiltrator",		exec "bot goal_edit";		exec "bot goal_setproperty roles INFILTRATOR";		exec "bot goal_finish",	"4", 3 )
+	QM_MENU_ITEM( "^d 5. BotRole Roamer",			exec "bot goal_edit";		exec "bot goal_setproperty roles ROAMER";		exec "bot goal_finish",	"5", 4 )
+	QM_MENU_ITEM( "^d 6. BotRole Sniper",			exec "bot goal_edit";		exec "bot goal_setproperty roles SNIPER";		exec "bot goal_finish",	"6", 5 )
+	QM_MENU_ITEM( "^d 7. BotRole Escort",			exec "bot goal_edit";		exec "bot goal_setproperty roles ESCORT";		exec "bot goal_finish",	"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw All Goals On",		exec "bot draw_goals on",											"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw All Goals Off",		exec "bot draw_goals off",											"9", 8 )
+	QM_MENU_ITEM( "^j 0. Save Goals",			exec "bot goal_save",												"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_botroleso_alt;		open wm_creategoals2_alt,							"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_botroleso_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_creategoals3_alt" )
+
+	QM_MENU_ITEM( "^h 1. Airstrike Goal Menu",		close wm_creategoals3_alt;		open wm_airstrikegoal_alt,						"1", 0 )
+	QM_MENU_ITEM( "^h 2. Artillery Goals Menu",		close wm_creategoals3_alt;		open wm_artillerygoal_alt,						"2", 1 )
+	QM_MENU_ITEM( "^h 3. Mobile MG Goal Menu",		close wm_creategoals3_alt;		open wm_mobilemggoal_alt,						"3", 2 )
+	QM_MENU_ITEM( "^h 4. MountMG Goal Menu",		close wm_creategoals3_alt;		open wm_mountmggoal_alt,						"4", 3 )
+	QM_MENU_ITEM( "^h 5. Mortar Goal Menu",			close wm_creategoals3_alt;		open wm_mortargoal_alt,							"5", 4 )
+	QM_MENU_ITEM( "^h 6. Grenade Goal Menu",		close wm_creategoals3_alt;		open wm_grenadegoal_alt,						"6", 5 )
+	QM_MENU_ITEM( "^h 7. PlantMine Goal Menu",		close wm_creategoals3_alt;		open wm_minegoal_alt,							"7", 6 )
+	QM_MENU_ITEM( "^h 8. SmokeBomb Goal Menu",		close wm_creategoals3_alt;		open wm_smokegoal_alt,							"8", 7 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_creategoals3_alt;		open wm_creategoals2_alt,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_creategoals3_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_airstrikegoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Airstrike Goal",	exec "bot goal_create airstrike";	exec "bot goal_setproperty facing 0";		open airstrike_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Stance Crouch",	exec "bot goal_edit";			exec "bot goal_setproperty stance crouch";	exec "bot goal_finish",		"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Stance Prone",		exec "bot goal_edit";			exec "bot goal_setproperty stance prone";	exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Stance Stand",		exec "bot goal_edit";			exec "bot goal_setproperty stance stand";	exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Facing 0",		exec "bot goal_edit";			exec "bot goal_setproperty facing 0";		exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Facing 1",		exec "bot goal_edit";			exec "bot goal_setproperty facing 1";		exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Facing 2",		exec "bot goal_edit";			exec "bot goal_setproperty facing 2";		exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Facing 3",		exec "bot goal_edit";			exec "bot goal_setproperty facing 3";		exec "bot goal_finish",		"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set Facing 4",		exec "bot goal_edit";			exec "bot goal_setproperty facing 4";		exec "bot goal_finish",		"9", 8 )
+	QM_MENU_ITEM( "^d 0. Clear Facing",		exec "bot goal_edit";			exec "bot goal_setproperty facing clear";	exec "bot goal_finish",		"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw Airstrike Goals On",	exec "bot draw_goals on AIRSTRIKE.*",											"-", 10 )
+	QM_MENU_ITEM( "^o =. Draw Airstrike Goals Off",	exec "bot draw_goals off AIRSTRIKE.*",											"=", 11 )
+	QM_MENU_ITEM( "^j [. Save Goals",		exec "bot goal_save",													"[", 12 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",		close wm_airstrikegoal_alt;		open wm_creategoals3_alt,							"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",			close wm_airstrikegoal_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_artillerygoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create CallArtillery Goal",	exec "bot goal_create callartillery";	open artillery_goalname,						"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Stance Crouch",		exec "bot goal_edit";			exec "bot goal_setproperty stance crouch";	exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Stance Prone",			exec "bot goal_edit";			exec "bot goal_setproperty stance prone";	exec "bot goal_finish",	"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Stance Stand",			exec "bot goal_edit";			exec "bot goal_setproperty stance stand";	exec "bot goal_finish",	"4", 3 )
+	QM_MENU_ITEM( "^d 5. Change Facing",			exec "bot goal_edit";			exec "bot goal_setproperty facing 0";		exec "bot goal_finish",	"5", 4 )
+	QM_MENU_ITEM( "^h 6. Create Arty Target (static) Goal",	exec "bot goal_create artillery_s";	open artillery_goalname,						"6", 5 )
+	QM_MENU_ITEM( "^h 7. Create Arty Target (dynamic) Goal",exec "bot goal_create artillery_d";	open artillery_goalname,						"7", 6 )
+	QM_MENU_ITEM( "^h 8. Trace Arty",			exec "bot tracearty",												"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Artillery Goals On",		exec "bot draw_goals on CALLARTILLERY.*";	exec "bot draw_goals on ARTILLERY.*",				"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Artillery Goals Off",		exec "bot draw_goals off CALLARTILLERY.*";	exec "bot draw_goals off ARTILLERY.*",				"0", 9 )
+	QM_MENU_ITEM( "^j -. Save Goals",			exec "bot goal_save",												"-", 10 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_artillerygoal_alt;		open wm_creategoals3_alt,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_artillerygoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_mobilemggoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Mobile MG Goal",		exec "bot goal_create mobilemg42";		exec "bot goal_setproperty facing 0";	open mobilemg_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^d 2. Change Facing",			exec "bot goal_edit";				exec "bot goal_setproperty facing 0";	exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^o 8. Draw Mobile MG Goals On",		exec "bot draw_goals on MOBILEMG.*",										"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Mobile MG Goals Off",		exec "bot draw_goals off MOBILEMG.*",										"9", 8 )
+	QM_MENU_ITEM( "^j 0. Save Goals",			exec "bot goal_save",												"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_mobilemggoal_alt;			open wm_creategoals3_alt,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_mobilemggoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_mountmggoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Select MountMG Goal 1st",		exec "bot goal_echo";			exec "bot goal_edit",							"1", 0 )
+	QM_MENU_ITEM( "^d 2. Add/Edit 1st Facing",		exec "bot goal_edit";			exec "bot goal_setproperty facing 0";		exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^d 3. Add extra Facings",		exec "bot goal_edit";			exec "bot goal_setproperty facing 99";		exec "bot goal_finish",	"3", 2 )
+	QM_MENU_ITEM( "^d 4. Clear Facings",			exec "bot goal_edit";			exec "bot goal_setproperty facing clear";	exec "bot goal_finish",	"4", 3 )
+	QM_MENU_ITEM( "^o 5. Draw MountMG Goals On",		exec "bot draw_goals on MOUNTMG.*",										"5", 4 )
+	QM_MENU_ITEM( "^o 6. Draw MountMG Goals Off",		exec "bot draw_goals off MOUNTMG.*",										"6", 5 )
+	QM_MENU_ITEM( "^j 7. Save Goals",			exec "bot goal_save",												"7", 6 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_mountmg_alt;			open wm_creategoals2_alt,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_mountmg_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_mortargoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Mortar Goal",		exec "bot goal_create mobilemortar";	exec "bot goal_setproperty facing 0";		open mortar_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Facing 0",			exec "bot goal_edit";			exec "bot goal_setproperty facing 0";		exec "bot goal_finish",	"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Facing 1",			exec "bot goal_edit";			exec "bot goal_setproperty facing 1";		exec "bot goal_finish",	"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Facing 2",			exec "bot goal_edit";			exec "bot goal_setproperty facing 2";		exec "bot goal_finish",	"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Facing 3",			exec "bot goal_edit";			exec "bot goal_setproperty facing 3";		exec "bot goal_finish",	"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Facing 4",			exec "bot goal_edit";			exec "bot goal_setproperty facing 4";		exec "bot goal_finish",	"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Facing 5",			exec "bot goal_edit";			exec "bot goal_setproperty facing 5";		exec "bot goal_finish",	"7", 6 )
+	QM_MENU_ITEM( "^d 8. Clear Facing",			exec "bot goal_edit";			exec "bot goal_setproperty facing clear";	exec "bot goal_finish",	"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Mobile Mortar Goals On",	exec "bot draw_goals on MOBILEMORTAR.*",									"9", 8 )
+	QM_MENU_ITEM( "^o 0. Draw Mobile Mortar Goals Off",	exec "bot draw_goals off MOBILEMORTAR.*",									"0", 9 )
+	QM_MENU_ITEM( "^j -. Save Goals",			exec "bot goal_save",												"-", 10 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_mortargoal_alt;			open wm_creategoals3_alt,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_mortargoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_grenadegoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Grenade Goal",		exec "bot goal_create grenade";		exec "bot goal_setproperty facing 0";	open grenade_goalname,		"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Target Goalname",		exec "bot goal_edit";			open grenade_target_goalname,						"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Trace (only if no Goalname)",	exec "bot goal_edit";			exec "bot goal_setproperty trace";	exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Change Facing",			exec "bot goal_edit";			exec "bot goal_setproperty facing 0";	exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Prime / Stance",		close wm_grenadegoal_alt;		open wm_grenadegoalps_alt,						"5", 4 )
+	QM_MENU_ITEM( "^o 6. Draw Grenade Goals On",		exec "bot draw_goals on grenade.*",										"6", 5 )
+	QM_MENU_ITEM( "^o 7. Draw Grenade Goals Off",		exec "bot draw_goals off grenade.*",										"7", 6 )
+	QM_MENU_ITEM( "^o 8. Draw Target Goals On",		exec "bot draw_goals on MOVER.*";	exec "bot draw_goals on MOUNT.*",					"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Target Goals Off",		exec "bot draw_goals off MOVER.*";	exec "bot draw_goals off MOUNT.*",					"9", 8 )
+	QM_MENU_ITEM( "^j 0. Save Goals",			exec "bot goal_save",												"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_grenadegoal_alt;		open wm_creategoals3_alt,						"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_grenadegoal_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_grenadegoalps_alt" )
+
+	QM_MENU_ITEM( "^d 1. Set Stance Crouch",		exec "bot goal_edit";		exec "bot goal_setproperty stance crouch";	exec "bot goal_finish",		"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Stance Prone",			exec "bot goal_edit";		exec "bot goal_setproperty stance prone";	exec "bot goal_finish",		"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Stance Stand",			exec "bot goal_edit";		exec "bot goal_setproperty stance stand";	exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Prime 0 Secs",			exec "bot goal_edit";		exec "bot goal_setproperty prime 0";		exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Prime 1 Secs (default)",	exec "bot goal_edit";		exec "bot goal_setproperty prime 1";		exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Prime 2 Secs",			exec "bot goal_edit";		exec "bot goal_setproperty prime 2";		exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Prime 3 Secs",			exec "bot goal_edit";		exec "bot goal_setproperty prime 3";		exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_grenadegoalps_alt;	open wm_grenadegoal_alt,							"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_grenadegoalps_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_minegoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create PlantMine Goal",		exec "bot goal_create plantmine";						open plantmine_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^o 8. Draw Mine Goals On",		exec "bot draw_goals on PLANTMINE.*",										"8", 7 )
+	QM_MENU_ITEM( "^o 9. Draw Mine Goals Off",		exec "bot draw_goals off PLANTMINE.*",										"9", 8 )
+	QM_MENU_ITEM( "^j 0. Save Goals",			exec "bot goal_save",												"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_minegoal_alt;								open wm_creategoals3_alt,	"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_minegoal_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_smokegoal_alt" )
+
+	QM_MENU_ITEM( "^h 1. Create Smoke Bomb Goal",	exec "bot goal_create smokebomb";	exec "bot goal_setproperty facing 0";		open smokebomb_goalname,	"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Stance Crouch",	exec "bot goal_edit";			exec "bot goal_setproperty stance crouch";	exec "bot goal_finish",		"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Stance Prone",		exec "bot goal_edit";			exec "bot goal_setproperty stance prone";	exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Stance Stand",		exec "bot goal_edit";			exec "bot goal_setproperty stance stand";	exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Facing 0",		exec "bot goal_edit";			exec "bot goal_setproperty facing 0";		exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Facing 1",		exec "bot goal_edit";			exec "bot goal_setproperty facing 1";		exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Facing 2",		exec "bot goal_edit";			exec "bot goal_setproperty facing 2";		exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Facing 3",		exec "bot goal_edit";			exec "bot goal_setproperty facing 3";		exec "bot goal_finish",		"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set Facing 4",		exec "bot goal_edit";			exec "bot goal_setproperty facing 4";		exec "bot goal_finish",		"9", 8 )
+	QM_MENU_ITEM( "^d 0. Clear Facing",		exec "bot goal_edit";			exec "bot goal_setproperty facing clear";	exec "bot goal_finish",		"0", 9 )
+	QM_MENU_ITEM( "^o -. Draw Smoke Bomb Goals On",	exec "bot draw_goals on SMOKEBOMB.*",											"-", 10 )
+	QM_MENU_ITEM( "^o =. Draw Smoke Bomb Goals Off",exec "bot draw_goals off SMOKEBOMB.*",											"=", 11 )
+	QM_MENU_ITEM( "^j [. Save Goals",		exec "bot goal_save",													"[", 12 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",		close wm_smokegoal_alt;			open wm_creategoals3_alt,							"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",			close wm_smokegoal_alt,													"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_editgoals_alt" )
+
+	QM_MENU_ITEM( "^d 1. Move Goal Start",		exec "bot goal_edit";			exec "bot goal_move",								"1", 0 )
+	QM_MENU_ITEM( "^d 2. Move Goal End",		exec "bot goal_move";			exec "bot goal_finish";				exec "bot goal_finish",		"2", 1 )
+	QM_MENU_ITEM( "^d 3. Move Goal To Ground",	exec "bot goal_edit";			exec "bot goal_move toplayer"			exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Move Goal To Player",	exec "bot goal_edit";			exec "bot goal_move toplayer false"		exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Goal Crouch",		exec "bot goal_edit";			exec "bot goal_setproperty stance crouch"	exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Goal Prone",		exec "bot goal_edit";			exec "bot goal_setproperty stance prone"	exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Goal Stand",		exec "bot goal_edit";			exec "bot goal_setproperty stance stand"	exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Goal Facing 0",	exec "bot goal_edit";			exec "bot goal_setproperty facing 0"		exec "bot goal_finish",		"8", 7 )
+	QM_MENU_ITEM( "^d 9. Add more Goal Facings",	exec "bot goal_edit";			exec "bot goal_setproperty facing 99"		exec "bot goal_finish",		"9", 8 )
+	QM_MENU_ITEM( "^d 0. Clear Goal Facings",	exec "bot goal_edit";			exec "bot goal_setproperty facing clear"	exec "bot goal_finish",		"0", 9 )
+	QM_MENU_ITEM( "^d -. Change Goal Aim",		exec "bot goal_edit";			exec "bot goal_setproperty aim"			exec "bot goal_finish",		"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",		exec "bot goal_save",													"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",		close wm_editgoals_alt;			open omnibot,									"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",			close wm_editgoals_alt,													"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_editcommands_alt" )
+
+	QM_MENU_ITEM( "^d 1. Rename Goal",		close wm_editcommands_alt;		exec "bot goal_edit";				open omnibot_goalname,		"1", 0 )
+	QM_MENU_ITEM( "^d 2. Edit Goal",		exec "bot goal_edit",													"2", 1 )
+	QM_MENU_ITEM( "^d 3. EditX Goal",		exec "bot goal_editx",													"3", 2 )
+	QM_MENU_ITEM( "^d 4. Goal Finish",		exec "bot goal_finish",													"4", 3 )
+	QM_MENU_ITEM( "^d 5. Load Goals",		exec "bot goal_load",													"5", 4 )
+	QM_MENU_ITEM( "^d 6. Move Goal",		exec "bot goal_move",													"6", 5 )
+	QM_MENU_ITEM( "^1 8. Delete Goal",		close wm_editcommands_alt;		open wm_deletegoal_alt,								"8", 7 )
+	QM_MENU_ITEM( "^1 9. Remove all Goals",		close wm_editcommands_alt;		open wm_removegoals_alt,							"9", 8 )
+	QM_MENU_ITEM( "^j 0. Save Goals",		exec "bot goal_save",													"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",		close wm_editcommands_alt;		open omnibot,									"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",			close wm_editcommands_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_deletegoal_alt" )
+
+	QM_MENU_ITEM( "^1 DELETE Goal",			close wm_deletegoal_alt;	open wm_editgoals_alt2,									"1", 0 )
+	QM_MENU_ITEM( "^7 Are you sure you want",	close wm_deletegoal_alt;	open wm_editgoals_alt2,									"2", 2 )
+	QM_MENU_ITEM( "^7 to DELETE this Goal?",	close wm_deletegoal_alt;	open wm_editgoals_alt2,									"3", 3 )
+	QM_MENU_ITEM( "^1 Y. Yes",			exec "bot goal_edit";		exec "bot goal_delete";	close wm_deletegoal_alt;	open wm_editcommands_alt,	"y", 6 )
+	QM_MENU_ITEM( "^2 N. No",			close wm_deletegoal_alt;	open wm_editgoals_alt2,									"n", 8 )
+	QM_MENU_ITEM( " ",				close wm_deletegoal_alt;	open wm_editgoals_alt2,									"v", 14 )
+	QM_MENU_ITEM( " ",				close wm_deletegoal_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_removegoals_alt" )
+
+	QM_MENU_ITEM( "^1 REMOVE all Goals",		close wm_removegoals_alt;		open wm_editgoals_alt2,								"1", 0 )
+	QM_MENU_ITEM( "^7 Are you sure you want",	close wm_removegoals_alt;		open wm_editgoals_alt2,								"2", 2 )
+	QM_MENU_ITEM( "^7 to REMOVE ^1all ^7Goals?",	close wm_removegoals_alt;		open wm_editgoals_alt2,								"3", 3 )
+	QM_MENU_ITEM( "^1 Y. Yes",			exec "bot goal_removeall";		close wm_removegoals_alt;			open wm_editcommands_alt,	"y", 6 )
+	QM_MENU_ITEM( "^2 N. No",			close wm_removegoals_alt;		open wm_editgoals_alt2,								"n", 8 )
+	QM_MENU_ITEM( "	",				close wm_removegoals_alt;		open wm_editgoals_alt2,								"v", 14 )
+	QM_MENU_ITEM( "	",				close wm_removegoals_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_addbots_alt" )
+
+	QM_MENU_ITEM( "^8 1. Kick All Bots",					exec "bot kickall",										"1", 0 )
+	QM_MENU_ITEM( "^8 2. Random Bot",					exec "bot addbot",										"2", 1 )
+	QM_MENU_ITEM( "^8 3. Random ^1Axis ^8Bot",				exec "bot addbot 1",										"3", 2 )
+	QM_MENU_ITEM( "^8 4. Random ^4Allies ^8Bot",				exec "bot addbot 2",										"4", 3 )
+	QM_MENU_ITEM( "^8 5. ^1Axis ^8Bots",					close wm_addbots_alt;				open wm_quickbotaxis_alt,			"5", 4 )
+	QM_MENU_ITEM( "^8 6. ^4Allies ^8Bots",					close wm_addbots_alt;				open wm_quickbotallies_alt,			"6", 5 )
+	QM_MENU_ITEM( "^8 7. Bot Come (^5team^8)",				exec "say_team bot come";			play "sound/chat/allies/81b.wav",		"7", 6 )
+	QM_MENU_ITEM( "^8 8. Bot Come (^2global^8)",				exec "say bot come";				play "sound/chat/allies/81b.wav",		"8", 7 )
+	QM_MENU_ITEM( "^8 9. Warp Bot to Player(^7Req Cheats On^8)",		exec "bot warpbot";				play "sound/chat/allies/81b.wav",		"9", 8 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",					close wm_addbots_alt;				open omnibot,					"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",						close wm_addbots_alt,										"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_quickbotaxis_alt" )
+
+	QM_MENU_ITEM( "^8 1. ^1Axis ^8Soldier",					exec "bot addbot 1 1" ;				play "sound/chat/axis/61a.wav",			"1", 0 )
+	QM_MENU_ITEM( "^8 2. ^1Axis ^8Medic",					exec "bot addbot 1 2" ;				play "sound/chat/axis/62a.wav",			"2", 1 )
+	QM_MENU_ITEM( "^8 3. ^1Axis ^8Engineer",				exec "bot addbot 1 3" ;				play "sound/chat/axis/63a.wav",			"3", 2 )
+	QM_MENU_ITEM( "^8 4. ^1Axis ^8Field Ops",				exec "bot addbot 1 4" ;				play "sound/chat/axis/64a.wav",			"4", 3 )
+	QM_MENU_ITEM( "^8 5. ^1Axis ^8Covert Ops",				exec "bot addbot 1 5" ;				play "sound/chat/axis/65a.wav",			"5", 4 )
+	QM_MENU_ITEM( "^8 6. ^1Axis ^7Testbot ^8Soldier",			exec "bot testbot 1 1" ;			play "sound/chat/axis/61a.wav",			"6", 5 )
+	QM_MENU_ITEM( "^8 7. ^1Axis ^7Testbot ^8Medic",				exec "bot testbot 1 2" ;			play "sound/chat/axis/62a.wav",			"7", 6 )
+	QM_MENU_ITEM( "^8 8. ^1Axis ^7Testbot ^8Engineer",			exec "bot testbot 1 3" ;			play "sound/chat/axis/63a.wav",			"8", 7 )
+	QM_MENU_ITEM( "^8 9. ^1Axis ^7Testbot ^8Field Ops",			exec "bot testbot 1 4" ;			play "sound/chat/axis/64a.wav",			"9", 8 )
+	QM_MENU_ITEM( "^8 0. ^1Axis ^7Testbot ^8Covert Ops",			exec "bot testbot 1 5" ;			play "sound/chat/axis/65a.wav",			"0", 9 )
+	QM_MENU_ITEM( "^8 -. Bot Come (^5team^8)",				exec "say_team bot come";			play "sound/chat/axis/81b.wav",			"-", 11 )
+	QM_MENU_ITEM( "^8 =. Warp Bot to Player (^7Req Cheats On^8)",		exec "bot warpbot";				play "sound/chat/axis/81b.wav",			"=", 12 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",					close wm_quickbotaxis_alt;			open wm_addbots_alt,				"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",						close wm_quickbotaxis_alt,									"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_quickbotallies_alt" )
+
+	QM_MENU_ITEM( "^8 1. ^4Allied ^8Soldier",				exec "bot addbot 2 1";				play "sound/chat/allies/61a.wav",		"1", 0 )
+	QM_MENU_ITEM( "^8 2. ^4Allied ^8Medic",					exec "bot addbot 2 2";				play "sound/chat/allies/62a.wav",		"2", 1 )
+	QM_MENU_ITEM( "^8 3. ^4Allied ^8Engineer",				exec "bot addbot 2 3";				play "sound/chat/allies/63a.wav",		"3", 2 )
+	QM_MENU_ITEM( "^8 4. ^4Allied ^8Field Ops",				exec "bot addbot 2 4";				play "sound/chat/allies/64a.wav",		"4", 3 )
+	QM_MENU_ITEM( "^8 5. ^4Allied ^8Covert Ops",				exec "bot addbot 2 5";				play "sound/chat/allies/65a.wav",		"5", 4 )
+	QM_MENU_ITEM( "^8 6. ^4Allied ^7Testbot ^8Soldier",			exec "bot testbot 2 1";				play "sound/chat/allies/61a.wav",		"6", 5 )
+	QM_MENU_ITEM( "^8 7. ^4Allied ^7Testbot ^8Medic",			exec "bot testbot 2 2";				play "sound/chat/allies/62a.wav",		"7", 6 )
+	QM_MENU_ITEM( "^8 8. ^4Allied ^7Testbot ^8Engineer",			exec "bot testbot 2 3";				play "sound/chat/allies/63a.wav",		"8", 7 )
+	QM_MENU_ITEM( "^8 9. ^4Allied ^7Testbot ^8Field Ops",			exec "bot testbot 2 4";				play "sound/chat/allies/64a.wav",		"9", 8 )
+	QM_MENU_ITEM( "^8 0. ^4Allied ^7Testbot ^8Covert Ops",			exec "bot testbot 2 5";				play "sound/chat/allies/65a.wav",		"0", 9 )
+	QM_MENU_ITEM( "^8 -. Bot Come (^5team^8)",				exec "say_team bot come";			play "sound/chat/allies/81b.wav",		"-", 11 )
+	QM_MENU_ITEM( "^8 =. Warp Bot to Player (^7Req Cheats On^8)",		exec "bot warpbot";				play "sound/chat/allies/81b.wav",		"=", 12 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",					close wm_quickbotallies_alt;			open wm_addbots_alt,				"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",						close wm_quickbotallies_alt,									"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_goaloptions_alt" )
+
+	QM_MENU_ITEM( "^d 1. Add/Edit Group Name",		close wm_goaloptions_alt;	exec "bot goal_edit";				open omnibot_groupname,		"1", 0 )
+	QM_MENU_ITEM( "^d 2. Add/Edit Facings Menu",		close wm_goaloptions_alt;	open wm_facing_alt,								"2", 1 )
+	QM_MENU_ITEM( "^d 3. Min/Max Camptimes Menu",		close wm_goaloptions_alt;	open wm_camptimes_alt,								"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Goal Radius Menu",		close wm_goaloptions_alt;	open wm_setradius_alt,								"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Goal Crouch",			exec "bot goal_edit";		exec "bot goal_setproperty stance crouch"	exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Goal Prone",			exec "bot goal_edit";		exec "bot goal_setproperty stance prone"	exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Goal Stand",			exec "bot goal_edit";		exec "bot goal_setproperty stance stand"	exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^d 8. Show Goal Name (SGN)",		exec "bot sgn 300",												"8", 7 )
+	QM_MENU_ITEM( "^d 9. Show Active Goals (SAG)",		exec "bot sag",													"9", 8 )
+	QM_MENU_ITEM( "^d 0. Draw Active Goals (All)",		exec "bot sag 0",												"0", 9 )
+	QM_MENU_ITEM( "^d -. Draw Active Goals (Axis)",		exec "bot sag 1",												"-", 10 )
+	QM_MENU_ITEM( "^d =. Draw Active Goals (Allies)",	exec "bot sag 2",												"=", 11 )
+	QM_MENU_ITEM( "^d [. Show Goals",			exec "bot show_goals .* p",											"[", 12 )
+	QM_MENU_ITEM( "^j ]. Save Goals",			exec "bot goal_save",												"]", 13 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_goaloptions_alt;	open omnibot,									"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_goaloptions_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_facing_alt" )
+
+	QM_MENU_ITEM( "^d 1. Add/Edit Facing 0",		exec "bot goal_edit";		exec "bot goal_setproperty facing 0";		exec "bot goal_finish",		"1", 0 )
+	QM_MENU_ITEM( "^d 2. Add/Edit Facing 1",		exec "bot goal_edit";		exec "bot goal_setproperty facing 1";		exec "bot goal_finish",		"2", 1 )
+	QM_MENU_ITEM( "^d 3. Add/Edit Facing 2",		exec "bot goal_edit";		exec "bot goal_setproperty facing 2";		exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Add/Edit Facing 3",		exec "bot goal_edit";		exec "bot goal_setproperty facing 3";		exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Add/Edit Facing 4",		exec "bot goal_edit";		exec "bot goal_setproperty facing 4";		exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Add/Edit Facing 5",		exec "bot goal_edit";		exec "bot goal_setproperty facing 5";		exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Add/Edit Facing 6",		exec "bot goal_edit";		exec "bot goal_setproperty facing 6";		exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^d 8. Add/Edit Facing 7",		exec "bot goal_edit";		exec "bot goal_setproperty facing 7";		exec "bot goal_finish",		"8", 7 )
+	QM_MENU_ITEM( "^d 9. Add/Edit Facing 8",		exec "bot goal_edit";		exec "bot goal_setproperty facing 8";		exec "bot goal_finish",		"9", 8 )
+	QM_MENU_ITEM( "^d 0. Add/Edit Facing 9",		exec "bot goal_edit";		exec "bot goal_setproperty facing 9";		exec "bot goal_finish",		"0", 9 )
+	QM_MENU_ITEM( "^d -. Clear Facing",			exec "bot goal_edit";		exec "bot goal_setproperty facing clear";	exec "bot goal_finish",		"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",			exec "bot goal_save",												"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_facing_alt;		open wm_goaloptions_alt,							"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_facing_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_camptimes_alt" )
+
+	QM_MENU_ITEM( "^d 1. Set MinCamp 0-10 Secs",		close wm_camptimes_alt;		open wm_mincamp0_10_alt,							"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set MinCamp 12-999 Secs",		close wm_camptimes_alt;		open wm_mincamp12_999_alt,							"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set MaxCamp 0-10 Secs",		close wm_camptimes_alt;		open wm_maxcamp0_10_alt,							"3", 3 )
+	QM_MENU_ITEM( "^d 4. Set MaxCamp 12-999 Secs",		close wm_camptimes_alt;		open wm_maxcamp12_999_alt,							"4", 4 )
+	QM_MENU_ITEM( "^j 0. Save Goals",			exec "bot goal_save",												"0", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_camptimes_alt;		open wm_goaloptions_alt,							"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_camptimes_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_mincamp0_10_alt" )
+
+	QM_MENU_ITEM( "^d 0. Set MinCamp 0 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 0";	exec "bot goal_finish",		"0", 0 )
+	QM_MENU_ITEM( "^d 1. Set MinCamp 1 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 1";	exec "bot goal_finish",		"1", 1 )
+	QM_MENU_ITEM( "^d 2. Set MinCamp 2 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 2";	exec "bot goal_finish",		"2", 2 )
+	QM_MENU_ITEM( "^d 3. Set MinCamp 3 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 3";	exec "bot goal_finish",		"3", 3 )
+	QM_MENU_ITEM( "^d 4. Set MinCamp 4 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 4";	exec "bot goal_finish",		"4", 4 )
+	QM_MENU_ITEM( "^d 5. Set MinCamp 5 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 5";	exec "bot goal_finish",		"5", 5 )
+	QM_MENU_ITEM( "^d 6. Set MinCamp 6 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 6";	exec "bot goal_finish",		"6", 6 )
+	QM_MENU_ITEM( "^d 7. Set MinCamp 7 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 7";	exec "bot goal_finish",		"7", 7 )
+	QM_MENU_ITEM( "^d 8. Set MinCamp 8 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 8";	exec "bot goal_finish",		"8", 8 )
+	QM_MENU_ITEM( "^d 9. Set MinCamp 9 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 9";	exec "bot goal_finish",		"9", 9 )
+	QM_MENU_ITEM( "^d -. Set MinCamp 10 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 10";	exec "bot goal_finish",		"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",			exec "bot goal_save",												"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_mincamp0_10_alt;	open wm_camptimes_alt,								"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_mincamp0_10_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_mincamp12_999_alt" )
+
+	QM_MENU_ITEM( "^d 1. Set MinCamp 12 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 12";	exec "bot goal_finish",		"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set MinCamp 15 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 15";	exec "bot goal_finish",		"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set MinCamp 20 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 20";	exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set MinCamp 25 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 25";	exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set MinCamp 30 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 30";	exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set MinCamp 35 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 35";	exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set MinCamp 40 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 40";	exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set MinCamp 45 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 45";	exec "bot goal_finish",		"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set MinCamp 50 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 50";	exec "bot goal_finish",		"9", 8 )
+	QM_MENU_ITEM( "^d 0. Set MinCamp 60 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 60";	exec "bot goal_finish",		"0", 9 )
+	QM_MENU_ITEM( "^d -. Set MinCamp 999 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty mincamptime 999";	exec "bot goal_finish",		"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",			exec "bot goal_save",												"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_mincamp12_999_alt;	open wm_camptimes_alt,								"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_mincamp12_999_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_maxcamp0_10_alt" )
+
+	QM_MENU_ITEM( "^d 0. Set MaxCamp 0 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 0";	exec "bot goal_finish",		"0", 0 )
+	QM_MENU_ITEM( "^d 1. Set MaxCamp 1 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 1";	exec "bot goal_finish",		"1", 1 )
+	QM_MENU_ITEM( "^d 2. Set MaxCamp 2 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 2";	exec "bot goal_finish",		"2", 2 )
+	QM_MENU_ITEM( "^d 3. Set MaxCamp 3 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 3";	exec "bot goal_finish",		"3", 3 )
+	QM_MENU_ITEM( "^d 4. Set MaxCamp 4 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 4";	exec "bot goal_finish",		"4", 4 )
+	QM_MENU_ITEM( "^d 5. Set MaxCamp 5 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 5";	exec "bot goal_finish",		"5", 5 )
+	QM_MENU_ITEM( "^d 6. Set MaxCamp 6 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 6";	exec "bot goal_finish",		"6", 6 )
+	QM_MENU_ITEM( "^d 7. Set MaxCamp 7 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 7";	exec "bot goal_finish",		"7", 7 )
+	QM_MENU_ITEM( "^d 8. Set MaxCamp 8 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 8";	exec "bot goal_finish",		"8", 8 )
+	QM_MENU_ITEM( "^d 9. Set MaxCamp 9 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 9";	exec "bot goal_finish",		"9", 9 )
+	QM_MENU_ITEM( "^d -. Set MaxCamp 10 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 10";	exec "bot goal_finish",		"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",			exec "bot goal_save",												"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_maxcamp0_10_alt;	open wm_camptimes_alt,								"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_maxcamp0_10_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_maxcamp12_999_alt" )
+
+	QM_MENU_ITEM( "^d 1. Set MaxCamp 12 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 12";	exec "bot goal_finish",		"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set MaxCamp 15 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 15";	exec "bot goal_finish",		"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set MaxCamp 20 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 20";	exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set MaxCamp 25 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 25";	exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set MaxCamp 30 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 30";	exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set MaxCamp 35 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 35";	exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set MaxCamp 40 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 40";	exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set MaxCamp 45 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 45";	exec "bot goal_finish",		"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set MaxCamp 50 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 50";	exec "bot goal_finish",		"9", 8 )
+	QM_MENU_ITEM( "^d 0. Set MaxCamp 60 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 60";	exec "bot goal_finish",		"0", 9 )
+	QM_MENU_ITEM( "^d -. Set MaxCamp 999 Secs",		exec "bot goal_edit";		exec "bot goal_setproperty maxcamptime 999";	exec "bot goal_finish",		"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",			exec "bot goal_save",												"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_maxcamp12_999_alt;	open wm_camptimes_alt,								"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_maxcamp12_999_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_setradius_alt" )
+
+	QM_MENU_ITEM( "^d 1. Set Goal Radius 20",		exec "bot goal_edit";		exec "bot goal_setproperty radius 20";		exec "bot goal_finish",		"1", 0 )
+	QM_MENU_ITEM( "^d 2. Set Goal Radius 35",		exec "bot goal_edit";		exec "bot goal_setproperty radius 35";		exec "bot goal_finish",		"2", 1 )
+	QM_MENU_ITEM( "^d 3. Set Goal Radius 50",		exec "bot goal_edit";		exec "bot goal_setproperty radius 50";		exec "bot goal_finish",		"3", 2 )
+	QM_MENU_ITEM( "^d 4. Set Goal Radius 75",		exec "bot goal_edit";		exec "bot goal_setproperty radius 75";		exec "bot goal_finish",		"4", 3 )
+	QM_MENU_ITEM( "^d 5. Set Goal Radius 100",		exec "bot goal_edit";		exec "bot goal_setproperty radius 100";		exec "bot goal_finish",		"5", 4 )
+	QM_MENU_ITEM( "^d 6. Set Goal Radius 125",		exec "bot goal_edit";		exec "bot goal_setproperty radius 125";		exec "bot goal_finish",		"6", 5 )
+	QM_MENU_ITEM( "^d 7. Set Goal Radius 150",		exec "bot goal_edit";		exec "bot goal_setproperty radius 150";		exec "bot goal_finish",		"7", 6 )
+	QM_MENU_ITEM( "^d 8. Set Goal Radius 175",		exec "bot goal_edit";		exec "bot goal_setproperty radius 175";		exec "bot goal_finish",		"8", 7 )
+	QM_MENU_ITEM( "^d 9. Set Goal Radius 200",		exec "bot goal_edit";		exec "bot goal_setproperty radius 200";		exec "bot goal_finish",		"9", 8 )
+	QM_MENU_ITEM( "^d 0. Set Goal Radius 250",		exec "bot goal_edit";		exec "bot goal_setproperty radius 250";		exec "bot goal_finish",		"0", 9 )
+	QM_MENU_ITEM( "^d -. Set Goal Radius 300",		exec "bot goal_edit";		exec "bot goal_setproperty radius 300";		exec "bot goal_finish",		"-", 10 )
+	QM_MENU_ITEM( "^j =. Save Goals",			exec "bot goal_save",												"=", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_setradius_alt;		open wm_goaloptions_alt,							"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_setradius_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_commands_alt" )
+
+	QM_MENU_ITEM( "^8 1. Ignore Player On",			exec "bot ip on";		exec "echo ^4Ignore Player ^2On ^5-Check Console-",					"1", 0 )
+	QM_MENU_ITEM( "^8 2. Ignore Player Off",		exec "bot ip off";		exec "echo ^4Ignore Player ^1Off ^5-Check Console-",					"2", 1 )
+	QM_MENU_ITEM( "^8 3. Bots Don't Shoot On",		exec "bot dontshoot on";	exec "echo ^4Bots Don't Shoot ^2On ^5-Check Console-",				"3", 2 )
+	QM_MENU_ITEM( "^8 4. Bots Don't Shoot Off",		exec "bot dontshoot off";	exec "echo ^4Bots Don't Shoot ^1Off ^5-Check Console-",				"4", 3 )
+	QM_MENU_ITEM( "^8 5. Show Distance On",			exec "bot dist";		exec "echo ^4Show Distance ^2On ^5-Check Console-",					"5", 4 )
+	QM_MENU_ITEM( "^8 6. Show Distance Off",		exec "bot dist off";		exec "echo ^4Show Distance ^1Off ^5-Check Console-",					"6", 5 )
+	QM_MENU_ITEM( "^8 7. Aim Position",			exec "bot aim_pos";		exec "echo ^4Aim Position ^5-Check Console-",						"7", 6 )
+	QM_MENU_ITEM( "^8 8. My Position",			exec "bot mypos";		exec "echo ^4My Position ^5-Check Console-",						"8", 7 )
+	QM_MENU_ITEM( "^8 9. Trigger Box Menu",			close wm_commands_alt;		open wm_trigger_bounds_alt,							"9", 8 )
+	QM_MENU_ITEM( "^8 0. Make Map GM",			exec "bot makemapgm",												"0", 9 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_commands_alt;		open omnibot,									"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_commands_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_trigger_bounds_alt" )
+
+	QM_MENU_ITEM( "^d 1. Start/End Trigger Box 1",		exec "bot trigger_bounds Trigger1",										"1", 0 )
+	QM_MENU_ITEM( "^d 2. Start/End Trigger Box 2",		exec "bot trigger_bounds Trigger2",										"2", 1 )
+	QM_MENU_ITEM( "^d 3. Start/End Trigger Box 3",		exec "bot trigger_bounds Trigger3",										"3", 2 )
+	QM_MENU_ITEM( "^d 4. Start/End Trigger Box 4",		exec "bot trigger_bounds Trigger4",										"4", 3 )
+	QM_MENU_ITEM( "^d 5. Start/End Trigger Box 5",		exec "bot trigger_bounds Trigger5",										"5", 4 )
+	QM_MENU_ITEM( "^d 6. Start/End Trigger Box 6",		exec "bot trigger_bounds Trigger6",										"6", 5 )
+	QM_MENU_ITEM( "^d 7. Start/End Trigger Box 7",		exec "bot trigger_bounds Trigger7",										"7", 6 )
+	QM_MENU_ITEM( "^d 8. Start/End Trigger Box 8",		exec "bot trigger_bounds Trigger8",										"8", 7 )
+	QM_MENU_ITEM( "^d 9. Start/End Trigger Box 9",		exec "bot trigger_bounds Trigger9",										"9", 8 )
+	QM_MENU_ITEM( "^d 0. Start/End Trigger Box 10",		exec "bot trigger_bounds Trigger10",										"0", 9 )
+	QM_MENU_ITEM( "^8 -. Show Trigger Box(s)",		exec "bot drawtriggers",											"-", 10 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_trigger_bounds_alt;		open wm_commands_alt,							"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_trigger_bounds_alt,											"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_cvars_alt" )
+
+	QM_MENU_ITEM( "^b 1. Set Engineer Chargetime 10",	exec "g_engineerChargeTime 10",											"1", 0 )
+	QM_MENU_ITEM( "^b 2. Set CovertOp Chargetime 10",	exec "g_covertopsChargeTime 10",										"2", 1 )
+	QM_MENU_ITEM( "^b 3. Set FieldOp Chargetime 10",	exec "g_LTChargeTime 10",											"3", 2 )
+	QM_MENU_ITEM( "^b 4. Set Medic Chargetime 10",		exec "g_medicChargeTime 10",											"4", 3 )
+	QM_MENU_ITEM( "^b 5. Set Soldier Chargetime 10",	exec "g_soldierChargeTime 10",											"5", 4 )
+	QM_MENU_ITEM( "^b 6. Set Axis Spawntime 1 Sec",		exec "g_useraxisrespawntime 1",											"6", 5 )
+	QM_MENU_ITEM( "^b 7. Set Allies Spawntime 1 Sec",	exec "g_useralliedrespawntime 1",										"7", 6 )
+	QM_MENU_ITEM( "^b 0. Set All Above",			exec "g_engineerChargeTime 10";		exec "g_covertopsChargeTime 10";	exec "g_LTChargeTime 10";	
+								exec "g_medicChargeTime 10";		exec "g_soldierChargeTime 10";
+								exec "g_useraxisrespawntime 1";		exec "g_useralliedrespawntime 1",					"0", 8 )	
+	QM_MENU_ITEM( "^b    Map Restart Required",		close wm_cvars_alt;			open omnibot,								"v", 10 )
+	QM_MENU_ITEM( "^b    to Enable Commands",		close wm_cvars_alt;			open omnibot,								"v", 11 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",			close wm_cvars_alt;			open omnibot,								"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",				close wm_cvars_alt,												"z", 15 )
+
+QM_MENU_END
+
+QM_MENU_START( "wm_debug_alt" )
+
+	QM_MENU_ITEM( "^b 1. Debug Triggers On/Off",			exec "bot debugtriggers";	exec "echo ^4Debug Triggers ^2On^7/^1Off ^5-Check Console-",		"1", 0 )
+	QM_MENU_ITEM( "^b 2. Debug Bot Fpinfo On/Off",			exec "bot debugbot all fpinfo";	exec "echo ^4Debug Bot ^2On^7/^1Off ^5-Check Console-",			"2", 1 )
+	QM_MENU_ITEM( "^b 3. Debug Map Script",				exec "bot dbg_mapscripts";	exec "echo ^4Debug Map Script ^2On^7/^1Off ^5-Check Console-",		"3", 2 )
+	QM_MENU_ITEM( "^b 4. Debug Goal Availability",			exec "bot dbg_goalavailability";exec "echo ^4Debug Map Availability ^2On^7/^1Off ^5-Check Console-",	"4", 3 )
+	QM_MENU_ITEM( "^b 5. Draw Paththrough On",			exec "bot draw_paththrough 1";	exec "echo ^4Draw Paththrough ^2On",					"5", 4 )
+	QM_MENU_ITEM( "^b 6. Draw Paththrough Off",			exec "bot draw_paththrough 0";	exec "echo ^4Draw Paththrough ^1Off",					"6", 5 )
+	QM_MENU_ITEM( "^b 7. StopMovers On (^7Req Cheats On^b)",	exec "g_stopmovers 1";		exec "echo ^4StopMovers ^2On",						"7", 6 )
+	QM_MENU_ITEM( "^b 8. StopMovers Off (^7Req Cheats On^b)",	exec "g_stopmovers 0";		exec "echo ^4StopMovers ^1Off",						"8", 7 )
+	QM_MENU_ITEM( "^b 9. View MaxInUse/Progress",			exec "bot sag 0 0 1";		exec "echo ^4Showing MaxInUse/Progres ^5-Check Console-",		"9", 8 )
+	QM_MENU_ITEM( "^7 V. Previous Menu",				close wm_commands_alt;		open omnibot,								"v", 14 )
+	QM_MENU_ITEM( "^7 Z. Close",					close wm_commands_alt,											"z", 15 )
+
+QM_MENU_END

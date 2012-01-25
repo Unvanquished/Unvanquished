@@ -1,0 +1,11 @@
+prefix=c:/devel/target/4baf4f94927a6ca0abcde5c3112e7501
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: GIO Windows specific APIs
+Description: Windows specific headers for glib I/O library
+Version: 2.26.1
+Requires: gobject-2.0,gmodule-no-export-2.0,gio-2.0
+Libs: -L${libdir} -lgio-2.0
+Cflags: -I${includedir}/gio-win32-2.0/

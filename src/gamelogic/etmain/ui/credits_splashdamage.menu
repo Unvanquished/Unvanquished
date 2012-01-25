@@ -1,0 +1,205 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+#define WINDOW_WIDTH	608
+#define WINDOW_HEIGHT	448
+#define GROUP_NAME		"grpCreditsSplashDamage"
+
+// Macros //
+
+#include "ui/menumacros.h"
+		
+// System Menu //
+	
+menuDef {
+	name		"credits_splashdamage"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+	
+	onESC {
+		close credits_splashdamage ;
+		open main
+	}
+
+// Window //
+
+	itemDef {
+		name		"window"
+		group		GROUP_NAME
+		rect		0 0 WINDOW_WIDTH WINDOW_HEIGHT
+		style		WINDOW_STYLE_FILLED
+		backcolor	0 0 0 1
+		border		WINDOW_BORDER_FULL
+		bordercolor	.5 .5 .5 .5
+		visible		1
+		decoration
+	}
+	
+// Logo //
+
+	itemDef {
+		name		"logoShadow"
+		rect		$evalfloat(.5*(WINDOW_WIDTH-64)+1) $evalfloat(8+1) 64 64
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/logo_sd"
+		forecolor	0 0 0 1
+		visible		1
+		decoration
+	}
+
+	itemDef {
+		name		"logo"
+		rect		$evalfloat(.5*(WINDOW_WIDTH-64)-1) $evalfloat(8-1) 64 64
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/logo_sd"
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	
+	itemDef {
+		name		"headerLogo"
+		group		GROUP_NAME
+		rect		6 80 $evalfloat(WINDOW_WIDTH-12) 16
+		text		"DEVELOPED BY SPLASH DAMAGE"
+		textfont	UI_FONT_ARIBLK_16
+		textstyle	ITEM_TEXTSTYLE_SHADOWED
+		textscale	.3
+		textalign	ITEM_ALIGN_CENTER
+		textalignx	$evalfloat(.5*(WINDOW_WIDTH-12))
+		textaligny	14
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	
+// Credits Sections //
+
+#define CREDITS_Y	108
+	
+	LABELWHITE( 6, CREDITS_Y, .5*(WINDOW_WIDTH-24), 10, "Paul 'Locki' Wedgwood", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y, .5*(WINDOW_WIDTH-24), 10, "Game Designer / Managing Director", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+12, .5*(WINDOW_WIDTH-24), 10, "Francisca 'Freya' Wedgwood", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+12, .5*(WINDOW_WIDTH-24), 10, "Business Director", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	
+// Art //
+
+	itemDef {
+		name		"headerArt"
+		group		GROUP_NAME
+		rect		6 $evalfloat(CREDITS_Y+30) $evalfloat(WINDOW_WIDTH-12) 12
+		text		"ART"
+		textfont	UI_FONT_ARIBLK_16
+		textstyle	ITEM_TEXTSTYLE_SHADOWED
+		textscale	.19
+		textalign	ITEM_ALIGN_CENTER
+		textalignx	$evalfloat(.5*(WINDOW_WIDTH-12))
+		textaligny	10
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	
+	LABELWHITE( 6, CREDITS_Y+46, .5*(WINDOW_WIDTH-24), 10, "Richard 'Fluffy_gIMp' Jolly", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+46, .5*(WINDOW_WIDTH-24), 10, "Lead Artist / Creative Director", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+58, .5*(WINDOW_WIDTH-24), 10, "Francis 'Frankie' Hobbins", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+58, .5*(WINDOW_WIDTH-24), 10, "Artist / Animator", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+70, .5*(WINDOW_WIDTH-24), 10, "Per 'Per128' Abrahamsen", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+70, .5*(WINDOW_WIDTH-24), 10, "Additional Art", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	
+// Programming //
+
+	itemDef {
+		name		"headerProgramming"
+		group		GROUP_NAME
+		rect		6 $evalfloat(CREDITS_Y+88) $evalfloat(WINDOW_WIDTH-12) 12
+		text		"PROGRAMMING"
+		textfont	UI_FONT_ARIBLK_16
+		textstyle	ITEM_TEXTSTYLE_SHADOWED
+		textscale	.19
+		textalign	ITEM_ALIGN_CENTER
+		textalignx	$evalfloat(.5*(WINDOW_WIDTH-12))
+		textaligny	10
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	
+	LABELWHITE( 6, CREDITS_Y+104, .5*(WINDOW_WIDTH-24), 10, "Arnout 'RR2DO2' van Meer", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+104, .5*(WINDOW_WIDTH-24), 10, "Lead Programmer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+116, .5*(WINDOW_WIDTH-24), 10, "Gordon 'digibob' Biggans", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+116, .5*(WINDOW_WIDTH-24), 10, "Programmer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+128, .5*(WINDOW_WIDTH-24), 10, "Randy 'ydnar' Reddig", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+128, .5*(WINDOW_WIDTH-24), 10, "Programmer / Artist", .2, ITEM_ALIGN_LEFT, 0, 8 )
+
+// Design //
+
+	itemDef {
+		name		"headerDesign"
+		group		GROUP_NAME
+		rect		6 $evalfloat(CREDITS_Y+146) $evalfloat(WINDOW_WIDTH-12) 12
+		text		"DESIGN"
+		textfont	UI_FONT_ARIBLK_16
+		textstyle	ITEM_TEXTSTYLE_SHADOWED
+		textscale	.19
+		textalign	ITEM_ALIGN_CENTER
+		textalignx	$evalfloat(.5*(WINDOW_WIDTH-12))
+		textaligny	10
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	
+	LABELWHITE( 6, CREDITS_Y+162, .5*(WINDOW_WIDTH-24), 10, "Tim 'Marauder' Kautz", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+162, .5*(WINDOW_WIDTH-24), 10, "Designer / Audio Engineer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+174, .5*(WINDOW_WIDTH-24), 10, "Ed 'Bongoboy' Stern", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+174, .5*(WINDOW_WIDTH-24), 10, "Designer / Writer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	
+// Level Design //
+
+	itemDef {
+		name		"headerLevelDesign"
+		group		GROUP_NAME
+		rect		6 $evalfloat(CREDITS_Y+192) $evalfloat(WINDOW_WIDTH-12) 12
+		text		"LEVEL DESIGN"
+		textfont	UI_FONT_ARIBLK_16
+		textstyle	ITEM_TEXTSTYLE_SHADOWED
+		textscale	.19
+		textalign	ITEM_ALIGN_CENTER
+		textalignx	$evalfloat(.5*(WINDOW_WIDTH-12))
+		textaligny	10
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+
+	LABELWHITE( 6, CREDITS_Y+208, .5*(WINDOW_WIDTH-24), 10, "Matt 'Wils' Wilson", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+208, .5*(WINDOW_WIDTH-24), 10, "Lead Level Designer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+220, .5*(WINDOW_WIDTH-24), 10, "Simon 'sock' O'Callaghan", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+220, .5*(WINDOW_WIDTH-24), 10, "Senior Level Designer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+232, .5*(WINDOW_WIDTH-24), 10, "Mark 'nakedape' Fry", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+232, .5*(WINDOW_WIDTH-24), 10, "Level Designer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+244, .5*(WINDOW_WIDTH-24), 10, "Thomas 'Q-Fraggel' Creutzenberg", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+244, .5*(WINDOW_WIDTH-24), 10, "Level Designer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+256, .5*(WINDOW_WIDTH-24), 10, "Chris 'SHoD' Farcy", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+256, .5*(WINDOW_WIDTH-24), 10, "Level Designer / Artist", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+268, .5*(WINDOW_WIDTH-24), 10, "Lloyd 'LloydM' Morris", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+268, .5*(WINDOW_WIDTH-24), 10, "Level Designer", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	LABELWHITE( 6, CREDITS_Y+280, .5*(WINDOW_WIDTH-24), 10, "Lee 'Llama' Mercer", .2, ITEM_ALIGN_RIGHT, .5*(WINDOW_WIDTH-24), 8 )
+	LABELWHITE( 6+.5*(WINDOW_WIDTH-24)+12, CREDITS_Y+280, .5*(WINDOW_WIDTH-24), 10, "Additional Level Design", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	
+// Copyright Notice //
+
+//	LABEL( 6, CREDITS_Y+300, WINDOW_WIDTH-12, 10, "© 2003 Id Software, Inc. All rights reserved. Wolfenstein: Enemy Territory, Return to Castle Wolfenstein, the Return to Castle Wolfenstein logo, the id Software name, and the id logo are either registered trademarks or trademarks of Id Software, Inc. in the United States and/or other countries. All other trademarks and trade names are the properties of their respective owners.", .15, ITEM_ALIGN_LEFT, 0, 8 )
+
+// Buttons //
+
+	BUTTON( 6, WINDOW_HEIGHT-24, .33*(WINDOW_WIDTH-24), 18, "BACK", .3, 14, close credits_splashdamage ; open main )
+//	BUTTON( 6+.33*(WINDOW_WIDTH-24)+6, WINDOW_HEIGHT-24, .34*(WINDOW_WIDTH-24), 18, "ACTIVISION", .3, 14, close credits_splashdamage ; open credits_activision_2 )
+	BUTTON( 6+.33*(WINDOW_WIDTH-24)+6+.34*(WINDOW_WIDTH-24)+6, WINDOW_HEIGHT-24, .33*(WINDOW_WIDTH-24), 18, "ID SOFTWARE", .3, 14, close credits_splashdamage ; open credits_idsoftware )
+}

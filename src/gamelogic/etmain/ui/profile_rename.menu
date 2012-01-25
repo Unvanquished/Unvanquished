@@ -1,0 +1,89 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		0
+#define WINDOW_Y		0
+#define WINDOW_WIDTH	640
+#define WINDOW_HEIGHT	480
+#define GROUP_NAME		"grpProfileRename"
+
+// Macros //
+
+#include "ui/menumacros.h"
+		
+// Rename Profile Menu //
+	
+menuDef {
+	name		"profile_rename"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+	popup
+	
+	fadeClamp	0.5
+	fadeAmount  0.075	
+	
+	onOpen {
+		conditionalscript ui_profile_create_error 1 
+			( "clearcvar ui_profile_create_error ; abort" )
+			( "clearfocus" )
+	
+		setitemcolor background backcolor 0 0 0 0 ;
+		fadein background ;
+		uiScript renameProfileInit
+	}
+	
+	onESC {
+		close profile_rename ;
+		open profile
+	}
+	
+// Background //
+
+	itemDef {
+		name		"background"
+		rect		0 0 640 480
+		style		WINDOW_STYLE_FILLED
+		background	"ui/assets/fadebox.tga"
+		backcolor	0 0 0 0
+		visible		1
+		decoration
+	}
+
+// Subwindows //
+
+#define SUBWINDOW_WIDTH		256
+#define SUBWINDOW_HEIGHT	64
+#define SUBWINDOW_X			.5*(WINDOW_WIDTH-SUBWINDOW_WIDTH)
+#define SUBWINDOW_Y			.5*(WINDOW_HEIGHT-SUBWINDOW_HEIGHT)
+
+	SUBWINDOWBLACK( SUBWINDOW_X, SUBWINDOW_Y, SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT, "RENAME PROFILE" )
+	itemDef {
+		name		"efleftbackNew Profile Name:"
+		group		GROUP_NAME
+		rect		$evalfloat((SUBWINDOW_X+4)+104+6) $evalfloat(SUBWINDOW_Y+16) $evalfloat((SUBWINDOW_WIDTH)-8-104-6) $evalfloat(10)
+		style		WINDOW_STYLE_FILLED
+		backcolor	.5 .5 .5 .2
+		visible		1
+		decoration
+	}
+	EDITFIELDLEFT( SUBWINDOW_X+4, SUBWINDOW_Y+16, (SUBWINDOW_WIDTH)-8, 10, "New Profile Name:", .2, 8, "ui_profile_renameto", 32, 23, "" )
+	
+	BUTTON( SUBWINDOW_X+6, SUBWINDOW_Y+SUBWINDOW_HEIGHT-24, .5*(SUBWINDOW_WIDTH-18), 18, "BACK", .3, 14, close profile_rename ; open profile )
+//	BUTTON( SUBWINDOW_X+6+.5*(SUBWINDOW_WIDTH-18)+6, SUBWINDOW_Y+SUBWINDOW_HEIGHT-24, .5*(SUBWINDOW_WIDTH-18), 18, "RENAME", .3, 14, conditionalscript ui_profile_renameto 1
+//																											( "close profile_rename ; uiscript renameProfile ; open profile" )
+//																											( "open profile_rename" ) )
+
+	BUTTON( SUBWINDOW_X+6+.5*(SUBWINDOW_WIDTH-18)+6, SUBWINDOW_Y+SUBWINDOW_HEIGHT-24, .5*(SUBWINDOW_WIDTH-18), 18, "RENAME", .3, 14, conditionalscript ui_profile_renameto 1
+																																		( "clearFocus" )
+																																		( "setcvar ui_profile_create_error \\\"Can't rename profile. Please enter a profile name.\\\" ; open profile_create_error ; abort" )
+																																	 conditionalscript UIProfileAlreadyExists_Rename 2
+																																		( "setcvar ui_profile_create_error \\\"Can't rename profile. A profile with the same name already exists.\\\" ; open profile_create_error ; abort" )
+																																		( "clearFocus" )
+																																		
+																																	close profile_rename ;
+																																	uiscript renameProfile ;
+																																	open profile ; )
+}

@@ -1,0 +1,499 @@
+#include "ui/menudef.h"
+
+{
+  \\ Server Creation \\
+
+#define W           640
+#define H           480
+#define BORDER      10
+
+#define PREVIEW_W   300
+#define PREVIEW_H   225
+#define PREVIEW_X   BORDER
+#define PREVIEW_Y   BORDER
+
+#define BC_W        (W-(2*BORDER))
+#define BC_H        50
+#define BC_X        BORDER
+#define BC_Y        (H-(BC_H+BORDER))
+#define ARROW_W     50
+#define ARROW_H     BC_H
+
+#define MAPS_W      PREVIEW_W
+#define MAPS_H      (H-((4*BORDER)+PREVIEW_H+BC_H))
+#define MAPS_X      BORDER
+#define MAPS_Y      ((2*BORDER)+PREVIEW_H)
+
+#define OPTIONS_W   (W-((3*BORDER)+PREVIEW_W))
+#define OPTIONS_H   (H-((3*BORDER)+BC_H))
+#define OPTIONS_X   ((2*BORDER)+PREVIEW_W)
+#define OPTIONS_Y   BORDER
+#define ELEM_OFF_Y  20
+#define ELEM_OFF_X  -135
+#define ELEM_H      21
+
+  menuDef
+  {
+    name "createserver"
+    visible MENU_FALSE
+    fullscreen MENU_TRUE
+    rect 0 0 W H
+    focusColor 1 .75 0 1
+    outOfBoundsClick
+    style WINDOW_STYLE_EMPTY
+    aspectBias ASPECT_NONE
+
+    onOpen
+    {
+      uiScript loadArenas;
+      hide accept_alt;
+      show accept;
+      hide back_alt;
+      show back
+    }
+
+    onEsc
+    {
+      close createserver
+    }
+
+    itemDef
+    {
+      name background
+      rect 0 0 W H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+    }
+
+    // map selection
+
+    itemDef
+    {
+      name mappreview
+      style WINDOW_STYLE_EMPTY
+      ownerdraw UI_SELECTEDMAPPREVIEW
+      rect PREVIEW_X PREVIEW_Y PREVIEW_W PREVIEW_H
+      border WINDOW_BORDER_FULL
+      bordercolor .5 .5 .5 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name maplist
+      rect MAPS_X MAPS_Y MAPS_W MAPS_H
+      type ITEM_TYPE_LISTBOX
+      style WINDOW_STYLE_EMPTY
+      elementwidth 120
+      elementheight 20
+      textscale .33
+      elementtype LISTBOX_TEXT
+      feeder FEEDER_MAPS
+      border WINDOW_BORDER_FULL
+      bordercolor   0.5 0.5 0.5 1
+      forecolor     1   1   1   1
+      backcolor     0.2 0.2 0.2 1
+      outlinecolor  0.1 0.1 0.1 0.5
+      visible MENU_TRUE
+      columns 1
+        2 190 ALIGN_LEFT
+    }
+
+
+    //  SETTINGS  //
+
+    itemDef
+    {
+      name window
+      rect OPTIONS_X OPTIONS_Y OPTIONS_W OPTIONS_H
+      style WINDOW_STYLE_FILLED
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+
+      border WINDOW_BORDER_FULL
+      borderSize 1.0
+      borderColor 0.5 0.5 0.5 1
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_EDITFIELD
+      text "Host Name:"
+      cvar "sv_hostname"
+      maxChars 40
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(0*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name normal
+      type ITEM_TYPE_NUMERICFIELD
+      text "Time Limit:"
+      cvar "timelimit"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(1*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      maxchars 4
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_NUMERICFIELD
+      text "Maximum Players:"
+      cvar "sv_maxclients"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(2*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      maxchars 4
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_YESNO
+      text "Require Password:"
+      cvar "g_needpassword"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(3*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav"
+      }
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_EDITFIELD
+      text "Password:"
+      cvar "g_password"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(4*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      maxchars 10
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+
+
+    itemDef
+    {
+      name normal
+      type ITEM_TYPE_YESNO
+      text "Pure Server:"
+      cvar "sv_pure"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(6*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav"
+      }
+    }
+
+    itemDef
+    {
+      name normal
+      type ITEM_TYPE_MULTI
+      text "Dedicated:"
+      // dedicated is a special cvar in that as soon as it is set,
+      // the game goes to console only so the ui catches this one specifically
+      cvar "ui_dedicated"
+      cvarFloatList { "No" 0 "LAN" 1 "Internet" 2 }
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(7*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav"
+      }
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_YESNO
+      text "Auto Download:"
+      cvar "sv_allowdownload"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(8*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav"
+      }
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_YESNO
+      text "Enable Voting:"
+      cvar "g_allowvote"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(9*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav"
+      }
+    }
+
+
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_NUMERICFIELD
+      text "Minimum Ping:"
+      cvar "sv_minping"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(11*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      maxchars 4
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_NUMERICFIELD
+      text "Maximum Ping:"
+      cvar "sv_maxping"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(12*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      maxchars 4
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_YESNO
+      text "Synchronous Client:"
+      cvar "g_synchronousclients"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(13*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav"
+      }
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_NUMERICFIELD
+      text "Max Rate:"
+      cvar "sv_maxrate"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(14*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      maxchars 4
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_NUMERICFIELD
+      text "Zombie Time:"
+      cvar "sv_zombietime"
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(15*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      maxchars 4
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+    itemDef
+    {
+      name expert
+      type ITEM_TYPE_NUMERICFIELD
+      text "Reconnect Limit:"
+      cvar "sv_reconnectlimit"
+      maxchars 4
+      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(16*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx ELEM_OFF_X
+      textscale .36
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+    }
+
+
+
+    // BACK BAR //
+
+    itemDef
+    {
+      name back
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/backarrow.tga"
+      rect BC_X BC_Y ARROW_H ARROW_W
+      aspectBias ALIGN_LEFT
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu4.wav";
+        close createserver
+      }
+
+      mouseEnter
+      {
+        hide back;
+        show back_alt
+      }
+    }
+
+    itemDef
+    {
+      name back_alt
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/backarrow_alt.tga"
+      rect BC_X BC_Y ARROW_H ARROW_W
+      aspectBias ALIGN_LEFT
+      backcolor 0 0 0 0
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      type ITEM_TYPE_BUTTON
+
+      text "Back"
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      textalignx ARROW_W
+      textscale .6
+
+      mouseExit
+      {
+        hide back_alt;
+        show back
+      }
+
+      action
+      {
+        play "sound/misc/menu4.wav";
+        close createserver
+      }
+    }
+
+
+
+
+    itemDef
+    {
+      name accept
+      style WINDOW_STYLE_SHADER
+      rect ((BC_X+BC_W)-ARROW_W) BC_Y ARROW_H ARROW_W
+      aspectBias ALIGN_RIGHT
+      background "ui/assets/forwardarrow.tga"
+      backcolor 0 0 0 0
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      mouseEnter
+      {
+        hide accept;
+        show accept_alt
+      }
+
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript StartServer
+      }
+    }
+
+    itemDef
+    {
+      name accept_alt
+      style WINDOW_STYLE_SHADER
+      rect ((BC_X+BC_W)-ARROW_W) BC_Y ARROW_H ARROW_W
+      aspectBias ALIGN_RIGHT
+      background "ui/assets/forwardarrow_alt.tga"
+      backcolor 0 0 0 0
+      type ITEM_TYPE_BUTTON
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+
+      text "Create"
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx -ARROW_W
+      textscale .6
+
+      mouseExit
+      {
+        hide accept_alt;
+        show accept
+      }
+
+      action
+      {
+        play "sound/misc/menu1.wav";
+        uiScript StartServer
+      }
+    }
+  }
+}

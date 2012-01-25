@@ -1,0 +1,183 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+#define WINDOW_WIDTH	608
+#define WINDOW_HEIGHT	448
+#define GROUP_NAME		"grpHostGameAdvanced"
+
+// Macros //
+
+#include "ui/menumacros.h"
+		
+// Host Game Advanced Menu //
+
+menuDef {
+	name		"hostgame_advanced"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+	
+	onESC {
+		close hostgame_advanced ;
+		open hostgame
+	}
+
+// Window //
+
+	WINDOW( "HOST GAME: ADVANCED", 266 )
+	
+// Subwindows //
+
+#define SUBWINDOW_WIDTH		.5*(WINDOW_WIDTH-18)
+
+// General //
+
+	SUBWINDOW( 6, 32, (SUBWINDOW_WIDTH), 76, "GENERAL" )
+	NUMERICFIELD( 8, 48, (SUBWINDOW_WIDTH)-4, 10, "Minimum Ping:", .2, 8, "sv_minping", 4, "Setting the minimum ping can be used to exclude LPBs (0 = No Minimum)" )
+	NUMERICFIELD( 8, 60, (SUBWINDOW_WIDTH)-4, 10, "Maximum Ping:", .2, 8, "sv_maxping", 4, "Setting the maximum ping can be used to exclude HPBs (0 = No Maximum)" )
+	NUMERICFIELD( 8, 72, (SUBWINDOW_WIDTH)-4, 10, "Maximum Game Rate:", .2, 8, "sv_maxrate", 6, "Maximum rate to send game data to clients (0 = match client rate settings)" )
+	NUMERICFIELD( 8, 84, (SUBWINDOW_WIDTH)-4, 10, "Player Inactivity:", .2, 8, "g_inactivity", 3, "Max time (in sec) a player can remain idle before being kicked from the server (0 = disabled)" )
+	NUMERICFIELD( 8, 96, (SUBWINDOW_WIDTH)-4, 10, "Spectator Inactivity:", .2, 8, "g_spectatorInactivity", 3, "Max time (in sec) a spectator can remain idle before being kicked from the server (0 = disabled)" )
+	
+// Match //
+
+	SUBWINDOW( 6, 114, (SUBWINDOW_WIDTH), 220, "MATCH" )
+	YESNO( 8, 130, (SUBWINDOW_WIDTH)-4, 10, "Wait for Ready:", .2, 8, "g_doWarmup", "Whether the server should require players to be ready before a match can start" )
+	NUMERICFIELD( 8, 142, (SUBWINDOW_WIDTH)-4, 10, "Minimum Players:", .2, 8, "match_minplayers", 2, "Specifies the minimum number of players required before a match can start" )
+	NUMERICFIELD( 8, 154, (SUBWINDOW_WIDTH)-4, 10, "Ready percentage:", .2, 8, "match_readypercent", 3, "Specifies the minimum percentage of players that must hit their ready key before a match can start" )
+	YESNO( 8, 166, (SUBWINDOW_WIDTH)-4, 10, "Allow Late Joins:", .2, 8, "match_latejoin", "Whether a player can join a team once a match has started" )
+	YESNO( 8, 178, (SUBWINDOW_WIDTH)-4, 10, "Mute Spectators:", .2, 8, "match_mutespecs", "Whether spectators are muted" )
+	MULTI( 8, 190, (SUBWINDOW_WIDTH)-4, 10, "Warmup Damage:", .2, 8, "match_warmupDamage", cvarFloatList { "Nobody" 0 "Enemies Only" 1 "Everyone" 2 }, "Whether you can damage players during the match's warmup period" )
+	NUMERICFIELD( 8, 202, (SUBWINDOW_WIDTH)-4, 10, "Max Players Per Team:", .2, 8, "team_maxplayers", 2, "Specifies the maximum number of players per team" )
+	YESNO( 8, 214, (SUBWINDOW_WIDTH)-4, 10, "Disable Team Controls:", .2, 8, "team_nocontrols", "Whether players can issue team commands (lock team/spectators, readyteam, etc.)" )
+	NUMERICFIELD( 8, 226, (SUBWINDOW_WIDTH)-4, 10, "Warmup Duration:", .2, 8, "g_warmup", 2, "The length of time the warmup lasts prior to a match starting" )
+	NUMERICFIELD( 8, 238, (SUBWINDOW_WIDTH)-4, 10, "Maximum Complaints:", .2, 8, "g_complaintlimit", 2, "The maximum number of complaints a player may receive before being kicked from a server" )
+	MULTI( 8, 250, (SUBWINDOW_WIDTH)-4, 10, "Maximum Complainees:", .2, 8, "g_ipcomplaintlimit", cvarFloatList { "Off" 0 "1" 1 "2" 2 "3" 3 "4" 4 "5" 5 "6" 6 }, "The number of unique complaints a player may receive before being kicked from a server" )
+	NUMERICFIELD( 8, 262, (SUBWINDOW_WIDTH)-4, 10, "Map Time Limit:", .2, 8, "ui_userTimeLimit", 6, "Override the default time limit" )
+	NUMERICFIELD( 8, 274, (SUBWINDOW_WIDTH)-4, 10, "Allied Spawn Time:", .2, 8, "ui_userAlliedRespawnTime", 2, "Override the default Allied spawn time" )
+	NUMERICFIELD( 8, 286, (SUBWINDOW_WIDTH)-4, 10, "Axis Spawn Time:", .2, 8, "ui_userAxisRespawnTime", 2, "Override the default Axis spawn time" )
+	NUMERICFIELD( 8, 298, (SUBWINDOW_WIDTH)-4, 10, "Allied Max Lives:", .2, 8, "g_alliedmaxlives", 3, "Specify the number of Allied lives in a max lives game" )
+	NUMERICFIELD( 8, 310, (SUBWINDOW_WIDTH)-4, 10, "Axis Max Lives:", .2, 8, "g_axismaxlives", 3, "Specify the number of Axis lives in a max lives game" )
+	MULTI( 8, 322, (SUBWINDOW_WIDTH)-4, 10, "Stopwatch Round-Type:", .2, 8, "g_altStopwatchMode", cvarFloatList { "ABBA" 0 "ABAB" 1 }, "Determines the type of Stopwatch round (ABBA = swap sides, ABAB = retain sides)" )	
+	
+// LMS //
+
+	SUBWINDOW( 6, 340, (SUBWINDOW_WIDTH), 64, "LAST MAN STANDING" )
+	
+	NUMERICFIELD( 8, 356, (SUBWINDOW_WIDTH)-4, 10, "LMS Rounds Per Match:", .2, 8, "g_lms_roundlimit", 2, "Override the default LMS rounds per match" )	// fixme: range check
+	NUMERICFIELD( 8, 368, (SUBWINDOW_WIDTH)-4, 10, "LMS Matches Per Map:", .2, 8, "g_lms_matchlimit", 2, "Override the default LMS matches (comprising of rounds) per map" )	// fixme: range check
+	YESNO( 8, 380, (SUBWINDOW_WIDTH)-4, 10, "LMS Spectate Team Only:", .2, 8, "g_lms_followTeamOnly", "Stops players spectating the enemy team" )
+	YESNO( 8, 392, (SUBWINDOW_WIDTH)-4, 10, "LMS Locked Teams:", .2, 8, "g_lms_lockTeams", "Stops players being able to switch teams" )
+
+// Admin //
+
+	SUBWINDOW( 6+(SUBWINDOW_WIDTH)+6, 32, (SUBWINDOW_WIDTH), 64, "ADMIN" )
+	YESNO( 6+(SUBWINDOW_WIDTH)+6+2, 48, (SUBWINDOW_WIDTH)-4, 10, "Pure Server:", .2, 8, "sv_pure", "Limits game content to that contained in PK3 files on both the client and server with matching CRCs" )
+	EDITFIELD( 6+(SUBWINDOW_WIDTH)+6+2, 60, (SUBWINDOW_WIDTH)-4, 10, "Password:", .2, 8, "g_password", 25, 18, "Sets the password required for players to join the server" )
+	EDITFIELD( 6+(SUBWINDOW_WIDTH)+6+2, 72, (SUBWINDOW_WIDTH)-4, 10, "Referee Password:", .2, 8, "refereePassword", 25, 18, "Password to utilize the \"ref\" command for match control and remote game administration" )
+	EDITFIELD( 6+(SUBWINDOW_WIDTH)+6+2, 84, (SUBWINDOW_WIDTH)-4, 10, "RCON Password:", .2, 8, "rconPassword", 25, 18, "Password to utilize the remote game server console (very powerful, so keep this password safe)" )
+
+// Voting //
+
+	SUBWINDOW( 6+(SUBWINDOW_WIDTH)+6, 102, (SUBWINDOW_WIDTH), 40, "VOTING" )
+	NUMERICFIELD( 6+(SUBWINDOW_WIDTH)+6+2, 118, (SUBWINDOW_WIDTH)-4, 10, "Max Votes per Player:", .2, 8, "vote_limit", 2, "Specifies the maximum number of votes per player per match" )
+	MULTI( 6+(SUBWINDOW_WIDTH)+6+2, 130, (SUBWINDOW_WIDTH)-4, 10, "Successful voting %:", .2, 8, "vote_percent", cvarFloatList { "25%" 25 "50%" 50 "75%" 75 "100%" 100 }, "Specifies the minimum percentage required for a vote to pass" )
+	
+	SUBWINDOW( 6+(SUBWINDOW_WIDTH)+6, 148, (SUBWINDOW_WIDTH), 112, "ALLOW VOTES" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2, 164, .5*((SUBWINDOW_WIDTH)-6), 10, "Comp Settings:", .2, 24, 8, "vote_allow_comp", "Allow players to vote for competition settings" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2, 176, .5*((SUBWINDOW_WIDTH)-6), 10, "Game Type:", .2, 24, 8, "vote_allow_gametype", "Allow players to vote for a change in game type" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2, 188, .5*((SUBWINDOW_WIDTH)-6), 10, "Player Kick:", .2, 24, 8, "vote_allow_kick", "Allow players to vote for other players to be kicked" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2, 200, .5*((SUBWINDOW_WIDTH)-6), 10, "Map:", .2, 24, 8, "vote_allow_map", "Allow players to vote for a different campaign or map" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2, 212, .5*((SUBWINDOW_WIDTH)-6), 10, "Match Reset:", .2, 24, 8, "vote_allow_matchreset", "Allow players to vote for the match to be reset" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2, 224, .5*((SUBWINDOW_WIDTH)-6), 10, "Mute Spects:", .2, 24, 8, "vote_allow_mutespecs", "Allow players to vote for spectators to be muted" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2, 236, .5*((SUBWINDOW_WIDTH)-6), 10, "Next Map:", .2, 24, 8, "vote_allow_nextmap", "Allow players to vote for the next campaign or map" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2, 248, .5*((SUBWINDOW_WIDTH)-6), 10, "Balanced Teams:", .2, 24, 8, "vote_allow_balancedteams", "Allow players to vote for enforced team balance" )
+	
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2+(.5*((SUBWINDOW_WIDTH)-6))+2, 164, .5*((SUBWINDOW_WIDTH)-6), 10, "Pub Settings:", .2, 24, 8, "vote_allow_pub", "Allow players to vote for public settings" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2+(.5*((SUBWINDOW_WIDTH)-6))+2, 176, .5*((SUBWINDOW_WIDTH)-6), 10, "Referee:", .2, 24, 8, "vote_allow_referee", "Allow players to vote for a referee" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2+(.5*((SUBWINDOW_WIDTH)-6))+2, 188, .5*((SUBWINDOW_WIDTH)-6), 10, "XP Shuffle:", .2, 24, 8, "vote_allow_shuffleteamsxp", "Allow players to vote for teams to be shuffled" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2+(.5*((SUBWINDOW_WIDTH)-6))+2, 200, .5*((SUBWINDOW_WIDTH)-6), 10, "Swap Teams:", .2, 24, 8, "vote_allow_swapteams", "Allow players to vote for teams to swap sides" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2+(.5*((SUBWINDOW_WIDTH)-6))+2, 212, .5*((SUBWINDOW_WIDTH)-6), 10, "Friendly Fire:", .2, 24, 8, "vote_allow_friendlyfire", "Allow players to vote for friendly fire to be enabled or disabled" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2+(.5*((SUBWINDOW_WIDTH)-6))+2, 224, .5*((SUBWINDOW_WIDTH)-6), 10, "Timelimit:", .2, 24, 8, "vote_allow_timelimit", "Allow players to vote for a different time limit" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2+(.5*((SUBWINDOW_WIDTH)-6))+2, 236, .5*((SUBWINDOW_WIDTH)-6), 10, "Warmup Damage:", .2, 24, 8, "vote_allow_warmupdamage", "Allow players to vote for warmup damage to be enabled or disabled" )
+	CHECKBOXALIGNX( 6+(SUBWINDOW_WIDTH)+6+2+(.5*((SUBWINDOW_WIDTH)-6))+2, 248, .5*((SUBWINDOW_WIDTH)-6), 10, "Anti-Lag:", .2, 24, 8, "vote_allow_antilag", "Allow players to vote for antilag to be enabled or disabled" )
+	
+// Message of the Day //
+
+	SUBWINDOW( 6+(SUBWINDOW_WIDTH)+6, 266, (SUBWINDOW_WIDTH), 76, "MESSAGE OF THE DAY" )
+
+	itemDef {
+		name		"efleftbackLine 1:"
+		group		GROUP_NAME
+		rect		$evalfloat((6+(SUBWINDOW_WIDTH)+6+4)+44+6) $evalfloat(282) $evalfloat(((SUBWINDOW_WIDTH)-8)-44-6) $evalfloat(10)
+		style		WINDOW_STYLE_FILLED
+		backcolor	.5 .5 .5 .2
+		visible		1
+		decoration
+	}
+	EDITFIELDLEFT( 6+(SUBWINDOW_WIDTH)+6+4, 282, (SUBWINDOW_WIDTH)-8, 10, "Line 1:", .2, 8, "server_motd0", 26, 35, "Specifies the message clients will see when connecting to the server" )
+	
+	itemDef {
+		name		"efleftbackLine 2:"
+		group		GROUP_NAME
+		rect		$evalfloat((6+(SUBWINDOW_WIDTH)+6+4)+44+6) $evalfloat(294) $evalfloat(((SUBWINDOW_WIDTH)-8)-44-6) $evalfloat(10)
+		style		WINDOW_STYLE_FILLED
+		backcolor	.5 .5 .5 .2
+		visible		1
+		decoration
+	}	
+	EDITFIELDLEFT( 6+(SUBWINDOW_WIDTH)+6+4, 294, (SUBWINDOW_WIDTH)-8, 10, "Line 2:", .2, 8, "server_motd1", 26, 35, "Specifies the message clients will see when connecting to the server" )
+
+	itemDef {
+		name		"efleftbackLine 3:"
+		group		GROUP_NAME
+		rect		$evalfloat((6+(SUBWINDOW_WIDTH)+6+4)+44+6) $evalfloat(306) $evalfloat(((SUBWINDOW_WIDTH)-8)-44-6) $evalfloat(10)
+		style		WINDOW_STYLE_FILLED
+		backcolor	.5 .5 .5 .2
+		visible		1
+		decoration
+	}	
+	EDITFIELDLEFT( 6+(SUBWINDOW_WIDTH)+6+4, 306, (SUBWINDOW_WIDTH)-8, 10, "Line 3:", .2, 8, "server_motd2", 26, 35, "Specifies the message clients will see when connecting to the server" )
+	
+	itemDef {
+		name		"efleftbackLine 4:"
+		group		GROUP_NAME
+		rect		$evalfloat((6+(SUBWINDOW_WIDTH)+6+4)+44+6) $evalfloat(318) $evalfloat(((SUBWINDOW_WIDTH)-8)-44-6) $evalfloat(10)
+		style		WINDOW_STYLE_FILLED
+		backcolor	.5 .5 .5 .2
+		visible		1
+		decoration
+	}	
+	EDITFIELDLEFT( 6+(SUBWINDOW_WIDTH)+6+4, 318, (SUBWINDOW_WIDTH)-8, 10, "Line 4:", .2, 8, "server_motd3", 26, 35, "Specifies the message clients will see when connecting to the server" )
+
+	itemDef {
+		name		"efleftbackLine 5:"
+		group		GROUP_NAME
+		rect		$evalfloat((6+(SUBWINDOW_WIDTH)+6+4)+44+6) $evalfloat(330) $evalfloat(((SUBWINDOW_WIDTH)-8)-44-6) $evalfloat(10)
+		style		WINDOW_STYLE_FILLED
+		backcolor	.5 .5 .5 .2
+		visible		1
+		decoration
+	}	
+	EDITFIELDLEFT( 6+(SUBWINDOW_WIDTH)+6+4, 330, (SUBWINDOW_WIDTH)-8, 10, "Line 5:", .2, 8, "server_motd4", 26, 35, "Specifies the message clients will see when connecting to the server" )
+	
+// Download //
+
+	SUBWINDOW( 6+(SUBWINDOW_WIDTH)+6, 348, (SUBWINDOW_WIDTH), 64/*72*/, "DOWNLOAD" )
+	YESNO( 6+(SUBWINDOW_WIDTH)+6+2, 364, (SUBWINDOW_WIDTH)-4, 10, "Client Downloads:", .2, 8, "sv_allowDownload", "Allows players to download missing files from the server" )
+	NUMERICFIELD( 6+(SUBWINDOW_WIDTH)+6+2, 376, (SUBWINDOW_WIDTH)-4, 10, "Maximum Download Rate:", .2, 8, "sv_dl_maxRate", 6, "Specifies the maximum download rate from the server for players with missing files" )
+	YESNO( 6+(SUBWINDOW_WIDTH)+6+2, 388, (SUBWINDOW_WIDTH)-4, 10, "FTP/HTTP Redirects:", .2, 8, "sv_wwwDownload", "Redirects players with missing files to another server" )
+	EDITFIELD( 6+(SUBWINDOW_WIDTH)+6+2, 400, (SUBWINDOW_WIDTH)-4, 10, "Base URL:", .2, 8, "sv_wwwBaseUrl", 64, 18, "Used to build the URL given to clients for download" )
+//	EDITFIELD( 6+(SUBWINDOW_WIDTH)+6+2, 412, (SUBWINDOW_WIDTH)-4, 10, "Check Path:", .2, 8, "sv_wwwCheckPath", 64, 18, "A local path on the server to check for files" )
+
+// Buttons //
+	
+	BUTTON( 6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "BACK", .3, 14,
+		close hostgame_advanced ; open hostgame )
+	BUTTON( 6+.5*(WINDOW_WIDTH-18)+6, WINDOW_HEIGHT-24, .5*(WINDOW_WIDTH-18), 18, "DEFAULT", .3, 14,
+		open hostgame_advanced_default )
+}

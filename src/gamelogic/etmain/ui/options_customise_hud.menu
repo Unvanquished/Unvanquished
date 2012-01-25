@@ -1,0 +1,88 @@
+// View menu for ET-XreaL - editted view menu from ET
+// Removed r_fastsky control and added a cg_fov one instead
+// Joshua 'ethr' England - the_england@hotmail.com
+
+#include "ui/menudef.h"
+#include "ui/menumacros.h"
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+#define WINDOW_WIDTH	400
+#define WINDOW_HEIGHT	442
+#define GROUP_NAME		"grpOptionsCustomiseHud"
+#define SUBWINDOW_WIDTH		WINDOW_WIDTH-12
+	
+menuDef {
+	name		"options_customise_hud"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+
+	onESC {
+		close options_customise_hud ;
+		open options
+	}
+
+	WINDOW( "VIEW", 94 )
+
+
+// Hud Display //
+
+	SUBWINDOW( 6, 32, (SUBWINDOW_WIDTH), 76, "HUD DISPLAY" )
+	YESNO( 8, 48, (SUBWINDOW_WIDTH)-4, 10, "Draw Gun:", .2, 8, "cg_drawGun", "Show gun model on-screen" )
+	YESNO( 8, 60, (SUBWINDOW_WIDTH)-4, 10, "Show Compass:", .2, 8, "cg_drawCompass", "Displays compass (with icons when near select events)" )
+	MULTI( 8, 72, (SUBWINDOW_WIDTH)-4, 10, "Mission Timer:", .2, 8, "cg_drawRoundTimer", cvarFloatList { "Off" 0 "On" 1 }, "" )
+	MULTI( 8, 84, (SUBWINDOW_WIDTH)-4, 10, "Reinforcement Timer:", .2, 8, "cg_drawReinforcementTime", cvarFloatList { "Off" 0 "On" 1 }, "Displays your team's \"reinforcement\" time" )
+	MULTI( 8, 96, (SUBWINDOW_WIDTH)-4, 10, "Cursor Hints:", .2, 8, "cg_cursorHints", cvarFloatList { "Off" 0 "Size Pulse" 1 "Strobe Pulse" 2 "Alpha Pulse" 3 "Solid" 4 }, "Icon display format when near an action item" )
+
+// Crosshair //
+
+	SUBWINDOW( 6, 114, (SUBWINDOW_WIDTH), 178, "CROSSHAIR" )
+	MULTI( 8, 130, (SUBWINDOW_WIDTH)-4, 10, "Crosshair Size:", .2, 8, "cg_crosshairsize", cvarFloatList { "Tiny" 24 "Small" 32 "Medium" 48 "Large" 64 "Huge" 96 }, "Sets the size of the displayed crosshair" )
+	YESNO( 8, 142, (SUBWINDOW_WIDTH)-4, 10, "Crosshair Pulsing:", .2, 8, "cg_crosshairPulse", "Toggles crosshair spread sizing while moving/firing" )
+	YESNO( 8, 154, (SUBWINDOW_WIDTH)-4, 10, "Crosshair Health Info:", .2, 8, "cg_crosshairHealth", "Colors the crosshair based on current health (overrides crosshair color settings)" )
+	YESNO( 8, 166, (SUBWINDOW_WIDTH)-4, 10, "Crosshair Name Drawing:", .2, 8, "cg_drawCrosshairNames", "Displays player info when the crosshair is over a teammate" )
+
+	itemDef {
+		name		"crosshair_select"
+		group		GROUP_NAME
+		rect		$evalfloat(.5*((SUBWINDOW_WIDTH)-64)) 178 64 64
+		style		WINDOW_STYLE_FILLED
+		ownerdraw	UI_CROSSHAIR
+		backcolor	.4 .4 .4 .9
+		border		WINDOW_BORDER_FULL
+		bordercolor	.6 .6 .6 1
+		visible		1
+		tooltip		""
+		
+		mouseEnter {
+			setitemcolor "crosshair_select" bordercolor .9 .9 .9 1
+		}
+
+		mouseExit {
+			setitemcolor "crosshair_select" bordercolor .6 .6 .6 1
+		}
+	}
+
+	MULTI( 8, 244, (SUBWINDOW_WIDTH)-4, 10, "Primary Color:", .2, 8, "cg_crosshairColor", cvarStrList { "White"; "white"; "Yellow"; "yellow"; "Red"; "red"; "Green"; "green"; "Blue"; "blue"; "Magenta"; "magenta"; "Cyan"; "cyan"; "Orange"; "orange"; "Light Blue"; "0xa0c0ff"; "Medium Blue"; "mdblue"; "Light Red"; "0xffc0a0"; "Medium Red"; "mdred"; "Light Green"; "0xa0ffc0"; "Medium Green"; "mdgreen"; "Dark Green"; "dkgreen"; "Medium Cyan"; "mdcyan"; "Medium Yellow"; "mdyellow"; "Medium Orange"; "mdorange"; "Light Grey"; "ltgrey"; "Medium Grey"; "mdgrey"; "Dark Grey"; "dkgrey"; "Black"; "black" }, "Set the color for the primary crosshair" )
+	SLIDER( 8, 256, (SUBWINDOW_WIDTH)-4, 10, "Primary Alpha:", .2, 8, "cg_crosshairAlpha" 1 0 1, "Set the transparency level for the primary crosshair" )
+	MULTI( 8, 268, (SUBWINDOW_WIDTH)-4, 10, "Secondary Color:", .2, 8, "cg_crosshairColorAlt", cvarStrList { "White"; "white"; "Yellow"; "yellow"; "Red"; "red"; "Green"; "green"; "Blue"; "blue"; "Magenta"; "magenta"; "Cyan"; "cyan"; "Orange"; "orange"; "Light Blue"; "0xa0c0ff"; "Medium Blue"; "mdblue"; "Light Red"; "0xffc0a0"; "Medium Red"; "mdred"; "Light Green"; "0xa0ffc0"; "Medium Green"; "mdgreen"; "Dark Green"; "dkgreen"; "Medium Cyan"; "mdcyan"; "Medium Yellow"; "mdyellow"; "Medium Orange"; "mdorange"; "Light Grey"; "ltgrey"; "Medium Grey"; "mdgrey"; "Dark Grey"; "dkgrey"; "Black"; "black" }, "Set the color for the secondary crosshair" )
+	SLIDER( 8, 280, (SUBWINDOW_WIDTH)-4, 10, "Secondary Alpha:", .2, 8, "cg_crosshairAlphaAlt" 1 0 1, "Set the transparency level for the secondary crosshair" )
+	
+// In-Game Display //
+
+	SUBWINDOW( 6, 298, (SUBWINDOW_WIDTH), 112, "IN-GAME DISPLAY" )
+	MULTI( 8, 314, (SUBWINDOW_WIDTH)-4, 10, "Ejecting Brass:", .2, 8, "cg_brassTime", cvarFloatList { "High" 15000 "Med" 2500 "Off" 0 }, "" )
+	SLIDER( 8, 326, (SUBWINDOW_WIDTH)-4, 10, "Field Of View:", .2, 8, "cg_fov" 1.3 80 120, "" )
+	MULTI( 8, 338, (SUBWINDOW_WIDTH)-4, 10, "Corona Distance:", .2, 8, "cg_coronafardist", cvarFloatList { "Off" 0 "Near" 800 "Normal" 1536 "Far" 4096 "Extreme" 16000 }, "" )
+	YESNO( 8, 350, (SUBWINDOW_WIDTH)-4, 10, "Particles:", .2, 8, "cg_wolfparticles", "" )
+	MULTI( 8, 362, (SUBWINDOW_WIDTH)-4, 10, "Wall Mark Lifetime:", .2, 8, "cg_markTime", cvarFloatList { "Long" 30000 "Normal" 20000 "Short" 10000 "Off" 0 }, "" )
+	MULTI( 8, 374, (SUBWINDOW_WIDTH)-4, 10, "Blood Flash:", .2, 8, "cg_bloodFlash", cvarFloatList { "None" 0.0 "Light" 0.25 "Medium" 0.5 "Heavy" 0.75 "Full" 1.0 }, "Red blood \"flash\" scale when receiving damage" )
+	MULTI( 8, 386, (SUBWINDOW_WIDTH)-4, 10, "Blood Splatter:", .2, 8, "cg_bloodDamageBlend", cvarFloatList { "None" 0.0 "Light" 0.25 "Medium" 0.5 "Heavy" 0.75 "Full" 1.0 }, "Blood \"splatter\" transparency when taking damage from other players" )
+	YESNO( 8, 398, (SUBWINDOW_WIDTH)-4, 10, "Atmospheric Effects:", .2, 8, "cg_atmosphericEffects", "" )
+	
+// Buttons //
+
+	BUTTON( 6, WINDOW_HEIGHT-24, WINDOW_WIDTH-12, 18, "BACK", .3, 14, close options_customise_hud ; open options )
+}

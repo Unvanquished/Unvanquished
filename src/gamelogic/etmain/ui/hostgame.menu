@@ -1,0 +1,235 @@
+#include "ui/menudef.h"
+
+// Defines //
+
+#define WINDOW_X		16
+#define WINDOW_Y		16
+#define WINDOW_WIDTH	608
+#define WINDOW_HEIGHT	448
+#define GROUP_NAME		"grpHostGame"
+
+// Macros //
+
+#include "ui/menumacros.h"
+		
+// System Menu //
+	
+menuDef {
+	name		"hostgame"
+	visible		0
+	fullscreen	0
+	rect		WINDOW_X WINDOW_Y WINDOW_WIDTH WINDOW_HEIGHT
+	style		WINDOW_STYLE_FILLED
+	
+	onOpen {
+		//uiScript loadArenas ;
+		//uiScript initHostGameFeatures ;
+		uiScript updateNetMap ;
+		show labelDetailsGametype ;
+		hide labelDetailsCampaign
+	}
+	
+	onESC {
+		close hostgame ;
+		open main
+	}
+
+//	onClose {
+//		close backgroundmusic_server ; 
+//		open backgroundmusic
+//	}
+
+// Window //
+
+	WINDOW( "HOST GAME", 126 )
+	
+// Subwindows //
+
+#define SUBWINDOW_WIDTH		.5*(WINDOW_WIDTH-18)
+
+// Settings //
+
+	SUBWINDOW( 6, 32, (SUBWINDOW_WIDTH), 88, "SETTINGS" )
+	EDITFIELD( 8, 48, (SUBWINDOW_WIDTH)-4, 10, "Server Name:", .2, 8, "sv_hostname", 32, 18, "Specifies the name of your game server" )
+	MULTIACTION( 8, 60, (SUBWINDOW_WIDTH)-4, 10, "Game Type:", .2, 8, "ui_netGameType", cvarFloatList { "Campaign" 4 "Last Man Standing" 5 "Single-Map Objective" 2 "Stopwatch" 3 }, show labelDetailsGametype ; hide labelDetailsCampaign ; uiScript updateGameType, "Click to specify the type of game to load" )
+	NUMERICFIELD( 8, 72, (SUBWINDOW_WIDTH)-4, 10, "Maximum Players:", .2, 8, "sv_maxclients", 3, "Maximum # of players that can connect to the server" )
+	MULTI( 8, 84, (SUBWINDOW_WIDTH)-4, 10, "Auto-Configure Server:", .2, 8, "server_autoconfig", cvarFloatList { "No" 0 "Competition Settings" 1 "Public Settings" 2 }, "Server automatically configures it self to specified default settings" )
+	MULTI( 8, 96, (SUBWINDOW_WIDTH)-4, 10, "Dedicated Server:", .2, 8, "ui_dedicated", cvarFloatList { "No" 0 "Yes - LAN" 1 "Yes - Internet" 2 }, "Specifies if the server should be \"dedicated\" for LAN or Internet play (no client)" )
+	EDITFIELD( 8, 108, (SUBWINDOW_WIDTH)-4, 10, "Password:", .2, 8, "g_password", 25, 18, "Password clients must set to join the server" )
+//	YESNOACTION( 8, 108, (SUBWINDOW_WIDTH)-4, 10, "PunkBuster:", .2, 8, "sv_punkbuster" noToggle, uiScript togglePbSVStatus, "Enable Punkbuster anti-cheating technology" )
+
+// Settings //
+
+	SUBWINDOW( 6, 126, (SUBWINDOW_WIDTH), 52, "FEATURES" )
+	
+	itemDef {
+		name		"filtericonFriendlyFire"
+		rect		$evalfloat(8+2) 142 10 10
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/filter_ff"
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	LABEL( 8+24+2, 142, .5*((SUBWINDOW_WIDTH)-6)-24-2-4, 10, "Friendly Fire", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	CHECKBOXNOTEXT( "labelFriendly Fire", 8+12+2, 142, .5*((SUBWINDOW_WIDTH)-6)-14-4, 10, "g_friendlyFire", "Specifies if teammates can hurt each other" )
+	
+	itemDef {
+		name		"filtericonPunkBuster"
+		rect		$evalfloat(8+2) 154 10 10
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/filter_pb"
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	LABEL( 8+24+2, 154, .5*((SUBWINDOW_WIDTH)-6)-24-2-4, 10, "PunkBuster", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	CHECKBOXNOTEXTACTION( "labelPunkBuster", 8+12+2, 154, .5*((SUBWINDOW_WIDTH)-6)-14-4, 10, "sv_punkbuster" noToggle, uiScript togglePbSVStatus, "Enable Punkbuster anti-cheating technology" )
+	
+	itemDef {
+		name		"filtericonAntilag"
+		rect		$evalfloat(8+2) 166 10 10
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/filter_antilag"
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	LABEL( 8+24+2, 166, .5*((SUBWINDOW_WIDTH)-6)-24-2-4, 10, "Anti-Lag", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	CHECKBOXNOTEXT( "labelAnti-Lag", 8+12+2, 166, .5*((SUBWINDOW_WIDTH)-6)-14-4, 10, "g_antilag", "Enables modem-friendly server support" )
+	
+	// lots of macro abuse in this one :)
+	itemDef {
+		name		"filtericonMaxLives"
+		rect		$evalfloat(8+.5*((SUBWINDOW_WIDTH)-6)+2+2-4) 142 10 10
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/filter_lives"
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+		cvarTest	"ui_netGameType"
+		hideCVar	{ 5 }
+	}
+	LABEL( 8+.5*((SUBWINDOW_WIDTH)-6)+2+2+24-4, 142, .5*((SUBWINDOW_WIDTH)-6)-26+4, 10, "Max Lives", .2, ITEM_ALIGN_LEFT cvarTest "ui_netGameType" hideCVar { 5 }, 0, 8 )
+	CHECKBOXNOTEXTACTION( "labelMax Lives", 8+.5*((SUBWINDOW_WIDTH)-6)+2+2+12-4, 142, .5*((SUBWINDOW_WIDTH)-6)-14+4, 10, "ui_maxlives" cvarTest "ui_netGameType" hideCVar { 5 }, uiScript toggleMaxLives, "Limits the number of player lives per round" )
+	
+	itemDef {
+		name		"filtericonWeapRestrict"
+		rect		$evalfloat(8+.5*((SUBWINDOW_WIDTH)-6)+2+2-4) 154 10 10
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/filter_weap"
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	LABEL( 8+.5*((SUBWINDOW_WIDTH)-6)+2+2+24-4, 154, .5*((SUBWINDOW_WIDTH)-6)-26+4, 10, "Weapon Restrictions", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	CHECKBOXNOTEXTACTION( "labelWeapon Restrictions", 8+.5*((SUBWINDOW_WIDTH)-6)+2+2+12-4, 154, .5*((SUBWINDOW_WIDTH)-6)-14+4, 10, "ui_heavyWeaponRestriction", uiScript toggleWeaponRestriction, "Restricts the number of weapons available to players to a percentage of the team size to reduce spam" )
+	
+	itemDef {
+		name		"filtericonTeamBalance"
+		rect		$evalfloat(8+.5*((SUBWINDOW_WIDTH)-6)+2+2-4) 166 10 10
+		style		WINDOW_STYLE_SHADER
+		background	"ui/assets/filter_balance"
+		forecolor	1 1 1 1
+		visible		1
+		decoration
+	}
+	LABEL( 8+.5*((SUBWINDOW_WIDTH)-6)+2+2+24-4, 166, .5*((SUBWINDOW_WIDTH)-6)-26+4, 10, "Balanced Teams", .2, ITEM_ALIGN_LEFT, 0, 8 )
+	CHECKBOXNOTEXTACTION( "labelBalanced Teams", 8+.5*((SUBWINDOW_WIDTH)-6)+2+2+12-4, 166, .5*((SUBWINDOW_WIDTH)-6)-14+4, 10, "g_teamforcebalance", copycvar g_teamforcebalance g_lms_teamforcebalance, "Enforces balanced teams by forcing players to join the team with the lowest player count"  )
+	
+// Map Selection //
+
+	SUBWINDOW( 6, 184, (SUBWINDOW_WIDTH), 132, "NAME" )
+	
+	itemDef {
+		name			"mapList"
+		group			GROUP_NAME
+		rect			12 204 $evalfloat((SUBWINDOW_WIDTH)-12) 106
+		type			ITEM_TYPE_LISTBOX
+		textfont		UI_FONT_COURBD_21
+		textscale		.2
+		textaligny		-3
+		forecolor		.6 .6 .6 1
+		outlinecolor	.5 .5 .5 .2
+		border			WINDOW_BORDER_FULL
+		bordercolor		.1 .1 .1 .5
+		feeder			FEEDER_ALLMAPS
+		elementtype		LISTBOX_TEXT
+		elementwidth	200
+		elementheight	12
+		columns			1 0 200 33
+		visible			1
+		tooltip			"Select the campaign or map that the server should load"
+		
+		action {
+			hide labelDetailsGametype ;
+			show labelDetailsCampaign
+		}
+	}
+	
+// Map Preview //
+
+	SUBWINDOW( 6+(SUBWINDOW_WIDTH)+6, 32, (SUBWINDOW_WIDTH), 284, "PREVIEW" )
+
+	itemDef {
+		name		"campaignPreview"
+		group		GROUP_NAME
+		rect		$evalfloat(6+(SUBWINDOW_WIDTH)+6+.5*(SUBWINDOW_WIDTH-256)) 52 256 256
+		type		ITEM_TYPE_OWNERDRAW
+		ownerdraw	UI_MAPPREVIEW
+		textfont	UI_FONT_COURBD_21
+		textscale	.2
+		border		WINDOW_BORDER_FULL
+		bordercolor	.1 .1 .1 .2
+		visible		1
+		decoration
+	}
+	
+// Details //
+
+	SUBWINDOW( 6, 320, WINDOW_WIDTH-12, 96, "DETAILS" )
+
+	itemDef {
+		name			"labelDetailsGametype"
+      	group			GROUP_NAME
+		rect			$evalfloat(6+4) $evalfloat(320+16) $evalfloat(WINDOW_WIDTH-12-8-8) $evalfloat(96-16-4)
+		type			ITEM_TYPE_OWNERDRAW
+		ownerdraw		UI_GAMETYPEDESCRIPTION
+		textfont		UI_FONT_COURBD_21
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textscale		.2
+//		textalign		LABEL_TEXT_ALIGN
+//		textalignx		$evalfloat(LABEL_TEXT_ALIGN_X)
+		textaligny		8
+		forecolor		.6 .6 .6 1
+		visible			0
+		decoration
+		autowrapped
+    }
+
+    itemDef {
+		name			"labelDetailsCampaign"
+      	group			GROUP_NAME
+		rect			$evalfloat(6+4) $evalfloat(320+16) $evalfloat(WINDOW_WIDTH-12-8-8) $evalfloat(96-16-4)
+		type			ITEM_TYPE_OWNERDRAW
+		ownerdraw		UI_CAMPAIGNDESCRIPTION
+		textfont		UI_FONT_COURBD_21
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textscale		.2
+//		textalign		LABEL_TEXT_ALIGN
+//		textalignx		$evalfloat(LABEL_TEXT_ALIGN_X)
+		textaligny		8
+		forecolor		.6 .6 .6 1
+		visible			1
+		decoration
+		autowrapped
+    }
+
+// Buttons //
+	
+	BUTTON( 6, WINDOW_HEIGHT-24, .33*(WINDOW_WIDTH-24), 18, "BACK", .3, 14, close hostgame ; open main )
+	BUTTON( 6+.33*(WINDOW_WIDTH-24)+6, WINDOW_HEIGHT-24, .34*(WINDOW_WIDTH-24), 18, "ADVANCED", .3, 14, close hostgame ; open hostgame_advanced )
+	BUTTON( 6+.33*(WINDOW_WIDTH-24)+6+.34*(WINDOW_WIDTH-24)+6, WINDOW_HEIGHT-24, .33*(WINDOW_WIDTH-24), 18, "START SERVER", .3, 14, conditionalScript ui_dedicated 0
+																																		( "open hostgame_dedicated_warning" )
+																																		( "uiScript StartServer" ) )
+}
