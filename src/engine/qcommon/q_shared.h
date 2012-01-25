@@ -42,12 +42,12 @@ extern "C" {
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
-#define PRODUCT_NAME            "OpenWolf"
-#define PRODUCT_NAME_UPPPER     "OpenWolf" // Case, No spaces
-#define PRODUCT_NAME_LOWER      "OpenWolf" // No case, No spaces
+#define PRODUCT_NAME            "Unvanquished"
+#define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
+#define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
 #define PRODUCT_VERSION         "0.2.0"
 
-#define ENGINE_NAME             "OpenWolf Engine"
+#define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          "0.1.2"
 
 

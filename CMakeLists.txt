@@ -1,5 +1,5 @@
 #
-# OpenWolf CMakeLists.txt
+#  CMakeLists.txt
 #
 # cmake required (http://www.cmake.org/)
 #
@@ -21,16 +21,16 @@ set(CMAKE_BUILD_TYPE Release CACHE STRING
 #this line has to appear before 'PROJECT' in order to be able to disable incremental linking
 SET(MSVC_INCREMENTAL_DEFAULT ON)
 
-project( OpenWolf C CXX ASM )
+project( Daemon C CXX ASM )
 set(CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER})
 set(CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT})
 set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
 
 # options
-option( BUILD_CLIENT         "Build OpenWolf client"                   1 )
+option( BUILD_CLIENT         "Build Daemon client"                   1 )
 option( BUILD_OLD_RENDERER   "Build old renderer library"              1 )
 option( BUILD_NEW_RENDERER   "Build new renderer library"              1 )
-option( BUILD_SERVER         "Build OpenWolfded server"                1 )
+option( BUILD_SERVER         "Build Daemonded server"                1 )
 option( BUILD_GAME_SO_ET     "Build game logic shared libraries for ET" 1 )
 option( BUILD_GAME_SO_TREM   "Build game logic shared libs for Trem"   1 )
 option( BUILD_GAME_SO_GPP    "Build GPP Tremulous game logic libs"     1 )
@@ -65,7 +65,7 @@ option( USE_VOIP	     "Compile with VOIP support"               1 )
 option( USE_CIN_XVID	     "Encode videos with XViD"                 1 )
 
 # package info
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenWolf ET TremZ client")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt")
 include(CPack)
@@ -1314,7 +1314,7 @@ endif()
 
   target_link_libraries( client ${OS_LIBRARIES} ${PNG_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} ${GLEW_LIBRARY} ${CURL_LIBRARY} ${VORBIS_LIBRARIES} ${RUBY_LIBRARY} ${XML_LIBRARY} ${NEWTON_LIBRARY} ${MYSQL_LIBRARY} ${CURSES_LIBRARY} ${GMP_LIBRARY} ${XVID_LIBRARY} )
   set_property( TARGET client PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER BOTLIB BOTLIB_STATIC COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_VOIP USE_CRYPTO )
-  set_target_properties( client PROPERTIES OUTPUT_NAME "openwolf.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
+  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install(TARGETS client
           RUNTIME DESTINATION bin
           LIBRARY DESTINATION lib
@@ -1403,7 +1403,7 @@ endif()
   include_directories( ${RUBY_INCLUDE_DIRS} ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${SDL_INCLUDE_DIR} ${CURL_INCLUDE_DIR} ${XML_INCLUDE_DIR} ${CURSES_INCLUDE_DIR} ${GMP_INCLUDES} ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${SDL_LIBRARY} ${CURL_LIBRARY} ${RUBY_LIBRARY} ${XML_LIBRARY} ${NEWTON_LIBRARY} ${MYSQL_LIBRARY} ${CURSES_LIBRARY} ${GMP_LIBRARY} )
   set_property( TARGET server PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_VOIP USE_CRYPTO )
-  set_target_properties( server PROPERTIES OUTPUT_NAME "owded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
+  set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install(TARGETS server
           RUNTIME DESTINATION bin
           LIBRARY DESTINATION lib
@@ -1429,7 +1429,7 @@ if( BUILD_OWMAP )
   include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${LIB_DIR}/zlib ${MOUNT_DIR}/tools/common ${GLIB_INCLUDE_DIRS} ${PNG_PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} )
   target_link_libraries( owmap ${OS_LIBRARIES} ${SDL_LIBRARY} ${GLIB_LIBRARIES} ${PNG_LIBRARY} ${JPEG_LIBRARY} ${OPENGL_LIBRARY} )
   set_property( TARGET owmap PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
-  set_target_properties( owmap PROPERTIES OUTPUT_NAME "owmap.${BUILD_ARCH}" PREFIX "" )
+  set_target_properties( owmap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
   install(TARGETS owmap
 	    RUNTIME DESTINATION bin
 	    LIBRARY DESTINATION lib
