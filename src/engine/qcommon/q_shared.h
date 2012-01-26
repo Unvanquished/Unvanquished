@@ -68,7 +68,7 @@ extern "C" {
 
 #define LOCALIZATION_SUPPORT
 
-#if 0
+#if 1
 #if !defined(COMPAT_Q3A)
 #define COMPAT_Q3A 1
 #endif
