@@ -4938,15 +4938,6 @@ void CL_Init(void)
 	cl_authserver = Cvar_Get( "cl_authserver", "www.openwolf.com", CVAR_INIT );
 #endif
 
-	// init autoswitch so the ui will have it correctly even
-	// if the cgame hasn't been started
-	// -NERVE - SMF - disabled autoswitch by default
-	Cvar_Get("cg_autoswitch", "0", CVAR_ARCHIVE);
-
-	// Rafael - particle switch
-	Cvar_Get("cg_wolfparticles", "1", CVAR_ARCHIVE);
-	// done
-
 	cl_conXOffset = Cvar_Get("cl_conXOffset", "3", 0);
 	cl_inGameVideo = Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);
 
@@ -5037,7 +5028,7 @@ void CL_Init(void)
 	// -NERVE - SMF
 #endif
 	// userinfo
-	Cvar_Get("name", "ETPlayer", CVAR_USERINFO | CVAR_ARCHIVE);
+	Cvar_Get("name", "UnnamedPlayer", CVAR_USERINFO | CVAR_ARCHIVE);
 	Cvar_Get("rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE);	// Dushan - changed from 5000
 	Cvar_Get("snaps", "20", CVAR_USERINFO | CVAR_ARCHIVE);
 //  Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );  // temp until we have an skeletal american model
