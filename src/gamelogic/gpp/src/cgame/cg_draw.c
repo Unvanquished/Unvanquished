@@ -366,6 +366,40 @@ static void CG_DrawPlayerCreditsFraction( rectDef_t *rect, vec4_t color, qhandle
   trap_R_SetColor( NULL );
 }
 
+static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
+    vec4_t color, float scale, int textalign, int textvalign, int textStyle )
+{
+  float           value;
+  float 	  tx, ty;
+  playerState_t *ps;
+  centity_t     *cent;
+  char * s;
+  cent = &cg_entities[ cg.snap->ps.clientNum ];
+  ps = &cg.snap->ps;
+
+  value = (float)ps->persistant[ PERS_CREDIT ];
+  if( value > -1 )
+  {
+    if( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+    {
+      if( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
+                              value, cgs.alienStage ) &&
+          cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME &&
+          ( ( cg.time - cg.lastEvolveAttempt ) / 300 ) & 1 )
+      {
+        color[ 3 ] = 0.0f;
+      }
+
+      value /= (float)ALIEN_CREDITS_PER_KILL;
+    }
+  s = va("%0.1f", value );
+  CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
+
+  UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, 0, textStyle );
+
+  }
+}
+
 
 /*
 ==============
@@ -3123,6 +3157,9 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
       break;
     case CG_PLAYER_CREDITS_VALUE_NOPAD:
       CG_DrawPlayerCreditsValue( &rect, foreColor, qfalse );
+      break;
+    case CG_PLAYER_ALIEN_EVOS:
+      CG_DrawPlayerAlienEvos( &rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
       break;
     case CG_PLAYER_STAMINA:
       CG_DrawPlayerStaminaBar( &rect, foreColor, shader );
