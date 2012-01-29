@@ -22,6 +22,7 @@
     <ProjectGuid>{A596DC61-F285-264E-AF49-24D6360F25B0}</ProjectGuid>
     <RootNamespace>ETXMap</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>DaemonMap</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

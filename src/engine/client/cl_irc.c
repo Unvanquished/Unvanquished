@@ -1,17 +1,17 @@
 /*
 ===========================================================================
 
-OpenWolf GPL Source Code
+Daemon GPL Source Code
 Copyright (C) 1997-2001 Id Software, Inc.
 Copyright (C) 2010 COR Entertainment, LLC.
 Copyright (C) 2011 Dusan Jocic <dusanjocic@msn.com>
 
-OpenWolf is free software: you can redistribute it and/or modify
+Daemon is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or
 (at your option) any later version.
 
-OpenWolf is distributed in the hope that it will be useful,
+Daemon is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
@@ -1356,7 +1356,7 @@ Connection established, we will be able to join a channel
 static int IRCH_Connected() {
 	if ( IRC_ThreadStatus != IRC_THREAD_SETNICK ) {
 		IRC_Display( IRC_MakeEvent(QUIT,1) , "" , "IRC client bug\n" );
-		IRC_Send( "QUIT :OpenWolf IRC bug!\n" );
+		IRC_Send( "QUIT :Daemon IRC bug!\n" );
 		return IRC_CMD_RETRY;
 	}
 	IRC_ThreadStatus = IRC_THREAD_CONNECTED;
@@ -1376,7 +1376,7 @@ static int IRCH_Joined() {
 
 	if ( IRC_ThreadStatus < IRC_THREAD_CONNECTED ) {
 		IRC_Display( IRC_MakeEvent(QUIT,1) , "" , "IRC client bug\n" );
-		IRC_Send( "QUIT :OpenWolf IRC bug!\n" );
+		IRC_Send( "QUIT :Daemon IRC bug!\n" );
 		return IRC_CMD_RETRY;
 	}
 
@@ -1480,7 +1480,7 @@ static int IRC_HandleMessage( qboolean is_channel , const char * string ) {
 	}
 
 	if ( IRC_CheckEventRate( IRC_RL_MESSAGE ) )
-		return IRC_Send( "PRIVMSG %s :Sorry, OpenWolf's IRC client does not support private messages\n" , IRC_String( pfx_nickOrServer ) );
+		return IRC_Send( "PRIVMSG %s :Sorry, Daemon's IRC client does not support private messages\n" , IRC_String( pfx_nickOrServer ) );
 	return IRC_CMD_SUCCESS;
 }
 
@@ -1582,7 +1582,7 @@ static int CTCP_Action( qboolean is_channel , const char * argument ) {
 	}
 
 	if ( IRC_CheckEventRate( IRC_RL_MESSAGE ) )
-		return IRC_Send( "PRIVMSG %s :Sorry, OpenWolf's IRC client does not support private messages\n" , IRC_String( pfx_nickOrServer ) );
+		return IRC_Send( "PRIVMSG %s :Sorry, Daemon's IRC client does not support private messages\n" , IRC_String( pfx_nickOrServer ) );
 	return IRC_CMD_SUCCESS;
 }
 
@@ -1614,7 +1614,7 @@ static int CTCP_Version( qboolean is_channel , const char * argument ) {
 	if ( is_channel || !IRC_CheckEventRate( IRC_RL_VERSION ) )
 		return IRC_CMD_SUCCESS;
 
-	return IRC_Send( "NOTICE %s :\001VERSION OpenWolf IRC client - v\n" Q3_VERSION "\001" , IRC_String( pfx_nickOrServer ) );
+	return IRC_Send( "NOTICE %s :\001VERSION Daemon IRC client - v\n" Q3_VERSION "\001" , IRC_String( pfx_nickOrServer ) );
 }
 
 /*--------------------------------------------------------------------------*/
@@ -2012,7 +2012,7 @@ static void IRC_MainLoop() {
 			if ( IRC_QuitRequested && IRC_ThreadStatus != IRC_THREAD_QUITTING ) {
 				IRC_ThreadStatus = IRC_THREAD_QUITTING;
 				IRC_Display( IRC_MakeEvent(QUIT,1) , "" , "quit from menu\n" );
-				err_code = IRC_Send( "QUIT :OpenWolf IRC %s\n" , Q3_VERSION );
+				err_code = IRC_Send( "QUIT :Daemon IRC %s\n" , Q3_VERSION );
 			} else {
 				// Wait for data or 1s timeout
 				err_code = IRC_Wait( );

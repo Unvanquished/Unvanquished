@@ -2,7 +2,7 @@
 ===========================================================================
 Copyright (C) 2011 Dusan Jocic <dusanjocic@msn.com>
 
-This file is part of OpenWolf.
+This file is part of Daemon.
 
 OpenTrem is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as

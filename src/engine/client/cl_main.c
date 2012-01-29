@@ -1,27 +1,27 @@
 /*
 ===========================================================================
 
-OpenWolf GPL Source Code
+Daemon GPL Source Code
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the OpenWolf GPL Source Code (OpenWolf Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
-OpenWolf Source Code is free software: you can redistribute it and/or modify
+Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-OpenWolf Source Code is distributed in the hope that it will be useful,
+Daemon Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with OpenWolf Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the OpenWolf Source Code is also subject to certain additional terms. 
+In addition, the Daemon Source Code is also subject to certain additional terms. 
 You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the OpenWolf 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
 Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
@@ -4683,7 +4683,7 @@ static void CL_GenerateGUIDKey(void) {
 
     len = FS_ReadFile(GUIDKEY_FILE, NULL);
     if(len >= (int)sizeof(buff)) {
-        Com_Printf("OpenWolf GUID public-key found.\n");
+        Com_Printf("Daemon GUID public-key found.\n");
         return;
     }
     else {
@@ -4693,7 +4693,7 @@ static void CL_GenerateGUIDKey(void) {
             buff[i] = (unsigned char)(rand() % 255);
         }
         buff[i] = 0;
-        Com_Printf("OpenWolf GUID public-key generated\n");
+        Com_Printf("Daemon GUID public-key generated\n");
         FS_WriteFile(GUIDKEY_FILE, buff, sizeof(buff));
     }
 }
@@ -4797,7 +4797,7 @@ static void CL_GenerateRSAKey(void)
 	len = FS_SV_FOpenFileRead( RSAKEY_FILE, &f );
 	if ( !f || len < 1 )
 	{
-		Com_Printf( "OpenWolf RSA public-key file not found, regenerating\n" );
+		Com_Printf( "Daemon RSA public-key file not found, regenerating\n" );
 		goto new_key;
 	}
 	buf = Z_TagMalloc( len, TAG_CRYPTO );
@@ -4812,7 +4812,7 @@ static void CL_GenerateRSAKey(void)
 	}
 
 	Z_Free( buf );
-	Com_Printf( "OpenWolf RSA public-key found.\n" );
+	Com_Printf( "Daemon RSA public-key found.\n" );
 	return;
 
 new_key:
@@ -4827,7 +4827,7 @@ new_key:
 	f = FS_SV_FOpenFileWrite( RSAKEY_FILE );
 	if( !f )
 	{
-		Com_Printf( "OpenWolf RSA public-key could not open %s for write, RSA support will be disabled\n", RSAKEY_FILE );
+		Com_Printf( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n", RSAKEY_FILE );
 		Cvar_Set( "cl_pubkeyID", "0" );
 		Crypto_Shutdown();
 		return;
@@ -4836,7 +4836,7 @@ new_key:
 	FS_Write( key_buffer.contents, key_buffer.size, f );
 	nettle_buffer_clear( &key_buffer );
 	FS_FCloseFile( f );
-	Com_Printf( "OpenWolf RSA public-key generated\n" );
+	Com_Printf( "Daemon RSA public-key generated\n" );
 	return;
 
 keygen_error:

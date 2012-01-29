@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>OWMaster</ProjectName>
+    <ProjectName>DaemonMaster</ProjectName>
     <ProjectGuid>{49F16AE1-8677-4ECE-A882-DC6BBC73C44E}</ProjectGuid>
     <RootNamespace>xjedimaster</RootNamespace>
     <Keyword>Win32Proj</Keyword>

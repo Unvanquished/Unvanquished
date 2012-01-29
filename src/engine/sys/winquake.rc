@@ -62,7 +62,7 @@ IDI_ICON1               ICON    DISCARDABLE     "openwolf.ico"
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-IDS_STRING1             "OpenWolf"
+IDS_STRING1             "Daemon"
 END
 
 #endif    // English (U.S.) resources
