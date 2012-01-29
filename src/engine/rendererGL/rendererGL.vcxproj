@@ -231,7 +231,7 @@
     <Link>
       <OutputFile>../../../bin/win64/release/rendererGL3x86_64.dll</OutputFile>
       <ModuleDefinitionFile>rendererGL.def</ModuleDefinitionFile>
-      <AdditionalDependencies>opengl32.lib;winmm.lib;SDL.lib;glew64.lib;libpng.lib;zlibwapi.lib;freetype.lib;mesaglsl2-win64.lib;libwebp_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;winmm.lib;SDL.lib;glew64.lib;libpng.lib;zlibwapi.lib;freetype.lib;libwebp_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\libs\libsdl\libs\x64;..\..\libs\glew\lib\x64;..\..\libs\libpng\libs\win64;..\..\libs\zlibwapi\lib\x64;..\..\libs\freetype\lib\x64;..\..\libs\glsl-optimizer\lib\x64\release;..\..\libs\libwebp\Lib\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ManifestFile>../../../bin/win64/release/rendererGL3x86_64.intermediate.manifest</ManifestFile>
     </Link>
