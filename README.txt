@@ -21,7 +21,8 @@ Build Instructions
 
     Visual Studio
     -------------
-    Open OpenWolf.sln in src/engine/
+    Open Daemon.sln in src/engine/
+    Pick which configuration you want to build.
     Click "Build"
 
     Linux  (CMake is required to build.)
