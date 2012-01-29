@@ -772,7 +772,7 @@ extern long int lrintf( float x );
 // Dushan
 // VS dont understand lrintf
 #ifdef _MSC_VER
-static ID_INLINE long lrintf(float f){
+ID_INLINE long lrintf(float f){
 #ifdef _M_X64
     return (long)((f>0.0f) ? (f + 0.5f):(f -0.5f));
 #else
