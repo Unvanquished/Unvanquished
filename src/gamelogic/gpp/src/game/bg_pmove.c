@@ -3025,7 +3025,7 @@ static void PM_Weapon( void )
         }
         else
         {
-          //if trying to toggle an UP_JETPACK, toggle it
+          //if trying to toggle an upgrade, toggle it
           if( BG_InventoryContainsUpgrade( pm->cmd.weapon - 32, pm->ps->stats ) ) //sanity check
           {
             if( BG_UpgradeIsActive( pm->cmd.weapon - 32, pm->ps->stats ) )
