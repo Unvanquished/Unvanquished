@@ -431,7 +431,8 @@ static void CG_SetUIVars( void )
 
   if( !cg.snap )
     return;
-
+  
+  playerState_t *ps = &cg.snap->ps;
   *carriageCvar = 0;
 
   //determine what the player is carrying
@@ -452,6 +453,117 @@ static void CG_SetUIVars( void )
   trap_Cvar_Set( "ui_carriage", carriageCvar );
 
   trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
+
+  trap_Cvar_Set( "p_team", va( "%d", ps->stats[ STAT_TEAM ] ) );
+  
+  switch( ps->stats[ STAT_TEAM ] )
+  {
+  case TEAM_NONE:
+	  trap_Cvar_Set( "p_teamname", "^3Spectator" );
+	  return;
+  case TEAM_ALIENS:
+	  trap_Cvar_Set( "p_teamname", "^1Alien" );
+	  trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
+	  break;
+  case TEAM_HUMANS:
+	  trap_Cvar_Set( "p_teamname", "^4Human" );
+	  trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
+	  break;
+  }
+  trap_Cvar_Set( "p_hp", va( "%d", ps->stats[ STAT_HEALTH ] ) );
+  trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
+  trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
+  switch ( ps->stats[ STAT_CLASS ] )
+  {
+  case PCL_ALIEN_BUILDER0:
+	  trap_Cvar_Set( "p_classname", "Builder" );
+	  break; 
+  case PCL_ALIEN_BUILDER0_UPG:
+	  trap_Cvar_Set( "p_classname", "Advanced Builder" );
+	  break; 
+  case PCL_ALIEN_LEVEL0:
+	  trap_Cvar_Set( "p_classname", "Dretch" );
+	  break; 
+  case PCL_ALIEN_LEVEL1:
+	  trap_Cvar_Set( "p_classname", "Basilisk" );
+	  break; 
+  case PCL_ALIEN_LEVEL1_UPG:
+	  trap_Cvar_Set( "p_classname", "Advanced Basilisk" );
+	  break; 
+  case PCL_ALIEN_LEVEL2:
+	  trap_Cvar_Set( "p_classname", "Marauder" );
+	  break; 
+  case PCL_ALIEN_LEVEL2_UPG:
+	  trap_Cvar_Set( "p_classname", "Advanced Marauder" );
+	  break; 
+  case PCL_ALIEN_LEVEL3:
+	  trap_Cvar_Set( "p_classname", "Dragoon" );
+	  break; 
+  case PCL_ALIEN_LEVEL3_UPG:
+	  trap_Cvar_Set( "p_classname", "Advanced Dragoon" );
+	  break; 
+  case PCL_ALIEN_LEVEL4:
+	  trap_Cvar_Set( "p_classname", "Tyrant" );
+	  break; 
+
+  case PCL_HUMAN:
+	  trap_Cvar_Set( "p_classname", "Human" );
+	  break; 
+  case PCL_HUMAN_BSUIT:
+	  trap_Cvar_Set( "p_classname", "Battlesuit" );
+	  break; 
+
+  default:
+	  trap_Cvar_Set( "p_classname", "Unknown" );
+	  break; 
+  }
+  trap_Cvar_Set( "p_weapon", va( "%d", ps->stats[ STAT_WEAPON ] ) );
+  switch ( ps->stats[ STAT_WEAPON ] )
+  {
+  case WP_HBUILD:
+	  trap_Cvar_Set( "p_weaponname", "Construction Kit" );
+	  break; 
+  case WP_BLASTER:
+	  trap_Cvar_Set( "p_weaponname", "Blaster" );
+	  break;
+  case WP_MACHINEGUN:
+	  trap_Cvar_Set( "p_weaponname", "Machine Gun" );
+	  break;
+  case WP_PAIN_SAW:
+	  trap_Cvar_Set( "p_weaponname", "Painsaw" );
+	  break;
+  case WP_SHOTGUN:
+	  trap_Cvar_Set( "p_weaponname", "Shotgun" );
+	  break;
+  case WP_LAS_GUN:
+	  trap_Cvar_Set( "p_weaponname", "Laser Gun" );
+	  break;
+  case WP_MASS_DRIVER:
+	  trap_Cvar_Set( "p_weaponname", "Mass Driver" );
+	  break;
+  case WP_CHAINGUN:
+	  trap_Cvar_Set( "p_weaponname", "Chain Gun" );
+	  break;
+  case WP_PULSE_RIFLE:
+	  trap_Cvar_Set( "p_weaponname", "Pulse Rifle" );
+	  break;
+  case WP_FLAMER:
+	  trap_Cvar_Set( "p_weaponname", "Flame Thrower" );
+	  break;
+  case WP_LUCIFER_CANNON:
+	  trap_Cvar_Set( "p_weaponname", "Lucifier cannon" );
+	  break;
+  case WP_GRENADE:
+	  trap_Cvar_Set( "p_weaponname", "Grenade" );
+	  break;
+  default:
+	  trap_Cvar_Set( "p_weaponname", "Unknown" );
+	  break;
+  }
+  trap_Cvar_Set( "p_credits", va( "%d", ps->persistant[ PERS_CREDIT ] ) );
+  trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
+  trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
+  trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 }
 
 /*
