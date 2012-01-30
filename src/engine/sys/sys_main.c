@@ -297,6 +297,7 @@ Sys_GetProcessorFeatures
 */
 cpuFeatures_t Sys_GetProcessorFeatures( void )
 {
+#ifdef USE_CPUINFO
 	cpuFeatures_t features = 0;
 	CPUINFO cpuinfo;
 	
@@ -318,6 +319,9 @@ cpuFeatures_t Sys_GetProcessorFeatures( void )
 	if( Is64Bit( &cpuinfo ) )     features |= CF_Is64Bit;
 
 	return features;
+#else
+	return 0;
+#endif
 }
 
 /*
