@@ -58,13 +58,6 @@ extern itemDef_t *g_editItem;
 
 uiInfo_t        uiInfo;
 
-static const char *MonthAbbrev[] = {
-	"Jan", "Feb", "Mar",
-	"Apr", "May", "Jun",
-	"Jul", "Aug", "Sep",
-	"Oct", "Nov", "Dec"
-};
-
 static const serverFilter_t serverFilters[] = {
 	{"All", ""}
 };
@@ -10554,9 +10547,8 @@ static void UI_StartServerRefresh(qboolean full)
 	qtime_t         q;
 
 	trap_RealTime(&q);
-	Com_sprintf(buff, sizeof(buff), "%s-%i, %i at %s:%s", MonthAbbrev[q.tm_mon], q.tm_mday, 1900 + q.tm_year,
-				q.tm_hour < 10 ? va("0%i", q.tm_hour) : va("%i", q.tm_hour), q.tm_min < 10 ? va("0%i", q.tm_min) : va("%i",
-																													  q.tm_min));
+	Com_sprintf(buff, sizeof(buff), "%04i-%02i-%02i %02i:%02i:%02i",
+	            1900 + q.tm_year, q.tm_mon + 1, q.tm_mday, q.tm_hour, q.tm_min, q.tm_sec);
 	trap_Cvar_Set(va("ui_lastServerRefresh_%i", ui_netSource.integer), buff);
 
 	if(!full)

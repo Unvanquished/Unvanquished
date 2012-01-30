@@ -870,19 +870,14 @@ static void CG_ToggleAutomap_f(void)
 	cgs.autoMapOff = !cgs.autoMapOff;
 }
 
-// OSP
-const char     *aMonths[12] = {
-	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-};
-
 void CG_currentTime_f(void)
 {
 	qtime_t         ct;
 
 	trap_RealTime(&ct);
-	CG_Printf("[cgnotify]Current time: ^3%02d:%02d:%02d (%02d %s %d)\n", ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday,
-			  aMonths[ct.tm_mon], 1900 + ct.tm_year);
+	CG_Printf("[cgnotify]Current time: ^3%04i-%02i-%02i %02i:%02i:%02i\n",
+	          1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday,
+	          ct.tm_hour, ct.tm_min, ct.tm_sec);
 }
 
 // Dynamically names a demo and sets up the recording

@@ -877,10 +877,10 @@ char           *CG_generateFilename(void)
 
 	trap_RealTime(&ct);
 //  CG_nameCleanFilename(Info_ValueForKey(pszPlayerInfo, "n"), strCleanName, sizeof(strCleanName));
-	return (va("%d-%02d-%02d-%02d%02d%02d-%s%s",
-			   1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday,
-			   ct.tm_hour, ct.tm_min, ct.tm_sec,
-			   Info_ValueForKey(pszServerInfo, "mapname"), (cg.mvTotalClients < 1) ? "" : "-MVD"));
+	return (va("%04i-%02i-%02i_%02i%02i%02i_%s%s",
+	           1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday,
+	           ct.tm_hour, ct.tm_min, ct.tm_sec,
+	           Info_ValueForKey(pszServerInfo, "mapname"), (cg.mvTotalClients < 1) ? "" : "_MVD"));
 }
 
 int CG_findClientNum(char *s)

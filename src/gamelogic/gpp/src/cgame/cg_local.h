@@ -1730,8 +1730,6 @@ void        CG_RunMenuScript(char **args);
 void        CG_SetPrintString( int type, const char *p );
 void        CG_GetTeamColor( vec4_t *color );
 const char  *CG_GetKillerText( void );
-void        CG_Text_PaintChar( float x, float y, float width, float height, float scale,
-                               float s, float t, float s2, float t2, qhandle_t hShader );
 void        CG_DrawLoadingScreen( void );
 void        CG_UpdateMediaFraction( float newFract );
 void        CG_ResetPainBlend( void );

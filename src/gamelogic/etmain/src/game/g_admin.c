@@ -1472,9 +1472,8 @@ static qboolean admin_create_ban( gentity_t *ent,
   Q_strncpyz( b->guid, guid, sizeof( b->guid ) );
   Q_strncpyz( b->ip, ip, sizeof( b->ip ) );
 
-  //strftime( b->made, sizeof( b->made ), "%m/%d/%y %H:%M:%S", lt );
-  Com_sprintf( b->made, sizeof( b->made ), "%02i/%02i/%02i %02i:%02i:%02i",
-    qt.tm_mon + 1, qt.tm_mday, qt.tm_year % 100,
+  Com_sprintf( b->made, sizeof( b->made ), "%04i-%02i-%02i %02i:%02i:%02i",
+    1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
     qt.tm_hour, qt.tm_min, qt.tm_sec );
 
   if( ent )

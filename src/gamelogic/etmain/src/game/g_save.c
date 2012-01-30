@@ -1028,19 +1028,8 @@ char *G_Save_TimeStr( void ) {
 	//
 	trap_RealTime( &tm );
 	//
-	return va( "%2i:%s%i:%s%i %s",
-			   ( 1 + ( tm.tm_hour + 11 ) % 12 ), // 12 hour format
-			   ( tm.tm_min > 9 ? "" : "0" ),    // minute padding
-			   tm.tm_min,
-			   ( tm.tm_sec > 9 ? "" : "0" ),    // second padding
-			   tm.tm_sec,
-			   ( tm.tm_hour < 12 ? "am" : "pm" ) );
+	return va( "%02i:%02i:%02i", qt.tm_hour, qt.tm_min, qt.tm_sec );
 }
-
-static char *monthStr[12] =
-{
-	"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
-};
 
 /*
 ==============
@@ -1052,10 +1041,7 @@ char *G_Save_DateStr( void ) {
 	//
 	trap_RealTime( &tm );
 	//
-	return va( "%s %i, %i",
-			   monthStr[tm.tm_mon],
-			   tm.tm_mday,
-			   1900 + tm.tm_year );
+	return va( "%04i-%02i-%02i", 1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday );
 }
 
 //=========================================================

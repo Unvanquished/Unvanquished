@@ -33,14 +33,6 @@ USER INTERFACE MAIN
 
 uiInfo_t uiInfo;
 
-static const char *MonthAbbrev[ ] =
-{
-  "Jan", "Feb", "Mar",
-  "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep",
-  "Oct", "Nov", "Dec"
-};
-
 static const char *netSources[ ] =
 {
   "LAN",
@@ -1102,8 +1094,9 @@ static void UI_StartServerRefresh( qboolean full )
   trap_Cvar_Set( va( "ui_lastServerRefresh_%i_time", ui_netSource.integer ),
                  va( "%i", time ) );
   trap_Cvar_Set( va( "ui_lastServerRefresh_%i", ui_netSource.integer ),
-                 va( "%s-%i, %i at %i:%02i", MonthAbbrev[q.tm_mon],
-                     q.tm_mday, 1900 + q.tm_year, q.tm_hour, q.tm_min ) );
+                 va( "%04i-%02i-%02i %02i:%02i:%02i",
+                     1900 + q.tm_year, q.tm_mon + 1, q.tm_mday,
+                     q.tm_hour, q.tm_min, q.tm_sec ) );
 
   if( !full )
   {

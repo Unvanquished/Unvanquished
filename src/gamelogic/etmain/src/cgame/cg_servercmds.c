@@ -2292,8 +2292,9 @@ void CG_scores_cmd(void)
 			qtime_t         ct;
 
 			trap_RealTime(&ct);
-			str = va("\nStats recorded: %02d:%02d:%02d (%02d %s %d)\n\n\n",
-					 ct.tm_hour, ct.tm_min, ct.tm_sec, ct.tm_mday, aMonths[ct.tm_mon], 1900 + ct.tm_year);
+			str = va("\nStats recorded: %04i-%02i-%02i %02i:%02i:%02i\n\n\n",
+			         1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday,
+			         ct.tm_hour, ct.tm_min, ct.tm_sec);
 
 			trap_FS_Write(str, strlen(str), cgs.dumpStatsFile);
 
@@ -2329,8 +2330,8 @@ void CG_dumpStats(void)
 	if(cgs.dumpStatsFile == 0)
 	{
 		fDoScores = qtrue;
-		cgs.dumpStatsFileName = va("stats/%d.%02d.%02d/%02d%02d%02d.txt",
-								   1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday, ct.tm_hour, ct.tm_min, ct.tm_sec);
+		cgs.dumpStatsFileName = va("stats/%04i-%02i-%02i/%02i%02i%02i.txt",
+		  1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday, ct.tm_hour, ct.tm_min, ct.tm_sec);
 	}
 
 	if(cgs.dumpStatsFile != 0)

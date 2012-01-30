@@ -590,9 +590,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
       G_LogPrintf( "InitGame: %s\n", serverinfo );
 
       t = trap_RealTime( &qt );
-      G_LogPrintf("RealTime: %04i/%02i/%02i %02i:%02i:%02i\n",
-            qt.tm_year+1900, qt.tm_mon+1, qt.tm_mday,
-            qt.tm_hour, qt.tm_min, qt.tm_sec );
+      G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i\n",
+                   1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
+                   qt.tm_hour, qt.tm_min, qt.tm_sec );
 
     }
   }

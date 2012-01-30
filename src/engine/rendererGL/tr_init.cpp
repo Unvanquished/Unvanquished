@@ -744,8 +744,8 @@ void R_TakeScreenshot(const char *name, ssFormat_t format)
 		// scan for a free filename
 		for(lastNumber = 0; lastNumber <= 999; lastNumber++)
 		{
-			Com_sprintf(fileName, sizeof(fileName), "screenshots/" PRODUCT_NAME_LOWER "-%04d%02d%02d-%02d%02d%02d-%03d.%s",
-						1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec, lastNumber, name);
+			Com_sprintf(fileName, sizeof(fileName), "screenshots/" PRODUCT_NAME_LOWER "_%04d-%02d-%02d_%02d%02d%02d_%03d.%s",
+						1900 + t.tm_year, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec, lastNumber, name);
 
 			if(!ri.FS_FileExists(fileName))
 			{

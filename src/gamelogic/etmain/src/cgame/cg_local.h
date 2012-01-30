@@ -2857,7 +2857,6 @@ oidInfo_t      *CG_OIDInfoForEntityNum(int num);
 //
 // cg_consolecmds.c
 //
-extern const char *aMonths[12];
 qboolean        CG_ConsoleCommand(void);
 void            CG_InitConsoleCommands(void);
 void            CG_ScoresDown_f(void);

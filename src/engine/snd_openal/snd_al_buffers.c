@@ -141,7 +141,7 @@ qboolean al_buf_init(void)
 	return qtrue;
 }
 
-void al_buf_shutdown()
+void al_buf_shutdown(void)
 {
 	int i;
 

@@ -950,9 +950,9 @@ qboolean CG_DrawScoreboard(void)
 
 		G_showWindowMessages();
 		trap_RealTime(&ct);
-		s = va("^3%02d:%02d:%02d - %02d %s %d",
-							ct.tm_hour, ct.tm_min, ct.tm_sec,
-							ct.tm_mday, aMonths[ct.tm_mon], 1900 + ct.tm_year);
+		s = va("^3%04i-%02i-%02i %02i:%02i:%02i",
+		       1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
+		       qt.tm_hour, qt.tm_min, qt.tm_sec);
 		CG_DrawStringExt(444, 12, s, colorWhite, qfalse, qtrue, 8, 8, 0);
 	}
 */

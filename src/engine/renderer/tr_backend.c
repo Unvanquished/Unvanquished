@@ -1211,8 +1211,7 @@ const void     *RB_RotatedPic(const void *data)
 	const stretchPicCommand_t *cmd;
 	shader_t       *shader;
 	int             numVerts, numIndexes;
-	float           angle;
-	float           pi2 = M_PI * 2;
+	float           mx, my, cosA, sinA, cw, ch, sw, sh;
 
 	cmd = (const stretchPicCommand_t *)data;
 
@@ -1250,33 +1249,38 @@ const void     *RB_RotatedPic(const void *data)
 		*(int *)tess.vertexColors[numVerts + 1].v =
 		*(int *)tess.vertexColors[numVerts + 2].v = *(int *)tess.vertexColors[numVerts + 3].v = *(int *)backEnd.color2D;
 
-	angle = cmd->angle * pi2;
-	tess.xyz[numVerts].v[0] = cmd->x + (cos(angle) * cmd->w);
-	tess.xyz[numVerts].v[1] = cmd->y + (sin(angle) * cmd->h);
+	mx = cmd->x + (cmd->w / 2);
+	my = cmd->y + (cmd->h / 2);
+	cosA = cos(DEG2RAD(cmd->angle));
+	sinA = sin(DEG2RAD(cmd->angle));
+	cw = cosA * (cmd->w / 2);
+	ch = cosA * (cmd->h / 2);
+	sw = sinA * (cmd->w / 2);
+	sh = sinA * (cmd->h / 2);
+
+	tess.xyz[numVerts].v[0] = mx - cw - sh;
+	tess.xyz[numVerts].v[1] = my + sw - ch;
 	tess.xyz[numVerts].v[2] = 0;
 
 	tess.texCoords0[numVerts].v[0] = cmd->s1;
 	tess.texCoords0[numVerts].v[1] = cmd->t1;
 
-	angle = cmd->angle * pi2 + 0.25 * pi2;
-	tess.xyz[numVerts + 1].v[0] = cmd->x + (cos(angle) * cmd->w);
-	tess.xyz[numVerts + 1].v[1] = cmd->y + (sin(angle) * cmd->h);
+	tess.xyz[numVerts + 1].v[0] = mx + cw - sh;
+	tess.xyz[numVerts + 1].v[1] = my - sw - ch;
 	tess.xyz[numVerts + 1].v[2] = 0;
 
 	tess.texCoords0[numVerts + 1].v[0] = cmd->s2;
 	tess.texCoords0[numVerts + 1].v[1] = cmd->t1;
 
-	angle = cmd->angle * pi2 + 0.50 * pi2;
-	tess.xyz[numVerts + 2].v[0] = cmd->x + (cos(angle) * cmd->w);
-	tess.xyz[numVerts + 2].v[1] = cmd->y + (sin(angle) * cmd->h);
+	tess.xyz[numVerts + 2].v[0] = mx + cw + sh;
+	tess.xyz[numVerts + 2].v[1] = my - sw + ch;
 	tess.xyz[numVerts + 2].v[2] = 0;
 
 	tess.texCoords0[numVerts + 2].v[0] = cmd->s2;
 	tess.texCoords0[numVerts + 2].v[1] = cmd->t2;
 
-	angle = cmd->angle * pi2 + 0.75 * pi2;
-	tess.xyz[numVerts + 3].v[0] = cmd->x + (cos(angle) * cmd->w);
-	tess.xyz[numVerts + 3].v[1] = cmd->y + (sin(angle) * cmd->h);
+	tess.xyz[numVerts + 3].v[0] = mx - cw + sh;
+	tess.xyz[numVerts + 3].v[1] = my + sw + ch;
 	tess.xyz[numVerts + 3].v[2] = 0;
 
 	tess.texCoords0[numVerts + 3].v[0] = cmd->s1;

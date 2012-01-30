@@ -1838,12 +1838,6 @@ static float CG_Cvar_Get( const char *cvar )
   return atof( buff );
 }
 
-void CG_Text_PaintWithCursor( float x, float y, float scale, vec4_t color, const char *text,
-                              int cursorPos, char cursor, int limit, int style )
-{
-  UI_Text_Paint( x, y, scale, color, text, 0, limit, style );
-}
-
 static int CG_OwnerDrawWidth( int ownerDraw, float scale )
 {
   switch( ownerDraw )

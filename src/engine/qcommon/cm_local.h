@@ -226,7 +226,6 @@ typedef struct
 // Used for oriented capsule collision detection
 typedef struct
 {
-	qboolean        use;
 	float           radius;
 	float           halfheight;
 	vec3_t          offset;

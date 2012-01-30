@@ -91,7 +91,7 @@ void Tess_CheckOverflow(int verts, int indexes)
 	}
 	if(indexes >= SHADER_MAX_INDEXES)
 	{
-		ri.Error(ERR_DROP, "Tess_CheckOverflow: indices > MAX (%d > %d)", indexes, SHADER_MAX_INDEXES);
+		ri.Error(ERR_DROP, "Tess_CheckOverflow: indexes > MAX (%d > %d)", indexes, SHADER_MAX_INDEXES);
 	}
 
 	Tess_Begin(tess.stageIteratorFunc, tess.stageIteratorFunc2, tess.surfaceShader, tess.lightShader, tess.skipTangentSpaces, tess.skipVBO,

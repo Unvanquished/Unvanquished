@@ -113,7 +113,7 @@ typedef struct g_admin_ban {
   char guid[ 33 ];
   char ip[ 40 ];
   char reason[ MAX_ADMIN_BAN_REASON ];
-  char made[ 18 ]; // big enough for strftime() %c
+  char made[ 20 ]; // "YYYY-MM-DD hh:mm:ss"
   int expires;
   char banner[ MAX_NAME_LENGTH ];
 } g_admin_ban_t;

@@ -625,14 +625,16 @@ void G_DebugOpenSkillLog(void)
 
 	trap_RealTime(&ct);
 
-	if(trap_FS_FOpenFile(va("skills-%d-%02d-%02d-%02d%02d%02d-%s.log",
-							1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday,
-							ct.tm_hour, ct.tm_min, ct.tm_sec, mapname.string), &skillDebugLog, FS_APPEND_SYNC) < 0)
+	if(trap_FS_FOpenFile(va("skills_%04i-%02i-%02i_%02i%02i%02i_%s.log",
+	                        1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday,
+	                        ct.tm_hour, ct.tm_min, ct.tm_sec, mapname.string),
+	                     &skillDebugLog, FS_APPEND_SYNC) < 0)
 	{
 		return;
 	}
 
-	s = va("%02d:%02d:%02d : Logfile opened.\n", ct.tm_hour, ct.tm_min, ct.tm_sec);
+	s = va("%04i-%02i-%02i %02i:%02i:%02i : Logfile opened.\n",
+	       1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday, ct.tm_hour, ct.tm_min, ct.tm_sec);
 
 	trap_FS_Write(s, strlen(s), skillDebugLog);
 }
@@ -649,7 +651,8 @@ void G_DebugCloseSkillLog(void)
 
 	trap_RealTime(&ct);
 
-	s = va("%02d:%02d:%02d : Logfile closed.\n", ct.tm_hour, ct.tm_min, ct.tm_sec);
+	s = va("%04i-%02i-%02i %02i:%02i:%02i : Logfile closed.\n",
+	       1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday, ct.tm_hour, ct.tm_min, ct.tm_sec);
 
 	trap_FS_Write(s, strlen(s), skillDebugLog);
 

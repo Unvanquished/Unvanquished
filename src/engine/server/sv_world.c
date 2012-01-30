@@ -548,7 +548,6 @@ typedef struct
 	trace_t         trace;
 	int             passEntityNum;
 	int             contentmask;
-	int             capsule;
 	traceType_t     collisionType;
 } moveclip_t;
 
