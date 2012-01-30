@@ -428,11 +428,12 @@ static void CG_SetUIVars( void )
 {
   int   i;
   char  carriageCvar[ MAX_TOKEN_CHARS ];
+  playerState_t *ps;
 
   if( !cg.snap )
     return;
   
-  playerState_t *ps = &cg.snap->ps;
+  ps = &cg.snap->ps;
   *carriageCvar = 0;
 
   //determine what the player is carrying
