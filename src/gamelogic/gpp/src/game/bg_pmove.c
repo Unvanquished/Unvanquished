@@ -3025,7 +3025,7 @@ static void PM_Weapon( void )
         }
         else
         {
-          //if trying to toggle an upgrade, toggle it
+          //if trying to toggle an UP_JETPACK, toggle it
           if( BG_InventoryContainsUpgrade( pm->cmd.weapon - 32, pm->ps->stats ) ) //sanity check
           {
             if( BG_UpgradeIsActive( pm->cmd.weapon - 32, pm->ps->stats ) )
@@ -3671,6 +3671,21 @@ void PmoveSingle( pmove_t *pmove )
     pm->ps->eFlags |= EF_FIRING3;
   else
     pm->ps->eFlags &= ~EF_FIRING3;
+  
+  if( pm->cmd.doubleTap == DT_BACK || pm->cmd.doubleTap == DT_MOVELEFT || pm->cmd.doubleTap == DT_MOVERIGHT )
+    pm->cmd.wbuttons |= WBUTTON_PRONE;
+  
+  if( pm->cmd.doubleTap == DT_UP )
+  {
+    if( BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) )
+    {
+      if( BG_UpgradeIsActive( UP_JETPACK, pm->ps->stats ) )
+	BG_DeactivateUpgrade( UP_JETPACK, pm->ps->stats );
+      else
+	BG_ActivateUpgrade( UP_JETPACK, pm->ps->stats );
+    }
+  }
+      
 
 
   // clear the respawned flag if attack and use are cleared
