@@ -2615,6 +2615,11 @@ qboolean G_admin_endvote( gentity_t *ent )
   level.voteNo[ team ] = cancel ? level.numVotingClients[ team ] : 0;
   level.voteYes[ team ] = cancel ? 0 : level.numVotingClients[ team ];
   G_CheckVote( team );
+
+  if( !Q_strncmp( level.voteDisplayString[ team ], "Extend", 6 ) &&
+      level.extend_vote_count > 0 )
+    level.extend_vote_count--;
+
   if( team == TEAM_NONE )
     AP( msg );
   else

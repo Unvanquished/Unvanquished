@@ -590,6 +590,7 @@ typedef struct
   int               voteYes[ NUM_TEAMS ];
   int               voteNo[ NUM_TEAMS ];
   int               numVotingClients[ NUM_TEAMS ];// set by CalculateRanks
+  int               extend_vote_count;
 
   // spawn variables
   qboolean          spawning;                     // the G_Spawn*() functions are valid
@@ -1120,6 +1121,11 @@ extern  vmCvar_t  g_allowVote;
 extern  vmCvar_t  g_voteLimit;
 extern  vmCvar_t  g_suddenDeathVotePercent;
 extern  vmCvar_t  g_suddenDeathVoteDelay;
+extern  vmCvar_t  g_extendVotesPercent;
+extern  vmCvar_t  g_extendVotesTime;
+extern  vmCvar_t  g_extendVotesCount;
+extern  vmCvar_t  g_kickVotesPercent;
+extern  vmCvar_t  g_mapVotesPercent;
 extern  vmCvar_t  g_teamForceBalance;
 extern  vmCvar_t  g_smoothClients;
 extern  vmCvar_t  pmove_fixed;

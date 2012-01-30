@@ -1279,6 +1279,8 @@ void Cmd_CallVote_f( gentity_t *ent )
       Q_strcat( level.voteDisplayString[ team ],
         sizeof( level.voteDisplayString[ team ] ), va( " for '%s'", reason ) );
     }
+
+    level.voteThreshold[ team ] = g_kickVotesPercent.integer;
   }
   else if( team == TEAM_NONE )
   {
@@ -1399,11 +1401,59 @@ void Cmd_CallVote_f( gentity_t *ent )
                    "Begin sudden death in %d seconds",
                    g_suddenDeathVoteDelay.integer );
     }
+    else if( !Q_stricmp( vote, "layout" ) )
+    {
+      char map[ 64 ];
+
+      trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
+      if( Q_stricmp( arg, "*BUILTIN*" ) &&
+	  !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), NULL, FS_READ ) )
+      {
+	trap_SendServerCommand( ent - g_entities, va( "print \"callvote: "
+	  "layout '%s' could not be found on the server\n\"", arg ) );
+	return;
+      }
+      Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "restart %s", arg );
+      Com_sprintf( level.voteDisplayString[ team ],
+	  sizeof( level.voteDisplayString[ team ] ), "Change to map layout '%s'", arg );
+      level.voteThreshold[ team ] = g_mapVotesPercent.integer;
+    }
+    else if( !Q_stricmp( vote, "extend" ) )
+    {
+      if( !g_extendVotesPercent.integer )
+      {
+	trap_SendServerCommand( ent-g_entities, "print \"Extend votes have been disabled\n\"" );
+	return;
+      }
+      if( g_extendVotesCount.integer
+	&& level.extend_vote_count >= g_extendVotesCount.integer )
+      {
+	trap_SendServerCommand( ent-g_entities,
+	  va( "print \"callvote: Maximum number of %d extend votes has been reached\n\"",
+	  g_extendVotesCount.integer ) );
+	return;
+      }
+      if( level.time - level.startTime <
+	( g_timelimit.integer - g_extendVotesTime.integer / 2 ) * 60000 )
+      {
+	trap_SendServerCommand( ent-g_entities,
+	  va( "print \"callvote: Extend votes only allowed with less than %d minutes remaining\n\"",
+	  g_extendVotesTime.integer / 2 ) );
+	return;
+      }
+      level.extend_vote_count++;
+      level.voteThreshold[ team ] = g_extendVotesPercent.integer; 
+      Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+	"timelimit %i", g_timelimit.integer + g_extendVotesTime.integer );
+      Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[team ] ),
+	"Extend the timelimit by %d minutes", g_extendVotesTime.integer );
+    }
+    
     else
     {
       trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string\n\"" );
       trap_SendServerCommand( ent-g_entities, "print \"Valid vote commands are: "
-        "map, nextmap, map_restart, draw, sudden_death, kick, mute and unmute\n" );
+        "map, nextmap, map_restart, draw, sudden_death, kick, mute, extend, layout, and unmute\n" );
       return;
     }
   }
