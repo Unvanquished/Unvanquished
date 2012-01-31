@@ -39,14 +39,15 @@ Maryland 20850 USA.
  *
 */
 
-#include "server.h"
-
 #ifdef USE_RUBY
 #include "ruby.h"
 #include "ruby.h"
 #undef vsnprintf
 #define vsnprintf vsnprintf
+#undef PATH_SEP
 #endif
+
+#include "server.h"
 
 #ifdef USE_HUB_SERVER
 /*

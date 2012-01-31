@@ -34,16 +34,17 @@ Maryland 20850 USA.
 
 // cl_main.c  -- client main loop
 
-#include "client.h"
-#include <limits.h>
-#include <zlib.h>
-#include <png.h>
-
 #ifdef USE_RUBY
 #include "ruby.h"
 #undef vsnprintf
 #define vsnprintf vsnprintf
+#undef PATH_SEP
 #endif
+
+#include "client.h"
+#include <limits.h>
+#include <zlib.h>
+#include <png.h>
 
 #ifdef ET_MYSQL
 #include "../database/database.h"
