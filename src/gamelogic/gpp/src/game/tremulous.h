@@ -93,18 +93,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL2_WALLJUMP_MAXSPEED    1000.0f
 
 #define LEVEL3_CLAW_DMG             ADM(80)
-#define LEVEL3_CLAW_RANGE           80.0f
+#define LEVEL3_CLAW_RANGE           82.0f
 #define LEVEL3_CLAW_UPG_RANGE       LEVEL3_CLAW_RANGE + 3.0f          
-#define LEVEL3_CLAW_WIDTH           12.0f
-#define LEVEL3_CLAW_REPEAT          900
+#define LEVEL3_CLAW_WIDTH           13.5f
+#define LEVEL3_CLAW_REPEAT          750
 #define LEVEL3_CLAW_K_SCALE         1.0f
-#define LEVEL3_CLAW_U_REPEAT        800
+#define LEVEL3_CLAW_U_REPEAT        650
 #define LEVEL3_CLAW_U_K_SCALE       1.0f
-#define LEVEL3_POUNCE_DMG           ADM(100)
+#define LEVEL3_POUNCE_DMG           ADM(75)
 #define LEVEL3_POUNCE_RANGE         48.0f
 #define LEVEL3_POUNCE_UPG_RANGE     LEVEL3_POUNCE_RANGE + 3.0f
-#define LEVEL3_POUNCE_WIDTH         14.0f
-#define LEVEL3_POUNCE_TIME          800      // msec for full Dragoon pounce
+#define LEVEL3_POUNCE_WIDTH         10.0f
+#define LEVEL3_POUNCE_TIME          750      // msec for full Dragoon pounce
 #define LEVEL3_POUNCE_TIME_UPG      800      // msec for full Adv. Dragoon pounce
 #define LEVEL3_POUNCE_TIME_MIN      200      // msec before which pounce cancels  
 #define LEVEL3_POUNCE_REPEAT        400      // msec before a new pounce starts
@@ -115,7 +115,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL3_BOUNCEBALL_REPEAT    1200
 #define LEVEL3_BOUNCEBALL_SPEED     1000.0f
 #define LEVEL3_BOUNCEBALL_RADIUS    75
-#define LEVEL3_BOUNCEBALL_REGEN     15000    // msec until new barb
+#define LEVEL3_BOUNCEBALL_REGEN     12500    // msec until new barb
 
 #define LEVEL4_CLAW_DMG             ADM(100)
 #define LEVEL4_CLAW_RANGE           100.0f
