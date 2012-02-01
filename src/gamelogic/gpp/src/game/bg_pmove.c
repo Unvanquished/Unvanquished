@@ -798,7 +798,7 @@ static qboolean PM_CheckJump( void )
 
   //no bunny hopping off a dodge
   if( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS && 
-      pm->ps->pm_time )
+      pm->ps->pm_time > HUMAN_DODGE_TIMEOUT - 500 ) // Let the human jump half a second into the dodge cooldown
     return qfalse;
 
   if( pm->ps->pm_flags & PMF_RESPAWNED )
