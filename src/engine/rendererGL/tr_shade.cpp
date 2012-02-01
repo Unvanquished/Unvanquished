@@ -700,7 +700,7 @@ static void GLSL_LinkProgram(GLhandleARB program)
 	if(!linked)
 	{
 		GLSL_PrintInfoLog(program, qfalse);
-		ri.Error(ERR_DROP, "%s\nshaders failed to link");
+		ri.Error(ERR_DROP, "shaders failed to link");
 	}
 }
 
@@ -714,7 +714,7 @@ void GLSL_ValidateProgram(GLhandleARB program)
 	if(!validated)
 	{
 		GLSL_PrintInfoLog(program, qfalse);
-		ri.Error(ERR_DROP, "%s\nshaders failed to validate");
+		ri.Error(ERR_DROP, "shaders failed to validate");
 	}
 }
 
