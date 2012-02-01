@@ -80,10 +80,6 @@ cvar_t         *sv_dl_maxRate;
 
 cvar_t         *g_gameType;
 
-#ifdef USE_RUBY
-cvar_t         *sv_ruby;
-#endif
-
 cvar_t         *sv_requireValidGuid;   // whether client userinfo must contain a cl_guid, string of length 32 consisting
                                        // of characters '0' through '9' and 'A' through 'F', default 0 don't require
 #ifdef USE_HUB_SERVER

@@ -32,15 +32,6 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-
-#ifdef USE_RUBY
-#include "ruby.h"
-#include "ruby.h"
-#undef vsnprintf
-#define vsnprintf vsnprintf
-#undef PATH_SEP
-#endif
-
 #include "server.h"
 
 /*
@@ -1275,26 +1266,6 @@ void SV_GameCompleteStatus_f(void)
 
 //===========================================================
 
-#ifdef USE_RUBY
-/*
-=================
-SV_Ruby
-=================
-*/
-void SV_Ruby_f(void) {
-	int state;
-
-	if (Cmd_Argc() != 2) {
-		Com_Printf("usage: ruby \"code_to_execute\"\nPlease note the \"\", also use single-quotes for ruby strings\n");
-		return;
-	}
-	rb_eval_string_protect(Cmd_Argv(1), &state);
-	if (state != 0) {
-		Com_Printf("^1ruby: error: %i\nYour syntax may be invalid, or you are referencing a non-existing class/variable.\n", state);
-	}
-}
-#endif
-
 /*
 ==================
 SV_CompleteMapName
@@ -1355,10 +1326,6 @@ void SV_AddOperatorCommands(void)
 	{
 		Cmd_AddCommand("say", SV_ConSay_f);
 	}
-
-#ifdef USE_RUBY
-	Cmd_AddCommand("ruby", SV_Ruby_f);
-#endif
 }
 
 /*
@@ -1381,8 +1348,5 @@ void SV_RemoveOperatorCommands(void)
 	Cmd_RemoveCommand("map_restart");
 	Cmd_RemoveCommand("sectorlist");
 	Cmd_RemoveCommand("say");
-#ifdef USE_RUBY
-	Cmd_RemoveCommand("ruby");
-#endif
 #endif
 }
