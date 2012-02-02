@@ -488,7 +488,7 @@ void al_src_update()
 		{
 			vec3_t sorigin;
 			VectorScale(entlist[ent].origin, POSITION_SCALE, sorigin);
-			qalSourcefv(srclist[i].source, AL_POSITION, entlist[ent].origin);
+			qalSourcefv(srclist[i].source, AL_POSITION, sorigin);
 		}
 	}
 }

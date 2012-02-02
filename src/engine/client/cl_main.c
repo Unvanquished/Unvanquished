@@ -39,12 +39,6 @@ Maryland 20850 USA.
 #include <zlib.h>
 #include <png.h>
 
-#ifdef USE_RUBY
-#include "ruby.h"
-#undef vsnprintf
-#define vsnprintf vsnprintf
-#endif
-
 #ifdef ET_MYSQL
 #include "../database/database.h"
 #endif
@@ -76,10 +70,6 @@ cvar_t         *cl_voipShowMeter;
 cvar_t	       *cl_voipShowSender;
 cvar_t	       *cl_voipSenderPos;
 cvar_t         *cl_voip;
-#endif
-
-#ifdef USE_RUBY
-cvar_t         *cl_ruby;
 #endif
 
 cvar_t         *cl_nodelta;
@@ -4698,82 +4688,6 @@ static void CL_GenerateGUIDKey(void) {
     }
 }
 
-#ifdef USE_RUBY
-
-/*
-====================
-CL_ExecRuby
-====================
-*/
-int CL_ExecRuby(void) {
-	void* status;
-
-	ruby_exec_node( status );
-
-	return 0;
-}
-
-/*
-====================
-CL_RubyPuts
-====================
-*/
-VALUE CL_RubyPuts(VALUE self, VALUE str) {
-
-	if (TYPE(str) == T_STRING) {
-		Com_Printf("%s\n", StringValuePtr(str));
-	}
-
-  return Qnil;
-}
-
-/*
-====================
-CL_RubyClientConsole
-====================
-*/
-VALUE CL_RubyClientConsole(VALUE self, VALUE str) {
-
-	if (TYPE(str) == T_STRING) {
-		Cmd_ExecuteString(StringValuePtr(str));
-	}
-
-	return Qnil;
-}
-
-/*
-====================
-CL_RegisterRubyData
-====================
-*/
-void CL_RegisterRubyData(void) {
-	rb_define_global_const("CLIENT", Qtrue);
-	rb_define_global_const("SERVER", Qfalse);
-	rb_define_global_function("puts", CL_RubyPuts, 1);
-	rb_define_global_function("console", CL_RubyClientConsole, 1);
-}
-
-/*
-====================
-Con_Ruby_f
-====================
-*/
-void Con_Ruby_f(void) {
-	int state;
-	
-	if (Cmd_Argc() != 2) {
-		Com_Printf("usage: ruby \"code_to_execute\"\nPlease note the \"\", also use single-quotes for ruby strings\n");
-		return;
-	}
-	
-	rb_eval_string_protect(Cmd_Argv(1), &state);
-
-	if (state != 0) {
-		Com_Printf("^1ruby: error: %i\nYour syntax may be invalid, or you are referencing a non-existing class/variable.\n", state);
-	}
-}
-#endif
-
 /*
 ===============
 CL_GenerateRSAKey
@@ -5039,10 +4953,6 @@ void CL_Init(void)
 //  Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get("cl_anonymous", "0", CVAR_USERINFO | CVAR_ARCHIVE);
 
-#ifdef USE_RUBY
-	cl_ruby = Cvar_Get("cl_ruby", "0", CVAR_ARCHIVE | CVAR_LATCH);
-#endif
-
 	cl_pubkeyID = Cvar_Get ("cl_pubkeyID", "1", CVAR_ARCHIVE | CVAR_USERINFO); 
 
 	Cvar_Get("password", "", CVAR_USERINFO);
@@ -5200,36 +5110,6 @@ void CL_Init(void)
 	CL_InitRef();
 
 	SCR_Init();
-
-#ifdef USE_RUBY
-	if (cl_ruby->integer) {
-		// Should be used only if cl_ruby is set to 1
-
-		// Add ruby exec command
-		Cmd_AddCommand("ruby", Con_Ruby_f);
-
-		Com_Printf("----- Initializing Ruby Interpreter ----\n");
-
-		// Initialize Ruby
-		ruby_init();
-
-		// Initializa load path
-		ruby_init_loadpath();
-
-		// Set safe level
-		rb_set_safe_level(0);
-
-		// Ruby script
-		ruby_script("rain");
-
-		// Register Ruby Data
-		CL_RegisterRubyData();
-
-		// Load Ruby script
-// 		rb_load_file("autoexec.rb");
-		CL_ExecRuby();
-	}
-#endif
 
 	Cbuf_Execute();
 

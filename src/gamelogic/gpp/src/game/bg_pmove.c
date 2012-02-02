@@ -952,6 +952,22 @@ static qboolean PM_CheckDodge( void )
   // Can't dodge forward
   if( pm->cmd.forwardmove > 0 )
     return qfalse;
+  
+  if( pm->cmd.doubleTap == DT_BACK || pm->cmd.doubleTap == DT_MOVELEFT || pm->cmd.doubleTap == DT_MOVERIGHT ) {
+    switch( pm->cmd.doubleTap )
+    {
+      case DT_BACK:
+	pm->cmd.forwardmove = -1;
+	break;
+      case DT_MOVELEFT:
+	pm->cmd.rightmove = -1;
+	break;
+      case DT_MOVERIGHT:
+	pm->cmd.rightmove = 1;
+	break;
+    }
+    pm->cmd.wbuttons |= WBUTTON_PRONE;
+  }
 
   // Reasons why we can't start a dodge only
   if( pm->ps->pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ) ||
@@ -3672,8 +3688,6 @@ void PmoveSingle( pmove_t *pmove )
   else
     pm->ps->eFlags &= ~EF_FIRING3;
   
-  if( pm->cmd.doubleTap == DT_BACK || pm->cmd.doubleTap == DT_MOVELEFT || pm->cmd.doubleTap == DT_MOVERIGHT )
-    pm->cmd.wbuttons |= WBUTTON_PRONE;
   
   if( pm->cmd.doubleTap == DT_UP )
   {

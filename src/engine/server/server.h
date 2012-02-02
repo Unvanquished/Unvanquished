@@ -384,10 +384,6 @@ extern cvar_t  *sv_showAverageBPS;	// NERVE - SMF - net debugging
 
 extern cvar_t  *sv_requireValidGuid;
 
-#ifdef USE_RUBY
-extern cvar_t  *sv_ruby;
-#endif
-
 #ifdef USE_HUB_SERVER
 extern cvar_t  *sv_owHubHost;
 extern cvar_t  *sv_owHubKey;

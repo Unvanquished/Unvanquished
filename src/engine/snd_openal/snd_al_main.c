@@ -208,14 +208,17 @@ qboolean SndAl_Init(void)
 	{
 		char devicenames[1024] = "";
 		const char *devicelist;
+#ifdef _WIN32
 		const char *defaultdevice;
+#endif
 		int curlen;
 		
 		// get all available devices + the default device name.
 		devicelist = qalcGetString(NULL, ALC_DEVICE_SPECIFIER);
+#ifdef _WIN32
 		defaultdevice = qalcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 
-#ifdef _WIN32
+
 		// check whether the default device is generic hardware. If it is, change to
 		// Generic Software as that one works more reliably with various sound systems.
 		// If it's not, use OpenAL's default selection as we don't want to ignore
@@ -356,7 +359,7 @@ void SndAl_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int
 
 	// Set OpenAL listener paramaters
 	VectorScale(origin, POSITION_SCALE, sorigin);
-	qalListenerfv(AL_POSITION, origin);
+	qalListenerfv(AL_POSITION, sorigin);
 	qalListenerfv(AL_VELOCITY, velocity);
 	qalListenerfv(AL_ORIENTATION, orientation);
 }

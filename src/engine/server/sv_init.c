@@ -41,13 +41,6 @@ Maryland 20850 USA.
 
 #include "server.h"
 
-#ifdef USE_RUBY
-#include "ruby.h"
-#include "ruby.h"
-#undef vsnprintf
-#define vsnprintf vsnprintf
-#endif
-
 #ifdef USE_HUB_SERVER
 /*
 ==================
@@ -912,56 +905,6 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	Com_Printf("-----------------------------------\n");
 }
 
-#ifdef USE_RUBY
-/*
-===============
-SV_RubyExec
-===============
-*/
-static int SV_RubyExec(void) {
-	void* status;
-
-	ruby_exec_node(status);
-	return *(int*)status;
-}
-
-/*
-===============
-SV_RubyPuts
-===============
-*/
-static VALUE SV_RubyPuts(VALUE self, VALUE str) {
-	if (TYPE(str) == T_STRING) {
-		Com_Printf("%s\n", StringValuePtr(str));
-	}
-	return Qnil;
-}
-
-/*
-===============
-SV_RubyServerConsole
-===============
-*/
-static VALUE SV_RubyServerConsole(VALUE self, VALUE str) {
-	if (TYPE(str) == T_STRING) {
-		Cmd_ExecuteString(StringValuePtr(str));
-	}
-	return Qnil;
-}
-
-/*
-===============
-SV_RegisterRubyData
-===============
-*/
-static void SV_RegisterRubyData(void) {
-	rb_define_global_const("CLIENT", Qfalse);
-	rb_define_global_const("SERVER", Qtrue);
-	rb_define_global_function("puts", SV_RubyPuts, 1);
-	rb_define_global_function("console", SV_RubyServerConsole, 1);
-}
-#endif
-
 
 /*
 ===============
@@ -1099,29 +1042,6 @@ void SV_Init(void)
 
 	sv_requireValidGuid = Cvar_Get ("sv_requireValidGuid", "0", CVAR_ARCHIVE );
 
-#ifdef USE_RUBY
-	sv_ruby = Cvar_Get("sv_ruby", "0", CVAR_ARCHIVE | CVAR_LATCH);
-#endif
-
-#ifdef USE_RUBY
-	// Dushan - FIX ME - Extremely Ugly
-
-	if (sv_ruby->integer) {
-		Com_Printf("----- Initializing Ruby Interpreter ----\n");
-		
-		ruby_init();
-		ruby_init_loadpath();
-		rb_set_safe_level(0);
-		
-		ruby_script("cloud");
-		
-		SV_RegisterRubyData();
-		
-// 		rb_load_file("autoexec.rb");
-		SV_RubyExec();
-	}
-#endif
-	
 #ifdef USE_HUB_SERVER
 	sv_owHubHost = Cvar_Get ("sv_owHubHost", "", CVAR_LATCH);
 	sv_owHubKey = Cvar_Get ("sv_owHubKey", "defaultkey123456", CVAR_ARCHIVE);
