@@ -776,7 +776,7 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
       break;
 
     default:
-      value = cg.snap->ps.Ammo + ( (cg.snap->ps.clips-1) * BG_Weapon( weapon )->maxAmmo );
+      value = cg.snap->ps.Ammo + ( cg.snap->ps.clips * BG_Weapon( weapon )->maxAmmo );
       break;
   }
 
@@ -1749,17 +1749,8 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
 
     if( scalableText )
     {
-      for( i = 0; i < strLength; i++ )
-      {
-        char c[ 2 ];
 
-        c[ 0 ] = s[ i ];
-        c[ 1 ] = '\0';
-
-        UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, c, 0, 0, textStyle );
-      }
-
-      UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, FPS_STRING, 0, 0, textStyle );
+      UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, va( "%d %s", fps, FPS_STRING), 0, 0, textStyle );
     }
     else
     {
@@ -1856,15 +1847,7 @@ static void CG_DrawTimer( rectDef_t *rect, float text_x, float text_y,
 
   CG_AlignText( rect, s, 0.0f, totalWidth, h, textalign, textvalign, &tx, &ty );
 
-  for( i = 0; i < strLength; i++ )
-  {
-    char c[ 2 ];
-
-    c[ 0 ] = s[ i ];
-    c[ 1 ] = '\0';
-
-    UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, c, 0, 0, textStyle );
-  }
+    UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, s, 0, 0, textStyle );
 }
 
 /*
