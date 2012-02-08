@@ -96,6 +96,11 @@ vmCvar_t  cl_profile;
 vmCvar_t  cl_defaultProfile;
 vmCvar_t  ui_profile;
 
+vmCvar_t  ui_menuFiles;
+vmCvar_t  ui_ingameFiles;
+vmCvar_t  ui_teamFiles;
+vmCvar_t  ui_helpFiles;
+
 
 static cvarTable_t    cvarTable[ ] =
 {
@@ -126,7 +131,12 @@ static cvarTable_t    cvarTable[ ] =
   { &cl_profile, "cl_profile", "", CVAR_ROM },
   { &cl_defaultProfile, "cl_defaultProfile", "", CVAR_ROM },
   { &ui_profile, "ui_profile", "", CVAR_ROM },
-  { &ui_chatCommands, "ui_chatCommands", "1", CVAR_ARCHIVE }
+  { &ui_chatCommands, "ui_chatCommands", "1", CVAR_ARCHIVE },
+
+  { &ui_menuFiles, "ui_menuFiles", "ui/menu/menus.txt", CVAR_ARCHIVE },
+  { &ui_ingameFiles, "ui_ingameFiles", "ui/menu/ingame/ingame.txt", CVAR_ARCHIVE },
+  { &ui_teamFiles, "ui_teamFiles", "ui/menu/team/team.txt", CVAR_ARCHIVE },
+  { &ui_helpFiles, "ui_helpFiles", "ui/menu/help/help.txt", CVAR_ARCHIVE }
 };
 
 static int    cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );
@@ -1626,10 +1636,10 @@ void UI_Load( void )
 
   String_Init();
 
-  UI_LoadMenus( "ui/menus.txt", qtrue );
-  UI_LoadMenus( "ui/ingame.txt", qfalse );
-  UI_LoadMenus( "ui/tremulous.txt", qfalse );
-  UI_LoadHelp( "ui/help.txt" );
+  UI_LoadMenus( ui_menuFiles.string, qtrue );
+  UI_LoadMenus( ui_ingameFiles.string, qfalse );
+  UI_LoadMenus( ui_teamFiles.string, qfalse );
+  UI_LoadHelp( ui_helpFiles.string );
   Menus_CloseAll( );
   Menus_ActivateByName( lastName );
 
