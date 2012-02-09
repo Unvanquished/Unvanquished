@@ -749,10 +749,10 @@ void Con_DrawInput (void) {
 	color[2] = 1.0f;
 	color[3] = (scr_conUseOld->integer ? 1.0f : con.displayFrac * 2.0f);
 
-	SCR_DrawSmallStringExt( con.xadjust + cl_conXOffset->integer, y, prompt, color, qfalse, qfalse );
+	SCR_DrawSmallStringExt( con.xadjust + cl_conXOffset->integer, y+10, prompt, color, qfalse, qfalse );
 
 	Q_CleanStr( prompt );
-	Field_Draw( &g_consoleField, con.xadjust + cl_conXOffset->integer + SCR_ConsoleFontStringWidth(prompt, strlen(prompt)), y, qtrue, qtrue, color[3] );
+	Field_Draw( &g_consoleField, con.xadjust + cl_conXOffset->integer + SCR_ConsoleFontStringWidth(prompt, strlen(prompt)), y+10, qtrue, qtrue, color[3] );
 }
 
 
@@ -988,7 +988,7 @@ void Con_DrawSolidConsole( float frac ) {
 	if (scr_conUseOld->integer)
 		rows++;
 
-	y = lines - (SCR_ConsoleFontCharHeight()*3);
+	y = lines - (SCR_ConsoleFontCharHeight()*3)+10;
 
 	// draw from the bottom up
 	if (con.display != con.current)
