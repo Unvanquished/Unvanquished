@@ -1,0 +1,914 @@
+/*
+===========================================================================
+This file is part of Tremulous.
+
+Tremulous is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
+
+Tremulous is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Tremulous; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+===========================================================================
+*/
+
+
+
+#include "g_local.h"
+#include "g_bot.h"
+#include "../../../../engine/botlib/nav.h"
+#include "../../../../libs/detour/DetourNavMeshBuilder.h"
+
+dtNavMeshQuery* navQuery;
+dtQueryFilter navFilter;
+
+dtPathCorridor pathCorridor[MAX_CLIENTS];
+dtNavMesh *navMesh;
+
+/*
+========================
+Navigation Mesh Loading
+========================
+*/
+qboolean G_NavLoad(dtNavMeshCreateParams *navParams) {
+  char filename[MAX_QPATH];
+  char mapname[MAX_QPATH];
+  long len;
+  char text[Square(MAX_STRING_CHARS)];
+  char *text_p;
+  fileHandle_t f;
+  NavMeshHeader_t navHeader;
+
+  char gameName[MAX_STRING_CHARS];
+
+  trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
+  trap_Cvar_VariableStringBuffer("fs_game",gameName, sizeof(gameName));
+  Com_sprintf(filename, sizeof(filename), "maps/%s.navMesh", mapname);
+  Com_Printf(" loading navigation mesh file '%s'...\n", filename);
+
+  // load the file
+  len = trap_FS_FOpenFile( filename, &f, FS_READ );
+  if( len < 0 ) {
+    Com_Printf(S_COLOR_RED "ERROR: Negative Length for Navigation Mesh file %s\n", filename);
+    return qfalse;
+  }
+
+  if( len == 0 || len >= sizeof( text ) - 1 )
+  {
+    trap_FS_FCloseFile( f );
+    Com_Printf( S_COLOR_RED "ERROR: Navigation Mesh file %s is %s\n", filename,
+      len == 0 ? "empty" : "too long" );
+    return qfalse;
+  }
+
+  trap_FS_Read( text, len, f );
+  text[ len ] = 0;
+  trap_FS_FCloseFile( f );
+
+  // parse the text
+  text_p = text;
+
+  //header
+  navHeader.version = atoi(COM_Parse(&text_p));
+
+  //wrong version!!!
+  if(navHeader.version != 1) {
+    Com_Printf( S_COLOR_RED "ERROR: The Navigation Mesh is the wrong version!\n");
+    return qfalse;
+  }
+
+  navHeader.numVerts = atoi(COM_Parse(&text_p));
+  navHeader.numPolys = atoi(COM_Parse(&text_p));
+  navHeader.numVertsPerPoly = atoi(COM_Parse(&text_p));
+  for(int i=0;i<3;i++) {
+    navHeader.mins[i] = atof(COM_Parse(&text_p));
+  }
+  for(int i=0;i<3;i++) {
+    navHeader.maxs[i] = atof(COM_Parse(&text_p));
+  }
+  navHeader.dNumMeshes = atoi(COM_Parse(&text_p));
+  navHeader.dNumVerts = atoi(COM_Parse(&text_p));
+  navHeader.dNumTris = atoi(COM_Parse(&text_p));
+  navHeader.cellSize = atof(COM_Parse(&text_p));
+  navHeader.cellHeight = atof(COM_Parse(&text_p));
+
+  //load verts
+  int vertsSize = navHeader.numVerts * sizeof (unsigned short) * 3;
+  navHeader.data.verts = (unsigned short *)malloc(vertsSize);
+  for(int i=0,j=0;i<navHeader.numVerts;i++,j+=3) {
+    for(int n=0;n<3;n++) {
+      navHeader.data.verts[j + n] = (unsigned short)atoi(COM_Parse(&text_p));
+    }
+  }
+  navParams->vertCount = navHeader.numVerts;
+  navParams->verts = navHeader.data.verts;
+
+  //load polys
+  int polysSize = navHeader.numPolys * sizeof (unsigned short) * navHeader.numVertsPerPoly * 2;
+  navHeader.data.polys = (unsigned short *)malloc(polysSize);
+  for(int i=0, k=0;i<navHeader.numPolys;i++,k+=navHeader.numVertsPerPoly * 2) {
+    for(int n=0;n<navHeader.numVertsPerPoly * 2;n++) {
+      navHeader.data.polys[k + n] = (unsigned short)atoi(COM_Parse(&text_p));
+    }
+  }
+  navParams->polyCount = navHeader.numPolys;
+  navParams->nvp = navHeader.numVertsPerPoly;
+  navParams->polys = navHeader.data.polys;
+
+  //load areas
+  int areasSize = navHeader.numPolys * sizeof (unsigned char);
+  navHeader.data.areas = (unsigned char *)malloc(areasSize);
+  for(int i=0;i<navHeader.numPolys;i++) {
+    navHeader.data.areas[i] = (unsigned char)atoi(COM_Parse(&text_p));
+  }
+  navParams->polyAreas = navHeader.data.areas;
+
+  //load flags
+  int flagsSize = navHeader.numPolys * sizeof (unsigned short);
+  navHeader.data.flags = (unsigned short *)malloc(flagsSize);
+  for(int i=0;i<navHeader.numPolys;i++) {
+    navHeader.data.flags[i] = (unsigned short)atoi(COM_Parse(&text_p));
+  }
+  navParams->polyFlags = navHeader.data.flags;
+
+  //load detailed meshes
+  int dMeshesSize = navHeader.dNumMeshes * sizeof (unsigned int) * 4;
+  navHeader.data.dMeshes = (unsigned int *)malloc(dMeshesSize);
+  for(int i=0,j=0;i<navHeader.dNumMeshes;i++,j+=4) {
+    for(int n=0;n<4;n++) {
+      navHeader.data.dMeshes[j + n] = (unsigned int)atoi(COM_Parse(&text_p));
+    }
+  }
+  navParams->detailMeshes = navHeader.data.dMeshes;
+
+  //load detailed verticies
+  int dVertsSize = navHeader.dNumVerts * sizeof (float) * 3;
+  navHeader.data.dVerts = (float *)malloc(dVertsSize);
+  for(int i=0,j=0;i<navHeader.dNumVerts;i++,j+=3) {
+    for(int n=0;n<3;n++) {
+      navHeader.data.dVerts[j + n] = atof(COM_Parse(&text_p));
+    }
+  }
+  navParams->detailVertsCount = navHeader.dNumVerts;
+  navParams->detailVerts = navHeader.data.dVerts;
+
+  //load detailed tris
+  int dTrisSize = navHeader.dNumTris * sizeof (unsigned char) * 4;
+  navHeader.data.dTris = (unsigned char *)malloc(dTrisSize);
+  for(int i=0,j=0;i<navHeader.dNumTris;i++,j+=4) {
+    for(int n=0;n<4;n++) {
+      navHeader.data.dTris[j + n] = (unsigned char)atoi(COM_Parse(&text_p));
+    }
+  }
+  navParams->detailTriCount = navHeader.dNumTris;
+  navParams->detailTris = navHeader.data.dTris;
+
+  //other parameters
+  navParams->walkableHeight = 48.0f;
+  navParams->walkableRadius = 15.0f;
+  navParams->walkableClimb = STEPSIZE;
+  VectorCopy (navHeader.mins, navParams->bmin);
+  VectorCopy (navHeader.maxs, navParams->bmax);
+  navParams->cs = navHeader.cellSize;
+  navParams->ch = navHeader.cellHeight;
+  navParams->offMeshConCount = 0;
+  navParams->buildBvTree = true;
+
+  Com_Printf(" done.\n");
+  return qtrue;
+}
+extern "C" void G_NavMeshInit() {
+  Com_Printf("==== Bot Navigation Initialization ==== \n");
+  dtNavMeshCreateParams navParams;
+  unsigned char *navData = NULL;
+  int navDataSize = 0;
+
+  if(!G_NavLoad(&navParams)) {
+
+    return;
+  }
+  
+  if ( !dtCreateNavMeshData (&navParams, &navData, &navDataSize) )
+  {
+    Com_Printf ("Could not build Detour Navigation Mesh Data\n");
+    return;
+  }
+
+  navMesh = dtAllocNavMesh();
+
+  if (!navMesh)
+  {
+    dtFree(navData);
+    Com_Printf ("Could not allocate Detour Navigation Mesh\n");
+    return;
+  }
+
+  if (dtStatusFailed(navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA)))
+  {
+    dtFree(navData);
+    Com_Printf ("Could not init Detour Navigation Mesh\n");
+    return;
+  }
+
+  navQuery = dtAllocNavMeshQuery();
+  if(!navQuery) {
+    Com_Printf("Could not allocate Detour Navigation Mesh Query\n");
+    return;
+  }
+  if (dtStatusFailed(navQuery->init(navMesh, 65536)))
+  {
+    Com_Printf("Could not init Detour Navigation Mesh Query");
+    return;
+  }
+
+  navFilter.setIncludeFlags(POLYFLAGS_WALK);
+  navFilter.setExcludeFlags((unsigned short) 0x0);
+  for(int i=0;i<MAX_CLIENTS;i++) {
+    if(!pathCorridor[i].init(MAX_PATH_POLYS)) {
+      Com_Printf("Could not init the path corridor\n");
+    }
+  }
+}
+extern "C" void G_NavMeshCleanup(void) {
+  if(navQuery) {
+    dtFreeNavMeshQuery(navQuery);
+    navQuery = NULL;
+  }
+  if(navMesh) {
+    dtFreeNavMesh(navMesh);
+    navMesh = NULL;
+  }
+  for(int i=0;i<MAX_CLIENTS;i++) {
+    pathCorridor[i] = dtPathCorridor();
+  }
+}
+
+/*
+========================
+Local Bot Navigation
+========================
+*/
+void BotDodge(gentity_t *self, usercmd_t *botCmdBuffer) {
+  if(self->client->time1000 >= 500)
+    botCmdBuffer->rightmove = 127;
+  else
+    botCmdBuffer->rightmove = -127;
+
+  if((self->client->time10000 % 2000) < 1000)
+    botCmdBuffer->rightmove *= -1;
+
+  if((self->client->time1000 % 300) >= 100 && (self->client->time10000 % 3000) > 2000)
+    botCmdBuffer->rightmove = 0;
+}
+gentity_t* BotGetPathBlocker(gentity_t *self) {
+  vec3_t playerMins,playerMaxs;
+  vec3_t end;
+  vec3_t forward;
+  trace_t trace;
+  vec3_t moveDir;
+  const int TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
+
+  if(!(self && self->client))
+    return NULL;
+
+  //get the forward vector, ignoring pitch
+  forward[0] = cos(DEG2RAD(self->client->ps.viewangles[YAW]));
+  forward[1] = sin(DEG2RAD(self->client->ps.viewangles[YAW]));
+  forward[2] = 0;
+  //VectorSubtract(target,self->s.origin, moveDir);
+  //moveDir[2] = 0;
+  //VectorNormalize(moveDir);
+  //already normalized
+  VectorCopy(forward,moveDir);
+
+  BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], playerMins,playerMaxs,NULL,NULL,NULL);
+
+  //account for how large we can step
+  playerMins[2] += STEPSIZE;
+  playerMaxs[2] += STEPSIZE;
+
+  VectorMA(self->s.origin, TRACE_LENGTH, moveDir, end);
+
+  trap_Trace(&trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT);
+  if(trace.entityNum != ENTITYNUM_NONE && trace.fraction < 1.0f) {
+    return &g_entities[trace.entityNum];
+  } else {
+    return NULL;
+  }
+}
+
+qboolean BotShouldJump(gentity_t *self, gentity_t *blocker) {
+  vec3_t playerMins;
+  vec3_t playerMaxs;
+  vec3_t moveDir;
+  float jumpMagnitude;
+  trace_t trace;
+  const int TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
+  vec3_t forward;
+  vec3_t end;
+
+  //blocker is not on our team, so ignore
+  if(BotGetTeam(self) != BotGetTeam(blocker))
+    return qfalse;
+
+  //get the forward vector, ignoring z axis
+  forward[0] = cos(DEG2RAD(self->client->ps.viewangles[YAW]));
+  forward[1] = sin(DEG2RAD(self->client->ps.viewangles[YAW]));
+  forward[2] = 0;
+
+  //already normalized
+  VectorCopy(forward,moveDir);
+  BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], playerMins,playerMaxs,NULL,NULL,NULL);
+
+  playerMins[2] += STEPSIZE;
+  playerMaxs[2] += STEPSIZE;
+
+  
+  //trap_Print(vtos(self->movedir));
+  VectorMA(self->s.origin, TRACE_LENGTH, moveDir, end);
+
+  //make sure we are moving into a block
+  //trap_Trace(&trace,self->s.origin,playerMins,playerMaxs,end,self->s.number,MASK_SHOT);
+  //if(trace.fraction >= 1.0f) {
+  //  return qfalse;
+  //}
+
+  jumpMagnitude = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->jumpMagnitude;
+
+  //find the actual height of our jump
+  jumpMagnitude = Square(jumpMagnitude) / (self->client->ps.gravity * 2);
+
+  //prepare for trace
+  playerMins[2] += jumpMagnitude;
+  playerMaxs[2] += jumpMagnitude;
+
+  //check if jumping will clear us of entity
+  trap_Trace(&trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT);
+
+  //if we can jump over it, then jump
+  //note that we also test for a blocking barricade because barricades will collapse to let us through
+  if(blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f)
+    return qtrue;
+  else
+    return qfalse;
+}
+int BotGetStrafeDirection(void) {
+  if(level.time % 8000 < 4000) {
+    return 127;
+  } else {
+    return -127;
+  }
+}
+qboolean BotFindSteerTarget(gentity_t *self, vec3_t aimPos) {
+  vec3_t forward;
+  vec3_t testPoint1,testPoint2;
+  vec3_t playerMins,playerMaxs;
+  float yaw1, yaw2;
+  trace_t trace1, trace2;
+
+  if(!(self && self->client))
+    return qfalse;
+
+  //get bbox
+  BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], playerMins,playerMaxs,NULL,NULL,NULL);
+
+  //account for stepsize
+  playerMins[2] += STEPSIZE;
+  playerMaxs[2] += STEPSIZE;
+
+  //get the yaw (left/right) we dont care about up/down
+  yaw1 = self->client->ps.viewangles[YAW];
+  yaw2 = self->client->ps.viewangles[YAW];
+  
+  //directly infront of us is blocked, so dont test it
+  yaw1 -= 15;
+  yaw2 += 15;
+  
+  //forward vector is 2D
+  forward[2] = 0;
+
+  //find an unobstructed position
+  //we check the full 180 degrees in front of us
+  for(int i=0;i<5;i++,yaw1 -= 15 ,yaw2 += 15) {
+    //compute forward for right
+    forward[0] = cos(DEG2RAD(yaw1));
+    forward[1] = sin(DEG2RAD(yaw1));
+    //forward is already normalized
+    //try the right
+    VectorMA(self->s.origin,BOT_OBSTACLE_AVOID_RANGE,forward,testPoint1);
+
+    //test it
+    trap_Trace(&trace1,self->s.origin,playerMins,playerMaxs,testPoint1,self->s.number,MASK_SHOT);
+
+    //check if unobstructed
+    if(trace1.fraction >= 1.0f) {
+      VectorCopy(testPoint1,aimPos);
+      aimPos[2] += self->client->ps.viewheight;
+      return qtrue;
+    }
+
+    //compute forward for left
+    forward[0] = cos(DEG2RAD(yaw2));
+    forward[1] = sin(DEG2RAD(yaw2));
+    //forward is already normalized
+    //try the left
+    VectorMA(self->s.origin,BOT_OBSTACLE_AVOID_RANGE,forward,testPoint2);
+  
+    //test it
+    trap_Trace(&trace2, self->s.origin,playerMins,playerMaxs,testPoint2,self->s.number,MASK_SHOT);
+
+    //check if unobstructed
+    if(trace2.fraction >= 1.0f) {
+      VectorCopy(testPoint2,aimPos);
+      aimPos[2] += self->client->ps.viewheight;
+      return qtrue;
+    }
+  }
+
+  //we couldnt find a new position
+  return qfalse;
+}
+qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec, usercmd_t *botCmdBuffer) {
+  if(!self->client)
+    return qfalse;
+  if(BotGetTeam(self) == TEAM_NONE)
+    return qfalse;
+  gentity_t *blocker = BotGetPathBlocker(self);
+  if(blocker) {
+    if(blocker->s.number != ENTITYNUM_WORLD) {
+      if(BotShouldJump(self, blocker)) {
+        //jump if we have enough stamina
+        if(self->client->ps.stats[STAT_STAMINA] >= STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE) {
+          botCmdBuffer->upmove = 127;
+        } else if(BotGetTeam(self) == BotGetTeam(blocker) || blocker->s.number == ENTITYNUM_WORLD){
+          botCmdBuffer->forwardmove = 0;
+          botCmdBuffer->rightmove = 0;
+        }
+        return qfalse;
+      } else {
+        vec3_t newAimPos;
+        //we should not jump, try to get around the obstruction
+        if(BotFindSteerTarget(self, newAimPos)) {
+          //found a steer target
+          VectorCopy(newAimPos,rVec);
+          return qtrue;
+        } else {
+          botCmdBuffer->rightmove = BotGetStrafeDirection();
+          botCmdBuffer->forwardmove = -127; //backup
+        }
+        //use dodge when against enemy
+        //FIXME: Doesnt seem to work?
+        //TODO: Refactor....
+        //if(BotGetTeam(self) == TEAM_HUMANS && BotGetTeam(blocker) == TEAM_ALIENS && self->botMind->botSkill.level > 7 && 
+         // self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE) {
+         //   botCmdBuffer->buttons |= BUTTON_DODGE;
+         //   botCmdBuffer->forwardmove = 0;
+        //}
+      }
+    }
+  }
+  return qfalse;
+}
+
+//copy of PM_CheckLadder in bg_pmove.c
+qboolean BotOnLadder( gentity_t *self )
+{
+  vec3_t forward, end;
+  vec3_t mins, maxs;
+  trace_t trace;
+
+  if( !BG_ClassHasAbility( (class_t) self->client->ps.stats[ STAT_CLASS ], SCA_CANUSELADDERS ) )
+    return qfalse;
+
+  AngleVectors( self->client->ps.viewangles, forward, NULL, NULL);
+
+  forward[ 2 ] = 0.0f;
+  BG_ClassBoundingBox( (class_t) self->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+  VectorMA( self->s.origin, 1.0f, forward, end );
+
+  trap_Trace( &trace, self->s.origin, mins, maxs, end, self->s.number, MASK_PLAYERSOLID );
+
+  if( trace.fraction < 1.0f && trace.surfaceFlags & SURF_LADDER )
+    return qtrue;
+  else
+    return qfalse;
+}
+/*
+BotSteer
+Slows down aiming for waypoints
+Based on Code by Mikko Mononen, but adapted for use in tremz
+*/
+void BotSteer(gentity_t *self, vec3_t target) {
+  vec3_t viewBase;
+  vec3_t aimVec;
+  vec3_t skilledVec;
+
+  if( !(self && self->client) )
+    return;
+  BG_GetClientViewOrigin(&self->client->ps,viewBase); 
+  //get the Vector from the bot to the enemy (aim Vector)
+  VectorSubtract( target, viewBase, aimVec );
+  float length = VectorLength(aimVec);
+
+  const int ip0 = 0;
+  const int ip1 = min(1,self->botMind->numCorners - 1);
+  vec3_t p0,p1;
+  vec3_t selfPos;
+  VectorCopy(self->s.origin,selfPos);
+  selfPos[2] += self->r.mins[2];
+  VectorCopy(self->botMind->routeToTarget[ip0],p0);
+  VectorCopy(self->botMind->routeToTarget[ip1],p1);
+  vec3_t dir0,dir1;
+  VectorSubtract(p0,selfPos,dir0);
+  VectorSubtract(p1,selfPos,dir1);
+  dir0[2] = 0;
+  dir1[2] = 0;
+  float len0 = VectorLength(dir0);
+  float len1 = VectorLength(dir1);
+  if(len1 > 0.001f)
+    VectorScale(dir1,1.0/len1,dir1);
+
+  skilledVec[0] = dir0[0] - dir1[0]*len0*0.5f;
+  skilledVec[1] = dir0[1] - dir1[1]*len0*0.5f;
+  skilledVec[2] = 0;
+
+  VectorNormalize(skilledVec);
+  VectorScale(skilledVec, length, skilledVec);
+  VectorAdd(viewBase, skilledVec, target);
+}
+/**BotGoto
+* Used to make the bot travel between waypoints or to the target from the last waypoint
+* Also can be used to make the bot travel other short distances
+*/
+void BotGoto(gentity_t *self, botTarget_t target, usercmd_t *botCmdBuffer) {
+
+  vec3_t tmpVec;
+  botCmdBuffer->forwardmove = 127; //max forward speed
+  BotGetIdealAimLocation(self, target, tmpVec);
+  if(BotAvoidObstacles(self, tmpVec, botCmdBuffer)) { //make whatever adjustments we need to make
+    BotSlowAim(self, tmpVec, 0.6);
+  } else {
+    BotSteer(self, tmpVec); //steer to stay on path
+  }
+  
+  BotAimAtLocation(self, tmpVec, botCmdBuffer);
+
+  //dont sprint or dodge if we dont have enough stamina and are about to slow
+  if(BotGetTeam(self) == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL) {
+    botCmdBuffer->buttons &= ~BUTTON_SPRINT;
+    botCmdBuffer->buttons &= ~BUTTON_DODGE;
+  }
+}
+
+/*
+=========================
+Global Bot Navigation
+=========================
+*/
+
+void FindWaypoints(gentity_t *self) {
+  float corners[MAX_CORRIDOR_CORNERS * 3];
+  unsigned char cornerFlags[MAX_CORRIDOR_CORNERS];
+  dtPolyRef cornerPolys[MAX_CORRIDOR_CORNERS];
+  vec3_t tmpVec;
+  if(!pathCorridor[self->client->ps.clientNum].getPathCount()) {
+    self->botMind->numCorners = 0;
+    return;
+  }
+  //trap_Print("finding Corners\n");
+  int numCorners = pathCorridor[self->client->ps.clientNum].findCorners(corners, cornerFlags, cornerPolys, MAX_CORRIDOR_CORNERS, navQuery, &navFilter);
+  //trap_Print("found Corners\n");
+  //copy the points to the vec3_t array, converting each point into quake coordinates too
+  for(int i=0;i<numCorners;i++) {
+    float *vert = &corners[3*i];//VectorSet(tmpVecQ,corners[3*i],corners[3*i+1],corners[3*i+2]);
+    VectorCopy(vert,tmpVec);
+    recast2quake(tmpVec);
+    VectorCopy(tmpVec,self->botMind->routeToTarget[i]);
+  }
+
+  self->botMind->numCorners = numCorners;
+}
+float Distance2D(vec3_t pos1, vec3_t pos2) {
+  return sqrt(pos1[0] * pos2[0] + pos1[1] * pos2[1]);
+}
+void UpdatePathCorridor(gentity_t *self) {
+  vec3_t selfPos, targetPos;
+  if(!pathCorridor[self->client->ps.clientNum].getPathCount())
+    return;
+  if(BotTargetIsEntity(self->botMind->goal)) {
+    PlantEntityOnGround(self->botMind->goal.ent,targetPos);
+  } else {
+    BotGetTargetPos(self->botMind->goal, targetPos);
+  }
+  PlantEntityOnGround(self,selfPos);
+  quake2recast(selfPos);
+  quake2recast(targetPos);
+
+  pathCorridor[self->client->ps.clientNum].movePosition(selfPos, navQuery, &navFilter);
+  pathCorridor[self->client->ps.clientNum].moveTargetPosition(targetPos,navQuery, &navFilter);
+
+
+  FindWaypoints(self);
+  self->botMind->targetNodeID = 0;
+  dtPolyRef check;
+  vec3_t pos;
+
+  //check for replans
+  //THIS STILL DOESNT WORK 100% OF THE TIME GRRRRRRR
+  if(self->client->time1000 % 500 == 0) {
+    if(BotFindNearestPoly(self,&check,pos) && self->client->ps.groundEntityNum != ENTITYNUM_NONE) {
+      if(check != pathCorridor[self->client->ps.clientNum].getFirstPoly())
+        FindRouteToTarget(self, self->botMind->goal);
+    }
+    if(BotTargetIsPlayer(self->botMind->goal)) {
+      if(self->botMind->goal.ent->client->ps.groundEntityNum != ENTITYNUM_NONE) {
+        if(BotFindNearestPoly(self->botMind->goal.ent,&check,pos)) {
+          if(check != pathCorridor[self->client->ps.clientNum].getLastPoly())
+            FindRouteToTarget(self, self->botMind->goal);
+        }
+      }
+    }
+  }
+
+  //GRRRRRRRRRR
+  //Keep messing with replan detection....
+  //botTarget_t temp;
+  //BotSetTarget(&temp, NULL, &self->botMind->routeToTarget[self->botMind->targetNodeID]);
+  //if(!BotPathIsWalkable(self, temp)) //this wont work if there is a navmesh below our path we are tracing! I.E 2 or more floors in a building!
+    //FindRouteToTarget(self,self->botMind->goal);
+
+  //if(pathCorridor[self->client->ps.clientNum].getFirstPoly() == 0 || pathCorridor[self->client->ps.clientNum].getLastPoly() == 0 || !BotPathIsWalkable(self, temp))
+   // FindRouteToTarget(self, self->botMind->goal);
+  //the path has become invalid so find a new one
+  /*if(pathCorridor[self->client->ps.clientNum].getLastPoly() != targetRef || pathCorridor[self->client->ps.clientNum].getFirstPoly() != selfRef) {
+  FindRouteToTarget(self, self->botMind->goal);
+  }*/
+}
+qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer ) {
+  botTarget_t target;
+
+  if(!(self && self->client))
+    return qfalse;
+
+  UpdatePathCorridor(self);
+
+  if(self->botMind->numCorners > 0) {
+    BotSetTarget(&target,NULL, &self->botMind->routeToTarget[self->botMind->targetNodeID]);
+    BotGoto( self, target, botCmdBuffer );
+    return qfalse;
+  }
+  return qtrue;
+}
+
+/*
+========================
+Bot Navigation Querys
+========================
+*/
+void BotGetAgentExtents(gentity_t *ent, vec3_t *extents) {
+  VectorSet(*extents, ent->r.maxs[0] * 5, 2 * (ent->r.maxs[2] - ent->r.mins[2]), ent->r.maxs[1] * 5);
+}
+int DistanceToGoal(gentity_t *self) {
+  vec3_t targetPos;
+  vec3_t selfPos;
+  //safety check for morons who use this incorrectly
+  if(!(self->botMind)) {
+    return -1;
+  }
+  BotGetTargetPos(self->botMind->goal,targetPos);
+  VectorCopy(self->s.origin,selfPos);
+  return Distance(selfPos,targetPos);
+}
+int DistanceToGoalSquared(gentity_t *self) {
+  vec3_t targetPos;
+  vec3_t selfPos;
+  //safety check for morons who use this incorrectly
+  if(!(self->botMind)) {
+    return -1;
+  }
+  BotGetTargetPos(self->botMind->goal,targetPos);
+  VectorCopy(self->s.origin,selfPos);
+  return DistanceSquared(selfPos,targetPos);
+}
+qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target) {
+  dtPolyRef pathPolys[MAX_PATH_POLYS];
+  vec3_t selfPos, targetPos;
+  float hit;
+  int numPolys;
+  vec3_t hitNormal;
+  vec3_t viewNormal;
+  BG_GetClientNormal(&self->client->ps,viewNormal);
+  VectorMA(self->s.origin,self->r.mins[2],viewNormal,selfPos);
+  BotGetTargetPos(target, targetPos);
+  //quake2recast(selfPos);
+  //quake2recast(targetPos);
+
+  if(!BotNav_Trace(selfPos,targetPos,&hit,hitNormal,pathPolys,&numPolys,MAX_PATH_POLYS))
+    return qfalse;
+
+  if(hit == FLT_MAX)
+    return qtrue;
+  else
+    return qfalse;
+}
+qboolean BotNav_Trace(vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies) {
+  vec3_t nearPoint;
+  dtPolyRef startRef;
+  dtStatus status;
+  vec3_t extents = {75,96,75};
+  quake2recast(start);
+  quake2recast(end);
+  status = navQuery->findNearestPoly(start,extents,&navFilter,&startRef,nearPoint);
+  if(dtStatusFailed(status) || startRef == 0) {
+    //try larger extents
+    extents[2] += 500;
+    status = navQuery->findNearestPoly(start,extents,&navFilter,&startRef,nearPoint);
+    if(dtStatusFailed(status) || startRef == 0) {
+      *numHit = 0;
+      *hit = 0;
+      VectorSet(normal,0,0,0);
+      if(maxPolies > 0) {
+        pathPolys[0] = startRef;
+        *numHit = 1;
+      }
+      return qfalse;
+    }
+  }
+  status = navQuery->raycast(startRef,start,end,&navFilter, hit, normal, pathPolys, numHit, maxPolies);
+  if(dtStatusFailed(status)) {
+    return qfalse;
+  } else {
+    return qtrue;
+  }
+}
+qboolean BotFindNearestPoly(gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint) {
+  vec3_t extents;
+  vec3_t start;
+  vec3_t viewNormal;
+  dtStatus status;
+  if(ent->client)
+    BG_GetClientNormal(&ent->client->ps,viewNormal);
+  else
+    VectorSet(viewNormal,0,0,1);
+  VectorMA(ent->s.origin,ent->r.mins[2],viewNormal,start);
+  quake2recast(start);
+  BotGetAgentExtents(ent,&extents);
+  status = navQuery->findNearestPoly(start,extents,&navFilter,nearestPoly,nearPoint);
+  if(dtStatusFailed(status) || *nearestPoly == 0) {
+    //try larger extents
+    extents[2] += 900;
+    status = navQuery->findNearestPoly(start,extents,&navFilter,nearestPoly,nearPoint);
+    if(dtStatusFailed(status) || *nearestPoly == 0) {
+      return qfalse; // failed
+    }
+  }
+  recast2quake(nearPoint);
+  return qtrue;
+    
+}
+qboolean BotFindNearestPoly(vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint) {
+  vec3_t start,extents;
+  dtStatus status;
+  VectorSet(extents,640,96,640);
+  VectorCopy(coord, start);
+  quake2recast(start);
+  status = navQuery->findNearestPoly(start,extents,&navFilter,nearestPoly,nearPoint);
+  if(dtStatusFailed(status) || *nearestPoly == 0) {
+    //try larger extents
+    extents[2] += 900;
+    status = navQuery->findNearestPoly(start,extents,&navFilter,nearestPoly,nearPoint);
+    if(dtStatusFailed(status) || *nearestPoly == 0) {
+      return qfalse; // failed
+    }
+  }
+  recast2quake(nearPoint);
+  return qtrue;
+}
+
+int FindRouteToTarget( gentity_t *self, botTarget_t target) {
+  vec3_t selfPos;
+  vec3_t start;
+  vec3_t end;
+  vec3_t targetPos;
+  vec3_t targetPosQ;
+  //vec3_t selfExtents, targetExtents;
+  dtPolyRef startRef, endRef = 1;
+  dtPolyRef pathPolys[MAX_PATH_POLYS];
+  dtStatus status;
+  int pathNumPolys = 512;
+  qboolean result;
+  //int straightNum;
+
+  //dont pathfind too much
+  if(level.time - self->botMind->timeFoundRoute < 200)
+    return STATUS_FAILED;
+
+  if(!navQuery) {
+    trap_Print("Cannot query the Navmesh!\n");
+    return STATUS_FAILED;
+  }
+
+  self->botMind->timeFoundRoute = level.time;
+
+  if(BotTargetIsEntity(target)) {
+    PlantEntityOnGround(target.ent,targetPosQ);
+  } else {
+    BotGetTargetPos(target,targetPosQ);
+  }
+  quake2recast(selfPos);
+  quake2recast(targetPos);
+  self->botMind->numCorners = 0;
+
+  if(!BotFindNearestPoly(self, &startRef, start)) {
+    trap_Print("Failed to find a polygon near the bot\n");
+    return STATUS_FAILED | STATUS_NOPOLYNEARSELF;
+  }
+  
+  if(BotTargetIsEntity(target)) {
+    result = BotFindNearestPoly(target.ent,&endRef,end);
+  } else {
+    result = BotFindNearestPoly(targetPosQ,&endRef,end);
+  }
+
+  if(!result) {
+    trap_Print("Failed to find a polygon near the target\n");
+    return STATUS_FAILED | STATUS_NOPOLYNEARTARGET;
+  }
+  quake2recast(start);
+  quake2recast(end);
+  //trap_Print("Finding path\n");
+  status = navQuery->findPath(startRef, endRef, start, end, &navFilter, pathPolys, &pathNumPolys, MAX_PATH_POLYS);
+
+  if(dtStatusFailed(status)) {
+    trap_Print("Could not find path\n");
+    return STATUS_FAILED;
+  }
+  pathCorridor[self->client->ps.clientNum].reset(startRef, selfPos);
+  pathCorridor[self->client->ps.clientNum].setCorridor(targetPos, pathPolys, pathNumPolys);
+
+#ifdef BOT_DEBUG
+  trap_Print(va("Start Position: %s\n",vtos(self->botMind->routeToTarget[0])));
+  trap_Print(va("Position2: %s\n",vtos(self->botMind->routeToTarget[1])));
+  trap_Print(va("My Position: %s\n",vtos(self->s.pos.trBase)));
+  trap_Print(va("Target Position: %s\n",vtos(targetPosQ)));
+#endif
+  FindWaypoints(self);
+  if(status & DT_PARTIAL_RESULT)
+    return STATUS_SUCCEED | STATUS_PARTIAL;
+
+  return STATUS_SUCCEED;
+}
+
+/*
+========================
+Misc Bot Nav
+========================
+*/
+extern "C" qboolean addOffMeshConnection(vec3_t start, vec3_t end, const int type) {
+  quake2recast(start);
+  quake2recast(end);
+  //is the type a power of 2?
+  //64 == max flag number
+  if((!(type & (type - 1)) && type && type <= 64)) {
+
+    //TODO: add connection
+
+    return qtrue;
+  }
+  return qfalse;
+
+}
+void PlantEntityOnGround(gentity_t *ent, vec3_t groundPos) {
+  vec3_t mins,maxs;
+  trace_t trace;
+  vec3_t realPos;
+  const int traceLength = 10000;
+  vec3_t endPos;
+  vec3_t traceDir;
+  if(ent->client) {
+    BG_ClassBoundingBox((class_t)ent->client->ps.stats[STAT_CLASS],mins,maxs,NULL,NULL,NULL);
+  } else if(ent->s.eType == ET_BUILDABLE) {
+    BG_BuildableBoundingBox((buildable_t)ent->s.modelindex, mins,maxs);
+  } else {
+    VectorCopy(ent->r.mins,mins);
+    VectorCopy(ent->r.maxs,maxs);
+  }
+
+  VectorSet(traceDir,0,0,-1);
+  VectorCopy(ent->s.origin, realPos);
+  VectorMA(realPos,traceLength,traceDir,endPos);
+  trap_Trace(&trace,ent->s.origin,mins,maxs,endPos,ent->s.number,MASK_SHOT);
+  if(trace.fraction != 1.0f) {
+    VectorCopy(trace.endpos,groundPos);
+  } else {
+    VectorCopy(realPos,groundPos);
+    groundPos[2] += mins[2];
+
+  }
+}
