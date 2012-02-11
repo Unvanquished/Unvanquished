@@ -908,12 +908,12 @@ CG_MapTorsoToWeaponFrame
 static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, qboolean md5 )
 {
 
-  // change weapon
-  if( frame >= ci->animations[ TORSO_DROP ].firstFrame &&
-      frame < ci->animations[ TORSO_DROP ].firstFrame + 9 )
-    return frame - ci->animations[ TORSO_DROP ].firstFrame + 6;
-  if( md5 )
+  if( !md5 )
   {
+    // change weapon
+    if( frame >= ci->animations[ TORSO_DROP ].firstFrame &&
+	frame < ci->animations[ TORSO_DROP ].firstFrame + 9 )
+      return frame - ci->animations[ TORSO_DROP ].firstFrame + 6;
     // stand attack
     if( frame >= ci->animations[ TORSO_ATTACK ].firstFrame &&
 	frame < ci->animations[ TORSO_ATTACK ].firstFrame + 6 )
@@ -963,23 +963,25 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
     angles[ YAW ] += scale * cg.bobfracsin * 0.01;
     angles[ PITCH ] += cg.xyspeed * cg.bobfracsin * 0.005;
   }
-
-  // drop the weapon when landing
-  if( !weapon->noDrift )
+  if( !weapon->md5 )
   {
-    delta = cg.time - cg.landTime;
-    if( delta < LAND_DEFLECT_TIME )
-      origin[ 2 ] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
-    else if( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
-      origin[ 2 ] += cg.landChange*0.25 *
-        ( LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta ) / LAND_RETURN_TIME;
+    // drop the weapon when landing
+    if( !weapon->noDrift )
+    {
+      delta = cg.time - cg.landTime;
+      if( delta < LAND_DEFLECT_TIME )
+	origin[ 2 ] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
+      else if( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
+	origin[ 2 ] += cg.landChange*0.25 *
+	  ( LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta ) / LAND_RETURN_TIME;
 
-    // idle drift
-    scale = cg.xyspeed + 40;
-    fracsin = sin( cg.time * 0.001 );
-    angles[ ROLL ] += scale * fracsin * 0.01;
-    angles[ YAW ] += scale * fracsin * 0.01;
-    angles[ PITCH ] += scale * fracsin * 0.01;
+      // idle drift
+      scale = cg.xyspeed + 40;
+      fracsin = sin( cg.time * 0.001 );
+      angles[ ROLL ] += scale * fracsin * 0.01;
+      angles[ YAW ] += scale * fracsin * 0.01;
+      angles[ PITCH ] += scale * fracsin * 0.01;
+    }
   }
 }
 

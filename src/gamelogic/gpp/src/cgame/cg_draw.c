@@ -754,6 +754,75 @@ static void CG_DrawPlayerAmmoValue( rectDef_t *rect, vec4_t color )
   }
 }
 
+static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
+{
+  int value;
+  int valueMarked = -1;
+  qboolean bp = qfalse;
+  weapon_t weapon;
+
+  switch( weapon = BG_PrimaryWeapon( cg.snap->ps.stats ) )
+  {
+    case WP_NONE:
+    case WP_BLASTER:
+      return;
+
+    case WP_ABUILD:
+    case WP_ABUILD2:
+    case WP_HBUILD:
+      value = cg.snap->ps.persistant[ PERS_BP ];
+      valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+      bp = qtrue;
+      break;
+
+    default:
+      value = cg.snap->ps.Ammo + ( cg.snap->ps.clips * BG_Weapon( weapon )->maxAmmo );
+      break;
+  }
+
+  if( value > 999 )
+    value = 999;
+  if( valueMarked > 999 )
+    valueMarked = 999;
+
+  if( value > -1 )
+  {
+    float tx, ty;
+    char *text;
+    float scale;
+    int len;
+
+    trap_R_SetColor( color );
+    if( !bp )
+    {
+      CG_DrawField( rect->x - 5, rect->y, 4, rect->w / 4, rect->h, value );
+      trap_R_SetColor( NULL );
+      return;
+    }
+
+    if( valueMarked > 0 )
+      text = va( "%d+(%d)", value, valueMarked );
+    else
+      text = va( "%d", value );
+
+    len = strlen( text );
+
+    if( len <= 4 )
+      scale = 0.50;
+    else if( len <= 6 )
+      scale = 0.43;
+    else if( len == 7 ) 
+      scale = 0.36; 
+    else if( len == 8 )
+      scale = 0.33;
+    else
+      scale = 0.31;
+
+    CG_AlignText( rect, text, scale, 0.0f, 0.0f, ALIGN_RIGHT, VALIGN_CENTER, &tx, &ty );
+    UI_Text_Paint( tx + 1, ty, scale, color, text, 0, 0, ITEM_TEXTSTYLE_NORMAL );
+    trap_R_SetColor( NULL );
+  }
+}
 
 /*
 ==============
@@ -1680,17 +1749,8 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
 
     if( scalableText )
     {
-      for( i = 0; i < strLength; i++ )
-      {
-        char c[ 2 ];
 
-        c[ 0 ] = s[ i ];
-        c[ 1 ] = '\0';
-
-        UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, c, 0, 0, textStyle );
-      }
-
-      UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, FPS_STRING, 0, 0, textStyle );
+      UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, va( "%d %s", fps, FPS_STRING), 0, 0, textStyle );
     }
     else
     {
@@ -1787,15 +1847,7 @@ static void CG_DrawTimer( rectDef_t *rect, float text_x, float text_y,
 
   CG_AlignText( rect, s, 0.0f, totalWidth, h, textalign, textvalign, &tx, &ty );
 
-  for( i = 0; i < strLength; i++ )
-  {
-    char c[ 2 ];
-
-    c[ 0 ] = s[ i ];
-    c[ 1 ] = '\0';
-
-    UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, c, 0, 0, textStyle );
-  }
+    UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, s, 0, 0, textStyle );
 }
 
 /*
@@ -3178,6 +3230,9 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
       break;
     case CG_PLAYER_AMMO_VALUE:
       CG_DrawPlayerAmmoValue( &rect, foreColor );
+      break;
+    case CG_PLAYER_TOTAL_AMMO_VALUE:
+      CG_DrawPlayerTotalAmmoValue( &rect, foreColor );
       break;
     case CG_PLAYER_CLIPS_VALUE:
       CG_DrawPlayerClipsValue( &rect, foreColor );
