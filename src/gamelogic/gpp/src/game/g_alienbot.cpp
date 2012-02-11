@@ -198,6 +198,8 @@ int BotEvolveToClass( gentity_t *ent, class_t newClass)
                 //remove credit
                 G_AddCreditToClient( ent->client, -(short)numLevels, qtrue );
                 ent->client->pers.classSelection = newClass;
+                ent->botMind->navQuery = navQuerys[newClass];
+                ent->botMind->navFilter = &navFilters[newClass];
                 ClientUserinfoChanged( clientNum, qfalse );
                 VectorCopy( infestOrigin, ent->s.pos.trBase );
                 ClientSpawn( ent, ent, ent->s.pos.trBase, ent->s.apos.trBase );

@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //#include "g_local.h"
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
+#ifdef __cplusplus
 #include "../../../../libs/detour/DetourNavMeshQuery.h"
 #include "../../../../libs/detour/DetourPathCorridor.h"
 //#ifndef BLIB_HEADERS
@@ -92,7 +93,7 @@ qboolean BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer);
 
 //g_nav.cpp
 qboolean BotFindNearestPoly(gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint);
-qboolean BotNav_Trace(vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies);
+qboolean BotNav_Trace(dtNavMeshQuery *navQuery, dtQueryFilter* navFilter, vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies);
 qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target);
 qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer );
 void BotDodge(gentity_t *self, usercmd_t *botCmdBuffer);
@@ -103,7 +104,11 @@ int DistanceToGoal(gentity_t *self);
 int DistanceToGoalSquared(gentity_t *self);
 int BotGetStrafeDirection(void);
 void PlantEntityOnGround(gentity_t *ent, vec3_t groundPos);
-extern dtNavMeshQuery *navQuery;
+
+extern dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
+extern dtQueryFilter navFilters[PCL_NUM_CLASSES];
+extern dtPathCorridor pathCorridor[MAX_CLIENTS];
+extern qboolean navMeshLoaded;
 
 //coordinate conversion
 static inline void quake2recast(vec3_t vec) {
@@ -205,6 +210,7 @@ static inline bool BotRoutePermission(gentity_t *self, botTask_t task) {
 #define BOT_LEADER_WAIT_RANGE 250 //should be > BOT_FOLLOW_RANGE + BOT_FOLLOW_RANGE_NEGLIGENCE
 #define BOT_FOLLOW_RANGE 100
 #define BOT_FOLLOW_RANGE_NEGLIGENCE 30
+#endif
 
 #endif
 

@@ -76,11 +76,77 @@ const char *skipEntities[18] = {"func_door"				, "team_alien_trapper"	,
 								"team_human_repeater"	, "team_human_tesla"	, 
 								"team_human_dcc"		, "func_door_model"		,
 								"func_train"			, "func_door_rotating" };
-//radius of agents (BBox maxs[0] or BBox maxs[1])
-//height of agents (BBox maxs[2] - BBox mins[2])
-//order: granger grangerupg human_base human_bsuit dretch basilisk basiliskupg marauder marauderupg dragoon dragoonupg tyrant
-const short agentRadii[12] = {20, 20, 15, 15, 15, 18, 21, 23, 25, 26, 29, 32};
-const short agentHeight[12] = {40, 40, 56, 76, 30, 36, 42, 36, 40, 55, 66, 92};
+
+
+typedef struct {
+  const char* name;   //appended to filename
+  const short radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
+  const short height; //height of agents (BBox maxs[2] - BBox mins[2])
+} tremClass_t;
+
+const tremClass_t tremClasses[12] = {
+  {
+    "builder",
+    20,
+    40,
+  },
+  { 
+    "builderupg",
+    20,
+    40,
+  },
+  {
+    "human_base",
+    15,
+    56,
+  },
+  {
+    "human_bsuit",
+    15,
+    76,
+  },
+  {
+    "level0",
+    15,
+    30,
+  },
+  {
+    "level1",
+    18,
+    36
+  },
+  { 
+    "level1upg",
+    21,
+    42
+  },
+  {
+    "level2",
+    23,
+    36
+  },
+  {
+    "level2upg",
+    25,
+    40
+  },
+  {
+    "level3",
+    26,
+    55
+  },
+  {
+    "level3upg",
+    26,
+    66
+  },
+  {
+    "level4",
+    32,
+    92
+  }
+};
+
 
 //flag for optional median filter of walkable surfaces
 qboolean median = qfalse;
@@ -93,23 +159,25 @@ static void quake2recast(vec3_t vec) {
   vec[1] = vec[2];
   vec[2] = -temp;
 }
-static void WriteRecastData ( const rcPolyMesh *polyMesh, const rcPolyMeshDetail *detailedPolyMesh, const rcConfig *cfg )
+static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, const rcPolyMeshDetail *detailedPolyMesh, const rcConfig *cfg )
 {
     FILE *file;
     NavMeshHeader_t navHeader;
-
+    char filename[1024];
     StripExtension(source);
-    DefaultExtension(source, ".navMesh");
-    Sys_Printf(" writing %s\n", source);
-    file = fopen(source, "w");
+    strcpy(filename,source);
+    sprintf(filename,"%s-%s",filename,agentname);
+    DefaultExtension(filename, ".navMesh");
+    Sys_Printf(" writing %s\n", filename);
+    file = fopen(filename, "w");
     if(!file) {
-      Error("Error opening %s: %s", source, strerror(errno));
+      Error("Error opening %s: %s", filename, strerror(errno));
     }
     memset(&navHeader,0, sizeof(NavMeshHeader_t));
 
     //print header info
     navHeader.version = 1;
-    Sys_Printf(" file version: %i",navHeader.version);
+    Sys_Printf(" file version: %i\n",navHeader.version);
 
     navHeader.numVerts = polyMesh->nverts;
     Sys_Printf(" numVerts: %i\n", navHeader.numVerts);
@@ -1003,47 +1071,53 @@ extern "C" int NavMain(int argc, char **argv)
     /* get the data into recast */
     LoadGeometry();
 
-    /* configure recast */
-    ConfigureRecast(agentRadii[2] ,agentHeight[2], cellSize,cellHeight,stepSize);
+    for(int i=0;i<12;i++) {
+      Sys_Printf("Making NavMesh for %s\n",tremClasses[i].name);
 
-    /* create recast height field */
-    CreateHeightfield();
+      /* configure recast */
+      ConfigureRecast(tremClasses[i].radius , tremClasses[i].height, cellSize,cellHeight,stepSize);
 
-    /* filter walkable surfaces */
-    FilterSurfaces ();
+      //only need to do this once
+      if(i==0) {
+        /* create recast height field */
+        CreateHeightfield();
+      }
 
-    /* partition walkable surface to simple regions */
-    CreateRegions ();
+      /* filter walkable surfaces */
+      FilterSurfaces ();
 
-    /* create contours */
-    CreateContours();
+      /* partition walkable surface to simple regions */
+      CreateRegions ();
 
-    /* build polygons mesh from contours */
-    BuildMeshFromContours();
+      /* create contours */
+      CreateContours();
 
-    /* Create detail mesh */
-    CreateDetailMesh();
+      /* build polygons mesh from contours */
+      BuildMeshFromContours();
 
-	/* Update poly areas */
-	//UpdatePolyAreas();
+      /* Create detail mesh */
+      CreateDetailMesh();
 
-    /* Update poly flags */
-    UpdatePolyFlags();
+	  /* Update poly areas */
+	  //UpdatePolyAreas();
 
-    /* write navigation data to disk */
-    WriteRecastData( polyMesh, detailedPolyMesh, &cfg );
+      /* Update poly flags */
+      UpdatePolyFlags();
 
+      /* write navigation data to disk */
+      WriteRecastData( tremClasses[i].name, polyMesh, detailedPolyMesh, &cfg );
+
+      
+
+      rcFreeCompactHeightfield (compHeightField);
+      rcFreeContourSet (contours);
+      rcFreePolyMesh (polyMesh);
+      rcFreePolyMeshDetail (detailedPolyMesh);
+    }
     /* clean up */
     Sys_Printf(" cleaning up recast...\n");
-
     rcFreeHeightField (heightField);
-    rcFreeCompactHeightfield (compHeightField);
-    rcFreeContourSet (contours);
-    rcFreePolyMesh (polyMesh);
-    rcFreePolyMeshDetail (detailedPolyMesh);
-
     delete[] verts;
     delete[] tris;
-
     return 0;
 }

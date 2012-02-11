@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 #include "../../../../engine/server/g_api.h"
-
 typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
 
@@ -75,6 +74,164 @@ typedef enum
 #define SP_PODIUM_MODEL "models/mapobjects/podium/podium4.md3"
 
 //============================================================================
+
+typedef enum{  
+  BOT_IDLE,  
+  BOT_ATTACK,  
+  BOT_REPAIR,  
+  BOT_AUTO
+} botCommand_t;
+
+typedef enum {	
+  TRAIT_LEADER = 1,	
+  TRAIT_FOLLOWER = 2,	
+  TRAIT_LONER = 3
+} botTrait_t;
+
+typedef enum {    
+  BOT_MODUS_ATTACK,	
+  BOT_MODUS_DEFEND,	
+  BOT_MODUS_BUILD,	
+  BOT_MODUS_IDLE
+} botModus_t;
+
+typedef enum {	
+  BOT_TASK_FIGHT,	
+  BOT_TASK_BUILD,	
+  BOT_TASK_BUY,	
+  BOT_TASK_GROUP,	
+  BOT_TASK_HEAL,	
+  BOT_TASK_REPAIR,	
+  BOT_TASK_RETREAT,	
+  BOT_TASK_RUSH,	
+  BOT_TASK_ROAM,	
+  BOT_TASK_NONE,
+} botTask_t;
+
+typedef enum {	
+  BOT_TASK_COMPLETE = 2,	
+  BOT_TASK_INPROGRESS = 4,	
+  BOT_TASK_NOTARGET = 8
+} botTaskFlags_t;
+
+typedef struct {	
+  gentity_t *ent;	
+  float distance;
+} botEntityAndDistance_t;
+
+typedef struct {	
+  botEntityAndDistance_t egg;	
+  botEntityAndDistance_t overmind;	
+  botEntityAndDistance_t barricade;	
+  botEntityAndDistance_t acidtube;	
+  botEntityAndDistance_t trapper;	
+  botEntityAndDistance_t booster;	
+  botEntityAndDistance_t hive;	
+  botEntityAndDistance_t telenode;	
+  botEntityAndDistance_t turret;	
+  botEntityAndDistance_t tesla;	
+  botEntityAndDistance_t armoury;	
+  botEntityAndDistance_t dcc;	
+  botEntityAndDistance_t medistation;
+  botEntityAndDistance_t reactor;	
+  botEntityAndDistance_t repeater;
+} botClosestBuildings_t;
+
+typedef struct{  
+  buildable_t type;  
+  vec3_t origin;
+} botBuilding_t;
+
+typedef struct{	
+  botBuilding_t buildings[MAX_BOT_BUILDINGS];    
+  int numBuildings;
+} botBuildLayout_t;
+
+typedef struct{    
+  gentity_t *ent;    
+  vec3_t coord;	
+  qboolean inuse;
+}botTarget_t;
+
+typedef struct{    
+  int level;   
+  float aimSlowness;    
+  float aimShake;
+} botSkill_t;
+
+typedef enum{	
+  STATUS_FAILED	= 0x01,	
+  STATUS_NOPOLYNEARSELF	= 0x02,	
+  STATUS_NOPOLYNEARTARGET =	0x04,
+  STATUS_SUCCEED = 0x08,	
+  STATUS_PARTIAL = 0x10
+} botRouteStatusFlags;
+
+typedef struct{	
+  //user specified command for the bot    
+  botCommand_t command;	
+
+  //when the enemy was last seen    
+  int enemyLastSeen;	
+  int timeFoundEnemy;	
+
+  //team the bot is on when added    
+  team_t botTeam;	
+
+  //item a human bot spawns with (1 == rifle, 2 == ckit)    
+  int spawnItem;   
+
+  //targets    
+  botTarget_t targetNode;    
+  botTarget_t goal;	
+
+  
+  //pathfinding stuff	
+  vec3_t routeToTarget[1000];    
+  int numCorners;	
+  int timeFoundNode;	
+  int timeFoundRoute;	
+  int targetNodeID;   
+  qboolean followingRoute;	
+
+  //skill structure    
+  botSkill_t botSkill;	
+  botModus_t modus;	
+  botTask_t task;	
+  botEntityAndDistance_t bestEnemy;	
+  botEntityAndDistance_t closestDamagedBuilding;	
+  botClosestBuildings_t closestBuildings;
+
+  //tells if we need a new goal	
+  qboolean needNewGoal;	
+
+  //the trait the bot has	
+  botTrait_t trait;	
+
+  //how many bots are in this bot's group	
+  int numGroup;	
+
+  //this bot's leader (NULL if no leader)	
+  gentity_t *leader;	
+
+  //for bot builders	
+  int currentBuilding;	
+  int maxBuildings;
+  botBuildLayout_t layout;
+
+  //navigation classes
+  //not for use outside C++ code
+#ifdef __cplusplus
+  class dtNavMeshQuery* navQuery;
+  class dtQueryFilter*  navFilter;
+  class dtPathCorridor* pathCorridor;
+#else
+  struct dtNavMeshQuery* navQuery;
+  struct dtQueryFilter* navFilter;
+  struct dtPathCorridor* pathCorridor;
+#endif
+
+} botMemory_t;
 
 struct gentity_s
 {

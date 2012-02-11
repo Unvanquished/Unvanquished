@@ -1067,7 +1067,7 @@ qboolean BotSetRoamGoal(gentity_t *self) {
   int result;
   botTarget_t testTarget;
   int numTiles = 0;
-  const dtNavMesh *navMesh = navQuery->getAttachedNavMesh();
+  const dtNavMesh *navMesh = self->botMind->navQuery->getAttachedNavMesh();
   numTiles = navMesh->getMaxTiles();
   const dtMeshTile *tile;
   vec3_t targetPos;
@@ -1780,7 +1780,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
   const char* s = 0;
   gentity_t *bot;
 
-  if(!navQuery) {
+  if(!navMeshLoaded) {
     trap_Print("No Navigation Mesh file is available for this map\n");
     return qfalse;
   }
@@ -1807,6 +1807,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
   bot->botMind->currentBuilding = 0;
   bot->botMind->maxBuildings  = 0;
   bot->botMind->modus = BOT_MODUS_IDLE;
+  bot->botMind->pathCorridor = &pathCorridor[clientNum];
   BotSetSkillLevel(bot, skill);
 
   // register user information
@@ -1836,10 +1837,8 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 }
 
 void G_BotDel( int clientNum ) {
-  gentity_t *bot;
-
-  bot = &g_entities[clientNum];
-  if( !( bot->r.svFlags & SVF_BOT ) && !bot->botMind) {
+  gentity_t *bot = &g_entities[clientNum];
+  if( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind) {
     trap_Print( va("'^7%s^7' is not a bot\n", bot->client->pers.netname) );
     return;
   }
@@ -1847,10 +1846,8 @@ void G_BotDel( int clientNum ) {
 }
 
 void G_BotCmd( gentity_t *master, int clientNum, char *command) {
-  gentity_t *bot;
-
-  bot = &g_entities[clientNum];
-  if( !( bot->r.svFlags & SVF_BOT ) )
+  gentity_t *bot = &g_entities[clientNum];
+  if( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind)
     return;
 
   if( !Q_stricmp( command, "auto" ) )
@@ -1985,7 +1982,8 @@ extern "C" void G_BotSpectatorThink( gentity_t *self ) {
     if( teamnum == TEAM_HUMANS ) {
       self->client->pers.classSelection = PCL_HUMAN;
       self->client->ps.stats[STAT_CLASS] = PCL_HUMAN;
-
+      self->botMind->navQuery = navQuerys[PCL_HUMAN];
+      self->botMind->navFilter = &navFilters[PCL_HUMAN];
       //we want to spawn with rifle unless it is disabled or we need to build
       if(g_bot_rifle.integer && !BotShouldBuild(self))
         self->client->pers.humanItemSelection = WP_MACHINEGUN;
@@ -1996,6 +1994,8 @@ extern "C" void G_BotSpectatorThink( gentity_t *self ) {
     } else if( teamnum == TEAM_ALIENS) {
       self->client->pers.classSelection = PCL_ALIEN_LEVEL0;
       self->client->ps.stats[STAT_CLASS] = PCL_ALIEN_LEVEL0;
+      self->botMind->navQuery = navQuerys[PCL_ALIEN_LEVEL0];
+      self->botMind->navFilter = &navFilters[PCL_ALIEN_LEVEL0];
       G_PushSpawnQueue( &level.alienSpawnQueue, clientNum );
     }
   }

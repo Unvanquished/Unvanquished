@@ -176,6 +176,7 @@ void BotBuy(gentity_t *self, upgrade_t upgrade) {
         VectorCopy( newOrigin, self->client->ps.origin );
         self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
         self->client->pers.classSelection = PCL_HUMAN_BSUIT;
+        self->botMind->navQuery = navQuerys[PCL_HUMAN_BSUIT];
         self->client->ps.eFlags ^= EF_TELEPORT_BIT;
       }
 

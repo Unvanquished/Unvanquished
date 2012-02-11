@@ -25,18 +25,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../../engine/botlib/nav.h"
 #include "../../../../libs/detour/DetourNavMeshBuilder.h"
 
-dtNavMeshQuery* navQuery;
-dtQueryFilter navFilter;
-
 dtPathCorridor pathCorridor[MAX_CLIENTS];
-dtNavMesh *navMesh;
+dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
+dtQueryFilter navFilters[PCL_NUM_CLASSES];
+dtNavMesh *navMeshes[PCL_NUM_CLASSES];
 
+//tells if all navmeshes loaded successfully
+qboolean navMeshLoaded = qfalse;
 /*
 ========================
 Navigation Mesh Loading
 ========================
 */
-qboolean G_NavLoad(dtNavMeshCreateParams *navParams) {
+qboolean G_NavLoad(dtNavMeshCreateParams *navParams, class_t classt) {
   char filename[MAX_QPATH];
   char mapname[MAX_QPATH];
   long len;
@@ -48,8 +49,8 @@ qboolean G_NavLoad(dtNavMeshCreateParams *navParams) {
   char gameName[MAX_STRING_CHARS];
 
   trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
-  trap_Cvar_VariableStringBuffer("fs_game",gameName, sizeof(gameName));
-  Com_sprintf(filename, sizeof(filename), "maps/%s.navMesh", mapname);
+  trap_Cvar_VariableStringBuffer("fs_game", gameName, sizeof(gameName));
+  Com_sprintf(filename, sizeof(filename), "maps/%s-%s.navMesh", mapname, BG_Class(classt)->name);
   Com_Printf(" loading navigation mesh file '%s'...\n", filename);
 
   // load the file
@@ -189,64 +190,70 @@ extern "C" void G_NavMeshInit() {
   unsigned char *navData = NULL;
   int navDataSize = 0;
 
-  if(!G_NavLoad(&navParams)) {
+  for(int i=PCL_NONE+1;i<PCL_NUM_CLASSES;i++) {
+    if(!G_NavLoad(&navParams, (class_t)i)) {
 
-    return;
-  }
-  
-  if ( !dtCreateNavMeshData (&navParams, &navData, &navDataSize) )
-  {
-    Com_Printf ("Could not build Detour Navigation Mesh Data\n");
-    return;
-  }
-
-  navMesh = dtAllocNavMesh();
-
-  if (!navMesh)
-  {
-    dtFree(navData);
-    Com_Printf ("Could not allocate Detour Navigation Mesh\n");
-    return;
-  }
-
-  if (dtStatusFailed(navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA)))
-  {
-    dtFree(navData);
-    Com_Printf ("Could not init Detour Navigation Mesh\n");
-    return;
-  }
-
-  navQuery = dtAllocNavMeshQuery();
-  if(!navQuery) {
-    Com_Printf("Could not allocate Detour Navigation Mesh Query\n");
-    return;
-  }
-  if (dtStatusFailed(navQuery->init(navMesh, 65536)))
-  {
-    Com_Printf("Could not init Detour Navigation Mesh Query");
-    return;
-  }
-
-  navFilter.setIncludeFlags(POLYFLAGS_WALK);
-  navFilter.setExcludeFlags((unsigned short) 0x0);
-  for(int i=0;i<MAX_CLIENTS;i++) {
-    if(!pathCorridor[i].init(MAX_PATH_POLYS)) {
-      Com_Printf("Could not init the path corridor\n");
+      return;
     }
+  
+    if ( !dtCreateNavMeshData (&navParams, &navData, &navDataSize) )
+    {
+      Com_Printf ("Could not build Detour Navigation Mesh Data for class %s\n",BG_Class((class_t)i)->name);
+      return;
+    }
+
+    navMeshes[i] = dtAllocNavMesh();
+
+    if (!navMeshes[i])
+    {
+      dtFree(navData);
+      Com_Printf ("Could not allocate Detour Navigation Mesh for class %s\n",BG_Class((class_t)i)->name);
+      return;
+    }
+
+    if (dtStatusFailed(navMeshes[i]->init(navData, navDataSize, DT_TILE_FREE_DATA)))
+    {
+      dtFree(navData);
+      Com_Printf ("Could not init Detour Navigation Mesh for class %s\n", BG_Class((class_t)i)->name);
+      return;
+    }
+
+    navQuerys[i] = dtAllocNavMeshQuery();
+    if(!navQuerys[i]) {
+      Com_Printf("Could not allocate Detour Navigation Mesh Query for class %s\n",BG_Class((class_t)i)->name);
+      return;
+    }
+    if (dtStatusFailed(navQuerys[i]->init(navMeshes[i], 65536)))
+    {
+      Com_Printf("Could not init Detour Navigation Mesh Query for class %s",BG_Class((class_t)i)->name);
+      return;
+    }
+    navFilters[i].setIncludeFlags(POLYFLAGS_WALK);
+    navFilters[i].setExcludeFlags((unsigned short) 0x0);
   }
+  for(int i=0;i<MAX_CLIENTS;i++) {
+      if(!pathCorridor[i].init(MAX_PATH_POLYS)) {
+        Com_Printf("Could not init the path corridor\n");
+      }
+  }
+  navMeshLoaded = qtrue;
 }
 extern "C" void G_NavMeshCleanup(void) {
-  if(navQuery) {
-    dtFreeNavMeshQuery(navQuery);
-    navQuery = NULL;
-  }
-  if(navMesh) {
-    dtFreeNavMesh(navMesh);
-    navMesh = NULL;
+  for(int i=PCL_NONE+1;i<PCL_NUM_CLASSES;i++) {
+    if(navQuerys[i]) {
+      dtFreeNavMeshQuery(navQuerys[i]);
+      navQuerys[i] = NULL;
+    }
+    if(navMeshes[i]) {
+      dtFreeNavMesh(navMeshes[i]);
+      navMeshes[i] = NULL;
+    }
   }
   for(int i=0;i<MAX_CLIENTS;i++) {
+    pathCorridor[i].~dtPathCorridor();
     pathCorridor[i] = dtPathCorridor();
   }
+  navMeshLoaded = qfalse;
 }
 
 /*
@@ -577,12 +584,12 @@ void FindWaypoints(gentity_t *self) {
   unsigned char cornerFlags[MAX_CORRIDOR_CORNERS];
   dtPolyRef cornerPolys[MAX_CORRIDOR_CORNERS];
   vec3_t tmpVec;
-  if(!pathCorridor[self->client->ps.clientNum].getPathCount()) {
+  if(!self->botMind->pathCorridor->getPathCount()) {
     self->botMind->numCorners = 0;
     return;
   }
   //trap_Print("finding Corners\n");
-  int numCorners = pathCorridor[self->client->ps.clientNum].findCorners(corners, cornerFlags, cornerPolys, MAX_CORRIDOR_CORNERS, navQuery, &navFilter);
+  int numCorners = self->botMind->pathCorridor->findCorners(corners, cornerFlags, cornerPolys, MAX_CORRIDOR_CORNERS,self->botMind->navQuery, self->botMind->navFilter);
   //trap_Print("found Corners\n");
   //copy the points to the vec3_t array, converting each point into quake coordinates too
   for(int i=0;i<numCorners;i++) {
@@ -599,7 +606,7 @@ float Distance2D(vec3_t pos1, vec3_t pos2) {
 }
 void UpdatePathCorridor(gentity_t *self) {
   vec3_t selfPos, targetPos;
-  if(!pathCorridor[self->client->ps.clientNum].getPathCount())
+  if(!self->botMind->pathCorridor->getPathCount())
     return;
   if(BotTargetIsEntity(self->botMind->goal)) {
     PlantEntityOnGround(self->botMind->goal.ent,targetPos);
@@ -610,8 +617,8 @@ void UpdatePathCorridor(gentity_t *self) {
   quake2recast(selfPos);
   quake2recast(targetPos);
 
-  pathCorridor[self->client->ps.clientNum].movePosition(selfPos, navQuery, &navFilter);
-  pathCorridor[self->client->ps.clientNum].moveTargetPosition(targetPos,navQuery, &navFilter);
+  self->botMind->pathCorridor->movePosition(selfPos, self->botMind->navQuery, self->botMind->navFilter);
+  self->botMind->pathCorridor->moveTargetPosition(targetPos,self->botMind->navQuery, self->botMind->navFilter);
 
 
   FindWaypoints(self);
@@ -623,13 +630,13 @@ void UpdatePathCorridor(gentity_t *self) {
   //THIS STILL DOESNT WORK 100% OF THE TIME GRRRRRRR
   if(self->client->time1000 % 500 == 0) {
     if(BotFindNearestPoly(self,&check,pos) && self->client->ps.groundEntityNum != ENTITYNUM_NONE) {
-      if(check != pathCorridor[self->client->ps.clientNum].getFirstPoly())
+      if(check != self->botMind->pathCorridor->getFirstPoly())
         FindRouteToTarget(self, self->botMind->goal);
     }
     if(BotTargetIsPlayer(self->botMind->goal)) {
       if(self->botMind->goal.ent->client->ps.groundEntityNum != ENTITYNUM_NONE) {
         if(BotFindNearestPoly(self->botMind->goal.ent,&check,pos)) {
-          if(check != pathCorridor[self->client->ps.clientNum].getLastPoly())
+          if(check != self->botMind->pathCorridor->getLastPoly())
             FindRouteToTarget(self, self->botMind->goal);
         }
       }
@@ -709,7 +716,7 @@ qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target) {
   //quake2recast(selfPos);
   //quake2recast(targetPos);
 
-  if(!BotNav_Trace(selfPos,targetPos,&hit,hitNormal,pathPolys,&numPolys,MAX_PATH_POLYS))
+  if(!BotNav_Trace(self->botMind->navQuery, self->botMind->navFilter, selfPos,targetPos,&hit,hitNormal,pathPolys,&numPolys,MAX_PATH_POLYS))
     return qfalse;
 
   if(hit == FLT_MAX)
@@ -717,18 +724,18 @@ qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target) {
   else
     return qfalse;
 }
-qboolean BotNav_Trace(vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies) {
+qboolean BotNav_Trace(dtNavMeshQuery* navQuery, dtQueryFilter* navFilter, vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies) {
   vec3_t nearPoint;
   dtPolyRef startRef;
   dtStatus status;
   vec3_t extents = {75,96,75};
   quake2recast(start);
   quake2recast(end);
-  status = navQuery->findNearestPoly(start,extents,&navFilter,&startRef,nearPoint);
+  status = navQuery->findNearestPoly(start,extents,navFilter,&startRef,nearPoint);
   if(dtStatusFailed(status) || startRef == 0) {
     //try larger extents
     extents[2] += 500;
-    status = navQuery->findNearestPoly(start,extents,&navFilter,&startRef,nearPoint);
+    status = navQuery->findNearestPoly(start,extents,navFilter,&startRef,nearPoint);
     if(dtStatusFailed(status) || startRef == 0) {
       *numHit = 0;
       *hit = 0;
@@ -740,7 +747,7 @@ qboolean BotNav_Trace(vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPol
       return qfalse;
     }
   }
-  status = navQuery->raycast(startRef,start,end,&navFilter, hit, normal, pathPolys, numHit, maxPolies);
+  status = navQuery->raycast(startRef,start,end,navFilter, hit, normal, pathPolys, numHit, maxPolies);
   if(dtStatusFailed(status)) {
     return qfalse;
   } else {
@@ -752,18 +759,25 @@ qboolean BotFindNearestPoly(gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearP
   vec3_t start;
   vec3_t viewNormal;
   dtStatus status;
-  if(ent->client)
+  dtNavMeshQuery* navQuery;
+  dtQueryFilter* navFilter;
+  if(ent->client) {
     BG_GetClientNormal(&ent->client->ps,viewNormal);
-  else
+    navQuery = navQuerys[ent->client->ps.stats[STAT_CLASS]];
+    navFilter = &navFilters[ent->client->ps.stats[STAT_CLASS]];
+  } else {
     VectorSet(viewNormal,0,0,1);
+    navQuery = navQuerys[PCL_ALIEN_LEVEL0];
+    navFilter = &navFilters[PCL_ALIEN_LEVEL0];
+  }
   VectorMA(ent->s.origin,ent->r.mins[2],viewNormal,start);
   quake2recast(start);
   BotGetAgentExtents(ent,&extents);
-  status = navQuery->findNearestPoly(start,extents,&navFilter,nearestPoly,nearPoint);
+  status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
   if(dtStatusFailed(status) || *nearestPoly == 0) {
     //try larger extents
     extents[2] += 900;
-    status = navQuery->findNearestPoly(start,extents,&navFilter,nearestPoly,nearPoint);
+    status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
     if(dtStatusFailed(status) || *nearestPoly == 0) {
       return qfalse; // failed
     }
@@ -775,14 +789,16 @@ qboolean BotFindNearestPoly(gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearP
 qboolean BotFindNearestPoly(vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint) {
   vec3_t start,extents;
   dtStatus status;
+  dtNavMeshQuery* navQuery = navQuerys[PCL_ALIEN_LEVEL0];
+  dtQueryFilter* navFilter = &navFilters[PCL_ALIEN_LEVEL0];
   VectorSet(extents,640,96,640);
   VectorCopy(coord, start);
   quake2recast(start);
-  status = navQuery->findNearestPoly(start,extents,&navFilter,nearestPoly,nearPoint);
+  status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
   if(dtStatusFailed(status) || *nearestPoly == 0) {
     //try larger extents
     extents[2] += 900;
-    status = navQuery->findNearestPoly(start,extents,&navFilter,nearestPoly,nearPoint);
+    status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
     if(dtStatusFailed(status) || *nearestPoly == 0) {
       return qfalse; // failed
     }
@@ -809,7 +825,7 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
   if(level.time - self->botMind->timeFoundRoute < 200)
     return STATUS_FAILED;
 
-  if(!navQuery) {
+  if(!self->botMind->navQuery) {
     trap_Print("Cannot query the Navmesh!\n");
     return STATUS_FAILED;
   }
@@ -843,14 +859,14 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
   quake2recast(start);
   quake2recast(end);
   //trap_Print("Finding path\n");
-  status = navQuery->findPath(startRef, endRef, start, end, &navFilter, pathPolys, &pathNumPolys, MAX_PATH_POLYS);
+  status = self->botMind->navQuery->findPath(startRef, endRef, start, end, self->botMind->navFilter, pathPolys, &pathNumPolys, MAX_PATH_POLYS);
 
   if(dtStatusFailed(status)) {
     trap_Print("Could not find path\n");
     return STATUS_FAILED;
   }
-  pathCorridor[self->client->ps.clientNum].reset(startRef, selfPos);
-  pathCorridor[self->client->ps.clientNum].setCorridor(targetPos, pathPolys, pathNumPolys);
+  self->botMind->pathCorridor->reset(startRef, selfPos);
+  self->botMind->pathCorridor->setCorridor(targetPos, pathPolys, pathNumPolys);
 
 #ifdef BOT_DEBUG
   trap_Print(va("Start Position: %s\n",vtos(self->botMind->routeToTarget[0])));
