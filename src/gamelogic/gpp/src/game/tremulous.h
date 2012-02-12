@@ -100,7 +100,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL3_CLAW_K_SCALE         1.0f
 #define LEVEL3_CLAW_U_REPEAT        700 // Whales: Lowered repeat for Adv. Goon. Standard value is 100ms below standard goon, but 650 is a bit fast for my taste.
 #define LEVEL3_CLAW_U_K_SCALE       1.0f
-#define LEVEL3_POUNCE_DMG           ADM(100) // Whales: Not weakened yet, we need to get the armor protection against pounce raised.
+#define LEVEL3_POUNCE_DMG           ADM(75) // Ishq: Reduced damage. Pounce is very powerful as it is.
 #define LEVEL3_POUNCE_RANGE         55.0f // Whales: Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
 #define LEVEL3_POUNCE_UPG_RANGE     LEVEL3_POUNCE_RANGE + 3.0f
 #define LEVEL3_POUNCE_WIDTH         12.0f // Whales: Pounce width narrowed. May scale this down even further.
@@ -109,7 +109,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL3_POUNCE_TIME_MIN      200      // msec before which pounce cancels  
 #define LEVEL3_POUNCE_REPEAT        400      // msec before a new pounce starts
 #define LEVEL3_POUNCE_SPEED_MOD     0.85f    // Whales: Reduced the slowdown from a charged pounce by 0.10
-#define LEVEL3_POUNCE_JUMP_MAG      750      // Whales: Raised by 50, I'm not entirely sure how this one will change pounce though.
+#define LEVEL3_POUNCE_JUMP_MAG      750      // Whales: Raised by 50, 
 #define LEVEL3_POUNCE_JUMP_MAG_UPG  850      // Whales: Raised by 50.
 #define LEVEL3_BOUNCEBALL_DMG       ADM(110)
 #define LEVEL3_BOUNCEBALL_REPEAT    1200
@@ -124,14 +124,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL4_CLAW_REPEAT          800
 #define LEVEL4_CLAW_K_SCALE         1.0f
 
-#define LEVEL4_TRAMPLE_DMG             ADM(111)
+#define LEVEL4_TRAMPLE_DMG             ADM(85) // 111 -> 85
 #define LEVEL4_TRAMPLE_SPEED           2.0f
 #define LEVEL4_TRAMPLE_CHARGE_MIN      375   // minimum msec to start a charge
 #define LEVEL4_TRAMPLE_CHARGE_MAX      1000  // msec to maximum charge stored
 #define LEVEL4_TRAMPLE_CHARGE_TRIGGER  3000  // msec charge starts on its own
 #define LEVEL4_TRAMPLE_DURATION        3000  // msec trample lasts on full charge
 #define LEVEL4_TRAMPLE_STOP_PENALTY    1     // charge lost per msec when stopped
-#define LEVEL4_TRAMPLE_REPEAT          100   // msec before a trample will rehit a player
+#define LEVEL4_TRAMPLE_REPEAT          2000   // msec before a trample will rehit a player
 
 #define LEVEL4_CRUSH_DAMAGE_PER_V      0.5f  // damage per falling velocity
 #define LEVEL4_CRUSH_DAMAGE            120   // to players only
