@@ -4250,8 +4250,12 @@ static int UI_FeederInitialise( int feederID )
   if( feederID == FEEDER_RESOLUTIONS )
   {
     int i;
-    int w = trap_Cvar_VariableValue( "r_customwidth" );
-    int h = trap_Cvar_VariableValue( "r_customheight" );
+    glconfig_t config;
+    int w,h;
+
+    trap_GetGlconfig(&config);
+    w = config.vidWidth;
+    h = config.vidHeight;
 
     for( i = 0; i < uiInfo.numResolutions; i++ )
     {
