@@ -4238,7 +4238,6 @@ static void UI_FeederSelection( int feederID, int index )
     {
       trap_Cvar_Set( "r_customwidth", va( "%d", uiInfo.resolutions[ index ].w ) );
       trap_Cvar_Set( "r_customheight", va( "%d", uiInfo.resolutions[ index ].h ) );
-      trap_Cvar_Set( "r_customaspect", va( "%f", ((float)uiInfo.resolutions[ index ].w / uiInfo.resolutions[index].h)));
       trap_Cvar_Set( "r_mode", "-1");
     }
 
