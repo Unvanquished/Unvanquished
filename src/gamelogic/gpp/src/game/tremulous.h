@@ -99,7 +99,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL3_CLAW_REPEAT          750 // Whales: Lowered repeat
 #define LEVEL3_CLAW_K_SCALE         1.0f
 #define LEVEL3_CLAW_U_REPEAT        700 // Whales: Lowered repeat for Adv. Goon. Standard value is 100ms below standard goon, but 650 is a bit fast for my taste.
-#define LEVEL3_CLAW_U_K_SCALE       1.0f
+#define LEVEL3_CLAW_U_K_SCALE       0.75f
 #define LEVEL3_POUNCE_DMG           ADM(75) // Ishq: Reduced damage. Pounce is very powerful as it is.
 #define LEVEL3_POUNCE_RANGE         55.0f // Whales: Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
 #define LEVEL3_POUNCE_UPG_RANGE     LEVEL3_POUNCE_RANGE + 3.0f
@@ -122,7 +122,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL4_CLAW_WIDTH           14.0f
 #define LEVEL4_CLAW_HEIGHT          20.0f
 #define LEVEL4_CLAW_REPEAT          800
-#define LEVEL4_CLAW_K_SCALE         1.0f
+#define LEVEL4_CLAW_K_SCALE         0.7f
 
 #define LEVEL4_TRAMPLE_DMG             ADM(85) // 111 -> 85
 #define LEVEL4_TRAMPLE_SPEED           2.0f
