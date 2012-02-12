@@ -12,6 +12,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDLmain", "..\libs\libsdl\VisualC\SDLmain\SDLmain.vcxproj", "{DA956FD3-E142-46F2-9DD5-C78BEBB56B7A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "renderer", "renderer\renderer.vcxproj", "{7906CC4F-E230-4049-A3EF-EA7F64E73DDE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{583B8B2E-E56E-4A63-8697-0942C654AC5F} = {583B8B2E-E56E-4A63-8697-0942C654AC5F}
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68} = {81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}
+		{DA956FD3-E142-46F2-9DD5-C78BEBB56B7A} = {DA956FD3-E142-46F2-9DD5-C78BEBB56B7A}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rendererGL3", "rendererGL\rendererGL.vcxproj", "{A78CE356-910C-4C0E-886D-5E3F09F40082}"
 EndProject
@@ -23,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ET Game Logic", "ET Game Lo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library Files", "Library Files", "{19015845-C78A-430B-BD2A-E864DC1C285A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWMap", "..\tools\owmap\OWMap.vcxproj", "{A596DC61-F285-264E-AF49-24D6360F25B0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DaemonMap", "..\tools\owmap\OWMap.vcxproj", "{A596DC61-F285-264E-AF49-24D6360F25B0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{DA3FC87A-518B-46BC-8C5F-591FA52C6D5D}"
 	ProjectSection(SolutionItems) = preProject
@@ -42,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tremulous GPP Game Logic", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game Logic", "Game Logic", "{8167C31B-DFE2-46EB-AC47-AF725E19BBE9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWMaster", "..\tools\owmaster\owmaster.vcxproj", "{49F16AE1-8677-4ECE-A882-DC6BBC73C44E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DaemonMaster", "..\tools\owmaster\owmaster.vcxproj", "{49F16AE1-8677-4ECE-A882-DC6BBC73C44E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "snd_openal", "snd_openal\snd_openal.vcxproj", "{26EFB790-E3D6-436F-A7FC-36B9A00240D1}"
 EndProject
