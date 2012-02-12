@@ -4099,8 +4099,8 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
       return resolution;
     }
 
-    w = (int)trap_Cvar_VariableValue( "r_width" );
-    h = (int)trap_Cvar_VariableValue( "r_height" );
+    w = (int)trap_Cvar_VariableValue( "r_customwidth" );
+    h = (int)trap_Cvar_VariableValue( "r_customheight" );
     Com_sprintf( resolution, sizeof( resolution ), "Custom (%dx%d)", w, h );
 
     return resolution;
@@ -4236,8 +4236,10 @@ static void UI_FeederSelection( int feederID, int index )
   {
     if( index >= 0 && index < uiInfo.numResolutions )
     {
-      trap_Cvar_Set( "r_width", va( "%d", uiInfo.resolutions[ index ].w ) );
-      trap_Cvar_Set( "r_height", va( "%d", uiInfo.resolutions[ index ].h ) );
+      trap_Cvar_Set( "r_customwidth", va( "%d", uiInfo.resolutions[ index ].w ) );
+      trap_Cvar_Set( "r_customheight", va( "%d", uiInfo.resolutions[ index ].h ) );
+      trap_Cvar_Set( "r_customaspect", va( "%f", ((float)uiInfo.resolutions[ index ].w / uiInfo.resolutions[index].h)));
+      trap_Cvar_Set( "r_mode", "-1");
     }
 
     uiInfo.resolutionIndex = index;
@@ -4249,8 +4251,8 @@ static int UI_FeederInitialise( int feederID )
   if( feederID == FEEDER_RESOLUTIONS )
   {
     int i;
-    int w = trap_Cvar_VariableValue( "r_width" );
-    int h = trap_Cvar_VariableValue( "r_height" );
+    int w = trap_Cvar_VariableValue( "r_customwidth" );
+    int h = trap_Cvar_VariableValue( "r_customheight" );
 
     for( i = 0; i < uiInfo.numResolutions; i++ )
     {
