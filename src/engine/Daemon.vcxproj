@@ -406,7 +406,7 @@
     </Midl>
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H;USE_OPENSSL;USE_CODEC_VORBIS;USE_VOIP;USE_OPENAL;USE_OPENAL_DLOPEN;USE_CIN_THEORA;USE_MUMBLE;USE_INCREASED_ENTITIES;ZLIB_WINAPI;USE_BASS;USE_REFENTITY_ANIMATIONSYSTEM;USE_PHYSICS;USE_CRYPTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H;USE_OPENSSL;USE_CODEC_VORBIS;USE_VOIP;USE_OPENAL;USE_OPENAL_DLOPEN;USE_CIN_THEORA;USE_MUMBLE;USE_INCREASED_ENTITIES;ZLIB_WINAPI;USE_BASS;USE_REFENTITY_ANIMATIONSYSTEM;USE_CRYPTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -481,7 +481,7 @@
     </Midl>
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;AMD64;WIN64;__WIN64__;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;USE_CODEC_VORBIS;USE_OPENAL;USE_OPENAL_DLOPEN;USE_LOCAL_HEADERS;USE_CIN_THEORA;HAVE_CONFIG_H;USE_VOIP;USE_MUMBLE;USE_BASS;USE_PHYSICS;USE_OPENSSL;USE_CRYPTO;USE_PHYSICS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;AMD64;WIN64;__WIN64__;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;USE_CODEC_VORBIS;USE_OPENAL;USE_OPENAL_DLOPEN;USE_LOCAL_HEADERS;USE_CIN_THEORA;HAVE_CONFIG_H;USE_VOIP;USE_MUMBLE;USE_BASS;USE_OPENSSL;USE_CRYPTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
