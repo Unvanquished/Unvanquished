@@ -425,10 +425,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define CHAINGUN_PRICE              400
 #define CHAINGUN_BULLETS            300
-#define CHAINGUN_REPEAT             80
+#define CHAINGUN_REPEAT             88 // Ishq: 80 -> 88
 #define CHAINGUN_K_SCALE            1.0f
 #define CHAINGUN_SPREAD             900
-#define CHAINGUN_DMG                HDM(5) // Ishq: Damage 6->5
+#define CHAINGUN_DMG                HDM(6)
 
 #define FLAMER_PRICE                450 // Ishq: 400->400
 #define FLAMER_GAS                  175 // Ishq: 200->175
