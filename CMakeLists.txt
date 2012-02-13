@@ -43,6 +43,7 @@ endif()
 option( USE_CURL             "Use curl"                                1 )
 if( USE_CURL )
   option( USE_CURL_DLOPEN    "Use dlopen to load curl"                 1 )
+option( USE_LLVM    "Use LLVM"                                         0 ) 
 endif()
 if( WIN32 )
   option( USE_SYSTEM_HEADERS "Use local headers"                       0 )
@@ -395,6 +396,11 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/vm_x86.c
   ${MOUNT_DIR}/engine/qcommon/vm_interpreted.c
 )
+
+if( USE_LLVM )
+  set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
+  add_definitions( -DUSE_LLVM )
+endif( )
 
 if( USE_PHYSICS )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/cm_physics.cpp )
