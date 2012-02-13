@@ -786,6 +786,7 @@ set( CGAMEGPP
  ${MOUNT_DIR}/engine/qcommon/q_math.c
  ${MOUNT_DIR}/engine/qcommon/q_shared.c
  ${GPP_DIR}/src/cgame/cg_api.c
+#   ${GPP_DIR}/src/cgame/cg_nav.c
 )
 
 set( GAMEGPP
@@ -819,6 +820,10 @@ set( GAMEGPP
  ${MOUNT_DIR}/engine/qcommon/q_math.c
  ${MOUNT_DIR}/engine/qcommon/q_shared.c
  ${GPP_DIR}/src/game/g_api.c
+ ${GPP_DIR}/src/game/g_bot.cpp
+ ${GPP_DIR}/src/game/g_alienbot.cpp
+ ${GPP_DIR}/src/game/g_humanbot.cpp
+ ${GPP_DIR}/src/game/g_nav.cpp
 )
 
 set( UIGPP
@@ -1033,6 +1038,33 @@ set( OWMAPLIST
   ${MOUNT_DIR}/tools/owmap/vis.c
   ${MOUNT_DIR}/tools/owmap/visflow.c
 )
+
+set( DETOURLIST
+  ${MOUNT_DIR}/libs/detour/DetourAlloc.cpp
+  ${MOUNT_DIR}/libs/detour/DetourCommon.cpp
+#   ${MOUNT_DIR}/libs/detour/DetourLocalBoundary.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshBuilder.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMesh.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshQuery.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNode.cpp
+#   ${MOUNT_DIR}/libs/detour/DetourObstacleAvoidance.cpp
+  ${MOUNT_DIR}/libs/detour/DetourPathCorridor.cpp
+#   ${MOUNT_DIR}/libs/detour/DetourProximityGrid.cpp
+)
+
+set( RECASTLIST
+  ${MOUNT_DIR}/libs/recast/RecastAlloc.cpp
+  ${MOUNT_DIR}/libs/recast/RecastArea.cpp
+  ${MOUNT_DIR}/libs/recast/RecastContour.cpp
+  ${MOUNT_DIR}/libs/recast/Recast.cpp
+  ${MOUNT_DIR}/libs/recast/RecastFilter.cpp
+  ${MOUNT_DIR}/libs/recast/RecastLayers.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMesh.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMeshDetail.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRasterization.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRegion.cpp
+)
+
 
 
 ####################
