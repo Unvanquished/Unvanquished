@@ -1661,7 +1661,8 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
       if(BotGetTeam(self) == TEAM_HUMANS) {
 
         //dont back away unless skill > 3 + distance logic
-        if(self->botMind->botSkill.level > 3 && DistanceToGoalSquared(self) < Square(300) && (DistanceToGoalSquared(self) > Square(100) || self->botMind->botSkill.level < 5)
+        if(self->botMind->botSkill.level >= 3 && DistanceToGoalSquared(self) < Square(300) 
+          && (DistanceToGoalSquared(self) > Square(100) || self->botMind->botSkill.level < 5)
           && self->client->ps.weapon != WP_PAIN_SAW)
         {
           botCmdBuffer->forwardmove = -127; //max backward speed
@@ -1669,6 +1670,16 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
           //we will be moving toward enemy, strafe too
           //the result: we go around the enemy
           botCmdBuffer->rightmove = BotGetStrafeDirection();
+
+          //also try to dodge if high enough level
+          //all the conditions are there so we dont stop moving forward when we cant dodge anyway
+          if(self->client->ps.weapon != WP_PAIN_SAW && self->botMind->botSkill.level >= 7 
+            && self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE
+            && !(self->client->ps.pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ))
+            && self->client->ps.groundEntityNum != ENTITYNUM_NONE) {  
+            botCmdBuffer->buttons |= WBUTTON_PRONE;
+            botCmdBuffer->forwardmove = 0;
+          }
         }
 
         //humans should not move if they are targeting, and can hit, a building
@@ -1679,15 +1690,16 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
           botCmdBuffer->upmove = 0;
         }
 
+
         if(self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL && self->botMind->botSkill.level >= 5) {
           botCmdBuffer->buttons |= BUTTON_SPRINT;
         } else {
           //dont sprint or dodge, we are about to slow
           botCmdBuffer->buttons &= ~BUTTON_SPRINT;
-          botCmdBuffer->buttons &= ~BUTTON_DODGE;
+          botCmdBuffer->buttons &= ~WBUTTON_PRONE;
         }
       } else if(BotGetTeam(self) == TEAM_ALIENS) {
-        BotClassMovement(self, botCmdBuffer); //aliens are dumber :'(
+        BotClassMovement(self, botCmdBuffer); //FIXME: aliens are so much dumber :'(
         // enable wallwalk for classes that can wallwalk
         if( BG_ClassHasAbility( (class_t) self->client->ps.stats[STAT_CLASS], SCA_WALLCLIMBER ) )
           botCmdBuffer->upmove = -1;

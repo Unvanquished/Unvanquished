@@ -442,7 +442,7 @@ qboolean BotFindSteerTarget(gentity_t *self, vec3_t aimPos) {
   return qfalse;
 }
 qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec, usercmd_t *botCmdBuffer) {
-  if(!self->client)
+  if(!(self && self->client))
     return qfalse;
   if(BotGetTeam(self) == TEAM_NONE)
     return qfalse;
@@ -469,14 +469,6 @@ qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec, usercmd_t *botCmdBuffer
           botCmdBuffer->rightmove = BotGetStrafeDirection();
           botCmdBuffer->forwardmove = -127; //backup
         }
-        //use dodge when against enemy
-        //FIXME: Doesnt seem to work?
-        //TODO: Refactor....
-        //if(BotGetTeam(self) == TEAM_HUMANS && BotGetTeam(blocker) == TEAM_ALIENS && self->botMind->botSkill.level > 7 && 
-         // self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE) {
-         //   botCmdBuffer->buttons |= BUTTON_DODGE;
-         //   botCmdBuffer->forwardmove = 0;
-        //}
       }
     }
   }
