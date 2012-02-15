@@ -529,8 +529,8 @@ void BotSteer(gentity_t *self, vec3_t target) {
   vec3_t selfPos;
   VectorCopy(self->s.origin,selfPos);
   selfPos[2] += self->r.mins[2];
-  VectorCopy(self->botMind->routeToTarget[ip0],p0);
-  VectorCopy(self->botMind->routeToTarget[ip1],p1);
+  VectorCopy(self->botMind->route[ip0],p0);
+  VectorCopy(self->botMind->route[ip1],p1);
   vec3_t dir0,dir1;
   VectorSubtract(p0,selfPos,dir0);
   VectorSubtract(p1,selfPos,dir1);
@@ -580,23 +580,23 @@ Global Bot Navigation
 */
 
 void FindWaypoints(gentity_t *self) {
-  float corners[MAX_CORRIDOR_CORNERS * 3];
-  unsigned char cornerFlags[MAX_CORRIDOR_CORNERS];
-  dtPolyRef cornerPolys[MAX_CORRIDOR_CORNERS];
-  vec3_t tmpVec;
+  float corners[MAX_ROUTE_NODES*3];
+  unsigned char cornerFlags[MAX_ROUTE_NODES];
+  dtPolyRef cornerPolys[MAX_ROUTE_NODES];
+
   if(!self->botMind->pathCorridor->getPathCount()) {
     self->botMind->numCorners = 0;
     return;
   }
+
   //trap_Print("finding Corners\n");
-  int numCorners = self->botMind->pathCorridor->findCorners(corners, cornerFlags, cornerPolys, MAX_CORRIDOR_CORNERS,self->botMind->navQuery, self->botMind->navFilter);
+  int numCorners = self->botMind->pathCorridor->findCorners(corners, cornerFlags, cornerPolys, MAX_ROUTE_NODES,self->botMind->navQuery, self->botMind->navFilter);
   //trap_Print("found Corners\n");
   //copy the points to the vec3_t array, converting each point into quake coordinates too
-  for(int i=0;i<numCorners;i++) {
-    float *vert = &corners[3*i];//VectorSet(tmpVecQ,corners[3*i],corners[3*i+1],corners[3*i+2]);
-    VectorCopy(vert,tmpVec);
-    recast2quake(tmpVec);
-    VectorCopy(tmpVec,self->botMind->routeToTarget[i]);
+  for(int i=0;i<numCorners*3;i+=3) {
+    float *vert = &corners[i];
+    recast2quake(vert);
+    VectorCopy(vert,self->botMind->route[i]);
   }
 
   self->botMind->numCorners = numCorners;
@@ -622,7 +622,6 @@ void UpdatePathCorridor(gentity_t *self) {
 
 
   FindWaypoints(self);
-  self->botMind->targetNodeID = 0;
   dtPolyRef check;
   vec3_t pos;
 
@@ -642,20 +641,6 @@ void UpdatePathCorridor(gentity_t *self) {
       }
     }
   }
-
-  //GRRRRRRRRRR
-  //Keep messing with replan detection....
-  //botTarget_t temp;
-  //BotSetTarget(&temp, NULL, &self->botMind->routeToTarget[self->botMind->targetNodeID]);
-  //if(!BotPathIsWalkable(self, temp)) //this wont work if there is a navmesh below our path we are tracing! I.E 2 or more floors in a building!
-    //FindRouteToTarget(self,self->botMind->goal);
-
-  //if(pathCorridor[self->client->ps.clientNum].getFirstPoly() == 0 || pathCorridor[self->client->ps.clientNum].getLastPoly() == 0 || !BotPathIsWalkable(self, temp))
-   // FindRouteToTarget(self, self->botMind->goal);
-  //the path has become invalid so find a new one
-  /*if(pathCorridor[self->client->ps.clientNum].getLastPoly() != targetRef || pathCorridor[self->client->ps.clientNum].getFirstPoly() != selfRef) {
-  FindRouteToTarget(self, self->botMind->goal);
-  }*/
 }
 qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer ) {
   botTarget_t target;
@@ -666,7 +651,7 @@ qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer ) {
   UpdatePathCorridor(self);
 
   if(self->botMind->numCorners > 0) {
-    BotSetTarget(&target,NULL, &self->botMind->routeToTarget[self->botMind->targetNodeID]);
+    BotSetTarget(&target,NULL, &self->botMind->route[0]);
     BotGoto( self, target, botCmdBuffer );
     return qfalse;
   }
@@ -868,12 +853,6 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
   self->botMind->pathCorridor->reset(startRef, selfPos);
   self->botMind->pathCorridor->setCorridor(targetPos, pathPolys, pathNumPolys);
 
-#ifdef BOT_DEBUG
-  trap_Print(va("Start Position: %s\n",vtos(self->botMind->routeToTarget[0])));
-  trap_Print(va("Position2: %s\n",vtos(self->botMind->routeToTarget[1])));
-  trap_Print(va("My Position: %s\n",vtos(self->s.pos.trBase)));
-  trap_Print(va("Target Position: %s\n",vtos(targetPosQ)));
-#endif
   FindWaypoints(self);
   if(status & DT_PARTIAL_RESULT)
     return STATUS_SUCCEED | STATUS_PARTIAL;

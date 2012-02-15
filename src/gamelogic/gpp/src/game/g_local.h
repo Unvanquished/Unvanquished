@@ -167,6 +167,8 @@ typedef enum{
   STATUS_PARTIAL = 0x10
 } botRouteStatusFlags;
 
+#define MAX_ROUTE_NODES 5
+
 typedef struct{	
   //user specified command for the bot    
   botCommand_t command;	
@@ -181,17 +183,15 @@ typedef struct{
   //item a human bot spawns with (1 == rifle, 2 == ckit)    
   int spawnItem;   
 
-  //targets    
-  botTarget_t targetNode;    
+  //targets      
   botTarget_t goal;	
 
   
   //pathfinding stuff	
-  vec3_t routeToTarget[1000];    
+  vec3_t route[MAX_ROUTE_NODES];    
   int numCorners;	
   int timeFoundNode;	
-  int timeFoundRoute;	
-  int targetNodeID;   
+  int timeFoundRoute;	   
   qboolean followingRoute;	
 
   //skill structure    

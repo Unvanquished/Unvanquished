@@ -700,7 +700,7 @@ void BotGetIdealAimLocation(gentity_t *self, botTarget_t target, vec3_t aimLocat
     }
   } else { 
     //get rid of 'bobing' motion when aiming at waypoints by making the aimlocation the same height above ground as our viewheight
-    VectorCopy(self->botMind->routeToTarget[0],aimLocation);
+    VectorCopy(self->botMind->route[0],aimLocation);
     VectorCopy(BG_ClassConfig((class_t) self->client->ps.stats[STAT_CLASS])->mins,mins);
     aimLocation[2] +=  self->client->ps.viewheight - mins[2] - 8;
   }
