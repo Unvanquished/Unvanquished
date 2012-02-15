@@ -110,8 +110,6 @@ fixedWinding_t *AllocStackWinding(pstack_t * stack)
 	}
 
 	Error("AllocStackWinding: failed");
-
-	return NULL;
 }
 
 void FreeStackWinding(fixedWinding_t * w, pstack_t * stack)

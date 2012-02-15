@@ -2156,7 +2156,7 @@ subdivides a patch into an approximate curve and filters it into the tree
 
 static int FilterPatchIntoTree(mapDrawSurface_t * ds, tree_t * tree)
 {
-	int             x, y, refs;
+	int             x, y, refs = 0;
 
 	for(y = 0; y + 2 < ds->patchHeight; y += 2)
 		for(x = 0; x + 2 < ds->patchWidth; x += 2)

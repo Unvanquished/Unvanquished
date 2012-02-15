@@ -71,7 +71,7 @@ chops a mesh by a plane
 
 void SplitMeshByPlane(mesh_t * in, vec3_t normal, float dist, mesh_t ** front, mesh_t ** back)
 {
-	int             w, h, split;
+	int             w, h, split = -1;
 	float           d[MAX_PATCH_SIZE][MAX_PATCH_SIZE];
 	bspDrawVert_t  *dv, *v1, *v2;
 	int             c_front, c_back, c_on;

@@ -118,8 +118,10 @@ void LeakFile(tree_t * tree)
 			}
 		}
 		node = nextnode;
-		WindingCenter(nextportal->winding, mid);
-		fprintf(linefile, "%f %f %f\n", mid[0], mid[1], mid[2]);
+        if(nextportal) {
+		  WindingCenter(nextportal->winding, mid);
+		  fprintf(linefile, "%f %f %f\n", mid[0], mid[1], mid[2]);
+        }
 #if defined(USE_XML)
 		point = xml_NodeForVec(mid);
 		xmlAddChild(xml_node, point);

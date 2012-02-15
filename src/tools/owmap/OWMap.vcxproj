@@ -223,6 +223,7 @@
     <ClInclude Include="..\common\unzip.h" />
     <ClInclude Include="..\common\vfs.h" />
     <ClInclude Include="game_openwolf.h" />
+    <ClInclude Include="game_tremulous.h" />
     <ClInclude Include="q3map2.h" />
     <ClInclude Include="..\..\libs\picomodel\picointernal.h" />
     <ClInclude Include="..\..\libs\picomodel\picomodel.h" />
@@ -232,7 +233,9 @@
   <ItemGroup>
     <ClCompile Include="..\common\cmdlib.c">
     </ClCompile>
-    <ClCompile Include="..\common\ddslib.c" />
+    <ClCompile Include="..\common\ddslib.c">
+	 <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
+	</ClCompile>
     <ClCompile Include="..\common\imagelib.c">
     </ClCompile>
     <ClCompile Include="..\common\inout.c">
