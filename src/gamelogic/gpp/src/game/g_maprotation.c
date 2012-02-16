@@ -109,6 +109,7 @@ typedef struct mapRotations_s
 
 static mapRotations_t mapRotations;
 
+static int G_CurrentNodeIndex( int rotation );
 static int G_NodeIndexAfter( int currentNode, int rotation );
 
 /*
@@ -692,6 +693,68 @@ void G_PrintRotations( void )
 
 /*
 ===============
+G_PrintCurrentRotation
+ 
+Print the current rotation to an entity
+===============
+*/
+void G_PrintCurrentRotation( gentity_t *ent, const char *command )
+{
+  int            mapRotationIndex = g_currentMapRotation.integer;
+  mapRotation_t *mapRotation      = G_MapRotationActive() ? &mapRotations.rotations[ mapRotationIndex ] : NULL;
+  int            i                = 0;
+  char           currentMapName[ MAX_QPATH ];
+  node_t        *node;
+
+  if( mapRotation == NULL )
+  {
+    trap_SendServerCommand( ent - g_entities, va( "print \"^3%s^3: ^7there is no active map rotation on this server\n\"", command ) );
+    return;
+  }
+
+  if( mapRotation->numNodes == 0 )
+  {
+    trap_SendServerCommand( ent - g_entities, va( "print \"^3%s^3: ^7there are no maps in the active map rotation\n\"", command ) );
+    return;
+  }
+
+  trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
+
+  ADMBP_begin();
+  ADMBP( va( "%s:\n", mapRotation->name ) );
+
+  while( node = mapRotation->nodes[ i++ ] )
+  {
+    int   colour = 7;
+    char *extra  = "";
+
+    if( !G_MapExists( node->u.map.name ) )
+    {
+      colour = 1;
+    }
+    else if( G_NodeIndexAfter( i - 1, mapRotationIndex ) == G_CurrentNodeIndex( mapRotationIndex ) )
+    {
+      colour = 3;
+
+      if( Q_stricmp( node->u.map.name, currentMapName ) )
+      {
+        extra = va( " (%s)", currentMapName );
+      }
+    }
+
+    ADMBP( va( " ^%i%3i %s%s\n", colour, i, node->u.map.name, extra ) );
+  }
+
+  if( G_MapExists( g_nextMap.string ) )
+  {
+    ADMBP( va( "^7The next map has been set to %s\n", g_nextMap.string ) );
+  }
+
+  ADMBP_end();
+}
+
+/*
+===============
 G_ClearRotationStack
 
 Clear the rotation stack
@@ -1059,7 +1122,8 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
         {
           G_SetCurrentNodeByIndex(
             G_NodeIndexAfter( nodeIndex, rotation ), rotation );
-          G_IssueMapChange( nodeIndex, rotation );
+          if( !G_MapExists( g_nextMap.string ) )
+            G_IssueMapChange( nodeIndex, rotation );
           return qfalse;
         }
 
