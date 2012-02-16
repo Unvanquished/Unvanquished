@@ -45,8 +45,8 @@ Maryland 20850 USA.
 #include "../client/cg_api.h"
 
 #ifdef USE_VOIP
-#include "speex/speex.h"
-#include "speex/speex_preprocess.h"
+#include <speex/speex.h>
+#include <speex/speex_preprocess.h>
 #endif
 
 // Dushan - create CL_GUID
