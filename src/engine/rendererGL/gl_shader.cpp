@@ -883,7 +883,7 @@ void GLShader::CompileAndLinkGPUShaderProgram(	shaderProgram_t * program,
 	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + fragmentShaderText;
 
 	CompileGPUShader(program->program, programName, vertexShaderTextWithMacros.c_str(), strlen( vertexShaderTextWithMacros.c_str() ), GL_VERTEX_SHADER_ARB);
-	CompileGPUShader(program->program, programName, fragmentShaderTextWithMacros.c_str(), strlen( vertexShaderTextWithMacros.c_str() ), GL_FRAGMENT_SHADER_ARB);
+	CompileGPUShader(program->program, programName, fragmentShaderTextWithMacros.c_str(), strlen( fragmentShaderTextWithMacros.c_str() ), GL_FRAGMENT_SHADER_ARB);
 
 	BindAttribLocations(program->program); //, _vertexAttribsRequired | _vertexAttribsOptional);
 	LinkProgram(program->program);
