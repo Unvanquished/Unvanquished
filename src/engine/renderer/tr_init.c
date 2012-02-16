@@ -1371,11 +1371,7 @@ void R_Init(void)
 
 	R_InitFreeType();
 
-	err = glGetError();
-	if(err != GL_NO_ERROR)
-	{
-		ri.Printf(PRINT_ALL, "glGetError() = 0x%x\n", err);
-	}
+	GL_CheckErrors();
 
 	ri.Printf(PRINT_ALL, "----- finished R_Init -----\n");
 }

@@ -2045,12 +2045,7 @@ void R_Init(void)
 		glGenQueriesARB(MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects);
 	}
 
-	err = glGetError();
-	if(err != GL_NO_ERROR)
-	{
-		ri.Error(ERR_FATAL, "R_Init() - glGetError() failed = 0x%x\n", err);
-		//ri.Printf(PRINT_ALL, "glGetError() = 0x%x\n", err);
-	}
+	GL_CheckErrors();
 
 	ri.Printf(PRINT_ALL, "----- finished R_Init -----\n");
 }
