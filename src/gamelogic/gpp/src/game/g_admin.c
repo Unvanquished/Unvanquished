@@ -975,6 +975,25 @@ qboolean G_admin_cmd_check( gentity_t *ent )
 
   if( ( c = G_admin_command( command ) ) )
   {
+
+      int j;
+      trap_Cvar_Register( NULL, "arg_all", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+      trap_Cvar_Set( "arg_all", ConcatArgs( 1 ) );
+      trap_Cvar_Register( NULL, "arg_count", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+      trap_Cvar_Set( "arg_count", va( "%i", trap_Argc() - ( 1 ) ) );
+      trap_Cvar_Register( NULL, "arg_client", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+      trap_Cvar_Set( "arg_client", ( ent ) ? ent->client->pers.netname : "console" );
+      for (j = trap_Argc() - ( 1 ); j; j--)
+      {
+        char this_arg[ MAX_CVAR_VALUE_STRING ];
+        trap_Cvar_Register( NULL, va( "arg_%i", j ), "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+        trap_Argv( j, this_arg, sizeof( this_arg ) );
+        trap_Cvar_Set( va( "arg_%i", j ), this_arg );
+
+      }
+
+
+
     admin_log( ConcatArgsPrintable( 1 ) );
     if( ( success = G_admin_permission( ent, c->flag ) ) )
     {
