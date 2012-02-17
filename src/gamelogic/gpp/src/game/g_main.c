@@ -1646,23 +1646,12 @@ void ExitLevel( void )
   int       i;
   gclient_t *cl;
 
-  if( G_MapExists( g_nextMap.string ) )
-  {
+  if ( G_MapExists( g_nextMap.string ) )
     trap_SendConsoleCommand( EXEC_APPEND, va("map \"%s\"\n", g_nextMap.string ) );
-
-    if( G_MapRotationActive( ) )
-    {
-      G_AdvanceMapRotation( 0 );
-    }
-  }
   else if( G_MapRotationActive( ) )
-  {
     G_AdvanceMapRotation( 0 );
-  }
   else
-  {
     trap_SendConsoleCommand( EXEC_APPEND, "map_restart\n" );
-  }
 
   trap_Cvar_Set( "g_nextMap", "" );
 
