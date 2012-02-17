@@ -1253,7 +1253,7 @@ Test if any map rotation is currently active
 */
 qboolean G_MapRotationActive( void )
 {
-  return ( g_currentMapRotation.integer != NOT_ROTATING );
+  return ( g_currentMapRotation.integer > NOT_ROTATING && g_currentMapRotation.integer <= MAX_MAP_ROTATIONS );
 }
 
 /*
