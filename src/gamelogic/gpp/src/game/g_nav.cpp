@@ -584,9 +584,9 @@ void FindWaypoints(gentity_t *self) {
   //trap_Print("finding Corners\n");
   int numCorners = self->botMind->pathCorridor->findCorners(corners, cornerFlags, cornerPolys, MAX_ROUTE_NODES,self->botMind->navQuery, self->botMind->navFilter);
   //trap_Print("found Corners\n");
-  //copy the points to the vec3_t array, converting each point into quake coordinates too
-  for(int i=0;i<numCorners*3;i+=3) {
-    float *vert = &corners[i];
+  //copy the points to the route array, converting each point into quake coordinates too
+  for(int i=0;i<numCorners;i++) {
+    float *vert = &corners[i*3];
     recast2quake(vert);
     VectorCopy(vert,self->botMind->route[i]);
   }
@@ -786,11 +786,9 @@ qboolean BotFindNearestPoly(vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoi
 
 int FindRouteToTarget( gentity_t *self, botTarget_t target) {
   vec3_t selfPos;
+  vec3_t targetPos;
   vec3_t start;
   vec3_t end;
-  vec3_t targetPos;
-  vec3_t targetPosQ;
-  //vec3_t selfExtents, targetExtents;
   dtPolyRef startRef, endRef = 1;
   dtPolyRef pathPolys[MAX_PATH_POLYS];
   dtStatus status;
@@ -810,13 +808,10 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
   self->botMind->timeFoundRoute = level.time;
 
   if(BotTargetIsEntity(target)) {
-    PlantEntityOnGround(target.ent,targetPosQ);
+    PlantEntityOnGround(target.ent,targetPos);
   } else {
-    BotGetTargetPos(target,targetPosQ);
+    BotGetTargetPos(target,targetPos);
   }
-  quake2recast(selfPos);
-  quake2recast(targetPos);
-  self->botMind->numCorners = 0;
 
   if(!BotFindNearestPoly(self, &startRef, start)) {
     trap_Print("Failed to find a polygon near the bot\n");
@@ -826,13 +821,17 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
   if(BotTargetIsEntity(target)) {
     result = BotFindNearestPoly(target.ent,&endRef,end);
   } else {
-    result = BotFindNearestPoly(targetPosQ,&endRef,end);
+    result = BotFindNearestPoly(targetPos,&endRef,end);
   }
 
   if(!result) {
     trap_Print("Failed to find a polygon near the target\n");
     return STATUS_FAILED | STATUS_NOPOLYNEARTARGET;
   }
+  quake2recast(selfPos);
+  quake2recast(targetPos);
+  self->botMind->numCorners = 0;
+
   quake2recast(start);
   quake2recast(end);
   //trap_Print("Finding path\n");
