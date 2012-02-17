@@ -753,17 +753,18 @@ void BotAimAtLocation( gentity_t *self, vec3_t target, usercmd_t *rAngles)
   rAngles->angles[2] = aimAngles[2];
 }
 
-void BotSlowAim( gentity_t *self, vec3_t target, float slow) {
+void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount) {
   vec3_t viewBase;
   vec3_t aimVec, forward;
   vec3_t skilledVec;
   float length;
   float slowness;
+  float slow;
 
   if( !(self && self->client) )
     return;
   //clamp to 0-1
-  slow = Com_Clamp(0.1f,1.0,slow);
+  slow = Com_Clamp(0.1f,1.0,slowAmount);
 
   //get the point that the bot is aiming from
   BG_GetClientViewOrigin(&self->client->ps,viewBase);
@@ -1618,7 +1619,9 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
     return qtrue;
   }
   //enemy has died so signal that the goal is unusable
-  if(self->botMind->goal.ent->health <= 0 || (BotTargetIsPlayer(self->botMind->goal) && self->botMind->goal.ent->client->ps.pm_type == PM_DEAD)) {
+  if(self->botMind->goal.ent->health <= 0 || 
+    (BotTargetIsPlayer(self->botMind->goal) && self->botMind->goal.ent->client->ps.pm_type == PM_DEAD)) 
+  {
     self->botMind->needNewGoal = qtrue;
     return qtrue;
   }
@@ -1676,7 +1679,8 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
           if(self->client->ps.weapon != WP_PAIN_SAW && self->botMind->botSkill.level >= 7 
             && self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE
             && !(self->client->ps.pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ))
-            && self->client->ps.groundEntityNum != ENTITYNUM_NONE) {  
+            && self->client->ps.groundEntityNum != ENTITYNUM_NONE) 
+          {  
             botCmdBuffer->buttons |= WBUTTON_PRONE;
             botCmdBuffer->forwardmove = 0;
           }
