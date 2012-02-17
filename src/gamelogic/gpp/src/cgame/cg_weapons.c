@@ -574,13 +574,13 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
         }
 
         CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
-          va( "%s_view_raise.md5anim", token2 ), qtrue, qtrue, qfalse );
+          va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
         CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
-          va( "%s_view_lower.md5anim", token2 ), qtrue, qtrue, qfalse);
+          va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse);
         CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-          va( "%s_view_fire.md5anim", token2 ), qtrue, qfalse, qfalse );
+          va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
 	CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-	  va( "%s_view_reload.md5anim", token2 ), qtrue, qfalse, qfalse );
+	  va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
       }
       else
         wi->weaponModel = trap_R_RegisterModel( token );
