@@ -2508,7 +2508,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
     {
       if( !G_admin_permission( ent, c->flag ) )
         continue;
-      ADMBP( va( "^3%-13s", c->command ) );
+      ADMBP( va( "^1%-13s", c->command ) );
       count++;
       // show 6 commands per line
       if( count % 6 == 0 )
