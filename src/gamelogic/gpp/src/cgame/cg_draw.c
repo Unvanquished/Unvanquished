@@ -1704,15 +1704,14 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
                         qboolean scalableText )
 {
   char        *s;
-  float       tx, ty;
-  float       w, h, totalWidth;
-  int         strLength;
+  float       tx=rect->x, ty=rect->y;
   static int  previousTimes[ FPS_FRAMES ];
   static int  index;
   int         i, total;
   int         fps;
   static int  previous;
   int         t, frameTime;
+  float	      maxX;
 
   if( !cg_drawFPS.integer )
     return;
@@ -1725,7 +1724,7 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
 
   previousTimes[ index % FPS_FRAMES ] = frameTime;
   index++;
-
+  
   if( index > FPS_FRAMES )
   {
     // average multiple frames together to smooth changes out a bit
@@ -1738,26 +1737,24 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
       total = 1;
 
     fps = 1000 * FPS_FRAMES / total;
-
-    s = va( "%d", fps );
-    w = UI_Text_Width( "0", scale );
-    h = UI_Text_Height( "0", scale );
-    strLength = CG_DrawStrlen( s );
-    totalWidth = UI_Text_Width( FPS_STRING, scale ) + w * strLength;
-
-    CG_AlignText( rect, s, 0.0f, totalWidth, h, textalign, textvalign, &tx, &ty );
-
-    if( scalableText )
-    {
-
-      UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, va( "%d %s", fps, FPS_STRING), 0, 0, textStyle );
-    }
-    else
-    {
-      trap_R_SetColor( color );
-      CG_DrawField( rect->x, rect->y, 3, rect->w / 3, rect->h, fps );
-      trap_R_SetColor( NULL );
-    }
+  }
+  s = va( "%d %s", fps, FPS_STRING);
+  maxX = rect->x + rect->w;
+  if( UI_Text_Width( s, scale ) < rect->w && scalableText )
+  {
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint( tx, ty, scale, color, s, 0, 0, textStyle );
+  }
+  else if( UI_Text_Width( s, scale ) >= rect->w && scalableText ) 
+  {
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint_Limit( &maxX, tx, ty, scale, color, s, 0, 0 );
+  }
+  else
+  {
+    trap_R_SetColor( color );
+    CG_DrawField( rect->x, rect->y, 3, rect->w / 3, rect->h, fps );
+    trap_R_SetColor( NULL );
   }
 }
 
@@ -1822,11 +1819,10 @@ static void CG_DrawTimer( rectDef_t *rect, float text_x, float text_y,
                           int textalign, int textvalign, int textStyle )
 {
   char    *s;
-  float   tx, ty;
-  int     i, strLength;
-  float   w, h, totalWidth;
+  float   tx=rect->x, ty=rect->y;
   int     mins, seconds, tens;
   int     msec;
+  float	  maxX;
 
   if( !cg_drawTimer.integer )
     return;
@@ -1840,14 +1836,17 @@ static void CG_DrawTimer( rectDef_t *rect, float text_x, float text_y,
   seconds -= tens * 10;
 
   s = va( "%d:%d%d", mins, tens, seconds );
-  w = UI_Text_Width( "0", scale );
-  h = UI_Text_Height( "0", scale );
-  strLength = CG_DrawStrlen( s );
-  totalWidth = w * strLength;
-
-  CG_AlignText( rect, s, 0.0f, totalWidth, h, textalign, textvalign, &tx, &ty );
-
-    UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, s, 0, 0, textStyle );
+  
+  if( UI_Text_Width( s, scale ) < rect->w )
+  {
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint( tx, ty, scale, color, s, 0, 0, textStyle );
+  }
+  else
+  {
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint_Limit( &maxX, tx, ty, scale, color, s, 0, 0 );
+  }
 }
 
 /*
