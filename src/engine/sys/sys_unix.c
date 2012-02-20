@@ -250,7 +250,7 @@ Sys_Cwd
 char *Sys_Cwd( void )
 {
 #ifdef MACOS_X
-	char *apppath = ;
+	char *apppath = Sys_DefaultAppPath();
 
 	if( apppath[0] )
 	{
