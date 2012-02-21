@@ -715,9 +715,21 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
       Q_strncpyz( wi->rotationBone, token, sizeof( wi->rotationBone ) );
       continue;
     }
-
-    Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
-    return qfalse;
+    else if(!Q_stricmp(token, "modelScale"))
+    {
+	for(i = 0; i < 3; i++)
+	{
+		token = COM_ParseExt2(&text_p, qfalse);
+		if(!token)
+		{
+			break;
+		}
+		wi->scale[i] = atof(token);
+	}
+	continue;
+   }
+   Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+   return qfalse;
   }
 
   return qtrue;
@@ -1154,7 +1166,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
       QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
       QuatMultiply0( gun.skeleton.bones[ boneIndex ].rotation, rotation );
     }
-    CG_TransformSkeleton( &gun.skeleton, NULL );
+    CG_TransformSkeleton( &gun.skeleton, weapon->scale );
 
     trap_R_AddRefEntityToScene( &gun );
 

@@ -873,6 +873,7 @@ typedef struct weaponInfo_s
   vec3_t	    rotation;
   vec3_t	    posOffs;
   char		    rotationBone[50];
+  vec3_t	    scale;
 
   weaponInfoMode_t  wim[ WPM_NUM_WEAPONMODES ];
 } weaponInfo_t;
