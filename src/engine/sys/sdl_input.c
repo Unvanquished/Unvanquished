@@ -446,23 +446,19 @@ static void IN_ActivateMouse( void )
 			{
 				if(IOHIDGetAccelerationWithKey(mouseDev, CFSTR(kIOHIDMouseAccelerationType), &originalMouseSpeed) == kIOReturnSuccess)
 				{
-					Com_Printf("previous mouse acceleration: %f\n", originalMouseSpeed);
 					if(IOHIDSetAccelerationWithKey(mouseDev, CFSTR(kIOHIDMouseAccelerationType), -1.0) != kIOReturnSuccess)
 					{
-						Com_Printf("Could not disable mouse acceleration (failed at IOHIDSetAccelerationWithKey).\n");
 						Cvar_Set ("in_disablemacosxmouseaccel", 0);
 					}
 				}
 				else
 				{
-					Com_Printf("Could not disable mouse acceleration (failed at IOHIDGetAccelerationWithKey).\n");
 					Cvar_Set ("in_disablemacosxmouseaccel", 0);
 				}
 				IOServiceClose(mouseDev);
 			}
 			else
 			{
-				Com_Printf("Could not disable mouse acceleration (failed at IO_GetIOHandle).\n");
 				Cvar_Set ("in_disablemacosxmouseaccel", 0);
 			}
 		}
@@ -526,13 +522,9 @@ static void IN_DeactivateMouse( void )
 			io_connect_t mouseDev = IN_GetIOHandle();
 			if(mouseDev != 0)
 			{
-				Com_Printf("restoring mouse acceleration to: %f\n", originalMouseSpeed);
-				if(IOHIDSetAccelerationWithKey(mouseDev, CFSTR(kIOHIDMouseAccelerationType), originalMouseSpeed) != kIOReturnSuccess)
-					Com_Printf("Could not re-enable mouse acceleration (failed at IOHIDSetAccelerationWithKey).\n");
+				IOHIDSetAccelerationWithKey(mouseDev, CFSTR(kIOHIDMouseAccelerationType), originalMouseSpeed);
 				IOServiceClose(mouseDev);
 			}
-			else
-				Com_Printf("Could not re-enable mouse acceleration (failed at IO_GetIOHandle).\n");
 		}
 	}
 #endif
