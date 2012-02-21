@@ -183,15 +183,18 @@ char *Sys_GetCurrentUser( void )
 	return p->pw_name;
 }
 
+
+#ifndef MACOS_X
 /*
 ==================
 Sys_GetClipboardData
 ==================
 */
-char *Sys_GetClipboardData(void)
+char *Sys_GetClipboardData( void )
 {
 	return NULL;
 }
+#endif
 
 #define MEM_THRESHOLD 96*1024*1024
 
@@ -252,7 +255,7 @@ char *Sys_Cwd( void )
 #ifdef MACOS_X
 	char *apppath = Sys_DefaultAppPath();
 
-	if( apppath[0] )
+	if( apppath[0] && apppath[0] != '.' )
 	{
 		return apppath;
 	}

@@ -70,6 +70,31 @@ const char *Sys_TempPath( void )
 }
 
 /*
+==================
+Sys_GetClipboardData
+==================
+*/
+char *Sys_GetClipboardData( void )
+{
+	FILE *pipe = popen( "pbpaste", "r" );
+	char  buffer[MAX_EDIT_LINE];
+	char *data = NULL;
+
+	if( !pipe )
+	{
+		return NULL;
+	}
+
+	fgets( buffer, sizeof( buffer ), pipe );
+	pclose( pipe );
+
+	data = Z_Malloc( sizeof( buffer ) );
+	Q_strncpyz( data, buffer, sizeof( buffer ) );
+
+	return data;
+}
+
+/*
 ==============
 Sys_Dialog
 
