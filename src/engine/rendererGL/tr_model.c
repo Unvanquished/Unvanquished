@@ -479,12 +479,13 @@ static qboolean R_LoadDAE(model_t * mod, void *buffer, int bufferLen, const char
 /*
 ** RE_BeginRegistration
 */
-void RE_BeginRegistration(glconfig_t * glconfigOut)
+void RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t *glconfig2Out)
 {
 	R_Init();
 
 	*glconfigOut = glConfig;
-
+	*glconfig2Out = glConfig2;
+	
 	R_SyncRenderThread();
 
 	tr.visIndex = 0;

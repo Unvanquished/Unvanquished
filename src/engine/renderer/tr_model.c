@@ -1833,13 +1833,13 @@ static qboolean R_LoadMDX(model_t * mod, void *buffer, const char *mod_name)
 /*
 ** RE_BeginRegistration
 */
-void RE_BeginRegistration(glconfig_t * glconfigOut)
+void RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t * glconfigOut2)
 {
 	ri.Hunk_Clear();			// (SA) MEM NOTE: not in missionpack
 
 	R_Init();
 	*glconfigOut = glConfig;
-
+	*glconfigOut2 = glConfig2;
 	R_SyncRenderThread();
 
 	tr.viewCluster = -1;		// force markleafs to regenerate

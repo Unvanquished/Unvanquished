@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "tr_local.h"
 
 glconfig_t      glConfig;
+glconfig2_t     glConfig2;
 glstate_t       glState;
 
 int				maxAnisotropy = 0;
