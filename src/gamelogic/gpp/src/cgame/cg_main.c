@@ -238,6 +238,8 @@ vmCvar_t  cg_chatTeamPrefix;
 
 vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_animBlend;
+vmCvar_t        cg_core;
+
 
 
 typedef struct
@@ -388,6 +390,7 @@ static cvarTable_t cvarTable[ ] =
   
   {&cg_animSpeed, "cg_animspeed", "1", CVAR_CHEAT},
   {&cg_animBlend, "cg_animblend", "5.0", CVAR_ARCHIVE},
+  {&cg_core, "cg_core", "3", CVAR_ARCHIVE },
 
   { &cg_chatTeamPrefix, "cg_chatTeamPrefix", "1", CVAR_ARCHIVE}
 };
@@ -1063,6 +1066,31 @@ static void CG_RegisterGraphics( void )
   cgs.media.sphereModel               = trap_R_RegisterModel( "models/generic/sphere.md3" );
   cgs.media.sphericalCone64Model      = trap_R_RegisterModel( "models/generic/sphericalCone64.md3" );
   cgs.media.sphericalCone240Model     = trap_R_RegisterModel( "models/generic/sphericalCone240.md3" );
+  
+  cgs.media.hudAlienDamagedView[0] = trap_R_RegisterShader( "gfx/hud/sight/sight100" );
+  cgs.media.hudAlienDamagedView[1] = trap_R_RegisterShader( "gfx/hud/sight/sight090" );
+  cgs.media.hudAlienDamagedView[2] = trap_R_RegisterShader( "gfx/hud/sight/sight080" );
+  cgs.media.hudAlienDamagedView[3] = trap_R_RegisterShader( "gfx/hud/sight/sight070" );
+  cgs.media.hudAlienDamagedView[4] = trap_R_RegisterShader( "gfx/hud/sight/sight060" );
+  cgs.media.hudAlienDamagedView[5] = trap_R_RegisterShader( "gfx/hud/sight/sight050" );
+  cgs.media.hudAlienDamagedView[6] = trap_R_RegisterShader( "gfx/hud/sight/sight040" );
+  cgs.media.hudAlienDamagedView[7] = trap_R_RegisterShader( "gfx/hud/sight/sight030" );
+  cgs.media.hudAlienDamagedView[8] = trap_R_RegisterShader( "gfx/hud/sight/sight020" );
+  cgs.media.hudAlienDamagedView[9] = trap_R_RegisterShader( "gfx/hud/sight/sight010" );
+  cgs.media.hudAlienDamagedView[10] = trap_R_RegisterShader( "gfx/hud/sight/sight000" );
+
+  cgs.media.hudHumanDamagedView[0] = trap_R_RegisterShader( "gfx/hud/sight/sight100" );
+  cgs.media.hudHumanDamagedView[1] = trap_R_RegisterShader( "gfx/hud/sight/sight090" );
+  cgs.media.hudHumanDamagedView[2] = trap_R_RegisterShader( "gfx/hud/sight/sight080" );
+  cgs.media.hudHumanDamagedView[3] = trap_R_RegisterShader( "gfx/hud/sight/sight070" );
+  cgs.media.hudHumanDamagedView[4] = trap_R_RegisterShader( "gfx/hud/sight/sight060" );
+  cgs.media.hudHumanDamagedView[5] = trap_R_RegisterShader( "gfx/hud/sight/sight050" );
+  cgs.media.hudHumanDamagedView[6] = trap_R_RegisterShader( "gfx/hud/sight/sight040" );
+  cgs.media.hudHumanDamagedView[7] = trap_R_RegisterShader( "gfx/hud/sight/sight030" );
+  cgs.media.hudHumanDamagedView[8] = trap_R_RegisterShader( "gfx/hud/sight/sight020" );
+  cgs.media.hudHumanDamagedView[9] = trap_R_RegisterShader( "gfx/hud/sight/sight010" );
+  cgs.media.hudHumanDamagedView[10] = trap_R_RegisterShader( "gfx/hud/sight/sight000" );
+
 
   cgs.media.plainColorShader          = trap_R_RegisterShader( "gfx/plainColor" );
   cgs.media.binaryAlpha1Shader        = trap_R_RegisterShader( "gfx/binary/alpha1" );

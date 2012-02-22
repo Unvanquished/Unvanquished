@@ -3725,7 +3725,7 @@ static void CG_DrawVote( team_t team )
   UI_Text_Paint( 8, 320 + offset, 0.3f, white, s, 0, 0,
     ITEM_TEXTSTYLE_NORMAL );
 
-  s = va( "  [check]%sYes:%i %sNo:%i",
+  s = va( "  [check]%sYes:%i %s[cross]No:%i",
     yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
   UI_Text_Paint( 8, 340 + offset, 0.3f, white, s, 0, 0,
@@ -3797,6 +3797,100 @@ static void CG_DrawIntermission( void )
   cg.scoreFadeTime = cg.time;
   cg.scoreBoardShowing = CG_DrawScoreboard( );
 }
+
+/*
+==============
+CG_DrawPainView
+==============
+*/
+static void CG_DrawPainView(void)
+{
+	float healthfraction;
+	qhandle_t painview, heartpump;
+	
+	if (cg.snap->ps.pm_type == PM_INTERMISSION)
+		return;
+	
+	if (!(cgs.blood & BLOOD_VIEW))
+		return;
+
+    if( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) {
+		if (healthfraction <= .0f) {
+			painview = cgs.media.hudAlienDamagedView[10];
+			heartpump = 255;		
+		} else if (healthfraction > .0f && healthfraction <= 0.5f) {
+			painview = cgs.media.hudAlienDamagedView[9];
+			heartpump = 255;		
+		} else if (healthfraction > 0.05f && healthfraction <= 0.1f) {
+			painview = cgs.media.hudAlienDamagedView[8];
+			heartpump = 255;
+		} else if (healthfraction > 0.1f && healthfraction <= 0.15f) {
+			painview = cgs.media.hudAlienDamagedView[7];
+			heartpump = 210;
+		} else if (healthfraction > 0.15f && healthfraction <= 0.2f) {
+			painview = cgs.media.hudAlienDamagedView[6];
+			heartpump = 175;
+		} else if (healthfraction > 0.2f && healthfraction <= 0.25f) {
+			painview = cgs.media.hudAlienDamagedView[5];
+			heartpump = 140;
+		} else if (healthfraction > 0.25f && healthfraction <= 0.3f) {
+			painview = cgs.media.hudAlienDamagedView[4];
+			heartpump = 105;
+		} else if (healthfraction > 0.3f && healthfraction <= 0.35f) {
+			painview = cgs.media.hudAlienDamagedView[3];
+			heartpump = 70;
+		} else if (healthfraction > 0.35f && healthfraction <= 0.4f) {
+			painview = cgs.media.hudAlienDamagedView[2];
+			heartpump = 35;
+		} else if (healthfraction > 0.4f && healthfraction <= 0.5f) {
+			heartpump = 0;
+			painview = cgs.media.hudAlienDamagedView[1];
+		} else if (healthfraction > 0.5f) {
+			heartpump = 0;
+			painview = cgs.media.hudAlienDamagedView[0];
+		}
+	} else {
+		if (healthfraction <= .0f) {
+			painview = cgs.media.hudHumanDamagedView[10];
+			heartpump = 255;		
+		} else if (healthfraction > .0f && healthfraction <= 0.5f) {
+			painview = cgs.media.hudHumanDamagedView[9];
+			heartpump = 255;		
+		} else if (healthfraction > 0.05f && healthfraction <= 0.1f) {
+			painview = cgs.media.hudHumanDamagedView[8];
+			heartpump = 255;
+		} else if (healthfraction > 0.1f && healthfraction <= 0.15f) {
+			painview = cgs.media.hudHumanDamagedView[7];
+			heartpump = 210;
+		} else if (healthfraction > 0.15f && healthfraction <= 0.2f) {
+			painview = cgs.media.hudHumanDamagedView[6];
+			heartpump = 175;
+		} else if (healthfraction > 0.2f && healthfraction <= 0.25f) {
+			painview = cgs.media.hudHumanDamagedView[5];
+			heartpump = 140;
+		} else if (healthfraction > 0.25f && healthfraction <= 0.3f) {
+			painview = cgs.media.hudHumanDamagedView[4];
+			heartpump = 105;
+		} else if (healthfraction > 0.3f && healthfraction <= 0.35f) {
+			painview = cgs.media.hudHumanDamagedView[3];
+			heartpump = 70;
+		} else if (healthfraction > 0.35f && healthfraction <= 0.4f) {
+			painview = cgs.media.hudHumanDamagedView[2];
+			heartpump = 35;
+		} else if (healthfraction > 0.4f && healthfraction <= 0.5f) {
+			heartpump = 0;
+			painview = cgs.media.hudHumanDamagedView[1];
+		} else if (healthfraction > 0.5f) {
+			heartpump = 0;
+			painview = cgs.media.hudHumanDamagedView[0];
+		}
+	}
+
+	if (cgs.blood & BLOOD_VIEW) {
+		CG_DrawPic( 0, 0, 640, 480, painview );
+	}	
+}
+
 
 /*
 =================
@@ -3902,6 +3996,8 @@ CG_Draw2D
 static void CG_Draw2D( void )
 {
   menuDef_t *menu = NULL;
+  
+  CG_DrawPainView();
 
   // fading to black if stamina runs out
   // (only 2D that can't be disabled)

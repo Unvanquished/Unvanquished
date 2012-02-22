@@ -1359,6 +1359,9 @@ typedef struct
   qhandle_t   healthCross3X;
   qhandle_t   healthCrossMedkit;
   qhandle_t   healthCrossPoisoned;
+  qhandle_t   hudAlienDamagedView[11];
+  qhandle_t   hudHumanDamagedView[11];
+  qhandle_t   hudDamagedView[11];
 } cgMedia_t;
 
 typedef struct
@@ -1463,6 +1466,7 @@ typedef struct
 
   voice_t       *voices;
   clientList_t  ignoreList;
+  int           blood;
 } cgs_t;
 
 typedef struct
@@ -1486,6 +1490,9 @@ typedef enum
   SHC_GREY,
   SHC_NUM_SHADER_COLORS
 } shaderColorEnum_t;
+
+#define BLOOD_VIEW 		1
+#define CORE_HUD		1
 
 //==============================================================================
 
@@ -1631,6 +1638,7 @@ extern  vmCvar_t    cg_chatTeamPrefix;
 
 extern vmCvar_t     cg_animSpeed;
 extern vmCvar_t     cg_animBlend;
+extern vmCvar_t     cg_core;
 
 //
 // cg_main.c
