@@ -28,6 +28,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../../libs/detour/DetourNavMeshQuery.h"
 #include "../../../../libs/detour/DetourPathCorridor.h"
 
+typedef enum {
+  TASK_STOPPED = 0,
+  TASK_RUNNING
+} botTaskStatus_t;
+
 //g_bot.cpp
 int getRushIndex(gentity_t *self);
 int getRetreatIndex(gentity_t *self);
@@ -52,11 +57,11 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target);
 
 qboolean BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer);
 qboolean BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer);
 qboolean BotTeamateIsInModus(gentity_t *self, botModus_t modus);
 int FindBots(int *botEntityNumbers, int maxBots, team_t team);
 
@@ -68,19 +73,19 @@ qboolean BotNeedsItem(gentity_t *self);
 qboolean BotCanShop(gentity_t *self);
 qboolean BotStructureIsDamaged(team_t team);
 qboolean buildableIsDamaged(gentity_t *building);
-qboolean BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotTaskBuy(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades,int numUpgrades, usercmd_t *botCmdBuffer);
-qboolean BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskBuy(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades,int numUpgrades, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer);
 
 //g_alienbot.cpp
 float CalcPounceAimPitch(gentity_t *self, botTarget_t target);
 float CalcBarbAimPitch(gentity_t *self, botTarget_t target);
 //int	 BotEvolveToClass( gentity_t *ent, char *classname, usercmd_t *botCmdBuffer);
-qboolean BotTaskEvolve( gentity_t *self , usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskEvolve( gentity_t *self , usercmd_t *botCmdBuffer);
 qboolean G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
-qboolean BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer);
 
 //g_nav.cpp
 qboolean BotFindNearestPoly(gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint);

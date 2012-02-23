@@ -1533,7 +1533,7 @@ qboolean BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer) {
   } else if(BotShouldRushEnemyBase(self) && BotTaskRush(self, botCmdBuffer)) {
     return qtrue;
   } else {
-    return BotTaskRoam(self, botCmdBuffer);
+    return (qboolean)BotTaskRoam(self, botCmdBuffer);
   }
 }
 
@@ -1561,7 +1561,7 @@ qboolean BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer) {
   } else if(BotTaskBuild(self, botCmdBuffer)) {
     return qtrue;
   } else {
-    return BotTaskRepair(self, botCmdBuffer);
+    return (qboolean)BotTaskRepair(self, botCmdBuffer);
   }
 }
 
@@ -1572,9 +1572,9 @@ General Bot Tasks
 For specific team tasks, see their respective files
 =======================
 */
-qboolean BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer) {
+botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer) {
   if(!g_bot_build.integer)
-    return qfalse;
+    return TASK_STOPPED;
   switch(BotGetTeam(self)) {
     case TEAM_HUMANS:
       return BotTaskBuildH(self, botCmdBuffer);
@@ -1583,19 +1583,19 @@ qboolean BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer) {
       return BotTaskBuildA(self, botCmdBuffer);
       break;
     default:
-      return qfalse;
+      return TASK_STOPPED;
       break;
   }
 }
-qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
+botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 
   //don't enter this task until we are given enough time to react to seeing the enemy
   if(level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME)
-    return qfalse;
+    return TASK_STOPPED;
 
   if(BotRoutePermission(self,BOT_TASK_FIGHT)) {
     if(!self->botMind->bestEnemy.ent) //no enemy, stop the task
-      return qfalse;
+      return TASK_STOPPED;
     BotSetGoal(self, self->botMind->bestEnemy.ent,NULL);
     FindRouteToTarget(self, self->botMind->goal);
     self->botMind->task = BOT_TASK_FIGHT;
@@ -1605,7 +1605,7 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
   //safety check
   if(!BotTargetIsEntity(self->botMind->goal)) {
     self->botMind->needNewGoal = qtrue;
-    return qtrue; //we dont want to end this task yet incase there is another enemy
+    return TASK_RUNNING; //we dont want to end this task yet incase there is another enemy
   }
 
   //switch to blaster if we need to
@@ -1625,10 +1625,10 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
     if(self->botMind->bestEnemy.ent) {
       //change targets
       self->botMind->needNewGoal = qtrue;
-      return qtrue;
+      return TASK_RUNNING;
     } else if(level.time - self->botMind->enemyLastSeen >= BOT_ENEMY_CHASETIME) {
       //we have chased our current (invisible) target for a while, but have not caught sight of him again, so end this task
-      return qfalse;
+      return TASK_STOPPED;
     } else {
       //move to the enemy
       BotMoveToGoal(self, botCmdBuffer);
@@ -1714,18 +1714,18 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
       BotMoveToGoal(self, botCmdBuffer);
     }
   }
-  return qtrue;
+  return TASK_RUNNING;
 }
 
-qboolean BotTaskGroup(gentity_t *self, usercmd_t *botCmdBuffer) {
-  return qfalse;
+botTaskStatus_t BotTaskGroup(gentity_t *self, usercmd_t *botCmdBuffer) {
+  return TASK_STOPPED;
 }
 
-qboolean BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer) {
+botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer) {
   if(!g_bot_retreat.integer)
-    return qfalse;
+    return TASK_STOPPED;
   if(!BotGetRetreatTarget(self).inuse)
-    return qfalse;
+    return TASK_STOPPED;
 
   if(BotRoutePermission(self, BOT_TASK_RETREAT)) {
     self->botMind->goal = BotGetRetreatTarget(self);
@@ -1735,18 +1735,18 @@ qboolean BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer) {
   }
   if(!BotTargetIsEntity(self->botMind->goal)) {
     self->botMind->needNewGoal = qtrue;
-    return qtrue;
+    return TASK_RUNNING;
   }
   if(DistanceToGoalSquared(self) > Square(70))
     BotMoveToGoal(self, botCmdBuffer);
-  return qtrue;
+  return TASK_RUNNING;
 }
 
-qboolean BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer) {
+botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer) {
   if(!g_bot_rush.integer)
-    return qfalse;
+    return TASK_STOPPED;
   if(!BotGetRushTarget(self).inuse) {
-    return qfalse;
+    return TASK_STOPPED;
   }
   if(BotRoutePermission(self,BOT_TASK_RUSH)) {
     self->botMind->goal = BotGetRushTarget(self);
@@ -1756,25 +1756,25 @@ qboolean BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer) {
   }
   if(!BotTargetIsEntity(self->botMind->goal)) {
     self->botMind->needNewGoal = qtrue;
-    return qtrue;
+    return TASK_RUNNING;
   }
   if(self->botMind->goal.ent->health <= 0) {
     self->botMind->needNewGoal = qtrue;
-    return qtrue;
+    return TASK_RUNNING;
   }
   if(DistanceToGoalSquared(self) > Square(70)) {
     BotMoveToGoal(self, botCmdBuffer);
   }
-  return qtrue;
+  return TASK_RUNNING;
 }
 
-qboolean BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer) {
+botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer) {
   if(BotRoutePermission(self,BOT_TASK_ROAM)) {
     if(BotSetRoamGoal(self)) {
       self->botMind->needNewGoal = qfalse;
       self->botMind->task = BOT_TASK_ROAM;
     } else {
-      return qtrue; //do nothing until we have a route
+      return TASK_STOPPED; //do nothing until we have a route
     }
   }
   if(DistanceToGoalSquared(self) > Square(70)) {
@@ -1782,7 +1782,7 @@ qboolean BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer) {
   } else {
     self->botMind->needNewGoal = qtrue;
   }
-  return qtrue;
+  return TASK_RUNNING;
 }
 /*
 =======================

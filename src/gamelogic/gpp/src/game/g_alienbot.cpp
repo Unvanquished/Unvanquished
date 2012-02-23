@@ -225,13 +225,13 @@ qboolean BotCanEvolveToClass(gentity_t *self, class_t newClass) {
 BotTaskEvolve
 ==============================
 */
-qboolean BotTaskEvolve ( gentity_t *self, usercmd_t *botCmdBuffer )
+botTaskStatus_t BotTaskEvolve ( gentity_t *self, usercmd_t *botCmdBuffer )
 {
     if(BotGetTeam(self) != TEAM_ALIENS)
-      return qfalse;
+      return TASK_STOPPED;
 
     if(!g_bot_evolve.integer)
-      return qfalse;
+      return TASK_STOPPED;
 
     if(BotCanEvolveToClass(self, PCL_ALIEN_LEVEL4) && g_bot_level4.integer) {
       BotEvolveToClass(self, PCL_ALIEN_LEVEL4);
@@ -250,9 +250,9 @@ qboolean BotTaskEvolve ( gentity_t *self, usercmd_t *botCmdBuffer )
     } else if(BotCanEvolveToClass(self, PCL_ALIEN_LEVEL0)) {
       BotEvolveToClass(self, PCL_ALIEN_LEVEL0);
     }
-    return qfalse;
+    return TASK_STOPPED;
 }
-qboolean BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer) {
-  return qfalse; //TODO: Implement
+botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer) {
+  return TASK_STOPPED; //TODO: Implement
 }
 
