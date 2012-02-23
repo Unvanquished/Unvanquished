@@ -27,17 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef __cplusplus
 #include "../../../../libs/detour/DetourNavMeshQuery.h"
 #include "../../../../libs/detour/DetourPathCorridor.h"
-//#ifndef BLIB_HEADERS
-///#define BLIB_HEADERS
-//#include "../botlib/botlib.h"
-
-//#include "../botlib/be_aas.h"		// TFL_*
-//#include "../botlib/be_ai_goal.h"	// bot_goal_t
-//#include "../botlib/be_ai_move.h"	// bot_initmove_t
-//#endif
 
 //g_bot.cpp
-
 int getRushIndex(gentity_t *self);
 int getRetreatIndex(gentity_t *self);
 

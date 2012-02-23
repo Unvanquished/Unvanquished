@@ -1588,12 +1588,14 @@ qboolean BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer) {
   }
 }
 qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
-  botTarget_t proposedTarget;
-  if(!self->botMind->bestEnemy.ent && (level.time - self->botMind->enemyLastSeen > BOT_ENEMY_CHASETIME || BotRoutePermission(self,BOT_TASK_FIGHT)))
-    return qfalse;
+
+  //don't enter this task until we are given enough time to react to seeing the enemy
   if(level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME)
     return qfalse;
+
   if(BotRoutePermission(self,BOT_TASK_FIGHT)) {
+    if(!self->botMind->bestEnemy.ent) //no enemy, stop the task
+      return qfalse;
     BotSetGoal(self, self->botMind->bestEnemy.ent,NULL);
     FindRouteToTarget(self, self->botMind->goal);
     self->botMind->task = BOT_TASK_FIGHT;
@@ -1603,27 +1605,7 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
   //safety check
   if(!BotTargetIsEntity(self->botMind->goal)) {
     self->botMind->needNewGoal = qtrue;
-    return qtrue;
-  }
-  if(self->botMind->bestEnemy.ent && self->botMind->bestEnemy.ent->s.number != BotGetTargetEntityNumber(self->botMind->goal)) {
-    BotSetTarget(&proposedTarget, self->botMind->bestEnemy.ent, NULL);
-    //if we cant see our current target, but we can see the closest Enemy, we should stop attacking our current target and attack said closest enemy
-    if(self->botMind->numCorners > 1 && BotPathIsWalkable(self, proposedTarget)) {
-      self->botMind->needNewGoal = qtrue;
-      return qtrue;
-    }
-  }
-  //enemy has switched teams so signal that the goal is unusable
-  if(BotGetTeam(self->botMind->goal) == BotGetTeam(self) || BotGetTeam(self->botMind->goal) == TEAM_NONE) {
-    self->botMind->needNewGoal = qtrue;
-    return qtrue;
-  }
-  //enemy has died so signal that the goal is unusable
-  if(self->botMind->goal.ent->health <= 0 || 
-    (BotTargetIsPlayer(self->botMind->goal) && self->botMind->goal.ent->client->ps.pm_type == PM_DEAD)) 
-  {
-    self->botMind->needNewGoal = qtrue;
-    return qtrue;
+    return qtrue; //we dont want to end this task yet incase there is another enemy
   }
 
   //switch to blaster if we need to
@@ -1636,31 +1618,46 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
     self->botMind->enemyLastSeen = level.time;
   }
 
-
-
-  if(BotTargetIsVisible(self, self->botMind->goal, MASK_SHOT)) {
+  //we can't see our target
+  if(!BotTargetIsVisible(self, self->botMind->goal,MASK_SHOT)) {
     
+    //we can see another enemy (not our target)
+    if(self->botMind->bestEnemy.ent) {
+      //change targets
+      self->botMind->needNewGoal = qtrue;
+      return qtrue;
+    } else if(level.time - self->botMind->enemyLastSeen >= BOT_ENEMY_CHASETIME) {
+      //we have chased our current (invisible) target for a while, but have not caught sight of him again, so end this task
+      return qfalse;
+    } else {
+      //move to the enemy
+      BotMoveToGoal(self, botCmdBuffer);
+    }
+  } else { //we see our target!!
+
+    //record the time we saw him
     self->botMind->enemyLastSeen = level.time;
 
-    //aim at the enemy and use attack movement if we can walk in a straight line to the enemy or we can hurt him from here
+    //only enter attacking AI if we can walk in a straight line to the enemy or we can hit him from our current position
     if(self->botMind->numCorners == 1 || BotTargetInAttackRange(self, self->botMind->goal)) {
       vec3_t tmpVec;
 
+      //aim at the enemy
       BotGetIdealAimLocation(self, self->botMind->goal, tmpVec);
       BotSlowAim(self, tmpVec, self->botMind->botSkill.aimSlowness);
       if(BotGetTargetType(self->botMind->goal) != ET_BUILDABLE) {
         BotShakeAim(self, tmpVec);
       }
-      //aim at the end position
       BotAimAtLocation(self, tmpVec, botCmdBuffer);
 
-      botCmdBuffer->forwardmove = 127; //max forward speed
+      botCmdBuffer->forwardmove = 127; //move forward
 
       //fire our weapon if we are in range or have pain saw
+      //TODO: Make this better with BotAimNegligence?
       if(BotTargetInAttackRange(self, self->botMind->goal) || self->client->ps.weapon == WP_PAIN_SAW) 
         BotFireWeaponAI(self, botCmdBuffer);
-
-      //mad dancing skillz
+      
+      //human specific attacking AI
       if(BotGetTeam(self) == TEAM_HUMANS) {
 
         //dont back away unless skill > 3 + distance logic
@@ -1687,7 +1684,7 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
         }
 
         //humans should not move if they are targeting, and can hit, a building
-        //FIXME: Maybe some best attack point logic here? Bots will be damaged a lot by buildings otherwise...
+        //FIXME: Maybe add some "move to best attack point" logic here? Bots will be damaged a lot by buildings otherwise...
         if(BotGetTargetType(self->botMind->goal) == ET_BUILDABLE) {
           botCmdBuffer->forwardmove = 0;
           botCmdBuffer->rightmove= 0;
@@ -1702,18 +1699,20 @@ qboolean BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
           botCmdBuffer->buttons &= ~BUTTON_SPRINT;
           botCmdBuffer->buttons &= ~WBUTTON_PRONE;
         }
+
       } else if(BotGetTeam(self) == TEAM_ALIENS) {
+        //alien specific attacking AI
+
         BotClassMovement(self, botCmdBuffer); //FIXME: aliens are so much dumber :'(
+
         // enable wallwalk for classes that can wallwalk
         if( BG_ClassHasAbility( (class_t) self->client->ps.stats[STAT_CLASS], SCA_WALLCLIMBER ) )
           botCmdBuffer->upmove = -1;
       }
     } else {
-      BotMoveToGoal(self, botCmdBuffer); //move to the enemy since we cant get to him directly, nor can we attack him from here
+      //move to the enemy since we cant get to him directly, nor can we attack him from here
+      BotMoveToGoal(self, botCmdBuffer);
     }
-
-  } else {
-    BotMoveToGoal(self, botCmdBuffer); //move to enemy since we cannot see him
   }
   return qtrue;
 }
@@ -1908,10 +1907,16 @@ extern "C" void G_BotThink( gentity_t *self) {
   //return;
   //update closest structs
   gentity_t* bestEnemy = BotFindBestEnemy(self);
+
+  //if we do not already have an enemy, and we found an enemy, update the time that we found an enemy
   if(!self->botMind->bestEnemy.ent && bestEnemy)
     self->botMind->timeFoundEnemy = level.time;
-  if(!bestEnemy && self->botMind->bestEnemy.ent)
+
+  //if we did not find an enemy, but we have an enemy currently, then our enemy has been obstructed
+  //so we record the last time we saw our current enemy
+  else if(!bestEnemy && self->botMind->bestEnemy.ent)
     self->botMind->enemyLastSeen = level.time;
+
   self->botMind->bestEnemy.ent = bestEnemy;
   self->botMind->bestEnemy.distance = (!bestEnemy) ? -1 : Distance(self->s.origin,bestEnemy->s.origin);
 
