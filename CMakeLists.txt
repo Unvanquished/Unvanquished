@@ -4,6 +4,7 @@
 # cmake required (http://www.cmake.org/)
 #
 cmake_minimum_required( VERSION 2.8 )
+set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "" )
 set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "" )
 set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "" )
@@ -43,6 +44,7 @@ endif()
 option( USE_CURL             "Use curl"                                1 )
 if( USE_CURL )
   option( USE_CURL_DLOPEN    "Use dlopen to load curl"                 1 )
+option( USE_LLVM             "Use LLVM"                                0 ) 
 endif()
 if( WIN32 )
   option( USE_SYSTEM_HEADERS "Use local headers"                       0 )
@@ -59,7 +61,7 @@ endif()
 option( USE_MUMBLE           "Compile with support for Mumble"         1 )
 option( USE_PHYSICS	     "Compile with Newton Physics"             0 )
 option( USE_WEBP	     "Compile with WebP loader"                1 )
-option( USE_MYSQL	     "Compile with MYSQL support"              1 )
+option( USE_MYSQL	     "Compile with MYSQL support"              0 )
 option( USE_VOIP	     "Compile with VOIP support"               1 )
 option( USE_CIN_XVID	     "Encode videos with XViD"                 1 )
 
@@ -396,6 +398,11 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/vm_interpreted.c
 )
 
+if( USE_LLVM )
+  set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
+  add_definitions( -DUSE_LLVM )
+endif( )
+
 if( USE_PHYSICS )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/cm_physics.cpp )
 endif( )
@@ -405,9 +412,14 @@ if( USE_MYSQL )
     ${MOUNT_DIR}/engine/database/db_main.c
     ${MOUNT_DIR}/engine/database/db_mysql.c
   )
+  find_package( MySQL REQUIRED )
 else()
   set( DATABASELIST )
 endif()
+
+set( SQLLITELIST
+  ${MOUNT_DIR}/libs/sqlite/sqlite3.c
+)
 
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cin_ogm.c
@@ -890,6 +902,7 @@ set( CRYPTOLIST
 
 if(  USE_CIN_XVID )
   add_definitions( -DUSE_CIN_XVID )
+  find_package( xvid REQUIRED )
 endif()
 set( OWMAPLIST
   ${MOUNT_DIR}/tools/common/cmdlib.c
@@ -1054,7 +1067,7 @@ elseif (UNIX)
     set( OS_BUILD )
   elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set( OS_LIBRARIES dl m z )
-    set( OS_LIBRARIES ${OS_LIBRARIES} "-framework AGL -framework OpenGL -framework Carbon -framework IOKit -framework DrawSprocket" )
+    set( OS_LIBRARIES ${OS_LIBRARIES} "-framework AGL -framework OpenGL -framework Carbon -framework IOKit" )
 	  set( OS_BUILD ${LINUXSOURCESLIST} )
   else()
     set( OS_LIBRARIES dl m z rt )
@@ -1144,14 +1157,22 @@ set(GLEW_INCLUDE_DIR
 # Build Renderers #
 ###################
 
-set( GLEW_LIBRARY CACHE FILEPATH "Location of the GLEW Library" )
-set( MYSQL_LIBRARY CACHE FILEPATH "Location of the MYSQL library" )
-set( MYSQL_INCLUDES CACHE PATH ADVANCED "Location of the MYSQL includes" )
-set( GMP_LIBRARY CACHE FILEPATH "Location of the GMP Library" )
-set( GMP_INCLUDES CACHE PATH ADVANCED "Location of the GMP Includes" )
-set( XVID_LIBRARY CACHE FILEPATH "Location of the XviD library" )
+# set( GLEW_LIBRARY CACHE FILEPATH "Location of the GLEW Library" )
+# set( MYSQL_LIBRARY CACHE FILEPATH "Location of the MYSQL library" )
+# set( MYSQL_INCLUDES CACHE PATH ADVANCED "Location of the MYSQL includes" )
+# set( GMP_LIBRARY CACHE FILEPATH "Location of the GMP Library" )
+# set( GMP_INCLUDES CACHE PATH ADVANCED "Location of the GMP Includes" )
+# set( XVID_LIBRARY CACHE FILEPATH "Location of the XviD library" )
 if( USE_PHYSICS )
-  set( NEWTON_LIBRARY CACHE FILEPATH "Location of the Newton library" )
+  if( LINUX )
+    if( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64" )
+      set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux64/libNewton.a" )
+    elseif( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86" )
+      set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux32/libNewton.a" )
+    endif()
+  else()
+    set( NEWTON_LIBRARY CACHE FILEPATH "Location of the Newton library" )
+  endif()
 endif()
 if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
   
@@ -1161,6 +1182,7 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
     find_package( JPEG  REQUIRED )
     find_package( PNG  REQUIRED )
     find_package( Freetype REQUIRED )
+    find_package( GLEW REQUIRED )
     set( GLEW_INCLUDE_DIR ${MOUNT_DIR}/libs/glew/include )
   else()
     set( PNG_PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
@@ -1215,7 +1237,9 @@ if( BUILD_CLIENT )
     find_package( JPEG )
     find_package( SDL REQUIRED )
     find_package( PNG )
-    find_package( Freetype REQUIRED )  
+    find_package( Freetype REQUIRED )
+    find_package( GLEW REQUIRED )
+    find_package( GMP REQUIRED )
   else() 
     set( PNG_PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
@@ -1237,7 +1261,7 @@ endif()
   endif()
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
       ${CPUINFOLIST} ${SDLLIST} ${OS_BUILD} ${QCOMMONLIST} ${SHAREDLIST}
-      ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
+      ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} ${SQLLITELIST} )
 if( USE_OPENAL )
   include( FindOpenAL )
   if( NOT OPENAL_FOUND )
@@ -1304,10 +1328,9 @@ endif()
   endif( )
     
   add_dependencies( client rendererGL )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${PNG_PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${CURL_INCLUDE_DIR} ${VORBIS_INCLUDE_DIR} ${XML_INCLUDE_DIR} ${CURSES_INCLUDE_DIR} ${MYSQL_INCLUDES} ${GMP_INCLUDES} ${NEWTON_INCLUDES} ${LIB_DIR}/xvidcore/include )
-
-  target_link_libraries( client ${OS_LIBRARIES} ${PNG_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} ${GLEW_LIBRARY} ${CURL_LIBRARY} ${VORBIS_LIBRARIES} ${XML_LIBRARY} ${NEWTON_LIBRARY} ${MYSQL_LIBRARY} ${CURSES_LIBRARY} ${GMP_LIBRARY} ${XVID_LIBRARY} )
-  set_property( TARGET client PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER BOTLIB BOTLIB_STATIC COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_VOIP USE_CRYPTO )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${PNG_PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${CURL_INCLUDE_DIR} ${VORBIS_INCLUDE_DIR} ${XML_INCLUDE_DIR} ${CURSES_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${GMP_INCLUDES} ${NEWTON_INCLUDES} ${LIB_DIR}/xvidcore/include )
+  target_link_libraries( client ${OS_LIBRARIES} ${PNG_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} ${GLEW_LIBRARY} ${CURL_LIBRARY} ${VORBIS_LIBRARIES} ${XML_LIBRARY} ${NEWTON_LIBRARY} ${MYSQL_LIBRARIES} ${CURSES_LIBRARY} ${GMP_LIBRARY} ${XVID_LIBRARY} )
+  set_property( TARGET client PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER BOTLIB BOTLIB_STATIC COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install(TARGETS client
           RUNTIME DESTINATION bin
@@ -1349,7 +1372,7 @@ if( BUILD_SERVER )
     endif()
   endif()
   add_executable( server ${SERVERLIST}  ${SDLBASELIST}
-      ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
+      ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST} ${SQLLITELIST}
       ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
 
 if( USE_CURL )
@@ -1391,7 +1414,7 @@ endif()
 
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${SDL_INCLUDE_DIR} ${CURL_INCLUDE_DIR} ${XML_INCLUDE_DIR} ${CURSES_INCLUDE_DIR} ${GMP_INCLUDES} ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${SDL_LIBRARY} ${CURL_LIBRARY} ${XML_LIBRARY} ${NEWTON_LIBRARY} ${MYSQL_LIBRARY} ${CURSES_LIBRARY} ${GMP_LIBRARY} )
-  set_property( TARGET server PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_VOIP USE_CRYPTO )
+  set_property( TARGET server PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install(TARGETS server
           RUNTIME DESTINATION bin

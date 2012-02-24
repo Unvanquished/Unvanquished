@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "tr_local.h"
 
 glconfig_t      glConfig;
+glconfig2_t     glConfig2;
 glstate_t       glState;
 
 int				maxAnisotropy = 0;
@@ -1371,11 +1372,7 @@ void R_Init(void)
 
 	R_InitFreeType();
 
-	err = glGetError();
-	if(err != GL_NO_ERROR)
-	{
-		ri.Printf(PRINT_ALL, "glGetError() = 0x%x\n", err);
-	}
+	GL_CheckErrors();
 
 	ri.Printf(PRINT_ALL, "----- finished R_Init -----\n");
 }

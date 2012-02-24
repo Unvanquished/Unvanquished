@@ -120,6 +120,11 @@ g_admin_cmd_t g_admin_cmds[ ] =
       ""
     },
 
+    {"listrotation", G_admin_listrotation, qfalse, "listrotation",
+      "display the active map rotation",
+      ""
+    },
+
     {"lock", G_admin_lock, qfalse, "lock",
       "lock a team to prevent anyone from joining it",
       "[^3a|h^7]"
@@ -970,6 +975,25 @@ qboolean G_admin_cmd_check( gentity_t *ent )
 
   if( ( c = G_admin_command( command ) ) )
   {
+
+      int j;
+      trap_Cvar_Register( NULL, "arg_all", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+      trap_Cvar_Set( "arg_all", ConcatArgs( 1 ) );
+      trap_Cvar_Register( NULL, "arg_count", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+      trap_Cvar_Set( "arg_count", va( "%i", trap_Argc() - ( 1 ) ) );
+      trap_Cvar_Register( NULL, "arg_client", "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+      trap_Cvar_Set( "arg_client", ( ent ) ? ent->client->pers.netname : "console" );
+      for (j = trap_Argc() - ( 1 ); j; j--)
+      {
+        char this_arg[ MAX_CVAR_VALUE_STRING ];
+        trap_Cvar_Register( NULL, va( "arg_%i", j ), "", CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+        trap_Argv( j, this_arg, sizeof( this_arg ) );
+        trap_Cvar_Set( va( "arg_%i", j ), this_arg );
+
+      }
+
+
+
     admin_log( ConcatArgsPrintable( 1 ) );
     if( ( success = G_admin_permission( ent, c->flag ) ) )
     {
@@ -2365,6 +2389,11 @@ qboolean G_admin_listplayers( gentity_t *ent )
   return qtrue;
 }
 
+qboolean G_admin_listrotation( gentity_t *ent )
+{
+    G_PrintCurrentRotation( ent, "listrotation" );
+}
+
 static qboolean ban_matchip( void *ban, const void *ip )
 {
   return G_AddressCompare( &((g_admin_ban_t *)ban)->ip, (addr_t *)ip ) ||
@@ -2468,7 +2497,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
     {
       if( G_admin_permission( ent, g_admin_cmds[ i ].flag ) )
       {
-        ADMBP( va( "^3%-12s", g_admin_cmds[ i ].keyword ) );
+        ADMBP( va( "^3%-13s", g_admin_cmds[ i ].keyword ) );
         count++;
         // show 6 commands per line
         if( count % 6 == 0 )
@@ -2479,7 +2508,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
     {
       if( !G_admin_permission( ent, c->flag ) )
         continue;
-      ADMBP( va( "^3%-12s", c->command ) );
+      ADMBP( va( "^1%-13s", c->command ) );
       count++;
       // show 6 commands per line
       if( count % 6 == 0 )

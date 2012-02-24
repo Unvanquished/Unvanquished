@@ -45,8 +45,8 @@ Maryland 20850 USA.
 #include "../client/cg_api.h"
 
 #ifdef USE_VOIP
-#include "speex/speex.h"
-#include "speex/speex_preprocess.h"
+#include <speex/speex.h>
+#include <speex/speex_preprocess.h>
 #endif
 
 // Dushan - create CL_GUID
@@ -422,6 +422,7 @@ typedef struct {
 
 	// rendering info
 	glconfig_t      glconfig;
+	glconfig2_t     glconfig2;
 	qhandle_t       charSetShader;
 	qhandle_t       whiteShader;
 	qhandle_t       consoleShader;

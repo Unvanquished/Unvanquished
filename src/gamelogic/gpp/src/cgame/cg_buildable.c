@@ -898,7 +898,7 @@ void CG_GhostBuildable( buildable_t buildable )
   {
     vec3_t Scale = { scale, scale, scale };
     trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[buildable].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
-    CG_TransformSkeleton( &ent.skeleton, NULL );
+    CG_TransformSkeleton( &ent.skeleton, Scale );
   }
   if( scale != 1.0f )
   {

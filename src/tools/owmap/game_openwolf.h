@@ -71,9 +71,9 @@ content and surface flags
 
 // Dushan - Tremulous
 // custominfoparms below
-#define	TREM_CONT_NOALIENBUILD                  0x00000001 /* disallow alien building */
-#define	TREM_CONT_NOHUMANBUILD                  0x00000002 /* disallow human building */
-#define	TREM_CONT_NOBUILD                       0x00000004 /* disallow building */
+#define	UNVANQUISHED_CONT_NOALIENBUILD                  0x00000001 /* disallow alien building */
+#define	UNVANQUISHED_CONT_NOHUMANBUILD                  0x00000002 /* disallow human building */
+#define	UNVANQUISHED_CONT_NOBUILD                       0x00000004 /* disallow building */
 
 #define W_SURF_NODAMAGE                         0x00000001 /* never give falling damage */
 #define W_SURF_SLICK                            0x00000002 /* effects game physics */
@@ -113,9 +113,9 @@ content and surface flags
 
 #define W_SURF_LANDMINE                         0x80000000 /* enemy territory 'landminable' surface */
 
-#define TREM_SURF_NOALIENBUILDSURFACE           0x00000001 /* disallow alien building */
-#define TREM_SURF_NOHUMANBUILDSURFACE           0x00000002 /* disallow human building */
-#define TREM_SURF_NOBUILDSURFACE                0x00000004 /* disallow building */
+#define UNVANQUISHED_SURF_NOALIENBUILDSURFACE           0x00000001 /* disallow alien building */
+#define UNVANQUISHED_SURF_NOHUMANBUILDSURFACE           0x00000002 /* disallow human building */
+#define UNVANQUISHED_SURF_NOBUILDSURFACE                0x00000004 /* disallow building */
 
 /* -------------------------------------------------------------------------------
 
@@ -220,13 +220,13 @@ game_t struct
 		{ "nodlight",		0,							0,							W_SURF_NODLIGHT,			0,							0,							0 },
 		
 		/* tremulous */
-		{"noalienbuild",	TREM_CONT_NOALIENBUILD,		0,							0,							0,							0,							0 },
-		{"nohumanbuild",	TREM_CONT_NOHUMANBUILD,		0,							0,							0,							0,							0 },
-		{"nobuild",			TREM_CONT_NOBUILD,			0,							0,							0,							0,							0 },
+		{"noalienbuild",	UNVANQUISHED_CONT_NOALIENBUILD,		0,							0,							0,							0,							0 },
+		{"nohumanbuild",	UNVANQUISHED_CONT_NOHUMANBUILD,		0,							0,							0,							0,							0 },
+		{"nobuild",			UNVANQUISHED_CONT_NOBUILD,			0,							0,							0,							0,							0 },
 
-		{"noalienbuildsurface",	0,						0,							TREM_SURF_NOALIENBUILDSURFACE,0,						0,							0 },
-		{"nohumanbuildsurface",	0,						0,							TREM_SURF_NOHUMANBUILDSURFACE,0,						0,							0 },
-		{"nobuildsurface",		0,						0,							TREM_SURF_NOBUILDSURFACE,0,								0,							0 },
+		{"noalienbuildsurface",	0,						0,							UNVANQUISHED_SURF_NOALIENBUILDSURFACE,0,						0,							0 },
+		{"nohumanbuildsurface",	0,						0,							UNVANQUISHED_SURF_NOHUMANBUILDSURFACE,0,						0,							0 },
+		{"nobuildsurface",		0,						0,							UNVANQUISHED_SURF_NOBUILDSURFACE,0,								0,							0 },
 
 
 		/* wolf et landmine-able surface */

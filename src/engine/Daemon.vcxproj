@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug Dedicated|Win32">
@@ -242,7 +242,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_AMD64_;_WIN64;__WIN64__;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H;USE_CODEC_VORBIS;USE_VOIP;USE_IRC;USE_OPENAL;USE_OPENAL_DLOPEN;USE_CIN_THEORA;USE_MUMBLE;USE_BASS;USE_CURL;USE_CRYPTO;USE_PHYSICS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_AMD64_;_WIN64;__WIN64__;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H;USE_CODEC_VORBIS;USE_VOIP;USE_IRC;USE_OPENAL;USE_OPENAL_DLOPEN;USE_CIN_THEORA;USE_MUMBLE;USE_BASS;USE_CURL;USE_CRYPTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -271,7 +271,7 @@
     </PreLinkEvent>
     <Link>
       <AdditionalOptions>/MACHINE:X64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>user32.lib;shell32.lib;libcurld_imp.lib;dinput8.lib;winmm.lib;wsock32.lib;Iphlpapi.lib;ws2_32.lib;glu32.lib;libmysql.lib;psapi.lib;opengl32.lib;SDLd.lib;SDLmaind.lib;glew64d.lib;CPUInfod.lib;advapi32.lib;GlU32.Lib;zlibwapi.lib;libvorbis.lib;libvorbisfile.lib;libogg.lib;libtheora.lib;newton.lib;bass.lib;libbz2.lib;libeay32.lib;libgmp.a;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;shell32.lib;libcurld_imp.lib;dinput8.lib;winmm.lib;wsock32.lib;Iphlpapi.lib;ws2_32.lib;glu32.lib;libmysql.lib;psapi.lib;opengl32.lib;SDLd.lib;SDLmaind.lib;glew64d.lib;CPUInfod.lib;advapi32.lib;GlU32.Lib;zlibwapi.lib;libvorbis.lib;libvorbisfile.lib;libogg.lib;libtheora.lib;bass.lib;libbz2.lib;libeay32.lib;libgmp.a;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>../../bin/win64/debug/Daemon.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\libs\curl-7.21.6\lib\win64\debug;..\libs\mysql\lib\win64;..\libs\libsdl\libs\x64;..\libs\glew\lib\x64;..\libs\cpuinfo\lib\x64\debug;..\libs\openssl\lib\VC;..\libs\zlibwapi\lib\x64;..\libs\libvorbis\libs\x64\Debug;..\libs\libogg\libs\win64\debug;..\libs\libtheora\libs\win64\debug;..\libs\bass\libs\win64;..\libs\libbz2\libs\x64;..\libs\llvm\libs\win64\debug;..\libs\libnewton\libs\win64;..\libs\openssl\libs\win64;..\libs\gmp\libs\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -406,7 +406,7 @@
     </Midl>
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H;USE_OPENSSL;USE_CODEC_VORBIS;USE_VOIP;USE_OPENAL;USE_OPENAL_DLOPEN;USE_CIN_THEORA;USE_MUMBLE;USE_INCREASED_ENTITIES;ZLIB_WINAPI;USE_BASS;USE_REFENTITY_ANIMATIONSYSTEM;USE_PHYSICS;USE_CRYPTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H;USE_OPENSSL;USE_CODEC_VORBIS;USE_VOIP;USE_OPENAL;USE_OPENAL_DLOPEN;USE_CIN_THEORA;USE_MUMBLE;USE_INCREASED_ENTITIES;ZLIB_WINAPI;USE_BASS;USE_REFENTITY_ANIMATIONSYSTEM;USE_CRYPTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -481,7 +481,7 @@
     </Midl>
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;AMD64;WIN64;__WIN64__;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;USE_CODEC_VORBIS;USE_OPENAL;USE_OPENAL_DLOPEN;USE_LOCAL_HEADERS;USE_CIN_THEORA;HAVE_CONFIG_H;USE_VOIP;USE_MUMBLE;USE_BASS;USE_PHYSICS;USE_OPENSSL;USE_CRYPTO;USE_PHYSICS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;AMD64;WIN64;__WIN64__;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;USE_CODEC_VORBIS;USE_OPENAL;USE_OPENAL_DLOPEN;USE_LOCAL_HEADERS;USE_CIN_THEORA;HAVE_CONFIG_H;USE_VOIP;USE_MUMBLE;USE_BASS;USE_OPENSSL;USE_CRYPTO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>

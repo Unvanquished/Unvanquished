@@ -558,7 +558,12 @@ static void PM_CheckCharge( void )
   }
 
   if( pm->ps->stats[ STAT_MISC ] > 0 )
+  {
+    vec3_t dir;
     pm->ps->pm_flags |= PMF_CHARGE;
+    AngleVectors( pm->ps->viewangles, dir, NULL, NULL );
+    pm->ps->stats[ STAT_VIEWLOCK ] = DirToByte( dir );
+  }
   else
     pm->ps->pm_flags &= ~PMF_CHARGE;
 }
@@ -798,7 +803,7 @@ static qboolean PM_CheckJump( void )
 
   //no bunny hopping off a dodge
   if( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS && 
-      pm->ps->pm_time )
+      pm->ps->pm_time > HUMAN_DODGE_TIMEOUT - 500 ) // Let the human jump half a second into the dodge cooldown
     return qfalse;
 
   if( pm->ps->pm_flags & PMF_RESPAWNED )
@@ -3606,6 +3611,34 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 
   //pull the view into the lock point
   if( ps->pm_type == PM_GRABBED && !BG_InventoryContainsUpgrade( UP_BATTLESUIT, ps->stats ) )
+  {
+    vec3_t  dir, angles;
+
+    ByteToDir( ps->stats[ STAT_VIEWLOCK ], dir );
+    vectoangles( dir, angles );
+
+    for( i = 0; i < 3; i++ )
+    {
+      float diff = AngleSubtract( ps->viewangles[ i ], angles[ i ] );
+
+      while( diff > 180.0f )
+        diff -= 360.0f;
+      while( diff < -180.0f )
+        diff += 360.0f;
+
+      if( diff < -90.0f )
+        ps->delta_angles[ i ] += ANGLE2SHORT( fabs( diff ) - 90.0f );
+      else if( diff > 90.0f )
+        ps->delta_angles[ i ] -= ANGLE2SHORT( fabs( diff ) - 90.0f );
+
+      if( diff < 0.0f )
+        ps->delta_angles[ i ] += ANGLE2SHORT( fabs( diff ) * 0.05f );
+      else if( diff > 0.0f )
+        ps->delta_angles[ i ] -= ANGLE2SHORT( fabs( diff ) * 0.05f );
+    }
+  }
+  
+  if( pm->ps->weapon == WP_ALEVEL4 && pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) 
   {
     vec3_t  dir, angles;
 

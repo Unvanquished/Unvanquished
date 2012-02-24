@@ -1018,11 +1018,10 @@ typedef enum
 }
 surfaceType_t;
 
-char           *surfaceTypes[NUM_SURFACE_TYPES]
-#ifndef MAIN_C
-               ;
-#else
-	= {
+
+#ifdef MAIN_C
+
+	char           *surfaceTypes[NUM_SURFACE_TYPES] = {
 	"SURFACE_BAD",
 	"SURFACE_FACE",
 	"SURFACE_PATCH",
@@ -1035,6 +1034,8 @@ char           *surfaceTypes[NUM_SURFACE_TYPES]
 	"SURFACE_DECAL",
 	"SURFACE_SHADER"
 };
+#else
+extern char           *surfaceTypes[NUM_SURFACE_TYPES];
 #endif
 
 
@@ -1985,6 +1986,8 @@ Q_EXTERN game_t				games[]
 							{
 								#include "game_openwolf.h"
 								,
+                                #include "game_tremulous.h"
+                                ,
 								{ NULL }	/* null game */
 							};
 #endif
@@ -2098,8 +2101,6 @@ Q_EXTERN char				name[ 1024 ];
 Q_EXTERN char				source[ 1024 ];
 Q_EXTERN char				outbase[ 32 ];
 
-Q_EXTERN int				sampleSize;						/* lightmap sample size in units */
-Q_EXTERN int				minSampleSize;                  /* minimum sample size to use at all */
 Q_EXTERN int				sampleScale;					/* vortex: lightmap sample scale (ie quality)*/
 
 Q_EXTERN int				mapEntityNum Q_ASSIGN( 0 );
@@ -2314,7 +2315,7 @@ Q_EXTERN float				gridScale Q_ASSIGN( 1.0f );
 Q_EXTERN float				gridAmbientScale Q_ASSIGN( 1.0f );
 Q_EXTERN float				gridDirectionality Q_ASSIGN( 1.0f );
 Q_EXTERN float				gridAmbientDirectionality Q_ASSIGN( 0.0f );
-Q_EXTERN qboolean			inGrid Q_ASSIGN(0);
+Q_EXTERN qboolean			inGrid Q_ASSIGN(qfalse);
 
 /* ydnar: lightmap gamma/compensation */
 Q_EXTERN float				lightmapGamma Q_ASSIGN( 1.0f );

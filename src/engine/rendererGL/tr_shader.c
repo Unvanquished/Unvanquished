@@ -6353,7 +6353,10 @@ static void ScanAndLoadShaderFiles(void)
 		textEnd += strlen( textEnd );
 		ri.FS_FreeFile( buffers[i] );
 	}
-
+	
+	// ydnar: unixify all shaders
+	COM_FixPath(s_shaderText);
+	
 	COM_Compress( s_shaderText );
 
 	// free up memory

@@ -120,19 +120,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define qalcCaptureSamples alcCaptureSamples
 
 #else // OPENAL_STATIC
+
+#define AL_NO_PROTOTYPES
+#define ALC_NO_PROTOTYPES
+
 #if _WIN32
-#define AL_NO_PROTOTYPES
 #include <al.h>
-
-#define ALC_NO_PROTOTYPES
 #include <alc.h>
+#elif MACOS_X
+#include <OpenAl/al.h>
+#include <OpenAl/alc.h>
 #else
-#define AL_NO_PROTOTYPES
 #include <AL/al.h>
-
-#define ALC_NO_PROTOTYPES
 #include <AL/alc.h>
 #endif
+
 extern LPALENABLE qalEnable;
 extern LPALDISABLE qalDisable;
 extern LPALISENABLED qalIsEnabled;

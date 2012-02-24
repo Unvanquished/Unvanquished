@@ -1265,6 +1265,10 @@ static void CG_ServerCommand( void )
   consoleCommand_t *command;
 
   cmd = CG_Argv( 0 );
+  
+  if( !cmd[0] )
+    return;
+  
   command = bsearch( cmd, svcommands, sizeof( svcommands ) /
                      sizeof( svcommands[ 0 ]), sizeof( svcommands[ 0 ] ),
                      cmdcmp );

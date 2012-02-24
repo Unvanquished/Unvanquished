@@ -167,8 +167,8 @@ qboolean GetNews( qboolean begin )
 		if( readSize > 0 ) {
 			finished = qtrue;
 			clc.bWWWDl = qfalse;
+			cls.bWWWDlDisconnected = qfalse;
 		}
-// 		cls.bWWWDlDisconnected = qfalse;
 	}
 	if( !finished ) 
 		strcpy( clc.newsString, "Retrieving..." );

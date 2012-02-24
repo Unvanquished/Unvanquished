@@ -1265,13 +1265,11 @@ stitches lightmap edges
 
 void StitchSurfaceLightmaps(void)
 {
-	int             i, j, x, y, x2, y2, *cluster, *cluster2, numStitched, numCandidates, numLuxels, f, fOld, start;
+	/* disabled for now */
+#if 0
+    int             i, j, x, y, x2, y2, *cluster, *cluster2, numStitched, numCandidates, numLuxels, f, fOld, start;
 	rawLightmap_t  *lm, *a, *b, *c[MAX_STITCH_CANDIDATES];
 	float          *luxel, *luxel2, *origin, *origin2, *normal, *normal2, sampleSize, average[3], totalColor, ootc;
-
-
-	/* disabled for now */
-	return;
 
 	/* note it */
 	Sys_Printf("--- StitchSurfaceLightmaps ---\n");
@@ -1402,6 +1400,7 @@ void StitchSurfaceLightmaps(void)
 	/* emit statistics */
 	Sys_Printf(" (%i)\n", (int)(I_FloatTime() - start));
 	Sys_FPrintf(SYS_VRB, "%9d luxels stitched\n", numStitched);
+#endif
 }
 
 

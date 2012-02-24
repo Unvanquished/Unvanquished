@@ -754,6 +754,75 @@ static void CG_DrawPlayerAmmoValue( rectDef_t *rect, vec4_t color )
   }
 }
 
+static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
+{
+  int value;
+  int valueMarked = -1;
+  qboolean bp = qfalse;
+  weapon_t weapon;
+
+  switch( weapon = BG_PrimaryWeapon( cg.snap->ps.stats ) )
+  {
+    case WP_NONE:
+    case WP_BLASTER:
+      return;
+
+    case WP_ABUILD:
+    case WP_ABUILD2:
+    case WP_HBUILD:
+      value = cg.snap->ps.persistant[ PERS_BP ];
+      valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+      bp = qtrue;
+      break;
+
+    default:
+      value = cg.snap->ps.Ammo + ( cg.snap->ps.clips * BG_Weapon( weapon )->maxAmmo );
+      break;
+  }
+
+  if( value > 999 )
+    value = 999;
+  if( valueMarked > 999 )
+    valueMarked = 999;
+
+  if( value > -1 )
+  {
+    float tx, ty;
+    char *text;
+    float scale;
+    int len;
+
+    trap_R_SetColor( color );
+    if( !bp )
+    {
+      CG_DrawField( rect->x - 5, rect->y, 4, rect->w / 4, rect->h, value );
+      trap_R_SetColor( NULL );
+      return;
+    }
+
+    if( valueMarked > 0 )
+      text = va( "%d+(%d)", value, valueMarked );
+    else
+      text = va( "%d", value );
+
+    len = strlen( text );
+
+    if( len <= 4 )
+      scale = 0.50;
+    else if( len <= 6 )
+      scale = 0.43;
+    else if( len == 7 ) 
+      scale = 0.36; 
+    else if( len == 8 )
+      scale = 0.33;
+    else
+      scale = 0.31;
+
+    CG_AlignText( rect, text, scale, 0.0f, 0.0f, ALIGN_RIGHT, VALIGN_CENTER, &tx, &ty );
+    UI_Text_Paint( tx + 1, ty, scale, color, text, 0, 0, ITEM_TEXTSTYLE_NORMAL );
+    trap_R_SetColor( NULL );
+  }
+}
 
 /*
 ==============
@@ -1635,15 +1704,14 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
                         qboolean scalableText )
 {
   char        *s;
-  float       tx, ty;
-  float       w, h, totalWidth;
-  int         strLength;
+  float       tx=rect->x, ty=rect->y;
   static int  previousTimes[ FPS_FRAMES ];
   static int  index;
   int         i, total;
   int         fps;
   static int  previous;
   int         t, frameTime;
+  float	      maxX;
 
   if( !cg_drawFPS.integer )
     return;
@@ -1656,7 +1724,7 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
 
   previousTimes[ index % FPS_FRAMES ] = frameTime;
   index++;
-
+  
   if( index > FPS_FRAMES )
   {
     // average multiple frames together to smooth changes out a bit
@@ -1669,35 +1737,24 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
       total = 1;
 
     fps = 1000 * FPS_FRAMES / total;
-
-    s = va( "%d", fps );
-    w = UI_Text_Width( "0", scale );
-    h = UI_Text_Height( "0", scale );
-    strLength = CG_DrawStrlen( s );
-    totalWidth = UI_Text_Width( FPS_STRING, scale ) + w * strLength;
-
-    CG_AlignText( rect, s, 0.0f, totalWidth, h, textalign, textvalign, &tx, &ty );
-
-    if( scalableText )
-    {
-      for( i = 0; i < strLength; i++ )
-      {
-        char c[ 2 ];
-
-        c[ 0 ] = s[ i ];
-        c[ 1 ] = '\0';
-
-        UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, c, 0, 0, textStyle );
-      }
-
-      UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, FPS_STRING, 0, 0, textStyle );
-    }
-    else
-    {
-      trap_R_SetColor( color );
-      CG_DrawField( rect->x, rect->y, 3, rect->w / 3, rect->h, fps );
-      trap_R_SetColor( NULL );
-    }
+  }
+  s = va( "%d %s", fps, FPS_STRING);
+  maxX = rect->x + rect->w;
+  if( UI_Text_Width( s, scale ) < rect->w && scalableText )
+  {
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint( tx, ty, scale, color, s, 0, 0, textStyle );
+  }
+  else if( UI_Text_Width( s, scale ) >= rect->w && scalableText ) 
+  {
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint_Limit( &maxX, tx, ty, scale, color, s, 0, 0 );
+  }
+  else
+  {
+    trap_R_SetColor( color );
+    CG_DrawField( rect->x, rect->y, 3, rect->w / 3, rect->h, fps );
+    trap_R_SetColor( NULL );
   }
 }
 
@@ -1762,11 +1819,10 @@ static void CG_DrawTimer( rectDef_t *rect, float text_x, float text_y,
                           int textalign, int textvalign, int textStyle )
 {
   char    *s;
-  float   tx, ty;
-  int     i, strLength;
-  float   w, h, totalWidth;
+  float   tx=rect->x, ty=rect->y;
   int     mins, seconds, tens;
   int     msec;
+  float	  maxX;
 
   if( !cg_drawTimer.integer )
     return;
@@ -1780,21 +1836,16 @@ static void CG_DrawTimer( rectDef_t *rect, float text_x, float text_y,
   seconds -= tens * 10;
 
   s = va( "%d:%d%d", mins, tens, seconds );
-  w = UI_Text_Width( "0", scale );
-  h = UI_Text_Height( "0", scale );
-  strLength = CG_DrawStrlen( s );
-  totalWidth = w * strLength;
-
-  CG_AlignText( rect, s, 0.0f, totalWidth, h, textalign, textvalign, &tx, &ty );
-
-  for( i = 0; i < strLength; i++ )
+  
+  if( UI_Text_Width( s, scale ) < rect->w )
   {
-    char c[ 2 ];
-
-    c[ 0 ] = s[ i ];
-    c[ 1 ] = '\0';
-
-    UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, c, 0, 0, textStyle );
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint( tx, ty, scale, color, s, 0, 0, textStyle );
+  }
+  else
+  {
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint_Limit( &maxX, tx, ty, scale, color, s, 0, 0 );
   }
 }
 
@@ -3179,6 +3230,9 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
     case CG_PLAYER_AMMO_VALUE:
       CG_DrawPlayerAmmoValue( &rect, foreColor );
       break;
+    case CG_PLAYER_TOTAL_AMMO_VALUE:
+      CG_DrawPlayerTotalAmmoValue( &rect, foreColor );
+      break;
     case CG_PLAYER_CLIPS_VALUE:
       CG_DrawPlayerClipsValue( &rect, foreColor );
       break;
@@ -3671,7 +3725,7 @@ static void CG_DrawVote( team_t team )
   UI_Text_Paint( 8, 320 + offset, 0.3f, white, s, 0, 0,
     ITEM_TEXTSTYLE_NORMAL );
 
-  s = va( "  [check]%sYes:%i %sNo:%i",
+  s = va( "  [check]%sYes:%i %s[cross]No:%i",
     yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
   UI_Text_Paint( 8, 340 + offset, 0.3f, white, s, 0, 0,
@@ -3743,6 +3797,100 @@ static void CG_DrawIntermission( void )
   cg.scoreFadeTime = cg.time;
   cg.scoreBoardShowing = CG_DrawScoreboard( );
 }
+
+/*
+==============
+CG_DrawPainView
+==============
+*/
+static void CG_DrawPainView(void)
+{
+	float healthfraction;
+	qhandle_t painview, heartpump;
+	
+	if (cg.snap->ps.pm_type == PM_INTERMISSION)
+		return;
+	
+	if (!(cgs.blood & BLOOD_VIEW))
+		return;
+
+    if( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) {
+		if (healthfraction <= .0f) {
+			painview = cgs.media.hudAlienDamagedView[10];
+			heartpump = 255;		
+		} else if (healthfraction > .0f && healthfraction <= 0.5f) {
+			painview = cgs.media.hudAlienDamagedView[9];
+			heartpump = 255;		
+		} else if (healthfraction > 0.05f && healthfraction <= 0.1f) {
+			painview = cgs.media.hudAlienDamagedView[8];
+			heartpump = 255;
+		} else if (healthfraction > 0.1f && healthfraction <= 0.15f) {
+			painview = cgs.media.hudAlienDamagedView[7];
+			heartpump = 210;
+		} else if (healthfraction > 0.15f && healthfraction <= 0.2f) {
+			painview = cgs.media.hudAlienDamagedView[6];
+			heartpump = 175;
+		} else if (healthfraction > 0.2f && healthfraction <= 0.25f) {
+			painview = cgs.media.hudAlienDamagedView[5];
+			heartpump = 140;
+		} else if (healthfraction > 0.25f && healthfraction <= 0.3f) {
+			painview = cgs.media.hudAlienDamagedView[4];
+			heartpump = 105;
+		} else if (healthfraction > 0.3f && healthfraction <= 0.35f) {
+			painview = cgs.media.hudAlienDamagedView[3];
+			heartpump = 70;
+		} else if (healthfraction > 0.35f && healthfraction <= 0.4f) {
+			painview = cgs.media.hudAlienDamagedView[2];
+			heartpump = 35;
+		} else if (healthfraction > 0.4f && healthfraction <= 0.5f) {
+			heartpump = 0;
+			painview = cgs.media.hudAlienDamagedView[1];
+		} else if (healthfraction > 0.5f) {
+			heartpump = 0;
+			painview = cgs.media.hudAlienDamagedView[0];
+		}
+	} else {
+		if (healthfraction <= .0f) {
+			painview = cgs.media.hudHumanDamagedView[10];
+			heartpump = 255;		
+		} else if (healthfraction > .0f && healthfraction <= 0.5f) {
+			painview = cgs.media.hudHumanDamagedView[9];
+			heartpump = 255;		
+		} else if (healthfraction > 0.05f && healthfraction <= 0.1f) {
+			painview = cgs.media.hudHumanDamagedView[8];
+			heartpump = 255;
+		} else if (healthfraction > 0.1f && healthfraction <= 0.15f) {
+			painview = cgs.media.hudHumanDamagedView[7];
+			heartpump = 210;
+		} else if (healthfraction > 0.15f && healthfraction <= 0.2f) {
+			painview = cgs.media.hudHumanDamagedView[6];
+			heartpump = 175;
+		} else if (healthfraction > 0.2f && healthfraction <= 0.25f) {
+			painview = cgs.media.hudHumanDamagedView[5];
+			heartpump = 140;
+		} else if (healthfraction > 0.25f && healthfraction <= 0.3f) {
+			painview = cgs.media.hudHumanDamagedView[4];
+			heartpump = 105;
+		} else if (healthfraction > 0.3f && healthfraction <= 0.35f) {
+			painview = cgs.media.hudHumanDamagedView[3];
+			heartpump = 70;
+		} else if (healthfraction > 0.35f && healthfraction <= 0.4f) {
+			painview = cgs.media.hudHumanDamagedView[2];
+			heartpump = 35;
+		} else if (healthfraction > 0.4f && healthfraction <= 0.5f) {
+			heartpump = 0;
+			painview = cgs.media.hudHumanDamagedView[1];
+		} else if (healthfraction > 0.5f) {
+			heartpump = 0;
+			painview = cgs.media.hudHumanDamagedView[0];
+		}
+	}
+
+	if (cgs.blood & BLOOD_VIEW) {
+		CG_DrawPic( 0, 0, 640, 480, painview );
+	}	
+}
+
 
 /*
 =================
@@ -3848,6 +3996,8 @@ CG_Draw2D
 static void CG_Draw2D( void )
 {
   menuDef_t *menu = NULL;
+  
+  CG_DrawPainView();
 
   // fading to black if stamina runs out
   // (only 2D that can't be disabled)

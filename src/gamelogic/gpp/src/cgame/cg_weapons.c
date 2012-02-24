@@ -574,13 +574,13 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
         }
 
         CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
-          va( "%s_view_raise.md5anim", token2 ), qtrue, qtrue, qfalse );
+          va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
         CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
-          va( "%s_view_lower.md5anim", token2 ), qtrue, qtrue, qfalse);
+          va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse);
         CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-          va( "%s_view_fire.md5anim", token2 ), qtrue, qfalse, qfalse );
+          va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
 	CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-	  va( "%s_view_reload.md5anim", token2 ), qtrue, qfalse, qfalse );
+	  va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
       }
       else
         wi->weaponModel = trap_R_RegisterModel( token );
@@ -715,9 +715,21 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
       Q_strncpyz( wi->rotationBone, token, sizeof( wi->rotationBone ) );
       continue;
     }
-
-    Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
-    return qfalse;
+    else if(!Q_stricmp(token, "modelScale"))
+    {
+	for(i = 0; i < 3; i++)
+	{
+		token = COM_ParseExt2(&text_p, qfalse);
+		if(!token)
+		{
+			break;
+		}
+		wi->scale[i] = atof(token);
+	}
+	continue;
+   }
+   Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+   return qfalse;
   }
 
   return qtrue;
@@ -908,12 +920,12 @@ CG_MapTorsoToWeaponFrame
 static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, qboolean md5 )
 {
 
-  // change weapon
-  if( frame >= ci->animations[ TORSO_DROP ].firstFrame &&
-      frame < ci->animations[ TORSO_DROP ].firstFrame + 9 )
-    return frame - ci->animations[ TORSO_DROP ].firstFrame + 6;
-  if( md5 )
+  if( !md5 )
   {
+    // change weapon
+    if( frame >= ci->animations[ TORSO_DROP ].firstFrame &&
+	frame < ci->animations[ TORSO_DROP ].firstFrame + 9 )
+      return frame - ci->animations[ TORSO_DROP ].firstFrame + 6;
     // stand attack
     if( frame >= ci->animations[ TORSO_ATTACK ].firstFrame &&
 	frame < ci->animations[ TORSO_ATTACK ].firstFrame + 6 )
@@ -963,23 +975,25 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
     angles[ YAW ] += scale * cg.bobfracsin * 0.01;
     angles[ PITCH ] += cg.xyspeed * cg.bobfracsin * 0.005;
   }
-
-  // drop the weapon when landing
-  if( !weapon->noDrift )
+  if( !weapon->md5 )
   {
-    delta = cg.time - cg.landTime;
-    if( delta < LAND_DEFLECT_TIME )
-      origin[ 2 ] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
-    else if( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
-      origin[ 2 ] += cg.landChange*0.25 *
-        ( LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta ) / LAND_RETURN_TIME;
+    // drop the weapon when landing
+    if( !weapon->noDrift )
+    {
+      delta = cg.time - cg.landTime;
+      if( delta < LAND_DEFLECT_TIME )
+	origin[ 2 ] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
+      else if( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
+	origin[ 2 ] += cg.landChange*0.25 *
+	  ( LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta ) / LAND_RETURN_TIME;
 
-    // idle drift
-    scale = cg.xyspeed + 40;
-    fracsin = sin( cg.time * 0.001 );
-    angles[ ROLL ] += scale * fracsin * 0.01;
-    angles[ YAW ] += scale * fracsin * 0.01;
-    angles[ PITCH ] += scale * fracsin * 0.01;
+      // idle drift
+      scale = cg.xyspeed + 40;
+      fracsin = sin( cg.time * 0.001 );
+      angles[ ROLL ] += scale * fracsin * 0.01;
+      angles[ YAW ] += scale * fracsin * 0.01;
+      angles[ PITCH ] += scale * fracsin * 0.01;
+    }
   }
 }
 
@@ -1152,7 +1166,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
       QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
       QuatMultiply0( gun.skeleton.bones[ boneIndex ].rotation, rotation );
     }
-    CG_TransformSkeleton( &gun.skeleton, NULL );
+    CG_TransformSkeleton( &gun.skeleton, weapon->scale );
 
     trap_R_AddRefEntityToScene( &gun );
 

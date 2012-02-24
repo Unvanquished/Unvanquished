@@ -1028,7 +1028,10 @@ fixes t-junctions on meta triangles
 
 void FixMetaTJunctions(void)
 {
-	int             i, j, k, f, fOld, start, vertIndex, triIndex, numTJuncs;
+	/* this code is crap; revisit later */
+#if 0
+
+    int             i, j, k, f, fOld, start, vertIndex, triIndex, numTJuncs;
 	metaTriangle_t *tri, *newTri;
 	shaderInfo_t   *si;
 	bspDrawVert_t  *a, *b, *c, junc;
@@ -1036,10 +1039,6 @@ void FixMetaTJunctions(void)
 	vec3_t          pt;
 	vec4_t          plane;
 	edge_t          edges[3];
-
-
-	/* this code is crap; revisit later */
-	return;
 
 	/* note it */
 	Sys_FPrintf(SYS_VRB, "--- FixMetaTJunctions ---\n");
@@ -1195,6 +1194,7 @@ void FixMetaTJunctions(void)
 
 	/* emit some stats */
 	Sys_FPrintf(SYS_VRB, "%9d T-junctions added\n", numTJuncs);
+#endif
 }
 
 

@@ -3,20 +3,20 @@
 Copyright (C) 1999-2005 Id Software, Inc.
 Copyright (C) 2000-2009 Darklegion Development
 
-This file is part of OpenWolf.
+This file is part of Tremulous.
 
-OpenWolf is free software; you can redistribute it
+Tremulous is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
-OpenWolf is distributed in the hope that it will be
+Tremulous is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with OpenWolf; if not, write to the Free Software
+along with Tremulous; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
@@ -54,14 +54,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL0_BITE_K_SCALE         1.0f
 
 #define LEVEL1_CLAW_DMG             ADM(32)
-#define LEVEL1_CLAW_RANGE           64.0f
+#define LEVEL1_CLAW_RANGE           80.0f // Whales: Claw and grab range normalized. Not sure on this one, but it was pretty widely requested.
 #define LEVEL1_CLAW_U_RANGE         LEVEL1_CLAW_RANGE + 3.0f
 #define LEVEL1_CLAW_WIDTH           10.0f
 #define LEVEL1_CLAW_REPEAT          600
 #define LEVEL1_CLAW_U_REPEAT        500
 #define LEVEL1_CLAW_K_SCALE         1.0f
 #define LEVEL1_CLAW_U_K_SCALE       1.0f
-#define LEVEL1_GRAB_RANGE           96.0f
+#define LEVEL1_GRAB_RANGE           80.0f // Whales: Claw and grab range normalized. 
 #define LEVEL1_GRAB_U_RANGE         LEVEL1_GRAB_RANGE + 3.0f
 #define LEVEL1_GRAB_TIME            300
 #define LEVEL1_GRAB_U_TIME          300
@@ -93,45 +93,45 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL2_WALLJUMP_MAXSPEED    1000.0f
 
 #define LEVEL3_CLAW_DMG             ADM(80)
-#define LEVEL3_CLAW_RANGE           80.0f
+#define LEVEL3_CLAW_RANGE           82.0f // Whales: Increased claw range
 #define LEVEL3_CLAW_UPG_RANGE       LEVEL3_CLAW_RANGE + 3.0f          
-#define LEVEL3_CLAW_WIDTH           12.0f
-#define LEVEL3_CLAW_REPEAT          900
+#define LEVEL3_CLAW_WIDTH           13.5f // Whales: Increased claw width
+#define LEVEL3_CLAW_REPEAT          750 // Whales: Lowered repeat
 #define LEVEL3_CLAW_K_SCALE         1.0f
-#define LEVEL3_CLAW_U_REPEAT        800
-#define LEVEL3_CLAW_U_K_SCALE       1.0f
-#define LEVEL3_POUNCE_DMG           ADM(100)
-#define LEVEL3_POUNCE_RANGE         48.0f
+#define LEVEL3_CLAW_U_REPEAT        700 // Whales: Lowered repeat for Adv. Goon. Standard value is 100ms below standard goon, but 650 is a bit fast for my taste.
+#define LEVEL3_CLAW_U_K_SCALE       0.75f
+#define LEVEL3_POUNCE_DMG           ADM(75) // Ishq: Reduced damage. Pounce is very powerful as it is.
+#define LEVEL3_POUNCE_RANGE         55.0f // Whales: Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
 #define LEVEL3_POUNCE_UPG_RANGE     LEVEL3_POUNCE_RANGE + 3.0f
-#define LEVEL3_POUNCE_WIDTH         14.0f
-#define LEVEL3_POUNCE_TIME          800      // msec for full Dragoon pounce
-#define LEVEL3_POUNCE_TIME_UPG      800      // msec for full Adv. Dragoon pounce
+#define LEVEL3_POUNCE_WIDTH         12.0f // Whales: Pounce width narrowed. May scale this down even further.
+#define LEVEL3_POUNCE_TIME          700      // Whales: Reduced this by 100ms, may need nerfing.
+#define LEVEL3_POUNCE_TIME_UPG      700      // Whales: Evened with standard goon. I'd like to keep this here even if standard goon charge time is raised.
 #define LEVEL3_POUNCE_TIME_MIN      200      // msec before which pounce cancels  
 #define LEVEL3_POUNCE_REPEAT        400      // msec before a new pounce starts
-#define LEVEL3_POUNCE_SPEED_MOD     0.75f    // walking speed modifier for pounce charging
-#define LEVEL3_POUNCE_JUMP_MAG      700      // Dragoon pounce jump power
-#define LEVEL3_POUNCE_JUMP_MAG_UPG  800      // Adv. Dragoon pounce jump power
+#define LEVEL3_POUNCE_SPEED_MOD     0.85f    // Whales: Reduced the slowdown from a charged pounce by 0.10
+#define LEVEL3_POUNCE_JUMP_MAG      750      // Whales: Raised by 50, 
+#define LEVEL3_POUNCE_JUMP_MAG_UPG  850      // Whales: Raised by 50.
 #define LEVEL3_BOUNCEBALL_DMG       ADM(110)
 #define LEVEL3_BOUNCEBALL_REPEAT    1200
 #define LEVEL3_BOUNCEBALL_SPEED     1000.0f
 #define LEVEL3_BOUNCEBALL_RADIUS    75
-#define LEVEL3_BOUNCEBALL_REGEN     15000    // msec until new barb
+#define LEVEL3_BOUNCEBALL_REGEN     12500    // Whales: Reduced regen time.
 
 #define LEVEL4_CLAW_DMG             ADM(100)
 #define LEVEL4_CLAW_RANGE           100.0f
 #define LEVEL4_CLAW_WIDTH           14.0f
 #define LEVEL4_CLAW_HEIGHT          20.0f
 #define LEVEL4_CLAW_REPEAT          800
-#define LEVEL4_CLAW_K_SCALE         1.0f
+#define LEVEL4_CLAW_K_SCALE         0.7f
 
-#define LEVEL4_TRAMPLE_DMG             ADM(111)
+#define LEVEL4_TRAMPLE_DMG             ADM(85) // 111 -> 85
 #define LEVEL4_TRAMPLE_SPEED           2.0f
 #define LEVEL4_TRAMPLE_CHARGE_MIN      375   // minimum msec to start a charge
 #define LEVEL4_TRAMPLE_CHARGE_MAX      1000  // msec to maximum charge stored
 #define LEVEL4_TRAMPLE_CHARGE_TRIGGER  3000  // msec charge starts on its own
 #define LEVEL4_TRAMPLE_DURATION        3000  // msec trample lasts on full charge
 #define LEVEL4_TRAMPLE_STOP_PENALTY    1     // charge lost per msec when stopped
-#define LEVEL4_TRAMPLE_REPEAT          100   // msec before a trample will rehit a player
+#define LEVEL4_TRAMPLE_REPEAT          300   // Time until charge rehits a player Ishq: 100->300
 
 #define LEVEL4_CRUSH_DAMAGE_PER_V      0.5f  // damage per falling velocity
 #define LEVEL4_CRUSH_DAMAGE            120   // to players only
@@ -195,19 +195,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL2_UPG_REGEN            (0.03f * LEVEL2_UPG_HEALTH)
 #define LEVEL2_UPG_COST             1
 
-#define LEVEL3_SPEED                1.1f
+#define LEVEL3_SPEED                1.2f // Whales: Raised goon speed by .1 to match backpedalling humans. May need nerf.
 #define LEVEL3_VALUE                AVM(600)
 #define LEVEL3_HEALTH               AHM(200)
 #define LEVEL3_REGEN                (0.03f * LEVEL3_HEALTH)
 #define LEVEL3_COST                 1
 
-#define LEVEL3_UPG_SPEED            1.1f
+#define LEVEL3_UPG_SPEED            1.2f // Whales: Raised by .1 to match standard goon. 
 #define LEVEL3_UPG_VALUE            AVM(720)
 #define LEVEL3_UPG_HEALTH           AHM(250)
 #define LEVEL3_UPG_REGEN            (0.03f * LEVEL3_UPG_HEALTH)
 #define LEVEL3_UPG_COST             1
 
-#define LEVEL4_SPEED                1.2f
+#define LEVEL4_SPEED                1.1f // Whales: Lowered by .1
 #define LEVEL4_VALUE                AVM(960)
 #define LEVEL4_HEALTH               AHM(350)
 #define LEVEL4_REGEN                (0.025f * LEVEL4_HEALTH)
@@ -375,11 +375,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define RIFLE_CLIPSIZE              30
 #define RIFLE_MAXCLIPS              6
-#define RIFLE_REPEAT                90
+#define RIFLE_REPEAT                80 // Whales: Lowered by 10
 #define RIFLE_K_SCALE               1.0f
 #define RIFLE_RELOAD                2000
 #define RIFLE_PRICE                 0
-#define RIFLE_SPREAD                200
+#define RIFLE_SPREAD                250 // Whales: Raised by 50. 
 #define RIFLE_DMG                   HDM(5)
 
 #define PAINSAW_PRICE               100
@@ -425,20 +425,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define CHAINGUN_PRICE              400
 #define CHAINGUN_BULLETS            300
-#define CHAINGUN_REPEAT             80
+#define CHAINGUN_REPEAT             88 // Ishq: 80 -> 88
 #define CHAINGUN_K_SCALE            1.0f
 #define CHAINGUN_SPREAD             900
 #define CHAINGUN_DMG                HDM(6)
 
-#define FLAMER_PRICE                400
-#define FLAMER_GAS                  200
+#define FLAMER_PRICE                450 // Ishq: 400->400
+#define FLAMER_GAS                  175 // Ishq: 200->175
 #define FLAMER_REPEAT               200
 #define FLAMER_K_SCALE              2.0f
-#define FLAMER_DMG                  HDM(20)
-#define FLAMER_SPLASHDAMAGE         HDM(10)
-#define FLAMER_RADIUS               50       // splash radius
+#define FLAMER_DMG                  HDM(15) // Ishq: 20->15
+#define FLAMER_SPLASHDAMAGE         HDM(7) // Ishq: 10->7
+#define FLAMER_RADIUS               25       // Whales: Radius lowered by 25
 #define FLAMER_SIZE                 15        // missile bounding box
-#define FLAMER_LIFETIME             700.0f
+#define FLAMER_LIFETIME             750.0f // Whales: Raised by 50.
 #define FLAMER_SPEED                500.0f
 #define FLAMER_LAG                  0.65f    // the amount of player velocity that is added to the fireball
 
@@ -509,7 +509,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define GAS_PRICE                   0
 
-#define MEDKIT_POISON_IMMUNITY_TIME 0
+#define MEDKIT_POISON_IMMUNITY_TIME 2000 // Whales: Added two second poison immunity from medkit.
 #define MEDKIT_STARTUP_TIME         4000
 #define MEDKIT_STARTUP_SPEED        5
 
@@ -625,7 +625,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_DODGE_SIDE_MODIFIER   2.9f
 #define HUMAN_DODGE_SLOWED_MODIFIER 0.9f
 #define HUMAN_DODGE_UP_MODIFIER     0.5f
-#define HUMAN_DODGE_TIMEOUT         500
+#define HUMAN_DODGE_TIMEOUT         5000
 #define HUMAN_LAND_FRICTION         3.0f
 
 #define STAMINA_STOP_RESTORE        30
@@ -633,8 +633,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define STAMINA_MEDISTAT_RESTORE    30 // stacked on STOP or WALK
 #define STAMINA_SPRINT_TAKE         6
 #define STAMINA_JUMP_TAKE           250
-#define STAMINA_DODGE_TAKE          250
-#define STAMINA_MAX                 1000
+#define STAMINA_DODGE_TAKE          750 // Whales: Tripled dodge stamina requirement.
+#define STAMINA_MAX                 3000 //Whales: Tripled maximum stamina.
 #define STAMINA_BREATHING_LEVEL     0
 #define STAMINA_SLOW_LEVEL          -500
 #define STAMINA_BLACKOUT_LEVEL      -800
@@ -680,4 +680,3 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                                          //do to increment the stage kill counters
                                          
 #define MAXIMUM_BUILD_TIME          20000 // used for pie timer
-
