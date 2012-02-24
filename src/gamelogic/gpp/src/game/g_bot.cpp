@@ -959,25 +959,14 @@ qboolean BotWillBuildSomething(gentity_t *self) {
     return needsToBuild;
 }
 qboolean BotShouldBuild(gentity_t *self) {
-  int botNumbers[MAX_CLIENTS];
   if(BotGetTeam(self) != TEAM_HUMANS)
     return qfalse;
   if((!g_bot_repair.integer || !self->botMind->closestDamagedBuilding.ent) && (!g_bot_build.integer || !level.botBuildLayout.numBuildings || !BotWillBuildSomething(self)))
     return qfalse;
   if(self->botMind->modus == BOT_MODUS_BUILD)
     return qtrue;
-  int numBots = FindBots(botNumbers,MAX_CLIENTS,TEAM_HUMANS);
 
-  //find out if anyone else on our team is building
-  for(int i=0;i<numBots;i++) {
-    gentity_t *bot = &g_entities[botNumbers[i]];
-    if(bot == self)
-      continue;
-    if(bot->botMind->modus == BOT_MODUS_BUILD) {
-      return qfalse; //someone is building already so we should not build
-    }
-  }
-  return qtrue;
+  return BotTeamateIsInModus(self, BOT_MODUS_BUILD);
 }
 
 qboolean BotShouldRushEnemyBase(gentity_t *self) {
