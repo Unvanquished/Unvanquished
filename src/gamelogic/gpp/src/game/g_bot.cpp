@@ -1561,6 +1561,20 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
     return TASK_RUNNING; //we dont want to end this task yet incase there is another enemy
   }
 
+  //enemy has switched teams so signal that the goal is unusable
+  if(BotGetTeam(self->botMind->goal) == BotGetTeam(self) || BotGetTeam(self->botMind->goal) == TEAM_NONE) {
+    self->botMind->needNewGoal = qtrue;
+    return TASK_RUNNING;
+  }
+
+  //enemy has died so signal that the goal is unusable
+  if(self->botMind->goal.ent->health <= 0 || 
+    (BotTargetIsPlayer(self->botMind->goal) && self->botMind->goal.ent->client->ps.pm_type == PM_DEAD)) 
+  {
+    self->botMind->needNewGoal = qtrue;
+    return TASK_RUNNING;
+  }
+
   //switch to blaster if we need to
   if((WeaponIsEmpty((weapon_t)self->client->ps.weapon, self->client->ps)
     || self->client->ps.weapon == WP_HBUILD) && BotGetTeam(self) == TEAM_HUMANS)
