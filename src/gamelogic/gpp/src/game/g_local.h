@@ -879,6 +879,18 @@ char     *G_NewString( const char *string );
 //
 // g_cmds.c
 //
+qboolean G_BotAdd( char *name, team_t team, int skill );
+void G_BotDel( int clientNum );
+void G_BotCmd( gentity_t *master, int clientNum, char *command);
+void G_BotThink(gentity_t *self);
+void G_BotSpectatorThink( gentity_t *self );
+void G_BotIntermissionThink( gclient_t *client );
+void G_BotAssignGroups(void);
+void G_BotLoadBuildLayout();
+
+//
+// g_cmds.c
+//
 
 #define DECOLOR_OFF '\16'
 #define DECOLOR_ON  '\17'
@@ -942,47 +954,49 @@ typedef enum
   IBE_MAXERRORS
 } itemBuildError_t;
 
-gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
-                              const vec3_t normal, buildable_t spawn,
-                              vec3_t spawnOrigin );
-
-buildable_t      G_IsPowered( vec3_t origin );
-qboolean         G_IsDCCBuilt( void );
-int              G_FindDCC( gentity_t *self );
-gentity_t        *G_Reactor( void );
-gentity_t        *G_Overmind( void );
-qboolean         G_FindCreep( gentity_t *self );
-
-void             G_BuildableThink( gentity_t *ent, int msec );
-qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
-void             G_ClearDeconMarks( void );
-itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal );
-qboolean         G_BuildIfValid( gentity_t *ent, buildable_t buildable );
-void             G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim, qboolean force );
-void             G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim );
-void             G_SpawnBuildable( gentity_t *ent, buildable_t buildable );
-void             FinishSpawningBuildable( gentity_t *ent );
-void             G_LayoutSave( char *name );
-int              G_LayoutList( const char *map, char *list, int len );
-void             G_LayoutSelect( void );
-void             G_LayoutLoad( void );
-void             G_BaseSelfDestruct( team_t team );
-int              G_NextQueueTime( int queuedBP, int totalBP, int queueBaseRate );
-void             G_QueueBuildPoints( gentity_t *self );
-int              G_GetBuildPoints( const vec3_t pos, team_t team );
-int              G_GetMarkedBuildPoints( const vec3_t pos, team_t team );
-qboolean         G_FindPower( gentity_t *self, qboolean searchUnspawned );
-gentity_t        *G_PowerEntityForPoint( const vec3_t origin );
-gentity_t        *G_PowerEntityForEntity( gentity_t *ent );
-gentity_t        *G_RepeaterEntityForPoint( vec3_t origin );
-gentity_t        *G_InPowerZone( gentity_t *self );
-buildLog_t       *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
-void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );
-void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
-void             G_BuildLogRevert( int id );
-void             G_RemoveRangeMarkerFrom( gentity_t *self );
-void             G_UpdateBuildableRangeMarkers( void );
-
+gentity_t         *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
+                                      const vec3_t normal, buildable_t spawn,
+                                      vec3_t spawnOrigin );
+itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable, vec3_t          origin );
+buildable_t       G_IsPowered( vec3_t origin );
+qboolean          G_IsDCCBuilt( void );
+int               G_FindDCC( gentity_t *self );
+gentity_t         *G_Reactor( void );
+gentity_t         *G_Overmind( void );
+qboolean          G_FindCreep( gentity_t *self );
+gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
+    const vec3_t origin, const vec3_t normal, const vec3_t angles );
+void              G_BuildableThink( gentity_t *ent, int msec );
+qboolean          G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
+void              G_ClearDeconMarks( void );
+itemBuildError_t  G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal );
+qboolean          G_BuildIfValid( gentity_t *ent, buildable_t buildable );
+void              G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim, qboolean force );
+void              G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim );
+void              G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
+void              FinishSpawningBuildable( gentity_t *ent );
+void              G_LayoutSave( char *name );
+int               G_LayoutList( const char *map, char *list, int len );
+void              G_LayoutSelect( void );
+void              G_LayoutLoad( void );
+void			  G_NavMeshInit( void );
+void			  G_NavMeshCleanup( void );
+void              G_BaseSelfDestruct( team_t team );
+int               G_NextQueueTime( int queuedBP, int totalBP, int queueBaseRate );
+void              G_QueueBuildPoints( gentity_t *self );
+int               G_GetBuildPoints( const vec3_t pos, team_t team );
+int               G_GetMarkedBuildPoints( const vec3_t pos, team_t team );
+qboolean          G_FindPower( gentity_t *self, qboolean searchUnspawned );
+gentity_t         *G_PowerEntityForPoint( const vec3_t origin );
+gentity_t         *G_PowerEntityForEntity( gentity_t *ent );
+gentity_t         *G_RepeaterEntityForPoint( vec3_t origin );
+gentity_t         *G_InPowerZone( gentity_t *self );
+buildLog_t        *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
+void              G_BuildLogSet( buildLog_t *log, gentity_t *ent );
+void              G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
+void              G_BuildLogRevert( int id );
+void              G_RemoveRangeMarkerFrom( gentity_t *self );
+void              G_UpdateBuildableRangeMarkers( void );
 //
 // g_utils.c
 //
