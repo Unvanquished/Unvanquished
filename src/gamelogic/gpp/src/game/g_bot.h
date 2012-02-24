@@ -84,9 +84,8 @@ botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer);
 //g_alienbot.cpp
 float CalcPounceAimPitch(gentity_t *self, botTarget_t target);
 float CalcBarbAimPitch(gentity_t *self, botTarget_t target);
-//int	 BotEvolveToClass( gentity_t *ent, char *classname, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskEvolve( gentity_t *self , usercmd_t *botCmdBuffer);
-qboolean G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
+bool G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
 botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer);
 
 //g_nav.cpp

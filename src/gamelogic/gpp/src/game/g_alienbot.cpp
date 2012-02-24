@@ -78,7 +78,7 @@ float CalcBarbAimPitch(gentity_t *self, botTarget_t target) {
    //in usrcmd angles, a positive angle is down, so multiply angle by -1
    //botCmdBuffer->angles[PITCH] = ANGLE2SHORT(-angle);
 }
-qboolean G_RoomForClassChange( gentity_t *ent, class_t classt,
+bool G_RoomForClassChange( gentity_t *ent, class_t classt,
                                       vec3_t newOrigin )
 {
   vec3_t    fromMins, fromMaxs;
@@ -133,9 +133,9 @@ qboolean G_RoomForClassChange( gentity_t *ent, class_t classt,
     ent->s.number, MASK_PLAYERSOLID );
 
   //check there is room to evolve
-  return (qboolean)((int) !tr.startsolid && tr.fraction == 1.0f );
+  return (!tr.startsolid && tr.fraction == 1.0f );
 }
-int BotEvolveToClass( gentity_t *ent, class_t newClass)
+bool BotEvolveToClass( gentity_t *ent, class_t newClass)
 {
     int clientNum;
     int i;
@@ -150,7 +150,7 @@ int BotEvolveToClass( gentity_t *ent, class_t newClass)
 
 
     if( ent->client->ps.stats[ STAT_HEALTH ] <= 0 )
-        return 0;
+        return false;
 
     clientNum = ent->client - level.clients;
 
@@ -171,11 +171,11 @@ int BotEvolveToClass( gentity_t *ent, class_t newClass)
 
             if( ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) ||
                 ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
-                return 0;
+                return false;
         }
 
         if( !G_Overmind() )
-            return 0;
+            return false;
 
         numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass,(short)ent->client->ps.persistant[ PERS_CREDIT ], g_alienStage.integer, 0);
 
@@ -206,19 +206,19 @@ int BotEvolveToClass( gentity_t *ent, class_t newClass)
 
                 //trap_SendServerCommand( -1, va( "print \"evolved to %s\n\"", classname) );
 
-                return 1;
+                return true;
             }
             else
                 //trap_SendServerCommand( -1, va( "print \"Not enough evos to evolve to %s\n\"", classname) );
-                return 0;
+                return false;
         }
         else
-            return 0;
+            return false;
     }
-    return 0;
+    return false;
 }
-qboolean BotCanEvolveToClass(gentity_t *self, class_t newClass) {
-  return (qboolean)((int)BG_ClassCanEvolveFromTo((class_t)self->client->ps.stats[STAT_CLASS],newClass,self->client->ps.persistant[PERS_CREDIT],g_alienStage.integer,0) >= 0);
+bool BotCanEvolveToClass(gentity_t *self, class_t newClass) {
+  return (BG_ClassCanEvolveFromTo((class_t)self->client->ps.stats[STAT_CLASS],newClass,self->client->ps.persistant[PERS_CREDIT],g_alienStage.integer,0) >= 0);
 }
 /*
 ==============================
