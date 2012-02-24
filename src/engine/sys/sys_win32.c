@@ -94,20 +94,41 @@ void Sys_SetFloatEnv(void)
 Sys_DefaultHomePath
 ================
 */
-// Dushan - SHFolder.dll is common in Windows nowadays, so we dont need much of this stuff anyway
 char *Sys_DefaultHomePath( void )
 {
-	if( SHGetSpecialFolderPath( NULL, buffer, CSIDL_PERSONAL, TRUE ) != NOERROR )
+	TCHAR szPath[MAX_PATH];
+	FARPROC qSHGetFolderPath;
+	HMODULE shfolder = LoadLibrary("shfolder.dll");
+	
+	if( !*homePath )
 	{
-		Q_strcat( buffer, size, "\\My Games\\Unvanquished" );
-	} else
-	{
-		Com_Error( ERR_FATAL, "couldn't find home path.\n" );
-		buffer[0] = 0;
+		if(shfolder == NULL)
+		{
+			Com_Printf("Unable to load SHFolder.dll\n");
+			return NULL;
+		}
+
+		qSHGetFolderPath = GetProcAddress(shfolder, "SHGetFolderPathA");
+		if(qSHGetFolderPath == NULL)
+		{
+			Com_Printf("Unable to find SHGetFolderPath in SHFolder.dll\n");
+			FreeLibrary(shfolder);
+			return NULL;
+		}
+
+		if( !SUCCEEDED( qSHGetFolderPath( NULL, CSIDL_APPDATA,
+						NULL, 0, szPath ) ) )
+		{
+			Com_Printf("Unable to detect CSIDL_APPDATA\n");
+			FreeLibrary(shfolder);
+			return NULL;
+		}
+		Q_strncpyz( homePath, szPath, sizeof( homePath ) );
+		Q_strcat( homePath, sizeof( homePath ), "\\Daemon" );
+		FreeLibrary(shfolder);
 	}
 
-	return buffer;
-  
+	return homePath;
 }
 
 /*
