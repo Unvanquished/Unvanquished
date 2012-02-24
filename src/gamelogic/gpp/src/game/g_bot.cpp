@@ -923,50 +923,24 @@ Boolean Functions for determining actions
 ========================
 */
 qboolean BotWillBuildSomething(gentity_t *self) {
-    if(!level.botBuildLayout.numBuildings) {
-      return qfalse;
-    }
-    //NOTE: Until alien building is (re)implemented, the only buildings in level.botLayout are ones on the human team
-
-    //check all buildings in layout and see if we need to build them
-    qboolean needsToBuild = qfalse;
-    for(int i=0;i<level.botBuildLayout.numBuildings;i++) {
-      vec3_t neededOrigin;
-      buildable_t neededBuilding;
-      trace_t trace;
-       VectorCopy(level.botBuildLayout.buildings[i].origin,neededOrigin);
-      neededBuilding = level.botBuildLayout.buildings[i].type;
-
-      //cant build stuff if we arnt in the right stage
-      if(!BG_BuildableAllowedInStage(neededBuilding,(stage_t) g_humanStage.integer))
-        continue;
-
-      //check if we cant build something, but we have enough buildpoints in the Queue to build it if we wait a while
-      if(level.humanBuildPoints < BG_Buildable(neededBuilding)->buildPoints && level.humanBuildPoints + level.humanBuildPointQueue >= BG_Buildable(neededBuilding)->buildPoints) {
-        continue;
-      }
-     
-      trap_Trace(&trace,neededOrigin,NULL,NULL,neededOrigin,ENTITYNUM_NONE,MASK_SHOT);
-      if(trace.entityNum >= ENTITYNUM_MAX_NORMAL) {
-        needsToBuild = qtrue;
-        break;
-      }
-      if(g_entities[trace.entityNum].s.modelindex != neededBuilding) {
-        needsToBuild = qtrue;
-        break;
-      }
-    }
-    return needsToBuild;
+    vec3_t origin;
+    buildable_t buildable;
+    return BotGetBuildingToBuild(self, &origin, &buildable);
 }
 qboolean BotShouldBuild(gentity_t *self) {
   if(BotGetTeam(self) != TEAM_HUMANS)
     return qfalse;
-  if((!g_bot_repair.integer || !self->botMind->closestDamagedBuilding.ent) && (!g_bot_build.integer || !level.botBuildLayout.numBuildings || !BotWillBuildSomething(self)))
+  if((!g_bot_repair.integer || !self->botMind->closestDamagedBuilding.ent) 
+     && (!g_bot_build.integer || !BotWillBuildSomething(self)))
     return qfalse;
   if(self->botMind->modus == BOT_MODUS_BUILD)
     return qtrue;
 
-  return BotTeamateIsInModus(self, BOT_MODUS_BUILD);
+  if(BotTeamateIsInModus(self, BOT_MODUS_BUILD)) {
+    return qfalse;
+  } else {
+    return qtrue;
+  }
 }
 
 qboolean BotShouldRushEnemyBase(gentity_t *self) {
