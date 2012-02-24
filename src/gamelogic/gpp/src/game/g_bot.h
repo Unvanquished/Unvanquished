@@ -33,6 +33,11 @@ typedef enum {
   TASK_RUNNING
 } botTaskStatus_t;
 
+typedef enum {
+  MODUS_STOPPED = 0,
+  MODUS_RUNNING
+} botModusStatus_t;
+
 //g_bot.cpp
 int getRushIndex(gentity_t *self);
 int getRetreatIndex(gentity_t *self);
@@ -55,8 +60,8 @@ void BotSetGoal(gentity_t *self, gentity_t *ent, vec3_t *pos);
 qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
 qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target);
 
-qboolean BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer);
+botModusStatus_t BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer);
+botModusStatus_t BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer);

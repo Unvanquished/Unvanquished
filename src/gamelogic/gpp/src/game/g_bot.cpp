@@ -1520,30 +1520,32 @@ extern "C" void G_BotAssignGroups(void) {
 Bot Modus
 =======================
 */
-qboolean BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer) {
+botModusStatus_t BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer) {
   self->botMind->modus = BOT_MODUS_ATTACK;
   if(BotTaskFight(self, botCmdBuffer)) {
-    return qtrue;
+    return MODUS_RUNNING;
   } else if(BotTaskHeal(self, botCmdBuffer)) {
-    return qtrue;
+    return MODUS_RUNNING;
   } else if(BotTaskBuy(self, botCmdBuffer)) {
-    return qtrue;
+    return MODUS_RUNNING;
   } else if(BotTaskEvolve(self, botCmdBuffer)) {
-    return qtrue;
+    return MODUS_RUNNING;
   } else if(BotShouldRushEnemyBase(self) && BotTaskRush(self, botCmdBuffer)) {
-    return qtrue;
+    return MODUS_RUNNING;
+  } else if(BotTaskRoam(self, botCmdBuffer)) {
+    return MODUS_RUNNING;
   } else {
-    return (qboolean)BotTaskRoam(self, botCmdBuffer);
+    return MODUS_STOPPED;
   }
 }
 
-qboolean BotDefendModus(gentity_t *self, usercmd_t *botCmdBuffer) {
-  return qfalse;
+botModusStatus_t BotDefendModus(gentity_t *self, usercmd_t *botCmdBuffer) {
+  return MODUS_STOPPED;
 }
 
-qboolean BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer) {
+botModusStatus_t BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer) {
   if(!BotShouldBuild(self))
-    return qfalse;
+    return MODUS_STOPPED;
   self->botMind->modus = BOT_MODUS_BUILD;
 
   if(self->botMind->bestEnemy.ent || level.time - self->botMind->enemyLastSeen <= BOT_RETREAT_TIME) {
@@ -1553,15 +1555,17 @@ qboolean BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer) {
     } else if(!BotTaskRetreat(self, botCmdBuffer)) {
       BotTaskFight(self, botCmdBuffer);
     }
-    return qtrue;
+    return MODUS_RUNNING;
   } else if(BotTaskBuy(self, WP_HBUILD, NULL, 0, botCmdBuffer)) {
-    return qtrue;
+    return MODUS_RUNNING;
   } else if(BotTaskHeal(self, botCmdBuffer)) {
-    return qtrue;
+    return MODUS_RUNNING;
   } else if(BotTaskBuild(self, botCmdBuffer)) {
-    return qtrue;
+    return MODUS_RUNNING;
+  } else if(BotTaskRepair(self, botCmdBuffer)){
+    return MODUS_RUNNING;
   } else {
-    return (qboolean)BotTaskRepair(self, botCmdBuffer);
+    return MODUS_STOPPED;
   }
 }
 
