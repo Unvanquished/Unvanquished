@@ -1107,20 +1107,6 @@ void BotClassMovement(gentity_t *self, usercmd_t *botCmdBuffer) {
     BotDodge(self, botCmdBuffer);
     break;
   case PCL_ALIEN_LEVEL1:
-    if(BotTargetIsPlayer(self->botMind->goal) && (self->botMind->goal.ent->client->ps.stats[STAT_STATE] & SS_GRABBED)) {
-      if(self->botMind->botSkill.level == 10) {
-        botCmdBuffer->forwardmove = 0;
-        botCmdBuffer->upmove = 0;
-        BotDodge(self, botCmdBuffer); //only move if skill == 10 because otherwise we wont aim fast enough to not lose grab
-      } else {
-        botCmdBuffer->forwardmove = 0;
-        botCmdBuffer->rightmove = 0;
-        botCmdBuffer->upmove = 0;
-      }
-    } else {
-      BotDodge(self, botCmdBuffer);
-    }
-    break;
   case PCL_ALIEN_LEVEL1_UPG:
     if(BotTargetIsPlayer(self->botMind->goal) && (self->botMind->goal.ent->client->ps.stats[STAT_STATE] & SS_GRABBED)) {
       if(self->botMind->botSkill.level == 10) {
