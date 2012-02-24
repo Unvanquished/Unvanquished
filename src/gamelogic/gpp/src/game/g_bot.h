@@ -49,7 +49,6 @@ void BotGetIdealAimLocation(gentity_t *self, botTarget_t target, vec3_t aimLocat
 void BotSlowAim( gentity_t *self, vec3_t target, float slow);
 void BotShakeAim( gentity_t *self, vec3_t rVec );
 void BotAimAtLocation( gentity_t *self, vec3_t target , usercmd_t *rAngles);
-void BotFireWeapon(gentity_t *self, usercmd_t *botCmdBuffer);
 
 void BotSetTarget(botTarget_t *target, gentity_t *ent, vec3_t *pos);
 void BotSetGoal(gentity_t *self, gentity_t *ent, vec3_t *pos);

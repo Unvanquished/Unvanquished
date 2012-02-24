@@ -1232,8 +1232,7 @@ void BotFireWeaponAI(gentity_t *self, usercmd_t *botCmdBuffer) {
     default: BotFireWeapon(WPM_PRIMARY,botCmdBuffer);
   }
 }
-//FIXME: Refactor this so the caller chooses the weapon to fire, we are getting inconsistencies with BotClassMovement and others!
-//FIXME: Fix this ugly mess
+#if 0
 void BotFireWeapon(gentity_t *self, usercmd_t *botCmdBuffer) {
   vec3_t forward,right,up;
   vec3_t muzzle;
@@ -1337,6 +1336,7 @@ void BotFireWeapon(gentity_t *self, usercmd_t *botCmdBuffer) {
 
   }
 }
+#endif
 
 extern "C" void G_BotLoadBuildLayout() {
   fileHandle_t f;
