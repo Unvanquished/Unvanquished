@@ -778,6 +778,97 @@ void SV_FlushRedirect(char *outputbuf)
 	NET_OutOfBandPrint(NS_SERVER, svs.redirectAddress, "print\n%s", outputbuf);
 }
 
+ /*
+=================
+SV_CheckDRDoS
+
+DRDoS stands for "Distributed Reflected Denial of Service".
+See here: http://www.lemuria.org/security/application-drdos.html
+
+Returns qfalse if we're good.  qtrue return value means we need to block.
+If the address isn't NA_IP, it's automatically denied.
+=================
+*/
+qboolean SV_CheckDRDoS(netadr_t from)
+{
+  int    i;
+  int    globalCount;
+  int    specificCount;
+  receipt_t  *receipt;
+  netadr_t  exactFrom;
+  int    oldest;
+  int    oldestTime;
+  static int  lastGlobalLogTime = 0;
+  static int  lastSpecificLogTime = 0;
+
+  // Usually the network is smart enough to not allow incoming UDP packets
+  // with a source address being a spoofed LAN address.  Even if that's not
+  // the case, sending packets to other hosts in the LAN is not a big deal.
+  // NA_LOOPBACK qualifies as a LAN address.
+  if (Sys_IsLANAddress(from)) { return qfalse; }
+
+  exactFrom = from;
+
+  if (from.type == NA_IP) {
+    from.ip[3] = 0; // xx.xx.xx.0
+  }
+  else {
+    // So we got a connectionless packet but it's not IPv4, so
+    // what is it?  I don't care, it doesn't matter, we'll just block it.
+    // This probably won't even happen.
+    return qtrue;
+  }
+
+  // Count receipts in last 2 seconds.
+  globalCount = 0;
+  specificCount = 0;
+  receipt = &svs.infoReceipts[0];
+  oldest = 0;
+  oldestTime = 0x7fffffff;
+  for (i = 0; i < MAX_INFO_RECEIPTS; i++, receipt++) {
+    if (receipt->time + 2000 > svs.time) {
+      if (receipt->time) {
+        // When the server starts, all receipt times are at zero.  Furthermore,
+        // svs.time is close to zero.  We check that the receipt time is already
+        // set so that during the first two seconds after server starts, queries
+        // from the master servers don't get ignored.  As a consequence a potentially
+        // unlimited number of getinfo+getstatus responses may be sent during the
+        // first frame of a server's life.
+        globalCount++;
+      }
+      if (NET_CompareBaseAdr(from, receipt->adr)) {
+        specificCount++;
+      }
+    }
+    if (receipt->time < oldestTime) {
+      oldestTime = receipt->time;
+      oldest = i;
+    }
+  }
+
+  if (globalCount == MAX_INFO_RECEIPTS) { // All receipts happened in last 2 seconds.
+    if (lastGlobalLogTime + 1000 <= svs.time){ // Limit one log every second.
+      Com_Printf("Detected flood of getinfo/getstatus connectionless packets\n");
+      lastGlobalLogTime = svs.time;
+    }
+    return qtrue;
+  }
+  if (specificCount >= 3) { // Already sent 3 to this IP in last 2 seconds.
+    if (lastSpecificLogTime + 1000 <= svs.time) { // Limit one log every second.
+      Com_Printf("Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet\n",
+          exactFrom.ip[0], exactFrom.ip[1], exactFrom.ip[2], exactFrom.ip[3]);
+      lastSpecificLogTime = svs.time;
+    }
+    return qtrue;
+  }
+
+  receipt = &svs.infoReceipts[oldest];
+  receipt->adr = from;
+  receipt->time = svs.time;
+  return qfalse;
+}
+
+
 /*
 ===============
 SVC_RemoteCommand
@@ -898,10 +989,12 @@ void SV_ConnectionlessPacket(netadr_t from, msg_t * msg)
 
 	if(!Q_stricmp(c, "getstatus"))
 	{
+	        if (SV_CheckDRDoS(from)) { return; }
 		SVC_Status(from);
 	}
 	else if(!Q_stricmp(c, "getinfo"))
 	{
+		if (SV_CheckDRDoS(from)) { return; }
 		SVC_Info(from);
 	}
 	else if(!Q_stricmp(c, "getchallenge"))

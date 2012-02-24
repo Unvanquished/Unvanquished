@@ -291,6 +291,16 @@ typedef struct
 	qboolean        connected;
 } challenge_t;
 
+typedef struct {
+  netadr_t  adr;
+  int    time;
+} receipt_t;
+
+// MAX_INFO_RECEIPTS is the maximum number of getstatus+getinfo responses that we send
+// in a two second time period.
+#define MAX_INFO_RECEIPTS  48
+
+
 typedef struct tempBan_s
 {
 	netadr_t        adr;
@@ -319,6 +329,7 @@ typedef struct
 	entityState_t  *snapshotEntities;	// [numSnapshotEntities]
 	int             nextHeartbeatTime;
 	challenge_t     challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
+	receipt_t   infoReceipts[MAX_INFO_RECEIPTS];
 	netadr_t        redirectAddress;	// for rcon return messages
 	tempBan_t       tempBanAddresses[MAX_TEMPBAN_ADDRESSES];
 
