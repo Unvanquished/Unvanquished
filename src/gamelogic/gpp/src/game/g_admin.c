@@ -115,12 +115,17 @@ g_admin_cmd_t g_admin_cmds[ ] =
       "(^5mapname^7)"
     },
 
+    {"listmaps", NULL, qtrue, NULL,
+      "display a list of available maps on the server",
+      "(^5mapname^7)"
+    },
+
     {"listplayers", G_admin_listplayers, qtrue, "listplayers",
       "display a list of players, their client numbers and their levels",
       ""
     },
 
-    {"listrotation", G_admin_listrotation, qfalse, "listrotation",
+    {"listrotation", NULL, qtrue, NULL,
       "display the active map rotation",
       ""
     },
@@ -341,6 +346,9 @@ qboolean G_admin_permission( gentity_t *ent, const char *flag )
   g_admin_admin_t *a;
   g_admin_level_t *l;
 
+  // Always return true for dummy commands.
+  if( flag == NULL )
+    return qtrue;
   // console always wins
   if( !ent )
     return qtrue;
@@ -2387,11 +2395,6 @@ qboolean G_admin_listplayers( gentity_t *ent )
   }
   ADMBP_end();
   return qtrue;
-}
-
-qboolean G_admin_listrotation( gentity_t *ent )
-{
-    G_PrintCurrentRotation( ent, "listrotation" );
 }
 
 static qboolean ban_matchip( void *ban, const void *ip )

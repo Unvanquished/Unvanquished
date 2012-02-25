@@ -698,7 +698,7 @@ G_PrintCurrentRotation
 Print the current rotation to an entity
 ===============
 */
-void G_PrintCurrentRotation( gentity_t *ent, const char *command )
+void G_PrintCurrentRotation( gentity_t *ent )
 {
   int            mapRotationIndex = g_currentMapRotation.integer;
   mapRotation_t *mapRotation      = G_MapRotationActive() ? &mapRotations.rotations[ mapRotationIndex ] : NULL;
@@ -708,13 +708,13 @@ void G_PrintCurrentRotation( gentity_t *ent, const char *command )
 
   if( mapRotation == NULL )
   {
-    trap_SendServerCommand( ent - g_entities, va( "print \"^3%s^3: ^7there is no active map rotation on this server\n\"", command ) );
+    trap_SendServerCommand( ent - g_entities, "print \"^3listrotation^3: ^7there is no active map rotation on this server\n\"" );
     return;
   }
 
   if( mapRotation->numNodes == 0 )
   {
-    trap_SendServerCommand( ent - g_entities, va( "print \"^3%s^3: ^7there are no maps in the active map rotation\n\"", command ) );
+    trap_SendServerCommand( ent - g_entities, "print \"^3listrotation^3: ^7there are no maps in the active map rotation\n\"" );
     return;
   }
 
@@ -726,9 +726,26 @@ void G_PrintCurrentRotation( gentity_t *ent, const char *command )
   while( node = mapRotation->nodes[ i++ ] )
   {
     int   colour = 7;
-    char *extra  = "";
+    char *prefix = "";
+    char *suffix = "";
 
-    if( !G_MapExists( node->u.map.name ) )
+    switch( node->type )
+    {
+      case NT_RETURN:
+        prefix = "return";
+        break;
+      case NT_LABEL:
+        prefix = "label: ";
+        break;
+      case NT_GOTO:
+        prefix = "goto: ";
+        break;
+      case NT_RESUME:
+        prefix = "resume: ";
+        break;
+    }
+
+    if( node->type == NT_MAP && !G_MapExists( node->u.map.name ) )
     {
       colour = 1;
     }
@@ -736,13 +753,19 @@ void G_PrintCurrentRotation( gentity_t *ent, const char *command )
     {
       colour = 3;
 
-      if( Q_stricmp( node->u.map.name, currentMapName ) )
+      if( node->type == NT_MAP && Q_stricmp( node->u.map.name, currentMapName ) )
       {
-        extra = va( " (%s)", currentMapName );
+        suffix = va( " (%s)", currentMapName );
       }
     }
 
-    ADMBP( va( " ^%i%3i %s%s\n", colour, i, node->u.map.name, extra ) );
+    ADMBP(
+      va( " ^%i%3i %s%s%s\n",
+        colour,
+        i,
+        prefix,
+        node->type == NT_MAP ? node->u.map.name : node->u.label.name,
+        suffix ) );
   }
 
   if( G_MapExists( g_nextMap.string ) )
