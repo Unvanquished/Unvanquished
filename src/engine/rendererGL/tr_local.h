@@ -983,6 +983,7 @@ typedef struct
 	expression_t    alphaTestExp;
 
 	qboolean		tcGen_Environment;
+	qboolean		tcGen_Lightmap;
 
 	byte            constantColor[4];	// for CGEN_CONST and AGEN_CONST
 
