@@ -1025,6 +1025,8 @@ qboolean G_admin_cmd_check( gentity_t *ent )
         return qtrue;
       if( admincmd->silent )
         admin_log_abort( );
+      if( !admincmd->handler )
+        return qtrue;
       if( !( success = admincmd->handler( ent ) ) )
         admin_log( ConcatArgsPrintable( 1 ) );
     }
