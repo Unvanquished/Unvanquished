@@ -61,7 +61,7 @@ endif()
 option( USE_MUMBLE           "Compile with support for Mumble"         1 )
 option( USE_PHYSICS	     "Compile with Newton Physics"             0 )
 option( USE_WEBP	     "Compile with WebP loader"                1 )
-option( USE_MYSQL	     "Compile with MYSQL support"              0 )
+option( USE_MYSQL	     "Compile with MYSQL support"              1 )
 option( USE_VOIP	     "Compile with VOIP support"               1 )
 option( USE_CIN_XVID	     "Encode videos with XViD"                 1 )
 
@@ -416,10 +416,6 @@ if( USE_MYSQL )
 else()
   set( DATABASELIST )
 endif()
-
-set( SQLLITELIST
-  ${MOUNT_DIR}/libs/sqlite/sqlite3.c
-)
 
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cin_ogm.c
@@ -1261,7 +1257,7 @@ endif()
   endif()
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
       ${CPUINFOLIST} ${SDLLIST} ${OS_BUILD} ${QCOMMONLIST} ${SHAREDLIST}
-      ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} ${SQLLITELIST} )
+      ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
 if( USE_OPENAL )
   include( FindOpenAL )
   if( NOT OPENAL_FOUND )
@@ -1372,7 +1368,7 @@ if( BUILD_SERVER )
     endif()
   endif()
   add_executable( server ${SERVERLIST}  ${SDLBASELIST}
-      ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST} ${SQLLITELIST}
+      ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
       ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
 
 if( USE_CURL )
