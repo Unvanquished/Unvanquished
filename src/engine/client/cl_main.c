@@ -2721,7 +2721,12 @@ void CL_DownloadsComplete(void)
 {
 	char           *fs_write_path;
 	char           *fn;
-
+	
+	if( clc.bWWWNonGame ) // Not game related (eg, getting news). No need to restart anything
+	{
+	  clc.bWWWNonGame = qfalse;
+	  return;
+	}
 	// DHM - Nerve :: Auto-update (not finished yet)
 	if(autoupdateStarted)
 	{
