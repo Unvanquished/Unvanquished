@@ -149,6 +149,8 @@ vmCvar_t  g_censorship;
 
 vmCvar_t  g_tag;
 
+vmCvar_t  g_showKillerHP;
+
 
 // copy cvars that can be set in worldspawn so they can be restored later
 static char cv_gravity[ MAX_CVAR_VALUE_STRING ];
@@ -283,7 +285,9 @@ static cvarTable_t   gameCvarTable[ ] =
 
   { &g_censorship, "g_censorship", "", CVAR_ARCHIVE, 0, qfalse  },
 
-  { &g_tag, "g_tag", "gpp", CVAR_INIT, 0, qfalse }
+  { &g_tag, "g_tag", "gpp", CVAR_INIT, 0, qfalse },
+
+  { &g_showKillerHP, "g_showKillerHP", "0", CVAR_ARCHIVE, 0, qfalse  }
 };
 
 static int gameCvarTableSize = sizeof( gameCvarTable ) / sizeof( gameCvarTable[ 0 ] );

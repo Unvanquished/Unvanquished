@@ -294,6 +294,13 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
   {
     attacker->client->lastkilled_client = self->s.number;
 
+    if( g_showKillerHP.integer )
+    {
+      trap_SendServerCommand( self - g_entities, va( "print \"Your killer, %s^7, had %3i HP.\n\"",
+        killerName,
+        attacker->health ) );
+    }
+
     if( ( attacker == self || OnSameTeam( self, attacker ) ) && meansOfDeath != MOD_HSPAWN )
     {
       //punish team kills and suicides
