@@ -499,7 +499,8 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
   trap_FS_Read( text, len, f );
   text[ len ] = 0;
   trap_FS_FCloseFile( f );
-
+  for( i=0;i<3;i++ )
+    wi->scale[i] = 1.0;
   // parse the text
   text_p = text;
 
