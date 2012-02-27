@@ -3313,15 +3313,20 @@ void CL_ServersResponsePacket( const netadr_t* from, msg_t *msg, qboolean extend
 	buffend    = buffptr + msg->cursize;
 
 	// advance to initial token
-	do
-	{
-		if(*buffptr == '\\' || (extended && *buffptr == '/'))
-			break;
-		
-		buffptr++;
-	} while (buffptr < buffend);
-	
-	
+        // skip header
+        buffptr += 4;
+
+        // advance to initial token
+        // I considered using strchr for this but I don't feel like relying
+        // on its behaviour with '\0'
+        while( *buffptr && *buffptr != '\\' && *buffptr != '/' )
+        {
+          buffptr++;
+
+          if(buffptr+1 >= buffend )
+            break;
+        }
+
 	if( *buffptr == '\0' )
 	{
 		int ind = CL_GSRSequenceInformation( &buffptr );
@@ -5818,6 +5823,68 @@ CL_GlobalServers_f
 ==================
 */
 void CL_GlobalServers_f( void ) {
+       netadr_t        to;
+       int                     count, i, masterNum;
+       char            command[1024], *masteraddress;
+       int protocol = atoi( Cmd_Argv(2) ); // Do this right away, otherwise weird things happen when you use the ingame "Get New Servers" button.
+
+       if ((count = Cmd_Argc()) < 2 || (masterNum = atoi(Cmd_Argv(1))) < 0 || masterNum > MAX_MASTER_SERVERS - 1)
+       {
+               Com_Printf("usage: globalservers <master# 0-%d> [protocol] [keywords]\n", MAX_MASTER_SERVERS - 1);
+               return;
+       }
+
+       sprintf(command, "sv_master%d", masterNum + 1);
+       masteraddress = Cvar_VariableString(command);
+
+       if(!*masteraddress)
+       {
+               Com_Printf( "CL_GlobalServers_f: Error: No master server address given.\n");
+               return;
+       }
+
+       // reset the list, waiting for response
+       // -1 is used to distinguish a "no response"
+
+       i = NET_StringToAdr(masteraddress, &to, NA_UNSPEC);
+
+       if(!i)
+       {
+               Com_Printf( "CL_GlobalServers_f: Error: could not resolve address of master %s\n", masteraddress);
+               return;
+       }
+       else if(i == 2)
+               to.port = BigShort(PORT_MASTER);
+
+       Com_Printf("Requesting servers from master %s...\n", masteraddress);
+
+       cls.numglobalservers = -1;
+       cls.pingUpdateSource = AS_GLOBAL;
+
+       Com_sprintf( command, sizeof( command ), "getserversExt %s %d",
+                     cl_gamename->string, protocol );
+       // TODO: test if we only have IPv4/IPv6, if so request only the relevant
+       // servers with getserversExt %s %d ipvX
+       // not that big a deal since the extra servers won't respond to getinfo
+       // anyway.
+
+       for (i=3; i < count; i++)
+       {
+               Q_strcat(command, sizeof(command), " ");
+               Q_strcat(command, sizeof(command), Cmd_Argv(i));
+       }
+
+       NET_OutOfBandPrint( NS_SERVER, to, "%s", command );
+       CL_RequestMotd();
+}
+
+#if 0
+/*
+==================
+CL_GlobalServers_f
+==================
+*/
+void CL_GlobalServers_f( void ) {
     netadr_t    to;
     int         count, i, masterNum;
     char        command[1024], *masteraddress;
@@ -5883,6 +5950,7 @@ void CL_GlobalServers_f( void ) {
 
     NET_OutOfBandPrint( NS_SERVER, to, "%s", command );
 }
+#endif
 
 
 /*
