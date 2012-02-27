@@ -3951,7 +3951,7 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
           }
 
         case SORT_GAME:
-          return Info_ValueForKey( info, "game" );
+          return Info_ValueForKey( info, "game" )[0] ? Info_ValueForKey( info, "game" ) : "main";
 
         case SORT_MAP:
           return Info_ValueForKey( info, "mapname" );
