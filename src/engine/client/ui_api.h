@@ -196,10 +196,10 @@ typedef enum {
 	SORT_HOST,
 	SORT_MAP,
 	SORT_CLIENTS,
+        SORT_PING,
 	SORT_GAME,
 	SORT_FILTERS,
-	SORT_FAVOURITES,
-	SORT_PING
+        SORT_FAVOURITES
 } serverSortField_t;
 
 typedef enum
