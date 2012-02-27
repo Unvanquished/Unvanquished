@@ -265,7 +265,6 @@ typedef struct
 	// www downloading
 	qboolean        bWWWDl;		// we have a www download going
 	qboolean        bWWWDlAborting;	// disable the CL_WWWDownload until server gets us a gamestate (used for aborts)
-	qboolean        bWWWNonGame;    // Will the download require a cgame restart
 	char            redirectedList[MAX_INFO_STRING];	// list of files that we downloaded through a redirect since last FS_ComparePaks
 	char            badChecksumList[MAX_INFO_STRING];	// list of files for which wwwdl redirect is broken (wrong checksum)
 	char		newsString[ MAX_NEWS_STRING ];

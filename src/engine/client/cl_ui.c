@@ -152,8 +152,7 @@ qboolean GetNews( qboolean begin )
 
 	if( begin ) { // if not already using curl, start the download
 		if( !clc.bWWWDl ) {
-		clc.bWWWDl = qtrue;
-		clc.bWWWNonGame = qtrue;
+		clc.bWWWDl = qtrue;  
 		DL_BeginDownload("news.dat", 
 			"http://tremulous.net/clientnews.txt", com_developer->integer);
 		cls.bWWWDlDisconnected = qtrue;
