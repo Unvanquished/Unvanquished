@@ -150,7 +150,7 @@
     </Lib>
     <Link>
       <OutputFile>../../../bin/win64/debug/rendererGL3x86_64.dll</OutputFile>
-      <AdditionalDependencies>opengl32.lib;winmm.lib;SDLd.lib;glew64d.lib;libpng.lib;zlibwapi.lib;freetype.lib;mesaglsl2-win64.lib;libwebp_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;winmm.lib;SDLd.lib;glew64d.lib;libpng.lib;zlibwapi.lib;freetype.lib;libwebp_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>rendererGL.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>..\..\libs\libsdl\libs\x64;..\..\libs\glew\lib\x64;..\..\libs\libpng\libs\win64;..\..\libs\zlibwapi\lib\x64;..\..\libs\freetype\lib\x64;..\..\libs\glsl-optimizer\lib\x64\debug;..\..\libs\libwebp\Lib\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libcmt</IgnoreSpecificDefaultLibraries>
