@@ -2094,8 +2094,8 @@ static void CG_DrawClock( rectDef_t *rect, float text_x, float text_y,
 {
   char    *s;
   float   tx, ty;
-  int     i, strLength;
-  float   w, h, totalWidth;
+  int     i;
+  float   w, h, maxX;
   qtime_t qt;
   int     t;
 
@@ -2126,22 +2126,16 @@ static void CG_DrawClock( rectDef_t *rect, float text_x, float text_y,
 
     s = va( "%d%s%02d%s", h, ( qt.tm_sec % 2 ) ? ":" : " ", qt.tm_min, pm );
   }
-  w = UI_Text_Width( "0", scale );
-  h = UI_Text_Height( "0", scale );
-  strLength = CG_DrawStrlen( s );
-  totalWidth = w * strLength;
-
-  CG_AlignText( rect, s, 0.0f, totalWidth, h, textalign, textvalign, &tx, &ty );
-
-  for( i = 0; i < strLength; i++ )
+  if( UI_Text_Width( s, scale ) < rect->w )
   {
-    char c[ 2 ];
-
-    c[ 0 ] = s[ i ];
-    c[ 1 ] = '\0';
-
-    UI_Text_Paint( text_x + tx + i * w, text_y + ty, scale, color, c, 0, 0, textStyle );
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint( tx, ty, scale, color, s, 0, 0, textStyle );
   }
+  else
+  {
+    CG_AlignText( rect, s, scale, 0, 0, textalign, textvalign, &tx, &ty );
+    UI_Text_Paint_Limit( &maxX, tx, ty, scale, color, s, 0, 0 );
+  } 
 }
 
 /*
