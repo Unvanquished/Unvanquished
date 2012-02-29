@@ -3797,7 +3797,7 @@ static void CG_DrawIntermission( void )
   cg.scoreFadeTime = cg.time;
   cg.scoreBoardShowing = CG_DrawScoreboard( );
 }
-
+#if 0
 /*
 ==============
 CG_DrawPainView
@@ -3890,7 +3890,7 @@ static void CG_DrawPainView(void)
 		CG_DrawPic( 0, 0, 640, 480, painview );
 	}	
 }
-
+#endif
 
 /*
 =================
@@ -3997,7 +3997,7 @@ static void CG_Draw2D( void )
 {
   menuDef_t *menu = NULL;
   
-  CG_DrawPainView();
+//   CG_DrawPainView();
 
   // fading to black if stamina runs out
   // (only 2D that can't be disabled)

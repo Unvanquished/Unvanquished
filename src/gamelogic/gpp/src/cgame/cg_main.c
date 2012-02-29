@@ -1067,6 +1067,7 @@ static void CG_RegisterGraphics( void )
   cgs.media.sphericalCone64Model      = trap_R_RegisterModel( "models/generic/sphericalCone64.md3" );
   cgs.media.sphericalCone240Model     = trap_R_RegisterModel( "models/generic/sphericalCone240.md3" );
   
+#if 0
   cgs.media.hudAlienDamagedView[0] = trap_R_RegisterShader( "gfx/hud/sight/sight100" );
   cgs.media.hudAlienDamagedView[1] = trap_R_RegisterShader( "gfx/hud/sight/sight090" );
   cgs.media.hudAlienDamagedView[2] = trap_R_RegisterShader( "gfx/hud/sight/sight080" );
@@ -1090,7 +1091,7 @@ static void CG_RegisterGraphics( void )
   cgs.media.hudHumanDamagedView[8] = trap_R_RegisterShader( "gfx/hud/sight/sight020" );
   cgs.media.hudHumanDamagedView[9] = trap_R_RegisterShader( "gfx/hud/sight/sight010" );
   cgs.media.hudHumanDamagedView[10] = trap_R_RegisterShader( "gfx/hud/sight/sight000" );
-
+#endif
 
   cgs.media.plainColorShader          = trap_R_RegisterShader( "gfx/plainColor" );
   cgs.media.binaryAlpha1Shader        = trap_R_RegisterShader( "gfx/binary/alpha1" );
