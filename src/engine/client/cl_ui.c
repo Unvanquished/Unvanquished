@@ -392,6 +392,7 @@ static void LAN_GetServerInfo(int source, int n, char *buf, int buflen)
 		Info_SetValueForKey(info, "hostname", server->hostName);
 		Info_SetValueForKey(info, "serverload", va("%i", server->load));
 		Info_SetValueForKey(info, "mapname", server->mapName);
+		Info_SetValueForKey(info, "label", server->label);
 		Info_SetValueForKey(info, "clients", va("%i", server->clients));
 		Info_SetValueForKey(info, "sv_maxclients", va("%i", server->maxClients));
 		Info_SetValueForKey(info, "ping", va("%i", server->ping));
@@ -489,6 +490,7 @@ static serverInfo_t *LAN_GetServerPtr(int source, int n)
 	return NULL;
 }
 
+#define FEATURED_MAXPING 200
 /*
 ====================
 LAN_CompareServers
@@ -505,6 +507,14 @@ static int LAN_CompareServers(int source, int sortKey, int sortDir, int s1, int 
 	if(!server1 || !server2)
 	{
 		return 0;
+	}
+	
+	// featured servers on top
+	if( ( server1->label[ 0 ] && server1->ping <= FEATURED_MAXPING  ) || 
+		( server2->label[ 0 ] && server2->ping <= FEATURED_MAXPING ) ) {
+		res = Q_stricmpn( server1->label, server2->label, MAX_FEATLABEL_CHARS );
+		if( res )
+			return -res;
 	}
 
 	res = 0;

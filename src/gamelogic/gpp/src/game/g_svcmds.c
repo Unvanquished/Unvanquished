@@ -526,6 +526,11 @@ static void Svcmd_ListMapsWrapper( void )
   Cmd_ListMaps_f( NULL );
 }
 
+static void Svcmd_ListRotationWrapper( void )
+{
+  G_PrintCurrentRotation( NULL );
+}
+
 static void Svcmd_SuddenDeath_f( void )
 {
   char secs[ 5 ];
@@ -566,6 +571,7 @@ struct svcmd
   { "layoutLoad", qfalse, Svcmd_LayoutLoad_f },
   { "layoutSave", qfalse, Svcmd_LayoutSave_f },
   { "listmaps", qtrue, Svcmd_ListMapsWrapper },
+  { "listrotation", qtrue, Svcmd_ListRotationWrapper },
   { "loadcensors", qfalse, G_LoadCensors },
   { "m", qtrue, Svcmd_MessageWrapper },
   { "mapRotation", qfalse, Svcmd_MapRotation_f },

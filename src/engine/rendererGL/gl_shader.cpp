@@ -1217,7 +1217,8 @@ GLShader_generic::GLShader_generic():
 		GLCompileMacro_USE_VERTEX_SKINNING(this),
 		GLCompileMacro_USE_VERTEX_ANIMATION(this),
 		GLCompileMacro_USE_DEFORM_VERTEXES(this),
-		GLCompileMacro_USE_TCGEN_ENVIRONMENT(this)
+		GLCompileMacro_USE_TCGEN_ENVIRONMENT(this),
+		GLCompileMacro_USE_TCGEN_LIGHTMAP(this)
 {
 	ri.Printf(PRINT_ALL, "/// -------------------------------------------------\n");
 	ri.Printf(PRINT_ALL, "/// creating generic shaders ------------------------\n");

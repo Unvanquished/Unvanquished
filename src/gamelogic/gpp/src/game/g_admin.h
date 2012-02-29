@@ -189,6 +189,10 @@ qboolean G_admin_pause( gentity_t *ent );
 qboolean G_admin_builder( gentity_t *ent );
 qboolean G_admin_buildlog( gentity_t *ent );
 qboolean G_admin_revert( gentity_t *ent );
+qboolean G_admin_l0( gentity_t *ent ); // AA-QVM 1.2
+qboolean G_admin_l1( gentity_t *ent ); // AA-QVM 1.2
+qboolean G_admin_register( gentity_t *ent ); // AA-QVM 1.2
+qboolean G_admin_unregister( gentity_t *ent ); // AA-QVM 1.2
 
 void G_admin_print( gentity_t *ent, char *m );
 void G_admin_buffer_print( gentity_t *ent, char *m );

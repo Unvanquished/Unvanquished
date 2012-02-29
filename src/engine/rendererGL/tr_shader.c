@@ -2245,9 +2245,7 @@ static qboolean ParseStage(shaderStage_t * stage, char **text)
 			}
 			else if(!Q_stricmp(token, "lightmap"))
 			{
-#if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
-				ri.Printf(PRINT_WARNING, "WARNING: texGen lightmap keyword not supported in shader '%s'\n", shader.name);
-#endif
+				stage->tcGen_Lightmap = qtrue;
 			}
 			else if(!Q_stricmp(token, "texture") || !Q_stricmp(token, "base"))
 			{

@@ -208,6 +208,7 @@ protected:
 		USE_VERTEX_ANIMATION,
 		USE_DEFORM_VERTEXES,
 		USE_TCGEN_ENVIRONMENT,
+		USE_TCGEN_LIGHTMAP,
 		USE_NORMAL_MAPPING,
 		USE_PARALLAX_MAPPING,
 		USE_REFLECTIVE_SPECULAR,
@@ -457,6 +458,39 @@ public:
 	}
 
 	void SetTCGenEnvironment(bool enable)
+	{
+		if(enable)
+			EnableMacro();
+		else
+			DisableMacro();
+	}
+};
+
+
+class GLCompileMacro_USE_TCGEN_LIGHTMAP:
+GLCompileMacro
+{
+public:
+	GLCompileMacro_USE_TCGEN_LIGHTMAP(GLShader* shader):
+	  GLCompileMacro(shader)
+	{
+	}
+
+	const char* GetName() const { return "USE_TCGEN_LIGHTMAP"; }
+	EGLCompileMacro GetType() const { return USE_TCGEN_LIGHTMAP; }
+	uint32_t	GetRequiredVertexAttributes() const { return ATTR_LIGHTCOORD; }
+
+	void EnableTCGenLightmap()
+	{
+		EnableMacro();
+	}
+	
+	void DisableTCGenLightmap()
+	{
+		DisableMacro();
+	}
+
+	void SetTCGenLightmap(bool enable)
 	{
 		if(enable)
 			EnableMacro();
@@ -1965,7 +1999,8 @@ public GLCompileMacro_USE_ALPHA_TESTING,
 public GLCompileMacro_USE_VERTEX_SKINNING,
 public GLCompileMacro_USE_VERTEX_ANIMATION,
 public GLCompileMacro_USE_DEFORM_VERTEXES,
-public GLCompileMacro_USE_TCGEN_ENVIRONMENT
+public GLCompileMacro_USE_TCGEN_ENVIRONMENT,
+public GLCompileMacro_USE_TCGEN_LIGHTMAP
 {
 public:
 	GLShader_generic();

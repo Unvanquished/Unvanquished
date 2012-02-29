@@ -1596,6 +1596,7 @@ static void DrawTris()
 
 	gl_genericShader->DisableDeformVertexes();
 	gl_genericShader->DisableTCGenEnvironment();
+	gl_genericShader->DisableTCGenLightmap();
 
 	gl_genericShader->BindProgram();
 	gl_genericShader->SetRequiredVertexPointers();
@@ -1769,6 +1770,7 @@ static void Render_generic(int stage)
 
 	gl_genericShader->SetDeformVertexes(tess.surfaceShader->numDeforms);
 	gl_genericShader->SetTCGenEnvironment(pStage->tcGen_Environment);
+	gl_genericShader->SetTCGenLightmap(pStage->tcGen_Lightmap);
 
 	gl_genericShader->BindProgram();
 	// end choose right shader program ------------------------------
@@ -4588,6 +4590,12 @@ static void Tess_ComputeTexMatrices(shaderStage_t * pStage)
 		matrix = tess.svars.texMatrices[i];
 
 		RB_CalcTexMatrix(&pStage->bundle[i], matrix);
+		if( pStage->tcGen_Lightmap && i == TB_COLORMAP ) {
+			MatrixMultiplyScale(matrix,
+					    tr.fatLightmapStep,
+					    tr.fatLightmapStep,
+					    tr.fatLightmapStep);
+		}
 	}
 }
 
