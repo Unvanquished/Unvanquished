@@ -629,12 +629,6 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	qboolean        isBot;
 	const char     *p;
 
-	// ydnar: broadcast a level change to all connected clients
-	if(svs.clients && !com_errorEntered)
-	{
-		SV_FinalCommand("spawnserver", qfalse);
-	}
-
 	// shut down the existing game if it is running
 	SV_ShutdownGameProgs();
 
