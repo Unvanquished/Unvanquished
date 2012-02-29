@@ -3113,30 +3113,32 @@ CL_MotdPacket
 
 ===================
 */
-void CL_MotdPacket(netadr_t from)
+void CL_MotdPacket( netadr_t from, const char *info )
 {
-	char           *challenge;
-	char           *info;
+	const char *v;
 
 	// if not from our server, ignore it
-	if(!NET_CompareAdr(from, cls.updateServer))
-	{
+	if ( !NET_CompareAdr( from, cls.updateServer ) ) {
+		Com_DPrintf( "MOTD packet from unexpected source\n" );
 		return;
 	}
 
-	info = Cmd_Argv(1);
+	Com_DPrintf( "MOTD packet: %s\n", info );
+	while( *info != '\\' )
+		info++;
 
 	// check challenge
-	challenge = Info_ValueForKey(info, "challenge");
-	if(strcmp(challenge, cls.updateChallenge))
-	{
+	v = Info_ValueForKey( info, "challenge" );
+	if ( strcmp( v, cls.updateChallenge ) ) {
+		Com_DPrintf( "MOTD packet mismatched challenge: "
+		             "'%s' != '%s'\n", v, cls.updateChallenge );
 		return;
 	}
 
-	challenge = Info_ValueForKey(info, "motd");
+	v = Info_ValueForKey( info, "motd" );
 
-	Q_strncpyz(cls.updateInfoString, info, sizeof(cls.updateInfoString));
-	Cvar_Set("cl_motdString", challenge);
+	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
+	Cvar_Set( "cl_motdString", v );
 }
 
 /*
@@ -3540,7 +3542,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 
 	// global MOTD from id
 	if ( !Q_stricmp( c, "motd" ) ) {
-		CL_MotdPacket( from );
+		CL_MotdPacket( from, s );
 		return;
 	}
 
