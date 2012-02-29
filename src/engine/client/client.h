@@ -52,10 +52,10 @@ Maryland 20850 USA.
 // Dushan - create CL_GUID
 // we cannot call it "qkey", "etkey" is already taken,
 // so we will change it to etxreal
-#define GUIDKEY_FILE "openwolf"
+#define GUIDKEY_FILE "guid"
 
 // file containing our RSA public and private keys
-#define RSAKEY_FILE "openwolf"
+#define RSAKEY_FILE "pubkey"
 
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
 

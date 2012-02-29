@@ -64,7 +64,7 @@ extern "C" {
 #define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME_LOWER
 #define GAMENAME_FOR_MASTER		PRODUCT_NAME_UPPPER
 
-#define CONFIG_NAME     "etconfig.cfg"
+#define CONFIG_NAME     "autogen.cfg"
 
 #define LOCALIZATION_SUPPORT
 

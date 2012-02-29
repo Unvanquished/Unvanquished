@@ -328,9 +328,9 @@ extern int demo_protocols[];
 
 // NERVE - SMF - wolf multiplayer master servers
 #ifndef MASTER_SERVER_NAME
-#define MASTER_SERVER_NAME      "209.160.20.93"
+#define MASTER_SERVER_NAME      "unvanquished.net"
 #endif
-#define MOTD_SERVER_NAME        "209.160.20.93"	//"etmotd.idsoftware.com"          // ?.?.?.?
+#define MOTD_SERVER_NAME        "unvanquished.net"	//"etmotd.idsoftware.com"          // ?.?.?.?
 
 #ifdef AUTHORIZE_SUPPORT
 #define AUTHORIZE_SERVER_NAME   "wolfauthorize.idsoftware.com"
