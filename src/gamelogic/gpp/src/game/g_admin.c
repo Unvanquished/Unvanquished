@@ -3549,7 +3549,7 @@ qboolean G_admin_register( gentity_t *ent )
   if( !ent )
     return qfalse;
 
-  if( ent->client->pers.admin->level != 0 )
+  if( ent->client->pers.admin )
   {
     level = ent->client->pers.admin->level;
   }
@@ -3569,7 +3569,7 @@ qboolean G_admin_unregister( gentity_t *ent )
   if( !ent )
     return qfalse;
 
-  if( ent->client->pers.admin->level == 0 )
+  if( !ent->client->pers.admin )
   {
     ADMP( "^3unregister: ^7you do not have a protected name\n" );
     return qfalse;
