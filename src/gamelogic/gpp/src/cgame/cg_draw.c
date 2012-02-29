@@ -3725,7 +3725,7 @@ static void CG_DrawVote( team_t team )
   UI_Text_Paint( 8, 320 + offset, 0.3f, white, s, 0, 0,
     ITEM_TEXTSTYLE_NORMAL );
 
-  s = va( "  [check]%sYes:%i %s[cross]No:%i",
+  s = va( "  %s[check]:%i %s[cross]:%i",
     yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
   UI_Text_Paint( 8, 340 + offset, 0.3f, white, s, 0, 0,
