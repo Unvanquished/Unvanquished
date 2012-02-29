@@ -4944,8 +4944,8 @@ static bind_t g_bindings[] =
     { "+scores",      K_TAB,         -1, -1, -1 },
     { "+button2",     K_ENTER,       -1, -1, -1 },
     { "+speed",       K_SHIFT,       -1, -1, -1 },
-    { "+button6",     'z',           -1, -1, -1 }, // human dodging
-    { "+button8",     'x',           -1, -1, -1 },
+    { "+dodge",       'z',           -1, -1, -1 }, // human dodging
+    { "+sprint" ,     'x',           -1, -1, -1 },
     { "+forward",     K_UPARROW,     -1, -1, -1 },
     { "+back",        K_DOWNARROW,   -1, -1, -1 },
     { "+moveleft",    ',',           -1, -1, -1 },
@@ -4974,11 +4974,11 @@ static bind_t g_bindings[] =
     { "weapon 12",    -1,            -1, -1, -1 },
     { "weapon 13",    -1,            -1, -1, -1 },
     { "+attack",      K_MOUSE1,      -1, -1, -1 },
-    { "+button5",     K_MOUSE2,      -1, -1, -1 }, // secondary attack
+    { "+attack2",     K_MOUSE2,      -1, -1, -1 }, // secondary attack
     { "reload",       'r',           -1, -1, -1 }, // reload
     { "buy ammo",     'b',           -1, -1, -1 }, // buy ammo
     { "itemact medkit", 'm',         -1, -1, -1 }, // use medkit
-    { "+button7",     'q',           -1, -1, -1 }, // buildable use
+    { "+activate",     'q',           -1, -1, -1 }, // buildable use
     { "deconstruct",  'e',           -1, -1, -1 }, // buildable destroy
     { "weapprev",     '[',           -1, -1, -1 },
     { "weapnext",     ']',           -1, -1, -1 },
