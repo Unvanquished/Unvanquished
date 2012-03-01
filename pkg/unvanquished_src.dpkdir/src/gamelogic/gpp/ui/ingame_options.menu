@@ -872,7 +872,7 @@
       group optionsGrp
       type ITEM_TYPE_BIND
       text "Dodge:"
-      cvar "+button6"
+      cvar "+dodge"
       rect SCONTENT_X (SCONTENT_Y+(4*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
@@ -892,7 +892,7 @@
       group optionsGrp
       type ITEM_TYPE_BIND
       text "Sprint:"
-      cvar "+button8"
+      cvar "+sprint"
       rect SCONTENT_X (SCONTENT_Y+(5*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
@@ -1138,7 +1138,7 @@
       group optionsGrp
       type ITEM_TYPE_BIND
       text "Secondary Attack:"
-      cvar "+button5"
+      cvar "+attack2"
       rect SCONTENT_X (SCONTENT_Y+(1*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
@@ -1362,7 +1362,7 @@
       group optionsGrp
       type ITEM_TYPE_BIND
       text "Use Structure/Evolve:"
-      cvar "+button7"
+      cvar "+activate"
       rect SCONTENT_X (SCONTENT_Y+(3*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
