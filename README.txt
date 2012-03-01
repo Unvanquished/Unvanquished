@@ -37,10 +37,11 @@ Build Instructions
 Run Instructions for Tremulous GPP
 ----------------------------------
 
-Copy the 'main' folder from the root source directory into the build directory.
-Copy http://tremz.com/downloads/main/pak0.pk3 and any maps into main as well.
+Copy http://tremz.com/downloads/main/pak0.pk3 and any maps (the mappack from
+http://sourceforge.net/projects/unvanquished/files/Map%20Pack/maps.7z/download
+is recommended) into main
 Put the latest GPP data pack in the 'gpp' folder ( current one can be found at http://downloads.mercenariesguild.net/gpp/data-gppr2223.pk3 )
-Copy 'ui' from src/gamelogic/gpp into the 'gpp' folder in the build directory
+Copy 'ui' from src/gamelogic/gpp into the 'gpp' folder
 
 
     
