@@ -1005,10 +1005,10 @@ void CL_MouseMove(usercmd_t * cmd)
 			rate[0] = fabs(mx) / (float) frame_msec;
 			rate[1] = fabs(my) / (float) frame_msec;
 			power[0] = powf(rate[0] / cl_mouseAccelOffset->value, cl_mouseAccel->value);
-			power[1] = powf(rate[1] / cl_mouseAccelOffset->value, cl_mouseAccel->value);
+		    power[1] = powf(rate[1] / cl_mouseAccelOffset->value, cl_mouseAccel->value);
 
-	mx = cl_sensitivity->value * (mx + ((mx < 0) ? -power[0] : power[0]) * cl_mouseAccelOffset->value);
-	my = cl_sensitivity->value * (my + ((my < 0) ? -power[1] : power[1]) * cl_mouseAccelOffset->value);
+	        mx = cl_sensitivity->value * (mx + ((mx < 0) ? -power[0] : power[0]) * cl_mouseAccelOffset->value);
+	        my = cl_sensitivity->value * (my + ((my < 0) ? -power[1] : power[1]) * cl_mouseAccelOffset->value);
 
 /*	NERVE - SMF - this has moved to CG_CalcFov to fix zoomed-in/out transition movement bug
 	if ( cl.snap.ps.stats[STAT_ZOOMED_VIEW] ) {
@@ -1020,24 +1020,13 @@ void CL_MouseMove(usercmd_t * cmd)
 		}
 	}
 */
-	if(cl_showMouseRate->integer)
-		Com_Printf("ratex: %f, ratey: %f, powx: %f, powy: %f\n", rate[0], rate[1], power[0], power[1]);
+	        if(cl_showMouseRate->integer)
+		        Com_Printf("ratex: %f, ratey: %f, powx: %f, powy: %f\n", rate[0], rate[1], power[0], power[1]);
 		}
  	}
 
-// Ridah, experimenting with a slow tracking gun
-
-	// Rafael - mg42
-	if(cl.snap.ps.persistant[PERS_HWEAPON_USE])
-	{
-		mx *= 2.5;				//(accelSensitivity * 0.1);
-		my *= 2;				//(accelSensitivity * 0.075);
-	}
-	else
-	{
-		mx *= cl_sensitivity->value;
-		my *= cl_sensitivity->value;
- 	}
+	mx *= cl_sensitivity->value;
+	my *= cl_sensitivity->value;
 	
 	// ingame FOV
 	mx *= cl.cgameSensitivity;
