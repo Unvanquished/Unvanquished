@@ -857,7 +857,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
   entityState_t *es = &cent->currentState;
 
   // see if the animation sequence is switching
-  if( es->weaponAnim != lf->animationNumber || !lf->animation )
+  if( es->weaponAnim != lf->animationNumber || !lf->animation || (lf->animation && !lf->animation->handle))
     CG_SetWeaponLerpFrameAnimation( es->weapon, lf, es->weaponAnim );
 
   CG_RunLerpFrame( lf, 1.0f );
