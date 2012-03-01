@@ -632,7 +632,7 @@ static void GLimp_InitOpenGL3xContext()
 		}
 		else
 		{
-            ri.Printf(PRINT_ERR, "Could not initialize OpenGL %i.%i context\n"
+            ri.Printf(PRINT_ERROR, "Could not initialize OpenGL %i.%i context\n"
 								"Make sure your graphics card supports OpenGL %i.%i or newer",
 								r_glMinMajorVersion->integer, r_glMinMinorVersion->integer,
 								r_glMinMajorVersion->integer, r_glMinMinorVersion->integer);
@@ -706,7 +706,7 @@ static void GLimp_InitOpenGL3xContext()
 		}
 		else
 		{
-            ri.Printf(PRINT_ERR, "Could not initialize OpenGL %i.%i context\n"
+            ri.Printf(PRINT_ERROR, "Could not initialize OpenGL %i.%i context\n"
 								"Make sure your graphics card supports OpenGL %i.%i or newer",
 								r_glMinMajorVersion->integer, r_glMinMinorVersion->integer,
 								r_glMinMajorVersion->integer, r_glMinMinorVersion->integer);
