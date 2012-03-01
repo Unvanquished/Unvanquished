@@ -632,10 +632,15 @@ static void GLimp_InitOpenGL3xContext()
 		}
 		else
 		{
-			ri.Error(ERR_FATAL, "Could not initialize OpenGL %i.%i context\n"
+            ri.Printf(PRINT_ERR, "Could not initialize OpenGL %i.%i context\n"
 								"Make sure your graphics card supports OpenGL %i.%i or newer",
 								r_glMinMajorVersion->integer, r_glMinMinorVersion->integer,
 								r_glMinMajorVersion->integer, r_glMinMinorVersion->integer);
+
+            ri.Printf(PRINT_ALL, "Trying Vanilla (GL) Renderer...\n");
+
+            ri.Cvar_Set("cl_renderer", "GL");
+            ri.Cmd_ExecuteText(EXEC_APPEND, "vid_restart");
 		}
 	}
 #elif defined(__linux__)
@@ -701,10 +706,15 @@ static void GLimp_InitOpenGL3xContext()
 		}
 		else
 		{
-			ri.Error(ERR_FATAL, "Could not initialize OpenGL %i.%i context\n"
-				"Make sure your graphics card supports OpenGL %i.%i or newer",
-				r_glMinMajorVersion->integer, r_glMinMinorVersion->integer,
-				r_glMinMajorVersion->integer, r_glMinMinorVersion->integer);
+            ri.Printf(PRINT_ERR, "Could not initialize OpenGL %i.%i context\n"
+								"Make sure your graphics card supports OpenGL %i.%i or newer",
+								r_glMinMajorVersion->integer, r_glMinMinorVersion->integer,
+								r_glMinMajorVersion->integer, r_glMinMinorVersion->integer);
+
+            ri.Printf(PRINT_ALL, "Trying Vanilla (GL) Renderer...\n");
+
+            ri.Cvar_Set("cl_renderer", "GL");
+            ri.Cmd_ExecuteText(EXEC_APPEND, "vid_restart");
 		}
 	}
 #endif
