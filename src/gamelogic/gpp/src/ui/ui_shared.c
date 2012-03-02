@@ -5283,8 +5283,6 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, qboolean down )
         g_bindItem = NULL;
         return qtrue;
 
-      case '`':
-        return qtrue;
     }
   }
 
