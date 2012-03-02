@@ -115,7 +115,7 @@ void IN_KeyDown(kbutton_t * b)
 	}
 	else
 	{
-		Com_Printf("Three keys down for a button!\n");
+		Com_DPrintf("Three keys down for a button!\n");
 		return;
 	}
 
