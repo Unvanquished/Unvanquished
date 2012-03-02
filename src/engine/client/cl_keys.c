@@ -1406,19 +1406,29 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 	}
 
 #ifdef MACOS_X
-	if ( down && keys[ K_COMMAND ].down ) {
-		
-		if ( key == 'f' ) {
+	if ( down && keys[ K_COMMAND ].down )
+	{
+		if ( key == 'f' )
+		{
 			Key_ClearStates();
 			Cbuf_ExecuteText( EXEC_APPEND, "toggle r_fullscreen\nvid_restart\n" );
 			return;
-		} else if ( key == 'q' ) {
+		}
+		else if ( key == 'q' )
+		{
 			Key_ClearStates();
 			Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
 			return;
 		}
+		else if ( key == K_TAB )
+		{
+			Key_ClearStates();
+			Cvar_SetValue( "r_minimize", 1 );
+			return;
+		}
 	}
 #endif
+
 	if( cl_altTab->integer && keys[K_ALT].down && key == K_TAB )
 	{
 		Key_ClearStates();

@@ -27,10 +27,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #if !SDL_VERSION_ATLEAST(1, 2, 10)
-#define SDL_GL_ACCELERATED_VISUAL 15
-#define SDL_GL_SWAP_CONTROL 16
+#	define SDL_GL_ACCELERATED_VISUAL 15
+#	define SDL_GL_SWAP_CONTROL 16
 #elif MINSDL_PATCH >= 10
-#error Code block no longer necessary, please remove
+#	error Code block no longer necessary, please remove
 #endif
 
 #ifdef SMP
@@ -46,19 +46,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <math.h>
 
 #if defined(USE_XREAL_RENDERER)
-#include "../rendererGL/tr_local.h"
+#	include "../rendererGL/tr_local.h"
 #else
-#include "../renderer/tr_local.h"
+#	include "../renderer/tr_local.h"
 #endif
+
 #include "../client/client.h"
 #include "../sys/sys_local.h"
 #include "sdl_icon.h"
 #include "SDL_syswm.h"
 
 #if defined(WIN32)
-#include <GL/wglew.h>
+#	include <GL/wglew.h>
 #else
-#include <GL/glxew.h>
+#	include <GL/glxew.h>
 #endif
 
 extern void GLimp_InitGamma(void);
@@ -484,7 +485,6 @@ void GLimp_Shutdown(void)
 
 	Com_Memset(&glConfig, 0, sizeof(glConfig));
 	Com_Memset(&glState, 0, sizeof(glState));
-
 }
 
 /*
@@ -1921,21 +1921,30 @@ void GLimp_EndFrame(void)
 	{
 		SDL_GL_SwapBuffers();
 	}
-	
-		if( r_minimize && r_minimize->integer )
+
+	if( r_minimize && r_minimize->integer )
 	{
-		extern void IN_DeactivateMouse( void );
 		SDL_Surface *s = SDL_GetVideoSurface( );
 		qboolean    fullscreen = qfalse;
 		qboolean    minimized = qfalse;
 
 		fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
+
+#ifdef MACOS_X
+		if( !fullscreen )
+		{
+			SDL_WM_IconifyWindow( );
+			ri.Cvar_Set( "r_minimize", "0" );
+		}
+		else if( r_fullscreen->integer )
+		{
+			ri.Cvar_Set( "r_fullscreen", "0" );
+		}
+#else
 		minimized = ( SDL_WM_IconifyWindow( ) != 0 );
-
-
-		ri.Cvar_Set( "r_minimize", "0" ); 
+		ri.Cvar_Set( "r_minimize", "0" );
+#endif
 	}
-
 
 	if(r_fullscreen->modified)
 	{

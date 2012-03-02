@@ -48,18 +48,11 @@ Maryland 20850 USA.
 
 #define ARRAYLEN(x) (sizeof(x)/sizeof(x[0]))
 
-#ifdef MACOS_X
-// Mouse acceleration needs to be disabled
-#define MACOS_X_ACCELERATION_HACK
-// Cursor needs hack to hide
-#define MACOS_X_CURSOR_HACK
-#endif
-
 #ifdef MACOS_X_ACCELERATION_HACK
-#include <IOKit/IOTypes.h>
-#include <IOKit/hidsystem/IOHIDLib.h>
-#include <IOKit/hidsystem/IOHIDParameter.h>
-#include <IOKit/hidsystem/event_status_driver.h>
+#	include <IOKit/IOTypes.h>
+#	include <IOKit/hidsystem/IOHIDLib.h>
+#	include <IOKit/hidsystem/IOHIDParameter.h>
+#	include <IOKit/hidsystem/event_status_driver.h>
 #endif
 
 static cvar_t *in_keyboardDebug     = NULL;
