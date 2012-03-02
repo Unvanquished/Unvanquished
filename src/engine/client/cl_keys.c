@@ -571,7 +571,7 @@ void Field_CharEvent( field_t *edit, int ch ) {
 	//
 	// ignore any other non printable chars
 	//
-	if ( ch < 32 ) {
+	if ( ch < 32 || ch == 0x7f ) {
 		return;
 	}
 

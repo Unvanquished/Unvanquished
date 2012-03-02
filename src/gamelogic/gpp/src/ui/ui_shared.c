@@ -3294,7 +3294,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 
         DC->setCVar( item->cvar, buff );
       }
-      else if( key < 32 || !item->cvar )
+      else if( key < 32 || key == 127 || !item->cvar )
       {
         // Ignore any non printable chars
         releaseFocus = qfalse;

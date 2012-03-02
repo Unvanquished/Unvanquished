@@ -3573,7 +3573,7 @@ qboolean Item_TextField_HandleKey(itemDef_t * item, int key)
 			//
 			// ignore any non printable chars
 			//
-			if(key < 32 || !item->cvar)
+			if(key < 32 || key == 127 || !item->cvar)
 			{
 				return qtrue;
 			}
@@ -9486,7 +9486,7 @@ qboolean BG_PanelButton_EditClick(panel_button_t * button, int key)
 				return qtrue;
 			}
 
-			if(key < 32)
+			if(key < 32 || key == 127)
 			{
 				return qtrue;
 			}
