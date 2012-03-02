@@ -440,7 +440,7 @@ extern cvar_t  *sv_voip;
 // sv_main.c
 //
 void            SV_FinalCommand(char *cmd, qboolean disconnect);	// ydnar: added disconnect flag so map changes can use this function as well
-void QDECL      SV_SendServerCommand(client_t * cl, const char *fmt, ...);
+void QDECL      SV_SendServerCommand(client_t * cl, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
 
 void            SV_AddOperatorCommands(void);

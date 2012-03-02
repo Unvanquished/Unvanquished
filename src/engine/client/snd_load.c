@@ -67,7 +67,7 @@ static qboolean useBuiltin = qfalse;
 /*
  * Glue
  */
-static void QDECL SndPrintf( int print_level, const char *fmt, ...) {
+static __attribute__((format(printf, 2, 3))) void QDECL SndPrintf( int print_level, const char *fmt, ...) {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
 	

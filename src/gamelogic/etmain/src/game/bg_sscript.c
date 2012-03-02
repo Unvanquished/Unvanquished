@@ -91,7 +91,7 @@ qboolean BG_SS_StoreSpeaker(bg_speaker_t * speaker)
 	return qtrue;
 }
 
-static qboolean BG_SS_ParseError(int handle, char *format, ...)
+static __attribute__((format(printf, 2, 3))) qboolean BG_SS_ParseError(int handle, char *format, ...)
 {
 	int             line;
 	char            filename[128];

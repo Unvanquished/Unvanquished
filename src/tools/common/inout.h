@@ -64,8 +64,8 @@ void            Broadcast_Shutdown();
 #define SYS_NOXML 4				// don't send that down the XML stream
 
 extern qboolean verbose;
-void            Sys_Printf(const char *text, ...);
-void            Sys_FPrintf(int flag, const char *text, ...);
+void            Sys_Printf(const char *text, ...) __attribute__((format(printf, 1, 2)));
+void            Sys_FPrintf(int flag, const char *text, ...) __attribute__((format(printf, 2, 3)));
 
 
 
