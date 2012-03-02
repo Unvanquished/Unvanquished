@@ -1419,6 +1419,12 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 		}
 	}
 #endif
+	if( cl_altTab->integer && keys[K_ALT].down && key == K_TAB )
+	{
+		Key_ClearStates();
+		Cvar_SetValue( "r_minimize", 1 );
+		return;
+	}
 
 	// console key is hardcoded, so the user can never unbind it
 	if( key == K_CONSOLE || ( keys[K_SHIFT].down && key == K_ESCAPE ) ) {

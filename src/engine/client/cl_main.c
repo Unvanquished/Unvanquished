@@ -181,6 +181,7 @@ struct rsa_private_key private_key;
 #endif
 
 cvar_t         *cl_gamename;
+cvar_t	       *cl_altTab;
 
 // XreaL BEGIN
 cvar_t         *cl_aviMotionJpeg;
@@ -5014,6 +5015,7 @@ void CL_Init(void)
 	cl_consolePrompt = Cvar_Get ("cl_consolePrompt", "^3->", CVAR_ARCHIVE);
 
 	cl_gamename = Cvar_Get("cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP);
+	cl_altTab = Cvar_Get ("cl_altTab", "1", CVAR_ARCHIVE);
 
 	//bani - make these cvars visible to cgame
 	cl_demorecording = Cvar_Get("cl_demorecording", "0", CVAR_ROM);

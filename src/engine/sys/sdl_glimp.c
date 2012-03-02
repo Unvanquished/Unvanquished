@@ -456,7 +456,7 @@ static const SDL_VideoInfo *videoInfo = NULL;
 cvar_t         *r_allowResize;	// make window resizable
 cvar_t         *r_centerWindow;
 cvar_t         *r_sdlDriver;
-
+cvar_t 	       *r_minimize;
 /*
 ===============
 GLimp_Shutdown
@@ -484,6 +484,7 @@ void GLimp_Shutdown(void)
 
 	Com_Memset(&glConfig, 0, sizeof(glConfig));
 	Com_Memset(&glState, 0, sizeof(glState));
+
 }
 
 /*
@@ -1718,6 +1719,7 @@ void GLimp_Init(void)
 	r_sdlDriver = ri.Cvar_Get("r_sdlDriver", "", CVAR_ROM);
 	r_allowResize = ri.Cvar_Get("r_allowResize", "0", CVAR_ARCHIVE);
 	r_centerWindow = ri.Cvar_Get("r_centerWindow", "0", CVAR_ARCHIVE);
+	r_minimize = ri.Cvar_Get("r_minimize", "0", CVAR_ARCHIVE);
 
 	if(ri.Cvar_VariableIntegerValue("com_abnormalExit"))
 	{
@@ -1919,6 +1921,21 @@ void GLimp_EndFrame(void)
 	{
 		SDL_GL_SwapBuffers();
 	}
+	
+		if( r_minimize && r_minimize->integer )
+	{
+		extern void IN_DeactivateMouse( void );
+		SDL_Surface *s = SDL_GetVideoSurface( );
+		qboolean    fullscreen = qfalse;
+		qboolean    minimized = qfalse;
+
+		fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
+		minimized = ( SDL_WM_IconifyWindow( ) != 0 );
+
+
+		ri.Cvar_Set( "r_minimize", "0" ); 
+	}
+
 
 	if(r_fullscreen->modified)
 	{
