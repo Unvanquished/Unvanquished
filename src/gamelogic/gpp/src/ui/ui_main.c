@@ -3216,14 +3216,14 @@ static void UI_RunMenuScript( char **args )
     else if( Q_stricmp( name, "RunMod" ) == 0 )
     {
       trap_Cvar_Set( "fs_game", uiInfo.modList[uiInfo.modIndex].modName );
-      trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
+      trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
     }
     else if( Q_stricmp( name, "RunDemo" ) == 0 )
       trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n", uiInfo.demoList[uiInfo.demoIndex] ) );
     else if( Q_stricmp( name, "Tremulous" ) == 0 )
     {
       trap_Cvar_Set( "fs_game", "" );
-      trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
+      trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
     }
     else if( Q_stricmp( name, "closeJoin" ) == 0 )
     {
@@ -3299,7 +3299,7 @@ static void UI_RunMenuScript( char **args )
       }
     }
     else if( Q_stricmp( name, "Quit" ) == 0 )
-      trap_Cmd_ExecuteText( EXEC_APPEND, "quit" );
+      trap_Cmd_ExecuteText( EXEC_APPEND, "quit\n" );
     else if( Q_stricmp( name, "Leave" ) == 0 )
     {
       trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );

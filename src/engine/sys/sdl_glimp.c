@@ -641,7 +641,7 @@ static void GLimp_InitOpenGL3xContext()
             ri.Printf(PRINT_ALL, "Trying Vanilla (GL) Renderer...\n");
 
             ri.Cvar_Set("cl_renderer", "GL");
-            ri.Cmd_ExecuteText(EXEC_APPEND, "vid_restart");
+            ri.Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
 		}
 	}
 #elif defined(__linux__)
@@ -715,7 +715,7 @@ static void GLimp_InitOpenGL3xContext()
             ri.Printf(PRINT_ALL, "Trying Vanilla (GL) Renderer...\n");
 
             ri.Cvar_Set("cl_renderer", "GL");
-            ri.Cmd_ExecuteText(EXEC_APPEND, "vid_restart");
+            ri.Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
 		}
 	}
 #endif
@@ -1967,7 +1967,7 @@ void GLimp_EndFrame(void)
 		{
 			// SDL_WM_ToggleFullScreen didn't work, so do it the slow way
 			if(!sdlToggled)
-				ri.Cmd_ExecuteText(EXEC_APPEND, "vid_restart");
+				ri.Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
 
 			ri.IN_Restart();
 		}
