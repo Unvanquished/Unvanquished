@@ -1216,7 +1216,7 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
       set( WEBP_LIBRARY webp )
     endif( )
     target_link_libraries( renderer ${PNG_LIBRARY} ${WEBP_LIBRARY} ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
-    set_target_properties( renderer PROPERTIES OUTPUT_NAME "librenderer${BUILD_ARCH}" PREFIX "" )
+    set_target_properties( renderer PROPERTIES OUTPUT_NAME "librendererGL${BUILD_ARCH}" PREFIX "" )
   endif()
 endif()
 
