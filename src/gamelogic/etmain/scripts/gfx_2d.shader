@@ -123,7 +123,7 @@ gfx/2d/compass2
 	}
 }
 
-gfx/2d/consolechars
+gfx/2d/bigchars
 {
 	nomipmaps
 	nopicmip

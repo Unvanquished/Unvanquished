@@ -507,7 +507,7 @@ void Con_Init(void)
 	scr_conColorBlue = Cvar_Get ("scr_conColorBlue", "0.3", CVAR_ARCHIVE);
 	scr_conColorGreen = Cvar_Get ("scr_conColorGreen", "0.23", CVAR_ARCHIVE);
 	
-	scr_conUseOld = Cvar_Get ("scr_conUseOld", "0", CVAR_ARCHIVE);
+	scr_conUseOld = Cvar_Get ("scr_conUseOld", "0", CVAR_ARCHIVE|CVAR_LATCH);
 	
 	scr_conBarHeight = Cvar_Get ("scr_conBarHeight", "2", CVAR_ARCHIVE);
 	

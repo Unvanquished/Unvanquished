@@ -1197,7 +1197,7 @@ console2_old
 	}
 }
 
-console-16bit
+console
 {
 	nopicmip
 	{
@@ -1251,7 +1251,7 @@ console-16bit_old
 	}
 }
 
-console2-16bit
+console2
 {
 	nopicmip
 	{

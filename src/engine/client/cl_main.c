@@ -4138,11 +4138,8 @@ void CL_InitRenderer(void)
 	re.BeginRegistration(&cls.glconfig, &cls.glconfig2);
 
 	// load character sets
-	cls.charSetShader = re.RegisterShader("gfx/2d/consolechars");
-
+	cls.charSetShader = re.RegisterShader("gfx/2d/bigchars");
 	cls.useLegacyConsoleFont = qtrue;
-
-
 
     // Register console font specified by cl_consoleFont, if any
     // filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is NULL 
@@ -4155,11 +4152,8 @@ void CL_InitRenderer(void)
 	}
 
 	cls.whiteShader = re.RegisterShader("white");
-
-// JPW NERVE
-
-	cls.consoleShader = re.RegisterShader( "console-16bit" ); // JPW NERVE shader works with 16bit
-	cls.consoleShader2 = re.RegisterShader( "console2-16bit" ); // JPW NERVE same
+	cls.consoleShader = re.RegisterShader( "console" );
+	cls.consoleShader2 = re.RegisterShader( "console2" );
 
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 	g_consoleField.widthInChars = g_console_field_width;
