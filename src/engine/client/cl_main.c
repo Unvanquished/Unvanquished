@@ -3016,7 +3016,7 @@ void CL_CheckForResend(void)
 			// EVEN BALANCE - T.RAY
 			strcpy(pkt, "getchallenge");
 			pktlen = strlen(pkt);
-			NET_OutOfBandPrint(NS_CLIENT, clc.serverAddress, pkt);
+			NET_OutOfBandPrint(NS_CLIENT, clc.serverAddress, "%s", pkt);
 			break;
 
 		case CA_CHALLENGING:
