@@ -1134,19 +1134,19 @@ set(GLEW_INCLUDE_DIR
     set_target_properties( gppgame PROPERTIES
       OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
       PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "gpp" )
+      LIBRARY_OUTPUT_DIRECTORY "main" )
     add_library( gpptrem SHARED ${CGAMEGPP} )
     set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
     set_target_properties( gpptrem PROPERTIES
       OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
       PREFIX "" 
-      LIBRARY_OUTPUT_DIRECTORY "gpp" )
+      LIBRARY_OUTPUT_DIRECTORY "main" )
   add_library( gppui SHARED ${UIGPP} )
     set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
     set_target_properties( gppui PROPERTIES
       OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
       PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "gpp" )
+      LIBRARY_OUTPUT_DIRECTORY "main" )
   endif()
 
 ###################
