@@ -41,7 +41,7 @@ extern void     Info_NextPair(const char **head, char *key, char *value);
 extern char    *Info_ValueForKey(const char *s, const char *key);
 extern float   *tv(float x, float y, float z);
 extern char    *QDECL va(char *format, ...) __attribute__ ((format (printf, 1, 2)));
-extern void QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
+extern void QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
 extern char    *Q_CleanDirName(char *dirname);
 extern qboolean Q_isBadDirChar(char c);
 extern char    *Q_CleanStr(char *string);
