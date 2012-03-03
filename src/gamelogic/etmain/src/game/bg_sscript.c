@@ -270,7 +270,7 @@ static qboolean BG_SS_ParseSpeaker(int handle)
 
 	if(!BG_SS_StoreSpeaker(&speaker))
 	{
-		return BG_SS_ParseError(handle, "Failed to store speaker", token.string);
+		return BG_SS_ParseError(handle, "Failed to store speaker");
 	}
 
 	return qtrue;
