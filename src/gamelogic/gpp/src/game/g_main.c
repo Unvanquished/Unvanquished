@@ -1722,7 +1722,7 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
   // Send to the logfile and server console
   G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_MAGENTA "%s\n",
     G_admin_permission( ent, ADMF_ADMINCHAT ) ? "AdminMsg" : "AdminMsgPublic",
-    ent ? ent - g_entities : -1, ent ? ent->client->pers.netname : "console",
+    ent ? (int)(ent - g_entities) : -1, ent ? ent->client->pers.netname : "console",
     msg );
 }
 

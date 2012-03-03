@@ -249,7 +249,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
   G_UpdateTeamConfigStrings( );
 
   G_LogPrintf( "ChangeTeam: %d %s: %s" S_COLOR_WHITE " switched teams\n",
-    ent - g_entities, BG_TeamName( newTeam ), ent->client->pers.netname );
+    (int)(ent - g_entities), BG_TeamName( newTeam ), ent->client->pers.netname );
 
   G_namelog_update_score( ent->client );
   TeamplayInfoMessage( ent );

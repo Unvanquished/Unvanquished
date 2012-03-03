@@ -1018,7 +1018,7 @@ void BG_AnimParseAnimScript(animModelInfo_t * animModelInfo, animScriptData_t * 
 		{
 			if(indentLevel)
 			{
-				BG_AnimParseError("BG_AnimParseAnimScript: unexpected end of file: %s");
+				BG_AnimParseError("BG_AnimParseAnimScript: unexpected end of file");
 			}
 			break;
 		}
