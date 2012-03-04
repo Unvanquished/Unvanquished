@@ -1189,8 +1189,8 @@ Key_Bind_f
 ===================
 */
 void Key_Bind_f( void ) {
-	int i, c, b;
-	char cmd[1024];
+	int q, i, c, b;
+	char *cmd;
 
 	c = Cmd_Argc();
 
@@ -1213,20 +1213,38 @@ void Key_Bind_f( void ) {
 		return;
 	}
 
-// copy the rest of the command line
-	cmd[0] = 0;     // start out with a null string
-	for ( i = 2 ; i < c ; i++ )
+	cmd = Cmd_Cmd () - 1;
+	// find the 3rd parameter
+	i = q = 0;
+	c = 2;
+	while (c && *++cmd)
 	{
-		const char *param = Cmd_Argv( i );
-		int q = !!strpbrk( param, " ;" );
-		if ( q )
-			strcat (cmd, "\"" );
-		strcat( cmd, param );
-		if ( q )
-			strcat( cmd, "\"" );
+		if (!q && *cmd == ' ')
+			i = 1; // space found outside quotation marks
+		if (i && *cmd != ' ')
+		{
+			i = 0; // non-space found after space outside quotation marks
+			--c; // one word fewer to scan
+		}
+		if (*cmd == '"')
+			q = !q; // found a quotation mark
+	}
 
-		if ( i != ( c - 1 ) ) {
-			strcat( cmd, " " );
+	if (*cmd == '"')
+    {
+		// See if this matches /^".*" *$/; if so, strip quotation marks
+		c = 0;
+		while (cmd[++c])
+			if (cmd[c] == '"')
+				break;
+		i = c;
+		if (cmd[c])
+			while (cmd[++c] == ' ')
+				/**/;
+		if (!cmd[c])
+		{
+			cmd[i] = 0;
+			++cmd;
 		}
 	}
 
@@ -1247,7 +1265,11 @@ void Key_WriteBindings( fileHandle_t f ) {
 
 	for (i=0 ; i<MAX_KEYS ; i++) {
 		if ( keys[i].binding && keys[i].binding[0] ) {
-			FS_Printf (f, "bind %s %s\n", Key_KeynumToString(i), keys[i].binding );
+			// quote the string if it contains ; but no "
+			if (strchr (keys[i].binding, ';') && !strchr (keys[i].binding, '"'))
+				FS_Printf (f, "bind %s \"%s\"\n", Key_KeynumToString(i), keys[i].binding );
+			else
+				FS_Printf (f, "bind %s %s\n", Key_KeynumToString(i), keys[i].binding );
 
 		}
 
