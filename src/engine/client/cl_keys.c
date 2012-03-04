@@ -1217,7 +1217,14 @@ void Key_Bind_f( void ) {
 	cmd[0] = 0;     // start out with a null string
 	for ( i = 2 ; i < c ; i++ )
 	{
-		strcat( cmd, Cmd_Argv( i ) );
+		const char *param = Cmd_Argv( i );
+		int q = !!strpbrk( param, " ;" );
+		if ( q )
+			strcat (cmd, "\"" );
+		strcat( cmd, param );
+		if ( q )
+			strcat( cmd, "\"" );
+
 		if ( i != ( c - 1 ) ) {
 			strcat( cmd, " " );
 		}
@@ -1240,7 +1247,7 @@ void Key_WriteBindings( fileHandle_t f ) {
 
 	for (i=0 ; i<MAX_KEYS ; i++) {
 		if ( keys[i].binding && keys[i].binding[0] ) {
-			FS_Printf (f, "bind %s \"%s\"\n", Key_KeynumToString(i), keys[i].binding );
+			FS_Printf (f, "bind %s %s\n", Key_KeynumToString(i), keys[i].binding );
 
 		}
 
@@ -1259,7 +1266,7 @@ void Key_Bindlist_f( void ) {
 
 	for ( i = 0 ; i < MAX_KEYS ; i++ ) {
 		if ( keys[i].binding && keys[i].binding[0] ) {
-			Com_Printf( "%s \"%s\"\n", Key_KeynumToString(i), keys[i].binding );
+			Com_Printf( "%s = %s\n", Key_KeynumToString(i), keys[i].binding );
 		}
 	}
 }
