@@ -517,6 +517,8 @@ qboolean RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t *glconfig2Ou
 	// without this we'd see a white flash on a level load because the very
 	// first time the level shot would not be drawn
 	RE_StretchPic(0, 0, 0, 0, 0, 0, 1, 1, 0);
+
+	return qtrue;
 }
 
 //=============================================================================
