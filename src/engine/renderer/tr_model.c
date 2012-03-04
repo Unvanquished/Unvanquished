@@ -1833,7 +1833,7 @@ static qboolean R_LoadMDX(model_t * mod, void *buffer, const char *mod_name)
 /*
 ** RE_BeginRegistration
 */
-void RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t * glconfigOut2)
+qboolean RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t * glconfigOut2)
 {
 	ri.Hunk_Clear();			// (SA) MEM NOTE: not in missionpack
 
@@ -1854,6 +1854,8 @@ void RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t * glconfigOut2)
 	// without this we'd see a white flash on a level load because the very
 	// first time the level shot would not be drawn
 	RE_StretchPic(0, 0, 0, 0, 0, 0, 1, 1, 0);
+
+	return qtrue;
 }
 
 /*

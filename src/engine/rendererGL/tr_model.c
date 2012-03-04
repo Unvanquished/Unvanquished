@@ -479,9 +479,10 @@ static qboolean R_LoadDAE(model_t * mod, void *buffer, int bufferLen, const char
 /*
 ** RE_BeginRegistration
 */
-void RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t *glconfig2Out)
+qboolean RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t *glconfig2Out)
 {
-	R_Init();
+	if( !R_Init() )
+		return qfalse;
 
 	*glconfigOut = glConfig;
 	*glconfig2Out = glConfig2;

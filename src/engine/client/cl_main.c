@@ -183,6 +183,9 @@ struct rsa_private_key private_key;
 cvar_t         *cl_gamename;
 cvar_t	       *cl_altTab;
 
+static cvar_t  *cl_renderer = NULL;
+static void    *rendererLib = NULL;
+
 // XreaL BEGIN
 cvar_t         *cl_aviMotionJpeg;
 // XreaL END
@@ -2468,9 +2471,6 @@ void CL_Vid_Restart_f(void)
 	CL_InitOpenGLExt();
 #endif
 
-	// initialize the renderer interface
-	CL_InitRef();
-	
 	// startup all the client stuff
 	CL_StartHunkUsers();
 
@@ -4131,11 +4131,14 @@ void QDECL CL_RefPrintf(int print_level, const char *fmt, ...)
 CL_InitRenderer
 ============
 */
-void CL_InitRenderer(void)
+qboolean CL_InitRenderer(void)
 {
 	fileHandle_t f;
 	// this sets up the renderer and calls R_Init
-	re.BeginRegistration(&cls.glconfig, &cls.glconfig2);
+	if( !re.BeginRegistration(&cls.glconfig, &cls.glconfig2) ) {
+		
+		return qfalse;
+	}
 
 	// load character sets
 	cls.charSetShader = re.RegisterShader("gfx/2d/bigchars");
@@ -4166,6 +4169,8 @@ void CL_InitRenderer(void)
 				, cls.glconfig.renderer_string
 				, cls.glconfig.version_string );
 #endif
+
+	return qtrue;
 }
 
 /*
@@ -4188,10 +4193,28 @@ void CL_StartHunkUsers(void)
 		return;
 	}
 
-	if(!cls.rendererStarted)
-	{
-		cls.rendererStarted = qtrue;
-		CL_InitRenderer();
+	if( rendererLib == NULL ) {
+		// initialize the renderer interface
+		char renderers[MAX_QPATH];
+		char *from, *to;
+
+		Q_strncpyz( renderers, cl_renderer->string, sizeof(renderers) );
+		from = renderers;
+		while( from ) {
+			to = strchr(from, ',');
+			if( to )
+				*to++ = '\0';
+			CL_InitRef( from );
+			if( CL_InitRenderer() ) {
+				cls.rendererStarted = qtrue;
+				break;
+			}
+			CL_ShutdownRef();
+			from = to;
+		}
+	} else if(!cls.rendererStarted) {
+		if( CL_InitRenderer() )
+			cls.rendererStarted = qtrue;
 	}
 
 	if(!cls.soundStarted)
@@ -4414,9 +4437,6 @@ int CL_ScaledMilliseconds(void)
 
 
 
-static cvar_t  *cl_renderer = NULL;
-static void    *rendererLib = NULL;
-
 #if defined(REF_HARD_LINKED)
 extern refexport_t* GetRefAPI(int apiVersion, refimport_t * rimp);
 #endif
@@ -4428,7 +4448,7 @@ CL_InitRef
 RB: changed to load the renderer from a .dll
 ============
 */
-void CL_InitRef(void)
+void CL_InitRef(const char *renderer)
 {
 	refimport_t     ri;
 	refexport_t    *ret;
@@ -4440,11 +4460,9 @@ void CL_InitRef(void)
 
 	Com_Printf("----- Initializing Renderer ----\n");
 
-	cl_renderer = Cvar_Get("cl_renderer", "GL3", CVAR_ARCHIVE | CVAR_LATCH);
-
 #if !defined(REF_HARD_LINKED)
 
-	Com_sprintf(dllName, sizeof(dllName), DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, cl_renderer->string);
+	Com_sprintf(dllName, sizeof(dllName), DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, renderer);
 
 	Com_Printf("Loading \"%s\"...", dllName);
 	if((rendererLib = Sys_LoadLibrary(dllName)) == 0)
@@ -4896,6 +4914,8 @@ void CL_Init(void)
 	//
 	// register our variables
 	//
+	cl_renderer = Cvar_Get("cl_renderer", "GL3,GL", CVAR_ARCHIVE|CVAR_LATCH);
+
 	cl_noprint = Cvar_Get("cl_noprint", "0", 0);
 	cl_motd = Cvar_Get("cl_motd", "1", 0);
 	cl_autoupdate = Cvar_Get("cl_autoupdate", "1", CVAR_ARCHIVE);
@@ -5216,8 +5236,6 @@ void CL_Init(void)
 	// Dushan
 	CL_InitOpenGLExt();
 #endif
-
-	CL_InitRef();
 
 	SCR_Init();
 

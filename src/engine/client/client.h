@@ -611,7 +611,7 @@ void            CL_ClearPing(int n);
 int             CL_GetPingQueueCount(void);
 
 void            CL_ShutdownRef(void);
-void            CL_InitRef(void);
+void            CL_InitRef(const char *renderer);
 void			CL_InitOpenGLExt(void);
 void			CL_InitPNG(void);
 void			CL_InitZLIB(void);

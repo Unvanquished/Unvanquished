@@ -40,9 +40,10 @@ float           displayAspect = 0.0f;
 
 static void     GfxInfo_f(void);
 
+cvar_t         *r_glMajorVersion;
+cvar_t         *r_glMinorVersion;
 cvar_t         *r_glCoreProfile;
-cvar_t         *r_glMinMajorVersion;
-cvar_t         *r_glMinMinorVersion;
+cvar_t         *r_glDebugProfile;
 
 cvar_t         *r_flares;
 cvar_t         *r_flareSize;
@@ -353,7 +354,7 @@ static void AssertCvarRange(cvar_t * cv, float minVal, float maxVal, qboolean sh
 ** to the user.
 */
 #if !defined(USE_D3D10)
-static void InitOpenGL(void)
+static qboolean InitOpenGL(void)
 {
 	char            renderer_buffer[1024];
 
@@ -373,7 +374,8 @@ static void InitOpenGL(void)
 	{
 		GLint           temp;
 
-		GLimp_Init();
+		if( !GLimp_Init() )
+			return qfalse;
 
 		GL_CheckErrors();
 
@@ -408,6 +410,8 @@ static void InitOpenGL(void)
 	// set default state
 	GL_SetDefaultState();
 	GL_CheckErrors();
+
+	return qtrue;
 }
 #endif
 
@@ -1327,10 +1331,11 @@ R_Register
 */
 void R_Register(void)
 {
-	r_glCoreProfile = ri.Cvar_Get("r_glCoreProfile", "1", CVAR_INIT);
-
-	r_glMinMajorVersion = ri.Cvar_Get("r_glMinMajorVersion", "3", CVAR_LATCH);
-	r_glMinMinorVersion = ri.Cvar_Get("r_glMinMinorVersion", "2", CVAR_LATCH);
+	// OpenGL context selection
+	r_glMajorVersion = ri.Cvar_Get("r_glMajorVersion", "", CVAR_LATCH);
+	r_glMinorVersion = ri.Cvar_Get("r_glMinorVersion", "", CVAR_LATCH);
+	r_glCoreProfile = ri.Cvar_Get("r_glCoreProfile", "", CVAR_LATCH);
+	r_glDebugProfile = ri.Cvar_Get("r_glDebugProfile", "", CVAR_LATCH);
 
 	// latched and archived variables
 	r_ext_compressed_textures = ri.Cvar_Get("r_ext_compressed_textures", "0", CVAR_ARCHIVE | CVAR_LATCH);
@@ -1436,7 +1441,7 @@ void R_Register(void)
 	r_lodBias = ri.Cvar_Get("r_lodBias", "0", CVAR_ARCHIVE);
 	r_flares = ri.Cvar_Get("r_flares", "0", CVAR_ARCHIVE);
 	r_znear = ri.Cvar_Get("r_znear", "4", CVAR_CHEAT);
-	r_zfar = ri.Cvar_Get("r_zfar", "1024", CVAR_CHEAT);
+	r_zfar = ri.Cvar_Get("r_zfar", "0", CVAR_CHEAT);
 	r_ignoreGLErrors = ri.Cvar_Get("r_ignoreGLErrors", "1", CVAR_ARCHIVE);
 	r_fastsky = ri.Cvar_Get("r_fastsky", "0", CVAR_ARCHIVE);
 	r_inGameVideo = ri.Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);
@@ -1709,7 +1714,7 @@ void R_Register(void)
 R_Init
 ===============
 */
-void R_Init(void)
+qboolean R_Init(void)
 {
 	int             err;
 	int             i;
@@ -1754,25 +1759,6 @@ void R_Init(void)
 	R_NoiseInit();
 
 	R_Register();
-
-	backEndData[0] = (backEndData_t *) ri.Hunk_Alloc(sizeof(*backEndData[0]), h_low);
-	backEndData[0]->polys = (srfPoly_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPoly_t), h_low);
-	backEndData[0]->polyVerts = (polyVert_t *) ri.Hunk_Alloc(r_maxPolyVerts->integer * sizeof(polyVert_t), h_low);
-	backEndData[0]->polybuffers = (srfPolyBuffer_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPolyBuffer_t), h_low);
-	
-	if(r_smp->integer)
-	{
-		backEndData[1] = (backEndData_t *) ri.Hunk_Alloc(sizeof(*backEndData[1]), h_low);
-		backEndData[1]->polys = (srfPoly_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPoly_t), h_low);
-		backEndData[1]->polyVerts = (polyVert_t *) ri.Hunk_Alloc(r_maxPolyVerts->integer * sizeof(polyVert_t), h_low);
-		backEndData[1]->polybuffers = (srfPolyBuffer_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPolyBuffer_t), h_low);
-	}
-	else
-	{
-		backEndData[1] = NULL;
-	}
-
-	R_ToggleSmpFrame();
 
 #if defined(USE_D3D10)
 	if(glConfig.vidWidth == 0)
@@ -2002,13 +1988,34 @@ void R_Init(void)
 	// set default state
 	//D3D10_SetDefaultState();
 #else
-	InitOpenGL();
+	if( !InitOpenGL() ) {
+		return qfalse;
+	}
 
 #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 	GLSL_InitGPUShaders();
 #endif
 
 #endif
+
+	backEndData[0] = (backEndData_t *) ri.Hunk_Alloc(sizeof(*backEndData[0]), h_low);
+	backEndData[0]->polys = (srfPoly_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPoly_t), h_low);
+	backEndData[0]->polyVerts = (polyVert_t *) ri.Hunk_Alloc(r_maxPolyVerts->integer * sizeof(polyVert_t), h_low);
+	backEndData[0]->polybuffers = (srfPolyBuffer_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPolyBuffer_t), h_low);
+	
+	if(r_smp->integer)
+	{
+		backEndData[1] = (backEndData_t *) ri.Hunk_Alloc(sizeof(*backEndData[1]), h_low);
+		backEndData[1]->polys = (srfPoly_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPoly_t), h_low);
+		backEndData[1]->polyVerts = (polyVert_t *) ri.Hunk_Alloc(r_maxPolyVerts->integer * sizeof(polyVert_t), h_low);
+		backEndData[1]->polybuffers = (srfPolyBuffer_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPolyBuffer_t), h_low);
+	}
+	else
+	{
+		backEndData[1] = NULL;
+	}
+
+	R_ToggleSmpFrame();
 
 	R_InitImages();
 
@@ -2048,6 +2055,8 @@ void R_Init(void)
 	GL_CheckErrors();
 
 	ri.Printf(PRINT_ALL, "----- finished R_Init -----\n");
+
+	return qtrue;
 }
 
 /*

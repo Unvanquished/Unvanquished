@@ -1823,7 +1823,7 @@ void            RE_StretchRaw(int x, int y, int w, int h, int cols, int rows, co
 void            RE_UploadCinematic(int w, int h, int cols, int rows, const byte * data, int client, qboolean dirty);
 
 void            RE_BeginFrame(stereoFrame_t stereoFrame);
-void            RE_BeginRegistration(glconfig_t * glconfig, glconfig2_t * glconfig2);
+qboolean        RE_BeginRegistration(glconfig_t * glconfig, glconfig2_t * glconfig2);
 void            RE_LoadWorldMap(const char *mapname);
 void            RE_SetWorldVisData(const byte * vis);
 qhandle_t       RE_RegisterModel(const char *name);
@@ -1910,7 +1910,7 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 
 extern int      gl_NormalFontBase;
 
-void            GLimp_Init(void);
+qboolean        GLimp_Init(void);
 #ifdef IPHONE
 void			GLimp_SetMode(float rotation);
 #endif // IPHONE
