@@ -1948,16 +1948,13 @@ void GLimp_EndFrame(void)
 
 	if( r_minimize && r_minimize->integer )
 	{
-		SDL_Surface *s = SDL_GetVideoSurface( );
-		qboolean    fullscreen = qfalse;
-		qboolean    minimized = qfalse;
-
-		fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
+		SDL_Surface *s         = SDL_GetVideoSurface();
+		qboolean    fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
 
 #ifdef MACOS_X
 		if( !fullscreen )
 		{
-			SDL_WM_IconifyWindow( );
+			SDL_WM_IconifyWindow();
 			ri.Cvar_Set( "r_minimize", "0" );
 		}
 		else if( r_fullscreen->integer )
@@ -1965,7 +1962,7 @@ void GLimp_EndFrame(void)
 			ri.Cvar_Set( "r_fullscreen", "0" );
 		}
 #else
-		minimized = ( SDL_WM_IconifyWindow( ) != 0 );
+		SDL_WM_IconifyWindow();
 		ri.Cvar_Set( "r_minimize", "0" );
 #endif
 	}
