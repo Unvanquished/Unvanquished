@@ -2390,7 +2390,7 @@ byte           *membase = NULL;
 int             hunkmaxsize;
 int             cursize;
 
-#define R_HUNK_MEGS     24
+#define R_HUNK_MEGS     48
 #define R_HUNK_SIZE     ( R_HUNK_MEGS*1024*1024 )
 
 void           *R_Hunk_Begin(void)
