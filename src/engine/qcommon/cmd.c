@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
+#include "../client/keys.h"
 
 #define MAX_CMD_BUFFER  131072
 #define MAX_CMD_LINE    1024
@@ -438,18 +439,51 @@ Compares two values, if true executes the third argument, if false executes the 
 ===============
 */
 void Cmd_If_f( void ) {
-  char	*v;
+  char	*v = NULL;
   int 	v1;
   int 	v2;
   char	*vt;
-  char	*vf;
+  char	*vf = NULL;
   char  *op;
 
-  if ( (Cmd_Argc () == 6 ) || (Cmd_Argc () == 5) ) {
+  int   argc;
+
+  switch ( argc = Cmd_Argc () )
+  {
+  case 4:
+    vf = Cmd_Argv (3);
+  case 3:
+    vt = Cmd_Argv (2);
+#ifdef DEDICATED
+    Com_Printf ("if (!)<modifier_key>... is not supported on the server -- assuming true.\n");
+    v = vt;
+#else
+    v = Cmd_Argv (1);
+    if ((v1 = (*v == '!'))) // allow for negation
+      ++v;
+    v2 = !Q_stricmp (v, "shift"  ) ? K_SHIFT
+       : !Q_stricmp (v, "ctrl"   ) ? K_CTRL
+       : !Q_stricmp (v, "alt"    ) ? K_ALT
+       : !Q_stricmp (v, "command") ? K_COMMAND
+       : !Q_stricmp (v, "cmd"    ) ? K_COMMAND
+       : !Q_stricmp (v, "mode"   ) ? K_MODE
+       : 0;
+    if (v2 == 0)
+    {
+      Com_Printf ("invalid key name in if command. valid operators are = != < > >= <=\n");
+      return;
+    }
+    v = (v1 ^ !!keys[v2].down) ? vt : vf;
+#endif
+    break;
+
+  case 6:
+    vf = Cmd_Argv( 5 );
+  case 5:
+    vt = Cmd_Argv( 4 );
     v1 = atoi( Cmd_Argv( 1 ) );
     op = Cmd_Argv( 2 );
     v2 = atoi( Cmd_Argv( 3 ) );
-    vt = Cmd_Argv( 4 );
     if ( ( !strcmp( op, "="  ) && v1 == v2 ) ||
          ( !strcmp( op, "!=" ) && v1 != v2 ) ||
          ( !strcmp( op, "<"  ) && v1 <  v2 ) ||
@@ -466,27 +500,28 @@ void Cmd_If_f( void ) {
               ( !strcmp( op, ">"  ) && v1 <= v2 ) ||
               ( !strcmp( op, ">=" ) && v1 <  v2 ) )
     {
-      if ( Cmd_Argc () == 6 ) 
-      {
-        vf = Cmd_Argv( 5 );
-        v = vf;
-      }
-      else
-      {
-        return;
-      }
+      v = vf;
     }
     else
     {
       Com_Printf ("invalid operator in if command. valid operators are = != < > >= <=\n");
       return;
     }
-  }
-  else {
-    Com_Printf ("if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first two values and executes <cmdthen> if true, <cmdelse> if false\n");
+    break;
+
+  default:
+    Com_Printf ("if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first two values and executes <cmdthen> if true, <cmdelse> if false\n"
+                "if (!)<modifier_key> <cmdthen> (<cmdelse>) : similarly for shift, ctrl, alt, command/cmd, mode\n"
+                "-- commands are cvar names unless prefixed with / or \\\n");
     return;
   }
-  Cbuf_InsertText( va("vstr %s\n", v ) );
+  if (v)
+  {
+    if (*v == '/' || *v == '\\')
+      Cbuf_InsertText( va("%s\n", v + 1) );
+    else
+      Cbuf_InsertText( va("vstr %s\n", v ) );
+  }
 }
 
 /*
