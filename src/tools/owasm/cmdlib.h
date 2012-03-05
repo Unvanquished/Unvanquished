@@ -90,7 +90,7 @@ char *ExpandPathAndArchive( const char *path );
 
 double I_FloatTime( void );
 
-void	Error( const char *error, ... );
+void	Error( const char *error, ... ) __attribute__((format(printf, 1, 2)));
 int		CheckParm( const char *check );
 
 FILE	*SafeOpenWrite( const char *filename );
@@ -143,8 +143,8 @@ extern	char			archivedir[1024];
 
 
 extern	qboolean verbose;
-void qprintf( const char *format, ... );
-void _printf( const char *format, ... );
+void qprintf( const char *format, ... ) __attribute__((format(printf, 1, 2)));
+void _printf( const char *format, ... ) __attribute__((format(printf, 1, 2)));
 
 void ExpandWildcards( int *argc, char ***argv );
 

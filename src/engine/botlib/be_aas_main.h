@@ -46,7 +46,7 @@ Maryland 20850 USA.
 extern          aas_t(*aasworld);
 
 //AAS error message
-void QDECL      AAS_Error(char *fmt, ...);
+void QDECL      AAS_Error(char *fmt, ...) __attribute__((format(printf, 1, 2)));
 
 //set AAS initialized
 void            AAS_SetInitialized(void);

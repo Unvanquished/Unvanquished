@@ -53,7 +53,7 @@ extern IEngineInterface		*g_InterfaceFunctions;
 
 //////////////////////////////////////////////////////////////////////////
 // Utility Function
-extern "C" const char *OB_VA(const char* _msg, ...);
+extern "C" const char *OB_VA(const char* _msg, ...) __attribute__((format(printf, 1, 2)));
 //////////////////////////////////////////////////////////////////////////
 
 eomnibot_error Omnibot_LoadLibrary(int version, const char *lib, const char *path);

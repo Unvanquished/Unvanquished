@@ -194,7 +194,7 @@ qboolean ReadNumber(source_t * source, fielddef_t * fd, void *p)
 		}						//end if
 		if(intval < intmin || intval > intmax)
 		{
-			SourceError(source, "value %d out of range [%d, %d]", intval, intmin, intmax);
+			SourceError(source, "value %ld out of range [%ld, %ld]", intval, intmin, intmax);
 			return 0;
 		}						//end if
 	}							//end if
@@ -204,7 +204,7 @@ qboolean ReadNumber(source_t * source, fielddef_t * fd, void *p)
 		{
 			if(intval < fd->floatmin || intval > fd->floatmax)
 			{
-				SourceError(source, "value %d out of range [%f, %f]", intval, fd->floatmin, fd->floatmax);
+				SourceError(source, "value %ld out of range [%f, %f]", intval, fd->floatmin, fd->floatmax);
 				return 0;
 			}					//end if
 		}						//end if

@@ -906,7 +906,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
   {
     case SAY_ALL:
       G_LogPrintf( "Say: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_GREEN "%s\n",
-        ( ent ) ? ent - g_entities : -1,
+        ( ent ) ? (int)(ent - g_entities) : -1,
         ( ent ) ? ent->client->pers.netname : "console", chatText );
       break;
     case SAY_TEAM:
@@ -914,7 +914,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
       if( !ent || !ent->client )
         Com_Error( ERR_FATAL, "SAY_TEAM by non-client entity\n" );
       G_LogPrintf( "SayTeam: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_CYAN "%s\n",
-        ent - g_entities, ent->client->pers.netname, chatText );
+        (int)(ent - g_entities), ent->client->pers.netname, chatText );
       break;
     case SAY_RAW:
       if( ent )
@@ -959,7 +959,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
     range[ i ] = g_sayAreaRange.value;
 
   G_LogPrintf( "SayArea: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_BLUE "%s\n",
-    ent - g_entities, ent->client->pers.netname, msg );
+    (int)(ent - g_entities), ent->client->pers.netname, msg );
 
   VectorAdd( ent->s.origin, range, maxs );
   VectorSubtract( ent->s.origin, range, mins );
@@ -1510,7 +1510,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
   G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\": %s\n",
     team == TEAM_NONE ? "CallVote" : "CallTeamVote",
-    ent - g_entities, ent->client->pers.netname, level.voteString[ team ] );
+    (int)(ent - g_entities), ent->client->pers.netname, level.voteString[ team ] );
 
   if( team == TEAM_NONE )
   {
@@ -3441,7 +3441,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 
     G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\" \"%s\": ^%c%s\n",
       ( teamonly ) ? "TPrivMsg" : "PrivMsg",
-      ( ent ) ? ent - g_entities : -1,
+      ( ent ) ? (int)(ent - g_entities) : -1,
       ( ent ) ? ent->client->pers.netname : "console",
       name, color, msg );
   }

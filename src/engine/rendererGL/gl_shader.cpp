@@ -1298,7 +1298,7 @@ GLShader_generic::GLShader_generic():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i generic shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i generic shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -1417,7 +1417,7 @@ GLShader_lightMapping::GLShader_lightMapping():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i lightMapping shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i lightMapping shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -1534,7 +1534,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i vertexLighting_DBS_entity shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i vertexLighting_DBS_entity shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -1648,7 +1648,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i vertexLighting_DBS_world shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i vertexLighting_DBS_world shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -1781,7 +1781,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i forwardLighting_omniXYZ shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i forwardLighting_omniXYZ shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -1916,7 +1916,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i forwardLighting_projXYZ shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i forwardLighting_projXYZ shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -2058,7 +2058,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i forwardLighting_directionalSun shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i forwardLighting_directionalSun shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -2175,7 +2175,7 @@ GLShader_deferredLighting_omniXYZ::GLShader_deferredLighting_omniXYZ():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i deferredLighting_omniXYZ shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i deferredLighting_omniXYZ shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -2292,7 +2292,7 @@ GLShader_deferredLighting_projXYZ::GLShader_deferredLighting_projXYZ():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i deferredLighting_projXYZ shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i deferredLighting_projXYZ shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalSun():
@@ -2415,7 +2415,7 @@ GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalS
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i deferredLighting_directionalSun shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i deferredLighting_directionalSun shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -2529,7 +2529,7 @@ GLShader_geometricFill::GLShader_geometricFill():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i geometricFill shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i geometricFill shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -2629,7 +2629,7 @@ GLShader_shadowFill::GLShader_shadowFill():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i shadowFill shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i shadowFill shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -2729,7 +2729,7 @@ GLShader_reflection::GLShader_reflection():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i reflection shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i reflection shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -2813,7 +2813,7 @@ GLShader_skybox::GLShader_skybox():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i skybox shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i skybox shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -2911,7 +2911,7 @@ GLShader_fogQuake3::GLShader_fogQuake3():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i fogQuake3 shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i fogQuake3 shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -2996,7 +2996,7 @@ GLShader_fogGlobal::GLShader_fogGlobal():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i fogQuake3 shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i fogQuake3 shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -3108,7 +3108,7 @@ GLShader_heatHaze::GLShader_heatHaze():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i heatHaze shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i heatHaze shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -3166,7 +3166,7 @@ GLShader_screen::GLShader_screen():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i screen shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i screen shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 GLShader_portal::GLShader_portal():
@@ -3223,7 +3223,7 @@ GLShader_portal::GLShader_portal():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i portal shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i portal shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -3305,7 +3305,7 @@ GLShader_toneMapping::GLShader_toneMapping():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i toneMapping shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i toneMapping shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -3382,7 +3382,7 @@ GLShader_contrast::GLShader_contrast():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i contrast shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i contrast shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -3465,7 +3465,7 @@ GLShader_cameraEffects::GLShader_cameraEffects():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i cameraEffects shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i cameraEffects shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -3543,7 +3543,7 @@ GLShader_blurX::GLShader_blurX():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i blurX shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i blurX shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -3623,7 +3623,7 @@ GLShader_blurY::GLShader_blurY():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i blurY shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i blurY shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }
 
 
@@ -3680,5 +3680,5 @@ GLShader_debugShadowMap::GLShader_debugShadowMap():
 	SelectProgram();
 
 	int endTime = ri.Milliseconds();
-	ri.Printf(PRINT_ALL, "...compiled %i debugShadowMap shader permutations in %5.2f seconds\n", numCompiled, (endTime - startTime) / 1000.0);
+	ri.Printf(PRINT_ALL, "...compiled %i debugShadowMap shader permutations in %5.2f seconds\n", (int)numCompiled, (endTime - startTime) / 1000.0);
 }

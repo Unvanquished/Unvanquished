@@ -2278,8 +2278,8 @@ int             trap_PC_ReadToken(int handle, pc_token_t * pc_token);
 int             trap_PC_SourceFileAndLine(int handle, char *filename, int *line);
 int             trap_PC_UnReadToken(int handle);
 
-void            PC_SourceError(int handle, char *format, ...);
-void            PC_SourceWarning(int handle, char *format, ...);
+void            PC_SourceError(int handle, char *format, ...) __attribute__ ((format (printf, 2, 3)));
+void            PC_SourceWarning(int handle, char *format, ...) __attribute__ ((format (printf, 2, 3)));
 
 #ifdef GAMEDLL
 const char     *PC_String_Parse(int handle);

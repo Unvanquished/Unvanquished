@@ -3573,7 +3573,7 @@ qboolean Item_TextField_HandleKey(itemDef_t * item, int key)
 			//
 			// ignore any non printable chars
 			//
-			if(key < 32 || !item->cvar)
+			if(key < 32 || key == 127 || !item->cvar)
 			{
 				return qtrue;
 			}
@@ -4928,12 +4928,12 @@ void Item_Text_Paint(itemDef_t * item)
 		if(seconds <= 2)
 		{
 			//Com_sprintf( text, 255, "^1%d", seconds );
-			Com_sprintf(text, 255, item->text, va("^1%d^*", seconds));
+			Com_sprintf(text, 255, item->text, "^1%d^*", seconds);
 		}
 		else
 		{
 			//Com_sprintf( text, 255, "%d", seconds );
-			Com_sprintf(text, 255, item->text, va("%d", seconds));
+			Com_sprintf(text, 255, item->text, "%d", seconds);
 		}
 
 		// set ptr
@@ -9486,7 +9486,7 @@ qboolean BG_PanelButton_EditClick(panel_button_t * button, int key)
 				return qtrue;
 			}
 
-			if(key < 32)
+			if(key < 32 || key == 127)
 			{
 				return qtrue;
 			}

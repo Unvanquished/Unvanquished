@@ -1736,7 +1736,7 @@ char           *CG_MustParse(char **pString, const char *pErrorMsg)
 
 	if(!*token)
 	{
-		CG_Error(pErrorMsg);
+		CG_Error("%s", pErrorMsg);
 	}
 	return token;
 }
