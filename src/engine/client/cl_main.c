@@ -4991,7 +4991,7 @@ void CL_Init(void)
 
 	cl_bypassMouseInput = Cvar_Get("cl_bypassMouseInput", "0", 0);	//CVAR_ROM );          // NERVE - SMF
 
-	cl_doubletapdelay = Cvar_Get("cl_doubletapdelay", "350", CVAR_ARCHIVE);	// Arnout: double tap
+	cl_doubletapdelay = Cvar_Get("cl_doubletapdelay", "100", CVAR_ARCHIVE);	// Arnout: double tap
 
 #if defined (USE_HTTP)
 	// Initialize ui_logged_in to -1(not logged in)

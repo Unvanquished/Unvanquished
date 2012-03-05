@@ -747,9 +747,8 @@ void CL_KeyMove(usercmd_t * cmd)
 
 	// Arnout: double tap
 	cmd->doubleTap = DT_NONE;	// reset
-	if(com_frameTime - cl.doubleTap.lastdoubleTap > cl_doubletapdelay->integer + 150 + cls.frametime)
-	{							// double tap only once every 500 msecs (add
-		// frametime for low(-ish) fps situations)
+	if( !cl.doubleTap.lastdoubleTap || com_frameTime - cl.doubleTap.lastdoubleTap > cl_doubletapdelay->integer + cls.frametime )
+	{
 		int             i;
 		qboolean        key_down;
 
