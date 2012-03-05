@@ -38,7 +38,7 @@
     rect 0 0 1280 56
     focusColor 1 .75 0 1
     disableColor .5 .5 .5 1
-    backColor 0 0 0 1
+    backColor 0 0 0 0.875
     aspectBias ALIGN_LEFT
 
     onEsc
