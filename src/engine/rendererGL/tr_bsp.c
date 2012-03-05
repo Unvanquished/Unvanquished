@@ -5816,7 +5816,7 @@ void R_LoadEntities(lump_t * l)
 
 		if(!*token)
 		{
-			ri.Printf(PRINT_WARNING, "WARNING: unexpected end of entities string while parsing worldspawn\n", token);
+			ri.Printf(PRINT_WARNING, "WARNING: unexpected end of entities string while parsing worldspawn\n");
 			break;
 		}
 

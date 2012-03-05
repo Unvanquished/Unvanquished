@@ -89,7 +89,7 @@ static animation_t *BG_RAG_FindFreeAnimation(const char *mdxFileName, const char
 	return NULL;
 }
 
-static qboolean BG_RAG_ParseError(int handle, char *format, ...)
+static qboolean __attribute((format(printf, 2, 3))) BG_RAG_ParseError(int handle, char *format, ...)
 {
 	int             line;
 	char            filename[128];

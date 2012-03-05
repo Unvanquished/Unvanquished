@@ -368,7 +368,7 @@ void trap_CIN_DrawCinematic(int handle);
 void trap_CIN_SetExtents(int handle, int x, int y, int w, int h);
 void trap_R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset);
 qboolean trap_GetLimboString(int index, char *buf);
-char *trap_TranslateString(const char *string);
+char *trap_TranslateString(const char *string) __attribute__((format_arg(1)));
 void trap_CheckAutoUpdate(void);
 void trap_GetAutoUpdate(void);
 void trap_openURL(const char *s);

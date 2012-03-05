@@ -83,7 +83,7 @@ extern char peer_address [128];
 #endif
 
 // Print a message to screen, depending on its verbose level
-int MsgPrint (msg_level_t msg_level, const char* format, ...);
+int MsgPrint (msg_level_t msg_level, const char* format, ...) __attribute__((format(printf, 2, 3)));
 
 void RecordClientStat( const char *address, const char *version, const char *renderer );
 void RecordGameStat( const char *address, const char *dataText );

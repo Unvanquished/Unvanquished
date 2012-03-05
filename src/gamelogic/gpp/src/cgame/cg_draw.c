@@ -3549,7 +3549,7 @@ static void CG_DrawLighting( void )
       ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) )
   {
     vec4_t black = { 0, 0, 0, 0 };
-    black[ 3 ] = 1.0 - ( (float)( cg.snap->ps.stats[ STAT_STAMINA ] + 1000 ) / 200.0f );
+    black[ 3 ] = 1.0 - ( (float)( cg.snap->ps.stats[ STAT_STAMINA ] + STAMINA_MAX ) / ( STAMINA_MAX + STAMINA_BLACKOUT_LEVEL ) );
     trap_R_SetColor( black );
     CG_DrawPic( 0, 0, 640, 480, cgs.media.whiteShader );
     trap_R_SetColor( NULL );

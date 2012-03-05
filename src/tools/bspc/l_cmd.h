@@ -87,8 +87,8 @@ char *ExpandPathAndArchive( char *path );
 
 double I_FloatTime( void );
 
-void Error( char *error, ... );
-void Warning( char *warning, ... );
+void Error( char *error, ... ) __attribute__((format(printf, 1, 2)));
+void Warning( char *warning, ... ) __attribute__((format(printf, 1, 2)));
 
 int     CheckParm( char *check );
 
@@ -148,7 +148,7 @@ extern char archivedir[1024];
 
 
 extern qboolean verbose;
-void qprintf( char *format, ... );
+void qprintf( char *format, ... ) __attribute__((format(printf, 1, 2)));
 
 void ExpandWildcards( int *argc, char ***argv );
 

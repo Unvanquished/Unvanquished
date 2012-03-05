@@ -77,7 +77,7 @@ void CG_LoadingString(const char *s)
 
 	if(s && *s)
 	{
-		CG_Printf(va("LOADING... %s\n", s));	//----(SA)    added so you can see from the console what's going on
+		CG_Printf("LOADING... %s\n", s);	//----(SA)    added so you can see from the console what's going on
 
 	}
 	// Arnout: no need for this

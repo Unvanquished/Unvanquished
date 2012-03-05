@@ -3064,7 +3064,7 @@ static void LoadPNG(const char *name, byte ** pic, int *width, int *height, byte
 	// allocate the memory to hold the image
 	*width = w;
 	*height = h;
-	*pic = out = (byte *) ri.Z_Malloc(w * h * 4);
+	*pic = out = (byte *) R_GetImageBuffer(w * h * 4, BUFFER_IMAGE);
 
 	row_pointers = (png_bytep *) ri.Hunk_AllocateTempMemory(sizeof(png_bytep) * h);
 
@@ -4135,7 +4135,7 @@ static void LoadDDS(const char *name, byte ** pic, int *width, int *height)
 	// create image pixel buffer
 	*width = w;
 	*height = h;
-	*pic = ri.Z_Malloc(w * h * 4);
+	*pic = R_GetImageBuffer(w * h * 4, BUFFER_IMAGE);
 
 	// decompress the dds texture
 	DDSDecompress((ddsBuffer_t *) buffer, *pic);

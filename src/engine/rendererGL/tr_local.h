@@ -3913,9 +3913,10 @@ extern float    displayAspect;	// FIXME
 //
 // cvars
 //
+extern cvar_t  *r_glMajorVersion;	// override GL version autodetect (for testing)
+extern cvar_t  *r_glMinorVersion;
 extern cvar_t  *r_glCoreProfile;
-extern cvar_t  *r_glMinMajorVersion;
-extern cvar_t  *r_glMinMinorVersion;
+extern cvar_t  *r_glDebugProfile;
 
 extern cvar_t  *r_flares;		// light flares
 extern cvar_t  *r_flareSize;
@@ -4347,7 +4348,7 @@ void            RE_StretchRaw(int x, int y, int w, int h, int cols, int rows, co
 void            RE_UploadCinematic(int w, int h, int cols, int rows, const byte * data, int client, qboolean dirty);
 
 void            RE_BeginFrame(stereoFrame_t stereoFrame);
-void            RE_BeginRegistration(glconfig_t * glconfig, glconfig2_t * glconfig2);
+qboolean        RE_BeginRegistration(glconfig_t * glconfig, glconfig2_t * glconfig2);
 void            RE_LoadWorldMap(const char *mapname);
 void            RE_SetWorldVisData(const byte * vis);
 qhandle_t       RE_RegisterModel(const char *name);
@@ -4365,7 +4366,7 @@ float           R_ProcessLightmap(byte ** pic, int in_padding, int width, int he
 model_t        *R_AllocModel(void);
 
 
-void            R_Init(void);
+qboolean        R_Init(void);
 
 
 qboolean        R_GetModeInfo(int *width, int *height, float *windowAspect, int mode);
@@ -4449,7 +4450,7 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 ====================================================================
 */
 
-void            GLimp_Init(void);
+qboolean        GLimp_Init(void);
 void            GLimp_Shutdown(void);
 void            GLimp_EndFrame(void);
 

@@ -7417,7 +7417,7 @@ static void IssueLightOcclusionQuery(link_t * queue, trRefLight_t * light, qbool
 #if 1
 		if(!glIsQueryARB(light->occlusionQueryObject))
 		{
-			ri.Error(ERR_FATAL, "IssueLightOcclusionQuery: light %i has no occlusion query object in slot %i: %i", light - tr.world->lights, backEnd.viewParms.viewCount, light->occlusionQueryObject);
+			ri.Error(ERR_FATAL, "IssueLightOcclusionQuery: light %i has no occlusion query object in slot %i: %i", (int)(light - tr.world->lights), backEnd.viewParms.viewCount, light->occlusionQueryObject);
 		}
 #endif
 

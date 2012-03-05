@@ -6,7 +6,8 @@ Dependencies
 ------------
     - Freetype
     - libpng
-    - libjpeg
+    - libjpeg (DO NOT USE VERSION 6)
+    - libcurl
     - libsdl
     - OpenAL
     - libwebp (optional)

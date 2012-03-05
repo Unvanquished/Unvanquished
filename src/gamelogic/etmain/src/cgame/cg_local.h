@@ -2318,8 +2318,8 @@ void            CG_printConsoleString(char *str);
 
 void            CG_LoadObjectiveData(void);
 
-void QDECL      CG_Printf(const char *msg, ...);
-void QDECL      CG_Error(const char *msg, ...);
+void QDECL      CG_Printf(const char *msg, ...) __attribute__ ((format (printf, 1, 2)));
+void QDECL      CG_Error(const char *msg, ...) __attribute__ ((format (printf, 1, 2)));
 
 void            CG_StartMusic(void);
 void            CG_QueueMusic(void);
@@ -2428,7 +2428,7 @@ void			CG_DrawBottom_NoScale( float x, float y, float w, float h, float size );
 
 // NERVE - SMF - localization functions
 void            CG_InitTranslation();
-char           *CG_TranslateString(const char *string);
+char           *CG_TranslateString(const char *string) __attribute__((__format_arg__(1)));
 void            CG_SaveTransTable();
 void            CG_ReloadTranslation();
 

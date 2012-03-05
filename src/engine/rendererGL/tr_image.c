@@ -1622,7 +1622,7 @@ static qboolean ParseHeightMap(char **text, byte ** pic, int *width, int *height
 	R_LoadImage(text, pic, width, height, bits, materialName);
 	if(!pic)
 	{
-		ri.Printf(PRINT_WARNING, "WARNING: failed loading of image for heightMap\n", token);
+		ri.Printf(PRINT_WARNING, "WARNING: failed loading of image for heightMap\n");
 		return qfalse;
 	}
 

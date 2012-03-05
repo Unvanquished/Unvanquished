@@ -187,10 +187,10 @@ typedef struct bot_entitystate_s
 typedef struct botlib_import_s
 {
 	//print messages from the bot library
-	void            (QDECL * Print) (int type, char *fmt, ...);
+	void            (QDECL * Print) (int type, char *fmt, ...) __attribute__((format(printf, 2, 3)));
 	
 	// abort the game
-	void            (QDECL * Error) (int errorLevel, const char *fmt, ...);
+	void            (QDECL * Error) (int errorLevel, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 	
 	//trace a bbox through the world
 	void            (*Trace) (bsp_trace_t * trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent,
