@@ -41,6 +41,13 @@
 # include <sys/socket.h>
 #endif
 
+#if defined __GNUC__ || defined __clang__
+#define _attribute( x ) __attribute__( x )
+#else
+#define _attribute( x )
+#define __attribute( x )
+#define __attribute__( x )
+#endif
 
 // ---------- Types ---------- //
 

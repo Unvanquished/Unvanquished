@@ -37,6 +37,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #pragma check_stack(off)
 #endif
 
+#if defined __GNUC__ || defined __clang__
+#define _attribute( x ) __attribute__( x )
+#else
+#define _attribute( x )
+#define __attribute( x )
+#define __attribute__( x )
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
