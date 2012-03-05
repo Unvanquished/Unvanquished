@@ -1395,6 +1395,9 @@ typedef enum {
 
 int Com_HexStrToInt( const char *str );
 
+const char *Com_QuoteStr (const char *str);
+const char *Com_UnquoteStr (const char *str);
+
 //=============================================
 
 int Q_isprint( int c );

@@ -568,6 +568,7 @@ char           *Cmd_Args(void);
 char           *Cmd_ArgsFrom(int arg);
 void            Cmd_ArgsBuffer(char *buffer, int bufferLength);
 char           *Cmd_Cmd(void);
+char           *Cmd_Cmd_FromNth(int);
 char           *Cmd_EscapeString(const char *in);
 
 // The functions that execute commands get their parameters with these
