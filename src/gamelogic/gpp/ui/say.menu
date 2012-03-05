@@ -3,11 +3,12 @@
 {
 
 #define BORDER    10
+#define TEXTHEIGHT 10
 
 #define X         BORDER
-#define Y         BORDER
-#define W         (600-(2*BORDER))
-#define H         (480-(2*BORDER))
+#define Y         (240-TEXTHEIGHT/2-BORDER/2)
+#define W         (640-(2*BORDER))
+#define H         (TEXTHEIGHT+BORDER)
 
   // Say to All
   menuDef
