@@ -199,7 +199,7 @@ void			NET_Restart_f( void );
 void			NET_Config( qboolean enableNetworking );
 
 void			NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to );
-void QDECL		NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... );
+void QDECL		NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) __attribute__((format(printf, 3, 4)));
 void QDECL		NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
 qboolean		NET_CompareAdr( netadr_t a, netadr_t b );
@@ -231,7 +231,7 @@ typedef int (QDECL * HTTP_response)( httpInfo_e code, const char * buffer, int l
 //			HTTP_GetUrl should be used only for receiving some content from webpage
 void		HTTP_GetUrl	( const char * url, HTTP_response, void * notifyData, int resume_from );
 //			HTTP_PostUrl should be used only when you want to post on webpage/database
-void		HTTP_PostUrl( const char * url, HTTP_response, void * notifyData, const char * fmt, ...  );
+void		HTTP_PostUrl( const char * url, HTTP_response, void * notifyData, const char * fmt, ...  ) __attribute__((format(printf, 4, 5)));
 
 #ifndef DEDICATED
 void		HTTP_PostBug( const char *fileName );
@@ -835,7 +835,7 @@ int             FS_FTell(fileHandle_t f);
 
 void            FS_Flush(fileHandle_t f);
 
-void QDECL      FS_Printf(fileHandle_t f, const char *fmt, ...);
+void QDECL      FS_Printf(fileHandle_t f, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
 // like fprintf
 
@@ -1365,7 +1365,7 @@ void           *Sys_GetSystemHandles(void);
 
 char           *Sys_GetCurrentUser(void);
 
-void QDECL      Sys_Error(const char *error, ...);
+void QDECL      Sys_Error(const char *error, ...) __attribute__((format(printf, 1, 2)));
 void            Sys_Quit(void);
 char           *Sys_GetClipboardData(void);	// note that this isn't journaled...
 

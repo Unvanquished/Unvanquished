@@ -612,7 +612,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
   if( newAnimation != lf->animationNumber || !lf->animation )
   {
     if( cg_debugRandom.integer )
-      CG_Printf( "newAnimation: %d lf->animationNumber: %d lf->animation: %d\n",
+      CG_Printf( "newAnimation: %d lf->animationNumber: %d lf->animation: %p\n",
                  newAnimation, lf->animationNumber, lf->animation );
 
     CG_SetBuildableLerpFrameAnimation( buildable, lf, newAnimation );

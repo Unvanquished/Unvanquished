@@ -42,7 +42,7 @@ Maryland 20850 USA.
 bg_character_t  alliedClassCharacters[NUM_PLAYER_CLASSES];
 bg_character_t  axisClassCharacters[NUM_PLAYER_CLASSES];
 
-static qboolean BG_PCF_ParseError(int handle, char *format, ...)
+static __attribute__((format(printf, 2, 3))) qboolean BG_PCF_ParseError(int handle, char *format, ...)
 {
 	int             line;
 	char            filename[128];

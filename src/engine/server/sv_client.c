@@ -506,7 +506,7 @@ void SV_DirectConnect( netadr_t from ) {
 				return;
 			}
 		} else {
-			NET_OutOfBandPrint( NS_SERVER, from, va( "print\n%s\n", sv_fullmsg->string ) );
+			NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", sv_fullmsg->string );
 			Com_DPrintf( "Rejected a connection.\n" );
 			return;
 		}

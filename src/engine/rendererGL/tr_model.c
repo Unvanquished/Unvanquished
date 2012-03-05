@@ -413,7 +413,7 @@ static qboolean R_LoadMDX(model_t * mod, void *buffer, const char *mod_name)
 R_XMLError
 =================
 */
-void R_XMLError(void *ctx, const char *fmt, ...)
+void __attribute__((format(printf, 2, 3))) R_XMLError(void *ctx, const char *fmt, ...)
 {
 	va_list         argptr;
 	static char     msg[4096];
@@ -479,9 +479,10 @@ static qboolean R_LoadDAE(model_t * mod, void *buffer, int bufferLen, const char
 /*
 ** RE_BeginRegistration
 */
-void RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t *glconfig2Out)
+qboolean RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t *glconfig2Out)
 {
-	R_Init();
+	if( !R_Init() )
+		return qfalse;
 
 	*glconfigOut = glConfig;
 	*glconfig2Out = glConfig2;
@@ -516,6 +517,8 @@ void RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t *glconfig2Out)
 	// without this we'd see a white flash on a level load because the very
 	// first time the level shot would not be drawn
 	RE_StretchPic(0, 0, 0, 0, 0, 0, 1, 1, 0);
+
+	return qtrue;
 }
 
 //=============================================================================

@@ -611,7 +611,7 @@ void            CL_ClearPing(int n);
 int             CL_GetPingQueueCount(void);
 
 void            CL_ShutdownRef(void);
-void            CL_InitRef(void);
+void            CL_InitRef(const char *renderer);
 void			CL_InitOpenGLExt(void);
 void			CL_InitPNG(void);
 void			CL_InitZLIB(void);
@@ -626,7 +626,7 @@ void            CL_InitTranslation();
 void            CL_SaveTransTable( const char *fileName, qboolean newOnly);
 void            CL_ReloadTranslation();
 void            CL_TranslateString(const char *string, char *dest_buffer);
-const char     *CL_TranslateStringBuf(const char *string);	// TTimo
+const char     *CL_TranslateStringBuf(const char *string) __attribute__((format_arg(1)));	// TTimo
 
 // -NERVE - SMF
 

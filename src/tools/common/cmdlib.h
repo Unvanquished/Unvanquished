@@ -81,10 +81,10 @@ extern int      myargc;
 extern char   **myargv;
 
 // *INDENT-OFF*
-void 			Com_sprintf(char *dest, int size, const char *fmt, ...);
+void 			Com_sprintf(char *dest, int size, const char *fmt, ...) __attribute__((format(printf, 3, 4)));
 // *INDENT-ON*
 
-char           *va(char *format, ...);
+char           *va(char *format, ...) __attribute__((format(printf, 1, 2)));
 char           *strlower(char *in);
 int             Q_strncasecmp(const char *s1, const char *s2, int n);
 int             Q_stricmp(const char *s1, const char *s2);
@@ -110,7 +110,7 @@ void            ExpandWildcards(int *argc, char ***argv);
 
 double          I_FloatTime(void);
 
-void            Error(const char *error, ...);
+void            Error(const char *error, ...) __attribute__((format(printf, 1, 2)));
 int             CheckParm(const char *check);
 
 FILE           *SafeOpenWrite(const char *filename);

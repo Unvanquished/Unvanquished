@@ -227,7 +227,7 @@ void BotDrawDebugPolygons(BotPolyFunc drawPoly, int value)
 BotImport_Print
 ==================
 */
-void QDECL BotImport_Print(int type, char *fmt, ...)
+void QDECL __attribute__((format(printf, 2, 3))) BotImport_Print(int type, char *fmt, ...)
 {
 	char            str[2048];
 	va_list         ap;

@@ -498,7 +498,7 @@ static void IN_ActivateMouse( void )
 IN_DeactivateMouse
 ===============
 */
-static void IN_DeactivateMouse( void )
+void IN_DeactivateMouse( void )
 {
 	if( !SDL_WasInit( SDL_INIT_VIDEO ) )
 		return;
@@ -1271,6 +1271,11 @@ void IN_Frame( void )
 	else if( !( SDL_GetAppState() & SDL_APPINPUTFOCUS ) )
 	{
 		// Window not got focus
+		IN_DeactivateMouse( );
+	}
+	else if( com_minimized->integer  )
+	{
+		// Minimized
 		IN_DeactivateMouse( );
 	}
 	else

@@ -732,7 +732,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
       if( bp->numModels > 0 )
       {
         CG_Printf( S_COLOR_RED "ERROR: 'shader' not allowed in "
-            "conjunction with 'model'\n", token );
+            "conjunction with 'model'\n" );
         break;
       }
 
@@ -762,7 +762,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
       if( bp->numFrames > 0 )
       {
         CG_Printf( S_COLOR_RED "ERROR: 'model' not allowed in "
-            "conjunction with 'shader'\n", token );
+            "conjunction with 'shader'\n" );
         break;
       }
 

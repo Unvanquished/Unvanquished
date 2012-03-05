@@ -1032,8 +1032,8 @@ void Con_DrawSolidConsole( float frac ) {
 		text = con.text + (row % con.totallines)*con.linewidth;
 
 		for (x=0 ; x<con.linewidth ; x++) {
-			if ( ( (text[x]>>8)&7 ) != currentColor ) {
-				currentColor = (text[x]>>8)&7;
+			if ( ( (text[x]>>8)&31 ) != currentColor ) {
+				currentColor = (text[x]>>8)&31;
 				color[0] = g_color_table[currentColor][0];
 				color[1] = g_color_table[currentColor][1];
 				color[2] = g_color_table[currentColor][2];

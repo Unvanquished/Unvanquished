@@ -1556,7 +1556,7 @@ void CG_PlayVoiceChat(bufferedVoiceChat_t * vchat)
 	if(!vchat->voiceOnly && !cg_noVoiceText.integer)
 	{
 		CG_AddToTeamChat(vchat->message, vchat->clientNum);
-		CG_Printf(va("[skipnotify]: %s\n", vchat->message));	// JPW NERVE
+		CG_Printf("[skipnotify]: %s\n", vchat->message);	// JPW NERVE
 	}
 	voiceChatBuffer[cg.voiceChatBufferOut].snd = 0;
 }
@@ -2308,7 +2308,7 @@ void CG_scores_cmd(void)
 
 void CG_printFile(char *str)
 {
-	CG_Printf(str);
+	CG_Printf("%s", str);
 	if(cgs.dumpStatsFile > 0)
 	{
 		char            s[MAX_STRING_CHARS];

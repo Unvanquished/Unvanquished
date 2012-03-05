@@ -1157,7 +1157,7 @@ static qboolean CG_ParseWeaponConfig(const char *filename, weaponInfo_t * wi)
 }
 
 
-static qboolean CG_RW_ParseError(int handle, char *format, ...)
+static __attribute__((format(printf, 2, 3))) qboolean CG_RW_ParseError(int handle, char *format, ...)
 {
 	int             line;
 	char            filename[128];

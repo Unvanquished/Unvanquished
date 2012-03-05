@@ -952,7 +952,7 @@ Attempt to format then send a message to the IRC server. Will return
 true on success, and false if an overflow occurred or if send() failed.
 ==================
 */
-static int IRC_Send( const char * format , ... ) {
+static __attribute__((format(printf, 1, 2))) int IRC_Send( const char * format , ... ) {
 	char buffer[ IRC_SEND_BUF_SIZE + 1 ];
 	va_list args;
 	int len , sent;
