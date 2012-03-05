@@ -190,7 +190,7 @@ void RE_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t * verts
 
 	if(!hShader)
 	{
-		ri.Printf(PRINT_WARNING, "WARNING: RE_AddPolyToScene: NULL poly shader\n");
+		ri.Printf(PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: NULL poly shader\n");
 		return;
 	}
 
@@ -274,7 +274,7 @@ void RE_AddPolysToScene(qhandle_t hShader, int numVerts, const polyVert_t * vert
 
 	if(!hShader)
 	{
-		ri.Printf(PRINT_WARNING, "WARNING: RE_AddPolysToScene: NULL poly shader\n");
+		ri.Printf(PRINT_DEVELOPER, "WARNING: RE_AddPolysToScene: NULL poly shader\n");
 		return;
 	}
 
