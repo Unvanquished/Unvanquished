@@ -271,7 +271,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
   G_LogPrintf( "Die: %d %d %s: %s" S_COLOR_WHITE " killed %s\n",
     killer,
-    self - g_entities,
+    (int)(self - g_entities),
     obit,
     killerName,
     self->client->pers.netname );
@@ -1421,8 +1421,8 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
     return;
 
   G_LogPrintf( S_COLOR_YELLOW "Deconstruct: %d %d %s %s: %s %s by %s\n",
-    actor - g_entities,
-    self - g_entities,
+    (int)(actor - g_entities),
+    (int)(self - g_entities),
     BG_Buildable( self->s.modelindex )->name,
     modNames[ mod ],
     BG_Buildable( self->s.modelindex )->humanName,

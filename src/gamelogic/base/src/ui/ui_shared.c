@@ -259,7 +259,7 @@ void String_Init( void )
 PC_SourceWarning
 =================
 */
-void PC_SourceWarning(int handle, char *format, ...) {
+void __attribute__((format(printf, 2, 3))) PC_SourceWarning(int handle, char *format, ...) {
   int line;
   char filename[128];
   va_list argptr;
@@ -281,7 +281,7 @@ void PC_SourceWarning(int handle, char *format, ...) {
 PC_SourceError
 =================
 */
-void PC_SourceError(int handle, char *format, ...) {
+void __attribute__((format(printf, 2, 3))) PC_SourceError(int handle, char *format, ...) {
   int line;
   char filename[128];
   va_list argptr;
@@ -2115,7 +2115,7 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
       //
       // ignore any non printable chars
       //
-      if ( key < 32 || !item->cvar) {
+      if ( key < 32 || key == 127 || !item->cvar) {
           return qtrue;
         }
 

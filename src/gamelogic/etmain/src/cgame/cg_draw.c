@@ -3500,7 +3500,7 @@ static void CG_DrawFlashFade(void)
 		if(fBlackout)
 		{
 			int             i, nOffset = 90;
-			char           *str, *format = "The %s team is speclocked!";
+			char           *str;
 			char           *teams[TEAM_NUM_TEAMS] = { "??", "AXIS", "ALLIES", "???" };
 			float           color[4] = { 1, 1, 0, 1 };
 
@@ -3508,7 +3508,7 @@ static void CG_DrawFlashFade(void)
 			{
 				if(cg.snap->ps.powerups[PW_BLACKOUT] & i)
 				{
-					str = va(format, teams[i]);
+					str = va("The %s team is speclocked!", teams[i]);
 					CG_DrawStringExt(INFOTEXT_STARTX, nOffset, str, color, qtrue, qfalse, 10, 10, 0);
 					nOffset += 12;
 				}

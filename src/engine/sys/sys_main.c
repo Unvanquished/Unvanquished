@@ -462,7 +462,7 @@ void Sys_Error( const char *error, ... )
 Sys_Warn
 =================
 */
-void Sys_Warn( char *warning, ... )
+void __attribute__((format(printf, 1, 2))) Sys_Warn( char *warning, ... )
 {
 #if defined (IPHONE)
 	NSString *warningString;

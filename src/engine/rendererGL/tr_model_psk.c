@@ -177,7 +177,7 @@ qboolean R_LoadPSK(model_t * mod, void *buffer, int bufferSize, const char *modN
 
 	if(chunkHeader.dataSize != sizeof(axPoint_t))
 	{
-		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, sizeof(axPoint_t));
+		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, (int)sizeof(axPoint_t));
 		FreeMemStream(stream);
 		return qfalse;
 	}
@@ -209,7 +209,7 @@ qboolean R_LoadPSK(model_t * mod, void *buffer, int bufferSize, const char *modN
 
 	if(chunkHeader.dataSize != sizeof(axVertex_t))
 	{
-		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, sizeof(axVertex_t));
+		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, (int)sizeof(axVertex_t));
 		FreeMemStream(stream);
 		return qfalse;
 	}
@@ -264,7 +264,7 @@ qboolean R_LoadPSK(model_t * mod, void *buffer, int bufferSize, const char *modN
 
 	if(chunkHeader.dataSize != sizeof(axTriangle_t))
 	{
-		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, sizeof(axTriangle_t));
+		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, (int)sizeof(axTriangle_t));
 		FreeMemStream(stream);
 		return qfalse;
 	}
@@ -303,7 +303,7 @@ qboolean R_LoadPSK(model_t * mod, void *buffer, int bufferSize, const char *modN
 
 	if(chunkHeader.dataSize != sizeof(axMaterial_t))
 	{
-		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, sizeof(axMaterial_t));
+		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, (int)sizeof(axMaterial_t));
 		FreeMemStream(stream);
 		return qfalse;
 	}
@@ -357,7 +357,7 @@ qboolean R_LoadPSK(model_t * mod, void *buffer, int bufferSize, const char *modN
 
 	if(chunkHeader.dataSize != sizeof(axReferenceBone_t))
 	{
-		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, sizeof(axReferenceBone_t));
+		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, (int)sizeof(axReferenceBone_t));
 		FreeMemStream(stream);
 		return qfalse;
 	}
@@ -415,7 +415,7 @@ qboolean R_LoadPSK(model_t * mod, void *buffer, int bufferSize, const char *modN
 
 	if(chunkHeader.dataSize != sizeof(axBoneWeight_t))
 	{
-		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, sizeof(axBoneWeight_t));
+		ri.Printf(PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, (int)sizeof(axBoneWeight_t));
 		FreeMemStream(stream);
 		return qfalse;
 	}

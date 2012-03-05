@@ -1077,7 +1077,7 @@ void SV_FinalCommand(char *cmd, qboolean disconnect)
 				if(cl->netchan.remoteAddress.type != NA_LOOPBACK)
 				{
 					//% SV_SendServerCommand( cl, "print \"%s\"", message );
-					SV_SendServerCommand(cl, cmd);
+					SV_SendServerCommand(cl, "%s", cmd);
 
 					// ydnar: added this so map changes can use this functionality
 					if(disconnect)

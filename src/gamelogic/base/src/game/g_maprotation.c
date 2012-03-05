@@ -390,7 +390,7 @@ void G_PrintRotations( void )
     G_Printf( "}\n" );
   }
 
-  G_Printf( "Total memory used: %d bytes\n", sizeof( mapRotations ) );
+  G_Printf( "Total memory used: %d bytes\n", (int)sizeof( mapRotations ) );
 }
 
 /*

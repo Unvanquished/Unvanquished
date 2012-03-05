@@ -536,7 +536,8 @@ void Field_CharEvent( field_t *edit, int ch ) {
 		return;
 	}
 
-	if ( ch == 'c' - 'a' + 1 ) {  // ctrl-c clears the field
+	if ( ch == 'c' - 'a' + 1 ||
+	     ch == 'u' - 'a' + 1 ) {  // ctrl-c or ctrl-u clear the field
 		Field_Clear( edit );
 		return;
 	}
@@ -570,7 +571,7 @@ void Field_CharEvent( field_t *edit, int ch ) {
 	//
 	// ignore any other non printable chars
 	//
-	if ( ch < 32 ) {
+	if ( ch < 32 || ch == 0x7f ) {
 		return;
 	}
 

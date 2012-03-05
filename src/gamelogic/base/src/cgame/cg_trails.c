@@ -898,7 +898,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
     {
       if( btb->numJitters == MAX_TRAIL_BEAM_JITTERS )
       {
-        CG_Printf( S_COLOR_RED "ERROR: too many jitters\n", token );
+        CG_Printf( S_COLOR_RED "ERROR: too many jitters\n" );
         break;
       }
 
