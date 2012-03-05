@@ -464,7 +464,7 @@ static void simplifyContour(rcIntArray& points, rcIntArray& simplified,
 		// and the neighbour region is take from the next raw point.
 		const int ai = (simplified[i*4+3]+1) % pn;
 		const int bi = simplified[i*4+3];
-		simplified[i*4+3] = (points[ai*4+3] & RC_CONTOUR_REG_MASK) | (points[bi*4+3] & RC_BORDER_VERTEX);
+		simplified[i*4+3] = (points[ai*4+3] & (RC_CONTOUR_REG_MASK|RC_AREA_BORDER)) | (points[bi*4+3] & RC_BORDER_VERTEX);
 	}
 	
 }
@@ -752,9 +752,9 @@ bool rcBuildContours(rcContext* ctx, rcCompactHeightfield& chf,
 					if (borderSize > 0)
 					{
 						// If the heightfield was build with bordersize, remove the offset.
-						for (int i = 0; i < cont->nverts; ++i)
+						for (int j = 0; j < cont->nverts; ++j)
 						{
-							int* v = &cont->verts[i*4];
+							int* v = &cont->verts[j*4];
 							v[0] -= borderSize;
 							v[2] -= borderSize;
 						}
@@ -771,9 +771,9 @@ bool rcBuildContours(rcContext* ctx, rcCompactHeightfield& chf,
 					if (borderSize > 0)
 					{
 						// If the heightfield was build with bordersize, remove the offset.
-						for (int i = 0; i < cont->nrverts; ++i)
+						for (int j = 0; j < cont->nrverts; ++j)
 						{
-							int* v = &cont->rverts[i*4];
+							int* v = &cont->rverts[j*4];
 							v[0] -= borderSize;
 							v[2] -= borderSize;
 						}
