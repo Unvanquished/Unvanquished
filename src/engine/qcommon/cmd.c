@@ -282,6 +282,11 @@ void Cbuf_Execute(void)
 		quotes = 0;
 		for(i = 0; i < cmd_text.cursize; i++)
 		{
+			if(text[i] == '\\' && text[i+1] == '"')
+			{
+				i++;
+				continue;		// ignore \"
+			}
 			if(text[i] == '"')
 			{
 				quotes++;
