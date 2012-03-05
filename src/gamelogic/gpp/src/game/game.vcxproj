@@ -332,7 +332,7 @@
     <ClCompile Include="g_admin.c" />
     <ClCompile Include="g_alienbot.cpp" />
     <ClCompile Include="g_api.c" />
-    <ClCompile Include="g_bot.cpp">
+    <ClCompile Include="g_bot.cpp" />
     <ClCompile Include="g_buildable.c" />
     <ClCompile Include="g_client.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
