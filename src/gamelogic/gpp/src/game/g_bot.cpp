@@ -1024,41 +1024,15 @@ return qfalse;
 return qtrue;
 }*/
 
-//This function is expensive since we check the route first!
-//Pls use with caution
-//returns true if successful, false if unsuccessful
 qboolean BotSetRoamGoal(gentity_t *self) {
-  int result;
-  botTarget_t testTarget;
-  int numTiles = 0;
-  const dtNavMesh *navMesh = self->botMind->navQuery->getAttachedNavMesh();
-  numTiles = navMesh->getMaxTiles();
-  const dtMeshTile *tile;
-  vec3_t targetPos;
-
-  //pick a random tile
-  do {
-    tile = navMesh->getTile(rand() % numTiles);
-  } while(!tile->header->vertCount);
-
-  //pick a random vertex in the tile
-  int vertStart = 3 * (rand() % tile->header->vertCount);
-  
-  //convert from recast to quake3
-  float *v = &tile->verts[vertStart];
-  VectorCopy(v, targetPos);
-  recast2quake(targetPos);
-
-  //see if we can get to that vert from our current position
-  BotSetTarget(&testTarget, NULL, &targetPos);
-  result = FindRouteToTarget(self,testTarget);
-
-  //if we can get to it, set the goal to that vertex
-  if((result & STATUS_SUCCEED) && !(result & STATUS_PARTIAL)) {
-    self->botMind->goal = testTarget;
+  vec3_t point;
+  if(BotFindRandomPoint(self, point)) {
+    BotSetGoal(self, NULL, &point);
     return qtrue;
-  } else
+  } else {
     return qfalse;
+  }
+
 }
 
 /*

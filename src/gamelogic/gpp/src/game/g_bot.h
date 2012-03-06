@@ -101,6 +101,7 @@ int DistanceToGoal(gentity_t *self);
 int DistanceToGoalSquared(gentity_t *self);
 int BotGetStrafeDirection(void);
 void PlantEntityOnGround(gentity_t *ent, vec3_t groundPos);
+qboolean BotFindRandomPoint(gentity_t *ent, vec3_t point);
 
 extern dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
 extern dtQueryFilter navFilters[PCL_NUM_CLASSES];
