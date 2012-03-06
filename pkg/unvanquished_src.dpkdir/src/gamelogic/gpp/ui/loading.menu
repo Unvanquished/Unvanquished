@@ -43,10 +43,9 @@
     shadowY  5          // y amount for shadow offset
     shadowColor 0.1 0.1 0.1 0.25      // shadow color
 
-	
-    font "fonts/cordiaz.ttf"      26   // font
-    smallFont "fonts/cordiaz.ttf" 20   // font
-    bigFont "fonts/cordiaz.ttf"   34   // font
+    font "fonts/font" 26        // font
+    smallFont "fonts/smallfont" 20      // font
+    bigFont "fonts/bigfont" 34      // font
   }
 
   menuDef

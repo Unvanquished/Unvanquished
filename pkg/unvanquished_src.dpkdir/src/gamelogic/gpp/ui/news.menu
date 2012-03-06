@@ -46,7 +46,7 @@
     {
       name title
       type ITEM_TYPE_TEXT
-      text "Tremulous News"
+      text "Unvanquished News"
       style WINDOW_STYLE_EMPTY
       textscale .5
       textstyle ITEM_TEXTSTYLE_NORMAL
