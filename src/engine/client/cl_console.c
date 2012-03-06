@@ -133,48 +133,6 @@ void Con_ToggleConsole_f(void)
 	}
 }
 
-/*
-================
-Con_MessageMode_f
-================
-*/
-void Con_MessageMode_f(void)
-{
-	chat_team = qfalse;
-	Field_Clear(&chatField);
-	chatField.widthInChars = 30;
-
-	cls.keyCatchers ^= KEYCATCH_MESSAGE;
-}
-
-/*
-================
-Con_MessageMode2_f
-================
-*/
-void Con_MessageMode2_f(void)
-{
-	chat_team = qtrue;
-	Field_Clear(&chatField);
-	chatField.widthInChars = 25;
-	cls.keyCatchers ^= KEYCATCH_MESSAGE;
-}
-
-/*
-================
-Con_MessageMode3_f
-================
-*/
-void Con_MessageMode3_f(void)
-{
-	chat_team = qfalse;
-	chat_buddy = qtrue;
-	Field_Clear(&chatField);
-	chatField.widthInChars = 26;
-	cls.keyCatchers ^= KEYCATCH_MESSAGE;
-}
-
-
 const short* Con_GetText( int console )
 {
 	if( console >= 0 && console < lengthof( cons ) && cons[console].text ) {
@@ -531,11 +489,6 @@ void Con_Init(void)
 	Cmd_AddCommand ("search", Con_Search_f);
 	Cmd_AddCommand ("searchDown", Con_Search_f);
 	Cmd_AddCommand ("grep", Con_Grep_f);
-	
-	// ydnar: these are deprecated in favor of cgame/ui based version
-	Cmd_AddCommand("clMessageMode", Con_MessageMode_f);
-	Cmd_AddCommand("clMessageMode2", Con_MessageMode2_f);
-	Cmd_AddCommand("clMessageMode3", Con_MessageMode3_f);
 }
 
 
@@ -826,37 +779,13 @@ void Con_DrawNotify(void)
 	// draw the chat line
 	if(cls.keyCatchers & KEYCATCH_MESSAGE)
 	{
-		if(chat_team)
-		{
-			char            buf[128];
-
-			CL_TranslateString("say_team:", buf);
-			SCR_DrawBigString(8, v, buf, 1.0f, qfalse );
-			skip = strlen(buf) + 2;
-		}
-		else if(chat_buddy)
-		{
-			char            buf[128];
-
-			CL_TranslateString("say_fireteam:", buf);
-			SCR_DrawBigString(8, v, buf, 1.0f, qfalse );
-			skip = strlen(buf) + 2;
-		}
-		else if(chat_irc)
+		if(chat_irc)
 		{
 			char            buf[128];
 
 			CL_TranslateString("say_irc:", buf);
 			SCR_DrawBigString(8, v, buf, 1.0f, qfalse );
 			skip = strlen(buf) + 2;
-		}
-		else
-		{
-			char            buf[128];
-
-			CL_TranslateString("say:", buf);
-			SCR_DrawBigString(8, v, buf, 1.0f, qfalse );
-			skip = strlen(buf) + 1;
 		}
 
 		Field_BigDraw(&chatField, skip * BIGCHAR_WIDTH, 232, qtrue, qtrue);

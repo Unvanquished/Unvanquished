@@ -55,9 +55,6 @@ void            Field_BigDraw( field_t *edit, int x, int y, qboolean showCursor,
 extern field_t  g_consoleField;
 extern field_t  chatField;
 extern int      anykeydown;
-extern qboolean chat_team;
-extern qboolean chat_buddy;
-// Dushan
 extern qboolean chat_irc;
 
 void            Key_WriteBindings(fileHandle_t f);

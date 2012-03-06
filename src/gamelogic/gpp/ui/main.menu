@@ -3,9 +3,9 @@
 {
   assetGlobalDef
   {
-    font "fonts/cordiaz.ttf" 30        // font
-    smallFont "fonts/cordiaz.ttf" 20        // font
-    bigFont "fonts/cordiaz.ttf" 40        // font
+    font "fonts/roboto.ttf" 30        // font
+    smallFont "fonts/roboto.ttf" 20        // font
+    bigFont "fonts/roboto.ttf" 40        // font
     cursor "ui/assets/3_cursor3"      // cursor
     gradientBar "ui/assets/gradientbar2.tga"  // gradient bar
     itemFocusSound "sound/misc/menu2.wav"   // sound for item getting focus (via keyboard or mouse )
@@ -17,10 +17,6 @@
     shadowColor 0.1 0.1 0.1 0.25      // shadow color
   }
 
-
-
-
-
   menuDef
   {
     name main
@@ -31,10 +27,10 @@
     background "ui/assets/mainmenu.jpg"
     aspectBias ASPECT_NONE
 
-    onOpen { uiScript stopRefresh ; playlooped "sound/ui/heartbeat.wav" }
+    onOpen { uiScript stopRefresh ; playlooped "sound/ui/heartbeat.ogg" }
     onESC { open quit_popmenu }
 
-    itemDef
+   itemDef
     {
       name splashmodel
       rect 0 0 640 480
@@ -175,7 +171,7 @@
     {
       name copyright
       type ITEM_TYPE_TEXT
-      text "Tremulous (C) 2005-2009 darklegion development"
+      text "Unvanquished (C) 2011-2012 Unvanquished Development"
       style WINDOW_STYLE_EMPTY
       textstyle ITEM_TEXTSTYLE_NORMAL
       textscale .25
