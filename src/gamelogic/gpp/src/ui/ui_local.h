@@ -295,6 +295,8 @@ typedef struct
   qboolean inGameLoad;
 
   qboolean  chatTeam;
+  qboolean  chatAdmin;
+
   profileInfo_t   profileList[MAX_PROFILES];
   int             profileCount;
   int             profileIndex;

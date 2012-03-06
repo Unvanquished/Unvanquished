@@ -42,9 +42,6 @@ key up events are sent even if in console mode
 
 field_t g_consoleField;
 field_t chatField;
-qboolean chat_team;
-qboolean chat_buddy;
-//Dushan
 qboolean chat_irc;
 
 qboolean key_overstrikeMode;
@@ -888,47 +885,6 @@ void Console_Key( int key ) {
 //============================================================================
 
 
-/*
-================
-Message_Key
-
-In game talk message
-================
-*/
-void Message_Key( int key ) {
-
-	char buffer[MAX_STRING_CHARS];
-
-
-	if ( key == K_ESCAPE ) {
-		cls.keyCatchers &= ~KEYCATCH_MESSAGE;
-		Field_Clear( &chatField );
-		return;
-	}
-
-	if ( key == K_ENTER || key == K_KP_ENTER ) {
-		if ( chatField.buffer[0] && cls.state == CA_ACTIVE ) {
-			if ( chat_team ) {
-				Com_sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
-			} else if ( chat_buddy ) {
-				Com_sprintf( buffer, sizeof( buffer ), "say_buddy \"%s\"\n", chatField.buffer );
-			} else {
-				Com_sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
-			}
-
-			CL_AddReliableCommand( buffer );
-		}
-		cls.keyCatchers &= ~KEYCATCH_MESSAGE;
-		Field_Clear( &chatField );
-		return;
-	}
-
-	Field_KeyDownEvent( &chatField, key );
-}
-
-//============================================================================
-
-
 qboolean Key_GetOverstrikeMode( void ) {
 	return key_overstrikeMode;
 }
@@ -1514,12 +1470,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 
 	// escape is always handled special
 	if ( key == K_ESCAPE && down ) {
-		if ( cls.keyCatchers & KEYCATCH_MESSAGE ) {
-			// clear message mode
-			Message_Key( key );
-			return;
-		}
-
 		// escape always gets out of CGAME stuff
 		if ( cls.keyCatchers & KEYCATCH_CGAME ) {
 			cls.keyCatchers &= ~KEYCATCH_CGAME;
@@ -1600,10 +1550,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 			if ( !onlybinds || VM_Call( cgvm, CG_WANTSBINDKEYS ) ) {
 				VM_Call( cgvm, CG_KEY_EVENT, key, down );
 			}
-		}
-	} else if ( cls.keyCatchers & KEYCATCH_MESSAGE ) {
-		if ( !onlybinds ) {
-			Message_Key( key );
 		}
 	} else if ( cls.state == CA_DISCONNECTED ) {
 
