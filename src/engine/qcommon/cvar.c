@@ -423,9 +423,11 @@ cvar_t         *Cvar_Set2(const char *var_name, const char *value, qboolean forc
 {
 	cvar_t         *var;
 
+#if 0
 	if (strcmp("com_hunkused", var_name)!=0) {
 		Com_DPrintf("Cvar_Set2: %s %s\n", var_name, value);
 	}
+#endif
 
 	if(!Cvar_ValidateString(var_name))
 	{

@@ -4704,7 +4704,7 @@ shader_t       *R_FindShader(const char *name, int lightmapIndex, qboolean mipRa
 	if(!image)
 	{
 		//ri.Printf( PRINT_DEVELOPER, "Couldn't find image for shader %s\n", name );
-		ri.Printf(PRINT_WARNING, "WARNING: Couldn't find image for shader %s\n", name);
+		ri.Printf(PRINT_DEVELOPER, "WARNING: Couldn't find image for shader %s (%s)\n", name, fileName);
 		shader.defaultShader = qtrue;
 		return FinishShader();
 	}

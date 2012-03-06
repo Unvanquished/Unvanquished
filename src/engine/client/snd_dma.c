@@ -1434,12 +1434,12 @@ void SOrig_StartBackgroundTrack( const char *intro, const char *loop )
 	s_backgroundStream = codec_open(intro);
 	if(!s_backgroundStream)
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: couldn't open music file %s\n", intro );
+		Com_DPrintf( S_COLOR_YELLOW "WARNING: couldn't open music file %s\n", intro );
 		return;
 	}
 
 	if(s_backgroundStream->info.channels != 2 || s_backgroundStream->info.rate != 22050)
-		Com_Printf(S_COLOR_YELLOW "WARNING: music file %s is not 22k stereo\n", intro );
+		Com_DPrintf(S_COLOR_YELLOW "WARNING: music file %s is not 22k stereo\n", intro );
 }
 
 /*

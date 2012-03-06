@@ -42,9 +42,6 @@ key up events are sent even if in console mode
 
 field_t g_consoleField;
 field_t chatField;
-qboolean chat_team;
-qboolean chat_buddy;
-//Dushan
 qboolean chat_irc;
 
 qboolean key_overstrikeMode;
@@ -888,47 +885,6 @@ void Console_Key( int key ) {
 //============================================================================
 
 
-/*
-================
-Message_Key
-
-In game talk message
-================
-*/
-void Message_Key( int key ) {
-
-	char buffer[MAX_STRING_CHARS];
-
-
-	if ( key == K_ESCAPE ) {
-		cls.keyCatchers &= ~KEYCATCH_MESSAGE;
-		Field_Clear( &chatField );
-		return;
-	}
-
-	if ( key == K_ENTER || key == K_KP_ENTER ) {
-		if ( chatField.buffer[0] && cls.state == CA_ACTIVE ) {
-			if ( chat_team ) {
-				Com_sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
-			} else if ( chat_buddy ) {
-				Com_sprintf( buffer, sizeof( buffer ), "say_buddy \"%s\"\n", chatField.buffer );
-			} else {
-				Com_sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
-			}
-
-			CL_AddReliableCommand( buffer );
-		}
-		cls.keyCatchers &= ~KEYCATCH_MESSAGE;
-		Field_Clear( &chatField );
-		return;
-	}
-
-	Field_KeyDownEvent( &chatField, key );
-}
-
-//============================================================================
-
-
 qboolean Key_GetOverstrikeMode( void ) {
 	return key_overstrikeMode;
 }
@@ -1190,8 +1146,8 @@ Key_Bind_f
 ===================
 */
 void Key_Bind_f( void ) {
-	int i, c, b;
-	char cmd[1024];
+	int q, i, c, b;
+	char *cmd;
 
 	c = Cmd_Argc();
 
@@ -1214,13 +1170,38 @@ void Key_Bind_f( void ) {
 		return;
 	}
 
-// copy the rest of the command line
-	cmd[0] = 0;     // start out with a null string
-	for ( i = 2 ; i < c ; i++ )
+	cmd = Cmd_Cmd () - 1;
+	// find the 3rd parameter
+	i = q = 0;
+	c = 2;
+	while (c && *++cmd)
 	{
-		strcat( cmd, Cmd_Argv( i ) );
-		if ( i != ( c - 1 ) ) {
-			strcat( cmd, " " );
+		if (!q && *cmd == ' ')
+			i = 1; // space found outside quotation marks
+		if (i && *cmd != ' ')
+		{
+			i = 0; // non-space found after space outside quotation marks
+			--c; // one word fewer to scan
+		}
+		if (*cmd == '"')
+			q = !q; // found a quotation mark
+	}
+
+	if (*cmd == '"')
+    {
+		// See if this matches /^".*" *$/; if so, strip quotation marks
+		c = 0;
+		while (cmd[++c])
+			if (cmd[c] == '"')
+				break;
+		i = c;
+		if (cmd[c])
+			while (cmd[++c] == ' ')
+				/**/;
+		if (!cmd[c])
+		{
+			cmd[i] = 0;
+			++cmd;
 		}
 	}
 
@@ -1241,7 +1222,11 @@ void Key_WriteBindings( fileHandle_t f ) {
 
 	for (i=0 ; i<MAX_KEYS ; i++) {
 		if ( keys[i].binding && keys[i].binding[0] ) {
-			FS_Printf (f, "bind %s \"%s\"\n", Key_KeynumToString(i), keys[i].binding );
+			// quote the string if it contains ; but no "
+			if (strchr (keys[i].binding, ';') && !strchr (keys[i].binding, '"'))
+				FS_Printf (f, "bind %s \"%s\"\n", Key_KeynumToString(i), keys[i].binding );
+			else
+				FS_Printf (f, "bind %s %s\n", Key_KeynumToString(i), keys[i].binding );
 
 		}
 
@@ -1260,7 +1245,7 @@ void Key_Bindlist_f( void ) {
 
 	for ( i = 0 ; i < MAX_KEYS ; i++ ) {
 		if ( keys[i].binding && keys[i].binding[0] ) {
-			Com_Printf( "%s \"%s\"\n", Key_KeynumToString(i), keys[i].binding );
+			Com_Printf( "%s = %s\n", Key_KeynumToString(i), keys[i].binding );
 		}
 	}
 }
@@ -1485,12 +1470,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 
 	// escape is always handled special
 	if ( key == K_ESCAPE && down ) {
-		if ( cls.keyCatchers & KEYCATCH_MESSAGE ) {
-			// clear message mode
-			Message_Key( key );
-			return;
-		}
-
 		// escape always gets out of CGAME stuff
 		if ( cls.keyCatchers & KEYCATCH_CGAME ) {
 			cls.keyCatchers &= ~KEYCATCH_CGAME;
@@ -1572,10 +1551,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time ) {
 				VM_Call( cgvm, CG_KEY_EVENT, key, down );
 			}
 		}
-	} else if ( cls.keyCatchers & KEYCATCH_MESSAGE ) {
-		if ( !onlybinds ) {
-			Message_Key( key );
-		}
 	} else if ( cls.state == CA_DISCONNECTED ) {
 
 		if ( !onlybinds ) {
@@ -1619,9 +1594,6 @@ void CL_CharEvent( int key ) {
 	// fretn - this should be fixed in Com_EventLoop
 	// but I can't be arsed to leave this as is
 
-	if ( key == (unsigned char) '`' || key == (unsigned char) '~' || key == (unsigned char) '¬' ) {
-		return;
-	}
 
 	// distribute the key down event to the apropriate handler
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE ) {

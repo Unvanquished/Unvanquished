@@ -3188,6 +3188,8 @@ static void UI_RunMenuScript( char **args )
       }
       else if( uiInfo.chatTeam )
         trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team \"%s\"\n", buffer ) );
+      else if( uiInfo.chatAdmin )
+        trap_Cmd_ExecuteText( EXEC_APPEND, va( "a \"%s\"\n", buffer ) );
       else
         trap_Cmd_ExecuteText( EXEC_APPEND, va( "say \"%s\"\n", buffer ) );
     }
@@ -3202,6 +3204,8 @@ static void UI_RunMenuScript( char **args )
           Menus_ReplaceActiveByName( "say_command" );
         else if( uiInfo.chatTeam )
           Menus_ReplaceActiveByName( "say_team" );
+        else if( uiInfo.chatAdmin )
+          Menus_ReplaceActiveByName( "say_admins" );
         else
           Menus_ReplaceActiveByName( "say" );
       }

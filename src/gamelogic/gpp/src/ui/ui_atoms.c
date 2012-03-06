@@ -163,11 +163,19 @@ static void UI_MessageMode_f( void )
     case '\0':
       // Global
       uiInfo.chatTeam             = qfalse;
+      uiInfo.chatAdmin            = qfalse;
       break;
 
     case '2':
       // Team
       uiInfo.chatTeam             = qtrue;
+      uiInfo.chatAdmin            = qfalse;
+      break;
+
+    case '3':
+      // Administrators
+      uiInfo.chatTeam             = qfalse;
+      uiInfo.chatAdmin            = qtrue;
       break;
   }
 
@@ -177,6 +185,8 @@ static void UI_MessageMode_f( void )
 
   if( uiInfo.chatTeam )
     Menus_ActivateByName( "say_team" );
+  else if( uiInfo.chatAdmin )
+    Menus_ActivateByName( "say_admins" );
   else
     Menus_ActivateByName( "say" );
 }
@@ -200,6 +210,7 @@ struct uicmd
   { "menu", UI_Menu_f },
   { "messagemode", UI_MessageMode_f },
   { "messagemode2", UI_MessageMode_f },
+  { "messagemode3", UI_MessageMode_f },
   { "ui_cache", UI_Cache_f },
   { "ui_load", UI_Load },
   { "ui_report", UI_Report }

@@ -187,8 +187,6 @@ typedef enum
 
 	UIMENU_WM_AUTOUPDATE,
 
-	// ydnar: say, team say, etc
-	UIMENU_INGAME_MESSAGEMODE,
 	UIMENU_INGAME_OMNIBOTMENU,
 } uiMenuCommand_t;
 

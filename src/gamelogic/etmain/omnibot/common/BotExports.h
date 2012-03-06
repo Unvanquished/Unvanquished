@@ -26,6 +26,10 @@
 #define OMNIBOT_API 
 #endif
 
+#ifdef _MSC_VER
+#define __attribute__( x )
+#endif
+
 // Typedef for the only exported bot function.
 typedef eomnibot_error (*pfnGetFunctionsFromDLL)(Bot_EngineFuncs_t *_pBotFuncs, int _size);
 

@@ -279,7 +279,6 @@ void CG_InitConsoleCommands( void )
   trap_AddCommand( "ui_messagemode" );
   trap_AddCommand( "ui_messagemode2" );
   trap_AddCommand( "ui_messagemode3" );
-  trap_AddCommand( "ui_messagemode4" );
   trap_AddCommand( "say" );
   trap_AddCommand( "say_team" );
   trap_AddCommand( "vsay" );

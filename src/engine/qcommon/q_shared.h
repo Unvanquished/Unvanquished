@@ -199,6 +199,7 @@ typedef int intptr_t;
 #define _attribute( x ) __attribute__( x )
 #else
 #define _attribute( x )
+#define __attribute( x )
 #define __attribute__( x )
 #endif
 

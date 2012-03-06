@@ -44,7 +44,7 @@
     {
       name confirm
       type ITEM_TYPE_TEXT
-      text "Quit Tremulous?"
+      text "Quit Unvanquished?"
       style WINDOW_STYLE_EMPTY
       textscale .3
       textstyle WINDOW_STYLE_SHADER
