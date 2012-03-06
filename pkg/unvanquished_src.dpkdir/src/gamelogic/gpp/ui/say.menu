@@ -92,6 +92,48 @@
       }
     }
   }
+
+  // Say to Admins
+  menuDef
+  {
+    name say_admins
+    fullScreen MENU_FALSE
+    visible MENU_FALSE
+    rect X Y W H
+    aspectBias ALIGN_LEFT
+    focusColor 1 1 1 1
+    style WINDOW_STYLE_EMPTY
+    onOpen
+    {
+      setfocus say_field
+    }
+
+    itemDef
+    {
+      name say_field
+      type ITEM_TYPE_SAYFIELD
+      style WINDOW_STYLE_EMPTY
+      text "Say to admins:"
+      cvar "ui_sayBuffer"
+      maxchars 128
+      rect 0 0 W H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      textstyle ITEM_TEXTSTYLE_SHADOWED
+      textscale .4
+      forecolor 0.93 0.93 0.92 1
+      visible MENU_TRUE
+      onCharEntry
+      {
+        uiScript SayKeyDown;
+      }
+      onTextEntry
+      {
+        uiScript Say;
+        close say_admins;
+      }
+    }
+  }
   
   // Command
   menuDef
