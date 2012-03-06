@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -85,16 +85,6 @@ enum {
 
 /* EgetShift masks */
 #define ES_MODE		0x0700
-
-/* TT shifter modes */
-#ifndef ST_LOW
-#define ST_LOW	0x0000
-#define ST_MED	0x0100
-#define ST_HIGH	0x0200
-#define TT_LOW	0x0700
-#define TT_MED	0x0300
-#define TT_HIGH	0x0600
-#endif
 
 /* Hidden structure -> variables names */
 #define SDL_nummodes		(this->hidden->SDL_nummodes)

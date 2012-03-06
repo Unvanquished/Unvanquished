@@ -5,6 +5,8 @@
 # stolen from Manish Singh
 # Shamelessly stolen from Owen Taylor
 
+# serial 1
+
 dnl AM_PATH_SDL([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for SDL, and define SDL_CFLAGS and SDL_LIBS
 dnl

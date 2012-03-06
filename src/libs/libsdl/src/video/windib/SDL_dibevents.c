@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -198,7 +198,7 @@ LRESULT DIB_HandleMessage(_THIS, HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 				m.wParam = wParam;
 				m.lParam = lParam;
 				m.time = 0;
-				if ( PeekMessage(&m, hwnd, 0, WM_USER, PM_NOREMOVE) && (m.message == WM_CHAR) ) {
+				if ( TranslateMessage(&m) && PeekMessage(&m, hwnd, 0, WM_USER, PM_NOREMOVE) && (m.message == WM_CHAR) ) {
 					GetMessage(&m, hwnd, 0, WM_USER);
 			    		wParam = m.wParam;
 				}
@@ -363,7 +363,6 @@ void DIB_PumpEvents(_THIS)
 
 	while ( PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) {
 		if ( GetMessage(&msg, NULL, 0, 0) > 0 ) {
-			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 	}
@@ -656,7 +655,7 @@ int DIB_CreateWindow(_THIS)
 		SDL_Window = (HWND)wcstol(windowid_t, NULL, 0);
 		SDL_free(windowid_t);
 #else
-		SDL_Window = (HWND)SDL_strtoull(windowid, NULL, 0);
+		SDL_Window = (HWND)((size_t)SDL_strtoull(windowid, NULL, 0));
 #endif
 		if ( SDL_Window == NULL ) {
 			SDL_SetError("Couldn't get user specified window");

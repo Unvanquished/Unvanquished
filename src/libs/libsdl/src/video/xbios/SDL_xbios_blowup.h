@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -70,14 +70,14 @@ typedef struct {
 	unsigned short	registers_C0;	/* value for register 0xffff82c0 */
 	unsigned short	registers_C2;	/* value for register 0xffff82c2 */
 	unsigned short	dummy40[30];
-} __attribute__((packed)) blow_mode_t;
+} blow_mode_t;
 
 typedef struct {
 	blow_mode_t	blowup_modes[10];
 	unsigned char	num_mode[6];
 	unsigned long	dummy;
 	unsigned short	montype;
-} __attribute__((packed)) blow_cookie_t;
+} blow_cookie_t;
 
 /*--- Functions prototypes ---*/
 

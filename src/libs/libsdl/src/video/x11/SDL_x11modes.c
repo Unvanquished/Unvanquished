@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -421,16 +421,11 @@ static int CheckXRandR(_THIS, int *major, int *minor)
         return 0;
     }
 
-    /* This used to default off, due to KDE window maximize problems */
-    /* Reactivated since I haven't encountered such problems with KDE, but if
-       one does encounter such problems he/she can just set
-       SDL_VIDEO_X11_XRANDR to 0
-       Closes Debian bug: #450689
-     */
-/*  if ( !env ) {
+    /* This defaults off now, due to KDE window maximize problems */
+    if ( !env ) {
         return 0;
     }
-*/
+
     if ( !SDL_X11_HAVE_XRANDR ) {
         return 0;
     }
@@ -465,10 +460,13 @@ static int CheckVidMode(_THIS, int *major, int *minor)
 
         metro_fp = fopen("/usr/X11R6/lib/X11/Metro/.version", "r");
         if ( metro_fp != NULL ) {
-            int major, minor, patch, version;
+            int major, minor, patch, version, scannum;
             major = 0; minor = 0; patch = 0;
-            fscanf(metro_fp, "%d.%d.%d", &major, &minor, &patch);
+            scannum = fscanf(metro_fp, "%d.%d.%d", &major, &minor, &patch);
             fclose(metro_fp);
+            if ( (scannum < 0) || (scannum > 3) ) {
+                return 0;  /* we need _something_ useful from fscanf(). */
+            }
             version = major*100+minor*10+patch;
             if ( version < 431 ) {
                 return 0;

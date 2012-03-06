@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -39,13 +39,15 @@ static SDL_Thread *SDL_AppThread = NULL;
 
 static int StartBeApp(void *unused)
 {
+  if(!be_app) {
 	BApplication *App;
 
 	App = new BApplication("application/x-SDL-executable");
 
 	App->Run();
 	delete App;
-	return(0);
+  }
+ return(0);
 }
 
 /* Initialize the Be Application, if it's not already started */
@@ -86,7 +88,7 @@ int SDL_InitBeApp(void)
 	++SDL_BeAppActive;
 
 	/* The app is running, and we're ready to go */
-	return(0);
+ return(0);
 }
 
 /* Quit the Be Application, if there's nothing left to do */

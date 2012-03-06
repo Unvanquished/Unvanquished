@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -59,7 +59,7 @@
 
 /*--- Static variables ---*/
 
-static unsigned long cookie_snd, cookie_mch;
+static long cookie_snd, cookie_mch;
 
 /*--- Audio driver functions ---*/
 
@@ -70,7 +70,11 @@ static void Mint_UnlockAudio(_THIS);
 
 /* To check/init hardware audio */
 static int Mint_CheckAudio(_THIS, SDL_AudioSpec *spec);
-static void Mint_InitAudio(_THIS, SDL_AudioSpec *spec);
+
+/* Functions called in supervisor mode */
+static void Mint_InitDma(void);
+static void Mint_StopReplay(void);
+static void Mint_StartReplay(void);
 
 /*--- Audio driver bootstrap functions ---*/
 
@@ -157,32 +161,17 @@ AudioBootStrap MINTAUDIO_DMA8_bootstrap = {
 
 static void Mint_LockAudio(_THIS)
 {
-	void *oldpile;
-
-	/* Stop replay */
-	oldpile=(void *)Super(0);
-	DMAAUDIO_IO.control=0;
-	Super(oldpile);
+	Supexec(Mint_StopReplay);
 }
 
 static void Mint_UnlockAudio(_THIS)
 {
-	void *oldpile;
-
-	/* Restart replay */
-	oldpile=(void *)Super(0);
-	DMAAUDIO_IO.control=3;
-	Super(oldpile);
+	Supexec(Mint_StartReplay);
 }
 
 static void Mint_CloseAudio(_THIS)
 {
-	void *oldpile;
-
-	/* Stop replay */
-	oldpile=(void *)Super(0);
-	DMAAUDIO_IO.control=0;
-	Super(oldpile);
+	Supexec(Mint_StopReplay);
 
 	DEBUG_PRINT((DEBUG_NAME "closeaudio: replay stopped\n"));
 
@@ -273,57 +262,6 @@ static int Mint_CheckAudio(_THIS, SDL_AudioSpec *spec)
 	return 0;
 }
 
-static void Mint_InitAudio(_THIS, SDL_AudioSpec *spec)
-{
-	void *oldpile;
-	unsigned long buffer;
-	unsigned char mode;
-	
-	/* Set replay tracks */
-	if (cookie_snd & SND_16BIT) {
-		Settracks(0,0);
-		Setmontracks(0);
-	}
-
-	oldpile=(void *)Super(0);
-
-	/* Stop currently playing sound */
-	DMAAUDIO_IO.control=0;
-
-	/* Set buffer */
-	buffer = (unsigned long) SDL_MintAudio_audiobuf[SDL_MintAudio_numbuf];
-	DMAAUDIO_IO.start_high = (buffer>>16) & 255;
-	DMAAUDIO_IO.start_mid = (buffer>>8) & 255;
-	DMAAUDIO_IO.start_low = buffer & 255;
-
-	buffer += SDL_MintAudio_audiosize;
-	DMAAUDIO_IO.end_high = (buffer>>16) & 255;
-	DMAAUDIO_IO.end_mid = (buffer>>8) & 255;
-	DMAAUDIO_IO.end_low = buffer & 255;
-
-	mode = 3-MINTAUDIO_frequencies[MINTAUDIO_numfreq].predivisor;
-	if (spec->channels==1) {
-		mode |= 1<<7;
-	}
-	DMAAUDIO_IO.sound_ctrl = mode;	
-
-	/* Set interrupt */
-	Jdisint(MFP_DMASOUND);
-	Xbtimer(XB_TIMERA, 8, 1, SDL_MintAudio_Dma8Interrupt);
-	Jenabint(MFP_DMASOUND);
-
-	if (cookie_snd & SND_16BIT) {
-		if (Setinterrupt(SI_TIMERA, SI_PLAY)<0) {
-			DEBUG_PRINT((DEBUG_NAME "Setinterrupt() failed\n"));
-		}
-	}
-
-	/* Go */
-	DMAAUDIO_IO.control = 3;	/* playback + repeat */
-
-	Super(oldpile);
-}
-
 static int Mint_OpenAudio(_THIS, SDL_AudioSpec *spec)
 {
 	SDL_MintAudio_device = this;
@@ -354,8 +292,66 @@ static int Mint_OpenAudio(_THIS, SDL_AudioSpec *spec)
 
 	SDL_MintAudio_CheckFpu();
 
-	/* Setup audio hardware */
-	Mint_InitAudio(this, spec);
+	/* Set replay tracks */
+	if (cookie_snd & SND_16BIT) {
+		Settracks(0,0);
+		Setmontracks(0);
+	}
+
+	Supexec(Mint_InitDma);
+
+	/* Set interrupt */
+	Jdisint(MFP_DMASOUND);
+	Xbtimer(XB_TIMERA, 8, 1, SDL_MintAudio_Dma8Interrupt);
+	Jenabint(MFP_DMASOUND);
+
+	if (cookie_snd & SND_16BIT) {
+		if (Setinterrupt(SI_TIMERA, SI_PLAY)<0) {
+			DEBUG_PRINT((DEBUG_NAME "Setinterrupt() failed\n"));
+		}
+	}
+
+	Supexec(Mint_StartReplay);
 
     return(1);	/* We don't use threaded audio */
+}
+
+/* Functions called in supervisor mode */
+
+static void Mint_InitDma(void)
+{
+	unsigned long buffer;
+	unsigned char mode;
+	SDL_AudioDevice *this = SDL_MintAudio_device;
+
+	Mint_StopReplay();
+
+	/* Set buffer */
+	buffer = (unsigned long) SDL_MintAudio_audiobuf[SDL_MintAudio_numbuf];
+	DMAAUDIO_IO.start_high = (buffer>>16) & 255;
+	DMAAUDIO_IO.start_mid = (buffer>>8) & 255;
+	DMAAUDIO_IO.start_low = buffer & 255;
+
+	buffer += SDL_MintAudio_audiosize;
+	DMAAUDIO_IO.end_high = (buffer>>16) & 255;
+	DMAAUDIO_IO.end_mid = (buffer>>8) & 255;
+	DMAAUDIO_IO.end_low = buffer & 255;
+
+	mode = 3-MINTAUDIO_frequencies[MINTAUDIO_numfreq].predivisor;
+	if (this->spec.channels==1) {
+		mode |= 1<<7;
+	}
+	DMAAUDIO_IO.sound_ctrl = mode;	
+}
+
+static void Mint_StopReplay(void)
+{
+	/* Stop replay */
+	DMAAUDIO_IO.control=0;
+}
+
+static void Mint_StartReplay(void)
+{
+	/* Start replay */
+	DMAAUDIO_IO.control=3;
 }

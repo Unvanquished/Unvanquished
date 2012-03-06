@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -102,13 +102,11 @@ int X11_SetupImage(_THIS, SDL_Surface *screen)
 	if(!use_mitshm)
 #endif /* not NO_SHARED_MEMORY */
 	{
-		int bpp;
 		screen->pixels = SDL_malloc(screen->h*screen->pitch);
 		if ( screen->pixels == NULL ) {
 			SDL_OutOfMemory();
 			return -1;
 		}
- 	        bpp = screen->format->BytesPerPixel;
 		SDL_Ximage = XCreateImage(SDL_Display, SDL_Visual,
 					  this->hidden->depth, ZPixmap, 0,
 					  (char *)screen->pixels, 

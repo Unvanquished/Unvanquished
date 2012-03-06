@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -30,6 +30,7 @@
 #include <mint/osbind.h>
 
 #include "../../events/SDL_events_c.h"
+#include "SDL_atarisuper.h"
 #include "SDL_xbiosevents_c.h"
 #include "SDL_xbiosinterrupt_s.h"
 
@@ -75,7 +76,7 @@ void SDL_AtariXbios_InstallVectors(int vectors_mask)
 	);
 
 	/* Back to user mode */
-	Super(oldpile);
+	SuperToUser(oldpile);
 
 	SDL_AtariXbios_enabled=1;
 }
@@ -98,7 +99,7 @@ void SDL_AtariXbios_RestoreVectors(void)
 	SDL_AtariXbios_Restore(kbdvecs);
 
 	/* Back to user mode */
-	Super(oldpile);
+	SuperToUser(oldpile);
 }
 
 static int atari_GetButton(int button)

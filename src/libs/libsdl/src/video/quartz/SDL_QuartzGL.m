@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009  Sam Lantinga
+    Copyright (C) 1997-2012  Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -153,7 +153,7 @@ int QZ_SetupOpenGL (_THIS, int bpp, Uint32 flags) {
      * http://lists.apple.com/archives/mac-opengl/2006/Jan/msg00080.html )
      */
     if ( this->gl_config.swap_control >= 0 ) {
-        long value;
+        GLint value;
         value = this->gl_config.swap_control;
         [ gl_context setValues: &value forParameter: NSOpenGLCPSwapInterval ];
     }
@@ -175,7 +175,7 @@ int QZ_SetupOpenGL (_THIS, int bpp, Uint32 flags) {
     #endif
 
     {
-        long cache_max = 64;
+        GLint cache_max = 64;
         CGLContextObj ctx = QZ_GetCGLContextObj(gl_context);
         CGLSetParameter (ctx, GLI_SUBMIT_FUNC_CACHE_MAX, &cache_max);
         CGLSetParameter (ctx, GLI_ARRAY_FUNC_CACHE_MAX, &cache_max);
@@ -261,7 +261,7 @@ int    QZ_GL_GetAttribute   (_THIS, SDL_GLattr attrib, int* value) {
         }
         case SDL_GL_ACCELERATED_VISUAL:
         {
-            long val;
+            GLint val;
 	    /* FIXME: How do we get this information here?
             [fmt getValues: &val forAttribute: NSOpenGLPFAAccelerated attr forVirtualScreen: 0];
 	    */
@@ -271,7 +271,7 @@ int    QZ_GL_GetAttribute   (_THIS, SDL_GLattr attrib, int* value) {
         }
         case SDL_GL_SWAP_CONTROL:
         {
-            long val;
+            GLint val;
             [ gl_context getValues: &val forParameter: NSOpenGLCPSwapInterval ];
             *value = val;
             return 0;

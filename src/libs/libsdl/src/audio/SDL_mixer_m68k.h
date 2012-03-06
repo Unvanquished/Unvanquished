@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,7 +27,7 @@
 	Patrice Mandin
 */
 
-#if defined(__M68000__) && defined(__GNUC__)
+#if (defined(__m68k__) && !defined(__mcoldfire__)) && defined(__GNUC__)
 void SDL_MixAudio_m68k_U8(char* dst,char* src, long len, long volume, char* mix8);
 void SDL_MixAudio_m68k_S8(char* dst,char* src, long len, long volume);
 

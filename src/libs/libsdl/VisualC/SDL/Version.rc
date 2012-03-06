@@ -28,8 +28,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,14,0
- PRODUCTVERSION 1,2,14,0
+ FILEVERSION 1,2,15,0
+ PRODUCTVERSION 1,2,15,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -46,12 +46,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "SDL\0"
-            VALUE "FileVersion", "1, 2, 14, 0\0"
+            VALUE "FileVersion", "1, 2, 15, 0\0"
             VALUE "InternalName", "SDL\0"
-            VALUE "LegalCopyright", "Copyright © 2007 Sam Lantinga\0"
+            VALUE "LegalCopyright", "Copyright © 2012 Sam Lantinga\0"
             VALUE "OriginalFilename", "SDL.dll\0"
             VALUE "ProductName", "Simple DirectMedia Layer\0"
-            VALUE "ProductVersion", "1, 2, 14, 0\0"
+            VALUE "ProductVersion", "1, 2, 15, 0\0"
         END
     END
     BLOCK "VarFileInfo"

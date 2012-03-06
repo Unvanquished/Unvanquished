@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -149,8 +149,8 @@ struct {
 #else
 		&c_dfDIMouse,
 #endif
-		(DISCL_FOREGROUND|DISCL_NONEXCLUSIVE),
-		(DISCL_FOREGROUND|DISCL_NONEXCLUSIVE), handle_mouse },
+		(DISCL_BACKGROUND|DISCL_NONEXCLUSIVE),
+		(DISCL_BACKGROUND|DISCL_NONEXCLUSIVE), handle_mouse },
 	{ NULL, NULL, NULL, 0, 0, NULL }
 };
 	
@@ -297,8 +297,7 @@ static void post_mouse_motion(int relative, Sint16 x, Sint16 y)
 {
 	extern int mouse_relative;
 
-	if ( (SDL_GetAppState() & (SDL_APPINPUTFOCUS|SDL_APPMOUSEFOCUS)) ==
-		(SDL_APPINPUTFOCUS|SDL_APPMOUSEFOCUS) ) {
+	if ( SDL_GetAppState() & SDL_APPMOUSEFOCUS ) {
 		posted = SDL_PrivateMouseMotion(
 			0, relative, x, y);
 
@@ -355,10 +354,6 @@ static void post_mouse_motion(int relative, Sint16 x, Sint16 y)
 			ClientToScreen(SDL_Window, &center);
 			SetCursorPos(center.x, center.y);
 		}
-	} else {
-		/* No window or mouse focus, control is lost */
-		mouse_lost = 1;
-		ClipCursor(NULL);
 	}
 }
 
@@ -375,177 +370,183 @@ static void handle_mouse(const int numevents, DIDEVICEOBJECTDATA *ptrbuf)
 		return;
 	}
 
-	/* If the mouse was lost, regain some sense of mouse state */
-	if ( mouse_lost && (SDL_GetAppState() & SDL_APPMOUSEFOCUS) ) {
-		POINT mouse_pos;
-		Uint8 old_state;
-		Uint8 new_state;
+	/* If mouse focus has been lost, make sure we release the cursor. */
+	if ( !(SDL_GetAppState() & SDL_APPMOUSEFOCUS) ) {
+		mouse_lost = 1;
+		ClipCursor(NULL);
+	} else {
+		/* If the mouse was lost, regain some sense of mouse state */
+		if ( mouse_lost ) {
+			POINT mouse_pos;
+			Uint8 old_state;
+			Uint8 new_state;
 
-		/* Set ourselves up with the current cursor position */
-		GetCursorPos(&mouse_pos);
-		ScreenToClient(SDL_Window, &mouse_pos);
-		post_mouse_motion( 0, (Sint16)mouse_pos.x, (Sint16)mouse_pos.y);
+			/* Set ourselves up with the current cursor position */
+			GetCursorPos(&mouse_pos);
+			ScreenToClient(SDL_Window, &mouse_pos);
+			post_mouse_motion( 0, (Sint16)mouse_pos.x, (Sint16)mouse_pos.y);
 
-		/* Check for mouse button changes */
-		old_state = SDL_GetMouseState(NULL, NULL);
-		new_state = 0;
-		{ /* Get the new DirectInput button state for the mouse */
-#if DIRECTINPUT_VERSION >= 0x700
-			DIMOUSESTATE2 distate;
-#else
-			DIMOUSESTATE distate;
-#endif
-			HRESULT result;
+			/* Check for mouse button changes */
+			old_state = SDL_GetMouseState(NULL, NULL);
+			new_state = 0;
+			{ /* Get the new DirectInput button state for the mouse */
+	#if DIRECTINPUT_VERSION >= 0x700
+				DIMOUSESTATE2 distate;
+	#else
+				DIMOUSESTATE distate;
+	#endif
+				HRESULT result;
 
-			result=IDirectInputDevice2_GetDeviceState(SDL_DIdev[1],
-						sizeof(distate), &distate);
-			if ( result != DI_OK ) {
-				/* Try again next time */
-				SetDIerror(
-				"IDirectInputDevice2::GetDeviceState", result);
-				return;
-			}
-			for ( i=3; i>=0; --i ) {
-				if ( (distate.rgbButtons[i]&0x80) == 0x80 ) {
-					new_state |= 0x01;
+				result=IDirectInputDevice2_GetDeviceState(SDL_DIdev[1],
+							sizeof(distate), &distate);
+				if ( result != DI_OK ) {
+					/* Try again next time */
+					SetDIerror(
+					"IDirectInputDevice2::GetDeviceState", result);
+					return;
 				}
-				new_state <<= 1;
-			}
-		}
-		for ( i=0; i<8; ++i ) {
-			if ( (old_state&0x01) != (new_state&0x01) ) {
-				button = (Uint8)(i+1);
-				/* Map DI button numbers to SDL */
-				switch ( button ) {
-					case 2: button = SDL_BUTTON_RIGHT; break;
-					case 3: button = SDL_BUTTON_MIDDLE; break;
-					case 4: button = SDL_BUTTON_X1; break;
-					case 5: button = SDL_BUTTON_X2; break;
-					default: break;
-				}
-				if ( new_state & 0x01 ) {
-					/* Grab mouse so we get mouse-up */
-					if ( ++mouse_pressed > 0 ) {
-						SetCapture(SDL_Window);
+				for ( i=3; i>=0; --i ) {
+					if ( (distate.rgbButtons[i]&0x80) == 0x80 ) {
+						new_state |= 0x01;
 					}
-					state = SDL_PRESSED;
-				} else {
-					/* Release mouse after all mouse-ups */
-					if ( --mouse_pressed <= 0 ) {
-						ReleaseCapture();
-						mouse_pressed = 0;
-					}
-					state = SDL_RELEASED;
+					new_state <<= 1;
 				}
-				if ( mouse_buttons_swapped ) {
-					if ( button == 1 ) button = 3;
-					else
-					if ( button == 3 ) button = 1;
-				}
-				posted = SDL_PrivateMouseButton(state, button,
-									0, 0);
 			}
-			old_state >>= 1;
-			new_state >>= 1;
+			for ( i=0; i<8; ++i ) {
+				if ( (old_state&0x01) != (new_state&0x01) ) {
+					button = (Uint8)(i+1);
+					/* Map DI button numbers to SDL */
+					switch ( button ) {
+						case 2: button = SDL_BUTTON_RIGHT; break;
+						case 3: button = SDL_BUTTON_MIDDLE; break;
+						case 4: button = SDL_BUTTON_X1; break;
+						case 5: button = SDL_BUTTON_X2; break;
+						default: break;
+					}
+					if ( new_state & 0x01 ) {
+						/* Grab mouse so we get mouse-up */
+						if ( ++mouse_pressed > 0 ) {
+							SetCapture(SDL_Window);
+						}
+						state = SDL_PRESSED;
+					} else {
+						/* Release mouse after all mouse-ups */
+						if ( --mouse_pressed <= 0 ) {
+							ReleaseCapture();
+							mouse_pressed = 0;
+						}
+						state = SDL_RELEASED;
+					}
+					if ( mouse_buttons_swapped ) {
+						if ( button == 1 ) button = 3;
+						else
+						if ( button == 3 ) button = 1;
+					}
+					posted = SDL_PrivateMouseButton(state, button,
+										0, 0);
+				}
+				old_state >>= 1;
+				new_state >>= 1;
+			}
+			mouse_lost = 0;
+			return;
 		}
-		mouse_lost = 0;
-		return;
-	}
 
-	/* Translate mouse messages */
-	xrel = 0;
-	yrel = 0;
-	for ( i=0; i<(int)numevents; ++i ) {
-		switch (ptrbuf[i].dwOfs) {
-			case DIMOFS_X:
-				if ( timestamp != ptrbuf[i].dwTimeStamp ) {
+		/* Translate mouse messages */
+		xrel = 0;
+		yrel = 0;
+		for ( i=0; i<(int)numevents; ++i ) {
+			switch (ptrbuf[i].dwOfs) {
+				case DIMOFS_X:
+					if ( timestamp != ptrbuf[i].dwTimeStamp ) {
+						if ( xrel || yrel ) {
+							post_mouse_motion(1, xrel, yrel);
+							xrel = 0;
+							yrel = 0;
+						}
+						timestamp = ptrbuf[i].dwTimeStamp;
+					}
+					xrel += (Sint16)ptrbuf[i].dwData;
+					break;
+				case DIMOFS_Y:
+					if ( timestamp != ptrbuf[i].dwTimeStamp ) {
+						if ( xrel || yrel ) {
+							post_mouse_motion(1, xrel, yrel);
+							xrel = 0;
+							yrel = 0;
+						}
+						timestamp = ptrbuf[i].dwTimeStamp;
+					}
+					yrel += (Sint16)ptrbuf[i].dwData;
+					break;
+				case DIMOFS_Z:
 					if ( xrel || yrel ) {
 						post_mouse_motion(1, xrel, yrel);
 						xrel = 0;
 						yrel = 0;
 					}
-					timestamp = ptrbuf[i].dwTimeStamp;
-				}
-				xrel += (Sint16)ptrbuf[i].dwData;
-				break;
-			case DIMOFS_Y:
-				if ( timestamp != ptrbuf[i].dwTimeStamp ) {
+					timestamp = 0;
+					if((int)ptrbuf[i].dwData > 0)
+						button = SDL_BUTTON_WHEELUP;
+					else
+						button = SDL_BUTTON_WHEELDOWN;
+					posted = SDL_PrivateMouseButton(
+							SDL_PRESSED, button, 0, 0);
+					posted |= SDL_PrivateMouseButton(
+							SDL_RELEASED, button, 0, 0);
+					break;
+				case DIMOFS_BUTTON0:
+				case DIMOFS_BUTTON1:
+				case DIMOFS_BUTTON2:
+				case DIMOFS_BUTTON3:
+	#if DIRECTINPUT_VERSION >= 0x700
+				case DIMOFS_BUTTON4:
+				case DIMOFS_BUTTON5:
+				case DIMOFS_BUTTON6:
+				case DIMOFS_BUTTON7:
+	#endif
 					if ( xrel || yrel ) {
 						post_mouse_motion(1, xrel, yrel);
 						xrel = 0;
 						yrel = 0;
 					}
-					timestamp = ptrbuf[i].dwTimeStamp;
-				}
-				yrel += (Sint16)ptrbuf[i].dwData;
-				break;
-			case DIMOFS_Z:
-				if ( xrel || yrel ) {
-					post_mouse_motion(1, xrel, yrel);
-					xrel = 0;
-					yrel = 0;
-				}
-				timestamp = 0;
-				if((int)ptrbuf[i].dwData > 0)
-					button = SDL_BUTTON_WHEELUP;
-				else
-					button = SDL_BUTTON_WHEELDOWN;
-				posted = SDL_PrivateMouseButton(
-						SDL_PRESSED, button, 0, 0);
-				posted |= SDL_PrivateMouseButton(
-						SDL_RELEASED, button, 0, 0);
-				break;
-			case DIMOFS_BUTTON0:
-			case DIMOFS_BUTTON1:
-			case DIMOFS_BUTTON2:
-			case DIMOFS_BUTTON3:
-#if DIRECTINPUT_VERSION >= 0x700
-			case DIMOFS_BUTTON4:
-			case DIMOFS_BUTTON5:
-			case DIMOFS_BUTTON6:
-			case DIMOFS_BUTTON7:
-#endif
-				if ( xrel || yrel ) {
-					post_mouse_motion(1, xrel, yrel);
-					xrel = 0;
-					yrel = 0;
-				}
-				timestamp = 0;
-				button = (Uint8)(ptrbuf[i].dwOfs-DIMOFS_BUTTON0)+1;
-				/* Map DI button numbers to SDL */
-				switch ( button ) {
-					case 2: button = SDL_BUTTON_RIGHT; break;
-					case 3: button = SDL_BUTTON_MIDDLE; break;
-					case 4: button = SDL_BUTTON_X1; break;
-					case 5: button = SDL_BUTTON_X2; break;
-					default: break;
-				}
-				if ( ptrbuf[i].dwData & 0x80 ) {
-					/* Grab mouse so we get mouse-up */
-					if ( ++mouse_pressed > 0 ) {
-						SetCapture(SDL_Window);
+					timestamp = 0;
+					button = (Uint8)(ptrbuf[i].dwOfs-DIMOFS_BUTTON0)+1;
+					/* Map DI button numbers to SDL */
+					switch ( button ) {
+						case 2: button = SDL_BUTTON_RIGHT; break;
+						case 3: button = SDL_BUTTON_MIDDLE; break;
+						case 4: button = SDL_BUTTON_X1; break;
+						case 5: button = SDL_BUTTON_X2; break;
+						default: break;
 					}
-					state = SDL_PRESSED;
-				} else {
-					/* Release mouse after all mouse-ups */
-					if ( --mouse_pressed <= 0 ) {
-						ReleaseCapture();
-						mouse_pressed = 0;
+					if ( ptrbuf[i].dwData & 0x80 ) {
+						/* Grab mouse so we get mouse-up */
+						if ( ++mouse_pressed > 0 ) {
+							SetCapture(SDL_Window);
+						}
+						state = SDL_PRESSED;
+					} else {
+						/* Release mouse after all mouse-ups */
+						if ( --mouse_pressed <= 0 ) {
+							ReleaseCapture();
+							mouse_pressed = 0;
+						}
+						state = SDL_RELEASED;
 					}
-					state = SDL_RELEASED;
-				}
-				if ( mouse_buttons_swapped ) {
-					if ( button == 1 ) button = 3;
-					else
-					if ( button == 3 ) button = 1;
-				}
-				posted = SDL_PrivateMouseButton(state, button,
-									0, 0);
-				break;
+					if ( mouse_buttons_swapped ) {
+						if ( button == 1 ) button = 3;
+						else
+						if ( button == 3 ) button = 1;
+					}
+					posted = SDL_PrivateMouseButton(state, button,
+										0, 0);
+					break;
+			}
 		}
-	}
-	if ( xrel || yrel ) {
-		post_mouse_motion(1, xrel, yrel);
+		if ( xrel || yrel ) {
+			post_mouse_motion(1, xrel, yrel);
+		}
 	}
 }
 
@@ -559,13 +560,15 @@ LRESULT DX5_HandleMessage(_THIS, HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 			active = (wParam && (GetForegroundWindow() == hwnd));
 			if ( active ) {
-				for ( i=0; SDL_DIdev[i]; ++i ) {
-					IDirectInputDevice2_Acquire(
+				for ( i=0; i<MAX_INPUTS; ++i ) {
+					if (SDL_DIdev[i] != NULL)
+						IDirectInputDevice2_Acquire(
 								SDL_DIdev[i]);
 				}
 			} else {
-				for ( i=0; SDL_DIdev[i]; ++i ) {
-					IDirectInputDevice2_Unacquire(
+				for ( i=0; i<MAX_INPUTS; ++i ) {
+					if (SDL_DIdev[i] != NULL) 
+						IDirectInputDevice2_Unacquire(
 								SDL_DIdev[i]);
 				}
 				mouse_lost = 1;
@@ -655,7 +658,6 @@ static int DX5_CheckInput(_THIS, int timeout, BOOL processInput)
 	while ( ! posted &&
 	        PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) {
 		if ( GetMessage(&msg, NULL, 0, 0) > 0 ) {
-			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} else {
 			return(-1);
@@ -666,7 +668,7 @@ static int DX5_CheckInput(_THIS, int timeout, BOOL processInput)
 	}
 
 	/* Pump the DirectInput flow */
-	if ( SDL_GetAppState() & SDL_APPINPUTFOCUS ) {
+	if ( SDL_GetAppState() & SDL_APPMOUSEFOCUS ) {
 		for ( i=0; i<MAX_INPUTS; ++i ) {
 			if ( SDL_DIdev[i] != NULL ) {
 				result = IDirectInputDevice2_Poll(SDL_DIdev[i]);
@@ -714,17 +716,12 @@ static int DX5_CheckInput(_THIS, int timeout, BOOL processInput)
 	}
 	if ( event != WAIT_TIMEOUT ) {
 		/* Maybe there was a windows message? */
-		posted = 0;
-		while ( ! posted &&
-			PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) {
+		if ( PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) {
 			if ( GetMessage(&msg, NULL, 0, 0) > 0 ) {
-				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			} else {
 				return(-1);
 			}
-		}
-		if ( posted ) {
 			return(1);
 		}
 	}
@@ -950,7 +947,7 @@ int DX5_CreateWindow(_THIS)
 
 	SDL_windowid = (windowid != NULL);
 	if ( SDL_windowid ) {
-		SDL_Window = (HWND)SDL_strtoull(windowid, NULL, 0);
+		SDL_Window = (HWND)((size_t)SDL_strtoull(windowid, NULL, 0));
 		if ( SDL_Window == NULL ) {
 			SDL_SetError("Couldn't get user specified window");
 			return(-1);

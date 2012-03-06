@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -330,8 +330,8 @@ SDL_Overlay *X11_CreateYUVOverlay(_THIS, int width, int height, Uint32 format, S
 #ifdef PITCH_WORKAROUND
 	if ( hwdata->image != NULL && hwdata->image->pitches[0] != (width*bpp) ) {
 		/* Ajust overlay width according to pitch */ 
-		XFree(hwdata->image);
 		width = hwdata->image->pitches[0] / bpp;
+		XFree(hwdata->image);
 		hwdata->image = SDL_NAME(XvShmCreateImage)(GFX_Display, xv_port, format,
 							   0, width, height, yuvshm);
 	}

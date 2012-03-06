@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -37,6 +37,7 @@
 #include "../SDL_audiomem.h"
 #include "../SDL_audio_c.h"
 #include "../SDL_audiodev_c.h"
+#include "../../../include/SDL_video.h"  /* for SDL_WM_GetCaption(). */
 #include "SDL_pulseaudio.h"
 
 #ifdef SDL_AUDIO_DRIVER_PULSE_DYNAMIC
@@ -56,6 +57,7 @@ static void PULSE_PlayAudio(_THIS);
 static Uint8 *PULSE_GetAudioBuf(_THIS);
 static void PULSE_CloseAudio(_THIS);
 static void PULSE_WaitDone(_THIS);
+static void PULSE_SetCaption(_THIS, const char *str);
 
 #ifdef SDL_AUDIO_DRIVER_PULSE_DYNAMIC
 
@@ -82,37 +84,39 @@ static pa_channel_map* (*SDL_NAME(pa_channel_map_init_auto))(
 	pa_channel_map_def_t def
 );
 
-pa_mainloop * (*SDL_NAME(pa_mainloop_new))(void);
-pa_mainloop_api * (*SDL_NAME(pa_mainloop_get_api))(pa_mainloop *m);
-int (*SDL_NAME(pa_mainloop_iterate))(pa_mainloop *m, int block, int *retval);
-void (*SDL_NAME(pa_mainloop_free))(pa_mainloop *m);
+static pa_mainloop * (*SDL_NAME(pa_mainloop_new))(void);
+static pa_mainloop_api * (*SDL_NAME(pa_mainloop_get_api))(pa_mainloop *m);
+static int (*SDL_NAME(pa_mainloop_iterate))(pa_mainloop *m, int block, int *retval);
+static void (*SDL_NAME(pa_mainloop_free))(pa_mainloop *m);
 
-pa_operation_state_t (*SDL_NAME(pa_operation_get_state))(pa_operation *o);
-void (*SDL_NAME(pa_operation_cancel))(pa_operation *o);
-void (*SDL_NAME(pa_operation_unref))(pa_operation *o);
+static pa_operation_state_t (*SDL_NAME(pa_operation_get_state))(pa_operation *o);
+static void (*SDL_NAME(pa_operation_cancel))(pa_operation *o);
+static void (*SDL_NAME(pa_operation_unref))(pa_operation *o);
 
-pa_context * (*SDL_NAME(pa_context_new))(
+static pa_context * (*SDL_NAME(pa_context_new))(
 	pa_mainloop_api *m, const char *name);
-int (*SDL_NAME(pa_context_connect))(
+static int (*SDL_NAME(pa_context_connect))(
 	pa_context *c, const char *server,
 	pa_context_flags_t flags, const pa_spawn_api *api);
-pa_context_state_t (*SDL_NAME(pa_context_get_state))(pa_context *c);
-void (*SDL_NAME(pa_context_disconnect))(pa_context *c);
-void (*SDL_NAME(pa_context_unref))(pa_context *c);
+static pa_context_state_t (*SDL_NAME(pa_context_get_state))(pa_context *c);
+static void (*SDL_NAME(pa_context_disconnect))(pa_context *c);
+static void (*SDL_NAME(pa_context_unref))(pa_context *c);
 
-pa_stream * (*SDL_NAME(pa_stream_new))(pa_context *c,
+static pa_stream * (*SDL_NAME(pa_stream_new))(pa_context *c,
 	const char *name, const pa_sample_spec *ss, const pa_channel_map *map);
-int (*SDL_NAME(pa_stream_connect_playback))(pa_stream *s, const char *dev,
+static int (*SDL_NAME(pa_stream_connect_playback))(pa_stream *s, const char *dev,
 	const pa_buffer_attr *attr, pa_stream_flags_t flags,
 	pa_cvolume *volume, pa_stream *sync_stream);
-pa_stream_state_t (*SDL_NAME(pa_stream_get_state))(pa_stream *s);
-size_t (*SDL_NAME(pa_stream_writable_size))(pa_stream *s);
-int (*SDL_NAME(pa_stream_write))(pa_stream *s, const void *data, size_t nbytes,
+static pa_stream_state_t (*SDL_NAME(pa_stream_get_state))(pa_stream *s);
+static size_t (*SDL_NAME(pa_stream_writable_size))(pa_stream *s);
+static int (*SDL_NAME(pa_stream_write))(pa_stream *s, const void *data, size_t nbytes,
 	pa_free_cb_t free_cb, int64_t offset, pa_seek_mode_t seek);
-pa_operation * (*SDL_NAME(pa_stream_drain))(pa_stream *s,
+static pa_operation * (*SDL_NAME(pa_stream_drain))(pa_stream *s,
 	pa_stream_success_cb_t cb, void *userdata);
-int (*SDL_NAME(pa_stream_disconnect))(pa_stream *s);
-void (*SDL_NAME(pa_stream_unref))(pa_stream *s);
+static int (*SDL_NAME(pa_stream_disconnect))(pa_stream *s);
+static void (*SDL_NAME(pa_stream_unref))(pa_stream *s);
+static pa_operation* (*SDL_NAME(pa_context_set_name))(pa_context *c,
+	const char *name, pa_context_success_cb_t cb, void *userdata);
 
 static struct {
 	const char *name;
@@ -164,6 +168,8 @@ static struct {
 		(void **)&SDL_NAME(pa_stream_disconnect)	},
 	{ "pa_stream_unref",
 		(void **)&SDL_NAME(pa_stream_unref)		},
+	{ "pa_context_set_name",
+		(void **)&SDL_NAME(pa_context_set_name)		},
 };
 
 static void UnloadPulseLibrary()
@@ -248,6 +254,7 @@ static int Audio_Available(void)
 
 static void Audio_DeleteDevice(SDL_AudioDevice *device)
 {
+	SDL_free(device->hidden->caption);
 	SDL_free(device->hidden);
 	SDL_free(device);
 	UnloadPulseLibrary();
@@ -281,6 +288,7 @@ static SDL_AudioDevice *Audio_CreateDevice(int devindex)
 	this->GetAudioBuf = PULSE_GetAudioBuf;
 	this->CloseAudio = PULSE_CloseAudio;
 	this->WaitDone = PULSE_WaitDone;
+	this->SetCaption = PULSE_SetCaption;
 
 	this->free = Audio_DeleteDevice;
 
@@ -372,7 +380,27 @@ static char *get_progname(void)
 #endif
 }
 
-static void stream_drain_complete(pa_stream *s, int success, void *userdata) {
+static void caption_set_complete(pa_context *c, int success, void *userdata)
+{
+	/* no-op. */
+}
+
+static void PULSE_SetCaption(_THIS, const char *str)
+{
+	SDL_free(this->hidden->caption);
+	if ((str == NULL) || (*str == '\0')) {
+		str = get_progname();  /* set a default so SOMETHING shows up. */
+	}
+	this->hidden->caption = SDL_strdup(str);
+	if (context != NULL) {
+		SDL_NAME(pa_context_set_name)(context, this->hidden->caption,
+		                              caption_set_complete, 0);
+	}
+}
+
+static void stream_drain_complete(pa_stream *s, int success, void *userdata)
+{
+	/* no-op. */
 }
 
 static void PULSE_WaitDone(_THIS)
@@ -418,6 +446,7 @@ static int PULSE_OpenAudio(_THIS, SDL_AudioSpec *spec)
 		}
 		if ( paspec.format != PA_SAMPLE_INVALID )
 			break;
+		test_format = SDL_NextAudioFormat();
 	}
 	if (paspec.format == PA_SAMPLE_INVALID ) {
 		SDL_SetError("Couldn't find any suitable audio formats");
@@ -469,8 +498,15 @@ static int PULSE_OpenAudio(_THIS, SDL_AudioSpec *spec)
 		return(-1);
 	}
 
+	if (this->hidden->caption == NULL) {
+		char *title = NULL;
+		SDL_WM_GetCaption(&title, NULL);
+		PULSE_SetCaption(this, title);
+	}
+
 	mainloop_api = SDL_NAME(pa_mainloop_get_api)(mainloop);
-	if (!(context = SDL_NAME(pa_context_new)(mainloop_api, get_progname()))) {
+	if (!(context = SDL_NAME(pa_context_new)(mainloop_api,
+	                                         this->hidden->caption))) {
 		PULSE_CloseAudio(this);
 		SDL_SetError("pa_context_new() failed");
 		return(-1);
@@ -479,7 +515,7 @@ static int PULSE_OpenAudio(_THIS, SDL_AudioSpec *spec)
 	/* Connect to the PulseAudio server */
 	if (SDL_NAME(pa_context_connect)(context, NULL, 0, NULL) < 0) {
 		PULSE_CloseAudio(this);
-	        SDL_SetError("Could not setup connection to PulseAudio");
+		SDL_SetError("Could not setup connection to PulseAudio");
 		return(-1);
 	}
 

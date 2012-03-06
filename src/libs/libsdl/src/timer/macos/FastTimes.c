@@ -8,7 +8,7 @@
 /* Updated 5/03/00    - Added copyright and placed into PD. No code changes   */
 /* Updated 8/01/00    - Made "Carbon-compatible" by replacing LMGetTicks()    */
 
-/* This file is Copyright (C) Matt Slot, 1999-2000. It is hereby placed into 
+/* This file is Copyright (C) Matt Slot, 1999-2012. It is hereby placed into 
    the public domain. The author makes no warranty as to fitness or stability */
 
 #include <Gestalt.h>

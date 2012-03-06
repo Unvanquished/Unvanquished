@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -176,6 +176,7 @@ int WIN_GL_SetupWindow(_THIS)
 	int i;
 	int iAttribs[64];
 	int *iAttr;
+	int *iAccelAttr = NULL;
 	float fAttribs[1] = { 0 };
 	const GLubyte *(WINAPI *glGetStringFunc)(GLenum);
 	const char *wglext;
@@ -220,15 +221,25 @@ int WIN_GL_SetupWindow(_THIS)
 
 	*iAttr++ = WGL_DRAW_TO_WINDOW_ARB;
 	*iAttr++ = GL_TRUE;
-	*iAttr++ = WGL_ACCELERATION_ARB;
-	*iAttr++ = WGL_FULL_ACCELERATION_ARB;
 	*iAttr++ = WGL_RED_BITS_ARB;
 	*iAttr++ = this->gl_config.red_size;
 	*iAttr++ = WGL_GREEN_BITS_ARB;
 	*iAttr++ = this->gl_config.green_size;
 	*iAttr++ = WGL_BLUE_BITS_ARB;
 	*iAttr++ = this->gl_config.blue_size;
-	
+
+	/* We always choose either FULL or NO accel on Windows, because of flaky
+	   drivers. If the app didn't specify, we use FULL, because that's
+	   probably what they wanted (and if you didn't care and got FULL, that's
+	   a perfectly valid result in any case. */
+	*iAttr++ = WGL_ACCELERATION_ARB;
+	iAccelAttr = iAttr;
+	if (this->gl_config.accelerated) {
+		*iAttr++ = WGL_FULL_ACCELERATION_ARB;
+	} else {
+		*iAttr++ = WGL_NO_ACCELERATION_ARB;
+	}
+
 	if ( this->gl_config.alpha_size ) {
 		*iAttr++ = WGL_ALPHA_BITS_ARB;
 		*iAttr++ = this->gl_config.alpha_size;
@@ -280,11 +291,6 @@ int WIN_GL_SetupWindow(_THIS)
 		*iAttr++ = this->gl_config.multisamplesamples;
 	}
 
-	if ( this->gl_config.accelerated >= 0 ) {
-		*iAttr++ = WGL_ACCELERATION_ARB;
-		*iAttr++ = (this->gl_config.accelerated ? WGL_GENERIC_ACCELERATION_ARB : WGL_NO_ACCELERATION_ARB);
-	}
-
 	*iAttr = 0;
 
 	for ( i=0; ; ++i ) {
@@ -297,6 +303,12 @@ int WIN_GL_SetupWindow(_THIS)
 
 		/* Choose and set the closest available pixel format */
 		pixel_format = ChoosePixelFormatARB(this, iAttribs, fAttribs);
+		/* App said "don't care about accel" and FULL accel failed. Try NO. */
+		if ( ( !pixel_format ) && ( this->gl_config.accelerated < 0 ) ) {
+			*iAccelAttr = WGL_NO_ACCELERATION_ARB;
+			pixel_format = ChoosePixelFormatARB(this, iAttribs, fAttribs);
+			*iAccelAttr = WGL_FULL_ACCELERATION_ARB;  /* if we try again. */
+		}
 		if ( !pixel_format ) {
 			pixel_format = ChoosePixelFormat(GL_hdc, &GL_pfd);
 		}

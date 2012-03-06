@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -34,6 +34,7 @@
 #include "../SDL_cursor_c.h"
 #include "SDL_gemmouse_c.h"
 #include "SDL_gemvideo.h"
+#include "../ataricommon/SDL_xbiosevents_c.h"
 
 /* Defines */
 

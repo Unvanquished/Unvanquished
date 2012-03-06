@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -111,7 +111,7 @@ void SDL_MixAudio (Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
 	switch (format) {
 
 		case AUDIO_U8: {
-#if defined(__GNUC__) && defined(__M68000__) && defined(SDL_ASSEMBLY_ROUTINES)
+#if defined(__GNUC__) && (defined(__m68k__) && !defined(__mcoldfire__)) && defined(SDL_ASSEMBLY_ROUTINES)
 			SDL_MixAudio_m68k_U8((char*)dst,(char*)src,(unsigned long)len,(long)volume,(char *)mix8);
 #else
 			Uint8 src_sample;
@@ -144,7 +144,7 @@ void SDL_MixAudio (Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
 #endif
 #endif
 
-#if defined(__GNUC__) && defined(__M68000__) && defined(SDL_ASSEMBLY_ROUTINES)
+#if defined(__GNUC__) && (defined(__m68k__) && !defined(__mcoldfire__)) && defined(SDL_ASSEMBLY_ROUTINES)
 			SDL_MixAudio_m68k_S8((char*)dst,(char*)src,(unsigned long)len,(long)volume);
 #else
 			{
@@ -193,7 +193,7 @@ void SDL_MixAudio (Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
 #endif
 #endif
 
-#if defined(__GNUC__) && defined(__M68000__) && defined(SDL_ASSEMBLY_ROUTINES)
+#if defined(__GNUC__) && (defined(__m68k__) && !defined(__mcoldfire__)) && defined(SDL_ASSEMBLY_ROUTINES)
 			SDL_MixAudio_m68k_S16LSB((short*)dst,(short*)src,(unsigned long)len,(long)volume);
 #else
 			{
@@ -226,7 +226,7 @@ void SDL_MixAudio (Uint8 *dst, const Uint8 *src, Uint32 len, int volume)
 		break;
 
 		case AUDIO_S16MSB: {
-#if defined(__GNUC__) && defined(__M68000__) && defined(SDL_ASSEMBLY_ROUTINES)
+#if defined(__GNUC__) && (defined(__m68k__) && !defined(__mcoldfire__)) && defined(SDL_ASSEMBLY_ROUTINES)
 			SDL_MixAudio_m68k_S16MSB((short*)dst,(short*)src,(unsigned long)len,(long)volume);
 #else
 			Sint16 src1, src2;

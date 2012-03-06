@@ -1,6 +1,6 @@
 
 Project files for embedded Visual C++ 3.0, 4.0 and 
-Visual Studio 2005 can be found in VisualCE.zip
+Visual Studio 2005 can be found in the VisualCE directory.
 
 SDL supports GAPI and WinDib output for Windows CE.
 

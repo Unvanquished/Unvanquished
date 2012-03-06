@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,15 +33,6 @@
 #include "SDL_xbios.h"
 
 /*--- Defines ---*/
-
-/* Cookies */
-#ifndef C__MIL
-#define C__MIL 0x5F4D494CL
-#endif
-
-#ifndef C__VDI
-#define C__VDI 0x5F564449L
-#endif
 
 /* Vsetscreen() parameters */
 #define MI_MAGIC	0x4D49 
@@ -100,7 +91,7 @@ typedef struct _scrblk {
 	unsigned long	blk_w;		/* width */ 
 	unsigned long	blk_h;		/* height */ 
 	unsigned long	blk_wrap;	/* width in bytes */ 
-} __attribute__((packed)) SCRMEMBLK;
+} SCRMEMBLK;
 
 typedef struct screeninfo { 
 	unsigned long	size;		/* Size of structure */ 
@@ -129,7 +120,7 @@ typedef struct screeninfo {
 	unsigned long	pagemem;	/* needed memory for one page */ 
 	unsigned long	max_x;		/* max. possible width */ 
 	unsigned long	max_y;		/* max. possible heigth */ 
-} __attribute__((packed)) SCREENINFO; 
+} SCREENINFO; 
 
 /*--- Functions prototypes ---*/
 

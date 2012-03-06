@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -82,42 +82,6 @@ enum {
 #define MASTERPREDIV_TT		320
 #define MASTERPREDIV_FALCON	256
 #define MASTERPREDIV_MILAN	256
-
-/* MFP 68901 interrupt sources */
-#ifndef MFP_PARALLEL
-enum {
-	MFP_PARALLEL=0,
-	MFP_DCD,
-	MFP_CTS,
-	MFP_BITBLT,
-	MFP_TIMERD,
-	MFP_BAUDRATE=MFP_TIMERD,
-	MFP_TIMERC,
-	MFP_200HZ=MFP_TIMERC,
-	MFP_ACIA,
-	MFP_DISK,
-	MFP_TIMERB,
-	MFP_HBLANK=MFP_TIMERB,
-	MFP_TERR,
-	MFP_TBE,
-	MFP_RERR,
-	MFP_RBF,
-	MFP_TIMERA,
-	MFP_DMASOUND=MFP_TIMERA,
-	MFP_RING,
-	MFP_MONODETECT
-};
-#endif
-
-/* Xbtimer() timers */
-#ifndef XB_TIMERA
-enum {
-	XB_TIMERA=0,
-	XB_TIMERB,
-	XB_TIMERC,
-	XB_TIMERD
-};
-#endif
 
 /* Variables */
 extern SDL_AudioDevice *SDL_MintAudio_device;

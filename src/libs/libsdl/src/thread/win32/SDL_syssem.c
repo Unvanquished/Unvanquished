@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -38,7 +38,7 @@ struct SDL_semaphore {
 #else
 	HANDLE id;
 #endif
-	Uint32 volatile count;
+	volatile LONG count;
 };
 
 
@@ -56,7 +56,7 @@ SDL_sem *SDL_CreateSemaphore(Uint32 initial_value)
 #else
 		sem->id = CreateSemaphore(NULL, initial_value, 32*1024, NULL);
 #endif
-		sem->count = initial_value;
+		sem->count = (LONG) initial_value;
 		if ( ! sem->id ) {
 			SDL_SetError("Couldn't create semaphore");
 			SDL_free(sem);
@@ -136,7 +136,7 @@ Uint32 SDL_SemValue(SDL_sem *sem)
 		SDL_SetError("Passed a NULL sem");
 		return 0;
 	}
-	return sem->count;
+	return (Uint32) sem->count;
 }
 
 int SDL_SemPost(SDL_sem *sem)

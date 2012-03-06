@@ -244,15 +244,15 @@ mmx_ok(void)
 		printf(#op "_i2r(" #imm "=0x%08x%08x, ", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
 		__asm__ __volatile__ ("movq %%" #reg ", %0" \
-				      : "=X" (mmx_trace) \
+				      : "=y" (mmx_trace) \
 				      : /* nothing */ ); \
 		printf(#reg "=0x%08x%08x) => ", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
 		__asm__ __volatile__ (#op " %0, %%" #reg \
 				      : /* nothing */ \
-				      : "X" (imm)); \
+				      : "y" (imm)); \
 		__asm__ __volatile__ ("movq %%" #reg ", %0" \
-				      : "=X" (mmx_trace) \
+				      : "=y" (mmx_trace) \
 				      : /* nothing */ ); \
 		printf(#reg "=0x%08x%08x\n", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
@@ -265,15 +265,15 @@ mmx_ok(void)
 		printf(#op "_m2r(" #mem "=0x%08x%08x, ", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
 		__asm__ __volatile__ ("movq %%" #reg ", %0" \
-				      : "=X" (mmx_trace) \
+				      : "=y" (mmx_trace) \
 				      : /* nothing */ ); \
 		printf(#reg "=0x%08x%08x) => ", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
 		__asm__ __volatile__ (#op " %0, %%" #reg \
 				      : /* nothing */ \
-				      : "X" (mem)); \
+				      : "y" (mem)); \
 		__asm__ __volatile__ ("movq %%" #reg ", %0" \
-				      : "=X" (mmx_trace) \
+				      : "=y" (mmx_trace) \
 				      : /* nothing */ ); \
 		printf(#reg "=0x%08x%08x\n", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
@@ -283,7 +283,7 @@ mmx_ok(void)
 	{ \
 		mmx_t mmx_trace; \
 		__asm__ __volatile__ ("movq %%" #reg ", %0" \
-				      : "=X" (mmx_trace) \
+				      : "=y" (mmx_trace) \
 				      : /* nothing */ ); \
 		printf(#op "_r2m(" #reg "=0x%08x%08x, ", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
@@ -291,7 +291,7 @@ mmx_ok(void)
 		printf(#mem "=0x%08x%08x) => ", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
 		__asm__ __volatile__ (#op " %%" #reg ", %0" \
-				      : "=X" (mem) \
+				      : "=y" (mem) \
 				      : /* nothing */ ); \
 		mmx_trace = (mem); \
 		printf(#mem "=0x%08x%08x\n", \
@@ -302,18 +302,18 @@ mmx_ok(void)
 	{ \
 		mmx_t mmx_trace; \
 		__asm__ __volatile__ ("movq %%" #regs ", %0" \
-				      : "=X" (mmx_trace) \
+				      : "=y" (mmx_trace) \
 				      : /* nothing */ ); \
 		printf(#op "_r2r(" #regs "=0x%08x%08x, ", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
 		__asm__ __volatile__ ("movq %%" #regd ", %0" \
-				      : "=X" (mmx_trace) \
+				      : "=y" (mmx_trace) \
 				      : /* nothing */ ); \
 		printf(#regd "=0x%08x%08x) => ", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
 		__asm__ __volatile__ (#op " %" #regs ", %" #regd); \
 		__asm__ __volatile__ ("movq %%" #regd ", %0" \
-				      : "=X" (mmx_trace) \
+				      : "=y" (mmx_trace) \
 				      : /* nothing */ ); \
 		printf(#regd "=0x%08x%08x\n", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
@@ -331,8 +331,8 @@ mmx_ok(void)
 		__asm__ __volatile__ ("movq %0, %%mm0\n\t" \
 				      #op " %1, %%mm0\n\t" \
 				      "movq %%mm0, %0" \
-				      : "=X" (memd) \
-				      : "X" (mems)); \
+				      : "=y" (memd) \
+				      : "y" (mems)); \
 		mmx_trace = (memd); \
 		printf(#memd "=0x%08x%08x\n", \
 			mmx_trace.d[1], mmx_trace.d[0]); \
@@ -346,7 +346,7 @@ mmx_ok(void)
 #define	mmx_i2r(op, imm, reg) \
 	__asm__ __volatile__ (#op " %0, %%" #reg \
 			      : /* nothing */ \
-			      : "X" (imm) )
+			      : "y" (imm) )
 
 #define	mmx_m2r(op, mem, reg) \
 	__asm__ __volatile__ (#op " %0, %%" #reg \
@@ -355,7 +355,7 @@ mmx_ok(void)
 
 #define	mmx_r2m(op, reg, mem) \
 	__asm__ __volatile__ (#op " %%" #reg ", %0" \
-			      : "=X" (mem) \
+			      : "=m" (mem) \
 			      : /* nothing */ )
 
 #define	mmx_r2r(op, regs, regd) \
@@ -365,8 +365,8 @@ mmx_ok(void)
 	__asm__ __volatile__ ("movq %0, %%mm0\n\t" \
 			      #op " %1, %%mm0\n\t" \
 			      "movq %%mm0, %0" \
-			      : "=X" (memd) \
-			      : "X" (mems))
+			      : "=y" (memd) \
+			      : "y" (mems))
 
 #endif
 
@@ -381,8 +381,8 @@ mmx_ok(void)
 #define	movq(vars, vard) \
 	__asm__ __volatile__ ("movq %1, %%mm0\n\t" \
 			      "movq %%mm0, %0" \
-			      : "=X" (vard) \
-			      : "X" (vars))
+			      : "=y" (vard) \
+			      : "y" (vars))
 
 
 /*	1x32 MOVe Doubleword
@@ -396,8 +396,8 @@ mmx_ok(void)
 #define	movd(vars, vard) \
 	__asm__ __volatile__ ("movd %1, %%mm0\n\t" \
 			      "movd %%mm0, %0" \
-			      : "=X" (vard) \
-			      : "X" (vars))
+			      : "=y" (vard) \
+			      : "y" (vars))
 
 
 /*	2x32, 4x16, and 8x8 Parallel ADDs

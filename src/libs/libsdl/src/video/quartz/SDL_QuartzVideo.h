@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009  Sam Lantinga
+    Copyright (C) 1997-2012  Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -86,14 +86,14 @@ CGLContextObj QZ_GetCGLContextObj(NSOpenGLContext *nsctx);
 
 /* Main driver structure to store required state information */
 typedef struct SDL_PrivateVideoData {
-
+    BOOL               use_new_mode_apis;  /* 1 == >= 10.6 APIs available */
     BOOL               allow_screensaver;  /* 0 == disable screensaver */
     CGDirectDisplayID  display;            /* 0 == main display (only support single display) */
-    CFDictionaryRef    mode;               /* current mode of the display */
-    CFDictionaryRef    save_mode;          /* original mode of the display */
-    CFArrayRef         mode_list;          /* list of available fullscreen modes */
+    const void         *mode;              /* current mode of the display */
+    const void         *save_mode;         /* original mode of the display */
     CGDirectPaletteRef palette;            /* palette of an 8-bit display */
     NSOpenGLContext    *gl_context;        /* OpenGL rendering context */
+    NSGraphicsContext  *nsgfx_context;     /* Cocoa graphics context */
     Uint32             width, height, bpp; /* frequently used data about the display */
     Uint32             flags;              /* flags for current mode, for teardown purposes */
     Uint32             video_set;          /* boolean; indicates if video was set correctly */
@@ -129,10 +129,11 @@ typedef struct SDL_PrivateVideoData {
 #define display_id (this->hidden->display)
 #define mode (this->hidden->mode)
 #define save_mode (this->hidden->save_mode)
+#define use_new_mode_apis (this->hidden->use_new_mode_apis)
 #define allow_screensaver (this->hidden->allow_screensaver)
-#define mode_list (this->hidden->mode_list)
 #define palette (this->hidden->palette)
 #define gl_context (this->hidden->gl_context)
+#define nsgfx_context (this->hidden->nsgfx_context)
 #define device_width (this->hidden->width)
 #define device_height (this->hidden->height)
 #define device_bpp (this->hidden->bpp)

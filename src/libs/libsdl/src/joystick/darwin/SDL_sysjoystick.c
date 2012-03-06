@@ -1,6 +1,6 @@
 /*
 	SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -39,11 +39,7 @@
 /* The header was moved here in Mac OS X 10.1 */
 #include <Kernel/IOKit/hidsystem/IOHIDUsageTables.h>
 #endif
-#if MAC_OS_X_VERSION_MIN_REQUIRED == 1030
-#include "10.3.9-FIX/IOHIDLib.h"
-#else
 #include <IOKit/hid/IOHIDLib.h>
-#endif
 #include <IOKit/hid/IOHIDKeys.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <Carbon/Carbon.h> /* for NewPtrClear, DisposePtr */

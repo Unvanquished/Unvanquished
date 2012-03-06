@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,10 +36,6 @@
 
 /*--- Defines ---*/
 
-#ifndef C_CNTS
-#define C_CNTS 0x434e5453L
-#endif
-
 #define CSCREEN_ENERGYSTAR		(1<<9)
 #define CSCREEN_SAVER			(1<<10)
 #define CSCREEN_VIRTUAL			(1<<11)
@@ -64,7 +60,7 @@ typedef struct {
 	unsigned short	hsize;	/* screen height (mm) */
 	unsigned short	dummy[21];
 	unsigned char	name[32];	/* videomode name */
-} __attribute__((packed)) centscreen_mode_t;
+} centscreen_mode_t;
 
 /*--- Functions prototypes ---*/
 

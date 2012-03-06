@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -57,6 +57,12 @@ static SDLKey ODD_keymap[256];
 static SDLKey MISC_keymap[256];
 SDLKey X11_TranslateKeycode(Display *display, KeyCode kc);
 
+/*
+ Pending resize target for ConfigureNotify (so outdated events don't
+ cause inappropriate resize events)
+*/
+int X11_PendingConfigureNotifyWidth = -1;
+int X11_PendingConfigureNotifyHeight = -1;
 
 #ifdef X_HAVE_UTF8_STRING
 Uint32 Utf8ToUcs4(const Uint8 *utf8)
@@ -441,8 +447,10 @@ printf("Mode: NotifyGrab\n");
 if ( xevent.xcrossing.mode == NotifyUngrab )
 printf("Mode: NotifyUngrab\n");
 #endif
-		if ( xevent.xcrossing.detail != NotifyInferior ) {
-			if ( this->input_grab == SDL_GRAB_OFF ) {
+		if ( (xevent.xcrossing.mode != NotifyGrab) &&
+		     (xevent.xcrossing.mode != NotifyUngrab) &&
+		     (xevent.xcrossing.detail != NotifyInferior) ) {
+               		if ( this->input_grab == SDL_GRAB_OFF ) {
 				posted = SDL_PrivateAppActive(0, SDL_APPMOUSEFOCUS);
 			} else {
 				posted = SDL_PrivateMouseMotion(0, 0,
@@ -817,6 +825,16 @@ printf("MapNotify!\n");
 #ifdef DEBUG_XEVENTS
 printf("ConfigureNotify! (resize: %dx%d)\n", xevent.xconfigure.width, xevent.xconfigure.height);
 #endif
+		if ((X11_PendingConfigureNotifyWidth != -1) &&
+		    (X11_PendingConfigureNotifyHeight != -1)) {
+		    if ((xevent.xconfigure.width != X11_PendingConfigureNotifyWidth) &&
+			(xevent.xconfigure.height != X11_PendingConfigureNotifyHeight)) {
+			    /* Event is from before the resize, so ignore. */
+			    break;
+		    }
+		    X11_PendingConfigureNotifyWidth = -1;
+		    X11_PendingConfigureNotifyHeight = -1;
+		}
 		if ( SDL_VideoSurface ) {
 		    if ((xevent.xconfigure.width != SDL_VideoSurface->w) ||
 		        (xevent.xconfigure.height != SDL_VideoSurface->h)) {

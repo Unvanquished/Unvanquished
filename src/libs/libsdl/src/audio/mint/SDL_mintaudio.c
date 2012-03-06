@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -144,7 +144,7 @@ int SDL_MintAudio_SearchFrequency(_THIS, int desired_freq)
 /* Check if FPU is present */
 void SDL_MintAudio_CheckFpu(void)
 {
-	unsigned long cookie_fpu;
+	long cookie_fpu;
 
 	SDL_MintAudio_hasfpu = 0;
 	if (Getcookie(C__FPU, &cookie_fpu) != C_FOUND) {

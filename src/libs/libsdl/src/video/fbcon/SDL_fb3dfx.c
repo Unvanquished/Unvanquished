@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -96,7 +96,6 @@ static int HWAccelBlit(SDL_Surface *src, SDL_Rect *srcrect,
 	SDL_VideoDevice *this = current_video;
 	int bpp;
 	Uint32 src_format;
-	Uint32 dst_format;
 	Uint32 src_base;
 	Uint32 dst_base;
 	int srcX, srcY;
@@ -118,7 +117,6 @@ static int HWAccelBlit(SDL_Surface *src, SDL_Rect *srcrect,
 	src_format = src->pitch | ((bpp+((bpp==8) ? 0 : 8)) << 13);
 	dst_base = ((char *)dst->pixels - mapped_mem);
 	bpp = dst->format->BitsPerPixel;
-	dst_format = dst->pitch | ((bpp+((bpp==8) ? 0 : 8)) << 13);
 
 	srcX = srcrect->x;
 	srcY = srcrect->y;

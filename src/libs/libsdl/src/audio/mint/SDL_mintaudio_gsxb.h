@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -31,10 +31,6 @@
 #define _SDL_mintaudio_gsxb_h
 
 #include <mint/falcon.h>	/* for trap_14_xxx macros */
-
-/* GSXB Cookie */
-
-#define C_GSXB		0x47535842L
 
 /* Bit 5 in cookie _SND */
 

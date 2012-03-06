@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -32,11 +32,6 @@
 
 #include "SDL_xbios.h"
 #include "SDL_xbios_milan.h"
-
-#ifndef Validmode
-#define Validmode(mode)	\
-	(short)trap_14_ww((short)0x5f,(short)(mode))
-#endif
 
 #define NUM_PREDEFINED_MODES 7
 

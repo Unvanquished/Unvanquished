@@ -74,9 +74,6 @@
 #define DIRECTSOUND_VERSION 0x0500
 #define DIRECTINPUT_VERSION 0x0500
 
-#ifdef __GNUC__
-#define NONAMELESSUNION
-#endif
 #include <ddraw.h>
 #include <dsound.h>
 #include <dinput.h>

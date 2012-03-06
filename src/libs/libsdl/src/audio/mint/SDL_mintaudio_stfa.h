@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,8 +31,6 @@
 #define _SDL_mintaudio_stfa_h
 
 /*--- Defines ---*/
-
-#define C_STFA	0x53544641L	/* Sound treiber für atari (seb/The removers) */
 
 #define STFA_PLAY_ENABLE	(1<<0)
 #define STFA_PLAY_DISABLE	(0<<0)
@@ -88,13 +86,12 @@ typedef struct {
 	void *play_stop;
 	unsigned short frequency;
 	void *set_frequency;
-	
 	unsigned short frequency_threshold;
 	unsigned short *custom_freq_table;
 	unsigned short stfa_on_off;
 	void *new_drivers_list;
 	unsigned long old_bit_2_of_cookie_snd;
 	void (*stfa_it)(void);
-} cookie_stfa_t __attribute__((packed));
+} cookie_stfa_t;
 
 #endif /* _SDL_mintaudio_stfa_h */

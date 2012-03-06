@@ -960,8 +960,8 @@ DGAMapPhysical(
 #else
 	return False;
 #endif
-    pMap->virtual = mmap(NULL, size, PROT_READ | PROT_WRITE, 
-			MAP_FILE | MAP_SHARED, pMap->fd, (off_t)base);
+    pMap->virtual = mmap(NULL, size, PROT_READ | PROT_WRITE,
+			MAP_FILE | MAP_SHARED, pMap->fd, (off_t)((size_t)base));
     if (pMap->virtual == (void *)-1)
 	return False;
 #endif

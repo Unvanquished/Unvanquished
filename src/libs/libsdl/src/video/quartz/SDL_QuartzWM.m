@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009  Sam Lantinga
+    Copyright (C) 1997-2012  Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -47,18 +47,18 @@ WMcursor*    QZ_CreateWMCursor   (_THIS, Uint8 *data, Uint8 *mask,
     /* Allocate the cursor memory */
     cursor = (WMcursor *)SDL_malloc(sizeof(WMcursor));
     if (cursor == NULL) goto outOfMemory;
-    
+
     /* create the image representation and get the pointers to its storage */
-    imgrep = [ [ [ NSBitmapImageRep alloc ] initWithBitmapDataPlanes: NULL pixelsWide: w pixelsHigh: h bitsPerSample: 1 samplesPerPixel: 2 hasAlpha: YES isPlanar: YES colorSpaceName: NSDeviceBlackColorSpace bytesPerRow: (w+7)/8 bitsPerPixel: 0 ] autorelease ];
+    imgrep = [ [ [ NSBitmapImageRep alloc ] initWithBitmapDataPlanes: NULL pixelsWide: w pixelsHigh: h bitsPerSample: 1 samplesPerPixel: 2 hasAlpha: YES isPlanar: YES colorSpaceName: NSDeviceWhiteColorSpace bytesPerRow: (w+7)/8 bitsPerPixel: 0 ] autorelease ];
     if (imgrep == nil) goto outOfMemory;
     [ imgrep getBitmapDataPlanes: planes ];
     
     /* copy data and mask, extending the mask to all black pixels because the inversion effect doesn't work with Cocoa's alpha-blended cursors */
     for (i = 0; i < (w+7)/8*h; i++) {
-        planes[0][i] = data[i];
+        planes[0][i] = data[i] ^ 0xFF;
         planes[1][i] = mask[i] | data[i];
     }
-    
+
     /* create image and cursor */
     img = [ [ [ NSImage alloc ] initWithSize: NSMakeSize(w, h) ] autorelease ];
     if (img == nil) goto outOfMemory;
@@ -124,16 +124,14 @@ int QZ_ShowWMCursor (_THIS, WMcursor *cursor) {
         QZ_UpdateCursor(this);
     }
     else {
-        if (qz_window ==nil || (mode_flags & SDL_FULLSCREEN)) {
-            [ cursor->nscursor set ];
-        }
-        else {
+        if ( qz_window != nil && !(mode_flags & SDL_FULLSCREEN) ) {
             [ qz_window invalidateCursorRectsForView: [ qz_window contentView ] ];
         }
         if ( ! cursor_should_be_visible ) {
             cursor_should_be_visible = YES;
             QZ_ChangeGrabState (this, QZ_SHOWCURSOR);
         }
+        [ cursor->nscursor performSelectorOnMainThread:@selector(set) withObject:nil waitUntilDone:NO ];
         QZ_UpdateCursor(this);
     }
 
@@ -151,14 +149,16 @@ int QZ_ShowWMCursor (_THIS, WMcursor *cursor) {
 /* Convert Cocoa screen coordinate to Cocoa window coordinate */
 void QZ_PrivateGlobalToLocal (_THIS, NSPoint *p) {
 
-    *p = [ qz_window convertScreenToBase:*p ];
+	if ( ! CGDisplayIsCaptured (display_id) )
+		*p = [ qz_window convertScreenToBase:*p ];
 }
 
 
 /* Convert Cocoa window coordinate to Cocoa screen coordinate */
 void QZ_PrivateLocalToGlobal (_THIS, NSPoint *p) {
 
-    *p = [ qz_window convertBaseToScreen:*p ];
+	if ( ! CGDisplayIsCaptured (display_id) )
+		*p = [ qz_window convertBaseToScreen:*p ];
 }
 
 /* Convert SDL coordinate to Cocoa coordinate */
@@ -230,7 +230,6 @@ void QZ_PrivateCGToSDL (_THIS, NSPoint *p) {
 #endif /* Dead code */
 
 void  QZ_PrivateWarpCursor (_THIS, int x, int y) {
-    
     NSPoint p;
     CGPoint cgp;
     
@@ -238,8 +237,12 @@ void  QZ_PrivateWarpCursor (_THIS, int x, int y) {
     cgp = QZ_PrivateSDLToCG (this, &p);
     
     /* this is the magic call that fixes cursor "freezing" after warp */
-    CGSetLocalEventsSuppressionInterval (0.0);
+    CGAssociateMouseAndMouseCursorPosition (0);
     CGWarpMouseCursorPosition (cgp);
+    if (grab_state != QZ_INVISIBLE_GRAB) { /* can't leave it disassociated? */
+        CGAssociateMouseAndMouseCursorPosition (1);
+    }
+    SDL_PrivateAppActive (QZ_IsMouseInWindow (this), SDL_APPMOUSEFOCUS);
 }
 
 void QZ_WarpWMCursor (_THIS, Uint16 x, Uint16 y) {
@@ -434,6 +437,7 @@ SDL_GrabMode QZ_GrabInput (_THIS, SDL_GrabMode grab_mode) {
             QZ_ChangeGrabState (this, QZ_DISABLE_GRAB);
         
         current_grab_mode = doGrab ? SDL_GRAB_ON : SDL_GRAB_OFF;
+        QZ_UpdateCursor(this);
     }
 
     return current_grab_mode;

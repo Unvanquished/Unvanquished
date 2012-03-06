@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -1034,7 +1034,8 @@ SDL_Surface *DX5_SetVideoMode(_THIS, SDL_Surface *current,
 				int width, int height, int bpp, Uint32 flags)
 {
 	SDL_Surface *video;
-	int prev_w, prev_h;
+	int prev_w = -1;
+	int prev_h = -1;
 	HRESULT result;
 	DWORD sharemode;
 	DWORD style;

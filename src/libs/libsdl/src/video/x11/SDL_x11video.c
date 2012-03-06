@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -417,6 +417,22 @@ static void create_aux_windows(_THIS)
 	}
     }
 
+	{
+		pid_t pid = getpid();
+		char hostname[256];
+
+		if (pid > 0 && gethostname(hostname, sizeof(hostname)) > -1) {
+			Atom _NET_WM_PID = XInternAtom(SDL_Display, "_NET_WM_PID", False);
+			Atom WM_CLIENT_MACHINE = XInternAtom(SDL_Display, "WM_CLIENT_MACHINE", False);
+			
+			hostname[sizeof(hostname)-1] = '\0';
+			XChangeProperty(SDL_Display, WMwindow, _NET_WM_PID, XA_CARDINAL, 32,
+					PropModeReplace, (unsigned char *)&pid, 1);
+			XChangeProperty(SDL_Display, WMwindow, WM_CLIENT_MACHINE, XA_STRING, 8,
+					PropModeReplace, (unsigned char *)hostname, SDL_strlen(hostname));
+		}
+	}
+
 	/* Setup the communication with the IM server */
 	/* create_aux_windows may be called several times against the same
 	   Display.  We should reuse the SDL_IM if one has been opened for
@@ -786,6 +802,11 @@ static void X11_SetSizeHints(_THIS, int w, int h, Uint32 flags)
 		/* Center it, if desired */
 		if ( X11_WindowPosition(this, &hints->x, &hints->y, w, h) ) {
 			hints->flags |= USPosition;
+
+			/* Hints must be set before moving the window, otherwise an
+			   unwanted ConfigureNotify event will be issued */
+			XSetWMNormalHints(SDL_Display, WMwindow, hints);
+
 			XMoveWindow(SDL_Display, WMwindow, hints->x, hints->y);
 
 			/* Flush the resize event so we don't catch it later */
@@ -877,8 +898,7 @@ static void X11_SetSizeHints(_THIS, int w, int h, Uint32 flags)
 		}
 		/* Finally unset the transient hints if necessary */
 		if ( ! set ) {
-			/* NOTE: Does this work? */
-			XSetTransientForHint(SDL_Display, WMwindow, None);
+			XDeleteProperty(SDL_Display, WMwindow, XA_WM_TRANSIENT_FOR);
 		}
 	}
 }
@@ -1157,6 +1177,8 @@ SDL_Surface *X11_SetVideoMode(_THIS, SDL_Surface *current,
 			current = NULL;
 			goto done;
 		}
+		X11_PendingConfigureNotifyWidth = width;
+		X11_PendingConfigureNotifyHeight = height;
 	} else {
 		if (X11_CreateWindow(this,current,width,height,bpp,flags) < 0) {
 			current = NULL;

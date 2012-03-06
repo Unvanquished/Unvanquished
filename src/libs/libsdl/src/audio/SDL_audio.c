@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -36,14 +36,14 @@
 
 /* Available audio drivers */
 static AudioBootStrap *bootstrap[] = {
-#if SDL_AUDIO_DRIVER_BSD
-	&BSD_AUDIO_bootstrap,
-#endif
 #if SDL_AUDIO_DRIVER_PULSE
 	&PULSE_bootstrap,
 #endif
 #if SDL_AUDIO_DRIVER_ALSA
 	&ALSA_bootstrap,
+#endif
+#if SDL_AUDIO_DRIVER_BSD
+	&BSD_AUDIO_bootstrap,
 #endif
 #if SDL_AUDIO_DRIVER_OSS
 	&DSP_bootstrap,
@@ -693,3 +693,11 @@ void SDL_CalculateAudioSpec(SDL_AudioSpec *spec)
 	spec->size *= spec->channels;
 	spec->size *= spec->samples;
 }
+
+void SDL_Audio_SetCaption(const char *caption)
+{
+	if ((current_audio) && (current_audio->SetCaption)) {
+		current_audio->SetCaption(current_audio, caption);
+	}
+}
+

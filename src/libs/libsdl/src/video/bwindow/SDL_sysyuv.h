@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -62,7 +62,7 @@ struct private_yuvhwdata
 };
 
 extern BBitmap * BE_GetOverlayBitmap(BRect bounds, color_space cs);
-SDL_Overlay* BE_CreateYUVOverlay(_THIS, int width, int height, Uint32 format, SDL_Surface* display);
+extern SDL_Overlay* BE_CreateYUVOverlay(_THIS, int width, int height, Uint32 format, SDL_Surface* display);
 extern int BE_LockYUVOverlay(_THIS, SDL_Overlay* overlay);
 extern void BE_UnlockYUVOverlay(_THIS, SDL_Overlay* overlay);
 extern int BE_DisplayYUVOverlay(_THIS, SDL_Overlay* overlay, SDL_Rect* src, SDL_Rect* dst);

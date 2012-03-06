@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -1910,7 +1910,16 @@ static void FB_VideoQuit(_THIS)
 
 	if ( this->screen ) {
 		/* Clear screen and tell SDL not to free the pixels */
-		if ( this->screen->pixels && FB_InGraphicsMode(this) ) {
+
+		const char *dontClearPixels = SDL_getenv("SDL_FBCON_DONT_CLEAR");
+
+		/* If the framebuffer is not to be cleared, make sure that we won't
+		 * display the previous frame when disabling double buffering. */
+		if ( dontClearPixels && flip_page == 0 ) {
+			SDL_memcpy(flip_address[0], flip_address[1], this->screen->pitch * this->screen->h);
+		}
+
+		if ( !dontClearPixels && this->screen->pixels && FB_InGraphicsMode(this) ) {
 #if defined(__powerpc__) || defined(__ia64__)	/* SIGBUS when using SDL_memset() ?? */
 			Uint8 *rowp = (Uint8 *)this->screen->pixels;
 			int left = this->screen->pitch*this->screen->h;

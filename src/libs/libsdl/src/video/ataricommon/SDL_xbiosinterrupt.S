@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -53,7 +53,12 @@ _SDL_AtariXbios_Install:
 	clrl	oldmousevector
 	movel	sp@(8),d0
 	beqs	no_new_mouse_vector
+#if defined(__mcoldfire__)
+	movel	a0@(16),d1
+	movel	d1,oldmousevector
+#else
 	movel	a0@(16),oldmousevector
+#endif
 	movel	d0,a0@(16)
 no_new_mouse_vector:
 
@@ -62,7 +67,12 @@ no_new_mouse_vector:
 	clrl	oldjoystickvector
 	movel	sp@(12),d0
 	beqs	no_new_joystick_vector
+#if defined(__mcoldfire__)
+	movel	a0@(24),d1
+	movel	d1,oldjoystickvector
+#else
 	movel	a0@(24),oldjoystickvector
+#endif
 	movel	d0,a0@(24)
 no_new_joystick_vector:
 
@@ -109,22 +119,43 @@ no_restore_joystick:
 	.ascii "LSDL"
 	.comm	oldmousevector,4*1
 _SDL_AtariXbios_MouseVector:
+#if defined(__mcoldfire__)
+	lea	sp@(-8),sp
+	moveml	d0-d1,sp@
+#else
 	movel	d0,sp@-
+#endif
 
 	/* Mouse buttons */
 	moveb	(a0),d0
+#if defined(__mcoldfire__)
+	andl	#3,d0
+#else
 	andw	#3,d0
+#endif
 	movew	d0,_SDL_AtariXbios_mouseb
 
 	/* X movement */
 	moveb	a0@(1),d0
 	extw	d0
+#if defined(__mcoldfire__)
+	movew	_SDL_AtariXbios_mousex,d1
+	addl	d1,d0
+	movew	d0,_SDL_AtariXbios_mousex
+#else
 	addw	d0,_SDL_AtariXbios_mousex
+#endif
 
 	/* Y movement */
 	moveb	a0@(2),d0
 	extw	d0
+#if defined(__mcoldfire__)
+	movew	_SDL_AtariXbios_mousey,d1
+	addl	d1,d0
+	movew	d0,_SDL_AtariXbios_mousey
+#else
 	addw	d0,_SDL_AtariXbios_mousey
+#endif
 
 	/* Lock mouse position ? */
 	tstw	_SDL_AtariXbios_mouselock
@@ -134,7 +165,12 @@ _SDL_AtariXbios_MouseVector:
 no_mouse_lock:
 
 	/* Jump through old vector */
+#if defined(__mcoldfire__)
+	moveml	sp@,d0-d1
+	lea	sp@(8),sp
+#else
 	movel	sp@+,d0
+#endif
 
 	movel	oldmousevector,sp@-
 	rts
@@ -158,7 +194,11 @@ _SDL_AtariXbios_JoystickVector:
 
 	/* New joystick state */
 	moveb	a0@(2),d0
+#if defined(__mcoldfire__)
+	andl	#0x8f,d0
+#else
 	andw	#0x8f,d0
+#endif
 	movew	d0,_SDL_AtariXbios_joystick
 
 	/* Jump through old vector */

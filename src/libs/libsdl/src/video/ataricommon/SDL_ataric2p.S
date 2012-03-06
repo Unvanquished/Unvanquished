@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -38,6 +38,7 @@
 
 	.text
 _SDL_Atari_C2pConvert8:
+#if !defined(__mcoldfire__)
 	movel	sp@(4),c2p_source
 	movel	sp@(8),c2p_dest
 	movel	sp@(12),c2p_width
@@ -283,11 +284,13 @@ SDL_Atari_C2p8_nodblline:
 	bne		SDL_Atari_C2p8_rowloop	
 
 	moveml	sp@+,d2-d7/a2-a6
+#endif
 	rts
 
 /* ------------	Conversion C2P, 4 bits ------------ */
 
 _SDL_Atari_C2pConvert4:
+#if !defined(__mcoldfire__)
 	movel	sp@(4),c2p_source
 	movel	sp@(8),c2p_dest
 	movel	sp@(12),c2p_width
@@ -302,7 +305,7 @@ _SDL_Atari_C2pConvert4:
 	movel	c2p_dest,a1
 	lea	_SDL_Atari_table_c2p,a2
 	movel	#0x00070001,d3
-#if defined(__M68020__)
+#if defined(__mc68020__)
 	moveq	#0,d0
 #endif
 	
@@ -323,7 +326,7 @@ c2p4_bclx:
 	moveq	#0,d1
 	moveq	#7,d5
 c2p4_bcl07:
-#if defined(__M68020__)
+#if defined(__mc68020__)
 	moveb	a0@+,d0
 	lea		a2@(0,d0:w:4),a3
 #else
@@ -345,7 +348,7 @@ c2p4_bcl07:
 	moveq	#0,d1
 	moveq	#7,d5
 c2p4_bcl815:
-#if defined(__M68020__)
+#if defined(__mc68020__)
 	moveb	a0@+,d0
 	lea		a2@(0,d0:w:4),a3
 #else
@@ -393,11 +396,13 @@ c2p4_nodblligne:
 	dbra	d7,c2p4_bcly
 
 	moveml	sp@+,d2-d7/a2-a6
+#endif
 	rts
 
 /* ------------	Conversion of a light palette in 4 bits ------------ */
 
 _SDL_Atari_C2pConvert4_pal:
+#if !defined(__mcoldfire__)
 	/* a0 is a 256-word light palette */
 	movel	sp@(4),a0
 
@@ -423,7 +428,7 @@ c2p_pal_initbyte:
 	dbra	d3,c2p_pal_initbcl
 
 	moveml	sp@+,d2-d3
-
+#endif
 	rts
 
 /* ------------	Buffers ------------ */

@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -48,7 +48,7 @@
 SDL_Surface * SDL_LoadBMP_RW (SDL_RWops *src, int freesrc)
 {
 	SDL_bool was_error;
-	long fp_offset;
+	long fp_offset = 0;
 	int bmpPitch;
 	int i, pad;
 	SDL_Surface *surface;
@@ -132,6 +132,17 @@ SDL_Surface * SDL_LoadBMP_RW (SDL_RWops *src, int freesrc)
 		biClrUsed	= SDL_ReadLE32(src);
 		biClrImportant	= SDL_ReadLE32(src);
 	}
+
+	/* stop some compiler warnings. */
+	(void) bfSize;
+	(void) bfReserved1;
+	(void) bfReserved2;
+	(void) biPlanes;
+	(void) biSizeImage;
+	(void) biXPelsPerMeter;
+	(void) biYPelsPerMeter;
+	(void) biClrImportant;
+
 	if (biHeight < 0) {
 		topDown = SDL_TRUE;
 		biHeight = -biHeight;

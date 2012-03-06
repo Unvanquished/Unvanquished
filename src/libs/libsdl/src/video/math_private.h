@@ -11,7 +11,7 @@
 
 /*
  * from: @(#)fdlibm.h 5.1 93/09/24
- * $Id: math_private.h 1969 2006-02-24 09:57:14Z slouken $
+ * $Id$
  */
 
 #ifndef _MATH_PRIVATE_H_

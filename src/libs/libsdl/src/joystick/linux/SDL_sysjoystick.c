@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -417,21 +417,31 @@ int SDL_SYS_JoystickInit(void)
 
 	numjoysticks = 0;
 
-	/* First see if the user specified a joystick to use */
+	/* First see if the user specified one or more joysticks to use */
 	if ( SDL_getenv("SDL_JOYSTICK_DEVICE") != NULL ) {
-		SDL_strlcpy(path, SDL_getenv("SDL_JOYSTICK_DEVICE"), sizeof(path));
-		if ( stat(path, &sb) == 0 ) {
-			fd = open(path, O_RDONLY, 0);
-			if ( fd >= 0 ) {
-				/* Assume the user knows what they're doing. */
-				SDL_joylist[numjoysticks].fname = SDL_strdup(path);
-				if ( SDL_joylist[numjoysticks].fname ) {
-					dev_nums[numjoysticks] = sb.st_rdev;
-					++numjoysticks;
-				}
-				close(fd);
+		char *envcopy, *envpath, *delim;
+		envcopy = SDL_strdup(SDL_getenv("SDL_JOYSTICK_DEVICE"));
+		envpath = envcopy;
+		while ( envpath != NULL ) {
+			delim = SDL_strchr(envpath, ':');
+			if ( delim != NULL ) {
+				*delim++ = '\0';
 			}
+			if ( stat(envpath, &sb) == 0 ) {
+				fd = open(envpath, O_RDONLY, 0);
+				if ( fd >= 0 ) {
+					/* Assume the user knows what they're doing. */
+					SDL_joylist[numjoysticks].fname = SDL_strdup(envpath);
+					if ( SDL_joylist[numjoysticks].fname ) {
+						dev_nums[numjoysticks] = sb.st_rdev;
+						++numjoysticks;
+					}
+					close(fd);
+				}
+			}
+			envpath = delim;
 		}
+		SDL_free(envcopy);
 	}
 
 	for ( i=0; i<SDL_arraysize(joydev_pattern); ++i ) {
@@ -571,7 +581,7 @@ static SDL_bool JS_ConfigJoystick(SDL_Joystick *joystick, int fd)
 {
 	SDL_bool handled;
 	unsigned char n;
-	int old_axes, tmp_naxes, tmp_nhats, tmp_nballs;
+	int tmp_naxes, tmp_nhats, tmp_nballs;
 	const char *name;
 	char *env, env_name[128];
 	int i;
@@ -591,7 +601,6 @@ static SDL_bool JS_ConfigJoystick(SDL_Joystick *joystick, int fd)
 	}
 
 	name = SDL_SYS_JoystickName(joystick->index);
-	old_axes = joystick->naxes;
 
 	/* Generic analog joystick support */
 	if ( SDL_strstr(name, "Analog") == name && SDL_strstr(name, "-hat") ) {
@@ -693,33 +702,33 @@ static SDL_bool EV_ConfigJoystick(SDL_Joystick *joystick, int fd)
 				++joystick->nbuttons;
 			}
 		}
-		for ( i=0; i<ABS_MAX; ++i ) {
+		for ( i=0; i<ABS_MISC; ++i ) {
 			/* Skip hats */
 			if ( i == ABS_HAT0X ) {
 				i = ABS_HAT3Y;
 				continue;
 			}
 			if ( test_bit(i, absbit) ) {
-				int values[5];
+				struct input_absinfo absinfo;
 
-				if ( ioctl(fd, EVIOCGABS(i), values) < 0 )
+				if ( ioctl(fd, EVIOCGABS(i), &absinfo) < 0 )
 					continue;
 #ifdef DEBUG_INPUT_EVENTS
 				printf("Joystick has absolute axis: %x\n", i);
 				printf("Values = { %d, %d, %d, %d, %d }\n",
-					values[0], values[1],
-					values[2], values[3], values[4]);
+					absinfo.value, absinfo.minimum,
+					absinfo.maximum, absinfo.fuzz, absinfo.flat);
 #endif /* DEBUG_INPUT_EVENTS */
 				joystick->hwdata->abs_map[i] = joystick->naxes;
-				if ( values[1] == values[2] ) {
+				if ( absinfo.minimum == absinfo.maximum ) {
 				    joystick->hwdata->abs_correct[i].used = 0;
 				} else {
 				    joystick->hwdata->abs_correct[i].used = 1;
 				    joystick->hwdata->abs_correct[i].coef[0] =
-					(values[2] + values[1]) / 2 - values[4];
+					(absinfo.maximum + absinfo.minimum) / 2 - absinfo.flat;
 				    joystick->hwdata->abs_correct[i].coef[1] =
-					(values[2] + values[1]) / 2 + values[4];
-				    t = ((values[2] - values[1]) / 2 - 2 * values[4]);
+					(absinfo.maximum + absinfo.minimum) / 2 + absinfo.flat;
+				    t = ((absinfo.maximum - absinfo.minimum) / 2 - 2 * absinfo.flat);
 				    if ( t != 0 ) {
 					joystick->hwdata->abs_correct[i].coef[2] = (1 << 29) / t;
 				    } else {
@@ -926,6 +935,10 @@ void HandleHat(SDL_Joystick *stick, Uint8 hat, int axis, int value)
 	SDL_logical_joydecl(SDL_Joystick *logicaljoy = NULL);
 	SDL_logical_joydecl(struct joystick_logical_mapping* hats = NULL);
 
+	if (stick->nhats <= hat) {
+		return;  /* whoops, that shouldn't happen! */
+	}
+
 	the_hat = &stick->hwdata->hats[hat];
 	if ( value < 0 ) {
 		value = 0;
@@ -964,6 +977,9 @@ void HandleHat(SDL_Joystick *stick, Uint8 hat, int axis, int value)
 static __inline__
 void HandleBall(SDL_Joystick *stick, Uint8 ball, int axis, int value)
 {
+	if ((stick->nballs <= ball) || (axis >= 2)) {
+		return;  /* whoops, that shouldn't happen! */
+	}
 	stick->hwdata->balls[ball].axis[axis] += value;
 }
 

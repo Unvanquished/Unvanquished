@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -57,7 +57,6 @@ static void BE_UnlockHWSurface(_THIS, SDL_Surface *surface);
 static void BE_FreeHWSurface(_THIS, SDL_Surface *surface);
 
 static int BE_ToggleFullScreen(_THIS, int fullscreen);
-static SDL_Overlay *BE_CreateYUVOverlay(_THIS, int width, int height, Uint32 format, SDL_Surface *display);
 
 /* OpenGL functions */
 #if SDL_VIDEO_OPENGL

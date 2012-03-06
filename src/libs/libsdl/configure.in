@@ -17,9 +17,9 @@ dnl Set various version strings - taken gratefully from the GTk sources
 #
 SDL_MAJOR_VERSION=1
 SDL_MINOR_VERSION=2
-SDL_MICRO_VERSION=14
-SDL_INTERFACE_AGE=3
-SDL_BINARY_AGE=14
+SDL_MICRO_VERSION=15
+SDL_INTERFACE_AGE=4
+SDL_BINARY_AGE=15
 SDL_VERSION=$SDL_MAJOR_VERSION.$SDL_MINOR_VERSION.$SDL_MICRO_VERSION
 
 AC_SUBST(SDL_MAJOR_VERSION)
@@ -59,12 +59,7 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-if test -z "$host_alias"; then
-    hostaliaswindres=
-else
-    hostaliaswindres="$host_alias-windres"
-fi
-AC_CHECK_PROGS(WINDRES, [windres $hostaliaswindres $host_os-windres])
+AC_CHECK_TOOL(WINDRES, [windres], [:])
 
 dnl Set up the compiler and linker flags
 INCLUDE="-I$srcdir/include"
@@ -185,6 +180,8 @@ if test x$enable_libc = xyes; then
 
     AC_CHECK_LIB(iconv, libiconv_open, [EXTRA_LDFLAGS="$EXTRA_LDFLAGS -liconv"])
     AC_CHECK_LIB(m, pow, [EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lm"])
+
+    AC_CHECK_MEMBER(struct sigaction.sa_sigaction,[AC_DEFINE(HAVE_SA_SIGACTION)], ,[#include <signal.h>])
 fi
 
 if test x$have_inttypes != xyes; then
@@ -733,28 +730,21 @@ AC_HELP_STRING([--enable-nasm], [use nasm assembly blitters on x86 [[default=yes
               win32)
                   NASMFLAGS="-f win32"
                   ;;
-              openbsd)
-                  NASMFLAGS="-f aoutb"
-                  ;;
               macosx)
                   NASMFLAGS="-f macho"
                   ;;
               *)
-                  NASMFLAGS="-f elf"
+                  NASMFLAGS="-f elf32"
                   ;;
             esac
         fi
 
-        AC_PATH_PROG(NASM, yasm)
-        echo "%ifidn __OUTPUT_FORMAT__,elf" > unquoted-sections
+        AC_PATH_PROG(NASM, nasm)
+        echo "%ifidn __OUTPUT_FORMAT__,elf32" > unquoted-sections
         echo "section .note.GNU-stack noalloc noexec nowrite progbits" >> unquoted-sections
         echo "%endif" >> unquoted-sections
         CompileNASM unquoted-sections || NASM=""
 
-        if test "x$NASM" = x -o "x$NASM" = x'"$NASM"'; then
-            $as_unset ac_cv_path_NASM
-            AC_PATH_PROG(NASM, nasm)
-        fi
         if test "x$NASM" != x -a "x$NASM" != x'"$NASM"'; then
             AC_DEFINE(SDL_HERMES_BLITTERS)
             SOURCES="$SOURCES $srcdir/src/hermes/*.asm"
@@ -882,6 +872,41 @@ CheckVisibilityHidden()
 
     if test x$have_gcc_fvisibility = xyes; then
         EXTRA_CFLAGS="$EXTRA_CFLAGS $visibility_CFLAGS"
+    fi
+}
+
+dnl See if GCC's -Wall is supported.
+CheckWarnAll()
+{
+    AC_MSG_CHECKING(for GCC -Wall option)
+    have_gcc_Wall=no
+
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$save_CFLAGS -Wall"
+    AC_TRY_COMPILE([
+    int x = 0;
+    ],[
+    ],[
+    have_gcc_Wall=yes
+    ])
+    AC_MSG_RESULT($have_gcc_Wall)
+    CFLAGS="$save_CFLAGS"
+
+    if test x$have_gcc_Wall = xyes; then
+        EXTRA_CFLAGS="$EXTRA_CFLAGS -Wall"
+
+        dnl Haiku headers use multicharacter constants all over the place. Ignore these warnings when using -Wall.
+        AC_MSG_CHECKING(for necessary GCC -Wno-multichar option)
+        need_gcc_Wno_multichar=no
+        case "$host" in
+            *-*-beos* | *-*-haiku*)
+                need_gcc_Wno_multichar=yes
+                ;;
+        esac
+        AC_MSG_RESULT($need_gcc_Wno_multichar)
+        if test x$need_gcc_Wno_multichar = xyes; then
+            EXTRA_CFLAGS="$EXTRA_CFLAGS -Wno-multichar"
+        fi
     fi
 }
 
@@ -1317,6 +1342,7 @@ CheckPS3()
     AC_TRY_COMPILE([
       #include <linux/fb.h>
       #include <asm/ps3fb.h>
+      #include <libspe2.h>
     ],[
     ],[
       video_ps3=yes
@@ -1530,6 +1556,7 @@ AC_HELP_STRING([--enable-video-qtopia], [use Qtopia video driver [[default=no]]]
             AC_DEFINE(SDL_VIDEO_DRIVER_QTOPIA)
             SOURCES="$SOURCES $srcdir/src/video/qtopia/*.cc"
             SDLMAIN_SOURCES="$srcdir/src/main/qtopia/*.cc"
+            SDLMAIN_LDFLAGS="-static"
             EXTRA_CFLAGS="$EXTRA_CFLAGS $QTOPIA_FLAGS"
             SDL_CFLAGS="$SDL_CFLAGS -DQWS -Dmain=SDL_main"
             SDL_LIBS="-lSDLmain $SDL_LIBS -L${QPEDIR}/lib -L${QTDIR}/lib/ -lqpe -lqte"
@@ -1966,6 +1993,20 @@ AC_HELP_STRING([--enable-pthread-sem], [use pthread semaphores [[default=yes]]])
                 have_pthread_sem=yes
                 ])
                 AC_MSG_RESULT($have_pthread_sem)
+            fi
+            if test x$have_pthread_sem = xyes; then
+                AC_MSG_CHECKING(for sem_timedwait)
+                have_sem_timedwait=no
+                AC_TRY_LINK([
+                  #include <pthread.h>
+                  #include <semaphore.h>
+                ],[
+                  sem_timedwait(NULL, NULL);
+                ],[
+                have_sem_timedwait=yes
+                AC_DEFINE(HAVE_SEM_TIMEDWAIT)
+                ])
+                AC_MSG_RESULT($have_sem_timedwait)
             fi
 
             # Restore the compiler flags and libraries
@@ -2522,6 +2563,7 @@ case "$host" in
         # The Win32 platform requires special setup
         SOURCES="$SOURCES $srcdir/src/main/win32/*.rc"
         SDLMAIN_SOURCES="$srcdir/src/main/win32/*.c"
+        SDLMAIN_LDFLAGS="-static"
         SDL_CFLAGS="$SDL_CFLAGS -Dmain=SDL_main"
         SDL_LIBS="-lmingw32 -lSDLmain $SDL_LIBS -mwindows"
         ;;
@@ -2565,6 +2607,7 @@ case "$host" in
         EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lcoredll -lcommctrl"
         # The Win32 platform requires special setup
         SDLMAIN_SOURCES="$srcdir/src/main/win32/*.c"
+        SDLMAIN_LDFLAGS="-static"
         SDL_CFLAGS="$SDL_CFLAGS -Dmain=SDL_main -D_WIN32_WCE=0x420"
         SDL_LIBS="-lSDLmain $SDL_LIBS"
         ;;
@@ -2696,6 +2739,7 @@ case "$host" in
         fi
         # The Mac OS X platform requires special setup.
         SDLMAIN_SOURCES="$srcdir/src/main/macosx/*.m"
+        SDLMAIN_LDFLAGS="-static"
         EXTRA_CFLAGS="$EXTRA_CFLAGS -fpascal-strings"
         SDL_LIBS="-lSDLmain $SDL_LIBS"
         if test x$enable_video_cocoa = xyes; then
@@ -2794,6 +2838,9 @@ case "$host" in
         ;;
 esac
 
+dnl Do this on all platforms, after everything else.
+CheckWarnAll
+
 # Verify that we have all the platform specific files we need
 
 if test x$enable_joystick = xyes; then
@@ -2829,6 +2876,7 @@ if test x$have_loadso != xyes; then
 fi
 if test x$SDLMAIN_SOURCES = x; then
     SDLMAIN_SOURCES="$srcdir/src/main/dummy/*.c"
+    SDLMAIN_LDFLAGS="-static"
 fi
 
 OBJECTS=`echo $SOURCES | sed 's,[[^ ]]*/\([[^ ]]*\)\.asm,$(objects)/\1.lo,g'`
@@ -2836,11 +2884,11 @@ OBJECTS=`echo $OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.cc,$(objects)/\1.lo,g'`
 OBJECTS=`echo $OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.m,$(objects)/\1.lo,g'`
 OBJECTS=`echo $OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.c,$(objects)/\1.lo,g'`
 OBJECTS=`echo $OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.S,$(objects)/\1.lo,g'`
-OBJECTS=`echo $OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.rc,$(objects)/\1.o,g'`
+OBJECTS=`echo $OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.rc,$(objects)/\1.lo,g'`
 
-SDLMAIN_OBJECTS=`echo $SDLMAIN_SOURCES | sed 's,[[^ ]]*/\([[^ ]]*\)\.cc,$(objects)/\1.o,g'`
-SDLMAIN_OBJECTS=`echo $SDLMAIN_OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.m,$(objects)/\1.o,g'`
-SDLMAIN_OBJECTS=`echo $SDLMAIN_OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.c,$(objects)/\1.o,g'`
+SDLMAIN_OBJECTS=`echo $SDLMAIN_SOURCES | sed 's,[[^ ]]*/\([[^ ]]*\)\.cc,$(objects)/\1.lo,g'`
+SDLMAIN_OBJECTS=`echo $SDLMAIN_OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.m,$(objects)/\1.lo,g'`
+SDLMAIN_OBJECTS=`echo $SDLMAIN_OBJECTS | sed 's,[[^ ]]*/\([[^ ]]*\)\.c,$(objects)/\1.lo,g'`
 
 # Set runtime shared library paths as needed
 
@@ -2902,6 +2950,7 @@ AC_SUBST(SOURCES)
 AC_SUBST(OBJECTS)
 AC_SUBST(SDLMAIN_SOURCES)
 AC_SUBST(SDLMAIN_OBJECTS)
+AC_SUBST(SDLMAIN_LDFLAGS)
 AC_SUBST(BUILD_CFLAGS)
 AC_SUBST(EXTRA_CFLAGS)
 AC_SUBST(BUILD_LDFLAGS)

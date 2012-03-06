@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -41,6 +41,7 @@
 #include "../SDL_sysaudio.h"
 
 #include "../../video/ataricommon/SDL_atarimxalloc_c.h"
+#include "../../video/ataricommon/SDL_atarisuper.h"
 
 #include "SDL_mintaudio.h"
 #include "SDL_mintaudio_dma8.h"
@@ -62,7 +63,7 @@
 
 /*--- Static variables ---*/
 
-static unsigned long cookie_snd;
+static long cookie_snd;
 
 /*--- Audio driver functions ---*/
 
@@ -79,7 +80,7 @@ static void Mint_InitAudio(_THIS, SDL_AudioSpec *spec);
 
 static int Audio_Available(void)
 {
-	unsigned long dummy;
+/*	unsigned long dummy;*/
 	const char *envr = SDL_getenv("SDL_AUDIODRIVER");
 
 	/*SDL_MintAudio_mint_present = (Getcookie(C_MiNT, &dummy) == C_FOUND);*/
@@ -104,7 +105,7 @@ static int Audio_Available(void)
 	/* Check if we have 16 bits audio */
 	if ((cookie_snd & SND_16BIT)==0) {
 		DEBUG_PRINT((DEBUG_NAME "no 16 bits sound\n"));
-	    return(0);
+		return(0);
 	}
 
 	/* Check if audio is lockable */
@@ -258,21 +259,17 @@ static void Devconnect2(int src, int dst, int sclk, int pre)
 	DMAAUDIO_IO.dest_ctrl = dest_ctrl;
 	DMAAUDIO_IO.sync_div = sync_div;
 
-	Super(oldstack);
+	SuperToUser(oldstack);
 }
 
 static void Mint_CheckExternalClock(_THIS)
 {
 #define SIZE_BUF_CLOCK_MEASURE (44100/10)
 
-	unsigned long cookie_snd;
 	char *buffer;
 	int i, j;
 
 	/* DSP present with its GPIO port ? */
-	if (Getcookie(C__SND, &cookie_snd) == C_NOTFOUND) {
-		return;
-	}
 	if ((cookie_snd & SND_DSP)==0) {
 		return;
 	}
@@ -334,7 +331,6 @@ static void Mint_CheckExternalClock(_THIS)
 static int Mint_CheckAudio(_THIS, SDL_AudioSpec *spec)
 {
 	int i;
-	Uint32 extclock;
 
 	DEBUG_PRINT((DEBUG_NAME "asked: %d bits, ",spec->format & 0x00ff));
 	DEBUG_PRINT(("signed=%d, ", ((spec->format & 0x8000)!=0)));
@@ -389,7 +385,7 @@ static int Mint_CheckAudio(_THIS, SDL_AudioSpec *spec)
 
 static void Mint_InitAudio(_THIS, SDL_AudioSpec *spec)
 {
-	int channels_mode, dmaclock, prediv;
+	int channels_mode, prediv;
 	void *buffer;
 
 	/* Stop currently playing sound */
@@ -417,7 +413,6 @@ static void Mint_InitAudio(_THIS, SDL_AudioSpec *spec)
 		DEBUG_PRINT((DEBUG_NAME "Setmode() failed\n"));
 	}
 
-	dmaclock = MINTAUDIO_frequencies[MINTAUDIO_numfreq].masterclock;
 	prediv = MINTAUDIO_frequencies[MINTAUDIO_numfreq].predivisor;
 	if (MINTAUDIO_frequencies[MINTAUDIO_numfreq].gpio_bits != -1) {
 		Gpio(GPIO_SET,7);		/* DSP port gpio outputs */

@@ -108,14 +108,7 @@ These instructions are for using Apple's Xcode IDE to build SDL applications.
 
 - First steps
 
-The first thing to do is to unpack the Xcode.tar.gz archive in the
-top level SDL directory (where the Xcode.tar.gz archive resides).
-Because Stuffit Expander will unpack the archive into a subdirectory,
-you should unpack the archive manually from the command line:
-	cd [path_to_SDL_source]
-	tar zxf Xcode.tar.gz
-This will create a new folder called Xcode, which you can browse
-normally from the Finder.
+The Xcode project files are in the "Xcode" directory.
 
 - Building the Framework
 

@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -168,6 +168,12 @@ SDL_X11_MODULE(IO_32BIT)
 SDL_X11_SYM(int,_XData32,(Display *dpy,register long *data,unsigned len),(dpy,data,len),return)
 SDL_X11_SYM(void,_XRead32,(Display *dpy,register long *data,long len),(dpy,data,len),)
 #endif
+
+/*
+ * libX11 1.4.99.1 added _XGetRequest, and macros use it behind the scenes.
+ */
+SDL_X11_MODULE(XGETREQUEST)
+SDL_X11_SYM(void *,_XGetRequest,(Display* a,CARD8 b,size_t c),(a,b,c),return)
 
 /*
  * These only show up on some variants of Unix.

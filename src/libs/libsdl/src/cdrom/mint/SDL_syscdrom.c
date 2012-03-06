@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,8 +31,8 @@
 
 #include <errno.h>
 
-#include <cdromio.h>
-#include <metados.h>
+#include <mint/cdromio.h>
+#include <mint/metados.h>
 
 #include "SDL_cdrom.h"
 #include "../SDL_syscdrom.h"
@@ -49,7 +49,7 @@
 #define MAX_DRIVES	32	
 
 typedef struct {
-	unsigned char device[3];	/* Physical device letter + ':' + '\0' */
+	char		device[3];	/* Physical device letter + ':' + '\0' */
 	metaopen_t	metaopen;		/* Infos on opened drive */
 } metados_drive_t;
 

@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -78,6 +78,15 @@ void DirectFB_PumpEvents (_THIS)
                 posted += SDL_PrivateMouseMotion(0, 1, evt.axisrel, 0);
               else if (evt.axis == DIAI_Y)
                 posted += SDL_PrivateMouseMotion(0, 1, 0, evt.axisrel);
+            }
+          else if (evt.flags & DIEF_AXISABS)
+            {
+              static int last_x, last_y;
+              if (evt.axis == DIAI_X)
+                last_x = evt.axisabs;
+              else if (evt.axis == DIAI_Y)
+                last_y = evt.axisabs;
+              posted += SDL_PrivateMouseMotion(0, 0, last_x, last_y);
             }
           break;
         default:

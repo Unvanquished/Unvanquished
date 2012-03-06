@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -32,8 +32,9 @@
 
 #if SDL_ASSEMBLY_ROUTINES
 #  if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
-#    define MMX_ASMBLIT 1
-#    define GCC_ASMBLIT 1
+     /* forced MMX to 0...it breaks on most compilers now.  --ryan. */
+#    define MMX_ASMBLIT 0
+#    define GCC_ASMBLIT 0
 #  elif defined(_MSC_VER) && defined(_M_IX86)
 #    if (_MSC_VER <= 1200)  
 #      include <malloc.h>   

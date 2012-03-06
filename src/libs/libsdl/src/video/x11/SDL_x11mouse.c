@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -229,6 +229,10 @@ void X11_CheckMouseModeNoLock(_THIS)
 	const Uint8 full_focus = (SDL_APPACTIVE|SDL_APPINPUTFOCUS|SDL_APPMOUSEFOCUS);
 	char *env_override;
 	int enable_relative = 1;
+
+	/* This happens when quiting after an xio error */
+	if ( SDL_Display == NULL )
+	        return;
 
 	/* Allow the user to override the relative mouse mode.
 	   They almost never want to do this, as it seriously affects

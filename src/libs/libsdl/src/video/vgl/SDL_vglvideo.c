@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -61,7 +61,6 @@ static void VGL_FreeHWSurface(_THIS, SDL_Surface *surface);
 
 /* Misc function */
 static VGLMode ** VGLListModes(int depth, int mem_model);
-static void VGLWaitRetrace(void);
 
 /* VGL driver bootstrap functions */
 
@@ -307,7 +306,6 @@ SDL_Rect **VGL_ListModes(_THIS, SDL_PixelFormat *format, Uint32 flags)
 
 /* Various screen update functions available */
 static void VGL_DirectUpdate(_THIS, int numrects, SDL_Rect *rects);
-static void VGL_BankedUpdate(_THIS, int numrects, SDL_Rect *rects);
 
 SDL_Surface *VGL_SetVideoMode(_THIS, SDL_Surface *current,
 			      int width, int height, int bpp, Uint32 flags)
@@ -421,7 +419,6 @@ static void VGL_UnlockHWSurface(_THIS, SDL_Surface *surface)
 
 static int VGL_FlipHWSurface(_THIS, SDL_Surface *surface)
 {
-//	VGLWaitRetrace();
 	if (VGLPanScreen(VGLDisplay, 0, flip_page * surface->h) < 0) {
 		SDL_SetError("VGLPanSreen() failed");
                 return -1;
@@ -434,11 +431,6 @@ static int VGL_FlipHWSurface(_THIS, SDL_Surface *surface)
 }
 
 static void VGL_DirectUpdate(_THIS, int numrects, SDL_Rect *rects)
-{
-	return;
-}
-
-static void VGL_BankedUpdate(_THIS, int numrects, SDL_Rect *rects)
 {
 	return;
 }
@@ -630,11 +622,3 @@ VGLListModes(int depth, int mem_model)
 
   return modes;
 }
-
-static void
-VGLWaitRetrace(void)
-{
-  while (!(inb(0x3DA) & 8));
-  while (inb(0x3DA) & 8);
-}
-

@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -65,6 +65,7 @@ static int (*SDL_NAME(arts_stream_set))(arts_stream_t s, arts_parameter_t param,
 static int (*SDL_NAME(arts_stream_get))(arts_stream_t s, arts_parameter_t param);
 static int (*SDL_NAME(arts_write))(arts_stream_t s, const void *buffer, int count);
 static void (*SDL_NAME(arts_close_stream))(arts_stream_t s);
+static int (*SDL_NAME(arts_suspend))(void);
 static int (*SDL_NAME(arts_suspended))(void);
 static const char *(*SDL_NAME(arts_error_text))(int errorcode);
 
@@ -79,6 +80,7 @@ static struct {
 	{ "arts_stream_get",	(void **)&SDL_NAME(arts_stream_get)	},
 	{ "arts_write",		(void **)&SDL_NAME(arts_write)		},
 	{ "arts_close_stream",	(void **)&SDL_NAME(arts_close_stream)	},
+	{ "arts_suspend",	(void **)&SDL_NAME(arts_suspend)	},
 	{ "arts_suspended",	(void **)&SDL_NAME(arts_suspended)	},
 	{ "arts_error_text",	(void **)&SDL_NAME(arts_error_text)	},
 };
@@ -128,6 +130,18 @@ static int LoadARTSLibrary(void)
 
 /* Audio driver bootstrap functions */
 
+static int ARTS_Suspend(void)
+{
+	const Uint32 abortms = SDL_GetTicks() + 3000; /* give up after 3 secs */
+	while ( (!SDL_NAME(arts_suspended)()) && (SDL_GetTicks() < abortms) ) {
+		if ( SDL_NAME(arts_suspend)() ) {
+			break;
+		}
+	}
+
+	return SDL_NAME(arts_suspended)();
+}
+
 static int Audio_Available(void)
 {
 	int available = 0;
@@ -136,7 +150,7 @@ static int Audio_Available(void)
 		return available;
 	}
 	if ( SDL_NAME(arts_init)() == 0 ) {
-		if ( SDL_NAME(arts_suspended)() ) {
+		if ( ARTS_Suspend() ) {
 			/* Play a stream so aRts doesn't crash */
 			arts_stream_t stream2;
 			stream2=SDL_NAME(arts_play_stream)(44100, 16, 2, "SDL");
@@ -307,7 +321,7 @@ static int ARTS_OpenAudio(_THIS, SDL_AudioSpec *spec)
 		SDL_SetError("Unable to initialize ARTS: %s", SDL_NAME(arts_error_text)(error_code));
 		return(-1);
 	}
-	if ( ! SDL_NAME(arts_suspended)() ) {
+	if ( ! ARTS_Suspend() ) {
 		SDL_SetError("ARTS can not open audio device");
 		return(-1);
 	}

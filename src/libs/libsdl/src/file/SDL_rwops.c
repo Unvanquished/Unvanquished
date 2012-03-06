@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -485,6 +485,7 @@ SDL_RWops *SDL_RWFromFile(const char *file, const char *mode)
 	SDL_RWops *rwops = NULL;
 #ifdef HAVE_STDIO_H
 	FILE *fp = NULL;
+	(void) fp;
 #endif
 	if ( !file || !*file || !mode || !*mode ) {
 		SDL_SetError("SDL_RWFromFile(): No file or no mode specified");

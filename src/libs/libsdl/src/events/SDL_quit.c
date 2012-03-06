@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,27 @@ static void SDL_HandleSIG(int sig)
 /* Public functions */
 int SDL_QuitInit(void)
 {
-#ifdef HAVE_SIGNAL_H
+#ifdef HAVE_SIGACTION
+	struct sigaction action;
+	sigaction(SIGINT, NULL, &action);
+#  ifdef HAVE_SA_SIGACTION
+	if ( action.sa_handler == SIG_DFL && action.sa_sigaction == (void*)SIG_DFL ) {
+#  else
+	if ( action.sa_handler == SIG_DFL ) {
+#  endif
+		action.sa_handler = SDL_HandleSIG;
+		sigaction(SIGINT, &action, NULL);
+	}
+	sigaction(SIGTERM, NULL, &action);
+#  ifdef HAVE_SA_SIGACTION
+	if ( action.sa_handler == SIG_DFL && action.sa_sigaction == (void*)SIG_DFL ) {
+#  else
+	if ( action.sa_handler == SIG_DFL ) {
+#  endif
+		action.sa_handler = SDL_HandleSIG;
+		sigaction(SIGTERM, &action, NULL);
+	}
+#elif HAVE_SIGNAL_H
 	void (*ohandler)(int);
 
 	/* Both SIGINT and SIGTERM are translated into quit interrupts */
@@ -62,7 +82,19 @@ int SDL_QuitInit(void)
 }
 void SDL_QuitQuit(void)
 {
-#ifdef HAVE_SIGNAL_H
+#ifdef HAVE_SIGACTION
+	struct sigaction action;
+	sigaction(SIGINT, NULL, &action);
+	if ( action.sa_handler == SDL_HandleSIG ) {
+		action.sa_handler = SIG_DFL;
+		sigaction(SIGINT, &action, NULL);
+	}
+	sigaction(SIGTERM, NULL, &action);
+	if ( action.sa_handler == SDL_HandleSIG ) {
+		action.sa_handler = SIG_DFL;
+		sigaction(SIGTERM, &action, NULL);
+	}
+#elif HAVE_SIGNAL_H
 	void (*ohandler)(int);
 
 	ohandler = signal(SIGINT, SIG_DFL);

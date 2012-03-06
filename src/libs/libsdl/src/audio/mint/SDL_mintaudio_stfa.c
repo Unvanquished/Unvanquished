@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -38,6 +38,7 @@
 #include "../SDL_sysaudio.h"
 
 #include "../../video/ataricommon/SDL_atarimxalloc_c.h"
+#include "../../video/ataricommon/SDL_atarisuper.h"
 
 #include "SDL_mintaudio.h"
 #include "SDL_mintaudio_stfa.h"
@@ -59,7 +60,7 @@
 
 /*--- Static variables ---*/
 
-static unsigned long cookie_snd, cookie_mch;
+static long cookie_snd, cookie_mch;
 static cookie_stfa_t *cookie_stfa;
 
 static const int freqs[16]={
@@ -84,6 +85,7 @@ static void Mint_InitAudio(_THIS, SDL_AudioSpec *spec);
 
 static int Audio_Available(void)
 {
+	long dummy;
 	const char *envr = SDL_getenv("SDL_AUDIODRIVER");
 
 	/* Check if user asked a different audio driver */
@@ -103,10 +105,11 @@ static int Audio_Available(void)
 	}
 
 	/* Cookie STFA present ? */
-	if (Getcookie(C_STFA, (long *) &cookie_stfa) != C_FOUND) {
+	if (Getcookie(C_STFA, &dummy) != C_FOUND) {
 		DEBUG_PRINT((DEBUG_NAME "no STFA audio\n"));
 		return(0);
 	}
+	cookie_stfa = (cookie_stfa_t *) dummy;
 
 	SDL_MintAudio_stfa = cookie_stfa;
 
@@ -162,7 +165,7 @@ static void Mint_LockAudio(_THIS)
 	/* Stop replay */
 	oldpile=(void *)Super(0);
 	cookie_stfa->sound_enable=STFA_PLAY_DISABLE;
-	Super(oldpile);
+	SuperToUser(oldpile);
 }
 
 static void Mint_UnlockAudio(_THIS)
@@ -172,7 +175,7 @@ static void Mint_UnlockAudio(_THIS)
 	/* Restart replay */
 	oldpile=(void *)Super(0);
 	cookie_stfa->sound_enable=STFA_PLAY_ENABLE|STFA_PLAY_REPEAT;
-	Super(oldpile);
+	SuperToUser(oldpile);
 }
 
 static void Mint_CloseAudio(_THIS)
@@ -182,7 +185,7 @@ static void Mint_CloseAudio(_THIS)
 	/* Stop replay */
 	oldpile=(void *)Super(0);
 	cookie_stfa->sound_enable=STFA_PLAY_DISABLE;
-	Super(oldpile);
+	SuperToUser(oldpile);
 
 	/* Wait if currently playing sound */
 	while (SDL_MintAudio_mutex != 0) {
@@ -281,7 +284,7 @@ static void Mint_InitAudio(_THIS, SDL_AudioSpec *spec)
 	/* Restart replay */
 	cookie_stfa->sound_enable=STFA_PLAY_ENABLE|STFA_PLAY_REPEAT;
 
-	Super(oldpile);
+	SuperToUser(oldpile);
 
 	DEBUG_PRINT((DEBUG_NAME "hardware initialized\n"));
 }

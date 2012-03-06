@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@
 #include "../../events/SDL_events_c.h"
 #include "SDL_gemvideo.h"
 #include "SDL_gemevents_c.h"
+#include "SDL_gemmouse_c.h"
 #include "../ataricommon/SDL_atarikeys.h"	/* for keyboard scancodes */
 #include "../ataricommon/SDL_atarievents_c.h"
 #include "../ataricommon/SDL_xbiosevents_c.h"
@@ -67,25 +68,27 @@ void GEM_InitOSKeymap(_THIS)
 
 void GEM_PumpEvents(_THIS)
 {
-	short mousex, mousey, mouseb, dummy;
-	short kstate, prevkc, prevks;
+	short prevkc, prevks;
+	static short maskmouseb=0;
 	int i;
 	SDL_keysym	keysym;
 
 	SDL_memset(gem_currentkeyboard,0,sizeof(gem_currentkeyboard));
 	prevkc = prevks = 0;
-	
+
 	for (;;)
 	{
 		int quit, resultat, event_mask, mouse_event;
 		short buffer[8], kc;
 		short x2,y2,w2,h2;
+		short mousex, mousey, mouseb, dummy;
+		short kstate;
 
 		quit =
 			mouse_event =
 			x2=y2=w2=h2 = 0;
 
-		event_mask = MU_MESAG|MU_TIMER|MU_KEYBD;
+		event_mask = MU_MESAG|MU_TIMER|MU_KEYBD|MU_BUTTON;
 		if (!GEM_fullscreen && (GEM_handle>=0)) {
 			wind_get (GEM_handle, WF_WORKXYWH, &x2, &y2, &w2, &h2);
 			event_mask |= MU_M1;
@@ -95,12 +98,12 @@ void GEM_PumpEvents(_THIS)
 
 		resultat = evnt_multi(
 			event_mask,
-			0,0,0,
+			0x101,7,maskmouseb,
 			mouse_event,x2,y2,w2,h2,
 			0,0,0,0,0,
 			buffer,
 			10,
-			&dummy,&dummy,&dummy,&kstate,&kc,&dummy
+			&mousex,&mousey,&mouseb,&kstate,&kc,&dummy
 		);
 
 		/* Message event ? */
@@ -127,14 +130,16 @@ void GEM_PumpEvents(_THIS)
 			GEM_CheckMouseMode(this);
 		}
 
+		/* Mouse button event ? */
+		if (resultat & MU_BUTTON) {
+			do_mouse(this, mousex, mousey, mouseb, kstate);
+			maskmouseb = mouseb & 7;
+		}
+
 		/* Timer event ? */
 		if ((resultat & MU_TIMER) || quit)
 			break;
 	}
-
-	/* Update mouse */
-	graf_mkstate(&mousex, &mousey, &mouseb, &kstate);
-	do_mouse(this, mousex, mousey, mouseb, kstate);
 
 	/* Now generate keyboard events */
 	for (i=0; i<ATARIBIOS_MAXKEYS; i++) {
@@ -168,14 +173,14 @@ void GEM_PumpEvents(_THIS)
 
 static int do_messages(_THIS, short *message)
 {
-	int quit, posted, check_mouse_mode;
+	int quit, check_mouse_mode;
 	short x2,y2,w2,h2;
 
 	quit = check_mouse_mode = 0;
 	switch (message[0]) {
 		case WM_CLOSED:
 		case AP_TERM:    
-			posted = SDL_PrivateQuit();
+			SDL_PrivateQuit();
 			quit=1;
 			break;
 		case WM_MOVED:
@@ -342,7 +347,7 @@ static void do_mouse(_THIS, short mx, short my, short mb, short ks)
 	if (prevmouseb!=mb) {
 		int i;
 
-		for (i=0;i<2;i++) {
+		for (i=0;i<3;i++) {
 			int curbutton, prevbutton;
 		
 			curbutton = mb & (1<<i);

@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -59,7 +59,7 @@
 
 /*--- Static variables ---*/
 
-static unsigned long cookie_snd, cookie_gsxb;
+static long cookie_snd, cookie_gsxb;
 
 /*--- Audio driver functions ---*/
 
@@ -199,7 +199,7 @@ static void Mint_CloseAudio(_THIS)
 
 static int Mint_CheckAudio(_THIS, SDL_AudioSpec *spec)
 {
-	long snd_format;
+	long snd_format = 0;
 	int i, resolution, format_signed, format_bigendian;
     Uint16 test_format = SDL_FirstAudioFormat(spec->format);
     int valid_datatype = 0;

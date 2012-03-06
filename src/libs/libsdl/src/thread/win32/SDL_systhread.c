@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -36,12 +36,7 @@
 #include <process.h>
 #endif
 
-#if __GNUC__
-typedef unsigned long (__cdecl *pfnSDL_CurrentBeginThread) (void *, unsigned,
-        unsigned (__stdcall *func)(void *), void *arg, 
-        unsigned, unsigned *threadID);
-typedef void (__cdecl *pfnSDL_CurrentEndThread)(unsigned code);
-#elif defined(__WATCOMC__)
+#if defined(__WATCOMC__)
 /* This is for Watcom targets except OS2 */
 #if __WATCOMC__ < 1240
 #define __watcall
@@ -50,6 +45,11 @@ typedef unsigned long (__watcall *pfnSDL_CurrentBeginThread) (void *, unsigned,
         unsigned (__stdcall *func)(void *), void *arg, 
         unsigned, unsigned *threadID);
 typedef void (__watcall *pfnSDL_CurrentEndThread)(unsigned code);
+#elif (defined(__MINGW32__) && (__GNUC__ < 4))
+typedef unsigned long (__cdecl *pfnSDL_CurrentBeginThread) (void *, unsigned,
+        unsigned (__stdcall *func)(void *), void *arg, 
+        unsigned, unsigned *threadID);
+typedef void (__cdecl *pfnSDL_CurrentEndThread)(unsigned code);
 #else
 typedef uintptr_t (__cdecl *pfnSDL_CurrentBeginThread) (void *, unsigned,
         unsigned (__stdcall *func)(void *), void *arg, 
@@ -65,7 +65,7 @@ typedef struct ThreadStartParms
   pfnSDL_CurrentEndThread pfnCurrentEndThread;
 } tThreadStartParms, *pThreadStartParms;
 
-static unsigned __stdcall RunThread(void *data)
+static DWORD RunThread(void *data)
 {
   pThreadStartParms pThreadParms = (pThreadStartParms)data;
   pfnSDL_CurrentEndThread pfnCurrentEndThread = NULL;
@@ -85,6 +85,16 @@ static unsigned __stdcall RunThread(void *data)
   return(0);
 }
 
+static DWORD WINAPI RunThreadViaCreateThread(LPVOID data)
+{
+  return RunThread(data);
+}
+
+static unsigned __stdcall RunThreadViaBeginThreadEx(void *data)
+{
+  return (unsigned) RunThread(data);
+}
+
 #ifdef SDL_PASSED_BEGINTHREAD_ENDTHREAD
 int SDL_SYS_CreateThread(SDL_Thread *thread, void *args, pfnSDL_CurrentBeginThread pfnBeginThread, pfnSDL_CurrentEndThread pfnEndThread)
 {
@@ -99,7 +109,6 @@ int SDL_SYS_CreateThread(SDL_Thread *thread, void *args)
 	pfnSDL_CurrentEndThread pfnEndThread = _endthreadex;
 #endif
 #endif /* SDL_PASSED_BEGINTHREAD_ENDTHREAD */
-	unsigned threadid;
 	pThreadStartParms pThreadParms = (pThreadStartParms)SDL_malloc(sizeof(tThreadStartParms));
 	if (!pThreadParms) {
 		SDL_OutOfMemory();
@@ -112,10 +121,13 @@ int SDL_SYS_CreateThread(SDL_Thread *thread, void *args)
 	pThreadParms->args = args;
 
 	if (pfnBeginThread) {
-		thread->handle = (SYS_ThreadHandle) pfnBeginThread(NULL, 0, RunThread,
-				pThreadParms, 0, &threadid);
+		unsigned threadid = 0;
+		thread->handle = (SYS_ThreadHandle)
+				((size_t) pfnBeginThread(NULL, 0, RunThreadViaBeginThreadEx,
+										 pThreadParms, 0, &threadid));
 	} else {
-		thread->handle = CreateThread(NULL, 0, RunThread, pThreadParms, 0, &threadid);
+		DWORD threadid = 0;
+		thread->handle = CreateThread(NULL, 0, RunThreadViaCreateThread, pThreadParms, 0, &threadid);
 	}
 	if (thread->handle == NULL) {
 		SDL_SetError("Not enough resources to create thread");

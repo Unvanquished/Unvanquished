@@ -41,13 +41,13 @@ search_deps()
 for src in $SOURCES
 do  echo "Generating dependencies for $src"
     ext=`echo $src | sed 's|.*\.\(.*\)|\1|'`
-    if test x"$ext" = x"rc"; then
-        obj=`echo $src | sed "s|^.*/\([^ ]*\)\..*|\1.o|g"`
-    else
-        obj=`echo $src | sed "s|^.*/\([^ ]*\)\..*|\1.lo|g"`
-    fi
+    obj=`echo $src | sed "s|^.*/\([^ ]*\)\..*|\1.lo|g"`
     echo "\$(objects)/$obj: $src \\" >>${output}.new
-    search_deps $src | sort | uniq >>${output}.new
+
+    # No search to be done with Windows resource files
+    if test x"$ext" != x"rc"; then
+        search_deps $src | sort | uniq >>${output}.new
+    fi
     case $ext in
         c) cat >>${output}.new <<__EOF__
 
@@ -69,7 +69,7 @@ __EOF__
         ;;
         asm) cat >>${output}.new <<__EOF__
 
-	\$(LIBTOOL) --tag=CC --mode=compile \$(auxdir)/strip_fPIC.sh \$(NASM) $src -o \$@
+	\$(LIBTOOL) --tag=CC --mode=compile \$(auxdir)/strip_fPIC.sh \$(NASM) -I\$(srcdir)/src/hermes/ $src -o \$@
 
 __EOF__
         ;;
@@ -81,7 +81,7 @@ __EOF__
         ;;
         rc) cat >>${output}.new <<__EOF__
 
-	\$(WINDRES) $src \$@
+	\$(LIBTOOL)  --tag=RC --mode=compile \$(WINDRES) $src -o \$@
 
 __EOF__
         ;;

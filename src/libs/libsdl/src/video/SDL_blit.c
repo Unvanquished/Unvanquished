@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -214,7 +214,7 @@ static void SDL_BlitCopyOverlap(SDL_BlitInfo *info)
 	dstskip = w+info->d_skip;
 	if ( dst < src ) {
 		while ( h-- ) {
-			SDL_memcpy(dst, src, w);
+			SDL_memmove(dst, src, w);
 			src += srcskip;
 			dst += dstskip;
 		}

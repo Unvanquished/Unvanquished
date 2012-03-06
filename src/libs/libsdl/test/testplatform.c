@@ -21,27 +21,27 @@ int TestTypes(SDL_bool verbose)
 
 	if ( badsize(sizeof(Uint8), 1) ) {
 		if ( verbose )
-			printf("sizeof(Uint8) != 1, instead = %ul\n",
-								sizeof(Uint8));
+			printf("sizeof(Uint8) != 1, instead = %lu\n",
+								(unsigned long) sizeof(Uint8));
 		++error;
 	}
 	if ( badsize(sizeof(Uint16), 2) ) {
 		if ( verbose )
-			printf("sizeof(Uint16) != 2, instead = %ul\n",
-								sizeof(Uint16));
+			printf("sizeof(Uint16) != 2, instead = %lu\n",
+								(unsigned long) sizeof(Uint16));
 		++error;
 	}
 	if ( badsize(sizeof(Uint32), 4) ) {
 		if ( verbose )
-			printf("sizeof(Uint32) != 4, instead = %ul\n",
-								sizeof(Uint32));
+			printf("sizeof(Uint32) != 4, instead = %lu\n",
+								(unsigned long) sizeof(Uint32));
 		++error;
 	}
 #ifdef SDL_HAS_64BIT_TYPE
 	if ( badsize(sizeof(Uint64), 8) ) {
 		if ( verbose )
-			printf("sizeof(Uint64) != 8, instead = %ul\n",
-								sizeof(Uint64));
+			printf("sizeof(Uint64) != 8, instead = %lu\n",
+								(unsigned long) sizeof(Uint64));
 		++error;
 	}
 #else
@@ -113,7 +113,7 @@ int TestEndian(SDL_bool verbose)
 #ifdef _MSC_VER
 		printf("Value 64 = 0x%I64X, swapped = 0x%I64X\n", value64, SDL_Swap64(value64));
 #else
-		printf("Value 64 = 0x%llX, swapped = 0x%llX\n", value64, SDL_Swap64(value64));
+		printf("Value 64 = 0x%llX, swapped = 0x%llX\n", (unsigned long long) value64, (unsigned long long) SDL_Swap64(value64));
 #endif
 	}
 	if ( SDL_Swap64(value64) != swapped64 ) {

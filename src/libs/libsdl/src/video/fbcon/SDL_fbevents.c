@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -359,9 +359,10 @@ static int find_pid(DIR *proc, const char *wanted_name)
 			SDL_snprintf(path, SDL_arraysize(path), "/proc/%s/status", entry->d_name);
 			status=fopen(path, "r");
 			if ( status ) {
+				int matches = 0;
 				name[0] = '\0';
-				fscanf(status, "Name: %s", name);
-				if ( SDL_strcmp(name, wanted_name) == 0 ) {
+				matches = fscanf(status, "Name: %s", name);
+				if ( (matches == 1) && (SDL_strcmp(name, wanted_name) == 0) ) {
 					pid = SDL_atoi(entry->d_name);
 				}
 				fclose(status);
@@ -479,7 +480,9 @@ static int set_imps2_mode(int fd)
 	tv.tv_usec = 0;
 	while ( select(fd+1, &fdset, 0, 0, &tv) > 0 ) {
 		char temp[32];
-		read(fd, temp, sizeof(temp));
+		if (read(fd, temp, sizeof(temp)) <= 0) {
+			break;
+		}
 	}
 
 	return retval;
@@ -508,12 +511,14 @@ static int detect_imps2(int fd)
 		tv.tv_usec = 0;
 		while ( select(fd+1, &fdset, 0, 0, &tv) > 0 ) {
 			char temp[32];
-			read(fd, temp, sizeof(temp));
+			if (read(fd, temp, sizeof(temp)) <= 0) {
+				break;
+			}
 		}
 
-   		/* Query for the type of mouse protocol */
-   		if ( write(fd, &query_ps2, sizeof (query_ps2)) == sizeof (query_ps2)) {
-   			Uint8 ch = 0;
+		/* Query for the type of mouse protocol */
+		if ( write(fd, &query_ps2, sizeof (query_ps2)) == sizeof (query_ps2)) {
+			Uint8 ch = 0;
 
 			/* Get the mouse protocol response */
 			do {
@@ -770,9 +775,7 @@ static void handle_mouse(_THIS)
 	/* Figure out the mouse packet size */
 	switch (mouse_drv) {
 		case MOUSE_NONE:
-			/* Ack! */
-			read(mouse_fd, mousebuf, BUFSIZ);
-			return;
+			break;  /* carry on to read from device and discard it. */
 		case MOUSE_MSC:
 			packetsize = 5;
 			break;
@@ -812,14 +815,20 @@ static void handle_mouse(_THIS)
 	if ( nread < 0 ) {
 		return;
 	}
+
+	if (mouse_drv == MOUSE_NONE) {
+		return;  /* we're done; just draining the input queue. */
+	}
+
 	nread += start;
 #ifdef DEBUG_MOUSE
 	fprintf(stderr, "Read %d bytes from mouse, start = %d\n", nread, start);
 #endif
+
 	for ( i=0; i<(nread-(packetsize-1)); i += packetsize ) {
 		switch (mouse_drv) {
-			case MOUSE_NONE:
-				break;
+			case MOUSE_NONE: /* shouldn't actually hit this. */
+				break;  /* just throw everything away. */
 			case MOUSE_MSC:
 				/* MSC protocol has 0x80 in high byte */
 				if ( (mousebuf[i] & 0xF8) != 0x80 ) {

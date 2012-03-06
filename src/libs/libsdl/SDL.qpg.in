@@ -28,7 +28,8 @@
          <QPG:Add filetype="symlink" file="libSDL.so" install="/usr/lib/" linkto="libSDL-@SDL_MAJOR_VERSION@.@SDL_MINOR_VERSION@.so.@LT_AGE@"/>
          <QPG:Add permissions="0644" file="./src/.libs/libSDL.a" install="/usr/lib/"/>
          <QPG:Add permissions="0644" file="./src/.libs/libSDL.lai" install="/usr/lib/libSDL.la"/>
-         <QPG:Add permissions="0644" file="./src/main/libSDLmain.a" install="/usr/lib/"/>
+         <QPG:Add permissions="0644" file="./src/.libs/libSDLmain.a" install="/usr/lib/"/>
+         <QPG:Add permissions="0644" file="./src/.libs/libSDLmain.lai" install="/usr/lib/libSDLmain.lai"/>
          <QPG:Add permissions="0644" file="./include/*.h" install="/usr/include/SDL/"/>
          <QPG:Add permissions="0755" file="./sdl-config" install="/usr/bin/"/>
          <QPG:Add permissions="0644" file="./BUGS" install="/usr/share/doc/SDL12/"/>

@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -46,7 +46,7 @@ void *Atari_SysMalloc(Uint32 size, Uint16 alloc_type)
 
 	if (atari_mxalloc_avail) {
 		return (void *) Mxalloc(size, alloc_type);
-	} else { \
+	} else {
 		return (void *) Malloc(size);
 	}
 }

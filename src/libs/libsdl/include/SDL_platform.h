@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -101,10 +101,6 @@
 #if defined(__SVR4)
 #undef __SOLARIS__
 #define __SOLARIS__	1
-#endif
-#if defined(WIN64) || defined(_WIN64)
-#undef __WIN64__
-#define __WIN64__	1
 #endif
 #if defined(WIN32) || defined(_WIN32)
 #undef __WIN32__

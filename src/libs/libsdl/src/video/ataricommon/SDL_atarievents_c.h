@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -36,19 +36,6 @@
 #define _THIS	SDL_VideoDevice *this
 
 #define ATARIBIOS_MAXKEYS 128
-
-/* Special keys state */
-#ifndef K_RSHIFT
-enum {
-	K_RSHIFT=0,
-	K_LSHIFT,
-	K_CTRL,
-	K_ALT,
-	K_CAPSLOCK,
-	K_CLRHOME,
-	K_INSERT
-};
-#endif
 
 extern void (*Atari_ShutdownEvents)(void);
 

@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -48,9 +48,9 @@
 
 /*--- Functions prototypes ---*/
 
+#if SDL_VIDEO_OPENGL
 static void SDL_AtariGL_UnloadLibrary(_THIS);
 
-#if SDL_VIDEO_OPENGL
 static void CopyShadowNull(_THIS, SDL_Surface *surface);
 static void CopyShadowDirect(_THIS, SDL_Surface *surface);
 static void CopyShadowRGBTo555(_THIS, SDL_Surface *surface);
@@ -389,9 +389,9 @@ void SDL_AtariGL_InitPointers(_THIS)
 
 /*--- Private functions ---*/
 
+#if SDL_VIDEO_OPENGL
 static void SDL_AtariGL_UnloadLibrary(_THIS)
 {
-#if SDL_VIDEO_OPENGL
 	if (this->gl_config.dll_handle) {
 		SDL_UnloadObject(this->gl_config.dll_handle);
 		this->gl_config.dll_handle = NULL;
@@ -399,12 +399,10 @@ static void SDL_AtariGL_UnloadLibrary(_THIS)
 		/* Restore pointers to static library */
 		SDL_AtariGL_InitPointers(this);
 	}
-#endif
 }
 
 /*--- Creation of an OpenGL context using new/old functions ---*/
 
-#if SDL_VIDEO_OPENGL
 static int InitNew(_THIS, SDL_Surface *current)
 {
 	GLenum osmesa_format;

@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -61,7 +61,7 @@
 
 /*--- Static variables ---*/
 
-static unsigned long cookie_snd, cookie_mch;
+static long cookie_snd, cookie_mch;
 static cookie_mcsn_t *cookie_mcsn;
 
 /*--- Audio driver functions ---*/
@@ -79,7 +79,7 @@ static void Mint_InitAudio(_THIS, SDL_AudioSpec *spec);
 
 static int Audio_Available(void)
 {
-	unsigned long dummy;
+	long dummy;
 	const char *envr = SDL_getenv("SDL_AUDIODRIVER");
 
 	SDL_MintAudio_mint_present = (Getcookie(C_MiNT, &dummy) == C_FOUND);
@@ -112,10 +112,11 @@ static int Audio_Available(void)
 	}
 
 	/* Cookie MCSN present ? */
-	if (Getcookie(C_McSn, (long *) &cookie_mcsn) != C_FOUND) {
+	if (Getcookie(C_McSn, &dummy) != C_FOUND) {
 		DEBUG_PRINT((DEBUG_NAME "no MCSN audio\n"));
 		return(0);
 	}
+	cookie_mcsn = (cookie_mcsn_t *) dummy;
 
 	/* Check if interrupt at end of replay */
 	if (cookie_mcsn->pint == 0) {

@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -138,8 +138,8 @@ static const xbiosmode_t falconvgamodes[6]={
 
 static int XBIOS_Available(void)
 {
-	unsigned long cookie_vdo, cookie_mil, cookie_hade, cookie_scpn;
-	unsigned long cookie_fvdi;
+	long cookie_vdo, /*cookie_mil,*/ cookie_hade, cookie_scpn;
+	long cookie_fvdi;
 	const char *envr = SDL_getenv("SDL_VIDEODRIVER");
 
 	/* Milan/Hades Atari clones do not have an Atari video chip */
@@ -361,9 +361,8 @@ static void XBIOS_ListFalconVgaModes(_THIS, int actually_add)
 
 static int XBIOS_VideoInit(_THIS, SDL_PixelFormat *vformat)
 {
-	int i,j8,j16;
-	xbiosmode_t *current_mode;
-	unsigned long cookie_blow, cookie_scpn, cookie_cnts;
+	int i;
+	long cookie_blow, cookie_scpn, cookie_cnts;
 
 	/* Initialize all variables that we clean on shutdown */
 	for ( i=0; i<NUM_MODELISTS; ++i ) {
@@ -1101,7 +1100,7 @@ static void XBIOS_VideoQuit(_THIS)
 
 	/* Restore screensavers */
 	if (SDL_XBIOS_TveillePresent(this)) {
-		SDL_XBIOS_TveilleRestore(this);
+		SDL_XBIOS_TveilleEnable(this);
 	}
 }
 

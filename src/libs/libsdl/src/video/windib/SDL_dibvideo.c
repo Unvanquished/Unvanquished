@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997-2009 Sam Lantinga
+    Copyright (C) 1997-2012 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -574,7 +574,9 @@ static void DIB_ResizeWindow(_THIS, int width, int height, int prev_width, int p
 			SDL_windowX = SDL_bounds.left;
 			SDL_windowY = SDL_bounds.top;
 		}
-		SetForegroundWindow(SDL_Window);
+		if ( GetParent(SDL_Window) == NULL ) {
+			SetForegroundWindow(SDL_Window);
+		}
 	}
 }
 

@@ -16,6 +16,75 @@ The latest stable release may be found on the
 
 <IMG SRC="docs/images/rainbow.gif" ALT="[separator]" WIDTH="100%">
 
+<H2> SDL 1.2.15 Release Notes </H2>
+<P>
+SDL 1.2.15 is a minor bug fix release.
+</P>
+
+<H3> General Notes </H3>
+
+<BLOCKQUOTE>
+<P>
+	Fixed assembly register clobbering in CPU info routines
+</P>
+<P>
+	Fixed memory stomp when using stretch blit on large images
+</P>
+<P>
+	Fixed pixel corruption with overlapping blits
+</P>
+<P>
+	SDL_JOYSTICK_DEVICE can be a colon separated list of joystick devices
+</P>
+<P>
+	Disabled MMX blitters since they don't compile on modern compilers
+</P>
+</BLOCKQUOTE>
+
+<H3> Unix Notes </H3>
+
+<BLOCKQUOTE>
+<P>
+	Fixed crash in joystick code on newer Linux kernels
+</P>
+<P>
+	Fixed channel swizzling for ALSA target with 6-channel output
+</P>
+<P>
+	Use the OpenGL GLX_EXT_swap_control extension if available
+</P>
+<P>
+	XRandR support is disabled by default because it causes desktop reconfiguring.  It can be enabled with the SDL_VIDEO_X11_XRANDR=1 environment variable, or by applying this patch: <a href="http://hg.libsdl.org/SDL/raw-rev/8ec3036098df">http://hg.libsdl.org/SDL/raw-rev/8ec3036098df</a>
+</P>
+</BLOCKQUOTE>
+
+<H3> Windows Notes </H3>
+
+<BLOCKQUOTE>
+<P>
+	Fixed SDL_GL_ACCELERATED_VISUAL handling
+</P>
+<P>
+	Fixed application state handling with ALT-Tab
+</P>
+<P>
+	Fixed occasional crash handling WM_ACTIVATEAPP in Direct X code
+</P>
+<P>
+	Fixed UTF-8 decoding of Russian characters
+</P>
+</BLOCKQUOTE>
+
+<H3> Mac OS X Notes </H3>
+
+<BLOCKQUOTE>
+<P>
+	Fixed building and running on Mac OS X 10.7 (Lion)
+</P>
+</BLOCKQUOTE>
+
+<IMG SRC="docs/images/rainbow.gif" ALT="[separator]" WIDTH="100%">
+
 <H2> SDL 1.2.14 Release Notes </H2>
 <P>
 SDL 1.2.14 is a significant bug fix release and a recommended update.
