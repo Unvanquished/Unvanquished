@@ -854,7 +854,9 @@ void Cvar_Set_f(void)
 		end[1] = 0; // end of string :-)
 	}
 
-	Cvar_Set2(Cmd_Argv(1), Com_UnquoteStr(value), qfalse); }
+	Cvar_Set2(Cmd_Argv(1), Com_UnquoteStr(value), qfalse);
+	free (value);
+}
 
 /*
 ============
