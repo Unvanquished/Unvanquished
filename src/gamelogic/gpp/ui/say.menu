@@ -30,7 +30,7 @@
       name say_field
       type ITEM_TYPE_SAYFIELD
       style WINDOW_STYLE_EMPTY
-      text "^2Say:"
+      text "Say:"
       cvar "ui_sayBuffer"
       maxchars 128
       rect 0 0 W H
@@ -72,7 +72,7 @@
       name say_field
       type ITEM_TYPE_SAYFIELD
       style WINDOW_STYLE_EMPTY
-      text "^5Say to team:"
+      text "Say to team:"
       cvar "ui_sayBuffer"
       maxchars 128
       rect 0 0 W H
