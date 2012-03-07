@@ -1533,7 +1533,7 @@ const char *Com_UnquoteStr (const char *str)
 	// If it doesn't begin with '"', return quickly
 	if (*str != '"')
 	{
-		length = end - str;
+		length = end + 1 - str;
 		free (buf);
 		buf = malloc (length + 1);
 		strncpy (buf, str, length);
