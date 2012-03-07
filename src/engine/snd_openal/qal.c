@@ -173,9 +173,8 @@ qboolean QAL_Init(const char *libname)
 		return qfalse;
 #else
 		char fn[1024];
-		getcwd(fn, sizeof(fn));
-		strncat(fn, "/", sizeof(fn));
-		strncat(fn, libname, sizeof(fn));
+		strncat(getcwd(fn, sizeof(fn)), "/", sizeof(fn)-strlen(fn)-1);
+		strncat(fn, libname, sizeof(fn)-strlen(fn)-1);
 
 		if( (OpenALLib = OBJLOAD(fn)) == 0 )
 		{
