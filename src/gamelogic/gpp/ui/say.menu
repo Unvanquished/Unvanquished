@@ -3,11 +3,12 @@
 {
 
 #define BORDER    10
+#define TEXTHEIGHT 10
 
 #define X         BORDER
-#define Y         BORDER
-#define W         (600-(2*BORDER))
-#define H         (480-(2*BORDER))
+#define Y         (240-TEXTHEIGHT/2-BORDER/2)
+#define W         (640-(2*BORDER))
+#define H         (TEXTHEIGHT+BORDER)
 
   // Say to All
   menuDef
@@ -29,7 +30,7 @@
       name say_field
       type ITEM_TYPE_SAYFIELD
       style WINDOW_STYLE_EMPTY
-      text "Say:"
+      text "^2Say:"
       cvar "ui_sayBuffer"
       maxchars 128
       rect 0 0 W H
@@ -71,7 +72,7 @@
       name say_field
       type ITEM_TYPE_SAYFIELD
       style WINDOW_STYLE_EMPTY
-      text "Say to team:"
+      text "^5Say to team:"
       cvar "ui_sayBuffer"
       maxchars 128
       rect 0 0 W H
@@ -113,7 +114,7 @@
       name say_field
       type ITEM_TYPE_SAYFIELD
       style WINDOW_STYLE_EMPTY
-      text "Say to admins:"
+      text "^6Say to admins:"
       cvar "ui_sayBuffer"
       maxchars 128
       rect 0 0 W H
