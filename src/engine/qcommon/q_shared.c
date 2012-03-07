@@ -1471,6 +1471,94 @@ int Com_HexStrToInt( const char *str )
 }
 
 /*
+===================
+Com_QuoteStr
+===================
+*/
+const char *Com_QuoteStr (const char *str)
+{
+	static char *buf = NULL;
+	static size_t buflen = 0;
+
+	size_t length;
+	char *ptr;
+
+	// quick exit if no quoting is needed
+//	if (!strpbrk (str, "\";"))
+//		return str;
+
+	length = strlen (str);
+	if (buflen < 2 * length + 3)
+	{
+		free (buf);
+		buflen = 2 * length + 3;
+		buf = malloc (buflen);
+	}
+	ptr = buf;
+	*ptr++ = '"';
+	--str;
+	while (*++str)
+	{
+		if (*str == '"')
+			*ptr++ = '\\';
+		*ptr++ = *str;
+	}
+	ptr[0] = '"';
+	ptr[1] = 0;
+
+	return buf;
+}
+
+/*
+===================
+Com_UnquoteStr
+===================
+*/
+const char *Com_UnquoteStr (const char *str)
+{
+	static char *buf = NULL;
+
+	size_t length;
+	char *ptr;
+	const char *end;
+
+	end = str + strlen (str);
+
+	// Strip trailing spaces
+	while (--end >= str)
+		if (*end != ' ')
+			break;
+	// end points at the last non-space character
+
+	// If it doesn't begin with '"', return quickly
+	if (*str != '"')
+	{
+		free (buf);
+		return buf = strndup (str, end + 1 - str);
+	}
+
+	// It begins with '"'; if it ends with '"', lose that '"'
+	if (end > str && *end == '"')
+		--end;
+
+	free (buf);
+	buf = malloc (end + 1 - str);
+	ptr = buf;
+
+	// Copy, unquoting as we go
+	// str[0] == '"', so that gets skipped
+	while (++str <= end)
+	{
+		if (str[0] == '\\' && str[1] == '"' && str < end) // FIXME: \ semantics are broken
+			++str;
+		*ptr++ = *str;
+	}
+	*ptr = 0;
+
+	return buf;
+}
+
+/*
 ============================================================================
 
 					LIBRARY REPLACEMENT FUNCTIONS
