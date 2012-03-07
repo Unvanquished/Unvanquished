@@ -1533,8 +1533,12 @@ const char *Com_UnquoteStr (const char *str)
 	// If it doesn't begin with '"', return quickly
 	if (*str != '"')
 	{
+		length = end - str;
 		free (buf);
-		return buf = strndup (str, end + 1 - str);
+		buf = malloc (length + 1);
+		strncpy (buf, str, length);
+		buf[length] = 0;
+		return buf;
 	}
 
 	// It begins with '"'; if it ends with '"', lose that '"'
