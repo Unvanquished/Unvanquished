@@ -1170,42 +1170,8 @@ void Key_Bind_f( void ) {
 		return;
 	}
 
-	cmd = Cmd_Cmd () - 1;
-	// find the 3rd parameter
-	i = q = 0;
-	c = 2;
-	while (c && *++cmd)
-	{
-		if (!q && *cmd == ' ')
-			i = 1; // space found outside quotation marks
-		if (i && *cmd != ' ')
-		{
-			i = 0; // non-space found after space outside quotation marks
-			--c; // one word fewer to scan
-		}
-		if (*cmd == '"')
-			q = !q; // found a quotation mark
-	}
-
-	if (*cmd == '"')
-    {
-		// See if this matches /^".*" *$/; if so, strip quotation marks
-		c = 0;
-		while (cmd[++c])
-			if (cmd[c] == '"')
-				break;
-		i = c;
-		if (cmd[c])
-			while (cmd[++c] == ' ')
-				/**/;
-		if (!cmd[c])
-		{
-			cmd[i] = 0;
-			++cmd;
-		}
-	}
-
-	Key_SetBinding( b, cmd );
+	// set to 3rd arg onwards, unquoted from raw
+	Key_SetBinding( b, Com_UnquoteStr( Cmd_Cmd_FromNth( 2 ) ) );
 }
 
 /*
@@ -1222,14 +1188,8 @@ void Key_WriteBindings( fileHandle_t f ) {
 
 	for (i=0 ; i<MAX_KEYS ; i++) {
 		if ( keys[i].binding && keys[i].binding[0] ) {
-			// quote the string if it contains ; but no "
-			if (strchr (keys[i].binding, ';') && !strchr (keys[i].binding, '"'))
-				FS_Printf (f, "bind %s \"%s\"\n", Key_KeynumToString(i), keys[i].binding );
-			else
-				FS_Printf (f, "bind %s %s\n", Key_KeynumToString(i), keys[i].binding );
-
+			FS_Printf (f, "bind %s %s\n", Key_KeynumToString(i), Com_QuoteStr(keys[i].binding) );
 		}
-
 	}
 }
 

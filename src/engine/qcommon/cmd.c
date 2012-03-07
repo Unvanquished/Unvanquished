@@ -282,6 +282,11 @@ void Cbuf_Execute(void)
 		quotes = 0;
 		for(i = 0; i < cmd_text.cursize; i++)
 		{
+			if(text[i] == '\\' && text[i+1] == '"')
+			{
+				i++;
+				continue;		// ignore \"
+			}
 			if(text[i] == '"')
 			{
 				quotes++;
@@ -1324,6 +1329,38 @@ ATVI Wolfenstein Misc #284
 char           *Cmd_Cmd()
 {
 	return cmd.cmd;
+}
+
+/*
+============
+Cmd_Cmd
+
+Retrieve the unmodified command string
+For rcon use when you want to transmit without altering quoting
+ATVI Wolfenstein Misc #284
+============
+*/
+char *Cmd_Cmd_FromNth(int count)
+{
+	char *ret = cmd.cmd - 1;
+	int i = 0, q = 0;
+
+	while (count && *++ret)
+	{
+		if (!q && *ret == ' ')
+			i = 1; // space found outside quotation marks
+		if (i && *ret != ' ')
+		{
+			i = 0; // non-space found after space outside quotation marks
+			--count; // one word fewer to scan
+		}
+		if (*ret == '"')
+			q = !q; // found a quotation mark
+		else if (*ret == '\\' && ret[1] == '"')
+			++ret;
+	}
+
+	return ret;
 }
 
 /*

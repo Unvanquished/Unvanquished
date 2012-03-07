@@ -810,8 +810,8 @@ weren't declared in C code.
 */
 void Cvar_Set_f(void)
 {
-	int             i, c, l, len;
-	char            combined[MAX_STRING_TOKENS];
+	int             i, c, l, len, unsafe = 0, q;
+	char            *value;
 
 	c = Cmd_Argc();
 	if(c < 3)
@@ -824,6 +824,7 @@ void Cvar_Set_f(void)
 	if(c >= 4 && !strcmp(Cmd_Argv(c - 1), "unsafe"))
 	{
 		c--;
+		unsafe = 1;
 		if(com_crashed != NULL && com_crashed->integer)
 		{
 			Com_Printf("%s is unsafe. Check com_crashed.\n", Cmd_Argv(1));
@@ -831,24 +832,29 @@ void Cvar_Set_f(void)
 		}
 	}
 
-	combined[0] = 0;
-	l = 0;
-	for(i = 2; i < c; i++)
+	value = strdup(Cmd_Cmd_FromNth (2)); // 3rd arg onwards, raw
+
+	if (unsafe)
 	{
-		len = strlen(Cmd_Argv(i) + 1);
-		if(l + len >= MAX_STRING_TOKENS - 2)
-		{
-			break;
-		}
-		strcat(combined, Cmd_Argv(i));
-		if(i != c - 1)
-		{
-			strcat(combined, " ");
-		}
-		l += len;
+		char *end = value + strlen (value);
+		// skip spaces
+		while (--end > value)
+			if (*end != ' ')
+				break;
+		++end;
+		// skip "unsafe" (may be quoted, so just scan it)
+		while (--end > value)
+			if (*end == ' ')
+				break;
+		++end;
+		// skip spaces
+		while (--end > value)
+			if (*end != ' ')
+				break;
+		end[1] = 0; // end of string :-)
 	}
-	Cvar_Set2(Cmd_Argv(1), combined, qfalse);
-}
+
+	Cvar_Set2(Cmd_Argv(1), Com_UnquoteStr(value), qfalse); }
 
 /*
 ============
@@ -962,28 +968,10 @@ void Cvar_WriteVariables(fileHandle_t f)
 		if(var->flags & CVAR_ARCHIVE)
 		{
 			// write the latched value, even if it hasn't taken effect yet
-			if(var->latchedString)
-			{
-				if(var->flags & CVAR_UNSAFE)
-				{
-					Com_sprintf(buffer, sizeof(buffer), "seta %s \"%s\" unsafe\n", var->name, var->latchedString);
-				}
-				else
-				{
-					Com_sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->latchedString);
-				}
-			}
-			else
-			{
-				if(var->flags & CVAR_UNSAFE)
-				{
-					Com_sprintf(buffer, sizeof(buffer), "seta %s \"%s\" unsafe\n", var->name, var->string);
-				}
-				else
-				{
-					Com_sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->string);
-				}
-			}
+			Com_sprintf(buffer, sizeof(buffer), "seta %s %s%s\n",
+			            var->name,
+			            Com_QuoteStr (var->latchedString ? var->latchedString : var->string),
+			            (var->flags & CVAR_UNSAFE) ? " unsafe" : "");
 
 			FS_Printf(f, "%s", buffer);
 		}
