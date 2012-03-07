@@ -351,10 +351,11 @@ void CL_Voip_f( void )
 	} else if (strcmp(cmd, "unignore") == 0) {
 		CL_UpdateVoipIgnore(Cmd_Argv(2), qfalse);
 	} else if (strcmp(cmd, "gain") == 0) {
+		int id = 0;
+	
 		if (Cmd_Argc() > 3) {
 			CL_UpdateVoipGain(Cmd_Argv(2), atof(Cmd_Argv(3)));
-		} else if (Q_isanumber(Cmd_Argv(2))) {
-			int id = atoi(Cmd_Argv(2));
+		} else if (Q_strtoi(Cmd_Argv(2), &id)) {
 			if (id >= 0 && id < MAX_CLIENTS) {
 				Com_Printf("VoIP: current gain for player #%d "
 					"is %f\n", id, clc.voipGain[id]);

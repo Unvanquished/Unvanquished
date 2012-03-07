@@ -1409,7 +1409,8 @@ int Q_isnumeric( int c );
 int Q_isalphanumeric( int c );
 int Q_isforfilename( int c );
 
-qboolean        Q_isanumber( const char *s );
+qboolean        Q_strtol( const char *s, long* out );
+qboolean        Q_strtoi( const char *s, int* out);
 
 // portable case insensitive compare
 int     Q_stricmp( const char *s1, const char *s2 );
