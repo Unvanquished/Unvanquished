@@ -1,48 +1,59 @@
-_______________________
+---------------------------------------------------------- Tremulous License ---
+Tremulous is licensed in two broadly separate sections: the code and the media. 
 
+The code is licensed under the GNU GENERAL PUBLIC LICENSE. This license is
+contained in full in the file named GPL. Please be aware of the exceptions to
+this license as listed below.
+
+The media is licensed under the CREATIVE COMMONS ATTRIBUTION-SHAREALIKE 2.5
+LICENSE. Please read http://creativecommons.org/licenses/by-sa/2.5/ to learn
+more about this license. The full license text is contained in the file named
+CC. Please be aware of the exceptions to this license as listed below.
+
+---------------------------------------------------- Code License Exceptions ---
+The following files contain sections of code that are not licensed under the
+GPL, but are nevertheless GPL compatible. The license text for these licenses
+is contained within the files as listed.
+
+    src/qcommon/unzip.c                                         zlib license
+    src/game/bg_lib.c                                            BSD license
+    src/client/snd_adpcm.c            Stichting Mathematisch Centrum license
+    src/jpeg-6/*                                                JPEG license
+
+--------------------------------------------------- Media License Exceptions ---
+All shaderlab (http://www.shaderlab.com/) textures (by Randy 'ydnar' Reddig)
+are subject to the following license:
+  Usage and redistribution policy: Textures may be freely downloaded, modified,
+  and used in free maps, mods or total conversions provided this copyright
+  notice is left intact and a link to Shaderlab is provided in the credits or
+  read-me file. Other non-commercial applications are considered on a
+  case-by-case basis via e-mail. All other usage requires written permission.
+  Bulk redistribution or archival of the textures in any medium, digital or
+  otherwise (except mapping packages for mods) is prohibited.
+     
+-----------------------
 ET-XreaL License
 _______________
 
 ET-XreaL is licensed in two broadly separate sections: the code and the media.
-
-
 __________________________________
 
 ET-XreaL Code License
 ______________________
-
 The code is licensed under the GNU GENERAL PUBLIC LICENSE. This license is
 contained in full in the file named GPL.txt. Please be aware of the exceptions to
 this license as listed below.
-
-
 __________________________________
-
 ET-XreaL Media License
 _______________________
 
-The media is not tied to a single license unlike in other free game projects.
-Every file can have its own copyright and license that reflects the idea of "The Open Source Definition".
-See http://opensource.org/docs/osd for further information.
-
-As game media is not source code we prefer the "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported" license.
-See http://creativecommons.org/licenses/by-nc-sa/3.0/ for more details.
-
--------------------------------------------------------------------------------------------------
-
-See ET-XreaL/etmain/MEDIA.txt for a listing of the individual copyrights and licenses of media files.
-
--------------------------------------------------------------------------------------------------
-
-
-
-
+The media is licensed under the "Creative Commons Attribution-ShareAlike 3.0 Unported" license.
+This license is contained in full in the file named CC-BY-SA.txt.
+See http://creativecommons.org/licenses/by-sa/3.0/ for more details.
 ____________________________________________________________________________________
 
 Code License Exceptions - The parts that are not covered by the GPL:
 _______________________________________________________________________
-
-
 See COPYING.txt for the GNU GENERAL PUBLIC LICENSE
 
 ADDITIONAL TERMS:  The Wolfenstein: Enemy Territory GPL Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU GPL which accompanied the Wolf ET Source Code.  If not, please request a copy in writing from id Software at id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
@@ -200,4 +211,3 @@ freely, subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
-
