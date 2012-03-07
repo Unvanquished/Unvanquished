@@ -951,8 +951,9 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
                  ignore, prefix, name, maybeColon, text );
       break;
     case SAY_TEAM:
-      CG_Printf( "%s%s(%s" S_COLOR_WHITE ")%s%s " S_COLOR_CYAN "%s\n",
-                 ignore, prefix, name, location, maybeColon, text );
+      color = ( cgs.clientinfo[ clientNum ].team == TEAM_NONE ) ? S_COLOR_YELLOW : S_COLOR_CYAN;
+      CG_Printf( "%s%s(%s" S_COLOR_WHITE ")%s%s %s%s\n",
+                 ignore, prefix, name, location, maybeColon, color, text );
       break;
     case SAY_ADMINS:
     case SAY_ADMINS_PUBLIC:
