@@ -3765,6 +3765,7 @@ void CL_WWWDownload(void)
 				strcat(clc.redirectedList, cls.originalDownloadName);
 			}
 		}
+        return;
 	}
 	else
 	{
