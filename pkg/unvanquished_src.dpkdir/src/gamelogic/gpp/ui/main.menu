@@ -116,7 +116,7 @@
       style WINDOW_STYLE_EMPTY
       textstyle ITEM_TEXTSTYLE_NORMAL
       textscale .416
-      rect X (Y+(3*ELEM_H)) W ELEM_H
+      rect X (Y+(2*ELEM_H)) W ELEM_H
       textalign ALIGN_RIGHT
       backcolor 0 0 0 0
       forecolor 1 1 1 1
@@ -136,7 +136,7 @@
       style WINDOW_STYLE_EMPTY
       textstyle ITEM_TEXTSTYLE_NORMAL
       textscale .416
-      rect X (Y+(4*ELEM_H)) W ELEM_H
+      rect X (Y+(3*ELEM_H)) W ELEM_H
       textalign ALIGN_RIGHT
       backcolor 0 0 0 0
       forecolor 1 1 1 1
@@ -155,7 +155,7 @@
       type ITEM_TYPE_BUTTON
       style WINDOW_STYLE_EMPTY
       textstyle ITEM_TEXTSTYLE_NORMAL
-      rect X (Y+(5*ELEM_H)) W ELEM_H
+      rect X (Y+(4*ELEM_H)) W ELEM_H
       textscale .416
       textalign ALIGN_RIGHT
       forecolor 1 1 1 1
