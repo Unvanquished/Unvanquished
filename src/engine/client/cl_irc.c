@@ -92,6 +92,8 @@ cvar_t * cl_IRC_reconnect_delay;
 #define IS_CNTRL(c) ( (c) >= 0 && (c) <= 31 )
 #define IS_ALPHA(c) ( IS_UPPER(c) || IS_LOWER(c) )
 #define IS_ALNUM(c) ( IS_ALPHA(c) || IS_DIGIT(c) )
+#define IS_SPECL(c) ( (c) >= '[' && (c) <= '`' || (c) >= '{' && (c) <= '}' || (c) == '-' )
+#define IS_CLEAN(c) ( IS_ALNUM(c) || IS_SPECL(c)) /* RFC 2812 */
 
 
 
@@ -170,7 +172,7 @@ static qboolean IRC_ParserError;
 
 
 /*
- * IRC messages consist in:
+ * IRC messages consist of:
  * 1) an optional prefix, which contains either a server name or a nickname,
  * 2) a command, which may be either a word or 3 numbers,
  * 3) any number of arguments.
@@ -392,9 +394,9 @@ static int IRC_ExecuteCTCPHandler( const char * command , qboolean is_channel , 
 
 /* Structure for the delayed execution queue */
 struct irc_delayed_t {
-	irc_handler_func_t		handler;	// Handler to call
-	int						time_left;	// "Time" left before call
-	struct irc_delayed_t *	next;		// Next record
+	irc_handler_func_t      handler;        // Handler to call
+	int                     time_left;      // "Time" left before call
+	struct irc_delayed_t *  next;                   // Next record
 };
 
 /* Delayed execution queue head & tail */
@@ -1622,7 +1624,7 @@ static int CTCP_Version( qboolean is_channel , const char * argument ) {
 /*--------------------------------------------------------------------------*/
 
 /* Maximal message length */
-#define IRC_MAX_SEND_LEN	400
+#define IRC_MAX_SEND_LEN 400
 
 /*
  * The message sending queue is used to avoid having to send stuff from the
@@ -1637,7 +1639,7 @@ struct irc_sendqueue_t {
 };
 
 /* Length of the IRC send queue */
-#define IRC_SENDQUEUE_SIZE	16
+#define IRC_SENDQUEUE_SIZE 16
 
 /* Index of the next message to process */
 static int IRC_SendQueue_Process = 0;
@@ -1819,17 +1821,17 @@ static qboolean IRC_InitialiseUser( const char * name ) {
 		}
 
 		c = source[i ++];
-		if ( j == 0 && !( IS_ALPHA( c ) || strchr( "[]\\`_^{|}" , c ) ) ) {
+		if (j == 0 && !(IS_ALPHA(c) || IS_SPECL(c))) {
 			c = '_';
 			replaced ++;
-		} else if ( j > 0 && !( IS_ALNUM( c ) || strchr( "-[]\\`_^{|}" , c ) ) ) {
+		} else if (j > 0 && !(IS_CLEAN( c ))) {
 			c = '_';
 			replaced ++;
 		}
 		IRC_User.nick[j] = c;
 
 		// User names are even more sensitive
-		if ( ! ( c == '-' || c == '.' || c == '_' || IS_ALNUM( c ) ) )
+		if (!(IS_CLEAN(c)))
 			c = '_';
 		IRC_User.username[j] = c;
 
