@@ -559,7 +559,7 @@ static void CG_UpdateBeam( trailBeam_t *tb )
   tb->lastEvalTime = cg.time;
 
   // first make sure this beam has enough nodes
-  if( ts->destroyTime <= 0 || btb->fadeOutTime > 0 )
+  if( ts->destroyTime <= 0  )
   {
     nodesToAdd = btb->numSegments - CG_CountBeamNodes( tb ) + 1;
 
