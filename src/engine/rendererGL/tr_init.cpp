@@ -1441,7 +1441,7 @@ void R_Register(void)
 	r_lodBias = ri.Cvar_Get("r_lodBias", "0", CVAR_ARCHIVE);
 	r_flares = ri.Cvar_Get("r_flares", "0", CVAR_ARCHIVE);
 	r_znear = ri.Cvar_Get("r_znear", "4", CVAR_CHEAT);
-	r_zfar = ri.Cvar_Get("r_zfar", "0", CVAR_CHEAT);
+	r_zfar = ri.Cvar_Get("r_zfar", "2048", CVAR_CHEAT);
 	r_ignoreGLErrors = ri.Cvar_Get("r_ignoreGLErrors", "1", CVAR_ARCHIVE);
 	r_fastsky = ri.Cvar_Get("r_fastsky", "0", CVAR_ARCHIVE);
 	r_inGameVideo = ri.Cvar_Get("r_inGameVideo", "1", CVAR_ARCHIVE);
