@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.2.0"
+#define PRODUCT_VERSION         "0.2.5"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.1.2"
+#define ENGINE_VERSION          "0.2.0"
 
 
 #ifdef SVN_VERSION
