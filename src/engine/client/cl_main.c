@@ -4467,21 +4467,13 @@ void CL_InitRef(const char *renderer)
 	Com_Printf("Loading \"%s\"...", dllName);
 	if((rendererLib = Sys_LoadLibrary(dllName)) == 0)
 	{
-#if 0//def _WIN32
 		Com_Printf("failed:\n\"%s\"\n", Sys_LibraryError());
-#else
-		char fn[1024];
-
-		Q_strncpyz(fn, Sys_Cwd(), sizeof(fn));
-		strncat(fn, "/", sizeof(fn) - strlen(fn) - 1);
-		strncat(fn, dllName, sizeof(fn) - strlen(fn) - 1);
-
-		Com_Printf("Loading \"%s\"...", fn);
-		if((rendererLib = Sys_LoadLibrary(fn)) == 0)
+		Com_sprintf(dllName, sizeof(dllName), DLL_PREFIX "rendererGL" ARCH_STRING DLL_EXT);
+		Com_Printf("Loading \"%s\"...", dllName);
+		if((rendererLib = Sys_LoadLibrary(dllName)) == 0)
 		{
 			Com_Error(ERR_FATAL, "failed:\n\"%s\"", Sys_LibraryError());
 		}
-#endif	/* _WIN32 */
 	}
 
 	Com_Printf("done\n");
