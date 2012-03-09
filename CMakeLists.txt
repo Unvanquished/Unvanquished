@@ -1052,6 +1052,7 @@ if( USE_PHYSICS )
   )
 endif()
 
+set( DLOPEN_LIBRARY )
 if (WIN32)
 	add_definitions(-DWINVER=0x501)
 # 	set( OS_LIBRARIES m winmm wsock32 gdi32 ole32 ws2_32 psapi Iphlpapi advapi32 shell32 user32 )
@@ -1066,9 +1067,15 @@ elseif (UNIX)
     set( OS_LIBRARIES dl m z )
     set( OS_LIBRARIES ${OS_LIBRARIES} "-framework AGL -framework OpenGL -framework Carbon -framework IOKit" )
 	  set( OS_BUILD ${LINUXSOURCESLIST} )
+    if( USE_OPENAL_DLOPEN )
+      set( DLOPEN_LIBRARY dl )
+    endif()
   else()
     set( OS_LIBRARIES dl m z rt )
     set( OS_BUILD ${LINUXSOURCESLIST} )
+    if( USE_OPENAL_DLOPEN )
+      set( DLOPEN_LIBRARY dl )
+    endif()
   endif()
 endif()
 
@@ -1084,6 +1091,7 @@ set(GLEW_INCLUDE_DIR
 
   if( BUILD_GAME_SO_ET )
     add_library( game  SHARED ${SHAREDLIST} ${QAGAMELIST} )
+    target_link_libraries( game m )
     set_property( TARGET game PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
     set_target_properties( game PROPERTIES
       OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
@@ -1131,18 +1139,21 @@ set(GLEW_INCLUDE_DIR
 
  if( BUILD_GAME_SO_GPP )
     add_library( gppgame  SHARED ${GAMEGPP} )
+    target_link_libraries( gppgame m )
     set_property( TARGET gppgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
     set_target_properties( gppgame PROPERTIES
       OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
       PREFIX ""
       LIBRARY_OUTPUT_DIRECTORY "main" )
     add_library( gpptrem SHARED ${CGAMEGPP} )
+    target_link_libraries( gpptrem m )
     set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
     set_target_properties( gpptrem PROPERTIES
       OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
       PREFIX "" 
       LIBRARY_OUTPUT_DIRECTORY "main" )
   add_library( gppui SHARED ${UIGPP} )
+    target_link_libraries( gppui m )
     set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
     set_target_properties( gppui PROPERTIES
       OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
@@ -1216,7 +1227,7 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
       set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
       set( WEBP_LIBRARY webp )
     endif( )
-    target_link_libraries( renderer ${PNG_LIBRARY} ${WEBP_LIBRARY} ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
+    target_link_libraries( renderer m ${PNG_LIBRARY} ${WEBP_LIBRARY} ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
     set_target_properties( renderer PROPERTIES OUTPUT_NAME "librendererGL${BUILD_ARCH}" PREFIX "" )
   endif()
 endif()
@@ -1352,7 +1363,7 @@ endif()
 if( USE_OPENAL )
   find_package( OpenAL REQUIRED )
   add_library( al SHARED ${ALLIST} )
-  target_link_libraries( al ${OPENAL_LIBRARY} )
+  target_link_libraries( al m ${DLOPEN_LIBRARY} ${OPENAL_LIBRARY} )
   set_property( TARGET al PROPERTY COMPILE_DEFINITIONS )
   set_target_properties( al PROPERTIES OUTPUT_NAME "snd_openal" PREFIX "" )
 endif()
