@@ -1559,24 +1559,22 @@ static void R_SetupProjection(qboolean infiniteFarClip)
 	float           zNear, zFar;
 	float          *proj = tr.viewParms.projectionMatrix;
 
-	if(r_zfar->value > 0)
-	{
-		// dynamically compute far clip plane distance
-		SetFarClip();
+	// dynamically compute far clip plane distance
+	SetFarClip();
 
-		// sanity check
-		zNear = tr.viewParms.zNear = r_znear->value;
+	zNear = tr.viewParms.zNear = r_znear->value;
+
+	if(r_zfar->value)
+	{
 		zFar = tr.viewParms.zFar = Q_max(tr.viewParms.zFar, r_zfar->value);
 	}
 	else if(infiniteFarClip)
 	{
-		zNear = tr.viewParms.zNear = r_znear->value;
 		zFar = tr.viewParms.zFar = 0;
 	}
 	else
 	{
-		zNear = tr.viewParms.zNear = r_znear->value;
-		zFar = tr.viewParms.zFar = r_zfar->value;
+		zFar = tr.viewParms.zFar;
 	}
 
 #if 0

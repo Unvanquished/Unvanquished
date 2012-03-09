@@ -3766,6 +3766,7 @@ void CL_WWWDownload(void)
 				strcat(clc.redirectedList, cls.originalDownloadName);
 			}
 		}
+        return;
 	}
 	else
 	{
@@ -4451,47 +4452,45 @@ RB: changed to load the renderer from a .dll
 */
 void CL_InitRef(const char *renderer)
 {
-	refimport_t     ri;
-	refexport_t    *ret;
+        refimport_t     ri;
+        refexport_t    *ret;
 
 #if !defined(REF_HARD_LINKED)
-	GetRefAPI_t		GetRefAPI;
-	char            dllName[MAX_OSPATH];
+        GetRefAPI_t		GetRefAPI;
+        char            dllName[MAX_OSPATH];
 #endif
 
-	Com_Printf("----- Initializing Renderer ----\n");
+        char fn[1024];
+        Q_strncpyz(fn, Sys_Cwd(), sizeof(fn));
+
+        Com_Printf("----- Initializing Renderer ----\n");
 
 #if !defined(REF_HARD_LINKED)
 
-	Com_sprintf(dllName, sizeof(dllName), DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, renderer);
+        Com_sprintf(dllName, sizeof(dllName), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, fn, renderer);
 
-	Com_Printf("Loading \"%s\"...", dllName);
-	if((rendererLib = Sys_LoadLibrary(dllName)) == 0)
-	{
-#if 0//def _WIN32
-		Com_Printf("failed:\n\"%s\"\n", Sys_LibraryError());
-#else
-		char fn[1024];
+        Com_Printf("Loading \"%s\"...", dllName);
+        if((rendererLib = Sys_LoadLibrary(dllName)) == 0)
+        {
+                Com_Printf("failed:\n\"%s\"\n", Sys_LibraryError());
 
-		Q_strncpyz(fn, Sys_Cwd(), sizeof(fn));
-		strncat(fn, "/", sizeof(fn) - strlen(fn) - 1);
-		strncat(fn, dllName, sizeof(fn) - strlen(fn) - 1);
+                //fall back to default
+                Com_sprintf(dllName, sizeof(dllName), "%s/" DLL_PREFIX "rendererGL" ARCH_STRING DLL_EXT, fn);
 
-		Com_Printf("Loading \"%s\"...", fn);
-		if((rendererLib = Sys_LoadLibrary(fn)) == 0)
-		{
-			Com_Error(ERR_FATAL, "failed:\n\"%s\"", Sys_LibraryError());
-		}
-#endif	/* _WIN32 */
-	}
+                Com_Printf("Loading \"%s\"...", dllName);
+                if((rendererLib = Sys_LoadLibrary(dllName)) == 0)
+                {
+                        Com_Error(ERR_FATAL, "failed:\n\"%s\"", Sys_LibraryError());
+                }
+        }
 
-	Com_Printf("done\n");
+        Com_Printf("done\n");
 
-	GetRefAPI = Sys_LoadFunction(rendererLib, "GetRefAPI");
-	if(!GetRefAPI)
-	{
-		Com_Error(ERR_FATAL, "Can't load symbol GetRefAPI: '%s'",  Sys_LibraryError());
-	}
+        GetRefAPI = Sys_LoadFunction(rendererLib, "GetRefAPI");
+        if(!GetRefAPI)
+        {
+                Com_Error(ERR_FATAL, "Can't load symbol GetRefAPI: '%s'",  Sys_LibraryError());
+      }
 
 #endif
 
