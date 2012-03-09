@@ -125,8 +125,9 @@ extern "C" {
  #endif
 #endif
 
-
-
+#if ZLIB_VERNUM > 0x1250
+#define OF _Z_OF /* in >=1.2.5.1 zlib redefined OF to the _Z namespace */
+#endif
 
 typedef voidpf   (ZCALLBACK *open_file_func)      OF((voidpf opaque, const char* filename, int mode));
 typedef uLong    (ZCALLBACK *read_file_func)      OF((voidpf opaque, voidpf stream, void* buf, uLong size));
