@@ -1061,7 +1061,7 @@ void CL_CmdButtons(usercmd_t * cmd)
 	// send a button bit even if the key was pressed and released in
 	// less than a frame
 	//
-	for(i = 0; i < 15; i++)
+	for(i = 0; i <= KB_BUTTONS_LAST - KB_BUTTONS0; i++)
 	{
 		if(kb[KB_BUTTONS0 + i].active || kb[KB_BUTTONS0 + i].wasPressed)
 		{
@@ -1070,7 +1070,7 @@ void CL_CmdButtons(usercmd_t * cmd)
 		kb[KB_BUTTONS0 + i].wasPressed = qfalse;
 	}
 
-	for(i = 0; i < 16; i++)
+	for(i = 0; i <= KB_WBUTTONS_LAST - KB_WBUTTONS0; i++)
 	{							// Arnout: this was i < 7, but there are 8 wbuttons
 		if(kb[KB_WBUTTONS0 + i].active || kb[KB_WBUTTONS0 + i].wasPressed)
 		{

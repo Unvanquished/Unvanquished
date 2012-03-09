@@ -4331,7 +4331,8 @@ static void SkipWhiteSpace( const char **text, char *lastColor )
 
 const char *Item_Text_Wrap( const char *text, float scale, float width )
 {
-  static char   out[ 8192 ] = "";
+  static char   *out = NULL;
+  static size_t outSize = 0;
   char          *paint = out;
   char          c[ 3 ] = "";
   const char    *p;
@@ -4344,8 +4345,19 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
   p = text;
   eos = p + strlen( p );
 
-  if( ( eos - p ) >= sizeof( out ) )
-    return NULL;
+  if( ( eos - p ) >= outSize )
+  {
+    free( out );
+    outSize = eos - p + 1;
+    paint = out = malloc( outSize );
+    if( !out )
+    {
+      // malloc failed - probably going to segfault soon
+      outSize = 0;
+      return NULL;
+    }
+    out[0] = 0;
+  }
 
   *paint = '\0';
 
