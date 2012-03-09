@@ -3791,8 +3791,7 @@ void CL_WWWDownload(void)
 	}
 
 	clc.bWWWDl = qfalse;
-    if(clc.downloadList[0])
-	   CL_NextDownload();
+	CL_NextDownload();
 }
 
 /*
