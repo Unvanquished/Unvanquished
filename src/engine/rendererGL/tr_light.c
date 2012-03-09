@@ -248,7 +248,7 @@ static void R_SetupEntityLightingGrid(trRefEntity_t * ent, vec3_t forcedOrigin)
 		ent->directedLight[0] += factor * gridPoint2->directedColor[0];
 		ent->directedLight[1] += factor * gridPoint2->directedColor[1];
 		ent->directedLight[2] += factor * gridPoint2->directedColor[2];
-		
+
 		VectorMA(direction, factor, gridPoint2->direction, direction);
 	}
 
@@ -289,6 +289,7 @@ static void R_SetupEntityLightingGrid(trRefEntity_t * ent, vec3_t forcedOrigin)
 LogLight
 ===============
 */
+#if 0
 static void LogLight(trRefEntity_t * ent)
 {
 	int             max1, max2;
@@ -320,6 +321,7 @@ static void LogLight(trRefEntity_t * ent)
 
 	ri.Printf(PRINT_ALL, "amb:%i  dir:%i\n", max1, max2);
 }
+#endif
 
 /*
 =================

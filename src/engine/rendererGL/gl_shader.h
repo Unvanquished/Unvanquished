@@ -38,7 +38,7 @@ class GLShader
 	//friend class GLCompileMacro_USE_ALPHA_TESTING;
 
 private:
-	GLShader& operator = (const GLShader&); 
+	GLShader& operator = (const GLShader&);
 
 	std::string							_name;
 protected:
@@ -58,14 +58,13 @@ protected:
 
 	GLShader(const std::string& name, uint32_t vertexAttribsRequired/*, uint32_t vertexAttribsOptional, uint32_t vertexAttribsUnsupported*/):
 	  _name(name),
-	  _vertexAttribsRequired(vertexAttribsRequired)
+      _activeMacros(0),
+	  _currentProgram(NULL),
+	  _vertexAttribsRequired(vertexAttribsRequired),
+	  _vertexAttribs(0)
 	  //_vertexAttribsOptional(vertexAttribsOptional),
 	  //_vertexAttribsUnsupported(vertexAttribsUnsupported)
 	{
-		_activeMacros = 0;
-		_currentProgram = NULL;
-		_vertexAttribs = 0;
-
 		//ri.Printf(PRINT_ALL, "/// -------------------------------------------------\n");
 	}
 
@@ -127,7 +126,7 @@ private:
 protected:
 	void				ValidateProgram(GLhandleARB program) const;
 	void				ShowProgramUniforms(GLhandleARB program) const;
-	
+
 
 public:
 	void				SelectProgram();
@@ -197,7 +196,7 @@ protected:
 		_shader->RegisterCompileMacro(this);
 	}
 
-	// RB: This is not good oo design, but it can be a workaround and its cost is more or less only a virtual function call. 
+	// RB: This is not good oo design, but it can be a workaround and its cost is more or less only a virtual function call.
 	// It also works regardless of RTTI is enabled or not.
 	enum EGLCompileMacro
 	{
@@ -340,7 +339,7 @@ public:
 	bool		HasConflictingMacros(int permutation, const std::vector<GLCompileMacro*>& macros) const;
 	bool		MissesRequiredMacros(int permutation, const std::vector<GLCompileMacro*>& macros) const;
 	uint32_t	GetRequiredVertexAttributes() const { return ATTR_BONE_INDEXES | ATTR_BONE_WEIGHTS; }
-	
+
 
 	void EnableVertexSkinning()
 	{
@@ -419,7 +418,7 @@ public:
 			DisableMacro();
 		}
 	}
-	
+
 	void DisableDeformVertexes()
 	{
 		DisableMacro();
@@ -451,7 +450,7 @@ public:
 	{
 		EnableMacro();
 	}
-	
+
 	void DisableTCGenEnvironment()
 	{
 		DisableMacro();
@@ -484,7 +483,7 @@ public:
 	{
 		EnableMacro();
 	}
-	
+
 	void DisableTCGenLightmap()
 	{
 		DisableMacro();
@@ -1603,6 +1602,9 @@ public:
 					deformParms[deformOfs++] = ds->bulgeHeight;
 					deformParms[deformOfs++] = ds->bulgeSpeed;
 					break;
+
+                default:
+                    break;
 			}
 
 			glUniform1fvARB(_shader->GetProgram()->u_DeformParms, MAX_SHADER_DEFORM_PARMS, deformParms);

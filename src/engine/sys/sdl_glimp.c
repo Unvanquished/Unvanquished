@@ -64,7 +64,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 extern void GLimp_InitGamma(void);
 extern void GLimp_RestoreGamma(void);
-static qboolean SDL_VIDEODRIVER_externallySet = qfalse;
+//static qboolean SDL_VIDEODRIVER_externallySet = qfalse;
 
 // Dushan
 #if defined (IPHONE)
@@ -572,7 +572,7 @@ static qboolean GLimp_InitOpenGL3xContext()
 	int		GLmajor, GLminor;
 
 	GLimp_GetCurrentContext();
-	sscanf( glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
+	sscanf( (const char*)glGetString( GL_VERSION ), "%d.%d", &GLmajor, &GLminor );
 
 	// GL_VERSION returns the highest OpenGL version supported by the driver
 	// which is also compatible with the version we requested (i.e. OpenGL 1.1).
@@ -635,7 +635,7 @@ static qboolean GLimp_InitOpenGL3xContext()
 		ri.Printf( PRINT_ALL, "...initializing new OpenGL context" );
 
 		opengl_context.hGLRC = wglCreateContextAttribsARB( opengl_context.hDC, 0, attribs );
-		
+
 		if( wglMakeCurrent(opengl_context.hDC, opengl_context.hGLRC) )
 		{
 			ri.Printf(PRINT_ALL, " done\n");
@@ -651,7 +651,7 @@ static qboolean GLimp_InitOpenGL3xContext()
 		int             numAttribs;
 		int             attribs[256];
 		GLXFBConfig     *FBConfig;
-		
+
 		// get FBConfig XID
 		memset(attribs, 0, sizeof(attribs));
 		numAttribs = 0;
@@ -661,7 +661,7 @@ static qboolean GLimp_InitOpenGL3xContext()
 				GLX_FBCONFIG_ID, &attribs[numAttribs++]);
 		FBConfig = glXChooseFBConfig(opengl_context.dpy, 0,
 					     attribs, &numAttribs);
-		
+
 		if( numAttribs == 0 ) {
 			ri.Printf( PRINT_WARNING, "Could not get FBConfig for XID %d\n", attribs[1]);
 		}
@@ -694,7 +694,7 @@ static qboolean GLimp_InitOpenGL3xContext()
 		// set current context to NULL
 		retVal = glXMakeCurrent(opengl_context.dpy, None, NULL) != 0;
 		ri.Printf(PRINT_ALL, "...glXMakeCurrent( %p, %p ): %s\n", opengl_context.dpy, NULL, success[retVal]);
- 
+
 		// delete dpy
 		if(opengl_context.ctx)
 		{
@@ -705,10 +705,10 @@ static qboolean GLimp_InitOpenGL3xContext()
 		}
 
 		ri.Printf( PRINT_ALL, "...initializing new OpenGL context " );
- 
+
 		opengl_context.ctx = glXCreateContextAttribsARB(opengl_context.dpy,
 								FBConfig[0], NULL, GL_TRUE, attribs);
-		
+
 		if( glXMakeCurrent(opengl_context.dpy, opengl_context.drawable, opengl_context.ctx) )
 		{
 			ri.Printf( PRINT_ALL, " done\n" );
@@ -783,12 +783,12 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder)
 		cls.glconfig = glConfig;
 		VM_Call(uivm, UI_UPDATE_GLCONFIG);
 	}
-	
+
 	if (cls.state == CA_ACTIVE)
 	{
 		cls.glconfig = glConfig;
 		VM_Call(cgvm, CG_UPDATE_GLCONFIG);
-	}	
+	}
 #else
 	const char     *glstring;
 	int             sdlcolorbits;
@@ -1003,7 +1003,7 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder)
 	ri.Printf(PRINT_ALL, "GL_RENDERER: %s\n", glstring);
 
 	return RSERR_OK;
-#endif	
+#endif
 }
 
 /*
@@ -1090,7 +1090,7 @@ static void GLimp_XreaLInitExtensions(void)
 			ri.Error(ERR_FATAL, "...GL_ARB_multitexture not found\n");
 		}
 	}
-	
+
 
 	// GL_ARB_depth_texture
 	if(GLEW_ARB_depth_texture)
@@ -1733,7 +1733,7 @@ qboolean GLimp_Init(void)
 
 	glConfig.textureCompression = TC_NONE;
 #else
-	qboolean        success = qtrue;
+	//qboolean        success = qtrue;
 
 	glConfig.driverType = GLDRV_ICD;
 
@@ -1915,7 +1915,7 @@ qboolean GLimp_Init(void)
 
 	// This depends on SDL_INIT_VIDEO, hence having it here
 	ri.IN_Init();
-#endif	
+#endif
 
 	return qtrue;
 }
@@ -1948,10 +1948,12 @@ void GLimp_EndFrame(void)
 
 	if( r_minimize && r_minimize->integer )
 	{
-		SDL_Surface *s         = SDL_GetVideoSurface();
-		qboolean    fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
+		//SDL_Surface *s         = SDL_GetVideoSurface();
+		//qboolean    fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
 
 #ifdef MACOS_X
+        SDL_Surface *s         = SDL_GetVideoSurface();
+        qboolean    fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
 		if( !fullscreen )
 		{
 			SDL_WM_IconifyWindow();
@@ -2004,7 +2006,7 @@ void GLimp_EndFrame(void)
 
 		r_fullscreen->modified = qfalse;
 	}
-#endif	
+#endif
 }
 
 void GLimp_AcquireGL(void) {
