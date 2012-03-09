@@ -34,5 +34,6 @@ Vcs-Browser: http://github.com/TremZ/Unvanquished
 Package: unvanquished
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Team-based FPS
- Git snapshot. :-)
+Description: Team-based FPS game, aliens v. humans
+ Build a base, defend it against the other team, gain credits for better
+ weapons or more advanced aliens, try to wipe them out.
