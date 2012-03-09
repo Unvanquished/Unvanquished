@@ -1,0 +1,1 @@
+shlibs:Depends=libc6 (>= 2.7), libfreetype6 (>= 2.2.1), libgl1-mesa-glx | libgl1, libglew1.5 (>= 1.5.8), libjpeg8 (>= 8c), libpng12-0 (>= 1.2.13-4), libsdl1.2debian (>= 1.2.11), libwebp2
