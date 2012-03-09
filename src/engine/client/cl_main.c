@@ -3765,7 +3765,6 @@ void CL_WWWDownload(void)
 				strcat(clc.redirectedList, cls.originalDownloadName);
 			}
 		}
-        return;
 	}
 	else
 	{
@@ -3792,7 +3791,8 @@ void CL_WWWDownload(void)
 	}
 
 	clc.bWWWDl = qfalse;
-	CL_NextDownload();
+    if(clc.downloadList[0])
+	   CL_NextDownload();
 }
 
 /*
