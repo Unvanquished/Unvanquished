@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -401,121 +401,121 @@ void IN_Button4Up(void)
 	IN_KeyUp(&kb[KB_BUTTONS4]);
 }
 
-void IN_Button5Down(void) 
+void IN_Button5Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS5]);
 }
 
-void IN_Button5Up(void) 
+void IN_Button5Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS5]);
 }
 
-void IN_Button6Down(void) 
+void IN_Button6Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS6]);
 }
 
-void IN_Button6Up(void) 
+void IN_Button6Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS6]);
 }
 
 //
-void IN_Button7Down(void) 
+void IN_Button7Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS7]);
 }
 
-void IN_Button7Up(void) 
+void IN_Button7Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS7]);
 }
 
 //
-void IN_Button8Down(void) 
+void IN_Button8Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS8]);
 }
 
-void IN_Button8Up(void) 
+void IN_Button8Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS8]);
 }
 
 //
-void IN_Button9Down(void) 
+void IN_Button9Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS9]);
 }
 
-void IN_Button9Up(void) 
+void IN_Button9Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS9]);
 }
 
 //
-void IN_Button10Down(void) 
+void IN_Button10Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS10]);
 }
 
-void IN_Button10Up(void) 
+void IN_Button10Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS10]);
 }
 
 //
-void IN_Button11Down(void) 
+void IN_Button11Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS11]);
 }
 
-void IN_Button11Up(void) 
+void IN_Button11Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS11]);
 }
 
 //
-void IN_Button12Down(void) 
+void IN_Button12Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS12]);
 }
 
-void IN_Button12Up(void) 
+void IN_Button12Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS12]);
 }
 
 //
-void IN_Button13Down(void) 
+void IN_Button13Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS13]);
 }
 
-void IN_Button13Up(void) 
+void IN_Button13Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS13]);
 }
 
 //
-void IN_Button14Down(void) 
+void IN_Button14Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS14]);
 }
 
-void IN_Button14Up(void) 
+void IN_Button14Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS14]);
 }
 
 //
-void IN_Button15Down(void) 
+void IN_Button15Down(void)
 {
 	IN_KeyDown(&kb[KB_BUTTONS15]);
 }
 
-void IN_Button15Up(void) 
+void IN_Button15Up(void)
 {
 	IN_KeyUp(&kb[KB_BUTTONS15]);
 }
@@ -862,16 +862,11 @@ CL_JoystickMove
 */
 void CL_JoystickMove(usercmd_t * cmd)
 {
-	int             movespeed;
+//	int             movespeed;
 	float           anglespeed;
 
-	if(kb[KB_SPEED].active ^ cl_run->integer)
-	{
-		movespeed = 2;
-	}
-	else
-	{
-		movespeed = 1;
+	if(!(kb[KB_SPEED].active ^ cl_run->integer))
+    {
 		cmd->buttons |= BUTTON_WALKING;
 	}
 
@@ -919,14 +914,11 @@ CL_Xbox360ControllerMove
 */
 
 void CL_Xbox360ControllerMove(usercmd_t * cmd) {
-	int     movespeed;
+//	int     movespeed;
 	float   anglespeed;
 
-	if(kb[KB_SPEED].active ^ cl_run->integer ) {
-		movespeed = 2;
-	}
-	else {
-		movespeed = 1;
+	if(!( kb[KB_SPEED].active ^ cl_run->integer ))
+	{
 		cmd->buttons |= BUTTON_WALKING;
 	}
 
@@ -955,7 +947,7 @@ CL_MouseMove
 void CL_MouseMove(usercmd_t * cmd)
 {
 	float           mx, my;
-	
+
 
 	// allow mouse smoothing
 	if(m_filter->integer)
@@ -974,20 +966,20 @@ void CL_MouseMove(usercmd_t * cmd)
 
 	if (mx == 0.0f && my == 0.0f)
 		return;
-	
+
 	if (cl_mouseAccel->value != 0.0f)
 	{
 		if(cl_mouseAccelStyle->integer == 0)
 		{
 			float accelSensitivity;
 			float rate;
-			
+
 			rate = sqrt(mx * mx + my * my) / (float) frame_msec;
 
 			accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
 			mx *= accelSensitivity;
 			my *= accelSensitivity;
-			
+
 			if(cl_showMouseRate->integer)
 				Com_Printf("rate: %f, accelSensitivity: %f\n", rate, accelSensitivity);
 		}
@@ -1026,24 +1018,24 @@ void CL_MouseMove(usercmd_t * cmd)
 
 	mx *= cl_sensitivity->value;
 	my *= cl_sensitivity->value;
-	
+
 	// ingame FOV
 	mx *= cl.cgameSensitivity;
 	my *= cl.cgameSensitivity;
-	
+
 	// add mouse X/Y movement to cmd
 	if(kb[KB_STRAFE].active)
 		cmd->rightmove = ClampChar(cmd->rightmove + m_side->value * mx);
 	else
 		cl.viewangles[YAW] -= m_yaw->value * mx;
-	
+
 	if((kb[KB_MLOOK].active || cl_freelook->integer) && !kb[KB_STRAFE].active)
 		cl.viewangles[PITCH] += m_pitch->value * my;
-	
+
 	else
-	
+
 		cmd->forwardmove = ClampChar(cmd->forwardmove - m_forward->value * my);
-	
+
 }
 
 
@@ -1061,7 +1053,7 @@ void CL_CmdButtons(usercmd_t * cmd)
 	// send a button bit even if the key was pressed and released in
 	// less than a frame
 	//
-	for(i = 0; i < 15; i++)
+	for(i = 0; i < 16; i++)
 	{
 		if(kb[KB_BUTTONS0 + i].active || kb[KB_BUTTONS0 + i].wasPressed)
 		{
@@ -1070,7 +1062,7 @@ void CL_CmdButtons(usercmd_t * cmd)
 		kb[KB_BUTTONS0 + i].wasPressed = qfalse;
 	}
 
-	for(i = 0; i < 16; i++)
+	for(i = 0; i < 8; i++)
 	{							// Arnout: this was i < 7, but there are 8 wbuttons
 		if(kb[KB_WBUTTONS0 + i].active || kb[KB_WBUTTONS0 + i].wasPressed)
 		{
@@ -1208,7 +1200,7 @@ Create a new usercmd_t structure for this frame
 */
 void CL_CreateNewCommands(void)
 {
-	usercmd_t      *cmd;
+	//usercmd_t      *cmd;
 	int             cmdNum;
 
 	// no need to create usercmds until we have a gamestate
@@ -1232,7 +1224,7 @@ void CL_CreateNewCommands(void)
 	cl.cmdNumber++;
 	cmdNum = cl.cmdNumber & CMD_MASK;
 	cl.cmds[cmdNum] = CL_CreateCmd();
-	cmd = &cl.cmds[cmdNum];
+	//cmd = &cl.cmds[cmdNum];
 }
 
 /*
@@ -1386,7 +1378,7 @@ void CL_WritePacket(void)
 		count = MAX_PACKET_USERCMDS;
 		Com_Printf("MAX_PACKET_USERCMDS\n");
 	}
-	
+
 #ifdef USE_VOIP
 	if (clc.voipOutgoingDataSize > 0)
 	{
@@ -1436,7 +1428,7 @@ void CL_WritePacket(void)
 		}
 	}
 #endif
-	
+
 	if(count >= 1)
 	{
 		if(cl_showSend->integer)
@@ -1638,10 +1630,10 @@ void CL_InitInput(void)
 	Cmd_AddCommand("+prone", IN_ProneDown);
 	Cmd_AddCommand("-prone", IN_ProneUp);
 	// done
-	
+
 	Cmd_AddCommand("+dodge", IN_ProneDown);
 	Cmd_AddCommand("-dodge", IN_ProneUp);
-	
+
 	Cmd_AddCommand("+sprint", IN_SprintDown);
 	Cmd_AddCommand("-sprint", IN_SprintUp);
 
@@ -1669,8 +1661,8 @@ void CL_InitInput(void)
 #ifdef USE_VOIP
 	Cmd_AddCommand ("+voiprecord", IN_VoipRecordDown);
 	Cmd_AddCommand ("-voiprecord", IN_VoipRecordUp);
-#endif	
-	
+#endif
+
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
 	cl_debugMove = Cvar_Get("cl_debugMove", "0", 0);
 }

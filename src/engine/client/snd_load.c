@@ -70,7 +70,7 @@ static qboolean useBuiltin = qfalse;
 static __attribute__((format(printf, 2, 3))) void QDECL SndPrintf( int print_level, const char *fmt, ...) {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
-	
+
 	va_start (argptr,fmt);
 	Q_vsnprintf (msg, sizeof(msg), fmt, argptr);
 	va_end (argptr);
@@ -116,10 +116,9 @@ static qboolean S_InitModule()
 #if _WIN32
 	sprintf(fn, "snd_%s.dll", s_module->string);
 #else
-	getcwd(fn, sizeof(fn));
-	strncat(fn, "/snd_", sizeof(fn));
-	strncat(fn, s_module->string, sizeof(fn));
-	strncat(fn, ".so", sizeof(fn));
+	strncat(fn, "/snd_", sizeof(fn) - strlen(getcwd(fn, sizeof(fn))) - 1);
+	strncat(fn, s_module->string, sizeof(fn) - strlen(fn)- 1);
+	strncat(fn, ".so", sizeof(fn) - strlen(fn)- 1);
 #endif
 
 	if( (libhandle = OBJLOAD(fn)) == 0 )

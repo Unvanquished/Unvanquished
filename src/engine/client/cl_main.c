@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -103,9 +103,9 @@ cvar_t         *cl_freelook;
 cvar_t         *cl_sensitivity;
 cvar_t         *cl_xbox360ControllerAvailable;
 
-cvar_t         *cl_mouseAccelOffset; 
+cvar_t         *cl_mouseAccelOffset;
 cvar_t         *cl_mouseAccel;
-cvar_t         *cl_mouseAccelStyle; 
+cvar_t         *cl_mouseAccelStyle;
 cvar_t         *cl_showMouseRate;
 
 cvar_t         *m_pitch;
@@ -176,8 +176,8 @@ cvar_t         *cl_consoleFontKerning;
 cvar_t	       *cl_consolePrompt;
 
 #ifdef USE_CRYPTO
-struct rsa_public_key public_key; 
-struct rsa_private_key private_key; 
+struct rsa_public_key public_key;
+struct rsa_private_key private_key;
 #endif
 
 cvar_t         *cl_gamename;
@@ -267,7 +267,7 @@ static void CL_UpdateMumble(void) {
 	vec3_t pos, forward, up;
 	float scale = cl_mumbleScale->value;
 	float tmp;
-	
+
 	if(!cl_useMumble->integer)
 		return;
 
@@ -351,10 +351,11 @@ void CL_Voip_f( void )
 	} else if (strcmp(cmd, "unignore") == 0) {
 		CL_UpdateVoipIgnore(Cmd_Argv(2), qfalse);
 	} else if (strcmp(cmd, "gain") == 0) {
+		int id = 0;
+
 		if (Cmd_Argc() > 3) {
 			CL_UpdateVoipGain(Cmd_Argv(2), atof(Cmd_Argv(3)));
-		} else if (Q_isanumber(Cmd_Argv(2))) {
-			int id = atoi(Cmd_Argv(2));
+		} else if (Q_strtoi(Cmd_Argv(2), &id)) {
 			if (id >= 0 && id < MAX_CLIENTS) {
 				Com_Printf("VoIP: current gain for player #%d "
 					"is %f\n", id, clc.voipGain[id]);
@@ -417,7 +418,7 @@ void CL_VoipParseTargets(void)
 
 		if(!*target)
 			break;
-		
+
 		if(isdigit(*target))
 		{
 			val = strtol(target, &end, 10);
@@ -676,10 +677,10 @@ CL_ChangeReliableCommand
 */
 void CL_ChangeReliableCommand(void)
 {
-	int             r, index, l;
+	int index, l;
 
 	// NOTE TTimo: what is the randomize for?
-	r = clc.reliableSequence - (random() * 5);
+	//r = clc.reliableSequence - (random() * 5);
 	index = clc.reliableSequence & (MAX_RELIABLE_COMMANDS - 1);
 	l = strlen(clc.reliableCommands[index]);
 	if(l >= MAX_STRING_CHARS - 1)
@@ -1532,8 +1533,8 @@ void CL_Disconnect(qboolean showMainMenu)
 		}
 	}
 	Cmd_RemoveCommand ("voip");
-#endif	
-	
+#endif
+
 	if(clc.demofile)
 	{
 		FS_FCloseFile(clc.demofile);
@@ -1577,9 +1578,9 @@ void CL_Disconnect(qboolean showMainMenu)
 #ifdef USE_VOIP
 	// not connected to voip server anymore.
 	clc.voipEnabled = qfalse;
-#endif	
-	
-	// XreaL BEGIN	
+#endif
+
+	// XreaL BEGIN
 	// stop recording any video
 	if(CL_VideoRecording())
 	{
@@ -1724,7 +1725,7 @@ static void CL_Login_f( void )
 {
 	if ( Cmd_Argc() != 3) {
 		Com_Printf( "usage: login user password\n");
-		return;	
+		return;
 	}
 
 	HTTP_PostUrl( va("http://%s/user/login", AUTHORIZE_SERVER_NAME), CL_Login_response, 0, "user[login]=%s&user[password]=%s&version=%d", Cmd_Argv(1), Cmd_Argv(2), 31 );
@@ -1848,15 +1849,15 @@ void CL_GlobalHighScores_f( void )
 {
 	if ( Cmd_Argc() != 3) {
 		Com_Printf( "usage: globalhighscores [version] [char slot]\n");
-		return;	
+		return;
 	}
 
 	HTTP_PostUrl( va("http://%s/user/scores/version/%d/slot/%d",
-		AUTHORIZE_SERVER_NAME, 
-		atoi(Cmd_Argv(1)), 
-		atoi(Cmd_Argv(2))), 
-		0, 
-		0, 
+		AUTHORIZE_SERVER_NAME,
+		atoi(Cmd_Argv(1)),
+		atoi(Cmd_Argv(2))),
+		0,
+		0,
 		0 );
 }
 
@@ -1878,7 +1879,7 @@ void CL_OpenUrl_f( void )
 	}
 
 	url = Cmd_Argv( 1 );
-	
+
 	{
 		/*
 			FixMe: URL sanity checks.
@@ -1944,7 +1945,7 @@ void CL_OpenUrl_f( void )
 		for (i=0; i < strlen(url); i++)
 		{
 			if ( !(
-				(url[i] >= 'a' && url[i] <= 'z') || // lower case alpha 
+				(url[i] >= 'a' && url[i] <= 'z') || // lower case alpha
 				(url[i] >= 'A' && url[i] <= 'Z') || // upper case alpha
 				(url[i] >= '0' && url[i] <= '9') || //numeric
 				(url[i] == '/') || (url[i] == ':' ) || // / and : chars
@@ -2216,9 +2217,9 @@ void CL_Connect_f( void ) {
 
 	if ( argc != 2 && argc != 3 ) {
 		Com_Printf( "usage: connect [-4|-6] server\n");
-		return;	
+		return;
 	}
-	
+
 	if(argc == 2)
 		server = Cmd_Argv(1);
 	else
@@ -2229,7 +2230,7 @@ void CL_Connect_f( void ) {
 			family = NA_IP6;
 		else
 			Com_Printf( "warning: only -4 or -6 as address type understood.\n");
-		
+
 		server = Cmd_Argv(2);
 	}
 
@@ -3379,10 +3380,10 @@ void CL_ServersResponsePacket( const netadr_t* from, msg_t *msg, qboolean extend
 
 			if (buffend - buffptr < sizeof(addresses[numservers].ip6) + sizeof(addresses[numservers].port) + 1)
 				break;
-			
+
 			for(i = 0; i < sizeof(addresses[numservers].ip6); i++)
 				addresses[numservers].ip6[i] = *buffptr++;
-			
+
 			addresses[numservers].type = NA_IP6;
 			addresses[numservers].scope_id = from->scope_id;
 		}
@@ -3398,7 +3399,7 @@ void CL_ServersResponsePacket( const netadr_t* from, msg_t *msg, qboolean extend
 		// syntax check
 		if (*buffptr != '\\' && *buffptr != '/')
 			break;
-	
+
 		numservers++;
 		if (numservers >= MAX_SERVERSPERPACKET)
 			break;
@@ -3911,12 +3912,12 @@ void CL_Frame(int msec)
 
 #ifdef USE_VOIP
 	CL_CaptureVoip();
-#endif	
+#endif
 
 #ifdef USE_MUMBLE
 	CL_UpdateMumble();
 #endif
-	
+
 	// advance local effects for next frame
 	SCR_RunCinematic();
 
@@ -4136,7 +4137,7 @@ qboolean CL_InitRenderer(void)
 	fileHandle_t f;
 	// this sets up the renderer and calls R_Init
 	if( !re.BeginRegistration(&cls.glconfig, &cls.glconfig2) ) {
-		
+
 		return qfalse;
 	}
 
@@ -4145,7 +4146,7 @@ qboolean CL_InitRenderer(void)
 	cls.useLegacyConsoleFont = qtrue;
 
     // Register console font specified by cl_consoleFont, if any
-    // filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is NULL 
+    // filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is NULL
     if( *cl_consoleFont->string ) {
 		if( FS_FOpenFileByMode( cl_consoleFont->string, &f, FS_READ ) >= 0 )  {
 			re.RegisterFont( cl_consoleFont->string, cl_consoleFontSize->integer, &cls.consoleFont);
@@ -4162,7 +4163,7 @@ qboolean CL_InitRenderer(void)
 	g_consoleField.widthInChars = g_console_field_width;
 
 #if defined (USE_HTTP)
-	HTTP_PostUrl( "http://www.openwolf.com/user/log", 0, 0, 
+	HTTP_PostUrl( "http://www.openwolf.com/user/log", 0, 0,
 				"message="
 				"[%s] %s(%s)\n"
 				, Cvar_VariableString( "sys_osstring" )
@@ -4497,10 +4498,10 @@ void CL_InitRef(const char *renderer)
 	ri.Cmd_Argc = Cmd_Argc;
 	ri.Cmd_Argv = Cmd_Argv;
 	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
-	
+
 	ri.Printf = CL_RefPrintf;
 	ri.Error = Com_Error;
-	
+
 	ri.Milliseconds = CL_ScaledMilliseconds;
 	ri.RealTime = Com_RealTime;
 
@@ -4522,7 +4523,7 @@ void CL_InitRef(const char *renderer)
 
 	ri.CM_PointContents = CM_PointContents;
 	ri.CM_DrawDebugSurface = CM_DrawDebugSurface;
-	
+
 	ri.FS_ReadFile = FS_ReadFile;
 	ri.FS_FreeFile = FS_FreeFile;
 	ri.FS_WriteFile = FS_WriteFile;
@@ -4530,7 +4531,7 @@ void CL_InitRef(const char *renderer)
 	ri.FS_ListFiles = FS_ListFiles;
 	ri.FS_FileIsInPAK = FS_FileIsInPAK;
 	ri.FS_FileExists = FS_FileExists;
-	
+
 	ri.Cvar_Get = Cvar_Get;
 	ri.Cvar_Set = Cvar_Set;
 	ri.Cvar_CheckRange = Cvar_CheckRange;
@@ -4886,7 +4887,7 @@ keygen_error:
 	Com_DPrintf( "RSA support is disabled\n" );
 	return;
 #endif
-} 
+}
 
 /*
 ====================
@@ -4958,13 +4959,13 @@ void CL_Init(void)
 
 	cl_xbox360ControllerAvailable = Cvar_Get("in_xbox360ControllerAvailable", "0", CVAR_ROM);
 
-	// 0: legacy mouse acceleration 
-	// 1: new implementation 
+	// 0: legacy mouse acceleration
+	// 1: new implementation
 
-	cl_mouseAccelStyle = Cvar_Get( "cl_mouseAccelStyle", "0", CVAR_ARCHIVE ); 
-	// offset for the power function (for style 1, ignored otherwise) 
-	// this should be set to the max rate value 
-	cl_mouseAccelOffset = Cvar_Get( "cl_mouseAccelOffset", "5", CVAR_ARCHIVE ); 
+	cl_mouseAccelStyle = Cvar_Get( "cl_mouseAccelStyle", "0", CVAR_ARCHIVE );
+	// offset for the power function (for style 1, ignored otherwise)
+	// this should be set to the max rate value
+	cl_mouseAccelOffset = Cvar_Get( "cl_mouseAccelOffset", "5", CVAR_ARCHIVE );
 
 
 	cl_showMouseRate = Cvar_Get("cl_showmouserate", "0", 0);
@@ -5081,7 +5082,7 @@ void CL_Init(void)
 //  Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get("cl_anonymous", "0", CVAR_USERINFO | CVAR_ARCHIVE);
 
-	cl_pubkeyID = Cvar_Get ("cl_pubkeyID", "1", CVAR_ARCHIVE | CVAR_USERINFO); 
+	cl_pubkeyID = Cvar_Get ("cl_pubkeyID", "1", CVAR_ARCHIVE | CVAR_USERINFO);
 
 	Cvar_Get("password", "", CVAR_USERINFO);
 	Cvar_Get("cg_predictItems", "1", CVAR_ARCHIVE);
@@ -5117,8 +5118,8 @@ void CL_Init(void)
 		Com_Printf("Until then, VoIP is disabled.\n");
 		Cvar_Set("cl_voip", "0");
 	}
-#endif	
-	
+#endif
+
 //----(SA) added
 	Cvar_Get("cg_autoactivate", "1", CVAR_ARCHIVE);
 //----(SA) end
@@ -5424,7 +5425,7 @@ CL_ServerInfoPacket
 void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	int i, type;
 	char info[MAX_INFO_STRING];
-	char*   str;
+//	char*   str;
 	char    *infoString;
 	int prot;
 	char    *gameName;
@@ -5462,7 +5463,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 			{
 			case NA_BROADCAST:
 			case NA_IP:
-				str = "udp";
+				//str = "udp";
 				type = 1;
 				break;
 			case NA_IP6:
@@ -5470,7 +5471,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 				break;
 
 			default:
-				str = "???";
+				//str = "???";
 				type = 0;
 				break;
 			}
@@ -5576,10 +5577,10 @@ CL_GetServerStatus
 ===================
 */
 serverStatus_t *CL_GetServerStatus( netadr_t from ) {
-	serverStatus_t *serverStatus;
+//	serverStatus_t *serverStatus;
 	int i, oldest, oldestTime;
 
-	serverStatus = NULL;
+//	serverStatus = NULL;
 	for ( i = 0; i < MAX_SERVERSTATUSREQUESTS; i++ ) {
 		if ( NET_CompareAdr( from, cl_serverStatusList[i].address ) ) {
 			return &cl_serverStatusList[i];
@@ -6154,9 +6155,9 @@ void CL_Ping_f( void ) {
 
 	if ( argc != 2 && argc != 3 ) {
 		Com_Printf( "usage: ping [-4|-6] server\n");
-		return;	
+		return;
 	}
-	
+
 	if(argc == 2)
 	server = Cmd_Argv( 1 );
 	else
@@ -6337,7 +6338,7 @@ void CL_ServerStatus_f( void ) {
 
 		toptr = &clc.serverAddress;
 	}
-	
+
 	if(!toptr)
 	{
 		Com_Memset( &to, 0, sizeof( netadr_t ) );
@@ -6352,7 +6353,7 @@ void CL_ServerStatus_f( void ) {
 				family = NA_IP6;
 			else
 				Com_Printf( "warning: only -4 or -6 as address type understood.\n");
-		
+
 			server = Cmd_Argv(2);
 	}
 
@@ -6390,12 +6391,12 @@ CL_AddToLimboChat
 void CL_AddToLimboChat(const char *str)
 {
 	int             len;
-	char           *p, *ls;
-	int             lastcolor;
-	int             chatHeight;
+	char           *p;//, *ls;
+//	int             lastcolor;
+//	int             chatHeight;
 	int             i;
 
-	chatHeight = LIMBOCHAT_HEIGHT;
+//	chatHeight = LIMBOCHAT_HEIGHT;
 	cl.limboChatPos = LIMBOCHAT_HEIGHT - 1;
 	len = 0;
 
@@ -6409,9 +6410,9 @@ void CL_AddToLimboChat(const char *str)
 	p = cl.limboChatMsgs[0];
 	*p = 0;
 
-	lastcolor = '7';
+//	lastcolor = '7';
 
-	ls = NULL;
+//	ls = NULL;
 	while(*str)
 	{
 		if(len > LIMBOCHAT_WIDTH - 1)
@@ -6422,14 +6423,16 @@ void CL_AddToLimboChat(const char *str)
 		if(Q_IsColorString(str))
 		{
 			*p++ = *str++;
-			lastcolor = *str;
+//			lastcolor = *str;
 			*p++ = *str++;
 			continue;
 		}
+/*
 		if(*str == ' ')
 		{
 			ls = p;
 		}
+*/
 		*p++ = *str++;
 		len++;
 	}

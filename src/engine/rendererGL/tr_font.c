@@ -338,7 +338,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t * font)
 #ifdef BUILD_FREETYPE
 	FT_Face         face;
 	int             j, k, xOut, yOut, lastStart, imageNumber;
-	int             scaledSize, newSize, maxHeight, left, satLevels;
+	int             scaledSize, newSize, maxHeight, left;//, satLevels; //unused
 	unsigned char  *out, *imageBuff;
 	glyphInfo_t    *glyph;
 	image_t        *image;
@@ -498,7 +498,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t * font)
 			imageBuff = ri.Z_Malloc(newSize);
 			left = 0;
 			max = 0;
-			satLevels = 255;
+			//satLevels = 255;
 			for(k = 0; k < (scaledSize); k++)
 			{
 				if(max < out[k])
