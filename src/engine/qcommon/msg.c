@@ -1009,7 +1009,7 @@ Prints out a table from the current statistics for copying to code
 */
 void MSG_ReportChangeVectors_f(void)
 {
-	int             i;
+	int i;
 
 	for(i = 0; i < 256; i++)
 	{
@@ -1024,7 +1024,7 @@ typedef struct
 {
 	char           *name;
 	int             offset;
-	int             bits;		// 0 = float
+	int             bits;
 	int             used;
 } netField_t;
 
@@ -1071,7 +1071,7 @@ netField_t      entityStateFields[] = {
 	{NETF(groundEntityNum), GENTITYNUM_BITS},
 	{NETF(loopSound), 8},
 	{NETF(constantLight), 32},
-	{NETF(dl_intensity), 32},	//----(SA)    longer now to carry the corona colors
+	{NETF(dl_intensity), 32},
 	{NETF(modelindex), 9},
 	{NETF(modelindex2), 9},
 	{NETF(frame), 16},
@@ -1079,7 +1079,7 @@ netField_t      entityStateFields[] = {
 	{NETF(solid), 24},
 	{NETF(event), 10},
 	{NETF(eventParm), 8},
-	{NETF(eventSequence), 8},	// warning: need to modify cg_event.c at "// check the sequencial list" if you change this
+	{NETF(eventSequence), 8}, // warning: need to modify cg_event.c at "// check the sequencial list" if you change this
 	{NETF(events[0]), 8},
 	{NETF(events[1]), 8},
 	{NETF(events[2]), 8},
@@ -1093,7 +1093,7 @@ netField_t      entityStateFields[] = {
 	{NETF(legsAnim), ANIM_BITS},
 	{NETF(torsoAnim), ANIM_BITS},
 	{NETF(density), 10},
-	{NETF(dmgFlags), 32},		//----(SA)  additional info flags for damage
+	{NETF(dmgFlags), 32},
 	{NETF(onFireStart), 32},
 	{NETF(onFireEnd), 32},
 	{NETF(nextWeapon), 8},
@@ -1103,10 +1103,9 @@ netField_t      entityStateFields[] = {
 	{NETF(effect3Time), 32},
 	{NETF(animMovetype), 4},
 	{NETF(aiState), 2},
-	// Dushan - Tremulous stuff
 	{NETF(generic1), 10},
 	{NETF(misc), MAX_MISC},
-	{NETF(weaponAnim), ANIM_BITS},		// Dushan - weaponAnim should be ANIM_BITS
+	{NETF(weaponAnim), ANIM_BITS},
 };
 
 
@@ -1223,7 +1222,7 @@ void MSG_WriteDeltaEntity(msg_t * msg, struct entityState_s *from, struct entity
 		// nothing at all changed
 		if(!force)
 		{
-			return;				// nothing at all
+			return; // nothing at all
 		}
 		// write two bits for no change
 		MSG_WriteBits(msg, to->number, GENTITYNUM_BITS);

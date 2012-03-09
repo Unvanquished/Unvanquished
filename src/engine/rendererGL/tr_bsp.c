@@ -9196,7 +9196,6 @@ void RE_LoadWorldMap(const char *name)
 	header = (dheader_t *) buffer;
 	fileBase = (byte *) header;
 
-	// Dushan
 	i = LittleLong(header->version);
 	if ( i != BSP_VERSION && i != BSP_VERSION_Q3) {
 		ri.Error (ERR_DROP, "RE_LoadWorldMap: %s has wrong version number (%i should be %i for ET or %i for Q3)",

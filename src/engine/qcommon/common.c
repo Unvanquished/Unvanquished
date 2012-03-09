@@ -3360,7 +3360,6 @@ void Com_Init(char *commandLine)
 #endif
 	}
 
-	// Dushan
 #if defined(USE_HTTP)
 	Net_HTTP_Init();
 #endif
@@ -3812,7 +3811,6 @@ void Com_Shutdown(qboolean badProfile)
 		com_journalFile = 0;
 	}
 
-	// Dushan
 #if defined(USE_HTTP)
 	Net_HTTP_Kill();
 #endif

@@ -1180,12 +1180,12 @@ intptr_t CL_UISystemCalls(intptr_t * args)
 			return 0;
 
 		case UI_S_FADESTREAMINGSOUND:
-			// Dushan - FIX ME
+			// FIXME
 			//S_FadeStreamingSound(VMF(1), args[2], args[3]);
 			return 0;
 
 		case UI_S_FADEALLSOUNDS:
-			// Dushan - FIX ME
+			// FIXME
 			//S_FadeAllSounds(VMF(1), args[2], args[3]);
 			return 0;
 
@@ -1353,7 +1353,6 @@ intptr_t CL_UISystemCalls(intptr_t * args)
 		case UI_CEIL:
 			return FloatAsInt(ceil(VMF(1)));
 
-		// Dushan - Tremulous
 		case UI_PARSE_ADD_GLOBAL_DEFINE:
 			return Parse_AddGlobalDefine( VMA(1) );
 		case UI_PARSE_LOAD_SOURCE:
@@ -1414,10 +1413,6 @@ intptr_t CL_UISystemCalls(intptr_t * args)
 		case UI_R_REMAP_SHADER:
 			re.RemapShader(VMA(1), VMA(2), VMA(3));
 			return 0;
-
-			// NERVE - SMF
-		case UI_CL_GETLIMBOSTRING:
-			return CL_GetLimboString(args[1], VMA(2));
 
 		case UI_CL_TRANSLATE_STRING:
 			CL_TranslateString(VMA(1), VMA(2));

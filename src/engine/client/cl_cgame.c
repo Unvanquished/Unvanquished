@@ -708,13 +708,13 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			Cmd_ArgsBuffer(VMA(1), args[2]);
 			return 0;
 		case CG_LITERAL_ARGS:
-			// Dushan : FIX ME
+			// FIXME
 			Cmd_LiteralArgsBuffer( VMA(1), args[2] );
 // 			Cmd_ArgsBuffer(VMA(1), args[2]);
 			return 0;
 		case CG_GETDEMOSTATE:
 			//return CL_DemoState( );
-			// Dushan : FIX ME
+			// FIXME
 			return 0;
 		case CG_GETDEMOPOS:
 			//return CL_DemoPos( );
@@ -809,7 +809,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			return 0;
 //----(SA)  added
 		case CG_S_STARTSOUNDEX:
-			// Dushan - FIX ME
+			// FIXME
 			//S_StartSoundEx(VMA(1), args[2], args[3], args[4], args[5], args[6]);
 			return 0;
 //----(SA)  end
@@ -822,7 +822,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			S_ClearLoopingSounds(args[1]);
 			return 0;
 		case CG_S_CLEARSOUNDS:
-			// Dushan - FIX ME
+			// FIXME
 			/*if(args[1] == 0)
 			{
 				S_ClearSounds(qtrue, qfalse);
@@ -845,7 +845,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			S_StopLoopingSound( args[1] );
 			return 0;
 		case CG_S_STOPSTREAMINGSOUND:
-			// Dushan - FIX ME
+			// FIXME
 			//S_StopEntStreamingSound(args[1]);
 			return 0;
 		case CG_S_UPDATEENTITYPOSITION:
@@ -853,18 +853,18 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			return 0;
 // Ridah, talking animations
 		case CG_S_GETVOICEAMPLITUDE:
-			// Dushan - FIX ME
+			// FIXME
 			//return S_GetVoiceAmplitude(args[1]);
 			return 0;
 // done.
 		case CG_S_GETSOUNDLENGTH:
-			// Dushan - FIX ME
+			// FIXME
 			//return S_GetSoundLength(args[1]);
 			return 0;
 
 			// ydnar: for looped sound starts
 		case CG_S_GETCURRENTSOUNDTIME:
-			// Dushan - FIX ME
+			// FIXME
 			//return S_GetCurrentSoundTime();
 			return 0;
 
@@ -882,11 +882,11 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			S_StartBackgroundTrack(VMA(1), VMA(2));
 			return 0;
 		case CG_S_FADESTREAMINGSOUND:
-			// Dushan - FIX ME
+			// FIXME
 			//S_FadeStreamingSound(VMF(1), args[2], args[3]);	//----(SA)  added music/all-streaming options
 			return 0;
 		case CG_S_STARTSTREAMINGSOUND:
-			// Dushan - FIX ME
+			// FIXME
 			//return S_StartStreamingSound(VMA(1), VMA(2), args[3], args[4], args[5]);
 			return 0;
 		case CG_R_LOADWORLDMAP:
@@ -1183,7 +1183,6 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			Key_SetBinding(args[1], VMA(2));
 			return 0;
 
-		// Dushan - Tremulous
 		case CG_PARSE_ADD_GLOBAL_DEFINE:
 			return Parse_AddGlobalDefine( VMA(1) );
 		case CG_PARSE_LOAD_SOURCE:
@@ -1208,7 +1207,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			return 0;
 
 		case CG_S_FADEALLSOUNDS:
-			// Dushan - FIX ME
+			// FIXME
 			//S_FadeAllSounds(VMF(1), args[2], args[3]);
 			return 0;
 
@@ -1245,7 +1244,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			re.Finish();
 			return 0;
 		case CG_GETDEMONAME:
-			// Dushan: FIX ME
+			// FIXME
 			//CL_DemoName( VMA(1), args[2] );
 			return 0;
 		case CG_R_LIGHTFORPOINT:
@@ -1404,7 +1403,6 @@ void CL_InitCGame(void) {
 	mapname = Info_ValueForKey(info, "mapname");
 	Com_sprintf(cl.mapname, sizeof(cl.mapname), "maps/%s.bsp", mapname);
 
-	// Dushan - load the dll or bytecode
 	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
 	if ( !cgvm ) {
 		Com_Error( ERR_DROP, "VM_Create on cgame failed" );

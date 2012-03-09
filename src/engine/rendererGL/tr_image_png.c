@@ -299,7 +299,7 @@ void SavePNG(const char *name, const byte * pic, int width, int height, int numB
 
 	ri.Hunk_FreeTempMemory(buffer);
 
-	// Dushan
+	// highly questionable
 	if ( ri.Cvar_Get( "developer", "", 0 )) {
 #if defined (USE_HTTP)
 		ri.HTTP_PostBug(name);

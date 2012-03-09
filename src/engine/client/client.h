@@ -49,18 +49,12 @@ Maryland 20850 USA.
 #include <speex/speex_preprocess.h>
 #endif
 
-// Dushan - create CL_GUID
-// we cannot call it "qkey", "etkey" is already taken,
-// so we will change it to etxreal
 #define GUIDKEY_FILE "guid"
 
 // file containing our RSA public and private keys
 #define RSAKEY_FILE "pubkey"
 
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
-
-#define LIMBOCHAT_WIDTH     140	// NERVE - SMF - NOTE TTimo buffer size indicator, not related to screen bbox
-#define LIMBOCHAT_HEIGHT    7	// NERVE - SMF
 
 // snapshots are a view of the server at a given time
 typedef struct
@@ -183,12 +177,6 @@ typedef struct
 	entityState_t   entityBaselines[MAX_GENTITIES];	// for delta compression when not in previous frame
 
 	entityState_t   parseEntities[MAX_PARSE_ENTITIES];
-
-	// NERVE - SMF
-	// NOTE TTimo - UI uses LIMBOCHAT_WIDTH strings (140),
-	// but for the processing in CL_AddToLimboChat we need some safe room
-	char            limboChatMsgs[LIMBOCHAT_HEIGHT][LIMBOCHAT_WIDTH * 3 + 1];
-	int             limboChatPos;
 
 	qboolean        corruptedTranslationFile;
 	char            translationVersion[MAX_STRING_TOKENS];
@@ -612,14 +600,12 @@ int             CL_GetPingQueueCount(void);
 
 void            CL_ShutdownRef(void);
 void            CL_InitRef(const char *renderer);
-void			CL_InitOpenGLExt(void);
-void			CL_InitPNG(void);
-void			CL_InitZLIB(void);
+void            CL_InitOpenGLExt(void);
+void            CL_InitPNG(void);
+void            CL_InitZLIB(void);
 
 int             CL_ServerStatus(char *serverAddress, char *serverStatusString, int maxLen);
 
-void            CL_AddToLimboChat(const char *str);	// NERVE - SMF
-qboolean        CL_GetLimboString(int index, char *buf);	// NERVE - SMF
 
 // NERVE - SMF - localization
 void            CL_InitTranslation();
@@ -685,9 +671,8 @@ typedef enum
 	KB_WBUTTONS6,
 	KB_WBUTTONS7,
 	KB_MLOOK,
-	// Dushan
 	KB_VOIPRECORD,
-	NUM_BUTTONS//38
+	NUM_BUTTONS
 } kbuttons_t;
 
 
@@ -700,12 +685,8 @@ void            CL_ReadPackets(void);
 
 void            CL_WritePacket(void);
 
-//void			IN_CenterView (void);
 void            IN_Notebook(void);
 void            IN_Help(void);
-
-//----(SA) salute
-void            IN_Salute(void);
 
 //----(SA)
 

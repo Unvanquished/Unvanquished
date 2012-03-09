@@ -66,7 +66,6 @@ extern void GLimp_InitGamma(void);
 extern void GLimp_RestoreGamma(void);
 //static qboolean SDL_VIDEODRIVER_externallySet = qfalse;
 
-// Dushan
 #if defined (IPHONE)
 #include <OpenGLES/ES1/gl.h>
 #include "ipad_local.h"

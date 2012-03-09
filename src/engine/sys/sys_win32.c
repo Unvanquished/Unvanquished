@@ -902,7 +902,6 @@ void Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptr
 	ev->evPtr = ptr;
 }
 
-// Dushan
 static double pfreq;
 static qboolean hwtimer = qfalse;
 

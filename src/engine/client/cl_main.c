@@ -2307,11 +2307,6 @@ void CL_Connect_f( void ) {
 	Cvar_Set( "mp_team", "0" );
 	Cvar_Set( "mp_currentTeam", "0" );
 
-	Cvar_Set( "ui_limboOptions", "0" );
-	Cvar_Set( "ui_limboPrevOptions", "0" );
-	Cvar_Set( "ui_limboObjective", "0" );
-	// -NERVE - SMF
-
 }
 
 /*
@@ -2468,7 +2463,6 @@ void CL_Vid_Restart_f(void)
 	}
 
 #ifdef _WIN32
-	// Dushan - initialize OpenGL Extension
 	CL_InitOpenGLExt();
 #endif
 
@@ -2515,7 +2509,7 @@ Reloads sounddata from disk, retains soundhandles.
 */
 void CL_Snd_Reload_f(void)
 {
-	// Dushan - FIX ME
+	// FIXME
 	//S_Reload();
 }
 
@@ -4557,7 +4551,6 @@ void CL_InitRef(const char *renderer)
 	ri.IN_Shutdown = IN_Shutdown;
 	ri.IN_Restart = IN_Restart;
 
-	// Dushan
 	ri.ftol = Q_ftol;
 	ri.Con_GetText = Con_GetText;
 #if defined (USE_HTTP)
@@ -4584,7 +4577,6 @@ void CL_InitRef(const char *renderer)
 }
 
 #if defined(_WIN32)
-// Dushan
 static cvar_t  *cl_openzlib = NULL;
 static void    *openzlib = NULL;
 
@@ -4619,7 +4611,6 @@ void CL_InitZLIB(void) {
 	Com_Printf("done\n");
 }
 
-// Dushan
 static cvar_t  *cl_openpng = NULL;
 static void    *openpng = NULL;
 
@@ -4654,7 +4645,6 @@ void CL_InitPNG(void) {
 	Com_Printf("done\n");
 }
 
-// Dushan
 static cvar_t  *cl_opengletxr = NULL;
 static void    *opengletx = NULL;
 
@@ -5043,36 +5033,9 @@ void CL_Init(void)
 	cl_packetdelay = Cvar_Get("cl_packetdelay", "0", CVAR_CHEAT);
 
 	Cvar_Get("cl_maxPing", "800", CVAR_ARCHIVE);
-#if 0 // Leftover from RTCW singleplayer days. All this is set in the gamecode now.
-	// NERVE - SMF
-	Cvar_Get("cg_drawCompass", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_drawNotifyText", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_quickMessageAlt", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_popupLimboMenu", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_descriptiveText", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_drawTeamOverlay", "2", CVAR_ARCHIVE);
-//  Cvar_Get( "cg_uselessNostalgia", "0", CVAR_ARCHIVE ); // JPW NERVE
-	Cvar_Get("cg_drawGun", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_cursorHints", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_voiceSpriteTime", "6000", CVAR_ARCHIVE);
-//  Cvar_Get( "cg_teamChatsOnly", "0", CVAR_ARCHIVE );
-//  Cvar_Get( "cg_noVoiceChats", "0", CVAR_ARCHIVE );
-//  Cvar_Get( "cg_noVoiceText", "0", CVAR_ARCHIVE );
-	Cvar_Get("cg_crosshairSize", "48", CVAR_ARCHIVE);
-	Cvar_Get("cg_drawCrosshair", "1", CVAR_ARCHIVE);
-	Cvar_Get("cg_zoomDefaultSniper", "20", CVAR_ARCHIVE);
-	Cvar_Get("cg_zoomstepsniper", "2", CVAR_ARCHIVE);
-
-//  Cvar_Get( "mp_playerType", "0", 0 );
-//  Cvar_Get( "mp_currentPlayerType", "0", 0 );
-//  Cvar_Get( "mp_weapon", "0", 0 );
-//  Cvar_Get( "mp_team", "0", 0 );
-//  Cvar_Get( "mp_currentTeam", "0", 0 );
-	// -NERVE - SMF
-#endif
 	// userinfo
 	Cvar_Get("name", "UnnamedPlayer", CVAR_USERINFO | CVAR_ARCHIVE);
-	Cvar_Get("rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE);	// Dushan - changed from 5000
+	Cvar_Get("rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE);
 	Cvar_Get("snaps", "40", CVAR_USERINFO | CVAR_ARCHIVE);
 //  Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );  // temp until we have an skeletal american model
 //  Arnout - no need // Cvar_Get ("model", "multi", CVAR_USERINFO | CVAR_ARCHIVE );
@@ -5226,13 +5189,8 @@ void CL_Init(void)
 // XreaL END
 
 #ifdef _WIN32
-	// Dushan
 	CL_InitZLIB();
-
-	// Dushan
 	CL_InitPNG();
-
-	// Dushan
 	CL_InitOpenGLExt();
 #endif
 
@@ -5241,9 +5199,6 @@ void CL_Init(void)
 	Cbuf_Execute();
 
 	Cvar_Set("cl_running", "1");
-
-	// Dushan
-	// Generate now CL_GUID key
 	CL_GenerateGUIDKey();
 
 	if (cl_pubkeyID->integer) {
@@ -5253,8 +5208,6 @@ void CL_Init(void)
 	Cvar_Get("cl_guid", Com_MD5File(GUIDKEY_FILE, 0), CVAR_USERINFO | CVAR_ROM);
 
 #ifdef ET_MYSQL
-	// Dushan
-	// connect to SQL
 	OW_Init();
 #endif
 
@@ -5262,7 +5215,7 @@ void CL_Init(void)
 	autoupdateChecked = qfalse;
 	autoupdateStarted = qfalse;
 
-#ifndef __MACOS__				//DAJ USA
+#ifndef __MACOS__
 	CL_InitTranslation();		// NERVE - SMF - localization
 #endif
 
@@ -6379,86 +6332,6 @@ void CL_ShowIP_f(void)
 {
 	Sys_ShowIP();
 }
-
-
-// NERVE - SMF
-/*
-=======================
-CL_AddToLimboChat
-
-=======================
-*/
-void CL_AddToLimboChat(const char *str)
-{
-	int             len;
-	char           *p;//, *ls;
-//	int             lastcolor;
-//	int             chatHeight;
-	int             i;
-
-//	chatHeight = LIMBOCHAT_HEIGHT;
-	cl.limboChatPos = LIMBOCHAT_HEIGHT - 1;
-	len = 0;
-
-	// copy old strings
-	for(i = cl.limboChatPos; i > 0; i--)
-	{
-		strcpy(cl.limboChatMsgs[i], cl.limboChatMsgs[i - 1]);
-	}
-
-	// copy new string
-	p = cl.limboChatMsgs[0];
-	*p = 0;
-
-//	lastcolor = '7';
-
-//	ls = NULL;
-	while(*str)
-	{
-		if(len > LIMBOCHAT_WIDTH - 1)
-		{
-			break;
-		}
-
-		if(Q_IsColorString(str))
-		{
-			*p++ = *str++;
-//			lastcolor = *str;
-			*p++ = *str++;
-			continue;
-		}
-/*
-		if(*str == ' ')
-		{
-			ls = p;
-		}
-*/
-		*p++ = *str++;
-		len++;
-	}
-	*p = 0;
-}
-
-/*
-=======================
-CL_GetLimboString
-
-=======================
-*/
-qboolean CL_GetLimboString(int index, char *buf)
-{
-	if(index >= LIMBOCHAT_HEIGHT)
-	{
-		return qfalse;
-	}
-
-	strncpy(buf, cl.limboChatMsgs[index], 140);
-	return qtrue;
-}
-
-// -NERVE - SMF
-
-
 
 // NERVE - SMF - Localization code
 #define FILE_HASH_SIZE      1024

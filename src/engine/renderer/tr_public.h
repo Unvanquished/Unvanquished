@@ -98,7 +98,6 @@ typedef struct
 	void            (*AddLightToScene) (const vec3_t org, float radius, float intensity, float r, float g, float b,
 										qhandle_t hShader, int flags);
 
-	// Dushan
 	void	        (*AddAdditiveLightToScene)( const vec3_t org, float intensity, float r, float g, float b );
 
 //----(SA)
@@ -255,7 +254,6 @@ typedef struct
 	int             (*CIN_PlayCinematic) (const char *arg0, int xpos, int ypos, int width, int height, int bits);
 	                e_status(*CIN_RunCinematic) (int handle);
 
-	// Dushan
 	long			(*ftol)(float f);
 	const char     *(*Con_GetText)( int console );
 	void		    (*HTTP_PostBug)(const char *fileName);

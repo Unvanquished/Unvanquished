@@ -1680,7 +1680,6 @@ Safe strncpy that ensures a trailing zero
 =============
 */
 
-// Dushan
 #ifdef _DEBUG
 void Q_strncpyzDebug (char *dest, const char *src, size_t destsize, const char *file, int line)
 #else
@@ -2056,9 +2055,8 @@ int QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) {
 	len = Q_vsnprintf( dest, size, fmt, argptr );
 	va_end( argptr );
 
-	// Dushan
 	if(len >= size) {
-		Com_Printf("Com_sprintf: Output length %d too short, require %d bytes.\n", size, len + 1);
+		Com_Printf("Com_sprintf: Output length %d too short, %d bytes required.\n", size, len + 1);
 	}
 
 	if ( len == -1 ) {

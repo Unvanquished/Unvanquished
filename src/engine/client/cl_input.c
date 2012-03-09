@@ -339,14 +339,12 @@ void IN_StrafeUp(void)
 #ifdef USE_VOIP
 void IN_VoipRecordDown(void) {
 	//IN_KeyDown(&in_voiprecord);
-	// Dushan
 	IN_KeyDown(&kb[KB_VOIPRECORD]);
 	Cvar_Set("cl_voipSend", "1");
 }
 
 void IN_VoipRecordUp(void) {
 	// IN_KeyUp(&in_voiprecord);
-	// Dushan
 	IN_KeyUp(&kb[KB_VOIPRECORD]);
 	Cvar_Set("cl_voipSend", "0");
 }

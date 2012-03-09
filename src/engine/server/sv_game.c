@@ -572,9 +572,8 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 		case G_GET_CONFIGSTRING:
 			SV_GetConfigstring(args[1], VMA(2), args[3]);
 			return 0;
-		// Dushan - Tremulous
 		case G_SET_CONFIGSTRING_RESTRICTIONS:
-			// Dushan: FIX ME
+			// FIXME
 			//SV_SetConfigstringRestrictions( args[1], VMA(2) );
 			return 0;
 		case G_SET_USERINFO:
@@ -632,7 +631,6 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 			Q_SnapVector(VMA(1));
 			return 0;
 
-		// Dushan - Tremulous
 		case G_SEND_GAMESTAT:
 			SV_MasterGameStat( VMA(1) );
 			return 0;
@@ -660,7 +658,6 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 		case G_GET_SOUND_LENGTH:
 			return S_GetSoundLength(args[1]);
 
-		// Dushan - Tremulous
 		case G_PARSE_ADD_GLOBAL_DEFINE:
 			return Parse_AddGlobalDefine( VMA(1) );
 		case G_PARSE_LOAD_SOURCE:
@@ -1158,7 +1155,6 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 			return SV_BinaryMessageStatus(args[1]);
 
 #if defined(ET_MYSQL)
-		//Dushan
         case G_SQL_RUNQUERY:
                 return OW_RunQuery( VMA(1) );
 
