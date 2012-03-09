@@ -2269,9 +2269,9 @@ static ID_INLINE void SwapPixel(byte * inout, int x, int y, int x2, int y2, int 
 static void R_Flip(byte * in, int width, int height)
 {
 	int             x, y;
-	byte           *out;
+//	byte           *out;
 
-	out = in;
+//	out = in;
 
 	for(y = 0; y < height; y++)
 	{
@@ -2285,9 +2285,9 @@ static void R_Flip(byte * in, int width, int height)
 static void R_Flop(byte * in, int width, int height)
 {
 	int             x, y;
-	byte           *out;
+//	byte           *out;
 
-	out = in;
+//	out = in;
 
 	for(y = 0; y < height / 2; y++)
 	{
@@ -2680,13 +2680,13 @@ static void R_CreateFogImage(void)
 {
 	int             x, y;
 	byte           *data;
-	float           g;
+	//float           g;
 	float           d;
 	float           borderColor[4];
 
 	data = ri.Hunk_AllocateTempMemory(FOG_S * FOG_T * 4);
 
-	g = 2.0;
+	//g = 2.0;
 
 	// S is distance, T is depth
 	for(x = 0; x < FOG_S; x++)
@@ -2757,7 +2757,7 @@ static void R_CreateRandomNormalsImage(void)
 
 			r = random();
 			angle = 2.0 * M_PI * r;// / 360.0;
-	
+
 			VectorSet(n, cos(angle), sin(angle), r);
 			VectorNormalize(n);
 
@@ -3265,7 +3265,7 @@ static void R_CreateShadowMapFBOImage(void)
 			else if(r_shadows->integer == SHADOWING_EVSM32)
 			{
 				if(r_evsmPostProcess->integer)
-				{	
+				{
 					tr.sunShadowMapFBOImage[i] = R_CreateImage(va("_sunShadowMapFBO%d", i), data, width, height, IF_NOPICMIP | IF_DEPTH24, (r_shadowMapLinearFilter->integer ? FT_LINEAR : FT_NEAREST), WT_EDGE_CLAMP);
 				}
 				else

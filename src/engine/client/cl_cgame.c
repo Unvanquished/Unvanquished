@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -897,9 +897,9 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			GLimp_AcquireGL();
 			return re.RegisterModel( VMA(1) );
 			GLimp_ReleaseGL();
-#else		
+#else
 			return re.RegisterModel(VMA(1));
-#endif // IPHONE			
+#endif // IPHONE
 		case CG_R_REGISTERSKIN:
 			return re.RegisterSkin(VMA(1));
 
@@ -915,7 +915,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			GLimp_AcquireGL();
 			return re.RegisterShader( VMA(1) );
 			GLimp_ReleaseGL();
-#else		
+#else
 			return re.RegisterShader(VMA(1));
 #endif // IPHONE
 		case CG_R_REGISTERFONT:
@@ -926,7 +926,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			GLimp_AcquireGL();
 			return re.RegisterShaderNoMip( VMA(1) );
 			GLimp_ReleaseGL();
-#else		
+#else
 			return re.RegisterShaderNoMip(VMA(1));
 #endif // IPHONE
 #if defined(USE_REFLIGHT)
@@ -1525,7 +1525,7 @@ or bursted delayed packets.
 
 void CL_AdjustTimeDelta(void)
 {
-	int             resetTime;
+//	int             resetTime;
 	int             newDelta;
 	int             deltaDelta;
 
@@ -1538,6 +1538,7 @@ void CL_AdjustTimeDelta(void)
 	}
 
 	// if the current time is WAY off, just correct to the current value
+/*
 	if(com_sv_running->integer)
 	{
 		resetTime = 100;
@@ -1546,6 +1547,7 @@ void CL_AdjustTimeDelta(void)
 	{
 		resetTime = RESET_TIME;
 	}
+*/
 
 	newDelta = cl.snap.serverTime - cls.realtime;
 	deltaDelta = abs(newDelta - cl.serverTimeDelta);
@@ -1611,11 +1613,11 @@ void CL_FirstSnapshot(void)
 		return;
 	}
 	cls.state = CA_ACTIVE;
-	
+
 #ifdef IPHONE
 	// Force the device into right landscape mode:
 	GLimp_SetMode(90);
-#endif // IPHONE	
+#endif // IPHONE
 
 	// set the timedelta so we are exactly on this first frame
 	cl.serverTimeDelta = cl.snap.serverTime - cls.realtime;
@@ -1638,8 +1640,8 @@ void CL_FirstSnapshot(void)
 		int ret = mumble_link(CLIENT_WINDOW_TITLE);
 		Com_Printf("Mumble: Linking to Mumble application %s\n", ret==0?"ok":"failed");
 	}
-#endif	
-	
+#endif
+
 #ifdef USE_VOIP
 	if (!clc.speexInitialized) {
 		int i;
