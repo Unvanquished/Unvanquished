@@ -147,10 +147,7 @@ qboolean GetNews( qboolean begin )
 {
 #ifdef USE_CURL
 	qboolean finished = qfalse;
-<<<<<<< HEAD
 	//fileHandle_t fileIn;
-=======
->>>>>>> bbd46fa049ac0d18f138455fcf6bdfa55b5ddee6
 	int readSize;
 
 	if( begin ) { // if not already using curl, start the download
@@ -165,24 +162,17 @@ qboolean GetNews( qboolean begin )
 
 	if (FS_SV_FOpenFileRead("news.dat", &clc.download)) {
 		readSize = FS_Read(clc.newsString, sizeof( clc.newsString ), clc.download);
-<<<<<<< HEAD
 		//FS_FCloseFile(fileIn);
-=======
->>>>>>> bbd46fa049ac0d18f138455fcf6bdfa55b5ddee6
-		clc.newsString[ readSize ] = '\0';
 		if( readSize > 0 ) {
 			finished = qtrue;
 			clc.bWWWDl = qfalse;
 			cls.bWWWDlDisconnected = qfalse;
 		}
 	}
-<<<<<<< HEAD
 	if( !finished )
-=======
     FS_FCloseFile(clc.download);
 
 	if( !finished ) 
->>>>>>> bbd46fa049ac0d18f138455fcf6bdfa55b5ddee6
 		strcpy( clc.newsString, "Retrieving..." );
 	Cvar_Set( "cl_newsString", clc.newsString );
 	return finished;
