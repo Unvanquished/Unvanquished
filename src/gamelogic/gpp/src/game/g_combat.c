@@ -294,14 +294,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
   {
     attacker->client->lastkilled_client = self->s.number;
 
-    if( g_showKillerHP.integer )
-    {
-      trap_SendServerCommand( self - g_entities, va( "print \"Your killer, %s^7, had %3i HP.\n\"",
-        killerName,
-        attacker->health ) );
-    }
-
-    if( ( attacker == self || OnSameTeam( self, attacker ) ) && meansOfDeath != MOD_HSPAWN )
+    if( ( attacker == self || OnSameTeam( self, attacker ) ) )
     {
       //punish team kills and suicides
       if( attacker->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
@@ -314,6 +307,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
         G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, qtrue );
         AddScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
       }
+    }
+    else if( g_showKillerHP.integer )
+    {
+      trap_SendServerCommand( self - g_entities, va( "print \"Your killer, %s^7, had %3i HP.\n\"",
+        killerName,
+        attacker->health ) );
     }
   }
   else if( attacker->s.eType != ET_BUILDABLE )
