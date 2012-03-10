@@ -458,6 +458,7 @@ qboolean        SV_VerifyChallenge(char *challenge);
 // sv_init.c
 //
 void            SV_SetConfigstringNoUpdate(int index, const char *val);
+void            SV_UpdateConfigStrings(void);
 void            SV_SetConfigstring(int index, const char *val);
 void            SV_UpdateConfigStrings(void);
 void            SV_GetConfigstring(int index, char *buffer, int bufferSize);
