@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -277,8 +277,8 @@ qboolean SV_ApproveGuid( const char *guid) {
 
 	if (sv_requireValidGuid->integer > 0) {
 		length = strlen(guid); // could avoid this extra linear-time computation
-		if (length != 32) {
-			return qfalse;
+		if (length != 32) { 
+			return qfalse; 
 		}
 		for (i = 31; i >= 0;) {
 			c = guid[i--];
@@ -361,7 +361,7 @@ void SV_DirectConnect( netadr_t from ) {
 		NET_OutOfBandPrint(NS_SERVER, from, "print\nGet legit, bro.\n");
 		Com_DPrintf("Invalid cl_guid, rejected connect from %s\n", NET_AdrToString (from));
 		return;
-	}
+	}	
 
 	// See comment made in SV_UserinfoChanged() regarding handicap.
 
@@ -393,7 +393,7 @@ void SV_DirectConnect( netadr_t from ) {
 	if ( !NET_IsLocalAddress( from ) ) {
 		int ping;
 
-
+		
 		for ( i = 0 ; i < MAX_CHALLENGES ; i++ ) {
 			if ( NET_CompareAdr( from, svs.challenges[i].adr ) ) {
 				if ( challenge == svs.challenges[i].challenge ) {
@@ -590,14 +590,14 @@ void SV_FreeClient(client_t *client)
 {
 #ifdef USE_VOIP
 	int index;
-
+	
 	for(index = client->queuedVoipIndex; index < client->queuedVoipPackets; index++)
 	{
 		index %= ARRAY_LEN(client->voipPacket);
-
+		
 		Z_Free(client->voipPacket[index]);
 	}
-
+	
 	client->queuedVoipPackets = 0;
 #endif
 
@@ -654,9 +654,9 @@ void SV_DropClient(client_t * drop, const char *reason)
 		// Kill any download
 		SV_CloseDownload(drop);
 	}
-
+	
 	// Free all allocated data on the client structure
-	SV_FreeClient(drop);
+	SV_FreeClient(drop);	
 
 	if((!SV_GameIsSinglePlayer()) || (!isBot))
 	{
@@ -1389,7 +1389,7 @@ This routine would be a bit simpler with a goto but i abstained
 
 =================
 */
-static void SV_VerifyPaks_f(client_t * cl)
+static void SV_VerifyPaks_f(client_t * cl) 
 {
 	int             nChkSum1, nChkSum2, nClientPaks, nServerPaks, i, j, nCurArg;
 	int             nClientChkSum[1024];
@@ -1621,9 +1621,9 @@ into a more C friendly form.
 void SV_UserinfoChanged(client_t * cl)
 {
 	char           *val;
-//	char           *ip;
+	char           *ip;
 	int             i;
-//	int				len;
+	int				len;
 
 	// In the ugly [commented out] code below, handicap is supposed to be
 	// either missing or a valid int between 1 and 100.
@@ -1672,7 +1672,7 @@ void SV_UserinfoChanged(client_t * cl)
 			cl->rate = 5000;
 		}
 	}
-
+	
 	//donmichelangelo: This code isn't used in ET and may cause an overflow in the userinfo string
 	/*
 	val = Info_ValueForKey(cl->userinfo, "handicap");
@@ -1693,7 +1693,7 @@ void SV_UserinfoChanged(client_t * cl)
 		if(i < 1) {
 			i = 1;
 		} else if ( i > sv_fps->integer ) {
-			i = sv_fps->integer;
+			i = sv_fps->integer; 
 		}
 		cl->snapshotMsec = 1000 / i;
 	}
@@ -1707,8 +1707,8 @@ void SV_UserinfoChanged(client_t * cl)
 	//  accept explicitly 1, not generally non-zero.
 	val = Info_ValueForKey (cl->userinfo, "cl_voip");
 	cl->hasVoip = (atoi(val) == 1) ? qtrue : qfalse;
-#endif
-
+#endif	
+	
 	// TTimo
 	// maintain the IP information
 	// this is set in SV_DirectConnect (directly on the server, not transmitted), may be lost when client updates it's userinfo
@@ -1805,7 +1805,7 @@ static ucmd_t   ucmds[] = {
 	{"donedl", SV_DoneDownload_f, qfalse},
 #ifdef USE_VOIP
 	{"voip", SV_Voip_f},
-#endif
+#endif	
 	{"wwwdl", SV_WWWDownload_f, qfalse},
 	{NULL, NULL}
 };
@@ -1854,7 +1854,7 @@ void SV_ExecuteClientCommand(client_t * cl, const char *s, qboolean clientOK, qb
 	int				i;
 	char			*arg;
 	qboolean		exploitDetected;
-
+	
 	Com_DPrintf("EXCL: %s\n", s);
 	Cmd_TokenizeString(s);
 
@@ -2202,7 +2202,7 @@ static qboolean SV_ShouldIgnoreVoipSender(const client_t *cl)
 		return qtrue;  // VoIP disabled on this server.
 	else if (!cl->hasVoip)  // client doesn't have VoIP support?!
 		return qtrue;
-
+    
 	// !!! FIXME: implement player blacklist.
 
 	return qfalse;  // don't ignore.

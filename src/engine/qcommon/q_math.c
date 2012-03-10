@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -1119,7 +1119,7 @@ __inline __declspec( naked ) int BoxOnPlaneSide_fast( vec3_t emins, vec3_t emaxs
 		mov Ljmptab[7 * 4], offset Lcase7
 
 initialized:
-
+		
 		mov edx,dword ptr[4 + 12 + esp]
 		mov ecx,dword ptr[4 + 4 + esp]
 		xor eax,eax
@@ -1890,7 +1890,7 @@ vec_t DistanceBetweenLineSegmentsSquared(const vec3_t sP0, const vec3_t sP1,
 	float           sN, sD;
 	float           tN, tD;
 	vec3_t          separation;
-
+	
 	VectorSubtract(sP1, sP0, sMag);
 	VectorSubtract(tP1, tP0, tMag);
 	VectorSubtract(sP0, tP0, diff);
@@ -1900,7 +1900,7 @@ vec_t DistanceBetweenLineSegmentsSquared(const vec3_t sP0, const vec3_t sP1,
 	d = DotProduct(sMag, diff);
 	e = DotProduct(tMag, diff);
 	sD = tD = D = a * c - b * b;
-
+	
 	if(D < LINE_DISTANCE_EPSILON)
 	{
 		// the lines are almost parallel
@@ -1911,10 +1911,10 @@ vec_t DistanceBetweenLineSegmentsSquared(const vec3_t sP0, const vec3_t sP1,
 	}
 	else
 	{
-		// get the closest points on the infinite  lines
+		// get the closest points on the infinite  lines	
 		sN = (b * e - c * d);
 		tN = (a * e - b * d);
-
+		
 		if(sN < 0.0)
 		{
 			// sN < 0 => the s=0 edge is visible
@@ -1930,12 +1930,12 @@ vec_t DistanceBetweenLineSegmentsSquared(const vec3_t sP0, const vec3_t sP1,
 			tD = c;
 		}
 	}
-
+	
 	if(tN < 0.0)
 	{
 		// tN < 0 => the t=0 edge is visible
 		tN = 0.0;
-
+		
 		// recompute sN for this edge
 		if(-d < 0.0)
 			sN = 0.0;
@@ -1951,7 +1951,7 @@ vec_t DistanceBetweenLineSegmentsSquared(const vec3_t sP0, const vec3_t sP1,
 	{
 		// tN > tD => the t=1 edge is visible
 		tN = tD;
-
+		
 		// recompute sN for this edge
 		if((-d + b) < 0.0)
 			sN = 0;
@@ -1963,19 +1963,19 @@ vec_t DistanceBetweenLineSegmentsSquared(const vec3_t sP0, const vec3_t sP1,
 			sD = a;
 		}
 	}
-
+		
 	// finally do the division to get *s and *t
 	*s = (fabs(sN) < LINE_DISTANCE_EPSILON ? 0.0 : sN / sD);
 	*t = (fabs(tN) < LINE_DISTANCE_EPSILON ? 0.0 : tN / tD);
-
+	
 	// get the difference of the two closest points
 	VectorScale(sMag, *s, sMag);
 	VectorScale(tMag, *t, tMag);
 	VectorAdd(diff, sMag, separation);
 	VectorSubtract(separation, tMag, separation);
-
+	
 	return VectorLengthSquared(separation);
-
+	
 }
 
 /*
@@ -2755,7 +2755,7 @@ void MatrixFromQuat(matrix_t m, const quat_t q)
 
 	http://www.intel.com/cd/ids/developer/asmo-na/eng/293748.htm
 	*/
-	float			x2, y2, z2 /*, w2*/;
+	float			x2, y2, z2, w2;
 	float			yy2, xy2;
 	float			xz2, yz2, zz2;
 	float			wz2, wy2, wx2, xx2;
@@ -2763,7 +2763,7 @@ void MatrixFromQuat(matrix_t m, const quat_t q)
 	x2 = q[0] + q[0];
 	y2 = q[1] + q[1];
 	z2 = q[2] + q[2];
-	//w2 = q[3] + q[3]; //Is this used for some underlying optimization?
+	w2 = q[3] + q[3];
 
 	yy2 = q[1] * y2;
 	xy2 = q[0] * y2;

@@ -33,7 +33,6 @@ MDXSurfaceCompare
 compare function for qsort()
 =================
 */
-#if 0
 static int MDXSurfaceCompare(const void *a, const void *b)
 {
 	mdvSurface_t   *aa, *bb;
@@ -50,7 +49,7 @@ static int MDXSurfaceCompare(const void *a, const void *b)
 
 	return 0;
 }
-#endif
+
 /*
 =================
 R_LoadMD3
@@ -288,10 +287,10 @@ qboolean R_LoadMD3(model_t * mod, int lod, void *buffer, int bufferSize, const c
 		GLuint          ofsBinormals;
 		GLuint          ofsNormals;
 
-		GLuint			sizeXYZ = 0;
-		GLuint			sizeTangents = 0;
-		GLuint			sizeBinormals = 0;
-		GLuint			sizeNormals = 0;
+		GLuint			sizeXYZ;
+		GLuint			sizeTangents;
+		GLuint			sizeBinormals;
+		GLuint			sizeNormals;
 
 		int				vertexesNum;
 		int				f;

@@ -797,6 +797,7 @@ int main( int argc, char **argv )
 	}
 #endif
 
+	// Dushan
 #ifdef _DEBUG
 	Sys_PrintCpuInfo();
 	Sys_PrintMemoryInfo();

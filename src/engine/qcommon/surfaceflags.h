@@ -39,8 +39,13 @@ Maryland 20850 USA.
 
 
 
-// content flags are separate bits
-// a given brush can bear multiple content bits
+// contents flags are seperate bits
+// a given brush can contribute multiple content bits
+
+// these definitions also need to be in q_shared.h!
+
+// contents flags are seperate bits
+// a given brush can contribute multiple content bits
 
 // these definitions also need to be in q_shared.h!
 
@@ -71,10 +76,11 @@ Maryland 20850 USA.
 #define CONTENTS_TRIGGER        0x40000000
 #define CONTENTS_NODROP         0x80000000	// don't leave bodies or items (death fog, lava)
 
+// Dushan - Tremulous
 // custominfoparms below
-#define	CONTENTS_NOALIENBUILD   0x1000	//disallow alien building
-#define	CONTENTS_NOHUMANBUILD   0x2000	//disallow human building
-#define	CONTENTS_NOBUILD        0x4000	//disallow building
+#define	CONTENTS_NOALIENBUILD	0x1000	//disallow alien building
+#define	CONTENTS_NOHUMANBUILD	0x2000	//disallow human building
+#define	CONTENTS_NOBUILD		0x4000	//disallow building
 
 #define SURF_NODAMAGE           0x000000001	// never give falling damage
 #define SURF_SLICK              0x000000002	// effects game physics
@@ -110,6 +116,7 @@ Maryland 20850 USA.
 
 #define SURF_LANDMINE           0x080000000	// ydnar: ok to place landmines on this surface
 
-#define SURF_NOALIENBUILD       0x10000000 //disallow alien building
-#define SURF_NOHUMANBUILD       0x20000000 //disallow human building
-#define SURF_NOBUILD            0x40000000 //disallow building
+// Dushan - Tremulous
+#define	SURF_NOALIENBUILD		0x10000000  //disallow alien building
+#define	SURF_NOHUMANBUILD		0x20000000 //disallow human building
+#define	SURF_NOBUILD			0x40000000 //disallow building

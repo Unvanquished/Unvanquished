@@ -151,6 +151,8 @@ static void *GPA(char *str)
 	}
 	else
 	{
+		// Dushan : Print some developer information
+		// Don't allow this for release
 #if defined _DEBUG
 		si.Printf(PRINT_ALL, " Loaded symbol %s (0x%08X)\n", str, rv);
 #endif

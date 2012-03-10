@@ -260,7 +260,8 @@ typedef struct client_s
 
 //=============================================================================
 
-#define STATFRAMES 100
+// Dushan
+#define	STATFRAMES	100
 typedef struct {
 	double	active;
 	double	idle;
@@ -344,14 +345,15 @@ typedef struct
 #ifdef USE_HUB_SERVER
     netadr_t        owHubAddress;     // address of hub we're using
 #endif
-	svstats_t       stats;
+	// Dushan
+	svstats_t		stats;
 } serverStatic_t;
 
 //=============================================================================
 
-extern serverStatic_t svs; // persistant server info across maps
-extern server_t sv;        // cleared each map
-extern vm_t    *gvm;       // game virtual machine
+extern serverStatic_t svs;		// persistant server info across maps
+extern server_t sv;				// cleared each map
+extern vm_t    *gvm;			// game virtual machine
 
 extern cvar_t  *sv_fps;
 extern cvar_t  *sv_timeout;

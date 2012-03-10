@@ -1059,6 +1059,7 @@ static void SV_Status_f(void)
 	playerState_t  *ps;
 	const char     *s;
 	int             ping;
+	// Dushan
 	float           cpu, avg;
 
 	// make sure server is running
@@ -1068,6 +1069,7 @@ static void SV_Status_f(void)
 		return;
 	}
 
+	// Dushan
 	cpu = (svs.stats.latched_active + svs.stats.latched_idle);
 	if (cpu)
 		cpu = 100 * svs.stats.latched_active / cpu;

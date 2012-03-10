@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -57,7 +57,7 @@ frame.
 
 static float    frontlerp, backlerp;
 static float    torsoFrontlerp, torsoBacklerp;
-//static int     *boneRefs;
+static int     *boneRefs;
 static mdxBoneFrame_t bones[MDX_MAX_BONES], rawBones[MDX_MAX_BONES], oldBones[MDX_MAX_BONES];
 static char     validBones[MDX_MAX_BONES];
 static char     newBones[MDX_MAX_BONES];
@@ -78,7 +78,7 @@ static int      render_count;
 static float    lodRadius, lodScale;
 static int32_t *pCollapseMap;
 static int32_t  collapse[MDM_MAX_VERTS], *pCollapse;
-//static int      p0, p1, p2;
+static int      p0, p1, p2;
 static qboolean isTorso, fullTorso;
 static vec4_t   m1[4], m2[4];
 static vec3_t   t;
@@ -318,8 +318,8 @@ static int R_CalcMDMLodIndex(refEntity_t * ent, vec3_t origin, float radius, flo
 	if(ent->reFlags & REFLAG_DEAD_LOD)
 	{
 		if(flod < 0.35)
-		{
-			// allow dead to lod down to 35% (even if below surf->minLod) (%35 is arbitrary and probably not good generally.
+		{						
+			// allow dead to lod down to 35% (even if below surf->minLod) (%35 is arbitrary and probably not good generally.  
 			// worked for the blackguard/infantry as a test though)
 			flod = 0.35;
 		}
@@ -414,7 +414,7 @@ static shader_t *GetMDMSurfaceShader(const trRefEntity_t * ent, mdmSurfaceIntern
 	else if(ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins)
 	{
 		skin_t         *skin;
-		//int             hash;
+		int             hash;
 		int             j;
 
 		skin = R_GetSkinByHandle(ent->e.customSkin);
@@ -424,7 +424,7 @@ static shader_t *GetMDMSurfaceShader(const trRefEntity_t * ent, mdmSurfaceIntern
 
 #if 1
 		// Q3A way
-
+		
 		// match the surface name to something in the skin file
 		shader = tr.defaultShader;
 		for(j = 0; j < skin->numSurfaces; j++)
@@ -525,14 +525,14 @@ void R_MDM_AddAnimSurfaces(trRefEntity_t * ent)
 		R_SetupEntityLighting(&tr.refdef, ent, NULL);
 	}
 
-
+	
 	// see if we are in a fog volume
 	fogNum = R_FogWorldBox(ent->worldBounds);
 
 	// draw all surfaces
 	if(r_vboModels->integer && mdm->numVBOSurfaces && glConfig2.vboVertexSkinningAvailable)// && ent->e.skeleton.type == SK_ABSOLUTE))
 	{
-		int             i;
+		int             i, j;
 		srfVBOMDMMesh_t *vboSurface;
 		shader_t       *shader;
 
@@ -577,7 +577,7 @@ void R_AddMDMInteractions(trRefEntity_t * ent, trRefLight_t * light)
 	mdmModel_t     *model = 0;
 	mdmSurfaceIntern_t *mdmSurface = 0;
 	shader_t       *shader = 0;
-	//int             lod;
+	int             lod;
 	qboolean        personalModel;
 	byte            cubeSideBits;
 	interactionType_t iaType = IA_DEFAULT;
@@ -642,7 +642,7 @@ void R_AddMDMInteractions(trRefEntity_t * ent, trRefLight_t * light)
 		{
 			vboSurface = model->vboSurfaces[i];
 			mdmSurface = vboSurface->mdmSurface;
-
+			
 			shader = GetMDMSurfaceShader(ent, mdmSurface);
 
 			// skip all surfaces that don't matter for lighting only pass
@@ -1901,7 +1901,7 @@ void Tess_MDM_SurfaceAnim(mdmSurfaceIntern_t * surface)
 		tess.indexes[tess.numIndexes + i * 3 + 1] = tess.numVertexes + tri->indexes[1];
 		tess.indexes[tess.numIndexes + i * 3 + 2] = tess.numVertexes + tri->indexes[2];
 	}
-
+	
 	tess.numIndexes += surface->numTriangles * 3;
 	tess.numVertexes += render_count;
 
@@ -1915,7 +1915,7 @@ void Tess_MDM_SurfaceAnim(mdmSurfaceIntern_t * surface)
 			tess.indexes[tess.numIndexes + i * 3 + 1] = tess.numVertexes + tri->indexes[1];
 			tess.indexes[tess.numIndexes + i * 3 + 2] = tess.numVertexes + tri->indexes[2];
 		}
-
+		
 		tess.numIndexes += surface->numTriangles * 3;
 		tess.numVertexes += render_count;
 	}
@@ -1962,7 +1962,7 @@ void Tess_MDM_SurfaceAnim(mdmSurfaceIntern_t * surface)
 	}
 #endif
 
-
+	
 
 	// deform the vertexes by the lerped bones
 	v = surface->verts;
@@ -1996,7 +1996,7 @@ void Tess_MDM_SurfaceAnim(mdmSurfaceIntern_t * surface)
 		tess.texCoords[baseVertex + j][0] = v->texCoords[0];
 		tess.texCoords[baseVertex + j][1] = v->texCoords[1];
 	}
-
+	
 	DBG_SHOWTIME
 
 #if 0
@@ -2324,7 +2324,7 @@ void Tess_SurfaceVBOMDMMesh(srfVBOMDMMesh_t * surface)
 	mdmModel = surface->mdmModel;
 	mdmSurface = surface->mdmSurface;
 
-	refent = &backEnd.currentEntity->e;
+	refent = &backEnd.currentEntity->e;	
 
 	// RB: R_CalcBones requires the bone references from the original mdmSurface_t because
 	// the GPU vertex skinning only requires a subset which does not reference the parent bones of the vertex weights.

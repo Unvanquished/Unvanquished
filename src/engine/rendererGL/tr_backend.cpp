@@ -209,7 +209,7 @@ void GL_SelectTexture(int unit)
 
 void GL_BlendFunc(GLenum sfactor, GLenum dfactor)
 {
-	if(glState.blendSrc != (signed)sfactor || glState.blendDst != (signed)dfactor)
+	if(glState.blendSrc != sfactor || glState.blendDst != dfactor)
 	{
 		glState.blendSrc = sfactor;
 		glState.blendDst = dfactor;
@@ -266,7 +266,7 @@ void GL_ColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alph
 
 void GL_CullFace(GLenum mode)
 {
-	if(glState.cullFace != (signed)mode)
+	if(glState.cullFace != mode)
 	{
 		glState.cullFace = mode;
 
@@ -276,7 +276,7 @@ void GL_CullFace(GLenum mode)
 
 void GL_DepthFunc(GLenum func)
 {
-	if(glState.depthFunc != (signed)func)
+	if(glState.depthFunc != func)
 	{
 		glState.depthFunc = func;
 
@@ -296,7 +296,7 @@ void GL_DepthMask(GLboolean flag)
 
 void GL_DrawBuffer(GLenum mode)
 {
-	if(glState.drawBuffer != (signed)mode)
+	if(glState.drawBuffer != mode)
 	{
 		glState.drawBuffer = mode;
 
@@ -306,7 +306,7 @@ void GL_DrawBuffer(GLenum mode)
 
 void GL_FrontFace(GLenum mode)
 {
-	if(glState.frontFace != (signed)mode)
+	if(glState.frontFace != mode)
 	{
 		glState.frontFace = mode;
 
@@ -367,7 +367,7 @@ void GL_PopMatrix()
 
 void GL_PolygonMode(GLenum face, GLenum mode)
 {
-	if(glState.polygonFace != (signed)face || glState.polygonMode != (signed)mode)
+	if(glState.polygonFace != face || glState.polygonMode != mode)
 	{
 		glState.polygonFace = face;
 		glState.polygonMode = mode;
@@ -408,7 +408,7 @@ void GL_PolygonOffset(float factor, float units)
 	{
 		glState.polygonOffsetFactor = factor;
 		glState.polygonOffsetUnits = units;
-
+		
 		glPolygonOffset(factor, units);
 	}
 }
@@ -1454,7 +1454,7 @@ static void RB_RenderDrawSurfaces(bool opaque, bool depthFill, renderDrawSurface
 	GL_CheckErrors();
 }
 
-#if 0
+
 static void RB_RenderOpaqueSurfacesIntoDepth(bool onlyWorld)
 {
 	trRefEntity_t  *entity, *oldEntity;
@@ -1508,7 +1508,7 @@ static void RB_RenderOpaqueSurfacesIntoDepth(bool onlyWorld)
 		// a "entityMergable" shader is a shader that can have surfaces from seperate
 		// entities merged into a single batch, like smoke and blood puff sprites
 		//if(shader != oldShader || lightmapNum != oldLightmapNum || (entity != oldEntity && !shader->entityMergable))
-
+		
 		if(entity == oldEntity && (alphaTest ? shader == oldShader : alphaTest == oldAlphaTest) && deformType == oldDeformType)
 		{
 			// fast path, same as previous sort
@@ -1591,7 +1591,7 @@ static void RB_RenderOpaqueSurfacesIntoDepth(bool onlyWorld)
 
 	GL_CheckErrors();
 }
-#endif
+
 
 // *INDENT-OFF*
 #ifdef VOLUMETRIC_LIGHTING
@@ -2462,9 +2462,9 @@ static void RB_RenderInteractionsShadowMapped()
 							vec4_t			splitFrustum[6];
 							vec3_t			splitFrustumCorners[8];
 							vec3_t			splitFrustumBounds[2];
-//							vec3_t			splitFrustumViewBounds[2];
+							vec3_t			splitFrustumViewBounds[2];
 							vec3_t			splitFrustumClipBounds[2];
-//							float			splitFrustumRadius;
+							float			splitFrustumRadius;
 							int				numCasters;
 							vec3_t			casterBounds[2];
 							vec3_t			receiverBounds[2];
@@ -2611,9 +2611,9 @@ static void RB_RenderInteractionsShadowMapped()
 								#if 1
 								MatrixOrthogonalProjectionRH(projectionMatrix,	splitFrustumViewBounds[0][0],
 																				splitFrustumViewBounds[1][0],
-																				splitFrustumViewBounds[0][1],
-																				splitFrustumViewBounds[1][1],
-																				-splitFrustumViewBounds[1][2],
+																				splitFrustumViewBounds[0][1], 
+																				splitFrustumViewBounds[1][1], 
+																				-splitFrustumViewBounds[1][2], 
 																				-splitFrustumViewBounds[0][2]);
 								#endif
 								MatrixMultiply(projectionMatrix, light->viewMatrix, viewProjectionMatrix);
@@ -3253,11 +3253,6 @@ static void RB_RenderInteractionsShadowMapped()
 					MatrixMultiply2(light->attenuationMatrix, modelToLight);
 					break;
 				}
-				case RL_MAX_REF_LIGHT_TYPE:
-				{
-				    //Nothing for right now...
-				    break;
-				}
 			}
 		}
 
@@ -3441,7 +3436,6 @@ static void RB_RenderInteractionsShadowMapped()
 	}
 }
 
-#if 0
 static void RB_RenderDrawSurfacesIntoGeometricBuffer()
 {
 	trRefEntity_t  *entity, *oldEntity;
@@ -3534,7 +3528,7 @@ static void RB_RenderDrawSurfacesIntoGeometricBuffer()
 			}
 		}
 
-
+		
 
 		// change the modelview matrix if needed
 		if(entity != oldEntity)
@@ -3608,14 +3602,15 @@ static void RB_RenderDrawSurfacesIntoGeometricBuffer()
 		backEnd.pc.c_deferredGBufferTime = endTime - startTime;
 	}
 }
-#endif
+
+
 
 
 void RB_RenderInteractionsDeferred()
 {
 	interaction_t  *ia;
 	int             iaCount;
-	trRefLight_t   *light;//, *oldLight = NULL;
+	trRefLight_t   *light, *oldLight = NULL;
 	shader_t       *lightShader;
 	shaderStage_t  *attenuationXYStage;
 	shaderStage_t  *attenuationZStage;
@@ -3623,7 +3618,7 @@ void RB_RenderInteractionsDeferred()
 	int		j;
 	//vec3_t          viewOrigin;
 	//vec3_t          lightOrigin;
-//	vec4_t          lightColor;
+	vec4_t          lightColor;
 	matrix_t        ortho;
 	vec4_t          quadVerts[4];
 	vec4_t			lightFrustum[6];
@@ -3943,7 +3938,7 @@ void RB_RenderInteractionsDeferred()
 						gl_deferredLightingShader_omniXYZ->SetFrustumClipping(light->clipsNearPlane);
 
 						gl_deferredLightingShader_omniXYZ->BindProgram();
-
+						
 						// end choose right shader program ------------------------------
 
 						gl_deferredLightingShader_omniXYZ->SetUniform_ViewOrigin(backEnd.viewParms.orientation.origin); // in world space
@@ -4001,7 +3996,7 @@ void RB_RenderInteractionsDeferred()
 						{
 							// draw lighting with a fullscreen quad
 							Tess_InstantQuad(backEnd.viewParms.viewportVerts);
-
+						
 							/*
 							Vector4Set(quadVerts[0], ia->scissorX, ia->scissorY, 0, 1);
 							Vector4Set(quadVerts[1], ia->scissorX + ia->scissorWidth - 1, ia->scissorY, 0, 1);
@@ -4025,7 +4020,7 @@ void RB_RenderInteractionsDeferred()
 						gl_deferredLightingShader_projXYZ->SetFrustumClipping(light->clipsNearPlane);
 
 						gl_deferredLightingShader_projXYZ->BindProgram();
-
+						
 						// end choose right shader program ------------------------------
 
 						gl_deferredLightingShader_projXYZ->SetUniform_ViewOrigin(backEnd.viewParms.orientation.origin); // in world space
@@ -4083,7 +4078,7 @@ void RB_RenderInteractionsDeferred()
 						{
 							// draw lighting with a fullscreen quad
 							Tess_InstantQuad(backEnd.viewParms.viewportVerts);
-
+						
 							/*
 							Vector4Set(quadVerts[0], ia->scissorX, ia->scissorY, 0, 1);
 							Vector4Set(quadVerts[1], ia->scissorX + ia->scissorWidth - 1, ia->scissorY, 0, 1);
@@ -4107,7 +4102,7 @@ void RB_RenderInteractionsDeferred()
 						gl_deferredLightingShader_directionalSun->SetFrustumClipping(light->clipsNearPlane);
 
 						gl_deferredLightingShader_directionalSun->BindProgram();
-
+						
 						// end choose right shader program ------------------------------
 
 						gl_deferredLightingShader_directionalSun->SetUniform_ViewOrigin(backEnd.viewParms.orientation.origin); // in world space
@@ -4165,7 +4160,7 @@ void RB_RenderInteractionsDeferred()
 						{
 							// draw lighting with a fullscreen quad
 							Tess_InstantQuad(backEnd.viewParms.viewportVerts);
-
+						
 							/*
 							Vector4Set(quadVerts[0], ia->scissorX, ia->scissorY, 0, 1);
 							Vector4Set(quadVerts[1], ia->scissorX + ia->scissorWidth - 1, ia->scissorY, 0, 1);
@@ -4207,7 +4202,7 @@ void RB_RenderInteractionsDeferred()
 			iaCount++;
 		}
 
-//		oldLight = light;
+		oldLight = light;
 	}
 
 	// clear shader so we can tell we don't have any unclosed surfaces
@@ -4268,7 +4263,8 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 	//vec3_t          viewOrigin;
 	//vec3_t          lightOrigin;
 	vec3_t			lightDirection;
-//	vec4_t          lightColor;
+	vec4_t          lightColor;
+	qboolean        shadowCompare;
 	matrix_t        ortho;
 	vec4_t          quadVerts[4];
 	vec4_t			lightFrustum[6];
@@ -4521,7 +4517,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 							vec4_t			splitFrustum[6];
 							vec3_t			splitFrustumCorners[8];
 							vec3_t			splitFrustumBounds[2];
-//							vec3_t			splitFrustumViewBounds[2];
+							vec3_t			splitFrustumViewBounds[2];
 							vec3_t			splitFrustumClipBounds[2];
 							//float			splitFrustumRadius;
 							int				numCasters;
@@ -5021,9 +5017,9 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 								//MatrixOrthogonalProjectionRH(projectionMatrix, -1, 1, -1, 1, -splitFrustumViewBounds[1][2], -splitFrustumViewBounds[0][2]);
 								MatrixOrthogonalProjectionRH(projectionMatrix,	splitFrustumViewBounds[0][0],
 																				splitFrustumViewBounds[1][0],
-																				splitFrustumViewBounds[0][1],
-																				splitFrustumViewBounds[1][1],
-																				-splitFrustumViewBounds[1][2],
+																				splitFrustumViewBounds[0][1], 
+																				splitFrustumViewBounds[1][1], 
+																				-splitFrustumViewBounds[1][2], 
 																				-splitFrustumViewBounds[0][2]);
 
 								MatrixMultiply(projectionMatrix, light->viewMatrix, viewProjectionMatrix);
@@ -5531,7 +5527,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 						gl_deferredLightingShader_omniXYZ->SetFrustumClipping(light->clipsNearPlane);
 
 						gl_deferredLightingShader_omniXYZ->BindProgram();
-
+						
 						// end choose right shader program ------------------------------
 
 						gl_deferredLightingShader_omniXYZ->SetUniform_ViewOrigin(backEnd.viewParms.orientation.origin); // in world space
@@ -5612,7 +5608,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 						gl_deferredLightingShader_projXYZ->SetFrustumClipping(light->clipsNearPlane);
 
 						gl_deferredLightingShader_projXYZ->BindProgram();
-
+						
 						// end choose right shader program ------------------------------
 
 						gl_deferredLightingShader_projXYZ->SetUniform_ViewOrigin(backEnd.viewParms.orientation.origin); // in world space
@@ -5702,7 +5698,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 						gl_deferredLightingShader_directionalSun->SetFrustumClipping(light->clipsNearPlane);
 
 						gl_deferredLightingShader_directionalSun->BindProgram();
-
+						
 						// end choose right shader program ------------------------------
 
 						gl_deferredLightingShader_directionalSun->SetUniform_ViewOrigin(backEnd.viewParms.orientation.origin); // in world space
@@ -5894,7 +5890,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 							GL_SelectTexture(0);
 							GL_Bind(tr.whiteImage);
 							gl_genericShader->SetUniform_ColorTextureMatrix(matrixIdentity);
-
+				
 							tess.multiDrawPrimitives = 0;
 							tess.numIndexes = 0;
 							tess.numVertexes = 0;
@@ -6537,8 +6533,8 @@ void RB_RenderDepthOfField()
 void RB_RenderGlobalFog()
 {
 	vec3_t          local;
-	vec4_t          fogDistanceVector; //, fogDepthVector; //unused, uninitialized use
-//	vec4_t          fogColor; //unused, uninitialized use
+	vec4_t          fogDistanceVector, fogDepthVector;
+	vec4_t          fogColor;
 	matrix_t        ortho;
 
 	GLimp_LogComment("--- RB_RenderGlobalFog ---\n");
@@ -6572,7 +6568,7 @@ void RB_RenderGlobalFog()
 #if defined(COMPAT_ET)
 	{
 		fog_t          *fog;
-
+		
 		fog = &tr.world->fogs[tr.world->globalFog];
 
 		if(r_logFile->integer)
@@ -6615,11 +6611,11 @@ void RB_RenderGlobalFog()
 	gl_fogGlobalShader->SetUniform_FogDepthVector(fogDepthVector);
 	gl_fogGlobalShader->SetUniform_Color(fogColor);
 #endif
-
+	
 	gl_fogGlobalShader->SetUniform_ViewMatrix(backEnd.viewParms.world.viewMatrix);
 	gl_fogGlobalShader->SetUniform_UnprojectMatrix(backEnd.viewParms.unprojectionMatrix);
 
-
+	
 	// bind u_ColorMap
 	GL_SelectTexture(0);
 	GL_Bind(tr.fogImage);
@@ -6689,7 +6685,7 @@ void RB_RenderBloom()
 		MatrixOrthogonalProjection(ortho, 0, tr.contrastRenderFBO->width, 0, tr.contrastRenderFBO->height, -99999, 99999);
 		GL_LoadProjectionMatrix(ortho);
 #endif
-
+		
 
 		if(DS_STANDARD_ENABLED())
 		{
@@ -6801,7 +6797,7 @@ void RB_RenderBloom()
 			{
 				R_BindFBO(tr.geometricRenderFBO);
 				glDrawBuffers(1, geometricRenderTargets);
-
+				
 				gl_screenShader->BindProgram();
 				GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
 				glVertexAttrib4fvARB(ATTR_INDEX_COLOR, colorWhite);
@@ -6925,7 +6921,7 @@ void RB_CameraPostFX(void)
 
 	MatrixMultiplyScale(grain, r_cameraFilmGrainScale->value, r_cameraFilmGrainScale->value, 0);
 	MatrixMultiplyTranslation(grain, backEnd.refdef.floatTime * 10, backEnd.refdef.floatTime * 10, 0);
-
+	
 	MatrixMultiplyTranslation(grain, 0.5, 0.5, 0.0);
 	MatrixMultiplyZRotation(grain, backEnd.refdef.floatTime * (random() * 7));
 	MatrixMultiplyTranslation(grain, -0.5, -0.5, 0.0);
@@ -7649,7 +7645,7 @@ void RB_RenderLightOcclusionQueries()
 		gl_genericShader->BindProgram();
 		gl_genericShader->SetRequiredVertexPointers();
 
-
+		
 		GL_Cull(CT_TWO_SIDED);
 
 		GL_LoadProjectionMatrix(backEnd.viewParms.projectionMatrix);
@@ -7755,7 +7751,7 @@ void RB_RenderLightOcclusionQueries()
 				// wait if result not available
 				GetLightOcclusionQueryResult(light);
 
-				if((signed)light->occlusionQuerySamples > r_chcVisibilityThreshold->integer)
+				if(light->occlusionQuerySamples > r_chcVisibilityThreshold->integer)
 				{
 					// if a query of multiple previously invisible objects became visible, we need to
 					// test all the individual objects ...
@@ -7842,7 +7838,7 @@ void RB_RenderLightOcclusionQueries()
 				{
 					if(!ia->noOcclusionQueries)
 					{
-						ocSamples = (signed)light->occlusionQuerySamples > r_chcVisibilityThreshold->integer;
+						ocSamples = light->occlusionQuerySamples > r_chcVisibilityThreshold->integer;
 					}
 					else
 					{
@@ -7912,7 +7908,7 @@ static void RenderEntityOcclusionVolume(trRefEntity_t * entity)
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-
+		
 	Tess_AddCube(vec3_origin, entity->localBounds[0], entity->localBounds[1], colorBlue);
 
 	Tess_UpdateVBOs(ATTR_POSITION | ATTR_COLOR);
@@ -7925,7 +7921,7 @@ static void RenderEntityOcclusionVolume(trRefEntity_t * entity)
 
 	vec3_t			boundsCenter;
 	vec3_t			boundsSize;
-	matrix_t		rot;
+	matrix_t		transform, scale, rot;
 	axis_t			axis;
 
 
@@ -7936,7 +7932,7 @@ static void RenderEntityOcclusionVolume(trRefEntity_t * entity)
 	boundsSize[1] = Q_fabs(entity->localBounds[0][1]) + Q_fabs(entity->localBounds[1][1]);
 	boundsSize[2] = Q_fabs(entity->localBounds[0][2]) + Q_fabs(entity->localBounds[1][2]);
 #endif
-
+	
 	VectorScale(entity->e.axis[0], boundsSize[0] * 0.5f, axis[0]);
 	VectorScale(entity->e.axis[1], boundsSize[1] * 0.5f, axis[1]);
 	VectorScale(entity->e.axis[2], boundsSize[2] * 0.5f, axis[2]);
@@ -8231,7 +8227,7 @@ void RB_RenderEntityOcclusionQueries()
 		gl_genericShader->BindProgram();
 		gl_genericShader->SetRequiredVertexPointers();
 
-
+		
 		GL_Cull(CT_TWO_SIDED);
 
 		GL_LoadProjectionMatrix(backEnd.viewParms.projectionMatrix);
@@ -8270,7 +8266,7 @@ void RB_RenderEntityOcclusionQueries()
 				continue;
 
 			backEnd.currentEntity = entity;
-
+			
 			entity->occlusionQuerySamples = 1;
 			entity->noOcclusionQueries = qfalse;
 
@@ -8328,7 +8324,7 @@ void RB_RenderEntityOcclusionQueries()
 				// wait if result not available
 				GetEntityOcclusionQueryResult(entity);
 
-				if((signed)entity->occlusionQuerySamples > r_chcVisibilityThreshold->integer)
+				if(entity->occlusionQuerySamples > r_chcVisibilityThreshold->integer)
 				{
 					// if a query of multiple previously invisible objects became visible, we need to
 					// test all the individual objects ...
@@ -8583,7 +8579,7 @@ static void RB_RenderDebugUtils()
 		int             iaCount, j;
 		trRefLight_t   *light;
 		vec3_t          forward, left, up;
-		vec4_t          lightColor; //unused
+		vec4_t          lightColor;
 		vec4_t          quadVerts[4];
 
 		vec3_t			minSize = {-2, -2, -2};
@@ -8753,7 +8749,7 @@ static void RB_RenderDebugUtils()
 							Tess_DrawElements();
 #else
 							matrix_t		transform, scale, rot;
-
+							
 							MatrixSetupScale(scale, light->l.radius[0], light->l.radius[1], light->l.radius[2]);
 							MatrixMultiply(light->transformMatrix, scale, transform);
 
@@ -9179,7 +9175,7 @@ static void RB_RenderDebugUtils()
 
 			//R_DebugAxis(vec3_origin, matrixIdentity);
 			//R_DebugBoundingBox(vec3_origin, ent->localBounds[0], ent->localBounds[1], colorMagenta);
-
+			
 			tess.multiDrawPrimitives = 0;
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
@@ -9199,7 +9195,7 @@ static void RB_RenderDebugUtils()
 			{
 				Tess_AddCube(vec3_origin, ent->localBounds[0], ent->localBounds[1], colorBlue);
 			}
-
+			
 			Tess_AddCube(vec3_origin, mins, maxs, colorWhite);
 
 			Tess_UpdateVBOs(ATTR_POSITION | ATTR_COLOR);
@@ -9396,7 +9392,7 @@ static void RB_RenderDebugUtils()
 							VectorSubtract(vec3_origin, left, left);
 						}
 
-						for(k = 0; (unsigned)k < strlen(skel->bones[j].name); k++)
+						for(k = 0; k < strlen(skel->bones[j].name); k++)
 						{
 							int				ch;
 							int             row, col;
@@ -9538,7 +9534,7 @@ static void RB_RenderDebugUtils()
 	{
 		cubemapProbe_t *cubeProbe;
 		int             j;
-//		vec4_t          quadVerts[4];
+		vec4_t          quadVerts[4];
 		vec3_t			mins = {-8, -8, -8};
 		vec3_t			maxs = { 8,  8,  8};
 		//vec3_t			viewOrigin;
@@ -9551,19 +9547,19 @@ static void RB_RenderDebugUtils()
 		// choose right shader program ----------------------------------
 		gl_reflectionShader->SetPortalClipping(backEnd.viewParms.isPortal);
 	//	gl_reflectionShader->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
-
+		
 		gl_reflectionShader->SetVertexSkinning(false);
 		gl_reflectionShader->SetVertexAnimation(false);
-
+		
 		gl_reflectionShader->SetDeformVertexes(false);
 
 		gl_reflectionShader->SetNormalMapping(false);
 //		gl_reflectionShader->DisableMacro_TWOSIDED();
 
 		gl_reflectionShader->BindProgram();
-
+		
 		// end choose right shader program ------------------------------
-
+		
 		gl_reflectionShader->SetUniform_ViewOrigin(backEnd.viewParms.orientation.origin); // in world space
 
 		GL_State(0);
@@ -9585,7 +9581,7 @@ static void RB_RenderDebugUtils()
 			// bind u_ColorMap
 			GL_SelectTexture(0);
 			GL_Bind(cubeProbe->cubemap);
-
+			
 			Tess_AddCubeWithNormals(cubeProbe->origin, mins, maxs, colorWhite);
 		}
 
@@ -9718,7 +9714,7 @@ static void RB_RenderDebugUtils()
 
 			length = 8;
 			VectorMA(gridPoint->origin, 8, lightDirection, offset);
-
+			
 			PerpendicularVector(tmp, lightDirection);
 			//VectorCopy(up, tmp);
 
@@ -9778,7 +9774,7 @@ static void RB_RenderDebugUtils()
 
 		GL_CheckErrors();
 
-
+		
 		for(int i = 0; i < 2; i++)
 		{
 			float		x, y, w, h;
@@ -9795,7 +9791,7 @@ static void RB_RenderDebugUtils()
 											backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight, -99999, 99999);
 				GL_LoadProjectionMatrix(ortho);
 				GL_LoadModelViewMatrix(matrixIdentity);
-
+			
 				GL_Cull(CT_TWO_SIDED);
 				GL_State(GLS_DEPTHTEST_DISABLE);
 
@@ -9833,9 +9829,9 @@ static void RB_RenderDebugUtils()
 						vec3_t			forward = {0, 0, -1};
 						vec3_t			up = {1, 0, 0};
 
-						matrix_t		/*rotationMatrix, transformMatrix,*/ viewMatrix, projectionMatrix;
-
-
+						matrix_t		rotationMatrix, transformMatrix, viewMatrix, projectionMatrix;
+						
+						
 						// Quake -> OpenGL view matrix from light perspective
 						#if 0
 						VectorToAngles(lightDirection, angles);
@@ -9867,13 +9863,13 @@ static void RB_RenderDebugUtils()
 							AddPointToBounds(transf, cropBounds[0], cropBounds[1]);
 						}
 
-
+						
 						MatrixOrthogonalProjectionRH(projectionMatrix, cropBounds[0][0], cropBounds[1][0], cropBounds[0][1], cropBounds[1][1], -cropBounds[1][2], -cropBounds[0][2]);
 
 						GL_LoadModelViewMatrix(viewMatrix);
 						GL_LoadProjectionMatrix(projectionMatrix);
 					}
-
+					
 
 					// set uniforms
 					gl_genericShader->SetUniform_ColorModulate(CGEN_VERTEX, AGEN_VERTEX);
@@ -9972,7 +9968,7 @@ static void RB_RenderDebugUtils()
 
 						//if(node->shrinkedAABB)
 						//	gl_genericShader->SetUniform_Color(colorBlue);
-						//else
+						//else 
 						if(node->visCounts[tr.visIndex] == tr.visCounts[tr.visIndex])
 							gl_genericShader->SetUniform_Color(colorGreen);
 						else
@@ -10236,14 +10232,14 @@ static void RB_RenderView(void)
 				glDrawBuffers(1, geometricRenderTargets);
 
 				// copy color of the main context to geometricRenderFBO
-
+				
 				glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, 0);
 				glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer);
 				glBlitFramebufferEXT(0, 0, glConfig.vidWidth, glConfig.vidHeight,
 									   0, 0, glConfig.vidWidth, glConfig.vidHeight,
 									   GL_COLOR_BUFFER_BIT,
 									   GL_NEAREST);
-
+			  
 			}
 			 */
 		}
@@ -10471,9 +10467,9 @@ static void RB_RenderView(void)
 		{
 			clearBits |= GL_STENCIL_BUFFER_BIT;
 		}
-#if defined(COMPAT_ET)
+#if defined(COMPAT_ET)	
 		// ydnar: global q3 fog volume
-		else
+		else 
 		if(tr.world && tr.world->globalFog >= 0)
 		{
 			clearBits |= GL_DEPTH_BUFFER_BIT;
@@ -10481,7 +10477,7 @@ static void RB_RenderView(void)
 			if(!(backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
 			{
 				clearBits |= GL_COLOR_BUFFER_BIT;
-
+			
 				GL_ClearColor(tr.world->fogs[tr.world->globalFog].color[0],
 							tr.world->fogs[tr.world->globalFog].color[1],
 							tr.world->fogs[tr.world->globalFog].color[2], 1.0);
@@ -10517,7 +10513,7 @@ static void RB_RenderView(void)
 					}
 				}
 				else
-				{
+				{					
 					// rendered sky (either clear color or draw quake sky)
 					if(tr.glfogsettings[FOG_PORTALVIEW].registered)
 					{
@@ -10525,7 +10521,7 @@ static void RB_RenderView(void)
 									  tr.glfogsettings[FOG_PORTALVIEW].color[2], tr.glfogsettings[FOG_PORTALVIEW].color[3]);
 
 						if(tr.glfogsettings[FOG_PORTALVIEW].clearscreen)
-						{
+						{			
 							// portal fog requests a screen clear (distance fog rather than quake sky)
 							clearBits |= GL_COLOR_BUFFER_BIT;
 						}
@@ -10533,7 +10529,7 @@ static void RB_RenderView(void)
 				}
 			}
 			else
-			{
+			{						
 				// world scene with portal sky, don't clear any buffers, just set the fog color if there is one
 				clearBits |= GL_DEPTH_BUFFER_BIT;	// this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
 
@@ -10547,7 +10543,7 @@ static void RB_RenderView(void)
 						}
 					}
 					else if(!r_portalSky->integer)
-					{
+					{				
 						// portal skies have been manually turned off, clear bg color
 						clearBits |= GL_COLOR_BUFFER_BIT;
 					}
@@ -10556,7 +10552,7 @@ static void RB_RenderView(void)
 								  tr.glfogsettings[FOG_CURRENT].color[2], tr.glfogsettings[FOG_CURRENT].color[3]);
 				}
 				else if(!r_portalSky->integer)
-				{
+				{					
 					// ydnar: portal skies have been manually turned off, clear bg color
 					clearBits |= GL_COLOR_BUFFER_BIT;
 					GL_ClearColor(0.5, 0.5, 0.5, 1.0);
@@ -10564,7 +10560,7 @@ static void RB_RenderView(void)
 			}
 		}
 		else
-		{
+		{							
 			// world scene with no portal sky
 			clearBits |= GL_DEPTH_BUFFER_BIT;
 
@@ -10579,7 +10575,7 @@ static void RB_RenderView(void)
 				clearBits |= GL_COLOR_BUFFER_BIT;
 
 				if(tr.glfogsettings[FOG_CURRENT].registered)
-				{
+				{					
 					// try to clear fastsky with current fog color
 					GL_ClearColor(tr.glfogsettings[FOG_CURRENT].color[0], tr.glfogsettings[FOG_CURRENT].color[1],
 								  tr.glfogsettings[FOG_CURRENT].color[2], tr.glfogsettings[FOG_CURRENT].color[3]);
@@ -10591,16 +10587,16 @@ static void RB_RenderView(void)
 				}
 			}
 			else
-			{
+			{						
 				// world scene, no portal sky, not fastsky, clear color if fog says to, otherwise, just set the clearcolor
 				if(tr.glfogsettings[FOG_CURRENT].registered)
-				{
+				{					
 					// try to clear fastsky with current fog color
 					GL_ClearColor(tr.glfogsettings[FOG_CURRENT].color[0], tr.glfogsettings[FOG_CURRENT].color[1],
 							  tr.glfogsettings[FOG_CURRENT].color[2], tr.glfogsettings[FOG_CURRENT].color[3]);
 
 					if(tr.glfogsettings[FOG_CURRENT].clearscreen)
-					{
+					{				
 						// world fog requests a screen clear (distance fog rather than quake sky)
 						clearBits |= GL_COLOR_BUFFER_BIT;
 					}
@@ -10953,7 +10949,7 @@ void RE_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte * 
 	// set uniforms
 	gl_genericShader->SetUniform_ColorModulate(CGEN_VERTEX, AGEN_VERTEX);
 	gl_genericShader->SetUniform_Color(colorBlack);
-
+	
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix(glState.modelViewProjectionMatrix[glState.stackIndex]);
 
 	// bind u_ColorMap
@@ -11433,7 +11429,7 @@ const void     *RB_StretchPicGradient(const void *data)
 		tess.colors[numVerts + 3][3] = cmd->gradientColor[0] * (1.0f / 255.0f);
 	}
 
-
+	
 
 	tess.xyz[numVerts][0] = cmd->x;
 	tess.xyz[numVerts][1] = cmd->y;

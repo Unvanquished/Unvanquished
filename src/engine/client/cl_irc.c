@@ -1793,17 +1793,16 @@ static qboolean IRC_InitialiseUser( const char * name ) {
 	const char * source;
 	int i = 0, j = 0;
 	int replaced = 0;
-	int namelen  = 0;
 	char c;
 
-	ovrnn = cl_IRC_override_nickname->integer && strlen( cl_IRC_nickname->string );
+	ovrnn = cl_IRC_override_nickname->integer && strlen( cl_IRC_nickname->name );
 	source = ovrnn ? cl_IRC_nickname->string : name;
-	namelen = ovrnn ? strlen (cl_IRC_nickname->string) : strlen (name);
 
-	// Strip color chars for the player's name, and remove special characters
+	// Strip color chars for the player's name, and remove special
+	// characters
 	IRC_User.nicklen = 0;
 	IRC_User.nickattempts = 1;
-	for (j; j < namelen; j++) {
+	while ( j < 15 ) {
 		if ( !ovrnn ) {
 			// Only process color escape codes if the nickname
 			// is being computed from the player source
@@ -1822,7 +1821,10 @@ static qboolean IRC_InitialiseUser( const char * name ) {
 		}
 
 		c = source[i ++];
-		if ((j == 0 && !(IS_ALPHA(c) || IS_SPECL(c))) || (j > 0 && !IS_CLEAN(c))) {
+		if (j == 0 && !(IS_ALPHA(c) || IS_SPECL(c))) {
+			c = '_';
+			replaced ++;
+		} else if (j > 0 && !(IS_CLEAN( c ))) {
 			c = '_';
 			replaced ++;
 		}
@@ -1832,12 +1834,12 @@ static qboolean IRC_InitialiseUser( const char * name ) {
 		if (!(IS_CLEAN(c)))
 			c = '_';
 		IRC_User.username[j] = c;
+
+		IRC_User.nicklen = ++j;
 	}
 
-	IRC_User.nicklen = j;
-
-	// If the nickname is overriden and its modified value differs
-	// it is invalid
+	// If the nickname is overriden and its modified value differs,
+	// then it is invalid
 	if ( ovrnn && strcmp( source , IRC_User.nick ) )
 		return qfalse;
 

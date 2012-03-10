@@ -1264,7 +1264,7 @@ void GfxInfo_f(void)
 		{
 			ri.Printf(PRINT_ALL, S_COLOR_RED "Having a compatibility profile\n");
 		}
-
+		
 		// check if context is forward compatible
 		glGetIntegerv(GL_CONTEXT_FLAGS, &contextFlags);
 		if(contextFlags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
@@ -1716,11 +1716,11 @@ R_Init
 */
 qboolean R_Init(void)
 {
-//	int             err;
+	int             err;
 	int             i;
 
 	ri.Printf(PRINT_ALL, "----- R_Init -----\n");
-
+	
 	// clear all our internal state
 	Com_Memset(&tr, 0, sizeof(tr));
 	Com_Memset(&backEnd, 0, sizeof(backEnd));
@@ -2002,7 +2002,7 @@ qboolean R_Init(void)
 	backEndData[0]->polys = (srfPoly_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPoly_t), h_low);
 	backEndData[0]->polyVerts = (polyVert_t *) ri.Hunk_Alloc(r_maxPolyVerts->integer * sizeof(polyVert_t), h_low);
 	backEndData[0]->polybuffers = (srfPolyBuffer_t *) ri.Hunk_Alloc(r_maxPolys->integer * sizeof(srfPolyBuffer_t), h_low);
-
+	
 	if(r_smp->integer)
 	{
 		backEndData[1] = (backEndData_t *) ri.Hunk_Alloc(sizeof(*backEndData[1]), h_low);
@@ -2238,7 +2238,7 @@ refexport_t* GetRefAPI(int apiVersion, refimport_t * rimp)
 
 	re.BeginRegistration = RE_BeginRegistration;
 	re.RegisterModel = RE_RegisterModel;
-
+	
 	re.RegisterSkin = RE_RegisterSkin;
 	re.RegisterShader = RE_RegisterShader;
 	re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
@@ -2313,7 +2313,7 @@ refexport_t* GetRefAPI(int apiVersion, refimport_t * rimp)
 
 	re.AddCoronaToScene = RE_AddCoronaToScene;
 	re.AddPolyBufferToScene = RE_AddPolyBufferToScene;
-
+	
 	re.SetFog = RE_SetFog;
 	re.SetGlobalFog = RE_SetGlobalFog;
 

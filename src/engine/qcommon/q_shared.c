@@ -769,10 +769,11 @@ static char *SkipWhitespace( char *data, qboolean *hasNewLines ) {
 
 int COM_Compress( char *data_p ) {
 	char *datai, *datao;
-	int c, size;
+	int c, pc, size;
 	qboolean ws = qfalse;
 
 	size = 0;
+	pc = 0;
 	datai = datao = data_p;
 	if ( datai ) {
 		while ( ( c = *datai ) != 0 ) {
@@ -780,6 +781,7 @@ int COM_Compress( char *data_p ) {
 				*datao = c;
 				datao++;
 				ws = qfalse;
+				pc = c;
 				datai++;
 				size++;
 				// skip double slash comments
@@ -808,6 +810,7 @@ int COM_Compress( char *data_p ) {
 				datao++;
 				datai++;
 				ws = qfalse;
+				pc = c;
 				size++;
 			}
 		}
@@ -1640,46 +1643,13 @@ char* Q_strrchr( const char* string, int c ) {
 
 /*
 =============
-Q_strtoi/l
-
-Takes a null-terminated string (which represents either a float or integer
-conforming to strtod) and an integer to assign to (if successful).
-
-Returns true on success and vice versa.
-Demonstration of behavior of strtod and conversions: http://codepad.org/YQKxV94R
--============
-*/
-qboolean Q_strtol(const char* s, long * outNum)
-{
-	char *p;
-
-	if( *s == '\0' )
-		return qfalse;
-
-	*outNum = strtod( s, &p );
-
-	return *p == '\0';
-}
-
-qboolean Q_strtoi(const char* s, int * outNum)
-{
-	char *p;
-	if ( *s== '\0' )
-		return qfalse;
-	
-	*outNum = strtod( s, &p );
-	
-	return *p == '\0';
-}
-
-/*
-=============
 Q_strncpyz
 
 Safe strncpy that ensures a trailing zero
 =============
 */
 
+// Dushan
 #ifdef _DEBUG
 void Q_strncpyzDebug (char *dest, const char *src, size_t destsize, const char *file, int line)
 #else
@@ -1880,6 +1850,18 @@ int Q_strcasecmp (const char *s1, const char *s2)
 	return Q_strncasecmp (s1, s2, 99999);
 }
 
+qboolean Q_isanumber( const char *s ) {
+	char *p;
+	double d;
+
+	if( *s == '\0' )
+		return qfalse;
+
+	d = strtod( s, &p );
+
+	return *p == '\0';
+}
+
 /*
 * Find the first occurrence of find in s.
 */
@@ -1911,8 +1893,6 @@ const char *Q_stristr( const char *s, const char *find)
   }
   return s;
 }
-
-
 
 
 /*
@@ -2055,8 +2035,9 @@ int QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) {
 	len = Q_vsnprintf( dest, size, fmt, argptr );
 	va_end( argptr );
 
+	// Dushan
 	if(len >= size) {
-		Com_Printf("Com_sprintf: Output length %d too short, %d bytes required.\n", size, len + 1);
+		Com_Printf("Com_sprintf: Output length %d too short, require %d bytes.\n", size, len + 1);
 	}
 
 	if ( len == -1 ) {

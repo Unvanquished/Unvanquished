@@ -244,7 +244,7 @@ std::string	GLShader::BuildGPUShaderText(	const char *mainShaderName,
 			Com_sprintf(filename, sizeof(filename), "glsl/%s_fp.glsl", token);
 			ri.Printf(PRINT_ALL, "...loading vertex shader '%s'\n", filename);
 		}
-
+	
 		libSize = ri.FS_ReadFile(filename, (void **)&libBuffer);
 		if(!libBuffer)
 		{
@@ -253,14 +253,14 @@ std::string	GLShader::BuildGPUShaderText(	const char *mainShaderName,
 
 		// append it to the libsBuffer
 		libsBuffer = (char* ) realloc(libsBuffer, libsSize + libSize);
-
+		
 		memset(libsBuffer + libsSize, 0, libSize);
 		libsSize += libSize;
 
 		Q_strcat(libsBuffer, libsSize, libBuffer);
 		//Q_strncpyz(libsBuffer + libsSize, libBuffer, libSize -1);
 
-
+		
 
 		ri.FS_FreeFile(libBuffer);
 	}
@@ -684,7 +684,7 @@ std::string	GLShader::BuildGPUShaderText(	const char *mainShaderName,
 														r_rimExponent->value));
 		}
 
-
+		
 
 
 		// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
@@ -731,7 +731,7 @@ std::string	GLShader::BuildGPUShaderText(	const char *mainShaderName,
 			static char     msgPart[1024];
 			int             length = 0;
 			int             i;
-
+			
 
 			glslopt_shader_type glsloptShaderType;
 
@@ -740,7 +740,7 @@ std::string	GLShader::BuildGPUShaderText(	const char *mainShaderName,
 			else
 				glsloptShaderType = kGlslOptShaderVertex;
 
-			glslopt_shader* shaderOptimized = glslopt_optimize(s_glslOptimizer,
+			glslopt_shader* shaderOptimized = glslopt_optimize(s_glslOptimizer, 
 				glsloptShaderType, bufferFinal, 0);
 
 			if(glslopt_get_status(shaderOptimized))
@@ -778,7 +778,7 @@ std::string	GLShader::BuildGPUShaderText(	const char *mainShaderName,
 
 				ri.Error(ERR_FATAL, "Couldn't optimize %s", filename);
 			}
-
+			
 			glslopt_shader_delete(shaderOptimized);
 		}
 		else
@@ -928,8 +928,8 @@ void GLShader::CompileGPUShader(GLhandleARB program, const char* programName, co
 void GLShader::PrintShaderText(const std::string& shaderText) const
 {
 	static char     msgPart[1024];
-
-	for(size_t i = 0; i < shaderText.length(); i += 1024)
+	
+	for(int i = 0; i < shaderText.length(); i += 1024)
 	{
 		Q_strncpyz(msgPart, shaderText.c_str() + i, sizeof(msgPart));
 		ri.Printf(PRINT_ALL, "%s\n", msgPart);
@@ -1107,7 +1107,7 @@ void GLShader::SelectProgram()
 	int index = 0;
 
 	size_t numMacros = _compileMacros.size();
-	for(size_t i = 0; i < numMacros; i++)
+	for(int i = 0; i < numMacros; i++)
 	{
 		if(_activeMacros & BIT(i))
 			index += BIT(i);
@@ -1226,7 +1226,7 @@ GLShader_generic::GLShader_generic():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -1274,7 +1274,7 @@ GLShader_generic::GLShader_generic():
 											vertexShaderText,
 											fragmentShaderText,
 											compileMacros);
-
+			
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
 			//shaderProgram->u_ColorMap = glGetUniformLocationARB(shaderProgram->program, "u_ColorMap");
@@ -1287,7 +1287,7 @@ GLShader_generic::GLShader_generic():
 
 			ValidateProgram(shaderProgram->program);
 			//ShowProgramUniforms(shaderProgram->program);
-
+			
 			GL_CheckErrors();
 
 			numCompiled++;
@@ -1338,7 +1338,7 @@ GLShader_lightMapping::GLShader_lightMapping():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "";
@@ -1456,7 +1456,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -1574,7 +1574,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "";
@@ -1693,7 +1693,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -1735,7 +1735,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ():
 			compileMacros += "TWOSIDED ";
 
 			//ri.Printf(PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str());
-
+		
 			shaderProgram_t *shaderProgram = &_shaderPrograms[i];
 
 			CompileAndLinkGPUShaderProgram(	shaderProgram,
@@ -1827,7 +1827,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -1870,7 +1870,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ():
 			compileMacros += "TWOSIDED ";
 
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
-
+		
 			shaderProgram_t *shaderProgram = &_shaderPrograms[i];
 
 			CompileAndLinkGPUShaderProgram(	shaderProgram,
@@ -1965,7 +1965,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -2008,7 +2008,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 			compileMacros += "TWOSIDED ";
 
 			//ri.Printf(PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str());
-
+		
 			shaderProgram_t *shaderProgram = &_shaderPrograms[i];
 
 			CompileAndLinkGPUShaderProgram(	shaderProgram,
@@ -2093,7 +2093,7 @@ GLShader_deferredLighting_omniXYZ::GLShader_deferredLighting_omniXYZ():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("deferredLighting", "", GL_VERTEX_SHADER_ARB);
@@ -2129,7 +2129,7 @@ GLShader_deferredLighting_omniXYZ::GLShader_deferredLighting_omniXYZ():
 			//compileMacros += "TWOSIDED ";
 
 			//ri.Printf(PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str());
-
+		
 			shaderProgram_t *shaderProgram = &_shaderPrograms[i];
 
 			CompileAndLinkGPUShaderProgram(	shaderProgram,
@@ -2210,7 +2210,7 @@ GLShader_deferredLighting_projXYZ::GLShader_deferredLighting_projXYZ():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("deferredLighting", "", GL_VERTEX_SHADER_ARB);
@@ -2246,7 +2246,7 @@ GLShader_deferredLighting_projXYZ::GLShader_deferredLighting_projXYZ():
 			compileMacros += "LIGHT_PROJ ";
 
 			//ri.Printf(PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str());
-
+		
 			shaderProgram_t *shaderProgram = &_shaderPrograms[i];
 
 			CompileAndLinkGPUShaderProgram(	shaderProgram,
@@ -2327,7 +2327,7 @@ GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalS
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("deferredLighting", "", GL_VERTEX_SHADER_ARB);
@@ -2363,7 +2363,7 @@ GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalS
 			compileMacros += "LIGHT_DIRECTIONAL ";
 
 			//ri.Printf(PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str());
-
+		
 			shaderProgram_t *shaderProgram = &_shaderPrograms[i];
 
 			CompileAndLinkGPUShaderProgram(	shaderProgram,
@@ -2451,7 +2451,7 @@ GLShader_geometricFill::GLShader_geometricFill():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -2561,7 +2561,7 @@ GLShader_shadowFill::GLShader_shadowFill():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -2659,7 +2659,7 @@ GLShader_reflection::GLShader_reflection():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -2753,7 +2753,7 @@ GLShader_skybox::GLShader_skybox():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("skybox", "", GL_VERTEX_SHADER_ARB);
@@ -2843,7 +2843,7 @@ GLShader_fogQuake3::GLShader_fogQuake3():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -2932,7 +2932,7 @@ GLShader_fogGlobal::GLShader_fogGlobal():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("fogGlobal", "", GL_VERTEX_SHADER_ARB);
@@ -3029,7 +3029,7 @@ GLShader_heatHaze::GLShader_heatHaze():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
@@ -3124,7 +3124,7 @@ GLShader_screen::GLShader_screen():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("screen", "", GL_VERTEX_SHADER_ARB);
@@ -3150,7 +3150,7 @@ GLShader_screen::GLShader_screen():
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
 			shaderProgram->u_CurrentMap = glGetUniformLocationARB(shaderProgram->program, "u_CurrentMap");
-
+			
 			glUseProgramObjectARB(shaderProgram->program);
 			glUniform1iARB(shaderProgram->u_CurrentMap, 0);
 			glUseProgramObjectARB(0);
@@ -3181,7 +3181,7 @@ GLShader_portal::GLShader_portal():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("portal", "", GL_VERTEX_SHADER_ARB);
@@ -3207,7 +3207,7 @@ GLShader_portal::GLShader_portal():
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
 			shaderProgram->u_CurrentMap = glGetUniformLocationARB(shaderProgram->program, "u_CurrentMap");
-
+			
 			glUseProgramObjectARB(shaderProgram->program);
 			glUniform1iARB(shaderProgram->u_CurrentMap, 0);
 			glUseProgramObjectARB(0);
@@ -3242,7 +3242,7 @@ GLShader_toneMapping::GLShader_toneMapping():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("toneMapping", "", GL_VERTEX_SHADER_ARB);
@@ -3288,7 +3288,7 @@ GLShader_toneMapping::GLShader_toneMapping():
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
 			shaderProgram->u_CurrentMap = glGetUniformLocationARB(shaderProgram->program, "u_CurrentMap");
-
+			
 			glUseProgramObjectARB(shaderProgram->program);
 			glUniform1iARB(shaderProgram->u_CurrentMap, 0);
 			glUseProgramObjectARB(0);
@@ -3319,7 +3319,7 @@ GLShader_contrast::GLShader_contrast():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("contrast", "", GL_VERTEX_SHADER_ARB);
@@ -3365,7 +3365,7 @@ GLShader_contrast::GLShader_contrast():
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
 			shaderProgram->u_ColorMap = glGetUniformLocationARB(shaderProgram->program, "u_ColorMap");
-
+			
 			glUseProgramObjectARB(shaderProgram->program);
 			glUniform1iARB(shaderProgram->u_ColorMap, 0);
 			glUseProgramObjectARB(0);
@@ -3398,7 +3398,7 @@ GLShader_cameraEffects::GLShader_cameraEffects():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("cameraEffects", "", GL_VERTEX_SHADER_ARB);
@@ -3446,7 +3446,7 @@ GLShader_cameraEffects::GLShader_cameraEffects():
 			shaderProgram->u_CurrentMap = glGetUniformLocationARB(shaderProgram->program, "u_CurrentMap");
 			shaderProgram->u_GrainMap = glGetUniformLocationARB(shaderProgram->program, "u_GrainMap");
 			shaderProgram->u_VignetteMap = glGetUniformLocationARB(shaderProgram->program, "u_VignetteMap");
-
+			
 			glUseProgramObjectARB(shaderProgram->program);
 			glUniform1iARB(shaderProgram->u_CurrentMap, 0);
 			glUniform1iARB(shaderProgram->u_GrainMap, 1);
@@ -3480,7 +3480,7 @@ GLShader_blurX::GLShader_blurX():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("blurX", "", GL_VERTEX_SHADER_ARB);
@@ -3526,7 +3526,7 @@ GLShader_blurX::GLShader_blurX():
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
 			shaderProgram->u_ColorMap = glGetUniformLocationARB(shaderProgram->program, "u_ColorMap");
-
+			
 			glUseProgramObjectARB(shaderProgram->program);
 			glUniform1iARB(shaderProgram->u_ColorMap, 0);
 			glUseProgramObjectARB(0);
@@ -3560,7 +3560,7 @@ GLShader_blurY::GLShader_blurY():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("blurY", "", GL_VERTEX_SHADER_ARB);
@@ -3606,7 +3606,7 @@ GLShader_blurY::GLShader_blurY():
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
 			shaderProgram->u_ColorMap = glGetUniformLocationARB(shaderProgram->program, "u_ColorMap");
-
+			
 			glUseProgramObjectARB(shaderProgram->program);
 			glUniform1iARB(shaderProgram->u_ColorMap, 0);
 			glUseProgramObjectARB(0);
@@ -3638,7 +3638,7 @@ GLShader_debugShadowMap::GLShader_debugShadowMap():
 	int startTime = ri.Milliseconds();
 
 	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
-
+	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexShaderText = BuildGPUShaderText("debugShadowMap", "", GL_VERTEX_SHADER_ARB);
@@ -3664,7 +3664,7 @@ GLShader_debugShadowMap::GLShader_debugShadowMap():
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
 			shaderProgram->u_CurrentMap = glGetUniformLocationARB(shaderProgram->program, "u_CurrentMap");
-
+			
 			glUseProgramObjectARB(shaderProgram->program);
 			glUniform1iARB(shaderProgram->u_CurrentMap, 0);
 			glUseProgramObjectARB(0);

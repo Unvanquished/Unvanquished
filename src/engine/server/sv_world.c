@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -464,9 +464,9 @@ void SV_AreaEntities_r(worldSector_t * node, areaParms_t * ap)
 {
 	svEntity_t     *check, *next;
 	sharedEntity_t *gcheck;
-//	int             count;
+	int             count;
 
-//	count = 0;
+	count = 0;
 
 	for(check = node->entities; check; check = next)
 	{
@@ -677,7 +677,7 @@ void SV_ClipMoveToEntities(moveclip_t * clip)
 
 		CM_TransformedBoxTrace(&trace, clip->start, clip->end,
 							   clip->mins, clip->maxs, clipHandle, clip->contentmask, origin, angles, clip->collisionType);
-
+ 
 		if(trace.allsolid)
 		{
 			clip->trace.allsolid = qtrue;
@@ -785,7 +785,7 @@ int SV_PointContents(const vec3_t p, int passEntityNum)
 	int             i, num;
 	int             contents, c2;
 	clipHandle_t    clipHandle;
-//	float          *angles;
+	float          *angles;
 
 	// get base contents from world
 	contents = CM_PointContents(p, 0);
@@ -809,13 +809,11 @@ int SV_PointContents(const vec3_t p, int passEntityNum)
 			continue;
 		}
 
-//		angles = hit->r.currentAngles;
-/*
+		angles = hit->r.currentAngles;
 		if(!hit->r.bmodel)
 		{
 			angles = vec3_origin;	// boxes don't rotate
 		}
-*/
 
 		c2 = CM_TransformedPointContents(p, clipHandle, hit->r.currentOrigin, hit->r.currentAngles);
 		// Gordon: s.origin/angles is base origin/angles, need to use the current origin/angles for moving entity based water, or water locks in movement start position.

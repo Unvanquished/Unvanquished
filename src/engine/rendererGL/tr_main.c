@@ -845,7 +845,7 @@ int R_FogPointAndRadius(const vec3_t pt, float radius)
 			{
 				break;
 			}
-
+			
 			if(pt[j] + radius <= fog->bounds[0][j])
 			{
 				break;
@@ -879,20 +879,20 @@ int R_FogWorldBox(vec3_t bounds[2])
 	for(i = 1; i < tr.world->numFogs; i++)
 	{
 		fog = &tr.world->fogs[i];
-
+		
 		for(j = 0; j < 3; j++)
 		{
 			if(bounds[0][j] >= fog->bounds[1][j])
 			{
 				break;
 			}
-
+			
 			if(bounds[1][j] <= fog->bounds[0][j])
 			{
 				break;
 			}
 		}
-
+		
 		if(j == 3)
 		{
 			return i;
@@ -1336,7 +1336,7 @@ void R_RotateForViewer(void)
 static void SetFarClip(void)
 {
 	float           farthestCornerDistance;
-	int             i;
+	int             i, j;
 //	vec3_t          v;
 //	vec3_t          eye;
 //	float          *modelMatrix;
@@ -1359,8 +1359,6 @@ static void SetFarClip(void)
 	// check visBounds
 	for(i = 0; i < 8; i++)
 	{
-	    int j;
-
 		if(i & 1)
 		{
 			v[0] = tr.viewParms.visBounds[0][0];
@@ -1404,8 +1402,6 @@ static void SetFarClip(void)
 	{
 		for(i = 0; i < 8; i++)
 		{
-		    int j;
-
 			if(i & 1)
 			{
 				v[0] = tr.viewParms.lightBounds[0][0];
@@ -1556,7 +1552,10 @@ R_SetupProjection
 // *INDENT-OFF*
 static void R_SetupProjection(qboolean infiniteFarClip)
 {
+	float           xMin, xMax, yMin, yMax;
+	float           width, height, depth;
 	float           zNear, zFar;
+
 	float          *proj = tr.viewParms.projectionMatrix;
 
 	// dynamically compute far clip plane distance
@@ -1577,37 +1576,33 @@ static void R_SetupProjection(qboolean infiniteFarClip)
 		zFar = tr.viewParms.zFar;
 	}
 
+	yMax = zNear * tan(tr.refdef.fov_y * M_PI / 360.0f);
+	yMin = -yMax;
+
+	xMax = zNear * tan(tr.refdef.fov_x * M_PI / 360.0f);
+	xMin = -xMax;
+
+	width = xMax - xMin;
+	height = yMax - yMin;
+	depth = zFar - zNear;
+
 #if 0
-    {
-        float xMin, yMin;
-        float xMax, yMax;
-        float width, height, depth;
-
-        yMax = zNear * tan(tr.refdef.fov_y * M_PI / 360.0f);
-        xMax = zNear * tan(tr.refdef.fov_x * M_PI / 360.0f);
-        yMin = -yMax;
-        xMin = -xMax;
-        width = xMax - xMin;
-        height = yMax - yMin;
-        depth = zFar - zNear;
-
-        if(zFar <= 0 || infiniteFarClip)
-        {
-            // Tr3B: far plane at infinity, see RobustShadowVolumes.pdf by Nvidia
-            proj[0] = 2 * zNear / width;	proj[4] = 0;					proj[8] = (xMax + xMin) / width;	proj[12] = 0;
-            proj[1] = 0;					proj[5] = 2 * zNear / height;	proj[9] = (yMax + yMin) / height;	proj[13] = 0;
-            proj[2] = 0;					proj[6] = 0;					proj[10] = -1;						proj[14] = -2 * zNear;
-            proj[3] = 0;					proj[7] = 0;					proj[11] = -1;						proj[15] = 0;
-        }
-        else
-        {
-            // standard OpenGL projection matrix
-            proj[0] = 2 * zNear / width;	proj[4] = 0;					proj[8] = (xMax + xMin) / width;	proj[12] = 0;
-            proj[1] = 0;					proj[5] = 2 * zNear / height;	proj[9] = (yMax + yMin) / height;	proj[13] = 0;
-            proj[2] = 0;					proj[6] = 0;					proj[10] = -(zFar + zNear) / depth;	proj[14] = -2 * zFar * zNear / depth;
-            proj[3] = 0;					proj[7] = 0;					proj[11] = -1;						proj[15] = 0;
-        }
-    }
+	if(zFar <= 0 || infiniteFarClip)
+	{
+		// Tr3B: far plane at infinity, see RobustShadowVolumes.pdf by Nvidia
+		proj[0] = 2 * zNear / width;	proj[4] = 0;					proj[8] = (xMax + xMin) / width;	proj[12] = 0;
+		proj[1] = 0;					proj[5] = 2 * zNear / height;	proj[9] = (yMax + yMin) / height;	proj[13] = 0;
+		proj[2] = 0;					proj[6] = 0;					proj[10] = -1;						proj[14] = -2 * zNear;
+		proj[3] = 0;					proj[7] = 0;					proj[11] = -1;						proj[15] = 0;
+	}
+	else
+	{
+		// standard OpenGL projection matrix
+		proj[0] = 2 * zNear / width;	proj[4] = 0;					proj[8] = (xMax + xMin) / width;	proj[12] = 0;
+		proj[1] = 0;					proj[5] = 2 * zNear / height;	proj[9] = (yMax + yMin) / height;	proj[13] = 0;
+		proj[2] = 0;					proj[6] = 0;					proj[10] = -(zFar + zNear) / depth;	proj[14] = -2 * zFar * zNear / depth;
+		proj[3] = 0;					proj[7] = 0;					proj[11] = -1;						proj[15] = 0;
+	}
 #else
 
 	if(zFar <= 0 || infiniteFarClip)// || r_showBspNodes->integer)
@@ -2815,11 +2810,11 @@ R_AddLightInteractions
 */
 void R_AddLightInteractions()
 {
-	int             i;
+	int             i, j;
 	trRefLight_t   *light;
-	//bspNode_t     **leafs; //unused
+	bspNode_t     **leafs;
 	bspNode_t      *leaf;
-	link_t         *l;//, *sentinel; //unused
+	link_t         *l, *sentinel;
 
 	for(i = 0; i < tr.refdef.numLights; i++)
 	{
@@ -3053,11 +3048,11 @@ void R_AddLightInteractions()
 
 void R_AddLightBoundsToVisBounds()
 {
-	int             i;
+	int             i, j;
 	trRefLight_t   *light;
-	//bspNode_t     **leafs; //unused
+	bspNode_t     **leafs;
 	bspNode_t      *leaf;
-	link_t         *l;//, *sentinel; //unused
+	link_t         *l, *sentinel;
 
 	for(i = 0; i < tr.refdef.numLights; i++)
 	{

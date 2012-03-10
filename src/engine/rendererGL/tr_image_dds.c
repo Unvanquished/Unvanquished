@@ -1035,7 +1035,7 @@ image_t        *R_LoadDDSImageData(void *pImageData, const char *name, int bits,
 
 		int             i;
 
-//		GLuint          texnum;
+		GLuint          texnum;
 
 		if(w & (w - 1) || h & (h - 1))
 		{
@@ -1055,7 +1055,7 @@ image_t        *R_LoadDDSImageData(void *pImageData, const char *name, int bits,
 			ret->type = GL_TEXTURE_2D;
 		}
 
-		//texnum = ret->texnum;
+		texnum = ret->texnum;
 
 		GL_Bind(ret);
 
@@ -1167,7 +1167,7 @@ image_t        *R_LoadDDSImage(const char *name, int bits, filterType_t filterTy
 {
 	image_t        *ret;
 	byte           *buff;
-//	int             len;
+	int             len;
 
 	// comes from R_CreateImage
 	/*
@@ -1178,7 +1178,7 @@ image_t        *R_LoadDDSImage(const char *name, int bits, filterType_t filterTy
 	}
 	*/
 
-	ri.FS_ReadFile(name, (void **)&buff);
+	len = ri.FS_ReadFile(name, (void **)&buff);
 	if(!buff)
 		return 0;
 

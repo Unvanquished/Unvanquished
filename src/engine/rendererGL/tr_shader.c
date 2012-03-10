@@ -1388,7 +1388,7 @@ static qboolean LoadMap(shaderStage_t * stage, char *buffer)
 	int             imageBits = 0;
 	filterType_t    filterType;
 	wrapType_t      wrapType;
-//	qboolean		uncompressed;
+	qboolean		uncompressed;
 	char           *buffer_p = &buffer[0];
 
 	if(!buffer || !buffer[0])
@@ -2915,7 +2915,7 @@ infoParm_t	infoParms[] = {
 #endif
 
 	{"water",			1,	0,	CONTENTS_WATER},
-
+	
 	{"slag",			1,	0,	CONTENTS_SLIME},	// uses the CONTENTS_SLIME flag, but the shader reference is changed to 'slag'
 	// to idendify that this doesn't work the same as 'slime' did.
 
@@ -2948,7 +2948,7 @@ infoParm_t	infoParms[] = {
 	{"areaportal",		1,	0,	CONTENTS_AREAPORTAL},	// divides areas
 	{"clusterportal",	1,	0,  CONTENTS_CLUSTERPORTAL},	// for bots
 	{"donotenter",  	1,  0,  CONTENTS_DONOTENTER},	// for bots
-
+	
 #if defined(COMPAT_ET)
 	{"donotenterlarge", 1, 0, CONTENTS_DONOTENTER_LARGE},	// for larger bots
 #else
@@ -4083,7 +4083,7 @@ static qboolean ParseShader(char *_text)
 			}
 		}
 		else if(!Q_stricmp(token, "lightgridmuldir"))
-		{
+		{	
 			// directional multiplier for lightgrid
 			token = COM_ParseExt2(text, qfalse);
 			if(!token[0])
@@ -4390,7 +4390,10 @@ static void CollapseStages()
 	shaderStage_t   tmpReflectionStage;
 
 #if defined(COMPAT_Q3A) || defined(COMPAT_ET)
+	int				idxColorStage;
 	shaderStage_t	tmpColorStage;
+
+	int				idxLightmapStage;
 	shaderStage_t	tmpLightmapStage;
 #endif
 
@@ -4423,14 +4426,17 @@ static void CollapseStages()
 		Com_Memset(&tmpSpecularStage, 0, sizeof(shaderStage_t));
 
 #if defined(COMPAT_Q3A) || defined(COMPAT_ET)
+		idxColorStage = -1;
 		Com_Memset(&tmpColorStage, 0, sizeof(shaderStage_t));
+
+		idxLightmapStage = -1;
 		Com_Memset(&tmpLightmapStage, 0, sizeof(shaderStage_t));
 #endif
 
 		if(!stages[j].active)
 			continue;
 
-		if(
+		if(	
 #if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
 			stages[j].type == ST_COLORMAP ||
 #endif
@@ -4452,53 +4458,48 @@ static void CollapseStages()
 
 
 #if 0 //defined(COMPAT_Q3A) || defined(COMPAT_ET)
-        {
-            int idxColorStage = -1;
-            int idxLightmapStage = -1;
+		for(i = 0; i < 2; i++)
+		{
+			if((j + i) >= MAX_SHADER_STAGES)
+				continue;
 
-            for(i = 0; i < 2; i++)
-            {
-                if((j + i) >= MAX_SHADER_STAGES)
-                    continue;
+			if(!stages[j + i].active)
+				continue;
 
-                if(!stages[j + i].active)
-                    continue;
+			if(stages[j + i].type == ST_COLORMAP && idxColorStage == -1)
+			{
+				idxColorStage = j + i;
+				tmpColorStage = stages[j + i];
+			}
+			else if(stages[j + i].type == ST_LIGHTMAP && idxLightmapStage == -1)
+			{
+				idxLightmapStage = j + i;
+				tmpLightmapStage = stages[j + i];
+			}
+		}
 
-                if(stages[j + i].type == ST_COLORMAP && idxColorStage == -1)
-                {
-                    idxColorStage = j + i;
-                    tmpColorStage = stages[j + i];
-                }
-                else if(stages[j + i].type == ST_LIGHTMAP && idxLightmapStage == -1)
-                {
-                    idxLightmapStage = j + i;
-                    tmpLightmapStage = stages[j + i];
-                }
-            }
+		// try to merge color/lightmap to diffuse
+		if(	idxColorStage != -1 &&
+			idxLightmapStage != -1 &&
+			// TODO check color stage no alphaGen
+			(tmpLightmapStage.stateBits & ( GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO))
+		)
+		{
+			ri.Printf(PRINT_ALL, "color/lightmap combo\n");
 
-            // try to merge color/lightmap to diffuse
-            if(	idxColorStage != -1 &&
-                idxLightmapStage != -1 &&
-                // TODO check color stage no alphaGen
-                (tmpLightmapStage.stateBits & ( GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO))
-            )
-            {
-                ri.Printf(PRINT_ALL, "color/lightmap combo\n");
+			tmpShader.collapseType = COLLAPSE_color_lightmap;
 
-                tmpShader.collapseType = COLLAPSE_color_lightmap;
+			tmpStages[numStages] = tmpColorStage;
+			tmpStages[numStages].type = ST_DIFFUSEMAP;
+			tmpStages[numStages].stateBits &= ~(GLS_DSTBLEND_BITS | GLS_SRCBLEND_BITS);
+			//tmpStages[numStages].stateBits |= GLS_DEPTHMASK_TRUE;
 
-                tmpStages[numStages] = tmpColorStage;
-                tmpStages[numStages].type = ST_DIFFUSEMAP;
-                tmpStages[numStages].stateBits &= ~(GLS_DSTBLEND_BITS | GLS_SRCBLEND_BITS);
-                //tmpStages[numStages].stateBits |= GLS_DEPTHMASK_TRUE;
+			//tmpStages[numStages].bundle[TB_NORMALMAP] = tmpNormalStage.bundle[0];
 
-                //tmpStages[numStages].bundle[TB_NORMALMAP] = tmpNormalStage.bundle[0];
-
-                numStages++;
-                j += 1;
-                continue;
-            }
-        }
+			numStages++;
+			j += 1;
+			continue;
+		}
 		/*
 		else if(idxLightmapStage > idxColorStage)
 		{
@@ -5015,7 +5016,7 @@ static shader_t *FinishShader(void)
 		{
 			pStage->stateBits |= GLS_DEPTHMASK_TRUE;
 		}
-
+		
 		if(shader.isSky && pStage->noFog)
 		{
 			shader.sort = SS_ENVIRONMENT_NOFOG;
@@ -6338,7 +6339,7 @@ static void ScanAndLoadShaderFiles(void)
 	s_shaderText = ri.Hunk_Alloc( sum + numShaderFiles*2, h_low );
 	s_shaderText[ 0 ] = '\0';
 	textEnd = s_shaderText;
-
+ 
 	// free in reverse order, so the temp files are all dumped
 	for ( i = numShaderFiles - 1; i >= 0 ; i-- )
 	{
@@ -6350,10 +6351,10 @@ static void ScanAndLoadShaderFiles(void)
 		textEnd += strlen( textEnd );
 		ri.FS_FreeFile( buffers[i] );
 	}
-
+	
 	// ydnar: unixify all shaders
 	COM_FixPath(s_shaderText);
-
+	
 	COM_Compress( s_shaderText );
 
 	// free up memory

@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -49,12 +49,18 @@ Maryland 20850 USA.
 #include <speex/speex_preprocess.h>
 #endif
 
+// Dushan - create CL_GUID
+// we cannot call it "qkey", "etkey" is already taken,
+// so we will change it to etxreal
 #define GUIDKEY_FILE "guid"
 
 // file containing our RSA public and private keys
 #define RSAKEY_FILE "pubkey"
 
 #define RETRANSMIT_TIMEOUT  3000	// time between connection packet retransmits
+
+#define LIMBOCHAT_WIDTH     140	// NERVE - SMF - NOTE TTimo buffer size indicator, not related to screen bbox
+#define LIMBOCHAT_HEIGHT    7	// NERVE - SMF
 
 // snapshots are a view of the server at a given time
 typedef struct
@@ -178,6 +184,12 @@ typedef struct
 
 	entityState_t   parseEntities[MAX_PARSE_ENTITIES];
 
+	// NERVE - SMF
+	// NOTE TTimo - UI uses LIMBOCHAT_WIDTH strings (140),
+	// but for the processing in CL_AddToLimboChat we need some safe room
+	char            limboChatMsgs[LIMBOCHAT_HEIGHT][LIMBOCHAT_WIDTH * 3 + 1];
+	int             limboChatPos;
+
 	qboolean        corruptedTranslationFile;
 	char            translationVersion[MAX_STRING_TOKENS];
 	// -NERVE - SMF
@@ -296,7 +308,7 @@ typedef struct
 	byte voipOutgoingData[1024];
 	float voipPower;
 #endif
-
+		
 	qboolean        waverecording;
 	fileHandle_t    wavefile;
 	int             wavetime;
@@ -379,7 +391,7 @@ typedef struct {
 
 	int				voipTime;
 	int				voipSender;
-
+	
 	// master server sequence information
 	int			numMasterPackets;
 	unsigned int		receivedMasterPackets; // bitfield
@@ -422,7 +434,7 @@ typedef struct {
 	qhandle_t       consoleShader;
 	qhandle_t       consoleShader2;	// NERVE - SMF - merged from WolfSP
 	qboolean        useLegacyConsoleFont;
-        fontInfo_t      consoleFont;
+        fontInfo_t      consoleFont; 
 
 	// www downloading
 	// in the static stuff since this may have to survive server disconnects
@@ -442,7 +454,7 @@ extern vm_t    *cgvm;			// interface to cgame dll or vm
 extern vm_t    *uivm;			// interface to ui dll or vm
 extern refexport_t re;			// interface to refresh .dll
 
-extern struct rsa_public_key public_key;
+extern struct rsa_public_key public_key; 
 extern struct rsa_private_key private_key;
 
 //
@@ -600,12 +612,14 @@ int             CL_GetPingQueueCount(void);
 
 void            CL_ShutdownRef(void);
 void            CL_InitRef(const char *renderer);
-void            CL_InitOpenGLExt(void);
-void            CL_InitPNG(void);
-void            CL_InitZLIB(void);
+void			CL_InitOpenGLExt(void);
+void			CL_InitPNG(void);
+void			CL_InitZLIB(void);
 
 int             CL_ServerStatus(char *serverAddress, char *serverStatusString, int maxLen);
 
+void            CL_AddToLimboChat(const char *str);	// NERVE - SMF
+qboolean        CL_GetLimboString(int index, char *buf);	// NERVE - SMF
 
 // NERVE - SMF - localization
 void            CL_InitTranslation();
@@ -634,7 +648,7 @@ typedef struct
 
 typedef enum
 {
-	KB_LEFT = 0,
+	KB_LEFT,
 	KB_RIGHT,
 	KB_FORWARD,
 	KB_BACK,
@@ -644,7 +658,7 @@ typedef enum
 	KB_MOVERIGHT,
 	KB_STRAFE,
 	KB_SPEED,
-	KB_UP = 10,
+	KB_UP,
 	KB_DOWN,
 	KB_BUTTONS0,
 	KB_BUTTONS1,
@@ -654,7 +668,7 @@ typedef enum
 	KB_BUTTONS5,
 	KB_BUTTONS6,
 	KB_BUTTONS7,
-	KB_BUTTONS8 = 20,
+	KB_BUTTONS8,
 	KB_BUTTONS9,
 	KB_BUTTONS10,
 	KB_BUTTONS11,
@@ -664,13 +678,14 @@ typedef enum
 	KB_BUTTONS15,
 	KB_WBUTTONS0,
 	KB_WBUTTONS1,
-	KB_WBUTTONS2 = 30,
+	KB_WBUTTONS2,
 	KB_WBUTTONS3,
 	KB_WBUTTONS4,
 	KB_WBUTTONS5,
 	KB_WBUTTONS6,
 	KB_WBUTTONS7,
 	KB_MLOOK,
+	// Dushan
 	KB_VOIPRECORD,
 	NUM_BUTTONS
 } kbuttons_t;
@@ -685,14 +700,18 @@ void            CL_ReadPackets(void);
 
 void            CL_WritePacket(void);
 
+//void			IN_CenterView (void);
 void            IN_Notebook(void);
 void            IN_Help(void);
+
+//----(SA) salute
+void            IN_Salute(void);
 
 //----(SA)
 
 float           CL_KeyState(kbutton_t * key);
 int             Key_StringToKeynum( char *str );
-char           *Key_KeynumToString( int keynum );
+char           *Key_KeynumToString( int keynum ); 
 
 //cl_irc.c
 void			CL_OW_IRCSetup(void);

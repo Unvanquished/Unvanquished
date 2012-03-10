@@ -128,6 +128,7 @@ void OW_Init( void ) {
 		Cvar_Set( "db_statusslave", "1" );
 	}
 
+	// Dushan : Print info if database is connected
 	if( db_enable->integer == 1 ) {
 		Com_DPrintf( "Master MySQL Database connected.\n");
 		Com_DPrintf( "Slave MySQL Database connected.\n" );
@@ -145,6 +146,9 @@ void OW_Shutdown( void ) {
 }
 
 void OW_Connect( void ) {
+	// Dushan
+	// On connection, MySQL should connect on both master and slave
+
 	// MySQL Master Server
 	if( dbi.DBConnectMaster ) {
 		dbi.DBConnectMaster();

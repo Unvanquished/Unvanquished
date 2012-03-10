@@ -221,41 +221,45 @@ or configs will never get loaded from disk!
 #define MAX_SEARCH_PATHS    4096
 #define MAX_FILEHASH_SIZE   1024
 
+// Dushan
+// INFO: Little crapy, but its working
+// Basically PAK3 files are ZIP files with BZ2 compression
+
 typedef struct fileInPack_s {
-	char                    *name; // name of the file
-	unsigned long pos;             // file info position in zip
-	unsigned long len;             // uncompress file size
-	struct  fileInPack_s*   next;  // next file in the hash
+	char                    *name;      // name of the file
+	unsigned long pos;                  // file info position in zip
+	unsigned long	len;				// uncompress file size
+	struct  fileInPack_s*   next;       // next file in the hash
 } fileInPack_t;
 
 typedef struct {
-	char pakFilename[MAX_OSPATH]; // full pak0 path
-	char pakBasename[MAX_OSPATH]; // pak0 basename
-	char pakGamename[MAX_OSPATH]; // baseq3
-	unzFile handle;               // handle to zip file
-	int checksum;                 // regular checksum
-	int pure_checksum;            // checksum for pure
-	int numfiles;                 // number of files in pk3
-	int referenced;               // referenced file flags
-	int hashSize;                 // hash table size (power of 2)
-	fileInPack_t*   *hashTable;   // hash table
-	fileInPack_t*   buildBuffer;  // buffer with the filenames etc.
+	char pakFilename[MAX_OSPATH];               // c:\quake3\baseq3\pak0.pk3
+	char pakBasename[MAX_OSPATH];               // pak0
+	char pakGamename[MAX_OSPATH];               // baseq3
+	unzFile handle;                             // handle to zip file
+	int checksum;                               // regular checksum
+	int pure_checksum;                          // checksum for pure
+	int numfiles;                               // number of files in pk3
+	int referenced;                             // referenced file flags
+	int hashSize;                               // hash table size (power of 2)
+	fileInPack_t*   *hashTable;                 // hash table
+	fileInPack_t*   buildBuffer;                // buffer with the filenames etc.
 } pack_t;
 
 typedef struct {
-	char path[MAX_OSPATH];    // root game folder path
-	char gamedir[MAX_OSPATH]; // baseq3
+	char path[MAX_OSPATH];              // c:\quake3
+	char gamedir[MAX_OSPATH];           // baseq3
 } directory_t;
 
 typedef struct searchpath_s {
 	struct searchpath_s *next;
 
-	pack_t      *pack; // only one of pack / dir will be non NULL
+	pack_t      *pack;      // only one of pack / dir will be non NULL
 	directory_t *dir;
 } searchpath_t;
 
 //bani - made fs_gamedir non-static
-char fs_gamedir[MAX_OSPATH]; // this will be a single file name with no separators
+char fs_gamedir[MAX_OSPATH];        // this will be a single file name with no separators
 static cvar_t      *fs_debug;
 static cvar_t      *fs_homepath;
 static cvar_t      *fs_basepath;
@@ -361,9 +365,16 @@ qboolean FS_PakIsPure( pack_t *pack ) {
 			}
 		}
 
+		// XreaL BEGIN
+
+		// CHEAT ALARM: always allow zz-XreaL-<date>.pk3 files so we don't need them on the server
+		// Dushan
+		// It was zz-XreaL-<date>.pk3, but I have changed it to pak3.pk3
 		if(strstr(pack->pakBasename, "pak3")) {
 			return qtrue;
 		}
+
+		// XreaL END
 
 		return qfalse;  // not on the pure server pak list
 	}
@@ -1567,6 +1578,7 @@ int FS_DeleteDir( char *dirname, qboolean nonEmpty, qboolean recursive ) {
 	char *ospath;
 	char **pFiles = NULL;
 	int i, nFiles = 0;
+	// Dushan
 	static char *root = "/";
 
 	if ( !fs_searchpaths ) {

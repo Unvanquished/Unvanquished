@@ -51,7 +51,7 @@ Maryland 20850 USA.
 // parallel on a dual cpu machine
 #define SMP_FRAMES      2
 
-#define	MAX_SHADERS	(1 << 12)
+#define	MAX_SHADERS	(1 << 12) // Dushan - Maked it XreaL compatible
 
 #define MAX_SHADER_STATES 2048
 #define MAX_STATES_PER_SHADER 32

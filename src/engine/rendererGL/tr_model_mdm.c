@@ -2,10 +2,10 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 Copyright (C) 2010 Robert Beckebans <trebor_7@users.sourceforge.net>
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,14 +20,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -71,7 +71,7 @@ static void AddSurfaceToVBOSurfacesListMDM(growList_t * vboSurfaces, growList_t 
 	srfVBOMDMMesh_t *vboSurf;
 	md5Vertex_t     *v;
 
-//	vec4_t          tmpColor = { 1, 1, 1, 1 };
+	vec4_t          tmpColor = { 1, 1, 1, 1 };
 
 	static int32_t  collapse[MDM_MAX_VERTS];
 
@@ -95,7 +95,7 @@ static void AddSurfaceToVBOSurfacesListMDM(growList_t * vboSurfaces, growList_t 
 	data = ri.Hunk_AllocateTempMemory(dataSize);
 	dataOfs = 0;
 
-
+	
 
 	//ri.Printf(PRINT_ALL, "AddSurfaceToVBOSurfacesList( %i verts, %i tris )\n", surf->numVerts, vboTriangles->currentElements);
 
@@ -240,7 +240,7 @@ static void AddSurfaceToVBOSurfacesListMDM(growList_t * vboSurfaces, growList_t 
 	{
 		float		flod;
 		int			renderCount;
-
+		
 		flod = mdmLODResolutions[lod];
 
 		renderCount = Q_min((int)((float)surf->numVerts * flod), surf->numVerts);
@@ -342,7 +342,7 @@ static void AddSurfaceToVBOSurfacesListMDM(growList_t * vboSurfaces, growList_t 
 					indexesOfs += sizeof(int);
 				}
 			}
-		}
+		}		
 
 		vboSurf->ibo[lod] = R_CreateIBO(va("staticMDMMesh_IBO_LOD_%f %i", flod, indexesNum / 3), indexes, indexesSize, VBO_USAGE_STATIC);
 		vboSurf->ibo[lod]->indexesNum = indexesNum;
@@ -358,7 +358,7 @@ static void AddSurfaceToVBOSurfacesListMDM(growList_t * vboSurfaces, growList_t 
 		lod++;
 	}
 	while(lod < MD3_MAX_LODS);
-
+	
 	ri.Hunk_FreeTempMemory(data);
 
 	// megs
@@ -379,7 +379,7 @@ R_LoadMDM
 qboolean R_LoadMDM(model_t * mod, void *buffer, const char *modName)
 {
 	int             i, j, k;
-
+	
 	mdmHeader_t    *mdm;
 //    mdmFrame_t            *frame;
 	mdmSurface_t   *mdmSurf;
@@ -387,7 +387,7 @@ qboolean R_LoadMDM(model_t * mod, void *buffer, const char *modName)
 	mdmVertex_t    *mdmVertex;
 	mdmTag_t       *mdmTag;
 	int             version;
-//	int             size;
+	int             size;
 	shader_t       *sh;
 	int32_t        *collapseMap, *collapseMapOut, *boneref, *bonerefOut;
 
@@ -408,9 +408,9 @@ qboolean R_LoadMDM(model_t * mod, void *buffer, const char *modName)
 	}
 
 	mod->type = MOD_MDM;
-//	size = LittleLong(mdm->ofsEnd);
+	size = LittleLong(mdm->ofsEnd);
 	mod->dataSize += sizeof(mdmModel_t);
-
+	
 	//mdm = mod->mdm = ri.Hunk_Alloc(size, h_low);
 	//memcpy(mdm, buffer, LittleLong(pinmodel->ofsEnd));
 
@@ -425,7 +425,7 @@ qboolean R_LoadMDM(model_t * mod, void *buffer, const char *modName)
 	LL(mdm->ofsTags);
 	LL(mdm->ofsEnd);
 	LL(mdm->ofsSurfaces);
-
+	
 	mdmModel->lodBias = LittleFloat(mdm->lodBias);
 	mdmModel->lodScale = LittleFloat(mdm->lodScale);
 
@@ -439,8 +439,8 @@ qboolean R_LoadMDM(model_t * mod, void *buffer, const char *modName)
 		return qfalse;
 	}*/
 
-
-
+	
+	
 	// swap all the frames
 	/*frameSize = (int) ( sizeof( mdmFrame_t ) );
 	   for ( i = 0 ; i < mdm->numFrames ; i++, frame++) {
@@ -478,7 +478,7 @@ qboolean R_LoadMDM(model_t * mod, void *buffer, const char *modName)
 		tag->offset[1] = LittleFloat(mdmTag->offset[1]);
 		tag->offset[2] = LittleFloat(mdmTag->offset[2]);
 
-
+		
 		LL(mdmTag->numBoneReferences);
 		LL(mdmTag->ofsBoneReferences);
 		LL(mdmTag->ofsEnd);
@@ -492,12 +492,12 @@ qboolean R_LoadMDM(model_t * mod, void *buffer, const char *modName)
 		{
 			*bonerefOut = LittleLong(*boneref);
 		}
-
+		
 
 		// find the next tag
 		mdmTag = (mdmTag_t *) ((byte *) mdmTag + mdmTag->ofsEnd);
 	}
-
+	
 
 	// swap all the surfaces
 	mdmModel->numSurfaces = mdm->numSurfaces;
@@ -530,7 +530,7 @@ qboolean R_LoadMDM(model_t * mod, void *buffer, const char *modName)
 			ri.Error(ERR_DROP, "R_LoadMDM: %s has more than %i verts on a surface (%i)",
 					 modName, SHADER_MAX_VERTEXES, mdmSurf->numVerts);
 		}
-
+		
 		if(mdmSurf->numTriangles > SHADER_MAX_TRIANGLES)
 		{
 			ri.Error(ERR_DROP, "R_LoadMDM: %s has more than %i triangles on a surface (%i)",
@@ -557,7 +557,7 @@ qboolean R_LoadMDM(model_t * mod, void *buffer, const char *modName)
 			surf->shaderIndex = 0;
 		}
 
-
+		
 		// swap all the triangles
 		surf->numTriangles = mdmSurf->numTriangles;
 		surf->triangles = ri.Hunk_Alloc(sizeof(*tri) * surf->numTriangles, h_low);

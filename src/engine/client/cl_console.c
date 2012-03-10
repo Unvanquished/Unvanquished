@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -418,7 +418,7 @@ void Con_CheckResize (void)
 			numlines = con.totallines;
 
 		numchars = oldwidth;
-
+	
 		if (con.linewidth < numchars)
 			numchars = con.linewidth;
 
@@ -456,30 +456,30 @@ void Con_Init(void)
 	con_debug = Cvar_Get("con_debug", "0", CVAR_ARCHIVE);	//----(SA)    added
 	con_autoclear = Cvar_Get("con_autoclear", "1", CVAR_ARCHIVE);
 	con_restricted = Cvar_Get("con_restricted", "0", CVAR_INIT);	// DHM - Nerve
-
+	
 	// Defines cvar for color and alpha for console/bar under console
 	scr_conUseShader = Cvar_Get ("scr_conUseShader", "0", CVAR_ARCHIVE);
-
+	
 	scr_conColorAlpha = Cvar_Get ("scr_conColorAlpha", "0.5", CVAR_ARCHIVE);
 	scr_conColorRed = Cvar_Get ("scr_conColorRed", "0", CVAR_ARCHIVE);
 	scr_conColorBlue = Cvar_Get ("scr_conColorBlue", "0.3", CVAR_ARCHIVE);
 	scr_conColorGreen = Cvar_Get ("scr_conColorGreen", "0.23", CVAR_ARCHIVE);
-
+	
 	scr_conUseOld = Cvar_Get ("scr_conUseOld", "0", CVAR_ARCHIVE|CVAR_LATCH);
-
+	
 	scr_conBarHeight = Cvar_Get ("scr_conBarHeight", "2", CVAR_ARCHIVE);
-
+	
 	scr_conBarColorAlpha = Cvar_Get ("scr_conBarColorAlpha", "0.3", CVAR_ARCHIVE);
 	scr_conBarColorRed = Cvar_Get ("scr_conBarColorRed", "1", CVAR_ARCHIVE);
 	scr_conBarColorBlue = Cvar_Get ("scr_conBarColorBlue", "1", CVAR_ARCHIVE);
 	scr_conBarColorGreen = Cvar_Get ("scr_conBarColorGreen", "1", CVAR_ARCHIVE);
-
+	
 	scr_conHeight = Cvar_Get ("scr_conHeight", "50", CVAR_ARCHIVE);
-
+	
 	scr_conBarSize = Cvar_Get ("scr_conBarSize", "2", CVAR_ARCHIVE);
 
 	// Done defining cvars for console colors
-
+	
 	Field_Clear(&g_consoleField);
 	g_consoleField.widthInChars = g_console_field_width;
 
@@ -565,9 +565,9 @@ void CL_ConsolePrint(char *txt)
 		Con_CheckResize();
 		con.initialized = qtrue;
 	}
-
+	
 	if( !skipnotify && !( cls.keyCatchers & KEYCATCH_CONSOLE ) && strncmp( txt, "EXCL: ", 6 ) ) {
-
+	
 
 		// feed the text to cgame
 		Cmd_SaveCmdContext( );
@@ -575,7 +575,7 @@ void CL_ConsolePrint(char *txt)
 		CL_GameConsoleText( );
 		Cmd_RestoreCmdContext( );
 
-
+	
 	}
 
 
@@ -722,7 +722,7 @@ void Con_DrawNotify(void)
 	short          *text;
 	int             i;
 	int             time;
-	int             skip = 0;
+	int             skip;
 	int             currentColor;
 
 	currentColor = 7;
@@ -849,7 +849,7 @@ void Con_DrawSolidConsole( float frac ) {
 			color[1] = scr_conColorGreen->value;
 			color[2] = scr_conColorBlue->value;
 			color[3] = scr_conColorAlpha->value;
-
+			
 			SCR_FillRect( 0, 0, SCREEN_WIDTH, y, color );
 		   }
 		}
@@ -858,7 +858,7 @@ void Con_DrawSolidConsole( float frac ) {
 		color[1] = scr_conBarColorGreen->value;
 		color[2] = scr_conBarColorBlue->value;
 		color[3] = scr_conBarColorAlpha->value;
-
+		
 		SCR_FillRect( 0, y, SCREEN_WIDTH, scr_conBarSize->value, color );
 	} else {
 		color[0] = scr_conColorRed->value;
@@ -895,20 +895,20 @@ void Con_DrawSolidConsole( float frac ) {
         SCR_DrawConsoleFontChar( cls.glconfig.vidWidth - totalwidth + currentWidthLocation, lines-SCR_ConsoleFontCharHeight()*2, Q3_VERSION[x] );
         currentWidthLocation += SCR_ConsoleFontCharWidth( Q3_VERSION[x] );
 	}
-
+	
 	// engine string
 	i = strlen( Q3_ENGINE );
 	totalwidth = SCR_ConsoleFontStringWidth( Q3_ENGINE, i ) + cl_conXOffset->integer;
 	if (!scr_conUseOld->integer) {
 		totalwidth += 30;
 	}
-
+	
 	currentWidthLocation = 0;
 	for (x=0 ; x<i ; x++) {
         SCR_DrawConsoleFontChar( cls.glconfig.vidWidth - totalwidth + currentWidthLocation, lines-SCR_ConsoleFontCharHeight(), Q3_ENGINE[x] );
         currentWidthLocation += SCR_ConsoleFontCharWidth( Q3_ENGINE[x] );
 	}
-
+	
 
 
 	// draw the text
@@ -933,7 +933,7 @@ void Con_DrawSolidConsole( float frac ) {
         y -= SCR_ConsoleFontCharHeight();
         rows--;
 	}
-
+	
 	row = con.display;
 
 	if ( con.x == 0 ) {
@@ -955,7 +955,7 @@ void Con_DrawSolidConsole( float frac ) {
 			break;
 		if (con.current - row >= con.totallines) {
 			// past scrollback wrap point
-			continue;
+			continue;	
 		}
 
 		text = con.text + (row % con.totallines)*con.linewidth;
@@ -969,7 +969,7 @@ void Con_DrawSolidConsole( float frac ) {
 				color[3] = (scr_conUseOld->integer ? 1.0f : frac * 2.0f);
 				re.SetColor( color );
 			}
-
+            
             SCR_DrawConsoleFontChar(  con.xadjust + currentWidthLocation, y, text[x] & 0xff );
             currentWidthLocation += SCR_ConsoleFontCharWidth( text[x] & 0xff );
 		}
@@ -1035,7 +1035,7 @@ void Con_RunConsole (void) {
 		}
 	else
 		con.finalFrac = 0;				// none visible
-
+	
 	// scroll towards the destination height
 	if (con.finalFrac < con.displayFrac)
 	{

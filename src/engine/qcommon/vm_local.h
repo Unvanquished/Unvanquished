@@ -193,6 +193,7 @@ struct vm_s {
 	byte		*jumpTableTargets;
 	int			numJumpTableTargets;
 
+	// Dushan
 	char            fqpath[MAX_QPATH + 1];
 	// for qmv modules
 	void           *qvmModuleProvider;

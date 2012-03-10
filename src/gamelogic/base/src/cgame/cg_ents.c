@@ -131,7 +131,7 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
   orientation_t lerped;
 
   // lerp the tag
-  // FIXME
+  // Dushan : FIX ME
   trap_R_LerpTag(&lerped, parent, tagName, 0);
 
   // FIXME: allow origin offsets along tag?
@@ -162,6 +162,7 @@ void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *pare
 
 //AxisClear( entity->axis );
   // lerp the tag
+  // Dushan
   /*trap_R_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
                   1.0 - parent->backlerp, tagName );*/
   trap_R_LerpTag(&lerped, parent, tagName, 0);

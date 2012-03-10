@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -173,8 +173,8 @@ static void SCR_DrawChar(int x, int y, float size, int ch)
 	size = 0.0625;
 
 	re.DrawStretchPic( ax, ay, aw, ah,
- 					   fcol, frow,
- 					   fcol + size, frow + size,
+ 					   fcol, frow, 
+ 					   fcol + size, frow + size, 
  					   cls.charSetShader );
 }
 
@@ -195,8 +195,8 @@ void SCR_DrawConsoleFontChar( float x, float y, int ch )
 
     if(ch==' ') return;
     re.DrawStretchPic( x+xadj, y-yadj, glyph->imageWidth, glyph->imageHeight,
-					   glyph->s, glyph->t,
-					   glyph->s2, glyph->t2,
+					   glyph->s, glyph->t, 
+					   glyph->s2, glyph->t2, 
 					   glyph->glyph );
 }
 
@@ -496,7 +496,7 @@ void SCR_DrawVoipSender( void ) {
                 SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, g_color_table[7], qtrue, qtrue );
         else
                 SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, g_color_table[7], qtrue, qtrue );
-
+        
        }
 }
 #endif
@@ -540,7 +540,7 @@ void SCR_DrawDebugGraph(void)
 {
 	int             a, x, y, w, i, h;
 	float           v;
-//	int             color;
+	int             color;
 
 	//
 	// draw the graph
@@ -556,7 +556,7 @@ void SCR_DrawDebugGraph(void)
 	{
 		i = (current - 1 - a + 1024) & 1023;
 		v = values[i].value;
-//		color = values[i].color;
+		color = values[i].color;
 		v = v * cl_graphscale->integer + cl_graphshift->integer;
 
 		if(v < 0)
@@ -655,7 +655,7 @@ void SCR_DrawScreenField(stereoFrame_t stereoFrame)
 #ifdef USE_VOIP
 			    SCR_DrawVoipMeter();
 				SCR_DrawVoipSender();
-#endif
+#endif				
 				break;
 		}
 	}
@@ -707,7 +707,7 @@ void SCR_UpdateScreen(void)
 	if( uivm || com_dedicated->integer )
 	{
 		// XXX
-//		extern cvar_t* r_anaglyphMode;
+		extern cvar_t* r_anaglyphMode;
 		// if running in stereo, we need to draw the frame twice
 		if(cls.glconfig.stereoEnabled) {
 			SCR_DrawScreenField( STEREO_LEFT );
@@ -769,3 +769,4 @@ float SCR_ConsoleFontStringWidth( const char* s, int len )
     return (width);
 }
 
+ 

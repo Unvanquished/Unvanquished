@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -413,12 +413,12 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	}
 }
 
-void Field_Draw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha )
+void Field_Draw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape, float alpha ) 
 {
 	Field_VariableSizeDraw( edit, x, y, SMALLCHAR_WIDTH, showCursor, noColorEscape, alpha );
 }
 
-void Field_BigDraw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape )
+void Field_BigDraw( field_t *edit, int x, int y, qboolean showCursor, qboolean noColorEscape ) 
 {
 	Field_VariableSizeDraw( edit, x, y, BIGCHAR_WIDTH, showCursor, noColorEscape, 1.0f );
 }
@@ -606,12 +606,10 @@ CONSOLE LINE EDITING
 ==============================================================================
 */
 
-#if 0
 static char completionString[MAX_TOKEN_CHARS];
 static char currentMatch[MAX_TOKEN_CHARS];
 static int matchCount;
 static int matchIndex;
-#endif
 
 /*
 ===============
@@ -619,7 +617,6 @@ FindMatches
 
 ===============
 */
-#if 0
 static void FindMatches( const char *s ) {
 	int i;
 
@@ -679,9 +676,7 @@ static void PrintCvarMatches( const char *s ) {
 		Com_Printf( "  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) );
 	}
 }
-#endif
 
-#if 0
 static void keyConcatArgs( void ) {
 	int i;
 	char    *arg;
@@ -702,9 +697,7 @@ static void keyConcatArgs( void ) {
 		}
 	}
 }
-#endif
 
-#if 0
 static void ConcatRemaining( const char *src, const char *start ) {
 	char *str;
 
@@ -717,7 +710,7 @@ static void ConcatRemaining( const char *src, const char *start ) {
 	str += strlen( start );
 	Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), str );
 }
-#endif
+
 
 /*
 ===============
@@ -766,7 +759,7 @@ void Console_Key( int key ) {
 		}
 
 		Com_Printf( "]%s\n", g_consoleField.buffer );
-
+		
 
 		// leading slash is an explicit command
 		if ( g_consoleField.buffer[0] == '\\' || g_consoleField.buffer[0] == '/' ) {
@@ -834,12 +827,12 @@ void Console_Key( int key ) {
 				  g_consoleField.scroll = g_consoleField.cursor - g_consoleField.widthInChars + 1;
 			  } else {
 				  g_consoleField.scroll = 0;
-			  }
+			  }  
 		  } else if ( g_consoleField.buffer[0] ) {
 				  Hist_Add( g_consoleField.buffer );
 				  Field_Clear( &g_consoleField );
 			  }
-
+		  
 		con.acLength = 0;
 		return;
 	}
@@ -1153,8 +1146,8 @@ Key_Bind_f
 ===================
 */
 void Key_Bind_f( void ) {
-	int c, b;
-//	char *cmd;
+	int q, i, c, b;
+	char *cmd;
 
 	c = Cmd_Argc();
 

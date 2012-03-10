@@ -43,7 +43,6 @@ VBO_t          *R_CreateVBO(const char *name, byte * vertexes, int vertexesSize,
 			break;
 
 		default:
-            glUsage = 0; //Prevents warning
 			Com_Error(ERR_FATAL, "bad vboUsage_t given: %i", usage);
 	}
 
@@ -121,7 +120,6 @@ VBO_t          *R_CreateVBO2(const char *name, int numVertexes, srfVert_t * vert
 			break;
 
 		default:
-            glUsage = 0;
 			Com_Error(ERR_FATAL, "bad vboUsage_t given: %i", usage);
 	}
 
@@ -353,7 +351,6 @@ IBO_t          *R_CreateIBO(const char *name, byte * indexes, int indexesSize, v
 			break;
 
 		default:
-            glUsage = 0;
 			Com_Error(ERR_FATAL, "bad vboUsage_t given: %i", usage);
 	}
 
@@ -413,7 +410,6 @@ IBO_t          *R_CreateIBO2(const char *name, int numTriangles, srfTriangle_t *
 			break;
 
 		default:
-            glUsage = 0;
 			Com_Error(ERR_FATAL, "bad vboUsage_t given: %i", usage);
 	}
 
@@ -572,9 +568,9 @@ static void R_InitUnitCubeVBO()
 {
 	vec3_t			mins = {-1, -1, -1};
 	vec3_t			maxs = { 1,  1,  1};
-
-	int             i;
-//	vec4_t          quadVerts[4];
+	
+	int             i, j;
+	vec4_t          quadVerts[4];
 	srfVert_t      *verts;
 	srfTriangle_t  *triangles;
 
@@ -676,7 +672,7 @@ R_ShutdownVBOs
 */
 void R_ShutdownVBOs(void)
 {
-	int             i;
+	int             i, j;
 	VBO_t          *vbo;
 	IBO_t          *ibo;
 
@@ -709,8 +705,6 @@ void R_ShutdownVBOs(void)
 #if defined(USE_BSP_CLUSTERSURFACE_MERGING)
 	if(tr.world)
 	{
-	    int j;
-
 		for(j = 0; j < MAX_VISCOUNTS; j++)
 		{
 			// FIXME: clean up this code
@@ -743,7 +737,7 @@ R_VBOList_f
 */
 void R_VBOList_f(void)
 {
-	int             i;
+	int             i, j;
 	VBO_t          *vbo;
 	IBO_t          *ibo;
 	int             vertexesSize = 0;
@@ -765,8 +759,6 @@ void R_VBOList_f(void)
 #if defined(USE_BSP_CLUSTERSURFACE_MERGING)
 	if(tr.world)
 	{
-	    int j;
-
 		for(j = 0; j < MAX_VISCOUNTS; j++)
 		{
 			// FIXME: clean up this code

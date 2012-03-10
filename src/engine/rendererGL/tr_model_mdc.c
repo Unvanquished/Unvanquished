@@ -2,10 +2,10 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
 Copyright (C) 2010 Robert Beckebans <trebor_7@users.sourceforge.net>
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).  
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,14 +20,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Daemon
-Source Code.  If not, please request a copy in writing from id Software at the address
+In addition, the Daemon Source Code is also subject to certain additional terms. 
+You should have received a copy of these additional terms immediately following the 
+terms and conditions of the GNU General Public License which accompanied the Daemon 
+Source Code.  If not, please request a copy in writing from id Software at the address 
 below.
 
-If you have questions concerning this license or the applicable additional terms, you
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+If you have questions concerning this license or the applicable additional terms, you 
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
 Maryland 20850 USA.
 
 ===========================================================================
@@ -42,7 +42,6 @@ Maryland 20850 USA.
 #define NUMMDCVERTEXNORMALS  256
 
 // *INDENT-OFF*
-#if 0
 static float    r_anormals[NUMMDCVERTEXNORMALS][3] = {
 {1.000000, 0.000000, 0.000000},
 {0.980785, 0.195090, 0.000000},
@@ -301,7 +300,6 @@ static float    r_anormals[NUMMDCVERTEXNORMALS][3] = {
 {-0.195090, -0.000000, 0.980785},
 {0.000000, -0.195090, 0.980785},
 };
-#endif
 // *INDENT-ON*
 
 // NOTE: MDC_MAX_ERROR is effectively the compression level. the lower this value, the higher
@@ -324,14 +322,9 @@ void            R_MDC_DecodeXyzCompressed(mdcXyzCompressed_t * xyzComp, vec3_t o
 	( out )[0] = ( (float)( ( ofsVec ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
 	( out )[1] = ( (float)( ( ofsVec >> 8 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
 	( out )[2] = ( (float)( ( ofsVec >> 16 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
-	VectorCopy( ( r_anormals )[( ofsVec >> 24 )], normal ); //This doesn't do anything...
-
-#define R_MDC_DecodeXyzCompressed2( ofsVec, out ) \
-	( out )[0] = ( (float)( ( ofsVec ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
-	( out )[1] = ( (float)( ( ofsVec >> 8 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
-	( out )[2] = ( (float)( ( ofsVec >> 16 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
-	//VectorCopy( ( r_anormals )[( ofsVec >> 24 )], normal ); //This doesn't do anything...
+	VectorCopy( ( r_anormals )[( ofsVec >> 24 )], normal );
 #endif
+
 
 /*
 =================
@@ -340,7 +333,7 @@ R_LoadMDC
 */
 qboolean R_LoadMDC(model_t * mod, int lod, void *buffer, int bufferSize, const char *modName)
 {
-	int             i, j, k;
+	int             i, j, k, l;
 
 	mdcHeader_t    *mdcModel;
 	md3Frame_t     *mdcFrame;
@@ -355,7 +348,7 @@ qboolean R_LoadMDC(model_t * mod, int lod, void *buffer, int bufferSize, const c
 
 	mdvModel_t     *mdvModel;
 	mdvFrame_t     *frame;
-	mdvSurface_t   *surf;//, *surface; //unused
+	mdvSurface_t   *surf, *surface;
 	srfTriangle_t  *tri;
 	mdvVertex_t    *v;
 	mdvSt_t        *st;
@@ -407,7 +400,7 @@ qboolean R_LoadMDC(model_t * mod, int lod, void *buffer, int bufferSize, const c
 	mdcFrame = (md3Frame_t *) ((byte *) mdcModel + mdcModel->ofsFrames);
 	for(i = 0; i < mdcModel->numFrames; i++, frame++, mdcFrame++)
 	{
-
+		
 #if 1
 		// RB: ET HACK
 		if(strstr(mod->name, "sherman") || strstr(mod->name, "mg42"))
@@ -588,11 +581,11 @@ qboolean R_LoadMDC(model_t * mod, int lod, void *buffer, int bufferSize, const c
 
 		surf->numVerts = mdcSurf->numVerts;
 		surf->verts = v = ri.Hunk_Alloc(sizeof(*v) * (mdcSurf->numVerts * mdcModel->numFrames), h_low);
-
+		
 		for(j = 0; j < mdcModel->numFrames; j++)
 		{
 			int             baseFrame;
-			int				compFrame = 0;
+			int				compFrame;
 
 			baseFrame = (int) *((short *)((byte *) mdcSurf + mdcSurf->ofsFrameBaseFrames) + j);
 
@@ -616,9 +609,9 @@ qboolean R_LoadMDC(model_t * mod, int lod, void *buffer, int bufferSize, const c
 				if(mdcSurf->numCompFrames > 0 && compFrame >= 0)
 				{
 					vec3_t      ofsVec;
-					//vec3_t		normal;
+					vec3_t		normal;
 
-					R_MDC_DecodeXyzCompressed2(LittleShort(mdcxyzComp->ofsVec), ofsVec/*, normal*/);
+					R_MDC_DecodeXyzCompressed(LittleShort(mdcxyzComp->ofsVec), ofsVec, normal);
 					VectorAdd(v->xyz, ofsVec, v->xyz);
 
 					mdcxyzComp++;
@@ -658,10 +651,10 @@ qboolean R_LoadMDC(model_t * mod, int lod, void *buffer, int bufferSize, const c
 		GLuint          ofsBinormals;
 		GLuint          ofsNormals;
 
-		GLuint			sizeXYZ = 0;
-		GLuint			sizeTangents = 0;
-		GLuint			sizeBinormals = 0;
-		GLuint			sizeNormals = 0;
+		GLuint			sizeXYZ;
+		GLuint			sizeTangents;
+		GLuint			sizeBinormals;
+		GLuint			sizeNormals;
 
 		int				vertexesNum;
 		int				f;

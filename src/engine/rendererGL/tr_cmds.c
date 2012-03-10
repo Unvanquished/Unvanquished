@@ -778,7 +778,7 @@ RE_RenderToTexture
 */
 void RE_RenderToTexture(int textureid, int x, int y, int w, int h)
 {
-	//renderToTextureCommand_t *cmd;
+	renderToTextureCommand_t *cmd;
 
 	ri.Printf(PRINT_ALL, S_COLOR_RED "TODO RE_RenderToTexture\n");
 
