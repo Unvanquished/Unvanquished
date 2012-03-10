@@ -1160,6 +1160,15 @@ set(GLEW_INCLUDE_DIR
 # set( GMP_LIBRARY CACHE FILEPATH "Location of the GMP Library" )
 # set( GMP_INCLUDES CACHE PATH ADVANCED "Location of the GMP Includes" )
 # set( XVID_LIBRARY CACHE FILEPATH "Location of the XviD library" )
+
+#Find WebP and set USE_WEBP to false if it can't be found
+if( USE_WEBP )
+  include( FindWebP )
+  if( NOT WEBP_FOUND )
+    set( USE_WEBP 0 )
+  endif()
+endif()
+
 if( USE_PHYSICS )
   if( LINUX )
     if( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64" )
@@ -1171,6 +1180,7 @@ if( USE_PHYSICS )
     set( NEWTON_LIBRARY CACHE FILEPATH "Location of the Newton library" )
   endif()
 endif()
+
 if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
   
   find_package( OpenGL REQUIRED )
@@ -1198,27 +1208,25 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
 
   if( BUILD_NEW_RENDERER )
     add_library( rendererGL SHARED  ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/libs/libpng/pngerror.c ${MOUNT_DIR}/libs/jpeg/jdatasrc.c )
-    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
+    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${WEBP_INCLUDE_DIR} )
     set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
-    if( USE_WEBP )
-      set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-      set( WEBP_LIBRARY webp )
-    endif( )
     target_link_libraries( rendererGL ${OS_LIBRARIES} ${WEBP_LIBRARY} ${PNG_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} ${SDL_LIBRARY} )
     set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "librendererGL3${BUILD_ARCH}" PREFIX "" )
   endif()
 
   if( BUILD_OLD_RENDERER )
     add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} )
-    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
+    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${WEBP_INCLUDE_DIR} )
     set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
-    if( USE_WEBP )
-      set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-      set( WEBP_LIBRARY webp )
-    endif( )
     target_link_libraries( renderer ${PNG_LIBRARY} ${WEBP_LIBRARY} ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
     set_target_properties( renderer PROPERTIES OUTPUT_NAME "librendererGL${BUILD_ARCH}" PREFIX "" )
   endif()
+
+  #Enable WEBP in code if WEBP is found
+  if( WEBP_FOUND )
+    set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+  endif( )
+
 endif()
 
 ################
