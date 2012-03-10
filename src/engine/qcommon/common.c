@@ -3269,7 +3269,7 @@ void Com_Init(char *commandLine)
 	// init commands and vars
 	//
 	// Gordon: no need to latch this in ET, our recoil is framerate independant
-	com_maxfps = Cvar_Get("com_maxfps", "85", CVAR_ARCHIVE /*|CVAR_LATCH */ );
+	com_maxfps = Cvar_Get("com_maxfps", "125", CVAR_ARCHIVE /*|CVAR_LATCH */ );
 //  com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE); // Gordon: no longer used?
 
 	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
