@@ -829,7 +829,6 @@ void Sys_OpenURL( const char *url, qboolean doexit ) {
 
 }
 
-// Dushan
 qboolean Sys_OpenUrl( const char *url )
 {
 	char *browser = getenv("BROWSER");
@@ -966,6 +965,6 @@ Sys_IsNumLockDown
 */
 qboolean Sys_IsNumLockDown(void)
 {
-	// Dushan : FIX ME for Linux
+	// FIXME for Linux
 	return qfalse;
 }

@@ -125,7 +125,7 @@ extern "C" {
  #endif
 #endif
 
-#if ZLIB_VERNUM > 0x1250
+#if ZLIB_VERNUM > 0x1250 && !defined(OF)
 #define OF _Z_OF /* in >=1.2.5.1 zlib redefined OF to the _Z namespace */
 #endif
 

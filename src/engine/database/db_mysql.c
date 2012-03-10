@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef ET_MYSQL
 
-// Dushan
 #if defined(WIN32) || defined(WIN64)
 #    include <winsock.h>
 #    include <mysql.h>
@@ -105,7 +104,6 @@ void OW_MySQL_ConnectMaster( void ) {
 		return;
 	}
 
-	// Dushan - moved creating databases after connecting to MySQL
 	OW_MySQL_CreateTable();
 
 	Com_Printf( "MySQL Master Server Loaded.\n" );
@@ -310,7 +308,6 @@ void OW_MySQL_CleanString( const char *in, char *out, int len ) {
 
 void OW_MySQL_CreateTable( void ) {
 
-	// Dushan : Write and created only info if database is connected
 	if( db_enable->integer == 1 ) {
 
 		// If it is connected to database

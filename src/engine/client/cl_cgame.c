@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -708,13 +708,13 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			Cmd_ArgsBuffer(VMA(1), args[2]);
 			return 0;
 		case CG_LITERAL_ARGS:
-			// Dushan : FIX ME
+			// FIXME
 			Cmd_LiteralArgsBuffer( VMA(1), args[2] );
 // 			Cmd_ArgsBuffer(VMA(1), args[2]);
 			return 0;
 		case CG_GETDEMOSTATE:
 			//return CL_DemoState( );
-			// Dushan : FIX ME
+			// FIXME
 			return 0;
 		case CG_GETDEMOPOS:
 			//return CL_DemoPos( );
@@ -809,7 +809,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			return 0;
 //----(SA)  added
 		case CG_S_STARTSOUNDEX:
-			// Dushan - FIX ME
+			// FIXME
 			//S_StartSoundEx(VMA(1), args[2], args[3], args[4], args[5], args[6]);
 			return 0;
 //----(SA)  end
@@ -822,7 +822,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			S_ClearLoopingSounds(args[1]);
 			return 0;
 		case CG_S_CLEARSOUNDS:
-			// Dushan - FIX ME
+			// FIXME
 			/*if(args[1] == 0)
 			{
 				S_ClearSounds(qtrue, qfalse);
@@ -845,7 +845,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			S_StopLoopingSound( args[1] );
 			return 0;
 		case CG_S_STOPSTREAMINGSOUND:
-			// Dushan - FIX ME
+			// FIXME
 			//S_StopEntStreamingSound(args[1]);
 			return 0;
 		case CG_S_UPDATEENTITYPOSITION:
@@ -853,18 +853,18 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			return 0;
 // Ridah, talking animations
 		case CG_S_GETVOICEAMPLITUDE:
-			// Dushan - FIX ME
+			// FIXME
 			//return S_GetVoiceAmplitude(args[1]);
 			return 0;
 // done.
 		case CG_S_GETSOUNDLENGTH:
-			// Dushan - FIX ME
+			// FIXME
 			//return S_GetSoundLength(args[1]);
 			return 0;
 
 			// ydnar: for looped sound starts
 		case CG_S_GETCURRENTSOUNDTIME:
-			// Dushan - FIX ME
+			// FIXME
 			//return S_GetCurrentSoundTime();
 			return 0;
 
@@ -882,11 +882,11 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			S_StartBackgroundTrack(VMA(1), VMA(2));
 			return 0;
 		case CG_S_FADESTREAMINGSOUND:
-			// Dushan - FIX ME
+			// FIXME
 			//S_FadeStreamingSound(VMF(1), args[2], args[3]);	//----(SA)  added music/all-streaming options
 			return 0;
 		case CG_S_STARTSTREAMINGSOUND:
-			// Dushan - FIX ME
+			// FIXME
 			//return S_StartStreamingSound(VMA(1), VMA(2), args[3], args[4], args[5]);
 			return 0;
 		case CG_R_LOADWORLDMAP:
@@ -897,9 +897,9 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			GLimp_AcquireGL();
 			return re.RegisterModel( VMA(1) );
 			GLimp_ReleaseGL();
-#else		
+#else
 			return re.RegisterModel(VMA(1));
-#endif // IPHONE			
+#endif // IPHONE
 		case CG_R_REGISTERSKIN:
 			return re.RegisterSkin(VMA(1));
 
@@ -915,7 +915,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			GLimp_AcquireGL();
 			return re.RegisterShader( VMA(1) );
 			GLimp_ReleaseGL();
-#else		
+#else
 			return re.RegisterShader(VMA(1));
 #endif // IPHONE
 		case CG_R_REGISTERFONT:
@@ -926,7 +926,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			GLimp_AcquireGL();
 			return re.RegisterShaderNoMip( VMA(1) );
 			GLimp_ReleaseGL();
-#else		
+#else
 			return re.RegisterShaderNoMip(VMA(1));
 #endif // IPHONE
 #if defined(USE_REFLIGHT)
@@ -1183,7 +1183,6 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			Key_SetBinding(args[1], VMA(2));
 			return 0;
 
-		// Dushan - Tremulous
 		case CG_PARSE_ADD_GLOBAL_DEFINE:
 			return Parse_AddGlobalDefine( VMA(1) );
 		case CG_PARSE_LOAD_SOURCE:
@@ -1208,7 +1207,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			return 0;
 
 		case CG_S_FADEALLSOUNDS:
-			// Dushan - FIX ME
+			// FIXME
 			//S_FadeAllSounds(VMF(1), args[2], args[3]);
 			return 0;
 
@@ -1245,7 +1244,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			re.Finish();
 			return 0;
 		case CG_GETDEMONAME:
-			// Dushan: FIX ME
+			// FIXME
 			//CL_DemoName( VMA(1), args[2] );
 			return 0;
 		case CG_R_LIGHTFORPOINT:
@@ -1404,7 +1403,6 @@ void CL_InitCGame(void) {
 	mapname = Info_ValueForKey(info, "mapname");
 	Com_sprintf(cl.mapname, sizeof(cl.mapname), "maps/%s.bsp", mapname);
 
-	// Dushan - load the dll or bytecode
 	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
 	if ( !cgvm ) {
 		Com_Error( ERR_DROP, "VM_Create on cgame failed" );
@@ -1525,7 +1523,7 @@ or bursted delayed packets.
 
 void CL_AdjustTimeDelta(void)
 {
-	int             resetTime;
+//	int             resetTime;
 	int             newDelta;
 	int             deltaDelta;
 
@@ -1538,6 +1536,7 @@ void CL_AdjustTimeDelta(void)
 	}
 
 	// if the current time is WAY off, just correct to the current value
+/*
 	if(com_sv_running->integer)
 	{
 		resetTime = 100;
@@ -1546,6 +1545,7 @@ void CL_AdjustTimeDelta(void)
 	{
 		resetTime = RESET_TIME;
 	}
+*/
 
 	newDelta = cl.snap.serverTime - cls.realtime;
 	deltaDelta = abs(newDelta - cl.serverTimeDelta);
@@ -1611,11 +1611,11 @@ void CL_FirstSnapshot(void)
 		return;
 	}
 	cls.state = CA_ACTIVE;
-	
+
 #ifdef IPHONE
 	// Force the device into right landscape mode:
 	GLimp_SetMode(90);
-#endif // IPHONE	
+#endif // IPHONE
 
 	// set the timedelta so we are exactly on this first frame
 	cl.serverTimeDelta = cl.snap.serverTime - cls.realtime;
@@ -1638,8 +1638,8 @@ void CL_FirstSnapshot(void)
 		int ret = mumble_link(CLIENT_WINDOW_TITLE);
 		Com_Printf("Mumble: Linking to Mumble application %s\n", ret==0?"ok":"failed");
 	}
-#endif	
-	
+#endif
+
 #ifdef USE_VOIP
 	if (!clc.speexInitialized) {
 		int i;

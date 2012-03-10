@@ -1281,7 +1281,6 @@ void SV_Frame(int msec)
 	int             startTime;
 	char            mapname[MAX_QPATH];
 	int             frameStartTime = 0, frameEndTime;
-	// Dushan
 	static int   start, end;
 
 	start = Sys_Milliseconds ();

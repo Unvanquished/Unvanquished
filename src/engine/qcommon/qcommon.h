@@ -50,7 +50,7 @@ Maryland 20850 USA.
 //#define PRE_RELEASE_DEMO
 #ifdef PRE_RELEASE_DEMO
 #define PRE_RELEASE_DEMO_NODEVMAP
-#endif							// PRE_RELEASE_DEMO
+#endif
 
 //============================================================================
 
@@ -59,15 +59,15 @@ Maryland 20850 USA.
 //
 typedef struct
 {
-	qboolean        allowoverflow;	// if false, do a Com_Error
-	qboolean        overflowed;	// set to true if the buffer size failed (with allowoverflow set)
-	qboolean        oob;		// set to true if the buffer size failed (with allowoverflow set)
+	qboolean        allowoverflow; // if false, do a Com_Error
+	qboolean        overflowed; // set to true if the buffer size failed (with allowoverflow set)
+	qboolean        oob;        // set to true if the buffer size failed (with allowoverflow set)
 	byte           *data;
 	int             maxsize;
 	int             cursize;
-	int             uncompsize;	// NERVE - SMF - net debugging
+	int             uncompsize; // NERVE - SMF - net debugging
 	int             readcount;
-	int             bit;		// for bitwise reads and writes
+	int             bit; // for bitwise reads and writes
 } msg_t;
 
 void            MSG_Init(msg_t * buf, byte * data, int length);
@@ -217,12 +217,11 @@ void			NET_Sleep( int msec );
 
 #if defined(USE_HTTP)
 
-// Dushan
 typedef enum {
 	HTTP_WRITE,
 	HTTP_READ,
 	HTTP_DONE,
-	HTTP_LENGTH,	//	Content-Length:
+	HTTP_LENGTH,
 	HTTP_FAILED,
 } httpInfo_e;
 
@@ -437,7 +436,6 @@ typedef enum
 
 typedef enum
 {
-	// Dushan - 100 was already used
 	TRAP_MEMSET = 300,
 	TRAP_MEMCPY,
 	TRAP_STRNCPY,
@@ -711,11 +709,9 @@ issues.
 */
 
 #ifndef PRE_RELEASE_DEMO
-// Dushan for ET game, basegame folder was "ETMAIN"
-//#define BASEGAME "etmain"
-#define BASEGAME "main"
+# define BASEGAME "main"
 #else
-#define BASEGAME "ettest"
+# define BASEGAME "test"
 #endif
 
 // referenced flags
@@ -815,7 +811,7 @@ int             FS_ReadFile(const char *qpath, void **buffer);
 // the buffer should be considered read-only, because it may be cached
 // for other uses.
 
-void			FS_ForceFlush( fileHandle_t f );
+void            FS_ForceFlush( fileHandle_t f );
 // forces flush on files we're writing to.
 
 void            FS_FreeFile(void *buffer);
@@ -915,11 +911,11 @@ qboolean        FS_IsPure(void);
 unsigned int    FS_ChecksumOSPath(char *OSPath);
 
 // XreaL BEGIN
-void			FS_HomeRemove(const char *homePath);
+void            FS_HomeRemove(const char *homePath);
 // XreaL END
 
-void	FS_FilenameCompletion( const char *dir, const char *ext,
-		qboolean stripExt, void(*callback)(const char *s) );
+void FS_FilenameCompletion( const char *dir, const char *ext,
+	qboolean stripExt, void(*callback)(const char *s) );
 
 const char *FS_GetCurrentGameDir(void);
 qboolean FS_Which(const char *filename, void *searchPath);
@@ -1060,7 +1056,7 @@ extern cvar_t  *com_speeds;
 extern cvar_t  *com_timescale;
 extern cvar_t  *com_sv_running;
 extern cvar_t  *com_cl_running;
-extern cvar_t  *com_viewlog;	// 0 = hidden, 1 = visible, 2 = minimized
+extern cvar_t  *com_viewlog; // 0 = hidden, 1 = visible, 2 = minimized
 extern cvar_t  *com_version;
 
 //extern    cvar_t  *com_blood;
@@ -1170,7 +1166,7 @@ void            Hunk_Log(void);
 
 void            Com_TouchMemory(void);
 
-double			Sys_DoubleTime (void) ;
+double          Sys_DoubleTime (void) ;
 
 // commandLine should not include the executable name (argv[0])
 void            Com_Init(char *commandLine);

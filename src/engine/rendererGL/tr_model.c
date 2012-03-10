@@ -95,7 +95,7 @@ qhandle_t RE_RegisterModel(const char *name)
 {
 	model_t        *mod;
 	unsigned       *buffer;
-	int             bufferLen;
+	int             bufferLen = 0;
 	int             lod;
 	int             ident;
 	qboolean        loaded;
@@ -486,7 +486,7 @@ qboolean RE_BeginRegistration(glconfig_t * glconfigOut, glconfig2_t *glconfig2Ou
 
 	*glconfigOut = glConfig;
 	*glconfig2Out = glConfig2;
-	
+
 	R_SyncRenderThread();
 
 	tr.visIndex = 0;
@@ -567,8 +567,8 @@ void R_Modellist_f(void)
 	for(i = 1; i < tr.numModels; i++)
 	{
 		mod = tr.models[i];
-		
-		
+
+
 		if(mod->type == MOD_MESH)
 		{
 			for(j = 0; j < MD3_MAX_LODS; j++)
@@ -582,7 +582,7 @@ void R_Modellist_f(void)
 					mdvModel = mod->mdv[j];
 
 					total++;
-					ri.Printf(PRINT_ALL, "%d.%02d MB '%s' LOD = %i\n",	mod->dataSize / (1024 * 1024), 
+					ri.Printf(PRINT_ALL, "%d.%02d MB '%s' LOD = %i\n",	mod->dataSize / (1024 * 1024),
 															(mod->dataSize % (1024 * 1024)) * 100 / (1024 * 1024),
 															mod->name, j);
 
@@ -590,7 +590,7 @@ void R_Modellist_f(void)
 					{
 						ri.Printf(PRINT_ALL, "\tnumSurfaces = %i\n", mdvModel->numSurfaces);
 						ri.Printf(PRINT_ALL, "\tnumFrames = %i\n", mdvModel->numFrames);
-						
+
 						for(k = 0, mdvSurface = mdvModel->surfaces; k < mdvModel->numSurfaces; k++, mdvSurface++)
 						{
 							ri.Printf(PRINT_ALL, "\t\tmesh = '%s'\n", mdvSurface->name);
@@ -609,7 +609,7 @@ void R_Modellist_f(void)
 		}
 		else
 		{
-			ri.Printf(PRINT_ALL, "%d.%02d MB '%s'\n",	mod->dataSize / (1024 * 1024), 
+			ri.Printf(PRINT_ALL, "%d.%02d MB '%s'\n",	mod->dataSize / (1024 * 1024),
 																(mod->dataSize % (1024 * 1024)) * 100 / (1024 * 1024),
 																mod->name);
 
@@ -618,7 +618,7 @@ void R_Modellist_f(void)
 
 		totalDataSize += mod->dataSize;
 	}
-	
+
 	ri.Printf(PRINT_ALL, " %d.%02d MB total model memory\n", totalDataSize / (1024 * 1024),
 			  (totalDataSize % (1024 * 1024)) * 100 / (1024 * 1024));
 	ri.Printf(PRINT_ALL, " %i total models\n\n", total);
@@ -809,7 +809,6 @@ int RE_LerpTagET(orientation_t * tag, const refEntity_t * refent, const char *ta
 	}
 	else if( model->type == MOD_MD5 )
 	{
-		// Dushan: VS need this first
 		vec3_t tmp;
 
 		retval = RE_BoneIndex( handle, tagName );
@@ -823,7 +822,7 @@ int RE_LerpTagET(orientation_t * tag, const refEntity_t * refent, const char *ta
 		VectorCopy(tmp, tag->axis[0]);
 		return retval;
 	}
-	  
+
 	/*
 	else
 	{
