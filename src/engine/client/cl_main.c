@@ -4281,11 +4281,6 @@ qboolean CL_NextUpdateServer( void ) {
 		return qfalse;
 	}
 
-#ifdef _DEBUG
-	Com_Printf( S_COLOR_MAGENTA "Autoupdate hardcoded OFF in debug build\n" );
-	return qfalse;
-#endif
-
 	while ( cls.autoUpdateServerChecked[cls.autoupdatServerFirstIndex] ) {
 		cls.autoupdatServerIndex++;
 
@@ -4626,7 +4621,7 @@ void CL_singlePlayLink_f(void)
 #if !defined( __MACOS__ )
 void CL_SaveTranslations_f(void)
 {
-	CL_SaveTransTable("scripts/translation.cfg", qfalse);
+	CL_SaveTransTable("scripts/translation.lang", qfalse);
 }
 
 void CL_SaveNewTranslations_f(void)
@@ -4639,7 +4634,7 @@ void CL_SaveNewTranslations_f(void)
 		return;
 	}
 
-	strcpy(fileName, va("translations/%s.cfg", Cmd_Argv(1)));
+	strcpy(fileName, va("translations/%s.lang", Cmd_Argv(1)));
 
 	CL_SaveTransTable(fileName, qtrue);
 }
@@ -5040,11 +5035,10 @@ void CL_Init(void)
 	Cmd_AddCommand("updatescreen", SCR_UpdateScreen);
 	// done.
 
-#ifndef __MACOS__				//DAJ USA
 	Cmd_AddCommand("SaveTranslations", CL_SaveTranslations_f);	// NERVE - SMF - localization
 	Cmd_AddCommand("SaveNewTranslations", CL_SaveNewTranslations_f);	// NERVE - SMF - localization
 	Cmd_AddCommand("LoadTranslations", CL_LoadTranslations_f);	// NERVE - SMF - localization
-#endif
+
 	// NERVE - SMF - don't do this in multiplayer
 	// RF, add this command so clients can't bind a key to send client damage commands to the server
 //  Cmd_AddCommand ("cld", CL_ClientDamageCommand );
@@ -5085,9 +5079,7 @@ void CL_Init(void)
 	autoupdateChecked = qfalse;
 	autoupdateStarted = qfalse;
 
-#ifndef __MACOS__
-	CL_InitTranslation();		// NERVE - SMF - localization
-#endif
+	CL_InitTranslation(); // NERVE - SMF - localization
 
 	Com_Printf("----- Client Initialization Complete -----\n");
 }
@@ -6208,7 +6200,6 @@ void CL_ShowIP_f(void)
 #define MAX_VA_STRING       32000
 #define MAX_TRANS_STRING    4096
 
-#ifndef __MACOS__				//DAJ USA
 typedef struct trans_s
 {
 	char            original[MAX_TRANS_STRING];
@@ -6746,17 +6737,6 @@ void CL_InitTranslation()
 	}
 }
 
-#else
-typedef struct trans_s
-{
-	char            original[MAX_TRANS_STRING];
-	struct trans_s *next;
-	float           x_offset;
-	float           y_offset;
-} trans_t;
-
-#endif							//DAJ USA
-
 /*
 =======================
 CL_TranslateString
@@ -6783,7 +6763,7 @@ void CL_TranslateString(const char *string, char *dest_buffer)
 		strcpy(buf, string);
 		return;
 	}
-#if !defined( __MACOS__ )
+
 	// ignore newlines
 	if(string[strlen(string) - 1] == '\n')
 	{
@@ -6870,7 +6850,6 @@ void CL_TranslateString(const char *string, char *dest_buffer)
 			}
 		}
 	}
-#endif							//DAJ USA
 }
 
 /*

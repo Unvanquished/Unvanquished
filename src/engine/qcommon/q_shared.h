@@ -2385,12 +2385,10 @@ typedef enum {
 
 // NERVE - SMF - localization
 typedef enum {
-#ifndef __MACOS__   //DAJ USA
 	LANGUAGE_FRENCH = 0,
 	LANGUAGE_GERMAN,
 	LANGUAGE_ITALIAN,
 	LANGUAGE_SPANISH,
-#endif
 	MAX_LANGUAGES
 } languages_t;
 
