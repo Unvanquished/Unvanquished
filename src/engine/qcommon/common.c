@@ -1750,6 +1750,7 @@ void Com_InitZoneMemory(void)
 	cvar_t         *cv;
 
 	// allocate the random block zone
+	Com_StartupVariable("com_zoneMegs"); // config files and command line options haven't been taken in account yet
 	cv = Cvar_Get("com_zoneMegs", DEF_COMZONEMEGS_S, CVAR_LATCH | CVAR_ARCHIVE);
 
 	if(cv->integer < DEF_COMZONEMEGS)
