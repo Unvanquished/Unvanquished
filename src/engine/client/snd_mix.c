@@ -633,3 +633,12 @@ void S_PaintChannels( int endtime ) {
 		s_paintedtime = end;
 	}
 }
+
+/*
+===================
+S_GetVoiceAmplitude
+===================
+*/
+int SOrig_GetVoiceAmplitude( int entityNum ) {
+	return 0;
+}

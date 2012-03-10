@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -296,7 +296,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 				Com_Printf ("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 			}
 			CL_DeltaEntity( msg, newframe, oldnum, oldstate, qtrue );
-			
+
 			oldindex++;
 
 			if ( oldindex >= oldframe->numEntities ) {
@@ -344,7 +344,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 			Com_Printf ("%3i:  unchanged: %i\n", msg->readcount, oldnum);
 		}
 		CL_DeltaEntity( msg, newframe, oldnum, oldstate, qtrue );
-		
+
 		oldindex++;
 
 		if ( oldindex >= oldframe->numEntities ) {
@@ -600,11 +600,11 @@ void CL_SystemInfoChanged(void)
 	if(clc.demoplaying) {
 		return;
 	}
-	
+
 #ifdef USE_VOIP
 	s = Info_ValueForKey( systemInfo, "sv_voip" );
 	clc.voipEnabled = atoi(s);
-#endif	
+#endif
 
 	s = Info_ValueForKey(systemInfo, "sv_cheats");
 	sv_cheats = atoi(s);		//bani
@@ -1076,7 +1076,7 @@ void CL_ParseVoip ( msg_t *msg ) {
 		if ((written + clc.speexFrameSize) * 2 > sizeof (decoded)) {
 			Com_DPrintf("VoIP: playback %d bytes, %d samples, %d frames\n",
 			            written * 2, written, i);
-			
+
 			CL_PlayVoip(sender, written, (const byte *) decoded, flags);
 			written = 0;
 		}
@@ -1163,9 +1163,9 @@ CL_ParseServerMessage
 void CL_ParseServerMessage(msg_t * msg)
 {
 	int             cmd;
-	msg_t           msgback;
+//	msg_t           msgback;
 
-	msgback = *msg;
+//	msgback = *msg;
 
 	if(cl_shownet->integer == 1)
 	{
@@ -1185,7 +1185,7 @@ void CL_ParseServerMessage(msg_t * msg)
 	{
 		clc.reliableAcknowledge = clc.reliableSequence;
 	}
-	 
+
 	//
 	// parse the message
 	//
@@ -1254,7 +1254,7 @@ void CL_ParseServerMessage(msg_t * msg)
 #ifdef USE_VOIP
 			    CL_ParseVoip( msg );
 #endif
-			    break;				
+			    break;
 		}
 	}
 

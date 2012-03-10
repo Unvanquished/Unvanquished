@@ -70,7 +70,7 @@ static qboolean useBuiltin = qfalse;
 static __attribute__((format(printf, 2, 3))) void QDECL SndPrintf( int print_level, const char *fmt, ...) {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
-	
+
 	va_start (argptr,fmt);
 	Q_vsnprintf (msg, sizeof(msg), fmt, argptr);
 	va_end (argptr);
@@ -116,10 +116,9 @@ static qboolean S_InitModule()
 #if _WIN32
 	sprintf(fn, "snd_%s.dll", s_module->string);
 #else
-	getcwd(fn, sizeof(fn));
-	strncat(fn, "/snd_", sizeof(fn));
-	strncat(fn, s_module->string, sizeof(fn));
-	strncat(fn, ".so", sizeof(fn));
+	strncat(fn, "/snd_", sizeof(fn) - strlen(getcwd(fn, sizeof(fn))) - 1);
+	strncat(fn, s_module->string, sizeof(fn) - strlen(fn)- 1);
+	strncat(fn, ".so", sizeof(fn) - strlen(fn)- 1);
 #endif
 
 	if( (libhandle = OBJLOAD(fn)) == 0 )
@@ -257,6 +256,14 @@ void S_Shutdown( void )
 }
 
 void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
+{
+	if(useBuiltin)
+		SOrig_StartSound(origin, entnum, entchannel, sfx);
+	else if(se)
+		se->StartSound(origin, entnum, entchannel, sfx);
+}
+
+void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
 {
 	if(useBuiltin)
 		SOrig_StartSound(origin, entnum, entchannel, sfx);
@@ -410,6 +417,34 @@ int S_SoundDuration( sfxHandle_t handle )
 		return 0;
 }
 
+/*
+=================
+S_GetVoiceAmplitude
+=================
+*/
+int S_GetVoiceAmplitude( int entnum ) {
+	if(useBuiltin)
+		return SOrig_GetVoiceAmplitude( entnum );
+	else if(se)
+		return se->GetVoiceAmplitude( entnum );
+	else
+		return 0;	
+}
+
+/*
+=================
+S_GetSoundLength
+=================
+*/
+int S_GetSoundLength( sfxHandle_t sfxHandle ) {
+	if(useBuiltin)
+		return SOrig_GetSoundLength( sfxHandle );
+	else if(se)
+		return se->GetSoundLength( sfxHandle );
+	else
+		return 0;	
+}
+
 #ifdef USE_VOIP
 void S_StartCapture( void ) {
 	if(useBuiltin)
@@ -448,3 +483,17 @@ void S_MasterGain( float gain ) {
 		se->MasterGain( gain );
 }
 #endif
+
+/*
+=================
+S_GetCurrentSoundTime
+=================
+*/
+int S_GetCurrentSoundTime( void ) {
+	if(useBuiltin)
+		return SOrig_GetCurrentSoundTime();
+	else if(se)
+		return se->GetCurrentSoundTime();
+	else
+		return 0;
+}

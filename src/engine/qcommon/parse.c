@@ -891,9 +891,19 @@ static int Parse_ReadPrimitive(script_t *script, token_t *token)
     }
     token->string[len++] = *script->script_p++;
   }
+
+  if(len >= MAX_TOKEN_CHARS)
+  {
+    // The last len++ made len==MAX_TOKEN_CHARS, which will overflow.
+    // Bring it back down and ensure we null terminate.
+    len = MAX_TOKEN_CHARS - 1;
+  }
+
   token->string[len] = 0;
+
   //copy the token into the script structure
   Com_Memcpy(&script->token, token, sizeof(token_t));
+
   //primitive reading successfull
   return 1;
 }

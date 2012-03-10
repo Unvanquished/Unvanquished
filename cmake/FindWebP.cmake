@@ -1,9 +1,9 @@
-# - Find ogg library
-# Find the native Ogg headers and libraries.
+# - Find WebP library
+# Find the native WebP headers and libraries.
 #
-#  OGG_INCLUDE_DIRS - where to find ogg/ogg.h, etc.
-#  OGG_LIBRARIES    - List of libraries when using ogg.
-#  OGG_FOUND        - True if ogg is found.
+#  WEBP_INCLUDE_DIRS - where to find webp/decode.h, etc.
+#  WEBP_LIBRARIES    - List of libraries when using webp.
+#  WEBP_FOUND        - True if webp is found.
 
 #=============================================================================
 #Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
@@ -37,16 +37,16 @@
 #=============================================================================
 
 # Look for the header file.
-FIND_PATH(OGG_INCLUDE_DIR NAMES ogg/ogg.h)
-MARK_AS_ADVANCED(OGG_INCLUDE_DIR)
+FIND_PATH(WEBP_INCLUDE_DIR NAMES webp/decode.h)
+MARK_AS_ADVANCED(WEBP_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(OGG_LIBRARY NAMES ogg)
-MARK_AS_ADVANCED(OGG_LIBRARY)
+FIND_LIBRARY(WEBP_LIBRARY NAMES webp)
+MARK_AS_ADVANCED(WEBP_LIBRARY)
 
-# handle the QUIETLY and REQUIRED arguments and set OGG_FOUND to TRUE if 
+# handle the QUIETLY and REQUIRED arguments and set WEBFOUND_FOUND to TRUE if 
 # all listed variables are TRUE
 INCLUDE(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Ogg DEFAULT_MSG OGG_LIBRARY OGG_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(WebP DEFAULT_MSG WEBP_LIBRARY WEBP_INCLUDE_DIR)
 
-SET(OGG_LIBRARIES ${OGG_LIBRARY})
+SET(WEBP_LIBRARIES ${WEBP_LIBRARY})

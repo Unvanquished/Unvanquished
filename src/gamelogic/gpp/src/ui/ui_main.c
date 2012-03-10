@@ -1442,8 +1442,6 @@ qboolean UI_ParseMenu( const char *menuFile )
 qboolean Load_Menu( int handle )
 {
   pc_token_t token;
-  // Dushan - engine support localization support
-  //        - it *should* be initialized with cvar
 #ifdef LOCALIZATION_SUPPORT
   int cl_lang;
 #endif
@@ -1471,7 +1469,6 @@ qboolean Load_Menu( int handle )
 	}
 
 #ifdef LOCALIZATION_SUPPORT
-	// Dushan - check cl_language cvar
 	cl_lang = atoi(UI_Cvar_VariableString("cl_language"));
 
 	if(cl_lang) {
@@ -1485,37 +1482,24 @@ qboolean Load_Menu( int handle )
 
 		// NOTE : cl_language 0 - English
 		
-		// Dushan - if cl_language is 1
-		//        - load French
-		if(cl_lang == 1)
-		{
+		if(cl_lang == 1) {
 			s = va("%s%s", out, "french/");
-		}
-		// Dushan - if cl_language is 2
-		//        - load German
-		else if(cl_lang == 2)
-		{
+		} else if(cl_lang == 2) {
 			s = va("%s%s", out, "german/");
-		}
-		// Dushan - if cl_language is 1
-		//        - load Italian
-		else if(cl_lang == 3)
-		{
+		} else if(cl_lang == 3) {
 			s = va("%s%s", out, "italian/");
-		}
-		// Dushan - if cl_language is 1
-		//        - load Spanish
-		else if(cl_lang == 4)
-		{
+		} else if(cl_lang == 4) {
 			s = va("%s%s", out, "spanish/");
+		} else if(cl_lang == 5) {
+			s = va("%s%s", out, "japanese/");
 		}
-		if(UI_ParseMenu(va("%s%s", s, fname)))
-		{
+
+		if(UI_ParseMenu(va("%s%s", s, fname))) {
 			continue;
 		}
 	}
 #endif // LOCALIZATION_SUPPORT
-	
+
     UI_ParseMenu( token.string );
   }
 

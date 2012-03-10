@@ -1,9 +1,12 @@
-# - Find ogg library
-# Find the native Ogg headers and libraries.
+# - Find vorbis library
+# Find the native Vorbis headers and libraries.
 #
-#  OGG_INCLUDE_DIRS - where to find ogg/ogg.h, etc.
-#  OGG_LIBRARIES    - List of libraries when using ogg.
-#  OGG_FOUND        - True if ogg is found.
+#  VORBIS_INCLUDE_DIR    - where to find vorbis/vorbis.h, codec.h, etc
+#  VORBIS_LIBRARIES      - List of libraries when using libvorbis
+#  VORBISFILE_LIBRARY    - Location of vorbisfile library
+#  VORBIS_VORBIS_LIBRARY - location of vorbis library
+#  VORBIS_FOUND          - True if vorbis is found.
+
 
 #=============================================================================
 #Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
@@ -36,17 +39,24 @@
 #POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
-# Look for the header file.
-FIND_PATH(OGG_INCLUDE_DIR NAMES ogg/ogg.h)
-MARK_AS_ADVANCED(OGG_INCLUDE_DIR)
+# Look for the vorbisfile header file.
+FIND_PATH(VORBIS_INCLUDE_DIR NAMES vorbis/vorbisfile.h)
+MARK_AS_ADVANCED(VORBIS_INCLUDE_DIR)
 
-# Look for the library.
-FIND_LIBRARY(OGG_LIBRARY NAMES ogg)
-MARK_AS_ADVANCED(OGG_LIBRARY)
+# Look for the vorbisfile library.
+FIND_LIBRARY(VORBISFILE_LIBRARY NAMES vorbisfile )
+MARK_AS_ADVANCED(VORBISFILE_LIBRARY)
 
-# handle the QUIETLY and REQUIRED arguments and set OGG_FOUND to TRUE if 
+# Look for the vorbis library.
+FIND_LIBRARY(VORBIS_VORBIS_LIBRARY NAMES vorbis )
+MARK_AS_ADVANCED(VORBIS_VORBIS_LIBRARY)
+
+
+
+# handle the QUIETLY and REQUIRED arguments and set VORBISFILE_FOUND to TRUE if 
 # all listed variables are TRUE
 INCLUDE(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Ogg DEFAULT_MSG OGG_LIBRARY OGG_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Vorbis DEFAULT_MSG VORBIS_VORBIS_LIBRARY VORBIS_INCLUDE_DIR)
 
-SET(OGG_LIBRARIES ${OGG_LIBRARY})
+SET(VORBIS_LIBRARIES ${VORBISFILE_LIBRARY} ${VORBIS_VORBIS_LIBRARY})
+SET(VORBIS_LIBRARY ${VORBIS_LIBRARIES})

@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -259,17 +259,17 @@ qboolean SV_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
 {
 	int             leafnum;
 	int             cluster;
-	int             area1, area2;
+//	int             area1, area2; //unused
 	byte           *mask;
 
 	leafnum = CM_PointLeafnum(p1);
 	cluster = CM_LeafCluster(leafnum);
-	area1 = CM_LeafArea(leafnum);
-	mask = CM_ClusterPVS(cluster);
+//	area1 = CM_LeafArea(leafnum); //Doesn't modify anything.
 
+	mask = CM_ClusterPVS(cluster);
 	leafnum = CM_PointLeafnum(p2);
 	cluster = CM_LeafCluster(leafnum);
-	area2 = CM_LeafArea(leafnum);
+//	area2 = CM_LeafArea(leafnum); //Doesn't modify anything.
 
 	if(mask && (!(mask[cluster >> 3] & (1 << (cluster & 7)))))
 	{
@@ -572,9 +572,8 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 		case G_GET_CONFIGSTRING:
 			SV_GetConfigstring(args[1], VMA(2), args[3]);
 			return 0;
-		// Dushan - Tremulous
 		case G_SET_CONFIGSTRING_RESTRICTIONS:
-			// Dushan: FIX ME
+			// FIXME
 			//SV_SetConfigstringRestrictions( args[1], VMA(2) );
 			return 0;
 		case G_SET_USERINFO:
@@ -632,7 +631,6 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 			Q_SnapVector(VMA(1));
 			return 0;
 
-		// Dushan - Tremulous
 		case G_SEND_GAMESTAT:
 			SV_MasterGameStat( VMA(1) );
 			return 0;
@@ -660,7 +658,6 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 		case G_GET_SOUND_LENGTH:
 			return S_GetSoundLength(args[1]);
 
-		// Dushan - Tremulous
 		case G_PARSE_ADD_GLOBAL_DEFINE:
 			return Parse_AddGlobalDefine( VMA(1) );
 		case G_PARSE_LOAD_SOURCE:
@@ -1109,7 +1106,7 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 			CMod_PhysicsAddStatic(VMA(1));
 #endif
 			return 0;
-			
+
 		case TRAP_MEMSET:
 			memset(VMA(1), args[2], args[3]);
 			return 0;
@@ -1158,39 +1155,38 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 			return SV_BinaryMessageStatus(args[1]);
 
 #if defined(ET_MYSQL)
-		//Dushan
         case G_SQL_RUNQUERY:
-                return OW_RunQuery( VMA(1) );
+                return D_RunQuery( VMA(1) );
 
         case G_SQL_FINISHQUERY:
-                OW_FinishQuery( args[1] );
+                D_FinishQuery( args[1] );
                 return 0;
 
         case G_SQL_NEXTROW:
-                return OW_NextRow( args[1] );
+                return D_NextRow( args[1] );
 
         case G_SQL_ROWCOUNT:
-                return OW_RowCount( args[1] );
+                return D_RowCount( args[1] );
 
         case G_SQL_GETFIELDBYID:
-                OW_GetFieldByID( args[1], args[2], VMA(3), args[4]  );
+                D_GetFieldByID( args[1], args[2], VMA(3), args[4]  );
                 return 0;
 
         case G_SQL_GETFIELDBYNAME:
-                OW_GetFieldByName( args[1], VMA(2), VMA(3), args[4] );
+                D_GetFieldByName( args[1], VMA(2), VMA(3), args[4] );
                 return 0;
 
         case G_SQL_GETFIELDBYID_INT:
-                return OW_GetFieldByID_int( args[1], args[2] );
+                return D_GetFieldByID_int( args[1], args[2] );
 
         case G_SQL_GETFIELDBYNAME_INT:
-                return OW_GetFieldByName_int( args[1], VMA(2) );
+                return D_GetFieldByName_int( args[1], VMA(2) );
 
         case G_SQL_FIELDCOUNT:
-                return OW_FieldCount( args[1] );
+                return D_FieldCount( args[1] );
 
         case G_SQL_CLEANSTRING:
-                OW_CleanString( VMA(1), VMA(2), args[3] );
+                D_CleanString( VMA(1), VMA(2), args[3] );
                 return 0;
 #endif
 		case G_RSA_GENMSG:
@@ -1268,7 +1264,7 @@ void SV_RestartGameProgs(void)
 #ifdef USE_PHYSICS
 	CMod_PhysicsClearBodies();
 #endif
-	
+
 	// do a restart instead of a free
 	gvm = VM_Restart(gvm);
 	if(!gvm)

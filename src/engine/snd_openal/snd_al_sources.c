@@ -504,3 +504,13 @@ ALuint al_src_get(srcHandle_t src)
 {
 	return srclist[src].source;
 }
+
+/*
+======================
+S_GetVoiceAmplitude
+======================
+*/
+int SndAl_GetVoiceAmplitude( int entnum )
+{
+	return 0;
+}

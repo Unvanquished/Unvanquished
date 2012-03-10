@@ -59,16 +59,16 @@ void LoadPNG(const char *name, byte ** pic, int *width, int *height, byte alphaB
 	png_uint_32     w;
 	png_uint_32     h;
 	unsigned int    row;
-	size_t          rowbytes;
+//	size_t          rowbytes;
 	png_infop       info;
 	png_structp     png;
 	png_bytep      *row_pointers;
 	byte           *data;
 	byte           *out;
-	int             size;
+//	int             size;
 
 	// load png
-	size = ri.FS_ReadFile(name, (void **)&data);
+	ri.FS_ReadFile(name, (void **)&data);
 
 	if(!data)
 		return;
@@ -167,7 +167,7 @@ void LoadPNG(const char *name, byte ** pic, int *width, int *height, byte alphaB
 		return;
 	}
 
-	rowbytes = png_get_rowbytes(png, info);
+	//rowbytes = png_get_rowbytes(png, info);
 
 	for(row = 0; row < h; row++)
 		row_pointers[row] = (png_bytep) (out + (row * 4 * w));
@@ -299,7 +299,7 @@ void SavePNG(const char *name, const byte * pic, int width, int height, int numB
 
 	ri.Hunk_FreeTempMemory(buffer);
 
-	// Dushan
+	// highly questionable
 	if ( ri.Cvar_Get( "developer", "", 0 )) {
 #if defined (USE_HTTP)
 		ri.HTTP_PostBug(name);

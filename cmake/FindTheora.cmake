@@ -1,9 +1,9 @@
-# - Find ogg library
-# Find the native Ogg headers and libraries.
+# - Find Theora library
+# Find the native Theora headers and libraries.
 #
-#  OGG_INCLUDE_DIRS - where to find ogg/ogg.h, etc.
-#  OGG_LIBRARIES    - List of libraries when using ogg.
-#  OGG_FOUND        - True if ogg is found.
+#  THEORA_INCLUDE_DIRS - where to find theora/theora.h, etc.
+#  THEORA_LIBRARIES    - List of libraries when using theora.
+#  THEORA_FOUND        - True if theora is found.
 
 #=============================================================================
 #Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
@@ -37,16 +37,17 @@
 #=============================================================================
 
 # Look for the header file.
-FIND_PATH(OGG_INCLUDE_DIR NAMES ogg/ogg.h)
-MARK_AS_ADVANCED(OGG_INCLUDE_DIR)
+FIND_PATH(THEORA_INCLUDE_DIR NAMES theora/theora.h)
+MARK_AS_ADVANCED(THEORA_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(OGG_LIBRARY NAMES ogg)
-MARK_AS_ADVANCED(OGG_LIBRARY)
+FIND_LIBRARY(THEORA_LIBRARY NAMES theora)
+MARK_AS_ADVANCED(THEORA_LIBRARY)
 
-# handle the QUIETLY and REQUIRED arguments and set OGG_FOUND to TRUE if 
+# handle the QUIETLY and REQUIRED arguments and set THEORA_FOUND to TRUE if 
 # all listed variables are TRUE
 INCLUDE(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Ogg DEFAULT_MSG OGG_LIBRARY OGG_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Theora DEFAULT_MSG THEORA_LIBRARY THEORA_INCLUDE_DIR)
 
-SET(OGG_LIBRARIES ${OGG_LIBRARY})
+SET(THEORA_LIBRARIES ${THEORA_LIBRARY})
+

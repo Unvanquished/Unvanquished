@@ -455,6 +455,9 @@ DLLEXPORT sndexport_t *GetSndAPI( int apiVersion, sndimport_t *simp )
 	se.StopCapture = SndAl_StopCapture;
 	se.MasterGain = SndAl_MasterGain;
 #endif
+	se.GetVoiceAmplitude = SndAl_GetVoiceAmplitude;
+	se.GetSoundLength = SndAl_GetSoundLength;
+	se.GetCurrentSoundTime = SndAl_GetCurrentSoundTime;
 	return &se;
 }
 

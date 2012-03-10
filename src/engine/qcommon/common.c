@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
+#include "../database/database.h"
 #include <setjmp.h>
 
 // htons
@@ -1749,6 +1750,7 @@ void Com_InitZoneMemory(void)
 	cvar_t         *cv;
 
 	// allocate the random block zone
+	Com_StartupVariable("com_zoneMegs"); // config files and command line options haven't been taken in account yet
 	cv = Cvar_Get("com_zoneMegs", DEF_COMZONEMEGS_S, CVAR_LATCH | CVAR_ARCHIVE);
 
 	if(cv->integer < DEF_COMZONEMEGS)
@@ -3269,7 +3271,7 @@ void Com_Init(char *commandLine)
 	// init commands and vars
 	//
 	// Gordon: no need to latch this in ET, our recoil is framerate independant
-	com_maxfps = Cvar_Get("com_maxfps", "85", CVAR_ARCHIVE /*|CVAR_LATCH */ );
+	com_maxfps = Cvar_Get("com_maxfps", "125", CVAR_ARCHIVE /*|CVAR_LATCH */ );
 //  com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE); // Gordon: no longer used?
 
 	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
@@ -3360,7 +3362,10 @@ void Com_Init(char *commandLine)
 #endif
 	}
 
-	// Dushan
+#ifdef ET_MYSQL
+	D_Init();
+#endif
+
 #if defined(USE_HTTP)
 	Net_HTTP_Init();
 #endif
@@ -3812,7 +3817,11 @@ void Com_Shutdown(qboolean badProfile)
 		com_journalFile = 0;
 	}
 
-	// Dushan
+#ifdef ET_MYSQL
+	// shut down SQL
+	D_Shutdown();
+#endif
+
 #if defined(USE_HTTP)
 	Net_HTTP_Kill();
 #endif

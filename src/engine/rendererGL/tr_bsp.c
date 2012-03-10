@@ -39,7 +39,7 @@ static growList_t s_interactions;
 static byte    *fileBase;
 
 static int      c_redundantInteractions;
-static int      c_redundantVertexes;
+//static int      c_redundantVertexes;
 static int      c_vboWorldSurfaces;
 static int      c_vboLightSurfaces;
 static int      c_vboShadowSurfaces;
@@ -175,6 +175,7 @@ static void R_ColorShiftLightingFloats(const vec4_t in, vec4_t out)
 R_HDRTonemapLightingColors
 ===============
 */
+#if 0
 static void R_HDRTonemapLightingColors(const vec4_t in, vec4_t out, qboolean applyGamma)
 {
 #if 0 //!defined(USE_HDR_LIGHTMAPS)
@@ -271,6 +272,7 @@ static void R_HDRTonemapLightingColors(const vec4_t in, vec4_t out, qboolean app
 #endif
 #endif
 }
+#endif
 
 /*
 ===============
@@ -284,7 +286,7 @@ float R_ProcessLightmap(byte ** pic, int in_padding, int width, int height, byte
 {
 	int             j;
 	float           maxIntensity = 0;
-	double          sumIntensity = 0;
+//	double          sumIntensity = 0;
 
 	/*
 	if(r_lightmap->integer > 1)
@@ -407,7 +409,7 @@ static ID_INLINE void rgbe2float(float *red, float *green, float *blue, unsigned
 		f = ldexp(1.0, rgbe[3] - (int)(128 + 8));
 		//f = ldexp(1.0, rgbe[3] - 128) / 10.0;
 		e = (rgbe[3] - 128) / 4.0f;
-		
+
 		// RB: exp2 not defined by MSVC
 		//f = exp2(e);
 		f = pow(2, e);
@@ -428,7 +430,7 @@ void LoadRGBEToFloats(const char *name, float **pic, int *width, int *height, qb
 	byte           *buf_p;
 	byte           *buffer;
 	float          *floatbuf;
-	int             len;
+//	int             len;
 	char           *token;
 	int             w, h, c;
 	qboolean        formatFound;
@@ -459,7 +461,7 @@ void LoadRGBEToFloats(const char *name, float **pic, int *width, int *height, qb
 	*pic = NULL;
 
 	// load the file
-	len = ri.FS_ReadFile((char *)name, (void **)&buffer);
+	ri.FS_ReadFile((char *)name, (void **)&buffer);
 	if(!buffer)
 	{
 		ri.Error(ERR_DROP, "LoadRGBE: '%s' not found\n", name);
@@ -1659,7 +1661,7 @@ static void ParseTriSurf(dsurface_t * ds, drawVert_t * verts, bspSurface_t * sur
 	srfTriangle_t  *tri;
 	int             i, j;
 	int             numVerts, numTriangles;
-	int             realLightmapNum;
+//	int             realLightmapNum;
 	static surfaceType_t skipData = SF_SKIP;
 
 	// get lightmap
@@ -2913,6 +2915,7 @@ static qboolean CompareShadowVert(const srfVert_t * v1, const srfVert_t * v2)
 	return qtrue;
 }*/
 
+#if 0
 static qboolean CompareShadowVolumeVert(const srfVert_t * v1, const srfVert_t * v2)
 {
 	int             i;
@@ -2926,6 +2929,7 @@ static qboolean CompareShadowVolumeVert(const srfVert_t * v1, const srfVert_t * 
 
 	return qtrue;
 }
+#endif
 
 /*static qboolean CompareWorldVertSmoothNormal(const srfVert_t * v1, const srfVert_t * v2)
 {
@@ -2944,6 +2948,7 @@ static qboolean CompareShadowVolumeVert(const srfVert_t * v1, const srfVert_t * 
 remove duplicated / redundant vertices from a batch of vertices
 return the new number of vertices
 */
+#if 0
 static int OptimizeVertices(int numVerts, srfVert_t * verts, int numTriangles, srfTriangle_t * triangles, srfVert_t * outVerts,
 							qboolean(*CompareVert) (const srfVert_t * v1, const srfVert_t * v2))
 {
@@ -3172,6 +3177,7 @@ static int OptimizeVertices(int numVerts, srfVert_t * verts, int numTriangles, s
 		return numVerts;
 	}
 }
+#endif
 
 /*static void OptimizeTriangles(int numVerts, srfVert_t * verts, int numTriangles, srfTriangle_t * triangles,
 							  qboolean(*compareVert) (const srfVert_t * v1, const srfVert_t * v2))
@@ -3896,8 +3902,8 @@ R_CreateClusters
 static void R_CreateClusters()
 {
 	int             i, j;
-	bspSurface_t   *surface, **mark;
-	bspNode_t      *node, *parent;
+	bspSurface_t   *surface;
+	bspNode_t      *node;
 #if defined(USE_BSP_CLUSTERSURFACE_MERGING)
 	int             numClusters;
 	bspCluster_t   *cluster;
@@ -4477,7 +4483,7 @@ static void R_CreateWorldVBO()
 #else
 	s_worldData.vbo = R_CreateVBO2(va("staticBspModel0_VBO %i", 0), numVerts, verts,
 								   ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL |
-								   ATTR_NORMAL | ATTR_COLOR 
+								   ATTR_NORMAL | ATTR_COLOR
 #if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
 								   | ATTR_PAINTCOLOR | ATTR_LIGHTDIRECTION
 #endif
@@ -4885,7 +4891,7 @@ static void R_CreateSubModelVBOs()
 				vboSurf->vbo =
 					R_CreateVBO2(va("staticBspModel%i_VBO %i", m, vboSurfaces.currentElements), numVerts, verts,
 								 ATTR_POSITION | ATTR_TEXCOORD | ATTR_LIGHTCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL
-								 | ATTR_COLOR 
+								 | ATTR_COLOR
  #if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
 								 | ATTR_PAINTCOLOR | ATTR_LIGHTDIRECTION
 #endif
@@ -5154,8 +5160,8 @@ static void R_LoadNodesAndLeafs(lump_t * nodeLump, lump_t * leafLump)
 	dleaf_t        *inLeaf;
 	bspNode_t      *out;
 	int             numNodes, numLeafs;
-	srfVert_t      *verts;
-	srfTriangle_t  *triangles;
+	srfVert_t      *verts = NULL;
+	srfTriangle_t  *triangles = NULL;
 	IBO_t          *volumeIBO;
 	vec3_t			mins, maxs;
 //	vec3_t			offset = {0.01, 0.01, 0.01};
@@ -5348,8 +5354,9 @@ static void R_LoadNodesAndLeafs(lump_t * nodeLump, lump_t * leafLump)
 		out->volumeIndexes = tess.numIndexes;
 	}
 
-	ri.Hunk_FreeTempMemory(triangles);
-	ri.Hunk_FreeTempMemory(verts);
+//I'm unsure if Hunk_FreeTempMemory can handle NULL values.
+	if (triangles) ri.Hunk_FreeTempMemory(triangles);
+	if (verts) ri.Hunk_FreeTempMemory(verts);
 
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
@@ -5480,7 +5487,7 @@ static void R_LoadFogs(lump_t * l, lump_t * brushesLump, lump_t * sidesLump)
 	int             planeNum;
 	shader_t       *shader;
 	float           d;
-	int             firstSide;
+	int             firstSide = 0;
 
 	ri.Printf(PRINT_ALL, "...loading fogs\n");
 
@@ -5710,7 +5717,7 @@ void R_LoadLightGrid(lump_t * l)
 		gridPoint->directedColor[3] = 1.0f;
 
 		// standard spherical coordinates to cartesian coordinates conversion
-		
+
 		// decode X as cos( lat ) * sin( long )
 		// decode Y as sin( lat ) * sin( long )
 		// decode Z as cos( long )
@@ -8534,7 +8541,7 @@ void R_FindTwoNearestCubeMaps(const vec3_t position, cubemapProbe_t **cubeProbeN
 
 	hash = VertexCoordGenerateHash(position);
 	maxDistance = maxDistance2 = 9999999.0f;
-	
+
 #if 0
 	for(j = 0; j < tr.cubeProbes.currentElements; j++)
 	{
@@ -8566,7 +8573,7 @@ void R_FindTwoNearestCubeMaps(const vec3_t position, cubemapProbe_t **cubeProbeN
 void R_BuildCubeMaps(void)
 {
 #if 1
-	int             i, j, k;
+	int             i, j;
 	int             ii, jj;
 	refdef_t        rf;
 	qboolean        flipx;
@@ -8669,6 +8676,7 @@ void R_BuildCubeMaps(void)
 	}
 #else
 	{
+	    int             k;
 		int             numGridPoints;
 		bspGridPoint_t *gridPoint;
 		int             gridStep[3];
@@ -8753,8 +8761,8 @@ void R_BuildCubeMaps(void)
 			do
 			{
 				ri.Printf(PRINT_ALL, "*");
-			
-				#if defined(COMPAT_ET) 
+
+				#if defined(COMPAT_ET)
 				ri.Cmd_ExecuteText(EXEC_NOW, "updatescreen\n");
 				#endif
 
@@ -8980,7 +8988,7 @@ void R_BuildCubeMaps(void)
 				R_SubImageCpy(fileBuf,
 					fileBufX * REF_CUBEMAP_SIZE, fileBufY * REF_CUBEMAP_SIZE,
 					REF_CUBEMAP_STORE_SIZE, REF_CUBEMAP_STORE_SIZE,
-					tr.cubeTemp[i], 
+					tr.cubeTemp[i],
 					REF_CUBEMAP_SIZE, REF_CUBEMAP_SIZE,
 					4, qtrue);
 
@@ -9188,7 +9196,6 @@ void RE_LoadWorldMap(const char *name)
 	header = (dheader_t *) buffer;
 	fileBase = (byte *) header;
 
-	// Dushan
 	i = LittleLong(header->version);
 	if ( i != BSP_VERSION && i != BSP_VERSION_Q3) {
 		ri.Error (ERR_DROP, "RE_LoadWorldMap: %s has wrong version number (%i should be %i for ET or %i for Q3)",
@@ -9207,7 +9214,7 @@ void RE_LoadWorldMap(const char *name)
 
 //	ri.Cmd_ExecuteText(EXEC_NOW, "updatescreen\n");
 	R_LoadShaders(&header->lumps[LUMP_SHADERS]);
-	
+
 //	ri.Cmd_ExecuteText(EXEC_NOW, "updatescreen\n");
 	R_LoadLightmaps(&header->lumps[LUMP_LIGHTMAPS], name);
 

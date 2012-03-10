@@ -260,8 +260,7 @@ typedef struct client_s
 
 //=============================================================================
 
-// Dushan
-#define	STATFRAMES	100
+#define STATFRAMES 100
 typedef struct {
 	double	active;
 	double	idle;
@@ -345,15 +344,14 @@ typedef struct
 #ifdef USE_HUB_SERVER
     netadr_t        owHubAddress;     // address of hub we're using
 #endif
-	// Dushan
-	svstats_t		stats;
+	svstats_t       stats;
 } serverStatic_t;
 
 //=============================================================================
 
-extern serverStatic_t svs;		// persistant server info across maps
-extern server_t sv;				// cleared each map
-extern vm_t    *gvm;			// game virtual machine
+extern serverStatic_t svs; // persistant server info across maps
+extern server_t sv;        // cleared each map
+extern vm_t    *gvm;       // game virtual machine
 
 extern cvar_t  *sv_fps;
 extern cvar_t  *sv_timeout;
@@ -460,6 +458,7 @@ qboolean        SV_VerifyChallenge(char *challenge);
 // sv_init.c
 //
 void            SV_SetConfigstringNoUpdate(int index, const char *val);
+void            SV_UpdateConfigStrings(void);
 void            SV_SetConfigstring(int index, const char *val);
 void            SV_UpdateConfigStrings(void);
 void            SV_GetConfigstring(int index, char *buffer, int bufferSize);

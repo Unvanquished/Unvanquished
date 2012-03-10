@@ -209,6 +209,9 @@ void SndAl_BeginRegistration( void );
 sfxHandle_t SndAl_RegisterSound( const char *sample, qboolean compressed );
 void SndAl_ClearSoundBuffer( void );
 int SndAl_SoundDuration( sfxHandle_t sfx );
+int SndAl_GetVoiceAmplitude( int entnum );
+int SndAl_GetSoundLength( sfxHandle_t sfxHandle );
+int SndAl_GetCurrentSoundTime ( void );
 
 #ifdef USE_VOIP
 void SndAl_InitCapture( qboolean usingAL );

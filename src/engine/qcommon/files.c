@@ -221,45 +221,41 @@ or configs will never get loaded from disk!
 #define MAX_SEARCH_PATHS    4096
 #define MAX_FILEHASH_SIZE   1024
 
-// Dushan
-// INFO: Little crapy, but its working
-// Basically PAK3 files are ZIP files with BZ2 compression
-
 typedef struct fileInPack_s {
-	char                    *name;      // name of the file
-	unsigned long pos;                  // file info position in zip
-	unsigned long	len;				// uncompress file size
-	struct  fileInPack_s*   next;       // next file in the hash
+	char                    *name; // name of the file
+	unsigned long pos;             // file info position in zip
+	unsigned long len;             // uncompress file size
+	struct  fileInPack_s*   next;  // next file in the hash
 } fileInPack_t;
 
 typedef struct {
-	char pakFilename[MAX_OSPATH];               // c:\quake3\baseq3\pak0.pk3
-	char pakBasename[MAX_OSPATH];               // pak0
-	char pakGamename[MAX_OSPATH];               // baseq3
-	unzFile handle;                             // handle to zip file
-	int checksum;                               // regular checksum
-	int pure_checksum;                          // checksum for pure
-	int numfiles;                               // number of files in pk3
-	int referenced;                             // referenced file flags
-	int hashSize;                               // hash table size (power of 2)
-	fileInPack_t*   *hashTable;                 // hash table
-	fileInPack_t*   buildBuffer;                // buffer with the filenames etc.
+	char pakFilename[MAX_OSPATH]; // full pak0 path
+	char pakBasename[MAX_OSPATH]; // pak0 basename
+	char pakGamename[MAX_OSPATH]; // baseq3
+	unzFile handle;               // handle to zip file
+	int checksum;                 // regular checksum
+	int pure_checksum;            // checksum for pure
+	int numfiles;                 // number of files in pk3
+	int referenced;               // referenced file flags
+	int hashSize;                 // hash table size (power of 2)
+	fileInPack_t*   *hashTable;   // hash table
+	fileInPack_t*   buildBuffer;  // buffer with the filenames etc.
 } pack_t;
 
 typedef struct {
-	char path[MAX_OSPATH];              // c:\quake3
-	char gamedir[MAX_OSPATH];           // baseq3
+	char path[MAX_OSPATH];    // root game folder path
+	char gamedir[MAX_OSPATH]; // baseq3
 } directory_t;
 
 typedef struct searchpath_s {
 	struct searchpath_s *next;
 
-	pack_t      *pack;      // only one of pack / dir will be non NULL
+	pack_t      *pack; // only one of pack / dir will be non NULL
 	directory_t *dir;
 } searchpath_t;
 
 //bani - made fs_gamedir non-static
-char fs_gamedir[MAX_OSPATH];        // this will be a single file name with no separators
+char fs_gamedir[MAX_OSPATH]; // this will be a single file name with no separators
 static cvar_t      *fs_debug;
 static cvar_t      *fs_homepath;
 static cvar_t      *fs_basepath;
@@ -365,16 +361,9 @@ qboolean FS_PakIsPure( pack_t *pack ) {
 			}
 		}
 
-		// XreaL BEGIN
-
-		// CHEAT ALARM: always allow zz-XreaL-<date>.pk3 files so we don't need them on the server
-		// Dushan
-		// It was zz-XreaL-<date>.pk3, but I have changed it to pak3.pk3
 		if(strstr(pack->pakBasename, "pak3")) {
 			return qtrue;
 		}
-
-		// XreaL END
 
 		return qfalse;  // not on the pure server pak list
 	}
@@ -597,6 +586,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath ) {
 	fclose( f );
 
 	if ( FS_CreatePath( toOSPath ) ) {
+		free( buf );
 		return;
 	}
 
@@ -1465,7 +1455,7 @@ Compares packed file against extracted file. If no differences, does not copy.
 This is necessary for exe/dlls which may or may not be locked.
 
 NOTE TTimo:
-  fullpath gives the full OS path to the dll that will potentially be loaded
+  path gives the full OS path to the dll that will potentially be loaded
 	on win32 it's always in fs_basepath/<fs_game>/
 	on linux it can be in fs_homepath/<fs_game>/ or fs_basepath/<fs_game>/
   the dll is extracted to fs_homepath (== fs_basepath on win32) if needed
@@ -1578,7 +1568,6 @@ int FS_DeleteDir( char *dirname, qboolean nonEmpty, qboolean recursive ) {
 	char *ospath;
 	char **pFiles = NULL;
 	int i, nFiles = 0;
-	// Dushan
 	static char *root = "/";
 
 	if ( !fs_searchpaths ) {
@@ -3042,6 +3031,11 @@ void FS_AddGameDirectory( const char *path, const char *dir ) {
 	int numfiles;
 	char            **pakfiles;
 	char            *sorted[MAX_PAKFILES];
+	int				pakfilesi=0;
+	char			**pakfilestmp;
+	int				numdirs;
+	char			**pakdirs;
+	int				pakdirsi=0;
 // JPW NERVE
 	/*char			mpsppakfilestring[4];
 
@@ -3073,50 +3067,147 @@ void FS_AddGameDirectory( const char *path, const char *dir ) {
 	pakfile = FS_BuildOSPath( path, dir, "" );
 	pakfile[ strlen( pakfile ) - 1 ] = 0; // strip the trailing slash
 
+	// Get .pk3 files
 	pakfiles = Sys_ListFiles( pakfile, ".pk3", NULL, &numfiles, qfalse );
+
+	// Get top level directories (we'll filter them later since the Sys_ListFiles filtering is terrible)
+	pakdirs = Sys_ListFiles( pakfile, "/", NULL, &numdirs, qfalse );
+
 
 	// sort them so that later alphabetic matches override
 	// earlier ones.  This makes pak1.pk3 override pak0.pk3
 	if ( numfiles > MAX_PAKFILES ) {
 		numfiles = MAX_PAKFILES;
 	}
-	for ( i = 0 ; i < numfiles ; i++ ) {
-		sorted[i] = pakfiles[i];
-// JPW NERVE KLUDGE: sorry, temp mod mp_* to _p_* so "mp_pak*" gets alphabetically sorted before "pak*"
 
-/*		if (!Q_strncmp(sorted[i],"mp_",3))
-			memcpy(sorted[i],"zz",2);	*/
-
-// jpw
-	}
-
-	qsort( sorted, numfiles, sizeof(char*), paksort );
-
-	for ( i = 0 ; i < numfiles ; i++ ) {
-/*		if (Q_strncmp(sorted[i],"sp_",3)) { // JPW NERVE -- exclude sp_*
-// JPW NERVE KLUDGE: fix filenames broken in mp/sp/pak sort above
-
-			if (!Q_strncmp(sorted[i],"zz_",3))
-				memcpy(sorted[i],"mp",2);
-
-// jpw
-*/
-		pakfile = FS_BuildOSPath( path, dir, sorted[i] );
-		if ( ( pak = FS_LoadZipFile( pakfile, sorted[i] ) ) == 0 ) {
-			continue;
+	qsort( pakfiles, numfiles, sizeof(char*), paksort );
+	qsort( pakdirs, numdirs, sizeof(char *), paksort );
+	
+	// Log may not be initialized at this point, but it will still show in the console.
+	Com_DPrintf("FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, numfiles, numdirs);
+#if 0
+	for (; (pakfilesi + pakdirsi) < (numfiles + numdirs); ) {
+		// Check if a pakfile or pakdir comes next
+		if (pakfilesi >= numfiles) {
+			// We've used all the pakfiles, it must be a pakdir.
+			pakwhich = 0;
 		}
-		// store the game name for downloading
-		strcpy( pak->pakGamename, dir );
+		else if (pakdirsi >= numdirs) {
+			// We've used all the pakdirs, it must be a pakfile.
+			pakwhich = 1;
+		}
+		else {
+			// Could be either, compare to see which name comes first
+			// Need tmp variables for appropriate indirection for paksort()
+			pakfilestmp = &pakfiles[pakfilesi];
+			pakdirstmp = &pakdirs[pakdirsi];
+			pakwhich = (paksort(pakfilestmp, pakdirstmp) < 0);
+		}
 
-		search = Z_Malloc( sizeof( searchpath_t ) );
-		search->pack = pak;
-		search->next = fs_searchpaths;
-		fs_searchpaths = search;
-//		}
+		if (pakwhich) {
+			// The next .pk3 file is before the next .pk3dir
+			pakfile = FS_BuildOSPath(path, dir, pakfiles[pakfilesi]);
+			Com_Printf("    pk3: %s\n", pakfile);
+			if ((pak = FS_LoadZipFile(pakfile, pakfiles[pakfilesi])) == 0) {
+				continue;
+			}
+
+			Q_strncpyz(pak->pakFilename, pakfile, sizeof(pak->pakFilename));
+			// store the game name for downloading
+			Q_strncpyz(pak->pakGamename, dir, sizeof(pak->pakGamename));
+
+			fs_packFiles += pak->numfiles;
+
+			search = Z_Malloc(sizeof(searchpath_t));
+			search->pack = pak;
+			search->next = fs_searchpaths;
+			fs_searchpaths = search;
+
+			pakfilesi++;
+		}
+		else {
+			// The next .pk3dir is before the next .pk3 file
+			// But wait, this could be any directory, we're filtering to only ending with ".pk3dir" here.
+			len = strlen(pakdirs[pakdirsi]);
+			if ( strcmp(COM_GetExtension(pakdirs[pakdirsi]), "pk3dir") ) {
+				// This isn't a .pk3dir! Next!
+				pakdirsi++;
+				continue;
+			}
+
+			pakfile = FS_BuildOSPath(path, dir, pakdirs[pakdirsi]);
+			Com_Printf(" pk3dir: %s\n", pakfile);
+
+			// add the directory to the search path
+			search = Z_Malloc(sizeof(searchpath_t));
+			search->dir = Z_Malloc(sizeof(*search->dir));
+
+			Q_strncpyz(search->dir->path, pakfile, sizeof(search->dir->path));	// c:\xreal\base
+			Q_strncpyz(search->dir->path, pakfile, sizeof(search->dir->path));	// c:\xreal\base\mypak.pk3dir
+			Q_strncpyz(search->dir->gamedir, pakdirs[pakdirsi], sizeof(search->dir->gamedir)); // mypak.pk3dir
+
+			search->next = fs_searchpaths;
+			fs_searchpaths = search;
+
+			pakdirsi++;
+		}
+	}
+#endif
+	
+	while( pakfilesi < numfiles )
+	{
+	  // The next .pk3 file is before the next .pk3dir
+	  pakfile = FS_BuildOSPath(path, dir, pakfiles[pakfilesi]);
+	  Com_DPrintf("    pk3: %s\n", pakfile);
+	  if ((pak = FS_LoadZipFile(pakfile, pakfiles[pakfilesi])) == 0) {
+		  continue;
+	  }
+
+	  Q_strncpyz(pak->pakFilename, pakfile, sizeof(pak->pakFilename));
+	  // store the game name for downloading
+	  Q_strncpyz(pak->pakGamename, dir, sizeof(pak->pakGamename));
+
+	  fs_packFiles += pak->numfiles;
+
+	  search = Z_Malloc(sizeof(searchpath_t));
+	  search->pack = pak;
+	  search->next = fs_searchpaths;
+	  fs_searchpaths = search;
+
+	  pakfilesi++;
+	}
+	
+	while( pakdirsi < numdirs )
+	{
+	  // The next .pk3dir is before the next .pk3 file
+	  // But wait, this could be any directory, we're filtering to only ending with ".pk3dir" here.
+	  if ( strcmp(COM_GetExtension(pakdirs[pakdirsi]), "pk3dir") ) {
+		  // This isn't a .pk3dir! Next!
+		  pakdirsi++;
+		  continue;
+	  }
+
+	  pakfile = FS_BuildOSPath(path, dir, pakdirs[pakdirsi]);
+	  Com_Printf(" pk3dir: %s\n", pakfile);
+
+	  // add the directory to the search path
+	  search = Z_Malloc(sizeof(searchpath_t));
+	  search->dir = Z_Malloc(sizeof(*search->dir));
+
+ 	  Q_strncpyz(search->dir->path, pakfile, sizeof(search->dir->path));	// c:\xreal\base\mypak.pk3dir
+	  search->dir->gamedir[0] = '.';
+	  // 	  Q_strncpyz(search->dir->gamedir, pakdirs[pakdirsi], sizeof(search->dir->gamedir)); // mypak.pk3dir
+
+	  search->next = fs_searchpaths;
+	  fs_searchpaths = search;
+
+	  pakdirsi++;
 	}
 
+	
 	// done
 	Sys_FreeFileList( pakfiles );
+	Sys_FreeFileList( pakdirs );
 }
 
 /*

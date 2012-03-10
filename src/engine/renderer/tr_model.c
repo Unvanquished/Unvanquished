@@ -2218,7 +2218,6 @@ int R_LerpTag(orientation_t * tag, const refEntity_t * refent, const char *tagNa
 	}
 	else if( model->type == MOD_MD5 )
 	{
-		// Dushan: VS need this first
 		vec3_t tmp;
 
 		retval = RE_BoneIndex( handle, tagName );

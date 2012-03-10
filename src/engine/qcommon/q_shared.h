@@ -251,22 +251,22 @@ typedef int clipHandle_t;
 #define lengthof( a ) (sizeof( (a) ) / sizeof( (a)[0] ))
 
 #define PAD(x,y) (((x)+(y)-1) & ~((y)-1))
-#define PADLEN(base, alignment)	(PAD((base), (alignment)) - (base))
-#define PADP(base, alignment)	((void *) PAD((intptr_t) (base), (alignment)))
+#define PADLEN(base, alignment) (PAD((base), (alignment)) - (base))
+#define PADP(base, alignment)   ((void *) PAD((intptr_t) (base), (alignment)))
 
 #ifndef NULL
 #define NULL ( (void *)0 )
 #endif
 
-#define STRING(s)			#s
+#define STRING(s)  #s
 // expand constants before stringifying them
-#define XSTRING(s)			STRING(s)
+#define XSTRING(s) STRING(s)
 
-#define MAX_QINT            0x7fffffff
-#define MIN_QINT            ( -MAX_QINT - 1 )
+#define MAX_QINT   0x7fffffff
+#define MIN_QINT   ( -MAX_QINT - 1 )
 
 #ifndef BIT
-#define BIT(x)				(1 << x)
+#define BIT(x)     (1 << x)
 #endif
 
 // TTimo gcc: was missing, added from Q3 source
@@ -317,7 +317,7 @@ typedef enum {
 // paramters for command buffer stuffing
 typedef enum {
 	EXEC_NOW,           // don't return until completed, a VM should NEVER use this,
-						// because some commands might cause the VM to be unloaded...
+                        // because some commands might cause the VM to be unloaded...
 	EXEC_INSERT,        // insert at current position, but don't run yet
 	EXEC_APPEND         // add to end of the command buffer (normal case)
 } cbufExec_t;
@@ -332,13 +332,13 @@ typedef enum {
 // print levels from renderer (FIXME: set up for game / cgame?)
 typedef enum {
 	PRINT_ALL,
-	PRINT_DEVELOPER,        // only print when "developer 1"
+	PRINT_DEVELOPER, // only print when "developer 1"
 	PRINT_WARNING,
 	PRINT_ERROR
 } printParm_t;
 
-#ifdef  ERR_FATAL
-#undef  ERR_FATAL               // this is be defined in malloc.h
+#ifdef ERR_FATAL
+#undef ERR_FATAL // this is be defined in malloc.h
 #endif
 
 // parameters to the main Error routine
@@ -394,13 +394,12 @@ typedef enum {
 } ha_pref;
 
 #ifdef HUNK_DEBUG
-#define Hunk_Alloc( size, preference )              Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
+#define Hunk_Alloc( size, preference ) Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
 void *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line );
 #else
 void *Hunk_Alloc( int size, ha_pref preference );
 #endif
 
-// Dushan
 #ifdef __linux__
 // custom Snd_Memset implementation for glibc memset bug workaround
 void Snd_Memset(void *dest, const int val, const size_t count);
@@ -434,7 +433,7 @@ typedef float vec_t;
 typedef vec_t vec2_t[2];
 
 #if defined(SSEVEC3_T)
-typedef vec_t   vec3_t[4];		// ALIGN(16);
+typedef vec_t   vec3_t[4]; // ALIGN(16);
 typedef vec3_t  vec4_t;
 #else
 typedef vec_t   vec3_t[3];
@@ -446,14 +445,14 @@ typedef vec_t   vec5_t[5];
 typedef vec3_t  axis_t[3];
 typedef vec_t   matrix3x3_t[9];
 typedef vec_t   matrix_t[16];
-typedef vec_t   quat_t[4];		// | x y z w |
+typedef vec_t   quat_t[4];
 
 typedef int     fixed4_t;
 typedef int     fixed8_t;
 typedef int     fixed16_t;
 
 #ifndef M_PI
-#define M_PI		3.14159265358979323846f	// matches value in gcc v2 math.h
+#define M_PI 3.14159265358979323846f // matches value in gcc v2 math.h
 #endif
 
 #ifndef M_SQRT2
@@ -464,17 +463,16 @@ typedef int     fixed16_t;
 #define M_ROOT3 1.732050808f
 #endif
 
-#define ARRAY_LEN(x)			(sizeof(x) / sizeof(*(x)))
+#define ARRAY_LEN(x) (sizeof(x) / sizeof(*(x)))
 
-// Dushan
 #if defined (IPHONE)
-#define UNIMPL()				Com_Printf("%s(): Unimplemented\n", __FUNCTION__)
+#define UNIMPL() Com_Printf("%s(): Unimplemented\n", __FUNCTION__)
 #endif
 
 // angle indexes
-#define	PITCH				0	// up / down
-#define	YAW					1	// left / right
-#define	ROLL				2	// fall over
+#define PITCH 0 // up / down
+#define YAW   1 // left / right
+#define ROLL  2 // fall over
 
 // plane sides
 typedef enum
@@ -485,7 +483,7 @@ typedef enum
 	SIDE_CROSS = 3
 } planeSide_t;
 
-#define NUMVERTEXNORMALS	162
+#define NUMVERTEXNORMALS 162
 extern vec3_t bytedirs[NUMVERTEXNORMALS];
 
 // all drawing is done to a 640*480 virtual screen size
@@ -590,7 +588,6 @@ extern vec4_t clrBrownLineFull;
 #define S_COLOR_MDPURPLE    "^C"
 #define S_COLOR_NULL        "^*"
 
-// Dushan - Tremulous
 #define INDENT_MARKER       '\v'
 
 extern vec4_t g_color_table[32];
@@ -770,20 +767,18 @@ extern long int lrintf( float x );
 #define myftol( x ) lrintf( x )
 #endif
 
-// Dushan
-// VS dont understand lrintf
 #ifdef _MSC_VER
 ID_INLINE long lrintf(float f){
 #ifdef _M_X64
     return (long)((f>0.0f) ? (f + 0.5f):(f -0.5f));
 #else
     int i;
- 
+
     _asm{
         fld f
         fistp i
     };
- 
+
     return i;
 #endif
 }
@@ -867,7 +862,7 @@ typedef struct {
   (r)[1]=(s)[1]+(f)*((e)[1]-(s)[1]),\
   (r)[2]=(s)[2]+(f)*((e)[2]-(s)[2]),\
   (r)[3]=(s)[3]+(f)*((e)[3]-(s)[3]))
-  
+
 #define DotProduct4(x, y)                        ((x)[0]*(y)[0]+(x)[1]*(y)[1]+(x)[2]*(y)[2]+(x)[3]*(y)[3])
 
 #define SnapVector( v ) {v[0] = ( (int)( v[0] ) ); v[1] = ( (int)( v[1] ) ); v[2] = ( (int)( v[2] ) );}
@@ -929,7 +924,6 @@ static ID_INLINE void VectorLerp(const vec3_t from, const vec3_t to, float frac,
 	out[2] = from[2] + ((to[2] - from[2]) * frac);
 }
 
-//Dushan - Tremulous
 #define VectorLerp4( f, s, e, r ) ((r)[0]=(s)[0]+(f)*((e)[0]-(s)[0]),\
   (r)[1]=(s)[1]+(f)*((e)[1]-(s)[1]),\
   (r)[2]=(s)[2]+(f)*((e)[2]-(s)[2])) 
@@ -957,8 +951,8 @@ vec_t VectorLengthSquared( const vec3_t v );
 vec_t Distance( const vec3_t p1, const vec3_t p2 );
 vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 );
 void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
-vec_t VectorNormalize( vec3_t v );       // returns vector length
-void VectorNormalizeFast( vec3_t v );     // does NOT return vector length, uses rsqrt approximation
+vec_t VectorNormalize( vec3_t v ); // returns vector length
+void VectorNormalizeFast( vec3_t v ); // does NOT return vector length, uses rsqrt approximation
 vec_t VectorNormalize2( const vec3_t v, vec3_t out );
 void VectorInverse( vec3_t v );
 void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
@@ -1119,10 +1113,10 @@ void            MatrixPerspectiveProjectionFovXYRH(matrix_t m, vec_t fovX, vec_t
 void            MatrixPerspectiveProjectionFovXYInfiniteRH(matrix_t m, vec_t fovX, vec_t fovY, vec_t near);
 void            MatrixOrthogonalProjection(matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far);
 
-void			MatrixOrthogonalProjectionLH(matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far);
-void			MatrixOrthogonalProjectionRH(matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far);
+void            MatrixOrthogonalProjectionLH(matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far);
+void            MatrixOrthogonalProjectionRH(matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far);
 
-void			MatrixPlaneReflection(matrix_t m, const vec4_t plane);
+void            MatrixPlaneReflection(matrix_t m, const vec4_t plane);
 
 void            MatrixLookAtLH(matrix_t output, const vec3_t pos, const vec3_t dir, const vec3_t up);
 void            MatrixLookAtRH(matrix_t m, const vec3_t eye, const vec3_t dir, const vec3_t up);
@@ -1139,10 +1133,10 @@ static ID_INLINE void AnglesToMatrix(const vec3_t angles, matrix_t m)
 
 // RB: XreaL quaternion math functions required by the renderer
 
-#define QuatSet(q,x,y,z,w)	((q)[0]=(x),(q)[1]=(y),(q)[2]=(z),(q)[3]=(w))
-#define QuatCopy(a,b)		((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2],(b)[3]=(a)[3])
+#define QuatSet(q,x,y,z,w) ((q)[0]=(x),(q)[1]=(y),(q)[2]=(z),(q)[3]=(w))
+#define QuatCopy(a,b)       ((b)[0]=(a)[0],(b)[1]=(a)[1],(b)[2]=(a)[2],(b)[3]=(a)[3])
 
-#define QuatCompare(a,b)	((a)[0]==(b)[0] && (a)[1]==(b)[1] && (a)[2]==(b)[2] && (a)[3]==(b)[3])
+#define QuatCompare(a,b)    ((a)[0]==(b)[0] && (a)[1]==(b)[1] && (a)[2]==(b)[2] && (a)[3]==(b)[3])
 
 static ID_INLINE void QuatClear(quat_t q)
 {
@@ -1409,7 +1403,8 @@ int Q_isnumeric( int c );
 int Q_isalphanumeric( int c );
 int Q_isforfilename( int c );
 
-qboolean        Q_isanumber( const char *s );
+qboolean        Q_strtol( const char *s, long* out );
+qboolean        Q_strtoi( const char *s, int* out);
 
 // portable case insensitive compare
 int     Q_stricmp( const char *s1, const char *s2 );
@@ -1427,7 +1422,6 @@ const char *Q_stristr( const char *s, const char *find);
 #endif
 
 // buffer size safe library replacements
-// Dushan 
 // NOTE : had problem with loading QVM modules
 #ifndef _DEBUG
 void			Q_strncpyz( char *dest, const char *src, int destsize );
@@ -1823,7 +1817,7 @@ typedef enum
 // bit field limits
 #define MAX_STATS               16
 #define MAX_PERSISTANT          16
-#define	MAX_MISC    			16	// Dushan - Tremulous
+#define	MAX_MISC                16
 #define MAX_POWERUPS            16
 #define MAX_WEAPONS             64  // (SA) and yet more!
 
@@ -1992,7 +1986,6 @@ typedef struct playerState_s {
 
 	aistateEnum_t aiState;          // xkan, 1/10/2003
 	
-	// Dushan - Tremulous
 	int	generic1;
 	int	loopSound;
 	int	otherEntityNum;
@@ -2016,7 +2009,7 @@ typedef struct playerState_s {
 //
 #define BUTTON_ATTACK       1
 #define BUTTON_TALK         2           // displays talk balloon and disables actions
-#define	BUTTON_USE_HOLDABLE	4			// Dushan - Tremulous need this
+#define	BUTTON_USE_HOLDABLE 4
 #define BUTTON_GESTURE      8
 #define BUTTON_WALKING      16          // walking can't just be infered from MOVE_RUN
 										// because a key pressed late in the frame will
@@ -2098,7 +2091,6 @@ typedef enum {
 	TR_GRAVITY_PAUSED,          //----(SA)	has stopped, but will still do a short trace to see if it should be switched back to TR_GRAVITY
 	TR_ACCELERATE,
 	TR_DECCELERATE,
-	// Dushan - Tremulous
 	TR_BUOYANCY,
 	// Gordon
 	TR_SPLINE,
@@ -2208,8 +2200,7 @@ typedef enum {
 	ET_WOLF_OBJECTIVE,
 
 	ET_RANGE_MARKER,
-	// Dushan - Tremulous
-	ET_BUILDABLE,			// buildable type
+	ET_BUILDABLE,
 	ET_PARTICLE_SYSTEM,
 	ET_LOCATION,
 	ET_LIGHTFLARE,
@@ -2257,7 +2248,7 @@ typedef struct entityState_s {
 	int solid;              // for client side prediction, trap_linkentity sets this properly
 
 	// old style events, in for compatibility only
-	int event;				// impulse events -- muzzle flashes, footsteps, etc
+	int event;              // impulse events -- muzzle flashes, footsteps, etc
 	int eventParm;
 
 	int eventSequence;      // pmove generated events
@@ -2269,7 +2260,6 @@ typedef struct entityState_s {
 	int weapon;             // determines weapon and flash model, etc
 	int legsAnim;           // mask off ANIM_TOGGLEBIT
 	int torsoAnim;          // mask off ANIM_TOGGLEBIT
-//	int		weapAnim;		// mask off ANIM_TOGGLEBIT	//----(SA)	removed (weap anims will be client-side only)
 
 	int density;            // for particle effects
 
@@ -2283,13 +2273,12 @@ typedef struct entityState_s {
 
 	int effect1Time, effect2Time, effect3Time;
 
-	aistateEnum_t aiState;      // xkan, 1/10/2003
+	aistateEnum_t aiState;  // xkan, 1/10/2003
 	int animMovetype;       // clients can't derive movetype of other clients for anim scripting system
 
-	// Dushan - Tremulous
-	int	misc;			// bit flags
-	int	generic1;
-	int	weaponAnim;		// mask off ANIM_TOGGLEBIT
+	int misc; // bit flags
+	int generic1;
+	int weaponAnim; // mask off ANIM_TOGGLEBIT
 } entityState_t;
 
 typedef enum {
@@ -2378,13 +2367,10 @@ typedef enum _flag_status {
 	FLAG_DROPPED
 } flagStatus_t;
 
-// Dushan - Tremulous
 typedef enum {
 	DS_NONE,
-
 	DS_PLAYBACK,
 	DS_RECORDING,
-
 	DS_NUM_DEMO_STATES
 } demoState_t;
 
@@ -2399,12 +2385,10 @@ typedef enum {
 
 // NERVE - SMF - localization
 typedef enum {
-#ifndef __MACOS__   //DAJ USA
 	LANGUAGE_FRENCH = 0,
 	LANGUAGE_GERMAN,
 	LANGUAGE_ITALIAN,
 	LANGUAGE_SPANISH,
-#endif
 	MAX_LANGUAGES
 } languages_t;
 
@@ -2419,19 +2403,18 @@ typedef enum {
 	GS_RESET
 } gamestate_t;
 
-// Dushan - Tremulous
-#define GENTITYNUM_MASK		(MAX_GENTITIES - 1)
+#define GENTITYNUM_MASK (MAX_GENTITIES - 1)
 
-#define MAX_EMOTICON_NAME_LEN		16
-#define MAX_EMOTICONS				64
+#define MAX_EMOTICON_NAME_LEN 16
+#define MAX_EMOTICONS 64
 
-#define MAX_LOCATIONS				64
-#define	MAX_MODELS					256		// these are sent over the net as 8 bits
-#define	MAX_SOUNDS					256		// so they cannot be blindly increased
-#define	MAX_GAME_SHADERS			64
-#define	MAX_GAME_PARTICLE_SYSTEMS	64
-#define	MAX_HOSTNAME_LENGTH			80		// max length of a host name
-#define	MAX_NEWS_STRING				10000
+#define MAX_LOCATIONS               64
+#define	MAX_MODELS                  256 // these are sent over the net as 8 bits
+#define	MAX_SOUNDS                  256 // so they cannot be blindly increased
+#define	MAX_GAME_SHADERS            64
+#define	MAX_GAME_PARTICLE_SYSTEMS   64
+#define	MAX_HOSTNAME_LENGTH         80
+#define	MAX_NEWS_STRING             10000
 
 typedef struct {
 	char      name[ MAX_EMOTICON_NAME_LEN ];
@@ -2465,12 +2448,7 @@ enum {
 };
 
 #if defined (ET_SQL)
-// Dushan
-// Use Daemon MySQL support 
-#define ET_MYSQL 1 
-// Dushan 
-// Autorisation HUB server 
-// #define USE_HUB_SERVER 1
+# define ET_MYSQL 1 
 #endif
 
 /* This should not be changed because this value is 

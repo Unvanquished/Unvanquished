@@ -78,71 +78,71 @@ typedef struct {
 } dbinterface_t;
 
 //database system functions
-void         OW_Init( void );
-void         OW_Shutdown( void );
+void         D_Init( void );
+void         D_Shutdown( void );
 
-void         OW_Connect( void );
-void         OW_Status( void );
-void         OW_Disconnect( void );
+void         D_Connect( void );
+void         D_Status( void );
+void         D_Disconnect( void );
 
-int          OW_RunQuery( const char *query );
-void         OW_FinishQuery( int queryid );
+int          D_RunQuery( const char *query );
+void         D_FinishQuery( int queryid );
 
-qboolean     OW_NextRow( int queryid );
-int          OW_RowCount( int queryid );
+qboolean     D_NextRow( int queryid );
+int          D_RowCount( int queryid );
 
-void         OW_GetFieldByID( int queryid, int fieldid, char *buffer, int len );
-void         OW_GetFieldByName( int queryid, const char *name, char *buffer, int len );
-int          OW_GetFieldByID_int( int queryid, int fieldid );
-int          OW_GetFieldByName_int( int queryid, const char *name );
-int          OW_FieldCount( int queryid );
+void         D_GetFieldByID( int queryid, int fieldid, char *buffer, int len );
+void         D_GetFieldByName( int queryid, const char *name, char *buffer, int len );
+int          D_GetFieldByID_int( int queryid, int fieldid );
+int          D_GetFieldByName_int( int queryid, const char *name );
+int          D_FieldCount( int queryid );
 
-void         OW_CleanString( const char *in, char *out, int len );
+void         D_CleanString( const char *in, char *out, int len );
 
 //
 // MySQL functions
 //
-qboolean     OW_MySQL_Init( dbinterface_t *dbi );
+qboolean     D_MySQL_Init( dbinterface_t *dbi );
 
 //
 // MYSQL Connecting related functions
 //
 
-void        OW_MySQL_ConnectMaster( void );
-void        OW_MySQL_ConnectSlave( void );
-void        OW_MySQL_DBStatus( void );
-void        OW_MySQL_Disconnect( void );
+void        D_MySQL_ConnectMaster( void );
+void        D_MySQL_ConnectSlave( void );
+void        D_MySQL_DBStatus( void );
+void        D_MySQL_Disconnect( void );
 //
 // MYSQL Query related functions
 //
 
-int         OW_MySQL_RunQuery( const char *query );
-void        OW_MySQL_FinishQuery( int queryid );
+int         D_MySQL_RunQuery( const char *query );
+void        D_MySQL_FinishQuery( int queryid );
 
 //
 // MYSQL ROW related functions
 //
 
-qboolean    OW_MySQL_NextRow( int queryid );
-int         OW_MySQL_RowCount( int queryid );
+qboolean    D_MySQL_NextRow( int queryid );
+int         D_MySQL_RowCount( int queryid );
 
 //
 // MYSQL Field related functions
 //
 
-void        OW_MySQL_GetFieldByID( int queryid, int fieldid, char *buffer, int len );
-void        OW_MySQL_GetFieldByName( int queryid, const char *name, char *buffer, int len );
-int         OW_MySQL_GetFieldByID_int( int queryid, int fieldid );
-int         OW_MySQL_GetFieldByName_int( int queryid, const char *name );
-int         OW_MySQL_FieldCount( int queryid );
+void        D_MySQL_GetFieldByID( int queryid, int fieldid, char *buffer, int len );
+void        D_MySQL_GetFieldByName( int queryid, const char *name, char *buffer, int len );
+int         D_MySQL_GetFieldByID_int( int queryid, int fieldid );
+int         D_MySQL_GetFieldByName_int( int queryid, const char *name );
+int         D_MySQL_FieldCount( int queryid );
 
-void        OW_MySQL_CleanString( const char *in, char *out, int len );
+void        D_MySQL_CleanString( const char *in, char *out, int len );
 
 //
 // MYSQL Create Table
 //
 
-void        OW_MySQL_CreateTable( void );
+void        D_MySQL_CreateTable( void );
 
 #endif
 
