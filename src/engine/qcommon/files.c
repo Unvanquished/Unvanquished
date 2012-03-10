@@ -586,6 +586,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath ) {
 	fclose( f );
 
 	if ( FS_CreatePath( toOSPath ) ) {
+		free( buf );
 		return;
 	}
 
