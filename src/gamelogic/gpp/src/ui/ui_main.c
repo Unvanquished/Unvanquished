@@ -1490,6 +1490,8 @@ qboolean Load_Menu( int handle )
 			s = va("%s%s", out, "italian/");
 		} else if(cl_lang == 4) {
 			s = va("%s%s", out, "spanish/");
+		} else if(cl_lang == 5) {
+			s = va("%s%s", out, "japanese/");
 		}
 
 		if(UI_ParseMenu(va("%s%s", s, fname))) {
