@@ -1105,7 +1105,7 @@ netField_t      entityStateFields[] = {
 	{NETF(aiState), 2},
 	{NETF(generic1), 10},
 	{NETF(misc), MAX_MISC},
-	{NETF(weaponAnim), ANIM_BITS}
+	{NETF(weaponAnim), ANIM_BITS},
 };
 
 
@@ -1502,94 +1502,186 @@ player_state_t communication
 #define PSF( x ) # x,(size_t)&( (playerState_t*)0 )->x
 
 netField_t      playerStateFields[] = {
-	{PSF(commandTime), 32},
-	{PSF(pm_type), 8},
-	{PSF(bobCycle), 8},
-	{PSF(pm_flags), 16},
-	{PSF(pm_time), -16},
-	{PSF(origin[0]), 0},
-	{PSF(origin[1]), 0},
-	{PSF(origin[2]), 0},
-	{PSF(velocity[0]), 0},
-	{PSF(velocity[1]), 0},
-	{PSF(velocity[2]), 0},
-	{PSF(weaponTime), -16},
-	{PSF(weaponDelay), -16},
-	{PSF(grenadeTimeLeft), -16},
-	{PSF(gravity), 16},
-	{PSF(leanf), 0},
-	{PSF(speed), 16},
-	{PSF(delta_angles[0]), 16},
-	{PSF(delta_angles[1]), 16},
-	{PSF(delta_angles[2]), 16},
-	{PSF(groundEntityNum), GENTITYNUM_BITS},
-	{PSF(legsTimer), 16},
-	{PSF(torsoTimer), 16},
-	{PSF(legsAnim), ANIM_BITS},
-	{PSF(torsoAnim), ANIM_BITS},
-	{PSF(movementDir), 8},
-	{PSF(eFlags), 24},
-	{PSF(eventSequence), 8},
-	{PSF(events[0]), 8},
-	{PSF(events[1]), 8},
-	{PSF(events[2]), 8},
-	{PSF(events[3]), 8},
-	{PSF(eventParms[0]), 8},
-	{PSF(eventParms[1]), 8},
-	{PSF(eventParms[2]), 8},
-	{PSF(eventParms[3]), 8},
-	{PSF(clientNum), 8},
-	{PSF(weapons[0]), 32},
-	{PSF(weapons[1]), 32},
-	{PSF(weapon), 7}, // (SA) yup, even more
-	{PSF(weaponstate), 4},
-	{PSF(weapAnim), 10},
-	{PSF(viewangles[0]), 0},
-	{PSF(viewangles[1]), 0},
-	{PSF(viewangles[2]), 0},
-	{PSF(viewheight), -8},
-	{PSF(damageEvent), 8},
-	{PSF(damageYaw), 8},
-	{PSF(damagePitch), 8},
-	{PSF(damageCount), 8},
-	{PSF(mins[0]), 0},
-	{PSF(mins[1]), 0},
-	{PSF(mins[2]), 0},
-	{PSF(maxs[0]), 0},
-	{PSF(maxs[1]), 0},
-	{PSF(maxs[2]), 0},
-	{PSF(crouchMaxZ), 0},
-	{PSF(crouchViewHeight), 0},
-	{PSF(standViewHeight), 0},
-	{PSF(deadViewHeight), 0},
-	{PSF(runSpeedScale), 0},
-	{PSF(sprintSpeedScale), 0},
-	{PSF(crouchSpeedScale), 0},
-	{PSF(friction), 0},
-	{PSF(viewlocked), 8},
-	{PSF(viewlocked_entNum), 16},
-	{PSF(nextWeapon), 8},
-	{PSF(teamNum), 8},
-	//{ PSF(gunfx), 8},
-	{PSF(onFireStart), 32},
-	{PSF(curWeapHeat), 8},
-	{PSF(aimSpreadScale), 8},
-	{PSF(serverCursorHint), 8}, //----(SA)   added
-	{PSF(serverCursorHintVal), 8}, //----(SA)    added
-	{PSF(classWeaponTime), 32}, // JPW NERVE
-	{PSF(identifyClient), 8},
-	{PSF(identifyClientHealth), 8},
-	{PSF(aiState), 2},
-	{PSF(generic1), 10},
-	{PSF(loopSound), 16},
-	{PSF(grapplePoint[0]), 0},
-	{PSF(grapplePoint[1]), 0},
-	{PSF(grapplePoint[2]), 0},
-	{PSF(Ammo), 12},
-	{PSF(clips), 4},
-	{PSF(tauntTimer), 12},
-	{PSF(weaponAnim), ANIM_BITS},
+	{PSF(commandTime), 32}
+	,
+	{PSF(pm_type), 8}
+	,
+	{PSF(bobCycle), 8}
+	,
+	{PSF(pm_flags), 16}
+	,
+	{PSF(pm_time), -16}
+	,
+	{PSF(origin[0]), 0}
+	,
+	{PSF(origin[1]), 0}
+	,
+	{PSF(origin[2]), 0}
+	,
+	{PSF(velocity[0]), 0}
+	,
+	{PSF(velocity[1]), 0}
+	,
+	{PSF(velocity[2]), 0}
+	,
+	{PSF(weaponTime), -16}
+	,
+	{PSF(weaponDelay), -16}
+	,
+	{PSF(grenadeTimeLeft), -16}
+	,
+	{PSF(gravity), 16}
+	,
+	{PSF(leanf), 0}
+	,
+	{PSF(speed), 16}
+	,
+	{PSF(delta_angles[0]), 16}
+	,
+	{PSF(delta_angles[1]), 16}
+	,
+	{PSF(delta_angles[2]), 16}
+	,
+	{PSF(groundEntityNum), GENTITYNUM_BITS}
+	,
+	{PSF(legsTimer), 16}
+	,
+	{PSF(torsoTimer), 16}
+	,
+	{PSF(legsAnim), ANIM_BITS}
+	,
+	{PSF(torsoAnim), ANIM_BITS}
+	,
+	{PSF(movementDir), 8}
+	,
+	{PSF(eFlags), 24}
+	,
+	{PSF(eventSequence), 8}
+	,
+	{PSF(events[0]), 8}
+	,
+	{PSF(events[1]), 8}
+	,
+	{PSF(events[2]), 8}
+	,
+	{PSF(events[3]), 8}
+	,
+	{PSF(eventParms[0]), 8}
+	,
+	{PSF(eventParms[1]), 8}
+	,
+	{PSF(eventParms[2]), 8}
+	,
+	{PSF(eventParms[3]), 8}
+	,
+	{PSF(clientNum), 8}
+	,
+	{PSF(weapons[0]), 32}
+	,
+	{PSF(weapons[1]), 32}
+	,
+	{PSF(weapon), 7}
+	,							// (SA) yup, even more
+	{PSF(weaponstate), 4}
+	,
+	{PSF(weapAnim), 10}
+	,
+	{PSF(viewangles[0]), 0}
+	,
+	{PSF(viewangles[1]), 0}
+	,
+	{PSF(viewangles[2]), 0}
+	,
+	{PSF(viewheight), -8}
+	,
+	{PSF(damageEvent), 8}
+	,
+	{PSF(damageYaw), 8}
+	,
+	{PSF(damagePitch), 8}
+	,
+	{PSF(damageCount), 8}
+	,
+	{PSF(mins[0]), 0}
+	,
+	{PSF(mins[1]), 0}
+	,
+	{PSF(mins[2]), 0}
+	,
+	{PSF(maxs[0]), 0}
+	,
+	{PSF(maxs[1]), 0}
+	,
+	{PSF(maxs[2]), 0}
+	,
+	{PSF(crouchMaxZ), 0}
+	,
+	{PSF(crouchViewHeight), 0}
+	,
+	{PSF(standViewHeight), 0}
+	,
+	{PSF(deadViewHeight), 0}
+	,
+	{PSF(runSpeedScale), 0}
+	,
+	{PSF(sprintSpeedScale), 0}
+	,
+	{PSF(crouchSpeedScale), 0}
+	,
+	{PSF(friction), 0}
+	,
+	{PSF(viewlocked), 8}
+	,
+	{PSF(viewlocked_entNum), 16}
+	,
+	{PSF(nextWeapon), 8}
+	,
+	{PSF(teamNum), 8}
+	,
+//{ PSF(gunfx), 8},
+	{PSF(onFireStart), 32}
+	,
+	{PSF(curWeapHeat), 8}
+	,
+	{PSF(aimSpreadScale), 8}
+	,
+	{PSF(serverCursorHint), 8}
+	,							//----(SA)   added
+	{PSF(serverCursorHintVal), 8}
+	,							//----(SA)    added
+	{PSF(classWeaponTime), 32}
+	,							// JPW NERVE
+	{PSF(identifyClient), 8}
+	,
+	{PSF(identifyClientHealth), 8}
+	,
+	{PSF(aiState), 2}
+	,
+	// Dushan - Tremulous
+	{PSF(generic1), 10}
+	,
+	{PSF(loopSound), 16}
+	,
+	{PSF(grapplePoint[0]), 0}
+	,
+	{PSF(grapplePoint[1]), 0}
+	,
+	{PSF(grapplePoint[2]), 0}
+	,
+	{PSF(Ammo), 12}
+	,
+	{PSF(clips), 4}
+	,
+	{PSF(tauntTimer), 12}
+	,
+	{PSF(weaponAnim), 12}
+	,
 	{PSF(otherEntityNum), 10}
+	,
+	{PSF(weaponAnim), ANIM_BITS}
+	,
+	{PSF(clips), 4}
+	,
 };
 
 static int QDECL qsort_playerstatefields(const void *a, const void *b)
