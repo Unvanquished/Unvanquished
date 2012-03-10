@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -147,12 +147,13 @@ qboolean GetNews( qboolean begin )
 {
 #ifdef USE_CURL
 	qboolean finished = qfalse;
+	//fileHandle_t fileIn;
 	int readSize;
 
 	if( begin ) { // if not already using curl, start the download
 		if( !clc.bWWWDl ) {
-		clc.bWWWDl = qtrue;  
-		DL_BeginDownload("news.dat", 
+		clc.bWWWDl = qtrue;
+		DL_BeginDownload("news.dat",
 			"http://tremulous.net/clientnews.txt", com_developer->integer);
 		cls.bWWWDlDisconnected = qtrue;
 		return qfalse;
@@ -161,13 +162,14 @@ qboolean GetNews( qboolean begin )
 
 	if (FS_SV_FOpenFileRead("news.dat", &clc.download)) {
 		readSize = FS_Read(clc.newsString, sizeof( clc.newsString ), clc.download);
-		clc.newsString[ readSize ] = '\0';
+		//FS_FCloseFile(fileIn);
 		if( readSize > 0 ) {
 			finished = qtrue;
 			clc.bWWWDl = qfalse;
 			cls.bWWWDlDisconnected = qfalse;
 		}
 	}
+	if( !finished )
     FS_FCloseFile(clc.download);
 
 	if( !finished ) 
@@ -175,7 +177,7 @@ qboolean GetNews( qboolean begin )
 	Cvar_Set( "cl_newsString", clc.newsString );
 	return finished;
 #else
-	Cvar_Set( "cl_newsString", 
+	Cvar_Set( "cl_newsString",
 		"^1You must compile your client with CURL support to use this feature" );
 	return qtrue;
 #endif
@@ -508,9 +510,9 @@ static int LAN_CompareServers(int source, int sortKey, int sortDir, int s1, int 
 	{
 		return 0;
 	}
-	
+
 	// featured servers on top
-	if( ( server1->label[ 0 ] && server1->ping <= FEATURED_MAXPING  ) || 
+	if( ( server1->label[ 0 ] && server1->ping <= FEATURED_MAXPING  ) ||
 		( server2->label[ 0 ] && server2->ping <= FEATURED_MAXPING ) ) {
 		res = Q_stricmpn( server1->label, server2->label, MAX_FEATLABEL_CHARS );
 		if( res )
@@ -1081,7 +1083,7 @@ intptr_t CL_UISystemCalls(intptr_t * args)
 			GLimp_ReleaseGL();
 #else
 			return re.RegisterModel(VMA(1));
-#endif // IPHONE			
+#endif // IPHONE
 
 		case UI_R_REGISTERSKIN:
 #ifdef IPHONE_NOTYET
@@ -1100,7 +1102,7 @@ intptr_t CL_UISystemCalls(intptr_t * args)
 #else
 			return re.RegisterShaderNoMip(VMA(1));
 #endif // IPHONE
-			
+
 		case UI_R_CLEARSCENE:
 			re.ClearScene();
 			return 0;
@@ -1505,7 +1507,7 @@ void CL_InitUI(void)
 
 #if defined (USE_HTTP)
 	//	if the session id has something in it, then assume that the browser sent it from the
-	//	command line and tell ui we're already logged in.  
+	//	command line and tell ui we're already logged in.
 	if ( com_sessionid->string[0] ) {
 		VM_Call( uivm, UI_AUTHORIZED, AUTHORIZE_OK );
 	}

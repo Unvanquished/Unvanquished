@@ -901,7 +901,7 @@ void Tess_SurfacePolybuffer(srfPolyBuffer_t * surf)
 	}
 	tess.numIndexes += numIndexes;
 
-	
+
 	numVertexes = Q_min(surf->pPolyBuffer->numVerts, MAX_PB_VERTS);
 	xyzw = &surf->pPolyBuffer->xyz[0][0];
 	st = &surf->pPolyBuffer->st[0][0];
@@ -973,12 +973,12 @@ static void Tess_SurfaceFace(srfSurfaceFace_t * srf)
 	int             i;
 	srfTriangle_t  *tri;
 	srfVert_t      *dv;
-	float          *xyz, *tangent, *binormal, *normal, *texCoords, *lightCoords, *color, *paintColor, *lightDirection;
+	float          *xyz, *tangent, *binormal, *normal, *texCoords, *lightCoords, *color;
 
 	GLimp_LogComment("--- Tess_SurfaceFace ---\n");
 
 	if(r_vboFaces->integer && srf->vbo && srf->ibo &&
-		!tess.skipVBO && 
+		!tess.skipVBO &&
 		!ShaderRequiresCPUDeforms(tess.surfaceShader) &&
 		tess.stageIteratorFunc != &Tess_StageIteratorSky)
 	{
@@ -1058,58 +1058,62 @@ static void Tess_SurfaceFace(srfSurfaceFace_t * srf)
 		color[3] = dv->lightColor[3];
 	}
 #else
-	
-	paintColor = tess.paintColors[tess.numVertexes];
-	lightDirection = tess.lightDirections[tess.numVertexes];
 
-	for(i = 0; i < srf->numVerts;
-		i++, dv++, xyz += 4, tangent += 4, binormal += 4, normal += 4, texCoords += 4, lightCoords += 4, color += 4, paintColor += 4, lightDirection += 4)
-	{
-		xyz[0] = dv->xyz[0];
-		xyz[1] = dv->xyz[1];
-		xyz[2] = dv->xyz[2];
-		xyz[3] = 1;
+    {
+        float *paintColor, *lightDirection;
 
-		//if(!tess.skipTangentSpaces)
-		{
-			tangent[0] = dv->tangent[0];
-			tangent[1] = dv->tangent[1];
-			tangent[2] = dv->tangent[2];
+        paintColor = tess.paintColors[tess.numVertexes];
+        lightDirection = tess.lightDirections[tess.numVertexes];
 
-			binormal[0] = dv->binormal[0];
-			binormal[1] = dv->binormal[1];
-			binormal[2] = dv->binormal[2];
+        for(i = 0; i < srf->numVerts;
+            i++, dv++, xyz += 4, tangent += 4, binormal += 4, normal += 4, texCoords += 4, lightCoords += 4, color += 4, paintColor += 4, lightDirection += 4)
+        {
+            xyz[0] = dv->xyz[0];
+            xyz[1] = dv->xyz[1];
+            xyz[2] = dv->xyz[2];
+            xyz[3] = 1;
 
-			normal[0] = dv->normal[0];
-			normal[1] = dv->normal[1];
-			normal[2] = dv->normal[2];
-		}
+            //if(!tess.skipTangentSpaces)
+            {
+                tangent[0] = dv->tangent[0];
+                tangent[1] = dv->tangent[1];
+                tangent[2] = dv->tangent[2];
 
-		texCoords[0] = dv->st[0];
-		texCoords[1] = dv->st[1];
-		texCoords[2] = 0;
-		texCoords[3] = 1;
+                binormal[0] = dv->binormal[0];
+                binormal[1] = dv->binormal[1];
+                binormal[2] = dv->binormal[2];
 
-		lightCoords[0] = dv->lightmap[0];
-		lightCoords[1] = dv->lightmap[1];
-		lightCoords[2] = 0;
-		lightCoords[3] = 1;
+                normal[0] = dv->normal[0];
+                normal[1] = dv->normal[1];
+                normal[2] = dv->normal[2];
+            }
 
-		color[0] = dv->lightColor[0];
-		color[1] = dv->lightColor[1];
-		color[2] = dv->lightColor[2];
-		color[3] = dv->lightColor[3];
+            texCoords[0] = dv->st[0];
+            texCoords[1] = dv->st[1];
+            texCoords[2] = 0;
+            texCoords[3] = 1;
 
-		paintColor[0] = dv->paintColor[0];
-		paintColor[1] = dv->paintColor[1];
-		paintColor[2] = dv->paintColor[2];
-		paintColor[3] = dv->paintColor[3];
+            lightCoords[0] = dv->lightmap[0];
+            lightCoords[1] = dv->lightmap[1];
+            lightCoords[2] = 0;
+            lightCoords[3] = 1;
 
-		lightDirection[0] = dv->lightDirection[0];
-		lightDirection[1] = dv->lightDirection[1];
-		lightDirection[2] = dv->lightDirection[2];
-		lightDirection[3] = 1;
-	}
+            color[0] = dv->lightColor[0];
+            color[1] = dv->lightColor[1];
+            color[2] = dv->lightColor[2];
+            color[3] = dv->lightColor[3];
+
+            paintColor[0] = dv->paintColor[0];
+            paintColor[1] = dv->paintColor[1];
+            paintColor[2] = dv->paintColor[2];
+            paintColor[3] = dv->paintColor[3];
+
+            lightDirection[0] = dv->lightDirection[0];
+            lightDirection[1] = dv->lightDirection[1];
+            lightDirection[2] = dv->lightDirection[2];
+            lightDirection[3] = 1;
+        }
+    }
 #endif
 
 	tess.numVertexes += srf->numVerts;
@@ -1125,10 +1129,10 @@ static void Tess_SurfaceGrid(srfGridMesh_t * srf)
 	int             i;
 	srfTriangle_t  *tri;
 	srfVert_t      *dv;
-	float          *xyz, *tangent, *binormal, *normal, *texCoords, *lightCoords, *color, *paintColor, *lightDirection;
+	float          *xyz, *tangent, *binormal, *normal, *texCoords, *lightCoords, *color;
 
 	GLimp_LogComment("--- Tess_SurfaceGrid ---\n");
-	
+
 	if(r_vboCurves->integer && srf->vbo && srf->ibo && !ShaderRequiresCPUDeforms(tess.surfaceShader))
 	{
 		if(tess.multiDrawPrimitives >= MAX_MULTIDRAW_PRIMITIVES)
@@ -1165,7 +1169,7 @@ static void Tess_SurfaceGrid(srfGridMesh_t * srf)
 	texCoords = tess.texCoords[tess.numVertexes];
 	lightCoords = tess.lightCoords[tess.numVertexes];
 	color = tess.colors[tess.numVertexes];
-	
+
 
 #if defined(COMPAT_Q3A) || defined(COMPAT_ET)
 
@@ -1208,57 +1212,61 @@ static void Tess_SurfaceGrid(srfGridMesh_t * srf)
 		color[3] = dv->lightColor[3];
 	}
 #else
-	
-	paintColor = tess.paintColors[tess.numVertexes];
-	lightDirection = tess.lightDirections[tess.numVertexes];
 
-	for(i = 0; i < srf->numVerts;
-		i++, dv++, xyz += 4, tangent += 4, binormal += 4, normal += 4, texCoords += 4, lightCoords += 4, color += 4, paintColor += 4, lightDirection += 4)
-	{
-		xyz[0] = dv->xyz[0];
-		xyz[1] = dv->xyz[1];
-		xyz[2] = dv->xyz[2];
-		xyz[3] = 1;
+    {
+        float *paintColor, *lightDirection;
 
-		//if(!tess.skipTangentSpaces)
-		{
-			tangent[0] = dv->tangent[0];
-			tangent[1] = dv->tangent[1];
-			tangent[2] = dv->tangent[2];
+        paintColor = tess.paintColors[tess.numVertexes];
+        lightDirection = tess.lightDirections[tess.numVertexes];
 
-			binormal[0] = dv->binormal[0];
-			binormal[1] = dv->binormal[1];
-			binormal[2] = dv->binormal[2];
+        for(i = 0; i < srf->numVerts;
+            i++, dv++, xyz += 4, tangent += 4, binormal += 4, normal += 4, texCoords += 4, lightCoords += 4, color += 4, paintColor += 4, lightDirection += 4)
+        {
+            xyz[0] = dv->xyz[0];
+            xyz[1] = dv->xyz[1];
+            xyz[2] = dv->xyz[2];
+            xyz[3] = 1;
 
-			normal[0] = dv->normal[0];
-			normal[1] = dv->normal[1];
-			normal[2] = dv->normal[2];
-		}
+            //if(!tess.skipTangentSpaces)
+            {
+                tangent[0] = dv->tangent[0];
+                tangent[1] = dv->tangent[1];
+                tangent[2] = dv->tangent[2];
 
-		texCoords[0] = dv->st[0];
-		texCoords[1] = dv->st[1];
-		texCoords[2] = 0;
-		texCoords[3] = 1;
+                binormal[0] = dv->binormal[0];
+                binormal[1] = dv->binormal[1];
+                binormal[2] = dv->binormal[2];
 
-		lightCoords[0] = dv->lightmap[0];
-		lightCoords[1] = dv->lightmap[1];
-		lightCoords[2] = 0;
-		lightCoords[3] = 1;
+                normal[0] = dv->normal[0];
+                normal[1] = dv->normal[1];
+                normal[2] = dv->normal[2];
+            }
 
-		color[0] = dv->lightColor[0];
-		color[1] = dv->lightColor[1];
-		color[2] = dv->lightColor[2];
-		color[3] = dv->lightColor[3];
+            texCoords[0] = dv->st[0];
+            texCoords[1] = dv->st[1];
+            texCoords[2] = 0;
+            texCoords[3] = 1;
 
-		paintColor[0] = dv->paintColor[0];
-		paintColor[1] = dv->paintColor[1];
-		paintColor[2] = dv->paintColor[2];
-		paintColor[3] = dv->paintColor[3];
+            lightCoords[0] = dv->lightmap[0];
+            lightCoords[1] = dv->lightmap[1];
+            lightCoords[2] = 0;
+            lightCoords[3] = 1;
 
-		lightDirection[0] = dv->lightDirection[0];
-		lightDirection[1] = dv->lightDirection[1];
-		lightDirection[2] = dv->lightDirection[2];
-		lightDirection[3] = 1;
+            color[0] = dv->lightColor[0];
+            color[1] = dv->lightColor[1];
+            color[2] = dv->lightColor[2];
+            color[3] = dv->lightColor[3];
+
+            paintColor[0] = dv->paintColor[0];
+            paintColor[1] = dv->paintColor[1];
+            paintColor[2] = dv->paintColor[2];
+            paintColor[3] = dv->paintColor[3];
+
+            lightDirection[0] = dv->lightDirection[0];
+            lightDirection[1] = dv->lightDirection[1];
+            lightDirection[2] = dv->lightDirection[2];
+            lightDirection[3] = 1;
+        }
 	}
 #endif
 
@@ -1275,10 +1283,10 @@ static void Tess_SurfaceTriangles(srfTriangles_t * srf)
 	int             i;
 	srfTriangle_t  *tri;
 	srfVert_t      *dv;
-	float          *xyz, *tangent, *binormal, *normal, *texCoords,  *lightCoords, *color, *paintColor, *lightDirection;
+	float          *xyz, *tangent, *binormal, *normal, *texCoords,  *lightCoords, *color;
 
 	GLimp_LogComment("--- Tess_SurfaceTriangles ---\n");
-	
+
 	if(r_vboTriangles->integer && srf->vbo && srf->ibo && !ShaderRequiresCPUDeforms(tess.surfaceShader))
 	{
 		if(tess.multiDrawPrimitives >= MAX_MULTIDRAW_PRIMITIVES)
@@ -1357,58 +1365,61 @@ static void Tess_SurfaceTriangles(srfTriangles_t * srf)
 		color[3] = dv->lightColor[3];
 	}
 #else
-	
-	paintColor = tess.paintColors[tess.numVertexes];
-	lightDirection = tess.lightDirections[tess.numVertexes];
+    {
+        float *paintColor, *lightDirection;
 
-	for(i = 0; i < srf->numVerts;
-		i++, dv++, xyz += 4, tangent += 4, binormal += 4, normal += 4, texCoords += 4, lightCoords += 4, color += 4, paintColor += 4, lightDirection += 4)
-	{
-		xyz[0] = dv->xyz[0];
-		xyz[1] = dv->xyz[1];
-		xyz[2] = dv->xyz[2];
-		xyz[3] = 1;
+        paintColor = tess.paintColors[tess.numVertexes];
+        lightDirection = tess.lightDirections[tess.numVertexes];
 
-		//if(!tess.skipTangentSpaces)
-		{
-			tangent[0] = dv->tangent[0];
-			tangent[1] = dv->tangent[1];
-			tangent[2] = dv->tangent[2];
+        for(i = 0; i < srf->numVerts;
+            i++, dv++, xyz += 4, tangent += 4, binormal += 4, normal += 4, texCoords += 4, lightCoords += 4, color += 4, paintColor += 4, lightDirection += 4)
+        {
+            xyz[0] = dv->xyz[0];
+            xyz[1] = dv->xyz[1];
+            xyz[2] = dv->xyz[2];
+            xyz[3] = 1;
 
-			binormal[0] = dv->binormal[0];
-			binormal[1] = dv->binormal[1];
-			binormal[2] = dv->binormal[2];
+            //if(!tess.skipTangentSpaces)
+            {
+                tangent[0] = dv->tangent[0];
+                tangent[1] = dv->tangent[1];
+                tangent[2] = dv->tangent[2];
 
-			normal[0] = dv->normal[0];
-			normal[1] = dv->normal[1];
-			normal[2] = dv->normal[2];
-		}
+                binormal[0] = dv->binormal[0];
+                binormal[1] = dv->binormal[1];
+                binormal[2] = dv->binormal[2];
 
-		texCoords[0] = dv->st[0];
-		texCoords[1] = dv->st[1];
-		texCoords[2] = 0;
-		texCoords[3] = 1;
+                normal[0] = dv->normal[0];
+                normal[1] = dv->normal[1];
+                normal[2] = dv->normal[2];
+            }
 
-		lightCoords[0] = dv->lightmap[0];
-		lightCoords[1] = dv->lightmap[1];
-		lightCoords[2] = 0;
-		lightCoords[3] = 1;
+            texCoords[0] = dv->st[0];
+            texCoords[1] = dv->st[1];
+            texCoords[2] = 0;
+            texCoords[3] = 1;
 
-		color[0] = dv->lightColor[0];
-		color[1] = dv->lightColor[1];
-		color[2] = dv->lightColor[2];
-		color[3] = dv->lightColor[3];
+            lightCoords[0] = dv->lightmap[0];
+            lightCoords[1] = dv->lightmap[1];
+            lightCoords[2] = 0;
+            lightCoords[3] = 1;
 
-		paintColor[0] = dv->paintColor[0];
-		paintColor[1] = dv->paintColor[1];
-		paintColor[2] = dv->paintColor[2];
-		paintColor[3] = dv->paintColor[3];
+            color[0] = dv->lightColor[0];
+            color[1] = dv->lightColor[1];
+            color[2] = dv->lightColor[2];
+            color[3] = dv->lightColor[3];
 
-		lightDirection[0] = dv->lightDirection[0];
-		lightDirection[1] = dv->lightDirection[1];
-		lightDirection[2] = dv->lightDirection[2];
-		lightDirection[3] = 1;
-	}
+            paintColor[0] = dv->paintColor[0];
+            paintColor[1] = dv->paintColor[1];
+            paintColor[2] = dv->paintColor[2];
+            paintColor[3] = dv->paintColor[3];
+
+            lightDirection[0] = dv->lightDirection[0];
+            lightDirection[1] = dv->lightDirection[1];
+            lightDirection[2] = dv->lightDirection[2];
+            lightDirection[3] = 1;
+        }
+    }
 #endif
 
 	tess.numVertexes += srf->numVerts;
@@ -1752,11 +1763,11 @@ static void Tess_SurfaceMDV(mdvSurface_t * srf)
 	int             i, j;
 	int             numIndexes = 0;
 	int             numVertexes;
-	mdvModel_t     *model;
+//	mdvModel_t     *model;
 	mdvVertex_t    *oldVert, *newVert;
 	mdvSt_t        *st;
 	srfTriangle_t  *tri;
-	vec3_t          lightOrigin;
+//	vec3_t          lightOrigin;
 	float           backlerp;
 	float           oldXyzScale, newXyzScale;
 
@@ -1776,7 +1787,7 @@ static void Tess_SurfaceMDV(mdvSurface_t * srf)
 
 	Tess_CheckOverflow(srf->numVerts, srf->numTriangles * 3);
 
-	model = srf->model;
+//	model = srf->model;
 
 	numIndexes = srf->numTriangles * 3;
 	for(i = 0, tri = srf->triangles; i < srf->numTriangles; i++, tri++)
@@ -1904,10 +1915,10 @@ static void Tess_SurfaceMD5(md5Surface_t * srf)
 	int             numVertexes;
 	md5Model_t     *model;
 	md5Vertex_t    *v;
-	md5Bone_t      *bone;
+//	md5Bone_t      *bone;
 	srfTriangle_t  *tri;
-	vec3_t          lightOrigin;
-	float          *xyzw, *xyzw2;
+//	vec3_t          lightOrigin;
+//	float          *xyzw, *xyzw2;
 	static matrix_t boneMatrices[MAX_BONES];
 
 	GLimp_LogComment("--- Tess_SurfaceMD5 ---\n");
@@ -1961,7 +1972,7 @@ static void Tess_SurfaceMD5(md5Surface_t * srf)
 
 			for(k = 0, w = v->weights[0]; k < v->numWeights; k++, w++)
 			{
-				bone = &model->bones[w->boneIndex];
+				//bone = &model->bones[w->boneIndex];
 
 				MatrixTransformPoint(boneMatrices[w->boneIndex], w->offset, tmpVert);
 				VectorMA(tmpPosition, w->boneWeight, tmpVert, tmpPosition);
@@ -2276,10 +2287,10 @@ Tess_SurfaceVBOMDVMesh
 */
 void Tess_SurfaceVBOMDVMesh(srfVBOMDVMesh_t * surface)
 {
-	int             i;
-	mdvModel_t     *mdvModel;
-	mdvSurface_t   *mdvSurface;
-	matrix_t        m, m2;	//, m3
+//	int             i;
+//	mdvModel_t     *mdvModel;
+//	mdvSurface_t   *mdvSurface;
+//	matrix_t        m, m2;	//, m3
 	refEntity_t    *refEnt;
 
 	GLimp_LogComment("--- Tess_SurfaceVBOMDVMesh ---\n");
@@ -2295,8 +2306,8 @@ void Tess_SurfaceVBOMDVMesh(srfVBOMDVMesh_t * surface)
 	tess.numIndexes = surface->numIndexes;
 	tess.numVertexes = surface->numVerts;
 
-	mdvModel = surface->mdvModel;
-	mdvSurface = surface->mdvSurface;
+//	mdvModel = surface->mdvModel;
+//	mdvSurface = surface->mdvSurface;
 
 	refEnt = &backEnd.currentEntity->e;
 

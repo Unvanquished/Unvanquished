@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -193,7 +193,7 @@ static void SV_WriteSnapshotToClient(client_t * client, msg_t * msg)
 
 	// send over the current server time so the client can drift
 	// its view of time to try to match
-	MSG_WriteLong(msg, svs.time); 
+	MSG_WriteLong(msg, svs.time);
 
 	// what we are delta'ing from
 	MSG_WriteByte(msg, lastframe);
@@ -358,7 +358,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, clientSnapshot_t * fra
 	int             l;
 	int             clientarea, clientcluster;
 	int             leafnum;
-	int             c_fullsend;
+//	int             c_fullsend;
 	byte           *clientpvs;
 	byte           *bitvector;
 
@@ -379,7 +379,7 @@ static void SV_AddEntitiesVisibleFromPoint(vec3_t origin, clientSnapshot_t * fra
 
 	clientpvs = CM_ClusterPVS(clientcluster);
 
-	c_fullsend = 0;
+//	c_fullsend = 0;
 
 	playerEnt = SV_GentityNum(frame->ps.clientNum);
 	if(playerEnt->r.svFlags & SVF_SELF_PORTAL)
@@ -935,7 +935,7 @@ void SV_SendClientIdle(client_t * client)
 
 	// Add any download data if the client is downloading
 	SV_WriteDownloadToClient(client, &msg);
-	
+
 	// check for overflow
 	if(msg.overflowed)
 	{
@@ -1005,7 +1005,7 @@ void SV_SendClientSnapshot(client_t * client)
 	SV_WriteDownloadToClient(client, &msg);
 #ifdef USE_VOIP
 	SV_WriteVoipToClient( client, &msg );
-#endif	
+#endif
 
 
 	// check for overflow

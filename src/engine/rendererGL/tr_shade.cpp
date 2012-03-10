@@ -140,7 +140,7 @@ static void GLSL_LoadGPUShader(GLhandleARB program, const char *name, const char
 		{
 			Com_sprintf(filename, sizeof(filename), "glsl/%s_fp.glsl", token);
 		}
-	
+
 		libSize = ri.FS_ReadFile(filename, (void **)&libBuffer);
 		if(!libBuffer)
 		{
@@ -149,14 +149,14 @@ static void GLSL_LoadGPUShader(GLhandleARB program, const char *name, const char
 
 		// append it to the libsBuffer
 		libsBuffer = (char* ) realloc(libsBuffer, libsSize + libSize);
-		
+
 		memset(libsBuffer + libsSize, 0, libSize);
 		libsSize += libSize;
 
 		Q_strcat(libsBuffer, libsSize, libBuffer);
 		//Q_strncpyz(libsBuffer + libsSize, libBuffer, libSize -1);
 
-		
+
 
 		ri.FS_FreeFile(libBuffer);
 	}
@@ -435,7 +435,7 @@ static void GLSL_LoadGPUShader(GLhandleARB program, const char *name, const char
 			}
 		}
 
-		
+
 
 		if(r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable)
 		{
@@ -597,7 +597,7 @@ static void GLSL_LoadGPUShader(GLhandleARB program, const char *name, const char
 			static char     msgPart[1024];
 			int             length = 0;
 			int             i;
-			
+
 
 			glslopt_shader_type glsloptShaderType;
 
@@ -606,7 +606,7 @@ static void GLSL_LoadGPUShader(GLhandleARB program, const char *name, const char
 			else
 				glsloptShaderType = kGlslOptShaderVertex;
 
-			glslopt_shader* shaderOptimized = glslopt_optimize(s_glslOptimizer, 
+			glslopt_shader* shaderOptimized = glslopt_optimize(s_glslOptimizer,
 				glsloptShaderType, bufferFinal, 0);
 
 			if(glslopt_get_status(shaderOptimized))
@@ -643,7 +643,7 @@ static void GLSL_LoadGPUShader(GLhandleARB program, const char *name, const char
 
 				ri.Error(ERR_FATAL, "Couldn't optimize %s", filename);
 			}
-			
+
 			glslopt_shader_delete(shaderOptimized);
 		}
 		else
@@ -799,6 +799,7 @@ static void GLSL_BindAttribLocations(GLhandleARB program, uint32_t attribs)
 		glBindAttribLocationARB(program, ATTR_INDEX_NORMAL2, "attr_Normal2");
 }
 
+#if 0
 static void GLSL_InitGPUShader(shaderProgram_t * program, const char *name, int attribs, qboolean fragmentShader, qboolean optimize)
 {
 	ri.Printf(PRINT_DEVELOPER, "------- GPU shader -------\n");
@@ -819,7 +820,7 @@ static void GLSL_InitGPUShader(shaderProgram_t * program, const char *name, int 
 	GLSL_BindAttribLocations(program->program, attribs);
 	GLSL_LinkProgram(program->program);
 }
-
+#endif
 
 /*
 static void GLSL_InitGPUShader2(shaderProgram_t * program,
@@ -849,7 +850,7 @@ static void GLSL_InitGPUShader2(shaderProgram_t * program,
 
 	GLSL_LoadGPUShader(program->program, vertexMainShader, vertexLibShaders, "", GL_VERTEX_SHADER_ARB, optimize);
 	GLSL_LoadGPUShader(program->program, fragmentMainShader, fragmentLibShaders, "", GL_FRAGMENT_SHADER_ARB, optimize);
-	
+
 	GLSL_BindAttribLocations(program->program, attribs);
 	GLSL_LinkProgram(program->program);
 }
@@ -921,7 +922,7 @@ void GLSL_InitGPUShaders(void)
 	startTime = ri.Milliseconds();
 
 	// single texture rendering
-	gl_genericShader = new GLShader_generic();	
+	gl_genericShader = new GLShader_generic();
 
 	// simple vertex color shading for entities
 	gl_vertexLightingShader_DBS_entity = new GLShader_vertexLighting_DBS_entity();
@@ -985,7 +986,7 @@ void GLSL_InitGPUShaders(void)
 	// shadowmap distance compression
 	gl_shadowFillShader = new GLShader_shadowFill();
 
-	
+
 
 #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
@@ -1112,7 +1113,7 @@ void GLSL_InitGPUShaders(void)
 	// liquid post process effect
 	GLSL_InitGPUShader(&tr.liquidShader, "liquid",
 			ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL | ATTR_COLOR
-			
+
 #if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
 			| ATTR_LIGHTDIRECTION
 #endif
@@ -1530,7 +1531,7 @@ static void BindLightMap()
 	if(tr.fatLightmap)
 	{
 		lightmap = tr.fatLightmap;
-	}		
+	}
 	else if(tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements)
 	{
 		lightmap = (image_t *) Com_GrowListElement(&tr.lightmaps, tess.lightmapNum);
@@ -1677,12 +1678,12 @@ void Tess_Begin(	 void (*stageIteratorFunc)(),
 	tess.numVertexes = 0;
 
 	tess.multiDrawPrimitives = 0;
-	
+
 	// materials are optional
 	if(surfaceShader != NULL)
 	{
 		state = (surfaceShader->remappedShader) ? surfaceShader->remappedShader : surfaceShader;
-	
+
 		tess.surfaceShader = state;
 		tess.surfaceStages = state->stages;
 		tess.numSurfaceStages = state->numStages;
@@ -1884,10 +1885,10 @@ static void Render_vertexLighting_DBS_entity(int stage)
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetPortalClipping(backEnd.viewParms.isPortal);
 	gl_vertexLightingShader_DBS_entity->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
-	
+
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning(glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning);
 	gl_vertexLightingShader_DBS_entity->SetVertexAnimation(glState.vertexAttribsInterpolation > 0);
-	
+
 	gl_vertexLightingShader_DBS_entity->SetDeformVertexes(tess.surfaceShader->numDeforms);
 
 	gl_vertexLightingShader_DBS_entity->SetNormalMapping(normalMapping);
@@ -1898,7 +1899,7 @@ static void Render_vertexLighting_DBS_entity(int stage)
 //	gl_vertexLightingShader_DBS_entity->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
 	gl_vertexLightingShader_DBS_entity->BindProgram();
-	
+
 	// end choose right shader program ------------------------------
 
 	// now we are ready to set the shader program uniforms
@@ -2010,7 +2011,7 @@ static void Render_vertexLighting_DBS_entity(int stage)
 				// FIXME position
 				R_FindTwoNearestCubeMaps(backEnd.viewParms.orientation.origin, &cubeProbeNearest, &cubeProbeSecondNearest);
 			}
-			
+
 
 			if(cubeProbeNearest == NULL && cubeProbeSecondNearest == NULL)
 			{
@@ -2065,7 +2066,7 @@ static void Render_vertexLighting_DBS_entity(int stage)
 					cubeProbeNearestDistance = Distance(backEnd.viewParms.orientation.origin, cubeProbeNearest->origin);
 					cubeProbeSecondNearestDistance = Distance(backEnd.viewParms.orientation.origin, cubeProbeSecondNearest->origin);
 				}
-				
+
 				float interpolate = cubeProbeNearestDistance / (cubeProbeNearestDistance + cubeProbeSecondNearestDistance);
 
 				if(r_logFile->integer)
@@ -2112,7 +2113,7 @@ static void Render_vertexLighting_DBS_world(int stage)
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_world->SetPortalClipping(backEnd.viewParms.isPortal);
 	gl_vertexLightingShader_DBS_world->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
-	
+
 	gl_vertexLightingShader_DBS_world->SetDeformVertexes(tess.surfaceShader->numDeforms);
 
 	gl_vertexLightingShader_DBS_world->SetNormalMapping(normalMapping);
@@ -2121,7 +2122,7 @@ static void Render_vertexLighting_DBS_world(int stage)
 //	gl_vertexLightingShader_DBS_world->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
 	gl_vertexLightingShader_DBS_world->BindProgram();
-	
+
 	// end choose right shader program ------------------------------
 
 	// now we are ready to set the shader program uniforms
@@ -2301,12 +2302,12 @@ static void Render_lightMapping(int stage, bool asColorMap, bool normalMapping)
 	{
 		normalMapping = false;
 	}
-	
+
 	// choose right shader program ----------------------------------
-	
+
 	gl_lightMappingShader->SetPortalClipping(backEnd.viewParms.isPortal);
 	gl_lightMappingShader->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
-	
+
 	gl_lightMappingShader->SetDeformVertexes(tess.surfaceShader->numDeforms);
 
 	gl_lightMappingShader->SetNormalMapping(normalMapping);
@@ -2315,7 +2316,7 @@ static void Render_lightMapping(int stage, bool asColorMap, bool normalMapping)
 //	gl_lightMappingShader->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
 	gl_lightMappingShader->BindProgram();
-	
+
 	// end choose right shader program ------------------------------
 
 	// now we are ready to set the shader program uniforms
@@ -2418,7 +2419,7 @@ static void Render_geometricFill(int stage, bool cmap2black)
 {
 	shaderStage_t  *pStage;
 	uint32_t        stateBits;
-	vec4_t          ambientColor;
+//	vec4_t          ambientColor;
 
 	GLimp_LogComment("--- Render_geometricFill ---\n");
 
@@ -2435,10 +2436,10 @@ static void Render_geometricFill(int stage, bool cmap2black)
 	// choose right shader program ----------------------------------
 	gl_geometricFillShader->SetPortalClipping(backEnd.viewParms.isPortal);
 	gl_geometricFillShader->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
-	
+
 	gl_geometricFillShader->SetVertexSkinning(glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning);
 	gl_geometricFillShader->SetVertexAnimation(glState.vertexAttribsInterpolation > 0);
-	
+
 	gl_geometricFillShader->SetDeformVertexes(tess.surfaceShader->numDeforms);
 
 	gl_geometricFillShader->SetNormalMapping(normalMapping);
@@ -2449,7 +2450,7 @@ static void Render_geometricFill(int stage, bool cmap2black)
 //	gl_geometricFillShader->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
 	gl_geometricFillShader->BindProgram();
-	
+
 	// end choose right shader program ------------------------------
 
 	/*
@@ -2582,8 +2583,8 @@ static void Render_geometricFill(int stage, bool cmap2black)
 static void Render_depthFill(int stage)
 {
 	shaderStage_t  *pStage;
-	colorGen_t		rgbGen;
-	alphaGen_t		alphaGen;
+//	colorGen_t		rgbGen;
+//	alphaGen_t		alphaGen;
 	vec4_t			ambientColor;
 
 	GLimp_LogComment("--- Render_depthFill ---\n");
@@ -2722,8 +2723,8 @@ static void Render_shadowFill(int stage)
 
 	gl_shadowFillShader->SetRequiredVertexPointers();
 
-	
-	
+
+
 	if(r_debugShadowMaps->integer)
 	{
 		vec4_t          shadowMapColor;
@@ -2815,10 +2816,10 @@ static void Render_forwardLighting_DBS_omni(shaderStage_t * diffuseStage,
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_omniXYZ->SetPortalClipping(backEnd.viewParms.isPortal);
 	gl_forwardLightingShader_omniXYZ->SetAlphaTesting((diffuseStage->stateBits & GLS_ATEST_BITS) != 0);
-	
+
 	gl_forwardLightingShader_omniXYZ->SetVertexSkinning(glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning);
 	gl_forwardLightingShader_omniXYZ->SetVertexAnimation(glState.vertexAttribsInterpolation > 0);
-	
+
 	gl_forwardLightingShader_omniXYZ->SetDeformVertexes(tess.surfaceShader->numDeforms);
 
 	gl_forwardLightingShader_omniXYZ->SetNormalMapping(normalMapping);
@@ -2829,7 +2830,7 @@ static void Render_forwardLighting_DBS_omni(shaderStage_t * diffuseStage,
 	gl_forwardLightingShader_omniXYZ->SetShadowing(shadowCompare);
 
 	gl_forwardLightingShader_omniXYZ->BindProgram();
-	
+
 	// end choose right shader program ------------------------------
 
 	// now we are ready to set the shader program uniforms
@@ -3020,10 +3021,10 @@ static void Render_forwardLighting_DBS_proj(shaderStage_t * diffuseStage,
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_projXYZ->SetPortalClipping(backEnd.viewParms.isPortal);
 	gl_forwardLightingShader_projXYZ->SetAlphaTesting((diffuseStage->stateBits & GLS_ATEST_BITS) != 0);
-	
+
 	gl_forwardLightingShader_projXYZ->SetVertexSkinning(glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning);
 	gl_forwardLightingShader_projXYZ->SetVertexAnimation(glState.vertexAttribsInterpolation > 0);
-	
+
 	gl_forwardLightingShader_projXYZ->SetDeformVertexes(tess.surfaceShader->numDeforms);
 
 	gl_forwardLightingShader_projXYZ->SetNormalMapping(normalMapping);
@@ -3034,7 +3035,7 @@ static void Render_forwardLighting_DBS_proj(shaderStage_t * diffuseStage,
 	gl_forwardLightingShader_projXYZ->SetShadowing(shadowCompare);
 
 	gl_forwardLightingShader_projXYZ->BindProgram();
-	
+
 	// end choose right shader program ------------------------------
 
 	// now we are ready to set the shader program uniforms
@@ -3227,10 +3228,10 @@ static void Render_forwardLighting_DBS_directional(shaderStage_t * diffuseStage,
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_directionalSun->SetPortalClipping(backEnd.viewParms.isPortal);
 	gl_forwardLightingShader_directionalSun->SetAlphaTesting((diffuseStage->stateBits & GLS_ATEST_BITS) != 0);
-	
+
 	gl_forwardLightingShader_directionalSun->SetVertexSkinning(glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning);
 	gl_forwardLightingShader_directionalSun->SetVertexAnimation(glState.vertexAttribsInterpolation > 0);
-	
+
 	gl_forwardLightingShader_directionalSun->SetDeformVertexes(tess.surfaceShader->numDeforms);
 
 	gl_forwardLightingShader_directionalSun->SetNormalMapping(normalMapping);
@@ -3241,7 +3242,7 @@ static void Render_forwardLighting_DBS_directional(shaderStage_t * diffuseStage,
 	gl_forwardLightingShader_directionalSun->SetShadowing(shadowCompare);
 
 	gl_forwardLightingShader_directionalSun->BindProgram();
-	
+
 	// end choose right shader program ------------------------------
 
 	// now we are ready to set the shader program uniforms
@@ -3292,7 +3293,7 @@ static void Render_forwardLighting_DBS_directional(shaderStage_t * diffuseStage,
 #else
 	VectorCopy(light->direction, lightDirection);
 #endif
-	
+
 	VectorCopy(tess.svars.color, lightColor);
 
 	if(shadowCompare)
@@ -3447,10 +3448,10 @@ static void Render_reflection_CB(int stage)
 	// choose right shader program ----------------------------------
 	gl_reflectionShader->SetPortalClipping(backEnd.viewParms.isPortal);
 //	gl_reflectionShader->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
-	
+
 	gl_reflectionShader->SetVertexSkinning(glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning);
 	gl_reflectionShader->SetVertexAnimation(glState.vertexAttribsInterpolation > 0);
-	
+
 	gl_reflectionShader->SetDeformVertexes(tess.surfaceShader->numDeforms);
 
 	gl_reflectionShader->SetNormalMapping(normalMapping);
@@ -3458,10 +3459,10 @@ static void Render_reflection_CB(int stage)
 //	gl_reflectionShader->SetMacro_TWOSIDED(tess.surfaceShader->cullType);
 
 	gl_reflectionShader->BindProgram();
-	
+
 	// end choose right shader program ------------------------------
 
-	
+
 	gl_reflectionShader->SetUniform_ViewOrigin(backEnd.viewParms.orientation.origin); // in world space
 
 	gl_reflectionShader->SetUniform_ModelMatrix(backEnd.orientation.transformMatrix);
@@ -3567,7 +3568,7 @@ static void Render_skybox(int stage)
 
 	gl_skyboxShader->SetPortalClipping(backEnd.viewParms.isPortal);
 	gl_skyboxShader->BindProgram();
-	
+
 	gl_skyboxShader->SetUniform_ViewOrigin(backEnd.viewParms.orientation.origin);	// in world space
 
 	gl_skyboxShader->SetUniform_ModelMatrix(backEnd.orientation.transformMatrix);
@@ -3831,14 +3832,14 @@ static void Render_heatHaze(int stage)
 	// choose right shader program ----------------------------------
 	gl_heatHazeShader->SetPortalClipping(backEnd.viewParms.isPortal);
 	//gl_heatHazeShader->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
-	
+
 	gl_heatHazeShader->SetVertexSkinning(glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning);
 	gl_heatHazeShader->SetVertexAnimation(glState.vertexAttribsInterpolation > 0);
-	
+
 	gl_heatHazeShader->SetDeformVertexes(tess.surfaceShader->numDeforms);
 
 	gl_heatHazeShader->BindProgram();
-	
+
 	// end choose right shader program ------------------------------
 
 	// set uniforms
@@ -3994,10 +3995,10 @@ static void Render_fog()
 {
 	fog_t          *fog;
 	float           eyeT;
-	qboolean        eyeOutside;
+//	qboolean        eyeOutside;
 	vec3_t          local;
 	vec4_t          fogDistanceVector, fogDepthVector;
-	
+
 	//ri.Printf(PRINT_ALL, "--- Render_fog ---\n");
 
 #if defined(COMPAT_ET)
@@ -4063,6 +4064,7 @@ static void Render_fog()
 	// see if the viewpoint is outside
 	// this is needed for clipping distance even for constant fog
 
+#if 0
 	if(eyeT < 0)
 	{
 		eyeOutside = qtrue;
@@ -4071,6 +4073,7 @@ static void Render_fog()
 	{
 		eyeOutside = qfalse;
 	}
+#endif
 
 	fogDistanceVector[3] += 1.0 / 512;
 
@@ -4095,7 +4098,7 @@ static void Render_fog()
 
 	gl_fogQuake3Shader->BindProgram();
 
-	
+
 
 	gl_fogQuake3Shader->SetUniform_FogDistanceVector(fogDistanceVector);
 	gl_fogQuake3Shader->SetUniform_FogDepthVector(fogDepthVector);
@@ -4743,7 +4746,7 @@ void Tess_StageIteratorGeneric()
 			RB_FogOff();
 		}
 		else
-		{					
+		{
 			// make sure it's on
 			RB_FogOn();
 		}
@@ -4936,7 +4939,7 @@ void Tess_StageIteratorGBuffer()
 			{
 				R_BindFBO(tr.geometricRenderFBO);
 				glDrawBuffers(1, geometricRenderTargets);
-				
+
 				Render_generic(stage);
 
 				if(	tess.surfaceShader->sort <= SS_OPAQUE &&
@@ -4999,7 +5002,7 @@ void Tess_StageIteratorGBuffer()
 			{
 				R_BindFBO(tr.geometricRenderFBO);
 				glDrawBuffers(1, geometricRenderTargets);
-				
+
 				Render_reflection_CB(stage);
 				break;
 			}
@@ -5021,7 +5024,7 @@ void Tess_StageIteratorGBuffer()
 			{
 				R_BindFBO(tr.geometricRenderFBO);
 				glDrawBuffers(1, geometricRenderTargets);
-					
+
 				Render_dispersion_C(stage);
 				break;
 			}
@@ -5030,7 +5033,7 @@ void Tess_StageIteratorGBuffer()
 			{
 				R_BindFBO(tr.geometricRenderFBO);
 				glDrawBuffers(4, geometricRenderTargets);
-					
+
 				Render_skybox(stage);
 				break;
 			}
@@ -5039,7 +5042,7 @@ void Tess_StageIteratorGBuffer()
 			{
 				R_BindFBO(tr.geometricRenderFBO);
 				glDrawBuffers(1, geometricRenderTargets);
-					
+
 				Render_screen(stage);
 				break;
 			}
@@ -5147,7 +5150,7 @@ void Tess_StageIteratorGBufferNormalsOnly()
 			{
 #if 1
 				if(	tess.surfaceShader->sort <= SS_OPAQUE &&
-					!(pStage->stateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) && 
+					!(pStage->stateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) &&
 					(pStage->stateBits & (GLS_DEPTHMASK_TRUE))
 				)
 				{
@@ -5165,13 +5168,13 @@ void Tess_StageIteratorGBufferNormalsOnly()
 			case ST_DIFFUSEMAP:
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
-			{	
+			{
 #if defined(OFFSCREEN_PREPASS_LIGHTING)
 				R_BindFBO(tr.geometricRenderFBO);
 #else
 				R_BindNullFBO();
 #endif
-				
+
 				Render_geometricFill(stage, false);
 				break;
 			}

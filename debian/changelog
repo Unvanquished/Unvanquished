@@ -1,7 +1,8 @@
-unvanquished (0~git-1) unstable; urgency=low
+unvanquished (0.2.5+git7270e68-1) unstable; urgency=low
 
   * Initial packaging.
+    - Based on commit 7270e680c2700fa6dbd882adf4912d2052af9830.
   * Deps on ‘old’ cmake are intended for Debian squeeze to handle missing
     -dev packages. No libxvidcore-dev without backports...
 
- -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Thu, 08 Mar 2012 21:15:31 +0000
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Sat, 10 Mar 2012 21:40:57 +0000
