@@ -617,6 +617,7 @@ qboolean Sv_AddAddressMapping (const char* mapping)
 				  "ERROR: can't allocate address mapping strings\n");
 		free (addrmap->to_string);
 		free (addrmap->from_string);
+		free (addrmap);
 		free (map_string);
 		return qfalse;
 	}
