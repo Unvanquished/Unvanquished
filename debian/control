@@ -2,7 +2,7 @@ Source: unvanquished
 Section: contrib/games
 Priority: extra
 Maintainer: Darren Salt <linux@youmustbejoking.demon.co.uk>
-Build-Depends: debhelper (>= 8.0.0), cmake,
+Build-Depends: debhelper (>= 8.0.0), cmake, curl,
 	libcurl4-gnutls-dev,
 	libfreetype6-dev,
 	libgl1-mesa-dev,

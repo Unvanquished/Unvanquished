@@ -10,3 +10,4 @@ main					usr/lib/games/unvanquished/
 src/gamelogic/gpp/ui			usr/lib/games/unvanquished/gpp/
 
 debian/unvanquished*.sh			usr/games/
+download-pk3.sh				usr/lib/games/unvanquished/

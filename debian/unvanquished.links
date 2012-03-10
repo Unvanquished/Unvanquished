@@ -12,3 +12,5 @@
 #usr/share/games/unvanquished/base/ui		usr/lib/games/unvanquished/main/ui
 
 usr/lib/games/unvanquished/base/ui		usr/lib/games/unvanquished/main/ui
+var/lib/games/unvanquished/pak0.pk3		usr/lib/games/unvanquished/main/pak0.pk3
+var/lib/games/unvanquished/pak1.pk3		usr/lib/games/unvanquished/main/pak1.pk3

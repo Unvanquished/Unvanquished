@@ -1,0 +1,7 @@
+#!/bin/sh
+
+#DEBHELPER#
+
+if test "$1" = "configure"; then
+  /usr/games/unvanquished-download-paks.sh
+fi
