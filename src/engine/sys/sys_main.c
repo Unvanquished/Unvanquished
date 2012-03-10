@@ -645,9 +645,9 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath ,
 	if ( !*entryPoint || !dllEntry ) {
 #ifndef NDEBUG
 		if (!dllEntry)
-			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%x\" !\n", name, Sys_LibraryError() );
+			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%s\" !\n", name, Sys_LibraryError() );
 		else
-			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%x\" !\n", name, Sys_LibraryError() );
+			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%s\" !\n", name, Sys_LibraryError() );
 #else
 		if (!dllEntry)
 			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%x\" !\n", name, Sys_LibraryError() );
