@@ -692,13 +692,13 @@ int             Key_StringToKeynum( char *str );
 char           *Key_KeynumToString( int keynum );
 
 //cl_irc.c
-void			CL_OW_IRCSetup(void);
-void			CL_OW_InitIRC(void);
-void			CL_OW_IRCInitiateShutdown(void);
-void			CL_OW_IRCWaitShutdown(void);
-void			CL_OW_IRCSay(void);
-qboolean		CL_OW_IRCIsConnected(void);
-qboolean		CL_OW_IRCIsRunning(void);
+void            CL_IRCSetup(void);
+void            CL_InitIRC(void);
+void            CL_IRCInitiateShutdown(void);
+void            CL_IRCWaitShutdown(void);
+void            CL_IRCSay(void);
+qboolean        CL_IRCIsConnected(void);
+qboolean        CL_IRCIsRunning(void);
 
 //
 // cl_parse.c

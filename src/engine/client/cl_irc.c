@@ -1680,12 +1680,12 @@ static qboolean IRC_AddSendItem( qboolean is_action , const char * string ) {
 
 /*
 ==================
-CL_OW_IRCSay
+CL_IRCSay
 
 Sends an IRC message (console command).
 ==================
 */
-void CL_OW_IRCSay() {
+void CL_IRCSay() {
 	char m_sendstring[480];
 	qboolean send_result;
 
@@ -2202,7 +2202,7 @@ static void IRC_WaitThread()  {
 CL_IRCSetup
 ==================
 */
-void CL_OW_IRCSetup(void) {
+void CL_IRCSetup(void) {
 	cl_IRC_connect_at_startup = Cvar_Get( "cl_IRC_connect_at_startup" , "0" , CVAR_ARCHIVE );
 	cl_IRC_server = Cvar_Get( "cl_IRC_server" , "irc.freenode.org" , CVAR_ARCHIVE );
 	cl_IRC_channel = Cvar_Get( "cl_IRC_channel" , "unv-lobby" , CVAR_ARCHIVE );
@@ -2213,7 +2213,7 @@ void CL_OW_IRCSetup(void) {
 	cl_IRC_reconnect_delay = Cvar_Get( "cl_IRC_reconnect_delay" , "100" , CVAR_ARCHIVE );
 
 	if ( cl_IRC_connect_at_startup->value )
-		CL_OW_InitIRC( );
+		CL_InitIRC( );
 }
 
 /*
@@ -2221,7 +2221,7 @@ void CL_OW_IRCSetup(void) {
 CL_InitIRC
 ==================
 */
-void CL_OW_InitIRC(void) {
+void CL_InitIRC(void) {
 	if ( IRC_ThreadStatus != IRC_THREAD_DEAD ) {
 		Com_Printf( "...IRC thread is already running\n" );
 		return;
@@ -2236,7 +2236,7 @@ void CL_OW_InitIRC(void) {
 CL_IRCInitiateShutdown
 ==================
 */
-void CL_OW_IRCInitiateShutdown(void) {
+void CL_IRCInitiateShutdown(void) {
 	IRC_QuitRequested = qtrue;
 }
 
@@ -2245,7 +2245,7 @@ void CL_OW_IRCInitiateShutdown(void) {
 CL_IRCWaitShutdown
 ==================
 */
-void CL_OW_IRCWaitShutdown( void ) {
+void CL_IRCWaitShutdown( void ) {
 	IRC_WaitThread( );
 }
 
@@ -2254,7 +2254,7 @@ void CL_OW_IRCWaitShutdown( void ) {
 CL_IRCIsConnected
 ==================
 */
-qboolean CL_OW_IRCIsConnected(void) {
+qboolean CL_IRCIsConnected(void) {
 	// get IRC status
 	return ( IRC_ThreadStatus == IRC_THREAD_JOINED );
 }
@@ -2265,7 +2265,7 @@ qboolean CL_OW_IRCIsConnected(void) {
 CL_IRCIsRunning
 ==================
 */
-qboolean CL_OW_IRCIsRunning(void) {
+qboolean CL_IRCIsRunning(void) {
 	// return IRC status
 	return ( IRC_ThreadStatus != IRC_THREAD_DEAD );
 }

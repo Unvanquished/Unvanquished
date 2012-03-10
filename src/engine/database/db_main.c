@@ -75,7 +75,7 @@ qboolean DB_ValidateInterface( dbinterface_t *dbi ) {
 	return qtrue;
 }
 
-void OW_Init( void ) {
+void D_Init( void ) {
 	qboolean started = qfalse;
 
 	Com_Printf( "------ Initializing Database ------\n" );
@@ -103,7 +103,7 @@ void OW_Init( void ) {
 		Com_Printf( "Database Disabled.\n" );
 	} else {
 		if( strstr( db_backend->string, "MySQL" ) ) {
-			started = OW_MySQL_Init( &dbi );
+			started = D_MySQL_Init( &dbi );
 		} else {
 			Cvar_Set( "db_enable", "0" );
 			Com_Printf( "Database was set enabled but no valid backend specified.\n" );
@@ -136,7 +136,7 @@ void OW_Init( void ) {
 	Com_Printf( "-----------------------------------\n" );
 }
 
-void OW_Shutdown( void ) {
+void D_Shutdown( void ) {
 	if( dbi.DBDisconnect ) {
 		dbi.DBDisconnect();
 		Cvar_Set( "db_statusmaster", "0" );
@@ -144,7 +144,7 @@ void OW_Shutdown( void ) {
 	}
 }
 
-void OW_Connect( void ) {
+void D_Connect( void ) {
 	// MySQL Master Server
 	if( dbi.DBConnectMaster ) {
 		dbi.DBConnectMaster();
@@ -159,13 +159,13 @@ void OW_Connect( void ) {
 
 }
 
-void OW_Status( void ) {
+void D_Status( void ) {
 	if( dbi.DBStatus ) {
 		dbi.DBStatus();
 	}
 }
 
-void OW_Disconnect( void ) {
+void D_Disconnect( void ) {
 	if( dbi.DBDisconnect ) {
 		dbi.DBDisconnect();
 		Cvar_Set( "db_statusmaster", "0" );
@@ -173,67 +173,67 @@ void OW_Disconnect( void ) {
 	}
 }
 
-int OW_RunQuery( const char *query ) {
+int D_RunQuery( const char *query ) {
 	if( dbi.RunQuery ) {
 		return dbi.RunQuery( query );
 	}
 	return -1;
 }
 
-void OW_FinishQuery( int queryid ) {
+void D_FinishQuery( int queryid ) {
 	if( dbi.FinishQuery ) {
 		dbi.FinishQuery( queryid );
 	}
 }
 
-qboolean OW_NextRow( int queryid ) {
+qboolean D_NextRow( int queryid ) {
 	if( dbi.NextRow ) {
 		return dbi.NextRow( queryid );
 	}
 	return qfalse;
 }
 
-int OW_RowCount( int queryid ) {
+int D_RowCount( int queryid ) {
 	if( dbi.RowCount ) {
 		return dbi.RowCount( queryid );
 	}
 	return 0;
 }
 
-void OW_GetFieldByID( int queryid, int fieldid, char *buffer, int len ) {
+void D_GetFieldByID( int queryid, int fieldid, char *buffer, int len ) {
 	if( dbi.GetFieldByID ) {
 		dbi.GetFieldByID( queryid, fieldid, buffer, len );
 	}
 }
 
-void OW_GetFieldByName( int queryid, const char *name, char *buffer, int len ) {
+void D_GetFieldByName( int queryid, const char *name, char *buffer, int len ) {
 	if( dbi.GetFieldByName ) {
 		dbi.GetFieldByName( queryid, name, buffer, len );
 	}
 }
 
-int OW_GetFieldByID_int( int queryid, int fieldid ) {
+int D_GetFieldByID_int( int queryid, int fieldid ) {
 	if( dbi.GetFieldByID_int ) {
 		return dbi.GetFieldByID_int( queryid, fieldid );
 	}
   return 0;
 }
 
-int OW_GetFieldByName_int( int queryid, const char *name ) {
+int D_GetFieldByName_int( int queryid, const char *name ) {
 	if( dbi.GetFieldByName_int ) {
 		return dbi.GetFieldByName_int( queryid, name );
 	}
   return 0;
 }
 
-int OW_FieldCount( int queryid ) {
+int D_FieldCount( int queryid ) {
 	if( dbi.FieldCount ) {
 		return dbi.FieldCount( queryid );
 	}
   return 0;
 }
 
-void OW_CleanString( const char *in, char *out, int len ) {
+void D_CleanString( const char *in, char *out, int len ) {
 	if( dbi.CleanString ) {
 		dbi.CleanString( in, out, len );
 	}

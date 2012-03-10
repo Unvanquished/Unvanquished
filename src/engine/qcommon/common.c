@@ -3363,7 +3363,7 @@ void Com_Init(char *commandLine)
 	}
 
 #ifdef ET_MYSQL
-	OW_Init();
+	D_Init();
 #endif
 
 #if defined(USE_HTTP)
@@ -3819,7 +3819,7 @@ void Com_Shutdown(qboolean badProfile)
 
 #ifdef ET_MYSQL
 	// shut down SQL
-	OW_Shutdown();
+	D_Shutdown();
 #endif
 
 #if defined(USE_HTTP)

@@ -46,7 +46,7 @@ typedef struct {
 
 db_MySQL_querylist_t querylist[ MAX_QUERYS_RESULTS ];
 
-int OW_MySQL_GetFreeQueryID( void ) {
+int D_MySQL_GetFreeQueryID( void ) {
 	int i;
  
 	for( i = 0; i < MAX_QUERYS_RESULTS; i++ ) {
@@ -57,27 +57,27 @@ int OW_MySQL_GetFreeQueryID( void ) {
 	return -1;
 }
 
-qboolean OW_MySQL_Init( dbinterface_t *dbi ) {
-	dbi->DBConnectMaster = OW_MySQL_ConnectMaster;
-	dbi->DBConnectSlave = OW_MySQL_ConnectSlave;
-	dbi->DBStatus= OW_MySQL_DBStatus;
-	dbi->DBDisconnect = OW_MySQL_Disconnect;
+qboolean D_MySQL_Init( dbinterface_t *dbi ) {
+	dbi->DBConnectMaster = D_MySQL_ConnectMaster;
+	dbi->DBConnectSlave = D_MySQL_ConnectSlave;
+	dbi->DBStatus= D_MySQL_DBStatus;
+	dbi->DBDisconnect = D_MySQL_Disconnect;
 
-	dbi->DBCreateTable = OW_MySQL_CreateTable;
+	dbi->DBCreateTable = D_MySQL_CreateTable;
 
-	dbi->RunQuery = OW_MySQL_RunQuery;
-	dbi->FinishQuery = OW_MySQL_FinishQuery;
+	dbi->RunQuery = D_MySQL_RunQuery;
+	dbi->FinishQuery = D_MySQL_FinishQuery;
 
-	dbi->NextRow = OW_MySQL_NextRow;
-	dbi->RowCount = OW_MySQL_RowCount;
+	dbi->NextRow = D_MySQL_NextRow;
+	dbi->RowCount = D_MySQL_RowCount;
 
-	dbi->GetFieldByID = OW_MySQL_GetFieldByID;
-	dbi->GetFieldByName = OW_MySQL_GetFieldByName;
-	dbi->GetFieldByID_int = OW_MySQL_GetFieldByID_int;
-	dbi->GetFieldByName_int = OW_MySQL_GetFieldByName_int;
-	dbi->FieldCount = OW_MySQL_FieldCount;
+	dbi->GetFieldByID = D_MySQL_GetFieldByID;
+	dbi->GetFieldByName = D_MySQL_GetFieldByName;
+	dbi->GetFieldByID_int = D_MySQL_GetFieldByID_int;
+	dbi->GetFieldByName_int = D_MySQL_GetFieldByName_int;
+	dbi->FieldCount = D_MySQL_FieldCount;
 
-	dbi->CleanString = OW_MySQL_CleanString;
+	dbi->CleanString = D_MySQL_CleanString;
 
 	return qtrue;
 }
@@ -86,7 +86,7 @@ qboolean OW_MySQL_Init( dbinterface_t *dbi ) {
 // MYSQL Connecting related functions
 //
 
-void OW_MySQL_ConnectMaster( void ) {
+void D_MySQL_ConnectMaster( void ) {
 	//init mysql
 	connection = mysql_init( connection );
 
@@ -104,12 +104,12 @@ void OW_MySQL_ConnectMaster( void ) {
 		return;
 	}
 
-	OW_MySQL_CreateTable();
+	D_MySQL_CreateTable();
 
 	Com_Printf( "MySQL Master Server Loaded.\n" );
 }
 
-void OW_MySQL_ConnectSlave( void ) {
+void D_MySQL_ConnectSlave( void ) {
 
 	//init mysql
 	connection = mysql_init( connection );
@@ -129,16 +129,15 @@ void OW_MySQL_ConnectSlave( void ) {
 
 	}
 
-	// Dushan - moved creating databases after connecting to MySQL
-	OW_MySQL_CreateTable();
+	D_MySQL_CreateTable();
 
 	Com_Printf( "MySQL Slave Server Loaded.\n" );
 }
 
-void OW_MySQL_DBStatus( void ) {
+void D_MySQL_DBStatus( void ) {
 }
 
-void OW_MySQL_Disconnect( void ) {
+void D_MySQL_Disconnect( void ) {
 	int i;
 	
 	//clear all results
@@ -161,10 +160,10 @@ void OW_MySQL_Disconnect( void ) {
 // MYSQL Query related functions
 //
 
-int OW_MySQL_RunQuery( const char *query ) {
+int D_MySQL_RunQuery( const char *query ) {
 	int queryid;
 
-	queryid = OW_MySQL_GetFreeQueryID();
+	queryid = D_MySQL_GetFreeQueryID();
 
 	if( queryid >= 0 ) {
 		if( connection ) {
@@ -184,7 +183,7 @@ int OW_MySQL_RunQuery( const char *query ) {
 	return -1;
 }
 
-void OW_MySQL_FinishQuery( int queryid ) {
+void D_MySQL_FinishQuery( int queryid ) {
 	if( querylist[ queryid ].results ) {
 		mysql_free_result( querylist[ queryid ].results );
 		querylist[ queryid ].results = NULL;
@@ -196,7 +195,7 @@ void OW_MySQL_FinishQuery( int queryid ) {
 // MYSQL ROW related functions
 //
 
-qboolean OW_MySQL_NextRow( int queryid ) {
+qboolean D_MySQL_NextRow( int queryid ) {
 	if( querylist[ queryid ].results ) {
 		//get next row
 		querylist[ queryid ].row = mysql_fetch_row( querylist[ queryid ].results );
@@ -209,7 +208,7 @@ qboolean OW_MySQL_NextRow( int queryid ) {
 	return qfalse;
 }
 
-int OW_MySQL_RowCount( int queryid ) {
+int D_MySQL_RowCount( int queryid ) {
 	if( querylist[ queryid ].results )
 		return mysql_num_rows( querylist[ queryid ].results );
 	return 0;
@@ -219,7 +218,7 @@ int OW_MySQL_RowCount( int queryid ) {
 // MYSQL Field related functions
 //
 
-void OW_MySQL_GetFieldByID( int queryid, int fieldid, char *buffer, int len ) {
+void D_MySQL_GetFieldByID( int queryid, int fieldid, char *buffer, int len ) {
 	if( querylist[ queryid ].row[ fieldid ] ) {
 		Q_strncpyz( buffer, querylist[ queryid ].row[ fieldid ], len );
 	}
@@ -228,7 +227,7 @@ void OW_MySQL_GetFieldByID( int queryid, int fieldid, char *buffer, int len ) {
 	}
 }
 
-void OW_MySQL_GetFieldByName( int queryid, const char *name, char *buffer, int len ) {
+void D_MySQL_GetFieldByName( int queryid, const char *name, char *buffer, int len ) {
 	MYSQL_FIELD *fields;
 	int num_fields;
 	int i;
@@ -251,7 +250,7 @@ void OW_MySQL_GetFieldByName( int queryid, const char *name, char *buffer, int l
 	}
 }
 
-int OW_MySQL_GetFieldByID_int( int queryid, int fieldid ) {
+int D_MySQL_GetFieldByID_int( int queryid, int fieldid ) {
 	if( querylist[ queryid ].row[ fieldid ] ) {
 		return atoi( querylist[ queryid ].row[ fieldid ] );
 	}
@@ -262,7 +261,7 @@ int OW_MySQL_GetFieldByID_int( int queryid, int fieldid ) {
 	return 0;
 }
 
-int OW_MySQL_GetFieldByName_int( int queryid, const char *name ) {
+int D_MySQL_GetFieldByName_int( int queryid, const char *name ) {
 	MYSQL_FIELD *fields;
 	int num_fields;
 	int i;
@@ -285,7 +284,7 @@ int OW_MySQL_GetFieldByName_int( int queryid, const char *name ) {
 	return 0;
 }
 
-int OW_MySQL_FieldCount( int queryid ) {
+int D_MySQL_FieldCount( int queryid ) {
 	if( querylist[ queryid ].results ) {
 		return mysql_num_fields( querylist[ queryid ].results );
 	}
@@ -296,7 +295,7 @@ int OW_MySQL_FieldCount( int queryid ) {
 // MYSQL Misc functions
 //
 
-void OW_MySQL_CleanString( const char *in, char *out, int len ) {
+void D_MySQL_CleanString( const char *in, char *out, int len ) {
 	if( connection && len > 0 && in[0] ) {
 		mysql_real_escape_string( connection, out, in, len );
 	}
@@ -306,7 +305,7 @@ void OW_MySQL_CleanString( const char *in, char *out, int len ) {
 // MYSQL Create database
 //
 
-void OW_MySQL_CreateTable( void ) {
+void D_MySQL_CreateTable( void ) {
 
 	if( db_enable->integer == 1 ) {
 

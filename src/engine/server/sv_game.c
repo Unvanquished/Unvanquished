@@ -1156,37 +1156,37 @@ intptr_t SV_GameSystemCalls(intptr_t * args) {
 
 #if defined(ET_MYSQL)
         case G_SQL_RUNQUERY:
-                return OW_RunQuery( VMA(1) );
+                return D_RunQuery( VMA(1) );
 
         case G_SQL_FINISHQUERY:
-                OW_FinishQuery( args[1] );
+                D_FinishQuery( args[1] );
                 return 0;
 
         case G_SQL_NEXTROW:
-                return OW_NextRow( args[1] );
+                return D_NextRow( args[1] );
 
         case G_SQL_ROWCOUNT:
-                return OW_RowCount( args[1] );
+                return D_RowCount( args[1] );
 
         case G_SQL_GETFIELDBYID:
-                OW_GetFieldByID( args[1], args[2], VMA(3), args[4]  );
+                D_GetFieldByID( args[1], args[2], VMA(3), args[4]  );
                 return 0;
 
         case G_SQL_GETFIELDBYNAME:
-                OW_GetFieldByName( args[1], VMA(2), VMA(3), args[4] );
+                D_GetFieldByName( args[1], VMA(2), VMA(3), args[4] );
                 return 0;
 
         case G_SQL_GETFIELDBYID_INT:
-                return OW_GetFieldByID_int( args[1], args[2] );
+                return D_GetFieldByID_int( args[1], args[2] );
 
         case G_SQL_GETFIELDBYNAME_INT:
-                return OW_GetFieldByName_int( args[1], VMA(2) );
+                return D_GetFieldByName_int( args[1], VMA(2) );
 
         case G_SQL_FIELDCOUNT:
-                return OW_FieldCount( args[1] );
+                return D_FieldCount( args[1] );
 
         case G_SQL_CLEANSTRING:
-                OW_CleanString( VMA(1), VMA(2), args[3] );
+                D_CleanString( VMA(1), VMA(2), args[3] );
                 return 0;
 #endif
 		case G_RSA_GENMSG:

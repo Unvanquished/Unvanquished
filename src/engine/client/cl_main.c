@@ -4769,7 +4769,7 @@ void CL_Init(void)
 
 	CL_InitInput();
 
-	CL_OW_IRCSetup();
+	CL_IRCSetup();
 
 	//
 	// register our variables
@@ -5020,9 +5020,9 @@ void CL_Init(void)
 	Cmd_AddCommand("fs_openedList", CL_OpenedPK3List_f);
 	Cmd_AddCommand("fs_referencedList", CL_ReferencedPK3List_f);
 
-	Cmd_AddCommand ("irc_connect", CL_OW_InitIRC);
-	Cmd_AddCommand ("irc_quit", CL_OW_IRCInitiateShutdown);
-	Cmd_AddCommand ("irc_say", CL_OW_IRCSay);
+	Cmd_AddCommand ("irc_connect", CL_InitIRC);
+	Cmd_AddCommand ("irc_quit", CL_IRCInitiateShutdown);
+	Cmd_AddCommand ("irc_say", CL_IRCSay);
 
 	// Ridah, startup-caching system
 	Cmd_AddCommand("cache_startgather", CL_Cache_StartGather_f);
@@ -5113,7 +5113,7 @@ void CL_Shutdown(void) {
 	DL_Shutdown();
 	CL_ShutdownRef();
 
-	CL_OW_IRCInitiateShutdown();
+	CL_IRCInitiateShutdown();
 
 	CL_ShutdownUI();
 
@@ -5150,7 +5150,7 @@ void CL_Shutdown(void) {
 	Cmd_RemoveCommand("wav_stoprecord");
 	// done.
 
-	CL_OW_IRCWaitShutdown( );
+	CL_IRCWaitShutdown( );
 
 	Cvar_Set("cl_running", "0");
 
