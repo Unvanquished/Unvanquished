@@ -1558,14 +1558,23 @@ void S_FreeOldestSound() {
 	sfx->soundData = NULL;
 }
 
-int S_GetSoundLength( sfxHandle_t sfxHandle ) {
+/*
+======================
+S_GetCurrentSoundTime
+For looped sound synchronisation
+======================
+*/
+int SOrig_GetCurrentSoundTime( void ) {
+	return s_soundtime + dma.speed;
+}
+
+int SOrig_GetSoundLength( sfxHandle_t sfxHandle ) {
 	if ( sfxHandle < 0 || sfxHandle >= s_numSfx ) {
 		Com_DPrintf( S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfxHandle );
 		return -1;
 	}
 	return (int)( (float)s_knownSfx[ sfxHandle ].soundLength / dma.speed * 1000.0 );
 }
-
 
 #ifdef USE_VOIP
 void SOrig_StartCapture( void ) {

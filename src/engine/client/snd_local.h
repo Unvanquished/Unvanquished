@@ -166,6 +166,8 @@ extern	vec3_t	listener_right;
 extern	vec3_t	listener_up;
 extern	dma_t	dma;
 
+extern unsigned char s_entityTalkAmplitude[MAX_CLIENTS];
+
 #define	MAX_RAW_SAMPLES	16384
 extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
@@ -191,6 +193,8 @@ portable_samplepair_t *S_GetRawSamplePointer();
 
 // spatializes a channel
 void S_Spatialize(channel_t *ch);
+
+int S_GetVoiceAmplitude( int entityNum );
 
 // adpcm functions
 int  S_AdpcmMemoryNeeded( const wavinfo_t *info );
@@ -236,6 +240,8 @@ void SOrig_BeginRegistration( void );
 sfxHandle_t SOrig_RegisterSound( const char *sample, qboolean compressed );
 void SOrig_ClearSoundBuffer( void );
 int SOrig_SoundDuration( sfxHandle_t handle );
+int SOrig_GetVoiceAmplitude( int entnum );
+int SOrig_GetSoundLength( sfxHandle_t sfxHandle );
 
 #if defined(USE_VOIP)
 void SOrig_StartCapture( void );
@@ -244,3 +250,5 @@ void SOrig_Capture( int samples, byte *data );
 void SOrig_StopCapture( void );
 void SOrig_MasterGain( float gain );
 #endif
+
+int SOrig_GetCurrentSoundTime ( void );

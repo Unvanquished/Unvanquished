@@ -52,7 +52,8 @@ struct sfx_s
 	qboolean	isLocked;	// Sound is locked (can not be unloaded)
 	int			used;		// Time last used
 	sfx_t 		*next;		// Next entry in hash list
-	int         duration;
+	int			duration;
+	snd_info_t	info;		// information for this sound like rate, sample count..
 };
 
 static qboolean al_buffer_inited = qfalse;
@@ -328,4 +329,31 @@ ALuint al_buf_get(sfxHandle_t sfx)
 char *al_buf_get_name(sfxHandle_t sfx)
 {
 	return knownSfx[sfx].filename;
+}
+
+/*
+======================
+S_GetCurrentSoundTime
+Returns how long the sound lasts in milliseconds
+======================
+*/
+int SndAl_GetSoundLength( sfxHandle_t sfxHandle )
+{
+	if ( sfxHandle < 0 || sfxHandle >= numSfx )
+	{
+		si.Printf( PRINT_WARNING, "S_StartSound: handle %i out of range\n", sfxHandle );
+		return -1;
+	}
+	return (int)(( (float)knownSfx[sfxHandle].info.samples / (float)knownSfx[sfxHandle].info.rate ) * 1000.0f);
+}
+
+/*
+======================
+S_GetCurrentSoundTime
+Returns how long the sound lasts in milliseconds
+======================
+*/
+int SndAl_GetCurrentSoundTime( void )
+{
+	return si.Milliseconds();
 }

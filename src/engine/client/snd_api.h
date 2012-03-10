@@ -88,6 +88,9 @@ typedef struct
 	void (*StopCapture)( void );
 	void (*MasterGain)( float gain );
 #endif
+	int (*GetVoiceAmplitude) ( int entnum );
+	int (*GetSoundLength)( sfxHandle_t sfxHandle );
+	int (*GetCurrentSoundTime) ( void );
 } sndexport_t;
 
 // Imported functions

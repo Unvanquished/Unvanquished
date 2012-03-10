@@ -263,6 +263,14 @@ void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
 		se->StartSound(origin, entnum, entchannel, sfx);
 }
 
+void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
+{
+	if(useBuiltin)
+		SOrig_StartSound(origin, entnum, entchannel, sfx);
+	else if(se)
+		se->StartSound(origin, entnum, entchannel, sfx);
+}
+
 void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 {
 	if(useBuiltin)
@@ -409,6 +417,34 @@ int S_SoundDuration( sfxHandle_t handle )
 		return 0;
 }
 
+/*
+=================
+S_GetVoiceAmplitude
+=================
+*/
+int S_GetVoiceAmplitude( int entnum ) {
+	if(useBuiltin)
+		return SOrig_GetVoiceAmplitude( entnum );
+	else if(se)
+		return se->GetVoiceAmplitude( entnum );
+	else
+		return 0;	
+}
+
+/*
+=================
+S_GetSoundLength
+=================
+*/
+int S_GetSoundLength( sfxHandle_t sfxHandle ) {
+	if(useBuiltin)
+		return SOrig_GetSoundLength( sfxHandle );
+	else if(se)
+		return se->GetSoundLength( sfxHandle );
+	else
+		return 0;	
+}
+
 #ifdef USE_VOIP
 void S_StartCapture( void ) {
 	if(useBuiltin)
@@ -447,3 +483,17 @@ void S_MasterGain( float gain ) {
 		se->MasterGain( gain );
 }
 #endif
+
+/*
+=================
+S_GetCurrentSoundTime
+=================
+*/
+int S_GetCurrentSoundTime( void ) {
+	if(useBuiltin)
+		return SOrig_GetCurrentSoundTime();
+	else if(se)
+		return se->GetCurrentSoundTime();
+	else
+		return 0;
+}

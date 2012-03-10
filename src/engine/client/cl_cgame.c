@@ -768,23 +768,15 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 		case CG_CM_TRANSFORMEDPOINTCONTENTS:
 			return CM_TransformedPointContents(VMA(1), args[2], VMA(3), VMA(4));
 		case CG_CM_BOXTRACE:
-//      numtraces++;
-			//CM_BoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule */ qfalse);
 			CM_BoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], TT_AABB);
 			return 0;
 		case CG_CM_TRANSFORMEDBOXTRACE:
-//      numtraces++;
-			//CM_TransformedBoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9), /*int capsule */ qfalse);
 			CM_TransformedBoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9), TT_AABB);
 			return 0;
 		case CG_CM_CAPSULETRACE:
-//      numtraces++;
-			//CM_BoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule */ qtrue);
 			CM_BoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], TT_CAPSULE);
 			return 0;
 		case CG_CM_TRANSFORMEDCAPSULETRACE:
-//      numtraces++;
-			//CM_TransformedBoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9),	/*int capsule */ qtrue);
 			CM_TransformedBoxTrace(VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9), TT_CAPSULE);
 			return 0;
 		case CG_CM_BISPHERETRACE:
@@ -805,24 +797,17 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 
 		case CG_S_STARTSOUND:
 			S_StartSound( VMA(1), args[2], args[3], args[4] );
-			//S_StartSound(VMA(1), args[2], args[3], args[4], args[5]);
 			return 0;
-//----(SA)  added
 		case CG_S_STARTSOUNDEX:
-			// FIXME
-			//S_StartSoundEx(VMA(1), args[2], args[3], args[4], args[5], args[6]);
+			S_StartSoundEx(VMA(1), args[2], args[3], args[4]);
 			return 0;
-//----(SA)  end
 		case CG_S_STARTLOCALSOUND:
-			//S_StartLocalSound(args[1], args[2], args[3]);
 			S_StartLocalSound( args[1], args[2] );
 			return 0;
 		case CG_S_CLEARLOOPINGSOUNDS:
-			//S_ClearLoopingSounds();
 			S_ClearLoopingSounds(args[1]);
 			return 0;
 		case CG_S_CLEARSOUNDS:
-			// FIXME
 			/*if(args[1] == 0)
 			{
 				S_ClearSounds(qtrue, qfalse);
@@ -833,12 +818,9 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			}*/
 			return 0;
 		case CG_S_ADDLOOPINGSOUND:
-			// FIXME MrE: handling of looping sounds changed
-			//S_AddLoopingSound(VMA(1), VMA(2), args[3], args[4], args[5], args[6]);
 			S_AddLoopingSound( args[1], VMA(2), VMA(3), args[4] );
 			return 0;
 		case CG_S_ADDREALLOOPINGSOUND:
-			//S_AddRealLoopingSound(VMA(1), VMA(2), args[3], args[4], args[5], args[6]);
 			S_AddRealLoopingSound( args[1], VMA(2), VMA(3), args[4] );
 			return 0;
 		case CG_S_STOPLOOPINGSOUND:
@@ -851,22 +833,14 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 		case CG_S_UPDATEENTITYPOSITION:
 			S_UpdateEntityPosition(args[1], VMA(2));
 			return 0;
-// Ridah, talking animations
 		case CG_S_GETVOICEAMPLITUDE:
-			// FIXME
-			//return S_GetVoiceAmplitude(args[1]);
-			return 0;
-// done.
+			return S_GetVoiceAmplitude(args[1]);
 		case CG_S_GETSOUNDLENGTH:
-			// FIXME
-			//return S_GetSoundLength(args[1]);
-			return 0;
+			return S_GetSoundLength(args[1]);
 
 			// ydnar: for looped sound starts
 		case CG_S_GETCURRENTSOUNDTIME:
-			// FIXME
-			//return S_GetCurrentSoundTime();
-			return 0;
+			return S_GetCurrentSoundTime();
 
 		case CG_S_RESPATIALIZE:
 			S_Respatialize(args[1], VMA(2), VMA(3), args[4]);
@@ -947,24 +921,15 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 		case CG_R_ADDPOLYTOSCENE:
 			re.AddPolyToScene(args[1], args[2], VMA(3));
 			return 0;
-			// Ridah
 		case CG_R_ADDPOLYSTOSCENE:
 			re.AddPolysToScene(args[1], args[2], VMA(3), args[4]);
 			return 0;
 		case CG_R_ADDPOLYBUFFERTOSCENE:
 			re.AddPolyBufferToScene(VMA(1));
 			break;
-			// done.
-//  case CG_R_LIGHTFORPOINT:
-//      return re.LightForPoint( VMA(1), VMA(2), VMA(3), VMA(4) );
 		case CG_R_ADDLIGHTTOSCENE:
-			// ydnar: new dlight code
-			//% re.AddLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), args[6] );
 			re.AddLightToScene(VMA(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), args[7], args[8]);
 			return 0;
-//  case CG_R_ADDADDITIVELIGHTTOSCENE:
-//      re.AddAdditiveLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
-//      return 0;
 		case CG_R_ADDADDITIVELIGHTTOSCENE:
 			re.AddAdditiveLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
 			return 0;
