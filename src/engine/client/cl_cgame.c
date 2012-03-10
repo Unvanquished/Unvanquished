@@ -713,12 +713,9 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 // 			Cmd_ArgsBuffer(VMA(1), args[2]);
 			return 0;
 		case CG_GETDEMOSTATE:
-			//return CL_DemoState( );
-			// FIXME
-			return 0;
+			return CL_DemoState( );
 		case CG_GETDEMOPOS:
-			//return CL_DemoPos( );
-			return 0;
+			return CL_DemoPos( );
 		case CG_FS_FOPENFILE:
 			return FS_FOpenFileByMode(VMA(1), VMA(2), args[3]);
 		case CG_FS_READ:
@@ -1209,9 +1206,7 @@ intptr_t CL_CgameSystemCalls(intptr_t * args)
 			re.Finish();
 			return 0;
 		case CG_GETDEMONAME:
-			// FIXME
-			//CL_DemoName( VMA(1), args[2] );
-			return 0;
+			CL_DemoName( VMA(1), args[2] );
 		case CG_R_LIGHTFORPOINT:
 			return re.LightForPoint( VMA(1), VMA(2), VMA(3), VMA(4) );
 		case CG_S_SOUNDDURATION:
