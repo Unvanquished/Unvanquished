@@ -180,7 +180,7 @@ qboolean SndAl_Init(void)
 	s_doppler = si.Cvar_Get ("s_doppler", "1", CVAR_ARCHIVE);
 
 	// New console variables
-	s_precache = si.Cvar_Get ("al_precache", "0", CVAR_ARCHIVE);
+	s_precache = si.Cvar_Get ("al_precache", "1", CVAR_ARCHIVE);
 	s_gain = si.Cvar_Get ("al_gain", "0.4", CVAR_ARCHIVE);
 	s_sources = si.Cvar_Get ("al_sources", "64", CVAR_ARCHIVE);
 	s_dopplerFactor = si.Cvar_Get ("al_dopplerfactor", "1.0", CVAR_ARCHIVE);
