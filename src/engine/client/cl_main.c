@@ -36,8 +36,6 @@ Maryland 20850 USA.
 
 #include "client.h"
 #include <limits.h>
-#include <zlib.h>
-#include <png.h>
 
 #ifdef ET_MYSQL
 #include "../database/database.h"
@@ -2462,10 +2460,6 @@ void CL_Vid_Restart_f(void)
 		Hunk_ClearToMark();
 	}
 
-#ifdef _WIN32
-	CL_InitOpenGLExt();
-#endif
-
 	// startup all the client stuff
 	CL_StartHunkUsers();
 
@@ -4576,124 +4570,6 @@ void CL_InitRef(const char *renderer)
 	Cvar_Set("cl_paused", "0");
 }
 
-#if defined(_WIN32)
-static cvar_t  *cl_openzlib = NULL;
-static void    *openzlib = NULL;
-
-/*
-============
-CL_InitZLIB
-============
-*/
-void CL_InitZLIB(void) {
-	char dllName[MAX_OSPATH];
-
-	Com_Printf("----- Initializing ZLIB Library - %s Version ---- \n", ZLIB_VERSION);
-
-	cl_openzlib = Cvar_Get("cl_openzlib", "wapi", CVAR_CHEAT);
-
-	Com_sprintf(dllName, sizeof(dllName), DLL_PREFIX "zlib%s" DLL_EXT, cl_openzlib->string);
-
-	Com_Printf("Loading \"%s\"...", dllName);
-	if((openzlib = Sys_LoadLibrary(dllName)) == 0) {
-		char fn[1024];
-
-		Q_strncpyz(fn, Sys_Cwd(), sizeof(fn));
-		strncat(fn, "/", sizeof(fn) - strlen(fn) - 1);
-		strncat(fn, dllName, sizeof(fn) - strlen(fn) - 1);
-
-		Com_Printf("Loading \"%s\"...", fn);
-		if((openzlib = Sys_LoadLibrary(fn)) == 0) {
-			Com_Error(ERR_FATAL, "failed:\n\"%s\"", Sys_LibraryError());
-		}
-	}
-
-	Com_Printf("done\n");
-}
-
-static cvar_t  *cl_openpng = NULL;
-static void    *openpng = NULL;
-
-/*
-============
-CL_InitPNG
-============
-*/
-void CL_InitPNG(void) {
-	char dllName[MAX_OSPATH];
-
-	Com_Printf("----- Initializing PNG Library - %s Version ----\n", PNG_LIBPNG_VER_STRING);
-
-	cl_openpng = Cvar_Get("cl_openpng", "14-14", CVAR_CHEAT);
-
-	Com_sprintf(dllName, sizeof(dllName), DLL_PREFIX "libpng%s" DLL_EXT, cl_openpng->string);
-
-	Com_Printf("Loading \"%s\"...", dllName);
-	if((openpng = Sys_LoadLibrary(dllName)) == 0) {
-		char fn[1024];
-
-		Q_strncpyz(fn, Sys_Cwd(), sizeof(fn));
-		strncat(fn, "/", sizeof(fn) - strlen(fn) - 1);
-		strncat(fn, dllName, sizeof(fn) - strlen(fn) - 1);
-
-		Com_Printf("Loading \"%s\"...", fn);
-		if((openpng = Sys_LoadLibrary(fn)) == 0) {
-			Com_Error(ERR_FATAL, "failed:\n\"%s\"", Sys_LibraryError());
-		}
-	}
-
-	Com_Printf("done\n");
-}
-
-static cvar_t  *cl_opengletxr = NULL;
-static void    *opengletx = NULL;
-
-/*
-============
-CL_InitOpenGLExt
-============
-*/
-void CL_InitOpenGLExt(void) {
-	char dllName[MAX_OSPATH];
-
-	Com_Printf("----- Initializing OpenGL Extension Library ----\n");
-
-#if defined (_DEBUG)
-#ifdef _WIN64
-	cl_opengletxr = Cvar_Get("cl_opengletxr", "64d", CVAR_LATCH);
-#else
-	cl_opengletxr = Cvar_Get("cl_opengletxr", "32d", CVAR_LATCH);
-#endif
-#endif
-
-#if !defined (_DEBUG)
-#ifdef _WIN64
-	cl_opengletxr = Cvar_Get("cl_opengletxr", "64", CVAR_LATCH);
-#else
-	cl_opengletxr = Cvar_Get("cl_opengletxr", "32", CVAR_LATCH);
-#endif
-#endif
-
-	Com_sprintf(dllName, sizeof(dllName), DLL_PREFIX "glew%s" DLL_EXT, cl_opengletxr->string);
-
-	Com_Printf("Loading \"%s\"...", dllName);
-	if((opengletx = Sys_LoadLibrary(dllName)) == 0) {
-		char fn[1024];
-
-		Q_strncpyz(fn, Sys_Cwd(), sizeof(fn));
-		strncat(fn, "/", sizeof(fn) - strlen(fn) - 1);
-		strncat(fn, dllName, sizeof(fn) - strlen(fn) - 1);
-
-		Com_Printf("Loading \"%s\"...", fn);
-		if((opengletx = Sys_LoadLibrary(fn)) == 0) {
-			Com_Error(ERR_FATAL, "failed:\n\"%s\"", Sys_LibraryError());
-		}
-	}
-
-	Com_Printf("done\n");
-}
-#endif
-
 /*
 ============
 CL_ShutdownRef
@@ -5187,12 +5063,6 @@ void CL_Init(void)
 	Cmd_AddCommand("video", CL_Video_f);
 	Cmd_AddCommand("stopvideo", CL_StopVideo_f);
 // XreaL END
-
-#ifdef _WIN32
-	CL_InitZLIB();
-	CL_InitPNG();
-	CL_InitOpenGLExt();
-#endif
 
 	SCR_Init();
 

@@ -600,9 +600,6 @@ int             CL_GetPingQueueCount(void);
 
 void            CL_ShutdownRef(void);
 void            CL_InitRef(const char *renderer);
-void            CL_InitOpenGLExt(void);
-void            CL_InitPNG(void);
-void            CL_InitZLIB(void);
 
 int             CL_ServerStatus(char *serverAddress, char *serverStatusString, int maxLen);
 
