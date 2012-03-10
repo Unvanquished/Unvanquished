@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
+#include "../database/database.h"
 #include <setjmp.h>
 
 // htons
@@ -3360,6 +3361,10 @@ void Com_Init(char *commandLine)
 #endif
 	}
 
+#ifdef ET_MYSQL
+	OW_Init();
+#endif
+
 #if defined(USE_HTTP)
 	Net_HTTP_Init();
 #endif
@@ -3810,6 +3815,11 @@ void Com_Shutdown(qboolean badProfile)
 		FS_FCloseFile(com_journalFile);
 		com_journalFile = 0;
 	}
+
+#ifdef ET_MYSQL
+	// shut down SQL
+	OW_Shutdown();
+#endif
 
 #if defined(USE_HTTP)
 	Net_HTTP_Kill();

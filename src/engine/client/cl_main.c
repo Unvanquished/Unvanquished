@@ -5071,10 +5071,6 @@ void CL_Init(void)
 
 	Cvar_Get("cl_guid", Com_MD5File(GUIDKEY_FILE, 0), CVAR_USERINFO | CVAR_ROM);
 
-#ifdef ET_MYSQL
-	OW_Init();
-#endif
-
 	// DHM - Nerve
 	autoupdateChecked = qfalse;
 	autoupdateStarted = qfalse;
@@ -5161,12 +5157,6 @@ void CL_Shutdown(void) {
 	recursive = qfalse;
 
 	memset(&cls, 0, sizeof(cls));
-
-
-#ifdef ET_MYSQL
-	// shut down SQL
-	OW_Shutdown();
-#endif
 
 	Com_Printf("-----------------------\n");
 }
