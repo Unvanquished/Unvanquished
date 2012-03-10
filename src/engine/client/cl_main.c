@@ -2778,8 +2778,11 @@ void CL_DownloadsComplete(void)
 		return;
 	}
 
-	// TTimo: I wonder if that happens - it should not but I suspect it could happen if a download fails in the middle or is aborted
-	assert(!cls.bWWWDlDisconnected);
+    if(cls.bWWWDlDisconnected) {
+        cls.bWWWDlDisconnected = qfalse;
+        CL_ClearStaticDownload();
+        return;
+    }
 
 	// let the client game init and load data
 	cls.state = CA_LOADING;
