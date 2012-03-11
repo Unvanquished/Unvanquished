@@ -1,0 +1,13 @@
+obj-*-*-*/daemon*			usr/lib/games/unvanquished/
+obj-*-*-*/*.so				usr/lib/games/unvanquished/
+obj-*-*-*/main/*.so			usr/lib/games/unvanquished/main/
+
+#src/gamelogic/base/ui			usr/share/games/unvanquished/base/
+#main					usr/share/games/unvanquished/
+#src/gamelogic/gpp/ui			usr/share/games/unvanquished/gpp/
+src/gamelogic/base/ui			usr/lib/games/unvanquished/base/
+main					usr/lib/games/unvanquished/
+src/gamelogic/gpp/ui			usr/lib/games/unvanquished/gpp/
+
+debian/unvanquished*.sh			usr/games/
+download-pk3.sh				usr/lib/games/unvanquished/

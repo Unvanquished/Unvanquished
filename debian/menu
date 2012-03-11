@@ -1,0 +1,2 @@
+?package(unvanquished):needs="X11|text|vc|wm" section="Games/Action"\
+  title="unvanquished" command="/usr/games/unvanquished.sh"

@@ -1,0 +1,39 @@
+Source: unvanquished
+Section: contrib/games
+Priority: extra
+Maintainer: Darren Salt <linux@youmustbejoking.demon.co.uk>
+Build-Depends: debhelper (>= 8.0.0), cmake, curl,
+	libcurl4-gnutls-dev,
+	libfreetype6-dev,
+	libgl1-mesa-dev,
+	libglu1-mesa-dev,
+	libglew-dev | libglew1.5-dev,
+	libgmp-dev | libgmp3-dev,
+	libice-dev,
+	libjpeg8-dev (>= 8d-1) | libjpeg62-dev,
+	libmysqlclient-dev,
+	libncurses5-dev,
+	libogg-dev,
+	libopenal-dev,
+	libpng12-dev,
+	libsdl1.2-dev,
+	libsm-dev,
+	libtheora-dev,
+	libtinfo-dev | cmake (<< 2.8.7),
+	libvorbis-dev,
+	libwebp-dev | cmake (<< 2.8.7),
+	libx11-dev,
+	libxext-dev,
+	libxvidcore-dev | cmake (<< 2.8.5),
+	zlib1g-dev
+Standards-Version: 3.9.2
+Homepage: http://www.unvanquished.net/
+Vcs-Git: git://github.com/TremZ/Unvanquished.git
+Vcs-Browser: http://github.com/TremZ/Unvanquished
+
+Package: unvanquished
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Team-based FPS game, aliens v. humans
+ Build a base, defend it against the other team, gain credits for better
+ weapons or more advanced aliens, try to wipe them out.
