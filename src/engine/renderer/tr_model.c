@@ -2218,7 +2218,6 @@ int R_LerpTag(orientation_t * tag, const refEntity_t * refent, const char *tagNa
 	}
 	else if( model->type == MOD_MD5 )
 	{
-		// Dushan: VS need this first
 		vec3_t tmp;
 
 		retval = RE_BoneIndex( handle, tagName );
@@ -2765,8 +2764,8 @@ qboolean R_FindCachedModel(const char *name, model_t * newmod)
 					}
 					break;
 				default:
-                  return qfalse;
-					break;		// MOD_BAD MOD_BRUSH
+					return qfalse;
+					break;	// MOD_BAD MOD_BRUSH
 			}
 
 			mod->type = MOD_BAD;	// don't try and purge it later
