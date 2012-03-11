@@ -1253,12 +1253,11 @@ else()
   link_directories( ${CMAKE_BINARY_DIR})
 endif()
 
-  find_package(ZLIB)
   if( NOT USE_INTERNAL_ZLIB )
-    if( ZLIB_FOUND )
-      set( ZLIBLIST )
-    endif()
+    find_package(ZLIB REQUIRED)
+    set( ZLIBLIST )
   endif()
+
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
       ${CPUINFOLIST} ${SDLLIST} ${OS_BUILD} ${QCOMMONLIST} ${SHAREDLIST}
       ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
@@ -1320,6 +1319,7 @@ endif()
       set( XML_LIBRARY )
       set( XML_INCLUDE_DIR )
       set( NEWTON_LIBRARY )
+      message( FATAL_ERROR "tinyxml is required to use physics but could not be found" )
     endif( )
   endif( )
     
@@ -1361,12 +1361,12 @@ if( BUILD_SERVER )
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
   endif()
   link_directories( ${CMAKE_BINARY_DIR} )
-  find_package(ZLIB)
+  
   if( NOT USE_INTERNAL_ZLIB )
-    if( ZLIB_FOUND )
-      set( ZLIBLIST )
-    endif()
+    find_package(ZLIB REQUIRED)
+    set( ZLIBLIST )
   endif()
+
   add_executable( server ${SERVERLIST}  ${SDLBASELIST}
       ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
       ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
@@ -1397,6 +1397,7 @@ endif()
       set( XML_LIBRARY )
       set( XML_INCLUDE_DIR )
       set( NEWTON_LIBRARY )
+      message( FATAL_ERROR "tinyxml is required to use physics but could not be found" )
     endif( )
   endif( )
 
