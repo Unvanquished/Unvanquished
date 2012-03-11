@@ -1,0 +1,16 @@
+#usr/share/games/unvanquished/base		usr/lib/games/unvanquished/base
+#usr/share/games/unvanquished/gpp		usr/lib/games/unvanquished/gpp
+#usr/share/games/unvanquished/main/def		usr/lib/games/unvanquished/main/def
+#usr/share/games/unvanquished/main/default.cfg	usr/lib/games/unvanquished/main/default.cfg
+#usr/share/games/unvanquished/main/fonts		usr/lib/games/unvanquished/main/fonts
+#usr/share/games/unvanquished/main/gfx		usr/lib/games/unvanquished/main/gfx
+#usr/share/games/unvanquished/main/glsl		usr/lib/games/unvanquished/main/glsl
+#usr/share/games/unvanquished/main/lights	usr/lib/games/unvanquished/main/lights
+#usr/share/games/unvanquished/main/models	usr/lib/games/unvanquished/main/models
+#usr/share/games/unvanquished/main/scripts	usr/lib/games/unvanquished/main/scripts
+#usr/share/games/unvanquished/main/sound		usr/lib/games/unvanquished/main/sound
+#usr/share/games/unvanquished/base/ui		usr/lib/games/unvanquished/main/ui
+
+usr/lib/games/unvanquished/base/ui		usr/lib/games/unvanquished/main/ui
+var/lib/games/unvanquished/pak0.pk3		usr/lib/games/unvanquished/main/pak0.pk3
+var/lib/games/unvanquished/pak1.pk3		usr/lib/games/unvanquished/main/pak1.pk3
