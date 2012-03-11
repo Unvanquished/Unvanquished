@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __QAL_H__
 #define __QAL_H__
 
-#ifdef OPENAL_STATIC
+#ifndef USE_OPENAL_DLOPEN
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -119,7 +119,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define qalcCaptureStop alcCaptureStop
 #define qalcCaptureSamples alcCaptureSamples
 
-#else // OPENAL_STATIC
+#else // !USE_OPENAL_DLOPEN
 
 #define AL_NO_PROTOTYPES
 #define ALC_NO_PROTOTYPES
@@ -233,6 +233,6 @@ extern LPALCCAPTURESAMPLES qalcCaptureSamples;
 qboolean QAL_Init(const char *libname);
 void QAL_Shutdown( void );
 
-#endif // !OPENAL_STATIC
+#endif // USE_OPENAL_DLOPEN
 
 #endif	// __QAL_H__

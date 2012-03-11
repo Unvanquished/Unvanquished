@@ -162,14 +162,14 @@ cvar_t *s_alAvailableInputDevices;
 static qboolean capture_ext = qfalse;
 #endif
 
-#ifndef OPENAL_STATIC
+#ifdef USE_OPENAL_DLOPEN
 cvar_t *s_alDriver;
 #ifdef _WIN32
 #define ALDRIVER_DEFAULT "OpenAL32"
 #else
 #define ALDRIVER_DEFAULT "libopenal.so.0"
 #endif
-#endif // !OPENAL_STATIC
+#endif // USE_OPENAL_DLOPEN
 
 qboolean SndAl_Init(void)
 {
@@ -188,18 +188,18 @@ qboolean SndAl_Init(void)
 	s_minDistance = si.Cvar_Get ("al_mindistance", "80", CVAR_ARCHIVE);
 	s_rolloff = si.Cvar_Get ("al_rolloff", "0.25", CVAR_ARCHIVE);
 	s_alDevice = si.Cvar_Get( "al_device", "", CVAR_ARCHIVE | CVAR_LATCH );
-#ifndef OPENAL_STATIC
+#ifdef USE_OPENAL_DLOPEN
 	s_alDriver = si.Cvar_Get ("al_driver", ALDRIVER_DEFAULT, CVAR_ARCHIVE);
-#endif // !OPENAL_STATIC
+#endif // USE_OPENAL_DLOPEN
 
-#ifndef OPENAL_STATIC
+#ifdef USE_OPENAL_DLOPEN
 	// Load QAL
 	if(!QAL_Init(s_alDriver->string))
 	{
 		si.Printf(PRINT_ALL, "not initializing.\n");
 		return qfalse;
 	}
-#endif // !OPENAL_STATIC
+#endif // USE_OPENAL_DLOPEN
 	// Open default device
 	device = s_alDevice->string;
 	if( device && !*device )
@@ -249,7 +249,7 @@ qboolean SndAl_Init(void)
 
 	if( !alDevice )
 	{
-#ifndef OPENAL_STATIC
+#ifdef USE_OPENAL_DLOPEN
 		QAL_Shutdown();
 #endif
 		si.Printf( PRINT_ALL,  "Failed to open OpenAL device.\n" );
@@ -261,7 +261,7 @@ qboolean SndAl_Init(void)
 	alContext = qalcCreateContext(alDevice, NULL);
 	if(!alContext)
 	{
-#ifndef OPENAL_STATIC
+#ifdef USE_OPENAL_DLOPEN
 		QAL_Shutdown();
 #endif
 		qalcCloseDevice(alDevice);
@@ -337,7 +337,7 @@ void SndAl_Shutdown(void)
 	}
 #endif	
 
-#ifndef OPENAL_STATIC
+#ifdef USE_OPENAL_DLOPEN
 	QAL_Shutdown();
 #endif
 }
@@ -506,6 +506,7 @@ void SndAl_InitCapture( qboolean usingAL )
 {
 	const char* inputdevice = NULL;
 
+#ifdef USE_OPENAL_DLOPEN
 	// Load QAL if we are called from the base sound driver
 	if( !usingAL )
 	{
@@ -516,6 +517,7 @@ void SndAl_InitCapture( qboolean usingAL )
 			return;
 		}
 	}
+#endif
 
 	// !!! FIXME: some of these alcCaptureOpenDevice() values should be cvars.
 	// !!! FIXME: add support for capture device enumeration.
