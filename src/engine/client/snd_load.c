@@ -112,14 +112,7 @@ static qboolean S_InitModule()
 
 	s_module = Cvar_Get("s_module", "openal", CVAR_ARCHIVE);
 	Com_Printf("using sound module %s\n", s_module->string);
-
-#if _WIN32
-	sprintf(fn, "snd_%s.dll", s_module->string);
-#else
-	strncat(fn, "/snd_", sizeof(fn) - strlen(getcwd(fn, sizeof(fn))) - 1);
-	strncat(fn, s_module->string, sizeof(fn) - strlen(fn)- 1);
-	strncat(fn, ".so", sizeof(fn) - strlen(fn)- 1);
-#endif
+	sprintf(fn, "%s/snd_%s" DLL_EXT, Sys_Cwd(), s_module->string);
 
 	if( (libhandle = OBJLOAD(fn)) == 0 )
 	{

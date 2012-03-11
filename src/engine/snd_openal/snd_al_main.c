@@ -164,10 +164,12 @@ static qboolean capture_ext = qfalse;
 
 #ifdef USE_OPENAL_DLOPEN
 cvar_t *s_alDriver;
-#ifdef _WIN32
-#define ALDRIVER_DEFAULT "OpenAL32"
+#if defined( _WIN32 )
+#	define ALDRIVER_DEFAULT "OpenAL32"
+#elif defined( MACOS_X )
+#	define ALDRIVER_DEFAULT "/System/Library/Frameworks/OpenAL.framework/OpenAL"
 #else
-#define ALDRIVER_DEFAULT "libopenal.so.1"
+#	define ALDRIVER_DEFAULT "libopenal.so.1"
 #endif
 #endif // USE_OPENAL_DLOPEN
 
