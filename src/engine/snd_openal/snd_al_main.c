@@ -167,7 +167,7 @@ cvar_t *s_alDriver;
 #ifdef _WIN32
 #define ALDRIVER_DEFAULT "OpenAL32"
 #else
-#define ALDRIVER_DEFAULT "libopenal.so.0"
+#define ALDRIVER_DEFAULT "libopenal.so.1"
 #endif
 #endif // USE_OPENAL_DLOPEN
 
