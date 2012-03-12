@@ -438,7 +438,7 @@ void Cmd_Vstr_f(void)
 
 /*
 ===============
-Helper functions for Cmd_If_f
+Helper functions for Cmd_If_f & Cmd_ModCase_f
 ===============
 */
 #ifdef DEDICATED
@@ -461,9 +461,12 @@ static const struct {
   { "super",   5, 32, K_SUPER   },
   { "",        0,  0, 0         }
 };
+// Following is no. of bits required for modifiers in the above list
+#define NUM_RECOGNISED_MODIFIERS 6
 
 typedef struct {
   uint16_t down, up;
+  int bits;
 } modifierMask_t;
 
 static modifierMask_t getModifierMask (const char *mods)
@@ -513,6 +516,14 @@ static modifierMask_t getModifierMask (const char *mods)
     }
   }
 
+  for (i = 0; i < NUM_RECOGNISED_MODIFIERS; ++i)
+  {
+    if (mask.up & (1 << i))
+      ++mask.bits;
+    if (mask.down & (1 << i))
+      ++mask.bits;
+  }
+
   return mask;
 }
 
@@ -530,6 +541,73 @@ static int checkKeysDown (modifierMask_t mask)
 
   return 1; // all (not) pressed as requested
 }
+
+/*
+===============
+Cmd_ModCase_f
+
+Takes a sequence of modifier/command pairs
+Executes the command for the first matching modifier set
+
+===============
+*/
+void Cmd_ModCase_f( void ) {
+  int   argc = Cmd_Argc ();
+  int   index = 0;
+  int   max = 0;
+  int   count = (argc - 1) / 2; // round down :-)
+  char *v;
+
+  int mods[1 << NUM_RECOGNISED_MODIFIERS];
+  // want 'modifierMask_t mods[argc / 2 - 1];' (variable array, C99)
+  // but MSVC apparently doesn't like that
+
+  if (argc < 3)
+  {
+    Com_Printf ("modcase <modifiers> <command> [<modifiers> <command>] ... [<command>]\n");
+    return;
+  }
+
+  while (index < count)
+  {
+    modifierMask_t mask = getModifierMask (Cmd_Argv (2 * index + 1));
+    if (mask.bits == 0)
+      return; // parse failure (reported) - abort
+    mods[index] = checkKeysDown (mask) ? mask.bits : 0;
+    if (max < mods[index])
+      max = mods[index];
+    ++index;
+  }
+
+  // If we have a tail command, use it as default
+  v = (argc & 1) ? NULL : Cmd_Argv (argc - 1);
+
+  // Search for a suitable command to execute.
+  // Search is done as if the commands are sorted by modifier count
+  // (descending) then parameter index no. (ascending).
+  for (; max > 0; --max)
+  {
+    int i;
+    for (i = 0; i < index; ++i)
+    {
+      if (mods[i] == max)
+      {
+        v = Cmd_Argv (2 * i + 2);
+        goto found;
+      }
+    }
+  }
+
+found:
+  if (v)
+  {
+    if (*v == '/' || *v == '\\')
+      Cbuf_InsertText( va("%s\n", v + 1) );
+    else
+      Cbuf_InsertText( va("vstr %s\n", v ) );
+  }
+}
+
 #endif // !DEDICATED
 
 /*
@@ -563,7 +641,7 @@ void Cmd_If_f( void ) {
 #else
     v = Cmd_Argv (1);
     mask = getModifierMask (v);
-    if ((mask.down | mask.up) == 0)
+    if (mask.bits == 0)
     {
       return;
     }
@@ -2042,6 +2120,9 @@ void Cmd_Init(void)
 	Cmd_SetCommandCompletionFunc( "vstr", Cvar_CompleteCvarName );
 	Cmd_AddCommand("echo", Cmd_Echo_f);
 	Cmd_AddCommand("wait", Cmd_Wait_f);
+#ifndef DEDICATED
+	Cmd_AddCommand ("modcase",Cmd_ModCase_f);
+#endif
 	Cmd_AddCommand ("if",Cmd_If_f);
 	Cmd_SetCommandCompletionFunc( "if", Cmd_CompleteIf );
 	Cmd_AddCommand ("calc",Cmd_Calc_f);
