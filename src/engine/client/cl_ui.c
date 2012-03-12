@@ -150,17 +150,26 @@ qboolean GetNews( qboolean begin )
 	//fileHandle_t fileIn;
 	int readSize;
 
+	static char newsFile[MAX_QPATH] = "";
+
+	if( !newsFile[0] ) {
+		Q_strncpyz( newsFile,
+		            FS_BuildOSPath( Cvar_VariableString("fs_homepath"), "", "news.dat"),
+		            MAX_QPATH );
+		newsFile[MAX_QPATH - 1] = 0;
+	}
+
 	if( begin ) { // if not already using curl, start the download
 		if( !clc.bWWWDl ) {
 		clc.bWWWDl = qtrue;
-		DL_BeginDownload("news.dat",
+		DL_BeginDownload(newsFile,
 			"http://tremulous.net/clientnews.txt", com_developer->integer);
 		cls.bWWWDlDisconnected = qtrue;
 		return qfalse;
 		}
 	}
 
-	if (FS_SV_FOpenFileRead("news.dat", &clc.download)) {
+	if (FS_SV_FOpenFileRead(newsFile, &clc.download)) {
 		readSize = FS_Read(clc.newsString, sizeof( clc.newsString ), clc.download);
 		//FS_FCloseFile(fileIn);
 		if( readSize > 0 ) {
