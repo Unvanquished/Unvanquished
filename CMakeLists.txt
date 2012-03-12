@@ -389,7 +389,6 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/msg.c
   ${MOUNT_DIR}/engine/qcommon/net_chan.c
   ${MOUNT_DIR}/engine/qcommon/net_ip.c
-  ${MOUNT_DIR}/engine/qcommon/net_http.c
   ${MOUNT_DIR}/engine/qcommon/parse.c
   ${MOUNT_DIR}/engine/qcommon/unzip.c
   ${MOUNT_DIR}/engine/qcommon/ioapi.c
