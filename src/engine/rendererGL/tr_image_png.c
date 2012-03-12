@@ -298,14 +298,6 @@ void SavePNG(const char *name, const byte * pic, int width, int height, int numB
 	ri.FS_WriteFile(name, buffer, png_compressed_size);
 
 	ri.Hunk_FreeTempMemory(buffer);
-
-	// highly questionable
-	if ( ri.Cvar_Get( "developer", "", 0 )) {
-#if defined (USE_HTTP)
-		ri.HTTP_PostBug(name);
-#endif
-	}
-
 }
 
 

@@ -215,34 +215,6 @@ void            NET_LeaveMulticast6(void);
 
 void			NET_Sleep( int msec );
 
-#if defined(USE_HTTP)
-
-typedef enum {
-	HTTP_WRITE,
-	HTTP_READ,
-	HTTP_DONE,
-	HTTP_LENGTH,
-	HTTP_FAILED,
-} httpInfo_e;
-
-typedef int (QDECL * HTTP_response)( httpInfo_e code, const char * buffer, int length, void * notifyData );
-
-//			HTTP_GetUrl should be used only for receiving some content from webpage
-void		HTTP_GetUrl	( const char * url, HTTP_response, void * notifyData, int resume_from );
-//			HTTP_PostUrl should be used only when you want to post on webpage/database
-void		HTTP_PostUrl( const char * url, HTTP_response, void * notifyData, const char * fmt, ...  ) __attribute__((format(printf, 4, 5)));
-
-#ifndef DEDICATED
-void		HTTP_PostBug( const char *fileName );
-void		HTTP_PostErrorNotice( const char *type, const char *msg );
-#endif
-
-int			Net_HTTP_Init	();
-int			Net_HTTP_Pump	();
-void		Net_HTTP_Kill	();
-
-#endif // USE_HTTP
-
 //----(SA)  increased for larger submodel entity counts
 #define MAX_MSGLEN					32768		// max length of a message, which may
 //#define   MAX_MSGLEN              16384       // max length of a message, which may
@@ -368,16 +340,6 @@ extern int demo_protocols[];
 #define NUM_SERVER_PORTS    4	// broadcast scan this many ports after
 									// PORT_SERVER so a single machine can
 									// run multiple servers
-
-
-// override on command line, config files etc.
-#if defined (USE_HTTP)
-#ifndef AUTHORIZE_SERVER_NAME
-#define AUTHORIZE_SERVER_NAME cl_authserver->string
-#endif
-#endif
-
-
 // the svc_strings[] array in cl_parse.c should mirror this
 //
 // server to client
@@ -1073,10 +1035,6 @@ extern cvar_t  *com_minimized;
 // watchdog
 extern cvar_t  *com_watchdog;
 extern cvar_t  *com_watchdog_cmd;
-
-#if defined (USE_HTTP)
-extern cvar_t  *com_sessionid;
-#endif
 
 // both client and server must agree to pause
 extern cvar_t  *cl_paused;

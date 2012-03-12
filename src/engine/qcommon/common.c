@@ -111,10 +111,6 @@ cvar_t		   *cl_packetdelay;
 cvar_t		   *sv_packetdelay;
 cvar_t         *com_cameraMode;
 
-#if defined (USE_HTTP)
-cvar_t	       *com_sessionid;
-#endif
-
 #if defined( _WIN32 ) && defined( _DEBUG )
 cvar_t         *com_noErrorInterrupt;
 #endif
@@ -299,19 +295,6 @@ A Com_Printf that only shows up if the "developer" cvar is set
 	Com_Printf("%s", msg);
 }
 
-
-#if defined (USE_HTTP)
-const char* Con_GetText	( int console );
-
-static int QDECL callhome( httpInfo_e code, const char * buffer, int length, void * notifyData )
-{
-	if ( code == HTTP_DONE || code == HTTP_FAILED ) {
-		*(int*)notifyData = 1;
-	}
-	return 1;
-}
-#endif
-
 /*
 =============
 Com_Error
@@ -337,18 +320,6 @@ void QDECL Com_Error(int code, const char *fmt, ...)
 
 	// make sure we can get at our local stuff
 	FS_PureServerSetLoadedPaks("", "");
-
-#if defined(USE_HTTP)
-	{
-		int i = 0;
-		HTTP_PostUrl( "http://www.openwolf.com/user/log", callhome, &i, "message=ERROR:%s\n%s\n", com_errorMessage, Con_GetText(0) );
-		// spin for up to 5 seconds to allow bug to post
-		while ( !i ) {
-			Sys_Sleep( 10 );
-			Net_HTTP_Pump();
-		}
-	}
-#endif
 
 	// if we are getting a solid stream of ERR_DROP, do an ERR_FATAL
 	currentTime = Sys_Milliseconds();
@@ -3306,11 +3277,6 @@ void Com_Init(char *commandLine)
 	com_unfocused = Cvar_Get("com_unfocused", "0", CVAR_ROM);
 	com_minimized = Cvar_Get("com_minimized", "0", CVAR_ROM);
 
-#if defined (USE_HTTP)
-	com_webhost	= Cvar_Get( "com_webhost", "http://www.openwolf.com", CVAR_INIT | CVAR_ARCHIVE | CVAR_SYSTEMINFO );
-	com_sessionid = Cvar_Get( "com_sessionid", "", CVAR_INIT );
-#endif
-
 	Cvar_Get("savegame_loading", "0", CVAR_ROM);
 
 #if defined( _WIN32 ) && defined( _DEBUG )
@@ -3338,12 +3304,6 @@ void Com_Init(char *commandLine)
 	Cmd_AddCommand("changeVectors", MSG_ReportChangeVectors_f);
 	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
 
-#if defined(USE_HTTP)
-	Cmd_AddCommand( "sync", Com_sync_f );
-	Cmd_AddCommand( "sync_all", Com_sync_all_f );
-	Cmd_AddCommand( "stop_downloads", Com_StopDownloads_f );
-#endif
-
 	s = va("%s %s %s", Q3_VERSION, ARCH_STRING, __DATE__);
 	com_version = Cvar_Get("version", s, CVAR_ROM | CVAR_SERVERINFO);
 	com_protocol = Cvar_Get ("protocol", va("%i", ETPROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ARCHIVE);
@@ -3364,10 +3324,6 @@ void Com_Init(char *commandLine)
 
 #ifdef ET_MYSQL
 	D_Init();
-#endif
-
-#if defined(USE_HTTP)
-	Net_HTTP_Init();
 #endif
 
 	com_dedicated->modified = qfalse;
@@ -3590,10 +3546,6 @@ void Com_Frame(void)
 
 	// Check to make sure we don't have any http data waiting
 	// comment this out until I get things going better under win32
-#if defined(USE_HTTP)
-	Net_HTTP_Pump();
-#endif
-
 	// old net chan encryption key
 	key = 0x87243987;
 
@@ -3820,10 +3772,6 @@ void Com_Shutdown(qboolean badProfile)
 #ifdef ET_MYSQL
 	// shut down SQL
 	D_Shutdown();
-#endif
-
-#if defined(USE_HTTP)
-	Net_HTTP_Kill();
 #endif
 }
 

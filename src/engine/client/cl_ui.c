@@ -1509,14 +1509,6 @@ void CL_InitUI(void)
 		cls.uiStarted = qfalse;
 	}
 
-#if defined (USE_HTTP)
-	//	if the session id has something in it, then assume that the browser sent it from the
-	//	command line and tell ui we're already logged in.
-	if ( com_sessionid->string[0] ) {
-		VM_Call( uivm, UI_AUTHORIZED, AUTHORIZE_OK );
-	}
-#endif
-
 	// init for this gamestate
 	VM_Call(uivm, UI_INIT, (cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE));
 }
