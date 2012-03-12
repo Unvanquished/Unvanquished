@@ -2,7 +2,7 @@
 ===========================================================================
 Copyright (C) 2000-2009 Darklegion Development
 
-This file is part of OpenWolf.
+This file is part of Daemon.
 
 This shrubbot implementation is the original work of Tony J. White.
 
@@ -14,18 +14,18 @@ inactive project shrubet (http://www.etstats.com/shrubet/index.php?ver=2)
 by Ryan Mannion.   However, shrubet was a closed-source project and
 none of it's code has been copied, only it's functionality.
 
-OpenWolf is free software; you can redistribute it
+Daemon is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
-OpenWolf is distributed in the hope that it will be
+Daemon is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with OpenWolf; if not, write to the Free Software
+along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
