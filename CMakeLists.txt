@@ -1253,9 +1253,7 @@ else()
   link_directories( ${CMAKE_BINARY_DIR})
 endif()
 
-  if( USE_INTERNAL_ZLIB )
-    
-  else()
+  if( NOT USE_INTERNAL_ZLIB )
     find_package(ZLIB REQUIRED)
     set( ZLIBLIST )
   endif()
