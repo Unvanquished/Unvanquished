@@ -92,7 +92,7 @@ cvar_t * cl_IRC_reconnect_delay;
 #define IS_CNTRL(c) ( (c) >= 0 && (c) <= 31 )
 #define IS_ALPHA(c) ( IS_UPPER(c) || IS_LOWER(c) )
 #define IS_ALNUM(c) ( IS_ALPHA(c) || IS_DIGIT(c) )
-#define IS_SPECL(c) ( (c) >= '[' && (c) <= '`' || (c) >= '{' && (c) <= '}' || (c) == '-' )
+#define IS_SPECL(c) ( ((c) >= '[' && (c) <= '`') || ((c) >= '{' && (c) <= '}') || ((c) == '-') )
 #define IS_CLEAN(c) ( IS_ALNUM(c) || IS_SPECL(c)) /* RFC 2812 */
 
 
@@ -161,7 +161,7 @@ static qboolean IRC_ParserInMessage;
 static qboolean IRC_ParserError;
 
 
-/* 
+/*
  * According to RFC 1459, maximal message size is 512 bytes, including trailing
  * CRLF.
  */
@@ -1803,7 +1803,7 @@ static qboolean IRC_InitialiseUser( const char * name ) {
 	// Strip color chars for the player's name, and remove special characters
 	IRC_User.nicklen = 0;
 	IRC_User.nickattempts = 1;
-	for (j; j < namelen; j++) {
+	for (; j < namelen; j++) {
 		if ( !ovrnn ) {
 			// Only process color escape codes if the nickname
 			// is being computed from the player source
@@ -2027,7 +2027,7 @@ static void IRC_MainLoop() {
 					// Disconnected, but reconnection should be attempted
 					err_code = IRC_CMD_RETRY;
 				}
-				
+
 				if ( err_code == IRC_CMD_SUCCESS && ! IRC_QuitRequested )
 					err_code = IRC_ProcessSendQueue( ) ? IRC_CMD_SUCCESS : IRC_CMD_RETRY;
 			}
