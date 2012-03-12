@@ -438,6 +438,102 @@ void Cmd_Vstr_f(void)
 
 /*
 ===============
+Helper functions for Cmd_If_f
+===============
+*/
+#ifdef DEDICATED
+static const char modifierList[] = "not supported in the dedicated server";
+#else
+static const char modifierList[] = "shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt";
+
+static const struct {
+  char name[8];
+  unsigned short count;
+  unsigned short bit;
+  unsigned int index;
+} modifierKeys[] = {
+  { "shift",   5,  1, K_SHIFT   },
+  { "ctrl",    4,  2, K_CTRL    },
+  { "alt",     3,  4, K_ALT     },
+  { "command", 7,  8, K_COMMAND },
+  { "cmd",     3,  8, K_COMMAND },
+  { "mode",    4, 16, K_MODE    },
+  { "super",   5, 32, K_SUPER   },
+  { "",        0,  0, 0         }
+};
+
+typedef struct {
+  uint16_t down, up;
+} modifierMask_t;
+
+static modifierMask_t getModifierMask (const char *mods)
+{
+  int i;
+  modifierMask_t mask;
+  const char *ptr;
+  static const modifierMask_t none;
+
+  mask = none;
+
+  --mods;
+  while (*++mods == ' ') /* skip leading spaces */;
+  ptr = mods;
+
+  while (*ptr)
+  {
+    int invert = (*ptr == '!');
+    if (invert)
+      ++ptr;
+    for (i = 0; modifierKeys[i].bit; ++i) {
+      // is it this modifier?
+      if (!Q_strnicmp (ptr, modifierKeys[i].name, modifierKeys[i].count)
+          && (ptr[modifierKeys[i].count] == ' ' ||
+              ptr[modifierKeys[i].count] == ',' ||
+              ptr[modifierKeys[i].count] == 0)) {
+        if (invert)
+          mask.up   |= modifierKeys[i].bit;
+        else
+          mask.down |= modifierKeys[i].bit;
+        if ((mask.down & mask.up) & modifierKeys[i].bit) {
+          Com_Printf ("can't have %s both pressed and not pressed\n", modifierKeys[i].name);
+          return none;
+        }
+        // right, parsed a word - skip it, maybe a comma, and any spaces
+        ptr += modifierKeys[i].count - 1;
+        while (*++ptr == ' ') /**/;
+        if (*ptr == ',')
+          while (*++ptr == ' ') /**/;
+        // ready to parse the next one
+        break;
+      }
+    }
+    if (!modifierKeys[i].bit) {
+      Com_Printf ("unknown modifier key name in \"%s\"\n", mods);
+      return none;
+    }
+  }
+
+  return mask;
+}
+
+static int checkKeysDown (modifierMask_t mask)
+{
+  int i;
+  for (i = 0; modifierKeys[i].bit; ++i) {
+    if ((mask.down & modifierKeys[i].bit) && keys[modifierKeys[i].index].down == 0) {
+      return 0; // should be pressed, isn't pressed
+    }
+    if ((mask.up   & modifierKeys[i].bit) && keys[modifierKeys[i].index].down) {
+      return 0; // should not be pressed, is pressed
+    }
+  }
+
+  return 1; // all (not) pressed as requested
+}
+#endif // !DEDICATED
+
+/*
+===============
 Cmd_If_f
 
 Compares two values, if true executes the third argument, if false executes the forth
@@ -450,7 +546,9 @@ void Cmd_If_f( void ) {
   char	*vt;
   char	*vf = NULL;
   char  *op;
-
+#ifndef DEDICATED
+  modifierMask_t mask;
+#endif
   int   argc;
 
   switch ( argc = Cmd_Argc () )
@@ -460,25 +558,16 @@ void Cmd_If_f( void ) {
   case 3:
     vt = Cmd_Argv (2);
 #ifdef DEDICATED
-    Com_Printf ("if (!)<modifier_key>... is not supported on the server -- assuming true.\n");
+    Com_Printf ("if <modifiers>... is not supported on the server -- assuming true.\n");
     v = vt;
 #else
     v = Cmd_Argv (1);
-    if ((v1 = (*v == '!'))) // allow for negation
-      ++v;
-    v2 = !Q_stricmp (v, "shift"  ) ? K_SHIFT
-       : !Q_stricmp (v, "ctrl"   ) ? K_CTRL
-       : !Q_stricmp (v, "alt"    ) ? K_ALT
-       : !Q_stricmp (v, "command") ? K_COMMAND
-       : !Q_stricmp (v, "cmd"    ) ? K_COMMAND
-       : !Q_stricmp (v, "mode"   ) ? K_MODE
-       : 0;
-    if (v2 == 0)
+    mask = getModifierMask (v);
+    if ((mask.down | mask.up) == 0)
     {
-      Com_Printf ("invalid key name in if command. valid operators are = != < > >= <=\n");
       return;
     }
-    v = (v1 ^ !!keys[v2].down) ? vt : vf;
+    v = checkKeysDown (mask) ? vt : vf;
 #endif
     break;
 
@@ -516,8 +605,10 @@ void Cmd_If_f( void ) {
 
   default:
     Com_Printf ("if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first two values and executes <cmdthen> if true, <cmdelse> if false\n"
-                "if (!)<modifier_key> <cmdthen> (<cmdelse>) : similarly for shift, ctrl, alt, command/cmd, mode\n"
-                "-- commands are cvar names unless prefixed with / or \\\n");
+                "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
+                "-- modifiers are %s\n"
+                "-- commands are cvar names unless prefixed with / or \\\n",
+                modifierList);
     return;
   }
   if (v)
