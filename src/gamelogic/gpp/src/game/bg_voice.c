@@ -200,25 +200,6 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
       }
       continue;
     }
-    else if( !Q_stricmp( token.string, "weapon" ) )
-    {
-      foundToken = trap_Parse_ReadToken( handle, &token );
-      found = qfalse;
-      while( foundToken && token.type == TT_NUMBER )
-      {
-        found = qtrue;
-        if( voiceTrack->weapon < 0 )
-          voiceTrack->weapon = 0;
-        voiceTrack->weapon |= ( 1 << token.intvalue );
-        foundToken = trap_Parse_ReadToken( handle, &token );
-      }
-      if( !found )
-      {
-        BG_VoiceParseError( handle,
-          "BG_VoiceParseTrack(): missing \"weapon\" value");
-      }
-      continue;
-    }
     else if( !Q_stricmp( token.string, "text" ) )
     {
       if( foundText )
@@ -604,7 +585,6 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
   {
     if( ( vt->team >= 0 && !( vt->team  & ( 1 << team ) ) ) || 
         ( vt->class >= 0 && !( vt->class & ( 1 << class ) ) ) || 
-        ( vt->weapon >= 0 && !( vt->weapon & ( 1 << weapon ) ) ) ||
         vt->enthusiasm > enthusiasm )
     {
       vt = vt->next;
@@ -634,7 +614,6 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
     j++;
     if( ( vt->team >= 0 && !( vt->team  & ( 1 << team ) ) ) || 
         ( vt->class >= 0 && !( vt->class & ( 1 << class ) ) ) || 
-        ( vt->weapon >= 0 && !( vt->weapon & ( 1 << weapon ) ) ) ||
         vt->enthusiasm != highestMatch )
     {
       vt = vt->next;
