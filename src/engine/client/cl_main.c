@@ -1949,7 +1949,7 @@ void CL_OpenUrl_f( void )
 		const char *u;
 
 		const char *allowPrefixes[] = { "http://", "https://", "" };
-		const char *allowDomains[2] = { "www.openwolf.com", 0 };
+		const char *allowDomains[2] = { "www.unvanquished.net", 0 };
 
 #if defined (USE_HTTP)
 		allowDomains[1] = AUTHORIZE_SERVER_NAME;
