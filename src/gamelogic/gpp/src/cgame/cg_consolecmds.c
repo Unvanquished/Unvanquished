@@ -211,44 +211,57 @@ static void CG_CompleteClass( void )
 {
   int i = 0;
   if( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS ) {
-    const char *classes[] = { "builder", "builderupg", "level0", "level1", "level1upg", "level2",
+    static const char classes[][12] = {
+      "builder", "builderupg", "level0", "level1", "level1upg", "level2",
       "level2upg", "level3", "level3upg", "level4" };
     for( i=0; i<ARRAY_LEN( classes ); i++ )
       trap_CompleteCallback( classes[i] );
   }
   else if( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS ) {
-    const char *classes[] = { "rifle", "ckit" };
+    static const char classes[][12] = { "rifle", "ckit" };
     for( i=0; i<ARRAY_LEN( classes ); i++ )
       trap_CompleteCallback( classes[i] );
   }
 }
 
-static void CG_CompleteBuy( void )
+static void CG_CompleteBuySell( qboolean buying )
 {
-  int i = 0;
-  const char *items[] = { "ckit", "rifle", "psaw", "shotgun", "lgun", "mdriver", "chaingun",
+  int i = buying ? 1 : 0;
+  static const char items[][12] = {
+    "weapons", // <- only valid when selling
+    "ckit", "rifle", "psaw", "shotgun", "lgun", "mdriver", "chaingun",
     "prifle", "flamer", "lcannon", "larmour", "helmet", "bsuit", "grenade", "battpack"
     "jetpack", "ammo" };
 
-  if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
-    return;
-    
-  
-  for( i=0; i<ARRAY_LEN( items ); i++ )
-    trap_CompleteCallback( items[i] );
+  if( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS ) {
+    for( /**/; i<ARRAY_LEN( items ); i++ )
+      trap_CompleteCallback( items[i] );
+  }
+}
+
+static void CG_CompleteBuy( void )
+{
+  CG_CompleteBuySell( qtrue );
+}
+
+static void CG_CompleteSell( void )
+{
+  CG_CompleteBuySell( qfalse );
 }
 
 static void CG_CompleteBuild( void )
 {
   int i = 0;
   if( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS ) {
-    const char *structs[] = { "eggpod", "overmind", "barricade", "acid_tube", "trapper",
+    static const char structs[][12] = {
+      "eggpod", "overmind", "barricade", "acid_tube", "trapper",
       "booster", "hive" };
     for( i=0; i<ARRAY_LEN( structs ); i++ )
       trap_CompleteCallback( structs[i] );
   }
   else if( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS ) {
-    const char *structs[] = { "telenode", "mgturret", "tesla", "arm", "dcc", "medistat", "reactor", "repeater" };
+    static const char structs[][12] = {
+      "telenode", "mgturret", "tesla", "arm", "dcc", "medistat", "reactor", "repeater" };
     for( i=0; i<ARRAY_LEN( structs ); i++ )
       trap_CompleteCallback( structs[i] );
   }
@@ -275,7 +288,7 @@ static struct {
   { "reloadhud", CG_ReloadHUD_f, NULL },
   { "scoresDown", CG_scrollScoresDown_f, NULL },
   { "scoresUp", CG_scrollScoresUp_f, NULL },
-  { "sell", NULL, CG_CompleteBuy },
+  { "sell", NULL, CG_CompleteSell },
   { "sizedown", CG_SizeDown_f, NULL },
   { "sizeup", CG_SizeUp_f, NULL },
   { "testgun", CG_TestGun_f, NULL },
