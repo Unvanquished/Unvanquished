@@ -225,13 +225,14 @@ static void CG_CompleteClass( void )
 
 static void CG_CompleteBuy( void )
 {
-  if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
-    return;
-    
   int i = 0;
   const char *items[] = { "ckit", "rifle", "psaw", "shotgun", "lgun", "mdriver", "chaingun",
     "prifle", "flamer", "lcannon", "larmour", "helmet", "bsuit", "grenade", "battpack"
     "jetpack", "ammo" };
+
+  if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
+    return;
+    
   
   for( i=0; i<ARRAY_LEN( items ); i++ )
     trap_CompleteCallback( items[i] );
