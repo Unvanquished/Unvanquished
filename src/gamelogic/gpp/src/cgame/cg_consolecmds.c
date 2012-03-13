@@ -149,13 +149,13 @@ void CG_ClientList_f( void )
   int i;
   int count = 0;
 
-  for( i = 0; i < MAX_CLIENTS; i++ ) 
+  for( i = 0; i < MAX_CLIENTS; i++ )
   {
     ci = &cgs.clientinfo[ i ];
-    if( !ci->infoValid ) 
+    if( !ci->infoValid )
       continue;
 
-    switch( ci->team ) 
+    switch( ci->team )
     {
       case TEAM_ALIENS:
         Com_Printf( "%2d " S_COLOR_RED "A   " S_COLOR_WHITE "%s\n", i,
@@ -230,7 +230,7 @@ static void CG_CompleteBuySell( qboolean buying )
   static const char items[][12] = {
     "weapons", // <- only valid when selling
     "ckit", "rifle", "psaw", "shotgun", "lgun", "mdriver", "chaingun",
-    "prifle", "flamer", "lcannon", "larmour", "helmet", "bsuit", "grenade", "battpack"
+    "prifle", "flamer", "lcannon", "larmour", "helmet", "bsuit", "grenade", "battpack",
     "jetpack", "ammo" };
 
   if( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS ) {
@@ -268,8 +268,8 @@ static void CG_CompleteBuild( void )
 }
 
 static struct {
-	char *cmd; 
-	void ( *function )( void ); 
+	char *cmd;
+	void ( *function )( void );
 	void ( *completer )( void );
 } commands[ ] = {
   { "+scores", CG_ScoresDown_f, NULL },
@@ -379,17 +379,17 @@ void CG_InitConsoleCommands( void )
 }
 
 /*
-================= 
+=================
 CG_CompleteCommand
 
 The command has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
-================= 
+=================
 */
 
 void CG_CompleteCommand( int argNum ) {
 	const char *cmd;
-	int i; 
+	int i;
 
 	cmd = CG_Argv( 0 );
 	while( *cmd == '\\' || *cmd == '/' )
