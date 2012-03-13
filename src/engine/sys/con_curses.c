@@ -475,6 +475,12 @@ char *CON_Input(void)
 			//doupdate();
 			Com_Printf(PROMPT "^7%s\n", text + 1);
 			return text + 1;
+		case 21: // Ctrl-U
+			Field_Clear(&input_field);
+			werase(inputwin);
+			wnoutrefresh(inputwin);
+			CON_UpdateCursor();
+			continue;
 		case '\t':
 		case KEY_STAB:
 			Field_AutoComplete(&input_field, PROMPT);
