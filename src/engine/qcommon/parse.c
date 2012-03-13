@@ -156,7 +156,7 @@ typedef struct script_s
   char *end_p;                    //pointer to the end of the script
   char *lastscript_p;             //script pointer before reading token
   char *whitespace_p;             //begin of the white space
-  char *endwhitespace_p;         
+  char *endwhitespace_p;
   int length;                     //length of the script in bytes
   int line;                       //current line in script
   int lastline;                   //line before reading token
@@ -1927,7 +1927,7 @@ static int Parse_EvaluateTokens(source_t *source, token_t *tokens, signed long i
   int questmarkintvalue = 0;
   double questmarkfloatvalue = 0;
   int gotquestmarkvalue = qfalse;
-  int lastoperatortype = 0;
+//  int lastoperatortype = 0;
   //
   operator_t operator_heap[MAX_OPERATORS];
   int numoperators = 0;
@@ -2296,7 +2296,7 @@ static int Parse_EvaluateTokens(source_t *source, token_t *tokens, signed long i
       }
     }
     if (error) break;
-    lastoperatortype = o->operator;
+//    lastoperatortype = o->operator;
     //if not an operator with arity 1
     if (o->operator != P_LOGIC_NOT
         && o->operator != P_BIN_NOT)

@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -519,7 +519,7 @@ FS_BuildOSHomePath
 */
 void FS_BuildOSHomePath( char * ospath, int size, const char *qpath ) {
 	Com_sprintf( ospath, size, "%s/%s/%s", fs_homepath->string, fs_gamedir, qpath );
-	FS_ReplaceSeparators( ospath );	
+	FS_ReplaceSeparators( ospath );
 }
 
 /*
@@ -1312,10 +1312,10 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 					} else {
 						fsh[*file].handleFiles.file.z = pak->handle;
 					}
-					
+
 					Q_strncpyz( fsh[*file].name, filename, sizeof( fsh[*file].name ) );
 					fsh[*file].zipFile = qtrue;
-					
+
 					// set the file position in the zip file (also sets the current file info)
 					unzSetOffset(fsh[*file].handleFiles.file.z, pakFile->pos);
 
@@ -1400,8 +1400,8 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			}
 
 			if ( Q_stricmp( filename + l - 4, ".cfg" )       // for config files
-				 && Q_stricmp( filename + l - 4, ".ttf") != 0 
-				 && Q_stricmp( filename + l - 4, ".otf") != 0 
+				 && Q_stricmp( filename + l - 4, ".ttf") != 0
+				 && Q_stricmp( filename + l - 4, ".otf") != 0
 				 && Q_stricmp( filename + l - 5, ".menu" )  // menu files
 				 && Q_stricmp( filename + l - 5, ".game" )  // menu files
 				 && Q_stricmp( filename + l - strlen( demoExt ), demoExt ) // menu files
@@ -3024,15 +3024,15 @@ then loads the zip headers
 #define MAX_PAKFILES    1024
 void FS_AddGameDirectory( const char *path, const char *dir ) {
 	searchpath_t    *sp;
-	int i;
+//	int i;
 	searchpath_t    *search;
 	pack_t          *pak;
 	char            *pakfile;
 	int numfiles;
 	char            **pakfiles;
-	char            *sorted[MAX_PAKFILES];
+//	char            *sorted[MAX_PAKFILES];
 	int				pakfilesi=0;
-	char			**pakfilestmp;
+//	char			**pakfilestmp;
 	int				numdirs;
 	char			**pakdirs;
 	int				pakdirsi=0;
@@ -3082,7 +3082,7 @@ void FS_AddGameDirectory( const char *path, const char *dir ) {
 
 	qsort( pakfiles, numfiles, sizeof(char*), paksort );
 	qsort( pakdirs, numdirs, sizeof(char *), paksort );
-	
+
 	// Log may not be initialized at this point, but it will still show in the console.
 	Com_DPrintf("FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, numfiles, numdirs);
 #if 0
@@ -3153,7 +3153,7 @@ void FS_AddGameDirectory( const char *path, const char *dir ) {
 		}
 	}
 #endif
-	
+
 	while( pakfilesi < numfiles )
 	{
 	  // The next .pk3 file is before the next .pk3dir
@@ -3176,7 +3176,7 @@ void FS_AddGameDirectory( const char *path, const char *dir ) {
 
 	  pakfilesi++;
 	}
-	
+
 	while( pakdirsi < numdirs )
 	{
 	  // The next .pk3dir is before the next .pk3 file
@@ -3204,7 +3204,7 @@ void FS_AddGameDirectory( const char *path, const char *dir ) {
 	  pakdirsi++;
 	}
 
-	
+
 	// done
 	Sys_FreeFileList( pakfiles );
 	Sys_FreeFileList( pakdirs );
@@ -3333,7 +3333,7 @@ we are not interested in a download string format, we want something human-reada
 qboolean CL_WWWBadChecksum( const char *pakname );
 qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring ) {
 	searchpath_t    *sp;
-	qboolean havepak, badchecksum;
+	qboolean havepak;
 	int i;
 
 	if ( !fs_numServerReferencedPaks ) {
@@ -3343,8 +3343,7 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring ) {
 	*neededpaks = 0;
 
 	for ( i = 0 ; i < fs_numServerReferencedPaks ; i++ ) {
-		// Ok, see if we have this pak file
-		badchecksum = qfalse;
+
 		havepak = qfalse;
 
 		// never autodownload any of the id paks
@@ -3518,7 +3517,7 @@ static void FS_Startup( const char *gameName ) {
 	fs_buildpath = Cvar_Get( "fs_buildpath", "", CVAR_INIT );
 	fs_buildgame = Cvar_Get( "fs_buildgame", BASEGAME, CVAR_INIT );
 	fs_basegame = Cvar_Get( "fs_basegame", "", CVAR_INIT );
-#ifdef __FreeBSD__	
+#ifdef __FreeBSD__
 	fs_libpath = Cvar_Get ("fs_libpath", Sys_DefaultLibPath(), CVAR_INIT );
 #endif
 #ifdef MACOS_X
@@ -3545,7 +3544,7 @@ static void FS_Startup( const char *gameName ) {
 	if (fs_apppath->string[0])
 		FS_AddGameDirectory(fs_apppath->string, gameName);
 #endif
-	
+
 	// NOTE: same filtering below for mods and basegame
 	if ( fs_basepath->string[0] && Q_stricmp( fs_homepath->string,fs_basepath->string ) ) {
 		FS_AddGameDirectory( fs_homepath->string, gameName );
@@ -4454,7 +4453,7 @@ int     FS_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode ) 
 			if (*f == 0) {
 				r = -1;
 			}
-			break;		
+			break;
 	default:
 		Com_Error( ERR_FATAL, "FSH_FOpenFile: bad mode" );
 		return -1;
