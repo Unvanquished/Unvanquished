@@ -1178,11 +1178,7 @@ if( USE_PHYSICS )
   if( LINUX )
     if( CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux64/libNewton.a" )
-<<<<<<< HEAD
     elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i[3-6]86")
-=======
-    elseif( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" )
->>>>>>> cmake-formatting
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux32/libNewton.a" )
     endif()
   else()
