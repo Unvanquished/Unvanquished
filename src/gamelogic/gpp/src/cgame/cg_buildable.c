@@ -444,7 +444,7 @@ void CG_InitBuildables( void )
 	"pain2", qtrue, qfalse, qfalse ) )
 	bi->animations[BANIM_PAIN2] = bi->animations[BANIM_IDLE1];
       if( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY1, 
-	"destroy", qtrue, qfalse, qfalse ) )
+	"destroy", qfalse, qfalse, qfalse ) )
 	bi->animations[BANIM_DESTROY1] = bi->animations[BANIM_IDLE1];
       if( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY2, 
 	"destroy2", qtrue, qfalse, qfalse ) )
