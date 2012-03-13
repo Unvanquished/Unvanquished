@@ -1188,7 +1188,8 @@ Key_EditBind_f
 */
 void Key_EditBind_f( void ) {
 	char *buf;
-	/*const*/ char *key, *binding, *keyq;
+	/*const*/ char *key, *binding;
+	const char* keyq;
 	int b;
 
 	b = Cmd_Argc ();
