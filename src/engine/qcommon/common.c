@@ -1102,6 +1102,10 @@ void           *Z_TagMalloc(int size, int tag)
 	int             extra;
 	memblock_t     *start, *rover, *new, *base;
 	memzone_t      *zone;
+	#ifdef ZONE_DEBUG
+		int allocSize;
+		allocSize = size;
+	#endif
 
 	if(!tag)
 	{
