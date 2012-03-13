@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -89,7 +89,7 @@ void VM_Init( void ) {
 	// NOTE to myself
 	// vm_* 0 means .dll files are used (windows)
 	// vm_* 1 means .so files are used (mac, linux)
-	// vm_* 2 (default) means qvm files are used. 
+	// vm_* 2 (default) means qvm files are used.
 	Cvar_Get( "vm_cgame", "0", CVAR_ARCHIVE );
 	Cvar_Get( "vm_game", "0", CVAR_ARCHIVE );
 	Cvar_Get( "vm_ui", "0", CVAR_ARCHIVE );
@@ -237,7 +237,6 @@ VM_LoadSymbols
 ===============
 */
 void VM_LoadSymbols( vm_t *vm ) {
-	int	len;
 	union {
 		char	*c;
 		void	*v;
@@ -259,7 +258,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 
 	COM_StripExtension3(vm->name, name, sizeof(name));
 	Com_sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
-	len = FS_ReadFile( symbols, &mapfile.v );
+	FS_ReadFile( symbols, &mapfile.v );
 	if ( !mapfile.c ) {
 		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
 		return;
@@ -353,7 +352,7 @@ Dlls will call this directly
 
   For speed, we just grab 15 arguments, and don't worry about exactly
    how many the syscall actually needs; the extra is thrown away.
- 
+
 ============
 */
 intptr_t QDECL VM_DllSyscall( intptr_t arg, ... ) {
@@ -362,14 +361,14 @@ intptr_t QDECL VM_DllSyscall( intptr_t arg, ... ) {
   intptr_t args[16];
   int i;
   va_list ap;
-  
+
   args[0] = arg;
-  
+
   va_start(ap, arg);
   for (i = 1; i < ARRAY_LEN (args); i++)
     args[i] = va_arg(ap, intptr_t);
   va_end(ap);
-  
+
   return currentVM->systemCall( args );
 #else // original id code
 	return currentVM->systemCall( &arg );
@@ -384,7 +383,6 @@ Load a .qvm file
 =================
 */
 vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc ) {
-    int                 length;
     int                 dataLength;
     int                 i;
     char                filename[MAX_QPATH];
@@ -396,7 +394,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc ) {
     // load the image
     Com_sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
     Com_Printf( "Loading vm file %s...\n", filename );
-    length = FS_ReadFile( filename, &header.v );
+    FS_ReadFile( filename, &header.v );
     if ( !header.h ) {
         Com_Printf( "Failed.\n" );
         VM_Free( vm );

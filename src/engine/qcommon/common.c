@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -55,7 +55,7 @@ int demo_protocols[] = { 66, 67, 68, 0 };
 
 #define MIN_DEDICATED_COMHUNKMEGS 4
 #define MIN_COMHUNKMEGS 256				// JPW NERVE changed this to 42 for MP, was 56 for team arena and 75 for wolfSP
-#define DEF_COMHUNKMEGS 512				// RF, increased this, some maps are exceeding 56mb 
+#define DEF_COMHUNKMEGS 512				// RF, increased this, some maps are exceeding 56mb
 										// JPW NERVE changed this for multiplayer back to 42, 56 for depot/mp_cpdepot, 42 for everything else
 #define DEF_COMZONEMEGS 96				// RF, increased this from 16, to account for botlib/AAS
 #define DEF_COMHUNKMEGS_S	XSTRING(DEF_COMHUNKMEGS)
@@ -1099,7 +1099,7 @@ void           *Z_TagMallocDebug(int size, int tag, char *label, char *file, int
 void           *Z_TagMalloc(int size, int tag)
 {
 #endif
-	int             extra, allocSize;
+	int             extra;
 	memblock_t     *start, *rover, *new, *base;
 	memzone_t      *zone;
 
@@ -1117,8 +1117,6 @@ void           *Z_TagMalloc(int size, int tag)
 		zone = mainzone;
 	}
 
-	allocSize = size;
-	//
 	// scan through the block list looking for the first free block
 	// of sufficient size
 	//
@@ -1663,7 +1661,7 @@ static void Com_DetectSSE(void)
 {
 #if !idx64
 	cpuFeatures_t feat;
-	
+
 	feat = Sys_GetProcessorFeatures();
 
 	if(feat & CF_SSE)
@@ -2307,7 +2305,7 @@ Com_InitJournaling
 =================
 */
 void Com_InitJournaling( void ) {
-	
+
 	int i;
 
 	Com_StartupVariable( "journal" );
@@ -2853,12 +2851,12 @@ char            cl_cdkey[34] = "123456789";
 #endif
 
 void Com_SetRecommended() {
-	cvar_t         *r_highQualityVideo, *com_recommended;
+	cvar_t         *r_highQualityVideo;//, *com_recommended;
 	qboolean        goodVideo;
 
 	// will use this for recommended settings as well.. do i outside the lower check so it gets done even with command line stuff
 	r_highQualityVideo = Cvar_Get("r_highQualityVideo", "1", CVAR_ARCHIVE);
-	com_recommended = Cvar_Get("com_recommended", "-1", CVAR_ARCHIVE);
+	//com_recommended = Cvar_Get("com_recommended", "-1", CVAR_ARCHIVE);
 	goodVideo = (r_highQualityVideo && r_highQualityVideo->integer);
 
 	if(goodVideo)
@@ -3315,10 +3313,10 @@ void Com_Init(char *commandLine)
 	Hist_Load();
 
 	if (!Crypto_Init()) {
-		// Disable all crypto functions 
-		Cvar_Get("g_adminPubkeyID", "0", CVAR_ROM); 
+		// Disable all crypto functions
+		Cvar_Get("g_adminPubkeyID", "0", CVAR_ROM);
 #ifndef DEDICATED
-		Cvar_Get("cl_pubkeyID", "0", CVAR_ROM); 
+		Cvar_Get("cl_pubkeyID", "0", CVAR_ROM);
 #endif
 	}
 
@@ -3520,7 +3518,7 @@ void Com_Frame(void)
 
 	int             msec, minMsec;
 	static int      lastTime;
-	int             key;
+	//int             key;
 
 	int             timeBeforeFirstEvents;
 	int             timeBeforeServer;
@@ -3547,7 +3545,7 @@ void Com_Frame(void)
 	// Check to make sure we don't have any http data waiting
 	// comment this out until I get things going better under win32
 	// old net chan encryption key
-	key = 0x87243987;
+	//key = 0x87243987;
 
 	// write config file if anything changed
 	Com_WriteConfiguration();
@@ -3586,7 +3584,7 @@ void Com_Frame(void)
 		//give cycles back to the OS
 		Sys_Sleep( minMsec - msec );
 
-		com_frameTime = Com_EventLoop();	
+		com_frameTime = Com_EventLoop();
 		msec = com_frameTime - lastTime;
 	}
 
@@ -3734,7 +3732,7 @@ void Com_Frame(void)
 	}
 
 	// old net chan encryption key
-	key = lastTime * 0x87243987;
+	//key = lastTime * 0x87243987;
 
 	com_frameNumber++;
 }
@@ -3842,6 +3840,7 @@ static int      matchCount;
 static field_t *completionField;
 static const char *completionPrompt;
 
+
 /*
 ===============
 FindMatches
@@ -3879,11 +3878,13 @@ static void FindMatches(const char *s)
 PrintCmdMatches
 ===============
 */
+#if 0
 static void PrintCmdMatches( const char *s ) {
 	if(!Q_stricmpn(s, shortestMatch, strlen(shortestMatch))) {
 		Com_Printf( " %s\n", s );
 	}
 }
+#endif
 
 /*
 ===============
@@ -3908,6 +3909,7 @@ static void PrintCvarMatches( const char *s ) {
 	}
 }
 
+#if 0
 static void keyConcatArgs(void) {
 	int             i;
 	char           *arg;
@@ -3932,7 +3934,9 @@ static void keyConcatArgs(void) {
 		}
 	}
 }
+#endif
 
+#if 0
 static void ConcatRemaining(const char *src, const char *start)
 {
 	char           *str;
@@ -3947,6 +3951,7 @@ static void ConcatRemaining(const char *src, const char *start)
 	str += strlen(start);
 	Q_strcat(completionField->buffer, sizeof(completionField->buffer), str);
 }
+#endif
 
 /*
 ===============
@@ -4230,12 +4235,12 @@ qboolean Com_IsVoipTarget(uint8_t *voipTargets, int voipTargetsSize, int clientN
 			if(voipTargets[index])
 				return qtrue;
 		}
-		
+
 		return qfalse;
 	}
 
 	index = clientNum >> 3;
-	
+
 	if(index < voipTargetsSize)
 		return (voipTargets[index] & (1 << (clientNum & 0x07)));
 
@@ -4248,7 +4253,7 @@ qboolean Com_IsVoipTarget(uint8_t *voipTargets, int voipTargetsSize, int clientN
 #define CON_HISTORY_FILE "conhistory"
 static char history[CON_HISTORY][MAX_EDIT_LINE];
 static int hist_current, hist_next;
- 
+
 /*
 ==================
 Hist_Load

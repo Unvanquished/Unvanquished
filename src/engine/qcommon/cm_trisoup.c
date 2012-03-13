@@ -894,7 +894,7 @@ static void CM_SurfaceCollideFromTriangleSoup(cTriangleSoup_t * triSoup, cSurfac
 {
 	int             i;
 	float          *p1, *p2, *p3;
-	int             i1, i2, i3;
+//	int             i1, i2, i3;
 
 	cFacet_t       *facet;
 
@@ -924,10 +924,6 @@ static void CM_SurfaceCollideFromTriangleSoup(cTriangleSoup_t * triSoup, cSurfac
 		facet = &facets[numFacets];
 		Com_Memset(facet, 0, sizeof(*facet));
 
-		i1 = triSoup->indexes[i * 3 + 0];
-		i2 = triSoup->indexes[i * 3 + 1];
-		i3 = triSoup->indexes[i * 3 + 2];
-
 		p1 = triSoup->points[i][0];
 		p2 = triSoup->points[i][1];
 		p3 = triSoup->points[i][2];
@@ -936,6 +932,10 @@ static void CM_SurfaceCollideFromTriangleSoup(cTriangleSoup_t * triSoup, cSurfac
 
 		// try and make a quad out of two triangles
 #if 0
+        i1 = triSoup->indexes[i * 3 + 0];
+		i2 = triSoup->indexes[i * 3 + 1];
+		i3 = triSoup->indexes[i * 3 + 2];
+
 		if(i != triSoup->numTriangles - 1)
 		{
 			i4 = triSoup->indexes[i * 3 + 3];
