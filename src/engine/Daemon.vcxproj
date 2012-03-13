@@ -869,7 +869,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="qcommon\net_http.c" />
     <ClCompile Include="qcommon\net_ip.c" />
     <ClCompile Include="qcommon\parse.c" />
     <ClCompile Include="qcommon\q_math.c" />
