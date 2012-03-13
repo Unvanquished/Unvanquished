@@ -145,51 +145,14 @@ GetNews
 */
 qboolean GetNews( qboolean begin )
 {
-#ifdef USE_CURL
-	qboolean finished = qfalse;
-	//fileHandle_t fileIn;
-	int readSize;
-
-	static char newsFile[MAX_QPATH] = "";
-
-	if( !newsFile[0] ) {
-		Q_strncpyz( newsFile,
-		            FS_BuildOSPath( Cvar_VariableString("fs_homepath"), "", "news.dat"),
-		            MAX_QPATH );
-		newsFile[MAX_QPATH - 1] = 0;
-	}
-
 	if( begin ) { // if not already using curl, start the download
-		if( !clc.bWWWDl ) {
-		clc.bWWWDl = qtrue;
-		DL_BeginDownload(newsFile,
-			"http://tremulous.net/clientnews.txt", com_developer->integer);
-		cls.bWWWDlDisconnected = qtrue;
-		return qfalse;
-		}
+	  CL_RequestMotd( );
+	  Cvar_Set( "cl_newsString", "Retrieving..." );
 	}
-
-	if (FS_SV_FOpenFileRead(newsFile, &clc.download)) {
-		readSize = FS_Read(clc.newsString, sizeof( clc.newsString ), clc.download);
-		//FS_FCloseFile(fileIn);
-		if( readSize > 0 ) {
-			finished = qtrue;
-			clc.bWWWDl = qfalse;
-			cls.bWWWDlDisconnected = qfalse;
-		}
-	}
-	if( !finished )
-    FS_FCloseFile(clc.download);
-
-	if( !finished ) 
-		strcpy( clc.newsString, "Retrieving..." );
-	Cvar_Set( "cl_newsString", clc.newsString );
-	return finished;
-#else
-	Cvar_Set( "cl_newsString",
-		"^1You must compile your client with CURL support to use this feature" );
-	return qtrue;
-#endif
+	if( Cvar_VariableString( "cl_newsString" )[0] == 'R' )
+	  return qfalse;
+	else
+	  return qtrue;
 }
 
 /*
