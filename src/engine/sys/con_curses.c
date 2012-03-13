@@ -465,15 +465,16 @@ char *CON_Input(void)
 		case KEY_ENTER:
 			if (!input_field.buffer[0])
 				continue;
-			Hist_Add(input_field.buffer);
-			strcpy(text, input_field.buffer);
+			Q_snprintf(text, sizeof(text), "\\%s",
+			           input_field.buffer + (input_field.buffer[0] == '\\' || input_field.buffer[0] == '/'));
+			Hist_Add(text);
 			Field_Clear(&input_field);
 			werase(inputwin);
 			wnoutrefresh(inputwin);
 			CON_UpdateCursor();
 			//doupdate();
-			Com_Printf(PROMPT "^7%s\n", text);
-			return text;
+			Com_Printf(PROMPT "^7%s\n", text + 1);
+			return text + 1;
 		case '\t':
 		case KEY_STAB:
 			Field_AutoComplete(&input_field, PROMPT);
