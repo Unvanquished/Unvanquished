@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -188,7 +188,7 @@ void CMod_LoadSubmodels(lump_t * l)
 #ifdef USE_PHYSICS
 		CMod_PhysicsAddBSPModel(i, in->firstSurface, in->numSurfaces);
 #endif
-		
+
 		// make a "leaf" just to hold the model's brushes and surfaces
 		out->leaf.numLeafBrushes = LittleLong(in->numBrushes);
 		indexes = Hunk_Alloc(out->leaf.numLeafBrushes * 4, h_high);
@@ -810,9 +810,9 @@ void CMod_LoadSurfaces(lump_t * surfs, lump_t * verts, lump_t * indexesLump)
 		}
 		else if(LittleLong(in->surfaceType) == MST_PATCH)
 		{
-			int j = 0, k = 0;
-            int rowLimit = in->patchHeight - 1;
-            int colLimit = in->patchWidth - 1;
+			int j = 0;
+//           int rowLimit = in->patchHeight - 1;
+//            int colLimit = in->patchWidth - 1;
 
 			// FIXME: check for non-colliding patches
 			cm.surfaces[i] = surface = Hunk_Alloc(sizeof(*surface), h_high);
@@ -841,10 +841,12 @@ void CMod_LoadSurfaces(lump_t * surfs, lump_t * verts, lump_t * indexesLump)
 
 			// create the internal facet structure
 			surface->sc = CM_GeneratePatchCollide(width, height, vertexes);
-            
+
 #ifdef USE_PHYSICS
             for ( j = 0; j < rowLimit; ++j )
             {
+                int k;
+
                 for ( k = 0; k < colLimit; ++k )
                 {
                     VectorCopy (dv[in->firstVert + (j * in->patchWidth) + k].xyz, v[0]);

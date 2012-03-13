@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -97,7 +97,7 @@ called to open a channel to a remote system
 */
 void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport ) {
 	Com_Memset (chan, 0, sizeof(*chan));
-	
+
 	chan->sock = sock;
 	chan->remoteAddress = adr;
 	chan->qport = qport;
@@ -315,14 +315,14 @@ copied out.
 */
 qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 	int			sequence;
-	int			qport;
+//	int			qport;
 	int			fragmentStart, fragmentLength;
 	qboolean	fragmented;
 
 	// XOR unscramble all data in the packet after the header
 //	Netchan_UnScramblePacket( msg );
 
-	// get sequence numbers		
+	// get sequence numbers
 	MSG_BeginReadingOOB( msg );
 	sequence = MSG_ReadLong( msg );
 
@@ -336,7 +336,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 
 	// read the qport if we are a server
 	if ( chan->sock == NS_SERVER ) {
-		qport = MSG_ReadShort( msg );
+		/*qport = */MSG_ReadShort( msg );
 	}
 
 	// read the fragment information
@@ -388,11 +388,11 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 			, sequence );
 		}
 	}
-	
+
 
 	//
 	// if this is the final framgent of a reliable message,
-	// bump incoming_reliable_sequence 
+	// bump incoming_reliable_sequence
 	//
 	if ( fragmented ) {
 		// TTimo
@@ -426,7 +426,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 			return qfalse;
 		}
 
-		Com_Memcpy( chan->fragmentBuffer + chan->fragmentLength, 
+		Com_Memcpy( chan->fragmentBuffer + chan->fragmentLength,
 			msg->data + msg->readcount, fragmentLength );
 
 		chan->fragmentLength += fragmentLength;
@@ -457,7 +457,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 		// TTimo
 		// clients were not acking fragmented messages
 		chan->incomingSequence = sequence;
-		
+
 		return qtrue;
 	}
 
@@ -562,7 +562,7 @@ static void NET_QueuePacket( int length, const void *data, netadr_t to,
 	Com_Memcpy(new->data, data, length);
 	new->length = length;
 	new->to = to;
-	new->release = Sys_Milliseconds() + (int)((float)offset / com_timescale->value);	
+	new->release = Sys_Milliseconds() + (int)((float)offset / com_timescale->value);
 	new->next = NULL;
 
 	if(!packetQueue) {
@@ -701,7 +701,7 @@ int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 	}
 
 	Q_strncpyz( base, s, sizeof( base ) );
-	
+
 	if(*base == '[' || Q_CountChar(base, ':') > 1)
 	{
 		// This is an ipv6 address, handle it specially.
@@ -714,7 +714,7 @@ int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 			if(*search == ':')
 				port = search + 1;
 		}
-		
+
 		if(*base == '[')
 			search = base + 1;
 		else
@@ -724,12 +724,12 @@ int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 	{
 		// look for a port number
 		port = strchr( base, ':' );
-		
+
 		if ( port ) {
 			*port = '\0';
 			port++;
 		}
-		
+
 		search = base;
 	}
 
