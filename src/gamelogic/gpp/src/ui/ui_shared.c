@@ -4329,11 +4329,31 @@ static void SkipWhiteSpace( const char **text, char *lastColor )
   }
 }
 
+
+#define WRAP_BUFFER_MARGIN 1024
+
+static void Check_Alloc( char **buffer, size_t *size, size_t needed )
+{
+  if( needed >= *size )
+  {
+    *size = needed + WRAP_BUFFER_MARGIN;
+    *buffer = realloc( *buffer, *size );
+    assert( *buffer != 0 );
+  }
+}
+
 const char *Item_Text_Wrap( const char *text, float scale, float width )
 {
+  // FIXME: QVM. Can't allocate memory there? Will need a larger buffer -
+  // something like 40KB should be enough; strings a little short of 32KB
+  // have been witnessed coming in from Item_Text_Wrapped_Paint() near map
+  // start-up.
+  // Regardless, we need to check remaining space before each write else we
+  // run a small risk of buffer overflow.
+
   static char   *out = NULL;
   static size_t outSize = 0;
-  char          *paint = out;
+  int           paint = 0;
   char          c[ 3 ] = "";
   const char    *p;
   const char    *eos;
@@ -4345,21 +4365,8 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
   p = text;
   eos = p + strlen( p );
 
-  if( ( eos - p ) >= outSize )
-  {
-    free( out );
-    outSize = eos - p + 1;
-    paint = out = malloc( outSize );
-    if( !out )
-    {
-      // malloc failed - probably going to segfault soon
-      outSize = 0;
-      return NULL;
-    }
-    out[0] = 0;
-  }
-
-  *paint = '\0';
+  Check_Alloc( &out, &outSize, eos - p );
+  out[paint] = '\0';
 
   while( *p )
   {
@@ -4412,13 +4419,14 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
     // blocks of text
 
     // Copy text
-    strncpy( paint, p, eol - p );
+    Check_Alloc( &out, &outSize, paint + eol - p );
+    strncpy( out + paint, p, eol - p );
     paint += ( eol - p );
-    *paint = '\0';
+    out[paint] = '\0';
 
     p = eol;
 
-    if( paint - out > 0 && *( paint - 1 ) == '\n' )
+    if( paint > 0 && out[paint - 1] == '\n' )
     {
       // The line is deliberately broken, clear the color and
       // any current indent
@@ -4428,8 +4436,9 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
     else
     {
       // Add a \n if it's not there already
-      *paint++ = '\n';
-      *paint = '\0';
+      Check_Alloc( &out, &outSize, paint + 1 );
+      out[paint++] = '\n';
+      out[paint] = '\0';
 
       // Insert a pixel indent on the next line
       if( indentWidth > 0.0f )
@@ -4437,9 +4446,10 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
         char  *indentMarkerText       = va( "%f%c", indentWidth, INDENT_MARKER );
         int   indentMarkerTextLength  = strlen( indentMarkerText );
 
-        strncpy( paint, indentMarkerText, indentMarkerTextLength );
+        Check_Alloc( &out, &outSize, paint + indentMarkerTextLength );
+        strncpy( out + paint, indentMarkerText, indentMarkerTextLength );
         paint += indentMarkerTextLength;
-        *paint = '\0';
+        out[paint] = '\0';
       }
 
       // Skip leading whitespace on next line and save the
@@ -4449,9 +4459,10 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 
     if( c[ 0 ] )
     {
-      *paint++ = c[ 0 ];
-      *paint++ = c[ 1 ];
-      *paint = '\0';
+      Check_Alloc( &out, &outSize, paint + 2 );
+      out[paint++] = c[ 0 ];
+      out[paint++] = c[ 1 ];
+      out[paint  ] = '\0';
     }
   }
 
