@@ -230,7 +230,7 @@ static void CG_CompleteBuy( void )
     
   int i = 0;
   const char *items[] = { "ckit", "rifle", "psaw", "shotgun", "lgun", "mdriver", "chaingun",
-    "prifle", "flamer", "lcannon", "larmour", "helmet", "human_bsuit", "grenade", "battpack"
+    "prifle", "flamer", "lcannon", "larmour", "helmet", "bsuit", "grenade", "battpack"
     "jetpack", "ammo" };
   
   for( i=0; i<ARRAY_LEN( items ); i++ )
