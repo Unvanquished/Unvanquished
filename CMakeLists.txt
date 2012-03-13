@@ -15,57 +15,57 @@ set( CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_MINSIZEREL ${CMAKE_C_FLAGS_MINSIZEREL} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO} CACHE STRING "" )
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-set(CMAKE_BUILD_TYPE Release CACHE STRING
-	"Build configuration (Debug, Release, RelWithDebInfo, MinSizeRel)")
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set( CMAKE_BUILD_TYPE Release CACHE STRING
+	"Build configuration (Debug, Release, RelWithDebInfo, MinSizeRel)" )
 
-#this line has to appear before 'PROJECT' in order to be able to disable incremental linking
-SET(MSVC_INCREMENTAL_DEFAULT ON)
+# This line has to appear before 'PROJECT' in order to be able to disable incremental linking
+set( MSVC_INCREMENTAL_DEFAULT ON )
 
 project( Daemon C CXX ASM )
-set(CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER})
-set(CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT})
+set( CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER} )
+set( CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT} )
 set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
 
-# options
-option( BUILD_CLIENT         "Build Daemon client"                   1 )
-option( BUILD_OLD_RENDERER   "Build old renderer library"              1 )
-option( BUILD_NEW_RENDERER   "Build new renderer library"              1 )
-option( BUILD_SERVER         "Build Daemonded server"                1 )
-option( BUILD_GAME_SO_ET     "Build game logic shared libraries for ET" 0 )
-option( BUILD_GAME_SO_TREM   "Build game logic shared libs for Trem"   0 )
-option( BUILD_GAME_SO_GPP    "Build GPP Tremulous game logic libs"     1 )
-option( BUILD_MASTER         "Build master server"                     1 )
-option( BUILD_OWMAP          "Build Mapping tool"                      0 )
-option( USE_OPENAL           "Use OpenAL"                              1 )
+# Options
+option( BUILD_CLIENT         "Build Daemon client"                         1 )
+option( BUILD_OLD_RENDERER   "Build old renderer library"                  1 )
+option( BUILD_NEW_RENDERER   "Build new renderer library"                  1 )
+option( BUILD_SERVER         "Build Daemonded server"                      1 )
+option( BUILD_GAME_SO_ET     "Build game logic shared libraries for ET"    0 )
+option( BUILD_GAME_SO_TREM   "Build game logic shared libs for Trem"       0 )
+option( BUILD_GAME_SO_GPP    "Build GPP Tremulous game logic libs"         1 )
+option( BUILD_MASTER         "Build master server"                         1 )
+option( BUILD_OWMAP          "Build Mapping tool"                          0 )
+option( USE_OPENAL           "Use OpenAL"                                  1 )
 if( USE_OPENAL )
-  option( USE_OPENAL_DLOPEN  "Use dlopen to load OpenAL"               1 )
+  option( USE_OPENAL_DLOPEN  "Use dlopen to load OpenAL"                   1 )
 endif()
-option( USE_CURL             "Use curl"                                1 )
+option( USE_CURL             "Use curl"                                    1 )
 if( USE_CURL )
-  option( USE_CURL_DLOPEN    "Use dlopen to load curl"                 1 )
-option( USE_LLVM             "Use LLVM"                                0 ) 
+  option( USE_CURL_DLOPEN    "Use dlopen to load curl"                     1 )
+option( USE_LLVM             "Use LLVM"                                    0 ) 
 endif()
 if( WIN32 )
-  option( USE_SYSTEM_HEADERS "Use local headers"                       0 )
+  option( USE_SYSTEM_HEADERS "Use local headers"                           0 )
 else()
-  option( USE_SYSTEM_HEADERS "Use local headers"                       1 )
+  option( USE_SYSTEM_HEADERS "Use local headers"                           1 )
 endif()
-option( USE_CPUINFO    "Use CPUInfo (if compile fails, disable this"   1 ) 
-option( USE_INTERNAL_ZLIB    "Use internal zlib"                       0 )
-option( USE_CURSES           "Use the curses console"                  1 )
-option( USE_CODEC_VORBIS     "Compile with support for Vorbis"         1 )
+option( USE_CPUINFO          "Use CPUInfo (if compile fails, disable this" 1 ) 
+option( USE_INTERNAL_ZLIB    "Use internal zlib"                           0 )
+option( USE_CURSES           "Use the curses console"                      1 )
+option( USE_CODEC_VORBIS     "Compile with support for Vorbis"             1 )
 if( USE_CODEC_VORBIS )
-  option( USE_CIN_THEORA     "Compile with support for Theora"         1 )
+  option( USE_CIN_THEORA     "Compile with support for Theora"             1 )
 endif()
-option( USE_MUMBLE           "Compile with support for Mumble"         1 )
-option( USE_PHYSICS	     "Compile with Newton Physics"             0 )
-option( USE_WEBP	     "Compile with WebP loader"                1 )
-option( USE_MYSQL	     "Compile with MYSQL support"              0 )
-option( USE_VOIP	     "Compile with VOIP support"               1 )
-option( USE_CIN_XVID	     "Encode videos with XViD"                 1 )
+option( USE_MUMBLE           "Compile with support for Mumble"             1 )
+option( USE_PHYSICS	     "Compile with Newton Physics"                 0 )
+option( USE_WEBP	     "Compile with WebP loader"                    1 )
+option( USE_MYSQL	     "Compile with MYSQL support"                  0 )
+option( USE_VOIP	     "Compile with VOIP support"                   1 )
+option( USE_CIN_XVID	     "Encode videos with XViD"                     1 )
 
-# package info
+# Package info
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt")
@@ -76,24 +76,27 @@ set( GAME_DIR	 ${CMAKE_SOURCE_DIR}/src/gamelogic/etmain )
 set( BASE_DIR	 ${CMAKE_SOURCE_DIR}/src/gamelogic/base )
 set( GPP_DIR	 ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
 set( LIB_DIR     ${CMAKE_SOURCE_DIR}/src/libs )
-find_package(PkgConfig)
-# 
- if( WIN32 )
-   add_definitions( -D_CRT_SECURE_NO_WARNINGS )
- endif()
 
-set(CONSOLE "tty")
-if(WIN32)
-	set(PLATFORM "win32")
-	set(CONSOLE "win32")
-elseif(UNIX)
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    add_definitions( -DMACOS_X -DMACOS_X_ACCELERATION_HACK -D USE_FILE32API -DMACOS_X_CURSOR_HACK )
-  endif()
-  set(PLATFORM "unix")
+find_package( PkgConfig )
+
+if( WIN32 )
+  add_definitions( -D_CRT_SECURE_NO_WARNINGS )
 endif()
 
-#Determine arch
+set( CONSOLE "tty" )
+
+# Determine platform
+if( WIN32 )
+  set( PLATFORM "win32" )
+  set( CONSOLE "win32" )
+elseif( UNIX )
+  if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    add_definitions( -DMACOS_X -DMACOS_X_ACCELERATION_HACK -D USE_FILE32API -DMACOS_X_CURSOR_HACK )
+  endif()
+  set( PLATFORM "unix" )
+endif()
+
+# Determine arch
 if( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64" )
   set( BUILD_ARCH "x86_64" )
 elseif( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86" )
@@ -400,11 +403,11 @@ set( QCOMMONLIST
 if( USE_LLVM )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
   add_definitions( -DUSE_LLVM )
-endif( )
+endif()
 
 if( USE_PHYSICS )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/cm_physics.cpp )
-endif( )
+endif()
 
 if( USE_MYSQL )
   set( DATABASELIST
@@ -444,7 +447,7 @@ set( CLIENTLIST
 
 if( USE_MUMBLE )
   set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c )
-endif( )
+endif()
 
 set( ALLIST
   ${MOUNT_DIR}/engine/snd_openal/qal.c
@@ -464,20 +467,21 @@ if( USE_CPUINFO )
 else()
   set( CPUINFOLIST )
 endif()
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set( SDLBASELIST
-      ${MOUNT_DIR}/engine/sys/sys_unix.c
-      ${MOUNT_DIR}/engine/sys/sys_osx.m
-      ${MOUNT_DIR}/engine/sys/sys_main.c
-      ${MOUNT_DIR}/engine/sys/con_log.c
-      ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
-     )
+    ${MOUNT_DIR}/engine/sys/sys_unix.c
+    ${MOUNT_DIR}/engine/sys/sys_osx.m
+    ${MOUNT_DIR}/engine/sys/sys_main.c
+    ${MOUNT_DIR}/engine/sys/con_log.c
+    ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
+  )
 else()
   set( SDLBASELIST
-      ${MOUNT_DIR}/engine/sys/sys_${PLATFORM}.c
-      ${MOUNT_DIR}/engine/sys/sys_main.c
-      ${MOUNT_DIR}/engine/sys/con_log.c
-      ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
+    ${MOUNT_DIR}/engine/sys/sys_${PLATFORM}.c
+    ${MOUNT_DIR}/engine/sys/sys_main.c
+    ${MOUNT_DIR}/engine/sys/con_log.c
+    ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
   )
 endif()
 
@@ -873,7 +877,7 @@ if( USE_VOIP )
     ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
     ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
     ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
-   )
+  )
 else()
   set( SPEEXLIST )
 endif()
@@ -896,10 +900,11 @@ set( CRYPTOLIST
   ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
 )
 
-if(  USE_CIN_XVID )
+if( USE_CIN_XVID )
   add_definitions( -DUSE_CIN_XVID )
   find_package( xvid REQUIRED )
 endif()
+
 set( OWMAPLIST
   ${MOUNT_DIR}/tools/common/cmdlib.c
   ${MOUNT_DIR}/tools/common/imagelib.c
@@ -936,52 +941,52 @@ set( OWMAPLIST
   ${MOUNT_DIR}/libs/picomodel/lwo/surface.c
   ${MOUNT_DIR}/libs/picomodel/lwo/vecmath.c
   ${MOUNT_DIR}/libs/picomodel/lwo/vmap.c
-#   ${MOUNT_DIR}/libs/jpeg/jaricom.c
-#   ${MOUNT_DIR}/libs/jpeg/jcapimin.c
-#   ${MOUNT_DIR}/libs/jpeg/jcapistd.c
-#   ${MOUNT_DIR}/libs/jpeg/jcarith.c
-#   ${MOUNT_DIR}/libs/jpeg/jccoefct.c
-#   ${MOUNT_DIR}/libs/jpeg/jccolor.c
-#   ${MOUNT_DIR}/libs/jpeg/jcdctmgr.c
-#   ${MOUNT_DIR}/libs/jpeg/jchuff.c
-#   ${MOUNT_DIR}/libs/jpeg/jcinit.c
-#   ${MOUNT_DIR}/libs/jpeg/jcmainct.c
-#   ${MOUNT_DIR}/libs/jpeg/jcmarker.c
-#   ${MOUNT_DIR}/libs/jpeg/jcmaster.c
-#   ${MOUNT_DIR}/libs/jpeg/jcomapi.c
-#   ${MOUNT_DIR}/libs/jpeg/jcparam.c
-#   ${MOUNT_DIR}/libs/jpeg/jcprepct.c
-#   ${MOUNT_DIR}/libs/jpeg/jcsample.c
-#   ${MOUNT_DIR}/libs/jpeg/jctrans.c
-#   ${MOUNT_DIR}/libs/jpeg/jdapimin.c
-#   ${MOUNT_DIR}/libs/jpeg/jdapistd.c
-#   ${MOUNT_DIR}/libs/jpeg/jdarith.c
-#   ${MOUNT_DIR}/libs/jpeg/jdatadst.c
-#   ${MOUNT_DIR}/libs/jpeg/jdatasrc.c
-#   ${MOUNT_DIR}/libs/jpeg/jdcoefct.c
-#   ${MOUNT_DIR}/libs/jpeg/jdcolor.c
-#   ${MOUNT_DIR}/libs/jpeg/jddctmgr.c
-#   ${MOUNT_DIR}/libs/jpeg/jdhuff.c
-#   ${MOUNT_DIR}/libs/jpeg/jdinput.c
-#   ${MOUNT_DIR}/libs/jpeg/jdmainct.c
-#   ${MOUNT_DIR}/libs/jpeg/jdmarker.c
-#   ${MOUNT_DIR}/libs/jpeg/jdmaster.c
-#   ${MOUNT_DIR}/libs/jpeg/jdmerge.c
-#   ${MOUNT_DIR}/libs/jpeg/jdpostct.c
-#   ${MOUNT_DIR}/libs/jpeg/jdsample.c
-#   ${MOUNT_DIR}/libs/jpeg/jdtrans.c
-#   ${MOUNT_DIR}/libs/jpeg/jerror.c
-#   ${MOUNT_DIR}/libs/jpeg/jfdctflt.c
-#   ${MOUNT_DIR}/libs/jpeg/jfdctfst.c
-#   ${MOUNT_DIR}/libs/jpeg/jfdctint.c
-#   ${MOUNT_DIR}/libs/jpeg/jidctflt.c
-#   ${MOUNT_DIR}/libs/jpeg/jidctfst.c
-#   ${MOUNT_DIR}/libs/jpeg/jidctint.c
-#   ${MOUNT_DIR}/libs/jpeg/jmemmgr.c
-#   ${MOUNT_DIR}/libs/jpeg/jmemnobs.c
-#   ${MOUNT_DIR}/libs/jpeg/jquant1.c
-#   ${MOUNT_DIR}/libs/jpeg/jquant2.c
-#   ${MOUNT_DIR}/libs/jpeg/jutils.c
+  #${MOUNT_DIR}/libs/jpeg/jaricom.c
+  #${MOUNT_DIR}/libs/jpeg/jcapimin.c
+  #${MOUNT_DIR}/libs/jpeg/jcapistd.c
+  #${MOUNT_DIR}/libs/jpeg/jcarith.c
+  #${MOUNT_DIR}/libs/jpeg/jccoefct.c
+  #${MOUNT_DIR}/libs/jpeg/jccolor.c
+  #${MOUNT_DIR}/libs/jpeg/jcdctmgr.c
+  #${MOUNT_DIR}/libs/jpeg/jchuff.c
+  #${MOUNT_DIR}/libs/jpeg/jcinit.c
+  #${MOUNT_DIR}/libs/jpeg/jcmainct.c
+  #${MOUNT_DIR}/libs/jpeg/jcmarker.c
+  #${MOUNT_DIR}/libs/jpeg/jcmaster.c
+  #${MOUNT_DIR}/libs/jpeg/jcomapi.c
+  #${MOUNT_DIR}/libs/jpeg/jcparam.c
+  #${MOUNT_DIR}/libs/jpeg/jcprepct.c
+  #${MOUNT_DIR}/libs/jpeg/jcsample.c
+  #${MOUNT_DIR}/libs/jpeg/jctrans.c
+  #${MOUNT_DIR}/libs/jpeg/jdapimin.c
+  #${MOUNT_DIR}/libs/jpeg/jdapistd.c
+  #${MOUNT_DIR}/libs/jpeg/jdarith.c
+  #${MOUNT_DIR}/libs/jpeg/jdatadst.c
+  #${MOUNT_DIR}/libs/jpeg/jdatasrc.c
+  #${MOUNT_DIR}/libs/jpeg/jdcoefct.c
+  #${MOUNT_DIR}/libs/jpeg/jdcolor.c
+  #${MOUNT_DIR}/libs/jpeg/jddctmgr.c
+  #${MOUNT_DIR}/libs/jpeg/jdhuff.c
+  #${MOUNT_DIR}/libs/jpeg/jdinput.c
+  #${MOUNT_DIR}/libs/jpeg/jdmainct.c
+  #${MOUNT_DIR}/libs/jpeg/jdmarker.c
+  #${MOUNT_DIR}/libs/jpeg/jdmaster.c
+  #${MOUNT_DIR}/libs/jpeg/jdmerge.c
+  #${MOUNT_DIR}/libs/jpeg/jdpostct.c
+  #${MOUNT_DIR}/libs/jpeg/jdsample.c
+  #${MOUNT_DIR}/libs/jpeg/jdtrans.c
+  #${MOUNT_DIR}/libs/jpeg/jerror.c
+  #${MOUNT_DIR}/libs/jpeg/jfdctflt.c
+  #${MOUNT_DIR}/libs/jpeg/jfdctfst.c
+  #${MOUNT_DIR}/libs/jpeg/jfdctint.c
+  #${MOUNT_DIR}/libs/jpeg/jidctflt.c
+  #${MOUNT_DIR}/libs/jpeg/jidctfst.c
+  #${MOUNT_DIR}/libs/jpeg/jidctint.c
+  #${MOUNT_DIR}/libs/jpeg/jmemmgr.c
+  #${MOUNT_DIR}/libs/jpeg/jmemnobs.c
+  #${MOUNT_DIR}/libs/jpeg/jquant1.c
+  #${MOUNT_DIR}/libs/jpeg/jquant2.c
+  #${MOUNT_DIR}/libs/jpeg/jutils.c
   ${MOUNT_DIR}/libs/zlib/adler32.c
   ${MOUNT_DIR}/libs/zlib/compress.c
   ${MOUNT_DIR}/libs/zlib/crc32.c
@@ -1051,20 +1056,20 @@ if( USE_PHYSICS )
   )
 endif()
 
-if (WIN32)
-	add_definitions(-DWINVER=0x501)
-# 	set( OS_LIBRARIES m winmm wsock32 gdi32 ole32 ws2_32 psapi Iphlpapi advapi32 shell32 user32 )
-	set( OS_LIBRARIES m winmm ws2_32 psapi )
-	set( EXTRALIBS dinput dsound )
-	set( OS_BUILD )
-elseif (UNIX)
+if( WIN32 )
+  add_definitions( -DWINVER=0x501 )
+  #set( OS_LIBRARIES m winmm wsock32 gdi32 ole32 ws2_32 psapi Iphlpapi advapi32 shell32 user32 )
+  set( OS_LIBRARIES m winmm ws2_32 psapi )
+  set( EXTRALIBS dinput dsound )
+  set( OS_BUILD )
+elseif( UNIX )
   if( CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" )
     set( OS_LIBRARIES m z )
     set( OS_BUILD )
-  elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  elseif( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
     set( OS_LIBRARIES dl m z )
     set( OS_LIBRARIES ${OS_LIBRARIES} "-framework AGL -framework OpenGL -framework Carbon -framework IOKit" )
-	  set( OS_BUILD ${LINUXSOURCESLIST} )
+    set( OS_BUILD ${LINUXSOURCESLIST} )
   else()
     set( OS_LIBRARIES dl m z rt )
     set( OS_BUILD ${LINUXSOURCESLIST} )
@@ -1072,8 +1077,7 @@ elseif (UNIX)
 endif()
 
 # GLEW
-set(GLEW_INCLUDE_DIR
-	"${MOUNT_DIR}/libs/glew/include")
+set( GLEW_INCLUDE_DIR "${MOUNT_DIR}/libs/glew/include" )
 
 
 
@@ -1081,73 +1085,79 @@ set(GLEW_INCLUDE_DIR
 # Build Game/Cgame/Ui DLL/.so #
 ###############################
 
-  if( BUILD_GAME_SO_ET )
-    add_library( game  SHARED ${SHAREDLIST} ${QAGAMELIST} )
-    set_property( TARGET game PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
-    set_target_properties( game PROPERTIES
-      OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "etmain" )
-    add_library( cgame SHARED ${SHAREDLIST} ${CGAMELIST} )
-    set_property( TARGET cgame PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
-    set_target_properties( cgame PROPERTIES
-      OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-      PREFIX "" 
-      LIBRARY_OUTPUT_DIRECTORY "etmain" )
-    add_library( ui SHARED ${SHAREDLIST} ${UILIST} )
-    set_property( TARGET ui PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
-    set_target_properties( ui PROPERTIES
-      OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "etmain" )
-  install(TARGETS game cgame ui
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib
+if( BUILD_GAME_SO_ET )
+  add_library( game  SHARED ${SHAREDLIST} ${QAGAMELIST} )
+  set_property( TARGET game PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( game PROPERTIES
+    OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY "etmain"
   )
-  endif()
+  add_library( cgame SHARED ${SHAREDLIST} ${CGAMELIST} )
+  set_property( TARGET cgame PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( cgame PROPERTIES
+    OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
+    PREFIX "" 
+    LIBRARY_OUTPUT_DIRECTORY "etmain"
+  )
+  add_library( ui SHARED ${SHAREDLIST} ${UILIST} )
+  set_property( TARGET ui PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( ui PROPERTIES
+    OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY "etmain"
+  )
+  install(TARGETS game cgame ui
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
+endif()
 
-  if( BUILD_GAME_SO_TREM )
-    add_library( tremgame  SHARED ${GAMETREM} )
-    set_property( TARGET tremgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
-    set_target_properties( tremgame PROPERTIES
-      OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "base" )
-    add_library( cgametrem SHARED ${CGAMETREM} )
-    set_property( TARGET cgametrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
-    set_target_properties( cgametrem PROPERTIES
-      OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-      PREFIX "" 
-      LIBRARY_OUTPUT_DIRECTORY "base" )
+if( BUILD_GAME_SO_TREM )
+  add_library( tremgame  SHARED ${GAMETREM} )
+  set_property( TARGET tremgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( tremgame PROPERTIES
+    OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY "base"
+  )
+  add_library( cgametrem SHARED ${CGAMETREM} )
+  set_property( TARGET cgametrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( cgametrem PROPERTIES
+    OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
+    PREFIX "" 
+    LIBRARY_OUTPUT_DIRECTORY "base"
+  )
   add_library( uitrem SHARED ${UITREM} )
-    set_property( TARGET uitrem PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
-    set_target_properties( uitrem PROPERTIES
-      OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "base" )
-  endif()
+  set_property( TARGET uitrem PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( uitrem PROPERTIES
+    OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY "base"
+  )
+endif()
 
- if( BUILD_GAME_SO_GPP )
-    add_library( gppgame  SHARED ${GAMEGPP} )
-    set_property( TARGET gppgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-    set_target_properties( gppgame PROPERTIES
-      OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main" )
-    add_library( gpptrem SHARED ${CGAMEGPP} )
-    set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-    set_target_properties( gpptrem PROPERTIES
-      OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-      PREFIX "" 
-      LIBRARY_OUTPUT_DIRECTORY "main" )
+if( BUILD_GAME_SO_GPP )
+  add_library( gppgame  SHARED ${GAMEGPP} )
+  set_property( TARGET gppgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( gppgame PROPERTIES
+    OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY "main" )
+  add_library( gpptrem SHARED ${CGAMEGPP} )
+  set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( gpptrem PROPERTIES
+    OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
+    PREFIX "" 
+    LIBRARY_OUTPUT_DIRECTORY "main" )
   add_library( gppui SHARED ${UIGPP} )
-    set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-    set_target_properties( gppui PROPERTIES
-      OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main" )
-  endif()
+  set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( gppui PROPERTIES
+    OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY "main" )
+endif()
 
 ###################
 # Build Renderers #
@@ -1166,17 +1176,21 @@ endif()
 
 if( USE_PHYSICS )
   if( LINUX )
-    if( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64" )
+    if( CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux64/libNewton.a" )
+<<<<<<< HEAD
     elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i[3-6]86")
+=======
+    elseif( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" )
+>>>>>>> cmake-formatting
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux32/libNewton.a" )
     endif()
   else()
     set( NEWTON_LIBRARY CACHE FILEPATH "Location of the Newton library" )
   endif()
 endif()
+
 if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
-  
   find_package( OpenGL REQUIRED )
   if( USE_SYSTEM_HEADERS )
     find_package( SDL REQUIRED )
@@ -1216,11 +1230,10 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
     set_target_properties( renderer PROPERTIES OUTPUT_NAME "librendererGL${BUILD_ARCH}" PREFIX "" )
   endif()
 
-  #Enable WEBP in code if WEBP is found
+  # Enable WEBP in code if WEBP is found
   if( WEBP_FOUND )
     set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-  endif( )
-
+  endif()
 endif()
 
 ################
@@ -1232,6 +1245,7 @@ if( BUILD_CLIENT )
   if( USE_CURL )
     find_package( CURL REQUIRED )
   endif()
+  
   if( USE_SYSTEM_HEADERS )
     find_package( JPEG )
     find_package( SDL REQUIRED )
@@ -1245,12 +1259,13 @@ if( BUILD_CLIENT )
     set( JPEG_INCLUDE_DIR ${MOUNT_DIR}/libs/jpeg )
     set( FREETYPE_INCLUDE_DIRS ${MOUNT_DIR}/libs/freetype/include/freetype2 )
     set( GLEW_INCLUDE_DIR ${MOUNT_DIR}/libs/glew/include )
-endif()
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  link_directories( ${CMAKE_BINARY_DIR} /opt/local/lib )
-else()
-  link_directories( ${CMAKE_BINARY_DIR})
-endif()
+  endif()
+
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    link_directories( ${CMAKE_BINARY_DIR} /opt/local/lib )
+  else()
+    link_directories( ${CMAKE_BINARY_DIR})
+  endif()
 
   if( NOT USE_INTERNAL_ZLIB )
     find_package(ZLIB REQUIRED)
@@ -1258,51 +1273,49 @@ endif()
   endif()
 
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
-      ${CPUINFOLIST} ${SDLLIST} ${OS_BUILD} ${QCOMMONLIST} ${SHAREDLIST}
-      ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
+    ${CPUINFOLIST} ${SDLLIST} ${OS_BUILD} ${QCOMMONLIST} ${SHAREDLIST}
+    ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
 
-if( USE_OPENAL )
-  find_package( OpenAL REQUIRED )
-  add_definitions( -DUSE_OPENAL )
-  if( USE_OPENAL_DLOPEN )
-    add_definitions( -DUSE_OPENAL_DLOPEN )
+  if( USE_OPENAL )
+    find_package( OpenAL REQUIRED )
+    add_definitions( -DUSE_OPENAL )
+    if( USE_OPENAL_DLOPEN )
+      add_definitions( -DUSE_OPENAL_DLOPEN )
+    endif()
   endif()
-endif()
 
-if( USE_CURL )
-  find_package( CURL REQUIRED )
-  add_definitions( -DUSE_CURL )
-  if( USE_CURL_DLOPEN )
-    add_definitions( -DUSE_CURL_DLOPEN )
+  if( USE_CURL )
+    find_package( CURL REQUIRED )
+    add_definitions( -DUSE_CURL )
+    if( USE_CURL_DLOPEN )
+      add_definitions( -DUSE_CURL_DLOPEN )
+    endif()
   endif()
-endif()
 
-if( USE_CURSES )
-  set( CURSES_NEED_NCURSES 1 )
-  find_package( Curses REQUIRED )
-  add_definitions( -DUSE_CURSES )
-endif()
-
-if( USE_VOIP )
-  add_definitions( -DUSE_VOIP -DFLOATING_POINT )
-endif()
-
-if( USE_CODEC_VORBIS )
-  find_package( Vorbis REQUIRED )
-  find_package( Ogg REQUIRED )
-  add_definitions( -DUSE_CODEC_VORBIS )
-endif()
-
-
-
-if( USE_CIN_THEORA )
-  find_package( Theora REQUIRED )
-  if( ${VORBIS_FOUND} AND ${THEORA_FOUND} )
-    add_definitions( -DUSE_CIN_THEORA )
-  else()
-    message( FATAL_ERROR "Vorbis must be enabled to use CIN_THEORA" )
+  if( USE_CURSES )
+    set( CURSES_NEED_NCURSES 1 )
+    find_package( Curses REQUIRED )
+    add_definitions( -DUSE_CURSES )
   endif()
-endif()
+
+  if( USE_VOIP )
+    add_definitions( -DUSE_VOIP -DFLOATING_POINT )
+  endif()
+
+  if( USE_CODEC_VORBIS )
+    find_package( Vorbis REQUIRED )
+    find_package( Ogg REQUIRED )
+    add_definitions( -DUSE_CODEC_VORBIS )
+  endif()
+
+  if( USE_CIN_THEORA )
+    find_package( Theora REQUIRED )
+    if( ${VORBIS_FOUND} AND ${THEORA_FOUND} )
+      add_definitions( -DUSE_CIN_THEORA )
+    else()
+      message( FATAL_ERROR "Vorbis must be enabled to use CIN_THEORA" )
+    endif()
+  endif()
      
  if( USE_MUMBLE )
    add_definitions( -DUSE_MUMBLE )
@@ -1359,27 +1372,26 @@ if( BUILD_SERVER )
     set( ZLIBLIST )
   endif()
 
-  add_executable( server ${SERVERLIST}  ${SDLBASELIST}
-      ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
+  add_executable( server ${SERVERLIST}  ${SDLBASELIST} ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
       ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
 
-if( USE_CURL )
-  find_package( CURL REQUIRED )
-  add_definitions( -DUSE_CURL )
-  if( USE_CURL_DLOPEN )
-    add_definitions( -DUSE_CURL_DLOPEN )
+  if( USE_CURL )
+    find_package( CURL REQUIRED )
+    add_definitions( -DUSE_CURL )
+    if( USE_CURL_DLOPEN )
+      add_definitions( -DUSE_CURL_DLOPEN )
+    endif()
   endif()
-endif()
 
-if( USE_CURSES )
-  set( CURSES_NEED_NCURSES 1 )
-  find_package( Curses REQUIRED )
-  add_definitions( -DUSE_CURSES )
-endif()
+  if( USE_CURSES )
+    set( CURSES_NEED_NCURSES 1 )
+    find_package( Curses REQUIRED )
+    add_definitions( -DUSE_CURSES )
+  endif()
 
-if( USE_VOIP )
-  add_definitions( -DUSE_VOIP -DFLOATING_POINT )
-endif()
+  if( USE_VOIP )
+    add_definitions( -DUSE_VOIP -DFLOATING_POINT )
+  endif()
  
   if( USE_PHYSICS )
     pkg_check_modules( XML tinyxml )
@@ -1427,5 +1439,5 @@ if( BUILD_OWMAP )
 	    RUNTIME DESTINATION bin
 	    LIBRARY DESTINATION lib
 	    ARCHIVE DESTINATION lib
-    )
+  )
 endif()
