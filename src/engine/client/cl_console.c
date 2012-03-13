@@ -133,6 +133,12 @@ void Con_ToggleConsole_f(void)
 	}
 }
 
+void Con_OpenConsole_f(void)
+{
+	if (!(cls.keyCatchers & KEYCATCH_CONSOLE))
+		Con_ToggleConsole_f ();
+}
+
 const short* Con_GetText( int console )
 {
 	if( console >= 0 && console < lengthof( cons ) && cons[console].text ) {

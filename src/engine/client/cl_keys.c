@@ -1182,6 +1182,39 @@ void Key_Bind_f( void ) {
 }
 
 /*
+===================
+Key_EditBind_f
+===================
+*/
+void Key_EditBind_f( void ) {
+	char *buf;
+	/*const*/ char *key, *binding, *keyq;
+	int b;
+
+	b = Cmd_Argc ();
+	if (b != 2) {
+		Com_Printf( "editbind <key> : edit a key binding (in the in-game console)" );
+		return;
+	}
+	key = Cmd_Argv (1);
+	b = Key_StringToKeynum (key);
+	if (b == -1) {
+		Com_Printf( "\"%s\" isn't a valid key\n", key );
+		return;
+	}
+
+	binding = Key_GetBinding (b);
+
+	keyq = Com_QuoteStr (key); // <- static buffer
+	buf = malloc (8 + strlen (keyq) + strlen (binding));
+	sprintf (buf, "/bind %s %s", keyq, binding);
+
+	Con_OpenConsole_f ();
+	Field_Set (&g_consoleField, buf);
+	free (buf);
+}
+
+/*
 ============
 Key_WriteBindings
 
@@ -1289,6 +1322,7 @@ void CL_InitKeyCommands( void ) {
 	Cmd_SetCommandCompletionFunc( "unbind", Key_CompleteUnbind );
 	Cmd_AddCommand( "unbindall",Key_Unbindall_f );
 	Cmd_AddCommand( "bindlist",Key_Bindlist_f );
+	Cmd_AddCommand( "editbind",Key_EditBind_f );
 }
 
 /*

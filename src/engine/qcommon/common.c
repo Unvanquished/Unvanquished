@@ -3801,6 +3801,22 @@ void Field_Clear(field_t * edit)
 
 /*
 ==================
+Field_Set
+==================
+*/
+void Field_Set(field_t * edit, const char * content)
+{
+	memset(edit->buffer, 0, MAX_EDIT_LINE);
+	strncpy(edit->buffer, content, MAX_EDIT_LINE);
+	edit->cursor = strlen(edit->buffer);
+	if (edit->cursor > edit->widthInChars)
+		edit->scroll = edit->cursor - edit->widthInChars;
+	else
+		edit->scroll = 0;
+}
+
+/*
+==================
 Field_WordDelete
 ==================
 */
