@@ -296,6 +296,7 @@ typedef struct
 
   qboolean  chatTeam;
   qboolean  chatAdmin;
+  qboolean  chatIRC;
 
   profileInfo_t   profileList[MAX_PROFILES];
   int             profileCount;
