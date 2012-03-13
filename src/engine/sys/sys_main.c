@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -128,18 +128,18 @@ char *Sys_DefaultInstallPath(void)
 
 	Q_strreplace(installdir, sizeof(installdir), "src/engine", "");
 	Q_strreplace(installdir, sizeof(installdir), "src\\engine", "");
-	
+
 	Q_strreplace(installdir, sizeof(installdir), "bin/win32", "");
 	Q_strreplace(installdir, sizeof(installdir), "bin\\win32", "");
-	
+
 	Q_strreplace(installdir, sizeof(installdir), "bin/win64", "");
 	Q_strreplace(installdir, sizeof(installdir), "bin\\win64", "");
-	
+
 	Q_strreplace(installdir, sizeof(installdir), "bin/linux-x86", "");
 	Q_strreplace(installdir, sizeof(installdir), "bin/linux-x86_64", "");
-	
+
 	// MacOS X x86 and x64
-	Q_strreplace(installdir, sizeof(installdir), "bin/macosx", "");	
+	Q_strreplace(installdir, sizeof(installdir), "bin/macosx", "");
 
 	return installdir;
 }
@@ -300,7 +300,7 @@ cpuFeatures_t Sys_GetProcessorFeatures( void )
 #ifdef USE_CPUINFO
 	cpuFeatures_t features = 0;
 	CPUINFO cpuinfo;
-	
+
 	GetCPUInfo( &cpuinfo, CI_FALSE );
 
 	if( HasCPUID( &cpuinfo ) )    features |= CF_RDTSC;
@@ -541,7 +541,7 @@ extern int      cl_connectedToPureServer;
 char *Sys_GetDLLName(const char *name) {
 #if defined _WIN32
 	return va("%s_mp_" ARCH_STRING DLL_EXT, name);
-#else 
+#else
 	return va("%s.mp." ARCH_STRING DLL_EXT, name);
 #endif
 }
@@ -583,7 +583,7 @@ Used to load a development dll instead of a virtual machine
 #4 look in fs_libpath under FreeBSD
 =================
 */
-void * QDECL Sys_LoadDll( const char *name, char *fqpath , 
+void * QDECL Sys_LoadDll( const char *name, char *fqpath ,
 	                            intptr_t (QDECL  **entryPoint)(int, ...),
 								intptr_t (QDECL *systemcalls)(intptr_t, ...) ) {
 	void           *libHandle;
@@ -650,9 +650,9 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath ,
 			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%s\" !\n", name, Sys_LibraryError() );
 #else
 		if (!dllEntry)
-			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%x\" !\n", name, Sys_LibraryError() );
+			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%p\" !\n", name, Sys_LibraryError() );
 		else
-			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%x\" !\n", name, Sys_LibraryError() );
+			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%p\" !\n", name, Sys_LibraryError() );
 #endif
 		Sys_UnloadLibrary(libHandle);
 		return NULL;
@@ -752,9 +752,9 @@ int main( int argc, char **argv )
 {
 #if defined (IPHONE)
 	NSAutoreleasePool *pool = [NSAutoreleasePool new];
-	
+
 	[[OWApplication sharedApplication] setPriority:1.0];
-	
+
 	UIApplicationMain(ac, av, nil, nil);
 
 	[pool release];
@@ -801,11 +801,11 @@ int main( int argc, char **argv )
 	Sys_PrintCpuInfo();
 	Sys_PrintMemoryInfo();
 #endif
-	
+
 #ifdef OPENMP
 	Com_Printf( "-----------------------------------\n" );
 	/* Start parallel region */
-	#pragma omp parallel private(nthreads, tid) 
+	#pragma omp parallel private(nthreads, tid)
 	{
 		/* Obtain thread number */
 		tid = omp_get_thread_num();
@@ -824,7 +824,7 @@ int main( int argc, char **argv )
 
 			Com_Printf( "-----------------------------------\n" );
 			Com_Printf( "-----------------------------------\n" );
-		
+
 			/* Print environment information */
 			Com_Printf("Number of processors = %d\n", procs);
 			Com_Printf("Number of threads = %d\n", nthreads);
