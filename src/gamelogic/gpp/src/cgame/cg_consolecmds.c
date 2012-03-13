@@ -201,6 +201,58 @@ static void CG_UIMenu_f( void )
   trap_SendConsoleCommand( va( "menu %s\n", CG_Argv( 1 ) ) );
 }
 
+static void CG_NullFunc( void )
+{
+}
+
+// TODO: Use functions from bg_misc.c so this stuff isn't hardcoded. The problem with that is that they also include invalid values.
+
+static void CG_CompleteClass( void )
+{
+  int i = 0;
+  if( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS ) {
+    const char *classes[] = { "builder", "builderupg", "level0", "level1", "level1upg", "level2",
+      "level2upg", "level3", "level3upg", "level4" };
+    for( i=0; i<ARRAY_LEN( classes ); i++ )
+      trap_CompleteCallback( classes[i] );
+  }
+  else if( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS ) {
+    const char *classes[] = { "rifle", "ckit" };
+    for( i=0; i<ARRAY_LEN( classes ); i++ )
+      trap_CompleteCallback( classes[i] );
+  }
+}
+
+static void CG_CompleteBuy( void )
+{
+  if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
+    return;
+    
+  int i = 0;
+  const char *items[] = { "ckit", "rifle", "psaw", "shotgun", "lgun", "mdriver", "chaingun",
+    "prifle", "flamer", "lcannon", "larmour", "helmet", "human_bsuit", "grenade", "battpack"
+    "jetpack", "ammo" };
+  
+  for( i=0; i<ARRAY_LEN( items ); i++ )
+    trap_CompleteCallback( items[i] );
+}
+
+static void CG_CompleteBuild( void )
+{
+  int i = 0;
+  if( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS ) {
+    const char *structs[] = { "eggpod", "overmind", "barricade", "acid_tube", "trapper",
+      "booster", "hive" };
+    for( i=0; i<ARRAY_LEN( structs ); i++ )
+      trap_CompleteCallback( structs[i] );
+  }
+  else if( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS ) {
+    const char *structs[] = { "telenode", "mgturret", "tesla", "arm", "dcc", "medistat", "reactor", "repeater" };
+    for( i=0; i<ARRAY_LEN( structs ); i++ )
+      trap_CompleteCallback( structs[i] );
+  }
+}
+
 static struct {
 	char *cmd; 
 	void ( *function )( void ); 
@@ -208,6 +260,9 @@ static struct {
 } commands[ ] = {
   { "+scores", CG_ScoresDown_f, NULL },
   { "-scores", CG_ScoresUp_f, NULL },
+  { "build", NULL, CG_CompleteBuild },
+  { "buy", NULL, CG_CompleteBuy },
+  { "class", NULL, CG_CompleteClass },
   { "cgame_memory", BG_MemoryInfo, NULL },
   { "clientlist", CG_ClientList_f, NULL },
   { "destroyTestPS", CG_DestroyTestPS_f, NULL },
@@ -219,6 +274,7 @@ static struct {
   { "reloadhud", CG_ReloadHUD_f, NULL },
   { "scoresDown", CG_scrollScoresDown_f, NULL },
   { "scoresUp", CG_scrollScoresUp_f, NULL },
+  { "sell", NULL, CG_CompleteBuy },
   { "sizedown", CG_SizeDown_f, NULL },
   { "sizeup", CG_SizeUp_f, NULL },
   { "testgun", CG_TestGun_f, NULL },
@@ -248,7 +304,7 @@ qboolean CG_ConsoleCommand( void )
     sizeof( commands ) / sizeof( commands[ 0 ]), sizeof( commands[ 0 ] ),
     cmdcmp );
 
-  if( !cmd )
+  if( !cmd || !cmd->function )
     return qfalse;
 
   cmd->function( );
@@ -298,10 +354,6 @@ void CG_InitConsoleCommands( void )
   trap_AddCommand( "vote" );
   trap_AddCommand( "callteamvote" );
   trap_AddCommand( "teamvote" );
-  trap_AddCommand( "class" );
-  trap_AddCommand( "build" );
-  trap_AddCommand( "buy" );
-  trap_AddCommand( "sell" );
   trap_AddCommand( "reload" );
   trap_AddCommand( "itemact" );
   trap_AddCommand( "itemdeact" );
@@ -326,6 +378,8 @@ void CG_CompleteCommand( int argNum ) {
 	int i; 
 
 	cmd = CG_Argv( 0 );
+	while( *cmd == '\\' || *cmd == '/' )
+	  cmd++;
 
 	for( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )  {
 		if( !Q_stricmp( cmd, commands[ i ].cmd ) ) {
