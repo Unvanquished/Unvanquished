@@ -113,6 +113,7 @@ sfxHandle_t al_buf_find ( const char *filename )
 		ptr = &knownSfx[ sfx ];
 		memset ( ptr, 0, sizeof ( *ptr ) );
 		strcpy ( ptr->filename, filename );
+		numSfx++;
 	}
 
 	// Return the handle
