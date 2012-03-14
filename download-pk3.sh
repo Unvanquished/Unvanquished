@@ -10,7 +10,7 @@
 set -e
 
 # Download from here
-BASE_URL='http://downloads.sourceforge.net/project/unvanquished/Individual%20Game%20Pk3s/'
+BASE_URL='http://downloads.sourceforge.net/project/unvanquished/Assets/'
 
 # Paths passed to script
 DEST_DIR="${1:-.}"
