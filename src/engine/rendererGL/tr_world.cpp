@@ -487,6 +487,17 @@ void R_AddBSPModelSurfaces ( trRefEntity_t *ent )
 
 			R_AddDrawSurf ( ( surfaceType_t * ) vboSurface, vboSurface->shader, vboSurface->lightmapNum, fogNum );
 		}
+
+		// Tr3B: also add surfaces like deform autosprite
+		for ( i = 0; i < bspModel->numSurfaces; i++ )
+		{
+			bspSurface_t* surf = bspModel->firstSurface + i;
+
+			if ( !ShaderRequiresCPUDeforms ( surf->shader ) )
+				continue;
+
+			R_AddBrushModelSurface ( surf, fogNum );
+		}
 	}
 	else
 	{
