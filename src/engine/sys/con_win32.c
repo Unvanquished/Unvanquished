@@ -263,7 +263,7 @@ void CON_Init( void )
 	GetConsoleScreenBufferInfo( qconsole_hout, &info );
 	qconsole_attrib = info.wAttributes;
 
-	SetConsoleTitle( "Daemon Dedicated Server Console" );
+	SetConsoleTitle( "Daemon Console" );
 
 	// make cursor invisible
 	GetConsoleCursorInfo( qconsole_hout, &qconsole_orig_cursorinfo );
