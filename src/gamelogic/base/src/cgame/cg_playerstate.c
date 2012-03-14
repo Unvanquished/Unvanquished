@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 CG_DamageFeedback
 ==============
 */
-void CG_DamageFeedback ( int yawByte, int pitchByte, int damage )
+void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 {
 	float  left, front, up;
 	float  kick;
@@ -50,7 +50,7 @@ void CG_DamageFeedback ( int yawByte, int pitchByte, int damage )
 	// the lower on health you are, the greater the view kick will be
 	health = cg.snap->ps.stats[ STAT_HEALTH ];
 
-	if ( health < 40 )
+	if( health < 40 )
 	{
 		scale = 1;
 	}
@@ -61,18 +61,18 @@ void CG_DamageFeedback ( int yawByte, int pitchByte, int damage )
 
 	kick = damage * scale;
 
-	if ( kick < 5 )
+	if( kick < 5 )
 	{
 		kick = 5;
 	}
 
-	if ( kick > 10 )
+	if( kick > 10 )
 	{
 		kick = 10;
 	}
 
 	// if yaw and pitch are both 255, make the damage always centered (falling, etc)
-	if ( yawByte == 255 && pitchByte == 255 )
+	if( yawByte == 255 && pitchByte == 255 )
 	{
 		cg.damageX = 0;
 		cg.damageY = 0;
@@ -89,19 +89,19 @@ void CG_DamageFeedback ( int yawByte, int pitchByte, int damage )
 		angles[ YAW ] = yaw;
 		angles[ ROLL ] = 0;
 
-		AngleVectors ( angles, dir, NULL, NULL );
-		VectorSubtract ( vec3_origin, dir, dir );
+		AngleVectors( angles, dir, NULL, NULL );
+		VectorSubtract( vec3_origin, dir, dir );
 
-		front = DotProduct ( dir, cg.refdef.viewaxis[ 0 ] );
-		left = DotProduct ( dir, cg.refdef.viewaxis[ 1 ] );
-		up = DotProduct ( dir, cg.refdef.viewaxis[ 2 ] );
+		front = DotProduct( dir, cg.refdef.viewaxis[ 0 ] );
+		left = DotProduct( dir, cg.refdef.viewaxis[ 1 ] );
+		up = DotProduct( dir, cg.refdef.viewaxis[ 2 ] );
 
 		dir[ 0 ] = front;
 		dir[ 1 ] = left;
 		dir[ 2 ] = 0;
-		dist = VectorLength ( dir );
+		dist = VectorLength( dir );
 
-		if ( dist < 0.1f )
+		if( dist < 0.1f )
 		{
 			dist = 0.1f;
 		}
@@ -110,7 +110,7 @@ void CG_DamageFeedback ( int yawByte, int pitchByte, int damage )
 
 		cg.v_dmg_pitch = -kick * front;
 
-		if ( front <= 0.1 )
+		if( front <= 0.1 )
 		{
 			front = 0.1f;
 		}
@@ -120,28 +120,28 @@ void CG_DamageFeedback ( int yawByte, int pitchByte, int damage )
 	}
 
 	// clamp the position
-	if ( cg.damageX > 1.0 )
+	if( cg.damageX > 1.0 )
 	{
 		cg.damageX = 1.0;
 	}
 
-	if ( cg.damageX < -1.0 )
+	if( cg.damageX < -1.0 )
 	{
 		cg.damageX = -1.0;
 	}
 
-	if ( cg.damageY > 1.0 )
+	if( cg.damageY > 1.0 )
 	{
 		cg.damageY = 1.0;
 	}
 
-	if ( cg.damageY < -1.0 )
+	if( cg.damageY < -1.0 )
 	{
 		cg.damageY = -1.0;
 	}
 
 	// don't let the screen flashes vary as much
-	if ( kick > 10 )
+	if( kick > 10 )
 	{
 		kick = 10;
 	}
@@ -158,7 +158,7 @@ CG_Respawn
 A respawn happened this snapshot
 ================
 */
-void CG_Respawn ( void )
+void CG_Respawn( void )
 {
 	// no error decay on player movement
 	cg.thisFrameTeleport = qtrue;
@@ -178,37 +178,37 @@ CG_CheckPlayerstateEvents
 
 ==============
 */
-void CG_CheckPlayerstateEvents ( playerState_t *ps, playerState_t *ops )
+void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops )
 {
 	int       i;
 	int       event;
 	centity_t *cent;
 
-	if ( ps->externalEvent && ps->externalEvent != ops->externalEvent )
+	if( ps->externalEvent && ps->externalEvent != ops->externalEvent )
 	{
 		cent = &cg_entities[ ps->clientNum ];
 		cent->currentState.event = ps->externalEvent;
 		cent->currentState.eventParm = ps->externalEventParm;
-		CG_EntityEvent ( cent, cent->lerpOrigin );
+		CG_EntityEvent( cent, cent->lerpOrigin );
 	}
 
 	cent = &cg.predictedPlayerEntity; // cg_entities[ ps->clientNum ];
 
 	// go through the predictable events buffer
-	for ( i = ps->eventSequence - MAX_EVENTS; i < ps->eventSequence; i++ )
+	for( i = ps->eventSequence - MAX_EVENTS; i < ps->eventSequence; i++ )
 	{
 		// if we have a new predictable event
-		if ( i >= ops->eventSequence ||
-		     // or the server told us to play another event instead of a predicted event we already issued
-		     // or something the server told us changed our prediction causing a different event
-		     ( i > ops->eventSequence - MAX_EVENTS && ps->events[ i & ( MAX_EVENTS - 1 ) ] !=
-		       ops->events[ i & ( MAX_EVENTS - 1 ) ] ) )
+		if( i >= ops->eventSequence ||
+		    // or the server told us to play another event instead of a predicted event we already issued
+		    // or something the server told us changed our prediction causing a different event
+		    ( i > ops->eventSequence - MAX_EVENTS && ps->events[ i & ( MAX_EVENTS - 1 ) ] !=
+		      ops->events[ i & ( MAX_EVENTS - 1 ) ] ) )
 		{
 			event = ps->events[ i & ( MAX_EVENTS - 1 ) ];
 
 			cent->currentState.event = event;
 			cent->currentState.eventParm = ps->eventParms[ i & ( MAX_EVENTS - 1 ) ];
-			CG_EntityEvent ( cent, cent->lerpOrigin );
+			CG_EntityEvent( cent, cent->lerpOrigin );
 			cg.predictableEvents[ i & ( MAX_PREDICTED_EVENTS - 1 ) ] = event;
 
 			cg.eventSequence++;
@@ -221,7 +221,7 @@ void CG_CheckPlayerstateEvents ( playerState_t *ps, playerState_t *ops )
 CG_CheckChangedPredictableEvents
 ==================
 */
-void CG_CheckChangedPredictableEvents ( playerState_t *ps )
+void CG_CheckChangedPredictableEvents( playerState_t *ps )
 {
 	int       i;
 	int       event;
@@ -229,30 +229,30 @@ void CG_CheckChangedPredictableEvents ( playerState_t *ps )
 
 	cent = &cg.predictedPlayerEntity;
 
-	for ( i = ps->eventSequence - MAX_EVENTS; i < ps->eventSequence; i++ )
+	for( i = ps->eventSequence - MAX_EVENTS; i < ps->eventSequence; i++ )
 	{
 		//
-		if ( i >= cg.eventSequence )
+		if( i >= cg.eventSequence )
 		{
 			continue;
 		}
 
 		// if this event is not further back in than the maximum predictable events we remember
-		if ( i > cg.eventSequence - MAX_PREDICTED_EVENTS )
+		if( i > cg.eventSequence - MAX_PREDICTED_EVENTS )
 		{
 			// if the new playerstate event is different from a previously predicted one
-			if ( ps->events[ i & ( MAX_EVENTS - 1 ) ] != cg.predictableEvents[ i & ( MAX_PREDICTED_EVENTS - 1 ) ] )
+			if( ps->events[ i & ( MAX_EVENTS - 1 ) ] != cg.predictableEvents[ i & ( MAX_PREDICTED_EVENTS - 1 ) ] )
 			{
 				event = ps->events[ i & ( MAX_EVENTS - 1 ) ];
 				cent->currentState.event = event;
 				cent->currentState.eventParm = ps->eventParms[ i & ( MAX_EVENTS - 1 ) ];
-				CG_EntityEvent ( cent, cent->lerpOrigin );
+				CG_EntityEvent( cent, cent->lerpOrigin );
 
 				cg.predictableEvents[ i & ( MAX_PREDICTED_EVENTS - 1 ) ] = event;
 
-				if ( cg_showmiss.integer )
+				if( cg_showmiss.integer )
 				{
-					CG_Printf ( "WARNING: changed predicted event\n" );
+					CG_Printf( "WARNING: changed predicted event\n" );
 				}
 			}
 		}
@@ -264,27 +264,27 @@ void CG_CheckChangedPredictableEvents ( playerState_t *ps )
 CG_CheckLocalSounds
 ==================
 */
-void CG_CheckLocalSounds ( playerState_t *ps, playerState_t *ops )
+void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
 {
 	int reward;
 
 	// don't play the sounds if the player just changed teams
-	if ( ps->persistant[ PERS_TEAM ] != ops->persistant[ PERS_TEAM ] )
+	if( ps->persistant[ PERS_TEAM ] != ops->persistant[ PERS_TEAM ] )
 	{
 		return;
 	}
 
 	// health changes of more than -1 should make pain sounds
-	if ( ps->stats[ STAT_HEALTH ] < ops->stats[ STAT_HEALTH ] - 1 )
+	if( ps->stats[ STAT_HEALTH ] < ops->stats[ STAT_HEALTH ] - 1 )
 	{
-		if ( ps->stats[ STAT_HEALTH ] > 0 )
+		if( ps->stats[ STAT_HEALTH ] > 0 )
 		{
-			CG_PainEvent ( &cg.predictedPlayerEntity, ps->stats[ STAT_HEALTH ] );
+			CG_PainEvent( &cg.predictedPlayerEntity, ps->stats[ STAT_HEALTH ] );
 		}
 	}
 
 	// if we are going into the intermission, don't start any voices
-	if ( cg.intermissionStarted )
+	if( cg.intermissionStarted )
 	{
 		return;
 	}
@@ -299,10 +299,10 @@ CG_TransitionPlayerState
 
 ===============
 */
-void CG_TransitionPlayerState ( playerState_t *ps, playerState_t *ops )
+void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 {
 	// check for changing follow mode
-	if ( ps->clientNum != ops->clientNum )
+	if( ps->clientNum != ops->clientNum )
 	{
 		cg.thisFrameTeleport = qtrue;
 		// make sure we don't get any unwanted transition effects
@@ -312,34 +312,34 @@ void CG_TransitionPlayerState ( playerState_t *ps, playerState_t *ops )
 	}
 
 	// damage events (player is getting wounded)
-	if ( ps->damageEvent != ops->damageEvent && ps->damageCount )
+	if( ps->damageEvent != ops->damageEvent && ps->damageCount )
 	{
-		CG_DamageFeedback ( ps->damageYaw, ps->damagePitch, ps->damageCount );
+		CG_DamageFeedback( ps->damageYaw, ps->damagePitch, ps->damageCount );
 	}
 
 	// respawning
-	if ( ps->persistant[ PERS_SPAWN_COUNT ] != ops->persistant[ PERS_SPAWN_COUNT ] )
+	if( ps->persistant[ PERS_SPAWN_COUNT ] != ops->persistant[ PERS_SPAWN_COUNT ] )
 	{
 		CG_Respawn();
 	}
 
-	if ( cg.mapRestart )
+	if( cg.mapRestart )
 	{
 		CG_Respawn();
 		cg.mapRestart = qfalse;
 	}
 
-	if ( cg.snap->ps.pm_type != PM_INTERMISSION &&
-	     ps->persistant[ PERS_TEAM ] != TEAM_SPECTATOR )
+	if( cg.snap->ps.pm_type != PM_INTERMISSION &&
+	    ps->persistant[ PERS_TEAM ] != TEAM_SPECTATOR )
 	{
-		CG_CheckLocalSounds ( ps, ops );
+		CG_CheckLocalSounds( ps, ops );
 	}
 
 	// run events
-	CG_CheckPlayerstateEvents ( ps, ops );
+	CG_CheckPlayerstateEvents( ps, ops );
 
 	// smooth the ducking viewheight change
-	if ( ps->viewheight != ops->viewheight )
+	if( ps->viewheight != ops->viewheight )
 	{
 		cg.duckChange = ps->viewheight - ops->viewheight;
 		cg.duckTime = cg.time;

@@ -414,91 +414,91 @@ typedef struct
 typedef struct
 {
 	const char *name;
-	void            ( *handler ) ( itemDef_t *item, qboolean *bAbort, char **args );
+	void ( *handler )( itemDef_t *item, qboolean *bAbort, char **args );
 } commandDef_t;
 
 typedef struct
 {
-	qhandle_t ( *registerShaderNoMip ) ( const char *p );
-	void            ( *setColor ) ( const vec4_t v );
-	void            ( *drawHandlePic ) ( float x, float y, float w, float h, qhandle_t asset );
-	void            ( *drawStretchPic ) ( float x, float y, float w, float h, float s1, float t1, float s2, float t2,
-	                                      qhandle_t hShader );
-	void            ( *drawText ) ( float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit,
-	                                int style );
-	void            ( *drawTextExt ) ( float x, float y, float scalex, float scaley, vec4_t color, const char *text, float adjust,
-	                                   int limit, int style, fontInfo_t *font );
-	int             ( *textWidth ) ( const char *text, float scale, int limit );
-	int             ( *textWidthExt ) ( const char *text, float scale, int limit, fontInfo_t *font );
-	int             ( *multiLineTextWidth ) ( const char *text, float scale, int limit );
-	int             ( *textHeight ) ( const char *text, float scale, int limit );
-	int             ( *textHeightExt ) ( const char *text, float scale, int limit, fontInfo_t *font );
-	int             ( *multiLineTextHeight ) ( const char *text, float scale, int limit );
-	void            ( *textFont ) ( int font ); // NERVE - SMF
-	qhandle_t ( *registerModel ) ( const char *p );
-	void            ( *modelBounds ) ( qhandle_t model, vec3_t min, vec3_t max );
-	void            ( *fillRect ) ( float x, float y, float w, float h, const vec4_t color );
-	void            ( *drawRect ) ( float x, float y, float w, float h, float size, const vec4_t color );
-	void            ( *drawSides ) ( float x, float y, float w, float h, float size );
-	void            ( *drawTopBottom ) ( float x, float y, float w, float h, float size );
-	void            ( *clearScene ) ();
-	void            ( *addRefEntityToScene ) ( const refEntity_t *re );
-	void            ( *renderScene ) ( const refdef_t *fd );
-	void            ( *registerFont ) ( const char *pFontname, int pointSize, fontInfo_t *font );
-	void            ( *ownerDrawItem ) ( float x, float y, float w, float h, float text_x, float text_y, int ownerDraw,
-	                                     int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader,
-	                                     int textStyle );
-	float           ( *getValue ) ( int ownerDraw, int type );
-	qboolean ( *ownerDrawVisible ) ( int flags );
-	void            ( *runScript ) ( char **p );
-	void            ( *getTeamColor ) ( vec4_t *color );
-	void            ( *getCVarString ) ( const char *cvar, char *buffer, int bufsize );
-	float           ( *getCVarValue ) ( const char *cvar );
-	void            ( *setCVar ) ( const char *cvar, const char *value );
-	void            ( *drawTextWithCursor ) ( float x, float y, float scale, vec4_t color, const char *text, int cursorPos,
-	    char cursor, int limit, int style );
-	void            ( *setOverstrikeMode ) ( qboolean b );
-	qboolean ( *getOverstrikeMode ) ();
-	void            ( *startLocalSound ) ( sfxHandle_t sfx, int channelNum );
-	qboolean ( *ownerDrawHandleKey ) ( int ownerDraw, int flags, float *special, int key );
-	int             ( *feederCount ) ( float feederID );
-	const char     * ( *feederItemText ) ( float feederID, int index, int column, qhandle_t *handles, int *numhandles );
-	const char     * ( *fileText ) ( char *flieName );
-	qhandle_t ( *feederItemImage ) ( float feederID, int index );
-	void            ( *feederSelection ) ( float feederID, int index );
-	qboolean ( *feederSelectionClick ) ( itemDef_t *item );
-	void            ( *feederAddItem ) ( float feederID, const char *name, int index ); // NERVE - SMF
-	char           * ( *translateString ) ( const char *string ); // NERVE - SMF
-	void            ( *checkAutoUpdate ) (); // DHM - Nerve
-	void            ( *getAutoUpdate ) (); // DHM - Nerve
+	qhandle_t ( *registerShaderNoMip )( const char *p );
+	void ( *setColor )( const vec4_t v );
+	void ( *drawHandlePic )( float x, float y, float w, float h, qhandle_t asset );
+	void ( *drawStretchPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2,
+	                          qhandle_t hShader );
+	void ( *drawText )( float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit,
+	                    int style );
+	void ( *drawTextExt )( float x, float y, float scalex, float scaley, vec4_t color, const char *text, float adjust,
+	                       int limit, int style, fontInfo_t *font );
+	int ( *textWidth )( const char *text, float scale, int limit );
+	int ( *textWidthExt )( const char *text, float scale, int limit, fontInfo_t *font );
+	int ( *multiLineTextWidth )( const char *text, float scale, int limit );
+	int ( *textHeight )( const char *text, float scale, int limit );
+	int ( *textHeightExt )( const char *text, float scale, int limit, fontInfo_t *font );
+	int ( *multiLineTextHeight )( const char *text, float scale, int limit );
+	void ( *textFont )( int font );             // NERVE - SMF
+	qhandle_t ( *registerModel )( const char *p );
+	void ( *modelBounds )( qhandle_t model, vec3_t min, vec3_t max );
+	void ( *fillRect )( float x, float y, float w, float h, const vec4_t color );
+	void ( *drawRect )( float x, float y, float w, float h, float size, const vec4_t color );
+	void ( *drawSides )( float x, float y, float w, float h, float size );
+	void ( *drawTopBottom )( float x, float y, float w, float h, float size );
+	void ( *clearScene )();
+	void ( *addRefEntityToScene )( const refEntity_t *re );
+	void ( *renderScene )( const refdef_t *fd );
+	void ( *registerFont )( const char *pFontname, int pointSize, fontInfo_t *font );
+	void ( *ownerDrawItem )( float x, float y, float w, float h, float text_x, float text_y, int ownerDraw,
+	                         int ownerDrawFlags, int align, float special, float scale, vec4_t color, qhandle_t shader,
+	                         int textStyle );
+	float( *getValue )( int ownerDraw, int type );
+	qboolean( *ownerDrawVisible )( int flags );
+	void ( *runScript )( char **p );
+	void ( *getTeamColor )( vec4_t *color );
+	void ( *getCVarString )( const char *cvar, char *buffer, int bufsize );
+	float( *getCVarValue )( const char *cvar );
+	void ( *setCVar )( const char *cvar, const char *value );
+	void ( *drawTextWithCursor )( float x, float y, float scale, vec4_t color, const char *text, int cursorPos,
+	                              char cursor, int limit, int style );
+	void ( *setOverstrikeMode )( qboolean b );
+	qboolean( *getOverstrikeMode )();
+	void ( *startLocalSound )( sfxHandle_t sfx, int channelNum );
+	qboolean( *ownerDrawHandleKey )( int ownerDraw, int flags, float *special, int key );
+	int ( *feederCount )( float feederID );
+	const char      *( *feederItemText )( float feederID, int index, int column, qhandle_t *handles, int *numhandles );
+	const char      *( *fileText )( char *flieName );
+	qhandle_t ( *feederItemImage )( float feederID, int index );
+	void ( *feederSelection )( float feederID, int index );
+	qboolean( *feederSelectionClick )( itemDef_t *item );
+	void ( *feederAddItem )( float feederID, const char *name, int index );             // NERVE - SMF
+	char            *( *translateString )( const char *string );  // NERVE - SMF
+	void ( *checkAutoUpdate )();             // DHM - Nerve
+	void ( *getAutoUpdate )();             // DHM - Nerve
 
-	void            ( *keynumToStringBuf ) ( int keynum, char *buf, int buflen );
-	void            ( *getBindingBuf ) ( int keynum, char *buf, int buflen );
-	void            ( *getKeysForBinding ) ( const char *binding, int *key1, int *key2 );
+	void ( *keynumToStringBuf )( int keynum, char *buf, int buflen );
+	void ( *getBindingBuf )( int keynum, char *buf, int buflen );
+	void ( *getKeysForBinding )( const char *binding, int *key1, int *key2 );
 
-	qboolean ( *keyIsDown ) ( int keynum );
+	qboolean( *keyIsDown )( int keynum );
 
-	void            ( *setBinding ) ( int keynum, const char *binding );
-	void            ( *executeText ) ( int exec_when, const char *text );
-	void            ( *Error ) ( int level, const char *error, ... ) __attribute__ ( ( format ( printf, 2, 3 ) ) );
-	void            ( *Print ) ( const char *msg, ... ) __attribute__ ( ( format ( printf, 1, 2 ) ) );
-	void            ( *Pause ) ( qboolean b );
-	int             ( *ownerDrawWidth ) ( int ownerDraw, float scale );
-	sfxHandle_t ( *registerSound ) ( const char *name, qboolean compressed );
-	void            ( *startBackgroundTrack ) ( const char *intro, const char *loop );
-	void            ( *stopBackgroundTrack ) ();
-	int             ( *playCinematic ) ( const char *name, float x, float y, float w, float h );
-	void            ( *stopCinematic ) ( int handle );
-	void            ( *drawCinematic ) ( int handle, float x, float y, float w, float h );
-	void            ( *runCinematicFrame ) ( int handle );
+	void ( *setBinding )( int keynum, const char *binding );
+	void ( *executeText )( int exec_when, const char *text );
+	void ( *Error )( int level, const char *error, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
+	void ( *Print )( const char *msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+	void ( *Pause )( qboolean b );
+	int ( *ownerDrawWidth )( int ownerDraw, float scale );
+	sfxHandle_t ( *registerSound )( const char *name, qboolean compressed );
+	void ( *startBackgroundTrack )( const char *intro, const char *loop );
+	void ( *stopBackgroundTrack )();
+	int ( *playCinematic )( const char *name, float x, float y, float w, float h );
+	void ( *stopCinematic )( int handle );
+	void ( *drawCinematic )( int handle, float x, float y, float w, float h );
+	void ( *runCinematicFrame )( int handle );
 
 	// Gordon: campaign stuffs
-	const char     * ( *descriptionForCampaign ) ( void );
-	const char     * ( *nameForCampaign ) ( void );
-	void            ( *add2dPolys ) ( polyVert_t *verts, int numverts, qhandle_t hShader );
-	void            ( *updateScreen ) ( void );
-	void            ( *getHunkData ) ( int *hunkused, int *hunkexpected );
-	int             ( *getConfigString ) ( int index, char *buff, int buffsize );
+	const char      *( *descriptionForCampaign )( void );
+	const char      *( *nameForCampaign )( void );
+	void ( *add2dPolys )( polyVert_t *verts, int numverts, qhandle_t hShader );
+	void ( *updateScreen )( void );
+	void ( *getHunkData )( int *hunkused, int *hunkexpected );
+	int ( *getConfigString )( int index, char *buff, int buffsize );
 
 	float          yscale;
 	float          xscale;
@@ -518,77 +518,77 @@ typedef struct
 	float          FPS;
 } displayContextDef_t;
 
-const char          *String_Alloc ( const char *p );
+const char          *String_Alloc( const char *p );
 void                String_Init();
 void                String_Report();
-void                Init_Display ( displayContextDef_t *dc );
-void                Display_ExpandMacros ( char *buff );
-void                Menu_Init ( menuDef_t *menu );
-void                Item_Init ( itemDef_t *item );
-void                Menu_PostParse ( menuDef_t *menu );
+void                Init_Display( displayContextDef_t *dc );
+void                Display_ExpandMacros( char *buff );
+void                Menu_Init( menuDef_t *menu );
+void                Item_Init( itemDef_t *item );
+void                Menu_PostParse( menuDef_t *menu );
 menuDef_t           *Menu_GetFocused();
-void                Menu_HandleKey ( menuDef_t *menu, int key, qboolean down );
-void                Menu_HandleMouseMove ( menuDef_t *menu, float x, float y );
-void                Menu_ScrollFeeder ( menuDef_t *menu, int feeder, qboolean down );
-qboolean            Float_Parse ( char **p, float *f );
-qboolean            Color_Parse ( char **p, vec4_t *c );
-qboolean            Int_Parse ( char **p, int *i );
-qboolean            Rect_Parse ( char **p, rectDef_t *r );
-qboolean            String_Parse ( char **p, const char **out );
-qboolean            Script_Parse ( char **p, const char **out );
-void                PC_SourceError ( int handle, char *format, ... );
-void                PC_SourceWarning ( int handle, char *format, ... );
-qboolean            PC_Float_Parse ( int handle, float *f );
-qboolean            PC_Color_Parse ( int handle, vec4_t *c );
-qboolean            PC_Int_Parse ( int handle, int *i );
-qboolean            PC_Rect_Parse ( int handle, rectDef_t *r );
-qboolean            PC_String_Parse ( int handle, const char **out );
-qboolean            PC_Script_Parse ( int handle, const char **out );
-qboolean            PC_Char_Parse ( int handle, char *out ); // NERVE - SMF
+void                Menu_HandleKey( menuDef_t *menu, int key, qboolean down );
+void                Menu_HandleMouseMove( menuDef_t *menu, float x, float y );
+void                Menu_ScrollFeeder( menuDef_t *menu, int feeder, qboolean down );
+qboolean            Float_Parse( char **p, float *f );
+qboolean            Color_Parse( char **p, vec4_t *c );
+qboolean            Int_Parse( char **p, int *i );
+qboolean            Rect_Parse( char **p, rectDef_t *r );
+qboolean            String_Parse( char **p, const char **out );
+qboolean            Script_Parse( char **p, const char **out );
+void                PC_SourceError( int handle, char *format, ... );
+void                PC_SourceWarning( int handle, char *format, ... );
+qboolean            PC_Float_Parse( int handle, float *f );
+qboolean            PC_Color_Parse( int handle, vec4_t *c );
+qboolean            PC_Int_Parse( int handle, int *i );
+qboolean            PC_Rect_Parse( int handle, rectDef_t *r );
+qboolean            PC_String_Parse( int handle, const char **out );
+qboolean            PC_Script_Parse( int handle, const char **out );
+qboolean            PC_Char_Parse( int handle, char *out );  // NERVE - SMF
 int                 Menu_Count();
-menuDef_t           *Menu_Get ( int handle );
-void                Menu_New ( int handle );
+menuDef_t           *Menu_Get( int handle );
+void                Menu_New( int handle );
 void                Menu_PaintAll();
-menuDef_t           *Menus_ActivateByName ( const char *p, qboolean modalStack );
+menuDef_t           *Menus_ActivateByName( const char *p, qboolean modalStack );
 void                Menu_Reset();
 qboolean            Menus_AnyFullScreenVisible();
-void                Menus_Activate ( menuDef_t *menu );
-qboolean            Menus_CaptureFuncActive ( void );
+void                Menus_Activate( menuDef_t *menu );
+qboolean            Menus_CaptureFuncActive( void );
 
 displayContextDef_t *Display_GetContext();
-void                *Display_CaptureItem ( int x, int y );
-qboolean            Display_MouseMove ( void *p, int x, int y );
-int                 Display_CursorType ( int x, int y );
+void                *Display_CaptureItem( int x, int y );
+qboolean            Display_MouseMove( void *p, int x, int y );
+int                 Display_CursorType( int x, int y );
 qboolean            Display_KeyBindPending();
-void                Menus_OpenByName ( const char *p );
-menuDef_t           *Menus_FindByName ( const char *p );
-void                Menus_ShowByName ( const char *p );
-void                Menus_CloseByName ( const char *p );
-void                Display_HandleKey ( int key, qboolean down, int x, int y );
-void                LerpColor ( vec4_t a, vec4_t b, vec4_t c, float t );
+void                Menus_OpenByName( const char *p );
+menuDef_t           *Menus_FindByName( const char *p );
+void                Menus_ShowByName( const char *p );
+void                Menus_CloseByName( const char *p );
+void                Display_HandleKey( int key, qboolean down, int x, int y );
+void                LerpColor( vec4_t a, vec4_t b, vec4_t c, float t );
 void                Menus_CloseAll();
-void                Menu_Paint ( menuDef_t *menu, qboolean forcePaint );
-void                Menu_SetFeederSelection ( menuDef_t *menu, int feeder, int index, const char *name );
+void                Menu_Paint( menuDef_t *menu, qboolean forcePaint );
+void                Menu_SetFeederSelection( menuDef_t *menu, int feeder, int index, const char *name );
 void                Display_CacheAll();
 
 // TTimo
-void                Menu_ShowItemByName ( menuDef_t *menu, const char *p, qboolean bShow );
+void                Menu_ShowItemByName( menuDef_t *menu, const char *p, qboolean bShow );
 
-void                *UI_Alloc ( int size );
-void                UI_InitMemory ( void );
+void                *UI_Alloc( int size );
+void                UI_InitMemory( void );
 qboolean            UI_OutOfMemory();
 
-void                Controls_GetConfig ( void );
-void                Controls_SetConfig ( qboolean restart );
-void                Controls_SetDefaults ( qboolean lefthanded );
+void                Controls_GetConfig( void );
+void                Controls_SetConfig( qboolean restart );
+void                Controls_SetDefaults( qboolean lefthanded );
 
-int                 trap_PC_AddGlobalDefine ( char *define );
-int                 trap_PC_RemoveAllGlobalDefines ( void );
-int                 trap_PC_LoadSource ( const char *filename );
-int                 trap_PC_FreeSource ( int handle );
-int                 trap_PC_ReadToken ( int handle, pc_token_t *pc_token );
-int                 trap_PC_SourceFileAndLine ( int handle, char *filename, int *line );
-int                 trap_PC_UnReadToken ( int handle );
+int                 trap_PC_AddGlobalDefine( char *define );
+int                 trap_PC_RemoveAllGlobalDefines( void );
+int                 trap_PC_LoadSource( const char *filename );
+int                 trap_PC_FreeSource( int handle );
+int                 trap_PC_ReadToken( int handle, pc_token_t *pc_token );
+int                 trap_PC_SourceFileAndLine( int handle, char *filename, int *line );
+int                 trap_PC_UnReadToken( int handle );
 
 //
 // panelhandling
@@ -605,10 +605,10 @@ typedef struct panel_button_text_s
 	fontInfo_t *font;
 } panel_button_text_t;
 
-typedef         qboolean ( *panel_button_key_down ) ( panel_button_t *, int );
-typedef         qboolean ( *panel_button_key_up ) ( panel_button_t *, int );
-typedef void    ( *panel_button_render ) ( panel_button_t * );
-typedef void    ( *panel_button_postprocess ) ( panel_button_t * );
+typedef         qboolean( *panel_button_key_down )( panel_button_t *, int );
+typedef         qboolean( *panel_button_key_up )( panel_button_t *, int );
+typedef void ( *panel_button_render )( panel_button_t * );
+typedef void ( *panel_button_postprocess )( panel_button_t * );
 
 // Button struct
 struct panel_button_s
@@ -640,24 +640,24 @@ struct panel_button_s
 	qhandle_t hShaderNormal;
 };
 
-void           BG_PanelButton_RenderEdit ( panel_button_t *button );
-qboolean       BG_PanelButton_EditClick ( panel_button_t *button, int key );
-qboolean       BG_PanelButtonsKeyEvent ( int key, qboolean down, panel_button_t **buttons );
-void           BG_PanelButtonsSetup ( panel_button_t **buttons );
-void           BG_PanelButtonsRender ( panel_button_t **buttons );
-void           BG_PanelButtonsRender_Text ( panel_button_t *button );
-void           BG_PanelButtonsRender_TextExt ( panel_button_t *button, const char *text );
-void           BG_PanelButtonsRender_Img ( panel_button_t *button );
-panel_button_t *BG_PanelButtonsGetHighlightButton ( panel_button_t **buttons );
-void           BG_PanelButtons_SetFocusButton ( panel_button_t *button );
-panel_button_t *BG_PanelButtons_GetFocusButton ( void );
+void           BG_PanelButton_RenderEdit( panel_button_t *button );
+qboolean       BG_PanelButton_EditClick( panel_button_t *button, int key );
+qboolean       BG_PanelButtonsKeyEvent( int key, qboolean down, panel_button_t **buttons );
+void           BG_PanelButtonsSetup( panel_button_t **buttons );
+void           BG_PanelButtonsRender( panel_button_t **buttons );
+void           BG_PanelButtonsRender_Text( panel_button_t *button );
+void           BG_PanelButtonsRender_TextExt( panel_button_t *button, const char *text );
+void           BG_PanelButtonsRender_Img( panel_button_t *button );
+panel_button_t *BG_PanelButtonsGetHighlightButton( panel_button_t **buttons );
+void           BG_PanelButtons_SetFocusButton( panel_button_t *button );
+panel_button_t *BG_PanelButtons_GetFocusButton( void );
 
-qboolean       BG_RectContainsPoint ( float x, float y, float w, float h, float px, float py );
-qboolean       BG_CursorInRect ( rectDef_t *rect );
+qboolean       BG_RectContainsPoint( float x, float y, float w, float h, float px, float py );
+qboolean       BG_CursorInRect( rectDef_t *rect );
 
-void           BG_FitTextToWidth_Ext ( char *instr, float scale, float w, int size, fontInfo_t *font );
+void           BG_FitTextToWidth_Ext( char *instr, float scale, float w, int size, fontInfo_t *font );
 
-void           AdjustFrom640 ( float *x, float *y, float *w, float *h );
-void           SetupRotatedThing ( polyVert_t *verts, vec2_t org, float w, float h, vec_t angle );
+void           AdjustFrom640( float *x, float *y, float *w, float *h );
+void           SetupRotatedThing( polyVert_t *verts, vec2_t org, float w, float h, vec_t angle );
 
 #endif

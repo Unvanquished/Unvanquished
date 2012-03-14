@@ -39,29 +39,29 @@ Maryland 20850 USA.
 polyBuffer_t cg_polyBuffers[ MAX_PB_BUFFERS ];
 qboolean     cg_polyBuffersInuse[ MAX_PB_BUFFERS ];
 
-polyBuffer_t   *CG_PB_FindFreePolyBuffer ( qhandle_t shader, int numVerts, int numIndicies )
+polyBuffer_t   *CG_PB_FindFreePolyBuffer( qhandle_t shader, int numVerts, int numIndicies )
 {
 	int i;
 
 	// Gordon: first find one with the same shader if possible
-	for ( i = 0; i < MAX_PB_BUFFERS; i++ )
+	for( i = 0; i < MAX_PB_BUFFERS; i++ )
 	{
-		if ( cg_polyBuffers[ i ].shader != shader )
+		if( cg_polyBuffers[ i ].shader != shader )
 		{
 			continue;
 		}
 
-		if ( !cg_polyBuffersInuse[ i ] )
+		if( !cg_polyBuffersInuse[ i ] )
 		{
 			continue;
 		}
 
-		if ( cg_polyBuffers[ i ].numIndicies + numIndicies >= MAX_PB_INDICIES )
+		if( cg_polyBuffers[ i ].numIndicies + numIndicies >= MAX_PB_INDICIES )
 		{
 			continue;
 		}
 
-		if ( cg_polyBuffers[ i ].numVerts + numVerts >= MAX_PB_VERTS )
+		if( cg_polyBuffers[ i ].numVerts + numVerts >= MAX_PB_VERTS )
 		{
 			continue;
 		}
@@ -73,9 +73,9 @@ polyBuffer_t   *CG_PB_FindFreePolyBuffer ( qhandle_t shader, int numVerts, int n
 	}
 
 	// Gordon: or just find a free one
-	for ( i = 0; i < MAX_PB_BUFFERS; i++ )
+	for( i = 0; i < MAX_PB_BUFFERS; i++ )
 	{
-		if ( !cg_polyBuffersInuse[ i ] )
+		if( !cg_polyBuffersInuse[ i ] )
 		{
 			cg_polyBuffersInuse[ i ] = qtrue;
 			cg_polyBuffers[ i ].shader = shader;
@@ -89,21 +89,21 @@ polyBuffer_t   *CG_PB_FindFreePolyBuffer ( qhandle_t shader, int numVerts, int n
 	return NULL;
 }
 
-void CG_PB_ClearPolyBuffers ( void )
+void CG_PB_ClearPolyBuffers( void )
 {
 	// Gordon: changed numIndicies and numVerts to be reset in CG_PB_FindFreePolyBuffer, not here (should save the cache misses we were prolly getting)
-	memset ( cg_polyBuffersInuse, 0, sizeof ( cg_polyBuffersInuse ) );
+	memset( cg_polyBuffersInuse, 0, sizeof( cg_polyBuffersInuse ) );
 }
 
-void CG_PB_RenderPolyBuffers ( void )
+void CG_PB_RenderPolyBuffers( void )
 {
 	int i;
 
-	for ( i = 0; i < MAX_PB_BUFFERS; i++ )
+	for( i = 0; i < MAX_PB_BUFFERS; i++ )
 	{
-		if ( cg_polyBuffersInuse[ i ] )
+		if( cg_polyBuffersInuse[ i ] )
 		{
-			trap_R_AddPolyBufferToScene ( &cg_polyBuffers[ i ] );
+			trap_R_AddPolyBufferToScene( &cg_polyBuffers[ i ] );
 		}
 	}
 }

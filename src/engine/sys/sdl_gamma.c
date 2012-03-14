@@ -43,10 +43,10 @@ GLimp_InitGamma
 Saves old gamma ramp and checks if gamma is supportet by the hardware.
 ===========
 */
-void GLimp_InitGamma ( void )
+void GLimp_InitGamma( void )
 {
 	// Get original gamma ramp
-	if ( SDL_GetGammaRamp ( OldGammaRamp[ 0 ], OldGammaRamp[ 1 ], OldGammaRamp[ 2 ] ) == -1 )
+	if( SDL_GetGammaRamp( OldGammaRamp[ 0 ], OldGammaRamp[ 1 ], OldGammaRamp[ 2 ] ) == -1 )
 	{
 		glConfig.deviceSupportsGamma = qfalse;
 		return;
@@ -55,26 +55,26 @@ void GLimp_InitGamma ( void )
 	glConfig.deviceSupportsGamma = qtrue;
 #ifdef WIN32
 
-	if ( !r_ignorehwgamma->integer )
+	if( !r_ignorehwgamma->integer )
 	{
 		// do a sanity check on the gamma values
-		if ( ( HIBYTE ( OldGammaRamp[ 0 ][ 255 ] ) <= HIBYTE ( OldGammaRamp[ 0 ][ 0 ] ) ) ||
-		     ( HIBYTE ( OldGammaRamp[ 1 ][ 255 ] ) <= HIBYTE ( OldGammaRamp[ 1 ][ 0 ] ) ) ||
-		     ( HIBYTE ( OldGammaRamp[ 2 ][ 255 ] ) <= HIBYTE ( OldGammaRamp[ 2 ][ 0 ] ) ) )
+		if( ( HIBYTE( OldGammaRamp[ 0 ][ 255 ] ) <= HIBYTE( OldGammaRamp[ 0 ][ 0 ] ) ) ||
+		    ( HIBYTE( OldGammaRamp[ 1 ][ 255 ] ) <= HIBYTE( OldGammaRamp[ 1 ][ 0 ] ) ) ||
+		    ( HIBYTE( OldGammaRamp[ 2 ][ 255 ] ) <= HIBYTE( OldGammaRamp[ 2 ][ 0 ] ) ) )
 		{
 			glConfig.deviceSupportsGamma = qfalse;
-			ri.Printf ( PRINT_WARNING, "WARNING: device has broken gamma support, generated gamma.dat\n" );
+			ri.Printf( PRINT_WARNING, "WARNING: device has broken gamma support, generated gamma.dat\n" );
 		}
 
 		// make sure that we didn't have a prior crash in the game
 		// and if so we need to restore the gamma values to at least a linear value
-		if ( ( HIBYTE ( OldGammaRamp[ 0 ][ 181 ] ) == 255 ) )
+		if( ( HIBYTE( OldGammaRamp[ 0 ][ 181 ] ) == 255 ) )
 		{
 			int g;
 
-			ri.Printf ( PRINT_WARNING, "WARNING: suspicious gamma tables, using linear ramp for restoration\n" );
+			ri.Printf( PRINT_WARNING, "WARNING: suspicious gamma tables, using linear ramp for restoration\n" );
 
-			for ( g = 0; g < 255; g++ )
+			for( g = 0; g < 255; g++ )
 			{
 				OldGammaRamp[ 0 ][ g ] = g << 8;
 				OldGammaRamp[ 1 ][ g ] = g << 8;
@@ -91,7 +91,7 @@ void GLimp_InitGamma ( void )
 GLimp_SetGamma
 =================
 */
-void GLimp_SetGamma ( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] )
+void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] )
 {
 #if defined( IPHONE )
 	UNIMPL();
@@ -100,16 +100,16 @@ void GLimp_SetGamma ( unsigned char red[ 256 ], unsigned char green[ 256 ], unsi
 	Uint16 table[ 256 ];
 	int    i, value, lastvalue = 0;
 
-	for ( i = 0; i < 256; i++ )
+	for( i = 0; i < 256; i++ )
 	{
 		value = ( ( ( Uint16 ) red[ i ] ) << 8 ) | red[ i ];
 
-		if ( i < 128 && ( value > ( ( 128 + i ) << 8 ) ) )
+		if( i < 128 && ( value > ( ( 128 + i ) << 8 ) ) )
 		{
 			value = ( 128 + i ) << 8;
 		}
 
-		if ( i && ( value < lastvalue ) )
+		if( i && ( value < lastvalue ) )
 		{
 			value = lastvalue;
 		}
@@ -117,17 +117,17 @@ void GLimp_SetGamma ( unsigned char red[ 256 ], unsigned char green[ 256 ], unsi
 		lastvalue = table[ i ] = value;
 	}
 
-	if ( SDL_SetGammaRamp ( table, table, table ) == -1 )
+	if( SDL_SetGammaRamp( table, table, table ) == -1 )
 	{
-		Com_Printf ( "SDL_SetGammaRamp failed.\n" );
+		Com_Printf( "SDL_SetGammaRamp failed.\n" );
 	}
 
 #else
-	float g = Cvar_Get ( "r_gamma", "1.0", 0 )->value;
+	float g = Cvar_Get( "r_gamma", "1.0", 0 )->value;
 
-	if ( SDL_SetGamma ( g, g, g ) == -1 )
+	if( SDL_SetGamma( g, g, g ) == -1 )
 	{
-		Com_Printf ( "SDL_SetGamma failed.\n" );
+		Com_Printf( "SDL_SetGamma failed.\n" );
 	}
 
 #endif
@@ -140,14 +140,14 @@ GLimp_RestoreGamma
 Restores original gamma ramp
 ===========
 */
-void GLimp_RestoreGamma ( void )
+void GLimp_RestoreGamma( void )
 {
-	if ( glConfig.deviceSupportsGamma )
+	if( glConfig.deviceSupportsGamma )
 	{
 		// Restore original gamma
-		if ( SDL_SetGammaRamp ( OldGammaRamp[ 0 ], OldGammaRamp[ 1 ], OldGammaRamp[ 2 ] ) == -1 )
+		if( SDL_SetGammaRamp( OldGammaRamp[ 0 ], OldGammaRamp[ 1 ], OldGammaRamp[ 2 ] ) == -1 )
 		{
-			Com_Printf ( "SDL_SetGammaRamp failed.\n" );
+			Com_Printf( "SDL_SetGammaRamp failed.\n" );
 		}
 	}
 }

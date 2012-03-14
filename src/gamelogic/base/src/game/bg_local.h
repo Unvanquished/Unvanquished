@@ -77,11 +77,11 @@ extern  float   pm_flightfriction;
 
 extern  int     c_pmove;
 
-void            PM_ClipVelocity ( vec3_t in, vec3_t normal, vec3_t out, float overbounce );
-void            PM_AddTouchEnt ( int entityNum );
-void            PM_AddEvent ( int newEvent );
+void            PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce );
+void            PM_AddTouchEnt( int entityNum );
+void            PM_AddEvent( int newEvent );
 
-qboolean        PM_SlideMove ( qboolean gravity );
-void            PM_StepEvent ( vec3_t from, vec3_t to, vec3_t normal );
-qboolean        PM_StepSlideMove ( qboolean gravity, qboolean predictive );
-qboolean        PM_PredictStepMove ( void );
+qboolean        PM_SlideMove( qboolean gravity );
+void            PM_StepEvent( vec3_t from, vec3_t to, vec3_t normal );
+qboolean        PM_StepSlideMove( qboolean gravity, qboolean predictive );
+qboolean        PM_PredictStepMove( void );

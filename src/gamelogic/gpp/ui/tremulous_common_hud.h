@@ -63,7 +63,7 @@ itemDef
 itemDef
 {
 	name "timer"
-	rect STAT_X ( ( 2 * BORDER ) + STAT_H ) STAT_W STAT_H
+	rect STAT_X( ( 2 * BORDER ) + STAT_H ) STAT_W STAT_H
 	aspectBias ALIGN_RIGHT
 	style WINDOW_STYLE_EMPTY
 	visible MENU_TRUE
@@ -80,7 +80,7 @@ itemDef
 itemDef
 {
 	name "lagometer"
-	rect STAT_X ( ( 3 * BORDER ) + ( 2 * STAT_H ) ) STAT_W STAT_H
+	rect STAT_X( ( 3 * BORDER ) + ( 2 * STAT_H ) ) STAT_W STAT_H
 	aspectBias ALIGN_RIGHT
 	style WINDOW_STYLE_EMPTY
 	visible MENU_TRUE
@@ -94,7 +94,7 @@ itemDef
 itemDef
 {
 	name "speedometer"
-	rect ( 320 - ( STAT_W / 2 ) ) 350 STAT_W STAT_H
+	rect( 320 - ( STAT_W / 2 ) ) 350 STAT_W STAT_H
 	aspectBias ALIGN_CENTER
 	type ITEM_TYPE_OWNERDRAW
 	ownerdraw CG_SPEEDOMETER
@@ -110,7 +110,7 @@ itemDef
 itemDef
 {
 	name "clock"
-	rect STAT_X ( ( 4 * BORDER ) + ( 3 * STAT_H ) ) STAT_W STAT_H
+	rect STAT_X( ( 4 * BORDER ) + ( 3 * STAT_H ) ) STAT_W STAT_H
 	aspectBias ALIGN_RIGHT
 	style WINDOW_STYLE_EMPTY
 	visible MENU_TRUE
@@ -127,7 +127,7 @@ itemDef
 itemDef
 {
 	name "location"
-	rect ( STAT_X - 75 ) ( ( 5 * BORDER ) + ( 4 * STAT_H ) ) ( STAT_W + 75 ) STAT_H
+	rect( STAT_X - 75 )( ( 5 * BORDER ) + ( 4 * STAT_H ) )( STAT_W + 75 ) STAT_H
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
@@ -141,7 +141,7 @@ itemDef
 itemDef
 {
 	name "demoRecording"
-	rect ( STAT_X + ( STAT_W - 32 ) ) ( ( 8 * BORDER ) + ( 4 * STAT_H ) ) 32 32
+	rect( STAT_X + ( STAT_W - 32 ) )( ( 8 * BORDER ) + ( 4 * STAT_H ) ) 32 32
 	aspectBias ALIGN_RIGHT
 	style WINDOW_STYLE_EMPTY
 	visible MENU_TRUE
@@ -154,7 +154,7 @@ itemDef
 itemDef
 {
 	name "demoPlayback"
-	rect ( STAT_X + ( STAT_W - 32 ) ) ( ( 8 * BORDER ) + ( 4 * STAT_H ) ) 32 32
+	rect( STAT_X + ( STAT_W - 32 ) )( ( 8 * BORDER ) + ( 4 * STAT_H ) ) 32 32
 	aspectBias ALIGN_RIGHT
 	style WINDOW_STYLE_EMPTY
 	visible MENU_TRUE
@@ -169,7 +169,7 @@ itemDef
 itemDef
 {
 	name "snapshot"
-	rect BORDER ( H - ( BORDER + STAT_H ) ) MAIN_W STAT_H
+	rect BORDER( H - ( BORDER + STAT_H ) ) MAIN_W STAT_H
 	aspectBias ALIGN_LEFT
 	style WINDOW_STYLE_EMPTY
 	visible MENU_TRUE

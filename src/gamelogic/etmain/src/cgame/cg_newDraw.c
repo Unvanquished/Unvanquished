@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-int CG_DrawField ( int x, int y, int width, int value, int charWidth, int charHeight, qboolean dodrawpic, qboolean leftAlign ); // NERVE - SMF
+int CG_DrawField( int x, int y, int width, int value, int charWidth, int charHeight, qboolean dodrawpic, qboolean leftAlign );  // NERVE - SMF
 
 /*void CG_FitTextToWidth( char* instr, int w, int size) {
         char buffer[1024];
@@ -83,26 +83,26 @@ int CG_DrawField ( int x, int y, int width, int value, int charWidth, int charHe
         *c = '\0';
 }*/
 
-int CG_TrimLeftPixels ( char *instr, float scale, float w, int size )
+int CG_TrimLeftPixels( char *instr, float scale, float w, int size )
 {
 	char buffer[ 1024 ];
 	char *p, *s;
 	int  tw;
 	int  i;
 
-	Q_strncpyz ( buffer, instr, 1024 );
-	memset ( instr, 0, size );
+	Q_strncpyz( buffer, instr, 1024 );
+	memset( instr, 0, size );
 
-	for ( i = 0, p = buffer; *p; p++, i++ )
+	for( i = 0, p = buffer; *p; p++, i++ )
 	{
 		instr[ i ] = *p;
-		tw = CG_Text_Width ( instr, scale, 0 );
+		tw = CG_Text_Width( instr, scale, 0 );
 
-		if ( tw >= w )
+		if( tw >= w )
 		{
-			memset ( instr, 0, size );
+			memset( instr, 0, size );
 
-			for ( s = instr, p = &buffer[ i + 1 ]; *p && ( ( s - instr ) < size ); p++, s++ )
+			for( s = instr, p = &buffer[ i + 1 ]; *p && ( ( s - instr ) < size ); p++, s++ )
 			{
 				*s = *p;
 			}
@@ -114,40 +114,40 @@ int CG_TrimLeftPixels ( char *instr, float scale, float w, int size )
 	return -1;
 }
 
-void CG_FitTextToWidth_Ext ( char *instr, float scale, float w, int size, fontInfo_t *font )
+void CG_FitTextToWidth_Ext( char *instr, float scale, float w, int size, fontInfo_t *font )
 {
 	char buffer[ 1024 ];
 	char *s, *p, *c, *ls;
 	int  l;
 
-	Q_strncpyz ( buffer, instr, 1024 );
-	memset ( instr, 0, size );
+	Q_strncpyz( buffer, instr, 1024 );
+	memset( instr, 0, size );
 
 	c = s = instr;
 	p = buffer;
 	ls = NULL;
 	l = 0;
 
-	while ( *p )
+	while( *p )
 	{
 		*c = *p++;
 		l++;
 
-		if ( *c == ' ' )
+		if( *c == ' ' )
 		{
 			ls = c;
 		} // store last space, to try not to break mid word
 
 		c++;
 
-		if ( *p == '\n' )
+		if( *p == '\n' )
 		{
 			s = c + 1;
 			l = 0;
 		}
-		else if ( CG_Text_Width_Ext ( s, scale, 0, font ) > w )
+		else if( CG_Text_Width_Ext( s, scale, 0, font ) > w )
 		{
-			if ( ls )
+			if( ls )
 			{
 				*ls = '\n';
 				s = ls + 1;
@@ -164,7 +164,7 @@ void CG_FitTextToWidth_Ext ( char *instr, float scale, float w, int size, fontIn
 		}
 	}
 
-	if ( c != buffer && ( * ( c - 1 ) != '\n' ) )
+	if( c != buffer && ( * ( c - 1 ) != '\n' ) )
 	{
 		*c++ = '\n';
 	}
@@ -172,40 +172,40 @@ void CG_FitTextToWidth_Ext ( char *instr, float scale, float w, int size, fontIn
 	*c = '\0';
 }
 
-void CG_FitTextToWidth2 ( char *instr, float scale, float w, int size )
+void CG_FitTextToWidth2( char *instr, float scale, float w, int size )
 {
 	char buffer[ 1024 ];
 	char *s, *p, *c, *ls;
 	int  l;
 
-	Q_strncpyz ( buffer, instr, 1024 );
-	memset ( instr, 0, size );
+	Q_strncpyz( buffer, instr, 1024 );
+	memset( instr, 0, size );
 
 	c = s = instr;
 	p = buffer;
 	ls = NULL;
 	l = 0;
 
-	while ( *p )
+	while( *p )
 	{
 		*c = *p++;
 		l++;
 
-		if ( *c == ' ' )
+		if( *c == ' ' )
 		{
 			ls = c;
 		} // store last space, to try not to break mid word
 
 		c++;
 
-		if ( *p == '\n' )
+		if( *p == '\n' )
 		{
 			s = c + 1;
 			l = 0;
 		}
-		else if ( CG_Text_Width ( s, scale, 0 ) > w )
+		else if( CG_Text_Width( s, scale, 0 ) > w )
 		{
-			if ( ls )
+			if( ls )
 			{
 				*ls = '\n';
 				s = ls + 1;
@@ -222,7 +222,7 @@ void CG_FitTextToWidth2 ( char *instr, float scale, float w, int size )
 		}
 	}
 
-	if ( c != buffer && ( * ( c - 1 ) != '\n' ) )
+	if( c != buffer && ( * ( c - 1 ) != '\n' ) )
 	{
 		*c++ = '\n';
 	}
@@ -230,20 +230,20 @@ void CG_FitTextToWidth2 ( char *instr, float scale, float w, int size )
 	*c = '\0';
 }
 
-void CG_FitTextToWidth_SingleLine ( char *instr, float scale, float w, int size )
+void CG_FitTextToWidth_SingleLine( char *instr, float scale, float w, int size )
 {
 	char *s, *p;
 	char buffer[ 1024 ];
 
-	Q_strncpyz ( buffer, instr, 1024 );
-	memset ( instr, 0, size );
+	Q_strncpyz( buffer, instr, 1024 );
+	memset( instr, 0, size );
 	p = instr;
 
-	for ( s = buffer; *s; s++, p++ )
+	for( s = buffer; *s; s++, p++ )
 	{
 		*p = *s;
 
-		if ( CG_Text_Width ( instr, scale, 0 ) > w )
+		if( CG_Text_Width( instr, scale, 0 ) > w )
 		{
 			*p = '\0';
 			return;
@@ -256,9 +256,9 @@ void CG_FitTextToWidth_SingleLine ( char *instr, float scale, float w, int size 
 weapIconDrawSize
 ==============
 */
-static int weapIconDrawSize ( int weap )
+static int weapIconDrawSize( int weap )
 {
-	switch ( weap )
+	switch( weap )
 	{
 			// weapons to not draw
 //      case WP_KNIFE:
@@ -297,7 +297,7 @@ static int weapIconDrawSize ( int weap )
 CG_DrawPlayerWeaponIcon
 ==============
 */
-void CG_DrawPlayerWeaponIcon ( rectDef_t *rect, qboolean drawHighlighted, int align, vec4_t *refcolor )
+void CG_DrawPlayerWeaponIcon( rectDef_t *rect, qboolean drawHighlighted, int align, vec4_t *refcolor )
 {
 	int       size;
 	int       realweap; // DHM - Nerve
@@ -305,11 +305,11 @@ void CG_DrawPlayerWeaponIcon ( rectDef_t *rect, qboolean drawHighlighted, int al
 	float     scale, halfScale;
 	vec4_t    hcolor;
 
-	VectorCopy ( *refcolor, hcolor );
+	VectorCopy( *refcolor, hcolor );
 	hcolor[ 3 ] = 1.f;
 
-	if ( cg.predictedPlayerEntity.currentState.eFlags & EF_MG42_ACTIVE ||
-	     cg.predictedPlayerEntity.currentState.eFlags & EF_MOUNTEDTANK )
+	if( cg.predictedPlayerEntity.currentState.eFlags & EF_MG42_ACTIVE ||
+	    cg.predictedPlayerEntity.currentState.eFlags & EF_MOUNTEDTANK )
 	{
 		realweap = WP_MOBILE_MG42;
 	}
@@ -318,21 +318,21 @@ void CG_DrawPlayerWeaponIcon ( rectDef_t *rect, qboolean drawHighlighted, int al
 		realweap = cg.predictedPlayerState.weapon;
 	}
 
-	size = weapIconDrawSize ( realweap );
+	size = weapIconDrawSize( realweap );
 
-	if ( !size )
+	if( !size )
 	{
 		return;
 	}
 
-	if ( cg.predictedPlayerEntity.currentState.eFlags & EF_MOUNTEDTANK &&
-	     cg_entities[ cg_entities[ cg_entities[ cg.snap->ps.clientNum ].tagParent ].tankparent ].currentState.density & 8 )
+	if( cg.predictedPlayerEntity.currentState.eFlags & EF_MOUNTEDTANK &&
+	    cg_entities[ cg_entities[ cg_entities[ cg.snap->ps.clientNum ].tagParent ].tankparent ].currentState.density & 8 )
 	{
 		icon = cgs.media.browningIcon;
 	}
 	else
 	{
-		if ( drawHighlighted )
+		if( drawHighlighted )
 		{
 			//icon = cg_weapons[ realweap ].weaponIcon[1];
 			icon = cg_weapons[ realweap ].weaponIcon[ 1 ]; // we don't have icon[0];
@@ -344,43 +344,43 @@ void CG_DrawPlayerWeaponIcon ( rectDef_t *rect, qboolean drawHighlighted, int al
 	}
 
 	// pulsing grenade icon to help the player 'count' in their head
-	if ( cg.predictedPlayerState.grenadeTimeLeft )
+	if( cg.predictedPlayerState.grenadeTimeLeft )
 	{
 		// grenades and dynamite set this
 		// these time differently
-		if ( realweap == WP_DYNAMITE )
+		if( realweap == WP_DYNAMITE )
 		{
-			if ( ( ( cg.grenLastTime ) % 1000 ) > ( ( cg.predictedPlayerState.grenadeTimeLeft ) % 1000 ) )
+			if( ( ( cg.grenLastTime ) % 1000 ) > ( ( cg.predictedPlayerState.grenadeTimeLeft ) % 1000 ) )
 			{
-				trap_S_StartLocalSound ( cgs.media.grenadePulseSound4, CHAN_LOCAL_SOUND );
+				trap_S_StartLocalSound( cgs.media.grenadePulseSound4, CHAN_LOCAL_SOUND );
 			}
 		}
 		else
 		{
-			if ( ( ( cg.grenLastTime ) % 1000 ) < ( ( cg.predictedPlayerState.grenadeTimeLeft ) % 1000 ) )
+			if( ( ( cg.grenLastTime ) % 1000 ) < ( ( cg.predictedPlayerState.grenadeTimeLeft ) % 1000 ) )
 			{
-				switch ( cg.predictedPlayerState.grenadeTimeLeft / 1000 )
+				switch( cg.predictedPlayerState.grenadeTimeLeft / 1000 )
 				{
 					case 3:
-						trap_S_StartLocalSound ( cgs.media.grenadePulseSound4, CHAN_LOCAL_SOUND );
+						trap_S_StartLocalSound( cgs.media.grenadePulseSound4, CHAN_LOCAL_SOUND );
 						break;
 
 					case 2:
-						trap_S_StartLocalSound ( cgs.media.grenadePulseSound3, CHAN_LOCAL_SOUND );
+						trap_S_StartLocalSound( cgs.media.grenadePulseSound3, CHAN_LOCAL_SOUND );
 						break;
 
 					case 1:
-						trap_S_StartLocalSound ( cgs.media.grenadePulseSound2, CHAN_LOCAL_SOUND );
+						trap_S_StartLocalSound( cgs.media.grenadePulseSound2, CHAN_LOCAL_SOUND );
 						break;
 
 					case 0:
-						trap_S_StartLocalSound ( cgs.media.grenadePulseSound1, CHAN_LOCAL_SOUND );
+						trap_S_StartLocalSound( cgs.media.grenadePulseSound1, CHAN_LOCAL_SOUND );
 						break;
 				}
 			}
 		}
 
-		scale = ( float ) ( ( cg.predictedPlayerState.grenadeTimeLeft ) % 1000 ) / 100.0f;
+		scale = ( float )( ( cg.predictedPlayerState.grenadeTimeLeft ) % 1000 ) / 100.0f;
 		halfScale = scale * 0.5f;
 
 		cg.grenLastTime = cg.predictedPlayerState.grenadeTimeLeft;
@@ -390,11 +390,11 @@ void CG_DrawPlayerWeaponIcon ( rectDef_t *rect, qboolean drawHighlighted, int al
 		scale = halfScale = 0;
 	}
 
-	if ( icon )
+	if( icon )
 	{
 		float x, y, w, h;
 
-		if ( size == 1 )
+		if( size == 1 )
 		{
 			// draw half width to match the icon asset
 			// start at left
@@ -403,7 +403,7 @@ void CG_DrawPlayerWeaponIcon ( rectDef_t *rect, qboolean drawHighlighted, int al
 			w = rect->w / 2 + scale;
 			h = rect->h + scale;
 
-			switch ( align )
+			switch( align )
 			{
 				case ITEM_ALIGN_CENTER:
 					x += rect->w / 4;
@@ -426,8 +426,8 @@ void CG_DrawPlayerWeaponIcon ( rectDef_t *rect, qboolean drawHighlighted, int al
 			h = rect->h + scale;
 		}
 
-		trap_R_SetColor ( hcolor ); // JPW NERVE
-		CG_DrawPic ( x, y, w, h, icon );
+		trap_R_SetColor( hcolor );  // JPW NERVE
+		CG_DrawPic( x, y, w, h, icon );
 	}
 }
 
@@ -446,7 +446,7 @@ CG_DrawCursorHints
 
 ==============
 */
-void CG_DrawCursorhint ( rectDef_t *rect )
+void CG_DrawCursorhint( rectDef_t *rect )
 {
 	float     *color;
 	qhandle_t icon, icon2 = 0;
@@ -455,14 +455,14 @@ void CG_DrawCursorhint ( rectDef_t *rect )
 	//qboolean  redbar = qfalse;
 	qboolean  yellowbar = qfalse;
 
-	if ( !cg_cursorHints.integer )
+	if( !cg_cursorHints.integer )
 	{
 		return;
 	}
 
 	CG_CheckForCursorHints();
 
-	switch ( cg.cursorHintIcon )
+	switch( cg.cursorHintIcon )
 	{
 		case HINT_NONE:
 		case HINT_FORCENONE:
@@ -529,7 +529,7 @@ void CG_DrawCursorhint ( rectDef_t *rect )
 			// this.
 #if 0
 
-			if ( ! ( cg.predictedPlayerState.weapon ) || WEAPS_ONE_HANDED & ( 1 << ( cg.predictedPlayerState.weapon ) ) )
+			if( !( cg.predictedPlayerState.weapon ) || WEAPS_ONE_HANDED & ( 1 << ( cg.predictedPlayerState.weapon ) ) )
 			{
 				icon = cgs.media.chairHintShader;
 			}
@@ -660,75 +660,75 @@ void CG_DrawCursorhint ( rectDef_t *rect )
 			break;
 	}
 
-	if ( !icon )
+	if( !icon )
 	{
 		return;
 	}
 
 	// color
-	color = CG_FadeColor ( cg.cursorHintTime, cg.cursorHintFade );
+	color = CG_FadeColor( cg.cursorHintTime, cg.cursorHintFade );
 
-	if ( !color )
+	if( !color )
 	{
-		trap_R_SetColor ( NULL );
+		trap_R_SetColor( NULL );
 		return;
 	}
 
-	if ( cg_cursorHints.integer == 3 )
+	if( cg_cursorHints.integer == 3 )
 	{
-		color[ 3 ] *= 0.5 + 0.5 * sin ( ( float ) cg.time / 150.0 );
+		color[ 3 ] *= 0.5 + 0.5 * sin( ( float ) cg.time / 150.0 );
 	}
 
 	// size
-	if ( cg_cursorHints.integer >= 3 )
+	if( cg_cursorHints.integer >= 3 )
 	{
 		// no size pulsing
 		scale = halfscale = 0;
 	}
 	else
 	{
-		if ( cg_cursorHints.integer == 2 )
+		if( cg_cursorHints.integer == 2 )
 		{
-			scale = ( float ) ( ( cg.cursorHintTime ) % 1000 ) / 100.0f; // one way size pulse
+			scale = ( float )( ( cg.cursorHintTime ) % 1000 ) / 100.0f;  // one way size pulse
 		}
 		else
 		{
-			scale = CURSORHINT_SCALE * ( 0.5 + 0.5 * sin ( ( float ) cg.time / 150.0 ) ); // sin pulse
+			scale = CURSORHINT_SCALE * ( 0.5 + 0.5 * sin( ( float ) cg.time / 150.0 ) );  // sin pulse
 		}
 
 		halfscale = scale * 0.5f;
 	}
 
 	// set color and draw the hint
-	trap_R_SetColor ( color );
-	CG_DrawPic ( rect->x - halfscale, rect->y - halfscale, rect->w + scale, rect->h + scale, icon );
+	trap_R_SetColor( color );
+	CG_DrawPic( rect->x - halfscale, rect->y - halfscale, rect->w + scale, rect->h + scale, icon );
 
-	if ( icon2 )
+	if( icon2 )
 	{
-		CG_DrawPic ( rect->x - halfscale, rect->y - halfscale, rect->w + scale, rect->h + scale, icon2 );
+		CG_DrawPic( rect->x - halfscale, rect->y - halfscale, rect->w + scale, rect->h + scale, icon2 );
 	}
 
-	trap_R_SetColor ( NULL );
+	trap_R_SetColor( NULL );
 
 	// draw status bar under the cursor hint
-	if ( cg.cursorHintValue )
+	if( cg.cursorHintValue )
 	{
-		if ( yellowbar )
+		if( yellowbar )
 		{
-			Vector4Set ( color, 1, 1, 0, 1.0f );
+			Vector4Set( color, 1, 1, 0, 1.0f );
 		}
 		else
 		{
-			Vector4Set ( color, 0, 0, 1, 0.5f );
+			Vector4Set( color, 0, 0, 1, 0.5f );
 		}
 
-		CG_FilledBar ( rect->x, rect->y + rect->h + 4, rect->w, 8, color, NULL, NULL, ( float ) cg.cursorHintValue / 255.0f, 0 );
+		CG_FilledBar( rect->x, rect->y + rect->h + 4, rect->w, 8, color, NULL, NULL, ( float ) cg.cursorHintValue / 255.0f, 0 );
 	}
 }
 
-float CG_GetValue ( int ownerDraw, int type )
+float CG_GetValue( int ownerDraw, int type )
 {
-	switch ( ownerDraw )
+	switch( ownerDraw )
 	{
 		default:
 			break;
@@ -749,7 +749,7 @@ qboolean CG_YourTeamHasFlag()
 
 // THINKABOUTME: should these be exclusive or inclusive..
 //
-qboolean CG_OwnerDrawVisible ( int flags )
+qboolean CG_OwnerDrawVisible( int flags )
 {
 	return qfalse;
 }
@@ -764,40 +764,40 @@ CG_DrawWeapStability
         probably only drawn for scoped weapons
 ==============
 */
-void CG_DrawWeapStability ( rectDef_t *rect )
+void CG_DrawWeapStability( rectDef_t *rect )
 {
 	vec4_t goodColor = { 0, 1, 0, 0.5f }, badColor =
 	{
 		1, 0, 0, 0.5f
 	};
 
-	if ( !cg_drawSpreadScale.integer )
+	if( !cg_drawSpreadScale.integer )
 	{
 		return;
 	}
 
-	if ( cg_drawSpreadScale.integer == 1 && !BG_IsScopedWeapon ( cg.predictedPlayerState.weapon ) )
+	if( cg_drawSpreadScale.integer == 1 && !BG_IsScopedWeapon( cg.predictedPlayerState.weapon ) )
 	{
 		// cg_drawSpreadScale of '1' means only draw for scoped weapons, '2' means draw all the time (for debugging)
 		return;
 	}
 
-	if ( cg.predictedPlayerState.weaponstate != WEAPON_READY )
+	if( cg.predictedPlayerState.weaponstate != WEAPON_READY )
 	{
 		return;
 	}
 
-	if ( ! ( cg.snap->ps.aimSpreadScale ) )
+	if( !( cg.snap->ps.aimSpreadScale ) )
 	{
 		return;
 	}
 
-	if ( cg.renderingThirdPerson )
+	if( cg.renderingThirdPerson )
 	{
 		return;
 	}
 
-	CG_FilledBar ( rect->x, rect->y, rect->w, rect->h, goodColor, badColor, NULL, ( float ) cg.snap->ps.aimSpreadScale / 255.0f, 2 | 4 | 256 ); // flags (BAR_CENTER|BAR_VERT|BAR_LERP_COLOR)
+	CG_FilledBar( rect->x, rect->y, rect->w, rect->h, goodColor, badColor, NULL, ( float ) cg.snap->ps.aimSpreadScale / 255.0f, 2 | 4 | 256 );  // flags (BAR_CENTER|BAR_VERT|BAR_LERP_COLOR)
 }
 
 /*
@@ -805,7 +805,7 @@ void CG_DrawWeapStability ( rectDef_t *rect )
 CG_DrawWeapHeat
 ==============
 */
-void CG_DrawWeapHeat ( rectDef_t *rect, int align )
+void CG_DrawWeapHeat( rectDef_t *rect, int align )
 {
 	vec4_t color = { 1, 0, 0, 0.2f }, color2 =
 	{
@@ -813,12 +813,12 @@ void CG_DrawWeapHeat ( rectDef_t *rect, int align )
 	};
 	int    flags = 0;
 
-	if ( ! ( cg.snap->ps.curWeapHeat ) )
+	if( !( cg.snap->ps.curWeapHeat ) )
 	{
 		return;
 	}
 
-	if ( align != HUD_HORIZONTAL )
+	if( align != HUD_HORIZONTAL )
 	{
 		flags |= 4; // BAR_VERT
 	}
@@ -829,7 +829,7 @@ void CG_DrawWeapHeat ( rectDef_t *rect, int align )
 
 	flags |= 256; // BAR_COLOR_LERP
 
-	CG_FilledBar ( rect->x, rect->y, rect->w, rect->h, color, color2, NULL, ( float ) cg.snap->ps.curWeapHeat / 255.0f, flags );
+	CG_FilledBar( rect->x, rect->y, rect->w, rect->h, color, color2, NULL, ( float ) cg.snap->ps.curWeapHeat / 255.0f, flags );
 }
 
 /*
@@ -837,12 +837,12 @@ void CG_DrawWeapHeat ( rectDef_t *rect, int align )
 CG_OwnerDraw
 ==============
 */
-void CG_OwnerDraw ( float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align,
-                    float special, float scale, vec4_t color, qhandle_t shader, int textStyle )
+void CG_OwnerDraw( float x, float y, float w, float h, float text_x, float text_y, int ownerDraw, int ownerDrawFlags, int align,
+                   float special, float scale, vec4_t color, qhandle_t shader, int textStyle )
 {
 	rectDef_t rect;
 
-	if ( cg_drawStatus.integer == 0 )
+	if( cg_drawStatus.integer == 0 )
 	{
 		return;
 	}
@@ -852,16 +852,16 @@ void CG_OwnerDraw ( float x, float y, float w, float h, float text_x, float text
 	rect.w = w;
 	rect.h = h;
 
-	switch ( ownerDraw )
+	switch( ownerDraw )
 	{
 		default:
 			break;
 	}
 }
 
-void CG_MouseEvent ( int x, int y )
+void CG_MouseEvent( int x, int y )
 {
-	switch ( cgs.eventHandling )
+	switch( cgs.eventHandling )
 	{
 		case CGAME_EVENT_SPEAKEREDITOR:
 		case CGAME_EVENT_GAMEVIEW:
@@ -869,29 +869,29 @@ void CG_MouseEvent ( int x, int y )
 		case CGAME_EVENT_FIRETEAMMSG:
 			cgs.cursorX += x;
 
-			if ( cgs.cursorX < 0 )
+			if( cgs.cursorX < 0 )
 			{
 				cgs.cursorX = 0;
 			}
-			else if ( cgs.cursorX > 640 )
+			else if( cgs.cursorX > 640 )
 			{
 				cgs.cursorX = 640;
 			}
 
 			cgs.cursorY += y;
 
-			if ( cgs.cursorY < 0 )
+			if( cgs.cursorY < 0 )
 			{
 				cgs.cursorY = 0;
 			}
-			else if ( cgs.cursorY > 480 )
+			else if( cgs.cursorY > 480 )
 			{
 				cgs.cursorY = 480;
 			}
 
-			if ( cgs.eventHandling == CGAME_EVENT_SPEAKEREDITOR )
+			if( cgs.eventHandling == CGAME_EVENT_SPEAKEREDITOR )
 			{
-				CG_SpeakerEditorMouseMove_Handling ( x, y );
+				CG_SpeakerEditorMouseMove_Handling( x, y );
 			}
 
 			break;
@@ -900,27 +900,27 @@ void CG_MouseEvent ( int x, int y )
 		case CGAME_EVENT_MULTIVIEW:
 			cgs.cursorX += x;
 
-			if ( cgs.cursorX < 0 )
+			if( cgs.cursorX < 0 )
 			{
 				cgs.cursorX = 0;
 			}
-			else if ( cgs.cursorX > 640 )
+			else if( cgs.cursorX > 640 )
 			{
 				cgs.cursorX = 640;
 			}
 
 			cgs.cursorY += y;
 
-			if ( cgs.cursorY < 0 )
+			if( cgs.cursorY < 0 )
 			{
 				cgs.cursorY = 0;
 			}
-			else if ( cgs.cursorY > 480 )
+			else if( cgs.cursorY > 480 )
 			{
 				cgs.cursorY = 480;
 			}
 
-			if ( x != 0 || y != 0 )
+			if( x != 0 || y != 0 )
 			{
 				cgs.cursorUpdate = cg.time + 5000;
 			}
@@ -928,17 +928,17 @@ void CG_MouseEvent ( int x, int y )
 			break;
 
 		default:
-			if ( cg.snap->ps.pm_type == PM_INTERMISSION )
+			if( cg.snap->ps.pm_type == PM_INTERMISSION )
 			{
-				CG_Debriefing_MouseEvent ( x, y );
+				CG_Debriefing_MouseEvent( x, y );
 				return;
 			}
 
 			// default handling
-			if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
-			       cg.predictedPlayerState.pm_type == PM_SPECTATOR ) && cg.showScores == qfalse )
+			if( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
+			      cg.predictedPlayerState.pm_type == PM_SPECTATOR ) && cg.showScores == qfalse )
 			{
-				trap_Key_SetCatcher ( trap_Key_GetCatcher() & ~KEYCATCH_CGAME );
+				trap_Key_SetCatcher( trap_Key_GetCatcher() & ~KEYCATCH_CGAME );
 				return;
 			}
 
@@ -951,19 +951,19 @@ void CG_MouseEvent ( int x, int y )
 CG_EventHandling
 ==================
 */
-void CG_EventHandling ( int type, qboolean fForced )
+void CG_EventHandling( int type, qboolean fForced )
 {
-	if ( cg.demoPlayback && type == CGAME_EVENT_NONE && !fForced )
+	if( cg.demoPlayback && type == CGAME_EVENT_NONE && !fForced )
 	{
 		type = CGAME_EVENT_DEMO;
 	}
 
-	if ( type != CGAME_EVENT_NONE )
+	if( type != CGAME_EVENT_NONE )
 	{
-		trap_Cvar_Set ( "cl_bypassMouseInput", 0 );
+		trap_Cvar_Set( "cl_bypassMouseInput", 0 );
 	}
 
-	switch ( type )
+	switch( type )
 	{
 			// OSP - Demo support
 		case CGAME_EVENT_DEMO:
@@ -983,60 +983,60 @@ void CG_EventHandling ( int type, qboolean fForced )
 		default:
 
 			// default handling (cleanup mostly)
-			if ( cgs.eventHandling == CGAME_EVENT_GAMEVIEW )
+			if( cgs.eventHandling == CGAME_EVENT_GAMEVIEW )
 			{
 				cg.showGameView = qfalse;
-				trap_S_FadeBackgroundTrack ( 0.0f, 500, 0 );
+				trap_S_FadeBackgroundTrack( 0.0f, 500, 0 );
 
-				trap_S_StopStreamingSound ( -1 );
+				trap_S_StopStreamingSound( -1 );
 				cg.limboEndCinematicTime = 0;
 
-				if ( fForced )
+				if( fForced )
 				{
-					if ( cgs.limboLoadoutModified )
+					if( cgs.limboLoadoutModified )
 					{
-						trap_SendClientCommand ( "rs" );
+						trap_SendClientCommand( "rs" );
 
 						cgs.limboLoadoutSelected = qfalse;
 					}
 				}
 			}
-			else if ( cgs.eventHandling == CGAME_EVENT_MULTIVIEW )
+			else if( cgs.eventHandling == CGAME_EVENT_MULTIVIEW )
 			{
-				if ( type == -CGAME_EVENT_MULTIVIEW )
+				if( type == -CGAME_EVENT_MULTIVIEW )
 				{
 					type = CGAME_EVENT_NONE;
 				}
 				else
 				{
-					trap_Key_SetCatcher ( KEYCATCH_CGAME );
+					trap_Key_SetCatcher( KEYCATCH_CGAME );
 					return;
 				}
 			}
-			else if ( cgs.eventHandling == CGAME_EVENT_SPEAKEREDITOR )
+			else if( cgs.eventHandling == CGAME_EVENT_SPEAKEREDITOR )
 			{
-				if ( type == -CGAME_EVENT_SPEAKEREDITOR )
+				if( type == -CGAME_EVENT_SPEAKEREDITOR )
 				{
 					type = CGAME_EVENT_NONE;
 				}
 				else
 				{
-					trap_Key_SetCatcher ( KEYCATCH_CGAME );
+					trap_Key_SetCatcher( KEYCATCH_CGAME );
 					return;
 				}
 			}
-			else if ( cgs.eventHandling == CGAME_EVENT_CAMPAIGNBREIFING )
+			else if( cgs.eventHandling == CGAME_EVENT_CAMPAIGNBREIFING )
 			{
 				type = CGAME_EVENT_GAMEVIEW;
 			}
-			else if ( cgs.eventHandling == CGAME_EVENT_FIRETEAMMSG )
+			else if( cgs.eventHandling == CGAME_EVENT_FIRETEAMMSG )
 			{
 				cg.showFireteamMenu = qfalse;
-				trap_Cvar_Set ( "cl_bypassmouseinput", "0" );
+				trap_Cvar_Set( "cl_bypassmouseinput", "0" );
 			}
-			else if ( cg.snap && cg.snap->ps.pm_type == PM_INTERMISSION && fForced )
+			else if( cg.snap && cg.snap->ps.pm_type == PM_INTERMISSION && fForced )
 			{
-				trap_UI_Popup ( UIMENU_INGAME );
+				trap_UI_Popup( UIMENU_INGAME );
 			}
 
 			break;
@@ -1044,86 +1044,86 @@ void CG_EventHandling ( int type, qboolean fForced )
 
 	cgs.eventHandling = type;
 
-	if ( type == CGAME_EVENT_NONE )
+	if( type == CGAME_EVENT_NONE )
 	{
-		trap_Key_SetCatcher ( trap_Key_GetCatcher() & ~KEYCATCH_CGAME );
+		trap_Key_SetCatcher( trap_Key_GetCatcher() & ~KEYCATCH_CGAME );
 		ccInitial = qfalse;
 
-		if ( cg.demoPlayback && cg.demohelpWindow != SHOW_OFF )
+		if( cg.demoPlayback && cg.demohelpWindow != SHOW_OFF )
 		{
-			CG_ShowHelp_Off ( &cg.demohelpWindow );
+			CG_ShowHelp_Off( &cg.demohelpWindow );
 		}
 	}
-	else if ( type == CGAME_EVENT_GAMEVIEW )
+	else if( type == CGAME_EVENT_GAMEVIEW )
 	{
 		cg.showGameView = qtrue;
 		CG_LimboPanel_Setup();
-		trap_Key_SetCatcher ( KEYCATCH_CGAME );
+		trap_Key_SetCatcher( KEYCATCH_CGAME );
 	}
-	else if ( type == CGAME_EVENT_MULTIVIEW )
+	else if( type == CGAME_EVENT_MULTIVIEW )
 	{
-		trap_Key_SetCatcher ( KEYCATCH_CGAME );
+		trap_Key_SetCatcher( KEYCATCH_CGAME );
 	}
-	else if ( type == CGAME_EVENT_FIRETEAMMSG )
+	else if( type == CGAME_EVENT_FIRETEAMMSG )
 	{
 		cgs.ftMenuPos = -1;
 		cgs.ftMenuMode = 0;
 		cg.showFireteamMenu = qtrue;
-		trap_Cvar_Set ( "cl_bypassmouseinput", "1" );
-		trap_Key_SetCatcher ( KEYCATCH_CGAME );
+		trap_Cvar_Set( "cl_bypassmouseinput", "1" );
+		trap_Key_SetCatcher( KEYCATCH_CGAME );
 	}
 	else
 	{
-		trap_Key_SetCatcher ( KEYCATCH_CGAME );
+		trap_Key_SetCatcher( KEYCATCH_CGAME );
 	}
 }
 
-void CG_KeyEvent ( int key, qboolean down )
+void CG_KeyEvent( int key, qboolean down )
 {
-	switch ( cgs.eventHandling )
+	switch( cgs.eventHandling )
 	{
 			// Demos get their own keys
 		case CGAME_EVENT_DEMO:
-			CG_DemoClick ( key, down );
+			CG_DemoClick( key, down );
 			return;
 
 		case CGAME_EVENT_CAMPAIGNBREIFING:
-			CG_LoadPanel_KeyHandling ( key, down );
+			CG_LoadPanel_KeyHandling( key, down );
 			break;
 
 		case CGAME_EVENT_FIRETEAMMSG:
-			CG_Fireteams_KeyHandling ( key, down );
+			CG_Fireteams_KeyHandling( key, down );
 			break;
 
 		case CGAME_EVENT_GAMEVIEW:
-			CG_LimboPanel_KeyHandling ( key, down );
+			CG_LimboPanel_KeyHandling( key, down );
 			break;
 
 		case CGAME_EVENT_SPEAKEREDITOR:
-			CG_SpeakerEditor_KeyHandling ( key, down );
+			CG_SpeakerEditor_KeyHandling( key, down );
 			break;
 
 		case CGAME_EVENT_MULTIVIEW:
-			CG_mv_KeyHandling ( key, down );
+			CG_mv_KeyHandling( key, down );
 			break;
 
 		default:
-			if ( cg.snap->ps.pm_type == PM_INTERMISSION )
+			if( cg.snap->ps.pm_type == PM_INTERMISSION )
 			{
-				CG_Debriefing_KeyEvent ( key, down );
+				CG_Debriefing_KeyEvent( key, down );
 				return;
 			}
 
 			// default handling
-			if ( !down )
+			if( !down )
 			{
 				return;
 			}
 
-			if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
-			       ( cg.predictedPlayerState.pm_type == PM_SPECTATOR && cg.showScores == qfalse ) ) )
+			if( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
+			      ( cg.predictedPlayerState.pm_type == PM_SPECTATOR && cg.showScores == qfalse ) ) )
 			{
-				CG_EventHandling ( CGAME_EVENT_NONE, qfalse );
+				CG_EventHandling( CGAME_EVENT_NONE, qfalse );
 				return;
 			}
 
@@ -1131,13 +1131,13 @@ void CG_KeyEvent ( int key, qboolean down )
 	}
 }
 
-int CG_ClientNumFromName ( const char *p )
+int CG_ClientNumFromName( const char *p )
 {
 	int i;
 
-	for ( i = 0; i < cgs.maxclients; i++ )
+	for( i = 0; i < cgs.maxclients; i++ )
 	{
-		if ( cgs.clientinfo[ i ].infoValid && Q_stricmp ( cgs.clientinfo[ i ].name, p ) == 0 )
+		if( cgs.clientinfo[ i ].infoValid && Q_stricmp( cgs.clientinfo[ i ].name, p ) == 0 )
 		{
 			return i;
 		}
@@ -1146,15 +1146,15 @@ int CG_ClientNumFromName ( const char *p )
 	return -1;
 }
 
-void CG_GetTeamColor ( vec4_t *color )
+void CG_GetTeamColor( vec4_t *color )
 {
-	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_AXIS )
+	if( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_AXIS )
 	{
 		( *color ) [ 0 ] = 1;
 		( *color ) [ 3 ] = .25f;
 		( *color ) [ 1 ] = ( *color ) [ 2 ] = 0;
 	}
-	else if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALLIES )
+	else if( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALLIES )
 	{
 		( *color ) [ 0 ] = ( *color ) [ 1 ] = 0;
 		( *color ) [ 2 ] = 1;
@@ -1168,6 +1168,6 @@ void CG_GetTeamColor ( vec4_t *color )
 	}
 }
 
-void CG_RunMenuScript ( char **args )
+void CG_RunMenuScript( char **args )
 {
 }

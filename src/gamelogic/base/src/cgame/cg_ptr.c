@@ -33,31 +33,31 @@ CG_ReadPTRCode
 Read a PTR code from disk
 ===============
 */
-int CG_ReadPTRCode ( void )
+int CG_ReadPTRCode( void )
 {
 	int          len;
 	char         text[ 16 ];
 	fileHandle_t f;
 
 	// load the file
-	len = trap_FS_FOpenFile ( PTRC_FILE, &f, FS_READ );
+	len = trap_FS_FOpenFile( PTRC_FILE, &f, FS_READ );
 
-	if ( len <= 0 )
+	if( len <= 0 )
 	{
 		return 0;
 	}
 
 	// should never happen - malformed write
-	if ( len >= sizeof ( text ) - 1 )
+	if( len >= sizeof( text ) - 1 )
 	{
 		return 0;
 	}
 
-	trap_FS_Read ( text, len, f );
+	trap_FS_Read( text, len, f );
 	text[ len ] = 0;
-	trap_FS_FCloseFile ( f );
+	trap_FS_FCloseFile( f );
 
-	return atoi ( text );
+	return atoi( text );
 }
 
 /*
@@ -67,21 +67,21 @@ CG_WritePTRCode
 Write a PTR code to disk
 ===============
 */
-void CG_WritePTRCode ( int code )
+void CG_WritePTRCode( int code )
 {
 	char         text[ 16 ];
 	fileHandle_t f;
 
-	Com_sprintf ( text, 16, "%d", code );
+	Com_sprintf( text, 16, "%d", code );
 
 	// open file
-	if ( trap_FS_FOpenFile ( PTRC_FILE, &f, FS_WRITE ) < 0 )
+	if( trap_FS_FOpenFile( PTRC_FILE, &f, FS_WRITE ) < 0 )
 	{
 		return;
 	}
 
 	// write the code
-	trap_FS_Write ( text, strlen ( text ), f );
+	trap_FS_Write( text, strlen( text ), f );
 
-	trap_FS_FCloseFile ( f );
+	trap_FS_FCloseFile( f );
 }

@@ -34,17 +34,17 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-const char     *CG_DescriptionForCampaign ( void )
+const char     *CG_DescriptionForCampaign( void )
 {
 	return cgs.campaignInfoLoaded ? cgs.campaignData.campaignDescription : NULL;
 }
 
-const char     *CG_NameForCampaign ( void )
+const char     *CG_NameForCampaign( void )
 {
 	return cgs.campaignInfoLoaded ? cgs.campaignData.campaignName : NULL;
 }
 
-qboolean CG_FindCampaignInFile ( char *filename, char *campaignShortName, cg_campaignInfo_t *info )
+qboolean CG_FindCampaignInFile( char *filename, char *campaignShortName, cg_campaignInfo_t *info )
 {
 	int        handle;
 	pc_token_t token;
@@ -54,154 +54,154 @@ qboolean CG_FindCampaignInFile ( char *filename, char *campaignShortName, cg_cam
 
 	info->mapCount = 0;
 
-	handle = trap_PC_LoadSource ( filename );
+	handle = trap_PC_LoadSource( filename );
 
-	if ( !handle )
+	if( !handle )
 	{
-		trap_Print ( va ( S_COLOR_RED "file not found: %s\n", filename ) );
+		trap_Print( va( S_COLOR_RED "file not found: %s\n", filename ) );
 		return qfalse;
 	}
 
-	if ( !trap_PC_ReadToken ( handle, &token ) )
+	if( !trap_PC_ReadToken( handle, &token ) )
 	{
-		trap_PC_FreeSource ( handle );
+		trap_PC_FreeSource( handle );
 		return qfalse;
 	}
 
-	if ( *token.string != '{' )
+	if( *token.string != '{' )
 	{
-		trap_PC_FreeSource ( handle );
+		trap_PC_FreeSource( handle );
 		return qfalse;
 	}
 
-	while ( trap_PC_ReadToken ( handle, &token ) )
+	while( trap_PC_ReadToken( handle, &token ) )
 	{
-		if ( *token.string == '}' )
+		if( *token.string == '}' )
 		{
-			if ( campaignFound )
+			if( campaignFound )
 			{
-				trap_PC_FreeSource ( handle );
+				trap_PC_FreeSource( handle );
 				return qtrue;
 			}
 
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
 				// eof
-				trap_PC_FreeSource ( handle );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
-			if ( *token.string != '{' )
+			if( *token.string != '{' )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected token '%s' inside: %s\n", token.string, filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected token '%s' inside: %s\n", token.string, filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
 			info->mapCount = 0;
 		}
-		else if ( !Q_stricmp ( token.string, "shortname" ) )
+		else if( !Q_stricmp( token.string, "shortname" ) )
 		{
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
 				// don't do a stringparse due to memory constraints
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
-			if ( !Q_stricmp ( token.string, campaignShortName ) )
+			if( !Q_stricmp( token.string, campaignShortName ) )
 			{
 				campaignFound = qtrue;
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "next" ) || !Q_stricmp ( token.string, "image" ) )
+		else if( !Q_stricmp( token.string, "next" ) || !Q_stricmp( token.string, "image" ) )
 		{
 			//if( !PC_String_Parse( handle, &dummy ) ) {
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
 				// don't do a stringparse due to memory constraints
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "description" ) )
+		else if( !Q_stricmp( token.string, "description" ) )
 		{
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
-			Q_strncpyz ( info->campaignDescription, token.string, sizeof ( info->campaignDescription ) );
+			Q_strncpyz( info->campaignDescription, token.string, sizeof( info->campaignDescription ) );
 		}
-		else if ( !Q_stricmp ( token.string, "name" ) )
+		else if( !Q_stricmp( token.string, "name" ) )
 		{
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
-			Q_strncpyz ( info->campaignName, token.string, sizeof ( info->campaignName ) );
+			Q_strncpyz( info->campaignName, token.string, sizeof( info->campaignName ) );
 		}
-		else if ( !Q_stricmp ( token.string, "maps" ) )
+		else if( !Q_stricmp( token.string, "maps" ) )
 		{
 			char *ptr, mapname[ 128 ], *mapnameptr;
 
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
 			ptr = token.string;
 
-			while ( *ptr )
+			while( *ptr )
 			{
 				mapnameptr = mapname;
 
-				while ( *ptr && *ptr != ';' )
+				while( *ptr && *ptr != ';' )
 				{
 					*mapnameptr++ = *ptr++;
 				}
 
-				if ( *ptr )
+				if( *ptr )
 				{
 					ptr++;
 				}
 
 				*mapnameptr = '\0';
 
-				if ( info->mapCount >= MAX_MAPS_PER_CAMPAIGN )
+				if( info->mapCount >= MAX_MAPS_PER_CAMPAIGN )
 				{
-					trap_Print ( va ( S_COLOR_RED "too many maps for a campaign inside: %s\n", filename ) );
-					trap_PC_FreeSource ( handle );
+					trap_Print( va( S_COLOR_RED "too many maps for a campaign inside: %s\n", filename ) );
+					trap_PC_FreeSource( handle );
 					break;
 				}
 
-				Q_strncpyz ( info->mapnames[ info->mapCount++ ], mapname, MAX_QPATH );
+				Q_strncpyz( info->mapnames[ info->mapCount++ ], mapname, MAX_QPATH );
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "maptc" ) )
+		else if( !Q_stricmp( token.string, "maptc" ) )
 		{
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
 			info->mapTC[ 0 ][ 0 ] = token.floatvalue;
 
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
@@ -212,87 +212,87 @@ qboolean CG_FindCampaignInFile ( char *filename, char *campaignShortName, cg_cam
 		}
 	}
 
-	trap_PC_FreeSource ( handle );
+	trap_PC_FreeSource( handle );
 	return qfalse;
 }
 
-qboolean CG_FindArenaInfo ( char *filename, char *mapname, arenaInfo_t *info )
+qboolean CG_FindArenaInfo( char *filename, char *mapname, arenaInfo_t *info )
 {
 	int        handle;
 	pc_token_t token;
 	const char *dummy;
 	qboolean   found = qfalse;
 
-	handle = trap_PC_LoadSource ( filename );
+	handle = trap_PC_LoadSource( filename );
 
-	if ( !handle )
+	if( !handle )
 	{
-		trap_Print ( va ( S_COLOR_RED "file not found: %s\n", filename ) );
+		trap_Print( va( S_COLOR_RED "file not found: %s\n", filename ) );
 		return qfalse;
 	}
 
-	if ( !trap_PC_ReadToken ( handle, &token ) )
+	if( !trap_PC_ReadToken( handle, &token ) )
 	{
-		trap_PC_FreeSource ( handle );
+		trap_PC_FreeSource( handle );
 		return qfalse;
 	}
 
-	if ( *token.string != '{' )
+	if( *token.string != '{' )
 	{
-		trap_PC_FreeSource ( handle );
+		trap_PC_FreeSource( handle );
 		return qfalse;
 	}
 
-	while ( trap_PC_ReadToken ( handle, &token ) )
+	while( trap_PC_ReadToken( handle, &token ) )
 	{
-		if ( *token.string == '}' )
+		if( *token.string == '}' )
 		{
-			if ( found )
+			if( found )
 			{
 //              info->image = trap_R_RegisterShaderNoMip(va("levelshots/%s", mapname));
-				trap_PC_FreeSource ( handle );
+				trap_PC_FreeSource( handle );
 				return qtrue;
 			}
 
 			found = qfalse;
 
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
 				// eof
-				trap_PC_FreeSource ( handle );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
-			if ( *token.string != '{' )
+			if( *token.string != '{' )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected token '%s' inside: %s\n", token.string, filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected token '%s' inside: %s\n", token.string, filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "objectives" ) || !Q_stricmp ( token.string, "description" ) ||
-		          !Q_stricmp ( token.string, "type" ) )
+		else if( !Q_stricmp( token.string, "objectives" ) || !Q_stricmp( token.string, "description" ) ||
+		         !Q_stricmp( token.string, "type" ) )
 		{
-			if ( !PC_String_Parse ( handle, &dummy ) )
+			if( !PC_String_Parse( handle, &dummy ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "longname" ) )
+		else if( !Q_stricmp( token.string, "longname" ) )
 		{
-			if ( !PC_String_Parse ( handle, &dummy ) )
+			if( !PC_String_Parse( handle, &dummy ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 			else
 			{
 				//char* p = info->longname;
 
-				Q_strncpyz ( info->longname, dummy, 128 );
+				Q_strncpyz( info->longname, dummy, 128 );
 				// Gordon: removing cuz, er, no-one knows why it's here!...
 
 				/*        while(*p) {
@@ -301,92 +301,92 @@ qboolean CG_FindArenaInfo ( char *filename, char *mapname, arenaInfo_t *info )
 				                                }*/
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "map" ) )
+		else if( !Q_stricmp( token.string, "map" ) )
 		{
-			if ( !PC_String_Parse ( handle, &dummy ) )
+			if( !PC_String_Parse( handle, &dummy ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 			else
 			{
-				if ( !Q_stricmp ( dummy, mapname ) )
+				if( !Q_stricmp( dummy, mapname ) )
 				{
 					found = qtrue;
 				}
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "Timelimit" ) || !Q_stricmp ( token.string, "AxisRespawnTime" ) ||
-		          !Q_stricmp ( token.string, "AlliedRespawnTime" ) )
+		else if( !Q_stricmp( token.string, "Timelimit" ) || !Q_stricmp( token.string, "AxisRespawnTime" ) ||
+		         !Q_stricmp( token.string, "AlliedRespawnTime" ) )
 		{
-			if ( !PC_Int_Parse ( handle, ( int * ) &dummy ) )
+			if( !PC_Int_Parse( handle, ( int * ) &dummy ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "lmsbriefing" ) )
+		else if( !Q_stricmp( token.string, "lmsbriefing" ) )
 		{
-			if ( !PC_String_Parse ( handle, &dummy ) )
+			if( !PC_String_Parse( handle, &dummy ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
-				return qfalse;
-			}
-			else
-			{
-				Q_strncpyz ( info->lmsdescription, dummy, sizeof ( info->lmsdescription ) );
-			}
-		}
-		else if ( !Q_stricmp ( token.string, "briefing" ) )
-		{
-			if ( !PC_String_Parse ( handle, &dummy ) )
-			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 			else
 			{
-				Q_strncpyz ( info->description, dummy, sizeof ( info->description ) );
+				Q_strncpyz( info->lmsdescription, dummy, sizeof( info->lmsdescription ) );
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "alliedwintext" ) )
+		else if( !Q_stricmp( token.string, "briefing" ) )
 		{
-			if ( !PC_String_Parse ( handle, &dummy ) )
+			if( !PC_String_Parse( handle, &dummy ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 			else
 			{
-				Q_strncpyz ( info->alliedwintext, dummy, sizeof ( info->description ) );
+				Q_strncpyz( info->description, dummy, sizeof( info->description ) );
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "axiswintext" ) )
+		else if( !Q_stricmp( token.string, "alliedwintext" ) )
 		{
-			if ( !PC_String_Parse ( handle, &dummy ) )
+			if( !PC_String_Parse( handle, &dummy ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 			else
 			{
-				Q_strncpyz ( info->axiswintext, dummy, sizeof ( info->description ) );
+				Q_strncpyz( info->alliedwintext, dummy, sizeof( info->description ) );
 			}
 		}
-		else if ( !Q_stricmp ( token.string, "mapposition_x" ) )
+		else if( !Q_stricmp( token.string, "axiswintext" ) )
+		{
+			if( !PC_String_Parse( handle, &dummy ) )
+			{
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
+				return qfalse;
+			}
+			else
+			{
+				Q_strncpyz( info->axiswintext, dummy, sizeof( info->description ) );
+			}
+		}
+		else if( !Q_stricmp( token.string, "mapposition_x" ) )
 		{
 			vec_t x;
 
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
@@ -394,14 +394,14 @@ qboolean CG_FindArenaInfo ( char *filename, char *mapname, arenaInfo_t *info )
 
 			info->mappos[ 0 ] = x;
 		}
-		else if ( !Q_stricmp ( token.string, "mapposition_y" ) )
+		else if( !Q_stricmp( token.string, "mapposition_y" ) )
 		{
 			vec_t y;
 
-			if ( !trap_PC_ReadToken ( handle, &token ) )
+			if( !trap_PC_ReadToken( handle, &token ) )
 			{
-				trap_Print ( va ( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
-				trap_PC_FreeSource ( handle );
+				trap_Print( va( S_COLOR_RED "unexpected end of file inside: %s\n", filename ) );
+				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
@@ -411,11 +411,11 @@ qboolean CG_FindArenaInfo ( char *filename, char *mapname, arenaInfo_t *info )
 		}
 	}
 
-	trap_PC_FreeSource ( handle );
+	trap_PC_FreeSource( handle );
 	return qfalse;
 }
 
-void CG_LocateCampaign ( void )
+void CG_LocateCampaign( void )
 {
 	/*  int     numdirs;
 	        char    filename[MAX_QPATH];
@@ -461,35 +461,35 @@ void CG_LocateCampaign ( void )
 	qboolean found = qfalse;
 
 	// get all campaigns from .campaign files
-	numdirs = trap_FS_GetFileList ( "scripts", ".campaign", dirlist, 1024 );
+	numdirs = trap_FS_GetFileList( "scripts", ".campaign", dirlist, 1024 );
 	dirptr = dirlist;
 
-	for ( i = 0; i < numdirs; i++, dirptr += dirlen + 1 )
+	for( i = 0; i < numdirs; i++, dirptr += dirlen + 1 )
 	{
-		dirlen = strlen ( dirptr );
-		Q_strncpyz ( filename, "scripts/", MAX_QPATH );
-		Q_strcat ( filename, MAX_QPATH, dirptr );
+		dirlen = strlen( dirptr );
+		Q_strncpyz( filename, "scripts/", MAX_QPATH );
+		Q_strcat( filename, MAX_QPATH, dirptr );
 
-		if ( CG_FindCampaignInFile ( filename, cgs.currentCampaign, &cgs.campaignData ) )
+		if( CG_FindCampaignInFile( filename, cgs.currentCampaign, &cgs.campaignData ) )
 		{
 			found = qtrue;
 			break;
 		}
 	}
 
-	if ( !found )
+	if( !found )
 	{
 		return;
 	}
 
-	for ( i = 0; i < cgs.campaignData.mapCount; i++ )
+	for( i = 0; i < cgs.campaignData.mapCount; i++ )
 	{
-		Com_sprintf ( filename, sizeof ( filename ), "scripts/%s.arena", cgs.campaignData.mapnames[ i ] );
+		Com_sprintf( filename, sizeof( filename ), "scripts/%s.arena", cgs.campaignData.mapnames[ i ] );
 
 		// Gordon: horrible hack, but i dont plan to parse EVERY .arena to get a map briefing...
-		if ( /*!CG_FindArenaInfo( "scripts/wolfmp.arena", cgs.campaignData.mapnames[i], &cgs.campaignData.arenas[i] ) &&
+		if( /*!CG_FindArenaInfo( "scripts/wolfmp.arena", cgs.campaignData.mapnames[i], &cgs.campaignData.arenas[i] ) &&
                                            !CG_FindArenaInfo( "scripts/wolfxp.arena", cgs.campaignData.mapnames[i], &cgs.campaignData.arenas[i] ) && */
-		  !CG_FindArenaInfo ( filename, cgs.campaignData.mapnames[ i ], &cgs.campaignData.arenas[ i ] ) )
+		  !CG_FindArenaInfo( filename, cgs.campaignData.mapnames[ i ], &cgs.campaignData.arenas[ i ] ) )
 		{
 			return;
 		}
@@ -498,15 +498,15 @@ void CG_LocateCampaign ( void )
 	cgs.campaignInfoLoaded = qtrue;
 }
 
-void CG_LocateArena ( void )
+void CG_LocateArena( void )
 {
 	char filename[ MAX_QPATH ];
 
-	Com_sprintf ( filename, sizeof ( filename ), "scripts/%s.arena", cgs.rawmapname );
+	Com_sprintf( filename, sizeof( filename ), "scripts/%s.arena", cgs.rawmapname );
 
-	if ( /*!CG_FindArenaInfo( "scripts/wolfmp.arena", cgs.rawmapname, &cgs.arenaData ) &&
+	if( /*!CG_FindArenaInfo( "scripts/wolfmp.arena", cgs.rawmapname, &cgs.arenaData ) &&
                                                        !CG_FindArenaInfo( "scripts/wolfxp.arena", cgs.rawmapname, &cgs.arenaData ) && */
-	  !CG_FindArenaInfo ( filename, cgs.rawmapname, &cgs.arenaData ) )
+	  !CG_FindArenaInfo( filename, cgs.rawmapname, &cgs.arenaData ) )
 	{
 		return;
 	}

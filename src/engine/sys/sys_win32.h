@@ -59,5 +59,5 @@ typedef struct
 
 extern WinVars_t g_wv;
 
-void             Sys_CreateConsole ( void );
-void             Sys_ShowConsole ( int level, qboolean quitOnClose );
+void             Sys_CreateConsole( void );
+void             Sys_ShowConsole( int level, qboolean quitOnClose );

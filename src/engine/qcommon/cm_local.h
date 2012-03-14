@@ -260,15 +260,15 @@ typedef struct leafList_s
 	int      *list;
 	vec3_t   bounds[ 2 ];
 	int      lastLeaf; // for overflows where each leaf can't be stored individually
-	void            ( *storeLeafs ) ( struct leafList_s *ll, int nodenum );
+	void ( *storeLeafs )( struct leafList_s *ll, int nodenum );
 } leafList_t;
 
 #define SUBDIVIDE_DISTANCE 16 //4 // never more than this units away from curve
 #define PLANE_TRI_EPSILON  0.1
 #define WRAP_POINT_EPSILON 0.1
 
-cSurfaceCollide_t *CM_GeneratePatchCollide ( int width, int height, vec3_t *points );
-void              CM_ClearLevelPatches ( void );
+cSurfaceCollide_t *CM_GeneratePatchCollide( int width, int height, vec3_t *points );
+void              CM_ClearLevelPatches( void );
 
 // cm_trisoup.c
 
@@ -282,7 +282,7 @@ typedef struct
 	vec3_t points[ SHADER_MAX_TRIANGLES ][ 3 ];
 } cTriangleSoup_t;
 
-cSurfaceCollide_t              *CM_GenerateTriangleSoupCollide ( int numVertexes, vec3_t *vertexes, int numIndexes, int *indexes );
+cSurfaceCollide_t              *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vertexes, int numIndexes, int *indexes );
 
 // cm_test.c
 extern const cSurfaceCollide_t *debugSurfaceCollide;
@@ -290,17 +290,17 @@ extern const cFacet_t          *debugFacet;
 extern qboolean                debugBlock;
 extern vec3_t                  debugBlockPoints[ 4 ];
 
-int                            CM_BoxBrushes ( const vec3_t mins, const vec3_t maxs, cbrush_t **list, int listsize );
+int                            CM_BoxBrushes( const vec3_t mins, const vec3_t maxs, cbrush_t **list, int listsize );
 
-void                           CM_StoreLeafs ( leafList_t *ll, int nodenum );
-void                           CM_StoreBrushes ( leafList_t *ll, int nodenum );
+void                           CM_StoreLeafs( leafList_t *ll, int nodenum );
+void                           CM_StoreBrushes( leafList_t *ll, int nodenum );
 
-void                           CM_BoxLeafnums_r ( leafList_t *ll, int nodenum );
+void                           CM_BoxLeafnums_r( leafList_t *ll, int nodenum );
 
-cmodel_t                       *CM_ClipHandleToModel ( clipHandle_t handle );
+cmodel_t                       *CM_ClipHandleToModel( clipHandle_t handle );
 
 // XreaL BEGIN
-qboolean                       CM_BoundsIntersect ( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
-qboolean                       CM_BoundsIntersectPoint ( const vec3_t mins, const vec3_t maxs, const vec3_t point );
+qboolean                       CM_BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
+qboolean                       CM_BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t point );
 
 // XreaL END

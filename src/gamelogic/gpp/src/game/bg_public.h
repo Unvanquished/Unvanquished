@@ -199,15 +199,15 @@ typedef struct pmove_s
 	// callbacks to test the world
 	// these will be different functions during game and cgame
 	/*void    (*trace)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );*/
-	void          ( *trace ) ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-	                           const vec3_t end, int passEntityNum, int contentMask );
+	void ( *trace )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+	                 const vec3_t end, int passEntityNum, int contentMask );
 
-	int           ( *pointcontents ) ( const vec3_t point, int passEntityNum );
+	int ( *pointcontents )( const vec3_t point, int passEntityNum );
 } pmove_t;
 
 // if a full pmove isn't done on the client, you can just update the angles
-void PM_UpdateViewAngles ( playerState_t *ps, const usercmd_t *cmd );
-void Pmove ( pmove_t *pmove );
+void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
+void Pmove( pmove_t *pmove );
 
 //===================================================================================
 
@@ -446,7 +446,7 @@ typedef enum
 
 #define EVENT_VALID_MSEC 300
 
-const char *BG_EventName ( int num );
+const char *BG_EventName( int num );
 
 typedef enum
 {
@@ -1095,72 +1095,72 @@ typedef struct
 	team_t    team;
 } upgradeAttributes_t;
 
-qboolean BG_WeaponIsFull ( weapon_t weapon, int stats[], int ammo, int clips );
-qboolean BG_InventoryContainsWeapon ( int weapon, int stats[]  );
-int      BG_SlotsForInventory ( int stats[]  );
-void     BG_AddUpgradeToInventory ( int item, int stats[]  );
-void     BG_RemoveUpgradeFromInventory ( int item, int stats[]  );
-qboolean BG_InventoryContainsUpgrade ( int item, int stats[]  );
-void     BG_ActivateUpgrade ( int item, int stats[]  );
-void     BG_DeactivateUpgrade ( int item, int stats[]  );
-qboolean BG_UpgradeIsActive ( int item, int stats[]  );
-qboolean BG_RotateAxis ( vec3_t surfNormal, vec3_t inAxis[ 3 ],
-                         vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling );
-void     BG_GetClientNormal ( const playerState_t *ps, vec3_t normal );
-void     BG_GetClientViewOrigin ( const playerState_t *ps, vec3_t viewOrigin );
-void     BG_PositionBuildableRelativeToPlayer ( const playerState_t *ps,
+qboolean BG_WeaponIsFull( weapon_t weapon, int stats[], int ammo, int clips );
+qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
+int      BG_SlotsForInventory( int stats[] );
+void     BG_AddUpgradeToInventory( int item, int stats[] );
+void     BG_RemoveUpgradeFromInventory( int item, int stats[] );
+qboolean BG_InventoryContainsUpgrade( int item, int stats[] );
+void     BG_ActivateUpgrade( int item, int stats[] );
+void     BG_DeactivateUpgrade( int item, int stats[] );
+qboolean BG_UpgradeIsActive( int item, int stats[] );
+qboolean BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
+                        vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling );
+void     BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
+void     BG_GetClientViewOrigin( const playerState_t *ps, vec3_t viewOrigin );
+void     BG_PositionBuildableRelativeToPlayer( const playerState_t *ps,
     const vec3_t mins, const vec3_t maxs,
-    void ( *trace ) ( trace_t *, const vec3_t, const vec3_t,
-                      const vec3_t, const vec3_t, int, int ),
+    void ( *trace )( trace_t *, const vec3_t, const vec3_t,
+                     const vec3_t, const vec3_t, int, int ),
     vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
-int                         BG_GetValueOfPlayer ( playerState_t *ps );
-qboolean                    BG_PlayerCanChangeWeapon ( playerState_t *ps );
-int                         BG_PlayerPoisonCloudTime ( playerState_t *ps );
-weapon_t                    BG_GetPlayerWeapon ( playerState_t *ps );
-qboolean                    BG_HasEnergyWeapon ( playerState_t *ps );
+int                         BG_GetValueOfPlayer( playerState_t *ps );
+qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
+int                         BG_PlayerPoisonCloudTime( playerState_t *ps );
+weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
+qboolean                    BG_HasEnergyWeapon( playerState_t *ps );
 
-void                        BG_PackEntityNumbers ( entityState_t *es, const int *entityNums, int count );
-int                         BG_UnpackEntityNumbers ( entityState_t *es, int *entityNums, int count );
+void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count );
+int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count );
 
-const buildableAttributes_t *BG_BuildableByName ( const char *name );
-const buildableAttributes_t *BG_BuildableByEntityName ( const char *name );
-const buildableAttributes_t *BG_Buildable ( buildable_t buildable );
-qboolean                    BG_BuildableAllowedInStage ( buildable_t buildable,
+const buildableAttributes_t *BG_BuildableByName( const char *name );
+const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
+const buildableAttributes_t *BG_Buildable( buildable_t buildable );
+qboolean                    BG_BuildableAllowedInStage( buildable_t buildable,
     stage_t stage );
 
-buildableConfig_t           *BG_BuildableConfig ( buildable_t buildable );
-void                        BG_BuildableBoundingBox ( buildable_t buildable,
+buildableConfig_t           *BG_BuildableConfig( buildable_t buildable );
+void                        BG_BuildableBoundingBox( buildable_t buildable,
     vec3_t mins, vec3_t maxs );
-void                        BG_InitBuildableConfigs ( void );
+void                        BG_InitBuildableConfigs( void );
 
-const classAttributes_t     *BG_ClassByName ( const char *name );
+const classAttributes_t     *BG_ClassByName( const char *name );
 
-const classAttributes_t     *BG_Class ( class_t class );
-qboolean                    BG_ClassAllowedInStage ( class_t class,
+const classAttributes_t     *BG_Class( class_t class );
+qboolean                    BG_ClassAllowedInStage( class_t class,
     stage_t stage );
 
-classConfig_t               *BG_ClassConfig ( class_t class );
+classConfig_t               *BG_ClassConfig( class_t class );
 
-void                        BG_ClassBoundingBox ( class_t class, vec3_t mins,
+void                        BG_ClassBoundingBox( class_t class, vec3_t mins,
     vec3_t maxs, vec3_t cmaxs,
     vec3_t dmins, vec3_t dmaxs );
-qboolean                    BG_ClassHasAbility ( class_t class, int ability );
-int                         BG_ClassCanEvolveFromTo ( class_t fclass,
+qboolean                    BG_ClassHasAbility( class_t class, int ability );
+int                         BG_ClassCanEvolveFromTo( class_t fclass,
     class_t tclass,
     int credits, int alienStage, int num );
 
-qboolean                  BG_AlienCanEvolve ( class_t class, int credits, int alienStage );
+qboolean                  BG_AlienCanEvolve( class_t class, int credits, int alienStage );
 
-void                      BG_InitClassConfigs ( void );
+void                      BG_InitClassConfigs( void );
 
-const weaponAttributes_t  *BG_WeaponByName ( const char *name );
-const weaponAttributes_t  *BG_Weapon ( weapon_t weapon );
-qboolean                  BG_WeaponAllowedInStage ( weapon_t weapon,
+const weaponAttributes_t  *BG_WeaponByName( const char *name );
+const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
+qboolean                  BG_WeaponAllowedInStage( weapon_t weapon,
     stage_t stage );
 
-const upgradeAttributes_t *BG_UpgradeByName ( const char *name );
-const upgradeAttributes_t *BG_Upgrade ( upgrade_t upgrade );
-qboolean                  BG_UpgradeAllowedInStage ( upgrade_t upgrade,
+const upgradeAttributes_t *BG_UpgradeByName( const char *name );
+const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
+qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
     stage_t stage );
 
 // content masks
@@ -1172,21 +1172,21 @@ qboolean                  BG_UpgradeAllowedInStage ( upgrade_t upgrade,
 #define MASK_OPAQUE      ( CONTENTS_SOLID | CONTENTS_SLIME | CONTENTS_LAVA )
 #define MASK_SHOT        ( CONTENTS_SOLID | CONTENTS_BODY )
 
-void     *BG_Alloc ( int size );
-void     BG_InitMemory ( void );
-void     BG_Free ( void *ptr );
-void     BG_DefragmentMemory ( void );
-void     BG_MemoryInfo ( void );
+void     *BG_Alloc( int size );
+void     BG_InitMemory( void );
+void     BG_Free( void *ptr );
+void     BG_DefragmentMemory( void );
+void     BG_MemoryInfo( void );
 
-void     BG_EvaluateTrajectory ( const trajectory_t *tr, int atTime, vec3_t result );
-void     BG_EvaluateTrajectoryDelta ( const trajectory_t *tr, int atTime, vec3_t result );
+void     BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
+void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
 
-void     BG_AddPredictableEventToPlayerstate ( int newEvent, int eventParm, playerState_t *ps );
+void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
 
-void     BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean snap );
-void     BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *s, int time, qboolean snap );
+void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
+void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
 
-qboolean BG_PlayerTouchesItem ( playerState_t *ps, entityState_t *item, int atTime );
+qboolean BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
 
 #define ARENAS_PER_TIER 4
 #define MAX_ARENAS      1024
@@ -1195,21 +1195,21 @@ qboolean BG_PlayerTouchesItem ( playerState_t *ps, entityState_t *item, int atTi
 #define MAX_BOTS        1024
 #define MAX_BOTS_TEXT   8192
 
-float    atof_neg ( char *token, qboolean allowNegative );
-int      atoi_neg ( char *token, qboolean allowNegative );
+float    atof_neg( char *token, qboolean allowNegative );
+int      atoi_neg( char *token, qboolean allowNegative );
 
-void     BG_ParseCSVEquipmentList ( const char *string, weapon_t *weapons, int weaponsSize,
-                                    upgrade_t *upgrades, int upgradesSize );
-void     BG_ParseCSVClassList ( const char *string, class_t *classes, int classesSize );
-void     BG_ParseCSVBuildableList ( const char *string, buildable_t *buildables, int buildablesSize );
-void     BG_InitAllowedGameElements ( void );
-qboolean BG_WeaponIsAllowed ( weapon_t weapon );
-qboolean BG_UpgradeIsAllowed ( upgrade_t upgrade );
+void     BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weaponsSize,
+                                   upgrade_t *upgrades, int upgradesSize );
+void     BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize );
+void     BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize );
+void     BG_InitAllowedGameElements( void );
+qboolean BG_WeaponIsAllowed( weapon_t weapon );
+qboolean BG_UpgradeIsAllowed( upgrade_t upgrade );
 
-qboolean BG_ClassIsAllowed ( class_t class );
-qboolean BG_BuildableIsAllowed ( buildable_t buildable );
+qboolean BG_ClassIsAllowed( class_t class );
+qboolean BG_BuildableIsAllowed( buildable_t buildable );
 
-weapon_t BG_PrimaryWeapon ( int stats[]  );
+weapon_t BG_PrimaryWeapon( int stats[] );
 
 // Friendly Fire Flags
 #define FFF_HUMANS             1
@@ -1259,24 +1259,24 @@ typedef struct voice_s
 	struct voice_s *next;
 } voice_t;
 
-voice_t      *BG_VoiceInit ( void );
-void         BG_PrintVoices ( voice_t *voices, int debugLevel );
+voice_t      *BG_VoiceInit( void );
+void         BG_PrintVoices( voice_t *voices, int debugLevel );
 
-voice_t      *BG_VoiceByName ( voice_t *head, char *name );
-voiceCmd_t   *BG_VoiceCmdFind ( voiceCmd_t *head, char *name, int *cmdNum );
-voiceCmd_t   *BG_VoiceCmdByNum ( voiceCmd_t *head, int num );
-voiceTrack_t *BG_VoiceTrackByNum ( voiceTrack_t *head, int num );
+voice_t      *BG_VoiceByName( voice_t *head, char *name );
+voiceCmd_t   *BG_VoiceCmdFind( voiceCmd_t *head, char *name, int *cmdNum );
+voiceCmd_t   *BG_VoiceCmdByNum( voiceCmd_t *head, int num );
+voiceTrack_t *BG_VoiceTrackByNum( voiceTrack_t *head, int num );
 
-voiceTrack_t *BG_VoiceTrackFind ( voiceTrack_t *head, team_t team,
-                                  class_t class, weapon_t weapon,
-                                  int enthusiasm, int *trackNum );
+voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
+                                 class_t class, weapon_t weapon,
+                                 int enthusiasm, int *trackNum );
 
-int  BG_LoadEmoticons ( emoticon_t *emoticons, int num );
+int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 
-char *BG_TeamName ( team_t team );
+char *BG_TeamName( team_t team );
 
 typedef struct
 {
 	const char *name;
 } dummyCmd_t;
-int cmdcmp ( const void *a, const void *b );
+int cmdcmp( const void *a, const void *b );

@@ -143,17 +143,17 @@ typedef struct
 */
 
 // initializes cycling through a DMA buffer and returns information on it
-qboolean SNDDMA_Init ( void );
+qboolean SNDDMA_Init( void );
 
 // gets the current DMA position
-int      SNDDMA_GetDMAPos ( void );
+int      SNDDMA_GetDMAPos( void );
 
 // shutdown the DMA xfer.
-void     SNDDMA_Shutdown ( void );
+void     SNDDMA_Shutdown( void );
 
-void     SNDDMA_BeginPainting ( void );
+void     SNDDMA_BeginPainting( void );
 
-void     SNDDMA_Submit ( void );
+void     SNDDMA_Submit( void );
 
 //====================================================================
 
@@ -184,26 +184,26 @@ extern cvar_t                 *s_mixahead;
 extern cvar_t                 *s_testsound;
 extern cvar_t                 *s_separation;
 
-qboolean                      S_LoadSound ( sfx_t *sfx );
+qboolean                      S_LoadSound( sfx_t *sfx );
 
-void                          SND_free ( sndBuffer *v );
+void                          SND_free( sndBuffer *v );
 sndBuffer                      *SND_malloc();
 void                          SND_setup();
 
-void                          S_PaintChannels ( int endtime );
+void                          S_PaintChannels( int endtime );
 
-void                          S_memoryLoad ( sfx_t *sfx );
+void                          S_memoryLoad( sfx_t *sfx );
 portable_samplepair_t         *S_GetRawSamplePointer();
 
 // spatializes a channel
-void                          S_Spatialize ( channel_t *ch );
+void                          S_Spatialize( channel_t *ch );
 
-int                           S_GetVoiceAmplitude ( int entityNum );
+int                           S_GetVoiceAmplitude( int entityNum );
 
 // adpcm functions
-int                           S_AdpcmMemoryNeeded ( const wavinfo_t *info );
-void                          S_AdpcmEncodeSound ( sfx_t *sfx, short *samples );
-void                          S_AdpcmGetSamples ( sndBuffer *chunk, short *to );
+int                           S_AdpcmMemoryNeeded( const wavinfo_t *info );
+void                          S_AdpcmEncodeSound( sfx_t *sfx, short *samples );
+void                          S_AdpcmGetSamples( sndBuffer *chunk, short *to );
 
 // wavelet function
 
@@ -214,10 +214,10 @@ void S_FreeOldestSound();
 
 #define NXStream byte
 
-void         encodeWavelet ( sfx_t *sfx, short *packets );
-void         decodeWavelet ( sndBuffer *stream, short *packets );
+void         encodeWavelet( sfx_t *sfx, short *packets );
+void         decodeWavelet( sndBuffer *stream, short *packets );
 
-void         encodeMuLaw ( sfx_t *sfx, short *packets );
+void         encodeMuLaw( sfx_t *sfx, short *packets );
 
 extern short mulawToShort[ 256 ];
 
@@ -225,37 +225,37 @@ extern short *sfxScratchBuffer;
 extern sfx_t *sfxScratchPointer;
 extern int   sfxScratchIndex;
 
-void         SOrig_Init ( void );
-void         SOrig_Shutdown ( void );
-void         SOrig_StartSound ( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
-void         SOrig_StartLocalSound ( sfxHandle_t sfx, int channelNum );
-void         SOrig_StartBackgroundTrack ( const char *intro, const char *loop );
-void         SOrig_StopBackgroundTrack ( void );
-void         SOrig_RawSamples ( int stream, int samples, int rate, int width, int s_channels, const byte *data, float volume, int entityNum );
-void         SOrig_StopAllSounds ( void );
-void         SOrig_ClearLoopingSounds ( qboolean killall );
-void         SOrig_AddLoopingSound ( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
-void         SOrig_AddRealLoopingSound ( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
-void         SOrig_StopLoopingSound ( int entityNum );
+void         SOrig_Init( void );
+void         SOrig_Shutdown( void );
+void         SOrig_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
+void         SOrig_StartLocalSound( sfxHandle_t sfx, int channelNum );
+void         SOrig_StartBackgroundTrack( const char *intro, const char *loop );
+void         SOrig_StopBackgroundTrack( void );
+void         SOrig_RawSamples( int stream, int samples, int rate, int width, int s_channels, const byte *data, float volume, int entityNum );
+void         SOrig_StopAllSounds( void );
+void         SOrig_ClearLoopingSounds( qboolean killall );
+void         SOrig_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
+void         SOrig_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
+void         SOrig_StopLoopingSound( int entityNum );
 
-void         SOrig_Respatialize ( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater );
-void         SOrig_UpdateEntityPosition ( int entityNum, const vec3_t origin );
-void         SOrig_Update ( void );
-void         SOrig_DisableSounds ( void );
-void         SOrig_BeginRegistration ( void );
-sfxHandle_t  SOrig_RegisterSound ( const char *sample, qboolean compressed );
-void         SOrig_ClearSoundBuffer ( void );
-int          SOrig_SoundDuration ( sfxHandle_t handle );
-int          SOrig_GetVoiceAmplitude ( int entnum );
-int          SOrig_GetSoundLength ( sfxHandle_t sfxHandle );
+void         SOrig_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater );
+void         SOrig_UpdateEntityPosition( int entityNum, const vec3_t origin );
+void         SOrig_Update( void );
+void         SOrig_DisableSounds( void );
+void         SOrig_BeginRegistration( void );
+sfxHandle_t  SOrig_RegisterSound( const char *sample, qboolean compressed );
+void         SOrig_ClearSoundBuffer( void );
+int          SOrig_SoundDuration( sfxHandle_t handle );
+int          SOrig_GetVoiceAmplitude( int entnum );
+int          SOrig_GetSoundLength( sfxHandle_t sfxHandle );
 
 #if defined( USE_VOIP )
-void         SOrig_StartCapture ( void );
-int          SOrig_AvailableCaptureSamples ( void );
-void         SOrig_Capture ( int samples, byte *data );
-void         SOrig_StopCapture ( void );
-void         SOrig_MasterGain ( float gain );
+void         SOrig_StartCapture( void );
+int          SOrig_AvailableCaptureSamples( void );
+void         SOrig_Capture( int samples, byte *data );
+void         SOrig_StopCapture( void );
+void         SOrig_MasterGain( float gain );
 
 #endif
 
-int SOrig_GetCurrentSoundTime ( void );
+int SOrig_GetCurrentSoundTime( void );

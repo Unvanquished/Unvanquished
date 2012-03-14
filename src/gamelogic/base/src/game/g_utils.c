@@ -37,43 +37,43 @@ typedef struct
 int           remapCount = 0;
 shaderRemap_t remappedShaders[ MAX_SHADER_REMAPS ];
 
-void AddRemap ( const char *oldShader, const char *newShader, float timeOffset )
+void AddRemap( const char *oldShader, const char *newShader, float timeOffset )
 {
 	int i;
 
-	for ( i = 0; i < remapCount; i++ )
+	for( i = 0; i < remapCount; i++ )
 	{
-		if ( Q_stricmp ( oldShader, remappedShaders[ i ].oldShader ) == 0 )
+		if( Q_stricmp( oldShader, remappedShaders[ i ].oldShader ) == 0 )
 		{
 			// found it, just update this one
-			strcpy ( remappedShaders[ i ].newShader, newShader );
+			strcpy( remappedShaders[ i ].newShader, newShader );
 			remappedShaders[ i ].timeOffset = timeOffset;
 			return;
 		}
 	}
 
-	if ( remapCount < MAX_SHADER_REMAPS )
+	if( remapCount < MAX_SHADER_REMAPS )
 	{
-		strcpy ( remappedShaders[ remapCount ].newShader, newShader );
-		strcpy ( remappedShaders[ remapCount ].oldShader, oldShader );
+		strcpy( remappedShaders[ remapCount ].newShader, newShader );
+		strcpy( remappedShaders[ remapCount ].oldShader, oldShader );
 		remappedShaders[ remapCount ].timeOffset = timeOffset;
 		remapCount++;
 	}
 }
 
-const char *BuildShaderStateConfig ( void )
+const char *BuildShaderStateConfig( void )
 {
 	static char buff[ MAX_STRING_CHARS * 4 ];
-	char        out[ ( MAX_QPATH * 2 ) + 5 ];
+	char        out[( MAX_QPATH * 2 ) + 5 ];
 	int         i;
 
-	memset ( buff, 0, MAX_STRING_CHARS );
+	memset( buff, 0, MAX_STRING_CHARS );
 
-	for ( i = 0; i < remapCount; i++ )
+	for( i = 0; i < remapCount; i++ )
 	{
-		Com_sprintf ( out, ( MAX_QPATH * 2 ) + 5, "%s=%s:%5.2f@", remappedShaders[ i ].oldShader,
-		              remappedShaders[ i ].newShader, remappedShaders[ i ].timeOffset );
-		Q_strcat ( buff, sizeof ( buff ), out );
+		Com_sprintf( out, ( MAX_QPATH * 2 ) + 5, "%s=%s:%5.2f@", remappedShaders[ i ].oldShader,
+		             remappedShaders[ i ].newShader, remappedShaders[ i ].timeOffset );
+		Q_strcat( buff, sizeof( buff ), out );
 	}
 
 	return buff;
@@ -93,66 +93,66 @@ G_FindConfigstringIndex
 
 ================
 */
-int G_FindConfigstringIndex ( char *name, int start, int max, qboolean create )
+int G_FindConfigstringIndex( char *name, int start, int max, qboolean create )
 {
 	int  i;
 	char s[ MAX_STRING_CHARS ];
 
-	if ( !name || !name[ 0 ] )
+	if( !name || !name[ 0 ] )
 	{
 		return 0;
 	}
 
-	for ( i = 1; i < max; i++ )
+	for( i = 1; i < max; i++ )
 	{
-		trap_GetConfigstring ( start + i, s, sizeof ( s ) );
+		trap_GetConfigstring( start + i, s, sizeof( s ) );
 
-		if ( !s[ 0 ] )
+		if( !s[ 0 ] )
 		{
 			break;
 		}
 
-		if ( !strcmp ( s, name ) )
+		if( !strcmp( s, name ) )
 		{
 			return i;
 		}
 	}
 
-	if ( !create )
+	if( !create )
 	{
 		return 0;
 	}
 
-	if ( i == max )
+	if( i == max )
 	{
-		G_Error ( "G_FindConfigstringIndex: overflow" );
+		G_Error( "G_FindConfigstringIndex: overflow" );
 	}
 
-	trap_SetConfigstring ( start + i, name );
+	trap_SetConfigstring( start + i, name );
 
 	return i;
 }
 
 //TA: added ParticleSystemIndex
-int G_ParticleSystemIndex ( char *name )
+int G_ParticleSystemIndex( char *name )
 {
-	return G_FindConfigstringIndex ( name, CS_PARTICLE_SYSTEMS, MAX_GAME_PARTICLE_SYSTEMS, qtrue );
+	return G_FindConfigstringIndex( name, CS_PARTICLE_SYSTEMS, MAX_GAME_PARTICLE_SYSTEMS, qtrue );
 }
 
 //TA: added ShaderIndex
-int G_ShaderIndex ( char *name )
+int G_ShaderIndex( char *name )
 {
-	return G_FindConfigstringIndex ( name, CS_SHADERS, MAX_GAME_SHADERS, qtrue );
+	return G_FindConfigstringIndex( name, CS_SHADERS, MAX_GAME_SHADERS, qtrue );
 }
 
-int G_ModelIndex ( char *name )
+int G_ModelIndex( char *name )
 {
-	return G_FindConfigstringIndex ( name, CS_MODELS, MAX_MODELS, qtrue );
+	return G_FindConfigstringIndex( name, CS_MODELS, MAX_MODELS, qtrue );
 }
 
-int G_SoundIndex ( char *name )
+int G_SoundIndex( char *name )
 {
-	return G_FindConfigstringIndex ( name, CS_SOUNDS, MAX_SOUNDS, qtrue );
+	return G_FindConfigstringIndex( name, CS_SOUNDS, MAX_SOUNDS, qtrue );
 }
 
 //=====================================================================
@@ -164,17 +164,17 @@ G_TeamCommand
 Broadcasts a command to only a specific team
 ================
 */
-void G_TeamCommand ( pTeam_t team, char *cmd )
+void G_TeamCommand( pTeam_t team, char *cmd )
 {
 	int i;
 
-	for ( i = 0; i < level.maxclients; i++ )
+	for( i = 0; i < level.maxclients; i++ )
 	{
-		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
+		if( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
-			if ( level.clients[ i ].ps.stats[ STAT_PTEAM ] == team )
+			if( level.clients[ i ].ps.stats[ STAT_PTEAM ] == team )
 			{
-				G_SendCommandFromServer ( i, va ( "%s", cmd ) );
+				G_SendCommandFromServer( i, va( "%s", cmd ) );
 			}
 		}
 	}
@@ -192,11 +192,11 @@ NULL will be returned if the end of the list is reached.
 
 =============
 */
-gentity_t *G_Find ( gentity_t *from, int fieldofs, const char *match )
+gentity_t *G_Find( gentity_t *from, int fieldofs, const char *match )
 {
 	char *s;
 
-	if ( !from )
+	if( !from )
 	{
 		from = g_entities;
 	}
@@ -205,21 +205,21 @@ gentity_t *G_Find ( gentity_t *from, int fieldofs, const char *match )
 		from++;
 	}
 
-	for ( ; from < &g_entities[ level.num_entities ]; from++ )
+	for( ; from < &g_entities[ level.num_entities ]; from++ )
 	{
-		if ( !from->inuse )
+		if( !from->inuse )
 		{
 			continue;
 		}
 
-		s = * ( char ** ) ( ( byte * ) from + fieldofs );
+		s = * ( char ** )( ( byte * ) from + fieldofs );
 
-		if ( !s )
+		if( !s )
 		{
 			continue;
 		}
 
-		if ( !Q_stricmp ( s, match ) )
+		if( !Q_stricmp( s, match ) )
 		{
 			return from;
 		}
@@ -237,38 +237,38 @@ Selects a random entity from among the targets
 */
 #define MAXCHOICES 32
 
-gentity_t *G_PickTarget ( char *targetname )
+gentity_t *G_PickTarget( char *targetname )
 {
 	gentity_t *ent = NULL;
 	int       num_choices = 0;
 	gentity_t *choice[ MAXCHOICES ];
 
-	if ( !targetname )
+	if( !targetname )
 	{
-		G_Printf ( "G_PickTarget called with NULL targetname\n" );
+		G_Printf( "G_PickTarget called with NULL targetname\n" );
 		return NULL;
 	}
 
-	while ( 1 )
+	while( 1 )
 	{
-		ent = G_Find ( ent, FOFS ( targetname ), targetname );
+		ent = G_Find( ent, FOFS( targetname ), targetname );
 
-		if ( !ent )
+		if( !ent )
 		{
 			break;
 		}
 
 		choice[ num_choices++ ] = ent;
 
-		if ( num_choices == MAXCHOICES )
+		if( num_choices == MAXCHOICES )
 		{
 			break;
 		}
 	}
 
-	if ( !num_choices )
+	if( !num_choices )
 	{
-		G_Printf ( "G_PickTarget: target %s not found\n", targetname );
+		G_Printf( "G_PickTarget: target %s not found\n", targetname );
 		return NULL;
 	}
 
@@ -286,46 +286,46 @@ match (string)self.target and call their .use function
 
 ==============================
 */
-void G_UseTargets ( gentity_t *ent, gentity_t *activator )
+void G_UseTargets( gentity_t *ent, gentity_t *activator )
 {
 	gentity_t *t;
 
-	if ( !ent )
+	if( !ent )
 	{
 		return;
 	}
 
-	if ( ent->targetShaderName && ent->targetShaderNewName )
+	if( ent->targetShaderName && ent->targetShaderNewName )
 	{
 		float f = level.time * 0.001;
-		AddRemap ( ent->targetShaderName, ent->targetShaderNewName, f );
-		trap_SetConfigstring ( CS_SHADERSTATE, BuildShaderStateConfig() );
+		AddRemap( ent->targetShaderName, ent->targetShaderNewName, f );
+		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 	}
 
-	if ( !ent->target )
+	if( !ent->target )
 	{
 		return;
 	}
 
 	t = NULL;
 
-	while ( ( t = G_Find ( t, FOFS ( targetname ), ent->target ) ) != NULL )
+	while( ( t = G_Find( t, FOFS( targetname ), ent->target ) ) != NULL )
 	{
-		if ( t == ent )
+		if( t == ent )
 		{
-			G_Printf ( "WARNING: Entity used itself.\n" );
+			G_Printf( "WARNING: Entity used itself.\n" );
 		}
 		else
 		{
-			if ( t->use )
+			if( t->use )
 			{
-				t->use ( t, ent, activator );
+				t->use( t, ent, activator );
 			}
 		}
 
-		if ( !ent->inuse )
+		if( !ent->inuse )
 		{
-			G_Printf ( "entity was removed while using targets\n" );
+			G_Printf( "entity was removed while using targets\n" );
 			return;
 		}
 	}
@@ -339,7 +339,7 @@ This is just a convenience function
 for printing vectors
 =============
 */
-char *vtos ( const vec3_t v )
+char *vtos( const vec3_t v )
 {
 	static  int  index;
 	static  char str[ 8 ][ 32 ];
@@ -349,7 +349,7 @@ char *vtos ( const vec3_t v )
 	s = str[ index ];
 	index = ( index + 1 ) & 7;
 
-	Com_sprintf ( s, 32, "(%i %i %i)", ( int ) v[ 0 ], ( int ) v[ 1 ], ( int ) v[ 2 ] );
+	Com_sprintf( s, 32, "(%i %i %i)", ( int ) v[ 0 ], ( int ) v[ 1 ], ( int ) v[ 2 ] );
 
 	return s;
 }
@@ -364,30 +364,30 @@ Angles will be cleared, because it is being used to represent a direction
 instead of an orientation.
 ===============
 */
-void G_SetMovedir ( vec3_t angles, vec3_t movedir )
+void G_SetMovedir( vec3_t angles, vec3_t movedir )
 {
 	static vec3_t VEC_UP = { 0, -1, 0 };
 	static vec3_t MOVEDIR_UP = { 0, 0, 1 };
 	static vec3_t VEC_DOWN = { 0, -2, 0 };
 	static vec3_t MOVEDIR_DOWN = { 0, 0, -1 };
 
-	if ( VectorCompare ( angles, VEC_UP ) )
+	if( VectorCompare( angles, VEC_UP ) )
 	{
-		VectorCopy ( MOVEDIR_UP, movedir );
+		VectorCopy( MOVEDIR_UP, movedir );
 	}
-	else if ( VectorCompare ( angles, VEC_DOWN ) )
+	else if( VectorCompare( angles, VEC_DOWN ) )
 	{
-		VectorCopy ( MOVEDIR_DOWN, movedir );
+		VectorCopy( MOVEDIR_DOWN, movedir );
 	}
 	else
 	{
-		AngleVectors ( angles, movedir, NULL, NULL );
+		AngleVectors( angles, movedir, NULL, NULL );
 	}
 
-	VectorClear ( angles );
+	VectorClear( angles );
 }
 
-void G_InitGentity ( gentity_t *e )
+void G_InitGentity( gentity_t *e )
 {
 	e->inuse = qtrue;
 	e->classname = "noclass";
@@ -410,7 +410,7 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-gentity_t *G_Spawn ( void )
+gentity_t *G_Spawn( void )
 {
 	int       i, force;
 	gentity_t *e;
@@ -418,55 +418,55 @@ gentity_t *G_Spawn ( void )
 	e = NULL; // shut up warning
 	i = 0; // shut up warning
 
-	for ( force = 0; force < 2; force++ )
+	for( force = 0; force < 2; force++ )
 	{
 		// if we go through all entities and can't find one to free,
 		// override the normal minimum times before use
 		e = &g_entities[ MAX_CLIENTS ];
 
-		for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
+		for( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
 		{
-			if ( e->inuse )
+			if( e->inuse )
 			{
 				continue;
 			}
 
 			// the first couple seconds of server time can involve a lot of
 			// freeing and allocating, so relax the replacement policy
-			if ( !force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000 )
+			if( !force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000 )
 			{
 				continue;
 			}
 
 			// reuse this slot
-			G_InitGentity ( e );
+			G_InitGentity( e );
 			return e;
 		}
 
-		if ( i != MAX_GENTITIES )
+		if( i != MAX_GENTITIES )
 		{
 			break;
 		}
 	}
 
-	if ( i == ENTITYNUM_MAX_NORMAL )
+	if( i == ENTITYNUM_MAX_NORMAL )
 	{
-		for ( i = 0; i < MAX_GENTITIES; i++ )
+		for( i = 0; i < MAX_GENTITIES; i++ )
 		{
-			G_Printf ( "%4i: %s\n", i, g_entities[ i ].classname );
+			G_Printf( "%4i: %s\n", i, g_entities[ i ].classname );
 		}
 
-		G_Error ( "G_Spawn: no free entities" );
+		G_Error( "G_Spawn: no free entities" );
 	}
 
 	// open up a new slot
 	level.num_entities++;
 
 	// let the server system know that there are more entities
-	trap_LocateGameData ( level.gentities, level.num_entities, sizeof ( gentity_t ),
-	                      &level.clients[ 0 ].ps, sizeof ( level.clients[ 0 ] ) );
+	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
+	                     &level.clients[ 0 ].ps, sizeof( level.clients[ 0 ] ) );
 
-	G_InitGentity ( e );
+	G_InitGentity( e );
 	return e;
 }
 
@@ -475,16 +475,16 @@ gentity_t *G_Spawn ( void )
 G_EntitiesFree
 =================
 */
-qboolean G_EntitiesFree ( void )
+qboolean G_EntitiesFree( void )
 {
 	int       i;
 	gentity_t *e;
 
 	e = &g_entities[ MAX_CLIENTS ];
 
-	for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
+	for( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
 	{
-		if ( e->inuse )
+		if( e->inuse )
 		{
 			continue;
 		}
@@ -503,16 +503,16 @@ G_FreeEntity
 Marks the entity as free
 =================
 */
-void G_FreeEntity ( gentity_t *ent )
+void G_FreeEntity( gentity_t *ent )
 {
-	trap_UnlinkEntity ( ent ); // unlink from world
+	trap_UnlinkEntity( ent );  // unlink from world
 
-	if ( ent->neverFree )
+	if( ent->neverFree )
 	{
 		return;
 	}
 
-	memset ( ent, 0, sizeof ( *ent ) );
+	memset( ent, 0, sizeof( *ent ) );
 	ent->classname = "freent";
 	ent->freetime = level.time;
 	ent->inuse = qfalse;
@@ -527,7 +527,7 @@ The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
-gentity_t *G_TempEntity ( vec3_t origin, int event )
+gentity_t *G_TempEntity( vec3_t origin, int event )
 {
 	gentity_t *e;
 	vec3_t    snapped;
@@ -539,12 +539,12 @@ gentity_t *G_TempEntity ( vec3_t origin, int event )
 	e->eventTime = level.time;
 	e->freeAfterEvent = qtrue;
 
-	VectorCopy ( origin, snapped );
-	SnapVector ( snapped ); // save network bandwidth
-	G_SetOrigin ( e, snapped );
+	VectorCopy( origin, snapped );
+	SnapVector( snapped );  // save network bandwidth
+	G_SetOrigin( e, snapped );
 
 	// find cluster for PVS
-	trap_LinkEntity ( e );
+	trap_LinkEntity( e );
 
 	return e;
 }
@@ -565,35 +565,35 @@ Kills all entities that would touch the proposed new positioning
 of ent.  Ent should be unlinked before calling this!
 =================
 */
-void G_KillBox ( gentity_t *ent )
+void G_KillBox( gentity_t *ent )
 {
 	int       i, num;
 	int       touch[ MAX_GENTITIES ];
 	gentity_t *hit;
 	vec3_t    mins, maxs;
 
-	VectorAdd ( ent->client->ps.origin, ent->r.mins, mins );
-	VectorAdd ( ent->client->ps.origin, ent->r.maxs, maxs );
-	num = trap_EntitiesInBox ( mins, maxs, touch, MAX_GENTITIES );
+	VectorAdd( ent->client->ps.origin, ent->r.mins, mins );
+	VectorAdd( ent->client->ps.origin, ent->r.maxs, maxs );
+	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
 
-	for ( i = 0; i < num; i++ )
+	for( i = 0; i < num; i++ )
 	{
 		hit = &g_entities[ touch[ i ] ];
 
-		if ( !hit->client )
+		if( !hit->client )
 		{
 			continue;
 		}
 
 		//TA: impossible to telefrag self
-		if ( ent == hit )
+		if( ent == hit )
 		{
 			continue;
 		}
 
 		// nail it
-		G_Damage ( hit, ent, ent, NULL, NULL,
-		           100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
+		G_Damage( hit, ent, ent, NULL, NULL,
+		          100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
 	}
 }
 
@@ -608,14 +608,14 @@ client side: jumppads and item pickups
 Adds an event+parm and twiddles the event counter
 ===============
 */
-void G_AddPredictableEvent ( gentity_t *ent, int event, int eventParm )
+void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm )
 {
-	if ( !ent->client )
+	if( !ent->client )
 	{
 		return;
 	}
 
-	BG_AddPredictableEventToPlayerstate ( event, eventParm, &ent->client->ps );
+	BG_AddPredictableEventToPlayerstate( event, eventParm, &ent->client->ps );
 }
 
 /*
@@ -625,18 +625,18 @@ G_AddEvent
 Adds an event+parm and twiddles the event counter
 ===============
 */
-void G_AddEvent ( gentity_t *ent, int event, int eventParm )
+void G_AddEvent( gentity_t *ent, int event, int eventParm )
 {
 	int bits;
 
-	if ( !event )
+	if( !event )
 	{
-		G_Printf ( "G_AddEvent: zero event added for entity %i\n", ent->s.number );
+		G_Printf( "G_AddEvent: zero event added for entity %i\n", ent->s.number );
 		return;
 	}
 
 	// clients need to add the event in playerState_t instead of entityState_t
-	if ( ent->client )
+	if( ent->client )
 	{
 		bits = ent->client->ps.externalEvent & EV_EVENT_BITS;
 		bits = ( bits + EV_EVENT_BIT1 ) & EV_EVENT_BITS;
@@ -662,11 +662,11 @@ G_BroadcastEvent
 Sends an event to every client
 ===============
 */
-void G_BroadcastEvent ( int event, int eventParm )
+void G_BroadcastEvent( int event, int eventParm )
 {
 	gentity_t *ent;
 
-	ent = G_TempEntity ( vec3_origin, event );
+	ent = G_TempEntity( vec3_origin, event );
 	ent->s.eventParm = eventParm;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 }
@@ -676,11 +676,11 @@ void G_BroadcastEvent ( int event, int eventParm )
 G_Sound
 =============
 */
-void G_Sound ( gentity_t *ent, int channel, int soundIndex )
+void G_Sound( gentity_t *ent, int channel, int soundIndex )
 {
 	gentity_t *te;
 
-	te = G_TempEntity ( ent->r.currentOrigin, EV_GENERAL_SOUND );
+	te = G_TempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND );
 	te->s.eventParm = soundIndex;
 }
 
@@ -689,11 +689,11 @@ void G_Sound ( gentity_t *ent, int channel, int soundIndex )
 G_ClientIsLagging
 =============
 */
-qboolean G_ClientIsLagging ( gclient_t *client )
+qboolean G_ClientIsLagging( gclient_t *client )
 {
-	if ( client )
+	if( client )
 	{
-		if ( client->ps.ping >= 999 )
+		if( client->ps.ping >= 999 )
 		{
 			return qtrue;
 		}
@@ -716,16 +716,16 @@ Return the front of a command queue
 Must use immediately or copy to a buffer
 ===============
 */
-static const char *G_PopCommandQueue ( commandQueue_t *cq )
+static const char *G_PopCommandQueue( commandQueue_t *cq )
 {
-	if ( cq->front )
+	if( cq->front )
 	{
 		commandQueueElement_t *cqe = cq->front;
 
 		cq->front = cqe->next;
 
 		// last element in the queue
-		if ( cq->front == NULL )
+		if( cq->front == NULL )
 		{
 			cq->back = NULL;
 		}
@@ -748,21 +748,21 @@ G_PushCommandQueue
 Put a command on a command queue
 ===============
 */
-static void G_PushCommandQueue ( commandQueue_t *cq, const char *cmd )
+static void G_PushCommandQueue( commandQueue_t *cq, const char *cmd )
 {
 	int i;
 
-	for ( i = 0; i < MAX_QUEUE_COMMANDS; i++ )
+	for( i = 0; i < MAX_QUEUE_COMMANDS; i++ )
 	{
 		commandQueueElement_t *cqe = &cq->pool[ i ];
 
-		if ( !cqe->used )
+		if( !cqe->used )
 		{
 			cqe->used = qtrue;
 			cqe->next = NULL;
-			Q_strncpyz ( cqe->command, cmd, MAX_TOKEN_CHARS );
+			Q_strncpyz( cqe->command, cmd, MAX_TOKEN_CHARS );
 
-			if ( cq->back )
+			if( cq->back )
 			{
 				cq->back->next = cqe;
 				cq->back = cqe;
@@ -786,21 +786,21 @@ G_PrintCommandQueue
 ===============
 */
 #if 0 //quiet compiler
-static void G_PrintCommandQueue ( commandQueue_t *cq )
+static void G_PrintCommandQueue( commandQueue_t *cq )
 {
 	commandQueueElement_t *cqe;
 
-	if ( cq->front )
+	if( cq->front )
 	{
 		cqe = cq->front;
 
 		do
 		{
-			G_Printf ( "->\"%s\"", cqe->command );
+			G_Printf( "->\"%s\"", cqe->command );
 		}
-		while ( ( cqe = cqe->next ) );
+		while( ( cqe = cqe->next ) );
 
-		G_Printf ( "\n" );
+		G_Printf( "\n" );
 	}
 }
 
@@ -811,9 +811,9 @@ static void G_PrintCommandQueue ( commandQueue_t *cq )
 G_ReadyToDequeue
 ===============
 */
-static qboolean G_ReadyToDequeue ( commandQueue_t *cq )
+static qboolean G_ReadyToDequeue( commandQueue_t *cq )
 {
-	if ( !cq )
+	if( !cq )
 	{
 		return qfalse;
 	}
@@ -828,22 +828,22 @@ G_ProcessCommandQueues
 Check for any outstanding commands to be sent
 ===============
 */
-void G_ProcessCommandQueues ( void )
+void G_ProcessCommandQueues( void )
 {
 	int i;
 
-	for ( i = 0; i < MAX_CLIENTS; i++ )
+	for( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		gclient_t      *cl = &level.clients[ i ];
 		commandQueue_t *cq = &queuedCommands[ i ];
 
-		if ( !G_ClientIsLagging ( cl ) && G_ReadyToDequeue ( cq ) )
+		if( !G_ClientIsLagging( cl ) && G_ReadyToDequeue( cq ) )
 		{
-			const char *command = G_PopCommandQueue ( cq );
+			const char *command = G_PopCommandQueue( cq );
 
-			if ( command )
+			if( command )
 			{
-				trap_SendServerCommand ( i, command );
+				trap_SendServerCommand( i, command );
 			}
 		}
 	}
@@ -854,17 +854,17 @@ void G_ProcessCommandQueues ( void )
 G_InitCommandQueue
 ===============
 */
-void G_InitCommandQueue ( int clientNum )
+void G_InitCommandQueue( int clientNum )
 {
 	int            i;
 	commandQueue_t *cq = &queuedCommands[ clientNum ];
 
-	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
+	if( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		cq->front = cq->back = NULL;
 		cq->nextCommandTime = 0;
 
-		for ( i = 0; i < MAX_QUEUE_COMMANDS; i++ )
+		for( i = 0; i < MAX_QUEUE_COMMANDS; i++ )
 		{
 			commandQueueElement_t *cqe = &cq->pool[ i ];
 
@@ -880,40 +880,40 @@ G_SendCommandFromServer
 Sends a command to a client
 ===============
 */
-void G_SendCommandFromServer ( int clientNum, const char *cmd )
+void G_SendCommandFromServer( int clientNum, const char *cmd )
 {
 	commandQueue_t *cq = &queuedCommands[ clientNum ];
 
-	if ( clientNum < 0 )
+	if( clientNum < 0 )
 	{
 		cq = NULL;
 	}
 
-	if ( strlen ( cmd ) > 1022 )
+	if( strlen( cmd ) > 1022 )
 	{
-		G_LogPrintf ( "G_SendCommandFromServer( %d, ... ) length exceeds 1022.\n", clientNum );
-		G_LogPrintf ( "cmd [%s]\n", cmd );
+		G_LogPrintf( "G_SendCommandFromServer( %d, ... ) length exceeds 1022.\n", clientNum );
+		G_LogPrintf( "cmd [%s]\n", cmd );
 		return;
 	}
 
-	if ( cq )
+	if( cq )
 	{
 		gclient_t *cl = &level.clients[ clientNum ];
 
-		if ( cq->nextCommandTime > level.time || G_ClientIsLagging ( cl ) )
+		if( cq->nextCommandTime > level.time || G_ClientIsLagging( cl ) )
 		{
 			//can't send yet, so queue the command up
-			G_PushCommandQueue ( cq, cmd );
+			G_PushCommandQueue( cq, cmd );
 		}
 		else
 		{
 			cq->nextCommandTime = level.time + g_minCommandPeriod.integer;
-			trap_SendServerCommand ( clientNum, cmd );
+			trap_SendServerCommand( clientNum, cmd );
 		}
 	}
 	else //no queue exists for this client
 	{
-		trap_SendServerCommand ( clientNum, cmd );
+		trap_SendServerCommand( clientNum, cmd );
 	}
 }
 
@@ -926,27 +926,27 @@ G_SetOrigin
 Sets the pos trajectory for a fixed position
 ================
 */
-void G_SetOrigin ( gentity_t *ent, vec3_t origin )
+void G_SetOrigin( gentity_t *ent, vec3_t origin )
 {
-	VectorCopy ( origin, ent->s.pos.trBase );
+	VectorCopy( origin, ent->s.pos.trBase );
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->s.pos.trTime = 0;
 	ent->s.pos.trDuration = 0;
-	VectorClear ( ent->s.pos.trDelta );
+	VectorClear( ent->s.pos.trDelta );
 
-	VectorCopy ( origin, ent->r.currentOrigin );
-	VectorCopy ( origin, ent->s.origin ); //TA: if shit breaks - blame this line
+	VectorCopy( origin, ent->r.currentOrigin );
+	VectorCopy( origin, ent->s.origin );  //TA: if shit breaks - blame this line
 }
 
 //TA: from quakestyle.telefragged.com
 // (NOBODY): Code helper function
 //
-gentity_t *G_FindRadius ( gentity_t *from, vec3_t org, float rad )
+gentity_t *G_FindRadius( gentity_t *from, vec3_t org, float rad )
 {
 	vec3_t eorg;
 	int    j;
 
-	if ( !from )
+	if( !from )
 	{
 		from = g_entities;
 	}
@@ -955,19 +955,19 @@ gentity_t *G_FindRadius ( gentity_t *from, vec3_t org, float rad )
 		from++;
 	}
 
-	for ( ; from < &g_entities[ level.num_entities ]; from++ )
+	for( ; from < &g_entities[ level.num_entities ]; from++ )
 	{
-		if ( !from->inuse )
+		if( !from->inuse )
 		{
 			continue;
 		}
 
-		for ( j = 0; j < 3; j++ )
+		for( j = 0; j < 3; j++ )
 		{
 			eorg[ j ] = org[ j ] - ( from->r.currentOrigin[ j ] + ( from->r.mins[ j ] + from->r.maxs[ j ] ) * 0.5 );
 		}
 
-		if ( VectorLength ( eorg ) > rad )
+		if( VectorLength( eorg ) > rad )
 		{
 			continue;
 		}
@@ -985,13 +985,13 @@ G_Visible
 Test for a LOS between two entities
 ===============
 */
-qboolean G_Visible ( gentity_t *ent1, gentity_t *ent2 )
+qboolean G_Visible( gentity_t *ent1, gentity_t *ent2 )
 {
 	trace_t trace;
 
-	trap_Trace ( &trace, ent1->s.pos.trBase, NULL, NULL, ent2->s.pos.trBase, ent1->s.number, MASK_SHOT );
+	trap_Trace( &trace, ent1->s.pos.trBase, NULL, NULL, ent2->s.pos.trBase, ent1->s.number, MASK_SHOT );
 
-	if ( trace.contents & CONTENTS_SOLID )
+	if( trace.contents & CONTENTS_SOLID )
 	{
 		return qfalse;
 	}
@@ -1006,17 +1006,17 @@ G_ClosestEnt
 Test a list of entities for the closest to a particular point
 ===============
 */
-gentity_t *G_ClosestEnt ( vec3_t origin, gentity_t **entities, int numEntities )
+gentity_t *G_ClosestEnt( vec3_t origin, gentity_t **entities, int numEntities )
 {
 	int       i;
 	float     nd, d = 1000000.0f;
 	gentity_t *closestEnt = NULL;
 
-	for ( i = 0; i < numEntities; i++ )
+	for( i = 0; i < numEntities; i++ )
 	{
 		gentity_t *ent = entities[ i ];
 
-		if ( ( nd = Distance ( origin, ent->s.origin ) ) < d )
+		if( ( nd = Distance( origin, ent->s.origin ) ) < d )
 		{
 			d = nd;
 			closestEnt = ent;
@@ -1033,12 +1033,12 @@ G_TriggerMenu
 Trigger a menu on some client
 ===============
 */
-void G_TriggerMenu ( int clientNum, dynMenu_t menu )
+void G_TriggerMenu( int clientNum, dynMenu_t menu )
 {
 	char buffer[ 32 ];
 
-	Com_sprintf ( buffer, 32, "servermenu %d", menu );
-	G_SendCommandFromServer ( clientNum, buffer );
+	Com_sprintf( buffer, 32, "servermenu %d", menu );
+	G_SendCommandFromServer( clientNum, buffer );
 }
 
 /*
@@ -1048,12 +1048,12 @@ G_CloseMenus
 Close all open menus on some client
 ===============
 */
-void G_CloseMenus ( int clientNum )
+void G_CloseMenus( int clientNum )
 {
 	char buffer[ 32 ];
 
-	Com_sprintf ( buffer, 32, "serverclosemenus" );
-	G_SendCommandFromServer ( clientNum, buffer );
+	Com_sprintf( buffer, 32, "serverclosemenus" );
+	G_SendCommandFromServer( clientNum, buffer );
 }
 
 /*
@@ -1064,37 +1064,37 @@ DebugLine
   with r_debugSurface set to 2
 ================
 */
-int DebugLine ( vec3_t start, vec3_t end, int color )
+int DebugLine( vec3_t start, vec3_t end, int color )
 {
 	vec3_t points[ 4 ], dir, cross, up = { 0, 0, 1 };
 	float  dot;
 
-	VectorCopy ( start, points[ 0 ] );
-	VectorCopy ( start, points[ 1 ] );
+	VectorCopy( start, points[ 0 ] );
+	VectorCopy( start, points[ 1 ] );
 	//points[1][2] -= 2;
-	VectorCopy ( end, points[ 2 ] );
+	VectorCopy( end, points[ 2 ] );
 	//points[2][2] -= 2;
-	VectorCopy ( end, points[ 3 ] );
+	VectorCopy( end, points[ 3 ] );
 
-	VectorSubtract ( end, start, dir );
-	VectorNormalize ( dir );
-	dot = DotProduct ( dir, up );
+	VectorSubtract( end, start, dir );
+	VectorNormalize( dir );
+	dot = DotProduct( dir, up );
 
-	if ( dot > 0.99 || dot < -0.99 )
+	if( dot > 0.99 || dot < -0.99 )
 	{
-		VectorSet ( cross, 1, 0, 0 );
+		VectorSet( cross, 1, 0, 0 );
 	}
 	else
 	{
-		CrossProduct ( dir, up, cross );
+		CrossProduct( dir, up, cross );
 	}
 
-	VectorNormalize ( cross );
+	VectorNormalize( cross );
 
-	VectorMA ( points[ 0 ], 2, cross, points[ 0 ] );
-	VectorMA ( points[ 1 ], -2, cross, points[ 1 ] );
-	VectorMA ( points[ 2 ], -2, cross, points[ 2 ] );
-	VectorMA ( points[ 3 ], 2, cross, points[ 3 ] );
+	VectorMA( points[ 0 ], 2, cross, points[ 0 ] );
+	VectorMA( points[ 1 ], -2, cross, points[ 1 ] );
+	VectorMA( points[ 2 ], -2, cross, points[ 2 ] );
+	VectorMA( points[ 3 ], 2, cross, points[ 3 ] );
 
-	return trap_DebugPolygonCreate ( color, 4, points );
+	return trap_DebugPolygonCreate( color, 4, points );
 }

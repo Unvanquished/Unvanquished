@@ -282,7 +282,7 @@ typedef struct
 	// outgoing data...
 	// if voipTargets[i / 8] & (1 << (i % 8)),
 	// then we are sending to clientnum i.
-	uint8_t              voipTargets[ ( MAX_CLIENTS + 7 ) / 8 ];
+	uint8_t              voipTargets[( MAX_CLIENTS + 7 ) / 8 ];
 	uint8_t              voipFlags;
 	SpeexPreprocessState *speexPreprocessor;
 	SpeexBits            speexEncoderBits;
@@ -572,53 +572,53 @@ extern qboolean sv_cheats;
 // cl_main
 //
 
-void        CL_Init ( void );
-void        CL_FlushMemory ( void );
-void        CL_ShutdownAll ( void );
-void        CL_AddReliableCommand ( const char *cmd );
+void        CL_Init( void );
+void        CL_FlushMemory( void );
+void        CL_ShutdownAll( void );
+void        CL_AddReliableCommand( const char *cmd );
 
-void        CL_StartHunkUsers ( void );
+void        CL_StartHunkUsers( void );
 
-void        CL_CheckAutoUpdate ( void );
-qboolean    CL_NextUpdateServer ( void );
-void        CL_GetAutoUpdate ( void );
+void        CL_CheckAutoUpdate( void );
+qboolean    CL_NextUpdateServer( void );
+void        CL_GetAutoUpdate( void );
 
-void        CL_Disconnect_f ( void );
-void        CL_GetChallengePacket ( void );
-void        CL_Vid_Restart_f ( void );
-void        CL_Snd_Restart_f ( void );
-void        CL_NextDemo ( void );
-void        CL_ReadDemoMessage ( void );
-void        CL_StartDemoLoop ( void );
-demoState_t CL_DemoState ( void );
-int         CL_DemoPos ( void );
-void        CL_DemoName ( char *buffer, int size );
+void        CL_Disconnect_f( void );
+void        CL_GetChallengePacket( void );
+void        CL_Vid_Restart_f( void );
+void        CL_Snd_Restart_f( void );
+void        CL_NextDemo( void );
+void        CL_ReadDemoMessage( void );
+void        CL_StartDemoLoop( void );
+demoState_t CL_DemoState( void );
+int         CL_DemoPos( void );
+void        CL_DemoName( char *buffer, int size );
 
-void        CL_InitDownloads ( void );
-void        CL_NextDownload ( void );
+void        CL_InitDownloads( void );
+void        CL_NextDownload( void );
 
-void        CL_GetPing ( int n, char *buf, int buflen, int *pingtime );
-void        CL_GetPingInfo ( int n, char *buf, int buflen );
-void        CL_ClearPing ( int n );
-int         CL_GetPingQueueCount ( void );
+void        CL_GetPing( int n, char *buf, int buflen, int *pingtime );
+void        CL_GetPingInfo( int n, char *buf, int buflen );
+void        CL_ClearPing( int n );
+int         CL_GetPingQueueCount( void );
 
-void        CL_ShutdownRef ( void );
-void        CL_InitRef ( const char *renderer );
+void        CL_ShutdownRef( void );
+void        CL_InitRef( const char *renderer );
 
-int         CL_ServerStatus ( char *serverAddress, char *serverStatusString, int maxLen );
+int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
 
 // NERVE - SMF - localization
 void        CL_InitTranslation();
-void        CL_SaveTransTable ( const char *fileName, qboolean newOnly );
+void        CL_SaveTransTable( const char *fileName, qboolean newOnly );
 void        CL_ReloadTranslation();
-void        CL_TranslateString ( const char *string, char *dest_buffer );
-const char  *CL_TranslateStringBuf ( const char *string ) __attribute__ ( ( format_arg ( 1 ) ) ); // TTimo
+void        CL_TranslateString( const char *string, char *dest_buffer );
+const char  *CL_TranslateStringBuf( const char *string ) __attribute__( ( format_arg( 1 ) ) );    // TTimo
 
 // -NERVE - SMF
 
-void CL_OpenURL ( const char *url ); // TTimo
+void CL_OpenURL( const char *url );  // TTimo
 
-void CL_Record ( const char *name );
+void CL_Record( const char *name );
 
 //
 // cl_input
@@ -675,32 +675,32 @@ typedef enum
   NUM_BUTTONS
 } kbuttons_t;
 
-void CL_ClearKeys ( void );
+void CL_ClearKeys( void );
 
-void CL_InitInput ( void );
-void CL_SendCmd ( void );
-void CL_ClearState ( void );
-void CL_ReadPackets ( void );
+void CL_InitInput( void );
+void CL_SendCmd( void );
+void CL_ClearState( void );
+void CL_ReadPackets( void );
 
-void CL_WritePacket ( void );
+void CL_WritePacket( void );
 
-void IN_Notebook ( void );
-void IN_Help ( void );
+void IN_Notebook( void );
+void IN_Help( void );
 
 //----(SA)
 
-float    CL_KeyState ( kbutton_t *key );
-int      Key_StringToKeynum ( char *str );
-char     *Key_KeynumToString ( int keynum );
+float    CL_KeyState( kbutton_t *key );
+int      Key_StringToKeynum( char *str );
+char     *Key_KeynumToString( int keynum );
 
 //cl_irc.c
-void     CL_IRCSetup ( void );
-void     CL_InitIRC ( void );
-void     CL_IRCInitiateShutdown ( void );
-void     CL_IRCWaitShutdown ( void );
-void     CL_IRCSay ( void );
-qboolean CL_IRCIsConnected ( void );
-qboolean CL_IRCIsRunning ( void );
+void     CL_IRCSetup( void );
+void     CL_InitIRC( void );
+void     CL_IRCInitiateShutdown( void );
+void     CL_IRCWaitShutdown( void );
+void     CL_IRCSay( void );
+qboolean CL_IRCIsConnected( void );
+qboolean CL_IRCIsRunning( void );
 
 //
 // cl_parse.c
@@ -708,23 +708,23 @@ qboolean CL_IRCIsRunning ( void );
 extern int cl_connectedToPureServer;
 
 #ifdef USE_VOIP
-void       CL_Voip_f ( void );
+void       CL_Voip_f( void );
 
 #endif
 
-void CL_SystemInfoChanged ( void );
-void CL_ParseServerMessage ( msg_t *msg );
+void CL_SystemInfoChanged( void );
+void CL_ParseServerMessage( msg_t *msg );
 
 //====================================================================
 
-void     CL_UpdateInfoPacket ( netadr_t from ); // DHM - Nerve
+void     CL_UpdateInfoPacket( netadr_t from );  // DHM - Nerve
 
-void     CL_ServerInfoPacket ( netadr_t from, msg_t *msg );
-void     CL_LocalServers_f ( void );
-void     CL_GlobalServers_f ( void );
-void     CL_FavoriteServers_f ( void );
-void     CL_Ping_f ( void );
-qboolean CL_UpdateVisiblePings_f ( int source );
+void     CL_ServerInfoPacket( netadr_t from, msg_t *msg );
+void     CL_LocalServers_f( void );
+void     CL_GlobalServers_f( void );
+void     CL_FavoriteServers_f( void );
+void     CL_Ping_f( void );
+qboolean CL_UpdateVisiblePings_f( int source );
 
 //
 // console
@@ -763,128 +763,128 @@ typedef struct
 
 extern console_t con;
 
-void             Con_DrawCharacter ( int cx, int line, int num );
+void             Con_DrawCharacter( int cx, int line, int num );
 
-void             Con_CheckResize ( void );
-void             Con_Init ( void );
-void             Con_Clear_f ( void );
-void             Con_ToggleConsole_f ( void );
-void             Con_OpenConsole_f ( void );
-void             Con_DrawNotify ( void );
-void             Con_ClearNotify ( void );
-void             Con_RunConsole ( void );
-void             Con_DrawConsole ( void );
-void             Con_PageUp ( void );
-void             Con_PageDown ( void );
-void             Con_Top ( void );
-void             Con_Bottom ( void );
-void             Con_Close ( void );
+void             Con_CheckResize( void );
+void             Con_Init( void );
+void             Con_Clear_f( void );
+void             Con_ToggleConsole_f( void );
+void             Con_OpenConsole_f( void );
+void             Con_DrawNotify( void );
+void             Con_ClearNotify( void );
+void             Con_RunConsole( void );
+void             Con_DrawConsole( void );
+void             Con_PageUp( void );
+void             Con_PageDown( void );
+void             Con_Top( void );
+void             Con_Bottom( void );
+void             Con_Close( void );
 
-void             CL_LoadConsoleHistory ( void );
-void             CL_SaveConsoleHistory ( void );
+void             CL_LoadConsoleHistory( void );
+void             CL_SaveConsoleHistory( void );
 
 //
 // cl_scrn.c
 //
-void  SCR_Init ( void );
-void  SCR_UpdateScreen ( void );
+void  SCR_Init( void );
+void  SCR_UpdateScreen( void );
 
-void  SCR_DebugGraph ( float value, int color );
+void  SCR_DebugGraph( float value, int color );
 
-int   SCR_GetBigStringWidth ( const char *str ); // returns in virtual 640x480 coordinates
+int   SCR_GetBigStringWidth( const char *str );  // returns in virtual 640x480 coordinates
 
-void  SCR_AdjustFrom640 ( float *x, float *y, float *w, float *h );
-void  SCR_FillRect ( float x, float y, float width, float height, const float *color );
-void  SCR_DrawPic ( float x, float y, float width, float height, qhandle_t hShader );
-void  SCR_DrawNamedPic ( float x, float y, float width, float height, const char *picname );
+void  SCR_AdjustFrom640( float *x, float *y, float *w, float *h );
+void  SCR_FillRect( float x, float y, float width, float height, const float *color );
+void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
+void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
 
-void  SCR_DrawBigString ( int x, int y, const char *s, float alpha, qboolean noColorEscape ); // draws a string with embedded color control characters with fade
-void  SCR_DrawBigStringColor ( int x, int y, const char *s, vec4_t color, qboolean noColorEscape ); // ignores embedded color control characters
-void  SCR_DrawSmallStringExt ( int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape );
-void  SCR_DrawSmallChar ( int x, int y, int ch );
-void  SCR_DrawConsoleFontChar ( float x, float y, int ch );
-float SCR_ConsoleFontCharWidth ( int ch );
-float SCR_ConsoleFontCharHeight ( void );
-float SCR_ConsoleFontStringWidth ( const char *s, int len );
+void  SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noColorEscape );  // draws a string with embedded color control characters with fade
+void  SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean noColorEscape );  // ignores embedded color control characters
+void  SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape );
+void  SCR_DrawSmallChar( int x, int y, int ch );
+void  SCR_DrawConsoleFontChar( float x, float y, int ch );
+float SCR_ConsoleFontCharWidth( int ch );
+float SCR_ConsoleFontCharHeight( void );
+float SCR_ConsoleFontStringWidth( const char *s, int len );
 
 //
 // cl_cin.c
 //
 
-void     CL_PlayCinematic_f ( void );
-void     SCR_DrawCinematic ( void );
-void     SCR_RunCinematic ( void );
-void     SCR_StopCinematic ( void );
-int      CIN_PlayCinematic ( const char *arg0, int xpos, int ypos, int width, int height, int bits );
-e_status CIN_StopCinematic ( int handle );
-e_status CIN_RunCinematic ( int handle );
-void     CIN_DrawCinematic ( int handle );
-void     CIN_SetExtents ( int handle, int x, int y, int w, int h );
-void     CIN_SetLooping ( int handle, qboolean loop );
-void     CIN_UploadCinematic ( int handle );
-void     CIN_CloseAllVideos ( void );
+void     CL_PlayCinematic_f( void );
+void     SCR_DrawCinematic( void );
+void     SCR_RunCinematic( void );
+void     SCR_StopCinematic( void );
+int      CIN_PlayCinematic( const char *arg0, int xpos, int ypos, int width, int height, int bits );
+e_status CIN_StopCinematic( int handle );
+e_status CIN_RunCinematic( int handle );
+void     CIN_DrawCinematic( int handle );
+void     CIN_SetExtents( int handle, int x, int y, int w, int h );
+void     CIN_SetLooping( int handle, qboolean loop );
+void     CIN_UploadCinematic( int handle );
+void     CIN_CloseAllVideos( void );
 
 // yuv->rgb will be used for Theora(ogm)
-void     ROQ_GenYUVTables ( void );
-void     Frame_yuv_to_rgb24 ( const unsigned char *y, const unsigned char *u, const unsigned char *v,
-                              int width, int height, int y_stride, int uv_stride,
-                              int yWShift, int uvWShift, int yHShift, int uvHShift, unsigned int *output );
+void     ROQ_GenYUVTables( void );
+void     Frame_yuv_to_rgb24( const unsigned char *y, const unsigned char *u, const unsigned char *v,
+                             int width, int height, int y_stride, int uv_stride,
+                             int yWShift, int uvWShift, int yHShift, int uvHShift, unsigned int *output );
 
 //
 // cin_ogm.c
 //
 
-int           Cin_OGM_Init ( const char *filename );
-int           Cin_OGM_Run ( int time );
-unsigned char *Cin_OGM_GetOutput ( int *outWidth, int *outHeight );
-void          Cin_OGM_Shutdown ( void );
+int           Cin_OGM_Init( const char *filename );
+int           Cin_OGM_Run( int time );
+unsigned char *Cin_OGM_GetOutput( int *outWidth, int *outHeight );
+void          Cin_OGM_Shutdown( void );
 
 //
 // cl_cgame.c
 //
-void     CL_InitCGame ( void );
-void     CL_ShutdownCGame ( void );
-qboolean CL_GameCommand ( void );
-qboolean CL_GameConsoleText ( void );
-void     CL_CGameRendering ( stereoFrame_t stereo );
-void     CL_SetCGameTime ( void );
-void     CL_FirstSnapshot ( void );
-void     CL_ShaderStateChanged ( void );
-void     CL_UpdateLevelHunkUsage ( void );
-void     CL_CGameBinaryMessageReceived ( const char *buf, int buflen, int serverTime );
+void     CL_InitCGame( void );
+void     CL_ShutdownCGame( void );
+qboolean CL_GameCommand( void );
+qboolean CL_GameConsoleText( void );
+void     CL_CGameRendering( stereoFrame_t stereo );
+void     CL_SetCGameTime( void );
+void     CL_FirstSnapshot( void );
+void     CL_ShaderStateChanged( void );
+void     CL_UpdateLevelHunkUsage( void );
+void     CL_CGameBinaryMessageReceived( const char *buf, int buflen, int serverTime );
 
 //
 // cl_ui.c
 //
-void CL_InitUI ( void );
-void CL_ShutdownUI ( void );
-int  Key_GetCatcher ( void );
-void Key_SetCatcher ( int catcher );
+void CL_InitUI( void );
+void CL_ShutdownUI( void );
+int  Key_GetCatcher( void );
+void Key_SetCatcher( int catcher );
 void LAN_LoadCachedServers();
 void LAN_SaveServersToCache();
 
 //
 // cl_net_chan.c
 //
-void     CL_Netchan_Transmit ( netchan_t *chan, msg_t *msg ); //int length, const byte *data );
-void     CL_Netchan_TransmitNextFragment ( netchan_t *chan );
-qboolean CL_Netchan_Process ( netchan_t *chan, msg_t *msg );
+void     CL_Netchan_Transmit( netchan_t *chan, msg_t *msg );  //int length, const byte *data );
+void     CL_Netchan_TransmitNextFragment( netchan_t *chan );
+qboolean CL_Netchan_Process( netchan_t *chan, msg_t *msg );
 
 // XreaL BEGIN
 
 //
 // cl_avi.c
 //
-qboolean CL_OpenAVIForWriting ( const char *filename );
-void     CL_TakeVideoFrame ( void );
-void     CL_WriteAVIVideoFrame ( const byte *imageBuffer, int size );
-void     CL_WriteAVIAudioFrame ( const byte *pcmBuffer, int size );
-qboolean CL_CloseAVI ( void );
-qboolean CL_VideoRecording ( void );
+qboolean CL_OpenAVIForWriting( const char *filename );
+void     CL_TakeVideoFrame( void );
+void     CL_WriteAVIVideoFrame( const byte *imageBuffer, int size );
+void     CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size );
+qboolean CL_CloseAVI( void );
+qboolean CL_VideoRecording( void );
 
 // XreaL END
 
 //
 // cl_main.c
 //
-void CL_WriteDemoMessage ( msg_t *msg, int headerBytes );
+void CL_WriteDemoMessage( msg_t *msg, int headerBytes );

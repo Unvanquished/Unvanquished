@@ -18,8 +18,8 @@ NSObject
 	NSMutableArray *_downloadFiles;
 }
 
-@property ( assign, readwrite, nonatomic ) id        delegate;
-@property ( assign, readwrite, nonatomic ) long long archiveOffset;
+@property( assign, readwrite, nonatomic ) id        delegate;
+@property( assign, readwrite, nonatomic ) long long archiveOffset;
 - ( BOOL ) addDownloadFileWithPath:
 ( NSString * ) path rangeInArchive:
 ( NSRange ) range;
@@ -28,7 +28,7 @@ NSObject
 
 @end
 
-@interface NSObject ( OWDownloaderDelegate )
+@interface NSObject( OWDownloaderDelegate )
 
 - ( void ) downloader:
 ( OWDownloader * ) downloader didCompleteProgress:

@@ -250,9 +250,9 @@ typedef struct aas_s
 	//reversed reachability links
 	aas_reversedreachability_t *reversedreachability;
 	//travel times within the areas
-	unsigned short              ** *areatraveltimes;
+	unsigned short               ** *areatraveltimes;
 	//array of size numclusters with cluster cache
-	aas_routingcache_t          ** *clusterareacache;
+	aas_routingcache_t           ** *clusterareacache;
 	aas_routingcache_t         **portalcache;
 	//maximum travel time through portals
 	int                        *portalmaxtraveltimes;

@@ -103,7 +103,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         return 0;
 }*/
 
-qboolean AddTriangleToVBOTriangleList ( growList_t *vboTriangles, skelTriangle_t *tri, int *numBoneReferences, int boneReferences[ MAX_BONES ] )
+qboolean AddTriangleToVBOTriangleList( growList_t *vboTriangles, skelTriangle_t *tri, int *numBoneReferences, int boneReferences[ MAX_BONES ] )
 {
 	int         i, j, k;
 	md5Vertex_t *v;
@@ -115,39 +115,39 @@ qboolean AddTriangleToVBOTriangleList ( growList_t *vboTriangles, skelTriangle_t
 	hasWeights = qfalse;
 
 	numNewReferences = 0;
-	Com_Memset ( newReferences, -1, sizeof ( newReferences ) );
+	Com_Memset( newReferences, -1, sizeof( newReferences ) );
 
-	for ( i = 0; i < 3; i++ )
+	for( i = 0; i < 3; i++ )
 	{
 		v = tri->vertexes[ i ];
 
 		// can the bones be referenced?
-		for ( j = 0; j < MAX_WEIGHTS; j++ )
+		for( j = 0; j < MAX_WEIGHTS; j++ )
 		{
-			if ( j < v->numWeights )
+			if( j < v->numWeights )
 			{
 				boneIndex = v->weights[ j ]->boneIndex;
 				hasWeights = qtrue;
 
 				// is the bone already referenced?
-				if ( !boneReferences[ boneIndex ] )
+				if( !boneReferences[ boneIndex ] )
 				{
 					// the bone isn't yet and we have to test if we can give the mesh this bone at all
-					if ( ( *numBoneReferences + numNewReferences ) >= glConfig2.maxVertexSkinningBones )
+					if( ( *numBoneReferences + numNewReferences ) >= glConfig2.maxVertexSkinningBones )
 					{
 						return qfalse;
 					}
 					else
 					{
-						for ( k = 0; k < ( MAX_WEIGHTS * 3 ); k++ )
+						for( k = 0; k < ( MAX_WEIGHTS * 3 ); k++ )
 						{
-							if ( newReferences[ k ] == boneIndex )
+							if( newReferences[ k ] == boneIndex )
 							{
 								break;
 							}
 						}
 
-						if ( k == ( MAX_WEIGHTS * 3 ) )
+						if( k == ( MAX_WEIGHTS * 3 ) )
 						{
 							newReferences[ numNewReferences ] = boneIndex;
 							numNewReferences++;
@@ -159,7 +159,7 @@ qboolean AddTriangleToVBOTriangleList ( growList_t *vboTriangles, skelTriangle_t
 	}
 
 	// reference them!
-	for ( j = 0; j < numNewReferences; j++ )
+	for( j = 0; j < numNewReferences; j++ )
 	{
 		boneIndex = newReferences[ j ];
 
@@ -170,35 +170,35 @@ qboolean AddTriangleToVBOTriangleList ( growList_t *vboTriangles, skelTriangle_t
 
 #if 0
 
-	if ( numNewReferences )
+	if( numNewReferences )
 	{
-		ri.Printf ( PRINT_ALL, "bone indices: %i %i %i %i %i %i %i %i %i %i %i %i\n",
-		            newReferences[ 0 ],
-		            newReferences[ 1 ],
-		            newReferences[ 2 ],
-		            newReferences[ 3 ],
-		            newReferences[ 4 ],
-		            newReferences[ 5 ],
-		            newReferences[ 6 ],
-		            newReferences[ 7 ],
-		            newReferences[ 8 ],
-		            newReferences[ 9 ],
-		            newReferences[ 10 ],
-		            newReferences[ 11 ] );
+		ri.Printf( PRINT_ALL, "bone indices: %i %i %i %i %i %i %i %i %i %i %i %i\n",
+		           newReferences[ 0 ],
+		           newReferences[ 1 ],
+		           newReferences[ 2 ],
+		           newReferences[ 3 ],
+		           newReferences[ 4 ],
+		           newReferences[ 5 ],
+		           newReferences[ 6 ],
+		           newReferences[ 7 ],
+		           newReferences[ 8 ],
+		           newReferences[ 9 ],
+		           newReferences[ 10 ],
+		           newReferences[ 11 ] );
 	}
 
 #endif
 
-	if ( hasWeights )
+	if( hasWeights )
 	{
-		Com_AddToGrowList ( vboTriangles, tri );
+		Com_AddToGrowList( vboTriangles, tri );
 		return qtrue;
 	}
 
 	return qfalse;
 }
 
-void AddSurfaceToVBOSurfacesList ( growList_t *vboSurfaces, growList_t *vboTriangles, md5Model_t *md5, md5Surface_t *surf, int skinIndex, int numBoneReferences, int boneReferences[ MAX_BONES ] )
+void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriangles, md5Model_t *md5, md5Surface_t *surf, int skinIndex, int numBoneReferences, int boneReferences[ MAX_BONES ] )
 {
 	int             j, k;
 
@@ -234,34 +234,34 @@ void AddSurfaceToVBOSurfacesList ( growList_t *vboSurfaces, growList_t *vboTrian
 	indexesNum = vboTriangles->currentElements * 3;
 
 	// create surface
-	vboSurf = ri.Hunk_Alloc ( sizeof ( *vboSurf ), h_low );
-	Com_AddToGrowList ( vboSurfaces, vboSurf );
+	vboSurf = ri.Hunk_Alloc( sizeof( *vboSurf ), h_low );
+	Com_AddToGrowList( vboSurfaces, vboSurf );
 
 	vboSurf->surfaceType = SF_VBO_MD5MESH;
 	vboSurf->md5Model = md5;
-	vboSurf->shader = R_GetShaderByHandle ( surf->shaderIndex );
+	vboSurf->shader = R_GetShaderByHandle( surf->shaderIndex );
 	vboSurf->skinIndex = skinIndex;
 	vboSurf->numIndexes = indexesNum;
 	vboSurf->numVerts = vertexesNum;
 
-	dataSize = vertexesNum * ( sizeof ( vec4_t ) * 8 );
-	data = ri.Hunk_AllocateTempMemory ( dataSize );
+	dataSize = vertexesNum * ( sizeof( vec4_t ) * 8 );
+	data = ri.Hunk_AllocateTempMemory( dataSize );
 	dataOfs = 0;
 
-	indexesSize = indexesNum * sizeof ( int );
-	indexes = ri.Hunk_AllocateTempMemory ( indexesSize );
+	indexesSize = indexesNum * sizeof( int );
+	indexes = ri.Hunk_AllocateTempMemory( indexesSize );
 	indexesOfs = 0;
 
 	//ri.Printf(PRINT_ALL, "AddSurfaceToVBOSurfacesList( %i verts, %i tris )\n", surf->numVerts, vboTriangles->currentElements);
 
 	vboSurf->numBoneRemap = 0;
-	Com_Memset ( vboSurf->boneRemap, 0, sizeof ( vboSurf->boneRemap ) );
-	Com_Memset ( vboSurf->boneRemapInverse, 0, sizeof ( vboSurf->boneRemapInverse ) );
+	Com_Memset( vboSurf->boneRemap, 0, sizeof( vboSurf->boneRemap ) );
+	Com_Memset( vboSurf->boneRemapInverse, 0, sizeof( vboSurf->boneRemapInverse ) );
 
 	//ri.Printf(PRINT_ALL, "referenced bones: ");
-	for ( j = 0; j < MAX_BONES; j++ )
+	for( j = 0; j < MAX_BONES; j++ )
 	{
-		if ( boneReferences[ j ] > 0 )
+		if( boneReferences[ j ] > 0 )
 		{
 			vboSurf->boneRemap[ j ] = vboSurf->numBoneRemap;
 			vboSurf->boneRemapInverse[ vboSurf->numBoneRemap ] = j;
@@ -275,110 +275,110 @@ void AddSurfaceToVBOSurfacesList ( growList_t *vboSurfaces, growList_t *vboTrian
 	//ri.Printf(PRINT_ALL, "\n");
 
 	//for(j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++)
-	for ( j = 0; j < vboTriangles->currentElements; j++ )
+	for( j = 0; j < vboTriangles->currentElements; j++ )
 	{
-		tri = Com_GrowListElement ( vboTriangles, j );
+		tri = Com_GrowListElement( vboTriangles, j );
 
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			index = tri->indexes[ k ];
 
-			Com_Memcpy ( indexes + indexesOfs, &index, sizeof ( int ) );
-			indexesOfs += sizeof ( int );
+			Com_Memcpy( indexes + indexesOfs, &index, sizeof( int ) );
+			indexesOfs += sizeof( int );
 		}
 	}
 
 	// feed vertex XYZ
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			tmp[ k ] = surf->verts[ j ].position[ k ];
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex texcoords
 	ofsTexCoords = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		for ( k = 0; k < 2; k++ )
+		for( k = 0; k < 2; k++ )
 		{
 			tmp[ k ] = surf->verts[ j ].texCoords[ k ];
 		}
 
 		tmp[ 2 ] = 0;
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex tangents
 	ofsTangents = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			tmp[ k ] = surf->verts[ j ].tangent[ k ];
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex binormals
 	ofsBinormals = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			tmp[ k ] = surf->verts[ j ].binormal[ k ];
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex normals
 	ofsNormals = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			tmp[ k ] = surf->verts[ j ].normal[ k ];
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex colors
 	ofsColors = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		Com_Memcpy ( data + dataOfs, tmpColor, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, tmpColor, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed bone indices
 	ofsBoneIndexes = dataOfs;
 
-	for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
+	for( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 	{
-		for ( k = 0; k < MAX_WEIGHTS; k++ )
+		for( k = 0; k < MAX_WEIGHTS; k++ )
 		{
-			if ( k < v->numWeights )
+			if( k < v->numWeights )
 			{
 				index = vboSurf->boneRemap[ v->weights[ k ]->boneIndex ];
 			}
@@ -387,19 +387,19 @@ void AddSurfaceToVBOSurfacesList ( growList_t *vboSurfaces, growList_t *vboTrian
 				index = 0;
 			}
 
-			Com_Memcpy ( data + dataOfs, &index, sizeof ( int ) );
-			dataOfs += sizeof ( int );
+			Com_Memcpy( data + dataOfs, &index, sizeof( int ) );
+			dataOfs += sizeof( int );
 		}
 	}
 
 	// feed bone weights
 	ofsBoneWeights = dataOfs;
 
-	for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
+	for( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 	{
-		for ( k = 0; k < MAX_WEIGHTS; k++ )
+		for( k = 0; k < MAX_WEIGHTS; k++ )
 		{
-			if ( k < v->numWeights )
+			if( k < v->numWeights )
 			{
 				tmp[ k ] = v->weights[ k ]->boneWeight;
 			}
@@ -409,11 +409,11 @@ void AddSurfaceToVBOSurfacesList ( growList_t *vboSurfaces, growList_t *vboTrian
 			}
 		}
 
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
-	vboSurf->vbo = R_CreateVBO ( va ( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, dataSize, VBO_USAGE_STATIC );
+	vboSurf->vbo = R_CreateVBO( va( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, dataSize, VBO_USAGE_STATIC );
 	vboSurf->vbo->ofsXYZ = 0;
 	vboSurf->vbo->ofsTexCoords = ofsTexCoords;
 	vboSurf->vbo->ofsLightCoords = ofsTexCoords;
@@ -426,10 +426,10 @@ void AddSurfaceToVBOSurfacesList ( growList_t *vboSurfaces, growList_t *vboTrian
 	vboSurf->vbo->ofsBoneIndexes = ofsBoneIndexes;
 	vboSurf->vbo->ofsBoneWeights = ofsBoneWeights;
 
-	vboSurf->ibo = R_CreateIBO ( va ( "staticMD5Mesh_IBO %i", vboSurfaces->currentElements ), indexes, indexesSize, VBO_USAGE_STATIC );
+	vboSurf->ibo = R_CreateIBO( va( "staticMD5Mesh_IBO %i", vboSurfaces->currentElements ), indexes, indexesSize, VBO_USAGE_STATIC );
 
-	ri.Hunk_FreeTempMemory ( indexes );
-	ri.Hunk_FreeTempMemory ( data );
+	ri.Hunk_FreeTempMemory( indexes );
+	ri.Hunk_FreeTempMemory( data );
 
 	// megs
 
@@ -441,7 +441,7 @@ void AddSurfaceToVBOSurfacesList ( growList_t *vboSurfaces, growList_t *vboTrian
 	 */
 }
 
-void AddSurfaceToVBOSurfacesList2 ( growList_t *vboSurfaces, growList_t *vboTriangles, growList_t *vboVertexes, md5Model_t *md5, int skinIndex, const char *materialName, int numBoneReferences, int boneReferences[ MAX_BONES ] )
+void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTriangles, growList_t *vboVertexes, md5Model_t *md5, int skinIndex, const char *materialName, int numBoneReferences, int boneReferences[ MAX_BONES ] )
 {
 	int             j, k;
 
@@ -480,16 +480,16 @@ void AddSurfaceToVBOSurfacesList2 ( growList_t *vboSurfaces, growList_t *vboTria
 	indexesNum = vboTriangles->currentElements * 3;
 
 	// create surface
-	vboSurf = ri.Hunk_Alloc ( sizeof ( *vboSurf ), h_low );
-	Com_AddToGrowList ( vboSurfaces, vboSurf );
+	vboSurf = ri.Hunk_Alloc( sizeof( *vboSurf ), h_low );
+	Com_AddToGrowList( vboSurfaces, vboSurf );
 
 	vboSurf->surfaceType = SF_VBO_MD5MESH;
 	vboSurf->md5Model = md5;
 
-	ri.Printf ( PRINT_ALL, "AddSurfaceToVBOSurfacesList2: loading shader '%s'", materialName );
-	shader = R_FindShader ( materialName, SHADER_3D_DYNAMIC, qtrue );
+	ri.Printf( PRINT_ALL, "AddSurfaceToVBOSurfacesList2: loading shader '%s'", materialName );
+	shader = R_FindShader( materialName, SHADER_3D_DYNAMIC, qtrue );
 
-	if ( shader->defaultShader )
+	if( shader->defaultShader )
 	{
 		shaderIndex = 0;
 	}
@@ -498,30 +498,30 @@ void AddSurfaceToVBOSurfacesList2 ( growList_t *vboSurfaces, growList_t *vboTria
 		shaderIndex = shader->index;
 	}
 
-	vboSurf->shader = R_GetShaderByHandle ( shaderIndex );
+	vboSurf->shader = R_GetShaderByHandle( shaderIndex );
 
 	vboSurf->skinIndex = skinIndex;
 	vboSurf->numIndexes = indexesNum;
 	vboSurf->numVerts = vertexesNum;
 
-	dataSize = vertexesNum * ( sizeof ( vec4_t ) * 8 );
-	data = ri.Hunk_AllocateTempMemory ( dataSize );
+	dataSize = vertexesNum * ( sizeof( vec4_t ) * 8 );
+	data = ri.Hunk_AllocateTempMemory( dataSize );
 	dataOfs = 0;
 
-	indexesSize = indexesNum * sizeof ( int );
-	indexes = ri.Hunk_AllocateTempMemory ( indexesSize );
+	indexesSize = indexesNum * sizeof( int );
+	indexes = ri.Hunk_AllocateTempMemory( indexesSize );
 	indexesOfs = 0;
 
 	//ri.Printf(PRINT_ALL, "AddSurfaceToVBOSurfacesList( %i verts, %i tris )\n", surf->numVerts, vboTriangles->currentElements);
 
 	vboSurf->numBoneRemap = 0;
-	Com_Memset ( vboSurf->boneRemap, 0, sizeof ( vboSurf->boneRemap ) );
-	Com_Memset ( vboSurf->boneRemapInverse, 0, sizeof ( vboSurf->boneRemapInverse ) );
+	Com_Memset( vboSurf->boneRemap, 0, sizeof( vboSurf->boneRemap ) );
+	Com_Memset( vboSurf->boneRemapInverse, 0, sizeof( vboSurf->boneRemapInverse ) );
 
 	//ri.Printf(PRINT_ALL, "referenced bones: ");
-	for ( j = 0; j < MAX_BONES; j++ )
+	for( j = 0; j < MAX_BONES; j++ )
 	{
-		if ( boneReferences[ j ] > 0 )
+		if( boneReferences[ j ] > 0 )
 		{
 			vboSurf->boneRemap[ j ] = vboSurf->numBoneRemap;
 			vboSurf->boneRemapInverse[ vboSurf->numBoneRemap ] = j;
@@ -535,122 +535,122 @@ void AddSurfaceToVBOSurfacesList2 ( growList_t *vboSurfaces, growList_t *vboTria
 	//ri.Printf(PRINT_ALL, "\n");
 
 	//for(j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++)
-	for ( j = 0; j < vboTriangles->currentElements; j++ )
+	for( j = 0; j < vboTriangles->currentElements; j++ )
 	{
-		tri = Com_GrowListElement ( vboTriangles, j );
+		tri = Com_GrowListElement( vboTriangles, j );
 
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			index = tri->indexes[ k ];
 
-			Com_Memcpy ( indexes + indexesOfs, &index, sizeof ( int ) );
-			indexesOfs += sizeof ( int );
+			Com_Memcpy( indexes + indexesOfs, &index, sizeof( int ) );
+			indexesOfs += sizeof( int );
 		}
 	}
 
 	// feed vertex XYZ
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		v = Com_GrowListElement ( vboVertexes, j );
+		v = Com_GrowListElement( vboVertexes, j );
 
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			tmp[ k ] = v->position[ k ];
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex texcoords
 	ofsTexCoords = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		v = Com_GrowListElement ( vboVertexes, j );
+		v = Com_GrowListElement( vboVertexes, j );
 
-		for ( k = 0; k < 2; k++ )
+		for( k = 0; k < 2; k++ )
 		{
 			tmp[ k ] = v->texCoords[ k ];
 		}
 
 		tmp[ 2 ] = 0;
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex tangents
 	ofsTangents = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		v = Com_GrowListElement ( vboVertexes, j );
+		v = Com_GrowListElement( vboVertexes, j );
 
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			tmp[ k ] = v->tangent[ k ];
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex binormals
 	ofsBinormals = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		v = Com_GrowListElement ( vboVertexes, j );
+		v = Com_GrowListElement( vboVertexes, j );
 
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			tmp[ k ] = v->binormal[ k ];
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex normals
 	ofsNormals = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		v = Com_GrowListElement ( vboVertexes, j );
+		v = Com_GrowListElement( vboVertexes, j );
 
-		for ( k = 0; k < 3; k++ )
+		for( k = 0; k < 3; k++ )
 		{
 			tmp[ k ] = v->normal[ k ];
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed vertex colors
 	ofsColors = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		Com_Memcpy ( data + dataOfs, tmpColor, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, tmpColor, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
 	// feed bone indices
 	ofsBoneIndexes = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		v = Com_GrowListElement ( vboVertexes, j );
+		v = Com_GrowListElement( vboVertexes, j );
 
-		for ( k = 0; k < MAX_WEIGHTS; k++ )
+		for( k = 0; k < MAX_WEIGHTS; k++ )
 		{
-			if ( k < v->numWeights )
+			if( k < v->numWeights )
 			{
 				index = vboSurf->boneRemap[ v->weights[ k ]->boneIndex ];
 			}
@@ -659,21 +659,21 @@ void AddSurfaceToVBOSurfacesList2 ( growList_t *vboSurfaces, growList_t *vboTria
 				index = 0;
 			}
 
-			Com_Memcpy ( data + dataOfs, &index, sizeof ( int ) );
-			dataOfs += sizeof ( int );
+			Com_Memcpy( data + dataOfs, &index, sizeof( int ) );
+			dataOfs += sizeof( int );
 		}
 	}
 
 	// feed bone weights
 	ofsBoneWeights = dataOfs;
 
-	for ( j = 0; j < vertexesNum; j++ )
+	for( j = 0; j < vertexesNum; j++ )
 	{
-		v = Com_GrowListElement ( vboVertexes, j );
+		v = Com_GrowListElement( vboVertexes, j );
 
-		for ( k = 0; k < MAX_WEIGHTS; k++ )
+		for( k = 0; k < MAX_WEIGHTS; k++ )
 		{
-			if ( k < v->numWeights )
+			if( k < v->numWeights )
 			{
 				tmp[ k ] = v->weights[ k ]->boneWeight;
 			}
@@ -683,11 +683,11 @@ void AddSurfaceToVBOSurfacesList2 ( growList_t *vboSurfaces, growList_t *vboTria
 			}
 		}
 
-		Com_Memcpy ( data + dataOfs, ( vec_t * ) tmp, sizeof ( vec4_t ) );
-		dataOfs += sizeof ( vec4_t );
+		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		dataOfs += sizeof( vec4_t );
 	}
 
-	vboSurf->vbo = R_CreateVBO ( va ( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, dataSize, VBO_USAGE_STATIC );
+	vboSurf->vbo = R_CreateVBO( va( "staticMD5Mesh_VBO %i", vboSurfaces->currentElements ), data, dataSize, VBO_USAGE_STATIC );
 	vboSurf->vbo->ofsXYZ = 0;
 	vboSurf->vbo->ofsTexCoords = ofsTexCoords;
 	vboSurf->vbo->ofsLightCoords = ofsTexCoords;
@@ -700,10 +700,10 @@ void AddSurfaceToVBOSurfacesList2 ( growList_t *vboSurfaces, growList_t *vboTria
 	vboSurf->vbo->ofsBoneIndexes = ofsBoneIndexes;
 	vboSurf->vbo->ofsBoneWeights = ofsBoneWeights;
 
-	vboSurf->ibo = R_CreateIBO ( va ( "staticMD5Mesh_IBO %i", vboSurfaces->currentElements ), indexes, indexesSize, VBO_USAGE_STATIC );
+	vboSurf->ibo = R_CreateIBO( va( "staticMD5Mesh_IBO %i", vboSurfaces->currentElements ), indexes, indexesSize, VBO_USAGE_STATIC );
 
-	ri.Hunk_FreeTempMemory ( indexes );
-	ri.Hunk_FreeTempMemory ( data );
+	ri.Hunk_FreeTempMemory( indexes );
+	ri.Hunk_FreeTempMemory( data );
 
 	// megs
 
@@ -714,5 +714,5 @@ void AddSurfaceToVBOSurfacesList2 ( growList_t *vboSurfaces, growList_t *vboTria
 	   (indexesSize % (1024 * 1024)) * 100 / (1024 * 1024));
 	 */
 
-	ri.Printf ( PRINT_ALL, "created VBO surface %i with %i vertices and %i triangles\n", vboSurfaces->currentElements, vboSurf->numVerts, vboSurf->numIndexes / 3 );
+	ri.Printf( PRINT_ALL, "created VBO surface %i with %i vertices and %i triangles\n", vboSurfaces->currentElements, vboSurf->numVerts, vboSurf->numIndexes / 3 );
 }

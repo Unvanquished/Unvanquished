@@ -62,7 +62,7 @@ public:
 		return udata.m_Int;
 	}
 
-	void FromInt ( obint32 _n )
+	void FromInt( obint32 _n )
 	{
 		udata.m_Int = _n;
 	}
@@ -87,7 +87,7 @@ public:
 		return udata.m_Int == _other.udata.m_Int;
 	}
 
-	explicit GameEntity ( obint16 _index, obint16 _serial )
+	explicit GameEntity( obint16 _index, obint16 _serial )
 	{
 		udata.m_Short[ 0 ] = _index;
 		udata.m_Short[ 1 ] = _serial;
@@ -150,12 +150,12 @@ typedef enum eobResult
 } obResult;
 
 #ifdef __cplusplus
-inline bool SUCCESS ( obResult _res )
+inline bool SUCCESS( obResult _res )
 {
 	return ( _res == Success ) ? true : false;
 }
 
-inline int MAKE_KEY ( char _v1, char _v2, char _v3, char _v4 )
+inline int MAKE_KEY( char _v1, char _v2, char _v3, char _v4 )
 {
 	return ( ( ( _v1 ) << 24 ) | ( ( _v2 ) << 16 ) | ( ( _v3 ) << 8 ) | ( _v4 ) );
 }
@@ -267,10 +267,10 @@ typedef struct AABB_t
 
 	bool IsZero() const
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
-			if ( m_Mins[ i ] != 0.f ||
-			     m_Maxs[ i ] != 0.f )
+			if( m_Mins[ i ] != 0.f ||
+			    m_Maxs[ i ] != 0.f )
 			{
 				return false;
 			}
@@ -279,81 +279,81 @@ typedef struct AABB_t
 		return true;
 	}
 
-	void Set ( const float _pt[ 3 ] )
+	void Set( const float _pt[ 3 ] )
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] = _pt[ i ];
 			m_Maxs[ i ] = _pt[ i ];
 		}
 	}
 
-	void Set ( const float _min[ 3 ], const float _max[ 3 ] )
+	void Set( const float _min[ 3 ], const float _max[ 3 ] )
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] = _min[ i ] < _max[ i ] ? _min[ i ] : _max[ i ];
 			m_Maxs[ i ] = _min[ i ] > _max[ i ] ? _min[ i ] : _max[ i ];
 		}
 	}
 
-	void CenterPoint ( float _out[ 3 ] ) const
+	void CenterPoint( float _out[ 3 ] ) const
 	{
 		_out[ 0 ] = ( m_Mins[ 0 ] + m_Maxs[ 0 ] ) * 0.5f;
 		_out[ 1 ] = ( m_Mins[ 1 ] + m_Maxs[ 1 ] ) * 0.5f;
 		_out[ 2 ] = ( m_Mins[ 2 ] + m_Maxs[ 2 ] ) * 0.5f;
 	}
 
-	void CenterTop ( float _out[ 3 ] ) const
+	void CenterTop( float _out[ 3 ] ) const
 	{
 		_out[ 0 ] = ( m_Mins[ 0 ] + m_Maxs[ 0 ] ) * 0.5f;
 		_out[ 1 ] = ( m_Mins[ 1 ] + m_Maxs[ 1 ] ) * 0.5f;
 		_out[ 2 ] = m_Maxs[ 2 ];
 	}
 
-	void CenterBottom ( float _out[ 3 ] ) const
+	void CenterBottom( float _out[ 3 ] ) const
 	{
 		_out[ 0 ] = ( m_Mins[ 0 ] + m_Maxs[ 0 ] ) * 0.5f;
 		_out[ 1 ] = ( m_Mins[ 1 ] + m_Maxs[ 1 ] ) * 0.5f;
 		_out[ 2 ] = m_Mins[ 2 ];
 	}
 
-	void SetCenter ( const float _out[ 3 ] )
+	void SetCenter( const float _out[ 3 ] )
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] += _out[ i ];
 			m_Maxs[ i ] += _out[ i ];
 		}
 	}
 
-	void Expand ( const float _pt[ 3 ] )
+	void Expand( const float _pt[ 3 ] )
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
-			if ( _pt[ i ] < m_Mins[ i ] )
+			if( _pt[ i ] < m_Mins[ i ] )
 			{
 				m_Mins[ i ] = _pt[ i ];
 			}
 
-			if ( _pt[ i ] > m_Maxs[ i ] )
+			if( _pt[ i ] > m_Maxs[ i ] )
 			{
 				m_Maxs[ i ] = _pt[ i ];
 			}
 		}
 	}
 
-	void Expand ( const AABB_t &_bbox )
+	void Expand( const AABB_t &_bbox )
 	{
-		Expand ( _bbox.m_Mins );
-		Expand ( _bbox.m_Maxs );
+		Expand( _bbox.m_Mins );
+		Expand( _bbox.m_Maxs );
 	}
 
-	bool Intersects ( const AABB_t &_bbox ) const
+	bool Intersects( const AABB_t &_bbox ) const
 	{
-		for ( int i = 0; i < 3; i++ )
+		for( int i = 0; i < 3; i++ )
 		{
-			if ( m_Maxs[ i ] < _bbox.m_Mins[ i ] || m_Mins[ i ] > _bbox.m_Maxs[ i ] )
+			if( m_Maxs[ i ] < _bbox.m_Mins[ i ] || m_Mins[ i ] > _bbox.m_Maxs[ i ] )
 			{
 				return false;
 			}
@@ -362,11 +362,11 @@ typedef struct AABB_t
 		return true;
 	}
 
-	bool Contains ( const float _pt[ 3 ] ) const
+	bool Contains( const float _pt[ 3 ] ) const
 	{
-		for ( int i = 0; i < 3; i++ )
+		for( int i = 0; i < 3; i++ )
 		{
-			if ( m_Maxs[ i ] < _pt[ i ] || m_Mins[ i ] > _pt[ i ] )
+			if( m_Maxs[ i ] < _pt[ i ] || m_Mins[ i ] > _pt[ i ] )
 			{
 				return false;
 			}
@@ -375,13 +375,13 @@ typedef struct AABB_t
 		return true;
 	}
 
-	bool FindIntersection ( const AABB_t &_bbox, AABB_t &_overlap ) const
+	bool FindIntersection( const AABB_t &_bbox, AABB_t &_overlap ) const
 	{
-		if ( Intersects ( _bbox ) )
+		if( Intersects( _bbox ) )
 		{
-			for ( int i = 0; i < 3; i++ )
+			for( int i = 0; i < 3; i++ )
 			{
-				if ( m_Maxs[ i ] <= _bbox.m_Maxs[ i ] )
+				if( m_Maxs[ i ] <= _bbox.m_Maxs[ i ] )
 				{
 					_overlap.m_Maxs[ i ] = m_Maxs[ i ];
 				}
@@ -390,7 +390,7 @@ typedef struct AABB_t
 					_overlap.m_Maxs[ i ] = _bbox.m_Maxs[ i ];
 				}
 
-				if ( m_Mins[ i ] <= _bbox.m_Mins[ i ] )
+				if( m_Mins[ i ] <= _bbox.m_Mins[ i ] )
 				{
 					_overlap.m_Mins[ i ] = _bbox.m_Mins[ i ];
 				}
@@ -406,40 +406,40 @@ typedef struct AABB_t
 		return false;
 	}
 
-	float GetAxisLength ( int _axis ) const
+	float GetAxisLength( int _axis ) const
 	{
 		return m_Maxs[ _axis ] - m_Mins[ _axis ];
 	}
 
 	float GetArea() const
 	{
-		return GetAxisLength ( 0 ) * GetAxisLength ( 1 ) * GetAxisLength ( 2 );
+		return GetAxisLength( 0 ) * GetAxisLength( 1 ) * GetAxisLength( 2 );
 	}
 
-	float DistanceFromBottom ( const float _pt[ 3 ] ) const
+	float DistanceFromBottom( const float _pt[ 3 ] ) const
 	{
 		return - ( m_Mins[ 2 ] - _pt[ 2 ] );
 	}
 
-	float DistanceFromTop ( const float _pt[ 3 ] ) const
+	float DistanceFromTop( const float _pt[ 3 ] ) const
 	{
 		return ( m_Maxs[ 2 ] - _pt[ 2 ] );
 	}
 
-	void Scale ( float _scale )
+	void Scale( float _scale )
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] *= _scale;
 			m_Maxs[ i ] *= _scale;
 		}
 	}
 
-	AABB_t ScaleCopy ( float _scale )
+	AABB_t ScaleCopy( float _scale )
 	{
 		AABB_t out = *this; // cs: was AABB, but gcc said NO
 
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			out.m_Mins[ i ] *= _scale;
 			out.m_Maxs[ i ] *= _scale;
@@ -448,16 +448,16 @@ typedef struct AABB_t
 		return out;
 	}
 
-	void Expand ( float _expand )
+	void Expand( float _expand )
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] -= _expand;
 			m_Maxs[ i ] += _expand;
 		}
 	}
 
-	void ExpandAxis ( int _axis, float _expand )
+	void ExpandAxis( int _axis, float _expand )
 	{
 		m_Mins[ _axis ] -= _expand;
 		m_Maxs[ _axis ] += _expand;
@@ -465,7 +465,7 @@ typedef struct AABB_t
 
 	void FlipHorizontalAxis()
 	{
-		for ( int i = 0; i < 2; ++i )
+		for( int i = 0; i < 2; ++i )
 		{
 			float tmp = m_Mins[ i ];
 			m_Mins[ i ] = m_Maxs[ i ];
@@ -473,7 +473,7 @@ typedef struct AABB_t
 		}
 	}
 
-	void GetBottomCorners ( float _bl[ 3 ], float _tl[ 3 ], float _tr[ 3 ], float _br[ 3 ] )
+	void GetBottomCorners( float _bl[ 3 ], float _tl[ 3 ], float _tr[ 3 ], float _br[ 3 ] )
 	{
 		_bl[ 0 ] = m_Mins[ 0 ];
 		_bl[ 1 ] = m_Mins[ 1 ];
@@ -492,38 +492,38 @@ typedef struct AABB_t
 		_br[ 2 ] = m_Mins[ 2 ];
 	}
 
-	void GetTopCorners ( float _bl[ 3 ], float _tl[ 3 ], float _tr[ 3 ], float _br[ 3 ] )
+	void GetTopCorners( float _bl[ 3 ], float _tl[ 3 ], float _tr[ 3 ], float _br[ 3 ] )
 	{
-		GetBottomCorners ( _bl, _tl, _tr, _br );
+		GetBottomCorners( _bl, _tl, _tr, _br );
 		_bl[ 2 ] = m_Maxs[ 2 ];
 		_tl[ 2 ] = m_Maxs[ 2 ];
 		_tr[ 2 ] = m_Maxs[ 2 ];
 		_br[ 2 ] = m_Maxs[ 2 ];
 	}
 
-	void Translate ( const float _pos[ 3 ] )
+	void Translate( const float _pos[ 3 ] )
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] += _pos[ i ];
 			m_Maxs[ i ] += _pos[ i ];
 		}
 	}
 
-	void UnTranslate ( const float _pos[ 3 ] )
+	void UnTranslate( const float _pos[ 3 ] )
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] -= _pos[ i ];
 			m_Maxs[ i ] -= _pos[ i ];
 		}
 	}
 
-	AABB_t TranslateCopy ( const float _pos[ 3 ] ) const
+	AABB_t TranslateCopy( const float _pos[ 3 ] ) const
 	{
 		AABB_t aabb = *this;
 
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			aabb.m_Mins[ i ] += _pos[ i ];
 			aabb.m_Maxs[ i ] += _pos[ i ];
@@ -534,17 +534,17 @@ typedef struct AABB_t
 
 	AABB_t ( const float _mins[ 3 ], const float _maxs[ 3 ] )
 	{
-		Set ( _mins, _maxs );
+		Set( _mins, _maxs );
 	}
 
 	AABB_t ( const float _center[ 3 ] )
 	{
-		Set ( _center );
+		Set( _center );
 	}
 
 	AABB_t()
 	{
-		for ( int i = 0; i < 3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] = 0.f;
 			m_Maxs[ i ] = 0.f;
@@ -903,54 +903,54 @@ typedef struct obUserData_t
 
 	// Easy Constructors for C++
 #ifdef __cplusplus
-	obUserData_t() : DataType ( dtNone )
+	obUserData_t() : DataType( dtNone )
 	{
 	};
-	obUserData_t ( const char *_str ) : DataType ( dtString )
+	obUserData_t ( const char *_str ) : DataType( dtString )
 	{
 		udata.m_String = _str;
 	};
-	obUserData_t ( int _int ) : DataType ( dtInt )
+	obUserData_t ( int _int ) : DataType( dtInt )
 	{
 		udata.m_Int = _int;
 	};
 	//obUserData_t(obint64 _int) : DataType(dtInt64) { udata.m_Int64 = _int; };
-	obUserData_t ( float _float ) : DataType ( dtFloat )
+	obUserData_t ( float _float ) : DataType( dtFloat )
 	{
 		udata.m_Float = _float;
 	};
-	obUserData_t ( const GameEntity &_ent ) : DataType ( dtEntity )
+	obUserData_t ( const GameEntity &_ent ) : DataType( dtEntity )
 	{
 		udata.m_Entity = _ent.AsInt();
 	};
 	obUserData_t ( float _x, float _y, float _z ) :
-		DataType ( dtVector )
+		DataType( dtVector )
 	{
 		udata.m_Vector[ 0 ] = _x;
 		udata.m_Vector[ 1 ] = _y;
 		udata.m_Vector[ 2 ] = _z;
 	};
 	obUserData_t ( float *_v ) :
-		DataType ( dtVector )
+		DataType( dtVector )
 	{
 		udata.m_Vector[ 0 ] = _v[ 0 ];
 		udata.m_Vector[ 1 ] = _v[ 1 ];
 		udata.m_Vector[ 2 ] = _v[ 2 ];
 	};
-	obUserData_t ( int _v0, int _v1, int _v2 ) : DataType ( dt3_4byteFlags )
+	obUserData_t ( int _v0, int _v1, int _v2 ) : DataType( dt3_4byteFlags )
 	{
 		udata.m_4ByteFlags[ 0 ] = _v0;
 		udata.m_4ByteFlags[ 1 ] = _v1;
 		udata.m_4ByteFlags[ 2 ] = _v2;
 	};
-	obUserData_t ( char *_v0, char *_v1, char *_v2 ) : DataType ( dt3_Strings )
+	obUserData_t ( char *_v0, char *_v1, char *_v2 ) : DataType( dt3_Strings )
 	{
 		udata.m_CharPtrs[ 0 ] = _v0;
 		udata.m_CharPtrs[ 1 ] = _v1;
 		udata.m_CharPtrs[ 2 ] = _v2;
 	};
 	obUserData_t ( short _v0, short _v1, short _v2, short _v3, short _v4, short _v5 ) :
-		DataType ( dt6_2byteFlags )
+		DataType( dt6_2byteFlags )
 	{
 		udata.m_2ByteFlags[ 0 ] = _v0;
 		udata.m_2ByteFlags[ 1 ] = _v1;
@@ -960,7 +960,7 @@ typedef struct obUserData_t
 		udata.m_2ByteFlags[ 5 ] = _v5;
 	};
 	obUserData_t ( char _v0, char _v1, char _v2, char _v3, char _v4, char _v5, char _v6, char _v7, char _v8, char _v9, char _v10, char _v11 ) :
-		DataType ( dt12_1byteFlags )
+		DataType( dt12_1byteFlags )
 	{
 		udata.m_1ByteFlags[ 0 ] = _v0;
 		udata.m_1ByteFlags[ 1 ] = _v1;
@@ -1061,14 +1061,14 @@ typedef struct obUserData_t
 	inline GameEntity GetEntity() const
 	{
 		GameEntity e;
-		e.FromInt ( udata.m_Entity );
+		e.FromInt( udata.m_Entity );
 		return e;
 	};
-	inline void SetEntity ( GameEntity e )
+	inline void SetEntity( GameEntity e )
 	{
 		udata.m_Entity = e.AsInt();
 	};
-	inline const char *GetStrings ( int _index ) const
+	inline const char *GetStrings( int _index ) const
 	{
 		return udata.m_CharPtrs[ _index ];
 	};
@@ -1090,12 +1090,12 @@ typedef struct obUserData_t
 	};
 	inline float GetNumAsFloat() const
 	{
-		if ( IsFloat() )
+		if( IsFloat() )
 		{
 			return GetFloat();
 		}
 
-		if ( IsInt() )
+		if( IsInt() )
 		{
 			return ( float ) GetInt();
 		}
@@ -1104,12 +1104,12 @@ typedef struct obUserData_t
 	};
 	inline int GetNumAsInt() const
 	{
-		if ( IsFloat() )
+		if( IsFloat() )
 		{
 			return ( int ) GetFloat();
 		}
 
-		if ( IsInt() )
+		if( IsInt() )
 		{
 			return GetInt();
 		}
@@ -1118,9 +1118,9 @@ typedef struct obUserData_t
 	};
 
 	//////////////////////////////////////////////////////////////////////////
-	bool Get ( float &_val )
+	bool Get( float &_val )
 	{
-		if ( IsFloat() )
+		if( IsFloat() )
 		{
 			_val = GetFloat();
 			return true;
@@ -1129,9 +1129,9 @@ typedef struct obUserData_t
 		return false;
 	}
 
-	bool Get ( int &_val )
+	bool Get( int &_val )
 	{
-		if ( IsInt() )
+		if( IsInt() )
 		{
 			_val = GetInt();
 			return true;
@@ -1140,9 +1140,9 @@ typedef struct obUserData_t
 		return false;
 	}
 
-	bool Get ( float *_val )
+	bool Get( float *_val )
 	{
-		if ( IsVector() )
+		if( IsVector() )
 		{
 			_val[ 0 ] = GetVector() [ 0 ];
 			_val[ 1 ] = GetVector() [ 1 ];
@@ -1153,9 +1153,9 @@ typedef struct obUserData_t
 		return false;
 	}
 
-	bool Get ( bool &_val )
+	bool Get( bool &_val )
 	{
-		if ( IsInt() )
+		if( IsInt() )
 		{
 			_val = GetInt() != 0;
 			return true;
@@ -1173,24 +1173,24 @@ class KeyVals
 public:
 	enum { MaxArgs = 32, MaxArgLength = 32, MaxStringLength = 64 };
 
-	bool SetInt ( const char *_key, int _val );
-	bool SetFloat ( const char *_key, float _val );
-	bool SetEntity ( const char *_key, GameEntity _val );
-	bool SetVector ( const char *_key, float _x, float _y, float _z );
-	bool SetVector ( const char *_key, const float *_v );
-	bool SetString ( const char *_key, const char *_value );
-	bool Set ( const char *_key, const obUserData &_value );
+	bool SetInt( const char *_key, int _val );
+	bool SetFloat( const char *_key, float _val );
+	bool SetEntity( const char *_key, GameEntity _val );
+	bool SetVector( const char *_key, float _x, float _y, float _z );
+	bool SetVector( const char *_key, const float *_v );
+	bool SetString( const char *_key, const char *_value );
+	bool Set( const char *_key, const obUserData &_value );
 
-	bool GetInt ( const char *_key, int &_val ) const;
-	bool GetFloat ( const char *_key, float &_val ) const;
-	bool GetEntity ( const char *_key, GameEntity &_val ) const;
-	bool GetVector ( const char *_key, float &_x, float &_y, float &_z ) const;
-	bool GetVector ( const char *_key, float *_v ) const;
-	bool GetString ( const char *_key, const char *&_value ) const;
+	bool GetInt( const char *_key, int &_val ) const;
+	bool GetFloat( const char *_key, float &_val ) const;
+	bool GetEntity( const char *_key, GameEntity &_val ) const;
+	bool GetVector( const char *_key, float &_x, float &_y, float &_z ) const;
+	bool GetVector( const char *_key, float *_v ) const;
+	bool GetString( const char *_key, const char *&_value ) const;
 
 	void Reset();
 
-	void GetKV ( int _index, const char *&_key, obUserData &ud ) const;
+	void GetKV( int _index, const char *&_key, obUserData &ud ) const;
 
 	KeyVals();
 private:
@@ -1198,8 +1198,8 @@ private:
 	char       m_String[ MaxArgs ][ MaxStringLength ];
 	obUserData m_Value[ MaxArgs ];
 
-	bool       SetKeyVal ( const char *_key, const obUserData &_ud );
-	bool       GetKeyVal ( const char *_key, obUserData &_ud ) const;
+	bool       SetKeyVal( const char *_key, const obUserData &_ud );
+	bool       GetKeyVal( const char *_key, obUserData &_ud ) const;
 };
 
 class Seconds
@@ -1210,7 +1210,7 @@ public:
 		return m_Ms;
 	}
 
-	Seconds ( float _seconds = 0.f ) : m_Ms ( ( int ) ( _seconds * 1000.f ) )
+	Seconds( float _seconds = 0.f ) : m_Ms( ( int )( _seconds * 1000.f ) )
 	{
 	}
 
@@ -1238,7 +1238,7 @@ typedef struct TriggerInfo_t
 #ifdef __cplusplus
 	TriggerInfo_t()
 	{
-		for ( int i = 0; i < TriggerBufferSize; ++i )
+		for( int i = 0; i < TriggerBufferSize; ++i )
 		{
 			m_TagName[ i ] = m_Action[ i ] = 0;
 		}
@@ -1249,7 +1249,7 @@ typedef struct TriggerInfo_t
 		m_Entity = _ti.m_Entity;
 		m_Activator = _ti.m_Activator;
 
-		for ( int i = 0; i < TriggerBufferSize; ++i )
+		for( int i = 0; i < TriggerBufferSize; ++i )
 		{
 			m_TagName[ i ] = _ti.m_TagName[ i ];
 			m_Action[ i ] = _ti.m_Action[ i ];
@@ -1257,7 +1257,7 @@ typedef struct TriggerInfo_t
 	}
 
 	TriggerInfo_t ( GameEntity _ent, GameEntity _activator ) :
-		m_Entity ( _ent ), m_Activator ( _activator )
+		m_Entity( _ent ), m_Activator( _activator )
 	{
 		m_TagName[ 0 ] = m_Action[ 0 ] = 0;
 	}
@@ -1364,9 +1364,9 @@ class Arguments
 public:
 	enum { MaxArgs = 64, MaxArgLength = 128, };
 
-	Arguments() : m_NumArgs ( 0 )
+	Arguments() : m_NumArgs( 0 )
 	{
-		for ( int i = 0; i < MaxArgs; ++i )
+		for( int i = 0; i < MaxArgs; ++i )
 		{
 			m_Args[ i ][ 0 ] = 0;
 		}

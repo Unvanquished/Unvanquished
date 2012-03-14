@@ -31,7 +31,7 @@
 #endif
 
 // Typedef for the only exported bot function.
-typedef eomnibot_error ( *pfnGetFunctionsFromDLL ) ( Bot_EngineFuncs_t *_pBotFuncs, int _size );
+typedef eomnibot_error( *pfnGetFunctionsFromDLL )( Bot_EngineFuncs_t *_pBotFuncs, int _size );
 
 // note: Export Functions with C Linkage
 //	Export with C Linkage so the game interface can acccess it easier.
@@ -44,7 +44,7 @@ extern "C"
 // function: ExportBotFunctionsFromDLL
 //		Allow the bot dll to fill in a struct of bot functions the interface
 //		can then call.
-	OMNIBOT_API eomnibot_error ExportBotFunctionsFromDLL ( Bot_EngineFuncs_t *_pBotFuncs, int _size );
+	OMNIBOT_API eomnibot_error ExportBotFunctionsFromDLL( Bot_EngineFuncs_t *_pBotFuncs, int _size );
 
 #ifdef __cplusplus
 }
@@ -58,15 +58,15 @@ extern IEngineInterface  *g_InterfaceFunctions;
 
 //////////////////////////////////////////////////////////////////////////
 // Utility Function
-extern "C" const char *OB_VA ( const char *_msg, ... ) __attribute__ ( ( format ( printf, 1, 2 ) ) );
+extern "C" const char *OB_VA( const char *_msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
 
 //////////////////////////////////////////////////////////////////////////
 
-eomnibot_error Omnibot_LoadLibrary ( int version, const char *lib, const char *path );
+eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *path );
 void           Omnibot_FreeLibrary();
 bool           IsOmnibotLoaded();
-const char     *Omnibot_ErrorString ( eomnibot_error err );
+const char     *Omnibot_ErrorString( eomnibot_error err );
 const char     *Omnibot_GetLibraryPath();
-const char     *Omnibot_FixPath ( const char *_path );
+const char     *Omnibot_FixPath( const char *_path );
 
 #endif

@@ -83,56 +83,56 @@ typedef unsigned  long uint32_t;
         if( !( expr ) ) \
     Com_Error( ERR_DROP, "%s:%d: Assertion `%s' failed", \
                __FILE__, __LINE__, #expr )
-typedef int cmp_t ( const void *, const void * );
-void qsort ( void *a, size_t n, size_t es, cmp_t *cmp );
+typedef int cmp_t( const void *, const void * );
+void qsort( void *a, size_t n, size_t es, cmp_t *cmp );
 
 #define RAND_MAX 0x7fff
-void srand ( unsigned seed );
-int  rand ( void );
-void *bsearch ( const void *key, const void *base, size_t nmemb,
-                size_t size, cmp_t *compar );
+void srand( unsigned seed );
+int  rand( void );
+void *bsearch( const void *key, const void *base, size_t nmemb,
+               size_t size, cmp_t *compar );
 
 // String functions
-size_t strlen ( const char *string );
-char   *strcat ( char *strDestination, const char *strSource );
-char   *strcpy ( char *strDestination, const char *strSource );
-int    strcmp ( const char *string1, const char *string2 );
-char   *strchr ( const char *string, int c );
-char   *strrchr ( const char *string, int c );
-char   *strstr ( const char *string, const char *strCharSet );
-char   *strncpy ( char *strDest, const char *strSource, size_t count );
-int    tolower ( int c );
-int    toupper ( int c );
+size_t strlen( const char *string );
+char   *strcat( char *strDestination, const char *strSource );
+char   *strcpy( char *strDestination, const char *strSource );
+int    strcmp( const char *string1, const char *string2 );
+char   *strchr( const char *string, int c );
+char   *strrchr( const char *string, int c );
+char   *strstr( const char *string, const char *strCharSet );
+char   *strncpy( char *strDest, const char *strSource, size_t count );
+int    tolower( int c );
+int    toupper( int c );
 
-double atof ( const char *string );
-double _atof ( const char **stringPtr );
-double strtod ( const char *nptr, char **endptr );
-int    atoi ( const char *string );
-int    _atoi ( const char **stringPtr );
-long   strtol ( const char *nptr, char **endptr, int base );
+double atof( const char *string );
+double _atof( const char **stringPtr );
+double strtod( const char *nptr, char **endptr );
+int    atoi( const char *string );
+int    _atoi( const char **stringPtr );
+long   strtol( const char *nptr, char **endptr, int base );
 
-int    Q_vsnprintf ( char *buffer, size_t length, const char *fmt, va_list argptr ) __attribute__ ( ( format ( printf, 3, 0 ) ) );
-int    Q_snprintf ( char *buffer, size_t length, const char *fmt, ... ) __attribute__ ( ( format ( printf, 3, 4 ) ) );
+int    Q_vsnprintf( char *buffer, size_t length, const char *fmt, va_list argptr ) __attribute__( ( format( printf, 3, 0 ) ) );
+int    Q_snprintf( char *buffer, size_t length, const char *fmt, ... ) __attribute__( ( format( printf, 3, 4 ) ) );
 
-int    sscanf ( const char *buffer, const char *fmt, ... ) __attribute__ ( ( format ( scanf, 2, 3 ) ) );
+int    sscanf( const char *buffer, const char *fmt, ... ) __attribute__( ( format( scanf, 2, 3 ) ) );
 
 // Memory functions
-void   *memmove ( void *dest, const void *src, size_t count );
-void   *memset ( void *dest, int c, size_t count );
-void   *memcpy ( void *dest, const void *src, size_t count );
+void   *memmove( void *dest, const void *src, size_t count );
+void   *memset( void *dest, int c, size_t count );
+void   *memcpy( void *dest, const void *src, size_t count );
 
 // Math functions
-double ceil ( double x );
-double floor ( double x );
-double sqrt ( double x );
-double sin ( double x );
-double cos ( double x );
-double atan2 ( double y, double x );
-double tan ( double x );
-int    abs ( int n );
-double fabs ( double x );
-double acos ( double x );
-float  pow ( float x, float y );
-double rint ( double v );
+double ceil( double x );
+double floor( double x );
+double sqrt( double x );
+double sin( double x );
+double cos( double x );
+double atan2( double y, double x );
+double tan( double x );
+int    abs( int n );
+double fabs( double x );
+double acos( double x );
+float  pow( float x, float y );
+double rint( double v );
 
 #endif // BG_LIB_H

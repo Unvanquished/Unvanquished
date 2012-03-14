@@ -56,48 +56,48 @@ typedef char *va_list;
 #define ULONG_MAX 0xffffffffUL /* maximum unsigned long value */
 
 // Misc functions
-typedef int cmp_t ( const void *, const void * );
-void   qsort ( void *a, size_t n, size_t es, cmp_t *cmp );
-void   srand ( unsigned seed );
-int    rand ( void );
+typedef int cmp_t( const void *, const void * );
+void   qsort( void *a, size_t n, size_t es, cmp_t *cmp );
+void   srand( unsigned seed );
+int    rand( void );
 
 // String functions
-size_t strlen ( const char *string );
-char   *strcat ( char *strDestination, const char *strSource );
-char   *strcpy ( char *strDestination, const char *strSource );
-int    strcmp ( const char *string1, const char *string2 );
-char   *strchr ( const char *string, int c );
-char   *strrchr ( const char *string, int c );
-char   *strstr ( const char *string, const char *strCharSet );
-char   *strncpy ( char *strDest, const char *strSource, size_t count );
-int    tolower ( int c );
-int    toupper ( int c );
+size_t strlen( const char *string );
+char   *strcat( char *strDestination, const char *strSource );
+char   *strcpy( char *strDestination, const char *strSource );
+int    strcmp( const char *string1, const char *string2 );
+char   *strchr( const char *string, int c );
+char   *strrchr( const char *string, int c );
+char   *strstr( const char *string, const char *strCharSet );
+char   *strncpy( char *strDest, const char *strSource, size_t count );
+int    tolower( int c );
+int    toupper( int c );
 
-double atof ( const char *string );
-double _atof ( const char **stringPtr );
-int    atoi ( const char *string );
-int    _atoi ( const char **stringPtr );
+double atof( const char *string );
+double _atof( const char **stringPtr );
+int    atoi( const char *string );
+int    _atoi( const char **stringPtr );
 
-int    vsprintf ( char *buffer, const char *fmt, va_list argptr );
-int    sscanf ( const char *buffer, const char *fmt, ... ) __attribute__ ( ( format ( scanf, 2, 3 ) ) );
+int    vsprintf( char *buffer, const char *fmt, va_list argptr );
+int    sscanf( const char *buffer, const char *fmt, ... ) __attribute__( ( format( scanf, 2, 3 ) ) );
 
 // Memory functions
-void   *memmove ( void *dest, const void *src, size_t count );
-void   *memset ( void *dest, int c, size_t count );
-void   *memcpy ( void *dest, const void *src, size_t count );
+void   *memmove( void *dest, const void *src, size_t count );
+void   *memset( void *dest, int c, size_t count );
+void   *memcpy( void *dest, const void *src, size_t count );
 
 // Math functions
-double ceil ( double x );
-double floor ( double x );
-double sqrt ( double x );
-double sin ( double x );
-double cos ( double x );
-double atan2 ( double y, double x );
-double tan ( double x );
-int    abs ( int n );
-double fabs ( double x );
-double acos ( double x );
-float  pow ( float x, float y );
-float  rint ( float v );
+double ceil( double x );
+double floor( double x );
+double sqrt( double x );
+double sin( double x );
+double cos( double x );
+double atan2( double y, double x );
+double tan( double x );
+int    abs( int n );
+double fabs( double x );
+double acos( double x );
+float  pow( float x, float y );
+float  rint( float v );
 
 #endif // BG_LIB_H

@@ -80,9 +80,9 @@ UIView
 
 - initWithFrame:
 ( CGRect ) frame;
-@property ( assign, readonly, nonatomic ) NSUInteger  numColorBits;
-@property ( assign, readonly, nonatomic ) NSUInteger  numDepthBits;
-@property ( assign, readonly, nonatomic ) EAGLContext *context;
+@property( assign, readonly, nonatomic ) NSUInteger  numColorBits;
+@property( assign, readonly, nonatomic ) NSUInteger  numDepthBits;
+@property( assign, readonly, nonatomic ) EAGLContext *context;
 - ( void ) swapBuffers;
 
 @end

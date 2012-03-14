@@ -395,16 +395,16 @@ extern "C" {
 
 #ifdef HUNK_DEBUG
 #define Hunk_Alloc( size, preference ) Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
-	void *Hunk_AllocDebug ( int size, ha_pref preference, char *label, char *file, int line );
+	void *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line );
 
 #else
-	void *Hunk_Alloc ( int size, ha_pref preference );
+	void *Hunk_Alloc( int size, ha_pref preference );
 
 #endif
 
 #ifdef __linux__
 // custom Snd_Memset implementation for glibc memset bug workaround
-	void Snd_Memset ( void *dest, const int val, const size_t count );
+	void Snd_Memset( void *dest, const int val, const size_t count );
 
 #else
 #define Snd_Memset   Com_Memset
@@ -623,25 +623,25 @@ extern "C" {
 #define IS_NAN( x ) ( ( ( *(int *)&x ) & nanmask ) == nanmask )
 
 #if idx64
-	extern long qftolsse ( float f );
-	extern int  qvmftolsse ( void );
-	extern void qsnapvectorsse ( vec3_t vec );
+	extern long qftolsse( float f );
+	extern int  qvmftolsse( void );
+	extern void qsnapvectorsse( vec3_t vec );
 
 #define Q_ftol       qftolsse
 #define Q_SnapVector qsnapvectorsse
 
-	extern int        ( *Q_VMftol ) ( void );
+	extern int ( *Q_VMftol )( void );
 #elif id386
-	extern long QDECL qftolx87 ( float f );
-	extern long QDECL qftolsse ( float f );
-	extern int QDECL  qvmftolx87 ( void );
-	extern int QDECL  qvmftolsse ( void );
-	extern void QDECL qsnapvectorx87 ( vec3_t vec );
-	extern void QDECL qsnapvectorsse ( vec3_t vec );
+	extern long QDECL qftolx87( float f );
+	extern long QDECL qftolsse( float f );
+	extern int QDECL  qvmftolx87( void );
+	extern int QDECL  qvmftolsse( void );
+	extern void QDECL qsnapvectorx87( vec3_t vec );
+	extern void QDECL qsnapvectorsse( vec3_t vec );
 
-	extern long       ( QDECL *Q_ftol ) ( float f );
-	extern int        ( QDECL *Q_VMftol ) ( void );
-	extern void       ( QDECL *Q_SnapVector ) ( vec3_t vec );
+	extern long( QDECL *Q_ftol )( float f );
+	extern int ( QDECL *Q_VMftol )( void );
+	extern void ( QDECL *Q_SnapVector )( vec3_t vec );
 #else
 #define 4 (f) lrintf(( f ))
 #define Q_SnapVector(vec) \
@@ -673,7 +673,7 @@ extern "C" {
 	#endif
 	*/
 
-	static ID_INLINE long XreaL_Q_ftol ( float f )
+	static ID_INLINE long XreaL_Q_ftol( float f )
 	{
 #if id386_sse && defined( _MSC_VER )
 		static int tmp;
@@ -685,7 +685,7 @@ extern "C" {
 #endif
 	}
 
-	static ID_INLINE float Q_rsqrt ( float number )
+	static ID_INLINE float Q_rsqrt( float number )
 	{
 		float y;
 
@@ -693,9 +693,9 @@ extern "C" {
 		float x = 0.5f * number;
 
 #ifdef __GNUC__
-		asm ( "frsqrte %0, %1" : "=f" ( y ) : "f" ( number ) );
+		asm( "frsqrte %0, %1" : "=f"( y ) : "f"( number ) );
 #else
-		y = __frsqrte ( number );
+		y = __frsqrte( number );
 #endif
 		return y * ( 1.5f - ( x * y * y ) );
 
@@ -714,10 +714,10 @@ extern "C" {
 		  "movd           %%mm1,        (%%edx)\n"
 		  "femms                               \n"
 		  :
-		  : "a" ( &number ), "d" ( &y ) : "memory"
+		  : "a"( &number ), "d"( &y ) : "memory"
 		);
 #elif id386_sse && defined __GNUC__
-		asm volatile ( "rsqrtss %0, %1" : "=x" ( y ) : "x" ( number ) );
+		asm volatile( "rsqrtss %0, %1" : "=x"( y ) : "x"( number ) );
 #elif id386_sse && defined _MSC_VER
 		__asm
 		{
@@ -743,12 +743,12 @@ extern "C" {
 		return y;
 	}
 
-	static ID_INLINE float Q_fabs ( float x )
+	static ID_INLINE float Q_fabs( float x )
 	{
 #if idppc && defined __GNUC__
 		float abs_x;
 
-		asm ( "fabs %0, %1" : "=f" ( abs_x ) : "f" ( x ) );
+		asm( "fabs %0, %1" : "=f"( abs_x ) : "f"( x ) );
 		return abs_x;
 #else
 		floatint_t tmp;
@@ -763,21 +763,21 @@ extern "C" {
 
 // fast float to int conversion
 #if id386 && !( ( defined __linux__ || defined __FreeBSD__ || defined __GNUC__ ) && ( defined __i386__ ) ) // rb010123
-	long myftol ( float f );
+	long myftol( float f );
 
 #elif defined( __MACOS__ )
 #define myftol( x ) (long)( x )
 #else
-	extern long int lrintf ( float x );
+	extern long int lrintf( float x );
 
 #define myftol( x ) lrintf( x )
 #endif
 
 #ifdef _MSC_VER
-	ID_INLINE long lrintf ( float f )
+	ID_INLINE long lrintf( float f )
 	{
 #ifdef _M_X64
-		return ( long ) ( ( f > 0.0f ) ? ( f + 0.5f ) : ( f - 0.5f ) );
+		return ( long )( ( f > 0.0f ) ? ( f + 0.5f ) : ( f - 0.5f ) );
 #else
 		int i;
 
@@ -793,32 +793,32 @@ extern "C" {
 
 #endif
 
-	static ID_INLINE float Q_recip ( float in )
+	static ID_INLINE float Q_recip( float in )
 	{
 #if id386_3dnow && defined __GNUC__ && 0
 		vec_t out;
 
 		femms();
-		asm volatile    ( "movd		(%%eax),	%%mm0\n""pfrcp		%%mm0,		%%mm1\n"                // (approx)
-		                  "pfrcpit1	%%mm1,		%%mm0\n"// (intermediate)
-		                  "pfrcpit2	%%mm1,		%%mm0\n"// (full 24-bit)
-		                  // out = mm0[low]
-		                  "movd		%%mm0,		(%%edx)\n"::"a" ( &in ), "d" ( &out ) : "memory" );
+		asm volatile( "movd		(%%eax),	%%mm0\n""pfrcp		%%mm0,		%%mm1\n"                    // (approx)
+		              "pfrcpit1	%%mm1,		%%mm0\n"// (intermediate)
+		              "pfrcpit2	%%mm1,		%%mm0\n"// (full 24-bit)
+		              // out = mm0[low]
+		              "movd		%%mm0,		(%%edx)\n"::"a"( &in ), "d"( &out ) : "memory" );
 
 		femms();
 		return out;
 #else
-		return ( float ) ( 1.0f / in );
+		return ( float )( 1.0f / in );
 #endif
 	}
 
-	byte         ClampByte ( int i );
-	signed char  ClampChar ( int i );
-	signed short ClampShort ( int i );
+	byte         ClampByte( int i );
+	signed char  ClampChar( int i );
+	signed short ClampShort( int i );
 
 // this isn't a real cheap function to call!
-	int          DirToByte ( vec3_t dir );
-	void         ByteToDir ( int b, vec3_t dir );
+	int          DirToByte( vec3_t dir );
+	void         ByteToDir( int b, vec3_t dir );
 
 #if 1
 
@@ -877,49 +877,49 @@ extern "C" {
 #define SnapVector( v )              { v[ 0 ] = ( (int)( v[ 0 ] ) ); v[ 1 ] = ( (int)( v[ 1 ] ) ); v[ 2 ] = ( (int)( v[ 2 ] ) ); }
 
 // just in case you do't want to use the macros
-	vec_t    _DotProduct ( const vec3_t v1, const vec3_t v2 );
-	void     _VectorSubtract ( const vec3_t veca, const vec3_t vecb, vec3_t out );
-	void     _VectorAdd ( const vec3_t veca, const vec3_t vecb, vec3_t out );
-	void     _VectorCopy ( const vec3_t in, vec3_t out );
-	void     _VectorScale ( const vec3_t in, float scale, vec3_t out );
-	void     _VectorMA ( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc );
+	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );
+	void     _VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out );
+	void     _VectorAdd( const vec3_t veca, const vec3_t vecb, vec3_t out );
+	void     _VectorCopy( const vec3_t in, vec3_t out );
+	void     _VectorScale( const vec3_t in, float scale, vec3_t out );
+	void     _VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc );
 
-	unsigned ColorBytes3 ( float r, float g, float b );
-	unsigned ColorBytes4 ( float r, float g, float b, float a );
+	unsigned ColorBytes3( float r, float g, float b );
+	unsigned ColorBytes4( float r, float g, float b, float a );
 
-	float    NormalizeColor ( const vec3_t in, vec3_t out );
-	void     ClampColor ( vec4_t color );
+	float    NormalizeColor( const vec3_t in, vec3_t out );
+	void     ClampColor( vec4_t color );
 
-	float    RadiusFromBounds ( const vec3_t mins, const vec3_t maxs );
-	void     ZeroBounds ( vec3_t mins, vec3_t maxs );
-	void     ClearBounds ( vec3_t mins, vec3_t maxs );
-	void     AddPointToBounds ( const vec3_t v, vec3_t mins, vec3_t maxs );
+	float    RadiusFromBounds( const vec3_t mins, const vec3_t maxs );
+	void     ZeroBounds( vec3_t mins, vec3_t maxs );
+	void     ClearBounds( vec3_t mins, vec3_t maxs );
+	void     AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs );
 
 // RB: same as BoundsIntersectPoint but kept for compatibility
-	qboolean PointInBounds ( const vec3_t v, const vec3_t mins, const vec3_t maxs );
+	qboolean PointInBounds( const vec3_t v, const vec3_t mins, const vec3_t maxs );
 
-	void     BoundsAdd ( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
-	qboolean BoundsIntersect ( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
-	qboolean BoundsIntersectSphere ( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
-	qboolean BoundsIntersectPoint ( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
+	void     BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
+	qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
+	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
+	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
 
-	static ID_INLINE void BoundsToCorners ( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] )
+	static ID_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] )
 	{
-		VectorSet ( corners[ 0 ], mins[ 0 ], maxs[ 1 ], maxs[ 2 ] );
-		VectorSet ( corners[ 1 ], maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] );
-		VectorSet ( corners[ 2 ], maxs[ 0 ], mins[ 1 ], maxs[ 2 ] );
-		VectorSet ( corners[ 3 ], mins[ 0 ], mins[ 1 ], maxs[ 2 ] );
-		VectorSet ( corners[ 4 ], mins[ 0 ], maxs[ 1 ], mins[ 2 ] );
-		VectorSet ( corners[ 5 ], maxs[ 0 ], maxs[ 1 ], mins[ 2 ] );
-		VectorSet ( corners[ 6 ], maxs[ 0 ], mins[ 1 ], mins[ 2 ] );
-		VectorSet ( corners[ 7 ], mins[ 0 ], mins[ 1 ], mins[ 2 ] );
+		VectorSet( corners[ 0 ], mins[ 0 ], maxs[ 1 ], maxs[ 2 ] );
+		VectorSet( corners[ 1 ], maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] );
+		VectorSet( corners[ 2 ], maxs[ 0 ], mins[ 1 ], maxs[ 2 ] );
+		VectorSet( corners[ 3 ], mins[ 0 ], mins[ 1 ], maxs[ 2 ] );
+		VectorSet( corners[ 4 ], mins[ 0 ], maxs[ 1 ], mins[ 2 ] );
+		VectorSet( corners[ 5 ], maxs[ 0 ], maxs[ 1 ], mins[ 2 ] );
+		VectorSet( corners[ 6 ], maxs[ 0 ], mins[ 1 ], mins[ 2 ] );
+		VectorSet( corners[ 7 ], mins[ 0 ], mins[ 1 ], mins[ 2 ] );
 	}
 
-	int VectorCompare ( const vec3_t v1, const vec3_t v2 );
+	int VectorCompare( const vec3_t v1, const vec3_t v2 );
 
-	static ID_INLINE int Vector4Compare ( const vec4_t v1, const vec4_t v2 )
+	static ID_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 )
 	{
-		if ( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] || v1[ 3 ] != v2[ 3 ] )
+		if( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] || v1[ 3 ] != v2[ 3 ] )
 		{
 			return 0;
 		}
@@ -927,7 +927,7 @@ extern "C" {
 		return 1;
 	}
 
-	static ID_INLINE void VectorLerp ( const vec3_t from, const vec3_t to, float frac, vec3_t out )
+	static ID_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out )
 	{
 		out[ 0 ] = from[ 0 ] + ( ( to[ 0 ] - from[ 0 ] ) * frac );
 		out[ 1 ] = from[ 1 ] + ( ( to[ 1 ] - from[ 1 ] ) * frac );
@@ -938,17 +938,17 @@ extern "C" {
                                    ( r )[ 1 ] = ( s )[ 1 ] + ( f ) * (( e )[ 1 ] - ( s )[ 1 ] ), \
                                    ( r )[ 2 ] = ( s )[ 2 ] + ( f ) * (( e )[ 2 ] - ( s )[ 2 ] ))
 
-	static ID_INLINE int VectorCompareEpsilon (
+	static ID_INLINE int VectorCompareEpsilon(
 	  const vec3_t v1, const vec3_t v2, float epsilon )
 	{
 		vec3_t d;
 
-		VectorSubtract ( v1, v2, d );
-		d[ 0 ] = fabs ( d[ 0 ] );
-		d[ 1 ] = fabs ( d[ 1 ] );
-		d[ 2 ] = fabs ( d[ 2 ] );
+		VectorSubtract( v1, v2, d );
+		d[ 0 ] = fabs( d[ 0 ] );
+		d[ 1 ] = fabs( d[ 1 ] );
+		d[ 2 ] = fabs( d[ 2 ] );
 
-		if ( d[ 0 ] > epsilon || d[ 1 ] > epsilon || d[ 2 ] > epsilon )
+		if( d[ 0 ] > epsilon || d[ 1 ] > epsilon || d[ 2 ] > epsilon )
 		{
 			return 0;
 		}
@@ -956,192 +956,192 @@ extern "C" {
 		return 1;
 	}
 
-	vec_t VectorLength ( const vec3_t v );
-	vec_t VectorLengthSquared ( const vec3_t v );
-	vec_t Distance ( const vec3_t p1, const vec3_t p2 );
-	vec_t DistanceSquared ( const vec3_t p1, const vec3_t p2 );
-	void  CrossProduct ( const vec3_t v1, const vec3_t v2, vec3_t cross );
-	vec_t VectorNormalize ( vec3_t v ); // returns vector length
-	void  VectorNormalizeFast ( vec3_t v ); // does NOT return vector length, uses rsqrt approximation
-	vec_t VectorNormalize2 ( const vec3_t v, vec3_t out );
-	void  VectorInverse ( vec3_t v );
-	void  Vector4Scale ( const vec4_t in, vec_t scale, vec4_t out );
+	vec_t VectorLength( const vec3_t v );
+	vec_t VectorLengthSquared( const vec3_t v );
+	vec_t Distance( const vec3_t p1, const vec3_t p2 );
+	vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 );
+	void  CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
+	vec_t VectorNormalize( vec3_t v );  // returns vector length
+	void  VectorNormalizeFast( vec3_t v );  // does NOT return vector length, uses rsqrt approximation
+	vec_t VectorNormalize2( const vec3_t v, vec3_t out );
+	void  VectorInverse( vec3_t v );
+	void  Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
 
-	void  VectorRotate ( vec3_t in, vec3_t matrix[ 3 ], vec3_t out );
+	void  VectorRotate( vec3_t in, vec3_t matrix[ 3 ], vec3_t out );
 
-	int   NearestPowerOfTwo ( int val );
-	int   Q_log2 ( int val );
+	int   NearestPowerOfTwo( int val );
+	int   Q_log2( int val );
 
-	float Q_acos ( float c );
+	float Q_acos( float c );
 
-	int   Q_isnan ( float x );
+	int   Q_isnan( float x );
 
-	int   Q_rand ( int *seed );
-	float Q_random ( int *seed );
-	float Q_crandom ( int *seed );
+	int   Q_rand( int *seed );
+	float Q_random( int *seed );
+	float Q_crandom( int *seed );
 
 #define random()  ( ( rand() & 0x7fff ) / ( (float)0x7fff ) )
 #define crandom() ( 2.0 * ( random() - 0.5 ) )
 
-	void vectoangles ( const vec3_t value1, vec3_t angles );
+	void vectoangles( const vec3_t value1, vec3_t angles );
 
-	static ID_INLINE void VectorToAngles ( const vec3_t value1, vec3_t angles )
+	static ID_INLINE void VectorToAngles( const vec3_t value1, vec3_t angles )
 	{
-		vectoangles ( value1, angles );
+		vectoangles( value1, angles );
 	}
 
-	float vectoyaw ( const vec3_t vec );
+	float vectoyaw( const vec3_t vec );
 
-	void  AnglesToAxis ( const vec3_t angles, vec3_t axis[ 3 ] );
+	void  AnglesToAxis( const vec3_t angles, vec3_t axis[ 3 ] );
 // TTimo: const vec_t ** would require explicit casts for ANSI C conformance
 // see unix/const-arg.c
-	void  AxisToAngles ( /*const*/ vec3_t axis[ 3 ], vec3_t angles );
+	void  AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles );
 //void AxisToAngles ( const vec3_t axis[3], vec3_t angles );
-	float VectorDistance ( vec3_t v1, vec3_t v2 );
-	float VectorDistanceSquared ( vec3_t v1, vec3_t v2 );
+	float VectorDistance( vec3_t v1, vec3_t v2 );
+	float VectorDistanceSquared( vec3_t v1, vec3_t v2 );
 
-	float VectorMinComponent ( vec3_t v );
-	float VectorMaxComponent ( vec3_t v );
+	float VectorMinComponent( vec3_t v );
+	float VectorMaxComponent( vec3_t v );
 
-	void  AxisClear ( vec3_t axis[ 3 ] );
-	void  AxisCopy ( vec3_t in[ 3 ], vec3_t out[ 3 ] );
+	void  AxisClear( vec3_t axis[ 3 ] );
+	void  AxisCopy( vec3_t in[ 3 ], vec3_t out[ 3 ] );
 
-	void  SetPlaneSignbits ( struct cplane_s *out );
-	int   BoxOnPlaneSide ( vec3_t emins, vec3_t emaxs, struct cplane_s *plane );
+	void  SetPlaneSignbits( struct cplane_s *out );
+	int   BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *plane );
 
-	float AngleMod ( float a );
-	float LerpAngle ( float from, float to, float frac );
-	void  LerpPosition ( vec3_t start, vec3_t end, float frac, vec3_t out );
-	float AngleSubtract ( float a1, float a2 );
-	void  AnglesSubtract ( vec3_t v1, vec3_t v2, vec3_t v3 );
+	float AngleMod( float a );
+	float LerpAngle( float from, float to, float frac );
+	void  LerpPosition( vec3_t start, vec3_t end, float frac, vec3_t out );
+	float AngleSubtract( float a1, float a2 );
+	void  AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 );
 
-	float AngleNormalize2Pi ( float angle );
-	float AngleNormalize360 ( float angle );
-	float AngleNormalize180 ( float angle );
-	float AngleDelta ( float angle1, float angle2 );
-	float AngleBetweenVectors ( const vec3_t a, const vec3_t b );
-	void  AngleVectors ( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
+	float AngleNormalize2Pi( float angle );
+	float AngleNormalize360( float angle );
+	float AngleNormalize180( float angle );
+	float AngleDelta( float angle1, float angle2 );
+	float AngleBetweenVectors( const vec3_t a, const vec3_t b );
+	void  AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
 
-	static ID_INLINE void AnglesToVector ( const vec3_t angles, vec3_t out )
+	static ID_INLINE void AnglesToVector( const vec3_t angles, vec3_t out )
 	{
-		AngleVectors ( angles, out, NULL, NULL );
+		AngleVectors( angles, out, NULL, NULL );
 	}
 
-	void  VectorToAngles ( const vec3_t value1, vec3_t angles );
+	void  VectorToAngles( const vec3_t value1, vec3_t angles );
 
-	vec_t PlaneNormalize ( vec4_t plane ); // returns normal length
+	vec_t PlaneNormalize( vec4_t plane );  // returns normal length
 
 	/* greebo: This calculates the intersection point of three planes.
 	 * Returns <0,0,0> if no intersection point could be found, otherwise returns the coordinates of the intersection point
 	 * (this may also be 0,0,0) */
-	qboolean PlanesGetIntersectionPoint ( const vec4_t plane1, const vec4_t plane2, const vec4_t plane3, vec3_t out );
-	void     PlaneIntersectRay ( const vec3_t rayPos, const vec3_t rayDir, const vec4_t plane, vec3_t res );
+	qboolean PlanesGetIntersectionPoint( const vec4_t plane1, const vec4_t plane2, const vec4_t plane3, vec3_t out );
+	void     PlaneIntersectRay( const vec3_t rayPos, const vec3_t rayDir, const vec4_t plane, vec3_t res );
 
-	qboolean PlaneFromPoints ( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
-	qboolean PlaneFromPointsOrder ( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, qboolean cw );
-	void     ProjectPointOnPlane ( vec3_t dst, const vec3_t p, const vec3_t normal );
-	void     RotatePointAroundVector ( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
-	void     RotatePointAroundVertex ( vec3_t pnt, float rot_x, float rot_y, float rot_z, const vec3_t origin );
+	qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
+	qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, qboolean cw );
+	void     ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
+	void     RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
+	void     RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z, const vec3_t origin );
 
-	void     RotateAroundDirection ( vec3_t axis[ 3 ], float yaw );
-	void     MakeNormalVectors ( const vec3_t forward, vec3_t right, vec3_t up );
+	void     RotateAroundDirection( vec3_t axis[ 3 ], float yaw );
+	void     MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
 
 // perpendicular vector could be replaced by this
 
 //int       PlaneTypeForNormal( vec3_t normal );
 
-	void VectorMatrixMultiply ( const vec3_t p, vec3_t m[ 3 ], vec3_t out );
+	void VectorMatrixMultiply( const vec3_t p, vec3_t m[ 3 ], vec3_t out );
 
 // RB: NOTE renamed MatrixMultiply to AxisMultiply because it conflicts with most new matrix functions
 // It is important for mod developers to do this change as well or they risk a memory corruption by using
 // the other MatrixMultiply function.
-	void  AxisMultiply ( float in1[ 3 ][ 3 ], float in2[ 3 ][ 3 ], float out[ 3 ][ 3 ] );
-	void  AngleVectors ( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
-	void  PerpendicularVector ( vec3_t dst, const vec3_t src );
+	void  AxisMultiply( float in1[ 3 ][ 3 ], float in2[ 3 ][ 3 ], float out[ 3 ][ 3 ] );
+	void  AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
+	void  PerpendicularVector( vec3_t dst, const vec3_t src );
 
 // Ridah
-	void  GetPerpendicularViewVector ( const vec3_t point, const vec3_t p1, const vec3_t p2, vec3_t up );
-	void  ProjectPointOntoVector ( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
-	void  ProjectPointOntoVectorBounded ( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
-	float DistanceFromLineSquared ( vec3_t p, vec3_t lp1, vec3_t lp2 );
-	float DistanceFromVectorSquared ( vec3_t p, vec3_t lp1, vec3_t lp2 );
+	void  GetPerpendicularViewVector( const vec3_t point, const vec3_t p1, const vec3_t p2, vec3_t up );
+	void  ProjectPointOntoVector( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
+	void  ProjectPointOntoVectorBounded( vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vProj );
+	float DistanceFromLineSquared( vec3_t p, vec3_t lp1, vec3_t lp2 );
+	float DistanceFromVectorSquared( vec3_t p, vec3_t lp1, vec3_t lp2 );
 
 // done.
 
-	vec_t DistanceBetweenLineSegmentsSquared ( const vec3_t sP0, const vec3_t sP1,
+	vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 	    const vec3_t tP0, const vec3_t tP1, float *s, float *t );
-	vec_t DistanceBetweenLineSegments ( const vec3_t sP0, const vec3_t sP1,
-	                                    const vec3_t tP0, const vec3_t tP1, float *s, float *t );
+	vec_t DistanceBetweenLineSegments( const vec3_t sP0, const vec3_t sP1,
+	                                   const vec3_t tP0, const vec3_t tP1, float *s, float *t );
 
 //=============================================
 
 // RB: XreaL matrix math functions required by the renderer
 
-	void     MatrixIdentity ( matrix_t m );
-	void     MatrixClear ( matrix_t m );
-	void     MatrixCopy ( const matrix_t in, matrix_t out );
-	qboolean MatrixCompare ( const matrix_t a, const matrix_t b );
-	void     MatrixTransposeIntoXMM ( const matrix_t m );
-	void     MatrixTranspose ( const matrix_t in, matrix_t out );
+	void     MatrixIdentity( matrix_t m );
+	void     MatrixClear( matrix_t m );
+	void     MatrixCopy( const matrix_t in, matrix_t out );
+	qboolean MatrixCompare( const matrix_t a, const matrix_t b );
+	void     MatrixTransposeIntoXMM( const matrix_t m );
+	void     MatrixTranspose( const matrix_t in, matrix_t out );
 
 // invert any m4x4 using Kramer's rule.. return qtrue if matrix is singular, else return qfalse
-	qboolean MatrixInverse ( matrix_t m );
-	void     MatrixSetupXRotation ( matrix_t m, vec_t degrees );
-	void     MatrixSetupYRotation ( matrix_t m, vec_t degrees );
-	void     MatrixSetupZRotation ( matrix_t m, vec_t degrees );
-	void     MatrixSetupTranslation ( matrix_t m, vec_t x, vec_t y, vec_t z );
-	void     MatrixSetupScale ( matrix_t m, vec_t x, vec_t y, vec_t z );
-	void     MatrixSetupShear ( matrix_t m, vec_t x, vec_t y );
-	void     MatrixMultiply ( const matrix_t a, const matrix_t b, matrix_t out );
-	void     MatrixMultiply2 ( matrix_t m, const matrix_t m2 );
-	void     MatrixMultiplyRotation ( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll );
-	void     MatrixMultiplyZRotation ( matrix_t m, vec_t degrees );
-	void     MatrixMultiplyTranslation ( matrix_t m, vec_t x, vec_t y, vec_t z );
-	void     MatrixMultiplyScale ( matrix_t m, vec_t x, vec_t y, vec_t z );
-	void     MatrixMultiplyShear ( matrix_t m, vec_t x, vec_t y );
-	void     MatrixToAngles ( const matrix_t m, vec3_t angles );
-	void     MatrixFromAngles ( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll );
-	void     MatrixFromVectorsFLU ( matrix_t m, const vec3_t forward, const vec3_t left, const vec3_t up );
-	void     MatrixFromVectorsFRU ( matrix_t m, const vec3_t forward, const vec3_t right, const vec3_t up );
-	void     MatrixFromQuat ( matrix_t m, const quat_t q );
-	void     MatrixFromPlanes ( matrix_t m, const vec4_t left, const vec4_t right, const vec4_t bottom, const vec4_t top,
-	                            const vec4_t near, const vec4_t far );
-	void     MatrixToVectorsFLU ( const matrix_t m, vec3_t forward, vec3_t left, vec3_t up );
-	void     MatrixToVectorsFRU ( const matrix_t m, vec3_t forward, vec3_t right, vec3_t up );
-	void     MatrixSetupTransformFromVectorsFLU ( matrix_t m, const vec3_t forward, const vec3_t left, const vec3_t up, const vec3_t origin );
-	void     MatrixSetupTransformFromVectorsFRU ( matrix_t m, const vec3_t forward, const vec3_t right, const vec3_t up, const vec3_t origin );
-	void     MatrixSetupTransformFromRotation ( matrix_t m, const matrix_t rot, const vec3_t origin );
-	void     MatrixSetupTransformFromQuat ( matrix_t m, const quat_t quat, const vec3_t origin );
-	void     MatrixAffineInverse ( const matrix_t in, matrix_t out );
-	void     MatrixTransformNormal ( const matrix_t m, const vec3_t in, vec3_t out );
-	void     MatrixTransformNormal2 ( const matrix_t m, vec3_t inout );
-	void     MatrixTransformPoint ( const matrix_t m, const vec3_t in, vec3_t out );
-	void     MatrixTransformPoint2 ( const matrix_t m, vec3_t inout );
-	void     MatrixTransform4 ( const matrix_t m, const vec4_t in, vec4_t out );
-	void     MatrixTransformPlane ( const matrix_t m, const vec4_t in, vec4_t out );
-	void     MatrixTransformPlane2 ( const matrix_t m, vec3_t inout );
-	void     MatrixPerspectiveProjection ( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
-	void     MatrixPerspectiveProjectionLH ( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
-	void     MatrixPerspectiveProjectionRH ( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
-	void     MatrixPerspectiveProjectionFovYAspectLH ( matrix_t m, vec_t fov, vec_t aspect, vec_t near, vec_t far );
-	void     MatrixPerspectiveProjectionFovXYLH ( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far );
-	void     MatrixPerspectiveProjectionFovXYRH ( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far );
-	void     MatrixPerspectiveProjectionFovXYInfiniteRH ( matrix_t m, vec_t fovX, vec_t fovY, vec_t near );
-	void     MatrixOrthogonalProjection ( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	qboolean MatrixInverse( matrix_t m );
+	void     MatrixSetupXRotation( matrix_t m, vec_t degrees );
+	void     MatrixSetupYRotation( matrix_t m, vec_t degrees );
+	void     MatrixSetupZRotation( matrix_t m, vec_t degrees );
+	void     MatrixSetupTranslation( matrix_t m, vec_t x, vec_t y, vec_t z );
+	void     MatrixSetupScale( matrix_t m, vec_t x, vec_t y, vec_t z );
+	void     MatrixSetupShear( matrix_t m, vec_t x, vec_t y );
+	void     MatrixMultiply( const matrix_t a, const matrix_t b, matrix_t out );
+	void     MatrixMultiply2( matrix_t m, const matrix_t m2 );
+	void     MatrixMultiplyRotation( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll );
+	void     MatrixMultiplyZRotation( matrix_t m, vec_t degrees );
+	void     MatrixMultiplyTranslation( matrix_t m, vec_t x, vec_t y, vec_t z );
+	void     MatrixMultiplyScale( matrix_t m, vec_t x, vec_t y, vec_t z );
+	void     MatrixMultiplyShear( matrix_t m, vec_t x, vec_t y );
+	void     MatrixToAngles( const matrix_t m, vec3_t angles );
+	void     MatrixFromAngles( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll );
+	void     MatrixFromVectorsFLU( matrix_t m, const vec3_t forward, const vec3_t left, const vec3_t up );
+	void     MatrixFromVectorsFRU( matrix_t m, const vec3_t forward, const vec3_t right, const vec3_t up );
+	void     MatrixFromQuat( matrix_t m, const quat_t q );
+	void     MatrixFromPlanes( matrix_t m, const vec4_t left, const vec4_t right, const vec4_t bottom, const vec4_t top,
+	                           const vec4_t near, const vec4_t far );
+	void     MatrixToVectorsFLU( const matrix_t m, vec3_t forward, vec3_t left, vec3_t up );
+	void     MatrixToVectorsFRU( const matrix_t m, vec3_t forward, vec3_t right, vec3_t up );
+	void     MatrixSetupTransformFromVectorsFLU( matrix_t m, const vec3_t forward, const vec3_t left, const vec3_t up, const vec3_t origin );
+	void     MatrixSetupTransformFromVectorsFRU( matrix_t m, const vec3_t forward, const vec3_t right, const vec3_t up, const vec3_t origin );
+	void     MatrixSetupTransformFromRotation( matrix_t m, const matrix_t rot, const vec3_t origin );
+	void     MatrixSetupTransformFromQuat( matrix_t m, const quat_t quat, const vec3_t origin );
+	void     MatrixAffineInverse( const matrix_t in, matrix_t out );
+	void     MatrixTransformNormal( const matrix_t m, const vec3_t in, vec3_t out );
+	void     MatrixTransformNormal2( const matrix_t m, vec3_t inout );
+	void     MatrixTransformPoint( const matrix_t m, const vec3_t in, vec3_t out );
+	void     MatrixTransformPoint2( const matrix_t m, vec3_t inout );
+	void     MatrixTransform4( const matrix_t m, const vec4_t in, vec4_t out );
+	void     MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out );
+	void     MatrixTransformPlane2( const matrix_t m, vec3_t inout );
+	void     MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionFovYAspectLH( matrix_t m, vec_t fov, vec_t aspect, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionFovXYLH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionFovXYRH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionFovXYInfiniteRH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near );
+	void     MatrixOrthogonalProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 
-	void     MatrixOrthogonalProjectionLH ( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
-	void     MatrixOrthogonalProjectionRH ( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	void     MatrixOrthogonalProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	void     MatrixOrthogonalProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 
-	void     MatrixPlaneReflection ( matrix_t m, const vec4_t plane );
+	void     MatrixPlaneReflection( matrix_t m, const vec4_t plane );
 
-	void     MatrixLookAtLH ( matrix_t output, const vec3_t pos, const vec3_t dir, const vec3_t up );
-	void     MatrixLookAtRH ( matrix_t m, const vec3_t eye, const vec3_t dir, const vec3_t up );
-	void     MatrixScaleTranslateToUnitCube ( matrix_t m, const vec3_t mins, const vec3_t maxs );
-	void     MatrixCrop ( matrix_t m, const vec3_t mins, const vec3_t maxs );
+	void     MatrixLookAtLH( matrix_t output, const vec3_t pos, const vec3_t dir, const vec3_t up );
+	void     MatrixLookAtRH( matrix_t m, const vec3_t eye, const vec3_t dir, const vec3_t up );
+	void     MatrixScaleTranslateToUnitCube( matrix_t m, const vec3_t mins, const vec3_t maxs );
+	void     MatrixCrop( matrix_t m, const vec3_t mins, const vec3_t maxs );
 
-	static ID_INLINE void AnglesToMatrix ( const vec3_t angles, matrix_t m )
+	static ID_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m )
 	{
-		MatrixFromAngles ( m, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
+		MatrixFromAngles( m, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
 
 //=============================================
@@ -1153,7 +1153,7 @@ extern "C" {
 
 #define QuatCompare(a,b)   (( a )[ 0 ] == ( b )[ 0 ] && ( a )[ 1 ] == ( b )[ 1 ] && ( a )[ 2 ] == ( b )[ 2 ] && ( a )[ 3 ] == ( b )[ 3 ] )
 
-	static ID_INLINE void QuatClear ( quat_t q )
+	static ID_INLINE void QuatClear( quat_t q )
 	{
 		q[ 0 ] = 0;
 		q[ 1 ] = 0;
@@ -1172,33 +1172,33 @@ extern "C" {
 	}
 	*/
 
-	static ID_INLINE void QuatCalcW ( quat_t q )
+	static ID_INLINE void QuatCalcW( quat_t q )
 	{
 #if 1
 		vec_t term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
 
-		if ( term < 0.0 )
+		if( term < 0.0 )
 		{
 			q[ 3 ] = 0.0;
 		}
 		else
 		{
-			q[ 3 ] = -sqrt ( term );
+			q[ 3 ] = -sqrt( term );
 		}
 
 #else
-		q[ 3 ] = sqrt ( fabs ( 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] ) ) );
+		q[ 3 ] = sqrt( fabs( 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] ) ) );
 #endif
 	}
 
-	static ID_INLINE void QuatInverse ( quat_t q )
+	static ID_INLINE void QuatInverse( quat_t q )
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 	}
 
-	static ID_INLINE void QuatAntipodal ( quat_t q )
+	static ID_INLINE void QuatAntipodal( quat_t q )
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
@@ -1206,46 +1206,46 @@ extern "C" {
 		q[ 3 ] = -q[ 3 ];
 	}
 
-	static ID_INLINE vec_t QuatLength ( const quat_t q )
+	static ID_INLINE vec_t QuatLength( const quat_t q )
 	{
-		return ( vec_t ) sqrt ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ] );
+		return ( vec_t ) sqrt( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ] );
 	}
 
-	vec_t QuatNormalize ( quat_t q );
+	vec_t QuatNormalize( quat_t q );
 
-	void  QuatFromAngles ( quat_t q, vec_t pitch, vec_t yaw, vec_t roll );
+	void  QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll );
 
-	static ID_INLINE void AnglesToQuat ( const vec3_t angles, quat_t q )
+	static ID_INLINE void AnglesToQuat( const vec3_t angles, quat_t q )
 	{
-		QuatFromAngles ( q, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
+		QuatFromAngles( q, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
 
-	void QuatFromMatrix ( quat_t q, const matrix_t m );
-	void QuatToVectorsFLU ( const quat_t quat, vec3_t forward, vec3_t left, vec3_t up );
-	void QuatToVectorsFRU ( const quat_t quat, vec3_t forward, vec3_t right, vec3_t up );
+	void QuatFromMatrix( quat_t q, const matrix_t m );
+	void QuatToVectorsFLU( const quat_t quat, vec3_t forward, vec3_t left, vec3_t up );
+	void QuatToVectorsFRU( const quat_t quat, vec3_t forward, vec3_t right, vec3_t up );
 
-	void QuatToAxis ( const quat_t q, vec3_t axis[ 3 ] );
-	void QuatToAngles ( const quat_t q, vec3_t angles );
+	void QuatToAxis( const quat_t q, vec3_t axis[ 3 ] );
+	void QuatToAngles( const quat_t q, vec3_t angles );
 
 // Quaternion multiplication, analogous to the matrix multiplication routines.
 
 // qa = rotate by qa, then qb
-	void QuatMultiply0 ( quat_t qa, const quat_t qb );
+	void QuatMultiply0( quat_t qa, const quat_t qb );
 
 // qc = rotate by qa, then qb
-	void QuatMultiply1 ( const quat_t qa, const quat_t qb, quat_t qc );
+	void QuatMultiply1( const quat_t qa, const quat_t qb, quat_t qc );
 
 // qc = rotate by qa, then by inverse of qb
-	void QuatMultiply2 ( const quat_t qa, const quat_t qb, quat_t qc );
+	void QuatMultiply2( const quat_t qa, const quat_t qb, quat_t qc );
 
 // qc = rotate by inverse of qa, then by qb
-	void QuatMultiply3 ( const quat_t qa, const quat_t qb, quat_t qc );
+	void QuatMultiply3( const quat_t qa, const quat_t qb, quat_t qc );
 
 // qc = rotate by inverse of qa, then by inverse of qb
-	void QuatMultiply4 ( const quat_t qa, const quat_t qb, quat_t qc );
+	void QuatMultiply4( const quat_t qa, const quat_t qb, quat_t qc );
 
-	void QuatSlerp ( const quat_t from, const quat_t to, float frac, quat_t out );
-	void QuatTransformVector ( const quat_t q, const vec3_t in, vec3_t out );
+	void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out );
+	void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out );
 
 //=============================================
 
@@ -1259,11 +1259,11 @@ extern "C" {
 
 // you don't need to init the growlist if you don't mind it growing and moving
 // the list as it expands
-	void Com_InitGrowList ( growList_t *list, int maxElements );
-	void Com_DestroyGrowList ( growList_t *list );
-	int  Com_AddToGrowList ( growList_t *list, void *data );
-	void *Com_GrowListElement ( const growList_t *list, int index );
-	int  Com_IndexForGrowListElement ( const growList_t *list, const void *element );
+	void Com_InitGrowList( growList_t *list, int maxElements );
+	void Com_DestroyGrowList( growList_t *list );
+	int  Com_AddToGrowList( growList_t *list, void *data );
+	void *Com_GrowListElement( const growList_t *list, int index );
+	int  Com_IndexForGrowListElement( const growList_t *list, const void *element );
 
 //=============================================================================
 
@@ -1276,8 +1276,8 @@ extern "C" {
 
 	enum
 	{
-	  MEMSTREAM_FLAGS_EOF = BIT ( 0 ),
-	  MEMSTREAM_FLAGS_ERR = BIT ( 1 ),
+	  MEMSTREAM_FLAGS_EOF = BIT( 0 ),
+	  MEMSTREAM_FLAGS_ERR = BIT( 1 ),
 	};
 
 // helper struct for reading binary file formats
@@ -1291,13 +1291,13 @@ extern "C" {
 
 	memStream_t;
 
-	memStream_t *AllocMemStream ( byte *buffer, int bufSize );
-	void        FreeMemStream ( memStream_t *s );
-	int         MemStreamRead ( memStream_t *s, void *buffer, int len );
-	int         MemStreamGetC ( memStream_t *s );
-	int         MemStreamGetLong ( memStream_t *s );
-	int         MemStreamGetShort ( memStream_t *s );
-	float       MemStreamGetFloat ( memStream_t *s );
+	memStream_t *AllocMemStream( byte *buffer, int bufSize );
+	void        FreeMemStream( memStream_t *s );
+	int         MemStreamRead( memStream_t *s, void *buffer, int len );
+	int         MemStreamGetC( memStream_t *s );
+	int         MemStreamGetLong( memStream_t *s );
+	int         MemStreamGetShort( memStream_t *s );
+	float       MemStreamGetFloat( memStream_t *s );
 
 //=============================================
 
@@ -1310,48 +1310,48 @@ extern "C" {
 #endif
 
 #ifdef _MSC_VER
-	float rint ( float v );
+	float rint( float v );
 
 #endif
 
 //=============================================
 
-	float      Com_Clamp ( float min, float max, float value );
+	float      Com_Clamp( float min, float max, float value );
 
-	char       *COM_SkipPath ( char *pathname );
-	char       *Com_SkipTokens ( char *s, int numTokens, char *sep );
-	char       *Com_SkipCharset ( char *s, char *sep );
-	void       COM_FixPath ( char *pathname );
-	const char *COM_GetExtension ( const char *name );
-	void       COM_StripExtension ( const char *in, char *out );
-	void       COM_StripExtension2 ( const char *in, char *out, int destsize );
-	void       COM_StripExtension3 ( const char *src, char *dest, int destsize );
-	void       COM_StripFilename ( char *in, char *out );
-	void       COM_DefaultExtension ( char *path, int maxSize, const char *extension );
+	char       *COM_SkipPath( char *pathname );
+	char       *Com_SkipTokens( char *s, int numTokens, char *sep );
+	char       *Com_SkipCharset( char *s, char *sep );
+	void       COM_FixPath( char *pathname );
+	const char *COM_GetExtension( const char *name );
+	void       COM_StripExtension( const char *in, char *out );
+	void       COM_StripExtension2( const char *in, char *out, int destsize );
+	void       COM_StripExtension3( const char *src, char *dest, int destsize );
+	void       COM_StripFilename( char *in, char *out );
+	void       COM_DefaultExtension( char *path, int maxSize, const char *extension );
 
-	void       COM_BeginParseSession ( const char *name );
-	void       COM_RestoreParseSession ( char **data_p );
-	void       COM_SetCurrentParseLine ( int line );
-	int        COM_GetCurrentParseLine ( void );
-	char       *COM_Parse ( char **data_p );
+	void       COM_BeginParseSession( const char *name );
+	void       COM_RestoreParseSession( char **data_p );
+	void       COM_SetCurrentParseLine( int line );
+	int        COM_GetCurrentParseLine( void );
+	char       *COM_Parse( char **data_p );
 
 // RB: added COM_Parse2 for having a Doom 3 style tokenizer.
-	char       *COM_Parse2 ( char **data_p );
-	char       *COM_ParseExt2 ( char **data_p, qboolean allowLineBreak );
+	char       *COM_Parse2( char **data_p );
+	char       *COM_ParseExt2( char **data_p, qboolean allowLineBreak );
 
-	char       *COM_ParseExt ( char **data_p, qboolean allowLineBreak );
-	int        COM_Compress ( char *data_p );
-	void       COM_ParseError ( char *format, ... ) _attribute ( ( format ( printf, 1, 2 ) ) );
-	void       COM_ParseWarning ( char *format, ... ) _attribute ( ( format ( printf, 1, 2 ) ) );
+	char       *COM_ParseExt( char **data_p, qboolean allowLineBreak );
+	int        COM_Compress( char *data_p );
+	void       COM_ParseError( char *format, ... ) _attribute( ( format( printf, 1, 2 ) ) );
+	void       COM_ParseWarning( char *format, ... ) _attribute( ( format( printf, 1, 2 ) ) );
 
-	int        Com_ParseInfos ( char *buf, int max, char infos[][ MAX_INFO_STRING ] );
+	int        Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] );
 
-	qboolean   COM_BitCheck ( const int array[], int bitNum );
+	qboolean   COM_BitCheck( const int array[], int bitNum );
 
-	void       COM_BitSet ( int array[], int bitNum );
-	void       COM_BitClear ( int array[], int bitNum );
+	void       COM_BitSet( int array[], int bitNum );
+	void       COM_BitClear( int array[], int bitNum );
 
-	int        Com_HashKey ( char *string, int maxlen );
+	int        Com_HashKey( char *string, int maxlen );
 
 #define MAX_TOKENLENGTH 1024
 
@@ -1377,21 +1377,21 @@ extern "C" {
 
 // data is an in/out parm, returns a parsed out token
 
-	void      COM_MatchToken ( char **buf_p, char *match );
+	void      COM_MatchToken( char **buf_p, char *match );
 
-	void      Com_Parse1DMatrix ( char **buf_p, int x, float *m, qboolean checkBrackets );
-	void      Com_Parse2DMatrix ( char **buf_p, int y, int x, float *m );
-	void      Com_Parse3DMatrix ( char **buf_p, int z, int y, int x, float *m );
+	void      Com_Parse1DMatrix( char **buf_p, int x, float *m, qboolean checkBrackets );
+	void      Com_Parse2DMatrix( char **buf_p, int y, int x, float *m );
+	void      Com_Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
 
-	void      SkipBracedSection ( char **program );
-	void      SkipBracedSection_Depth ( char **program, int depth ); // start at given depth if already
-	void      SkipRestOfLine ( char **data );
+	void      SkipBracedSection( char **program );
+	void      SkipBracedSection_Depth( char **program, int depth );  // start at given depth if already
+	void      SkipRestOfLine( char **data );
 
-	void      Parse1DMatrix ( char **buf_p, int x, float *m );
-	void      Parse2DMatrix ( char **buf_p, int y, int x, float *m );
-	void      Parse3DMatrix ( char **buf_p, int z, int y, int x, float *m );
+	void      Parse1DMatrix( char **buf_p, int x, float *m );
+	void      Parse2DMatrix( char **buf_p, int y, int x, float *m );
+	void      Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
 
-	int QDECL Com_sprintf ( char *dest, int size, const char *fmt, ... ) __attribute__ ( ( format ( printf, 3, 4 ) ) );
+	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) __attribute__( ( format( printf, 3, 4 ) ) );
 
 // mode parm for FS_FOpenFile
 	typedef enum
@@ -1411,32 +1411,32 @@ extern "C" {
 	  FS_SEEK_SET
 	} fsOrigin_t;
 
-	int        Com_HexStrToInt ( const char *str );
+	int        Com_HexStrToInt( const char *str );
 
-	const char *Com_QuoteStr ( const char *str );
-	const char *Com_UnquoteStr ( const char *str );
+	const char *Com_QuoteStr( const char *str );
+	const char *Com_UnquoteStr( const char *str );
 
 //=============================================
 
-	int        Q_isprint ( int c );
-	int        Q_islower ( int c );
-	int        Q_isupper ( int c );
-	int        Q_isalpha ( int c );
-	int        Q_isnumeric ( int c );
-	int        Q_isalphanumeric ( int c );
-	int        Q_isforfilename ( int c );
+	int        Q_isprint( int c );
+	int        Q_islower( int c );
+	int        Q_isupper( int c );
+	int        Q_isalpha( int c );
+	int        Q_isnumeric( int c );
+	int        Q_isalphanumeric( int c );
+	int        Q_isforfilename( int c );
 
-	qboolean   Q_strtol ( const char *s, long *out );
-	qboolean   Q_strtoi ( const char *s, int *out );
+	qboolean   Q_strtol( const char *s, long *out );
+	qboolean   Q_strtoi( const char *s, int *out );
 
 // portable case insensitive compare
-	int        Q_stricmp ( const char *s1, const char *s2 );
-	int        Q_strncmp ( const char *s1, const char *s2, int n );
-	int        Q_stricmpn ( const char *s1, const char *s2, int n );
-	char       *Q_strlwr ( char *s1 );
-	char       *Q_strupr ( char *s1 );
-	char       *Q_strrchr ( const char *string, int c );
-	const char *Q_stristr ( const char *s, const char *find );
+	int        Q_stricmp( const char *s1, const char *s2 );
+	int        Q_strncmp( const char *s1, const char *s2, int n );
+	int        Q_stricmpn( const char *s1, const char *s2, int n );
+	char       *Q_strlwr( char *s1 );
+	char       *Q_strupr( char *s1 );
+	char       *Q_strrchr( const char *string, int c );
+	const char *Q_stristr( const char *s, const char *find );
 
 #ifdef _WIN32
 #define Q_putenv _putenv
@@ -1447,34 +1447,34 @@ extern "C" {
 // buffer size safe library replacements
 // NOTE : had problem with loading QVM modules
 #ifndef _DEBUG
-	void Q_strncpyz ( char *dest, const char *src, int destsize );
+	void Q_strncpyz( char *dest, const char *src, int destsize );
 
 #else
 #define         Q_strncpyz(string1,string2,length) Q_strncpyzDebug( string1, string2, length, __FILE__, __LINE__ )
-	void     Q_strncpyzDebug ( char *dest, const char *src, size_t destsize, const char *file, int line ) __attribute__ ( ( nonnull ) );
+	void     Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line ) __attribute__( ( nonnull ) );
 
 #endif
-	void     Q_strcat ( char *dest, int destsize, const char *src );
-	int      Q_strnicmp ( const char *string1, const char *string2, int n );
-	void     Q_strncpyz2 ( char *dst, const char *src, int dstSize );
-	int      Q_strcasecmp ( const char *s1, const char *s2 );
-	int      Q_strncasecmp ( const char *s1, const char *s2, int n );
-	qboolean Q_strreplace ( char *dest, int destsize, const char *find, const char *replace );
+	void     Q_strcat( char *dest, int destsize, const char *src );
+	int      Q_strnicmp( const char *string1, const char *string2, int n );
+	void     Q_strncpyz2( char *dst, const char *src, int dstSize );
+	int      Q_strcasecmp( const char *s1, const char *s2 );
+	int      Q_strncasecmp( const char *s1, const char *s2, int n );
+	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
 // strlen that discounts Quake color sequences
-	int      Q_PrintStrlen ( const char *string );
+	int      Q_PrintStrlen( const char *string );
 
 // removes color sequences from string
-	char     *Q_CleanStr ( char *string );
+	char     *Q_CleanStr( char *string );
 
 // parse "\n" into '\n'
-	void     Q_ParseNewlines ( char *dest, const char *src, int destsize );
+	void     Q_ParseNewlines( char *dest, const char *src, int destsize );
 
 // Count the number of char tocount encountered in string
-	int      Q_CountChar ( const char *string, char tocount );
+	int      Q_CountChar( const char *string, char tocount );
 
 // removes whitespaces and other bad directory characters
-	char     *Q_CleanDirName ( char *dirname );
+	char     *Q_CleanDirName( char *dirname );
 
 //=============================================
 
@@ -1505,27 +1505,27 @@ extern "C" {
 
 	void            Swap_Init(void);
 	*/
-	float           *tv ( float x, float y, float z );
+	float           *tv( float x, float y, float z );
 
-	char     *QDECL va ( const char *format, ... ) __attribute__ ( ( format ( printf, 1, 2 ) ) );
+	char     *QDECL va( const char *format, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
 
 //=============================================
 
 //
 // key / value info strings
 //
-	char       *Info_ValueForKey ( const char *s, const char *key );
-	void       Info_RemoveKey ( char *s, const char *key );
-	void       Info_RemoveKey_big ( char *s, const char *key );
-	void       Info_SetValueForKey ( char *s, const char *key, const char *value );
-	void       Info_SetValueForKey_Big ( char *s, const char *key, const char *value );
-	qboolean   Info_Validate ( const char *s );
-	void       Info_NextPair ( const char **s, char *key, char *value );
+	char       *Info_ValueForKey( const char *s, const char *key );
+	void       Info_RemoveKey( char *s, const char *key );
+	void       Info_RemoveKey_big( char *s, const char *key );
+	void       Info_SetValueForKey( char *s, const char *key, const char *value );
+	void       Info_SetValueForKey_Big( char *s, const char *key, const char *value );
+	qboolean   Info_Validate( const char *s );
+	void       Info_NextPair( const char **s, char *key, char *value );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-	void QDECL Com_Error ( int level, const char *error, ... ) _attribute ( ( format ( printf, 2, 3 ) ) );
-	void QDECL Com_Printf ( const char *msg, ... ) _attribute ( ( format ( printf, 1, 2 ) ) );
-	void QDECL Com_DPrintf ( const char *msg, ... ) _attribute ( ( format ( printf, 1, 2 ) ) );
+	void QDECL Com_Error( int level, const char *error, ... ) _attribute( ( format( printf, 2, 3 ) ) );
+	void QDECL Com_Printf( const char *msg, ... ) _attribute( ( format( printf, 1, 2 ) ) );
+	void QDECL Com_DPrintf( const char *msg, ... ) _attribute( ( format( printf, 1, 2 ) ) );
 
 	/*
 	==========================================================
@@ -1939,7 +1939,7 @@ extern "C" {
 		int ammoclip[ MAX_WEAPONS ]; // ammo in clip
 		int holdable[ 16 ];
 		int holding; // the current item in holdable[] that is selected (held)
-		int weapons[ MAX_WEAPONS / ( sizeof ( int ) * 8 ) ]; // 64 bits for weapons held
+		int weapons[ MAX_WEAPONS / ( sizeof( int ) * 8 ) ];  // 64 bits for weapons held
 
 		// Ridah, allow for individual bounding boxes
 		vec3_t mins, maxs;
@@ -2465,11 +2465,11 @@ extern "C" {
 		unsigned int lo;
 	} clientList_t;
 
-	qboolean Com_ClientListContains ( const clientList_t *list, int clientNum );
-	void     Com_ClientListAdd ( clientList_t *list, int clientNum );
-	void     Com_ClientListRemove ( clientList_t *list, int clientNum );
-	char     *Com_ClientListString ( const clientList_t *list );
-	void     Com_ClientListParse ( clientList_t *list, const char *s );
+	qboolean Com_ClientListContains( const clientList_t *list, int clientNum );
+	void     Com_ClientListAdd( clientList_t *list, int clientNum );
+	void     Com_ClientListRemove( clientList_t *list, int clientNum );
+	char     *Com_ClientListString( const clientList_t *list );
+	void     Com_ClientListParse( clientList_t *list, const char *s );
 
 #define SQR( a ) ( ( a ) * ( a ) )
 

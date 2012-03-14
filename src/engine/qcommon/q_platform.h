@@ -408,9 +408,9 @@ Maryland 20850 USA.
 #endif
 
 //endianness
-short ShortSwap ( short l );
-int   LongSwap ( int l );
-float FloatSwap ( float f );
+short ShortSwap( short l );
+int   LongSwap( int l );
+float FloatSwap( float f );
 
 #if defined( Q3_BIG_ENDIAN ) && defined( Q3_LITTLE_ENDIAN )
 #error "Endianness defined as both big and little"

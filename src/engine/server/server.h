@@ -436,140 +436,140 @@ extern cvar_t *sv_voip;
 //
 // sv_main.c
 //
-void       SV_FinalCommand ( char *cmd, qboolean disconnect ); // ydnar: added disconnect flag so map changes can use this function as well
-void QDECL SV_SendServerCommand ( client_t *cl, const char *fmt, ... ) __attribute__ ( ( format ( printf, 2, 3 ) ) );
+void       SV_FinalCommand( char *cmd, qboolean disconnect );  // ydnar: added disconnect flag so map changes can use this function as well
+void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
 
-void       SV_AddOperatorCommands ( void );
-void       SV_RemoveOperatorCommands ( void );
+void       SV_AddOperatorCommands( void );
+void       SV_RemoveOperatorCommands( void );
 
-void       SV_MasterHeartbeat ( const char *hbname );
-void       SV_MasterShutdown ( void );
-void       SV_MasterGameStat ( const char *data );
+void       SV_MasterHeartbeat( const char *hbname );
+void       SV_MasterShutdown( void );
+void       SV_MasterGameStat( const char *data );
 
 void       SV_MasterGameCompleteStatus(); // NERVE - SMF
 
 //bani - bugtraq 12534
-qboolean   SV_VerifyChallenge ( char *challenge );
+qboolean   SV_VerifyChallenge( char *challenge );
 
 //
 // sv_init.c
 //
-void SV_SetConfigstringNoUpdate ( int index, const char *val );
-void SV_UpdateConfigStrings ( void );
-void SV_SetConfigstring ( int index, const char *val );
-void SV_UpdateConfigStrings ( void );
-void SV_GetConfigstring ( int index, char *buffer, int bufferSize );
-void SV_SetConfigstringRestrictions ( int index, const clientList_t *clientList );
+void SV_SetConfigstringNoUpdate( int index, const char *val );
+void SV_UpdateConfigStrings( void );
+void SV_SetConfigstring( int index, const char *val );
+void SV_UpdateConfigStrings( void );
+void SV_GetConfigstring( int index, char *buffer, int bufferSize );
+void SV_SetConfigstringRestrictions( int index, const clientList_t *clientList );
 
-void SV_SetUserinfo ( int index, const char *val );
-void SV_GetUserinfo ( int index, char *buffer, int bufferSize );
+void SV_SetUserinfo( int index, const char *val );
+void SV_GetUserinfo( int index, char *buffer, int bufferSize );
 
-void SV_CreateBaseline ( void );
+void SV_CreateBaseline( void );
 
-void SV_ChangeMaxClients ( void );
-void SV_SpawnServer ( char *server, qboolean killBots );
+void SV_ChangeMaxClients( void );
+void SV_SpawnServer( char *server, qboolean killBots );
 
 //
 // sv_client.c
 //
-void SV_GetChallenge ( netadr_t from );
+void SV_GetChallenge( netadr_t from );
 
-void SV_DirectConnect ( netadr_t from );
+void SV_DirectConnect( netadr_t from );
 
-void SV_AuthorizeIpPacket ( netadr_t from );
+void SV_AuthorizeIpPacket( netadr_t from );
 
-void SV_ExecuteClientMessage ( client_t *cl, msg_t *msg );
-void SV_UserinfoChanged ( client_t *cl );
+void SV_ExecuteClientMessage( client_t *cl, msg_t *msg );
+void SV_UserinfoChanged( client_t *cl );
 
-void SV_ClientEnterWorld ( client_t *client, usercmd_t *cmd );
-void SV_FreeClient ( client_t *client );
-void SV_DropClient ( client_t *drop, const char *reason );
+void SV_ClientEnterWorld( client_t *client, usercmd_t *cmd );
+void SV_FreeClient( client_t *client );
+void SV_DropClient( client_t *drop, const char *reason );
 
-void SV_ExecuteClientCommand ( client_t *cl, const char *s, qboolean clientOK, qboolean premaprestart );
-void SV_ClientThink ( client_t *cl, usercmd_t *cmd );
+void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qboolean premaprestart );
+void SV_ClientThink( client_t *cl, usercmd_t *cmd );
 
-void SV_WriteDownloadToClient ( client_t *cl, msg_t *msg );
+void SV_WriteDownloadToClient( client_t *cl, msg_t *msg );
 
 #ifdef USE_VOIP
-void SV_WriteVoipToClient ( client_t *cl, msg_t *msg );
+void SV_WriteVoipToClient( client_t *cl, msg_t *msg );
 
 #endif
 
 //
 // sv_ccmds.c
 //
-void     SV_Heartbeat_f ( void );
+void     SV_Heartbeat_f( void );
 
-qboolean SV_TempBanIsBanned ( netadr_t address );
-void     SV_TempBanNetAddress ( netadr_t address, int length );
+qboolean SV_TempBanIsBanned( netadr_t address );
+void     SV_TempBanNetAddress( netadr_t address, int length );
 
 //
 // sv_snapshot.c
 //
-void SV_AddServerCommand ( client_t *client, const char *cmd );
-void SV_UpdateServerCommandsToClient ( client_t *client, msg_t *msg );
-void SV_WriteFrameToClient ( client_t *client, msg_t *msg );
-void SV_SendMessageToClient ( msg_t *msg, client_t *client );
-void SV_SendClientMessages ( void );
-void SV_SendClientSnapshot ( client_t *client );
+void SV_AddServerCommand( client_t *client, const char *cmd );
+void SV_UpdateServerCommandsToClient( client_t *client, msg_t *msg );
+void SV_WriteFrameToClient( client_t *client, msg_t *msg );
+void SV_SendMessageToClient( msg_t *msg, client_t *client );
+void SV_SendClientMessages( void );
+void SV_SendClientSnapshot( client_t *client );
 
 //bani
-void SV_SendClientIdle ( client_t *client );
+void SV_SendClientIdle( client_t *client );
 
 //
 // sv_game.c
 //
-int SV_NumForGentity ( sharedEntity_t *ent );
+int SV_NumForGentity( sharedEntity_t *ent );
 
 //#define SV_GentityNum( num ) ((sharedEntity_t *)((byte *)sv.gentities + sv.gentitySize*(num)))
 //#define SV_GameClientNum( num ) ((playerState_t *)((byte *)sv.gameClients + sv.gameClientSize*(num)))
 
-sharedEntity_t *SV_GentityNum ( int num );
-playerState_t  *SV_GameClientNum ( int num );
+sharedEntity_t *SV_GentityNum( int num );
+playerState_t  *SV_GameClientNum( int num );
 
-svEntity_t     *SV_SvEntityForGentity ( sharedEntity_t *gEnt );
-sharedEntity_t *SV_GEntityForSvEntity ( svEntity_t *svEnt );
-void           SV_InitGameProgs ( void );
-void           SV_ShutdownGameProgs ( void );
-void           SV_RestartGameProgs ( void );
-qboolean       SV_inPVS ( const vec3_t p1, const vec3_t p2 );
-qboolean       SV_GetTag ( int clientNum, int tagFileNumber, char *tagname, orientation_t *ort );
-int            SV_LoadTag ( const char *mod_name );
-qboolean       SV_GameIsSinglePlayer ( void );
-qboolean       SV_GameIsCoop ( void );
-void           SV_GameBinaryMessageReceived ( int cno, const char *buf, int buflen, int commandTime );
+svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt );
+sharedEntity_t *SV_GEntityForSvEntity( svEntity_t *svEnt );
+void           SV_InitGameProgs( void );
+void           SV_ShutdownGameProgs( void );
+void           SV_RestartGameProgs( void );
+qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
+qboolean       SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation_t *ort );
+int            SV_LoadTag( const char *mod_name );
+qboolean       SV_GameIsSinglePlayer( void );
+qboolean       SV_GameIsCoop( void );
+void           SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime );
 
 //
 // sv_bot.c
 //
-void SV_BotFrame ( int time );
-int  SV_BotAllocateClient ( int clientNum );
-void SV_BotFreeClient ( int clientNum );
+void SV_BotFrame( int time );
+int  SV_BotAllocateClient( int clientNum );
+void SV_BotFreeClient( int clientNum );
 
-void SV_BotInitCvars ( void );
-int  SV_BotLibSetup ( void );
-int  SV_BotLibShutdown ( void );
-int  SV_BotGetSnapshotEntity ( int client, int ent );
-int  SV_BotGetConsoleMessage ( int client, char *buf, int size );
+void SV_BotInitCvars( void );
+int  SV_BotLibSetup( void );
+int  SV_BotLibShutdown( void );
+int  SV_BotGetSnapshotEntity( int client, int ent );
+int  SV_BotGetConsoleMessage( int client, char *buf, int size );
 
-int  BotImport_DebugPolygonCreate ( int color, int numPoints, vec3_t *points );
-void BotImport_DebugPolygonDelete ( int id );
+int  BotImport_DebugPolygonCreate( int color, int numPoints, vec3_t *points );
+void BotImport_DebugPolygonDelete( int id );
 
 //============================================================
 //
 // high level object sorting to reduce interaction tests
 //
 
-void SV_ClearWorld ( void );
+void SV_ClearWorld( void );
 
 // called after the world model has been loaded, before linking any entities
 
-void SV_UnlinkEntity ( sharedEntity_t *ent );
+void SV_UnlinkEntity( sharedEntity_t *ent );
 
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself
 
-void SV_LinkEntity ( sharedEntity_t *ent );
+void SV_LinkEntity( sharedEntity_t *ent );
 
 // Needs to be called any time an entity changes origin, mins, maxs,
 // or solid.  Automatically unlinks if needed.
@@ -577,11 +577,11 @@ void SV_LinkEntity ( sharedEntity_t *ent );
 // sets ent->leafnums[] for pvs determination even if the entity
 // is not solid
 
-clipHandle_t SV_ClipHandleForEntity ( const sharedEntity_t *ent );
+clipHandle_t SV_ClipHandleForEntity( const sharedEntity_t *ent );
 
-void         SV_SectorList_f ( void );
+void         SV_SectorList_f( void );
 
-int          SV_AreaEntities ( const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount );
+int          SV_AreaEntities( const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount );
 
 // fills in a table of entity numbers with entities that have bounding boxes
 // that intersect the given area.  It is possible for a non-axial bmodel
@@ -590,12 +590,12 @@ int          SV_AreaEntities ( const vec3_t mins, const vec3_t maxs, int *entity
 // returns the number of pointers filled in
 // The world entity is never returned in this list.
 
-int SV_PointContents ( const vec3_t p, int passEntityNum );
+int SV_PointContents( const vec3_t p, int passEntityNum );
 
 // returns the CONTENTS_* value from the world and all entities at the given point.
 
-void SV_Trace ( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum,
-                int contentmask, traceType_t type );
+void SV_Trace( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum,
+               int contentmask, traceType_t type );
 
 // mins and maxs are relative
 
@@ -607,17 +607,17 @@ void SV_Trace ( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, 
 
 // passEntityNum is explicitly excluded from clipping checks (normally ENTITYNUM_NONE)
 
-void SV_ClipToEntity ( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, traceType_t type );
+void SV_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, traceType_t type );
 
 // clip to a specific entity
 
 //
 // sv_net_chan.c
 //
-void     SV_Netchan_Transmit ( client_t *client, msg_t *msg );
-void     SV_Netchan_TransmitNextFragment ( client_t *client );
-qboolean SV_Netchan_Process ( client_t *client, msg_t *msg );
-void     SV_Netchan_FreeQueue ( client_t *client );
+void     SV_Netchan_Transmit( client_t *client, msg_t *msg );
+void     SV_Netchan_TransmitNextFragment( client_t *client );
+qboolean SV_Netchan_Process( client_t *client, msg_t *msg );
+void     SV_Netchan_FreeQueue( client_t *client );
 
 //bani - cl->downloadnotify
 #define DLNOTIFY_REDIRECT 0x00000001 // "Redirecting client ..."

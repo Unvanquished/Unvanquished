@@ -52,16 +52,16 @@ Maryland 20850 USA.
 #include "l_script.h"
 #include "l_precomp.h"
 
-void            botlib_stub ( void );
-int             PC_LoadSourceHandle ( const char * );
-int             PC_FreeSourceHandle ( int );
-int             PC_ReadTokenHandle ( int, pc_token_t * );
-int             PC_SourceFileAndLine ( int, char *, int * );
-void            PC_UnreadLastTokenHandle ( int );
+void            botlib_stub( void );
+int             PC_LoadSourceHandle( const char * );
+int             PC_FreeSourceHandle( int );
+int             PC_ReadTokenHandle( int, pc_token_t * );
+int             PC_SourceFileAndLine( int, char *, int * );
+void            PC_UnreadLastTokenHandle( int );
 
 botlib_import_t botimport;
 
-botlib_export_t *GetBotLibAPI ( int version, botlib_import_t *imports )
+botlib_export_t *GetBotLibAPI( int version, botlib_import_t *imports )
 {
 	static botlib_export_t botlib_export;
 
@@ -225,52 +225,52 @@ botlib_export_t *GetBotLibAPI ( int version, botlib_import_t *imports )
 	return &botlib_export;
 }
 
-void botlib_stub ( void )
+void botlib_stub( void )
 {
-	botimport.Print ( PRT_WARNING, "WARNING: botlib stub!\n" );
+	botimport.Print( PRT_WARNING, "WARNING: botlib stub!\n" );
 }
 
-int PC_LoadSourceHandle ( const char *filename )
+int PC_LoadSourceHandle( const char *filename )
 {
 	// rain - FIXME - LoadSourceFile should take a const filename
-	return ( int ) LoadSourceFile ( filename );
+	return ( int ) LoadSourceFile( filename );
 }
 
-int PC_FreeSourceHandle ( int handle )
+int PC_FreeSourceHandle( int handle )
 {
-	FreeSource ( ( source_t * ) handle );
+	FreeSource( ( source_t * ) handle );
 	return 0;
 }
 
-int PC_ReadTokenHandle ( int handle, pc_token_t *token )
+int PC_ReadTokenHandle( int handle, pc_token_t *token )
 {
 	token_t t;
 	int     ret;
 
-	ret = PC_ReadToken ( ( source_t * ) handle, &t );
+	ret = PC_ReadToken( ( source_t * ) handle, &t );
 
 	token->type = t.type;
 	token->subtype = t.subtype;
 	token->intvalue = t.intvalue;
 	token->floatvalue = t.floatvalue;
-	Q_strncpyz ( token->string, t.string, MAX_TOKENLENGTH );
+	Q_strncpyz( token->string, t.string, MAX_TOKENLENGTH );
 	token->line = t.line;
 	token->linescrossed = t.linescrossed;
 
 	// gamecode doesn't want the quotes on the string
-	if ( token->type == TT_STRING )
+	if( token->type == TT_STRING )
 	{
-		StripDoubleQuotes ( token->string );
+		StripDoubleQuotes( token->string );
 	}
 
 	return ret;
 }
 
-int PC_SourceFileAndLine ( int handle, char *filename, int *line )
+int PC_SourceFileAndLine( int handle, char *filename, int *line )
 {
 	source_t *source = ( source_t * ) handle;
 
-	Q_strncpyz ( filename, source->filename, 128 );
+	Q_strncpyz( filename, source->filename, 128 );
 	// ikkyo - i'm pretty sure token.line is the line of the last token
 	//         parsed, not the line of the token currently being parsed...
 	*line = source->token.line;
@@ -278,7 +278,7 @@ int PC_SourceFileAndLine ( int handle, char *filename, int *line )
 	return 0;
 }
 
-void PC_UnreadLastTokenHandle ( int handle )
+void PC_UnreadLastTokenHandle( int handle )
 {
-	PC_UnreadLastToken ( ( source_t * ) handle );
+	PC_UnreadLastToken( ( source_t * ) handle );
 }

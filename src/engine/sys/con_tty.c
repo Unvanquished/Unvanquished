@@ -89,11 +89,11 @@ Flush stdin, I suspect some terminals are sending a LOT of shit
 FIXME relevant?
 ==================
 */
-static void CON_FlushIn ( void )
+static void CON_FlushIn( void )
 {
 	char key;
 
-	while ( read ( STDIN_FILENO, &key, 1 ) != -1 ) {; }
+	while( read( STDIN_FILENO, &key, 1 ) != -1 ) {; }
 }
 
 /*
@@ -107,17 +107,17 @@ send "\b \b"
 (FIXME there may be a way to find out if '\b' alone would work though)
 ==================
 */
-static void CON_Back ( void )
+static void CON_Back( void )
 {
 	char key;
 //	size_t size;
 
 	key = '\b';
-	write ( STDOUT_FILENO, &key, 1 );
+	write( STDOUT_FILENO, &key, 1 );
 	key = ' ';
-	write ( STDOUT_FILENO, &key, 1 );
+	write( STDOUT_FILENO, &key, 1 );
 	key = '\b';
-	write ( STDOUT_FILENO, &key, 1 );
+	write( STDOUT_FILENO, &key, 1 );
 }
 
 /*
@@ -128,21 +128,21 @@ Clear the display of the line currently edited
 bring cursor back to beginning of line
 ==================
 */
-static void CON_Hide ( void )
+static void CON_Hide( void )
 {
-	if ( ttycon_on )
+	if( ttycon_on )
 	{
 		int i;
 
-		if ( ttycon_hide )
+		if( ttycon_hide )
 		{
 			ttycon_hide++;
 			return;
 		}
 
-		if ( TTY_con.cursor > 0 )
+		if( TTY_con.cursor > 0 )
 		{
-			for ( i = 0; i < TTY_con.cursor; i++ )
+			for( i = 0; i < TTY_con.cursor; i++ )
 			{
 				CON_Back();
 			}
@@ -161,25 +161,25 @@ Show the current line
 FIXME need to position the cursor if needed?
 ==================
 */
-static void CON_Show ( void )
+static void CON_Show( void )
 {
-	if ( ttycon_on )
+	if( ttycon_on )
 	{
 		int i;
 
-		assert ( ttycon_hide > 0 );
+		assert( ttycon_hide > 0 );
 		ttycon_hide--;
 
-		if ( ttycon_hide == 0 )
+		if( ttycon_hide == 0 )
 		{
 //			size_t size;
-			write ( STDOUT_FILENO, "]", 1 );
+			write( STDOUT_FILENO, "]", 1 );
 
-			if ( TTY_con.cursor )
+			if( TTY_con.cursor )
 			{
-				for ( i = 0; i < TTY_con.cursor; i++ )
+				for( i = 0; i < TTY_con.cursor; i++ )
 				{
-					write ( STDOUT_FILENO, TTY_con.buffer + i, 1 );
+					write( STDOUT_FILENO, TTY_con.buffer + i, 1 );
 				}
 			}
 		}
@@ -193,16 +193,16 @@ CON_Shutdown
 Never exit without calling this, or your terminal will be left in a pretty bad state
 ==================
 */
-void CON_Shutdown ( void )
+void CON_Shutdown( void )
 {
-	if ( ttycon_on )
+	if( ttycon_on )
 	{
 		CON_Back(); // Delete "]"
-		tcsetattr ( STDIN_FILENO, TCSADRAIN, &TTY_tc );
+		tcsetattr( STDIN_FILENO, TCSADRAIN, &TTY_tc );
 	}
 
 	// Restore blocking to stdin reads
-	fcntl ( STDIN_FILENO, F_SETFL, fcntl ( STDIN_FILENO, F_GETFL, 0 ) & ~O_NONBLOCK );
+	fcntl( STDIN_FILENO, F_SETFL, fcntl( STDIN_FILENO, F_GETFL, 0 ) & ~O_NONBLOCK );
 }
 
 /*
@@ -213,9 +213,9 @@ set attributes if user did CTRL+Z and then does fg again.
 ==================
 */
 
-void CON_SigCont ( int signum )
+void CON_SigCont( int signum )
 {
-	void CON_Init ( void );
+	void CON_Init( void );
 
 	CON_Init();
 }
@@ -227,31 +227,31 @@ CON_Init
 Initialize the console input (tty mode if possible)
 ==================
 */
-void CON_Init ( void )
+void CON_Init( void )
 {
 	struct termios tc;
 
 	// If the process is backgrounded (running non interactively)
 	// then SIGTTIN or SIGTOU is emitted, if not caught, turns into a SIGSTP
-	signal ( SIGTTIN, SIG_IGN );
-	signal ( SIGTTOU, SIG_IGN );
+	signal( SIGTTIN, SIG_IGN );
+	signal( SIGTTOU, SIG_IGN );
 
 	// If SIGCONT is received, reinitialize console
-	signal ( SIGCONT, CON_SigCont );
+	signal( SIGCONT, CON_SigCont );
 
 	// Make stdin reads non-blocking
-	fcntl ( STDIN_FILENO, F_SETFL, fcntl ( STDIN_FILENO, F_GETFL, 0 ) | O_NONBLOCK );
+	fcntl( STDIN_FILENO, F_SETFL, fcntl( STDIN_FILENO, F_GETFL, 0 ) | O_NONBLOCK );
 
-	if ( !stdinIsATTY )
+	if( !stdinIsATTY )
 	{
-		Com_Printf ( "tty console mode disabled\n" );
+		Com_Printf( "tty console mode disabled\n" );
 		ttycon_on = qfalse;
 		stdin_active = qtrue;
 		return;
 	}
 
-	Field_Clear ( &TTY_con );
-	tcgetattr ( STDIN_FILENO, &TTY_tc );
+	Field_Clear( &TTY_con );
+	tcgetattr( STDIN_FILENO, &TTY_tc );
 	TTY_erase = TTY_tc.c_cc[ VERASE ];
 	TTY_eof = TTY_tc.c_cc[ VEOF ];
 	tc = TTY_tc;
@@ -265,16 +265,16 @@ void CON_Init ( void )
 	DSUSP are received, generate the corresponding sig
 	nal
 	*/
-	tc.c_lflag &= ~ ( ECHO | ICANON );
+	tc.c_lflag &= ~( ECHO | ICANON );
 
 	/*
 	ISTRIP strip off bit 8
 	INPCK enable input parity checking
 	*/
-	tc.c_iflag &= ~ ( ISTRIP | INPCK );
+	tc.c_iflag &= ~( ISTRIP | INPCK );
 	tc.c_cc[ VMIN ] = 1;
 	tc.c_cc[ VTIME ] = 0;
-	tcsetattr ( STDIN_FILENO, TCSADRAIN, &tc );
+	tcsetattr( STDIN_FILENO, TCSADRAIN, &tc );
 	ttycon_on = qtrue;
 }
 
@@ -283,7 +283,7 @@ void CON_Init ( void )
 CON_Input
 ==================
 */
-char *CON_Input ( void )
+char *CON_Input( void )
 {
 	// we use this when sending back commands
 	static char text[ MAX_EDIT_LINE ];
@@ -292,18 +292,18 @@ char *CON_Input ( void )
 	const char  *history;
 //	size_t size;
 
-	if ( ttycon_on )
+	if( ttycon_on )
 	{
-		avail = read ( STDIN_FILENO, &key, 1 );
+		avail = read( STDIN_FILENO, &key, 1 );
 
-		if ( avail != -1 )
+		if( avail != -1 )
 		{
 			// we have something
 			// backspace?
 			// NOTE TTimo testing a lot of values .. seems it's the only way to get it to work everywhere
-			if ( ( key == TTY_erase ) || ( key == 127 ) || ( key == 8 ) )
+			if( ( key == TTY_erase ) || ( key == 127 ) || ( key == 8 ) )
 			{
-				if ( TTY_con.cursor > 0 )
+				if( TTY_con.cursor > 0 )
 				{
 					TTY_con.cursor--;
 					TTY_con.buffer[ TTY_con.cursor ] = '\0';
@@ -314,47 +314,47 @@ char *CON_Input ( void )
 			}
 
 			// check if this is a control char
-			if ( ( key ) && ( key ) < ' ' )
+			if( ( key ) && ( key ) < ' ' )
 			{
-				if ( key == '\n' )
+				if( key == '\n' )
 				{
 					// push it in history
-					Hist_Add ( TTY_con.buffer );
-					Q_strncpyz ( text, TTY_con.buffer, sizeof ( text ) );
-					Field_Clear ( &TTY_con );
+					Hist_Add( TTY_con.buffer );
+					Q_strncpyz( text, TTY_con.buffer, sizeof( text ) );
+					Field_Clear( &TTY_con );
 					key = '\n';
-					write ( 1, &key, 1 );
-					write ( 1, "]", 1 );
+					write( 1, &key, 1 );
+					write( 1, "]", 1 );
 					return text;
 				}
 
-				if ( key == '\t' )
+				if( key == '\t' )
 				{
 					CON_Hide();
 					field_t *edit = &TTY_con;
-					Cmd_TokenizeString ( edit->buffer );
-					Field_AutoComplete ( edit, "]" );
+					Cmd_TokenizeString( edit->buffer );
+					Field_AutoComplete( edit, "]" );
 					CON_Show();
 					return NULL;
 				}
 
-				avail = read ( STDIN_FILENO, &key, 1 );
+				avail = read( STDIN_FILENO, &key, 1 );
 
-				if ( avail != -1 )
+				if( avail != -1 )
 				{
 					// VT 100 keys
-					if ( key == '[' || key == 'O' )
+					if( key == '[' || key == 'O' )
 					{
-						avail = read ( STDIN_FILENO, &key, 1 );
+						avail = read( STDIN_FILENO, &key, 1 );
 
-						if ( avail != -1 )
+						if( avail != -1 )
 						{
-							switch ( key )
+							switch( key )
 							{
 								case 'A':
 									CON_Hide();
-									Q_strncpyz ( TTY_con.buffer, Hist_Prev(), sizeof ( TTY_con.buffer ) );
-									TTY_con.cursor = strlen ( TTY_con.buffer );
+									Q_strncpyz( TTY_con.buffer, Hist_Prev(), sizeof( TTY_con.buffer ) );
+									TTY_con.cursor = strlen( TTY_con.buffer );
 									CON_Show();
 									CON_FlushIn();
 									return NULL;
@@ -363,15 +363,15 @@ char *CON_Input ( void )
 									history = Hist_Next();
 									CON_Hide();
 
-									if ( history )
+									if( history )
 									{
-										Q_strncpyz ( TTY_con.buffer, history, sizeof ( TTY_con.buffer ) );
-										TTY_con.cursor = strlen ( TTY_con.buffer );
+										Q_strncpyz( TTY_con.buffer, history, sizeof( TTY_con.buffer ) );
+										TTY_con.cursor = strlen( TTY_con.buffer );
 									}
-									else if ( TTY_con.buffer[ 0 ] )
+									else if( TTY_con.buffer[ 0 ] )
 									{
-										Hist_Add ( TTY_con.buffer );
-										Field_Clear ( &TTY_con );
+										Hist_Add( TTY_con.buffer );
+										Field_Clear( &TTY_con );
 									}
 
 									CON_Show();
@@ -389,12 +389,12 @@ char *CON_Input ( void )
 					}
 				}
 
-				Com_DPrintf ( "droping ISCTL sequence: %d, TTY_erase: %d\n", key, TTY_erase );
+				Com_DPrintf( "droping ISCTL sequence: %d, TTY_erase: %d\n", key, TTY_erase );
 				CON_FlushIn();
 				return NULL;
 			}
 
-			if ( TTY_con.cursor >= sizeof ( text ) - 1 )
+			if( TTY_con.cursor >= sizeof( text ) - 1 )
 			{
 				return NULL;
 			}
@@ -403,37 +403,37 @@ char *CON_Input ( void )
 			TTY_con.buffer[ TTY_con.cursor ] = key;
 			TTY_con.cursor++;
 			// print the current line (this is differential)
-			write ( STDOUT_FILENO, &key, 1 );
+			write( STDOUT_FILENO, &key, 1 );
 		}
 
 		return NULL;
 	}
-	else if ( stdin_active )
+	else if( stdin_active )
 	{
 		int            len;
 		fd_set         fdset;
 		struct timeval timeout;
 
-		FD_ZERO ( &fdset );
-		FD_SET ( STDIN_FILENO, &fdset ); // stdin
+		FD_ZERO( &fdset );
+		FD_SET( STDIN_FILENO, &fdset );  // stdin
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 0;
 
-		if ( select ( STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout ) == -1 || !FD_ISSET ( STDIN_FILENO, &fdset ) )
+		if( select( STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout ) == -1 || !FD_ISSET( STDIN_FILENO, &fdset ) )
 		{
 			return NULL;
 		}
 
-		len = read ( STDIN_FILENO, text, sizeof ( text ) );
+		len = read( STDIN_FILENO, text, sizeof( text ) );
 
-		if ( len == 0 )
+		if( len == 0 )
 		{
 			// eof!
 			stdin_active = qfalse;
 			return NULL;
 		}
 
-		if ( len < 1 )
+		if( len < 1 )
 		{
 			return NULL;
 		}
@@ -451,17 +451,17 @@ char *CON_Input ( void )
 CON_Print
 ==================
 */
-void CON_Print ( const char *msg )
+void CON_Print( const char *msg )
 {
 	CON_Hide();
 
-	if ( com_ansiColor && com_ansiColor->integer )
+	if( com_ansiColor && com_ansiColor->integer )
 	{
-		Sys_AnsiColorPrint ( msg );
+		Sys_AnsiColorPrint( msg );
 	}
 	else
 	{
-		fputs ( msg, stderr );
+		fputs( msg, stderr );
 	}
 
 	CON_Show();

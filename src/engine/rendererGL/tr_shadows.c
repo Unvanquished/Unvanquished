@@ -41,7 +41,7 @@ shadowState_t shadowState;
 RB_ProjectionShadowDeform
 =================
 */
-void RB_ProjectionShadowDeform ( void )
+void RB_ProjectionShadowDeform( void )
 {
 	float  *xyz;
 	int    i;
@@ -60,14 +60,14 @@ void RB_ProjectionShadowDeform ( void )
 
 	groundDist = backEnd.orientation.origin[ 2 ] - backEnd.currentEntity->e.shadowPlane;
 
-	VectorCopy ( backEnd.currentEntity->lightDir, lightDir );
-	d = DotProduct ( lightDir, ground );
+	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
+	d = DotProduct( lightDir, ground );
 
 	// don't let the shadows get too long or go negative
-	if ( d < 0.5 )
+	if( d < 0.5 )
 	{
-		VectorMA ( lightDir, ( 0.5 - d ), ground, lightDir );
-		d = DotProduct ( lightDir, ground );
+		VectorMA( lightDir, ( 0.5 - d ), ground, lightDir );
+		d = DotProduct( lightDir, ground );
 	}
 
 	d = 1.0 / d;
@@ -76,9 +76,9 @@ void RB_ProjectionShadowDeform ( void )
 	light[ 1 ] = lightDir[ 1 ] * d;
 	light[ 2 ] = lightDir[ 2 ] * d;
 
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 )
+	for( i = 0; i < tess.numVertexes; i++, xyz += 4 )
 	{
-		h = DotProduct ( xyz, ground ) + groundDist;
+		h = DotProduct( xyz, ground ) + groundDist;
 
 		xyz[ 0 ] -= light[ 0 ] * h;
 		xyz[ 1 ] -= light[ 1 ] * h;

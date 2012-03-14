@@ -29,7 +29,7 @@ G_Bounce
 
 ================
 */
-static void G_Bounce ( gentity_t *ent, trace_t *trace )
+static void G_Bounce( gentity_t *ent, trace_t *trace )
 {
 	vec3_t   velocity;
 	float    dot;
@@ -39,14 +39,14 @@ static void G_Bounce ( gentity_t *ent, trace_t *trace )
 
 	// reflect the velocity on the trace plane
 	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
-	BG_EvaluateTrajectoryDelta ( &ent->s.pos, hitTime, velocity );
-	dot = DotProduct ( velocity, trace->plane.normal );
-	VectorMA ( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
+	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
+	dot = DotProduct( velocity, trace->plane.normal );
+	VectorMA( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
 
-	if ( ent->s.eType == ET_BUILDABLE )
+	if( ent->s.eType == ET_BUILDABLE )
 	{
-		minNormal = BG_FindMinNormalForBuildable ( ent->s.modelindex );
-		invert = BG_FindInvertNormalForBuildable ( ent->s.modelindex );
+		minNormal = BG_FindMinNormalForBuildable( ent->s.modelindex );
+		invert = BG_FindInvertNormalForBuildable( ent->s.modelindex );
 	}
 	else
 	{
@@ -54,30 +54,30 @@ static void G_Bounce ( gentity_t *ent, trace_t *trace )
 	}
 
 	// cut the velocity to keep from bouncing forever
-	if ( ( trace->plane.normal[ 2 ] >= minNormal ||
-	       ( invert && trace->plane.normal[ 2 ] <= -minNormal ) ) &&
-	     trace->entityNum == ENTITYNUM_WORLD )
+	if( ( trace->plane.normal[ 2 ] >= minNormal ||
+	      ( invert && trace->plane.normal[ 2 ] <= -minNormal ) ) &&
+	    trace->entityNum == ENTITYNUM_WORLD )
 	{
-		VectorScale ( ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta );
+		VectorScale( ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta );
 	}
 	else
 	{
-		VectorScale ( ent->s.pos.trDelta, 0.3f, ent->s.pos.trDelta );
+		VectorScale( ent->s.pos.trDelta, 0.3f, ent->s.pos.trDelta );
 	}
 
-	if ( VectorLength ( ent->s.pos.trDelta ) < 10 )
+	if( VectorLength( ent->s.pos.trDelta ) < 10 )
 	{
-		VectorMA ( trace->endpos, 0.5, trace->plane.normal, trace->endpos ); // make sure it is off ground
-		SnapVector ( trace->endpos );
-		G_SetOrigin ( ent, trace->endpos );
+		VectorMA( trace->endpos, 0.5, trace->plane.normal, trace->endpos );  // make sure it is off ground
+		SnapVector( trace->endpos );
+		G_SetOrigin( ent, trace->endpos );
 		ent->s.groundEntityNum = trace->entityNum;
-		VectorCopy ( trace->plane.normal, ent->s.origin2 );
-		VectorSet ( ent->s.pos.trDelta, 0.0f, 0.0f, 0.0f );
+		VectorCopy( trace->plane.normal, ent->s.origin2 );
+		VectorSet( ent->s.pos.trDelta, 0.0f, 0.0f, 0.0f );
 		return;
 	}
 
-	VectorCopy ( ent->r.currentOrigin, ent->s.pos.trBase );
-	VectorAdd ( ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin );
+	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
+	VectorAdd( ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin );
 	ent->s.pos.trTime = level.time;
 }
 
@@ -89,7 +89,7 @@ G_Physics
 
 ================
 */
-void G_Physics ( gentity_t *ent, int msec )
+void G_Physics( gentity_t *ent, int msec )
 {
 	vec3_t  origin;
 	trace_t tr;
@@ -97,17 +97,17 @@ void G_Physics ( gentity_t *ent, int msec )
 	int     mask;
 
 	// if groundentity has been set to -1, it may have been pushed off an edge
-	if ( ent->s.groundEntityNum == -1 )
+	if( ent->s.groundEntityNum == -1 )
 	{
-		if ( ent->s.eType == ET_BUILDABLE )
+		if( ent->s.eType == ET_BUILDABLE )
 		{
-			if ( ent->s.pos.trType != BG_FindTrajectoryForBuildable ( ent->s.modelindex ) )
+			if( ent->s.pos.trType != BG_FindTrajectoryForBuildable( ent->s.modelindex ) )
 			{
-				ent->s.pos.trType = BG_FindTrajectoryForBuildable ( ent->s.modelindex );
+				ent->s.pos.trType = BG_FindTrajectoryForBuildable( ent->s.modelindex );
 				ent->s.pos.trTime = level.time;
 			}
 		}
-		else if ( ent->s.pos.trType != TR_GRAVITY )
+		else if( ent->s.pos.trType != TR_GRAVITY )
 		{
 			ent->s.pos.trType = TR_GRAVITY;
 			ent->s.pos.trTime = level.time;
@@ -115,7 +115,7 @@ void G_Physics ( gentity_t *ent, int msec )
 	}
 
 	// trace a line from the previous position to the current position
-	if ( ent->clipmask )
+	if( ent->clipmask )
 	{
 		mask = ent->clipmask;
 	}
@@ -124,21 +124,21 @@ void G_Physics ( gentity_t *ent, int msec )
 		mask = MASK_PLAYERSOLID & ~CONTENTS_BODY; //MASK_SOLID;
 	}
 
-	if ( ent->s.pos.trType == TR_STATIONARY )
+	if( ent->s.pos.trType == TR_STATIONARY )
 	{
 		// check think function
-		G_RunThink ( ent );
+		G_RunThink( ent );
 
 		//check floor infrequently
-		if ( ent->nextPhysicsTime < level.time )
+		if( ent->nextPhysicsTime < level.time )
 		{
-			VectorCopy ( ent->r.currentOrigin, origin );
+			VectorCopy( ent->r.currentOrigin, origin );
 
-			VectorMA ( origin, -2.0f, ent->s.origin2, origin );
+			VectorMA( origin, -2.0f, ent->s.origin2, origin );
 
-			trap_Trace ( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, mask );
+			trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, mask );
 
-			if ( tr.fraction == 1.0f )
+			if( tr.fraction == 1.0f )
 			{
 				ent->s.groundEntityNum = -1;
 			}
@@ -150,35 +150,35 @@ void G_Physics ( gentity_t *ent, int msec )
 	}
 
 	// get current position
-	BG_EvaluateTrajectory ( &ent->s.pos, level.time, origin );
+	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 
-	trap_Trace ( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, mask );
+	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, mask );
 
-	VectorCopy ( tr.endpos, ent->r.currentOrigin );
+	VectorCopy( tr.endpos, ent->r.currentOrigin );
 
-	if ( tr.startsolid )
+	if( tr.startsolid )
 	{
 		tr.fraction = 0;
 	}
 
-	trap_LinkEntity ( ent ); // FIXME: avoid this for stationary?
+	trap_LinkEntity( ent );  // FIXME: avoid this for stationary?
 
 	// check think function
-	G_RunThink ( ent );
+	G_RunThink( ent );
 
-	if ( tr.fraction == 1.0f )
+	if( tr.fraction == 1.0f )
 	{
 		return;
 	}
 
 	// if it is in a nodrop volume, remove it
-	contents = trap_PointContents ( ent->r.currentOrigin, -1 );
+	contents = trap_PointContents( ent->r.currentOrigin, -1 );
 
-	if ( contents & CONTENTS_NODROP )
+	if( contents & CONTENTS_NODROP )
 	{
-		G_FreeEntity ( ent );
+		G_FreeEntity( ent );
 		return;
 	}
 
-	G_Bounce ( ent, &tr );
+	G_Bounce( ent, &tr );
 }

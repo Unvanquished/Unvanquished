@@ -26,12 +26,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
-int                                trap_FS_FOpenFile ( const char *qpath, fileHandle_t *f, fsMode_t mode );
-void                               trap_FS_Read ( void *buffer, int len, fileHandle_t f );
-void                               trap_FS_Write ( const void *buffer, int len, fileHandle_t f );
-void                               trap_FS_FCloseFile ( fileHandle_t f );
-void                               trap_FS_Seek ( fileHandle_t f, long offset, fsOrigin_t origin ); // fsOrigin_t
-int                                trap_FS_GetFileList (  const char *path, const char *extension, char *listbuf, int bufsize );
+int                                trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
+void                               trap_FS_Read( void *buffer, int len, fileHandle_t f );
+void                               trap_FS_Write( const void *buffer, int len, fileHandle_t f );
+void                               trap_FS_FCloseFile( fileHandle_t f );
+void                               trap_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin );  // fsOrigin_t
+int                                trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 
 static const buildableAttributes_t bg_buildableList[] =
 {
@@ -563,7 +563,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	}
 };
 
-int                                bg_numBuildables = sizeof ( bg_buildableList ) / sizeof ( bg_buildableList[ 0 ] );
+int                                bg_numBuildables = sizeof( bg_buildableList ) / sizeof( bg_buildableList[ 0 ] );
 
 static const buildableAttributes_t nullBuildable = { 0 };
 
@@ -572,13 +572,13 @@ static const buildableAttributes_t nullBuildable = { 0 };
 BG_BuildableByName
 ==============
 */
-const buildableAttributes_t *BG_BuildableByName ( const char *name )
+const buildableAttributes_t *BG_BuildableByName( const char *name )
 {
 	int i;
 
-	for ( i = 0; i < bg_numBuildables; i++ )
+	for( i = 0; i < bg_numBuildables; i++ )
 	{
-		if ( !Q_stricmp ( bg_buildableList[ i ].name, name ) )
+		if( !Q_stricmp( bg_buildableList[ i ].name, name ) )
 		{
 			return &bg_buildableList[ i ];
 		}
@@ -592,13 +592,13 @@ const buildableAttributes_t *BG_BuildableByName ( const char *name )
 BG_BuildableByEntityName
 ==============
 */
-const buildableAttributes_t *BG_BuildableByEntityName ( const char *name )
+const buildableAttributes_t *BG_BuildableByEntityName( const char *name )
 {
 	int i;
 
-	for ( i = 0; i < bg_numBuildables; i++ )
+	for( i = 0; i < bg_numBuildables; i++ )
 	{
-		if ( !Q_stricmp ( bg_buildableList[ i ].entityName, name ) )
+		if( !Q_stricmp( bg_buildableList[ i ].entityName, name ) )
 		{
 			return &bg_buildableList[ i ];
 		}
@@ -612,7 +612,7 @@ const buildableAttributes_t *BG_BuildableByEntityName ( const char *name )
 BG_Buildable
 ==============
 */
-const buildableAttributes_t *BG_Buildable ( buildable_t buildable )
+const buildableAttributes_t *BG_Buildable( buildable_t buildable )
 {
 	return ( buildable > BA_NONE && buildable < BA_NUM_BUILDABLES ) ?
 	       &bg_buildableList[ buildable - 1 ] : &nullBuildable;
@@ -623,12 +623,12 @@ const buildableAttributes_t *BG_Buildable ( buildable_t buildable )
 BG_BuildableAllowedInStage
 ==============
 */
-qboolean BG_BuildableAllowedInStage ( buildable_t buildable,
-                                      stage_t stage )
+qboolean BG_BuildableAllowedInStage( buildable_t buildable,
+                                     stage_t stage )
 {
-	int stages = BG_Buildable ( buildable )->stages;
+	int stages = BG_Buildable( buildable )->stages;
 
-	if ( stages & ( 1 << stage ) )
+	if( stages & ( 1 << stage ) )
 	{
 		return qtrue;
 	}
@@ -645,7 +645,7 @@ static buildableConfig_t bg_buildableConfigList[ BA_NUM_BUILDABLES ];
 BG_BuildableConfig
 ==============
 */
-buildableConfig_t *BG_BuildableConfig ( buildable_t buildable )
+buildableConfig_t *BG_BuildableConfig( buildable_t buildable )
 {
 	return &bg_buildableConfigList[ buildable ];
 }
@@ -655,19 +655,19 @@ buildableConfig_t *BG_BuildableConfig ( buildable_t buildable )
 BG_BuildableBoundingBox
 ==============
 */
-void BG_BuildableBoundingBox ( buildable_t buildable,
-                               vec3_t mins, vec3_t maxs )
+void BG_BuildableBoundingBox( buildable_t buildable,
+                              vec3_t mins, vec3_t maxs )
 {
-	buildableConfig_t *buildableConfig = BG_BuildableConfig ( buildable );
+	buildableConfig_t *buildableConfig = BG_BuildableConfig( buildable );
 
-	if ( mins != NULL )
+	if( mins != NULL )
 	{
-		VectorCopy ( buildableConfig->mins, mins );
+		VectorCopy( buildableConfig->mins, mins );
 	}
 
-	if ( maxs != NULL )
+	if( maxs != NULL )
 	{
-		VectorCopy ( buildableConfig->maxs, maxs );
+		VectorCopy( buildableConfig->maxs, maxs );
 	}
 }
 
@@ -678,7 +678,7 @@ BG_ParseBuildableFile
 Parses a configuration file describing a buildable
 ======================
 */
-static qboolean BG_ParseBuildableFile ( const char *filename, buildableConfig_t *bc )
+static qboolean BG_ParseBuildableFile( const char *filename, buildableConfig_t *bc )
 {
 	char         *text_p;
 	int          i;
@@ -698,90 +698,90 @@ static qboolean BG_ParseBuildableFile ( const char *filename, buildableConfig_t 
 	};
 
 	// load the file
-	len = trap_FS_FOpenFile ( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, FS_READ );
 
-	if ( len < 0 )
+	if( len < 0 )
 	{
-		Com_Printf ( S_COLOR_RED "ERROR: Buildable file %s doesn't exist\n", filename );
+		Com_Printf( S_COLOR_RED "ERROR: Buildable file %s doesn't exist\n", filename );
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof ( text ) - 1 )
+	if( len == 0 || len >= sizeof( text ) - 1 )
 	{
-		trap_FS_FCloseFile ( f );
-		Com_Printf ( S_COLOR_RED "ERROR: Buildable file %s is %s\n", filename,
-		             len == 0 ? "empty" : "too long" );
+		trap_FS_FCloseFile( f );
+		Com_Printf( S_COLOR_RED "ERROR: Buildable file %s is %s\n", filename,
+		            len == 0 ? "empty" : "too long" );
 		return qfalse;
 	}
 
-	trap_FS_Read ( text, len, f );
+	trap_FS_Read( text, len, f );
 	text[ len ] = 0;
-	trap_FS_FCloseFile ( f );
+	trap_FS_FCloseFile( f );
 
 	// parse the text
 	text_p = text;
 
 	// read optional parameters
-	while ( 1 )
+	while( 1 )
 	{
-		token = COM_Parse ( &text_p );
+		token = COM_Parse( &text_p );
 
-		if ( !token )
+		if( !token )
 		{
 			break;
 		}
 
-		if ( !Q_stricmp ( token, "" ) )
+		if( !Q_stricmp( token, "" ) )
 		{
 			break;
 		}
 
-		if ( !Q_stricmp ( token, "model" ) )
+		if( !Q_stricmp( token, "model" ) )
 		{
 			int index = 0;
 
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			index = atoi ( token );
+			index = atoi( token );
 
-			if ( index < 0 )
+			if( index < 0 )
 			{
 				index = 0;
 			}
-			else if ( index > 3 )
+			else if( index > 3 )
 			{
 				index = 3;
 			}
 
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			Q_strncpyz ( bc->models[ index ], token, sizeof ( bc->models[ 0 ] ) );
+			Q_strncpyz( bc->models[ index ], token, sizeof( bc->models[ 0 ] ) );
 
 			defined |= MODEL;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "modelScale" ) )
+		else if( !Q_stricmp( token, "modelScale" ) )
 		{
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			scale = atof ( token );
+			scale = atof( token );
 
-			if ( scale < 0.0f )
+			if( scale < 0.0f )
 			{
 				scale = 0.0f;
 			}
@@ -791,52 +791,52 @@ static qboolean BG_ParseBuildableFile ( const char *filename, buildableConfig_t 
 			defined |= MODELSCALE;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "mins" ) )
+		else if( !Q_stricmp( token, "mins" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for( i = 0; i <= 2; i++ )
 			{
-				token = COM_Parse ( &text_p );
+				token = COM_Parse( &text_p );
 
-				if ( !token )
+				if( !token )
 				{
 					break;
 				}
 
-				bc->mins[ i ] = atof ( token );
+				bc->mins[ i ] = atof( token );
 			}
 
 			defined |= MINS;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "maxs" ) )
+		else if( !Q_stricmp( token, "maxs" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for( i = 0; i <= 2; i++ )
 			{
-				token = COM_Parse ( &text_p );
+				token = COM_Parse( &text_p );
 
-				if ( !token )
+				if( !token )
 				{
 					break;
 				}
 
-				bc->maxs[ i ] = atof ( token );
+				bc->maxs[ i ] = atof( token );
 			}
 
 			defined |= MAXS;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "zOffset" ) )
+		else if( !Q_stricmp( token, "zOffset" ) )
 		{
 			float offset;
 
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			offset = atof ( token );
+			offset = atof( token );
 
 			bc->zOffset = offset;
 
@@ -844,21 +844,21 @@ static qboolean BG_ParseBuildableFile ( const char *filename, buildableConfig_t 
 			continue;
 		}
 
-		Com_Printf ( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+		Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
 		return qfalse;
 	}
 
-	if (      ! ( defined & MODEL      ) ) { token = "model"; }
-	else if ( ! ( defined & MODELSCALE ) ) { token = "modelScale"; }
-	else if ( ! ( defined & MINS       ) ) { token = "mins"; }
-	else if ( ! ( defined & MAXS       ) ) { token = "maxs"; }
-	else if ( ! ( defined & ZOFFSET    ) ) { token = "zOffset"; }
+	if( !( defined & MODEL ) ) { token = "model"; }
+	else if( !( defined & MODELSCALE ) ) { token = "modelScale"; }
+	else if( !( defined & MINS ) ) { token = "mins"; }
+	else if( !( defined & MAXS ) ) { token = "maxs"; }
+	else if( !( defined & ZOFFSET ) ) { token = "zOffset"; }
 	else { token = ""; }
 
-	if ( strlen ( token ) > 0 )
+	if( strlen( token ) > 0 )
 	{
-		Com_Printf ( S_COLOR_RED "ERROR: %s not defined in %s\n",
-		             token, filename );
+		Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+		            token, filename );
 		return qfalse;
 	}
 
@@ -870,18 +870,18 @@ static qboolean BG_ParseBuildableFile ( const char *filename, buildableConfig_t 
 BG_InitBuildableConfigs
 ===============
 */
-void BG_InitBuildableConfigs ( void )
+void BG_InitBuildableConfigs( void )
 {
 	int               i;
 	buildableConfig_t *bc;
 
-	for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; i++ )
+	for( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; i++ )
 	{
-		bc = BG_BuildableConfig ( i );
-		Com_Memset ( bc, 0, sizeof ( buildableConfig_t ) );
+		bc = BG_BuildableConfig( i );
+		Com_Memset( bc, 0, sizeof( buildableConfig_t ) );
 
-		BG_ParseBuildableFile ( va ( "configs/buildables/%s.cfg",
-		                             BG_Buildable ( i )->name ), bc );
+		BG_ParseBuildableFile( va( "configs/buildables/%s.cfg",
+		                           BG_Buildable( i )->name ), bc );
 	}
 }
 
@@ -1249,7 +1249,7 @@ static const classAttributes_t bg_classList[] =
 	}
 };
 
-int                            bg_numClasses = sizeof ( bg_classList ) / sizeof ( bg_classList[ 0 ] );
+int                            bg_numClasses = sizeof( bg_classList ) / sizeof( bg_classList[ 0 ] );
 
 static const classAttributes_t nullClass = { 0 };
 
@@ -1258,13 +1258,13 @@ static const classAttributes_t nullClass = { 0 };
 BG_ClassByName
 ==============
 */
-const classAttributes_t *BG_ClassByName ( const char *name )
+const classAttributes_t *BG_ClassByName( const char *name )
 {
 	int i;
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	for( i = 0; i < bg_numClasses; i++ )
 	{
-		if ( !Q_stricmp ( bg_classList[ i ].name, name ) )
+		if( !Q_stricmp( bg_classList[ i ].name, name ) )
 		{
 			return &bg_classList[ i ];
 		}
@@ -1278,7 +1278,7 @@ const classAttributes_t *BG_ClassByName ( const char *name )
 BG_Class
 ==============
 */
-const classAttributes_t *BG_Class ( class_t class )
+const classAttributes_t *BG_Class( class_t class )
 {
 	return ( class >= PCL_NONE && class < PCL_NUM_CLASSES ) ?
 	       &bg_classList[ class ] : &nullClass;
@@ -1289,10 +1289,10 @@ const classAttributes_t *BG_Class ( class_t class )
 BG_ClassAllowedInStage
 ==============
 */
-qboolean BG_ClassAllowedInStage ( class_t class,
-                                  stage_t stage )
+qboolean BG_ClassAllowedInStage( class_t class,
+                                 stage_t stage )
 {
-	int stages = BG_Class ( class )->stages;
+	int stages = BG_Class( class )->stages;
 
 	return stages & ( 1 << stage );
 }
@@ -1304,7 +1304,7 @@ static classConfig_t bg_classConfigList[ PCL_NUM_CLASSES ];
 BG_ClassConfig
 ==============
 */
-classConfig_t *BG_ClassConfig ( class_t class )
+classConfig_t *BG_ClassConfig( class_t class )
 {
 	return &bg_classConfigList[ class ];
 }
@@ -1314,35 +1314,35 @@ classConfig_t *BG_ClassConfig ( class_t class )
 BG_ClassBoundingBox
 ==============
 */
-void BG_ClassBoundingBox ( class_t class,
-                           vec3_t mins, vec3_t maxs,
-                           vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs )
+void BG_ClassBoundingBox( class_t class,
+                          vec3_t mins, vec3_t maxs,
+                          vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs )
 {
-	classConfig_t *classConfig = BG_ClassConfig ( class );
+	classConfig_t *classConfig = BG_ClassConfig( class );
 
-	if ( mins != NULL )
+	if( mins != NULL )
 	{
-		VectorCopy ( classConfig->mins, mins );
+		VectorCopy( classConfig->mins, mins );
 	}
 
-	if ( maxs != NULL )
+	if( maxs != NULL )
 	{
-		VectorCopy ( classConfig->maxs, maxs );
+		VectorCopy( classConfig->maxs, maxs );
 	}
 
-	if ( cmaxs != NULL )
+	if( cmaxs != NULL )
 	{
-		VectorCopy ( classConfig->crouchMaxs, cmaxs );
+		VectorCopy( classConfig->crouchMaxs, cmaxs );
 	}
 
-	if ( dmins != NULL )
+	if( dmins != NULL )
 	{
-		VectorCopy ( classConfig->deadMins, dmins );
+		VectorCopy( classConfig->deadMins, dmins );
 	}
 
-	if ( dmaxs != NULL )
+	if( dmaxs != NULL )
 	{
-		VectorCopy ( classConfig->deadMaxs, dmaxs );
+		VectorCopy( classConfig->deadMaxs, dmaxs );
 	}
 }
 
@@ -1351,9 +1351,9 @@ void BG_ClassBoundingBox ( class_t class,
 BG_ClassHasAbility
 ==============
 */
-qboolean BG_ClassHasAbility ( class_t class, int ability )
+qboolean BG_ClassHasAbility( class_t class, int ability )
 {
-	int abilities = BG_Class ( class )->abilities;
+	int abilities = BG_Class( class )->abilities;
 
 	return abilities & ability;
 }
@@ -1363,53 +1363,53 @@ qboolean BG_ClassHasAbility ( class_t class, int ability )
 BG_ClassCanEvolveFromTo
 ==============
 */
-int BG_ClassCanEvolveFromTo ( class_t fclass,
-                              class_t tclass,
-                              int credits, int stage,
-                              int cost )
+int BG_ClassCanEvolveFromTo( class_t fclass,
+                             class_t tclass,
+                             int credits, int stage,
+                             int cost )
 {
 	int i, j, best, value;
 
-	if ( credits < cost || fclass == PCL_NONE || tclass == PCL_NONE ||
-	     fclass == tclass )
+	if( credits < cost || fclass == PCL_NONE || tclass == PCL_NONE ||
+	    fclass == tclass )
 	{
 		return -1;
 	}
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	for( i = 0; i < bg_numClasses; i++ )
 	{
-		if ( bg_classList[ i ].number != fclass )
+		if( bg_classList[ i ].number != fclass )
 		{
 			continue;
 		}
 
 		best = credits + 1;
 
-		for ( j = 0; j < 3; j++ )
+		for( j = 0; j < 3; j++ )
 		{
 			int thruClass, evolveCost;
 
 			thruClass = bg_classList[ i ].children[ j ];
 
-			if ( thruClass == PCL_NONE || !BG_ClassAllowedInStage ( thruClass, stage ) ||
-			     !BG_ClassIsAllowed ( thruClass ) )
+			if( thruClass == PCL_NONE || !BG_ClassAllowedInStage( thruClass, stage ) ||
+			    !BG_ClassIsAllowed( thruClass ) )
 			{
 				continue;
 			}
 
-			evolveCost = BG_Class ( thruClass )->cost * ALIEN_CREDITS_PER_KILL;
+			evolveCost = BG_Class( thruClass )->cost * ALIEN_CREDITS_PER_KILL;
 
-			if ( thruClass == tclass )
+			if( thruClass == tclass )
 			{
 				value = cost + evolveCost;
 			}
 			else
 			{
-				value = BG_ClassCanEvolveFromTo ( thruClass, tclass, credits, stage,
-				                                  cost + evolveCost );
+				value = BG_ClassCanEvolveFromTo( thruClass, tclass, credits, stage,
+				                                 cost + evolveCost );
 			}
 
-			if ( value >= 0 && value < best )
+			if( value >= 0 && value < best )
 			{
 				best = value;
 			}
@@ -1418,7 +1418,7 @@ int BG_ClassCanEvolveFromTo ( class_t fclass,
 		return best <= credits ? best : -1;
 	}
 
-	Com_Printf ( S_COLOR_YELLOW "WARNING: fallthrough in BG_ClassCanEvolveFromTo\n" );
+	Com_Printf( S_COLOR_YELLOW "WARNING: fallthrough in BG_ClassCanEvolveFromTo\n" );
 	return -1;
 }
 
@@ -1427,24 +1427,24 @@ int BG_ClassCanEvolveFromTo ( class_t fclass,
 BG_AlienCanEvolve
 ==============
 */
-qboolean BG_AlienCanEvolve ( class_t class, int credits, int stage )
+qboolean BG_AlienCanEvolve( class_t class, int credits, int stage )
 {
 	int i, j, tclass;
 
-	for ( i = 0; i < bg_numClasses; i++ )
+	for( i = 0; i < bg_numClasses; i++ )
 	{
-		if ( bg_classList[ i ].number != class )
+		if( bg_classList[ i ].number != class )
 		{
 			continue;
 		}
 
-		for ( j = 0; j < 3; j++ )
+		for( j = 0; j < 3; j++ )
 		{
 			tclass = bg_classList[ i ].children[ j ];
 
-			if ( tclass != PCL_NONE && BG_ClassAllowedInStage ( tclass, stage ) &&
-			     BG_ClassIsAllowed ( tclass ) &&
-			     credits >= BG_Class ( tclass )->cost * ALIEN_CREDITS_PER_KILL )
+			if( tclass != PCL_NONE && BG_ClassAllowedInStage( tclass, stage ) &&
+			    BG_ClassIsAllowed( tclass ) &&
+			    credits >= BG_Class( tclass )->cost * ALIEN_CREDITS_PER_KILL )
 			{
 				return qtrue;
 			}
@@ -1453,7 +1453,7 @@ qboolean BG_AlienCanEvolve ( class_t class, int credits, int stage )
 		return qfalse;
 	}
 
-	Com_Printf ( S_COLOR_YELLOW "WARNING: fallthrough in BG_AlienCanEvolve\n" );
+	Com_Printf( S_COLOR_YELLOW "WARNING: fallthrough in BG_AlienCanEvolve\n" );
 	return qfalse;
 }
 
@@ -1464,7 +1464,7 @@ BG_ParseClassFile
 Parses a configuration file describing a class
 ======================
 */
-static qboolean BG_ParseClassFile ( const char *filename, classConfig_t *cc )
+static qboolean BG_ParseClassFile( const char *filename, classConfig_t *cc )
 {
 	char         *text_p;
 	int          i;
@@ -1494,97 +1494,97 @@ static qboolean BG_ParseClassFile ( const char *filename, classConfig_t *cc )
 	};
 
 	// load the file
-	len = trap_FS_FOpenFile ( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile( filename, &f, FS_READ );
 
-	if ( len < 0 )
+	if( len < 0 )
 	{
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof ( text ) - 1 )
+	if( len == 0 || len >= sizeof( text ) - 1 )
 	{
-		trap_FS_FCloseFile ( f );
-		Com_Printf ( S_COLOR_RED "ERROR: Class file %s is %s\n", filename,
-		             len == 0 ? "empty" : "too long" );
+		trap_FS_FCloseFile( f );
+		Com_Printf( S_COLOR_RED "ERROR: Class file %s is %s\n", filename,
+		            len == 0 ? "empty" : "too long" );
 		return qfalse;
 	}
 
-	trap_FS_Read ( text, len, f );
+	trap_FS_Read( text, len, f );
 	text[ len ] = 0;
-	trap_FS_FCloseFile ( f );
+	trap_FS_FCloseFile( f );
 
 	// parse the text
 	text_p = text;
 
 	// read optional parameters
-	while ( 1 )
+	while( 1 )
 	{
-		token = COM_Parse ( &text_p );
+		token = COM_Parse( &text_p );
 
-		if ( !token )
+		if( !token )
 		{
 			break;
 		}
 
-		if ( !Q_stricmp ( token, "" ) )
+		if( !Q_stricmp( token, "" ) )
 		{
 			break;
 		}
 
-		if ( !Q_stricmp ( token, "model" ) )
+		if( !Q_stricmp( token, "model" ) )
 		{
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			Q_strncpyz ( cc->modelName, token, sizeof ( cc->modelName ) );
+			Q_strncpyz( cc->modelName, token, sizeof( cc->modelName ) );
 
 			defined |= MODEL;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "skin" ) )
+		else if( !Q_stricmp( token, "skin" ) )
 		{
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			Q_strncpyz ( cc->skinName, token, sizeof ( cc->skinName ) );
+			Q_strncpyz( cc->skinName, token, sizeof( cc->skinName ) );
 
 			defined |= SKIN;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "hud" ) )
+		else if( !Q_stricmp( token, "hud" ) )
 		{
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			Q_strncpyz ( cc->hudName, token, sizeof ( cc->hudName ) );
+			Q_strncpyz( cc->hudName, token, sizeof( cc->hudName ) );
 
 			defined |= HUD;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "modelScale" ) )
+		else if( !Q_stricmp( token, "modelScale" ) )
 		{
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			scale = atof ( token );
+			scale = atof( token );
 
-			if ( scale < 0.0f )
+			if( scale < 0.0f )
 			{
 				scale = 0.0f;
 			}
@@ -1594,18 +1594,18 @@ static qboolean BG_ParseClassFile ( const char *filename, classConfig_t *cc )
 			defined |= MODELSCALE;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "shadowScale" ) )
+		else if( !Q_stricmp( token, "shadowScale" ) )
 		{
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			scale = atof ( token );
+			scale = atof( token );
 
-			if ( scale < 0.0f )
+			if( scale < 0.0f )
 			{
 				scale = 0.0f;
 			}
@@ -1615,180 +1615,180 @@ static qboolean BG_ParseClassFile ( const char *filename, classConfig_t *cc )
 			defined |= SHADOWSCALE;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "mins" ) )
+		else if( !Q_stricmp( token, "mins" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for( i = 0; i <= 2; i++ )
 			{
-				token = COM_Parse ( &text_p );
+				token = COM_Parse( &text_p );
 
-				if ( !token )
+				if( !token )
 				{
 					break;
 				}
 
-				cc->mins[ i ] = atof ( token );
+				cc->mins[ i ] = atof( token );
 			}
 
 			defined |= MINS;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "maxs" ) )
+		else if( !Q_stricmp( token, "maxs" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for( i = 0; i <= 2; i++ )
 			{
-				token = COM_Parse ( &text_p );
+				token = COM_Parse( &text_p );
 
-				if ( !token )
+				if( !token )
 				{
 					break;
 				}
 
-				cc->maxs[ i ] = atof ( token );
+				cc->maxs[ i ] = atof( token );
 			}
 
 			defined |= MAXS;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "deadMins" ) )
+		else if( !Q_stricmp( token, "deadMins" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for( i = 0; i <= 2; i++ )
 			{
-				token = COM_Parse ( &text_p );
+				token = COM_Parse( &text_p );
 
-				if ( !token )
+				if( !token )
 				{
 					break;
 				}
 
-				cc->deadMins[ i ] = atof ( token );
+				cc->deadMins[ i ] = atof( token );
 			}
 
 			defined |= DEADMINS;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "deadMaxs" ) )
+		else if( !Q_stricmp( token, "deadMaxs" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for( i = 0; i <= 2; i++ )
 			{
-				token = COM_Parse ( &text_p );
+				token = COM_Parse( &text_p );
 
-				if ( !token )
+				if( !token )
 				{
 					break;
 				}
 
-				cc->deadMaxs[ i ] = atof ( token );
+				cc->deadMaxs[ i ] = atof( token );
 			}
 
 			defined |= DEADMAXS;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "crouchMaxs" ) )
+		else if( !Q_stricmp( token, "crouchMaxs" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for( i = 0; i <= 2; i++ )
 			{
-				token = COM_Parse ( &text_p );
+				token = COM_Parse( &text_p );
 
-				if ( !token )
+				if( !token )
 				{
 					break;
 				}
 
-				cc->crouchMaxs[ i ] = atof ( token );
+				cc->crouchMaxs[ i ] = atof( token );
 			}
 
 			defined |= CROUCHMAXS;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "viewheight" ) )
+		else if( !Q_stricmp( token, "viewheight" ) )
 		{
-			token = COM_Parse ( &text_p );
-			cc->viewheight = atoi ( token );
+			token = COM_Parse( &text_p );
+			cc->viewheight = atoi( token );
 			defined |= VIEWHEIGHT;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "crouchViewheight" ) )
+		else if( !Q_stricmp( token, "crouchViewheight" ) )
 		{
-			token = COM_Parse ( &text_p );
-			cc->crouchViewheight = atoi ( token );
+			token = COM_Parse( &text_p );
+			cc->crouchViewheight = atoi( token );
 			defined |= CVIEWHEIGHT;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "zOffset" ) )
+		else if( !Q_stricmp( token, "zOffset" ) )
 		{
 			float offset;
 
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			offset = atof ( token );
+			offset = atof( token );
 
 			cc->zOffset = offset;
 
 			defined |= ZOFFSET;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "name" ) )
+		else if( !Q_stricmp( token, "name" ) )
 		{
-			token = COM_Parse ( &text_p );
+			token = COM_Parse( &text_p );
 
-			if ( !token )
+			if( !token )
 			{
 				break;
 			}
 
-			Q_strncpyz ( cc->humanName, token, sizeof ( cc->humanName ) );
+			Q_strncpyz( cc->humanName, token, sizeof( cc->humanName ) );
 
 			defined |= NAME;
 			continue;
 		}
-		else if ( !Q_stricmp ( token, "shoulderOffsets" ) )
+		else if( !Q_stricmp( token, "shoulderOffsets" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for( i = 0; i <= 2; i++ )
 			{
-				token = COM_Parse ( &text_p );
+				token = COM_Parse( &text_p );
 
-				if ( !token )
+				if( !token )
 				{
 					break;
 				}
 
-				cc->shoulderOffsets[ i ] = atof ( token );
+				cc->shoulderOffsets[ i ] = atof( token );
 			}
 
 			defined |= SHOULDEROFFSETS;
 			continue;
 		}
 
-		Com_Printf ( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+		Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
 		return qfalse;
 	}
 
-	if (      ! ( defined & MODEL           ) ) { token = "model"; }
-	else if ( ! ( defined & SKIN            ) ) { token = "skin"; }
-	else if ( ! ( defined & HUD             ) ) { token = "hud"; }
-	else if ( ! ( defined & MODELSCALE      ) ) { token = "modelScale"; }
-	else if ( ! ( defined & SHADOWSCALE     ) ) { token = "shadowScale"; }
-	else if ( ! ( defined & MINS            ) ) { token = "mins"; }
-	else if ( ! ( defined & MAXS            ) ) { token = "maxs"; }
-	else if ( ! ( defined & DEADMINS        ) ) { token = "deadMins"; }
-	else if ( ! ( defined & DEADMAXS        ) ) { token = "deadMaxs"; }
-	else if ( ! ( defined & CROUCHMAXS      ) ) { token = "crouchMaxs"; }
-	else if ( ! ( defined & VIEWHEIGHT      ) ) { token = "viewheight"; }
-	else if ( ! ( defined & CVIEWHEIGHT     ) ) { token = "crouchViewheight"; }
-	else if ( ! ( defined & ZOFFSET         ) ) { token = "zOffset"; }
-	else if ( ! ( defined & NAME            ) ) { token = "name"; }
-	else if ( ! ( defined & SHOULDEROFFSETS ) ) { token = "shoulderOffsets"; }
+	if( !( defined & MODEL ) ) { token = "model"; }
+	else if( !( defined & SKIN ) ) { token = "skin"; }
+	else if( !( defined & HUD ) ) { token = "hud"; }
+	else if( !( defined & MODELSCALE ) ) { token = "modelScale"; }
+	else if( !( defined & SHADOWSCALE ) ) { token = "shadowScale"; }
+	else if( !( defined & MINS ) ) { token = "mins"; }
+	else if( !( defined & MAXS ) ) { token = "maxs"; }
+	else if( !( defined & DEADMINS ) ) { token = "deadMins"; }
+	else if( !( defined & DEADMAXS ) ) { token = "deadMaxs"; }
+	else if( !( defined & CROUCHMAXS ) ) { token = "crouchMaxs"; }
+	else if( !( defined & VIEWHEIGHT ) ) { token = "viewheight"; }
+	else if( !( defined & CVIEWHEIGHT ) ) { token = "crouchViewheight"; }
+	else if( !( defined & ZOFFSET ) ) { token = "zOffset"; }
+	else if( !( defined & NAME ) ) { token = "name"; }
+	else if( !( defined & SHOULDEROFFSETS ) ) { token = "shoulderOffsets"; }
 	else { token = ""; }
 
-	if ( strlen ( token ) > 0 )
+	if( strlen( token ) > 0 )
 	{
-		Com_Printf ( S_COLOR_RED "ERROR: %s not defined in %s\n",
-		             token, filename );
+		Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+		            token, filename );
 		return qfalse;
 	}
 
@@ -1800,17 +1800,17 @@ static qboolean BG_ParseClassFile ( const char *filename, classConfig_t *cc )
 BG_InitClassConfigs
 ===============
 */
-void BG_InitClassConfigs ( void )
+void BG_InitClassConfigs( void )
 {
 	int           i;
 	classConfig_t *cc;
 
-	for ( i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
+	for( i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
 	{
-		cc = BG_ClassConfig ( i );
+		cc = BG_ClassConfig( i );
 
-		BG_ParseClassFile ( va ( "configs/classes/%s.cfg",
-		                         BG_Class ( i )->name ), cc );
+		BG_ParseClassFile( va( "configs/classes/%s.cfg",
+		                       BG_Class( i )->name ), cc );
 	}
 }
 
@@ -2486,7 +2486,7 @@ static const weaponAttributes_t bg_weapons[] =
 	}
 };
 
-int                             bg_numWeapons = sizeof ( bg_weapons ) / sizeof ( bg_weapons[ 0 ] );
+int                             bg_numWeapons = sizeof( bg_weapons ) / sizeof( bg_weapons[ 0 ] );
 
 static const weaponAttributes_t nullWeapon = { 0 };
 
@@ -2495,13 +2495,13 @@ static const weaponAttributes_t nullWeapon = { 0 };
 BG_WeaponByName
 ==============
 */
-const weaponAttributes_t *BG_WeaponByName ( const char *name )
+const weaponAttributes_t *BG_WeaponByName( const char *name )
 {
 	int i;
 
-	for ( i = 0; i < bg_numWeapons; i++ )
+	for( i = 0; i < bg_numWeapons; i++ )
 	{
-		if ( !Q_stricmp ( bg_weapons[ i ].name, name ) )
+		if( !Q_stricmp( bg_weapons[ i ].name, name ) )
 		{
 			return &bg_weapons[ i ];
 		}
@@ -2515,7 +2515,7 @@ const weaponAttributes_t *BG_WeaponByName ( const char *name )
 BG_Weapon
 ==============
 */
-const weaponAttributes_t *BG_Weapon ( weapon_t weapon )
+const weaponAttributes_t *BG_Weapon( weapon_t weapon )
 {
 	return ( weapon > WP_NONE && weapon < WP_NUM_WEAPONS ) ?
 	       &bg_weapons[ weapon - 1 ] : &nullWeapon;
@@ -2526,9 +2526,9 @@ const weaponAttributes_t *BG_Weapon ( weapon_t weapon )
 BG_WeaponAllowedInStage
 ==============
 */
-qboolean BG_WeaponAllowedInStage ( weapon_t weapon, stage_t stage )
+qboolean BG_WeaponAllowedInStage( weapon_t weapon, stage_t stage )
 {
-	int stages = BG_Weapon ( weapon )->stages;
+	int stages = BG_Weapon( weapon )->stages;
 
 	return stages & ( 1 << stage );
 }
@@ -2652,7 +2652,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 	}
 };
 
-int                              bg_numUpgrades = sizeof ( bg_upgrades ) / sizeof ( bg_upgrades[ 0 ] );
+int                              bg_numUpgrades = sizeof( bg_upgrades ) / sizeof( bg_upgrades[ 0 ] );
 
 static const upgradeAttributes_t nullUpgrade = { 0 };
 
@@ -2661,13 +2661,13 @@ static const upgradeAttributes_t nullUpgrade = { 0 };
 BG_UpgradeByName
 ==============
 */
-const upgradeAttributes_t *BG_UpgradeByName ( const char *name )
+const upgradeAttributes_t *BG_UpgradeByName( const char *name )
 {
 	int i;
 
-	for ( i = 0; i < bg_numUpgrades; i++ )
+	for( i = 0; i < bg_numUpgrades; i++ )
 	{
-		if ( !Q_stricmp ( bg_upgrades[ i ].name, name ) )
+		if( !Q_stricmp( bg_upgrades[ i ].name, name ) )
 		{
 			return &bg_upgrades[ i ];
 		}
@@ -2681,7 +2681,7 @@ const upgradeAttributes_t *BG_UpgradeByName ( const char *name )
 BG_Upgrade
 ==============
 */
-const upgradeAttributes_t *BG_Upgrade ( upgrade_t upgrade )
+const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade )
 {
 	return ( upgrade > UP_NONE && upgrade < UP_NUM_UPGRADES ) ?
 	       &bg_upgrades[ upgrade - 1 ] : &nullUpgrade;
@@ -2692,9 +2692,9 @@ const upgradeAttributes_t *BG_Upgrade ( upgrade_t upgrade )
 BG_UpgradeAllowedInStage
 ==============
 */
-qboolean BG_UpgradeAllowedInStage ( upgrade_t upgrade, stage_t stage )
+qboolean BG_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage )
 {
-	int stages = BG_Upgrade ( upgrade )->stages;
+	int stages = BG_Upgrade( upgrade )->stages;
 
 	return stages & ( 1 << stage );
 }
@@ -2707,59 +2707,59 @@ BG_EvaluateTrajectory
 
 ================
 */
-void BG_EvaluateTrajectory ( const trajectory_t *tr, int atTime, vec3_t result )
+void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 {
 	float deltaTime;
 	float phase;
 
-	switch ( tr->trType )
+	switch( tr->trType )
 	{
 		case TR_STATIONARY:
 		case TR_INTERPOLATE:
-			VectorCopy ( tr->trBase, result );
+			VectorCopy( tr->trBase, result );
 			break;
 
 		case TR_LINEAR:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
-			VectorMA ( tr->trBase, deltaTime, tr->trDelta, result );
+			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			break;
 
 		case TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
-			phase = sin ( deltaTime * M_PI * 2 );
-			VectorMA ( tr->trBase, phase, tr->trDelta, result );
+			phase = sin( deltaTime * M_PI * 2 );
+			VectorMA( tr->trBase, phase, tr->trDelta, result );
 			break;
 
 		case TR_LINEAR_STOP:
-			if ( atTime > tr->trTime + tr->trDuration )
+			if( atTime > tr->trTime + tr->trDuration )
 			{
 				atTime = tr->trTime + tr->trDuration;
 			}
 
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 
-			if ( deltaTime < 0 )
+			if( deltaTime < 0 )
 			{
 				deltaTime = 0;
 			}
 
-			VectorMA ( tr->trBase, deltaTime, tr->trDelta, result );
+			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			break;
 
 		case TR_GRAVITY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
-			VectorMA ( tr->trBase, deltaTime, tr->trDelta, result );
+			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			result[ 2 ] -= 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 			break;
 
 		case TR_BUOYANCY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
-			VectorMA ( tr->trBase, deltaTime, tr->trDelta, result );
+			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			result[ 2 ] += 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 			break;
 
 		default:
-			Com_Error ( ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
+			Com_Error( ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
 			break;
 	}
 }
@@ -2771,53 +2771,53 @@ BG_EvaluateTrajectoryDelta
 For determining velocity at a given time
 ================
 */
-void BG_EvaluateTrajectoryDelta ( const trajectory_t *tr, int atTime, vec3_t result )
+void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result )
 {
 	float deltaTime;
 	float phase;
 
-	switch ( tr->trType )
+	switch( tr->trType )
 	{
 		case TR_STATIONARY:
 		case TR_INTERPOLATE:
-			VectorClear ( result );
+			VectorClear( result );
 			break;
 
 		case TR_LINEAR:
-			VectorCopy ( tr->trDelta, result );
+			VectorCopy( tr->trDelta, result );
 			break;
 
 		case TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
-			phase = cos ( deltaTime * M_PI * 2 ); // derivative of sin = cos
+			phase = cos( deltaTime * M_PI * 2 );  // derivative of sin = cos
 			phase *= 0.5;
-			VectorScale ( tr->trDelta, phase, result );
+			VectorScale( tr->trDelta, phase, result );
 			break;
 
 		case TR_LINEAR_STOP:
-			if ( atTime > tr->trTime + tr->trDuration )
+			if( atTime > tr->trTime + tr->trDuration )
 			{
-				VectorClear ( result );
+				VectorClear( result );
 				return;
 			}
 
-			VectorCopy ( tr->trDelta, result );
+			VectorCopy( tr->trDelta, result );
 			break;
 
 		case TR_GRAVITY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
-			VectorCopy ( tr->trDelta, result );
+			VectorCopy( tr->trDelta, result );
 			result[ 2 ] -= DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			break;
 
 		case TR_BUOYANCY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
-			VectorCopy ( tr->trDelta, result );
+			VectorCopy( tr->trDelta, result );
 			result[ 2 ] += DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			break;
 
 		default:
-			Com_Error ( ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
+			Com_Error( ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
 			break;
 	}
 }
@@ -2928,9 +2928,9 @@ char *eventnames[] =
 BG_EventName
 ===============
 */
-const char *BG_EventName ( int num )
+const char *BG_EventName( int num )
 {
-	if ( num < 0 || num >= sizeof ( eventnames ) / sizeof ( char * ) )
+	if( num < 0 || num >= sizeof( eventnames ) / sizeof( char * ) )
 	{
 		return "UNKNOWN";
 	}
@@ -2946,25 +2946,25 @@ Handles the sequence numbers
 ===============
 */
 
-void trap_Cvar_VariableStringBuffer ( const char *var_name, char *buffer, int bufsize );
+void trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
-void BG_AddPredictableEventToPlayerstate ( int newEvent, int eventParm, playerState_t *ps )
+void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps )
 {
 #ifdef _DEBUG
 	{
 		char buf[ 256 ];
-		trap_Cvar_VariableStringBuffer ( "showevents", buf, sizeof ( buf ) );
+		trap_Cvar_VariableStringBuffer( "showevents", buf, sizeof( buf ) );
 
-		if ( atof ( buf ) != 0 )
+		if( atof( buf ) != 0 )
 		{
 #ifdef GAME
-			Com_Printf ( " game event svt %5d -> %5d: num = %20s parm %d\n",
+			Com_Printf( " game event svt %5d -> %5d: num = %20s parm %d\n",
 			ps->pmove_framecount /*ps->commandTime*/, ps->eventSequence,
-			BG_EventName ( newEvent ), eventParm );
+			BG_EventName( newEvent ), eventParm );
 #else
-			Com_Printf ( "Cgame event svt %5d -> %5d: num = %20s parm %d\n",
+			Com_Printf( "Cgame event svt %5d -> %5d: num = %20s parm %d\n",
 			ps->pmove_framecount /*ps->commandTime*/, ps->eventSequence,
-			BG_EventName ( newEvent ), eventParm );
+			BG_EventName( newEvent ), eventParm );
 #endif
 		}
 	}
@@ -2982,15 +2982,15 @@ This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
-void BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean snap )
+void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap )
 {
 	int i;
 
-	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR || ps->pm_type == PM_FREEZE )
+	if( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR || ps->pm_type == PM_FREEZE )
 	{
 		s->eType = ET_INVISIBLE;
 	}
-	else if ( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+	else if( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 	{
 		s->eType = ET_INVISIBLE;
 	}
@@ -3002,22 +3002,22 @@ void BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean
 	s->number = ps->clientNum;
 
 	s->pos.trType = TR_INTERPOLATE;
-	VectorCopy ( ps->origin, s->pos.trBase );
+	VectorCopy( ps->origin, s->pos.trBase );
 
-	if ( snap )
+	if( snap )
 	{
-		SnapVector ( s->pos.trBase );
+		SnapVector( s->pos.trBase );
 	}
 
 	//set the trDelta for flag direction
-	VectorCopy ( ps->velocity, s->pos.trDelta );
+	VectorCopy( ps->velocity, s->pos.trDelta );
 
 	s->apos.trType = TR_INTERPOLATE;
-	VectorCopy ( ps->viewangles, s->apos.trBase );
+	VectorCopy( ps->viewangles, s->apos.trBase );
 
-	if ( snap )
+	if( snap )
 	{
-		SnapVector ( s->apos.trBase );
+		SnapVector( s->apos.trBase );
 	}
 
 	s->time2 = ps->movementDir;
@@ -3028,7 +3028,7 @@ void BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean
 	// so corpses can also reference the proper config
 	s->eFlags = ps->eFlags;
 
-	if ( ps->stats[ STAT_HEALTH ] <= 0 )
+	if( ps->stats[ STAT_HEALTH ] <= 0 )
 	{
 		s->eFlags |= EF_DEAD;
 	}
@@ -3037,7 +3037,7 @@ void BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean
 		s->eFlags &= ~EF_DEAD;
 	}
 
-	if ( ps->stats[ STAT_STATE ] & SS_BLOBLOCKED )
+	if( ps->stats[ STAT_STATE ] & SS_BLOBLOCKED )
 	{
 		s->eFlags |= EF_BLOBLOCKED;
 	}
@@ -3046,16 +3046,16 @@ void BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean
 		s->eFlags &= ~EF_BLOBLOCKED;
 	}
 
-	if ( ps->externalEvent )
+	if( ps->externalEvent )
 	{
 		s->event = ps->externalEvent;
 		s->eventParm = ps->externalEventParm;
 	}
-	else if ( ps->entityEventSequence < ps->eventSequence )
+	else if( ps->entityEventSequence < ps->eventSequence )
 	{
 		int seq;
 
-		if ( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
+		if( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
 		{
 			ps->entityEventSequence = ps->eventSequence - MAX_EVENTS;
 		}
@@ -3073,13 +3073,13 @@ void BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean
 	s->modelindex = 0;
 	s->modelindex2 = 0;
 
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	for( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
-		if ( BG_InventoryContainsUpgrade ( i, ps->stats ) )
+		if( BG_InventoryContainsUpgrade( i, ps->stats ) )
 		{
 			s->modelindex |= 1 << i;
 
-			if ( BG_UpgradeIsActive ( i, ps->stats ) )
+			if( BG_UpgradeIsActive( i, ps->stats ) )
 			{
 				s->modelindex2 |= 1 << i;
 			}
@@ -3090,12 +3090,12 @@ void BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean
 	s->misc = ps->stats[ STAT_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
 
 	// have to get the surfNormal through somehow...
-	VectorCopy ( ps->grapplePoint, s->angles2 );
+	VectorCopy( ps->grapplePoint, s->angles2 );
 
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
 
-	if ( s->generic1 <= WPM_NONE || s->generic1 >= WPM_NUM_WEAPONMODES )
+	if( s->generic1 <= WPM_NONE || s->generic1 >= WPM_NUM_WEAPONMODES )
 	{
 		s->generic1 = WPM_PRIMARY;
 	}
@@ -3111,15 +3111,15 @@ This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
-void BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *s, int time, qboolean snap )
+void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap )
 {
 	int i;
 
-	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR || ps->pm_type == PM_FREEZE )
+	if( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR || ps->pm_type == PM_FREEZE )
 	{
 		s->eType = ET_INVISIBLE;
 	}
-	else if ( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+	else if( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 	{
 		s->eType = ET_INVISIBLE;
 	}
@@ -3131,26 +3131,26 @@ void BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *
 	s->number = ps->clientNum;
 
 	s->pos.trType = TR_LINEAR_STOP;
-	VectorCopy ( ps->origin, s->pos.trBase );
+	VectorCopy( ps->origin, s->pos.trBase );
 
-	if ( snap )
+	if( snap )
 	{
-		SnapVector ( s->pos.trBase );
+		SnapVector( s->pos.trBase );
 	}
 
 	// set the trDelta for flag direction and linear prediction
-	VectorCopy ( ps->velocity, s->pos.trDelta );
+	VectorCopy( ps->velocity, s->pos.trDelta );
 	// set the time for linear prediction
 	s->pos.trTime = time;
 	// set maximum extra polation time
 	s->pos.trDuration = 50; // 1000 / sv_fps (default = 20)
 
 	s->apos.trType = TR_INTERPOLATE;
-	VectorCopy ( ps->viewangles, s->apos.trBase );
+	VectorCopy( ps->viewangles, s->apos.trBase );
 
-	if ( snap )
+	if( snap )
 	{
-		SnapVector ( s->apos.trBase );
+		SnapVector( s->apos.trBase );
 	}
 
 	s->time2 = ps->movementDir;
@@ -3161,7 +3161,7 @@ void BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *
 	// so corpses can also reference the proper config
 	s->eFlags = ps->eFlags;
 
-	if ( ps->stats[ STAT_HEALTH ] <= 0 )
+	if( ps->stats[ STAT_HEALTH ] <= 0 )
 	{
 		s->eFlags |= EF_DEAD;
 	}
@@ -3170,7 +3170,7 @@ void BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *
 		s->eFlags &= ~EF_DEAD;
 	}
 
-	if ( ps->stats[ STAT_STATE ] & SS_BLOBLOCKED )
+	if( ps->stats[ STAT_STATE ] & SS_BLOBLOCKED )
 	{
 		s->eFlags |= EF_BLOBLOCKED;
 	}
@@ -3179,16 +3179,16 @@ void BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *
 		s->eFlags &= ~EF_BLOBLOCKED;
 	}
 
-	if ( ps->externalEvent )
+	if( ps->externalEvent )
 	{
 		s->event = ps->externalEvent;
 		s->eventParm = ps->externalEventParm;
 	}
-	else if ( ps->entityEventSequence < ps->eventSequence )
+	else if( ps->entityEventSequence < ps->eventSequence )
 	{
 		int seq;
 
-		if ( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
+		if( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
 		{
 			ps->entityEventSequence = ps->eventSequence - MAX_EVENTS;
 		}
@@ -3206,13 +3206,13 @@ void BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *
 	s->modelindex = 0;
 	s->modelindex2 = 0;
 
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	for( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
-		if ( BG_InventoryContainsUpgrade ( i, ps->stats ) )
+		if( BG_InventoryContainsUpgrade( i, ps->stats ) )
 		{
 			s->modelindex |= 1 << i;
 
-			if ( BG_UpgradeIsActive ( i, ps->stats ) )
+			if( BG_UpgradeIsActive( i, ps->stats ) )
 			{
 				s->modelindex2 |= 1 << i;
 			}
@@ -3223,12 +3223,12 @@ void BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *
 	s->misc = ps->stats[ STAT_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
 
 	// have to get the surfNormal through somehow...
-	VectorCopy ( ps->grapplePoint, s->angles2 );
+	VectorCopy( ps->grapplePoint, s->angles2 );
 
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
 
-	if ( s->generic1 <= WPM_NONE || s->generic1 >= WPM_NUM_WEAPONMODES )
+	if( s->generic1 <= WPM_NONE || s->generic1 >= WPM_NUM_WEAPONMODES )
 	{
 		s->generic1 = WPM_PRIMARY;
 	}
@@ -3243,16 +3243,16 @@ BG_WeaponIsFull
 Check if a weapon has full ammo
 ========================
 */
-qboolean BG_WeaponIsFull ( weapon_t weapon, int stats[], int ammo, int clips )
+qboolean BG_WeaponIsFull( weapon_t weapon, int stats[], int ammo, int clips )
 {
 	int maxAmmo, maxClips;
 
-	maxAmmo = BG_Weapon ( weapon )->maxAmmo;
-	maxClips = BG_Weapon ( weapon )->maxClips;
+	maxAmmo = BG_Weapon( weapon )->maxAmmo;
+	maxClips = BG_Weapon( weapon )->maxClips;
 
-	if ( BG_InventoryContainsUpgrade ( UP_BATTPACK, stats ) )
+	if( BG_InventoryContainsUpgrade( UP_BATTPACK, stats ) )
 	{
-		maxAmmo = ( int ) ( ( float ) maxAmmo * BATTPACK_MODIFIER );
+		maxAmmo = ( int )( ( float ) maxAmmo * BATTPACK_MODIFIER );
 	}
 
 	return ( maxAmmo == ammo ) && ( maxClips == clips );
@@ -3265,10 +3265,10 @@ BG_InventoryContainsWeapon
 Does the player hold a weapon?
 ========================
 */
-qboolean BG_InventoryContainsWeapon ( int weapon, int stats[]  )
+qboolean BG_InventoryContainsWeapon( int weapon, int stats[] )
 {
 	// humans always have a blaster
-	if ( stats[ STAT_TEAM ] == TEAM_HUMANS && weapon == WP_BLASTER )
+	if( stats[ STAT_TEAM ] == TEAM_HUMANS && weapon == WP_BLASTER )
 	{
 		return qtrue;
 	}
@@ -3283,28 +3283,28 @@ BG_SlotsForInventory
 Calculate the slots used by an inventory and warn of conflicts
 ========================
 */
-int BG_SlotsForInventory ( int stats[]  )
+int BG_SlotsForInventory( int stats[] )
 {
 	int i, slot, slots;
 
-	slots = BG_Weapon ( stats[ STAT_WEAPON ] )->slots;
+	slots = BG_Weapon( stats[ STAT_WEAPON ] )->slots;
 
-	if ( stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if( stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
-		slots |= BG_Weapon ( WP_BLASTER )->slots;
+		slots |= BG_Weapon( WP_BLASTER )->slots;
 	}
 
-	for ( i = UP_NONE; i < UP_NUM_UPGRADES; i++ )
+	for( i = UP_NONE; i < UP_NUM_UPGRADES; i++ )
 	{
-		if ( BG_InventoryContainsUpgrade ( i, stats ) )
+		if( BG_InventoryContainsUpgrade( i, stats ) )
 		{
-			slot = BG_Upgrade ( i )->slots;
+			slot = BG_Upgrade( i )->slots;
 
 			// this check should never be true
-			if ( slots & slot )
+			if( slots & slot )
 			{
-				Com_Printf ( S_COLOR_YELLOW "WARNING: held item %d conflicts with "
-				             "inventory slot %d\n", i, slot );
+				Com_Printf( S_COLOR_YELLOW "WARNING: held item %d conflicts with "
+				            "inventory slot %d\n", i, slot );
 			}
 
 			slots |= slot;
@@ -3321,7 +3321,7 @@ BG_AddUpgradeToInventory
 Give the player an upgrade
 ========================
 */
-void BG_AddUpgradeToInventory ( int item, int stats[]  )
+void BG_AddUpgradeToInventory( int item, int stats[] )
 {
 	stats[ STAT_ITEMS ] |= ( 1 << item );
 }
@@ -3333,9 +3333,9 @@ BG_RemoveUpgradeFromInventory
 Take an upgrade from the player
 ========================
 */
-void BG_RemoveUpgradeFromInventory ( int item, int stats[]  )
+void BG_RemoveUpgradeFromInventory( int item, int stats[] )
 {
-	stats[ STAT_ITEMS ] &= ~ ( 1 << item );
+	stats[ STAT_ITEMS ] &= ~( 1 << item );
 }
 
 /*
@@ -3345,7 +3345,7 @@ BG_InventoryContainsUpgrade
 Does the player hold an upgrade?
 ========================
 */
-qboolean BG_InventoryContainsUpgrade ( int item, int stats[]  )
+qboolean BG_InventoryContainsUpgrade( int item, int stats[] )
 {
 	return ( stats[ STAT_ITEMS ] & ( 1 << item ) );
 }
@@ -3357,7 +3357,7 @@ BG_ActivateUpgrade
 Activates an upgrade
 ========================
 */
-void BG_ActivateUpgrade ( int item, int stats[]  )
+void BG_ActivateUpgrade( int item, int stats[] )
 {
 	stats[ STAT_ACTIVEITEMS ] |= ( 1 << item );
 }
@@ -3369,9 +3369,9 @@ BG_DeactivateUpgrade
 Deactivates an upgrade
 ========================
 */
-void BG_DeactivateUpgrade ( int item, int stats[]  )
+void BG_DeactivateUpgrade( int item, int stats[] )
 {
-	stats[ STAT_ACTIVEITEMS ] &= ~ ( 1 << item );
+	stats[ STAT_ACTIVEITEMS ] &= ~( 1 << item );
 }
 
 /*
@@ -3381,7 +3381,7 @@ BG_UpgradeIsActive
 Is this upgrade active?
 ========================
 */
-qboolean BG_UpgradeIsActive ( int item, int stats[]  )
+qboolean BG_UpgradeIsActive( int item, int stats[] )
 {
 	return ( stats[ STAT_ACTIVEITEMS ] & ( 1 << item ) );
 }
@@ -3393,8 +3393,8 @@ BG_RotateAxis
 Shared axis rotation function
 ===============
 */
-qboolean BG_RotateAxis ( vec3_t surfNormal, vec3_t inAxis[ 3 ],
-                         vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling )
+qboolean BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
+                        vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling )
 {
 	vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
 	vec3_t ceilingNormal = { 0.0f, 0.0f, -1.0f };
@@ -3402,35 +3402,35 @@ qboolean BG_RotateAxis ( vec3_t surfNormal, vec3_t inAxis[ 3 ],
 	float  rotAngle;
 
 	//the grapplePoint being a surfNormal rotation Normal hack... see above :)
-	if ( ceiling )
+	if( ceiling )
 	{
-		VectorCopy ( ceilingNormal, localNormal );
-		VectorCopy ( surfNormal, xNormal );
+		VectorCopy( ceilingNormal, localNormal );
+		VectorCopy( surfNormal, xNormal );
 	}
 	else
 	{
 		//cross the reference normal and the surface normal to get the rotation axis
-		VectorCopy ( surfNormal, localNormal );
-		CrossProduct ( localNormal, refNormal, xNormal );
-		VectorNormalize ( xNormal );
+		VectorCopy( surfNormal, localNormal );
+		CrossProduct( localNormal, refNormal, xNormal );
+		VectorNormalize( xNormal );
 	}
 
 	//can't rotate with no rotation vector
-	if ( VectorLength ( xNormal ) != 0.0f )
+	if( VectorLength( xNormal ) != 0.0f )
 	{
-		rotAngle = RAD2DEG ( acos ( DotProduct ( localNormal, refNormal ) ) );
+		rotAngle = RAD2DEG( acos( DotProduct( localNormal, refNormal ) ) );
 
-		if ( inverse )
+		if( inverse )
 		{
 			rotAngle = -rotAngle;
 		}
 
-		AngleNormalize180 ( rotAngle );
+		AngleNormalize180( rotAngle );
 
 		//hmmm could get away with only one rotation and some clever stuff later... but i'm lazy
-		RotatePointAroundVector ( outAxis[ 0 ], xNormal, inAxis[ 0 ], -rotAngle );
-		RotatePointAroundVector ( outAxis[ 1 ], xNormal, inAxis[ 1 ], -rotAngle );
-		RotatePointAroundVector ( outAxis[ 2 ], xNormal, inAxis[ 2 ], -rotAngle );
+		RotatePointAroundVector( outAxis[ 0 ], xNormal, inAxis[ 0 ], -rotAngle );
+		RotatePointAroundVector( outAxis[ 1 ], xNormal, inAxis[ 1 ], -rotAngle );
+		RotatePointAroundVector( outAxis[ 2 ], xNormal, inAxis[ 2 ], -rotAngle );
 	}
 	else
 	{
@@ -3447,22 +3447,22 @@ BG_GetClientNormal
 Get the normal for the surface the client is walking on
 ===============
 */
-void BG_GetClientNormal ( const playerState_t *ps, vec3_t normal )
+void BG_GetClientNormal( const playerState_t *ps, vec3_t normal )
 {
-	if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	if( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
 	{
-		if ( ps->eFlags & EF_WALLCLIMBCEILING )
+		if( ps->eFlags & EF_WALLCLIMBCEILING )
 		{
-			VectorSet ( normal, 0.0f, 0.0f, -1.0f );
+			VectorSet( normal, 0.0f, 0.0f, -1.0f );
 		}
 		else
 		{
-			VectorCopy ( ps->grapplePoint, normal );
+			VectorCopy( ps->grapplePoint, normal );
 		}
 	}
 	else
 	{
-		VectorSet ( normal, 0.0f, 0.0f, 1.0f );
+		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 }
 
@@ -3473,11 +3473,11 @@ BG_GetClientViewOrigin
 Get the position of the client's eye, based on the client's position, the surface's normal, and client's view height
 ===============
 */
-void BG_GetClientViewOrigin ( const playerState_t *ps, vec3_t viewOrigin )
+void BG_GetClientViewOrigin( const playerState_t *ps, vec3_t viewOrigin )
 {
 	vec3_t normal;
-	BG_GetClientNormal ( ps, normal );
-	VectorMA ( ps->origin, ps->viewheight, normal, viewOrigin );
+	BG_GetClientNormal( ps, normal );
+	VectorMA( ps->origin, ps->viewheight, normal, viewOrigin );
 }
 
 /*
@@ -3487,41 +3487,41 @@ BG_PositionBuildableRelativeToPlayer
 Find a place to build a buildable
 ===============
 */
-void BG_PositionBuildableRelativeToPlayer ( const playerState_t *ps,
+void BG_PositionBuildableRelativeToPlayer( const playerState_t *ps,
     const vec3_t mins, const vec3_t maxs,
-    void ( *trace ) ( trace_t *, const vec3_t, const vec3_t,
-                      const vec3_t, const vec3_t, int, int ),
+    void ( *trace )( trace_t *, const vec3_t, const vec3_t,
+                     const vec3_t, const vec3_t, int, int ),
     vec3_t outOrigin, vec3_t outAngles, trace_t *tr )
 {
 	vec3_t forward, entityOrigin, targetOrigin;
 	vec3_t angles, playerOrigin, playerNormal;
 	float  buildDist;
 
-	BG_GetClientNormal ( ps, playerNormal );
+	BG_GetClientNormal( ps, playerNormal );
 
-	VectorCopy ( ps->viewangles, angles );
-	VectorCopy ( ps->origin, playerOrigin );
-	buildDist = BG_Class ( ps->stats[ STAT_CLASS ] )->buildDist;
+	VectorCopy( ps->viewangles, angles );
+	VectorCopy( ps->origin, playerOrigin );
+	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist;
 
-	AngleVectors ( angles, forward, NULL, NULL );
-	ProjectPointOnPlane ( forward, forward, playerNormal );
-	VectorNormalize ( forward );
+	AngleVectors( angles, forward, NULL, NULL );
+	ProjectPointOnPlane( forward, forward, playerNormal );
+	VectorNormalize( forward );
 
-	VectorMA ( playerOrigin, buildDist, forward, entityOrigin );
+	VectorMA( playerOrigin, buildDist, forward, entityOrigin );
 
-	VectorCopy ( entityOrigin, targetOrigin );
+	VectorCopy( entityOrigin, targetOrigin );
 
 	//so buildings can be placed facing slopes
-	VectorMA ( entityOrigin, 32, playerNormal, entityOrigin );
+	VectorMA( entityOrigin, 32, playerNormal, entityOrigin );
 
 	//so buildings drop to floor
-	VectorMA ( targetOrigin, -128, playerNormal, targetOrigin );
+	VectorMA( targetOrigin, -128, playerNormal, targetOrigin );
 
 	// The mask is MASK_DEADSOLID on purpose to avoid collisions with other entities
-	( *trace ) ( tr, entityOrigin, mins, maxs, targetOrigin, ps->clientNum, MASK_DEADSOLID );
-	VectorCopy ( tr->endpos, entityOrigin );
-	VectorMA ( entityOrigin, 0.1f, playerNormal, outOrigin );
-	vectoangles ( forward, outAngles );
+	( *trace )( tr, entityOrigin, mins, maxs, targetOrigin, ps->clientNum, MASK_DEADSOLID );
+	VectorCopy( tr->endpos, entityOrigin );
+	VectorMA( entityOrigin, 0.1f, playerNormal, outOrigin );
+	vectoangles( forward, outAngles );
 }
 
 /*
@@ -3531,28 +3531,28 @@ BG_GetValueOfPlayer
 Returns the credit value of a player
 ===============
 */
-int BG_GetValueOfPlayer ( playerState_t *ps )
+int BG_GetValueOfPlayer( playerState_t *ps )
 {
 	int i, worth = 0;
 
-	worth = BG_Class ( ps->stats[ STAT_CLASS ] )->value;
+	worth = BG_Class( ps->stats[ STAT_CLASS ] )->value;
 
 	// Humans have worth from their equipment as well
-	if ( ps->stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if( ps->stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
-		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+		for( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 		{
-			if ( BG_InventoryContainsUpgrade ( i, ps->stats ) )
+			if( BG_InventoryContainsUpgrade( i, ps->stats ) )
 			{
-				worth += BG_Upgrade ( i )->price;
+				worth += BG_Upgrade( i )->price;
 			}
 		}
 
-		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+		for( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 		{
-			if ( BG_InventoryContainsWeapon ( i, ps->stats ) )
+			if( BG_InventoryContainsWeapon( i, ps->stats ) )
 			{
-				worth += BG_Weapon ( i )->price;
+				worth += BG_Weapon( i )->price;
 			}
 		}
 	}
@@ -3565,11 +3565,11 @@ int BG_GetValueOfPlayer ( playerState_t *ps )
 BG_PlayerCanChangeWeapon
 =================
 */
-qboolean BG_PlayerCanChangeWeapon ( playerState_t *ps )
+qboolean BG_PlayerCanChangeWeapon( playerState_t *ps )
 {
 	// Do not allow Lucifer Cannon "canceling" via weapon switch
-	if ( ps->weapon == WP_LUCIFER_CANNON &&
-	     ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_MIN )
+	if( ps->weapon == WP_LUCIFER_CANNON &&
+	    ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_MIN )
 	{
 		return qfalse;
 	}
@@ -3582,21 +3582,21 @@ qboolean BG_PlayerCanChangeWeapon ( playerState_t *ps )
 BG_PlayerPoisonCloudTime
 =================
 */
-int BG_PlayerPoisonCloudTime ( playerState_t *ps )
+int BG_PlayerPoisonCloudTime( playerState_t *ps )
 {
 	int time = LEVEL1_PCLOUD_TIME;
 
-	if ( BG_InventoryContainsUpgrade ( UP_BATTLESUIT, ps->stats ) )
+	if( BG_InventoryContainsUpgrade( UP_BATTLESUIT, ps->stats ) )
 	{
 		time -= BSUIT_PCLOUD_PROTECTION;
 	}
 
-	if ( BG_InventoryContainsUpgrade ( UP_HELMET, ps->stats ) )
+	if( BG_InventoryContainsUpgrade( UP_HELMET, ps->stats ) )
 	{
 		time -= HELMET_PCLOUD_PROTECTION;
 	}
 
-	if ( BG_InventoryContainsUpgrade ( UP_LIGHTARMOUR, ps->stats ) )
+	if( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, ps->stats ) )
 	{
 		time -= LIGHTARMOUR_PCLOUD_PROTECTION;
 	}
@@ -3612,9 +3612,9 @@ Returns the players current weapon or the weapon they are switching to.
 Only needs to be used for human weapons.
 =================
 */
-weapon_t BG_GetPlayerWeapon ( playerState_t *ps )
+weapon_t BG_GetPlayerWeapon( playerState_t *ps )
 {
-	if ( ps->persistant[ PERS_NEWWEAPON ] )
+	if( ps->persistant[ PERS_NEWWEAPON ] )
 	{
 		return ps->persistant[ PERS_NEWWEAPON ];
 	}
@@ -3629,13 +3629,13 @@ atof_neg
 atof with an allowance for negative values
 ===============
 */
-float atof_neg ( char *token, qboolean allowNegative )
+float atof_neg( char *token, qboolean allowNegative )
 {
 	float value;
 
-	value = atof ( token );
+	value = atof( token );
 
-	if ( !allowNegative && value < 0.0f )
+	if( !allowNegative && value < 0.0f )
 	{
 		value = 1.0f;
 	}
@@ -3650,13 +3650,13 @@ atoi_neg
 atoi with an allowance for negative values
 ===============
 */
-int atoi_neg ( char *token, qboolean allowNegative )
+int atoi_neg( char *token, qboolean allowNegative )
 {
 	int value;
 
-	value = atoi ( token );
+	value = atoi( token );
 
-	if ( !allowNegative && value < 0 )
+	if( !allowNegative && value < 0 )
 	{
 		value = 1;
 	}
@@ -3673,25 +3673,25 @@ BG_PackEntityNumbers
 Pack entity numbers into an entityState_t
 ===============
 */
-void BG_PackEntityNumbers ( entityState_t *es, const int *entityNums, int count )
+void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count )
 {
 	int i;
 
-	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
+	if( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
 		count = MAX_NUM_PACKED_ENTITY_NUMS;
-		Com_Printf ( S_COLOR_YELLOW "WARNING: A maximum of %d entity numbers can be "
-		             "packed, but BG_PackEntityNumbers was passed %d entities",
-		             MAX_NUM_PACKED_ENTITY_NUMS, count );
+		Com_Printf( S_COLOR_YELLOW "WARNING: A maximum of %d entity numbers can be "
+		            "packed, but BG_PackEntityNumbers was passed %d entities",
+		            MAX_NUM_PACKED_ENTITY_NUMS, count );
 	}
 
 	es->misc = es->time = es->time2 = es->constantLight = 0;
 
-	for ( i = 0; i < MAX_NUM_PACKED_ENTITY_NUMS; i++ )
+	for( i = 0; i < MAX_NUM_PACKED_ENTITY_NUMS; i++ )
 	{
 		int entityNum;
 
-		if ( i < count )
+		if( i < count )
 		{
 			entityNum = entityNums[ i ];
 		}
@@ -3700,13 +3700,13 @@ void BG_PackEntityNumbers ( entityState_t *es, const int *entityNums, int count 
 			entityNum = ENTITYNUM_NONE;
 		}
 
-		if ( entityNum & ~GENTITYNUM_MASK )
+		if( entityNum & ~GENTITYNUM_MASK )
 		{
-			Com_Error ( ERR_FATAL, "BG_PackEntityNumbers passed an entity number (%d) which "
-			            "exceeds %d bits", entityNum, GENTITYNUM_BITS );
+			Com_Error( ERR_FATAL, "BG_PackEntityNumbers passed an entity number (%d) which "
+			           "exceeds %d bits", entityNum, GENTITYNUM_BITS );
 		}
 
-		switch ( i )
+		switch( i )
 		{
 			case 0:
 				es->misc |= entityNum;
@@ -3749,7 +3749,7 @@ void BG_PackEntityNumbers ( entityState_t *es, const int *entityNums, int count 
 				break;
 
 			default:
-				Com_Error ( ERR_FATAL, "Entity index %d not handled", i );
+				Com_Error( ERR_FATAL, "Entity index %d not handled", i );
 				break;
 		}
 	}
@@ -3762,20 +3762,20 @@ BG_UnpackEntityNumbers
 Unpack entity numbers from an entityState_t
 ===============
 */
-int BG_UnpackEntityNumbers ( entityState_t *es, int *entityNums, int count )
+int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count )
 {
 	int i;
 
-	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
+	if( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
 		count = MAX_NUM_PACKED_ENTITY_NUMS;
 	}
 
-	for ( i = 0; i < count; i++ )
+	for( i = 0; i < count; i++ )
 	{
 		int *entityNum = &entityNums[ i ];
 
-		switch ( i )
+		switch( i )
 		{
 			case 0:
 				*entityNum = es->misc;
@@ -3818,13 +3818,13 @@ int BG_UnpackEntityNumbers ( entityState_t *es, int *entityNums, int count )
 				break;
 
 			default:
-				Com_Error ( ERR_FATAL, "Entity index %d not handled", i );
+				Com_Error( ERR_FATAL, "Entity index %d not handled", i );
 				break;
 		}
 
 		*entityNum &= GENTITYNUM_MASK;
 
-		if ( *entityNum == ENTITYNUM_NONE )
+		if( *entityNum == ENTITYNUM_NONE )
 		{
 			break;
 		}
@@ -3838,27 +3838,27 @@ int BG_UnpackEntityNumbers ( entityState_t *es, int *entityNums, int count )
 BG_ParseCSVEquipmentList
 ===============
 */
-void BG_ParseCSVEquipmentList ( const char *string, weapon_t *weapons, int weaponsSize,
-                                upgrade_t *upgrades, int upgradesSize )
+void BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weaponsSize,
+                               upgrade_t *upgrades, int upgradesSize )
 {
 	char     buffer[ MAX_STRING_CHARS ];
 	int      i = 0, j = 0;
 	char     *p, *q;
 	qboolean EOS = qfalse;
 
-	Q_strncpyz ( buffer, string, MAX_STRING_CHARS );
+	Q_strncpyz( buffer, string, MAX_STRING_CHARS );
 
 	p = q = buffer;
 
-	while ( *p != '\0' )
+	while( *p != '\0' )
 	{
 		//skip to first , or EOS
-		while ( *p != ',' && *p != '\0' )
+		while( *p != ',' && *p != '\0' )
 		{
 			p++;
 		}
 
-		if ( *p == '\0' )
+		if( *p == '\0' )
 		{
 			EOS = qtrue;
 		}
@@ -3866,36 +3866,36 @@ void BG_ParseCSVEquipmentList ( const char *string, weapon_t *weapons, int weapo
 		*p = '\0';
 
 		//strip leading whitespace
-		while ( *q == ' ' )
+		while( *q == ' ' )
 		{
 			q++;
 		}
 
-		if ( weaponsSize )
+		if( weaponsSize )
 		{
-			weapons[ i ] = BG_WeaponByName ( q )->number;
+			weapons[ i ] = BG_WeaponByName( q )->number;
 		}
 
-		if ( upgradesSize )
+		if( upgradesSize )
 		{
-			upgrades[ j ] = BG_UpgradeByName ( q )->number;
+			upgrades[ j ] = BG_UpgradeByName( q )->number;
 		}
 
-		if ( weaponsSize && weapons[ i ] == WP_NONE &&
-		     upgradesSize && upgrades[ j ] == UP_NONE )
+		if( weaponsSize && weapons[ i ] == WP_NONE &&
+		    upgradesSize && upgrades[ j ] == UP_NONE )
 		{
-			Com_Printf ( S_COLOR_YELLOW "WARNING: unknown equipment %s\n", q );
+			Com_Printf( S_COLOR_YELLOW "WARNING: unknown equipment %s\n", q );
 		}
-		else if ( weaponsSize && weapons[ i ] != WP_NONE )
+		else if( weaponsSize && weapons[ i ] != WP_NONE )
 		{
 			i++;
 		}
-		else if ( upgradesSize && upgrades[ j ] != UP_NONE )
+		else if( upgradesSize && upgrades[ j ] != UP_NONE )
 		{
 			j++;
 		}
 
-		if ( !EOS )
+		if( !EOS )
 		{
 			p++;
 			q = p;
@@ -3905,18 +3905,18 @@ void BG_ParseCSVEquipmentList ( const char *string, weapon_t *weapons, int weapo
 			break;
 		}
 
-		if ( i == ( weaponsSize - 1 ) || j == ( upgradesSize - 1 ) )
+		if( i == ( weaponsSize - 1 ) || j == ( upgradesSize - 1 ) )
 		{
 			break;
 		}
 	}
 
-	if ( weaponsSize )
+	if( weaponsSize )
 	{
 		weapons[ i ] = WP_NONE;
 	}
 
-	if ( upgradesSize )
+	if( upgradesSize )
 	{
 		upgrades[ j ] = UP_NONE;
 	}
@@ -3927,26 +3927,26 @@ void BG_ParseCSVEquipmentList ( const char *string, weapon_t *weapons, int weapo
 BG_ParseCSVClassList
 ===============
 */
-void BG_ParseCSVClassList ( const char *string, class_t *classes, int classesSize )
+void BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize )
 {
 	char     buffer[ MAX_STRING_CHARS ];
 	int      i = 0;
 	char     *p, *q;
 	qboolean EOS = qfalse;
 
-	Q_strncpyz ( buffer, string, MAX_STRING_CHARS );
+	Q_strncpyz( buffer, string, MAX_STRING_CHARS );
 
 	p = q = buffer;
 
-	while ( *p != '\0' && i < classesSize - 1 )
+	while( *p != '\0' && i < classesSize - 1 )
 	{
 		//skip to first , or EOS
-		while ( *p != ',' && *p != '\0' )
+		while( *p != ',' && *p != '\0' )
 		{
 			p++;
 		}
 
-		if ( *p == '\0' )
+		if( *p == '\0' )
 		{
 			EOS = qtrue;
 		}
@@ -3954,23 +3954,23 @@ void BG_ParseCSVClassList ( const char *string, class_t *classes, int classesSiz
 		*p = '\0';
 
 		//strip leading whitespace
-		while ( *q == ' ' )
+		while( *q == ' ' )
 		{
 			q++;
 		}
 
-		classes[ i ] = BG_ClassByName ( q )->number;
+		classes[ i ] = BG_ClassByName( q )->number;
 
-		if ( classes[ i ] == PCL_NONE )
+		if( classes[ i ] == PCL_NONE )
 		{
-			Com_Printf ( S_COLOR_YELLOW "WARNING: unknown class %s\n", q );
+			Com_Printf( S_COLOR_YELLOW "WARNING: unknown class %s\n", q );
 		}
 		else
 		{
 			i++;
 		}
 
-		if ( !EOS )
+		if( !EOS )
 		{
 			p++;
 			q = p;
@@ -3989,26 +3989,26 @@ void BG_ParseCSVClassList ( const char *string, class_t *classes, int classesSiz
 BG_ParseCSVBuildableList
 ===============
 */
-void BG_ParseCSVBuildableList ( const char *string, buildable_t *buildables, int buildablesSize )
+void BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize )
 {
 	char     buffer[ MAX_STRING_CHARS ];
 	int      i = 0;
 	char     *p, *q;
 	qboolean EOS = qfalse;
 
-	Q_strncpyz ( buffer, string, MAX_STRING_CHARS );
+	Q_strncpyz( buffer, string, MAX_STRING_CHARS );
 
 	p = q = buffer;
 
-	while ( *p != '\0' && i < buildablesSize - 1 )
+	while( *p != '\0' && i < buildablesSize - 1 )
 	{
 		//skip to first , or EOS
-		while ( *p != ',' && *p != '\0' )
+		while( *p != ',' && *p != '\0' )
 		{
 			p++;
 		}
 
-		if ( *p == '\0' )
+		if( *p == '\0' )
 		{
 			EOS = qtrue;
 		}
@@ -4016,23 +4016,23 @@ void BG_ParseCSVBuildableList ( const char *string, buildable_t *buildables, int
 		*p = '\0';
 
 		//strip leading whitespace
-		while ( *q == ' ' )
+		while( *q == ' ' )
 		{
 			q++;
 		}
 
-		buildables[ i ] = BG_BuildableByName ( q )->number;
+		buildables[ i ] = BG_BuildableByName( q )->number;
 
-		if ( buildables[ i ] == BA_NONE )
+		if( buildables[ i ] == BA_NONE )
 		{
-			Com_Printf ( S_COLOR_YELLOW "WARNING: unknown buildable %s\n", q );
+			Com_Printf( S_COLOR_YELLOW "WARNING: unknown buildable %s\n", q );
 		}
 		else
 		{
 			i++;
 		}
 
-		if ( !EOS )
+		if( !EOS )
 		{
 			p++;
 			q = p;
@@ -4061,28 +4061,28 @@ static gameElements_t bg_disabledGameElements;
 BG_InitAllowedGameElements
 ============
 */
-void BG_InitAllowedGameElements ( void )
+void BG_InitAllowedGameElements( void )
 {
 	char cvar[ MAX_CVAR_VALUE_STRING ];
 
-	trap_Cvar_VariableStringBuffer ( "g_disabledEquipment",
-	                                 cvar, MAX_CVAR_VALUE_STRING );
+	trap_Cvar_VariableStringBuffer( "g_disabledEquipment",
+	                                cvar, MAX_CVAR_VALUE_STRING );
 
-	BG_ParseCSVEquipmentList ( cvar,
-	                           bg_disabledGameElements.weapons, WP_NUM_WEAPONS,
-	                           bg_disabledGameElements.upgrades, UP_NUM_UPGRADES );
+	BG_ParseCSVEquipmentList( cvar,
+	                          bg_disabledGameElements.weapons, WP_NUM_WEAPONS,
+	                          bg_disabledGameElements.upgrades, UP_NUM_UPGRADES );
 
-	trap_Cvar_VariableStringBuffer ( "g_disabledClasses",
-	                                 cvar, MAX_CVAR_VALUE_STRING );
+	trap_Cvar_VariableStringBuffer( "g_disabledClasses",
+	                                cvar, MAX_CVAR_VALUE_STRING );
 
-	BG_ParseCSVClassList ( cvar,
-	                       bg_disabledGameElements.classes, PCL_NUM_CLASSES );
+	BG_ParseCSVClassList( cvar,
+	                      bg_disabledGameElements.classes, PCL_NUM_CLASSES );
 
-	trap_Cvar_VariableStringBuffer ( "g_disabledBuildables",
-	                                 cvar, MAX_CVAR_VALUE_STRING );
+	trap_Cvar_VariableStringBuffer( "g_disabledBuildables",
+	                                cvar, MAX_CVAR_VALUE_STRING );
 
-	BG_ParseCSVBuildableList ( cvar,
-	                           bg_disabledGameElements.buildables, BA_NUM_BUILDABLES );
+	BG_ParseCSVBuildableList( cvar,
+	                          bg_disabledGameElements.buildables, BA_NUM_BUILDABLES );
 }
 
 /*
@@ -4090,14 +4090,14 @@ void BG_InitAllowedGameElements ( void )
 BG_WeaponIsAllowed
 ============
 */
-qboolean BG_WeaponIsAllowed ( weapon_t weapon )
+qboolean BG_WeaponIsAllowed( weapon_t weapon )
 {
 	int i;
 
-	for ( i = 0; i < WP_NUM_WEAPONS &&
-	      bg_disabledGameElements.weapons[ i ] != WP_NONE; i++ )
+	for( i = 0; i < WP_NUM_WEAPONS &&
+	     bg_disabledGameElements.weapons[ i ] != WP_NONE; i++ )
 	{
-		if ( bg_disabledGameElements.weapons[ i ] == weapon )
+		if( bg_disabledGameElements.weapons[ i ] == weapon )
 		{
 			return qfalse;
 		}
@@ -4111,14 +4111,14 @@ qboolean BG_WeaponIsAllowed ( weapon_t weapon )
 BG_UpgradeIsAllowed
 ============
 */
-qboolean BG_UpgradeIsAllowed ( upgrade_t upgrade )
+qboolean BG_UpgradeIsAllowed( upgrade_t upgrade )
 {
 	int i;
 
-	for ( i = 0; i < UP_NUM_UPGRADES &&
-	      bg_disabledGameElements.upgrades[ i ] != UP_NONE; i++ )
+	for( i = 0; i < UP_NUM_UPGRADES &&
+	     bg_disabledGameElements.upgrades[ i ] != UP_NONE; i++ )
 	{
-		if ( bg_disabledGameElements.upgrades[ i ] == upgrade )
+		if( bg_disabledGameElements.upgrades[ i ] == upgrade )
 		{
 			return qfalse;
 		}
@@ -4132,14 +4132,14 @@ qboolean BG_UpgradeIsAllowed ( upgrade_t upgrade )
 BG_ClassIsAllowed
 ============
 */
-qboolean BG_ClassIsAllowed ( class_t class )
+qboolean BG_ClassIsAllowed( class_t class )
 {
 	int i;
 
-	for ( i = 0; i < PCL_NUM_CLASSES &&
-	      bg_disabledGameElements.classes[ i ] != PCL_NONE; i++ )
+	for( i = 0; i < PCL_NUM_CLASSES &&
+	     bg_disabledGameElements.classes[ i ] != PCL_NONE; i++ )
 	{
-		if ( bg_disabledGameElements.classes[ i ] == class )
+		if( bg_disabledGameElements.classes[ i ] == class )
 		{
 			return qfalse;
 		}
@@ -4153,14 +4153,14 @@ qboolean BG_ClassIsAllowed ( class_t class )
 BG_BuildableIsAllowed
 ============
 */
-qboolean BG_BuildableIsAllowed ( buildable_t buildable )
+qboolean BG_BuildableIsAllowed( buildable_t buildable )
 {
 	int i;
 
-	for ( i = 0; i < BA_NUM_BUILDABLES &&
-	      bg_disabledGameElements.buildables[ i ] != BA_NONE; i++ )
+	for( i = 0; i < BA_NUM_BUILDABLES &&
+	     bg_disabledGameElements.buildables[ i ] != BA_NONE; i++ )
 	{
-		if ( bg_disabledGameElements.buildables[ i ] == buildable )
+		if( bg_disabledGameElements.buildables[ i ] == buildable )
 		{
 			return qfalse;
 		}
@@ -4174,24 +4174,24 @@ qboolean BG_BuildableIsAllowed ( buildable_t buildable )
 BG_PrimaryWeapon
 ============
 */
-weapon_t BG_PrimaryWeapon ( int stats[]  )
+weapon_t BG_PrimaryWeapon( int stats[] )
 {
 	int i;
 
-	for ( i = WP_NONE; i < WP_NUM_WEAPONS; i++ )
+	for( i = WP_NONE; i < WP_NUM_WEAPONS; i++ )
 	{
-		if ( BG_Weapon ( i )->slots != SLOT_WEAPON )
+		if( BG_Weapon( i )->slots != SLOT_WEAPON )
 		{
 			continue;
 		}
 
-		if ( BG_InventoryContainsWeapon ( i, stats ) )
+		if( BG_InventoryContainsWeapon( i, stats ) )
 		{
 			return i;
 		}
 	}
 
-	if ( BG_InventoryContainsWeapon ( WP_BLASTER, stats ) )
+	if( BG_InventoryContainsWeapon( WP_BLASTER, stats ) )
 	{
 		return WP_BLASTER;
 	}
@@ -4204,7 +4204,7 @@ weapon_t BG_PrimaryWeapon ( int stats[]  )
 BG_LoadEmoticons
 ============
 */
-int BG_LoadEmoticons ( emoticon_t *emoticons, int num )
+int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 {
 	int  numFiles;
 	char fileList[ MAX_EMOTICONS * ( MAX_EMOTICON_NAME_LEN + 9 ) ] = { "" };
@@ -4213,10 +4213,10 @@ int BG_LoadEmoticons ( emoticon_t *emoticons, int num )
 	int  fileLen;
 	int  count;
 
-	numFiles = trap_FS_GetFileList ( "emoticons", "x1.tga", fileList,
-	                                 sizeof ( fileList ) );
+	numFiles = trap_FS_GetFileList( "emoticons", "x1.tga", fileList,
+	                                sizeof( fileList ) );
 
-	if ( numFiles < 1 )
+	if( numFiles < 1 )
 	{
 		return 0;
 	}
@@ -4225,40 +4225,40 @@ int BG_LoadEmoticons ( emoticon_t *emoticons, int num )
 	fileLen = 0;
 	count = 0;
 
-	for ( i = 0; i < numFiles && count < num; i++, filePtr += fileLen + 1 )
+	for( i = 0; i < numFiles && count < num; i++, filePtr += fileLen + 1 )
 	{
-		fileLen = strlen ( filePtr );
+		fileLen = strlen( filePtr );
 
-		if ( fileLen < 9 || filePtr[ fileLen - 8 ] != '_' ||
-		     filePtr[ fileLen - 7 ] < '1' || filePtr[ fileLen - 7 ] > '9' )
+		if( fileLen < 9 || filePtr[ fileLen - 8 ] != '_' ||
+		    filePtr[ fileLen - 7 ] < '1' || filePtr[ fileLen - 7 ] > '9' )
 		{
-			Com_Printf ( S_COLOR_YELLOW "skipping invalidly named emoticon \"%s\"\n",
-			             filePtr );
+			Com_Printf( S_COLOR_YELLOW "skipping invalidly named emoticon \"%s\"\n",
+			            filePtr );
 			continue;
 		}
 
-		if ( fileLen - 8 > MAX_EMOTICON_NAME_LEN )
+		if( fileLen - 8 > MAX_EMOTICON_NAME_LEN )
 		{
-			Com_Printf ( S_COLOR_YELLOW "emoticon file name \"%s\" too long (>%d)\n",
-			             filePtr, MAX_EMOTICON_NAME_LEN + 8 );
+			Com_Printf( S_COLOR_YELLOW "emoticon file name \"%s\" too long (>%d)\n",
+			            filePtr, MAX_EMOTICON_NAME_LEN + 8 );
 			continue;
 		}
 
-		if ( !trap_FS_FOpenFile ( va ( "emoticons/%s", filePtr ), NULL, FS_READ ) )
+		if( !trap_FS_FOpenFile( va( "emoticons/%s", filePtr ), NULL, FS_READ ) )
 		{
-			Com_Printf ( S_COLOR_YELLOW "could not open \"emoticons/%s\"\n", filePtr );
+			Com_Printf( S_COLOR_YELLOW "could not open \"emoticons/%s\"\n", filePtr );
 			continue;
 		}
 
-		Q_strncpyz ( emoticons[ count ].name, filePtr, fileLen - 8 + 1 );
+		Q_strncpyz( emoticons[ count ].name, filePtr, fileLen - 8 + 1 );
 #ifndef GAME
 		emoticons[ count ].width = filePtr[ fileLen - 7 ] - '0';
 #endif
 		count++;
 	}
 
-	Com_Printf ( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n",
-	             count, numFiles, MAX_EMOTICONS );
+	Com_Printf( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n",
+	            count, numFiles, MAX_EMOTICONS );
 	return count;
 }
 
@@ -4267,19 +4267,19 @@ int BG_LoadEmoticons ( emoticon_t *emoticons, int num )
 BG_TeamName
 ============
 */
-char *BG_TeamName ( team_t team )
+char *BG_TeamName( team_t team )
 {
-	if ( team == TEAM_NONE )
+	if( team == TEAM_NONE )
 	{
 		return "spectator";
 	}
 
-	if ( team == TEAM_ALIENS )
+	if( team == TEAM_ALIENS )
 	{
 		return "alien";
 	}
 
-	if ( team == TEAM_HUMANS )
+	if( team == TEAM_HUMANS )
 	{
 		return "human";
 	}
@@ -4287,7 +4287,7 @@ char *BG_TeamName ( team_t team )
 	return "<team>";
 }
 
-int cmdcmp ( const void *a, const void *b )
+int cmdcmp( const void *a, const void *b )
 {
-	return Q_stricmp ( ( const char * ) a, ( ( dummyCmd_t * ) b )->name );
+	return Q_stricmp( ( const char * ) a, ( ( dummyCmd_t * ) b )->name );
 }

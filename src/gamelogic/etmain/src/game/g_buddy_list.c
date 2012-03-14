@@ -129,12 +129,12 @@ void G_SetWayPoint( gentity_t *ent, wayPointType_t wayPointType, vec3_t loc ) {
         }
 }*/
 
-void G_RemoveFromAllIgnoreLists ( int clientNum )
+void G_RemoveFromAllIgnoreLists( int clientNum )
 {
 	int i;
 
-	for ( i = 0; i < MAX_CLIENTS; i++ )
+	for( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		COM_BitClear ( level.clients[ i ].sess.ignoreClients, clientNum );
+		COM_BitClear( level.clients[ i ].sess.ignoreClients, clientNum );
 	}
 }

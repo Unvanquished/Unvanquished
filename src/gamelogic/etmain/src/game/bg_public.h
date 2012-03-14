@@ -306,8 +306,8 @@ typedef struct
 	cpsCampaign_t campaigns[ MAX_CAMPAIGNS ];
 } cpsFile_t;
 
-qboolean BG_LoadCampaignSave ( const char *filename, cpsFile_t *file, const char *profile );
-qboolean BG_StoreCampaignSave ( const char *filename, cpsFile_t *file, const char *profile );
+qboolean BG_LoadCampaignSave( const char *filename, cpsFile_t *file, const char *profile );
+qboolean BG_StoreCampaignSave( const char *filename, cpsFile_t *file, const char *profile );
 
 typedef struct
 {
@@ -603,16 +603,16 @@ typedef struct
 
 	// callbacks to test the world
 	// these will be different functions during game and cgame
-	void            ( *trace ) ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-	                             int passEntityNum, int contentMask );
-	int             ( *pointcontents ) ( const vec3_t point, int passEntityNum );
+	void ( *trace )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+	                 int passEntityNum, int contentMask );
+	int ( *pointcontents )( const vec3_t point, int passEntityNum );
 } pmove_t;
 
 // if a full pmove isn't done on the client, you can just update the angles
-void PM_UpdateViewAngles ( playerState_t *ps, pmoveExt_t *pmext, usercmd_t *cmd,
-                           void ( trace ) ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-                               const vec3_t end, int passEntityNum, int contentMask ), int tracemask );
-int  Pmove ( pmove_t *pmove );
+void PM_UpdateViewAngles( playerState_t *ps, pmoveExt_t *pmext, usercmd_t *cmd,
+                          void ( trace )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+                              const vec3_t end, int passEntityNum, int contentMask ), int tracemask );
+int  Pmove( pmove_t *pmove );
 
 //===================================================================================
 
@@ -949,7 +949,7 @@ typedef struct ammotable_s
 } ammotable_t;
 
 // Lookup table to find ammo table entry
-extern ammotable_t *GetAmmoTableData ( int ammoIndex );
+extern ammotable_t *GetAmmoTableData( int ammoIndex );
 
 extern int         weapAlts[]; // defined in bg_misc.c
 
@@ -1586,27 +1586,27 @@ typedef struct gitem_s
 extern gitem_t bg_itemlist[];
 extern int     bg_numItems;
 
-gitem_t        *BG_FindItem ( const char *pickupName );
-gitem_t        *BG_FindItemForClassName ( const char *className );
-gitem_t        *BG_FindItemForWeapon ( weapon_t weapon );
-gitem_t        *BG_FindItemForPowerup ( powerup_t pw );
-gitem_t        *BG_FindItemForHoldable ( holdable_t pw );
-gitem_t        *BG_FindItemForAmmo ( int weapon );
+gitem_t        *BG_FindItem( const char *pickupName );
+gitem_t        *BG_FindItemForClassName( const char *className );
+gitem_t        *BG_FindItemForWeapon( weapon_t weapon );
+gitem_t        *BG_FindItemForPowerup( powerup_t pw );
+gitem_t        *BG_FindItemForHoldable( holdable_t pw );
+gitem_t        *BG_FindItemForAmmo( int weapon );
 
 //gitem_t *BG_FindItemForKey        ( wkey_t k, int *index );
-weapon_t       BG_FindAmmoForWeapon ( weapon_t weapon );
-weapon_t       BG_FindClipForWeapon ( weapon_t weapon );
+weapon_t       BG_FindAmmoForWeapon( weapon_t weapon );
+weapon_t       BG_FindClipForWeapon( weapon_t weapon );
 
-qboolean       BG_AkimboFireSequence ( int weapon, int akimboClip, int mainClip );
-qboolean       BG_IsAkimboWeapon ( int weaponNum );
-qboolean       BG_IsAkimboSideArm ( int weaponNum, playerState_t *ps );
-int            BG_AkimboSidearm ( int weaponNum );
+qboolean       BG_AkimboFireSequence( int weapon, int akimboClip, int mainClip );
+qboolean       BG_IsAkimboWeapon( int weaponNum );
+qboolean       BG_IsAkimboSideArm( int weaponNum, playerState_t *ps );
+int            BG_AkimboSidearm( int weaponNum );
 
 #define ITEM_INDEX( x ) ( ( x ) - bg_itemlist )
 
-qboolean BG_CanUseWeapon ( int classNum, int teamNum, weapon_t weapon );
+qboolean BG_CanUseWeapon( int classNum, int teamNum, weapon_t weapon );
 
-qboolean BG_CanItemBeGrabbed ( const entityState_t *ent, const playerState_t *ps, int *skill, int teamNum );
+qboolean BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps, int *skill, int teamNum );
 
 // content masks
 #define MASK_ALL         ( -1 )
@@ -1680,29 +1680,29 @@ typedef enum
   HINT_NUM_HINTS
 } hintType_t;
 
-void BG_EvaluateTrajectory ( const trajectory_t *tr, int atTime, vec3_t result, qboolean isAngle, int splinePath );
-void BG_EvaluateTrajectoryDelta ( const trajectory_t *tr, int atTime, vec3_t result, qboolean isAngle, int splineData );
-void BG_GetMarkDir ( const vec3_t dir, const vec3_t normal, vec3_t out );
+void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, qboolean isAngle, int splinePath );
+void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result, qboolean isAngle, int splineData );
+void BG_GetMarkDir( const vec3_t dir, const vec3_t normal, vec3_t out );
 
-void BG_AddPredictableEventToPlayerstate ( int newEvent, int eventParm, playerState_t *ps );
+void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
 
 //void  BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad );
 
-void     BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean snap );
-void     BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *s, int time, qboolean snap );
-weapon_t BG_DuplicateWeapon ( weapon_t weap );
-gitem_t  *BG_ValidStatWeapon ( weapon_t weap );
-weapon_t BG_WeaponForMOD ( int MOD );
+void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
+void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
+weapon_t BG_DuplicateWeapon( weapon_t weap );
+gitem_t  *BG_ValidStatWeapon( weapon_t weap );
+weapon_t BG_WeaponForMOD( int MOD );
 
-qboolean BG_WeaponInWolfMP ( int weapon );
-qboolean BG_PlayerTouchesItem ( playerState_t *ps, entityState_t *item, int atTime );
-qboolean BG_PlayerSeesItem ( playerState_t *ps, entityState_t *item, int atTime );
-qboolean BG_AddMagicAmmo ( playerState_t *ps, int *skill, int teamNum, int numOfClips );
+qboolean BG_WeaponInWolfMP( int weapon );
+qboolean BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
+qboolean BG_PlayerSeesItem( playerState_t *ps, entityState_t *item, int atTime );
+qboolean BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfClips );
 
 #define OVERCLIP 1.001
 
 //----(SA)  removed PM_ammoNeeded 11/27/00
-void PM_ClipVelocity ( vec3_t in, vec3_t normal, vec3_t out, float overbounce );
+void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce );
 
 //#define ARENAS_PER_TIER       4
 #define MAX_ARENAS         64
@@ -1940,8 +1940,8 @@ typedef struct
 	// pointers to functions from the owning module
 	//
 	// TTimo: constify the arg
-	int             ( *soundIndex ) ( const char *name );
-	void            ( *playSound ) ( int soundIndex, vec3_t org, int clientNum );
+	int ( *soundIndex )( const char *name );
+	void ( *playSound )( int soundIndex, vec3_t org, int clientNum );
 } animScriptData_t;
 
 //------------------------------------------------------------------
@@ -2097,49 +2097,49 @@ SAVE
 // Global Function Decs
 
 //animModelInfo_t *BG_ModelInfoForModelname( char *modelname );
-void                    BG_InitWeaponStrings ( void );
-void                    BG_AnimParseAnimScript ( animModelInfo_t *modelInfo, animScriptData_t *scriptData, const char *filename,
+void                    BG_InitWeaponStrings( void );
+void                    BG_AnimParseAnimScript( animModelInfo_t *modelInfo, animScriptData_t *scriptData, const char *filename,
     char *input );
-int                     BG_AnimScriptAnimation ( playerState_t *ps, animModelInfo_t *modelInfo, scriptAnimMoveTypes_t movetype,
+int                     BG_AnimScriptAnimation( playerState_t *ps, animModelInfo_t *modelInfo, scriptAnimMoveTypes_t movetype,
     qboolean isContinue );
-int                     BG_AnimScriptCannedAnimation ( playerState_t *ps, animModelInfo_t *modelInfo );
-int                     BG_AnimScriptEvent ( playerState_t *ps, animModelInfo_t *modelInfo, scriptAnimEventTypes_t event,
+int                     BG_AnimScriptCannedAnimation( playerState_t *ps, animModelInfo_t *modelInfo );
+int                     BG_AnimScriptEvent( playerState_t *ps, animModelInfo_t *modelInfo, scriptAnimEventTypes_t event,
     qboolean isContinue, qboolean force );
-int                     BG_IndexForString ( char *token, animStringItem_t *strings, qboolean allowFail );
-int                     BG_PlayAnimName ( playerState_t *ps, animModelInfo_t *animModelInfo, char *animName, animBodyPart_t bodyPart,
+int                     BG_IndexForString( char *token, animStringItem_t *strings, qboolean allowFail );
+int                     BG_PlayAnimName( playerState_t *ps, animModelInfo_t *animModelInfo, char *animName, animBodyPart_t bodyPart,
     qboolean setTimer, qboolean isContinue, qboolean force );
-void                    BG_ClearAnimTimer ( playerState_t *ps, animBodyPart_t bodyPart );
-qboolean                BG_ValidAnimScript ( int clientNum );
-char                    *BG_GetAnimString ( animModelInfo_t *animModelInfo, int anim );
-void                    BG_UpdateConditionValue ( int client, int condition, int value, qboolean checkConversion );
-int                     BG_GetConditionValue ( int client, int condition, qboolean checkConversion );
-qboolean                BG_GetConditionBitFlag ( int client, int condition, int bitNumber );
-void                    BG_SetConditionBitFlag ( int client, int condition, int bitNumber );
-void                    BG_ClearConditionBitFlag ( int client, int condition, int bitNumber );
-int                     BG_GetAnimScriptAnimation ( int client, animModelInfo_t *animModelInfo, aistateEnum_t aistate,
+void                    BG_ClearAnimTimer( playerState_t *ps, animBodyPart_t bodyPart );
+qboolean                BG_ValidAnimScript( int clientNum );
+char                    *BG_GetAnimString( animModelInfo_t *animModelInfo, int anim );
+void                    BG_UpdateConditionValue( int client, int condition, int value, qboolean checkConversion );
+int                     BG_GetConditionValue( int client, int condition, qboolean checkConversion );
+qboolean                BG_GetConditionBitFlag( int client, int condition, int bitNumber );
+void                    BG_SetConditionBitFlag( int client, int condition, int bitNumber );
+void                    BG_ClearConditionBitFlag( int client, int condition, int bitNumber );
+int                     BG_GetAnimScriptAnimation( int client, animModelInfo_t *animModelInfo, aistateEnum_t aistate,
     scriptAnimMoveTypes_t movetype );
-void                    BG_AnimUpdatePlayerStateConditions ( pmove_t *pmove );
-animation_t             *BG_AnimationForString ( char *string, animModelInfo_t *animModelInfo );
-animation_t             *BG_GetAnimationForIndex ( animModelInfo_t *animModelInfo, int index );
-int                     BG_GetAnimScriptEvent ( playerState_t *ps, scriptAnimEventTypes_t event );
-int                     PM_IdleAnimForWeapon ( int weapon );
-int                     PM_RaiseAnimForWeapon ( int weapon );
-void                    PM_ContinueWeaponAnim ( int anim );
+void                    BG_AnimUpdatePlayerStateConditions( pmove_t *pmove );
+animation_t             *BG_AnimationForString( char *string, animModelInfo_t *animModelInfo );
+animation_t             *BG_GetAnimationForIndex( animModelInfo_t *animModelInfo, int index );
+int                     BG_GetAnimScriptEvent( playerState_t *ps, scriptAnimEventTypes_t event );
+int                     PM_IdleAnimForWeapon( int weapon );
+int                     PM_RaiseAnimForWeapon( int weapon );
+void                    PM_ContinueWeaponAnim( int anim );
 
 extern animStringItem_t animStateStr[];
 extern animStringItem_t animBodyPartsStr[];
 
-bg_playerclass_t        *BG_GetPlayerClassInfo ( int team, int cls );
-bg_playerclass_t        *BG_PlayerClassForPlayerState ( playerState_t *ps );
-qboolean                BG_ClassHasWeapon ( bg_playerclass_t *classInfo, weapon_t weap );
-qboolean                BG_WeaponIsPrimaryForClassAndTeam ( int classnum, team_t team, weapon_t weapon );
-int                     BG_ClassWeaponCount ( bg_playerclass_t *classInfo, team_t team );
-const char              *BG_ShortClassnameForNumber ( int classNum );
-const char              *BG_ClassnameForNumber ( int classNum );
-const char              *BG_ClassLetterForNumber ( int classNum );
+bg_playerclass_t        *BG_GetPlayerClassInfo( int team, int cls );
+bg_playerclass_t        *BG_PlayerClassForPlayerState( playerState_t *ps );
+qboolean                BG_ClassHasWeapon( bg_playerclass_t *classInfo, weapon_t weap );
+qboolean                BG_WeaponIsPrimaryForClassAndTeam( int classnum, team_t team, weapon_t weapon );
+int                     BG_ClassWeaponCount( bg_playerclass_t *classInfo, team_t team );
+const char              *BG_ShortClassnameForNumber( int classNum );
+const char              *BG_ClassnameForNumber( int classNum );
+const char              *BG_ClassLetterForNumber( int classNum );
 
-void                    BG_DisableClassWeapon ( bg_playerclass_t *classinfo, int weapon );
-void                    BG_DisableWeaponForAllClasses ( int weapon );
+void                    BG_DisableClassWeapon( bg_playerclass_t *classinfo, int weapon );
+void                    BG_DisableWeaponForAllClasses( int weapon );
 
 extern bg_playerclass_t bg_allies_playerclasses[ NUM_PLAYER_CLASSES ];
 extern bg_playerclass_t bg_axis_playerclasses[ NUM_PLAYER_CLASSES ];
@@ -2214,20 +2214,20 @@ struct splinePath_s
 extern int          numSplinePaths;
 extern splinePath_t splinePaths[ MAX_SPLINE_PATHS ];
 
-pathCorner_t        *BG_Find_PathCorner ( const char *match );
-splinePath_t        *BG_GetSplineData ( int number, qboolean *backwards );
-void                BG_AddPathCorner ( const char *name, vec3_t origin );
-splinePath_t        *BG_AddSplinePath ( const char *name, const char *target, vec3_t origin );
+pathCorner_t        *BG_Find_PathCorner( const char *match );
+splinePath_t        *BG_GetSplineData( int number, qboolean *backwards );
+void                BG_AddPathCorner( const char *name, vec3_t origin );
+splinePath_t        *BG_AddSplinePath( const char *name, const char *target, vec3_t origin );
 void                BG_BuildSplinePaths();
-splinePath_t        *BG_Find_Spline ( const char *match );
-float               BG_SplineLength ( splinePath_t *pSpline );
-void                BG_AddSplineControl ( splinePath_t *spline, const char *name );
-void                BG_LinearPathOrigin2 ( float radius, splinePath_t **pSpline, float *deltaTime, vec3_t result, qboolean backwards );
+splinePath_t        *BG_Find_Spline( const char *match );
+float               BG_SplineLength( splinePath_t *pSpline );
+void                BG_AddSplineControl( splinePath_t *spline, const char *name );
+void                BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTime, vec3_t result, qboolean backwards );
 
-int                 BG_MaxAmmoForWeapon ( weapon_t weaponNum, int *skill );
+int                 BG_MaxAmmoForWeapon( weapon_t weaponNum, int *skill );
 
-void                BG_InitLocations ( vec2_t world_mins, vec2_t world_maxs );
-char                *BG_GetLocationString ( vec_t *pos );
+void                BG_InitLocations( vec2_t world_mins, vec2_t world_maxs );
+char                *BG_GetLocationString( vec_t *pos );
 
 // START Mad Doc - TDF
 typedef struct botpool_x
@@ -2253,64 +2253,64 @@ typedef struct
 	qboolean priv;
 } fireteamData_t;
 
-long        BG_StringHashValue ( const char *fname );
-long        BG_StringHashValue_Lwr ( const char *fname );
+long        BG_StringHashValue( const char *fname );
+long        BG_StringHashValue_Lwr( const char *fname );
 
-void        BG_RotatePoint ( vec3_t point, const vec3_t matrix[ 3 ] );
+void        BG_RotatePoint( vec3_t point, const vec3_t matrix[ 3 ] );
 
-void        BG_TransposeMatrix ( const vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] );
-void        BG_CreateRotationMatrix ( const vec3_t angles, vec3_t matrix[ 3 ] );
+void        BG_TransposeMatrix( const vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] );
+void        BG_CreateRotationMatrix( const vec3_t angles, vec3_t matrix[ 3 ] );
 
-int         trap_PC_AddGlobalDefine ( char *define );
-int         trap_PC_LoadSource ( const char *filename );
-int         trap_PC_FreeSource ( int handle );
-int         trap_PC_ReadToken ( int handle, pc_token_t *pc_token );
-int         trap_PC_SourceFileAndLine ( int handle, char *filename, int *line );
-int         trap_PC_UnReadToken ( int handle );
+int         trap_PC_AddGlobalDefine( char *define );
+int         trap_PC_LoadSource( const char *filename );
+int         trap_PC_FreeSource( int handle );
+int         trap_PC_ReadToken( int handle, pc_token_t *pc_token );
+int         trap_PC_SourceFileAndLine( int handle, char *filename, int *line );
+int         trap_PC_UnReadToken( int handle );
 
-void        PC_SourceError ( int handle, char *format, ... ) __attribute__ ( ( format ( printf, 2, 3 ) ) );
-void        PC_SourceWarning ( int handle, char *format, ... ) __attribute__ ( ( format ( printf, 2, 3 ) ) );
+void        PC_SourceError( int handle, char *format, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
+void        PC_SourceWarning( int handle, char *format, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
 
 #ifdef GAMEDLL
-const char  *PC_String_Parse ( int handle );
-const char  *PC_Line_Parse ( int handle );
+const char  *PC_String_Parse( int handle );
+const char  *PC_Line_Parse( int handle );
 
 #else
-const char  *String_Alloc ( const char *p );
-qboolean    PC_String_Parse ( int handle, const char **out );
+const char  *String_Alloc( const char *p );
+qboolean    PC_String_Parse( int handle, const char **out );
 
 #endif
-qboolean    PC_String_ParseNoAlloc ( int handle, char *out, size_t size );
-qboolean    PC_Int_Parse ( int handle, int *i );
-qboolean    PC_Color_Parse ( int handle, vec4_t *c );
-qboolean    PC_Vec_Parse ( int handle, vec3_t *c );
-qboolean    PC_Float_Parse ( int handle, float *f );
+qboolean    PC_String_ParseNoAlloc( int handle, char *out, size_t size );
+qboolean    PC_Int_Parse( int handle, int *i );
+qboolean    PC_Color_Parse( int handle, vec4_t *c );
+qboolean    PC_Vec_Parse( int handle, vec3_t *c );
+qboolean    PC_Float_Parse( int handle, float *f );
 
-void        BG_AdjustAAGunMuzzleForBarrel ( vec_t *origin, vec_t *forward, vec_t *right, vec_t *up, int barrel );
+void        BG_AdjustAAGunMuzzleForBarrel( vec_t *origin, vec_t *forward, vec_t *right, vec_t *up, int barrel );
 
-int         BG_ClassTextToClass ( char *token );
-skillType_t BG_ClassSkillForClass ( int classnum );
+int         BG_ClassTextToClass( char *token );
+skillType_t BG_ClassSkillForClass( int classnum );
 
-qboolean    BG_isLightWeaponSupportingFastReload ( int weapon );
-qboolean    BG_IsScopedWeapon ( int weapon );
+qboolean    BG_isLightWeaponSupportingFastReload( int weapon );
+qboolean    BG_IsScopedWeapon( int weapon );
 
-int         BG_FootstepForSurface ( int surfaceFlags );
+int         BG_FootstepForSurface( int surfaceFlags );
 
 #define MATCH_MINPLAYERS "4" //"1"  // Minimum # of players needed to start a match
 
 // Multiview support
-int  BG_simpleHintsCollapse ( int hint, int val );
-int  BG_simpleHintsExpand ( int hint, int val );
-int  BG_simpleWeaponState ( int ws );
+int  BG_simpleHintsCollapse( int hint, int val );
+int  BG_simpleHintsExpand( int hint, int val );
+int  BG_simpleWeaponState( int ws );
 
 // Color escape handling
-int  BG_colorstrncpyz ( char *in, char *out, int str_max, int out_max );
-int  BG_drawStrlen ( const char *str );
-int  BG_strRelPos ( char *in, int index );
-int  BG_cleanName ( const char *pszIn, char *pszOut, int dwMaxLength, qboolean fCRLF ); // CHRUKER: b069 - Cleaned up a few compiler warnings
+int  BG_colorstrncpyz( char *in, char *out, int str_max, int out_max );
+int  BG_drawStrlen( const char *str );
+int  BG_strRelPos( char *in, int index );
+int  BG_cleanName( const char *pszIn, char *pszOut, int dwMaxLength, qboolean fCRLF );  // CHRUKER: b069 - Cleaned up a few compiler warnings
 
 // Crosshair support
-void BG_setCrosshair ( char *colString, float *col, float alpha, char *cvarName );
+void BG_setCrosshair( char *colString, float *col, float alpha, char *cvarName );
 
 // Voting
 #define VOTING_DISABLED ( ( 1 << numVotesAvailable ) - 1 )
@@ -2326,21 +2326,21 @@ extern int              numVotesAvailable;
 
 // Tracemap
 #ifdef CGAMEDLL
-void     CG_GenerateTracemap ( void );
+void     CG_GenerateTracemap( void );
 
 #endif // CGAMEDLL
-qboolean BG_LoadTraceMap ( char *rawmapname, vec2_t world_mins, vec2_t world_maxs );
-float    BG_GetSkyHeightAtPoint ( vec3_t pos );
-float    BG_GetSkyGroundHeightAtPoint ( vec3_t pos );
-float    BG_GetGroundHeightAtPoint ( vec3_t pos );
-int      BG_GetTracemapGroundFloor ( void );
-int      BG_GetTracemapGroundCeil ( void );
+qboolean BG_LoadTraceMap( char *rawmapname, vec2_t world_mins, vec2_t world_maxs );
+float    BG_GetSkyHeightAtPoint( vec3_t pos );
+float    BG_GetSkyGroundHeightAtPoint( vec3_t pos );
+float    BG_GetGroundHeightAtPoint( vec3_t pos );
+int      BG_GetTracemapGroundFloor( void );
+int      BG_GetTracemapGroundCeil( void );
 
 //
 // bg_animgroup.c
 //
-void     BG_ClearAnimationPool ( void );
-qboolean BG_R_RegisterAnimationGroup ( const char *filename, animModelInfo_t *animModelInfo );
+void     BG_ClearAnimationPool( void );
+qboolean BG_R_RegisterAnimationGroup( const char *filename, animModelInfo_t *animModelInfo );
 
 //
 // bg_character.c
@@ -2359,12 +2359,12 @@ typedef struct bg_characterDef_s
 	char hudheadskin[ MAX_QPATH ];
 } bg_characterDef_t;
 
-qboolean       BG_ParseCharacterFile ( const char *filename, bg_characterDef_t *characterDef );
-bg_character_t *BG_GetCharacter ( int team, int cls );
-bg_character_t *BG_GetCharacterForPlayerstate ( playerState_t *ps );
-void           BG_ClearCharacterPool ( void );
-bg_character_t *BG_FindFreeCharacter ( const char *characterFile );
-bg_character_t *BG_FindCharacter ( const char *characterFile );
+qboolean       BG_ParseCharacterFile( const char *filename, bg_characterDef_t *characterDef );
+bg_character_t *BG_GetCharacter( int team, int cls );
+bg_character_t *BG_GetCharacterForPlayerstate( playerState_t *ps );
+void           BG_ClearCharacterPool( void );
+bg_character_t *BG_FindFreeCharacter( const char *characterFile );
+bg_character_t *BG_FindCharacter( const char *characterFile );
 
 //
 // bg_sscript.c
@@ -2403,13 +2403,13 @@ typedef struct bg_speaker_s
 	int                    soundTime;
 } bg_speaker_t;
 
-void               BG_ClearScriptSpeakerPool ( void );
-int                BG_NumScriptSpeakers ( void );
-int                BG_GetIndexForSpeaker ( bg_speaker_t *speaker );
-bg_speaker_t       *BG_GetScriptSpeaker ( int index );
-qboolean           BG_SS_DeleteSpeaker ( int index );
-qboolean           BG_SS_StoreSpeaker ( bg_speaker_t *speaker );
-qboolean           BG_LoadSpeakerScript ( const char *filename );
+void               BG_ClearScriptSpeakerPool( void );
+int                BG_NumScriptSpeakers( void );
+int                BG_GetIndexForSpeaker( bg_speaker_t *speaker );
+bg_speaker_t       *BG_GetScriptSpeaker( int index );
+qboolean           BG_SS_DeleteSpeaker( int index );
+qboolean           BG_SS_StoreSpeaker( bg_speaker_t *speaker );
+qboolean           BG_LoadSpeakerScript( const char *filename );
 
 // Lookup table to find ammo table entry
 extern ammotable_t ammoTableMP[ WP_NUM_WEAPONS ];
@@ -2418,7 +2418,7 @@ extern ammotable_t ammoTableMP[ WP_NUM_WEAPONS ];
 
 #define MAX_MAP_SIZE 65536
 
-qboolean BG_BBoxCollision ( vec3_t min1, vec3_t max1, vec3_t min2, vec3_t max2 );
+qboolean BG_BBoxCollision( vec3_t min1, vec3_t max1, vec3_t min2, vec3_t max2 );
 
 //#define VISIBLE_TRIGGERS
 
@@ -2438,7 +2438,7 @@ typedef struct
 	extWeaponStats_t iWS;
 } mod_ws_convert_t;
 
-extWeaponStats_t BG_WeapStatForWeapon ( weapon_t iWeaponID );
+extWeaponStats_t BG_WeapStatForWeapon( weapon_t iWeaponID );
 
 typedef enum popupMessageType_e
 {
@@ -2464,14 +2464,14 @@ typedef enum popupMessageBigType_e
 #define NUM_HEAVY_WEAPONS 6
 extern weapon_t bg_heavyWeapons[ NUM_HEAVY_WEAPONS ];
 
-int             PM_AltSwitchFromForWeapon ( int weapon );
-int             PM_AltSwitchToForWeapon ( int weapon );
+int             PM_AltSwitchFromForWeapon( int weapon );
+int             PM_AltSwitchToForWeapon( int weapon );
 
-void            PM_TraceLegs ( trace_t *trace, float *legsOffset, vec3_t start, vec3_t end, trace_t *bodytrace, vec3_t viewangles,
-                               void ( tracefunc ) ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-                                   const vec3_t end, int passEntityNum, int contentMask ), int ignoreent,
-                               int tracemask );
-void PM_TraceAllLegs ( trace_t *trace, float *legsOffset, vec3_t start, vec3_t end );
-void PM_TraceAll ( trace_t *trace, vec3_t start, vec3_t end );
+void            PM_TraceLegs( trace_t *trace, float *legsOffset, vec3_t start, vec3_t end, trace_t *bodytrace, vec3_t viewangles,
+                              void ( tracefunc )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+                                  const vec3_t end, int passEntityNum, int contentMask ), int ignoreent,
+                              int tracemask );
+void PM_TraceAllLegs( trace_t *trace, float *legsOffset, vec3_t start, vec3_t end );
+void PM_TraceAll( trace_t *trace, vec3_t start, vec3_t end );
 
 #endif

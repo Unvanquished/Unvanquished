@@ -28,9 +28,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 CG_DoorAnimation
 ===============
 */
-static void CG_DoorAnimation ( centity_t *cent, int *old, int *now, float *backLerp )
+static void CG_DoorAnimation( centity_t *cent, int *old, int *now, float *backLerp )
 {
-	CG_RunLerpFrame ( &cent->lerpFrame, 1.0f );
+	CG_RunLerpFrame( &cent->lerpFrame, 1.0f );
 
 	*old = cent->lerpFrame.oldFrame;
 	*now = cent->lerpFrame.frame;
@@ -42,7 +42,7 @@ static void CG_DoorAnimation ( centity_t *cent, int *old, int *now, float *backL
 CG_ModelDoor
 ===============
 */
-void CG_ModelDoor ( centity_t *cent )
+void CG_ModelDoor( centity_t *cent )
 {
 	refEntity_t   ent;
 	entityState_t *es;
@@ -51,16 +51,16 @@ void CG_ModelDoor ( centity_t *cent )
 
 	es = &cent->currentState;
 
-	if ( !es->modelindex )
+	if( !es->modelindex )
 	{
 		return;
 	}
 
 	//create the render entity
-	memset ( &ent, 0, sizeof ( ent ) );
-	VectorCopy ( cent->lerpOrigin, ent.origin );
-	VectorCopy ( cent->lerpOrigin, ent.oldorigin );
-	AnglesToAxis ( cent->lerpAngles, ent.axis );
+	memset( &ent, 0, sizeof( ent ) );
+	VectorCopy( cent->lerpOrigin, ent.origin );
+	VectorCopy( cent->lerpOrigin, ent.oldorigin );
+	AnglesToAxis( cent->lerpAngles, ent.axis );
 
 	ent.renderfx = RF_NOSHADOW;
 
@@ -69,9 +69,9 @@ void CG_ModelDoor ( centity_t *cent )
 	ent.hModel = cgs.gameModels[ es->modelindex ];
 
 	//scale the door
-	VectorScale ( ent.axis[ 0 ], es->origin2[ 0 ], ent.axis[ 0 ] );
-	VectorScale ( ent.axis[ 1 ], es->origin2[ 1 ], ent.axis[ 1 ] );
-	VectorScale ( ent.axis[ 2 ], es->origin2[ 2 ], ent.axis[ 2 ] );
+	VectorScale( ent.axis[ 0 ], es->origin2[ 0 ], ent.axis[ 0 ] );
+	VectorScale( ent.axis[ 1 ], es->origin2[ 1 ], ent.axis[ 1 ] );
+	VectorScale( ent.axis[ 2 ], es->origin2[ 2 ], ent.axis[ 2 ] );
 	ent.nonNormalizedAxes = qtrue;
 
 	//setup animation
@@ -84,7 +84,7 @@ void CG_ModelDoor ( centity_t *cent )
 	anim.initialLerp = 1000 / es->torsoAnim;
 
 	//door changed state
-	if ( es->legsAnim != cent->doorState )
+	if( es->legsAnim != cent->doorState )
 	{
 		lf->animationTime = lf->frameTime + anim.initialLerp;
 		cent->doorState = es->legsAnim;
@@ -93,9 +93,9 @@ void CG_ModelDoor ( centity_t *cent )
 	lf->animation = &anim;
 
 	//run animation
-	CG_DoorAnimation ( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
+	CG_DoorAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
-	trap_R_AddRefEntityToScene ( &ent );
+	trap_R_AddRefEntityToScene( &ent );
 }
 
 /*
@@ -103,20 +103,20 @@ void CG_ModelDoor ( centity_t *cent )
 CG_AMOAnimation
 ===============
 */
-static void CG_AMOAnimation ( centity_t *cent, int *old, int *now, float *backLerp )
+static void CG_AMOAnimation( centity_t *cent, int *old, int *now, float *backLerp )
 {
-	if ( ! ( cent->currentState.eFlags & EF_MOVER_STOP ) || cent->animPlaying )
+	if( !( cent->currentState.eFlags & EF_MOVER_STOP ) || cent->animPlaying )
 	{
 		int delta = cg.time - cent->miscTime;
 
 		//hack to prevent "pausing" mucking up the lerping
-		if ( delta > 900 )
+		if( delta > 900 )
 		{
 			cent->lerpFrame.oldFrameTime += delta;
 			cent->lerpFrame.frameTime += delta;
 		}
 
-		CG_RunLerpFrame ( &cent->lerpFrame, 1.0f );
+		CG_RunLerpFrame( &cent->lerpFrame, 1.0f );
 		cent->miscTime = cg.time;
 	}
 
@@ -130,7 +130,7 @@ static void CG_AMOAnimation ( centity_t *cent, int *old, int *now, float *backLe
 CG_animMapObj
 ==================
 */
-void CG_AnimMapObj ( centity_t *cent )
+void CG_AnimMapObj( centity_t *cent )
 {
 	refEntity_t   ent;
 	entityState_t *es;
@@ -140,30 +140,30 @@ void CG_AnimMapObj ( centity_t *cent )
 	es = &cent->currentState;
 
 	// if set to invisible, skip
-	if ( !es->modelindex || ( es->eFlags & EF_NODRAW ) )
+	if( !es->modelindex || ( es->eFlags & EF_NODRAW ) )
 	{
 		return;
 	}
 
-	memset ( &ent, 0, sizeof ( ent ) );
+	memset( &ent, 0, sizeof( ent ) );
 
-	VectorCopy ( es->angles, cent->lerpAngles );
-	AnglesToAxis ( cent->lerpAngles, ent.axis );
+	VectorCopy( es->angles, cent->lerpAngles );
+	AnglesToAxis( cent->lerpAngles, ent.axis );
 
 	ent.hModel = cgs.gameModels[ es->modelindex ];
 
-	VectorCopy ( cent->lerpOrigin, ent.origin );
-	VectorCopy ( cent->lerpOrigin, ent.oldorigin );
+	VectorCopy( cent->lerpOrigin, ent.origin );
+	VectorCopy( cent->lerpOrigin, ent.oldorigin );
 
 	ent.nonNormalizedAxes = qfalse;
 
 	//scale the model
-	if ( es->angles2[ 0 ] )
+	if( es->angles2[ 0 ] )
 	{
 		scale = es->angles2[ 0 ];
-		VectorScale ( ent.axis[ 0 ], scale, ent.axis[ 0 ] );
-		VectorScale ( ent.axis[ 1 ], scale, ent.axis[ 1 ] );
-		VectorScale ( ent.axis[ 2 ], scale, ent.axis[ 2 ] );
+		VectorScale( ent.axis[ 0 ], scale, ent.axis[ 0 ] );
+		VectorScale( ent.axis[ 1 ], scale, ent.axis[ 1 ] );
+		VectorScale( ent.axis[ 2 ], scale, ent.axis[ 2 ] );
 		ent.nonNormalizedAxes = qtrue;
 	}
 
@@ -174,7 +174,7 @@ void CG_AnimMapObj ( centity_t *cent )
 	anim.flipflop = qfalse;
 
 	// if numFrames is negative the animation is reversed
-	if ( anim.numFrames < 0 )
+	if( anim.numFrames < 0 )
 	{
 		anim.numFrames = -anim.numFrames;
 		anim.reversed = qtrue;
@@ -182,7 +182,7 @@ void CG_AnimMapObj ( centity_t *cent )
 
 	anim.loopFrames = es->torsoAnim;
 
-	if ( !es->legsAnim )
+	if( !es->legsAnim )
 	{
 		anim.frameLerp = 1000;
 		anim.initialLerp = 1000;
@@ -195,21 +195,21 @@ void CG_AnimMapObj ( centity_t *cent )
 
 	cent->lerpFrame.animation = &anim;
 
-	if ( !anim.loopFrames )
+	if( !anim.loopFrames )
 	{
 		// add one frame to allow the animation to play the last frame
 		// add another to get it to stop playing at the first frame
 		anim.numFrames += 2;
 
-		if ( !cent->animInit )
+		if( !cent->animInit )
 		{
 			cent->animInit = qtrue;
-			cent->animPlaying = ! ( cent->currentState.eFlags & EF_MOVER_STOP );
+			cent->animPlaying = !( cent->currentState.eFlags & EF_MOVER_STOP );
 		}
 		else
 		{
-			if ( cent->animLastState !=
-			     ! ( cent->currentState.eFlags & EF_MOVER_STOP ) )
+			if( cent->animLastState !=
+			    !( cent->currentState.eFlags & EF_MOVER_STOP ) )
 			{
 				cent->animPlaying = qtrue;
 				cent->lerpFrame.animationTime = cg.time;
@@ -217,12 +217,12 @@ void CG_AnimMapObj ( centity_t *cent )
 			}
 		}
 
-		cent->animLastState = ! ( cent->currentState.eFlags & EF_MOVER_STOP );
+		cent->animLastState = !( cent->currentState.eFlags & EF_MOVER_STOP );
 	}
 
 	//run animation
-	CG_AMOAnimation ( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
+	CG_AMOAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
 	// add to refresh list
-	trap_R_AddRefEntityToScene ( &ent );
+	trap_R_AddRefEntityToScene( &ent );
 }

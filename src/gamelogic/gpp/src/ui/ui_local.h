@@ -34,19 +34,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // ui_main.c
 //
-void UI_Report ( void );
-void UI_Load ( void );
-void UI_LoadMenus ( const char *menuFile, qboolean reset );
-int  UI_AdjustTimeByGame ( int time );
-void UI_ClearScores ( void );
-void UI_LoadArenas ( void );
-void UI_ServerInfo ( void );
+void UI_Report( void );
+void UI_Load( void );
+void UI_LoadMenus( const char *menuFile, qboolean reset );
+int  UI_AdjustTimeByGame( int time );
+void UI_ClearScores( void );
+void UI_LoadArenas( void );
+void UI_ServerInfo( void );
 
-void UI_UpdateNews ( qboolean );
+void UI_UpdateNews( qboolean );
 
-void UI_RegisterCvars ( void );
-void UI_UpdateCvars ( void );
-void UI_DrawConnectScreen ( qboolean overlay );
+void UI_RegisterCvars( void );
+void UI_UpdateCvars( void );
+void UI_DrawConnectScreen( qboolean overlay );
 
 // new ui stuff
 #define MAX_MAPS                128
@@ -316,12 +316,12 @@ uiInfo_t;
 
 extern uiInfo_t uiInfo;
 
-qboolean        UI_ConsoleCommand ( int realTime );
-char            *UI_Cvar_VariableString ( const char *var_name );
-void            UI_SetColor ( const float *rgba );
-void            UI_AdjustFrom640 ( float *x, float *y, float *w, float *h );
-void            UI_Refresh ( int time );
-void            UI_DrawHandlePic ( float x, float y, float w, float h, qhandle_t hShader );
-void            UI_FillRect ( float x, float y, float width, float height, const float *color );
+qboolean        UI_ConsoleCommand( int realTime );
+char            *UI_Cvar_VariableString( const char *var_name );
+void            UI_SetColor( const float *rgba );
+void            UI_AdjustFrom640( float *x, float *y, float *w, float *h );
+void            UI_Refresh( int time );
+void            UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader );
+void            UI_FillRect( float x, float y, float width, float height, const float *color );
 
 #endif

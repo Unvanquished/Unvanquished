@@ -117,7 +117,7 @@ typedef struct
 
 static cin_ogm_t g_ogm;
 
-int              nextNeededVFrame ( void );
+int              nextNeededVFrame( void );
 
 /* ####################### #######################
 
@@ -136,8 +136,8 @@ static int init_xvid()
 	xvid_dec_create_t xvid_dec_create;
 
 	/* Reset the structure with zeros */
-	memset ( &xvid_gbl_init, 0, sizeof ( xvid_gbl_init_t ) );
-	memset ( &xvid_dec_create, 0, sizeof ( xvid_dec_create_t ) );
+	memset( &xvid_gbl_init, 0, sizeof( xvid_gbl_init_t ) );
+	memset( &xvid_dec_create, 0, sizeof( xvid_dec_create_t ) );
 
 	/* Version */
 	xvid_gbl_init.version = XVID_VERSION;
@@ -145,7 +145,7 @@ static int init_xvid()
 	xvid_gbl_init.cpu_flags = 0;
 	xvid_gbl_init.debug = 0;
 
-	xvid_global ( NULL, 0, &xvid_gbl_init, NULL );
+	xvid_global( NULL, 0, &xvid_gbl_init, NULL );
 
 	/* Version */
 	xvid_dec_create.version = XVID_VERSION;
@@ -157,22 +157,22 @@ static int init_xvid()
 	xvid_dec_create.width = 0;
 	xvid_dec_create.height = 0;
 
-	ret = xvid_decore ( NULL, XVID_DEC_CREATE, &xvid_dec_create, NULL );
+	ret = xvid_decore( NULL, XVID_DEC_CREATE, &xvid_dec_create, NULL );
 
 	g_ogm.xvid_dec_handle = xvid_dec_create.handle;
 
 	return ( ret );
 }
 
-static int dec_xvid ( unsigned char *input, int input_size )
+static int dec_xvid( unsigned char *input, int input_size )
 {
 	int              ret;
 
 	xvid_dec_frame_t xvid_dec_frame;
 
 	/* Reset all structures */
-	memset ( &xvid_dec_frame, 0, sizeof ( xvid_dec_frame_t ) );
-	memset ( &g_ogm.xvid_dec_stats, 0, sizeof ( xvid_dec_stats_t ) );
+	memset( &xvid_dec_frame, 0, sizeof( xvid_dec_frame_t ) );
+	memset( &g_ogm.xvid_dec_stats, 0, sizeof( xvid_dec_stats_t ) );
 
 	/* Set version */
 	xvid_dec_frame.version = XVID_VERSION;
@@ -189,7 +189,7 @@ static int dec_xvid ( unsigned char *input, int input_size )
 	xvid_dec_frame.output.plane[ 0 ] = g_ogm.outputBuffer;
 	xvid_dec_frame.output.stride[ 0 ] = g_ogm.outputWidht * BPP;
 
-	if ( g_ogm.outputBuffer == NULL )
+	if( g_ogm.outputBuffer == NULL )
 	{
 		xvid_dec_frame.output.csp = XVID_CSP_NULL;
 	}
@@ -198,7 +198,7 @@ static int dec_xvid ( unsigned char *input, int input_size )
 		xvid_dec_frame.output.csp = XVID_CSP_RGBA; // example was with XVID_CSP_I420
 	}
 
-	ret = xvid_decore ( g_ogm.xvid_dec_handle, XVID_DEC_DECODE, &xvid_dec_frame, &g_ogm.xvid_dec_stats );
+	ret = xvid_decore( g_ogm.xvid_dec_handle, XVID_DEC_DECODE, &xvid_dec_frame, &g_ogm.xvid_dec_stats );
 
 	return ( ret );
 }
@@ -207,9 +207,9 @@ static int shutdown_xvid()
 {
 	int ret = 0;
 
-	if ( g_ogm.xvid_dec_handle )
+	if( g_ogm.xvid_dec_handle )
 	{
-		ret = xvid_decore ( g_ogm.xvid_dec_handle, XVID_DEC_DESTROY, NULL, NULL );
+		ret = xvid_decore( g_ogm.xvid_dec_handle, XVID_DEC_DESTROY, NULL, NULL );
 	}
 
 	return ( ret );
@@ -230,17 +230,17 @@ static int shutdown_xvid()
   return:
   !0 -> no data transferred
 */
-static int loadBlockToSync ( void )
+static int loadBlockToSync( void )
 {
 	int  r = -1;
 	char *buffer;
 	int  bytes;
 
-	if ( g_ogm.ogmFile )
+	if( g_ogm.ogmFile )
 	{
-		buffer = ogg_sync_buffer ( &g_ogm.oy, OGG_BUFFER_SIZE );
-		bytes = FS_Read ( buffer, OGG_BUFFER_SIZE, g_ogm.ogmFile );
-		ogg_sync_wrote ( &g_ogm.oy, bytes );
+		buffer = ogg_sync_buffer( &g_ogm.oy, OGG_BUFFER_SIZE );
+		bytes = FS_Read( buffer, OGG_BUFFER_SIZE, g_ogm.ogmFile );
+		ogg_sync_wrote( &g_ogm.oy, bytes );
 
 		r = ( bytes == 0 );
 	}
@@ -254,7 +254,7 @@ static int loadBlockToSync ( void )
   return:
   !0 -> no data transferred (or not for all Streams)
 */
-static int loadPagesToStreams ( void )
+static int loadPagesToStreams( void )
 {
 	int              r = -1;
 	int              AudioPages = 0;
@@ -262,32 +262,32 @@ static int loadPagesToStreams ( void )
 	ogg_stream_state *osptr = NULL;
 	ogg_page         og;
 
-	while ( !AudioPages || !VideoPages )
+	while( !AudioPages || !VideoPages )
 	{
-		if ( ogg_sync_pageout ( &g_ogm.oy, &og ) != 1 )
+		if( ogg_sync_pageout( &g_ogm.oy, &og ) != 1 )
 		{
 			break;
 		}
 
-		if ( g_ogm.os_audio.serialno == ogg_page_serialno ( &og ) )
+		if( g_ogm.os_audio.serialno == ogg_page_serialno( &og ) )
 		{
 			osptr = &g_ogm.os_audio;
 			++AudioPages;
 		}
 
-		if ( g_ogm.os_video.serialno == ogg_page_serialno ( &og ) )
+		if( g_ogm.os_video.serialno == ogg_page_serialno( &og ) )
 		{
 			osptr = &g_ogm.os_video;
 			++VideoPages;
 		}
 
-		if ( osptr != NULL )
+		if( osptr != NULL )
 		{
-			ogg_stream_pagein ( osptr, &og );
+			ogg_stream_pagein( osptr, &og );
 		}
 	}
 
-	if ( AudioPages && VideoPages )
+	if( AudioPages && VideoPages )
 	{
 		r = 0;
 	}
@@ -305,7 +305,7 @@ static byte rawBuffer[ SIZEOF_RAWBUFF ];
 
   return: audio wants more packets
 */
-static qboolean loadAudio ( void )
+static qboolean loadAudio( void )
 {
 	qboolean     anyDataTransferred = qtrue;
 	float        **pcm;
@@ -316,21 +316,21 @@ static qboolean loadAudio ( void )
 	ogg_packet   op;
 	vorbis_block vb;
 
-	memset ( &op, 0, sizeof ( op ) );
-	memset ( &vb, 0, sizeof ( vb ) );
-	vorbis_block_init ( &g_ogm.vd, &vb );
+	memset( &op, 0, sizeof( op ) );
+	memset( &vb, 0, sizeof( vb ) );
+	vorbis_block_init( &g_ogm.vd, &vb );
 
-	while ( anyDataTransferred && g_ogm.currentTime + MAX_AUDIO_PRELOAD > ( int ) ( g_ogm.vd.granulepos * 1000 / g_ogm.vi.rate ) )
+	while( anyDataTransferred && g_ogm.currentTime + MAX_AUDIO_PRELOAD > ( int )( g_ogm.vd.granulepos * 1000 / g_ogm.vi.rate ) )
 	{
 		anyDataTransferred = qfalse;
 
-		if ( ( samples = vorbis_synthesis_pcmout ( &g_ogm.vd, &pcm ) ) > 0 )
+		if( ( samples = vorbis_synthesis_pcmout( &g_ogm.vd, &pcm ) ) > 0 )
 		{
 			// vorbis -> raw
 			ptr = ( short * ) rawBuffer;
 			samplesNeeded = ( SIZEOF_RAWBUFF ) / ( 2 * 2 ); // (width*channel)
 
-			if ( samples < samplesNeeded )
+			if( samples < samplesNeeded )
 			{
 				samplesNeeded = samples;
 			}
@@ -338,7 +338,7 @@ static qboolean loadAudio ( void )
 			left = pcm[ 0 ];
 			right = ( g_ogm.vi.channels > 1 ) ? pcm[ 1 ] : pcm[ 0 ];
 
-			for ( i = 0; i < samplesNeeded; ++i )
+			for( i = 0; i < samplesNeeded; ++i )
 			{
 				ptr[ 0 ] = ( left[ i ] >= -1.0f &&
 				             left[ i ] <= 1.0f ) ? left[ i ] * 32767.f : 32767 * ( ( left[ i ] > 0.0f ) - ( left[ i ] < 0.0f ) );
@@ -347,26 +347,26 @@ static qboolean loadAudio ( void )
 				ptr += 2; //numChans;
 			}
 
-			if ( i > 0 )
+			if( i > 0 )
 			{
 				// tell libvorbis how many samples we actually consumed
-				vorbis_synthesis_read ( &g_ogm.vd, i );
+				vorbis_synthesis_read( &g_ogm.vd, i );
 
 //              S_RawSamples( ssize, 22050, 2, 2, (byte *)sbuf, 1.0f );
-				S_RawSamples ( 0, i, g_ogm.vi.rate, 2, 2, rawBuffer, 1.0f, 1.0f );
+				S_RawSamples( 0, i, g_ogm.vi.rate, 2, 2, rawBuffer, 1.0f, 1.0f );
 
 				anyDataTransferred = qtrue;
 			}
 		}
 
-		if ( !anyDataTransferred )
+		if( !anyDataTransferred )
 		{
 			// op -> vorbis
-			if ( ogg_stream_packetout ( &g_ogm.os_audio, &op ) )
+			if( ogg_stream_packetout( &g_ogm.os_audio, &op ) )
 			{
-				if ( vorbis_synthesis ( &vb, &op ) == 0 )
+				if( vorbis_synthesis( &vb, &op ) == 0 )
 				{
-					vorbis_synthesis_blockin ( &g_ogm.vd, &vb );
+					vorbis_synthesis_blockin( &g_ogm.vd, &vb );
 				}
 
 				anyDataTransferred = qtrue;
@@ -374,9 +374,9 @@ static qboolean loadAudio ( void )
 		}
 	}
 
-	vorbis_block_clear ( &vb );
+	vorbis_block_clear( &vb );
 
-	if ( g_ogm.currentTime + MIN_AUDIO_PRELOAD > ( int ) ( g_ogm.vd.granulepos * 1000 / g_ogm.vi.rate ) )
+	if( g_ogm.currentTime + MIN_AUDIO_PRELOAD > ( int )( g_ogm.vd.granulepos * 1000 / g_ogm.vi.rate ) )
 	{
 		return qtrue;
 	}
@@ -399,36 +399,36 @@ static int loadVideoFrameXvid()
 	ogg_packet op;
 	int        used_bytes = 0;
 
-	memset ( &op, 0, sizeof ( op ) );
+	memset( &op, 0, sizeof( op ) );
 
-	while ( !r && ( ogg_stream_packetout ( &g_ogm.os_video, &op ) ) )
+	while( !r && ( ogg_stream_packetout( &g_ogm.os_video, &op ) ) )
 	{
-		used_bytes = dec_xvid ( op.packet, op.bytes );
+		used_bytes = dec_xvid( op.packet, op.bytes );
 
-		if ( g_ogm.xvid_dec_stats.type == XVID_TYPE_VOL )
+		if( g_ogm.xvid_dec_stats.type == XVID_TYPE_VOL )
 		{
-			if ( g_ogm.outputWidht != g_ogm.xvid_dec_stats.data.vol.width ||
-			     g_ogm.outputHeight != g_ogm.xvid_dec_stats.data.vol.height )
+			if( g_ogm.outputWidht != g_ogm.xvid_dec_stats.data.vol.width ||
+			    g_ogm.outputHeight != g_ogm.xvid_dec_stats.data.vol.height )
 			{
 				g_ogm.outputWidht = g_ogm.xvid_dec_stats.data.vol.width;
 				g_ogm.outputHeight = g_ogm.xvid_dec_stats.data.vol.height;
-				Com_DPrintf ( "[XVID]new resolution %dx%d\n", g_ogm.outputWidht, g_ogm.outputHeight );
+				Com_DPrintf( "[XVID]new resolution %dx%d\n", g_ogm.outputWidht, g_ogm.outputHeight );
 			}
 
-			if ( g_ogm.outputBufferSize < g_ogm.xvid_dec_stats.data.vol.width * g_ogm.xvid_dec_stats.data.vol.height )
+			if( g_ogm.outputBufferSize < g_ogm.xvid_dec_stats.data.vol.width * g_ogm.xvid_dec_stats.data.vol.height )
 			{
 				g_ogm.outputBufferSize = g_ogm.xvid_dec_stats.data.vol.width * g_ogm.xvid_dec_stats.data.vol.height;
 
 				/* Free old output buffer */
-				if ( g_ogm.outputBuffer )
+				if( g_ogm.outputBuffer )
 				{
-					free ( g_ogm.outputBuffer );
+					free( g_ogm.outputBuffer );
 				}
 
 				/* Allocate the new buffer */
-				g_ogm.outputBuffer = ( unsigned char * ) malloc ( g_ogm.outputBufferSize * 4 ); //FIXME? should the 4 stay for BPP?
+				g_ogm.outputBuffer = ( unsigned char * ) malloc( g_ogm.outputBufferSize * 4 );  //FIXME? should the 4 stay for BPP?
 
-				if ( g_ogm.outputBuffer == NULL )
+				if( g_ogm.outputBuffer == NULL )
 				{
 					g_ogm.outputBufferSize = 0;
 					r = -2;
@@ -437,11 +437,11 @@ static int loadVideoFrameXvid()
 			}
 
 			// use the rest of this packet
-			used_bytes += dec_xvid ( op.packet + used_bytes, op.bytes - used_bytes );
+			used_bytes += dec_xvid( op.packet + used_bytes, op.bytes - used_bytes );
 		}
 
 		// we got a real output frame ...
-		if ( g_ogm.xvid_dec_stats.type > 0 )
+		if( g_ogm.xvid_dec_stats.type > 0 )
 		{
 			r = 1;
 
@@ -472,13 +472,13 @@ how many >> are needed to make y==x (shifting y>>i)
 return: -1  -> no match
                 >=0 -> number of shifts
 */
-static int findSizeShift ( int x, int y )
+static int findSizeShift( int x, int y )
 {
 	int i;
 
-	for ( i = 0; ( y >> i ); ++i )
+	for( i = 0; ( y >> i ); ++i )
 	{
-		if ( x == ( y >> i ) )
+		if( x == ( y >> i ) )
 		{
 			return i;
 		}
@@ -487,53 +487,53 @@ static int findSizeShift ( int x, int y )
 	return -1;
 }
 
-static int loadVideoFrameTheora ( void )
+static int loadVideoFrameTheora( void )
 {
 	int        r = 0;
 	ogg_packet op;
 
-	memset ( &op, 0, sizeof ( op ) );
+	memset( &op, 0, sizeof( op ) );
 
-	while ( !r && ( ogg_stream_packetout ( &g_ogm.os_video, &op ) ) )
+	while( !r && ( ogg_stream_packetout( &g_ogm.os_video, &op ) ) )
 	{
 		ogg_int64_t th_frame;
 
-		theora_decode_packetin ( &g_ogm.th_state, &op );
+		theora_decode_packetin( &g_ogm.th_state, &op );
 
-		th_frame = theora_granule_frame ( &g_ogm.th_state, g_ogm.th_state.granulepos );
+		th_frame = theora_granule_frame( &g_ogm.th_state, g_ogm.th_state.granulepos );
 
-		if ( ( g_ogm.VFrameCount < th_frame && th_frame >= nextNeededVFrame() ) || !g_ogm.outputBuffer )
+		if( ( g_ogm.VFrameCount < th_frame && th_frame >= nextNeededVFrame() ) || !g_ogm.outputBuffer )
 		{
 //          int i,j;
 			int yWShift, uvWShift;
 			int yHShift, uvHShift;
 
-			if ( theora_decode_YUVout ( &g_ogm.th_state, &g_ogm.th_yuvbuffer ) )
+			if( theora_decode_YUVout( &g_ogm.th_state, &g_ogm.th_yuvbuffer ) )
 			{
 				continue;
 			}
 
-			if ( g_ogm.outputWidht != g_ogm.th_info.width || g_ogm.outputHeight != g_ogm.th_info.height )
+			if( g_ogm.outputWidht != g_ogm.th_info.width || g_ogm.outputHeight != g_ogm.th_info.height )
 			{
 				g_ogm.outputWidht = g_ogm.th_info.width;
 				g_ogm.outputHeight = g_ogm.th_info.height;
-				Com_DPrintf ( "[Theora(ogg)]new resolution %dx%d\n", g_ogm.outputWidht, g_ogm.outputHeight );
+				Com_DPrintf( "[Theora(ogg)]new resolution %dx%d\n", g_ogm.outputWidht, g_ogm.outputHeight );
 			}
 
-			if ( g_ogm.outputBufferSize < g_ogm.th_info.width * g_ogm.th_info.height )
+			if( g_ogm.outputBufferSize < g_ogm.th_info.width * g_ogm.th_info.height )
 			{
 				g_ogm.outputBufferSize = g_ogm.th_info.width * g_ogm.th_info.height;
 
 				/* Free old output buffer */
-				if ( g_ogm.outputBuffer )
+				if( g_ogm.outputBuffer )
 				{
-					free ( g_ogm.outputBuffer );
+					free( g_ogm.outputBuffer );
 				}
 
 				/* Allocate the new buffer */
-				g_ogm.outputBuffer = ( unsigned char * ) malloc ( g_ogm.outputBufferSize * 4 );
+				g_ogm.outputBuffer = ( unsigned char * ) malloc( g_ogm.outputBufferSize * 4 );
 
-				if ( g_ogm.outputBuffer == NULL )
+				if( g_ogm.outputBuffer == NULL )
 				{
 					g_ogm.outputBufferSize = 0;
 					r = -2;
@@ -541,22 +541,22 @@ static int loadVideoFrameTheora ( void )
 				}
 			}
 
-			yWShift = findSizeShift ( g_ogm.th_yuvbuffer.y_width, g_ogm.th_info.width );
-			uvWShift = findSizeShift ( g_ogm.th_yuvbuffer.uv_width, g_ogm.th_info.width );
-			yHShift = findSizeShift ( g_ogm.th_yuvbuffer.y_height, g_ogm.th_info.height );
-			uvHShift = findSizeShift ( g_ogm.th_yuvbuffer.uv_height, g_ogm.th_info.height );
+			yWShift = findSizeShift( g_ogm.th_yuvbuffer.y_width, g_ogm.th_info.width );
+			uvWShift = findSizeShift( g_ogm.th_yuvbuffer.uv_width, g_ogm.th_info.width );
+			yHShift = findSizeShift( g_ogm.th_yuvbuffer.y_height, g_ogm.th_info.height );
+			uvHShift = findSizeShift( g_ogm.th_yuvbuffer.uv_height, g_ogm.th_info.height );
 
-			if ( yWShift < 0 || uvWShift < 0 || yHShift < 0 || uvHShift < 0 )
+			if( yWShift < 0 || uvWShift < 0 || yHShift < 0 || uvHShift < 0 )
 			{
-				Com_Printf ( "[Theora] unexpected resolution in a yuv-Frame\n" );
+				Com_Printf( "[Theora] unexpected resolution in a yuv-Frame\n" );
 				r = -1;
 			}
 			else
 			{
-				Frame_yuv_to_rgb24 ( g_ogm.th_yuvbuffer.y, g_ogm.th_yuvbuffer.u, g_ogm.th_yuvbuffer.v,
-				                     g_ogm.th_info.width, g_ogm.th_info.height, g_ogm.th_yuvbuffer.y_stride,
-				                     g_ogm.th_yuvbuffer.uv_stride, yWShift, uvWShift, yHShift, uvHShift,
-				                     ( unsigned int * ) g_ogm.outputBuffer );
+				Frame_yuv_to_rgb24( g_ogm.th_yuvbuffer.y, g_ogm.th_yuvbuffer.u, g_ogm.th_yuvbuffer.v,
+				                    g_ogm.th_info.width, g_ogm.th_info.height, g_ogm.th_yuvbuffer.y_stride,
+				                    g_ogm.th_yuvbuffer.uv_stride, yWShift, uvWShift, yHShift, uvHShift,
+				                    ( unsigned int * ) g_ogm.outputBuffer );
 
 				/*        unsigned char*  pixelPtr = g_ogm.outputBuffer;
 				                                unsigned int* pixPtr;
@@ -599,11 +599,11 @@ static int loadVideoFrameTheora ( void )
                         0 -> no new Frame
                         <0  -> error
 */
-static int loadVideoFrame ( void )
+static int loadVideoFrame( void )
 {
 #ifdef USE_CIN_XVID
 
-	if ( g_ogm.videoStreamIsXvid )
+	if( g_ogm.videoStreamIsXvid )
 	{
 		return loadVideoFrameXvid();
 	}
@@ -611,7 +611,7 @@ static int loadVideoFrame ( void )
 #endif
 #ifdef USE_CIN_THEORA
 
-	if ( g_ogm.videoStreamIsTheora )
+	if( g_ogm.videoStreamIsTheora )
 	{
 		return loadVideoFrameTheora();
 	}
@@ -619,11 +619,11 @@ static int loadVideoFrame ( void )
 #endif
 
 	// if we come to this point, there will be no codec that use the stream content ...
-	if ( g_ogm.os_video.serialno )
+	if( g_ogm.os_video.serialno )
 	{
 		ogg_packet op;
 
-		while ( ogg_stream_packetout ( &g_ogm.os_video, &op ) ) {; }
+		while( ogg_stream_packetout( &g_ogm.os_video, &op ) ) {; }
 	}
 
 	return 1;
@@ -633,7 +633,7 @@ static int loadVideoFrame ( void )
 
   return: qtrue => noDataTransferred
 */
-static qboolean loadFrame ( void )
+static qboolean loadFrame( void )
 {
 	qboolean anyDataTransferred = qtrue;
 	qboolean needVOutputData = qtrue;
@@ -643,7 +643,7 @@ static qboolean loadFrame ( void )
 	qboolean audioWantsMoreData = qfalse;
 	int      status;
 
-	while ( anyDataTransferred && ( needVOutputData || audioWantsMoreData ) )
+	while( anyDataTransferred && ( needVOutputData || audioWantsMoreData ) )
 	{
 		anyDataTransferred = qfalse;
 
@@ -657,11 +657,11 @@ static qboolean loadFrame ( void )
 //          audioSteam -> vorbis ? audioStreamDone : needPage
 //          anyDataTransferred = audioStreamDone && audioStreamDone;
 
-			if ( needVOutputData && ( status = loadVideoFrame() ) )
+			if( needVOutputData && ( status = loadVideoFrame() ) )
 			{
 				needVOutputData = qfalse;
 
-				if ( status > 0 )
+				if( status > 0 )
 				{
 					anyDataTransferred = qtrue;
 				}
@@ -672,10 +672,10 @@ static qboolean loadFrame ( void )
 			}
 
 //          if needPage
-			if ( needVOutputData || audioWantsMoreData )
+			if( needVOutputData || audioWantsMoreData )
 			{
 				// try to transfer Pages to the audio- and video-Stream
-				if ( loadPagesToStreams() )
+				if( loadPagesToStreams() )
 				{
 					// try to load a datablock from file
 					anyDataTransferred |= !loadBlockToSync();
@@ -687,7 +687,7 @@ static qboolean loadFrame ( void )
 			}
 
 			// load all Audio after loading new pages ...
-			if ( g_ogm.VFrameCount > 1 ) // wait some videoframes (it's better to have some delay, than a lagy sound)
+			if( g_ogm.VFrameCount > 1 )  // wait some videoframes (it's better to have some delay, than a lagy sound)
 			{
 				audioWantsMoreData = loadAudio();
 			}
@@ -731,14 +731,14 @@ typedef struct
 	} sh;
 } stream_header_t;
 
-qboolean isPowerOf2 ( int x )
+qboolean isPowerOf2( int x )
 {
 	int bitsSet = 0;
 	int i;
 
-	for ( i = 0; i < sizeof ( int ) * 8; ++i )
+	for( i = 0; i < sizeof( int ) * 8; ++i )
 	{
-		if ( x & ( 1 << i ) )
+		if( x & ( 1 << i ) )
 		{
 			++bitsSet;
 		}
@@ -752,76 +752,76 @@ qboolean isPowerOf2 ( int x )
 */
 //TODO: vorbis/theora-header&init in sub-functions
 //TODO: "clean" error-returns ...
-int Cin_OGM_Init ( const char *filename )
+int Cin_OGM_Init( const char *filename )
 {
 	int        status;
 	ogg_page   og;
 	ogg_packet op;
 	int        i;
 
-	if ( g_ogm.ogmFile )
+	if( g_ogm.ogmFile )
 	{
-		Com_Printf ( S_COLOR_YELLOW "WARNING: it seams there was already a ogm running, it will be killed to start %s\n", filename );
+		Com_Printf( S_COLOR_YELLOW "WARNING: it seams there was already a ogm running, it will be killed to start %s\n", filename );
 		Cin_OGM_Shutdown();
 	}
 
-	memset ( &g_ogm, 0, sizeof ( cin_ogm_t ) );
+	memset( &g_ogm, 0, sizeof( cin_ogm_t ) );
 
-	FS_FOpenFileRead ( filename, &g_ogm.ogmFile, qtrue );
+	FS_FOpenFileRead( filename, &g_ogm.ogmFile, qtrue );
 
-	if ( !g_ogm.ogmFile )
+	if( !g_ogm.ogmFile )
 	{
-		Com_Printf ( S_COLOR_YELLOW "WARNING: Can't open ogm-file for reading (%s)\n", filename );
+		Com_Printf( S_COLOR_YELLOW "WARNING: Can't open ogm-file for reading (%s)\n", filename );
 		return -1;
 	}
 
-	ogg_sync_init ( &g_ogm.oy ); /* Now we can read pages */
+	ogg_sync_init( &g_ogm.oy );  /* Now we can read pages */
 
 	//FIXME? can serialno be 0 in ogg? (better way to check inited?)
 	//TODO: support for more than one audio stream? / detect files with one stream(or without correct ones)
-	while ( !g_ogm.os_audio.serialno || !g_ogm.os_video.serialno )
+	while( !g_ogm.os_audio.serialno || !g_ogm.os_video.serialno )
 	{
-		if ( ogg_sync_pageout ( &g_ogm.oy, &og ) == 1 )
+		if( ogg_sync_pageout( &g_ogm.oy, &og ) == 1 )
 		{
-			if ( strstr ( ( char * ) ( og.body + 1 ), "vorbis" ) )
+			if( strstr( ( char * )( og.body + 1 ), "vorbis" ) )
 			{
 				//FIXME? better way to find audio stream
-				if ( g_ogm.os_audio.serialno )
+				if( g_ogm.os_audio.serialno )
 				{
-					Com_Printf ( S_COLOR_YELLOW "WARNING: more than one audio stream, in ogm-file(%s) ... we will stay at the first one\n", filename );
+					Com_Printf( S_COLOR_YELLOW "WARNING: more than one audio stream, in ogm-file(%s) ... we will stay at the first one\n", filename );
 				}
 				else
 				{
-					ogg_stream_init ( &g_ogm.os_audio, ogg_page_serialno ( &og ) );
-					ogg_stream_pagein ( &g_ogm.os_audio, &og );
+					ogg_stream_init( &g_ogm.os_audio, ogg_page_serialno( &og ) );
+					ogg_stream_pagein( &g_ogm.os_audio, &og );
 				}
 			}
 
 #ifdef USE_CIN_THEORA
 
-			if ( strstr ( ( char * ) ( og.body + 1 ), "theora" ) )
+			if( strstr( ( char * )( og.body + 1 ), "theora" ) )
 			{
-				if ( g_ogm.os_video.serialno )
+				if( g_ogm.os_video.serialno )
 				{
-					Com_Printf ( S_COLOR_YELLOW "WARNING: more than one video stream, in ogm-file(%s) ... we will stay at the first one\n", filename );
+					Com_Printf( S_COLOR_YELLOW "WARNING: more than one video stream, in ogm-file(%s) ... we will stay at the first one\n", filename );
 				}
 				else
 				{
 					g_ogm.videoStreamIsTheora = qtrue;
-					ogg_stream_init ( &g_ogm.os_video, ogg_page_serialno ( &og ) );
-					ogg_stream_pagein ( &g_ogm.os_video, &og );
+					ogg_stream_init( &g_ogm.os_video, ogg_page_serialno( &og ) );
+					ogg_stream_pagein( &g_ogm.os_video, &og );
 				}
 			}
 
 #endif
 #ifdef USE_CIN_XVID
 
-			if ( strstr ( ( char * ) ( og.body + 1 ), "video" ) )
+			if( strstr( ( char * )( og.body + 1 ), "video" ) )
 			{
 				//FIXME? better way to find video stream
-				if ( g_ogm.os_video.serialno )
+				if( g_ogm.os_video.serialno )
 				{
-					Com_Printf ( "more than one video stream, in ogm-file(%s) ... we will stay at the first one\n", filename );
+					Com_Printf( "more than one video stream, in ogm-file(%s) ... we will stay at the first one\n", filename );
 				}
 				else
 				{
@@ -829,105 +829,105 @@ int Cin_OGM_Init ( const char *filename )
 
 					g_ogm.videoStreamIsXvid = qtrue;
 
-					sh = ( stream_header_t * ) ( og.body + 1 );
+					sh = ( stream_header_t * )( og.body + 1 );
 
 					//TODO: one solution for checking xvid and theora
-					if ( !isPowerOf2 ( sh->sh.stream_header_video.width ) )
+					if( !isPowerOf2( sh->sh.stream_header_video.width ) )
 					{
-						Com_Printf ( "VideoWidth of the ogm-file isn't a power of 2 value (%s)\n", filename );
+						Com_Printf( "VideoWidth of the ogm-file isn't a power of 2 value (%s)\n", filename );
 
 						return -5;
 					}
 
-					if ( !isPowerOf2 ( sh->sh.stream_header_video.height ) )
+					if( !isPowerOf2( sh->sh.stream_header_video.height ) )
 					{
-						Com_Printf ( "VideoHeight of the ogm-file isn't a power of 2 value (%s)\n", filename );
+						Com_Printf( "VideoHeight of the ogm-file isn't a power of 2 value (%s)\n", filename );
 
 						return -6;
 					}
 
 					g_ogm.Vtime_unit = sh->time_unit;
 
-					ogg_stream_init ( &g_ogm.os_video, ogg_page_serialno ( &og ) );
-					ogg_stream_pagein ( &g_ogm.os_video, &og );
+					ogg_stream_init( &g_ogm.os_video, ogg_page_serialno( &og ) );
+					ogg_stream_pagein( &g_ogm.os_video, &og );
 				}
 			}
 
 #endif
 		}
-		else if ( loadBlockToSync() )
+		else if( loadBlockToSync() )
 		{
 			break;
 		}
 	}
 
-	if ( g_ogm.videoStreamIsXvid && g_ogm.videoStreamIsTheora )
+	if( g_ogm.videoStreamIsXvid && g_ogm.videoStreamIsTheora )
 	{
-		Com_Printf ( S_COLOR_YELLOW "WARNING: Found \"video\"- and \"theora\"-stream ,ogm-file (%s)\n", filename );
+		Com_Printf( S_COLOR_YELLOW "WARNING: Found \"video\"- and \"theora\"-stream ,ogm-file (%s)\n", filename );
 		return -2;
 	}
 
 #if 1
 
-	if ( !g_ogm.os_audio.serialno )
+	if( !g_ogm.os_audio.serialno )
 	{
-		Com_Printf ( S_COLOR_YELLOW "WARNING: Haven't found a audio(vorbis) stream in ogm-file (%s)\n", filename );
+		Com_Printf( S_COLOR_YELLOW "WARNING: Haven't found a audio(vorbis) stream in ogm-file (%s)\n", filename );
 		return -2;
 	}
 
 #endif
 
-	if ( !g_ogm.os_video.serialno )
+	if( !g_ogm.os_video.serialno )
 	{
-		Com_Printf ( S_COLOR_YELLOW "WARNING: Haven't found a video stream in ogm-file (%s)\n", filename );
+		Com_Printf( S_COLOR_YELLOW "WARNING: Haven't found a video stream in ogm-file (%s)\n", filename );
 		return -3;
 	}
 
 	//load vorbis header
-	vorbis_info_init ( &g_ogm.vi );
-	vorbis_comment_init ( &g_ogm.vc );
+	vorbis_info_init( &g_ogm.vi );
+	vorbis_comment_init( &g_ogm.vc );
 	i = 0;
 
-	while ( i < 3 )
+	while( i < 3 )
 	{
-		status = ogg_stream_packetout ( &g_ogm.os_audio, &op );
+		status = ogg_stream_packetout( &g_ogm.os_audio, &op );
 
-		if ( status < 0 )
+		if( status < 0 )
 		{
-			Com_Printf ( S_COLOR_YELLOW "WARNING: Corrupt ogg packet while loading vorbis-headers, ogm-file(%s)\n", filename );
+			Com_Printf( S_COLOR_YELLOW "WARNING: Corrupt ogg packet while loading vorbis-headers, ogm-file(%s)\n", filename );
 			return -8;
 		}
 
-		if ( status > 0 )
+		if( status > 0 )
 		{
-			status = vorbis_synthesis_headerin ( &g_ogm.vi, &g_ogm.vc, &op );
+			status = vorbis_synthesis_headerin( &g_ogm.vi, &g_ogm.vc, &op );
 
-			if ( i == 0 && status < 0 )
+			if( i == 0 && status < 0 )
 			{
-				Com_Printf ( S_COLOR_YELLOW "WARNING: This Ogg bitstream does not contain Vorbis audio data, ogm-file(%s)\n", filename );
+				Com_Printf( S_COLOR_YELLOW "WARNING: This Ogg bitstream does not contain Vorbis audio data, ogm-file(%s)\n", filename );
 				return -9;
 			}
 
 			++i;
 		}
-		else if ( loadPagesToStreams() )
+		else if( loadPagesToStreams() )
 		{
-			if ( loadBlockToSync() )
+			if( loadBlockToSync() )
 			{
-				Com_Printf ( S_COLOR_YELLOW "WARNING: Couldn't find all vorbis headers before end of ogm-file (%s)\n", filename );
+				Com_Printf( S_COLOR_YELLOW "WARNING: Couldn't find all vorbis headers before end of ogm-file (%s)\n", filename );
 				return -10;
 			}
 		}
 	}
 
-	vorbis_synthesis_init ( &g_ogm.vd, &g_ogm.vi );
+	vorbis_synthesis_init( &g_ogm.vd, &g_ogm.vi );
 
 #ifdef USE_CIN_XVID
 	status = init_xvid();
 
-	if ( status )
+	if( status )
 	{
-		Com_Printf ( "[Xvid]Decore INIT problem, return value %d(ogm-file: %s)\n", status, filename );
+		Com_Printf( "[Xvid]Decore INIT problem, return value %d(ogm-file: %s)\n", status, filename );
 
 		return -4;
 	}
@@ -936,58 +936,58 @@ int Cin_OGM_Init ( const char *filename )
 
 #ifdef USE_CIN_THEORA
 
-	if ( g_ogm.videoStreamIsTheora )
+	if( g_ogm.videoStreamIsTheora )
 	{
 		ROQ_GenYUVTables();
 
-		theora_info_init ( &g_ogm.th_info );
-		theora_comment_init ( &g_ogm.th_comment );
+		theora_info_init( &g_ogm.th_info );
+		theora_comment_init( &g_ogm.th_comment );
 
 		i = 0;
 
-		while ( i < 3 )
+		while( i < 3 )
 		{
-			status = ogg_stream_packetout ( &g_ogm.os_video, &op );
+			status = ogg_stream_packetout( &g_ogm.os_video, &op );
 
-			if ( status < 0 )
+			if( status < 0 )
 			{
-				Com_Printf ( S_COLOR_YELLOW "WARNING: Corrupt ogg packet while loading theora-headers, ogm-file(%s)\n", filename );
+				Com_Printf( S_COLOR_YELLOW "WARNING: Corrupt ogg packet while loading theora-headers, ogm-file(%s)\n", filename );
 				return -8;
 			}
 
-			if ( status > 0 )
+			if( status > 0 )
 			{
-				status = theora_decode_header ( &g_ogm.th_info, &g_ogm.th_comment, &op );
+				status = theora_decode_header( &g_ogm.th_info, &g_ogm.th_comment, &op );
 
-				if ( i == 0 && status != 0 )
+				if( i == 0 && status != 0 )
 				{
-					Com_Printf ( S_COLOR_YELLOW "WARNING: This Ogg bitstream does not contain theora data, ogm-file(%s)\n", filename );
+					Com_Printf( S_COLOR_YELLOW "WARNING: This Ogg bitstream does not contain theora data, ogm-file(%s)\n", filename );
 					return -9;
 				}
 
 				++i;
 			}
-			else if ( loadPagesToStreams() )
+			else if( loadPagesToStreams() )
 			{
-				if ( loadBlockToSync() )
+				if( loadBlockToSync() )
 				{
-					Com_Printf ( S_COLOR_YELLOW "WARNING: Couldn't find all theora headers before end of ogm-file (%s)\n", filename );
+					Com_Printf( S_COLOR_YELLOW "WARNING: Couldn't find all theora headers before end of ogm-file (%s)\n", filename );
 					return -10;
 				}
 			}
 		}
 
-		theora_decode_init ( &g_ogm.th_state, &g_ogm.th_info );
+		theora_decode_init( &g_ogm.th_state, &g_ogm.th_info );
 
-		if ( !isPowerOf2 ( g_ogm.th_info.width ) )
+		if( !isPowerOf2( g_ogm.th_info.width ) )
 		{
-			Com_Printf ( S_COLOR_YELLOW "WARNING: VideoWidth of the ogm-file isn't a power of 2 value (%s)\n", filename );
+			Com_Printf( S_COLOR_YELLOW "WARNING: VideoWidth of the ogm-file isn't a power of 2 value (%s)\n", filename );
 			return -5;
 		}
 
-		if ( !isPowerOf2 ( g_ogm.th_info.height ) )
+		if( !isPowerOf2( g_ogm.th_info.height ) )
 		{
-			Com_Printf ( S_COLOR_YELLOW "WARNING: VideoHeight of the ogm-file isn't a power of 2 value (%s)\n", filename );
+			Com_Printf( S_COLOR_YELLOW "WARNING: VideoHeight of the ogm-file isn't a power of 2 value (%s)\n", filename );
 			return -6;
 		}
 
@@ -996,14 +996,14 @@ int Cin_OGM_Init ( const char *filename )
 
 #endif
 
-	Com_DPrintf ( "OGM-Init done (%s)\n", filename );
+	Com_DPrintf( "OGM-Init done (%s)\n", filename );
 
 	return 0;
 }
 
-int nextNeededVFrame ( void )
+int nextNeededVFrame( void )
 {
-	return ( int ) ( g_ogm.currentTime * ( ogg_int64_t ) 10000 / g_ogm.Vtime_unit );
+	return ( int )( g_ogm.currentTime * ( ogg_int64_t ) 10000 / g_ogm.Vtime_unit );
 }
 
 /*
@@ -1012,13 +1012,13 @@ int nextNeededVFrame ( void )
   return: 0 => nothing special
                         1 => eof
 */
-int Cin_OGM_Run ( int time )
+int Cin_OGM_Run( int time )
 {
 	g_ogm.currentTime = time;
 
-	while ( !g_ogm.VFrameCount || time + 20 >= ( int ) ( g_ogm.VFrameCount * g_ogm.Vtime_unit / 10000 ) )
+	while( !g_ogm.VFrameCount || time + 20 >= ( int )( g_ogm.VFrameCount * g_ogm.Vtime_unit / 10000 ) )
 	{
-		if ( loadFrame() )
+		if( loadFrame() )
 		{
 			return 1;
 		}
@@ -1031,14 +1031,14 @@ int Cin_OGM_Run ( int time )
   Gives a Pointer to the current Output-Buffer
   and the Resolution
 */
-unsigned char  *Cin_OGM_GetOutput ( int *outWidth, int *outHeight )
+unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
 {
-	if ( outWidth != NULL )
+	if( outWidth != NULL )
 	{
 		*outWidth = g_ogm.outputWidht;
 	}
 
-	if ( outHeight != NULL )
+	if( outHeight != NULL )
 	{
 		*outHeight = g_ogm.outputHeight;
 	}
@@ -1053,51 +1053,51 @@ void Cin_OGM_Shutdown()
 
 	status = shutdown_xvid();
 
-	if ( status )
+	if( status )
 	{
-		Com_Printf ( "[Xvid]Decore RELEASE problem, return value %d\n", status );
+		Com_Printf( "[Xvid]Decore RELEASE problem, return value %d\n", status );
 	}
 
 #endif
 
 #ifdef USE_CIN_THEORA
-	theora_clear ( &g_ogm.th_state );
-	theora_comment_clear ( &g_ogm.th_comment );
-	theora_info_clear ( &g_ogm.th_info );
+	theora_clear( &g_ogm.th_state );
+	theora_comment_clear( &g_ogm.th_comment );
+	theora_info_clear( &g_ogm.th_info );
 #endif
 
-	if ( g_ogm.outputBuffer )
+	if( g_ogm.outputBuffer )
 	{
-		free ( g_ogm.outputBuffer );
+		free( g_ogm.outputBuffer );
 	}
 
 	g_ogm.outputBuffer = NULL;
 
-	vorbis_dsp_clear ( &g_ogm.vd );
-	vorbis_comment_clear ( &g_ogm.vc );
-	vorbis_info_clear ( &g_ogm.vi ); /* must be called last (comment from vorbis example code) */
+	vorbis_dsp_clear( &g_ogm.vd );
+	vorbis_comment_clear( &g_ogm.vc );
+	vorbis_info_clear( &g_ogm.vi );  /* must be called last (comment from vorbis example code) */
 
-	ogg_stream_clear ( &g_ogm.os_audio );
-	ogg_stream_clear ( &g_ogm.os_video );
+	ogg_stream_clear( &g_ogm.os_audio );
+	ogg_stream_clear( &g_ogm.os_video );
 
-	ogg_sync_clear ( &g_ogm.oy );
+	ogg_sync_clear( &g_ogm.oy );
 
-	FS_FCloseFile ( g_ogm.ogmFile );
+	FS_FCloseFile( g_ogm.ogmFile );
 	g_ogm.ogmFile = 0;
 }
 
 #else
-int Cin_OGM_Init ( const char *filename )
+int Cin_OGM_Init( const char *filename )
 {
 	return 1;
 }
 
-int Cin_OGM_Run ( int time )
+int Cin_OGM_Run( int time )
 {
 	return 1;
 }
 
-unsigned char  *Cin_OGM_GetOutput ( int *outWidth, int *outHeight )
+unsigned char  *Cin_OGM_GetOutput( int *outWidth, int *outHeight )
 {
 	return 0;
 }

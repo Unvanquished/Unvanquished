@@ -152,7 +152,7 @@ struct vm_s
 	// DO NOT MOVE OR CHANGE THESE WITHOUT CHANGING THE VM_OFFSET_* DEFINES
 	// USED BY THE ASM CODE
 	int      programStack; // the vm may be recursively entered
-	intptr_t ( *systemCall ) ( intptr_t *parms );
+	intptr_t ( *systemCall )( intptr_t *parms );
 
 	//------------------------------------
 
@@ -161,8 +161,8 @@ struct vm_s
 
 	// for dynamic linked modules
 	void     *dllHandle;
-	intptr_t ( QDECL *entryPoint ) ( int callNum, ... );
-	void     ( *destroy ) ( vm_t *self );
+	intptr_t ( QDECL *entryPoint )( int callNum, ... );
+	void ( *destroy )( vm_t *self );
 
 #if USE_LLVM
 	// for llvm modules
@@ -203,15 +203,15 @@ struct vm_s
 extern  vm_t *currentVM;
 extern  int  vm_debugLevel;
 
-void         VM_Compile ( vm_t *vm, vmHeader_t *header );
-int          VM_CallCompiled ( vm_t *vm, int *args );
+void         VM_Compile( vm_t *vm, vmHeader_t *header );
+int          VM_CallCompiled( vm_t *vm, int *args );
 
-void         VM_PrepareInterpreter ( vm_t *vm, vmHeader_t *header );
-int          VM_CallInterpreted ( vm_t *vm, int *args );
+void         VM_PrepareInterpreter( vm_t *vm, vmHeader_t *header );
+int          VM_CallInterpreted( vm_t *vm, int *args );
 
-vmSymbol_t   *VM_ValueToFunctionSymbol ( vm_t *vm, int value );
-int          VM_SymbolToValue ( vm_t *vm, const char *symbol );
-const char   *VM_ValueToSymbol ( vm_t *vm, int value );
-void         VM_LogSyscalls ( int *args );
+vmSymbol_t   *VM_ValueToFunctionSymbol( vm_t *vm, int value );
+int          VM_SymbolToValue( vm_t *vm, const char *symbol );
+const char   *VM_ValueToSymbol( vm_t *vm, int value );
+void         VM_LogSyscalls( int *args );
 
-void         VM_BlockCopy ( unsigned int dest, unsigned int src, size_t n );
+void         VM_BlockCopy( unsigned int dest, unsigned int src, size_t n );

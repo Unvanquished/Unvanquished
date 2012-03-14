@@ -25,12 +25,12 @@ public:
 		cdata.m_RGBA[ 3 ] = 255; // 255 is opaque, 0 is transparent
 	}
 
-	obColor ( obint32 _color )
+	obColor( obint32 _color )
 	{
 		cdata.m_RGBAi = _color;
 	}
 
-	obColor ( obuint8 _r, obuint8 _g, obuint8 _b, obuint8 _a = 255 )
+	obColor( obuint8 _r, obuint8 _g, obuint8 _b, obuint8 _a = 255 )
 	{
 		cdata.m_RGBA[ 0 ] = _r;
 		cdata.m_RGBA[ 1 ] = _g;
@@ -38,12 +38,12 @@ public:
 		cdata.m_RGBA[ 3 ] = _a; // 255 is opaque, 0 is transparent
 	}
 
-	void FromFloat ( float _r, float _g, float _b, float _a = 1 )
+	void FromFloat( float _r, float _g, float _b, float _a = 1 )
 	{
-		cdata.m_RGBA[ 0 ] = ( obuint8 ) ( _r * 255.f );
-		cdata.m_RGBA[ 1 ] = ( obuint8 ) ( _g * 255.f );
-		cdata.m_RGBA[ 2 ] = ( obuint8 ) ( _b * 255.f );
-		cdata.m_RGBA[ 3 ] = ( obuint8 ) ( _a * 255.f ); // 255 is opaque, 0 is transparent
+		cdata.m_RGBA[ 0 ] = ( obuint8 )( _r * 255.f );
+		cdata.m_RGBA[ 1 ] = ( obuint8 )( _g * 255.f );
+		cdata.m_RGBA[ 2 ] = ( obuint8 )( _b * 255.f );
+		cdata.m_RGBA[ 3 ] = ( obuint8 )( _a * 255.f );  // 255 is opaque, 0 is transparent
 	}
 
 	operator int() const
@@ -91,9 +91,9 @@ public:
 		return ( float ) cdata.m_RGBA[ 3 ] / 255.0f;
 	}
 
-	inline obColor fade ( obuint8 _a ) const
+	inline obColor fade( obuint8 _a ) const
 	{
-		obColor c ( cdata.m_RGBAi );
+		obColor c( cdata.m_RGBAi );
 		c.cdata.m_RGBA[ 3 ] = _a;
 		return c;
 	}
@@ -105,7 +105,7 @@ public:
 
 	inline obint32 argb() const
 	{
-		return obColor ( a(), r(), g(), b() );
+		return obColor( a(), r(), g(), b() );
 	}
 
 private:

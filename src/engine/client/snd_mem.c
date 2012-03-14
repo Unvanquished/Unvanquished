@@ -56,11 +56,11 @@ short             *sfxScratchBuffer = NULL;
 sfx_t             *sfxScratchPointer = NULL;
 int               sfxScratchIndex = 0;
 
-void    SND_free ( sndBuffer *v )
+void    SND_free( sndBuffer *v )
 {
 	* ( sndBuffer ** ) v = freelist;
 	freelist = ( sndBuffer * ) v;
-	inUse += sizeof ( sndBuffer );
+	inUse += sizeof( sndBuffer );
 }
 
 sndBuffer      *SND_malloc()
@@ -68,14 +68,14 @@ sndBuffer      *SND_malloc()
 	sndBuffer *v;
 redo:
 
-	if ( freelist == NULL )
+	if( freelist == NULL )
 	{
 		S_FreeOldestSound();
 		goto redo;
 	}
 
-	inUse -= sizeof ( sndBuffer );
-	totalInUse += sizeof ( sndBuffer );
+	inUse -= sizeof( sndBuffer );
+	totalInUse += sizeof( sndBuffer );
 
 	v = freelist;
 	freelist = * ( sndBuffer ** ) freelist;
@@ -89,20 +89,20 @@ void SND_setup()
 	cvar_t    *cv;
 	int       scs;
 
-	cv = Cvar_Get ( "com_soundMegs", DEF_COMSOUNDMEGS, CVAR_LATCH | CVAR_ARCHIVE );
+	cv = Cvar_Get( "com_soundMegs", DEF_COMSOUNDMEGS, CVAR_LATCH | CVAR_ARCHIVE );
 
 	scs = ( cv->integer * 1536 );
 
-	buffer = malloc ( scs * sizeof ( sndBuffer ) );
+	buffer = malloc( scs * sizeof( sndBuffer ) );
 	// allocate the stack based hunk allocator
-	sfxScratchBuffer = malloc ( SND_CHUNK_SIZE * sizeof ( short ) * 4 ); //Hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
+	sfxScratchBuffer = malloc( SND_CHUNK_SIZE * sizeof( short ) * 4 );   //Hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
 	sfxScratchPointer = NULL;
 
-	inUse = scs * sizeof ( sndBuffer );
+	inUse = scs * sizeof( sndBuffer );
 	p = buffer;;
 	q = p + scs;
 
-	while ( --q > p )
+	while( --q > p )
 	{
 		* ( sndBuffer ** ) q = q - 1;
 	}
@@ -110,7 +110,7 @@ void SND_setup()
 	* ( sndBuffer ** ) q = NULL;
 	freelist = p + scs - 1;
 
-	Com_Printf ( "Sound memory manager started\n" );
+	Com_Printf( "Sound memory manager started\n" );
 }
 
 /*
@@ -120,7 +120,7 @@ ResampleSfx
 resample / decimate to the current source rate
 ================
 */
-static void ResampleSfx ( sfx_t *sfx, int inrate, int inwidth, byte *data, qboolean compressed )
+static void ResampleSfx( sfx_t *sfx, int inrate, int inwidth, byte *data, qboolean compressed )
 {
 	int       outcount;
 	int       srcsample;
@@ -139,28 +139,28 @@ static void ResampleSfx ( sfx_t *sfx, int inrate, int inwidth, byte *data, qbool
 	fracstep = stepscale * 256;
 	chunk = sfx->soundData;
 
-	for ( i = 0; i < outcount; i++ )
+	for( i = 0; i < outcount; i++ )
 	{
 		srcsample = samplefrac >> 8;
 		samplefrac += fracstep;
 
-		if ( inwidth == 2 )
+		if( inwidth == 2 )
 		{
-			sample = LittleShort ( ( ( short * ) data ) [ srcsample ] );
+			sample = LittleShort( ( ( short * ) data ) [ srcsample ] );
 		}
 		else
 		{
-			sample = ( int ) ( ( unsigned char ) ( data[ srcsample ] ) - 128 ) << 8;
+			sample = ( int )( ( unsigned char )( data[ srcsample ] ) - 128 ) << 8;
 		}
 
 		part = ( i & ( SND_CHUNK_SIZE - 1 ) );
 
-		if ( part == 0 )
+		if( part == 0 )
 		{
 			sndBuffer *newchunk;
 			newchunk = SND_malloc();
 
-			if ( chunk == NULL )
+			if( chunk == NULL )
 			{
 				sfx->soundData = newchunk;
 			}
@@ -183,7 +183,7 @@ ResampleSfx
 resample / decimate to the current source rate
 ================
 */
-static int ResampleSfxRaw ( short *sfx, int inrate, int inwidth, int samples, byte *data )
+static int ResampleSfxRaw( short *sfx, int inrate, int inwidth, int samples, byte *data )
 {
 	int   outcount;
 	int   srcsample;
@@ -198,18 +198,18 @@ static int ResampleSfxRaw ( short *sfx, int inrate, int inwidth, int samples, by
 	samplefrac = 0;
 	fracstep = stepscale * 256;
 
-	for ( i = 0; i < outcount; i++ )
+	for( i = 0; i < outcount; i++ )
 	{
 		srcsample = samplefrac >> 8;
 		samplefrac += fracstep;
 
-		if ( inwidth == 2 )
+		if( inwidth == 2 )
 		{
-			sample = LittleShort ( ( ( short * ) data ) [ srcsample ] );
+			sample = LittleShort( ( ( short * ) data ) [ srcsample ] );
 		}
 		else
 		{
-			sample = ( int ) ( ( unsigned char ) ( data[ srcsample ] ) - 128 ) << 8;
+			sample = ( int )( ( unsigned char )( data[ srcsample ] ) - 128 ) << 8;
 		}
 
 		sfx[ i ] = sample;
@@ -228,7 +228,7 @@ The filename may be different than sfx->name in the case
 of a forced fallback of a player specific sound
 ==============
 */
-qboolean S_LoadSound ( sfx_t *sfx )
+qboolean S_LoadSound( sfx_t *sfx )
 {
 	byte       *data;
 	short      *samples;
@@ -236,30 +236,30 @@ qboolean S_LoadSound ( sfx_t *sfx )
 	//int   size;
 
 	// player specific sounds are never directly loaded
-	if ( sfx->soundName[ 0 ] == '*' )
+	if( sfx->soundName[ 0 ] == '*' )
 	{
 		return qfalse;
 	}
 
 	// load it in
-	data = codec_load ( sfx->soundName, &info );
+	data = codec_load( sfx->soundName, &info );
 
-	if ( !data )
+	if( !data )
 	{
 		return qfalse;
 	}
 
-	if ( info.width == 1 )
+	if( info.width == 1 )
 	{
-		Com_DPrintf ( S_COLOR_YELLOW "WARNING: %s is a 8 bit wav file\n", sfx->soundName );
+		Com_DPrintf( S_COLOR_YELLOW "WARNING: %s is a 8 bit wav file\n", sfx->soundName );
 	}
 
-	if ( info.rate != 22050 )
+	if( info.rate != 22050 )
 	{
-		Com_DPrintf ( S_COLOR_YELLOW "WARNING: %s is not a 22kHz wav file\n", sfx->soundName );
+		Com_DPrintf( S_COLOR_YELLOW "WARNING: %s is not a 22kHz wav file\n", sfx->soundName );
 	}
 
-	samples = Hunk_AllocateTempMemory ( info.samples * sizeof ( short ) * 2 );
+	samples = Hunk_AllocateTempMemory( info.samples * sizeof( short ) * 2 );
 
 	sfx->lastTimeUsed = Com_Milliseconds() + 1;
 
@@ -269,27 +269,27 @@ qboolean S_LoadSound ( sfx_t *sfx )
 	// manager to do the right thing for us and page
 	// sound in as needed
 
-	if ( sfx->soundCompressed == qtrue )
+	if( sfx->soundCompressed == qtrue )
 	{
 		sfx->soundCompressionMethod = 1;
 		sfx->soundData = NULL;
-		sfx->soundLength = ResampleSfxRaw ( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
-		S_AdpcmEncodeSound ( sfx, samples );
+		sfx->soundLength = ResampleSfxRaw( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
+		S_AdpcmEncodeSound( sfx, samples );
 #if 0
 	}
-	else if ( info.samples > ( SND_CHUNK_SIZE * 16 ) && info.width > 1 )
+	else if( info.samples > ( SND_CHUNK_SIZE * 16 ) && info.width > 1 )
 	{
 		sfx->soundCompressionMethod = 3;
 		sfx->soundData = NULL;
-		sfx->soundLength = ResampleSfxRaw ( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
-		encodeMuLaw ( sfx, samples );
+		sfx->soundLength = ResampleSfxRaw( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
+		encodeMuLaw( sfx, samples );
 	}
-	else if ( info.samples > ( SND_CHUNK_SIZE * 6400 ) && info.width > 1 )
+	else if( info.samples > ( SND_CHUNK_SIZE * 6400 ) && info.width > 1 )
 	{
 		sfx->soundCompressionMethod = 2;
 		sfx->soundData = NULL;
-		sfx->soundLength = ResampleSfxRaw ( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
-		encodeWavelet ( sfx, samples );
+		sfx->soundLength = ResampleSfxRaw( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
+		encodeWavelet( sfx, samples );
 #endif
 	}
 	else
@@ -297,16 +297,16 @@ qboolean S_LoadSound ( sfx_t *sfx )
 		sfx->soundCompressionMethod = 0;
 		sfx->soundLength = info.samples;
 		sfx->soundData = NULL;
-		ResampleSfx ( sfx, info.rate, info.width, data + info.dataofs, qfalse );
+		ResampleSfx( sfx, info.rate, info.width, data + info.dataofs, qfalse );
 	}
 
-	Hunk_FreeTempMemory ( samples );
-	Hunk_FreeTempMemory ( data );
+	Hunk_FreeTempMemory( samples );
+	Hunk_FreeTempMemory( data );
 
 	return qtrue;
 }
 
 void S_DisplayFreeMemory()
 {
-	Com_Printf ( "%d bytes free sound buffer memory, %d total used\n", inUse, totalInUse );
+	Com_Printf( "%d bytes free sound buffer memory, %d total used\n", inUse, totalInUse );
 }

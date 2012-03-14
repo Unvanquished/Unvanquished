@@ -106,12 +106,12 @@ static const modeCvarTable_t aPubSettings[] =
 };
 
 // Force settings to predefined state.
-void G_configSet ( int dwMode, qboolean doComp )
+void G_configSet( int dwMode, qboolean doComp )
 {
 	unsigned int          dwGameType;
 	const modeCvarTable_t *pModeCvars;
 
-	if ( dwMode < 0 || dwMode >= GT_MAX_GAME_TYPE )
+	if( dwMode < 0 || dwMode >= GT_MAX_GAME_TYPE )
 	{
 		return;
 	}
@@ -120,25 +120,25 @@ void G_configSet ( int dwMode, qboolean doComp )
 
 	G_wipeCvars();
 
-	for ( pModeCvars = ( ( doComp ) ? aCompSettings : aPubSettings ); pModeCvars->cvar_name; pModeCvars++ )
+	for( pModeCvars = ( ( doComp ) ? aCompSettings : aPubSettings ); pModeCvars->cvar_name; pModeCvars++ )
 	{
-		if ( pModeCvars->modes & dwGameType )
+		if( pModeCvars->modes & dwGameType )
 		{
-			trap_Cvar_Set ( pModeCvars->cvar_name, pModeCvars->cvar_value );
-			G_Printf ( "set %s %s\n", pModeCvars->cvar_name, pModeCvars->cvar_value );
+			trap_Cvar_Set( pModeCvars->cvar_name, pModeCvars->cvar_value );
+			G_Printf( "set %s %s\n", pModeCvars->cvar_name, pModeCvars->cvar_value );
 		}
 	}
 
 	G_UpdateCvars();
-	G_Printf ( ">> %s settings loaded!\n", ( doComp ) ? "Competition" : "Public" );
+	G_Printf( ">> %s settings loaded!\n", ( doComp ) ? "Competition" : "Public" );
 
-	if ( doComp && g_gamestate.integer == GS_WARMUP_COUNTDOWN )
+	if( doComp && g_gamestate.integer == GS_WARMUP_COUNTDOWN )
 	{
 		level.lastRestartTime = level.time;
-		trap_SendConsoleCommand ( EXEC_APPEND, va ( "map_restart 0 %i\n", GS_WARMUP ) );
+		trap_SendConsoleCommand( EXEC_APPEND, va( "map_restart 0 %i\n", GS_WARMUP ) );
 	}
 	else
 	{
-		trap_SendConsoleCommand ( EXEC_APPEND, va ( "map_restart 0 %i\n", GS_WARMUP ) );
+		trap_SendConsoleCommand( EXEC_APPEND, va( "map_restart 0 %i\n", GS_WARMUP ) );
 	}
 }

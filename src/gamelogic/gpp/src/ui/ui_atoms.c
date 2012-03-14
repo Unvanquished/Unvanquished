@@ -30,28 +30,28 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 qboolean m_entersound; // after a frame, so caching won't disrupt the sound
 
-void QDECL Com_Error ( int level, const char *error, ... )
+void QDECL Com_Error( int level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
 
-	va_start ( argptr, error );
-	Q_vsnprintf ( text, sizeof ( text ), error, argptr );
-	va_end ( argptr );
+	va_start( argptr, error );
+	Q_vsnprintf( text, sizeof( text ), error, argptr );
+	va_end( argptr );
 
-	trap_Error ( text );
+	trap_Error( text );
 }
 
-void QDECL Com_Printf ( const char *msg, ... )
+void QDECL Com_Printf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
 
-	va_start ( argptr, msg );
-	Q_vsnprintf ( text, sizeof ( text ), msg, argptr );
-	va_end ( argptr );
+	va_start( argptr, msg );
+	Q_vsnprintf( text, sizeof( text ), msg, argptr );
+	va_end( argptr );
 
-	trap_Print ( text );
+	trap_Print( text );
 }
 
 /*
@@ -59,11 +59,11 @@ void QDECL Com_Printf ( const char *msg, ... )
 UI_ClampCvar
 =================
 */
-float UI_ClampCvar ( float min, float max, float value )
+float UI_ClampCvar( float min, float max, float value )
 {
-	if ( value < min ) { return min; }
+	if( value < min ) { return min; }
 
-	if ( value > max ) { return max; }
+	if( value > max ) { return max; }
 
 	return value;
 }
@@ -73,26 +73,26 @@ float UI_ClampCvar ( float min, float max, float value )
 UI_StartDemoLoop
 =================
 */
-void UI_StartDemoLoop ( void )
+void UI_StartDemoLoop( void )
 {
-	trap_Cmd_ExecuteText ( EXEC_APPEND, "d1\n" );
+	trap_Cmd_ExecuteText( EXEC_APPEND, "d1\n" );
 }
 
-char *UI_Argv ( int arg )
+char *UI_Argv( int arg )
 {
 	static char buffer[ MAX_STRING_CHARS ];
 
-	trap_Argv ( arg, buffer, sizeof ( buffer ) );
+	trap_Argv( arg, buffer, sizeof( buffer ) );
 
 	return buffer;
 }
 
-char *UI_ConcatArgs ( int arg, char *buf, int len )
+char *UI_ConcatArgs( int arg, char *buf, int len )
 {
 	char *p;
 	int  c;
 
-	if ( len <= 0 )
+	if( len <= 0 )
 	{
 		return buf;
 	}
@@ -100,16 +100,16 @@ char *UI_ConcatArgs ( int arg, char *buf, int len )
 	p = buf;
 	c = trap_Argc();
 
-	for ( ; arg < c; arg++ )
+	for( ; arg < c; arg++ )
 	{
-		char *argp = UI_Argv ( arg );
+		char *argp = UI_Argv( arg );
 
-		while ( *argp && p < &buf[ len - 1 ] )
+		while( *argp && p < &buf[ len - 1 ] )
 		{
 			*p++ = *argp++;
 		}
 
-		if ( p < &buf[ len - 2 ] )
+		if( p < &buf[ len - 2 ] )
 		{
 			*p++ = ' ';
 		}
@@ -124,47 +124,47 @@ char *UI_ConcatArgs ( int arg, char *buf, int len )
 	return buf;
 }
 
-char *UI_Cvar_VariableString ( const char *var_name )
+char *UI_Cvar_VariableString( const char *var_name )
 {
 	static char buffer[ MAX_STRING_CHARS ];
 
-	trap_Cvar_VariableStringBuffer ( var_name, buffer, sizeof ( buffer ) );
+	trap_Cvar_VariableStringBuffer( var_name, buffer, sizeof( buffer ) );
 
 	return buffer;
 }
 
-static void  UI_Cache_f ( void )
+static void  UI_Cache_f( void )
 {
 	Display_CacheAll();
 }
 
-static void UI_Menu_f ( void )
+static void UI_Menu_f( void )
 {
-	if ( Menu_Count() > 0 )
+	if( Menu_Count() > 0 )
 	{
-		trap_Key_SetCatcher ( KEYCATCH_UI );
-		Menus_ActivateByName ( UI_Argv ( 1 ) );
+		trap_Key_SetCatcher( KEYCATCH_UI );
+		Menus_ActivateByName( UI_Argv( 1 ) );
 	}
 }
 
-static void UI_CloseMenus_f ( void )
+static void UI_CloseMenus_f( void )
 {
-	if ( Menu_Count() > 0 )
+	if( Menu_Count() > 0 )
 	{
-		trap_Key_SetCatcher ( trap_Key_GetCatcher() & ~KEYCATCH_UI );
+		trap_Key_SetCatcher( trap_Key_GetCatcher() & ~KEYCATCH_UI );
 		trap_Key_ClearStates();
-		trap_Cvar_Set ( "cl_paused", "0" );
+		trap_Cvar_Set( "cl_paused", "0" );
 		Menus_CloseAll();
 	}
 }
 
-static void UI_MessageMode_f ( void )
+static void UI_MessageMode_f( void )
 {
-	char *arg = UI_Argv ( 0 );
+	char *arg = UI_Argv( 0 );
 
-	trap_Cvar_Set ( "ui_sayBuffer", "" );
+	trap_Cvar_Set( "ui_sayBuffer", "" );
 
-	switch ( arg[ 11 ] )
+	switch( arg[ 11 ] )
 	{
 		default:
 		case '\0':
@@ -196,43 +196,43 @@ static void UI_MessageMode_f ( void )
 			break;
 	}
 
-	trap_Key_SetCatcher ( KEYCATCH_UI );
-	Menus_CloseByName ( "say" );
-	Menus_CloseByName ( "say_team" );
-	Menus_CloseByName ( "a" );
-	Menus_CloseByName ( "irc_say" );
+	trap_Key_SetCatcher( KEYCATCH_UI );
+	Menus_CloseByName( "say" );
+	Menus_CloseByName( "say_team" );
+	Menus_CloseByName( "a" );
+	Menus_CloseByName( "irc_say" );
 
-	if ( uiInfo.chatTeam )
+	if( uiInfo.chatTeam )
 	{
-		Menus_ActivateByName ( "say_team" );
+		Menus_ActivateByName( "say_team" );
 	}
-	else if ( uiInfo.chatAdmin )
+	else if( uiInfo.chatAdmin )
 	{
-		Menus_ActivateByName ( "a" );
+		Menus_ActivateByName( "a" );
 	}
-	else if ( uiInfo.chatIRC )
+	else if( uiInfo.chatIRC )
 	{
-		Menus_ActivateByName ( "irc_say" );
+		Menus_ActivateByName( "irc_say" );
 	}
 	else
 	{
-		Menus_ActivateByName ( "say" );
+		Menus_ActivateByName( "say" );
 	}
 }
 
-static void UI_Me_f ( void )
+static void UI_Me_f( void )
 {
 	char buf[ MAX_SAY_TEXT - 4 ];
 
-	UI_ConcatArgs ( 1, buf, sizeof ( buf ) );
+	UI_ConcatArgs( 1, buf, sizeof( buf ) );
 
-	trap_Cmd_ExecuteText ( EXEC_APPEND, va ( "say \"/me %s\"", buf ) );
+	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say \"/me %s\"", buf ) );
 }
 
 struct uicmd
 {
 	char *cmd;
-	void ( *function ) ( void );
+	void ( *function )( void );
 } commands[] =
 {
 	{ "closemenus",   UI_CloseMenus_f  },
@@ -252,16 +252,16 @@ struct uicmd
 UI_ConsoleCommand
 =================
 */
-qboolean UI_ConsoleCommand ( int realTime )
+qboolean UI_ConsoleCommand( int realTime )
 {
-	struct uicmd *cmd = bsearch ( UI_Argv ( 0 ), commands,
-	                              sizeof ( commands ) / sizeof ( commands[ 0 ] ), sizeof ( commands[ 0 ] ),
-	                              cmdcmp );
+	struct uicmd *cmd = bsearch( UI_Argv( 0 ), commands,
+	                             sizeof( commands ) / sizeof( commands[ 0 ] ), sizeof( commands[ 0 ] ),
+	                             cmdcmp );
 
 	uiInfo.uiDC.frameTime = realTime - uiInfo.uiDC.realTime;
 	uiInfo.uiDC.realTime = realTime;
 
-	if ( cmd )
+	if( cmd )
 	{
 		cmd->function();
 		return qtrue;
@@ -270,23 +270,23 @@ qboolean UI_ConsoleCommand ( int realTime )
 	return qfalse;
 }
 
-void UI_DrawNamedPic ( float x, float y, float width, float height, const char *picname )
+void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname )
 {
 	qhandle_t hShader;
 
-	hShader = trap_R_RegisterShaderNoMip ( picname );
-	UI_AdjustFrom640 ( &x, &y, &width, &height );
-	trap_R_DrawStretchPic ( x, y, width, height, 0, 0, 1, 1, hShader );
+	hShader = trap_R_RegisterShaderNoMip( picname );
+	UI_AdjustFrom640( &x, &y, &width, &height );
+	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
-void UI_DrawHandlePic ( float x, float y, float w, float h, qhandle_t hShader )
+void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 {
 	float s0;
 	float s1;
 	float t0;
 	float t1;
 
-	if ( w < 0 )
+	if( w < 0 )
 	{
 		// flip about vertical
 		w = -w;
@@ -299,7 +299,7 @@ void UI_DrawHandlePic ( float x, float y, float w, float h, qhandle_t hShader )
 		s1 = 1;
 	}
 
-	if ( h < 0 )
+	if( h < 0 )
 	{
 		// flip about horizontal
 		h = -h;
@@ -312,8 +312,8 @@ void UI_DrawHandlePic ( float x, float y, float w, float h, qhandle_t hShader )
 		t1 = 1;
 	}
 
-	UI_AdjustFrom640 ( &x, &y, &w, &h );
-	trap_R_DrawStretchPic ( x, y, w, h, s0, t0, s1, t1, hShader );
+	UI_AdjustFrom640( &x, &y, &w, &h );
+	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
 }
 
 /*
@@ -323,17 +323,17 @@ UI_FillRect
 Coordinates are 640*480 virtual values
 =================
 */
-void UI_FillRect ( float x, float y, float width, float height, const float *color )
+void UI_FillRect( float x, float y, float width, float height, const float *color )
 {
-	trap_R_SetColor ( color );
+	trap_R_SetColor( color );
 
-	UI_AdjustFrom640 ( &x, &y, &width, &height );
-	trap_R_DrawStretchPic ( x, y, width, height, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
+	UI_AdjustFrom640( &x, &y, &width, &height );
+	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 
-	trap_R_SetColor ( NULL );
+	trap_R_SetColor( NULL );
 }
 
-void UI_SetColor ( const float *rgba )
+void UI_SetColor( const float *rgba )
 {
-	trap_R_SetColor ( rgba );
+	trap_R_SetColor( rgba );
 }

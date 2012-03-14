@@ -39,7 +39,7 @@ static struct freememnode *freehead;
 
 static int                freemem;
 
-void *CG_Alloc ( int size )
+void *CG_Alloc( int size )
 {
 	// Find a free block and allocate.
 	// Does two passes, attempts to fill same-sized free slot first.
@@ -50,40 +50,40 @@ void *CG_Alloc ( int size )
 	char               *endptr;
 	int                *ptr;
 
-	allocsize = ( size + sizeof ( int ) + ROUNDBITS ) & ~ROUNDBITS; // Round to 32-byte boundary
+	allocsize = ( size + sizeof( int ) + ROUNDBITS ) & ~ROUNDBITS;  // Round to 32-byte boundary
 	ptr = NULL;
 
 	smallest = NULL;
 	smallestsize = POOLSIZE + 1; // Guaranteed not to miss any slots :)
 
-	for ( fmn = freehead; fmn; fmn = fmn->next )
+	for( fmn = freehead; fmn; fmn = fmn->next )
 	{
-		if ( fmn->cookie != FREEMEMCOOKIE )
+		if( fmn->cookie != FREEMEMCOOKIE )
 		{
-			CG_Error ( "CG_Alloc: Memory corruption detected!\n" );
+			CG_Error( "CG_Alloc: Memory corruption detected!\n" );
 		}
 
-		if ( fmn->size >= allocsize )
+		if( fmn->size >= allocsize )
 		{
 			// We've got a block
-			if ( fmn->size == allocsize )
+			if( fmn->size == allocsize )
 			{
 				// Same size, just remove
 
 				prev = fmn->prev;
 				next = fmn->next;
 
-				if ( prev )
+				if( prev )
 				{
 					prev->next = next; // Point previous node to next
 				}
 
-				if ( next )
+				if( next )
 				{
 					next->prev = prev; // Point next node to previous
 				}
 
-				if ( fmn == freehead )
+				if( fmn == freehead )
 				{
 					freehead = next; // Set head pointer to next
 				}
@@ -94,7 +94,7 @@ void *CG_Alloc ( int size )
 			else
 			{
 				// Keep track of the smallest free slot
-				if ( fmn->size < smallestsize )
+				if( fmn->size < smallestsize )
 				{
 					smallest = fmn;
 					smallestsize = fmn->size;
@@ -103,7 +103,7 @@ void *CG_Alloc ( int size )
 		}
 	}
 
-	if ( !ptr && smallest )
+	if( !ptr && smallest )
 	{
 		// We found a slot big enough
 		smallest->size -= allocsize;
@@ -111,25 +111,25 @@ void *CG_Alloc ( int size )
 		ptr = ( int * ) endptr;
 	}
 
-	if ( ptr )
+	if( ptr )
 	{
 		freemem -= allocsize;
 
-		if ( cg_debugAlloc.integer )
+		if( cg_debugAlloc.integer )
 		{
-			CG_Printf ( "CG_Alloc of %i bytes (%i left)\n", allocsize, freemem );
+			CG_Printf( "CG_Alloc of %i bytes (%i left)\n", allocsize, freemem );
 		}
 
-		memset ( ptr, 0, allocsize );
+		memset( ptr, 0, allocsize );
 		*ptr++ = allocsize; // Store a copy of size for deallocation
 		return ( ( void * ) ptr );
 	}
 
-	CG_Error ( "CG_Alloc: failed on allocation of %i bytes\n", size );
+	CG_Error( "CG_Alloc: failed on allocation of %i bytes\n", size );
 	return ( NULL );
 }
 
-void CG_Free ( void *ptr )
+void CG_Free( void *ptr )
 {
 	// Release allocated memory, add it to the free list.
 
@@ -143,16 +143,16 @@ void CG_Free ( void *ptr )
 
 	freemem += *freeptr;
 
-	if ( cg_debugAlloc.integer )
+	if( cg_debugAlloc.integer )
 	{
-		CG_Printf ( "CG_Free of %i bytes (%i left)\n", *freeptr, freemem );
+		CG_Printf( "CG_Free of %i bytes (%i left)\n", *freeptr, freemem );
 	}
 
-	for ( fmn = freehead; fmn; fmn = fmn->next )
+	for( fmn = freehead; fmn; fmn = fmn->next )
 	{
 		freeend = ( ( char * ) fmn ) + fmn->size;
 
-		if ( freeend == ( char * ) freeptr )
+		if( freeend == ( char * ) freeptr )
 		{
 			// Released block can be merged to an existing node
 
@@ -172,7 +172,7 @@ void CG_Free ( void *ptr )
 	freehead = fmn;
 }
 
-void CG_InitMemory ( void )
+void CG_InitMemory( void )
 {
 	// Set up the initial node
 
@@ -181,10 +181,10 @@ void CG_InitMemory ( void )
 	freehead->size = POOLSIZE;
 	freehead->next = NULL;
 	freehead->prev = NULL;
-	freemem = sizeof ( memoryPool );
+	freemem = sizeof( memoryPool );
 }
 
-void CG_DefragmentMemory ( void )
+void CG_DefragmentMemory( void )
 {
 	// If there's a frenzy of deallocation and we want to
 	// allocate something big, this is useful. Otherwise...
@@ -192,36 +192,36 @@ void CG_DefragmentMemory ( void )
 
 	struct freememnode *startfmn, *endfmn, *fmn;
 
-	for ( startfmn = freehead; startfmn; )
+	for( startfmn = freehead; startfmn; )
 	{
-		endfmn = ( struct freememnode * ) ( ( ( char * ) startfmn ) + startfmn->size );
+		endfmn = ( struct freememnode * )( ( ( char * ) startfmn ) + startfmn->size );
 
-		for ( fmn = freehead; fmn; )
+		for( fmn = freehead; fmn; )
 		{
-			if ( fmn->cookie != FREEMEMCOOKIE )
+			if( fmn->cookie != FREEMEMCOOKIE )
 			{
-				CG_Error ( "CG_DefragmentMemory: Memory corruption detected!\n" );
+				CG_Error( "CG_DefragmentMemory: Memory corruption detected!\n" );
 			}
 
-			if ( fmn == endfmn )
+			if( fmn == endfmn )
 			{
 				// We can add fmn onto startfmn.
 
-				if ( fmn->prev )
+				if( fmn->prev )
 				{
 					fmn->prev->next = fmn->next;
 				}
 
-				if ( fmn->next )
+				if( fmn->next )
 				{
-					if ( ! ( fmn->next->prev = fmn->prev ) )
+					if( !( fmn->next->prev = fmn->prev ) )
 					{
 						freehead = fmn->next; // We're removing the head node
 					}
 				}
 
 				startfmn->size += fmn->size;
-				memset ( fmn, 0, sizeof ( struct freememnode ) ); // A redundant call, really.
+				memset( fmn, 0, sizeof( struct freememnode ) );   // A redundant call, really.
 
 				startfmn = freehead;
 				endfmn = fmn = NULL; // Break out of current loop
@@ -232,7 +232,7 @@ void CG_DefragmentMemory ( void )
 			}
 		}
 
-		if ( endfmn )
+		if( endfmn )
 		{
 			startfmn = startfmn->next; // endfmn acts as a 'restart' flag here
 		}

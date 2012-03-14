@@ -37,15 +37,15 @@ public:
 	template< class Type >
 	Type *Get() const
 	{
-		assert ( sizeof ( Type ) == m_BlockSize && "Memory Block Doesn't match!" );
-		return static_cast< Type * > ( m_pVoid );
+		assert( sizeof( Type ) == m_BlockSize && "Memory Block Doesn't match!" );
+		return static_cast< Type * >( m_pVoid );
 	}
 
 	template< class Type >
-	void Get2 ( Type *&_p ) const
+	void Get2( Type *&_p ) const
 	{
-		assert ( sizeof ( Type ) == m_BlockSize && "Memory Block Doesn't match!" );
-		_p = static_cast< Type * > ( m_pVoid );
+		assert( sizeof( Type ) == m_BlockSize && "Memory Block Doesn't match!" );
+		_p = static_cast< Type * >( m_pVoid );
 	}
 
 	int GetMessageId() const
@@ -58,10 +58,10 @@ public:
 		return ( m_MessageId != 0 );
 	}
 
-	MessageHelper ( int _msgId, void *_void = 0, obuint32 _size = 0 ) :
-		m_MessageId     ( _msgId ),
-		m_pVoid         ( _void ),
-		m_BlockSize     ( _size )
+	MessageHelper( int _msgId, void *_void = 0, obuint32 _size = 0 ) :
+		m_MessageId( _msgId ),
+		m_pVoid( _void ),
+		m_BlockSize( _size )
 	{
 	}
 
@@ -80,7 +80,7 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
-typedef void ( *pfnMessageFunction ) ( const MessageHelper &_helper );
+typedef void ( *pfnMessageFunction )( const MessageHelper &_helper );
 
 //////////////////////////////////////////////////////////////////////////
 

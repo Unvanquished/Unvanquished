@@ -167,10 +167,10 @@ typedef struct
 
 //....................................................................
 
-void           AAS_RT_BuildRouteTable ( void );
-void           AAS_RT_ShowRoute ( vec3_t srcpos, int srcnum, int destnum );
-aas_rt_route_t *AAS_RT_GetRoute ( int srcnum, vec3_t origin, int destnum );
-void           AAS_RT_ShutdownRouteTable ( void );
-qboolean       AAS_RT_GetHidePos ( vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea,
-                                   vec3_t returnPos );
-int            AAS_RT_GetReachabilityIndex ( int areanum, int reachIndex );
+void           AAS_RT_BuildRouteTable( void );
+void           AAS_RT_ShowRoute( vec3_t srcpos, int srcnum, int destnum );
+aas_rt_route_t *AAS_RT_GetRoute( int srcnum, vec3_t origin, int destnum );
+void           AAS_RT_ShutdownRouteTable( void );
+qboolean       AAS_RT_GetHidePos( vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea,
+                                  vec3_t returnPos );
+int            AAS_RT_GetReachabilityIndex( int areanum, int reachIndex );

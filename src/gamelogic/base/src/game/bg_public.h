@@ -183,15 +183,15 @@ typedef struct
 	// callbacks to test the world
 	// these will be different functions during game and cgame
 	/*void    (*trace)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );*/
-	void          ( *trace ) ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-	                           const vec3_t end, int passEntityNum, int contentMask );
+	void ( *trace )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+	                 const vec3_t end, int passEntityNum, int contentMask );
 
-	int           ( *pointcontents ) ( const vec3_t point, int passEntityNum );
+	int ( *pointcontents )( const vec3_t point, int passEntityNum );
 } pmove_t;
 
 // if a full pmove isn't done on the client, you can just update the angles
-void PM_UpdateViewAngles ( playerState_t *ps, const usercmd_t *cmd );
-void Pmove ( pmove_t *pmove );
+void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
+void Pmove( pmove_t *pmove );
 
 //===================================================================================
 
@@ -1080,131 +1080,131 @@ typedef struct
 } upgradeAttributes_t;
 
 //TA:
-void     BG_UnpackAmmoArray ( int weapon, int psAmmo[], int psAmmo2[], int *ammo, int *clips );
-void     BG_PackAmmoArray ( int weapon, int psAmmo[], int psAmmo2[], int ammo, int clips );
-qboolean BG_WeaponIsFull ( weapon_t weapon, int stats[], int psAmmo[], int psAmmo2[]  );
-void     BG_AddWeaponToInventory ( int weapon, int stats[]  );
-void     BG_RemoveWeaponFromInventory ( int weapon, int stats[]  );
-qboolean BG_InventoryContainsWeapon ( int weapon, int stats[]  );
-void     BG_AddUpgradeToInventory ( int item, int stats[]  );
-void     BG_RemoveUpgradeFromInventory ( int item, int stats[]  );
-qboolean BG_InventoryContainsUpgrade ( int item, int stats[]  );
-void     BG_ActivateUpgrade ( int item, int stats[]  );
-void     BG_DeactivateUpgrade ( int item, int stats[]  );
-qboolean BG_UpgradeIsActive ( int item, int stats[]  );
-qboolean BG_RotateAxis ( vec3_t surfNormal, vec3_t inAxis[ 3 ],
-                         vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling );
-void     BG_PositionBuildableRelativeToPlayer ( const playerState_t *ps,
+void     BG_UnpackAmmoArray( int weapon, int psAmmo[], int psAmmo2[], int *ammo, int *clips );
+void     BG_PackAmmoArray( int weapon, int psAmmo[], int psAmmo2[], int ammo, int clips );
+qboolean BG_WeaponIsFull( weapon_t weapon, int stats[], int psAmmo[], int psAmmo2[] );
+void     BG_AddWeaponToInventory( int weapon, int stats[] );
+void     BG_RemoveWeaponFromInventory( int weapon, int stats[] );
+qboolean BG_InventoryContainsWeapon( int weapon, int stats[] );
+void     BG_AddUpgradeToInventory( int item, int stats[] );
+void     BG_RemoveUpgradeFromInventory( int item, int stats[] );
+qboolean BG_InventoryContainsUpgrade( int item, int stats[] );
+void     BG_ActivateUpgrade( int item, int stats[] );
+void     BG_DeactivateUpgrade( int item, int stats[] );
+qboolean BG_UpgradeIsActive( int item, int stats[] );
+qboolean BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
+                        vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling );
+void     BG_PositionBuildableRelativeToPlayer( const playerState_t *ps,
     const vec3_t mins, const vec3_t maxs,
-    void ( *trace ) ( trace_t *, const vec3_t, const vec3_t,
-                      const vec3_t, const vec3_t, int, int ),
+    void ( *trace )( trace_t *, const vec3_t, const vec3_t,
+                     const vec3_t, const vec3_t, int, int ),
     vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
-int      BG_GetValueOfHuman ( playerState_t *ps );
+int      BG_GetValueOfHuman( playerState_t *ps );
 
-int      BG_FindBuildNumForName ( char *name );
-int      BG_FindBuildNumForEntityName ( char *name );
-char     *BG_FindNameForBuildable ( int bclass );
-char     *BG_FindHumanNameForBuildable ( int bclass );
-char     *BG_FindEntityNameForBuildable ( int bclass );
-char     *BG_FindModelsForBuildable ( int bclass, int modelNum );
-float    BG_FindModelScaleForBuildable ( int bclass );
-void     BG_FindBBoxForBuildable ( int bclass, vec3_t mins, vec3_t maxs );
-float    BG_FindZOffsetForBuildable ( int pclass );
-int      BG_FindHealthForBuildable ( int bclass );
-int      BG_FindRegenRateForBuildable ( int bclass );
-trType_t BG_FindTrajectoryForBuildable ( int bclass );
-float    BG_FindBounceForBuildable ( int bclass );
-int      BG_FindBuildPointsForBuildable ( int bclass );
-qboolean BG_FindStagesForBuildable ( int bclass, stage_t stage );
-int      BG_FindSplashDamageForBuildable ( int bclass );
-int      BG_FindSplashRadiusForBuildable ( int bclass );
-int      BG_FindMODForBuildable ( int bclass );
-int      BG_FindTeamForBuildable ( int bclass );
-weapon_t BG_FindBuildWeaponForBuildable ( int bclass );
-int      BG_FindAnimForBuildable ( int bclass );
-int      BG_FindNextThinkForBuildable ( int bclass );
-int      BG_FindBuildTimeForBuildable ( int bclass );
-qboolean BG_FindUsableForBuildable ( int bclass );
-int      BG_FindRangeForBuildable ( int bclass );
-int      BG_FindFireSpeedForBuildable ( int bclass );
-weapon_t BG_FindProjTypeForBuildable ( int bclass );
-float    BG_FindMinNormalForBuildable ( int bclass );
-qboolean BG_FindInvertNormalForBuildable ( int bclass );
-int      BG_FindCreepTestForBuildable ( int bclass );
-int      BG_FindCreepSizeForBuildable ( int bclass );
-int      BG_FindDCCTestForBuildable ( int bclass );
-int      BG_FindUniqueTestForBuildable ( int bclass );
-void     BG_InitBuildableOverrides ( void );
+int      BG_FindBuildNumForName( char *name );
+int      BG_FindBuildNumForEntityName( char *name );
+char     *BG_FindNameForBuildable( int bclass );
+char     *BG_FindHumanNameForBuildable( int bclass );
+char     *BG_FindEntityNameForBuildable( int bclass );
+char     *BG_FindModelsForBuildable( int bclass, int modelNum );
+float    BG_FindModelScaleForBuildable( int bclass );
+void     BG_FindBBoxForBuildable( int bclass, vec3_t mins, vec3_t maxs );
+float    BG_FindZOffsetForBuildable( int pclass );
+int      BG_FindHealthForBuildable( int bclass );
+int      BG_FindRegenRateForBuildable( int bclass );
+trType_t BG_FindTrajectoryForBuildable( int bclass );
+float    BG_FindBounceForBuildable( int bclass );
+int      BG_FindBuildPointsForBuildable( int bclass );
+qboolean BG_FindStagesForBuildable( int bclass, stage_t stage );
+int      BG_FindSplashDamageForBuildable( int bclass );
+int      BG_FindSplashRadiusForBuildable( int bclass );
+int      BG_FindMODForBuildable( int bclass );
+int      BG_FindTeamForBuildable( int bclass );
+weapon_t BG_FindBuildWeaponForBuildable( int bclass );
+int      BG_FindAnimForBuildable( int bclass );
+int      BG_FindNextThinkForBuildable( int bclass );
+int      BG_FindBuildTimeForBuildable( int bclass );
+qboolean BG_FindUsableForBuildable( int bclass );
+int      BG_FindRangeForBuildable( int bclass );
+int      BG_FindFireSpeedForBuildable( int bclass );
+weapon_t BG_FindProjTypeForBuildable( int bclass );
+float    BG_FindMinNormalForBuildable( int bclass );
+qboolean BG_FindInvertNormalForBuildable( int bclass );
+int      BG_FindCreepTestForBuildable( int bclass );
+int      BG_FindCreepSizeForBuildable( int bclass );
+int      BG_FindDCCTestForBuildable( int bclass );
+int      BG_FindUniqueTestForBuildable( int bclass );
+void     BG_InitBuildableOverrides( void );
 
-int      BG_FindClassNumForName ( char *name );
-char     *BG_FindNameForClassNum ( int pclass );
-char     *BG_FindHumanNameForClassNum ( int pclass );
-char     *BG_FindModelNameForClass ( int pclass );
-float    BG_FindModelScaleForClass ( int pclass );
-char     *BG_FindSkinNameForClass ( int pclass );
-float    BG_FindShadowScaleForClass ( int pclass );
-char     *BG_FindHudNameForClass ( int pclass );
-qboolean BG_FindStagesForClass ( int pclass, stage_t stage );
-void     BG_FindBBoxForClass ( int pclass, vec3_t mins, vec3_t maxs, vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs );
-float    BG_FindZOffsetForClass ( int pclass );
-void     BG_FindViewheightForClass ( int pclass, int *viewheight, int *cViewheight );
-int      BG_FindHealthForClass ( int pclass );
-float    BG_FindFallDamageForClass ( int pclass );
-int      BG_FindRegenRateForClass ( int pclass );
-int      BG_FindFovForClass ( int pclass );
-float    BG_FindBobForClass ( int pclass );
-float    BG_FindBobCycleForClass ( int pclass );
-float    BG_FindSpeedForClass ( int pclass );
-float    BG_FindAccelerationForClass ( int pclass );
-float    BG_FindAirAccelerationForClass ( int pclass );
-float    BG_FindFrictionForClass ( int pclass );
-float    BG_FindStopSpeedForClass ( int pclass );
-float    BG_FindJumpMagnitudeForClass ( int pclass );
-float    BG_FindKnockbackScaleForClass ( int pclass );
-int      BG_FindSteptimeForClass ( int pclass );
-qboolean BG_ClassHasAbility ( int pclass, int ability );
-weapon_t BG_FindStartWeaponForClass ( int pclass );
-float    BG_FindBuildDistForClass ( int pclass );
-int      BG_ClassCanEvolveFromTo ( int fclass, int tclass, int credits, int num );
-int      BG_FindCostOfClass ( int pclass );
-int      BG_FindValueOfClass ( int pclass );
-void     BG_InitClassOverrides ( void );
+int      BG_FindClassNumForName( char *name );
+char     *BG_FindNameForClassNum( int pclass );
+char     *BG_FindHumanNameForClassNum( int pclass );
+char     *BG_FindModelNameForClass( int pclass );
+float    BG_FindModelScaleForClass( int pclass );
+char     *BG_FindSkinNameForClass( int pclass );
+float    BG_FindShadowScaleForClass( int pclass );
+char     *BG_FindHudNameForClass( int pclass );
+qboolean BG_FindStagesForClass( int pclass, stage_t stage );
+void     BG_FindBBoxForClass( int pclass, vec3_t mins, vec3_t maxs, vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs );
+float    BG_FindZOffsetForClass( int pclass );
+void     BG_FindViewheightForClass( int pclass, int *viewheight, int *cViewheight );
+int      BG_FindHealthForClass( int pclass );
+float    BG_FindFallDamageForClass( int pclass );
+int      BG_FindRegenRateForClass( int pclass );
+int      BG_FindFovForClass( int pclass );
+float    BG_FindBobForClass( int pclass );
+float    BG_FindBobCycleForClass( int pclass );
+float    BG_FindSpeedForClass( int pclass );
+float    BG_FindAccelerationForClass( int pclass );
+float    BG_FindAirAccelerationForClass( int pclass );
+float    BG_FindFrictionForClass( int pclass );
+float    BG_FindStopSpeedForClass( int pclass );
+float    BG_FindJumpMagnitudeForClass( int pclass );
+float    BG_FindKnockbackScaleForClass( int pclass );
+int      BG_FindSteptimeForClass( int pclass );
+qboolean BG_ClassHasAbility( int pclass, int ability );
+weapon_t BG_FindStartWeaponForClass( int pclass );
+float    BG_FindBuildDistForClass( int pclass );
+int      BG_ClassCanEvolveFromTo( int fclass, int tclass, int credits, int num );
+int      BG_FindCostOfClass( int pclass );
+int      BG_FindValueOfClass( int pclass );
+void     BG_InitClassOverrides( void );
 
-int      BG_FindPriceForWeapon ( int weapon );
-qboolean BG_FindStagesForWeapon ( int weapon, stage_t stage );
-int      BG_FindSlotsForWeapon ( int weapon );
-char     *BG_FindNameForWeapon ( int weapon );
-int      BG_FindWeaponNumForName ( char *name );
-char     *BG_FindHumanNameForWeapon ( int weapon );
-char     *BG_FindModelsForWeapon ( int weapon, int modelNum );
-char     *BG_FindIconForWeapon ( int weapon );
-char     *BG_FindCrosshairForWeapon ( int weapon );
-int      BG_FindCrosshairSizeForWeapon ( int weapon );
-void     BG_FindAmmoForWeapon ( int weapon, int *maxAmmo, int *maxClips );
-qboolean BG_FindInfinteAmmoForWeapon ( int weapon );
-qboolean BG_FindUsesEnergyForWeapon ( int weapon );
-int      BG_FindRepeatRate1ForWeapon ( int weapon );
-int      BG_FindRepeatRate2ForWeapon ( int weapon );
-int      BG_FindRepeatRate3ForWeapon ( int weapon );
-int      BG_FindReloadTimeForWeapon ( int weapon );
-qboolean BG_WeaponHasAltMode ( int weapon );
-qboolean BG_WeaponHasThirdMode ( int weapon );
-qboolean BG_WeaponCanZoom ( int weapon );
-float    BG_FindZoomFovForWeapon ( int weapon );
-qboolean BG_FindPurchasableForWeapon ( int weapon );
-int      BG_FindBuildDelayForWeapon ( int weapon );
-WUTeam_t BG_FindTeamForWeapon ( int weapon );
+int      BG_FindPriceForWeapon( int weapon );
+qboolean BG_FindStagesForWeapon( int weapon, stage_t stage );
+int      BG_FindSlotsForWeapon( int weapon );
+char     *BG_FindNameForWeapon( int weapon );
+int      BG_FindWeaponNumForName( char *name );
+char     *BG_FindHumanNameForWeapon( int weapon );
+char     *BG_FindModelsForWeapon( int weapon, int modelNum );
+char     *BG_FindIconForWeapon( int weapon );
+char     *BG_FindCrosshairForWeapon( int weapon );
+int      BG_FindCrosshairSizeForWeapon( int weapon );
+void     BG_FindAmmoForWeapon( int weapon, int *maxAmmo, int *maxClips );
+qboolean BG_FindInfinteAmmoForWeapon( int weapon );
+qboolean BG_FindUsesEnergyForWeapon( int weapon );
+int      BG_FindRepeatRate1ForWeapon( int weapon );
+int      BG_FindRepeatRate2ForWeapon( int weapon );
+int      BG_FindRepeatRate3ForWeapon( int weapon );
+int      BG_FindReloadTimeForWeapon( int weapon );
+qboolean BG_WeaponHasAltMode( int weapon );
+qboolean BG_WeaponHasThirdMode( int weapon );
+qboolean BG_WeaponCanZoom( int weapon );
+float    BG_FindZoomFovForWeapon( int weapon );
+qboolean BG_FindPurchasableForWeapon( int weapon );
+int      BG_FindBuildDelayForWeapon( int weapon );
+WUTeam_t BG_FindTeamForWeapon( int weapon );
 
-int      BG_FindPriceForUpgrade ( int upgrade );
-qboolean BG_FindStagesForUpgrade ( int upgrade, stage_t stage );
-int      BG_FindSlotsForUpgrade ( int upgrade );
-char     *BG_FindNameForUpgrade ( int upgrade );
-int      BG_FindUpgradeNumForName ( char *name );
-char     *BG_FindHumanNameForUpgrade ( int upgrade );
-char     *BG_FindIconForUpgrade ( int upgrade );
-qboolean BG_FindPurchasableForUpgrade ( int upgrade );
-qboolean BG_FindUsableForUpgrade ( int upgrade );
-WUTeam_t BG_FindTeamForUpgrade ( int upgrade );
+int      BG_FindPriceForUpgrade( int upgrade );
+qboolean BG_FindStagesForUpgrade( int upgrade, stage_t stage );
+int      BG_FindSlotsForUpgrade( int upgrade );
+char     *BG_FindNameForUpgrade( int upgrade );
+int      BG_FindUpgradeNumForName( char *name );
+char     *BG_FindHumanNameForUpgrade( int upgrade );
+char     *BG_FindIconForUpgrade( int upgrade );
+qboolean BG_FindPurchasableForUpgrade( int upgrade );
+qboolean BG_FindUsableForUpgrade( int upgrade );
+WUTeam_t BG_FindTeamForUpgrade( int upgrade );
 
 // content masks
 #define MASK_ALL         ( -1 )
@@ -1215,15 +1215,15 @@ WUTeam_t BG_FindTeamForUpgrade ( int upgrade );
 #define MASK_OPAQUE      ( CONTENTS_SOLID | CONTENTS_SLIME | CONTENTS_LAVA )
 #define MASK_SHOT        ( CONTENTS_SOLID | CONTENTS_BODY )
 
-void     BG_EvaluateTrajectory ( const trajectory_t *tr, int atTime, vec3_t result );
-void     BG_EvaluateTrajectoryDelta ( const trajectory_t *tr, int atTime, vec3_t result );
+void     BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
+void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
 
-void     BG_AddPredictableEventToPlayerstate ( int newEvent, int eventParm, playerState_t *ps );
+void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
 
-void     BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean snap );
-void     BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *s, int time, qboolean snap );
+void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
+void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
 
-qboolean BG_PlayerTouchesItem ( playerState_t *ps, entityState_t *item, int atTime );
+qboolean BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
 
 #define ARENAS_PER_TIER 4
 #define MAX_ARENAS      1024
@@ -1232,17 +1232,17 @@ qboolean BG_PlayerTouchesItem ( playerState_t *ps, entityState_t *item, int atTi
 #define MAX_BOTS        1024
 #define MAX_BOTS_TEXT   8192
 
-float    atof_neg ( char *token, qboolean allowNegative );
-int      atoi_neg ( char *token, qboolean allowNegative );
+float    atof_neg( char *token, qboolean allowNegative );
+int      atoi_neg( char *token, qboolean allowNegative );
 
-void     BG_ParseCSVEquipmentList ( const char *string, weapon_t *weapons, int weaponsSize,
-                                    upgrade_t *upgrades, int upgradesSize );
-void     BG_ParseCSVClassList ( const char *string, pClass_t *classes, int classesSize );
-void     BG_ParseCSVBuildableList ( const char *string, buildable_t *buildables, int buildablesSize );
-void     BG_InitAllowedGameElements ( void );
-qboolean BG_WeaponIsAllowed ( weapon_t weapon );
-qboolean BG_UpgradeIsAllowed ( upgrade_t upgrade );
+void     BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weaponsSize,
+                                   upgrade_t *upgrades, int upgradesSize );
+void     BG_ParseCSVClassList( const char *string, pClass_t *classes, int classesSize );
+void     BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize );
+void     BG_InitAllowedGameElements( void );
+qboolean BG_WeaponIsAllowed( weapon_t weapon );
+qboolean BG_UpgradeIsAllowed( upgrade_t upgrade );
 
-qboolean BG_ClassIsAllowed ( pClass_t class );
-qboolean BG_BuildableIsAllowed ( buildable_t buildable );
-qboolean BG_UpgradeClassAvailable ( playerState_t *ps );
+qboolean BG_ClassIsAllowed( pClass_t class );
+qboolean BG_BuildableIsAllowed( buildable_t buildable );
+qboolean BG_UpgradeClassAvailable( playerState_t *ps );

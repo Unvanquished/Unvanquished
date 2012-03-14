@@ -165,8 +165,8 @@ struct ET_FireTeamInfo
 	int        m_FireTeamNum;
 
 	ET_FireTeamInfo()
-		: m_InFireTeam ( False )
-		, m_FireTeamNum ( 0 )
+		: m_InFireTeam( False )
+		, m_FireTeamNum( 0 )
 	{
 	}
 };

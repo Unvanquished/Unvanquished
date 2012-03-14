@@ -150,7 +150,7 @@ extern "C" {
 		tm_unz tmu_date;
 	} unz_file_info;
 
-	extern int ZEXPORT unzStringFileNameCompare OF ( ( const char *fileName1,
+	extern int ZEXPORT unzStringFileNameCompare OF( ( const char *fileName1,
 	    const char *fileName2,
 	    int iCaseSensitivity ) );
 
@@ -163,8 +163,8 @@ extern "C" {
 	    (like 1 on Unix, 2 on Windows)
 	*/
 
-	extern unzFile ZEXPORT unzOpen   OF ( ( const char *path ) );
-	extern unzFile ZEXPORT unzOpen64 OF ( ( const void *path ) );
+	extern unzFile ZEXPORT unzOpen   OF( ( const char *path ) );
+	extern unzFile ZEXPORT unzOpen64 OF( ( const void *path ) );
 
 	/*
 	  Open a Zip file. path contain the full pathname (by example,
@@ -181,23 +181,23 @@ extern "C" {
 	       does not describe the reality
 	*/
 
-	extern unzFile ZEXPORT unzOpen2 OF ( ( const char *path,
-	                                       zlib_filefunc_def *pzlib_filefunc_def ) );
+	extern unzFile ZEXPORT unzOpen2 OF( ( const char *path,
+	                                      zlib_filefunc_def *pzlib_filefunc_def ) );
 
 	/*
 	   Open a Zip file, like unzOpen, but provide a set of file low level API
 	      for read/write the zip file (see ioapi.h)
 	*/
 
-	extern unzFile ZEXPORT unzOpen2_64 OF ( ( const void *path,
-	                                        zlib_filefunc64_def *pzlib_filefunc_def ) );
+	extern unzFile ZEXPORT unzOpen2_64 OF( ( const void *path,
+	                                       zlib_filefunc64_def *pzlib_filefunc_def ) );
 
 	/*
 	   Open a Zip file, like unz64Open, but provide a set of file low level API
 	      for read/write the zip file (see ioapi.h)
 	*/
 
-	extern int ZEXPORT unzClose OF ( ( unzFile file ) );
+	extern int ZEXPORT unzClose OF( ( unzFile file ) );
 
 	/*
 	  Close a ZipFile opened with unzipOpen.
@@ -205,10 +205,10 @@ extern "C" {
 	    these files MUST be closed with unzipCloseCurrentFile before call unzipClose.
 	  return UNZ_OK if there is no problem. */
 
-	extern int ZEXPORT unzGetGlobalInfo   OF ( ( unzFile file,
+	extern int ZEXPORT unzGetGlobalInfo   OF( ( unzFile file,
 	    unz_global_info *pglobal_info ) );
 
-	extern int ZEXPORT unzGetGlobalInfo64 OF ( ( unzFile file,
+	extern int ZEXPORT unzGetGlobalInfo64 OF( ( unzFile file,
 	    unz_global_info64 *pglobal_info ) );
 
 	/*
@@ -216,7 +216,7 @@ extern "C" {
 	  No preparation of the structure is needed
 	  return UNZ_OK if there is no problem. */
 
-	extern int ZEXPORT unzGetGlobalComment OF ( ( unzFile file,
+	extern int ZEXPORT unzGetGlobalComment OF( ( unzFile file,
 	    char *szComment,
 	    uLong uSizeBuf ) );
 
@@ -229,14 +229,14 @@ extern "C" {
 	/***************************************************************************/
 	/* Unzip package allow you browse the directory of the zipfile */
 
-	extern int ZEXPORT unzGoToFirstFile OF ( ( unzFile file ) );
+	extern int ZEXPORT unzGoToFirstFile OF( ( unzFile file ) );
 
 	/*
 	  Set the current file of the zipfile to the first file.
 	  return UNZ_OK if there is no problem
 	*/
 
-	extern int ZEXPORT unzGoToNextFile OF ( ( unzFile file ) );
+	extern int ZEXPORT unzGoToNextFile OF( ( unzFile file ) );
 
 	/*
 	  Set the current file of the zipfile to the next file.
@@ -244,9 +244,9 @@ extern "C" {
 	  return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
 	*/
 
-	extern int ZEXPORT unzLocateFile OF ( ( unzFile file,
-	                                        const char *szFileName,
-	                                        int iCaseSensitivity ) );
+	extern int ZEXPORT unzLocateFile OF( ( unzFile file,
+	                                       const char *szFileName,
+	                                       int iCaseSensitivity ) );
 
 	/*
 	  Try locate the file szFileName in the zipfile.
@@ -266,11 +266,11 @@ extern "C" {
 		uLong num_of_file; /* # of file */
 	} unz_file_pos;
 
-	extern int ZEXPORT unzGetFilePos (
+	extern int ZEXPORT unzGetFilePos(
 	  unzFile file,
 	  unz_file_pos *file_pos );
 
-	extern int ZEXPORT unzGoToFilePos (
+	extern int ZEXPORT unzGoToFilePos(
 	  unzFile file,
 	  unz_file_pos *file_pos );
 
@@ -280,17 +280,17 @@ extern "C" {
 		ZPOS64_T num_of_file; /* # of file */
 	} unz64_file_pos;
 
-	extern int ZEXPORT unzGetFilePos64 (
+	extern int ZEXPORT unzGetFilePos64(
 	  unzFile file,
 	  unz64_file_pos *file_pos );
 
-	extern int ZEXPORT unzGoToFilePos64 (
+	extern int ZEXPORT unzGoToFilePos64(
 	  unzFile file,
 	  const unz64_file_pos *file_pos );
 
 	/* ****************************************** */
 
-	extern int ZEXPORT unzGetCurrentFileInfo64 OF ( ( unzFile file,
+	extern int ZEXPORT unzGetCurrentFileInfo64 OF( ( unzFile file,
 	    unz_file_info64 *pfile_info,
 	    char *szFileName,
 	    uLong fileNameBufferSize,
@@ -299,7 +299,7 @@ extern "C" {
 	    char *szComment,
 	    uLong commentBufferSize ) );
 
-	extern int ZEXPORT unzGetCurrentFileInfo OF ( ( unzFile file,
+	extern int ZEXPORT unzGetCurrentFileInfo OF( ( unzFile file,
 	    unz_file_info *pfile_info,
 	    char *szFileName,
 	    uLong fileNameBufferSize,
@@ -323,7 +323,7 @@ extern "C" {
 
 	/** Addition for GDAL : START */
 
-	extern ZPOS64_T ZEXPORT unzGetCurrentFileZStreamPos64 OF ( ( unzFile file ) );
+	extern ZPOS64_T ZEXPORT unzGetCurrentFileZStreamPos64 OF( ( unzFile file ) );
 
 	/** Addition for GDAL : END */
 
@@ -333,14 +333,14 @@ extern "C" {
 	   from it, and close it (you can close it before reading all the file)
 	   */
 
-	extern int ZEXPORT unzOpenCurrentFile OF ( ( unzFile file ) );
+	extern int ZEXPORT unzOpenCurrentFile OF( ( unzFile file ) );
 
 	/*
 	  Open for reading data the current file in the zipfile.
 	  If there is no error, the return value is UNZ_OK.
 	*/
 
-	extern int ZEXPORT unzOpenCurrentFilePassword OF ( ( unzFile file,
+	extern int ZEXPORT unzOpenCurrentFilePassword OF( ( unzFile file,
 	    const char *password ) );
 
 	/*
@@ -349,7 +349,7 @@ extern "C" {
 	  If there is no error, the return value is UNZ_OK.
 	*/
 
-	extern int ZEXPORT unzOpenCurrentFile2 OF ( ( unzFile file,
+	extern int ZEXPORT unzOpenCurrentFile2 OF( ( unzFile file,
 	    int *method,
 	    int *level,
 	    int raw ) );
@@ -363,7 +363,7 @@ extern "C" {
 	         but you CANNOT set method parameter as NULL
 	*/
 
-	extern int ZEXPORT unzOpenCurrentFile3 OF ( ( unzFile file,
+	extern int ZEXPORT unzOpenCurrentFile3 OF( ( unzFile file,
 	    int *method,
 	    int *level,
 	    int raw,
@@ -378,14 +378,14 @@ extern "C" {
 	         but you CANNOT set method parameter as NULL
 	*/
 
-	extern int ZEXPORT unzCloseCurrentFile OF ( ( unzFile file ) );
+	extern int ZEXPORT unzCloseCurrentFile OF( ( unzFile file ) );
 
 	/*
 	  Close the file in zip opened with unzOpenCurrentFile
 	  Return UNZ_CRCERROR if all the file was read but the CRC is not good
 	*/
 
-	extern int ZEXPORT unzReadCurrentFile OF ( ( unzFile file,
+	extern int ZEXPORT unzReadCurrentFile OF( ( unzFile file,
 	    voidp buf,
 	    unsigned len ) );
 
@@ -400,21 +400,21 @@ extern "C" {
 	    (UNZ_ERRNO for IO error, or zLib error for uncompress error)
 	*/
 
-	extern z_off_t ZEXPORT unztell    OF ( ( unzFile file ) );
+	extern z_off_t ZEXPORT unztell    OF( ( unzFile file ) );
 
-	extern ZPOS64_T ZEXPORT unztell64 OF ( ( unzFile file ) );
+	extern ZPOS64_T ZEXPORT unztell64 OF( ( unzFile file ) );
 
 	/*
 	  Give the current position in uncompressed data
 	*/
 
-	extern int ZEXPORT unzeof OF ( ( unzFile file ) );
+	extern int ZEXPORT unzeof OF( ( unzFile file ) );
 
 	/*
 	  return 1 if the end of file was reached, 0 elsewhere
 	*/
 
-	extern int ZEXPORT unzGetLocalExtrafield OF ( ( unzFile file,
+	extern int ZEXPORT unzGetLocalExtrafield OF( ( unzFile file,
 	    voidp buf,
 	    unsigned len ) );
 
@@ -434,12 +434,12 @@ extern "C" {
 	/***************************************************************************/
 
 	/* Get the current file offset */
-	extern ZPOS64_T ZEXPORT unzGetOffset64 ( unzFile file );
-	extern uLong ZEXPORT    unzGetOffset ( unzFile file );
+	extern ZPOS64_T ZEXPORT unzGetOffset64( unzFile file );
+	extern uLong ZEXPORT    unzGetOffset( unzFile file );
 
 	/* Set the current file offset */
-	extern int ZEXPORT      unzSetOffset64 ( unzFile file, ZPOS64_T pos );
-	extern int ZEXPORT      unzSetOffset ( unzFile file, uLong pos );
+	extern int ZEXPORT      unzSetOffset64( unzFile file, ZPOS64_T pos );
+	extern int ZEXPORT      unzSetOffset( unzFile file, uLong pos );
 
 #ifdef __cplusplus
 }
