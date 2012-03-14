@@ -419,7 +419,7 @@ void Cmd_Give_f( gentity_t *ent )
     else
     {
       credits = atof( name + 6 ) *
-        ( ent->client->pers.teamSelection == 
+        ( ent->client->pers.teamSelection ==
           TEAM_ALIENS ? ALIEN_CREDITS_PER_KILL : 1.0f );
 
       // clamp credits manually, as G_AddCreditToClient() expects a short int
@@ -594,13 +594,13 @@ void Cmd_Team_f( gentity_t *ent )
     humans--;
 
   // stop team join spam
-  if( ent->client->pers.teamChangeTime && 
+  if( ent->client->pers.teamChangeTime &&
       level.time - ent->client->pers.teamChangeTime < 1000 )
     return;
 
   // stop switching teams for gameplay exploit reasons by enforcing a long
   // wait before they can come back
-  if( !force && !g_cheats.integer && ent->client->pers.aliveSeconds && 
+  if( !force && !g_cheats.integer && ent->client->pers.aliveSeconds &&
       level.time - ent->client->pers.teamChangeTime < 30000 )
   {
     trap_SendServerCommand( ent-g_entities,
@@ -1236,8 +1236,8 @@ void Cmd_CallVote_f( gentity_t *ent )
         G_AdminMessage( NULL, va( S_COLOR_WHITE "%s" S_COLOR_YELLOW " attempted %s %s"
                                 " on immune admin " S_COLOR_WHITE "%s" S_COLOR_YELLOW
                                 " for: %s",
-                                ent->client->pers.netname, cmd, vote, 
-                                g_entities[ clientNum ].client->pers.netname, 
+                                ent->client->pers.netname, cmd, vote,
+                                g_entities[ clientNum ].client->pers.netname,
                                 reason[ 0 ] ? reason : "no reason" ) );
         return;
       }
@@ -1442,13 +1442,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 	return;
       }
       level.extend_vote_count++;
-      level.voteThreshold[ team ] = g_extendVotesPercent.integer; 
+      level.voteThreshold[ team ] = g_extendVotesPercent.integer;
       Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
 	"timelimit %i", g_timelimit.integer + g_extendVotesTime.integer );
       Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[team ] ),
 	"Extend the timelimit by %d minutes", g_extendVotesTime.integer );
     }
-    
+
     else
     {
       trap_SendServerCommand( ent-g_entities, "print \"Invalid vote string\n\"" );
@@ -1536,9 +1536,9 @@ void Cmd_CallVote_f( gentity_t *ent )
         }
         else if( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
         {
-          trap_SendServerCommand( i, va( "chat -1 %d \"" S_COLOR_YELLOW "%s" 
+          trap_SendServerCommand( i, va( "chat -1 %d \"" S_COLOR_YELLOW "%s"
             S_COLOR_YELLOW " called a team vote (%ss): %s\"", SAY_ADMINS,
-            ent->client->pers.netname, BG_TeamName( team ), 
+            ent->client->pers.netname, BG_TeamName( team ),
             level.voteDisplayString[ team ] ) );
         }
       }
@@ -3171,6 +3171,8 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
     return;
   ent->client->pers.pubkey_authenticated = 1;
   ent->client->pers.pubkey_msg[0] = '\0';
+  G_admin_authlog( ent );
+  G_admin_cmdlist( ent );
   CP( "cp \"^2Pubkey authenticated\"\n" );
 }
 
