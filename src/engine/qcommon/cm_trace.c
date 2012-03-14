@@ -2389,7 +2389,7 @@ void CM_TransformedBoxTrace ( trace_t *results, const vec3_t start, const vec3_t
                               const vec3_t mins, const vec3_t maxs,
                               clipHandle_t model, int brushmask, const vec3_t origin, const vec3_t angles, traceType_t type )
 {
-#if 0
+#if 1
 	trace_t  trace;
 	vec3_t   start_l, end_l;
 	qboolean rotated;
