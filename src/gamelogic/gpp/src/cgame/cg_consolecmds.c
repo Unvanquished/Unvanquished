@@ -241,10 +241,10 @@ static void CG_CompleteClass( void )
 
 static void CG_CompleteBuySell( qboolean buying )
 {
-	int               i             = buying ? 1 : 0;
+	int               i             = buying ? 2 : 0;
 	static const char items[][ 12 ] =
 	{
-		"weapons", // <- only valid when selling
+		"weapons", "upgrades", // <- only valid when selling
 		"ckit",    "rifle",  "psaw",    "shotgun", "lgun",   "mdriver", "chaingun",
 		"prifle",  "flamer", "lcannon", "larmour", "helmet", "bsuit",   "grenade", "battpack",
 		"jetpack", "ammo"
