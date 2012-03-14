@@ -53,7 +53,7 @@ inspired from http://www.w3.org/Library/Examples/LoadToFile.c
 setup the download, return once we have a connection
 ===============
 */
-int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
+int DL_BeginDownload ( const char *localName, const char *remoteName, int debug )
 {
 	return 1;
 }

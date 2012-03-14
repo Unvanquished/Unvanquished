@@ -38,8 +38,8 @@ Maryland 20850 USA.
 #include "../qcommon/q_shared.h"
 #include "../renderer/tr_types.h"
 
-void mdfour( byte *out, byte *in, int n );
+void mdfour ( byte *out, byte *in, int n );
 
-void mdfour_hex( const byte md4[ 16 ], char hex[ 32 ] );
+void mdfour_hex ( const byte md4[ 16 ], char hex[ 32 ] );
 
 #endif

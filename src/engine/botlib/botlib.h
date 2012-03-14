@@ -73,7 +73,7 @@ typedef struct bot_debugpoly_s
 	vec3_t points[ 128 ];
 } bot_debugpoly_t;
 
-typedef void    ( *BotPolyFunc )( int color, int numPoints, float *points );
+typedef void    ( *BotPolyFunc ) ( int color, int numPoints, float *points );
 
 // RF, these need to be here so the botlib also knows how many bot game entities there are
 #define NUM_BOTGAMEENTITIES           384
@@ -100,39 +100,39 @@ typedef void    ( *BotPolyFunc )( int color, int numPoints, float *points );
 #define CMS_CHAT                      1
 
 //botlib error codes
-#define BLERR_NOERROR                 0         //no error
-#define BLERR_LIBRARYNOTSETUP         1         //library not setup
-#define BLERR_LIBRARYALREADYSETUP     2         //BotSetupLibrary: library already setup
-#define BLERR_INVALIDCLIENTNUMBER     3         //invalid client number
-#define BLERR_INVALIDENTITYNUMBER     4         //invalid entity number
-#define BLERR_NOAASFILE               5         //BotLoadMap: no AAS file available
-#define BLERR_CANNOTOPENAASFILE       6         //BotLoadMap: cannot open AAS file
-#define BLERR_CANNOTSEEKTOAASFILE     7         //BotLoadMap: cannot seek to AAS file
-#define BLERR_CANNOTREADAASHEADER     8         //BotLoadMap: cannot read AAS header
-#define BLERR_WRONGAASFILEID          9         //BotLoadMap: incorrect AAS file id
-#define BLERR_WRONGAASFILEVERSION     10        //BotLoadMap: incorrect AAS file version
-#define BLERR_CANNOTREADAASLUMP       11        //BotLoadMap: cannot read AAS file lump
-#define BLERR_NOBSPFILE               12        //BotLoadMap: no BSP file available
-#define BLERR_CANNOTOPENBSPFILE       13        //BotLoadMap: cannot open BSP file
-#define BLERR_CANNOTSEEKTOBSPFILE     14        //BotLoadMap: cannot seek to BSP file
-#define BLERR_CANNOTREADBSPHEADER     15        //BotLoadMap: cannot read BSP header
-#define BLERR_WRONGBSPFILEID          16        //BotLoadMap: incorrect BSP file id
-#define BLERR_WRONGBSPFILEVERSION     17        //BotLoadMap: incorrect BSP file version
-#define BLERR_CANNOTREADBSPLUMP       18        //BotLoadMap: cannot read BSP file lump
-#define BLERR_AICLIENTNOTSETUP        19        //BotAI: client not setup
-#define BLERR_AICLIENTALREADYSETUP    20        //BotSetupClient: client already setup
-#define BLERR_AIMOVEINACTIVECLIENT    21        //BotMoveClient: cannot move inactive client
-#define BLERR_AIMOVETOACTIVECLIENT    22        //BotMoveClient: cannot move to active client
-#define BLERR_AICLIENTALREADYSHUTDOWN 23        //BotShutdownClient: client not setup
-#define BLERR_AIUPDATEINACTIVECLIENT  24        //BotUpdateClient: called for inactive client
-#define BLERR_AICMFORINACTIVECLIENT   25        //BotConsoleMessage: called for inactive client
-#define BLERR_SETTINGSINACTIVECLIENT  26        //BotClientSettings: called for inactive client
-#define BLERR_CANNOTLOADICHAT         27        //BotSetupClient: cannot load initial chats
-#define BLERR_CANNOTLOADITEMWEIGHTS   28        //BotSetupClient: cannot load item weights
-#define BLERR_CANNOTLOADITEMCONFIG    29        //BotSetupLibrary: cannot load item config
-#define BLERR_CANNOTLOADWEAPONWEIGHTS 30        //BotSetupClient: cannot load weapon weights
-#define BLERR_CANNOTLOADWEAPONCONFIG  31        //BotSetupLibrary: cannot load weapon config
-#define BLERR_INVALIDSOUNDINDEX       32        //BotAddSound: invalid sound index value
+#define BLERR_NOERROR                 0 //no error
+#define BLERR_LIBRARYNOTSETUP         1 //library not setup
+#define BLERR_LIBRARYALREADYSETUP     2 //BotSetupLibrary: library already setup
+#define BLERR_INVALIDCLIENTNUMBER     3 //invalid client number
+#define BLERR_INVALIDENTITYNUMBER     4 //invalid entity number
+#define BLERR_NOAASFILE               5 //BotLoadMap: no AAS file available
+#define BLERR_CANNOTOPENAASFILE       6 //BotLoadMap: cannot open AAS file
+#define BLERR_CANNOTSEEKTOAASFILE     7 //BotLoadMap: cannot seek to AAS file
+#define BLERR_CANNOTREADAASHEADER     8 //BotLoadMap: cannot read AAS header
+#define BLERR_WRONGAASFILEID          9 //BotLoadMap: incorrect AAS file id
+#define BLERR_WRONGAASFILEVERSION     10 //BotLoadMap: incorrect AAS file version
+#define BLERR_CANNOTREADAASLUMP       11 //BotLoadMap: cannot read AAS file lump
+#define BLERR_NOBSPFILE               12 //BotLoadMap: no BSP file available
+#define BLERR_CANNOTOPENBSPFILE       13 //BotLoadMap: cannot open BSP file
+#define BLERR_CANNOTSEEKTOBSPFILE     14 //BotLoadMap: cannot seek to BSP file
+#define BLERR_CANNOTREADBSPHEADER     15 //BotLoadMap: cannot read BSP header
+#define BLERR_WRONGBSPFILEID          16 //BotLoadMap: incorrect BSP file id
+#define BLERR_WRONGBSPFILEVERSION     17 //BotLoadMap: incorrect BSP file version
+#define BLERR_CANNOTREADBSPLUMP       18 //BotLoadMap: cannot read BSP file lump
+#define BLERR_AICLIENTNOTSETUP        19 //BotAI: client not setup
+#define BLERR_AICLIENTALREADYSETUP    20 //BotSetupClient: client already setup
+#define BLERR_AIMOVEINACTIVECLIENT    21 //BotMoveClient: cannot move inactive client
+#define BLERR_AIMOVETOACTIVECLIENT    22 //BotMoveClient: cannot move to active client
+#define BLERR_AICLIENTALREADYSHUTDOWN 23 //BotShutdownClient: client not setup
+#define BLERR_AIUPDATEINACTIVECLIENT  24 //BotUpdateClient: called for inactive client
+#define BLERR_AICMFORINACTIVECLIENT   25 //BotConsoleMessage: called for inactive client
+#define BLERR_SETTINGSINACTIVECLIENT  26 //BotClientSettings: called for inactive client
+#define BLERR_CANNOTLOADICHAT         27 //BotSetupClient: cannot load initial chats
+#define BLERR_CANNOTLOADITEMWEIGHTS   28 //BotSetupClient: cannot load item weights
+#define BLERR_CANNOTLOADITEMCONFIG    29 //BotSetupLibrary: cannot load item config
+#define BLERR_CANNOTLOADWEAPONWEIGHTS 30 //BotSetupClient: cannot load weapon weights
+#define BLERR_CANNOTLOADWEAPONCONFIG  31 //BotSetupLibrary: cannot load weapon config
+#define BLERR_INVALIDSOUNDINDEX       32 //BotAddSound: invalid sound index value
 
 //action flags
 #define ACTION_ATTACK                 1
@@ -158,35 +158,35 @@ typedef void    ( *BotPolyFunc )( int color, int numPoints, float *points );
 //the bot input, will be converted to an usercmd_t
 typedef struct bot_input_s
 {
-	float  thinktime;               //time since last output (in seconds)
-	vec3_t dir;                     //movement direction
-	float  speed;                   //speed in the range [0, 400]
-	vec3_t viewangles;              //the view angles
-	int    actionflags;             //one of the ACTION_? flags
-	int    weapon;                  //weapon to use
+	float  thinktime; //time since last output (in seconds)
+	vec3_t dir; //movement direction
+	float  speed; //speed in the range [0, 400]
+	vec3_t viewangles; //the view angles
+	int    actionflags; //one of the ACTION_? flags
+	int    weapon; //weapon to use
 } bot_input_t;
 
 //entity state
 typedef struct bot_entitystate_s
 {
-	int    type;                    // entity type
-	int    flags;                   // entity flags
-	vec3_t origin;                  // origin of the entity
-	vec3_t angles;                  // angles of the model
-	vec3_t old_origin;              // for lerping
-	vec3_t mins;                    // bounding box minimums
-	vec3_t maxs;                    // bounding box maximums
-	int    groundent;               // ground entity
-	int    solid;                   // solid type
-	int    modelindex;              // model used
-	int    modelindex2;             // weapons, CTF flags, etc
-	int    frame;                   // model frame number
-	int    event;                   // impulse events -- muzzle flashes, footsteps, etc
-	int    eventParm;               // even parameter
-	int    powerups;                // bit flags
-	int    weapon;                  // determines weapon and flash model, etc
-	int    legsAnim;                // mask off ANIM_TOGGLEBIT
-	int    torsoAnim;               // mask off ANIM_TOGGLEBIT
+	int    type; // entity type
+	int    flags; // entity flags
+	vec3_t origin; // origin of the entity
+	vec3_t angles; // angles of the model
+	vec3_t old_origin; // for lerping
+	vec3_t mins; // bounding box minimums
+	vec3_t maxs; // bounding box maximums
+	int    groundent; // ground entity
+	int    solid; // solid type
+	int    modelindex; // model used
+	int    modelindex2; // weapons, CTF flags, etc
+	int    frame; // model frame number
+	int    event; // impulse events -- muzzle flashes, footsteps, etc
+	int    eventParm; // even parameter
+	int    powerups; // bit flags
+	int    weapon; // determines weapon and flash model, etc
+	int    legsAnim; // mask off ANIM_TOGGLEBIT
+	int    torsoAnim; // mask off ANIM_TOGGLEBIT
 //  int     weapAnim;       // mask off ANIM_TOGGLEBIT  //----(SA)  added
 //----(SA)  didn't want to comment in as I wasn't sure of any implications of changing this structure.
 } bot_entitystate_t;
@@ -195,58 +195,58 @@ typedef struct bot_entitystate_s
 typedef struct botlib_import_s
 {
 	//print messages from the bot library
-	void            ( QDECL *Print )( int type, char *fmt, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
+	void            ( QDECL *Print ) ( int type, char *fmt, ... ) __attribute__ ( ( format ( printf, 2, 3 ) ) );
 
 	// abort the game
-	void            ( QDECL *Error )( int errorLevel, const char *fmt, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
+	void            ( QDECL *Error ) ( int errorLevel, const char *fmt, ... ) __attribute__ ( ( format ( printf, 2, 3 ) ) );
 
 	//trace a bbox through the world
-	void            ( *Trace )( bsp_trace_t *trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent,
-	                            int contentmask );
+	void            ( *Trace ) ( bsp_trace_t *trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent,
+	                             int contentmask );
 	//trace a bbox against a specific entity
-	void            ( *EntityTrace )( bsp_trace_t *trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int entnum,
-	                                  int contentmask );
+	void            ( *EntityTrace ) ( bsp_trace_t *trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int entnum,
+	                                   int contentmask );
 	//retrieve the contents at the given point
-	int             ( *PointContents )( vec3_t point );
+	int             ( *PointContents ) ( vec3_t point );
 	//check if the point is in potential visible sight
-	int             ( *inPVS )( vec3_t p1, vec3_t p2 );
+	int             ( *inPVS ) ( vec3_t p1, vec3_t p2 );
 	//retrieve the BSP entity data lump
-	char           *( *BSPEntityData )( void );
+	char           * ( *BSPEntityData ) ( void );
 	//
-	void            ( *BSPModelMinsMaxsOrigin )( int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin );
+	void            ( *BSPModelMinsMaxsOrigin ) ( int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin );
 	//send a bot client command
-	void            ( *BotClientCommand )( int client, char *command );
+	void            ( *BotClientCommand ) ( int client, char *command );
 	//memory allocation
-	void           *( *GetMemory )( int size );
-	void            ( *FreeMemory )( void *ptr );
-	void            ( *FreeZoneMemory )( void );
-	void           *( *HunkAlloc )( int size );
+	void           * ( *GetMemory ) ( int size );
+	void            ( *FreeMemory ) ( void *ptr );
+	void            ( *FreeZoneMemory ) ( void );
+	void           * ( *HunkAlloc ) ( int size );
 	//file system access
-	int             ( *FS_FOpenFile )( const char *qpath, fileHandle_t *file, fsMode_t mode );
-	int             ( *FS_Read )( void *buffer, int len, fileHandle_t f );
-	int             ( *FS_Write )( const void *buffer, int len, fileHandle_t f );
-	void            ( *FS_FCloseFile )( fileHandle_t f );
-	int             ( *FS_Seek )( fileHandle_t f, long offset, int origin );
+	int             ( *FS_FOpenFile ) ( const char *qpath, fileHandle_t *file, fsMode_t mode );
+	int             ( *FS_Read ) ( void *buffer, int len, fileHandle_t f );
+	int             ( *FS_Write ) ( const void *buffer, int len, fileHandle_t f );
+	void            ( *FS_FCloseFile ) ( fileHandle_t f );
+	int             ( *FS_Seek ) ( fileHandle_t f, long offset, int origin );
 	//debug visualisation stuff
-	int             ( *DebugLineCreate )( void );
-	void            ( *DebugLineDelete )( int line );
-	void            ( *DebugLineShow )( int line, vec3_t start, vec3_t end, int color );
+	int             ( *DebugLineCreate ) ( void );
+	void            ( *DebugLineDelete ) ( int line );
+	void            ( *DebugLineShow ) ( int line, vec3_t start, vec3_t end, int color );
 	//
-	int             ( *DebugPolygonCreate )( int color, int numPoints, vec3_t *points );
-	bot_debugpoly_t *( *DebugPolygonGetFree )( void );
-	void            ( *DebugPolygonDelete )( int id );
-	void            ( *DebugPolygonDeletePointer )( bot_debugpoly_t *pPoly );
+	int             ( *DebugPolygonCreate ) ( int color, int numPoints, vec3_t *points );
+	bot_debugpoly_t * ( *DebugPolygonGetFree ) ( void );
+	void            ( *DebugPolygonDelete ) ( int id );
+	void            ( *DebugPolygonDeletePointer ) ( bot_debugpoly_t *pPoly );
 	//
 	// Ridah, Cast AI stuff
-	qboolean( *BotVisibleFromPos )( vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, qboolean updateVisPos );
-	qboolean( *BotCheckAttackAtPos )( int entnum, int enemy, vec3_t pos, qboolean ducking, qboolean allowHitWorld );
+	qboolean ( *BotVisibleFromPos ) ( vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, qboolean updateVisPos );
+	qboolean ( *BotCheckAttackAtPos ) ( int entnum, int enemy, vec3_t pos, qboolean ducking, qboolean allowHitWorld );
 	// done.
 	// Gordon: ability for botlib to check for singleplayer
 	// Arnout: removed again, botlibsetup already has a parameter 'singleplayer'
 	//qboolean  (*BotGameIsSinglePlayer) ( void );
 
 	// Gordon: direct hookup into rendering, stop using this silly debugpoly faff
-	void            ( *BotDrawPolygon )( int color, int numPoints, float *points );
+	void            ( *BotDrawPolygon ) ( int color, int numPoints, float *points );
 } botlib_import_t;
 
 typedef struct aas_export_s
@@ -254,45 +254,45 @@ typedef struct aas_export_s
 	//-----------------------------------
 	// be_aas_entity.h
 	//-----------------------------------
-	void            ( *AAS_EntityInfo )( int entnum, struct aas_entityinfo_s *info );
+	void            ( *AAS_EntityInfo ) ( int entnum, struct aas_entityinfo_s *info );
 
 	//-----------------------------------
 	// be_aas_main.h
 	//-----------------------------------
-	int             ( *AAS_Initialized )( void );
-	void            ( *AAS_PresenceTypeBoundingBox )( int presencetype, vec3_t mins, vec3_t maxs );
-	float           ( *AAS_Time )( void );
+	int             ( *AAS_Initialized ) ( void );
+	void            ( *AAS_PresenceTypeBoundingBox ) ( int presencetype, vec3_t mins, vec3_t maxs );
+	float           ( *AAS_Time ) ( void );
 	//--------------------------------------------
 	// be_aas_sample.c
 	//--------------------------------------------
-	int             ( *AAS_PointAreaNum )( vec3_t point );
-	int             ( *AAS_TraceAreas )( vec3_t start, vec3_t end, int *areas, vec3_t *points, int maxareas );
-	int             ( *AAS_BBoxAreas )( vec3_t absmins, vec3_t absmaxs, int *areas, int maxareas );
-	void            ( *AAS_AreaCenter )( int areanum, vec3_t center );
-	qboolean( *AAS_AreaWaypoint )( int areanum, vec3_t center );
+	int             ( *AAS_PointAreaNum ) ( vec3_t point );
+	int             ( *AAS_TraceAreas ) ( vec3_t start, vec3_t end, int *areas, vec3_t *points, int maxareas );
+	int             ( *AAS_BBoxAreas ) ( vec3_t absmins, vec3_t absmaxs, int *areas, int maxareas );
+	void            ( *AAS_AreaCenter ) ( int areanum, vec3_t center );
+	qboolean ( *AAS_AreaWaypoint ) ( int areanum, vec3_t center );
 	//--------------------------------------------
 	// be_aas_bspq3.c
 	//--------------------------------------------
-	int             ( *AAS_PointContents )( vec3_t point );
-	int             ( *AAS_NextBSPEntity )( int ent );
-	int             ( *AAS_ValueForBSPEpairKey )( int ent, char *key, char *value, int size );
-	int             ( *AAS_VectorForBSPEpairKey )( int ent, char *key, vec3_t v );
-	int             ( *AAS_FloatForBSPEpairKey )( int ent, char *key, float *value );
-	int             ( *AAS_IntForBSPEpairKey )( int ent, char *key, int *value );
+	int             ( *AAS_PointContents ) ( vec3_t point );
+	int             ( *AAS_NextBSPEntity ) ( int ent );
+	int             ( *AAS_ValueForBSPEpairKey ) ( int ent, char *key, char *value, int size );
+	int             ( *AAS_VectorForBSPEpairKey ) ( int ent, char *key, vec3_t v );
+	int             ( *AAS_FloatForBSPEpairKey ) ( int ent, char *key, float *value );
+	int             ( *AAS_IntForBSPEpairKey ) ( int ent, char *key, int *value );
 	//--------------------------------------------
 	// be_aas_reach.c
 	//--------------------------------------------
-	int             ( *AAS_AreaReachability )( int areanum );
-	int             ( *AAS_AreaLadder )( int areanum );
+	int             ( *AAS_AreaReachability ) ( int areanum );
+	int             ( *AAS_AreaLadder ) ( int areanum );
 	//--------------------------------------------
 	// be_aas_route.c
 	//--------------------------------------------
-	int             ( *AAS_AreaTravelTimeToGoalArea )( int areanum, vec3_t origin, int goalareanum, int travelflags );
+	int             ( *AAS_AreaTravelTimeToGoalArea ) ( int areanum, vec3_t origin, int goalareanum, int travelflags );
 	//--------------------------------------------
 	// be_aas_move.c
 	//--------------------------------------------
-	int             ( *AAS_Swimming )( vec3_t origin );
-	int             ( *AAS_PredictClientMovement )( struct aas_clientmove_s *move,
+	int             ( *AAS_Swimming ) ( vec3_t origin );
+	int             ( *AAS_PredictClientMovement ) ( struct aas_clientmove_s *move,
 	    int entnum, vec3_t origin,
 	    int presencetype, int onground,
 	    vec3_t velocity, vec3_t cmdmove,
@@ -303,66 +303,66 @@ typedef struct aas_export_s
 	//--------------------------------------------
 	// be_aas_routetable.c
 	//--------------------------------------------
-	void            ( *AAS_RT_ShowRoute )( vec3_t srcpos, int srcnum, int destnum );
+	void            ( *AAS_RT_ShowRoute ) ( vec3_t srcpos, int srcnum, int destnum );
 
-	qboolean( *AAS_RT_GetHidePos )( vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea,
-	                                vec3_t returnPos );
-	int             ( *AAS_FindAttackSpotWithinRange )( int srcnum, int rangenum, int enemynum, float rangedist, int travelflags,
+	qboolean ( *AAS_RT_GetHidePos ) ( vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea,
+	                                  vec3_t returnPos );
+	int             ( *AAS_FindAttackSpotWithinRange ) ( int srcnum, int rangenum, int enemynum, float rangedist, int travelflags,
 	    float *outpos );
-	int             ( *AAS_ListAreasInRange )( vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t *outareas,
+	int             ( *AAS_ListAreasInRange ) ( vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t *outareas,
 	    int maxareas );
-	int             ( *AAS_AvoidDangerArea )( vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range,
+	int             ( *AAS_AvoidDangerArea ) ( vec3_t srcpos, int srcarea, vec3_t dangerpos, int dangerarea, float range,
 	    int travelflags );
-	int             ( *AAS_Retreat )( int *dangerSpots, int dangerSpotCount, vec3_t srcpos, int srcarea, vec3_t dangerpos,
-	                                  int dangerarea, float range, float dangerRange, int travelflags );
-	int             ( *AAS_AlternativeRouteGoals )( vec3_t start, vec3_t goal, int travelflags, aas_altroutegoal_t *altroutegoals,
+	int             ( *AAS_Retreat ) ( int *dangerSpots, int dangerSpotCount, vec3_t srcpos, int srcarea, vec3_t dangerpos,
+	                                   int dangerarea, float range, float dangerRange, int travelflags );
+	int             ( *AAS_AlternativeRouteGoals ) ( vec3_t start, vec3_t goal, int travelflags, aas_altroutegoal_t *altroutegoals,
 	    int maxaltroutegoals, int color );
-	void            ( *AAS_SetAASBlockingEntity )( vec3_t absmin, vec3_t absmax, int blocking );
-	int             ( *AAS_NearestHideArea )( int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin,
+	void            ( *AAS_SetAASBlockingEntity ) ( vec3_t absmin, vec3_t absmax, int blocking );
+	int             ( *AAS_NearestHideArea ) ( int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin,
 	    int enemyareanum, int travelflags, float maxdist, vec3_t distpos );
-	void            ( *AAS_RecordTeamDeathArea )( vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags );
+	void            ( *AAS_RecordTeamDeathArea ) ( vec3_t srcpos, int srcarea, int team, int teamCount, int travelflags );
 	// done.
 
 	// Ridah
-	void            ( *AAS_SetCurrentWorld )( int index );
+	void            ( *AAS_SetCurrentWorld ) ( int index );
 	// done.
 } aas_export_t;
 
 typedef struct ea_export_s
 {
 	//ClientCommand elementary actions
-	void            ( *EA_Say )( int client, char *str );
-	void            ( *EA_SayTeam )( int client, char *str );
-	void            ( *EA_UseItem )( int client, char *it );
-	void            ( *EA_DropItem )( int client, char *it );
-	void            ( *EA_UseInv )( int client, char *inv );
-	void            ( *EA_DropInv )( int client, char *inv );
-	void            ( *EA_Gesture )( int client );
-	void            ( *EA_Command )( int client, char *command );
+	void            ( *EA_Say ) ( int client, char *str );
+	void            ( *EA_SayTeam ) ( int client, char *str );
+	void            ( *EA_UseItem ) ( int client, char *it );
+	void            ( *EA_DropItem ) ( int client, char *it );
+	void            ( *EA_UseInv ) ( int client, char *inv );
+	void            ( *EA_DropInv ) ( int client, char *inv );
+	void            ( *EA_Gesture ) ( int client );
+	void            ( *EA_Command ) ( int client, char *command );
 	//regular elementary actions
-	void            ( *EA_SelectWeapon )( int client, int weapon );
-	void            ( *EA_Talk )( int client );
-	void            ( *EA_Attack )( int client );
-	void            ( *EA_Reload )( int client );
-	void            ( *EA_Use )( int client );
-	void            ( *EA_Respawn )( int client );
-	void            ( *EA_Jump )( int client );
-	void            ( *EA_DelayedJump )( int client );
-	void            ( *EA_Crouch )( int client );
-	void            ( *EA_Walk )( int client );
-	void            ( *EA_MoveUp )( int client );
-	void            ( *EA_MoveDown )( int client );
-	void            ( *EA_MoveForward )( int client );
-	void            ( *EA_MoveBack )( int client );
-	void            ( *EA_MoveLeft )( int client );
-	void            ( *EA_MoveRight )( int client );
-	void            ( *EA_Move )( int client, vec3_t dir, float speed );
-	void            ( *EA_View )( int client, vec3_t viewangles );
-	void            ( *EA_Prone )( int client );
+	void            ( *EA_SelectWeapon ) ( int client, int weapon );
+	void            ( *EA_Talk ) ( int client );
+	void            ( *EA_Attack ) ( int client );
+	void            ( *EA_Reload ) ( int client );
+	void            ( *EA_Use ) ( int client );
+	void            ( *EA_Respawn ) ( int client );
+	void            ( *EA_Jump ) ( int client );
+	void            ( *EA_DelayedJump ) ( int client );
+	void            ( *EA_Crouch ) ( int client );
+	void            ( *EA_Walk ) ( int client );
+	void            ( *EA_MoveUp ) ( int client );
+	void            ( *EA_MoveDown ) ( int client );
+	void            ( *EA_MoveForward ) ( int client );
+	void            ( *EA_MoveBack ) ( int client );
+	void            ( *EA_MoveLeft ) ( int client );
+	void            ( *EA_MoveRight ) ( int client );
+	void            ( *EA_Move ) ( int client, vec3_t dir, float speed );
+	void            ( *EA_View ) ( int client, vec3_t viewangles );
+	void            ( *EA_Prone ) ( int client );
 	//send regular input to the server
-	void            ( *EA_EndRegular )( int client, float thinktime );
-	void            ( *EA_GetInput )( int client, float thinktime, bot_input_t *input );
-	void            ( *EA_ResetInput )( int client, bot_input_t *init );
+	void            ( *EA_EndRegular ) ( int client, float thinktime );
+	void            ( *EA_GetInput ) ( int client, float thinktime, bot_input_t *input );
+	void            ( *EA_ResetInput ) ( int client, bot_input_t *init );
 } ea_export_t;
 
 typedef struct ai_export_s
@@ -370,119 +370,119 @@ typedef struct ai_export_s
 	//-----------------------------------
 	// be_ai_char.h
 	//-----------------------------------
-	int             ( *BotLoadCharacter )( char *charfile, int skill );
-	void            ( *BotFreeCharacter )( int character );
-	float           ( *Characteristic_Float )( int character, int index );
-	float           ( *Characteristic_BFloat )( int character, int index, float min, float max );
-	int             ( *Characteristic_Integer )( int character, int index );
-	int             ( *Characteristic_BInteger )( int character, int index, int min, int max );
-	void            ( *Characteristic_String )( int character, int index, char *buf, int size );
+	int             ( *BotLoadCharacter ) ( char *charfile, int skill );
+	void            ( *BotFreeCharacter ) ( int character );
+	float           ( *Characteristic_Float ) ( int character, int index );
+	float           ( *Characteristic_BFloat ) ( int character, int index, float min, float max );
+	int             ( *Characteristic_Integer ) ( int character, int index );
+	int             ( *Characteristic_BInteger ) ( int character, int index, int min, int max );
+	void            ( *Characteristic_String ) ( int character, int index, char *buf, int size );
 	//-----------------------------------
 	// be_ai_chat.h
 	//-----------------------------------
-	int             ( *BotAllocChatState )( void );
-	void            ( *BotFreeChatState )( int handle );
-	void            ( *BotQueueConsoleMessage )( int chatstate, int type, char *message );
-	void            ( *BotRemoveConsoleMessage )( int chatstate, int handle );
-	int             ( *BotNextConsoleMessage )( int chatstate, struct bot_consolemessage_s *cm );
+	int             ( *BotAllocChatState ) ( void );
+	void            ( *BotFreeChatState ) ( int handle );
+	void            ( *BotQueueConsoleMessage ) ( int chatstate, int type, char *message );
+	void            ( *BotRemoveConsoleMessage ) ( int chatstate, int handle );
+	int             ( *BotNextConsoleMessage ) ( int chatstate, struct bot_consolemessage_s *cm );
 
-	int             ( *BotNumConsoleMessages )( int chatstate );
-	void            ( *BotInitialChat )( int chatstate, char *type, int mcontext, char *var0, char *var1, char *var2, char *var3,
-	                                     char *var4, char *var5, char *var6, char *var7 );
-	int             ( *BotNumInitialChats )( int chatstate, char *type );
-	int             ( *BotReplyChat )( int chatstate, char *message, int mcontext, int vcontext, char *var0, char *var1, char *var2,
-	                                   char *var3, char *var4, char *var5, char *var6, char *var7 );
-	int             ( *BotChatLength )( int chatstate );
-	void            ( *BotEnterChat )( int chatstate, int client, int sendto );
-	void            ( *BotGetChatMessage )( int chatstate, char *buf, int size );
-	int             ( *StringContains )( char *str1, char *str2, int casesensitive );
-	int             ( *BotFindMatch )( char *str, struct bot_match_s *match, unsigned long int context );
+	int             ( *BotNumConsoleMessages ) ( int chatstate );
+	void            ( *BotInitialChat ) ( int chatstate, char *type, int mcontext, char *var0, char *var1, char *var2, char *var3,
+	                                      char *var4, char *var5, char *var6, char *var7 );
+	int             ( *BotNumInitialChats ) ( int chatstate, char *type );
+	int             ( *BotReplyChat ) ( int chatstate, char *message, int mcontext, int vcontext, char *var0, char *var1, char *var2,
+	                                    char *var3, char *var4, char *var5, char *var6, char *var7 );
+	int             ( *BotChatLength ) ( int chatstate );
+	void            ( *BotEnterChat ) ( int chatstate, int client, int sendto );
+	void            ( *BotGetChatMessage ) ( int chatstate, char *buf, int size );
+	int             ( *StringContains ) ( char *str1, char *str2, int casesensitive );
+	int             ( *BotFindMatch ) ( char *str, struct bot_match_s *match, unsigned long int context );
 
-	void            ( *BotMatchVariable )( struct bot_match_s *match, int variable, char *buf, int size );
+	void            ( *BotMatchVariable ) ( struct bot_match_s *match, int variable, char *buf, int size );
 
-	void            ( *UnifyWhiteSpaces )( char *string );
-	void            ( *BotReplaceSynonyms )( char *string, unsigned long int context );
-	int             ( *BotLoadChatFile )( int chatstate, char *chatfile, char *chatname );
-	void            ( *BotSetChatGender )( int chatstate, int gender );
-	void            ( *BotSetChatName )( int chatstate, char *name );
+	void            ( *UnifyWhiteSpaces ) ( char *string );
+	void            ( *BotReplaceSynonyms ) ( char *string, unsigned long int context );
+	int             ( *BotLoadChatFile ) ( int chatstate, char *chatfile, char *chatname );
+	void            ( *BotSetChatGender ) ( int chatstate, int gender );
+	void            ( *BotSetChatName ) ( int chatstate, char *name );
 	//-----------------------------------
 	// be_ai_goal.h
 	//-----------------------------------
-	void            ( *BotResetGoalState )( int goalstate );
-	void            ( *BotResetAvoidGoals )( int goalstate );
-	void            ( *BotRemoveFromAvoidGoals )( int goalstate, int number );
-	void            ( *BotPushGoal )( int goalstate, struct bot_goal_s *goal );
+	void            ( *BotResetGoalState ) ( int goalstate );
+	void            ( *BotResetAvoidGoals ) ( int goalstate );
+	void            ( *BotRemoveFromAvoidGoals ) ( int goalstate, int number );
+	void            ( *BotPushGoal ) ( int goalstate, struct bot_goal_s *goal );
 
-	void            ( *BotPopGoal )( int goalstate );
-	void            ( *BotEmptyGoalStack )( int goalstate );
-	void            ( *BotDumpAvoidGoals )( int goalstate );
-	void            ( *BotDumpGoalStack )( int goalstate );
-	void            ( *BotGoalName )( int number, char *name, int size );
-	int             ( *BotGetTopGoal )( int goalstate, struct bot_goal_s *goal );
+	void            ( *BotPopGoal ) ( int goalstate );
+	void            ( *BotEmptyGoalStack ) ( int goalstate );
+	void            ( *BotDumpAvoidGoals ) ( int goalstate );
+	void            ( *BotDumpGoalStack ) ( int goalstate );
+	void            ( *BotGoalName ) ( int number, char *name, int size );
+	int             ( *BotGetTopGoal ) ( int goalstate, struct bot_goal_s *goal );
 
-	int             ( *BotGetSecondGoal )( int goalstate, struct bot_goal_s *goal );
+	int             ( *BotGetSecondGoal ) ( int goalstate, struct bot_goal_s *goal );
 
-	int             ( *BotChooseLTGItem )( int goalstate, vec3_t origin, int *inventory, int travelflags );
-	int             ( *BotChooseNBGItem )( int goalstate, vec3_t origin, int *inventory, int travelflags,
-	                                       struct bot_goal_s *ltg, float maxtime );
+	int             ( *BotChooseLTGItem ) ( int goalstate, vec3_t origin, int *inventory, int travelflags );
+	int             ( *BotChooseNBGItem ) ( int goalstate, vec3_t origin, int *inventory, int travelflags,
+	                                        struct bot_goal_s *ltg, float maxtime );
 
-	int             ( *BotTouchingGoal )( vec3_t origin, struct bot_goal_s *goal );
+	int             ( *BotTouchingGoal ) ( vec3_t origin, struct bot_goal_s *goal );
 
-	int             ( *BotItemGoalInVisButNotVisible )( int viewer, vec3_t eye, vec3_t viewangles, struct bot_goal_s *goal );
+	int             ( *BotItemGoalInVisButNotVisible ) ( int viewer, vec3_t eye, vec3_t viewangles, struct bot_goal_s *goal );
 
-	int             ( *BotGetLevelItemGoal )( int index, char *classname, struct bot_goal_s *goal );
+	int             ( *BotGetLevelItemGoal ) ( int index, char *classname, struct bot_goal_s *goal );
 
-	int             ( *BotGetNextCampSpotGoal )( int num, struct bot_goal_s *goal );
+	int             ( *BotGetNextCampSpotGoal ) ( int num, struct bot_goal_s *goal );
 
-	int             ( *BotGetMapLocationGoal )( char *name, struct bot_goal_s *goal );
+	int             ( *BotGetMapLocationGoal ) ( char *name, struct bot_goal_s *goal );
 
-	float           ( *BotAvoidGoalTime )( int goalstate, int number );
-	void            ( *BotInitLevelItems )( void );
-	void            ( *BotUpdateEntityItems )( void );
-	int             ( *BotLoadItemWeights )( int goalstate, char *filename );
-	void            ( *BotFreeItemWeights )( int goalstate );
-	void            ( *BotInterbreedGoalFuzzyLogic )( int parent1, int parent2, int child );
-	void            ( *BotSaveGoalFuzzyLogic )( int goalstate, char *filename );
-	void            ( *BotMutateGoalFuzzyLogic )( int goalstate, float range );
-	int             ( *BotAllocGoalState )( int client );
-	void            ( *BotFreeGoalState )( int handle );
+	float           ( *BotAvoidGoalTime ) ( int goalstate, int number );
+	void            ( *BotInitLevelItems ) ( void );
+	void            ( *BotUpdateEntityItems ) ( void );
+	int             ( *BotLoadItemWeights ) ( int goalstate, char *filename );
+	void            ( *BotFreeItemWeights ) ( int goalstate );
+	void            ( *BotInterbreedGoalFuzzyLogic ) ( int parent1, int parent2, int child );
+	void            ( *BotSaveGoalFuzzyLogic ) ( int goalstate, char *filename );
+	void            ( *BotMutateGoalFuzzyLogic ) ( int goalstate, float range );
+	int             ( *BotAllocGoalState ) ( int client );
+	void            ( *BotFreeGoalState ) ( int handle );
 	//-----------------------------------
 	// be_ai_move.h
 	//-----------------------------------
-	void            ( *BotResetMoveState )( int movestate );
-	void            ( *BotMoveToGoal )( struct bot_moveresult_s *result, int movestate, struct bot_goal_s *goal, int travelflags );
+	void            ( *BotResetMoveState ) ( int movestate );
+	void            ( *BotMoveToGoal ) ( struct bot_moveresult_s *result, int movestate, struct bot_goal_s *goal, int travelflags );
 
-	int             ( *BotMoveInDirection )( int movestate, vec3_t dir, float speed, int type );
-	void            ( *BotResetAvoidReach )( int movestate );
-	void            ( *BotResetLastAvoidReach )( int movestate );
-	int             ( *BotReachabilityArea )( vec3_t origin, int testground );
-	int             ( *BotMovementViewTarget )( int movestate, struct bot_goal_s *goal, int travelflags, float lookahead,
+	int             ( *BotMoveInDirection ) ( int movestate, vec3_t dir, float speed, int type );
+	void            ( *BotResetAvoidReach ) ( int movestate );
+	void            ( *BotResetLastAvoidReach ) ( int movestate );
+	int             ( *BotReachabilityArea ) ( vec3_t origin, int testground );
+	int             ( *BotMovementViewTarget ) ( int movestate, struct bot_goal_s *goal, int travelflags, float lookahead,
 	    vec3_t target );
 
-	int             ( *BotPredictVisiblePosition )( vec3_t origin, int areanum, struct bot_goal_s *goal, int travelflags,
+	int             ( *BotPredictVisiblePosition ) ( vec3_t origin, int areanum, struct bot_goal_s *goal, int travelflags,
 	    vec3_t target );
 
-	int             ( *BotAllocMoveState )( void );
-	void            ( *BotFreeMoveState )( int handle );
-	void            ( *BotInitMoveState )( int handle, struct bot_initmove_s *initmove );
+	int             ( *BotAllocMoveState ) ( void );
+	void            ( *BotFreeMoveState ) ( int handle );
+	void            ( *BotInitMoveState ) ( int handle, struct bot_initmove_s *initmove );
 
 	// Ridah
-	void            ( *BotInitAvoidReach )( int handle );
+	void            ( *BotInitAvoidReach ) ( int handle );
 	// done.
 	//-----------------------------------
 	// be_ai_weap.h
 	//-----------------------------------
-	int             ( *BotChooseBestFightWeapon )( int weaponstate, int *inventory );
-	void            ( *BotGetWeaponInfo )( int weaponstate, int weapon, struct weaponinfo_s *weaponinfo );
+	int             ( *BotChooseBestFightWeapon ) ( int weaponstate, int *inventory );
+	void            ( *BotGetWeaponInfo ) ( int weaponstate, int weapon, struct weaponinfo_s *weaponinfo );
 
-	int             ( *BotLoadWeaponWeights )( int weaponstate, char *filename );
-	int             ( *BotAllocWeaponState )( void );
-	void            ( *BotFreeWeaponState )( int weaponstate );
-	void            ( *BotResetWeaponState )( int weaponstate );
+	int             ( *BotLoadWeaponWeights ) ( int weaponstate, char *filename );
+	int             ( *BotAllocWeaponState ) ( void );
+	void            ( *BotFreeWeaponState ) ( int weaponstate );
+	void            ( *BotResetWeaponState ) ( int weaponstate );
 	//-----------------------------------
 	// be_ai_gen.h
 	//-----------------------------------
-	int             ( *GeneticParentsAndChildSelection )( int numranks, float *ranks, int *parent1, int *parent2, int *child );
+	int             ( *GeneticParentsAndChildSelection ) ( int numranks, float *ranks, int *parent1, int *parent2, int *child );
 } ai_export_t;
 
 //bot AI library imported functions
@@ -495,35 +495,35 @@ typedef struct botlib_export_s
 	//AI functions
 	ai_export_t  ai;
 	//setup the bot library, returns BLERR_
-	int             ( *BotLibSetup )( qboolean singleplayer );
+	int             ( *BotLibSetup ) ( qboolean singleplayer );
 	//shutdown the bot library, returns BLERR_
-	int             ( *BotLibShutdown )( void );
+	int             ( *BotLibShutdown ) ( void );
 	//sets a library variable returns BLERR_
-	int             ( *BotLibVarSet )( char *var_name, char *value );
+	int             ( *BotLibVarSet ) ( char *var_name, char *value );
 	//gets a library variable returns BLERR_
-	int             ( *BotLibVarGet )( char *var_name, char *value, int size );
+	int             ( *BotLibVarGet ) ( char *var_name, char *value, int size );
 
 	//sets a C-like define returns BLERR_
-	int             ( *PC_AddGlobalDefine )( char *string );
-	void            ( *PC_RemoveAllGlobalDefines )( void );
-	int             ( *PC_LoadSourceHandle )( const char *filename );
-	int             ( *PC_FreeSourceHandle )( int handle );
-	int             ( *PC_ReadTokenHandle )( int handle, pc_token_t *pc_token );
-	int             ( *PC_SourceFileAndLine )( int handle, char *filename, int *line );
-	void            ( *PC_UnreadLastTokenHandle )( int handle );
+	int             ( *PC_AddGlobalDefine ) ( char *string );
+	void            ( *PC_RemoveAllGlobalDefines ) ( void );
+	int             ( *PC_LoadSourceHandle ) ( const char *filename );
+	int             ( *PC_FreeSourceHandle ) ( int handle );
+	int             ( *PC_ReadTokenHandle ) ( int handle, pc_token_t *pc_token );
+	int             ( *PC_SourceFileAndLine ) ( int handle, char *filename, int *line );
+	void            ( *PC_UnreadLastTokenHandle ) ( int handle );
 
 	//start a frame in the bot library
-	int             ( *BotLibStartFrame )( float time );
+	int             ( *BotLibStartFrame ) ( float time );
 	//load a new map in the bot library
-	int             ( *BotLibLoadMap )( const char *mapname );
+	int             ( *BotLibLoadMap ) ( const char *mapname );
 	//entity updates
-	int             ( *BotLibUpdateEntity )( int ent, bot_entitystate_t *state );
+	int             ( *BotLibUpdateEntity ) ( int ent, bot_entitystate_t *state );
 	//just for testing
-	int             ( *Test )( int parm0, char *parm1, vec3_t parm2, vec3_t parm3 );
+	int             ( *Test ) ( int parm0, char *parm1, vec3_t parm2, vec3_t parm3 );
 } botlib_export_t;
 
 //linking of bot library
-botlib_export_t *GetBotLibAPI( int apiVersion, botlib_import_t *import );
+botlib_export_t *GetBotLibAPI ( int apiVersion, botlib_import_t *import );
 
 /* Library variables:
 

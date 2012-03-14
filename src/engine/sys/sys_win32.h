@@ -43,7 +43,7 @@ Maryland 20850 USA.
 
 typedef struct
 {
-	HINSTANCE     reflib_library;       // Handle to refresh DLL
+	HINSTANCE     reflib_library; // Handle to refresh DLL
 	qboolean      reflib_active;
 
 	HWND          hWnd;
@@ -59,5 +59,5 @@ typedef struct
 
 extern WinVars_t g_wv;
 
-void             Sys_CreateConsole( void );
-void             Sys_ShowConsole( int level, qboolean quitOnClose );
+void             Sys_CreateConsole ( void );
+void             Sys_ShowConsole ( int level, qboolean quitOnClose );

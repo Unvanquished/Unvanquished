@@ -75,11 +75,11 @@ this culls the basic subset of all triangle/mesh map drawsurfaces
 
 #else
 
-static qboolean R_CullTriSurf( srfTriangles_t *cv )
+static qboolean R_CullTriSurf ( srfTriangles_t *cv )
 {
 	int boxCull;
 
-	boxCull = R_CullLocalBox( cv->bounds );
+	boxCull = R_CullLocalBox ( cv->bounds );
 
 	if ( boxCull == CULL_OUT )
 	{
@@ -97,7 +97,7 @@ Returns true if the grid is completely culled away.
 Also sets the clipped hint bit in tess
 =================
 */
-static qboolean R_CullGrid( srfGridMesh_t *cv )
+static qboolean R_CullGrid ( srfGridMesh_t *cv )
 {
 	int boxCull;
 	int sphereCull;
@@ -109,11 +109,11 @@ static qboolean R_CullGrid( srfGridMesh_t *cv )
 
 	if ( tr.currentEntityNum != ENTITYNUM_WORLD )
 	{
-		sphereCull = R_CullLocalPointAndRadius( cv->localOrigin, cv->meshRadius );
+		sphereCull = R_CullLocalPointAndRadius ( cv->localOrigin, cv->meshRadius );
 	}
 	else
 	{
-		sphereCull = R_CullPointAndRadius( cv->localOrigin, cv->meshRadius );
+		sphereCull = R_CullPointAndRadius ( cv->localOrigin, cv->meshRadius );
 	}
 
 	boxCull = CULL_OUT;
@@ -129,7 +129,7 @@ static qboolean R_CullGrid( srfGridMesh_t *cv )
 	{
 		tr.pc.c_sphere_cull_patch_clip++;
 
-		boxCull = R_CullLocalBox( cv->meshBounds );
+		boxCull = R_CullLocalBox ( cv->meshBounds );
 
 		if ( boxCull == CULL_OUT )
 		{
@@ -155,7 +155,7 @@ static qboolean R_CullGrid( srfGridMesh_t *cv )
 
 #endif
 
-#endif                                                  // 0
+#endif // 0
 
 /*
 ================
@@ -167,7 +167,7 @@ added to the sorting list.
 This will also allow mirrors on both sides of a model without recursion.
 ================
 */
-static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *frontFace )
+static qboolean R_CullSurface ( surfaceType_t *surface, shader_t *shader, int *frontFace )
 {
 	srfGeneric_t *gen;
 	int          cull;
@@ -215,7 +215,7 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 	// plane cull
 	if ( gen->plane.type != PLANE_NON_PLANAR && r_facePlaneCull->integer )
 	{
-		d = DotProduct( tr.orientation.viewOrigin, gen->plane.normal ) - gen->plane.dist;
+		d = DotProduct ( tr.orientation.viewOrigin, gen->plane.normal ) - gen->plane.dist;
 
 		if ( d > 0.0f )
 		{
@@ -249,11 +249,11 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 		// try sphere cull
 		if ( tr.currentEntityNum != ENTITYNUM_WORLD )
 		{
-			cull = R_CullLocalPointAndRadius( gen->origin, gen->radius );
+			cull = R_CullLocalPointAndRadius ( gen->origin, gen->radius );
 		}
 		else
 		{
-			cull = R_CullPointAndRadius( gen->origin, gen->radius );
+			cull = R_CullPointAndRadius ( gen->origin, gen->radius );
 		}
 
 		if ( cull == CULL_OUT )
@@ -270,7 +270,7 @@ static qboolean R_CullSurface( surfaceType_t *surface, shader_t *shader, int *fr
 }
 
 #if 0
-static int R_DlightFace( srfSurfaceFace_t *face, int dlightBits )
+static int R_DlightFace ( srfSurfaceFace_t *face, int dlightBits )
 {
 	float    d;
 	int      i;
@@ -281,18 +281,18 @@ static int R_DlightFace( srfSurfaceFace_t *face, int dlightBits )
 
 	for ( i = 0; i < tr.refdef.num_dlights; i++ )
 	{
-		if ( !( dlightBits & ( 1 << i ) ) )
+		if ( ! ( dlightBits & ( 1 << i ) ) )
 		{
 			continue;
 		}
 
 		dl = &tr.refdef.dlights[ i ];
-		d  = DotProduct( dl->origin, face->plane.normal ) - face->plane.dist;
+		d = DotProduct ( dl->origin, face->plane.normal ) - face->plane.dist;
 
 		if ( d < -dl->radius || d > dl->radius )
 		{
 			// dlight doesn't reach the plane
-			dlightBits &= ~( 1 << i );
+			dlightBits &= ~ ( 1 << i );
 		}
 	}
 
@@ -335,7 +335,7 @@ static int R_DlightFace( srfSurfaceFace_t *face, int dlightBits )
 
 // ydnar: fixed this function (can be used for trisurfs and foliage)
 
-static int R_DlightTrisurf( srfTriangles_t *srf, int dlightBits )
+static int R_DlightTrisurf ( srfTriangles_t *srf, int dlightBits )
 #if 0
 {
 	// FIXME: more dlight culling to trisurfs...
@@ -350,24 +350,24 @@ static int R_DlightTrisurf( srfTriangles_t *srf, int dlightBits )
 	vec3_t   origin, delta;
 	float    radius2, dist2;
 
-	VectorCopy( srf->origin, origin );
+	VectorCopy ( srf->origin, origin );
 	radius2 = srf->radius * srf->radius;
 
 	for ( i = 0; i < tr.refdef.num_dlights; i++ )
 	{
-		if ( !( dlightBits & ( 1 << i ) ) )
+		if ( ! ( dlightBits & ( 1 << i ) ) )
 		{
 			continue;
 		}
 
-		dl    = &tr.refdef.dlights[ i ];
+		dl = &tr.refdef.dlights[ i ];
 
-		VectorSubtract( dl->origin, srf->origin, delta );
-		dist2 = DotProduct( delta, delta ) - ( dl->radius * dl->radius );
+		VectorSubtract ( dl->origin, srf->origin, delta );
+		dist2 = DotProduct ( delta, delta ) - ( dl->radius * dl->radius );
 
 		if ( dist2 > radius2 )
 		{
-			dlightBits &= ~( 1 << i );
+			dlightBits &= ~ ( 1 << i );
 		}
 	}
 
@@ -382,7 +382,7 @@ static int R_DlightTrisurf( srfTriangles_t *srf, int dlightBits )
 	return dlightBits;
 }
 #endif
-#endif                                                  // 0
+#endif // 0
 
 /*
 ====================
@@ -396,20 +396,20 @@ more dlights if possible.
 
 #if 0
 
-static int R_DlightSurface( msurface_t *surf, int dlightBits )
+static int R_DlightSurface ( msurface_t *surf, int dlightBits )
 {
 	if ( *surf->data == SF_FACE )
 	{
-		dlightBits = R_DlightFace( ( srfSurfaceFace_t * ) surf->data, dlightBits );
+		dlightBits = R_DlightFace ( ( srfSurfaceFace_t * ) surf->data, dlightBits );
 	}
 	else if ( *surf->data == SF_GRID )
 	{
-		dlightBits = R_DlightGrid( ( srfGridMesh_t * ) surf->data, dlightBits );
+		dlightBits = R_DlightGrid ( ( srfGridMesh_t * ) surf->data, dlightBits );
 	}
 	else if ( *surf->data == SF_TRIANGLES || *surf->data == SF_FOLIAGE )
 	{
 		// ydnar
-		dlightBits = R_DlightTrisurf( ( srfTriangles_t * ) surf->data, dlightBits );
+		dlightBits = R_DlightTrisurf ( ( srfTriangles_t * ) surf->data, dlightBits );
 	}
 	else
 	{
@@ -428,7 +428,7 @@ static int R_DlightSurface( msurface_t *surf, int dlightBits )
 
 // ydnar: made this use generic surface
 
-static int R_DlightSurface( msurface_t *surface, int dlightBits )
+static int R_DlightSurface ( msurface_t *surface, int dlightBits )
 {
 	int          i;
 	vec3_t       origin;
@@ -459,7 +459,7 @@ static int R_DlightSurface( msurface_t *surface, int dlightBits )
 	// try to cull out dlights
 	for ( i = 0; i < tr.refdef.num_dlights; i++ )
 	{
-		if ( !( dlightBits & ( 1 << i ) ) )
+		if ( ! ( dlightBits & ( 1 << i ) ) )
 		{
 			continue;
 		}
@@ -467,7 +467,7 @@ static int R_DlightSurface( msurface_t *surface, int dlightBits )
 		// junior dlights don't affect world surfaces
 		if ( tr.refdef.dlights[ i ].flags & REF_JUNIOR_DLIGHT )
 		{
-			dlightBits &= ~( 1 << i );
+			dlightBits &= ~ ( 1 << i );
 			continue;
 		}
 
@@ -478,7 +478,7 @@ static int R_DlightSurface( msurface_t *surface, int dlightBits )
 		}
 
 		// test surface bounding sphere against dlight bounding sphere
-		VectorCopy( tr.refdef.dlights[ i ].transformed, origin );
+		VectorCopy ( tr.refdef.dlights[ i ].transformed, origin );
 		radius = tr.refdef.dlights[ i ].radius;
 
 		if ( ( gen->origin[ 0 ] + gen->radius ) < ( origin[ 0 ] - radius ) ||
@@ -487,7 +487,7 @@ static int R_DlightSurface( msurface_t *surface, int dlightBits )
 		     ( gen->origin[ 1 ] - gen->radius ) > ( origin[ 1 ] + radius ) ||
 		     ( gen->origin[ 2 ] + gen->radius ) < ( origin[ 2 ] - radius ) || ( gen->origin[ 2 ] - gen->radius ) > ( origin[ 2 ] + radius ) )
 		{
-			dlightBits &= ~( 1 << i );
+			dlightBits &= ~ ( 1 << i );
 		}
 	}
 
@@ -515,20 +515,20 @@ static int R_DlightSurface( msurface_t *surface, int dlightBits )
 R_AddWorldSurface
 ======================
 */
-static void R_AddWorldSurface( msurface_t *surf, shader_t *shader, int dlightMap, int decalBits )
+static void R_AddWorldSurface ( msurface_t *surf, shader_t *shader, int dlightMap, int decalBits )
 {
 	int i, frontFace;
 
 	if ( surf->viewCount == tr.viewCount )
 	{
-		return;                                 // already in this view
+		return; // already in this view
 	}
 
 	surf->viewCount = tr.viewCount;
 	// FIXME: bmodel fog?
 
 	// try to cull before dlighting or adding
-	if ( R_CullSurface( surf->data, shader, &frontFace ) )
+	if ( R_CullSurface ( surf->data, shader, &frontFace ) )
 	{
 		return;
 	}
@@ -536,7 +536,7 @@ static void R_AddWorldSurface( msurface_t *surf, shader_t *shader, int dlightMap
 	// check for dlighting
 	if ( dlightMap )
 	{
-		dlightMap = R_DlightSurface( surf, dlightMap );
+		dlightMap = R_DlightSurface ( surf, dlightMap );
 		dlightMap = ( dlightMap != 0 );
 	}
 
@@ -548,12 +548,12 @@ static void R_AddWorldSurface( msurface_t *surf, shader_t *shader, int dlightMap
 		{
 			if ( decalBits & ( 1 << i ) )
 			{
-				R_ProjectDecalOntoSurface( &tr.refdef.decalProjectors[ i ], surf, tr.currentBModel );
+				R_ProjectDecalOntoSurface ( &tr.refdef.decalProjectors[ i ], surf, tr.currentBModel );
 			}
 		}
 	}
 
-	R_AddDrawSurf( surf->data, shader, surf->fogIndex, frontFace, dlightMap );
+	R_AddDrawSurf ( surf->data, shader, surf->fogIndex, frontFace, dlightMap );
 }
 
 /*
@@ -576,7 +576,7 @@ Return positive with /any part/ of the brush falling within a fog volume
 */
 
 // ydnar: the original implementation of this function is a bit flaky...
-int R_BmodelFogNum( trRefEntity_t *re, bmodel_t *bmodel )
+int R_BmodelFogNum ( trRefEntity_t *re, bmodel_t *bmodel )
 #if 1
 {
 	int   i, j;
@@ -666,7 +666,7 @@ int R_BmodelFogNum( trRefEntity_t *re, bmodel_t *bmodel )
 R_AddBrushModelSurfaces
 =================
 */
-void R_AddBrushModelSurfaces( trRefEntity_t *ent )
+void R_AddBrushModelSurfaces ( trRefEntity_t *ent )
 {
 	int              i, clip, fognum, decalBits;
 	vec3_t           mins, maxs;
@@ -675,11 +675,11 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent )
 	int              savedNumDecalProjectors, numLocalProjectors;
 	decalProjector_t *savedDecalProjectors, localProjectors[ MAX_DECAL_PROJECTORS ];
 
-	pModel = R_GetModelByHandle( ent->e.hModel );
+	pModel = R_GetModelByHandle ( ent->e.hModel );
 
 	bmodel = pModel->model.bmodel;
 
-	clip   = R_CullLocalBox( bmodel->bounds );
+	clip = R_CullLocalBox ( bmodel->bounds );
 
 	if ( clip == CULL_OUT )
 	{
@@ -690,20 +690,20 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent )
 	tr.currentBModel = bmodel;
 
 	// ydnar: set model state for decals and dynamic fog
-	VectorCopy( ent->e.origin, bmodel->orientation[ tr.smpFrame ].origin );
-	VectorCopy( ent->e.axis[ 0 ], bmodel->orientation[ tr.smpFrame ].axis[ 0 ] );
-	VectorCopy( ent->e.axis[ 1 ], bmodel->orientation[ tr.smpFrame ].axis[ 1 ] );
-	VectorCopy( ent->e.axis[ 2 ], bmodel->orientation[ tr.smpFrame ].axis[ 2 ] );
-	bmodel->visible[ tr.smpFrame ]   = qtrue;
+	VectorCopy ( ent->e.origin, bmodel->orientation[ tr.smpFrame ].origin );
+	VectorCopy ( ent->e.axis[ 0 ], bmodel->orientation[ tr.smpFrame ].axis[ 0 ] );
+	VectorCopy ( ent->e.axis[ 1 ], bmodel->orientation[ tr.smpFrame ].axis[ 1 ] );
+	VectorCopy ( ent->e.axis[ 2 ], bmodel->orientation[ tr.smpFrame ].axis[ 2 ] );
+	bmodel->visible[ tr.smpFrame ] = qtrue;
 	bmodel->entityNum[ tr.smpFrame ] = tr.currentEntityNum;
 
-	R_DlightBmodel( bmodel );
+	R_DlightBmodel ( bmodel );
 
 	// determine if in fog
-	fognum             = R_BmodelFogNum( ent, bmodel );
+	fognum = R_BmodelFogNum ( ent, bmodel );
 
 	// ydnar: project any decals
-	decalBits          = 0;
+	decalBits = 0;
 	numLocalProjectors = 0;
 
 	for ( i = 0; i < tr.refdef.numDecalProjectors; i++ )
@@ -715,27 +715,27 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent )
 		}
 
 		// transform entity bbox (fixme: rotated entities have invalid bounding boxes)
-		VectorAdd( bmodel->bounds[ 0 ], tr.orientation.origin, mins );
-		VectorAdd( bmodel->bounds[ 1 ], tr.orientation.origin, maxs );
+		VectorAdd ( bmodel->bounds[ 0 ], tr.orientation.origin, mins );
+		VectorAdd ( bmodel->bounds[ 1 ], tr.orientation.origin, maxs );
 
 		// set bit
-		if ( R_TestDecalBoundingBox( &tr.refdef.decalProjectors[ i ], mins, maxs ) )
+		if ( R_TestDecalBoundingBox ( &tr.refdef.decalProjectors[ i ], mins, maxs ) )
 		{
-			R_TransformDecalProjector( &tr.refdef.decalProjectors[ i ], tr.orientation.axis, tr.orientation.origin,
-			                           &localProjectors[ numLocalProjectors ] );
+			R_TransformDecalProjector ( &tr.refdef.decalProjectors[ i ], tr.orientation.axis, tr.orientation.origin,
+			                            &localProjectors[ numLocalProjectors ] );
 			numLocalProjectors++;
 			decalBits <<= 1;
-			decalBits  |= 1;
+			decalBits |= 1;
 		}
 	}
 
 	// ydnar: save old decal projectors
-	savedNumDecalProjectors      = tr.refdef.numDecalProjectors;
-	savedDecalProjectors         = tr.refdef.decalProjectors;
+	savedNumDecalProjectors = tr.refdef.numDecalProjectors;
+	savedDecalProjectors = tr.refdef.decalProjectors;
 
 	// set local decal projectors
 	tr.refdef.numDecalProjectors = numLocalProjectors;
-	tr.refdef.decalProjectors    = localProjectors;
+	tr.refdef.decalProjectors = localProjectors;
 
 	// add model surfaces
 	for ( i = 0; i < bmodel->numSurfaces; i++ )
@@ -745,22 +745,22 @@ void R_AddBrushModelSurfaces( trRefEntity_t *ent )
 		// Arnout: custom shader support for brushmodels
 		if ( ent->e.customShader )
 		{
-			R_AddWorldSurface( bmodel->firstSurface + i, R_GetShaderByHandle( ent->e.customShader ), tr.currentEntity->needDlights,
-			                   decalBits );
+			R_AddWorldSurface ( bmodel->firstSurface + i, R_GetShaderByHandle ( ent->e.customShader ), tr.currentEntity->needDlights,
+			                    decalBits );
 		}
 		else
 		{
-			R_AddWorldSurface( bmodel->firstSurface + i, ( ( msurface_t * ) ( bmodel->firstSurface + i ) )->shader,
-			                   tr.currentEntity->needDlights, decalBits );
+			R_AddWorldSurface ( bmodel->firstSurface + i, ( ( msurface_t * ) ( bmodel->firstSurface + i ) )->shader,
+			                    tr.currentEntity->needDlights, decalBits );
 		}
 	}
 
 	// ydnar: restore old decal projectors
 	tr.refdef.numDecalProjectors = savedNumDecalProjectors;
-	tr.refdef.decalProjectors    = savedDecalProjectors;
+	tr.refdef.decalProjectors = savedDecalProjectors;
 
 	// ydnar: add decal surfaces
-	R_AddDecalSurfaces( bmodel );
+	R_AddDecalSurfaces ( bmodel );
 
 	// ydnar: clear current brush model
 	tr.currentBModel = NULL;
@@ -779,7 +779,7 @@ R_AddLeafSurfaces() - ydnar
 adds a leaf's drawsurfaces
 */
 
-static void R_AddLeafSurfaces( mnode_t *node, int dlightBits, int decalBits )
+static void R_AddLeafSurfaces ( mnode_t *node, int dlightBits, int decalBits )
 {
 	int        c;
 	msurface_t *surf, **mark;
@@ -820,14 +820,14 @@ static void R_AddLeafSurfaces( mnode_t *node, int dlightBits, int decalBits )
 
 	// add the individual surfaces
 	mark = node->firstmarksurface;
-	c    = node->nummarksurfaces;
+	c = node->nummarksurfaces;
 
 	while ( c-- )
 	{
 		// the surface may have already been added if it
 		// spans multiple leafs
 		surf = *mark;
-		R_AddWorldSurface( surf, surf->shader, dlightBits, decalBits );
+		R_AddWorldSurface ( surf, surf->shader, dlightBits, decalBits );
 		mark++;
 	}
 }
@@ -837,7 +837,7 @@ static void R_AddLeafSurfaces( mnode_t *node, int dlightBits, int decalBits )
 R_RecursiveWorldNode
 ================
 */
-static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits, int decalBits )
+static void R_RecursiveWorldNode ( mnode_t *node, int planeBits, int dlightBits, int decalBits )
 {
 	int      i, r;
 	dlight_t *dl;
@@ -857,77 +857,77 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits, 
 		{
 			if ( planeBits & 1 )
 			{
-				r = BoxOnPlaneSide( node->mins, node->maxs, &tr.viewParms.frustum[ 0 ] );
+				r = BoxOnPlaneSide ( node->mins, node->maxs, &tr.viewParms.frustum[ 0 ] );
 
 				if ( r == 2 )
 				{
-					return;         // culled
+					return; // culled
 				}
 
 				if ( r == 1 )
 				{
-					planeBits &= ~1;        // all descendants will also be in front
+					planeBits &= ~1; // all descendants will also be in front
 				}
 			}
 
 			if ( planeBits & 2 )
 			{
-				r = BoxOnPlaneSide( node->mins, node->maxs, &tr.viewParms.frustum[ 1 ] );
+				r = BoxOnPlaneSide ( node->mins, node->maxs, &tr.viewParms.frustum[ 1 ] );
 
 				if ( r == 2 )
 				{
-					return;         // culled
+					return; // culled
 				}
 
 				if ( r == 1 )
 				{
-					planeBits &= ~2;        // all descendants will also be in front
+					planeBits &= ~2; // all descendants will also be in front
 				}
 			}
 
 			if ( planeBits & 4 )
 			{
-				r = BoxOnPlaneSide( node->mins, node->maxs, &tr.viewParms.frustum[ 2 ] );
+				r = BoxOnPlaneSide ( node->mins, node->maxs, &tr.viewParms.frustum[ 2 ] );
 
 				if ( r == 2 )
 				{
-					return;         // culled
+					return; // culled
 				}
 
 				if ( r == 1 )
 				{
-					planeBits &= ~4;        // all descendants will also be in front
+					planeBits &= ~4; // all descendants will also be in front
 				}
 			}
 
 			if ( planeBits & 8 )
 			{
-				r = BoxOnPlaneSide( node->mins, node->maxs, &tr.viewParms.frustum[ 3 ] );
+				r = BoxOnPlaneSide ( node->mins, node->maxs, &tr.viewParms.frustum[ 3 ] );
 
 				if ( r == 2 )
 				{
-					return;         // culled
+					return; // culled
 				}
 
 				if ( r == 1 )
 				{
-					planeBits &= ~8;        // all descendants will also be in front
+					planeBits &= ~8; // all descendants will also be in front
 				}
 			}
 
 			// ydnar: farplane culling
 			if ( planeBits & 16 )
 			{
-				r = BoxOnPlaneSide( node->mins, node->maxs, &tr.viewParms.frustum[ 4 ] );
+				r = BoxOnPlaneSide ( node->mins, node->maxs, &tr.viewParms.frustum[ 4 ] );
 
 				if ( r == 2 )
 				{
-					return;         // culled
+					return; // culled
 				}
 
 				if ( r == 1 )
 				{
-					planeBits &= ~8;        // all descendants will also be in front
+					planeBits &= ~8; // all descendants will also be in front
 				}
 			}
 		}
@@ -953,7 +953,7 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits, 
 					     node->surfMins[ 1 ] >= ( dl->origin[ 1 ] + dl->radius ) || node->surfMaxs[ 1 ] <= ( dl->origin[ 1 ] - dl->radius ) ||
 					     node->surfMins[ 2 ] >= ( dl->origin[ 2 ] + dl->radius ) || node->surfMaxs[ 2 ] <= ( dl->origin[ 2 ] - dl->radius ) )
 					{
-						dlightBits &= ~( 1 << i );
+						dlightBits &= ~ ( 1 << i );
 					}
 				}
 			}
@@ -968,9 +968,9 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits, 
 				{
 					// test decal bounds against node surface bounds
 					if ( tr.refdef.decalProjectors[ i ].shader == NULL ||
-					     !R_TestDecalBoundingBox( &tr.refdef.decalProjectors[ i ], node->surfMins, node->surfMaxs ) )
+					     !R_TestDecalBoundingBox ( &tr.refdef.decalProjectors[ i ], node->surfMins, node->surfMaxs ) )
 					{
-						decalBits &= ~( 1 << i );
+						decalBits &= ~ ( 1 << i );
 					}
 				}
 			}
@@ -983,7 +983,7 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits, 
 		}
 
 		// recurse down the children, front side first
-		R_RecursiveWorldNode( node->children[ 0 ], planeBits, dlightBits, decalBits );
+		R_RecursiveWorldNode ( node->children[ 0 ], planeBits, dlightBits, decalBits );
 
 		// tail recurse
 		node = node->children[ 1 ];
@@ -997,7 +997,7 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits, 
 	}
 
 	// ydnar: moved off to separate function
-	R_AddLeafSurfaces( node, dlightBits, decalBits );
+	R_AddLeafSurfaces ( node, dlightBits, decalBits );
 }
 
 /*
@@ -1005,7 +1005,7 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits, 
 R_PointInLeaf
 ===============
 */
-static mnode_t *R_PointInLeaf( const vec3_t p )
+static mnode_t *R_PointInLeaf ( const vec3_t p )
 {
 	mnode_t  *node;
 	float    d;
@@ -1013,7 +1013,7 @@ static mnode_t *R_PointInLeaf( const vec3_t p )
 
 	if ( !tr.world )
 	{
-		ri.Error( ERR_DROP, "R_PointInLeaf: bad model" );
+		ri.Error ( ERR_DROP, "R_PointInLeaf: bad model" );
 	}
 
 	node = tr.world->nodes;
@@ -1026,7 +1026,7 @@ static mnode_t *R_PointInLeaf( const vec3_t p )
 		}
 
 		plane = node->plane;
-		d     = DotProduct( p, plane->normal ) - plane->dist;
+		d = DotProduct ( p, plane->normal ) - plane->dist;
 
 		if ( d > 0 )
 		{
@@ -1046,7 +1046,7 @@ static mnode_t *R_PointInLeaf( const vec3_t p )
 R_ClusterPVS
 ==============
 */
-static const byte *R_ClusterPVS( int cluster )
+static const byte *R_ClusterPVS ( int cluster )
 {
 	if ( !tr.world || !tr.world->vis || cluster < 0 || cluster >= tr.world->numClusters )
 	{
@@ -1061,16 +1061,16 @@ static const byte *R_ClusterPVS( int cluster )
 R_inPVS
 =================
 */
-qboolean R_inPVS( const vec3_t p1, const vec3_t p2 )
+qboolean R_inPVS ( const vec3_t p1, const vec3_t p2 )
 {
 	mnode_t    *leaf;
 	const byte *vis;
 
-	leaf = R_PointInLeaf( p1 );
-	vis  = R_ClusterPVS( leaf->cluster );
-	leaf = R_PointInLeaf( p2 );
+	leaf = R_PointInLeaf ( p1 );
+	vis = R_ClusterPVS ( leaf->cluster );
+	leaf = R_PointInLeaf ( p2 );
 
-	if ( !( vis[ leaf->cluster >> 3 ] & ( 1 << ( leaf->cluster & 7 ) ) ) )
+	if ( ! ( vis[ leaf->cluster >> 3 ] & ( 1 << ( leaf->cluster & 7 ) ) ) )
 	{
 		return qfalse;
 	}
@@ -1086,7 +1086,7 @@ Mark the leaves and nodes that are in the PVS for the current
 cluster
 ===============
 */
-static void R_MarkLeaves( void )
+static void R_MarkLeaves ( void )
 {
 	const byte *vis;
 	mnode_t    *leaf, *parent;
@@ -1101,7 +1101,7 @@ static void R_MarkLeaves( void )
 	}
 
 	// current viewcluster
-	leaf    = R_PointInLeaf( tr.viewParms.pvsOrigin );
+	leaf = R_PointInLeaf ( tr.viewParms.pvsOrigin );
 	cluster = leaf->cluster;
 
 	// if the cluster is the same and the area visibility matrix
@@ -1119,7 +1119,7 @@ static void R_MarkLeaves( void )
 
 		if ( r_showcluster->integer )
 		{
-			ri.Printf( PRINT_ALL, "cluster:%i  area:%i\n", cluster, leaf->area );
+			ri.Printf ( PRINT_ALL, "cluster:%i  area:%i\n", cluster, leaf->area );
 		}
 	}
 
@@ -1139,7 +1139,7 @@ static void R_MarkLeaves( void )
 		return;
 	}
 
-	vis = R_ClusterPVS( tr.viewCluster );
+	vis = R_ClusterPVS ( tr.viewCluster );
 
 	for ( i = 0, leaf = tr.world->nodes; i < tr.world->numnodes; i++, leaf++ )
 	{
@@ -1151,7 +1151,7 @@ static void R_MarkLeaves( void )
 		}
 
 		// check general pvs
-		if ( !( vis[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) )
+		if ( ! ( vis[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) )
 		{
 			continue;
 		}
@@ -1159,7 +1159,7 @@ static void R_MarkLeaves( void )
 		// check for door connection
 		if ( ( tr.refdef.areamask[ leaf->area >> 3 ] & ( 1 << ( leaf->area & 7 ) ) ) )
 		{
-			continue;                       // not visible
+			continue; // not visible
 		}
 
 		// ydnar: don't want to walk the entire bsp to add skybox surfaces
@@ -1172,7 +1172,7 @@ static void R_MarkLeaves( void )
 				tr.world->skyNodes[ tr.world->numSkyNodes++ ] = leaf;
 			}
 
-			R_AddLeafSurfaces( leaf, 0, 0 );
+			R_AddLeafSurfaces ( leaf, 0, 0 );
 			continue;
 		}
 
@@ -1186,7 +1186,7 @@ static void R_MarkLeaves( void )
 			}
 
 			parent->visframe = tr.visCount;
-			parent           = parent->parent;
+			parent = parent->parent;
 		}
 		while ( parent );
 	}
@@ -1197,7 +1197,7 @@ static void R_MarkLeaves( void )
 R_AddWorldSurfaces
 =============
 */
-void R_AddWorldSurfaces( void )
+void R_AddWorldSurfaces ( void )
 {
 	if ( !r_drawworld->integer )
 	{
@@ -1213,10 +1213,10 @@ void R_AddWorldSurfaces( void )
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
 	// ydnar: set current brush model to world
-	tr.currentBModel    = &tr.world->bmodels[ 0 ];
+	tr.currentBModel = &tr.world->bmodels[ 0 ];
 
 	// clear out the visible min/max
-	ClearBounds( tr.viewParms.visBounds[ 0 ], tr.viewParms.visBounds[ 1 ] );
+	ClearBounds ( tr.viewParms.visBounds[ 0 ], tr.viewParms.visBounds[ 1 ] );
 
 	// render sky or world?
 	if ( tr.refdef.rdflags & RDF_SKYBOXPORTAL && tr.world->numSkyNodes > 0 )
@@ -1226,7 +1226,7 @@ void R_AddWorldSurfaces( void )
 
 		for ( i = 0, node = tr.world->skyNodes; i < tr.world->numSkyNodes; i++, node++ )
 		{
-			R_AddLeafSurfaces( *node, tr.refdef.dlightBits, 0 );    // no decals on skybox nodes
+			R_AddLeafSurfaces ( *node, tr.refdef.dlightBits, 0 ); // no decals on skybox nodes
 		}
 	}
 	else
@@ -1235,10 +1235,10 @@ void R_AddWorldSurfaces( void )
 		R_MarkLeaves();
 
 		// perform frustum culling and add all the potentially visible surfaces
-		R_RecursiveWorldNode( tr.world->nodes, 255, tr.refdef.dlightBits, tr.refdef.decalBits );
+		R_RecursiveWorldNode ( tr.world->nodes, 255, tr.refdef.dlightBits, tr.refdef.decalBits );
 
 		// ydnar: add decal surfaces
-		R_AddDecalSurfaces( tr.world->bmodels );
+		R_AddDecalSurfaces ( tr.world->bmodels );
 	}
 
 	// clear brush model

@@ -51,7 +51,7 @@ int        r_numDecals;
 R_ToggleSmpFrame
 ====================
 */
-void R_ToggleSmpFrame( void )
+void R_ToggleSmpFrame ( void )
 {
 	if ( r_smp->integer )
 	{
@@ -66,28 +66,28 @@ void R_ToggleSmpFrame( void )
 
 	backEndData[ tr.smpFrame ]->commands.used = 0;
 
-	r_firstSceneDrawSurf                      = 0;
-	r_firstSceneInteraction                   = 0;
+	r_firstSceneDrawSurf = 0;
+	r_firstSceneInteraction = 0;
 
-	r_numLights                               = 0;
-	r_firstSceneLight                         = 0;
+	r_numLights = 0;
+	r_firstSceneLight = 0;
 
-	r_numEntities                             = 0;
-	r_firstSceneEntity                        = 0;
+	r_numEntities = 0;
+	r_firstSceneEntity = 0;
 
-	r_numPolys                                = 0;
-	r_firstScenePoly                          = 0;
+	r_numPolys = 0;
+	r_firstScenePoly = 0;
 
-	r_numPolyVerts                            = 0;
+	r_numPolyVerts = 0;
 
-	r_numPolybuffers                          = 0;
-	r_firstScenePolybuffer                    = 0;
+	r_numPolybuffers = 0;
+	r_firstScenePolybuffer = 0;
 
 	// ydnar: decals
-	r_numDecalProjectors                      = 0;
-	r_firstSceneDecalProjector                = 0;
-	r_numDecals                               = 0;
-	r_firstSceneDecal                         = 0;
+	r_numDecalProjectors = 0;
+	r_firstSceneDecalProjector = 0;
+	r_numDecals = 0;
+	r_firstSceneDecal = 0;
 }
 
 /*
@@ -95,11 +95,11 @@ void R_ToggleSmpFrame( void )
 RE_ClearScene
 ====================
 */
-void RE_ClearScene( void )
+void RE_ClearScene ( void )
 {
-	r_firstSceneLight  = r_numLights;
+	r_firstSceneLight = r_numLights;
 	r_firstSceneEntity = r_numEntities;
-	r_firstScenePoly   = r_numPolys;
+	r_firstScenePoly = r_numPolys;
 }
 
 /*
@@ -117,7 +117,7 @@ R_AddPolygonSurfaces
 Adds all the scene's polys into this view's drawsurf list
 =====================
 */
-void R_AddPolygonSurfaces( void )
+void R_AddPolygonSurfaces ( void )
 {
 	int       i;
 	shader_t  *sh;
@@ -132,8 +132,8 @@ void R_AddPolygonSurfaces( void )
 
 	for ( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys; i++, poly++ )
 	{
-		sh = R_GetShaderByHandle( poly->hShader );
-		R_AddDrawSurf( ( void * )poly, sh, -1, poly->fogIndex );
+		sh = R_GetShaderByHandle ( poly->hShader );
+		R_AddDrawSurf ( ( void * ) poly, sh, -1, poly->fogIndex );
 	}
 }
 
@@ -144,7 +144,7 @@ R_AddPolygonSurfaces
 Adds all the scene's polys into this view's drawsurf list
 =====================
 */
-void R_AddPolygonBufferSurfaces( void )
+void R_AddPolygonBufferSurfaces ( void )
 {
 	int             i;
 	shader_t        *sh;
@@ -154,10 +154,10 @@ void R_AddPolygonBufferSurfaces( void )
 
 	for ( i = 0, polybuffer = tr.refdef.polybuffers; i < tr.refdef.numPolybuffers; i++, polybuffer++ )
 	{
-		sh = R_GetShaderByHandle( polybuffer->pPolyBuffer->shader );
+		sh = R_GetShaderByHandle ( polybuffer->pPolyBuffer->shader );
 
 		//R_AddDrawSurf((void *)polybuffer, sh, polybuffer->fogIndex, 0, 0);
-		R_AddDrawSurf( ( void * )polybuffer, sh, -1, polybuffer->fogIndex );
+		R_AddDrawSurf ( ( void * ) polybuffer, sh, -1, polybuffer->fogIndex );
 	}
 }
 
@@ -166,7 +166,7 @@ void R_AddPolygonBufferSurfaces( void )
 R_AddPolysToScene
 =====================
 */
-static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
+static void R_AddPolysToScene ( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
 {
 	srfPoly_t *poly;
 	int       i, j;
@@ -186,7 +186,7 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 
 	if ( !hShader )
 	{
-		ri.Printf( PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: NULL poly shader\n" );
+		ri.Printf ( PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: NULL poly shader\n" );
 		return;
 	}
 
@@ -200,17 +200,17 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 			   since we don't plan on changing the const and making for room for those effects
 			   simply cut this message to developer only
 			 */
-			ri.Printf( PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: r_max_polys or r_max_polyverts reached\n" );
+			ri.Printf ( PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: r_max_polys or r_max_polyverts reached\n" );
 			return;
 		}
 
-		poly              = &backEndData[ tr.smpFrame ]->polys[ r_numPolys ];
+		poly = &backEndData[ tr.smpFrame ]->polys[ r_numPolys ];
 		poly->surfaceType = SF_POLY;
-		poly->hShader     = hShader;
-		poly->numVerts    = numVerts;
-		poly->verts       = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
+		poly->hShader = hShader;
+		poly->numVerts = numVerts;
+		poly->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numPolyVerts ];
 
-		Com_Memcpy( poly->verts, &verts[ numVerts * j ], numVerts * sizeof( *verts ) );
+		Com_Memcpy ( poly->verts, &verts[ numVerts * j ], numVerts * sizeof ( *verts ) );
 
 		// done.
 		r_numPolys++;
@@ -229,19 +229,19 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 		else
 		{
 			// find which fog volume the poly is in
-			VectorCopy( poly->verts[ 0 ].xyz, bounds[ 0 ] );
-			VectorCopy( poly->verts[ 0 ].xyz, bounds[ 1 ] );
+			VectorCopy ( poly->verts[ 0 ].xyz, bounds[ 0 ] );
+			VectorCopy ( poly->verts[ 0 ].xyz, bounds[ 1 ] );
 
 			for ( i = 1; i < poly->numVerts; i++ )
 			{
-				AddPointToBounds( poly->verts[ i ].xyz, bounds[ 0 ], bounds[ 1 ] );
+				AddPointToBounds ( poly->verts[ i ].xyz, bounds[ 0 ], bounds[ 1 ] );
 			}
 
 			for ( fogIndex = 1; fogIndex < tr.world->numFogs; fogIndex++ )
 			{
 				fog = &tr.world->fogs[ fogIndex ];
 
-				if ( BoundsIntersect( bounds[ 0 ], bounds[ 1 ], fog->bounds[ 0 ], fog->bounds[ 1 ] ) )
+				if ( BoundsIntersect ( bounds[ 0 ], bounds[ 1 ], fog->bounds[ 0 ], fog->bounds[ 1 ] ) )
 				{
 					break;
 				}
@@ -262,14 +262,14 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 RE_AddPolyToScene
 =====================
 */
-void RE_AddPolyToSceneQ3A( qhandle_t hShader, int numVerts, const polyVert_t *verts, int num )
+void RE_AddPolyToSceneQ3A ( qhandle_t hShader, int numVerts, const polyVert_t *verts, int num )
 {
-	R_AddPolysToScene( hShader, numVerts, verts, num );
+	R_AddPolysToScene ( hShader, numVerts, verts, num );
 }
 
-void RE_AddPolyToSceneET( qhandle_t hShader, int numVerts, const polyVert_t *verts )
+void RE_AddPolyToSceneET ( qhandle_t hShader, int numVerts, const polyVert_t *verts )
 {
-	R_AddPolysToScene( hShader, numVerts, verts, 1 );
+	R_AddPolysToScene ( hShader, numVerts, verts, 1 );
 }
 
 /*
@@ -277,9 +277,9 @@ void RE_AddPolyToSceneET( qhandle_t hShader, int numVerts, const polyVert_t *ver
 RE_AddPolysToScene
 =====================
 */
-void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
+void RE_AddPolysToScene ( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys )
 {
-	R_AddPolysToScene( hShader, numVerts, verts, numPolys );
+	R_AddPolysToScene ( hShader, numVerts, verts, numPolys );
 }
 
 /*
@@ -287,7 +287,7 @@ void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *vert
 RE_AddPolyBufferToScene
 =====================
 */
-void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer )
+void RE_AddPolyBufferToScene ( polyBuffer_t *pPolyBuffer )
 {
 	srfPolyBuffer_t *pPolySurf;
 	int             fogIndex;
@@ -305,25 +305,25 @@ void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer )
 		return;
 	}
 
-	pPolySurf              = &backEndData[ tr.smpFrame ]->polybuffers[ r_numPolybuffers ];
+	pPolySurf = &backEndData[ tr.smpFrame ]->polybuffers[ r_numPolybuffers ];
 	r_numPolybuffers++;
 
 	pPolySurf->surfaceType = SF_POLYBUFFER;
 	pPolySurf->pPolyBuffer = pPolyBuffer;
 
-	VectorCopy( pPolyBuffer->xyz[ 0 ], bounds[ 0 ] );
-	VectorCopy( pPolyBuffer->xyz[ 0 ], bounds[ 1 ] );
+	VectorCopy ( pPolyBuffer->xyz[ 0 ], bounds[ 0 ] );
+	VectorCopy ( pPolyBuffer->xyz[ 0 ], bounds[ 1 ] );
 
 	for ( i = 1; i < pPolyBuffer->numVerts; i++ )
 	{
-		AddPointToBounds( pPolyBuffer->xyz[ i ], bounds[ 0 ], bounds[ 1 ] );
+		AddPointToBounds ( pPolyBuffer->xyz[ i ], bounds[ 0 ], bounds[ 1 ] );
 	}
 
 	for ( fogIndex = 1; fogIndex < tr.world->numFogs; fogIndex++ )
 	{
 		fog = &tr.world->fogs[ fogIndex ];
 
-		if ( BoundsIntersect( bounds[ 0 ], bounds[ 1 ], fog->bounds[ 0 ], fog->bounds[ 1 ] ) )
+		if ( BoundsIntersect ( bounds[ 0 ], bounds[ 1 ], fog->bounds[ 0 ], fog->bounds[ 1 ] ) )
 		{
 			break;
 		}
@@ -344,7 +344,7 @@ void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer )
 RE_AddRefEntityToScene
 =====================
 */
-void RE_AddRefEntityToScene( const refEntity_t *ent )
+void RE_AddRefEntityToScene ( const refEntity_t *ent )
 {
 	if ( !tr.registered )
 	{
@@ -357,12 +357,12 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 		return;
 	}
 
-	if ( ( unsigned )ent->reType >= RT_MAX_REF_ENTITY_TYPE )
+	if ( ( unsigned ) ent->reType >= RT_MAX_REF_ENTITY_TYPE )
 	{
-		ri.Error( ERR_DROP, "RE_AddRefEntityToScene: bad reType %i", ent->reType );
+		ri.Error ( ERR_DROP, "RE_AddRefEntityToScene: bad reType %i", ent->reType );
 	}
 
-	Com_Memcpy( &backEndData[ tr.smpFrame ]->entities[ r_numEntities ].e, ent, sizeof( refEntity_t ) );
+	Com_Memcpy ( &backEndData[ tr.smpFrame ]->entities[ r_numEntities ].e, ent, sizeof ( refEntity_t ) );
 	//backEndData[tr.smpFrame]->entities[r_numentities].e = *ent;
 	backEndData[ tr.smpFrame ]->entities[ r_numEntities ].lightingCalculated = qfalse;
 
@@ -374,7 +374,7 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 RE_AddRefLightToScene
 =====================
 */
-void RE_AddRefLightToScene( const refLight_t *l )
+void RE_AddRefLightToScene ( const refLight_t *l )
 {
 	trRefLight_t *light;
 
@@ -388,18 +388,18 @@ void RE_AddRefLightToScene( const refLight_t *l )
 		return;
 	}
 
-	if ( l->radius[ 0 ] <= 0 && !VectorLength( l->radius ) && !VectorLength( l->projTarget ) )
+	if ( l->radius[ 0 ] <= 0 && !VectorLength ( l->radius ) && !VectorLength ( l->projTarget ) )
 	{
 		return;
 	}
 
-	if ( ( unsigned )l->rlType >= RL_MAX_REF_LIGHT_TYPE )
+	if ( ( unsigned ) l->rlType >= RL_MAX_REF_LIGHT_TYPE )
 	{
-		ri.Error( ERR_DROP, "RE_AddRefLightToScene: bad rlType %i", l->rlType );
+		ri.Error ( ERR_DROP, "RE_AddRefLightToScene: bad rlType %i", l->rlType );
 	}
 
-	light           = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
-	Com_Memcpy( &light->l, l, sizeof( light->l ) );
+	light = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
+	Com_Memcpy ( &light->l, l, sizeof ( light->l ) );
 
 	light->isStatic = qfalse;
 	light->additive = qtrue;
@@ -465,7 +465,7 @@ static void R_AddWorldLightsToScene()
 			continue;
 		}
 
-		Com_Memcpy( &backEndData[ tr.smpFrame ]->lights[ r_numLights ], light, sizeof( trRefLight_t ) );
+		Com_Memcpy ( &backEndData[ tr.smpFrame ]->lights[ r_numLights ], light, sizeof ( trRefLight_t ) );
 		r_numLights++;
 	}
 }
@@ -477,7 +477,7 @@ RE_AddDynamicLightToScene
 ydnar: modified dlight system to support seperate radius and intensity
 =====================
 */
-void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
+void RE_AddDynamicLightToSceneET ( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )
 {
 	trRefLight_t *light;
 
@@ -496,18 +496,18 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 		return;
 	}
 
-	light           = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
+	light = &backEndData[ tr.smpFrame ]->lights[ r_numLights++ ];
 
 	light->l.rlType = RL_OMNI;
 //  light->l.lightfx = 0;
-	VectorCopy( org, light->l.origin );
+	VectorCopy ( org, light->l.origin );
 
-	QuatClear( light->l.rotation );
-	VectorClear( light->l.center );
+	QuatClear ( light->l.rotation );
+	VectorClear ( light->l.center );
 
 	// HACK: this will tell the renderer backend to use tr.defaultLightShader
 #if 0
-	dl->shader = R_GetShaderByHandle( hShader );
+	dl->shader = R_GetShaderByHandle ( hShader );
 
 	if ( dl->shader == tr.defaultShader )
 	{
@@ -517,21 +517,21 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 #endif
 	light->l.attenuationShader = 0;
 
-	light->l.radius[ 0 ]       = radius;
-	light->l.radius[ 1 ]       = radius;
-	light->l.radius[ 2 ]       = radius;
+	light->l.radius[ 0 ] = radius;
+	light->l.radius[ 1 ] = radius;
+	light->l.radius[ 2 ] = radius;
 
-	light->l.color[ 0 ]        = r;
-	light->l.color[ 1 ]        = g;
-	light->l.color[ 2 ]        = b;
+	light->l.color[ 0 ] = r;
+	light->l.color[ 1 ] = g;
+	light->l.color[ 2 ] = b;
 
-	light->l.noShadows         = r_dynamicLightCastShadows->integer ? qfalse : qtrue;
-	light->l.inverseShadows    = qfalse;
+	light->l.noShadows = r_dynamicLightCastShadows->integer ? qfalse : qtrue;
+	light->l.inverseShadows = qfalse;
 
-	light->isStatic            = qfalse;
-	light->additive            = qtrue;
+	light->isStatic = qfalse;
+	light->additive = qtrue;
 
-	light->l.scale             = intensity;
+	light->l.scale = intensity;
 #if 0
 
 	if ( light->l.scale <= r_lightScale->value )
@@ -542,9 +542,9 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 #endif
 }
 
-void RE_AddDynamicLightToSceneQ3A( const vec3_t org, float radius, float r, float g, float b )
+void RE_AddDynamicLightToSceneQ3A ( const vec3_t org, float radius, float r, float g, float b )
 {
-	RE_AddDynamicLightToSceneET( org, radius, r_lightScale->value, r, g, b, 0, 0 );
+	RE_AddDynamicLightToSceneET ( org, radius, r_lightScale->value, r, g, b, 0, 0 );
 }
 
 /*
@@ -554,7 +554,7 @@ RE_AddCoronaToScene
 RB: TODO
 ==============
 */
-void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible )
+void RE_AddCoronaToScene ( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible )
 {
 #if 0
 	corona_t *cor;
@@ -569,14 +569,14 @@ void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float sca
 		return;
 	}
 
-	cor             = &backEndData[ tr.smpFrame ]->coronas[ r_numcoronas++ ];
-	VectorCopy( org, cor->origin );
+	cor = &backEndData[ tr.smpFrame ]->coronas[ r_numcoronas++ ];
+	VectorCopy ( org, cor->origin );
 	cor->color[ 0 ] = r;
 	cor->color[ 1 ] = g;
 	cor->color[ 2 ] = b;
-	cor->scale      = scale;
-	cor->id         = id;
-	cor->visible    = visible;
+	cor->scale = scale;
+	cor->id = id;
+	cor->visible = visible;
 #endif
 }
 
@@ -591,7 +591,7 @@ Rendering a scene may require multiple views to be rendered
 to handle mirrors,
 @@@@@@@@@@@@@@@@@@@@@
 */
-void RE_RenderScene( const refdef_t *fd )
+void RE_RenderScene ( const refdef_t *fd )
 {
 	viewParms_t parms;
 	int         startTime;
@@ -601,7 +601,7 @@ void RE_RenderScene( const refdef_t *fd )
 		return;
 	}
 
-	GLimp_LogComment( "====== RE_RenderScene =====\n" );
+	GLimp_LogComment ( "====== RE_RenderScene =====\n" );
 
 	if ( r_norefresh->integer )
 	{
@@ -610,26 +610,26 @@ void RE_RenderScene( const refdef_t *fd )
 
 	startTime = ri.Milliseconds();
 
-	if ( !tr.world && !( fd->rdflags & RDF_NOWORLDMODEL ) )
+	if ( !tr.world && ! ( fd->rdflags & RDF_NOWORLDMODEL ) )
 	{
-		ri.Error( ERR_DROP, "R_RenderScene: NULL worldmodel" );
+		ri.Error ( ERR_DROP, "R_RenderScene: NULL worldmodel" );
 	}
 
-	Com_Memcpy( tr.refdef.text, fd->text, sizeof( tr.refdef.text ) );
+	Com_Memcpy ( tr.refdef.text, fd->text, sizeof ( tr.refdef.text ) );
 
-	tr.refdef.x      = fd->x;
-	tr.refdef.y      = fd->y;
-	tr.refdef.width  = fd->width;
+	tr.refdef.x = fd->x;
+	tr.refdef.y = fd->y;
+	tr.refdef.width = fd->width;
 	tr.refdef.height = fd->height;
-	tr.refdef.fov_x  = fd->fov_x;
-	tr.refdef.fov_y  = fd->fov_y;
+	tr.refdef.fov_x = fd->fov_x;
+	tr.refdef.fov_y = fd->fov_y;
 
-	VectorCopy( fd->vieworg, tr.refdef.vieworg );
-	VectorCopy( fd->viewaxis[ 0 ], tr.refdef.viewaxis[ 0 ] );
-	VectorCopy( fd->viewaxis[ 1 ], tr.refdef.viewaxis[ 1 ] );
-	VectorCopy( fd->viewaxis[ 2 ], tr.refdef.viewaxis[ 2 ] );
+	VectorCopy ( fd->vieworg, tr.refdef.vieworg );
+	VectorCopy ( fd->viewaxis[ 0 ], tr.refdef.viewaxis[ 0 ] );
+	VectorCopy ( fd->viewaxis[ 1 ], tr.refdef.viewaxis[ 1 ] );
+	VectorCopy ( fd->viewaxis[ 2 ], tr.refdef.viewaxis[ 2 ] );
 
-	tr.refdef.time    = fd->time;
+	tr.refdef.time = fd->time;
 	tr.refdef.rdflags = fd->rdflags;
 
 	/*
@@ -643,7 +643,7 @@ void RE_RenderScene( const refdef_t *fd )
 	// will force a reset of the visible leafs even if the view hasn't moved
 	tr.refdef.areamaskModified = qfalse;
 
-	if ( !( tr.refdef.rdflags & RDF_NOWORLDMODEL ) && !( ( tr.refdef.rdflags & RDF_SKYBOXPORTAL ) && tr.world->numSkyNodes > 0 ) )
+	if ( ! ( tr.refdef.rdflags & RDF_NOWORLDMODEL ) && ! ( ( tr.refdef.rdflags & RDF_SKYBOXPORTAL ) && tr.world->numSkyNodes > 0 ) )
 	{
 		int areaDiff;
 		int i;
@@ -653,8 +653,8 @@ void RE_RenderScene( const refdef_t *fd )
 
 		for ( i = 0; i < MAX_MAP_AREA_BYTES / 4; i++ )
 		{
-			areaDiff                         |= ( ( int * )tr.refdef.areamask )[ i ] ^ ( ( int * )fd->areamask )[ i ];
-			( ( int * )tr.refdef.areamask )[ i ] = ( ( int * )fd->areamask )[ i ];
+			areaDiff |= ( ( int * ) tr.refdef.areamask ) [ i ] ^ ( ( int * ) fd->areamask ) [ i ];
+			( ( int * ) tr.refdef.areamask ) [ i ] = ( ( int * ) fd->areamask ) [ i ];
 		}
 
 		if ( areaDiff )
@@ -667,31 +667,31 @@ void RE_RenderScene( const refdef_t *fd )
 	R_AddWorldLightsToScene();
 
 	// derived info
-	tr.refdef.floatTime          = tr.refdef.time * 0.001f;
+	tr.refdef.floatTime = tr.refdef.time * 0.001f;
 
-	tr.refdef.numDrawSurfs       = r_firstSceneDrawSurf;
-	tr.refdef.drawSurfs          = backEndData[ tr.smpFrame ]->drawSurfs;
+	tr.refdef.numDrawSurfs = r_firstSceneDrawSurf;
+	tr.refdef.drawSurfs = backEndData[ tr.smpFrame ]->drawSurfs;
 
-	tr.refdef.numInteractions    = r_firstSceneInteraction;
-	tr.refdef.interactions       = backEndData[ tr.smpFrame ]->interactions;
+	tr.refdef.numInteractions = r_firstSceneInteraction;
+	tr.refdef.interactions = backEndData[ tr.smpFrame ]->interactions;
 
-	tr.refdef.numEntities        = r_numEntities - r_firstSceneEntity;
-	tr.refdef.entities           = &backEndData[ tr.smpFrame ]->entities[ r_firstSceneEntity ];
+	tr.refdef.numEntities = r_numEntities - r_firstSceneEntity;
+	tr.refdef.entities = &backEndData[ tr.smpFrame ]->entities[ r_firstSceneEntity ];
 
-	tr.refdef.numLights          = r_numLights - r_firstSceneLight;
-	tr.refdef.lights             = &backEndData[ tr.smpFrame ]->lights[ r_firstSceneLight ];
+	tr.refdef.numLights = r_numLights - r_firstSceneLight;
+	tr.refdef.lights = &backEndData[ tr.smpFrame ]->lights[ r_firstSceneLight ];
 
-	tr.refdef.numPolys           = r_numPolys - r_firstScenePoly;
-	tr.refdef.polys              = &backEndData[ tr.smpFrame ]->polys[ r_firstScenePoly ];
+	tr.refdef.numPolys = r_numPolys - r_firstScenePoly;
+	tr.refdef.polys = &backEndData[ tr.smpFrame ]->polys[ r_firstScenePoly ];
 
-	tr.refdef.numPolybuffers     = r_numPolybuffers - r_firstScenePolybuffer;
-	tr.refdef.polybuffers        = &backEndData[ tr.smpFrame ]->polybuffers[ r_firstScenePolybuffer ];
+	tr.refdef.numPolybuffers = r_numPolybuffers - r_firstScenePolybuffer;
+	tr.refdef.polybuffers = &backEndData[ tr.smpFrame ]->polybuffers[ r_firstScenePolybuffer ];
 
 	tr.refdef.numDecalProjectors = r_numDecalProjectors - r_firstSceneDecalProjector;
-	tr.refdef.decalProjectors    = &backEndData[ tr.smpFrame ]->decalProjectors[ r_firstSceneDecalProjector ];
+	tr.refdef.decalProjectors = &backEndData[ tr.smpFrame ]->decalProjectors[ r_firstSceneDecalProjector ];
 
-	tr.refdef.numDecals          = r_numDecals - r_firstSceneDecal;
-	tr.refdef.decals             = &backEndData[ tr.smpFrame ]->decals[ r_firstSceneDecal ];
+	tr.refdef.numDecals = r_numDecals - r_firstSceneDecal;
+	tr.refdef.decals = &backEndData[ tr.smpFrame ]->decals[ r_firstSceneDecal ];
 
 	// a single frame may have multiple scenes draw inside it --
 	// a 3D game view, 3D status bar renderings, 3D menus, etc.
@@ -712,7 +712,7 @@ void RE_RenderScene( const refdef_t *fd )
 	// The refdef takes 0-at-the-top y coordinates, so
 	// convert to GL's 0-at-the-bottom space
 	//
-	Com_Memset( &parms, 0, sizeof( parms ) );
+	Com_Memset ( &parms, 0, sizeof ( parms ) );
 
 #if 1
 
@@ -731,43 +731,43 @@ void RE_RenderScene( const refdef_t *fd )
 	}
 
 #else
-	parms.viewportX      = tr.refdef.x;
-	parms.viewportY      = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );
+	parms.viewportX = tr.refdef.x;
+	parms.viewportY = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );
 #endif
 
-	parms.viewportWidth  = tr.refdef.width;
+	parms.viewportWidth = tr.refdef.width;
 	parms.viewportHeight = tr.refdef.height;
 
-	Vector4Set( parms.viewportVerts[ 0 ], parms.viewportX, parms.viewportY, 0, 1 );
-	Vector4Set( parms.viewportVerts[ 1 ], parms.viewportX + parms.viewportWidth, parms.viewportY, 0, 1 );
-	Vector4Set( parms.viewportVerts[ 2 ], parms.viewportX + parms.viewportWidth, parms.viewportY + parms.viewportHeight, 0, 1 );
-	Vector4Set( parms.viewportVerts[ 3 ], parms.viewportX, parms.viewportY + parms.viewportHeight, 0, 1 );
+	Vector4Set ( parms.viewportVerts[ 0 ], parms.viewportX, parms.viewportY, 0, 1 );
+	Vector4Set ( parms.viewportVerts[ 1 ], parms.viewportX + parms.viewportWidth, parms.viewportY, 0, 1 );
+	Vector4Set ( parms.viewportVerts[ 2 ], parms.viewportX + parms.viewportWidth, parms.viewportY + parms.viewportHeight, 0, 1 );
+	Vector4Set ( parms.viewportVerts[ 3 ], parms.viewportX, parms.viewportY + parms.viewportHeight, 0, 1 );
 
-	parms.isPortal    = qfalse;
+	parms.isPortal = qfalse;
 
-	parms.fovX        = tr.refdef.fov_x;
-	parms.fovY        = tr.refdef.fov_y;
+	parms.fovX = tr.refdef.fov_x;
+	parms.fovY = tr.refdef.fov_y;
 
 	parms.stereoFrame = tr.refdef.stereoFrame;
 
-	VectorCopy( fd->vieworg, parms.orientation.origin );
-	VectorCopy( fd->viewaxis[ 0 ], parms.orientation.axis[ 0 ] );
-	VectorCopy( fd->viewaxis[ 1 ], parms.orientation.axis[ 1 ] );
-	VectorCopy( fd->viewaxis[ 2 ], parms.orientation.axis[ 2 ] );
+	VectorCopy ( fd->vieworg, parms.orientation.origin );
+	VectorCopy ( fd->viewaxis[ 0 ], parms.orientation.axis[ 0 ] );
+	VectorCopy ( fd->viewaxis[ 1 ], parms.orientation.axis[ 1 ] );
+	VectorCopy ( fd->viewaxis[ 2 ], parms.orientation.axis[ 2 ] );
 
-	VectorCopy( fd->vieworg, parms.pvsOrigin );
+	VectorCopy ( fd->vieworg, parms.pvsOrigin );
 
-	R_RenderView( &parms );
+	R_RenderView ( &parms );
 
 	// the next scene rendered in this frame will tack on after this one
-	r_firstSceneDrawSurf    = tr.refdef.numDrawSurfs;
+	r_firstSceneDrawSurf = tr.refdef.numDrawSurfs;
 	r_firstSceneInteraction = tr.refdef.numInteractions;
-	r_firstSceneEntity      = r_numEntities;
-	r_firstSceneLight       = r_numLights;
-	r_firstScenePoly        = r_numPolys;
-	r_firstScenePolybuffer  = r_numPolybuffers;
+	r_firstSceneEntity = r_numEntities;
+	r_firstSceneLight = r_numLights;
+	r_firstScenePoly = r_numPolys;
+	r_firstScenePolybuffer = r_numPolybuffers;
 
-	tr.frontEndMsec        += ri.Milliseconds() - startTime;
+	tr.frontEndMsec += ri.Milliseconds() - startTime;
 }
 
 // Temp storage for saving view paramters.  Drawing the animated head in the corner

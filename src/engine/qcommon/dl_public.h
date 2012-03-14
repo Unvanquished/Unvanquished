@@ -42,7 +42,7 @@ typedef enum
   DL_FAILED
 } dlStatus_t;
 
-int        DL_BeginDownload( const char *localName, const char *remoteName, int debug );
+int        DL_BeginDownload ( const char *localName, const char *remoteName, int debug );
 dlStatus_t DL_DownloadLoop();
 
 void       DL_Shutdown();
@@ -54,6 +54,6 @@ typedef enum
   DL_FLAG_URL
 } dlFlags_t;
 
-int FS_CreatePath( const char *OSPath );
+int FS_CreatePath ( const char *OSPath );
 
 #endif

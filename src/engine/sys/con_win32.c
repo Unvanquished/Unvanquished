@@ -56,7 +56,7 @@ static CONSOLE_CURSOR_INFO qconsole_orig_cursorinfo;
 
 // cmd history
 static char                qconsole_history[ QCONSOLE_HISTORY ][ MAX_EDIT_LINE ];
-static int                 qconsole_history_pos    = -1;
+static int                 qconsole_history_pos = -1;
 static int                 qconsole_history_oldest = 0;
 
 // current edit buffer
@@ -78,9 +78,9 @@ Sys_SigHandler() with those numbers should be safe for generating unique
 shutdown messages.
 ==================
 */
-static BOOL WINAPI CON_CtrlHandler( DWORD sig )
+static BOOL WINAPI CON_CtrlHandler ( DWORD sig )
 {
-	Sys_SigHandler( sig );
+	Sys_SigHandler ( sig );
 	return TRUE;
 }
 
@@ -89,10 +89,10 @@ static BOOL WINAPI CON_CtrlHandler( DWORD sig )
 CON_HistAdd
 ==================
 */
-static void CON_HistAdd( void )
+static void CON_HistAdd ( void )
 {
-	Q_strncpyz( qconsole_history[ qconsole_history_oldest ], qconsole_line,
-	            sizeof( qconsole_history[ qconsole_history_oldest ] ) );
+	Q_strncpyz ( qconsole_history[ qconsole_history_oldest ], qconsole_line,
+	             sizeof ( qconsole_history[ qconsole_history_oldest ] ) );
 
 	if ( qconsole_history_oldest >= QCONSOLE_HISTORY - 1 )
 	{
@@ -111,7 +111,7 @@ static void CON_HistAdd( void )
 CON_HistPrev
 ==================
 */
-static void CON_HistPrev( void )
+static void CON_HistPrev ( void )
 {
 	int pos;
 
@@ -125,9 +125,9 @@ static void CON_HistPrev( void )
 	}
 
 	qconsole_history_pos = pos;
-	Q_strncpyz( qconsole_line, qconsole_history[ qconsole_history_pos ],
-	            sizeof( qconsole_line ) );
-	qconsole_linelen     = strlen( qconsole_line );
+	Q_strncpyz ( qconsole_line, qconsole_history[ qconsole_history_pos ],
+	             sizeof ( qconsole_line ) );
+	qconsole_linelen = strlen ( qconsole_line );
 }
 
 /*
@@ -135,7 +135,7 @@ static void CON_HistPrev( void )
 CON_HistNext
 ==================
 */
-static void CON_HistNext( void )
+static void CON_HistNext ( void )
 {
 	int pos;
 
@@ -146,14 +146,14 @@ static void CON_HistNext( void )
 	if ( pos == qconsole_history_oldest )
 	{
 		qconsole_line[ 0 ] = '\0';
-		qconsole_linelen   = 0;
+		qconsole_linelen = 0;
 		return;
 	}
 
 	qconsole_history_pos = pos;
-	Q_strncpyz( qconsole_line, qconsole_history[ qconsole_history_pos ],
-	            sizeof( qconsole_line ) );
-	qconsole_linelen     = strlen( qconsole_line );
+	Q_strncpyz ( qconsole_line, qconsole_history[ qconsole_history_pos ],
+	             sizeof ( qconsole_line ) );
+	qconsole_linelen = strlen ( qconsole_line );
 }
 
 /*
@@ -161,16 +161,16 @@ static void CON_HistNext( void )
 CON_Show
 ==================
 */
-static void CON_Show( void )
+static void CON_Show ( void )
 {
 	CONSOLE_SCREEN_BUFFER_INFO binfo;
 	COORD                      writeSize = { MAX_EDIT_LINE, 1 };
-	COORD                      writePos  = { 0, 0 };
+	COORD                      writePos = { 0, 0 };
 	SMALL_RECT                 writeArea = { 0, 0, 0, 0 };
 	int                        i;
 	CHAR_INFO                  line[ MAX_EDIT_LINE ];
 
-	GetConsoleScreenBufferInfo( qconsole_hout, &binfo );
+	GetConsoleScreenBufferInfo ( qconsole_hout, &binfo );
 
 	// if we're in the middle of printf, don't bother writing the buffer
 	if ( binfo.dwCursorPosition.X != 0 )
@@ -178,10 +178,10 @@ static void CON_Show( void )
 		return;
 	}
 
-	writeArea.Left   = 0;
-	writeArea.Top    = binfo.dwCursorPosition.Y;
+	writeArea.Left = 0;
+	writeArea.Top = binfo.dwCursorPosition.Y;
 	writeArea.Bottom = binfo.dwCursorPosition.Y;
-	writeArea.Right  = MAX_EDIT_LINE;
+	writeArea.Right = MAX_EDIT_LINE;
 
 	// build a space-padded CHAR_INFO array
 	for ( i = 0; i < MAX_EDIT_LINE; i++ )
@@ -195,19 +195,19 @@ static void CON_Show( void )
 			line[ i ].Char.AsciiChar = ' ';
 		}
 
-		line[ i ].Attributes =  qconsole_attrib;
+		line[ i ].Attributes = qconsole_attrib;
 	}
 
 	if ( qconsole_linelen > binfo.srWindow.Right )
 	{
-		WriteConsoleOutput( qconsole_hout,
-		                    line + ( qconsole_linelen - binfo.srWindow.Right ),
-		                    writeSize, writePos, &writeArea );
+		WriteConsoleOutput ( qconsole_hout,
+		                     line + ( qconsole_linelen - binfo.srWindow.Right ),
+		                     writeSize, writePos, &writeArea );
 	}
 	else
 	{
-		WriteConsoleOutput( qconsole_hout, line, writeSize,
-		                    writePos, &writeArea );
+		WriteConsoleOutput ( qconsole_hout, line, writeSize,
+		                     writePos, &writeArea );
 	}
 }
 
@@ -216,12 +216,12 @@ static void CON_Show( void )
 CON_Shutdown
 ==================
 */
-void CON_Shutdown( void )
+void CON_Shutdown ( void )
 {
-	SetConsoleMode( qconsole_hin, qconsole_orig_mode );
-	SetConsoleCursorInfo( qconsole_hout, &qconsole_orig_cursorinfo );
-	CloseHandle( qconsole_hout );
-	CloseHandle( qconsole_hin );
+	SetConsoleMode ( qconsole_hin, qconsole_orig_mode );
+	SetConsoleCursorInfo ( qconsole_hout, &qconsole_orig_cursorinfo );
+	CloseHandle ( qconsole_hout );
+	CloseHandle ( qconsole_hin );
 }
 
 /*
@@ -229,47 +229,51 @@ void CON_Shutdown( void )
 CON_Init
 ==================
 */
-void CON_Init( void )
+void CON_Init ( void )
 {
 	CONSOLE_CURSOR_INFO        curs;
 	CONSOLE_SCREEN_BUFFER_INFO info;
 	int                        i;
 
 	// handle Ctrl-C or other console termination
-	SetConsoleCtrlHandler( CON_CtrlHandler, TRUE );
+	SetConsoleCtrlHandler ( CON_CtrlHandler, TRUE );
 
-	qconsole_hin = GetStdHandle( STD_INPUT_HANDLE );
+	qconsole_hin = GetStdHandle ( STD_INPUT_HANDLE );
 
 	if ( qconsole_hin == INVALID_HANDLE_VALUE )
 	{
 		return;
 	}
 
-	qconsole_hout = GetStdHandle( STD_OUTPUT_HANDLE );
+	qconsole_hout = GetStdHandle ( STD_OUTPUT_HANDLE );
 
 	if ( qconsole_hout == INVALID_HANDLE_VALUE )
 	{
 		return;
 	}
 
-	GetConsoleMode( qconsole_hin, &qconsole_orig_mode );
+	GetConsoleMode ( qconsole_hin, &qconsole_orig_mode );
 
 	// allow mouse wheel scrolling
-	SetConsoleMode( qconsole_hin,
-	                qconsole_orig_mode & ~ENABLE_MOUSE_INPUT );
+	SetConsoleMode ( qconsole_hin,
+	                 qconsole_orig_mode & ~ENABLE_MOUSE_INPUT );
 
-	FlushConsoleInputBuffer( qconsole_hin );
+	FlushConsoleInputBuffer ( qconsole_hin );
 
-	GetConsoleScreenBufferInfo( qconsole_hout, &info );
+	GetConsoleScreenBufferInfo ( qconsole_hout, &info );
 	qconsole_attrib = info.wAttributes;
 
+<<<<<<< HEAD
 	SetConsoleTitle( "Daemon Console" );
+=======
+	SetConsoleTitle ( "Daemon Dedicated Server Console" );
+>>>>>>> Remove the alignment of assignment operators and inline comments.
 
 	// make cursor invisible
-	GetConsoleCursorInfo( qconsole_hout, &qconsole_orig_cursorinfo );
-	curs.dwSize   = 1;
+	GetConsoleCursorInfo ( qconsole_hout, &qconsole_orig_cursorinfo );
+	curs.dwSize = 1;
 	curs.bVisible = FALSE;
-	SetConsoleCursorInfo( qconsole_hout, &curs );
+	SetConsoleCursorInfo ( qconsole_hout, &curs );
 
 	// initialize history
 	for ( i = 0; i < QCONSOLE_HISTORY; i++ )
@@ -283,15 +287,15 @@ void CON_Init( void )
 CON_Input
 ==================
 */
-char *CON_Input( void )
+char *CON_Input ( void )
 {
 	INPUT_RECORD buff[ MAX_EDIT_LINE ];
-	DWORD        count      = 0, events = 0;
-	WORD         key        = 0;
+	DWORD        count = 0, events = 0;
+	WORD         key = 0;
 	int          i;
 	int          newlinepos = -1;
 
-	if ( !GetNumberOfConsoleInputEvents( qconsole_hin, &events ) )
+	if ( !GetNumberOfConsoleInputEvents ( qconsole_hin, &events ) )
 	{
 		return NULL;
 	}
@@ -304,16 +308,16 @@ char *CON_Input( void )
 	// if we have overflowed, start dropping oldest input events
 	if ( events >= MAX_EDIT_LINE )
 	{
-		ReadConsoleInput( qconsole_hin, buff, 1, &events );
+		ReadConsoleInput ( qconsole_hin, buff, 1, &events );
 		return NULL;
 	}
 
-	if ( !ReadConsoleInput( qconsole_hin, buff, events, &count ) )
+	if ( !ReadConsoleInput ( qconsole_hin, buff, events, &count ) )
 	{
 		return NULL;
 	}
 
-	FlushConsoleInputBuffer( qconsole_hin );
+	FlushConsoleInputBuffer ( qconsole_hin );
 
 	for ( i = 0; i < count; i++ )
 	{
@@ -336,8 +340,8 @@ char *CON_Input( void )
 		}
 		else if ( key == VK_UP )
 		{
-			Q_strncpyz( qconsole_line, Hist_Prev(), sizeof( qconsole_line ) );
-			qconsole_linelen = strlen( qconsole_line );
+			Q_strncpyz ( qconsole_line, Hist_Prev(), sizeof ( qconsole_line ) );
+			qconsole_linelen = strlen ( qconsole_line );
 			break;
 		}
 		else if ( key == VK_DOWN )
@@ -346,14 +350,14 @@ char *CON_Input( void )
 
 			if ( history )
 			{
-				Q_strncpyz( qconsole_line, history, sizeof( qconsole_line ) );
-				qconsole_linelen = strlen( qconsole_line );
+				Q_strncpyz ( qconsole_line, history, sizeof ( qconsole_line ) );
+				qconsole_linelen = strlen ( qconsole_line );
 			}
 			else if ( qconsole_linelen )
 			{
-				Hist_Add( qconsole_line );
+				Hist_Add ( qconsole_line );
 				qconsole_line[ 0 ] = '\0';
-				qconsole_linelen   = 0;
+				qconsole_linelen = 0;
 			}
 
 			break;
@@ -362,16 +366,16 @@ char *CON_Input( void )
 		{
 			field_t f;
 
-			Q_strncpyz( f.buffer, qconsole_line,
-			            sizeof( f.buffer ) );
-			Field_AutoComplete( &f, "]" );
-			Q_strncpyz( qconsole_line, f.buffer,
-			            sizeof( qconsole_line ) );
-			qconsole_linelen = strlen( qconsole_line );
+			Q_strncpyz ( f.buffer, qconsole_line,
+			             sizeof ( f.buffer ) );
+			Field_AutoComplete ( &f, "]" );
+			Q_strncpyz ( qconsole_line, f.buffer,
+			             sizeof ( qconsole_line ) );
+			qconsole_linelen = strlen ( qconsole_line );
 			break;
 		}
 
-		if ( qconsole_linelen < sizeof( qconsole_line ) - 1 )
+		if ( qconsole_linelen < sizeof ( qconsole_line ) - 1 )
 		{
 			char c = buff[ i ].Event.KeyEvent.uChar.AsciiChar;
 
@@ -381,12 +385,12 @@ char *CON_Input( void )
 				          qconsole_linelen - 1 : 0;
 
 				qconsole_line[ pos ] = '\0';
-				qconsole_linelen     = pos;
+				qconsole_linelen = pos;
 			}
 			else if ( c )
 			{
 				qconsole_line[ qconsole_linelen++ ] = c;
-				qconsole_line[ qconsole_linelen ]   = '\0';
+				qconsole_line[ qconsole_linelen ] = '\0';
 			}
 		}
 	}
@@ -400,12 +404,12 @@ char *CON_Input( void )
 
 	if ( !qconsole_linelen )
 	{
-		Com_Printf( "\n" );
+		Com_Printf ( "\n" );
 		return NULL;
 	}
 
-	Hist_Add( qconsole_line );
-	Com_Printf( "]%s\n", qconsole_line );
+	Hist_Add ( qconsole_line );
+	Com_Printf ( "]%s\n", qconsole_line );
 
 	qconsole_linelen = 0;
 
@@ -417,9 +421,9 @@ char *CON_Input( void )
 CON_Print
 ==================
 */
-void CON_Print( const char *msg )
+void CON_Print ( const char *msg )
 {
-	fputs( msg, stderr );
+	fputs ( msg, stderr );
 
 	CON_Show();
 }

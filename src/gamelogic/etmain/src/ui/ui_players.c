@@ -59,17 +59,17 @@ static float jumpHeight;
 UI_PlayerInfo_SetWeapon
 ===============
 */
-static void UI_PlayerInfo_SetWeapon( playerInfo_t *pi, weapon_t weaponNum )
+static void UI_PlayerInfo_SetWeapon ( playerInfo_t *pi, weapon_t weaponNum )
 {
 	gitem_t *item;
 	char    path[ MAX_QPATH ];
 
 	pi->currentWeapon = weaponNum;
 tryagain:
-	pi->realWeapon    = weaponNum;
-	pi->weaponModel   = 0;
-	pi->barrelModel   = 0;
-	pi->flashModel    = 0;
+	pi->realWeapon = weaponNum;
+	pi->weaponModel = 0;
+	pi->barrelModel = 0;
+	pi->flashModel = 0;
 
 	if ( weaponNum == WP_NONE )
 	{
@@ -79,7 +79,7 @@ tryagain:
 	// NERVE - SMF - multiplayer only hack to show correct panzerfaust and venom barrel
 	if ( weaponNum == WP_PANZERFAUST )
 	{
-		pi->weaponModel = trap_R_RegisterModel( "models/multiplayer/panzerfaust/multi_pf.md3" );
+		pi->weaponModel = trap_R_RegisterModel ( "models/multiplayer/panzerfaust/multi_pf.md3" );
 		return;
 	}
 
@@ -100,7 +100,7 @@ tryagain:
 
 	if ( item->classname )
 	{
-		pi->weaponModel = trap_R_RegisterModel( item->world_model[ 0 ] );
+		pi->weaponModel = trap_R_RegisterModel ( item->world_model[ 0 ] );
 	}
 
 	if ( pi->weaponModel == 0 )
@@ -115,10 +115,10 @@ tryagain:
 		goto tryagain;
 	}
 
-	strcpy( path, item->world_model[ 0 ] );
-	COM_StripExtension( path, path );
-	strcat( path, "_flash.md3" );
-	pi->flashModel = trap_R_RegisterModel( path );
+	strcpy ( path, item->world_model[ 0 ] );
+	COM_StripExtension ( path, path );
+	strcat ( path, "_flash.md3" );
+	pi->flashModel = trap_R_RegisterModel ( path );
 
 	switch ( weaponNum )
 	{
@@ -131,11 +131,11 @@ tryagain:
 //      break;
 
 		case WP_GRENADE_LAUNCHER:
-			MAKERGB( pi->flashDlightColor, 1, 0.7, 0.5 );
+			MAKERGB ( pi->flashDlightColor, 1, 0.7, 0.5 );
 			break;
 
 		case WP_FLAMETHROWER:
-			MAKERGB( pi->flashDlightColor, 0.6, 0.6, 1 );
+			MAKERGB ( pi->flashDlightColor, 0.6, 0.6, 1 );
 			break;
 
 //  case WP_RAILGUN:
@@ -151,7 +151,7 @@ tryagain:
 //      break;
 
 		default:
-			MAKERGB( pi->flashDlightColor, 1, 1, 1 );
+			MAKERGB ( pi->flashDlightColor, 1, 1, 1 );
 			break;
 	}
 }
@@ -161,7 +161,7 @@ tryagain:
 UI_ForceLegsAnim
 ===============
 */
-static void UI_ForceLegsAnim( playerInfo_t *pi, int anim )
+static void UI_ForceLegsAnim ( playerInfo_t *pi, int anim )
 {
 	pi->legsAnim = ( ( pi->legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 
@@ -193,7 +193,7 @@ static void UI_SetLegsAnim( playerInfo_t *pi, int anim ) {
 UI_ForceTorsoAnim
 ===============
 */
-static void UI_ForceTorsoAnim( playerInfo_t *pi, int anim )
+static void UI_ForceTorsoAnim ( playerInfo_t *pi, int anim )
 {
 	pi->torsoAnim = ( ( pi->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 
@@ -340,24 +340,24 @@ static void UI_LegsSequencing( playerInfo_t *pi ) {
 UI_PositionEntityOnTag
 ======================
 */
-static void UI_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent, clipHandle_t parentModel, char *tagName )
+static void UI_PositionEntityOnTag ( refEntity_t *entity, const refEntity_t *parent, clipHandle_t parentModel, char *tagName )
 {
 	int           i;
 	orientation_t lerped;
 
 	// lerp the tag
-	trap_CM_LerpTag( &lerped, ( const refEntity_t * )parent, ( const char * )tagName, 0 );
+	trap_CM_LerpTag ( &lerped, ( const refEntity_t * ) parent, ( const char * ) tagName, 0 );
 
 	// FIXME: allow origin offsets along tag?
-	VectorCopy( parent->origin, entity->origin );
+	VectorCopy ( parent->origin, entity->origin );
 
 	for ( i = 0; i < 3; i++ )
 	{
-		VectorMA( entity->origin, lerped.origin[ i ], parent->axis[ i ], entity->origin );
+		VectorMA ( entity->origin, lerped.origin[ i ], parent->axis[ i ], entity->origin );
 	}
 
 	// cast away const because of compiler problems
-	AxisMultiply( lerped.axis, ( ( refEntity_t * ) parent )->axis, entity->axis );
+	AxisMultiply ( lerped.axis, ( ( refEntity_t * ) parent )->axis, entity->axis );
 	entity->backlerp = parent->backlerp;
 }
 
@@ -366,7 +366,7 @@ static void UI_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *pare
 UI_PositionRotatedEntityOnTag
 ======================
 */
-static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
+static void UI_PositionRotatedEntityOnTag ( refEntity_t *entity, const refEntity_t *parent,
     clipHandle_t parentModel, char *tagName )
 {
 	int           i;
@@ -374,19 +374,19 @@ static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_
 	vec3_t        tempAxis[ 3 ];
 
 	// lerp the tag
-	trap_CM_LerpTag( &lerped, parent, tagName, 0 );
+	trap_CM_LerpTag ( &lerped, parent, tagName, 0 );
 
 	// FIXME: allow origin offsets along tag?
-	VectorCopy( parent->origin, entity->origin );
+	VectorCopy ( parent->origin, entity->origin );
 
 	for ( i = 0; i < 3; i++ )
 	{
-		VectorMA( entity->origin, lerped.origin[ i ], parent->axis[ i ], entity->origin );
+		VectorMA ( entity->origin, lerped.origin[ i ], parent->axis[ i ], entity->origin );
 	}
 
 	// cast away const because of compiler problems
-	AxisMultiply( entity->axis, ( ( refEntity_t * ) parent )->axis, tempAxis );
-	AxisMultiply( lerped.axis, tempAxis, entity->axis );
+	AxisMultiply ( entity->axis, ( ( refEntity_t * ) parent )->axis, tempAxis );
+	AxisMultiply ( lerped.axis, tempAxis, entity->axis );
 }
 
 /*
@@ -527,8 +527,8 @@ static void UI_PlayerAnimation( playerInfo_t *pi, int *legsOld, int *legs, float
 UI_SwingAngles
 ==================
 */
-static void UI_SwingAngles( float destination, float swingTolerance, float clampTolerance,
-                            float speed, float *angle, qboolean *swinging )
+static void UI_SwingAngles ( float destination, float swingTolerance, float clampTolerance,
+                             float speed, float *angle, qboolean *swinging )
 {
 	float swing;
 	float move;
@@ -537,7 +537,7 @@ static void UI_SwingAngles( float destination, float swingTolerance, float clamp
 	if ( !*swinging )
 	{
 		// see if a swing should be started
-		swing = AngleSubtract( *angle, destination );
+		swing = AngleSubtract ( *angle, destination );
 
 		if ( swing > swingTolerance || swing < -swingTolerance )
 		{
@@ -552,8 +552,8 @@ static void UI_SwingAngles( float destination, float swingTolerance, float clamp
 
 	// modify the speed depending on the delta
 	// so it doesn't seem so linear
-	swing = AngleSubtract( destination, *angle );
-	scale = fabs( swing );
+	swing = AngleSubtract ( destination, *angle );
+	scale = fabs ( swing );
 
 	if ( scale < swingTolerance * 0.5 )
 	{
@@ -575,11 +575,11 @@ static void UI_SwingAngles( float destination, float swingTolerance, float clamp
 
 		if ( move >= swing )
 		{
-			move      = swing;
+			move = swing;
 			*swinging = qfalse;
 		}
 
-		*angle = AngleMod( *angle + move );
+		*angle = AngleMod ( *angle + move );
 	}
 	else if ( swing < 0 )
 	{
@@ -587,23 +587,23 @@ static void UI_SwingAngles( float destination, float swingTolerance, float clamp
 
 		if ( move <= swing )
 		{
-			move      = swing;
+			move = swing;
 			*swinging = qfalse;
 		}
 
-		*angle = AngleMod( *angle + move );
+		*angle = AngleMod ( *angle + move );
 	}
 
 	// clamp to no more than tolerance
-	swing = AngleSubtract( destination, *angle );
+	swing = AngleSubtract ( destination, *angle );
 
 	if ( swing > clampTolerance )
 	{
-		*angle = AngleMod( destination - ( clampTolerance - 1 ) );
+		*angle = AngleMod ( destination - ( clampTolerance - 1 ) );
 	}
 	else if ( swing < -clampTolerance )
 	{
-		*angle = AngleMod( destination + ( clampTolerance - 1 ) );
+		*angle = AngleMod ( destination + ( clampTolerance - 1 ) );
 	}
 }
 
@@ -612,20 +612,20 @@ static void UI_SwingAngles( float destination, float swingTolerance, float clamp
 UI_MovedirAdjustment
 ======================
 */
-static float UI_MovedirAdjustment( playerInfo_t *pi )
+static float UI_MovedirAdjustment ( playerInfo_t *pi )
 {
 	vec3_t relativeAngles;
 	vec3_t moveVector;
 
-	VectorSubtract( pi->viewAngles, pi->moveAngles, relativeAngles );
-	AngleVectors( relativeAngles, moveVector, NULL, NULL );
+	VectorSubtract ( pi->viewAngles, pi->moveAngles, relativeAngles );
+	AngleVectors ( relativeAngles, moveVector, NULL, NULL );
 
-	if ( Q_fabs( moveVector[ 0 ] ) < 0.01 )
+	if ( Q_fabs ( moveVector[ 0 ] ) < 0.01 )
 	{
 		moveVector[ 0 ] = 0.0;
 	}
 
-	if ( Q_fabs( moveVector[ 1 ] ) < 0.01 )
+	if ( Q_fabs ( moveVector[ 1 ] ) < 0.01 )
 	{
 		moveVector[ 1 ] = 0.0;
 	}
@@ -673,16 +673,16 @@ static float UI_MovedirAdjustment( playerInfo_t *pi )
 UI_PlayerAngles
 ===============
 */
-static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[ 3 ], vec3_t torso[ 3 ], vec3_t head[ 3 ] )
+static void UI_PlayerAngles ( playerInfo_t *pi, vec3_t legs[ 3 ], vec3_t torso[ 3 ], vec3_t head[ 3 ] )
 {
 	vec3_t legsAngles, torsoAngles, headAngles;
 	float  dest;
 	float  adjust;
 
-	VectorCopy( pi->viewAngles, headAngles );
-	headAngles[ YAW ] = AngleMod( headAngles[ YAW ] );
-	VectorClear( legsAngles );
-	VectorClear( torsoAngles );
+	VectorCopy ( pi->viewAngles, headAngles );
+	headAngles[ YAW ] = AngleMod ( headAngles[ YAW ] );
+	VectorClear ( legsAngles );
+	VectorClear ( torsoAngles );
 
 	// --------- yaw -------------
 
@@ -690,22 +690,22 @@ static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[ 3 ], vec3_t torso[ 3
 	if ( ( pi->legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE || ( pi->torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND )
 	{
 		// if not standing still, always point all in the same direction
-		pi->torso.yawing   = qtrue;     // always center
-		pi->torso.pitching = qtrue;     // always center
-		pi->legs.yawing    = qtrue;     // always center
+		pi->torso.yawing = qtrue; // always center
+		pi->torso.pitching = qtrue; // always center
+		pi->legs.yawing = qtrue; // always center
 	}
 
 	// adjust legs for movement dir
-	adjust             = UI_MovedirAdjustment( pi );
-	legsAngles[ YAW ]  = headAngles[ YAW ] + adjust;
+	adjust = UI_MovedirAdjustment ( pi );
+	legsAngles[ YAW ] = headAngles[ YAW ] + adjust;
 	torsoAngles[ YAW ] = headAngles[ YAW ] + 0.25 * adjust;
 
 	// torso
-	UI_SwingAngles( torsoAngles[ YAW ], 25, 90, SWINGSPEED, &pi->torso.yawAngle, &pi->torso.yawing );
-	UI_SwingAngles( legsAngles[ YAW ], 40, 90, SWINGSPEED, &pi->legs.yawAngle, &pi->legs.yawing );
+	UI_SwingAngles ( torsoAngles[ YAW ], 25, 90, SWINGSPEED, &pi->torso.yawAngle, &pi->torso.yawing );
+	UI_SwingAngles ( legsAngles[ YAW ], 40, 90, SWINGSPEED, &pi->legs.yawAngle, &pi->legs.yawing );
 
 	torsoAngles[ YAW ] = pi->torso.yawAngle;
-	legsAngles[ YAW ]  = pi->legs.yawAngle;
+	legsAngles[ YAW ] = pi->legs.yawAngle;
 
 	// --------- pitch -------------
 
@@ -719,18 +719,18 @@ static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[ 3 ], vec3_t torso[ 3
 		dest = headAngles[ PITCH ] * 0.75;
 	}
 
-	UI_SwingAngles( dest, 15, 30, 0.1, &pi->torso.pitchAngle, &pi->torso.pitching );
+	UI_SwingAngles ( dest, 15, 30, 0.1, &pi->torso.pitchAngle, &pi->torso.pitching );
 	torsoAngles[ PITCH ] = pi->torso.pitchAngle;
 
 	// pull the angles back out of the hierarchial chain
-	AnglesSubtract( headAngles, torsoAngles, headAngles );
-	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );
+	AnglesSubtract ( headAngles, torsoAngles, headAngles );
+	AnglesSubtract ( torsoAngles, legsAngles, torsoAngles );
 
-	AnglesSubtract( legsAngles, pi->moveAngles, legsAngles ); // NERVE - SMF
+	AnglesSubtract ( legsAngles, pi->moveAngles, legsAngles ); // NERVE - SMF
 
-	AnglesToAxis( legsAngles, legs );
-	AnglesToAxis( torsoAngles, torso );
-	AnglesToAxis( headAngles, head );
+	AnglesToAxis ( legsAngles, legs );
+	AnglesToAxis ( torsoAngles, torso );
+	AnglesToAxis ( headAngles, head );
 }
 
 /*
@@ -738,18 +738,18 @@ static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[ 3 ], vec3_t torso[ 3
 UI_PlayerFloatSprite
 ===============
 */
-static void UI_PlayerFloatSprite( playerInfo_t *pi, vec3_t origin, qhandle_t shader )
+static void UI_PlayerFloatSprite ( playerInfo_t *pi, vec3_t origin, qhandle_t shader )
 {
 	refEntity_t ent;
 
-	memset( &ent, 0, sizeof( ent ) );
-	VectorCopy( origin, ent.origin );
+	memset ( &ent, 0, sizeof ( ent ) );
+	VectorCopy ( origin, ent.origin );
 	ent.origin[ 2 ] += 48;
-	ent.reType       = RT_SPRITE;
+	ent.reType = RT_SPRITE;
 	ent.customShader = shader;
-	ent.radius       = 10;
-	ent.renderfx     = 0;
-	trap_R_AddRefEntityToScene( &ent );
+	ent.radius = 10;
+	ent.renderfx = 0;
+	trap_R_AddRefEntityToScene ( &ent );
 }
 
 /*
@@ -757,7 +757,7 @@ static void UI_PlayerFloatSprite( playerInfo_t *pi, vec3_t origin, qhandle_t sha
 UI_MachinegunSpinAngle
 ======================
 */
-float UI_MachinegunSpinAngle( playerInfo_t *pi )
+float UI_MachinegunSpinAngle ( playerInfo_t *pi )
 {
 	int   delta;
 	float angle;
@@ -777,7 +777,7 @@ float UI_MachinegunSpinAngle( playerInfo_t *pi )
 			delta = COAST_TIME;
 		}
 
-		speed = 0.5 * ( SPIN_SPEED + ( float )( COAST_TIME - delta ) / COAST_TIME );
+		speed = 0.5 * ( SPIN_SPEED + ( float ) ( COAST_TIME - delta ) / COAST_TIME );
 		angle = pi->barrelAngle + delta * speed;
 	}
 
@@ -788,11 +788,11 @@ float UI_MachinegunSpinAngle( playerInfo_t *pi )
 		torsoAnim = TORSO_ATTACK;
 	}
 
-	if ( pi->barrelSpinning == !( torsoAnim == TORSO_ATTACK ) )
+	if ( pi->barrelSpinning == ! ( torsoAnim == TORSO_ATTACK ) )
 	{
-		pi->barrelTime     = dp_realtime;
-		pi->barrelAngle    = AngleMod( angle );
-		pi->barrelSpinning = !!( torsoAnim == TORSO_ATTACK );
+		pi->barrelTime = dp_realtime;
+		pi->barrelAngle = AngleMod ( angle );
+		pi->barrelSpinning = !! ( torsoAnim == TORSO_ATTACK );
 	}
 
 	return angle;
@@ -805,13 +805,13 @@ float UI_MachinegunSpinAngle( playerInfo_t *pi )
 UI_GetAnimation
 ===============
 */
-static int UI_GetAnimation( playerInfo_t *pi, const char *name )
+static int UI_GetAnimation ( playerInfo_t *pi, const char *name )
 {
 	int i;
 
 	for ( i = 0; i < pi->numAnimations; i++ )
 	{
-		if ( !Q_stricmp( pi->animations[ i ].name, name ) )
+		if ( !Q_stricmp ( pi->animations[ i ].name, name ) )
 		{
 			return pi->animations[ i ].firstFrame;
 		}
@@ -825,7 +825,7 @@ static int UI_GetAnimation( playerInfo_t *pi, const char *name )
 UI_DrawPlayer
 ===============
 */
-void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int time )
+void UI_DrawPlayer ( float x, float y, float w, float h, playerInfo_t *pi, int time )
 {
 	refdef_t    refdef;
 	refEntity_t legs;
@@ -840,11 +840,11 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 	refEntity_t flash;
 	vec3_t      origin;
 	int         renderfx;
-	vec3_t      mins        = { -16, -16, -24 };
-	vec3_t      maxs        = { 16, 16, 32 };
+	vec3_t      mins = { -16, -16, -24 };
+	vec3_t      maxs = { 16, 16, 32 };
 	float       len;
 	float       xx;
-	vec4_t      hcolor      = { 1, 0, 0, 0.5 };
+	vec4_t      hcolor = { 1, 0, 0, 0.5 };
 	const char  *torso_anim = NULL, *legs_anim = NULL;
 
 	if ( !pi->legsModel || !pi->torsoModel || !pi->headModel || !pi->animations[ 0 ].numFrames )
@@ -856,54 +856,54 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 
 	if ( pi->pendingWeapon != -1 && dp_realtime > pi->weaponTimer )
 	{
-		pi->weapon        = pi->pendingWeapon;
-		pi->lastWeapon    = pi->pendingWeapon;
+		pi->weapon = pi->pendingWeapon;
+		pi->lastWeapon = pi->pendingWeapon;
 		pi->pendingWeapon = -1;
-		pi->weaponTimer   = 0;
+		pi->weaponTimer = 0;
 
 		if ( pi->currentWeapon != pi->weapon )
 		{
-			trap_S_StartLocalSound( trap_S_RegisterSound( "sound/weapons/change.wav", qfalse ), CHAN_LOCAL );
+			trap_S_StartLocalSound ( trap_S_RegisterSound ( "sound/weapons/change.wav", qfalse ), CHAN_LOCAL );
 		}
 	}
 
-	UI_AdjustFrom640( &x, &y, &w, &h );
+	UI_AdjustFrom640 ( &x, &y, &w, &h );
 
 	y -= jumpHeight;
 
-	memset( &refdef, 0, sizeof( refdef ) );
-	memset( &legs, 0, sizeof( legs ) );
-	memset( &torso, 0, sizeof( torso ) );
-	memset( &head, 0, sizeof( head ) );
+	memset ( &refdef, 0, sizeof ( refdef ) );
+	memset ( &legs, 0, sizeof ( legs ) );
+	memset ( &torso, 0, sizeof ( torso ) );
+	memset ( &head, 0, sizeof ( head ) );
 
 	refdef.rdflags = RDF_NOWORLDMODEL;
 
-	AxisClear( refdef.viewaxis );
+	AxisClear ( refdef.viewaxis );
 
-	refdef.x      = x;
-	refdef.y      = y;
-	refdef.width  = w;
+	refdef.x = x;
+	refdef.y = y;
+	refdef.width = w;
 	refdef.height = h;
 
-	refdef.fov_x  = ( int )( ( float )refdef.width / 640.0f * 90.0f );
-	xx            = refdef.width / tan( refdef.fov_x / 360 * M_PI );
-	refdef.fov_y  = atan2( refdef.height, xx );
+	refdef.fov_x = ( int ) ( ( float ) refdef.width / 640.0f * 90.0f );
+	xx = refdef.width / tan ( refdef.fov_x / 360 * M_PI );
+	refdef.fov_y = atan2 ( refdef.height, xx );
 	refdef.fov_y *= ( 360 / M_PI );
 
 	// calculate distance so the player nearly fills the box
-	len           = 1.01 * ( maxs[ 2 ] - mins[ 2 ] ); // NERVE - SMF - changed from 0.7
-	origin[ 0 ]   = len / tan( DEG2RAD( refdef.fov_x ) * 0.5 );
-	origin[ 1 ]   = 0.5 * ( mins[ 1 ] + maxs[ 1 ] );
-	origin[ 2 ]   = -0.5 * ( mins[ 2 ] + maxs[ 2 ] );
+	len = 1.01 * ( maxs[ 2 ] - mins[ 2 ] ); // NERVE - SMF - changed from 0.7
+	origin[ 0 ] = len / tan ( DEG2RAD ( refdef.fov_x ) * 0.5 );
+	origin[ 1 ] = 0.5 * ( mins[ 1 ] + maxs[ 1 ] );
+	origin[ 2 ] = -0.5 * ( mins[ 2 ] + maxs[ 2 ] );
 
-	refdef.time   = dp_realtime;
+	refdef.time = dp_realtime;
 
-	trap_R_SetColor( hcolor );
+	trap_R_SetColor ( hcolor );
 	trap_R_ClearScene();
-	trap_R_SetColor( NULL );
+	trap_R_SetColor ( NULL );
 
 	// get the rotation information
-	UI_PlayerAngles( pi, legs.axis, torso.axis, head.axis );
+	UI_PlayerAngles ( pi, legs.axis, torso.axis, head.axis );
 
 	// get the animation state (after rotation, to allow feet shuffle)
 //  UI_PlayerAnimation( pi, &legs.oldframe, &legs.frame, &legs.backlerp,
@@ -914,34 +914,34 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 	//
 	// add the body
 	//
-	legs.hModel     = pi->legsModel;
+	legs.hModel = pi->legsModel;
 	legs.customSkin = pi->legsSkin;
-	legs.renderfx   = renderfx;
+	legs.renderfx = renderfx;
 
-	VectorCopy( origin, legs.origin );
-	VectorCopy( origin, legs.lightingOrigin );
-	VectorCopy( legs.origin, legs.oldorigin );
+	VectorCopy ( origin, legs.origin );
+	VectorCopy ( origin, legs.lightingOrigin );
+	VectorCopy ( legs.origin, legs.oldorigin );
 
 	if ( torso_anim )
 	{
-		legs.torsoFrame    = 0; //UI_GetAnimation( pi, torso_anim );
+		legs.torsoFrame = 0; //UI_GetAnimation( pi, torso_anim );
 		legs.oldTorsoFrame = 0; //UI_GetAnimation( pi, torso_anim );
 	}
 
-	legs.torsoBacklerp = 0;         //torso.backlerp;
+	legs.torsoBacklerp = 0; //torso.backlerp;
 
 	if ( legs_anim )
 	{
-		legs.frame    = UI_GetAnimation( pi, legs_anim );
-		legs.oldframe = UI_GetAnimation( pi, legs_anim );
+		legs.frame = UI_GetAnimation ( pi, legs_anim );
+		legs.oldframe = UI_GetAnimation ( pi, legs_anim );
 	}
 
 	legs.backlerp = 0;
 
-	memcpy( legs.torsoAxis, torso.axis, sizeof( torso.axis ) );
-	torso         = legs;
+	memcpy ( legs.torsoAxis, torso.axis, sizeof ( torso.axis ) );
+	torso = legs;
 
-	trap_R_AddRefEntityToScene( &torso );
+	trap_R_AddRefEntityToScene ( &torso );
 
 	//
 	// add the head
@@ -955,25 +955,25 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 
 	head.customSkin = pi->headSkin;
 
-	VectorCopy( origin, head.lightingOrigin );
+	VectorCopy ( origin, head.lightingOrigin );
 
-	UI_PositionRotatedEntityOnTag( &head, &torso, pi->torsoModel, "tag_head" );
+	UI_PositionRotatedEntityOnTag ( &head, &torso, pi->torsoModel, "tag_head" );
 
 	head.renderfx = renderfx;
 
-	trap_R_AddRefEntityToScene( &head );
+	trap_R_AddRefEntityToScene ( &head );
 
 	//
 	// add the gun
 	//
 	if ( pi->currentWeapon != WP_NONE )
 	{
-		memset( &gun, 0, sizeof( gun ) );
-		gun.hModel   = pi->weaponModel;
-		VectorCopy( origin, gun.lightingOrigin );
-		UI_PositionEntityOnTag( &gun, &torso, pi->torsoModel, "tag_weapon" );
+		memset ( &gun, 0, sizeof ( gun ) );
+		gun.hModel = pi->weaponModel;
+		VectorCopy ( origin, gun.lightingOrigin );
+		UI_PositionEntityOnTag ( &gun, &torso, pi->torsoModel, "tag_weapon" );
 		gun.renderfx = renderfx;
-		trap_R_AddRefEntityToScene( &gun );
+		trap_R_AddRefEntityToScene ( &gun );
 	}
 
 	//
@@ -981,12 +981,12 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 	//
 	if ( pi->currentWeapon != WP_NONE && pi->barrelModel )
 	{
-		memset( &barrel, 0, sizeof( barrel ) );
-		barrel.hModel   = pi->barrelModel;
-		VectorCopy( origin, barrel.lightingOrigin );
-		UI_PositionEntityOnTag( &barrel, &gun, pi->weaponModel, "tag_barrel" );
+		memset ( &barrel, 0, sizeof ( barrel ) );
+		barrel.hModel = pi->barrelModel;
+		VectorCopy ( origin, barrel.lightingOrigin );
+		UI_PositionEntityOnTag ( &barrel, &gun, pi->weaponModel, "tag_barrel" );
 		barrel.renderfx = renderfx;
-		trap_R_AddRefEntityToScene( &barrel );
+		trap_R_AddRefEntityToScene ( &barrel );
 	}
 
 	//
@@ -996,12 +996,12 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 	{
 		if ( pi->flashModel )
 		{
-			memset( &flash, 0, sizeof( flash ) );
-			flash.hModel   = pi->flashModel;
-			VectorCopy( origin, flash.lightingOrigin );
-			UI_PositionEntityOnTag( &flash, &gun, pi->weaponModel, "tag_flash" );
+			memset ( &flash, 0, sizeof ( flash ) );
+			flash.hModel = pi->flashModel;
+			VectorCopy ( origin, flash.lightingOrigin );
+			UI_PositionEntityOnTag ( &flash, &gun, pi->weaponModel, "tag_flash" );
 			flash.renderfx = renderfx;
-			trap_R_AddRefEntityToScene( &flash );
+			trap_R_AddRefEntityToScene ( &flash );
 		}
 
 		// make a dlight for the flash
@@ -1009,8 +1009,8 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 		{
 			//% trap_R_AddLightToScene( flash.origin, 200 + (rand()&31), pi->flashDlightColor[0],
 			//%     pi->flashDlightColor[1], pi->flashDlightColor[2], 0 );
-			trap_R_AddLightToScene( flash.origin, 256, 0.75 + 8.0 / ( rand() & 31 ),
-			                        pi->flashDlightColor[ 0 ], pi->flashDlightColor[ 1 ], pi->flashDlightColor[ 2 ], 0, 0 );
+			trap_R_AddLightToScene ( flash.origin, 256, 0.75 + 8.0 / ( rand() & 31 ),
+			                         pi->flashDlightColor[ 0 ], pi->flashDlightColor[ 1 ], pi->flashDlightColor[ 2 ], 0, 0 );
 		}
 	}
 
@@ -1019,12 +1019,12 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 	//
 	if ( pi->backpackModel )
 	{
-		memset( &backpack, 0, sizeof( backpack ) );
-		backpack.hModel   = pi->backpackModel;
-		VectorCopy( origin, backpack.lightingOrigin );
-		UI_PositionEntityOnTag( &backpack, &torso, pi->torsoModel, "tag_back" );
+		memset ( &backpack, 0, sizeof ( backpack ) );
+		backpack.hModel = pi->backpackModel;
+		VectorCopy ( origin, backpack.lightingOrigin );
+		UI_PositionEntityOnTag ( &backpack, &torso, pi->torsoModel, "tag_back" );
 		backpack.renderfx = renderfx;
-		trap_R_AddRefEntityToScene( &backpack );
+		trap_R_AddRefEntityToScene ( &backpack );
 	}
 
 	//
@@ -1032,12 +1032,12 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 	//
 	if ( pi->helmetModel )
 	{
-		memset( &helmet, 0, sizeof( helmet ) );
-		helmet.hModel   = pi->helmetModel;
-		VectorCopy( origin, helmet.lightingOrigin );
-		UI_PositionEntityOnTag( &helmet, &head, pi->headModel, "tag_mouth" );
+		memset ( &helmet, 0, sizeof ( helmet ) );
+		helmet.hModel = pi->helmetModel;
+		VectorCopy ( origin, helmet.lightingOrigin );
+		UI_PositionEntityOnTag ( &helmet, &head, pi->headModel, "tag_mouth" );
 		helmet.renderfx = renderfx;
-		trap_R_AddRefEntityToScene( &helmet );
+		trap_R_AddRefEntityToScene ( &helmet );
 	}
 
 	//
@@ -1045,25 +1045,25 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 	//
 	if ( pi->chat )
 	{
-		UI_PlayerFloatSprite( pi, origin, trap_R_RegisterShaderNoMip( "sprites/balloon3" ) );
+		UI_PlayerFloatSprite ( pi, origin, trap_R_RegisterShaderNoMip ( "sprites/balloon3" ) );
 	}
 
 	//
 	// add an accent light
 	//
-	origin[ 0 ] -= 100;                       // + = behind, - = in front
-	origin[ 1 ] += 100;                       // + = left, - = right
-	origin[ 2 ] += 100;                       // + = above, - = below
+	origin[ 0 ] -= 100; // + = behind, - = in front
+	origin[ 1 ] += 100; // + = left, - = right
+	origin[ 2 ] += 100; // + = above, - = below
 	//% trap_R_AddLightToScene( origin, 1000, 1.0, 1.0, 1.0, 0 );
-	trap_R_AddLightToScene( origin, 1000, 1.0, 1.0, 1.0, 1.0, 0, 0 );
+	trap_R_AddLightToScene ( origin, 1000, 1.0, 1.0, 1.0, 1.0, 0, 0 );
 
 	origin[ 0 ] -= 100;
 	origin[ 1 ] -= 100;
 	origin[ 2 ] -= 100;
 	//% trap_R_AddLightToScene( origin, 1000, 1.0, 1.0, 1.0, 0 );
-	trap_R_AddLightToScene( origin, 1000, 1.0, 1.0, 1.0, 1.0, 0, 0 );
+	trap_R_AddLightToScene ( origin, 1000, 1.0, 1.0, 1.0, 1.0, 0, 0 );
 
-	trap_R_RenderScene( &refdef );
+	trap_R_RenderScene ( &refdef );
 }
 
 /*
@@ -1071,20 +1071,20 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 UI_RegisterClientSkin
 ==========================
 */
-static qboolean UI_RegisterClientSkin( playerInfo_t *pi, const char *modelName, const char *skinName )
+static qboolean UI_RegisterClientSkin ( playerInfo_t *pi, const char *modelName, const char *skinName )
 {
 	char filename[ MAX_QPATH ];
 
 //  Com_sprintf( filename, sizeof( filename ), "models/players/%s/lower_%s.skin", modelName, skinName );
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/body_%s.skin", modelName, skinName ); // NERVE - SMF - make this work with wolf
-	pi->legsSkin = trap_R_RegisterSkin( filename );
+	Com_sprintf ( filename, sizeof ( filename ), "models/players/%s/body_%s.skin", modelName, skinName ); // NERVE - SMF - make this work with wolf
+	pi->legsSkin = trap_R_RegisterSkin ( filename );
 
 //  Com_sprintf( filename, sizeof( filename ), "models/players/%s/upper_%s.skin", modelName, skinName );
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/body_%s.skin", modelName, skinName ); // NERVE - SMF - make this work with wolf
-	pi->torsoSkin = trap_R_RegisterSkin( filename );
+	Com_sprintf ( filename, sizeof ( filename ), "models/players/%s/body_%s.skin", modelName, skinName ); // NERVE - SMF - make this work with wolf
+	pi->torsoSkin = trap_R_RegisterSkin ( filename );
 
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/head_%s.skin", modelName, skinName );
-	pi->headSkin  = trap_R_RegisterSkin( filename );
+	Com_sprintf ( filename, sizeof ( filename ), "models/players/%s/head_%s.skin", modelName, skinName );
+	pi->headSkin = trap_R_RegisterSkin ( filename );
 
 	if ( !pi->legsSkin || !pi->torsoSkin || !pi->headSkin )
 	{
@@ -1102,25 +1102,25 @@ return a hash value for the given string
 // rain - renamed from BG_StringHashValue to UI_StringHashValue, so that
 // it doesn't conflict with the BG_ version (which is prototyped, but
 // not linked in to save space from all the extra bg_ baggage.)
-static long UI_StringHashValue( const char *fname )
+static long UI_StringHashValue ( const char *fname )
 {
 	int  i;
 	long hash;
 	char letter;
 
 	hash = 0;
-	i    = 0;
+	i = 0;
 
 	while ( fname[ i ] != '\0' )
 	{
-		letter = tolower( fname[ i ] );
-		hash  += ( long )( letter ) * ( i + 119 );
+		letter = tolower ( fname[ i ] );
+		hash += ( long ) ( letter ) * ( i + 119 );
 		i++;
 	}
 
 	if ( hash == -1 )
 	{
-		hash = 0;                               // never return -1
+		hash = 0; // never return -1
 	}
 
 	return hash;
@@ -1133,7 +1133,7 @@ AnimParseAnimConfig
   returns qfalse if error, qtrue otherwise
 ============
 */
-static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *filename, const char *input )
+static qboolean AnimParseAnimConfig ( playerInfo_t *animModelInfo, const char *filename, const char *input )
 {
 	char            *text_p, *token;
 	animation_t     *animations;
@@ -1146,39 +1146,39 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 
 //  globalFilename = (char *)filename;
 
-	animations                   = animModelInfo->animations;
+	animations = animModelInfo->animations;
 	animModelInfo->numAnimations = 0;
 //  headAnims = animModelInfo->headAnims;
 
-	text_p                       = ( char * )input;
-	COM_BeginParseSession( "AnimParseAnimConfig" );
+	text_p = ( char * ) input;
+	COM_BeginParseSession ( "AnimParseAnimConfig" );
 
-	animModelInfo->footsteps     = FOOTSTEP_NORMAL;
-	VectorClear( animModelInfo->headOffset );
-	animModelInfo->gender        = GENDER_MALE;
-	animModelInfo->isSkeletal    = qfalse;
-	animModelInfo->version       = 0;
+	animModelInfo->footsteps = FOOTSTEP_NORMAL;
+	VectorClear ( animModelInfo->headOffset );
+	animModelInfo->gender = GENDER_MALE;
+	animModelInfo->isSkeletal = qfalse;
+	animModelInfo->version = 0;
 
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( &text_p );
+		token = COM_Parse ( &text_p );
 
 		if ( !token )
 		{
 			break;
 		}
 
-		if ( !Q_stricmp( token, "footsteps" ) )
+		if ( !Q_stricmp ( token, "footsteps" ) )
 		{
-			token = COM_Parse( &text_p );
+			token = COM_Parse ( &text_p );
 
 			if ( !token )
 			{
 				break;
 			}
 
-			if ( !Q_stricmp( token, "default" ) || !Q_stricmp( token, "normal" ) )
+			if ( !Q_stricmp ( token, "default" ) || !Q_stricmp ( token, "normal" ) )
 			{
 				animModelInfo->footsteps = FOOTSTEP_NORMAL;
 			}
@@ -1189,25 +1189,25 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 
 			continue;
 		}
-		else if ( !Q_stricmp( token, "headoffset" ) )
+		else if ( !Q_stricmp ( token, "headoffset" ) )
 		{
 			for ( i = 0; i < 3; i++ )
 			{
-				token = COM_Parse( &text_p );
+				token = COM_Parse ( &text_p );
 
 				if ( !token )
 				{
 					break;
 				}
 
-				animModelInfo->headOffset[ i ] = atof( token );
+				animModelInfo->headOffset[ i ] = atof ( token );
 			}
 
 			continue;
 		}
-		else if ( !Q_stricmp( token, "sex" ) )
+		else if ( !Q_stricmp ( token, "sex" ) )
 		{
-			token = COM_Parse( &text_p );
+			token = COM_Parse ( &text_p );
 
 			if ( !token )
 			{
@@ -1229,19 +1229,19 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 
 			continue;
 		}
-		else if ( !Q_stricmp( token, "version" ) )
+		else if ( !Q_stricmp ( token, "version" ) )
 		{
-			token = COM_Parse( &text_p );
+			token = COM_Parse ( &text_p );
 
 			if ( !token )
 			{
 				break;
 			}
 
-			animModelInfo->version = atoi( token );
+			animModelInfo->version = atoi ( token );
 			continue;
 		}
-		else if ( !Q_stricmp( token, "skeletal" ) )
+		else if ( !Q_stricmp ( token, "skeletal" ) )
 		{
 			animModelInfo->isSkeletal = qtrue;
 			continue;
@@ -1252,13 +1252,13 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 			// if it is a number, start parsing animations
 			if ( token[ 0 ] >= '0' && token[ 0 ] <= '9' )
 			{
-				text_p -= strlen( token );      // unget the token
+				text_p -= strlen ( token ); // unget the token
 				break;
 			}
 		}
 
 		// STARTANIMS marks the start of the animations
-		if ( !Q_stricmp( token, "STARTANIMS" ) )
+		if ( !Q_stricmp ( token, "STARTANIMS" ) )
 		{
 			break;
 		}
@@ -1269,7 +1269,7 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 	// read information for each frame
 	for ( i = 0; ( animModelInfo->version > 1 ) || ( i < MAX_ANIMATIONS ); i++ )
 	{
-		token = COM_Parse( &text_p );
+		token = COM_Parse ( &text_p );
 
 		if ( !token )
 		{
@@ -1279,17 +1279,17 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 		if ( animModelInfo->version > 1 )
 		{
 			// includes animation names at start of each line
-			if ( !Q_stricmp( token, "ENDANIMS" ) )
+			if ( !Q_stricmp ( token, "ENDANIMS" ) )
 			{
 				// end of animations
 				break;
 			}
 
-			Q_strncpyz( animations[ i ].name, token, sizeof( animations[ i ].name ) );
+			Q_strncpyz ( animations[ i ].name, token, sizeof ( animations[ i ].name ) );
 			// convert to all lower case
-			Q_strlwr( animations[ i ].name );
+			Q_strlwr ( animations[ i ].name );
 			//
-			token = COM_ParseExt( &text_p, qfalse );
+			token = COM_ParseExt ( &text_p, qfalse );
 
 			if ( !token || !token[ 0 ] )
 			{
@@ -1299,12 +1299,12 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 		else
 		{
 			// just set it to the equivalent animStrings[]
-			Q_strncpyz( animations[ i ].name, animStrings[ i ], sizeof( animations[ i ].name ) );
+			Q_strncpyz ( animations[ i ].name, animStrings[ i ], sizeof ( animations[ i ].name ) );
 			// convert to all lower case
-			Q_strlwr( animations[ i ].name );
+			Q_strlwr ( animations[ i ].name );
 		}
 
-		animations[ i ].firstFrame = atoi( token );
+		animations[ i ].firstFrame = atoi ( token );
 
 		if ( !animModelInfo->isSkeletal )
 		{
@@ -1321,53 +1321,53 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 			}
 		}
 
-		token = COM_ParseExt( &text_p, qfalse );
+		token = COM_ParseExt ( &text_p, qfalse );
 
 		if ( !token || !token[ 0 ] )
 		{
 //          BG_AnimParseError( "end of file without ENDANIMS" );
 		}
 
-		animations[ i ].numFrames = atoi( token );
+		animations[ i ].numFrames = atoi ( token );
 
-		token                     = COM_ParseExt( &text_p, qfalse );
-
-		if ( !token || !token[ 0 ] )
-		{
-//          BG_AnimParseError( "end of file without ENDANIMS: line %i" );
-		}
-
-		animations[ i ].loopFrames = atoi( token );
-
-		token                      = COM_ParseExt( &text_p, qfalse );
+		token = COM_ParseExt ( &text_p, qfalse );
 
 		if ( !token || !token[ 0 ] )
 		{
 //          BG_AnimParseError( "end of file without ENDANIMS: line %i" );
 		}
 
-		fps = atof( token );
+		animations[ i ].loopFrames = atoi ( token );
+
+		token = COM_ParseExt ( &text_p, qfalse );
+
+		if ( !token || !token[ 0 ] )
+		{
+//          BG_AnimParseError( "end of file without ENDANIMS: line %i" );
+		}
+
+		fps = atof ( token );
 
 		if ( fps == 0 )
 		{
 			fps = 1;
 		}
 
-		animations[ i ].frameLerp   = 1000 / fps;
+		animations[ i ].frameLerp = 1000 / fps;
 		animations[ i ].initialLerp = 1000 / fps;
 
 		// movespeed
-		token                       = COM_ParseExt( &text_p, qfalse );
+		token = COM_ParseExt ( &text_p, qfalse );
 
 		if ( !token || !token[ 0 ] )
 		{
 //          BG_AnimParseError( "end of file without ENDANIMS" );
 		}
 
-		animations[ i ].moveSpeed = atoi( token );
+		animations[ i ].moveSpeed = atoi ( token );
 
 		// animation blending
-		token                     = COM_ParseExt( &text_p, qfalse ); // must be on same line
+		token = COM_ParseExt ( &text_p, qfalse ); // must be on same line
 
 		if ( !token )
 		{
@@ -1375,7 +1375,7 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 		}
 		else
 		{
-			animations[ i ].animBlend = atoi( token );
+			animations[ i ].animBlend = atoi ( token );
 		}
 
 		// calculate the duration
@@ -1383,16 +1383,16 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 		                           + animations[ i ].frameLerp * animations[ i ].numFrames + animations[ i ].animBlend;
 
 		// get the nameHash
-		animations[ i ].nameHash = UI_StringHashValue( animations[ i ].name );
+		animations[ i ].nameHash = UI_StringHashValue ( animations[ i ].name );
 
-		if ( !Q_strncmp( animations[ i ].name, "climb", 5 ) )
+		if ( !Q_strncmp ( animations[ i ].name, "climb", 5 ) )
 		{
 			animations[ i ].flags |= ANIMFL_LADDERANIM;
 		}
 
-		if ( strstr( animations[ i ].name, "firing" ) )
+		if ( strstr ( animations[ i ].name, "firing" ) )
 		{
-			animations[ i ].flags      |= ANIMFL_FIRINGANIM;
+			animations[ i ].flags |= ANIMFL_FIRINGANIM;
 			animations[ i ].initialLerp = 40;
 		}
 	}
@@ -1405,19 +1405,19 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 		return qfalse;
 	}
 
-	return qtrue;                           // NERVE - SMF - blah
+	return qtrue; // NERVE - SMF - blah
 
 	// check for head anims
-	token = COM_Parse( &text_p );
+	token = COM_Parse ( &text_p );
 
 	if ( token && token[ 0 ] )
 	{
-		if ( animModelInfo->version < 2 || !Q_stricmp( token, "HEADFRAMES" ) )
+		if ( animModelInfo->version < 2 || !Q_stricmp ( token, "HEADFRAMES" ) )
 		{
 			// read information for each head frame
 			for ( i = 0; i < MAX_HEAD_ANIMS; i++ )
 			{
-				token = COM_Parse( &text_p );
+				token = COM_Parse ( &text_p );
 
 				if ( !token || !token[ 0 ] )
 				{
@@ -1428,7 +1428,7 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 				{
 					// includes animation names at start of each line
 					// just throw this information away, not required for head
-					token = COM_ParseExt( &text_p, qfalse );
+					token = COM_ParseExt ( &text_p, qfalse );
 
 					if ( !token || !token[ 0 ] )
 					{
@@ -1438,25 +1438,25 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 
 				if ( !i )
 				{
-					skip = atoi( token );
+					skip = atoi ( token );
 				}
 
-				headAnims[ i ].firstFrame  = atoi( token );
+				headAnims[ i ].firstFrame = atoi ( token );
 				// modify according to last frame of the main animations, since the head is totally seperate
 				headAnims[ i ].firstFrame -=
 				  animations[ MAX_ANIMATIONS - 1 ].firstFrame + animations[ MAX_ANIMATIONS - 1 ].numFrames + skip;
 
-				token                      = COM_ParseExt( &text_p, qfalse );
+				token = COM_ParseExt ( &text_p, qfalse );
 
 				if ( !token || !token[ 0 ] )
 				{
 					break;
 				}
 
-				headAnims[ i ].numFrames = atoi( token );
+				headAnims[ i ].numFrames = atoi ( token );
 
 				// skip the movespeed
-				token                    = COM_ParseExt( &text_p, qfalse );
+				token = COM_ParseExt ( &text_p, qfalse );
 			}
 
 //          animModelInfo->numHeadAnims = i;
@@ -1477,7 +1477,7 @@ static qboolean AnimParseAnimConfig( playerInfo_t *animModelInfo, const char *fi
 UI_ParseAnimationFile
 ======================
 */
-static qboolean UI_ParseAnimationFile( const char *filename, playerInfo_t *pi )
+static qboolean UI_ParseAnimationFile ( const char *filename, playerInfo_t *pi )
 {
 	char         *text_p, *prev;
 	int          len;
@@ -1489,36 +1489,36 @@ static qboolean UI_ParseAnimationFile( const char *filename, playerInfo_t *pi )
 	fileHandle_t f;
 
 	token = NULL;
-	i     = 0;
-	fps   = 0;
-	prev  = 0;
+	i = 0;
+	fps = 0;
+	prev = 0;
 
-	memset( pi->animations, 0, sizeof( animation_t ) * MAX_ANIMATIONS );
+	memset ( pi->animations, 0, sizeof ( animation_t ) * MAX_ANIMATIONS );
 
 	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	len = trap_FS_FOpenFile ( filename, &f, FS_READ );
 
 	if ( len <= 0 )
 	{
 		return qfalse;
 	}
 
-	if ( len >= ( sizeof( text ) - 1 ) )
+	if ( len >= ( sizeof ( text ) - 1 ) )
 	{
-		Com_Printf( "File %s too long\n", filename );
+		Com_Printf ( "File %s too long\n", filename );
 		return qfalse;
 	}
 
-	trap_FS_Read( text, len, f );
+	trap_FS_Read ( text, len, f );
 	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
+	trap_FS_FCloseFile ( f );
 
 	// parse the text
 	text_p = text;
-	skip   = 0;                                     // quite the compiler warning
+	skip = 0; // quite the compiler warning
 
 	// NERVE - SMF - new!!!!
-	AnimParseAnimConfig( pi, filename, text );
+	AnimParseAnimConfig ( pi, filename, text );
 	return qtrue;
 
 	// -NERVE - SMF - This does not work with wolf's new animation system
@@ -1618,42 +1618,42 @@ UI_RegisterClientModelname
 */
 int WM_getWeaponIndex();
 
-qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName )
+qboolean UI_RegisterClientModelname ( playerInfo_t *pi, const char *modelSkinName )
 {
 	char       modelName[ MAX_QPATH ];
 	char       skinName[ MAX_QPATH ];
 	char       filename[ MAX_QPATH ];
 	char       *slash;
 	const char *backpack = NULL;
-	const char *helmet   = NULL;
+	const char *helmet = NULL;
 
 	pi->torsoModel = 0;
-	pi->headModel  = 0;
+	pi->headModel = 0;
 
 	if ( !modelSkinName[ 0 ] )
 	{
 		return qfalse;
 	}
 
-	Q_strncpyz( modelName, modelSkinName, sizeof( modelName ) );
+	Q_strncpyz ( modelName, modelSkinName, sizeof ( modelName ) );
 
-	slash = strchr( modelName, '/' );
+	slash = strchr ( modelName, '/' );
 
 	if ( !slash )
 	{
 		// modelName did not include a skin name
-		Q_strncpyz( skinName, "default", sizeof( skinName ) );
+		Q_strncpyz ( skinName, "default", sizeof ( skinName ) );
 	}
 	else
 	{
-		Q_strncpyz( skinName, slash + 1, sizeof( skinName ) );
+		Q_strncpyz ( skinName, slash + 1, sizeof ( skinName ) );
 		// truncate modelName
 		*slash = 0;
 	}
 
 	// NERVE - SMF - set weapon
-	pi->weapon = trap_Cvar_VariableValue( "mp_weapon" );
-	UI_PlayerInfo_SetWeapon( pi, pi->weapon );
+	pi->weapon = trap_Cvar_VariableValue ( "mp_weapon" );
+	UI_PlayerInfo_SetWeapon ( pi, pi->weapon );
 
 	// NERVE - SMF - determine skin
 	{
@@ -1663,18 +1663,18 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 
 		// DHM - Nerve :: Don't rely on cvar for team, use modelname instead
 		//teamval = trap_Cvar_VariableValue( "mp_team" );
-		if ( !strcmp( modelSkinName, "multi" ) )
+		if ( !strcmp ( modelSkinName, "multi" ) )
 		{
 			teamval = 1;
-			team    = "blue";
+			team = "blue";
 		}
 		else
 		{
 			teamval = 0;
-			team    = "red";
+			team = "red";
 		}
 
-		var = trap_Cvar_VariableValue( "mp_playerType" );
+		var = trap_Cvar_VariableValue ( "mp_playerType" );
 
 		if ( var == 0 )
 		{
@@ -1683,12 +1683,12 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 			if ( teamval == 1 )
 			{
 				backpack = "acc/backpack/backpack_sol.md3";
-				helmet   = "acc/helmet_american/sol.md3";
+				helmet = "acc/helmet_american/sol.md3";
 			}
 			else
 			{
 				backpack = "acc/backpack/backpack_german_sol.md3";
-				helmet   = "acc/helmet_german/helmet_sol.md3";
+				helmet = "acc/helmet_german/helmet_sol.md3";
 			}
 		}
 		else if ( var == 1 )
@@ -1698,12 +1698,12 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 			if ( teamval == 1 )
 			{
 				backpack = "acc/backpack/backpack_med.md3";
-				helmet   = "acc/helmet_american/med.md3";
+				helmet = "acc/helmet_american/med.md3";
 			}
 			else
 			{
 				backpack = "acc/backpack/backpack_german_med.md3";
-				helmet   = "acc/helmet_german/helmet_med.md3";
+				helmet = "acc/helmet_german/helmet_med.md3";
 			}
 		}
 		else if ( var == 2 )
@@ -1713,12 +1713,12 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 			if ( teamval == 1 )
 			{
 				backpack = "acc/backpack/backpack_eng.md3";
-				helmet   = "acc/helmet_american/eng.md3";
+				helmet = "acc/helmet_american/eng.md3";
 			}
 			else
 			{
 				backpack = "acc/backpack/backpack_german_eng.md3";
-				helmet   = "acc/helmet_german/helmet_eng.md3";
+				helmet = "acc/helmet_german/helmet_eng.md3";
 			}
 		}
 		else if ( var == 4 )
@@ -1728,12 +1728,12 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 			if ( teamval == 1 )
 			{
 				backpack = "acc/backpack/backpack_cvops.md3";
-				helmet   = "acc/helmet_american/cvops.md3";
+				helmet = "acc/helmet_american/cvops.md3";
 			}
 			else
 			{
 				backpack = "acc/backpack/backpack_german_cvops.md3";
-				helmet   = "acc/helmet_german/helmet_cvops.md3";
+				helmet = "acc/helmet_german/helmet_cvops.md3";
 			}
 		}
 		else
@@ -1743,16 +1743,16 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 			if ( teamval == 1 )
 			{
 				backpack = "acc/backpack/backpack_lieu.md3";
-				helmet   = "acc/helmet_american/lieu.md3";
+				helmet = "acc/helmet_american/lieu.md3";
 			}
 			else
 			{
 				backpack = "acc/backpack/backpack_german_lieu.md3";
-				helmet   = "acc/helmet_german/helmet_leiu.md3";
+				helmet = "acc/helmet_german/helmet_leiu.md3";
 			}
 		}
 
-		strcpy( skinName, va( "%s%s1", team, playerClass ) );
+		strcpy ( skinName, va ( "%s%s1", team, playerClass ) );
 	}
 	// -NERVE - SMF
 
@@ -1765,51 +1765,51 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 	// load cmodels before models so filecache works
 
 //  Com_sprintf( filename, sizeof( filename ), "models/players/%s/lower.md3", modelName );
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.mds", modelName );     // NERVE - SMF - make this work with wolf
-	pi->legsModel = trap_R_RegisterModel( filename );
+	Com_sprintf ( filename, sizeof ( filename ), "models/players/%s/body.mds", modelName ); // NERVE - SMF - make this work with wolf
+	pi->legsModel = trap_R_RegisterModel ( filename );
 
 	if ( !pi->legsModel )
 	{
-		Com_Printf( "Failed to load model file %s\n", filename );
+		Com_Printf ( "Failed to load model file %s\n", filename );
 		return qfalse;
 	}
 
 //  Com_sprintf( filename, sizeof( filename ), "models/players/%s/upper.md3", modelName );
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.mds", modelName );     // NERVE - SMF - make this work with wolf
-	pi->torsoModel = trap_R_RegisterModel( filename );
+	Com_sprintf ( filename, sizeof ( filename ), "models/players/%s/body.mds", modelName ); // NERVE - SMF - make this work with wolf
+	pi->torsoModel = trap_R_RegisterModel ( filename );
 
 	if ( !pi->torsoModel )
 	{
-		Com_Printf( "Failed to load model file %s\n", filename );
+		Com_Printf ( "Failed to load model file %s\n", filename );
 		return qfalse;
 	}
 
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/head.md3", modelName );
-	pi->headModel = trap_R_RegisterModel( filename );
+	Com_sprintf ( filename, sizeof ( filename ), "models/players/%s/head.md3", modelName );
+	pi->headModel = trap_R_RegisterModel ( filename );
 
 	if ( !pi->headModel )
 	{
-		Com_Printf( "Failed to load model file %s\n", filename );
+		Com_Printf ( "Failed to load model file %s\n", filename );
 		return qfalse;
 	}
 
 	// NERVE - SMF - load backpack and helmet
 	if ( backpack )
 	{
-		pi->backpackModel = trap_R_RegisterModel( va( "models/players/%s/%s", modelName, backpack ) );
+		pi->backpackModel = trap_R_RegisterModel ( va ( "models/players/%s/%s", modelName, backpack ) );
 	}
 
 	if ( helmet )
 	{
-		pi->helmetModel = trap_R_RegisterModel( va( "models/players/%s/%s", modelName, helmet ) );
+		pi->helmetModel = trap_R_RegisterModel ( va ( "models/players/%s/%s", modelName, helmet ) );
 	}
 
 	// if any skins failed to load, fall back to default
-	if ( !UI_RegisterClientSkin( pi, modelName, skinName ) )
+	if ( !UI_RegisterClientSkin ( pi, modelName, skinName ) )
 	{
-		if ( !UI_RegisterClientSkin( pi, modelName, "default" ) )
+		if ( !UI_RegisterClientSkin ( pi, modelName, "default" ) )
 		{
-			Com_Printf( "Failed to load skin file: %s : %s\n", modelName, skinName );
+			Com_Printf ( "Failed to load skin file: %s : %s\n", modelName, skinName );
 			return qfalse;
 		}
 	}
@@ -1817,13 +1817,13 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 	// load the animations
 //----(SA) changing name of config file to avoid backwards or alternate compatibility confustion
 //  Com_sprintf( filename, sizeof( filename ), "models/players/%s/animation.cfg", modelName );
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/wolfanim.cfg", modelName );
+	Com_sprintf ( filename, sizeof ( filename ), "models/players/%s/wolfanim.cfg", modelName );
 
 //----(SA) end
-	if ( !UI_ParseAnimationFile( filename, pi ) )
+	if ( !UI_ParseAnimationFile ( filename, pi ) )
 	{
 		// NERVE - SMF - make this work with wolf
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		Com_Printf ( "Failed to load animation file %s\n", filename );
 		return qfalse;
 	}
 
@@ -1835,19 +1835,19 @@ qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName
 UI_PlayerInfo_SetModel
 ===============
 */
-void UI_PlayerInfo_SetModel( playerInfo_t *pi, const char *model )
+void UI_PlayerInfo_SetModel ( playerInfo_t *pi, const char *model )
 {
-	memset( pi, 0, sizeof( *pi ) );
-	UI_RegisterClientModelname( pi, model );
+	memset ( pi, 0, sizeof ( *pi ) );
+	UI_RegisterClientModelname ( pi, model );
 //  pi->weapon = WP_MACHINEGUN;
 //  pi->weapon = WP_MP40;
 	pi->currentWeapon = pi->weapon;
-	pi->lastWeapon    = pi->weapon;
+	pi->lastWeapon = pi->weapon;
 	pi->pendingWeapon = -1;
-	pi->weaponTimer   = 0;
-	pi->chat          = qfalse;
-	pi->newModel      = qtrue;
-	UI_PlayerInfo_SetWeapon( pi, pi->weapon );
+	pi->weaponTimer = 0;
+	pi->chat = qfalse;
+	pi->newModel = qtrue;
+	UI_PlayerInfo_SetWeapon ( pi, pi->weapon );
 }
 
 /*
@@ -1855,8 +1855,8 @@ void UI_PlayerInfo_SetModel( playerInfo_t *pi, const char *model )
 UI_PlayerInfo_SetInfo
 ===============
 */
-void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles,
-                            weapon_t weaponNumber, qboolean chat )
+void UI_PlayerInfo_SetInfo ( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles,
+                             weapon_t weaponNumber, qboolean chat )
 {
 	int      currentAnim;
 	weapon_t weaponNum;
@@ -1864,34 +1864,34 @@ void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_
 	pi->chat = chat;
 
 	// view angles
-	VectorCopy( viewAngles, pi->viewAngles );
+	VectorCopy ( viewAngles, pi->viewAngles );
 
 	// move angles
-	VectorCopy( moveAngles, pi->moveAngles );
+	VectorCopy ( moveAngles, pi->moveAngles );
 
 	if ( pi->newModel )
 	{
-		pi->newModel         = qfalse;
+		pi->newModel = qfalse;
 
-		jumpHeight           = 0;
-		pi->pendingLegsAnim  = 0;
-		UI_ForceLegsAnim( pi, legsAnim );
-		pi->legs.yawAngle    = viewAngles[ YAW ];
-		pi->legs.yawing      = qfalse;
+		jumpHeight = 0;
+		pi->pendingLegsAnim = 0;
+		UI_ForceLegsAnim ( pi, legsAnim );
+		pi->legs.yawAngle = viewAngles[ YAW ];
+		pi->legs.yawing = qfalse;
 
 		pi->pendingTorsoAnim = 0;
-		UI_ForceTorsoAnim( pi, torsoAnim );
-		pi->torso.yawAngle   = viewAngles[ YAW ];
-		pi->torso.yawing     = qfalse;
+		UI_ForceTorsoAnim ( pi, torsoAnim );
+		pi->torso.yawAngle = viewAngles[ YAW ];
+		pi->torso.yawing = qfalse;
 
 		if ( weaponNumber != -1 )
 		{
-			pi->weapon        = weaponNumber;
+			pi->weapon = weaponNumber;
 			pi->currentWeapon = weaponNumber;
-			pi->lastWeapon    = weaponNumber;
+			pi->lastWeapon = weaponNumber;
 			pi->pendingWeapon = -1;
-			pi->weaponTimer   = 0;
-			UI_PlayerInfo_SetWeapon( pi, pi->weapon );
+			pi->weaponTimer = 0;
+			UI_PlayerInfo_SetWeapon ( pi, pi->weapon );
 		}
 
 		return;
@@ -1901,29 +1901,29 @@ void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_
 	if ( weaponNumber == -1 )
 	{
 		pi->pendingWeapon = -1;
-		pi->weaponTimer   = 0;
+		pi->weaponTimer = 0;
 	}
 	else if ( weaponNumber != WP_NONE )
 	{
 		pi->pendingWeapon = weaponNumber;
-		pi->weaponTimer   = dp_realtime + UI_TIMER_WEAPON_DELAY;
+		pi->weaponTimer = dp_realtime + UI_TIMER_WEAPON_DELAY;
 	}
 
-	weaponNum  = pi->lastWeapon;
+	weaponNum = pi->lastWeapon;
 	pi->weapon = weaponNum;
 
 	if ( torsoAnim == BOTH_DEATH1 || legsAnim == BOTH_DEATH1 )
 	{
-		torsoAnim            = legsAnim = BOTH_DEATH1;
-		pi->weapon           = pi->currentWeapon = WP_NONE;
-		UI_PlayerInfo_SetWeapon( pi, pi->weapon );
+		torsoAnim = legsAnim = BOTH_DEATH1;
+		pi->weapon = pi->currentWeapon = WP_NONE;
+		UI_PlayerInfo_SetWeapon ( pi, pi->weapon );
 
-		jumpHeight           = 0;
-		pi->pendingLegsAnim  = 0;
-		UI_ForceLegsAnim( pi, legsAnim );
+		jumpHeight = 0;
+		pi->pendingLegsAnim = 0;
+		UI_ForceLegsAnim ( pi, legsAnim );
 
 		pi->pendingTorsoAnim = 0;
-		UI_ForceTorsoAnim( pi, torsoAnim );
+		UI_ForceTorsoAnim ( pi, torsoAnim );
 
 		return;
 	}
@@ -1937,9 +1937,9 @@ void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_
 	}
 	else if ( legsAnim != currentAnim )
 	{
-		jumpHeight          = 0;
+		jumpHeight = 0;
 		pi->pendingLegsAnim = 0;
-		UI_ForceLegsAnim( pi, legsAnim );
+		UI_ForceLegsAnim ( pi, legsAnim );
 	}
 
 	// torso animation
@@ -1983,6 +1983,6 @@ void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_
 	else if ( torsoAnim != currentAnim )
 	{
 		pi->pendingTorsoAnim = 0;
-		UI_ForceTorsoAnim( pi, torsoAnim );
+		UI_ForceTorsoAnim ( pi, torsoAnim );
 	}
 }

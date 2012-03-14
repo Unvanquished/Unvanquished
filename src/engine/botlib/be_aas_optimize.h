@@ -40,6 +40,6 @@ Maryland 20850 USA.
  *
  *****************************************************************************/
 
-void AAS_Optimize( void );
-void AAS_RemoveNonReachability( void );
-void AAS_RemoveNonGrounded( void );
+void AAS_Optimize ( void );
+void AAS_RemoveNonReachability ( void );
+void AAS_RemoveNonGrounded ( void );

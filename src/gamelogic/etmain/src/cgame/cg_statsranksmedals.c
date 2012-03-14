@@ -104,13 +104,13 @@ rankicon_t rankicons[ NUM_EXPERIENCE_LEVELS ][ 2 ] =
 	,
 };
 
-void CG_LoadRankIcons( void )
+void CG_LoadRankIcons ( void )
 {
 	int i;
 
 	for ( i = 1; i < NUM_EXPERIENCE_LEVELS; i++ )
 	{
-		rankicons[ i ][ 0 ].shader = trap_R_RegisterShaderNoMip( rankicons[ i ][ 0 ].iconname );
-		rankicons[ i ][ 1 ].shader = trap_R_RegisterShaderNoMip( rankicons[ i ][ 1 ].iconname );
+		rankicons[ i ][ 0 ].shader = trap_R_RegisterShaderNoMip ( rankicons[ i ][ 0 ].iconname );
+		rankicons[ i ][ 1 ].shader = trap_R_RegisterShaderNoMip ( rankicons[ i ][ 1 ].iconname );
 	}
 }

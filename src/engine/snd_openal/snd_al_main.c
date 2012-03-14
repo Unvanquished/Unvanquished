@@ -73,8 +73,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 sndexport_t se;
 sndimport_t si;
 
-void        S_Play_f( void );
-void        S_Music_f( void );
+void        S_Play_f ( void );
+void        S_Music_f ( void );
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
@@ -83,7 +83,7 @@ void        S_Music_f( void );
 /*
  * Util
  */
-ALuint al_format( int width, int channels )
+ALuint al_format ( int width, int channels )
 {
 	ALuint format = AL_FORMAT_MONO16;
 
@@ -117,7 +117,7 @@ ALuint al_format( int width, int channels )
 /*
  * OpenAL error messages
  */
-char *al_errormsg( ALenum error )
+char *al_errormsg ( ALenum error )
 {
 	switch ( error )
 	{
@@ -187,37 +187,37 @@ cvar_t *s_alDriver;
 #endif
 #endif // USE_OPENAL_DLOPEN
 
-qboolean SndAl_Init( void )
+qboolean SndAl_Init ( void )
 {
 	const char *device = NULL;
 	// Original console variables
-	s_volume        = si.Cvar_Get ( "s_volume", "0.8", CVAR_ARCHIVE );
-	s_musicVolume   = si.Cvar_Get ( "s_musicvolume", "0.25", CVAR_ARCHIVE );
-	s_doppler       = si.Cvar_Get ( "s_doppler", "1", CVAR_ARCHIVE );
+	s_volume = si.Cvar_Get ( "s_volume", "0.8", CVAR_ARCHIVE );
+	s_musicVolume = si.Cvar_Get ( "s_musicvolume", "0.25", CVAR_ARCHIVE );
+	s_doppler = si.Cvar_Get ( "s_doppler", "1", CVAR_ARCHIVE );
 
 	// New console variables
-	s_precache      = si.Cvar_Get ( "al_precache", "1", CVAR_ARCHIVE );
-	s_gain          = si.Cvar_Get ( "al_gain", "0.4", CVAR_ARCHIVE );
-	s_sources       = si.Cvar_Get ( "al_sources", "64", CVAR_ARCHIVE );
+	s_precache = si.Cvar_Get ( "al_precache", "1", CVAR_ARCHIVE );
+	s_gain = si.Cvar_Get ( "al_gain", "0.4", CVAR_ARCHIVE );
+	s_sources = si.Cvar_Get ( "al_sources", "64", CVAR_ARCHIVE );
 	s_dopplerFactor = si.Cvar_Get ( "al_dopplerfactor", "1.0", CVAR_ARCHIVE );
-	s_dopplerSpeed  = si.Cvar_Get ( "al_dopplerspeed", "2200", CVAR_ARCHIVE );
-	s_minDistance   = si.Cvar_Get ( "al_mindistance", "80", CVAR_ARCHIVE );
-	s_rolloff       = si.Cvar_Get ( "al_rolloff", "0.25", CVAR_ARCHIVE );
-	s_alDevice      = si.Cvar_Get( "al_device", "", CVAR_ARCHIVE | CVAR_LATCH );
+	s_dopplerSpeed = si.Cvar_Get ( "al_dopplerspeed", "2200", CVAR_ARCHIVE );
+	s_minDistance = si.Cvar_Get ( "al_mindistance", "80", CVAR_ARCHIVE );
+	s_rolloff = si.Cvar_Get ( "al_rolloff", "0.25", CVAR_ARCHIVE );
+	s_alDevice = si.Cvar_Get ( "al_device", "", CVAR_ARCHIVE | CVAR_LATCH );
 #ifdef USE_OPENAL_DLOPEN
-	s_alDriver      = si.Cvar_Get ( "al_driver", ALDRIVER_DEFAULT, CVAR_ARCHIVE );
-#endif  // USE_OPENAL_DLOPEN
+	s_alDriver = si.Cvar_Get ( "al_driver", ALDRIVER_DEFAULT, CVAR_ARCHIVE );
+#endif // USE_OPENAL_DLOPEN
 
 #ifdef USE_OPENAL_DLOPEN
 
 	// Load QAL
-	if ( !QAL_Init( s_alDriver->string ) )
+	if ( !QAL_Init ( s_alDriver->string ) )
 	{
-		si.Printf( PRINT_ALL, "not initializing.\n" );
+		si.Printf ( PRINT_ALL, "not initializing.\n" );
 		return qfalse;
 	}
 
-#endif  // USE_OPENAL_DLOPEN
+#endif // USE_OPENAL_DLOPEN
 	// Open default device
 	device = s_alDevice->string;
 
@@ -226,7 +226,7 @@ qboolean SndAl_Init( void )
 		device = NULL;
 	}
 
-	if ( qalcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" ) )
+	if ( qalcIsExtensionPresent ( NULL, "ALC_ENUMERATION_EXT" ) )
 	{
 		char       devicenames[ 1024 ] = "";
 		const char *devicelist;
@@ -236,15 +236,15 @@ qboolean SndAl_Init( void )
 		int        curlen;
 
 		// get all available devices + the default device name.
-		devicelist    = qalcGetString( NULL, ALC_DEVICE_SPECIFIER );
+		devicelist = qalcGetString ( NULL, ALC_DEVICE_SPECIFIER );
 #ifdef _WIN32
-		defaultdevice = qalcGetString( NULL, ALC_DEFAULT_DEVICE_SPECIFIER );
+		defaultdevice = qalcGetString ( NULL, ALC_DEFAULT_DEVICE_SPECIFIER );
 
 		// check whether the default device is generic hardware. If it is, change to
 		// Generic Software as that one works more reliably with various sound systems.
 		// If it's not, use OpenAL's default selection as we don't want to ignore
 		// native hardware acceleration.
-		if ( !device && !strcmp( defaultdevice, "Generic Hardware" ) )
+		if ( !device && !strcmp ( defaultdevice, "Generic Hardware" ) )
 		{
 			device = "Generic Software";
 		}
@@ -254,24 +254,24 @@ qboolean SndAl_Init( void )
 		// dump a list of available devices to a cvar for the user to see.
 #ifndef MACOS_X
 
-		while ( ( curlen = strlen( devicelist ) ) )
+		while ( ( curlen = strlen ( devicelist ) ) )
 		{
-			strcat( devicenames, devicelist );
-			strcat( devicenames, "\n" );
+			strcat ( devicenames, devicelist );
+			strcat ( devicenames, "\n" );
 
 			devicelist += curlen + 1;
 		}
 
 #endif
-		s_alAvailableDevices = si.Cvar_Get( "al_AvailableDevices", devicenames, CVAR_ROM | CVAR_NORESTART );
+		s_alAvailableDevices = si.Cvar_Get ( "al_AvailableDevices", devicenames, CVAR_ROM | CVAR_NORESTART );
 	}
 
-	alDevice = qalcOpenDevice( device );
+	alDevice = qalcOpenDevice ( device );
 
 	if ( !alDevice && device )
 	{
-		si.Printf( PRINT_ALL,  "Failed to open OpenAL device '%s', trying default.\n", device );
-		alDevice = qalcOpenDevice( NULL );
+		si.Printf ( PRINT_ALL,  "Failed to open OpenAL device '%s', trying default.\n", device );
+		alDevice = qalcOpenDevice ( NULL );
 	}
 
 	if ( !alDevice )
@@ -279,42 +279,42 @@ qboolean SndAl_Init( void )
 #ifdef USE_OPENAL_DLOPEN
 		QAL_Shutdown();
 #endif
-		si.Printf( PRINT_ALL,  "Failed to open OpenAL device.\n" );
+		si.Printf ( PRINT_ALL,  "Failed to open OpenAL device.\n" );
 		return qfalse;
 	}
 
 	// Create OpenAL context
-	alContext = qalcCreateContext( alDevice, NULL );
+	alContext = qalcCreateContext ( alDevice, NULL );
 
 	if ( !alContext )
 	{
 #ifdef USE_OPENAL_DLOPEN
 		QAL_Shutdown();
 #endif
-		qalcCloseDevice( alDevice );
-		si.Printf( PRINT_ALL, "Failed to create context\n" );
+		qalcCloseDevice ( alDevice );
+		si.Printf ( PRINT_ALL, "Failed to create context\n" );
 		return qfalse;
 	}
 
-	qalcMakeContextCurrent( alContext );
-	qalcProcessContext( alContext );
+	qalcMakeContextCurrent ( alContext );
+	qalcProcessContext ( alContext );
 
 	// Print OpenAL information
-	si.Printf( PRINT_ALL, "OpenAL initialised\n" );
-	si.Printf( PRINT_ALL, "  Vendor:     %s\n", qalGetString( AL_VENDOR ) );
-	si.Printf( PRINT_ALL, "  Version:    %s\n", qalGetString( AL_VERSION ) );
-	si.Printf( PRINT_ALL, "  Renderer:   %s\n", qalGetString( AL_RENDERER ) );
-	si.Printf( PRINT_ALL, "  AL Extensions: %s\n", qalGetString( AL_EXTENSIONS ) );
-	si.Printf( PRINT_ALL,  "  ALC Extensions: %s\n", qalcGetString( alDevice, ALC_EXTENSIONS ) );
+	si.Printf ( PRINT_ALL, "OpenAL initialised\n" );
+	si.Printf ( PRINT_ALL, "  Vendor:     %s\n", qalGetString ( AL_VENDOR ) );
+	si.Printf ( PRINT_ALL, "  Version:    %s\n", qalGetString ( AL_VERSION ) );
+	si.Printf ( PRINT_ALL, "  Renderer:   %s\n", qalGetString ( AL_RENDERER ) );
+	si.Printf ( PRINT_ALL, "  AL Extensions: %s\n", qalGetString ( AL_EXTENSIONS ) );
+	si.Printf ( PRINT_ALL,  "  ALC Extensions: %s\n", qalcGetString ( alDevice, ALC_EXTENSIONS ) );
 
-	if ( qalcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" ) )
+	if ( qalcIsExtensionPresent ( NULL, "ALC_ENUMERATION_EXT" ) )
 	{
-		si.Printf( PRINT_ALL, "  Device:     %s\n", qalcGetString( alDevice, ALC_DEVICE_SPECIFIER ) );
-		si.Printf( PRINT_ALL, "Available Devices:\n%s", s_alAvailableDevices->string );
+		si.Printf ( PRINT_ALL, "  Device:     %s\n", qalcGetString ( alDevice, ALC_DEVICE_SPECIFIER ) );
+		si.Printf ( PRINT_ALL, "Available Devices:\n%s", s_alAvailableDevices->string );
 	}
 
 	// Check for Linux shutdown race condition
-	if ( !strcmp( qalGetString( AL_VENDOR ), "J. Valenzuela" ) )
+	if ( !strcmp ( qalGetString ( AL_VENDOR ), "J. Valenzuela" ) )
 	{
 		snd_shutdown_bug = qtrue;
 	}
@@ -324,27 +324,27 @@ qboolean SndAl_Init( void )
 	al_src_init();
 
 	// Set up OpenAL parameters (doppler, etc)
-	qalDistanceModel( AL_INVERSE_DISTANCE_CLAMPED );
-	qalDopplerFactor( s_dopplerFactor->value );
-	qalDopplerVelocity( s_dopplerSpeed->value );;
+	qalDistanceModel ( AL_INVERSE_DISTANCE_CLAMPED );
+	qalDopplerFactor ( s_dopplerFactor->value );
+	qalDopplerVelocity ( s_dopplerSpeed->value );;
 
 	// Add commands
-	si.Cmd_AddCommand( "play", S_Play_f );
-	si.Cmd_AddCommand( "music", S_Music_f );
+	si.Cmd_AddCommand ( "play", S_Play_f );
+	si.Cmd_AddCommand ( "music", S_Music_f );
 #ifdef USE_VOIP
-	SndAl_InitCapture( qtrue );
+	SndAl_InitCapture ( qtrue );
 #endif
 
 	// Init successful
-	si.Printf( PRINT_ALL, "initialization successful\n" );
+	si.Printf ( PRINT_ALL, "initialization successful\n" );
 	return qtrue;
 }
 
-void SndAl_Shutdown( void )
+void SndAl_Shutdown ( void )
 {
 	// Remove commands
-	si.Cmd_RemoveCommand( "music" );
-	si.Cmd_RemoveCommand( "play" );
+	si.Cmd_RemoveCommand ( "music" );
+	si.Cmd_RemoveCommand ( "play" );
 
 	// Shut down everything
 	al_stream_die();
@@ -354,20 +354,20 @@ void SndAl_Shutdown( void )
 
 	if ( !snd_shutdown_bug )
 	{
-		qalcMakeContextCurrent( NULL );
+		qalcMakeContextCurrent ( NULL );
 	}
 
-	qalcDestroyContext( alContext );
-	qalcCloseDevice( alDevice );
+	qalcDestroyContext ( alContext );
+	qalcCloseDevice ( alDevice );
 
 #ifdef USE_VOIP
 
 	if ( alCaptureDevice != NULL )
 	{
-		qalcCaptureStop( alCaptureDevice );
-		qalcCaptureCloseDevice( alCaptureDevice );
+		qalcCaptureStop ( alCaptureDevice );
+		qalcCaptureCloseDevice ( alCaptureDevice );
 		alCaptureDevice = NULL;
-		si.Printf( PRINT_ALL, "OpenAL capture device closed.\n" );
+		si.Printf ( PRINT_ALL, "OpenAL capture device closed.\n" );
 	}
 
 #endif
@@ -377,30 +377,30 @@ void SndAl_Shutdown( void )
 #endif
 }
 
-void SndAl_StopAllSounds( void )
+void SndAl_StopAllSounds ( void )
 {
 	al_src_shutup();
 	SndAl_StopBackgroundTrack();
 }
 
-void SndAl_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater )
+void SndAl_Respatialize ( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater )
 {
 	// Axis[0] = Forward
 	// Axis[2] = Up
-	float  velocity[]    = { 0.0f, 0.0f, 0.0f };
+	float  velocity[] = { 0.0f, 0.0f, 0.0f };
 	float  orientation[] = { axis[ 0 ][ 0 ], axis[ 0 ][ 1 ], axis[ 0 ][ 2 ],
 	                         axis[ 2 ][ 0 ], axis[ 2 ][ 1 ], axis[ 2 ][ 2 ]
 	                       };
 	vec3_t sorigin;
 
 	// Set OpenAL listener paramaters
-	VectorScale( origin, POSITION_SCALE, sorigin );
-	qalListenerfv( AL_POSITION, sorigin );
-	qalListenerfv( AL_VELOCITY, velocity );
-	qalListenerfv( AL_ORIENTATION, orientation );
+	VectorScale ( origin, POSITION_SCALE, sorigin );
+	qalListenerfv ( AL_POSITION, sorigin );
+	qalListenerfv ( AL_VELOCITY, velocity );
+	qalListenerfv ( AL_ORIENTATION, orientation );
 }
 
-void SndAl_Update( void )
+void SndAl_Update ( void )
 {
 	// Update SFX channels
 	al_src_update();
@@ -413,7 +413,7 @@ void SndAl_Update( void )
 	if ( s_doppler->modified )
 	{
 		s_dopplerFactor->modified = qtrue;
-		s_doppler->modified       = qfalse;
+		s_doppler->modified = qfalse;
 	}
 
 	// Doppler parameters
@@ -421,11 +421,11 @@ void SndAl_Update( void )
 	{
 		if ( s_doppler->integer )
 		{
-			qalDopplerFactor( s_dopplerFactor->value );
+			qalDopplerFactor ( s_dopplerFactor->value );
 		}
 		else
 		{
-			qalDopplerFactor( 0.0f );
+			qalDopplerFactor ( 0.0f );
 		}
 
 		s_dopplerFactor->modified = qfalse;
@@ -433,81 +433,81 @@ void SndAl_Update( void )
 
 	if ( s_dopplerSpeed->modified )
 	{
-		qalDopplerVelocity( s_dopplerSpeed->value );
+		qalDopplerVelocity ( s_dopplerSpeed->value );
 		s_dopplerSpeed->modified = qfalse;
 	}
 
 	// Clear the modified flags on the other cvars
-	s_gain->modified        = qfalse;
-	s_volume->modified      = qfalse;
+	s_gain->modified = qfalse;
+	s_volume->modified = qfalse;
 	s_musicVolume->modified = qfalse;
 	s_minDistance->modified = qfalse;
-	s_rolloff->modified     = qfalse;
+	s_rolloff->modified = qfalse;
 }
 
-void SndAl_DisableSounds( void )
+void SndAl_DisableSounds ( void )
 {
 	SndAl_StopAllSounds();
 }
 
-void SndAl_BeginRegistration( void )
+void SndAl_BeginRegistration ( void )
 {
 }
 
-void SndAl_ClearSoundBuffer( void )
+void SndAl_ClearSoundBuffer ( void )
 {
 }
 
-DLLEXPORT sndexport_t *GetSndAPI( int apiVersion, sndimport_t *simp )
+DLLEXPORT sndexport_t *GetSndAPI ( int apiVersion, sndimport_t *simp )
 {
 	si = *simp;
 
-	memset( &se, 0, sizeof( se ) );
+	memset ( &se, 0, sizeof ( se ) );
 
 	if ( apiVersion != SND_API_VERSION )
 	{
-		si.Printf( PRINT_ALL, "Mismatched SND_API_VERSION: expected %i, got %i\n",
-		           SND_API_VERSION, apiVersion );
+		si.Printf ( PRINT_ALL, "Mismatched SND_API_VERSION: expected %i, got %i\n",
+		            SND_API_VERSION, apiVersion );
 		return NULL;
 	}
 
-	se.Init                    = SndAl_Init;
-	se.Shutdown                = SndAl_Shutdown;
-	se.StartSound              = SndAl_StartSound;
-	se.StartLocalSound         = SndAl_StartLocalSound;
-	se.StartBackgroundTrack    = SndAl_StartBackgroundTrack;
-	se.StopBackgroundTrack     = SndAl_StopBackgroundTrack;
-	se.RawSamples              = SndAl_RawSamples;
-	se.StopAllSounds           = SndAl_StopAllSounds;
-	se.ClearLoopingSounds      = SndAl_ClearLoopingSounds;
-	se.AddLoopingSound         = SndAl_AddLoopingSound;
-	se.AddRealLoopingSound     = SndAl_AddRealLoopingSound;
-	se.StopLoopingSound        = SndAl_StopLoopingSound;
-	se.Respatialize            = SndAl_Respatialize;
-	se.UpdateEntityPosition    = SndAl_UpdateEntityPosition;
-	se.Update                  = SndAl_Update;
-	se.DisableSounds           = SndAl_DisableSounds;
-	se.BeginRegistration       = SndAl_BeginRegistration;
-	se.RegisterSound           = SndAl_RegisterSound;
-	se.ClearSoundBuffer        = SndAl_ClearSoundBuffer;
-	se.SoundDuration           = SndAl_SoundDuration;
+	se.Init = SndAl_Init;
+	se.Shutdown = SndAl_Shutdown;
+	se.StartSound = SndAl_StartSound;
+	se.StartLocalSound = SndAl_StartLocalSound;
+	se.StartBackgroundTrack = SndAl_StartBackgroundTrack;
+	se.StopBackgroundTrack = SndAl_StopBackgroundTrack;
+	se.RawSamples = SndAl_RawSamples;
+	se.StopAllSounds = SndAl_StopAllSounds;
+	se.ClearLoopingSounds = SndAl_ClearLoopingSounds;
+	se.AddLoopingSound = SndAl_AddLoopingSound;
+	se.AddRealLoopingSound = SndAl_AddRealLoopingSound;
+	se.StopLoopingSound = SndAl_StopLoopingSound;
+	se.Respatialize = SndAl_Respatialize;
+	se.UpdateEntityPosition = SndAl_UpdateEntityPosition;
+	se.Update = SndAl_Update;
+	se.DisableSounds = SndAl_DisableSounds;
+	se.BeginRegistration = SndAl_BeginRegistration;
+	se.RegisterSound = SndAl_RegisterSound;
+	se.ClearSoundBuffer = SndAl_ClearSoundBuffer;
+	se.SoundDuration = SndAl_SoundDuration;
 #ifdef USE_VOIP
-	se.StartCapture            = SndAl_StartCapture;
+	se.StartCapture = SndAl_StartCapture;
 	se.AvailableCaptureSamples = SndAl_AvailableCaptureSamples;
-	se.Capture                 = SndAl_Capture;
-	se.StopCapture             = SndAl_StopCapture;
-	se.MasterGain              = SndAl_MasterGain;
+	se.Capture = SndAl_Capture;
+	se.StopCapture = SndAl_StopCapture;
+	se.MasterGain = SndAl_MasterGain;
 #endif
-	se.GetVoiceAmplitude       = SndAl_GetVoiceAmplitude;
-	se.GetSoundLength          = SndAl_GetSoundLength;
-	se.GetCurrentSoundTime     = SndAl_GetCurrentSoundTime;
+	se.GetVoiceAmplitude = SndAl_GetVoiceAmplitude;
+	se.GetSoundLength = SndAl_GetSoundLength;
+	se.GetCurrentSoundTime = SndAl_GetCurrentSoundTime;
 	return &se;
 }
 
 /**
  * Commands
  */
-void S_Play_f( void )
+void S_Play_f ( void )
 {
 	int         i;
 	sfxHandle_t h;
@@ -517,27 +517,27 @@ void S_Play_f( void )
 
 	while ( i < si.Cmd_Argc() )
 	{
-		if ( !strrchr( si.Cmd_Argv( i ), '.' ) )
+		if ( !strrchr ( si.Cmd_Argv ( i ), '.' ) )
 		{
-			snprintf( name, sizeof( name ), "%s.wav", si.Cmd_Argv( 1 ) );
+			snprintf ( name, sizeof ( name ), "%s.wav", si.Cmd_Argv ( 1 ) );
 		}
 		else
 		{
-			strncpy( name, si.Cmd_Argv( i ), sizeof( name ) );
+			strncpy ( name, si.Cmd_Argv ( i ), sizeof ( name ) );
 		}
 
-		h = SndAl_RegisterSound( name, qfalse );
+		h = SndAl_RegisterSound ( name, qfalse );
 
 		if ( h )
 		{
-			SndAl_StartLocalSound( h, CHAN_LOCAL_SOUND );
+			SndAl_StartLocalSound ( h, CHAN_LOCAL_SOUND );
 		}
 
 		i++;
 	}
 }
 
-void S_Music_f( void )
+void S_Music_f ( void )
 {
 	int c;
 
@@ -545,21 +545,21 @@ void S_Music_f( void )
 
 	if ( c == 2 )
 	{
-		SndAl_StartBackgroundTrack( si.Cmd_Argv( 1 ), si.Cmd_Argv( 1 ) );
+		SndAl_StartBackgroundTrack ( si.Cmd_Argv ( 1 ), si.Cmd_Argv ( 1 ) );
 	}
 	else if ( c == 3 )
 	{
-		SndAl_StartBackgroundTrack( si.Cmd_Argv( 1 ), si.Cmd_Argv( 2 ) );
+		SndAl_StartBackgroundTrack ( si.Cmd_Argv ( 1 ), si.Cmd_Argv ( 2 ) );
 	}
 	else
 	{
-		si.Printf( PRINT_ALL, "music <musicfile> [loopfile]\n" );
+		si.Printf ( PRINT_ALL, "music <musicfile> [loopfile]\n" );
 		return;
 	}
 }
 
 #ifdef USE_VOIP
-void SndAl_InitCapture( qboolean usingAL )
+void SndAl_InitCapture ( qboolean usingAL )
 {
 	const char *inputdevice = NULL;
 
@@ -568,11 +568,11 @@ void SndAl_InitCapture( qboolean usingAL )
 	// Load QAL if we are called from the base sound driver
 	if ( !usingAL )
 	{
-		s_alDriver = si.Cvar_Get( "s_alDriver", ALDRIVER_DEFAULT, CVAR_ARCHIVE | CVAR_LATCH );
+		s_alDriver = si.Cvar_Get ( "s_alDriver", ALDRIVER_DEFAULT, CVAR_ARCHIVE | CVAR_LATCH );
 
-		if ( !QAL_Init( s_alDriver->string ) )
+		if ( !QAL_Init ( s_alDriver->string ) )
 		{
-			si.Printf( PRINT_ALL, "Failed to load library: \"%s\".\n", s_alDriver->string );
+			si.Printf ( PRINT_ALL, "Failed to load library: \"%s\".\n", s_alDriver->string );
 			return;
 		}
 	}
@@ -582,17 +582,17 @@ void SndAl_InitCapture( qboolean usingAL )
 	// !!! FIXME: some of these alcCaptureOpenDevice() values should be cvars.
 	// !!! FIXME: add support for capture device enumeration.
 	// !!! FIXME: add some better error reporting.
-	s_alCapture = si.Cvar_Get( "s_alCapture", "1", CVAR_ARCHIVE | CVAR_LATCH );
+	s_alCapture = si.Cvar_Get ( "s_alCapture", "1", CVAR_ARCHIVE | CVAR_LATCH );
 
 	if ( !s_alCapture->integer )
 	{
-		si.Printf( PRINT_ALL, "OpenAL capture support disabled by user ('+set s_alCapture 1' to enable)\n" );
+		si.Printf ( PRINT_ALL, "OpenAL capture support disabled by user ('+set s_alCapture 1' to enable)\n" );
 	}
 	else
 	{
-		if ( !qalcIsExtensionPresent( NULL, "ALC_EXT_capture" ) )
+		if ( !qalcIsExtensionPresent ( NULL, "ALC_EXT_capture" ) )
 		{
-			si.Printf( PRINT_ALL, "No ALC_EXT_CAPTURE support, can't record audio.\n" );
+			si.Printf ( PRINT_ALL, "No ALC_EXT_CAPTURE support, can't record audio.\n" );
 		}
 		else
 		{
@@ -601,87 +601,87 @@ void SndAl_InitCapture( qboolean usingAL )
 			const char *defaultinputdevice;
 			int        curlen;
 
-			capture_ext        = qtrue;
+			capture_ext = qtrue;
 
 			// get all available input devices + the default input device name.
-			inputdevicelist    = qalcGetString( NULL, ALC_CAPTURE_DEVICE_SPECIFIER );
-			defaultinputdevice = qalcGetString( NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER );
+			inputdevicelist = qalcGetString ( NULL, ALC_CAPTURE_DEVICE_SPECIFIER );
+			defaultinputdevice = qalcGetString ( NULL, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER );
 
 			// dump a list of available devices to a cvar for the user to see.
 #ifndef MACOS_X
 
-			while ( ( curlen = strlen( inputdevicelist ) ) )
+			while ( ( curlen = strlen ( inputdevicelist ) ) )
 			{
-				si.strcat( inputdevicenames, sizeof( inputdevicenames ), inputdevicelist );
-				si.strcat( inputdevicenames, sizeof( inputdevicenames ), "\n" );
+				si.strcat ( inputdevicenames, sizeof ( inputdevicenames ), inputdevicelist );
+				si.strcat ( inputdevicenames, sizeof ( inputdevicenames ), "\n" );
 				inputdevicelist += curlen + 1;
 			}
 
 #endif
-			s_alAvailableInputDevices = si.Cvar_Get( "s_alAvailableInputDevices", inputdevicenames, CVAR_ROM | CVAR_NORESTART );
+			s_alAvailableInputDevices = si.Cvar_Get ( "s_alAvailableInputDevices", inputdevicenames, CVAR_ROM | CVAR_NORESTART );
 
 			// !!! FIXME: 8000Hz is what Speex narrowband mode needs, but we
 			// !!! FIXME:  should probably open the capture device after
 			// !!! FIXME:  initializing Speex so we can change to wideband
 			// !!! FIXME:  if we like.
-			si.Printf( PRINT_ALL, "OpenAL default capture device is '%s'\n", defaultinputdevice );
-			alCaptureDevice = qalcCaptureOpenDevice( inputdevice, 8000, AL_FORMAT_MONO16, 4096 );
+			si.Printf ( PRINT_ALL, "OpenAL default capture device is '%s'\n", defaultinputdevice );
+			alCaptureDevice = qalcCaptureOpenDevice ( inputdevice, 8000, AL_FORMAT_MONO16, 4096 );
 
 			if ( !alCaptureDevice && inputdevice )
 			{
-				si.Printf( PRINT_ALL, "Failed to open OpenAL Input device '%s', trying default.\n", inputdevice );
-				alCaptureDevice = qalcCaptureOpenDevice( NULL, 8000, AL_FORMAT_MONO16, 4096 );
+				si.Printf ( PRINT_ALL, "Failed to open OpenAL Input device '%s', trying default.\n", inputdevice );
+				alCaptureDevice = qalcCaptureOpenDevice ( NULL, 8000, AL_FORMAT_MONO16, 4096 );
 			}
 
-			si.Printf( PRINT_ALL,  "OpenAL capture device %s.\n", ( alCaptureDevice == NULL ) ? "failed to open" : "opened" );
+			si.Printf ( PRINT_ALL,  "OpenAL capture device %s.\n", ( alCaptureDevice == NULL ) ? "failed to open" : "opened" );
 		}
 	}
 }
 
-void SndAl_StartCapture( void )
+void SndAl_StartCapture ( void )
 {
 	if ( alCaptureDevice != NULL )
 	{
 #ifndef _WIN32
-		alContext = qalcCreateContext( alDevice, NULL );
+		alContext = qalcCreateContext ( alDevice, NULL );
 #endif
-		qalcCaptureStart( alCaptureDevice );
+		qalcCaptureStart ( alCaptureDevice );
 	}
 }
 
-int SndAl_AvailableCaptureSamples( void )
+int SndAl_AvailableCaptureSamples ( void )
 {
 	int retval = 0;
 
 	if ( alCaptureDevice != NULL )
 	{
 		ALint samples = 0;
-		qalcGetIntegerv( alCaptureDevice, ALC_CAPTURE_SAMPLES, sizeof ( samples ), &samples );
+		qalcGetIntegerv ( alCaptureDevice, ALC_CAPTURE_SAMPLES, sizeof ( samples ), &samples );
 		retval = ( int ) samples;
 	}
 
 	return retval;
 }
 
-void SndAl_Capture( int samples, byte *data )
+void SndAl_Capture ( int samples, byte *data )
 {
 	if ( alCaptureDevice != NULL )
 	{
-		qalcCaptureSamples( alCaptureDevice, data, samples );
+		qalcCaptureSamples ( alCaptureDevice, data, samples );
 	}
 }
 
-void SndAl_StopCapture( void )
+void SndAl_StopCapture ( void )
 {
 	if ( alCaptureDevice != NULL )
 	{
-		qalcCaptureStop( alCaptureDevice );
+		qalcCaptureStop ( alCaptureDevice );
 	}
 }
 
-void SndAl_MasterGain( float gain )
+void SndAl_MasterGain ( float gain )
 {
-	qalListenerf( AL_GAIN, gain );
+	qalListenerf ( AL_GAIN, gain );
 }
 
 #endif

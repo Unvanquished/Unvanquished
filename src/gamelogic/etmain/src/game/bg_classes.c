@@ -175,7 +175,7 @@ bg_playerclass_t bg_axis_playerclasses[ NUM_PLAYER_CLASSES ] =
 	,
 };
 
-bg_playerclass_t *BG_GetPlayerClassInfo( int team, int cls )
+bg_playerclass_t *BG_GetPlayerClassInfo ( int team, int cls )
 {
 	bg_playerclass_t *teamList;
 
@@ -199,12 +199,12 @@ bg_playerclass_t *BG_GetPlayerClassInfo( int team, int cls )
 	return &teamList[ cls ];
 }
 
-bg_playerclass_t *BG_PlayerClassForPlayerState( playerState_t *ps )
+bg_playerclass_t *BG_PlayerClassForPlayerState ( playerState_t *ps )
 {
-	return BG_GetPlayerClassInfo( ps->persistant[ PERS_TEAM ], ps->stats[ STAT_PLAYER_CLASS ] );
+	return BG_GetPlayerClassInfo ( ps->persistant[ PERS_TEAM ], ps->stats[ STAT_PLAYER_CLASS ] );
 }
 
-qboolean BG_ClassHasWeapon( bg_playerclass_t *classInfo, weapon_t weap )
+qboolean BG_ClassHasWeapon ( bg_playerclass_t *classInfo, weapon_t weap )
 {
 	int i;
 
@@ -224,7 +224,7 @@ qboolean BG_ClassHasWeapon( bg_playerclass_t *classInfo, weapon_t weap )
 	return qfalse;
 }
 
-qboolean BG_WeaponIsPrimaryForClassAndTeam( int classnum, team_t team, weapon_t weapon )
+qboolean BG_WeaponIsPrimaryForClassAndTeam ( int classnum, team_t team, weapon_t weapon )
 {
 	bg_playerclass_t *classInfo;
 
@@ -232,7 +232,7 @@ qboolean BG_WeaponIsPrimaryForClassAndTeam( int classnum, team_t team, weapon_t 
 	{
 		classInfo = &bg_allies_playerclasses[ classnum ];
 
-		if ( BG_ClassHasWeapon( classInfo, weapon ) )
+		if ( BG_ClassHasWeapon ( classInfo, weapon ) )
 		{
 			return qtrue;
 		}
@@ -241,7 +241,7 @@ qboolean BG_WeaponIsPrimaryForClassAndTeam( int classnum, team_t team, weapon_t 
 	{
 		classInfo = &bg_axis_playerclasses[ classnum ];
 
-		if ( BG_ClassHasWeapon( classInfo, weapon ) )
+		if ( BG_ClassHasWeapon ( classInfo, weapon ) )
 		{
 			return qtrue;
 		}
@@ -250,7 +250,7 @@ qboolean BG_WeaponIsPrimaryForClassAndTeam( int classnum, team_t team, weapon_t 
 	return qfalse;
 }
 
-const char     *BG_ShortClassnameForNumber( int classNum )
+const char     *BG_ShortClassnameForNumber ( int classNum )
 {
 	switch ( classNum )
 	{
@@ -274,7 +274,7 @@ const char     *BG_ShortClassnameForNumber( int classNum )
 	}
 }
 
-const char     *BG_ClassnameForNumber( int classNum )
+const char     *BG_ClassnameForNumber ( int classNum )
 {
 	switch ( classNum )
 	{
@@ -298,7 +298,7 @@ const char     *BG_ClassnameForNumber( int classNum )
 	}
 }
 
-const char     *BG_ClassLetterForNumber( int classNum )
+const char     *BG_ClassLetterForNumber ( int classNum )
 {
 	switch ( classNum )
 	{
@@ -322,30 +322,30 @@ const char     *BG_ClassLetterForNumber( int classNum )
 	}
 }
 
-int BG_ClassTextToClass( char *token )
+int BG_ClassTextToClass ( char *token )
 {
-	if ( !Q_stricmp( token, "soldier" ) )
+	if ( !Q_stricmp ( token, "soldier" ) )
 	{
 		return PC_SOLDIER;
 	}
-	else if ( !Q_stricmp( token, "medic" ) )
+	else if ( !Q_stricmp ( token, "medic" ) )
 	{
 		return PC_MEDIC;
 	}
-	else if ( !Q_stricmp( token, "lieutenant" ) )
+	else if ( !Q_stricmp ( token, "lieutenant" ) )
 	{
 		// FIXME: remove from missionpack
 		return PC_FIELDOPS;
 	}
-	else if ( !Q_stricmp( token, "fieldops" ) )
+	else if ( !Q_stricmp ( token, "fieldops" ) )
 	{
 		return PC_FIELDOPS;
 	}
-	else if ( !Q_stricmp( token, "engineer" ) )
+	else if ( !Q_stricmp ( token, "engineer" ) )
 	{
 		return PC_ENGINEER;
 	}
-	else if ( !Q_stricmp( token, "covertops" ) )
+	else if ( !Q_stricmp ( token, "covertops" ) )
 	{
 		return PC_COVERTOPS;
 	}
@@ -353,7 +353,7 @@ int BG_ClassTextToClass( char *token )
 	return -1;
 }
 
-skillType_t BG_ClassSkillForClass( int classnum )
+skillType_t BG_ClassSkillForClass ( int classnum )
 {
 	skillType_t classskill[ NUM_PLAYER_CLASSES ] = { SK_HEAVY_WEAPONS, SK_FIRST_AID, SK_EXPLOSIVES_AND_CONSTRUCTION, SK_SIGNALS,
 	    SK_MILITARY_INTELLIGENCE_AND_SCOPED_WEAPONS

@@ -32,15 +32,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef enum
 {
-  K_NONE      = -1,
-  K_TAB       = 9,
-  K_ENTER     = 13,
-  K_ESCAPE    = 27,
-  K_SPACE     = 32,
+  K_NONE = -1,
+  K_TAB = 9,
+  K_ENTER = 13,
+  K_ESCAPE = 27,
+  K_SPACE = 32,
 
   K_BACKSPACE = 127,
 
-  K_COMMAND   = 128,
+  K_COMMAND = 128,
   K_CAPSLOCK,
   K_POWER,
   K_PAUSE,

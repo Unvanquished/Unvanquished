@@ -27,8 +27,8 @@ struct Msg_Addbot
 	char m_Profile[ 64 ];
 
 	Msg_Addbot()
-		: m_Team( RANDOM_TEAM_IF_NO_TEAM )
-		, m_Class( RANDOM_CLASS_IF_NO_CLASS )
+		: m_Team ( RANDOM_TEAM_IF_NO_TEAM )
+		, m_Class ( RANDOM_CLASS_IF_NO_CLASS )
 	{
 		m_Name[ 0 ] = m_Model[ 0 ] = m_Skin[ 0 ] = m_SpawnPointName[ 0 ] = m_Profile[ 0 ] = 0;
 	}
@@ -42,9 +42,9 @@ struct Msg_Kickbot
 	int  m_GameId;
 
 	Msg_Kickbot()
-		: m_GameId( InvalidGameId )
+		: m_GameId ( InvalidGameId )
 	{
-		m_Name[ 0 ] =  0;
+		m_Name[ 0 ] = 0;
 	}
 };
 
@@ -65,7 +65,7 @@ struct Msg_PlayerChooseEquipment
 		for ( int i = 0; i < NumItems; ++i )
 		{
 			m_WeaponChoice[ i ] = 0;
-			m_ItemChoice[ i ]   = 0;
+			m_ItemChoice[ i ] = 0;
 		}
 	}
 };
@@ -78,10 +78,10 @@ struct Msg_HealthArmor
 	int m_MaxArmor;
 
 	Msg_HealthArmor()
-		: m_CurrentHealth( 0 )
-		, m_MaxHealth( 0 )
-		, m_CurrentArmor( 0 )
-		, m_MaxArmor( 0 )
+		: m_CurrentHealth ( 0 )
+		, m_MaxHealth ( 0 )
+		, m_CurrentArmor ( 0 )
+		, m_MaxArmor ( 0 )
 	{
 	}
 };
@@ -90,7 +90,7 @@ struct Msg_PlayerMaxSpeed
 {
 	float m_MaxSpeed;
 
-	Msg_PlayerMaxSpeed() : m_MaxSpeed( 0.f )
+	Msg_PlayerMaxSpeed() : m_MaxSpeed ( 0.f )
 	{
 	}
 };
@@ -99,7 +99,7 @@ struct Msg_IsAlive
 {
 	obBool m_IsAlive;
 
-	Msg_IsAlive() : m_IsAlive( False )
+	Msg_IsAlive() : m_IsAlive ( False )
 	{
 	}
 };
@@ -109,7 +109,7 @@ struct Msg_IsAllied
 	GameEntity m_TargetEntity;
 	obBool     m_IsAllied;
 
-	Msg_IsAllied( GameEntity e ) : m_TargetEntity( e ), m_IsAllied( True )
+	Msg_IsAllied ( GameEntity e ) : m_TargetEntity ( e ), m_IsAllied ( True )
 	{
 	}
 };
@@ -120,7 +120,7 @@ struct Msg_IsOutside
 	obBool m_IsOutside;
 
 	Msg_IsOutside()
-		: m_IsOutside( False )
+		: m_IsOutside ( False )
 	{
 		m_Position[ 0 ] = m_Position[ 1 ] = m_Position[ 2 ] = 0.f;
 	}
@@ -132,10 +132,10 @@ struct Msg_PointContents
 	float x, y, z;
 
 	Msg_PointContents()
-		: m_Contents( 0 )
-		, x( 0.f )
-		, y( 0.f )
-		, z( 0.f )
+		: m_Contents ( 0 )
+		, x ( 0.f )
+		, y ( 0.f )
+		, z ( 0.f )
 	{
 	}
 };
@@ -144,7 +144,7 @@ struct Msg_ReadyToFire
 {
 	obBool m_Ready;
 
-	Msg_ReadyToFire() : m_Ready( False )
+	Msg_ReadyToFire() : m_Ready ( False )
 	{
 	}
 };
@@ -153,7 +153,7 @@ struct Msg_Reloading
 {
 	obBool m_Reloading;
 
-	Msg_Reloading() : m_Reloading( False )
+	Msg_Reloading() : m_Reloading ( False )
 	{
 	}
 };
@@ -164,7 +164,7 @@ struct Msg_FlagState
 	GameEntity m_Owner;
 
 	Msg_FlagState()
-		: m_FlagState( S_FLAG_NOT_A_FLAG )
+		: m_FlagState ( S_FLAG_NOT_A_FLAG )
 	{
 	}
 };
@@ -175,8 +175,8 @@ struct Msg_GameState
 	float     m_TimeLeft;
 
 	Msg_GameState()
-		: m_GameState( GAME_STATE_INVALID )
-		, m_TimeLeft( 0.f )
+		: m_GameState ( GAME_STATE_INVALID )
+		, m_TimeLeft ( 0.f )
 	{
 	}
 };
@@ -199,7 +199,7 @@ struct Msg_TeamStat
 	obUserData m_Result;
 
 	Msg_TeamStat()
-		: m_Team( 0 )
+		: m_Team ( 0 )
 	{
 		m_StatName[ 0 ] = 0;
 	}
@@ -222,11 +222,11 @@ struct WeaponCharged
 	obBool   m_IsCharged;
 	obBool   m_IsCharging;
 
-	WeaponCharged( int w = 0, FireMode m = Primary )
-		: m_Weapon( w )
-		, m_FireMode( m )
-		, m_IsCharged( False )
-		, m_IsCharging( False )
+	WeaponCharged ( int w = 0, FireMode m = Primary )
+		: m_Weapon ( w )
+		, m_FireMode ( m )
+		, m_IsCharged ( False )
+		, m_IsCharging ( False )
 	{
 	}
 };
@@ -237,10 +237,10 @@ struct WeaponHeatLevel
 	float    m_CurrentHeat;
 	float    m_MaxHeat;
 
-	WeaponHeatLevel( FireMode m = Primary )
-		: m_FireMode( m )
-		, m_CurrentHeat( 0.f )
-		, m_MaxHeat( 0.f )
+	WeaponHeatLevel ( FireMode m = Primary )
+		: m_FireMode ( m )
+		, m_CurrentHeat ( 0.f )
+		, m_MaxHeat ( 0.f )
 	{
 	}
 };
@@ -257,13 +257,13 @@ struct VehicleInfo
 
 	VehicleInfo()
 	{
-		m_Type             = 0;
-		m_Entity           = GameEntity();
-		m_Weapon           = GameEntity();
-		m_Driver           = GameEntity();
-		m_VehicleHealth    = 0;
+		m_Type = 0;
+		m_Entity = GameEntity();
+		m_Weapon = GameEntity();
+		m_Driver = GameEntity();
+		m_VehicleHealth = 0;
 		m_VehicleMaxHealth = 0;
-		m_Armor            = 0.f;
+		m_Armor = 0.f;
 	}
 };
 
@@ -271,7 +271,7 @@ struct ControllingTeam
 {
 	int m_ControllingTeam;
 
-	ControllingTeam() : m_ControllingTeam( 0 )
+	ControllingTeam() : m_ControllingTeam ( 0 )
 	{
 	}
 };
@@ -281,18 +281,18 @@ struct WeaponStatus
 	int m_WeaponId;
 	//FireMode  m_FireMode;
 
-	WeaponStatus() : m_WeaponId( 0 )
+	WeaponStatus() : m_WeaponId ( 0 )
 	{
 	}
 
-	bool operator==( const WeaponStatus &_w2 )
+	bool operator== ( const WeaponStatus &_w2 )
 	{
 		return m_WeaponId == _w2.m_WeaponId;
 	}
 
-	bool operator!=( const WeaponStatus &_w2 )
+	bool operator!= ( const WeaponStatus &_w2 )
 	{
-		return !( *this == _w2 );
+		return ! ( *this == _w2 );
 	}
 };
 
@@ -307,12 +307,12 @@ struct WeaponLimits
 	obBool m_Limited;
 
 	WeaponLimits()
-		: m_MinYaw( -45.f )
-		, m_MaxYaw( 45.f )
-		, m_MinPitch( -20.f )
-		, m_MaxPitch( 20.f )
-		, m_WeaponId( 0 )
-		, m_Limited( False )
+		: m_MinYaw ( -45.f )
+		, m_MaxYaw ( 45.f )
+		, m_MinPitch ( -20.f )
+		, m_MaxPitch ( 20.f )
+		, m_WeaponId ( 0 )
+		, m_Limited ( False )
 	{
 		m_CenterFacing[ 0 ] = 0.f;
 		m_CenterFacing[ 1 ] = 0.f;
@@ -351,9 +351,9 @@ struct Msg_GotoWaypoint
 
 	Msg_GotoWaypoint()
 	{
-		m_Origin[ 0 ]       = 0.f;
-		m_Origin[ 1 ]       = 0.f;
-		m_Origin[ 2 ]       = 0.f;
+		m_Origin[ 0 ] = 0.f;
+		m_Origin[ 1 ] = 0.f;
+		m_Origin[ 2 ] = 0.f;
 		m_WaypointName[ 0 ] = 0;
 	}
 };
@@ -368,7 +368,7 @@ struct Msg_MoverAt
 	Msg_MoverAt()
 	{
 		m_Position[ 0 ] = m_Position[ 1 ] = m_Position[ 2 ] = 0.f;
-		m_Under[ 0 ]    = m_Under[ 1 ] = m_Under[ 2 ] = 0.f;
+		m_Under[ 0 ] = m_Under[ 1 ] = m_Under[ 2 ] = 0.f;
 	}
 };
 
@@ -388,10 +388,10 @@ struct Event_SystemClientConnected
 	int    m_DesiredTeam;
 
 	Event_SystemClientConnected()
-		: m_GameId( -1 )
-		, m_IsBot( False )
-		, m_DesiredClass( RANDOM_CLASS_IF_NO_CLASS )
-		, m_DesiredTeam( RANDOM_TEAM_IF_NO_TEAM )
+		: m_GameId ( -1 )
+		, m_IsBot ( False )
+		, m_DesiredClass ( RANDOM_CLASS_IF_NO_CLASS )
+		, m_DesiredTeam ( RANDOM_TEAM_IF_NO_TEAM )
 	{
 	}
 };
@@ -543,9 +543,9 @@ struct Event_DynamicPathsChanged
 	int m_TeamMask;
 	int m_NavId;
 
-	Event_DynamicPathsChanged( int _team, int _navid = 0 )
-		: m_TeamMask( _team )
-		, m_NavId( _navid )
+	Event_DynamicPathsChanged ( int _team, int _navid = 0 )
+		: m_TeamMask ( _team )
+		, m_NavId ( _navid )
 	{
 	}
 };
@@ -573,10 +573,10 @@ struct Event_EntityConnection
 	bool       m_Teleport;
 
 	Event_EntityConnection()
-		: m_ConnectionId( 0 )
-		, m_ConnectionDir( CON_TWO_WAY )
-		, m_Radius( 0.f )
-		, m_Teleport( false )
+		: m_ConnectionId ( 0 )
+		, m_ConnectionDir ( CON_TWO_WAY )
+		, m_Radius ( 0.f )
+		, m_Teleport ( false )
 	{
 	}
 };

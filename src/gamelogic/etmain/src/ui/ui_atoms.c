@@ -40,57 +40,57 @@ Maryland 20850 USA.
 #include "ui_local.h"
 
 uiStatic_t uis;
-qboolean   m_entersound;        // after a frame, so caching won't disrupt the sound
+qboolean   m_entersound; // after a frame, so caching won't disrupt the sound
 
 // these are here so the functions in q_shared.c can link
 #ifndef UI_HARD_LINKED
 
 // JPW NERVE added Com_DPrintf
 #define MAXPRINTMSG 4096
-void QDECL Com_DPrintf( const char *fmt, ... )
+void QDECL Com_DPrintf ( const char *fmt, ... )
 {
 	va_list argptr;
 	char    msg[ MAXPRINTMSG ];
 	int     developer;
 
-	developer = trap_Cvar_VariableValue( "developer" );
+	developer = trap_Cvar_VariableValue ( "developer" );
 
 	if ( !developer )
 	{
 		return;
 	}
 
-	va_start( argptr, fmt );
-	Q_vsnprintf( msg, sizeof( msg ), fmt, argptr );
-	va_end( argptr );
+	va_start ( argptr, fmt );
+	Q_vsnprintf ( msg, sizeof ( msg ), fmt, argptr );
+	va_end ( argptr );
 
-	Com_Printf( "%s", msg );
+	Com_Printf ( "%s", msg );
 }
 
 // jpw
 
-void QDECL Com_Error( int level, const char *error, ... )
+void QDECL Com_Error ( int level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
 
-	va_start( argptr, error );
-	Q_vsnprintf( text, sizeof( text ), error, argptr );
-	va_end( argptr );
+	va_start ( argptr, error );
+	Q_vsnprintf ( text, sizeof ( text ), error, argptr );
+	va_end ( argptr );
 
-	trap_Error( va( "%s", text ) );
+	trap_Error ( va ( "%s", text ) );
 }
 
-void QDECL Com_Printf( const char *msg, ... )
+void QDECL Com_Printf ( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
 
-	va_start( argptr, msg );
-	Q_vsnprintf( text, sizeof( text ), msg, argptr );
-	va_end( argptr );
+	va_start ( argptr, msg );
+	Q_vsnprintf ( text, sizeof ( text ), msg, argptr );
+	va_end ( argptr );
 
-	trap_Print( va( "%s", text ) );
+	trap_Print ( va ( "%s", text ) );
 }
 
 #endif
@@ -100,7 +100,7 @@ void QDECL Com_Printf( const char *msg, ... )
 UI_ClampCvar
 =================
 */
-float UI_ClampCvar( float min, float max, float value )
+float UI_ClampCvar ( float min, float max, float value )
 {
 	if ( value < min )
 	{
@@ -130,28 +130,28 @@ static void NeedCDKeyAction( qboolean result ) {
 }
 */
 
-char           *UI_Argv( int arg )
+char           *UI_Argv ( int arg )
 {
 	static char buffer[ MAX_STRING_CHARS ];
 
-	trap_Argv( arg, buffer, sizeof( buffer ) );
+	trap_Argv ( arg, buffer, sizeof ( buffer ) );
 
 	return buffer;
 }
 
-char           *UI_Cvar_VariableString( const char *var_name )
+char           *UI_Cvar_VariableString ( const char *var_name )
 {
 	static char buffer[ 2 ][ MAX_STRING_CHARS ];
 	static int  toggle;
 
-	toggle ^= 1;                            // flip-flop to allow two returns without clash
+	toggle ^= 1; // flip-flop to allow two returns without clash
 
-	trap_Cvar_VariableStringBuffer( var_name, buffer[ toggle ], sizeof( buffer[ 0 ] ) );
+	trap_Cvar_VariableStringBuffer ( var_name, buffer[ toggle ], sizeof ( buffer[ 0 ] ) );
 
 	return buffer[ toggle ];
 }
 
-void UI_LoadBestScores( const char *map, int game )
+void UI_LoadBestScores ( const char *map, int game )
 {
 }
 
@@ -183,31 +183,31 @@ static void UI_CalcPostGameStats()
 UI_ConsoleCommand
 =================
 */
-qboolean UI_ConsoleCommand( int realTime )
+qboolean UI_ConsoleCommand ( int realTime )
 {
 	char            *cmd;
 	uiClientState_t cstate;
 
 	uiInfo.uiDC.frameTime = realTime - uiInfo.uiDC.realTime;
-	uiInfo.uiDC.realTime  = realTime;
+	uiInfo.uiDC.realTime = realTime;
 
-	cmd                   = UI_Argv( 0 );
+	cmd = UI_Argv ( 0 );
 
 	// ensure minimum menu data is available
 	//Menu_Cache();
 
-	if ( Q_stricmp( cmd, "ui_test" ) == 0 )
+	if ( Q_stricmp ( cmd, "ui_test" ) == 0 )
 	{
-		UI_ShowPostGame( qtrue );
+		UI_ShowPostGame ( qtrue );
 	}
 
-	if ( Q_stricmp( cmd, "ui_report" ) == 0 )
+	if ( Q_stricmp ( cmd, "ui_report" ) == 0 )
 	{
 		UI_Report();
 		return qtrue;
 	}
 
-	if ( Q_stricmp( cmd, "ui_load" ) == 0 )
+	if ( Q_stricmp ( cmd, "ui_load" ) == 0 )
 	{
 		UI_Load();
 		return qtrue;
@@ -226,31 +226,31 @@ qboolean UI_ConsoleCommand( int realTime )
 	   }
 	   } */
 
-	if ( Q_stricmp( cmd, "postgame" ) == 0 )
+	if ( Q_stricmp ( cmd, "postgame" ) == 0 )
 	{
 		UI_CalcPostGameStats();
 		return qtrue;
 	}
 
-	if ( Q_stricmp( cmd, "ui_cache" ) == 0 )
+	if ( Q_stricmp ( cmd, "ui_cache" ) == 0 )
 	{
 		UI_Cache_f();
 		return qtrue;
 	}
 
-	if ( Q_stricmp( cmd, "ui_teamOrders" ) == 0 )
+	if ( Q_stricmp ( cmd, "ui_teamOrders" ) == 0 )
 	{
 		//UI_TeamOrdersMenu_f();
 		return qtrue;
 	}
 
-	if ( Q_stricmp( cmd, "ui_cdkey" ) == 0 )
+	if ( Q_stricmp ( cmd, "ui_cdkey" ) == 0 )
 	{
 		//UI_CDKeyMenu_f();
 		return qtrue;
 	}
 
-	if ( Q_stricmp( cmd, "iamacheater" ) == 0 )
+	if ( Q_stricmp ( cmd, "iamacheater" ) == 0 )
 	{
 		int i;
 
@@ -267,17 +267,17 @@ qboolean UI_ConsoleCommand( int realTime )
 		return qtrue;
 	}
 
-	trap_GetClientState( &cstate );
+	trap_GetClientState ( &cstate );
 
 	if ( cstate.connState == CA_DISCONNECTED )
 	{
-		if ( Q_stricmp( cmd, "campaign" ) == 0 )
+		if ( Q_stricmp ( cmd, "campaign" ) == 0 )
 		{
 			UI_Campaign_f();
 			return qtrue;
 		}
 
-		if ( Q_stricmp( cmd, "listcampaigns" ) == 0 )
+		if ( Q_stricmp ( cmd, "listcampaigns" ) == 0 )
 		{
 			UI_ListCampaigns_f();
 			return qtrue;
@@ -292,7 +292,7 @@ qboolean UI_ConsoleCommand( int realTime )
 UI_Shutdown
 =================
 */
-void UI_Shutdown( void )
+void UI_Shutdown ( void )
 {
 }
 
@@ -303,11 +303,11 @@ UI_AdjustFrom640
 Adjusted for resolution and screen aspect ratio
 ================
 */
-void UI_AdjustFrom640( float *x, float *y, float *w, float *h )
+void UI_AdjustFrom640 ( float *x, float *y, float *w, float *h )
 {
 	// expect valid pointers
 #if 0
-	*x  = *x * uiInfo.uiDC.scale + uiInfo.uiDC.bias;
+	*x = *x * uiInfo.uiDC.scale + uiInfo.uiDC.bias;
 	*y *= uiInfo.uiDC.scale;
 	*w *= uiInfo.uiDC.scale;
 	*h *= uiInfo.uiDC.scale;
@@ -319,16 +319,16 @@ void UI_AdjustFrom640( float *x, float *y, float *w, float *h )
 	*h *= uiInfo.uiDC.yscale;
 }
 
-void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname )
+void UI_DrawNamedPic ( float x, float y, float width, float height, const char *picname )
 {
 	qhandle_t hShader;
 
-	hShader = trap_R_RegisterShaderNoMip( picname );
-	UI_AdjustFrom640( &x, &y, &width, &height );
-	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
+	hShader = trap_R_RegisterShaderNoMip ( picname );
+	UI_AdjustFrom640 ( &x, &y, &width, &height );
+	trap_R_DrawStretchPic ( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
-void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
+void UI_DrawHandlePic ( float x, float y, float w, float h, qhandle_t hShader )
 {
 	float s0;
 	float s1;
@@ -338,7 +338,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 	if ( w < 0 )
 	{
 		// flip about vertical
-		w  = -w;
+		w = -w;
 		s0 = 1;
 		s1 = 0;
 	}
@@ -351,7 +351,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 	if ( h < 0 )
 	{
 		// flip about horizontal
-		h  = -h;
+		h = -h;
 		t0 = 1;
 		t1 = 0;
 	}
@@ -361,8 +361,8 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 		t1 = 1;
 	}
 
-	UI_AdjustFrom640( &x, &y, &w, &h );
-	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
+	UI_AdjustFrom640 ( &x, &y, &w, &h );
+	trap_R_DrawStretchPic ( x, y, w, h, s0, t0, s1, t1, hShader );
 }
 
 /*
@@ -372,11 +372,11 @@ UI_DrawRotatedPic
 Coordinates are 640*480 virtual values
 =================
 */
-void UI_DrawRotatedPic( float x, float y, float width, float height, qhandle_t hShader, float angle )
+void UI_DrawRotatedPic ( float x, float y, float width, float height, qhandle_t hShader, float angle )
 {
-	UI_AdjustFrom640( &x, &y, &width, &height );
+	UI_AdjustFrom640 ( &x, &y, &width, &height );
 
-	trap_R_DrawRotatedPic( x, y, width, height, 0, 0, 1, 1, hShader, angle );
+	trap_R_DrawRotatedPic ( x, y, width, height, 0, 0, 1, 1, hShader, angle );
 }
 
 /*
@@ -386,28 +386,28 @@ UI_FillRect
 Coordinates are 640*480 virtual values
 =================
 */
-void UI_FillRect( float x, float y, float width, float height, const float *color )
+void UI_FillRect ( float x, float y, float width, float height, const float *color )
 {
-	trap_R_SetColor( color );
+	trap_R_SetColor ( color );
 
-	UI_AdjustFrom640( &x, &y, &width, &height );
-	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
+	UI_AdjustFrom640 ( &x, &y, &width, &height );
+	trap_R_DrawStretchPic ( x, y, width, height, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor ( NULL );
 }
 
-void UI_DrawSides( float x, float y, float w, float h )
+void UI_DrawSides ( float x, float y, float w, float h )
 {
-	UI_AdjustFrom640( &x, &y, &w, &h );
-	trap_R_DrawStretchPic( x, y, 1, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
-	trap_R_DrawStretchPic( x + w - 1, y, 1, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
+	UI_AdjustFrom640 ( &x, &y, &w, &h );
+	trap_R_DrawStretchPic ( x, y, 1, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
+	trap_R_DrawStretchPic ( x + w - 1, y, 1, h, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 }
 
-void UI_DrawTopBottom( float x, float y, float w, float h )
+void UI_DrawTopBottom ( float x, float y, float w, float h )
 {
-	UI_AdjustFrom640( &x, &y, &w, &h );
-	trap_R_DrawStretchPic( x, y, w, 1, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
-	trap_R_DrawStretchPic( x, y + h - 1, w, 1, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
+	UI_AdjustFrom640 ( &x, &y, &w, &h );
+	trap_R_DrawStretchPic ( x, y, w, 1, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
+	trap_R_DrawStretchPic ( x, y + h - 1, w, 1, 0, 0, 0, 0, uiInfo.uiDC.whiteShader );
 }
 
 /*
@@ -417,35 +417,35 @@ UI_DrawRect
 Coordinates are 640*480 virtual values
 =================
 */
-void UI_DrawRect( float x, float y, float width, float height, const float *color )
+void UI_DrawRect ( float x, float y, float width, float height, const float *color )
 {
-	trap_R_SetColor( color );
+	trap_R_SetColor ( color );
 
-	UI_DrawTopBottom( x, y, width, height );
-	UI_DrawSides( x, y, width, height );
+	UI_DrawTopBottom ( x, y, width, height );
+	UI_DrawSides ( x, y, width, height );
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor ( NULL );
 }
 
-void UI_SetColor( const float *rgba )
+void UI_SetColor ( const float *rgba )
 {
-	trap_R_SetColor( rgba );
+	trap_R_SetColor ( rgba );
 }
 
-void UI_UpdateScreen( void )
+void UI_UpdateScreen ( void )
 {
 	trap_UpdateScreen();
 }
 
-void UI_DrawTextBox( int x, int y, int width, int lines )
+void UI_DrawTextBox ( int x, int y, int width, int lines )
 {
-	UI_FillRect( x + BIGCHAR_WIDTH / 2, y + BIGCHAR_HEIGHT / 2, ( width + 1 ) * BIGCHAR_WIDTH, ( lines + 1 ) * BIGCHAR_HEIGHT,
-	             colorBlack );
-	UI_DrawRect( x + BIGCHAR_WIDTH / 2, y + BIGCHAR_HEIGHT / 2, ( width + 1 ) * BIGCHAR_WIDTH, ( lines + 1 ) * BIGCHAR_HEIGHT,
-	             colorWhite );
+	UI_FillRect ( x + BIGCHAR_WIDTH / 2, y + BIGCHAR_HEIGHT / 2, ( width + 1 ) * BIGCHAR_WIDTH, ( lines + 1 ) * BIGCHAR_HEIGHT,
+	              colorBlack );
+	UI_DrawRect ( x + BIGCHAR_WIDTH / 2, y + BIGCHAR_HEIGHT / 2, ( width + 1 ) * BIGCHAR_WIDTH, ( lines + 1 ) * BIGCHAR_HEIGHT,
+	              colorWhite );
 }
 
-qboolean UI_CursorInRect( int x, int y, int width, int height )
+qboolean UI_CursorInRect ( int x, int y, int width, int height )
 {
 	if ( uiInfo.uiDC.cursorx < x || uiInfo.uiDC.cursory < y || uiInfo.uiDC.cursorx > x + width || uiInfo.uiDC.cursory > y + height )
 	{

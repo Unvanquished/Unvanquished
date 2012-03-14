@@ -54,7 +54,7 @@ Maryland 20850 USA.
 #else
 #define id386_3dnow 0
 #endif
-#if defined( SIMD_SSE )                   //|| 1 //|| defined(__SSE__)//defined(_MSC_VER)
+#if defined( SIMD_SSE ) //|| 1 //|| defined(__SSE__)//defined(_MSC_VER)
 #define id386_sse   1
 #include <xmmintrin.h>
 #define SSEVEC3_T
@@ -72,7 +72,7 @@ Maryland 20850 USA.
 #define idppc         1
 #if defined( __VEC__ )
 #define idppc_altivec 1
-#ifdef MACOS_X  // Apple's GCC does this differently than the FSF.
+#ifdef MACOS_X // Apple's GCC does this differently than the FSF.
 #define VECCONST_UINT8(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) \
         (vector unsigned char) ( a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p )
 #else

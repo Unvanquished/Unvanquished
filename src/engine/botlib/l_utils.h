@@ -41,7 +41,7 @@ Maryland 20850 USA.
  *****************************************************************************/
 
 #define Vector2Angles( v,a ) vectoangles( v,a )
-#ifndef MAX_PATH                                // LBO 1/25/05
+#ifndef MAX_PATH // LBO 1/25/05
 #define MAX_PATH MAX_QPATH
 #endif
 #define Maximum( x,y ) ( x > y ? x : y )

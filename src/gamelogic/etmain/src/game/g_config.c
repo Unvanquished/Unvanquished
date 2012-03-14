@@ -106,7 +106,7 @@ static const modeCvarTable_t aPubSettings[] =
 };
 
 // Force settings to predefined state.
-void G_configSet( int dwMode, qboolean doComp )
+void G_configSet ( int dwMode, qboolean doComp )
 {
 	unsigned int          dwGameType;
 	const modeCvarTable_t *pModeCvars;
@@ -124,21 +124,21 @@ void G_configSet( int dwMode, qboolean doComp )
 	{
 		if ( pModeCvars->modes & dwGameType )
 		{
-			trap_Cvar_Set( pModeCvars->cvar_name, pModeCvars->cvar_value );
-			G_Printf( "set %s %s\n", pModeCvars->cvar_name, pModeCvars->cvar_value );
+			trap_Cvar_Set ( pModeCvars->cvar_name, pModeCvars->cvar_value );
+			G_Printf ( "set %s %s\n", pModeCvars->cvar_name, pModeCvars->cvar_value );
 		}
 	}
 
 	G_UpdateCvars();
-	G_Printf( ">> %s settings loaded!\n", ( doComp ) ? "Competition" : "Public" );
+	G_Printf ( ">> %s settings loaded!\n", ( doComp ) ? "Competition" : "Public" );
 
 	if ( doComp && g_gamestate.integer == GS_WARMUP_COUNTDOWN )
 	{
 		level.lastRestartTime = level.time;
-		trap_SendConsoleCommand( EXEC_APPEND, va( "map_restart 0 %i\n", GS_WARMUP ) );
+		trap_SendConsoleCommand ( EXEC_APPEND, va ( "map_restart 0 %i\n", GS_WARMUP ) );
 	}
 	else
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, va( "map_restart 0 %i\n", GS_WARMUP ) );
+		trap_SendConsoleCommand ( EXEC_APPEND, va ( "map_restart 0 %i\n", GS_WARMUP ) );
 	}
 }

@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 // bg_local.h -- local definitions for the bg (both games) files
 
-#define MIN_WALK_NORMAL  0.7            // can't walk on very steep slopes
+#define MIN_WALK_NORMAL  0.7 // can't walk on very steep slopes
 
 #define STEPSIZE         18
 
@@ -100,13 +100,13 @@ extern float pm_flightfriction;
 
 extern int c_pmove;
 
-void       PM_AddTouchEnt( int entityNum );
-void       PM_AddEvent( int newEvent );
+void       PM_AddTouchEnt ( int entityNum );
+void       PM_AddEvent ( int newEvent );
 
-qboolean   PM_SlideMove( qboolean gravity );
-void       PM_StepSlideMove( qboolean gravity );
+qboolean   PM_SlideMove ( qboolean gravity );
+void       PM_StepSlideMove ( qboolean gravity );
 
-qboolean   PM_SlideMoveProne( qboolean gravity );
-void       PM_StepSlideMoveProne( qboolean gravity );
+qboolean   PM_SlideMoveProne ( qboolean gravity );
+void       PM_StepSlideMoveProne ( qboolean gravity );
 
-void       PM_BeginWeaponChange( int oldweapon, int newweapon, qboolean reload );
+void       PM_BeginWeaponChange ( int oldweapon, int newweapon, qboolean reload );

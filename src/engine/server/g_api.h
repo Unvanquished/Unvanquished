@@ -28,41 +28,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SVF_CLIENTMASK            0x00000002
 #define SVF_VISDUMMY              0x00000004
 #define SVF_BOT                   0x00000008
-#define SVF_POW                   0x00000010     // ignored by the engine
+#define SVF_POW                   0x00000010 // ignored by the engine
 #define SVF_BROADCAST             0x00000020
 #define SVF_PORTAL                0x00000040
-#define SVF_BLANK                 0x00000080     // ignored by the engine
-#define SVF_NOFOOTSTEPS           0x00000100     // ignored by the engine
+#define SVF_BLANK                 0x00000080 // ignored by the engine
+#define SVF_NOFOOTSTEPS           0x00000100 // ignored by the engine
 #define SVF_CAPSULE               0x00000200
 #define SVF_VISDUMMY_MULTIPLE     0x00000400
 #define SVF_SINGLECLIENT          0x00000800
-#define SVF_NOSERVERINFO          0x00001000     // only meaningful for entities numbered in [0..MAX_CLIENTS)
+#define SVF_NOSERVERINFO          0x00001000 // only meaningful for entities numbered in [0..MAX_CLIENTS)
 #define SVF_NOTSINGLECLIENT       0x00002000
 #define SVF_IGNOREBMODELEXTENTS   0x00004000
 #define SVF_SELF_PORTAL           0x00008000
 #define SVF_SELF_PORTAL_EXCLUSIVE 0x00010000
-#define SVF_RIGID_BODY            0x00020000     // ignored by the engine
-#define SVF_USE_CURRENT_ORIGIN    0x00040000     // ignored by the engine
+#define SVF_RIGID_BODY            0x00020000 // ignored by the engine
+#define SVF_USE_CURRENT_ORIGIN    0x00040000 // ignored by the engine
 
 typedef struct
 {
-	qboolean linked;         // qfalse if not in any good cluster
+	qboolean linked; // qfalse if not in any good cluster
 	int      linkcount;
 
-	int      svFlags;        // SVF_NOCLIENT, SVF_BROADCAST, etc.
-	int      singleClient;   // only send to this client when SVF_SINGLECLIENT is set
+	int      svFlags; // SVF_NOCLIENT, SVF_BROADCAST, etc.
+	int      singleClient; // only send to this client when SVF_SINGLECLIENT is set
 	int      hiMask, loMask; // if SVF_CLIENTMASK is set, then only send to the
 	//  clients specified by the following 64-bit bitmask:
 	//  hiMask: high-order bits (32..63)
 	//  loMask: low-order bits (0..31)
 
-	qboolean bmodel;         // if false, assume an explicit mins/maxs bounding box
+	qboolean bmodel; // if false, assume an explicit mins/maxs bounding box
 	// only set by trap_SetBrushModel
 	vec3_t   mins, maxs;
-	int      contents;       // CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc.
+	int      contents; // CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc.
 	// a non-solid entity should have this set to 0
 
-	vec3_t absmin, absmax;   // derived from mins/maxs and origin + rotation
+	vec3_t absmin, absmax; // derived from mins/maxs and origin + rotation
 
 	// currentOrigin will be used for all collision detection and world linking.
 	// it will not necessarily be the same as the trajectory evaluation for the current
@@ -342,19 +342,19 @@ typedef enum
   // return NULL if the client is allowed to connect,
   //  otherwise return a text string describing the reason for the denial
 
-  GAME_CLIENT_BEGIN,            // void ()( int clientNum );
+  GAME_CLIENT_BEGIN, // void ()( int clientNum );
 
   GAME_CLIENT_USERINFO_CHANGED, // void ()( int clientNum );
 
-  GAME_CLIENT_DISCONNECT,       // void ()( int clientNum );
+  GAME_CLIENT_DISCONNECT, // void ()( int clientNum );
 
-  GAME_CLIENT_COMMAND,          // void ()( int clientNum );
+  GAME_CLIENT_COMMAND, // void ()( int clientNum );
 
-  GAME_CLIENT_THINK,            // void ()( int clientNum );
+  GAME_CLIENT_THINK, // void ()( int clientNum );
 
-  GAME_RUN_FRAME,               // void ()( int levelTime );
+  GAME_RUN_FRAME, // void ()( int levelTime );
 
-  GAME_CONSOLE_COMMAND,         // void ()( void );
+  GAME_CONSOLE_COMMAND, // void ()( void );
   // this will be called when a client-to-server command has been
   //  issued that is not recognized as an engine command.
   // the game module can issue trap_Argc() and trap_Argv() calls to get the command and arguments.
@@ -366,7 +366,7 @@ typedef enum
   BOTAI_START_FRAME, // void ()( int levelTime );
 
   // Cast AI
-  BOT_VISIBLEFROMPOS,   // qboolean ()( vec3_t srcOrig, int srcNum, dstOrig, int dstNum, qboolean isDummy );
+  BOT_VISIBLEFROMPOS, // qboolean ()( vec3_t srcOrig, int srcNum, dstOrig, int dstNum, qboolean isDummy );
   BOT_CHECKATTACKATPOS, // qboolean ()( int entityNum, int enemyNum, vec3_t position,
   //              qboolean ducking, qboolean allowWorldHit );
 

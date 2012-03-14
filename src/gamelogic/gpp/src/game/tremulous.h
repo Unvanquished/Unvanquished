@@ -92,29 +92,29 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL2_WALLJUMP_MAXSPEED      1000.0f
 
 #define LEVEL3_CLAW_DMG               ADM(80)
-#define LEVEL3_CLAW_RANGE             82.0f   // Whales: Increased claw range
+#define LEVEL3_CLAW_RANGE             82.0f // Whales: Increased claw range
 #define LEVEL3_CLAW_UPG_RANGE         LEVEL3_CLAW_RANGE + 3.0f
-#define LEVEL3_CLAW_WIDTH             13.5f   // Whales: Increased claw width
-#define LEVEL3_CLAW_REPEAT            750     // Whales: Lowered repeat
+#define LEVEL3_CLAW_WIDTH             13.5f // Whales: Increased claw width
+#define LEVEL3_CLAW_REPEAT            750 // Whales: Lowered repeat
 #define LEVEL3_CLAW_K_SCALE           1.0f
-#define LEVEL3_CLAW_U_REPEAT          700     // Whales: Lowered repeat for Adv. Goon. Standard value is 100ms below standard goon, but 650 is a bit fast for my taste.
+#define LEVEL3_CLAW_U_REPEAT          700 // Whales: Lowered repeat for Adv. Goon. Standard value is 100ms below standard goon, but 650 is a bit fast for my taste.
 #define LEVEL3_CLAW_U_K_SCALE         0.75f
 #define LEVEL3_POUNCE_DMG             ADM(75) // Ishq: Reduced damage. Pounce is very powerful as it is.
-#define LEVEL3_POUNCE_RANGE           55.0f   // Whales: Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
+#define LEVEL3_POUNCE_RANGE           55.0f // Whales: Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
 #define LEVEL3_POUNCE_UPG_RANGE       LEVEL3_POUNCE_RANGE + 3.0f
-#define LEVEL3_POUNCE_WIDTH           12.0f   // Whales: Pounce width narrowed. May scale this down even further.
-#define LEVEL3_POUNCE_TIME            700     // Whales: Reduced this by 100ms, may need nerfing.
-#define LEVEL3_POUNCE_TIME_UPG        700     // Whales: Evened with standard goon. I'd like to keep this here even if standard goon charge time is raised.
-#define LEVEL3_POUNCE_TIME_MIN        200     // msec before which pounce cancels
-#define LEVEL3_POUNCE_REPEAT          400     // msec before a new pounce starts
-#define LEVEL3_POUNCE_SPEED_MOD       0.85f   // Whales: Reduced the slowdown from a charged pounce by 0.10
-#define LEVEL3_POUNCE_JUMP_MAG        750     // Whales: Raised by 50,
-#define LEVEL3_POUNCE_JUMP_MAG_UPG    850     // Whales: Raised by 50.
+#define LEVEL3_POUNCE_WIDTH           12.0f // Whales: Pounce width narrowed. May scale this down even further.
+#define LEVEL3_POUNCE_TIME            700 // Whales: Reduced this by 100ms, may need nerfing.
+#define LEVEL3_POUNCE_TIME_UPG        700 // Whales: Evened with standard goon. I'd like to keep this here even if standard goon charge time is raised.
+#define LEVEL3_POUNCE_TIME_MIN        200 // msec before which pounce cancels
+#define LEVEL3_POUNCE_REPEAT          400 // msec before a new pounce starts
+#define LEVEL3_POUNCE_SPEED_MOD       0.85f // Whales: Reduced the slowdown from a charged pounce by 0.10
+#define LEVEL3_POUNCE_JUMP_MAG        750 // Whales: Raised by 50,
+#define LEVEL3_POUNCE_JUMP_MAG_UPG    850 // Whales: Raised by 50.
 #define LEVEL3_BOUNCEBALL_DMG         ADM(110)
 #define LEVEL3_BOUNCEBALL_REPEAT      1200
 #define LEVEL3_BOUNCEBALL_SPEED       1000.0f
 #define LEVEL3_BOUNCEBALL_RADIUS      75
-#define LEVEL3_BOUNCEBALL_REGEN       12500  // Whales: Reduced regen time.
+#define LEVEL3_BOUNCEBALL_REGEN       12500 // Whales: Reduced regen time.
 
 #define LEVEL4_CLAW_DMG               ADM(100)
 #define LEVEL4_CLAW_RANGE             100.0f
@@ -125,16 +125,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define LEVEL4_TRAMPLE_DMG            ADM(85) // 111 -> 85
 #define LEVEL4_TRAMPLE_SPEED          2.0f
-#define LEVEL4_TRAMPLE_CHARGE_MIN     375     // minimum msec to start a charge
-#define LEVEL4_TRAMPLE_CHARGE_MAX     1000    // msec to maximum charge stored
-#define LEVEL4_TRAMPLE_CHARGE_TRIGGER 3000    // msec charge starts on its own
-#define LEVEL4_TRAMPLE_DURATION       3000    // msec trample lasts on full charge
-#define LEVEL4_TRAMPLE_STOP_PENALTY   1       // charge lost per msec when stopped
-#define LEVEL4_TRAMPLE_REPEAT         300     // Time until charge rehits a player Ishq: 100->300
+#define LEVEL4_TRAMPLE_CHARGE_MIN     375 // minimum msec to start a charge
+#define LEVEL4_TRAMPLE_CHARGE_MAX     1000 // msec to maximum charge stored
+#define LEVEL4_TRAMPLE_CHARGE_TRIGGER 3000 // msec charge starts on its own
+#define LEVEL4_TRAMPLE_DURATION       3000 // msec trample lasts on full charge
+#define LEVEL4_TRAMPLE_STOP_PENALTY   1 // charge lost per msec when stopped
+#define LEVEL4_TRAMPLE_REPEAT         300 // Time until charge rehits a player Ishq: 100->300
 
-#define LEVEL4_CRUSH_DAMAGE_PER_V     0.5f    // damage per falling velocity
-#define LEVEL4_CRUSH_DAMAGE           120     // to players only
-#define LEVEL4_CRUSH_REPEAT           500     // player damage repeat
+#define LEVEL4_CRUSH_DAMAGE_PER_V     0.5f // damage per falling velocity
+#define LEVEL4_CRUSH_DAMAGE           120 // to players only
+#define LEVEL4_CRUSH_REPEAT           500 // player damage repeat
 
 /*
  * ALIEN classes
@@ -194,19 +194,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL2_UPG_REGEN     ( 0.03f * LEVEL2_UPG_HEALTH )
 #define LEVEL2_UPG_COST      1
 
-#define LEVEL3_SPEED         1.2f        // Whales: Raised goon speed by .1 to match backpedalling humans. May need nerf.
+#define LEVEL3_SPEED         1.2f // Whales: Raised goon speed by .1 to match backpedalling humans. May need nerf.
 #define LEVEL3_VALUE         AVM(600)
 #define LEVEL3_HEALTH        AHM(200)
 #define LEVEL3_REGEN         ( 0.03f * LEVEL3_HEALTH )
 #define LEVEL3_COST          1
 
-#define LEVEL3_UPG_SPEED     1.2f        // Whales: Raised by .1 to match standard goon.
+#define LEVEL3_UPG_SPEED     1.2f // Whales: Raised by .1 to match standard goon.
 #define LEVEL3_UPG_VALUE     AVM(720)
 #define LEVEL3_UPG_HEALTH    AHM(250)
 #define LEVEL3_UPG_REGEN     ( 0.03f * LEVEL3_UPG_HEALTH )
 #define LEVEL3_UPG_COST      1
 
-#define LEVEL4_SPEED         1.1f        // Whales: Lowered by .1
+#define LEVEL4_SPEED         1.1f // Whales: Lowered by .1
 #define LEVEL4_VALUE         AVM(960)
 #define LEVEL4_HEALTH        AHM(350)
 #define LEVEL4_REGEN         ( 0.025f * LEVEL4_HEALTH )
@@ -313,7 +313,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define TRAPPER_VALUE           ABVM(TRAPPER_BP)
 #define LOCKBLOB_SPEED          650.0f
 #define LOCKBLOB_LOCKTIME       5000
-#define LOCKBLOB_DOT            0.85f     // max angle = acos( LOCKBLOB_DOT )
+#define LOCKBLOB_DOT            0.85f // max angle = acos( LOCKBLOB_DOT )
 #define LOCKBLOB_K_SCALE        1.0f
 
 #define OVERMIND_BP             0
@@ -343,7 +343,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define ALIEN_SPAWN_REPEAT_TIME  10000
 
-#define ALIEN_REGEN_DAMAGE_TIME  2000            //msec since damage that regen starts again
+#define ALIEN_REGEN_DAMAGE_TIME  2000 //msec since damage that regen starts again
 #define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) //regen off creep
 
 #define ALIEN_MAX_FRAGS          9
@@ -374,11 +374,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define RIFLE_CLIPSIZE           30
 #define RIFLE_MAXCLIPS           6
-#define RIFLE_REPEAT             80    // Whales: Lowered by 10
+#define RIFLE_REPEAT             80 // Whales: Lowered by 10
 #define RIFLE_K_SCALE            1.0f
 #define RIFLE_RELOAD             2000
 #define RIFLE_PRICE              0
-#define RIFLE_SPREAD             250    // Whales: Raised by 50.
+#define RIFLE_SPREAD             250 // Whales: Raised by 50.
 #define RIFLE_DMG                HDM(5)
 
 #define PAINSAW_PRICE            100
@@ -398,7 +398,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define SHOTGUN_PRICE            150
 #define SHOTGUN_SHELLS           8
-#define SHOTGUN_PELLETS          11    //used to sync server and client side
+#define SHOTGUN_PELLETS          11 //used to sync server and client side
 #define SHOTGUN_MAXCLIPS         3
 #define SHOTGUN_REPEAT           1000
 #define SHOTGUN_K_SCALE          1.0f
@@ -424,22 +424,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define CHAINGUN_PRICE           400
 #define CHAINGUN_BULLETS         300
-#define CHAINGUN_REPEAT          88    // Ishq: 80 -> 88
+#define CHAINGUN_REPEAT          88 // Ishq: 80 -> 88
 #define CHAINGUN_K_SCALE         1.0f
 #define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
 
-#define FLAMER_PRICE             450    // Ishq: 400->400
-#define FLAMER_GAS               175    // Ishq: 200->175
+#define FLAMER_PRICE             450 // Ishq: 400->400
+#define FLAMER_GAS               175 // Ishq: 200->175
 #define FLAMER_REPEAT            200
 #define FLAMER_K_SCALE           2.0f
-#define FLAMER_DMG               HDM(15)   // Ishq: 20->15
-#define FLAMER_SPLASHDAMAGE      HDM(7)    // Ishq: 10->7
-#define FLAMER_RADIUS            25        // Whales: Radius lowered by 25
-#define FLAMER_SIZE              15        // missile bounding box
-#define FLAMER_LIFETIME          750.0f    // Whales: Raised by 50.
+#define FLAMER_DMG               HDM(15) // Ishq: 20->15
+#define FLAMER_SPLASHDAMAGE      HDM(7) // Ishq: 10->7
+#define FLAMER_RADIUS            25 // Whales: Radius lowered by 25
+#define FLAMER_SIZE              15 // missile bounding box
+#define FLAMER_LIFETIME          750.0f // Whales: Raised by 50.
 #define FLAMER_SPEED             500.0f
-#define FLAMER_LAG               0.65f     // the amount of player velocity that is added to the fireball
+#define FLAMER_LAG               0.65f // the amount of player velocity that is added to the fireball
 
 #define PRIFLE_PRICE             450
 #define PRIFLE_CLIPS             40
@@ -457,10 +457,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LCANNON_REPEAT           500
 #define LCANNON_RELOAD           0
 #define LCANNON_DAMAGE           HDM(265)
-#define LCANNON_RADIUS           150         // primary splash damage radius
-#define LCANNON_SIZE             5           // missile bounding box radius
+#define LCANNON_RADIUS           150 // primary splash damage radius
+#define LCANNON_SIZE             5 // missile bounding box radius
 #define LCANNON_SECONDARY_DAMAGE HDM(30)
-#define LCANNON_SECONDARY_RADIUS 75          // secondary splash damage radius
+#define LCANNON_SECONDARY_RADIUS 75 // secondary splash damage radius
 #define LCANNON_SECONDARY_SPEED  1400
 #define LCANNON_SECONDARY_RELOAD 2000
 #define LCANNON_SECONDARY_REPEAT 1000
@@ -468,7 +468,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LCANNON_CHARGE_TIME_MAX  3000
 #define LCANNON_CHARGE_TIME_MIN  100
 #define LCANNON_CHARGE_TIME_WARN 2000
-#define LCANNON_CHARGE_AMMO      10          // ammo cost of a full charge shot
+#define LCANNON_CHARGE_AMMO      10 // ammo cost of a full charge shot
 
 #define HBUILD_PRICE             0
 #define HBUILD_REPEAT            1000
@@ -495,7 +495,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define JETPACK_PRICE                 120
 #define JETPACK_FLOAT_SPEED           128.0f //up movement speed
 #define JETPACK_SINK_SPEED            192.0f //down movement speed
-#define JETPACK_DISABLE_TIME          1000   //time to disable the jetpack when player damaged
+#define JETPACK_DISABLE_TIME          1000 //time to disable the jetpack when player damaged
 #define JETPACK_DISABLE_CHANCE        0.3f
 
 #define BSUIT_PRICE                   400
@@ -529,7 +529,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_BHLTH_MODIFIER      1.0f
 #define HBHM(h) ((int)((float)h * HUMAN_BHLTH_MODIFIER ))
 #define HUMAN_BVALUE_MODIFIER     240.0f
-#define HBVM(h) ((int)((float)h * (float)HUMAN_BVALUE_MODIFIER ))                  // remember these are measured in credits not frags (c.f. ALIEN_CREDITS_PER_KILL)
+#define HBVM(h) ((int)((float)h * (float)HUMAN_BVALUE_MODIFIER )) // remember these are measured in credits not frags (c.f. ALIEN_CREDITS_PER_KILL)
 
 #define REACTOR_BASESIZE          1000
 #define REPEATER_BASESIZE         500
@@ -556,13 +556,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MGTURRET_SPLASHRADIUS     100
 #define MGTURRET_ANGULARSPEED     12
 #define MGTURRET_ACCURACY_TO_FIRE 0
-#define MGTURRET_VERTICALCAP      30    // +/- maximum pitch
+#define MGTURRET_VERTICALCAP      30 // +/- maximum pitch
 #define MGTURRET_REPEAT           150
 #define MGTURRET_K_SCALE          1.0f
 #define MGTURRET_RANGE            400.0f
 #define MGTURRET_SPREAD           200
 #define MGTURRET_DMG              HDM(8)
-#define MGTURRET_SPINUP_TIME      750   // time between target sighted and fire
+#define MGTURRET_SPINUP_TIME      750 // time between target sighted and fire
 #define MGTURRET_VALUE            HBVM(MGTURRET_BP)
 
 #define TESLAGEN_BP               10
@@ -581,7 +581,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DC_HEALTH                 HBHM(190)
 #define DC_SPLASHDAMAGE           50
 #define DC_SPLASHRADIUS           100
-#define DC_ATTACK_PERIOD          10000   // how often to spam "under attack"
+#define DC_ATTACK_PERIOD          10000 // how often to spam "under attack"
 #define DC_HEALRATE               4
 #define DC_RANGE                  1000
 #define DC_VALUE                  HBVM(DC_BP)
@@ -632,7 +632,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define STAMINA_MEDISTAT_RESTORE      30 // stacked on STOP or WALK
 #define STAMINA_SPRINT_TAKE           6
 #define STAMINA_JUMP_TAKE             250
-#define STAMINA_DODGE_TAKE            750  // Whales: Tripled dodge stamina requirement.
+#define STAMINA_DODGE_TAKE            750 // Whales: Tripled dodge stamina requirement.
 #define STAMINA_MAX                   3000 //Whales: Tripled maximum stamina.
 #define STAMINA_BREATHING_LEVEL       0
 #define STAMINA_SLOW_LEVEL            -500
@@ -644,7 +644,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150
 
-#define HUMAN_BUILDER_SCOREINC        50       // builders receive this many points every 10 seconds
+#define HUMAN_BUILDER_SCOREINC        50 // builders receive this many points every 10 seconds
 #define ALIEN_BUILDER_SCOREINC        AVM(100) // builders receive this many points every 10 seconds
 
 #define HUMAN_BUILDABLE_INACTIVE_TIME 90000
@@ -653,7 +653,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * Misc
  */
 
-#define MIN_FALL_DISTANCE                  30.0f  //the fall distance at which fall damage kicks in
+#define MIN_FALL_DISTANCE                  30.0f //the fall distance at which fall damage kicks in
 #define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
 
@@ -675,7 +675,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_HUMAN_STAGE3_THRESH        "12000"
 #define DEFAULT_HUMAN_MAX_STAGE            "2"
 
-#define DAMAGE_FRACTION_FOR_KILL           0.5f  //how much damage players (versus structures) need to
+#define DAMAGE_FRACTION_FOR_KILL           0.5f //how much damage players (versus structures) need to
 //do to increment the stage kill counters
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer

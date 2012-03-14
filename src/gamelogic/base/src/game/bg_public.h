@@ -32,14 +32,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define DEFAULT_GRAVITY    800
 
-#define SCORE_NOT_PRESENT  -9999      // for the CS_SCORES[12] when only one player is present
+#define SCORE_NOT_PRESENT  -9999 // for the CS_SCORES[12] when only one player is present
 
-#define VOTE_TIME          30000      // 30 seconds before vote times out
+#define VOTE_TIME          30000 // 30 seconds before vote times out
 
 #define MINS_Z             -24
 #define DEFAULT_VIEWHEIGHT 26
 #define CROUCH_VIEWHEIGHT  12
-#define DEAD_VIEWHEIGHT    -14      //TA: watch for mins[ 2 ] less than this causing
+#define DEAD_VIEWHEIGHT    -14 //TA: watch for mins[ 2 ] less than this causing
 
 //
 // config strings are a general means of communicating variable length strings
@@ -48,9 +48,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 #define CS_MUSIC            2
-#define CS_MESSAGE          3   // from the map worldspawn's message field
-#define CS_MOTD             4   // g_motd string for server message of the day
-#define CS_WARMUP           5   // server time when the match will be restarted
+#define CS_MESSAGE          3 // from the map worldspawn's message field
+#define CS_MOTD             4 // g_motd string for server message of the day
+#define CS_WARMUP           5 // server time when the match will be restarted
 #define CS_SCORES1          6
 #define CS_SCORES2          7
 #define CS_VOTE_TIME        8
@@ -64,12 +64,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CS_TEAMVOTE_NO      18
 
 #define CS_GAME_VERSION     20
-#define CS_LEVEL_START_TIME 21    // so the timer only shows the current level
-#define CS_INTERMISSION     22    // when 1, fraglimit/timelimit has been hit and intermission will start in a second or two
-#define CS_FLAGSTATUS       23    // string indicating flag status in CTF
+#define CS_LEVEL_START_TIME 21 // so the timer only shows the current level
+#define CS_INTERMISSION     22 // when 1, fraglimit/timelimit has been hit and intermission will start in a second or two
+#define CS_FLAGSTATUS       23 // string indicating flag status in CTF
 #define CS_SHADERSTATE      24
 #define CS_BOTINFO          25
-#define CS_CLIENTS_READY    26    //TA: following suggestion in STAT_ enum STAT_CLIENTS_READY becomes a configstring
+#define CS_CLIENTS_READY    26 //TA: following suggestion in STAT_ enum STAT_CLIENTS_READY becomes a configstring
 
 //TA: extra stuff:
 #define CS_BUILDPOINTS      28
@@ -110,14 +110,14 @@ movement on the server game.
 
 typedef enum
 {
-  PM_NORMAL,        // can accelerate and turn
-  PM_NOCLIP,        // noclip movement
-  PM_SPECTATOR,     // still run into walls
-  PM_JETPACK,       // jetpack physics
-  PM_GRABBED,       // like dead, but for when the player is still live
-  PM_DEAD,          // no acceleration or turning, but free falling
-  PM_FREEZE,        // stuck in place with no control
-  PM_INTERMISSION,  // no movement or status bar
+  PM_NORMAL, // can accelerate and turn
+  PM_NOCLIP, // noclip movement
+  PM_SPECTATOR, // still run into walls
+  PM_JETPACK, // jetpack physics
+  PM_GRABBED, // like dead, but for when the player is still live
+  PM_DEAD, // no acceleration or turning, but free falling
+  PM_FREEZE, // stuck in place with no control
+  PM_INTERMISSION, // no movement or status bar
   PM_SPINTERMISSION // no movement or status bar
 } pmtype_t;
 
@@ -134,19 +134,19 @@ typedef enum
 #define PMF_DUCKED         1
 #define PMF_JUMP_HELD      2
 #define PMF_CROUCH_HELD    4
-#define PMF_BACKWARDS_JUMP 8        // go into backwards land
-#define PMF_BACKWARDS_RUN  16       // coast down to backwards run
-#define PMF_TIME_LAND      32       // pm_time is time before rejump
-#define PMF_TIME_KNOCKBACK 64       // pm_time is an air-accelerate only time
-#define PMF_TIME_WATERJUMP 256      // pm_time is waterjump
-#define PMF_RESPAWNED      512      // clear after attack and jump buttons come up
+#define PMF_BACKWARDS_JUMP 8 // go into backwards land
+#define PMF_BACKWARDS_RUN  16 // coast down to backwards run
+#define PMF_TIME_LAND      32 // pm_time is time before rejump
+#define PMF_TIME_KNOCKBACK 64 // pm_time is an air-accelerate only time
+#define PMF_TIME_WATERJUMP 256 // pm_time is waterjump
+#define PMF_RESPAWNED      512 // clear after attack and jump buttons come up
 #define PMF_USE_ITEM_HELD  1024
-#define PMF_WEAPON_RELOAD  2048     //TA: force a weapon switch
-#define PMF_FOLLOW         4096     // spectate following another player
-#define PMF_QUEUED         8192     //TA: player is queued
-#define PMF_TIME_WALLJUMP  16384    //TA: for limiting wall jumping
-#define PMF_CHARGE         32768    //TA: keep track of pouncing
-#define PMF_WEAPON_SWITCH  65536    //TA: force a weapon switch
+#define PMF_WEAPON_RELOAD  2048 //TA: force a weapon switch
+#define PMF_FOLLOW         4096 // spectate following another player
+#define PMF_QUEUED         8192 //TA: player is queued
+#define PMF_TIME_WALLJUMP  16384 //TA: for limiting wall jumping
+#define PMF_CHARGE         32768 //TA: keep track of pouncing
+#define PMF_WEAPON_SWITCH  65536 //TA: force a weapon switch
 
 #define PMF_ALL_TIMES      ( PMF_TIME_WATERJUMP | PMF_TIME_LAND | PMF_TIME_KNOCKBACK | PMF_TIME_WALLJUMP )
 
@@ -158,9 +158,9 @@ typedef struct
 
 	// command (in)
 	usercmd_t cmd;
-	int       tracemask;           // collide against these types of surfaces
-	int       debugLevel;          // if set, diagnostic output will be printed
-	qboolean  noFootsteps;         // if the game is setup for no footsteps by the server
+	int       tracemask; // collide against these types of surfaces
+	int       debugLevel; // if set, diagnostic output will be printed
+	qboolean  noFootsteps; // if the game is setup for no footsteps by the server
 	qboolean  autoWeaponHit[ 32 ]; //FIXME: TA: remind myself later this might be a problem
 
 	int       framecount;
@@ -169,7 +169,7 @@ typedef struct
 	int    numtouch;
 	int    touchents[ MAXTOUCH ];
 
-	vec3_t mins, maxs;      // bounding box size
+	vec3_t mins, maxs; // bounding box size
 
 	int    watertype;
 	int    waterlevel;
@@ -183,15 +183,15 @@ typedef struct
 	// callbacks to test the world
 	// these will be different functions during game and cgame
 	/*void    (*trace)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );*/
-	void          ( *trace )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-	                          const vec3_t end, int passEntityNum, int contentMask );
+	void          ( *trace ) ( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+	                           const vec3_t end, int passEntityNum, int contentMask );
 
-	int           ( *pointcontents )( const vec3_t point, int passEntityNum );
+	int           ( *pointcontents ) ( const vec3_t point, int passEntityNum );
 } pmove_t;
 
 // if a full pmove isn't done on the client, you can just update the angles
-void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
-void Pmove( pmove_t *pmove );
+void PM_UpdateViewAngles ( playerState_t *ps, const usercmd_t *cmd );
+void Pmove ( pmove_t *pmove );
 
 //===================================================================================
 
@@ -200,20 +200,20 @@ typedef enum
 {
   STAT_HEALTH,
   STAT_ITEMS,
-  STAT_SLOTS,      //TA: tracks the amount of stuff human players are carrying
+  STAT_SLOTS, //TA: tracks the amount of stuff human players are carrying
   STAT_ACTIVEITEMS,
-  STAT_WEAPONS,    // 16 bit fields
-  STAT_WEAPONS2,   //TA: another 16 bits to push the max weapon count up
+  STAT_WEAPONS, // 16 bit fields
+  STAT_WEAPONS2, //TA: another 16 bits to push the max weapon count up
   STAT_MAX_HEALTH, // health / armor limit, changable by handicap
-  STAT_PCLASS,     //TA: player class (for aliens AND humans)
-  STAT_PTEAM,      //TA: player team
-  STAT_STAMINA,    //TA: stamina (human only)
-  STAT_STATE,      //TA: client states e.g. wall climbing
-  STAT_MISC,       //TA: for uh...misc stuff
-  STAT_BUILDABLE,  //TA: which ghost model to display for building
-  STAT_BOOSTTIME,  //TA: time left for boost (alien only)
-  STAT_FALLDIST,   //TA: the distance the player fell
-  STAT_VIEWLOCK    //TA: direction to lock the view in
+  STAT_PCLASS, //TA: player class (for aliens AND humans)
+  STAT_PTEAM, //TA: player team
+  STAT_STAMINA, //TA: stamina (human only)
+  STAT_STATE, //TA: client states e.g. wall climbing
+  STAT_MISC, //TA: for uh...misc stuff
+  STAT_BUILDABLE, //TA: which ghost model to display for building
+  STAT_BOOSTTIME, //TA: time left for boost (alien only)
+  STAT_FALLDIST, //TA: the distance the player fell
+  STAT_VIEWLOCK //TA: direction to lock the view in
 } statIndex_t;
 
 #define SCA_WALLCLIMBER        0x00000001
@@ -249,18 +249,18 @@ typedef enum
 // cleared on respawn
 typedef enum
 {
-  PERS_SCORE,     // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-  PERS_HITS,      // total points damage inflicted so damage beeps can sound on change
+  PERS_SCORE, // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
+  PERS_HITS, // total points damage inflicted so damage beeps can sound on change
   PERS_RANK,
   PERS_TEAM,
   PERS_SPAWN_COUNT, // incremented every respawn
-  PERS_ATTACKER,    // clientnum of last damage inflicter
-  PERS_KILLED,      // count of the number of times you died
+  PERS_ATTACKER, // clientnum of last damage inflicter
+  PERS_KILLED, // count of the number of times you died
 
   //TA:
   PERS_STATE,
-  PERS_CREDIT,   // human credit
-  PERS_BANK,     // human credit in the bank
+  PERS_CREDIT, // human credit
+  PERS_BANK, // human credit in the bank
   PERS_QUEUEPOS, // position in the spawn queue
   PERS_NEWWEAPON // weapon to switch to
 } persEnum_t;
@@ -270,25 +270,25 @@ typedef enum
 #define PS_NONSEGMODEL        0x00000004
 
 // entityState_t->eFlags
-#define EF_DEAD               0x00000001  // don't draw a foe marker over players with EF_DEAD
-#define EF_TELEPORT_BIT       0x00000002  // toggled every time the origin abruptly changes
+#define EF_DEAD               0x00000001 // don't draw a foe marker over players with EF_DEAD
+#define EF_TELEPORT_BIT       0x00000002 // toggled every time the origin abruptly changes
 #define EF_PLAYER_EVENT       0x00000004
-#define EF_BOUNCE             0x00000008  // for missiles
-#define EF_BOUNCE_HALF        0x00000010  // for missiles
-#define EF_NO_BOUNCE_SOUND    0x00000020  // for missiles
-#define EF_WALLCLIMB          0x00000040  // TA: wall walking
-#define EF_WALLCLIMBCEILING   0x00000080  // TA: wall walking ceiling hack
-#define EF_NODRAW             0x00000100  // may have an event, but no model (unspawned items)
-#define EF_FIRING             0x00000200  // for lightning gun
-#define EF_FIRING2            0x00000400  // alt fire
-#define EF_FIRING3            0x00000800  // third fire
-#define EF_MOVER_STOP         0x00001000  // will push otherwise
-#define EF_TALK               0x00002000  // draw a talk balloon
-#define EF_CONNECTION         0x00004000  // draw a connection trouble sprite
-#define EF_VOTED              0x00008000  // already cast a vote
-#define EF_TEAMVOTED          0x00010000  // already cast a vote
-#define EF_BLOBLOCKED         0x00020000  // TA: caught by a trapper
-#define EF_REAL_LIGHT         0x00040000  // TA: light sprites according to ambient light
+#define EF_BOUNCE             0x00000008 // for missiles
+#define EF_BOUNCE_HALF        0x00000010 // for missiles
+#define EF_NO_BOUNCE_SOUND    0x00000020 // for missiles
+#define EF_WALLCLIMB          0x00000040 // TA: wall walking
+#define EF_WALLCLIMBCEILING   0x00000080 // TA: wall walking ceiling hack
+#define EF_NODRAW             0x00000100 // may have an event, but no model (unspawned items)
+#define EF_FIRING             0x00000200 // for lightning gun
+#define EF_FIRING2            0x00000400 // alt fire
+#define EF_FIRING3            0x00000800 // third fire
+#define EF_MOVER_STOP         0x00001000 // will push otherwise
+#define EF_TALK               0x00002000 // draw a talk balloon
+#define EF_CONNECTION         0x00004000 // draw a connection trouble sprite
+#define EF_VOTED              0x00008000 // already cast a vote
+#define EF_TEAMVOTED          0x00010000 // already cast a vote
+#define EF_BLOBLOCKED         0x00020000 // TA: caught by a trapper
+#define EF_REAL_LIGHT         0x00040000 // TA: light sprites according to ambient light
 
 typedef enum
 {
@@ -531,7 +531,7 @@ typedef enum
   EV_MISSILE_MISS,
   EV_MISSILE_MISS_METAL,
   EV_TESLATRAIL,
-  EV_BULLET,  // otherEntity is the shooter
+  EV_BULLET, // otherEntity is the shooter
 
   EV_LEV1_GRAB,
   EV_LEV4_CHARGE_PREPARE,
@@ -543,13 +543,13 @@ typedef enum
   EV_DEATH3,
   EV_OBITUARY,
 
-  EV_GIB_PLAYER,      // gib a previously living player
+  EV_GIB_PLAYER, // gib a previously living player
 
   EV_BUILD_CONSTRUCT, //TA
-  EV_BUILD_DESTROY,   //TA
-  EV_BUILD_DELAY,     //TA: can't build yet
-  EV_BUILD_REPAIR,    //TA: repairing buildable
-  EV_BUILD_REPAIRED,  //TA: buildable has full health
+  EV_BUILD_DESTROY, //TA
+  EV_BUILD_DELAY, //TA: can't build yet
+  EV_BUILD_REPAIR, //TA: repairing buildable
+  EV_BUILD_REPAIRED, //TA: buildable has full health
   EV_HUMAN_BUILDABLE_EXPLOSION,
   EV_ALIEN_BUILDABLE_EXPLOSION,
   EV_ALIEN_ACIDTUBE,
@@ -564,12 +564,12 @@ typedef enum
   EV_TAUNT,
 
   EV_OVERMIND_ATTACK, //TA: overmind under attack
-  EV_OVERMIND_DYING,  //TA: overmind close to death
+  EV_OVERMIND_DYING, //TA: overmind close to death
   EV_OVERMIND_SPAWNS, //TA: overmind needs spawns
 
-  EV_DCC_ATTACK,      //TA: dcc under attack
+  EV_DCC_ATTACK, //TA: dcc under attack
 
-  EV_RPTUSE_SOUND     //TA: trigger a sound
+  EV_RPTUSE_SOUND //TA: trigger a sound
 } entity_event_t;
 
 typedef enum
@@ -755,11 +755,11 @@ typedef struct animation_s
 {
 	int firstFrame;
 	int numFrames;
-	int loopFrames;  // 0 to numFrames
-	int frameLerp;   // msec between frames
+	int loopFrames; // 0 to numFrames
+	int frameLerp; // msec between frames
 	int initialLerp; // msec to get to first frame
-	int reversed;    // true if animation is reversed
-	int flipflop;    // true if animation should flipflop back to base
+	int reversed; // true if animation is reversed
+	int flipflop; // true if animation should flipflop back to base
 } animation_t;
 
 // flip the togglebit every time an animation
@@ -1080,131 +1080,131 @@ typedef struct
 } upgradeAttributes_t;
 
 //TA:
-void     BG_UnpackAmmoArray( int weapon, int psAmmo[], int psAmmo2[], int *ammo, int *clips );
-void     BG_PackAmmoArray( int weapon, int psAmmo[], int psAmmo2[], int ammo, int clips );
-qboolean BG_WeaponIsFull( weapon_t weapon, int stats[], int psAmmo[], int psAmmo2[]  );
-void     BG_AddWeaponToInventory( int weapon, int stats[]  );
-void     BG_RemoveWeaponFromInventory( int weapon, int stats[]  );
-qboolean BG_InventoryContainsWeapon( int weapon, int stats[]  );
-void     BG_AddUpgradeToInventory( int item, int stats[]  );
-void     BG_RemoveUpgradeFromInventory( int item, int stats[]  );
-qboolean BG_InventoryContainsUpgrade( int item, int stats[]  );
-void     BG_ActivateUpgrade( int item, int stats[]  );
-void     BG_DeactivateUpgrade( int item, int stats[]  );
-qboolean BG_UpgradeIsActive( int item, int stats[]  );
-qboolean BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
-                        vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling );
-void     BG_PositionBuildableRelativeToPlayer( const playerState_t *ps,
+void     BG_UnpackAmmoArray ( int weapon, int psAmmo[], int psAmmo2[], int *ammo, int *clips );
+void     BG_PackAmmoArray ( int weapon, int psAmmo[], int psAmmo2[], int ammo, int clips );
+qboolean BG_WeaponIsFull ( weapon_t weapon, int stats[], int psAmmo[], int psAmmo2[]  );
+void     BG_AddWeaponToInventory ( int weapon, int stats[]  );
+void     BG_RemoveWeaponFromInventory ( int weapon, int stats[]  );
+qboolean BG_InventoryContainsWeapon ( int weapon, int stats[]  );
+void     BG_AddUpgradeToInventory ( int item, int stats[]  );
+void     BG_RemoveUpgradeFromInventory ( int item, int stats[]  );
+qboolean BG_InventoryContainsUpgrade ( int item, int stats[]  );
+void     BG_ActivateUpgrade ( int item, int stats[]  );
+void     BG_DeactivateUpgrade ( int item, int stats[]  );
+qboolean BG_UpgradeIsActive ( int item, int stats[]  );
+qboolean BG_RotateAxis ( vec3_t surfNormal, vec3_t inAxis[ 3 ],
+                         vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling );
+void     BG_PositionBuildableRelativeToPlayer ( const playerState_t *ps,
     const vec3_t mins, const vec3_t maxs,
-    void ( *trace )( trace_t *, const vec3_t, const vec3_t,
-                     const vec3_t, const vec3_t, int, int ),
+    void ( *trace ) ( trace_t *, const vec3_t, const vec3_t,
+                      const vec3_t, const vec3_t, int, int ),
     vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
-int      BG_GetValueOfHuman( playerState_t *ps );
+int      BG_GetValueOfHuman ( playerState_t *ps );
 
-int      BG_FindBuildNumForName( char *name );
-int      BG_FindBuildNumForEntityName( char *name );
-char     *BG_FindNameForBuildable( int bclass );
-char     *BG_FindHumanNameForBuildable( int bclass );
-char     *BG_FindEntityNameForBuildable( int bclass );
-char     *BG_FindModelsForBuildable( int bclass, int modelNum );
-float    BG_FindModelScaleForBuildable( int bclass );
-void     BG_FindBBoxForBuildable( int bclass, vec3_t mins, vec3_t maxs );
-float    BG_FindZOffsetForBuildable( int pclass );
-int      BG_FindHealthForBuildable( int bclass );
-int      BG_FindRegenRateForBuildable( int bclass );
-trType_t BG_FindTrajectoryForBuildable( int bclass );
-float    BG_FindBounceForBuildable( int bclass );
-int      BG_FindBuildPointsForBuildable( int bclass );
-qboolean BG_FindStagesForBuildable( int bclass, stage_t stage );
-int      BG_FindSplashDamageForBuildable( int bclass );
-int      BG_FindSplashRadiusForBuildable( int bclass );
-int      BG_FindMODForBuildable( int bclass );
-int      BG_FindTeamForBuildable( int bclass );
-weapon_t BG_FindBuildWeaponForBuildable( int bclass );
-int      BG_FindAnimForBuildable( int bclass );
-int      BG_FindNextThinkForBuildable( int bclass );
-int      BG_FindBuildTimeForBuildable( int bclass );
-qboolean BG_FindUsableForBuildable( int bclass );
-int      BG_FindRangeForBuildable( int bclass );
-int      BG_FindFireSpeedForBuildable( int bclass );
-weapon_t BG_FindProjTypeForBuildable( int bclass );
-float    BG_FindMinNormalForBuildable( int bclass );
-qboolean BG_FindInvertNormalForBuildable( int bclass );
-int      BG_FindCreepTestForBuildable( int bclass );
-int      BG_FindCreepSizeForBuildable( int bclass );
-int      BG_FindDCCTestForBuildable( int bclass );
-int      BG_FindUniqueTestForBuildable( int bclass );
-void     BG_InitBuildableOverrides( void );
+int      BG_FindBuildNumForName ( char *name );
+int      BG_FindBuildNumForEntityName ( char *name );
+char     *BG_FindNameForBuildable ( int bclass );
+char     *BG_FindHumanNameForBuildable ( int bclass );
+char     *BG_FindEntityNameForBuildable ( int bclass );
+char     *BG_FindModelsForBuildable ( int bclass, int modelNum );
+float    BG_FindModelScaleForBuildable ( int bclass );
+void     BG_FindBBoxForBuildable ( int bclass, vec3_t mins, vec3_t maxs );
+float    BG_FindZOffsetForBuildable ( int pclass );
+int      BG_FindHealthForBuildable ( int bclass );
+int      BG_FindRegenRateForBuildable ( int bclass );
+trType_t BG_FindTrajectoryForBuildable ( int bclass );
+float    BG_FindBounceForBuildable ( int bclass );
+int      BG_FindBuildPointsForBuildable ( int bclass );
+qboolean BG_FindStagesForBuildable ( int bclass, stage_t stage );
+int      BG_FindSplashDamageForBuildable ( int bclass );
+int      BG_FindSplashRadiusForBuildable ( int bclass );
+int      BG_FindMODForBuildable ( int bclass );
+int      BG_FindTeamForBuildable ( int bclass );
+weapon_t BG_FindBuildWeaponForBuildable ( int bclass );
+int      BG_FindAnimForBuildable ( int bclass );
+int      BG_FindNextThinkForBuildable ( int bclass );
+int      BG_FindBuildTimeForBuildable ( int bclass );
+qboolean BG_FindUsableForBuildable ( int bclass );
+int      BG_FindRangeForBuildable ( int bclass );
+int      BG_FindFireSpeedForBuildable ( int bclass );
+weapon_t BG_FindProjTypeForBuildable ( int bclass );
+float    BG_FindMinNormalForBuildable ( int bclass );
+qboolean BG_FindInvertNormalForBuildable ( int bclass );
+int      BG_FindCreepTestForBuildable ( int bclass );
+int      BG_FindCreepSizeForBuildable ( int bclass );
+int      BG_FindDCCTestForBuildable ( int bclass );
+int      BG_FindUniqueTestForBuildable ( int bclass );
+void     BG_InitBuildableOverrides ( void );
 
-int      BG_FindClassNumForName( char *name );
-char     *BG_FindNameForClassNum( int pclass );
-char     *BG_FindHumanNameForClassNum( int pclass );
-char     *BG_FindModelNameForClass( int pclass );
-float    BG_FindModelScaleForClass( int pclass );
-char     *BG_FindSkinNameForClass( int pclass );
-float    BG_FindShadowScaleForClass( int pclass );
-char     *BG_FindHudNameForClass( int pclass );
-qboolean BG_FindStagesForClass( int pclass, stage_t stage );
-void     BG_FindBBoxForClass( int pclass, vec3_t mins, vec3_t maxs, vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs );
-float    BG_FindZOffsetForClass( int pclass );
-void     BG_FindViewheightForClass( int pclass, int *viewheight, int *cViewheight );
-int      BG_FindHealthForClass( int pclass );
-float    BG_FindFallDamageForClass( int pclass );
-int      BG_FindRegenRateForClass( int pclass );
-int      BG_FindFovForClass( int pclass );
-float    BG_FindBobForClass( int pclass );
-float    BG_FindBobCycleForClass( int pclass );
-float    BG_FindSpeedForClass( int pclass );
-float    BG_FindAccelerationForClass( int pclass );
-float    BG_FindAirAccelerationForClass( int pclass );
-float    BG_FindFrictionForClass( int pclass );
-float    BG_FindStopSpeedForClass( int pclass );
-float    BG_FindJumpMagnitudeForClass( int pclass );
-float    BG_FindKnockbackScaleForClass( int pclass );
-int      BG_FindSteptimeForClass( int pclass );
-qboolean BG_ClassHasAbility( int pclass, int ability );
-weapon_t BG_FindStartWeaponForClass( int pclass );
-float    BG_FindBuildDistForClass( int pclass );
-int      BG_ClassCanEvolveFromTo( int fclass, int tclass, int credits, int num );
-int      BG_FindCostOfClass( int pclass );
-int      BG_FindValueOfClass( int pclass );
-void     BG_InitClassOverrides( void );
+int      BG_FindClassNumForName ( char *name );
+char     *BG_FindNameForClassNum ( int pclass );
+char     *BG_FindHumanNameForClassNum ( int pclass );
+char     *BG_FindModelNameForClass ( int pclass );
+float    BG_FindModelScaleForClass ( int pclass );
+char     *BG_FindSkinNameForClass ( int pclass );
+float    BG_FindShadowScaleForClass ( int pclass );
+char     *BG_FindHudNameForClass ( int pclass );
+qboolean BG_FindStagesForClass ( int pclass, stage_t stage );
+void     BG_FindBBoxForClass ( int pclass, vec3_t mins, vec3_t maxs, vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs );
+float    BG_FindZOffsetForClass ( int pclass );
+void     BG_FindViewheightForClass ( int pclass, int *viewheight, int *cViewheight );
+int      BG_FindHealthForClass ( int pclass );
+float    BG_FindFallDamageForClass ( int pclass );
+int      BG_FindRegenRateForClass ( int pclass );
+int      BG_FindFovForClass ( int pclass );
+float    BG_FindBobForClass ( int pclass );
+float    BG_FindBobCycleForClass ( int pclass );
+float    BG_FindSpeedForClass ( int pclass );
+float    BG_FindAccelerationForClass ( int pclass );
+float    BG_FindAirAccelerationForClass ( int pclass );
+float    BG_FindFrictionForClass ( int pclass );
+float    BG_FindStopSpeedForClass ( int pclass );
+float    BG_FindJumpMagnitudeForClass ( int pclass );
+float    BG_FindKnockbackScaleForClass ( int pclass );
+int      BG_FindSteptimeForClass ( int pclass );
+qboolean BG_ClassHasAbility ( int pclass, int ability );
+weapon_t BG_FindStartWeaponForClass ( int pclass );
+float    BG_FindBuildDistForClass ( int pclass );
+int      BG_ClassCanEvolveFromTo ( int fclass, int tclass, int credits, int num );
+int      BG_FindCostOfClass ( int pclass );
+int      BG_FindValueOfClass ( int pclass );
+void     BG_InitClassOverrides ( void );
 
-int      BG_FindPriceForWeapon( int weapon );
-qboolean BG_FindStagesForWeapon( int weapon, stage_t stage );
-int      BG_FindSlotsForWeapon( int weapon );
-char     *BG_FindNameForWeapon( int weapon );
-int      BG_FindWeaponNumForName( char *name );
-char     *BG_FindHumanNameForWeapon( int weapon );
-char     *BG_FindModelsForWeapon( int weapon, int modelNum );
-char     *BG_FindIconForWeapon( int weapon );
-char     *BG_FindCrosshairForWeapon( int weapon );
-int      BG_FindCrosshairSizeForWeapon( int weapon );
-void     BG_FindAmmoForWeapon( int weapon, int *maxAmmo, int *maxClips );
-qboolean BG_FindInfinteAmmoForWeapon( int weapon );
-qboolean BG_FindUsesEnergyForWeapon( int weapon );
-int      BG_FindRepeatRate1ForWeapon( int weapon );
-int      BG_FindRepeatRate2ForWeapon( int weapon );
-int      BG_FindRepeatRate3ForWeapon( int weapon );
-int      BG_FindReloadTimeForWeapon( int weapon );
-qboolean BG_WeaponHasAltMode( int weapon );
-qboolean BG_WeaponHasThirdMode( int weapon );
-qboolean BG_WeaponCanZoom( int weapon );
-float    BG_FindZoomFovForWeapon( int weapon );
-qboolean BG_FindPurchasableForWeapon( int weapon );
-int      BG_FindBuildDelayForWeapon( int weapon );
-WUTeam_t BG_FindTeamForWeapon( int weapon );
+int      BG_FindPriceForWeapon ( int weapon );
+qboolean BG_FindStagesForWeapon ( int weapon, stage_t stage );
+int      BG_FindSlotsForWeapon ( int weapon );
+char     *BG_FindNameForWeapon ( int weapon );
+int      BG_FindWeaponNumForName ( char *name );
+char     *BG_FindHumanNameForWeapon ( int weapon );
+char     *BG_FindModelsForWeapon ( int weapon, int modelNum );
+char     *BG_FindIconForWeapon ( int weapon );
+char     *BG_FindCrosshairForWeapon ( int weapon );
+int      BG_FindCrosshairSizeForWeapon ( int weapon );
+void     BG_FindAmmoForWeapon ( int weapon, int *maxAmmo, int *maxClips );
+qboolean BG_FindInfinteAmmoForWeapon ( int weapon );
+qboolean BG_FindUsesEnergyForWeapon ( int weapon );
+int      BG_FindRepeatRate1ForWeapon ( int weapon );
+int      BG_FindRepeatRate2ForWeapon ( int weapon );
+int      BG_FindRepeatRate3ForWeapon ( int weapon );
+int      BG_FindReloadTimeForWeapon ( int weapon );
+qboolean BG_WeaponHasAltMode ( int weapon );
+qboolean BG_WeaponHasThirdMode ( int weapon );
+qboolean BG_WeaponCanZoom ( int weapon );
+float    BG_FindZoomFovForWeapon ( int weapon );
+qboolean BG_FindPurchasableForWeapon ( int weapon );
+int      BG_FindBuildDelayForWeapon ( int weapon );
+WUTeam_t BG_FindTeamForWeapon ( int weapon );
 
-int      BG_FindPriceForUpgrade( int upgrade );
-qboolean BG_FindStagesForUpgrade( int upgrade, stage_t stage );
-int      BG_FindSlotsForUpgrade( int upgrade );
-char     *BG_FindNameForUpgrade( int upgrade );
-int      BG_FindUpgradeNumForName( char *name );
-char     *BG_FindHumanNameForUpgrade( int upgrade );
-char     *BG_FindIconForUpgrade( int upgrade );
-qboolean BG_FindPurchasableForUpgrade( int upgrade );
-qboolean BG_FindUsableForUpgrade( int upgrade );
-WUTeam_t BG_FindTeamForUpgrade( int upgrade );
+int      BG_FindPriceForUpgrade ( int upgrade );
+qboolean BG_FindStagesForUpgrade ( int upgrade, stage_t stage );
+int      BG_FindSlotsForUpgrade ( int upgrade );
+char     *BG_FindNameForUpgrade ( int upgrade );
+int      BG_FindUpgradeNumForName ( char *name );
+char     *BG_FindHumanNameForUpgrade ( int upgrade );
+char     *BG_FindIconForUpgrade ( int upgrade );
+qboolean BG_FindPurchasableForUpgrade ( int upgrade );
+qboolean BG_FindUsableForUpgrade ( int upgrade );
+WUTeam_t BG_FindTeamForUpgrade ( int upgrade );
 
 // content masks
 #define MASK_ALL         ( -1 )
@@ -1215,15 +1215,15 @@ WUTeam_t BG_FindTeamForUpgrade( int upgrade );
 #define MASK_OPAQUE      ( CONTENTS_SOLID | CONTENTS_SLIME | CONTENTS_LAVA )
 #define MASK_SHOT        ( CONTENTS_SOLID | CONTENTS_BODY )
 
-void     BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
-void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
+void     BG_EvaluateTrajectory ( const trajectory_t *tr, int atTime, vec3_t result );
+void     BG_EvaluateTrajectoryDelta ( const trajectory_t *tr, int atTime, vec3_t result );
 
-void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
+void     BG_AddPredictableEventToPlayerstate ( int newEvent, int eventParm, playerState_t *ps );
 
-void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
-void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
+void     BG_PlayerStateToEntityState ( playerState_t *ps, entityState_t *s, qboolean snap );
+void     BG_PlayerStateToEntityStateExtraPolate ( playerState_t *ps, entityState_t *s, int time, qboolean snap );
 
-qboolean BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
+qboolean BG_PlayerTouchesItem ( playerState_t *ps, entityState_t *item, int atTime );
 
 #define ARENAS_PER_TIER 4
 #define MAX_ARENAS      1024
@@ -1232,17 +1232,17 @@ qboolean BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTim
 #define MAX_BOTS        1024
 #define MAX_BOTS_TEXT   8192
 
-float    atof_neg( char *token, qboolean allowNegative );
-int      atoi_neg( char *token, qboolean allowNegative );
+float    atof_neg ( char *token, qboolean allowNegative );
+int      atoi_neg ( char *token, qboolean allowNegative );
 
-void     BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weaponsSize,
-                                   upgrade_t *upgrades, int upgradesSize );
-void     BG_ParseCSVClassList( const char *string, pClass_t *classes, int classesSize );
-void     BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize );
-void     BG_InitAllowedGameElements( void );
-qboolean BG_WeaponIsAllowed( weapon_t weapon );
-qboolean BG_UpgradeIsAllowed( upgrade_t upgrade );
+void     BG_ParseCSVEquipmentList ( const char *string, weapon_t *weapons, int weaponsSize,
+                                    upgrade_t *upgrades, int upgradesSize );
+void     BG_ParseCSVClassList ( const char *string, pClass_t *classes, int classesSize );
+void     BG_ParseCSVBuildableList ( const char *string, buildable_t *buildables, int buildablesSize );
+void     BG_InitAllowedGameElements ( void );
+qboolean BG_WeaponIsAllowed ( weapon_t weapon );
+qboolean BG_UpgradeIsAllowed ( upgrade_t upgrade );
 
-qboolean BG_ClassIsAllowed( pClass_t class );
-qboolean BG_BuildableIsAllowed( buildable_t buildable );
-qboolean BG_UpgradeClassAvailable( playerState_t *ps );
+qboolean BG_ClassIsAllowed ( pClass_t class );
+qboolean BG_BuildableIsAllowed ( buildable_t buildable );
+qboolean BG_UpgradeClassAvailable ( playerState_t *ps );

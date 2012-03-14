@@ -39,9 +39,9 @@ extern          "C"
 {
 #endif
 
-	void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, qboolean doGamma, qboolean toneMap, qboolean compensate );
+	void LoadRGBEToFloats ( const char *name, float **pic, int *width, int *height, qboolean doGamma, qboolean toneMap, qboolean compensate );
 
-	void LoadRGBEToHalfs( const char *name, unsigned short **halfImage, int *width, int *height )
+	void LoadRGBEToHalfs ( const char *name, unsigned short **halfImage, int *width, int *height )
 	{
 		int            i, j;
 		int            w, h;
@@ -50,16 +50,16 @@ extern          "C"
 		unsigned short *halfbuf;
 
 #if 0
-		w         = h = 0;
-		LoadRGBEToFloats( name, &hdrImage, &w, &h, qtrue, qtrue, qtrue );
+		w = h = 0;
+		LoadRGBEToFloats ( name, &hdrImage, &w, &h, qtrue, qtrue, qtrue );
 
-		*width    = w;
-		*height   = h;
+		*width = w;
+		*height = h;
 
-		*ldrImage = ri.Malloc( w * h * 4 );
-		pixbuf    = *ldrImage;
+		*ldrImage = ri.Malloc ( w * h * 4 );
+		pixbuf = *ldrImage;
 
-		floatbuf  = hdrImage;
+		floatbuf = hdrImage;
 
 		for ( i = 0; i < ( w * h ); i++ )
 		{
@@ -68,7 +68,7 @@ extern          "C"
 				sample[ j ] = *floatbuf++;
 			}
 
-			NormalizeColor( sample, sample );
+			NormalizeColor ( sample, sample );
 
 			*pixbuf++ = ( byte ) ( sample[ 0 ] * 255 );
 			*pixbuf++ = ( byte ) ( sample[ 1 ] * 255 );
@@ -77,29 +77,29 @@ extern          "C"
 		}
 
 #else
-		w          = h = 0;
-		LoadRGBEToFloats( name, &hdrImage, &w, &h, qtrue, qfalse, qtrue );
+		w = h = 0;
+		LoadRGBEToFloats ( name, &hdrImage, &w, &h, qtrue, qfalse, qtrue );
 
-		*width     = w;
-		*height    = h;
+		*width = w;
+		*height = h;
 
-		*halfImage = ( unsigned short * ) Com_Allocate( w * h * 3 * 6 );
+		*halfImage = ( unsigned short * ) Com_Allocate ( w * h * 3 * 6 );
 
-		halfbuf    = *halfImage;
-		floatbuf   = hdrImage;
+		halfbuf = *halfImage;
+		floatbuf = hdrImage;
 
 		for ( i = 0; i < ( w * h ); i++ )
 		{
 			for ( j = 0; j < 3; j++ )
 			{
-				half sample( *floatbuf++ );
+				half sample ( *floatbuf++ );
 				*halfbuf++ = sample.bits();
 			}
 		}
 
 #endif
 
-		Com_Dealloc( hdrImage );
+		Com_Dealloc ( hdrImage );
 	}
 
 #ifdef __cplusplus

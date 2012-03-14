@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define WAVEVALUE( table, base, amplitude, phase, freq ) (( base ) + table[ XreaL_Q_ftol( ( ( ( phase ) + backEnd.refdef.floatTime * ( freq ) ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * ( amplitude ))
 
-static float   *TableForFunc( genFunc_t func )
+static float   *TableForFunc ( genFunc_t func )
 {
 	switch ( func )
 	{
@@ -50,7 +50,7 @@ static float   *TableForFunc( genFunc_t func )
 	}
 
 #if 0
-	ri.Error( ERR_DROP, "TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.surfaceShader->name );
+	ri.Error ( ERR_DROP, "TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.surfaceShader->name );
 	return NULL;
 #else
 	// FIXME ri.Printf(PRINT_WARNING, "TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.surfaceShader->name);
@@ -63,18 +63,18 @@ static float   *TableForFunc( genFunc_t func )
 **
 ** Evaluates a given waveForm_t, referencing backEnd.refdef.time directly
 */
-float RB_EvalWaveForm( const waveForm_t *wf )
+float RB_EvalWaveForm ( const waveForm_t *wf )
 {
 	float *table;
 
-	table = TableForFunc( wf->func );
+	table = TableForFunc ( wf->func );
 
-	return WAVEVALUE( table, wf->base, wf->amplitude, wf->phase, wf->frequency );
+	return WAVEVALUE ( table, wf->base, wf->amplitude, wf->phase, wf->frequency );
 }
 
-float RB_EvalWaveFormClamped( const waveForm_t *wf )
+float RB_EvalWaveFormClamped ( const waveForm_t *wf )
 {
-	float glow = RB_EvalWaveForm( wf );
+	float glow = RB_EvalWaveForm ( wf );
 
 	if ( glow < 0 )
 	{
@@ -89,7 +89,7 @@ float RB_EvalWaveFormClamped( const waveForm_t *wf )
 	return glow;
 }
 
-static float GetOpValue( const expOperation_t *op )
+static float GetOpValue ( const expOperation_t *op )
 {
 	float value;
 	float inv255 = 1.0f / 255.0f;
@@ -215,7 +215,7 @@ static float GetOpValue( const expOperation_t *op )
 			break;
 
 		case OP_DISTANCE:
-			value = 0.0;            // FIXME ?
+			value = 0.0; // FIXME ?
 			break;
 
 		default:
@@ -226,7 +226,7 @@ static float GetOpValue( const expOperation_t *op )
 	return value;
 }
 
-float RB_EvalExpression( const expression_t *exp, float defaultValue )
+float RB_EvalExpression ( const expression_t *exp, float defaultValue )
 {
 #if 1
 	int                     i;
@@ -239,7 +239,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 	extern const opstring_t opStrings[];
 
 	numOps = 0;
-	value  = 0;
+	value = 0;
 	value1 = 0;
 	value2 = 0;
 
@@ -264,18 +264,18 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 				{
 					if ( numOps < 1 )
 					{
-						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for unary - operator\n", tess.surfaceShader->name );
+						ri.Printf ( PRINT_ALL, "WARNING: shader %s has numOps < 1 for unary - operator\n", tess.surfaceShader->name );
 						return defaultValue;
 					}
 
-					value1          = GetOpValue( &ops[ numOps - 1 ] );
+					value1 = GetOpValue ( &ops[ numOps - 1 ] );
 					numOps--;
 
-					value           = -value1;
+					value = -value1;
 
 					// push result
-					op.type         = OP_NUM;
-					op.value        = value;
+					op.type = OP_NUM;
+					op.value = value;
 					ops[ numOps++ ] = op;
 					break;
 				}
@@ -320,28 +320,28 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 
 					if ( numOps < 1 )
 					{
-						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for table operator\n", tess.surfaceShader->name );
+						ri.Printf ( PRINT_ALL, "WARNING: shader %s has numOps < 1 for table operator\n", tess.surfaceShader->name );
 						return defaultValue;
 					}
 
-					value1    = GetOpValue( &ops[ numOps - 1 ] );
+					value1 = GetOpValue ( &ops[ numOps - 1 ] );
 					numOps--;
 
-					table     = tr.shaderTables[ ( int )op.value ];
+					table = tr.shaderTables[ ( int ) op.value ];
 
 					numValues = table->numValues;
 
-					index     = value1 * numValues;         // float index into the table?s elements
-					lerp      = index - floor( index );     // being inbetween two elements of the table
+					index = value1 * numValues; // float index into the table?s elements
+					lerp = index - floor ( index ); // being inbetween two elements of the table
 
-					oldIndex  = ( int )index;
-					newIndex  = ( int )index + 1;
+					oldIndex = ( int ) index;
+					newIndex = ( int ) index + 1;
 
 					if ( table->clamp )
 					{
 						// clamp indices to table-range
-						Q_clamp( oldIndex, 0, numValues - 1 );
-						Q_clamp( newIndex, 0, numValues - 1 );
+						Q_clamp ( oldIndex, 0, numValues - 1 );
+						Q_clamp ( newIndex, 0, numValues - 1 );
 					}
 					else
 					{
@@ -364,8 +364,8 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					//ri.Printf(PRINT_ALL, "%s: %i %i %f\n", table->name, oldIndex, newIndex, value);
 
 					// push result
-					op.type         = OP_NUM;
-					op.value        = value;
+					op.type = OP_NUM;
+					op.value = value;
 					ops[ numOps++ ] = op;
 					break;
 				}
@@ -374,15 +374,15 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 				{
 					if ( numOps < 2 )
 					{
-						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 2 for binary operator %s\n", tess.surfaceShader->name,
-						           opStrings[ op.type ].s );
+						ri.Printf ( PRINT_ALL, "WARNING: shader %s has numOps < 2 for binary operator %s\n", tess.surfaceShader->name,
+						            opStrings[ op.type ].s );
 						return defaultValue;
 					}
 
-					value2 = GetOpValue( &ops[ numOps - 1 ] );
+					value2 = GetOpValue ( &ops[ numOps - 1 ] );
 					numOps--;
 
-					value1 = GetOpValue( &ops[ numOps - 1 ] );
+					value1 = GetOpValue ( &ops[ numOps - 1 ] );
 					numOps--;
 
 					switch ( op.type )
@@ -433,7 +433,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 							break;
 
 						case OP_MOD:
-							value = ( float )( ( int )value1 % ( int )value2 );
+							value = ( float ) ( ( int ) value1 % ( int ) value2 );
 							break;
 
 						case OP_MUL:
@@ -456,15 +456,15 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					//ri.Printf(PRINT_ALL, "%s: %f %f %f\n", opStrings[op.type].s, value, value1, value2);
 
 					// push result
-					op.type         = OP_NUM;
-					op.value        = value;
+					op.type = OP_NUM;
+					op.value = value;
 					ops[ numOps++ ] = op;
 					break;
 				}
 		}
 	}
 
-	return GetOpValue( &ops[ 0 ] );
+	return GetOpValue ( &ops[ 0 ] );
 #else
 	return defaultValue;
 #endif
@@ -483,13 +483,13 @@ DEFORMATIONS
 RB_CalcDeformVertexes
 ========================
 */
-void RB_CalcDeformVertexes( deformStage_t *ds )
+void RB_CalcDeformVertexes ( deformStage_t *ds )
 {
 	int    i;
 	vec3_t offset;
 	float  scale;
-	float  *xyz    = ( float * )tess.xyz;
-	float  *normal = ( float * )tess.normals;
+	float  *xyz = ( float * ) tess.xyz;
+	float  *normal = ( float * ) tess.normals;
 	float  *table;
 
 #if defined( COMPAT_ET )
@@ -501,45 +501,45 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 
 		//static vec3_t up = {0,0,1};
 
-		if ( VectorCompare( backEnd.currentEntity->e.fireRiseDir, vec3_origin ) )
+		if ( VectorCompare ( backEnd.currentEntity->e.fireRiseDir, vec3_origin ) )
 		{
-			VectorSet( backEnd.currentEntity->e.fireRiseDir, 0, 0, 1 );
+			VectorSet ( backEnd.currentEntity->e.fireRiseDir, 0, 0, 1 );
 		}
 
 		// get the world up vector in local coordinates
 		if ( backEnd.currentEntity->e.hModel )
 		{
 			// world surfaces dont have an axis
-			VectorRotate( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
+			VectorRotate ( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
 		}
 		else
 		{
-			VectorCopy( backEnd.currentEntity->e.fireRiseDir, worldUp );
+			VectorCopy ( backEnd.currentEntity->e.fireRiseDir, worldUp );
 		}
 
 		// don't go so far if sideways, since they must be moving
-		VectorScale( worldUp, 0.4 + 0.6 * Q_fabs( backEnd.currentEntity->e.fireRiseDir[ 2 ] ), worldUp );
+		VectorScale ( worldUp, 0.4 + 0.6 * Q_fabs ( backEnd.currentEntity->e.fireRiseDir[ 2 ] ), worldUp );
 
 		ds->deformationWave.frequency *= -1;
 
 		if ( ds->deformationWave.frequency > 999 )
 		{
 			// hack for negative Z deformation (ack)
-			inverse                        = qtrue;
+			inverse = qtrue;
 			ds->deformationWave.frequency -= 999;
 		}
 
-		table = TableForFunc( ds->deformationWave.func );
+		table = TableForFunc ( ds->deformationWave.func );
 
 		for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
 		{
 			float off = ( xyz[ 0 ] + xyz[ 1 ] + xyz[ 2 ] ) * ds->deformationSpread;
 			float dot;
 
-			scale = WAVEVALUE( table, ds->deformationWave.base,
-			                   ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
+			scale = WAVEVALUE ( table, ds->deformationWave.base,
+			                    ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
 
-			dot   = DotProduct( worldUp, normal );
+			dot = DotProduct ( worldUp, normal );
 
 			if ( dot * scale > 0 )
 			{
@@ -548,7 +548,7 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 					scale *= -1;
 				}
 
-				VectorMA( xyz, dot * scale, worldUp, xyz );
+				VectorMA ( xyz, dot * scale, worldUp, xyz );
 			}
 		}
 
@@ -560,14 +560,14 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 		ds->deformationWave.frequency *= -1;
 	}
 	else
-#endif  // #if defined(COMPAT_ET)
+#endif // #if defined(COMPAT_ET)
 		if ( ds->deformationWave.frequency == 0 )
 		{
-			scale = RB_EvalWaveForm( &ds->deformationWave );
+			scale = RB_EvalWaveForm ( &ds->deformationWave );
 
 			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
 			{
-				VectorScale( normal, scale, offset );
+				VectorScale ( normal, scale, offset );
 
 				xyz[ 0 ] += offset[ 0 ];
 				xyz[ 1 ] += offset[ 1 ];
@@ -576,16 +576,16 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 		}
 		else
 		{
-			table = TableForFunc( ds->deformationWave.func );
+			table = TableForFunc ( ds->deformationWave.func );
 
 			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
 			{
 				float off = ( xyz[ 0 ] + xyz[ 1 ] + xyz[ 2 ] ) * ds->deformationSpread;
 
-				scale = WAVEVALUE( table, ds->deformationWave.base,
-				                   ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
+				scale = WAVEVALUE ( table, ds->deformationWave.base,
+				                    ds->deformationWave.amplitude, ds->deformationWave.phase + off, ds->deformationWave.frequency );
 
-				VectorScale( normal, scale, offset );
+				VectorScale ( normal, scale, offset );
 
 				xyz[ 0 ] += offset[ 0 ];
 				xyz[ 1 ] += offset[ 1 ];
@@ -601,32 +601,32 @@ RB_CalcDeformNormals
 Wiggle the normals for wavy environment mapping
 =========================
 */
-void RB_CalcDeformNormals( deformStage_t *ds )
+void RB_CalcDeformNormals ( deformStage_t *ds )
 {
 	int   i;
 	float scale;
-	float *xyz    = ( float * )tess.xyz;
-	float *normal = ( float * )tess.normals;
+	float *xyz = ( float * ) tess.xyz;
+	float *normal = ( float * ) tess.normals;
 
 	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
 	{
-		scale        = 0.98f;
-		scale        =
-		  R_NoiseGet4f( xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
-		                backEnd.refdef.floatTime * ds->deformationWave.frequency );
+		scale = 0.98f;
+		scale =
+		  R_NoiseGet4f ( xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
+		                 backEnd.refdef.floatTime * ds->deformationWave.frequency );
 		normal[ 0 ] += ds->deformationWave.amplitude * scale;
 
-		scale        = 0.98f;
-		scale        = R_NoiseGet4f( 100 + xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
-		                             backEnd.refdef.floatTime * ds->deformationWave.frequency );
+		scale = 0.98f;
+		scale = R_NoiseGet4f ( 100 + xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
+		                       backEnd.refdef.floatTime * ds->deformationWave.frequency );
 		normal[ 1 ] += ds->deformationWave.amplitude * scale;
 
-		scale        = 0.98f;
-		scale        = R_NoiseGet4f( 200 + xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
-		                             backEnd.refdef.floatTime * ds->deformationWave.frequency );
+		scale = 0.98f;
+		scale = R_NoiseGet4f ( 200 + xyz[ 0 ] * scale, xyz[ 1 ] * scale, xyz[ 2 ] * scale,
+		                       backEnd.refdef.floatTime * ds->deformationWave.frequency );
 		normal[ 2 ] += ds->deformationWave.amplitude * scale;
 
-		VectorNormalizeFast( normal );
+		VectorNormalizeFast ( normal );
 	}
 }
 
@@ -635,12 +635,12 @@ void RB_CalcDeformNormals( deformStage_t *ds )
 RB_CalcBulgeVertexes
 ========================
 */
-void RB_CalcBulgeVertexes( deformStage_t *ds )
+void RB_CalcBulgeVertexes ( deformStage_t *ds )
 {
 	int         i;
-	const float *st     = ( const float * )tess.texCoords[ 0 ];
-	float       *xyz    = ( float * )tess.xyz;
-	float       *normal = ( float * )tess.normals;
+	const float *st = ( const float * ) tess.texCoords[ 0 ];
+	float       *xyz = ( float * ) tess.xyz;
+	float       *normal = ( float * ) tess.normals;
 	float       now;
 
 	now = backEnd.refdef.time * ds->bulgeSpeed * 0.001f;
@@ -650,9 +650,9 @@ void RB_CalcBulgeVertexes( deformStage_t *ds )
 		int   off;
 		float scale;
 
-		off       = ( float )( FUNCTABLE_SIZE / ( M_PI * 2 ) ) * ( st[ 0 ] * ds->bulgeWidth + now );
+		off = ( float ) ( FUNCTABLE_SIZE / ( M_PI * 2 ) ) * ( st[ 0 ] * ds->bulgeWidth + now );
 
-		scale     = tr.sinTable[ off & FUNCTABLE_MASK ] * ds->bulgeHeight;
+		scale = tr.sinTable[ off & FUNCTABLE_MASK ] * ds->bulgeHeight;
 
 		xyz[ 0 ] += normal[ 0 ] * scale;
 		xyz[ 1 ] += normal[ 1 ] * scale;
@@ -667,7 +667,7 @@ RB_CalcMoveVertexes
 A deformation that can move an entire surface along a wave path
 ======================
 */
-void RB_CalcMoveVertexes( deformStage_t *ds )
+void RB_CalcMoveVertexes ( deformStage_t *ds )
 {
 	int    i;
 	float  *xyz;
@@ -675,18 +675,18 @@ void RB_CalcMoveVertexes( deformStage_t *ds )
 	float  scale;
 	vec3_t offset;
 
-	table = TableForFunc( ds->deformationWave.func );
+	table = TableForFunc ( ds->deformationWave.func );
 
-	scale = WAVEVALUE( table, ds->deformationWave.base,
-	                   ds->deformationWave.amplitude, ds->deformationWave.phase, ds->deformationWave.frequency );
+	scale = WAVEVALUE ( table, ds->deformationWave.base,
+	                    ds->deformationWave.amplitude, ds->deformationWave.phase, ds->deformationWave.frequency );
 
-	VectorScale( ds->moveVector, scale, offset );
+	VectorScale ( ds->moveVector, scale, offset );
 
-	xyz = ( float * )tess.xyz;
+	xyz = ( float * ) tess.xyz;
 
 	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 )
 	{
-		VectorAdd( xyz, offset, xyz );
+		VectorAdd ( xyz, offset, xyz );
 	}
 }
 
@@ -697,7 +697,7 @@ DeformText
 Change a polygon into a bunch of text polygons
 =============
 */
-void DeformText( const char *text )
+void DeformText ( const char *text )
 {
 	int    i;
 	vec3_t origin, width, height;
@@ -709,16 +709,16 @@ void DeformText( const char *text )
 	height[ 0 ] = 0;
 	height[ 1 ] = 0;
 	height[ 2 ] = -1;
-	CrossProduct( tess.normals[ 0 ], height, width );
+	CrossProduct ( tess.normals[ 0 ], height, width );
 
 	// find the midpoint of the box
-	VectorClear( mid );
+	VectorClear ( mid );
 	bottom = 999999;
-	top    = -999999;
+	top = -999999;
 
 	for ( i = 0; i < 4; i++ )
 	{
-		VectorAdd( tess.xyz[ i ], mid, mid );
+		VectorAdd ( tess.xyz[ i ], mid, mid );
 
 		if ( tess.xyz[ i ][ 2 ] < bottom )
 		{
@@ -731,28 +731,28 @@ void DeformText( const char *text )
 		}
 	}
 
-	VectorScale( mid, 0.25f, origin );
+	VectorScale ( mid, 0.25f, origin );
 
 	// determine the individual character size
 	height[ 0 ] = 0;
 	height[ 1 ] = 0;
 	height[ 2 ] = ( top - bottom ) * 0.5f;
 
-	VectorScale( width, height[ 2 ] * -0.75f, width );
+	VectorScale ( width, height[ 2 ] * -0.75f, width );
 
 	// determine the starting position
-	len = strlen( text );
-	VectorMA( origin, ( len - 1 ), width, origin );
+	len = strlen ( text );
+	VectorMA ( origin, ( len - 1 ), width, origin );
 
 	// clear the shader indexes
 	tess.multiDrawPrimitives = 0;
-	tess.numIndexes          = 0;
-	tess.numVertexes         = 0;
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 
 	// draw each character
 	for ( i = 0; i < len; i++ )
 	{
-		ch  = text[ i ];
+		ch = text[ i ];
 		ch &= 255;
 
 		if ( ch != ' ' )
@@ -760,17 +760,17 @@ void DeformText( const char *text )
 			int   row, col;
 			float frow, fcol, size;
 
-			row  = ch >> 4;
-			col  = ch & 15;
+			row = ch >> 4;
+			col = ch & 15;
 
 			frow = row * 0.0625f;
 			fcol = col * 0.0625f;
 			size = 0.0625f;
 
-			Tess_AddQuadStampExt( origin, width, height, colorWhite, fcol, frow, fcol + size, frow + size );
+			Tess_AddQuadStampExt ( origin, width, height, colorWhite, fcol, frow, fcol + size, frow + size );
 		}
 
-		VectorMA( origin, -2, width, origin );
+		VectorMA ( origin, -2, width, origin );
 	}
 }
 
@@ -779,11 +779,11 @@ void DeformText( const char *text )
 GlobalVectorToLocal
 ==================
 */
-static void GlobalVectorToLocal( const vec3_t in, vec3_t out )
+static void GlobalVectorToLocal ( const vec3_t in, vec3_t out )
 {
-	out[ 0 ] = DotProduct( in, backEnd.orientation.axis[ 0 ] );
-	out[ 1 ] = DotProduct( in, backEnd.orientation.axis[ 1 ] );
-	out[ 2 ] = DotProduct( in, backEnd.orientation.axis[ 2 ] );
+	out[ 0 ] = DotProduct ( in, backEnd.orientation.axis[ 0 ] );
+	out[ 1 ] = DotProduct ( in, backEnd.orientation.axis[ 1 ] );
+	out[ 2 ] = DotProduct ( in, backEnd.orientation.axis[ 2 ] );
 }
 
 /*
@@ -794,7 +794,7 @@ Assuming all the triangles for this shader are independant
 quads, rebuild them as forward facing sprites
 =====================
 */
-static void AutospriteDeform( void )
+static void AutospriteDeform ( void )
 {
 	int    i;
 	int    oldVerts;
@@ -806,48 +806,48 @@ static void AutospriteDeform( void )
 
 	if ( tess.numVertexes & 3 )
 	{
-		ri.Printf( PRINT_WARNING, "Autosprite shader %s had odd vertex count", tess.surfaceShader->name );
+		ri.Printf ( PRINT_WARNING, "Autosprite shader %s had odd vertex count", tess.surfaceShader->name );
 	}
 
 	if ( tess.numIndexes != ( tess.numVertexes >> 2 ) * 6 )
 	{
-		ri.Printf( PRINT_WARNING, "Autosprite shader %s had odd index count", tess.surfaceShader->name );
+		ri.Printf ( PRINT_WARNING, "Autosprite shader %s had odd index count", tess.surfaceShader->name );
 	}
 
-	oldVerts                 = tess.numVertexes;
-	tess.numVertexes         = 0;
-	tess.numIndexes          = 0;
+	oldVerts = tess.numVertexes;
+	tess.numVertexes = 0;
+	tess.numIndexes = 0;
 	tess.multiDrawPrimitives = 0;
 
 	if ( backEnd.currentEntity != &tr.worldEntity )
 	{
-		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[ 1 ], leftDir );
-		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[ 2 ], upDir );
+		GlobalVectorToLocal ( backEnd.viewParms.orientation.axis[ 1 ], leftDir );
+		GlobalVectorToLocal ( backEnd.viewParms.orientation.axis[ 2 ], upDir );
 	}
 	else
 	{
-		VectorCopy( backEnd.viewParms.orientation.axis[ 1 ], leftDir );
-		VectorCopy( backEnd.viewParms.orientation.axis[ 2 ], upDir );
+		VectorCopy ( backEnd.viewParms.orientation.axis[ 1 ], leftDir );
+		VectorCopy ( backEnd.viewParms.orientation.axis[ 2 ], upDir );
 	}
 
 	for ( i = 0; i < oldVerts; i += 4 )
 	{
 		// find the midpoint
-		xyz      = tess.xyz[ i ];
+		xyz = tess.xyz[ i ];
 
 		mid[ 0 ] = 0.25f * ( xyz[ 0 ] + xyz[ 4 ] + xyz[ 8 ] + xyz[ 12 ] );
 		mid[ 1 ] = 0.25f * ( xyz[ 1 ] + xyz[ 5 ] + xyz[ 9 ] + xyz[ 13 ] );
 		mid[ 2 ] = 0.25f * ( xyz[ 2 ] + xyz[ 6 ] + xyz[ 10 ] + xyz[ 14 ] );
 
-		VectorSubtract( xyz, mid, delta );
-		radius   = VectorLength( delta ) * 0.707f; // / sqrt(2)
+		VectorSubtract ( xyz, mid, delta );
+		radius = VectorLength ( delta ) * 0.707f; // / sqrt(2)
 
-		VectorScale( leftDir, radius, left );
-		VectorScale( upDir, radius, up );
+		VectorScale ( leftDir, radius, left );
+		VectorScale ( upDir, radius, up );
 
 		if ( backEnd.viewParms.isMirror )
 		{
-			VectorSubtract( vec3_origin, left, left );
+			VectorSubtract ( vec3_origin, left, left );
 		}
 
 		// compensate for scale in the axes if necessary
@@ -855,7 +855,7 @@ static void AutospriteDeform( void )
 		{
 			float axisLength;
 
-			axisLength = VectorLength( backEnd.currentEntity->e.axis[ 0 ] );
+			axisLength = VectorLength ( backEnd.currentEntity->e.axis[ 0 ] );
 
 			if ( !axisLength )
 			{
@@ -866,11 +866,11 @@ static void AutospriteDeform( void )
 				axisLength = 1.0f / axisLength;
 			}
 
-			VectorScale( left, axisLength, left );
-			VectorScale( up, axisLength, up );
+			VectorScale ( left, axisLength, left );
+			VectorScale ( up, axisLength, up );
 		}
 
-		Tess_AddQuadStamp( mid, left, up, tess.colors[ i ] );
+		Tess_AddQuadStamp ( mid, left, up, tess.colors[ i ] );
 	}
 }
 
@@ -891,7 +891,7 @@ int edgeVerts[ 6 ][ 2 ] =
 	{ 2, 3 }
 };
 
-static void Autosprite2Deform( void )
+static void Autosprite2Deform ( void )
 {
 	int    i, j, k;
 	int    indexes;
@@ -900,21 +900,21 @@ static void Autosprite2Deform( void )
 
 	if ( tess.numVertexes & 3 )
 	{
-		ri.Printf( PRINT_WARNING, "Autosprite2 shader %s had odd vertex count", tess.surfaceShader->name );
+		ri.Printf ( PRINT_WARNING, "Autosprite2 shader %s had odd vertex count", tess.surfaceShader->name );
 	}
 
 	if ( tess.numIndexes != ( tess.numVertexes >> 2 ) * 6 )
 	{
-		ri.Printf( PRINT_WARNING, "Autosprite2 shader %s had odd index count", tess.surfaceShader->name );
+		ri.Printf ( PRINT_WARNING, "Autosprite2 shader %s had odd index count", tess.surfaceShader->name );
 	}
 
 	if ( backEnd.currentEntity != &tr.worldEntity )
 	{
-		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[ 0 ], forward );
+		GlobalVectorToLocal ( backEnd.viewParms.orientation.axis[ 0 ], forward );
 	}
 	else
 	{
-		VectorCopy( backEnd.viewParms.orientation.axis[ 0 ], forward );
+		VectorCopy ( backEnd.viewParms.orientation.axis[ 0 ], forward );
 	}
 
 	// this is a lot of work for two triangles...
@@ -929,10 +929,10 @@ static void Autosprite2Deform( void )
 		float  *v1, *v2;
 
 		// find the midpoint
-		xyz          = tess.xyz[ i ];
+		xyz = tess.xyz[ i ];
 
 		// identify the two shortest edges
-		nums[ 0 ]    = nums[ 1 ] = 0;
+		nums[ 0 ] = nums[ 1 ] = 0;
 		lengths[ 0 ] = lengths[ 1 ] = 999999;
 
 		for ( j = 0; j < 6; j++ )
@@ -943,28 +943,28 @@ static void Autosprite2Deform( void )
 			v1 = xyz + 4 * edgeVerts[ j ][ 0 ];
 			v2 = xyz + 4 * edgeVerts[ j ][ 1 ];
 
-			VectorSubtract( v1, v2, temp );
+			VectorSubtract ( v1, v2, temp );
 
-			l = DotProduct( temp, temp );
+			l = DotProduct ( temp, temp );
 
 			if ( l < lengths[ 0 ] )
 			{
-				nums[ 1 ]    = nums[ 0 ];
+				nums[ 1 ] = nums[ 0 ];
 				lengths[ 1 ] = lengths[ 0 ];
-				nums[ 0 ]    = j;
+				nums[ 0 ] = j;
 				lengths[ 0 ] = l;
 			}
 			else if ( l < lengths[ 1 ] )
 			{
-				nums[ 1 ]    = j;
+				nums[ 1 ] = j;
 				lengths[ 1 ] = l;
 			}
 		}
 
 		for ( j = 0; j < 2; j++ )
 		{
-			v1            = xyz + 4 * edgeVerts[ nums[ j ] ][ 0 ];
-			v2            = xyz + 4 * edgeVerts[ nums[ j ] ][ 1 ];
+			v1 = xyz + 4 * edgeVerts[ nums[ j ] ][ 0 ];
+			v2 = xyz + 4 * edgeVerts[ nums[ j ] ][ 1 ];
 
 			mid[ j ][ 0 ] = 0.5f * ( v1[ 0 ] + v2[ 0 ] );
 			mid[ j ][ 1 ] = 0.5f * ( v1[ 1 ] + v2[ 1 ] );
@@ -972,11 +972,11 @@ static void Autosprite2Deform( void )
 		}
 
 		// find the vector of the major axis
-		VectorSubtract( mid[ 1 ], mid[ 0 ], major );
+		VectorSubtract ( mid[ 1 ], mid[ 0 ], major );
 
 		// cross this with the view direction to get minor axis
-		CrossProduct( major, forward, minor );
-		VectorNormalize( minor );
+		CrossProduct ( major, forward, minor );
+		VectorNormalize ( minor );
 
 		// re-project the points
 		for ( j = 0; j < 2; j++ )
@@ -986,7 +986,7 @@ static void Autosprite2Deform( void )
 			v1 = xyz + 4 * edgeVerts[ nums[ j ] ][ 0 ];
 			v2 = xyz + 4 * edgeVerts[ nums[ j ] ][ 1 ];
 
-			l  = 0.5 * sqrt( lengths[ j ] );
+			l = 0.5 * sqrt ( lengths[ j ] );
 
 			// we need to see which direction this edge
 			// is used to determine direction of projection
@@ -1001,19 +1001,19 @@ static void Autosprite2Deform( void )
 
 			if ( k == 5 )
 			{
-				VectorMA( mid[ j ], l, minor, v1 );
-				VectorMA( mid[ j ], -l, minor, v2 );
+				VectorMA ( mid[ j ], l, minor, v1 );
+				VectorMA ( mid[ j ], -l, minor, v2 );
 			}
 			else
 			{
-				VectorMA( mid[ j ], -l, minor, v1 );
-				VectorMA( mid[ j ], l, minor, v2 );
+				VectorMA ( mid[ j ], -l, minor, v1 );
+				VectorMA ( mid[ j ], l, minor, v2 );
 			}
 		}
 	}
 }
 
-qboolean ShaderRequiresCPUDeforms( const shader_t *shader )
+qboolean ShaderRequiresCPUDeforms ( const shader_t *shader )
 {
 	if ( shader->numDeforms )
 	{
@@ -1052,7 +1052,7 @@ qboolean ShaderRequiresCPUDeforms( const shader_t *shader )
 Tess_DeformGeometry
 =====================
 */
-void Tess_DeformGeometry( void )
+void Tess_DeformGeometry ( void )
 {
 	int           i;
 	deformStage_t *ds;
@@ -1069,7 +1069,7 @@ void Tess_DeformGeometry( void )
 
 #endif
 
-	if ( !ShaderRequiresCPUDeforms( tess.surfaceShader ) )
+	if ( !ShaderRequiresCPUDeforms ( tess.surfaceShader ) )
 	{
 		// we don't need the following CPU deforms
 		return;
@@ -1085,19 +1085,19 @@ void Tess_DeformGeometry( void )
 				break;
 
 			case DEFORM_NORMALS:
-				RB_CalcDeformNormals( ds );
+				RB_CalcDeformNormals ( ds );
 				break;
 
 			case DEFORM_WAVE:
-				RB_CalcDeformVertexes( ds );
+				RB_CalcDeformVertexes ( ds );
 				break;
 
 			case DEFORM_BULGE:
-				RB_CalcBulgeVertexes( ds );
+				RB_CalcBulgeVertexes ( ds );
 				break;
 
 			case DEFORM_MOVE:
-				RB_CalcMoveVertexes( ds );
+				RB_CalcMoveVertexes ( ds );
 				break;
 
 			case DEFORM_PROJECTION_SHADOW:
@@ -1120,7 +1120,7 @@ void Tess_DeformGeometry( void )
 			case DEFORM_TEXT5:
 			case DEFORM_TEXT6:
 			case DEFORM_TEXT7:
-				DeformText( backEnd.refdef.text[ ds->deformation - DEFORM_TEXT0 ] );
+				DeformText ( backEnd.refdef.text[ ds->deformation - DEFORM_TEXT0 ] );
 				break;
 
 			case DEFORM_SPRITE:
@@ -1151,19 +1151,19 @@ TEX COORDS
 RB_CalcTexMatrix
 ===============
 */
-void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
+void RB_CalcTexMatrix ( const textureBundle_t *bundle, matrix_t matrix )
 {
 	int   j;
 	float x, y;
 
-	MatrixIdentity( matrix );
+	MatrixIdentity ( matrix );
 
 	for ( j = 0; j < bundle->numTexMods; j++ )
 	{
 		switch ( bundle->texMods[ j ].type )
 		{
 			case TMOD_NONE:
-				j = TR_MAX_TEXMODS;             // break out of for loop
+				j = TR_MAX_TEXMODS; // break out of for loop
 				break;
 
 			case TMOD_TURBULENT:
@@ -1172,11 +1172,11 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 
 					wf = &bundle->texMods[ j ].wave;
 
-					x  = ( 1.0 / 4.0 );
-					y  = ( wf->phase + backEnd.refdef.floatTime * wf->frequency );
+					x = ( 1.0 / 4.0 );
+					y = ( wf->phase + backEnd.refdef.floatTime * wf->frequency );
 
-					MatrixMultiplyScale( matrix, 1 + ( wf->amplitude * sin( y ) + wf->base ) * x,
-					                     1 + ( wf->amplitude * sin( y + 0.25 ) + wf->base ) * x, 0.0 );
+					MatrixMultiplyScale ( matrix, 1 + ( wf->amplitude * sin ( y ) + wf->base ) * x,
+					                      1 + ( wf->amplitude * sin ( y + 0.25 ) + wf->base ) * x, 0.0 );
 					break;
 				}
 
@@ -1187,10 +1187,10 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 
 					// clamp so coordinates don't continuously get larger, causing problems
 					// with hardware limits
-					x = x - floor( x );
-					y = y - floor( y );
+					x = x - floor ( x );
+					y = y - floor ( y );
 
-					MatrixMultiplyTranslation( matrix, x, y, 0.0 );
+					MatrixMultiplyTranslation ( matrix, x, y, 0.0 );
 					break;
 				}
 
@@ -1201,10 +1201,10 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 
 					// clamp so coordinates don't continuously get larger, causing problems
 					// with hardware limits
-					x = x - floor( x );
-					y = y - floor( y );
+					x = x - floor ( x );
+					y = y - floor ( y );
 
-					MatrixMultiplyTranslation( matrix, x, y, 0.0 );
+					MatrixMultiplyTranslation ( matrix, x, y, 0.0 );
 					break;
 				}
 
@@ -1213,7 +1213,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 					x = bundle->texMods[ j ].scale[ 0 ];
 					y = bundle->texMods[ j ].scale[ 1 ];
 
-					MatrixMultiplyScale( matrix, x, y, 0.0 );
+					MatrixMultiplyScale ( matrix, x, y, 0.0 );
 					break;
 				}
 
@@ -1221,11 +1221,11 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 				{
 					float p;
 
-					p = 1.0f / RB_EvalWaveForm( &bundle->texMods[ j ].wave );
+					p = 1.0f / RB_EvalWaveForm ( &bundle->texMods[ j ].wave );
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyScale( matrix, p, p, 0.0 );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+					MatrixMultiplyTranslation ( matrix, 0.5, 0.5, 0.0 );
+					MatrixMultiplyScale ( matrix, p, p, 0.0 );
+					MatrixMultiplyTranslation ( matrix, -0.5, -0.5, 0.0 );
 					break;
 				}
 
@@ -1233,7 +1233,7 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 				{
 					const texModInfo_t *tmi = &bundle->texMods[ j ];
 
-					MatrixMultiply2( matrix, tmi->matrix );
+					MatrixMultiply2 ( matrix, tmi->matrix );
 					break;
 				}
 
@@ -1241,64 +1241,64 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 				{
 					x = -bundle->texMods[ j ].rotateSpeed * backEnd.refdef.floatTime;
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyZRotation( matrix, x );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+					MatrixMultiplyTranslation ( matrix, 0.5, 0.5, 0.0 );
+					MatrixMultiplyZRotation ( matrix, x );
+					MatrixMultiplyTranslation ( matrix, -0.5, -0.5, 0.0 );
 					break;
 				}
 
 			case TMOD_SCROLL2:
 				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
-					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
+					x = RB_EvalExpression ( &bundle->texMods[ j ].sExp, 0 );
+					y = RB_EvalExpression ( &bundle->texMods[ j ].tExp, 0 );
 
 					// clamp so coordinates don't continuously get larger, causing problems
 					// with hardware limits
-					x = x - floor( x );
-					y = y - floor( y );
+					x = x - floor ( x );
+					y = y - floor ( y );
 
-					MatrixMultiplyTranslation( matrix, x, y, 0.0 );
+					MatrixMultiplyTranslation ( matrix, x, y, 0.0 );
 					break;
 				}
 
 			case TMOD_SCALE2:
 				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
-					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
+					x = RB_EvalExpression ( &bundle->texMods[ j ].sExp, 0 );
+					y = RB_EvalExpression ( &bundle->texMods[ j ].tExp, 0 );
 
-					MatrixMultiplyScale( matrix, x, y, 0.0 );
+					MatrixMultiplyScale ( matrix, x, y, 0.0 );
 					break;
 				}
 
 			case TMOD_CENTERSCALE:
 				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
-					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
+					x = RB_EvalExpression ( &bundle->texMods[ j ].sExp, 0 );
+					y = RB_EvalExpression ( &bundle->texMods[ j ].tExp, 0 );
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyScale( matrix, x, y, 0.0 );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+					MatrixMultiplyTranslation ( matrix, 0.5, 0.5, 0.0 );
+					MatrixMultiplyScale ( matrix, x, y, 0.0 );
+					MatrixMultiplyTranslation ( matrix, -0.5, -0.5, 0.0 );
 					break;
 				}
 
 			case TMOD_SHEAR:
 				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].sExp, 0 );
-					y = RB_EvalExpression( &bundle->texMods[ j ].tExp, 0 );
+					x = RB_EvalExpression ( &bundle->texMods[ j ].sExp, 0 );
+					y = RB_EvalExpression ( &bundle->texMods[ j ].tExp, 0 );
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyShear( matrix, x, y );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+					MatrixMultiplyTranslation ( matrix, 0.5, 0.5, 0.0 );
+					MatrixMultiplyShear ( matrix, x, y );
+					MatrixMultiplyTranslation ( matrix, -0.5, -0.5, 0.0 );
 					break;
 				}
 
 			case TMOD_ROTATE2:
 				{
-					x = RB_EvalExpression( &bundle->texMods[ j ].rExp, 0 );
+					x = RB_EvalExpression ( &bundle->texMods[ j ].rExp, 0 );
 
-					MatrixMultiplyTranslation( matrix, 0.5, 0.5, 0.0 );
-					MatrixMultiplyZRotation( matrix, x );
-					MatrixMultiplyTranslation( matrix, -0.5, -0.5, 0.0 );
+					MatrixMultiplyTranslation ( matrix, 0.5, 0.5, 0.0 );
+					MatrixMultiplyZRotation ( matrix, x );
+					MatrixMultiplyTranslation ( matrix, -0.5, -0.5, 0.0 );
 					break;
 				}
 

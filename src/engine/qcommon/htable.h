@@ -49,7 +49,7 @@ struct hashtable_s;
 typedef struct hashtable_s *hashtable_t;
 
 /* Function pointer for HT_Apply */
-typedef qboolean ( *ht_apply_funct )( void *item, void *extra );
+typedef qboolean ( *ht_apply_funct ) ( void *item, void *extra );
 
 /*=============================================*
  * Hash table flags                            *
@@ -80,7 +80,7 @@ typedef qboolean ( *ht_apply_funct )( void *item, void *extra );
  *  key_length  maximal length of the key in the table; if 0, the key
  *      will be accessed as a pointer instead of an array
  */
-hashtable_t HT_Create(
+hashtable_t HT_Create (
   size_t          size,
   unsigned int    flags,
   size_t          item_size,
@@ -97,7 +97,7 @@ hashtable_t HT_Create(
 /*
  * Hash table destruction
  */
-void HT_Destroy(
+void HT_Destroy (
   hashtable_t     table
 );
 
@@ -111,7 +111,7 @@ void HT_Destroy(
  *      the item was created; if NULL, no creation will take
  *      place
  */
-void *HT_GetItem(
+void *HT_GetItem (
   hashtable_t     table,
   const char     *key,
   qboolean       *created
@@ -136,7 +136,7 @@ void *HT_GetItem(
  *  memory they use, a replacement will still return NULL, as the
  *  memory will have been freed or reused.
  */
-void *HT_PutItem(
+void *HT_PutItem (
   hashtable_t     table,
   void           *item,
   qboolean        allow_replacement
@@ -159,7 +159,7 @@ void *HT_PutItem(
  *  If the items are stored in-table or are freed automatically, then
  *  the "found" parameter will always be ignored.
  */
-qboolean HT_DeleteItem(
+qboolean HT_DeleteItem (
   hashtable_t     table,
   const char     *key,
   void          **found
@@ -181,7 +181,7 @@ qboolean HT_DeleteItem(
  *  order.
  *  The function should return false if processing is to stop.
  */
-void HT_Apply(
+void HT_Apply (
   hashtable_t     table,
   ht_apply_funct  function,
   void           *data

@@ -125,16 +125,16 @@ typedef struct aas_settings_s
 //routing cache
 typedef struct aas_routingcache_s
 {
-	int                       size;            //size of the routing cache
-	float                     time;            //last time accessed or updated
-	int                       cluster;         //cluster the cache is for
-	int                       areanum;         //area the cache is created for
-	vec3_t                    origin;          //origin within the area
+	int                       size; //size of the routing cache
+	float                     time; //last time accessed or updated
+	int                       cluster; //cluster the cache is for
+	int                       areanum; //area the cache is created for
+	vec3_t                    origin; //origin within the area
 	float                     starttraveltime; //travel time to start with
-	int                       travelflags;     //combinations of the travel flags
+	int                       travelflags; //combinations of the travel flags
 	struct aas_routingcache_s *prev, *next;
 
-	unsigned char             *reachabilities;  //reachabilities used for routing
+	unsigned char             *reachabilities; //reachabilities used for routing
 	unsigned short int        traveltimes[ 1 ]; //travel time for every area (variable sized)
 } aas_routingcache_t;
 
@@ -142,11 +142,11 @@ typedef struct aas_routingcache_s
 typedef struct aas_routingupdate_s
 {
 	int                        cluster;
-	int                        areanum;          //area number of the update
-	vec3_t                     start;            //start point the area was entered
-	unsigned short int         tmptraveltime;    //temporary travel time
+	int                        areanum; //area number of the update
+	vec3_t                     start; //start point the area was entered
+	unsigned short int         tmptraveltime; //temporary travel time
 	unsigned short int         *areatraveltimes; //travel times within the area
-	qboolean                   inlist;           //true if the update is in the list
+	qboolean                   inlist; //true if the update is in the list
 	struct aas_routingupdate_s *next;
 
 	struct aas_routingupdate_s *prev;
@@ -157,7 +157,7 @@ typedef struct aas_reversedlink_s
 {
 	int                       linknum; //the aas_areareachability_t
 	int                       areanum; //reachable from this area
-	struct aas_reversedlink_s *next;   //next link
+	struct aas_reversedlink_s *next; //next link
 } aas_reversedlink_t;
 
 //reversed area reachability
@@ -173,9 +173,9 @@ typedef struct aas_reversedreachability_s
 
 typedef struct aas_s
 {
-	int                        loaded;      //true when an AAS file is loaded
+	int                        loaded; //true when an AAS file is loaded
 	int                        initialized; //true when AAS has been initialized
-	int                        savefile;    //set true when file should be saved
+	int                        savefile; //set true when file should be saved
 	int                        bspchecksum;
 	//current time
 	float                      time;
@@ -229,9 +229,9 @@ typedef struct aas_s
 	int                        reachabilityareas;
 	float                      reachabilitytime;
 	//enities linked in the areas
-	aas_link_t                 *linkheap;            //heap with link structures
-	int                        linkheapsize;         //size of the link heap
-	aas_link_t                 *freelinks;           //first free link
+	aas_link_t                 *linkheap; //heap with link structures
+	int                        linkheapsize; //size of the link heap
+	aas_link_t                 *freelinks; //first free link
 	aas_link_t                 **arealinkedentities; //entities linked into areas
 	//entities
 	int                        maxentities;
@@ -250,9 +250,9 @@ typedef struct aas_s
 	//reversed reachability links
 	aas_reversedreachability_t *reversedreachability;
 	//travel times within the areas
-	unsigned short             ** *areatraveltimes;
+	unsigned short              ** *areatraveltimes;
 	//array of size numclusters with cluster cache
-	aas_routingcache_t         ** *clusterareacache;
+	aas_routingcache_t          ** *clusterareacache;
 	aas_routingcache_t         **portalcache;
 	//maximum travel time through portals
 	int                        *portalmaxtraveltimes;
@@ -309,4 +309,4 @@ typedef struct aas_s
 // Ridah, route-tables
 #include "be_aas_routetable.h"
 
-#endif                                                  //BSPCINCLUDE
+#endif //BSPCINCLUDE

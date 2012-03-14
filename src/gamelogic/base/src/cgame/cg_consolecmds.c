@@ -33,9 +33,9 @@ CG_SizeUp_f
 Keybinding command
 =================
 */
-static void CG_SizeUp_f( void )
+static void CG_SizeUp_f ( void )
 {
-	trap_Cvar_Set( "cg_viewsize", va( "%i", ( int )( cg_viewsize.integer + 10 ) ) );
+	trap_Cvar_Set ( "cg_viewsize", va ( "%i", ( int ) ( cg_viewsize.integer + 10 ) ) );
 }
 
 /*
@@ -45,9 +45,9 @@ CG_SizeDown_f
 Keybinding command
 =================
 */
-static void CG_SizeDown_f( void )
+static void CG_SizeDown_f ( void )
 {
-	trap_Cvar_Set( "cg_viewsize", va( "%i", ( int )( cg_viewsize.integer - 10 ) ) );
+	trap_Cvar_Set ( "cg_viewsize", va ( "%i", ( int ) ( cg_viewsize.integer - 10 ) ) );
 }
 
 /*
@@ -57,14 +57,14 @@ CG_Viewpos_f
 Debugging command to print the current position
 =============
 */
-static void CG_Viewpos_f( void )
+static void CG_Viewpos_f ( void )
 {
-	CG_Printf( "(%i %i %i) : %i\n", ( int )cg.refdef.vieworg[ 0 ],
-	           ( int )cg.refdef.vieworg[ 1 ], ( int )cg.refdef.vieworg[ 2 ],
-	           ( int )cg.refdefViewAngles[ YAW ] );
+	CG_Printf ( "(%i %i %i) : %i\n", ( int ) cg.refdef.vieworg[ 0 ],
+	            ( int ) cg.refdef.vieworg[ 1 ], ( int ) cg.refdef.vieworg[ 2 ],
+	            ( int ) cg.refdefViewAngles[ YAW ] );
 }
 
-qboolean CG_RequestScores( void )
+qboolean CG_RequestScores ( void )
 {
 	if ( cg.scoresRequestTime + 2000 < cg.time )
 	{
@@ -72,7 +72,7 @@ qboolean CG_RequestScores( void )
 		// so request new ones
 		cg.scoresRequestTime = cg.time;
 		//TA: added \n SendClientCommand doesn't call flush( )?
-		trap_SendClientCommand( "score\n" );
+		trap_SendClientCommand ( "score\n" );
 
 		return qtrue;
 	}
@@ -82,7 +82,7 @@ qboolean CG_RequestScores( void )
 	}
 }
 
-static void CG_ScoresDown_f( void )
+static void CG_ScoresDown_f ( void )
 {
 	if ( CG_RequestScores() )
 	{
@@ -92,11 +92,11 @@ static void CG_ScoresDown_f( void )
 		{
 			if ( cg_debugRandom.integer )
 			{
-				CG_Printf( "CG_ScoresDown_f: scores out of date\n" );
+				CG_Printf ( "CG_ScoresDown_f: scores out of date\n" );
 			}
 
 			cg.showScores = qtrue;
-			cg.numScores  = 0;
+			cg.numScores = 0;
 		}
 	}
 	else
@@ -107,16 +107,16 @@ static void CG_ScoresDown_f( void )
 	}
 }
 
-static void CG_ScoresUp_f( void )
+static void CG_ScoresUp_f ( void )
 {
 	if ( cg.showScores )
 	{
-		cg.showScores    = qfalse;
+		cg.showScores = qfalse;
 		cg.scoreFadeTime = cg.time;
 	}
 }
 
-static void CG_TellTarget_f( void )
+static void CG_TellTarget_f ( void )
 {
 	int  clientNum;
 	char command[ 128 ];
@@ -129,12 +129,12 @@ static void CG_TellTarget_f( void )
 		return;
 	}
 
-	trap_Args( message, 128 );
-	Com_sprintf( command, 128, "tell %i %s", clientNum, message );
-	trap_SendClientCommand( command );
+	trap_Args ( message, 128 );
+	Com_sprintf ( command, 128, "tell %i %s", clientNum, message );
+	trap_SendClientCommand ( command );
 }
 
-static void CG_TellAttacker_f( void )
+static void CG_TellAttacker_f ( void )
 {
 	int  clientNum;
 	char command[ 128 ];
@@ -147,16 +147,16 @@ static void CG_TellAttacker_f( void )
 		return;
 	}
 
-	trap_Args( message, 128 );
-	Com_sprintf( command, 128, "tell %i %s", clientNum, message );
-	trap_SendClientCommand( command );
+	trap_Args ( message, 128 );
+	Com_sprintf ( command, 128, "tell %i %s", clientNum, message );
+	trap_SendClientCommand ( command );
 }
 
 static struct
 {
 	char *cmd;
-	void ( *function )( void );
-	void ( *completer )( void );
+	void ( *function ) ( void );
+	void ( *completer ) ( void );
 } commands[] =
 {
 	{ "testgun",       CG_TestGun_f,            NULL },
@@ -191,25 +191,25 @@ The string has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
 =================
 */
-qboolean CG_ConsoleCommand( void )
+qboolean CG_ConsoleCommand ( void )
 {
 	const char *cmd;
 	const char *arg1;
 	int        i;
 
-	cmd = CG_Argv( 0 );
+	cmd = CG_Argv ( 0 );
 
 	//TA: ugly hacky special case
-	if ( !Q_stricmp( cmd, "ui_menu" ) )
+	if ( !Q_stricmp ( cmd, "ui_menu" ) )
 	{
-		arg1 = CG_Argv( 1 );
-		trap_SendConsoleCommand( va( "menu %s\n", arg1 ) );
+		arg1 = CG_Argv ( 1 );
+		trap_SendConsoleCommand ( va ( "menu %s\n", arg1 ) );
 		return qtrue;
 	}
 
-	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof ( commands ) / sizeof ( commands[ 0 ] ); i++ )
 	{
-		if ( !Q_stricmp( cmd, commands[ i ].cmd ) )
+		if ( !Q_stricmp ( cmd, commands[ i ].cmd ) )
 		{
 			commands[ i ].function();
 			return qtrue;
@@ -227,60 +227,60 @@ Let the client system know about all of our commands
 so it can perform tab completion
 =================
 */
-void CG_InitConsoleCommands( void )
+void CG_InitConsoleCommands ( void )
 {
 	int i;
 
-	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof ( commands ) / sizeof ( commands[ 0 ] ); i++ )
 	{
-		trap_AddCommand( commands[ i ].cmd );
+		trap_AddCommand ( commands[ i ].cmd );
 	}
 
 	//
 	// the game server will interpret these commands, which will be automatically
 	// forwarded to the server after they are not recognized locally
 	//
-	trap_AddCommand( "kill" );
-	trap_AddCommand( "say" );
-	trap_AddCommand( "say_team" );
-	trap_AddCommand( "tell" );
-	trap_AddCommand( "vsay" );
-	trap_AddCommand( "vsay_team" );
-	trap_AddCommand( "vtell" );
-	trap_AddCommand( "vtaunt" );
-	trap_AddCommand( "vosay" );
-	trap_AddCommand( "vosay_team" );
-	trap_AddCommand( "votell" );
-	trap_AddCommand( "give" );
-	trap_AddCommand( "god" );
-	trap_AddCommand( "notarget" );
-	trap_AddCommand( "noclip" );
-	trap_AddCommand( "team" );
-	trap_AddCommand( "follow" );
-	trap_AddCommand( "addbot" );
-	trap_AddCommand( "setviewpos" );
-	trap_AddCommand( "callvote" );
-	trap_AddCommand( "vote" );
-	trap_AddCommand( "callteamvote" );
-	trap_AddCommand( "teamvote" );
-	trap_AddCommand( "stats" );
-	trap_AddCommand( "teamtask" );
-	trap_AddCommand( "class" );
-	trap_AddCommand( "build" );
-	trap_AddCommand( "buy" );
-	trap_AddCommand( "sell" );
-	trap_AddCommand( "reload" );
-	trap_AddCommand( "itemact" );
-	trap_AddCommand( "itemdeact" );
-	trap_AddCommand( "itemtoggle" );
-	trap_AddCommand( "destroy" );
-	trap_AddCommand( "deconstruct" );
-	trap_AddCommand( "menu" );
-	trap_AddCommand( "ui_menu" );
-	trap_AddCommand( "mapRotation" );
-	trap_AddCommand( "stopMapRotation" );
-	trap_AddCommand( "alienWin" );
-	trap_AddCommand( "humanWin" );
+	trap_AddCommand ( "kill" );
+	trap_AddCommand ( "say" );
+	trap_AddCommand ( "say_team" );
+	trap_AddCommand ( "tell" );
+	trap_AddCommand ( "vsay" );
+	trap_AddCommand ( "vsay_team" );
+	trap_AddCommand ( "vtell" );
+	trap_AddCommand ( "vtaunt" );
+	trap_AddCommand ( "vosay" );
+	trap_AddCommand ( "vosay_team" );
+	trap_AddCommand ( "votell" );
+	trap_AddCommand ( "give" );
+	trap_AddCommand ( "god" );
+	trap_AddCommand ( "notarget" );
+	trap_AddCommand ( "noclip" );
+	trap_AddCommand ( "team" );
+	trap_AddCommand ( "follow" );
+	trap_AddCommand ( "addbot" );
+	trap_AddCommand ( "setviewpos" );
+	trap_AddCommand ( "callvote" );
+	trap_AddCommand ( "vote" );
+	trap_AddCommand ( "callteamvote" );
+	trap_AddCommand ( "teamvote" );
+	trap_AddCommand ( "stats" );
+	trap_AddCommand ( "teamtask" );
+	trap_AddCommand ( "class" );
+	trap_AddCommand ( "build" );
+	trap_AddCommand ( "buy" );
+	trap_AddCommand ( "sell" );
+	trap_AddCommand ( "reload" );
+	trap_AddCommand ( "itemact" );
+	trap_AddCommand ( "itemdeact" );
+	trap_AddCommand ( "itemtoggle" );
+	trap_AddCommand ( "destroy" );
+	trap_AddCommand ( "deconstruct" );
+	trap_AddCommand ( "menu" );
+	trap_AddCommand ( "ui_menu" );
+	trap_AddCommand ( "mapRotation" );
+	trap_AddCommand ( "stopMapRotation" );
+	trap_AddCommand ( "alienWin" );
+	trap_AddCommand ( "humanWin" );
 }
 
 /*
@@ -291,16 +291,16 @@ The command has been tokenized and can be retrieved with
 Cmd_Argc() / Cmd_Argv()
 =================
 */
-void CG_CompleteCommand( int argNum )
+void CG_CompleteCommand ( int argNum )
 {
 	const char *cmd;
 	int        i;
 
-	cmd = CG_Argv( 0 );
+	cmd = CG_Argv ( 0 );
 
-	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof ( commands ) / sizeof ( commands[ 0 ] ); i++ )
 	{
-		if ( !Q_stricmp( cmd, commands[ i ].cmd ) )
+		if ( !Q_stricmp ( cmd, commands[ i ].cmd ) )
 		{
 			commands[ i ].completer();
 			return;

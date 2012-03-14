@@ -68,9 +68,9 @@ typedef enum
   MESSAGE_HEALED,
   MESSAGE_REVIVED,
   MESSAGE_KILLEDSOMEONE,
-  MESSAGE_ADDWEAPON,                      // gives a weapon to the bot, should add to list to be evaluated for use
-  MESSAGE_REMOVEWEAPON,                   // remove a weapon from the bots inventory
-  MESSAGE_RESETWEAPONS,                   // tells the bot to clear out all the weapons
+  MESSAGE_ADDWEAPON, // gives a weapon to the bot, should add to list to be evaluated for use
+  MESSAGE_REMOVEWEAPON, // remove a weapon from the bots inventory
+  MESSAGE_RESETWEAPONS, // tells the bot to clear out all the weapons
   MESSAGE_REFRESHWEAPON,
   MESSAGE_REFRESHALLWEAPONS,
   MESSAGE_SPECTATED,

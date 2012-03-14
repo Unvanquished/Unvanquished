@@ -46,14 +46,14 @@ CG_CheckAmmo
 If the ammo has gone low enough to generate the warning, play a sound
 ==============
 */
-void CG_CheckAmmo( void )
+void CG_CheckAmmo ( void )
 {
 	int i;
 	int total;
-	int weapons[ MAX_WEAPONS / ( sizeof( int ) * 8 ) ];
+	int weapons[ MAX_WEAPONS / ( sizeof ( int ) * 8 ) ];
 
 	// see about how many seconds of ammo we have remaining
-	memcpy( weapons, cg.snap->ps.weapons, sizeof( weapons ) );
+	memcpy ( weapons, cg.snap->ps.weapons, sizeof ( weapons ) );
 
 	if ( !weapons[ 0 ] && !weapons[ 1 ] )
 	{
@@ -65,7 +65,7 @@ void CG_CheckAmmo( void )
 
 	for ( i = 0; i < WP_NUM_WEAPONS; i++ )
 	{
-		if ( !( weapons[ 0 ] & ( 1 << i ) ) )
+		if ( ! ( weapons[ 0 ] & ( 1 << i ) ) )
 		{
 			continue;
 		}
@@ -97,7 +97,7 @@ void CG_CheckAmmo( void )
 			case WP_K43:
 			case WP_MORTAR_SET:
 			default:
-				total += cg.snap->ps.ammo[ BG_FindAmmoForWeapon( i ) ] * 1000;
+				total += cg.snap->ps.ammo[ BG_FindAmmoForWeapon ( i ) ] * 1000;
 				break;
 //          default:
 //              total += cg.snap->ps.ammo[BG_FindAmmoForWeapon(i)] * 200;
@@ -114,7 +114,7 @@ void CG_CheckAmmo( void )
 	if ( !cg.lowAmmoWarning )
 	{
 		// play a sound on this transition
-		trap_S_StartLocalSound( cgs.media.noAmmoSound, CHAN_LOCAL_SOUND );
+		trap_S_StartLocalSound ( cgs.media.noAmmoSound, CHAN_LOCAL_SOUND );
 	}
 
 	if ( total == 0 )
@@ -132,7 +132,7 @@ void CG_CheckAmmo( void )
 CG_DamageFeedback
 ==============
 */
-void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
+void CG_DamageFeedback ( int yawByte, int pitchByte, int damage )
 {
 	float        left, front, up;
 	float        kick;
@@ -149,7 +149,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 	cg.attackerTime = cg.time;
 
 	// the lower on health you are, the greater the view kick will be
-	health          = cg.snap->ps.stats[ STAT_HEALTH ];
+	health = cg.snap->ps.stats[ STAT_HEALTH ];
 
 	if ( health < 40 )
 	{
@@ -183,7 +183,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 
 	if ( slot == MAX_VIEWDAMAGE )
 	{
-		return;                                 // no free slots, never override or splats will suddenly disappear
+		return; // no free slots, never override or splats will suddenly disappear
 	}
 
 	vd = &cg.viewDamage[ slot ];
@@ -191,39 +191,39 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 	// if yaw and pitch are both 255, make the damage always centered (falling, etc)
 	if ( yawByte == 255 && pitchByte == 255 )
 	{
-		vd->damageX    = 0;
-		vd->damageY    = 0;
-		cg.v_dmg_roll  = 0;
+		vd->damageX = 0;
+		vd->damageY = 0;
+		cg.v_dmg_roll = 0;
 		cg.v_dmg_pitch = -kick;
 	}
 	else
 	{
 		// positional
-		pitch           = pitchByte / 255.0 * 360;
-		yaw             = yawByte / 255.0 * 360;
+		pitch = pitchByte / 255.0 * 360;
+		yaw = yawByte / 255.0 * 360;
 
 		angles[ PITCH ] = pitch;
-		angles[ YAW ]   = yaw;
-		angles[ ROLL ]  = 0;
+		angles[ YAW ] = yaw;
+		angles[ ROLL ] = 0;
 
-		AngleVectors( angles, dir, NULL, NULL );
-		VectorSubtract( vec3_origin, dir, dir );
+		AngleVectors ( angles, dir, NULL, NULL );
+		VectorSubtract ( vec3_origin, dir, dir );
 
-		front    = DotProduct( dir, cg.refdef.viewaxis[ 0 ] );
-		left     = DotProduct( dir, cg.refdef.viewaxis[ 1 ] );
-		up       = DotProduct( dir, cg.refdef.viewaxis[ 2 ] );
+		front = DotProduct ( dir, cg.refdef.viewaxis[ 0 ] );
+		left = DotProduct ( dir, cg.refdef.viewaxis[ 1 ] );
+		up = DotProduct ( dir, cg.refdef.viewaxis[ 2 ] );
 
 		dir[ 0 ] = front;
 		dir[ 1 ] = left;
 		dir[ 2 ] = 0;
-		dist     = VectorLength( dir );
+		dist = VectorLength ( dir );
 
 		if ( dist < 0.1 )
 		{
 			dist = 0.1;
 		}
 
-		cg.v_dmg_roll  = kick * left;
+		cg.v_dmg_roll = kick * left;
 
 		cg.v_dmg_pitch = -kick * front;
 
@@ -263,12 +263,12 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 		kick = 10;
 	}
 
-	vd->damageValue    = kick;
-	cg.v_dmg_time      = cg.time + DAMAGE_TIME;
-	vd->damageTime     = cg.snap->serverTime;
+	vd->damageValue = kick;
+	cg.v_dmg_time = cg.time + DAMAGE_TIME;
+	vd->damageTime = cg.snap->serverTime;
 	vd->damageDuration = kick * 50 * ( 1 + 2 * ( !vd->damageX && !vd->damageY ) );
-	cg.damageTime      = cg.snap->serverTime;
-	cg.damageIndex     = slot;
+	cg.damageTime = cg.snap->serverTime;
+	cg.damageIndex = slot;
 }
 
 /*
@@ -278,42 +278,42 @@ CG_Respawn
 A respawn happened this snapshot
 ================
 */
-void CG_Respawn( qboolean revived )
+void CG_Respawn ( qboolean revived )
 {
-	cg.serverRespawning                 = qfalse; // Arnout: just in case
+	cg.serverRespawning = qfalse; // Arnout: just in case
 
 	// no error decay on player movement
-	cg.thisFrameTeleport                = qtrue;
+	cg.thisFrameTeleport = qtrue;
 
 	// need to reset client-side weapon animations
-	cg.predictedPlayerState.weapAnim    = ( ( cg.predictedPlayerState.weapAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | PM_IdleAnimForWeapon( cg.snap->ps.weapon ); // reset weapon animations
-	cg.predictedPlayerState.weaponstate = WEAPON_READY;                                                                                                         // hmm, set this?  what to?
+	cg.predictedPlayerState.weapAnim = ( ( cg.predictedPlayerState.weapAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | PM_IdleAnimForWeapon ( cg.snap->ps.weapon ); // reset weapon animations
+	cg.predictedPlayerState.weaponstate = WEAPON_READY; // hmm, set this?  what to?
 
 	// display weapons available
-	cg.weaponSelectTime                 = cg.time;
+	cg.weaponSelectTime = cg.time;
 
-	cg.cursorHintIcon                   = 0;
-	cg.cursorHintTime                   = 0;
+	cg.cursorHintIcon = 0;
+	cg.cursorHintTime = 0;
 
-	cg.cameraMode                       = qfalse; //----(SA)  get out of camera for sure
+	cg.cameraMode = qfalse; //----(SA)  get out of camera for sure
 
 	// select the weapon the server says we are using
-	cg.weaponSelect                     = cg.snap->ps.weapon;
+	cg.weaponSelect = cg.snap->ps.weapon;
 	// DHM - Nerve :: Clear even more things on respawn
-	cg.zoomedBinoc                      = qfalse;
-	cg.zoomedScope                      = qfalse;
-	cg.zoomTime                         = 0;
-	cg.zoomval                          = 0;
+	cg.zoomedBinoc = qfalse;
+	cg.zoomedScope = qfalse;
+	cg.zoomTime = 0;
+	cg.zoomval = 0;
 
-	trap_SendConsoleCommand( "-zoom\n" );
-	cg.binocZoomTime                    = 0;
+	trap_SendConsoleCommand ( "-zoom\n" );
+	cg.binocZoomTime = 0;
 
 	// clear pmext
-	memset( &cg.pmext, 0, sizeof( cg.pmext ) );
+	memset ( &cg.pmext, 0, sizeof ( cg.pmext ) );
 
 	cg.pmext.bAutoReload = ( cg_autoReload.integer > 0 );
 
-	cg.pmext.sprintTime  = SPRINTTIME;
+	cg.pmext.sprintTime = SPRINTTIME;
 
 	if ( !revived )
 	{
@@ -328,7 +328,7 @@ void CG_Respawn( qboolean revived )
 	cg.proneMovingTime = 0;
 
 	// reset fog to world fog (if present)
-	trap_R_SetFog( FOG_CMD_SWITCHFOG, FOG_MAP, 20, 0, 0, 0, 0 );
+	trap_R_SetFog ( FOG_CMD_SWITCHFOG, FOG_MAP, 20, 0, 0, 0, 0 );
 	// dhm - end
 }
 
@@ -339,7 +339,7 @@ extern char *eventnames[];
 CG_CheckPlayerstateEvents
 ==============
 */
-void CG_CheckPlayerstateEvents_wolf( playerState_t *ps, playerState_t *ops )
+void CG_CheckPlayerstateEvents_wolf ( playerState_t *ps, playerState_t *ops )
 {
 	int       i;
 	int       event;
@@ -353,23 +353,23 @@ void CG_CheckPlayerstateEvents_wolf( playerState_t *ps, playerState_t *ops )
 	                CG_EntityEvent( cent, cent->lerpOrigin );
 	        }
 	*/
-	cent = &cg.predictedPlayerEntity;       // cg_entities[ ps->clientNum ];
+	cent = &cg.predictedPlayerEntity; // cg_entities[ ps->clientNum ];
 
 	// go through the predictable events buffer
 	for ( i = ps->eventSequence - MAX_EVENTS; i < ps->eventSequence; i++ )
 	{
 		if ( ps->events[ i & ( MAX_EVENTS - 1 ) ] != ops->events[ i & ( MAX_EVENTS - 1 ) ] || i >= ops->eventSequence )
 		{
-			event                        = ps->events[ i & ( MAX_EVENTS - 1 ) ];
+			event = ps->events[ i & ( MAX_EVENTS - 1 ) ];
 
-			cent->currentState.event     = event;
+			cent->currentState.event = event;
 			cent->currentState.eventParm = ps->eventParms[ i & ( MAX_EVENTS - 1 ) ];
-			CG_EntityEvent( cent, cent->lerpOrigin );
+			CG_EntityEvent ( cent, cent->lerpOrigin );
 		}
 	}
 }
 
-void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops )
+void CG_CheckPlayerstateEvents ( playerState_t *ps, playerState_t *ops )
 {
 	int       i;
 	int       event;
@@ -377,13 +377,13 @@ void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops )
 
 	if ( ps->externalEvent && ps->externalEvent != ops->externalEvent )
 	{
-		cent                         = &cg_entities[ ps->clientNum ];
-		cent->currentState.event     = ps->externalEvent;
+		cent = &cg_entities[ ps->clientNum ];
+		cent->currentState.event = ps->externalEvent;
 		cent->currentState.eventParm = ps->externalEventParm;
-		CG_EntityEvent( cent, cent->lerpOrigin );
+		CG_EntityEvent ( cent, cent->lerpOrigin );
 	}
 
-	cent = &cg.predictedPlayerEntity;       // cg_entities[ ps->clientNum ];
+	cent = &cg.predictedPlayerEntity; // cg_entities[ ps->clientNum ];
 
 	// go through the predictable events buffer
 	for ( i = ps->eventSequence - MAX_EVENTS; i < ps->eventSequence; i++ )
@@ -394,10 +394,10 @@ void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops )
 		     // or something the server told us changed our prediction causing a different event
 		     || ( i > ops->eventSequence - MAX_EVENTS && ps->events[ i & ( MAX_EVENTS - 1 ) ] != ops->events[ i & ( MAX_EVENTS - 1 ) ] ) )
 		{
-			event                                                    = ps->events[ i & ( MAX_EVENTS - 1 ) ];
-			cent->currentState.event                                 = event;
-			cent->currentState.eventParm                             = ps->eventParms[ i & ( MAX_EVENTS - 1 ) ];
-			CG_EntityEvent( cent, cent->lerpOrigin );
+			event = ps->events[ i & ( MAX_EVENTS - 1 ) ];
+			cent->currentState.event = event;
+			cent->currentState.eventParm = ps->eventParms[ i & ( MAX_EVENTS - 1 ) ];
+			CG_EntityEvent ( cent, cent->lerpOrigin );
 
 			cg.predictableEvents[ i & ( MAX_PREDICTED_EVENTS - 1 ) ] = event;
 
@@ -411,7 +411,7 @@ void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops )
 CG_CheckChangedPredictableEvents
 ==================
 */
-void CG_CheckChangedPredictableEvents( playerState_t *ps )
+void CG_CheckChangedPredictableEvents ( playerState_t *ps )
 {
 	int       i;
 	int       event;
@@ -433,16 +433,16 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps )
 			// if the new playerstate event is different from a previously predicted one
 			if ( ps->events[ i & ( MAX_EVENTS - 1 ) ] != cg.predictableEvents[ i & ( MAX_PREDICTED_EVENTS - 1 ) ] )
 			{
-				event                                                    = ps->events[ i & ( MAX_EVENTS - 1 ) ];
-				cent->currentState.event                                 = event;
-				cent->currentState.eventParm                             = ps->eventParms[ i & ( MAX_EVENTS - 1 ) ];
-				CG_EntityEvent( cent, cent->lerpOrigin );
+				event = ps->events[ i & ( MAX_EVENTS - 1 ) ];
+				cent->currentState.event = event;
+				cent->currentState.eventParm = ps->eventParms[ i & ( MAX_EVENTS - 1 ) ];
+				CG_EntityEvent ( cent, cent->lerpOrigin );
 
 				cg.predictableEvents[ i & ( MAX_PREDICTED_EVENTS - 1 ) ] = event;
 
 				if ( cg_showmiss.integer )
 				{
-					CG_Printf( "WARNING: changed predicted event\n" );
+					CG_Printf ( "WARNING: changed predicted event\n" );
 				}
 			}
 		}
@@ -454,14 +454,14 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps )
 CG_CheckLocalSounds
 ==================
 */
-void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
+void CG_CheckLocalSounds ( playerState_t *ps, playerState_t *ops )
 {
 	// health changes of more than -1 should make pain sounds
 	if ( ps->stats[ STAT_HEALTH ] < ops->stats[ STAT_HEALTH ] - 1 )
 	{
 		if ( ps->stats[ STAT_HEALTH ] > 0 )
 		{
-			CG_PainEvent( &cg.predictedPlayerEntity, ps->stats[ STAT_HEALTH ], qfalse );
+			CG_PainEvent ( &cg.predictedPlayerEntity, ps->stats[ STAT_HEALTH ], qfalse );
 
 			cg.painTime = cg.time;
 		}
@@ -474,7 +474,7 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
 
 		msec = cg.time - cgs.levelStartTime;
 
-		if ( cgs.timelimit > 5 && !( cg.timelimitWarnings & 1 ) && ( msec > ( cgs.timelimit - 5 ) * 60 * 1000 ) &&
+		if ( cgs.timelimit > 5 && ! ( cg.timelimitWarnings & 1 ) && ( msec > ( cgs.timelimit - 5 ) * 60 * 1000 ) &&
 		     ( msec < ( cgs.timelimit - 5 ) * 60 * 1000 + 1000 ) )
 		{
 			cg.timelimitWarnings |= 1;
@@ -483,27 +483,27 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
 			{
 				if ( cgs.media.fiveMinuteSound_g == -1 )
 				{
-					CG_SoundPlaySoundScript( cg.fiveMinuteSound_g, NULL, -1, qtrue );
+					CG_SoundPlaySoundScript ( cg.fiveMinuteSound_g, NULL, -1, qtrue );
 				}
 				else if ( cgs.media.fiveMinuteSound_g )
 				{
-					trap_S_StartLocalSound( cgs.media.fiveMinuteSound_g, CHAN_ANNOUNCER );
+					trap_S_StartLocalSound ( cgs.media.fiveMinuteSound_g, CHAN_ANNOUNCER );
 				}
 			}
 			else if ( ps->persistant[ PERS_TEAM ] == TEAM_ALLIES )
 			{
 				if ( cgs.media.fiveMinuteSound_a == -1 )
 				{
-					CG_SoundPlaySoundScript( cg.fiveMinuteSound_a, NULL, -1, qtrue );
+					CG_SoundPlaySoundScript ( cg.fiveMinuteSound_a, NULL, -1, qtrue );
 				}
 				else if ( cgs.media.fiveMinuteSound_a )
 				{
-					trap_S_StartLocalSound( cgs.media.fiveMinuteSound_a, CHAN_ANNOUNCER );
+					trap_S_StartLocalSound ( cgs.media.fiveMinuteSound_a, CHAN_ANNOUNCER );
 				}
 			}
 		}
 
-		if ( cgs.timelimit > 2 && !( cg.timelimitWarnings & 2 ) && ( msec > ( cgs.timelimit - 2 ) * 60 * 1000 ) &&
+		if ( cgs.timelimit > 2 && ! ( cg.timelimitWarnings & 2 ) && ( msec > ( cgs.timelimit - 2 ) * 60 * 1000 ) &&
 		     ( msec < ( cgs.timelimit - 2 ) * 60 * 1000 + 1000 ) )
 		{
 			cg.timelimitWarnings |= 2;
@@ -512,27 +512,27 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
 			{
 				if ( cgs.media.twoMinuteSound_g == -1 )
 				{
-					CG_SoundPlaySoundScript( cg.twoMinuteSound_g, NULL, -1, qtrue );
+					CG_SoundPlaySoundScript ( cg.twoMinuteSound_g, NULL, -1, qtrue );
 				}
 				else if ( cgs.media.twoMinuteSound_g )
 				{
-					trap_S_StartLocalSound( cgs.media.twoMinuteSound_g, CHAN_ANNOUNCER );
+					trap_S_StartLocalSound ( cgs.media.twoMinuteSound_g, CHAN_ANNOUNCER );
 				}
 			}
 			else if ( ps->persistant[ PERS_TEAM ] == TEAM_ALLIES )
 			{
 				if ( cgs.media.twoMinuteSound_a == -1 )
 				{
-					CG_SoundPlaySoundScript( cg.twoMinuteSound_a, NULL, -1, qtrue );
+					CG_SoundPlaySoundScript ( cg.twoMinuteSound_a, NULL, -1, qtrue );
 				}
 				else if ( cgs.media.twoMinuteSound_a )
 				{
-					trap_S_StartLocalSound( cgs.media.twoMinuteSound_a, CHAN_ANNOUNCER );
+					trap_S_StartLocalSound ( cgs.media.twoMinuteSound_a, CHAN_ANNOUNCER );
 				}
 			}
 		}
 
-		if ( !( cg.timelimitWarnings & 4 ) && ( msec > ( cgs.timelimit ) * 60 * 1000 - 30000 ) &&
+		if ( ! ( cg.timelimitWarnings & 4 ) && ( msec > ( cgs.timelimit ) * 60 * 1000 - 30000 ) &&
 		     ( msec < ( cgs.timelimit ) * 60 * 1000 - 29000 ) )
 		{
 			cg.timelimitWarnings |= 4;
@@ -541,22 +541,22 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
 			{
 				if ( cgs.media.thirtySecondSound_g == -1 )
 				{
-					CG_SoundPlaySoundScript( cg.thirtySecondSound_g, NULL, -1, qtrue );
+					CG_SoundPlaySoundScript ( cg.thirtySecondSound_g, NULL, -1, qtrue );
 				}
 				else if ( cgs.media.thirtySecondSound_g )
 				{
-					trap_S_StartLocalSound( cgs.media.thirtySecondSound_g, CHAN_ANNOUNCER );
+					trap_S_StartLocalSound ( cgs.media.thirtySecondSound_g, CHAN_ANNOUNCER );
 				}
 			}
 			else if ( ps->persistant[ PERS_TEAM ] == TEAM_ALLIES )
 			{
 				if ( cgs.media.thirtySecondSound_a == -1 )
 				{
-					CG_SoundPlaySoundScript( cg.thirtySecondSound_a, NULL, -1, qtrue );
+					CG_SoundPlaySoundScript ( cg.thirtySecondSound_a, NULL, -1, qtrue );
 				}
 				else if ( cgs.media.thirtySecondSound_a )
 				{
-					trap_S_StartLocalSound( cgs.media.thirtySecondSound_a, CHAN_ANNOUNCER );
+					trap_S_StartLocalSound ( cgs.media.thirtySecondSound_a, CHAN_ANNOUNCER );
 				}
 			}
 		}
@@ -569,37 +569,37 @@ CG_TransitionPlayerState
 
 ===============
 */
-void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
+void CG_TransitionPlayerState ( playerState_t *ps, playerState_t *ops )
 {
 	// OSP - MV client handling
 	if ( cg.mvTotalClients > 0 )
 	{
 		if ( ps->clientNum != ops->clientNum )
 		{
-			cg.thisFrameTeleport                             = qtrue;
+			cg.thisFrameTeleport = qtrue;
 
 			// clear voicechat
-			cg.predictedPlayerEntity.voiceChatSpriteTime     = 0;   // CHECKME: should we do this here?
+			cg.predictedPlayerEntity.voiceChatSpriteTime = 0; // CHECKME: should we do this here?
 			cg_entities[ ps->clientNum ].voiceChatSpriteTime = 0;
 
-			*ops                                             = *ps;
+			*ops = *ps;
 		}
 
-		CG_CheckLocalSounds( ps, ops );
+		CG_CheckLocalSounds ( ps, ops );
 		return;
 	}
 
 	// check for changing follow mode
 	if ( ps->clientNum != ops->clientNum )
 	{
-		cg.thisFrameTeleport                             = qtrue;
+		cg.thisFrameTeleport = qtrue;
 
 		// clear voicechat
-		cg.predictedPlayerEntity.voiceChatSpriteTime     = 0;
+		cg.predictedPlayerEntity.voiceChatSpriteTime = 0;
 		cg_entities[ ps->clientNum ].voiceChatSpriteTime = 0;
 
 		// make sure we don't get any unwanted transition effects
-		*ops                                             = *ps;
+		*ops = *ps;
 
 		// DHM - Nerve :: After Limbo, make sure and do a CG_Respawn
 		if ( ps->clientNum == cg.clientNum )
@@ -611,7 +611,7 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 	if ( ps->eFlags & EF_FIRING )
 	{
 		cg.lastFiredWeaponTime = 0;
-		cg.weaponFireTime     += cg.frametime;
+		cg.weaponFireTime += cg.frametime;
 	}
 	else
 	{
@@ -626,24 +626,24 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 	// damage events (player is getting wounded)
 	if ( ps->damageEvent != ops->damageEvent && ps->damageCount )
 	{
-		CG_DamageFeedback( ps->damageYaw, ps->damagePitch, ps->damageCount );
+		CG_DamageFeedback ( ps->damageYaw, ps->damagePitch, ps->damageCount );
 	}
 
 	// respawning
 	if ( ps->persistant[ PERS_SPAWN_COUNT ] != ops->persistant[ PERS_SPAWN_COUNT ] )
 	{
-		CG_Respawn( ps->persistant[ PERS_REVIVE_COUNT ] != ops->persistant[ PERS_REVIVE_COUNT ] ? qtrue : qfalse );
+		CG_Respawn ( ps->persistant[ PERS_REVIVE_COUNT ] != ops->persistant[ PERS_REVIVE_COUNT ] ? qtrue : qfalse );
 	}
 
 	if ( cg.mapRestart )
 	{
-		CG_Respawn( qfalse );
+		CG_Respawn ( qfalse );
 		cg.mapRestart = qfalse;
 	}
 
 	if ( cg.snap->ps.pm_type != PM_INTERMISSION && ps->persistant[ PERS_TEAM ] != TEAM_SPECTATOR )
 	{
-		CG_CheckLocalSounds( ps, ops );
+		CG_CheckLocalSounds ( ps, ops );
 	}
 
 	// check for going low on ammo
@@ -655,11 +655,11 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 		{
 			if ( ps->eFlags & EF_ZOOMING )
 			{
-				trap_SendConsoleCommand( "-zoom\n" );
+				trap_SendConsoleCommand ( "-zoom\n" );
 			}
 		}
 
-		if ( !( ops->eFlags & EF_PRONE_MOVING ) )
+		if ( ! ( ops->eFlags & EF_PRONE_MOVING ) )
 		{
 			// ydnar: this screws up auto-switching when dynamite planted or grenade thrown/out of ammo
 			//% CG_FinishWeaponChange( cg.weaponSelect, ps->nextWeapon );
@@ -672,21 +672,21 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 		cg.proneMovingTime = -cg.time;
 	}
 
-	if ( !( ps->eFlags & EF_PRONE ) && ops->eFlags & EF_PRONE )
+	if ( ! ( ps->eFlags & EF_PRONE ) && ops->eFlags & EF_PRONE )
 	{
 		if ( cg.weaponSelect == WP_MOBILE_MG42_SET )
 		{
-			CG_FinishWeaponChange( cg.weaponSelect, ps->nextWeapon );
+			CG_FinishWeaponChange ( cg.weaponSelect, ps->nextWeapon );
 		}
 	}
 
 	// run events
-	CG_CheckPlayerstateEvents( ps, ops );
+	CG_CheckPlayerstateEvents ( ps, ops );
 
 	// smooth the ducking viewheight change
 	if ( ps->viewheight != ops->viewheight )
 	{
 		cg.duckChange = ps->viewheight - ops->viewheight;
-		cg.duckTime   = cg.time;
+		cg.duckTime = cg.time;
 	}
 }

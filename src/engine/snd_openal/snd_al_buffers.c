@@ -46,14 +46,14 @@ typedef struct sfx_s sfx_t;
 struct sfx_s
 {
 	char       filename[ MAX_QPATH ];
-	ALuint     buffer;              // OpenAL buffer
-	qboolean   isDefault;           // Couldn't be loaded - use default FX
-	qboolean   inMemory;            // Sound is stored in memory
-	qboolean   isLocked;            // Sound is locked (can not be unloaded)
-	int        used;                // Time last used
-	sfx_t      *next;               // Next entry in hash list
+	ALuint     buffer; // OpenAL buffer
+	qboolean   isDefault; // Couldn't be loaded - use default FX
+	qboolean   inMemory; // Sound is stored in memory
+	qboolean   isLocked; // Sound is locked (can not be unloaded)
+	int        used; // Time last used
+	sfx_t      *next; // Next entry in hash list
 	int        duration;
-	snd_info_t info;                // information for this sound like rate, sample count..
+	snd_info_t info; // information for this sound like rate, sample count..
 };
 
 static qboolean al_buffer_inited = qfalse;
@@ -82,12 +82,12 @@ sfxHandle_t al_buf_find_free()
 	}
 
 	// Shit...
-	si.Error( ERR_FATAL, "al_buf_find_free: No free sound handles" );
+	si.Error ( ERR_FATAL, "al_buf_find_free: No free sound handles" );
 	return -1;
 }
 
 // Find a sound effect if loaded, set up a handle otherwise
-sfxHandle_t al_buf_find( const char *filename )
+sfxHandle_t al_buf_find ( const char *filename )
 {
 	// Look it up in the hash table
 	sfxHandle_t sfx = -1;
@@ -95,7 +95,7 @@ sfxHandle_t al_buf_find( const char *filename )
 
 	for ( i = 0; i < MAX_SFX; i++ )
 	{
-		if ( !strcmp( knownSfx[ i ].filename, filename ) )
+		if ( !strcmp ( knownSfx[ i ].filename, filename ) )
 		{
 			sfx = i;
 			break;
@@ -111,8 +111,8 @@ sfxHandle_t al_buf_find( const char *filename )
 
 		// Clear and copy the filename over
 		ptr = &knownSfx[ sfx ];
-		memset( ptr, 0, sizeof( *ptr ) );
-		strcpy( ptr->filename, filename );
+		memset ( ptr, 0, sizeof ( *ptr ) );
+		strcpy ( ptr->filename, filename );
 	}
 
 	// Return the handle
@@ -123,7 +123,7 @@ sfxHandle_t al_buf_find( const char *filename )
  * Initialisation and shutdown
  */
 // Called at init, shutdown
-qboolean al_buf_init( void )
+qboolean al_buf_init ( void )
 {
 	sfxHandle_t default_sfx;
 
@@ -133,20 +133,20 @@ qboolean al_buf_init( void )
 	}
 
 	// Clear the hash table, and SFX table
-	memset( knownSfx, 0, sizeof( knownSfx ) );
-	numSfx                           = 0;
+	memset ( knownSfx, 0, sizeof ( knownSfx ) );
+	numSfx = 0;
 
 	// Load the default sound, and lock it
-	default_sfx                      = al_buf_find( "sound/feedback/hit.wav" );
-	al_buf_use( default_sfx );
+	default_sfx = al_buf_find ( "sound/feedback/hit.wav" );
+	al_buf_use ( default_sfx );
 	knownSfx[ default_sfx ].isLocked = qtrue;
 
 	// All done
-	al_buffer_inited                 = qtrue;
+	al_buffer_inited = qtrue;
 	return qtrue;
 }
 
-void al_buf_shutdown( void )
+void al_buf_shutdown ( void )
 {
 	int i;
 
@@ -161,11 +161,11 @@ void al_buf_shutdown( void )
 	// Free all used effects
 	for ( i = 0; i < MAX_SFX; i++ )
 	{
-		al_buf_unload( i );
+		al_buf_unload ( i );
 	}
 
 	// Clear the tables
-	memset( knownSfx, 0, sizeof( knownSfx ) );
+	memset ( knownSfx, 0, sizeof ( knownSfx ) );
 
 	// All undone
 	al_buffer_inited = qfalse;
@@ -174,13 +174,13 @@ void al_buf_shutdown( void )
 /**
  * Registration
  */
-sfxHandle_t SndAl_RegisterSound( const char *sample, qboolean compressed )
+sfxHandle_t SndAl_RegisterSound ( const char *sample, qboolean compressed )
 {
-	sfxHandle_t sfx = al_buf_find( sample );
+	sfxHandle_t sfx = al_buf_find ( sample );
 
 	if ( ( s_precache->integer == 1 ) && ( !knownSfx[ sfx ].inMemory ) && ( !knownSfx[ sfx ].isDefault ) )
 	{
-		al_buf_load( sfx );
+		al_buf_load ( sfx );
 	}
 
 	knownSfx[ sfx ].used = si.Milliseconds();
@@ -191,7 +191,7 @@ sfxHandle_t SndAl_RegisterSound( const char *sample, qboolean compressed )
 /**
  * Usage counter
  */
-void al_buf_use( sfxHandle_t sfx )
+void al_buf_use ( sfxHandle_t sfx )
 {
 	if ( knownSfx[ sfx ].filename[ 0 ] == '\0' )
 	{
@@ -200,7 +200,7 @@ void al_buf_use( sfxHandle_t sfx )
 
 	if ( ( !knownSfx[ sfx ].inMemory ) && ( !knownSfx[ sfx ].isDefault ) )
 	{
-		al_buf_load( sfx );
+		al_buf_load ( sfx );
 	}
 
 	knownSfx[ sfx ].used = si.Milliseconds();
@@ -209,19 +209,19 @@ void al_buf_use( sfxHandle_t sfx )
 /**
  * Loading and unloading
  */
-static void al_buf_use_default( sfxHandle_t sfx )
+static void al_buf_use_default ( sfxHandle_t sfx )
 {
 	if ( sfx == default_sfx )
 	{
-		si.Error( ERR_FATAL, "Can't load default sound effect %s\n", knownSfx[ sfx ].filename );
+		si.Error ( ERR_FATAL, "Can't load default sound effect %s\n", knownSfx[ sfx ].filename );
 	}
 
-	si.Printf( PRINT_ALL, "Warning: Using default sound for %s\n", knownSfx[ sfx ].filename );
+	si.Printf ( PRINT_ALL, "Warning: Using default sound for %s\n", knownSfx[ sfx ].filename );
 	knownSfx[ sfx ].isDefault = qtrue;
-	knownSfx[ sfx ].buffer    = knownSfx[ default_sfx ].buffer;
+	knownSfx[ sfx ].buffer = knownSfx[ default_sfx ].buffer;
 }
 
-void al_buf_load( sfxHandle_t sfx )
+void al_buf_load ( sfxHandle_t sfx )
 {
 	ALenum     error;
 
@@ -248,31 +248,31 @@ void al_buf_load( sfxHandle_t sfx )
 	}
 
 	// Try to load
-	data = si.LoadSound( knownSfx[ sfx ].filename, &info );
+	data = si.LoadSound ( knownSfx[ sfx ].filename, &info );
 
 	if ( !data )
 	{
-		si.Printf( PRINT_ALL, "Can't load %s\n", knownSfx[ sfx ].filename );
-		al_buf_use_default( sfx );
+		si.Printf ( PRINT_ALL, "Can't load %s\n", knownSfx[ sfx ].filename );
+		al_buf_use_default ( sfx );
 		return;
 	}
 
-	format = al_format( info.width, info.channels );
+	format = al_format ( info.width, info.channels );
 
 	// Create a buffer
-	qalGenBuffers( 1, &knownSfx[ sfx ].buffer );
+	qalGenBuffers ( 1, &knownSfx[ sfx ].buffer );
 
 	if ( ( error = qalGetError() ) != AL_NO_ERROR )
 	{
-		al_buf_use_default( sfx );
-		si.Hunk_FreeTempMemory( data );
-		si.Printf( PRINT_ALL, "Can't create a sound buffer for %s - %s\n", knownSfx[ sfx ].filename, al_errormsg( error ) );
+		al_buf_use_default ( sfx );
+		si.Hunk_FreeTempMemory ( data );
+		si.Printf ( PRINT_ALL, "Can't create a sound buffer for %s - %s\n", knownSfx[ sfx ].filename, al_errormsg ( error ) );
 		return;
 	}
 
 	// Fill the buffer
 	qalGetError();
-	qalBufferData( knownSfx[ sfx ].buffer, format, data, info.size, info.rate );
+	qalBufferData ( knownSfx[ sfx ].buffer, format, data, info.size, info.rate );
 	error = qalGetError();
 
 	// If we ran out of memory, start evicting the least recently used sounds
@@ -282,29 +282,29 @@ void al_buf_load( sfxHandle_t sfx )
 
 		if ( !rv )
 		{
-			al_buf_use_default( sfx );
-			si.Hunk_FreeTempMemory( data );
-			si.Printf( PRINT_ALL, "Out of memory loading %s\n", knownSfx[ sfx ].filename );
+			al_buf_use_default ( sfx );
+			si.Hunk_FreeTempMemory ( data );
+			si.Printf ( PRINT_ALL, "Out of memory loading %s\n", knownSfx[ sfx ].filename );
 			return;
 		}
 
 		// Try load it again
 		qalGetError();
-		qalBufferData( knownSfx[ sfx ].buffer, format, data, info.size, info.rate );
+		qalBufferData ( knownSfx[ sfx ].buffer, format, data, info.size, info.rate );
 		error = qalGetError();
 	}
 
 	// Some other error condition
 	if ( error != AL_NO_ERROR )
 	{
-		al_buf_use_default( sfx );
-		si.Hunk_FreeTempMemory( data );
-		si.Printf( PRINT_ALL, "Can't fill sound buffer for %s - %s", knownSfx[ sfx ].filename, al_errormsg( error ) );
+		al_buf_use_default ( sfx );
+		si.Hunk_FreeTempMemory ( data );
+		si.Printf ( PRINT_ALL, "Can't fill sound buffer for %s - %s", knownSfx[ sfx ].filename, al_errormsg ( error ) );
 		return;
 	}
 
 	// Free the memory
-	si.Hunk_FreeTempMemory( data );
+	si.Hunk_FreeTempMemory ( data );
 
 	// Woo!
 	knownSfx[ sfx ].inMemory = qtrue;
@@ -314,14 +314,14 @@ int al_duration ( sfxHandle_t sfx )
 {
 	if ( sfx < 0 || sfx >= numSfx )
 	{
-		si.Printf( PRINT_ALL, "ERROR: S_AL_SoundDuration: handle %i out of range\n", sfx );
+		si.Printf ( PRINT_ALL, "ERROR: S_AL_SoundDuration: handle %i out of range\n", sfx );
 		return 0;
 	}
 
 	return knownSfx[ sfx ].duration;
 }
 
-void al_buf_unload( sfxHandle_t sfx )
+void al_buf_unload ( sfxHandle_t sfx )
 {
 	ALenum error;
 
@@ -336,11 +336,11 @@ void al_buf_unload( sfxHandle_t sfx )
 	}
 
 	// Delete it
-	qalDeleteBuffers( 1, &knownSfx[ sfx ].buffer );
+	qalDeleteBuffers ( 1, &knownSfx[ sfx ].buffer );
 
 	if ( ( error = qalGetError() ) != AL_NO_ERROR )
 	{
-		si.Printf( PRINT_ALL, "Can't delete sound buffer for %s", knownSfx[ sfx ].filename );
+		si.Printf ( PRINT_ALL, "Can't delete sound buffer for %s", knownSfx[ sfx ].filename );
 	}
 
 	knownSfx[ sfx ].inMemory = qfalse;
@@ -356,12 +356,12 @@ qboolean al_buf_evict()
 /**
  * Buffer grabbage
  */
-ALuint al_buf_get( sfxHandle_t sfx )
+ALuint al_buf_get ( sfxHandle_t sfx )
 {
 	return knownSfx[ sfx ].buffer;
 }
 
-char *al_buf_get_name( sfxHandle_t sfx )
+char *al_buf_get_name ( sfxHandle_t sfx )
 {
 	return knownSfx[ sfx ].filename;
 }
@@ -372,15 +372,15 @@ S_GetCurrentSoundTime
 Returns how long the sound lasts in milliseconds
 ======================
 */
-int SndAl_GetSoundLength( sfxHandle_t sfxHandle )
+int SndAl_GetSoundLength ( sfxHandle_t sfxHandle )
 {
 	if ( sfxHandle < 0 || sfxHandle >= numSfx )
 	{
-		si.Printf( PRINT_WARNING, "S_StartSound: handle %i out of range\n", sfxHandle );
+		si.Printf ( PRINT_WARNING, "S_StartSound: handle %i out of range\n", sfxHandle );
 		return -1;
 	}
 
-	return ( int )( ( ( float )knownSfx[ sfxHandle ].info.samples / ( float )knownSfx[ sfxHandle ].info.rate ) * 1000.0f );
+	return ( int ) ( ( ( float ) knownSfx[ sfxHandle ].info.samples / ( float ) knownSfx[ sfxHandle ].info.rate ) * 1000.0f );
 }
 
 /*
@@ -389,7 +389,7 @@ S_GetCurrentSoundTime
 Returns how long the sound lasts in milliseconds
 ======================
 */
-int SndAl_GetCurrentSoundTime( void )
+int SndAl_GetCurrentSoundTime ( void )
 {
 	return si.Milliseconds();
 }

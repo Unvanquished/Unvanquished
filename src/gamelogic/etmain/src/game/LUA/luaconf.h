@@ -216,7 +216,7 @@
 #include <stdio.h>
 #define lua_stdin_is_tty() _isatty(_fileno(stdin))
 #else
-#define lua_stdin_is_tty() 1       /* assume stdin is a tty */
+#define lua_stdin_is_tty() 1 /* assume stdin is a tty */
 #endif
 
 /*
@@ -256,14 +256,14 @@
 #include <readline/history.h>
 #define lua_readline(L,b,p) ((void)L, (( b ) = readline(p)) != NULL )
 #define lua_saveline(L,idx) \
-        if (lua_strlen(L,idx) > 0) {               /* non-empty line? */ \
+        if (lua_strlen(L,idx) > 0) { /* non-empty line? */ \
     add_history(lua_tostring(L, idx)); /* add it to history */
 } \
 #define lua_freeline(L,b)   ((void)L, free(b))
 #else
 #define lua_readline(L,b,p)     \
         ((void)L, fputs(p, stdout), fflush(stdout), /* show prompt */ \
-         fgets(b, LUA_MAXINPUT, stdin) != NULL )    /* get line */
+         fgets(b, LUA_MAXINPUT, stdin) != NULL ) /* get line */
 #define lua_saveline(L,idx) { (void)L; (void)idx; }
 #define lua_freeline(L,b)   { (void)L; (void)b; }
 #endif
@@ -279,7 +279,7 @@
 ** mean larger pauses which mean slower collection.) You can also change
 ** this value dynamically.
 */
-#define LUAI_GCPAUSE 200     /* 200% (wait memory to double before next GC) */
+#define LUAI_GCPAUSE 200 /* 200% (wait memory to double before next GC) */
 
 /*
 @@ LUAI_GCMUL defines the default speed of garbage collection relative to
@@ -289,7 +289,7 @@
 ** infinity, where each step performs a full collection.) You can also
 ** change this value dynamically.
 */
-#define LUAI_GCMUL   200    /* GC runs 'twice the speed' of memory allocation */
+#define LUAI_GCMUL   200 /* GC runs 'twice the speed' of memory allocation */
 
 /*
 @@ LUA_COMPAT_GETN controls compatibility with old getn behavior.
@@ -482,7 +482,7 @@
 #define LUA_NUMBER_SCAN    "%lf"
 #define LUA_NUMBER_FMT     "%.14g"
 #define lua_number2str(s,n) sprintf(( s ), LUA_NUMBER_FMT, ( n ))
-#define LUAI_MAXNUMBER2STR 32      /* 16 digits, sign, point, and \0 */
+#define LUAI_MAXNUMBER2STR 32 /* 16 digits, sign, point, and \0 */
 #define lua_str2number(s,p) strtod(( s ), ( p ))
 
 /*
@@ -565,7 +565,7 @@ union luai_Cast { double l_d; long l_l; };
 #define LUAI_THROW(L,c) throw( c )
 #define LUAI_TRY(L,c,a) try { a } catch(...) \
   { if (( c )->status == 0) { ( c )->status = -1; } }
-#define luai_jmpbuf int      /* dummy variable */
+#define luai_jmpbuf int /* dummy variable */
 
 #elif defined( LUA_USE_ULONGJMP )
 /* in Unix, try _longjmp/_setjmp (more efficient) */

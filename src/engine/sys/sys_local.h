@@ -41,38 +41,38 @@ Maryland 20850 USA.
 #define MINSDL_PATCH 10
 
 // Input subsystem
-void         IN_Init( void );
-void         IN_Frame( void );
-void         IN_Shutdown( void );
-void         IN_Restart( void );
+void         IN_Init ( void );
+void         IN_Frame ( void );
+void         IN_Shutdown ( void );
+void         IN_Restart ( void );
 
 // Console
-void         CON_Shutdown( void );
-void         CON_Init( void );
-char         *CON_Input( void );
-void         CON_Print( const char *message );
+void         CON_Shutdown ( void );
+void         CON_Init ( void );
+char         *CON_Input ( void );
+void         CON_Print ( const char *message );
 const char    *Con_GetText ( int console );
 
-unsigned int CON_LogSize( void );
-unsigned int CON_LogWrite( const char *in );
-unsigned int CON_LogRead( char *out, unsigned int outSize );
+unsigned int CON_LogSize ( void );
+unsigned int CON_LogWrite ( const char *in );
+unsigned int CON_LogRead ( char *out, unsigned int outSize );
 
 #ifdef MACOS_X
-char         *Sys_StripAppBundle( char *pwd );
+char         *Sys_StripAppBundle ( char *pwd );
 
 #endif
 
-void     Sys_GLimpSafeInit( void );
-void     Sys_GLimpInit( void );
-void     Sys_PlatformInit( void );
-void     Sys_SigHandler( int signal );
-void     Sys_ErrorDialog( const char *error );
-void     Sys_AnsiColorPrint( const char *msg );
+void     Sys_GLimpSafeInit ( void );
+void     Sys_GLimpInit ( void );
+void     Sys_PlatformInit ( void );
+void     Sys_SigHandler ( int signal );
+void     Sys_ErrorDialog ( const char *error );
+void     Sys_AnsiColorPrint ( const char *msg );
 
-void     Sys_InitStreamThread( void );
+void     Sys_InitStreamThread ( void );
 
-void     Sys_PrintCpuInfo( void );
-void     Sys_PrintMemoryInfo( void );
+void     Sys_PrintCpuInfo ( void );
+void     Sys_PrintMemoryInfo ( void );
 
-int      Sys_PID( void );
-qboolean Sys_PIDIsRunning( int pid );
+int      Sys_PID ( void );
+qboolean Sys_PIDIsRunning ( int pid );

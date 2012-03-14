@@ -36,14 +36,14 @@ Maryland 20850 USA.
 
 static mapEntityData_t mapEntities[ MAX_GENTITIES ];
 static int             mapEntityCount = 0;
-static int             mapEntityTime  = 0;
-static qboolean        expanded       = qfalse;
+static int             mapEntityTime = 0;
+static qboolean        expanded = qfalse;
 
 extern playerInfo_t    pi;
 
 qboolean               ccInitial = qtrue;
 
-void CG_TransformToCommandMapCoord( float *coord_x, float *coord_y )
+void CG_TransformToCommandMapCoord ( float *coord_x, float *coord_y )
 {
 	*coord_x = CC_2D_X + ( ( *coord_x - cg.mapcoordsMins[ 0 ] ) * cg.mapcoordsScale[ 0 ] ) * CC_2D_W;
 	*coord_y = CC_2D_Y + ( ( *coord_y - cg.mapcoordsMins[ 1 ] ) * cg.mapcoordsScale[ 1 ] ) * CC_2D_H;
@@ -53,7 +53,7 @@ void CG_TransformToCommandMapCoord( float *coord_x, float *coord_y )
 //static float automapZoom = 3.583; // apporoximately 1.2^7
 static float automapZoom = 5.159;
 
-int CG_CurLayerForZ( int z )
+int CG_CurLayerForZ ( int z )
 {
 	int curlayer = 0;
 
@@ -64,14 +64,14 @@ int CG_CurLayerForZ( int z )
 
 	if ( curlayer == cgs.ccLayers )
 	{
-		CG_Printf( "^3Warning: no valid command map layer for z\n" );
+		CG_Printf ( "^3Warning: no valid command map layer for z\n" );
 		curlayer = 0;
 	}
 
 	return curlayer;
 }
 
-static qboolean CG_ScissorEntIsCulled( mapEntityData_t *mEnt, mapScissor_t *scissor )
+static qboolean CG_ScissorEntIsCulled ( mapEntityData_t *mEnt, mapScissor_t *scissor )
 {
 	if ( !scissor->circular )
 	{
@@ -89,9 +89,9 @@ static qboolean CG_ScissorEntIsCulled( mapEntityData_t *mEnt, mapScissor_t *scis
 
 		distVec[ 0 ] = mEnt->automapTransformed[ 0 ] - ( scissor->tl[ 0 ] + ( 0.5f * ( scissor->br[ 0 ] - scissor->tl[ 0 ] ) ) );
 		distVec[ 1 ] = mEnt->automapTransformed[ 1 ] - ( scissor->tl[ 1 ] + ( 0.5f * ( scissor->br[ 1 ] - scissor->tl[ 1 ] ) ) );
-		distSquared  = distVec[ 0 ] * distVec[ 0 ] + distVec[ 1 ] * distVec[ 1 ];
+		distSquared = distVec[ 0 ] * distVec[ 0 ] + distVec[ 1 ] * distVec[ 1 ];
 
-		if ( distSquared > Square( 0.5f * ( scissor->br[ 0 ] - scissor->tl[ 0 ] ) ) )
+		if ( distSquared > Square ( 0.5f * ( scissor->br[ 0 ] - scissor->tl[ 0 ] ) ) )
 		{
 			return qtrue;
 		}
@@ -100,7 +100,7 @@ static qboolean CG_ScissorEntIsCulled( mapEntityData_t *mEnt, mapScissor_t *scis
 	return qfalse;
 }
 
-static qboolean CG_ScissorPointIsCulled( vec2_t vec, mapScissor_t *scissor )
+static qboolean CG_ScissorPointIsCulled ( vec2_t vec, mapScissor_t *scissor )
 {
 	if ( !scissor->circular )
 	{
@@ -116,9 +116,9 @@ static qboolean CG_ScissorPointIsCulled( vec2_t vec, mapScissor_t *scissor )
 
 		distVec[ 0 ] = vec[ 0 ] - ( scissor->tl[ 0 ] + ( 0.5f * ( scissor->br[ 0 ] - scissor->tl[ 0 ] ) ) );
 		distVec[ 1 ] = vec[ 1 ] - ( scissor->tl[ 1 ] + ( 0.5f * ( scissor->br[ 1 ] - scissor->tl[ 1 ] ) ) );
-		distSquared  = distVec[ 0 ] * distVec[ 0 ] + distVec[ 1 ] * distVec[ 1 ];
+		distSquared = distVec[ 0 ] * distVec[ 0 ] + distVec[ 1 ] * distVec[ 1 ];
 
-		if ( distSquared > Square( 0.5f * ( scissor->br[ 0 ] - scissor->tl[ 0 ] ) ) )
+		if ( distSquared > Square ( 0.5f * ( scissor->br[ 0 ] - scissor->tl[ 0 ] ) ) )
 		{
 			return qtrue;
 		}
@@ -133,7 +133,7 @@ CG_TransformAutomapEntity: calculate the scaled (zoomed) yet unshifted coordinat
 each map entity within the automap
 =====================================================================================
 */
-void CG_TransformAutomapEntity( void )
+void CG_TransformAutomapEntity ( void )
 {
 	int i;
 
@@ -147,7 +147,7 @@ void CG_TransformAutomapEntity( void )
 	}
 }
 
-void CG_AdjustAutomapZoom( int zoomIn )
+void CG_AdjustAutomapZoom ( int zoomIn )
 {
 	if ( zoomIn )
 	{
@@ -177,13 +177,13 @@ void CG_AdjustAutomapZoom( int zoomIn )
 
 // END      xkan, 9/19/2002
 
-void CG_ParseMapEntity( int *mapEntityCount, int *offset, team_t team )
+void CG_ParseMapEntity ( int *mapEntityCount, int *offset, team_t team )
 {
 	mapEntityData_t *mEnt = &mapEntities[ ( *mapEntityCount ) ];
 	char            buffer[ 16 ];
 
-	trap_Argv( ( *offset )++, buffer, 16 );
-	mEnt->type = atoi( buffer );
+	trap_Argv ( ( *offset ) ++, buffer, 16 );
+	mEnt->type = atoi ( buffer );
 
 	switch ( mEnt->type )
 	{
@@ -191,50 +191,50 @@ void CG_ParseMapEntity( int *mapEntityCount, int *offset, team_t team )
 		case ME_CONSTRUCT:
 		case ME_DESTRUCT:
 		case ME_DESTRUCT_2:
-		case ME_COMMANDMAP_MARKER:         // b043 - removed break;
+		case ME_COMMANDMAP_MARKER: // b043 - removed break;
 		case ME_TANK:
 		case ME_TANK_DEAD:
-			trap_Argv( ( *offset )++, buffer, 16 );
-			mEnt->x = atoi( buffer ) * 128;
+			trap_Argv ( ( *offset ) ++, buffer, 16 );
+			mEnt->x = atoi ( buffer ) * 128;
 
-			trap_Argv( ( *offset )++, buffer, 16 );
-			mEnt->y = atoi( buffer ) * 128;
+			trap_Argv ( ( *offset ) ++, buffer, 16 );
+			mEnt->y = atoi ( buffer ) * 128;
 
 			if ( cgs.ccLayers )
 			{
-				trap_Argv( ( *offset )++, buffer, 16 );
-				mEnt->z = atoi( buffer ) * 128;
+				trap_Argv ( ( *offset ) ++, buffer, 16 );
+				mEnt->z = atoi ( buffer ) * 128;
 			}
 
 			break;
 
 		default:
-			trap_Argv( ( *offset )++, buffer, 16 );
-			mEnt->x = atoi( buffer ) * 128;
+			trap_Argv ( ( *offset ) ++, buffer, 16 );
+			mEnt->x = atoi ( buffer ) * 128;
 
-			trap_Argv( ( *offset )++, buffer, 16 );
-			mEnt->y = atoi( buffer ) * 128;
+			trap_Argv ( ( *offset ) ++, buffer, 16 );
+			mEnt->y = atoi ( buffer ) * 128;
 
 			if ( cgs.ccLayers )
 			{
-				trap_Argv( ( *offset )++, buffer, 16 );
-				mEnt->z = atoi( buffer ) * 128;
+				trap_Argv ( ( *offset ) ++, buffer, 16 );
+				mEnt->z = atoi ( buffer ) * 128;
 			}
 
-			trap_Argv( ( *offset )++, buffer, 16 );
-			mEnt->yaw = atoi( buffer );
+			trap_Argv ( ( *offset ) ++, buffer, 16 );
+			mEnt->yaw = atoi ( buffer );
 			break;
 	}
 
-	trap_Argv( ( *offset )++, buffer, 16 );
-	mEnt->data             = atoi( buffer );
+	trap_Argv ( ( *offset ) ++, buffer, 16 );
+	mEnt->data = atoi ( buffer );
 
 	mEnt->transformed[ 0 ] = ( mEnt->x - cg.mapcoordsMins[ 0 ] ) * cg.mapcoordsScale[ 0 ] * CC_2D_W;
 	mEnt->transformed[ 1 ] = ( mEnt->y - cg.mapcoordsMins[ 1 ] ) * cg.mapcoordsScale[ 1 ] * CC_2D_H;
 
-	mEnt->team             = team;
+	mEnt->team = team;
 
-	( *mapEntityCount )++;
+	( *mapEntityCount ) ++;
 }
 
 /*
@@ -242,23 +242,23 @@ void CG_ParseMapEntity( int *mapEntityCount, int *offset, team_t team )
 CG_ParseMapEntityInfo
 =======================
 */
-void CG_ParseMapEntityInfo( int axis_number, int allied_number )
+void CG_ParseMapEntityInfo ( int axis_number, int allied_number )
 {
 	int i, offset;
 
 	mapEntityCount = 0;
-	mapEntityTime  = cg.time;
+	mapEntityTime = cg.time;
 
-	offset         = 3;
+	offset = 3;
 
 	for ( i = 0; i < axis_number; i++ )
 	{
-		CG_ParseMapEntity( &mapEntityCount, &offset, TEAM_AXIS );
+		CG_ParseMapEntity ( &mapEntityCount, &offset, TEAM_AXIS );
 	}
 
 	for ( i = 0; i < allied_number; i++ )
 	{
-		CG_ParseMapEntity( &mapEntityCount, &offset, TEAM_ALLIES );
+		CG_ParseMapEntity ( &mapEntityCount, &offset, TEAM_ALLIES );
 	}
 
 	CG_TransformAutomapEntity();
@@ -267,7 +267,7 @@ void CG_ParseMapEntityInfo( int axis_number, int allied_number )
 static qboolean gridInitDone = qfalse;
 static vec2_t   gridStartCoord, gridStep;
 
-static void CG_DrawGrid( float x, float y, float w, float h, mapScissor_t *scissor )
+static void CG_DrawGrid ( float x, float y, float w, float h, mapScissor_t *scissor )
 {
 	vec2_t step;
 	vec2_t dim_x, dim_y;
@@ -299,11 +299,11 @@ static void CG_DrawGrid( float x, float y, float w, float h, mapScissor_t *sciss
 		gridStartCoord[ 0 ] =
 		  .5f *
 		  ( ( ( ( cg.mapcoordsMaxs[ 0 ] - cg.mapcoordsMins[ 0 ] ) / gridStep[ 0 ] ) -
-		      ( ( int )( ( cg.mapcoordsMaxs[ 0 ] - cg.mapcoordsMins[ 0 ] ) / gridStep[ 0 ] ) ) ) * gridStep[ 0 ] );
+		      ( ( int ) ( ( cg.mapcoordsMaxs[ 0 ] - cg.mapcoordsMins[ 0 ] ) / gridStep[ 0 ] ) ) ) * gridStep[ 0 ] );
 		gridStartCoord[ 1 ] =
 		  .5f *
 		  ( ( ( ( cg.mapcoordsMins[ 1 ] - cg.mapcoordsMaxs[ 1 ] ) / gridStep[ 1 ] ) -
-		      ( ( int )( ( cg.mapcoordsMins[ 1 ] - cg.mapcoordsMaxs[ 1 ] ) / gridStep[ 1 ] ) ) ) * gridStep[ 1 ] );
+		      ( ( int ) ( ( cg.mapcoordsMins[ 1 ] - cg.mapcoordsMaxs[ 1 ] ) / gridStep[ 1 ] ) ) ) * gridStep[ 1 ] );
 
 		gridInitDone = qtrue;
 	}
@@ -317,8 +317,8 @@ static void CG_DrawGrid( float x, float y, float w, float h, mapScissor_t *sciss
 		dim_y[ 1 ] = cg.mapcoordsMins[ 1 ];
 
 		// transform
-		xscale     = ( w * scissor->zoomFactor ) / dist[ 0 ];
-		yscale     = ( h * scissor->zoomFactor ) / -dist[ 1 ];
+		xscale = ( w * scissor->zoomFactor ) / dist[ 0 ];
+		yscale = ( h * scissor->zoomFactor ) / -dist[ 1 ];
 
 		dim_x[ 0 ] = ( dim_x[ 0 ] - cg.mapcoordsMins[ 0 ] ) * xscale;
 		dim_x[ 1 ] = ( dim_x[ 1 ] - cg.mapcoordsMins[ 0 ] ) * xscale;
@@ -326,15 +326,15 @@ static void CG_DrawGrid( float x, float y, float w, float h, mapScissor_t *sciss
 		dim_y[ 0 ] = ( dim_y[ 0 ] - cg.mapcoordsMaxs[ 1 ] ) * yscale;
 		dim_y[ 1 ] = ( dim_y[ 1 ] - cg.mapcoordsMaxs[ 1 ] ) * yscale;
 
-		grid_x     = ( ( gridStartCoord[ 0 ] / dist[ 0 ] ) * w * scissor->zoomFactor ) - scissor->tl[ 0 ];
-		grid_y     = ( ( -gridStartCoord[ 1 ] / dist[ 1 ] ) * h * scissor->zoomFactor ) - scissor->tl[ 1 ];
+		grid_x = ( ( gridStartCoord[ 0 ] / dist[ 0 ] ) * w * scissor->zoomFactor ) - scissor->tl[ 0 ];
+		grid_y = ( ( -gridStartCoord[ 1 ] / dist[ 1 ] ) * h * scissor->zoomFactor ) - scissor->tl[ 1 ];
 
-		step[ 0 ]  = gridStep[ 0 ] * xscale;
-		step[ 1 ]  = gridStep[ 1 ] * yscale;
+		step[ 0 ] = gridStep[ 0 ] * xscale;
+		step[ 1 ] = gridStep[ 1 ] * yscale;
 
 		// draw
-		Vector4Set( gridColour, clrBrownLine[ 0 ], clrBrownLine[ 1 ], clrBrownLine[ 2 ], .4f );
-		trap_R_SetColor( gridColour );
+		Vector4Set ( gridColour, clrBrownLine[ 0 ], clrBrownLine[ 1 ], clrBrownLine[ 2 ], .4f );
+		trap_R_SetColor ( gridColour );
 
 		for ( ; grid_x < dim_x[ 1 ]; grid_x += step[ 0 ] )
 		{
@@ -354,21 +354,21 @@ static void CG_DrawGrid( float x, float y, float w, float h, mapScissor_t *sciss
 				float xc, yc;
 
 				line[ 0 ] = x + grid_x;
-				xc        = line[ 0 ] >= x + .5f * w ? line[ 0 ] - ( x + .5f * w ) : ( x + .5f * w ) - line[ 0 ];
-				yc        = SQRTFAST( Square( .5f * w ) - Square( xc ) );
+				xc = line[ 0 ] >= x + .5f * w ? line[ 0 ] - ( x + .5f * w ) : ( x + .5f * w ) - line[ 0 ];
+				yc = SQRTFAST ( Square ( .5f * w ) - Square ( xc ) );
 				line[ 1 ] = y + ( .5f * h ) - yc;
 				line[ 2 ] = 1.f;
 				line[ 3 ] = 2 * yc;
 			}
 			else
 			{
-				Vector4Set( line, x + grid_x, y + dim_y[ 0 ], 1.f, h );
+				Vector4Set ( line, x + grid_x, y + dim_y[ 0 ], 1.f, h );
 			}
 
 			line[ 0 ] *= cgs.screenXScale;
 			line[ 1 ] *= cgs.screenYScale;
 			line[ 3 ] *= cgs.screenYScale;
-			trap_R_DrawStretchPic( line[ 0 ], line[ 1 ], line[ 2 ], line[ 3 ], 0, 0, 0, 1, cgs.media.whiteShader );
+			trap_R_DrawStretchPic ( line[ 0 ], line[ 1 ], line[ 2 ], line[ 3 ], 0, 0, 0, 1, cgs.media.whiteShader );
 		}
 
 		for ( ; grid_y < dim_y[ 1 ]; grid_y += step[ 1 ] )
@@ -389,24 +389,24 @@ static void CG_DrawGrid( float x, float y, float w, float h, mapScissor_t *sciss
 				float xc, yc;
 
 				line[ 1 ] = y + grid_y;
-				yc        = line[ 1 ] >= y + .5f * h ? line[ 1 ] - ( y + .5f * h ) : ( y + .5f * h ) - line[ 1 ];
-				xc        = SQRTFAST( Square( .5f * h ) - Square( yc ) );
+				yc = line[ 1 ] >= y + .5f * h ? line[ 1 ] - ( y + .5f * h ) : ( y + .5f * h ) - line[ 1 ];
+				xc = SQRTFAST ( Square ( .5f * h ) - Square ( yc ) );
 				line[ 0 ] = x + ( .5f * w ) - xc;
 				line[ 2 ] = 2 * xc;
 				line[ 3 ] = 1.f;
 			}
 			else
 			{
-				Vector4Set( line, x + dim_x[ 0 ], y + grid_y, w, 1 );
+				Vector4Set ( line, x + dim_x[ 0 ], y + grid_y, w, 1 );
 			}
 
 			line[ 0 ] *= cgs.screenXScale;
 			line[ 1 ] *= cgs.screenYScale;
 			line[ 2 ] *= cgs.screenXScale;
-			trap_R_DrawStretchPic( line[ 0 ], line[ 1 ], line[ 2 ], line[ 3 ], 0, 0, 0, 1, cgs.media.whiteShader );
+			trap_R_DrawStretchPic ( line[ 0 ], line[ 1 ], line[ 2 ], line[ 3 ], 0, 0, 0, 1, cgs.media.whiteShader );
 		}
 
-		trap_R_SetColor( NULL );
+		trap_R_SetColor ( NULL );
 	}
 	else
 	{
@@ -414,33 +414,33 @@ static void CG_DrawGrid( float x, float y, float w, float h, mapScissor_t *sciss
 		float  text_width, text_height;
 		vec2_t textOrigin;
 
-		dim_x[ 0 ]      = cg.mapcoordsMins[ 0 ];
-		dim_x[ 1 ]      = cg.mapcoordsMaxs[ 0 ];
+		dim_x[ 0 ] = cg.mapcoordsMins[ 0 ];
+		dim_x[ 1 ] = cg.mapcoordsMaxs[ 0 ];
 
-		dim_y[ 0 ]      = cg.mapcoordsMaxs[ 1 ];
-		dim_y[ 1 ]      = cg.mapcoordsMins[ 1 ];
+		dim_y[ 0 ] = cg.mapcoordsMaxs[ 1 ];
+		dim_y[ 1 ] = cg.mapcoordsMins[ 1 ];
 
 		// transform
-		xscale          = w / dist[ 0 ];
-		yscale          = h / -dist[ 1 ];
+		xscale = w / dist[ 0 ];
+		yscale = h / -dist[ 1 ];
 
-		dim_x[ 0 ]      = ( dim_x[ 0 ] - cg.mapcoordsMins[ 0 ] ) * xscale;
-		dim_x[ 1 ]      = ( dim_x[ 1 ] - cg.mapcoordsMins[ 0 ] ) * xscale;
+		dim_x[ 0 ] = ( dim_x[ 0 ] - cg.mapcoordsMins[ 0 ] ) * xscale;
+		dim_x[ 1 ] = ( dim_x[ 1 ] - cg.mapcoordsMins[ 0 ] ) * xscale;
 
-		dim_y[ 0 ]      = ( dim_y[ 0 ] - cg.mapcoordsMaxs[ 1 ] ) * yscale;
-		dim_y[ 1 ]      = ( dim_y[ 1 ] - cg.mapcoordsMaxs[ 1 ] ) * yscale;
+		dim_y[ 0 ] = ( dim_y[ 0 ] - cg.mapcoordsMaxs[ 1 ] ) * yscale;
+		dim_y[ 1 ] = ( dim_y[ 1 ] - cg.mapcoordsMaxs[ 1 ] ) * yscale;
 
-		grid_x          = gridStartCoord[ 0 ] * xscale;
-		grid_y          = gridStartCoord[ 1 ] * yscale;
+		grid_x = gridStartCoord[ 0 ] * xscale;
+		grid_y = gridStartCoord[ 1 ] * yscale;
 
-		step[ 0 ]       = gridStep[ 0 ] * xscale;
-		step[ 1 ]       = gridStep[ 1 ] * yscale;
+		step[ 0 ] = gridStep[ 0 ] * xscale;
+		step[ 1 ] = gridStep[ 1 ] * yscale;
 
 		// draw
 		textOrigin[ 0 ] = grid_x;
 		textOrigin[ 1 ] = grid_y;
 
-		Vector4Set( gridColour, clrBrownLine[ 0 ], clrBrownLine[ 1 ], clrBrownLine[ 2 ], 1.f );
+		Vector4Set ( gridColour, clrBrownLine[ 0 ], clrBrownLine[ 1 ], clrBrownLine[ 2 ], 1.f );
 
 		coord_char[ 1 ] = '\0';
 
@@ -448,44 +448,44 @@ static void CG_DrawGrid( float x, float y, float w, float h, mapScissor_t *sciss
 		{
 			if ( coord_char[ 0 ] >= 'A' )
 			{
-				text_width  = CG_Text_Width_Ext( coord_char, 0.2f, 0, &cgs.media.limboFont2 );
-				text_height = CG_Text_Height_Ext( coord_char, 0.2f, 0, &cgs.media.limboFont2 );
-				CG_Text_Paint_Ext( ( x + grid_x ) - ( .5f * step[ 0 ] ) - ( .5f * text_width ),
-				                   y + dim_y[ 0 ] + textOrigin[ 1 ] + 1.5f * text_height, 0.2f, 0.2f, colorBlack, coord_char, 0, 0, 0,
-				                   &cgs.media.limboFont2 );
+				text_width = CG_Text_Width_Ext ( coord_char, 0.2f, 0, &cgs.media.limboFont2 );
+				text_height = CG_Text_Height_Ext ( coord_char, 0.2f, 0, &cgs.media.limboFont2 );
+				CG_Text_Paint_Ext ( ( x + grid_x ) - ( .5f * step[ 0 ] ) - ( .5f * text_width ),
+				                    y + dim_y[ 0 ] + textOrigin[ 1 ] + 1.5f * text_height, 0.2f, 0.2f, colorBlack, coord_char, 0, 0, 0,
+				                    &cgs.media.limboFont2 );
 			}
 
-			trap_R_SetColor( gridColour );
+			trap_R_SetColor ( gridColour );
 
-			Vector4Set( line, x + grid_x, y + dim_y[ 0 ], 1, dim_x[ 1 ] - dim_x[ 0 ] );
+			Vector4Set ( line, x + grid_x, y + dim_y[ 0 ], 1, dim_x[ 1 ] - dim_x[ 0 ] );
 			line[ 0 ] *= cgs.screenXScale;
 			line[ 1 ] *= cgs.screenYScale;
 			line[ 3 ] *= cgs.screenYScale;
-			trap_R_DrawStretchPic( line[ 0 ], line[ 1 ], line[ 2 ], line[ 3 ], 0, 0, 0, 1, cgs.media.whiteShader );
+			trap_R_DrawStretchPic ( line[ 0 ], line[ 1 ], line[ 2 ], line[ 3 ], 0, 0, 0, 1, cgs.media.whiteShader );
 		}
 
 		for ( coord_int = -1; grid_y < dim_y[ 1 ]; grid_y += step[ 1 ], coord_int++ )
 		{
 			if ( coord_int >= 0 )
 			{
-				Com_sprintf( coord_char, sizeof( coord_char ), "%i", coord_int );
-				text_width  = CG_Text_Width_Ext( "0", 0.2f, 0, &cgs.media.limboFont2 );
-				text_height = CG_Text_Height_Ext( coord_char, 0.2f, 0, &cgs.media.limboFont2 );
-				CG_Text_Paint_Ext( x + dim_x[ 0 ] + textOrigin[ 0 ] + .5f * text_width,
-				                   ( y + grid_y ) - ( .5f * step[ 1 ] ) + ( .5f * text_height ), 0.2f, 0.2f, colorBlack, coord_char, 0, 0,
-				                   0, &cgs.media.limboFont2 );
+				Com_sprintf ( coord_char, sizeof ( coord_char ), "%i", coord_int );
+				text_width = CG_Text_Width_Ext ( "0", 0.2f, 0, &cgs.media.limboFont2 );
+				text_height = CG_Text_Height_Ext ( coord_char, 0.2f, 0, &cgs.media.limboFont2 );
+				CG_Text_Paint_Ext ( x + dim_x[ 0 ] + textOrigin[ 0 ] + .5f * text_width,
+				                    ( y + grid_y ) - ( .5f * step[ 1 ] ) + ( .5f * text_height ), 0.2f, 0.2f, colorBlack, coord_char, 0, 0,
+				                    0, &cgs.media.limboFont2 );
 			}
 
-			trap_R_SetColor( gridColour );
+			trap_R_SetColor ( gridColour );
 
-			Vector4Set( line, x + dim_x[ 0 ], y + grid_y, dim_y[ 1 ] - dim_y[ 0 ], 1 );
+			Vector4Set ( line, x + dim_x[ 0 ], y + grid_y, dim_y[ 1 ] - dim_y[ 0 ], 1 );
 			line[ 0 ] *= cgs.screenXScale;
 			line[ 1 ] *= cgs.screenYScale;
 			line[ 2 ] *= cgs.screenXScale;
-			trap_R_DrawStretchPic( line[ 0 ], line[ 1 ], line[ 2 ], line[ 3 ], 0, 0, 0, 1, cgs.media.whiteShader );
+			trap_R_DrawStretchPic ( line[ 0 ], line[ 1 ], line[ 2 ], line[ 3 ], 0, 0, 0, 1, cgs.media.whiteShader );
 		}
 
-		trap_R_SetColor( NULL );
+		trap_R_SetColor ( NULL );
 	}
 }
 
@@ -495,8 +495,8 @@ static void CG_DrawGrid( float x, float y, float w, float h, mapScissor_t *sciss
 // xkan: extracted from CG_DrawCommandMap.
 // drawingCommandMap - qfalse: command map; qtrue: auto map (upper left in main game view)
 
-void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h, int mEntFilter, mapScissor_t *scissor,
-                       qboolean interactive, snapshot_t *snap, int icon_size )
+void CG_DrawMapEntity ( mapEntityData_t *mEnt, float x, float y, float w, float h, int mEntFilter, mapScissor_t *scissor,
+                        qboolean interactive, snapshot_t *snap, int icon_size )
 {
 	int              j = 1;
 	qhandle_t        pic;
@@ -504,10 +504,10 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 	bg_playerclass_t *classInfo;
 	centity_t        *cent;
 	const char       *name;
-	vec4_t           c_clr       = { 1.f, 1.f, 1.f, 1.f };
+	vec4_t           c_clr = { 1.f, 1.f, 1.f, 1.f };
 	vec2_t           icon_extends, icon_pos, string_pos;
 	int              customimage = 0;
-	oidInfo_t        *oidInfo    = NULL;
+	oidInfo_t        *oidInfo = NULL;
 
 	switch ( mEnt->type )
 	{
@@ -542,12 +542,12 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 
 			cent = &cg_entities[ mEnt->data ];
 
-			if ( mEnt->type == ME_PLAYER_DISGUISED && !( cent->currentState.powerups & ( 1 << PW_OPS_DISGUISED ) ) )
+			if ( mEnt->type == ME_PLAYER_DISGUISED && ! ( cent->currentState.powerups & ( 1 << PW_OPS_DISGUISED ) ) )
 			{
 				return;
 			}
 
-			classInfo = CG_PlayerClassForClientinfo( ci, cent );
+			classInfo = CG_PlayerClassForClientinfo ( ci, cent );
 
 			// For these, if availaible, ignore the coordinate data and grab the most up to date pvs data
 			if ( cent - cg_entities == cg.clientNum )
@@ -598,14 +598,14 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 			}
 
 			// now check to see if the entity is within our clip region
-			if ( scissor && CG_ScissorEntIsCulled( mEnt, scissor ) )
+			if ( scissor && CG_ScissorEntIsCulled ( mEnt, scissor ) )
 			{
 				return;
 			}
 
 			if ( cgs.ccLayers )
 			{
-				if ( CG_CurLayerForZ( mEnt->z ) != cgs.ccSelectedLayer )
+				if ( CG_CurLayerForZ ( mEnt->z ) != cgs.ccSelectedLayer )
 				{
 					return;
 				}
@@ -619,8 +619,8 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 			}
 			else
 			{
-				icon_pos[ 0 ]   = x + mEnt->transformed[ 0 ] - icon_size;
-				icon_pos[ 1 ]   = y + mEnt->transformed[ 1 ] - icon_size;
+				icon_pos[ 0 ] = x + mEnt->transformed[ 0 ] - icon_size;
+				icon_pos[ 1 ] = y + mEnt->transformed[ 1 ] - icon_size;
 				string_pos[ 0 ] = x + mEnt->transformed[ 0 ];
 				string_pos[ 1 ] = y + mEnt->transformed[ 1 ] + icon_size;
 			}
@@ -641,22 +641,22 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 
 				if ( cgs.clientinfo[ cg.snap->ps.clientNum ].team == TEAM_AXIS )
 				{
-					msec = ( cg_redlimbotime.integer - ( cg.time % cg_redlimbotime.integer ) ) / ( float )cg_redlimbotime.integer;
+					msec = ( cg_redlimbotime.integer - ( cg.time % cg_redlimbotime.integer ) ) / ( float ) cg_redlimbotime.integer;
 				}
 				else if ( cgs.clientinfo[ cg.snap->ps.clientNum ].team == TEAM_ALLIES )
 				{
-					msec = ( cg_bluelimbotime.integer - ( cg.time % cg_bluelimbotime.integer ) ) / ( float )cg_bluelimbotime.integer;
+					msec = ( cg_bluelimbotime.integer - ( cg.time % cg_bluelimbotime.integer ) ) / ( float ) cg_bluelimbotime.integer;
 				}
 				else
 				{
 					msec = 0;
 				}
 
-				reviveClr[ 3 ] = .5f + .5f * ( ( sin( sqrt( msec ) * 25 * 2 * M_PI ) + 1 ) * .5f );
+				reviveClr[ 3 ] = .5f + .5f * ( ( sin ( sqrt ( msec ) * 25 * 2 * M_PI ) + 1 ) * .5f );
 
-				trap_R_SetColor( reviveClr );
-				CG_DrawPic( icon_pos[ 0 ] + 3, icon_pos[ 1 ] + 3, icon_extends[ 0 ] - 3, icon_extends[ 1 ] - 3, cgs.media.medicIcon );
-				trap_R_SetColor( NULL );
+				trap_R_SetColor ( reviveClr );
+				CG_DrawPic ( icon_pos[ 0 ] + 3, icon_pos[ 1 ] + 3, icon_extends[ 0 ] - 3, icon_extends[ 1 ] - 3, cgs.media.medicIcon );
+				trap_R_SetColor ( NULL );
 			}
 			else
 			{
@@ -664,75 +664,75 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 				{
 					if ( ci->ccSelected )
 					{
-						trap_R_SetColor( colorRed );
+						trap_R_SetColor ( colorRed );
 					}
 					else
 					{
-						trap_R_SetColor( colorYellow );
+						trap_R_SetColor ( colorYellow );
 					}
 
-					CG_DrawPic( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], cgs.media.ccPlayerHighlight );
-					trap_R_SetColor( NULL );
+					CG_DrawPic ( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], cgs.media.ccPlayerHighlight );
+					trap_R_SetColor ( NULL );
 
 					if ( cg.predictedPlayerEntity.voiceChatSpriteTime > cg.time )
 					{
-						CG_DrawPic( icon_pos[ 0 ] + 12, icon_pos[ 1 ], icon_extends[ 0 ] * 0.5f, icon_extends[ 1 ] * 0.5f,
-						            cg.predictedPlayerEntity.voiceChatSprite );
+						CG_DrawPic ( icon_pos[ 0 ] + 12, icon_pos[ 1 ], icon_extends[ 0 ] * 0.5f, icon_extends[ 1 ] * 0.5f,
+						             cg.predictedPlayerEntity.voiceChatSprite );
 					}
 				}
 				else if ( mEnt->type == ME_PLAYER_DISGUISED )
 				{
-					trap_R_SetColor( colorOrange );
-					CG_DrawPic( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], cgs.media.ccPlayerHighlight );
-					trap_R_SetColor( NULL );
+					trap_R_SetColor ( colorOrange );
+					CG_DrawPic ( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], cgs.media.ccPlayerHighlight );
+					trap_R_SetColor ( NULL );
 				}
-				else if ( /*!(cgs.ccFilter & CC_FILTER_BUDDIES) && */ CG_IsOnSameFireteam( cg.clientNum, mEnt->data ) )
+				else if ( /*!(cgs.ccFilter & CC_FILTER_BUDDIES) && */ CG_IsOnSameFireteam ( cg.clientNum, mEnt->data ) )
 				{
 					if ( ci->ccSelected )
 					{
-						trap_R_SetColor( colorRed );
+						trap_R_SetColor ( colorRed );
 					}
 
-					CG_DrawPic( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], cgs.media.ccPlayerHighlight );
-					trap_R_SetColor( NULL );
+					CG_DrawPic ( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], cgs.media.ccPlayerHighlight );
+					trap_R_SetColor ( NULL );
 
 					if ( !scissor )
 					{
-						CG_Text_Paint_Ext( string_pos[ 0 ], string_pos[ 1 ], 0.2f, 0.2f, colorWhite, ci->name, 0, 0,
-						                   ITEM_TEXTSTYLE_SHADOWED, &cgs.media.limboFont2 );
+						CG_Text_Paint_Ext ( string_pos[ 0 ], string_pos[ 1 ], 0.2f, 0.2f, colorWhite, ci->name, 0, 0,
+						                    ITEM_TEXTSTYLE_SHADOWED, &cgs.media.limboFont2 );
 //                  CG_DrawStringExt_Shadow( string_pos[0], string_pos[1], ci->name, colorWhite, qfalse, 1, 8, 12, 0 );
 					}
 
 					if ( cent->voiceChatSpriteTime > cg.time )
 					{
-						CG_DrawPic( icon_pos[ 0 ] + 12, icon_pos[ 1 ], icon_extends[ 0 ] * 0.5f, icon_extends[ 1 ] * 0.5f,
-						            cent->voiceChatSprite );
+						CG_DrawPic ( icon_pos[ 0 ] + 12, icon_pos[ 1 ], icon_extends[ 0 ] * 0.5f, icon_extends[ 1 ] * 0.5f,
+						             cent->voiceChatSprite );
 					}
 				}
 				else if ( ci->team == snap->ps.persistant[ PERS_TEAM ] )
 				{
 					if ( ci->ccSelected )
 					{
-						trap_R_SetColor( colorRed );
-						CG_DrawPic( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], cgs.media.ccPlayerHighlight );
-						trap_R_SetColor( NULL );
+						trap_R_SetColor ( colorRed );
+						CG_DrawPic ( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], cgs.media.ccPlayerHighlight );
+						trap_R_SetColor ( NULL );
 					}
 
 					if ( cent->voiceChatSpriteTime > cg.time )
 					{
-						CG_DrawPic( icon_pos[ 0 ] + 12, icon_pos[ 1 ], icon_extends[ 0 ] * 0.5f, icon_extends[ 1 ] * 0.5f,
-						            cent->voiceChatSprite );
+						CG_DrawPic ( icon_pos[ 0 ] + 12, icon_pos[ 1 ], icon_extends[ 0 ] * 0.5f, icon_extends[ 1 ] * 0.5f,
+						             cent->voiceChatSprite );
 					}
 				}
 
 				c_clr[ 3 ] = 1.0f;
 
-				trap_R_SetColor( c_clr );
-				CG_DrawPic( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], classInfo->icon );
+				trap_R_SetColor ( c_clr );
+				CG_DrawPic ( icon_pos[ 0 ], icon_pos[ 1 ], icon_extends[ 0 ], icon_extends[ 1 ], classInfo->icon );
 
-				CG_DrawRotatedPic( icon_pos[ 0 ] - 1, icon_pos[ 1 ] - 1, icon_extends[ 0 ] + 2, icon_extends[ 1 ] + 2, classInfo->arrow,
-				                   ( 0.5 - ( mEnt->yaw - 180.f ) / 360.f ) );
-				trap_R_SetColor( NULL );
+				CG_DrawRotatedPic ( icon_pos[ 0 ] - 1, icon_pos[ 1 ] - 1, icon_extends[ 0 ] + 2, icon_extends[ 1 ] + 2, classInfo->arrow,
+				                    ( 0.5 - ( mEnt->yaw - 180.f ) / 360.f ) );
+				trap_R_SetColor ( NULL );
 			}
 
 			return;
@@ -774,7 +774,7 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 			}
 			else if ( mEnt->type == ME_CONSTRUCT || mEnt->type == ME_DESTRUCT || mEnt->type == ME_DESTRUCT_2 )
 			{
-				cent    = &cg_entities[ mEnt->data ];
+				cent = &cg_entities[ mEnt->data ];
 
 				oidInfo = &cgs.oidInfo[ cent->currentState.modelindex2 ];
 
@@ -810,14 +810,14 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 			}
 
 			// now check to see if the entity is within our clip region
-			if ( scissor && CG_ScissorEntIsCulled( mEnt, scissor ) )
+			if ( scissor && CG_ScissorEntIsCulled ( mEnt, scissor ) )
 			{
 				return;
 			}
 
 			if ( cgs.ccLayers )
 			{
-				if ( CG_CurLayerForZ( mEnt->z ) != cgs.ccSelectedLayer )
+				if ( CG_CurLayerForZ ( mEnt->z ) != cgs.ccSelectedLayer )
 				{
 					return;
 				}
@@ -858,7 +858,7 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 				}
 
 				pic = cgs.media.ccTankIcon;
-				trap_R_SetColor( colorRed );
+				trap_R_SetColor ( colorRed );
 			}
 			else if ( mEnt->type == ME_COMMANDMAP_MARKER )
 			{
@@ -941,9 +941,9 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 #define CONST_ICON_EXPANDED_SIZE 48.f
 
 			if ( interactive && !expanded &&
-			     BG_RectContainsPoint( x + mEnt->transformed[ 0 ] - ( CONST_ICON_NORMAL_SIZE * 0.5f ),
-			                           y + mEnt->transformed[ 1 ] - ( CONST_ICON_NORMAL_SIZE * 0.5f ), CONST_ICON_NORMAL_SIZE,
-			                           CONST_ICON_NORMAL_SIZE, cgDC.cursorx, cgDC.cursory ) )
+			     BG_RectContainsPoint ( x + mEnt->transformed[ 0 ] - ( CONST_ICON_NORMAL_SIZE * 0.5f ),
+			                            y + mEnt->transformed[ 1 ] - ( CONST_ICON_NORMAL_SIZE * 0.5f ), CONST_ICON_NORMAL_SIZE,
+			                            CONST_ICON_NORMAL_SIZE, cgDC.cursorx, cgDC.cursory ) )
 			{
 				float w;
 
@@ -966,8 +966,8 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 					icon_extends[ 1 ] *= cgs.ccZoomFactor;
 				}
 
-				CG_DrawPic( icon_pos[ 0 ] - ( icon_extends[ 0 ] * 0.5f ), icon_pos[ 1 ] - ( icon_extends[ 1 ] * 0.5f ), icon_extends[ 0 ],
-				            icon_extends[ 1 ], pic );
+				CG_DrawPic ( icon_pos[ 0 ] - ( icon_extends[ 0 ] * 0.5f ), icon_pos[ 1 ] - ( icon_extends[ 1 ] * 0.5f ), icon_extends[ 0 ],
+				             icon_extends[ 1 ], pic );
 
 				if ( oidInfo )
 				{
@@ -975,11 +975,11 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 				}
 				else
 				{
-					name = va( "%i", j );
+					name = va ( "%i", j );
 				}
 
-				w = CG_Text_Width_Ext( name, 0.2f, 0, &cgs.media.limboFont2 );
-				CG_CommandMap_SetHighlightText( name, icon_pos[ 0 ] - ( w * 0.5f ), icon_pos[ 1 ] - 8 );
+				w = CG_Text_Width_Ext ( name, 0.2f, 0, &cgs.media.limboFont2 );
+				CG_CommandMap_SetHighlightText ( name, icon_pos[ 0 ] - ( w * 0.5f ), icon_pos[ 1 ] - 8 );
 			}
 			else if ( interactive && ( mEnt->yaw & 0xFF ) & ( 1 << cgs.ccSelectedObjective ) )
 			{
@@ -1014,8 +1014,8 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 					icon_extends[ 1 ] *= 0.5f;
 				}
 
-				CG_DrawPic( icon_pos[ 0 ] - ( icon_extends[ 0 ] * 0.5f ), icon_pos[ 1 ] - ( icon_extends[ 1 ] * 0.5f ), icon_extends[ 0 ],
-				            icon_extends[ 1 ], pic );
+				CG_DrawPic ( icon_pos[ 0 ] - ( icon_extends[ 0 ] * 0.5f ), icon_pos[ 1 ] - ( icon_extends[ 1 ] * 0.5f ), icon_extends[ 0 ],
+				             icon_extends[ 1 ], pic );
 			}
 			else
 			{
@@ -1038,11 +1038,11 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 					icon_extends[ 1 ] *= cgs.ccZoomFactor;
 				}
 
-				CG_DrawPic( icon_pos[ 0 ] - ( icon_extends[ 0 ] * 0.5f ), icon_pos[ 1 ] - ( icon_extends[ 1 ] * 0.5f ), icon_extends[ 0 ],
-				            icon_extends[ 1 ], pic );
+				CG_DrawPic ( icon_pos[ 0 ] - ( icon_extends[ 0 ] * 0.5f ), icon_pos[ 1 ] - ( icon_extends[ 1 ] * 0.5f ), icon_extends[ 0 ],
+				             icon_extends[ 1 ], pic );
 			}
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor ( NULL );
 			return;
 
 		case ME_LANDMINE:
@@ -1052,14 +1052,14 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 			                }*/
 
 			// now check to see if the entity is within our clip region
-			if ( scissor && CG_ScissorEntIsCulled( mEnt, scissor ) )
+			if ( scissor && CG_ScissorEntIsCulled ( mEnt, scissor ) )
 			{
 				return;
 			}
 
 			if ( cgs.ccLayers )
 			{
-				if ( CG_CurLayerForZ( mEnt->z ) != cgs.ccSelectedLayer )
+				if ( CG_CurLayerForZ ( mEnt->z ) != cgs.ccSelectedLayer )
 				{
 					return;
 				}
@@ -1102,10 +1102,10 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 				icon_extends[ 1 ] *= cgs.ccZoomFactor;
 			}
 
-			trap_R_SetColor( c_clr );
-			CG_DrawPic( icon_pos[ 0 ] - icon_extends[ 0 ] * 0.5f, icon_pos[ 1 ] - icon_extends[ 1 ] * 0.5f, icon_extends[ 0 ],
-			            icon_extends[ 1 ], pic );
-			trap_R_SetColor( NULL );
+			trap_R_SetColor ( c_clr );
+			CG_DrawPic ( icon_pos[ 0 ] - icon_extends[ 0 ] * 0.5f, icon_pos[ 1 ] - icon_extends[ 1 ] * 0.5f, icon_extends[ 0 ],
+			             icon_extends[ 1 ], pic );
+			trap_R_SetColor ( NULL );
 
 			j++;
 			return;
@@ -1115,8 +1115,8 @@ void CG_DrawMapEntity( mapEntityData_t *mEnt, float x, float y, float w, float h
 	}
 }
 
-void CG_DrawMap( float x, float y, float w, float h, int mEntFilter, mapScissor_t *scissor, qboolean interactive, float alpha,
-                 qboolean borderblend )
+void CG_DrawMap ( float x, float y, float w, float h, int mEntFilter, mapScissor_t *scissor, qboolean interactive, float alpha,
+                  qboolean borderblend )
 {
 	int             i /*, j = 1 */;
 	snapshot_t      *snap;
@@ -1152,32 +1152,32 @@ void CG_DrawMap( float x, float y, float w, float h, int mEntFilter, mapScissor_
 			sc_w = w;
 			sc_h = h;
 
-			CG_DrawPic( sc_x, sc_y, sc_w, sc_h, cgs.media.commandCentreAutomapMaskShader );
+			CG_DrawPic ( sc_x, sc_y, sc_w, sc_h, cgs.media.commandCentreAutomapMaskShader );
 
 			s0 = ( scissor->tl[ 0 ] ) / ( w * scissor->zoomFactor );
 			s1 = ( scissor->br[ 0 ] ) / ( w * scissor->zoomFactor );
 			t0 = ( scissor->tl[ 1 ] ) / ( h * scissor->zoomFactor );
 			t1 = ( scissor->br[ 1 ] ) / ( h * scissor->zoomFactor );
 
-			CG_AdjustFrom640( &sc_x, &sc_y, &sc_w, &sc_h );
+			CG_AdjustFrom640 ( &sc_x, &sc_y, &sc_w, &sc_h );
 
 			if ( cgs.ccLayers )
 			{
-				trap_R_DrawStretchPic( sc_x, sc_y, sc_w, sc_h, s0, t0, s1, t1,
-				                       cgs.media.commandCentreAutomapShader[ cgs.ccSelectedLayer ] );
+				trap_R_DrawStretchPic ( sc_x, sc_y, sc_w, sc_h, s0, t0, s1, t1,
+				                        cgs.media.commandCentreAutomapShader[ cgs.ccSelectedLayer ] );
 			}
 			else
 			{
-				trap_R_DrawStretchPic( sc_x, sc_y, sc_w, sc_h, s0, t0, s1, t1, cgs.media.commandCentreAutomapShader[ 0 ] );
+				trap_R_DrawStretchPic ( sc_x, sc_y, sc_w, sc_h, s0, t0, s1, t1, cgs.media.commandCentreAutomapShader[ 0 ] );
 			}
 
-			trap_R_DrawStretchPic( 0, 0, 0, 0, 0, 0, 0, 0, cgs.media.whiteShader ); // HACK : the code above seems to do weird things to
+			trap_R_DrawStretchPic ( 0, 0, 0, 0, 0, 0, 0, 0, cgs.media.whiteShader ); // HACK : the code above seems to do weird things to
 			// the next trap_R_DrawStretchPic issued. This works
 			// around this.
 		}
 
 		// Draw the grid
-		CG_DrawGrid( x, y, w, h, scissor );
+		CG_DrawGrid ( x, y, w, h, scissor );
 	}
 	else
 	{
@@ -1186,34 +1186,34 @@ void CG_DrawMap( float x, float y, float w, float h, int mEntFilter, mapScissor_
 		{
 			vec4_t color;
 
-			Vector4Set( color, 1.f, 1.f, 1.f, alpha );
-			trap_R_SetColor( color );
+			Vector4Set ( color, 1.f, 1.f, 1.f, alpha );
+			trap_R_SetColor ( color );
 
 			if ( cgs.ccLayers )
 			{
-				CG_DrawPic( x, y, w, h, cgs.media.commandCentreMapShaderTrans[ cgs.ccSelectedLayer ] );
+				CG_DrawPic ( x, y, w, h, cgs.media.commandCentreMapShaderTrans[ cgs.ccSelectedLayer ] );
 			}
 			else
 			{
-				CG_DrawPic( x, y, w, h, cgs.media.commandCentreMapShaderTrans[ 0 ] );
+				CG_DrawPic ( x, y, w, h, cgs.media.commandCentreMapShaderTrans[ 0 ] );
 			}
 
-			trap_R_SetColor( NULL );
+			trap_R_SetColor ( NULL );
 		}
 
 		// Draw the grid
-		CG_DrawGrid( x, y, w, h, NULL );
+		CG_DrawGrid ( x, y, w, h, NULL );
 	}
 
 	if ( borderblend )
 	{
 		vec4_t clr = { 0.f, 0.f, 0.f, 0.75f };
-		trap_R_SetColor( clr );
-		CG_DrawPic( x, y, w, h, cgs.media.limboBlendThingy );
-		trap_R_SetColor( NULL );
+		trap_R_SetColor ( clr );
+		CG_DrawPic ( x, y, w, h, cgs.media.limboBlendThingy );
+		trap_R_SetColor ( NULL );
 	}
 
-	exspawn = CG_DrawSpawnPointInfo( x, y, w, h, qfalse, scissor, -1 );
+	exspawn = CG_DrawSpawnPointInfo ( x, y, w, h, qfalse, scissor, -1 );
 
 	for ( i = 0, mEnt = &mapEntities[ 0 ]; i < mapEntityCount; i++, mEnt++ )
 	{
@@ -1227,12 +1227,12 @@ void CG_DrawMap( float x, float y, float w, float h, int mEntFilter, mapScissor_
 			continue;
 		}
 
-		CG_DrawMapEntity( mEnt, x, y, w, h, mEntFilter, scissor, interactive, snap, icon_size );
+		CG_DrawMapEntity ( mEnt, x, y, w, h, mEntFilter, scissor, interactive, snap, icon_size );
 	}
 
-	CG_DrawSpawnPointInfo( x, y, w, h, qtrue, scissor, exspawn );
+	CG_DrawSpawnPointInfo ( x, y, w, h, qtrue, scissor, exspawn );
 
-	CG_DrawMortarMarker( x, y, w, h, qtrue, scissor, exspawn );
+	CG_DrawMortarMarker ( x, y, w, h, qtrue, scissor, exspawn );
 
 	for ( i = 0, mEnt = &mapEntities[ 0 ]; i < mapEntityCount; i++, mEnt++ )
 	{
@@ -1246,11 +1246,11 @@ void CG_DrawMap( float x, float y, float w, float h, int mEntFilter, mapScissor_
 			continue;
 		}
 
-		CG_DrawMapEntity( mEnt, x, y, w, h, mEntFilter, scissor, interactive, snap, icon_size );
+		CG_DrawMapEntity ( mEnt, x, y, w, h, mEntFilter, scissor, interactive, snap, icon_size );
 	}
 }
 
-void CG_DrawExpandedAutoMap( void )
+void CG_DrawExpandedAutoMap ( void )
 {
 	float x, y, w, h;
 	float b_x, b_y, b_w, b_h;
@@ -1287,112 +1287,112 @@ void CG_DrawExpandedAutoMap( void )
 		}
 	}
 
-	CG_DrawMap( x, y, w, h, cgs.ccFilter, NULL, qfalse, .7f, qfalse );
+	CG_DrawMap ( x, y, w, h, cgs.ccFilter, NULL, qfalse, .7f, qfalse );
 
 	// Draw the border
 
 	// top left
-	s1  = 0;
-	t1  = 0;
-	s2  = 1;
-	t2  = 1;
+	s1 = 0;
+	t1 = 0;
+	s2 = 1;
+	t2 = 1;
 	b_x = x - 8;
 	b_y = y - 8;
 	b_w = 8;
 	b_h = 8;
-	CG_AdjustFrom640( &b_x, &b_y, &b_w, &b_h );
-	trap_R_DrawStretchPic( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapCornerShader );
+	CG_AdjustFrom640 ( &b_x, &b_y, &b_w, &b_h );
+	trap_R_DrawStretchPic ( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapCornerShader );
 
 	// top
-	s2  = w / 256.f;
+	s2 = w / 256.f;
 	b_x = x;
 	b_y = y - 8;
 	b_w = w;
 	b_h = 8;
-	CG_AdjustFrom640( &b_x, &b_y, &b_w, &b_h );
-	trap_R_DrawStretchPic( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapBorderShader );
+	CG_AdjustFrom640 ( &b_x, &b_y, &b_w, &b_h );
+	trap_R_DrawStretchPic ( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapBorderShader );
 
 	// top right
-	s1  = 1;
-	t1  = 0;
-	s2  = 0;
-	t2  = 1;
+	s1 = 1;
+	t1 = 0;
+	s2 = 0;
+	t2 = 1;
 	b_x = x + w;
 	b_y = y - 8;
 	b_w = 8;
 	b_h = 8;
-	CG_AdjustFrom640( &b_x, &b_y, &b_w, &b_h );
-	trap_R_DrawStretchPic( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapCornerShader );
+	CG_AdjustFrom640 ( &b_x, &b_y, &b_w, &b_h );
+	trap_R_DrawStretchPic ( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapCornerShader );
 
 	// right
-	s1  = 1;
-	t1  = h / 256.f;
-	s2  = 0;
-	t2  = 0;
+	s1 = 1;
+	t1 = h / 256.f;
+	s2 = 0;
+	t2 = 0;
 	b_x = x + w;
 	b_y = y;
 	b_w = 8;
 	b_h = h;
-	CG_AdjustFrom640( &b_x, &b_y, &b_w, &b_h );
-	trap_R_DrawStretchPic( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapBorder2Shader );
+	CG_AdjustFrom640 ( &b_x, &b_y, &b_w, &b_h );
+	trap_R_DrawStretchPic ( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapBorder2Shader );
 
 	// bottom right
-	s1  = 1;
-	t1  = 1;
-	s2  = 0;
-	t2  = 0;
+	s1 = 1;
+	t1 = 1;
+	s2 = 0;
+	t2 = 0;
 	b_x = x + w;
 	b_y = y + h;
 	b_w = 8;
 	b_h = 8;
-	CG_AdjustFrom640( &b_x, &b_y, &b_w, &b_h );
-	trap_R_DrawStretchPic( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapCornerShader );
+	CG_AdjustFrom640 ( &b_x, &b_y, &b_w, &b_h );
+	trap_R_DrawStretchPic ( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapCornerShader );
 
 	// bottom
-	s1  = w / 256.f;
+	s1 = w / 256.f;
 	b_x = x;
 	b_y = y + h;
 	b_w = w;
 	b_h = 8;
-	CG_AdjustFrom640( &b_x, &b_y, &b_w, &b_h );
-	trap_R_DrawStretchPic( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapBorderShader );
+	CG_AdjustFrom640 ( &b_x, &b_y, &b_w, &b_h );
+	trap_R_DrawStretchPic ( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapBorderShader );
 
 	// bottom left
-	s1  = 0;
-	t1  = 1;
-	s2  = 1;
-	t2  = 0;
+	s1 = 0;
+	t1 = 1;
+	s2 = 1;
+	t2 = 0;
 	b_x = x - 8;
 	b_y = y + h;
 	b_w = 8;
 	b_h = 8;
-	CG_AdjustFrom640( &b_x, &b_y, &b_w, &b_h );
-	trap_R_DrawStretchPic( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapCornerShader );
+	CG_AdjustFrom640 ( &b_x, &b_y, &b_w, &b_h );
+	trap_R_DrawStretchPic ( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapCornerShader );
 
 	// left
-	s1  = 0;
-	t1  = 0;
-	s2  = 1;
-	t2  = h / 256.f;
+	s1 = 0;
+	t1 = 0;
+	s2 = 1;
+	t2 = h / 256.f;
 	b_x = x - 8;
 	b_y = y;
 	b_w = 8;
 	b_h = h;
-	CG_AdjustFrom640( &b_x, &b_y, &b_w, &b_h );
-	trap_R_DrawStretchPic( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapBorder2Shader );
+	CG_AdjustFrom640 ( &b_x, &b_y, &b_w, &b_h );
+	trap_R_DrawStretchPic ( b_x, b_y, b_w, b_h, s1, t1, s2, t2, cgs.media.commandCentreAutomapBorder2Shader );
 }
 
-void CG_DrawAutoMap( void )
+void CG_DrawAutoMap ( void )
 {
 	float        x, y, w, h;
 	mapScissor_t mapScissor;
 	vec2_t       automapTransformed;
 
-	memset( &mapScissor, 0, sizeof( mapScissor ) );
+	memset ( &mapScissor, 0, sizeof ( mapScissor ) );
 
 	if ( cgs.ccLayers )
 	{
-		cgs.ccSelectedLayer = CG_CurLayerForZ( ( int )cg.predictedPlayerEntity.lerpOrigin[ 2 ] );
+		cgs.ccSelectedLayer = CG_CurLayerForZ ( ( int ) cg.predictedPlayerEntity.lerpOrigin[ 2 ] );
 	}
 
 	x = 520;
@@ -1429,12 +1429,12 @@ void CG_DrawAutoMap( void )
 		}
 	}
 
-	mapScissor.circular     = qtrue;
+	mapScissor.circular = qtrue;
 
-	mapScissor.zoomFactor   = automapZoom;
+	mapScissor.zoomFactor = automapZoom;
 
-	mapScissor.tl[ 0 ]      = mapScissor.tl[ 1 ] = 0;
-	mapScissor.br[ 0 ]      = mapScissor.br[ 1 ] = -1;
+	mapScissor.tl[ 0 ] = mapScissor.tl[ 1 ] = 0;
+	mapScissor.br[ 0 ] = mapScissor.br[ 1 ] = -1;
 
 	automapTransformed[ 0 ] =
 	  ( ( cg.predictedPlayerEntity.lerpOrigin[ 0 ] - cg.mapcoordsMins[ 0 ] ) * cg.mapcoordsScale[ 0 ] ) * w * mapScissor.zoomFactor;
@@ -1476,7 +1476,7 @@ void CG_DrawAutoMap( void )
 		mapScissor.tl[ 1 ] = mapScissor.br[ 1 ] - h;
 	}
 
-	CG_DrawMap( x, y, w, h, cgs.ccFilter, &mapScissor, qfalse, 1.f, qfalse );
+	CG_DrawMap ( x, y, w, h, cgs.ccFilter, &mapScissor, qfalse, 1.f, qfalse );
 }
 
 /*void CG_DrawWaypointInfo( int x, int y, int w, int h ) {
@@ -1516,12 +1516,12 @@ void CG_DrawAutoMap( void )
         }
 }*/
 
-int CG_DrawSpawnPointInfo( int px, int py, int pw, int ph, qboolean draw, mapScissor_t *scissor, int expand )
+int CG_DrawSpawnPointInfo ( int px, int py, int pw, int ph, qboolean draw, mapScissor_t *scissor, int expand )
 {
 	int    i;
 	char   buffer[ 64 ];
 	vec2_t point;
-	int    e    = -1;
+	int    e = -1;
 	vec2_t icon_extends;
 
 	team_t team = CG_LimboPanel_GetRealTeam();
@@ -1560,7 +1560,7 @@ int CG_DrawSpawnPointInfo( int px, int py, int pw, int ph, qboolean draw, mapSci
 
 		if ( cgs.ccLayers )
 		{
-			if ( CG_CurLayerForZ( ( int )cg.spawnCoords[ i ][ 2 ] ) != cgs.ccSelectedLayer )
+			if ( CG_CurLayerForZ ( ( int ) cg.spawnCoords[ i ][ 2 ] ) != cgs.ccSelectedLayer )
 			{
 				break;
 			}
@@ -1579,7 +1579,7 @@ int CG_DrawSpawnPointInfo( int px, int py, int pw, int ph, qboolean draw, mapSci
 			point[ 1 ] = py + ( ( ( cg.spawnCoordsUntransformed[ i ][ 1 ] - cg.mapcoordsMins[ 1 ] ) * cg.mapcoordsScale[ 1 ] ) * ph );
 		}
 
-		if ( scissor && CG_ScissorPointIsCulled( point, scissor ) )
+		if ( scissor && CG_ScissorPointIsCulled ( point, scissor ) )
 		{
 			continue;
 		}
@@ -1631,14 +1631,14 @@ int CG_DrawSpawnPointInfo( int px, int py, int pw, int ph, qboolean draw, mapSci
 					size *= cgs.ccZoomFactor;
 				}
 
-				CG_DrawPic( point[ 0 ] - FLAG_LEFTFRAC * size, point[ 1 ] - FLAG_TOPFRAC * size, size, size,
-				            cgs.media.commandCentreSpawnShader[ cg.spawnTeams[ i ] == TEAM_AXIS ? 0 : 1 ] );
+				CG_DrawPic ( point[ 0 ] - FLAG_LEFTFRAC * size, point[ 1 ] - FLAG_TOPFRAC * size, size, size,
+				             cgs.media.commandCentreSpawnShader[ cg.spawnTeams[ i ] == TEAM_AXIS ? 0 : 1 ] );
 			}
 		}
 		else if ( ( draw && i == expand ) ||
 		          ( !expanded &&
-		            BG_RectContainsPoint( point[ 0 ] - FLAGSIZE_NORMAL * 0.5f, point[ 1 ] - FLAGSIZE_NORMAL * 0.5f, FLAGSIZE_NORMAL,
-		                                  FLAGSIZE_NORMAL, cgDC.cursorx, cgDC.cursory ) ) )
+		            BG_RectContainsPoint ( point[ 0 ] - FLAGSIZE_NORMAL * 0.5f, point[ 1 ] - FLAGSIZE_NORMAL * 0.5f, FLAGSIZE_NORMAL,
+		                                   FLAGSIZE_NORMAL, cgDC.cursorx, cgDC.cursory ) ) )
 		{
 			if ( draw )
 			{
@@ -1653,8 +1653,8 @@ int CG_DrawSpawnPointInfo( int px, int py, int pw, int ph, qboolean draw, mapSci
 					size *= cgs.ccZoomFactor;
 				}
 
-				CG_DrawPic( point[ 0 ] - FLAG_LEFTFRAC * size, point[ 1 ] - FLAG_TOPFRAC * size, size, size,
-				            cgs.media.commandCentreSpawnShader[ cg.spawnTeams[ i ] == TEAM_AXIS ? 0 : 1 ] );
+				CG_DrawPic ( point[ 0 ] - FLAG_LEFTFRAC * size, point[ 1 ] - FLAG_TOPFRAC * size, size, size,
+				             cgs.media.commandCentreSpawnShader[ cg.spawnTeams[ i ] == TEAM_AXIS ? 0 : 1 ] );
 			}
 			else
 			{
@@ -1662,9 +1662,9 @@ int CG_DrawSpawnPointInfo( int px, int py, int pw, int ph, qboolean draw, mapSci
 				{
 					float w;
 
-					Com_sprintf( buffer, sizeof( buffer ), "%s (Troops: %i)", cg.spawnPoints[ i ], cg.spawnPlayerCounts[ i ] );
-					w = CG_Text_Width_Ext( buffer, 0.2f, 0, &cgs.media.limboFont2 );
-					CG_CommandMap_SetHighlightText( buffer, point[ 0 ] - ( w * 0.5f ), point[ 1 ] - 8 );
+					Com_sprintf ( buffer, sizeof ( buffer ), "%s (Troops: %i)", cg.spawnPoints[ i ], cg.spawnPlayerCounts[ i ] );
+					w = CG_Text_Width_Ext ( buffer, 0.2f, 0, &cgs.media.limboFont2 );
+					CG_CommandMap_SetHighlightText ( buffer, point[ 0 ] - ( w * 0.5f ), point[ 1 ] - 8 );
 				}
 
 				e = i;
@@ -1685,14 +1685,14 @@ int CG_DrawSpawnPointInfo( int px, int py, int pw, int ph, qboolean draw, mapSci
 					size *= cgs.ccZoomFactor;
 				}
 
-				CG_DrawPic( point[ 0 ] - FLAG_LEFTFRAC * size, point[ 1 ] - FLAG_TOPFRAC * size, size, size,
-				            cgs.media.commandCentreSpawnShader[ cg.spawnTeams[ i ] == TEAM_AXIS ? 0 : 1 ] );
+				CG_DrawPic ( point[ 0 ] - FLAG_LEFTFRAC * size, point[ 1 ] - FLAG_TOPFRAC * size, size, size,
+				             cgs.media.commandCentreSpawnShader[ cg.spawnTeams[ i ] == TEAM_AXIS ? 0 : 1 ] );
 
 				if ( !scissor )
 				{
-					Com_sprintf( buffer, sizeof( buffer ), "(Troops: %i)", cg.spawnPlayerCounts[ i ] );
-					CG_Text_Paint_Ext( point[ 0 ] + FLAGSIZE_NORMAL * 0.25f, point[ 1 ], 0.2f, 0.2f, colorWhite, buffer, 0, 0,
-					                   ITEM_TEXTSTYLE_SHADOWED, &cgs.media.limboFont2 );
+					Com_sprintf ( buffer, sizeof ( buffer ), "(Troops: %i)", cg.spawnPlayerCounts[ i ] );
+					CG_Text_Paint_Ext ( point[ 0 ] + FLAGSIZE_NORMAL * 0.25f, point[ 1 ], 0.2f, 0.2f, colorWhite, buffer, 0, 0,
+					                    ITEM_TEXTSTYLE_SHADOWED, &cgs.media.limboFont2 );
 				}
 			}
 		}
@@ -1701,7 +1701,7 @@ int CG_DrawSpawnPointInfo( int px, int py, int pw, int ph, qboolean draw, mapSci
 	return e;
 }
 
-void CG_DrawMortarMarker( int px, int py, int pw, int ph, qboolean draw, mapScissor_t *scissor, int expand )
+void CG_DrawMortarMarker ( int px, int py, int pw, int ph, qboolean draw, mapScissor_t *scissor, int expand )
 {
 	if ( cg.lastFiredWeapon == WP_MORTAR_SET && cg.mortarImpactTime >= 0 )
 	{
@@ -1730,7 +1730,7 @@ void CG_DrawMortarMarker( int px, int py, int pw, int ph, qboolean draw, mapScis
 
 			// rain - don't return if the marker is culled, just don't
 			// draw it.
-			if ( !( scissor && CG_ScissorPointIsCulled( point, scissor ) ) )
+			if ( ! ( scissor && CG_ScissorPointIsCulled ( point, scissor ) ) )
 			{
 				if ( scissor )
 				{
@@ -1765,22 +1765,22 @@ void CG_DrawMortarMarker( int px, int py, int pw, int ph, qboolean draw, mapScis
 					colour[ 3 ] = .5f;
 				}
 
-				trap_R_SetColor( colour );
-				CG_DrawRotatedPic( point[ 0 ] - 8.f, point[ 1 ] - 8.f, 16, 16, cgs.media.ccMortarHit,
-				                   .5f - ( cg.mortarFireAngles[ YAW ] /*- 180.f */  + 45.f ) / 360.f );
-				trap_R_SetColor( NULL );
+				trap_R_SetColor ( colour );
+				CG_DrawRotatedPic ( point[ 0 ] - 8.f, point[ 1 ] - 8.f, 16, 16, cgs.media.ccMortarHit,
+				                    .5f - ( cg.mortarFireAngles[ YAW ] /*- 180.f */  + 45.f ) / 360.f );
+				trap_R_SetColor ( NULL );
 			}
 		}
 	}
 
-	if ( COM_BitCheck( cg.snap->ps.weapons, WP_MORTAR_SET ) )
+	if ( COM_BitCheck ( cg.snap->ps.weapons, WP_MORTAR_SET ) )
 	{
 		int i;
 
 		for ( i = 0; i < MAX_CLIENTS; i++ )
 		{
 			//vec4_t colour = { .23f, 1.f, .23f, 1.f };
-			vec4_t colour   = { 1.f, 1.f, 1.f, 1.f };
+			vec4_t colour = { 1.f, 1.f, 1.f, 1.f };
 			vec3_t point;
 			int    fadeTime = cg.time - ( cg.artilleryRequestTime[ i ] + 25000 );
 
@@ -1806,7 +1806,7 @@ void CG_DrawMortarMarker( int px, int py, int pw, int ph, qboolean draw, mapScis
 
 				// rain - don't return if the marker is culled, just skip
 				// it (so we draw the rest, if any)
-				if ( scissor && CG_ScissorPointIsCulled( point, scissor ) )
+				if ( scissor && CG_ScissorPointIsCulled ( point, scissor ) )
 				{
 					continue;
 				}
@@ -1817,9 +1817,9 @@ void CG_DrawMortarMarker( int px, int py, int pw, int ph, qboolean draw, mapScis
 					point[ 1 ] += py - scissor->tl[ 1 ];
 				}
 
-				trap_R_SetColor( colour );
-				CG_DrawPic( point[ 0 ] - 8.f, point[ 1 ] - 8.f, 16, 16, cgs.media.ccMortarTarget );
-				trap_R_SetColor( NULL );
+				trap_R_SetColor ( colour );
+				CG_DrawPic ( point[ 0 ] - 8.f, point[ 1 ] - 8.f, 16, 16, cgs.media.ccMortarTarget );
+				trap_R_SetColor ( NULL );
 
 				//CG_FillRect( point[0] - 8.f, point[1] - 8.f, 16, 16, colour );
 			}
@@ -1857,11 +1857,11 @@ void CG_DrawMortarMarker( int px, int py, int pw, int ph, qboolean draw, mapScis
         }
 }*/
 
-mapEntityData_t *CG_ScanForCommandCentreEntity( void )
+mapEntityData_t *CG_ScanForCommandCentreEntity ( void )
 {
-	vec_t           rangeSquared = Square( 1000 );
-	int             ent          = 0;
-	mapEntityData_t *mEnt        = &mapEntities[ 0 ];
+	vec_t           rangeSquared = Square ( 1000 );
+	int             ent = 0;
+	mapEntityData_t *mEnt = &mapEntities[ 0 ];
 	int             i;
 
 	if ( mapEntityCount <= 0 )
@@ -1875,23 +1875,23 @@ mapEntityData_t *CG_ScanForCommandCentreEntity( void )
 
 		if ( cgs.ccLayers )
 		{
-			if ( CG_CurLayerForZ( mEnt->z ) != cgs.ccSelectedLayer )
+			if ( CG_CurLayerForZ ( mEnt->z ) != cgs.ccSelectedLayer )
 			{
 				continue;
 			}
 		}
 
 		rngSquared =
-		  Square( CC_2D_X + mEnt->transformed[ 0 ] - cgDC.cursorx ) + Square( CC_2D_Y + mEnt->transformed[ 1 ] - cgDC.cursory );
+		  Square ( CC_2D_X + mEnt->transformed[ 0 ] - cgDC.cursorx ) + Square ( CC_2D_Y + mEnt->transformed[ 1 ] - cgDC.cursory );
 
 		if ( i == 0 || rngSquared < rangeSquared )
 		{
 			rangeSquared = rngSquared;
-			ent          = i;
+			ent = i;
 		}
 	}
 
-	if ( rangeSquared < Square( 8 ) )
+	if ( rangeSquared < Square ( 8 ) )
 	{
 		return &mapEntities[ ent ];
 	}
@@ -1910,7 +1910,7 @@ typedef enum
   MT_INFO
 } menuType_t;
 
-qboolean CG_PlayerSelected( void )
+qboolean CG_PlayerSelected ( void )
 {
 	snapshot_t *snap;
 	int        i;
@@ -1940,7 +1940,7 @@ qboolean CG_PlayerSelected( void )
 
 #define CC_MENU_WIDTH 150
 
-qboolean CG_CommandCentreLayersClick( void )
+qboolean CG_CommandCentreLayersClick ( void )
 {
 	int x, y;
 	int i;
@@ -1955,7 +1955,7 @@ qboolean CG_CommandCentreLayersClick( void )
 
 	for ( i = 0; i < cgs.ccLayers; i++ )
 	{
-		if ( BG_RectContainsPoint( x, y, 32, 32, cgDC.cursorx, cgDC.cursory ) )
+		if ( BG_RectContainsPoint ( x, y, 32, 32, cgDC.cursorx, cgDC.cursory ) )
 		{
 			cgs.ccSelectedLayer = i;
 			return qtrue;
@@ -1967,7 +1967,7 @@ qboolean CG_CommandCentreLayersClick( void )
 	return qfalse;
 }
 
-qboolean CG_CommandCentreSpawnPointClick( void )
+qboolean CG_CommandCentreSpawnPointClick ( void )
 {
 	int    i;
 	vec2_t point;
@@ -1992,7 +1992,7 @@ qboolean CG_CommandCentreSpawnPointClick( void )
 
 		if ( cgs.ccLayers )
 		{
-			if ( CG_CurLayerForZ( ( int )cg.spawnCoords[ i ][ 2 ] ) != cgs.ccSelectedLayer )
+			if ( CG_CurLayerForZ ( ( int ) cg.spawnCoords[ i ][ 2 ] ) != cgs.ccSelectedLayer )
 			{
 				continue;
 			}
@@ -2005,8 +2005,8 @@ qboolean CG_CommandCentreSpawnPointClick( void )
 		     ( point[ 0 ] - FLAGSIZE_NORMAL * 0.5f, point[ 1 ] - FLAGSIZE_NORMAL * 0.5f, FLAGSIZE_NORMAL, FLAGSIZE_NORMAL, cgDC.cursorx,
 		       cgDC.cursory ) )
 		{
-			trap_SendConsoleCommand( va( "setspawnpt %i\n", i ) );
-			cg.selectedSpawnPoint    = i;
+			trap_SendConsoleCommand ( va ( "setspawnpt %i\n", i ) );
+			cg.selectedSpawnPoint = i;
 			cgs.ccRequestedObjective = -1;
 			return qtrue;
 		}
@@ -2015,7 +2015,7 @@ qboolean CG_CommandCentreSpawnPointClick( void )
 	return qfalse;
 }
 
-void CG_CommandCentreClick( int key )
+void CG_CommandCentreClick ( int key )
 {
 	switch ( key )
 	{
@@ -2031,17 +2031,17 @@ void CG_CommandCentreClick( int key )
 
 char      cg_highlightText[ 256 ];
 rectDef_t cg_highlightTextRect;
-void CG_CommandMap_SetHighlightText( const char *text, float x, float y )
+void CG_CommandMap_SetHighlightText ( const char *text, float x, float y )
 {
-	Q_strncpyz( cg_highlightText, text, sizeof( cg_highlightText ) );
+	Q_strncpyz ( cg_highlightText, text, sizeof ( cg_highlightText ) );
 	cg_highlightTextRect.x = x;
 	cg_highlightTextRect.y = y;
-	expanded               = qtrue;
+	expanded = qtrue;
 }
 
-void CG_CommandMap_DrawHighlightText( void )
+void CG_CommandMap_DrawHighlightText ( void )
 {
-	CG_Text_Paint_Ext( cg_highlightTextRect.x, cg_highlightTextRect.y, 0.25f, 0.25f, colorWhite, cg_highlightText, 0, 0,
-	                   ITEM_TEXTSTYLE_SHADOWED, &cgs.media.limboFont2 );
+	CG_Text_Paint_Ext ( cg_highlightTextRect.x, cg_highlightTextRect.y, 0.25f, 0.25f, colorWhite, cg_highlightText, 0, 0,
+	                    ITEM_TEXTSTYLE_SHADOWED, &cgs.media.limboFont2 );
 	*cg_highlightText = '\0';
 }

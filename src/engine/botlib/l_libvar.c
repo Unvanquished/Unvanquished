@@ -47,10 +47,10 @@ libvar_t *libvarlist;
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-float LibVarStringValue( char *string )
+float LibVarStringValue ( char *string )
 {
 	int   dotfound = 0;
-	float value    = 0;
+	float value = 0;
 
 	while ( *string )
 	{
@@ -59,29 +59,29 @@ float LibVarStringValue( char *string )
 			if ( dotfound || *string != '.' )
 			{
 				return 0;
-			}                                       //end if
+			} //end if
 			else
 			{
 				dotfound = 10;
 				string++;
-			}                                       //end if
-		}                                               //end if
+			} //end if
+		} //end if
 
 		if ( dotfound )
 		{
-			value     = value + ( float )( *string - '0' ) / ( float )dotfound;
+			value = value + ( float ) ( *string - '0' ) / ( float ) dotfound;
 			dotfound *= 10;
-		}                                               //end if
+		} //end if
 		else
 		{
-			value = value * 10.0 + ( float )( *string - '0' );
-		}                                               //end else
+			value = value * 10.0 + ( float ) ( *string - '0' );
+		} //end else
 
 		string++;
-	}                                                       //end while
+	} //end while
 
 	return value;
-}                                                               //end of the function LibVarStringValue
+} //end of the function LibVarStringValue
 
 //===========================================================================
 //
@@ -89,19 +89,19 @@ float LibVarStringValue( char *string )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-libvar_t       *LibVarAlloc( char *var_name )
+libvar_t       *LibVarAlloc ( char *var_name )
 {
 	libvar_t *v;
 
-	v          = ( libvar_t * ) GetMemory( sizeof( libvar_t ) + strlen( var_name ) + 1 );
-	memset( v, 0, sizeof( libvar_t ) );
-	v->name    = ( char * )v + sizeof( libvar_t );
-	strcpy( v->name, var_name );
+	v = ( libvar_t * ) GetMemory ( sizeof ( libvar_t ) + strlen ( var_name ) + 1 );
+	memset ( v, 0, sizeof ( libvar_t ) );
+	v->name = ( char * ) v + sizeof ( libvar_t );
+	strcpy ( v->name, var_name );
 	//add the variable in the list
-	v->next    = libvarlist;
+	v->next = libvarlist;
 	libvarlist = v;
 	return v;
-}                                                               //end of the function LibVarAlloc
+} //end of the function LibVarAlloc
 
 //===========================================================================
 //
@@ -109,15 +109,15 @@ libvar_t       *LibVarAlloc( char *var_name )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void LibVarDeAlloc( libvar_t *v )
+void LibVarDeAlloc ( libvar_t *v )
 {
 	if ( v->string )
 	{
-		FreeMemory( v->string );
+		FreeMemory ( v->string );
 	}
 
-	FreeMemory( v );
-}                                                               //end of the function LibVarDeAlloc
+	FreeMemory ( v );
+} //end of the function LibVarDeAlloc
 
 //===========================================================================
 //
@@ -125,18 +125,18 @@ void LibVarDeAlloc( libvar_t *v )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void LibVarDeAllocAll( void )
+void LibVarDeAllocAll ( void )
 {
 	libvar_t *v;
 
 	for ( v = libvarlist; v; v = libvarlist )
 	{
 		libvarlist = libvarlist->next;
-		LibVarDeAlloc( v );
-	}                                                       //end for
+		LibVarDeAlloc ( v );
+	} //end for
 
 	libvarlist = NULL;
-}                                                               //end of the function LibVarDeAllocAll
+} //end of the function LibVarDeAllocAll
 
 //===========================================================================
 //
@@ -144,20 +144,20 @@ void LibVarDeAllocAll( void )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-libvar_t       *LibVarGet( char *var_name )
+libvar_t       *LibVarGet ( char *var_name )
 {
 	libvar_t *v;
 
 	for ( v = libvarlist; v; v = v->next )
 	{
-		if ( !Q_stricmp( v->name, var_name ) )
+		if ( !Q_stricmp ( v->name, var_name ) )
 		{
 			return v;
-		}                                               //end if
-	}                                                       //end for
+		} //end if
+	} //end for
 
 	return NULL;
-}                                                               //end of the function LibVarGet
+} //end of the function LibVarGet
 
 //===========================================================================
 //
@@ -165,21 +165,21 @@ libvar_t       *LibVarGet( char *var_name )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-char           *LibVarGetString( char *var_name )
+char           *LibVarGetString ( char *var_name )
 {
 	libvar_t *v;
 
-	v = LibVarGet( var_name );
+	v = LibVarGet ( var_name );
 
 	if ( v )
 	{
 		return v->string;
-	}                                                       //end if
+	} //end if
 	else
 	{
 		return "";
-	}                                                       //end else
-}                                                               //end of the function LibVarGetString
+	} //end else
+} //end of the function LibVarGetString
 
 //===========================================================================
 //
@@ -187,21 +187,21 @@ char           *LibVarGetString( char *var_name )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-float LibVarGetValue( char *var_name )
+float LibVarGetValue ( char *var_name )
 {
 	libvar_t *v;
 
-	v = LibVarGet( var_name );
+	v = LibVarGet ( var_name );
 
 	if ( v )
 	{
 		return v->value;
-	}                                                       //end if
+	} //end if
 	else
 	{
 		return 0;
-	}                                                       //end else
-}                                                               //end of the function LibVarGetValue
+	} //end else
+} //end of the function LibVarGetValue
 
 //===========================================================================
 //
@@ -209,11 +209,11 @@ float LibVarGetValue( char *var_name )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-libvar_t       *LibVar( char *var_name, char *value )
+libvar_t       *LibVar ( char *var_name, char *value )
 {
 	libvar_t *v;
 
-	v = LibVarGet( var_name );
+	v = LibVarGet ( var_name );
 
 	if ( v )
 	{
@@ -221,17 +221,17 @@ libvar_t       *LibVar( char *var_name, char *value )
 	}
 
 	//create new variable
-	v           = LibVarAlloc( var_name );
+	v = LibVarAlloc ( var_name );
 	//variable string
-	v->string   = ( char * )GetMemory( strlen( value ) + 1 );
-	strcpy( v->string, value );
+	v->string = ( char * ) GetMemory ( strlen ( value ) + 1 );
+	strcpy ( v->string, value );
 	//the value
-	v->value    = LibVarStringValue( v->string );
+	v->value = LibVarStringValue ( v->string );
 	//variable is modified
 	v->modified = qtrue;
 	//
 	return v;
-}                                                               //end of the function LibVar
+} //end of the function LibVar
 
 //===========================================================================
 //
@@ -239,13 +239,13 @@ libvar_t       *LibVar( char *var_name, char *value )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-char           *LibVarString( char *var_name, char *value )
+char           *LibVarString ( char *var_name, char *value )
 {
 	libvar_t *v;
 
-	v = LibVar( var_name, value );
+	v = LibVar ( var_name, value );
 	return v->string;
-}                                                               //end of the function LibVarString
+} //end of the function LibVarString
 
 //===========================================================================
 //
@@ -253,13 +253,13 @@ char           *LibVarString( char *var_name, char *value )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-float LibVarValue( char *var_name, char *value )
+float LibVarValue ( char *var_name, char *value )
 {
 	libvar_t *v;
 
-	v = LibVar( var_name, value );
+	v = LibVar ( var_name, value );
 	return v->value;
-}                                                               //end of the function LibVarValue
+} //end of the function LibVarValue
 
 //===========================================================================
 //
@@ -267,29 +267,29 @@ float LibVarValue( char *var_name, char *value )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void LibVarSet( char *var_name, char *value )
+void LibVarSet ( char *var_name, char *value )
 {
 	libvar_t *v;
 
-	v = LibVarGet( var_name );
+	v = LibVarGet ( var_name );
 
 	if ( v )
 	{
-		FreeMemory( v->string );
-	}                                                       //end if
+		FreeMemory ( v->string );
+	} //end if
 	else
 	{
-		v = LibVarAlloc( var_name );
-	}                                                       //end else
+		v = LibVarAlloc ( var_name );
+	} //end else
 
 	//variable string
-	v->string   = ( char * )GetMemory( strlen( value ) + 1 );
-	strcpy( v->string, value );
+	v->string = ( char * ) GetMemory ( strlen ( value ) + 1 );
+	strcpy ( v->string, value );
 	//the value
-	v->value    = LibVarStringValue( v->string );
+	v->value = LibVarStringValue ( v->string );
 	//variable is modified
 	v->modified = qtrue;
-}                                                               //end of the function LibVarSet
+} //end of the function LibVarSet
 
 //===========================================================================
 //
@@ -297,21 +297,21 @@ void LibVarSet( char *var_name, char *value )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-qboolean LibVarChanged( char *var_name )
+qboolean LibVarChanged ( char *var_name )
 {
 	libvar_t *v;
 
-	v = LibVarGet( var_name );
+	v = LibVarGet ( var_name );
 
 	if ( v )
 	{
 		return v->modified;
-	}                                                       //end if
+	} //end if
 	else
 	{
 		return qfalse;
-	}                                                       //end else
-}                                                               //end of the function LibVarChanged
+	} //end else
+} //end of the function LibVarChanged
 
 //===========================================================================
 //
@@ -319,14 +319,14 @@ qboolean LibVarChanged( char *var_name )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void LibVarSetNotModified( char *var_name )
+void LibVarSetNotModified ( char *var_name )
 {
 	libvar_t *v;
 
-	v = LibVarGet( var_name );
+	v = LibVarGet ( var_name );
 
 	if ( v )
 	{
 		v->modified = qfalse;
-	}                                                       //end if
-}                                                               //end of the function LibVarSetNotModified
+	} //end if
+} //end of the function LibVarSetNotModified

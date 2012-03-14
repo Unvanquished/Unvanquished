@@ -20,22 +20,22 @@ NSObject
 
 @property ( assign, readwrite, nonatomic ) id        delegate;
 @property ( assign, readwrite, nonatomic ) long long archiveOffset;
-- ( BOOL )addDownloadFileWithPath:
-( NSString * )path rangeInArchive:
-( NSRange )range;
-- ( void )startWithURL:
-( NSURL * )url;
+- ( BOOL ) addDownloadFileWithPath:
+( NSString * ) path rangeInArchive:
+( NSRange ) range;
+- ( void ) startWithURL:
+( NSURL * ) url;
 
 @end
 
 @interface NSObject ( OWDownloaderDelegate )
 
-- ( void )downloader:
-( OWDownloader * )downloader didCompleteProgress:
-( double )progress withText:
-( NSString * )progressText;
-- ( void )downloader:
-( OWDownloader * )downloader didFinishDownloadingWithError:
-( NSError * )error;
+- ( void ) downloader:
+( OWDownloader * ) downloader didCompleteProgress:
+( double ) progress withText:
+( NSString * ) progressText;
+- ( void ) downloader:
+( OWDownloader * ) downloader didFinishDownloadingWithError:
+( NSError * ) error;
 
 @end

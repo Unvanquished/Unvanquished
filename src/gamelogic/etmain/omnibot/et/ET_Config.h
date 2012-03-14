@@ -85,14 +85,14 @@ typedef enum eET_Msgs
   ET_MSG_CHANGESPAWNPOINT,
 
   ET_MSG_GHASFLAG,
-  ET_MSG_GCONSTRUCTABLE,          // check if goal is constructible at the moment
-  ET_MSG_GDYNDESTROYABLE,         // check if goal can be destroyed by dynamite
-  ET_MSG_GSATDESTROYABLE,         // check if goal can be destroyed by satchel charge
-  ET_MSG_GEXPLOSIVESTATE,         // check if state of an explosive
-  ET_MSG_GCANBEGRABBED,           // check if an entity can be grabbed
-  ET_MSG_GNUMTEAMMINES,           // check the number of team mines
-  ET_MSG_CABINETDATA,             // stats from a health/ammo cabinet
-  ET_MSG_SKILLLEVEL,              // skill level for all the skills of the bot.
+  ET_MSG_GCONSTRUCTABLE, // check if goal is constructible at the moment
+  ET_MSG_GDYNDESTROYABLE, // check if goal can be destroyed by dynamite
+  ET_MSG_GSATDESTROYABLE, // check if goal can be destroyed by satchel charge
+  ET_MSG_GEXPLOSIVESTATE, // check if state of an explosive
+  ET_MSG_GCANBEGRABBED, // check if an entity can be grabbed
+  ET_MSG_GNUMTEAMMINES, // check the number of team mines
+  ET_MSG_CABINETDATA, // stats from a health/ammo cabinet
+  ET_MSG_SKILLLEVEL, // skill level for all the skills of the bot.
 
   ET_MSG_FIRETEAM_CREATE,
   ET_MSG_FIRETEAM_DISBAND,
@@ -115,23 +115,23 @@ typedef enum eET_Msgs
 typedef enum eET_Weapons
 {
   ET_WP_UNKNOWN = INVALID_WEAPON,
-  ET_WP_NONE    = INVALID_WEAPON,
+  ET_WP_NONE = INVALID_WEAPON,
 
   // general
   ET_WP_KNIFE,
   ET_WP_BINOCULARS,
 
   // axis
-  ET_WP_GREN_AXIS,    // grenades used by axis
-  ET_WP_LUGER,        // axis standard secondary weapon
+  ET_WP_GREN_AXIS, // grenades used by axis
+  ET_WP_LUGER, // axis standard secondary weapon
   ET_WP_AKIMBO_LUGER, // double luger
-  ET_WP_MP40,         // axis standard weapon
+  ET_WP_MP40, // axis standard weapon
 
   // allies
-  ET_WP_GREN_ALLIES,      // grenades used by allies
-  ET_WP_COLT,             // allies standard secondary weapon
-  ET_WP_AKIMBO_COLT,      // double colt
-  ET_WP_THOMPSON,         // allies standard weapon
+  ET_WP_GREN_ALLIES, // grenades used by allies
+  ET_WP_COLT, // allies standard secondary weapon
+  ET_WP_AKIMBO_COLT, // double colt
+  ET_WP_THOMPSON, // allies standard weapon
 
   // soldier
   ET_WP_PANZERFAUST,
@@ -151,7 +151,7 @@ typedef enum eET_Weapons
   ET_WP_FG42,
   ET_WP_FG42_SCOPE,
   ET_WP_SATCHEL,
-  ET_WP_SATCHEL_DET,      // remote control for satchel
+  ET_WP_SATCHEL_DET, // remote control for satchel
   ET_WP_SMOKE_GRENADE,
   // covertops (axis)
   ET_WP_SILENCED_LUGER,
@@ -174,10 +174,10 @@ typedef enum eET_Weapons
   ET_WP_LANDMINE,
   // engineer (axis)
   ET_WP_KAR98,
-  ET_WP_GPG40,            // grenade launcher
+  ET_WP_GPG40, // grenade launcher
   // engineer (allies)
   ET_WP_CARBINE,
-  ET_WP_M7,                       // grenade launcher
+  ET_WP_M7, // grenade launcher
 
   ET_WP_MOUNTABLE_MG42,
 
@@ -196,7 +196,7 @@ typedef enum eET_EntityCategory
 typedef enum eET_PlayerClass
 {
   ET_CLASS_UNKNOWN = 0,
-  ET_CLASS_NULL    = 0,
+  ET_CLASS_NULL = 0,
   ET_CLASS_SOLDIER,
   ET_CLASS_MEDIC,
   ET_CLASS_ENGINEER,
@@ -348,27 +348,27 @@ typedef enum eCursorHintType
 typedef enum eExplosiveTargetType
 {
   XPLO_TYPE_DYNAMITE = 1 << 0,
-  XPLO_TYPE_SATCHEL  = 1 << 1
+  XPLO_TYPE_SATCHEL = 1 << 1
 } ExplosiveTargetType;
 
 typedef enum eExplosiveState
 {
   XPLO_INVALID = -1,
-  XPLO_ARMED   = 0,
+  XPLO_ARMED = 0,
   XPLO_UNARMED = 1,
 } ExplosiveState;
 
 typedef enum eConstructableState
 {
-  CONST_INVALID        = -1,
+  CONST_INVALID = -1,
 
-  CONST_BUILT          = 0,
-  CONST_UNBUILT        = 1,
+  CONST_BUILT = 0,
+  CONST_UNBUILT = 1,
 
   CONST_NOTDESTROYABLE = 0,
-  CONST_DESTROYABLE    = 1,
+  CONST_DESTROYABLE = 1,
 
-  CONST_BROKEN         = 2,
+  CONST_BROKEN = 2,
 } ConstructableState;
 
 #endif

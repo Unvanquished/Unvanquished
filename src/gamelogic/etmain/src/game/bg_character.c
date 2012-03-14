@@ -42,53 +42,53 @@ Maryland 20850 USA.
 bg_character_t alliedClassCharacters[ NUM_PLAYER_CLASSES ];
 bg_character_t axisClassCharacters[ NUM_PLAYER_CLASSES ];
 
-static __attribute__( ( format( printf, 2, 3 ) ) ) qboolean BG_PCF_ParseError( int handle, char *format, ... )
+static __attribute__ ( ( format ( printf, 2, 3 ) ) ) qboolean BG_PCF_ParseError ( int handle, char *format, ... )
 {
 	int         line;
 	char        filename[ 128 ];
 	va_list     argptr;
 	static char string[ 4096 ];
 
-	va_start( argptr, format );
-	Q_vsnprintf( string, sizeof( string ), format, argptr );
-	va_end( argptr );
+	va_start ( argptr, format );
+	Q_vsnprintf ( string, sizeof ( string ), format, argptr );
+	va_end ( argptr );
 
 	filename[ 0 ] = '\0';
-	line          = 0;
-	trap_PC_SourceFileAndLine( handle, filename, &line );
+	line = 0;
+	trap_PC_SourceFileAndLine ( handle, filename, &line );
 
-	Com_Printf( S_COLOR_RED "ERROR: %s, line %d: %s\n", filename, line, string );
+	Com_Printf ( S_COLOR_RED "ERROR: %s, line %d: %s\n", filename, line, string );
 
-	trap_PC_FreeSource( handle );
+	trap_PC_FreeSource ( handle );
 
 	return qfalse;
 }
 
-qboolean BG_ParseCharacterFile( const char *filename, bg_characterDef_t *characterDef )
+qboolean BG_ParseCharacterFile ( const char *filename, bg_characterDef_t *characterDef )
 {
 	pc_token_t token;
 	int        handle;
 
-	handle = trap_PC_LoadSource( filename );
+	handle = trap_PC_LoadSource ( filename );
 
 	if ( !handle )
 	{
 		return qfalse;
 	}
 
-	if ( !trap_PC_ReadToken( handle, &token ) || Q_stricmp( token.string, "characterDef" ) )
+	if ( !trap_PC_ReadToken ( handle, &token ) || Q_stricmp ( token.string, "characterDef" ) )
 	{
-		return BG_PCF_ParseError( handle, "expected 'characterDef'" );
+		return BG_PCF_ParseError ( handle, "expected 'characterDef'" );
 	}
 
-	if ( !trap_PC_ReadToken( handle, &token ) || Q_stricmp( token.string, "{" ) )
+	if ( !trap_PC_ReadToken ( handle, &token ) || Q_stricmp ( token.string, "{" ) )
 	{
-		return BG_PCF_ParseError( handle, "expected '{'" );
+		return BG_PCF_ParseError ( handle, "expected '{'" );
 	}
 
 	while ( 1 )
 	{
-		if ( !trap_PC_ReadToken( handle, &token ) )
+		if ( !trap_PC_ReadToken ( handle, &token ) )
 		{
 			break;
 		}
@@ -98,81 +98,81 @@ qboolean BG_ParseCharacterFile( const char *filename, bg_characterDef_t *charact
 			break;
 		}
 
-		if ( !Q_stricmp( token.string, "mesh" ) )
+		if ( !Q_stricmp ( token.string, "mesh" ) )
 		{
-			if ( !PC_String_ParseNoAlloc( handle, characterDef->mesh, sizeof( characterDef->mesh ) ) )
+			if ( !PC_String_ParseNoAlloc ( handle, characterDef->mesh, sizeof ( characterDef->mesh ) ) )
 			{
-				return BG_PCF_ParseError( handle, "expected mesh filename" );
+				return BG_PCF_ParseError ( handle, "expected mesh filename" );
 			}
 		}
-		else if ( !Q_stricmp( token.string, "animationGroup" ) )
+		else if ( !Q_stricmp ( token.string, "animationGroup" ) )
 		{
-			if ( !PC_String_ParseNoAlloc( handle, characterDef->animationGroup, sizeof( characterDef->animationGroup ) ) )
+			if ( !PC_String_ParseNoAlloc ( handle, characterDef->animationGroup, sizeof ( characterDef->animationGroup ) ) )
 			{
-				return BG_PCF_ParseError( handle, "expected animationGroup filename" );
+				return BG_PCF_ParseError ( handle, "expected animationGroup filename" );
 			}
 		}
-		else if ( !Q_stricmp( token.string, "animationScript" ) )
+		else if ( !Q_stricmp ( token.string, "animationScript" ) )
 		{
-			if ( !PC_String_ParseNoAlloc( handle, characterDef->animationScript, sizeof( characterDef->animationScript ) ) )
+			if ( !PC_String_ParseNoAlloc ( handle, characterDef->animationScript, sizeof ( characterDef->animationScript ) ) )
 			{
-				return BG_PCF_ParseError( handle, "expected animationScript filename" );
+				return BG_PCF_ParseError ( handle, "expected animationScript filename" );
 			}
 		}
-		else if ( !Q_stricmp( token.string, "skin" ) )
+		else if ( !Q_stricmp ( token.string, "skin" ) )
 		{
-			if ( !PC_String_ParseNoAlloc( handle, characterDef->skin, sizeof( characterDef->skin ) ) )
+			if ( !PC_String_ParseNoAlloc ( handle, characterDef->skin, sizeof ( characterDef->skin ) ) )
 			{
-				return BG_PCF_ParseError( handle, "expected skin filename" );
+				return BG_PCF_ParseError ( handle, "expected skin filename" );
 			}
 		}
-		else if ( !Q_stricmp( token.string, "undressedCorpseModel" ) )
+		else if ( !Q_stricmp ( token.string, "undressedCorpseModel" ) )
 		{
-			if ( !PC_String_ParseNoAlloc( handle, characterDef->undressedCorpseModel, sizeof( characterDef->undressedCorpseModel ) ) )
+			if ( !PC_String_ParseNoAlloc ( handle, characterDef->undressedCorpseModel, sizeof ( characterDef->undressedCorpseModel ) ) )
 			{
-				return BG_PCF_ParseError( handle, "expected undressedCorpseModel filename" );
+				return BG_PCF_ParseError ( handle, "expected undressedCorpseModel filename" );
 			}
 		}
-		else if ( !Q_stricmp( token.string, "undressedCorpseSkin" ) )
+		else if ( !Q_stricmp ( token.string, "undressedCorpseSkin" ) )
 		{
-			if ( !PC_String_ParseNoAlloc( handle, characterDef->undressedCorpseSkin, sizeof( characterDef->undressedCorpseSkin ) ) )
+			if ( !PC_String_ParseNoAlloc ( handle, characterDef->undressedCorpseSkin, sizeof ( characterDef->undressedCorpseSkin ) ) )
 			{
-				return BG_PCF_ParseError( handle, "expected undressedCorpseSkin filename" );
+				return BG_PCF_ParseError ( handle, "expected undressedCorpseSkin filename" );
 			}
 		}
-		else if ( !Q_stricmp( token.string, "hudhead" ) )
+		else if ( !Q_stricmp ( token.string, "hudhead" ) )
 		{
-			if ( !PC_String_ParseNoAlloc( handle, characterDef->hudhead, sizeof( characterDef->hudhead ) ) )
+			if ( !PC_String_ParseNoAlloc ( handle, characterDef->hudhead, sizeof ( characterDef->hudhead ) ) )
 			{
-				return BG_PCF_ParseError( handle, "expected hudhead filename" );
+				return BG_PCF_ParseError ( handle, "expected hudhead filename" );
 			}
 		}
-		else if ( !Q_stricmp( token.string, "hudheadskin" ) )
+		else if ( !Q_stricmp ( token.string, "hudheadskin" ) )
 		{
-			if ( !PC_String_ParseNoAlloc( handle, characterDef->hudheadskin, sizeof( characterDef->hudheadskin ) ) )
+			if ( !PC_String_ParseNoAlloc ( handle, characterDef->hudheadskin, sizeof ( characterDef->hudheadskin ) ) )
 			{
-				return BG_PCF_ParseError( handle, "expected hudhead filename" );
+				return BG_PCF_ParseError ( handle, "expected hudhead filename" );
 			}
 		}
-		else if ( !Q_stricmp( token.string, "hudheadanims" ) )
+		else if ( !Q_stricmp ( token.string, "hudheadanims" ) )
 		{
-			if ( !PC_String_ParseNoAlloc( handle, characterDef->hudheadanims, sizeof( characterDef->hudheadanims ) ) )
+			if ( !PC_String_ParseNoAlloc ( handle, characterDef->hudheadanims, sizeof ( characterDef->hudheadanims ) ) )
 			{
-				return BG_PCF_ParseError( handle, "expected hudheadanims filename" );
+				return BG_PCF_ParseError ( handle, "expected hudheadanims filename" );
 			}
 		}
 		else
 		{
-			return BG_PCF_ParseError( handle, "unknown token '%s'", token.string );
+			return BG_PCF_ParseError ( handle, "unknown token '%s'", token.string );
 		}
 	}
 
-	trap_PC_FreeSource( handle );
+	trap_PC_FreeSource ( handle );
 
 	return qtrue;
 }
 
-bg_character_t *BG_GetCharacter( int team, int cls )
+bg_character_t *BG_GetCharacter ( int team, int cls )
 {
 	switch ( team )
 	{
@@ -185,7 +185,7 @@ bg_character_t *BG_GetCharacter( int team, int cls )
 	}
 }
 
-bg_character_t *BG_GetCharacterForPlayerstate( playerState_t *ps )
+bg_character_t *BG_GetCharacterForPlayerstate ( playerState_t *ps )
 {
 	// FIXME: add disguise?
 	switch ( ps->persistant[ PERS_TEAM ] )
@@ -206,13 +206,13 @@ bg_character_t *BG_GetCharacterForPlayerstate( playerState_t *ps )
 bg_character_t bg_characterPool[ MAX_CHARACTERS ];
 qboolean       bg_characterPoolInuse[ MAX_CHARACTERS ];
 
-void BG_ClearCharacterPool( void )
+void BG_ClearCharacterPool ( void )
 {
-	memset( &bg_characterPool, 0, sizeof( bg_characterPool ) );
-	memset( &bg_characterPoolInuse, 0, sizeof( bg_characterPoolInuse ) );
+	memset ( &bg_characterPool, 0, sizeof ( bg_characterPool ) );
+	memset ( &bg_characterPoolInuse, 0, sizeof ( bg_characterPoolInuse ) );
 }
 
-bg_character_t *BG_FindFreeCharacter( const char *characterFile )
+bg_character_t *BG_FindFreeCharacter ( const char *characterFile )
 {
 	int i;
 
@@ -224,7 +224,7 @@ bg_character_t *BG_FindFreeCharacter( const char *characterFile )
 			continue;
 		}
 
-		if ( !Q_stricmp( characterFile, bg_characterPool[ i ].characterFile ) )
+		if ( !Q_stricmp ( characterFile, bg_characterPool[ i ].characterFile ) )
 		{
 			return &bg_characterPool[ i ];
 		}
@@ -236,7 +236,7 @@ bg_character_t *BG_FindFreeCharacter( const char *characterFile )
 		if ( !bg_characterPoolInuse[ i ] )
 		{
 			bg_characterPoolInuse[ i ] = qtrue;
-			Q_strncpyz( bg_characterPool[ i ].characterFile, characterFile, sizeof( bg_characterPool[ i ].characterFile ) );
+			Q_strncpyz ( bg_characterPool[ i ].characterFile, characterFile, sizeof ( bg_characterPool[ i ].characterFile ) );
 			return &bg_characterPool[ i ];
 		}
 	}
@@ -245,7 +245,7 @@ bg_character_t *BG_FindFreeCharacter( const char *characterFile )
 	return NULL;
 }
 
-bg_character_t *BG_FindCharacter( const char *characterFile )
+bg_character_t *BG_FindCharacter ( const char *characterFile )
 {
 	int i;
 
@@ -257,7 +257,7 @@ bg_character_t *BG_FindCharacter( const char *characterFile )
 			continue;
 		}
 
-		if ( !Q_stricmp( characterFile, bg_characterPool[ i ].characterFile ) )
+		if ( !Q_stricmp ( characterFile, bg_characterPool[ i ].characterFile ) )
 		{
 			return &bg_characterPool[ i ];
 		}

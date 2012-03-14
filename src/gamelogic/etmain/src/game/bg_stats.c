@@ -110,7 +110,7 @@ static const weap_ws_convert_t aWeapID[ WP_NUM_WEAPONS ] =
 };
 
 // Get right stats index based on weapon id
-extWeaponStats_t BG_WeapStatForWeapon( weapon_t iWeaponID )
+extWeaponStats_t BG_WeapStatForWeapon ( weapon_t iWeaponID )
 {
 	weapon_t i;
 

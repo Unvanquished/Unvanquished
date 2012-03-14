@@ -39,83 +39,83 @@ int main()
 	/*
 	 *  Perform test A
 	 */
-	printf( "\nTest A: 'abc'\n" );
+	printf ( "\nTest A: 'abc'\n" );
 
-	SHA1Reset( &sha );
-	SHA1Input( &sha, ( const unsigned char * ) TESTA, strlen( TESTA ) );
+	SHA1Reset ( &sha );
+	SHA1Input ( &sha, ( const unsigned char * ) TESTA, strlen ( TESTA ) );
 
-	if ( !SHA1Result( &sha ) )
+	if ( !SHA1Result ( &sha ) )
 	{
-		fprintf( stderr, "ERROR-- could not compute message digest\n" );
+		fprintf ( stderr, "ERROR-- could not compute message digest\n" );
 	}
 	else
 	{
-		printf( "\t" );
+		printf ( "\t" );
 
 		for ( i = 0; i < 5; i++ )
 		{
-			printf( "%X ", sha.Message_Digest[ i ] );
+			printf ( "%X ", sha.Message_Digest[ i ] );
 		}
 
-		printf( "\n" );
-		printf( "Should match:\n" );
-		printf( "\tA9993E36 4706816A BA3E2571 7850C26C 9CD0D89D\n" );
+		printf ( "\n" );
+		printf ( "Should match:\n" );
+		printf ( "\tA9993E36 4706816A BA3E2571 7850C26C 9CD0D89D\n" );
 	}
 
 	/*
 	 *  Perform test B
 	 */
-	printf( "\nTest B:\n" );
+	printf ( "\nTest B:\n" );
 
-	SHA1Reset( &sha );
-	SHA1Input( &sha, ( const unsigned char * ) TESTB, strlen( TESTB ) );
+	SHA1Reset ( &sha );
+	SHA1Input ( &sha, ( const unsigned char * ) TESTB, strlen ( TESTB ) );
 
-	if ( !SHA1Result( &sha ) )
+	if ( !SHA1Result ( &sha ) )
 	{
-		fprintf( stderr, "ERROR-- could not compute message digest\n" );
+		fprintf ( stderr, "ERROR-- could not compute message digest\n" );
 	}
 	else
 	{
-		printf( "\t" );
+		printf ( "\t" );
 
 		for ( i = 0; i < 5; i++ )
 		{
-			printf( "%X ", sha.Message_Digest[ i ] );
+			printf ( "%X ", sha.Message_Digest[ i ] );
 		}
 
-		printf( "\n" );
-		printf( "Should match:\n" );
-		printf( "\t84983E44 1C3BD26E BAAE4AA1 F95129E5 E54670F1\n" );
+		printf ( "\n" );
+		printf ( "Should match:\n" );
+		printf ( "\t84983E44 1C3BD26E BAAE4AA1 F95129E5 E54670F1\n" );
 	}
 
 	/*
 	 *  Perform test C
 	 */
-	printf( "\nTest C: One million 'a' characters\n" );
+	printf ( "\nTest C: One million 'a' characters\n" );
 
-	SHA1Reset( &sha );
+	SHA1Reset ( &sha );
 
 	for ( i = 1; i <= 1000000; i++ )
 	{
-		SHA1Input( &sha, ( const unsigned char * ) TESTC, 1 );
+		SHA1Input ( &sha, ( const unsigned char * ) TESTC, 1 );
 	}
 
-	if ( !SHA1Result( &sha ) )
+	if ( !SHA1Result ( &sha ) )
 	{
-		fprintf( stderr, "ERROR-- could not compute message digest\n" );
+		fprintf ( stderr, "ERROR-- could not compute message digest\n" );
 	}
 	else
 	{
-		printf( "\t" );
+		printf ( "\t" );
 
 		for ( i = 0; i < 5; i++ )
 		{
-			printf( "%X ", sha.Message_Digest[ i ] );
+			printf ( "%X ", sha.Message_Digest[ i ] );
 		}
 
-		printf( "\n" );
-		printf( "Should match:\n" );
-		printf( "\t34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F\n" );
+		printf ( "\n" );
+		printf ( "Should match:\n" );
+		printf ( "\t34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F\n" );
 	}
 
 	return 0;

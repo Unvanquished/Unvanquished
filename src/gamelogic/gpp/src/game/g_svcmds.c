@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 Svcmd_EntityList_f
 ===================
 */
-void  Svcmd_EntityList_f( void )
+void  Svcmd_EntityList_f ( void )
 {
 	int       e;
 	gentity_t *check;
@@ -44,132 +44,132 @@ void  Svcmd_EntityList_f( void )
 			continue;
 		}
 
-		G_Printf( "%3i:", e );
+		G_Printf ( "%3i:", e );
 
 		switch ( check->s.eType )
 		{
 			case ET_GENERAL:
-				G_Printf( "ET_GENERAL          " );
+				G_Printf ( "ET_GENERAL          " );
 				break;
 
 			case ET_PLAYER:
-				G_Printf( "ET_PLAYER           " );
+				G_Printf ( "ET_PLAYER           " );
 				break;
 
 			case ET_ITEM:
-				G_Printf( "ET_ITEM             " );
+				G_Printf ( "ET_ITEM             " );
 				break;
 
 			case ET_BUILDABLE:
-				G_Printf( "ET_BUILDABLE        " );
+				G_Printf ( "ET_BUILDABLE        " );
 				break;
 
 			case ET_RANGE_MARKER:
-				G_Printf( "ET_RANGE_MARKER     " );
+				G_Printf ( "ET_RANGE_MARKER     " );
 				break;
 
 			case ET_LOCATION:
-				G_Printf( "ET_LOCATION         " );
+				G_Printf ( "ET_LOCATION         " );
 				break;
 
 			case ET_MISSILE:
-				G_Printf( "ET_MISSILE          " );
+				G_Printf ( "ET_MISSILE          " );
 				break;
 
 			case ET_MOVER:
-				G_Printf( "ET_MOVER            " );
+				G_Printf ( "ET_MOVER            " );
 				break;
 
 			case ET_BEAM:
-				G_Printf( "ET_BEAM             " );
+				G_Printf ( "ET_BEAM             " );
 				break;
 
 			case ET_PORTAL:
-				G_Printf( "ET_PORTAL           " );
+				G_Printf ( "ET_PORTAL           " );
 				break;
 
 			case ET_SPEAKER:
-				G_Printf( "ET_SPEAKER          " );
+				G_Printf ( "ET_SPEAKER          " );
 				break;
 
 			case ET_PUSH_TRIGGER:
-				G_Printf( "ET_PUSH_TRIGGER     " );
+				G_Printf ( "ET_PUSH_TRIGGER     " );
 				break;
 
 			case ET_TELEPORT_TRIGGER:
-				G_Printf( "ET_TELEPORT_TRIGGER " );
+				G_Printf ( "ET_TELEPORT_TRIGGER " );
 				break;
 
 			case ET_INVISIBLE:
-				G_Printf( "ET_INVISIBLE        " );
+				G_Printf ( "ET_INVISIBLE        " );
 				break;
 
 			case ET_GRAPPLE:
-				G_Printf( "ET_GRAPPLE          " );
+				G_Printf ( "ET_GRAPPLE          " );
 				break;
 
 			case ET_CORPSE:
-				G_Printf( "ET_CORPSE           " );
+				G_Printf ( "ET_CORPSE           " );
 				break;
 
 			case ET_PARTICLE_SYSTEM:
-				G_Printf( "ET_PARTICLE_SYSTEM  " );
+				G_Printf ( "ET_PARTICLE_SYSTEM  " );
 				break;
 
 			case ET_ANIMMAPOBJ:
-				G_Printf( "ET_ANIMMAPOBJ       " );
+				G_Printf ( "ET_ANIMMAPOBJ       " );
 				break;
 
 			case ET_MODELDOOR:
-				G_Printf( "ET_MODELDOOR        " );
+				G_Printf ( "ET_MODELDOOR        " );
 				break;
 
 			case ET_LIGHTFLARE:
-				G_Printf( "ET_LIGHTFLARE       " );
+				G_Printf ( "ET_LIGHTFLARE       " );
 				break;
 
 			case ET_LEV2_ZAP_CHAIN:
-				G_Printf( "ET_LEV2_ZAP_CHAIN   " );
+				G_Printf ( "ET_LEV2_ZAP_CHAIN   " );
 				break;
 
 			default:
-				G_Printf( "%-3i                 ", check->s.eType );
+				G_Printf ( "%-3i                 ", check->s.eType );
 				break;
 		}
 
 		if ( check->classname )
 		{
-			G_Printf( "%s", check->classname );
+			G_Printf ( "%s", check->classname );
 		}
 
-		G_Printf( "\n" );
+		G_Printf ( "\n" );
 	}
 }
 
-static gclient_t *ClientForString( char *s )
+static gclient_t *ClientForString ( char *s )
 {
 	int  idnum;
 	char err[ MAX_STRING_CHARS ];
 
-	idnum = G_ClientNumberFromString( s, err, sizeof( err ) );
+	idnum = G_ClientNumberFromString ( s, err, sizeof ( err ) );
 
 	if ( idnum == -1 )
 	{
-		G_Printf( "%s", err );
+		G_Printf ( "%s", err );
 		return NULL;
 	}
 
 	return &level.clients[ idnum ];
 }
 
-static void Svcmd_Status_f( void )
+static void Svcmd_Status_f ( void )
 {
 	int       i;
 	gclient_t *cl;
 	char      userinfo[ MAX_INFO_STRING ];
 
-	G_Printf( "slot score ping address               rate     name\n" );
-	G_Printf( "---- ----- ---- -------               ----     ----\n" );
+	G_Printf ( "slot score ping address               rate     name\n" );
+	G_Printf ( "---- ----- ---- -------               ----     ----\n" );
 
 	for ( i = 0, cl = level.clients; i < level.maxclients; i++, cl++ )
 	{
@@ -178,22 +178,22 @@ static void Svcmd_Status_f( void )
 			continue;
 		}
 
-		G_Printf( "%-4d ", i );
-		G_Printf( "%-5d ", cl->ps.persistant[ PERS_SCORE ] );
+		G_Printf ( "%-4d ", i );
+		G_Printf ( "%-5d ", cl->ps.persistant[ PERS_SCORE ] );
 
 		if ( cl->pers.connected == CON_CONNECTING )
 		{
-			G_Printf( "CNCT " );
+			G_Printf ( "CNCT " );
 		}
 		else
 		{
-			G_Printf( "%-4d ", cl->ps.ping );
+			G_Printf ( "%-4d ", cl->ps.ping );
 		}
 
-		trap_GetUserinfo( i, userinfo, sizeof( userinfo ) );
-		G_Printf( "%-21s ", Info_ValueForKey( userinfo, "ip" ) );
-		G_Printf( "%-8d ", ( int )( intptr_t )Info_ValueForKey( userinfo, "rate" ) );
-		G_Printf( "%s\n", cl->pers.netname ); // Info_ValueForKey( userinfo, "name" )
+		trap_GetUserinfo ( i, userinfo, sizeof ( userinfo ) );
+		G_Printf ( "%-21s ", Info_ValueForKey ( userinfo, "ip" ) );
+		G_Printf ( "%-8d ", ( int ) ( intptr_t ) Info_ValueForKey ( userinfo, "rate" ) );
+		G_Printf ( "%s\n", cl->pers.netname ); // Info_ValueForKey( userinfo, "name" )
 	}
 }
 
@@ -204,7 +204,7 @@ Svcmd_ForceTeam_f
 forceteam <player> <team>
 ===================
 */
-static void Svcmd_ForceTeam_f( void )
+static void Svcmd_ForceTeam_f ( void )
 {
 	gclient_t *cl;
 	char      str[ MAX_TOKEN_CHARS ];
@@ -212,28 +212,28 @@ static void Svcmd_ForceTeam_f( void )
 
 	if ( trap_Argc() != 3 )
 	{
-		G_Printf( "usage: forceteam <player> <team>\n" );
+		G_Printf ( "usage: forceteam <player> <team>\n" );
 		return;
 	}
 
-	trap_Argv( 1, str, sizeof( str ) );
-	cl = ClientForString( str );
+	trap_Argv ( 1, str, sizeof ( str ) );
+	cl = ClientForString ( str );
 
 	if ( !cl )
 	{
 		return;
 	}
 
-	trap_Argv( 2, str, sizeof( str ) );
-	team = G_TeamFromString( str );
+	trap_Argv ( 2, str, sizeof ( str ) );
+	team = G_TeamFromString ( str );
 
 	if ( team == NUM_TEAMS )
 	{
-		G_Printf( "forceteam: invalid team \"%s\"\n", str );
+		G_Printf ( "forceteam: invalid team \"%s\"\n", str );
 		return;
 	}
 
-	G_ChangeTeam( &g_entities[ cl - level.clients ], team );
+	G_ChangeTeam ( &g_entities[ cl - level.clients ], team );
 }
 
 /*
@@ -243,7 +243,7 @@ Svcmd_LayoutSave_f
 layoutsave <name>
 ===================
 */
-static void Svcmd_LayoutSave_f( void )
+static void Svcmd_LayoutSave_f ( void )
 {
 	char str[ MAX_QPATH ];
 	char str2[ MAX_QPATH - 4 ];
@@ -252,21 +252,21 @@ static void Svcmd_LayoutSave_f( void )
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "usage: layoutsave <name>\n" );
+		G_Printf ( "usage: layoutsave <name>\n" );
 		return;
 	}
 
-	trap_Argv( 1, str, sizeof( str ) );
+	trap_Argv ( 1, str, sizeof ( str ) );
 
 	// sanitize name
 	s = &str[ 0 ];
 
-	while ( *s && i < sizeof( str2 ) - 1 )
+	while ( *s && i < sizeof ( str2 ) - 1 )
 	{
-		if ( isalnum( *s ) || *s == '-' || *s == '_' )
+		if ( isalnum ( *s ) || *s == '-' || *s == '_' )
 		{
 			str2[ i++ ] = *s;
-			str2[ i ]   = '\0';
+			str2[ i ] = '\0';
 		}
 
 		s++;
@@ -274,14 +274,14 @@ static void Svcmd_LayoutSave_f( void )
 
 	if ( !str2[ 0 ] )
 	{
-		G_Printf( "layoutsave: invalid name \"%s\"\n", str );
+		G_Printf ( "layoutsave: invalid name \"%s\"\n", str );
 		return;
 	}
 
-	G_LayoutSave( str2 );
+	G_LayoutSave ( str2 );
 }
 
-char *ConcatArgs( int start );
+char *ConcatArgs ( int start );
 
 /*
 ===================
@@ -294,72 +294,72 @@ This is just a silly alias for doing:
  map_restart
 ===================
 */
-static void Svcmd_LayoutLoad_f( void )
+static void Svcmd_LayoutLoad_f ( void )
 {
 	char layouts[ MAX_CVAR_VALUE_STRING ];
 	char *s;
 
 	if ( trap_Argc() < 2 )
 	{
-		G_Printf( "usage: layoutload <name> ...\n" );
+		G_Printf ( "usage: layoutload <name> ...\n" );
 		return;
 	}
 
-	s = ConcatArgs( 1 );
-	Q_strncpyz( layouts, s, sizeof( layouts ) );
-	trap_Cvar_Set( "g_layouts", layouts );
-	trap_SendConsoleCommand( EXEC_APPEND, "map_restart\n" );
+	s = ConcatArgs ( 1 );
+	Q_strncpyz ( layouts, s, sizeof ( layouts ) );
+	trap_Cvar_Set ( "g_layouts", layouts );
+	trap_SendConsoleCommand ( EXEC_APPEND, "map_restart\n" );
 	level.restarted = qtrue;
 }
 
-static void Svcmd_AdmitDefeat_f( void )
+static void Svcmd_AdmitDefeat_f ( void )
 {
 	int  team;
 	char teamNum[ 2 ];
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "admitdefeat: must provide a team\n" );
+		G_Printf ( "admitdefeat: must provide a team\n" );
 		return;
 	}
 
-	trap_Argv( 1, teamNum, sizeof( teamNum ) );
-	team = G_TeamFromString( teamNum );
+	trap_Argv ( 1, teamNum, sizeof ( teamNum ) );
+	team = G_TeamFromString ( teamNum );
 
 	if ( team == TEAM_ALIENS )
 	{
-		G_TeamCommand( TEAM_ALIENS, "cp \"Hivemind Link Broken\" 1" );
-		trap_SendServerCommand( -1, "print \"Alien team has admitted defeat\n\"" );
+		G_TeamCommand ( TEAM_ALIENS, "cp \"Hivemind Link Broken\" 1" );
+		trap_SendServerCommand ( -1, "print \"Alien team has admitted defeat\n\"" );
 	}
 	else if ( team == TEAM_HUMANS )
 	{
-		G_TeamCommand( TEAM_HUMANS, "cp \"Life Support Terminated\" 1" );
-		trap_SendServerCommand( -1, "print \"Human team has admitted defeat\n\"" );
+		G_TeamCommand ( TEAM_HUMANS, "cp \"Life Support Terminated\" 1" );
+		trap_SendServerCommand ( -1, "print \"Human team has admitted defeat\n\"" );
 	}
 	else
 	{
-		G_Printf( "admitdefeat: invalid team\n" );
+		G_Printf ( "admitdefeat: invalid team\n" );
 		return;
 	}
 
 	level.surrenderTeam = team;
-	G_BaseSelfDestruct( team );
+	G_BaseSelfDestruct ( team );
 }
 
-static void Svcmd_TeamWin_f( void )
+static void Svcmd_TeamWin_f ( void )
 {
 	// this is largely made redundant by admitdefeat <team>
 	char cmd[ 6 ];
-	trap_Argv( 0, cmd, sizeof( cmd ) );
+	trap_Argv ( 0, cmd, sizeof ( cmd ) );
 
-	switch ( G_TeamFromString( cmd ) )
+	switch ( G_TeamFromString ( cmd ) )
 	{
 		case TEAM_ALIENS:
-			G_BaseSelfDestruct( TEAM_HUMANS );
+			G_BaseSelfDestruct ( TEAM_HUMANS );
 			break;
 
 		case TEAM_HUMANS:
-			G_BaseSelfDestruct( TEAM_ALIENS );
+			G_BaseSelfDestruct ( TEAM_ALIENS );
 			break;
 
 		default:
@@ -367,83 +367,83 @@ static void Svcmd_TeamWin_f( void )
 	}
 }
 
-static void Svcmd_Evacuation_f( void )
+static void Svcmd_Evacuation_f ( void )
 {
-	trap_SendServerCommand( -1, "print \"Evacuation ordered\n\"" );
+	trap_SendServerCommand ( -1, "print \"Evacuation ordered\n\"" );
 	level.lastWin = TEAM_NONE;
-	trap_SetConfigstring( CS_WINNER, "Evacuation" );
-	LogExit( "Evacuation." );
+	trap_SetConfigstring ( CS_WINNER, "Evacuation" );
+	LogExit ( "Evacuation." );
 }
 
-static void Svcmd_MapRotation_f( void )
+static void Svcmd_MapRotation_f ( void )
 {
 	char rotationName[ MAX_QPATH ];
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "usage: maprotation <name>\n" );
+		G_Printf ( "usage: maprotation <name>\n" );
 		return;
 	}
 
 	G_ClearRotationStack();
 
-	trap_Argv( 1, rotationName, sizeof( rotationName ) );
+	trap_Argv ( 1, rotationName, sizeof ( rotationName ) );
 
-	if ( !G_StartMapRotation( rotationName, qfalse, qtrue, qfalse, 0 ) )
+	if ( !G_StartMapRotation ( rotationName, qfalse, qtrue, qfalse, 0 ) )
 	{
-		G_Printf( "maprotation: invalid map rotation \"%s\"\n", rotationName );
+		G_Printf ( "maprotation: invalid map rotation \"%s\"\n", rotationName );
 	}
 }
 
-static void Svcmd_TeamMessage_f( void )
+static void Svcmd_TeamMessage_f ( void )
 {
 	char   teamNum[ 2 ];
 	team_t team;
 
 	if ( trap_Argc() < 3 )
 	{
-		G_Printf( "usage: say_team <team> <message>\n" );
+		G_Printf ( "usage: say_team <team> <message>\n" );
 		return;
 	}
 
-	trap_Argv( 1, teamNum, sizeof( teamNum ) );
-	team = G_TeamFromString( teamNum );
+	trap_Argv ( 1, teamNum, sizeof ( teamNum ) );
+	team = G_TeamFromString ( teamNum );
 
 	if ( team == NUM_TEAMS )
 	{
-		G_Printf( "say_team: invalid team \"%s\"\n", teamNum );
+		G_Printf ( "say_team: invalid team \"%s\"\n", teamNum );
 		return;
 	}
 
-	G_TeamCommand( team, va( "chat -1 %d \"%s\"", SAY_TEAM, ConcatArgs( 2 ) ) );
-	G_LogPrintf( "SayTeam: -1 \"console\": %s\n", ConcatArgs( 2 ) );
+	G_TeamCommand ( team, va ( "chat -1 %d \"%s\"", SAY_TEAM, ConcatArgs ( 2 ) ) );
+	G_LogPrintf ( "SayTeam: -1 \"console\": %s\n", ConcatArgs ( 2 ) );
 }
 
-static void Svcmd_CenterPrint_f( void )
+static void Svcmd_CenterPrint_f ( void )
 {
 	if ( trap_Argc() < 2 )
 	{
-		G_Printf( "usage: cp <message>\n" );
+		G_Printf ( "usage: cp <message>\n" );
 		return;
 	}
 
-	trap_SendServerCommand( -1, va( "cp \"%s\"", ConcatArgs( 1 ) ) );
+	trap_SendServerCommand ( -1, va ( "cp \"%s\"", ConcatArgs ( 1 ) ) );
 }
 
-static void Svcmd_EjectClient_f( void )
+static void Svcmd_EjectClient_f ( void )
 {
 	char *reason, name[ MAX_STRING_CHARS ];
 
 	if ( trap_Argc() < 2 )
 	{
-		G_Printf( "usage: eject <player|-1> <reason>\n" );
+		G_Printf ( "usage: eject <player|-1> <reason>\n" );
 		return;
 	}
 
-	trap_Argv( 1, name, sizeof( name ) );
-	reason = ConcatArgs( 2 );
+	trap_Argv ( 1, name, sizeof ( name ) );
+	reason = ConcatArgs ( 2 );
 
-	if ( atoi( name ) == -1 )
+	if ( atoi ( name ) == -1 )
 	{
 		int i;
 
@@ -459,12 +459,12 @@ static void Svcmd_EjectClient_f( void )
 				continue;
 			}
 
-			trap_DropClient( i, reason, 0 );
+			trap_DropClient ( i, reason, 0 );
 		}
 	}
 	else
 	{
-		gclient_t *cl = ClientForString( name );
+		gclient_t *cl = ClientForString ( name );
 
 		if ( !cl )
 		{
@@ -473,15 +473,15 @@ static void Svcmd_EjectClient_f( void )
 
 		if ( cl->pers.localClient )
 		{
-			G_Printf( "eject: cannot eject local clients\n" );
+			G_Printf ( "eject: cannot eject local clients\n" );
 			return;
 		}
 
-		trap_DropClient( cl - level.clients, reason, 0 );
+		trap_DropClient ( cl - level.clients, reason, 0 );
 	}
 }
 
-static void Svcmd_DumpUser_f( void )
+static void Svcmd_DumpUser_f ( void )
 {
 	char       name[ MAX_STRING_CHARS ], userinfo[ MAX_INFO_STRING ];
 	char       key[ BIG_INFO_KEY ], value[ BIG_INFO_VALUE ];
@@ -490,143 +490,143 @@ static void Svcmd_DumpUser_f( void )
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "usage: dumpuser <player>\n" );
+		G_Printf ( "usage: dumpuser <player>\n" );
 		return;
 	}
 
-	trap_Argv( 1, name, sizeof( name ) );
-	cl = ClientForString( name );
+	trap_Argv ( 1, name, sizeof ( name ) );
+	cl = ClientForString ( name );
 
 	if ( !cl )
 	{
 		return;
 	}
 
-	trap_GetUserinfo( cl - level.clients, userinfo, sizeof( userinfo ) );
+	trap_GetUserinfo ( cl - level.clients, userinfo, sizeof ( userinfo ) );
 	info = &userinfo[ 0 ];
-	G_Printf( "userinfo\n--------\n" );
+	G_Printf ( "userinfo\n--------\n" );
 
 	//Info_Print( userinfo );
 	while ( 1 )
 	{
-		Info_NextPair( &info, key, value );
+		Info_NextPair ( &info, key, value );
 
 		if ( !*info )
 		{
 			return;
 		}
 
-		G_Printf( "%-20s%s\n", key, value );
+		G_Printf ( "%-20s%s\n", key, value );
 	}
 }
 
-static void Svcmd_Pr_f( void )
+static void Svcmd_Pr_f ( void )
 {
 	char targ[ 4 ];
 	int  cl;
 
 	if ( trap_Argc() < 3 )
 	{
-		G_Printf( "usage: <clientnum|-1> <message>\n" );
+		G_Printf ( "usage: <clientnum|-1> <message>\n" );
 		return;
 	}
 
-	trap_Argv( 1, targ, sizeof( targ ) );
-	cl = atoi( targ );
+	trap_Argv ( 1, targ, sizeof ( targ ) );
+	cl = atoi ( targ );
 
 	if ( cl >= MAX_CLIENTS || cl < -1 )
 	{
-		G_Printf( "invalid clientnum %d\n", cl );
+		G_Printf ( "invalid clientnum %d\n", cl );
 		return;
 	}
 
-	trap_SendServerCommand( cl, va( "print \"%s\n\"", ConcatArgs( 2 ) ) );
+	trap_SendServerCommand ( cl, va ( "print \"%s\n\"", ConcatArgs ( 2 ) ) );
 }
 
-static void Svcmd_PrintQueue_f( void )
+static void Svcmd_PrintQueue_f ( void )
 {
 	char team[ MAX_STRING_CHARS ];
 
 	if ( trap_Argc() != 2 )
 	{
-		G_Printf( "usage: printqueue <team>\n" );
+		G_Printf ( "usage: printqueue <team>\n" );
 		return;
 	}
 
-	trap_Argv( 1, team, sizeof( team ) );
+	trap_Argv ( 1, team, sizeof ( team ) );
 
-	switch ( G_TeamFromString( team ) )
+	switch ( G_TeamFromString ( team ) )
 	{
 		case TEAM_ALIENS:
-			G_PrintSpawnQueue( &level.alienSpawnQueue );
+			G_PrintSpawnQueue ( &level.alienSpawnQueue );
 			break;
 
 		case TEAM_HUMANS:
-			G_PrintSpawnQueue( &level.humanSpawnQueue );
+			G_PrintSpawnQueue ( &level.humanSpawnQueue );
 			break;
 
 		default:
-			G_Printf( "unknown team\n" );
+			G_Printf ( "unknown team\n" );
 	}
 }
 
 // dumb wrapper for "a", "m", "chat", and "say"
-static void Svcmd_MessageWrapper( void )
+static void Svcmd_MessageWrapper ( void )
 {
 	char cmd[ 5 ];
-	trap_Argv( 0, cmd, sizeof( cmd ) );
+	trap_Argv ( 0, cmd, sizeof ( cmd ) );
 
-	if ( !Q_stricmp( cmd, "a" ) )
+	if ( !Q_stricmp ( cmd, "a" ) )
 	{
-		Cmd_AdminMessage_f( NULL );
+		Cmd_AdminMessage_f ( NULL );
 	}
-	else if ( !Q_stricmp( cmd, "m" ) )
+	else if ( !Q_stricmp ( cmd, "m" ) )
 	{
-		Cmd_PrivateMessage_f( NULL );
+		Cmd_PrivateMessage_f ( NULL );
 	}
-	else if ( !Q_stricmp( cmd, "say" ) )
+	else if ( !Q_stricmp ( cmd, "say" ) )
 	{
-		G_Say( NULL, SAY_ALL, ConcatArgs( 1 ) );
+		G_Say ( NULL, SAY_ALL, ConcatArgs ( 1 ) );
 	}
-	else if ( !Q_stricmp( cmd, "chat" ) )
+	else if ( !Q_stricmp ( cmd, "chat" ) )
 	{
-		G_Say( NULL, SAY_RAW, ConcatArgs( 1 ) );
+		G_Say ( NULL, SAY_RAW, ConcatArgs ( 1 ) );
 	}
 }
 
-static void Svcmd_ListMapsWrapper( void )
+static void Svcmd_ListMapsWrapper ( void )
 {
-	Cmd_ListMaps_f( NULL );
+	Cmd_ListMaps_f ( NULL );
 }
 
-static void Svcmd_ListRotationWrapper( void )
+static void Svcmd_ListRotationWrapper ( void )
 {
-	G_PrintCurrentRotation( NULL );
+	G_PrintCurrentRotation ( NULL );
 }
 
-static void Svcmd_SuddenDeath_f( void )
+static void Svcmd_SuddenDeath_f ( void )
 {
 	char secs[ 5 ];
 	int  offset;
-	trap_Argv( 1, secs, sizeof( secs ) );
-	offset                     = atoi( secs );
+	trap_Argv ( 1, secs, sizeof ( secs ) );
+	offset = atoi ( secs );
 
 	level.suddenDeathBeginTime = level.time - level.startTime + offset * 1000;
-	trap_SendServerCommand( -1,
-	                        va( "cp \"Sudden Death will begin in %d second%s\"",
-	                            offset, offset == 1 ? "" : "s" ) );
+	trap_SendServerCommand ( -1,
+	                         va ( "cp \"Sudden Death will begin in %d second%s\"",
+	                              offset, offset == 1 ? "" : "s" ) );
 }
 
-static void Svcmd_G_AdvanceMapRotation_f( void )
+static void Svcmd_G_AdvanceMapRotation_f ( void )
 {
-	G_AdvanceMapRotation( 0 );
+	G_AdvanceMapRotation ( 0 );
 }
 
 struct svcmd
 {
 	char     *cmd;
 	qboolean dedicated;
-	void     ( *function )( void );
+	void     ( *function ) ( void );
 } svcmds[] =
 {
 	{ "a",                  qtrue,  Svcmd_MessageWrapper         },
@@ -664,27 +664,27 @@ ConsoleCommand
 
 =================
 */
-qboolean  ConsoleCommand( void )
+qboolean  ConsoleCommand ( void )
 {
 	char         cmd[ MAX_TOKEN_CHARS ];
 	struct svcmd *command;
 
-	trap_Argv( 0, cmd, sizeof( cmd ) );
+	trap_Argv ( 0, cmd, sizeof ( cmd ) );
 
-	command = bsearch( cmd, svcmds, sizeof( svcmds ) / sizeof( struct svcmd ),
-	                   sizeof( struct svcmd ), cmdcmp );
+	command = bsearch ( cmd, svcmds, sizeof ( svcmds ) / sizeof ( struct svcmd ),
+	                    sizeof ( struct svcmd ), cmdcmp );
 
 	if ( !command )
 	{
 		// see if this is an admin command
-		if ( G_admin_cmd_check( NULL ) )
+		if ( G_admin_cmd_check ( NULL ) )
 		{
 			return qtrue;
 		}
 
 		if ( g_dedicated.integer )
 		{
-			G_Printf( "unknown command: %s\n", cmd );
+			G_Printf ( "unknown command: %s\n", cmd );
 		}
 
 		return qfalse;
@@ -699,35 +699,35 @@ qboolean  ConsoleCommand( void )
 	return qtrue;
 }
 
-void G_RegisterCommands( void )
+void G_RegisterCommands ( void )
 {
 	int i;
 
-	for ( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof ( svcmds ) / sizeof ( svcmds[ 0 ] ); i++ )
 	{
 		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
 		{
 			continue;
 		}
 
-		trap_AddCommand( svcmds[ i ].cmd );
+		trap_AddCommand ( svcmds[ i ].cmd );
 	}
 
 	G_admin_register_cmds();
 }
 
-void G_UnregisterCommands( void )
+void G_UnregisterCommands ( void )
 {
 	int i;
 
-	for ( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof ( svcmds ) / sizeof ( svcmds[ 0 ] ); i++ )
 	{
 		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
 		{
 			continue;
 		}
 
-		trap_RemoveCommand( svcmds[ i ].cmd );
+		trap_RemoveCommand ( svcmds[ i ].cmd );
 	}
 
 	G_admin_unregister_cmds();

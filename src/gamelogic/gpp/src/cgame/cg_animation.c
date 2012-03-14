@@ -31,7 +31,7 @@ Sets cg.snap, cg.oldFrame, and cg.backlerp
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
-void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
+void CG_RunLerpFrame ( lerpFrame_t *lf, float scale )
 {
 	int         f, numFrames;
 	animation_t *anim;
@@ -47,11 +47,11 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 	// oldFrame and calculate a new frame
 	if ( cg.time >= lf->frameTime )
 	{
-		lf->oldFrame     = lf->frame;
+		lf->oldFrame = lf->frame;
 		lf->oldFrameTime = lf->frameTime;
 
 		// get the next frame based on the animation
-		anim             = lf->animation;
+		anim = lf->animation;
 
 		if ( !anim->frameLerp )
 		{
@@ -67,8 +67,8 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
 		}
 
-		f         = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
-		f        *= scale;
+		f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
+		f *= scale;
 		numFrames = anim->numFrames;
 
 		if ( anim->flipflop )
@@ -87,7 +87,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 			}
 			else
 			{
-				f             = numFrames - 1;
+				f = numFrames - 1;
 				// the animation is stuck at the end, so it
 				// can immediately transition to another sequence
 				lf->frameTime = cg.time;
@@ -113,7 +113,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 
 			if ( cg_debugAnim.integer )
 			{
-				CG_Printf( "Clamp lf->frameTime\n" );
+				CG_Printf ( "Clamp lf->frameTime\n" );
 			}
 		}
 	}
@@ -135,6 +135,6 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 	}
 	else
 	{
-		lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+		lf->backlerp = 1.0 - ( float ) ( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
 	}
 }

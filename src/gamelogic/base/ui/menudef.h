@@ -1,46 +1,46 @@
-#define ITEM_TYPE_TEXT                 0  // simple text
-#define ITEM_TYPE_BUTTON               1  // button, basically text with a border
-#define ITEM_TYPE_RADIOBUTTON          2  // toggle button, may be grouped
-#define ITEM_TYPE_CHECKBOX             3  // check box
-#define ITEM_TYPE_EDITFIELD            4  // editable text, associated with a cvar
-#define ITEM_TYPE_COMBO                5  // drop down list
-#define ITEM_TYPE_LISTBOX              6  // scrollable list
-#define ITEM_TYPE_MODEL                7  // model
-#define ITEM_TYPE_OWNERDRAW            8  // owner draw, name specs what it is
-#define ITEM_TYPE_NUMERICFIELD         9  // editable text, associated with a cvar
+#define ITEM_TYPE_TEXT                 0 // simple text
+#define ITEM_TYPE_BUTTON               1 // button, basically text with a border
+#define ITEM_TYPE_RADIOBUTTON          2 // toggle button, may be grouped
+#define ITEM_TYPE_CHECKBOX             3 // check box
+#define ITEM_TYPE_EDITFIELD            4 // editable text, associated with a cvar
+#define ITEM_TYPE_COMBO                5 // drop down list
+#define ITEM_TYPE_LISTBOX              6 // scrollable list
+#define ITEM_TYPE_MODEL                7 // model
+#define ITEM_TYPE_OWNERDRAW            8 // owner draw, name specs what it is
+#define ITEM_TYPE_NUMERICFIELD         9 // editable text, associated with a cvar
 #define ITEM_TYPE_SLIDER               10 // mouse speed, volume, etc.
 #define ITEM_TYPE_YESNO                11 // yes no cvar setting
 #define ITEM_TYPE_MULTI                12 // multiple list setting, enumerated
 #define ITEM_TYPE_BIND                 13 // multiple list setting, enumerated
 
-#define ITEM_ALIGN_LEFT                0  // left alignment
-#define ITEM_ALIGN_CENTER              1  // center alignment
-#define ITEM_ALIGN_RIGHT               2  // right alignment
+#define ITEM_ALIGN_LEFT                0 // left alignment
+#define ITEM_ALIGN_CENTER              1 // center alignment
+#define ITEM_ALIGN_RIGHT               2 // right alignment
 
-#define ITEM_TEXTSTYLE_NORMAL          0  // normal text
-#define ITEM_TEXTSTYLE_BLINK           1  // fast blinking
-#define ITEM_TEXTSTYLE_PULSE           2  // slow pulsing
-#define ITEM_TEXTSTYLE_SHADOWED        3  // drop shadow ( need a color for this )
-#define ITEM_TEXTSTYLE_OUTLINED        4  // drop shadow ( need a color for this )
-#define ITEM_TEXTSTYLE_OUTLINESHADOWED 5  // drop shadow ( need a color for this )
-#define ITEM_TEXTSTYLE_SHADOWEDMORE    6  // drop shadow ( need a color for this )
-#define ITEM_TEXTSTYLE_NEON            7  // drop shadow ( need a color for this )
+#define ITEM_TEXTSTYLE_NORMAL          0 // normal text
+#define ITEM_TEXTSTYLE_BLINK           1 // fast blinking
+#define ITEM_TEXTSTYLE_PULSE           2 // slow pulsing
+#define ITEM_TEXTSTYLE_SHADOWED        3 // drop shadow ( need a color for this )
+#define ITEM_TEXTSTYLE_OUTLINED        4 // drop shadow ( need a color for this )
+#define ITEM_TEXTSTYLE_OUTLINESHADOWED 5 // drop shadow ( need a color for this )
+#define ITEM_TEXTSTYLE_SHADOWEDMORE    6 // drop shadow ( need a color for this )
+#define ITEM_TEXTSTYLE_NEON            7 // drop shadow ( need a color for this )
 
-#define WINDOW_BORDER_NONE             0  // no border
-#define WINDOW_BORDER_FULL             1  // full border based on border color ( single pixel )
-#define WINDOW_BORDER_HORZ             2  // horizontal borders only
-#define WINDOW_BORDER_VERT             3  // vertical borders only
-#define WINDOW_BORDER_KCGRADIENT       4  // horizontal border using the gradient bars
+#define WINDOW_BORDER_NONE             0 // no border
+#define WINDOW_BORDER_FULL             1 // full border based on border color ( single pixel )
+#define WINDOW_BORDER_HORZ             2 // horizontal borders only
+#define WINDOW_BORDER_VERT             3 // vertical borders only
+#define WINDOW_BORDER_KCGRADIENT       4 // horizontal border using the gradient bars
 
-#define WINDOW_STYLE_EMPTY             0  // no background
-#define WINDOW_STYLE_FILLED            1  // filled with background color
-#define WINDOW_STYLE_GRADIENT          2  // gradient bar based on background color
-#define WINDOW_STYLE_SHADER            3  // gradient bar based on background color
-#define WINDOW_STYLE_TEAMCOLOR         4  // team color
-#define WINDOW_STYLE_CINEMATIC         5  // cinematic
+#define WINDOW_STYLE_EMPTY             0 // no background
+#define WINDOW_STYLE_FILLED            1 // filled with background color
+#define WINDOW_STYLE_GRADIENT          2 // gradient bar based on background color
+#define WINDOW_STYLE_SHADER            3 // gradient bar based on background color
+#define WINDOW_STYLE_TEAMCOLOR         4 // team color
+#define WINDOW_STYLE_CINEMATIC         5 // cinematic
 
-#define MENU_TRUE                      1  // uh.. true
-#define MENU_FALSE                     0  // and false
+#define MENU_TRUE                      1 // uh.. true
+#define MENU_FALSE                     0 // and false
 
 #define HUD_VERTICAL                   0x00
 #define HUD_HORIZONTAL                 0x01
@@ -50,32 +50,32 @@
 #define LISTBOX_IMAGE                  0x01
 
 // list feeders
-#define FEEDER_HEADS                   0x00       // model heads
-#define FEEDER_MAPS                    0x01       // text maps based on game type
-#define FEEDER_SERVERS                 0x02       // servers
-#define FEEDER_CLANS                   0x03       // clan names
-#define FEEDER_ALLMAPS                 0x04       // all maps available, in graphic format
-#define FEEDER_ALIENTEAM_LIST          0x05       // red team members
-#define FEEDER_HUMANTEAM_LIST          0x06       // blue team members
-#define FEEDER_PLAYER_LIST             0x07       // players
-#define FEEDER_TEAM_LIST               0x08       // team members for team voting
-#define FEEDER_MODS                    0x09       // team members for team voting
-#define FEEDER_DEMOS                   0x0a       // team members for team voting
-#define FEEDER_SCOREBOARD              0x0b       // team members for team voting
-#define FEEDER_Q3HEADS                 0x0c       // model heads
-#define FEEDER_SERVERSTATUS            0x0d       // server status
-#define FEEDER_FINDPLAYER              0x0e       // find player
-#define FEEDER_CINEMATICS              0x0f       // cinematics
+#define FEEDER_HEADS                   0x00 // model heads
+#define FEEDER_MAPS                    0x01 // text maps based on game type
+#define FEEDER_SERVERS                 0x02 // servers
+#define FEEDER_CLANS                   0x03 // clan names
+#define FEEDER_ALLMAPS                 0x04 // all maps available, in graphic format
+#define FEEDER_ALIENTEAM_LIST          0x05 // red team members
+#define FEEDER_HUMANTEAM_LIST          0x06 // blue team members
+#define FEEDER_PLAYER_LIST             0x07 // players
+#define FEEDER_TEAM_LIST               0x08 // team members for team voting
+#define FEEDER_MODS                    0x09 // team members for team voting
+#define FEEDER_DEMOS                   0x0a // team members for team voting
+#define FEEDER_SCOREBOARD              0x0b // team members for team voting
+#define FEEDER_Q3HEADS                 0x0c // model heads
+#define FEEDER_SERVERSTATUS            0x0d // server status
+#define FEEDER_FINDPLAYER              0x0e // find player
+#define FEEDER_CINEMATICS              0x0f // cinematics
 
 //TA: tremulous menus
-#define FEEDER_TREMTEAMS               0x10       //teams
-#define FEEDER_TREMALIENCLASSES        0x11       //alien classes
-#define FEEDER_TREMHUMANITEMS          0x12       //human items
-#define FEEDER_TREMHUMANARMOURYBUY     0x13       //human buy
-#define FEEDER_TREMHUMANARMOURYSELL    0x14       //human sell
-#define FEEDER_TREMALIENUPGRADE        0x15       //alien upgrade
-#define FEEDER_TREMALIENBUILD          0x16       //alien buildables
-#define FEEDER_TREMHUMANBUILD          0x17       //human buildables
+#define FEEDER_TREMTEAMS               0x10 //teams
+#define FEEDER_TREMALIENCLASSES        0x11 //alien classes
+#define FEEDER_TREMHUMANITEMS          0x12 //human items
+#define FEEDER_TREMHUMANARMOURYBUY     0x13 //human buy
+#define FEEDER_TREMHUMANARMOURYSELL    0x14 //human sell
+#define FEEDER_TREMALIENUPGRADE        0x15 //alien upgrade
+#define FEEDER_TREMALIENBUILD          0x16 //alien buildables
+#define FEEDER_TREMHUMANBUILD          0x17 //human buildables
 //TA: tremulous menus
 
 // display flags
@@ -223,7 +223,7 @@
 #define CG_VOICE_HEAD                 62
 #define CG_VOICE_NAME                 63
 #define CG_PLAYER_HASFLAG2D           64
-#define CG_HARVESTER_SKULLS2D         65  // only shows in harvester
+#define CG_HARVESTER_SKULLS2D         65 // only shows in harvester
 #define CG_CAPFRAGLIMIT               66
 #define CG_1STPLACE                   67
 #define CG_2NDPLACE                   68
@@ -325,32 +325,32 @@
 #define UI_ABUILDINFOPANE           264
 #define UI_HBUILDINFOPANE           265
 
-#define VOICECHAT_GETFLAG           "getflag"           // command someone to get the flag
-#define VOICECHAT_OFFENSE           "offense"           // command someone to go on offense
-#define VOICECHAT_DEFEND            "defend"            // command someone to go on defense
-#define VOICECHAT_DEFENDFLAG        "defendflag"        // command someone to defend the flag
-#define VOICECHAT_PATROL            "patrol"            // command someone to go on patrol (roam)
-#define VOICECHAT_CAMP              "camp"              // command someone to camp (we don't have sounds for this one)
-#define VOICECHAT_FOLLOWME          "followme"          // command someone to follow you
-#define VOICECHAT_RETURNFLAG        "returnflag"        // command someone to return our flag
+#define VOICECHAT_GETFLAG           "getflag" // command someone to get the flag
+#define VOICECHAT_OFFENSE           "offense" // command someone to go on offense
+#define VOICECHAT_DEFEND            "defend" // command someone to go on defense
+#define VOICECHAT_DEFENDFLAG        "defendflag" // command someone to defend the flag
+#define VOICECHAT_PATROL            "patrol" // command someone to go on patrol (roam)
+#define VOICECHAT_CAMP              "camp" // command someone to camp (we don't have sounds for this one)
+#define VOICECHAT_FOLLOWME          "followme" // command someone to follow you
+#define VOICECHAT_RETURNFLAG        "returnflag" // command someone to return our flag
 #define VOICECHAT_FOLLOWFLAGCARRIER "followflagcarrier" // command someone to follow the flag carrier
-#define VOICECHAT_YES               "yes"               // yes, affirmative, etc.
-#define VOICECHAT_NO                "no"                // no, negative, etc.
-#define VOICECHAT_ONGETFLAG         "ongetflag"         // I'm getting the flag
-#define VOICECHAT_ONOFFENSE         "onoffense"         // I'm on offense
-#define VOICECHAT_ONDEFENSE         "ondefense"         // I'm on defense
-#define VOICECHAT_ONPATROL          "onpatrol"          // I'm on patrol (roaming)
-#define VOICECHAT_ONCAMPING         "oncamp"            // I'm camping somewhere
-#define VOICECHAT_ONFOLLOW          "onfollow"          // I'm following
-#define VOICECHAT_ONFOLLOWCARRIER   "onfollowcarrier"   // I'm following the flag carrier
-#define VOICECHAT_ONRETURNFLAG      "onreturnflag"      // I'm returning our flag
-#define VOICECHAT_INPOSITION        "inposition"        // I'm in position
-#define VOICECHAT_IHAVEFLAG         "ihaveflag"         // I have the flag
-#define VOICECHAT_BASEATTACK        "baseattack"        // the base is under attack
-#define VOICECHAT_ENEMYHASFLAG      "enemyhasflag"      // the enemy has our flag (CTF)
-#define VOICECHAT_STARTLEADER       "startleader"       // I'm the leader
-#define VOICECHAT_STOPLEADER        "stopleader"        // I resign leadership
-#define VOICECHAT_TRASH             "trash"             // lots of trash talk
-#define VOICECHAT_WHOISLEADER       "whoisleader"       // who is the team leader
-#define VOICECHAT_WANTONDEFENSE     "wantondefense"     // I want to be on defense
-#define VOICECHAT_WANTONOFFENSE     "wantonoffense"     // I want to be on offense
+#define VOICECHAT_YES               "yes" // yes, affirmative, etc.
+#define VOICECHAT_NO                "no" // no, negative, etc.
+#define VOICECHAT_ONGETFLAG         "ongetflag" // I'm getting the flag
+#define VOICECHAT_ONOFFENSE         "onoffense" // I'm on offense
+#define VOICECHAT_ONDEFENSE         "ondefense" // I'm on defense
+#define VOICECHAT_ONPATROL          "onpatrol" // I'm on patrol (roaming)
+#define VOICECHAT_ONCAMPING         "oncamp" // I'm camping somewhere
+#define VOICECHAT_ONFOLLOW          "onfollow" // I'm following
+#define VOICECHAT_ONFOLLOWCARRIER   "onfollowcarrier" // I'm following the flag carrier
+#define VOICECHAT_ONRETURNFLAG      "onreturnflag" // I'm returning our flag
+#define VOICECHAT_INPOSITION        "inposition" // I'm in position
+#define VOICECHAT_IHAVEFLAG         "ihaveflag" // I have the flag
+#define VOICECHAT_BASEATTACK        "baseattack" // the base is under attack
+#define VOICECHAT_ENEMYHASFLAG      "enemyhasflag" // the enemy has our flag (CTF)
+#define VOICECHAT_STARTLEADER       "startleader" // I'm the leader
+#define VOICECHAT_STOPLEADER        "stopleader" // I resign leadership
+#define VOICECHAT_TRASH             "trash" // lots of trash talk
+#define VOICECHAT_WHOISLEADER       "whoisleader" // who is the team leader
+#define VOICECHAT_WANTONDEFENSE     "wantondefense" // I want to be on defense
+#define VOICECHAT_WANTONOFFENSE     "wantonoffense" // I want to be on offense

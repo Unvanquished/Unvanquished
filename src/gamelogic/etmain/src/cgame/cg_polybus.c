@@ -39,7 +39,7 @@ Maryland 20850 USA.
 polyBuffer_t cg_polyBuffers[ MAX_PB_BUFFERS ];
 qboolean     cg_polyBuffersInuse[ MAX_PB_BUFFERS ];
 
-polyBuffer_t   *CG_PB_FindFreePolyBuffer( qhandle_t shader, int numVerts, int numIndicies )
+polyBuffer_t   *CG_PB_FindFreePolyBuffer ( qhandle_t shader, int numVerts, int numIndicies )
 {
 	int i;
 
@@ -66,7 +66,7 @@ polyBuffer_t   *CG_PB_FindFreePolyBuffer( qhandle_t shader, int numVerts, int nu
 			continue;
 		}
 
-		cg_polyBuffersInuse[ i ]   = qtrue;
+		cg_polyBuffersInuse[ i ] = qtrue;
 		cg_polyBuffers[ i ].shader = shader;
 
 		return &cg_polyBuffers[ i ];
@@ -77,10 +77,10 @@ polyBuffer_t   *CG_PB_FindFreePolyBuffer( qhandle_t shader, int numVerts, int nu
 	{
 		if ( !cg_polyBuffersInuse[ i ] )
 		{
-			cg_polyBuffersInuse[ i ]        = qtrue;
-			cg_polyBuffers[ i ].shader      = shader;
+			cg_polyBuffersInuse[ i ] = qtrue;
+			cg_polyBuffers[ i ].shader = shader;
 			cg_polyBuffers[ i ].numIndicies = 0;
-			cg_polyBuffers[ i ].numVerts    = 0;
+			cg_polyBuffers[ i ].numVerts = 0;
 
 			return &cg_polyBuffers[ i ];
 		}
@@ -89,13 +89,13 @@ polyBuffer_t   *CG_PB_FindFreePolyBuffer( qhandle_t shader, int numVerts, int nu
 	return NULL;
 }
 
-void CG_PB_ClearPolyBuffers( void )
+void CG_PB_ClearPolyBuffers ( void )
 {
 	// Gordon: changed numIndicies and numVerts to be reset in CG_PB_FindFreePolyBuffer, not here (should save the cache misses we were prolly getting)
-	memset( cg_polyBuffersInuse, 0, sizeof( cg_polyBuffersInuse ) );
+	memset ( cg_polyBuffersInuse, 0, sizeof ( cg_polyBuffersInuse ) );
 }
 
-void CG_PB_RenderPolyBuffers( void )
+void CG_PB_RenderPolyBuffers ( void )
 {
 	int i;
 
@@ -103,7 +103,7 @@ void CG_PB_RenderPolyBuffers( void )
 	{
 		if ( cg_polyBuffersInuse[ i ] )
 		{
-			trap_R_AddPolyBufferToScene( &cg_polyBuffers[ i ] );
+			trap_R_AddPolyBufferToScene ( &cg_polyBuffers[ i ] );
 		}
 	}
 }

@@ -34,14 +34,14 @@ Maryland 20850 USA.
 
 #include "g_local.h"
 
-void propExplosion( gentity_t *ent );
+void propExplosion ( gentity_t *ent );
 
 /*
 ==============
 alarmbox_updateparts
 ==============
 */
-void alarmbox_updateparts( gentity_t *ent, qboolean matestoo )
+void alarmbox_updateparts ( gentity_t *ent, qboolean matestoo )
 {
 	gentity_t *t, *mate;
 	qboolean  alarming = ( ent->s.frame == 1 );
@@ -56,13 +56,13 @@ void alarmbox_updateparts( gentity_t *ent, qboolean matestoo )
 				continue;
 			}
 
-			if ( !( mate->active ) )
+			if ( ! ( mate->active ) )
 			{
 				// don't update dead alarm boxes, they stay dead
 				continue;
 			}
 
-			if ( !( ent->active ) )
+			if ( ! ( ent->active ) )
 			{
 				// destroyed, so just turn teammates off
 				mate->s.frame = 0;
@@ -72,7 +72,7 @@ void alarmbox_updateparts( gentity_t *ent, qboolean matestoo )
 				mate->s.frame = ent->s.frame;
 			}
 
-			alarmbox_updateparts( mate, qfalse );
+			alarmbox_updateparts ( mate, qfalse );
 		}
 	}
 
@@ -84,42 +84,42 @@ void alarmbox_updateparts( gentity_t *ent, qboolean matestoo )
 
 	t = NULL;
 
-	while ( ( t = G_FindByTargetname( t, ent->target ) ) != NULL )
+	while ( ( t = G_FindByTargetname ( t, ent->target ) ) != NULL )
 	{
 		if ( t == ent )
 		{
-			G_Printf( "WARNING: Entity used itself.\n" );
+			G_Printf ( "WARNING: Entity used itself.\n" );
 		}
 		else
 		{
 			// give the dlight the sound
-			if ( !Q_stricmp( t->classname, "dlight" ) )
+			if ( !Q_stricmp ( t->classname, "dlight" ) )
 			{
 				t->soundLoop = ent->soundLoop;
 
 				if ( alarming )
 				{
-					if ( !( t->r.linked ) )
+					if ( ! ( t->r.linked ) )
 					{
-						G_UseEntity( t, ent, 0 );
+						G_UseEntity ( t, ent, 0 );
 					}
 				}
 				else
 				{
 					if ( t->r.linked )
 					{
-						G_UseEntity( t, ent, 0 );
+						G_UseEntity ( t, ent, 0 );
 					}
 				}
 			}
 			// alarmbox can tell script_trigger about activation
 			// (but don't trigger if dying, only activation)
-			else if ( !Q_stricmp( t->classname, "target_script_trigger" ) )
+			else if ( !Q_stricmp ( t->classname, "target_script_trigger" ) )
 			{
 				if ( ent->active )
 				{
 					// not dead
-					G_UseEntity( t, ent, 0 );
+					G_UseEntity ( t, ent, 0 );
 				}
 			}
 		}
@@ -131,9 +131,9 @@ void alarmbox_updateparts( gentity_t *ent, qboolean matestoo )
 alarmbox_use
 ==============
 */
-void alarmbox_use( gentity_t *ent, gentity_t *other, gentity_t *foo )
+void alarmbox_use ( gentity_t *ent, gentity_t *other, gentity_t *foo )
 {
-	if ( !( ent->active ) )
+	if ( ! ( ent->active ) )
 	{
 		return;
 	}
@@ -147,11 +147,11 @@ void alarmbox_use( gentity_t *ent, gentity_t *other, gentity_t *foo )
 		ent->s.frame = 1;
 	}
 
-	alarmbox_updateparts( ent, qtrue );
+	alarmbox_updateparts ( ent, qtrue );
 
 	if ( other->client )
 	{
-		G_AddEvent( ent, EV_GENERAL_SOUND, ent->soundPos3 );
+		G_AddEvent ( ent, EV_GENERAL_SOUND, ent->soundPos3 );
 	}
 
 //  G_Printf("touched alarmbox\n");
@@ -162,13 +162,13 @@ void alarmbox_use( gentity_t *ent, gentity_t *other, gentity_t *foo )
 alarmbox_die
 ==============
 */
-void alarmbox_die( gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void alarmbox_die ( gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
-	propExplosion( ent );
-	ent->s.frame    = 2;
-	ent->active     = qfalse;
+	propExplosion ( ent );
+	ent->s.frame = 2;
+	ent->active = qfalse;
 	ent->takedamage = qfalse;
-	alarmbox_updateparts( ent, qtrue );
+	alarmbox_updateparts ( ent, qtrue );
 }
 
 /*
@@ -176,7 +176,7 @@ void alarmbox_die( gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, in
 alarmbox_finishspawning
 ==============
 */
-void alarmbox_finishspawning( gentity_t *ent )
+void alarmbox_finishspawning ( gentity_t *ent )
 {
 	gentity_t *mate;
 
@@ -187,7 +187,7 @@ void alarmbox_finishspawning( gentity_t *ent )
 	}
 
 	// find lights and set their state
-	alarmbox_updateparts( ent, qtrue );
+	alarmbox_updateparts ( ent, qtrue );
 }
 
 /*QUAKED alarm_box (1 0 1) START_ON
@@ -206,33 +206,33 @@ alarm sound locations are also placed in the dlights, so wherever you place an a
 model: the model used is "models/mapobjects/electronics/alarmbox.md3"
 place the origin at the center of your trigger box
 */
-void SP_alarm_box( gentity_t *ent )
+void SP_alarm_box ( gentity_t *ent )
 {
 	char *s;
 
 	if ( !ent->model )
 	{
-		G_Printf( S_COLOR_RED "alarm_box with NULL model\n" );
+		G_Printf ( S_COLOR_RED "alarm_box with NULL model\n" );
 		return;
 	}
 
 	// model
-	trap_SetBrushModel( ent, ent->model );
-	ent->s.modelindex2 = G_ModelIndex( "models/mapobjects/electronics/alarmbox.md3" );
+	trap_SetBrushModel ( ent, ent->model );
+	ent->s.modelindex2 = G_ModelIndex ( "models/mapobjects/electronics/alarmbox.md3" );
 
 	// sound
-	if ( G_SpawnString( "noise", "0", &s ) )
+	if ( G_SpawnString ( "noise", "0", &s ) )
 	{
-		ent->soundLoop = G_SoundIndex( s );
+		ent->soundLoop = G_SoundIndex ( s );
 	}
 
-	ent->soundPos3 = G_SoundIndex( "sound/world/alarmswitch.wav" );
+	ent->soundPos3 = G_SoundIndex ( "sound/world/alarmswitch.wav" );
 
-	G_SetOrigin( ent, ent->s.origin );
-	G_SetAngle( ent, ent->s.angles );
+	G_SetOrigin ( ent, ent->s.origin );
+	G_SetAngle ( ent, ent->s.angles );
 
 	// Gordon: FIXME: temp
-	G_Printf( "Alarm: %f %f %f\n", ent->s.origin[ 0 ], ent->s.origin[ 1 ], ent->s.origin[ 2 ] );
+	G_Printf ( "Alarm: %f %f %f\n", ent->s.origin[ 0 ], ent->s.origin[ 1 ], ent->s.origin[ 2 ] );
 
 	if ( !ent->health )
 	{
@@ -248,13 +248,13 @@ void SP_alarm_box( gentity_t *ent )
 		ent->s.frame = 0;
 	}
 
-	ent->active     = qtrue;
-	ent->s.eType    = ET_ALARMBOX;
+	ent->active = qtrue;
+	ent->s.eType = ET_ALARMBOX;
 	ent->takedamage = qtrue;
-	ent->die        = alarmbox_die;
-	ent->use        = alarmbox_use;
-	ent->think      = alarmbox_finishspawning;
-	ent->nextthink  = level.time + FRAMETIME;
+	ent->die = alarmbox_die;
+	ent->use = alarmbox_use;
+	ent->think = alarmbox_finishspawning;
+	ent->nextthink = level.time + FRAMETIME;
 
-	trap_LinkEntity( ent );
+	trap_LinkEntity ( ent );
 }

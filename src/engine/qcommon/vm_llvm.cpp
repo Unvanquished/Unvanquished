@@ -57,39 +57,39 @@ extern "C" {
 
 	static ExecutionEngine *engine = NULL;
 
-	void *VM_LoadLLVM( vm_t *vm, intptr_t ( *systemcalls )( intptr_t, ... ) )
+	void *VM_LoadLLVM ( vm_t *vm, intptr_t ( *systemcalls ) ( intptr_t, ... ) )
 	{
 		char        name[ MAX_QPATH ];
 		char        filename[ MAX_QPATH ];
 		char        *bytes;
 		std::string error;
 
-		COM_StripExtension3( vm->name, name, sizeof( name ) );
-		Com_sprintf( filename, sizeof( filename ), "%sllvm.bc", name );
-		int len = FS_ReadFile( filename, ( void ** )&bytes );
+		COM_StripExtension3 ( vm->name, name, sizeof ( name ) );
+		Com_sprintf ( filename, sizeof ( filename ), "%sllvm.bc", name );
+		int len = FS_ReadFile ( filename, ( void ** ) &bytes );
 
 		if ( !bytes )
 		{
-			Com_Printf( "Couldn't load llvm file: %s\n", filename );
+			Com_Printf ( "Couldn't load llvm file: %s\n", filename );
 			return NULL;
 		}
 
-		MemoryBuffer *buffer = MemoryBuffer::getMemBuffer( StringRef( bytes, len ) );
-		Module       *module = ParseBitcodeFile( buffer, getGlobalContext(), &error );
+		MemoryBuffer *buffer = MemoryBuffer::getMemBuffer ( StringRef ( bytes, len ) );
+		Module       *module = ParseBitcodeFile ( buffer, getGlobalContext(), &error );
 		delete buffer;
-		FS_FreeFile( bytes );
+		FS_FreeFile ( bytes );
 
 		if ( !module )
 		{
-			Com_Printf( "Couldn't parse llvm file: %s: %s\n", filename, error.c_str() );
+			Com_Printf ( "Couldn't parse llvm file: %s: %s\n", filename, error.c_str() );
 			return NULL;
 		}
 
 		PassManager p;
-		llvm::Pass  *InliningPass = createFunctionInliningPass( 275 );
-		p.add( new TargetData( module ) );
-		createStandardModulePasses( &p, 3, false, true, true, true, false, InliningPass );
-		p.run( *module );
+		llvm::Pass  *InliningPass = createFunctionInliningPass ( 275 );
+		p.add ( new TargetData ( module ) );
+		createStandardModulePasses ( &p, 3, false, true, true, true, false, InliningPass );
+		p.run ( *module );
 
 		if ( !engine )
 		{
@@ -103,70 +103,70 @@ extern "C" {
 			 * call to engine->getPointerToFunction below. This is OK though, since the
 			 * parameter is only there for backwards compatibility and they plan to reverse
 			 * its default to false at some point in the future.  */
-			engine = ExecutionEngine::create( module, false, &str, CodeGenOpt::Default, false );
+			engine = ExecutionEngine::create ( module, false, &str, CodeGenOpt::Default, false );
 
 			if ( !engine )
 			{
-				Com_Printf( "Couldn't create ExecutionEngine: %s\n", str.c_str() );
+				Com_Printf ( "Couldn't create ExecutionEngine: %s\n", str.c_str() );
 				return NULL;
 			}
 		}
 		else
 		{
-			engine->addModule( module );
+			engine->addModule ( module );
 		}
 
-		Function *dllEntry_ptr = module->getFunction( std::string( "dllEntry" ) );
+		Function *dllEntry_ptr = module->getFunction ( std::string ( "dllEntry" ) );
 
 		if ( !dllEntry_ptr )
 		{
-			Com_Printf( "Couldn't get function address of dllEntry\n" );
+			Com_Printf ( "Couldn't get function address of dllEntry\n" );
 			return NULL;
 		}
 
-		void     ( *dllEntry )( intptr_t ( *syscallptr )( intptr_t, ... ) ) = ( void ( * )( intptr_t ( *syscallptr )( intptr_t, ... ) ) )engine->getPointerToFunction( dllEntry_ptr );
-		dllEntry( systemcalls );
+		void     ( *dllEntry ) ( intptr_t ( *syscallptr ) ( intptr_t, ... ) ) = ( void ( * ) ( intptr_t ( *syscallptr ) ( intptr_t, ... ) ) ) engine->getPointerToFunction ( dllEntry_ptr );
+		dllEntry ( systemcalls );
 
-		Function *vmMain_ptr = module->getFunction( std::string( "vmMain" ) );
+		Function *vmMain_ptr = module->getFunction ( std::string ( "vmMain" ) );
 
 		if ( !vmMain_ptr )
 		{
-			Com_Printf( "Couldn't get function address of vmMain\n" );
+			Com_Printf ( "Couldn't get function address of vmMain\n" );
 			return NULL;
 		}
 
-		intptr_t( *fp )( int, ... ) = ( intptr_t( * )( int, ... ) )engine->getPointerToFunction( vmMain_ptr );
+		intptr_t ( *fp ) ( int, ... ) = ( intptr_t ( * ) ( int, ... ) ) engine->getPointerToFunction ( vmMain_ptr );
 
-		vm->entryPoint            = fp;
+		vm->entryPoint = fp;
 
 		if ( com_developer->integer )
 		{
-			Com_Printf( "Loaded LLVM %s with module==%p\n", name, module );
+			Com_Printf ( "Loaded LLVM %s with module==%p\n", name, module );
 		}
 
 		return module;
 	}
 
-	void VM_UnloadLLVM( void *llvmModule )
+	void VM_UnloadLLVM ( void *llvmModule )
 	{
 		if ( !llvmModule )
 		{
-			Com_Printf( "VM_UnloadLLVM called with NULL pointer\n" );
+			Com_Printf ( "VM_UnloadLLVM called with NULL pointer\n" );
 			return;
 		}
 
 		if ( com_developer->integer )
 		{
-			Com_Printf( "Unloading LLVM with module==%p\n", llvmModule );
+			Com_Printf ( "Unloading LLVM with module==%p\n", llvmModule );
 		}
 
-		if ( !engine->removeModule( ( Module * )llvmModule ) )
+		if ( !engine->removeModule ( ( Module * ) llvmModule ) )
 		{
-			Com_Printf( "Couldn't remove llvm\n" );
+			Com_Printf ( "Couldn't remove llvm\n" );
 			return;
 		}
 
-		delete ( Module * )llvmModule;
+		delete ( Module * ) llvmModule;
 	}
 
 #ifdef __cplusplus

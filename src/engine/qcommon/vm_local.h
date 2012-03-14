@@ -94,7 +94,7 @@ typedef enum
   OP_LOAD4,
   OP_STORE1,
   OP_STORE2,
-  OP_STORE4,                              // *(stack[top-1]) = stack[top]
+  OP_STORE4, // *(stack[top-1]) = stack[top]
   OP_ARG,
 
   OP_BLOCK_COPY,
@@ -151,23 +151,23 @@ struct vm_s
 {
 	// DO NOT MOVE OR CHANGE THESE WITHOUT CHANGING THE VM_OFFSET_* DEFINES
 	// USED BY THE ASM CODE
-	int      programStack;                  // the vm may be recursively entered
-	intptr_t ( *systemCall )( intptr_t *parms );
+	int      programStack; // the vm may be recursively entered
+	intptr_t ( *systemCall ) ( intptr_t *parms );
 
 	//------------------------------------
 
 	char name[ MAX_QPATH ];
-	void *searchPath;                               // hint for FS_ReadFileDir()
+	void *searchPath; // hint for FS_ReadFileDir()
 
 	// for dynamic linked modules
 	void     *dllHandle;
-	intptr_t ( QDECL *entryPoint )( int callNum, ... );
-	void     ( *destroy )( vm_t *self );
+	intptr_t ( QDECL *entryPoint ) ( int callNum, ... );
+	void     ( *destroy ) ( vm_t *self );
 
 #if USE_LLVM
 	// for llvm modules
 	void *llvmModuleProvider;
-#endif  // USE_LLVM
+#endif // USE_LLVM
 
 	// for interpreted modules
 	qboolean          currentlyInterpreting;
@@ -183,13 +183,13 @@ struct vm_s
 	byte              *dataBase;
 	int               dataMask;
 
-	int               stackBottom;                  // if programStack < stackBottom, error
+	int               stackBottom; // if programStack < stackBottom, error
 
 	int               numSymbols;
 	struct vmSymbol_s *symbols;
 
-	int               callLevel;                    // counts recursive VM_Call
-	int               breakFunction;                // increment breakCount on function entry to this
+	int               callLevel; // counts recursive VM_Call
+	int               breakFunction; // increment breakCount on function entry to this
 	int               breakCount;
 
 	byte              *jumpTableTargets;
@@ -203,15 +203,15 @@ struct vm_s
 extern  vm_t *currentVM;
 extern  int  vm_debugLevel;
 
-void         VM_Compile( vm_t *vm, vmHeader_t *header );
-int          VM_CallCompiled( vm_t *vm, int *args );
+void         VM_Compile ( vm_t *vm, vmHeader_t *header );
+int          VM_CallCompiled ( vm_t *vm, int *args );
 
-void         VM_PrepareInterpreter( vm_t *vm, vmHeader_t *header );
-int          VM_CallInterpreted( vm_t *vm, int *args );
+void         VM_PrepareInterpreter ( vm_t *vm, vmHeader_t *header );
+int          VM_CallInterpreted ( vm_t *vm, int *args );
 
-vmSymbol_t   *VM_ValueToFunctionSymbol( vm_t *vm, int value );
-int          VM_SymbolToValue( vm_t *vm, const char *symbol );
-const char   *VM_ValueToSymbol( vm_t *vm, int value );
-void         VM_LogSyscalls( int *args );
+vmSymbol_t   *VM_ValueToFunctionSymbol ( vm_t *vm, int value );
+int          VM_SymbolToValue ( vm_t *vm, const char *symbol );
+const char   *VM_ValueToSymbol ( vm_t *vm, int value );
+void         VM_LogSyscalls ( int *args );
 
-void         VM_BlockCopy( unsigned int dest, unsigned int src, size_t n );
+void         VM_BlockCopy ( unsigned int dest, unsigned int src, size_t n );

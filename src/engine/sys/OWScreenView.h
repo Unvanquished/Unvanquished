@@ -24,13 +24,13 @@
 
 enum OWEventType
 {
-  OWEvent_ClickOnMenu       = BIT0,
-  OWEvent_Fire              = BIT1,
-  OWEvent_RotateCamera      = BIT2,
+  OWEvent_ClickOnMenu = BIT0,
+  OWEvent_Fire = BIT1,
+  OWEvent_RotateCamera = BIT2,
   OWEvent_MovePlayerForward = BIT3,
-  OWEvent_MovePlayerBack    = BIT4,
-  OWEvent_MovePlayerLeft    = BIT5,
-  OWEvent_MovePlayerRight   = BIT6,
+  OWEvent_MovePlayerBack = BIT4,
+  OWEvent_MovePlayerLeft = BIT5,
+  OWEvent_MovePlayerRight = BIT6,
   COUNT
 };
 
@@ -50,7 +50,7 @@ UIView
 	NSUInteger           _numTouches;
 #ifdef TODO
 	unsigned int         _bitMask;
-#endif  // TODO
+#endif // TODO
 
 	IBOutlet UIImageView *joypadCap;
 
@@ -79,10 +79,10 @@ UIView
 }
 
 - initWithFrame:
-( CGRect )frame;
+( CGRect ) frame;
 @property ( assign, readonly, nonatomic ) NSUInteger  numColorBits;
 @property ( assign, readonly, nonatomic ) NSUInteger  numDepthBits;
 @property ( assign, readonly, nonatomic ) EAGLContext *context;
-- ( void )swapBuffers;
+- ( void ) swapBuffers;
 
 @end

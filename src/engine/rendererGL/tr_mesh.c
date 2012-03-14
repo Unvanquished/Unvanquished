@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 R_CullMDV
 =============
 */
-static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
+static void R_CullMDV ( mdvModel_t *model, trRefEntity_t *ent )
 {
 	mdvFrame_t *oldFrame, *newFrame;
 	int        i;
@@ -49,7 +49,7 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 	}
 
 	// setup world bounds for intersection tests
-	ClearBounds( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
+	ClearBounds ( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
 
 	for ( i = 0; i < 8; i++ )
 	{
@@ -58,9 +58,9 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 		v[ 2 ] = ent->localBounds[ ( i >> 2 ) & 1 ][ 2 ];
 
 		// transform local bounds vertices into world space
-		R_LocalPointToWorld( v, transformed );
+		R_LocalPointToWorld ( v, transformed );
 
-		AddPointToBounds( transformed, ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
+		AddPointToBounds ( transformed, ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
 	}
 
 	// cull bounding sphere ONLY if this is not an upscaled entity
@@ -68,7 +68,7 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 	{
 		if ( ent->e.frame == ent->e.oldframe )
 		{
-			switch ( R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius ) )
+			switch ( R_CullLocalPointAndRadius ( newFrame->localOrigin, newFrame->radius ) )
 			{
 				case CULL_OUT:
 					tr.pc.c_sphere_cull_mdx_out++;
@@ -89,7 +89,7 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 		{
 			int sphereCull, sphereCullB;
 
-			sphereCull = R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius );
+			sphereCull = R_CullLocalPointAndRadius ( newFrame->localOrigin, newFrame->radius );
 
 			if ( newFrame == oldFrame )
 			{
@@ -97,7 +97,7 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 			}
 			else
 			{
-				sphereCullB = R_CullLocalPointAndRadius( oldFrame->localOrigin, oldFrame->radius );
+				sphereCullB = R_CullLocalPointAndRadius ( oldFrame->localOrigin, oldFrame->radius );
 			}
 
 			if ( sphereCull == sphereCullB )
@@ -122,7 +122,7 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 		}
 	}
 
-	switch ( R_CullLocalBox( ent->localBounds ) )
+	switch ( R_CullLocalBox ( ent->localBounds ) )
 	{
 		case CULL_IN:
 			tr.pc.c_box_cull_mdx_in++;
@@ -147,7 +147,7 @@ static void R_CullMDV( mdvModel_t *model, trRefEntity_t *ent )
 R_ComputeLOD
 =================
 */
-int R_ComputeLOD( trRefEntity_t *ent )
+int R_ComputeLOD ( trRefEntity_t *ent )
 {
 	float      radius;
 	float      flod, lodscale;
@@ -165,12 +165,12 @@ int R_ComputeLOD( trRefEntity_t *ent )
 		// multiple LODs exist, so compute projected bounding sphere
 		// and use that as a criteria for selecting LOD
 
-		frame  = tr.currentModel->mdv[ 0 ]->frames;
+		frame = tr.currentModel->mdv[ 0 ]->frames;
 		frame += ent->e.frame;
 
-		radius = RadiusFromBounds( frame->bounds[ 0 ], frame->bounds[ 1 ] );
+		radius = RadiusFromBounds ( frame->bounds[ 0 ], frame->bounds[ 1 ] );
 
-		if ( ( projectedRadius = R_ProjectRadius( radius, ent->e.origin ) ) != 0 )
+		if ( ( projectedRadius = R_ProjectRadius ( radius, ent->e.origin ) ) != 0 )
 		{
 			lodscale = r_lodScale->value;
 
@@ -179,7 +179,7 @@ int R_ComputeLOD( trRefEntity_t *ent )
 				lodscale = 20;
 			}
 
-			flod     = 1.0f - projectedRadius * lodscale;
+			flod = 1.0f - projectedRadius * lodscale;
 		}
 		else
 		{
@@ -188,7 +188,7 @@ int R_ComputeLOD( trRefEntity_t *ent )
 		}
 
 		flod *= tr.currentModel->numLods;
-		lod   = XreaL_Q_ftol( flod );
+		lod = XreaL_Q_ftol ( flod );
 
 		if ( lod < 0 )
 		{
@@ -215,20 +215,20 @@ int R_ComputeLOD( trRefEntity_t *ent )
 	return lod;
 }
 
-static shader_t *GetMDVSurfaceShader( const trRefEntity_t *ent, mdvSurface_t *mdvSurface )
+static shader_t *GetMDVSurfaceShader ( const trRefEntity_t *ent, mdvSurface_t *mdvSurface )
 {
 	shader_t *shader = 0;
 
 	if ( ent->e.customShader )
 	{
-		shader = R_GetShaderByHandle( ent->e.customShader );
+		shader = R_GetShaderByHandle ( ent->e.customShader );
 	}
 	else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins )
 	{
 		skin_t *skin;
 		int    j;
 
-		skin   = R_GetSkinByHandle( ent->e.customSkin );
+		skin = R_GetSkinByHandle ( ent->e.customSkin );
 
 		// match the surface name to something in the skin file
 		shader = tr.defaultShader;
@@ -236,7 +236,7 @@ static shader_t *GetMDVSurfaceShader( const trRefEntity_t *ent, mdvSurface_t *md
 		for ( j = 0; j < skin->numSurfaces; j++ )
 		{
 			// the names have both been lowercased
-			if ( !strcmp( skin->surfaces[ j ]->name, mdvSurface->name ) )
+			if ( !strcmp ( skin->surfaces[ j ]->name, mdvSurface->name ) )
 			{
 				shader = skin->surfaces[ j ]->shader;
 				break;
@@ -245,11 +245,11 @@ static shader_t *GetMDVSurfaceShader( const trRefEntity_t *ent, mdvSurface_t *md
 
 		if ( shader == tr.defaultShader )
 		{
-			ri.Printf( PRINT_DEVELOPER, "WARNING: no shader for surface %s in skin %s\n", mdvSurface->name, skin->name );
+			ri.Printf ( PRINT_DEVELOPER, "WARNING: no shader for surface %s in skin %s\n", mdvSurface->name, skin->name );
 		}
 		else if ( shader->defaultShader )
 		{
-			ri.Printf( PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
+			ri.Printf ( PRINT_DEVELOPER, "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
 		}
 	}
 	else
@@ -265,12 +265,12 @@ static shader_t *GetMDVSurfaceShader( const trRefEntity_t *ent, mdvSurface_t *md
 R_AddMDVSurfaces
 =================
 */
-void R_AddMDVSurfaces( trRefEntity_t *ent )
+void R_AddMDVSurfaces ( trRefEntity_t *ent )
 {
 	int          i;
-	mdvModel_t   *model      = 0;
+	mdvModel_t   *model = 0;
 	mdvSurface_t *mdvSurface = 0;
-	shader_t     *shader     = 0;
+	shader_t     *shader = 0;
 	int          lod;
 	qboolean     personalModel;
 	int          fogNum;
@@ -280,7 +280,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 
 	if ( ent->e.renderfx & RF_WRAP_FRAMES )
 	{
-		ent->e.frame    %= tr.currentModel->mdv[ 0 ]->numFrames;
+		ent->e.frame %= tr.currentModel->mdv[ 0 ]->numFrames;
 		ent->e.oldframe %= tr.currentModel->mdv[ 0 ]->numFrames;
 	}
 
@@ -291,7 +291,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	}
 	else
 	{
-		lod = R_ComputeLOD( ent );
+		lod = R_ComputeLOD ( ent );
 	}
 
 	// Validate the frames so there is no chance of a crash.
@@ -301,9 +301,9 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	if ( ( ent->e.frame >= tr.currentModel->mdv[ lod ]->numFrames )
 	     || ( ent->e.frame < 0 ) || ( ent->e.oldframe >= tr.currentModel->mdv[ lod ]->numFrames ) || ( ent->e.oldframe < 0 ) )
 	{
-		ri.Printf( PRINT_DEVELOPER, "R_AddMDVSurfaces: no such frame %d to %d for '%s' (%d)\n",
-		           ent->e.oldframe, ent->e.frame, tr.currentModel->name, tr.currentModel->mdv[ lod ]->numFrames );
-		ent->e.frame    = 0;
+		ri.Printf ( PRINT_DEVELOPER, "R_AddMDVSurfaces: no such frame %d to %d for '%s' (%d)\n",
+		            ent->e.oldframe, ent->e.frame, tr.currentModel->name, tr.currentModel->mdv[ lod ]->numFrames );
+		ent->e.frame = 0;
 		ent->e.oldframe = 0;
 	}
 
@@ -311,7 +311,7 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 
 	// cull the entire model if merged bounding box of both frames
 	// is outside the view frustum.
-	R_CullMDV( model, ent );
+	R_CullMDV ( model, ent );
 
 	if ( ent->cull == CULL_OUT )
 	{
@@ -321,11 +321,11 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	// set up lighting now that we know we aren't culled
 	if ( !personalModel || r_shadows->integer > SHADOWING_BLOB )
 	{
-		R_SetupEntityLighting( &tr.refdef, ent, NULL );
+		R_SetupEntityLighting ( &tr.refdef, ent, NULL );
 	}
 
 	// see if we are in a fog volume
-	fogNum = R_FogWorldBox( ent->worldBounds );
+	fogNum = R_FogWorldBox ( ent->worldBounds );
 
 	// draw all surfaces
 	if ( r_vboModels->integer && model->numVBOSurfaces )
@@ -339,12 +339,12 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 			vboSurface = model->vboSurfaces[ i ];
 			mdvSurface = vboSurface->mdvSurface;
 
-			shader     = GetMDVSurfaceShader( ent, mdvSurface );
+			shader = GetMDVSurfaceShader ( ent, mdvSurface );
 
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddDrawSurf( ( void * )vboSurface, shader, -1, fogNum );
+				R_AddDrawSurf ( ( void * ) vboSurface, shader, -1, fogNum );
 			}
 		}
 	}
@@ -352,14 +352,14 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 	{
 		for ( i = 0, mdvSurface = model->surfaces; i < model->numSurfaces; i++, mdvSurface++ )
 		{
-			shader = GetMDVSurfaceShader( ent, mdvSurface );
+			shader = GetMDVSurfaceShader ( ent, mdvSurface );
 
 			// we will add shadows even if the main object isn't visible in the view
 
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddDrawSurf( ( void * )mdvSurface, shader, -1, fogNum );
+				R_AddDrawSurf ( ( void * ) mdvSurface, shader, -1, fogNum );
 			}
 		}
 	}
@@ -370,12 +370,12 @@ void R_AddMDVSurfaces( trRefEntity_t *ent )
 R_AddMDVInteractions
 =================
 */
-void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light )
+void R_AddMDVInteractions ( trRefEntity_t *ent, trRefLight_t *light )
 {
 	int               i;
-	mdvModel_t        *model      = 0;
+	mdvModel_t        *model = 0;
 	mdvSurface_t      *mdvSurface = 0;
-	shader_t          *shader     = 0;
+	shader_t          *shader = 0;
 	int               lod;
 	qboolean          personalModel;
 	byte              cubeSideBits;
@@ -419,12 +419,12 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light )
 	personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
 
 	// compute LOD
-	lod           = R_ComputeLOD( ent );
+	lod = R_ComputeLOD ( ent );
 
-	model         = tr.currentModel->mdv[ lod ];
+	model = tr.currentModel->mdv[ lod ];
 
 	// do a quick AABB cull
-	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] ) )
+	if ( !BoundsIntersect ( light->worldBounds[ 0 ], light->worldBounds[ 1 ], ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] ) )
 	{
 		tr.pc.c_dlightSurfacesCulled += model->numSurfaces;
 		return;
@@ -433,14 +433,14 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light )
 	// do a more expensive and precise light frustum cull
 	if ( !r_noLightFrustums->integer )
 	{
-		if ( R_CullLightWorldBounds( light, ent->worldBounds ) == CULL_OUT )
+		if ( R_CullLightWorldBounds ( light, ent->worldBounds ) == CULL_OUT )
 		{
 			tr.pc.c_dlightSurfacesCulled += model->numSurfaces;
 			return;
 		}
 	}
 
-	cubeSideBits = R_CalcLightCubeSideBits( light, ent->worldBounds );
+	cubeSideBits = R_CalcLightCubeSideBits ( light, ent->worldBounds );
 
 	// generate interactions with all surfaces
 	if ( r_vboModels->integer && model->numVBOSurfaces )
@@ -456,7 +456,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light )
 			vboSurface = model->vboSurfaces[ i ];
 			mdvSurface = vboSurface->mdvSurface;
 
-			shader     = GetMDVSurfaceShader( ent, mdvSurface );
+			shader = GetMDVSurfaceShader ( ent, mdvSurface );
 
 			// skip all surfaces that don't matter for lighting only pass
 			if ( shader->isSky || ( !shader->interactLight && shader->noShadows ) )
@@ -469,7 +469,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light )
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddLightInteraction( light, ( void * )vboSurface, shader, cubeSideBits, iaType );
+				R_AddLightInteraction ( light, ( void * ) vboSurface, shader, cubeSideBits, iaType );
 				tr.pc.c_dlightSurfaces++;
 			}
 		}
@@ -478,7 +478,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light )
 	{
 		for ( i = 0, mdvSurface = model->surfaces; i < model->numSurfaces; i++, mdvSurface++ )
 		{
-			shader = GetMDVSurfaceShader( ent, mdvSurface );
+			shader = GetMDVSurfaceShader ( ent, mdvSurface );
 
 			// skip all surfaces that don't matter for lighting only pass
 			if ( shader->isSky || ( !shader->interactLight && shader->noShadows ) )
@@ -491,7 +491,7 @@ void R_AddMDVInteractions( trRefEntity_t *ent, trRefLight_t *light )
 			// don't add third_person objects if not viewing through a portal
 			if ( !personalModel )
 			{
-				R_AddLightInteraction( light, ( void * )mdvSurface, shader, cubeSideBits, iaType );
+				R_AddLightInteraction ( light, ( void * ) mdvSurface, shader, cubeSideBits, iaType );
 				tr.pc.c_dlightSurfaces++;
 			}
 		}

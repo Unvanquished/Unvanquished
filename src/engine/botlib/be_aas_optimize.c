@@ -95,7 +95,7 @@ typedef struct optimized_s
 	        //clusters
 	        int numclusters;
 	                                                aas_cluster_t *clusters;
-	*/                                                                                                                                                                                        //
+	*/                                                                                                                                                                                                                                                                                             //
 	int *vertexoptimizeindex;
 	int *edgeoptimizeindex;
 	int *faceoptimizeindex;
@@ -112,10 +112,10 @@ typedef struct optimized_s
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-int AAS_KeepEdge( aas_edge_t *edge )
+int AAS_KeepEdge ( aas_edge_t *edge )
 {
 	return 1;
-}                                                               //end of the function AAS_KeepFace
+} //end of the function AAS_KeepFace
 
 //===========================================================================
 //
@@ -123,19 +123,19 @@ int AAS_KeepEdge( aas_edge_t *edge )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-int AAS_OptimizeEdge( optimized_t *optimized, int edgenum )
+int AAS_OptimizeEdge ( optimized_t *optimized, int edgenum )
 {
 	int        i, optedgenum;
 	aas_edge_t *edge, *optedge;
 
-	edge = &( *aasworld ).edges[ abs( edgenum ) ];
+	edge = & ( *aasworld ).edges[ abs ( edgenum ) ];
 
-	if ( !AAS_KeepEdge( edge ) )
+	if ( !AAS_KeepEdge ( edge ) )
 	{
 		return 0;
 	}
 
-	optedgenum = optimized->edgeoptimizeindex[ abs( edgenum ) ];
+	optedgenum = optimized->edgeoptimizeindex[ abs ( edgenum ) ];
 
 	if ( optedgenum )
 	{
@@ -148,7 +148,7 @@ int AAS_OptimizeEdge( optimized_t *optimized, int edgenum )
 		{
 			return -optedgenum;
 		}
-	}                                                       //end if
+	} //end if
 
 	optedge = &optimized->edges[ optimized->numedges ];
 
@@ -157,18 +157,18 @@ int AAS_OptimizeEdge( optimized_t *optimized, int edgenum )
 		if ( optimized->vertexoptimizeindex[ edge->v[ i ] ] )
 		{
 			optedge->v[ i ] = optimized->vertexoptimizeindex[ edge->v[ i ] ];
-		}                                               //end if
+		} //end if
 		else
 		{
-			VectorCopy( ( *aasworld ).vertexes[ edge->v[ i ] ], optimized->vertexes[ optimized->numvertexes ] );
-			optedge->v[ i ]                                = optimized->numvertexes;
+			VectorCopy ( ( *aasworld ).vertexes[ edge->v[ i ] ], optimized->vertexes[ optimized->numvertexes ] );
+			optedge->v[ i ] = optimized->numvertexes;
 			optimized->vertexoptimizeindex[ edge->v[ i ] ] = optimized->numvertexes;
 			optimized->numvertexes++;
-		}                                               //end else
-	}                                                       //end for
+		} //end else
+	} //end for
 
-	optimized->edgeoptimizeindex[ abs( edgenum ) ] = optimized->numedges;
-	optedgenum                                   = optimized->numedges;
+	optimized->edgeoptimizeindex[ abs ( edgenum ) ] = optimized->numedges;
+	optedgenum = optimized->numedges;
 	optimized->numedges++;
 
 	//keep the edge reversed sign
@@ -180,7 +180,7 @@ int AAS_OptimizeEdge( optimized_t *optimized, int edgenum )
 	{
 		return -optedgenum;
 	}
-}                                                               //end of the function AAS_OptimizeEdge
+} //end of the function AAS_OptimizeEdge
 
 //===========================================================================
 //
@@ -188,9 +188,9 @@ int AAS_OptimizeEdge( optimized_t *optimized, int edgenum )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-int AAS_KeepFace( aas_face_t *face )
+int AAS_KeepFace ( aas_face_t *face )
 {
-	if ( !( face->faceflags & FACE_LADDER ) )
+	if ( ! ( face->faceflags & FACE_LADDER ) )
 	{
 		return 0;
 	}
@@ -198,7 +198,7 @@ int AAS_KeepFace( aas_face_t *face )
 	{
 		return 1;
 	}
-}                                                               //end of the function AAS_KeepFace
+} //end of the function AAS_KeepFace
 
 //===========================================================================
 //
@@ -206,19 +206,19 @@ int AAS_KeepFace( aas_face_t *face )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-int AAS_OptimizeFace( optimized_t *optimized, int facenum )
+int AAS_OptimizeFace ( optimized_t *optimized, int facenum )
 {
 	int        i, edgenum, optedgenum, optfacenum;
 	aas_face_t *face, *optface;
 
-	face = &( *aasworld ).faces[ abs( facenum ) ];
+	face = & ( *aasworld ).faces[ abs ( facenum ) ];
 
-	if ( !AAS_KeepFace( face ) )
+	if ( !AAS_KeepFace ( face ) )
 	{
 		return 0;
 	}
 
-	optfacenum = optimized->faceoptimizeindex[ abs( facenum ) ];
+	optfacenum = optimized->faceoptimizeindex[ abs ( facenum ) ];
 
 	if ( optfacenum )
 	{
@@ -231,29 +231,29 @@ int AAS_OptimizeFace( optimized_t *optimized, int facenum )
 		{
 			return -optfacenum;
 		}
-	}                                                       //end if
+	} //end if
 
-	optface            = &optimized->faces[ optimized->numfaces ];
-	memcpy( optface, face, sizeof( aas_face_t ) );
+	optface = &optimized->faces[ optimized->numfaces ];
+	memcpy ( optface, face, sizeof ( aas_face_t ) );
 
-	optface->numedges  = 0;
+	optface->numedges = 0;
 	optface->firstedge = optimized->edgeindexsize;
 
 	for ( i = 0; i < face->numedges; i++ )
 	{
-		edgenum    = ( *aasworld ).edgeindex[ face->firstedge + i ];
-		optedgenum = AAS_OptimizeEdge( optimized, edgenum );
+		edgenum = ( *aasworld ).edgeindex[ face->firstedge + i ];
+		optedgenum = AAS_OptimizeEdge ( optimized, edgenum );
 
 		if ( optedgenum )
 		{
 			optimized->edgeindex[ optface->firstedge + optface->numedges ] = optedgenum;
 			optface->numedges++;
 			optimized->edgeindexsize++;
-		}                                               //end if
-	}                                                       //end for
+		} //end if
+	} //end for
 
-	optimized->faceoptimizeindex[ abs( facenum ) ] = optimized->numfaces;
-	optfacenum                                   = optimized->numfaces;
+	optimized->faceoptimizeindex[ abs ( facenum ) ] = optimized->numfaces;
+	optfacenum = optimized->numfaces;
 	optimized->numfaces++;
 
 	//keep the face side sign
@@ -265,7 +265,7 @@ int AAS_OptimizeFace( optimized_t *optimized, int facenum )
 	{
 		return -optfacenum;
 	}
-}                                                               //end of the function AAS_OptimizeFace
+} //end of the function AAS_OptimizeFace
 
 //===========================================================================
 //
@@ -273,31 +273,31 @@ int AAS_OptimizeFace( optimized_t *optimized, int facenum )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void AAS_OptimizeArea( optimized_t *optimized, int areanum )
+void AAS_OptimizeArea ( optimized_t *optimized, int areanum )
 {
 	int        i, facenum, optfacenum;
 	aas_area_t *area, *optarea;
 
-	area               = &( *aasworld ).areas[ areanum ];
-	optarea            = &optimized->areas[ areanum ];
-	memcpy( optarea, area, sizeof( aas_area_t ) );
+	area = & ( *aasworld ).areas[ areanum ];
+	optarea = &optimized->areas[ areanum ];
+	memcpy ( optarea, area, sizeof ( aas_area_t ) );
 
-	optarea->numfaces  = 0;
+	optarea->numfaces = 0;
 	optarea->firstface = optimized->faceindexsize;
 
 	for ( i = 0; i < area->numfaces; i++ )
 	{
-		facenum    = ( *aasworld ).faceindex[ area->firstface + i ];
-		optfacenum = AAS_OptimizeFace( optimized, facenum );
+		facenum = ( *aasworld ).faceindex[ area->firstface + i ];
+		optfacenum = AAS_OptimizeFace ( optimized, facenum );
 
 		if ( optfacenum )
 		{
 			optimized->faceindex[ optarea->firstface + optarea->numfaces ] = optfacenum;
 			optarea->numfaces++;
 			optimized->faceindexsize++;
-		}                                               //end if
-	}                                                       //end for
-}                                                               //end of the function AAS_OptimizeArea
+		} //end if
+	} //end for
+} //end of the function AAS_OptimizeArea
 
 //===========================================================================
 //
@@ -305,25 +305,25 @@ void AAS_OptimizeArea( optimized_t *optimized, int areanum )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void AAS_OptimizeAlloc( optimized_t *optimized )
+void AAS_OptimizeAlloc ( optimized_t *optimized )
 {
-	optimized->vertexes            = ( aas_vertex_t * ) GetClearedMemory( ( *aasworld ).numvertexes * sizeof( aas_vertex_t ) );
-	optimized->numvertexes         = 0;
-	optimized->edges               = ( aas_edge_t * ) GetClearedMemory( ( *aasworld ).numedges * sizeof( aas_edge_t ) );
-	optimized->numedges            = 1; //edge zero is a dummy
-	optimized->edgeindex           = ( aas_edgeindex_t * ) GetClearedMemory( ( *aasworld ).edgeindexsize * sizeof( aas_edgeindex_t ) );
-	optimized->edgeindexsize       = 0;
-	optimized->faces               = ( aas_face_t * ) GetClearedMemory( ( *aasworld ).numfaces * sizeof( aas_face_t ) );
-	optimized->numfaces            = 1; //face zero is a dummy
-	optimized->faceindex           = ( aas_faceindex_t * ) GetClearedMemory( ( *aasworld ).faceindexsize * sizeof( aas_faceindex_t ) );
-	optimized->faceindexsize       = 0;
-	optimized->areas               = ( aas_area_t * ) GetClearedMemory( ( *aasworld ).numareas * sizeof( aas_area_t ) );
-	optimized->numareas            = ( *aasworld ).numareas;
+	optimized->vertexes = ( aas_vertex_t * ) GetClearedMemory ( ( *aasworld ).numvertexes * sizeof ( aas_vertex_t ) );
+	optimized->numvertexes = 0;
+	optimized->edges = ( aas_edge_t * ) GetClearedMemory ( ( *aasworld ).numedges * sizeof ( aas_edge_t ) );
+	optimized->numedges = 1; //edge zero is a dummy
+	optimized->edgeindex = ( aas_edgeindex_t * ) GetClearedMemory ( ( *aasworld ).edgeindexsize * sizeof ( aas_edgeindex_t ) );
+	optimized->edgeindexsize = 0;
+	optimized->faces = ( aas_face_t * ) GetClearedMemory ( ( *aasworld ).numfaces * sizeof ( aas_face_t ) );
+	optimized->numfaces = 1; //face zero is a dummy
+	optimized->faceindex = ( aas_faceindex_t * ) GetClearedMemory ( ( *aasworld ).faceindexsize * sizeof ( aas_faceindex_t ) );
+	optimized->faceindexsize = 0;
+	optimized->areas = ( aas_area_t * ) GetClearedMemory ( ( *aasworld ).numareas * sizeof ( aas_area_t ) );
+	optimized->numareas = ( *aasworld ).numareas;
 	//
-	optimized->vertexoptimizeindex = ( int * )GetClearedMemory( ( *aasworld ).numvertexes * sizeof( int ) );
-	optimized->edgeoptimizeindex   = ( int * )GetClearedMemory( ( *aasworld ).numedges * sizeof( int ) );
-	optimized->faceoptimizeindex   = ( int * )GetClearedMemory( ( *aasworld ).numfaces * sizeof( int ) );
-}                                                               //end of the function AAS_OptimizeAlloc
+	optimized->vertexoptimizeindex = ( int * ) GetClearedMemory ( ( *aasworld ).numvertexes * sizeof ( int ) );
+	optimized->edgeoptimizeindex = ( int * ) GetClearedMemory ( ( *aasworld ).numedges * sizeof ( int ) );
+	optimized->faceoptimizeindex = ( int * ) GetClearedMemory ( ( *aasworld ).numfaces * sizeof ( int ) );
+} //end of the function AAS_OptimizeAlloc
 
 //===========================================================================
 //
@@ -331,66 +331,66 @@ void AAS_OptimizeAlloc( optimized_t *optimized )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void AAS_OptimizeStore( optimized_t *optimized )
+void AAS_OptimizeStore ( optimized_t *optimized )
 {
 	//store the optimized vertexes
 	if ( ( *aasworld ).vertexes )
 	{
-		FreeMemory( ( *aasworld ).vertexes );
+		FreeMemory ( ( *aasworld ).vertexes );
 	}
 
-	( *aasworld ).vertexes    = optimized->vertexes;
+	( *aasworld ).vertexes = optimized->vertexes;
 	( *aasworld ).numvertexes = optimized->numvertexes;
 
 	//store the optimized edges
 	if ( ( *aasworld ).edges )
 	{
-		FreeMemory( ( *aasworld ).edges );
+		FreeMemory ( ( *aasworld ).edges );
 	}
 
-	( *aasworld ).edges    = optimized->edges;
+	( *aasworld ).edges = optimized->edges;
 	( *aasworld ).numedges = optimized->numedges;
 
 	//store the optimized edge index
 	if ( ( *aasworld ).edgeindex )
 	{
-		FreeMemory( ( *aasworld ).edgeindex );
+		FreeMemory ( ( *aasworld ).edgeindex );
 	}
 
-	( *aasworld ).edgeindex     = optimized->edgeindex;
+	( *aasworld ).edgeindex = optimized->edgeindex;
 	( *aasworld ).edgeindexsize = optimized->edgeindexsize;
 
 	//store the optimized faces
 	if ( ( *aasworld ).faces )
 	{
-		FreeMemory( ( *aasworld ).faces );
+		FreeMemory ( ( *aasworld ).faces );
 	}
 
-	( *aasworld ).faces    = optimized->faces;
+	( *aasworld ).faces = optimized->faces;
 	( *aasworld ).numfaces = optimized->numfaces;
 
 	//store the optimized face index
 	if ( ( *aasworld ).faceindex )
 	{
-		FreeMemory( ( *aasworld ).faceindex );
+		FreeMemory ( ( *aasworld ).faceindex );
 	}
 
-	( *aasworld ).faceindex     = optimized->faceindex;
+	( *aasworld ).faceindex = optimized->faceindex;
 	( *aasworld ).faceindexsize = optimized->faceindexsize;
 
 	//store the optimized areas
 	if ( ( *aasworld ).areas )
 	{
-		FreeMemory( ( *aasworld ).areas );
+		FreeMemory ( ( *aasworld ).areas );
 	}
 
-	( *aasworld ).areas    = optimized->areas;
+	( *aasworld ).areas = optimized->areas;
 	( *aasworld ).numareas = optimized->numareas;
 	//free optimize indexes
-	FreeMemory( optimized->vertexoptimizeindex );
-	FreeMemory( optimized->edgeoptimizeindex );
-	FreeMemory( optimized->faceoptimizeindex );
-}                                                               //end of the function AAS_OptimizeStore
+	FreeMemory ( optimized->vertexoptimizeindex );
+	FreeMemory ( optimized->edgeoptimizeindex );
+	FreeMemory ( optimized->faceoptimizeindex );
+} //end of the function AAS_OptimizeStore
 
 //===========================================================================
 //
@@ -398,17 +398,17 @@ void AAS_OptimizeStore( optimized_t *optimized )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void AAS_Optimize( void )
+void AAS_Optimize ( void )
 {
 	int         i, sign;
 	optimized_t optimized;
 
-	AAS_OptimizeAlloc( &optimized );
+	AAS_OptimizeAlloc ( &optimized );
 
 	for ( i = 1; i < ( *aasworld ).numareas; i++ )
 	{
-		AAS_OptimizeArea( &optimized, i );
-	}                                                       //end for
+		AAS_OptimizeArea ( &optimized, i );
+	} //end for
 
 	//reset the reachability face pointers
 	for ( i = 0; i < ( *aasworld ).reachabilitysize; i++ )
@@ -433,28 +433,28 @@ void AAS_Optimize( void )
 		}
 
 		//
-		sign                                    = ( *aasworld ).reachability[ i ].facenum;
-		( *aasworld ).reachability[ i ].facenum = optimized.faceoptimizeindex[ abs( ( *aasworld ).reachability[ i ].facenum ) ];
+		sign = ( *aasworld ).reachability[ i ].facenum;
+		( *aasworld ).reachability[ i ].facenum = optimized.faceoptimizeindex[ abs ( ( *aasworld ).reachability[ i ].facenum ) ];
 
 		if ( sign < 0 )
 		{
-			( *aasworld ).reachability[ i ].facenum = -( *aasworld ).reachability[ i ].facenum;
+			( *aasworld ).reachability[ i ].facenum = - ( *aasworld ).reachability[ i ].facenum;
 		}
 
-		sign                                    = ( *aasworld ).reachability[ i ].edgenum;
-		( *aasworld ).reachability[ i ].edgenum = optimized.edgeoptimizeindex[ abs( ( *aasworld ).reachability[ i ].edgenum ) ];
+		sign = ( *aasworld ).reachability[ i ].edgenum;
+		( *aasworld ).reachability[ i ].edgenum = optimized.edgeoptimizeindex[ abs ( ( *aasworld ).reachability[ i ].edgenum ) ];
 
 		if ( sign < 0 )
 		{
-			( *aasworld ).reachability[ i ].edgenum = -( *aasworld ).reachability[ i ].edgenum;
+			( *aasworld ).reachability[ i ].edgenum = - ( *aasworld ).reachability[ i ].edgenum;
 		}
-	}                                                       //end for
+	} //end for
 
 	//store the optimized AAS data into (*aasworld)
-	AAS_OptimizeStore( &optimized );
+	AAS_OptimizeStore ( &optimized );
 	//print some nice stuff :)
-	botimport.Print( PRT_MESSAGE, "AAS data optimized.\n" );
-}                                                               //end of the function AAS_Optimize
+	botimport.Print ( PRT_MESSAGE, "AAS data optimized.\n" );
+} //end of the function AAS_Optimize
 
 //===========================================================================
 //
@@ -462,14 +462,14 @@ void AAS_Optimize( void )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void AAS_RemoveNonReachabilityAlloc( optimized_t *optimized )
+void AAS_RemoveNonReachabilityAlloc ( optimized_t *optimized )
 {
-	optimized->areas             = ( aas_area_t * ) GetClearedMemory( ( *aasworld ).numareas * sizeof( aas_area_t ) );
+	optimized->areas = ( aas_area_t * ) GetClearedMemory ( ( *aasworld ).numareas * sizeof ( aas_area_t ) );
 	//
-	optimized->areasettings      = ( aas_areasettings_t * ) GetClearedMemory( ( *aasworld ).numareas * sizeof( aas_areasettings_t ) );
+	optimized->areasettings = ( aas_areasettings_t * ) GetClearedMemory ( ( *aasworld ).numareas * sizeof ( aas_areasettings_t ) );
 	//
-	optimized->reachability      = ( aas_reachability_t * ) GetClearedMemory( ( *aasworld ).reachabilitysize * sizeof( aas_reachability_t ) );
-	optimized->reachabilitysize  = ( *aasworld ).reachabilitysize;
+	optimized->reachability = ( aas_reachability_t * ) GetClearedMemory ( ( *aasworld ).reachabilitysize * sizeof ( aas_reachability_t ) );
+	optimized->reachabilitysize = ( *aasworld ).reachabilitysize;
 
 	/*  //
 	        optimized->nodes = (aas_node_t *) GetClearedMemory((*aasworld).numnodes * sizeof(aas_node_t));
@@ -480,12 +480,12 @@ void AAS_RemoveNonReachabilityAlloc( optimized_t *optimized )
 	        //
 	        optimized->clusters = (aas_cluster_t *) GetClearedMemory((*aasworld).numclusters * sizeof(aas_cluster_t));
 	                                                optimized->numclusters = (*aasworld).numclusters;
-	*/                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          //
-	optimized->areakeep          = ( int * )GetClearedMemory( ( *aasworld ).numareas * sizeof( int ) );
-	optimized->arearemap         = ( int * )GetClearedMemory( ( *aasworld ).numareas * sizeof( int ) );
-	optimized->removedareas      = ( int * )GetClearedMemory( ( *aasworld ).numareas * sizeof( int ) );
-	optimized->reachabilityremap = ( int * )GetClearedMemory( ( *aasworld ).reachabilitysize * sizeof( int ) );
-}                                                               //end of the function AAS_OptimizeAlloc
+	*/                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               //
+	optimized->areakeep = ( int * ) GetClearedMemory ( ( *aasworld ).numareas * sizeof ( int ) );
+	optimized->arearemap = ( int * ) GetClearedMemory ( ( *aasworld ).numareas * sizeof ( int ) );
+	optimized->removedareas = ( int * ) GetClearedMemory ( ( *aasworld ).numareas * sizeof ( int ) );
+	optimized->reachabilityremap = ( int * ) GetClearedMemory ( ( *aasworld ).reachabilitysize * sizeof ( int ) );
+} //end of the function AAS_OptimizeAlloc
 
 //===========================================================================
 //
@@ -493,17 +493,17 @@ void AAS_RemoveNonReachabilityAlloc( optimized_t *optimized )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void AAS_NumberClusterAreas( int clusternum );
+void AAS_NumberClusterAreas ( int clusternum );
 
-void AAS_RemoveNonReachability( void )
+void AAS_RemoveNonReachability ( void )
 {
 	int         i, j;
 	optimized_t optimized;
-	int         removed    = 0, valid = 0, numoriginalareas;
+	int         removed = 0, valid = 0, numoriginalareas;
 	int         validreach = 0;
 	aas_face_t  *face;
 
-	AAS_RemoveNonReachabilityAlloc( &optimized );
+	AAS_RemoveNonReachabilityAlloc ( &optimized );
 
 	// mark portal areas as non-removable
 	if ( aasworld->numportals )
@@ -522,9 +522,9 @@ void AAS_RemoveNonReachability( void )
 		// is this a reachability area?
 		if ( optimized.areakeep[ i ] || aasworld->areasettings[ i ].numreachableareas )
 		{
-			optimized.arearemap[ i ]         = ++valid;
+			optimized.arearemap[ i ] = ++valid;
 			// copy it to the optimized areas
-			optimized.areas[ valid ]         = ( *aasworld ).areas[ i ];
+			optimized.areas[ valid ] = ( *aasworld ).areas[ i ];
 			optimized.areas[ valid ].areanum = valid;
 			continue;
 		}
@@ -539,14 +539,14 @@ void AAS_RemoveNonReachability( void )
 	// store the new areas
 	if ( ( *aasworld ).areas )
 	{
-		FreeMemory( ( *aasworld ).areas );
+		FreeMemory ( ( *aasworld ).areas );
 	}
 
-	( *aasworld ).areas    = optimized.areas;
+	( *aasworld ).areas = optimized.areas;
 	( *aasworld ).numareas = optimized.numareas;
 	//
 	// remove reachabilities that are no longer required
-	validreach             = 1;
+	validreach = 1;
 
 	for ( i = 1; i < aasworld->reachabilitysize; i++ )
 	{
@@ -558,7 +558,7 @@ void AAS_RemoveNonReachability( void )
 		}
 
 		// save this reachability
-		optimized.reachability[ validreach ]         = aasworld->reachability[ i ];
+		optimized.reachability[ validreach ] = aasworld->reachability[ i ];
 		optimized.reachability[ validreach ].areanum = optimized.arearemap[ optimized.reachability[ validreach ].areanum ];
 		//
 		validreach++;
@@ -569,10 +569,10 @@ void AAS_RemoveNonReachability( void )
 	// store the reachabilities
 	if ( ( *aasworld ).reachability )
 	{
-		FreeMemory( ( *aasworld ).reachability );
+		FreeMemory ( ( *aasworld ).reachability );
 	}
 
-	( *aasworld ).reachability     = optimized.reachability;
+	( *aasworld ).reachability = optimized.reachability;
 	( *aasworld ).reachabilitysize = optimized.reachabilitysize;
 
 	//
@@ -584,10 +584,10 @@ void AAS_RemoveNonReachability( void )
 			continue;
 		}
 
-		j                                              = optimized.arearemap[ i ];
-		optimized.areasettings[ j ]                    = aasworld->areasettings[ i ];
+		j = optimized.arearemap[ i ];
+		optimized.areasettings[ j ] = aasworld->areasettings[ i ];
 		optimized.areasettings[ j ].firstreachablearea = optimized.reachabilityremap[ aasworld->areasettings[ i ].firstreachablearea ];
-		optimized.areasettings[ j ].numreachableareas  =
+		optimized.areasettings[ j ].numreachableareas =
 		  1 + optimized.reachabilityremap[ aasworld->areasettings[ i ].firstreachablearea +
 		                                   aasworld->areasettings[ i ].numreachableareas - 1 ] -
 		  optimized.areasettings[ j ].firstreachablearea;
@@ -620,10 +620,10 @@ void AAS_RemoveNonReachability( void )
 	// store the areasettings
 	if ( ( *aasworld ).areasettings )
 	{
-		FreeMemory( ( *aasworld ).areasettings );
+		FreeMemory ( ( *aasworld ).areasettings );
 	}
 
-	( *aasworld ).areasettings    = optimized.areasettings;
+	( *aasworld ).areasettings = optimized.areasettings;
 	( *aasworld ).numareasettings = optimized.numareas;
 
 	//
@@ -636,7 +636,7 @@ void AAS_RemoveNonReachability( void )
 			{
 				if ( optimized.removedareas[ -aasworld->nodes[ i ].children[ j ] ] )
 				{
-					aasworld->nodes[ i ].children[ j ] = 0;     //make it solid
+					aasworld->nodes[ i ].children[ j ] = 0; //make it solid
 				}
 				else
 				{
@@ -657,17 +657,17 @@ void AAS_RemoveNonReachability( void )
 	// update clusters and portals
 	for ( i = 0; i < ( *aasworld ).numclusters; i++ )
 	{
-		AAS_NumberClusterAreas( i );
+		AAS_NumberClusterAreas ( i );
 	}
 
 	// free temporary memory
-	FreeMemory( optimized.areakeep );
-	FreeMemory( optimized.arearemap );
-	FreeMemory( optimized.removedareas );
-	FreeMemory( optimized.reachabilityremap );
+	FreeMemory ( optimized.areakeep );
+	FreeMemory ( optimized.arearemap );
+	FreeMemory ( optimized.removedareas );
+	FreeMemory ( optimized.reachabilityremap );
 	//print some nice stuff :)
-	botimport.Print( PRT_MESSAGE, "%i non-reachability areas removed, %i remain.\n", removed, valid );
-}                                                               //end of the function AAS_Optimize
+	botimport.Print ( PRT_MESSAGE, "%i non-reachability areas removed, %i remain.\n", removed, valid );
+} //end of the function AAS_Optimize
 
 //===========================================================================
 //
@@ -675,15 +675,15 @@ void AAS_RemoveNonReachability( void )
 // Returns:                 -
 // Changes Globals:     -
 //===========================================================================
-void AAS_RemoveNonGrounded( void )
+void AAS_RemoveNonGrounded ( void )
 {
 	int         i, j;
 	optimized_t optimized;
-	int         removed    = 0, valid = 0, numoriginalareas;
+	int         removed = 0, valid = 0, numoriginalareas;
 	int         validreach = 0;
 	aas_face_t  *face;
 
-	AAS_RemoveNonReachabilityAlloc( &optimized );
+	AAS_RemoveNonReachabilityAlloc ( &optimized );
 
 	// mark portal areas as non-removable
 	if ( aasworld->numportals )
@@ -702,9 +702,9 @@ void AAS_RemoveNonGrounded( void )
 		// is this a grounded area?
 		if ( optimized.areakeep[ i ] || ( aasworld->areasettings[ i ].areaflags & ( AREA_GROUNDED | AREA_LADDER ) ) )
 		{
-			optimized.arearemap[ i ]         = ++valid;
+			optimized.arearemap[ i ] = ++valid;
 			// copy it to the optimized areas
-			optimized.areas[ valid ]         = ( *aasworld ).areas[ i ];
+			optimized.areas[ valid ] = ( *aasworld ).areas[ i ];
 			optimized.areas[ valid ].areanum = valid;
 			continue;
 		}
@@ -719,14 +719,14 @@ void AAS_RemoveNonGrounded( void )
 	// store the new areas
 	if ( ( *aasworld ).areas )
 	{
-		FreeMemory( ( *aasworld ).areas );
+		FreeMemory ( ( *aasworld ).areas );
 	}
 
-	( *aasworld ).areas    = optimized.areas;
+	( *aasworld ).areas = optimized.areas;
 	( *aasworld ).numareas = optimized.numareas;
 	//
 	// remove reachabilities that are no longer required
-	validreach             = 1;
+	validreach = 1;
 
 	for ( i = 1; i < aasworld->reachabilitysize; i++ )
 	{
@@ -738,7 +738,7 @@ void AAS_RemoveNonGrounded( void )
 		}
 
 		// save this reachability
-		optimized.reachability[ validreach ]         = aasworld->reachability[ i ];
+		optimized.reachability[ validreach ] = aasworld->reachability[ i ];
 		optimized.reachability[ validreach ].areanum = optimized.arearemap[ optimized.reachability[ validreach ].areanum ];
 		//
 		validreach++;
@@ -749,10 +749,10 @@ void AAS_RemoveNonGrounded( void )
 	// store the reachabilities
 	if ( ( *aasworld ).reachability )
 	{
-		FreeMemory( ( *aasworld ).reachability );
+		FreeMemory ( ( *aasworld ).reachability );
 	}
 
-	( *aasworld ).reachability     = optimized.reachability;
+	( *aasworld ).reachability = optimized.reachability;
 	( *aasworld ).reachabilitysize = optimized.reachabilitysize;
 
 	//
@@ -764,10 +764,10 @@ void AAS_RemoveNonGrounded( void )
 			continue;
 		}
 
-		j                                              = optimized.arearemap[ i ];
-		optimized.areasettings[ j ]                    = aasworld->areasettings[ i ];
+		j = optimized.arearemap[ i ];
+		optimized.areasettings[ j ] = aasworld->areasettings[ i ];
 		optimized.areasettings[ j ].firstreachablearea = optimized.reachabilityremap[ aasworld->areasettings[ i ].firstreachablearea ];
-		optimized.areasettings[ j ].numreachableareas  =
+		optimized.areasettings[ j ].numreachableareas =
 		  1 + optimized.reachabilityremap[ aasworld->areasettings[ i ].firstreachablearea +
 		                                   aasworld->areasettings[ i ].numreachableareas - 1 ] -
 		  optimized.areasettings[ j ].firstreachablearea;
@@ -800,10 +800,10 @@ void AAS_RemoveNonGrounded( void )
 	// store the areasettings
 	if ( ( *aasworld ).areasettings )
 	{
-		FreeMemory( ( *aasworld ).areasettings );
+		FreeMemory ( ( *aasworld ).areasettings );
 	}
 
-	( *aasworld ).areasettings    = optimized.areasettings;
+	( *aasworld ).areasettings = optimized.areasettings;
 	( *aasworld ).numareasettings = optimized.numareas;
 
 	//
@@ -816,7 +816,7 @@ void AAS_RemoveNonGrounded( void )
 			{
 				if ( optimized.removedareas[ -aasworld->nodes[ i ].children[ j ] ] )
 				{
-					aasworld->nodes[ i ].children[ j ] = 0;     //make it solid
+					aasworld->nodes[ i ].children[ j ] = 0; //make it solid
 				}
 				else
 				{
@@ -837,14 +837,14 @@ void AAS_RemoveNonGrounded( void )
 	// update clusters and portals
 	for ( i = 0; i < ( *aasworld ).numclusters; i++ )
 	{
-		AAS_NumberClusterAreas( i );
+		AAS_NumberClusterAreas ( i );
 	}
 
 	// free temporary memory
-	FreeMemory( optimized.areakeep );
-	FreeMemory( optimized.arearemap );
-	FreeMemory( optimized.removedareas );
-	FreeMemory( optimized.reachabilityremap );
+	FreeMemory ( optimized.areakeep );
+	FreeMemory ( optimized.arearemap );
+	FreeMemory ( optimized.removedareas );
+	FreeMemory ( optimized.reachabilityremap );
 	//print some nice stuff :)
-	botimport.Print( PRT_MESSAGE, "%i non-grounded areas removed, %i remain.\n", removed, valid );
-}                                                               //end of the function AAS_Optimize
+	botimport.Print ( PRT_MESSAGE, "%i non-grounded areas removed, %i remain.\n", removed, valid );
+} //end of the function AAS_Optimize

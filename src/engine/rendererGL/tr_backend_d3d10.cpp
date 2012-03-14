@@ -37,7 +37,7 @@ extern "C" {
 	A player has predicted a teleport, but hasn't arrived yet
 	================
 	*/
-	static void RB_Hyperspace( void )
+	static void RB_Hyperspace ( void )
 	{
 		float c;
 
@@ -51,26 +51,26 @@ extern "C" {
 #if defined( USE_D3D10 )
 		// TODO
 #else
-		GL_ClearColor( c, c, c, 1 );
-		qglClear( GL_COLOR_BUFFER_BIT );
+		GL_ClearColor ( c, c, c, 1 );
+		qglClear ( GL_COLOR_BUFFER_BIT );
 #endif
 
 		backEnd.isHyperspace = qtrue;
 	}
 
-	static void SetViewportAndScissor( void )
+	static void SetViewportAndScissor ( void )
 	{
 #if defined( USE_D3D10 )
 		// TODO
 #else
-		GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
+		GL_LoadProjectionMatrix ( backEnd.viewParms.projectionMatrix );
 
 		// set the window clipping
-		GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-		             backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+		GL_Viewport ( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
+		              backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 
-		GL_Scissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
-		            backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+		GL_Scissor ( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
+		             backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 #endif
 	}
 
@@ -79,11 +79,11 @@ extern "C" {
 	RB_SetGL2D
 	================
 	*/
-	static void RB_SetGL2D( void )
+	static void RB_SetGL2D ( void )
 	{
 		matrix_t proj;
 
-		GLimp_LogComment( "--- RB_SetGL2D ---\n" );
+		GLimp_LogComment ( "--- RB_SetGL2D ---\n" );
 
 #if defined( USE_D3D10 )
 		// TODO
@@ -103,25 +103,25 @@ extern "C" {
 		// TODO
 #else
 		// set 2D virtual screen size
-		GL_Viewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-		GL_Scissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+		GL_Viewport ( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+		GL_Scissor ( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 
-		MatrixOrthogonalProjection( proj, 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 );
-		GL_LoadProjectionMatrix( proj );
-		GL_LoadModelViewMatrix( matrixIdentity );
+		MatrixOrthogonalProjection ( proj, 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 );
+		GL_LoadProjectionMatrix ( proj );
+		GL_LoadModelViewMatrix ( matrixIdentity );
 
-		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+		GL_State ( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
-		qglDisable( GL_CULL_FACE );
-		qglDisable( GL_CLIP_PLANE0 );
+		qglDisable ( GL_CULL_FACE );
+		qglDisable ( GL_CLIP_PLANE0 );
 #endif
 
 		// set time for 2D shaders
-		backEnd.refdef.time      = ri.Milliseconds();
+		backEnd.refdef.time = ri.Milliseconds();
 		backEnd.refdef.floatTime = backEnd.refdef.time * 0.001f;
 	}
 
-	static void RB_RenderDrawSurfaces( qboolean opaque, qboolean depthFill )
+	static void RB_RenderDrawSurfaces ( qboolean opaque, qboolean depthFill )
 	{
 		trRefEntity_t *entity, *oldEntity;
 		shader_t      *shader, *oldShader;
@@ -130,21 +130,21 @@ extern "C" {
 		int           i;
 		drawSurf_t    *drawSurf;
 
-		GLimp_LogComment( "--- RB_RenderDrawSurfaces ---\n" );
+		GLimp_LogComment ( "--- RB_RenderDrawSurfaces ---\n" );
 
 		// draw everything
-		oldEntity            = NULL;
-		oldShader            = NULL;
-		oldLightmapNum       = -1;
-		oldDepthRange        = qfalse;
-		depthRange           = qfalse;
+		oldEntity = NULL;
+		oldShader = NULL;
+		oldLightmapNum = -1;
+		oldDepthRange = qfalse;
+		depthRange = qfalse;
 		backEnd.currentLight = NULL;
 
 		for ( i = 0, drawSurf = backEnd.viewParms.drawSurfs; i < backEnd.viewParms.numDrawSurfs; i++, drawSurf++ )
 		{
 			// update locals
-			entity      = drawSurf->entity;
-			shader      = tr.sortedShaders[ drawSurf->shaderNum ];
+			entity = drawSurf->entity;
+			shader = tr.sortedShaders[ drawSurf->shaderNum ];
 			lightmapNum = drawSurf->lightmapNum;
 
 			if ( opaque )
@@ -183,14 +183,14 @@ extern "C" {
 
 				if ( depthFill )
 				{
-					Tess_Begin( Tess_StageIteratorDepthFill, NULL, shader, NULL, qtrue, qfalse, lightmapNum, tess.fogNum );
+					Tess_Begin ( Tess_StageIteratorDepthFill, NULL, shader, NULL, qtrue, qfalse, lightmapNum, tess.fogNum );
 				}
 				else
 				{
-					Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, lightmapNum, tess.fogNum );
+					Tess_Begin ( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, lightmapNum, tess.fogNum );
 				}
 
-				oldShader      = shader;
+				oldShader = shader;
 				oldLightmapNum = lightmapNum;
 			}
 
@@ -204,7 +204,7 @@ extern "C" {
 					backEnd.currentEntity = entity;
 
 					// set up the transformation matrix
-					R_RotateEntityForViewParms( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orientation );
+					R_RotateEntityForViewParms ( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orientation );
 
 					if ( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK )
 					{
@@ -215,13 +215,13 @@ extern "C" {
 				else
 				{
 					backEnd.currentEntity = &tr.worldEntity;
-					backEnd.orientation   = backEnd.viewParms.world;
+					backEnd.orientation = backEnd.viewParms.world;
 				}
 
 #if defined( USE_D3D10 )
 				// TODO
 #else
-				GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
+				GL_LoadModelViewMatrix ( backEnd.orientation.modelViewMatrix );
 #endif
 
 				// change depthrange if needed
@@ -233,11 +233,11 @@ extern "C" {
 
 					if ( depthRange )
 					{
-						qglDepthRange( 0, 0.3 );
+						qglDepthRange ( 0, 0.3 );
 					}
 					else
 					{
-						qglDepthRange( 0, 1 );
+						qglDepthRange ( 0, 1 );
 					}
 
 #endif
@@ -261,7 +261,7 @@ extern "C" {
 #if defined( USE_D3D10 )
 		// TODO
 #else
-		GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
+		GL_LoadModelViewMatrix ( backEnd.viewParms.world.modelViewMatrix );
 #endif
 
 		if ( depthRange )
@@ -269,7 +269,7 @@ extern "C" {
 #if defined( USE_D3D10 )
 			// TODO
 #else
-			qglDepthRange( 0, 1 );
+			qglDepthRange ( 0, 1 );
 #endif
 		}
 
@@ -291,14 +291,14 @@ extern "C" {
 	GL_RenderView
 	==================
 	*/
-	static void D3D10_RenderView( void )
+	static void D3D10_RenderView ( void )
 	{
 		if ( r_logFile->integer )
 		{
 			// don't just call LogComment, or we will get a call to va() every frame!
-			GLimp_LogComment( va
-			                  ( "--- D3D10_RenderView( %i surfaces, %i interactions ) ---\n", backEnd.viewParms.numDrawSurfs,
-			                    backEnd.viewParms.numInteractions ) );
+			GLimp_LogComment ( va
+			                   ( "--- D3D10_RenderView( %i surfaces, %i interactions ) ---\n", backEnd.viewParms.numDrawSurfs,
+			                     backEnd.viewParms.numInteractions ) );
 		}
 
 		backEnd.pc.c_surfaces += backEnd.viewParms.numDrawSurfs;
@@ -306,21 +306,21 @@ extern "C" {
 		//if(r_deferredShading->integer && glConfig.framebufferObjectAvailable && glConfig.textureFloatAvailable &&
 		//   glConfig.drawBuffersAvailable && glConfig.maxDrawBuffers >= 4)
 		{
-			int   clearBits       = 0;
+			int   clearBits = 0;
 
 			// clear the back buffer
 			float ClearColor[ 4 ] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red,green,blue,alpha
-			dx.d3dDevice->ClearRenderTargetView( dx.renderTargetView, ClearColor );
+			dx.d3dDevice->ClearRenderTargetView ( dx.renderTargetView, ClearColor );
 
 #if 0
 			// render a triangle
 			D3D10_TECHNIQUE_DESC techDesc;
-			dx.genericTechnique->GetDesc( &techDesc );
+			dx.genericTechnique->GetDesc ( &techDesc );
 
 			for ( UINT p = 0; p < techDesc.Passes; ++p )
 			{
-				dx.genericTechnique->GetPassByIndex( p )->Apply( 0 );
-				dx.d3dDevice->Draw( 3, 0 );
+				dx.genericTechnique->GetPassByIndex ( p )->Apply ( 0 );
+				dx.d3dDevice->Draw ( 3, 0 );
 			}
 
 #endif
@@ -419,8 +419,8 @@ extern "C" {
 			if ( r_deferredShading->integer == DS_STANDARD )
 			{
 				// draw everything that is opaque
-				R_BindFBO( tr.deferredRenderFBO );
-				RB_RenderDrawSurfaces( qtrue, qfalse );
+				R_BindFBO ( tr.deferredRenderFBO );
+				RB_RenderDrawSurfaces ( qtrue, qfalse );
 			}
 
 #endif
@@ -556,7 +556,7 @@ extern "C" {
 	Used for cinematics.
 	=============
 	*/
-	void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty )
+	void RE_StretchRaw ( int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty )
 	{
 		int i, j;
 		int start, end;
@@ -598,7 +598,7 @@ extern "C" {
 
 		if ( ( 1 << i ) != cols || ( 1 << j ) != rows )
 		{
-			ri.Error( ERR_DROP, "Draw_StretchRaw: size not a power of 2: %i by %i", cols, rows );
+			ri.Error ( ERR_DROP, "Draw_StretchRaw: size not a power of 2: %i by %i", cols, rows );
 		}
 
 #if defined( USE_D3D10 )
@@ -606,44 +606,44 @@ extern "C" {
 #else
 		RB_SetGL2D();
 
-		qglVertexAttrib4fARB( ATTR_INDEX_NORMAL, 0, 0, 1, 1 );
-		qglVertexAttrib4fARB( ATTR_INDEX_COLOR, tr.identityLight, tr.identityLight, tr.identityLight, 1 );
+		qglVertexAttrib4fARB ( ATTR_INDEX_NORMAL, 0, 0, 1, 1 );
+		qglVertexAttrib4fARB ( ATTR_INDEX_COLOR, tr.identityLight, tr.identityLight, tr.identityLight, 1 );
 
-		GL_BindProgram( &tr.genericSingleShader );
+		GL_BindProgram ( &tr.genericSingleShader );
 
 		// set uniforms
-		GLSL_SetUniform_TCGen_Environment( &tr.genericSingleShader,  qfalse );
-		GLSL_SetUniform_ColorGen( &tr.genericSingleShader, CGEN_VERTEX );
-		GLSL_SetUniform_AlphaGen( &tr.genericSingleShader, AGEN_VERTEX );
+		GLSL_SetUniform_TCGen_Environment ( &tr.genericSingleShader,  qfalse );
+		GLSL_SetUniform_ColorGen ( &tr.genericSingleShader, CGEN_VERTEX );
+		GLSL_SetUniform_AlphaGen ( &tr.genericSingleShader, AGEN_VERTEX );
 
 		//GLSL_SetUniform_Color(&tr.genericSingleShader, colorWhite);
 		if ( glConfig.vboVertexSkinningAvailable )
 		{
-			GLSL_SetUniform_VertexSkinning( &tr.genericSingleShader, qfalse );
+			GLSL_SetUniform_VertexSkinning ( &tr.genericSingleShader, qfalse );
 		}
 
-		GLSL_SetUniform_DeformGen( &tr.genericSingleShader, DGEN_NONE );
-		GLSL_SetUniform_AlphaTest( &tr.genericSingleShader, 0 );
-		GLSL_SetUniform_ModelViewProjectionMatrix( &tr.genericSingleShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		GLSL_SetUniform_DeformGen ( &tr.genericSingleShader, DGEN_NONE );
+		GLSL_SetUniform_AlphaTest ( &tr.genericSingleShader, 0 );
+		GLSL_SetUniform_ModelViewProjectionMatrix ( &tr.genericSingleShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// bind u_ColorMap
-		GL_SelectTexture( 0 );
-		GL_Bind( tr.scratchImage[ client ] );
-		GLSL_SetUniform_ColorTextureMatrix( &tr.genericSingleShader, matrixIdentity );
+		GL_SelectTexture ( 0 );
+		GL_Bind ( tr.scratchImage[ client ] );
+		GLSL_SetUniform_ColorTextureMatrix ( &tr.genericSingleShader, matrixIdentity );
 
 		// if the scratchImage isn't in the format we want, specify it as a new texture
 		if ( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
 		{
-			tr.scratchImage[ client ]->width  = tr.scratchImage[ client ]->uploadWidth = cols;
+			tr.scratchImage[ client ]->width = tr.scratchImage[ client ]->uploadWidth = cols;
 			tr.scratchImage[ client ]->height = tr.scratchImage[ client ]->uploadHeight = rows;
 
-			qglTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+			qglTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB8, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 
-			qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			qglTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			qglTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
-			qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-			qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+			qglTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+			qglTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
 		}
 		else
 		{
@@ -651,11 +651,11 @@ extern "C" {
 			{
 				// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 				// it and don't try and do a texture compression
-				qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
+				qglTexSubImage2D ( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
 			}
 		}
 
-#endif  // #if defined(USE_D3D10)
+#endif // #if defined(USE_D3D10)
 
 		if ( r_speeds->integer )
 		{
@@ -665,65 +665,65 @@ extern "C" {
 			qglFinish();
 #endif
 			end = ri.Milliseconds();
-			ri.Printf( PRINT_ALL, "qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
+			ri.Printf ( PRINT_ALL, "qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
 		}
 
-		tess.numVertexes                        = 0;
-		tess.numIndexes                         = 0;
+		tess.numVertexes = 0;
+		tess.numIndexes = 0;
 
-		tess.xyz[ tess.numVertexes ][ 0 ]       = x;
-		tess.xyz[ tess.numVertexes ][ 1 ]       = y;
-		tess.xyz[ tess.numVertexes ][ 2 ]       = 0;
-		tess.xyz[ tess.numVertexes ][ 3 ]       = 1;
+		tess.xyz[ tess.numVertexes ][ 0 ] = x;
+		tess.xyz[ tess.numVertexes ][ 1 ] = y;
+		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
+		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 		tess.texCoords[ tess.numVertexes ][ 0 ] = 0.5f / cols;
 		tess.texCoords[ tess.numVertexes ][ 1 ] = 0.5f / rows;
 		tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
 		tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 		tess.numVertexes++;
 
-		tess.xyz[ tess.numVertexes ][ 0 ]       = x + w;
-		tess.xyz[ tess.numVertexes ][ 1 ]       = y;
-		tess.xyz[ tess.numVertexes ][ 2 ]       = 0;
-		tess.xyz[ tess.numVertexes ][ 3 ]       = 1;
+		tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
+		tess.xyz[ tess.numVertexes ][ 1 ] = y;
+		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
+		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 		tess.texCoords[ tess.numVertexes ][ 0 ] = ( cols - 0.5f ) / cols;
 		tess.texCoords[ tess.numVertexes ][ 1 ] = 0.5f / rows;
 		tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
 		tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 		tess.numVertexes++;
 
-		tess.xyz[ tess.numVertexes ][ 0 ]       = x + w;
-		tess.xyz[ tess.numVertexes ][ 1 ]       = y + h;
-		tess.xyz[ tess.numVertexes ][ 2 ]       = 0;
-		tess.xyz[ tess.numVertexes ][ 3 ]       = 1;
+		tess.xyz[ tess.numVertexes ][ 0 ] = x + w;
+		tess.xyz[ tess.numVertexes ][ 1 ] = y + h;
+		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
+		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 		tess.texCoords[ tess.numVertexes ][ 0 ] = ( cols - 0.5f ) / cols;
 		tess.texCoords[ tess.numVertexes ][ 1 ] = ( rows - 0.5f ) / rows;
 		tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
 		tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 		tess.numVertexes++;
 
-		tess.xyz[ tess.numVertexes ][ 0 ]       = x;
-		tess.xyz[ tess.numVertexes ][ 1 ]       = y + h;
-		tess.xyz[ tess.numVertexes ][ 2 ]       = 0;
-		tess.xyz[ tess.numVertexes ][ 3 ]       = 1;
+		tess.xyz[ tess.numVertexes ][ 0 ] = x;
+		tess.xyz[ tess.numVertexes ][ 1 ] = y + h;
+		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
+		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 		tess.texCoords[ tess.numVertexes ][ 0 ] = 0.5f / cols;
 		tess.texCoords[ tess.numVertexes ][ 1 ] = ( rows - 0.5f ) / rows;
 		tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
 		tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
 		tess.numVertexes++;
 
-		tess.indexes[ tess.numIndexes++ ]       = 0;
-		tess.indexes[ tess.numIndexes++ ]       = 1;
-		tess.indexes[ tess.numIndexes++ ]       = 2;
-		tess.indexes[ tess.numIndexes++ ]       = 0;
-		tess.indexes[ tess.numIndexes++ ]       = 2;
-		tess.indexes[ tess.numIndexes++ ]       = 3;
+		tess.indexes[ tess.numIndexes++ ] = 0;
+		tess.indexes[ tess.numIndexes++ ] = 1;
+		tess.indexes[ tess.numIndexes++ ] = 2;
+		tess.indexes[ tess.numIndexes++ ] = 0;
+		tess.indexes[ tess.numIndexes++ ] = 2;
+		tess.indexes[ tess.numIndexes++ ] = 3;
 
-		Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
+		Tess_UpdateVBOs ( ATTR_POSITION | ATTR_TEXCOORD );
 
 		Tess_DrawElements();
 
 		tess.numVertexes = 0;
-		tess.numIndexes  = 0;
+		tess.numIndexes = 0;
 
 #if defined( USE_D3D10 )
 		// TODO
@@ -732,27 +732,27 @@ extern "C" {
 #endif
 	}
 
-	void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty )
+	void RE_UploadCinematic ( int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty )
 	{
 #if defined( USE_D3D10 )
 		// TODO
 #else
-		GL_Bind( tr.scratchImage[ client ] );
+		GL_Bind ( tr.scratchImage[ client ] );
 
 		// if the scratchImage isn't in the format we want, specify it as a new texture
 		if ( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
 		{
-			tr.scratchImage[ client ]->width  = tr.scratchImage[ client ]->uploadWidth = cols;
+			tr.scratchImage[ client ]->width = tr.scratchImage[ client ]->uploadWidth = cols;
 			tr.scratchImage[ client ]->height = tr.scratchImage[ client ]->uploadHeight = rows;
 
-			qglTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+			qglTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB8, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 
-			qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			qglTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			qglTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
-			qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-			qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-			qglTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, colorBlack );
+			qglTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+			qglTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+			qglTexParameterfv ( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, colorBlack );
 		}
 		else
 		{
@@ -760,7 +760,7 @@ extern "C" {
 			{
 				// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 				// it and don't try and do a texture compression
-				qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
+				qglTexSubImage2D ( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
 			}
 		}
 
@@ -773,20 +773,20 @@ extern "C" {
 	RB_SetColor
 	=============
 	*/
-	const void     *RB_SetColor( const void *data )
+	const void     *RB_SetColor ( const void *data )
 	{
 		const setColorCommand_t *cmd;
 
-		GLimp_LogComment( "--- RB_SetColor ---\n" );
+		GLimp_LogComment ( "--- RB_SetColor ---\n" );
 
-		cmd                  = ( const setColorCommand_t * )data;
+		cmd = ( const setColorCommand_t * ) data;
 
 		backEnd.color2D[ 0 ] = cmd->color[ 0 ];
 		backEnd.color2D[ 1 ] = cmd->color[ 1 ];
 		backEnd.color2D[ 2 ] = cmd->color[ 2 ];
 		backEnd.color2D[ 3 ] = cmd->color[ 3 ];
 
-		return ( const void * )( cmd + 1 );
+		return ( const void * ) ( cmd + 1 );
 	}
 
 	/*
@@ -794,16 +794,16 @@ extern "C" {
 	RB_StretchPic
 	=============
 	*/
-	const void     *RB_StretchPic( const void *data )
+	const void     *RB_StretchPic ( const void *data )
 	{
 		int                       i;
 		const stretchPicCommand_t *cmd;
 		shader_t                  *shader;
 		int                       numVerts, numIndexes;
 
-		GLimp_LogComment( "--- RB_StretchPic ---\n" );
+		GLimp_LogComment ( "--- RB_StretchPic ---\n" );
 
-		cmd = ( const stretchPicCommand_t * )data;
+		cmd = ( const stretchPicCommand_t * ) data;
 
 		if ( !backEnd.projection2D )
 		{
@@ -820,17 +820,17 @@ extern "C" {
 			}
 
 			backEnd.currentEntity = &backEnd.entity2D;
-			Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, tess.fogNum );
+			Tess_Begin ( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, tess.fogNum );
 		}
 
-		Tess_CheckOverflow( 4, 6 );
-		numVerts                       = tess.numVertexes;
-		numIndexes                     = tess.numIndexes;
+		Tess_CheckOverflow ( 4, 6 );
+		numVerts = tess.numVertexes;
+		numIndexes = tess.numIndexes;
 
-		tess.numVertexes              += 4;
-		tess.numIndexes               += 6;
+		tess.numVertexes += 4;
+		tess.numIndexes += 6;
 
-		tess.indexes[ numIndexes ]     = numVerts + 3;
+		tess.indexes[ numIndexes ] = numVerts + 3;
 		tess.indexes[ numIndexes + 1 ] = numVerts + 0;
 		tess.indexes[ numIndexes + 2 ] = numVerts + 2;
 		tess.indexes[ numIndexes + 3 ] = numVerts + 2;
@@ -845,47 +845,47 @@ extern "C" {
 			tess.colors[ numVerts + i ][ 3 ] = backEnd.color2D[ 3 ];
 		}
 
-		tess.xyz[ numVerts ][ 0 ]           = cmd->x;
-		tess.xyz[ numVerts ][ 1 ]           = cmd->y;
-		tess.xyz[ numVerts ][ 2 ]           = 0;
-		tess.xyz[ numVerts ][ 3 ]           = 1;
+		tess.xyz[ numVerts ][ 0 ] = cmd->x;
+		tess.xyz[ numVerts ][ 1 ] = cmd->y;
+		tess.xyz[ numVerts ][ 2 ] = 0;
+		tess.xyz[ numVerts ][ 3 ] = 1;
 
-		tess.texCoords[ numVerts ][ 0 ]     = cmd->s1;
-		tess.texCoords[ numVerts ][ 1 ]     = cmd->t1;
-		tess.texCoords[ numVerts ][ 2 ]     = 0;
-		tess.texCoords[ numVerts ][ 3 ]     = 1;
+		tess.texCoords[ numVerts ][ 0 ] = cmd->s1;
+		tess.texCoords[ numVerts ][ 1 ] = cmd->t1;
+		tess.texCoords[ numVerts ][ 2 ] = 0;
+		tess.texCoords[ numVerts ][ 3 ] = 1;
 
-		tess.xyz[ numVerts + 1 ][ 0 ]       = cmd->x + cmd->w;
-		tess.xyz[ numVerts + 1 ][ 1 ]       = cmd->y;
-		tess.xyz[ numVerts + 1 ][ 2 ]       = 0;
-		tess.xyz[ numVerts + 1 ][ 3 ]       = 1;
+		tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
+		tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
+		tess.xyz[ numVerts + 1 ][ 2 ] = 0;
+		tess.xyz[ numVerts + 1 ][ 3 ] = 1;
 
 		tess.texCoords[ numVerts + 1 ][ 0 ] = cmd->s2;
 		tess.texCoords[ numVerts + 1 ][ 1 ] = cmd->t1;
 		tess.texCoords[ numVerts + 1 ][ 2 ] = 0;
 		tess.texCoords[ numVerts + 1 ][ 3 ] = 1;
 
-		tess.xyz[ numVerts + 2 ][ 0 ]       = cmd->x + cmd->w;
-		tess.xyz[ numVerts + 2 ][ 1 ]       = cmd->y + cmd->h;
-		tess.xyz[ numVerts + 2 ][ 2 ]       = 0;
-		tess.xyz[ numVerts + 2 ][ 3 ]       = 1;
+		tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
+		tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
+		tess.xyz[ numVerts + 2 ][ 2 ] = 0;
+		tess.xyz[ numVerts + 2 ][ 3 ] = 1;
 
 		tess.texCoords[ numVerts + 2 ][ 0 ] = cmd->s2;
 		tess.texCoords[ numVerts + 2 ][ 1 ] = cmd->t2;
 		tess.texCoords[ numVerts + 2 ][ 2 ] = 0;
 		tess.texCoords[ numVerts + 2 ][ 3 ] = 1;
 
-		tess.xyz[ numVerts + 3 ][ 0 ]       = cmd->x;
-		tess.xyz[ numVerts + 3 ][ 1 ]       = cmd->y + cmd->h;
-		tess.xyz[ numVerts + 3 ][ 2 ]       = 0;
-		tess.xyz[ numVerts + 3 ][ 3 ]       = 1;
+		tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
+		tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
+		tess.xyz[ numVerts + 3 ][ 2 ] = 0;
+		tess.xyz[ numVerts + 3 ][ 3 ] = 1;
 
 		tess.texCoords[ numVerts + 3 ][ 0 ] = cmd->s1;
 		tess.texCoords[ numVerts + 3 ][ 1 ] = cmd->t2;
 		tess.texCoords[ numVerts + 3 ][ 2 ] = 0;
 		tess.texCoords[ numVerts + 3 ][ 3 ] = 1;
 
-		return ( const void * )( cmd + 1 );
+		return ( const void * ) ( cmd + 1 );
 	}
 
 	/*
@@ -893,11 +893,11 @@ extern "C" {
 	RB_DrawView
 	=============
 	*/
-	const void     *RB_DrawView( const void *data )
+	const void     *RB_DrawView ( const void *data )
 	{
 		const drawViewCommand_t *cmd;
 
-		GLimp_LogComment( "--- RB_DrawView ---\n" );
+		GLimp_LogComment ( "--- RB_DrawView ---\n" );
 
 		// finish any 2D drawing if needed
 		if ( tess.numIndexes )
@@ -905,9 +905,9 @@ extern "C" {
 			Tess_End();
 		}
 
-		cmd               = ( const drawViewCommand_t * )data;
+		cmd = ( const drawViewCommand_t * ) data;
 
-		backEnd.refdef    = cmd->refdef;
+		backEnd.refdef = cmd->refdef;
 		backEnd.viewParms = cmd->viewParms;
 
 #if defined( USE_D3D10 )
@@ -916,7 +916,7 @@ extern "C" {
 		GL_RenderView();
 #endif
 
-		return ( const void * )( cmd + 1 );
+		return ( const void * ) ( cmd + 1 );
 	}
 
 	/*
@@ -924,22 +924,22 @@ extern "C" {
 	RB_DrawBuffer
 	=============
 	*/
-	const void     *RB_DrawBuffer( const void *data )
+	const void     *RB_DrawBuffer ( const void *data )
 	{
 		const drawBufferCommand_t *cmd;
 
-		GLimp_LogComment( "--- RB_DrawBuffer ---\n" );
+		GLimp_LogComment ( "--- RB_DrawBuffer ---\n" );
 
-		cmd = ( const drawBufferCommand_t * )data;
+		cmd = ( const drawBufferCommand_t * ) data;
 
 		// clear screen for debugging
 		if ( r_clear->integer )
 		{
 			float ClearColor[ 4 ] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red,green,blue,alpha
-			dx.d3dDevice->ClearRenderTargetView( dx.renderTargetView, ClearColor );
+			dx.d3dDevice->ClearRenderTargetView ( dx.renderTargetView, ClearColor );
 		}
 
-		return ( const void * )( cmd + 1 );
+		return ( const void * ) ( cmd + 1 );
 	}
 
 	/*
@@ -955,7 +955,7 @@ extern "C" {
 #if defined( USE_D3D10 )
 // TODO
 #else
-	void RB_ShowImages( void )
+	void RB_ShowImages ( void )
 	{
 		int     i;
 		image_t *image;
@@ -963,41 +963,41 @@ extern "C" {
 		vec4_t  quadVerts[ 4 ];
 		int     start, end;
 
-		GLimp_LogComment( "--- RB_ShowImages ---\n" );
+		GLimp_LogComment ( "--- RB_ShowImages ---\n" );
 
 		if ( !backEnd.projection2D )
 		{
 			RB_SetGL2D();
 		}
 
-		qglClear( GL_COLOR_BUFFER_BIT );
+		qglClear ( GL_COLOR_BUFFER_BIT );
 
 		qglFinish();
 
-		GL_BindProgram( &tr.genericSingleShader );
-		GL_Cull( CT_TWO_SIDED );
+		GL_BindProgram ( &tr.genericSingleShader );
+		GL_Cull ( CT_TWO_SIDED );
 
 		// set uniforms
-		GLSL_SetUniform_TCGen_Environment( &tr.genericSingleShader,  qfalse );
-		GLSL_SetUniform_ColorGen( &tr.genericSingleShader, CGEN_VERTEX );
-		GLSL_SetUniform_AlphaGen( &tr.genericSingleShader, AGEN_VERTEX );
+		GLSL_SetUniform_TCGen_Environment ( &tr.genericSingleShader,  qfalse );
+		GLSL_SetUniform_ColorGen ( &tr.genericSingleShader, CGEN_VERTEX );
+		GLSL_SetUniform_AlphaGen ( &tr.genericSingleShader, AGEN_VERTEX );
 
 		if ( glConfig.vboVertexSkinningAvailable )
 		{
-			GLSL_SetUniform_VertexSkinning( &tr.genericSingleShader, qfalse );
+			GLSL_SetUniform_VertexSkinning ( &tr.genericSingleShader, qfalse );
 		}
 
-		GLSL_SetUniform_DeformGen( &tr.genericSingleShader, DGEN_NONE );
-		GLSL_SetUniform_AlphaTest( &tr.genericSingleShader, 0 );
-		GLSL_SetUniform_ColorTextureMatrix( &tr.genericSingleShader, matrixIdentity );
+		GLSL_SetUniform_DeformGen ( &tr.genericSingleShader, DGEN_NONE );
+		GLSL_SetUniform_AlphaTest ( &tr.genericSingleShader, 0 );
+		GLSL_SetUniform_ColorTextureMatrix ( &tr.genericSingleShader, matrixIdentity );
 
-		GL_SelectTexture( 0 );
+		GL_SelectTexture ( 0 );
 
 		start = ri.Milliseconds();
 
 		for ( i = 0; i < tr.images.currentElements; i++ )
 		{
-			image = Com_GrowListElement( &tr.images, i );
+			image = Com_GrowListElement ( &tr.images, i );
 
 			/*
 			   if(image->bits & (IF_RGBA16F | IF_RGBA32F | IF_LA16F | IF_LA32F))
@@ -1020,14 +1020,14 @@ extern "C" {
 			}
 
 			// bind u_ColorMap
-			GL_Bind( image );
+			GL_Bind ( image );
 
-			VectorSet4( quadVerts[ 0 ], x, y, 0, 1 );
-			VectorSet4( quadVerts[ 1 ], x + w, y, 0, 1 );
-			VectorSet4( quadVerts[ 2 ], x + w, y + h, 0, 1 );
-			VectorSet4( quadVerts[ 3 ], x, y + h, 0, 1 );
+			VectorSet4 ( quadVerts[ 0 ], x, y, 0, 1 );
+			VectorSet4 ( quadVerts[ 1 ], x + w, y, 0, 1 );
+			VectorSet4 ( quadVerts[ 2 ], x + w, y + h, 0, 1 );
+			VectorSet4 ( quadVerts[ 3 ], x, y + h, 0, 1 );
 
-			Tess_InstantQuad( quadVerts );
+			Tess_InstantQuad ( quadVerts );
 
 			/*
 			   qglBegin(GL_QUADS);
@@ -1046,7 +1046,7 @@ extern "C" {
 		qglFinish();
 
 		end = ri.Milliseconds();
-		ri.Printf( PRINT_ALL, "%i msec to draw all images\n", end - start );
+		ri.Printf ( PRINT_ALL, "%i msec to draw all images\n", end - start );
 
 		GL_CheckErrors();
 	}
@@ -1058,7 +1058,7 @@ extern "C" {
 	RB_SwapBuffers
 	=============
 	*/
-	const void     *RB_SwapBuffers( const void *data )
+	const void     *RB_SwapBuffers ( const void *data )
 	{
 		const swapBuffersCommand_t *cmd;
 
@@ -1078,7 +1078,7 @@ extern "C" {
 
 #endif
 
-		cmd = ( const swapBuffersCommand_t * )data;
+		cmd = ( const swapBuffersCommand_t * ) data;
 
 #if defined( USE_D3D10 )
 		// TODO
@@ -1092,8 +1092,8 @@ extern "C" {
 			long          sum = 0;
 			unsigned char *stencilReadback;
 
-			stencilReadback = ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight );
-			qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback );
+			stencilReadback = ri.Hunk_AllocateTempMemory ( glConfig.vidWidth * glConfig.vidHeight );
+			qglReadPixels ( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback );
 
 			for ( i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++ )
 			{
@@ -1101,7 +1101,7 @@ extern "C" {
 			}
 
 			backEnd.pc.c_overDraw += sum;
-			ri.Hunk_FreeTempMemory( stencilReadback );
+			ri.Hunk_FreeTempMemory ( stencilReadback );
 		}
 
 #endif
@@ -1117,27 +1117,27 @@ extern "C" {
 
 #endif
 
-		GLimp_LogComment( "***************** RB_SwapBuffers *****************\n\n\n" );
+		GLimp_LogComment ( "***************** RB_SwapBuffers *****************\n\n\n" );
 
 		// present the information rendered to the back buffer to the front buffer (the screen)
-		dx.swapChain->Present( 0, 0 );
+		dx.swapChain->Present ( 0, 0 );
 
 		if ( r_fullscreen->modified )
 		{
 			bool        fullscreen;
 			bool        needToToggle = qtrue;
-			bool        sdlToggled   = qfalse;
-			SDL_Surface *s           = SDL_GetVideoSurface();
+			bool        sdlToggled = qfalse;
+			SDL_Surface *s = SDL_GetVideoSurface();
 
 			if ( s )
 			{
 				// Find out the current state
-				fullscreen = !!( s->flags & SDL_FULLSCREEN );
+				fullscreen = !! ( s->flags & SDL_FULLSCREEN );
 
-				if ( r_fullscreen->integer > 0 && ri.Cvar_VariableIntegerValue( "in_nograb" ) > 0 )
+				if ( r_fullscreen->integer > 0 && ri.Cvar_VariableIntegerValue ( "in_nograb" ) > 0 )
 				{
-					ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
-					ri.Cvar_Set( "r_fullscreen", "0" );
+					ri.Printf ( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
+					ri.Cvar_Set ( "r_fullscreen", "0" );
 					r_fullscreen->modified = qfalse;
 				}
 
@@ -1146,7 +1146,7 @@ extern "C" {
 
 				if ( needToToggle )
 				{
-					sdlToggled = SDL_WM_ToggleFullScreen( s );
+					sdlToggled = SDL_WM_ToggleFullScreen ( s );
 				}
 			}
 
@@ -1155,7 +1155,7 @@ extern "C" {
 				// SDL_WM_ToggleFullScreen didn't work, so do it the slow way
 				if ( !sdlToggled )
 				{
-					ri.Cmd_ExecuteText( EXEC_APPEND, "vid_restart" );
+					ri.Cmd_ExecuteText ( EXEC_APPEND, "vid_restart" );
 				}
 
 				ri.IN_Restart();
@@ -1166,7 +1166,7 @@ extern "C" {
 
 		backEnd.projection2D = qfalse;
 
-		return ( const void * )( cmd + 1 );
+		return ( const void * ) ( cmd + 1 );
 	}
 
 	/*
@@ -1177,11 +1177,11 @@ extern "C" {
 	smp extensions, or asynchronously by another thread.
 	====================
 	*/
-	void RB_ExecuteRenderCommands( const void *data )
+	void RB_ExecuteRenderCommands ( const void *data )
 	{
 		int t1, t2;
 
-		GLimp_LogComment( "--- RB_ExecuteRenderCommands ---\n" );
+		GLimp_LogComment ( "--- RB_ExecuteRenderCommands ---\n" );
 
 		t1 = ri.Milliseconds();
 
@@ -1196,40 +1196,40 @@ extern "C" {
 
 		while ( 1 )
 		{
-			switch ( *( const int * )data )
+			switch ( * ( const int * ) data )
 			{
 				case RC_SET_COLOR:
-					data = RB_SetColor( data );
+					data = RB_SetColor ( data );
 					break;
 
 				case RC_STRETCH_PIC:
-					data = RB_StretchPic( data );
+					data = RB_StretchPic ( data );
 					break;
 
 				case RC_DRAW_VIEW:
-					data = RB_DrawView( data );
+					data = RB_DrawView ( data );
 					break;
 
 				case RC_DRAW_BUFFER:
-					data = RB_DrawBuffer( data );
+					data = RB_DrawBuffer ( data );
 					break;
 
 				case RC_SWAP_BUFFERS:
-					data = RB_SwapBuffers( data );
+					data = RB_SwapBuffers ( data );
 					break;
 
 				case RC_SCREENSHOT:
-					data = RB_TakeScreenshotCmd( data );
+					data = RB_TakeScreenshotCmd ( data );
 					break;
 
 				case RC_VIDEOFRAME:
-					data = RB_TakeVideoFrameCmd( data );
+					data = RB_TakeVideoFrameCmd ( data );
 					break;
 
 				case RC_END_OF_LIST:
 				default:
 					// stop rendering on this thread
-					t2              = ri.Milliseconds();
+					t2 = ri.Milliseconds();
 					backEnd.pc.msec = t2 - t1;
 					return;
 			}
@@ -1241,7 +1241,7 @@ extern "C" {
 	RB_RenderThread
 	================
 	*/
-	void RB_RenderThread( void )
+	void RB_RenderThread ( void )
 	{
 		const void *data;
 
@@ -1253,12 +1253,12 @@ extern "C" {
 
 			if ( !data )
 			{
-				return;                         // all done, renderer is shutting down
+				return; // all done, renderer is shutting down
 			}
 
 			renderThreadActive = qtrue;
 
-			RB_ExecuteRenderCommands( data );
+			RB_ExecuteRenderCommands ( data );
 
 			renderThreadActive = qfalse;
 		}

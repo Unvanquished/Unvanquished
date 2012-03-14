@@ -62,7 +62,7 @@ public:
 		return udata.m_Int;
 	}
 
-	void FromInt( obint32 _n )
+	void FromInt ( obint32 _n )
 	{
 		udata.m_Int = _n;
 	}
@@ -77,17 +77,17 @@ public:
 		return udata.m_Short[ 0 ] >= 0;
 	}
 
-	bool operator!=( const GameEntity &_other ) const
+	bool operator!= ( const GameEntity &_other ) const
 	{
 		return udata.m_Int != _other.udata.m_Int;
 	}
 
-	bool operator==( const GameEntity &_other ) const
+	bool operator== ( const GameEntity &_other ) const
 	{
 		return udata.m_Int == _other.udata.m_Int;
 	}
 
-	explicit GameEntity( obint16 _index, obint16 _serial )
+	explicit GameEntity ( obint16 _index, obint16 _serial )
 	{
 		udata.m_Short[ 0 ] = _index;
 		udata.m_Short[ 1 ] = _serial;
@@ -150,12 +150,12 @@ typedef enum eobResult
 } obResult;
 
 #ifdef __cplusplus
-inline bool SUCCESS( obResult _res )
+inline bool SUCCESS ( obResult _res )
 {
 	return ( _res == Success ) ? true : false;
 }
 
-inline int MAKE_KEY( char _v1, char _v2, char _v3, char _v4 )
+inline int MAKE_KEY ( char _v1, char _v2, char _v3, char _v4 )
 {
 	return ( ( ( _v1 ) << 24 ) | ( ( _v2 ) << 16 ) | ( ( _v3 ) << 8 ) | ( _v4 ) );
 }
@@ -223,7 +223,7 @@ typedef enum eBotDebugFlag
 
 typedef enum eTeamBase
 {
-  OB_TEAM_ALL       = -2,
+  OB_TEAM_ALL = -2,
   OB_TEAM_SPECTATOR = -1,
   OB_TEAM_NONE,
   OB_TEAM_1,
@@ -239,10 +239,10 @@ typedef enum eTeamBase
 //		RANDOM_TEAM_IF_NO_TEAM -  - Pick a random team if we don't already have a team.
 typedef enum eHelpers
 {
-  RANDOM_CLASS             = -1,
+  RANDOM_CLASS = -1,
   RANDOM_CLASS_IF_NO_CLASS = -2,
-  RANDOM_TEAM              = -1,
-  RANDOM_TEAM_IF_NO_TEAM   = -2,
+  RANDOM_TEAM = -1,
+  RANDOM_TEAM_IF_NO_TEAM = -2,
 } Helpers;
 
 // typedef: AABB
@@ -279,7 +279,7 @@ typedef struct AABB_t
 		return true;
 	}
 
-	void Set( const float _pt[ 3 ] )
+	void Set ( const float _pt[ 3 ] )
 	{
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -288,7 +288,7 @@ typedef struct AABB_t
 		}
 	}
 
-	void Set( const float _min[ 3 ], const float _max[ 3 ] )
+	void Set ( const float _min[ 3 ], const float _max[ 3 ] )
 	{
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -297,28 +297,28 @@ typedef struct AABB_t
 		}
 	}
 
-	void CenterPoint( float _out[ 3 ] ) const
+	void CenterPoint ( float _out[ 3 ] ) const
 	{
 		_out[ 0 ] = ( m_Mins[ 0 ] + m_Maxs[ 0 ] ) * 0.5f;
 		_out[ 1 ] = ( m_Mins[ 1 ] + m_Maxs[ 1 ] ) * 0.5f;
 		_out[ 2 ] = ( m_Mins[ 2 ] + m_Maxs[ 2 ] ) * 0.5f;
 	}
 
-	void CenterTop( float _out[ 3 ] ) const
+	void CenterTop ( float _out[ 3 ] ) const
 	{
 		_out[ 0 ] = ( m_Mins[ 0 ] + m_Maxs[ 0 ] ) * 0.5f;
 		_out[ 1 ] = ( m_Mins[ 1 ] + m_Maxs[ 1 ] ) * 0.5f;
 		_out[ 2 ] = m_Maxs[ 2 ];
 	}
 
-	void CenterBottom( float _out[ 3 ] ) const
+	void CenterBottom ( float _out[ 3 ] ) const
 	{
 		_out[ 0 ] = ( m_Mins[ 0 ] + m_Maxs[ 0 ] ) * 0.5f;
 		_out[ 1 ] = ( m_Mins[ 1 ] + m_Maxs[ 1 ] ) * 0.5f;
 		_out[ 2 ] = m_Mins[ 2 ];
 	}
 
-	void SetCenter( const float _out[ 3 ] )
+	void SetCenter ( const float _out[ 3 ] )
 	{
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -327,7 +327,7 @@ typedef struct AABB_t
 		}
 	}
 
-	void Expand( const float _pt[ 3 ] )
+	void Expand ( const float _pt[ 3 ] )
 	{
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -343,13 +343,13 @@ typedef struct AABB_t
 		}
 	}
 
-	void Expand( const AABB_t &_bbox )
+	void Expand ( const AABB_t &_bbox )
 	{
-		Expand( _bbox.m_Mins );
-		Expand( _bbox.m_Maxs );
+		Expand ( _bbox.m_Mins );
+		Expand ( _bbox.m_Maxs );
 	}
 
-	bool Intersects( const AABB_t &_bbox ) const
+	bool Intersects ( const AABB_t &_bbox ) const
 	{
 		for ( int i = 0; i < 3; i++ )
 		{
@@ -362,7 +362,7 @@ typedef struct AABB_t
 		return true;
 	}
 
-	bool Contains( const float _pt[ 3 ] ) const
+	bool Contains ( const float _pt[ 3 ] ) const
 	{
 		for ( int i = 0; i < 3; i++ )
 		{
@@ -375,9 +375,9 @@ typedef struct AABB_t
 		return true;
 	}
 
-	bool FindIntersection( const AABB_t &_bbox, AABB_t &_overlap ) const
+	bool FindIntersection ( const AABB_t &_bbox, AABB_t &_overlap ) const
 	{
-		if ( Intersects( _bbox ) )
+		if ( Intersects ( _bbox ) )
 		{
 			for ( int i = 0; i < 3; i++ )
 			{
@@ -406,27 +406,27 @@ typedef struct AABB_t
 		return false;
 	}
 
-	float GetAxisLength( int _axis ) const
+	float GetAxisLength ( int _axis ) const
 	{
 		return m_Maxs[ _axis ] - m_Mins[ _axis ];
 	}
 
 	float GetArea() const
 	{
-		return GetAxisLength( 0 ) * GetAxisLength( 1 ) * GetAxisLength( 2 );
+		return GetAxisLength ( 0 ) * GetAxisLength ( 1 ) * GetAxisLength ( 2 );
 	}
 
-	float DistanceFromBottom( const float _pt[ 3 ] ) const
+	float DistanceFromBottom ( const float _pt[ 3 ] ) const
 	{
-		return -( m_Mins[ 2 ] - _pt[ 2 ] );
+		return - ( m_Mins[ 2 ] - _pt[ 2 ] );
 	}
 
-	float DistanceFromTop( const float _pt[ 3 ] ) const
+	float DistanceFromTop ( const float _pt[ 3 ] ) const
 	{
 		return ( m_Maxs[ 2 ] - _pt[ 2 ] );
 	}
 
-	void Scale( float _scale )
+	void Scale ( float _scale )
 	{
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -435,7 +435,7 @@ typedef struct AABB_t
 		}
 	}
 
-	AABB_t ScaleCopy( float _scale )
+	AABB_t ScaleCopy ( float _scale )
 	{
 		AABB_t out = *this; // cs: was AABB, but gcc said NO
 
@@ -448,7 +448,7 @@ typedef struct AABB_t
 		return out;
 	}
 
-	void Expand( float _expand )
+	void Expand ( float _expand )
 	{
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -457,7 +457,7 @@ typedef struct AABB_t
 		}
 	}
 
-	void ExpandAxis( int _axis, float _expand )
+	void ExpandAxis ( int _axis, float _expand )
 	{
 		m_Mins[ _axis ] -= _expand;
 		m_Maxs[ _axis ] += _expand;
@@ -473,7 +473,7 @@ typedef struct AABB_t
 		}
 	}
 
-	void GetBottomCorners( float _bl[ 3 ], float _tl[ 3 ], float _tr[ 3 ], float _br[ 3 ] )
+	void GetBottomCorners ( float _bl[ 3 ], float _tl[ 3 ], float _tr[ 3 ], float _br[ 3 ] )
 	{
 		_bl[ 0 ] = m_Mins[ 0 ];
 		_bl[ 1 ] = m_Mins[ 1 ];
@@ -492,16 +492,16 @@ typedef struct AABB_t
 		_br[ 2 ] = m_Mins[ 2 ];
 	}
 
-	void GetTopCorners( float _bl[ 3 ], float _tl[ 3 ], float _tr[ 3 ], float _br[ 3 ] )
+	void GetTopCorners ( float _bl[ 3 ], float _tl[ 3 ], float _tr[ 3 ], float _br[ 3 ] )
 	{
-		GetBottomCorners( _bl, _tl, _tr, _br );
+		GetBottomCorners ( _bl, _tl, _tr, _br );
 		_bl[ 2 ] = m_Maxs[ 2 ];
 		_tl[ 2 ] = m_Maxs[ 2 ];
 		_tr[ 2 ] = m_Maxs[ 2 ];
 		_br[ 2 ] = m_Maxs[ 2 ];
 	}
 
-	void Translate( const float _pos[ 3 ] )
+	void Translate ( const float _pos[ 3 ] )
 	{
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -510,7 +510,7 @@ typedef struct AABB_t
 		}
 	}
 
-	void UnTranslate( const float _pos[ 3 ] )
+	void UnTranslate ( const float _pos[ 3 ] )
 	{
 		for ( int i = 0; i < 3; ++i )
 		{
@@ -519,7 +519,7 @@ typedef struct AABB_t
 		}
 	}
 
-	AABB_t TranslateCopy( const float _pos[ 3 ] ) const
+	AABB_t TranslateCopy ( const float _pos[ 3 ] ) const
 	{
 		AABB_t aabb = *this;
 
@@ -532,14 +532,14 @@ typedef struct AABB_t
 		return aabb;
 	}
 
-	AABB_t( const float _mins[ 3 ], const float _maxs[ 3 ] )
+	AABB_t ( const float _mins[ 3 ], const float _maxs[ 3 ] )
 	{
-		Set( _mins, _maxs );
+		Set ( _mins, _maxs );
 	}
 
-	AABB_t( const float _center[ 3 ] )
+	AABB_t ( const float _center[ 3 ] )
 	{
-		Set( _center );
+		Set ( _center );
 	}
 
 	AABB_t()
@@ -778,17 +778,17 @@ typedef enum eSoundType
 //		CONT_LAVA - In lava.
 typedef enum eContents
 {
-  CONT_SOLID      = ( 1 << 0 ),
-  CONT_WATER      = ( 1 << 1 ),
-  CONT_SLIME      = ( 1 << 2 ),
-  CONT_FOG        = ( 1 << 3 ),
-  CONT_MOVER      = ( 1 << 4 ),
-  CONT_TRIGGER    = ( 1 << 5 ),
-  CONT_LAVA       = ( 1 << 6 ),
-  CONT_LADDER     = ( 1 << 7 ),
+  CONT_SOLID = ( 1 << 0 ),
+  CONT_WATER = ( 1 << 1 ),
+  CONT_SLIME = ( 1 << 2 ),
+  CONT_FOG = ( 1 << 3 ),
+  CONT_MOVER = ( 1 << 4 ),
+  CONT_TRIGGER = ( 1 << 5 ),
+  CONT_LAVA = ( 1 << 6 ),
+  CONT_LADDER = ( 1 << 7 ),
   CONT_TELEPORTER = ( 1 << 8 ),
-  CONT_MOVABLE    = ( 1 << 9 ),
-  CONT_PLYRCLIP   = ( 1 << 10 ),
+  CONT_MOVABLE = ( 1 << 9 ),
+  CONT_PLYRCLIP = ( 1 << 10 ),
 
   // THIS MUST BE LAST
   CONT_START_USER = ( 1 << 24 )
@@ -798,8 +798,8 @@ typedef enum eContents
 //		SURFACE_SLICK - Low friction surface.
 typedef enum eSurfaceFlags
 {
-  SURFACE_SLICK      = ( 1 << 0 ),
-  SURFACE_LADDER     = ( 1 << 1 ),
+  SURFACE_SLICK = ( 1 << 0 ),
+  SURFACE_LADDER = ( 1 << 1 ),
 
   // THIS MUST BE LAST
   SURFACE_START_USER = ( 1 << 24 )
@@ -852,24 +852,24 @@ typedef enum eNavigatorID
 // enumerations: TraceMasks
 typedef enum eTraceMasks
 {
-  TR_MASK_ALL          = ( 1 << 0 ),  // hit everything
-  TR_MASK_SOLID        = ( 1 << 1 ),  // blocked by solids/world
-  TR_MASK_PLAYER       = ( 1 << 2 ),  // blocked by players
-  TR_MASK_SHOT         = ( 1 << 3 ),  // blocked by same mask that game uses for projectile/shot traces
-  TR_MASK_OPAQUE       = ( 1 << 4 ),  // blocked by opaque surfaces(even if they can be shot through)
-  TR_MASK_WATER        = ( 1 << 5 ),  // blocked by see-through water
-  TR_MASK_SLIME        = ( 1 << 6 ),  // blocked by opaque water
-  TR_MASK_GRATE        = ( 1 << 7 ),  // blocked by grates, normally projectiles go through grates, solids dont
-  TR_MASK_PLAYERCLIP   = ( 1 << 8 ),  // blocked by player clips
-  TR_MASK_SMOKEBOMB    = ( 1 << 9 ),  // blocked by smoke bombs
-  TR_MASK_FLOODFILL    = ( 1 << 10 ), // flood fill filter
+  TR_MASK_ALL = ( 1 << 0 ), // hit everything
+  TR_MASK_SOLID = ( 1 << 1 ), // blocked by solids/world
+  TR_MASK_PLAYER = ( 1 << 2 ), // blocked by players
+  TR_MASK_SHOT = ( 1 << 3 ), // blocked by same mask that game uses for projectile/shot traces
+  TR_MASK_OPAQUE = ( 1 << 4 ), // blocked by opaque surfaces(even if they can be shot through)
+  TR_MASK_WATER = ( 1 << 5 ), // blocked by see-through water
+  TR_MASK_SLIME = ( 1 << 6 ), // blocked by opaque water
+  TR_MASK_GRATE = ( 1 << 7 ), // blocked by grates, normally projectiles go through grates, solids dont
+  TR_MASK_PLAYERCLIP = ( 1 << 8 ), // blocked by player clips
+  TR_MASK_SMOKEBOMB = ( 1 << 9 ), // blocked by smoke bombs
+  TR_MASK_FLOODFILL = ( 1 << 10 ), // flood fill filter
   TR_MASK_FLOODFILLENT = ( 1 << 11 ), // flood fill filter with entities
 
   // THIS MUST BE LAST
-  TR_MASK_START_USER   = ( 1 << 24 ),
+  TR_MASK_START_USER = ( 1 << 24 ),
 
   // combo masks can be defined separately
-  TR_MASK_VISIBLE      = TR_MASK_SOLID | TR_MASK_OPAQUE | TR_MASK_SLIME, // can see but not necessarily shoot
+  TR_MASK_VISIBLE = TR_MASK_SOLID | TR_MASK_OPAQUE | TR_MASK_SLIME, // can see but not necessarily shoot
 } TraceMasks;
 
 // struct: BotUserData
@@ -903,54 +903,54 @@ typedef struct obUserData_t
 
 	// Easy Constructors for C++
 #ifdef __cplusplus
-	obUserData_t() : DataType( dtNone )
+	obUserData_t() : DataType ( dtNone )
 	{
 	};
-	obUserData_t( const char *_str ) : DataType( dtString )
+	obUserData_t ( const char *_str ) : DataType ( dtString )
 	{
 		udata.m_String = _str;
 	};
-	obUserData_t( int _int ) : DataType( dtInt )
+	obUserData_t ( int _int ) : DataType ( dtInt )
 	{
 		udata.m_Int = _int;
 	};
 	//obUserData_t(obint64 _int) : DataType(dtInt64) { udata.m_Int64 = _int; };
-	obUserData_t( float _float ) : DataType( dtFloat )
+	obUserData_t ( float _float ) : DataType ( dtFloat )
 	{
 		udata.m_Float = _float;
 	};
-	obUserData_t( const GameEntity &_ent ) : DataType( dtEntity )
+	obUserData_t ( const GameEntity &_ent ) : DataType ( dtEntity )
 	{
 		udata.m_Entity = _ent.AsInt();
 	};
-	obUserData_t( float _x, float _y, float _z ) :
-		DataType( dtVector )
+	obUserData_t ( float _x, float _y, float _z ) :
+		DataType ( dtVector )
 	{
 		udata.m_Vector[ 0 ] = _x;
 		udata.m_Vector[ 1 ] = _y;
 		udata.m_Vector[ 2 ] = _z;
 	};
-	obUserData_t( float *_v ) :
-		DataType( dtVector )
+	obUserData_t ( float *_v ) :
+		DataType ( dtVector )
 	{
 		udata.m_Vector[ 0 ] = _v[ 0 ];
 		udata.m_Vector[ 1 ] = _v[ 1 ];
 		udata.m_Vector[ 2 ] = _v[ 2 ];
 	};
-	obUserData_t( int _v0, int _v1, int _v2 ) : DataType( dt3_4byteFlags )
+	obUserData_t ( int _v0, int _v1, int _v2 ) : DataType ( dt3_4byteFlags )
 	{
 		udata.m_4ByteFlags[ 0 ] = _v0;
 		udata.m_4ByteFlags[ 1 ] = _v1;
 		udata.m_4ByteFlags[ 2 ] = _v2;
 	};
-	obUserData_t( char *_v0, char *_v1, char *_v2 ) : DataType( dt3_Strings )
+	obUserData_t ( char *_v0, char *_v1, char *_v2 ) : DataType ( dt3_Strings )
 	{
 		udata.m_CharPtrs[ 0 ] = _v0;
 		udata.m_CharPtrs[ 1 ] = _v1;
 		udata.m_CharPtrs[ 2 ] = _v2;
 	};
-	obUserData_t( short _v0, short _v1, short _v2, short _v3, short _v4, short _v5 ) :
-		DataType( dt6_2byteFlags )
+	obUserData_t ( short _v0, short _v1, short _v2, short _v3, short _v4, short _v5 ) :
+		DataType ( dt6_2byteFlags )
 	{
 		udata.m_2ByteFlags[ 0 ] = _v0;
 		udata.m_2ByteFlags[ 1 ] = _v1;
@@ -959,19 +959,19 @@ typedef struct obUserData_t
 		udata.m_2ByteFlags[ 4 ] = _v4;
 		udata.m_2ByteFlags[ 5 ] = _v5;
 	};
-	obUserData_t( char _v0, char _v1, char _v2, char _v3, char _v4, char _v5, char _v6, char _v7, char _v8, char _v9, char _v10, char _v11 ) :
-		DataType( dt12_1byteFlags )
+	obUserData_t ( char _v0, char _v1, char _v2, char _v3, char _v4, char _v5, char _v6, char _v7, char _v8, char _v9, char _v10, char _v11 ) :
+		DataType ( dt12_1byteFlags )
 	{
-		udata.m_1ByteFlags[ 0 ]  = _v0;
-		udata.m_1ByteFlags[ 1 ]  = _v1;
-		udata.m_1ByteFlags[ 2 ]  = _v2;
-		udata.m_1ByteFlags[ 3 ]  = _v3;
-		udata.m_1ByteFlags[ 4 ]  = _v4;
-		udata.m_1ByteFlags[ 5 ]  = _v5;
-		udata.m_1ByteFlags[ 6 ]  = _v6;
-		udata.m_1ByteFlags[ 7 ]  = _v7;
-		udata.m_1ByteFlags[ 8 ]  = _v8;
-		udata.m_1ByteFlags[ 9 ]  = _v9;
+		udata.m_1ByteFlags[ 0 ] = _v0;
+		udata.m_1ByteFlags[ 1 ] = _v1;
+		udata.m_1ByteFlags[ 2 ] = _v2;
+		udata.m_1ByteFlags[ 3 ] = _v3;
+		udata.m_1ByteFlags[ 4 ] = _v4;
+		udata.m_1ByteFlags[ 5 ] = _v5;
+		udata.m_1ByteFlags[ 6 ] = _v6;
+		udata.m_1ByteFlags[ 7 ] = _v7;
+		udata.m_1ByteFlags[ 8 ] = _v8;
+		udata.m_1ByteFlags[ 9 ] = _v9;
 		udata.m_1ByteFlags[ 10 ] = _v10;
 		udata.m_1ByteFlags[ 11 ] = _v11;
 	};
@@ -1061,14 +1061,14 @@ typedef struct obUserData_t
 	inline GameEntity GetEntity() const
 	{
 		GameEntity e;
-		e.FromInt( udata.m_Entity );
+		e.FromInt ( udata.m_Entity );
 		return e;
 	};
-	inline void SetEntity( GameEntity e )
+	inline void SetEntity ( GameEntity e )
 	{
 		udata.m_Entity = e.AsInt();
 	};
-	inline const char *GetStrings( int _index ) const
+	inline const char *GetStrings ( int _index ) const
 	{
 		return udata.m_CharPtrs[ _index ];
 	};
@@ -1097,7 +1097,7 @@ typedef struct obUserData_t
 
 		if ( IsInt() )
 		{
-			return ( float )GetInt();
+			return ( float ) GetInt();
 		}
 
 		return 0.0f;
@@ -1106,7 +1106,7 @@ typedef struct obUserData_t
 	{
 		if ( IsFloat() )
 		{
-			return ( int )GetFloat();
+			return ( int ) GetFloat();
 		}
 
 		if ( IsInt() )
@@ -1118,7 +1118,7 @@ typedef struct obUserData_t
 	};
 
 	//////////////////////////////////////////////////////////////////////////
-	bool Get( float &_val )
+	bool Get ( float &_val )
 	{
 		if ( IsFloat() )
 		{
@@ -1129,7 +1129,7 @@ typedef struct obUserData_t
 		return false;
 	}
 
-	bool Get( int &_val )
+	bool Get ( int &_val )
 	{
 		if ( IsInt() )
 		{
@@ -1140,20 +1140,20 @@ typedef struct obUserData_t
 		return false;
 	}
 
-	bool Get( float *_val )
+	bool Get ( float *_val )
 	{
 		if ( IsVector() )
 		{
-			_val[ 0 ] = GetVector()[ 0 ];
-			_val[ 1 ] = GetVector()[ 1 ];
-			_val[ 2 ] = GetVector()[ 2 ];
+			_val[ 0 ] = GetVector() [ 0 ];
+			_val[ 1 ] = GetVector() [ 1 ];
+			_val[ 2 ] = GetVector() [ 2 ];
 			return true;
 		}
 
 		return false;
 	}
 
-	bool Get( bool &_val )
+	bool Get ( bool &_val )
 	{
 		if ( IsInt() )
 		{
@@ -1173,24 +1173,24 @@ class KeyVals
 public:
 	enum { MaxArgs = 32, MaxArgLength = 32, MaxStringLength = 64 };
 
-	bool SetInt( const char *_key, int _val );
-	bool SetFloat( const char *_key, float _val );
-	bool SetEntity( const char *_key, GameEntity _val );
-	bool SetVector( const char *_key, float _x, float _y, float _z );
-	bool SetVector( const char *_key, const float *_v );
-	bool SetString( const char *_key, const char *_value );
-	bool Set( const char *_key, const obUserData &_value );
+	bool SetInt ( const char *_key, int _val );
+	bool SetFloat ( const char *_key, float _val );
+	bool SetEntity ( const char *_key, GameEntity _val );
+	bool SetVector ( const char *_key, float _x, float _y, float _z );
+	bool SetVector ( const char *_key, const float *_v );
+	bool SetString ( const char *_key, const char *_value );
+	bool Set ( const char *_key, const obUserData &_value );
 
-	bool GetInt( const char *_key, int &_val ) const;
-	bool GetFloat( const char *_key, float &_val ) const;
-	bool GetEntity( const char *_key, GameEntity &_val ) const;
-	bool GetVector( const char *_key, float &_x, float &_y, float &_z ) const;
-	bool GetVector( const char *_key, float *_v ) const;
-	bool GetString( const char *_key, const char *&_value ) const;
+	bool GetInt ( const char *_key, int &_val ) const;
+	bool GetFloat ( const char *_key, float &_val ) const;
+	bool GetEntity ( const char *_key, GameEntity &_val ) const;
+	bool GetVector ( const char *_key, float &_x, float &_y, float &_z ) const;
+	bool GetVector ( const char *_key, float *_v ) const;
+	bool GetString ( const char *_key, const char *&_value ) const;
 
 	void Reset();
 
-	void GetKV( int _index, const char *&_key, obUserData &ud ) const;
+	void GetKV ( int _index, const char *&_key, obUserData &ud ) const;
 
 	KeyVals();
 private:
@@ -1198,8 +1198,8 @@ private:
 	char       m_String[ MaxArgs ][ MaxStringLength ];
 	obUserData m_Value[ MaxArgs ];
 
-	bool       SetKeyVal( const char *_key, const obUserData &_ud );
-	bool       GetKeyVal( const char *_key, obUserData &_ud ) const;
+	bool       SetKeyVal ( const char *_key, const obUserData &_ud );
+	bool       GetKeyVal ( const char *_key, obUserData &_ud ) const;
 };
 
 class Seconds
@@ -1210,7 +1210,7 @@ public:
 		return m_Ms;
 	}
 
-	Seconds( float _seconds = 0.f ) : m_Ms( ( int )( _seconds * 1000.f ) )
+	Seconds ( float _seconds = 0.f ) : m_Ms ( ( int ) ( _seconds * 1000.f ) )
 	{
 	}
 
@@ -1244,20 +1244,20 @@ typedef struct TriggerInfo_t
 		}
 	}
 
-	TriggerInfo_t( const TriggerInfo_t &_ti )
+	TriggerInfo_t ( const TriggerInfo_t &_ti )
 	{
-		m_Entity    = _ti.m_Entity;
+		m_Entity = _ti.m_Entity;
 		m_Activator = _ti.m_Activator;
 
 		for ( int i = 0; i < TriggerBufferSize; ++i )
 		{
 			m_TagName[ i ] = _ti.m_TagName[ i ];
-			m_Action[ i ]  = _ti.m_Action[ i ];
+			m_Action[ i ] = _ti.m_Action[ i ];
 		}
 	}
 
-	TriggerInfo_t( GameEntity _ent, GameEntity _activator ) :
-		m_Entity( _ent ), m_Activator( _activator )
+	TriggerInfo_t ( GameEntity _ent, GameEntity _activator ) :
+		m_Entity ( _ent ), m_Activator ( _activator )
 	{
 		m_TagName[ 0 ] = m_Action[ 0 ] = 0;
 	}
@@ -1310,12 +1310,12 @@ typedef struct AutoNavFeature_t
 //		S_PLAYER_PLAYING - Player is good to go, and fully joined.
 typedef enum ePlayerState
 {
-  S_PLAYER_INVALID = 0,           // Player doesn't exist
-  S_PLAYER_SPECTATOR,             // Player is in spectator mode.
-  S_PLAYED_WAITING_TEAM,          // Player waiting on team selection.
-  S_PLAYED_WAITING_CLASS,         // Player waiting on class selection.
-  S_PLAYED_WAITING_NEXTROUND,     // Player waiting on on the next round. Died or something.
-  S_PLAYER_PLAYING                // Player is good to go, and fully joined.
+  S_PLAYER_INVALID = 0, // Player doesn't exist
+  S_PLAYER_SPECTATOR, // Player is in spectator mode.
+  S_PLAYED_WAITING_TEAM, // Player waiting on team selection.
+  S_PLAYED_WAITING_CLASS, // Player waiting on class selection.
+  S_PLAYED_WAITING_NEXTROUND, // Player waiting on on the next round. Died or something.
+  S_PLAYER_PLAYING // Player is good to go, and fully joined.
 } PlayerState;
 
 // enumerations: FlagState
@@ -1364,7 +1364,7 @@ class Arguments
 public:
 	enum { MaxArgs = 64, MaxArgLength = 128, };
 
-	Arguments() : m_NumArgs( 0 )
+	Arguments() : m_NumArgs ( 0 )
 	{
 		for ( int i = 0; i < MaxArgs; ++i )
 		{

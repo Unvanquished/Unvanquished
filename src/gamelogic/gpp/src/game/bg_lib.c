@@ -67,12 +67,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #if 0
 static char       sccsid[] = "@(#)qsort.c 8.1 (Berkeley) 6/4/93";
 #endif
-static const char rcsid[]  =
+static const char rcsid[] =
   "$Id: bg_lib.c 2248 2011-08-08 22:39:07Z cschwarz $";
 #endif /* LIBC_SCCS and not lint */
 
-static char *med3( char *, char *, char *, cmp_t * );
-static void swapfunc( char *, char *, int, int );
+static char *med3 ( char *, char *, char *, cmp_t * );
+static void swapfunc ( char *, char *, int, int );
 
 #ifndef min
 #define min(a, b) (( a ) < ( b ) ? ( a ) : ( b ))
@@ -82,7 +82,7 @@ static void swapfunc( char *, char *, int, int );
  * Qsort routine from Bentley & McIlroy's "Engineering a Sort Function".
  */
 #define swapcode(TYPE, parmi, parmj, n) {     \
-    long          i   = ( n ) / sizeof ( TYPE );       \
+    long          i = ( n ) / sizeof ( TYPE );       \
     register TYPE *pi = (TYPE *) ( parmi );     \
     register TYPE *pj = (TYPE *) ( parmj );     \
     do {            \
@@ -96,22 +96,22 @@ static void swapfunc( char *, char *, int, int );
                                                    es % sizeof( long ) ? 2 : es == sizeof( long ) ? 0 : 1;
 
 static void
-swapfunc( a, b, n, swaptype )
+swapfunc ( a, b, n, swaptype )
 char *a, *b;
 
 int n, swaptype;
 {
 	if ( swaptype <= 1 )
 	{
-		swapcode( long, a, b, n )
+		swapcode ( long, a, b, n )
 		else
 		{
-			swapcode( char, a, b, n )
+			swapcode ( char, a, b, n )
 		}
 
 #define swap(a, b)          \
   if (swaptype == 0) {        \
-    long t         = *(long *)( a );      \
+    long t = *(long *)( a );      \
     *(long *)( a ) = *(long *)( b );    \
     *(long *)( b ) = t;     \
   } else            \
@@ -120,19 +120,19 @@ int n, swaptype;
 #define vecswap(a, b, n) if (( n ) > 0) swapfunc(a, b, n, swaptype)
 
 		static char *
-		med3( a, b, c, cmp )
+		med3 ( a, b, c, cmp )
 		char *a, *b, *c;
 	}
 }
 cmp_t *cmp;
 {
-	return cmp( a, b ) < 0 ?
-	       ( cmp( b, c ) < 0 ? b : ( cmp( a, c ) < 0 ? c : a ) )
-		       : ( cmp( b, c ) > 0 ? b : ( cmp( a, c ) < 0 ? a : c ) );
+	return cmp ( a, b ) < 0 ?
+	       ( cmp ( b, c ) < 0 ? b : ( cmp ( a, c ) < 0 ? c : a ) )
+		       : ( cmp ( b, c ) > 0 ? b : ( cmp ( a, c ) < 0 ? a : c ) );
 }
 
 void
-qsort( a, n, es, cmp )
+qsort ( a, n, es, cmp )
 void *a;
 
 size_t n, es;
@@ -142,67 +142,67 @@ cmp_t  *cmp;
 	int  d, r, swaptype, swap_cnt;
 
 loop:
-	SWAPINIT( a, es );
+	SWAPINIT ( a, es );
 	swap_cnt = 0;
 
 	if ( n < 7 )
 	{
-		for ( pm = ( char * )a + es; pm < ( char * )a + n * es; pm += es )
+		for ( pm = ( char * ) a + es; pm < ( char * ) a + n * es; pm += es )
 		{
-			for ( pl = pm; pl > ( char * )a && cmp( pl - es, pl ) > 0;
+			for ( pl = pm; pl > ( char * ) a && cmp ( pl - es, pl ) > 0;
 			      pl -= es )
 			{
-				swap( pl, pl - es );
+				swap ( pl, pl - es );
 			}
 		}
 
 		return;
 	}
 
-	pm = ( char * )a + ( n / 2 ) * es;
+	pm = ( char * ) a + ( n / 2 ) * es;
 
 	if ( n > 7 )
 	{
 		pl = a;
-		pn = ( char * )a + ( n - 1 ) * es;
+		pn = ( char * ) a + ( n - 1 ) * es;
 
 		if ( n > 40 )
 		{
-			d  = ( n / 8 ) * es;
-			pl = med3( pl, pl + d, pl + 2 * d, cmp );
-			pm = med3( pm - d, pm, pm + d, cmp );
-			pn = med3( pn - 2 * d, pn - d, pn, cmp );
+			d = ( n / 8 ) * es;
+			pl = med3 ( pl, pl + d, pl + 2 * d, cmp );
+			pm = med3 ( pm - d, pm, pm + d, cmp );
+			pn = med3 ( pn - 2 * d, pn - d, pn, cmp );
 		}
 
-		pm = med3( pl, pm, pn, cmp );
+		pm = med3 ( pl, pm, pn, cmp );
 	}
 
-	swap( a, pm );
-	pa = pb = ( char * )a + es;
+	swap ( a, pm );
+	pa = pb = ( char * ) a + es;
 
-	pc = pd = ( char * )a + ( n - 1 ) * es;
+	pc = pd = ( char * ) a + ( n - 1 ) * es;
 
 	for ( ;; )
 	{
-		while ( pb <= pc && ( r = cmp( pb, a ) ) <= 0 )
+		while ( pb <= pc && ( r = cmp ( pb, a ) ) <= 0 )
 		{
 			if ( r == 0 )
 			{
 				swap_cnt = 1;
-				swap( pa, pb );
-				pa      += es;
+				swap ( pa, pb );
+				pa += es;
 			}
 
 			pb += es;
 		}
 
-		while ( pb <= pc && ( r = cmp( pc, a ) ) >= 0 )
+		while ( pb <= pc && ( r = cmp ( pc, a ) ) >= 0 )
 		{
 			if ( r == 0 )
 			{
 				swap_cnt = 1;
-				swap( pc, pd );
-				pd      -= es;
+				swap ( pc, pd );
+				pd -= es;
 			}
 
 			pc -= es;
@@ -213,35 +213,35 @@ loop:
 			break;
 		}
 
-		swap( pb, pc );
+		swap ( pb, pc );
 		swap_cnt = 1;
-		pb      += es;
-		pc      -= es;
+		pb += es;
+		pc -= es;
 	}
 
 	if ( swap_cnt == 0 ) /* Switch to insertion sort */
 	{
-		for ( pm = ( char * )a + es; pm < ( char * )a + n * es; pm += es )
+		for ( pm = ( char * ) a + es; pm < ( char * ) a + n * es; pm += es )
 		{
-			for ( pl = pm; pl > ( char * )a && cmp( pl - es, pl ) > 0;
+			for ( pl = pm; pl > ( char * ) a && cmp ( pl - es, pl ) > 0;
 			      pl -= es )
 			{
-				swap( pl, pl - es );
+				swap ( pl, pl - es );
 			}
 		}
 
 		return;
 	}
 
-	pn = ( char * )a + n * es;
-	r  = min( pa - ( char * )a, pb - pa );
-	vecswap( a, pb - r, r );
-	r  = min( pd - pc, pn - pd - es );
-	vecswap( pb, pn - r, r );
+	pn = ( char * ) a + n * es;
+	r = min ( pa - ( char * ) a, pb - pa );
+	vecswap ( a, pb - r, r );
+	r = min ( pd - pc, pn - pd - es );
+	vecswap ( pb, pn - r, r );
 
 	if ( ( r = pb - pa ) > es )
 	{
-		qsort( a, r / es, es, cmp );
+		qsort ( a, r / es, es, cmp );
 	}
 
 	if ( ( r = pd - pc ) > es )
@@ -257,7 +257,7 @@ loop:
 
 //==================================================================================
 
-size_t strlen( const char *string )
+size_t strlen ( const char *string )
 {
 	const char *s;
 
@@ -271,7 +271,7 @@ size_t strlen( const char *string )
 	return s - string;
 }
 
-char *strcat( char *strDestination, const char *strSource )
+char *strcat ( char *strDestination, const char *strSource )
 {
 	char *s;
 
@@ -291,7 +291,7 @@ char *strcat( char *strDestination, const char *strSource )
 	return strDestination;
 }
 
-char *strcpy( char *strDestination, const char *strSource )
+char *strcpy ( char *strDestination, const char *strSource )
 {
 	char *s;
 
@@ -306,7 +306,7 @@ char *strcpy( char *strDestination, const char *strSource )
 	return strDestination;
 }
 
-int strcmp( const char *string1, const char *string2 )
+int strcmp ( const char *string1, const char *string2 )
 {
 	while ( *string1 == *string2 && *string1 && *string2 )
 	{
@@ -317,40 +317,40 @@ int strcmp( const char *string1, const char *string2 )
 	return *string1 - *string2;
 }
 
-char *strrchr( const char *string, int c )
+char *strrchr ( const char *string, int c )
 {
-	int  i, length = strlen( string );
+	int  i, length = strlen ( string );
 	char *p;
 
 	for ( i = length - 1; i >= 0; i-- )
 	{
-		p = ( char * )&string[ i ];
+		p = ( char * ) &string[ i ];
 
 		if ( *p == c )
 		{
-			return ( char * )p;
+			return ( char * ) p;
 		}
 	}
 
-	return ( char * )0;
+	return ( char * ) 0;
 }
 
-char *strchr( const char *string, int c )
+char *strchr ( const char *string, int c )
 {
 	while ( *string )
 	{
 		if ( *string == c )
 		{
-			return ( char * )string;
+			return ( char * ) string;
 		}
 
 		string++;
 	}
 
-	return ( char * )0;
+	return ( char * ) 0;
 }
 
-char *strstr( const char *string, const char *strCharSet )
+char *strstr ( const char *string, const char *strCharSet )
 {
 	while ( *string )
 	{
@@ -366,16 +366,16 @@ char *strstr( const char *string, const char *strCharSet )
 
 		if ( !strCharSet[ i ] )
 		{
-			return ( char * )string;
+			return ( char * ) string;
 		}
 
 		string++;
 	}
 
-	return ( char * )0;
+	return ( char * ) 0;
 }
 
-int tolower( int c )
+int tolower ( int c )
 {
 	if ( c >= 'A' && c <= 'Z' )
 	{
@@ -385,7 +385,7 @@ int tolower( int c )
 	return c;
 }
 
-int toupper( int c )
+int toupper ( int c )
 {
 	if ( c >= 'a' && c <= 'z' )
 	{
@@ -395,7 +395,7 @@ int toupper( int c )
 	return c;
 }
 
-void *memmove( void *dest, const void *src, size_t count )
+void *memmove ( void *dest, const void *src, size_t count )
 {
 	size_t i;
 
@@ -406,14 +406,14 @@ void *memmove( void *dest, const void *src, size_t count )
 		while ( i > 0 )
 		{
 			i--;
-			( ( char * )dest )[ i ] = ( ( char * )src )[ i ];
+			( ( char * ) dest ) [ i ] = ( ( char * ) src ) [ i ];
 		}
 	}
 	else
 	{
 		for ( i = 0; i < count; i++ )
 		{
-			( ( char * ) dest )[ i ] = ( ( char * )src )[ i ];
+			( ( char * ) dest ) [ i ] = ( ( char * ) src ) [ i ];
 		}
 	}
 
@@ -422,32 +422,32 @@ void *memmove( void *dest, const void *src, size_t count )
 
 #if 0
 
-double floor( double x )
+double floor ( double x )
 {
-	return ( int )( x + 0x40000000 ) - 0x40000000;
+	return ( int ) ( x + 0x40000000 ) - 0x40000000;
 }
 
-void *memset( void *dest, int c, size_t count )
+void *memset ( void *dest, int c, size_t count )
 {
 	while ( count-- )
 	{
-		( ( char * )dest )[ count ] = c;
+		( ( char * ) dest ) [ count ] = c;
 	}
 
 	return dest;
 }
 
-void *memcpy( void *dest, const void *src, size_t count )
+void *memcpy ( void *dest, const void *src, size_t count )
 {
 	while ( count-- )
 	{
-		( ( char * )dest )[ count ] = ( ( char * )src )[ count ];
+		( ( char * ) dest ) [ count ] = ( ( char * ) src ) [ count ];
 	}
 
 	return dest;
 }
 
-char *strncpy( char *strDest, const char *strSource, size_t count )
+char *strncpy ( char *strDest, const char *strSource, size_t count )
 {
 	char *s;
 
@@ -467,7 +467,7 @@ char *strncpy( char *strDest, const char *strSource, size_t count )
 	return strDest;
 }
 
-double sqrt( double x )
+double sqrt ( double x )
 {
 	float y;
 	float delta;
@@ -479,7 +479,7 @@ double sqrt( double x )
 	}
 
 	// initial guess
-	y        = x / 2;
+	y = x / 2;
 
 	// refine
 	maxError = x * 0.001;
@@ -487,7 +487,7 @@ double sqrt( double x )
 	do
 	{
 		delta = ( y * y ) - x;
-		y    -= delta / ( 2 * y );
+		y -= delta / ( 2 * y );
 	}
 	while ( delta > maxError || delta < -maxError );
 
@@ -626,13 +626,13 @@ float sintable[ 1024 ] =
 	0.999925, 0.999942, 0.999958, 0.999971, 0.999981, 0.999989, 0.999995, 0.999999
 };
 
-double sin( double x )
+double sin ( double x )
 {
 	int index;
 	int quad;
 
-	index  = 1024 * x / ( M_PI * 0.5 );
-	quad   = ( index >> 10 ) & 3;
+	index = 1024 * x / ( M_PI * 0.5 );
+	quad = ( index >> 10 ) & 3;
 	index &= 1023;
 
 	switch ( quad )
@@ -653,13 +653,13 @@ double sin( double x )
 	return 0;
 }
 
-double cos( double x )
+double cos ( double x )
 {
 	int index;
 	int quad;
 
-	index  = 1024 * x / ( M_PI * 0.5 );
-	quad   = ( index >> 10 ) & 3;
+	index = 1024 * x / ( M_PI * 0.5 );
+	quad = ( index >> 10 ) & 3;
 	index &= 1023;
 
 	switch ( quad )
@@ -831,7 +831,7 @@ float acostable[] =
 	0.17700769, 0.16554844, 0.15324301, 0.13986823, 0.12508152, 0.10830610, 0.08841715, 0.06251018,
 };
 
-double acos( double x )
+double acos ( double x )
 {
 	int index;
 
@@ -849,7 +849,7 @@ double acos( double x )
 	return acostable[ index ];
 }
 
-double atan2( double y, double x )
+double atan2 ( double y, double x )
 {
 	float base;
 	float temp;
@@ -864,15 +864,15 @@ double atan2( double y, double x )
 			// quad 1
 			base = M_PI / 2;
 			temp = x;
-			x    = y;
-			y    = -temp;
+			x = y;
+			y = -temp;
 		}
 		else
 		{
 			// quad 2
 			base = M_PI;
-			x    = -x;
-			y    = -y;
+			x = -x;
+			y = -y;
 		}
 	}
 	else
@@ -882,18 +882,18 @@ double atan2( double y, double x )
 			// quad 3
 			base = 3 * M_PI / 2;
 			temp = x;
-			x    = -y;
-			y    = temp;
+			x = -y;
+			y = temp;
 		}
 	}
 
 	if ( y > x )
 	{
 		base += M_PI / 2;
-		temp  = x;
-		x     = y;
-		y     = temp;
-		dir   = -1;
+		temp = x;
+		x = y;
+		y = temp;
+		dir = -1;
 	}
 	else
 	{
@@ -928,21 +928,21 @@ double atan2( double y, double x )
 rint
 ===============
 */
-double rint( double v )
+double rint ( double v )
 {
 	if ( v >= 0.5f )
 	{
-		return ceil( v );
+		return ceil ( v );
 	}
 	else
 	{
-		return floor( v );
+		return floor ( v );
 	}
 }
 
-double tan( double x )
+double tan ( double x )
 {
-	return sin( x ) / cos( x );
+	return sin ( x ) / cos ( x );
 }
 
 /*
@@ -968,7 +968,7 @@ typedef union
         do {                          \
     ieee_float_shape_type gf_u; \
     gf_u.value = ( d );           \
-    ( i )      = gf_u.word;            \
+    ( i ) = gf_u.word;            \
   } while (0)
 
 /* Set a float from a 32 bit int.  */
@@ -977,7 +977,7 @@ typedef union
         do {                          \
     ieee_float_shape_type sf_u; \
     sf_u.word = ( i );            \
-    ( d )     = sf_u.value;           \
+    ( d ) = sf_u.value;           \
   } while (0)
 
 /* A union which permits us to convert between a float and a 32 bit
@@ -985,31 +985,31 @@ typedef union
 
 //acos
 static const float
-pi      =  3.1415925026e+00, /* 0x40490fda */
-pio2_hi =  1.5707962513e+00, /* 0x3fc90fda */
-pio2_lo =  7.5497894159e-08, /* 0x33a22168 */
-pS0     =  1.6666667163e-01, /* 0x3e2aaaab */
-pS1     = -3.2556581497e-01, /* 0xbea6b090 */
-pS2     =  2.0121252537e-01, /* 0x3e4e0aa8 */
-pS3     = -4.0055535734e-02, /* 0xbd241146 */
-pS4     =  7.9153501429e-04, /* 0x3a4f7f04 */
-pS5     =  3.4793309169e-05, /* 0x3811ef08 */
-qS1     = -2.4033949375e+00, /* 0xc019d139 */
-qS2     =  2.0209457874e+00, /* 0x4001572d */
-qS3     = -6.8828397989e-01, /* 0xbf303361 */
-qS4     =  7.7038154006e-02; /* 0x3d9dc62e */
+pi = 3.1415925026e+00, /* 0x40490fda */
+pio2_hi = 1.5707962513e+00, /* 0x3fc90fda */
+pio2_lo = 7.5497894159e-08, /* 0x33a22168 */
+pS0 = 1.6666667163e-01, /* 0x3e2aaaab */
+pS1 = -3.2556581497e-01, /* 0xbea6b090 */
+pS2 = 2.0121252537e-01, /* 0x3e4e0aa8 */
+pS3 = -4.0055535734e-02, /* 0xbd241146 */
+pS4 = 7.9153501429e-04, /* 0x3a4f7f04 */
+pS5 = 3.4793309169e-05, /* 0x3811ef08 */
+qS1 = -2.4033949375e+00, /* 0xc019d139 */
+qS2 = 2.0209457874e+00, /* 0x4001572d */
+qS3 = -6.8828397989e-01, /* 0xbf303361 */
+qS4 = 7.7038154006e-02; /* 0x3d9dc62e */
 
 /*
 ==================
 acos
 ==================
 */
-double acos( double x )
+double acos ( double x )
 {
 	float z, subp, p, q, r, w, s, c, df;
 	int   hx, ix;
 
-	GET_FLOAT_WORD( hx, x );
+	GET_FLOAT_WORD ( hx, x );
 	ix = hx & 0x7fffffff;
 
 	if ( ix == 0x3f800000 )
@@ -1021,7 +1021,7 @@ double acos( double x )
 		}
 		else
 		{
-			return pi + ( float )2.0 * pio2_lo; // acos(-1)= pi
+			return pi + ( float ) 2.0 * pio2_lo; // acos(-1)= pi
 		}
 	}
 	else if ( ix > 0x3f800000 )
@@ -1038,95 +1038,95 @@ double acos( double x )
 			return pio2_hi + pio2_lo; //if|x|<2**-57
 		}
 
-		z    = x * x;
+		z = x * x;
 		subp = pS3 + z * ( pS4 + z * pS5 );
 		// chop up expression to keep mac register based stack happy
-		p    = z * ( pS0 + z * ( pS1 + z * ( pS2 + z * subp ) ) );
-		q    = 1.0 + z * ( qS1 + z * ( qS2 + z * ( qS3 + z * qS4 ) ) );
-		r    = p / q;
+		p = z * ( pS0 + z * ( pS1 + z * ( pS2 + z * subp ) ) );
+		q = 1.0 + z * ( qS1 + z * ( qS2 + z * ( qS3 + z * qS4 ) ) );
+		r = p / q;
 		return pio2_hi - ( x - ( pio2_lo - x * r ) );
 	}
 	else if ( hx < 0 )
 	{
 		// x < -0.5
-		z    = ( 1.0 + x ) * ( float )0.5;
+		z = ( 1.0 + x ) * ( float ) 0.5;
 		subp = pS3 + z * ( pS4 + z * pS5 );
 		// chop up expression to keep mac register based stack happy
-		p    = z * ( pS0 + z * ( pS1 + z * ( pS2 + z * subp ) ) );
-		q    = 1.0 + z * ( qS1 + z * ( qS2 + z * ( qS3 + z * qS4 ) ) );
-		s    = sqrt( z );
-		r    = p / q;
-		w    = r * s - pio2_lo;
-		return pi - ( float )2.0 * ( s + w );
+		p = z * ( pS0 + z * ( pS1 + z * ( pS2 + z * subp ) ) );
+		q = 1.0 + z * ( qS1 + z * ( qS2 + z * ( qS3 + z * qS4 ) ) );
+		s = sqrt ( z );
+		r = p / q;
+		w = r * s - pio2_lo;
+		return pi - ( float ) 2.0 * ( s + w );
 	}
 	else
 	{
 		// x > 0.5
 		int idf;
-		z    = ( 1.0 - x ) * ( float )0.5;
-		s    = sqrt( z );
-		df   = s;
-		GET_FLOAT_WORD( idf, df );
-		SET_FLOAT_WORD( df, idf & 0xfffff000 );
-		c    = ( z - df * df ) / ( s + df );
+		z = ( 1.0 - x ) * ( float ) 0.5;
+		s = sqrt ( z );
+		df = s;
+		GET_FLOAT_WORD ( idf, df );
+		SET_FLOAT_WORD ( df, idf & 0xfffff000 );
+		c = ( z - df * df ) / ( s + df );
 		subp = pS3 + z * ( pS4 + z * pS5 );
 		// chop up expression to keep mac register based stack happy
-		p    = z * ( pS0 + z * ( pS1 + z * ( pS2 + z * subp ) ) );
-		q    = 1.0 + z * ( qS1 + z * ( qS2 + z * ( qS3 + z * qS4 ) ) );
-		r    = p / q;
-		w    = r * s + c;
-		return ( double )( 2.0 * ( df + w ) );
+		p = z * ( pS0 + z * ( pS1 + z * ( pS2 + z * subp ) ) );
+		q = 1.0 + z * ( qS1 + z * ( qS2 + z * ( qS3 + z * qS4 ) ) );
+		r = p / q;
+		w = r * s + c;
+		return ( double ) ( 2.0 * ( df + w ) );
 	}
 }
 
 //pow
 static const float
-bp[]    = { 1.0, 1.5, },
-          dp_h[]  = { 0.0, 5.84960938e-01, }, /* 0x3f15c000 */
-                    dp_l[]  = { 0.0, 1.56322085e-06, }, /* 0x35d1cfdc */
-                              huge    =  1.0e+30,
-                              tiny    =  1.0e-30,
-                              zero    =  0.0,
-                              one     =  1.0,
-                              two     =  2.0,
-                              two24   =  16777216.0,       /* 0x4b800000 */
-                              two25   =  3.355443200e+07,  /* 0x4c000000 */
-                              twom25  =  2.9802322388e-08, /* 0x33000000 */
-                              /* poly coefs for (3/2)*(log(x)-2s-2/3*s**3 */
-                              L1      =  6.0000002384e-01, /* 0x3f19999a */
-                              L2      =  4.2857143283e-01, /* 0x3edb6db7 */
-                              L3      =  3.3333334327e-01, /* 0x3eaaaaab */
-                              L4      =  2.7272811532e-01, /* 0x3e8ba305 */
-                              L5      =  2.3066075146e-01, /* 0x3e6c3255 */
-                              L6      =  2.0697501302e-01, /* 0x3e53f142 */
-                              P1      =  1.6666667163e-01, /* 0x3e2aaaab */
-                              P2      = -2.7777778450e-03, /* 0xbb360b61 */
-                              P3      =  6.6137559770e-05, /* 0x388ab355 */
-                              P4      = -1.6533901999e-06, /* 0xb5ddea0e */
-                              P5      =  4.1381369442e-08, /* 0x3331bb4c */
-                              lg2     =  6.9314718246e-01, /* 0x3f317218 */
-                              lg2_h   =  6.93145752e-01,   /* 0x3f317200 */
-                              lg2_l   =  1.42860654e-06,   /* 0x35bfbe8c */
-                              ovt     =  4.2995665694e-08, /* -(128-log2(ovfl+.5ulp)) */
-                              cp      =  9.6179670095e-01, /* 0x3f76384f =2/(3ln2) */
-                              cp_h    =  9.6179199219e-01, /* 0x3f763800 =head of cp */
-                              cp_l    =  4.7017383622e-06, /* 0x369dc3a0 =tail of cp_h */
-                              ivln2   =  1.4426950216e+00, /* 0x3fb8aa3b =1/ln2 */
-                              ivln2_h =  1.4426879883e+00, /* 0x3fb8aa00 =16b 1/ln2*/
-                              ivln2_l =  7.0526075433e-06; /* 0x36eca570 =1/ln2 tail*/
+bp[] = { 1.0, 1.5, },
+       dp_h[] = { 0.0, 5.84960938e-01, }, /* 0x3f15c000 */
+                dp_l[] = { 0.0, 1.56322085e-06, }, /* 0x35d1cfdc */
+                         huge = 1.0e+30,
+                         tiny = 1.0e-30,
+                         zero = 0.0,
+                         one = 1.0,
+                         two = 2.0,
+                         two24 = 16777216.0, /* 0x4b800000 */
+                         two25 = 3.355443200e+07, /* 0x4c000000 */
+                         twom25 = 2.9802322388e-08, /* 0x33000000 */
+                         /* poly coefs for (3/2)*(log(x)-2s-2/3*s**3 */
+                         L1 = 6.0000002384e-01, /* 0x3f19999a */
+                         L2 = 4.2857143283e-01, /* 0x3edb6db7 */
+                         L3 = 3.3333334327e-01, /* 0x3eaaaaab */
+                         L4 = 2.7272811532e-01, /* 0x3e8ba305 */
+                         L5 = 2.3066075146e-01, /* 0x3e6c3255 */
+                         L6 = 2.0697501302e-01, /* 0x3e53f142 */
+                         P1 = 1.6666667163e-01, /* 0x3e2aaaab */
+                         P2 = -2.7777778450e-03, /* 0xbb360b61 */
+                         P3 = 6.6137559770e-05, /* 0x388ab355 */
+                         P4 = -1.6533901999e-06, /* 0xb5ddea0e */
+                         P5 = 4.1381369442e-08, /* 0x3331bb4c */
+                         lg2 = 6.9314718246e-01, /* 0x3f317218 */
+                         lg2_h = 6.93145752e-01, /* 0x3f317200 */
+                         lg2_l = 1.42860654e-06, /* 0x35bfbe8c */
+                         ovt = 4.2995665694e-08, /* -(128-log2(ovfl+.5ulp)) */
+                         cp = 9.6179670095e-01, /* 0x3f76384f =2/(3ln2) */
+                         cp_h = 9.6179199219e-01, /* 0x3f763800 =head of cp */
+                         cp_l = 4.7017383622e-06, /* 0x369dc3a0 =tail of cp_h */
+                         ivln2 = 1.4426950216e+00, /* 0x3fb8aa3b =1/ln2 */
+                         ivln2_h = 1.4426879883e+00, /* 0x3fb8aa00 =16b 1/ln2*/
+                         ivln2_l = 7.0526075433e-06; /* 0x36eca570 =1/ln2 tail*/
 
 /*
 ==================
 copysignf
 ==================
 */
-static float copysignf( float x, float y )
+static float copysignf ( float x, float y )
 {
 	unsigned int ix, iy;
 
-	GET_FLOAT_WORD( ix, x );
-	GET_FLOAT_WORD( iy, y );
-	SET_FLOAT_WORD( x, ( ix & 0x7fffffff ) | ( iy & 0x80000000 ) );
+	GET_FLOAT_WORD ( ix, x );
+	GET_FLOAT_WORD ( iy, y );
+	SET_FLOAT_WORD ( x, ( ix & 0x7fffffff ) | ( iy & 0x80000000 ) );
 	return x;
 }
 
@@ -1135,11 +1135,11 @@ static float copysignf( float x, float y )
 __scalbnf
 ==================
 */
-static float __scalbnf( float x, int n )
+static float __scalbnf ( float x, int n )
 {
 	int k, ix;
 
-	GET_FLOAT_WORD( ix, x );
+	GET_FLOAT_WORD ( ix, x );
 
 	k = ( ix & 0x7f800000 ) >> 23; /* extract exponent */
 
@@ -1152,8 +1152,8 @@ static float __scalbnf( float x, int n )
 		}
 
 		x *= two25;
-		GET_FLOAT_WORD( ix, x );
-		k  = ( ( ix & 0x7f800000 ) >> 23 ) - 25;
+		GET_FLOAT_WORD ( ix, x );
+		k = ( ( ix & 0x7f800000 ) >> 23 ) - 25;
 	}
 
 	if ( k == 0xff )
@@ -1165,27 +1165,27 @@ static float __scalbnf( float x, int n )
 
 	if ( n > 50000 || k > 0xfe )
 	{
-		return huge * copysignf( huge, x ); /* overflow  */
+		return huge * copysignf ( huge, x ); /* overflow  */
 	}
 
 	if ( n < -50000 )
 	{
-		return tiny * copysignf( tiny, x ); /*underflow*/
+		return tiny * copysignf ( tiny, x ); /*underflow*/
 	}
 
-	if ( k > 0 )                                /* normal result */
+	if ( k > 0 ) /* normal result */
 	{
-		SET_FLOAT_WORD( x, ( ix & 0x807fffff ) | ( k << 23 ) );
+		SET_FLOAT_WORD ( x, ( ix & 0x807fffff ) | ( k << 23 ) );
 		return x;
 	}
 
 	if ( k <= -25 )
 	{
-		return tiny * copysignf( tiny, x ); /*underflow*/
+		return tiny * copysignf ( tiny, x ); /*underflow*/
 	}
 
-	k += 25;                                    /* subnormal result */
-	SET_FLOAT_WORD( x, ( ix & 0x807fffff ) | ( k << 23 ) );
+	k += 25; /* subnormal result */
+	SET_FLOAT_WORD ( x, ( ix & 0x807fffff ) | ( k << 23 ) );
 	return x * twom25;
 }
 
@@ -1194,7 +1194,7 @@ static float __scalbnf( float x, int n )
 pow
 ==================
 */
-float pow( float x, float y )
+float pow ( float x, float y )
 {
 	float z, ax, z_h, z_l, p_h, p_l;
 	float y1, subt1, t1, t2, subr, r, s, t, u, v, w;
@@ -1209,8 +1209,8 @@ float pow( float x, float y )
 		return x;
 	}
 
-	GET_FLOAT_WORD( hx, x );
-	GET_FLOAT_WORD( hy, y );
+	GET_FLOAT_WORD ( hx, x );
+	GET_FLOAT_WORD ( hy, y );
 	ix = hx & 0x7fffffff;
 	iy = hy & 0x7fffffff;
 
@@ -1257,13 +1257,13 @@ float pow( float x, float y )
 		/* y is +-inf */
 		if ( ix == 0x3f800000 )
 		{
-			return y - y;        /* inf**+-1 is NaN */
+			return y - y; /* inf**+-1 is NaN */
 		}
-		else if ( ix > 0x3f800000 )  /* (|x|>1)**+-inf = inf,0 */
+		else if ( ix > 0x3f800000 ) /* (|x|>1)**+-inf = inf,0 */
 		{
 			return ( hy >= 0 ) ? y : zero;
 		}
-		else            /* (|x|<1)**-,+inf = inf,0 */
+		else /* (|x|<1)**-,+inf = inf,0 */
 		{
 			return ( hy < 0 ) ? -y : zero;
 		}
@@ -1290,18 +1290,18 @@ float pow( float x, float y )
 	if ( hy == 0x3f000000 )
 	{
 		/* y is  0.5 */
-		if ( hx >= 0 )  /* x >= +0 */
+		if ( hx >= 0 ) /* x >= +0 */
 		{
-			return sqrt( x );
+			return sqrt ( x );
 		}
 	}
 
-	ax = fabs( x );
+	ax = fabs ( x );
 
 	/* special value of x */
 	if ( ix == 0x7f800000 || ix == 0 || ix == 0x3f800000 )
 	{
-		z = ax;              /*x is +-0,+-inf,+-1*/
+		z = ax; /*x is +-0,+-inf,+-1*/
 
 		if ( hy < 0 )
 		{
@@ -1324,7 +1324,7 @@ float pow( float x, float y )
 	}
 
 	/* (x<0)**(non-int) is NaN */
-	if ( ( ( ( ( unsigned int )hx >> 31 ) - 1 ) | yisint ) == 0 )
+	if ( ( ( ( ( unsigned int ) hx >> 31 ) - 1 ) | yisint ) == 0 )
 	{
 		return ( x - x ) / ( x - x );
 	}
@@ -1346,13 +1346,13 @@ float pow( float x, float y )
 
 		/* now |1-x| is tiny <= 2**-20, suffice to compute
 		   log(x) by x-x^2/2+x^3/3-x^4/4 */
-		t  = x - 1;       /* t has 20 trailing zeros */
-		w  = ( t * t ) * ( ( float )0.5 - t * ( ( float )0.333333333333 - t * ( float )0.25 ) );
-		u  = ivln2_h * t; /* ivln2_h has 16 sig. bits */
-		v  = t * ivln2_l - w * ivln2;
+		t = x - 1; /* t has 20 trailing zeros */
+		w = ( t * t ) * ( ( float ) 0.5 - t * ( ( float ) 0.333333333333 - t * ( float ) 0.25 ) );
+		u = ivln2_h * t; /* ivln2_h has 16 sig. bits */
+		v = t * ivln2_l - w * ivln2;
 		t1 = u + v;
-		GET_FLOAT_WORD( is, t1 );
-		SET_FLOAT_WORD( t1, is & 0xfffff000 );
+		GET_FLOAT_WORD ( is, t1 );
+		SET_FLOAT_WORD ( t1, is & 0xfffff000 );
 		t2 = v - ( t1 - u );
 	}
 	else
@@ -1364,19 +1364,19 @@ float pow( float x, float y )
 		if ( ix < 0x00800000 )
 		{
 			ax *= two24;
-			n  -= 24;
-			GET_FLOAT_WORD( ix, ax );
+			n -= 24;
+			GET_FLOAT_WORD ( ix, ax );
 		}
 
 		n += ( ( ix ) >> 23 ) - 0x7f;
-		j  = ix & 0x007fffff;
+		j = ix & 0x007fffff;
 
 		/* determine interval */
 		ix = j | 0x3f800000; /* normalize ix */
 
 		if ( j <= 0x1cc471 )
 		{
-			k = 0;       /* |x|<sqrt(3/2) */
+			k = 0; /* |x|<sqrt(3/2) */
 		}
 		else if ( j < 0x5db3d7 )
 		{
@@ -1384,69 +1384,69 @@ float pow( float x, float y )
 		}
 		else
 		{
-			k   = 0;
-			n  += 1;
+			k = 0;
+			n += 1;
 			ix -= 0x00800000;
 		}
 
-		SET_FLOAT_WORD( ax, ix );
+		SET_FLOAT_WORD ( ax, ix );
 
 		/* compute s = s_h+s_l = (x-1)/(x+1) or (x-1.5)/(x+1.5) */
-		u   = ax - bp[ k ]; /* bp[0]=1.0, bp[1]=1.5 */
-		v   = one / ( ax + bp[ k ] );
-		s   = u * v;
+		u = ax - bp[ k ]; /* bp[0]=1.0, bp[1]=1.5 */
+		v = one / ( ax + bp[ k ] );
+		s = u * v;
 		s_h = s;
-		GET_FLOAT_WORD( is, s_h );
-		SET_FLOAT_WORD( s_h, is & 0xfffff000 );
+		GET_FLOAT_WORD ( is, s_h );
+		SET_FLOAT_WORD ( s_h, is & 0xfffff000 );
 		/* t_h=ax+bp[k] High */
-		SET_FLOAT_WORD( t_h, ( ( ix >> 1 ) | 0x20000000 ) + 0x0040000 + ( k << 21 ) );
-		t_l  = ax - ( t_h - bp[ k ] );
-		s_l  = v * ( ( u - s_h * t_h ) - s_h * t_l );
+		SET_FLOAT_WORD ( t_h, ( ( ix >> 1 ) | 0x20000000 ) + 0x0040000 + ( k << 21 ) );
+		t_l = ax - ( t_h - bp[ k ] );
+		s_l = v * ( ( u - s_h * t_h ) - s_h * t_l );
 		/* compute log(ax) */
-		s2   = s * s;
+		s2 = s * s;
 		subr = L3 + s2 * ( L4 + s2 * ( L5 + s2 * L6 ) );
 		// chop up expression to keep mac register based stack happy
-		r    = s2 * s2 * ( L1 + s2 * ( L2 + s2 * subr ) );
-		r   += s_l * ( s_h + s );
-		s2   = s_h * s_h;
-		t_h  = ( float )3.0 + s2 + r;
-		GET_FLOAT_WORD( is, t_h );
-		SET_FLOAT_WORD( t_h, is & 0xfffff000 );
-		t_l  = r - ( ( t_h - ( float )3.0 ) - s2 );
+		r = s2 * s2 * ( L1 + s2 * ( L2 + s2 * subr ) );
+		r += s_l * ( s_h + s );
+		s2 = s_h * s_h;
+		t_h = ( float ) 3.0 + s2 + r;
+		GET_FLOAT_WORD ( is, t_h );
+		SET_FLOAT_WORD ( t_h, is & 0xfffff000 );
+		t_l = r - ( ( t_h - ( float ) 3.0 ) - s2 );
 		/* u+v = s*(1+...) */
-		u    = s_h * t_h;
-		v    = s_l * t_h + t_l * s;
+		u = s_h * t_h;
+		v = s_l * t_h + t_l * s;
 		/* 2/(3log2)*(s+...) */
-		p_h  = u + v;
-		GET_FLOAT_WORD( is, p_h );
-		SET_FLOAT_WORD( p_h, is & 0xfffff000 );
-		p_l  = v - ( p_h - u );
-		z_h  = cp_h * p_h; /* cp_h+cp_l = 2/(3*log2) */
-		z_l  = cp_l * p_h + p_l * cp + dp_l[ k ];
+		p_h = u + v;
+		GET_FLOAT_WORD ( is, p_h );
+		SET_FLOAT_WORD ( p_h, is & 0xfffff000 );
+		p_l = v - ( p_h - u );
+		z_h = cp_h * p_h; /* cp_h+cp_l = 2/(3*log2) */
+		z_l = cp_l * p_h + p_l * cp + dp_l[ k ];
 		/* log2(ax) = (s+..)*2/(3*log2) = n + dp_h + z_h + z_l */
-		t    = ( float )n;
-		t1   = ( ( ( z_h + z_l ) + dp_h[ k ] ) + t );
-		GET_FLOAT_WORD( is, t1 );
-		SET_FLOAT_WORD( t1, is & 0xfffff000 );
-		t2   = z_l - ( ( ( t1 - t ) - dp_h[ k ] ) - z_h );
+		t = ( float ) n;
+		t1 = ( ( ( z_h + z_l ) + dp_h[ k ] ) + t );
+		GET_FLOAT_WORD ( is, t1 );
+		SET_FLOAT_WORD ( t1, is & 0xfffff000 );
+		t2 = z_l - ( ( ( t1 - t ) - dp_h[ k ] ) - z_h );
 	}
 
-	s = one;          /* s (sign of result -ve**odd) = -1 else = 1 */
+	s = one; /* s (sign of result -ve**odd) = -1 else = 1 */
 
-	if ( ( ( ( ( unsigned int )hx >> 31 ) - 1 ) | ( yisint - 1 ) ) == 0 )
+	if ( ( ( ( ( unsigned int ) hx >> 31 ) - 1 ) | ( yisint - 1 ) ) == 0 )
 	{
 		s = -one; /* (-ve)**(odd int) */
 	}
 
 	/* split up y into y1+y2 and compute (y1+y2)*(t1+t2) */
-	GET_FLOAT_WORD( is, y );
-	SET_FLOAT_WORD( y1, is & 0xfffff000 );
+	GET_FLOAT_WORD ( is, y );
+	SET_FLOAT_WORD ( y1, is & 0xfffff000 );
 	p_l = ( y - y1 ) * t1 + y * t2;
 	p_h = y1 * t1;
-	z   = p_l + p_h;
-	GET_FLOAT_WORD( j, z );
+	z = p_l + p_h;
+	GET_FLOAT_WORD ( j, z );
 
-	if ( j > 0x43000000 )           /* if z > 128 */
+	if ( j > 0x43000000 ) /* if z > 128 */
 	{
 		return s * huge * huge; /* overflow */
 	}
@@ -1458,11 +1458,11 @@ float pow( float x, float y )
 			return s * huge * huge; /* overflow */
 		}
 	}
-	else if ( ( j & 0x7fffffff ) > 0x43160000 )  /* z <= -150 */
+	else if ( ( j & 0x7fffffff ) > 0x43160000 ) /* z <= -150 */
 	{
-		return s * tiny * tiny;              /* underflow */
+		return s * tiny * tiny; /* underflow */
 	}
-	else if ( ( unsigned int )j == 0xc3160000 )
+	else if ( ( unsigned int ) j == 0xc3160000 )
 	{
 		/* z == -150 */
 		if ( p_l <= z - p_h )
@@ -1483,7 +1483,7 @@ float pow( float x, float y )
 		/* if |z| > 0.5, set n = [z+0.5] */
 		n = j + ( 0x00800000 >> ( k + 1 ) );
 		k = ( ( n & 0x7fffffff ) >> 23 ) - 0x7f; /* new k for n */
-		SET_FLOAT_WORD( t, n & ~( 0x007fffff >> k ) );
+		SET_FLOAT_WORD ( t, n & ~ ( 0x007fffff >> k ) );
 		n = ( ( n & 0x007fffff ) | 0x00800000 ) >> ( 23 - k );
 
 		if ( j < 0 )
@@ -1494,29 +1494,29 @@ float pow( float x, float y )
 		p_h -= t;
 	}
 
-	t     = p_l + p_h;
-	GET_FLOAT_WORD( is, t );
-	SET_FLOAT_WORD( t, is & 0xfffff000 );
-	u     = t * lg2_h;
-	v     = ( p_l - ( t - p_h ) ) * lg2 + t * lg2_l;
-	z     = u + v;
-	w     = v - ( z - u );
-	t     = z * z;
+	t = p_l + p_h;
+	GET_FLOAT_WORD ( is, t );
+	SET_FLOAT_WORD ( t, is & 0xfffff000 );
+	u = t * lg2_h;
+	v = ( p_l - ( t - p_h ) ) * lg2 + t * lg2_l;
+	z = u + v;
+	w = v - ( z - u );
+	t = z * z;
 	subt1 = P3 + t * ( P4 + t * P5 );
 	// chop up expression to keep mac register based stack happy
-	t1    = z - t * ( P1 + t * ( P2 + t * subt1 ) );
-	r     = ( z * t1 ) / ( t1 - two ) - ( w + z * w );
-	z     = one - ( r - z );
-	GET_FLOAT_WORD( j, z );
-	j    += ( n << 23 );
+	t1 = z - t * ( P1 + t * ( P2 + t * subt1 ) );
+	r = ( z * t1 ) / ( t1 - two ) - ( w + z * w );
+	z = one - ( r - z );
+	GET_FLOAT_WORD ( j, z );
+	j += ( n << 23 );
 
 	if ( ( j >> 23 ) <= 0 )
 	{
-		z = __scalbnf( z, n ); /* subnormal output */
+		z = __scalbnf ( z, n ); /* subnormal output */
 	}
 	else
 	{
-		SET_FLOAT_WORD( z, j );
+		SET_FLOAT_WORD ( z, j );
 	}
 
 	return s * z;
@@ -1524,18 +1524,18 @@ float pow( float x, float y )
 
 static int randSeed = 0;
 
-void srand( unsigned seed )
+void srand ( unsigned seed )
 {
 	randSeed = seed;
 }
 
-int rand( void )
+int rand ( void )
 {
 	randSeed = ( 69069 * randSeed + 1 );
 	return randSeed & 0x7fff;
 }
 
-double atof( const char *string )
+double atof ( const char *string )
 {
 	float sign;
 	float value;
@@ -1572,7 +1572,7 @@ double atof( const char *string )
 
 	// read digits
 	value = 0;
-	c     = string[ 0 ];
+	c = string[ 0 ];
 
 	if ( c != '.' )
 	{
@@ -1585,7 +1585,7 @@ double atof( const char *string )
 				break;
 			}
 
-			c    -= '0';
+			c -= '0';
 			value = value * 10 + c;
 		}
 		while ( 1 );
@@ -1611,8 +1611,8 @@ double atof( const char *string )
 				break;
 			}
 
-			c        -= '0';
-			value    += c * fraction;
+			c -= '0';
+			value += c * fraction;
 			fraction *= 0.1;
 		}
 		while ( 1 );
@@ -1637,25 +1637,25 @@ The variable pointed to by endptr will hold the location of the first character
 in the nptr string that was not used in the conversion
 ==============
 */
-double strtod( const char *nptr, char **endptr )
+double strtod ( const char *nptr, char **endptr )
 {
 	double   res;
 	qboolean neg = qfalse;
 
 	// skip whitespace
-	while ( isspace( *nptr ) )
+	while ( isspace ( *nptr ) )
 	{
 		nptr++;
 	}
 
 	// special string parsing
-	if ( Q_stricmpn( nptr, "nan", 3 ) == 0 )
+	if ( Q_stricmpn ( nptr, "nan", 3 ) == 0 )
 	{
 		floatint_t nan;
 
 		if ( endptr )
 		{
-			*endptr = ( char * )&nptr[ 3 ];
+			*endptr = ( char * ) &nptr[ 3 ];
 		}
 
 		// nan can be followed by a bracketed number (in hex, octal,
@@ -1666,7 +1666,7 @@ double strtod( const char *nptr, char **endptr )
 		if ( nptr[ 3 ] == '(' )
 		{
 			char *end;
-			int  mantissa = strtol( &nptr[ 4 ], &end, 0 );
+			int  mantissa = strtol ( &nptr[ 4 ], &end, 0 );
 
 			if ( *end == ')' )
 			{
@@ -1685,7 +1685,7 @@ double strtod( const char *nptr, char **endptr )
 		return nan.f;
 	}
 
-	if ( Q_stricmpn( nptr, "inf", 3 ) == 0 )
+	if ( Q_stricmpn ( nptr, "inf", 3 ) == 0 )
 	{
 		floatint_t inf;
 		inf.ui = 0x7f800000;
@@ -1695,13 +1695,13 @@ double strtod( const char *nptr, char **endptr )
 			return inf.f;
 		}
 
-		if ( Q_stricmpn( &nptr[ 3 ], "inity", 5 ) == 0 )
+		if ( Q_stricmpn ( &nptr[ 3 ], "inity", 5 ) == 0 )
 		{
-			*endptr = ( char * )&nptr[ 8 ];
+			*endptr = ( char * ) &nptr[ 8 ];
 		}
 		else
 		{
-			*endptr = ( char * )&nptr[ 3 ];
+			*endptr = ( char * ) &nptr[ 3 ];
 		}
 
 		return inf.f;
@@ -1720,7 +1720,7 @@ double strtod( const char *nptr, char **endptr )
 	}
 
 	// hex
-	if ( Q_stricmpn( nptr, "0x", 2 ) == 0 )
+	if ( Q_stricmpn ( nptr, "0x", 2 ) == 0 )
 	{
 		// track if we use any digits
 		const char *s = &nptr[ 1 ], *end = s;
@@ -1728,7 +1728,7 @@ double strtod( const char *nptr, char **endptr )
 
 		for ( res = 0;; )
 		{
-			if ( isdigit( *nptr ) )
+			if ( isdigit ( *nptr ) )
 			{
 				res = 16 * res + ( *nptr++ - '0' );
 			}
@@ -1763,7 +1763,7 @@ double strtod( const char *nptr, char **endptr )
 			// the string anyway we keep on going regardless
 			for ( place = 0.0625;; place /= 16.0 )
 			{
-				if ( isdigit( *nptr ) )
+				if ( isdigit ( *nptr ) )
 				{
 					res += place * ( *nptr++ - '0' );
 				}
@@ -1791,20 +1791,20 @@ double strtod( const char *nptr, char **endptr )
 		// by a power of two
 		// exponents are only valid if we encountered at least one
 		// digit already (and have therefore set end to something)
-		if ( end != s && tolower( *nptr ) == 'p' )
+		if ( end != s && tolower ( *nptr ) == 'p' )
 		{
 			int   exp;
 			float res2;
 			// apparently (confusingly) the exponent should be
 			// decimal
-			exp = strtol( &nptr[ 1 ], ( char ** )&end, 10 );
+			exp = strtol ( &nptr[ 1 ], ( char ** ) &end, 10 );
 
 			if ( &nptr[ 1 ] == end )
 			{
 				// no exponent
 				if ( endptr )
 				{
-					*endptr = ( char * )nptr;
+					*endptr = ( char * ) nptr;
 				}
 
 				return res;
@@ -1844,7 +1844,7 @@ double strtod( const char *nptr, char **endptr )
 
 		if ( endptr )
 		{
-			*endptr = ( char * )end;
+			*endptr = ( char * ) end;
 		}
 
 		return res;
@@ -1856,7 +1856,7 @@ double strtod( const char *nptr, char **endptr )
 		const char *end = nptr, *p = nptr;
 
 		// this is most of the work
-		for ( res = 0; isdigit( *nptr );
+		for ( res = 0; isdigit ( *nptr );
 		      res = 10 * res + *nptr++ - '0' ) {; }
 
 		// if nptr moved, we read something
@@ -1871,7 +1871,7 @@ double strtod( const char *nptr, char **endptr )
 			float place;
 			nptr++;
 
-			for ( place = 0.1; isdigit( *nptr ); place /= 10.0 )
+			for ( place = 0.1; isdigit ( *nptr ); place /= 10.0 )
 			{
 				res += ( *nptr++ - '0' ) * place;
 			}
@@ -1886,18 +1886,18 @@ double strtod( const char *nptr, char **endptr )
 		// exponent
 		// meaningless without having already read digits, so check
 		// we've set end to something
-		if ( p != end && tolower( *nptr ) == 'e' )
+		if ( p != end && tolower ( *nptr ) == 'e' )
 		{
 			int   exp;
 			float res10;
-			exp = strtol( &nptr[ 1 ], ( char ** )&end, 10 );
+			exp = strtol ( &nptr[ 1 ], ( char ** ) &end, 10 );
 
 			if ( &nptr[ 1 ] == end )
 			{
 				// no exponent
 				if ( endptr )
 				{
-					*endptr = ( char * )nptr;
+					*endptr = ( char * ) nptr;
 				}
 
 				return res;
@@ -1939,14 +1939,14 @@ double strtod( const char *nptr, char **endptr )
 
 		if ( endptr )
 		{
-			*endptr = ( char * )end;
+			*endptr = ( char * ) end;
 		}
 
 		return res;
 	}
 }
 
-double _atof( const char **stringPtr )
+double _atof ( const char **stringPtr )
 {
 	const char *string;
 	float      sign;
@@ -1999,7 +1999,7 @@ double _atof( const char **stringPtr )
 				break;
 			}
 
-			c    -= '0';
+			c -= '0';
 			value = value * 10 + c;
 		}
 		while ( 1 );
@@ -2021,8 +2021,8 @@ double _atof( const char **stringPtr )
 				break;
 			}
 
-			c        -= '0';
-			value    += c * fraction;
+			c -= '0';
+			value += c * fraction;
 			fraction *= 0.1;
 		}
 		while ( 1 );
@@ -2044,14 +2044,14 @@ Will not overflow - returns LONG_MIN or LONG_MAX as appropriate
 *endptr is set to the location of the first character not used
 ==============
 */
-long strtol( const char *nptr, char **endptr, int base )
+long strtol ( const char *nptr, char **endptr, int base )
 {
 	long     res;
 	qboolean pos = qtrue;
 
 	if ( endptr )
 	{
-		*endptr = ( char * )nptr;
+		*endptr = ( char * ) nptr;
 	}
 
 	// bases other than 0, 2, 8, 16 are very rarely used, but they're
@@ -2062,7 +2062,7 @@ long strtol( const char *nptr, char **endptr, int base )
 	}
 
 	// skip leading whitespace
-	while ( isspace( *nptr ) )
+	while ( isspace ( *nptr ) )
 	{
 		nptr++;
 	}
@@ -2086,7 +2086,7 @@ long strtol( const char *nptr, char **endptr, int base )
 		// 0 is always a valid digit
 		if ( endptr )
 		{
-			*endptr = ( char * )nptr;
+			*endptr = ( char * ) nptr;
 		}
 
 		if ( *nptr == 'x' || *nptr == 'X' )
@@ -2096,7 +2096,7 @@ long strtol( const char *nptr, char **endptr, int base )
 				// can't be hex, reject x (accept 0)
 				if ( endptr )
 				{
-					*endptr = ( char * )nptr;
+					*endptr = ( char * ) nptr;
 				}
 
 				return 0;
@@ -2119,15 +2119,15 @@ long strtol( const char *nptr, char **endptr, int base )
 	{
 		int val;
 
-		if ( isdigit( *nptr ) )
+		if ( isdigit ( *nptr ) )
 		{
 			val = *nptr - '0';
 		}
-		else if ( islower( *nptr ) )
+		else if ( islower ( *nptr ) )
 		{
 			val = 10 + *nptr - 'a';
 		}
-		else if ( isupper( *nptr ) )
+		else if ( isupper ( *nptr ) )
 		{
 			val = 10 + *nptr - 'A';
 		}
@@ -2156,7 +2156,7 @@ long strtol( const char *nptr, char **endptr, int base )
 
 		if ( endptr )
 		{
-			*endptr = ( char * )nptr;
+			*endptr = ( char * ) nptr;
 		}
 	}
 
@@ -2176,7 +2176,7 @@ long strtol( const char *nptr, char **endptr, int base )
 	return res;
 }
 
-int atoi( const char *string )
+int atoi ( const char *string )
 {
 	int sign;
 	int value;
@@ -2223,7 +2223,7 @@ int atoi( const char *string )
 			break;
 		}
 
-		c    -= '0';
+		c -= '0';
 		value = value * 10 + c;
 	}
 	while ( 1 );
@@ -2233,7 +2233,7 @@ int atoi( const char *string )
 	return value * sign;
 }
 
-int _atoi( const char **stringPtr )
+int _atoi ( const char **stringPtr )
 {
 	int        sign;
 	int        value;
@@ -2283,7 +2283,7 @@ int _atoi( const char **stringPtr )
 			break;
 		}
 
-		c    -= '0';
+		c -= '0';
 		value = value * 10 + c;
 	}
 	while ( 1 );
@@ -2295,17 +2295,17 @@ int _atoi( const char **stringPtr )
 	return value * sign;
 }
 
-int abs( int n )
+int abs ( int n )
 {
 	return n < 0 ? -n : n;
 }
 
-double fabs( double x )
+double fabs ( double x )
 {
 	return x < 0 ? -x : x;
 }
 
-unsigned int _hextoi( const char **stringPtr )
+unsigned int _hextoi ( const char **stringPtr )
 {
 	unsigned int value;
 	int          c;
@@ -2326,7 +2326,7 @@ unsigned int _hextoi( const char **stringPtr )
 	}
 
 	value = 0;
-	i     = 0;
+	i = 0;
 
 	while ( i++ < 8 && ( c = *string++ ) )
 	{
@@ -2500,11 +2500,11 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 	int     total;
 	size_t  currlen;
 
-	state   = DP_S_DEFAULT;
+	state = DP_S_DEFAULT;
 	currlen = flags = cflags = min = 0;
-	max     = -1;
-	ch      = *format++;
-	total   = 0;
+	max = -1;
+	ch = *format++;
+	total = 0;
 
 	while ( state != DP_S_DONE )
 	{
@@ -2533,31 +2533,31 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 				{
 					case '-':
 						flags |= DP_F_MINUS;
-						ch     = *format++;
+						ch = *format++;
 						break;
 
 					case '+':
 						flags |= DP_F_PLUS;
-						ch     = *format++;
+						ch = *format++;
 						break;
 
 					case ' ':
 						flags |= DP_F_SPACE;
-						ch     = *format++;
+						ch = *format++;
 						break;
 
 					case '#':
 						flags |= DP_F_NUM;
-						ch     = *format++;
+						ch = *format++;
 						break;
 
 					case '0':
 						flags |= DP_F_ZERO;
-						ch     = *format++;
+						ch = *format++;
 						break;
 
 					default:
-						state  = DP_S_MIN;
+						state = DP_S_MIN;
 						break;
 				}
 
@@ -2567,12 +2567,12 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 				if ( '0' <= ch && ch <= '9' )
 				{
 					min = 10 * min + char_to_int ( ch );
-					ch  = *format++;
+					ch = *format++;
 				}
 				else if ( ch == '*' )
 				{
-					min   = va_arg ( args, int );
-					ch    = *format++;
+					min = va_arg ( args, int );
+					ch = *format++;
 					state = DP_S_DOT;
 				}
 				else
@@ -2586,7 +2586,7 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 				if ( ch == '.' )
 				{
 					state = DP_S_MAX;
-					ch    = *format++;
+					ch = *format++;
 				}
 				else
 				{
@@ -2604,12 +2604,12 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 					}
 
 					max = 10 * max + char_to_int ( ch );
-					ch  = *format++;
+					ch = *format++;
 				}
 				else if ( ch == '*' )
 				{
-					max   = va_arg ( args, int );
-					ch    = *format++;
+					max = va_arg ( args, int );
+					ch = *format++;
 					state = DP_S_MOD;
 				}
 				else
@@ -2624,17 +2624,17 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 				{
 					case 'h':
 						cflags = DP_C_SHORT;
-						ch     = *format++;
+						ch = *format++;
 						break;
 
 					case 'l':
 						cflags = DP_C_LONG;
-						ch     = *format++;
+						ch = *format++;
 						break;
 
 					case 'L':
 						cflags = DP_C_LDOUBLE;
-						ch     = *format++;
+						ch = *format++;
 						break;
 
 					default:
@@ -2657,7 +2657,7 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 				{
 					case 'l':
 						cflags = DP_C_LLONG;
-						ch     = *format++;
+						ch = *format++;
 						break;
 
 					default:
@@ -2674,7 +2674,7 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 					case 'i':
 						if ( cflags == DP_C_SHORT )
 						{
-							value = ( short int )va_arg ( args, int );
+							value = ( short int ) va_arg ( args, int );
 						}
 						else if ( cflags == DP_C_LONG )
 						{
@@ -2698,7 +2698,7 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 						if ( cflags == DP_C_SHORT )
 						{
 							//    value = (unsigned short int) va_arg (args, unsigned short int); // Thilo: This does not work because the rcc compiler cannot do that cast correctly.
-							value = va_arg ( args, unsigned int ) & ( ( 1 << sizeof( unsigned short int ) * 8 ) - 1 ); // Using this workaround instead.
+							value = va_arg ( args, unsigned int ) & ( ( 1 << sizeof ( unsigned short int ) * 8 ) - 1 ); // Using this workaround instead.
 						}
 						else if ( cflags == DP_C_LONG )
 						{
@@ -2721,7 +2721,7 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 
 						if ( cflags == DP_C_SHORT )
 						{
-							value = va_arg ( args, unsigned int ) & ( ( 1 << sizeof( unsigned short int ) * 8 ) - 1 );
+							value = va_arg ( args, unsigned int ) & ( ( 1 << sizeof ( unsigned short int ) * 8 ) - 1 );
 						}
 						else if ( cflags == DP_C_LONG )
 						{
@@ -2747,7 +2747,7 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 
 						if ( cflags == DP_C_SHORT )
 						{
-							value = va_arg ( args, unsigned int ) & ( ( 1 << sizeof( unsigned short int ) * 8 ) - 1 );
+							value = va_arg ( args, unsigned int ) & ( ( 1 << sizeof ( unsigned short int ) * 8 ) - 1 );
 						}
 						else if ( cflags == DP_C_LONG )
 						{
@@ -2810,47 +2810,47 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 						}
 
 						/* um, floating point? */
-						total   += fmtfp ( buffer, &currlen, maxlen, fvalue, min, max, flags );
+						total += fmtfp ( buffer, &currlen, maxlen, fvalue, min, max, flags );
 						break;
 
 					case 'c':
-						total   += dopr_outch ( buffer, &currlen, maxlen, va_arg ( args, int ) );
+						total += dopr_outch ( buffer, &currlen, maxlen, va_arg ( args, int ) );
 						break;
 
 					case 's':
 						strvalue = va_arg ( args, char * );
-						total   += fmtstr ( buffer, &currlen, maxlen, strvalue, flags, min, max );
+						total += fmtstr ( buffer, &currlen, maxlen, strvalue, flags, min, max );
 						break;
 
 					case 'p':
 						strvalue = va_arg ( args, void * );
-						total   += fmtint ( buffer, &currlen, maxlen, ( long ) strvalue, 16, min,
-						                    max, flags );
+						total += fmtint ( buffer, &currlen, maxlen, ( long ) strvalue, 16, min,
+						                  max, flags );
 						break;
 
 					case 'n':
 						if ( cflags == DP_C_SHORT )
 						{
 							short int *num;
-							num  = va_arg ( args, short int * );
+							num = va_arg ( args, short int * );
 							*num = currlen;
 						}
 						else if ( cflags == DP_C_LONG )
 						{
 							long int *num;
-							num  = va_arg ( args, long int * );
+							num = va_arg ( args, long int * );
 							*num = currlen;
 						}
 						else if ( cflags == DP_C_LLONG )
 						{
 							LLONG *num;
-							num  = va_arg ( args, LLONG * );
+							num = va_arg ( args, LLONG * );
 							*num = currlen;
 						}
 						else
 						{
 							int *num;
-							num  = va_arg ( args, int * );
+							num = va_arg ( args, int * );
 							*num = currlen;
 						}
 
@@ -2870,10 +2870,10 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 						break;
 				}
 
-				ch    = *format++;
+				ch = *format++;
 				state = DP_S_DEFAULT;
 				flags = cflags = min = 0;
-				max   = -1;
+				max = -1;
 				break;
 
 			case DP_S_DONE:
@@ -2881,7 +2881,7 @@ static int dopr ( char *buffer, size_t maxlen, const char *format, va_list args 
 
 			default:
 				/* hmm? */
-				break;  /* some picky compilers need this */
+				break; /* some picky compilers need this */
 		}
 	}
 
@@ -2897,7 +2897,7 @@ static int fmtstr ( char *buffer, size_t *currlen, size_t maxlen,
                     char *value, int flags, int min, int max )
 {
 	int padlen, strln; /* amount to pad */
-	int cnt   = 0;
+	int cnt = 0;
 	int total = 0;
 
 	if ( value == 0 )
@@ -2956,11 +2956,11 @@ static int fmtint ( char *buffer, size_t *currlen, size_t maxlen,
 	int            signvalue = 0;
 	unsigned LLONG uvalue;
 	char           convert[ 24 ];
-	int            place     = 0;
-	int            spadlen   = 0; /* amount to space pad */
-	int            zpadlen   = 0; /* amount to zero pad */
+	int            place = 0;
+	int            spadlen = 0; /* amount to space pad */
+	int            zpadlen = 0; /* amount to zero pad */
 	const char     *digits;
-	int            total     = 0;
+	int            total = 0;
 
 	if ( max < 0 )
 	{
@@ -2969,12 +2969,12 @@ static int fmtint ( char *buffer, size_t *currlen, size_t maxlen,
 
 	uvalue = value;
 
-	if ( !( flags & DP_F_UNSIGNED ) )
+	if ( ! ( flags & DP_F_UNSIGNED ) )
 	{
 		if ( value < 0 )
 		{
 			signvalue = '-';
-			uvalue    = -value;
+			uvalue = -value;
 		}
 		else if ( flags & DP_F_PLUS ) /* Do a sign (+/i) */
 		{
@@ -2998,8 +2998,8 @@ static int fmtint ( char *buffer, size_t *currlen, size_t maxlen,
 
 	do
 	{
-		convert[ place++ ] = digits[ uvalue % ( unsigned )base ];
-		uvalue             = ( uvalue / ( unsigned )base );
+		convert[ place++ ] = digits[ uvalue % ( unsigned ) base ];
+		uvalue = ( uvalue / ( unsigned ) base );
 	}
 	while ( uvalue && ( place < sizeof ( convert ) ) );
 
@@ -3007,8 +3007,8 @@ static int fmtint ( char *buffer, size_t *currlen, size_t maxlen,
 
 	convert[ place ] = 0;
 
-	zpadlen          = max - place;
-	spadlen          = min - MAX ( max, place ) - ( signvalue ? 1 : 0 );
+	zpadlen = max - place;
+	spadlen = min - MAX ( max, place ) - ( signvalue ? 1 : 0 );
 
 	if ( zpadlen < 0 ) { zpadlen = 0; }
 
@@ -3016,7 +3016,7 @@ static int fmtint ( char *buffer, size_t *currlen, size_t maxlen,
 
 	if ( flags & DP_F_ZERO )
 	{
-		zpadlen = MAX( zpadlen, spadlen );
+		zpadlen = MAX ( zpadlen, spadlen );
 		spadlen = 0;
 	}
 
@@ -3099,7 +3099,7 @@ static long round ( LDOUBLE value )
 	long intpart;
 
 	intpart = value;
-	value   = value - intpart;
+	value = value - intpart;
 
 	if ( value >= 0.5 )
 	{
@@ -3116,12 +3116,12 @@ static int fmtfp ( char *buffer, size_t *currlen, size_t maxlen,
 	LDOUBLE ufvalue;
 	char    iconvert[ 20 ];
 	char    fconvert[ 20 ];
-	int     iplace  = 0;
-	int     fplace  = 0;
-	int     padlen  = 0; /* amount to pad */
+	int     iplace = 0;
+	int     fplace = 0;
+	int     padlen = 0; /* amount to pad */
 	int     zpadlen = 0;
-	int     caps    = 0;
-	int     total   = 0;
+	int     caps = 0;
+	int     total = 0;
 	long    intpart;
 	long    fracpart;
 
@@ -3188,8 +3188,8 @@ static int fmtfp ( char *buffer, size_t *currlen, size_t maxlen,
 	do
 	{
 		iconvert[ iplace++ ] =
-		  ( caps ? "0123456789ABCDEF" : "0123456789abcdef" )[ intpart % 10 ];
-		intpart              = ( intpart / 10 );
+		  ( caps ? "0123456789ABCDEF" : "0123456789abcdef" ) [ intpart % 10 ];
+		intpart = ( intpart / 10 );
 	}
 	while ( intpart && ( iplace < 20 ) );
 
@@ -3201,8 +3201,8 @@ static int fmtfp ( char *buffer, size_t *currlen, size_t maxlen,
 	do
 	{
 		fconvert[ fplace++ ] =
-		  ( caps ? "0123456789ABCDEF" : "0123456789abcdef" )[ fracpart % 10 ];
-		fracpart             = ( fracpart / 10 );
+		  ( caps ? "0123456789ABCDEF" : "0123456789abcdef" ) [ fracpart % 10 ];
+		fracpart = ( fracpart / 10 );
 	}
 	while ( fracpart && ( fplace < 20 ) );
 
@@ -3211,8 +3211,8 @@ static int fmtfp ( char *buffer, size_t *currlen, size_t maxlen,
 	fconvert[ fplace ] = 0;
 
 	/* -1 for decimal point, another -1 if we are printing a sign */
-	padlen             = min - iplace - max - 1 - ( ( signvalue ) ? 1 : 0 );
-	zpadlen            = max - fplace;
+	padlen = min - iplace - max - 1 - ( ( signvalue ) ? 1 : 0 );
+	zpadlen = max - fplace;
 
 	if ( zpadlen < 0 )
 	{
@@ -3233,7 +3233,7 @@ static int fmtfp ( char *buffer, size_t *currlen, size_t maxlen,
 	{
 		if ( signvalue )
 		{
-			total    += dopr_outch ( buffer, currlen, maxlen, signvalue );
+			total += dopr_outch ( buffer, currlen, maxlen, signvalue );
 			--padlen;
 			signvalue = 0;
 		}
@@ -3293,38 +3293,38 @@ static int dopr_outch ( char *buffer, size_t *currlen, size_t maxlen, char c )
 {
 	if ( *currlen + 1 < maxlen )
 	{
-		buffer[ ( *currlen )++ ] = c;
+		buffer[ ( *currlen ) ++ ] = c;
 	}
 
 	return 1;
 }
 
-int Q_vsnprintf( char *str, size_t length, const char *fmt, va_list args )
+int Q_vsnprintf ( char *str, size_t length, const char *fmt, va_list args )
 {
-	return dopr( str, length, fmt, args );
+	return dopr ( str, length, fmt, args );
 }
 
-int Q_snprintf( char *str, size_t length, const char *fmt, ... )
+int Q_snprintf ( char *str, size_t length, const char *fmt, ... )
 {
 	va_list ap;
 	int     retval;
 
-	va_start( ap, fmt );
-	retval = Q_vsnprintf( str, length, fmt, ap );
-	va_end( ap );
+	va_start ( ap, fmt );
+	retval = Q_vsnprintf ( str, length, fmt, ap );
+	va_end ( ap );
 
 	return retval;
 }
 
 /* this is really crappy */
-int sscanf( const char *buffer, const char *fmt, ... )
+int sscanf ( const char *buffer, const char *fmt, ... )
 {
 	int     cmd;
 	va_list ap;
 	int     count;
 	size_t  len;
 
-	va_start( ap, fmt );
+	va_start ( ap, fmt );
 	count = 0;
 
 	while ( *fmt )
@@ -3338,10 +3338,10 @@ int sscanf( const char *buffer, const char *fmt, ... )
 		fmt++;
 		cmd = *fmt;
 
-		if ( isdigit( cmd ) )
+		if ( isdigit ( cmd ) )
 		{
-			len = ( size_t )_atoi( &fmt );
-			cmd = *( fmt - 1 );
+			len = ( size_t ) _atoi ( &fmt );
+			cmd = * ( fmt - 1 );
 		}
 		else
 		{
@@ -3354,27 +3354,27 @@ int sscanf( const char *buffer, const char *fmt, ... )
 			case 'i':
 			case 'd':
 			case 'u':
-				*( va_arg( ap, int * ) )          = _atoi( &buffer );
+				* ( va_arg ( ap, int * ) ) = _atoi ( &buffer );
 				break;
 
 			case 'f':
-				*( va_arg( ap, float * ) )        = _atof( &buffer );
+				* ( va_arg ( ap, float * ) ) = _atof ( &buffer );
 				break;
 
 			case 'x':
-				*( va_arg( ap, unsigned int * ) ) = _hextoi( &buffer );
+				* ( va_arg ( ap, unsigned int * ) ) = _hextoi ( &buffer );
 				break;
 
 			case 's':
 				{
-					char *s = va_arg( ap, char * );
+					char *s = va_arg ( ap, char * );
 
-					while ( isspace( *buffer ) )
+					while ( isspace ( *buffer ) )
 					{
 						buffer++;
 					}
 
-					while ( *buffer && !isspace( *buffer ) && len-- > 0 )
+					while ( *buffer && !isspace ( *buffer ) && len-- > 0 )
 					{
 						*s++ = *buffer++;
 					}
@@ -3385,12 +3385,12 @@ int sscanf( const char *buffer, const char *fmt, ... )
 		}
 	}
 
-	va_end( ap );
+	va_end ( ap );
 	return count;
 }
 
-void *bsearch( const void *key, const void *base, size_t nmemb, size_t size,
-               cmp_t *compar )
+void *bsearch ( const void *key, const void *base, size_t nmemb, size_t size,
+                cmp_t *compar )
 {
 	size_t low = 0, high = nmemb, mid;
 	int    comp;
@@ -3398,8 +3398,8 @@ void *bsearch( const void *key, const void *base, size_t nmemb, size_t size,
 
 	while ( low < high )
 	{
-		mid  = low + ( high - low ) / 2;
-		ptr  = ( void * )( ( char * )base + ( mid * size ) );
+		mid = low + ( high - low ) / 2;
+		ptr = ( void * ) ( ( char * ) base + ( mid * size ) );
 		comp = compar ( key, ptr );
 
 		if ( comp < 0 )

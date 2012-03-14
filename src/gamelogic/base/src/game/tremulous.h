@@ -232,7 +232,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define BOOSTER_SPLASHDAMAGE   50
 #define BOOSTER_SPLASHRADIUS   50
 #define BOOSTER_CREEPSIZE      120
-#define BOOSTER_INTERVAL       30000      //time in msec between uses (per player)
+#define BOOSTER_INTERVAL       30000 //time in msec between uses (per player)
 #define BOOSTER_REGEN_MOD      2.0f
 #define BOOST_TIME             30000
 
@@ -269,7 +269,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define TRAPPER_RANGE          400
 #define TRAPPER_REPEAT         1000
 #define LOCKBLOB_SPEED         650.0f
-#define LOCKBLOB_DOT           0.85f      // max angle = acos( LOCKBLOB_DOT )
+#define LOCKBLOB_DOT           0.85f // max angle = acos( LOCKBLOB_DOT )
 
 #define OVERMIND_BP            0
 #define OVERMIND_BT            30000
@@ -305,7 +305,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define ALIEN_SPAWN_REPEAT_TIME 10000
 
-#define ALIEN_REGEN_DAMAGE_TIME 2000     //msec since damage that regen starts again
+#define ALIEN_REGEN_DAMAGE_TIME 2000 //msec since damage that regen starts again
 
 /*
  * HUMAN weapons
@@ -347,7 +347,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define SHOTGUN_PRICE            150
 #define SHOTGUN_SHELLS           8
-#define SHOTGUN_PELLETS          8    //used to sync server and client side
+#define SHOTGUN_PELLETS          8 //used to sync server and client side
 #define SHOTGUN_MAXCLIPS         3
 #define SHOTGUN_REPEAT           1000
 #define SHOTGUN_RELOAD           2000
@@ -388,7 +388,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FLAMER_RADIUS            50
 #define FLAMER_LIFETIME          800.0f
 #define FLAMER_SPEED             200.0f
-#define FLAMER_LAG               0.65f     //the amount of player velocity that is added to the fireball
+#define FLAMER_LAG               0.65f //the amount of player velocity that is added to the fireball
 
 #define LCANNON_PRICE            600
 #define LCANNON_AMMO             90
@@ -430,7 +430,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define JETPACK_PRICE               120
 #define JETPACK_FLOAT_SPEED         128.0f //up movement speed
 #define JETPACK_SINK_SPEED          192.0f //down movement speed
-#define JETPACK_DISABLE_TIME        1000   //time to disable the jetpack when player damaged
+#define JETPACK_DISABLE_TIME        1000 //time to disable the jetpack when player damaged
 #define JETPACK_DISABLE_CHANCE      0.3f
 
 #define BSUIT_PRICE                 400
@@ -484,9 +484,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MGTURRET_HEALTH                 HBHM(190)
 #define MGTURRET_SPLASHDAMAGE           100
 #define MGTURRET_SPLASHRADIUS           100
-#define MGTURRET_ANGULARSPEED           8                            //degrees/think ~= 200deg/sec
+#define MGTURRET_ANGULARSPEED           8 //degrees/think ~= 200deg/sec
 #define MGTURRET_ACCURACYTOLERANCE      MGTURRET_ANGULARSPEED / 1.5f //angular difference for turret to fire
-#define MGTURRET_VERTICALCAP            30                           // +/- maximum pitch
+#define MGTURRET_VERTICALCAP            30 // +/- maximum pitch
 #define MGTURRET_REPEAT                 100
 #define MGTURRET_RANGE                  300.0f
 #define MGTURRET_SPREAD                 200
@@ -554,21 +554,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * Misc
  */
 
-#define MIN_FALL_DISTANCE         30.0f   //the fall distance at which fall damage kicks in
-#define MAX_FALL_DISTANCE         120.0f  //the fall distance at which maximum damage is dealt
+#define MIN_FALL_DISTANCE         30.0f //the fall distance at which fall damage kicks in
+#define MAX_FALL_DISTANCE         120.0f //the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE         (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
 
-#define HUMAN_MAXED               900     //a human with a strong selection of weapons/upgrades
+#define HUMAN_MAXED               900 //a human with a strong selection of weapons/upgrades
 #define HUMAN_MAX_CREDITS         2000
 #define ALIEN_MAX_KILLS           9
 #define ALIEN_MAX_SINGLE_KILLS    3
 
-#define FREEKILL_PERIOD           120000   //msec
+#define FREEKILL_PERIOD           120000 //msec
 #define FREEKILL_ALIEN            1
 #define FREEKILL_HUMAN            LEVEL0_VALUE
 
 #define DEFAULT_ALIEN_BUILDPOINTS "100"
 #define DEFAULT_HUMAN_BUILDPOINTS "100"
 
-#define DAMAGE_FRACTION_FOR_KILL  0.5f   //how much damage players (versus structures) need to
+#define DAMAGE_FRACTION_FOR_KILL  0.5f //how much damage players (versus structures) need to
 //do to increment the stage kill counters

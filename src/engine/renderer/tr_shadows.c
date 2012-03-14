@@ -58,7 +58,7 @@ static edgeDef_t edgeDefs[ SHADER_MAX_VERTEXES ][ MAX_EDGE_DEFS ];
 static int       numEdgeDefs[ SHADER_MAX_VERTEXES ];
 static int       facing[ SHADER_MAX_INDEXES / 3 ];
 
-void R_AddEdgeDef( int i1, int i2, int facing )
+void R_AddEdgeDef ( int i1, int i2, int facing )
 {
 	int c;
 
@@ -66,16 +66,16 @@ void R_AddEdgeDef( int i1, int i2, int facing )
 
 	if ( c == MAX_EDGE_DEFS )
 	{
-		return;                                 // overflow
+		return; // overflow
 	}
 
-	edgeDefs[ i1 ][ c ].i2     = i2;
+	edgeDefs[ i1 ][ c ].i2 = i2;
 	edgeDefs[ i1 ][ c ].facing = facing;
 
 	numEdgeDefs[ i1 ]++;
 }
 
-void R_RenderShadowEdges( void )
+void R_RenderShadowEdges ( void )
 {
 	int i;
 
@@ -98,15 +98,15 @@ void R_RenderShadowEdges( void )
 		i2 = tess.indexes[ i * 3 + 1 ];
 		i3 = tess.indexes[ i * 3 + 2 ];
 
-		glBegin( GL_TRIANGLE_STRIP );
-		glVertex3fv( tess.xyz[ i1 ].v );
-		glVertex3fv( tess.xyz[ i1 + tess.numVertexes ].v );
-		glVertex3fv( tess.xyz[ i2 ].v );
-		glVertex3fv( tess.xyz[ i2 + tess.numVertexes ].v );
-		glVertex3fv( tess.xyz[ i3 ].v );
-		glVertex3fv( tess.xyz[ i3 + tess.numVertexes ].v );
-		glVertex3fv( tess.xyz[ i1 ].v );
-		glVertex3fv( tess.xyz[ i1 + tess.numVertexes ].v );
+		glBegin ( GL_TRIANGLE_STRIP );
+		glVertex3fv ( tess.xyz[ i1 ].v );
+		glVertex3fv ( tess.xyz[ i1 + tess.numVertexes ].v );
+		glVertex3fv ( tess.xyz[ i2 ].v );
+		glVertex3fv ( tess.xyz[ i2 + tess.numVertexes ].v );
+		glVertex3fv ( tess.xyz[ i3 ].v );
+		glVertex3fv ( tess.xyz[ i3 + tess.numVertexes ].v );
+		glVertex3fv ( tess.xyz[ i1 ].v );
+		glVertex3fv ( tess.xyz[ i1 + tess.numVertexes ].v );
 		glEnd();
 	}
 
@@ -121,7 +121,7 @@ void R_RenderShadowEdges( void )
 	// or if it has a reverse paired edge that also faces the light.
 	// A well behaved polyhedron would have exactly two faces for each edge,
 	// but lots of models have dangling edges or overfanned edges
-	c_edges    = 0;
+	c_edges = 0;
 	c_rejected = 0;
 
 	for ( i = 0; i < tess.numVertexes; i++ )
@@ -138,8 +138,8 @@ void R_RenderShadowEdges( void )
 			hit[ 0 ] = 0;
 			hit[ 1 ] = 0;
 
-			i2       = edgeDefs[ i ][ j ].i2;
-			c2       = numEdgeDefs[ i2 ];
+			i2 = edgeDefs[ i ][ j ].i2;
+			c2 = numEdgeDefs[ i2 ];
 
 			for ( k = 0; k < c2; k++ )
 			{
@@ -153,11 +153,11 @@ void R_RenderShadowEdges( void )
 			// triangle, it is a sil edge
 			if ( hit[ 1 ] == 0 )
 			{
-				glBegin( GL_TRIANGLE_STRIP );
-				glVertex3fv( tess.xyz[ i ].v );
-				glVertex3fv( tess.xyz[ i + tess.numVertexes ].v );
-				glVertex3fv( tess.xyz[ i2 ].v );
-				glVertex3fv( tess.xyz[ i2 + tess.numVertexes ].v );
+				glBegin ( GL_TRIANGLE_STRIP );
+				glVertex3fv ( tess.xyz[ i ].v );
+				glVertex3fv ( tess.xyz[ i + tess.numVertexes ].v );
+				glVertex3fv ( tess.xyz[ i2 ].v );
+				glVertex3fv ( tess.xyz[ i2 + tess.numVertexes ].v );
 				glEnd();
 				c_edges++;
 			}
@@ -183,7 +183,7 @@ triangleFromEdge[ v1 ][ v2 ]
   }
 =================
 */
-void RB_ShadowTessEnd( void )
+void RB_ShadowTessEnd ( void )
 {
 	int    i;
 	int    numTris;
@@ -200,16 +200,16 @@ void RB_ShadowTessEnd( void )
 		return;
 	}
 
-	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
+	VectorCopy ( backEnd.currentEntity->lightDir, lightDir );
 
 	// project vertexes away from light direction
 	for ( i = 0; i < tess.numVertexes; i++ )
 	{
-		VectorMA( tess.xyz[ i ].v, -512, lightDir, tess.xyz[ i + tess.numVertexes ].v );
+		VectorMA ( tess.xyz[ i ].v, -512, lightDir, tess.xyz[ i + tess.numVertexes ].v );
 	}
 
 	// decide which triangles face the light
-	memset( numEdgeDefs, 0, 4 * tess.numVertexes );
+	memset ( numEdgeDefs, 0, 4 * tess.numVertexes );
 
 	numTris = tess.numIndexes / 3;
 
@@ -228,11 +228,11 @@ void RB_ShadowTessEnd( void )
 		v2 = tess.xyz[ i2 ].v;
 		v3 = tess.xyz[ i3 ].v;
 
-		VectorSubtract( v2, v1, d1 );
-		VectorSubtract( v3, v1, d2 );
-		CrossProduct( d1, d2, normal );
+		VectorSubtract ( v2, v1, d1 );
+		VectorSubtract ( v3, v1, d2 );
+		CrossProduct ( d1, d2, normal );
 
-		d = DotProduct( normal, lightDir );
+		d = DotProduct ( normal, lightDir );
 
 		if ( d > 0 )
 		{
@@ -244,52 +244,52 @@ void RB_ShadowTessEnd( void )
 		}
 
 		// create the edges
-		R_AddEdgeDef( i1, i2, facing[ i ] );
-		R_AddEdgeDef( i2, i3, facing[ i ] );
-		R_AddEdgeDef( i3, i1, facing[ i ] );
+		R_AddEdgeDef ( i1, i2, facing[ i ] );
+		R_AddEdgeDef ( i2, i3, facing[ i ] );
+		R_AddEdgeDef ( i3, i1, facing[ i ] );
 	}
 
 	// draw the silhouette edges
 
-	GL_Bind( tr.whiteImage );
-	glEnable( GL_CULL_FACE );
-	GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-	glColor3f( 0.2f, 0.2f, 0.2f );
+	GL_Bind ( tr.whiteImage );
+	glEnable ( GL_CULL_FACE );
+	GL_State ( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
+	glColor3f ( 0.2f, 0.2f, 0.2f );
 
 	// don't write to the color buffer
-	glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
+	glColorMask ( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
 
-	glEnable( GL_STENCIL_TEST );
-	glStencilFunc( GL_ALWAYS, 1, 255 );
+	glEnable ( GL_STENCIL_TEST );
+	glStencilFunc ( GL_ALWAYS, 1, 255 );
 
 	// mirrors have the culling order reversed
 	if ( backEnd.viewParms.isMirror )
 	{
-		glCullFace( GL_FRONT );
-		glStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
+		glCullFace ( GL_FRONT );
+		glStencilOp ( GL_KEEP, GL_KEEP, GL_INCR );
 
 		R_RenderShadowEdges();
 
-		glCullFace( GL_BACK );
-		glStencilOp( GL_KEEP, GL_KEEP, GL_DECR );
+		glCullFace ( GL_BACK );
+		glStencilOp ( GL_KEEP, GL_KEEP, GL_DECR );
 
 		R_RenderShadowEdges();
 	}
 	else
 	{
-		glCullFace( GL_BACK );
-		glStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
+		glCullFace ( GL_BACK );
+		glStencilOp ( GL_KEEP, GL_KEEP, GL_INCR );
 
 		R_RenderShadowEdges();
 
-		glCullFace( GL_FRONT );
-		glStencilOp( GL_KEEP, GL_KEEP, GL_DECR );
+		glCullFace ( GL_FRONT );
+		glStencilOp ( GL_KEEP, GL_KEEP, GL_DECR );
 
 		R_RenderShadowEdges();
 	}
 
 	// reenable writing to the color buffer
-	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glColorMask ( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 }
 
 /*
@@ -302,7 +302,7 @@ because otherwise shadows from different body parts would
 overlap and double darken.
 =================
 */
-void RB_ShadowFinish( void )
+void RB_ShadowFinish ( void )
 {
 	if ( r_shadows->integer != 2 )
 	{
@@ -314,31 +314,31 @@ void RB_ShadowFinish( void )
 		return;
 	}
 
-	glEnable( GL_STENCIL_TEST );
-	glStencilFunc( GL_NOTEQUAL, 0, 255 );
+	glEnable ( GL_STENCIL_TEST );
+	glStencilFunc ( GL_NOTEQUAL, 0, 255 );
 
-	glDisable( GL_CLIP_PLANE0 );
-	glDisable( GL_CULL_FACE );
+	glDisable ( GL_CLIP_PLANE0 );
+	glDisable ( GL_CULL_FACE );
 
-	GL_Bind( tr.whiteImage );
+	GL_Bind ( tr.whiteImage );
 
 	glLoadIdentity();
 
-	glColor3f( 0.6f, 0.6f, 0.6f );
-	GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO );
+	glColor3f ( 0.6f, 0.6f, 0.6f );
+	GL_State ( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO );
 
 //  glColor3f( 1, 0, 0 );
 //  GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
 
-	glBegin( GL_QUADS );
-	glVertex3f( -100, 100, -10 );
-	glVertex3f( 100, 100, -10 );
-	glVertex3f( 100, -100, -10 );
-	glVertex3f( -100, -100, -10 );
+	glBegin ( GL_QUADS );
+	glVertex3f ( -100, 100, -10 );
+	glVertex3f ( 100, 100, -10 );
+	glVertex3f ( 100, -100, -10 );
+	glVertex3f ( -100, -100, -10 );
 	glEnd();
 
-	glColor4f( 1, 1, 1, 1 );
-	glDisable( GL_STENCIL_TEST );
+	glColor4f ( 1, 1, 1, 1 );
+	glDisable ( GL_STENCIL_TEST );
 }
 
 /*
@@ -347,7 +347,7 @@ RB_ProjectionShadowDeform
 
 =================
 */
-void RB_ProjectionShadowDeform( void )
+void RB_ProjectionShadowDeform ( void )
 {
 	float  *xyz;
 	int    i;
@@ -358,25 +358,25 @@ void RB_ProjectionShadowDeform( void )
 	float  d;
 	vec3_t lightDir;
 
-	xyz         = ( float * )tess.xyz;
+	xyz = ( float * ) tess.xyz;
 
 	ground[ 0 ] = backEnd.orientation.axis[ 0 ][ 2 ];
 	ground[ 1 ] = backEnd.orientation.axis[ 1 ][ 2 ];
 	ground[ 2 ] = backEnd.orientation.axis[ 2 ][ 2 ];
 
-	groundDist  = backEnd.orientation.origin[ 2 ] - backEnd.currentEntity->e.shadowPlane;
+	groundDist = backEnd.orientation.origin[ 2 ] - backEnd.currentEntity->e.shadowPlane;
 
-	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
-	d           = DotProduct( lightDir, ground );
+	VectorCopy ( backEnd.currentEntity->lightDir, lightDir );
+	d = DotProduct ( lightDir, ground );
 
 	// don't let the shadows get too long or go negative
 	if ( d < 0.5 )
 	{
-		VectorMA( lightDir, ( 0.5 - d ), ground, lightDir );
-		d = DotProduct( lightDir, ground );
+		VectorMA ( lightDir, ( 0.5 - d ), ground, lightDir );
+		d = DotProduct ( lightDir, ground );
 	}
 
-	d          = 1.0 / d;
+	d = 1.0 / d;
 
 	light[ 0 ] = lightDir[ 0 ] * d;
 	light[ 1 ] = lightDir[ 1 ] * d;
@@ -384,7 +384,7 @@ void RB_ProjectionShadowDeform( void )
 
 	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 )
 	{
-		h         = DotProduct( xyz, ground ) + groundDist;
+		h = DotProduct ( xyz, ground ) + groundDist;
 
 		xyz[ 0 ] -= light[ 0 ] * h;
 		xyz[ 1 ] -= light[ 1 ] * h;

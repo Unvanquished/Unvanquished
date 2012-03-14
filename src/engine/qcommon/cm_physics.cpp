@@ -76,7 +76,7 @@ extern "C" void CMod_PhysicsInit()
 	NewtonSetPlatformArchitecture ( g_world, 0 );
 
 	// Set up default material properties for newton
-	defaultMaterialGroup = NewtonMaterialGetDefaultGroupID( g_world );
+	defaultMaterialGroup = NewtonMaterialGetDefaultGroupID ( g_world );
 	NewtonMaterialSetDefaultFriction   ( g_world, defaultMaterialGroup, defaultMaterialGroup, 0.9f, 0.5f );
 	NewtonMaterialSetDefaultElasticity ( g_world, defaultMaterialGroup, defaultMaterialGroup, 0.4f );
 	NewtonMaterialSetDefaultSoftness   ( g_world, defaultMaterialGroup, defaultMaterialGroup, 0.1f );
@@ -127,11 +127,11 @@ extern "C" void CMod_PhysicsShutdown()
 	}
 }
 
-extern "C" void CMod_PhysicsAddBSPFace( vec3_t vec[ 3 ] )
+extern "C" void CMod_PhysicsAddBSPFace ( vec3_t vec[ 3 ] )
 {
-	VectorScale( vec[ 0 ], UNITS_PER_METRE, vec[ 0 ] );
-	VectorScale( vec[ 1 ], UNITS_PER_METRE, vec[ 1 ] );
-	VectorScale( vec[ 2 ], UNITS_PER_METRE, vec[ 2 ] );
+	VectorScale ( vec[ 0 ], UNITS_PER_METRE, vec[ 0 ] );
+	VectorScale ( vec[ 1 ], UNITS_PER_METRE, vec[ 1 ] );
+	VectorScale ( vec[ 2 ], UNITS_PER_METRE, vec[ 2 ] );
 
 	NewtonTreeCollisionAddFace ( g_collision, 3, &vec[ 0 ][ 0 ], sizeof ( vec3_t ), NewtonMaterialGetDefaultGroupID ( g_world ) );
 }
@@ -181,22 +181,22 @@ static void PhysicsEntityThink ( const NewtonBody *body, dFloat timestep, int th
 	NewtonBodySetForce ( body, &force.m_x );
 }
 
-static char *vtos( const vec3_t v )
+static char *vtos ( const vec3_t v )
 {
 	static int  index;
 	static char str[ 8 ][ 32 ];
 	char        *s;
 
 	// use an array so that multiple vtos won't collide
-	s     = str[ index ];
+	s = str[ index ];
 	index = ( index + 1 ) & 7;
 
-	Com_sprintf( s, 32, "(%i %i %i)", ( int )v[ 0 ], ( int )v[ 1 ], ( int )v[ 2 ] );
+	Com_sprintf ( s, 32, "(%i %i %i)", ( int ) v[ 0 ], ( int ) v[ 1 ], ( int ) v[ 2 ] );
 
 	return s;
 }
 
-void TransposeMatrix( vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
+void TransposeMatrix ( vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
 {
 	int i, j;
 
@@ -213,7 +213,7 @@ static void PhysicsEntitySetTransform ( const NewtonBody *body, const dFloat *ma
 {
 	if ( com_sv_running->integer )
 	{
-		sharedEntity_t *ent = ( sharedEntity_t * )NewtonBodyGetUserData ( body );
+		sharedEntity_t *ent = ( sharedEntity_t * ) NewtonBodyGetUserData ( body );
 		vec3_t         newPosition;
 		vec3_t         angles;
 		vec3_t         axis[ 3 ];
@@ -251,11 +251,11 @@ static void PhysicsEntitySetTransform ( const NewtonBody *body, const dFloat *ma
 	}
 }
 
-extern "C" void CMod_PhysicsAddStatic( const sharedEntity_t *gEnt )
+extern "C" void CMod_PhysicsAddStatic ( const sharedEntity_t *gEnt )
 {
 }
 
-extern "C" void CMod_PhysicsAddEntity( sharedEntity_t *gEnt )
+extern "C" void CMod_PhysicsAddEntity ( sharedEntity_t *gEnt )
 {
 	std::map< int, bspCmodel >::iterator it = bspModels.find ( gEnt->s.modelindex );
 
@@ -266,15 +266,15 @@ extern "C" void CMod_PhysicsAddEntity( sharedEntity_t *gEnt )
 
 	vec3_t         inertia, com;
 	dMatrix        matrix ( GetIdentityMatrix() );
-	bspCmodel       *bmodel    = &it->second;
+	bspCmodel       *bmodel = &it->second;
 
 	NewtonCollision *collision = NewtonCreateConvexHull ( g_world, bmodel->vertices.size(), &bmodel->vertices[ 0 ].m_x, sizeof ( dVector ), 0.0f, NULL );
-	NewtonBody      *body      = NewtonCreateBody ( g_world, collision );
+	NewtonBody      *body = NewtonCreateBody ( g_world, collision );
 
 	bmodel->rigidBody = body;
 
 	NewtonBodySetMaterialGroupID ( body, defaultMaterialGroup );
-	NewtonBodySetUserData ( body, ( void * )gEnt );
+	NewtonBodySetUserData ( body, ( void * ) gEnt );
 	NewtonBodySetDestructorCallback ( body, PhysicsEntityDie );
 	NewtonBodySetContinuousCollisionMode ( body, 0 );
 	NewtonBodySetForceAndTorqueCallback ( body, PhysicsEntityThink );
@@ -302,14 +302,14 @@ extern "C" void CMod_PhysicsAddEntity( sharedEntity_t *gEnt )
 	VectorCopy ( gEnt->s.angles, gEnt->r.currentAngles );
 }
 
-extern "C" void CMod_PhysicsAddBSPModel( int index, int firstSurface, int numSurfaces )
+extern "C" void CMod_PhysicsAddBSPModel ( int index, int firstSurface, int numSurfaces )
 {
 	bspCmodel newModel;
-	newModel.index        = index;
+	newModel.index = index;
 	newModel.firstSurface = firstSurface;
-	newModel.numSurfaces  = numSurfaces;
+	newModel.numSurfaces = numSurfaces;
 
-	bspModels[ index ]    = newModel;
+	bspModels[ index ] = newModel;
 }
 
 extern "C" int CMod_PhysicsBSPSurfaceIsModel ( int surfaceID )
@@ -327,7 +327,7 @@ extern "C" int CMod_PhysicsBSPSurfaceIsModel ( int surfaceID )
 	return 0;
 }
 
-extern "C" void CMod_PhysicsAddFaceToModel( int modelIndex, int surface, vec3_t vec[ 3 ] )
+extern "C" void CMod_PhysicsAddFaceToModel ( int modelIndex, int surface, vec3_t vec[ 3 ] )
 {
 	std::map< int, bspCmodel >::iterator it = bspModels.find ( modelIndex );
 
@@ -336,9 +336,9 @@ extern "C" void CMod_PhysicsAddFaceToModel( int modelIndex, int surface, vec3_t 
 		return;
 	}
 
-	VectorScale( vec[ 0 ], UNITS_PER_METRE, vec[ 0 ] );
-	VectorScale( vec[ 1 ], UNITS_PER_METRE, vec[ 1 ] );
-	VectorScale( vec[ 2 ], UNITS_PER_METRE, vec[ 2 ] );
+	VectorScale ( vec[ 0 ], UNITS_PER_METRE, vec[ 0 ] );
+	VectorScale ( vec[ 1 ], UNITS_PER_METRE, vec[ 1 ] );
+	VectorScale ( vec[ 2 ], UNITS_PER_METRE, vec[ 2 ] );
 
 	dVector newVert[ 3 ];
 	newVert[ 0 ].m_x = vec[ 0 ][ 0 ];

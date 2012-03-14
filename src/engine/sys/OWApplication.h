@@ -46,7 +46,7 @@ UIApplication
 	NSThread                         *_frameThread;
 #else
 	NSTimer                          *_frameTimer;
-#endif  // IPHONE_USE_THREADS
+#endif // IPHONE_USE_THREADS
 }
 
 @property ( assign, readonly, nonatomic ) OWScreenView *screenView;
@@ -61,9 +61,9 @@ UIApplication
 @property ( assign, readonly, nonatomic ) UIButton     *_enterKey;
 @property ( assign, readonly, nonatomic ) UIButton     *_amokKey;
 
-- ( void )presentErrorMessage:
-( NSString * )errorMessage;
-- ( void )presentWarningMessage:
-( NSString * )warningMessage;
+- ( void ) presentErrorMessage:
+( NSString * ) errorMessage;
+- ( void ) presentWarningMessage:
+( NSString * ) warningMessage;
 
 @end

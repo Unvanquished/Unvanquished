@@ -37,7 +37,7 @@ Maryland 20850 USA.
 #define NUM_PM_STACK_ITEMS     32
 #define MAX_VISIBLE_ITEMS      5
 
-#define NUM_PM_STACK_ITEMS_BIG 8        // Gordon: we shouldn't need many of these
+#define NUM_PM_STACK_ITEMS_BIG 8 // Gordon: we shouldn't need many of these
 
 typedef struct pmStackItem_s    pmListItem_t;
 typedef struct pmStackItemBig_s pmListItemBig_t;
@@ -82,33 +82,33 @@ const char      *cg_skillRewards[ SK_NUM_SKILLS ][ NUM_SKILL_LEVELS - 1 ] =
 	{ "Improved use of Scoped Weapon Ammunition", "Improved use of Sabotage and Misdirection", "Breath Control",                        "Assassin"                 } // scoped weapons & military intelligence
 };
 
-void            CG_PMItemBigSound( pmListItemBig_t *item );
+void            CG_PMItemBigSound ( pmListItemBig_t *item );
 
-void CG_InitPMGraphics( void )
+void CG_InitPMGraphics ( void )
 {
-	cgs.media.pmImages[ PM_DYNAMITE ]     = trap_R_RegisterShaderNoMip( "gfx/limbo/cm_dynamite" );
-	cgs.media.pmImages[ PM_CONSTRUCTION ] = trap_R_RegisterShaderNoMip( "sprites/voiceChat" );
-	cgs.media.pmImages[ PM_MINES ]        = trap_R_RegisterShaderNoMip( "sprites/voiceChat" );
-	cgs.media.pmImages[ PM_DEATH ]        = trap_R_RegisterShaderNoMip( "gfx/hud/pm_death" );
-	cgs.media.pmImages[ PM_MESSAGE ]      = trap_R_RegisterShaderNoMip( "sprites/voiceChat" );
-	cgs.media.pmImages[ PM_OBJECTIVE ]    = trap_R_RegisterShaderNoMip( "sprites/objective" );
-	cgs.media.pmImages[ PM_DESTRUCTION ]  = trap_R_RegisterShaderNoMip( "sprites/voiceChat" );
-	cgs.media.pmImages[ PM_TEAM ]         = trap_R_RegisterShaderNoMip( "sprites/voiceChat" );
+	cgs.media.pmImages[ PM_DYNAMITE ] = trap_R_RegisterShaderNoMip ( "gfx/limbo/cm_dynamite" );
+	cgs.media.pmImages[ PM_CONSTRUCTION ] = trap_R_RegisterShaderNoMip ( "sprites/voiceChat" );
+	cgs.media.pmImages[ PM_MINES ] = trap_R_RegisterShaderNoMip ( "sprites/voiceChat" );
+	cgs.media.pmImages[ PM_DEATH ] = trap_R_RegisterShaderNoMip ( "gfx/hud/pm_death" );
+	cgs.media.pmImages[ PM_MESSAGE ] = trap_R_RegisterShaderNoMip ( "sprites/voiceChat" );
+	cgs.media.pmImages[ PM_OBJECTIVE ] = trap_R_RegisterShaderNoMip ( "sprites/objective" );
+	cgs.media.pmImages[ PM_DESTRUCTION ] = trap_R_RegisterShaderNoMip ( "sprites/voiceChat" );
+	cgs.media.pmImages[ PM_TEAM ] = trap_R_RegisterShaderNoMip ( "sprites/voiceChat" );
 
-	cgs.media.pmImageAlliesConstruct      = trap_R_RegisterShaderNoMip( "gfx/hud/pm_constallied" );
-	cgs.media.pmImageAxisConstruct        = trap_R_RegisterShaderNoMip( "gfx/hud/pm_constaxis" );
-	cgs.media.pmImageAlliesMine           = trap_R_RegisterShaderNoMip( "gfx/hud/pm_mineallied" );
-	cgs.media.pmImageAxisMine             = trap_R_RegisterShaderNoMip( "gfx/hud/pm_mineaxis" );
-	cgs.media.hintKey                     = trap_R_RegisterShaderNoMip( "gfx/hud/keyboardkey_old" );
+	cgs.media.pmImageAlliesConstruct = trap_R_RegisterShaderNoMip ( "gfx/hud/pm_constallied" );
+	cgs.media.pmImageAxisConstruct = trap_R_RegisterShaderNoMip ( "gfx/hud/pm_constaxis" );
+	cgs.media.pmImageAlliesMine = trap_R_RegisterShaderNoMip ( "gfx/hud/pm_mineallied" );
+	cgs.media.pmImageAxisMine = trap_R_RegisterShaderNoMip ( "gfx/hud/pm_mineaxis" );
+	cgs.media.hintKey = trap_R_RegisterShaderNoMip ( "gfx/hud/keyboardkey_old" );
 }
 
-void CG_InitPM( void )
+void CG_InitPM ( void )
 {
-	memset( &cg_pmStack, 0, sizeof( cg_pmStack ) );
-	memset( &cg_pmStackBig, 0, sizeof( cg_pmStackBig ) );
+	memset ( &cg_pmStack, 0, sizeof ( cg_pmStack ) );
+	memset ( &cg_pmStackBig, 0, sizeof ( cg_pmStackBig ) );
 
-	cg_pmOldList        = NULL;
-	cg_pmWaitingList    = NULL;
+	cg_pmOldList = NULL;
+	cg_pmWaitingList = NULL;
 	cg_pmWaitingListBig = NULL;
 }
 
@@ -118,7 +118,7 @@ void CG_InitPM( void )
 #define PM_FADETIME_BIG 1000
 #define PM_WAITTIME_BIG 3500
 
-int CG_TimeForPopup( popupMessageType_t type )
+int CG_TimeForPopup ( popupMessageType_t type )
 {
 	switch ( type )
 	{
@@ -127,7 +127,7 @@ int CG_TimeForPopup( popupMessageType_t type )
 	}
 }
 
-int CG_TimeForBigPopup( popupMessageBigType_t type )
+int CG_TimeForBigPopup ( popupMessageBigType_t type )
 {
 	switch ( type )
 	{
@@ -136,13 +136,13 @@ int CG_TimeForBigPopup( popupMessageBigType_t type )
 	}
 }
 
-void CG_AddToListFront( pmListItem_t **list, pmListItem_t *item )
+void CG_AddToListFront ( pmListItem_t **list, pmListItem_t *item )
 {
 	item->next = *list;
-	*list      = item;
+	*list = item;
 }
 
-void CG_UpdatePMLists( void )
+void CG_UpdatePMLists ( void )
 {
 	pmListItem_t    *listItem;
 	pmListItem_t    *lastItem;
@@ -150,17 +150,17 @@ void CG_UpdatePMLists( void )
 
 	if ( ( listItem = cg_pmWaitingList ) )
 	{
-		int t = ( CG_TimeForPopup( listItem->type ) + listItem->time );
+		int t = ( CG_TimeForPopup ( listItem->type ) + listItem->time );
 
 		if ( cg.time > t )
 		{
 			if ( listItem->next )
 			{
 				// there's another item waiting to come on, so move to old list
-				cg_pmWaitingList       = listItem->next;
-				cg_pmWaitingList->time = cg.time;       // set time we popped up at
+				cg_pmWaitingList = listItem->next;
+				cg_pmWaitingList->time = cg.time; // set time we popped up at
 
-				CG_AddToListFront( &cg_pmOldList, listItem );
+				CG_AddToListFront ( &cg_pmOldList, listItem );
 			}
 			else
 			{
@@ -168,8 +168,8 @@ void CG_UpdatePMLists( void )
 				{
 					// we're gone completely
 					cg_pmWaitingList = NULL;
-					listItem->inuse  = qfalse;
-					listItem->next   = NULL;
+					listItem->inuse = qfalse;
+					listItem->next = NULL;
 				}
 				else
 				{
@@ -184,7 +184,7 @@ void CG_UpdatePMLists( void )
 
 	while ( listItem )
 	{
-		int t = ( CG_TimeForPopup( listItem->type ) + listItem->time + PM_WAITTIME + PM_FADETIME );
+		int t = ( CG_TimeForPopup ( listItem->type ) + listItem->time + PM_WAITTIME + PM_FADETIME );
 
 		if ( cg.time > t )
 		{
@@ -203,9 +203,9 @@ void CG_UpdatePMLists( void )
 
 			do
 			{
-				next            = listItem->next;
+				next = listItem->next;
 
-				listItem->next  = NULL;
+				listItem->next = NULL;
 				listItem->inuse = qfalse;
 			}
 			while ( ( listItem = next ) );
@@ -219,20 +219,20 @@ void CG_UpdatePMLists( void )
 
 	if ( ( listItem2 = cg_pmWaitingListBig ) )
 	{
-		int t = CG_TimeForBigPopup( listItem2->type ) + listItem2->time;
+		int t = CG_TimeForBigPopup ( listItem2->type ) + listItem2->time;
 
 		if ( cg.time > t )
 		{
 			if ( listItem2->next )
 			{
 				// there's another item waiting to come on, so kill us and shove the next one to the front
-				cg_pmWaitingListBig       = listItem2->next;
-				cg_pmWaitingListBig->time = cg.time;    // set time we popped up at
+				cg_pmWaitingListBig = listItem2->next;
+				cg_pmWaitingListBig->time = cg.time; // set time we popped up at
 
-				CG_PMItemBigSound( cg_pmWaitingListBig );
+				CG_PMItemBigSound ( cg_pmWaitingListBig );
 
 				listItem2->inuse = qfalse;
-				listItem2->next  = NULL;
+				listItem2->next = NULL;
 			}
 			else
 			{
@@ -240,8 +240,8 @@ void CG_UpdatePMLists( void )
 				{
 					// we're gone completely
 					cg_pmWaitingListBig = NULL;
-					listItem2->inuse    = qfalse;
-					listItem2->next     = NULL;
+					listItem2->inuse = qfalse;
+					listItem2->next = NULL;
 				}
 				else
 				{
@@ -252,7 +252,7 @@ void CG_UpdatePMLists( void )
 	}
 }
 
-pmListItemBig_t *CG_FindFreePMItem2( void )
+pmListItemBig_t *CG_FindFreePMItem2 ( void )
 {
 	int i = 0;
 
@@ -267,7 +267,7 @@ pmListItemBig_t *CG_FindFreePMItem2( void )
 	return NULL;
 }
 
-pmListItem_t   *CG_FindFreePMItem( void )
+pmListItem_t   *CG_FindFreePMItem ( void )
 {
 	pmListItem_t *listItem;
 	pmListItem_t *lastItem;
@@ -311,7 +311,7 @@ pmListItem_t   *CG_FindFreePMItem( void )
 	}
 }
 
-void CG_AddPMItem( popupMessageType_t type, const char *message, qhandle_t shader )
+void CG_AddPMItem ( popupMessageType_t type, const char *message, qhandle_t shader )
 {
 	pmListItem_t *listItem;
 	char         *end;
@@ -321,9 +321,9 @@ void CG_AddPMItem( popupMessageType_t type, const char *message, qhandle_t shade
 		return;
 	}
 
-	if ( ( unsigned )type >= PM_NUM_TYPES )
+	if ( ( unsigned ) type >= PM_NUM_TYPES )
 	{
-		CG_Printf( "Invalid popup type: %d\n", type );
+		CG_Printf ( "Invalid popup type: %d\n", type );
 		return;
 	}
 
@@ -344,21 +344,21 @@ void CG_AddPMItem( popupMessageType_t type, const char *message, qhandle_t shade
 	}
 
 	listItem->inuse = qtrue;
-	listItem->type  = type;
-	Q_strncpyz( listItem->message, message, sizeof( cg_pmStack[ 0 ].message ) );
+	listItem->type = type;
+	Q_strncpyz ( listItem->message, message, sizeof ( cg_pmStack[ 0 ].message ) );
 
 	// rain - moved this: print and THEN chop off the newline, as the
 	// console deals with newlines perfectly.  We do chop off the newline
 	// at the end, if any, though.
-	if ( listItem->message[ strlen( listItem->message ) - 1 ] == '\n' )
+	if ( listItem->message[ strlen ( listItem->message ) - 1 ] == '\n' )
 	{
-		listItem->message[ strlen( listItem->message ) - 1 ] = 0;
+		listItem->message[ strlen ( listItem->message ) - 1 ] = 0;
 	}
 
-	trap_Print( va( "%s\n", listItem->message ) );
+	trap_Print ( va ( "%s\n", listItem->message ) );
 
 	// rain - added parens
-	while ( ( end = strchr( listItem->message, '\n' ) ) )
+	while ( ( end = strchr ( listItem->message, '\n' ) ) )
 	{
 		*end = '\0';
 	}
@@ -372,7 +372,7 @@ void CG_AddPMItem( popupMessageType_t type, const char *message, qhandle_t shade
 	if ( !cg_pmWaitingList )
 	{
 		cg_pmWaitingList = listItem;
-		listItem->time   = cg.time;
+		listItem->time = cg.time;
 	}
 	else
 	{
@@ -387,7 +387,7 @@ void CG_AddPMItem( popupMessageType_t type, const char *message, qhandle_t shade
 	}
 }
 
-void CG_PMItemBigSound( pmListItemBig_t *item )
+void CG_PMItemBigSound ( pmListItemBig_t *item )
 {
 	if ( !cg.snap )
 	{
@@ -397,11 +397,11 @@ void CG_PMItemBigSound( pmListItemBig_t *item )
 	switch ( item->type )
 	{
 		case PM_RANK:
-			trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.sndRankUp );
+			trap_S_StartSound ( NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.sndRankUp );
 			break;
 
 		case PM_SKILL:
-			trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.sndSkillUp );
+			trap_S_StartSound ( NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.sndSkillUp );
 			break;
 
 		default:
@@ -409,7 +409,7 @@ void CG_PMItemBigSound( pmListItemBig_t *item )
 	}
 }
 
-void CG_AddPMItemBig( popupMessageBigType_t type, const char *message, qhandle_t shader )
+void CG_AddPMItemBig ( popupMessageBigType_t type, const char *message, qhandle_t shader )
 {
 	pmListItemBig_t *listItem = CG_FindFreePMItem2();
 
@@ -428,16 +428,16 @@ void CG_AddPMItemBig( popupMessageBigType_t type, const char *message, qhandle_t
 	}
 
 	listItem->inuse = qtrue;
-	listItem->type  = type;
-	listItem->next  = NULL;
-	Q_strncpyz( listItem->message, message, sizeof( cg_pmStackBig[ 0 ].message ) );
+	listItem->type = type;
+	listItem->next = NULL;
+	Q_strncpyz ( listItem->message, message, sizeof ( cg_pmStackBig[ 0 ].message ) );
 
 	if ( !cg_pmWaitingListBig )
 	{
 		cg_pmWaitingListBig = listItem;
-		listItem->time      = cg.time;
+		listItem->time = cg.time;
 
-		CG_PMItemBigSound( listItem );
+		CG_PMItemBigSound ( listItem );
 	}
 	else
 	{
@@ -454,20 +454,20 @@ void CG_AddPMItemBig( popupMessageBigType_t type, const char *message, qhandle_t
 
 #define PM_ICON_SIZE_NORMAL 20
 #define PM_ICON_SIZE_SMALL  12
-void CG_DrawPMItems( void )
+void CG_DrawPMItems ( void )
 {
-	vec4_t       colour     = { 0.f, 0.f, 0.f, 1.f };
+	vec4_t       colour = { 0.f, 0.f, 0.f, 1.f };
 	vec4_t       colourText = { 1.f, 1.f, 1.f, 1.f };
 	float        t;
 	int          i, size;
-	pmListItem_t *listItem  = cg_pmOldList;
-	float        y          = 360;
+	pmListItem_t *listItem = cg_pmOldList;
+	float        y = 360;
 
 	if ( cg_drawSmallPopupIcons.integer )
 	{
 		size = PM_ICON_SIZE_SMALL;
 
-		y   += 4;
+		y += 4;
 	}
 	else
 	{
@@ -484,46 +484,46 @@ void CG_DrawPMItems( void )
 		return;
 	}
 
-	t = cg_pmWaitingList->time + CG_TimeForPopup( cg_pmWaitingList->type ) + PM_WAITTIME;
+	t = cg_pmWaitingList->time + CG_TimeForPopup ( cg_pmWaitingList->type ) + PM_WAITTIME;
 
 	if ( cg.time > t )
 	{
-		colourText[ 3 ] = colour[ 3 ] = 1 - ( ( cg.time - t ) / ( float )PM_FADETIME );
+		colourText[ 3 ] = colour[ 3 ] = 1 - ( ( cg.time - t ) / ( float ) PM_FADETIME );
 	}
 
-	trap_R_SetColor( colourText );
-	CG_DrawPic( 4, y, size, size, cg_pmWaitingList->shader );
-	trap_R_SetColor( NULL );
-	CG_Text_Paint_Ext( 4 + size + 2, y + 12, 0.2f, 0.2f, colourText, cg_pmWaitingList->message, 0, 0, 0, &cgs.media.limboFont2 );
+	trap_R_SetColor ( colourText );
+	CG_DrawPic ( 4, y, size, size, cg_pmWaitingList->shader );
+	trap_R_SetColor ( NULL );
+	CG_Text_Paint_Ext ( 4 + size + 2, y + 12, 0.2f, 0.2f, colourText, cg_pmWaitingList->message, 0, 0, 0, &cgs.media.limboFont2 );
 
 	for ( i = 0; i < 4 && listItem; i++, listItem = listItem->next )
 	{
 		y -= size + 2;
 
-		t  = listItem->time + CG_TimeForPopup( listItem->type ) + PM_WAITTIME;
+		t = listItem->time + CG_TimeForPopup ( listItem->type ) + PM_WAITTIME;
 
 		if ( cg.time > t )
 		{
-			colourText[ 3 ] = colour[ 3 ] = 1 - ( ( cg.time - t ) / ( float )PM_FADETIME );
+			colourText[ 3 ] = colour[ 3 ] = 1 - ( ( cg.time - t ) / ( float ) PM_FADETIME );
 		}
 		else
 		{
 			colourText[ 3 ] = colour[ 3 ] = 1.f;
 		}
 
-		trap_R_SetColor( colourText );
-		CG_DrawPic( 4, y, size, size, listItem->shader );
-		trap_R_SetColor( NULL );
-		CG_Text_Paint_Ext( 4 + size + 2, y + 12, 0.2f, 0.2f, colourText, listItem->message, 0, 0, 0, &cgs.media.limboFont2 );
+		trap_R_SetColor ( colourText );
+		CG_DrawPic ( 4, y, size, size, listItem->shader );
+		trap_R_SetColor ( NULL );
+		CG_Text_Paint_Ext ( 4 + size + 2, y + 12, 0.2f, 0.2f, colourText, listItem->message, 0, 0, 0, &cgs.media.limboFont2 );
 	}
 }
 
-void CG_DrawPMItemsBig( void )
+void CG_DrawPMItemsBig ( void )
 {
-	vec4_t colour     = { 0.f, 0.f, 0.f, 1.f };
+	vec4_t colour = { 0.f, 0.f, 0.f, 1.f };
 	vec4_t colourText = { 1.f, 1.f, 1.f, 1.f };
 	float  t;
-	float  y          = 270;
+	float  y = 270;
 	float  w;
 
 	if ( !cg_pmWaitingListBig )
@@ -531,23 +531,23 @@ void CG_DrawPMItemsBig( void )
 		return;
 	}
 
-	t = cg_pmWaitingListBig->time + CG_TimeForBigPopup( cg_pmWaitingListBig->type ) + PM_WAITTIME_BIG;
+	t = cg_pmWaitingListBig->time + CG_TimeForBigPopup ( cg_pmWaitingListBig->type ) + PM_WAITTIME_BIG;
 
 	if ( cg.time > t )
 	{
-		colourText[ 3 ] = colour[ 3 ] = 1 - ( ( cg.time - t ) / ( float )PM_FADETIME_BIG );
+		colourText[ 3 ] = colour[ 3 ] = 1 - ( ( cg.time - t ) / ( float ) PM_FADETIME_BIG );
 	}
 
-	trap_R_SetColor( colourText );
-	CG_DrawPic( 640 - 56, y, 48, 48, cg_pmWaitingListBig->shader );
-	trap_R_SetColor( NULL );
+	trap_R_SetColor ( colourText );
+	CG_DrawPic ( 640 - 56, y, 48, 48, cg_pmWaitingListBig->shader );
+	trap_R_SetColor ( NULL );
 
-	w = CG_Text_Width_Ext( cg_pmWaitingListBig->message, 0.22f, 0, &cgs.media.limboFont2 );
-	CG_Text_Paint_Ext( 640 - 4 - w, y + 56, 0.22f, 0.24f, colourText, cg_pmWaitingListBig->message, 0, 0, 0,
-	                   &cgs.media.limboFont2 );
+	w = CG_Text_Width_Ext ( cg_pmWaitingListBig->message, 0.22f, 0, &cgs.media.limboFont2 );
+	CG_Text_Paint_Ext ( 640 - 4 - w, y + 56, 0.22f, 0.24f, colourText, cg_pmWaitingListBig->message, 0, 0, 0,
+	                    &cgs.media.limboFont2 );
 }
 
-const char     *CG_GetPMItemText( centity_t *cent )
+const char     *CG_GetPMItemText ( centity_t *cent )
 {
 	switch ( cent->currentState.effect1Time )
 	{
@@ -555,10 +555,10 @@ const char     *CG_GetPMItemText( centity_t *cent )
 			switch ( cent->currentState.effect2Time )
 			{
 				case 0:
-					return va( "Planted at %s.", CG_ConfigString( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
+					return va ( "Planted at %s.", CG_ConfigString ( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
 
 				case 1:
-					return va( "Defused at %s.", CG_ConfigString( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
+					return va ( "Defused at %s.", CG_ConfigString ( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
 			}
 
 			break;
@@ -567,10 +567,10 @@ const char     *CG_GetPMItemText( centity_t *cent )
 			switch ( cent->currentState.effect2Time )
 			{
 				case -1:
-					return CG_ConfigString( CS_STRINGS + cent->currentState.effect3Time );
+					return CG_ConfigString ( CS_STRINGS + cent->currentState.effect3Time );
 
 				case 0:
-					return va( "%s has been constructed.", CG_ConfigString( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
+					return va ( "%s has been constructed.", CG_ConfigString ( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
 			}
 
 			break;
@@ -579,10 +579,10 @@ const char     *CG_GetPMItemText( centity_t *cent )
 			switch ( cent->currentState.effect2Time )
 			{
 				case 0:
-					return va( "%s has been damaged.", CG_ConfigString( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
+					return va ( "%s has been damaged.", CG_ConfigString ( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
 
 				case 1:
-					return va( "%s has been destroyed.", CG_ConfigString( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
+					return va ( "%s has been destroyed.", CG_ConfigString ( CS_OID_TRIGGERS + cent->currentState.effect3Time ) );
 			}
 
 			break;
@@ -600,19 +600,19 @@ const char     *CG_GetPMItemText( centity_t *cent )
 				return NULL;
 			}
 
-			return va( "Spotted by %s^7 at %s", cgs.clientinfo[ cent->currentState.effect3Time ].name,
-			           BG_GetLocationString( cent->currentState.origin ) );
+			return va ( "Spotted by %s^7 at %s", cgs.clientinfo[ cent->currentState.effect3Time ].name,
+			            BG_GetLocationString ( cent->currentState.origin ) );
 
 		case PM_OBJECTIVE:
 			switch ( cent->currentState.density )
 			{
 				case 0:
-					return va( "%s have stolen %s!", cent->currentState.effect2Time == TEAM_ALLIES ? "Allies" : "Axis",
-					           CG_ConfigString( CS_STRINGS + cent->currentState.effect3Time ) );
+					return va ( "%s have stolen %s!", cent->currentState.effect2Time == TEAM_ALLIES ? "Allies" : "Axis",
+					            CG_ConfigString ( CS_STRINGS + cent->currentState.effect3Time ) );
 
 				case 1:
-					return va( "%s have returned %s!", cent->currentState.effect2Time == TEAM_ALLIES ? "Allies" : "Axis",
-					           CG_ConfigString( CS_STRINGS + cent->currentState.effect3Time ) );
+					return va ( "%s have returned %s!", cent->currentState.effect2Time == TEAM_ALLIES ? "Allies" : "Axis",
+					            CG_ConfigString ( CS_STRINGS + cent->currentState.effect3Time ) );
 			}
 
 			break;
@@ -620,7 +620,7 @@ const char     *CG_GetPMItemText( centity_t *cent )
 		case PM_TEAM:
 			switch ( cent->currentState.density )
 			{
-				case 0:                         // joined
+				case 0: // joined
 					{
 						const char *teamstr = NULL;
 
@@ -639,18 +639,18 @@ const char     *CG_GetPMItemText( centity_t *cent )
 								break;
 						}
 
-						return va( "%s^7 has joined the %s^7!", cgs.clientinfo[ cent->currentState.effect3Time ].name, teamstr );
+						return va ( "%s^7 has joined the %s^7!", cgs.clientinfo[ cent->currentState.effect3Time ].name, teamstr );
 					}
 
 				case 1:
-					return va( "%s^7 disconnected", cgs.clientinfo[ cent->currentState.effect3Time ].name );
+					return va ( "%s^7 disconnected", cgs.clientinfo[ cent->currentState.effect3Time ].name );
 			}
 	}
 
 	return NULL;
 }
 
-void CG_PlayPMItemSound( centity_t *cent )
+void CG_PlayPMItemSound ( centity_t *cent )
 {
 	switch ( cent->currentState.effect1Time )
 	{
@@ -660,11 +660,11 @@ void CG_PlayPMItemSound( centity_t *cent )
 				case 0:
 					if ( cent->currentState.teamNum == TEAM_AXIS )
 					{
-						CG_SoundPlaySoundScript( "axis_hq_dynamite_planted", NULL, -1, qtrue );
+						CG_SoundPlaySoundScript ( "axis_hq_dynamite_planted", NULL, -1, qtrue );
 					}
 					else
 					{
-						CG_SoundPlaySoundScript( "allies_hq_dynamite_planted", NULL, -1, qtrue );
+						CG_SoundPlaySoundScript ( "allies_hq_dynamite_planted", NULL, -1, qtrue );
 					}
 
 					break;
@@ -672,11 +672,11 @@ void CG_PlayPMItemSound( centity_t *cent )
 				case 1:
 					if ( cent->currentState.teamNum == TEAM_AXIS )
 					{
-						CG_SoundPlaySoundScript( "axis_hq_dynamite_defused", NULL, -1, qtrue );
+						CG_SoundPlaySoundScript ( "axis_hq_dynamite_defused", NULL, -1, qtrue );
 					}
 					else
 					{
-						CG_SoundPlaySoundScript( "allies_hq_dynamite_defused", NULL, -1, qtrue );
+						CG_SoundPlaySoundScript ( "allies_hq_dynamite_defused", NULL, -1, qtrue );
 					}
 
 					break;
@@ -697,11 +697,11 @@ void CG_PlayPMItemSound( centity_t *cent )
 				// inverted teams
 				if ( cent->currentState.effect2Time == TEAM_AXIS )
 				{
-					CG_SoundPlaySoundScript( "allies_hq_mines_spotted", NULL, -1, qtrue );
+					CG_SoundPlaySoundScript ( "allies_hq_mines_spotted", NULL, -1, qtrue );
 				}
 				else
 				{
-					CG_SoundPlaySoundScript( "axis_hq_mines_spotted", NULL, -1, qtrue );
+					CG_SoundPlaySoundScript ( "axis_hq_mines_spotted", NULL, -1, qtrue );
 				}
 			}
 
@@ -713,11 +713,11 @@ void CG_PlayPMItemSound( centity_t *cent )
 				case 0:
 					if ( cent->currentState.effect2Time == TEAM_AXIS )
 					{
-						CG_SoundPlaySoundScript( "axis_hq_objective_taken", NULL, -1, qtrue );
+						CG_SoundPlaySoundScript ( "axis_hq_objective_taken", NULL, -1, qtrue );
 					}
 					else
 					{
-						CG_SoundPlaySoundScript( "allies_hq_objective_taken", NULL, -1, qtrue );
+						CG_SoundPlaySoundScript ( "allies_hq_objective_taken", NULL, -1, qtrue );
 					}
 
 					break;
@@ -725,11 +725,11 @@ void CG_PlayPMItemSound( centity_t *cent )
 				case 1:
 					if ( cent->currentState.effect2Time == TEAM_AXIS )
 					{
-						CG_SoundPlaySoundScript( "axis_hq_objective_secure", NULL, -1, qtrue );
+						CG_SoundPlaySoundScript ( "axis_hq_objective_secure", NULL, -1, qtrue );
 					}
 					else
 					{
-						CG_SoundPlaySoundScript( "allies_hq_objective_secure", NULL, -1, qtrue );
+						CG_SoundPlaySoundScript ( "allies_hq_objective_secure", NULL, -1, qtrue );
 					}
 
 					break;
@@ -742,7 +742,7 @@ void CG_PlayPMItemSound( centity_t *cent )
 	}
 }
 
-qhandle_t CG_GetPMItemIcon( centity_t *cent )
+qhandle_t CG_GetPMItemIcon ( centity_t *cent )
 {
 	switch ( cent->currentState.effect1Time )
 	{
@@ -769,7 +769,7 @@ qhandle_t CG_GetPMItemIcon( centity_t *cent )
 	return 0;
 }
 
-void CG_DrawKeyHint( rectDef_t *rect, const char *binding )
+void CG_DrawKeyHint ( rectDef_t *rect, const char *binding )
 {
 	/*  int k1, k2;
 	        char buffer[256];

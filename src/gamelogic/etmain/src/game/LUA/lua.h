@@ -42,19 +42,19 @@
 
 typedef struct lua_State lua_State;
 
-typedef int ( *lua_CFunction )( lua_State *L );
+typedef int ( *lua_CFunction ) ( lua_State *L );
 
 /*
 ** functions that read/write blocks when loading/dumping Lua chunks
 */
-typedef const char *( *lua_Reader )( lua_State *L, void *ud, size_t *sz );
+typedef const char * ( *lua_Reader ) ( lua_State *L, void *ud, size_t *sz );
 
-typedef int ( *lua_Writer )( lua_State *L, const void *p, size_t sz, void *ud );
+typedef int ( *lua_Writer ) ( lua_State *L, const void *p, size_t sz, void *ud );
 
 /*
 ** prototype for memory-allocation functions
 */
-typedef void *( *lua_Alloc )( void *ud, void *ptr, size_t osize, size_t nsize );
+typedef void * ( *lua_Alloc ) ( void *ud, void *ptr, size_t osize, size_t nsize );
 
 /*
 ** basic types
@@ -90,9 +90,9 @@ typedef LUA_INTEGER lua_Integer;
 /*
 ** state manipulation
 */
-LUA_API lua_State *( lua_newstate ) ( lua_Alloc f, void *ud );
+LUA_API lua_State * ( lua_newstate ) ( lua_Alloc f, void *ud );
 LUA_API void       ( lua_close ) ( lua_State *L );
-LUA_API lua_State *( lua_newthread ) ( lua_State *L );
+LUA_API lua_State * ( lua_newthread ) ( lua_State *L );
 
 LUA_API lua_CFunction ( lua_atpanic ) ( lua_State *L, lua_CFunction panicf );
 
@@ -118,7 +118,7 @@ LUA_API int             ( lua_isstring ) ( lua_State *L, int idx );
 LUA_API int             ( lua_iscfunction ) ( lua_State *L, int idx );
 LUA_API int             ( lua_isuserdata ) ( lua_State *L, int idx );
 LUA_API int             ( lua_type ) ( lua_State *L, int idx );
-LUA_API const char     *( lua_typename ) ( lua_State *L, int tp );
+LUA_API const char     * ( lua_typename ) ( lua_State *L, int tp );
 
 LUA_API int            ( lua_equal ) ( lua_State *L, int idx1, int idx2 );
 LUA_API int            ( lua_rawequal ) ( lua_State *L, int idx1, int idx2 );
@@ -127,12 +127,12 @@ LUA_API int            ( lua_lessthan ) ( lua_State *L, int idx1, int idx2 );
 LUA_API lua_Number      ( lua_tonumber ) ( lua_State *L, int idx );
 LUA_API lua_Integer     ( lua_tointeger ) ( lua_State *L, int idx );
 LUA_API int             ( lua_toboolean ) ( lua_State *L, int idx );
-LUA_API const char     *( lua_tolstring ) ( lua_State *L, int idx, size_t *len );
+LUA_API const char     * ( lua_tolstring ) ( lua_State *L, int idx, size_t *len );
 LUA_API size_t          ( lua_objlen ) ( lua_State *L, int idx );
 LUA_API lua_CFunction   ( lua_tocfunction ) ( lua_State *L, int idx );
-LUA_API void           *( lua_touserdata ) ( lua_State *L, int idx );
-LUA_API lua_State      *( lua_tothread ) ( lua_State *L, int idx );
-LUA_API const void     *( lua_topointer ) ( lua_State *L, int idx );
+LUA_API void           * ( lua_touserdata ) ( lua_State *L, int idx );
+LUA_API lua_State      * ( lua_tothread ) ( lua_State *L, int idx );
+LUA_API const void     * ( lua_topointer ) ( lua_State *L, int idx );
 
 /*
 ** push functions (C -> stack)
@@ -142,9 +142,9 @@ LUA_API void  ( lua_pushnumber ) ( lua_State *L, lua_Number n );
 LUA_API void  ( lua_pushinteger ) ( lua_State *L, lua_Integer n );
 LUA_API void  ( lua_pushlstring ) ( lua_State *L, const char *s, size_t l );
 LUA_API void  ( lua_pushstring ) ( lua_State *L, const char *s );
-LUA_API const char *( lua_pushvfstring ) ( lua_State *L, const char *fmt,
+LUA_API const char * ( lua_pushvfstring ) ( lua_State *L, const char *fmt,
     va_list argp );
-LUA_API const char *( lua_pushfstring ) ( lua_State *L, const char *fmt, ... );
+LUA_API const char * ( lua_pushfstring ) ( lua_State *L, const char *fmt, ... );
 LUA_API void  ( lua_pushcclosure ) ( lua_State *L, lua_CFunction fn, int n );
 LUA_API void  ( lua_pushboolean ) ( lua_State *L, int b );
 LUA_API void  ( lua_pushlightuserdata ) ( lua_State *L, void *p );
@@ -158,7 +158,7 @@ LUA_API void  ( lua_getfield ) ( lua_State *L, int idx, const char *k );
 LUA_API void  ( lua_rawget ) ( lua_State *L, int idx );
 LUA_API void  ( lua_rawgeti ) ( lua_State *L, int idx, int n );
 LUA_API void  ( lua_createtable ) ( lua_State *L, int narr, int nrec );
-LUA_API void *( lua_newuserdata ) ( lua_State *L, size_t sz );
+LUA_API void * ( lua_newuserdata ) ( lua_State *L, size_t sz );
 LUA_API int   ( lua_getmetatable ) ( lua_State *L, int objindex );
 LUA_API void  ( lua_getfenv ) ( lua_State *L, int idx );
 
@@ -290,10 +290,10 @@ LUA_API void lua_setlevel       ( lua_State *from, lua_State *to );
 #define LUA_MASKLINE    ( 1 << LUA_HOOKLINE )
 #define LUA_MASKCOUNT   ( 1 << LUA_HOOKCOUNT )
 
-typedef struct lua_Debug lua_Debug;  /* activation record */
+typedef struct lua_Debug lua_Debug; /* activation record */
 
 /* Functions to be called by the debuger in specific events */
-typedef void ( *lua_Hook )( lua_State *L, lua_Debug *ar );
+typedef void ( *lua_Hook ) ( lua_State *L, lua_Debug *ar );
 
 LUA_API int        lua_getstack ( lua_State *L, int level, lua_Debug *ar );
 LUA_API int        lua_getinfo ( lua_State *L, const char *what, lua_Debug *ar );
@@ -310,17 +310,17 @@ LUA_API int        lua_gethookcount ( lua_State *L );
 struct lua_Debug
 {
 	int        event;
-	const char *name;                   /* (n) */
-	const char *namewhat;               /* (n) `global', `local', `field', `method' */
-	const char *what;                   /* (S) `Lua', `C', `main', `tail' */
-	const char *source;                 /* (S) */
-	int        currentline;             /* (l) */
-	int        nups;                    /* (u) number of upvalues */
-	int        linedefined;             /* (S) */
-	int        lastlinedefined;         /* (S) */
+	const char *name; /* (n) */
+	const char *namewhat; /* (n) `global', `local', `field', `method' */
+	const char *what; /* (S) `Lua', `C', `main', `tail' */
+	const char *source; /* (S) */
+	int        currentline; /* (l) */
+	int        nups; /* (u) number of upvalues */
+	int        linedefined; /* (S) */
+	int        lastlinedefined; /* (S) */
 	char       short_src[ LUA_IDSIZE ]; /* (S) */
 	/* private part */
-	int        i_ci;                    /* active function */
+	int        i_ci; /* active function */
 };
 
 /* }====================================================================== */

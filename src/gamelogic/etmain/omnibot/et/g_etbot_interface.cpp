@@ -9,7 +9,7 @@
 extern "C"
 {
 #include "g_etbot_interface.h"
-	qboolean G_IsOnFireteam( int entityNum, fireteamData_t **teamNum );
+	qboolean G_IsOnFireteam ( int entityNum, fireteamData_t **teamNum );
 };
 
 #include "../common/BotExports.h"
@@ -22,16 +22,16 @@ extern "C"
 #define OMNIBOT_MIN_SOL 2
 #define OMNIBOT_MIN_COP 1
 
-void Bot_Event_EntityCreated( gentity_t *pEnt );
+void Bot_Event_EntityCreated ( gentity_t *pEnt );
 
-bool IsBot( gentity_t *e )
+bool IsBot ( gentity_t *e )
 {
 	return e->r.svFlags & SVF_BOT ? true : false;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-const int MAX_SMOKEGREN_CACHE                         = 32;
+const int MAX_SMOKEGREN_CACHE = 32;
 gentity_t *g_SmokeGrenadeCache[ MAX_SMOKEGREN_CACHE ] = { 0 };
 
 struct BotEntity
@@ -55,7 +55,7 @@ BotEntity m_EntityHandles[ MAX_GENTITIES ];
 
 //////////////////////////////////////////////////////////////////////////
 
-gentity_t *INDEXENT( const int _gameId )
+gentity_t *INDEXENT ( const int _gameId )
 {
 	if ( _gameId >= 0 && _gameId < MAX_GENTITIES )
 	{
@@ -72,12 +72,12 @@ gentity_t *INDEXENT( const int _gameId )
 	return 0;
 }
 
-int ENTINDEX( gentity_t *_ent )
+int ENTINDEX ( gentity_t *_ent )
 {
 	return _ent - g_entities;
 }
 
-gentity_t *EntityFromHandle( GameEntity _ent )
+gentity_t *EntityFromHandle ( GameEntity _ent )
 {
 	obint16 index = _ent.GetIndex();
 
@@ -94,11 +94,11 @@ gentity_t *EntityFromHandle( GameEntity _ent )
 	return NULL;
 }
 
-GameEntity HandleFromEntity( gentity_t *_ent )
+GameEntity HandleFromEntity ( gentity_t *_ent )
 {
 	if ( _ent )
 	{
-		return GameEntity( _ent - g_entities, m_EntityHandles[ _ent - g_entities ].m_HandleSerial );
+		return GameEntity ( _ent - g_entities, m_EntityHandles[ _ent - g_entities ].m_HandleSerial );
 	}
 	else
 	{
@@ -111,35 +111,35 @@ enum { MaxDeferredGoals = 64 };
 
 MapGoalDef g_DeferredGoals[ MaxDeferredGoals ];
 int        g_NumDeferredGoals = 0;
-bool       g_GoalSubmitReady  = false;
+bool       g_GoalSubmitReady = false;
 
-void AddDeferredGoal( gentity_t *ent )
+void AddDeferredGoal ( gentity_t *ent )
 {
 	if ( g_NumDeferredGoals >= MaxDeferredGoals )
 	{
-		G_Error( "Deferred Goal Buffer Full!" );
+		G_Error ( "Deferred Goal Buffer Full!" );
 		return;
 	}
 
-	MapGoalDef &goaldef  = g_DeferredGoals[ g_NumDeferredGoals++ ];
+	MapGoalDef &goaldef = g_DeferredGoals[ g_NumDeferredGoals++ ];
 	MapGoalDef &goaldef2 = g_DeferredGoals[ g_NumDeferredGoals++ ];
 
 	switch ( ent->s.eType )
 	{
 		case ET_MG42_BARREL:
 			{
-				goaldef.Props.SetString( "Type", "mountmg42" );
-				goaldef.Props.SetEntity( "Entity", HandleFromEntity( ent ) );
-				goaldef.Props.SetInt( "Team", ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ) );
-				goaldef.Props.SetString( "TagName", _GetEntityName( ent ) );
-				goaldef.Props.SetInt( "InterfaceGoal", 1 );
+				goaldef.Props.SetString ( "Type", "mountmg42" );
+				goaldef.Props.SetEntity ( "Entity", HandleFromEntity ( ent ) );
+				goaldef.Props.SetInt ( "Team", ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ) );
+				goaldef.Props.SetString ( "TagName", _GetEntityName ( ent ) );
+				goaldef.Props.SetInt ( "InterfaceGoal", 1 );
 
 				// cs: this was done in et_goalmanager before
-				goaldef2.Props.SetString( "Type", "repairmg42" );
-				goaldef2.Props.SetEntity( "Entity", HandleFromEntity( ent ) );
-				goaldef2.Props.SetInt( "Team", ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ) );
-				goaldef2.Props.SetString( "TagName", _GetEntityName( ent ) );
-				goaldef2.Props.SetInt( "InterfaceGoal", 1 );
+				goaldef2.Props.SetString ( "Type", "repairmg42" );
+				goaldef2.Props.SetEntity ( "Entity", HandleFromEntity ( ent ) );
+				goaldef2.Props.SetInt ( "Team", ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ) );
+				goaldef2.Props.SetString ( "TagName", _GetEntityName ( ent ) );
+				goaldef2.Props.SetInt ( "InterfaceGoal", 1 );
 				break;
 			}
 
@@ -156,24 +156,24 @@ void SendDeferredGoals()
 	{
 		for ( int i = 0; i < g_NumDeferredGoals; ++i )
 		{
-			g_BotFunctions.pfnAddGoal( g_DeferredGoals[ i ] );
+			g_BotFunctions.pfnAddGoal ( g_DeferredGoals[ i ] );
 		}
 
 		g_NumDeferredGoals = 0;
 	}
 }
 
-void UpdateGoalEntity( gentity_t *oldent, gentity_t *newent )
+void UpdateGoalEntity ( gentity_t *oldent, gentity_t *newent )
 {
 	if ( g_GoalSubmitReady )
 	{
-		g_BotFunctions.pfnUpdateEntity( HandleFromEntity( oldent ), HandleFromEntity( newent ) );
+		g_BotFunctions.pfnUpdateEntity ( HandleFromEntity ( oldent ), HandleFromEntity ( newent ) );
 	}
 }
 
-void DeleteMapGoal( char *name )
+void DeleteMapGoal ( char *name )
 {
-	g_BotFunctions.pfnDeleteGoal( name );
+	g_BotFunctions.pfnDeleteGoal ( name );
 }
 
 struct mg42s_t
@@ -187,7 +187,7 @@ struct mg42s_t
 
 mg42s_t mg42s[ 64 ];
 int     numofmg42s = 0;
-bool    havemg42s  = true;
+bool    havemg42s = true;
 
 void GetMG42s()
 {
@@ -196,19 +196,19 @@ void GetMG42s()
 		gentity_t *trav = NULL;
 		char      *name;
 
-		while ( ( trav = G_Find( trav, FOFS( classname ), "misc_mg42" ) ) )
+		while ( ( trav = G_Find ( trav, FOFS ( classname ), "misc_mg42" ) ) )
 		{
-			name                    = ( char * )_GetEntityName( trav );
+			name = ( char * ) _GetEntityName ( trav );
 			mg42s[ numofmg42s ].ent = trav;
-			GetEntityCenter( trav, mg42s[ numofmg42s ].position );
+			GetEntityCenter ( trav, mg42s[ numofmg42s ].position );
 
 			if ( name )
 			{
-				strcpy( mg42s[ numofmg42s ].name, name );
+				strcpy ( mg42s[ numofmg42s ].name, name );
 			}
 			else
 			{
-				mg42s[ numofmg42s ].name[ 0 ] = ( char )NULL;
+				mg42s[ numofmg42s ].name[ 0 ] = ( char ) NULL;
 			}
 
 			mg42s[ numofmg42s ].buildable = false;
@@ -222,11 +222,11 @@ void GetMG42s()
 	}
 }
 
-void UpdateMG42( gentity_t *ent )
+void UpdateMG42 ( gentity_t *ent )
 {
 	vec3_t entpos;
 
-	GetEntityCenter( ent, entpos );
+	GetEntityCenter ( ent, entpos );
 
 	for ( int i = 0; i < numofmg42s; ++i )
 	{
@@ -238,7 +238,7 @@ void UpdateMG42( gentity_t *ent )
 	}
 }
 
-void CheckForMG42( gentity_t *ent, const char *newname )
+void CheckForMG42 ( gentity_t *ent, const char *newname )
 {
 	if ( !numofmg42s )
 	{
@@ -247,22 +247,22 @@ void CheckForMG42( gentity_t *ent, const char *newname )
 
 	vec3_t entpos;
 
-	GetEntityCenter( ent, entpos );
+	GetEntityCenter ( ent, entpos );
 
 	for ( int i = 0; i < numofmg42s; ++i )
 	{
-		if ( ( fabs( mg42s[ i ].position[ 0 ] - entpos[ 0 ] ) < 100.0 ) &&
-		     ( fabs( mg42s[ i ].position[ 1 ] - entpos[ 1 ] ) < 100.0 ) )
+		if ( ( fabs ( mg42s[ i ].position[ 0 ] - entpos[ 0 ] ) < 100.0 ) &&
+		     ( fabs ( mg42s[ i ].position[ 1 ] - entpos[ 1 ] ) < 100.0 ) )
 		{
 			mg42s[ i ].buildable = true;
-			strcpy( mg42s[ i ].newname, newname );
+			strcpy ( mg42s[ i ].newname, newname );
 		}
 	}
 
 	return;
 }
 
-void GetEntityCenter( gentity_t *ent, vec3_t _pos )
+void GetEntityCenter ( gentity_t *ent, vec3_t _pos )
 {
 	_pos[ 0 ] = ent->r.currentOrigin[ 0 ] + ( ( ent->r.maxs[ 0 ] + ent->r.mins[ 0 ] ) * 0.5f );
 	_pos[ 1 ] = ent->r.currentOrigin[ 1 ] + ( ( ent->r.maxs[ 1 ] + ent->r.mins[ 1 ] ) * 0.5f );
@@ -280,7 +280,7 @@ void GetEntityCenter( gentity_t *ent, vec3_t _pos )
 // we do an exact match instead of lowered value
 // Note:
 // There is a seperate goal for soldiers with panzer/bazooka to go defend at
-static qboolean weaponCharged( playerState_t *ps, team_t team, int weapon, int *skill )
+static qboolean weaponCharged ( playerState_t *ps, team_t team, int weapon, int *skill )
 {
 	switch ( weapon )
 	{
@@ -514,7 +514,7 @@ static qboolean weaponCharged( playerState_t *ps, team_t team, int weapon, int *
 
 // cs: added ignore ent so the bot wont count itself.
 // this fixes soldier counts since latchPlayerType defaults to 0
-static int CountPlayerClass( team_t team, int playerClass, int ignore )
+static int CountPlayerClass ( team_t team, int playerClass, int ignore )
 {
 	int num = 0;
 	int j;
@@ -544,7 +544,7 @@ static int CountPlayerClass( team_t team, int playerClass, int ignore )
 	return num;
 }
 
-int Bot_TeamGameToBot( int team )
+int Bot_TeamGameToBot ( int team )
 {
 	switch ( team )
 	{
@@ -562,7 +562,7 @@ int Bot_TeamGameToBot( int team )
 	}
 }
 
-static int playerClassBotToGame( int playerClass )
+static int playerClassBotToGame ( int playerClass )
 {
 	switch ( playerClass )
 	{
@@ -586,7 +586,7 @@ static int playerClassBotToGame( int playerClass )
 	}
 }
 
-int Bot_PlayerClassGameToBot( int playerClass )
+int Bot_PlayerClassGameToBot ( int playerClass )
 {
 	switch ( playerClass )
 	{
@@ -610,7 +610,7 @@ int Bot_PlayerClassGameToBot( int playerClass )
 	}
 }
 
-static int _weaponBotToGame( int weapon )
+static int _weaponBotToGame ( int weapon )
 {
 	switch ( weapon )
 	{
@@ -812,7 +812,7 @@ static int _weaponBotToGame( int weapon )
 	}
 }
 
-int Bot_WeaponGameToBot( int weapon )
+int Bot_WeaponGameToBot ( int weapon )
 {
 	switch ( weapon )
 	{
@@ -973,7 +973,7 @@ int Bot_WeaponGameToBot( int weapon )
 			return 87;
 
 		case WP_MOBILE_BROWNING:
-			return ET_WP_MOBILE_MG42;     //cs: was 88
+			return ET_WP_MOBILE_MG42; //cs: was 88
 
 		case WP_MOBILE_BROWNING_SET:
 			return ET_WP_MOBILE_MG42_SET; //cs: was 89
@@ -985,13 +985,13 @@ int Bot_WeaponGameToBot( int weapon )
 			return 91;
 
 		case WP_MORTAR2:
-			return ET_WP_MORTAR;     //cs: was 92
+			return ET_WP_MORTAR; //cs: was 92
 
 		case WP_MORTAR2_SET:
 			return ET_WP_MORTAR_SET; //cs: was 93
 
 		case WP_KNIFE_KABAR:
-			return ET_WP_KNIFE;      //cs: was 94
+			return ET_WP_KNIFE; //cs: was 94
 
 		case WP_STEN_MKII:
 			return 95;
@@ -1014,7 +1014,7 @@ int Bot_WeaponGameToBot( int weapon )
 	}
 }
 
-static int Bot_HintGameToBot( gentity_t *_ent )
+static int Bot_HintGameToBot ( gentity_t *_ent )
 {
 	if ( _ent && _ent->client )
 	{
@@ -1177,9 +1177,9 @@ static int Bot_HintGameToBot( gentity_t *_ent )
 	return CURSOR_HINT_NONE;
 }
 
-qboolean Simple_EmplacedGunIsRepairable( gentity_t *ent )
+qboolean Simple_EmplacedGunIsRepairable ( gentity_t *ent )
 {
-	if ( Q_stricmp( ent->classname, "misc_mg42" ) /*&& Q_stricmp( ent->classname, "misc_aagun" )*/ )
+	if ( Q_stricmp ( ent->classname, "misc_mg42" ) /*&& Q_stricmp( ent->classname, "misc_aagun" )*/ )
 	{
 		return qfalse;
 	}
@@ -1192,7 +1192,7 @@ qboolean Simple_EmplacedGunIsRepairable( gentity_t *ent )
 	return qtrue;
 }
 
-static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
+static int _choosePriWeap ( gentity_t *bot, int playerClass, int team )
 {
 	int iSelected = 0;
 
@@ -1212,8 +1212,8 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 					{
 						int wpns[] =
 						{
-							86,                // BAR
-							96,                // BAZOOKA
+							86, // BAR
+							96, // BAZOOKA
 							//88, // BROWNING
 							ET_WP_MOBILE_MG42,
 							ET_WP_FLAMETHROWER,
@@ -1221,7 +1221,7 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 							ET_WP_THOMPSON
 						};
 
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1229,7 +1229,7 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 					{
 						int wpns[] =
 						{
-							85,                // STG44
+							85, // STG44
 							ET_WP_PANZERFAUST,
 							ET_WP_MOBILE_MG42,
 							ET_WP_FLAMETHROWER,
@@ -1238,7 +1238,7 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 							ET_WP_MP40
 						};
 
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1253,10 +1253,10 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 						ET_WP_FLAMETHROWER,
 						ET_WP_MORTAR,
 #ifdef JAYMOD_name
-						77         //WP_M97
+						77 //WP_M97
 #endif
 					};
-					int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+					int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 					iSelected = wpns[ rInt ];
 					break;
 #endif
@@ -1271,10 +1271,10 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_THOMPSON,
 #ifdef JAYMOD_name
-							77         //WP_M97
+							77 //WP_M97
 #endif
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1285,10 +1285,10 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_MP40,
 #ifdef JAYMOD_name
-							77         //WP_M97
+							77 //WP_M97
 #endif
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1304,13 +1304,13 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 							ET_WP_THOMPSON,
 							ET_WP_CARBINE,
 #ifdef JAYMOD_name
-							77         //WP_M97
+							77 //WP_M97
 #endif
 #ifdef NOQUARTER
-							90         //SHOTGUN
+							90 //SHOTGUN
 #endif
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1322,13 +1322,13 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 							ET_WP_MP40,
 							ET_WP_KAR98,
 #ifdef JAYMOD_name
-							77         //WP_M97
+							77 //WP_M97
 #endif
 #ifdef NOQUARTER
-							90         //SHOTGUN
+							90 //SHOTGUN
 #endif
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1343,13 +1343,13 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_THOMPSON,
 #ifdef JAYMOD_name
-							77         //WP_M97
+							77 //WP_M97
 #endif
 #ifdef NOQUARTER
-							90         //SHOTGUN
+							90 //SHOTGUN
 #endif
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1360,13 +1360,13 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_MP40,
 #ifdef JAYMOD_name
-							77         //WP_M97
+							77 //WP_M97
 #endif
 #ifdef NOQUARTER
-							90         //SHOTGUN
+							90 //SHOTGUN
 #endif
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1381,13 +1381,13 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_STEN,
 #ifdef NOQUARTER
-							86,        //BAR
+							86, //BAR
 #else
 							ET_WP_FG42,
 #endif
 							ET_WP_GARAND
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1397,14 +1397,14 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 						{
 							// add shit as needed
 #ifdef NOQUARTER
-							91,        //MP34
+							91, //MP34
 #else
 							ET_WP_STEN,
 #endif
 							ET_WP_FG42,
 							ET_WP_K43
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1417,23 +1417,23 @@ static int _choosePriWeap( gentity_t *bot, int playerClass, int team )
 
 #ifdef NOQUARTER
 	}
-	while ( G_IsWeaponDisabled( bot, ( weapon_t )_weaponBotToGame( iSelected ), qtrue ) );
+	while ( G_IsWeaponDisabled ( bot, ( weapon_t ) _weaponBotToGame ( iSelected ), qtrue ) );
 
 #elif defined( ETPUB_VERSION )
 	}
 
-	while ( G_IsWeaponDisabled( bot, ( weapon_t )_weaponBotToGame( iSelected ), bot->client->sess.sessionTeam, qtrue ) );
+	while ( G_IsWeaponDisabled ( bot, ( weapon_t ) _weaponBotToGame ( iSelected ), bot->client->sess.sessionTeam, qtrue ) );
 
 #else
 
-	} while ( G_IsWeaponDisabled( bot, ( weapon_t )_weaponBotToGame( iSelected ) ) );
+	} while ( G_IsWeaponDisabled ( bot, ( weapon_t ) _weaponBotToGame ( iSelected ) ) );
 
 #endif
 
 	return iSelected;
 }
 
-static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
+static int _chooseSecWeap ( gentity_t *bot, int playerClass, int team )
 {
 	int iSelected = ET_WP_NONE;
 
@@ -1457,11 +1457,11 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 					{
 						int wpns[] =
 						{
-							ET_WP_COLT,       // simple noob bots ...
+							ET_WP_COLT, // simple noob bots ...
 							ET_WP_AKIMBO_COLT,
 							ET_WP_AKIMBO_COLT
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 					}
 				}
@@ -1475,11 +1475,11 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 					{
 						int wpns[] =
 						{
-							ET_WP_LUGER,       // simple noob bots ...
+							ET_WP_LUGER, // simple noob bots ...
 							ET_WP_AKIMBO_LUGER,
 							ET_WP_AKIMBO_LUGER
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 					}
 				}
@@ -1498,11 +1498,11 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 					{
 						int wpns[] =
 						{
-							ET_WP_SILENCED_COLT,       // simple noob bots ...
+							ET_WP_SILENCED_COLT, // simple noob bots ...
 							ET_WP_AKIMBO_SILENCED_COLT,
 							ET_WP_AKIMBO_SILENCED_COLT
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 					}
 				}
@@ -1516,11 +1516,11 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 					{
 						int wpns[] =
 						{
-							ET_WP_SILENCED_LUGER,       // simple noob bots ...
+							ET_WP_SILENCED_LUGER, // simple noob bots ...
 							ET_WP_AKIMBO_SILENCED_LUGER,
 							ET_WP_AKIMBO_SILENCED_LUGER
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 					}
 				}
@@ -1551,7 +1551,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_COLT,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1562,7 +1562,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_LUGER,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1577,7 +1577,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_COLT,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1588,7 +1588,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_LUGER,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1603,7 +1603,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_COLT,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1614,7 +1614,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_LUGER,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1629,7 +1629,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_COLT,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1640,7 +1640,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_LUGER,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1655,7 +1655,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_SILENCED_COLT,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1666,7 +1666,7 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 							// add shit as needed
 							ET_WP_SILENCED_LUGER,
 						};
-						int rInt = rand() % ( sizeof( wpns ) / sizeof( wpns[ 0 ] ) );
+						int rInt = rand() % ( sizeof ( wpns ) / sizeof ( wpns[ 0 ] ) );
 						iSelected = wpns[ rInt ];
 						break;
 					}
@@ -1679,12 +1679,12 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 
 #ifdef ETPUB_VERSION
 	}
-	while ( G_IsWeaponDisabled( bot, ( weapon_t )_weaponBotToGame( iSelected ), bot->client->sess.sessionTeam, qtrue ) );
+	while ( G_IsWeaponDisabled ( bot, ( weapon_t ) _weaponBotToGame ( iSelected ), bot->client->sess.sessionTeam, qtrue ) );
 
 #else
 	}
 
-	while ( G_IsWeaponDisabled( bot, ( weapon_t )_weaponBotToGame( iSelected ) ) );
+	while ( G_IsWeaponDisabled ( bot, ( weapon_t ) _weaponBotToGame ( iSelected ) ) );
 
 #endif // ETPUB_VERSION
 #endif // NOQUARTER
@@ -1692,20 +1692,20 @@ static int _chooseSecWeap( gentity_t *bot, int playerClass, int team )
 	return iSelected;
 }
 
-static void ReTransmitWeapons( const gentity_t *bot )
+static void ReTransmitWeapons ( const gentity_t *bot )
 {
 	if ( !bot || !bot->client )
 	{
 		return;
 	}
 
-	Bot_Event_ResetWeapons( bot - g_entities );
+	Bot_Event_ResetWeapons ( bot - g_entities );
 
 	for ( int weapon = WP_NONE + 1; weapon < WP_NUM_WEAPONS; ++weapon )
 	{
-		if ( COM_BitCheck( bot->client->ps.weapons, weapon ) )
+		if ( COM_BitCheck ( bot->client->ps.weapons, weapon ) )
 		{
-			Bot_Event_AddWeapon( bot - g_entities, Bot_WeaponGameToBot( weapon ) );
+			Bot_Event_AddWeapon ( bot - g_entities, Bot_WeaponGameToBot ( weapon ) );
 		}
 	}
 }
@@ -1714,10 +1714,10 @@ static void ReTransmitWeapons( const gentity_t *bot )
 #define MAX_SMOKE_RADIUS_TIME    10000.0
 #define UNAFFECTED_BY_SMOKE_DIST SQR(100)
 
-gentity_t *Bot_EntInvisibleBySmokeBomb( vec3_t start, vec3_t end )
+gentity_t *Bot_EntInvisibleBySmokeBomb ( vec3_t start, vec3_t end )
 {
 	// if the target is close enough, vision is not affected by smoke bomb
-	if ( DistanceSquared( start, end ) < UNAFFECTED_BY_SMOKE_DIST )
+	if ( DistanceSquared ( start, end ) < UNAFFECTED_BY_SMOKE_DIST )
 	{
 		//pfnPrintMessage("within unaffected dist");
 		return 0;
@@ -1746,13 +1746,13 @@ gentity_t *Bot_EntInvisibleBySmokeBomb( vec3_t start, vec3_t end )
 		}
 
 		// check the distance
-		VectorCopy( ent->s.pos.trBase, smokeCenter );
+		VectorCopy ( ent->s.pos.trBase, smokeCenter );
 		// raise the center to better match the position of the smoke, see
 		// CG_SpawnSmokeSprite().
 		smokeCenter[ 2 ] += 32;
 		// smoke sprite has a maximum radius of 640/2. and it takes a while for it to
 		// reach that size, so adjust the radius accordingly.
-		smokeRadius       = MAX_SMOKE_RADIUS * ( ( level.time - ent->grenadeExplodeTime ) / MAX_SMOKE_RADIUS_TIME );
+		smokeRadius = MAX_SMOKE_RADIUS * ( ( level.time - ent->grenadeExplodeTime ) / MAX_SMOKE_RADIUS_TIME );
 
 		if ( smokeRadius > MAX_SMOKE_RADIUS )
 		{
@@ -1761,7 +1761,7 @@ gentity_t *Bot_EntInvisibleBySmokeBomb( vec3_t start, vec3_t end )
 
 		// if distance from line is short enough, vision is blocked by smoke
 
-		if ( DistanceFromLineSquared( smokeCenter, start, end ) < ( smokeRadius * smokeRadius ) )
+		if ( DistanceFromLineSquared ( smokeCenter, start, end ) < ( smokeRadius * smokeRadius ) )
 		{
 			//// if smoke is farther, we're less sensitive to being hidden.
 
@@ -1780,34 +1780,34 @@ gentity_t *Bot_EntInvisibleBySmokeBomb( vec3_t start, vec3_t end )
 	return 0;
 }
 
-void Bot_Util_AddGoal( const char *_type, gentity_t *_ent, int _team, const char *_tag, const char *_extrakey = 0, obUserData *_extraval = 0 )
+void Bot_Util_AddGoal ( const char *_type, gentity_t *_ent, int _team, const char *_tag, const char *_extrakey = 0, obUserData *_extraval = 0 )
 {
 	if ( IsOmnibotLoaded() )
 	{
 		MapGoalDef goaldef;
 
-		goaldef.Props.SetString( "Type", _type );
-		goaldef.Props.SetEntity( "Entity", HandleFromEntity( _ent ) );
-		goaldef.Props.SetInt( "Team", _team );
-		goaldef.Props.SetString( "TagName", _tag );
-		goaldef.Props.SetInt( "InterfaceGoal", 1 );
+		goaldef.Props.SetString ( "Type", _type );
+		goaldef.Props.SetEntity ( "Entity", HandleFromEntity ( _ent ) );
+		goaldef.Props.SetInt ( "Team", _team );
+		goaldef.Props.SetString ( "TagName", _tag );
+		goaldef.Props.SetInt ( "InterfaceGoal", 1 );
 
 		if ( _extrakey && _extraval )
 		{
-			goaldef.Props.Set( _extrakey, *_extraval );
+			goaldef.Props.Set ( _extrakey, *_extraval );
 		}
 
-		g_BotFunctions.pfnAddGoal( goaldef );
+		g_BotFunctions.pfnAddGoal ( goaldef );
 	}
 }
 
-static int _GetEntityTeam( gentity_t *_ent )
+static int _GetEntityTeam ( gentity_t *_ent )
 {
 	// hack, when the game joins clients again after warmup, they are temporarily ET_GENERAL entities(LAME)
 	if ( _ent->client && ( _ent - g_entities ) < MAX_CLIENTS )
 	{
 		//t = ET_PLAYER;
-		return Bot_TeamGameToBot( _ent->client->sess.sessionTeam );
+		return Bot_TeamGameToBot ( _ent->client->sess.sessionTeam );
 	}
 
 	int t = _ent->s.eType;
@@ -1815,26 +1815,26 @@ static int _GetEntityTeam( gentity_t *_ent )
 	switch ( t )
 	{
 		case ET_PLAYER:
-			return Bot_TeamGameToBot( _ent->client->sess.sessionTeam );
+			return Bot_TeamGameToBot ( _ent->client->sess.sessionTeam );
 
 		case ET_CORPSE:
-			return Bot_TeamGameToBot( BODY_TEAM( _ent ) );
+			return Bot_TeamGameToBot ( BODY_TEAM ( _ent ) );
 
 		case ET_MISSILE:
 			if ( _ent->s.weapon == WP_LANDMINE || _ent->s.weapon == WP_DYNAMITE )
 			{
-				return Bot_TeamGameToBot( G_LandmineTeam( _ent ) );
+				return Bot_TeamGameToBot ( G_LandmineTeam ( _ent ) );
 			}
 
 			// Let this fall through
 		default:
-			return Bot_TeamGameToBot( _ent->s.teamNum );
+			return Bot_TeamGameToBot ( _ent->s.teamNum );
 	}
 
 	return 0;
 }
 
-static int _GetEntityClass( gentity_t *_ent )
+static int _GetEntityClass ( gentity_t *_ent )
 {
 	// hack, when the game joins clients again after warmup, they are temporarily ET_GENERAL entities(LAME)
 	int t = _ent->s.eType;
@@ -1848,15 +1848,15 @@ static int _GetEntityClass( gentity_t *_ent )
 	{
 		case ET_GENERAL:
 			{
-				if ( !Q_stricmp( _ent->classname, "func_invisible_user" ) )
+				if ( !Q_stricmp ( _ent->classname, "func_invisible_user" ) )
 				{
 					return ENT_CLASS_GENERIC_BUTTON;
 				}
-				else if ( !Q_stricmp( _ent->classname, "func_button" ) )
+				else if ( !Q_stricmp ( _ent->classname, "func_button" ) )
 				{
 					return ENT_CLASS_GENERIC_BUTTON;
 				}
-				else if ( !Q_stricmp( _ent->classname, "misc_mg42" ) )
+				else if ( !Q_stricmp ( _ent->classname, "misc_mg42" ) )
 				{
 					return ET_CLASSEX_MG42MOUNT;
 				}
@@ -1874,10 +1874,10 @@ static int _GetEntityClass( gentity_t *_ent )
 				}
 
 				// cs: waypoint tool, don't merge the spawns
-				else if ( !Q_stricmp( _ent->classname, "info_player_deathmatch" ) ||
-				          !Q_stricmp( _ent->classname, "team_CTF_redspawn" ) ||
-				          !Q_stricmp( _ent->classname, "team_CTF_bluespawn" ) ||
-				          !Q_stricmp( _ent->classname, "info_player_spawn" ) )
+				else if ( !Q_stricmp ( _ent->classname, "info_player_deathmatch" ) ||
+				          !Q_stricmp ( _ent->classname, "team_CTF_redspawn" ) ||
+				          !Q_stricmp ( _ent->classname, "team_CTF_bluespawn" ) ||
+				          !Q_stricmp ( _ent->classname, "info_player_spawn" ) )
 				{
 					return ENT_CLASS_GENERIC_PLAYERSTART;
 				}
@@ -1916,26 +1916,26 @@ static int _GetEntityClass( gentity_t *_ent )
 				|| _ent->client->ps.pm_flags & PMF_LIMBO )
 				return Bot_PlayerClassGameToBot(_ent->client->sess.latchPlayerType);*/
 
-				return Bot_PlayerClassGameToBot( _ent->client->sess.latchPlayerType );
+				return Bot_PlayerClassGameToBot ( _ent->client->sess.latchPlayerType );
 			}
 
 		case ET_ITEM:
 			{
-				if ( !Q_strncmp( _ent->classname, "item_health", strlen( "item_health" ) ) )
+				if ( !Q_strncmp ( _ent->classname, "item_health", strlen ( "item_health" ) ) )
 				{
 					return ENT_CLASS_GENERIC_HEALTH;
 				}
-				else if ( !Q_strncmp( _ent->classname, "weapon_magicammo", strlen( "weapon_magicammo" ) ) )
+				else if ( !Q_strncmp ( _ent->classname, "weapon_magicammo", strlen ( "weapon_magicammo" ) ) )
 				{
 					return ENT_CLASS_GENERIC_AMMO;
 				}
-				else if ( !Q_stricmp( _ent->classname, "item_treasure" ) )
+				else if ( !Q_stricmp ( _ent->classname, "item_treasure" ) )
 				{
 					return ET_CLASSEX_TREASURE;
 				}
 				else if ( _ent->item && _ent->item->giType == IT_WEAPON )
 				{
-					return ET_CLASSEX_WEAPON + Bot_WeaponGameToBot( _ent->item->giTag );
+					return ET_CLASSEX_WEAPON + Bot_WeaponGameToBot ( _ent->item->giTag );
 				}
 
 				break;
@@ -1996,7 +1996,7 @@ static int _GetEntityClass( gentity_t *_ent )
 #endif
 
 					default:
-						if ( !Q_strncmp( _ent->classname, "air strike", sizeof( "air strike" ) ) )
+						if ( !Q_strncmp ( _ent->classname, "air strike", sizeof ( "air strike" ) ) )
 						{
 							return ET_CLASSEX_AIRSTRIKE;
 						}
@@ -2013,7 +2013,7 @@ static int _GetEntityClass( gentity_t *_ent )
 
 		case ET_MOVER:
 			{
-				if ( !Q_stricmp( _ent->classname, "script_mover" ) )
+				if ( !Q_stricmp ( _ent->classname, "script_mover" ) )
 				{
 					if ( _ent->count > 0 )
 					{
@@ -2075,9 +2075,9 @@ static int _GetEntityClass( gentity_t *_ent )
 			//  }
 		case ET_EXPLOSIVE:
 			{
-				if ( !( _ent->spawnflags & EXPLOSIVE_TANK ) &&
+				if ( ! ( _ent->spawnflags & EXPLOSIVE_TANK ) &&
 				     ( _ent->constructibleStats.weaponclass != 1 ) &&
-				     ( _ent->constructibleStats.weaponclass != 2 ) )         // &&
+				     ( _ent->constructibleStats.weaponclass != 2 ) ) // &&
 					//(_ent->health > 0) && (_ent->takedamage == qtrue))
 				{
 					return ET_CLASSEX_BREAKABLE;
@@ -2124,9 +2124,9 @@ static int _GetEntityClass( gentity_t *_ent )
 	return 0;
 }
 
-qboolean _TankIsMountable( gentity_t *_ent )
+qboolean _TankIsMountable ( gentity_t *_ent )
 {
-	if ( !( _ent->spawnflags & 128 ) )
+	if ( ! ( _ent->spawnflags & 128 ) )
 	{
 		return qfalse;
 	}
@@ -2151,7 +2151,7 @@ qboolean _TankIsMountable( gentity_t *_ent )
 	return qtrue;
 }
 
-qboolean _EmplacedGunIsMountable( gentity_t *_ent )
+qboolean _EmplacedGunIsMountable ( gentity_t *_ent )
 {
 	if ( g_OmniBotFlags.integer & OBF_DONT_MOUNT_GUNS )
 	{
@@ -2161,19 +2161,19 @@ qboolean _EmplacedGunIsMountable( gentity_t *_ent )
 	return qtrue;
 }
 
-void Omnibot_Load_PrintMsg( const char *_msg )
+void Omnibot_Load_PrintMsg ( const char *_msg )
 {
-	G_Printf( "Omni-bot: %s%s\n", S_COLOR_GREEN, _msg );
+	G_Printf ( "Omni-bot: %s%s\n", S_COLOR_GREEN, _msg );
 }
 
-void Omnibot_Load_PrintErr( const char *_msg )
+void Omnibot_Load_PrintErr ( const char *_msg )
 {
-	G_Printf( "Omni-bot: %s%s\n", S_COLOR_RED, _msg );
+	G_Printf ( "Omni-bot: %s%s\n", S_COLOR_RED, _msg );
 }
 
 int g_LastScreenMessageTime = 0;
 
-int obUtilBotContentsFromGameContents( int _contents )
+int obUtilBotContentsFromGameContents ( int _contents )
 {
 	int iBotContents = 0;
 
@@ -2225,7 +2225,7 @@ int obUtilBotContentsFromGameContents( int _contents )
 	return iBotContents;
 }
 
-int obUtilBotSurfaceFromGameSurface( int _surfaceflags )
+int obUtilBotSurfaceFromGameSurface ( int _surfaceflags )
 {
 	int iBotSurface = 0;
 
@@ -2242,11 +2242,11 @@ int obUtilBotSurfaceFromGameSurface( int _surfaceflags )
 	return iBotSurface;
 }
 
-void Bot_Util_CheckForGoalEntity( GameEntity _ent )
+void Bot_Util_CheckForGoalEntity ( GameEntity _ent )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt->inuse )
 		{
@@ -2254,32 +2254,32 @@ void Bot_Util_CheckForGoalEntity( GameEntity _ent )
 			{
 				case ET_ITEM:
 					{
-						char buffer[ 256 ]    = { 0 };
-						const char *pGoalName = _GetEntityName( pEnt );
+						char buffer[ 256 ] = { 0 };
+						const char *pGoalName = _GetEntityName ( pEnt );
 
-						if ( !Q_stricmp( pEnt->classname, "team_CTF_redflag" ) )
+						if ( !Q_stricmp ( pEnt->classname, "team_CTF_redflag" ) )
 						{
 							// allies flag
 							if ( pEnt->s.otherEntityNum != -1 )
 							{
-								pGoalName = _GetEntityName( &g_entities[ pEnt->s.otherEntityNum ] );
+								pGoalName = _GetEntityName ( &g_entities[ pEnt->s.otherEntityNum ] );
 							}
 
-							sprintf( buffer, "%s_dropped", pGoalName ? pGoalName : "allies_flag" );
-							Bot_Util_AddGoal( "flag", pEnt, ( 1 << ET_TEAM_ALLIES ), buffer );
-							Bot_Util_AddGoal( "flagreturn", pEnt, ( 1 << ET_TEAM_AXIS ), buffer );
+							sprintf ( buffer, "%s_dropped", pGoalName ? pGoalName : "allies_flag" );
+							Bot_Util_AddGoal ( "flag", pEnt, ( 1 << ET_TEAM_ALLIES ), buffer );
+							Bot_Util_AddGoal ( "flagreturn", pEnt, ( 1 << ET_TEAM_AXIS ), buffer );
 						}
-						else if ( !Q_stricmp( pEnt->classname, "team_CTF_blueflag" ) )
+						else if ( !Q_stricmp ( pEnt->classname, "team_CTF_blueflag" ) )
 						{
 							// axis flag
 							if ( pEnt->s.otherEntityNum != -1 )
 							{
-								pGoalName = _GetEntityName( &g_entities[ pEnt->s.otherEntityNum ] );
+								pGoalName = _GetEntityName ( &g_entities[ pEnt->s.otherEntityNum ] );
 							}
 
-							sprintf( buffer, "%s_dropped", pGoalName ? pGoalName : "axis_flag" );
-							Bot_Util_AddGoal( "flag", pEnt, ( 1 << ET_TEAM_AXIS ), buffer );
-							Bot_Util_AddGoal( "flagreturn", pEnt, ( 1 << ET_TEAM_ALLIES ), buffer );
+							sprintf ( buffer, "%s_dropped", pGoalName ? pGoalName : "axis_flag" );
+							Bot_Util_AddGoal ( "flag", pEnt, ( 1 << ET_TEAM_AXIS ), buffer );
+							Bot_Util_AddGoal ( "flagreturn", pEnt, ( 1 << ET_TEAM_ALLIES ), buffer );
 						}
 
 						break;
@@ -2293,15 +2293,15 @@ void Bot_Util_CheckForGoalEntity( GameEntity _ent )
 }
 
 // helper stuff
-qboolean InFieldOfVision( vec3_t viewangles, float fov, vec3_t angles )
+qboolean InFieldOfVision ( vec3_t viewangles, float fov, vec3_t angles )
 {
 	float diff, angle;
 
 	for ( int i = 0; i < 2; ++i )
 	{
-		angle       = AngleMod( viewangles[ i ] );
-		angles[ i ] = AngleMod( angles[ i ] );
-		diff        = angles[ i ] - angle;
+		angle = AngleMod ( viewangles[ i ] );
+		angles[ i ] = AngleMod ( angles[ i ] );
+		diff = angles[ i ] - angle;
 
 		if ( angles[ i ] > angle )
 		{
@@ -2328,7 +2328,7 @@ qboolean InFieldOfVision( vec3_t viewangles, float fov, vec3_t angles )
 class ETInterface : public IEngineInterface
 {
 public:
-	int AddBot( const MessageHelper &_data )
+	int AddBot ( const MessageHelper &_data )
 	{
 		// wait until everything settles before adding bots on dedicated servers
 		if ( g_dedicated.integer && ( level.time - level.startTime < 10000 ) )
@@ -2336,37 +2336,37 @@ public:
 			return -1;
 		}
 
-		OB_GETMSG( Msg_Addbot );
+		OB_GETMSG ( Msg_Addbot );
 
-		int num = trap_BotAllocateClient( 0 );
+		int num = trap_BotAllocateClient ( 0 );
 
 		if ( num < 0 )
 		{
-			PrintError( "Could not add bot!" );
-			PrintError( "No free slots!" );
+			PrintError ( "Could not add bot!" );
+			PrintError ( "No free slots!" );
 			return -1;
 		}
 
 		char userinfo[ MAX_INFO_STRING ] = { 0 };
 
 		std::stringstream guid;
-		guid << "OMNIBOT" << std::setw( 2 ) << std::setfill( '0' ) << num << std::right << std::setw( 23 ) << "";
+		guid << "OMNIBOT" << std::setw ( 2 ) << std::setfill ( '0' ) << num << std::right << std::setw ( 23 ) << "";
 
 		gentity_t *bot = &g_entities[ num ];
 
-		Info_SetValueForKey( userinfo, "name", pMsg->m_Name );
-		Info_SetValueForKey( userinfo, "rate", "25000" );
-		Info_SetValueForKey( userinfo, "snaps", "20" );
-		Info_SetValueForKey( userinfo, "ip", "localhost" );
-		Info_SetValueForKey( userinfo, "cl_guid", guid.str().c_str() );
+		Info_SetValueForKey ( userinfo, "name", pMsg->m_Name );
+		Info_SetValueForKey ( userinfo, "rate", "25000" );
+		Info_SetValueForKey ( userinfo, "snaps", "20" );
+		Info_SetValueForKey ( userinfo, "ip", "localhost" );
+		Info_SetValueForKey ( userinfo, "cl_guid", guid.str().c_str() );
 
-		trap_SetUserinfo( num, userinfo );
+		trap_SetUserinfo ( num, userinfo );
 
 		const char *s = 0;
 
-		if ( ( s = ClientConnect( num, qtrue, qtrue ) ) != 0 )
+		if ( ( s = ClientConnect ( num, qtrue, qtrue ) ) != 0 )
 		{
-			PrintError( va( "Could not connect bot: %s", s ) );
+			PrintError ( va ( "Could not connect bot: %s", s ) );
 			num = -1;
 		}
 
@@ -2374,9 +2374,9 @@ public:
 		return bot && bot->inuse ? num : -1;
 	}
 
-	void RemoveBot( const MessageHelper &_data )
+	void RemoveBot ( const MessageHelper &_data )
 	{
-		OB_GETMSG( Msg_Kickbot );
+		OB_GETMSG ( Msg_Kickbot );
 
 		if ( pMsg->m_GameId != Msg_Kickbot::InvalidGameId )
 		{
@@ -2384,9 +2384,9 @@ public:
 			{
 				gentity_t *ent = &g_entities[ pMsg->m_GameId ];
 
-				if ( IsBot( ent ) )
+				if ( IsBot ( ent ) )
 				{
-					trap_DropClient( pMsg->m_GameId, "disconnected", 0 );
+					trap_DropClient ( pMsg->m_GameId, "disconnected", 0 );
 				}
 			}
 		}
@@ -2395,8 +2395,8 @@ public:
 			char cleanNetName[ MAX_NETNAME ];
 			char cleanName[ MAX_NAME_LENGTH ];
 
-			Q_strncpyz( cleanName, pMsg->m_Name, MAX_NAME_LENGTH );
-			Q_CleanStr( cleanName );
+			Q_strncpyz ( cleanName, pMsg->m_Name, MAX_NAME_LENGTH );
+			Q_CleanStr ( cleanName );
 
 			for ( int i = 0; i < g_maxclients.integer; ++i )
 			{
@@ -2405,24 +2405,24 @@ public:
 					continue;
 				}
 
-				if ( !IsBot( &g_entities[ i ] ) )
+				if ( !IsBot ( &g_entities[ i ] ) )
 				{
 					continue;
 				}
 
 				// clean stuff
-				Q_strncpyz( cleanNetName, g_entities[ i ].client->pers.netname, MAX_NETNAME );
-				Q_CleanStr( cleanNetName );
+				Q_strncpyz ( cleanNetName, g_entities[ i ].client->pers.netname, MAX_NETNAME );
+				Q_CleanStr ( cleanNetName );
 
-				if ( !Q_stricmp( cleanNetName, cleanName ) )
+				if ( !Q_stricmp ( cleanNetName, cleanName ) )
 				{
-					trap_DropClient( i, "disconnected", 0 );
+					trap_DropClient ( i, "disconnected", 0 );
 				}
 			}
 		}
 	}
 
-	obResult ChangeTeam( int _client, int _newteam, const MessageHelper *_data )
+	obResult ChangeTeam ( int _client, int _newteam, const MessageHelper *_data )
 	{
 #ifdef NOQUARTER
 		const char *teamName;
@@ -2438,7 +2438,7 @@ public:
 			     ( bot->client->sess.sessionTeam != TEAM_AXIS &&
 			       bot->client->sess.sessionTeam != TEAM_ALLIES ) )
 			{
-				if ( TeamCount( _client, TEAM_ALLIES ) <= TeamCount( _client, TEAM_AXIS ) )
+				if ( TeamCount ( _client, TEAM_ALLIES ) <= TeamCount ( _client, TEAM_AXIS ) )
 				{
 					_newteam = ET_TEAM_ALLIES;
 				}
@@ -2450,7 +2450,7 @@ public:
 			else
 			{
 				// remember old team
-				_newteam = Bot_TeamGameToBot( bot->client->sess.sessionTeam );
+				_newteam = Bot_TeamGameToBot ( bot->client->sess.sessionTeam );
 			}
 		}
 
@@ -2468,52 +2468,52 @@ public:
 
 		Msg_PlayerChooseEquipment *pMsg = 0;
 
-		if ( _data ) { _data->Get2( pMsg ); }
+		if ( _data ) { _data->Get2 ( pMsg ); }
 
 		if ( pMsg )
 		{
 			if ( pMsg->m_WeaponChoice[ 0 ] )
 			{
-				bot->client->sess.latchPlayerWeapon = _weaponBotToGame( pMsg->m_WeaponChoice[ 0 ] );
+				bot->client->sess.latchPlayerWeapon = _weaponBotToGame ( pMsg->m_WeaponChoice[ 0 ] );
 			}
 
 			if ( pMsg->m_WeaponChoice[ 1 ] )
 			{
-				bot->client->sess.latchPlayerWeapon2 = _weaponBotToGame( pMsg->m_WeaponChoice[ 1 ] );
+				bot->client->sess.latchPlayerWeapon2 = _weaponBotToGame ( pMsg->m_WeaponChoice[ 1 ] );
 			}
 
 #ifdef NOQUARTER
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon, qtrue ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon, qtrue ) )
 			{
 				bot->client->sess.latchPlayerWeapon = 0;
 			}
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon2, qtrue ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon2, qtrue ) )
 			{
 				bot->client->sess.latchPlayerWeapon2 = 0;
 			}
 
 #elif defined( ETPUB_VERSION )
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon, bot->client->sess.sessionTeam, qtrue ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon, bot->client->sess.sessionTeam, qtrue ) )
 			{
 				bot->client->sess.latchPlayerWeapon = 0;
 			}
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon2, bot->client->sess.sessionTeam, qtrue ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon2, bot->client->sess.sessionTeam, qtrue ) )
 			{
 				bot->client->sess.latchPlayerWeapon2 = 0;
 			}
 
 #else
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon ) )
 			{
 				bot->client->sess.latchPlayerWeapon = 0;
 			}
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon2 ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon2 ) )
 			{
 				bot->client->sess.latchPlayerWeapon2 = 0;
 			}
@@ -2522,18 +2522,18 @@ public:
 		}
 
 		{
-			const int iBotTeam  = Bot_TeamGameToBot( bot->client->sess.sessionTeam );
-			const int iBotClass = Bot_PlayerClassGameToBot( bot->client->sess.latchPlayerType );
+			const int iBotTeam = Bot_TeamGameToBot ( bot->client->sess.sessionTeam );
+			const int iBotClass = Bot_PlayerClassGameToBot ( bot->client->sess.latchPlayerType );
 
 			//G_IsWeaponDisabled ?
 			if ( !bot->client->sess.latchPlayerWeapon || iBotTeam != _newteam )
 			{
-				bot->client->sess.latchPlayerWeapon = _weaponBotToGame( _choosePriWeap( bot, iBotClass, _newteam ) );
+				bot->client->sess.latchPlayerWeapon = _weaponBotToGame ( _choosePriWeap ( bot, iBotClass, _newteam ) );
 			}
 
 			if ( !bot->client->sess.latchPlayerWeapon2 || iBotTeam != _newteam )
 			{
-				bot->client->sess.latchPlayerWeapon2 = _weaponBotToGame( _chooseSecWeap( bot, iBotClass, _newteam ) );
+				bot->client->sess.latchPlayerWeapon2 = _weaponBotToGame ( _chooseSecWeap ( bot, iBotClass, _newteam ) );
 			}
 		}
 
@@ -2544,7 +2544,7 @@ public:
 
 		// if SetTeam() fails, be sure to at least send a note to the bot about the current team
 		// (else this won't be neccessary because on respawn messages will be sent automatically)
-		if ( !SetTeam( bot, teamName, qtrue, ( weapon_t ) - 1, ( weapon_t ) - 1, qfalse ) )
+		if ( !SetTeam ( bot, teamName, qtrue, ( weapon_t ) - 1, ( weapon_t ) - 1, qfalse ) )
 		{
 			// also retransmit weapons stuff
 			//ReTransmitWeapons(bot);
@@ -2553,7 +2553,7 @@ public:
 		return Success;
 	}
 
-	obResult ChangeClass( int _client, int _newclass, const MessageHelper *_data )
+	obResult ChangeClass ( int _client, int _newclass, const MessageHelper *_data )
 	{
 		gentity_t *bot = &g_entities[ _client ];
 
@@ -2567,7 +2567,7 @@ public:
 
 				if ( predictedTeam != TEAM_ALLIES && predictedTeam != TEAM_AXIS )
 				{
-					if ( TeamCount( _client, TEAM_ALLIES ) <= TeamCount( _client, TEAM_AXIS ) )
+					if ( TeamCount ( _client, TEAM_ALLIES ) <= TeamCount ( _client, TEAM_AXIS ) )
 					{
 						predictedTeam = TEAM_ALLIES;
 					}
@@ -2578,11 +2578,11 @@ public:
 				}
 
 				// cs: make sure one of each if min is greater than zero
-				int engineers = CountPlayerClass( predictedTeam, PC_ENGINEER, _client );
-				int medics    = CountPlayerClass( predictedTeam, PC_MEDIC, _client );
-				int fieldops  = CountPlayerClass( predictedTeam, PC_FIELDOPS, _client );
-				int soldiers  = CountPlayerClass( predictedTeam, PC_SOLDIER, _client );
-				int covops    = CountPlayerClass( predictedTeam, PC_COVERTOPS, _client );
+				int engineers = CountPlayerClass ( predictedTeam, PC_ENGINEER, _client );
+				int medics = CountPlayerClass ( predictedTeam, PC_MEDIC, _client );
+				int fieldops = CountPlayerClass ( predictedTeam, PC_FIELDOPS, _client );
+				int soldiers = CountPlayerClass ( predictedTeam, PC_SOLDIER, _client );
+				int covops = CountPlayerClass ( predictedTeam, PC_COVERTOPS, _client );
 
 				if ( OMNIBOT_MIN_ENG > 0 && engineers == 0 )
 				{
@@ -2626,7 +2626,7 @@ public:
 				}
 				else
 				{
-					_newclass = Bot_PlayerClassGameToBot( rand() % NUM_PLAYER_CLASSES );
+					_newclass = Bot_PlayerClassGameToBot ( rand() % NUM_PLAYER_CLASSES );
 				}
 
 				// old stuff
@@ -2647,61 +2647,61 @@ public:
 			}
 			else
 			{
-				_newclass = Bot_PlayerClassGameToBot( bot->client->sess.latchPlayerType );
+				_newclass = Bot_PlayerClassGameToBot ( bot->client->sess.latchPlayerType );
 			}
 		}
 
-		int team                        = Bot_TeamGameToBot( bot->client->sess.sessionTeam );
-		bot->client->sess.latchPlayerType = playerClassBotToGame( _newclass );
+		int team = Bot_TeamGameToBot ( bot->client->sess.sessionTeam );
+		bot->client->sess.latchPlayerType = playerClassBotToGame ( _newclass );
 
 		Msg_PlayerChooseEquipment *pMsg = 0;
 
-		if ( _data ) { _data->Get2( pMsg ); }
+		if ( _data ) { _data->Get2 ( pMsg ); }
 
 		if ( pMsg )
 		{
 			if ( pMsg->m_WeaponChoice[ 0 ] )
 			{
-				bot->client->sess.latchPlayerWeapon = _weaponBotToGame( pMsg->m_WeaponChoice[ 0 ] );
+				bot->client->sess.latchPlayerWeapon = _weaponBotToGame ( pMsg->m_WeaponChoice[ 0 ] );
 			}
 
 			if ( pMsg->m_WeaponChoice[ 1 ] )
 			{
-				bot->client->sess.latchPlayerWeapon2 = _weaponBotToGame( pMsg->m_WeaponChoice[ 1 ] );
+				bot->client->sess.latchPlayerWeapon2 = _weaponBotToGame ( pMsg->m_WeaponChoice[ 1 ] );
 			}
 
 #ifdef NOQUARTER
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon, qtrue ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon, qtrue ) )
 			{
 				bot->client->sess.latchPlayerWeapon = 0;
 			}
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon2, qtrue ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon2, qtrue ) )
 			{
 				bot->client->sess.latchPlayerWeapon2 = 0;
 			}
 
 #elif defined( ETPUB_VERSION )
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon, bot->client->sess.sessionTeam, qtrue ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon, bot->client->sess.sessionTeam, qtrue ) )
 			{
 				bot->client->sess.latchPlayerWeapon = 0;
 			}
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon2, bot->client->sess.sessionTeam, qtrue ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon2, bot->client->sess.sessionTeam, qtrue ) )
 			{
 				bot->client->sess.latchPlayerWeapon2 = 0;
 			}
 
 #else
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon ) )
 			{
 				bot->client->sess.latchPlayerWeapon = 0;
 			}
 
-			if ( G_IsWeaponDisabled( bot, ( weapon_t )bot->client->sess.latchPlayerWeapon2 ) )
+			if ( G_IsWeaponDisabled ( bot, ( weapon_t ) bot->client->sess.latchPlayerWeapon2 ) )
 			{
 				bot->client->sess.latchPlayerWeapon2 = 0;
 			}
@@ -2710,16 +2710,16 @@ public:
 		}
 
 		{
-			const int iBotClass = Bot_PlayerClassGameToBot( bot->client->sess.latchPlayerType );
+			const int iBotClass = Bot_PlayerClassGameToBot ( bot->client->sess.latchPlayerType );
 
 			if ( !bot->client->sess.latchPlayerWeapon || bot->client->sess.latchPlayerType != bot->client->sess.playerType )
 			{
-				bot->client->sess.latchPlayerWeapon = _weaponBotToGame( _choosePriWeap( bot, iBotClass, team ) );
+				bot->client->sess.latchPlayerWeapon = _weaponBotToGame ( _choosePriWeap ( bot, iBotClass, team ) );
 			}
 
 			if ( !bot->client->sess.latchPlayerWeapon2 || bot->client->sess.latchPlayerType != bot->client->sess.playerType )
 			{
-				bot->client->sess.latchPlayerWeapon2 = _weaponBotToGame( _chooseSecWeap( bot, iBotClass, team ) );
+				bot->client->sess.latchPlayerWeapon2 = _weaponBotToGame ( _chooseSecWeap ( bot, iBotClass, team ) );
 			}
 		}
 
@@ -2730,9 +2730,9 @@ public:
 			//round end.
 			if ( bot->client->ps.pm_flags & PMF_TIME_LOCKPLAYER )
 			{
-				Cmd_Kill_f( bot );
+				Cmd_Kill_f ( bot );
 			}
-			else if ( !( bot->client->ps.pm_flags & PMF_LIMBO ) )
+			else if ( ! ( bot->client->ps.pm_flags & PMF_LIMBO ) )
 			{
 				bot->client->sess.botSuicide = qtrue;
 			}
@@ -2740,13 +2740,13 @@ public:
 		else
 		{
 			// also retransmit weapons stuff
-			ReTransmitWeapons( bot );
+			ReTransmitWeapons ( bot );
 		}
 
 		return Success;
 	}
 
-	bool DebugLine( const float _start[ 3 ], const float _end[ 3 ], const obColor &_color, float _time )
+	bool DebugLine ( const float _start[ 3 ], const float _end[ 3 ], const obColor &_color, float _time )
 	{
 		// for dedicated servers we tell the bot we can handle this function, so it doesn't open
 		// an IPC channel.
@@ -2758,7 +2758,7 @@ public:
 		return false;
 	}
 
-	bool DebugRadius( const float _pos[ 3 ], const float _radius, const obColor &_color, float _time )
+	bool DebugRadius ( const float _pos[ 3 ], const float _radius, const obColor &_color, float _time )
 	{
 		// for dedicated servers we tell the bot we can handle this function, so it doesn't open
 		// an IPC channel.
@@ -2770,7 +2770,7 @@ public:
 		return false;
 	}
 
-	void UpdateBotInput( int _client, const ClientInput &_input )
+	void UpdateBotInput ( int _client, const ClientInput &_input )
 	{
 		static usercmd_t cmd;
 		gentity_t *bot = &g_entities[ _client ];
@@ -2778,13 +2778,13 @@ public:
 		// only causes problems
 		bot->client->ps.pm_flags &= ~PMF_RESPAWNED;
 
-		memset( &cmd, 0, sizeof( cmd ) );
+		memset ( &cmd, 0, sizeof ( cmd ) );
 
 		cmd.identClient = _client;
-		cmd.serverTime  = level.time;
+		cmd.serverTime = level.time;
 
 		// Set the weapon
-		cmd.weapon      = _weaponBotToGame( _input.m_CurrentWeapon );
+		cmd.weapon = _weaponBotToGame ( _input.m_CurrentWeapon );
 
 #ifdef NOQUARTER
 
@@ -2816,7 +2816,7 @@ public:
 			}
 		}
 
-#endif          //NOQUARTER
+#endif //NOQUARTER
 
 		// dont choose scoped directly.
 		switch ( cmd.weapon )
@@ -2870,7 +2870,7 @@ public:
 
 		if ( cmd.weapon == WP_GPG40 && bot->client->ps.weapon == WP_GPG40 /*&& bot->client->ps.weapon != WP_KAR98*/ )
 		{
-			const int ammo = bot->client->ps.ammoclip[ BG_FindClipForWeapon( WP_GPG40 ) ];
+			const int ammo = bot->client->ps.ammoclip[ BG_FindClipForWeapon ( WP_GPG40 ) ];
 
 			if ( ammo == 0 && bot->client->ps.weaponstate == WEAPON_READY )
 			{
@@ -2879,7 +2879,7 @@ public:
 		}
 		else if ( cmd.weapon == WP_M7 && bot->client->ps.weapon == WP_M7 /*&& bot->client->ps.weapon != WP_CARBINE*/ )
 		{
-			const int ammo = bot->client->ps.ammoclip[ BG_FindClipForWeapon( WP_M7 ) ];
+			const int ammo = bot->client->ps.ammoclip[ BG_FindClipForWeapon ( WP_M7 ) ];
 
 			if ( ammo == 0 && bot->client->ps.weaponstate == WEAPON_READY )
 			{
@@ -2890,46 +2890,46 @@ public:
 #endif
 
 		// Process the bot keypresses.
-		if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_RESPAWN ) )
+		if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_RESPAWN ) )
 		{
 			cmd.buttons |= BUTTON_ACTIVATE;
 		}
 
-		if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_ATTACK1 ) )
+		if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_ATTACK1 ) )
 		{
 			cmd.buttons |= BUTTON_ATTACK;
 		}
 
-		if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_WALK ) )
+		if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_WALK ) )
 		{
 			cmd.buttons |= BUTTON_WALKING;
 		}
-		else if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_SPRINT ) )
+		else if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_SPRINT ) )
 		{
 			cmd.buttons |= BUTTON_SPRINT;
 		}
 
-		if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_USE ) )
+		if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_USE ) )
 		{
 			cmd.buttons |= BUTTON_ACTIVATE;
 		}
 
 		// wbuttons
-		if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_ATTACK2 ) )
+		if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_ATTACK2 ) )
 		{
 			cmd.wbuttons |= WBUTTON_ATTACK2;
 		}
 
-		if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_DROP ) )
+		if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_DROP ) )
 		{
 			cmd.wbuttons |= WBUTTON_DROP;
 		}
 
 		// if we have prone held
-		if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_PRONE ) )
+		if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_PRONE ) )
 		{
 			// and we're not prone, go prone
-			if ( !( bot->client->ps.eFlags & EF_PRONE ) )
+			if ( ! ( bot->client->ps.eFlags & EF_PRONE ) )
 			{
 				cmd.wbuttons |= WBUTTON_PRONE;
 			}
@@ -2944,7 +2944,7 @@ public:
 		}
 
 		// if we have aim held
-		if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_AIM ) )
+		if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_AIM ) )
 		{
 			//if(!(bot->s.eFlags & EF_ZOOMING))
 			switch ( bot->client->ps.weapon )
@@ -2961,7 +2961,7 @@ public:
 
 				case WP_K43:
 				case WP_K43_SCOPE:
-					cmd.weapon    = WP_K43_SCOPE;
+					cmd.weapon = WP_K43_SCOPE;
 					break;
 
 				default:
@@ -2979,11 +2979,11 @@ public:
 			//}
 		}
 
-		if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_LEANLEFT ) )
+		if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_LEANLEFT ) )
 		{
 			cmd.wbuttons |= WBUTTON_LEANLEFT;
 		}
-		else if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_LEANRIGHT ) )
+		else if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_LEANRIGHT ) )
 		{
 			cmd.wbuttons |= WBUTTON_LEANRIGHT;
 		}
@@ -2995,7 +2995,7 @@ public:
 			// keep the same weapon while reloading
 			cmd.weapon = bot->client->ps.weapon;
 		}
-		else if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_RELOAD ) )
+		else if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_RELOAD ) )
 		{
 			// watch for gpg40 and m7 as these need to be switched for reloading
 
@@ -3026,10 +3026,10 @@ public:
 		if ( bot->client->ps.pm_type >= PM_DEAD || bot->client->ps.pm_flags & ( PMF_LIMBO | PMF_TIME_LOCKPLAYER ) )
 		{
 			// cant move in these states
-			cmd.buttons  &= ~BUTTON_ATTACK;
+			cmd.buttons &= ~BUTTON_ATTACK;
 			cmd.wbuttons &= ~WBUTTON_ATTACK2;
 #ifdef NOQUARTER
-			cmd.buttons  &= ~BUTTON_GESTURE;
+			cmd.buttons &= ~BUTTON_GESTURE;
 #endif
 		}
 		else
@@ -3038,8 +3038,8 @@ public:
 			vec3_t angles, bodyangles, forward, right;
 
 			// Convert the bots vector to angles and set the view angle to the orientation
-			vectoangles( _input.m_Facing, angles );
-			SetClientViewAngle( bot, angles );
+			vectoangles ( _input.m_Facing, angles );
+			SetClientViewAngle ( bot, angles );
 
 			if ( cmd.buttons & BUTTON_WALKING )
 			{
@@ -3050,64 +3050,64 @@ public:
 			// take the bots orientation into account.
 
 			// flatten the view angles so we get a proper fwd,right vector as relevent to movement.
-			VectorCopy( angles, bodyangles );
+			VectorCopy ( angles, bodyangles );
 			bodyangles[ PITCH ] = 0;
 
-			AngleVectors( bodyangles, forward, right, NULL );
-			const float fwd  = DotProduct( forward, _input.m_MoveDir );
-			const float rght = DotProduct( right, _input.m_MoveDir );
+			AngleVectors ( bodyangles, forward, right, NULL );
+			const float fwd = DotProduct ( forward, _input.m_MoveDir );
+			const float rght = DotProduct ( right, _input.m_MoveDir );
 
-			cmd.forwardmove = ( char )( fwd * fMaxSpeed );
-			cmd.rightmove   = ( char )( rght * fMaxSpeed );
+			cmd.forwardmove = ( char ) ( fwd * fMaxSpeed );
+			cmd.rightmove = ( char ) ( rght * fMaxSpeed );
 
-			if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_FWD ) || _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_MOVEUP ) )
+			if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_FWD ) || _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_MOVEUP ) )
 			{
-				cmd.forwardmove = ( char )fMaxSpeed;
+				cmd.forwardmove = ( char ) fMaxSpeed;
 			}
 
-			if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_BACK ) || _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_MOVEDN ) )
+			if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_BACK ) || _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_MOVEDN ) )
 			{
 				cmd.forwardmove = ( char ) - fMaxSpeed;
 			}
 
-			if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_RSTRAFE ) )
+			if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_RSTRAFE ) )
 			{
-				cmd.rightmove = ( char )fMaxSpeed;
+				cmd.rightmove = ( char ) fMaxSpeed;
 			}
 
-			if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_LSTRAFE ) )
+			if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_LSTRAFE ) )
 			{
 				cmd.rightmove = ( char ) - fMaxSpeed;
 			}
 
-			if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_JUMP ) )
+			if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_JUMP ) )
 			{
-				cmd.upmove = ( char )fMaxSpeed;
+				cmd.upmove = ( char ) fMaxSpeed;
 			}
 
-			if ( _input.m_ButtonFlags.CheckFlag( BOT_BUTTON_CROUCH ) )
+			if ( _input.m_ButtonFlags.CheckFlag ( BOT_BUTTON_CROUCH ) )
 			{
 				cmd.upmove = ( char ) - fMaxSpeed;
 			}
 		}
 
-		trap_BotUserCommand( _client, &cmd );
+		trap_BotUserCommand ( _client, &cmd );
 	}
 
-	void BotCommand( int _client, const char *_cmd )
+	void BotCommand ( int _client, const char *_cmd )
 	{
-		trap_EA_Command( _client, ( char * )_cmd );
+		trap_EA_Command ( _client, ( char * ) _cmd );
 	}
 
-	obBool IsInPVS( const float _pos[ 3 ], const float _target[ 3 ] )
+	obBool IsInPVS ( const float _pos[ 3 ], const float _target[ 3 ] )
 	{
-		return trap_InPVS( _pos, _target ) ? True : False;
+		return trap_InPVS ( _pos, _target ) ? True : False;
 	}
 
-	obResult TraceLine( obTraceResult &_result, const float _start[ 3 ], const float _end[ 3 ],
-	                    const AABB *_pBBox, int _mask, int _user, obBool _bUsePVS )
+	obResult TraceLine ( obTraceResult &_result, const float _start[ 3 ], const float _end[ 3 ],
+	                     const AABB *_pBBox, int _mask, int _user, obBool _bUsePVS )
 	{
-		qboolean bInPVS = _bUsePVS ? trap_InPVS( _start, _end ) : qtrue;
+		qboolean bInPVS = _bUsePVS ? trap_InPVS ( _start, _end ) : qtrue;
 
 		if ( bInPVS )
 		{
@@ -3157,12 +3157,12 @@ public:
 
 				if ( _mask & TR_MASK_SMOKEBOMB )
 				{
-					gentity_t *pSmokeBlocker = Bot_EntInvisibleBySmokeBomb( ( float * )_start, ( float * )_end );
+					gentity_t *pSmokeBlocker = Bot_EntInvisibleBySmokeBomb ( ( float * ) _start, ( float * ) _end );
 
 					if ( pSmokeBlocker )
 					{
-						_result.m_Fraction  = 0.0f;
-						_result.m_HitEntity = HandleFromEntity( pSmokeBlocker );
+						_result.m_Fraction = 0.0f;
+						_result.m_HitEntity = HandleFromEntity ( pSmokeBlocker );
 						return Success;
 					}
 				}
@@ -3172,22 +3172,22 @@ public:
 
 			if ( _mask & TR_MASK_FLOODFILL )
 			{
-				trap_TraceNoEnts( &tr, _start,
-				                  _pBBox ? _pBBox->m_Mins : NULL,
-				                  _pBBox ? _pBBox->m_Maxs : NULL,
-				                  _end, _user, iMask );
+				trap_TraceNoEnts ( &tr, _start,
+				                   _pBBox ? _pBBox->m_Mins : NULL,
+				                   _pBBox ? _pBBox->m_Maxs : NULL,
+				                   _end, _user, iMask );
 			}
 			else
 			{
-				trap_Trace( &tr, _start,
-				            _pBBox ? _pBBox->m_Mins : NULL,
-				            _pBBox ? _pBBox->m_Maxs : NULL,
-				            _end, _user, iMask );
+				trap_Trace ( &tr, _start,
+				             _pBBox ? _pBBox->m_Mins : NULL,
+				             _pBBox ? _pBBox->m_Maxs : NULL,
+				             _end, _user, iMask );
 			}
 
 			if ( ( tr.entityNum != ENTITYNUM_WORLD ) && ( tr.entityNum != ENTITYNUM_NONE ) )
 			{
-				_result.m_HitEntity = HandleFromEntity( &g_entities[ tr.entityNum ] );
+				_result.m_HitEntity = HandleFromEntity ( &g_entities[ tr.entityNum ] );
 			}
 			else
 			{
@@ -3197,16 +3197,16 @@ public:
 			//_result.m_iUser1 = tr.surfaceFlags;
 
 			// Fill in the bot traceflag.
-			_result.m_Fraction    = tr.fraction;
-			_result.m_StartSolid  = tr.startsolid;
+			_result.m_Fraction = tr.fraction;
+			_result.m_StartSolid = tr.startsolid;
 			_result.m_Endpos[ 0 ] = tr.endpos[ 0 ];
 			_result.m_Endpos[ 1 ] = tr.endpos[ 1 ];
 			_result.m_Endpos[ 2 ] = tr.endpos[ 2 ];
 			_result.m_Normal[ 0 ] = tr.plane.normal[ 0 ];
 			_result.m_Normal[ 1 ] = tr.plane.normal[ 1 ];
 			_result.m_Normal[ 2 ] = tr.plane.normal[ 2 ];
-			_result.m_Contents    = obUtilBotContentsFromGameContents( tr.contents );
-			_result.m_Surface     = obUtilBotSurfaceFromGameSurface( tr.surfaceFlags );
+			_result.m_Contents = obUtilBotContentsFromGameContents ( tr.contents );
+			_result.m_Surface = obUtilBotSurfaceFromGameSurface ( tr.surfaceFlags );
 		}
 		else
 		{
@@ -3218,29 +3218,29 @@ public:
 		return bInPVS ? Success : OutOfPVS;
 	}
 
-	int GetPointContents( const float _pos[ 3 ] )
+	int GetPointContents ( const float _pos[ 3 ] )
 	{
-		vec3_t vpos   = { _pos[ 0 ], _pos[ 1 ], _pos[ 2 ] };
-		int iContents = trap_PointContents( vpos, -1 );
-		return obUtilBotContentsFromGameContents( iContents );
+		vec3_t vpos = { _pos[ 0 ], _pos[ 1 ], _pos[ 2 ] };
+		int iContents = trap_PointContents ( vpos, -1 );
+		return obUtilBotContentsFromGameContents ( iContents );
 	}
 
 	GameEntity GetLocalGameEntity()
 	{
-		return EntityFromID( 0 );
+		return EntityFromID ( 0 );
 	}
 
-	GameEntity FindEntityInSphere( const float _pos[ 3 ], float _radius, GameEntity _pStart, int classId )
+	GameEntity FindEntityInSphere ( const float _pos[ 3 ], float _radius, GameEntity _pStart, int classId )
 	{
 		// square it to avoid the square root in the distance check.
-		gentity_t *pStartEnt   = _pStart.IsValid() ? EntityFromHandle( _pStart ) : 0;
+		gentity_t *pStartEnt = _pStart.IsValid() ? EntityFromHandle ( _pStart ) : 0;
 
 		const char *pClassName = 0;
-		int iPlayerClass       = 0;
-		int iSpawnFlags        = 0;
+		int iPlayerClass = 0;
+		int iSpawnFlags = 0;
 
 #ifdef NOQUARTER
-		int iHash              = 0;
+		int iHash = 0;
 
 		switch ( classId )
 		{
@@ -3251,46 +3251,46 @@ public:
 			case ET_CLASS_COVERTOPS:
 			case ET_CLASS_ANY:
 				iPlayerClass = classId != ET_CLASS_ANY ? classId : 0;
-				pClassName   = "player";
-				iHash        = PLAYER_HASH;
+				pClassName = "player";
+				iHash = PLAYER_HASH;
 				break;
 
 				//////////////////////////////////////////////////////////////////////////
 			case ET_CLASSEX_MG42MOUNT:
 				pClassName = "misc_mg42";
-				iHash      = MISC_MG42_HASH;
+				iHash = MISC_MG42_HASH;
 				break;
 
 			case ET_CLASSEX_DYNAMITE:
 				pClassName = "dynamite";
-				iHash      = DYNAMITE_HASH;
+				iHash = DYNAMITE_HASH;
 				break;
 
 			case ET_CLASSEX_MINE:
 				pClassName = "landmine";
-				iHash      = LANDMINE_HASH;
+				iHash = LANDMINE_HASH;
 				break;
 
 			case ET_CLASSEX_SATCHEL:
 				pClassName = "satchel_charge";
-				iHash      = SATCHEL_CHARGE_HASH;
+				iHash = SATCHEL_CHARGE_HASH;
 				break;
 
 			case ET_CLASSEX_SMOKEBOMB:
 				pClassName = "smoke_bomb";
-				iHash      = SMOKE_BOMB_HASH;
+				iHash = SMOKE_BOMB_HASH;
 				break;
 
 			case ET_CLASSEX_SMOKEMARKER:
 				pClassName = "air strike";
-				iHash      = AIR_STRIKE_HASH;
+				iHash = AIR_STRIKE_HASH;
 				break;
 
 			case ET_CLASSEX_VEHICLE:
 			case ET_CLASSEX_VEHICLE_HVY:
 				iSpawnFlags = classId == ET_CLASSEX_VEHICLE_HVY ? 4 : 0;
-				pClassName  = "script_mover";
-				iHash       = SCRIPT_MOVER_HASH;
+				pClassName = "script_mover";
+				iHash = SCRIPT_MOVER_HASH;
 				break;
 
 			case ET_CLASSEX_BREAKABLE:
@@ -3298,57 +3298,57 @@ public:
 
 			case ET_CLASSEX_CORPSE:
 				pClassName = "corpse";
-				iHash      = CORPSE_HASH;
+				iHash = CORPSE_HASH;
 				break;
 
 			case ET_CLASSEX_GRENADE:
 				pClassName = "grenade";
-				iHash      = GRENADE_HASH;
+				iHash = GRENADE_HASH;
 				break;
 
 			case ET_CLASSEX_ROCKET:
 				pClassName = "rocket";
-				iHash      = ROCKET_HASH;
+				iHash = ROCKET_HASH;
 				break;
 
 			case ET_CLASSEX_MORTAR:
 				pClassName = "mortar_grenade";
-				iHash      = MORTAR_GRENADE_HASH;
+				iHash = MORTAR_GRENADE_HASH;
 				break;
 
 			case ET_CLASSEX_ARTY:
 				pClassName = "air strike";
-				iHash      = AIR_STRIKE_HASH;
+				iHash = AIR_STRIKE_HASH;
 				break;
 
 			case ET_CLASSEX_AIRSTRIKE:
 				pClassName = "air strike";
-				iHash      = AIR_STRIKE_HASH;
+				iHash = AIR_STRIKE_HASH;
 				break;
 
 			case ET_CLASSEX_FLAMECHUNK:
 				pClassName = "flamechunk";
-				iHash      = FLAMECHUNK_HASH;
+				iHash = FLAMECHUNK_HASH;
 				break;
 
 			case ET_CLASSEX_M7_GRENADE:
 				pClassName = "m7_grenade";
-				iHash      = M7_GRENADE_HASH;
+				iHash = M7_GRENADE_HASH;
 				break;
 
 			case ET_CLASSEX_GPG40_GRENADE:
 				pClassName = "gpg40_grenade";
-				iHash      = GPG40_GRENADE_HASH;
+				iHash = GPG40_GRENADE_HASH;
 				break;
 
 			case ET_CLASSEX_HEALTHCABINET:
 				pClassName = "misc_cabinet_health";
-				iHash      = MISC_CABINET_HEALTH_HASH;
+				iHash = MISC_CABINET_HEALTH_HASH;
 				break;
 
 			case ET_CLASSEX_AMMOCABINET:
 				pClassName = "misc_cabinet_supply";
-				iHash      = MISC_CABINET_SUPPLY_HASH;
+				iHash = MISC_CABINET_SUPPLY_HASH;
 				break;
 		}
 
@@ -3357,7 +3357,7 @@ public:
 			float fSqRad = _radius * _radius;
 			vec3_t toent;
 
-			while ( ( pStartEnt = G_FindByClassnameFast( pStartEnt, pClassName, iHash ) ) != NULL )
+			while ( ( pStartEnt = G_FindByClassnameFast ( pStartEnt, pClassName, iHash ) ) != NULL )
 			{
 				if ( iPlayerClass && pStartEnt->client &&
 				     pStartEnt->client->sess.sessionTeam != iPlayerClass )
@@ -3365,7 +3365,7 @@ public:
 					continue;
 				}
 
-				if ( iSpawnFlags && !( pStartEnt->spawnflags & iSpawnFlags ) )
+				if ( iSpawnFlags && ! ( pStartEnt->spawnflags & iSpawnFlags ) )
 				{
 					continue;
 				}
@@ -3378,18 +3378,18 @@ public:
 					continue;
 				}
 
-				VectorSubtract( _pos, pStartEnt->r.currentOrigin, toent );
+				VectorSubtract ( _pos, pStartEnt->r.currentOrigin, toent );
 
-				if ( VectorLengthSquared( toent ) < fSqRad )
+				if ( VectorLengthSquared ( toent ) < fSqRad )
 				{
 					break;
 				}
 			}
 
-			return HandleFromEntity( pStartEnt );
+			return HandleFromEntity ( pStartEnt );
 		}
 
-#else           // not NoQuarter
+#else // not NoQuarter
 
 		switch ( classId )
 		{
@@ -3400,7 +3400,7 @@ public:
 			case ET_CLASS_COVERTOPS:
 			case ET_CLASS_ANY:
 				iPlayerClass = classId != ET_CLASS_ANY ? classId : 0;
-				pClassName   = "player";
+				pClassName = "player";
 				break;
 
 				//////////////////////////////////////////////////////////////////////////
@@ -3431,7 +3431,7 @@ public:
 			case ET_CLASSEX_VEHICLE:
 			case ET_CLASSEX_VEHICLE_HVY:
 				iSpawnFlags = classId == ET_CLASSEX_VEHICLE_HVY ? 4 : 0;
-				pClassName  = "script_mover";
+				pClassName = "script_mover";
 				break;
 
 			case ET_CLASSEX_BREAKABLE:
@@ -3487,7 +3487,7 @@ public:
 			float fSqRad = _radius * _radius;
 			vec3_t toent;
 
-			while ( ( pStartEnt = G_Find( pStartEnt, FOFS( classname ), pClassName ) ) != NULL )
+			while ( ( pStartEnt = G_Find ( pStartEnt, FOFS ( classname ), pClassName ) ) != NULL )
 			{
 				if ( iPlayerClass && pStartEnt->client &&
 				     pStartEnt->client->sess.sessionTeam != iPlayerClass )
@@ -3495,7 +3495,7 @@ public:
 					continue;
 				}
 
-				if ( iSpawnFlags && !( pStartEnt->spawnflags & iSpawnFlags ) )
+				if ( iSpawnFlags && ! ( pStartEnt->spawnflags & iSpawnFlags ) )
 				{
 					continue;
 				}
@@ -3508,31 +3508,31 @@ public:
 					continue;
 				}
 
-				VectorSubtract( _pos, pStartEnt->r.currentOrigin, toent );
+				VectorSubtract ( _pos, pStartEnt->r.currentOrigin, toent );
 
-				if ( VectorLengthSquared( toent ) < fSqRad )
+				if ( VectorLengthSquared ( toent ) < fSqRad )
 				{
 					break;
 				}
 			}
 
-			return HandleFromEntity( pStartEnt );
+			return HandleFromEntity ( pStartEnt );
 		}
 
 #endif
 		return GameEntity();
 	}
 
-	int GetEntityClass( const GameEntity _ent )
+	int GetEntityClass ( const GameEntity _ent )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
-		return pEnt && pEnt->inuse ? _GetEntityClass( pEnt ) : ET_TEAM_NONE;
+		gentity_t *pEnt = EntityFromHandle ( _ent );
+		return pEnt && pEnt->inuse ? _GetEntityClass ( pEnt ) : ET_TEAM_NONE;
 	}
 
-	obResult GetEntityCategory( const GameEntity _ent, BitFlag32 &_category )
+	obResult GetEntityCategory ( const GameEntity _ent, BitFlag32 &_category )
 	{
-		obResult res    = Success;
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		obResult res = Success;
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( !pEnt )
 		{
@@ -3551,42 +3551,42 @@ public:
 		{
 			case ET_GENERAL:
 				{
-					if ( !Q_stricmp( pEnt->classname, "func_invisible_user" ) )
+					if ( !Q_stricmp ( pEnt->classname, "func_invisible_user" ) )
 					{
 						// The damage flags tells us the type.
 						switch ( pEnt->s.dmgFlags )
 						{
 							case HINT_BUTTON:
-								_category.SetFlag( ENT_CAT_TRIGGER );
-								_category.SetFlag( ENT_CAT_STATIC );
+								_category.SetFlag ( ENT_CAT_TRIGGER );
+								_category.SetFlag ( ENT_CAT_STATIC );
 								break;
 						}
 					}
-					else if ( !Q_stricmp( pEnt->classname, "func_button" ) )
+					else if ( !Q_stricmp ( pEnt->classname, "func_button" ) )
 					{
-						_category.SetFlag( ENT_CAT_TRIGGER );
-						_category.SetFlag( ENT_CAT_STATIC );
+						_category.SetFlag ( ENT_CAT_TRIGGER );
+						_category.SetFlag ( ENT_CAT_STATIC );
 						// continue for now so it doesnt get regged
 						//continue;
 					}
-					else if ( !Q_stricmp( pEnt->classname, "misc_mg42" ) )
+					else if ( !Q_stricmp ( pEnt->classname, "misc_mg42" ) )
 					{
 						if ( ( pEnt->health > 0 ) &&
 						     ( pEnt->entstate != STATE_INVISIBLE ) &&
 						     ( pEnt->entstate != STATE_UNDERCONSTRUCTION ) )
 						{
-							_category.SetFlag( ENT_CAT_MOUNTEDWEAPON );
-							_category.SetFlag( ENT_CAT_SHOOTABLE );
+							_category.SetFlag ( ENT_CAT_MOUNTEDWEAPON );
+							_category.SetFlag ( ENT_CAT_SHOOTABLE );
 						}
 					}
 					// cs: waypoint tool, don't merge the spawns
-					else if ( !Q_stricmp( pEnt->classname, "info_player_deathmatch" ) ||
-					          !Q_stricmp( pEnt->classname, "team_CTF_redspawn" ) ||
-					          !Q_stricmp( pEnt->classname, "team_CTF_bluespawn" ) ||
-					          !Q_stricmp( pEnt->classname, "info_player_spawn" ) )
+					else if ( !Q_stricmp ( pEnt->classname, "info_player_deathmatch" ) ||
+					          !Q_stricmp ( pEnt->classname, "team_CTF_redspawn" ) ||
+					          !Q_stricmp ( pEnt->classname, "team_CTF_bluespawn" ) ||
+					          !Q_stricmp ( pEnt->classname, "info_player_spawn" ) )
 					{
 						// don't fill up the bots sensory mem at start with these
-						_category.SetFlag( ENT_CAT_INTERNAL );
+						_category.SetFlag ( ENT_CAT_INTERNAL );
 					}
 					else
 					{
@@ -3610,7 +3610,7 @@ public:
 					// Special case for dead players that haven't respawned.
 					if ( pEnt->health <= GIB_HEALTH )
 					{
-						_category.SetFlag( ENT_CAT_MISC );
+						_category.SetFlag ( ENT_CAT_MISC );
 						break;
 					}
 
@@ -3618,38 +3618,38 @@ public:
 					{
 						if ( !pEnt->client->ps.powerups[ PW_INVULNERABLE ] )
 						{
-							_category.SetFlag( ENT_CAT_SHOOTABLE );
+							_category.SetFlag ( ENT_CAT_SHOOTABLE );
 						}
 
-						_category.SetFlag( ENT_CAT_PLAYER );
+						_category.SetFlag ( ENT_CAT_PLAYER );
 						break;
 					}
 				}
 
 			case ET_ITEM:
 				{
-					if ( !( pEnt->r.contents & CONTENTS_ITEM ) )
+					if ( ! ( pEnt->r.contents & CONTENTS_ITEM ) )
 					{
 						res = InvalidEntity;
 					}
-					else if ( !Q_strncmp( pEnt->classname, "item_health", strlen( "item_health" ) ) )
+					else if ( !Q_strncmp ( pEnt->classname, "item_health", strlen ( "item_health" ) ) )
 					{
-						_category.SetFlag( ENT_CAT_PICKUP );
-						_category.SetFlag( ENT_CAT_PICKUP_HEALTH );
+						_category.SetFlag ( ENT_CAT_PICKUP );
+						_category.SetFlag ( ENT_CAT_PICKUP_HEALTH );
 					}
-					else if ( !Q_strncmp( pEnt->classname, "weapon_magicammo", strlen( "weapon_magicammo" ) ) )
+					else if ( !Q_strncmp ( pEnt->classname, "weapon_magicammo", strlen ( "weapon_magicammo" ) ) )
 					{
-						_category.SetFlag( ENT_CAT_PICKUP );
-						_category.SetFlag( ENT_CAT_PICKUP_AMMO );
+						_category.SetFlag ( ENT_CAT_PICKUP );
+						_category.SetFlag ( ENT_CAT_PICKUP_AMMO );
 					}
-					else if ( !Q_stricmp( pEnt->classname, "item_treasure" ) )
+					else if ( !Q_stricmp ( pEnt->classname, "item_treasure" ) )
 					{
-						_category.SetFlag( ENT_CAT_PICKUP );
+						_category.SetFlag ( ENT_CAT_PICKUP );
 					}
 					else if ( pEnt->item && pEnt->item->giType == IT_WEAPON )
 					{
-						_category.SetFlag( ENT_CAT_PICKUP );
-						_category.SetFlag( ENT_CAT_PICKUP_WEAPON );
+						_category.SetFlag ( ENT_CAT_PICKUP );
+						_category.SetFlag ( ENT_CAT_PICKUP_WEAPON );
 					}
 					else
 					{
@@ -3661,7 +3661,7 @@ public:
 
 			case ET_CORPSE:
 				{
-					_category.SetFlag( ENT_CAT_MISC );
+					_category.SetFlag ( ENT_CAT_MISC );
 					break;
 				}
 
@@ -3684,29 +3684,29 @@ public:
 						case WP_MORTAR2_SET:
 						case WP_BAZOOKA:
 #endif
-							_category.SetFlag( ENT_CAT_AVOID );
-							_category.SetFlag( ENT_CAT_PROJECTILE );
+							_category.SetFlag ( ENT_CAT_AVOID );
+							_category.SetFlag ( ENT_CAT_PROJECTILE );
 							break;
 
 						case WP_LANDMINE:
 #ifdef JAYMOD_name
-						case 79:                 //WP_LANDMINE_BBETTY
-						case 80:                 //WP_LANDMINE_PGAS
+						case 79: //WP_LANDMINE_BBETTY
+						case 80: //WP_LANDMINE_PGAS
 #endif
-							_category.SetFlag( ENT_CAT_AVOID );
-							_category.SetFlag( ET_ENT_CAT_MINE );
-							_category.SetFlag( ENT_CAT_OBSTACLE );
+							_category.SetFlag ( ENT_CAT_AVOID );
+							_category.SetFlag ( ET_ENT_CAT_MINE );
+							_category.SetFlag ( ENT_CAT_OBSTACLE );
 							break;
 
 						case WP_SMOKE_BOMB:
-							_category.SetFlag( ENT_CAT_PROJECTILE );
+							_category.SetFlag ( ENT_CAT_PROJECTILE );
 							break;
 
 						default:
-							if ( !Q_strncmp( pEnt->classname, "air strike", sizeof( "air strike" ) ) )
+							if ( !Q_strncmp ( pEnt->classname, "air strike", sizeof ( "air strike" ) ) )
 							{
-								_category.SetFlag( ENT_CAT_AVOID );
-								_category.SetFlag( ENT_CAT_PROJECTILE );
+								_category.SetFlag ( ENT_CAT_AVOID );
+								_category.SetFlag ( ENT_CAT_PROJECTILE );
 								break;
 							}
 							else
@@ -3720,31 +3720,31 @@ public:
 
 			case ET_FLAMETHROWER_CHUNK:
 				{
-					_category.SetFlag( ENT_CAT_AVOID );
-					_category.SetFlag( ENT_CAT_PROJECTILE );
+					_category.SetFlag ( ENT_CAT_AVOID );
+					_category.SetFlag ( ENT_CAT_PROJECTILE );
 					break;
 				}
 
 			case ET_MOVER:
 				{
-					if ( !Q_stricmp( pEnt->classname, "script_mover" ) )
+					if ( !Q_stricmp ( pEnt->classname, "script_mover" ) )
 					{
-						_category.SetFlag( ENT_CAT_OBSTACLE );
+						_category.SetFlag ( ENT_CAT_OBSTACLE );
 
 						if ( pEnt->model2 )
 						{
-							_category.SetFlag( ENT_CAT_VEHICLE );
+							_category.SetFlag ( ENT_CAT_VEHICLE );
 						}
 						else
 						{
-							_category.SetFlag( ENT_CAT_MOVER );
+							_category.SetFlag ( ENT_CAT_MOVER );
 						}
 
-						_category.SetFlag( ENT_CAT_STATIC );
+						_category.SetFlag ( ENT_CAT_STATIC );
 
 						if ( pEnt->health > 0 )
 						{
-							_category.SetFlag( ENT_CAT_SHOOTABLE );
+							_category.SetFlag ( ENT_CAT_SHOOTABLE );
 						}
 					}
 
@@ -3762,21 +3762,21 @@ public:
 					{
 						if ( ( pEnt->health > 0 ) && ( pEnt->takedamage == qtrue ) )
 						{
-							_category.SetFlag( ENT_CAT_SHOOTABLE );
+							_category.SetFlag ( ENT_CAT_SHOOTABLE );
 						}
 					}
 					else if ( !Q_stricmp ( pEnt->classname, "props_chair" ) )
 					{
 						if ( ( pEnt->health > 0 ) && ( pEnt->takedamage == qtrue ) )
 						{
-							_category.SetFlag( ENT_CAT_SHOOTABLE );
+							_category.SetFlag ( ENT_CAT_SHOOTABLE );
 						}
 					}
 					else if ( !Q_stricmp ( pEnt->classname, "props_chair_side" ) )
 					{
 						if ( ( pEnt->health > 0 ) && ( pEnt->takedamage == qtrue ) )
 						{
-							_category.SetFlag( ENT_CAT_SHOOTABLE );
+							_category.SetFlag ( ENT_CAT_SHOOTABLE );
 						}
 					}
 					else
@@ -3793,8 +3793,8 @@ public:
 					     ( pEnt->entstate != STATE_INVISIBLE ) &&
 					     ( pEnt->entstate != STATE_UNDERCONSTRUCTION ) )
 					{
-						_category.SetFlag( ENT_CAT_MOUNTEDWEAPON );
-						_category.SetFlag( ENT_CAT_SHOOTABLE );
+						_category.SetFlag ( ENT_CAT_MOUNTEDWEAPON );
+						_category.SetFlag ( ENT_CAT_SHOOTABLE );
 					}
 					else
 					{
@@ -3815,13 +3815,13 @@ public:
 				}*/
 			case ET_EXPLOSIVE:
 				{
-					if ( !( pEnt->spawnflags & EXPLOSIVE_TANK ) &&
+					if ( ! ( pEnt->spawnflags & EXPLOSIVE_TANK ) &&
 					     ( pEnt->constructibleStats.weaponclass != 1 ) &&
-					     ( pEnt->constructibleStats.weaponclass != 2 ) )                 // &&
+					     ( pEnt->constructibleStats.weaponclass != 2 ) ) // &&
 						//(pEnt->health > 0) && (pEnt->takedamage == qtrue))
 					{
-						_category.SetFlag( ENT_CAT_OBSTACLE );
-						_category.SetFlag( ENT_CAT_SHOOTABLE );
+						_category.SetFlag ( ENT_CAT_OBSTACLE );
+						_category.SetFlag ( ENT_CAT_SHOOTABLE );
 					}
 					else
 					{
@@ -3847,76 +3847,76 @@ public:
 				//}
 			case ET_HEALER:
 				{
-					_category.SetFlag( ENT_CAT_OBSTACLE );
-					_category.SetFlag( ENT_CAT_PICKUP );
+					_category.SetFlag ( ENT_CAT_OBSTACLE );
+					_category.SetFlag ( ENT_CAT_PICKUP );
 					break;
 				}
 
 			case ET_SUPPLIER:
 				{
-					_category.SetFlag( ENT_CAT_OBSTACLE );
-					_category.SetFlag( ENT_CAT_PICKUP );
+					_category.SetFlag ( ENT_CAT_OBSTACLE );
+					_category.SetFlag ( ENT_CAT_PICKUP );
 					break;
 				}
 
 			default:
 				res = InvalidEntity;
-				break;         // ignore this type.
+				break; // ignore this type.
 		};
 
 		return res;
 	}
 
-	obResult GetEntityFlags( const GameEntity _ent, BitFlag64 &_flags )
+	obResult GetEntityFlags ( const GameEntity _ent, BitFlag64 &_flags )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt && pEnt->inuse )
 		{
 			// Set any flags.
 			if ( pEnt->health <= 0 )
 			{
-				_flags.SetFlag( ENT_FLAG_DEAD );
+				_flags.SetFlag ( ENT_FLAG_DEAD );
 			}
 
-			if ( pEnt->client && !IsBot( pEnt ) )
+			if ( pEnt->client && !IsBot ( pEnt ) )
 			{
-				_flags.SetFlag( ENT_FLAG_HUMANCONTROLLED );
+				_flags.SetFlag ( ENT_FLAG_HUMANCONTROLLED );
 			}
 
 			if ( pEnt->waterlevel >= 3 )
 			{
-				_flags.SetFlag( ENT_FLAG_UNDERWATER );
+				_flags.SetFlag ( ENT_FLAG_UNDERWATER );
 			}
 			else if ( pEnt->waterlevel > 0 )
 			{
-				_flags.SetFlag( ENT_FLAG_INWATER );
+				_flags.SetFlag ( ENT_FLAG_INWATER );
 			}
 
 			if ( pEnt->s.eFlags & EF_ZOOMING )
 			{
-				_flags.SetFlag( ENT_FLAG_ZOOMING );
-				_flags.SetFlag( ENT_FLAG_AIMING );
+				_flags.SetFlag ( ENT_FLAG_ZOOMING );
+				_flags.SetFlag ( ENT_FLAG_AIMING );
 			}
 
 			if ( pEnt->s.eFlags & EF_MG42_ACTIVE )
 			{
-				_flags.SetFlag( ET_ENT_FLAG_MNT_MG42 );
-				_flags.SetFlag( ET_ENT_FLAG_MOUNTED );
+				_flags.SetFlag ( ET_ENT_FLAG_MNT_MG42 );
+				_flags.SetFlag ( ET_ENT_FLAG_MOUNTED );
 			}
 
 			if ( pEnt->s.eFlags & EF_MOUNTEDTANK )
 			{
-				_flags.SetFlag( ET_ENT_FLAG_MNT_TANK );
-				_flags.SetFlag( ET_ENT_FLAG_MOUNTED );
+				_flags.SetFlag ( ET_ENT_FLAG_MNT_TANK );
+				_flags.SetFlag ( ET_ENT_FLAG_MOUNTED );
 			}
 
 #ifndef NOQUARTER
 
 			if ( pEnt->s.eFlags & EF_AAGUN_ACTIVE )
 			{
-				_flags.SetFlag( ET_ENT_FLAG_MNT_AAGUN );
-				_flags.SetFlag( ET_ENT_FLAG_MOUNTED );
+				_flags.SetFlag ( ET_ENT_FLAG_MNT_AAGUN );
+				_flags.SetFlag ( ET_ENT_FLAG_MOUNTED );
 			}
 
 #endif
@@ -3925,47 +3925,47 @@ public:
 			{
 				if ( pEnt->entstate == STATE_INVISIBLE )
 				{
-					_flags.SetFlag( ENT_FLAG_DISABLED );
+					_flags.SetFlag ( ENT_FLAG_DISABLED );
 				}
 			}
 
 			if ( pEnt->s.eType == ET_MOVER )
 			{
-				_flags.SetFlag( ENT_FLAG_VISTEST );
+				_flags.SetFlag ( ENT_FLAG_VISTEST );
 
-				if ( _TankIsMountable( pEnt ) )
+				if ( _TankIsMountable ( pEnt ) )
 				{
-					_flags.SetFlag( ET_ENT_FLAG_ISMOUNTABLE );
+					_flags.SetFlag ( ET_ENT_FLAG_ISMOUNTABLE );
 				}
 
-				if ( G_TankIsOccupied( pEnt ) )
+				if ( G_TankIsOccupied ( pEnt ) )
 				{
-					_flags.SetFlag( ET_ENT_FLAG_MOUNTED );
+					_flags.SetFlag ( ET_ENT_FLAG_MOUNTED );
 				}
 			}
 
 			if ( pEnt->s.eType == ET_CONSTRUCTIBLE )
 			{
-				if ( !G_ConstructionIsFullyBuilt( pEnt ) )
+				if ( !G_ConstructionIsFullyBuilt ( pEnt ) )
 				{
-					_flags.SetFlag( ENT_FLAG_DEAD );
+					_flags.SetFlag ( ENT_FLAG_DEAD );
 				}
-				else if ( G_ConstructionIsFullyBuilt( pEnt ) )
+				else if ( G_ConstructionIsFullyBuilt ( pEnt ) )
 				{
-					_flags.SetFlag( ENT_FLAG_DEAD, false );
+					_flags.SetFlag ( ENT_FLAG_DEAD, false );
 				}
 			}
 
 			if ( ( pEnt->s.eType == ET_MG42_BARREL ) ||
-			     ( pEnt->s.eType == ET_GENERAL && !Q_stricmp( pEnt->classname, "misc_mg42" ) ) )
+			     ( pEnt->s.eType == ET_GENERAL && !Q_stricmp ( pEnt->classname, "misc_mg42" ) ) )
 			{
-				_flags.SetFlag( ENT_FLAG_DEAD, Simple_EmplacedGunIsRepairable( pEnt ) != 0 );
+				_flags.SetFlag ( ENT_FLAG_DEAD, Simple_EmplacedGunIsRepairable ( pEnt ) != 0 );
 
-				_flags.SetFlag( ENT_FLAG_VISTEST );
+				_flags.SetFlag ( ENT_FLAG_VISTEST );
 
-				if ( _EmplacedGunIsMountable( pEnt ) )
+				if ( _EmplacedGunIsMountable ( pEnt ) )
 				{
-					_flags.SetFlag( ET_ENT_FLAG_ISMOUNTABLE );
+					_flags.SetFlag ( ET_ENT_FLAG_ISMOUNTABLE );
 				}
 
 				if ( pEnt->r.ownerNum != pEnt->s.number )
@@ -3974,7 +3974,7 @@ public:
 
 					if ( owner && owner->active && owner->client && owner->s.eFlags & EF_MG42_ACTIVE )
 					{
-						_flags.SetFlag( ET_ENT_FLAG_MOUNTED );
+						_flags.SetFlag ( ET_ENT_FLAG_MOUNTED );
 					}
 				}
 			}
@@ -3985,63 +3985,63 @@ public:
 
 				if ( pEnt->client->ps.eFlags & EF_POISONED )
 				{
-					_flags.SetFlag( ET_ENT_FLAG_POISONED );
+					_flags.SetFlag ( ET_ENT_FLAG_POISONED );
 				}
 
 #elif defined ETPUB_VERSION
 
 				if ( pEnt->client->pmext.poisoned )
 				{
-					_flags.SetFlag( ET_ENT_FLAG_POISONED );
+					_flags.SetFlag ( ET_ENT_FLAG_POISONED );
 				}
 
 #elif defined JAYMOD_name
 
-				if ( G_IsPoisoned( pEnt ) )
+				if ( G_IsPoisoned ( pEnt ) )
 				{
-					_flags.SetFlag( ET_ENT_FLAG_POISONED );
+					_flags.SetFlag ( ET_ENT_FLAG_POISONED );
 				}
 
 #endif
 
 				if ( pEnt->client->ps.pm_flags & PMF_LADDER )
 				{
-					_flags.SetFlag( ENT_FLAG_ONLADDER );
+					_flags.SetFlag ( ENT_FLAG_ONLADDER );
 				}
 
 				if ( pEnt->client->ps.eFlags & EF_PRONE )
 				{
-					_flags.SetFlag( ENT_FLAG_PRONED );
+					_flags.SetFlag ( ENT_FLAG_PRONED );
 				}
 
 				if ( pEnt->client->ps.pm_flags & PMF_DUCKED )
 				{
-					_flags.SetFlag( ENT_FLAG_CROUCHED );
+					_flags.SetFlag ( ENT_FLAG_CROUCHED );
 				}
 
 				if ( pEnt->client->ps.groundEntityNum != ENTITYNUM_NONE )
 				{
-					_flags.SetFlag( ENT_FLAG_ONGROUND );
+					_flags.SetFlag ( ENT_FLAG_ONGROUND );
 				}
 
 				if ( pEnt->client->ps.weaponstate == WEAPON_RELOADING )
 				{
-					_flags.SetFlag( ENT_FLAG_RELOADING );
+					_flags.SetFlag ( ENT_FLAG_RELOADING );
 				}
 
 				if ( pEnt->client->ps.powerups[ PW_OPS_DISGUISED ] )
 				{
-					_flags.SetFlag( ET_ENT_FLAG_DISGUISED );
+					_flags.SetFlag ( ET_ENT_FLAG_DISGUISED );
 				}
 
 				if ( pEnt->client->ps.powerups[ PW_REDFLAG ] || pEnt->client->ps.powerups[ PW_BLUEFLAG ] )
 				{
-					_flags.SetFlag( ET_ENT_FLAG_CARRYINGGOAL );
+					_flags.SetFlag ( ET_ENT_FLAG_CARRYINGGOAL );
 				}
 
 				if ( pEnt->client->ps.pm_flags & PMF_LIMBO )
 				{
-					_flags.SetFlag( ET_ENT_FLAG_INLIMBO );
+					_flags.SetFlag ( ET_ENT_FLAG_INLIMBO );
 				}
 
 				switch ( pEnt->client->ps.weapon )
@@ -4049,13 +4049,13 @@ public:
 					case WP_GARAND_SCOPE:
 					case WP_FG42SCOPE:
 					case WP_K43_SCOPE:
-						_flags.SetFlag( ENT_FLAG_ZOOMING );
+						_flags.SetFlag ( ENT_FLAG_ZOOMING );
 						break;
 				}
 
 				if ( pEnt->s.eFlags & EF_ZOOMING )
 				{
-					_flags.SetFlag( ENT_FLAG_ZOOMING );
+					_flags.SetFlag ( ENT_FLAG_ZOOMING );
 				}
 			}
 
@@ -4071,19 +4071,19 @@ public:
 			{
 				case ET_PLAYER:
 					{
-						_flags.SetFlag( ENT_FLAG_VISTEST );
+						_flags.SetFlag ( ENT_FLAG_VISTEST );
 
 						if ( pEnt->health <= 0 )
 						{
-							if ( !pEnt->r.linked || BODY_TEAM( pEnt ) >= 4 || BODY_VALUE( pEnt ) >= 250 || pEnt->health < GIB_HEALTH )
+							if ( !pEnt->r.linked || BODY_TEAM ( pEnt ) >= 4 || BODY_VALUE ( pEnt ) >= 250 || pEnt->health < GIB_HEALTH )
 							{
-								_flags.SetFlag( ENT_FLAG_DISABLED );
+								_flags.SetFlag ( ENT_FLAG_DISABLED );
 							}
 							else if ( g_OmniBotFlags.integer & OBF_GIBBING )
 							{
 								// for gibbing
-								_flags.SetFlag( ENT_FLAG_DEAD, false );
-								_flags.SetFlag( ENT_FLAG_PRONED );
+								_flags.SetFlag ( ENT_FLAG_DEAD, false );
+								_flags.SetFlag ( ENT_FLAG_PRONED );
 							}
 						}
 
@@ -4092,11 +4092,11 @@ public:
 
 				case ET_CORPSE:
 					{
-						_flags.SetFlag( ENT_FLAG_VISTEST );
+						_flags.SetFlag ( ENT_FLAG_VISTEST );
 
-						if ( !pEnt->r.linked || BODY_TEAM( pEnt ) >= 4 || BODY_VALUE( pEnt ) >= 250 || pEnt->health < GIB_HEALTH )
+						if ( !pEnt->r.linked || BODY_TEAM ( pEnt ) >= 4 || BODY_VALUE ( pEnt ) >= 250 || pEnt->health < GIB_HEALTH )
 						{
-							_flags.SetFlag( ENT_FLAG_DISABLED );
+							_flags.SetFlag ( ENT_FLAG_DISABLED );
 						}
 
 						break;
@@ -4104,11 +4104,11 @@ public:
 
 				case ET_ITEM:
 					{
-						_flags.SetFlag( ENT_FLAG_VISTEST );
+						_flags.SetFlag ( ENT_FLAG_VISTEST );
 
-						if ( !( pEnt->r.contents & CONTENTS_ITEM ) )
+						if ( ! ( pEnt->r.contents & CONTENTS_ITEM ) )
 						{
-							_flags.SetFlag( ENT_FLAG_DISABLED );
+							_flags.SetFlag ( ENT_FLAG_DISABLED );
 						}
 
 						break;
@@ -4126,7 +4126,7 @@ public:
 
 				case ET_EXPLOSIVE:
 					{
-						_flags.SetFlag( ENT_FLAG_VISTEST );
+						_flags.SetFlag ( ENT_FLAG_VISTEST );
 						break;
 					}
 
@@ -4153,7 +4153,7 @@ public:
 							case WP_SMOKE_BOMB:
 
 							default:
-								_flags.SetFlag( ENT_FLAG_VISTEST );
+								_flags.SetFlag ( ENT_FLAG_VISTEST );
 						}
 
 						break;
@@ -4162,13 +4162,13 @@ public:
 				case ET_GENERAL:
 				case ET_MG42_BARREL:
 					{
-						if ( !Q_stricmp( pEnt->classname, "misc_mg42" ) )
+						if ( !Q_stricmp ( pEnt->classname, "misc_mg42" ) )
 						{
 							if ( ( pEnt->health < 0 ) ||
 							     ( pEnt->entstate == STATE_INVISIBLE ) )
 							{
 								//_flags.SetFlag(ENT_FLAG_VISTEST);
-								_flags.SetFlag( ENT_FLAG_DEAD );
+								_flags.SetFlag ( ENT_FLAG_DEAD );
 							}
 						}
 
@@ -4180,16 +4180,16 @@ public:
 		return Success;
 	}
 
-	obResult GetEntityPowerups( const GameEntity _ent, BitFlag64 &_flags )
+	obResult GetEntityPowerups ( const GameEntity _ent, BitFlag64 &_flags )
 	{
 		return Success;
 	}
 
-	obResult GetEntityEyePosition( const GameEntity _ent, float _pos[ 3 ] )
+	obResult GetEntityEyePosition ( const GameEntity _ent, float _pos[ 3 ] )
 	{
-		if ( GetEntityPosition( _ent, _pos ) == Success )
+		if ( GetEntityPosition ( _ent, _pos ) == Success )
 		{
-			gentity_t *pEnt = EntityFromHandle( _ent );
+			gentity_t *pEnt = EntityFromHandle ( _ent );
 
 			if ( pEnt && pEnt->client )
 			{
@@ -4202,25 +4202,25 @@ public:
 		return InvalidEntity;
 	}
 
-	obResult GetEntityBonePosition( const GameEntity _ent, int _boneid, float _pos[ 3 ] )
+	obResult GetEntityBonePosition ( const GameEntity _ent, int _boneid, float _pos[ 3 ] )
 	{
 		// ET doesnt really support bones
-		return GetEntityPosition( _ent, _pos );
+		return GetEntityPosition ( _ent, _pos );
 	}
 
-	obResult GetEntityOrientation( const GameEntity _ent, float _fwd[ 3 ], float _right[ 3 ], float _up[ 3 ] )
+	obResult GetEntityOrientation ( const GameEntity _ent, float _fwd[ 3 ], float _right[ 3 ], float _up[ 3 ] )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt && pEnt->inuse )
 		{
 			if ( pEnt->client )
 			{
-				AngleVectors( pEnt->client->ps.viewangles, _fwd, _right, _up );
+				AngleVectors ( pEnt->client->ps.viewangles, _fwd, _right, _up );
 			}
 			else
 			{
-				AngleVectors( pEnt->r.currentAngles, _fwd, _right, _up );
+				AngleVectors ( pEnt->r.currentAngles, _fwd, _right, _up );
 			}
 
 			return Success;
@@ -4229,9 +4229,9 @@ public:
 		return InvalidEntity;
 	}
 
-	obResult GetEntityVelocity( const GameEntity _ent, float _velocity[ 3 ] )
+	obResult GetEntityVelocity ( const GameEntity _ent, float _velocity[ 3 ] )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt && pEnt->inuse )
 		{
@@ -4247,7 +4247,7 @@ public:
 			{
 				// Calculate the velocity ourselves. for some reason mover velocity
 				// isn't in s.pos.trDelta
-				const float fDeltaTime = 50.0f;         // get this dynamically?
+				const float fDeltaTime = 50.0f; // get this dynamically?
 				_velocity[ 0 ] = ( pEnt->r.currentOrigin[ 0 ] - pEnt->oldOrigin[ 0 ] ) * fDeltaTime;
 				_velocity[ 1 ] = ( pEnt->r.currentOrigin[ 1 ] - pEnt->oldOrigin[ 1 ] ) * fDeltaTime;
 				_velocity[ 2 ] = ( pEnt->r.currentOrigin[ 2 ] - pEnt->oldOrigin[ 2 ] ) * fDeltaTime;
@@ -4265,9 +4265,9 @@ public:
 		return InvalidEntity;
 	}
 
-	obResult GetEntityPosition( const GameEntity _ent, float _pos[ 3 ] )
+	obResult GetEntityPosition ( const GameEntity _ent, float _pos[ 3 ] )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt && pEnt->inuse )
 		{
@@ -4275,7 +4275,7 @@ public:
 			{
 				vec3_t axis[ 3 ];
 				//AngleVectors( pEnt->r.currentAngles, axis[0], axis[1], axis[2] );
-				AnglesToAxis( pEnt->r.currentAngles, axis );
+				AnglesToAxis ( pEnt->r.currentAngles, axis );
 
 				vec3_t boxCenter;
 				boxCenter[ 0 ] = ( ( pEnt->r.maxs[ 0 ] + pEnt->r.mins[ 0 ] ) * 0.5f );
@@ -4283,16 +4283,16 @@ public:
 				boxCenter[ 2 ] = ( ( pEnt->r.maxs[ 2 ] + pEnt->r.mins[ 2 ] ) * 0.5f );
 
 				vec3_t out;
-				VectorCopy( pEnt->r.currentOrigin, out );
+				VectorCopy ( pEnt->r.currentOrigin, out );
 
 				for ( int i = 0; i < 3; ++i )
 				{
 					vec3_t tmp;
-					VectorScale( axis[ i ], boxCenter[ i ], tmp );
-					VectorAdd( out, tmp, out );
+					VectorScale ( axis[ i ], boxCenter[ i ], tmp );
+					VectorAdd ( out, tmp, out );
 				}
 
-				VectorCopy( out, _pos );
+				VectorCopy ( out, _pos );
 				return Success;
 			}
 
@@ -4307,9 +4307,9 @@ public:
 		return InvalidEntity;
 	}
 
-	obResult GetEntityLocalAABB( const GameEntity _ent, AABB &_aabb )
+	obResult GetEntityLocalAABB ( const GameEntity _ent, AABB &_aabb )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt && pEnt->inuse )
 		{
@@ -4318,8 +4318,8 @@ public:
 
 			if ( pEnt->s.eType == ET_CONSTRUCTIBLE )
 			{
-				gentity_t *pAxis = G_ConstructionForTeam( pEnt->parent ? pEnt->parent : pEnt, TEAM_AXIS );
-				gentity_t *pAlly = G_ConstructionForTeam( pEnt->parent ? pEnt->parent : pEnt, TEAM_ALLIES );
+				gentity_t *pAxis = G_ConstructionForTeam ( pEnt->parent ? pEnt->parent : pEnt, TEAM_AXIS );
+				gentity_t *pAlly = G_ConstructionForTeam ( pEnt->parent ? pEnt->parent : pEnt, TEAM_ALLIES );
 
 				if ( pAxis /*&& pAxis->entstate == STATE_DEFAULT*/ )
 				{
@@ -4389,13 +4389,13 @@ public:
 			_aabb.m_Maxs[ 2 ] = pEnt->r.maxs[ 2 ];
 
 			// hack for bad abs bounds
-			if ( !Q_stricmp( pEnt->classname, "misc_mg42" ) )
+			if ( !Q_stricmp ( pEnt->classname, "misc_mg42" ) )
 			{
 				if ( _aabb.IsZero() )
 				{
 					const float default_box_mins[] = { -8, -8, -8 };
 					const float default_box_maxs[] = { 8, 8, 48 };
-					_aabb.Set( default_box_mins, default_box_maxs );
+					_aabb.Set ( default_box_mins, default_box_maxs );
 				}
 			}
 
@@ -4405,9 +4405,9 @@ public:
 		return InvalidEntity;
 	}
 
-	obResult GetEntityWorldAABB( const GameEntity _ent, AABB &_aabb )
+	obResult GetEntityWorldAABB ( const GameEntity _ent, AABB &_aabb )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt && pEnt->inuse )
 		{
@@ -4416,8 +4416,8 @@ public:
 
 			if ( pEnt->s.eType == ET_CONSTRUCTIBLE )
 			{
-				gentity_t *pAxis = G_ConstructionForTeam( pEnt->parent ? pEnt->parent : pEnt, TEAM_AXIS );
-				gentity_t *pAlly = G_ConstructionForTeam( pEnt->parent ? pEnt->parent : pEnt, TEAM_ALLIES );
+				gentity_t *pAxis = G_ConstructionForTeam ( pEnt->parent ? pEnt->parent : pEnt, TEAM_AXIS );
+				gentity_t *pAlly = G_ConstructionForTeam ( pEnt->parent ? pEnt->parent : pEnt, TEAM_ALLIES );
 
 				if ( pAxis /*&& pAxis->entstate == STATE_DEFAULT*/ )
 				{
@@ -4444,16 +4444,16 @@ public:
 			}
 
 			// hack for bad abs bounds
-			if ( !Q_stricmp( pEnt->classname, "misc_mg42" ) )
+			if ( !Q_stricmp ( pEnt->classname, "misc_mg42" ) )
 			{
-				if ( _aabb.IsZero() || !_aabb.Contains( pEnt->r.currentOrigin ) )
+				if ( _aabb.IsZero() || !_aabb.Contains ( pEnt->r.currentOrigin ) )
 				{
-					float pos[ 3 ]                 = { 0, 0, 0 };
+					float pos[ 3 ] = { 0, 0, 0 };
 					const float default_box_mins[] = { -8, -8, -8 };
 					const float default_box_maxs[] = { 8, 8, 48 };
-					GetEntityPosition( _ent, pos );
-					_aabb.Set( default_box_mins, default_box_maxs );
-					_aabb.SetCenter( pos );
+					GetEntityPosition ( _ent, pos );
+					_aabb.Set ( default_box_mins, default_box_maxs );
+					_aabb.SetCenter ( pos );
 				}
 			}
 
@@ -4463,14 +4463,14 @@ public:
 		return InvalidEntity;
 	}
 
-	obResult GetEntityWorldOBB( const GameEntity _ent, float *_center, float *_axis0, float *_axis1, float *_axis2, float *_extents )
+	obResult GetEntityWorldOBB ( const GameEntity _ent, float *_center, float *_axis0, float *_axis1, float *_axis2, float *_extents )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt )
 		{
 			vec3_t axis[ 3 ];
-			AnglesToAxis( pEnt->r.currentAngles, axis );
+			AnglesToAxis ( pEnt->r.currentAngles, axis );
 
 			vec3_t boxCenter;
 			boxCenter[ 0 ] = ( ( pEnt->r.maxs[ 0 ] + pEnt->r.mins[ 0 ] ) * 0.5f );
@@ -4478,19 +4478,19 @@ public:
 			boxCenter[ 2 ] = ( ( pEnt->r.maxs[ 2 ] + pEnt->r.mins[ 2 ] ) * 0.5f );
 
 			vec3_t out;
-			VectorCopy( pEnt->r.currentOrigin, out );
+			VectorCopy ( pEnt->r.currentOrigin, out );
 
 			for ( int i = 0; i < 3; ++i )
 			{
 				vec3_t tmp;
-				VectorScale( axis[ i ], boxCenter[ i ], tmp );
-				VectorAdd( out, tmp, out );
+				VectorScale ( axis[ i ], boxCenter[ i ], tmp );
+				VectorAdd ( out, tmp, out );
 			}
 
-			VectorCopy( out, _center );
-			VectorCopy( axis[ 0 ], _axis0 );
-			VectorCopy( axis[ 1 ], _axis1 );
-			VectorCopy( axis[ 2 ], _axis2 );
+			VectorCopy ( out, _center );
+			VectorCopy ( axis[ 0 ], _axis0 );
+			VectorCopy ( axis[ 1 ], _axis1 );
+			VectorCopy ( axis[ 2 ], _axis2 );
 			_extents[ 0 ] = ( pEnt->r.maxs[ 0 ] - pEnt->r.mins[ 0 ] ) * 0.5f;
 			_extents[ 1 ] = ( pEnt->r.maxs[ 1 ] - pEnt->r.mins[ 1 ] ) * 0.5f;
 			_extents[ 2 ] = ( pEnt->r.maxs[ 2 ] - pEnt->r.mins[ 2 ] ) * 0.5f;
@@ -4501,15 +4501,15 @@ public:
 		return InvalidEntity;
 	}
 
-	obResult GetEntityGroundEntity( const GameEntity _ent, GameEntity &moveent )
+	obResult GetEntityGroundEntity ( const GameEntity _ent, GameEntity &moveent )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt )
 		{
 			if ( pEnt->s.groundEntityNum > 0 && pEnt->s.groundEntityNum < ENTITYNUM_MAX_NORMAL )
 			{
-				moveent = HandleFromEntity( &g_entities[ pEnt->s.groundEntityNum ] );
+				moveent = HandleFromEntity ( &g_entities[ pEnt->s.groundEntityNum ] );
 			}
 
 			return Success;
@@ -4518,11 +4518,11 @@ public:
 		return InvalidEntity;
 	}
 
-	GameEntity GetEntityOwner( const GameEntity _ent )
+	GameEntity GetEntityOwner ( const GameEntity _ent )
 	{
 		GameEntity owner;
 
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt && pEnt->inuse )
 		{
@@ -4538,8 +4538,8 @@ public:
 			{
 				case ET_ITEM:
 					{
-						if ( !Q_stricmp( pEnt->classname, "team_CTF_redflag" ) ||
-						     !Q_stricmp( pEnt->classname, "team_CTF_blueflag" ) )
+						if ( !Q_stricmp ( pEnt->classname, "team_CTF_redflag" ) ||
+						     !Q_stricmp ( pEnt->classname, "team_CTF_blueflag" ) )
 						{
 							int iFlagEntNum = pEnt - g_entities;
 
@@ -4547,7 +4547,7 @@ public:
 							{
 								if ( g_entities[ i ].client && g_entities[ i ].client->flagParent == iFlagEntNum )
 								{
-									owner = HandleFromEntity( &g_entities[ i ] );
+									owner = HandleFromEntity ( &g_entities[ i ] );
 								}
 							}
 						}
@@ -4558,7 +4558,7 @@ public:
 				case ET_GENERAL:
 				case ET_MG42_BARREL:
 					{
-						if ( !Q_stricmp( pEnt->classname, "misc_mg42" ) )
+						if ( !Q_stricmp ( pEnt->classname, "misc_mg42" ) )
 						{
 							if ( pEnt->r.ownerNum != pEnt->s.number )
 							{
@@ -4566,7 +4566,7 @@ public:
 
 								if ( pOwner && pOwner->active && pOwner->client && pOwner->s.eFlags & EF_MG42_ACTIVE )
 								{
-									owner = HandleFromEntity( pOwner );
+									owner = HandleFromEntity ( pOwner );
 								}
 							}
 						}
@@ -4579,7 +4579,7 @@ public:
 					// -1 means theres no owner.
 					if ( pEnt->r.ownerNum < MAX_GENTITIES )
 					{
-						owner = HandleFromEntity( &g_entities[ pEnt->r.ownerNum ] );
+						owner = HandleFromEntity ( &g_entities[ pEnt->r.ownerNum ] );
 					}
 			}
 		}
@@ -4587,35 +4587,35 @@ public:
 		return owner;
 	}
 
-	int GetEntityTeam( const GameEntity _ent )
+	int GetEntityTeam ( const GameEntity _ent )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
-		return pEnt && pEnt->inuse ? _GetEntityTeam( pEnt ) : ET_TEAM_NONE;
+		gentity_t *pEnt = EntityFromHandle ( _ent );
+		return pEnt && pEnt->inuse ? _GetEntityTeam ( pEnt ) : ET_TEAM_NONE;
 	}
 
-	const char *GetEntityName( const GameEntity _ent )
+	const char *GetEntityName ( const GameEntity _ent )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt )
 		{
-			return _GetEntityName( pEnt );
+			return _GetEntityName ( pEnt );
 		}
 
 		return NULL;
 	}
 
-	obResult GetCurrentWeaponClip( const GameEntity _ent, FireMode _mode, int &_curclip, int &_maxclip )
+	obResult GetCurrentWeaponClip ( const GameEntity _ent, FireMode _mode, int &_curclip, int &_maxclip )
 	{
-		gentity_t *bot = EntityFromHandle( _ent );
+		gentity_t *bot = EntityFromHandle ( _ent );
 
 		if ( bot && bot->inuse && bot->client )
 		{
 			int iWeapon = bot->client->ps.weapon;
 #ifdef NOQUARTER
-			_curclip = bot->client->ps.ammoclip[ WeaponTable[ ( weapon_t )iWeapon ].clipindex ];
+			_curclip = bot->client->ps.ammoclip[ WeaponTable[ ( weapon_t ) iWeapon ].clipindex ];
 #else
-			_curclip = bot->client->ps.ammoclip[ BG_FindClipForWeapon( ( weapon_t )iWeapon ) ];
+			_curclip = bot->client->ps.ammoclip[ BG_FindClipForWeapon ( ( weapon_t ) iWeapon ) ];
 #endif
 
 			// sanity check for non-clipped weapons
@@ -4650,9 +4650,9 @@ public:
 
 				default:
 #ifdef NOQUARTER
-					_maxclip = GetWeaponTableData( iWeapon )->maxclip;
+					_maxclip = GetWeaponTableData ( iWeapon )->maxclip;
 #else
-					_maxclip = GetAmmoTableData( iWeapon )->maxclip;
+					_maxclip = GetAmmoTableData ( iWeapon )->maxclip;
 #endif
 			}
 
@@ -4662,16 +4662,16 @@ public:
 		return InvalidEntity;
 	}
 
-	obResult GetCurrentAmmo( const GameEntity _ent, int _weaponId, FireMode _mode, int &_cur, int &_max )
+	obResult GetCurrentAmmo ( const GameEntity _ent, int _weaponId, FireMode _mode, int &_cur, int &_max )
 	{
-		gentity_t *bot = EntityFromHandle( _ent );
+		gentity_t *bot = EntityFromHandle ( _ent );
 
 		if ( bot && bot->inuse && bot->client )
 		{
-			int maxclip   = 0;
+			int maxclip = 0;
 			int ammoIndex = 0;
 
-			_weaponId = _weaponBotToGame( _weaponId );
+			_weaponId = _weaponBotToGame ( _weaponId );
 
 #ifdef NOQUARTER
 
@@ -4711,14 +4711,14 @@ public:
 
 #endif
 
-			ammoIndex = BG_FindAmmoForWeapon( ( weapon_t )_weaponId );
+			ammoIndex = BG_FindAmmoForWeapon ( ( weapon_t ) _weaponId );
 
 #ifdef NOQUARTER
-			_cur      = bot->client->ps.ammoclip[ WeaponTable[ ( weapon_t )_weaponId ].clipindex ] +
-			            bot->client->ps.ammo[ WeaponTable[ ( weapon_t )_weaponId ].ammoindex ];
+			_cur = bot->client->ps.ammoclip[ WeaponTable[ ( weapon_t ) _weaponId ].clipindex ] +
+			       bot->client->ps.ammo[ WeaponTable[ ( weapon_t ) _weaponId ].ammoindex ];
 #else
-			_cur      = bot->client->ps.ammoclip[ BG_FindClipForWeapon( ( weapon_t )_weaponId ) ] +
-			            bot->client->ps.ammo[ ammoIndex ];
+			_cur = bot->client->ps.ammoclip[ BG_FindClipForWeapon ( ( weapon_t ) _weaponId ) ] +
+			       bot->client->ps.ammo[ ammoIndex ];
 #endif
 
 			// sanity check for non-clipped weapons
@@ -4753,16 +4753,16 @@ public:
 
 				default:
 #ifdef NOQUARTER
-					maxclip = GetWeaponTableData( ammoIndex )->maxclip;
+					maxclip = GetWeaponTableData ( ammoIndex )->maxclip;
 #else
-					maxclip = GetAmmoTableData( ammoIndex )->maxclip;
+					maxclip = GetAmmoTableData ( ammoIndex )->maxclip;
 #endif
 			}
 
 #ifdef NOQUARTER
-			_max = maxclip + GetWeaponTableData( ammoIndex )->maxammo;
+			_max = maxclip + GetWeaponTableData ( ammoIndex )->maxammo;
 #else
-			_max = maxclip + BG_MaxAmmoForWeapon( ( weapon_t )_weaponId, bot->client->sess.skill );
+			_max = maxclip + BG_MaxAmmoForWeapon ( ( weapon_t ) _weaponId, bot->client->sess.skill );
 #endif
 			return Success;
 		}
@@ -4792,21 +4792,21 @@ public:
 				continue;
 			}
 
-			const char *pGoalName = _GetEntityName( e );
+			const char *pGoalName = _GetEntityName ( e );
 
 			switch ( e->s.eType )
 			{
 				case ET_ITEM:
 					{
-						if ( !Q_stricmp( e->classname, "team_CTF_redflag" ) )
+						if ( !Q_stricmp ( e->classname, "team_CTF_redflag" ) )
 						{
 							// allies flag
-							Bot_Util_AddGoal( "flag", e, ( 1 << ET_TEAM_ALLIES ), pGoalName );
+							Bot_Util_AddGoal ( "flag", e, ( 1 << ET_TEAM_ALLIES ), pGoalName );
 						}
-						else if ( !Q_stricmp( e->classname, "team_CTF_blueflag" ) )
+						else if ( !Q_stricmp ( e->classname, "team_CTF_blueflag" ) )
 						{
 							// axis flag
-							Bot_Util_AddGoal( "flag", e, ( 1 << ET_TEAM_AXIS ), pGoalName );
+							Bot_Util_AddGoal ( "flag", e, ( 1 << ET_TEAM_AXIS ), pGoalName );
 						}
 
 						break;
@@ -4815,9 +4815,9 @@ public:
 				case ET_OID_TRIGGER:
 					{
 						// detect constructibles
-						char *pTmp                = 0;
-						gentity_t *eAxis          = G_ConstructionForTeam( e, TEAM_AXIS );
-						gentity_t *eAlly          = G_ConstructionForTeam( e, TEAM_ALLIES );
+						char *pTmp = 0;
+						gentity_t *eAxis = G_ConstructionForTeam ( e, TEAM_AXIS );
+						gentity_t *eAlly = G_ConstructionForTeam ( e, TEAM_ALLIES );
 						const char *pAllyGoalName = 0, *pAxisGoalName = 0;
 						//gentity_t *mg42ent;
 
@@ -4830,16 +4830,16 @@ public:
 							//  pAxisGoalName = _GetEntityName(eAxis);
 							if ( !pAxisGoalName )
 							{
-								pAxisGoalName = _GetEntityName( e );
+								pAxisGoalName = _GetEntityName ( e );
 							}
 
 							if ( !pAxisGoalName && e->parent )
 							{
-								pAxisGoalName = _GetEntityName( e->parent );
+								pAxisGoalName = _GetEntityName ( e->parent );
 							}
 
 							// detect fakeobj's
-							if ( strncmp( eAxis->targetname, "fakeobj", 7 ) == 0 )
+							if ( strncmp ( eAxis->targetname, "fakeobj", 7 ) == 0 )
 							{
 								continue;
 							}
@@ -4854,16 +4854,16 @@ public:
 							//  pAllyGoalName = _GetEntityName(eAlly);
 							if ( !pAllyGoalName )
 							{
-								pAllyGoalName = _GetEntityName( e );
+								pAllyGoalName = _GetEntityName ( e );
 							}
 
 							if ( !pAllyGoalName && e->parent )
 							{
-								pAllyGoalName = _GetEntityName( e->parent );
+								pAllyGoalName = _GetEntityName ( e->parent );
 							}
 
 							// detect fakeobj's
-							if ( strncmp( eAlly->targetname, "fakeobj", 7 ) == 0 )
+							if ( strncmp ( eAlly->targetname, "fakeobj", 7 ) == 0 )
 							{
 								continue;
 							}
@@ -4879,29 +4879,29 @@ public:
 						//  }
 						//}
 						//////////////////////////////////////////////////////////////////////////
-						if ( eAxis && eAlly && !Q_stricmp( pAxisGoalName, pAllyGoalName ) )
+						if ( eAxis && eAlly && !Q_stricmp ( pAxisGoalName, pAllyGoalName ) )
 						{
 							//bool bMover = pAxisGoalName ? strstr(pAxisGoalName, "_construct")!=0 : false;
-							bool bMover   = e->target ? strstr( e->target, "_construct" ) != 0 : false;
-							obUserData ud = obUserData( bMover ? 1 : 0 );
-							Bot_Util_AddGoal( "build", e, ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ), pAxisGoalName, "Mobile", &ud );
+							bool bMover = e->target ? strstr ( e->target, "_construct" ) != 0 : false;
+							obUserData ud = obUserData ( bMover ? 1 : 0 );
+							Bot_Util_AddGoal ( "build", e, ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ), pAxisGoalName, "Mobile", &ud );
 						}
 						else
 						{
 							if ( eAxis )
 							{
 								//bool bMover = pAxisGoalName ? strstr(pAxisGoalName, "_construct")!=0 : false;
-								bool bMover   = e->target ? strstr( e->target, "_construct" ) != 0 : false;
-								obUserData ud = obUserData( bMover ? 1 : 0 );
-								Bot_Util_AddGoal( "build", e, ( 1 << ET_TEAM_AXIS ), pAxisGoalName, "Mobile", &ud );
+								bool bMover = e->target ? strstr ( e->target, "_construct" ) != 0 : false;
+								obUserData ud = obUserData ( bMover ? 1 : 0 );
+								Bot_Util_AddGoal ( "build", e, ( 1 << ET_TEAM_AXIS ), pAxisGoalName, "Mobile", &ud );
 							}
 
 							if ( eAlly )
 							{
 								//bool bMover = pAllyGoalName ? strstr(pAllyGoalName, "_construct")!=0 : false;
-								bool bMover   = e->target ? strstr( e->target, "_construct" ) != 0 : false;
-								obUserData ud = obUserData( bMover ? 1 : 0 );
-								Bot_Util_AddGoal( "build", e, ( 1 << ET_TEAM_ALLIES ), pAllyGoalName, "Mobile", &ud );
+								bool bMover = e->target ? strstr ( e->target, "_construct" ) != 0 : false;
+								obUserData ud = obUserData ( bMover ? 1 : 0 );
+								Bot_Util_AddGoal ( "build", e, ( 1 << ET_TEAM_ALLIES ), pAllyGoalName, "Mobile", &ud );
 							}
 						}
 
@@ -4920,22 +4920,22 @@ public:
 						pAllyGoalName = pAllyGoalName ? pAllyGoalName : _GetEntityName(e->target_ent);*/
 						//pAxisGoalName = _GetEntityName(e->target_ent) ? _GetEntityName(e->target_ent) : pAxisGoalName;
 						//pAllyGoalName = _GetEntityName(e->target_ent) ? _GetEntityName(e->target_ent) : pAllyGoalName;
-						pAxisGoalName = _GetEntityName( e ) ? _GetEntityName( e ) : pAxisGoalName;
-						pAllyGoalName = _GetEntityName( e ) ? _GetEntityName( e ) : pAllyGoalName;
+						pAxisGoalName = _GetEntityName ( e ) ? _GetEntityName ( e ) : pAxisGoalName;
+						pAllyGoalName = _GetEntityName ( e ) ? _GetEntityName ( e ) : pAllyGoalName;
 
 						//////////////////////////////////////////////////////////////////////////
 						// Is this a movable?, skip it if so.
 						if ( e->target_ent->targetname &&
-						     ( pTmp = strstr( e->target_ent->targetname, "_construct" ) ) != NULL )
+						     ( pTmp = strstr ( e->target_ent->targetname, "_construct" ) ) != NULL )
 						{
 							char strName[ 256 ];
-							Q_strncpyz( strName, e->target_ent->targetname, 256 );
+							Q_strncpyz ( strName, e->target_ent->targetname, 256 );
 							strName[ pTmp - e->target_ent->targetname ] = 0;
-							gentity_t *pMover = G_FindByTargetname( NULL, strName );
+							gentity_t *pMover = G_FindByTargetname ( NULL, strName );
 
 							if ( pMover &&
 							     pMover->s.eType == ET_MOVER &&
-							     !Q_stricmp( pMover->classname, "script_mover" ) )
+							     !Q_stricmp ( pMover->classname, "script_mover" ) )
 							{
 								continue;
 							}
@@ -4946,16 +4946,16 @@ public:
 						if ( e->target_ent->s.eType == ET_CONSTRUCTIBLE )
 						{
 							obUserData bud;
-							bud.DataType    = obUserData::dtInt;
+							bud.DataType = obUserData::dtInt;
 							bud.udata.m_Int = 0;
 
 							switch ( e->target_ent->constructibleStats.weaponclass )
 							{
-								case -1:                // Grenade, fall through and also register as satchel and dyno.
-								case 1:                 // Satchelable, it should fall through and also register as dyno.
+								case -1: // Grenade, fall through and also register as satchel and dyno.
+								case 1: // Satchelable, it should fall through and also register as dyno.
 									bud.udata.m_Int |= XPLO_TYPE_SATCHEL;
 
-								case 2:                 // Dynamite
+								case 2: // Dynamite
 									bud.udata.m_Int |= XPLO_TYPE_DYNAMITE;
 									break;
 
@@ -4975,58 +4975,58 @@ public:
 							if ( bud.udata.m_Int != 0 )
 							{
 								// If there's a goal for each team, and it has the same name, just register 1 goal
-								if ( eAxis && eAlly && !Q_stricmp( pAxisGoalName, pAllyGoalName ) )
+								if ( eAxis && eAlly && !Q_stricmp ( pAxisGoalName, pAllyGoalName ) )
 								{
-									Bot_Util_AddGoal( "plant", e->target_ent,
-									                  ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ),
-									                  pAxisGoalName,
-									                  "ExplosiveType",
-									                  &bud );
-									CheckForMG42( e->target_ent, pAxisGoalName );
+									Bot_Util_AddGoal ( "plant", e->target_ent,
+									                   ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ),
+									                   pAxisGoalName,
+									                   "ExplosiveType",
+									                   &bud );
+									CheckForMG42 ( e->target_ent, pAxisGoalName );
 								}
 								else
 								{
 									if ( eAxis )
 									{
-										Bot_Util_AddGoal( "plant", e->target_ent,
-										                  ( 1 << ET_TEAM_ALLIES ),
-										                  pAxisGoalName,
-										                  "ExplosiveType",
-										                  &bud );
-										CheckForMG42( e->target_ent, pAxisGoalName );
+										Bot_Util_AddGoal ( "plant", e->target_ent,
+										                   ( 1 << ET_TEAM_ALLIES ),
+										                   pAxisGoalName,
+										                   "ExplosiveType",
+										                   &bud );
+										CheckForMG42 ( e->target_ent, pAxisGoalName );
 									}
 
 									if ( eAlly )
 									{
-										Bot_Util_AddGoal( "plant", e->target_ent,
-										                  ( 1 << ET_TEAM_AXIS ),
-										                  pAllyGoalName,
-										                  "ExplosiveType",
-										                  &bud );
-										CheckForMG42( e->target_ent, pAllyGoalName );
+										Bot_Util_AddGoal ( "plant", e->target_ent,
+										                   ( 1 << ET_TEAM_AXIS ),
+										                   pAllyGoalName,
+										                   "ExplosiveType",
+										                   &bud );
+										CheckForMG42 ( e->target_ent, pAllyGoalName );
 									}
 								}
 							}
-							else                 // for grenadetarget
+							else // for grenadetarget
 							{
 								if ( eAxis )
 								{
-									Bot_Util_AddGoal( "explode",
-									                  e->target_ent,
-									                  ( 1 << ET_TEAM_ALLIES ),
-									                  pAxisGoalName,
-									                  "ExplosiveType",
-									                  &bud );
+									Bot_Util_AddGoal ( "explode",
+									                   e->target_ent,
+									                   ( 1 << ET_TEAM_ALLIES ),
+									                   pAxisGoalName,
+									                   "ExplosiveType",
+									                   &bud );
 								}
 
 								if ( eAlly )
 								{
-									Bot_Util_AddGoal( "explode",
-									                  e->target_ent,
-									                  ( 1 << ET_TEAM_AXIS ),
-									                  pAllyGoalName,
-									                  "ExplosiveType",
-									                  &bud );
+									Bot_Util_AddGoal ( "explode",
+									                   e->target_ent,
+									                   ( 1 << ET_TEAM_AXIS ),
+									                   pAllyGoalName,
+									                   "ExplosiveType",
+									                   &bud );
 								}
 							}
 						}
@@ -5064,22 +5064,22 @@ public:
 										// note ALLIED/AXIS stuff is reversed here (ET is strange sometimes)
 										if ( e->spawnflags & ALLIED_OBJECTIVE )
 										{
-											Bot_Util_AddGoal( "plant",
-											                  e->target_ent,
-											                  ( 1 << ET_TEAM_AXIS ),
-											                  pAxisGoalName,
-											                  "ExplosiveType",
-											                  &bud );
+											Bot_Util_AddGoal ( "plant",
+											                   e->target_ent,
+											                   ( 1 << ET_TEAM_AXIS ),
+											                   pAxisGoalName,
+											                   "ExplosiveType",
+											                   &bud );
 										}
 
 										if ( e->spawnflags & AXIS_OBJECTIVE )
 										{
-											Bot_Util_AddGoal( "plant",
-											                  e->target_ent,
-											                  ( 1 << ET_TEAM_ALLIES ),
-											                  pAllyGoalName,
-											                  "ExplosiveType",
-											                  &bud );
+											Bot_Util_AddGoal ( "plant",
+											                   e->target_ent,
+											                   ( 1 << ET_TEAM_ALLIES ),
+											                   pAllyGoalName,
+											                   "ExplosiveType",
+											                   &bud );
 										}
 
 										break;
@@ -5101,7 +5101,7 @@ public:
 						//      pGoalName = _GetEntityName(e);
 						//      Bot_Util_AddGoal(e, ET_GOAL_MG42MOUNT, team, pGoalName, NULL);
 						//    }
-						UpdateMG42( e );
+						UpdateMG42 ( e );
 
 						break;
 					}
@@ -5124,12 +5124,12 @@ public:
 							team |= ( 1 << ET_TEAM_AXIS );
 						}
 
-						pGoalName = _GetEntityName( e );
+						pGoalName = _GetEntityName ( e );
 
-						if ( pGoalName && !Q_stricmp( e->classname, "script_mover" ) &&
+						if ( pGoalName && !Q_stricmp ( e->classname, "script_mover" ) &&
 						     e->think != G_FreeEntity )
 						{
-							Bot_Util_AddGoal( "mover", e, team, pGoalName );
+							Bot_Util_AddGoal ( "mover", e, team, pGoalName );
 						}
 
 						break;
@@ -5165,27 +5165,27 @@ public:
 					//  }
 				case ET_HEALER:
 					{
-						obUserData bud( e->damage );               // heal rate
+						obUserData bud ( e->damage ); // heal rate
 						int team = ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS );
-						pGoalName = _GetEntityName( e->target_ent ) ? _GetEntityName( e->target_ent ) : _GetEntityName( e );
-						Bot_Util_AddGoal( "healthcab", e, team, pGoalName, "HealRate", &bud );
+						pGoalName = _GetEntityName ( e->target_ent ) ? _GetEntityName ( e->target_ent ) : _GetEntityName ( e );
+						Bot_Util_AddGoal ( "healthcab", e, team, pGoalName, "HealRate", &bud );
 						break;
 					}
 
 				case ET_SUPPLIER:
 					{
-						obUserData bud( e->damage );               // heal rate
+						obUserData bud ( e->damage ); // heal rate
 						int team = ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS );
-						pGoalName = _GetEntityName( e->target_ent ) ? _GetEntityName( e->target_ent ) : _GetEntityName( e );
-						Bot_Util_AddGoal( "ammocab", e, team, pGoalName, "AmmoRate", &bud );
+						pGoalName = _GetEntityName ( e->target_ent ) ? _GetEntityName ( e->target_ent ) : _GetEntityName ( e );
+						Bot_Util_AddGoal ( "ammocab", e, team, pGoalName, "AmmoRate", &bud );
 						break;
 					}
 
 				case ET_TRAP:
 					{
-						if ( !Q_stricmp( e->classname, "team_WOLF_checkpoint" ) )
+						if ( !Q_stricmp ( e->classname, "team_WOLF_checkpoint" ) )
 						{
-							Bot_Util_AddGoal( "checkpoint", e, 0, pGoalName );
+							Bot_Util_AddGoal ( "checkpoint", e, 0, pGoalName );
 						}
 
 						break;
@@ -5194,10 +5194,10 @@ public:
 				case ET_EXPLOSIVE:
 					{
 						//CS: hack - weaponclass not set yet, using xpbonus
-						if ( !Q_stricmp( e->classname, "func_explosive" ) && e->constructibleStats.constructxpbonus == 5 )
+						if ( !Q_stricmp ( e->classname, "func_explosive" ) && e->constructibleStats.constructxpbonus == 5 )
 						{
-							pGoalName = _GetEntityName( e );
-							Bot_Util_AddGoal( "explosive", e, 0, pGoalName );
+							pGoalName = _GetEntityName ( e );
+							Bot_Util_AddGoal ( "explosive", e, 0, pGoalName );
 						}
 
 						break;
@@ -5216,28 +5216,28 @@ public:
 
 			if ( mg42s[ i ].buildable )
 			{
-				strcpy( strName, mg42s[ i ].newname );
+				strcpy ( strName, mg42s[ i ].newname );
 			}
 			else
 			{
-				strcpy( strName, mg42s[ i ].name );
+				strcpy ( strName, mg42s[ i ].name );
 			}
 
-			Bot_Util_AddGoal( "mountmg42", mg42s[ i ].ent,
-			                  ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ), strName );
+			Bot_Util_AddGoal ( "mountmg42", mg42s[ i ].ent,
+			                   ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ), strName );
 
 			// cs: this was done in et_goalmanager before
-			Bot_Util_AddGoal( "repairmg42", mg42s[ i ].ent,
-			                  ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ), strName );
+			Bot_Util_AddGoal ( "repairmg42", mg42s[ i ].ent,
+			                   ( 1 << ET_TEAM_ALLIES ) | ( 1 << ET_TEAM_AXIS ), strName );
 		}
 	}
 
-	void GetPlayerInfo( obPlayerInfo &info )
+	void GetPlayerInfo ( obPlayerInfo &info )
 	{
 		info.m_AvailableTeams |= ( 1 << ET_TEAM_ALLIES );
 		info.m_AvailableTeams |= ( 1 << ET_TEAM_AXIS );
 
-		info.m_MaxPlayers      = level.maxclients;
+		info.m_MaxPlayers = level.maxclients;
 
 		GameEntity ge;
 
@@ -5258,25 +5258,25 @@ public:
 				continue;
 			}
 
-			ge                               = HandleFromEntity( &g_entities[ i ] );
+			ge = HandleFromEntity ( &g_entities[ i ] );
 
-			info.m_Players[ i ].m_Team       = GetEntityTeam( ge );
-			info.m_Players[ i ].m_Class      = GetEntityClass( ge );
-			info.m_Players[ i ].m_Controller = IsBot( &g_entities[ i ] ) ?
+			info.m_Players[ i ].m_Team = GetEntityTeam ( ge );
+			info.m_Players[ i ].m_Class = GetEntityClass ( ge );
+			info.m_Players[ i ].m_Controller = IsBot ( &g_entities[ i ] ) ?
 			                                   obPlayerInfo::Bot : obPlayerInfo::Human;
 		}
 	}
 
-	obResult InterfaceSendMessage( const MessageHelper &_data, const GameEntity _ent )
+	obResult InterfaceSendMessage ( const MessageHelper &_data, const GameEntity _ent )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		switch ( _data.GetMessageId() )
 		{
 				// general messages
 			case GEN_MSG_ISALIVE:
 				{
-					OB_GETMSG( Msg_IsAlive );
+					OB_GETMSG ( Msg_IsAlive );
 
 					if ( pMsg )
 					{
@@ -5292,7 +5292,7 @@ public:
 
 			case GEN_MSG_ISRELOADING:
 				{
-					OB_GETMSG( Msg_Reloading );
+					OB_GETMSG ( Msg_Reloading );
 
 					if ( pMsg )
 					{
@@ -5308,7 +5308,7 @@ public:
 
 			case GEN_MSG_ISREADYTOFIRE:
 				{
-					OB_GETMSG( Msg_ReadyToFire );
+					OB_GETMSG ( Msg_ReadyToFire );
 
 					if ( pMsg )
 					{
@@ -5326,13 +5326,13 @@ public:
 
 			case GEN_MSG_GETEQUIPPEDWEAPON:
 				{
-					OB_GETMSG( WeaponStatus );
+					OB_GETMSG ( WeaponStatus );
 
 					if ( pMsg )
 					{
 						if ( pEnt && pEnt->inuse && pEnt->client )
 						{
-							pMsg->m_WeaponId = Bot_WeaponGameToBot( pEnt->client->ps.weapon );
+							pMsg->m_WeaponId = Bot_WeaponGameToBot ( pEnt->client->ps.weapon );
 						}
 						else
 						{
@@ -5345,11 +5345,11 @@ public:
 
 			case GEN_MSG_GETMOUNTEDWEAPON:
 				{
-					OB_GETMSG( WeaponStatus );
+					OB_GETMSG ( WeaponStatus );
 
 					if ( pMsg && pEnt && pEnt->inuse && pEnt->client )
 					{
-						pMsg->m_WeaponId = BG_PlayerMounted( pEnt->s.eFlags ) ? ET_WP_MOUNTABLE_MG42 : ET_WP_NONE;
+						pMsg->m_WeaponId = BG_PlayerMounted ( pEnt->s.eFlags ) ? ET_WP_MOUNTABLE_MG42 : ET_WP_NONE;
 					}
 
 					break;
@@ -5357,30 +5357,30 @@ public:
 
 			case GEN_MSG_GETWEAPONLIMITS:
 				{
-					OB_GETMSG( WeaponLimits );
+					OB_GETMSG ( WeaponLimits );
 
 					if ( pMsg )
 					{
 						if ( pEnt && pEnt->inuse && pEnt->client )
 						{
 							if ( pMsg->m_WeaponId == ET_WP_MOUNTABLE_MG42 &&
-							     BG_PlayerMounted( pEnt->client->ps.eFlags ) )
+							     BG_PlayerMounted ( pEnt->client->ps.eFlags ) )
 							{
 								pMsg->m_Limited = True;
-								AngleVectors( pEnt->client->pmext.centerangles, pMsg->m_CenterFacing, NULL, NULL );
+								AngleVectors ( pEnt->client->pmext.centerangles, pMsg->m_CenterFacing, NULL, NULL );
 
 								if ( pEnt->client->ps.eFlags & EF_MOUNTEDTANK )
 								{
 									// seems tanks have complete horizonal movement, and fixed vertical
-									pMsg->m_MinYaw   = -360;
-									pMsg->m_MaxYaw   = -360;
+									pMsg->m_MinYaw = -360;
+									pMsg->m_MaxYaw = -360;
 									pMsg->m_MinPitch = 14;
 									pMsg->m_MaxPitch = 50;
 								}
 								else
 								{
-									pMsg->m_MinYaw   = -pEnt->client->pmext.harc;
-									pMsg->m_MaxYaw   = pEnt->client->pmext.harc;
+									pMsg->m_MinYaw = -pEnt->client->pmext.harc;
+									pMsg->m_MaxYaw = pEnt->client->pmext.harc;
 									pMsg->m_MinPitch = -pEnt->client->pmext.varc;
 									pMsg->m_MaxPitch = pEnt->client->pmext.varc;
 								}
@@ -5388,10 +5388,10 @@ public:
 
 							if ( pMsg->m_WeaponId == ET_WP_MOBILE_MG42 || pMsg->m_WeaponId == ET_WP_MOBILE_MG42_SET )
 							{
-								AngleVectors( pEnt->client->pmext.mountedWeaponAngles, pMsg->m_CenterFacing, NULL, NULL );
-								pMsg->m_Limited  = True;
-								pMsg->m_MinYaw   = -20.f;
-								pMsg->m_MaxYaw   = 20.f;
+								AngleVectors ( pEnt->client->pmext.mountedWeaponAngles, pMsg->m_CenterFacing, NULL, NULL );
+								pMsg->m_Limited = True;
+								pMsg->m_MinYaw = -20.f;
+								pMsg->m_MaxYaw = 20.f;
 								pMsg->m_MinPitch = -20.f;
 								pMsg->m_MaxPitch = 20.f;
 							}
@@ -5408,7 +5408,7 @@ public:
 
 			case GEN_MSG_GETHEALTHARMOR:
 				{
-					OB_GETMSG( Msg_HealthArmor );
+					OB_GETMSG ( Msg_HealthArmor );
 
 					if ( pMsg )
 					{
@@ -5422,17 +5422,17 @@ public:
 								case ET_MOVER:
 								case ET_CONSTRUCTIBLE:
 									pMsg->m_CurrentHealth = pEnt->takedamage ? pEnt->health > 0 ? pEnt->health : 0 : 0;
-									pMsg->m_MaxHealth     = pEnt->count;
+									pMsg->m_MaxHealth = pEnt->count;
 									break;
 
 								case ET_GENERAL:
 								case ET_MG42_BARREL:
-									if ( !Q_stricmp( pEnt->classname, "misc_mg42" ) )
+									if ( !Q_stricmp ( pEnt->classname, "misc_mg42" ) )
 									{
-										if ( Simple_EmplacedGunIsRepairable( pEnt ) )
+										if ( Simple_EmplacedGunIsRepairable ( pEnt ) )
 										{
 											pMsg->m_CurrentHealth = 0;
-											pMsg->m_MaxHealth     = MG42_MULTIPLAYER_HEALTH;
+											pMsg->m_MaxHealth = MG42_MULTIPLAYER_HEALTH;
 										}
 										else
 										{
@@ -5440,13 +5440,13 @@ public:
 											{
 												gentity_t *pBase = &g_entities[ pEnt->mg42BaseEnt ];
 												pMsg->m_CurrentHealth = pBase->health;
-												pMsg->m_MaxHealth     = MG42_MULTIPLAYER_HEALTH;
+												pMsg->m_MaxHealth = MG42_MULTIPLAYER_HEALTH;
 											}
 											else
 											{
 												// just in case
 												pMsg->m_CurrentHealth = pEnt->health;
-												pMsg->m_MaxHealth     = MG42_MULTIPLAYER_HEALTH;
+												pMsg->m_MaxHealth = MG42_MULTIPLAYER_HEALTH;
 											}
 										}
 									}
@@ -5457,12 +5457,12 @@ public:
 									if ( pEnt->client )
 									{
 										pMsg->m_CurrentHealth = pEnt->client->ps.stats[ STAT_HEALTH ];
-										pMsg->m_MaxHealth     = pEnt->client->ps.stats[ STAT_MAX_HEALTH ];
+										pMsg->m_MaxHealth = pEnt->client->ps.stats[ STAT_MAX_HEALTH ];
 									}
 									else
 									{
 										pMsg->m_CurrentHealth = pEnt->takedamage ? pEnt->health : 0;
-										pMsg->m_MaxHealth     = 0;
+										pMsg->m_MaxHealth = 0;
 									}
 							}
 						}
@@ -5473,11 +5473,11 @@ public:
 
 			case GEN_MSG_GETMAXSPEED:
 				{
-					OB_GETMSG( Msg_PlayerMaxSpeed );
+					OB_GETMSG ( Msg_PlayerMaxSpeed );
 
 					if ( pMsg && pEnt )
 					{
-						pMsg->m_MaxSpeed = ( float )g_movespeed.integer;
+						pMsg->m_MaxSpeed = ( float ) g_movespeed.integer;
 					}
 
 					break;
@@ -5485,21 +5485,21 @@ public:
 
 			case GEN_MSG_ISALLIED:
 				{
-					OB_GETMSG( Msg_IsAllied );
+					OB_GETMSG ( Msg_IsAllied );
 
 					if ( pMsg )
 					{
-						gentity_t *pEntOther = EntityFromHandle( pMsg->m_TargetEntity );
+						gentity_t *pEntOther = EntityFromHandle ( pMsg->m_TargetEntity );
 
 						if ( pEntOther && pEnt )
 						{
-							if ( ENTINDEX( pEntOther ) == ENTITYNUM_WORLD )
+							if ( ENTINDEX ( pEntOther ) == ENTITYNUM_WORLD )
 							{
 								pMsg->m_IsAllied = True;
 							}
 							else
 							{
-								pMsg->m_IsAllied = _GetEntityTeam( pEnt ) == _GetEntityTeam( pEntOther ) ? True : False;
+								pMsg->m_IsAllied = _GetEntityTeam ( pEnt ) == _GetEntityTeam ( pEntOther ) ? True : False;
 							}
 						}
 					}
@@ -5509,15 +5509,15 @@ public:
 
 			case GEN_MSG_ISOUTSIDE:
 				{
-					OB_GETMSG( Msg_IsOutside );
+					OB_GETMSG ( Msg_IsOutside );
 
 					if ( pMsg )
 					{
 						trace_t tr;
 						vec3_t end = { pMsg->m_Position[ 0 ], pMsg->m_Position[ 1 ], ( pMsg->m_Position[ 2 ] + 4096 ) };
-						trap_Trace( &tr, pMsg->m_Position, NULL, NULL, end, -1, MASK_SOLID );
+						trap_Trace ( &tr, pMsg->m_Position, NULL, NULL, end, -1, MASK_SOLID );
 
-						if ( ( tr.fraction < 1.0 ) && !( tr.surfaceFlags & SURF_NOIMPACT ) )
+						if ( ( tr.fraction < 1.0 ) && ! ( tr.surfaceFlags & SURF_NOIMPACT ) )
 						{
 							pMsg->m_IsOutside = False;
 						}
@@ -5532,15 +5532,15 @@ public:
 
 			case GEN_MSG_CHANGENAME:
 				{
-					OB_GETMSG( Msg_ChangeName );
+					OB_GETMSG ( Msg_ChangeName );
 
 					if ( pMsg && pEnt && pEnt->client )
 					{
 						char userinfo[ MAX_INFO_STRING ];
-						trap_GetUserinfo( pEnt - g_entities, userinfo, MAX_INFO_STRING );
-						Info_SetValueForKey( userinfo, "name", pMsg->m_NewName );
-						trap_SetUserinfo( pEnt - g_entities, userinfo );
-						ClientUserinfoChanged( pEnt - g_entities );
+						trap_GetUserinfo ( pEnt - g_entities, userinfo, MAX_INFO_STRING );
+						Info_SetValueForKey ( userinfo, "name", pMsg->m_NewName );
+						trap_SetUserinfo ( pEnt - g_entities, userinfo );
+						ClientUserinfoChanged ( pEnt - g_entities );
 					}
 
 					break;
@@ -5548,15 +5548,15 @@ public:
 
 			case GEN_MSG_ENTITYKILL:
 				{
-					OB_GETMSG( Msg_KillEntity );
+					OB_GETMSG ( Msg_KillEntity );
 
 					if ( pMsg && pMsg->m_WhoToKill.IsValid() && g_cheats.integer )
 					{
-						gentity_t *pWho = EntityFromHandle( pMsg->m_WhoToKill );
+						gentity_t *pWho = EntityFromHandle ( pMsg->m_WhoToKill );
 
 						if ( pWho )
 						{
-							G_Damage( pWho, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
+							G_Damage ( pWho, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
 						}
 					}
 
@@ -5565,11 +5565,11 @@ public:
 
 			case GEN_MSG_SERVERCOMMAND:
 				{
-					OB_GETMSG( Msg_ServerCommand );
+					OB_GETMSG ( Msg_ServerCommand );
 
 					if ( pMsg && pMsg->m_Command[ 0 ] /*&& g_cheats.integer*/ )
 					{
-						trap_SendConsoleCommand( EXEC_NOW, pMsg->m_Command );
+						trap_SendConsoleCommand ( EXEC_NOW, pMsg->m_Command );
 					}
 
 					break;
@@ -5577,7 +5577,7 @@ public:
 
 			case GEN_MSG_GETFLAGSTATE:
 				{
-					OB_GETMSG( Msg_FlagState );
+					OB_GETMSG ( Msg_FlagState );
 
 					if ( pMsg )
 					{
@@ -5605,7 +5605,7 @@ public:
 					{
 						if ( pEnt && pEnt->s.eType == ET_TRAP )
 						{
-							pMsg->m_ControllingTeam = Bot_TeamGameToBot( pEnt->count );
+							pMsg->m_ControllingTeam = Bot_TeamGameToBot ( pEnt->count );
 						}
 					}
 
@@ -5614,7 +5614,7 @@ public:
 
 			case GEN_MSG_GAMESTATE:
 				{
-					OB_GETMSG( Msg_GameState );
+					OB_GETMSG ( Msg_GameState );
 
 					if ( pMsg )
 					{
@@ -5624,7 +5624,7 @@ public:
 							break;
 						}
 
-						int iTimeLimit = ( int )( g_timelimit.value * 60000 );
+						int iTimeLimit = ( int ) ( g_timelimit.value * 60000 );
 						int iMatchTime = level.timeCurrent - level.startTime;
 						pMsg->m_TimeLeft = ( iTimeLimit - iMatchTime ) / 1000.f;
 
@@ -5661,21 +5661,21 @@ public:
 
 			case GEN_MSG_ENTITYSTAT:
 				{
-					OB_GETMSG( Msg_EntityStat );
+					OB_GETMSG ( Msg_EntityStat );
 
 					if ( pMsg )
 					{
-						if ( pEnt && pEnt->client && !strcmp( pMsg->m_StatName, "kills" ) )
+						if ( pEnt && pEnt->client && !strcmp ( pMsg->m_StatName, "kills" ) )
 						{
-							pMsg->m_Result = obUserData( pEnt->client->sess.kills );
+							pMsg->m_Result = obUserData ( pEnt->client->sess.kills );
 						}
-						else if ( pEnt && pEnt->client && !strcmp( pMsg->m_StatName, "deaths" ) )
+						else if ( pEnt && pEnt->client && !strcmp ( pMsg->m_StatName, "deaths" ) )
 						{
-							pMsg->m_Result = obUserData( pEnt->client->sess.deaths );
+							pMsg->m_Result = obUserData ( pEnt->client->sess.deaths );
 						}
-						else if ( pEnt && pEnt->client && !strcmp( pMsg->m_StatName, "xp" ) )
+						else if ( pEnt && pEnt->client && !strcmp ( pMsg->m_StatName, "xp" ) )
 						{
-							pMsg->m_Result = obUserData( pEnt->client->ps.stats[ STAT_XP ] );
+							pMsg->m_Result = obUserData ( pEnt->client->ps.stats[ STAT_XP ] );
 						}
 					}
 
@@ -5684,7 +5684,7 @@ public:
 
 			case GEN_MSG_TEAMSTAT:
 				{
-					OB_GETMSG( Msg_TeamStat );
+					OB_GETMSG ( Msg_TeamStat );
 
 					/*if(pMsg)
 					{
@@ -5699,7 +5699,7 @@ public:
 
 			case GEN_MSG_WPCHARGED:
 				{
-					OB_GETMSG( WeaponCharged );
+					OB_GETMSG ( WeaponCharged );
 
 					if ( pMsg && pEnt && pEnt->inuse && pEnt->client )
 					{
@@ -5717,8 +5717,8 @@ public:
 						{
 #endif
 							pMsg->m_IsCharged =
-							  ( weaponCharged( &pEnt->client->ps, pEnt->client->sess.sessionTeam,
-							                   _weaponBotToGame( pMsg->m_Weapon ), pEnt->client->sess.skill ) == qtrue ) ? True : False;
+							  ( weaponCharged ( &pEnt->client->ps, pEnt->client->sess.sessionTeam,
+							                    _weaponBotToGame ( pMsg->m_Weapon ), pEnt->client->sess.skill ) == qtrue ) ? True : False;
 #ifdef NOQUARTER
 						}
 
@@ -5730,12 +5730,12 @@ public:
 
 			case GEN_MSG_WPHEATLEVEL:
 				{
-					OB_GETMSG( WeaponHeatLevel );
+					OB_GETMSG ( WeaponHeatLevel );
 
 					if ( pMsg && pEnt && pEnt->inuse && pEnt->client )
 					{
 						pMsg->m_CurrentHeat = pEnt->client->ps.weapHeat[ WP_DUMMY_MG42 ];
-						pMsg->m_MaxHeat     = MAX_MG42_HEAT;
+						pMsg->m_MaxHeat = MAX_MG42_HEAT;
 					}
 
 					break;
@@ -5743,7 +5743,7 @@ public:
 
 			case GEN_MSG_MOVERAT:
 				{
-					OB_GETMSG( Msg_MoverAt );
+					OB_GETMSG ( Msg_MoverAt );
 
 					/*
 					if(pMsg)
@@ -5771,12 +5771,12 @@ public:
 
 			case GEN_MSG_GOTOWAYPOINT:
 				{
-					OB_GETMSG( Msg_GotoWaypoint );
+					OB_GETMSG ( Msg_GotoWaypoint );
 
 					if ( pMsg && pMsg->m_Origin && g_cheats.integer )
 					{
-						char *cmd = va( "setviewpos %f %f %f %f", pMsg->m_Origin[ 0 ], pMsg->m_Origin[ 1 ], pMsg->m_Origin[ 2 ], 0.f );
-						trap_SendConsoleCommand( EXEC_NOW, cmd );
+						char *cmd = va ( "setviewpos %f %f %f %f", pMsg->m_Origin[ 0 ], pMsg->m_Origin[ 1 ], pMsg->m_Origin[ 2 ], 0.f );
+						trap_SendConsoleCommand ( EXEC_NOW, cmd );
 						return Success;
 					}
 
@@ -5786,7 +5786,7 @@ public:
 				//////////////////////////////////////////////////////////////////////////
 			case ET_MSG_GOTOLIMBO:
 				{
-					OB_GETMSG( ET_GoLimbo );
+					OB_GETMSG ( ET_GoLimbo );
 
 					if ( pMsg )
 					{
@@ -5795,9 +5795,9 @@ public:
 						int limbo_health = GIB_HEALTH;
 
 						if ( pEnt && pEnt->inuse && pEnt->client && pEnt->health > limbo_health &&
-						     pEnt->client->ps.pm_type == PM_DEAD && !( pEnt->client->ps.pm_flags & PMF_LIMBO ) )
+						     pEnt->client->ps.pm_type == PM_DEAD && ! ( pEnt->client->ps.pm_flags & PMF_LIMBO ) )
 						{
-							limbo( pEnt, qtrue );
+							limbo ( pEnt, qtrue );
 							pMsg->m_GoLimbo = True;
 						}
 						else
@@ -5811,12 +5811,12 @@ public:
 
 			case ET_MSG_ISMEDICNEAR:
 				{
-					OB_GETMSG( ET_MedicNear );
+					OB_GETMSG ( ET_MedicNear );
 
 					if ( pMsg )
 					{
 						if ( pEnt && pEnt->inuse && pEnt->client &&
-						     pEnt->client->ps.pm_type == PM_DEAD && !( pEnt->client->ps.pm_flags & PMF_LIMBO ) )
+						     pEnt->client->ps.pm_type == PM_DEAD && ! ( pEnt->client->ps.pm_flags & PMF_LIMBO ) )
 						{
 							pMsg->m_MedicNear = ( pEnt->client->ps.viewlocked == 7 ) ? True : False;
 						}
@@ -5831,13 +5831,13 @@ public:
 
 			case ET_MSG_ISWAITINGFORMEDIC:
 				{
-					OB_GETMSG( ET_WaitingForMedic );
+					OB_GETMSG ( ET_WaitingForMedic );
 
 					if ( pMsg )
 					{
 						if ( pEnt && pEnt->inuse && pEnt->client &&
 						     ( pEnt->health <= 60 || pEnt->client->ps.pm_type == PM_DEAD ) &&
-						     !( pEnt->client->ps.pm_flags & PMF_LIMBO ) )
+						     ! ( pEnt->client->ps.pm_flags & PMF_LIMBO ) )
 						{
 							pMsg->m_WaitingForMedic = True;
 						}
@@ -5857,7 +5857,7 @@ public:
 
 			case ET_MSG_REINFORCETIME:
 				{
-					OB_GETMSG( ET_ReinforceTime );
+					OB_GETMSG ( ET_ReinforceTime );
 
 					if ( pMsg )
 					{
@@ -5883,11 +5883,11 @@ public:
 
 			case ET_MSG_GETGUNHEALTH:
 				{
-					OB_GETMSG( ET_MG42Health );
+					OB_GETMSG ( ET_MG42Health );
 
 					if ( pMsg )
 					{
-						gentity_t *pGunEntity = EntityFromHandle( pMsg->m_MG42Entity );
+						gentity_t *pGunEntity = EntityFromHandle ( pMsg->m_MG42Entity );
 
 						if ( pGunEntity && pGunEntity->inuse && pGunEntity->r.linked &&
 						     pGunEntity->entstate == STATE_DEFAULT )
@@ -5912,21 +5912,21 @@ public:
 
 			case ET_MSG_GETGUNHEAT:
 				{
-					OB_GETMSG( ET_WeaponHeatLevel );
+					OB_GETMSG ( ET_WeaponHeatLevel );
 
 					if ( pMsg )
 					{
-						gentity_t *pGunEntity = EntityFromHandle( pMsg->m_Entity );
+						gentity_t *pGunEntity = EntityFromHandle ( pMsg->m_Entity );
 
 						if ( pEnt && pEnt->client && pGunEntity )
 						{
 							pMsg->m_Current = pEnt->client->ps.weapHeat[ WP_DUMMY_MG42 ];
-							pMsg->m_Max     = ( int )MAX_MG42_HEAT;
+							pMsg->m_Max = ( int ) MAX_MG42_HEAT;
 						}
 						else
 						{
 							pMsg->m_Current = -1;
-							pMsg->m_Max     = -1;
+							pMsg->m_Max = -1;
 						}
 					}
 
@@ -5935,15 +5935,15 @@ public:
 
 			case ET_MSG_ISGUNMOUNTED:
 				{
-					OB_GETMSG( ET_MG42MountedPlayer );
+					OB_GETMSG ( ET_MG42MountedPlayer );
 
 					if ( pMsg )
 					{
-						gentity_t *pGunEntity = EntityFromHandle( pMsg->m_MG42Entity );
+						gentity_t *pGunEntity = EntityFromHandle ( pMsg->m_MG42Entity );
 
 						if ( pGunEntity && pGunEntity->inuse && ( pGunEntity->r.ownerNum < level.maxclients ) )
 						{
-							pMsg->m_MountedEntity = HandleFromEntity( &g_entities[ pGunEntity->r.ownerNum ] );
+							pMsg->m_MountedEntity = HandleFromEntity ( &g_entities[ pGunEntity->r.ownerNum ] );
 						}
 						else
 						{
@@ -5956,15 +5956,15 @@ public:
 
 			case ET_MSG_ISGUNREPAIRABLE:
 				{
-					OB_GETMSG( ET_MG42MountedRepairable );
+					OB_GETMSG ( ET_MG42MountedRepairable );
 
 					if ( pMsg )
 					{
-						gentity_t *pGunEntity = EntityFromHandle( pMsg->m_MG42Entity );
+						gentity_t *pGunEntity = EntityFromHandle ( pMsg->m_MG42Entity );
 
 						if ( pEnt && pGunEntity && pGunEntity->inuse )
 						{
-							pMsg->m_Repairable = G_EmplacedGunIsRepairable( pGunEntity, pEnt ) == qtrue ? True : False;
+							pMsg->m_Repairable = G_EmplacedGunIsRepairable ( pGunEntity, pEnt ) == qtrue ? True : False;
 						}
 						else
 						{
@@ -5977,13 +5977,13 @@ public:
 
 			case ET_MSG_MOUNTEDMG42INFO:
 				{
-					OB_GETMSG( ET_MG42Info );
+					OB_GETMSG ( ET_MG42Info );
 
 					if ( pMsg )
 					{
-						if ( pEnt && pEnt->inuse && pEnt->client && BG_PlayerMounted( pEnt->client->ps.eFlags ) )
+						if ( pEnt && pEnt->inuse && pEnt->client && BG_PlayerMounted ( pEnt->client->ps.eFlags ) )
 						{
-							AngleVectors( pEnt->client->pmext.centerangles, pMsg->m_CenterFacing, NULL, NULL );
+							AngleVectors ( pEnt->client->pmext.centerangles, pMsg->m_CenterFacing, NULL, NULL );
 
 							//AngleVectors(pEnt->client->pmext.mountedWeaponAngles, pMsg->, NULL, NULL);
 							if ( pEnt->client->ps.eFlags & EF_MOUNTEDTANK )
@@ -5991,15 +5991,15 @@ public:
 								// seems tanks have complete horizonal movement, and fixed vertical
 								pMsg->m_MinHorizontalArc = -360;
 								pMsg->m_MaxHorizontalArc = -360;
-								pMsg->m_MinVerticalArc   = 14;
-								pMsg->m_MaxVerticalArc   = 50;
+								pMsg->m_MinVerticalArc = 14;
+								pMsg->m_MaxVerticalArc = 50;
 							}
 							else
 							{
 								pMsg->m_MinHorizontalArc = -pEnt->client->pmext.harc;
 								pMsg->m_MaxHorizontalArc = pEnt->client->pmext.harc;
-								pMsg->m_MinVerticalArc   = -pEnt->client->pmext.varc;
-								pMsg->m_MaxVerticalArc   = pEnt->client->pmext.varc;
+								pMsg->m_MinVerticalArc = -pEnt->client->pmext.varc;
+								pMsg->m_MaxVerticalArc = pEnt->client->pmext.varc;
 							}
 						}
 					}
@@ -6009,7 +6009,7 @@ public:
 
 			case ET_MSG_WPOVERHEATED:
 				{
-					OB_GETMSG( ET_WeaponOverheated );
+					OB_GETMSG ( ET_WeaponOverheated );
 
 					if ( pMsg )
 					{
@@ -6017,11 +6017,11 @@ public:
 						{
 							if ( pMsg->m_Weapon != ET_WP_MOUNTABLE_MG42 )
 							{
-								int iCurHeat = pEnt->client->ps.weapHeat[ _weaponBotToGame( pMsg->m_Weapon ) ];
+								int iCurHeat = pEnt->client->ps.weapHeat[ _weaponBotToGame ( pMsg->m_Weapon ) ];
 #ifdef NOQUARTER
-								int iMaxHeat = GetWeaponTableData( _weaponBotToGame( pMsg->m_Weapon ) )->maxHeat;
+								int iMaxHeat = GetWeaponTableData ( _weaponBotToGame ( pMsg->m_Weapon ) )->maxHeat;
 #else
-								int iMaxHeat = GetAmmoTableData( _weaponBotToGame( pMsg->m_Weapon ) )->maxHeat;
+								int iMaxHeat = GetAmmoTableData ( _weaponBotToGame ( pMsg->m_Weapon ) )->maxHeat;
 #endif
 								pMsg->m_IsOverheated = iMaxHeat ? ( ( iCurHeat >= iMaxHeat ) ? True : False ) : False;
 							}
@@ -6038,7 +6038,7 @@ public:
 			case ET_MSG_PICKWEAPON:
 			case ET_MSG_PICKWEAPON2:
 				{
-					OB_GETMSG( ET_SelectWeapon );
+					OB_GETMSG ( ET_SelectWeapon );
 
 					if ( pMsg )
 					{
@@ -6055,13 +6055,13 @@ public:
 
 							if ( _data.GetMessageId() == ET_MSG_PICKWEAPON2 )
 							{
-								pEnt->client->sess.playerWeapon2      = _weaponBotToGame( pMsg->m_Selection );
-								pEnt->client->sess.latchPlayerWeapon2 = _weaponBotToGame( pMsg->m_Selection );
+								pEnt->client->sess.playerWeapon2 = _weaponBotToGame ( pMsg->m_Selection );
+								pEnt->client->sess.latchPlayerWeapon2 = _weaponBotToGame ( pMsg->m_Selection );
 							}
 							else
 							{
 								//CS: /kill 2 seconds before next spawn
-								if ( !( pEnt->client->ps.pm_flags & PMF_LIMBO ) && pEnt->client->sess.playerWeapon != _weaponBotToGame( pMsg->m_Selection ) )
+								if ( ! ( pEnt->client->ps.pm_flags & PMF_LIMBO ) && pEnt->client->sess.playerWeapon != _weaponBotToGame ( pMsg->m_Selection ) )
 								{
 									pEnt->client->sess.botSuicide = qtrue;
 								}
@@ -6071,23 +6071,23 @@ public:
 								// dupe weapons now have same id for NQ
 								if ( pEnt->client->sess.sessionTeam == TEAM_ALLIES && pMsg->m_Selection == ET_WP_MOBILE_MG42 )
 								{
-									pEnt->client->sess.playerWeapon      = WP_MOBILE_BROWNING;
+									pEnt->client->sess.playerWeapon = WP_MOBILE_BROWNING;
 									pEnt->client->sess.latchPlayerWeapon = WP_MOBILE_BROWNING;
 								}
 								else if ( pEnt->client->sess.sessionTeam == TEAM_AXIS && pMsg->m_Selection == ET_WP_MORTAR )
 								{
-									pEnt->client->sess.playerWeapon      = WP_MORTAR2;
+									pEnt->client->sess.playerWeapon = WP_MORTAR2;
 									pEnt->client->sess.latchPlayerWeapon = WP_MORTAR2;
 								}
 								else
 								{
-									pEnt->client->sess.playerWeapon      = _weaponBotToGame( pMsg->m_Selection );
-									pEnt->client->sess.latchPlayerWeapon = _weaponBotToGame( pMsg->m_Selection );
+									pEnt->client->sess.playerWeapon = _weaponBotToGame ( pMsg->m_Selection );
+									pEnt->client->sess.latchPlayerWeapon = _weaponBotToGame ( pMsg->m_Selection );
 								}
 
-#else                                                   // !NOQUARTER
-								pEnt->client->sess.playerWeapon      = _weaponBotToGame( pMsg->m_Selection );
-								pEnt->client->sess.latchPlayerWeapon = _weaponBotToGame( pMsg->m_Selection );
+#else // !NOQUARTER
+								pEnt->client->sess.playerWeapon = _weaponBotToGame ( pMsg->m_Selection );
+								pEnt->client->sess.latchPlayerWeapon = _weaponBotToGame ( pMsg->m_Selection );
 #endif
 							}
 
@@ -6104,13 +6104,13 @@ public:
 
 			case ET_MSG_GETHINT:
 				{
-					OB_GETMSG( ET_CursorHint );
+					OB_GETMSG ( ET_CursorHint );
 
 					if ( pMsg )
 					{
 						if ( pEnt && pEnt->client )
 						{
-							pMsg->m_Type  = Bot_HintGameToBot( pEnt );
+							pMsg->m_Type = Bot_HintGameToBot ( pEnt );
 							pMsg->m_Value = pEnt->client->ps.serverCursorHintVal;
 						}
 					}
@@ -6120,13 +6120,13 @@ public:
 
 			case ET_MSG_CHANGESPAWNPOINT:
 				{
-					OB_GETMSG( ET_SpawnPoint );
+					OB_GETMSG ( ET_SpawnPoint );
 
 					if ( pMsg )
 					{
 						if ( pEnt && pEnt->client )
 						{
-							SetPlayerSpawn( pEnt, pMsg->m_SpawnPoint, qtrue );
+							SetPlayerSpawn ( pEnt, pMsg->m_SpawnPoint, qtrue );
 						}
 					}
 
@@ -6135,7 +6135,7 @@ public:
 
 			case ET_MSG_GHASFLAG:
 				{
-					OB_GETMSG( ET_HasFlag );
+					OB_GETMSG ( ET_HasFlag );
 
 					if ( pMsg )
 					{
@@ -6153,20 +6153,20 @@ public:
 
 			case ET_MSG_GCONSTRUCTABLE:
 				{
-					OB_GETMSG( ET_ConstructionState );
+					OB_GETMSG ( ET_ConstructionState );
 
 					if ( pMsg )
 					{
-						gentity_t *pConstructable = EntityFromHandle( pMsg->m_Constructable );
+						gentity_t *pConstructable = EntityFromHandle ( pMsg->m_Constructable );
 
 						if ( pEnt && pEnt->inuse && pConstructable && pConstructable->inuse )
 						{
-							if ( G_IsConstructible( pEnt->client->sess.sessionTeam, pConstructable ) )
+							if ( G_IsConstructible ( pEnt->client->sess.sessionTeam, pConstructable ) )
 							{
 								pMsg->m_State = CONST_UNBUILT;
 							}
-							else if ( ( pConstructable = G_ConstructionForTeam( pConstructable, pEnt->client->sess.sessionTeam ) ) &&
-							          G_ConstructionIsFullyBuilt( pConstructable ) )
+							else if ( ( pConstructable = G_ConstructionForTeam ( pConstructable, pEnt->client->sess.sessionTeam ) ) &&
+							          G_ConstructionIsFullyBuilt ( pConstructable ) )
 							{
 								pMsg->m_State = CONST_BUILT;
 							}
@@ -6186,11 +6186,11 @@ public:
 
 			case ET_MSG_GDYNDESTROYABLE:
 				{
-					OB_GETMSG( ET_Destroyable );
+					OB_GETMSG ( ET_Destroyable );
 
 					if ( pMsg )
 					{
-						gentity_t *pDestroyable = EntityFromHandle( pMsg->m_Entity );
+						gentity_t *pDestroyable = EntityFromHandle ( pMsg->m_Entity );
 
 						if ( pEnt && pEnt->inuse && pDestroyable && pDestroyable->inuse )
 						{
@@ -6215,7 +6215,7 @@ public:
 								{
 									pMsg->m_State = CONST_INVALID;
 								}
-								else if ( G_ConstructionIsPartlyBuilt( pDestroyable ) && pDestroyable->s.teamNum != pEnt->client->sess.sessionTeam )
+								else if ( G_ConstructionIsPartlyBuilt ( pDestroyable ) && pDestroyable->s.teamNum != pEnt->client->sess.sessionTeam )
 								{
 									pMsg->m_State = CONST_DESTROYABLE;
 								}
@@ -6225,7 +6225,7 @@ public:
 
 									while ( pCurrent )
 									{
-										if ( G_ConstructionIsPartlyBuilt( pCurrent ) &&
+										if ( G_ConstructionIsPartlyBuilt ( pCurrent ) &&
 										     pCurrent->s.teamNum != pEnt->client->sess.sessionTeam )
 										{
 											pMsg->m_State = CONST_DESTROYABLE;
@@ -6266,11 +6266,11 @@ public:
 
 			case ET_MSG_GEXPLOSIVESTATE:
 				{
-					OB_GETMSG( ET_ExplosiveState );
+					OB_GETMSG ( ET_ExplosiveState );
 
 					if ( pMsg )
 					{
-						gentity_t *pExplo = EntityFromHandle( pMsg->m_Explosive );
+						gentity_t *pExplo = EntityFromHandle ( pMsg->m_Explosive );
 
 						if ( pExplo && pExplo->inuse )
 						{
@@ -6296,14 +6296,14 @@ public:
 
 			case ET_MSG_GCANBEGRABBED:
 				{
-					OB_GETMSG( ET_CanBeGrabbed );
+					OB_GETMSG ( ET_CanBeGrabbed );
 
 					if ( pMsg )
 					{
 						//CS: testing flagstate
 						//pMsg->m_CanBeGrabbed = True;
 
-						gentity_t *pFlagEnt = EntityFromHandle( pMsg->m_Entity );
+						gentity_t *pFlagEnt = EntityFromHandle ( pMsg->m_Entity );
 
 						if ( pEnt && pEnt->client && pFlagEnt )
 						{
@@ -6316,18 +6316,18 @@ public:
 							else
 							{
 								pMsg->m_CanBeGrabbed =
-								  BG_CanItemBeGrabbed( &pFlagEnt->s, &pEnt->client->ps,
-								                       pEnt->client->sess.skill, pEnt->client->sess.sessionTeam ) ? True : False;
+								  BG_CanItemBeGrabbed ( &pFlagEnt->s, &pEnt->client->ps,
+								                        pEnt->client->sess.skill, pEnt->client->sess.sessionTeam ) ? True : False;
 
 								// When flags aren't dropped, we need to reject some pickup cases
 								// This is because the return flag goal uses this function to see if they can
 								// grab/return a flag
-								if ( pMsg->m_CanBeGrabbed == True && !( pFlagEnt->flags & FL_DROPPED_ITEM ) )
+								if ( pMsg->m_CanBeGrabbed == True && ! ( pFlagEnt->flags & FL_DROPPED_ITEM ) )
 								{
 									if ( ( pEnt->client->sess.sessionTeam == TEAM_AXIS ) &&
-									     !Q_stricmp( pFlagEnt->classname, "team_CTF_redflag" ) )
+									     !Q_stricmp ( pFlagEnt->classname, "team_CTF_redflag" ) )
 									{
-										GameEntity owner = GetEntityOwner( pMsg->m_Entity );
+										GameEntity owner = GetEntityOwner ( pMsg->m_Entity );
 
 										if ( !owner.IsValid() )
 										{
@@ -6335,9 +6335,9 @@ public:
 										}
 									}
 									else if ( ( pEnt->client->sess.sessionTeam == TEAM_ALLIES ) &&
-									          !Q_stricmp( pFlagEnt->classname, "team_CTF_blueflag" ) )
+									          !Q_stricmp ( pFlagEnt->classname, "team_CTF_blueflag" ) )
 									{
-										GameEntity owner = GetEntityOwner( pMsg->m_Entity );
+										GameEntity owner = GetEntityOwner ( pMsg->m_Entity );
 
 										if ( !owner.IsValid() )
 										{
@@ -6354,19 +6354,19 @@ public:
 
 			case ET_MSG_GNUMTEAMMINES:
 				{
-					OB_GETMSG( ET_TeamMines );
+					OB_GETMSG ( ET_TeamMines );
 
 					if ( pMsg )
 					{
 						if ( pEnt && pEnt->client )
 						{
-							pMsg->m_Current = G_CountTeamLandmines( pEnt->client->sess.sessionTeam );
+							pMsg->m_Current = G_CountTeamLandmines ( pEnt->client->sess.sessionTeam );
 #ifdef NOQUARTER
-							pMsg->m_Max     = team_maxLandmines.integer;
+							pMsg->m_Max = team_maxLandmines.integer;
 #elif defined ETPUB_VERSION
-							pMsg->m_Max     = g_maxTeamLandmines.integer;
+							pMsg->m_Max = g_maxTeamLandmines.integer;
 #else
-							pMsg->m_Max     = MAX_TEAM_LANDMINES;
+							pMsg->m_Max = MAX_TEAM_LANDMINES;
 #endif
 						}
 					}
@@ -6376,15 +6376,15 @@ public:
 
 			case ET_MSG_CABINETDATA:
 				{
-					OB_GETMSG( ET_CabinetData );
+					OB_GETMSG ( ET_CabinetData );
 
 					if ( pMsg )
 					{
 						if ( pEnt && ( pEnt->s.eType == ET_HEALER || pEnt->s.eType == ET_SUPPLIER ) )
 						{
-							pMsg->m_Rate          = pEnt->damage;
+							pMsg->m_Rate = pEnt->damage;
 							pMsg->m_CurrentAmount = pEnt->health;
-							pMsg->m_MaxAmount     = pEnt->count;
+							pMsg->m_MaxAmount = pEnt->count;
 						}
 						else
 						{
@@ -6399,14 +6399,14 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						OB_GETMSG( ET_PlayerSkills );
-						pMsg->m_Skill[ ET_SKILL_BATTLE_SENSE ]  = pEnt->client->sess.skill[ SK_BATTLE_SENSE ];
-						pMsg->m_Skill[ ET_SKILL_ENGINEERING ]   = pEnt->client->sess.skill[ SK_EXPLOSIVES_AND_CONSTRUCTION ];
-						pMsg->m_Skill[ ET_SKILL_FIRST_AID ]     = pEnt->client->sess.skill[ SK_FIRST_AID ];
-						pMsg->m_Skill[ ET_SKILL_SIGNALS ]       = pEnt->client->sess.skill[ SK_SIGNALS ];
+						OB_GETMSG ( ET_PlayerSkills );
+						pMsg->m_Skill[ ET_SKILL_BATTLE_SENSE ] = pEnt->client->sess.skill[ SK_BATTLE_SENSE ];
+						pMsg->m_Skill[ ET_SKILL_ENGINEERING ] = pEnt->client->sess.skill[ SK_EXPLOSIVES_AND_CONSTRUCTION ];
+						pMsg->m_Skill[ ET_SKILL_FIRST_AID ] = pEnt->client->sess.skill[ SK_FIRST_AID ];
+						pMsg->m_Skill[ ET_SKILL_SIGNALS ] = pEnt->client->sess.skill[ SK_SIGNALS ];
 						pMsg->m_Skill[ ET_SKILL_LIGHT_WEAPONS ] = pEnt->client->sess.skill[ SK_LIGHT_WEAPONS ];
 						pMsg->m_Skill[ ET_SKILL_HEAVY_WEAPONS ] = pEnt->client->sess.skill[ SK_HEAVY_WEAPONS ];
-						pMsg->m_Skill[ ET_SKILL_COVERTOPS ]     = pEnt->client->sess.skill[ SK_MILITARY_INTELLIGENCE_AND_SCOPED_WEAPONS ];
+						pMsg->m_Skill[ ET_SKILL_COVERTOPS ] = pEnt->client->sess.skill[ SK_MILITARY_INTELLIGENCE_AND_SCOPED_WEAPONS ];
 					}
 					else
 					{
@@ -6420,7 +6420,7 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						trap_EA_Command( pEnt - g_entities, ( char * ) "fireteam create" );
+						trap_EA_Command ( pEnt - g_entities, ( char * ) "fireteam create" );
 					}
 
 					break;
@@ -6430,7 +6430,7 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						trap_EA_Command( pEnt - g_entities, ( char * ) "fireteam disband" );
+						trap_EA_Command ( pEnt - g_entities, ( char * ) "fireteam disband" );
 					}
 
 					break;
@@ -6440,7 +6440,7 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						trap_EA_Command( pEnt - g_entities, ( char * ) "fireteam leave" );
+						trap_EA_Command ( pEnt - g_entities, ( char * ) "fireteam leave" );
 					}
 
 					break;
@@ -6450,8 +6450,8 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						OB_GETMSG( ET_FireTeamApply );
-						trap_EA_Command( pEnt - g_entities, va( "fireteam apply %i", pMsg->m_FireTeamNum ) );
+						OB_GETMSG ( ET_FireTeamApply );
+						trap_EA_Command ( pEnt - g_entities, va ( "fireteam apply %i", pMsg->m_FireTeamNum ) );
 					}
 
 					break;
@@ -6461,12 +6461,12 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						OB_GETMSG( ET_FireTeam );
-						gentity_t *targ = EntityFromHandle( pMsg->m_Target );
+						OB_GETMSG ( ET_FireTeam );
+						gentity_t *targ = EntityFromHandle ( pMsg->m_Target );
 
 						if ( targ )
 						{
-							trap_EA_Command( pEnt - g_entities, va( "fireteam invite %i", ( targ - g_entities ) + 1 ) );
+							trap_EA_Command ( pEnt - g_entities, va ( "fireteam invite %i", ( targ - g_entities ) + 1 ) );
 						}
 					}
 
@@ -6477,12 +6477,12 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						OB_GETMSG( ET_FireTeam );
-						gentity_t *targ = EntityFromHandle( pMsg->m_Target );
+						OB_GETMSG ( ET_FireTeam );
+						gentity_t *targ = EntityFromHandle ( pMsg->m_Target );
 
 						if ( targ )
 						{
-							trap_EA_Command( pEnt - g_entities, va( "fireteam warn %i", ( targ - g_entities ) + 1 ) );
+							trap_EA_Command ( pEnt - g_entities, va ( "fireteam warn %i", ( targ - g_entities ) + 1 ) );
 						}
 					}
 
@@ -6493,12 +6493,12 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						OB_GETMSG( ET_FireTeam );
-						gentity_t *targ = EntityFromHandle( pMsg->m_Target );
+						OB_GETMSG ( ET_FireTeam );
+						gentity_t *targ = EntityFromHandle ( pMsg->m_Target );
 
 						if ( targ )
 						{
-							trap_EA_Command( pEnt - g_entities, va( "fireteam kick %i", ( targ - g_entities ) + 1 ) );
+							trap_EA_Command ( pEnt - g_entities, va ( "fireteam kick %i", ( targ - g_entities ) + 1 ) );
 						}
 					}
 
@@ -6509,12 +6509,12 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						OB_GETMSG( ET_FireTeam );
-						gentity_t *targ = EntityFromHandle( pMsg->m_Target );
+						OB_GETMSG ( ET_FireTeam );
+						gentity_t *targ = EntityFromHandle ( pMsg->m_Target );
 
 						if ( targ )
 						{
-							trap_EA_Command( pEnt - g_entities, va( "fireteam propose %i", ( targ - g_entities ) + 1 ) );
+							trap_EA_Command ( pEnt - g_entities, va ( "fireteam propose %i", ( targ - g_entities ) + 1 ) );
 						}
 					}
 
@@ -6525,14 +6525,14 @@ public:
 				{
 					if ( pEnt && pEnt->client )
 					{
-						OB_GETMSG( ET_FireTeamInfo );
+						OB_GETMSG ( ET_FireTeamInfo );
 						fireteamData_t *ft = 0;
 
-						if ( G_IsOnFireteam( pEnt - g_entities, &ft ) )
+						if ( G_IsOnFireteam ( pEnt - g_entities, &ft ) )
 						{
 							pMsg->m_FireTeamNum = ft->ident;
-							pMsg->m_Leader      = HandleFromEntity( &g_entities[ ( int )ft->joinOrder[ 0 ] ] );
-							pMsg->m_InFireTeam  = True;
+							pMsg->m_Leader = HandleFromEntity ( &g_entities[ ( int ) ft->joinOrder[ 0 ] ] );
+							pMsg->m_InFireTeam = True;
 
 							int mbrnum = 0;
 
@@ -6542,7 +6542,7 @@ public:
 
 								if ( ft->joinOrder[ i ] != -1 )
 								{
-									GameEntity ge = HandleFromEntity( &g_entities[ ( int )ft->joinOrder[ i ] ] );
+									GameEntity ge = HandleFromEntity ( &g_entities[ ( int ) ft->joinOrder[ i ] ] );
 
 									if ( ge.IsValid() )
 									{
@@ -6558,7 +6558,7 @@ public:
 
 			case ET_MSG_GETGAMETYPE:
 				{
-					OB_GETMSG( ET_GameType );
+					OB_GETMSG ( ET_GameType );
 
 					if ( pMsg )
 					{
@@ -6570,11 +6570,11 @@ public:
 
 			case ET_MSG_SETCVAR:
 				{
-					OB_GETMSG( ET_CvarSet );
+					OB_GETMSG ( ET_CvarSet );
 
 					if ( pMsg )
 					{
-						trap_Cvar_Set( pMsg->m_Cvar, pMsg->m_Value );
+						trap_Cvar_Set ( pMsg->m_Cvar, pMsg->m_Value );
 					}
 
 					break;
@@ -6582,12 +6582,12 @@ public:
 
 			case ET_MSG_GETCVAR:
 				{
-					OB_GETMSG( ET_CvarGet );
+					OB_GETMSG ( ET_CvarGet );
 
 					if ( pMsg )
 					{
 						pMsg->m_Value =
-						  trap_Cvar_VariableIntegerValue( pMsg->m_Cvar );
+						  trap_Cvar_VariableIntegerValue ( pMsg->m_Cvar );
 					}
 
 					break;
@@ -6595,7 +6595,7 @@ public:
 
 			case ET_MSG_DISABLEBOTPUSH:
 				{
-					OB_GETMSG( ET_DisableBotPush );
+					OB_GETMSG ( ET_DisableBotPush );
 
 					if ( pMsg )
 					{
@@ -6624,23 +6624,23 @@ public:
 		return Success;
 	}
 
-	void PrintError( const char *_error )
+	void PrintError ( const char *_error )
 	{
 		if ( _error )
 		{
-			G_Printf( "%s%s\n", S_COLOR_RED, _error );
+			G_Printf ( "%s%s\n", S_COLOR_RED, _error );
 		}
 	}
 
-	void PrintMessage( const char *_msg )
+	void PrintMessage ( const char *_msg )
 	{
 		if ( _msg )
 		{
 			// et console doesn't support tabs, so
-			const int BufferSize         = 1024;
+			const int BufferSize = 1024;
 			char tmpbuffer[ BufferSize ] = {};
 			const char *src = _msg;
-			char *dest      = tmpbuffer;
+			char *dest = tmpbuffer;
 
 			while ( *src != 0 )
 			{
@@ -6659,7 +6659,7 @@ public:
 				}
 			}
 
-			G_Printf( "%s%s\n", S_COLOR_GREEN, tmpbuffer );
+			G_Printf ( "%s%s\n", S_COLOR_GREEN, tmpbuffer );
 		}
 	}
 
@@ -6699,7 +6699,7 @@ public:
 		return level.rawmapname;
 	}
 
-	void GetMapExtents( AABB &_aabb )
+	void GetMapExtents ( AABB &_aabb )
 	{
 		if ( level.mapcoordsValid )
 		{
@@ -6722,43 +6722,43 @@ public:
 		}
 		else
 		{
-			memset( &_aabb, 0, sizeof( AABB ) );
+			memset ( &_aabb, 0, sizeof ( AABB ) );
 		}
 	}
 
-	GameEntity EntityByName( const char *_name )
+	GameEntity EntityByName ( const char *_name )
 	{
-		gentity_t *pEnt = G_FindByTargetname( NULL, _name );
-		return HandleFromEntity( pEnt );
+		gentity_t *pEnt = G_FindByTargetname ( NULL, _name );
+		return HandleFromEntity ( pEnt );
 	}
 
-	GameEntity EntityFromID( const int _gameId )
+	GameEntity EntityFromID ( const int _gameId )
 	{
-		gentity_t *pEnt = INDEXENT( _gameId );
-		return pEnt ? HandleFromEntity( pEnt ) : GameEntity();
+		gentity_t *pEnt = INDEXENT ( _gameId );
+		return pEnt ? HandleFromEntity ( pEnt ) : GameEntity();
 	}
 
-	int IDFromEntity( const GameEntity _ent )
+	int IDFromEntity ( const GameEntity _ent )
 	{
-		gentity_t *pEnt = EntityFromHandle( _ent );
+		gentity_t *pEnt = EntityFromHandle ( _ent );
 
 		if ( pEnt )
 		{
 			gentity_t *pStart = g_entities;
-			int iIndex        = pEnt - pStart;
-			assert( iIndex >= 0 );
+			int iIndex = pEnt - pStart;
+			assert ( iIndex >= 0 );
 			return ( iIndex < MAX_GENTITIES ) ? iIndex : -1;
 		}
 
 		return -1;
 	}
 
-	bool DoesEntityStillExist( const GameEntity &_hndl )
+	bool DoesEntityStillExist ( const GameEntity &_hndl )
 	{
-		return _hndl.IsValid() ? EntityFromHandle( _hndl ) != NULL : false;
+		return _hndl.IsValid() ? EntityFromHandle ( _hndl ) != NULL : false;
 	}
 
-	int GetAutoNavFeatures( AutoNavFeature *_feature, int _max )
+	int GetAutoNavFeatures ( AutoNavFeature *_feature, int _max )
 	{
 		int iNumFeatures = 0;
 
@@ -6772,17 +6772,17 @@ public:
 			}
 
 			////////////////////////////////////////////////////////////////////////
-			_feature[ iNumFeatures ].m_Type           = 0;
-			_feature[ iNumFeatures ].m_TravelTime     = 0;
+			_feature[ iNumFeatures ].m_Type = 0;
+			_feature[ iNumFeatures ].m_TravelTime = 0;
 			_feature[ iNumFeatures ].m_ObstacleEntity = false;
 
 			for ( int i = 0; i < 3; ++i )
 			{
-				_feature[ iNumFeatures ].m_Position[ i ]       = e->r.currentOrigin[ i ];
+				_feature[ iNumFeatures ].m_Position[ i ] = e->r.currentOrigin[ i ];
 				_feature[ iNumFeatures ].m_TargetPosition[ i ] = e->r.currentOrigin[ i ];
-				_feature[ iNumFeatures ].m_Bounds.m_Mins[ 0 ]  = 0.f;
-				_feature[ iNumFeatures ].m_Bounds.m_Maxs[ 0 ]  = 0.f;
-				AngleVectors( e->s.angles, _feature[ iNumFeatures ].m_Facing, NULL, NULL );
+				_feature[ iNumFeatures ].m_Bounds.m_Mins[ 0 ] = 0.f;
+				_feature[ iNumFeatures ].m_Bounds.m_Maxs[ 0 ] = 0.f;
+				AngleVectors ( e->s.angles, _feature[ iNumFeatures ].m_Facing, NULL, NULL );
 			}
 
 			_feature[ iNumFeatures ].m_Bounds.m_Mins[ 0 ] = e->r.absmin[ 0 ];
@@ -6795,23 +6795,23 @@ public:
 			//////////////////////////////////////////////////////////////////////////
 			if ( e->classname )
 			{
-				if ( !Q_stricmp( e->classname, "team_CTF_redspawn" ) )
+				if ( !Q_stricmp ( e->classname, "team_CTF_redspawn" ) )
 				{
 					_feature[ iNumFeatures ].m_Type = ENT_CLASS_GENERIC_PLAYERSTART_TEAM1;
 				}
-				else if ( !Q_stricmp( e->classname, "team_CTF_bluespawn" ) )
+				else if ( !Q_stricmp ( e->classname, "team_CTF_bluespawn" ) )
 				{
 					_feature[ iNumFeatures ].m_Type = ENT_CLASS_GENERIC_PLAYERSTART_TEAM2;
 				}
-				else if ( !Q_stricmp( e->classname, "info_player_deathmatch" ) ||
-				          !Q_stricmp( e->classname, "info_player_spawn" ) )
+				else if ( !Q_stricmp ( e->classname, "info_player_deathmatch" ) ||
+				          !Q_stricmp ( e->classname, "info_player_spawn" ) )
 				{
 					_feature[ iNumFeatures ].m_Type = ENT_CLASS_GENERIC_PLAYERSTART;
 				}
-				else if ( !Q_stricmp( e->classname, "target_teleporter" ) )
+				else if ( !Q_stricmp ( e->classname, "target_teleporter" ) )
 				{
 					_feature[ iNumFeatures ].m_Type = ENT_CLASS_GENERIC_TELEPORTER;
-					gentity_t *pTarget = G_PickTarget( e->target );
+					gentity_t *pTarget = G_PickTarget ( e->target );
 
 					if ( pTarget )
 					{
@@ -6820,27 +6820,27 @@ public:
 						_feature[ iNumFeatures ].m_TargetPosition[ 2 ] = pTarget->r.currentOrigin[ 2 ];
 					}
 				}
-				else if ( !Q_stricmp( e->classname, "team_CTF_redflag" ) )
+				else if ( !Q_stricmp ( e->classname, "team_CTF_redflag" ) )
 				{
 					_feature[ iNumFeatures ].m_Type = ENT_CLASS_GENERIC_FLAG;
 				}
-				else if ( !Q_stricmp( e->classname, "team_CTF_blueflag" ) )
+				else if ( !Q_stricmp ( e->classname, "team_CTF_blueflag" ) )
 				{
 					_feature[ iNumFeatures ].m_Type = ENT_CLASS_GENERIC_FLAG;
 				}
-				else if ( !Q_stricmp( e->classname, "misc_mg42" ) || !Q_stricmp( e->classname, "misc_mg42base" ) )
+				else if ( !Q_stricmp ( e->classname, "misc_mg42" ) || !Q_stricmp ( e->classname, "misc_mg42base" ) )
 				{
-					_feature[ iNumFeatures ].m_Type           = ET_CLASSEX_MG42MOUNT;
+					_feature[ iNumFeatures ].m_Type = ET_CLASSEX_MG42MOUNT;
 					_feature[ iNumFeatures ].m_ObstacleEntity = true;
 				}
-				else if ( !Q_stricmp( e->classname, "misc_cabinet_health" ) )
+				else if ( !Q_stricmp ( e->classname, "misc_cabinet_health" ) )
 				{
-					_feature[ iNumFeatures ].m_Type           = ET_CLASSEX_HEALTHCABINET;
+					_feature[ iNumFeatures ].m_Type = ET_CLASSEX_HEALTHCABINET;
 					_feature[ iNumFeatures ].m_ObstacleEntity = true;
 				}
-				else if ( !Q_stricmp( e->classname, "misc_cabinet_supply" ) )
+				else if ( !Q_stricmp ( e->classname, "misc_cabinet_supply" ) )
 				{
-					_feature[ iNumFeatures ].m_Type           = ET_CLASSEX_AMMOCABINET;
+					_feature[ iNumFeatures ].m_Type = ET_CLASSEX_AMMOCABINET;
 					_feature[ iNumFeatures ].m_ObstacleEntity = true;
 				}
 			}
@@ -6876,18 +6876,18 @@ public:
 		char            basepath[ MAX_OSPATH ];
 		static char botpath[ MAX_OSPATH ];
 
-		trap_Cvar_VariableStringBuffer( "fs_basepath", basepath, sizeof( basepath ) );
+		trap_Cvar_VariableStringBuffer ( "fs_basepath", basepath, sizeof ( basepath ) );
 
-		Com_sprintf( botpath, sizeof( botpath ), "%s\\omni-bot", basepath );
+		Com_sprintf ( botpath, sizeof ( botpath ), "%s\\omni-bot", basepath );
 
-		return Omnibot_FixPath( botpath );
+		return Omnibot_FixPath ( botpath );
 	}
 
 	const char *GetLogPath()
 	{
 		static char logpath[ 512 ];
-		trap_Cvar_VariableStringBuffer( "fs_homepath", logpath, sizeof( logpath ) );
-		return Omnibot_FixPath( logpath );
+		trap_Cvar_VariableStringBuffer ( "fs_homepath", logpath, sizeof ( logpath ) );
+		return Omnibot_FixPath ( logpath );
 	}
 };
 
@@ -6896,8 +6896,8 @@ void Bot_Interface_InitHandles()
 	for ( int i = 0; i < MAX_GENTITIES; ++i )
 	{
 		m_EntityHandles[ i ].m_HandleSerial = 1;
-		m_EntityHandles[ i ].m_NewEntity    = false;
-		m_EntityHandles[ i ].m_Used         = false;
+		m_EntityHandles[ i ].m_NewEntity = false;
+		m_EntityHandles[ i ].m_Used = false;
 	}
 }
 
@@ -6905,21 +6905,21 @@ int Bot_Interface_Init()
 {
 	if ( g_OmniBotEnable.integer == 0 )
 	{
-		G_Printf( "%s%s\n", S_COLOR_GREEN,
-		          "Omni-bot is currently disabled with \"omnibot_enable 0\"" );
+		G_Printf ( "%s%s\n", S_COLOR_GREEN,
+		           "Omni-bot is currently disabled with \"omnibot_enable 0\"" );
 		return 1;
 	}
 
 #ifdef _DEBUG
-	trap_Cvar_Set( "sv_cheats", "1" );
-	trap_Cvar_Update( &g_cheats );
+	trap_Cvar_Set ( "sv_cheats", "1" );
+	trap_Cvar_Update ( &g_cheats );
 #endif
 
-	g_GoalSubmitReady    = false;
+	g_GoalSubmitReady = false;
 
 	g_InterfaceFunctions = new ETInterface;
-	eomnibot_error err = Omnibot_LoadLibrary( ET_VERSION_LATEST,
-	                     "omnibot_et", Omnibot_FixPath( g_OmniBotPath.string ) );
+	eomnibot_error err = Omnibot_LoadLibrary ( ET_VERSION_LATEST,
+	                     "omnibot_et", Omnibot_FixPath ( g_OmniBotPath.string ) );
 
 	if ( err == BOT_ERROR_NONE )
 	{
@@ -6947,16 +6947,16 @@ void Bot_Interface_ConsoleCommand()
 	enum { BuffSize = 32 };
 
 	char buffer[ BuffSize ] = {};
-	trap_Argv( 1, buffer, BuffSize );
+	trap_Argv ( 1, buffer, BuffSize );
 
 	if ( IsOmnibotLoaded() )
 	{
-		if ( !Q_stricmp( buffer, "unload" ) )
+		if ( !Q_stricmp ( buffer, "unload" ) )
 		{
 			Bot_Interface_Shutdown();
 			return;
 		}
-		else if ( !Q_stricmp( buffer, "reload" ) )
+		else if ( !Q_stricmp ( buffer, "reload" ) )
 		{
 			Bot_Interface_Shutdown();
 			Bot_Interface_InitHandles();
@@ -6968,14 +6968,14 @@ void Bot_Interface_ConsoleCommand()
 
 		for ( int i = 0; i < trap_Argc(); ++i )
 		{
-			trap_Argv( i, args.m_Args[ args.m_NumArgs++ ], Arguments::MaxArgLength );
+			trap_Argv ( i, args.m_Args[ args.m_NumArgs++ ], Arguments::MaxArgLength );
 		}
 
-		g_BotFunctions.pfnConsoleCommand( args );
+		g_BotFunctions.pfnConsoleCommand ( args );
 	}
 	else
 	{
-		if ( !Q_stricmp( buffer, "load" ) )
+		if ( !Q_stricmp ( buffer, "load" ) )
 		{
 			Bot_Interface_InitHandles();
 			Bot_Interface_Init();
@@ -6983,12 +6983,12 @@ void Bot_Interface_ConsoleCommand()
 		}
 		else
 		{
-			G_Printf( "%s%s\n", S_COLOR_RED, "Omni-bot not loaded." );
+			G_Printf ( "%s%s\n", S_COLOR_RED, "Omni-bot not loaded." );
 		}
 	}
 }
 
-extern "C" void script_mover_spawn( gentity_t *ent );
+extern "C" void script_mover_spawn ( gentity_t *ent );
 
 void Bot_Interface_Update()
 {
@@ -7016,13 +7016,13 @@ void Bot_Interface_Update()
 				if ( !level.twoMinute && ( g_timelimit.value * 60000 - ( level.time - level.startTime ) ) < 120000 )
 				{
 					level.twoMinute = qtrue;
-					Bot_Util_SendTrigger( NULL, NULL, "two minute warning.", "twominute" );
+					Bot_Util_SendTrigger ( NULL, NULL, "two minute warning.", "twominute" );
 				}
 
 				if ( !level.thirtySecond && ( g_timelimit.value * 60000 - ( level.time - level.startTime ) ) < 30000 )
 				{
 					level.thirtySecond = qtrue;
-					Bot_Util_SendTrigger( NULL, NULL, "thirty second warning.", "thirtysecond" );
+					Bot_Util_SendTrigger ( NULL, NULL, "thirty second warning.", "thirtysecond" );
 				}
 			}
 		}
@@ -7033,7 +7033,7 @@ void Bot_Interface_Update()
 			if ( serverGravity != g_gravity.value )
 			{
 				Event_SystemGravity d = { -g_gravity.value };
-				g_BotFunctions.pfnSendGlobalEvent( MessageHelper( GAME_GRAVITY, &d, sizeof( d ) ) );
+				g_BotFunctions.pfnSendGlobalEvent ( MessageHelper ( GAME_GRAVITY, &d, sizeof ( d ) ) );
 				serverGravity = g_gravity.value;
 			}
 
@@ -7042,7 +7042,7 @@ void Bot_Interface_Update()
 			if ( g_cheats.integer != cheatsEnabled )
 			{
 				Event_SystemCheats d = { g_cheats.integer ? True : False };
-				g_BotFunctions.pfnSendGlobalEvent( MessageHelper( GAME_CHEATS, &d, sizeof( d ) ) );
+				g_BotFunctions.pfnSendGlobalEvent ( MessageHelper ( GAME_CHEATS, &d, sizeof ( d ) ) );
 				cheatsEnabled = g_cheats.integer;
 			}
 		}
@@ -7074,26 +7074,26 @@ void Bot_Interface_Update()
 			     ( g_entities[ i ].client->sess.spectatorState == SPECTATOR_FOLLOW ) )
 			{
 				int iDestination = g_entities[ i ].client->sess.spectatorClient;
-				Bot_Event_Spectated( iDestination, i );
+				Bot_Event_Spectated ( iDestination, i );
 			}
 
 			// fake handle server commands (to prevent server command overflow)
-			if ( ( g_entities[ i ].inuse == qtrue ) && IsBot( &g_entities[ i ] ) )
+			if ( ( g_entities[ i ].inuse == qtrue ) && IsBot ( &g_entities[ i ] ) )
 			{
 				++iNumBots;
 
-				while ( trap_BotGetServerCommand( i, buf, sizeof( buf ) ) )
+				while ( trap_BotGetServerCommand ( i, buf, sizeof ( buf ) ) )
 				{
 				}
 			}
 		}
 
-		if ( !( g_OmniBotFlags.integer & OBF_DONT_SHOW_BOTCOUNT ) )
+		if ( ! ( g_OmniBotFlags.integer & OBF_DONT_SHOW_BOTCOUNT ) )
 		{
 			if ( g_OmniBotPlaying.integer != iNumBots )
 			{
 				g_OmniBotPlaying.integer = iNumBots;
-				trap_Cvar_Set( "omnibot_playing", va( "%i", iNumBots ) );
+				trap_Cvar_Set ( "omnibot_playing", va ( "%i", iNumBots ) );
 			}
 		}
 		else
@@ -7101,7 +7101,7 @@ void Bot_Interface_Update()
 			if ( g_OmniBotPlaying.integer != -1 )
 			{
 				g_OmniBotPlaying.integer = -1;
-				trap_Cvar_Set( "omnibot_playing", "-1" );
+				trap_Cvar_Set ( "omnibot_playing", "-1" );
 			}
 		}
 
@@ -7114,7 +7114,7 @@ void Bot_Interface_Update()
 				if ( g_entities[ i ].think != script_mover_spawn )
 				{
 					m_EntityHandles[ i ].m_NewEntity = false;
-					Bot_Event_EntityCreated( &g_entities[ i ] );
+					Bot_Event_EntityCreated ( &g_entities[ i ] );
 				}
 			}
 		}
@@ -7129,7 +7129,7 @@ void Bot_Interface_Update()
 
 //////////////////////////////////////////////////////////////////////////
 
-qboolean Bot_Util_AllowPush( int weaponId )
+qboolean Bot_Util_AllowPush ( int weaponId )
 {
 	switch ( weaponId )
 	{
@@ -7147,7 +7147,7 @@ qboolean Bot_Util_AllowPush( int weaponId )
 }
 
 //////////////////////////////////////////////////////////////////////////
-const char *_GetEntityName( gentity_t *_ent )
+const char *_GetEntityName ( gentity_t *_ent )
 {
 	// For goal names.
 	//if(_ent)
@@ -7175,43 +7175,43 @@ const char *_GetEntityName( gentity_t *_ent )
 			else
 			{
 				static char     userinfo[ MAX_INFO_STRING ] = { 0 };
-				trap_GetUserinfo( _ent - g_entities, userinfo, sizeof( userinfo ) );
-				return Info_ValueForKey( userinfo, "name" );
+				trap_GetUserinfo ( _ent - g_entities, userinfo, sizeof ( userinfo ) );
+				return Info_ValueForKey ( userinfo, "name" );
 			}
 		}
 
 		if ( _ent->track )
 		{
-			strcpy( newentname, _ent->track );
+			strcpy ( newentname, _ent->track );
 		}
 		else if ( _ent->scriptName )
 		{
-			strcpy( newentname, _ent->scriptName );
+			strcpy ( newentname, _ent->scriptName );
 		}
 		else if ( _ent->targetname )
 		{
-			strcpy( newentname, _ent->targetname );
+			strcpy ( newentname, _ent->targetname );
 		}
 		else if ( _ent->message )
 		{
-			strcpy( newentname, _ent->message );
+			strcpy ( newentname, _ent->message );
 		}
 
 		name = newentname;
 
-		Q_CleanStr( name );
+		Q_CleanStr ( name );
 
 		if ( name )
 		{
-			char undschar[] = { '-', ( char )NULL };
+			char undschar[] = { '-', ( char ) NULL };
 			char skipchar[] = { '[', ']', '#', '!', '*', '`',
 			                    '^', '&', '<', '>', '+', '=', '|',  '\'', '%',
-			                    '.', ':', '/', '(', ')', ( char )NULL
+			                    '.', ':', '/', '(', ')', ( char ) NULL
 			                  };
-			char *curchar   = NULL;
-			char *tmp       = NULL;
-			char *tmpdst    = NULL;
-			tmp    = name;
+			char *curchar = NULL;
+			char *tmp = NULL;
+			char *tmpdst = NULL;
+			tmp = name;
 			tmpdst = name;
 
 			while ( *tmp )
@@ -7249,7 +7249,7 @@ const char *_GetEntityName( gentity_t *_ent )
 
 			*tmpdst = '\0';
 
-			if ( !Q_stricmpn( "the ", name, 4 ) )
+			if ( !Q_stricmpn ( "the ", name, 4 ) )
 			{
 				return name + 4;
 			}
@@ -7262,7 +7262,7 @@ const char *_GetEntityName( gentity_t *_ent )
 }
 
 //////////////////////////////////////////////////////////////////////////
-qboolean Bot_Util_CheckForSuicide( gentity_t *ent )
+qboolean Bot_Util_CheckForSuicide ( gentity_t *ent )
 {
 	if ( ent && ent->client )
 	{
@@ -7273,7 +7273,7 @@ qboolean Bot_Util_CheckForSuicide( gentity_t *ent )
 			{
 				if ( ( g_redlimbotime.integer - ( ( level.dwRedReinfOffset + level.timeCurrent - level.startTime ) % g_redlimbotime.integer ) ) < 2000 )
 				{
-					Cmd_Kill_f( ent );
+					Cmd_Kill_f ( ent );
 					ent->client->sess.botSuicide = qfalse;
 					return qtrue;
 				}
@@ -7282,7 +7282,7 @@ qboolean Bot_Util_CheckForSuicide( gentity_t *ent )
 			{
 				if ( ( g_bluelimbotime.integer - ( ( level.dwBlueReinfOffset + level.timeCurrent - level.startTime ) % g_bluelimbotime.integer ) ) < 2000 )
 				{
-					Cmd_Kill_f( ent );
+					Cmd_Kill_f ( ent );
 					ent->client->sess.botSuicide = qfalse;
 					return qtrue;
 				}
@@ -7295,42 +7295,42 @@ qboolean Bot_Util_CheckForSuicide( gentity_t *ent )
 
 //////////////////////////////////////////////////////////////////////////
 
-void Bot_Event_ClientConnected( int _client, qboolean _isbot )
+void Bot_Event_ClientConnected ( int _client, qboolean _isbot )
 {
 	if ( IsOmnibotLoaded() )
 	{
 		Event_SystemClientConnected d;
 		d.m_GameId = _client;
-		d.m_IsBot  = _isbot == qtrue ? True : False;
-		g_BotFunctions.pfnSendGlobalEvent( MessageHelper( GAME_CLIENTCONNECTED, &d, sizeof( d ) ) );
+		d.m_IsBot = _isbot == qtrue ? True : False;
+		g_BotFunctions.pfnSendGlobalEvent ( MessageHelper ( GAME_CLIENTCONNECTED, &d, sizeof ( d ) ) );
 	}
 }
 
-void Bot_Event_ClientDisConnected( int _client )
+void Bot_Event_ClientDisConnected ( int _client )
 {
 	if ( IsOmnibotLoaded() )
 	{
 		Event_SystemClientDisConnected d = { _client };
-		g_BotFunctions.pfnSendGlobalEvent( MessageHelper( GAME_CLIENTDISCONNECTED, &d, sizeof( d ) ) );
+		g_BotFunctions.pfnSendGlobalEvent ( MessageHelper ( GAME_CLIENTDISCONNECTED, &d, sizeof ( d ) ) );
 	}
 }
 
-void Bot_Event_ResetWeapons( int _client )
+void Bot_Event_ResetWeapons ( int _client )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_RESETWEAPONS ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_RESETWEAPONS ) );
 		}
 	}
 }
 
-void Bot_Event_AddWeapon( int _client, int _weaponId )
+void Bot_Event_AddWeapon ( int _client, int _weaponId )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			//////////////////////////////////////////////////////////////////////////
 			int AddWeapon = _weaponId;
@@ -7339,11 +7339,11 @@ void Bot_Event_AddWeapon( int _client, int _weaponId )
 			{
 				case ET_WP_GARAND:
 					{
-						if ( COM_BitCheck( g_entities[ _client ].client->ps.weapons, WP_GARAND_SCOPE ) )
+						if ( COM_BitCheck ( g_entities[ _client ].client->ps.weapons, WP_GARAND_SCOPE ) )
 						{
 							// remove the unscoped to give the scoped
 							Event_RemoveWeapon d = { ET_WP_GARAND };
-							g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_REMOVEWEAPON, &d, sizeof( d ) ) );
+							g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_REMOVEWEAPON, &d, sizeof ( d ) ) );
 
 							AddWeapon = ET_WP_GARAND_SCOPE;
 						}
@@ -7353,11 +7353,11 @@ void Bot_Event_AddWeapon( int _client, int _weaponId )
 
 				case ET_WP_K43:
 					{
-						if ( COM_BitCheck( g_entities[ _client ].client->ps.weapons, WP_K43_SCOPE ) )
+						if ( COM_BitCheck ( g_entities[ _client ].client->ps.weapons, WP_K43_SCOPE ) )
 						{
 							// remove the unscoped to give the scoped
 							Event_RemoveWeapon d = { ET_WP_K43 };
-							g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_REMOVEWEAPON, &d, sizeof( d ) ) );
+							g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_REMOVEWEAPON, &d, sizeof ( d ) ) );
 
 							AddWeapon = ET_WP_K43_SCOPE;
 						}
@@ -7367,11 +7367,11 @@ void Bot_Event_AddWeapon( int _client, int _weaponId )
 
 				case ET_WP_FG42:
 					{
-						if ( COM_BitCheck( g_entities[ _client ].client->ps.weapons, WP_FG42SCOPE ) )
+						if ( COM_BitCheck ( g_entities[ _client ].client->ps.weapons, WP_FG42SCOPE ) )
 						{
 							// remove the unscoped to give the scoped
 							Event_RemoveWeapon d = { ET_WP_FG42 };
-							g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_REMOVEWEAPON, &d, sizeof( d ) ) );
+							g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_REMOVEWEAPON, &d, sizeof ( d ) ) );
 
 							AddWeapon = ET_WP_FG42_SCOPE;
 						}
@@ -7383,7 +7383,7 @@ void Bot_Event_AddWeapon( int _client, int _weaponId )
 					{
 						// remove the unscoped
 						Event_RemoveWeapon d = { ET_WP_GARAND };
-						g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_REMOVEWEAPON, &d, sizeof( d ) ) );
+						g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_REMOVEWEAPON, &d, sizeof ( d ) ) );
 
 						break;
 					}
@@ -7392,7 +7392,7 @@ void Bot_Event_AddWeapon( int _client, int _weaponId )
 					{
 						// remove the unscoped
 						Event_RemoveWeapon d = { ET_WP_K43 };
-						g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_REMOVEWEAPON, &d, sizeof( d ) ) );
+						g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_REMOVEWEAPON, &d, sizeof ( d ) ) );
 
 						break;
 					}
@@ -7401,7 +7401,7 @@ void Bot_Event_AddWeapon( int _client, int _weaponId )
 					{
 						// remove the unscoped
 						Event_RemoveWeapon d = { ET_WP_FG42 };
-						g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_REMOVEWEAPON, &d, sizeof( d ) ) );
+						g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_REMOVEWEAPON, &d, sizeof ( d ) ) );
 
 						break;
 					}
@@ -7410,167 +7410,167 @@ void Bot_Event_AddWeapon( int _client, int _weaponId )
 			//////////////////////////////////////////////////////////////////////////
 
 			Event_AddWeapon d = { AddWeapon };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_ADDWEAPON, &d, sizeof( d ) ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_ADDWEAPON, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_RemoveWeapon( int _client, int _weaponId )
+void Bot_Event_RemoveWeapon ( int _client, int _weaponId )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			Event_RemoveWeapon d = { _weaponId };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_REMOVEWEAPON, &d, sizeof( d ) ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_REMOVEWEAPON, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_TakeDamage( int _client, gentity_t *_ent )
+void Bot_Event_TakeDamage ( int _client, gentity_t *_ent )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_TakeDamage d = { HandleFromEntity( _ent ) };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( PERCEPT_FEEL_PAIN, &d, sizeof( d ) ) );
+			Event_TakeDamage d = { HandleFromEntity ( _ent ) };
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( PERCEPT_FEEL_PAIN, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_Death( int _client, gentity_t *_killer, const char *_meansofdeath )
+void Bot_Event_Death ( int _client, gentity_t *_killer, const char *_meansofdeath )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			Event_Death d;
-			d.m_WhoKilledMe = HandleFromEntity( _killer );
-			Q_strncpyz( d.m_MeansOfDeath,
-			            _meansofdeath ? _meansofdeath : "<unknown>", sizeof( d.m_MeansOfDeath ) );
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_DEATH, &d, sizeof( d ) ) );
+			d.m_WhoKilledMe = HandleFromEntity ( _killer );
+			Q_strncpyz ( d.m_MeansOfDeath,
+			             _meansofdeath ? _meansofdeath : "<unknown>", sizeof ( d.m_MeansOfDeath ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_DEATH, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_Healed( int _client, gentity_t *_whodoneit )
+void Bot_Event_Healed ( int _client, gentity_t *_whodoneit )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_Healed d = { HandleFromEntity( _whodoneit ) };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_HEALED, &d, sizeof( d ) ) );
+			Event_Healed d = { HandleFromEntity ( _whodoneit ) };
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_HEALED, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_RecievedAmmo( int _client, gentity_t *_whodoneit )
+void Bot_Event_RecievedAmmo ( int _client, gentity_t *_whodoneit )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_Ammo d = { HandleFromEntity( _whodoneit ) };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ET_EVENT_RECIEVEDAMMO, &d, sizeof( d ) ) );
+			Event_Ammo d = { HandleFromEntity ( _whodoneit ) };
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ET_EVENT_RECIEVEDAMMO, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_Revived( int _client, gentity_t *_whodoneit )
+void Bot_Event_Revived ( int _client, gentity_t *_whodoneit )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_Revived d = { HandleFromEntity( _whodoneit ) };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_REVIVED, &d, sizeof( d ) ) );
+			Event_Revived d = { HandleFromEntity ( _whodoneit ) };
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_REVIVED, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_KilledSomeone( int _client, gentity_t *_victim, const char *_meansofdeath )
+void Bot_Event_KilledSomeone ( int _client, gentity_t *_victim, const char *_meansofdeath )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			Event_KilledSomeone d;
-			d.m_WhoIKilled = HandleFromEntity( _victim );
-			Q_strncpyz( d.m_MeansOfDeath,
-			            _meansofdeath ? _meansofdeath : "<unknown>",
-			            sizeof( d.m_MeansOfDeath ) / sizeof( d.m_MeansOfDeath[ 0 ] ) );
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_KILLEDSOMEONE, &d, sizeof( d ) ) );
+			d.m_WhoIKilled = HandleFromEntity ( _victim );
+			Q_strncpyz ( d.m_MeansOfDeath,
+			             _meansofdeath ? _meansofdeath : "<unknown>",
+			             sizeof ( d.m_MeansOfDeath ) / sizeof ( d.m_MeansOfDeath[ 0 ] ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_KILLEDSOMEONE, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_FireWeapon( int _client, int _weaponId, gentity_t *_projectile )
+void Bot_Event_FireWeapon ( int _client, int _weaponId, gentity_t *_projectile )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_WeaponFire d = { _weaponId, Primary, HandleFromEntity( _projectile ) };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ACTION_WEAPON_FIRE, &d, sizeof( d ) ) );
+			Event_WeaponFire d = { _weaponId, Primary, HandleFromEntity ( _projectile ) };
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ACTION_WEAPON_FIRE, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_PreTriggerMine( int _client, gentity_t *_mine )
+void Bot_Event_PreTriggerMine ( int _client, gentity_t *_mine )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_TriggerMine_ET d = { HandleFromEntity( _mine ) };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ET_EVENT_PRETRIGGER_MINE, &d, sizeof( d ) ) );
+			Event_TriggerMine_ET d = { HandleFromEntity ( _mine ) };
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ET_EVENT_PRETRIGGER_MINE, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_PostTriggerMine( int _client, gentity_t *_mine )
+void Bot_Event_PostTriggerMine ( int _client, gentity_t *_mine )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_TriggerMine_ET d = { HandleFromEntity( _mine ) };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ET_EVENT_POSTTRIGGER_MINE, &d, sizeof( d ) ) );
+			Event_TriggerMine_ET d = { HandleFromEntity ( _mine ) };
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ET_EVENT_POSTTRIGGER_MINE, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_MortarImpact( int _client, vec3_t _pos )
+void Bot_Event_MortarImpact ( int _client, vec3_t _pos )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			Event_MortarImpact_ET d = { { _pos[ 0 ], _pos[ 1 ], _pos[ 2 ] } };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ET_EVENT_MORTAR_IMPACT, &d, sizeof( d ) ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ET_EVENT_MORTAR_IMPACT, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_Spectated( int _client, int _who )
+void Bot_Event_Spectated ( int _client, int _who )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			Event_Spectated d = { _who };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( MESSAGE_SPECTATED, &d, sizeof( d ) ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( MESSAGE_SPECTATED, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_ChatMessage( int _to, gentity_t *_source, int _type, const char *_message )
+void Bot_Event_ChatMessage ( int _to, gentity_t *_source, int _type, const char *_message )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _to ] ) )
+		if ( IsBot ( &g_entities[ _to ] ) )
 		{
 			int iMsg = PERCEPT_HEAR_GLOBALCHATMSG;
 
@@ -7591,19 +7591,19 @@ void Bot_Event_ChatMessage( int _to, gentity_t *_source, int _type, const char *
 			}
 
 			Event_ChatMessage d;
-			d.m_WhoSaidIt = HandleFromEntity( _source );
-			Q_strncpyz( d.m_Message, _message ? _message : "<unknown>",
-			            sizeof( d.m_Message ) / sizeof( d.m_Message[ 0 ] ) );
-			g_BotFunctions.pfnSendEvent( _to, MessageHelper( iMsg, &d, sizeof( d ) ) );
+			d.m_WhoSaidIt = HandleFromEntity ( _source );
+			Q_strncpyz ( d.m_Message, _message ? _message : "<unknown>",
+			             sizeof ( d.m_Message ) / sizeof ( d.m_Message[ 0 ] ) );
+			g_BotFunctions.pfnSendEvent ( _to, MessageHelper ( iMsg, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_VoiceMacro( int _client, gentity_t *_source, int _type, const char *_message )
+void Bot_Event_VoiceMacro ( int _client, gentity_t *_source, int _type, const char *_message )
 {
 	if ( IsOmnibotLoaded() )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			int iMessageId = PERCEPT_HEAR_GLOBALVOICEMACRO;
 
@@ -7617,132 +7617,132 @@ void Bot_Event_VoiceMacro( int _client, gentity_t *_source, int _type, const cha
 			}
 
 			Event_VoiceMacro d;
-			d.m_WhoSaidIt = HandleFromEntity( _source );
-			Q_strncpyz( d.m_MacroString, _message ? _message : "<unknown>",
-			            sizeof( d.m_MacroString ) / sizeof( d.m_MacroString[ 0 ] ) );
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( iMessageId, &d, sizeof( d ) ) );
+			d.m_WhoSaidIt = HandleFromEntity ( _source );
+			Q_strncpyz ( d.m_MacroString, _message ? _message : "<unknown>",
+			             sizeof ( d.m_MacroString ) / sizeof ( d.m_MacroString[ 0 ] ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( iMessageId, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_Sound( gentity_t *_source, int _sndtype, const char *_name )
+void Bot_Event_Sound ( gentity_t *_source, int _sndtype, const char *_name )
 {
 	if ( IsOmnibotLoaded() )
 	{
 		Event_Sound d = {};
-		d.m_Source    = HandleFromEntity( _source );
+		d.m_Source = HandleFromEntity ( _source );
 		d.m_SoundType = _sndtype;
-		g_InterfaceFunctions->GetEntityPosition( d.m_Source, d.m_Origin );
-		Q_strncpyz( d.m_SoundName, _name ? _name : "<unknown>", sizeof( d.m_SoundName ) / sizeof( d.m_SoundName[ 0 ] ) );
-		g_BotFunctions.pfnSendGlobalEvent( MessageHelper( GAME_SOUND, &d, sizeof( d ) ) );
+		g_InterfaceFunctions->GetEntityPosition ( d.m_Source, d.m_Origin );
+		Q_strncpyz ( d.m_SoundName, _name ? _name : "<unknown>", sizeof ( d.m_SoundName ) / sizeof ( d.m_SoundName[ 0 ] ) );
+		g_BotFunctions.pfnSendGlobalEvent ( MessageHelper ( GAME_SOUND, &d, sizeof ( d ) ) );
 	}
 }
 
-void Bot_Event_FireTeamCreated( int _client, int _fireteamnum )
+void Bot_Event_FireTeamCreated ( int _client, int _fireteamnum )
 {
-	if ( IsOmnibotLoaded() && IsBot( &g_entities[ _client ] ) )
+	if ( IsOmnibotLoaded() && IsBot ( &g_entities[ _client ] ) )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			Event_FireTeamCreated d = { _fireteamnum };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ET_EVENT_FIRETEAM_CREATED, &d, sizeof( d ) ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ET_EVENT_FIRETEAM_CREATED, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_FireTeamDestroyed( int _client )
+void Bot_Event_FireTeamDestroyed ( int _client )
 {
-	if ( IsOmnibotLoaded() && IsBot( &g_entities[ _client ] ) )
+	if ( IsOmnibotLoaded() && IsBot ( &g_entities[ _client ] ) )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			Event_FireTeamDisbanded d;
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ET_EVENT_FIRETEAM_DISBANDED, &d, sizeof( d ) ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ET_EVENT_FIRETEAM_DISBANDED, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_JoinedFireTeam( int _client, gentity_t *leader )
+void Bot_Event_JoinedFireTeam ( int _client, gentity_t *leader )
 {
-	if ( IsOmnibotLoaded() && IsBot( &g_entities[ _client ] ) )
+	if ( IsOmnibotLoaded() && IsBot ( &g_entities[ _client ] ) )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_FireTeamJoined d = { HandleFromEntity( leader ) };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ET_EVENT_FIRETEAM_JOINED, &d, sizeof( d ) ) );
+			Event_FireTeamJoined d = { HandleFromEntity ( leader ) };
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ET_EVENT_FIRETEAM_JOINED, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_LeftFireTeam( int _client )
+void Bot_Event_LeftFireTeam ( int _client )
 {
-	if ( IsOmnibotLoaded() && IsBot( &g_entities[ _client ] ) )
+	if ( IsOmnibotLoaded() && IsBot ( &g_entities[ _client ] ) )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
 			Event_FireTeamLeft d;
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ET_EVENT_FIRETEAM_LEFT, &d, sizeof( d ) ) );
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ET_EVENT_FIRETEAM_LEFT, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_InviteFireTeam( int _inviter, int _invitee )
+void Bot_Event_InviteFireTeam ( int _inviter, int _invitee )
 {
-	if ( IsOmnibotLoaded() && IsBot( &g_entities[ _invitee ] ) )
+	if ( IsOmnibotLoaded() && IsBot ( &g_entities[ _invitee ] ) )
 	{
-		if ( IsBot( &g_entities[ _invitee ] ) )
+		if ( IsBot ( &g_entities[ _invitee ] ) )
 		{
-			Event_FireTeamInvited d = { HandleFromEntity( &g_entities[ _inviter ] ) };
-			g_BotFunctions.pfnSendEvent( _invitee, MessageHelper( ET_EVENT_FIRETEAM_INVITED, &d, sizeof( d ) ) );
+			Event_FireTeamInvited d = { HandleFromEntity ( &g_entities[ _inviter ] ) };
+			g_BotFunctions.pfnSendEvent ( _invitee, MessageHelper ( ET_EVENT_FIRETEAM_INVITED, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_FireTeam_Proposal( int _client, int _proposed )
+void Bot_Event_FireTeam_Proposal ( int _client, int _proposed )
 {
-	if ( IsOmnibotLoaded() && IsBot( &g_entities[ _client ] ) )
+	if ( IsOmnibotLoaded() && IsBot ( &g_entities[ _client ] ) )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_FireTeamProposal d = { HandleFromEntity( &g_entities[ _proposed ] ) };
-			g_BotFunctions.pfnSendEvent( _client, MessageHelper( ET_EVENT_FIRETEAM_PROPOSAL, &d, sizeof( d ) ) );
+			Event_FireTeamProposal d = { HandleFromEntity ( &g_entities[ _proposed ] ) };
+			g_BotFunctions.pfnSendEvent ( _client, MessageHelper ( ET_EVENT_FIRETEAM_PROPOSAL, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_FireTeam_Warn( int _client, int _warned )
+void Bot_Event_FireTeam_Warn ( int _client, int _warned )
 {
-	if ( IsOmnibotLoaded() && IsBot( &g_entities[ _client ] ) )
+	if ( IsOmnibotLoaded() && IsBot ( &g_entities[ _client ] ) )
 	{
-		if ( IsBot( &g_entities[ _client ] ) )
+		if ( IsBot ( &g_entities[ _client ] ) )
 		{
-			Event_FireTeamWarning d = { HandleFromEntity( &g_entities[ _client ] ) };
-			g_BotFunctions.pfnSendEvent( _warned, MessageHelper( ET_EVENT_FIRETEAM_WARNED, &d, sizeof( d ) ) );
+			Event_FireTeamWarning d = { HandleFromEntity ( &g_entities[ _client ] ) };
+			g_BotFunctions.pfnSendEvent ( _warned, MessageHelper ( ET_EVENT_FIRETEAM_WARNED, &d, sizeof ( d ) ) );
 		}
 	}
 }
 
-void Bot_Event_EntityCreated( gentity_t *pEnt )
+void Bot_Event_EntityCreated ( gentity_t *pEnt )
 {
 	if ( pEnt && IsOmnibotLoaded() )
 	{
 		// Get common properties.
 		const int iEntNum = pEnt - g_entities;
-		GameEntity ent    = HandleFromEntity( pEnt );
-		int iClass        = g_InterfaceFunctions->GetEntityClass( ent );
+		GameEntity ent = HandleFromEntity ( pEnt );
+		int iClass = g_InterfaceFunctions->GetEntityClass ( ent );
 
 		if ( iClass )
 		{
 			Event_EntityCreated d;
-			d.m_Entity                        = GameEntity( iEntNum, m_EntityHandles[ iEntNum ].m_HandleSerial );
+			d.m_Entity = GameEntity ( iEntNum, m_EntityHandles[ iEntNum ].m_HandleSerial );
 
-			d.m_EntityClass                   = iClass;
-			g_InterfaceFunctions->GetEntityCategory( ent, d.m_EntityCategory );
-			g_BotFunctions.pfnSendGlobalEvent( MessageHelper( GAME_ENTITYCREATED, &d, sizeof( d ) ) );
+			d.m_EntityClass = iClass;
+			g_InterfaceFunctions->GetEntityCategory ( ent, d.m_EntityCategory );
+			g_BotFunctions.pfnSendGlobalEvent ( MessageHelper ( GAME_ENTITYCREATED, &d, sizeof ( d ) ) );
 			m_EntityHandles[ iEntNum ].m_Used = true;
 		}
 
-		Bot_Util_CheckForGoalEntity( ent );
+		Bot_Util_CheckForGoalEntity ( ent );
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -7762,7 +7762,7 @@ void Bot_Event_EntityCreated( gentity_t *pEnt )
 
 extern "C"
 {
-	void Bot_Queue_EntityCreated( gentity_t *pEnt )
+	void Bot_Queue_EntityCreated ( gentity_t *pEnt )
 	{
 		if ( pEnt )
 		{
@@ -7770,7 +7770,7 @@ extern "C"
 		}
 	}
 
-	void Bot_Event_EntityDeleted( gentity_t *pEnt )
+	void Bot_Event_EntityDeleted ( gentity_t *pEnt )
 	{
 		if ( pEnt )
 		{
@@ -7778,11 +7778,11 @@ extern "C"
 
 			if ( IsOmnibotLoaded() )
 			{
-				Event_EntityDeleted d = { GameEntity( iEntNum, m_EntityHandles[ iEntNum ].m_HandleSerial ) };
-				g_BotFunctions.pfnSendGlobalEvent( MessageHelper( GAME_ENTITYDELETED, &d, sizeof( d ) ) );
+				Event_EntityDeleted d = { GameEntity ( iEntNum, m_EntityHandles[ iEntNum ].m_HandleSerial ) };
+				g_BotFunctions.pfnSendGlobalEvent ( MessageHelper ( GAME_ENTITYDELETED, &d, sizeof ( d ) ) );
 			}
 
-			m_EntityHandles[ iEntNum ].m_Used      = false;
+			m_EntityHandles[ iEntNum ].m_Used = false;
 			m_EntityHandles[ iEntNum ].m_NewEntity = false;
 
 			while ( ++m_EntityHandles[ iEntNum ].m_HandleSerial == 0 ) {}
@@ -7799,39 +7799,39 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////
 
-	void Bot_Util_SendTrigger( gentity_t *_ent, gentity_t *_activator, const char *_tagname, const char *_action )
+	void Bot_Util_SendTrigger ( gentity_t *_ent, gentity_t *_activator, const char *_tagname, const char *_action )
 	{
 		if ( IsOmnibotLoaded() )
 		{
 			TriggerInfo triggerInfo;
-			triggerInfo.m_Entity = HandleFromEntity( _ent );
-			Q_strncpyz( triggerInfo.m_TagName, _tagname, TriggerBufferSize );
-			Q_strncpyz( triggerInfo.m_Action, _action, TriggerBufferSize );
-			g_BotFunctions.pfnSendTrigger( triggerInfo );
+			triggerInfo.m_Entity = HandleFromEntity ( _ent );
+			Q_strncpyz ( triggerInfo.m_TagName, _tagname, TriggerBufferSize );
+			Q_strncpyz ( triggerInfo.m_Action, _action, TriggerBufferSize );
+			g_BotFunctions.pfnSendTrigger ( triggerInfo );
 		}
 	}
 
-	void Bot_AddDynamiteGoal( gentity_t *_ent, int _team, const char *_tag )
+	void Bot_AddDynamiteGoal ( gentity_t *_ent, int _team, const char *_tag )
 	{
 		if ( _team == TEAM_AXIS )
 		{
-			Bot_Util_AddGoal( "defuse", _ent, ( 1 << ET_TEAM_ALLIES ), _tag );
+			Bot_Util_AddGoal ( "defuse", _ent, ( 1 << ET_TEAM_ALLIES ), _tag );
 		}
 		else
 		{
-			Bot_Util_AddGoal( "defuse", _ent, ( 1 << ET_TEAM_AXIS ), _tag );
+			Bot_Util_AddGoal ( "defuse", _ent, ( 1 << ET_TEAM_AXIS ), _tag );
 		}
 	}
 
-	void Bot_AddFallenTeammateGoals( gentity_t *_teammate, int _team )
+	void Bot_AddFallenTeammateGoals ( gentity_t *_teammate, int _team )
 	{
 		if ( _team == TEAM_AXIS )
 		{
-			Bot_Util_AddGoal( "revive", _teammate, ( 1 << ET_TEAM_AXIS ), _GetEntityName( _teammate ) );
+			Bot_Util_AddGoal ( "revive", _teammate, ( 1 << ET_TEAM_AXIS ), _GetEntityName ( _teammate ) );
 		}
 		else if ( _team == TEAM_ALLIES )
 		{
-			Bot_Util_AddGoal( "revive", _teammate, ( 1 << ET_TEAM_ALLIES ), _GetEntityName( _teammate ) );
+			Bot_Util_AddGoal ( "revive", _teammate, ( 1 << ET_TEAM_ALLIES ), _GetEntityName ( _teammate ) );
 		}
 	}
 };
