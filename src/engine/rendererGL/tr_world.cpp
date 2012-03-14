@@ -494,7 +494,9 @@ void R_AddBSPModelSurfaces ( trRefEntity_t *ent )
 			bspSurface_t* surf = bspModel->firstSurface + i;
 
 			if ( !ShaderRequiresCPUDeforms ( surf->shader ) )
+			{
 				continue;
+			}
 
 			R_AddBrushModelSurface ( surf, fogNum );
 		}
