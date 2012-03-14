@@ -241,11 +241,7 @@ static void CG_CompleteClass ( void )
 
 static void CG_CompleteBuySell ( qboolean buying )
 {
-<<<<<<< HEAD
-	int               i             = buying ? 2 : 0;
-=======
 	int               i = buying ? 1 : 0;
->>>>>>> Remove the alignment of assignment operators and inline comments.
 	static const char items[][ 12 ] =
 	{
 		"weapons", "upgrades", // <- only valid when selling
