@@ -30,8 +30,8 @@ along with the GNU MP Library.  If not, see http://www.gnu.org/licenses/.  */
 #  endif 
 #  define __GMP_BITS_PER_MP_LIMB  GMP_LIMB_BITS 
 #  define SIZEOF_MP_LIMB_T (GMP_LIMB_BITS >> 3) 
-#  define GMP_NAIL_BITS                       0 
 #endif 
+#define GMP_NAIL_BITS                       0
 #endif
 #define GMP_NUMB_BITS     (GMP_LIMB_BITS - GMP_NAIL_BITS)
 #define GMP_NUMB_MASK     ((~ __GMP_CAST (mp_limb_t, 0)) >> GMP_NAIL_BITS)
