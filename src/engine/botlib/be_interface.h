@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,24 +19,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
 */
 
-
 /*****************************************************************************
- * name:		be_interface.h
+ * name:    be_interface.h
  *
- * desc:		botlib interface
+ * desc:    botlib interface
  *
  *
  *****************************************************************************/
@@ -56,11 +55,11 @@ Maryland 20850 USA.
 */
 
 //#define DEBUG         //debug code
-#define RANDOMIZE				//randomize bot behaviour
+#define RANDOMIZE //randomize bot behaviour
 #if defined( WIN32 ) || defined( _WIN32 )
-#define AASZIP					//allow reading directly from aasX.zip files
+#define AASZIP    //allow reading directly from aasX.zip files
 #endif
-#define QUAKE2					//bot for Quake2
+#define QUAKE2    //bot for Quake2
 //#define HALFLIFE      //bot for Half-Life
 
 //==========================================================
@@ -72,16 +71,16 @@ Maryland 20850 USA.
 //FIXME: get rid of this global structure
 typedef struct botlib_globals_s
 {
-	int             botlibsetup;	//true when the bot library has been setup
-	int             maxentities;	//maximum number of entities
-	int             maxclients;	//maximum number of clients
-	float           time;		//the global time
+	int      botlibsetup;           //true when the bot library has been setup
+	int      maxentities;           //maximum number of entities
+	int      maxclients;            //maximum number of clients
+	float    time;                  //the global time
 //#ifdef DEBUG
-	qboolean        debug;		//true if debug is on
-	int             goalareanum;
-	vec3_t          goalorigin;
-	int             runai;
-	qboolean        lastsuccess;
+	qboolean debug;                 //true if debug is on
+	int      goalareanum;
+	vec3_t   goalorigin;
+	int      runai;
+	qboolean lastsuccess;
 //#endif
 } botlib_globals_t;
 
@@ -92,8 +91,8 @@ typedef struct botlib_globals_s
 //==========================================================
 
 extern botlib_globals_t botlibglobals;
-extern botlib_import_t botimport;
-extern int      bot_developer;	//true if developer is on
+extern botlib_import_t  botimport;
+extern int              bot_developer; //true if developer is on
 
 //
-int             Sys_MilliSeconds(void);
+int                     Sys_MilliSeconds( void );

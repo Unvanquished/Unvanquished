@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
@@ -48,14 +48,18 @@ static snd_codec_t *codecs;
 /*
  * Searching
  */
-char *findExtension(const char *fni)
+char *findExtension( const char *fni )
 {
-	char *fn = (char *)fni;
+	char *fn   = ( char * )fni;
 	char *eptr = NULL;
-	while(*fn)
+
+	while ( *fn )
 	{
-		if(*fn == '.')
+		if ( *fn == '.' )
+		{
 			eptr = fn;
+		}
+
 		fn++;
 	}
 
@@ -63,23 +67,25 @@ char *findExtension(const char *fni)
 }
 
 // This is ugly...
-static snd_codec_t *findCodec(const char *filename)
+static snd_codec_t *findCodec( const char *filename )
 {
-	char *ext = findExtension(filename);
+	char        *ext   = findExtension( filename );
 	snd_codec_t *codec = codecs;
 
-	if(!ext)
+	if ( !ext )
 	{
 		// No extension - auto-detect
-		while(codec)
+		while ( codec )
 		{
-			char fn[MAX_QPATH];
-			Q_strncpyz(fn, filename, sizeof(fn) - 4);
-			COM_DefaultExtension(fn, sizeof(fn), codec->ext);
+			char fn[ MAX_QPATH ];
+			Q_strncpyz( fn, filename, sizeof( fn ) - 4 );
+			COM_DefaultExtension( fn, sizeof( fn ), codec->ext );
 
 			// Check it exists
-			if(FS_ReadFile(fn, NULL) != -1)
+			if ( FS_ReadFile( fn, NULL ) != -1 )
+			{
 				return codec;
+			}
 
 			// Nope. Next!
 			codec = codec->next;
@@ -89,10 +95,13 @@ static snd_codec_t *findCodec(const char *filename)
 		return NULL;
 	}
 
-	while(codec)
+	while ( codec )
 	{
-		if(!Q_stricmp(ext, codec->ext))
+		if ( !Q_stricmp( ext, codec->ext ) )
+		{
 			return codec;
+		}
+
 		codec = codec->next;
 	}
 
@@ -105,9 +114,9 @@ static snd_codec_t *findCodec(const char *filename)
 void codec_init()
 {
 	codecs = NULL;
-	codec_register(&wav_codec);
+	codec_register( &wav_codec );
 #ifdef USE_CODEC_VORBIS
-	codec_register(&ogg_codec);
+	codec_register( &ogg_codec );
 #endif
 }
 
@@ -116,92 +125,96 @@ void codec_shutdown()
 	codecs = NULL;
 }
 
-void codec_register(snd_codec_t *codec)
+void codec_register( snd_codec_t *codec )
 {
 	codec->next = codecs;
-	codecs = codec;
+	codecs      = codec;
 }
 
-void *codec_load(const char *filename, snd_info_t *info)
+void *codec_load( const char *filename, snd_info_t *info )
 {
 	snd_codec_t *codec;
-	char fn[MAX_QPATH];
+	char        fn[ MAX_QPATH ];
 
-	codec = findCodec(filename);
-	if(!codec)
+	codec = findCodec( filename );
+
+	if ( !codec )
 	{
-		Com_Printf("Unknown extension for %s\n", filename);
+		Com_Printf( "Unknown extension for %s\n", filename );
 		return NULL;
 	}
 
-	strncpy(fn, filename, sizeof(fn));
-	COM_DefaultExtension(fn, sizeof(fn), codec->ext);
+	strncpy( fn, filename, sizeof( fn ) );
+	COM_DefaultExtension( fn, sizeof( fn ), codec->ext );
 
-	return codec->load(fn, info);
+	return codec->load( fn, info );
 }
 
-snd_stream_t *codec_open(const char *filename)
+snd_stream_t *codec_open( const char *filename )
 {
 	snd_codec_t *codec;
-	char fn[MAX_QPATH];
+	char        fn[ MAX_QPATH ];
 
-	codec = findCodec(filename);
-	if(!codec)
+	codec = findCodec( filename );
+
+	if ( !codec )
 	{
-		Com_Printf("Unknown extension for %s\n", filename);
+		Com_Printf( "Unknown extension for %s\n", filename );
 		return NULL;
 	}
 
-	strncpy(fn, filename, sizeof(fn));
-	COM_DefaultExtension(fn, sizeof(fn), codec->ext);
+	strncpy( fn, filename, sizeof( fn ) );
+	COM_DefaultExtension( fn, sizeof( fn ), codec->ext );
 
-	return codec->open(fn);
+	return codec->open( fn );
 }
 
-void codec_close(snd_stream_t *stream)
+void codec_close( snd_stream_t *stream )
 {
-	stream->codec->close(stream);
+	stream->codec->close( stream );
 }
 
-int codec_read(snd_stream_t *stream, int bytes, void *buffer)
+int codec_read( snd_stream_t *stream, int bytes, void *buffer )
 {
-	return stream->codec->read(stream, bytes, buffer);
+	return stream->codec->read( stream, bytes, buffer );
 }
 
 /*
  * Util functions (used by codecs)
  */
-snd_stream_t *codec_util_open(const char *filename, snd_codec_t *codec)
+snd_stream_t *codec_util_open( const char *filename, snd_codec_t *codec )
 {
 	snd_stream_t *stream;
 	fileHandle_t hnd;
-	int length;
+	int          length;
 
 	// Try to open the file
-	length = FS_FOpenFileRead(filename, &hnd, qtrue);
-	if(!hnd)
+	length = FS_FOpenFileRead( filename, &hnd, qtrue );
+
+	if ( !hnd )
 	{
-		Com_Printf("Can't read sound file %s\n", filename);
+		Com_Printf( "Can't read sound file %s\n", filename );
 		return NULL;
 	}
 
 	// Allocate a stream
-	stream = calloc(1, sizeof(snd_stream_t));
-	if(!stream)
+	stream = calloc( 1, sizeof( snd_stream_t ) );
+
+	if ( !stream )
 	{
-		FS_FCloseFile(hnd);
+		FS_FCloseFile( hnd );
 		return NULL;
 	}
 
 	// Copy over, return
-	stream->codec = codec;
-	stream->file = hnd;
+	stream->codec  = codec;
+	stream->file   = hnd;
 	stream->length = length;
 	return stream;
 }
 
-void codec_util_close(snd_stream_t *stream)
+void codec_util_close( snd_stream_t *stream )
 {
-	FS_FCloseFile(stream->file);
-	free(stream);
+	FS_FCloseFile( stream->file );
+	free( stream );
 }

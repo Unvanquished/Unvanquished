@@ -33,12 +33,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <nettle/rsa.h>
 #include <nettle/buffer.h>
 
-qboolean Crypto_Init(void);
-void Crypto_Shutdown(void);
+qboolean Crypto_Init( void );
+void     Crypto_Shutdown( void );
+
 // The size is stored in the location pointed to by second arg, and will change as the buffer grows
-void qnettle_buffer_init(struct nettle_buffer *buffer, int *size);
+void     qnettle_buffer_init( struct nettle_buffer *buffer, int *size );
+
 // Random function used for key generation and encryption
-void qnettle_random(void *ctx, unsigned length, uint8_t *dst);
+void     qnettle_random( void *ctx, unsigned length, uint8_t *dst );
+
 #else
 #define Crypto_Init() qfalse
 #define Crypto_Shutdown()

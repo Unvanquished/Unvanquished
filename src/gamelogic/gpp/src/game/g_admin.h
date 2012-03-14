@@ -23,17 +23,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef _G_ADMIN_H
 #define _G_ADMIN_H
 
-#define AP(x) trap_SendServerCommand(-1, x)
-#define CP(x) trap_SendServerCommand(ent-g_entities, x)
-#define CPx(x, y) trap_SendServerCommand(x, y)
-#define ADMP(x) G_admin_print(ent, x)
-#define ADMBP(x) G_admin_buffer_print(ent, x)
+#define AP(x)         trap_SendServerCommand(-1, x)
+#define CP(x)         trap_SendServerCommand(ent - g_entities, x)
+#define CPx(x, y)     trap_SendServerCommand(x, y)
+#define ADMP(x)       G_admin_print(ent, x)
+#define ADMBP(x)      G_admin_buffer_print(ent, x)
 #define ADMBP_begin() G_admin_buffer_begin()
-#define ADMBP_end() G_admin_buffer_end(ent)
+#define ADMBP_end()   G_admin_buffer_end(ent)
 
-#define MAX_ADMIN_FLAG_LEN 20
-#define MAX_ADMIN_FLAGS 1024
-#define MAX_ADMIN_CMD_LEN 20
+#define MAX_ADMIN_FLAG_LEN   20
+#define MAX_ADMIN_FLAGS      1024
+#define MAX_ADMIN_CMD_LEN    20
 #define MAX_ADMIN_BAN_REASON 50
 
 /*
@@ -65,141 +65,152 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ADMF_ALLFLAGS        "ALLFLAGS"
 #define ADMF_ADMINCHAT       "ADMINCHAT"
 
-#define MAX_ADMIN_LISTITEMS 20
-#define MAX_ADMIN_SHOWBANS 10
+#define MAX_ADMIN_LISTITEMS  20
+#define MAX_ADMIN_SHOWBANS   10
 
 // important note: QVM does not seem to allow a single char to be a
 // member of a struct at init time.  flag has been converted to char*
 typedef struct
 {
-  char *keyword;
-  qboolean ( * handler ) ( gentity_t *ent );
-  qboolean silent;
-  char *flag;
-  char *function;  // used for !help
-  char *syntax;  // used for !help
+	char     *keyword;
+	qboolean ( * handler )( gentity_t *ent );
+	qboolean silent;
+	char     *flag;
+	char     *function; // used for !help
+	char     *syntax;   // used for !help
 }
+
 g_admin_cmd_t;
 
 typedef struct g_admin_level
 {
-  struct g_admin_level *next;
-  int level;
-  char name[ MAX_NAME_LENGTH ];
-  char flags[ MAX_ADMIN_FLAGS ];
+	struct g_admin_level *next;
+
+	int                  level;
+	char                 name[ MAX_NAME_LENGTH ];
+	char                 flags[ MAX_ADMIN_FLAGS ];
 }
+
 g_admin_level_t;
 
 typedef struct g_admin_admin
 {
-  struct g_admin_admin *next;
-  int level;
-  char guid[ 33 ];
-  char name[ MAX_NAME_LENGTH ];
-  char flags[ MAX_ADMIN_FLAGS ];
-  char pubkey[ RSA_STRING_LENGTH ];
-  char msg[ RSA_STRING_LENGTH ];
-  char msg2[ RSA_STRING_LENGTH ];
-  int counter;
+	struct g_admin_admin *next;
+
+	int                  level;
+	char                 guid[ 33 ];
+	char                 name[ MAX_NAME_LENGTH ];
+	char                 flags[ MAX_ADMIN_FLAGS ];
+	char                 pubkey[ RSA_STRING_LENGTH ];
+	char                 msg[ RSA_STRING_LENGTH ];
+	char                 msg2[ RSA_STRING_LENGTH ];
+	int                  counter;
 }
+
 g_admin_admin_t;
 
 #define ADDRLEN 16
+
 /*
 addr_ts are passed as "arg" to admin_search for IP address matching
 admin_search prints (char *)arg, so the stringified address needs to be first
 */
 typedef struct
 {
-  char str[ 44 ];
-  enum
-  {
-    IPv4,
-    IPv6
-  } type;
-  byte addr[ ADDRLEN ];
-  int mask;
+	char str[ 44 ];
+	enum
+	{
+	  IPv4,
+	  IPv6
+	} type;
+
+	byte addr[ ADDRLEN ];
+	int  mask;
 } addr_t;
 
 typedef struct g_admin_ban
 {
-  struct g_admin_ban *next;
-  char name[ MAX_NAME_LENGTH ];
-  char guid[ 33 ];
-  addr_t ip;
-  char reason[ MAX_ADMIN_BAN_REASON ];
-  char made[ 20 ]; // "YYYY-MM-DD hh:mm:ss"
-  int expires;
-  char banner[ MAX_NAME_LENGTH ];
-  int warnCount;
+	struct g_admin_ban *next;
+
+	char               name[ MAX_NAME_LENGTH ];
+	char               guid[ 33 ];
+	addr_t             ip;
+	char               reason[ MAX_ADMIN_BAN_REASON ];
+	char               made[ 20 ]; // "YYYY-MM-DD hh:mm:ss"
+	int                expires;
+	char               banner[ MAX_NAME_LENGTH ];
+	int                warnCount;
 }
+
 g_admin_ban_t;
 
 typedef struct g_admin_command
 {
-  struct g_admin_command *next;
-  char command[ MAX_ADMIN_CMD_LEN ];
-  char exec[ MAX_QPATH ];
-  char desc[ 50 ];
-  char flag[ MAX_ADMIN_FLAG_LEN ];
+	struct g_admin_command *next;
+
+	char                   command[ MAX_ADMIN_CMD_LEN ];
+	char                   exec[ MAX_QPATH ];
+	char                   desc[ 50 ];
+	char                   flag[ MAX_ADMIN_FLAG_LEN ];
 }
+
 g_admin_command_t;
 
-void G_admin_register_cmds( void );
-void G_admin_unregister_cmds( void );
-void G_admin_cmdlist( gentity_t *ent );
-void G_admin_writeconfig( void );
-void G_admin_pubkey( void );
+void            G_admin_register_cmds( void );
+void            G_admin_unregister_cmds( void );
+void            G_admin_cmdlist( gentity_t *ent );
+void            G_admin_writeconfig( void );
+void            G_admin_pubkey( void );
 
-qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen );
-qboolean G_admin_cmd_check( gentity_t *ent );
-qboolean G_admin_readconfig( gentity_t *ent );
-qboolean G_admin_permission( gentity_t *ent, const char *flag );
-qboolean G_admin_name_check( gentity_t *ent, char *name, char *err, int len );
+qboolean        G_admin_ban_check( gentity_t *ent, char *reason, int rlen );
+qboolean        G_admin_cmd_check( gentity_t *ent );
+qboolean        G_admin_readconfig( gentity_t *ent );
+qboolean        G_admin_permission( gentity_t *ent, const char *flag );
+qboolean        G_admin_name_check( gentity_t *ent, char *name, char *err, int len );
 g_admin_admin_t *G_admin_admin( const char *guid );
-void G_admin_authlog( gentity_t *ent );
+void            G_admin_authlog( gentity_t *ent );
 
 // admin command functions
-qboolean G_admin_time( gentity_t *ent );
-qboolean G_admin_setlevel( gentity_t *ent );
-qboolean G_admin_kick( gentity_t *ent );
-qboolean G_admin_adjustban( gentity_t *ent );
-qboolean G_admin_ban( gentity_t *ent );
-qboolean G_admin_unban( gentity_t *ent );
-qboolean G_admin_putteam( gentity_t *ent );
-qboolean G_admin_listadmins( gentity_t *ent );
-qboolean G_admin_listlayouts( gentity_t *ent );
-qboolean G_admin_listplayers( gentity_t *ent );
-qboolean G_admin_listrotation( gentity_t *ent );
-qboolean G_admin_changemap( gentity_t *ent );
-qboolean G_admin_mute( gentity_t *ent );
-qboolean G_admin_denybuild( gentity_t *ent );
-qboolean G_admin_showbans( gentity_t *ent );
-qboolean G_admin_adminhelp( gentity_t *ent );
-qboolean G_admin_admintest( gentity_t *ent );
-qboolean G_admin_allready( gentity_t *ent );
-qboolean G_admin_endvote( gentity_t *ent );
-qboolean G_admin_spec999( gentity_t *ent );
-qboolean G_admin_rename( gentity_t *ent );
-qboolean G_admin_restart( gentity_t *ent );
-qboolean G_admin_nextmap( gentity_t *ent );
-qboolean G_admin_namelog( gentity_t *ent );
-qboolean G_admin_lock( gentity_t *ent );
-qboolean G_admin_pause( gentity_t *ent );
-qboolean G_admin_builder( gentity_t *ent );
-qboolean G_admin_buildlog( gentity_t *ent );
-qboolean G_admin_revert( gentity_t *ent );
-qboolean G_admin_l0( gentity_t *ent ); // AA-QVM 1.2
-qboolean G_admin_l1( gentity_t *ent ); // AA-QVM 1.2
-qboolean G_admin_register( gentity_t *ent ); // AA-QVM 1.2
-qboolean G_admin_unregister( gentity_t *ent ); // AA-QVM 1.2
+qboolean        G_admin_time( gentity_t *ent );
+qboolean        G_admin_setlevel( gentity_t *ent );
+qboolean        G_admin_kick( gentity_t *ent );
+qboolean        G_admin_adjustban( gentity_t *ent );
+qboolean        G_admin_ban( gentity_t *ent );
+qboolean        G_admin_unban( gentity_t *ent );
+qboolean        G_admin_putteam( gentity_t *ent );
+qboolean        G_admin_listadmins( gentity_t *ent );
+qboolean        G_admin_listlayouts( gentity_t *ent );
+qboolean        G_admin_listplayers( gentity_t *ent );
+qboolean        G_admin_listrotation( gentity_t *ent );
+qboolean        G_admin_changemap( gentity_t *ent );
+qboolean        G_admin_mute( gentity_t *ent );
+qboolean        G_admin_denybuild( gentity_t *ent );
+qboolean        G_admin_showbans( gentity_t *ent );
+qboolean        G_admin_adminhelp( gentity_t *ent );
+qboolean        G_admin_admintest( gentity_t *ent );
+qboolean        G_admin_allready( gentity_t *ent );
+qboolean        G_admin_endvote( gentity_t *ent );
+qboolean        G_admin_spec999( gentity_t *ent );
+qboolean        G_admin_rename( gentity_t *ent );
+qboolean        G_admin_restart( gentity_t *ent );
+qboolean        G_admin_nextmap( gentity_t *ent );
+qboolean        G_admin_namelog( gentity_t *ent );
+qboolean        G_admin_lock( gentity_t *ent );
+qboolean        G_admin_pause( gentity_t *ent );
+qboolean        G_admin_builder( gentity_t *ent );
+qboolean        G_admin_buildlog( gentity_t *ent );
+qboolean        G_admin_revert( gentity_t *ent );
+qboolean        G_admin_l0( gentity_t *ent );         // AA-QVM 1.2
+qboolean        G_admin_l1( gentity_t *ent );         // AA-QVM 1.2
+qboolean        G_admin_register( gentity_t *ent );   // AA-QVM 1.2
+qboolean        G_admin_unregister( gentity_t *ent ); // AA-QVM 1.2
 
-void G_admin_print( gentity_t *ent, char *m );
-void G_admin_buffer_print( gentity_t *ent, char *m );
-void G_admin_buffer_begin( void );
-void G_admin_buffer_end( gentity_t *ent );
+void            G_admin_print( gentity_t *ent, char *m );
+void            G_admin_buffer_print( gentity_t *ent, char *m );
+void            G_admin_buffer_begin( void );
+void            G_admin_buffer_end( gentity_t *ent );
 
-void G_admin_duration( int secs, char *duration, int dursize );
-void G_admin_cleanup( void );
+void            G_admin_duration( int secs, char *duration, int dursize );
+void            G_admin_cleanup( void );
 
 #endif /* ifndef _G_ADMIN_H */

@@ -37,10 +37,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void UI_Report( void );
 void UI_Load( void );
 void UI_LoadMenus( const char *menuFile, qboolean reset );
-int UI_AdjustTimeByGame( int time );
+int  UI_AdjustTimeByGame( int time );
 void UI_ClearScores( void );
 void UI_LoadArenas( void );
 void UI_ServerInfo( void );
+
 void UI_UpdateNews( qboolean );
 
 void UI_RegisterCvars( void );
@@ -48,118 +49,124 @@ void UI_UpdateCvars( void );
 void UI_DrawConnectScreen( qboolean overlay );
 
 // new ui stuff
-#define MAX_MAPS 128
-#define MAX_ADDRESSLENGTH 64
-#define MAX_DISPLAY_SERVERS 2048
-#define MAX_SERVERSTATUS_LINES 128
-#define MAX_SERVERSTATUS_TEXT 1024
-#define MAX_NEWS_LINES 50
-#define MAX_NEWS_LINEWIDTH 85
+#define MAX_MAPS                128
+#define MAX_ADDRESSLENGTH       64
+#define MAX_DISPLAY_SERVERS     2048
+#define MAX_SERVERSTATUS_LINES  128
+#define MAX_SERVERSTATUS_TEXT   1024
+#define MAX_NEWS_LINES          50
+#define MAX_NEWS_LINEWIDTH      85
 #define MAX_FOUNDPLAYER_SERVERS 16
-#define MAX_MODS 64
-#define MAX_DEMOS 256
-#define MAX_MOVIES 256
-#define MAX_HELP_INFOPANES 32
-#define MAX_RESOLUTIONS 32
-#define MAX_PROFILES 64
+#define MAX_MODS                64
+#define MAX_DEMOS               256
+#define MAX_MOVIES              256
+#define MAX_HELP_INFOPANES      32
+#define MAX_RESOLUTIONS         32
+#define MAX_PROFILES            64
 
 typedef struct
 {
-        const char     *name;
-        const char     *dir;
+	const char *name;
+	const char *dir;
 } profileInfo_t;
 
 typedef struct
 {
-  const char *mapName;
-  const char *mapLoadName;
-  const char *imageName;
-  int cinematic;
-  qhandle_t levelShot;
+	const char *mapName;
+	const char *mapLoadName;
+	const char *imageName;
+	int        cinematic;
+	qhandle_t  levelShot;
 }
+
 mapInfo;
 
 typedef struct serverFilter_s
 {
-  const char *description;
-  const char *basedir;
+	const char *description;
+	const char *basedir;
 }
-serverFilter_t;
 
+serverFilter_t;
 
 typedef struct serverStatus_s
 {
-  int    numqueriedservers;
-  int    currentping;
-  int    nextpingtime;
-  int    maxservers;
-  int    refreshtime;
-  int    numServers;
-  int    sortKey;
-  int    sortDir;
-  qboolean sorted;
-  int    lastCount;
-  qboolean refreshActive;
-  int    currentServer;
-  int    displayServers[MAX_DISPLAY_SERVERS];
-  int    numDisplayServers;
-  int    numPlayersOnServers;
-  int    nextDisplayRefresh;
-  int    nextSortTime;
-  qhandle_t currentServerPreview;
-  int    currentServerCinematic;
-  int    motdLen;
-  int    motdWidth;
-  int    motdPaintX;
-  int    motdPaintX2;
-  int    motdOffset;
-  int    motdTime;
-  char  motd[MAX_STRING_CHARS];
+	int       numqueriedservers;
+	int       currentping;
+	int       nextpingtime;
+	int       maxservers;
+	int       refreshtime;
+	int       numServers;
+	int       sortKey;
+	int       sortDir;
+	qboolean  sorted;
+	int       lastCount;
+	qboolean  refreshActive;
+	int       currentServer;
+	int       displayServers[ MAX_DISPLAY_SERVERS ];
+	int       numDisplayServers;
+	int       numPlayersOnServers;
+	int       nextDisplayRefresh;
+	int       nextSortTime;
+	qhandle_t currentServerPreview;
+	int       currentServerCinematic;
+	int       motdLen;
+	int       motdWidth;
+	int       motdPaintX;
+	int       motdPaintX2;
+	int       motdOffset;
+	int       motdTime;
+	char      motd[ MAX_STRING_CHARS ];
 }
-serverStatus_t;
 
+serverStatus_t;
 
 typedef struct
 {
-  char    adrstr[MAX_ADDRESSLENGTH];
-  char    name[MAX_ADDRESSLENGTH];
-  int      startTime;
-  int      serverNum;
-  qboolean  valid;
+	char     adrstr[ MAX_ADDRESSLENGTH ];
+	char     name[ MAX_ADDRESSLENGTH ];
+	int      startTime;
+	int      serverNum;
+	qboolean valid;
 }
+
 pendingServer_t;
 
 typedef struct
 {
-  int num;
-  pendingServer_t server[MAX_SERVERSTATUSREQUESTS];
+	int             num;
+	pendingServer_t server[ MAX_SERVERSTATUSREQUESTS ];
 }
+
 pendingServerStatus_t;
 
 typedef struct
 {
-  char address[MAX_ADDRESSLENGTH];
-  char *lines[MAX_SERVERSTATUS_LINES][4];
-  char text[MAX_SERVERSTATUS_TEXT];
-  char pings[MAX_CLIENTS * 3];
-  int numLines;
+	char address[ MAX_ADDRESSLENGTH ];
+	char *lines[ MAX_SERVERSTATUS_LINES ][ 4 ];
+	char text[ MAX_SERVERSTATUS_TEXT ];
+	char pings[ MAX_CLIENTS * 3 ];
+	int  numLines;
 }
+
 serverStatusInfo_t;
 
 typedef struct
 {
-  char text[MAX_NEWS_LINES][MAX_NEWS_LINEWIDTH];
-  int numLines;
-  qboolean refreshActive;
-  int refreshtime;
+	char     text[ MAX_NEWS_LINES ][ MAX_NEWS_LINEWIDTH ];
+	int      numLines;
+	qboolean refreshActive;
+	int      refreshtime;
 }
+
 newsInfo_t;
 
 typedef struct
 {
-  const char *modName;
-  const char *modDescr;
+	const char *modName;
+	const char *modDescr;
 }
+
 modInfo_t;
 
 typedef enum
@@ -173,146 +180,148 @@ typedef enum
 
 typedef struct
 {
-  const char    *text;
-  const char    *cmd;
-  infoType_t    type;
-  union
-  {
-    const char  *text;
-    buildable_t buildable;
-    class_t     pclass;
-    weapon_t    weapon;
-    upgrade_t   upgrade;
-  } v;
+	const char *text;
+	const char *cmd;
+	infoType_t type;
+	union
+	{
+		const char  *text;
+		buildable_t buildable;
+		class_t     pclass;
+		weapon_t    weapon;
+		upgrade_t   upgrade;
+	} v;
 }
+
 menuItem_t;
 
 typedef struct
 {
-  int w;
-  int h;
+	int w;
+	int h;
 }
+
 resolution_t;
 
 typedef struct
 {
-  displayContextDef_t uiDC;
+	displayContextDef_t uiDC;
 
-  int playerCount;
-  int myTeamCount;
-  int teamPlayerIndex;
-  int playerRefresh;
-  int playerIndex;
-  int playerNumber;
-  int myPlayerIndex;
-  int ignoreIndex;
-  char playerNames[MAX_CLIENTS][MAX_NAME_LENGTH];
-  char rawPlayerNames[MAX_CLIENTS][MAX_NAME_LENGTH];
-  char teamNames[MAX_CLIENTS][MAX_NAME_LENGTH];
-  char rawTeamNames[MAX_CLIENTS][MAX_NAME_LENGTH];
-  int clientNums[MAX_CLIENTS];
-  int teamClientNums[MAX_CLIENTS];
-  clientList_t ignoreList[MAX_CLIENTS];
+	int                 playerCount;
+	int                 myTeamCount;
+	int                 teamPlayerIndex;
+	int                 playerRefresh;
+	int                 playerIndex;
+	int                 playerNumber;
+	int                 myPlayerIndex;
+	int                 ignoreIndex;
+	char                playerNames[ MAX_CLIENTS ][ MAX_NAME_LENGTH ];
+	char                rawPlayerNames[ MAX_CLIENTS ][ MAX_NAME_LENGTH ];
+	char                teamNames[ MAX_CLIENTS ][ MAX_NAME_LENGTH ];
+	char                rawTeamNames[ MAX_CLIENTS ][ MAX_NAME_LENGTH ];
+	int                 clientNums[ MAX_CLIENTS ];
+	int                 teamClientNums[ MAX_CLIENTS ];
+	clientList_t        ignoreList[ MAX_CLIENTS ];
 
-  int mapCount;
-  mapInfo mapList[MAX_MAPS];
+	int                 mapCount;
+	mapInfo             mapList[ MAX_MAPS ];
 
-  modInfo_t modList[MAX_MODS];
-  int modCount;
-  int modIndex;
+	modInfo_t           modList[ MAX_MODS ];
+	int                 modCount;
+	int                 modIndex;
 
-  const char *demoList[MAX_DEMOS];
-  int demoCount;
-  int demoIndex;
+	const char          *demoList[ MAX_DEMOS ];
+	int                 demoCount;
+	int                 demoIndex;
 
-  const char *movieList[MAX_MOVIES];
-  int movieCount;
-  int movieIndex;
-  int previewMovie;
+	const char          *movieList[ MAX_MOVIES ];
+	int                 movieCount;
+	int                 movieIndex;
+	int                 previewMovie;
 
-  menuItem_t  teamList[ 4 ];
-  int         teamCount;
-  int         teamIndex;
+	menuItem_t          teamList[ 4 ];
+	int                 teamCount;
+	int                 teamIndex;
 
-  menuItem_t  alienClassList[ 3 ];
-  int         alienClassCount;
-  int         alienClassIndex;
+	menuItem_t          alienClassList[ 3 ];
+	int                 alienClassCount;
+	int                 alienClassIndex;
 
-  menuItem_t  humanItemList[ 3 ];
-  int         humanItemCount;
-  int         humanItemIndex;
+	menuItem_t          humanItemList[ 3 ];
+	int                 humanItemCount;
+	int                 humanItemIndex;
 
-  menuItem_t  humanArmouryBuyList[ 32 ];
-  int         humanArmouryBuyCount;
-  int         humanArmouryBuyIndex;
+	menuItem_t          humanArmouryBuyList[ 32 ];
+	int                 humanArmouryBuyCount;
+	int                 humanArmouryBuyIndex;
 
-  menuItem_t  humanArmourySellList[ 32 ];
-  int         humanArmourySellCount;
-  int         humanArmourySellIndex;
+	menuItem_t          humanArmourySellList[ 32 ];
+	int                 humanArmourySellCount;
+	int                 humanArmourySellIndex;
 
-  menuItem_t  alienUpgradeList[ 16 ];
-  int         alienUpgradeCount;
-  int         alienUpgradeIndex;
+	menuItem_t          alienUpgradeList[ 16 ];
+	int                 alienUpgradeCount;
+	int                 alienUpgradeIndex;
 
-  menuItem_t  alienBuildList[ 32 ];
-  int         alienBuildCount;
-  int         alienBuildIndex;
+	menuItem_t          alienBuildList[ 32 ];
+	int                 alienBuildCount;
+	int                 alienBuildIndex;
 
-  menuItem_t  humanBuildList[ 32 ];
-  int         humanBuildCount;
-  int         humanBuildIndex;
+	menuItem_t          humanBuildList[ 32 ];
+	int                 humanBuildCount;
+	int                 humanBuildIndex;
 
-  menuItem_t  helpList[ MAX_HELP_INFOPANES ];
-  int         helpCount;
-  int         helpIndex;
+	menuItem_t          helpList[ MAX_HELP_INFOPANES ];
+	int                 helpCount;
+	int                 helpIndex;
 
-  int         weapons;
-  int         upgrades;
+	int                 weapons;
+	int                 upgrades;
 
-  serverStatus_t serverStatus;
+	serverStatus_t      serverStatus;
 
-  // for showing the game news window
-  newsInfo_t newsInfo;
+	// for showing the game news window
+	newsInfo_t newsInfo;
 
-  // for the showing the status of a server
-  char serverStatusAddress[MAX_ADDRESSLENGTH];
-  serverStatusInfo_t serverStatusInfo;
-  int nextServerStatusRefresh;
+	// for the showing the status of a server
+	char               serverStatusAddress[ MAX_ADDRESSLENGTH ];
+	serverStatusInfo_t serverStatusInfo;
+	int                nextServerStatusRefresh;
 
-  // to retrieve the status of server to find a player
-  pendingServerStatus_t pendingServerStatus;
-  char findPlayerName[MAX_STRING_CHARS];
-  char foundPlayerServerAddresses[MAX_FOUNDPLAYER_SERVERS][MAX_ADDRESSLENGTH];
-  char foundPlayerServerNames[MAX_FOUNDPLAYER_SERVERS][MAX_ADDRESSLENGTH];
-  int currentFoundPlayerServer;
-  int numFoundPlayerServers;
-  int nextFindPlayerRefresh;
+	// to retrieve the status of server to find a player
+	pendingServerStatus_t pendingServerStatus;
+	char                  findPlayerName[ MAX_STRING_CHARS ];
+	char                  foundPlayerServerAddresses[ MAX_FOUNDPLAYER_SERVERS ][ MAX_ADDRESSLENGTH ];
+	char                  foundPlayerServerNames[ MAX_FOUNDPLAYER_SERVERS ][ MAX_ADDRESSLENGTH ];
+	int                   currentFoundPlayerServer;
+	int                   numFoundPlayerServers;
+	int                   nextFindPlayerRefresh;
 
-  resolution_t  resolutions[ MAX_RESOLUTIONS ];
-  int           numResolutions;
-  int           resolutionIndex;
+	resolution_t          resolutions[ MAX_RESOLUTIONS ];
+	int                   numResolutions;
+	int                   resolutionIndex;
 
-  qboolean inGameLoad;
+	qboolean              inGameLoad;
 
-  qboolean  chatTeam;
-  qboolean  chatAdmin;
-  qboolean  chatIRC;
+	qboolean              chatTeam;
+	qboolean              chatAdmin;
+	qboolean              chatIRC;
 
-  profileInfo_t   profileList[MAX_PROFILES];
-  int             profileCount;
-  int             profileIndex;
+	profileInfo_t         profileList[ MAX_PROFILES ];
+	int                   profileCount;
+	int                   profileIndex;
 }
+
 uiInfo_t;
 
 extern uiInfo_t uiInfo;
 
-
-qboolean UI_ConsoleCommand( int realTime );
-char      *UI_Cvar_VariableString( const char *var_name );
-void      UI_SetColor( const float *rgba );
-void      UI_AdjustFrom640( float *x, float *y, float *w, float *h );
-void      UI_Refresh( int time );
-void      UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader );
-void      UI_FillRect( float x, float y, float width, float height, const float *color );
+qboolean        UI_ConsoleCommand( int realTime );
+char            *UI_Cvar_VariableString( const char *var_name );
+void            UI_SetColor( const float *rgba );
+void            UI_AdjustFrom640( float *x, float *y, float *w, float *h );
+void            UI_Refresh( int time );
+void            UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader );
+void            UI_FillRect( float x, float y, float width, float height, const float *color );
 
 #endif

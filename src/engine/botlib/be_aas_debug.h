@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,69 +19,68 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
 */
 
-
 /*****************************************************************************
- * name:		be_aas_debug.h
+ * name:    be_aas_debug.h
  *
- * desc:		AAS
+ * desc:    AAS
  *
  *
  *****************************************************************************/
 
 //clear the shown debug lines
-void            AAS_ClearShownDebugLines(void);
+void AAS_ClearShownDebugLines( void );
 
 //
-void            AAS_ClearShownPolygons(void);
+void AAS_ClearShownPolygons( void );
 
 //show a debug line
-void            AAS_DebugLine(vec3_t start, vec3_t end, int color);
+void AAS_DebugLine( vec3_t start, vec3_t end, int color );
 
 //show a permenent line
-void            AAS_PermanentLine(vec3_t start, vec3_t end, int color);
+void AAS_PermanentLine( vec3_t start, vec3_t end, int color );
 
 //show a permanent cross
-void            AAS_DrawPermanentCross(vec3_t origin, float size, int color);
+void AAS_DrawPermanentCross( vec3_t origin, float size, int color );
 
 //draw a cross in the plane
-void            AAS_DrawPlaneCross(vec3_t point, vec3_t normal, float dist, int type, int color);
+void AAS_DrawPlaneCross( vec3_t point, vec3_t normal, float dist, int type, int color );
 
 //show a bounding box
-void            AAS_ShowBoundingBox(vec3_t origin, vec3_t mins, vec3_t maxs);
+void AAS_ShowBoundingBox( vec3_t origin, vec3_t mins, vec3_t maxs );
 
 //show a face
-void            AAS_ShowFace(int facenum);
+void AAS_ShowFace( int facenum );
 
 //show an area
-void            AAS_ShowArea(int areanum, int groundfacesonly);
+void AAS_ShowArea( int areanum, int groundfacesonly );
 
 //
-void            AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly);
+void AAS_ShowAreaPolygons( int areanum, int color, int groundfacesonly );
 
 //draw a cros
-void            AAS_DrawCross(vec3_t origin, float size, int color);
+void AAS_DrawCross( vec3_t origin, float size, int color );
 
 //print the travel type
-void            AAS_PrintTravelType(int traveltype);
+void AAS_PrintTravelType( int traveltype );
 
 //draw an arrow
-void            AAS_DrawArrow(vec3_t start, vec3_t end, int linecolor, int arrowcolor);
+void AAS_DrawArrow( vec3_t start, vec3_t end, int linecolor, int arrowcolor );
 
 //visualize the given reachability
-void            AAS_ShowReachability(struct aas_reachability_s *reach);
+void AAS_ShowReachability( struct aas_reachability_s *reach );
 
 //show the reachable areas from the given area
-void            AAS_ShowReachableAreas(int areanum);
+void AAS_ShowReachableAreas( int areanum );

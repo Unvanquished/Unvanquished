@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,23 +19,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
 */
 
 /*****************************************************************************
- * name:		l_memory.h
+ * name:    l_memory.h
  *
- * desc:		memory management
+ * desc:    memory management
  *
  *
  *****************************************************************************/
@@ -45,53 +45,55 @@ Maryland 20850 USA.
 #endif
 
 #ifdef MEMDEBUG
-#define GetMemory( size )             GetMemoryDebug( size, # size, __FILE__, __LINE__ );
-#define GetClearedMemory( size )      GetClearedMemoryDebug( size, # size, __FILE__, __LINE__ );
+#define GetMemory( size )        GetMemoryDebug( size, # size, __FILE__, __LINE__ );
+#define GetClearedMemory( size ) GetClearedMemoryDebug( size, # size, __FILE__, __LINE__ );
 //allocate a memory block of the given size
-void           *GetMemoryDebug(unsigned long size, char *label, char *file, int line);
+void *GetMemoryDebug( unsigned long size, char *label, char *file, int line );
 
 //allocate a memory block of the given size and clear it
-void           *GetClearedMemoryDebug(unsigned long size, char *label, char *file, int line);
+void *GetClearedMemoryDebug( unsigned long size, char *label, char *file, int line );
 
 //
-#define GetHunkMemory( size )         GetHunkMemoryDebug( size, # size, __FILE__, __LINE__ );
-#define GetClearedHunkMemory( size )  GetClearedHunkMemoryDebug( size, # size, __FILE__, __LINE__ );
+#define GetHunkMemory( size )        GetHunkMemoryDebug( size, # size, __FILE__, __LINE__ );
+#define GetClearedHunkMemory( size ) GetClearedHunkMemoryDebug( size, # size, __FILE__, __LINE__ );
 //allocate a memory block of the given size
-void           *GetHunkMemoryDebug(unsigned long size, char *label, char *file, int line);
+void *GetHunkMemoryDebug( unsigned long size, char *label, char *file, int line );
 
 //allocate a memory block of the given size and clear it
-void           *GetClearedHunkMemoryDebug(unsigned long size, char *label, char *file, int line);
+void *GetClearedHunkMemoryDebug( unsigned long size, char *label, char *file, int line );
+
 #else
 //allocate a memory block of the given size
-void           *GetMemory(unsigned long size);
+void *GetMemory( unsigned long size );
 
 //allocate a memory block of the given size and clear it
-void           *GetClearedMemory(unsigned long size);
+void *GetClearedMemory( unsigned long size );
 
 //
 #ifdef BSPC
-#define GetHunkMemory GetMemory
+#define GetHunkMemory        GetMemory
 #define GetClearedHunkMemory GetClearedMemory
 #else
 //allocate a memory block of the given size
-void           *GetHunkMemory(unsigned long size);
+void *GetHunkMemory( unsigned long size );
 
 //allocate a memory block of the given size and clear it
-void           *GetClearedHunkMemory(unsigned long size);
+void *GetClearedHunkMemory( unsigned long size );
+
 #endif
 #endif
 
 //free the given memory block
-void            FreeMemory(void *ptr);
+void FreeMemory( void *ptr );
 
 //prints the total used memory size
-void            PrintUsedMemorySize(void);
+void PrintUsedMemorySize( void );
 
 //print all memory blocks with label
-void            PrintMemoryLabels(void);
+void PrintMemoryLabels( void );
 
 //returns the size of the memory block in bytes
-int             MemoryByteSize(void *ptr);
+int  MemoryByteSize( void *ptr );
 
 //free all allocated memory
-void            DumpMemory(void);
+void DumpMemory( void );

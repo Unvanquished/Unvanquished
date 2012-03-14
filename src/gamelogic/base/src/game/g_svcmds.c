@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-
 /*
 ==============================================================================
 
@@ -62,11 +61,10 @@ still, you should rely on PB for banning instead
 // extern vmCvar_t  g_banIPs;
 // extern vmCvar_t  g_filterBan;
 
-
 typedef struct ipFilter_s
 {
-  unsigned  mask;
-  unsigned  compare;
+	unsigned mask;
+	unsigned compare;
 } ipFilter_t;
 
 #define MAX_IPFILTERS 1024
@@ -81,55 +79,63 @@ StringToFilter
 */
 static qboolean StringToFilter( char *s, ipFilter_t *f )
 {
-  char  num[ 128 ];
-  int   i, j;
-  byte  b[ 4 ];
-  byte  m[ 4 ];
+	char num[ 128 ];
+	int  i, j;
+	byte b[ 4 ];
+	byte m[ 4 ];
 
-  for( i = 0; i < 4; i++ )
-  {
-    b[ i ] = 0;
-    m[ i ] = 0;
-  }
+	for ( i = 0; i < 4; i++ )
+	{
+		b[ i ] = 0;
+		m[ i ] = 0;
+	}
 
-  for( i = 0; i < 4; i++ )
-  {
-    if( *s < '0' || *s > '9' )
-    {
-      if( *s == '*' ) // 'match any'
-      {
-        //b[ i ] and m[ i ] to 0
-        s++;
-        if ( !*s )
-          break;
+	for ( i = 0; i < 4; i++ )
+	{
+		if ( *s < '0' || *s > '9' )
+		{
+			if ( *s == '*' ) // 'match any'
+			{
+				//b[ i ] and m[ i ] to 0
+				s++;
 
-        s++;
-        continue;
-      }
+				if ( !*s )
+				{
+					break;
+				}
 
-      G_Printf( "Bad filter address: %s\n", s );
-      return qfalse;
-    }
+				s++;
+				continue;
+			}
 
-    j = 0;
-    while( *s >= '0' && *s <= '9' )
-      num[ j++ ] = *s++;
+			G_Printf( "Bad filter address: %s\n", s );
+			return qfalse;
+		}
 
-    num[ j ] = 0;
-    b[ i ] = atoi( num );
+		j = 0;
 
-    m[ i ] = 255;
+		while ( *s >= '0' && *s <= '9' )
+		{
+			num[ j++ ] = *s++;
+		}
 
-    if( !*s )
-      break;
+		num[ j ] = 0;
+		b[ i ]   = atoi( num );
 
-    s++;
-  }
+		m[ i ]   = 255;
 
-  f->mask = *(unsigned *)m;
-  f->compare = *(unsigned *)b;
+		if ( !*s )
+		{
+			break;
+		}
 
-  return qtrue;
+		s++;
+	}
+
+	f->mask    = *( unsigned * )m;
+	f->compare = *( unsigned * )b;
+
+	return qtrue;
 }
 
 /*
@@ -139,43 +145,51 @@ UpdateIPBans
 */
 static void UpdateIPBans( void )
 {
-  byte  b[ 4 ];
-  byte  m[ 4 ];
-  int    i, j;
-  char  iplist_final[ MAX_CVAR_VALUE_STRING ];
-  char  ip[ 64 ];
+	byte b[ 4 ];
+	byte m[ 4 ];
+	int  i, j;
+	char iplist_final[ MAX_CVAR_VALUE_STRING ];
+	char ip[ 64 ];
 
-  *iplist_final = 0;
+	*iplist_final = 0;
 
-  for( i = 0 ; i < numIPFilters ; i++ )
-  {
-    if( ipFilters[ i ].compare == 0xffffffff )
-      continue;
+	for ( i = 0; i < numIPFilters; i++ )
+	{
+		if ( ipFilters[ i ].compare == 0xffffffff )
+		{
+			continue;
+		}
 
-    *(unsigned *)b = ipFilters[ i ].compare;
-    *(unsigned *)m = ipFilters[ i ].mask;
-    *ip = 0;
+		*( unsigned * )b = ipFilters[ i ].compare;
+		*( unsigned * )m = ipFilters[ i ].mask;
+		*ip            = 0;
 
-    for( j = 0 ; j < 4 ; j++ )
-    {
-      if( m[ j ] != 255 )
-        Q_strcat( ip, sizeof( ip ), "*" );
-      else
-        Q_strcat( ip, sizeof( ip ), va( "%i", b[ j ] ) );
+		for ( j = 0; j < 4; j++ )
+		{
+			if ( m[ j ] != 255 )
+			{
+				Q_strcat( ip, sizeof( ip ), "*" );
+			}
+			else
+			{
+				Q_strcat( ip, sizeof( ip ), va( "%i", b[ j ] ) );
+			}
 
-      Q_strcat( ip, sizeof( ip ), ( j < 3 ) ? "." : " " );
-    }
+			Q_strcat( ip, sizeof( ip ), ( j < 3 ) ? "." : " " );
+		}
 
-    if( strlen( iplist_final ) + strlen( ip ) < MAX_CVAR_VALUE_STRING )
-      Q_strcat( iplist_final, sizeof( iplist_final ), ip );
-    else
-    {
-      Com_Printf( "g_banIPs overflowed at MAX_CVAR_VALUE_STRING\n" );
-      break;
-    }
-  }
+		if ( strlen( iplist_final ) + strlen( ip ) < MAX_CVAR_VALUE_STRING )
+		{
+			Q_strcat( iplist_final, sizeof( iplist_final ), ip );
+		}
+		else
+		{
+			Com_Printf( "g_banIPs overflowed at MAX_CVAR_VALUE_STRING\n" );
+			break;
+		}
+	}
 
-  trap_Cvar_Set( "g_banIPs", iplist_final );
+	trap_Cvar_Set( "g_banIPs", iplist_final );
 }
 
 /*
@@ -185,35 +199,43 @@ G_FilterPacket
 */
 qboolean G_FilterPacket( char *from )
 {
-  int       i;
-  unsigned  in;
-  byte      m[ 4 ];
-  char      *p;
+	int      i;
+	unsigned in;
+	byte     m[ 4 ];
+	char     *p;
 
-  i = 0;
-  p = from;
-  while( *p && i < 4 )
-  {
-    m[ i ] = 0;
-    while( *p >= '0' && *p <= '9' )
-    {
-      m[ i ] = m[ i ] * 10 + ( *p - '0' );
-      p++;
-    }
+	i = 0;
+	p = from;
 
-    if( !*p || *p == ':' )
-      break;
+	while ( *p && i < 4 )
+	{
+		m[ i ] = 0;
 
-    i++, p++;
-  }
+		while ( *p >= '0' && *p <= '9' )
+		{
+			m[ i ] = m[ i ] * 10 + ( *p - '0' );
+			p++;
+		}
 
-  in = *(unsigned *)m;
+		if ( !*p || *p == ':' )
+		{
+			break;
+		}
 
-  for( i = 0; i < numIPFilters; i++ )
-    if( ( in & ipFilters[ i ].mask ) == ipFilters[ i ].compare )
-      return g_filterBan.integer != 0;
+		i++, p++;
+	}
 
-  return g_filterBan.integer == 0;
+	in = *( unsigned * )m;
+
+	for ( i = 0; i < numIPFilters; i++ )
+	{
+		if ( ( in & ipFilters[ i ].mask ) == ipFilters[ i ].compare )
+		{
+			return g_filterBan.integer != 0;
+		}
+	}
+
+	return g_filterBan.integer == 0;
 }
 
 /*
@@ -223,27 +245,33 @@ AddIP
 */
 static void AddIP( char *str )
 {
-  int   i;
+	int i;
 
-  for( i = 0 ; i < numIPFilters ; i++ )
-    if( ipFilters[ i ].compare == 0xffffffff )
-      break;    // free spot
+	for ( i = 0; i < numIPFilters; i++ )
+	{
+		if ( ipFilters[ i ].compare == 0xffffffff )
+		{
+			break; // free spot
+		}
+	}
 
-  if( i == numIPFilters )
-  {
-    if( numIPFilters == MAX_IPFILTERS )
-    {
-      G_Printf( "IP filter list is full\n" );
-      return;
-    }
+	if ( i == numIPFilters )
+	{
+		if ( numIPFilters == MAX_IPFILTERS )
+		{
+			G_Printf( "IP filter list is full\n" );
+			return;
+		}
 
-    numIPFilters++;
-  }
+		numIPFilters++;
+	}
 
-  if( !StringToFilter( str, &ipFilters[ i ] ) )
-    ipFilters[ i ].compare = 0xffffffffu;
+	if ( !StringToFilter( str, &ipFilters[ i ] ) )
+	{
+		ipFilters[ i ].compare = 0xffffffffu;
+	}
 
-  UpdateIPBans( );
+	UpdateIPBans();
 }
 
 /*
@@ -253,28 +281,33 @@ G_ProcessIPBans
 */
 void G_ProcessIPBans( void )
 {
-  char *s, *t;
-  char str[ MAX_CVAR_VALUE_STRING ];
+	char *s, *t;
+	char str[ MAX_CVAR_VALUE_STRING ];
 
-  Q_strncpyz( str, g_banIPs.string, sizeof( str ) );
+	Q_strncpyz( str, g_banIPs.string, sizeof( str ) );
 
-  for( t = s = g_banIPs.string; *t; /* */ )
-  {
-    s = strchr( s, ' ' );
+	for ( t = s = g_banIPs.string; *t; /* */ )
+	{
+		s = strchr( s, ' ' );
 
-    if( !s )
-      break;
+		if ( !s )
+		{
+			break;
+		}
 
-    while( *s == ' ' )
-      *s++ = 0;
+		while ( *s == ' ' )
+		{
+			*s++ = 0;
+		}
 
-    if( *t )
-      AddIP( t );
+		if ( *t )
+		{
+			AddIP( t );
+		}
 
-    t = s;
-  }
+		t = s;
+	}
 }
-
 
 /*
 =================
@@ -283,17 +316,17 @@ Svcmd_AddIP_f
 */
 void Svcmd_AddIP_f( void )
 {
-  char str[ MAX_TOKEN_CHARS ];
+	char str[ MAX_TOKEN_CHARS ];
 
-  if( trap_Argc( ) < 2 )
-  {
-    G_Printf( "Usage:  addip <ip-mask>\n" );
-    return;
-  }
+	if ( trap_Argc() < 2 )
+	{
+		G_Printf( "Usage:  addip <ip-mask>\n" );
+		return;
+	}
 
-  trap_Argv( 1, str, sizeof( str ) );
+	trap_Argv( 1, str, sizeof( str ) );
 
-  AddIP( str );
+	AddIP( str );
 }
 
 /*
@@ -303,35 +336,37 @@ Svcmd_RemoveIP_f
 */
 void Svcmd_RemoveIP_f( void )
 {
-  ipFilter_t  f;
-  int         i;
-  char        str[ MAX_TOKEN_CHARS ];
+	ipFilter_t  f;
+	int         i;
+	char        str[ MAX_TOKEN_CHARS ];
 
-  if( trap_Argc( ) < 2 )
-  {
-    G_Printf( "Usage:  sv removeip <ip-mask>\n" );
-    return;
-  }
+	if ( trap_Argc() < 2 )
+	{
+		G_Printf( "Usage:  sv removeip <ip-mask>\n" );
+		return;
+	}
 
-  trap_Argv( 1, str, sizeof( str ) );
+	trap_Argv( 1, str, sizeof( str ) );
 
-  if( !StringToFilter( str, &f ) )
-    return;
+	if ( !StringToFilter( str, &f ) )
+	{
+		return;
+	}
 
-  for( i = 0; i < numIPFilters; i++ )
-  {
-    if( ipFilters[ i ].mask == f.mask &&
-        ipFilters[ i ].compare == f.compare)
-    {
-      ipFilters[ i ].compare = 0xffffffffu;
-      G_Printf ( "Removed.\n" );
+	for ( i = 0; i < numIPFilters; i++ )
+	{
+		if ( ipFilters[ i ].mask == f.mask &&
+		     ipFilters[ i ].compare == f.compare )
+		{
+			ipFilters[ i ].compare = 0xffffffffu;
+			G_Printf ( "Removed.\n" );
 
-      UpdateIPBans( );
-      return;
-    }
-  }
+			UpdateIPBans();
+			return;
+		}
+	}
 
-  G_Printf ( "Didn't find %s.\n", str );
+	G_Printf ( "Didn't find %s.\n", str );
 }
 
 /*
@@ -341,113 +376,135 @@ Svcmd_EntityList_f
 */
 void  Svcmd_EntityList_f( void )
 {
-  int       e;
-  gentity_t *check;
+	int       e;
+	gentity_t *check;
 
-  check = g_entities + 1;
+	check = g_entities + 1;
 
-  for( e = 1; e < level.num_entities; e++, check++ )
-  {
-    if( !check->inuse )
-      continue;
+	for ( e = 1; e < level.num_entities; e++, check++ )
+	{
+		if ( !check->inuse )
+		{
+			continue;
+		}
 
-    G_Printf( "%3i:", e );
+		G_Printf( "%3i:", e );
 
-    switch( check->s.eType )
-    {
-      case ET_GENERAL:
-        G_Printf( "ET_GENERAL          " );
-        break;
-      case ET_PLAYER:
-        G_Printf( "ET_PLAYER           " );
-        break;
-      case ET_ITEM:
-        G_Printf( "ET_ITEM             " );
-        break;
-      case ET_BUILDABLE:
-        G_Printf( "ET_BUILDABLE        " );
-        break;
-      case ET_MISSILE:
-        G_Printf( "ET_MISSILE          " );
-        break;
-      case ET_MOVER:
-        G_Printf( "ET_MOVER            " );
-        break;
-      case ET_BEAM:
-        G_Printf( "ET_BEAM             " );
-        break;
-      case ET_PORTAL:
-        G_Printf( "ET_PORTAL           " );
-        break;
-      case ET_SPEAKER:
-        G_Printf( "ET_SPEAKER          " );
-        break;
-      case ET_PUSH_TRIGGER:
-        G_Printf( "ET_PUSH_TRIGGER     " );
-        break;
-      case ET_TELEPORT_TRIGGER:
-        G_Printf( "ET_TELEPORT_TRIGGER " );
-        break;
-      case ET_INVISIBLE:
-        G_Printf( "ET_INVISIBLE        " );
-        break;
-      case ET_GRAPPLE:
-        G_Printf( "ET_GRAPPLE          " );
-        break;
-      default:
-        G_Printf( "%3i                 ", check->s.eType );
-        break;
-    }
+		switch ( check->s.eType )
+		{
+			case ET_GENERAL:
+				G_Printf( "ET_GENERAL          " );
+				break;
 
-    if( check->classname )
-      G_Printf( "%s", check->classname );
+			case ET_PLAYER:
+				G_Printf( "ET_PLAYER           " );
+				break;
 
-    G_Printf( "\n" );
-  }
+			case ET_ITEM:
+				G_Printf( "ET_ITEM             " );
+				break;
+
+			case ET_BUILDABLE:
+				G_Printf( "ET_BUILDABLE        " );
+				break;
+
+			case ET_MISSILE:
+				G_Printf( "ET_MISSILE          " );
+				break;
+
+			case ET_MOVER:
+				G_Printf( "ET_MOVER            " );
+				break;
+
+			case ET_BEAM:
+				G_Printf( "ET_BEAM             " );
+				break;
+
+			case ET_PORTAL:
+				G_Printf( "ET_PORTAL           " );
+				break;
+
+			case ET_SPEAKER:
+				G_Printf( "ET_SPEAKER          " );
+				break;
+
+			case ET_PUSH_TRIGGER:
+				G_Printf( "ET_PUSH_TRIGGER     " );
+				break;
+
+			case ET_TELEPORT_TRIGGER:
+				G_Printf( "ET_TELEPORT_TRIGGER " );
+				break;
+
+			case ET_INVISIBLE:
+				G_Printf( "ET_INVISIBLE        " );
+				break;
+
+			case ET_GRAPPLE:
+				G_Printf( "ET_GRAPPLE          " );
+				break;
+
+			default:
+				G_Printf( "%3i                 ", check->s.eType );
+				break;
+		}
+
+		if ( check->classname )
+		{
+			G_Printf( "%s", check->classname );
+		}
+
+		G_Printf( "\n" );
+	}
 }
 
 gclient_t *ClientForString( const char *s )
 {
-  gclient_t *cl;
-  int       i;
-  int       idnum;
+	gclient_t *cl;
+	int       i;
+	int       idnum;
 
-  // numeric values are just slot numbers
-  if( s[ 0 ] >= '0' && s[ 0 ] <= '9' )
-  {
-    idnum = atoi( s );
+	// numeric values are just slot numbers
+	if ( s[ 0 ] >= '0' && s[ 0 ] <= '9' )
+	{
+		idnum = atoi( s );
 
-    if( idnum < 0 || idnum >= level.maxclients )
-    {
-      Com_Printf( "Bad client slot: %i\n", idnum );
-      return NULL;
-    }
+		if ( idnum < 0 || idnum >= level.maxclients )
+		{
+			Com_Printf( "Bad client slot: %i\n", idnum );
+			return NULL;
+		}
 
-    cl = &level.clients[ idnum ];
+		cl = &level.clients[ idnum ];
 
-    if( cl->pers.connected == CON_DISCONNECTED )
-    {
-      G_Printf( "Client %i is not connected\n", idnum );
-      return NULL;
-    }
+		if ( cl->pers.connected == CON_DISCONNECTED )
+		{
+			G_Printf( "Client %i is not connected\n", idnum );
+			return NULL;
+		}
 
-    return cl;
-  }
+		return cl;
+	}
 
-  // check for a name match
-  for( i = 0; i < level.maxclients; i++ )
-  {
-    cl = &level.clients[ i ];
-    if( cl->pers.connected == CON_DISCONNECTED )
-      continue;
+	// check for a name match
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		cl = &level.clients[ i ];
 
-    if( !Q_stricmp( cl->pers.netname, s ) )
-      return cl;
-  }
+		if ( cl->pers.connected == CON_DISCONNECTED )
+		{
+			continue;
+		}
 
-  G_Printf( "User %s is not on the server\n", s );
+		if ( !Q_stricmp( cl->pers.netname, s ) )
+		{
+			return cl;
+		}
+	}
 
-  return NULL;
+	G_Printf( "User %s is not on the server\n", s );
+
+	return NULL;
 }
 
 /*
@@ -459,20 +516,22 @@ forceteam <player> <team>
 */
 void  Svcmd_ForceTeam_f( void )
 {
-  gclient_t *cl;
-  char      str[ MAX_TOKEN_CHARS ];
+	gclient_t *cl;
+	char      str[ MAX_TOKEN_CHARS ];
 
-  // find the player
-  trap_Argv( 1, str, sizeof( str ) );
-  cl = ClientForString( str );
+	// find the player
+	trap_Argv( 1, str, sizeof( str ) );
+	cl = ClientForString( str );
 
-  if( !cl )
-    return;
+	if ( !cl )
+	{
+		return;
+	}
 
-  // set the team
-  trap_Argv( 2, str, sizeof( str ) );
-  /*SetTeam( &g_entities[cl - level.clients], str );*/
-  //FIXME: tremulise this
+	// set the team
+	trap_Argv( 2, str, sizeof( str ) );
+	/*SetTeam( &g_entities[cl - level.clients], str );*/
+	//FIXME: tremulise this
 }
 
 char  *ConcatArgs( int start );
@@ -485,104 +544,109 @@ ConsoleCommand
 */
 qboolean  ConsoleCommand( void )
 {
-  char cmd[ MAX_TOKEN_CHARS ];
+	char cmd[ MAX_TOKEN_CHARS ];
 
-  trap_Argv( 0, cmd, sizeof( cmd ) );
+	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-  if( Q_stricmp( cmd, "entitylist" ) == 0 )
-  {
-    Svcmd_EntityList_f( );
-    return qtrue;
-  }
+	if ( Q_stricmp( cmd, "entitylist" ) == 0 )
+	{
+		Svcmd_EntityList_f();
+		return qtrue;
+	}
 
-  if( Q_stricmp( cmd, "forceteam" ) == 0 )
-  {
-    Svcmd_ForceTeam_f( );
-    return qtrue;
-  }
+	if ( Q_stricmp( cmd, "forceteam" ) == 0 )
+	{
+		Svcmd_ForceTeam_f();
+		return qtrue;
+	}
 
-  if( Q_stricmp( cmd, "game_memory" ) == 0 )
-  {
-    Svcmd_GameMem_f( );
-    return qtrue;
-  }
+	if ( Q_stricmp( cmd, "game_memory" ) == 0 )
+	{
+		Svcmd_GameMem_f();
+		return qtrue;
+	}
 
-  if( Q_stricmp( cmd, "addip" ) == 0 )
-  {
-    Svcmd_AddIP_f( );
-    return qtrue;
-  }
+	if ( Q_stricmp( cmd, "addip" ) == 0 )
+	{
+		Svcmd_AddIP_f();
+		return qtrue;
+	}
 
-  if( Q_stricmp( cmd, "removeip" ) == 0 )
-  {
-    Svcmd_RemoveIP_f( );
-    return qtrue;
-  }
+	if ( Q_stricmp( cmd, "removeip" ) == 0 )
+	{
+		Svcmd_RemoveIP_f();
+		return qtrue;
+	}
 
-  if( Q_stricmp( cmd, "listip" ) == 0 )
-  {
-    trap_SendConsoleCommand( EXEC_NOW, "g_banIPs\n" );
-    return qtrue;
-  }
+	if ( Q_stricmp( cmd, "listip" ) == 0 )
+	{
+		trap_SendConsoleCommand( EXEC_NOW, "g_banIPs\n" );
+		return qtrue;
+	}
 
-  if( Q_stricmp( cmd, "mapRotation" ) == 0 )
-  {
-    char *rotationName = ConcatArgs( 1 );
+	if ( Q_stricmp( cmd, "mapRotation" ) == 0 )
+	{
+		char *rotationName = ConcatArgs( 1 );
 
-    if( !G_StartMapRotation( rotationName, qfalse ) )
-      G_Printf( "Can't find map rotation %s\n", rotationName );
+		if ( !G_StartMapRotation( rotationName, qfalse ) )
+		{
+			G_Printf( "Can't find map rotation %s\n", rotationName );
+		}
 
-    return qtrue;
-  }
+		return qtrue;
+	}
 
-  if( Q_stricmp( cmd, "stopMapRotation" ) == 0 )
-  {
-    G_StopMapRotation( );
+	if ( Q_stricmp( cmd, "stopMapRotation" ) == 0 )
+	{
+		G_StopMapRotation();
 
-    return qtrue;
-  }
+		return qtrue;
+	}
 
-  if( Q_stricmp( cmd, "alienWin" ) == 0 )
-  {
-    int       i;
-    gentity_t *e;
+	if ( Q_stricmp( cmd, "alienWin" ) == 0 )
+	{
+		int       i;
+		gentity_t *e;
 
-    for( i = 1, e = g_entities + i; i < level.num_entities; i++, e++ )
-    {
-      if( e->s.modelindex == BA_H_SPAWN )
-        G_Damage( e, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
-    }
+		for ( i = 1, e = g_entities + i; i < level.num_entities; i++, e++ )
+		{
+			if ( e->s.modelindex == BA_H_SPAWN )
+			{
+				G_Damage( e, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
+			}
+		}
 
-    return qtrue;
-  }
+		return qtrue;
+	}
 
-  if( Q_stricmp( cmd, "humanWin" ) == 0 )
-  {
-    int       i;
-    gentity_t *e;
+	if ( Q_stricmp( cmd, "humanWin" ) == 0 )
+	{
+		int       i;
+		gentity_t *e;
 
-    for( i = 1, e = g_entities + i; i < level.num_entities; i++, e++ )
-    {
-      if( e->s.modelindex == BA_A_SPAWN )
-        G_Damage( e, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
-    }
+		for ( i = 1, e = g_entities + i; i < level.num_entities; i++, e++ )
+		{
+			if ( e->s.modelindex == BA_A_SPAWN )
+			{
+				G_Damage( e, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
+			}
+		}
 
-    return qtrue;
-  }
+		return qtrue;
+	}
 
-  if( g_dedicated.integer )
-  {
-    if( Q_stricmp( cmd, "say" ) == 0 )
-    {
-      G_SendCommandFromServer( -1, va( "print \"server: %s\n\"", ConcatArgs( 1 ) ) );
-      return qtrue;
-    }
+	if ( g_dedicated.integer )
+	{
+		if ( Q_stricmp( cmd, "say" ) == 0 )
+		{
+			G_SendCommandFromServer( -1, va( "print \"server: %s\n\"", ConcatArgs( 1 ) ) );
+			return qtrue;
+		}
 
-    // everything else will also be printed as a say command
-    G_SendCommandFromServer( -1, va( "print \"server: %s\n\"", ConcatArgs( 0 ) ) );
-    return qtrue;
-  }
+		// everything else will also be printed as a say command
+		G_SendCommandFromServer( -1, va( "print \"server: %s\n\"", ConcatArgs( 0 ) ) );
+		return qtrue;
+	}
 
-  return qfalse;
+	return qfalse;
 }
-

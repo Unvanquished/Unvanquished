@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,64 +26,63 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-
 // snddma_null.c
 // all other sound mixing is portable
 
 #include "../client/client.h"
 
-qboolean SNDDMA_Init(void)
+qboolean SNDDMA_Init( void )
 {
 	return qfalse;
 }
 
-int SNDDMA_GetDMAPos(void)
+int SNDDMA_GetDMAPos( void )
 {
 	return 0;
 }
 
-void SNDDMA_Shutdown(void)
+void SNDDMA_Shutdown( void )
 {
 }
 
-void SNDDMA_BeginPainting(void)
+void SNDDMA_BeginPainting( void )
 {
 }
 
-void SNDDMA_Submit(void)
+void SNDDMA_Submit( void )
 {
 }
 
 // bk001119 - added boolean flag, match client/snd_public.h
-sfxHandle_t S_RegisterSound(const char *name, qboolean compressed)
+sfxHandle_t S_RegisterSound( const char *name, qboolean compressed )
 {
 	return 0;
 }
 
-void S_StartLocalSound(sfxHandle_t sfx, int channelNum)
+void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 {
 }
 
-void S_ClearSoundBuffer(void)
+void S_ClearSoundBuffer( void )
 {
 }
 
 // TTimo: added for win32 dedicated
-void SNDDMA_Activate(void)
+void SNDDMA_Activate( void )
 {
 }
 
 // show_bug.cgi?id=574
-int S_GetSoundLength(sfxHandle_t sfxHandle)
+int S_GetSoundLength( sfxHandle_t sfxHandle )
 {
-	Com_Error(ERR_DROP, "null_snddma.c: S_GetSoundLength\n");
+	Com_Error( ERR_DROP, "null_snddma.c: S_GetSoundLength\n" );
 	return 0;
 }
 
-void S_UpdateThread(void)
+void S_UpdateThread( void )
 {
 }
 
-void S_AddLoopSounds(void)
+void S_AddLoopSounds( void )
 {
 }

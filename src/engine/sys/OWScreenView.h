@@ -5,82 +5,84 @@
  *
  */
 
-#import	<UIKit/UIView.h>
+#import <UIKit/UIView.h>
 #import <UIKit/UIKit.h>
 
-#import	<OpenGLES/EAGL.h>
-#import	<OpenGLES/EAGLDrawable.h>
-#import	<OpenGLES/ES1/gl.h>
+#import <OpenGLES/EAGL.h>
+#import <OpenGLES/EAGLDrawable.h>
+#import <OpenGLES/ES1/gl.h>
 
-#define BIT0 (1<<0)
-#define BIT1 (1<<1)
-#define BIT2 (1<<2)
-#define BIT3 (1<<3)
-#define BIT4 (1<<4)
-#define BIT5 (1<<5)
-#define BIT6 (1<<6)
+#define BIT0 ( 1 << 0 )
+#define BIT1 ( 1 << 1 )
+#define BIT2 ( 1 << 2 )
+#define BIT3 ( 1 << 3 )
+#define BIT4 ( 1 << 4 )
+#define BIT5 ( 1 << 5 )
+#define BIT6 ( 1 << 6 )
 
 #define TODO 0
 
-enum OWEventType         
+enum OWEventType
 {
-	OWEvent_ClickOnMenu = BIT0,
-	OWEvent_Fire = BIT1,
-	OWEvent_RotateCamera = BIT2,
-	OWEvent_MovePlayerForward = BIT3,
-	OWEvent_MovePlayerBack = BIT4,
-	OWEvent_MovePlayerLeft = BIT5,
-	OWEvent_MovePlayerRight = BIT6,
-	COUNT
+  OWEvent_ClickOnMenu       = BIT0,
+  OWEvent_Fire              = BIT1,
+  OWEvent_RotateCamera      = BIT2,
+  OWEvent_MovePlayerForward = BIT3,
+  OWEvent_MovePlayerBack    = BIT4,
+  OWEvent_MovePlayerLeft    = BIT5,
+  OWEvent_MovePlayerRight   = BIT6,
+  COUNT
 };
 
-@interface OWScreenView : UIView
+@interface OWScreenView :
+UIView
 {
-@protected
-		
-	EAGLContext *_context;
-	GLuint _frameBuffer;
-	GLuint _renderBuffer;
-	GLuint _depthBuffer;
-	CGSize _size;
-	CGPoint _GUIMouseLocation;
-	CGSize _GUIMouseOffset;
-	CGPoint _mouseScale;
-	NSUInteger _numTouches;
+	@protected
+
+	EAGLContext          *_context;
+	GLuint               _frameBuffer;
+	GLuint               _renderBuffer;
+	GLuint               _depthBuffer;
+	CGSize               _size;
+	CGPoint              _GUIMouseLocation;
+	CGSize               _GUIMouseOffset;
+	CGPoint              _mouseScale;
+	NSUInteger           _numTouches;
 #ifdef TODO
-	unsigned int _bitMask;
-#endif // TODO
-		
+	unsigned int         _bitMask;
+#endif  // TODO
+
 	IBOutlet UIImageView *joypadCap;
 
-	NSTimer *gameTimer;	
-	
-	BOOL joypadMoving;
+	NSTimer              *gameTimer;
 
-	CGRect joypad;
+	BOOL                 joypadMoving;
 
-	uint joypadCenterx, joypadCentery, joypadMaxRadius, joypadWidth, joypadHeight;
+	CGRect               joypad;
 
-	int joypadTouchHash;
+	uint                 joypadCenterx, joypadCentery, joypadMaxRadius, joypadWidth, joypadHeight;
 
-	CGPoint joypadCapLocation;
-	
-	CGPoint oldLocation;
-	
-	CGRect	shootbutton;
-	
-	BOOL	shooting;
-	
-	BOOL	isFinger;
-	
-	float touchAngle;
-	float distance;
+	int                  joypadTouchHash;
+
+	CGPoint              joypadCapLocation;
+
+	CGPoint              oldLocation;
+
+	CGRect               shootbutton;
+
+	BOOL                 shooting;
+
+	BOOL                 isFinger;
+
+	float                touchAngle;
+	float                distance;
 }
 
-- initWithFrame:(CGRect)frame;
-@property (assign, readonly, nonatomic) NSUInteger numColorBits;
-@property (assign, readonly, nonatomic) NSUInteger numDepthBits;
-@property (assign, readonly, nonatomic) EAGLContext *context;
-- (void)swapBuffers;
+- initWithFrame:
+( CGRect )frame;
+@property ( assign, readonly, nonatomic ) NSUInteger  numColorBits;
+@property ( assign, readonly, nonatomic ) NSUInteger  numDepthBits;
+@property ( assign, readonly, nonatomic ) EAGLContext *context;
+- ( void )swapBuffers;
 
 @end

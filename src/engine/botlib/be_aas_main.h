@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,67 +19,67 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
 */
 
-
 /*****************************************************************************
- * name:		be_aas_main.h
+ * name:    be_aas_main.h
  *
- * desc:		AAS
+ * desc:    AAS
  *
  *
  *****************************************************************************/
 
 #ifdef AASINTERN
 
-extern          aas_t(*aasworld);
+extern          aas_t( *aasworld );
 
 //AAS error message
-void QDECL      AAS_Error(char *fmt, ...) __attribute__((format(printf, 1, 2)));
+void QDECL AAS_Error( char *fmt, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
 
 //set AAS initialized
-void            AAS_SetInitialized(void);
+void       AAS_SetInitialized( void );
 
 //setup AAS with the given number of entities and clients
-int             AAS_Setup(void);
+int        AAS_Setup( void );
 
 //shutdown AAS
-void            AAS_Shutdown(void);
+void       AAS_Shutdown( void );
 
 //start a new map
-int             AAS_LoadMap(const char *mapname);
+int        AAS_LoadMap( const char *mapname );
 
 //start a new time frame
-int             AAS_StartFrame(float time);
-#endif							//AASINTERN
+int        AAS_StartFrame( float time );
+
+#endif                                                  //AASINTERN
 
 //returns true if AAS is initialized
-int             AAS_Initialized(void);
+int   AAS_Initialized( void );
 
 //returns true if the AAS file is loaded
-int             AAS_Loaded(void);
+int   AAS_Loaded( void );
 
 //returns the model name from the given index
-char           *AAS_ModelFromIndex(int index);
+char  *AAS_ModelFromIndex( int index );
 
 //returns the index from the given model name
-int             AAS_IndexFromModel(char *modelname);
+int   AAS_IndexFromModel( char *modelname );
 
 //returns the current time
-float           AAS_Time(void);
+float AAS_Time( void );
 
 // Ridah
-void            AAS_SetCurrentWorld(int index);
+void  AAS_SetCurrentWorld( int index );
 
 // done.

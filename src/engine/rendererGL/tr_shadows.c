@@ -34,52 +34,54 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ====================================================
 */
 
-shadowState_t   shadowState;
+shadowState_t shadowState;
 
 /*
 =================
 RB_ProjectionShadowDeform
 =================
 */
-void RB_ProjectionShadowDeform(void)
+void RB_ProjectionShadowDeform( void )
 {
-	float          *xyz;
-	int             i;
-	float           h;
-	vec3_t          ground;
-	vec3_t          light;
-	float           groundDist;
-	float           d;
-	vec3_t          lightDir;
+	float  *xyz;
+	int    i;
+	float  h;
+	vec3_t ground;
+	vec3_t light;
+	float  groundDist;
+	float  d;
+	vec3_t lightDir;
 
-	xyz = (float *)tess.xyz;
+	xyz         = ( float * )tess.xyz;
 
-	ground[0] = backEnd.orientation.axis[0][2];
-	ground[1] = backEnd.orientation.axis[1][2];
-	ground[2] = backEnd.orientation.axis[2][2];
+	ground[ 0 ] = backEnd.orientation.axis[ 0 ][ 2 ];
+	ground[ 1 ] = backEnd.orientation.axis[ 1 ][ 2 ];
+	ground[ 2 ] = backEnd.orientation.axis[ 2 ][ 2 ];
 
-	groundDist = backEnd.orientation.origin[2] - backEnd.currentEntity->e.shadowPlane;
+	groundDist  = backEnd.orientation.origin[ 2 ] - backEnd.currentEntity->e.shadowPlane;
 
-	VectorCopy(backEnd.currentEntity->lightDir, lightDir);
-	d = DotProduct(lightDir, ground);
+	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
+	d           = DotProduct( lightDir, ground );
+
 	// don't let the shadows get too long or go negative
-	if(d < 0.5)
+	if ( d < 0.5 )
 	{
-		VectorMA(lightDir, (0.5 - d), ground, lightDir);
-		d = DotProduct(lightDir, ground);
+		VectorMA( lightDir, ( 0.5 - d ), ground, lightDir );
+		d = DotProduct( lightDir, ground );
 	}
-	d = 1.0 / d;
 
-	light[0] = lightDir[0] * d;
-	light[1] = lightDir[1] * d;
-	light[2] = lightDir[2] * d;
+	d          = 1.0 / d;
 
-	for(i = 0; i < tess.numVertexes; i++, xyz += 4)
+	light[ 0 ] = lightDir[ 0 ] * d;
+	light[ 1 ] = lightDir[ 1 ] * d;
+	light[ 2 ] = lightDir[ 2 ] * d;
+
+	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 )
 	{
-		h = DotProduct(xyz, ground) + groundDist;
+		h         = DotProduct( xyz, ground ) + groundDist;
 
-		xyz[0] -= light[0] * h;
-		xyz[1] -= light[1] * h;
-		xyz[2] -= light[2] * h;
+		xyz[ 0 ] -= light[ 0 ] * h;
+		xyz[ 1 ] -= light[ 1 ] * h;
+		xyz[ 2 ] -= light[ 2 ] * h;
 	}
 }

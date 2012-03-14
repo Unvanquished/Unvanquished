@@ -22,10 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // cg_ptr.c -- post timeout restoration handling
 
-
 #include "cg_local.h"
 
-#define PTRC_FILE  "ptrc.cfg"
+#define PTRC_FILE "ptrc.cfg"
 
 /*
 ===============
@@ -36,24 +35,29 @@ Read a PTR code from disk
 */
 int CG_ReadPTRCode( void )
 {
-  int           len;
-  char          text[ 16 ];
-  fileHandle_t  f;
+	int          len;
+	char         text[ 16 ];
+	fileHandle_t f;
 
-  // load the file
-  len = trap_FS_FOpenFile( PTRC_FILE, &f, FS_READ );
-  if( len <= 0 )
-    return 0;
+	// load the file
+	len = trap_FS_FOpenFile( PTRC_FILE, &f, FS_READ );
 
-  // should never happen - malformed write
-  if( len >= sizeof( text ) - 1 )
-    return 0;
+	if ( len <= 0 )
+	{
+		return 0;
+	}
 
-  trap_FS_Read( text, len, f );
-  text[ len ] = 0;
-  trap_FS_FCloseFile( f );
+	// should never happen - malformed write
+	if ( len >= sizeof( text ) - 1 )
+	{
+		return 0;
+	}
 
-  return atoi( text );
+	trap_FS_Read( text, len, f );
+	text[ len ] = 0;
+	trap_FS_FCloseFile( f );
+
+	return atoi( text );
 }
 
 /*
@@ -65,17 +69,19 @@ Write a PTR code to disk
 */
 void CG_WritePTRCode( int code )
 {
-  char          text[ 16 ];
-  fileHandle_t  f;
+	char         text[ 16 ];
+	fileHandle_t f;
 
-  Com_sprintf( text, 16, "%d", code );
+	Com_sprintf( text, 16, "%d", code );
 
-  // open file
-  if( trap_FS_FOpenFile( PTRC_FILE, &f, FS_WRITE ) < 0 )
-    return;
+	// open file
+	if ( trap_FS_FOpenFile( PTRC_FILE, &f, FS_WRITE ) < 0 )
+	{
+		return;
+	}
 
-  // write the code
-  trap_FS_Write( text, strlen( text ), f );
+	// write the code
+	trap_FS_Write( text, strlen( text ), f );
 
-  trap_FS_FCloseFile( f );
+	trap_FS_FCloseFile( f );
 }

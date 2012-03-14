@@ -72,8 +72,8 @@ enum
   WINDOW_STYLE_CINEMATIC  // cinematic
 };
 
-#define MENU_TRUE                         1     // uh.. true
-#define MENU_FALSE                        0     // and false
+#define MENU_TRUE  1                            // uh.. true
+#define MENU_FALSE 0                            // and false
 
 enum
 {
@@ -91,18 +91,18 @@ enum
 // list feeders
 enum
 {
-  FEEDER_SERVERS,        // servers
-  FEEDER_MAPS,           // all maps available, in graphic format
-  FEEDER_ALIENTEAM_LIST, // alien team members
-  FEEDER_HUMANTEAM_LIST, // human team members
-  FEEDER_TEAM_LIST,      // team members for team voting
-  FEEDER_PLAYER_LIST,    // players
-  FEEDER_NEWS,           // news
-  FEEDER_MODS,           // list of available mods
-  FEEDER_DEMOS,          // list of available demo files
-  FEEDER_SERVERSTATUS,   // server status
-  FEEDER_FINDPLAYER,     // find player
-  FEEDER_CINEMATICS,     // cinematics
+  FEEDER_SERVERS,              // servers
+  FEEDER_MAPS,                 // all maps available, in graphic format
+  FEEDER_ALIENTEAM_LIST,       // alien team members
+  FEEDER_HUMANTEAM_LIST,       // human team members
+  FEEDER_TEAM_LIST,            // team members for team voting
+  FEEDER_PLAYER_LIST,          // players
+  FEEDER_NEWS,                 // news
+  FEEDER_MODS,                 // list of available mods
+  FEEDER_DEMOS,                // list of available demo files
+  FEEDER_SERVERSTATUS,         // server status
+  FEEDER_FINDPLAYER,           // find player
+  FEEDER_CINEMATICS,           // cinematics
 
   FEEDER_TREMTEAMS,            // teams
   FEEDER_TREMALIENCLASSES,     // alien classes
@@ -114,20 +114,20 @@ enum
   FEEDER_TREMHUMANBUILD,       // human buildables
   FEEDER_IGNORE_LIST,          // ignored players
   FEEDER_HELP_LIST,            // help topics
-  FEEDER_RESOLUTIONS,           // display resolutions
+  FEEDER_RESOLUTIONS,          // display resolutions
   FEEDER_PROFILES              // Profiles
 };
 
 // display flags
-#define UI_SHOW_FAVORITESERVERS           0x00000001
-#define UI_SHOW_NOTFAVORITESERVERS        0x00000002
+#define UI_SHOW_FAVORITESERVERS    0x00000001
+#define UI_SHOW_NOTFAVORITESERVERS 0x00000002
 
-#define UI_SHOW_VOTEACTIVE                0x00000004
-#define UI_SHOW_CANVOTE                   0x00000008
-#define UI_SHOW_TEAMVOTEACTIVE            0x00000010
-#define UI_SHOW_CANTEAMVOTE               0x00000020
+#define UI_SHOW_VOTEACTIVE         0x00000004
+#define UI_SHOW_CANVOTE            0x00000008
+#define UI_SHOW_TEAMVOTEACTIVE     0x00000010
+#define UI_SHOW_CANTEAMVOTE        0x00000020
 
-#define UI_SHOW_NOTSPECTATING             0x00000040
+#define UI_SHOW_NOTSPECTATING      0x00000040
 
 // owner draw types
 enum

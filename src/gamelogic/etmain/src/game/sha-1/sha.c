@@ -1,12 +1,12 @@
 /*
  *  sha.cpp
  *
- *	Copyright (C) 1998
- *	Paul E. Jones <paulej@arid.us>
- *	All Rights Reserved
+ *  Copyright (C) 1998
+ *  Paul E. Jones <paulej@arid.us>
+ *  All Rights Reserved
  *
  *****************************************************************************
- *	$Id: sha.c,v 1.2 2004/03/27 18:00:33 paulej Exp $
+ *  $Id: sha.c,v 1.2 2004/03/27 18:00:33 paulej Exp $
  *****************************************************************************
  *
  *  Description:
@@ -30,8 +30,7 @@
  */
 void usage();
 
-
-/*  
+/*
  *  main
  *
  *  Description:
@@ -50,114 +49,116 @@ void usage();
  *  Comments:
  *
  */
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
-    SHA1Context sha;                /* SHA-1 context                 */
-    FILE        *fp;                /* File pointer for reading files*/
-    char        c;                  /* Character read from file      */
-    int         i;                  /* Counter                       */
-    int         reading_stdin;      /* Are we reading standard in?   */
-    int         read_stdin = 0;     /* Have we read stdin?           */
+	SHA1Context sha;            /* SHA-1 context                 */
+	FILE        *fp;            /* File pointer for reading files*/
+	char        c;              /* Character read from file      */
+	int         i;              /* Counter                       */
+	int         reading_stdin;  /* Are we reading standard in?   */
+	int         read_stdin = 0; /* Have we read stdin?           */
 
-    /*
-     *  Check the program arguments and print usage information if -?
-     *  or --help is passed as the first argument.
-     */
-    if (argc > 1 && (!strcmp(argv[1],"-?") ||
-        !strcmp(argv[1],"--help")))
-    {
-        usage();
-        return 1;
-    }
+	/*
+	 *  Check the program arguments and print usage information if -?
+	 *  or --help is passed as the first argument.
+	 */
+	if ( argc > 1 && ( !strcmp( argv[ 1 ], "-?" ) ||
+	                   !strcmp( argv[ 1 ], "--help" ) ) )
+	{
+		usage();
+		return 1;
+	}
 
-    /*
-     *  For each filename passed in on the command line, calculate the
-     *  SHA-1 value and display it.
-     */
-    for(i = 0; i < argc; i++)
-    {
-        /*
-         *  We start the counter at 0 to guarantee entry into the for
-         *  loop. So if 'i' is zero, we will increment it now.  If there
-         *  is no argv[1], we will use STDIN below.
-         */
-        if (i == 0)
-        {
-            i++;
-        }
+	/*
+	 *  For each filename passed in on the command line, calculate the
+	 *  SHA-1 value and display it.
+	 */
+	for ( i = 0; i < argc; i++ )
+	{
+		/*
+		 *  We start the counter at 0 to guarantee entry into the for
+		 *  loop. So if 'i' is zero, we will increment it now.  If there
+		 *  is no argv[1], we will use STDIN below.
+		 */
+		if ( i == 0 )
+		{
+			i++;
+		}
 
-        if (argc == 1 || !strcmp(argv[i],"-"))
-        {
+		if ( argc == 1 || !strcmp( argv[ i ], "-" ) )
+		{
 #ifdef WIN32
-            setmode(fileno(stdin), _O_BINARY);
+			setmode( fileno( stdin ), _O_BINARY );
 #endif
-            fp = stdin;
-            reading_stdin = 1;
-        }
-        else
-        {
-            if (!(fp = fopen(argv[i],"rb")))
-            {
-                fprintf(stderr,
-                        "sha: unable to open file %s\n",
-                        argv[i]);
-                return 2;
-            }
-            reading_stdin = 0;
-        }
+			fp            = stdin;
+			reading_stdin = 1;
+		}
+		else
+		{
+			if ( !( fp = fopen( argv[ i ], "rb" ) ) )
+			{
+				fprintf( stderr,
+				         "sha: unable to open file %s\n",
+				         argv[ i ] );
+				return 2;
+			}
 
-        /*
-         *  We do not want to read STDIN multiple times
-         */
-        if (reading_stdin)
-        {
-            if (read_stdin)
-            {
-                continue;
-            }
+			reading_stdin = 0;
+		}
 
-            read_stdin = 1;
-        }
+		/*
+		 *  We do not want to read STDIN multiple times
+		 */
+		if ( reading_stdin )
+		{
+			if ( read_stdin )
+			{
+				continue;
+			}
 
-        /*
-         *  Reset the SHA-1 context and process input
-         */
-        SHA1Reset(&sha);
+			read_stdin = 1;
+		}
 
-        c = fgetc(fp);
-        while(!feof(fp))
-        {
-            SHA1Input(&sha, &c, 1);
-            c = fgetc(fp);
-        }
+		/*
+		 *  Reset the SHA-1 context and process input
+		 */
+		SHA1Reset( &sha );
 
-        if (!reading_stdin)
-        {
-            fclose(fp);
-        }
+		c = fgetc( fp );
 
-        if (!SHA1Result(&sha))
-        {
-            fprintf(stderr,
-                    "sha: could not compute message digest for %s\n",
-                    reading_stdin?"STDIN":argv[i]);
-        }
-        else
-        {
-            printf( "%08X %08X %08X %08X %08X - %s\n",
-                    sha.Message_Digest[0],
-                    sha.Message_Digest[1],
-                    sha.Message_Digest[2],
-                    sha.Message_Digest[3],
-                    sha.Message_Digest[4],
-                    reading_stdin?"STDIN":argv[i]);
-        }
-    }
+		while ( !feof( fp ) )
+		{
+			SHA1Input( &sha, &c, 1 );
+			c = fgetc( fp );
+		}
 
-    return 0;
+		if ( !reading_stdin )
+		{
+			fclose( fp );
+		}
+
+		if ( !SHA1Result( &sha ) )
+		{
+			fprintf( stderr,
+			         "sha: could not compute message digest for %s\n",
+			         reading_stdin ? "STDIN" : argv[ i ] );
+		}
+		else
+		{
+			printf( "%08X %08X %08X %08X %08X - %s\n",
+			        sha.Message_Digest[ 0 ],
+			        sha.Message_Digest[ 1 ],
+			        sha.Message_Digest[ 2 ],
+			        sha.Message_Digest[ 3 ],
+			        sha.Message_Digest[ 4 ],
+			        reading_stdin ? "STDIN" : argv[ i ] );
+		}
+	}
+
+	return 0;
 }
 
-/*  
+/*
  *  usage
  *
  *  Description:
@@ -175,7 +176,7 @@ int main(int argc, char *argv[])
  */
 void usage()
 {
-    printf("usage: sha <file> [<file> ...]\n");
-    printf("\tThis program will display the message digest\n");
-    printf("\tfor files using the Secure Hashing Algorithm (SHA-1).\n");
+	printf( "usage: sha <file> [<file> ...]\n" );
+	printf( "\tThis program will display the message digest\n" );
+	printf( "\tfor files using the Secure Hashing Algorithm (SHA-1).\n" );
 }

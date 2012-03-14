@@ -36,18 +36,22 @@ Callback to detect ptrc clashes
 */
 static qboolean G_CheckForUniquePTRC( int code )
 {
-  int i;
+	int i;
 
-  if( code == 0 )
-    return qfalse;
+	if ( code == 0 )
+	{
+		return qfalse;
+	}
 
-  for( i = 0; i < MAX_CLIENTS; i++ )
-  {
-    if( connections[ i ].ptrCode == code )
-      return qfalse;
-  }
+	for ( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		if ( connections[ i ].ptrCode == code )
+		{
+			return qfalse;
+		}
+	}
 
-  return qtrue;
+	return qtrue;
 }
 
 /*
@@ -59,11 +63,11 @@ Update the data in a connection record
 */
 void G_UpdatePTRConnection( gclient_t *client )
 {
-  if( client && client->pers.connection )
-  {
-    client->pers.connection->clientTeam = client->ps.stats[ STAT_PTEAM ];
-    client->pers.connection->clientCredit = client->ps.persistant[ PERS_CREDIT ];
-  }
+	if ( client && client->pers.connection )
+	{
+		client->pers.connection->clientTeam   = client->ps.stats[ STAT_PTEAM ];
+		client->pers.connection->clientCredit = client->ps.persistant[ PERS_CREDIT ];
+	}
 }
 
 /*
@@ -75,34 +79,35 @@ Generates a new connection
 */
 connectionRecord_t *G_GenerateNewConnection( gclient_t *client )
 {
-  int     code = 0;
-  int     i;
+	int code = 0;
+	int i;
 
-  // this should be really random
-  srand( trap_Milliseconds( ) );
+	// this should be really random
+	srand( trap_Milliseconds() );
 
-  // there is a very very small possibility that this
-  // will loop infinitely
-  do
-  {
-    code = rand( );
-  } while( !G_CheckForUniquePTRC( code ) );
+	// there is a very very small possibility that this
+	// will loop infinitely
+	do
+	{
+		code = rand();
+	}
+	while ( !G_CheckForUniquePTRC( code ) );
 
-  for( i = 0; i < MAX_CLIENTS; i++ )
-  {
-    //found an unused slot
-    if( !connections[ i ].ptrCode )
-    {
-      connections[ i ].ptrCode = code;
-      connections[ i ].clientNum = client->ps.clientNum;
-      client->pers.connection = &connections[ i ];
-      G_UpdatePTRConnection( client );
+	for ( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		//found an unused slot
+		if ( !connections[ i ].ptrCode )
+		{
+			connections[ i ].ptrCode   = code;
+			connections[ i ].clientNum = client->ps.clientNum;
+			client->pers.connection    = &connections[ i ];
+			G_UpdatePTRConnection( client );
 
-      return &connections[ i ];
-    }
-  }
+			return &connections[ i ];
+		}
+	}
 
-  return NULL;
+	return NULL;
 }
 
 /*
@@ -114,18 +119,22 @@ Check a PTR code for validity
 */
 qboolean G_VerifyPTRC( int code )
 {
-  int i;
+	int i;
 
-  if( code == 0 )
-    return qfalse;
+	if ( code == 0 )
+	{
+		return qfalse;
+	}
 
-  for( i = 0; i < MAX_CLIENTS; i++ )
-  {
-    if( connections[ i ].ptrCode == code )
-      return qtrue;
-  }
+	for ( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		if ( connections[ i ].ptrCode == code )
+		{
+			return qtrue;
+		}
+	}
 
-  return qfalse;
+	return qfalse;
 }
 
 /*
@@ -137,18 +146,22 @@ Finds a connection for a given code
 */
 connectionRecord_t *G_FindConnectionForCode( int code )
 {
-  int i;
+	int i;
 
-  if( code == 0 )
-    return NULL;
+	if ( code == 0 )
+	{
+		return NULL;
+	}
 
-  for( i = 0; i < MAX_CLIENTS; i++ )
-  {
-    if( connections[ i ].ptrCode == code )
-      return &connections[ i ];
-  }
+	for ( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		if ( connections[ i ].ptrCode == code )
+		{
+			return &connections[ i ];
+		}
+	}
 
-  return NULL;
+	return NULL;
 }
 
 /*
@@ -160,8 +173,10 @@ Finds a connection and deletes it
 */
 void G_DeletePTRConnection( connectionRecord_t *connection )
 {
-  if( connection )
-    memset( connection, 0, sizeof( connectionRecord_t ) );
+	if ( connection )
+	{
+		memset( connection, 0, sizeof( connectionRecord_t ) );
+	}
 }
 
 /*
@@ -173,5 +188,5 @@ Invalidate any existing codes
 */
 void G_ResetPTRConnections( void )
 {
-  memset( connections, 0, sizeof( connectionRecord_t ) * MAX_CLIENTS );
+	memset( connections, 0, sizeof( connectionRecord_t ) * MAX_CLIENTS );
 }

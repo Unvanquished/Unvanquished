@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-
 /*
 =======================================================================
 
@@ -43,20 +42,20 @@ Called on game shutdown
 */
 void G_WriteClientSessionData( gclient_t *client )
 {
-  const char  *s;
-  const char  *var;
+	const char *s;
+	const char *var;
 
-  s = va( "%i %i %i %i %s",
-    client->sess.spectatorTime,
-    client->sess.spectatorState,
-    client->sess.spectatorClient,
-    client->sess.restartTeam,
-    Com_ClientListString( &client->sess.ignoreList )
-    );
+	s = va( "%i %i %i %i %s",
+	        client->sess.spectatorTime,
+	        client->sess.spectatorState,
+	        client->sess.spectatorClient,
+	        client->sess.restartTeam,
+	        Com_ClientListString( &client->sess.ignoreList )
+	      );
 
-  var = va( "session%li", (long)(client - level.clients) );
+	var = va( "session%li", ( long )( client - level.clients ) );
 
-  trap_Cvar_Set( var, s );
+	trap_Cvar_Set( var, s );
 }
 
 /*
@@ -68,28 +67,27 @@ Called on a reconnect
 */
 void G_ReadSessionData( gclient_t *client )
 {
-  char        s[ MAX_STRING_CHARS ];
-  const char  *var;
-  int         spectatorState;
-  int         restartTeam;
-  char        ignorelist[ 17 ];
+	char       s[ MAX_STRING_CHARS ];
+	const char *var;
+	int        spectatorState;
+	int        restartTeam;
+	char       ignorelist[ 17 ];
 
-  var = va( "session%li", (long)(client - level.clients) );
-  trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
+	var = va( "session%li", ( long )( client - level.clients ) );
+	trap_Cvar_VariableStringBuffer( var, s, sizeof( s ) );
 
-  sscanf( s, "%i %i %i %i %16s",
-    &client->sess.spectatorTime,
-    &spectatorState,
-    &client->sess.spectatorClient,
-    &restartTeam,
-    ignorelist
-    );
+	sscanf( s, "%i %i %i %i %16s",
+	        &client->sess.spectatorTime,
+	        &spectatorState,
+	        &client->sess.spectatorClient,
+	        &restartTeam,
+	        ignorelist
+	      );
 
-  client->sess.spectatorState = (spectatorState_t)spectatorState;
-  client->sess.restartTeam = (team_t)restartTeam;
-  Com_ClientListParse( &client->sess.ignoreList, ignorelist );
+	client->sess.spectatorState = ( spectatorState_t )spectatorState;
+	client->sess.restartTeam    = ( team_t )restartTeam;
+	Com_ClientListParse( &client->sess.ignoreList, ignorelist );
 }
-
 
 /*
 ================
@@ -100,36 +98,40 @@ Called on a first-time connect
 */
 void G_InitSessionData( gclient_t *client, char *userinfo )
 {
-  clientSession_t  *sess;
-  const char      *value;
+	clientSession_t *sess;
+	const char      *value;
 
-  sess = &client->sess;
+	sess  = &client->sess;
 
-  // initial team determination
-  value = Info_ValueForKey( userinfo, "team" );
-  if( value[ 0 ] == 's' )
-  {
-    // a willing spectator, not a waiting-in-line
-    sess->spectatorState = SPECTATOR_FREE;
-  }
-  else
-  {
-    if( g_maxGameClients.integer > 0 &&
-      level.numNonSpectatorClients >= g_maxGameClients.integer )
-      sess->spectatorState = SPECTATOR_FREE;
-    else
-      sess->spectatorState = SPECTATOR_NOT;
-  }
+	// initial team determination
+	value = Info_ValueForKey( userinfo, "team" );
 
-  sess->restartTeam = TEAM_NONE;
-  sess->spectatorState = SPECTATOR_FREE;
-  sess->spectatorTime = level.time;
-  sess->spectatorClient = -1;
-  memset( &sess->ignoreList, 0, sizeof( sess->ignoreList ) );
+	if ( value[ 0 ] == 's' )
+	{
+		// a willing spectator, not a waiting-in-line
+		sess->spectatorState = SPECTATOR_FREE;
+	}
+	else
+	{
+		if ( g_maxGameClients.integer > 0 &&
+		     level.numNonSpectatorClients >= g_maxGameClients.integer )
+		{
+			sess->spectatorState = SPECTATOR_FREE;
+		}
+		else
+		{
+			sess->spectatorState = SPECTATOR_NOT;
+		}
+	}
 
-  G_WriteClientSessionData( client );
+	sess->restartTeam     = TEAM_NONE;
+	sess->spectatorState  = SPECTATOR_FREE;
+	sess->spectatorTime   = level.time;
+	sess->spectatorClient = -1;
+	memset( &sess->ignoreList, 0, sizeof( sess->ignoreList ) );
+
+	G_WriteClientSessionData( client );
 }
-
 
 /*
 ==================
@@ -139,14 +141,16 @@ G_WriteSessionData
 */
 void G_WriteSessionData( void )
 {
-  int    i;
+	int i;
 
-  //FIXME: What's this for?
-  trap_Cvar_Set( "session", va( "%i", 0 ) );
+	//FIXME: What's this for?
+	trap_Cvar_Set( "session", va( "%i", 0 ) );
 
-  for( i = 0 ; i < level.maxclients ; i++ )
-  {
-    if( level.clients[ i ].pers.connected == CON_CONNECTED )
-      G_WriteClientSessionData( &level.clients[ i ] );
-  }
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
+		{
+			G_WriteClientSessionData( &level.clients[ i ] );
+		}
+	}
 }

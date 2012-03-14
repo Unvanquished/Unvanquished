@@ -26,8 +26,8 @@ extern "C" {
 
 #ifdef USE_LLVM
 
-void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) );
-void VM_UnloadLLVM( void *llvmModuleProvider );
+	void *VM_LoadLLVM( vm_t *vm, intptr_t ( *systemcalls )( intptr_t, ... ) );
+	void VM_UnloadLLVM( void *llvmModuleProvider );
 
 #endif
 

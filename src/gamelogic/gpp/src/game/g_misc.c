@@ -23,20 +23,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
-
 /*QUAKED func_group (0 0 0) ?
 Used to group brushes together just for editor convenience.  They are turned into normal brushes by the utilities.
 */
-
 
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
 */
 void SP_info_null( gentity_t *self )
 {
-  G_FreeEntity( self );
+	G_FreeEntity( self );
 }
-
 
 /*QUAKED info_notnull (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for in-game calculation, like jumppad targets.
@@ -44,9 +41,8 @@ target_position does the same thing
 */
 void SP_info_notnull( gentity_t *self )
 {
-  G_SetOrigin( self, self->s.origin );
+	G_SetOrigin( self, self->s.origin );
 }
-
 
 /*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear
 Non-displayed light.
@@ -57,10 +53,8 @@ Lights pointed at a target will be spotlights.
 */
 void SP_light( gentity_t *self )
 {
-  G_FreeEntity( self );
+	G_FreeEntity( self );
 }
-
-
 
 /*
 =================================================================================
@@ -72,43 +66,42 @@ TELEPORTERS
 
 void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles )
 {
-  // unlink to make sure it can't possibly interfere with G_KillBox
-  trap_UnlinkEntity( player );
+	// unlink to make sure it can't possibly interfere with G_KillBox
+	trap_UnlinkEntity( player );
 
-  VectorCopy( origin, player->client->ps.origin );
-  player->client->ps.origin[ 2 ] += 1;
+	VectorCopy( origin, player->client->ps.origin );
+	player->client->ps.origin[ 2 ] += 1;
 
-  // spit the player out
-  AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
-  VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
-  player->client->ps.pm_time = 160;   // hold time
-  player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	// spit the player out
+	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
+	VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
+	player->client->ps.pm_time   = 160; // hold time
+	player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 
-  // toggle the teleport bit so the client knows to not lerp
-  player->client->ps.eFlags ^= EF_TELEPORT_BIT;
-  G_UnlaggedClear( player );
+	// toggle the teleport bit so the client knows to not lerp
+	player->client->ps.eFlags   ^= EF_TELEPORT_BIT;
+	G_UnlaggedClear( player );
 
-  // cut all relevant zap beams
-  G_ClearPlayerZapEffects( player );
+	// cut all relevant zap beams
+	G_ClearPlayerZapEffects( player );
 
-  // set angles
-  G_SetClientViewAngle( player, angles );
+	// set angles
+	G_SetClientViewAngle( player, angles );
 
-  // save results of pmove
-  BG_PlayerStateToEntityState( &player->client->ps, &player->s, qtrue );
+	// save results of pmove
+	BG_PlayerStateToEntityState( &player->client->ps, &player->s, qtrue );
 
-  // use the precise origin for linking
-  VectorCopy( player->client->ps.origin, player->r.currentOrigin );
+	// use the precise origin for linking
+	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
 
-  if( player->client->sess.spectatorState == SPECTATOR_NOT )
-  {
-    // kill anything at the destination
-    G_KillBox( player );
+	if ( player->client->sess.spectatorState == SPECTATOR_NOT )
+	{
+		// kill anything at the destination
+		G_KillBox( player );
 
-    trap_LinkEntity (player);
-  }
+		trap_LinkEntity ( player );
+	}
 }
-
 
 /*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
 Point teleporters at these.
@@ -119,7 +112,6 @@ void SP_misc_teleporter_dest( gentity_t *ent )
 {
 }
 
-
 //===========================================================
 
 /*QUAKED misc_model (1 0 0) (-16 -16 -16) (16 16 16)
@@ -128,15 +120,15 @@ void SP_misc_teleporter_dest( gentity_t *ent )
 void SP_misc_model( gentity_t *ent )
 {
 #if 0
-  ent->s.modelindex = G_ModelIndex( ent->model );
-  VectorSet (ent->mins, -16, -16, -16);
-  VectorSet (ent->maxs, 16, 16, 16);
-  trap_LinkEntity (ent);
+	ent->s.modelindex = G_ModelIndex( ent->model );
+	VectorSet ( ent->mins, -16, -16, -16 );
+	VectorSet ( ent->maxs, 16, 16, 16 );
+	trap_LinkEntity ( ent );
 
-  G_SetOrigin( ent, ent->s.origin );
-  VectorCopy( ent->s.angles, ent->s.apos.trBase );
+	G_SetOrigin( ent, ent->s.origin );
+	VectorCopy( ent->s.angles, ent->s.apos.trBase );
 #else
-  G_FreeEntity( ent );
+	G_FreeEntity( ent );
 #endif
 }
 
@@ -144,50 +136,61 @@ void SP_misc_model( gentity_t *ent )
 
 void locateCamera( gentity_t *ent )
 {
-  vec3_t    dir;
-  gentity_t *target;
-  gentity_t *owner;
+	vec3_t    dir;
+	gentity_t *target;
+	gentity_t *owner;
 
-  owner = G_PickTarget( ent->target );
-  if( !owner )
-  {
-    G_Printf( "Couldn't find target for misc_portal_surface\n" );
-    G_FreeEntity( ent );
-    return;
-  }
-  ent->r.ownerNum = owner->s.number;
+	owner = G_PickTarget( ent->target );
 
-  // frame holds the rotate speed
-  if( owner->spawnflags & 1 )
-    ent->s.frame = 25;
-  else if( owner->spawnflags & 2 )
-    ent->s.frame = 75;
+	if ( !owner )
+	{
+		G_Printf( "Couldn't find target for misc_portal_surface\n" );
+		G_FreeEntity( ent );
+		return;
+	}
 
-  // swing camera ?
-  if( owner->spawnflags & 4 )
-  {
-    // set to 0 for no rotation at all
-    ent->s.misc = 0;
-  }
-  else
-    ent->s.misc = 1;
+	ent->r.ownerNum = owner->s.number;
 
-  // clientNum holds the rotate offset
-  ent->s.clientNum = owner->s.clientNum;
+	// frame holds the rotate speed
+	if ( owner->spawnflags & 1 )
+	{
+		ent->s.frame = 25;
+	}
+	else if ( owner->spawnflags & 2 )
+	{
+		ent->s.frame = 75;
+	}
 
-  VectorCopy( owner->s.origin, ent->s.origin2 );
+	// swing camera ?
+	if ( owner->spawnflags & 4 )
+	{
+		// set to 0 for no rotation at all
+		ent->s.misc = 0;
+	}
+	else
+	{
+		ent->s.misc = 1;
+	}
 
-  // see if the portal_camera has a target
-  target = G_PickTarget( owner->target );
-  if( target )
-  {
-    VectorSubtract( target->s.origin, owner->s.origin, dir );
-    VectorNormalize( dir );
-  }
-  else
-    G_SetMovedir( owner->s.angles, dir );
+	// clientNum holds the rotate offset
+	ent->s.clientNum = owner->s.clientNum;
 
-  ent->s.eventParm = DirToByte( dir );
+	VectorCopy( owner->s.origin, ent->s.origin2 );
+
+	// see if the portal_camera has a target
+	target = G_PickTarget( owner->target );
+
+	if ( target )
+	{
+		VectorSubtract( target->s.origin, owner->s.origin, dir );
+		VectorNormalize( dir );
+	}
+	else
+	{
+		G_SetMovedir( owner->s.angles, dir );
+	}
+
+	ent->s.eventParm = DirToByte( dir );
 }
 
 /*QUAKED misc_portal_surface (0 0 1) (-8 -8 -8) (8 8 8)
@@ -196,22 +199,22 @@ This must be within 64 world units of the surface!
 */
 void SP_misc_portal_surface( gentity_t *ent )
 {
-  VectorClear( ent->r.mins );
-  VectorClear( ent->r.maxs );
-  trap_LinkEntity( ent );
+	VectorClear( ent->r.mins );
+	VectorClear( ent->r.maxs );
+	trap_LinkEntity( ent );
 
-  ent->r.svFlags = SVF_PORTAL;
-  ent->s.eType = ET_PORTAL;
+	ent->r.svFlags = SVF_PORTAL;
+	ent->s.eType   = ET_PORTAL;
 
-  if( !ent->target )
-  {
-    VectorCopy( ent->s.origin, ent->s.origin2 );
-  }
-  else
-  {
-    ent->think = locateCamera;
-    ent->nextthink = level.time + 100;
-  }
+	if ( !ent->target )
+	{
+		VectorCopy( ent->s.origin, ent->s.origin2 );
+	}
+	else
+	{
+		ent->think     = locateCamera;
+		ent->nextthink = level.time + 100;
+	}
 }
 
 /*QUAKED misc_portal_camera (0 0 1) (-8 -8 -8) (8 8 8) slowrotate fastrotate noswing
@@ -221,15 +224,15 @@ The target for a misc_portal_director.  You can set either angles or target anot
 */
 void SP_misc_portal_camera( gentity_t *ent )
 {
-  float roll;
+	float roll;
 
-  VectorClear( ent->r.mins );
-  VectorClear( ent->r.maxs );
-  trap_LinkEntity( ent );
+	VectorClear( ent->r.mins );
+	VectorClear( ent->r.maxs );
+	trap_LinkEntity( ent );
 
-  G_SpawnFloat( "roll", "0", &roll );
+	G_SpawnFloat( "roll", "0", &roll );
 
-  ent->s.clientNum = roll / 360.0f * 256;
+	ent->s.clientNum = roll / 360.0f * 256;
 }
 
 /*
@@ -242,10 +245,10 @@ void SP_misc_portal_camera( gentity_t *ent )
 
 void SP_toggle_particle_system( gentity_t *self )
 {
-  //toggle EF_NODRAW
-  self->s.eFlags ^= EF_NODRAW;
+	//toggle EF_NODRAW
+	self->s.eFlags ^= EF_NODRAW;
 
-  self->nextthink = 0;
+	self->nextthink = 0;
 }
 
 /*
@@ -257,13 +260,13 @@ Use function for particle_system
 */
 void SP_use_particle_system( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-  SP_toggle_particle_system( self );
+	SP_toggle_particle_system( self );
 
-  if( self->wait > 0.0f )
-  {
-    self->think = SP_toggle_particle_system;
-    self->nextthink = level.time + (int)( self->wait * 1000 );
-  }
+	if ( self->wait > 0.0f )
+	{
+		self->think     = SP_toggle_particle_system;
+		self->nextthink = level.time + ( int )( self->wait * 1000 );
+	}
 }
 
 /*
@@ -275,22 +278,24 @@ Spawn function for particle system
 */
 void SP_misc_particle_system( gentity_t *self )
 {
-  char  *s;
+	char *s;
 
-  G_SetOrigin( self, self->s.origin );
+	G_SetOrigin( self, self->s.origin );
 
-  G_SpawnString( "psName", "", &s );
-  G_SpawnFloat( "wait", "0", &self->wait );
+	G_SpawnString( "psName", "", &s );
+	G_SpawnFloat( "wait", "0", &self->wait );
 
-  //add the particle system to the client precache list
-  self->s.modelindex = G_ParticleSystemIndex( s );
+	//add the particle system to the client precache list
+	self->s.modelindex = G_ParticleSystemIndex( s );
 
-  if( self->spawnflags & 1 )
-    self->s.eFlags |= EF_NODRAW;
+	if ( self->spawnflags & 1 )
+	{
+		self->s.eFlags |= EF_NODRAW;
+	}
 
-  self->use = SP_use_particle_system;
-  self->s.eType = ET_PARTICLE_SYSTEM;
-  trap_LinkEntity( self );
+	self->use     = SP_use_particle_system;
+	self->s.eType = ET_PARTICLE_SYSTEM;
+	trap_LinkEntity( self );
 }
 
 /*
@@ -302,24 +307,32 @@ Use function for anim model
 */
 void SP_use_anim_model( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-  if( self->spawnflags & 1 )
-  {
-    //if spawnflag 1 is set
-    //toggle EF_NODRAW
-    if( self->s.eFlags & EF_NODRAW )
-      self->s.eFlags &= ~EF_NODRAW;
-    else
-      self->s.eFlags |= EF_NODRAW;
-  }
-  else
-  {
-    //if the animation loops then toggle the animation
-    //toggle EF_MOVER_STOP
-    if( self->s.eFlags & EF_MOVER_STOP )
-      self->s.eFlags &= ~EF_MOVER_STOP;
-    else
-      self->s.eFlags |= EF_MOVER_STOP;
-  }
+	if ( self->spawnflags & 1 )
+	{
+		//if spawnflag 1 is set
+		//toggle EF_NODRAW
+		if ( self->s.eFlags & EF_NODRAW )
+		{
+			self->s.eFlags &= ~EF_NODRAW;
+		}
+		else
+		{
+			self->s.eFlags |= EF_NODRAW;
+		}
+	}
+	else
+	{
+		//if the animation loops then toggle the animation
+		//toggle EF_MOVER_STOP
+		if ( self->s.eFlags & EF_MOVER_STOP )
+		{
+			self->s.eFlags &= ~EF_MOVER_STOP;
+		}
+		else
+		{
+			self->s.eFlags |= EF_MOVER_STOP;
+		}
+	}
 }
 
 /*
@@ -331,25 +344,27 @@ Spawn function for anim model
 */
 void SP_misc_anim_model( gentity_t *self )
 {
-  self->s.misc      = (int)self->animation[ 0 ];
-  self->s.weapon    = (int)self->animation[ 1 ];
-  self->s.torsoAnim = (int)self->animation[ 2 ];
-  self->s.legsAnim  = (int)self->animation[ 3 ];
+	self->s.misc         = ( int )self->animation[ 0 ];
+	self->s.weapon       = ( int )self->animation[ 1 ];
+	self->s.torsoAnim    = ( int )self->animation[ 2 ];
+	self->s.legsAnim     = ( int )self->animation[ 3 ];
 
-  self->s.angles2[ 0 ] = self->pos2[ 0 ];
+	self->s.angles2[ 0 ] = self->pos2[ 0 ];
 
-  //add the model to the client precache list
-  self->s.modelindex = G_ModelIndex( self->model );
+	//add the model to the client precache list
+	self->s.modelindex   = G_ModelIndex( self->model );
 
-  self->use = SP_use_anim_model;
+	self->use            = SP_use_anim_model;
 
-  self->s.eType = ET_ANIMMAPOBJ;
+	self->s.eType        = ET_ANIMMAPOBJ;
 
-  // spawn with animation stopped
-  if( self->spawnflags & 2 )
-    self->s.eFlags |= EF_MOVER_STOP;
+	// spawn with animation stopped
+	if ( self->spawnflags & 2 )
+	{
+		self->s.eFlags |= EF_MOVER_STOP;
+	}
 
-  trap_LinkEntity( self );
+	trap_LinkEntity( self );
 }
 
 /*
@@ -361,7 +376,7 @@ Use function for light flare
 */
 void SP_use_light_flare( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-  self->s.eFlags ^= EF_NODRAW;
+	self->s.eFlags ^= EF_NODRAW;
 }
 
 /*
@@ -373,40 +388,40 @@ Finds an empty spot radius units from origin
 */
 static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 {
-  int     i, j, k;
-  vec3_t  delta, test, total;
-  trace_t tr;
+	int     i, j, k;
+	vec3_t  delta, test, total;
+	trace_t tr;
 
-  VectorClear( total );
+	VectorClear( total );
 
-  //54(!) traces to test for empty spots
-  for( i = -1; i <= 1; i++ )
-  {
-    for( j = -1; j <= 1; j++ )
-    {
-      for( k = -1; k <= 1; k++ )
-      {
-        VectorSet( delta, ( i * radius ),
-                          ( j * radius ),
-                          ( k * radius ) );
+	//54(!) traces to test for empty spots
+	for ( i = -1; i <= 1; i++ )
+	{
+		for ( j = -1; j <= 1; j++ )
+		{
+			for ( k = -1; k <= 1; k++ )
+			{
+				VectorSet( delta, ( i * radius ),
+				           ( j * radius ),
+				           ( k * radius ) );
 
-        VectorAdd( origin, delta, test );
+				VectorAdd( origin, delta, test );
 
-        trap_Trace( &tr, test, NULL, NULL, test, -1, MASK_SOLID );
+				trap_Trace( &tr, test, NULL, NULL, test, -1, MASK_SOLID );
 
-        if( !tr.allsolid )
-        {
-          trap_Trace( &tr, test, NULL, NULL, origin, -1, MASK_SOLID );
-          VectorScale( delta, tr.fraction, delta );
-          VectorAdd( total, delta, total );
-        }
-      }
-    }
-  }
+				if ( !tr.allsolid )
+				{
+					trap_Trace( &tr, test, NULL, NULL, origin, -1, MASK_SOLID );
+					VectorScale( delta, tr.fraction, delta );
+					VectorAdd( total, delta, total );
+				}
+			}
+		}
+	}
 
-  VectorNormalize( total );
-  VectorScale( total, radius, total );
-  VectorAdd( origin, total, spot );
+	VectorNormalize( total );
+	VectorScale( total, radius, total );
+	VectorAdd( origin, total, spot );
 }
 
 /*
@@ -418,23 +433,25 @@ Spawn function for light flare
 */
 void SP_misc_light_flare( gentity_t *self )
 {
-  self->s.eType = ET_LIGHTFLARE;
-  self->s.modelindex = G_ShaderIndex( self->targetShaderName );
-  VectorCopy( self->pos2, self->s.origin2 );
+	self->s.eType      = ET_LIGHTFLARE;
+	self->s.modelindex = G_ShaderIndex( self->targetShaderName );
+	VectorCopy( self->pos2, self->s.origin2 );
 
-  //try to find a spot near to the flare which is empty. This
-  //is used to facilitate visibility testing
-  findEmptySpot( self->s.origin, 8.0f, self->s.angles2 );
+	//try to find a spot near to the flare which is empty. This
+	//is used to facilitate visibility testing
+	findEmptySpot( self->s.origin, 8.0f, self->s.angles2 );
 
-  self->use = SP_use_light_flare;
+	self->use    = SP_use_light_flare;
 
-  G_SpawnFloat( "speed", "200", &self->speed );
-  self->s.time = self->speed;
+	G_SpawnFloat( "speed", "200", &self->speed );
+	self->s.time = self->speed;
 
-  G_SpawnInt( "mindist", "0", &self->s.generic1 );
+	G_SpawnInt( "mindist", "0", &self->s.generic1 );
 
-  if( self->spawnflags & 1 )
-    self->s.eFlags |= EF_NODRAW;
+	if ( self->spawnflags & 1 )
+	{
+		self->s.eFlags |= EF_NODRAW;
+	}
 
-  trap_LinkEntity( self );
+	trap_LinkEntity( self );
 }

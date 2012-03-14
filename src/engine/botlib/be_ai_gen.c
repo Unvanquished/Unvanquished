@@ -2,9 +2,9 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Daemon GPL Source Code (Daemon Source Code).  
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
 Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,24 +19,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Daemon Source Code is also subject to certain additional terms. 
-You should have received a copy of these additional terms immediately following the 
-terms and conditions of the GNU General Public License which accompanied the Daemon 
-Source Code.  If not, please request a copy in writing from id Software at the address 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
-If you have questions concerning this license or the applicable additional terms, you 
-may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, 
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
 Maryland 20850 USA.
 
 ===========================================================================
 */
 
-
 /*****************************************************************************
- * name:		be_ai_gen.c
+ * name:    be_ai_gen.c
  *
- * desc:		genetic selection
+ * desc:    genetic selection
  *
  *
  *****************************************************************************/
@@ -61,50 +60,60 @@ Maryland 20850 USA.
 // Returns:             -
 // Changes Globals:     -
 //===========================================================================
-int GeneticSelection(int numranks, float *rankings)
+int GeneticSelection( int numranks, float *rankings )
 {
-	float           sum, select;
-	int             i, index;
+	float sum, select;
+	int   i, index;
 
 	sum = 0;
-	for(i = 0; i < numranks; i++)
+
+	for ( i = 0; i < numranks; i++ )
 	{
-		if(rankings[i] < 0)
+		if ( rankings[ i ] < 0 )
 		{
 			continue;
 		}
-		sum += rankings[i];
-	}							//end for
-	if(sum > 0)
+
+		sum += rankings[ i ];
+	}                                                       //end for
+
+	if ( sum > 0 )
 	{
 		//select a bot where the ones with the higest rankings have
 		//the highest chance of being selected
 		select = random() * sum;
-		for(i = 0; i < numranks; i++)
+
+		for ( i = 0; i < numranks; i++ )
 		{
-			if(rankings[i] < 0)
+			if ( rankings[ i ] < 0 )
 			{
 				continue;
 			}
-			sum -= rankings[i];
-			if(sum <= 0)
+
+			sum -= rankings[ i ];
+
+			if ( sum <= 0 )
 			{
 				return i;
 			}
-		}						//end for
-	}							//end if
+		}                                               //end for
+	}                                                       //end if
+
 	//select a bot randomly
 	index = random() * numranks;
-	for(i = 0; i < numranks; i++)
+
+	for ( i = 0; i < numranks; i++ )
 	{
-		if(rankings[index] >= 0)
+		if ( rankings[ index ] >= 0 )
 		{
 			return index;
 		}
-		index = (index + 1) % numranks;
-	}							//end for
+
+		index = ( index + 1 ) % numranks;
+	}                                                       //end for
+
 	return 0;
-}								//end of the function GeneticSelection
+}                                                               //end of the function GeneticSelection
 
 //===========================================================================
 //
@@ -112,60 +121,69 @@ int GeneticSelection(int numranks, float *rankings)
 // Returns:             -
 // Changes Globals:     -
 //===========================================================================
-int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, int *parent2, int *child)
+int GeneticParentsAndChildSelection( int numranks, float *ranks, int *parent1, int *parent2, int *child )
 {
-	float           rankings[256], max;
-	int             i;
+	float rankings[ 256 ], max;
+	int   i;
 
-	if(numranks > 256)
+	if ( numranks > 256 )
 	{
-		botimport.Print(PRT_WARNING, "GeneticParentsAndChildSelection: too many bots\n");
+		botimport.Print( PRT_WARNING, "GeneticParentsAndChildSelection: too many bots\n" );
 		*parent1 = *parent2 = *child = 0;
 		return qfalse;
-	}							//end if
-	for(max = 0, i = 0; i < numranks; i++)
+	}                                                       //end if
+
+	for ( max = 0, i = 0; i < numranks; i++ )
 	{
-		if(ranks[i] < 0)
+		if ( ranks[ i ] < 0 )
 		{
 			continue;
 		}
+
 		max++;
-	}							//end for
-	if(max < 3)
+	}                                                       //end for
+
+	if ( max < 3 )
 	{
-		botimport.Print(PRT_WARNING, "GeneticParentsAndChildSelection: too few valid bots\n");
+		botimport.Print( PRT_WARNING, "GeneticParentsAndChildSelection: too few valid bots\n" );
 		*parent1 = *parent2 = *child = 0;
 		return qfalse;
-	}							//end if
-	memcpy(rankings, ranks, sizeof(float) * numranks);
+	}                                                       //end if
+
+	memcpy( rankings, ranks, sizeof( float ) * numranks );
 	//select first parent
-	*parent1 = GeneticSelection(numranks, rankings);
-	rankings[*parent1] = -1;
+	*parent1             = GeneticSelection( numranks, rankings );
+	rankings[ *parent1 ] = -1;
 	//select second parent
-	*parent2 = GeneticSelection(numranks, rankings);
-	rankings[*parent2] = -1;
+	*parent2             = GeneticSelection( numranks, rankings );
+	rankings[ *parent2 ] = -1;
 	//reverse the rankings
-	max = 0;
-	for(i = 0; i < numranks; i++)
+	max                  = 0;
+
+	for ( i = 0; i < numranks; i++ )
 	{
-		if(rankings[i] < 0)
+		if ( rankings[ i ] < 0 )
 		{
 			continue;
 		}
-		if(rankings[i] > max)
+
+		if ( rankings[ i ] > max )
 		{
-			max = rankings[i];
+			max = rankings[ i ];
 		}
-	}							//end for
-	for(i = 0; i < numranks; i++)
+	}                                                       //end for
+
+	for ( i = 0; i < numranks; i++ )
 	{
-		if(rankings[i] < 0)
+		if ( rankings[ i ] < 0 )
 		{
 			continue;
 		}
-		rankings[i] = max - rankings[i];
-	}							//end for
+
+		rankings[ i ] = max - rankings[ i ];
+	}                                                       //end for
+
 	//select child
-	*child = GeneticSelection(numranks, rankings);
+	*child = GeneticSelection( numranks, rankings );
 	return qtrue;
-}								//end of the function GeneticParentsAndChildSelection
+}                                                               //end of the function GeneticParentsAndChildSelection
