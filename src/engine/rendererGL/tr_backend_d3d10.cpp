@@ -41,7 +41,7 @@ extern "C" {
 	{
 		float c;
 
-		if( !backEnd.isHyperspace )
+		if ( !backEnd.isHyperspace )
 		{
 			// do initialization shit
 		}
@@ -90,7 +90,7 @@ extern "C" {
 #else
 
 		// disable offscreen rendering
-		if( glConfig.framebufferObjectAvailable )
+		if ( glConfig.framebufferObjectAvailable )
 		{
 			R_BindNullFBO();
 		}
@@ -140,17 +140,17 @@ extern "C" {
 		depthRange = qfalse;
 		backEnd.currentLight = NULL;
 
-		for( i = 0, drawSurf = backEnd.viewParms.drawSurfs; i < backEnd.viewParms.numDrawSurfs; i++, drawSurf++ )
+		for ( i = 0, drawSurf = backEnd.viewParms.drawSurfs; i < backEnd.viewParms.numDrawSurfs; i++, drawSurf++ )
 		{
 			// update locals
 			entity = drawSurf->entity;
 			shader = tr.sortedShaders[ drawSurf->shaderNum ];
 			lightmapNum = drawSurf->lightmapNum;
 
-			if( opaque )
+			if ( opaque )
 			{
 				// skip all translucent surfaces that don't matter for this pass
-				if( shader->sort > SS_OPAQUE )
+				if ( shader->sort > SS_OPAQUE )
 				{
 					break;
 				}
@@ -158,13 +158,13 @@ extern "C" {
 			else
 			{
 				// skip all opaque surfaces that don't matter for this pass
-				if( shader->sort <= SS_OPAQUE )
+				if ( shader->sort <= SS_OPAQUE )
 				{
 					continue;
 				}
 			}
 
-			if( entity == oldEntity && shader == oldShader && lightmapNum == oldLightmapNum )
+			if ( entity == oldEntity && shader == oldShader && lightmapNum == oldLightmapNum )
 			{
 				// fast path, same as previous sort
 				rb_surfaceTable[ *drawSurf->surface ]( drawSurf->surface );
@@ -174,14 +174,14 @@ extern "C" {
 			// change the tess parameters if needed
 			// a "entityMergable" shader is a shader that can have surfaces from seperate
 			// entities merged into a single batch, like smoke and blood puff sprites
-			if( shader != oldShader || lightmapNum != oldLightmapNum || ( entity != oldEntity && !shader->entityMergable ) )
+			if ( shader != oldShader || lightmapNum != oldLightmapNum || ( entity != oldEntity && !shader->entityMergable ) )
 			{
-				if( oldShader != NULL )
+				if ( oldShader != NULL )
 				{
 					Tess_End();
 				}
 
-				if( depthFill )
+				if ( depthFill )
 				{
 					Tess_Begin( Tess_StageIteratorDepthFill, NULL, shader, NULL, qtrue, qfalse, lightmapNum, tess.fogNum );
 				}
@@ -195,18 +195,18 @@ extern "C" {
 			}
 
 			// change the modelview matrix if needed
-			if( entity != oldEntity )
+			if ( entity != oldEntity )
 			{
 				depthRange = qfalse;
 
-				if( entity != &tr.worldEntity )
+				if ( entity != &tr.worldEntity )
 				{
 					backEnd.currentEntity = entity;
 
 					// set up the transformation matrix
 					R_RotateEntityForViewParms( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orientation );
 
-					if( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK )
+					if ( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK )
 					{
 						// hack the depth range to prevent view model from poking into walls
 						depthRange = qtrue;
@@ -225,13 +225,13 @@ extern "C" {
 #endif
 
 				// change depthrange if needed
-				if( oldDepthRange != depthRange )
+				if ( oldDepthRange != depthRange )
 				{
 #if defined( USE_D3D10 )
 					// TODO
 #else
 
-					if( depthRange )
+					if ( depthRange )
 					{
 						qglDepthRange( 0, 0.3 );
 					}
@@ -252,7 +252,7 @@ extern "C" {
 		}
 
 		// draw the contents of the last shader batch
-		if( oldShader != NULL )
+		if ( oldShader != NULL )
 		{
 			Tess_End();
 		}
@@ -264,7 +264,7 @@ extern "C" {
 		GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 #endif
 
-		if( depthRange )
+		if ( depthRange )
 		{
 #if defined( USE_D3D10 )
 			// TODO
@@ -293,7 +293,7 @@ extern "C" {
 	*/
 	static void D3D10_RenderView( void )
 	{
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			// don't just call LogComment, or we will get a call to va() every frame!
 			GLimp_LogComment( va
@@ -317,7 +317,7 @@ extern "C" {
 			D3D10_TECHNIQUE_DESC techDesc;
 			dx.genericTechnique->GetDesc( &techDesc );
 
-			for( UINT p = 0; p < techDesc.Passes; ++p )
+			for ( UINT p = 0; p < techDesc.Passes; ++p )
 			{
 				dx.genericTechnique->GetPassByIndex( p )->Apply( 0 );
 				dx.d3dDevice->Draw( 3, 0 );
@@ -397,7 +397,7 @@ extern "C" {
 			}
 			*/
 
-			if( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
+			if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
 			{
 				RB_Hyperspace();
 				return;
@@ -416,7 +416,7 @@ extern "C" {
 
 #if 0
 
-			if( r_deferredShading->integer == DS_STANDARD )
+			if ( r_deferredShading->integer == DS_STANDARD )
 			{
 				// draw everything that is opaque
 				R_BindFBO( tr.deferredRenderFBO );
@@ -561,7 +561,7 @@ extern "C" {
 		int i, j;
 		int start, end;
 
-		if( !tr.registered )
+		if ( !tr.registered )
 		{
 			return;
 		}
@@ -577,7 +577,7 @@ extern "C" {
 
 		start = end = 0;
 
-		if( r_speeds->integer )
+		if ( r_speeds->integer )
 		{
 #if defined( USE_D3D10 )
 			// TODO
@@ -588,15 +588,15 @@ extern "C" {
 		}
 
 		// make sure rows and cols are powers of 2
-		for( i = 0; ( 1 << i ) < cols; i++ )
+		for ( i = 0; ( 1 << i ) < cols; i++ )
 		{
 		}
 
-		for( j = 0; ( 1 << j ) < rows; j++ )
+		for ( j = 0; ( 1 << j ) < rows; j++ )
 		{
 		}
 
-		if( ( 1 << i ) != cols || ( 1 << j ) != rows )
+		if ( ( 1 << i ) != cols || ( 1 << j ) != rows )
 		{
 			ri.Error( ERR_DROP, "Draw_StretchRaw: size not a power of 2: %i by %i", cols, rows );
 		}
@@ -617,7 +617,7 @@ extern "C" {
 		GLSL_SetUniform_AlphaGen( &tr.genericSingleShader, AGEN_VERTEX );
 
 		//GLSL_SetUniform_Color(&tr.genericSingleShader, colorWhite);
-		if( glConfig.vboVertexSkinningAvailable )
+		if ( glConfig.vboVertexSkinningAvailable )
 		{
 			GLSL_SetUniform_VertexSkinning( &tr.genericSingleShader, qfalse );
 		}
@@ -632,7 +632,7 @@ extern "C" {
 		GLSL_SetUniform_ColorTextureMatrix( &tr.genericSingleShader, matrixIdentity );
 
 		// if the scratchImage isn't in the format we want, specify it as a new texture
-		if( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
+		if ( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
 		{
 			tr.scratchImage[ client ]->width = tr.scratchImage[ client ]->uploadWidth = cols;
 			tr.scratchImage[ client ]->height = tr.scratchImage[ client ]->uploadHeight = rows;
@@ -647,7 +647,7 @@ extern "C" {
 		}
 		else
 		{
-			if( dirty )
+			if ( dirty )
 			{
 				// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 				// it and don't try and do a texture compression
@@ -657,7 +657,7 @@ extern "C" {
 
 #endif // #if defined(USE_D3D10)
 
-		if( r_speeds->integer )
+		if ( r_speeds->integer )
 		{
 #if defined( USE_D3D10 )
 			// TODO
@@ -740,7 +740,7 @@ extern "C" {
 		GL_Bind( tr.scratchImage[ client ] );
 
 		// if the scratchImage isn't in the format we want, specify it as a new texture
-		if( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
+		if ( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
 		{
 			tr.scratchImage[ client ]->width = tr.scratchImage[ client ]->uploadWidth = cols;
 			tr.scratchImage[ client ]->height = tr.scratchImage[ client ]->uploadHeight = rows;
@@ -756,7 +756,7 @@ extern "C" {
 		}
 		else
 		{
-			if( dirty )
+			if ( dirty )
 			{
 				// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 				// it and don't try and do a texture compression
@@ -805,16 +805,16 @@ extern "C" {
 
 		cmd = ( const stretchPicCommand_t * ) data;
 
-		if( !backEnd.projection2D )
+		if ( !backEnd.projection2D )
 		{
 			RB_SetGL2D();
 		}
 
 		shader = cmd->shader;
 
-		if( shader != tess.surfaceShader )
+		if ( shader != tess.surfaceShader )
 		{
-			if( tess.numIndexes )
+			if ( tess.numIndexes )
 			{
 				Tess_End();
 			}
@@ -837,7 +837,7 @@ extern "C" {
 		tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 		tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-		for( i = 0; i < 4; i++ )
+		for ( i = 0; i < 4; i++ )
 		{
 			tess.colors[ numVerts + i ][ 0 ] = backEnd.color2D[ 0 ];
 			tess.colors[ numVerts + i ][ 1 ] = backEnd.color2D[ 1 ];
@@ -900,7 +900,7 @@ extern "C" {
 		GLimp_LogComment( "--- RB_DrawView ---\n" );
 
 		// finish any 2D drawing if needed
-		if( tess.numIndexes )
+		if ( tess.numIndexes )
 		{
 			Tess_End();
 		}
@@ -933,7 +933,7 @@ extern "C" {
 		cmd = ( const drawBufferCommand_t * ) data;
 
 		// clear screen for debugging
-		if( r_clear->integer )
+		if ( r_clear->integer )
 		{
 			float ClearColor[ 4 ] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red,green,blue,alpha
 			dx.d3dDevice->ClearRenderTargetView( dx.renderTargetView, ClearColor );
@@ -965,7 +965,7 @@ extern "C" {
 
 		GLimp_LogComment( "--- RB_ShowImages ---\n" );
 
-		if( !backEnd.projection2D )
+		if ( !backEnd.projection2D )
 		{
 			RB_SetGL2D();
 		}
@@ -982,7 +982,7 @@ extern "C" {
 		GLSL_SetUniform_ColorGen( &tr.genericSingleShader, CGEN_VERTEX );
 		GLSL_SetUniform_AlphaGen( &tr.genericSingleShader, AGEN_VERTEX );
 
-		if( glConfig.vboVertexSkinningAvailable )
+		if ( glConfig.vboVertexSkinningAvailable )
 		{
 			GLSL_SetUniform_VertexSkinning( &tr.genericSingleShader, qfalse );
 		}
@@ -995,7 +995,7 @@ extern "C" {
 
 		start = ri.Milliseconds();
 
-		for( i = 0; i < tr.images.currentElements; i++ )
+		for ( i = 0; i < tr.images.currentElements; i++ )
 		{
 			image = Com_GrowListElement( &tr.images, i );
 
@@ -1013,7 +1013,7 @@ extern "C" {
 			y = i / 20 * h;
 
 			// show in proportional size in mode 2
-			if( r_showImages->integer == 2 )
+			if ( r_showImages->integer == 2 )
 			{
 				w *= image->uploadWidth / 512.0f;
 				h *= image->uploadHeight / 512.0f;
@@ -1063,7 +1063,7 @@ extern "C" {
 		const swapBuffersCommand_t *cmd;
 
 		// finish any 2D drawing if needed
-		if( tess.numIndexes )
+		if ( tess.numIndexes )
 		{
 			Tess_End();
 		}
@@ -1071,7 +1071,7 @@ extern "C" {
 		// texture swapping test
 #if !defined( USE_D3D10 )
 
-		if( r_showImages->integer )
+		if ( r_showImages->integer )
 		{
 			RB_ShowImages();
 		}
@@ -1086,7 +1086,7 @@ extern "C" {
 
 		// we measure overdraw by reading back the stencil buffer and
 		// counting up the number of increments that have happened
-		if( r_measureOverdraw->integer )
+		if ( r_measureOverdraw->integer )
 		{
 			int           i;
 			long          sum = 0;
@@ -1095,7 +1095,7 @@ extern "C" {
 			stencilReadback = ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight );
 			qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback );
 
-			for( i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++ )
+			for ( i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++ )
 			{
 				sum += stencilReadback[ i ];
 			}
@@ -1110,7 +1110,7 @@ extern "C" {
 		// TODO
 #else
 
-		if( !glState.finishCalled )
+		if ( !glState.finishCalled )
 		{
 			qglFinish();
 		}
@@ -1122,19 +1122,19 @@ extern "C" {
 		// present the information rendered to the back buffer to the front buffer (the screen)
 		dx.swapChain->Present( 0, 0 );
 
-		if( r_fullscreen->modified )
+		if ( r_fullscreen->modified )
 		{
 			bool        fullscreen;
 			bool        needToToggle = qtrue;
 			bool        sdlToggled = qfalse;
 			SDL_Surface *s = SDL_GetVideoSurface();
 
-			if( s )
+			if ( s )
 			{
 				// Find out the current state
 				fullscreen = !!( s->flags & SDL_FULLSCREEN );
 
-				if( r_fullscreen->integer > 0 && ri.Cvar_VariableIntegerValue( "in_nograb" ) > 0 )
+				if ( r_fullscreen->integer > 0 && ri.Cvar_VariableIntegerValue( "in_nograb" ) > 0 )
 				{
 					ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
 					ri.Cvar_Set( "r_fullscreen", "0" );
@@ -1144,16 +1144,16 @@ extern "C" {
 				// Is the state we want different from the current state?
 				needToToggle = !!r_fullscreen->integer != fullscreen;
 
-				if( needToToggle )
+				if ( needToToggle )
 				{
 					sdlToggled = SDL_WM_ToggleFullScreen( s );
 				}
 			}
 
-			if( needToToggle )
+			if ( needToToggle )
 			{
 				// SDL_WM_ToggleFullScreen didn't work, so do it the slow way
-				if( !sdlToggled )
+				if ( !sdlToggled )
 				{
 					ri.Cmd_ExecuteText( EXEC_APPEND, "vid_restart" );
 				}
@@ -1185,7 +1185,7 @@ extern "C" {
 
 		t1 = ri.Milliseconds();
 
-		if( !r_smp->integer || data == backEndData[ 0 ]->commands.cmds )
+		if ( !r_smp->integer || data == backEndData[ 0 ]->commands.cmds )
 		{
 			backEnd.smpFrame = 0;
 		}
@@ -1194,9 +1194,9 @@ extern "C" {
 			backEnd.smpFrame = 1;
 		}
 
-		while( 1 )
+		while ( 1 )
 		{
-			switch( * ( const int * ) data )
+			switch ( * ( const int * ) data )
 			{
 				case RC_SET_COLOR:
 					data = RB_SetColor( data );
@@ -1246,12 +1246,12 @@ extern "C" {
 		const void *data;
 
 		// wait for either a rendering command or a quit command
-		while( 1 )
+		while ( 1 )
 		{
 			// sleep until we have work to do
 			data = GLimp_RendererSleep();
 
-			if( !data )
+			if ( !data )
 			{
 				return; // all done, renderer is shutting down
 			}

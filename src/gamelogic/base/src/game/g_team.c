@@ -32,7 +32,7 @@ void QDECL __attribute__( ( format( printf, 2, 3 ) ) ) PrintMsg( gentity_t *ent,
 
 	va_start( argptr, fmt );
 
-	if( vsprintf( msg, fmt, argptr ) > sizeof( msg ) )
+	if ( vsprintf( msg, fmt, argptr ) > sizeof( msg ) )
 	{
 		G_Error( "PrintMsg overrun" );
 	}
@@ -40,7 +40,7 @@ void QDECL __attribute__( ( format( printf, 2, 3 ) ) ) PrintMsg( gentity_t *ent,
 	va_end( argptr );
 
 	// double quotes are bad
-	while( ( p = strchr( msg, '"' ) ) != NULL )
+	while ( ( p = strchr( msg, '"' ) ) != NULL )
 	{
 		*p = '\'';
 	}
@@ -55,12 +55,12 @@ OnSameTeam
 */
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
-	if( !ent1->client || !ent2->client )
+	if ( !ent1->client || !ent2->client )
 	{
 		return qfalse;
 	}
 
-	if( ent1->client->pers.teamSelection == ent2->client->pers.teamSelection )
+	if ( ent1->client->pers.teamSelection == ent2->client->pers.teamSelection )
 	{
 		return qtrue;
 	}
@@ -86,18 +86,18 @@ gentity_t *Team_GetLocation( gentity_t *ent )
 
 	VectorCopy( ent->r.currentOrigin, origin );
 
-	for( eloc = level.locationHead; eloc; eloc = eloc->nextTrain )
+	for ( eloc = level.locationHead; eloc; eloc = eloc->nextTrain )
 	{
 		len = ( origin[ 0 ] - eloc->r.currentOrigin[ 0 ] ) * ( origin[ 0 ] - eloc->r.currentOrigin[ 0 ] )
 		      + ( origin[ 1 ] - eloc->r.currentOrigin[ 1 ] ) * ( origin[ 1 ] - eloc->r.currentOrigin[ 1 ] )
 		      + ( origin[ 2 ] - eloc->r.currentOrigin[ 2 ] ) * ( origin[ 2 ] - eloc->r.currentOrigin[ 2 ] );
 
-		if( len > bestlen )
+		if ( len > bestlen )
 		{
 			continue;
 		}
 
-		if( !trap_InPVS( origin, eloc->r.currentOrigin ) )
+		if ( !trap_InPVS( origin, eloc->r.currentOrigin ) )
 		{
 			continue;
 		}
@@ -122,19 +122,19 @@ qboolean Team_GetLocationMsg( gentity_t *ent, char *loc, int loclen )
 
 	best = Team_GetLocation( ent );
 
-	if( !best )
+	if ( !best )
 	{
 		return qfalse;
 	}
 
-	if( best->count )
+	if ( best->count )
 	{
-		if( best->count < 0 )
+		if ( best->count < 0 )
 		{
 			best->count = 0;
 		}
 
-		if( best->count > 7 )
+		if ( best->count > 7 )
 		{
 			best->count = 7;
 		}
@@ -176,7 +176,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 	int       h, a = 0;
 	int       clients[ TEAM_MAXOVERLAY ];
 
-	if( !ent->client->pers.teamInfo )
+	if ( !ent->client->pers.teamInfo )
 	{
 		return;
 	}
@@ -184,12 +184,12 @@ void TeamplayInfoMessage( gentity_t *ent )
 	// figure out what client should be on the display
 	// we are limited to 8, but we want to use the top eight players
 	// but in client order (so they don't keep changing position on the overlay)
-	for( i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++ )
+	for ( i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++ )
 	{
 		player = g_entities + level.sortedClients[ i ];
 
-		if( player->inuse && player->client->sess.sessionTeam ==
-		    ent->client->sess.sessionTeam )
+		if ( player->inuse && player->client->sess.sessionTeam ==
+		     ent->client->sess.sessionTeam )
 		{
 			clients[ cnt++ ] = level.sortedClients[ i ];
 		}
@@ -202,16 +202,16 @@ void TeamplayInfoMessage( gentity_t *ent )
 	string[ 0 ] = 0;
 	stringlength = 0;
 
-	for( i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++ )
+	for ( i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++ )
 	{
 		player = g_entities + i;
 
-		if( player->inuse && player->client->sess.sessionTeam ==
-		    ent->client->sess.sessionTeam )
+		if ( player->inuse && player->client->sess.sessionTeam ==
+		     ent->client->sess.sessionTeam )
 		{
 			h = player->client->ps.stats[ STAT_HEALTH ];
 
-			if( h < 0 )
+			if ( h < 0 )
 			{
 				h = 0;
 			}
@@ -224,7 +224,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 
 			j = strlen( entry );
 
-			if( stringlength + j > sizeof( string ) )
+			if ( stringlength + j > sizeof( string ) )
 			{
 				break;
 			}
@@ -243,25 +243,25 @@ void CheckTeamStatus( void )
 	int       i;
 	gentity_t *loc, *ent;
 
-	if( level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME )
+	if ( level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME )
 	{
 		level.lastTeamLocationTime = level.time;
 
-		for( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < g_maxclients.integer; i++ )
 		{
 			ent = g_entities + i;
 
-			if( ent->client->pers.connected != CON_CONNECTED )
+			if ( ent->client->pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
 
-			if( ent->inuse && ( ent->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS ||
-			                    ent->client->ps.stats[ STAT_PTEAM ] == PTE_ALIENS ) )
+			if ( ent->inuse && ( ent->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS ||
+			                     ent->client->ps.stats[ STAT_PTEAM ] == PTE_ALIENS ) )
 			{
 				loc = Team_GetLocation( ent );
 
-				if( loc )
+				if ( loc )
 				{
 					ent->client->pers.teamState.location = loc->health;
 				}
@@ -272,17 +272,17 @@ void CheckTeamStatus( void )
 			}
 		}
 
-		for( i = 0; i < g_maxclients.integer; i++ )
+		for ( i = 0; i < g_maxclients.integer; i++ )
 		{
 			ent = g_entities + i;
 
-			if( ent->client->pers.connected != CON_CONNECTED )
+			if ( ent->client->pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
 
-			if( ent->inuse && ( ent->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS ||
-			                    ent->client->ps.stats[ STAT_PTEAM ] == PTE_ALIENS ) )
+			if ( ent->inuse && ( ent->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS ||
+			                     ent->client->ps.stats[ STAT_PTEAM ] == PTE_ALIENS ) )
 			{
 				TeamplayInfoMessage( ent );
 			}

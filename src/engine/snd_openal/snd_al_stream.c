@@ -46,7 +46,7 @@ static void allocate_channel()
 	// Allocate a source at high priority
 	source_handle = al_src_alloc( SRCPRI_STREAM, -2, 0 );
 
-	if( source_handle == -1 )
+	if ( source_handle == -1 )
 	{
 		return;
 	}
@@ -80,36 +80,36 @@ void SndAl_RawSamples( int stream, int samples, int rate, int width, int channel
 	ALint  state;
 
 	// Work out AL format
-	if( width == 1 )
+	if ( width == 1 )
 	{
-		if( channels == 1 )
+		if ( channels == 1 )
 		{
 			format = AL_FORMAT_MONO8;
 		}
-		else if( channels == 2 )
+		else if ( channels == 2 )
 		{
 			format = AL_FORMAT_STEREO8;
 		}
 	}
-	else if( width == 2 )
+	else if ( width == 2 )
 	{
-		if( channels == 1 )
+		if ( channels == 1 )
 		{
 			format = AL_FORMAT_MONO16;
 		}
-		else if( channels == 2 )
+		else if ( channels == 2 )
 		{
 			format = AL_FORMAT_STEREO16;
 		}
 	}
 
 	// Create the source if necessary
-	if( source_handle == -1 )
+	if ( source_handle == -1 )
 	{
 		allocate_channel();
 
 		// Failed?
-		if( source_handle == -1 )
+		if ( source_handle == -1 )
 		{
 			si.Printf( PRINT_ALL, "Can't allocate streaming source\n" );
 			return;
@@ -129,7 +129,7 @@ void SndAl_RawSamples( int stream, int samples, int rate, int width, int channel
 	// Volume
 	qalSourcef( source, AL_GAIN, volume * s_volume->value * s_gain->value );
 
-	if( !is_playing )
+	if ( !is_playing )
 	{
 		qalSourcePlay( source );
 		is_playing = qtrue;
@@ -141,7 +141,7 @@ void al_stream_update()
 	int   processed;
 	ALint state;
 
-	if( source_handle == -1 )
+	if ( source_handle == -1 )
 	{
 		return;
 	}
@@ -149,9 +149,9 @@ void al_stream_update()
 	// Un-queue any buffers, and delete them
 	qalGetSourcei( source, AL_BUFFERS_PROCESSED, &processed );
 
-	if( processed )
+	if ( processed )
 	{
-		while( processed-- )
+		while ( processed-- )
 		{
 			ALuint buffer;
 			qalSourceUnqueueBuffers( source, 1, &buffer );
@@ -162,7 +162,7 @@ void al_stream_update()
 	// If it's stopped, release the source
 	qalGetSourcei( source, AL_SOURCE_STATE, &state );
 
-	if( state == AL_STOPPED )
+	if ( state == AL_STOPPED )
 	{
 		is_playing = qfalse;
 		qalSourceStop( source );
@@ -172,7 +172,7 @@ void al_stream_update()
 
 void al_stream_die()
 {
-	if( source_handle == -1 )
+	if ( source_handle == -1 )
 	{
 		return;
 	}

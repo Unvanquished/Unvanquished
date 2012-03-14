@@ -28,7 +28,7 @@ static void GetChunkHeader( memStream_t *s, axChunkHeader_t *chunkHeader )
 {
 	int i;
 
-	for( i = 0; i < 20; i++ )
+	for ( i = 0; i < 20; i++ )
 	{
 		chunkHeader->ident[ i ] = MemStreamGetC( s );
 	}
@@ -53,12 +53,12 @@ static void GetBone( memStream_t *s, axBone_t *bone )
 {
 	int i;
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
 		bone->quat[ i ] = MemStreamGetFloat( s );
 	}
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		bone->position[ i ] = MemStreamGetFloat( s );
 	}
@@ -77,12 +77,12 @@ static int CompareTrianglesByMaterialIndex( const void *a, const void *b )
 	t1 = ( axTriangle_t * ) a;
 	t2 = ( axTriangle_t * ) b;
 
-	if( t1->materialIndex < t2->materialIndex )
+	if ( t1->materialIndex < t2->materialIndex )
 	{
 		return -1;
 	}
 
-	if( t1->materialIndex > t2->materialIndex )
+	if ( t1->materialIndex > t2->materialIndex )
 	{
 		return 1;
 	}
@@ -156,7 +156,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	GetChunkHeader( stream, &chunkHeader );
 
 	// check indent again
-	if( Q_stricmpn( chunkHeader.ident, "ACTRHEAD", 8 ) )
+	if ( Q_stricmpn( chunkHeader.ident, "ACTRHEAD", 8 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk indent ('%s' should be '%s')\n", modName, chunkHeader.ident, "ACTRHEAD" );
 		FreeMemStream( stream );
@@ -172,14 +172,14 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// read points
 	GetChunkHeader( stream, &chunkHeader );
 
-	if( Q_stricmpn( chunkHeader.ident, "PNTS0000", 8 ) )
+	if ( Q_stricmpn( chunkHeader.ident, "PNTS0000", 8 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk indent ('%s' should be '%s')\n", modName, chunkHeader.ident, "PNTS0000" );
 		FreeMemStream( stream );
 		return qfalse;
 	}
 
-	if( chunkHeader.dataSize != sizeof( axPoint_t ) )
+	if ( chunkHeader.dataSize != sizeof( axPoint_t ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, ( int ) sizeof( axPoint_t ) );
 		FreeMemStream( stream );
@@ -191,7 +191,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	numPoints = chunkHeader.numData;
 	points = Com_Allocate( numPoints * sizeof( axPoint_t ) );
 
-	for( i = 0, point = points; i < numPoints; i++, point++ )
+	for ( i = 0, point = points; i < numPoints; i++, point++ )
 	{
 		point->point[ 0 ] = MemStreamGetFloat( stream );
 		point->point[ 1 ] = MemStreamGetFloat( stream );
@@ -206,14 +206,14 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// read vertices
 	GetChunkHeader( stream, &chunkHeader );
 
-	if( Q_stricmpn( chunkHeader.ident, "VTXW0000", 8 ) )
+	if ( Q_stricmpn( chunkHeader.ident, "VTXW0000", 8 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk indent ('%s' should be '%s')\n", modName, chunkHeader.ident, "VTXW0000" );
 		FreeMemStream( stream );
 		return qfalse;
 	}
 
-	if( chunkHeader.dataSize != sizeof( axVertex_t ) )
+	if ( chunkHeader.dataSize != sizeof( axVertex_t ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, ( int ) sizeof( axVertex_t ) );
 		FreeMemStream( stream );
@@ -225,11 +225,11 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	numVertexes = chunkHeader.numData;
 	vertexes = Com_Allocate( numVertexes * sizeof( axVertex_t ) );
 
-	for( i = 0, vertex = vertexes; i < numVertexes; i++, vertex++ )
+	for ( i = 0, vertex = vertexes; i < numVertexes; i++, vertex++ )
 	{
 		vertex->pointIndex = MemStreamGetShort( stream );
 
-		if( vertex->pointIndex < 0 || vertex->pointIndex >= numPoints )
+		if ( vertex->pointIndex < 0 || vertex->pointIndex >= numPoints )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has vertex with point index out of range (%i while max %i)\n", modName, vertex->pointIndex, numPoints );
 			FreeMemStream( stream );
@@ -264,14 +264,14 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// read triangles
 	GetChunkHeader( stream, &chunkHeader );
 
-	if( Q_stricmpn( chunkHeader.ident, "FACE0000", 8 ) )
+	if ( Q_stricmpn( chunkHeader.ident, "FACE0000", 8 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk indent ('%s' should be '%s')\n", modName, chunkHeader.ident, "FACE0000" );
 		FreeMemStream( stream );
 		return qfalse;
 	}
 
-	if( chunkHeader.dataSize != sizeof( axTriangle_t ) )
+	if ( chunkHeader.dataSize != sizeof( axTriangle_t ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, ( int ) sizeof( axTriangle_t ) );
 		FreeMemStream( stream );
@@ -283,14 +283,14 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	numTriangles = chunkHeader.numData;
 	triangles = Com_Allocate( numTriangles * sizeof( axTriangle_t ) );
 
-	for( i = 0, triangle = triangles; i < numTriangles; i++, triangle++ )
+	for ( i = 0, triangle = triangles; i < numTriangles; i++, triangle++ )
 	{
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 			//for(j = 2; j >= 0; j--)
 		{
 			triangle->indexes[ j ] = MemStreamGetShort( stream );
 
-			if( triangle->indexes[ j ] < 0 || triangle->indexes[ j ] >= numVertexes )
+			if ( triangle->indexes[ j ] < 0 || triangle->indexes[ j ] >= numVertexes )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has triangle with vertex index out of range (%i while max %i)\n", modName, triangle->indexes[ j ], numVertexes );
 				FreeMemStream( stream );
@@ -306,14 +306,14 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// read materials
 	GetChunkHeader( stream, &chunkHeader );
 
-	if( Q_stricmpn( chunkHeader.ident, "MATT0000", 8 ) )
+	if ( Q_stricmpn( chunkHeader.ident, "MATT0000", 8 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk indent ('%s' should be '%s')\n", modName, chunkHeader.ident, "MATT0000" );
 		FreeMemStream( stream );
 		return qfalse;
 	}
 
-	if( chunkHeader.dataSize != sizeof( axMaterial_t ) )
+	if ( chunkHeader.dataSize != sizeof( axMaterial_t ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, ( int ) sizeof( axMaterial_t ) );
 		FreeMemStream( stream );
@@ -325,7 +325,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	numMaterials = chunkHeader.numData;
 	materials = Com_Allocate( numMaterials * sizeof( axMaterial_t ) );
 
-	for( i = 0, material = materials; i < numMaterials; i++, material++ )
+	for ( i = 0, material = materials; i < numMaterials; i++, material++ )
 	{
 		MemStreamRead( stream, material->name, sizeof( material->name ) );
 
@@ -339,9 +339,9 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 		material->lodStyle = MemStreamGetLong( stream );
 	}
 
-	for( i = 0, vertex = vertexes; i < numVertexes; i++, vertex++ )
+	for ( i = 0, vertex = vertexes; i < numVertexes; i++, vertex++ )
 	{
-		if( vertex->materialIndex < 0 || vertex->materialIndex >= numMaterials )
+		if ( vertex->materialIndex < 0 || vertex->materialIndex >= numMaterials )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has vertex with material index out of range (%i while max %i)\n", modName, vertex->materialIndex, numMaterials );
 			FreeMemStream( stream );
@@ -349,9 +349,9 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 		}
 	}
 
-	for( i = 0, triangle = triangles; i < numTriangles; i++, triangle++ )
+	for ( i = 0, triangle = triangles; i < numTriangles; i++, triangle++ )
 	{
-		if( triangle->materialIndex < 0 || triangle->materialIndex >= numMaterials )
+		if ( triangle->materialIndex < 0 || triangle->materialIndex >= numMaterials )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has triangle with material index out of range (%i while max %i)\n", modName, triangle->materialIndex, numMaterials );
 			FreeMemStream( stream );
@@ -362,14 +362,14 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// read reference bones
 	GetChunkHeader( stream, &chunkHeader );
 
-	if( Q_stricmpn( chunkHeader.ident, "REFSKELT", 8 ) )
+	if ( Q_stricmpn( chunkHeader.ident, "REFSKELT", 8 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk indent ('%s' should be '%s')\n", modName, chunkHeader.ident, "REFSKELT" );
 		FreeMemStream( stream );
 		return qfalse;
 	}
 
-	if( chunkHeader.dataSize != sizeof( axReferenceBone_t ) )
+	if ( chunkHeader.dataSize != sizeof( axReferenceBone_t ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, ( int ) sizeof( axReferenceBone_t ) );
 		FreeMemStream( stream );
@@ -381,7 +381,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	numReferenceBones = chunkHeader.numData;
 	refBones = Com_Allocate( numReferenceBones * sizeof( axReferenceBone_t ) );
 
-	for( i = 0, refBone = refBones; i < numReferenceBones; i++, refBone++ )
+	for ( i = 0, refBone = refBones; i < numReferenceBones; i++, refBone++ )
 	{
 		MemStreamRead( stream, refBone->name, sizeof( refBone->name ) );
 
@@ -422,14 +422,14 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// read  bone weights
 	GetChunkHeader( stream, &chunkHeader );
 
-	if( Q_stricmpn( chunkHeader.ident, "RAWWEIGHTS", 10 ) )
+	if ( Q_stricmpn( chunkHeader.ident, "RAWWEIGHTS", 10 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk indent ('%s' should be '%s')\n", modName, chunkHeader.ident, "RAWWEIGHTS" );
 		FreeMemStream( stream );
 		return qfalse;
 	}
 
-	if( chunkHeader.dataSize != sizeof( axBoneWeight_t ) )
+	if ( chunkHeader.dataSize != sizeof( axBoneWeight_t ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", modName, chunkHeader.dataSize, ( int ) sizeof( axBoneWeight_t ) );
 		FreeMemStream( stream );
@@ -441,7 +441,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	numWeights = chunkHeader.numData;
 	axWeights = Com_Allocate( numWeights * sizeof( axBoneWeight_t ) );
 
-	for( i = 0, axWeight = axWeights; i < numWeights; i++, axWeight++ )
+	for ( i = 0, axWeight = axWeights; i < numWeights; i++, axWeight++ )
 	{
 		axWeight->weight = MemStreamGetFloat( stream );
 		axWeight->pointIndex = MemStreamGetLong( stream );
@@ -477,13 +477,13 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	}
 	*/
 
-	if( md5->numBones < 1 )
+	if ( md5->numBones < 1 )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has no bones\n", modName );
 		return qfalse;
 	}
 
-	if( md5->numBones > MAX_BONES )
+	if ( md5->numBones > MAX_BONES )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSK: '%s' has more than %i bones (%i)\n", modName, MAX_BONES, md5->numBones );
 		return qfalse;
@@ -494,11 +494,11 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// copy all reference bones
 	md5->bones = ri.Hunk_Alloc( sizeof( *md5Bone ) * md5->numBones, h_low );
 
-	for( i = 0, md5Bone = md5->bones, refBone = refBones; i < md5->numBones; i++, md5Bone++, refBone++ )
+	for ( i = 0, md5Bone = md5->bones, refBone = refBones; i < md5->numBones; i++, md5Bone++, refBone++ )
 	{
 		Q_strncpyz( md5Bone->name, refBone->name, sizeof( md5Bone->name ) );
 
-		if( i == 0 )
+		if ( i == 0 )
 		{
 			md5Bone->parentIndex = refBone->parentIndex - 1;
 		}
@@ -509,20 +509,20 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		//ri.Printf(PRINT_ALL, "R_LoadPSK: '%s' has bone '%s' with parent index %i\n", modName, md5Bone->name, md5Bone->parentIndex);
 
-		if( md5Bone->parentIndex >= md5->numBones )
+		if ( md5Bone->parentIndex >= md5->numBones )
 		{
 			ri.Error( ERR_DROP, "R_LoadPSK: '%s' has bone '%s' with bad parent index %i while numBones is %i\n", modName,
 			          md5Bone->name, md5Bone->parentIndex, md5->numBones );
 		}
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			boneOrigin[ j ] = refBone->bone.position[ j ];
 		}
 
 		// Tr3B: I have really no idea why the .psk format stores the first quaternion with inverted quats.
 		// Furthermore only the X and Z components of the first quat are inverted ?!?!
-		if( i == 0 )
+		if ( i == 0 )
 		{
 			boneQuat[ 0 ] = refBone->bone.quat[ 0 ];
 			boneQuat[ 1 ] = -refBone->bone.quat[ 1 ];
@@ -557,7 +557,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 		           md5Bone->origin[ 0 ], md5Bone->origin[ 1 ], md5Bone->origin[ 2 ] );
 #endif
 
-		if( md5Bone->parentIndex >= 0 )
+		if ( md5Bone->parentIndex >= 0 )
 		{
 			vec3_t    rotated;
 			quat_t    quat;
@@ -594,11 +594,11 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	Com_InitGrowList( &vboVertexes, 10000 );
 
-	for( i = 0, vertex = vertexes; i < numVertexes; i++, vertex++ )
+	for ( i = 0, vertex = vertexes; i < numVertexes; i++, vertex++ )
 	{
 		md5Vertex_t *vboVert = Com_Allocate( sizeof( *vboVert ) );
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			vboVert->position[ j ] = points[ vertex->pointIndex ].point[ j ];
 		}
@@ -609,15 +609,15 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 		// find number of associated weights
 		vboVert->numWeights = 0;
 
-		for( j = 0, axWeight = axWeights; j < numWeights; j++, axWeight++ )
+		for ( j = 0, axWeight = axWeights; j < numWeights; j++, axWeight++ )
 		{
-			if( axWeight->pointIndex == vertex->pointIndex && axWeight->weight > 0.0f )
+			if ( axWeight->pointIndex == vertex->pointIndex && axWeight->weight > 0.0f )
 			{
 				vboVert->numWeights++;
 			}
 		}
 
-		if( vboVert->numWeights > MAX_WEIGHTS )
+		if ( vboVert->numWeights > MAX_WEIGHTS )
 		{
 			ri.Error( ERR_DROP, "R_LoadPSK: vertex %i requires more weights %i than the maximum of %i in model '%s'", i, vboVert->numWeights, MAX_WEIGHTS, modName );
 			//ri.Printf(PRINT_WARNING, "R_LoadPSK: vertex %i requires more weights %i than the maximum of %i in model '%s'\n", i, vboVert->numWeights, MAX_WEIGHTS, modName);
@@ -625,9 +625,9 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		vboVert->weights = ri.Hunk_Alloc( sizeof( *vboVert->weights ) * vboVert->numWeights, h_low );
 
-		for( j = 0, axWeight = axWeights, k = 0; j < numWeights; j++, axWeight++ )
+		for ( j = 0, axWeight = axWeights, k = 0; j < numWeights; j++, axWeight++ )
 		{
-			if( axWeight->pointIndex == vertex->pointIndex && axWeight->weight > 0.0f )
+			if ( axWeight->pointIndex == vertex->pointIndex && axWeight->weight > 0.0f )
 			{
 				weight = ri.Hunk_Alloc( sizeof( *weight ), h_low );
 
@@ -648,7 +648,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	ClearBounds( md5->bounds[ 0 ], md5->bounds[ 1 ] );
 
-	for( i = 0, vertex = vertexes; i < numVertexes; i++, vertex++ )
+	for ( i = 0, vertex = vertexes; i < numVertexes; i++, vertex++ )
 	{
 		AddPointToBounds( points[ vertex->pointIndex ].point, md5->bounds[ 0 ], md5->bounds[ 1 ] );
 	}
@@ -668,11 +668,11 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	Com_InitGrowList( &sortedTriangles, 1000 );
 
-	for( i = 0, triangle = triangles; i < numTriangles; i++, triangle++ )
+	for ( i = 0, triangle = triangles; i < numTriangles; i++, triangle++ )
 	{
 		skelTriangle_t *sortTri = Com_Allocate( sizeof( *sortTri ) );
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			sortTri->indexes[ j ] = triangle->indexes[ j ];
 			sortTri->vertexes[ j ] = Com_GrowListElement( &vboVertexes, triangle->indexes[ j ] );
@@ -693,7 +693,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 		vec3_t      binormal;
 		vec3_t      normal;
 
-		for( j = 0; j < vboVertexes.currentElements; j++ )
+		for ( j = 0; j < vboVertexes.currentElements; j++ )
 		{
 			v0 = Com_GrowListElement( &vboVertexes, j );
 
@@ -702,7 +702,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 			VectorClear( v0->normal );
 		}
 
-		for( j = 0; j < sortedTriangles.currentElements; j++ )
+		for ( j = 0; j < sortedTriangles.currentElements; j++ )
 		{
 			skelTriangle_t *tri = Com_GrowListElement( &sortedTriangles, j );
 
@@ -725,7 +725,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 			R_CalcTangentsForTriangle( tangent, binormal, p0, p1, p2, t0, t1, t2 );
 #endif
 
-			for( k = 0; k < 3; k++ )
+			for ( k = 0; k < 3; k++ )
 			{
 				float *v;
 
@@ -742,7 +742,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 			}
 		}
 
-		for( j = 0; j < vboVertexes.currentElements; j++ )
+		for ( j = 0; j < vboVertexes.currentElements; j++ )
 		{
 			v0 = Com_GrowListElement( &vboVertexes, j );
 
@@ -758,7 +758,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 		vec3_t      faceNormal;
 		md5Vertex_t *dv[ 3 ];
 
-		for( j = 0; j < sortedTriangles.currentElements; j++ )
+		for ( j = 0; j < sortedTriangles.currentElements; j++ )
 		{
 			skelTriangle_t *tri = Com_GrowListElement( &sortedTriangles, j );
 
@@ -772,13 +772,13 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 			bb = ( dv[ 1 ]->texCoords[ 0 ] - dv[ 0 ]->texCoords[ 0 ] ) * ( dv[ 2 ]->texCoords[ 1 ] - dv[ 0 ]->texCoords[ 1 ] ) - ( dv[ 2 ]->texCoords[ 0 ] - dv[ 0 ]->texCoords[ 0 ] ) * ( dv[ 1 ]->texCoords[ 1 ] -
 			     dv[ 0 ]->texCoords[ 1 ] );
 
-			if( fabs( bb ) < 0.00000001f )
+			if ( fabs( bb ) < 0.00000001f )
 			{
 				continue;
 			}
 
 			// do each vertex
-			for( k = 0; k < 3; k++ )
+			for ( k = 0; k < 3; k++ )
 			{
 				// calculate s tangent vector
 				s = dv[ k ]->texCoords[ 0 ] + 10.0f;
@@ -818,7 +818,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 				// an orthogonal basis
 				CrossProduct( dv[ k ]->normal, dv[ k ]->tangent, dv[ k ]->binormal );
 
-				if( DotProduct( dv[ k ]->normal, faceNormal ) < 0 )
+				if ( DotProduct( dv[ k ]->normal, faceNormal ) < 0 )
 				{
 					VectorInverse( dv[ k ]->normal );
 					//VectorInverse(dv[k]->tangent);
@@ -833,7 +833,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 #if 1
 
-		for( j = 0; j < vboVertexes.currentElements; j++ )
+		for ( j = 0; j < vboVertexes.currentElements; j++ )
 		{
 			dv[ 0 ] = Com_GrowListElement( &vboVertexes, j );
 			//VectorNormalize(dv[0]->tangent);
@@ -850,20 +850,20 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 		md5Vertex_t *v0, *v1;
 
 		// do another extra smoothing for normals to avoid flat shading
-		for( j = 0; j < vboVertexes.currentElements; j++ )
+		for ( j = 0; j < vboVertexes.currentElements; j++ )
 		{
 			v0 = Com_GrowListElement( &vboVertexes, j );
 
-			for( k = 0; k < vboVertexes.currentElements; k++ )
+			for ( k = 0; k < vboVertexes.currentElements; k++ )
 			{
-				if( j == k )
+				if ( j == k )
 				{
 					continue;
 				}
 
 				v1 = Com_GrowListElement( &vboVertexes, k );
 
-				if( VectorCompare( v0->position, v1->position ) )
+				if ( VectorCompare( v0->position, v1->position ) )
 				{
 					VectorAdd( v0->position, v1->normal, v0->normal );
 				}
@@ -879,58 +879,58 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	materialIndex = oldMaterialIndex = -1;
 
-	for( i = 0; i < numTriangles; i++ )
+	for ( i = 0; i < numTriangles; i++ )
 	{
 		triangle = &triangles[ i ];
 		materialIndex = triangle->materialIndex;
 
-		if( materialIndex != oldMaterialIndex )
+		if ( materialIndex != oldMaterialIndex )
 		{
 			oldMaterialIndex = materialIndex;
 
 			numRemaining = sortedTriangles.currentElements - i;
 
-			while( numRemaining )
+			while ( numRemaining )
 			{
 				numBoneReferences = 0;
 				Com_Memset( boneReferences, 0, sizeof( boneReferences ) );
 
 				Com_InitGrowList( &vboTriangles, 1000 );
 
-				for( j = i; j < sortedTriangles.currentElements; j++ )
+				for ( j = i; j < sortedTriangles.currentElements; j++ )
 				{
 					skelTriangle_t *sortTri;
 
 					triangle = &triangles[ j ];
 					materialIndex = triangle->materialIndex;
 
-					if( materialIndex != oldMaterialIndex )
+					if ( materialIndex != oldMaterialIndex )
 					{
 						continue;
 					}
 
 					sortTri = Com_GrowListElement( &sortedTriangles, j );
 
-					if( sortTri->referenced )
+					if ( sortTri->referenced )
 					{
 						continue;
 					}
 
-					if( AddTriangleToVBOTriangleList( &vboTriangles, sortTri, &numBoneReferences, boneReferences ) )
+					if ( AddTriangleToVBOTriangleList( &vboTriangles, sortTri, &numBoneReferences, boneReferences ) )
 					{
 						sortTri->referenced = qtrue;
 					}
 				}
 
-				for( j = 0; j < MAX_BONES; j++ )
+				for ( j = 0; j < MAX_BONES; j++ )
 				{
-					if( boneReferences[ j ] > 0 )
+					if ( boneReferences[ j ] > 0 )
 					{
 						ri.Printf( PRINT_ALL, "R_LoadPSK: referenced bone: '%s'\n", ( j < numReferenceBones ) ? refBones[ j ].name : NULL );
 					}
 				}
 
-				if( !vboTriangles.currentElements )
+				if ( !vboTriangles.currentElements )
 				{
 					ri.Printf( PRINT_WARNING, "R_LoadPSK: could not add triangles to a remaining VBO surface for model '%s'\n", modName );
 					break;
@@ -945,7 +945,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 		}
 	}
 
-	for( j = 0; j < sortedTriangles.currentElements; j++ )
+	for ( j = 0; j < sortedTriangles.currentElements; j++ )
 	{
 		skelTriangle_t *sortTri = Com_GrowListElement( &sortedTriangles, j );
 		Com_Dealloc( sortTri );
@@ -953,7 +953,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	Com_DestroyGrowList( &sortedTriangles );
 
-	for( j = 0; j < vboVertexes.currentElements; j++ )
+	for ( j = 0; j < vboVertexes.currentElements; j++ )
 	{
 		md5Vertex_t *v = Com_GrowListElement( &vboVertexes, j );
 		Com_Dealloc( v );
@@ -965,7 +965,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	md5->numVBOSurfaces = vboSurfaces.currentElements;
 	md5->vboSurfaces = ri.Hunk_Alloc( md5->numVBOSurfaces * sizeof( *md5->vboSurfaces ), h_low );
 
-	for( i = 0; i < md5->numVBOSurfaces; i++ )
+	for ( i = 0; i < md5->numVBOSurfaces; i++ )
 	{
 		md5->vboSurfaces[ i ] = ( srfVBOMD5Mesh_t * ) Com_GrowListElement( &vboSurfaces, i );
 	}

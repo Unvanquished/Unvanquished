@@ -54,7 +54,7 @@ void CG_BuildSolidList( void )
 	cg_numSolidEntities = 0;
 	cg_numTriggerEntities = 0;
 
-	if( cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport )
+	if ( cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport )
 	{
 		snap = cg.nextSnap;
 	}
@@ -63,19 +63,19 @@ void CG_BuildSolidList( void )
 		snap = cg.snap;
 	}
 
-	for( i = 0; i < snap->numEntities; i++ )
+	for ( i = 0; i < snap->numEntities; i++ )
 	{
 		cent = &cg_entities[ snap->entities[ i ].number ];
 		ent = &cent->currentState;
 
-		if( ent->eType == ET_ITEM || ent->eType == ET_PUSH_TRIGGER || ent->eType == ET_TELEPORT_TRIGGER )
+		if ( ent->eType == ET_ITEM || ent->eType == ET_PUSH_TRIGGER || ent->eType == ET_TELEPORT_TRIGGER )
 		{
 			cg_triggerEntities[ cg_numTriggerEntities ] = cent;
 			cg_numTriggerEntities++;
 			continue;
 		}
 
-		if( cent->nextState.solid && ent->eType != ET_MISSILE )
+		if ( cent->nextState.solid && ent->eType != ET_MISSILE )
 		{
 			cg_solidEntities[ cg_numSolidEntities ] = cent;
 			cg_numSolidEntities++;
@@ -104,7 +104,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 
 	//SUPAR HACK
 	//this causes a trace to collide with the local player
-	if( skipNumber == MAGIC_TRACE_HACK )
+	if ( skipNumber == MAGIC_TRACE_HACK )
 	{
 		j = cg_numSolidEntities + 1;
 	}
@@ -113,9 +113,9 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		j = cg_numSolidEntities;
 	}
 
-	for( i = 0; i < j; i++ )
+	for ( i = 0; i < j; i++ )
 	{
-		if( i < cg_numSolidEntities )
+		if ( i < cg_numSolidEntities )
 		{
 			cent = cg_solidEntities[ i ];
 		}
@@ -126,12 +126,12 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 
 		ent = &cent->currentState;
 
-		if( ent->number == skipNumber )
+		if ( ent->number == skipNumber )
 		{
 			continue;
 		}
 
-		if( ent->solid == SOLID_BMODEL )
+		if ( ent->solid == SOLID_BMODEL )
 		{
 			// special value for bmodel
 			cmodel = trap_CM_InlineModel( ent->modelindex );
@@ -150,7 +150,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			bmins[ 2 ] = -zd;
 			bmaxs[ 2 ] = zu;
 
-			if( i == cg_numSolidEntities )
+			if ( i == cg_numSolidEntities )
 			{
 				BG_FindBBoxForClass( ( ent->powerups >> 8 ) & 0xFF, bmins, bmaxs, NULL, NULL, NULL );
 			}
@@ -160,27 +160,27 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			VectorCopy( cent->lerpOrigin, origin );
 		}
 
-		if( collisionType == TT_CAPSULE )
+		if ( collisionType == TT_CAPSULE )
 		{
 			trap_CM_TransformedCapsuleTrace( &trace, start, end,
 			                                 mins, maxs, cmodel,  mask, origin, angles );
 		}
-		else if( collisionType == TT_AABB )
+		else if ( collisionType == TT_AABB )
 		{
 			trap_CM_TransformedBoxTrace( &trace, start, end,
 			                             mins, maxs, cmodel,  mask, origin, angles );
 		}
-		else if( collisionType == TT_BISPHERE )
+		else if ( collisionType == TT_BISPHERE )
 		{
 			trap_CM_TransformedBiSphereTrace( &trace, start, end,
 			                                  mins[ 0 ], maxs[ 0 ], cmodel, mask, origin );
 		}
 
-		if( trace.allsolid || trace.fraction < tr->fraction )
+		if ( trace.allsolid || trace.fraction < tr->fraction )
 		{
 			trace.entityNum = ent->number;
 
-			if( tr->lateralFraction < trace.lateralFraction )
+			if ( tr->lateralFraction < trace.lateralFraction )
 			{
 				float oldLateralFraction = tr->lateralFraction;
 				*tr = trace;
@@ -191,12 +191,12 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 				*tr = trace;
 			}
 		}
-		else if( trace.startsolid )
+		else if ( trace.startsolid )
 		{
 			tr->startsolid = qtrue;
 		}
 
-		if( tr->allsolid )
+		if ( tr->allsolid )
 		{
 			return;
 		}
@@ -276,25 +276,25 @@ int   CG_PointContents( const vec3_t point, int passEntityNum )
 
 	contents = trap_CM_PointContents( point, 0 );
 
-	for( i = 0; i < cg_numSolidEntities; i++ )
+	for ( i = 0; i < cg_numSolidEntities; i++ )
 	{
 		cent = cg_solidEntities[ i ];
 
 		ent = &cent->currentState;
 
-		if( ent->number == passEntityNum )
+		if ( ent->number == passEntityNum )
 		{
 			continue;
 		}
 
-		if( ent->solid != SOLID_BMODEL )  // special value for bmodel
+		if ( ent->solid != SOLID_BMODEL ) // special value for bmodel
 		{
 			continue;
 		}
 
 		cmodel = trap_CM_InlineModel( ent->modelindex );
 
-		if( !cmodel )
+		if ( !cmodel )
 		{
 			continue;
 		}
@@ -327,7 +327,7 @@ static void CG_InterpolatePlayerState( qboolean grabAngles )
 	*out = cg.snap->ps;
 
 	// if we are still allowing local input, short circuit the view angles
-	if( grabAngles )
+	if ( grabAngles )
 	{
 		usercmd_t cmd;
 		int       cmdNum;
@@ -339,12 +339,12 @@ static void CG_InterpolatePlayerState( qboolean grabAngles )
 	}
 
 	// if the next frame is a teleport, we can't lerp to it
-	if( cg.nextFrameTeleport )
+	if ( cg.nextFrameTeleport )
 	{
 		return;
 	}
 
-	if( !next || next->serverTime <= prev->serverTime )
+	if ( !next || next->serverTime <= prev->serverTime )
 	{
 		return;
 	}
@@ -353,18 +353,18 @@ static void CG_InterpolatePlayerState( qboolean grabAngles )
 
 	i = next->ps.bobCycle;
 
-	if( i < prev->ps.bobCycle )
+	if ( i < prev->ps.bobCycle )
 	{
 		i += 256; // handle wraparound
 	}
 
 	out->bobCycle = prev->ps.bobCycle + f * ( i - prev->ps.bobCycle );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		out->origin[ i ] = prev->ps.origin[ i ] + f * ( next->ps.origin[ i ] - prev->ps.origin[ i ] );
 
-		if( !grabAngles )
+		if ( !grabAngles )
 		{
 			out->viewangles[ i ] = LerpAngle( prev->ps.viewangles[ i ], next->ps.viewangles[ i ], f );
 		}
@@ -391,31 +391,31 @@ static void CG_TouchTriggerPrediction( void )
 	qboolean      spectator;
 
 	// dead clients don't activate triggers
-	if( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
+	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
 	{
 		return;
 	}
 
 	spectator = ( cg.predictedPlayerState.pm_type == PM_SPECTATOR );
 
-	if( cg.predictedPlayerState.pm_type != PM_NORMAL && !spectator )
+	if ( cg.predictedPlayerState.pm_type != PM_NORMAL && !spectator )
 	{
 		return;
 	}
 
-	for( i = 0; i < cg_numTriggerEntities; i++ )
+	for ( i = 0; i < cg_numTriggerEntities; i++ )
 	{
 		cent = cg_triggerEntities[ i ];
 		ent = &cent->currentState;
 
-		if( ent->solid != SOLID_BMODEL )
+		if ( ent->solid != SOLID_BMODEL )
 		{
 			continue;
 		}
 
 		cmodel = trap_CM_InlineModel( ent->modelindex );
 
-		if( !cmodel )
+		if ( !cmodel )
 		{
 			continue;
 		}
@@ -423,19 +423,19 @@ static void CG_TouchTriggerPrediction( void )
 		trap_CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin,
 		                  cg_pmove.mins, cg_pmove.maxs, cmodel, -1 );
 
-		if( !trace.startsolid )
+		if ( !trace.startsolid )
 		{
 			continue;
 		}
 
-		if( ent->eType == ET_TELEPORT_TRIGGER )
+		if ( ent->eType == ET_TELEPORT_TRIGGER )
 		{
 			cg.hyperspace = qtrue;
 		}
 	}
 
 	// if we didn't touch a jump pad this pmove frame
-	if( cg.predictedPlayerState.jumppad_frame != cg.predictedPlayerState.pmove_framecount )
+	if ( cg.predictedPlayerState.jumppad_frame != cg.predictedPlayerState.pmove_framecount )
 	{
 		cg.predictedPlayerState.jumppad_frame = 0;
 		cg.predictedPlayerState.jumppad_ent = 0;
@@ -481,21 +481,21 @@ void CG_PredictPlayerState( void )
 	// if this is the first frame we must guarantee
 	// predictedPlayerState is valid even if there is some
 	// other error condition
-	if( !cg.validPPS )
+	if ( !cg.validPPS )
 	{
 		cg.validPPS = qtrue;
 		cg.predictedPlayerState = cg.snap->ps;
 	}
 
 	// demo playback just copies the moves
-	if( cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
+	if ( cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
 	{
 		CG_InterpolatePlayerState( qfalse );
 		return;
 	}
 
 	// non-predicting local movement will grab the latest angles
-	if( cg_nopredict.integer || cg_synchronousClients.integer )
+	if ( cg_nopredict.integer || cg_synchronousClients.integer )
 	{
 		CG_InterpolatePlayerState( qtrue );
 		return;
@@ -507,7 +507,7 @@ void CG_PredictPlayerState( void )
 	cg_pmove.pointcontents = CG_PointContents;
 	cg_pmove.debugLevel = cg_debugMove.integer;
 
-	if( cg_pmove.ps->pm_type == PM_DEAD )
+	if ( cg_pmove.ps->pm_type == PM_DEAD )
 	{
 		cg_pmove.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
 	}
@@ -516,7 +516,7 @@ void CG_PredictPlayerState( void )
 		cg_pmove.tracemask = MASK_PLAYERSOLID;
 	}
 
-	if( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
+	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
 	{
 		cg_pmove.tracemask &= ~CONTENTS_BODY; // spectators can fly through bodies
 	}
@@ -534,11 +534,11 @@ void CG_PredictPlayerState( void )
 	cmdNum = current - CMD_BACKUP + 1;
 	trap_GetUserCmd( cmdNum, &oldestCmd );
 
-	if( oldestCmd.serverTime > cg.snap->ps.commandTime &&
-	    oldestCmd.serverTime < cg.time )
+	if ( oldestCmd.serverTime > cg.snap->ps.commandTime &&
+	     oldestCmd.serverTime < cg.time )
 	{
 		// special check for map_restart
-		if( cg_showmiss.integer )
+		if ( cg_showmiss.integer )
 		{
 			CG_Printf( "exceeded PACKET_BACKUP on commands\n" );
 		}
@@ -553,7 +553,7 @@ void CG_PredictPlayerState( void )
 	// the server time is beyond our current cg.time,
 	// because predicted player positions are going to
 	// be ahead of everything else anyway
-	if( cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport )
+	if ( cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport )
 	{
 		cg.predictedPlayerState = cg.nextSnap->ps;
 		cg.physicsTime = cg.nextSnap->serverTime;
@@ -564,11 +564,11 @@ void CG_PredictPlayerState( void )
 		cg.physicsTime = cg.snap->serverTime;
 	}
 
-	if( pmove_msec.integer < 8 )
+	if ( pmove_msec.integer < 8 )
 	{
 		trap_Cvar_Set( "pmove_msec", "8" );
 	}
-	else if( pmove_msec.integer > 33 )
+	else if ( pmove_msec.integer > 33 )
 	{
 		trap_Cvar_Set( "pmove_msec", "33" );
 	}
@@ -579,24 +579,24 @@ void CG_PredictPlayerState( void )
 	// run cmds
 	moved = qfalse;
 
-	for( cmdNum = current - CMD_BACKUP + 1; cmdNum <= current; cmdNum++ )
+	for ( cmdNum = current - CMD_BACKUP + 1; cmdNum <= current; cmdNum++ )
 	{
 		// get the command
 		trap_GetUserCmd( cmdNum, &cg_pmove.cmd );
 
-		if( cg_pmove.pmove_fixed )
+		if ( cg_pmove.pmove_fixed )
 		{
 			PM_UpdateViewAngles( cg_pmove.ps, &cg_pmove.cmd );
 		}
 
 		// don't do anything if the time is before the snapshot player time
-		if( cg_pmove.cmd.serverTime <= cg.predictedPlayerState.commandTime )
+		if ( cg_pmove.cmd.serverTime <= cg.predictedPlayerState.commandTime )
 		{
 			continue;
 		}
 
 		// don't do anything if the command was from a previous map_restart
-		if( cg_pmove.cmd.serverTime > latestCmd.serverTime )
+		if ( cg_pmove.cmd.serverTime > latestCmd.serverTime )
 		{
 			continue;
 		}
@@ -606,17 +606,17 @@ void CG_PredictPlayerState( void )
 		// from the snapshot, but on a wan we will have
 		// to predict several commands to get to the point
 		// we want to compare
-		if( cg.predictedPlayerState.commandTime == oldPlayerState.commandTime )
+		if ( cg.predictedPlayerState.commandTime == oldPlayerState.commandTime )
 		{
 			vec3_t delta;
 			float  len;
 
-			if( cg.thisFrameTeleport )
+			if ( cg.thisFrameTeleport )
 			{
 				// a teleport will not cause an error decay
 				VectorClear( cg.predictedError );
 
-				if( cg_showmiss.integer )
+				if ( cg_showmiss.integer )
 				{
 					CG_Printf( "PredictionTeleport\n" );
 				}
@@ -629,9 +629,9 @@ void CG_PredictPlayerState( void )
 				CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
 				                           cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted );
 
-				if( cg_showmiss.integer )
+				if ( cg_showmiss.integer )
 				{
-					if( !VectorCompare( oldPlayerState.origin, adjusted ) )
+					if ( !VectorCompare( oldPlayerState.origin, adjusted ) )
 					{
 						CG_Printf( "prediction error\n" );
 					}
@@ -640,14 +640,14 @@ void CG_PredictPlayerState( void )
 				VectorSubtract( oldPlayerState.origin, adjusted, delta );
 				len = VectorLength( delta );
 
-				if( len > 0.1 )
+				if ( len > 0.1 )
 				{
-					if( cg_showmiss.integer )
+					if ( cg_showmiss.integer )
 					{
 						CG_Printf( "Prediction miss: %f\n", len );
 					}
 
-					if( cg_errorDecay.integer )
+					if ( cg_errorDecay.integer )
 					{
 						int   t;
 						float f;
@@ -655,12 +655,12 @@ void CG_PredictPlayerState( void )
 						t = cg.time - cg.predictedErrorTime;
 						f = ( cg_errorDecay.value - t ) / cg_errorDecay.value;
 
-						if( f < 0 )
+						if ( f < 0 )
 						{
 							f = 0;
 						}
 
-						if( f > 0 && cg_showmiss.integer )
+						if ( f > 0 && cg_showmiss.integer )
 						{
 							CG_Printf( "Double prediction decay: %f\n", f );
 						}
@@ -680,12 +680,12 @@ void CG_PredictPlayerState( void )
 
 		// don't predict gauntlet firing, which is only supposed to happen
 		// when it actually inflicts damage
-		for( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 		{
 			cg_pmove.autoWeaponHit[ i ] = qfalse;
 		}
 
-		if( cg_pmove.pmove_fixed )
+		if ( cg_pmove.pmove_fixed )
 		{
 			cg_pmove.cmd.serverTime = ( ( cg_pmove.cmd.serverTime + pmove_msec.integer - 1 ) /
 			                            pmove_msec.integer ) * pmove_msec.integer;
@@ -702,14 +702,14 @@ void CG_PredictPlayerState( void )
 		//CG_CheckChangedPredictableEvents(&cg.predictedPlayerState);
 	}
 
-	if( cg_showmiss.integer > 1 )
+	if ( cg_showmiss.integer > 1 )
 	{
 		CG_Printf( "[%i : %i] ", cg_pmove.cmd.serverTime, cg.time );
 	}
 
-	if( !moved )
+	if ( !moved )
 	{
-		if( cg_showmiss.integer )
+		if ( cg_showmiss.integer )
 		{
 			CG_Printf( "not moved\n" );
 		}
@@ -722,9 +722,9 @@ void CG_PredictPlayerState( void )
 	                           cg.predictedPlayerState.groundEntityNum,
 	                           cg.physicsTime, cg.time, cg.predictedPlayerState.origin );
 
-	if( cg_showmiss.integer )
+	if ( cg_showmiss.integer )
 	{
-		if( cg.predictedPlayerState.eventSequence > oldPlayerState.eventSequence + MAX_EVENTS )
+		if ( cg.predictedPlayerState.eventSequence > oldPlayerState.eventSequence + MAX_EVENTS )
 		{
 			CG_Printf( "WARNING: dropped event\n" );
 		}
@@ -733,9 +733,9 @@ void CG_PredictPlayerState( void )
 	// fire events and other transition triggered things
 	CG_TransitionPlayerState( &cg.predictedPlayerState, &oldPlayerState );
 
-	if( cg_showmiss.integer )
+	if ( cg_showmiss.integer )
 	{
-		if( cg.eventSequence > cg.predictedPlayerState.eventSequence )
+		if ( cg.eventSequence > cg.predictedPlayerState.eventSequence )
 		{
 			CG_Printf( "WARNING: double event\n" );
 			cg.eventSequence = cg.predictedPlayerState.eventSequence;

@@ -42,7 +42,7 @@ void G_initMatch( void )
 {
 	int i;
 
-	for( i = TEAM_AXIS; i <= TEAM_ALLIES; i++ )
+	for ( i = TEAM_AXIS; i <= TEAM_ALLIES; i++ )
 	{
 		G_teamReset( i, qfalse );
 	}
@@ -55,7 +55,7 @@ void G_loadMatchGame( void )
 	unsigned int aRandomValues[ MAX_REINFSEEDS ];
 	char         strReinfSeeds[ MAX_STRING_CHARS ];
 
-	if( server_autoconfig.integer > 0 && ( !( z_serverflags.integer & ZSF_COMP ) || level.newSession ) )
+	if ( server_autoconfig.integer > 0 && ( !( z_serverflags.integer & ZSF_COMP ) || level.newSession ) )
 	{
 		G_configSet( g_gametype.integer, ( server_autoconfig.integer == 1 ) );
 		trap_Cvar_Set( "z_serverflags", va( "%d", z_serverflags.integer | ZSF_COMP ) );
@@ -81,7 +81,7 @@ void G_loadMatchGame( void )
 	strcpy( strReinfSeeds, va( "%d %d", ( dwBlueOffset << REINF_BLUEDELT ) + ( rand() % ( 1 << REINF_BLUEDELT ) ),
 	                           ( dwRedOffset << REINF_REDDELT ) + ( rand() % ( 1 << REINF_REDDELT ) ) ) );
 
-	for( i = 0; i < MAX_REINFSEEDS; i++ )
+	for ( i = 0; i < MAX_REINFSEEDS; i++ )
 	{
 		aRandomValues[ i ] = ( rand() % REINF_RANGE ) * aReinfSeeds[ i ];
 		strcat( strReinfSeeds, va( " %d", aRandomValues[ i ] ) );
@@ -96,7 +96,7 @@ void G_loadMatchGame( void )
 // Simple alias for sure-fire print :)
 void G_printFull( char *str, gentity_t *ent )
 {
-	if( ent != NULL )
+	if ( ent != NULL )
 	{
 		CP( va( "print \"%s\n\"", str ) );
 		CP( va( "cp \"%s\n\"", str ) );
@@ -122,15 +122,15 @@ void G_delayPrint( gentity_t *dpent )
 	int      think_next = 0;
 	qboolean fFree = qtrue;
 
-	switch( dpent->spawnflags )
+	switch ( dpent->spawnflags )
 	{
 		case DP_PAUSEINFO:
 			{
-				if( level.match_pause > PAUSE_UNPAUSING )
+				if ( level.match_pause > PAUSE_UNPAUSING )
 				{
 					int cSeconds = match_timeoutlength.integer * 1000 - ( level.time - dpent->timestamp );
 
-					if( cSeconds > 1000 )
+					if ( cSeconds > 1000 )
 					{
 						AP( va( "cp \"^3Match resuming in ^1%d^3 seconds!\n\"", cSeconds / 1000 ) );
 						think_next = level.time + 15000;
@@ -150,11 +150,11 @@ void G_delayPrint( gentity_t *dpent )
 
 		case DP_UNPAUSING:
 			{
-				if( level.match_pause == PAUSE_UNPAUSING )
+				if ( level.match_pause == PAUSE_UNPAUSING )
 				{
 					int cSeconds = 11 * 1000 - ( level.time - dpent->timestamp );
 
-					if( cSeconds > 1000 )
+					if ( cSeconds > 1000 )
 					{
 						AP( va( "cp \"^3Match resuming in ^1%d^3 seconds!\n\"", cSeconds / 1000 ) );
 						think_next = level.time + 1000;
@@ -179,16 +179,16 @@ void G_delayPrint( gentity_t *dpent )
 				int       i;
 				gentity_t *ent;
 
-				for( i = 0; i < level.numConnectedClients; i++ )
+				for ( i = 0; i < level.numConnectedClients; i++ )
 				{
 					ent = g_entities + level.sortedClients[ i ];
 
-					if( ent->client->pers.mvReferenceList == 0 )
+					if ( ent->client->pers.mvReferenceList == 0 )
 					{
 						continue;
 					}
 
-					if( ent->client->sess.sessionTeam != TEAM_SPECTATOR )
+					if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR )
 					{
 						continue;
 					}
@@ -205,7 +205,7 @@ void G_delayPrint( gentity_t *dpent )
 
 	dpent->nextthink = think_next;
 
-	if( fFree )
+	if ( fFree )
 	{
 		dpent->think = 0;
 		G_FreeEntity( dpent );
@@ -249,25 +249,25 @@ void G_addStats( gentity_t *targ, gentity_t *attacker, int dmg_ref, int mod )
 	int dmg, ref;
 
 	// Keep track of only active player-to-player interactions in a real game
-	if( !targ || !targ->client ||
+	if ( !targ || !targ->client ||
 #ifndef DEBUG_STATS
-	    g_gamestate.integer != GS_PLAYING ||
+	     g_gamestate.integer != GS_PLAYING ||
 #endif
-	    mod == MOD_SWITCHTEAM ||
-	    ( g_gametype.integer >= GT_WOLF && ( targ->client->ps.pm_flags & PMF_LIMBO ) ) ||
-	    ( g_gametype.integer < GT_WOLF && ( targ->s.eFlags == EF_DEAD || targ->client->ps.pm_type == PM_DEAD ) ) )
+	     mod == MOD_SWITCHTEAM ||
+	     ( g_gametype.integer >= GT_WOLF && ( targ->client->ps.pm_flags & PMF_LIMBO ) ) ||
+	     ( g_gametype.integer < GT_WOLF && ( targ->s.eFlags == EF_DEAD || targ->client->ps.pm_type == PM_DEAD ) ) )
 	{
 		return;
 	}
 
 	// Special hack for intentional gibbage
-	if( targ->health <= 0 && targ->client->ps.pm_type == PM_DEAD )
+	if ( targ->health <= 0 && targ->client->ps.pm_type == PM_DEAD )
 	{
-		if( mod < MOD_CROSS && attacker && attacker->client )
+		if ( mod < MOD_CROSS && attacker && attacker->client )
 		{
 			int x = attacker->client->sess.aWeaponStats[ G_weapStatIndex_MOD( mod ) ].atts--;
 
-			if( x < 1 )
+			if ( x < 1 )
 			{
 				attacker->client->sess.aWeaponStats[ G_weapStatIndex_MOD( mod ) ].atts = 1;
 			}
@@ -279,22 +279,22 @@ void G_addStats( gentity_t *targ, gentity_t *attacker, int dmg_ref, int mod )
 //  G_Printf("mod: %d, Index: %d, dmg: %d\n", mod, G_weapStatIndex_MOD(mod), dmg_ref);
 
 	// Suicides only affect the player specifically
-	if( targ == attacker || !attacker || !attacker->client || mod == MOD_SUICIDE )
+	if ( targ == attacker || !attacker || !attacker->client || mod == MOD_SUICIDE )
 	{
-		if( targ->health <= 0 )
+		if ( targ->health <= 0 )
 		{
 			targ->client->sess.suicides++;
 		}
 
 #ifdef DEBUG_STATS
 
-		if( !attacker || !attacker->client )
+		if ( !attacker || !attacker->client )
 #endif
 			return;
 	}
 
 	// Telefrags only add 100 points.. not 100k!!
-	if( mod == MOD_TELEFRAG )
+	if ( mod == MOD_TELEFRAG )
 	{
 		dmg = 100;
 	}
@@ -304,11 +304,11 @@ void G_addStats( gentity_t *targ, gentity_t *attacker, int dmg_ref, int mod )
 	}
 
 	// Player team stats
-	if( g_gametype.integer >= GT_WOLF && targ->client->sess.sessionTeam == attacker->client->sess.sessionTeam )
+	if ( g_gametype.integer >= GT_WOLF && targ->client->sess.sessionTeam == attacker->client->sess.sessionTeam )
 	{
 		attacker->client->sess.team_damage += dmg;
 
-		if( targ->health <= 0 )
+		if ( targ->health <= 0 )
 		{
 			attacker->client->sess.team_kills++;
 		}
@@ -319,12 +319,12 @@ void G_addStats( gentity_t *targ, gentity_t *attacker, int dmg_ref, int mod )
 	}
 
 	// General player stats
-	if( mod != MOD_SYRINGE )
+	if ( mod != MOD_SYRINGE )
 	{
 		attacker->client->sess.damage_given += dmg;
 		targ->client->sess.damage_received += dmg;
 
-		if( targ->health <= 0 )
+		if ( targ->health <= 0 )
 		{
 			attacker->client->sess.kills++;
 			targ->client->sess.deaths++;
@@ -334,12 +334,12 @@ void G_addStats( gentity_t *targ, gentity_t *attacker, int dmg_ref, int mod )
 	// Player weapon stats
 	ref = G_weapStatIndex_MOD( mod );
 
-	if( dmg > 0 )
+	if ( dmg > 0 )
 	{
 		attacker->client->sess.aWeaponStats[ ref ].hits++;
 	}
 
-	if( targ->health <= 0 )
+	if ( targ->health <= 0 )
 	{
 		attacker->client->sess.aWeaponStats[ ref ].kills++;
 		targ->client->sess.aWeaponStats[ ref ].deaths++;
@@ -351,14 +351,14 @@ void G_addStatsHeadShot( gentity_t *attacker, int mod )
 {
 #ifndef DEBUG_STATS
 
-	if( g_gamestate.integer != GS_PLAYING )
+	if ( g_gamestate.integer != GS_PLAYING )
 	{
 		return;
 	}
 
 #endif
 
-	if( !attacker || !attacker->client )
+	if ( !attacker || !attacker->client )
 	{
 		return;
 	}
@@ -455,9 +455,9 @@ unsigned int G_weapStatIndex_MOD( unsigned int iWeaponMOD )
 {
 	unsigned int i;
 
-	for( i = 0; i < MOD_NUM_MODS; i++ )
+	for ( i = 0; i < MOD_NUM_MODS; i++ )
 	{
-		if( iWeaponMOD == ( unsigned int ) aWeapMOD[ i ].iMOD )
+		if ( iWeaponMOD == ( unsigned int ) aWeapMOD[ i ].iMOD )
 		{
 			return ( aWeapMOD[ i ].iWS );
 		}
@@ -473,17 +473,17 @@ char           *G_createStats( gentity_t *refEnt )
 	char         strWeapInfo[ MAX_STRING_CHARS ] = { 0 };
 	char         strSkillInfo[ MAX_STRING_CHARS ] = { 0 };
 
-	if( !refEnt )
+	if ( !refEnt )
 	{
 		return ( NULL );
 	}
 
 	// Add weapon stats as necessary
 	// CHRUKER: b015 - The client also expects stats when kills are above 0
-	for( i = WS_KNIFE; i < WS_MAX; i++ )
+	for ( i = WS_KNIFE; i < WS_MAX; i++ )
 	{
-		if( refEnt->client->sess.aWeaponStats[ i ].atts || refEnt->client->sess.aWeaponStats[ i ].hits ||
-		    refEnt->client->sess.aWeaponStats[ i ].deaths  || refEnt->client->sess.aWeaponStats[ i ].kills )
+		if ( refEnt->client->sess.aWeaponStats[ i ].atts || refEnt->client->sess.aWeaponStats[ i ].hits ||
+		     refEnt->client->sess.aWeaponStats[ i ].deaths  || refEnt->client->sess.aWeaponStats[ i ].kills )
 		{
 			dwWeaponMask |= ( 1 << i );
 			Q_strcat( strWeapInfo, sizeof( strWeapInfo ), va( " %d %d %d %d %d",
@@ -497,7 +497,7 @@ char           *G_createStats( gentity_t *refEnt )
 
 	// Additional info
 	// CHRUKER: b015 - Only send these when there are some weaponstats. This is what the client expects.
-	if( dwWeaponMask != 0 )
+	if ( dwWeaponMask != 0 )
 	{
 		Q_strcat( strWeapInfo, sizeof( strWeapInfo ), va( " %d %d %d",
 		          refEnt->client->sess.damage_given,
@@ -505,9 +505,9 @@ char           *G_createStats( gentity_t *refEnt )
 	} // b015
 
 	// Add skillpoints as necessary
-	for( i = SK_BATTLE_SENSE; i < SK_NUM_SKILLS; i++ )
+	for ( i = SK_BATTLE_SENSE; i < SK_NUM_SKILLS; i++ )
 	{
-		if( refEnt->client->sess.skillpoints[ i ] != 0 )  // CHRUKER: b037 - Need to add negative skillpoints too
+		if ( refEnt->client->sess.skillpoints[ i ] != 0 ) // CHRUKER: b037 - Need to add negative skillpoints too
 		{
 			dwSkillPointMask |= ( 1 << i );
 			Q_strcat( strSkillInfo, sizeof( strSkillInfo ), va( " %d", ( int ) refEnt->client->sess.skillpoints[ i ] ) );
@@ -545,7 +545,7 @@ void G_parseStats( char *pszStatsInfo )
 	const char   *tmp = pszStatsInfo;
 	unsigned int i, dwWeaponMask, dwClientID = atoi( pszStatsInfo );
 
-	if( dwClientID >= MAX_CLIENTS )
+	if ( dwClientID >= MAX_CLIENTS )
 	{
 		return;
 	}
@@ -557,9 +557,9 @@ void G_parseStats( char *pszStatsInfo )
 	GETVAL( cl->sess.rounds );
 	GETVAL( dwWeaponMask );
 
-	for( i = WS_KNIFE; i < WS_MAX; i++ )
+	for ( i = WS_KNIFE; i < WS_MAX; i++ )
 	{
-		if( dwWeaponMask & ( 1 << i ) )
+		if ( dwWeaponMask & ( 1 << i ) )
 		{
 			GETVAL( cl->sess.aWeaponStats[ i ].hits );
 			GETVAL( cl->sess.aWeaponStats[ i ].atts );
@@ -570,7 +570,7 @@ void G_parseStats( char *pszStatsInfo )
 	}
 
 	// CHRUKER: b015 - These only get generated when there are some weaponstats. This is what the client expects.
-	if( dwWeaponMask != 0 )
+	if ( dwWeaponMask != 0 )
 	{
 		GETVAL( cl->sess.damage_given );
 		GETVAL( cl->sess.damage_received );
@@ -590,9 +590,9 @@ void G_printMatchInfo( gentity_t *ent )
 
 	cnt = 0;
 
-	for( i = TEAM_AXIS; i <= TEAM_ALLIES; i++ )
+	for ( i = TEAM_AXIS; i <= TEAM_ALLIES; i++ )
 	{
-		if( !TeamCount( -1, i ) )
+		if ( !TeamCount( -1, i ) )
 		{
 			continue;
 		}
@@ -609,11 +609,11 @@ void G_printMatchInfo( gentity_t *ent )
 		CP( "sc \"\n^7TEAM   Player          Kll Dth Sui TK Eff  ^3GP^7    ^2DG    ^1DR   ^6TD  ^3Score\n"
 		    "^7---------------------------------------------------------------------\n\"" );
 
-		for( j = 0; j < level.numPlayingClients; j++ )
+		for ( j = 0; j < level.numPlayingClients; j++ )
 		{
 			cl = level.clients + level.sortedClients[ j ];
 
-			if( cl->pers.connected != CON_CONNECTED || cl->sess.sessionTeam != i )
+			if ( cl->pers.connected != CON_CONNECTED || cl->sess.sessionTeam != i )
 			{
 				continue;
 			}
@@ -633,15 +633,15 @@ void G_printMatchInfo( gentity_t *ent )
 
 			eff = ( cl->sess.deaths + cl->sess.kills == 0 ) ? 0 : 100 * cl->sess.kills / ( cl->sess.deaths + cl->sess.kills );
 
-			if( eff < 0 )
+			if ( eff < 0 )
 			{
 				eff = 0;
 			}
 
-			if( ent->client == cl ||
-			    ( ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
-			      ent->client->sess.spectatorState == SPECTATOR_FOLLOW &&
-			      ent->client->sess.spectatorClient == level.sortedClients[ j ] ) )
+			if ( ent->client == cl ||
+			     ( ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
+			       ent->client->sess.spectatorState == SPECTATOR_FOLLOW &&
+			       ent->client->sess.spectatorClient == level.sortedClients[ j ] ) )
 			{
 				ref = "^3";
 			}
@@ -663,7 +663,7 @@ void G_printMatchInfo( gentity_t *ent )
 
 		eff = ( tot_kills + tot_deaths == 0 ) ? 0 : 100 * tot_kills / ( tot_kills + tot_deaths );
 
-		if( eff < 0 )
+		if ( eff < 0 )
 		{
 			eff = 0;
 		}
@@ -686,29 +686,29 @@ void G_matchInfoDump( unsigned int dwDumpType )
 	gentity_t *ent;
 	gclient_t *cl;
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		ref = level.sortedClients[ i ];
 		ent = &g_entities[ ref ];
 		cl = ent->client;
 
-		if( cl->pers.connected != CON_CONNECTED )
+		if ( cl->pers.connected != CON_CONNECTED )
 		{
 			continue;
 		}
 
-		if( dwDumpType == EOM_WEAPONSTATS )
+		if ( dwDumpType == EOM_WEAPONSTATS )
 		{
 			// If client wants to write stats to a file, don't auto send this stuff
-			if( !( cl->pers.clientFlags & CGF_STATSDUMP ) )
+			if ( !( cl->pers.clientFlags & CGF_STATSDUMP ) )
 			{
-				if( ( cl->pers.autoaction & AA_STATSALL ) || cl->pers.mvCount > 0 )
+				if ( ( cl->pers.autoaction & AA_STATSALL ) || cl->pers.mvCount > 0 )
 				{
 					G_statsall_cmd( ent, 0, qfalse );
 				}
-				else if( cl->sess.sessionTeam != TEAM_SPECTATOR )
+				else if ( cl->sess.sessionTeam != TEAM_SPECTATOR )
 				{
-					if( cl->pers.autoaction & AA_STATSTEAM )
+					if ( cl->pers.autoaction & AA_STATSTEAM )
 					{
 						G_statsall_cmd( ent, cl->sess.sessionTeam, qfalse );  // Currently broken.. need to support the overloading of dwCommandID
 					}
@@ -717,11 +717,11 @@ void G_matchInfoDump( unsigned int dwDumpType )
 						CP( va( "ws %s\n", G_createStats( ent ) ) );
 					}
 				}
-				else if( cl->sess.spectatorState != SPECTATOR_FREE )
+				else if ( cl->sess.spectatorState != SPECTATOR_FREE )
 				{
 					int pid = cl->sess.spectatorClient;
 
-					if( ( cl->pers.autoaction & AA_STATSTEAM ) )
+					if ( ( cl->pers.autoaction & AA_STATSTEAM ) )
 					{
 						G_statsall_cmd( ent, level.clients[ pid ].sess.sessionTeam, qfalse );  // Currently broken.. need to support the overloading of dwCommandID
 					}
@@ -733,21 +733,21 @@ void G_matchInfoDump( unsigned int dwDumpType )
 			}
 
 			// Log it
-			if( cl->sess.sessionTeam != TEAM_SPECTATOR )
+			if ( cl->sess.sessionTeam != TEAM_SPECTATOR )
 			{
 				G_LogPrintf( "WeaponStats: %s\n", G_createStats( ent ) );
 			}
 		}
-		else if( dwDumpType == EOM_MATCHINFO )
+		else if ( dwDumpType == EOM_MATCHINFO )
 		{
-			if( !( cl->pers.clientFlags & CGF_STATSDUMP ) )
+			if ( !( cl->pers.clientFlags & CGF_STATSDUMP ) )
 			{
 				G_printMatchInfo( ent );
 			}
 
-			if( g_gametype.integer == GT_WOLF_STOPWATCH )
+			if ( g_gametype.integer == GT_WOLF_STOPWATCH )
 			{
-				if( g_currentRound.integer == 1 )
+				if ( g_currentRound.integer == 1 )
 				{
 					// We've already missed the switch
 					CP( va( "print \">>> ^3Clock set to: %d:%02d\n\n\n\"",
@@ -758,7 +758,7 @@ void G_matchInfoDump( unsigned int dwDumpType )
 					float val =
 					  ( float )( ( level.timeCurrent - ( level.startTime + level.time - level.intermissiontime ) ) / 60000.0 );
 
-					if( val < g_timelimit.value )
+					if ( val < g_timelimit.value )
 					{
 						CP( va( "print \">>> ^3Objective reached at %d:%02d (original: %d:%02d)\n\n\n\"",
 						        ( int ) val,
@@ -781,26 +781,26 @@ int G_checkServerToggle( vmCvar_t *cv )
 {
 	int nFlag;
 
-	if( cv == &match_mutespecs )
+	if ( cv == &match_mutespecs )
 	{
 		nFlag = CV_SVS_MUTESPECS;
 	}
-	else if( cv == &g_friendlyFire )
+	else if ( cv == &g_friendlyFire )
 	{
 		nFlag = CV_SVS_FRIENDLYFIRE;
 	}
-	else if( cv == &g_antilag )
+	else if ( cv == &g_antilag )
 	{
 		nFlag = CV_SVS_ANTILAG;
 	}
-	else if( cv == &g_balancedteams )
+	else if ( cv == &g_balancedteams )
 	{
 		nFlag = CV_SVS_BALANCEDTEAMS;
 	}
 	// special case for 2 bits
-	else if( cv == &match_warmupDamage )
+	else if ( cv == &match_warmupDamage )
 	{
-		if( cv->integer > 0 )
+		if ( cv->integer > 0 )
 		{
 			level.server_settings &= ~CV_SVS_WARMUPDMG;
 			nFlag = ( cv->integer > 2 ) ? 2 : cv->integer;
@@ -811,9 +811,9 @@ int G_checkServerToggle( vmCvar_t *cv )
 			nFlag = CV_SVS_WARMUPDMG;
 		}
 	}
-	else if( cv == &g_nextmap && g_gametype.integer != GT_WOLF_CAMPAIGN )
+	else if ( cv == &g_nextmap && g_gametype.integer != GT_WOLF_CAMPAIGN )
 	{
-		if( *cv->string )
+		if ( *cv->string )
 		{
 			level.server_settings |= CV_SVS_NEXTMAP;
 		}
@@ -824,9 +824,9 @@ int G_checkServerToggle( vmCvar_t *cv )
 
 		return ( qtrue );
 	}
-	else if( cv == &g_nextcampaign && g_gametype.integer == GT_WOLF_CAMPAIGN )
+	else if ( cv == &g_nextcampaign && g_gametype.integer == GT_WOLF_CAMPAIGN )
 	{
-		if( *cv->string )
+		if ( *cv->string )
 		{
 			level.server_settings |= CV_SVS_NEXTMAP;
 		}
@@ -842,7 +842,7 @@ int G_checkServerToggle( vmCvar_t *cv )
 		return ( qfalse );
 	}
 
-	if( cv->integer > 0 )
+	if ( cv->integer > 0 )
 	{
 		level.server_settings |= nFlag;
 	}
@@ -861,20 +861,20 @@ void G_statsPrint( gentity_t *ent, int nType )
 	char *cmd = ( nType == 0 ) ? "ws" : ( ( nType == 1 ) ? "wws" : "gstats" ); // Yes, not the cleanest
 	char arg[ MAX_TOKEN_CHARS ];
 
-	if( !ent || ( ent->r.svFlags & SVF_BOT ) )
+	if ( !ent || ( ent->r.svFlags & SVF_BOT ) )
 	{
 		return;
 	}
 
 	// If requesting stats for self, its easy.
-	if( trap_Argc() < 2 )
+	if ( trap_Argc() < 2 )
 	{
-		if( ent->client->sess.sessionTeam != TEAM_SPECTATOR )
+		if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR )
 		{
 			CP( va( "%s %s\n", cmd, G_createStats( ent ) ) );
 			// Specs default to players they are chasing
 		}
-		else if( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
+		else if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
 		{
 			CP( va( "%s %s\n", cmd, G_createStats( g_entities + ent->client->sess.spectatorClient ) ) );
 		}
@@ -889,7 +889,7 @@ void G_statsPrint( gentity_t *ent, int nType )
 		// Find the player to poll stats.
 		trap_Argv( 1, arg, sizeof( arg ) );
 
-		if( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
+		if ( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
 		{
 			return;
 		}
@@ -955,11 +955,11 @@ qboolean G_allowPanzer(gentity_t *ent)
 
 void G_resetRoundState( void )
 {
-	if( g_gametype.integer == GT_WOLF_STOPWATCH )
+	if ( g_gametype.integer == GT_WOLF_STOPWATCH )
 	{
 		trap_Cvar_Set( "g_currentRound", "0" );
 	}
-	else if( g_gametype.integer == GT_WOLF_LMS )
+	else if ( g_gametype.integer == GT_WOLF_LMS )
 	{
 		trap_Cvar_Set( "g_currentRound", "0" );
 		trap_Cvar_Set( "g_lms_currentMatch", "0" );
@@ -968,11 +968,11 @@ void G_resetRoundState( void )
 
 void G_resetModeState( void )
 {
-	if( g_gametype.integer == GT_WOLF_STOPWATCH )
+	if ( g_gametype.integer == GT_WOLF_STOPWATCH )
 	{
 		trap_Cvar_Set( "g_nextTimeLimit", "0" );
 	}
-	else if( g_gametype.integer == GT_WOLF_LMS )
+	else if ( g_gametype.integer == GT_WOLF_LMS )
 	{
 		trap_Cvar_Set( "g_axiswins", "0" );
 		trap_Cvar_Set( "g_alliedwins", "0" );

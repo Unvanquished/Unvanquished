@@ -134,9 +134,9 @@ static qboolean G_RotationExists( char *name )
 {
 	int i;
 
-	for( i = 0; i < mapRotations.numRotations; i++ )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
-		if( Q_strncmp( mapRotations.rotations[ i ].name, name, MAX_QPATH ) == 0 )
+		if ( Q_strncmp( mapRotations.rotations[ i ].name, name, MAX_QPATH ) == 0 )
 		{
 			return qtrue;
 		}
@@ -157,18 +157,18 @@ static qboolean G_LabelExists( int rotation, char *name )
 	mapRotation_t *mr = &mapRotations.rotations[ rotation ];
 	int           i;
 
-	for( i = 0; i < mr->numNodes; i++ )
+	for ( i = 0; i < mr->numNodes; i++ )
 	{
 		node_t *node = mr->nodes[ i ];
 
-		if( node->type == NT_LABEL &&
-		    !Q_stricmp( name, node->u.label.name ) )
+		if ( node->type == NT_LABEL &&
+		     !Q_stricmp( name, node->u.label.name ) )
 		{
 			return qtrue;
 		}
 
-		if( node->type == NT_MAP &&
-		    !Q_stricmp( name, node->u.map.name ) )
+		if ( node->type == NT_MAP &&
+		     !Q_stricmp( name, node->u.map.name ) )
 		{
 			return qtrue;
 		}
@@ -205,23 +205,23 @@ static qboolean G_ParseMapCommandSection( node_t *node, char **text_p )
 	int   commandLength = 0;
 
 	// read optional parameters
-	while( 1 )
+	while ( 1 )
 	{
 		token = COM_Parse( text_p );
 
-		if( !*token )
+		if ( !*token )
 		{
 			break;
 		}
 
-		if( !Q_stricmp( token, "" ) )
+		if ( !Q_stricmp( token, "" ) )
 		{
 			return qfalse;
 		}
 
-		if( !Q_stricmp( token, "}" ) )
+		if ( !Q_stricmp( token, "}" ) )
 		{
-			if( commandLength > 0 )
+			if ( commandLength > 0 )
 			{
 				// Replace last ; with \n
 				map->postCommand[ commandLength - 1 ] = '\n';
@@ -230,12 +230,12 @@ static qboolean G_ParseMapCommandSection( node_t *node, char **text_p )
 			return qtrue; //reached the end of this command section
 		}
 
-		if( !Q_stricmp( token, "layouts" ) )
+		if ( !Q_stricmp( token, "layouts" ) )
 		{
 			token = COM_ParseExt( text_p, qfalse );
 			map->layouts[ 0 ] = '\0';
 
-			while( token[ 0 ] != 0 )
+			while ( token[ 0 ] != 0 )
 			{
 				Q_strcat( map->layouts, sizeof( map->layouts ), token );
 				Q_strcat( map->layouts, sizeof( map->layouts ), " " );
@@ -251,7 +251,7 @@ static qboolean G_ParseMapCommandSection( node_t *node, char **text_p )
 
 		token = COM_ParseExt( text_p, qfalse );
 
-		while( token[ 0 ] != 0 )
+		while ( token[ 0 ] != 0 )
 		{
 			Q_strcat( map->postCommand, sizeof( map->postCommand ), token );
 			Q_strcat( map->postCommand, sizeof( map->postCommand ), " " );
@@ -274,7 +274,7 @@ Parse a node
 */
 static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean conditional )
 {
-	if( !Q_stricmp( token, "if" ) )
+	if ( !Q_stricmp( token, "if" ) )
 	{
 		condition_t *condition;
 
@@ -283,31 +283,31 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 
 		token = COM_Parse( text_p );
 
-		if( !*token )
+		if ( !*token )
 		{
 			return qfalse;
 		}
 
-		if( !Q_stricmp( token, "numClients" ) )
+		if ( !Q_stricmp( token, "numClients" ) )
 		{
 			condition->lhs = CV_NUMCLIENTS;
 
 			token = COM_Parse( text_p );
 
-			if( !*token )
+			if ( !*token )
 			{
 				return qfalse;
 			}
 
-			if( !Q_stricmp( token, "<" ) )
+			if ( !Q_stricmp( token, "<" ) )
 			{
 				condition->op = CO_LT;
 			}
-			else if( !Q_stricmp( token, ">" ) )
+			else if ( !Q_stricmp( token, ">" ) )
 			{
 				condition->op = CO_GT;
 			}
-			else if( !Q_stricmp( token, "=" ) )
+			else if ( !Q_stricmp( token, "=" ) )
 			{
 				condition->op = CO_EQ;
 			}
@@ -319,29 +319,29 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 
 			token = COM_Parse( text_p );
 
-			if( !*token )
+			if ( !*token )
 			{
 				return qfalse;
 			}
 
 			condition->numClients = atoi( token );
 		}
-		else if( !Q_stricmp( token, "lastWin" ) )
+		else if ( !Q_stricmp( token, "lastWin" ) )
 		{
 			condition->lhs = CV_LASTWIN;
 
 			token = COM_Parse( text_p );
 
-			if( !*token )
+			if ( !*token )
 			{
 				return qfalse;
 			}
 
-			if( !Q_stricmp( token, "aliens" ) )
+			if ( !Q_stricmp( token, "aliens" ) )
 			{
 				condition->lastWin = TEAM_ALIENS;
 			}
-			else if( !Q_stricmp( token, "humans" ) )
+			else if ( !Q_stricmp( token, "humans" ) )
 			{
 				condition->lastWin = TEAM_HUMANS;
 			}
@@ -351,7 +351,7 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 				return qfalse;
 			}
 		}
-		else if( !Q_stricmp( token, "random" ) )
+		else if ( !Q_stricmp( token, "random" ) )
 		{
 			condition->lhs = CV_RANDOM;
 		}
@@ -363,7 +363,7 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 
 		token = COM_Parse( text_p );
 
-		if( !*token )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -373,16 +373,16 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 
 		return G_ParseNode( node, token, text_p, qtrue );
 	}
-	else if( !Q_stricmp( token, "return" ) )
+	else if ( !Q_stricmp( token, "return" ) )
 	{
 		( *node )->type = NT_RETURN;
 	}
-	else if( !Q_stricmp( token, "goto" ) ||
-	         !Q_stricmp( token, "resume" ) )
+	else if ( !Q_stricmp( token, "goto" ) ||
+	          !Q_stricmp( token, "resume" ) )
 	{
 		label_t *label;
 
-		if( !Q_stricmp( token, "goto" ) )
+		if ( !Q_stricmp( token, "goto" ) )
 		{
 			( *node )->type = NT_GOTO;
 		}
@@ -395,7 +395,7 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 
 		token = COM_Parse( text_p );
 
-		if( !*token )
+		if ( !*token )
 		{
 			G_Printf( S_COLOR_RED "ERROR: goto or resume without label\n" );
 			return qfalse;
@@ -403,7 +403,7 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 
 		Q_strncpyz( label->name, token, sizeof( label->name ) );
 	}
-	else if( *token == '#' || conditional )
+	else if ( *token == '#' || conditional )
 	{
 		label_t *label;
 
@@ -439,29 +439,29 @@ static qboolean G_ParseMapRotation( mapRotation_t *mr, char **text_p )
 	node_t *node = NULL;
 
 	// read optional parameters
-	while( 1 )
+	while ( 1 )
 	{
 		token = COM_Parse( text_p );
 
-		if( !*token )
+		if ( !*token )
 		{
 			break;
 		}
 
-		if( !Q_stricmp( token, "" ) )
+		if ( !Q_stricmp( token, "" ) )
 		{
 			return qfalse;
 		}
 
-		if( !Q_stricmp( token, "{" ) )
+		if ( !Q_stricmp( token, "{" ) )
 		{
-			if( node == NULL )
+			if ( node == NULL )
 			{
 				G_Printf( S_COLOR_RED "ERROR: map command section with no associated map\n" );
 				return qfalse;
 			}
 
-			if( !G_ParseMapCommandSection( node, text_p ) )
+			if ( !G_ParseMapCommandSection( node, text_p ) )
 			{
 				G_Printf( S_COLOR_RED "ERROR: failed to parse map command section\n" );
 				return qfalse;
@@ -469,13 +469,13 @@ static qboolean G_ParseMapRotation( mapRotation_t *mr, char **text_p )
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "}" ) )
+		else if ( !Q_stricmp( token, "}" ) )
 		{
 			// Reached the end of this map rotation
 			return qtrue;
 		}
 
-		if( mr->numNodes == MAX_MAP_ROTATION_MAPS )
+		if ( mr->numNodes == MAX_MAP_ROTATION_MAPS )
 		{
 			G_Printf( S_COLOR_RED "ERROR: maximum number of maps in one rotation (%d) reached\n",
 			          MAX_MAP_ROTATION_MAPS );
@@ -485,7 +485,7 @@ static qboolean G_ParseMapRotation( mapRotation_t *mr, char **text_p )
 		node = G_AllocateNode();
 		mr->nodes[ mr->numNodes++ ] = node;
 
-		if( !G_ParseNode( &node, token, text_p, qfalse ) )
+		if ( !G_ParseNode( &node, token, text_p, qfalse ) )
 		{
 			return qfalse;
 		}
@@ -515,12 +515,12 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 	// load the file
 	len = trap_FS_FOpenFile( fileName, &f, FS_READ );
 
-	if( len < 0 )
+	if ( len < 0 )
 	{
 		return qfalse;
 	}
 
-	if( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
 		G_Printf( S_COLOR_RED "ERROR: map rotation file %s is %s\n", fileName,
@@ -536,32 +536,32 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 	text_p = text;
 
 	// read optional parameters
-	while( 1 )
+	while ( 1 )
 	{
 		token = COM_Parse( &text_p );
 
-		if( !*token )
+		if ( !*token )
 		{
 			break;
 		}
 
-		if( !Q_stricmp( token, "" ) )
+		if ( !Q_stricmp( token, "" ) )
 		{
 			break;
 		}
 
-		if( !Q_stricmp( token, "{" ) )
+		if ( !Q_stricmp( token, "{" ) )
 		{
-			if( mrNameSet )
+			if ( mrNameSet )
 			{
 				//check for name space clashes
-				if( G_RotationExists( mrName ) )
+				if ( G_RotationExists( mrName ) )
 				{
 					G_Printf( S_COLOR_RED "ERROR: a map rotation is already named %s\n", mrName );
 					return qfalse;
 				}
 
-				if( mapRotations.numRotations == MAX_MAP_ROTATIONS )
+				if ( mapRotations.numRotations == MAX_MAP_ROTATIONS )
 				{
 					G_Printf( S_COLOR_RED "ERROR: maximum number of map rotations (%d) reached\n",
 					          MAX_MAP_ROTATIONS );
@@ -570,7 +570,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 
 				Q_strncpyz( mapRotations.rotations[ mapRotations.numRotations ].name, mrName, MAX_QPATH );
 
-				if( !G_ParseMapRotation( &mapRotations.rotations[ mapRotations.numRotations ], &text_p ) )
+				if ( !G_ParseMapRotation( &mapRotations.rotations[ mapRotations.numRotations ], &text_p ) )
 				{
 					G_Printf( S_COLOR_RED "ERROR: %s: failed to parse map rotation %s\n", fileName, mrName );
 					return qfalse;
@@ -590,7 +590,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 			}
 		}
 
-		if( !mrNameSet )
+		if ( !mrNameSet )
 		{
 			Q_strncpyz( mrName, token, sizeof( mrName ) );
 			mrNameSet = qtrue;
@@ -602,20 +602,20 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 		}
 	}
 
-	for( i = 0; i < mapRotations.numRotations; i++ )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
 		mapRotation_t *mr = &mapRotations.rotations[ i ];
 		int           mapCount = 0;
 
-		for( j = 0; j < mr->numNodes; j++ )
+		for ( j = 0; j < mr->numNodes; j++ )
 		{
 			node_t *node = mr->nodes[ j ];
 
-			if( node->type == NT_MAP )
+			if ( node->type == NT_MAP )
 			{
 				mapCount++;
 
-				if( !G_MapExists( node->u.map.name ) )
+				if ( !G_MapExists( node->u.map.name ) )
 				{
 					G_Printf( S_COLOR_RED "ERROR: rotation map \"%s\" doesn't exist\n",
 					          node->u.map.name );
@@ -624,25 +624,25 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 
 				continue;
 			}
-			else if( node->type == NT_RETURN )
+			else if ( node->type == NT_RETURN )
 			{
 				continue;
 			}
-			else if( node->type == NT_LABEL )
+			else if ( node->type == NT_LABEL )
 			{
 				continue;
 			}
 			else
 			{
-				while( node->type == NT_CONDITION )
+				while ( node->type == NT_CONDITION )
 				{
 					node = node->u.condition.target;
 				}
 			}
 
-			if( ( node->type == NT_GOTO || node->type == NT_RESUME ) &&
-			    !G_LabelExists( i, node->u.label.name ) &&
-			    !G_RotationExists( node->u.label.name ) )
+			if ( ( node->type == NT_GOTO || node->type == NT_RESUME ) &&
+			     !G_LabelExists( i, node->u.label.name ) &&
+			     !G_RotationExists( node->u.label.name ) )
 			{
 				G_Printf( S_COLOR_RED "ERROR: goto destination named \"%s\" doesn't exist\n",
 				          node->u.label.name );
@@ -650,7 +650,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 			}
 		}
 
-		if( mapCount == 0 )
+		if ( mapCount == 0 )
 		{
 			G_Printf( S_COLOR_RED "ERROR: rotation \"%s\" needs at least one map entry\n",
 			          mr->name );
@@ -670,7 +670,7 @@ static void G_PrintSpaces( int spaces )
 {
 	int i;
 
-	for( i = 0; i < spaces; i++ )
+	for ( i = 0; i < spaces; i++ )
 	{
 		G_Printf( " " );
 	}
@@ -690,7 +690,7 @@ void G_PrintRotations( void )
 
 	G_Printf( "Map rotations as parsed:\n\n" );
 
-	for( i = 0; i < mapRotations.numRotations; i++ )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
 		mapRotation_t *mr = &mapRotations.rotations[ i ];
 
@@ -698,12 +698,12 @@ void G_PrintRotations( void )
 
 		size += mr->numNodes * sizeof( node_t );
 
-		for( j = 0; j < mr->numNodes; j++ )
+		for ( j = 0; j < mr->numNodes; j++ )
 		{
 			node_t *node = mr->nodes[ j ];
 			int    indentation = 0;
 
-			while( node->type == NT_CONDITION )
+			while ( node->type == NT_CONDITION )
 			{
 				G_PrintSpaces( indentation );
 				G_Printf( "  condition\n" );
@@ -716,12 +716,12 @@ void G_PrintRotations( void )
 
 			G_PrintSpaces( indentation );
 
-			switch( node->type )
+			switch ( node->type )
 			{
 				case NT_MAP:
 					G_Printf( "  %s\n", node->u.map.name );
 
-					if( strlen( node->u.map.postCommand ) > 0 )
+					if ( strlen( node->u.map.postCommand ) > 0 )
 					{
 						G_Printf( "    command: %s", node->u.map.postCommand );
 					}
@@ -770,13 +770,13 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	char          currentMapName[ MAX_QPATH ];
 	node_t        *node;
 
-	if( mapRotation == NULL )
+	if ( mapRotation == NULL )
 	{
 		trap_SendServerCommand( ent - g_entities, "print \"^3listrotation^3: ^7there is no active map rotation on this server\n\"" );
 		return;
 	}
 
-	if( mapRotation->numNodes == 0 )
+	if ( mapRotation->numNodes == 0 )
 	{
 		trap_SendServerCommand( ent - g_entities, "print \"^3listrotation^3: ^7there are no maps in the active map rotation\n\"" );
 		return;
@@ -787,13 +787,13 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	ADMBP_begin();
 	ADMBP( va( "%s:\n", mapRotation->name ) );
 
-	while( node = mapRotation->nodes[ i++ ] )
+	while ( node = mapRotation->nodes[ i++ ] )
 	{
 		int  colour = 7;
 		char *prefix = "";
 		char *suffix = "";
 
-		switch( node->type )
+		switch ( node->type )
 		{
 			case NT_RETURN:
 				prefix = "return";
@@ -812,15 +812,15 @@ void G_PrintCurrentRotation( gentity_t *ent )
 				break;
 		}
 
-		if( node->type == NT_MAP && !G_MapExists( node->u.map.name ) )
+		if ( node->type == NT_MAP && !G_MapExists( node->u.map.name ) )
 		{
 			colour = 1;
 		}
-		else if( G_NodeIndexAfter( i - 1, mapRotationIndex ) == G_CurrentNodeIndex( mapRotationIndex ) )
+		else if ( G_NodeIndexAfter( i - 1, mapRotationIndex ) == G_CurrentNodeIndex( mapRotationIndex ) )
 		{
 			colour = 3;
 
-			if( node->type == NT_MAP && Q_stricmp( node->u.map.name, currentMapName ) )
+			if ( node->type == NT_MAP && Q_stricmp( node->u.map.name, currentMapName ) )
 			{
 				suffix = va( " (%s)", currentMapName );
 			}
@@ -835,7 +835,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 		      suffix ) );
 	}
 
-	if( G_MapExists( g_nextMap.string ) )
+	if ( G_MapExists( g_nextMap.string ) )
 	{
 		ADMBP( va( "^7The next map has been set to %s\n", g_nextMap.string ) );
 	}
@@ -891,14 +891,14 @@ static int G_PopRotationStack( void )
 	text_p = text;
 	token = COM_Parse( &text_p );
 
-	if( *token )
+	if ( *token )
 	{
 		value = atoi( token );
 	}
 
-	if( text_p )
+	if ( text_p )
 	{
-		while( *text_p == ' ' )
+		while ( *text_p == ' ' )
 		{
 			text_p++;
 		}
@@ -923,7 +923,7 @@ Returns the name of a rotation by its index
 */
 static char *G_RotationNameByIndex( int index )
 {
-	if( index >= 0 && index < mapRotations.numRotations )
+	if ( index >= 0 && index < mapRotations.numRotations )
 	{
 		return mapRotations.rotations[ index ].name;
 	}
@@ -949,11 +949,11 @@ static int *G_CurrentNodeIndexArray( void )
 
 	text_p = text;
 
-	while( 1 )
+	while ( 1 )
 	{
 		token = COM_Parse( &text_p );
 
-		if( !*token )
+		if ( !*token )
 		{
 			break;
 		}
@@ -979,7 +979,7 @@ static void G_SetCurrentNodeByIndex( int currentNode, int rotation )
 
 	p[ rotation ] = currentNode;
 
-	for( i = 0; i < mapRotations.numRotations; i++ )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
 		Q_strcat( text, sizeof( text ), va( "%d ", p[ i ] ) );
 	}
@@ -1011,8 +1011,8 @@ Return a node in a rotation by its index
 */
 static node_t *G_NodeByIndex( int index, int rotation )
 {
-	if( rotation >= 0 && rotation < mapRotations.numRotations &&
-	    index >= 0 && index < mapRotations.rotations[ rotation ].numNodes )
+	if ( rotation >= 0 && rotation < mapRotations.numRotations &&
+	     index >= 0 && index < mapRotations.rotations[ rotation ].numNodes )
 	{
 		return mapRotations.rotations[ rotation ].nodes[ index ];
 	}
@@ -1033,7 +1033,7 @@ static void G_IssueMapChange( int index, int rotation )
 	map_t  *map = &node->u.map;
 
 	// allow a manually defined g_layouts setting to override the maprotation
-	if( !g_layouts.string[ 0 ] && map->layouts[ 0 ] )
+	if ( !g_layouts.string[ 0 ] && map->layouts[ 0 ] )
 	{
 		trap_Cvar_Set( "g_layouts", map->layouts );
 	}
@@ -1043,7 +1043,7 @@ static void G_IssueMapChange( int index, int rotation )
 	// Load up map defaults if g_mapConfigs is set
 	G_MapConfigs( map->name );
 
-	if( strlen( map->postCommand ) > 0 )
+	if ( strlen( map->postCommand ) > 0 )
 	{
 		trap_SendConsoleCommand( EXEC_APPEND, map->postCommand );
 	}
@@ -1063,17 +1063,17 @@ static qboolean G_GotoLabel( int rotation, int nodeIndex, char *name,
 	int    i;
 
 	// Search the rotation names...
-	if( G_StartMapRotation( name, qtrue, qtrue, reset_index, depth ) )
+	if ( G_StartMapRotation( name, qtrue, qtrue, reset_index, depth ) )
 	{
 		return qtrue;
 	}
 
 	// ...then try labels in the rotation
-	for( i = 0; i < mapRotations.rotations[ rotation ].numNodes; i++ )
+	for ( i = 0; i < mapRotations.rotations[ rotation ].numNodes; i++ )
 	{
 		node = mapRotations.rotations[ rotation ].nodes[ i ];
 
-		if( node->type == NT_LABEL && !Q_stricmp( node->u.label.name, name ) )
+		if ( node->type == NT_LABEL && !Q_stricmp( node->u.label.name, name ) )
 		{
 			G_SetCurrentNodeByIndex( G_NodeIndexAfter( i, rotation ), rotation );
 			G_AdvanceMapRotation( depth );
@@ -1082,12 +1082,12 @@ static qboolean G_GotoLabel( int rotation, int nodeIndex, char *name,
 	}
 
 	// finally check for a map by name
-	for( i = 0; i < mapRotations.rotations[ rotation ].numNodes; i++ )
+	for ( i = 0; i < mapRotations.rotations[ rotation ].numNodes; i++ )
 	{
 		nodeIndex = G_NodeIndexAfter( nodeIndex, rotation );
 		node = mapRotations.rotations[ rotation ].nodes[ nodeIndex ];
 
-		if( node->type == NT_MAP && !Q_stricmp( node->u.map.name, name ) )
+		if ( node->type == NT_MAP && !Q_stricmp( node->u.map.name, name ) )
 		{
 			G_SetCurrentNodeByIndex( nodeIndex, rotation );
 			G_AdvanceMapRotation( depth );
@@ -1110,14 +1110,14 @@ static qboolean G_EvaluateMapCondition( condition_t **condition )
 	qboolean    result = qfalse;
 	condition_t *localCondition = *condition;
 
-	switch( localCondition->lhs )
+	switch ( localCondition->lhs )
 	{
 		case CV_RANDOM:
 			result = rand() / ( RAND_MAX / 2 + 1 );
 			break;
 
 		case CV_NUMCLIENTS:
-			switch( localCondition->op )
+			switch ( localCondition->op )
 			{
 				case CO_LT:
 					result = level.numConnectedClients < localCondition->numClients;
@@ -1144,7 +1144,7 @@ static qboolean G_EvaluateMapCondition( condition_t **condition )
 			break;
 	}
 
-	if( localCondition->target->type == NT_CONDITION )
+	if ( localCondition->target->type == NT_CONDITION )
 	{
 		*condition = &localCondition->target->u.condition;
 
@@ -1184,9 +1184,9 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 	depth++;
 
 	// guard against inifinite loop in conditional code
-	if( depth > 32 && node->type != NT_MAP )
+	if ( depth > 32 && node->type != NT_MAP )
 	{
-		if( depth > 64 )
+		if ( depth > 64 )
 		{
 			G_Printf( S_COLOR_RED "ERROR: infinite loop protection stopped at map rotation %s\n",
 			          G_RotationNameByIndex( rotation ) );
@@ -1198,16 +1198,16 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 		return qtrue;
 	}
 
-	while( step )
+	while ( step )
 	{
 		step = qfalse;
 
-		switch( node->type )
+		switch ( node->type )
 		{
 			case NT_CONDITION:
 				condition = &node->u.condition;
 
-				if( G_EvaluateMapCondition( &condition ) )
+				if ( G_EvaluateMapCondition( &condition ) )
 				{
 					node = condition->target;
 					step = qtrue;
@@ -1219,13 +1219,13 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 			case NT_RETURN:
 				returnRotation = G_PopRotationStack();
 
-				if( returnRotation >= 0 )
+				if ( returnRotation >= 0 )
 				{
 					G_SetCurrentNodeByIndex(
 					  G_NodeIndexAfter( nodeIndex, rotation ), rotation );
 
-					if( G_StartMapRotation( G_RotationNameByIndex( returnRotation ),
-					                        qtrue, qfalse, qfalse, depth ) )
+					if ( G_StartMapRotation( G_RotationNameByIndex( returnRotation ),
+					                         qtrue, qfalse, qfalse, depth ) )
 					{
 						return qfalse;
 					}
@@ -1234,12 +1234,12 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 				break;
 
 			case NT_MAP:
-				if( G_MapExists( node->u.map.name ) )
+				if ( G_MapExists( node->u.map.name ) )
 				{
 					G_SetCurrentNodeByIndex(
 					  G_NodeIndexAfter( nodeIndex, rotation ), rotation );
 
-					if( !G_MapExists( g_nextMap.string ) )
+					if ( !G_MapExists( g_nextMap.string ) )
 					{
 						G_IssueMapChange( nodeIndex, rotation );
 					}
@@ -1259,8 +1259,8 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 				G_SetCurrentNodeByIndex(
 				  G_NodeIndexAfter( nodeIndex, rotation ), rotation );
 
-				if( G_GotoLabel( rotation, nodeIndex, node->u.label.name,
-				                 ( node->type == NT_GOTO ), depth ) )
+				if ( G_GotoLabel( rotation, nodeIndex, node->u.label.name,
+				                  ( node->type == NT_GOTO ), depth ) )
 				{
 					return qfalse;
 				}
@@ -1289,7 +1289,7 @@ void G_AdvanceMapRotation( int depth )
 
 	rotation = g_currentMapRotation.integer;
 
-	if( rotation < 0 || rotation >= MAX_MAP_ROTATIONS )
+	if ( rotation < 0 || rotation >= MAX_MAP_ROTATIONS )
 	{
 		return;
 	}
@@ -1297,7 +1297,7 @@ void G_AdvanceMapRotation( int depth )
 	nodeIndex = G_CurrentNodeIndex( rotation );
 	node = G_NodeByIndex( nodeIndex, rotation );
 
-	if( !node )
+	if ( !node )
 	{
 		G_Printf( S_COLOR_YELLOW "WARNING: index incorrect for map rotation %s, trying 0\n",
 		          G_RotationNameByIndex( rotation ) );
@@ -1305,14 +1305,14 @@ void G_AdvanceMapRotation( int depth )
 		node = G_NodeByIndex( nodeIndex, rotation );
 	}
 
-	while( node && G_StepMapRotation( rotation, nodeIndex, depth ) )
+	while ( node && G_StepMapRotation( rotation, nodeIndex, depth ) )
 	{
 		nodeIndex = G_NodeIndexAfter( nodeIndex, rotation );
 		node = G_NodeByIndex( nodeIndex, rotation );
 		depth++;
 	}
 
-	if( !node )
+	if ( !node )
 	{
 		G_Printf( S_COLOR_RED "ERROR: unexpected end of maprotation '%s'\n",
 		          G_RotationNameByIndex( rotation ) );
@@ -1332,11 +1332,11 @@ qboolean G_StartMapRotation( char *name, qboolean advance,
 	int i;
 	int currentRotation = g_currentMapRotation.integer;
 
-	for( i = 0; i < mapRotations.numRotations; i++ )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
-		if( !Q_stricmp( mapRotations.rotations[ i ].name, name ) )
+		if ( !Q_stricmp( mapRotations.rotations[ i ].name, name ) )
 		{
-			if( putOnStack && currentRotation >= 0 )
+			if ( putOnStack && currentRotation >= 0 )
 			{
 				G_PushRotationStack( currentRotation );
 			}
@@ -1344,9 +1344,9 @@ qboolean G_StartMapRotation( char *name, qboolean advance,
 			trap_Cvar_Set( "g_currentMapRotation", va( "%d", i ) );
 			trap_Cvar_Update( &g_currentMapRotation );
 
-			if( advance )
+			if ( advance )
 			{
-				if( reset_index )
+				if ( reset_index )
 				{
 					G_SetCurrentNodeByIndex( 0, i );
 				}
@@ -1358,7 +1358,7 @@ qboolean G_StartMapRotation( char *name, qboolean advance,
 		}
 	}
 
-	if( i == mapRotations.numRotations )
+	if ( i == mapRotations.numRotations )
 	{
 		return qfalse;
 	}
@@ -1405,9 +1405,9 @@ void G_InitMapRotations( void )
 	const char *fileName = "maprotation.cfg";
 
 	// Load the file if it exists
-	if( trap_FS_FOpenFile( fileName, NULL, FS_READ ) )
+	if ( trap_FS_FOpenFile( fileName, NULL, FS_READ ) )
 	{
-		if( !G_ParseMapRotationFile( fileName ) )
+		if ( !G_ParseMapRotationFile( fileName ) )
 		{
 			G_Printf( S_COLOR_RED "ERROR: failed to parse %s file\n", fileName );
 		}
@@ -1417,9 +1417,9 @@ void G_InitMapRotations( void )
 		G_Printf( "%s file not found.\n", fileName );
 	}
 
-	if( g_currentMapRotation.integer == NOT_ROTATING )
+	if ( g_currentMapRotation.integer == NOT_ROTATING )
 	{
-		if( g_initialMapRotation.string[ 0 ] != 0 )
+		if ( g_initialMapRotation.string[ 0 ] != 0 )
 		{
 			G_StartMapRotation( g_initialMapRotation.string, qfalse, qtrue, qfalse, 0 );
 
@@ -1438,7 +1438,7 @@ Free up memory used by a node
 */
 void G_FreeNode( node_t *node )
 {
-	if( node->type == NT_CONDITION )
+	if ( node->type == NT_CONDITION )
 	{
 		G_FreeNode( node->u.condition.target );
 	}
@@ -1457,11 +1457,11 @@ void G_ShutdownMapRotations( void )
 {
 	int i, j;
 
-	for( i = 0; i < mapRotations.numRotations; i++ )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
 		mapRotation_t *mr = &mapRotations.rotations[ i ];
 
-		for( j = 0; j < mr->numNodes; j++ )
+		for ( j = 0; j < mr->numNodes; j++ )
 		{
 			node_t *node = mr->nodes[ j ];
 

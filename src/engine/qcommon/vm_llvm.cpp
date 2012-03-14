@@ -68,7 +68,7 @@ extern "C" {
 		Com_sprintf( filename, sizeof( filename ), "%sllvm.bc", name );
 		int len = FS_ReadFile( filename, ( void ** ) &bytes );
 
-		if( !bytes )
+		if ( !bytes )
 		{
 			Com_Printf( "Couldn't load llvm file: %s\n", filename );
 			return NULL;
@@ -79,7 +79,7 @@ extern "C" {
 		delete buffer;
 		FS_FreeFile( bytes );
 
-		if( !module )
+		if ( !module )
 		{
 			Com_Printf( "Couldn't parse llvm file: %s: %s\n", filename, error.c_str() );
 			return NULL;
@@ -91,7 +91,7 @@ extern "C" {
 		createStandardModulePasses( &p, 3, false, true, true, true, false, InliningPass );
 		p.run( *module );
 
-		if( !engine )
+		if ( !engine )
 		{
 			InitializeNativeTarget();
 
@@ -105,7 +105,7 @@ extern "C" {
 			 * its default to false at some point in the future.  */
 			engine = ExecutionEngine::create( module, false, &str, CodeGenOpt::Default, false );
 
-			if( !engine )
+			if ( !engine )
 			{
 				Com_Printf( "Couldn't create ExecutionEngine: %s\n", str.c_str() );
 				return NULL;
@@ -118,7 +118,7 @@ extern "C" {
 
 		Function *dllEntry_ptr = module->getFunction( std::string( "dllEntry" ) );
 
-		if( !dllEntry_ptr )
+		if ( !dllEntry_ptr )
 		{
 			Com_Printf( "Couldn't get function address of dllEntry\n" );
 			return NULL;
@@ -129,7 +129,7 @@ extern "C" {
 
 		Function *vmMain_ptr = module->getFunction( std::string( "vmMain" ) );
 
-		if( !vmMain_ptr )
+		if ( !vmMain_ptr )
 		{
 			Com_Printf( "Couldn't get function address of vmMain\n" );
 			return NULL;
@@ -139,7 +139,7 @@ extern "C" {
 
 		vm->entryPoint = fp;
 
-		if( com_developer->integer )
+		if ( com_developer->integer )
 		{
 			Com_Printf( "Loaded LLVM %s with module==%p\n", name, module );
 		}
@@ -149,18 +149,18 @@ extern "C" {
 
 	void VM_UnloadLLVM( void *llvmModule )
 	{
-		if( !llvmModule )
+		if ( !llvmModule )
 		{
 			Com_Printf( "VM_UnloadLLVM called with NULL pointer\n" );
 			return;
 		}
 
-		if( com_developer->integer )
+		if ( com_developer->integer )
 		{
 			Com_Printf( "Unloading LLVM with module==%p\n", llvmModule );
 		}
 
-		if( !engine->removeModule( ( Module * ) llvmModule ) )
+		if ( !engine->removeModule( ( Module * ) llvmModule ) )
 		{
 			Com_Printf( "Couldn't remove llvm\n" );
 			return;

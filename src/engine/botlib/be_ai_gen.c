@@ -67,9 +67,9 @@ int GeneticSelection( int numranks, float *rankings )
 
 	sum = 0;
 
-	for( i = 0; i < numranks; i++ )
+	for ( i = 0; i < numranks; i++ )
 	{
-		if( rankings[ i ] < 0 )
+		if ( rankings[ i ] < 0 )
 		{
 			continue;
 		}
@@ -77,22 +77,22 @@ int GeneticSelection( int numranks, float *rankings )
 		sum += rankings[ i ];
 	} //end for
 
-	if( sum > 0 )
+	if ( sum > 0 )
 	{
 		//select a bot where the ones with the higest rankings have
 		//the highest chance of being selected
 		select = random() * sum;
 
-		for( i = 0; i < numranks; i++ )
+		for ( i = 0; i < numranks; i++ )
 		{
-			if( rankings[ i ] < 0 )
+			if ( rankings[ i ] < 0 )
 			{
 				continue;
 			}
 
 			sum -= rankings[ i ];
 
-			if( sum <= 0 )
+			if ( sum <= 0 )
 			{
 				return i;
 			}
@@ -102,9 +102,9 @@ int GeneticSelection( int numranks, float *rankings )
 	//select a bot randomly
 	index = random() * numranks;
 
-	for( i = 0; i < numranks; i++ )
+	for ( i = 0; i < numranks; i++ )
 	{
-		if( rankings[ index ] >= 0 )
+		if ( rankings[ index ] >= 0 )
 		{
 			return index;
 		}
@@ -126,16 +126,16 @@ int GeneticParentsAndChildSelection( int numranks, float *ranks, int *parent1, i
 	float rankings[ 256 ], max;
 	int   i;
 
-	if( numranks > 256 )
+	if ( numranks > 256 )
 	{
 		botimport.Print( PRT_WARNING, "GeneticParentsAndChildSelection: too many bots\n" );
 		*parent1 = *parent2 = *child = 0;
 		return qfalse;
 	} //end if
 
-	for( max = 0, i = 0; i < numranks; i++ )
+	for ( max = 0, i = 0; i < numranks; i++ )
 	{
-		if( ranks[ i ] < 0 )
+		if ( ranks[ i ] < 0 )
 		{
 			continue;
 		}
@@ -143,7 +143,7 @@ int GeneticParentsAndChildSelection( int numranks, float *ranks, int *parent1, i
 		max++;
 	} //end for
 
-	if( max < 3 )
+	if ( max < 3 )
 	{
 		botimport.Print( PRT_WARNING, "GeneticParentsAndChildSelection: too few valid bots\n" );
 		*parent1 = *parent2 = *child = 0;
@@ -160,22 +160,22 @@ int GeneticParentsAndChildSelection( int numranks, float *ranks, int *parent1, i
 	//reverse the rankings
 	max = 0;
 
-	for( i = 0; i < numranks; i++ )
+	for ( i = 0; i < numranks; i++ )
 	{
-		if( rankings[ i ] < 0 )
+		if ( rankings[ i ] < 0 )
 		{
 			continue;
 		}
 
-		if( rankings[ i ] > max )
+		if ( rankings[ i ] > max )
 		{
 			max = rankings[ i ];
 		}
 	} //end for
 
-	for( i = 0; i < numranks; i++ )
+	for ( i = 0; i < numranks; i++ )
 	{
-		if( rankings[ i ] < 0 )
+		if ( rankings[ i ] < 0 )
 		{
 			continue;
 		}

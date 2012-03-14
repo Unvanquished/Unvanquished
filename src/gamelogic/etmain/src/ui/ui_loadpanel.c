@@ -174,9 +174,9 @@ void UI_DrawLoadPanel( qboolean forcerefresh, qboolean ownerdraw, qboolean uihac
 {
 	static qboolean inside = qfalse;
 
-	if( inside )
+	if ( inside )
 	{
-		if( !uihack && trap_Cvar_VariableValue( "ui_connecting" ) )
+		if ( !uihack && trap_Cvar_VariableValue( "ui_connecting" ) )
 		{
 			trap_Cvar_Set( "ui_connecting", "0" );
 		}
@@ -188,7 +188,7 @@ void UI_DrawLoadPanel( qboolean forcerefresh, qboolean ownerdraw, qboolean uihac
 
 	inside = qtrue;
 
-	if( !bg_loadscreeninited )
+	if ( !bg_loadscreeninited )
 	{
 		trap_R_RegisterFont( "ariblk.ttf", 27, &bg_loadscreenfont1 );
 		trap_R_RegisterFont( "courbd.ttf", 30, &bg_loadscreenfont2 );
@@ -200,12 +200,12 @@ void UI_DrawLoadPanel( qboolean forcerefresh, qboolean ownerdraw, qboolean uihac
 
 	BG_PanelButtonsRender( loadpanelButtons );
 
-	if( forcerefresh )
+	if ( forcerefresh )
 	{
 		//trap_UpdateScreen();
 	}
 
-	if( !uihack && trap_Cvar_VariableValue( "ui_connecting" ) )
+	if ( !uihack && trap_Cvar_VariableValue( "ui_connecting" ) )
 	{
 		trap_Cvar_Set( "ui_connecting", "0" );
 	}
@@ -310,7 +310,7 @@ void UI_LoadPanel_RenderHeaderText( panel_button_t *button )
 
 	trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
 
-	if( ( cstate.connState == CA_DISCONNECTED || cstate.connState == CA_CONNECTED ) && *downloadName )
+	if ( ( cstate.connState == CA_DISCONNECTED || cstate.connState == CA_CONNECTED ) && *downloadName )
 	{
 		button->text = "DOWNLOADING...";
 	}
@@ -344,7 +344,7 @@ const char     *UI_DownloadInfo( const char *downloadName )
 	downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
 	downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 
-	if( downloadSize > 0 )
+	if ( downloadSize > 0 )
 	{
 		ds = va( "%s (%d%%)", downloadName, ( int )( ( float ) downloadCount * 100.0f / ( float ) downloadSize ) );
 	}
@@ -356,14 +356,14 @@ const char     *UI_DownloadInfo( const char *downloadName )
 	UI_ReadableSize( dlSizeBuf, sizeof dlSizeBuf, downloadCount );
 	UI_ReadableSize( totalSizeBuf, sizeof totalSizeBuf, downloadSize );
 
-	if( downloadCount < 4096 || !downloadTime )
+	if ( downloadCount < 4096 || !downloadTime )
 	{
 		s = va( "%s\n %s\n%s\n\n%s\n estimating...\n\n%s\n\n%s copied", dlText, ds, totalSizeBuf, etaText, xferText, dlSizeBuf );
 		return s;
 	}
 	else
 	{
-		if( ( uiInfo.uiDC.realTime - downloadTime ) / 1000 )
+		if ( ( uiInfo.uiDC.realTime - downloadTime ) / 1000 )
 		{
 			xferRate = downloadCount / ( ( uiInfo.uiDC.realTime - downloadTime ) / 1000 );
 		}
@@ -375,7 +375,7 @@ const char     *UI_DownloadInfo( const char *downloadName )
 		UI_ReadableSize( xferRateBuf, sizeof xferRateBuf, xferRate );
 
 		// Extrapolate estimated completion time
-		if( downloadSize && xferRate )
+		if ( downloadSize && xferRate )
 		{
 			int n = downloadSize / xferRate; // estimated time for entire d/l in secs
 			int timeleft = 0, i;
@@ -384,12 +384,12 @@ const char     *UI_DownloadInfo( const char *downloadName )
 			tleEstimates[ tleIndex ] = ( n - ( ( ( downloadCount / 1024 ) * n ) / ( downloadSize / 1024 ) ) );
 			tleIndex++;
 
-			if( tleIndex >= ESTIMATES )
+			if ( tleIndex >= ESTIMATES )
 			{
 				tleIndex = 0;
 			}
 
-			for( i = 0; i < ESTIMATES; i++ )
+			for ( i = 0; i < ESTIMATES; i++ )
 			{
 				timeleft += tleEstimates[ i ];
 			}
@@ -403,14 +403,14 @@ const char     *UI_DownloadInfo( const char *downloadName )
 			dlTimeBuf[ 0 ] = '\0';
 		}
 
-		if( xferRate )
+		if ( xferRate )
 		{
 			s = va( "%s\n %s\n%s\n\n%s\n %s\n\n%s\n %s/sec\n\n%s copied", dlText, ds, totalSizeBuf,
 			        etaText, dlTimeBuf, xferText, xferRateBuf, dlSizeBuf );
 		}
 		else
 		{
-			if( downloadSize )
+			if ( downloadSize )
 			{
 				s = va( "%s\n %s\n%s\n\n%s\n estimating...\n\n%s\n\n%s copied", dlText, ds, totalSizeBuf,
 				        etaText, xferText, dlSizeBuf );
@@ -446,18 +446,18 @@ void UI_LoadPanel_RenderLoadingText( panel_button_t *button )
 
 	trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
 
-	if( lastConnState > cstate.connState )
+	if ( lastConnState > cstate.connState )
 	{
 		lastLoadingText[ 0 ] = '\0';
 	}
 
 	lastConnState = cstate.connState;
 
-	if( !connect_ownerdraw )
+	if ( !connect_ownerdraw )
 	{
-		if( !trap_Cvar_VariableValue( "ui_connecting" ) )
+		if ( !trap_Cvar_VariableValue( "ui_connecting" ) )
 		{
-			switch( cstate.connState )
+			switch ( cstate.connState )
 			{
 				case CA_CONNECTING:
 					s = va( trap_TranslateString( "Awaiting connection...%i" ), cstate.connectPacketCount );
@@ -469,7 +469,7 @@ void UI_LoadPanel_RenderLoadingText( panel_button_t *button )
 
 				case CA_DISCONNECTED:
 				case CA_CONNECTED:
-					if( *downloadName || cstate.connState == CA_DISCONNECTED )
+					if ( *downloadName || cstate.connState == CA_DISCONNECTED )
 					{
 						s = ( char * ) UI_DownloadInfo( downloadName );
 					}
@@ -486,7 +486,7 @@ void UI_LoadPanel_RenderLoadingText( panel_button_t *button )
 					break;
 			}
 		}
-		else if( trap_Cvar_VariableValue( "ui_dl_running" ) )
+		else if ( trap_Cvar_VariableValue( "ui_dl_running" ) )
 		{
 			// only toggle during a disconnected download
 			s = ( char * ) UI_DownloadInfo( downloadName );
@@ -494,7 +494,7 @@ void UI_LoadPanel_RenderLoadingText( panel_button_t *button )
 
 		Q_strcat( buff, sizeof( buff ), va( "\n\n%s^*", s ) );
 
-		if( cstate.connState < CA_CONNECTED && *cstate.messageString )
+		if ( cstate.connState < CA_CONNECTED && *cstate.messageString )
 		{
 			Q_strcat( buff, sizeof( buff ), va( "\n\n%s^*", cstate.messageString ) );
 		}
@@ -508,9 +508,9 @@ void UI_LoadPanel_RenderLoadingText( panel_button_t *button )
 
 	s = p = buff;
 
-	while( *p )
+	while ( *p )
 	{
-		if( *p == '\n' )
+		if ( *p == '\n' )
 		{
 			*p++ = '\0';
 			Text_Paint_Ext( button->rect.x + 4, y, button->font->scalex, button->font->scaley, button->font->colour, s, 0, 0, 0,

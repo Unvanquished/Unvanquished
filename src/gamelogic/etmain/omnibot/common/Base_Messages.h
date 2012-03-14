@@ -62,7 +62,7 @@ struct Msg_PlayerChooseEquipment
 
 	Msg_PlayerChooseEquipment()
 	{
-		for( int i = 0; i < NumItems; ++i )
+		for ( int i = 0; i < NumItems; ++i )
 		{
 			m_WeaponChoice[ i ] = 0;
 			m_ItemChoice[ i ] = 0;

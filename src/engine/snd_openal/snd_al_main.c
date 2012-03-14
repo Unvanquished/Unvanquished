@@ -88,24 +88,24 @@ ALuint al_format( int width, int channels )
 	ALuint format = AL_FORMAT_MONO16;
 
 	// Work out format
-	if( width == 1 )
+	if ( width == 1 )
 	{
-		if( channels == 1 )
+		if ( channels == 1 )
 		{
 			format = AL_FORMAT_MONO8;
 		}
-		else if( channels == 2 )
+		else if ( channels == 2 )
 		{
 			format = AL_FORMAT_STEREO8;
 		}
 	}
-	else if( width == 2 )
+	else if ( width == 2 )
 	{
-		if( channels == 1 )
+		if ( channels == 1 )
 		{
 			format = AL_FORMAT_MONO16;
 		}
-		else if( channels == 2 )
+		else if ( channels == 2 )
 		{
 			format = AL_FORMAT_STEREO16;
 		}
@@ -119,7 +119,7 @@ ALuint al_format( int width, int channels )
  */
 char *al_errormsg( ALenum error )
 {
-	switch( error )
+	switch ( error )
 	{
 		case AL_NO_ERROR:
 			return "No error";
@@ -211,7 +211,7 @@ qboolean SndAl_Init( void )
 #ifdef USE_OPENAL_DLOPEN
 
 	// Load QAL
-	if( !QAL_Init( s_alDriver->string ) )
+	if ( !QAL_Init( s_alDriver->string ) )
 	{
 		si.Printf( PRINT_ALL, "not initializing.\n" );
 		return qfalse;
@@ -221,12 +221,12 @@ qboolean SndAl_Init( void )
 	// Open default device
 	device = s_alDevice->string;
 
-	if( device && !*device )
+	if ( device && !*device )
 	{
 		device = NULL;
 	}
 
-	if( qalcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" ) )
+	if ( qalcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" ) )
 	{
 		char       devicenames[ 1024 ] = "";
 		const char *devicelist;
@@ -244,7 +244,7 @@ qboolean SndAl_Init( void )
 		// Generic Software as that one works more reliably with various sound systems.
 		// If it's not, use OpenAL's default selection as we don't want to ignore
 		// native hardware acceleration.
-		if( !device && !strcmp( defaultdevice, "Generic Hardware" ) )
+		if ( !device && !strcmp( defaultdevice, "Generic Hardware" ) )
 		{
 			device = "Generic Software";
 		}
@@ -254,7 +254,7 @@ qboolean SndAl_Init( void )
 		// dump a list of available devices to a cvar for the user to see.
 #ifndef MACOS_X
 
-		while( ( curlen = strlen( devicelist ) ) )
+		while ( ( curlen = strlen( devicelist ) ) )
 		{
 			strcat( devicenames, devicelist );
 			strcat( devicenames, "\n" );
@@ -268,13 +268,13 @@ qboolean SndAl_Init( void )
 
 	alDevice = qalcOpenDevice( device );
 
-	if( !alDevice && device )
+	if ( !alDevice && device )
 	{
 		si.Printf( PRINT_ALL,  "Failed to open OpenAL device '%s', trying default.\n", device );
 		alDevice = qalcOpenDevice( NULL );
 	}
 
-	if( !alDevice )
+	if ( !alDevice )
 	{
 #ifdef USE_OPENAL_DLOPEN
 		QAL_Shutdown();
@@ -286,7 +286,7 @@ qboolean SndAl_Init( void )
 	// Create OpenAL context
 	alContext = qalcCreateContext( alDevice, NULL );
 
-	if( !alContext )
+	if ( !alContext )
 	{
 #ifdef USE_OPENAL_DLOPEN
 		QAL_Shutdown();
@@ -307,14 +307,14 @@ qboolean SndAl_Init( void )
 	si.Printf( PRINT_ALL, "  AL Extensions: %s\n", qalGetString( AL_EXTENSIONS ) );
 	si.Printf( PRINT_ALL,  "  ALC Extensions: %s\n", qalcGetString( alDevice, ALC_EXTENSIONS ) );
 
-	if( qalcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" ) )
+	if ( qalcIsExtensionPresent( NULL, "ALC_ENUMERATION_EXT" ) )
 	{
 		si.Printf( PRINT_ALL, "  Device:     %s\n", qalcGetString( alDevice, ALC_DEVICE_SPECIFIER ) );
 		si.Printf( PRINT_ALL, "Available Devices:\n%s", s_alAvailableDevices->string );
 	}
 
 	// Check for Linux shutdown race condition
-	if( !strcmp( qalGetString( AL_VENDOR ), "J. Valenzuela" ) )
+	if ( !strcmp( qalGetString( AL_VENDOR ), "J. Valenzuela" ) )
 	{
 		snd_shutdown_bug = qtrue;
 	}
@@ -352,7 +352,7 @@ void SndAl_Shutdown( void )
 	al_src_shutdown();
 	al_buf_shutdown();
 
-	if( !snd_shutdown_bug )
+	if ( !snd_shutdown_bug )
 	{
 		qalcMakeContextCurrent( NULL );
 	}
@@ -362,7 +362,7 @@ void SndAl_Shutdown( void )
 
 #ifdef USE_VOIP
 
-	if( alCaptureDevice != NULL )
+	if ( alCaptureDevice != NULL )
 	{
 		qalcCaptureStop( alCaptureDevice );
 		qalcCaptureCloseDevice( alCaptureDevice );
@@ -410,16 +410,16 @@ void SndAl_Update( void )
 	al_mus_update();
 
 	// Doppler
-	if( s_doppler->modified )
+	if ( s_doppler->modified )
 	{
 		s_dopplerFactor->modified = qtrue;
 		s_doppler->modified = qfalse;
 	}
 
 	// Doppler parameters
-	if( s_dopplerFactor->modified )
+	if ( s_dopplerFactor->modified )
 	{
-		if( s_doppler->integer )
+		if ( s_doppler->integer )
 		{
 			qalDopplerFactor( s_dopplerFactor->value );
 		}
@@ -431,7 +431,7 @@ void SndAl_Update( void )
 		s_dopplerFactor->modified = qfalse;
 	}
 
-	if( s_dopplerSpeed->modified )
+	if ( s_dopplerSpeed->modified )
 	{
 		qalDopplerVelocity( s_dopplerSpeed->value );
 		s_dopplerSpeed->modified = qfalse;
@@ -464,7 +464,7 @@ DLLEXPORT sndexport_t *GetSndAPI( int apiVersion, sndimport_t *simp )
 
 	memset( &se, 0, sizeof( se ) );
 
-	if( apiVersion != SND_API_VERSION )
+	if ( apiVersion != SND_API_VERSION )
 	{
 		si.Printf( PRINT_ALL, "Mismatched SND_API_VERSION: expected %i, got %i\n",
 		           SND_API_VERSION, apiVersion );
@@ -515,9 +515,9 @@ void S_Play_f( void )
 
 	i = 1;
 
-	while( i < si.Cmd_Argc() )
+	while ( i < si.Cmd_Argc() )
 	{
-		if( !strrchr( si.Cmd_Argv( i ), '.' ) )
+		if ( !strrchr( si.Cmd_Argv( i ), '.' ) )
 		{
 			snprintf( name, sizeof( name ), "%s.wav", si.Cmd_Argv( 1 ) );
 		}
@@ -528,7 +528,7 @@ void S_Play_f( void )
 
 		h = SndAl_RegisterSound( name, qfalse );
 
-		if( h )
+		if ( h )
 		{
 			SndAl_StartLocalSound( h, CHAN_LOCAL_SOUND );
 		}
@@ -543,11 +543,11 @@ void S_Music_f( void )
 
 	c = si.Cmd_Argc();
 
-	if( c == 2 )
+	if ( c == 2 )
 	{
 		SndAl_StartBackgroundTrack( si.Cmd_Argv( 1 ), si.Cmd_Argv( 1 ) );
 	}
-	else if( c == 3 )
+	else if ( c == 3 )
 	{
 		SndAl_StartBackgroundTrack( si.Cmd_Argv( 1 ), si.Cmd_Argv( 2 ) );
 	}
@@ -566,11 +566,11 @@ void SndAl_InitCapture( qboolean usingAL )
 #ifdef USE_OPENAL_DLOPEN
 
 	// Load QAL if we are called from the base sound driver
-	if( !usingAL )
+	if ( !usingAL )
 	{
 		s_alDriver = si.Cvar_Get( "s_alDriver", ALDRIVER_DEFAULT, CVAR_ARCHIVE | CVAR_LATCH );
 
-		if( !QAL_Init( s_alDriver->string ) )
+		if ( !QAL_Init( s_alDriver->string ) )
 		{
 			si.Printf( PRINT_ALL, "Failed to load library: \"%s\".\n", s_alDriver->string );
 			return;
@@ -584,13 +584,13 @@ void SndAl_InitCapture( qboolean usingAL )
 	// !!! FIXME: add some better error reporting.
 	s_alCapture = si.Cvar_Get( "s_alCapture", "1", CVAR_ARCHIVE | CVAR_LATCH );
 
-	if( !s_alCapture->integer )
+	if ( !s_alCapture->integer )
 	{
 		si.Printf( PRINT_ALL, "OpenAL capture support disabled by user ('+set s_alCapture 1' to enable)\n" );
 	}
 	else
 	{
-		if( !qalcIsExtensionPresent( NULL, "ALC_EXT_capture" ) )
+		if ( !qalcIsExtensionPresent( NULL, "ALC_EXT_capture" ) )
 		{
 			si.Printf( PRINT_ALL, "No ALC_EXT_CAPTURE support, can't record audio.\n" );
 		}
@@ -610,7 +610,7 @@ void SndAl_InitCapture( qboolean usingAL )
 			// dump a list of available devices to a cvar for the user to see.
 #ifndef MACOS_X
 
-			while( ( curlen = strlen( inputdevicelist ) ) )
+			while ( ( curlen = strlen( inputdevicelist ) ) )
 			{
 				si.strcat( inputdevicenames, sizeof( inputdevicenames ), inputdevicelist );
 				si.strcat( inputdevicenames, sizeof( inputdevicenames ), "\n" );
@@ -627,7 +627,7 @@ void SndAl_InitCapture( qboolean usingAL )
 			si.Printf( PRINT_ALL, "OpenAL default capture device is '%s'\n", defaultinputdevice );
 			alCaptureDevice = qalcCaptureOpenDevice( inputdevice, 8000, AL_FORMAT_MONO16, 4096 );
 
-			if( !alCaptureDevice && inputdevice )
+			if ( !alCaptureDevice && inputdevice )
 			{
 				si.Printf( PRINT_ALL, "Failed to open OpenAL Input device '%s', trying default.\n", inputdevice );
 				alCaptureDevice = qalcCaptureOpenDevice( NULL, 8000, AL_FORMAT_MONO16, 4096 );
@@ -640,7 +640,7 @@ void SndAl_InitCapture( qboolean usingAL )
 
 void SndAl_StartCapture( void )
 {
-	if( alCaptureDevice != NULL )
+	if ( alCaptureDevice != NULL )
 	{
 #ifndef _WIN32
 		alContext = qalcCreateContext( alDevice, NULL );
@@ -653,7 +653,7 @@ int SndAl_AvailableCaptureSamples( void )
 {
 	int retval = 0;
 
-	if( alCaptureDevice != NULL )
+	if ( alCaptureDevice != NULL )
 	{
 		ALint samples = 0;
 		qalcGetIntegerv( alCaptureDevice, ALC_CAPTURE_SAMPLES, sizeof( samples ), &samples );
@@ -665,7 +665,7 @@ int SndAl_AvailableCaptureSamples( void )
 
 void SndAl_Capture( int samples, byte *data )
 {
-	if( alCaptureDevice != NULL )
+	if ( alCaptureDevice != NULL )
 	{
 		qalcCaptureSamples( alCaptureDevice, data, samples );
 	}
@@ -673,7 +673,7 @@ void SndAl_Capture( int samples, byte *data )
 
 void SndAl_StopCapture( void )
 {
-	if( alCaptureDevice != NULL )
+	if ( alCaptureDevice != NULL )
 	{
 		qalcCaptureStop( alCaptureDevice );
 	}

@@ -349,17 +349,17 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	len = strlen( edit->buffer );
 
 	// guarantee that cursor will be visible
-	if( len <= drawLen )
+	if ( len <= drawLen )
 	{
 		prestep = 0;
 	}
 	else
 	{
-		if( edit->scroll + drawLen > len )
+		if ( edit->scroll + drawLen > len )
 		{
 			edit->scroll = len - drawLen;
 
-			if( edit->scroll < 0 )
+			if ( edit->scroll < 0 )
 			{
 				edit->scroll = 0;
 			}
@@ -368,13 +368,13 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 		prestep = edit->scroll;
 	}
 
-	if( prestep + drawLen > len )
+	if ( prestep + drawLen > len )
 	{
 		drawLen = len - prestep;
 	}
 
 	// extract <drawLen> characters from the field at <prestep>
-	if( drawLen >= MAX_STRING_CHARS )
+	if ( drawLen >= MAX_STRING_CHARS )
 	{
 		Com_Error( ERR_DROP, "drawLen >= MAX_STRING_CHARS" );
 	}
@@ -383,7 +383,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	str[ drawLen ] = 0;
 
 	// draw it
-	if( size == SMALLCHAR_WIDTH )
+	if ( size == SMALLCHAR_WIDTH )
 	{
 		float color[ 4 ];
 
@@ -398,14 +398,14 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	}
 
 	// draw the cursor
-	if( showCursor )
+	if ( showCursor )
 	{
-		if( ( int )( cls.realtime >> 8 ) & 1 )
+		if ( ( int )( cls.realtime >> 8 ) & 1 )
 		{
 			return; // off blink
 		}
 
-		if( key_overstrikeMode )
+		if ( key_overstrikeMode )
 		{
 			cursorChar = 11;
 		}
@@ -416,7 +416,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 
 		i = drawLen - strlen( str );
 
-		if( size == SMALLCHAR_WIDTH )
+		if ( size == SMALLCHAR_WIDTH )
 		{
 			float xlocation = x + SCR_ConsoleFontStringWidth( str + prestep, edit->cursor - prestep );
 			SCR_DrawConsoleFontChar( xlocation, y, cursorChar );
@@ -452,7 +452,7 @@ void Field_Paste( field_t *edit )
 
 	cbd = Sys_GetClipboardData();
 
-	if( !cbd )
+	if ( !cbd )
 	{
 		return;
 	}
@@ -460,7 +460,7 @@ void Field_Paste( field_t *edit )
 	// send as if typed, so insert / overstrike works properly
 	pasteLen = strlen( cbd );
 
-	for( i = 0; i < pasteLen; i++ )
+	for ( i = 0; i < pasteLen; i++ )
 	{
 		Field_CharEvent( edit, cbd[ i ] );
 	}
@@ -483,7 +483,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 	int len;
 
 	// shift-insert is paste
-	if( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keys[ K_SHIFT ].down )
+	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keys[ K_SHIFT ].down )
 	{
 		Field_Paste( edit );
 		return;
@@ -491,11 +491,11 @@ void Field_KeyDownEvent( field_t *edit, int key )
 
 	len = strlen( edit->buffer );
 
-	switch( key )
+	switch ( key )
 	{
 		case K_DEL:
 		case K_KP_DEL:
-			if( edit->cursor < len )
+			if ( edit->cursor < len )
 			{
 				memmove( edit->buffer + edit->cursor,
 				         edit->buffer + edit->cursor + 1, len - edit->cursor );
@@ -505,7 +505,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 
 		case K_RIGHTARROW:
 		case K_KP_RIGHTARROW:
-			if( edit->cursor < len )
+			if ( edit->cursor < len )
 			{
 				edit->cursor++;
 			}
@@ -514,7 +514,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 
 		case K_LEFTARROW:
 		case K_KP_LEFTARROW:
-			if( edit->cursor > 0 )
+			if ( edit->cursor > 0 )
 			{
 				edit->cursor--;
 			}
@@ -526,7 +526,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			edit->cursor = 0;
 
 		case 'a':
-			if( keys[ K_CTRL ].down )
+			if ( keys[ K_CTRL ].down )
 			{
 				edit->cursor = 0;
 			}
@@ -538,7 +538,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			edit->cursor = len;
 
 		case 'e':
-			if( keys[ K_CTRL ].down )
+			if ( keys[ K_CTRL ].down )
 			{
 				edit->cursor = len;
 			}
@@ -552,11 +552,11 @@ void Field_KeyDownEvent( field_t *edit, int key )
 	}
 
 	// Change scroll if cursor is no longer visible
-	if( edit->cursor < edit->scroll )
+	if ( edit->cursor < edit->scroll )
 	{
 		edit->scroll = edit->cursor;
 	}
-	else if( edit->cursor >= edit->scroll + edit->widthInChars && edit->cursor <= len )
+	else if ( edit->cursor >= edit->scroll + edit->widthInChars && edit->cursor <= len )
 	{
 		edit->scroll = edit->cursor - edit->widthInChars + 1;
 	}
@@ -571,14 +571,14 @@ void Field_CharEvent( field_t *edit, int ch )
 {
 	int len;
 
-	if( ch == 'v' - 'a' + 1 )  // ctrl-v is paste
+	if ( ch == 'v' - 'a' + 1 ) // ctrl-v is paste
 	{
 		Field_Paste( edit );
 		return;
 	}
 
-	if( ch == 'c' - 'a' + 1 ||
-	    ch == 'u' - 'a' + 1 ) // ctrl-c or ctrl-u clear the field
+	if ( ch == 'c' - 'a' + 1 ||
+	     ch == 'u' - 'a' + 1 ) // ctrl-c or ctrl-u clear the field
 	{
 		Field_Clear( edit );
 		return;
@@ -586,15 +586,15 @@ void Field_CharEvent( field_t *edit, int ch )
 
 	len = strlen( edit->buffer );
 
-	if( ch == 'h' - 'a' + 1 )  // ctrl-h is backspace
+	if ( ch == 'h' - 'a' + 1 ) // ctrl-h is backspace
 	{
-		if( edit->cursor > 0 )
+		if ( edit->cursor > 0 )
 		{
 			memmove( edit->buffer + edit->cursor - 1,
 			         edit->buffer + edit->cursor, len + 1 - edit->cursor );
 			edit->cursor--;
 
-			if( edit->cursor < edit->scroll )
+			if ( edit->cursor < edit->scroll )
 			{
 				edit->scroll--;
 			}
@@ -603,14 +603,14 @@ void Field_CharEvent( field_t *edit, int ch )
 		return;
 	}
 
-	if( ch == 'a' - 'a' + 1 )  // ctrl-a is home
+	if ( ch == 'a' - 'a' + 1 ) // ctrl-a is home
 	{
 		edit->cursor = 0;
 		edit->scroll = 0;
 		return;
 	}
 
-	if( ch == 'e' - 'a' + 1 )  // ctrl-e is end
+	if ( ch == 'e' - 'a' + 1 ) // ctrl-e is end
 	{
 		edit->cursor = len;
 		edit->scroll = edit->cursor - edit->widthInChars;
@@ -620,14 +620,14 @@ void Field_CharEvent( field_t *edit, int ch )
 	//
 	// ignore any other non printable chars
 	//
-	if( ch < 32 || ch == 0x7f )
+	if ( ch < 32 || ch == 0x7f )
 	{
 		return;
 	}
 
-	if( key_overstrikeMode )
+	if ( key_overstrikeMode )
 	{
-		if( edit->cursor == MAX_EDIT_LINE - 1 )
+		if ( edit->cursor == MAX_EDIT_LINE - 1 )
 		{
 			return;
 		}
@@ -637,7 +637,7 @@ void Field_CharEvent( field_t *edit, int ch )
 	}
 	else // insert mode
 	{
-		if( len == MAX_EDIT_LINE - 1 )
+		if ( len == MAX_EDIT_LINE - 1 )
 		{
 			return; // all full
 		}
@@ -648,12 +648,12 @@ void Field_CharEvent( field_t *edit, int ch )
 		edit->cursor++;
 	}
 
-	if( edit->cursor >= edit->widthInChars )
+	if ( edit->cursor >= edit->widthInChars )
 	{
 		edit->scroll++;
 	}
 
-	if( edit->cursor == len + 1 )
+	if ( edit->cursor == len + 1 )
 	{
 		edit->buffer[ edit->cursor ] = 0;
 	}
@@ -685,23 +685,23 @@ static void FindMatches( const char *s )
 {
 	int i;
 
-	if( Q_stricmpn( s, completionString, strlen( completionString ) ) )
+	if ( Q_stricmpn( s, completionString, strlen( completionString ) ) )
 	{
 		return;
 	}
 
 	matchCount++;
 
-	if( matchCount == 1 )
+	if ( matchCount == 1 )
 	{
 		Q_strncpyz( currentMatch, s, sizeof( currentMatch ) );
 		return;
 	}
 
 	// cut currentMatch to the amount common with s
-	for( i = 0; s[ i ]; i++ )
+	for ( i = 0; s[ i ]; i++ )
 	{
-		if( tolower( currentMatch[ i ] ) != tolower( s[ i ] ) )
+		if ( tolower( currentMatch[ i ] ) != tolower( s[ i ] ) )
 		{
 			currentMatch[ i ] = 0;
 		}
@@ -719,12 +719,12 @@ FindIndexMatch
 static int findMatchIndex;
 static void FindIndexMatch( const char *s )
 {
-	if( Q_stricmpn( s, completionString, strlen( completionString ) ) )
+	if ( Q_stricmpn( s, completionString, strlen( completionString ) ) )
 	{
 		return;
 	}
 
-	if( findMatchIndex == matchIndex )
+	if ( findMatchIndex == matchIndex )
 	{
 		Q_strncpyz( currentMatch, s, sizeof( currentMatch ) );
 	}
@@ -740,7 +740,7 @@ PrintMatches
 */
 static void PrintMatches( const char *s )
 {
-	if( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
+	if ( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
 	{
 		Com_Printf( "  ^9%s^0\n", s );
 	}
@@ -749,7 +749,7 @@ static void PrintMatches( const char *s )
 // ydnar: to display cvar values
 static void PrintCvarMatches( const char *s )
 {
-	if( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
+	if ( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
 	{
 		Com_Printf( "  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) );
 	}
@@ -763,14 +763,14 @@ static void keyConcatArgs( void )
 	int  i;
 	char *arg;
 
-	for( i = 1; i < Cmd_Argc(); i++ )
+	for ( i = 1; i < Cmd_Argc(); i++ )
 	{
 		Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), " " );
 		arg = Cmd_Argv( i );
 
-		while( *arg )
+		while ( *arg )
 		{
-			if( *arg == ' ' )
+			if ( *arg == ' ' )
 			{
 				Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
 				break;
@@ -781,7 +781,7 @@ static void keyConcatArgs( void )
 
 		Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  Cmd_Argv( i ) );
 
-		if( *arg == ' ' )
+		if ( *arg == ' ' )
 		{
 			Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
 		}
@@ -797,7 +797,7 @@ static void ConcatRemaining( const char *src, const char *start )
 
 	str = strstr( src, start );
 
-	if( !str )
+	if ( !str )
 	{
 		keyConcatArgs();
 		return;
@@ -837,20 +837,20 @@ Handles history and console scrollback
 void Console_Key( int key )
 {
 	// ctrl-L clears screen
-	if( key == 'l' && keys[ K_CTRL ].down )
+	if ( key == 'l' && keys[ K_CTRL ].down )
 	{
 		Cbuf_AddText( "clear\n" );
 		return;
 	}
 
 	// enter finishes the line
-	if( key == K_ENTER || key == K_KP_ENTER )
+	if ( key == K_ENTER || key == K_KP_ENTER )
 	{
 		con.acLength = 0;
 
 		// if not in the game explicitly prepend a slash if needed
-		if( cls.state != CA_ACTIVE && g_consoleField.buffer[ 0 ] != '\\'
-		    && g_consoleField.buffer[ 0 ] != '/' )
+		if ( cls.state != CA_ACTIVE && g_consoleField.buffer[ 0 ] != '\\'
+		     && g_consoleField.buffer[ 0 ] != '/' )
 		{
 			char temp[ MAX_STRING_CHARS ];
 
@@ -862,7 +862,7 @@ void Console_Key( int key )
 		Com_Printf( "]%s\n", g_consoleField.buffer );
 
 		// leading slash is an explicit command
-		if( g_consoleField.buffer[ 0 ] == '\\' || g_consoleField.buffer[ 0 ] == '/' )
+		if ( g_consoleField.buffer[ 0 ] == '\\' || g_consoleField.buffer[ 0 ] == '/' )
 		{
 			Cbuf_AddText( g_consoleField.buffer + 1 );  // valid command
 			Cbuf_AddText( "\n" );
@@ -870,7 +870,7 @@ void Console_Key( int key )
 		else
 		{
 			// other text will be chat messages
-			if( !g_consoleField.buffer[ 0 ] )
+			if ( !g_consoleField.buffer[ 0 ] )
 			{
 				return; // empty lines just scroll the console without adding to history
 			}
@@ -885,7 +885,7 @@ void Console_Key( int key )
 		// copy line to history buffer
 		Hist_Add( g_consoleField.buffer );
 
-		if( cls.state == CA_DISCONNECTED )
+		if ( cls.state == CA_DISCONNECTED )
 		{
 			SCR_UpdateScreen(); // force an update, because the command
 		} // may take some time
@@ -896,16 +896,16 @@ void Console_Key( int key )
 
 	// command completion
 
-	if( key == K_TAB )
+	if ( key == K_TAB )
 	{
 		CompleteCommand();
 		return;
 	}
 
 	// clear autocompletion buffer on normal key input
-	if( ( key >= K_SPACE && key <= K_BACKSPACE ) || ( key == K_LEFTARROW ) || ( key == K_RIGHTARROW ) ||
-	    ( key >= K_KP_LEFTARROW && key <= K_KP_RIGHTARROW ) ||
-	    ( key >= K_KP_SLASH && key <= K_KP_PLUS ) || ( key >= K_KP_STAR && key <= K_KP_EQUALS ) )
+	if ( ( key >= K_SPACE && key <= K_BACKSPACE ) || ( key == K_LEFTARROW ) || ( key == K_RIGHTARROW ) ||
+	     ( key >= K_KP_LEFTARROW && key <= K_KP_RIGHTARROW ) ||
+	     ( key >= K_KP_SLASH && key <= K_KP_PLUS ) || ( key >= K_KP_STAR && key <= K_KP_EQUALS ) )
 	{
 		con.acLength = 0;
 	}
@@ -913,13 +913,13 @@ void Console_Key( int key )
 	// command history (ctrl-p ctrl-n for unix style)
 
 	//----(SA)  added some mousewheel functionality to the console
-	if( ( key == K_MWHEELUP && keys[ K_SHIFT ].down ) || ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
-	    ( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
+	if ( ( key == K_MWHEELUP && keys[ K_SHIFT ].down ) || ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
+	     ( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
 	{
 		Q_strncpyz( g_consoleField.buffer, Hist_Prev(), sizeof( g_consoleField.buffer ) );
 		g_consoleField.cursor = strlen( g_consoleField.buffer );
 
-		if( g_consoleField.cursor >= g_consoleField.widthInChars )
+		if ( g_consoleField.cursor >= g_consoleField.widthInChars )
 		{
 			g_consoleField.scroll = g_consoleField.cursor - g_consoleField.widthInChars + 1;
 		}
@@ -933,17 +933,17 @@ void Console_Key( int key )
 	}
 
 	//----(SA)  added some mousewheel functionality to the console
-	if( ( key == K_MWHEELDOWN && keys[ K_SHIFT ].down ) || ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ||
-	    ( ( tolower( key ) == 'n' ) && keys[ K_CTRL ].down ) )
+	if ( ( key == K_MWHEELDOWN && keys[ K_SHIFT ].down ) || ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ||
+	     ( ( tolower( key ) == 'n' ) && keys[ K_CTRL ].down ) )
 	{
 		const char *history = Hist_Next();
 
-		if( history )
+		if ( history )
 		{
 			Q_strncpyz( g_consoleField.buffer, history, sizeof( g_consoleField.buffer ) );
 			g_consoleField.cursor = strlen( g_consoleField.buffer );
 
-			if( g_consoleField.cursor >= g_consoleField.widthInChars )
+			if ( g_consoleField.cursor >= g_consoleField.widthInChars )
 			{
 				g_consoleField.scroll = g_consoleField.cursor - g_consoleField.widthInChars + 1;
 			}
@@ -952,7 +952,7 @@ void Console_Key( int key )
 				g_consoleField.scroll = 0;
 			}
 		}
-		else if( g_consoleField.buffer[ 0 ] )
+		else if ( g_consoleField.buffer[ 0 ] )
 		{
 			Hist_Add( g_consoleField.buffer );
 			Field_Clear( &g_consoleField );
@@ -963,23 +963,23 @@ void Console_Key( int key )
 	}
 
 	// console scrolling
-	if( key == K_PGUP || key == K_KP_PGUP )
+	if ( key == K_PGUP || key == K_KP_PGUP )
 	{
 		Con_PageUp();
 		return;
 	}
 
-	if( key == K_PGDN || key == K_KP_PGDN )
+	if ( key == K_PGDN || key == K_KP_PGDN )
 	{
 		Con_PageDown();
 		return;
 	}
 
-	if( key == K_MWHEELUP )  //----(SA) added some mousewheel functionality to the console
+	if ( key == K_MWHEELUP ) //----(SA) added some mousewheel functionality to the console
 	{
 		Con_PageUp();
 
-		if( keys[ K_CTRL ].down )  // hold <ctrl> to accelerate scrolling
+		if ( keys[ K_CTRL ].down ) // hold <ctrl> to accelerate scrolling
 		{
 			Con_PageUp();
 			Con_PageUp();
@@ -988,11 +988,11 @@ void Console_Key( int key )
 		return;
 	}
 
-	if( key == K_MWHEELDOWN )  //----(SA) added some mousewheel functionality to the console
+	if ( key == K_MWHEELDOWN ) //----(SA) added some mousewheel functionality to the console
 	{
 		Con_PageDown();
 
-		if( keys[ K_CTRL ].down )  // hold <ctrl> to accelerate scrolling
+		if ( keys[ K_CTRL ].down ) // hold <ctrl> to accelerate scrolling
 		{
 			Con_PageDown();
 			Con_PageDown();
@@ -1002,14 +1002,14 @@ void Console_Key( int key )
 	}
 
 	// ctrl-home = top of console
-	if( ( key == K_HOME || key == K_KP_HOME ) && keys[ K_CTRL ].down )
+	if ( ( key == K_HOME || key == K_KP_HOME ) && keys[ K_CTRL ].down )
 	{
 		Con_Top();
 		return;
 	}
 
 	// ctrl-end = bottom of console
-	if( ( key == K_END || key == K_KP_END ) && keys[ K_CTRL ].down )
+	if ( ( key == K_END || key == K_KP_END ) && keys[ K_CTRL ].down )
 	{
 		Con_Bottom();
 		return;
@@ -1038,7 +1038,7 @@ Key_IsDown
 */
 qboolean Key_IsDown( int keynum )
 {
-	if( keynum < 0 || keynum >= MAX_KEYS )
+	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
 		return qfalse;
 	}
@@ -1063,31 +1063,31 @@ int Key_StringToKeynum( char *str )
 {
 	keyname_t *kn;
 
-	if( !str || !str[ 0 ] )
+	if ( !str || !str[ 0 ] )
 	{
 		return -1;
 	}
 
-	if( !str[ 1 ] )
+	if ( !str[ 1 ] )
 	{
 		return str[ 0 ];
 	}
 
 	// check for hex code
-	if( strlen( str ) == 4 )
+	if ( strlen( str ) == 4 )
 	{
 		int n = Com_HexStrToInt( str );
 
-		if( n >= 0 )
+		if ( n >= 0 )
 		{
 			return n;
 		}
 	}
 
 	// scan for a text match
-	for( kn = keynames; kn->name; kn++ )
+	for ( kn = keynames; kn->name; kn++ )
 	{
-		if( !Q_stricmp( str, kn->name ) )
+		if ( !Q_stricmp( str, kn->name ) )
 		{
 			return kn->keynum;
 		}
@@ -1110,18 +1110,18 @@ char *Key_KeynumToString( int keynum )
 	static char tinystr[ 5 ];
 	int         i, j;
 
-	if( keynum == -1 )
+	if ( keynum == -1 )
 	{
 		return "<KEY NOT FOUND>";
 	}
 
-	if( keynum < 0 || keynum >= MAX_KEYS )
+	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
 		return "<OUT OF RANGE>";
 	}
 
 	// check for printable ascii (don't use quote)
-	if( keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';' )
+	if ( keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';' )
 	{
 		tinystr[ 0 ] = keynum;
 		tinystr[ 1 ] = 0;
@@ -1129,9 +1129,9 @@ char *Key_KeynumToString( int keynum )
 	}
 
 	// check for a key string
-	for( kn = keynames; kn->name; kn++ )
+	for ( kn = keynames; kn->name; kn++ )
 	{
-		if( keynum == kn->keynum )
+		if ( keynum == kn->keynum )
 		{
 			return kn->name;
 		}
@@ -1157,7 +1157,7 @@ static long generateHashValue( const char *fname )
 	int  i;
 	long hash;
 
-	if( !fname )
+	if ( !fname )
 	{
 		return 0;
 	}
@@ -1165,7 +1165,7 @@ static long generateHashValue( const char *fname )
 	hash = 0;
 	i = 0;
 
-	while( fname[ i ] != '\0' )
+	while ( fname[ i ] != '\0' )
 	{
 		hash += ( long )( fname[ i ] ) * ( i + 119 );
 		i++;
@@ -1186,13 +1186,13 @@ void Key_SetBinding( int keynum, const char *binding )
 	// so name toggle scripts work again: bind x name BzZIfretn?
 	// resulted into bzzifretn?
 
-	if( keynum < 0 || keynum >= MAX_KEYS )
+	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
 		return;
 	}
 
 	// free old bindings
-	if( keys[ keynum ].binding )
+	if ( keys[ keynum ].binding )
 	{
 		Z_Free( keys[ keynum ].binding );
 	}
@@ -1216,7 +1216,7 @@ Key_GetBinding
 */
 char *Key_GetBinding( int keynum )
 {
-	if( keynum < 0 || keynum >= MAX_KEYS )
+	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
 		return "";
 	}
@@ -1233,15 +1233,15 @@ void Key_GetBindingByString( const char *binding, int *key1, int *key2 )
 	*key1 = -1;
 	*key2 = -1;
 
-	for( i = 0; i < MAX_KEYS; i++ )
+	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if( keys[ i ].hash == hash && !Q_stricmp( binding, keys[ i ].binding ) )
+		if ( keys[ i ].hash == hash && !Q_stricmp( binding, keys[ i ].binding ) )
 		{
-			if( *key1 == -1 )
+			if ( *key1 == -1 )
 			{
 				*key1 = i;
 			}
-			else if( *key2 == -1 )
+			else if ( *key2 == -1 )
 			{
 				*key2 = i;
 				return;
@@ -1260,11 +1260,11 @@ int Key_GetKey( const char *binding )
 {
 	int i;
 
-	if( binding )
+	if ( binding )
 	{
-		for( i = 0; i < MAX_KEYS; i++ )
+		for ( i = 0; i < MAX_KEYS; i++ )
 		{
-			if( keys[ i ].binding && Q_stricmp( binding, keys[ i ].binding ) == 0 )
+			if ( keys[ i ].binding && Q_stricmp( binding, keys[ i ].binding ) == 0 )
 			{
 				return i;
 			}
@@ -1283,7 +1283,7 @@ void Key_Unbind_f( void )
 {
 	int b;
 
-	if( Cmd_Argc() != 2 )
+	if ( Cmd_Argc() != 2 )
 	{
 		Com_Printf( "unbind <key> : remove commands from a key\n" );
 		return;
@@ -1291,7 +1291,7 @@ void Key_Unbind_f( void )
 
 	b = Key_StringToKeynum( Cmd_Argv( 1 ) );
 
-	if( b == -1 )
+	if ( b == -1 )
 	{
 		Com_Printf( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
 		return;
@@ -1309,9 +1309,9 @@ void Key_Unbindall_f( void )
 {
 	int i;
 
-	for( i = 0; i < MAX_KEYS; i++ )
+	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if( keys[ i ].binding )
+		if ( keys[ i ].binding )
 		{
 			Key_SetBinding( i, "" );
 		}
@@ -1330,7 +1330,7 @@ void Key_Bind_f( void )
 
 	c = Cmd_Argc();
 
-	if( c < 2 )
+	if ( c < 2 )
 	{
 		Com_Printf( "bind <key> [command] : attach a command to a key\n" );
 		return;
@@ -1338,15 +1338,15 @@ void Key_Bind_f( void )
 
 	b = Key_StringToKeynum( Cmd_Argv( 1 ) );
 
-	if( b == -1 )
+	if ( b == -1 )
 	{
 		Com_Printf( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
 		return;
 	}
 
-	if( c == 2 )
+	if ( c == 2 )
 	{
-		if( keys[ b ].binding )
+		if ( keys[ b ].binding )
 		{
 			Com_Printf( "\"%s\" = \"%s\"\n", Cmd_Argv( 1 ), keys[ b ].binding );
 		}
@@ -1377,7 +1377,7 @@ void Key_EditBind_f( void )
 
 	b = Cmd_Argc();
 
-	if( b != 2 )
+	if ( b != 2 )
 	{
 		Com_Printf( "editbind <key> : edit a key binding (in the in-game console)" );
 		return;
@@ -1386,7 +1386,7 @@ void Key_EditBind_f( void )
 	key = Cmd_Argv( 1 );
 	b = Key_StringToKeynum( key );
 
-	if( b == -1 )
+	if ( b == -1 )
 	{
 		Com_Printf( "\"%s\" isn't a valid key\n", key );
 		return;
@@ -1416,9 +1416,9 @@ void Key_WriteBindings( fileHandle_t f )
 
 	FS_Printf( f, "unbindall\n" );
 
-	for( i = 0; i < MAX_KEYS; i++ )
+	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if( keys[ i ].binding && keys[ i ].binding[ 0 ] )
+		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
 		{
 			FS_Printf( f, "bind %s %s\n", Key_KeynumToString( i ), Com_QuoteStr( keys[ i ].binding ) );
 		}
@@ -1435,9 +1435,9 @@ void Key_Bindlist_f( void )
 {
 	int i;
 
-	for( i = 0; i < MAX_KEYS; i++ )
+	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if( keys[ i ].binding && keys[ i ].binding[ 0 ] )
+		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
 		{
 			Com_Printf( "%s = %s\n", Key_KeynumToString( i ), keys[ i ].binding );
 		}
@@ -1453,7 +1453,7 @@ void Key_KeynameCompletion( void ( *callback )( const char *s ) )
 {
 	int i;
 
-	for( i = 0; keynames[ i ].name != NULL; i++ )
+	for ( i = 0; keynames[ i ].name != NULL; i++ )
 	{
 		callback( keynames[ i ].name );
 	}
@@ -1466,12 +1466,12 @@ Key_CompleteUnbind
 */
 static void Key_CompleteUnbind( char *args, int argNum )
 {
-	if( argNum == 2 )
+	if ( argNum == 2 )
 	{
 		// Skip "unbind "
 		char *p = Com_SkipTokens( args, 1, " " );
 
-		if( p > args )
+		if ( p > args )
 		{
 			Field_CompleteKeyname();
 		}
@@ -1487,22 +1487,22 @@ void Key_CompleteBind( char *args, int argNum )
 {
 	char *p;
 
-	if( argNum == 2 )
+	if ( argNum == 2 )
 	{
 		// Skip "bind "
 		p = Com_SkipTokens( args, 1, " " );
 
-		if( p > args )
+		if ( p > args )
 		{
 			Field_CompleteKeyname();
 		}
 	}
-	else if( argNum >= 3 )
+	else if ( argNum >= 3 )
 	{
 		// Skip "bind <key> "
 		p = Com_SkipTokens( args, 2, " " );
 
-		if( p > args )
+		if ( p > args )
 		{
 			Field_CompleteCommand( p, qtrue, qtrue );
 		}
@@ -1544,12 +1544,12 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	qboolean bypassMenu = qfalse; // NERVE - SMF
 	qboolean onlybinds = qfalse;
 
-	if( !key )
+	if ( !key )
 	{
 		return;
 	}
 
-	switch( key )
+	switch ( key )
 	{
 		case K_KP_PGUP:
 		case K_KP_EQUALS:
@@ -1563,7 +1563,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		case K_KP_INS:
 		case K_KP_DEL:
 		case K_KP_HOME:
-			if( Sys_IsNumLockDown() )
+			if ( Sys_IsNumLockDown() )
 			{
 				onlybinds = qtrue;
 			}
@@ -1574,11 +1574,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	// update auto-repeat status and BUTTON_ANY status
 	keys[ key ].down = down;
 
-	if( down )
+	if ( down )
 	{
 		keys[ key ].repeats++;
 
-		if( keys[ key ].repeats == 1 )
+		if ( keys[ key ].repeats == 1 )
 		{
 			anykeydown++;
 		}
@@ -1588,17 +1588,17 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		keys[ key ].repeats = 0;
 		anykeydown--;
 
-		if( anykeydown < 0 )
+		if ( anykeydown < 0 )
 		{
 			anykeydown = 0;
 		}
 	}
 
-	if( key == K_ENTER )
+	if ( key == K_ENTER )
 	{
-		if( down )
+		if ( down )
 		{
-			if( keys[ K_ALT ].down )
+			if ( keys[ K_ALT ].down )
 			{
 				Cvar_SetValue( "r_fullscreen", !Cvar_VariableIntegerValue( "r_fullscreen" ) );
 				return;
@@ -1608,21 +1608,21 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 
 #ifdef MACOS_X
 
-	if( down && keys[ K_COMMAND ].down )
+	if ( down && keys[ K_COMMAND ].down )
 	{
-		if( key == 'f' )
+		if ( key == 'f' )
 		{
 			Key_ClearStates();
 			Cbuf_ExecuteText( EXEC_APPEND, "toggle r_fullscreen\nvid_restart\n" );
 			return;
 		}
-		else if( key == 'q' )
+		else if ( key == 'q' )
 		{
 			Key_ClearStates();
 			Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
 			return;
 		}
-		else if( key == K_TAB )
+		else if ( key == K_TAB )
 		{
 			Key_ClearStates();
 			Cvar_SetValue( "r_minimize", 1 );
@@ -1632,7 +1632,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 
 #endif
 
-	if( cl_altTab->integer && keys[ K_ALT ].down && key == K_TAB )
+	if ( cl_altTab->integer && keys[ K_ALT ].down && key == K_TAB )
 	{
 		Key_ClearStates();
 		Cvar_SetValue( "r_minimize", 1 );
@@ -1640,9 +1640,9 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	}
 
 	// console key is hardcoded, so the user can never unbind it
-	if( key == K_CONSOLE || ( keys[ K_SHIFT ].down && key == K_ESCAPE ) )
+	if ( key == K_CONSOLE || ( keys[ K_SHIFT ].down && key == K_ESCAPE ) )
 	{
-		if( !down )
+		if ( !down )
 		{
 			return;
 		}
@@ -1653,27 +1653,27 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	}
 
 //----(SA)  added
-	if( cl.cameraMode )
+	if ( cl.cameraMode )
 	{
-		if( !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CONSOLE ) ) )   // let menu/console handle keys if necessary
+		if ( !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CONSOLE ) ) )  // let menu/console handle keys if necessary
 		{
 			// in cutscenes we need to handle keys specially (pausing not allowed in camera mode)
-			if( ( key == K_ESCAPE ||
-			      key == K_SPACE ||
-			      key == K_ENTER ) && down )
+			if ( ( key == K_ESCAPE ||
+			       key == K_SPACE ||
+			       key == K_ENTER ) && down )
 			{
 				CL_AddReliableCommand( "cameraInterrupt" );
 				return;
 			}
 
 			// eat all keys
-			if( down )
+			if ( down )
 			{
 				return;
 			}
 		}
 
-		if( ( cls.keyCatchers & KEYCATCH_CONSOLE ) && key == K_ESCAPE )
+		if ( ( cls.keyCatchers & KEYCATCH_CONSOLE ) && key == K_ESCAPE )
 		{
 			// don't allow menu starting when console is down and camera running
 			return;
@@ -1695,22 +1695,22 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	*/
 
 	// escape is always handled special
-	if( key == K_ESCAPE && down )
+	if ( key == K_ESCAPE && down )
 	{
 		// escape always gets out of CGAME stuff
-		if( cls.keyCatchers & KEYCATCH_CGAME )
+		if ( cls.keyCatchers & KEYCATCH_CGAME )
 		{
 			cls.keyCatchers &= ~KEYCATCH_CGAME;
 			VM_Call( cgvm, CG_EVENT_HANDLING, CGAME_EVENT_NONE );
 			return;
 		}
 
-		if( !( cls.keyCatchers & KEYCATCH_UI ) )
+		if ( !( cls.keyCatchers & KEYCATCH_UI ) )
 		{
-			if( cls.state == CA_ACTIVE && !clc.demoplaying )
+			if ( cls.state == CA_ACTIVE && !clc.demoplaying )
 			{
 				// Arnout: on request
-				if( cls.keyCatchers & KEYCATCH_CONSOLE )  // get rid of the console
+				if ( cls.keyCatchers & KEYCATCH_CONSOLE ) // get rid of the console
 				{
 					Con_ToggleConsole_f();
 				}
@@ -1739,11 +1739,11 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	// console mode and menu mode, to keep the character from continuing
 	// an action started before a mode switch.
 	//
-	if( !down )
+	if ( !down )
 	{
 		kb = keys[ key ].binding;
 
-		if( kb && kb[ 0 ] == '+' )
+		if ( kb && kb[ 0 ] == '+' )
 		{
 			// button commands add keynum and time as parms so that multiple
 			// sources can be discriminated and subframe corrected
@@ -1751,16 +1751,16 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 			Cbuf_AddText( cmd );
 		}
 
-		if( cls.keyCatchers & KEYCATCH_UI && uivm )
+		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
 		{
-			if( !onlybinds || VM_Call( uivm, UI_WANTSBINDKEYS ) )
+			if ( !onlybinds || VM_Call( uivm, UI_WANTSBINDKEYS ) )
 			{
 				VM_Call( uivm, UI_KEY_EVENT, key, down );
 			}
 		}
-		else if( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
+		else if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
 		{
-			if( !onlybinds || VM_Call( cgvm, CG_WANTSBINDKEYS ) )
+			if ( !onlybinds || VM_Call( cgvm, CG_WANTSBINDKEYS ) )
 			{
 				VM_Call( cgvm, CG_KEY_EVENT, key, down );
 			}
@@ -1770,49 +1770,49 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	}
 
 	// NERVE - SMF - if we just want to pass it along to game
-	if( cl_bypassMouseInput && cl_bypassMouseInput->integer )
+	if ( cl_bypassMouseInput && cl_bypassMouseInput->integer )
 	{
-		if( ( key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 || key == K_MOUSE4 || key == K_MOUSE5 ) )
+		if ( ( key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 || key == K_MOUSE4 || key == K_MOUSE5 ) )
 		{
-			if( cl_bypassMouseInput->integer == 1 )
+			if ( cl_bypassMouseInput->integer == 1 )
 			{
 				bypassMenu = qtrue;
 			}
 		}
-		else if( ( cls.keyCatchers & KEYCATCH_UI && !UI_checkKeyExec( key ) ) || ( cls.keyCatchers & KEYCATCH_CGAME && !CL_CGameCheckKeyExec( key ) ) )
+		else if ( ( cls.keyCatchers & KEYCATCH_UI && !UI_checkKeyExec( key ) ) || ( cls.keyCatchers & KEYCATCH_CGAME && !CL_CGameCheckKeyExec( key ) ) )
 		{
 			bypassMenu = qtrue;
 		}
 	}
 
 	// distribute the key down event to the apropriate handler
-	if( cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
-		if( !onlybinds )
+		if ( !onlybinds )
 		{
 			Console_Key( key );
 		}
 	}
-	else if( cls.keyCatchers & KEYCATCH_UI && !bypassMenu )
+	else if ( cls.keyCatchers & KEYCATCH_UI && !bypassMenu )
 	{
-		if( !onlybinds || VM_Call( uivm, UI_WANTSBINDKEYS ) )
+		if ( !onlybinds || VM_Call( uivm, UI_WANTSBINDKEYS ) )
 		{
 			VM_Call( uivm, UI_KEY_EVENT, key, down );
 		}
 	}
-	else if( cls.keyCatchers & KEYCATCH_CGAME && !bypassMenu )
+	else if ( cls.keyCatchers & KEYCATCH_CGAME && !bypassMenu )
 	{
-		if( cgvm )
+		if ( cgvm )
 		{
-			if( !onlybinds || VM_Call( cgvm, CG_WANTSBINDKEYS ) )
+			if ( !onlybinds || VM_Call( cgvm, CG_WANTSBINDKEYS ) )
 			{
 				VM_Call( cgvm, CG_KEY_EVENT, key, down );
 			}
 		}
 	}
-	else if( cls.state == CA_DISCONNECTED )
+	else if ( cls.state == CA_DISCONNECTED )
 	{
-		if( !onlybinds )
+		if ( !onlybinds )
 		{
 			Console_Key( key );
 		}
@@ -1822,15 +1822,15 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		// send the bound action
 		kb = keys[ key ].binding;
 
-		if( !kb )
+		if ( !kb )
 		{
-			if( key >= 200 )
+			if ( key >= 200 )
 			{
 				Com_Printf( "%s is unbound, use controls menu to set.\n"
 				            , Key_KeynumToString( key ) );
 			}
 		}
-		else if( kb[ 0 ] == '+' )
+		else if ( kb[ 0 ] == '+' )
 		{
 			// button commands add keynum and time as parms so that multiple
 			// sources can be discriminated and subframe corrected
@@ -1863,23 +1863,23 @@ void CL_CharEvent( int key )
 	// but I can't be arsed to leave this as is
 
 	// distribute the key down event to the apropriate handler
-	if( cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		Field_CharEvent( &g_consoleField, key );
 	}
-	else if( cls.keyCatchers & KEYCATCH_UI )
+	else if ( cls.keyCatchers & KEYCATCH_UI )
 	{
 		VM_Call( uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, qtrue );
 	}
-	else if( cls.keyCatchers & KEYCATCH_CGAME )
+	else if ( cls.keyCatchers & KEYCATCH_CGAME )
 	{
 		VM_Call( cgvm, CG_KEY_EVENT, key | K_CHAR_FLAG, qtrue );
 	}
-	else if( cls.keyCatchers & KEYCATCH_MESSAGE )
+	else if ( cls.keyCatchers & KEYCATCH_MESSAGE )
 	{
 		Field_CharEvent( &chatField, key );
 	}
-	else if( cls.state == CA_DISCONNECTED )
+	else if ( cls.state == CA_DISCONNECTED )
 	{
 		Field_CharEvent( &g_consoleField, key );
 	}
@@ -1896,9 +1896,9 @@ void Key_ClearStates( void )
 
 	anykeydown = 0;
 
-	for( i = 0; i < MAX_KEYS; i++ )
+	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if( keys[ i ].down )
+		if ( keys[ i ].down )
 		{
 			CL_KeyEvent( i, qfalse, 0 );
 		}

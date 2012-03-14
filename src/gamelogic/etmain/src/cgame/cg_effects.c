@@ -61,7 +61,7 @@ void CG_BubbleTrail( vec3_t start, vec3_t end, float size, float spacing )
 
 	VectorScale( vec, spacing, vec );
 
-	for( ; i < len; i += spacing )
+	for ( ; i < len; i += spacing )
 	{
 		localEntity_t *le;
 		refEntity_t   *re;
@@ -137,7 +137,7 @@ localEntity_t  *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 	le->endTime = startTime + duration;
 	le->fadeInTime = fadeInTime;
 
-	if( fadeInTime > startTime )
+	if ( fadeInTime > startTime )
 	{
 		le->lifeRate = 1.0 / ( le->endTime - le->fadeInTime );
 	}
@@ -160,7 +160,7 @@ localEntity_t  *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 	re->customShader = hShader;
 
 	// rage pro can't alpha fade, so use a different shader
-	if( cgs.glconfig.hardwareType == GLHW_RAGEPRO )
+	if ( cgs.glconfig.hardwareType == GLHW_RAGEPRO )
 	{
 		re->customShader = cgs.media.smokePuffRageProShader;
 		re->shaderRGBA[ 0 ] = 0xff;
@@ -177,7 +177,7 @@ localEntity_t  *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 	}
 
 // JPW NERVE
-	if( cg_fxflags & 1 )
+	if ( cg_fxflags & 1 )
 	{
 		re->customShader = getTestShader();
 		re->rotation = 180;
@@ -229,7 +229,7 @@ void CG_SpawnEffect( vec3_t org )
 
 qhandle_t getTestShader( void )
 {
-	switch( rand() % 2 )
+	switch ( rand() % 2 )
 	{
 		case 0:
 			return cgs.media.nerveTestShader;
@@ -254,7 +254,7 @@ localEntity_t  *CG_MakeExplosion( vec3_t origin, vec3_t dir, qhandle_t hModel, q
 	int           offset;
 	vec3_t        tmpVec, newOrigin;
 
-	if( msec <= 0 )
+	if ( msec <= 0 )
 	{
 		CG_Error( "CG_MakeExplosion: msec = %i", msec );
 	}
@@ -264,7 +264,7 @@ localEntity_t  *CG_MakeExplosion( vec3_t origin, vec3_t dir, qhandle_t hModel, q
 
 	ex = CG_AllocLocalEntity();
 
-	if( isSprite )
+	if ( isSprite )
 	{
 		ex->leType = LE_SPRITE_EXPLOSION;
 
@@ -279,7 +279,7 @@ localEntity_t  *CG_MakeExplosion( vec3_t origin, vec3_t dir, qhandle_t hModel, q
 		VectorCopy( origin, newOrigin );
 
 		// set axis with random rotate
-		if( !dir )
+		if ( !dir )
 		{
 			AxisClear( ex->refEntity.axis );
 		}
@@ -328,7 +328,7 @@ void CG_AddBloodTrails( vec3_t origin, vec3_t dir, int speed, int duration, int 
 	vec3_t        velocity;
 	int           i;
 
-	for( i = 0; i < count; i++ )
+	for ( i = 0; i < count; i++ )
 	{
 		le = CG_AllocLocalEntity();
 		re = &le->refEntity;
@@ -367,7 +367,7 @@ void CG_Bleed( vec3_t origin, int entityNum )
 	int       i, j;
 	centity_t *cent;
 
-	if( !cg_blood.integer )
+	if ( !cg_blood.integer )
 	{
 		return;
 	}
@@ -375,7 +375,7 @@ void CG_Bleed( vec3_t origin, int entityNum )
 	cent = &cg_entities[ entityNum ];
 
 	// Ridah, blood spurts
-	if( entityNum != cg.snap->ps.clientNum )
+	if ( entityNum != cg.snap->ps.clientNum )
 	{
 		vec3_t vhead, vbody, bOrigin, dir, vec, pvec, ndir;
 
@@ -388,7 +388,7 @@ void CG_Bleed( vec3_t origin, int entityNum )
 		VectorSubtract( vhead, vbody, vec );
 		VectorSubtract( bOrigin, vbody, pvec );
 
-		if( DotProduct( pvec, vec ) < 0 )
+		if ( DotProduct( pvec, vec ) < 0 )
 		{
 			VectorCopy( vbody, bOrigin );
 		}
@@ -396,7 +396,7 @@ void CG_Bleed( vec3_t origin, int entityNum )
 		{
 			VectorSubtract( bOrigin, vhead, pvec );
 
-			if( DotProduct( pvec, vec ) > 0 )
+			if ( DotProduct( pvec, vec ) > 0 )
 			{
 				VectorCopy( vhead, bOrigin );
 			}
@@ -413,18 +413,18 @@ void CG_Bleed( vec3_t origin, int entityNum )
 			VectorSubtract( bOrigin, vhead, vec );
 			len = VectorLength( vec );
 
-			if( len > 8 )
+			if ( len > 8 )
 			{
 				VectorMA( bOrigin, 8, dir, bOrigin );
 			}
 		}
 
 		// DHM - Nerve :: Made minor adjustments
-		for( i = 0; i < BLOOD_SPURT_COUNT; i++ )
+		for ( i = 0; i < BLOOD_SPURT_COUNT; i++ )
 		{
 			VectorCopy( dir, ndir );
 
-			for( j = 0; j < 3; j++ )
+			for ( j = 0; j < 3; j++ )
 			{
 				ndir[ j ] += crandom() * 0.3;
 			}
@@ -450,7 +450,7 @@ void CG_LaunchGib( centity_t *cent, vec3_t origin, vec3_t angles, vec3_t velocit
 	refEntity_t   *re;
 	int           i;
 
-	if( !cg_blood.integer )
+	if ( !cg_blood.integer )
 	{
 		return;
 	}
@@ -469,9 +469,9 @@ void CG_LaunchGib( centity_t *cent, vec3_t origin, vec3_t angles, vec3_t velocit
 	VectorCopy( origin, re->origin );
 	AnglesToAxis( angles, re->axis );
 
-	if( sizeScale != 1.0 )
+	if ( sizeScale != 1.0 )
 	{
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			VectorScale( re->axis[ i ], sizeScale, re->axis[ i ] );
 		}
@@ -506,7 +506,7 @@ void CG_LaunchGib( centity_t *cent, vec3_t origin, vec3_t angles, vec3_t velocit
 	le->ownerNum = cent->currentState.number;
 
 	// Ridah, if the player is on fire, then spawn some flaming gibs
-	if( cent && CG_EntOnFire( cent ) )
+	if ( cent && CG_EntOnFire( cent ) )
 	{
 		le->onFireStart = cent->currentState.onFireStart;
 		le->onFireEnd = re->fadeEndTime + 1000;
@@ -536,7 +536,7 @@ void CG_LoseHat( centity_t *cent, vec3_t dir )
 
 	clientNum = cent->currentState.clientNum;
 
-	if( clientNum < 0 || clientNum >= MAX_CLIENTS )
+	if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
 	{
 		CG_Error( "Bad clientNum on player entity" );
 	}
@@ -545,7 +545,7 @@ void CG_LoseHat( centity_t *cent, vec3_t dir )
 	character = CG_CharacterForClientinfo( ci, cent );
 
 	// don't launch anything if they don't have one
-	if( !character->accModels[ ACC_HAT ] )
+	if ( !character->accModels[ ACC_HAT ] )
 	{
 		return;
 	}
@@ -597,7 +597,7 @@ void CG_LoseHat( centity_t *cent, vec3_t dir )
 		le->bounceFactor = 0.2;
 
 		// Ridah, if the player is on fire, then make the hat on fire
-		if( cent && CG_EntOnFire( cent ) )
+		if ( cent && CG_EntOnFire( cent ) )
 		{
 			le->onFireStart = cent->currentState.onFireStart;
 			le->onFireEnd = cent->currentState.onFireEnd + 4000;
@@ -623,19 +623,19 @@ int CG_GetOriginForTag( centity_t *cent, refEntity_t *parent, char *tagName, int
 	// lerp the tag
 	retval = trap_R_LerpTag( &lerped, parent, tagName, startIndex );
 
-	if( retval < 0 )
+	if ( retval < 0 )
 	{
 		return retval;
 	}
 
 	VectorCopy( parent->origin, org );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		VectorMA( org, lerped.origin[ i ], parent->axis[ i ], org );
 	}
 
-	if( axis )
+	if ( axis )
 	{
 		// had to cast away the const to avoid compiler problems...
 		AxisMultiply( lerped.axis, ( ( refEntity_t * ) parent )->axis, axis );
@@ -721,17 +721,17 @@ void CG_GibPlayer( centity_t *cent, vec3_t playerOrigin, vec3_t gdir )
 		NULL
 	};
 
-	if( cg_blood.integer )
+	if ( cg_blood.integer )
 	{
 		// Rafael
-		for( i = 0; i < MAXJUNCTIONS; i++ )
+		for ( i = 0; i < MAXJUNCTIONS; i++ )
 		{
 			newjunction[ i ] = qfalse;
 		}
 
 		clientNum = cent->currentState.clientNum;
 
-		if( clientNum < 0 || clientNum >= MAX_CLIENTS )
+		if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
 		{
 			CG_Error( "Bad clientNum on player entity" );
 		}
@@ -741,21 +741,21 @@ void CG_GibPlayer( centity_t *cent, vec3_t playerOrigin, vec3_t gdir )
 
 		// Ridah, fetch the various positions of the tag_gib*'s
 		// and spawn the gibs from the correct places (especially the head)
-		for( gibIndex = 0, count = 0, foundtag = qtrue; foundtag && gibIndex < MAX_GIB_MODELS && gibTags[ gibIndex ]; gibIndex++ )
+		for ( gibIndex = 0, count = 0, foundtag = qtrue; foundtag && gibIndex < MAX_GIB_MODELS && gibTags[ gibIndex ]; gibIndex++ )
 		{
 			refEntity_t *re = 0;
 
 			foundtag = qfalse;
 
-			if( !character->gibModels[ gibIndex ] )
+			if ( !character->gibModels[ gibIndex ] )
 			{
 				continue;
 			}
 
 			re = &cent->pe.bodyRefEnt;
 
-			for( tagIndex = 0; ( tagIndex = CG_GetOriginForTag( cent, re, gibTags[ gibIndex ], tagIndex, origin, axis ) ) >= 0;
-			     count++, tagIndex++ )
+			for ( tagIndex = 0; ( tagIndex = CG_GetOriginForTag( cent, re, gibTags[ gibIndex ], tagIndex, origin, axis ) ) >= 0;
+			      count++, tagIndex++ )
 			{
 				foundtag = qtrue;
 
@@ -772,9 +772,9 @@ void CG_GibPlayer( centity_t *cent, vec3_t playerOrigin, vec3_t gdir )
 
 				CG_LaunchGib( cent, origin, angles, velocity, character->gibModels[ gibIndex ], 1.0, 0 );
 
-				for( junction = 0; junction < MAXJUNCTIONS; junction++ )
+				for ( junction = 0; junction < MAXJUNCTIONS; junction++ )
 				{
-					if( !Q_stricmp( gibTags[ gibIndex ], JunctiongibTags[ junction ] ) )
+					if ( !Q_stricmp( gibTags[ gibIndex ], JunctiongibTags[ junction ] ) )
 					{
 						VectorCopy( origin, junctionOrigin[ junction ] );
 						newjunction[ junction ] = qtrue;
@@ -783,15 +783,15 @@ void CG_GibPlayer( centity_t *cent, vec3_t playerOrigin, vec3_t gdir )
 			}
 		}
 
-		for( i = 0; i < MAXJUNCTIONS; i++ )
+		for ( i = 0; i < MAXJUNCTIONS; i++ )
 		{
-			if( newjunction[ i ] == qtrue )
+			if ( newjunction[ i ] == qtrue )
 			{
-				for( j = 0; j < MAXJUNCTIONS; j++ )
+				for ( j = 0; j < MAXJUNCTIONS; j++ )
 				{
-					if( !Q_stricmp( JunctiongibTags[ j ], ConnectTags[ i ] ) )
+					if ( !Q_stricmp( JunctiongibTags[ j ], ConnectTags[ i ] ) )
 					{
-						if( newjunction[ j ] == qtrue )
+						if ( newjunction[ j ] == qtrue )
 						{
 							// spawn a blood cloud somewhere on the vec from
 							VectorSubtract( junctionOrigin[ i ], junctionOrigin[ j ], dir );
@@ -805,13 +805,13 @@ void CG_GibPlayer( centity_t *cent, vec3_t playerOrigin, vec3_t gdir )
 		// Ridah, spawn a bunch of blood dots around the place
 #define GIB_BLOOD_DOTS 3
 
-		for( i = 0, count = 0; i < GIB_BLOOD_DOTS * 2; i++ )
+		for ( i = 0, count = 0; i < GIB_BLOOD_DOTS * 2; i++ )
 		{
 			// TTimo: unused
 			//static vec3_t mins = {-10,-10,-10};
 			//static vec3_t maxs = { 10, 10, 10};
 
-			if( i > 0 )
+			if ( i > 0 )
 			{
 				velocity[ 0 ] = ( ( i % 2 ) * 2 - 1 ) * ( 40 + 40 * random() );
 				velocity[ 1 ] = ( ( ( i / 2 ) % 2 ) * 2 - 1 ) * ( 40 + 40 * random() );
@@ -827,7 +827,7 @@ void CG_GibPlayer( centity_t *cent, vec3_t playerOrigin, vec3_t gdir )
 
 			CG_Trace( &trace, playerOrigin, NULL, NULL, origin, -1, CONTENTS_SOLID );
 
-			if( trace.fraction < 1.0 )
+			if ( trace.fraction < 1.0 )
 			{
 				//% BG_GetMarkDir( velocity, trace.plane.normal, velocity );
 				//% CG_ImpactMark( cgs.media.bloodDotShaders[rand()%5], trace.endpos, velocity, random()*360,
@@ -847,7 +847,7 @@ void CG_GibPlayer( centity_t *cent, vec3_t playerOrigin, vec3_t gdir )
 				                     cg_bloodTime.integer * 1000, ( cg_bloodTime.integer * 1000 ) >> 4 );
 #endif
 
-				if( count++ > GIB_BLOOD_DOTS )
+				if ( count++ > GIB_BLOOD_DOTS )
 				{
 					break;
 				}
@@ -855,7 +855,7 @@ void CG_GibPlayer( centity_t *cent, vec3_t playerOrigin, vec3_t gdir )
 		}
 	}
 
-	if( !( cent->currentState.eFlags & EF_HEADSHOT ) )
+	if ( !( cent->currentState.eFlags & EF_HEADSHOT ) )
 	{
 		// (SA) already lost hat while living
 		CG_LoseHat( cent, tv( 0, 0, 1 ) );
@@ -880,7 +880,7 @@ void CG_SparklerSparks( vec3_t origin, int count )
 	localEntity_t *le;
 	refEntity_t   *re;
 
-	for( i = 0; i < count; i++ )
+	for ( i = 0; i < count; i++ )
 	{
 		// spawn the spark
 		le = CG_AllocLocalEntity();
@@ -970,7 +970,7 @@ void CG_ProjectedSpotLight( vec3_t start, vec3_t dir )
 	VectorMA( start, 1000, dir, end );
 	CG_Trace( &tr, start, NULL, NULL, end, -1, CONTENTS_SOLID );
 
-	if( tr.fraction == 1.0 )
+	if ( tr.fraction == 1.0 )
 	{
 		return;
 	}
@@ -978,7 +978,7 @@ void CG_ProjectedSpotLight( vec3_t start, vec3_t dir )
 	//
 	alpha = ( 1.0 - tr.fraction );
 
-	if( alpha > 1.0 )
+	if ( alpha > 1.0 )
 	{
 		alpha = 1.0;
 	}
@@ -1058,15 +1058,15 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 	// normalize color
 	colorNorm[ 3 ] = 0; // store normalize multiplier in alpha index
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		if( color[ i ] > colorNorm[ 3 ] )
+		if ( color[ i ] > colorNorm[ 3 ] )
 		{
 			colorNorm[ 3 ] = color[ i ]; // find largest color value in RGB
 		}
 	}
 
-	if( colorNorm[ 3 ] != 1 )
+	if ( colorNorm[ 3 ] != 1 )
 	{
 		// it needs to be boosted
 		VectorMA( color, 1.0 / colorNorm[ 3 ], color, colorNorm );  // FIXME: div by 0
@@ -1078,18 +1078,18 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 
 	colorNorm[ 3 ] = color[ 3 ];
 
-	if( flags & SL_NOSTARTCAP )
+	if ( flags & SL_NOSTARTCAP )
 	{
 		capStart = qfalse;
 	}
 
-	if( startWidth == 0 )
+	if ( startWidth == 0 )
 	{
 		// cone, not cylinder
 		capStart = qfalse;
 	}
 
-	if( flags & SL_LOCKTRACETORANGE )
+	if ( flags & SL_LOCKTRACETORANGE )
 	{
 		VectorMA( start, range, lightDir, traceEnd );  // trace out to 'range'
 	}
@@ -1099,13 +1099,13 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 	}
 
 	// first trace to see if anything is hit
-	if( flags & SL_NOTRACE )
+	if ( flags & SL_NOTRACE )
 	{
 		tr.fraction = 1.0; // force no hit
 	}
 	else
 	{
-		if( flags & SL_TRACEWORLDONLY )
+		if ( flags & SL_TRACEWORLDONLY )
 		{
 			CG_Trace( &tr, start, NULL, NULL, traceEnd, -1, CONTENTS_SOLID );
 		}
@@ -1117,11 +1117,11 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 //      CG_Trace( &tr, start, NULL, NULL, traceEnd, -1, MASK_ALL &~(CONTENTS_MONSTERCLIP|CONTENTS_AREAPORTAL|CONTENTS_CLUSTERPORTAL));
 	}
 
-	if( tr.fraction < 1.0 )
+	if ( tr.fraction < 1.0 )
 	{
 		hitDist = beamLen = MAX_SPOT_RANGE * tr.fraction;
 
-		if( beamLen > range )
+		if ( beamLen > range )
 		{
 			beamLen = range;
 		}
@@ -1132,15 +1132,15 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 		beamLen = range;
 	}
 
-	if( flags & SL_LOCKUV )
+	if ( flags & SL_LOCKUV )
 	{
-		if( beamLen < range )
+		if ( beamLen < range )
 		{
 			endAlpha = 255.0f * ( color[ 3 ] - ( color[ 3 ] * beamLen / range ) );
 		}
 	}
 
-	if( segs >= MAX_SPOT_SEGS )
+	if ( segs >= MAX_SPOT_SEGS )
 	{
 		segs = MAX_SPOT_SEGS - 1;
 	}
@@ -1149,7 +1149,7 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 	// TODO: move much of this to renderer
 
 // model at base
-	if( cent->currentState.modelindex )
+	if ( cent->currentState.modelindex )
 	{
 		memset( &ent, 0, sizeof( ent ) );
 		ent.frame = 0;
@@ -1187,7 +1187,7 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 //
 //  generate the flat beam 'core'
 //
-	if( !( flags & SL_NOCORE ) )
+	if ( !( flags & SL_NOCORE ) )
 	{
 		VectorSubtract( start, cg.refdef_current->vieworg, v1 );
 		VectorNormalize( v1 );
@@ -1204,14 +1204,14 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 		VectorMA( endCenter, coreEndRadius * CORESCALE, coreright, coreverts[ 3 ].xyz );
 		VectorAdd( start, coreverts[ 3 ].xyz, coreverts[ 3 ].xyz );
 
-		for( i = 0; i < 4; i++ )
+		for ( i = 0; i < 4; i++ )
 		{
 			coreverts[ i ].modulate[ 0 ] = color[ 0 ] * 200.0f;
 			coreverts[ i ].modulate[ 1 ] = color[ 1 ] * 200.0f;
 			coreverts[ i ].modulate[ 2 ] = color[ 2 ] * 200.0f;
 			coreverts[ i ].modulate[ 3 ] = color[ 3 ] * 200.0f;
 
-			if( i > 1 )
+			if ( i > 1 )
 			{
 				coreverts[ i ].modulate[ 3 ] = 0;
 			}
@@ -1224,7 +1224,7 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 // generate the beam cylinder
 //
 
-	for( i = 0; i <= segs; i++ )
+	for ( i = 0; i <= segs; i++ )
 	{
 		RotatePointAroundVector( start_points[ i ], lightDir, startvec, ( 360.0f / ( float ) segs ) * i );
 		VectorAdd( start_points[ i ], start, start_points[ i ] );
@@ -1233,7 +1233,7 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 		VectorAdd( end_points[ i ], start, end_points[ i ] );
 	}
 
-	for( i = 0; i < segs; i++ )
+	for ( i = 0; i < segs; i++ )
 	{
 		j = ( i * 4 );
 
@@ -1272,7 +1272,7 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 		verts[ j ].modulate[ 2 ] = color[ 2 ] * 255.0f;
 		verts[ j ].modulate[ 3 ] = color[ 3 ] * 255.0f;
 
-		if( capStart )
+		if ( capStart )
 		{
 			VectorCopy( start_points[ i ], plugVerts[ i ].xyz );
 			plugVerts[ i ].st[ 0 ] = 0;
@@ -1287,16 +1287,16 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 	trap_R_AddPolysToScene( cgs.media.spotLightBeamShader, 4, &verts[ 0 ], segs );
 
 	// plug up the start circle
-	if( capStart )
+	if ( capStart )
 	{
 		trap_R_AddPolyToScene( cgs.media.spotLightBeamShader, segs, &plugVerts[ 0 ] );
 	}
 
 	// show the endpoint
 
-	if( !( flags & SL_NOIMPACT ) )
+	if ( !( flags & SL_NOIMPACT ) )
 	{
-		if( hitDist )
+		if ( hitDist )
 		{
 			VectorMA( startvec, hitDist, conevec, endvec );
 
@@ -1314,7 +1314,7 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 	}
 
 	// add d light at end
-	if( !( flags & SL_NODLIGHT ) && tr.endpos )
+	if ( !( flags & SL_NODLIGHT ) && tr.endpos )
 	{
 		vec3_t dlightLoc;
 
@@ -1323,7 +1323,7 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 	}
 
 	// draw flare at source
-	if( !( flags & SL_NOFLARE ) )
+	if ( !( flags & SL_NOFLARE ) )
 	{
 		qboolean lightInEyes = qfalse;
 		vec3_t   camloc, dirtolight;
@@ -1343,30 +1343,30 @@ void CG_Spotlight( centity_t *cent, float *color, vec3_t realstart, vec3_t light
 
 		deg = RAD2DEG( M_PI - acos( dot ) );
 
-		if( deg <= 35 )
+		if ( deg <= 35 )
 		{
 			// start flare a bit before the camera gets inside the cylinder
 			lightInEyes = qtrue;
 			flarescale = 1 - ( deg / 35 );
 		}
 
-		if( lightInEyes )
+		if ( lightInEyes )
 		{
 			// the dot check succeeded, now do a trace
 			CG_Trace( &tr, start, NULL, NULL, camloc, -1,
 			          MASK_ALL & ~( CONTENTS_MONSTERCLIP | CONTENTS_AREAPORTAL | CONTENTS_CLUSTERPORTAL ) );
 
-			if( tr.fraction != 1 )
+			if ( tr.fraction != 1 )
 			{
 				lightInEyes = qfalse;
 			}
 		}
 
-		if( lightInEyes )
+		if ( lightInEyes )
 		{
 			float coronasize = flarescale;
 
-			if( dist < 512 )
+			if ( dist < 512 )
 			{
 				// make even bigger if you're close enough
 				coronasize *= ( 512.0f / dist );
@@ -1400,7 +1400,7 @@ void CG_RumbleEfx( float pitch, float yaw )
 	yawRandom = 0;
 	//
 
-	if( pitch < 1 )
+	if ( pitch < 1 )
 	{
 		pitch = 1;
 	}
@@ -1420,9 +1420,9 @@ void CG_RumbleEfx( float pitch, float yaw )
 	// of time. The idea here is to keep it skewed for short period of time and then switches
 	// to the other direction - switch the sign of recoil[YAW] when random() < 0.05 and keep the
 	// sign otherwise. This seems better at balancing out the effect.
-	if( cg.kickAVel[ YAW ] > 0 )
+	if ( cg.kickAVel[ YAW ] > 0 )
 	{
-		if( random() < 0.05 )
+		if ( random() < 0.05 )
 		{
 			recoil[ YAW ] = -random() * yawRandom;
 		}
@@ -1431,9 +1431,9 @@ void CG_RumbleEfx( float pitch, float yaw )
 			recoil[ YAW ] = random() * yawRandom;
 		}
 	}
-	else if( cg.kickAVel[ YAW ] < 0 )
+	else if ( cg.kickAVel[ YAW ] < 0 )
 	{
-		if( random() < 0.05 )
+		if ( random() < 0.05 )
 		{
 			recoil[ YAW ] = random() * yawRandom;
 		}
@@ -1444,7 +1444,7 @@ void CG_RumbleEfx( float pitch, float yaw )
 	}
 	else
 	{
-		if( random() < 0.5 )
+		if ( random() < 0.5 )
 		{
 			recoil[ YAW ] = random() * yawRandom;
 		}
@@ -1496,7 +1496,7 @@ void InitSmokeSprites( void )
 
 	memset( &SmokeSprites, 0, sizeof( SmokeSprites ) );
 
-	for( i = 0; i < MAX_SMOKESPRITES - 1; i++ )
+	for ( i = 0; i < MAX_SMOKESPRITES - 1; i++ )
 	{
 		SmokeSprites[ i ].next = &SmokeSprites[ i + 1 ];
 	}
@@ -1510,7 +1510,7 @@ static smokesprite_t *AllocSmokeSprite( void )
 {
 	smokesprite_t *alloc;
 
-	if( SmokeSpriteCount >= MAX_SMOKESPRITES )
+	if ( SmokeSpriteCount >= MAX_SMOKESPRITES )
 	{
 		return ( NULL );
 	}
@@ -1519,7 +1519,7 @@ static smokesprite_t *AllocSmokeSprite( void )
 
 	firstfreesmokesprite = alloc->next;
 
-	if( lastusedsmokesprite )
+	if ( lastusedsmokesprite )
 	{
 		lastusedsmokesprite->next = alloc;
 	}
@@ -1537,12 +1537,12 @@ static smokesprite_t *DeAllocSmokeSprite( smokesprite_t *dealloc )
 {
 	smokesprite_t *ret_smokesprite;
 
-	if( dealloc->prev )
+	if ( dealloc->prev )
 	{
 		dealloc->prev->next = dealloc->next;
 	}
 
-	if( dealloc->next )
+	if ( dealloc->next )
 	{
 		dealloc->next->prev = dealloc->prev;
 	}
@@ -1551,7 +1551,7 @@ static smokesprite_t *DeAllocSmokeSprite( smokesprite_t *dealloc )
 		// no next particle, so this particle was 'lastusedsmokesprite'
 		lastusedsmokesprite = dealloc->prev;
 
-		if( lastusedsmokesprite )
+		if ( lastusedsmokesprite )
 		{
 			// incase that there was no previous particle (happens when there is only one particle and this one gets dealloced)
 			lastusedsmokesprite->next = NULL;
@@ -1590,11 +1590,11 @@ static qboolean CG_SmokeSpritePhysics( smokesprite_t *smokesprite, const float d
 	//CG_Trace( &tr, oldpos, mins, maxs, smokesprite->pos, -1, CONTENTS_SOLID );
 	CG_Trace( &tr, oldpos, NULL, NULL, smokesprite->pos, -1, CONTENTS_SOLID );
 
-	if( tr.fraction != 1.f )
+	if ( tr.fraction != 1.f )
 	{
 		//float dot;
 
-		if( smokesprite->dist < 24.f )
+		if ( smokesprite->dist < 24.f )
 		{
 			return ( qfalse );
 		}
@@ -1617,7 +1617,7 @@ qboolean CG_SpawnSmokeSprite( centity_t *cent, float dist )
 {
 	smokesprite_t *smokesprite = AllocSmokeSprite();
 
-	if( smokesprite )
+	if ( smokesprite )
 	{
 		smokesprite->smokebomb = cent;
 		//VectorCopy( cent->lerpOrigin, smokesprite->pos );
@@ -1632,7 +1632,7 @@ qboolean CG_SpawnSmokeSprite( centity_t *cent, float dist )
 		smokesprite->colour[ 3 ] = .8f;
 
 		// Advance sprite
-		if( !CG_SmokeSpritePhysics( smokesprite, dist ) )
+		if ( !CG_SmokeSpritePhysics( smokesprite, dist ) )
 		{
 			DeAllocSmokeSprite( smokesprite );
 			return ( qfalse );
@@ -1653,7 +1653,7 @@ void CG_RenderSmokeGrenadeSmoke( centity_t *cent, const weaponInfo_t *weapon )
 	smokesprite_t *smokesprite;
 	float         spawnrate = ( 1.f / SMOKEBOMB_SPAWNRATE ) * 1000.f;
 
-	if( cent->currentState.effect1Time == 16 )
+	if ( cent->currentState.effect1Time == 16 )
 	{
 		cent->miscTime = 0;
 		cent->lastFuseSparkTime = 0; // last spawn time
@@ -1662,13 +1662,13 @@ void CG_RenderSmokeGrenadeSmoke( centity_t *cent, const weaponInfo_t *weapon )
 		return;
 	}
 
-	if( cent->currentState.effect1Time > 16 )
+	if ( cent->currentState.effect1Time > 16 )
 	{
 		int volume = 16 + ( ( cent->currentState.effect1Time / 640.f ) * ( 100 - 16 ) );
 
-		if( !cent->dl_atten ||
-		    cent->currentState.pos.trType != TR_STATIONARY ||
-		    ( cent->currentState.groundEntityNum != ENTITYNUM_WORLD && !VectorCompare( cent->lastLerpOrigin, cent->lerpOrigin ) ) )
+		if ( !cent->dl_atten ||
+		     cent->currentState.pos.trType != TR_STATIONARY ||
+		     ( cent->currentState.groundEntityNum != ENTITYNUM_WORLD && !VectorCompare( cent->lastLerpOrigin, cent->lerpOrigin ) ) )
 		{
 			trace_t tr;
 
@@ -1676,7 +1676,7 @@ void CG_RenderSmokeGrenadeSmoke( centity_t *cent, const weaponInfo_t *weapon )
 			cent->origin2[ 2 ] += 32;
 			CG_Trace( &tr, cent->currentState.pos.trBase, NULL, NULL, cent->origin2, -1, CONTENTS_SOLID );
 
-			if( tr.startsolid )
+			if ( tr.startsolid )
 			{
 				cent->dl_atten = 2;
 			}
@@ -1690,7 +1690,7 @@ void CG_RenderSmokeGrenadeSmoke( centity_t *cent, const weaponInfo_t *weapon )
 		//trap_S_AddLoopingSound(cent->lerpOrigin, vec3_origin, weapon->overheatSound, volume, 0);
 
 		// emitter is stuck in solid
-		if( cent->dl_atten == 2 )
+		if ( cent->dl_atten == 2 )
 		{
 			return;
 		}
@@ -1705,7 +1705,7 @@ void CG_RenderSmokeGrenadeSmoke( centity_t *cent, const weaponInfo_t *weapon )
 
 //      CG_Printf( "numSpritesForRadius: %i / numNewSpritesNeeded: %i / cent->miscTime: %i\n", numSpritesForRadius, numNewSpritesNeeded, cent->miscTime );
 
-		if( cg.oldTime && cent->lastFuseSparkTime != cg.time )
+		if ( cg.oldTime && cent->lastFuseSparkTime != cg.time )
 		{
 			cent->muzzleFlashTime += cg.frametime;
 			spritesNeeded = cent->muzzleFlashTime / spawnrate;
@@ -1716,17 +1716,17 @@ void CG_RenderSmokeGrenadeSmoke( centity_t *cent, const weaponInfo_t *weapon )
 //      if( spritesNeeded + cent->miscTime < 40 )
 //          spritesNeeded = 40 - cent->miscTime;
 
-		if( !spritesNeeded )
+		if ( !spritesNeeded )
 		{
 			return;
 		}
-		else if( spritesNeeded == 1 )
+		else if ( spritesNeeded == 1 )
 		{
 			// this is theoretically fine, till the smokegrenade ends up in a solid
 			//while( !CG_SpawnSmokeSprite( cent, 0.f ) );
 
 			// this is better
-			if( !CG_SpawnSmokeSprite( cent, 0.f ) )
+			if ( !CG_SpawnSmokeSprite( cent, 0.f ) )
 			{
 				// try again, just in case, so we don't get lots of gaps and remain quite constant
 				CG_SpawnSmokeSprite( cent, 0.f );
@@ -1738,13 +1738,13 @@ void CG_RenderSmokeGrenadeSmoke( centity_t *cent, const weaponInfo_t *weapon )
 			float lerp = 1.0f;
 			float dtime;
 
-			for( dtime = spritesNeeded * spawnrate; dtime > 0; dtime -= spawnrate )
+			for ( dtime = spritesNeeded * spawnrate; dtime > 0; dtime -= spawnrate )
 			{
 				// this is theoretically fine, till the smokegrenade ends up in a solid
 				//while( !CG_SpawnSmokeSprite( cent, lerp * cg.frametime * SMOKEBOMB_SMOKEVELOCITY ) );
 
 				// this is better
-				if( !CG_SpawnSmokeSprite( cent, lerp * cg.frametime * SMOKEBOMB_SMOKEVELOCITY ) )
+				if ( !CG_SpawnSmokeSprite( cent, lerp * cg.frametime * SMOKEBOMB_SMOKEVELOCITY ) )
 				{
 					// try again, just in case, so we don't get lots of gaps and remain quite constant
 					CG_SpawnSmokeSprite( cent, lerp * cg.frametime * SMOKEBOMB_SMOKEVELOCITY );
@@ -1752,16 +1752,16 @@ void CG_RenderSmokeGrenadeSmoke( centity_t *cent, const weaponInfo_t *weapon )
 			}
 		}
 	}
-	else if( cent->currentState.effect1Time == -1 )
+	else if ( cent->currentState.effect1Time == -1 )
 	{
 		// unlink smokesprites from smokebomb
-		if( cent->miscTime > 0 )
+		if ( cent->miscTime > 0 )
 		{
 			smokesprite = lastusedsmokesprite;
 
-			while( smokesprite )
+			while ( smokesprite )
 			{
-				if( smokesprite->smokebomb == cent )
+				if ( smokesprite->smokebomb == cent )
 				{
 					smokesprite->smokebomb = NULL;
 					cent->miscTime--;
@@ -1787,18 +1787,18 @@ void CG_AddSmokeSprites( void )
 
 	smokesprite = lastusedsmokesprite;
 
-	while( smokesprite )
+	while ( smokesprite )
 	{
-		if( smokesprite->smokebomb && !smokesprite->smokebomb->currentValid )
+		if ( smokesprite->smokebomb && !smokesprite->smokebomb->currentValid )
 		{
 			smokesprite = smokesprite->prev;
 			continue;
 		}
 
 		// Do physics
-		if( !CG_SmokeSpritePhysics( smokesprite, dist ) )
+		if ( !CG_SmokeSpritePhysics( smokesprite, dist ) )
 		{
-			if( smokesprite->smokebomb )
+			if ( smokesprite->smokebomb )
 			{
 				smokesprite->smokebomb->miscTime--;
 			}
@@ -1807,7 +1807,7 @@ void CG_AddSmokeSprites( void )
 			continue;
 		}
 
-		if( smokesprite->smokebomb )
+		if ( smokesprite->smokebomb )
 		{
 			radius = smokesprite->smokebomb->currentState.effect1Time;
 		}
@@ -1816,15 +1816,15 @@ void CG_AddSmokeSprites( void )
 			radius = -1.f;
 		}
 
-		if( radius < 0 )
+		if ( radius < 0 )
 		{
 			radius = 640.f; // max radius
 		}
 
 		// Expire sprites
-		if( smokesprite->dist > radius * .5f )
+		if ( smokesprite->dist > radius * .5f )
 		{
-			if( smokesprite->smokebomb )
+			if ( smokesprite->smokebomb )
 			{
 				smokesprite->smokebomb->miscTime--;
 			}
@@ -1850,7 +1850,7 @@ void CG_AddSmokeSprites( void )
 		color[ 3 ] = smokesprite->colour[ 3 ] * 0xff;
 
 		// fadeout
-		if( smokesprite->dist > ( radius * .5f * .8f ) )
+		if ( smokesprite->dist > ( radius * .5f * .8f ) )
 		{
 			color[ 3 ] =
 			  ( smokesprite->colour[ 3 ] -

@@ -248,7 +248,7 @@ void EA_Jump( int client )
 
 	bi = &botinputs[ client ];
 
-	if( bi->actionflags & ACTION_JUMPEDLASTFRAME )
+	if ( bi->actionflags & ACTION_JUMPEDLASTFRAME )
 	{
 		bi->actionflags &= ~ACTION_JUMP;
 	} //end if
@@ -270,7 +270,7 @@ void EA_DelayedJump( int client )
 
 	bi = &botinputs[ client ];
 
-	if( bi->actionflags & ACTION_JUMPEDLASTFRAME )
+	if ( bi->actionflags & ACTION_JUMPEDLASTFRAME )
 	{
 		bi->actionflags &= ~ACTION_DELAYEDJUMP;
 	} //end if
@@ -415,11 +415,11 @@ void EA_Move( int client, vec3_t dir, float speed )
 	VectorCopy( dir, bi->dir );
 
 	//cap speed
-	if( speed > MAX_USERMOVE )
+	if ( speed > MAX_USERMOVE )
 	{
 		speed = MAX_USERMOVE;
 	}
-	else if( speed < -MAX_USERMOVE )
+	else if ( speed < -MAX_USERMOVE )
 	{
 		speed = -MAX_USERMOVE;
 	}
@@ -534,12 +534,12 @@ void EA_ResetInput( int client, bot_input_t *init )
 	jumped = bi->actionflags & ACTION_JUMP;
 	bi->actionflags = 0;
 
-	if( jumped )
+	if ( jumped )
 	{
 		bi->actionflags |= ACTION_JUMPEDLASTFRAME;
 	}
 
-	if( init )
+	if ( init )
 	{
 		memcpy( bi, init, sizeof( bot_input_t ) );
 	}

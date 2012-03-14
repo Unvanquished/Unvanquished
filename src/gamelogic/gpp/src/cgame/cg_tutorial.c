@@ -62,25 +62,25 @@ static void CG_GetBindings( void )
 	int  i, j, numKeys;
 	char buffer[ MAX_STRING_CHARS ];
 
-	for( i = 0; i < numBindings; i++ )
+	for ( i = 0; i < numBindings; i++ )
 	{
 		bindings[ i ].keys[ 0 ] = bindings[ i ].keys[ 1 ] = K_NONE;
 		numKeys = 0;
 
-		for( j = 0; j < K_LAST_KEY; j++ )
+		for ( j = 0; j < K_LAST_KEY; j++ )
 		{
 			trap_Key_GetBindingBuf( j, buffer, MAX_STRING_CHARS );
 
-			if( buffer[ 0 ] == 0 )
+			if ( buffer[ 0 ] == 0 )
 			{
 				continue;
 			}
 
-			if( !Q_stricmp( buffer, bindings[ i ].command ) )
+			if ( !Q_stricmp( buffer, bindings[ i ].command ) )
 			{
 				bindings[ i ].keys[ numKeys++ ] = j;
 
-				if( numKeys > 1 )
+				if ( numKeys > 1 )
 				{
 					break;
 				}
@@ -102,28 +102,28 @@ static const char *CG_KeyNameForCommand( const char *command )
 
 	buffer[ 0 ] = '\0';
 
-	for( i = 0; i < numBindings; i++ )
+	for ( i = 0; i < numBindings; i++ )
 	{
-		if( !Q_stricmp( command, bindings[ i ].command ) )
+		if ( !Q_stricmp( command, bindings[ i ].command ) )
 		{
-			if( bindings[ i ].keys[ 0 ] != K_NONE )
+			if ( bindings[ i ].keys[ 0 ] != K_NONE )
 			{
 				trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 0 ],
 				                            buffer, MAX_STRING_CHARS );
 				firstKeyLength = strlen( buffer );
 
-				for( j = 0; j < firstKeyLength; j++ )
+				for ( j = 0; j < firstKeyLength; j++ )
 				{
 					buffer[ j ] = toupper( buffer[ j ] );
 				}
 
-				if( bindings[ i ].keys[ 1 ] != K_NONE )
+				if ( bindings[ i ].keys[ 1 ] != K_NONE )
 				{
 					Q_strcat( buffer, MAX_STRING_CHARS, " or " );
 					trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 1 ],
 					                            buffer + strlen( buffer ), MAX_STRING_CHARS - strlen( buffer ) );
 
-					for( j = firstKeyLength + 4; j < strlen( buffer ); j++ )
+					for ( j = firstKeyLength + 4; j < strlen( buffer ); j++ )
 					{
 						buffer[ j ] = toupper( buffer[ j ] );
 					}
@@ -163,14 +163,14 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 
 	es = &cg_entities[ trace.entityNum ].currentState;
 
-	if( healthFraction )
+	if ( healthFraction )
 	{
 		health = es->generic1;
 		*healthFraction = ( float ) health / BG_Buildable( es->modelindex )->health;
 	}
 
-	if( es->eType == ET_BUILDABLE &&
-	    ps->stats[ STAT_TEAM ] == BG_Buildable( es->modelindex )->team )
+	if ( es->eType == ET_BUILDABLE &&
+	     ps->stats[ STAT_TEAM ] == BG_Buildable( es->modelindex )->team )
 	{
 		return es;
 	}
@@ -190,7 +190,7 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
 	entityState_t *es;
 
-	if( buildable > BA_NONE )
+	if ( buildable > BA_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to place the %s\n",
@@ -209,11 +209,11 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 		              CG_KeyNameForCommand( "+attack" ) ) );
 	}
 
-	if( ( es = CG_BuildableInRange( ps, NULL ) ) )
+	if ( ( es = CG_BuildableInRange( ps, NULL ) ) )
 	{
-		if( cgs.markDeconstruct )
+		if ( cgs.markDeconstruct )
 		{
-			if( es->eFlags & EF_B_MARKED )
+			if ( es->eFlags & EF_B_MARKED )
 			{
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
 				          va( "Press %s to unmark this structure for replacement\n",
@@ -234,14 +234,14 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 		}
 	}
 
-	if( ( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) == BA_NONE )
+	if ( ( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) == BA_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to swipe\n",
 		              CG_KeyNameForCommand( "+attack2" ) ) );
 	}
 
-	if( ps->stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0_UPG )
+	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to launch a projectile\n",
@@ -282,7 +282,7 @@ static void CG_AlienLevel1Text( char *text, playerState_t *ps )
 	          va( "Press %s to swipe\n",
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
-	if( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
+	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to spray poisonous gas\n",
@@ -305,7 +305,7 @@ static void CG_AlienLevel2Text( char *text, playerState_t *ps )
 	          va( "Press %s to bite\n",
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
-	if( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL2_UPG )
+	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL2_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to invoke an electrical attack\n",
@@ -328,7 +328,7 @@ static void CG_AlienLevel3Text( char *text, playerState_t *ps )
 	          va( "Press %s to bite\n",
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
-	if( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG )
+	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to launch a projectile\n",
@@ -366,7 +366,7 @@ static void CG_HumanCkitText( char *text, playerState_t *ps )
 	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
 	entityState_t *es;
 
-	if( buildable > BA_NONE )
+	if ( buildable > BA_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to place the %s\n",
@@ -385,11 +385,11 @@ static void CG_HumanCkitText( char *text, playerState_t *ps )
 		              CG_KeyNameForCommand( "+attack" ) ) );
 	}
 
-	if( ( es = CG_BuildableInRange( ps, NULL ) ) )
+	if ( ( es = CG_BuildableInRange( ps, NULL ) ) )
 	{
-		if( cgs.markDeconstruct )
+		if ( cgs.markDeconstruct )
 		{
-			if( es->eFlags & EF_B_MARKED )
+			if ( es->eFlags & EF_B_MARKED )
 			{
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
 				          va( "Press %s to unmark this structure\n",
@@ -421,7 +421,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	char      *name;
 	upgrade_t upgrade = UP_NONE;
 
-	if( cg.weaponSelect < 32 )
+	if ( cg.weaponSelect < 32 )
 	{
 		name = cg_weapons[ cg.weaponSelect ].humanName;
 	}
@@ -431,10 +431,10 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		upgrade = cg.weaponSelect - 32;
 	}
 
-	if( !ps->Ammo && !ps->clips && !BG_Weapon( ps->weapon )->infiniteAmmo )
+	if ( !ps->Ammo && !ps->clips && !BG_Weapon( ps->weapon )->infiniteAmmo )
 	{
 		//no ammo
-		switch( ps->weapon )
+		switch ( ps->weapon )
 		{
 			case WP_MACHINEGUN:
 			case WP_CHAINGUN:
@@ -460,7 +460,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	}
 	else
 	{
-		switch( ps->weapon )
+		switch ( ps->weapon )
 		{
 			case WP_BLASTER:
 			case WP_MACHINEGUN:
@@ -520,8 +520,8 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	          va( "%s to select an upgrade\n",
 	              CG_KeyNameForCommand( "weapnext" ) ) );
 
-	if( upgrade == UP_NONE ||
-	    ( upgrade > UP_NONE && BG_Upgrade( upgrade )->usable ) )
+	if ( upgrade == UP_NONE ||
+	     ( upgrade > UP_NONE && BG_Upgrade( upgrade )->usable ) )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to use the %s\n",
@@ -529,8 +529,8 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		              name ) );
 	}
 
-	if( ps->stats[ STAT_HEALTH ] <= 35 &&
-	    BG_InventoryContainsUpgrade( UP_MEDKIT, ps->stats ) )
+	if ( ps->stats[ STAT_HEALTH ] <= 35 &&
+	     BG_InventoryContainsUpgrade( UP_MEDKIT, ps->stats ) )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to use your %s\n",
@@ -538,18 +538,18 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		              BG_Upgrade( UP_MEDKIT )->humanName ) );
 	}
 
-	if( ps->stats[ STAT_STAMINA ] <= STAMINA_BLACKOUT_LEVEL )
+	if ( ps->stats[ STAT_STAMINA ] <= STAMINA_BLACKOUT_LEVEL )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          "You are blacking out. Stop sprinting to recover stamina\n" );
 	}
-	else if( ps->stats[ STAT_STAMINA ] <= STAMINA_SLOW_LEVEL )
+	else if ( ps->stats[ STAT_STAMINA ] <= STAMINA_SLOW_LEVEL )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          "Your stamina is low. Stop sprinting to recover\n" );
 	}
 
-	switch( cg.nearUsableBuildable )
+	switch ( cg.nearUsableBuildable )
 	{
 		case BA_H_ARMOURY:
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
@@ -593,9 +593,9 @@ CG_SpectatorText
 */
 static void CG_SpectatorText( char *text, playerState_t *ps )
 {
-	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_NONE )
+	if ( cgs.clientinfo[ cg.clientNum ].team != TEAM_NONE )
 	{
-		if( ps->pm_flags & PMF_QUEUED )
+		if ( ps->pm_flags & PMF_QUEUED )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to leave spawn queue\n",
@@ -615,15 +615,15 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 		              CG_KeyNameForCommand( "+attack" ) ) );
 	}
 
-	if( ps->pm_flags & PMF_FOLLOW )
+	if ( ps->pm_flags & PMF_FOLLOW )
 	{
-		if( !cg.chaseFollow )
+		if ( !cg.chaseFollow )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to switch to chase-cam spectator mode\n",
 			              CG_KeyNameForCommand( "+button2" ) ) );
 		}
-		else if( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
+		else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to return to free spectator mode\n",
@@ -666,7 +666,7 @@ const char *CG_TutorialText( void )
 	static char   text[ MAX_TUTORIAL_TEXT ];
 	static int    refreshBindings = 0;
 
-	if( refreshBindings == 0 )
+	if ( refreshBindings == 0 )
 	{
 		CG_GetBindings();
 	}
@@ -676,16 +676,16 @@ const char *CG_TutorialText( void )
 	text[ 0 ] = '\0';
 	ps = &cg.snap->ps;
 
-	if( !cg.intermissionStarted && !cg.demoPlayback )
+	if ( !cg.intermissionStarted && !cg.demoPlayback )
 	{
-		if( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
-		    ps->pm_flags & PMF_FOLLOW )
+		if ( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
+		     ps->pm_flags & PMF_FOLLOW )
 		{
 			CG_SpectatorText( text, ps );
 		}
-		else if( ps->stats[ STAT_HEALTH ] > 0 )
+		else if ( ps->stats[ STAT_HEALTH ] > 0 )
 		{
-			switch( ps->stats[ STAT_CLASS ] )
+			switch ( ps->stats[ STAT_CLASS ] )
 			{
 				case PCL_ALIEN_BUILDER0:
 				case PCL_ALIEN_BUILDER0_UPG:
@@ -724,11 +724,11 @@ const char *CG_TutorialText( void )
 					break;
 			}
 
-			if( ps->stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( ps->stats[ STAT_TEAM ] == TEAM_ALIENS )
 			{
-				if( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ],
-				                       ps->persistant[ PERS_CREDIT ],
-				                       cgs.alienStage ) )
+				if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ],
+				                        ps->persistant[ PERS_CREDIT ],
+				                        cgs.alienStage ) )
 				{
 					Q_strcat( text, MAX_TUTORIAL_TEXT,
 					          va( "Press %s to evolve\n",
@@ -737,9 +737,9 @@ const char *CG_TutorialText( void )
 			}
 		}
 	}
-	else if( !cg.demoPlayback )
+	else if ( !cg.demoPlayback )
 	{
-		if( !CG_ClientIsReady( ps->clientNum ) )
+		if ( !CG_ClientIsReady( ps->clientNum ) )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s when ready to continue\n",
@@ -751,7 +751,7 @@ const char *CG_TutorialText( void )
 		}
 	}
 
-	if( !cg.demoPlayback )
+	if ( !cg.demoPlayback )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT, "Press ESC for the menu" );
 	}

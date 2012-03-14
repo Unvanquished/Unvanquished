@@ -56,34 +56,34 @@ void *G_Alloc( int size )
 	smallest = NULL;
 	smallestsize = POOLSIZE + 1; // Guaranteed not to miss any slots :)
 
-	for( fmn = freehead; fmn; fmn = fmn->next )
+	for ( fmn = freehead; fmn; fmn = fmn->next )
 	{
-		if( fmn->cookie != FREEMEMCOOKIE )
+		if ( fmn->cookie != FREEMEMCOOKIE )
 		{
 			G_Error( "G_Alloc: Memory corruption detected!\n" );
 		}
 
-		if( fmn->size >= allocsize )
+		if ( fmn->size >= allocsize )
 		{
 			// We've got a block
-			if( fmn->size == allocsize )
+			if ( fmn->size == allocsize )
 			{
 				// Same size, just remove
 
 				prev = fmn->prev;
 				next = fmn->next;
 
-				if( prev )
+				if ( prev )
 				{
 					prev->next = next; // Point previous node to next
 				}
 
-				if( next )
+				if ( next )
 				{
 					next->prev = prev; // Point next node to previous
 				}
 
-				if( fmn == freehead )
+				if ( fmn == freehead )
 				{
 					freehead = next; // Set head pointer to next
 				}
@@ -94,7 +94,7 @@ void *G_Alloc( int size )
 			else
 			{
 				// Keep track of the smallest free slot
-				if( fmn->size < smallestsize )
+				if ( fmn->size < smallestsize )
 				{
 					smallest = fmn;
 					smallestsize = fmn->size;
@@ -103,7 +103,7 @@ void *G_Alloc( int size )
 		}
 	}
 
-	if( !ptr && smallest )
+	if ( !ptr && smallest )
 	{
 		// We found a slot big enough
 		smallest->size -= allocsize;
@@ -111,11 +111,11 @@ void *G_Alloc( int size )
 		ptr = ( int * ) endptr;
 	}
 
-	if( ptr )
+	if ( ptr )
 	{
 		freemem -= allocsize;
 
-		if( g_debugAlloc.integer )
+		if ( g_debugAlloc.integer )
 		{
 			G_Printf( "G_Alloc of %i bytes (%i left)\n", allocsize, freemem );
 		}
@@ -143,16 +143,16 @@ void G_Free( void *ptr )
 
 	freemem += *freeptr;
 
-	if( g_debugAlloc.integer )
+	if ( g_debugAlloc.integer )
 	{
 		G_Printf( "G_Free of %i bytes (%i left)\n", *freeptr, freemem );
 	}
 
-	for( fmn = freehead; fmn; fmn = fmn->next )
+	for ( fmn = freehead; fmn; fmn = fmn->next )
 	{
 		freeend = ( ( char * ) fmn ) + fmn->size;
 
-		if( freeend == ( char * ) freeptr )
+		if ( freeend == ( char * ) freeptr )
 		{
 			// Released block can be merged to an existing node
 
@@ -192,29 +192,29 @@ void G_DefragmentMemory( void )
 
 	struct freememnode *startfmn, *endfmn, *fmn;
 
-	for( startfmn = freehead; startfmn; )
+	for ( startfmn = freehead; startfmn; )
 	{
 		endfmn = ( struct freememnode * )( ( ( char * ) startfmn ) + startfmn->size );
 
-		for( fmn = freehead; fmn; )
+		for ( fmn = freehead; fmn; )
 		{
-			if( fmn->cookie != FREEMEMCOOKIE )
+			if ( fmn->cookie != FREEMEMCOOKIE )
 			{
 				G_Error( "G_DefragmentMemory: Memory corruption detected!\n" );
 			}
 
-			if( fmn == endfmn )
+			if ( fmn == endfmn )
 			{
 				// We can add fmn onto startfmn.
 
-				if( fmn->prev )
+				if ( fmn->prev )
 				{
 					fmn->prev->next = fmn->next;
 				}
 
-				if( fmn->next )
+				if ( fmn->next )
 				{
-					if( !( fmn->next->prev = fmn->prev ) )
+					if ( !( fmn->next->prev = fmn->prev ) )
 					{
 						freehead = fmn->next; // We're removing the head node
 					}
@@ -232,7 +232,7 @@ void G_DefragmentMemory( void )
 			}
 		}
 
-		if( endfmn )
+		if ( endfmn )
 		{
 			startfmn = startfmn->next; // endfmn acts as a 'restart' flag here
 		}
@@ -247,7 +247,7 @@ void Svcmd_GameMem_f( void )
 
 	G_Printf( "Game memory status: %i out of %i bytes allocated\n", POOLSIZE - freemem, POOLSIZE );
 
-	for( fmn = freehead; fmn; fmn = fmn->next )
+	for ( fmn = freehead; fmn; fmn = fmn->next )
 	{
 		G_Printf( "  %p: %d bytes free.\n", fmn, fmn->size );
 	}

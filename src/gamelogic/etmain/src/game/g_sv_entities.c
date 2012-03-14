@@ -63,7 +63,7 @@ void InitServerEntities( void )
 g_serverEntity_t *GetServerEntity( int num )
 {
 	// if it's an invalid number, return null
-	if( ( num < MAX_GENTITIES ) || ( num >= MAX_GENTITIES + numServerEntities ) )
+	if ( ( num < MAX_GENTITIES ) || ( num >= MAX_GENTITIES + numServerEntities ) )
 	{
 		return NULL;
 	}
@@ -75,7 +75,7 @@ g_serverEntity_t *GetFreeServerEntity()
 {
 	// NOTE:  this is simplistic because we can't currently free these entities
 	//      if we change this, then we need to be more careful when allocating the entities
-	if( numServerEntities >= MAX_SERVER_ENTITIES )
+	if ( numServerEntities >= MAX_SERVER_ENTITIES )
 	{
 		G_Error( "GetFreeServerEntity: Cannot allocate server entity" );
 		return NULL;
@@ -93,20 +93,20 @@ g_serverEntity_t *CreateServerEntity( gentity_t *ent )
 	g_serverEntity_t *newEnt = GetFreeServerEntity();
 
 	// if we managed to get one, copy over data
-	if( newEnt )
+	if ( newEnt )
 	{
 		// G_NewString crashes if you pass in NULL, so let's check...
-		if( ent->classname )
+		if ( ent->classname )
 		{
 			newEnt->classname = G_NewString( ent->classname );
 		}
 
-		if( ent->targetname )
+		if ( ent->targetname )
 		{
 			newEnt->name = G_NewString( ent->targetname );
 		}
 
-		if( ent->target )
+		if ( ent->target )
 		{
 			newEnt->target = G_NewString( ent->target );
 		}
@@ -141,12 +141,12 @@ void InitialServerEntitySetup()
 	//      these are read from an additional file
 	CreateMapServerEntities();
 
-	for( i = 0; i < numServerEntities; i++ )
+	for ( i = 0; i < numServerEntities; i++ )
 	{
 		ent = &g_serverEntities[ i ];
 
 		// if this entity is in use and has a setup function
-		if( ent->inuse && ent->setup )
+		if ( ent->inuse && ent->setup )
 		{
 			// call it
 			ent->setup( ent );
@@ -160,7 +160,7 @@ g_serverEntity_t *FindServerEntity( g_serverEntity_t *from, int fieldofs, char *
 	char             *s;
 	g_serverEntity_t *max = &g_serverEntities[ numServerEntities ];
 
-	if( !from )
+	if ( !from )
 	{
 		from = g_serverEntities;
 	}
@@ -169,21 +169,21 @@ g_serverEntity_t *FindServerEntity( g_serverEntity_t *from, int fieldofs, char *
 		from++;
 	}
 
-	for( ; from < max; from++ )
+	for ( ; from < max; from++ )
 	{
-		if( !from->inuse )
+		if ( !from->inuse )
 		{
 			continue;
 		}
 
 		s = * ( char ** )( ( byte * ) from + fieldofs );
 
-		if( !s )
+		if ( !s )
 		{
 			continue;
 		}
 
-		if( !Q_stricmp( s, match ) )
+		if ( !Q_stricmp( s, match ) )
 		{
 			return from;
 		}
@@ -200,18 +200,18 @@ extern void SP_AIMarker_Setup( g_serverEntity_t *ent );
 // We have to hardcode the setup functions for these
 void InitServerEntitySetupFunc( g_serverEntity_t *ent )
 {
-	if( strcmp( ent->classname, "ai_marker" ) == 0 )
+	if ( strcmp( ent->classname, "ai_marker" ) == 0 )
 	{
 		ent->setup = SP_AIMarker_Setup;
 	}
-	else if( strcmp( ent->classname, "bot_seek_cover_spot" ) == 0 )
+	else if ( strcmp( ent->classname, "bot_seek_cover_spot" ) == 0 )
 	{
 		// set the team to allies
 		ent->team = TEAM_ALLIES;
 		// set the setup func
 		ent->setup = SP_SeekCover_Setup;
 	}
-	else if( strcmp( ent->classname, "bot_axis_seek_cover_spot" ) == 0 )
+	else if ( strcmp( ent->classname, "bot_axis_seek_cover_spot" ) == 0 )
 	{
 		// set the team to axis
 		ent->team = TEAM_AXIS;
@@ -227,20 +227,20 @@ void CreateServerEntityFromData( char *classname, char *targetname, char *target
 	g_serverEntity_t *newEnt = GetFreeServerEntity();
 
 	// if we managed to get one, copy over data
-	if( newEnt )
+	if ( newEnt )
 	{
 		// G_NewString crashes if you pass in NULL, so let's check...
-		if( classname )
+		if ( classname )
 		{
 			newEnt->classname = G_NewString( classname );
 		}
 
-		if( targetname )
+		if ( targetname )
 		{
 			newEnt->name = G_NewString( targetname );
 		}
 
-		if( target )
+		if ( target )
 		{
 			newEnt->target = G_NewString( target );
 		}

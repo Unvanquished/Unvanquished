@@ -88,17 +88,17 @@ void *imageBufferPtr[ BUFFER_MAX_TYPES ] = { NULL, NULL, NULL };
 
 void           *R_GetImageBuffer( int size, bufferMemType_t bufferType )
 {
-	if( imageBufferSize[ bufferType ] < R_IMAGE_BUFFER_SIZE && size <= imageBufferSize[ bufferType ] )
+	if ( imageBufferSize[ bufferType ] < R_IMAGE_BUFFER_SIZE && size <= imageBufferSize[ bufferType ] )
 	{
 		imageBufferSize[ bufferType ] = R_IMAGE_BUFFER_SIZE;
 		imageBufferPtr[ bufferType ] = malloc( imageBufferSize[ bufferType ] );
 //DAJ TEST      imageBufferPtr[bufferType] = Z_Malloc( imageBufferSize[bufferType] );
 	}
 
-	if( size > imageBufferSize[ bufferType ] )
+	if ( size > imageBufferSize[ bufferType ] )
 	{
 		// it needs to grow
-		if( imageBufferPtr[ bufferType ] )
+		if ( imageBufferPtr[ bufferType ] )
 		{
 			free( imageBufferPtr[ bufferType ] );
 		}
@@ -116,9 +116,9 @@ void R_FreeImageBuffer( void )
 {
 	int bufferType;
 
-	for( bufferType = 0; bufferType < BUFFER_MAX_TYPES; bufferType++ )
+	for ( bufferType = 0; bufferType < BUFFER_MAX_TYPES; bufferType++ )
 	{
-		if( !imageBufferPtr[ bufferType ] )
+		if ( !imageBufferPtr[ bufferType ] )
 		{
 			return;
 		}
@@ -137,7 +137,7 @@ void R_GammaCorrect( byte *buffer, int bufSize )
 {
 	int i;
 
-	for( i = 0; i < bufSize; i++ )
+	for ( i = 0; i < bufSize; i++ )
 	{
 		buffer[ i ] = s_gammatable[ buffer[ i ] ];
 	}
@@ -173,16 +173,16 @@ long GenerateImageHashValue( const char *fname )
 	hash = 0;
 	i = 0;
 
-	while( fname[ i ] != '\0' )
+	while ( fname[ i ] != '\0' )
 	{
 		letter = tolower( fname[ i ] );
 
-		if( letter == '.' )
+		if ( letter == '.' )
 		{
 			break; // don't include extension
 		}
 
-		if( letter == '\\' )
+		if ( letter == '\\' )
 		{
 			letter = '/'; // damn path names
 		}
@@ -205,9 +205,9 @@ void GL_TextureMode( const char *string )
 	int     i;
 	image_t *glt;
 
-	for( i = 0; i < 6; i++ )
+	for ( i = 0; i < 6; i++ )
 	{
-		if( !Q_stricmp( modes[ i ].name, string ) )
+		if ( !Q_stricmp( modes[ i ].name, string ) )
 		{
 			break;
 		}
@@ -215,13 +215,13 @@ void GL_TextureMode( const char *string )
 
 	// hack to prevent trilinear from being set on voodoo,
 	// because their driver freaks...
-	if( i == 5 && glConfig.hardwareType == GLHW_3DFX_2D3D )
+	if ( i == 5 && glConfig.hardwareType == GLHW_3DFX_2D3D )
 	{
 		ri.Printf( PRINT_ALL, "Refusing to set trilinear on a voodoo.\n" );
 		i = 3;
 	}
 
-	if( i == 6 )
+	if ( i == 6 )
 	{
 		ri.Printf( PRINT_ALL, "bad filter name\n" );
 		return;
@@ -231,13 +231,13 @@ void GL_TextureMode( const char *string )
 	gl_filter_max = modes[ i ].maximize;
 
 	// change all the existing mipmap texture objects
-	for( i = 0; i < tr.numImages; i++ )
+	for ( i = 0; i < tr.numImages; i++ )
 	{
 		glt = tr.images[ i ];
 		GL_Bind( glt );
 
 		// ydnar: for allowing lightmap debugging
-		if( glt->mipmap )
+		if ( glt->mipmap )
 		{
 			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min );
 			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
@@ -260,9 +260,9 @@ void GL_TextureAnisotropy( float anisotropy )
 	int     i;
 	image_t *glt;
 
-	if( r_ext_texture_filter_anisotropic->integer == 1 )
+	if ( r_ext_texture_filter_anisotropic->integer == 1 )
 	{
-		if( anisotropy < 1.0 || anisotropy > glConfig.maxAnisotropy )
+		if ( anisotropy < 1.0 || anisotropy > glConfig.maxAnisotropy )
 		{
 			ri.Printf( PRINT_ALL, "anisotropy out of range\n" );
 			return;
@@ -271,13 +271,13 @@ void GL_TextureAnisotropy( float anisotropy )
 
 	gl_anisotropy = anisotropy;
 
-	if( !glConfig.anisotropicAvailable )
+	if ( !glConfig.anisotropicAvailable )
 	{
 		return;
 	}
 
 	// change all the existing texture objects
-	for( i = 0; i < tr.numImages; i++ )
+	for ( i = 0; i < tr.numImages; i++ )
 	{
 		glt = tr.images[ i ];
 		GL_Bind( glt );
@@ -297,9 +297,9 @@ int R_SumOfUsedImages( void )
 
 	total = 0;
 
-	for( i = 0; i < tr.numImages; i++ )
+	for ( i = 0; i < tr.numImages; i++ )
 	{
-		if( tr.images[ i ]->frameUsed == fc )
+		if ( tr.images[ i ]->frameUsed == fc )
 		{
 			total += tr.images[ i ]->uploadWidth * tr.images[ i ]->uploadHeight;
 		}
@@ -326,7 +326,7 @@ void R_ImageList_f( void )
 	ri.Printf( PRINT_ALL, "\n      -w-- -h-- -mm- -TMU- GLname -if-- wrap --name-------\n" );
 	texels = 0;
 
-	for( i = 0; i < tr.numImages; i++ )
+	for ( i = 0; i < tr.numImages; i++ )
 	{
 		image = tr.images[ i ];
 
@@ -334,7 +334,7 @@ void R_ImageList_f( void )
 		ri.Printf( PRINT_ALL, "%4i: %4i %4i  %s   %d   %5d ",
 		           i, image->uploadWidth, image->uploadHeight, yesno[ image->mipmap ], image->TMU, image->texnum );
 
-		switch( image->internalFormat )
+		switch ( image->internalFormat )
 		{
 			case 1:
 				ri.Printf( PRINT_ALL, "I    " );
@@ -388,7 +388,7 @@ void R_ImageList_f( void )
 				ri.Printf( PRINT_ALL, "???? " );
 		}
 
-		switch( image->wrapClampMode )
+		switch ( image->wrapClampMode )
 		{
 			case GL_REPEAT:
 				ri.Printf( PRINT_ALL, "rept " );
@@ -434,7 +434,7 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 	unsigned p1[ 2048 ], p2[ 2048 ];
 	byte     *pix1, *pix2, *pix3, *pix4;
 
-	if( outwidth > 2048 )
+	if ( outwidth > 2048 )
 	{
 		ri.Error( ERR_DROP, "ResampleTexture: max width" );
 	}
@@ -443,7 +443,7 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 
 	frac = fracstep >> 2;
 
-	for( i = 0; i < outwidth; i++ )
+	for ( i = 0; i < outwidth; i++ )
 	{
 		p1[ i ] = 4 * ( frac >> 16 );
 		frac += fracstep;
@@ -451,19 +451,19 @@ static void ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *
 
 	frac = 3 * ( fracstep >> 2 );
 
-	for( i = 0; i < outwidth; i++ )
+	for ( i = 0; i < outwidth; i++ )
 	{
 		p2[ i ] = 4 * ( frac >> 16 );
 		frac += fracstep;
 	}
 
-	for( i = 0; i < outheight; i++, out += outwidth )
+	for ( i = 0; i < outheight; i++, out += outwidth )
 	{
 		inrow = in + inwidth * ( int )( ( i + 0.25 ) * inheight / outheight );
 		inrow2 = in + inwidth * ( int )( ( i + 0.75 ) * inheight / outheight );
 		frac = fracstep >> 1;
 
-		for( j = 0; j < outwidth; j++ )
+		for ( j = 0; j < outwidth; j++ )
 		{
 			pix1 = ( byte * ) inrow + p1[ j ];
 			pix2 = ( byte * ) inrow + p2[ j ];
@@ -487,9 +487,9 @@ lighting range
 */
 void R_LightScaleTexture( unsigned *in, int inwidth, int inheight, qboolean only_gamma )
 {
-	if( only_gamma )
+	if ( only_gamma )
 	{
-		if( !glConfig.deviceSupportsGamma )
+		if ( !glConfig.deviceSupportsGamma )
 		{
 			int  i, c;
 			byte *p;
@@ -498,7 +498,7 @@ void R_LightScaleTexture( unsigned *in, int inwidth, int inheight, qboolean only
 
 			c = inwidth * inheight;
 
-			for( i = 0; i < c; i++, p += 4 )
+			for ( i = 0; i < c; i++, p += 4 )
 			{
 				p[ 0 ] = s_gammatable[ p[ 0 ] ];
 				p[ 1 ] = s_gammatable[ p[ 1 ] ];
@@ -515,12 +515,12 @@ void R_LightScaleTexture( unsigned *in, int inwidth, int inheight, qboolean only
 
 		c = inwidth * inheight;
 
-		if( glConfig.deviceSupportsGamma )
+		if ( glConfig.deviceSupportsGamma )
 		{
 			// raynorpat: small optimization
-			if( r_intensity->value != 1.0f )
+			if ( r_intensity->value != 1.0f )
 			{
-				for( i = 0; i < c; i++, p += 4 )
+				for ( i = 0; i < c; i++, p += 4 )
 				{
 					p[ 0 ] = s_intensitytable[ p[ 0 ] ];
 					p[ 1 ] = s_intensitytable[ p[ 1 ] ];
@@ -530,7 +530,7 @@ void R_LightScaleTexture( unsigned *in, int inwidth, int inheight, qboolean only
 		}
 		else
 		{
-			for( i = 0; i < c; i++, p += 4 )
+			for ( i = 0; i < c; i++, p += 4 )
 			{
 				p[ 0 ] = s_gammatable[ s_intensitytable[ p[ 0 ] ] ];
 				p[ 1 ] = s_gammatable[ s_intensitytable[ p[ 1 ] ] ];
@@ -564,13 +564,13 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight )
 	inWidthMask = inWidth - 1;
 	inHeightMask = inHeight - 1;
 
-	for( i = 0; i < outHeight; i++ )
+	for ( i = 0; i < outHeight; i++ )
 	{
-		for( j = 0; j < outWidth; j++ )
+		for ( j = 0; j < outWidth; j++ )
 		{
 			outpix = ( byte * )( temp + i * outWidth + j );
 
-			for( k = 0; k < 4; k++ )
+			for ( k = 0; k < 4; k++ )
 			{
 				total =
 				  1 * ( ( byte * ) &in[( ( i * 2 - 1 ) & inHeightMask ) * inWidth + ( ( j * 2 - 1 ) & inWidthMask ) ] ) [ k ] +
@@ -611,13 +611,13 @@ static void R_MipMap( byte *in, int width, int height )
 	byte *out;
 	int  row;
 
-	if( !r_simpleMipMaps->integer )
+	if ( !r_simpleMipMaps->integer )
 	{
 		R_MipMap2( ( unsigned * ) in, width, height );
 		return;
 	}
 
-	if( width == 1 && height == 1 )
+	if ( width == 1 && height == 1 )
 	{
 		return;
 	}
@@ -627,11 +627,11 @@ static void R_MipMap( byte *in, int width, int height )
 	width >>= 1;
 	height >>= 1;
 
-	if( width == 0 || height == 0 )
+	if ( width == 0 || height == 0 )
 	{
 		width += height; // get largest
 
-		for( i = 0; i < width; i++, out += 4, in += 8 )
+		for ( i = 0; i < width; i++, out += 4, in += 8 )
 		{
 			out[ 0 ] = ( in[ 0 ] + in[ 4 ] ) >> 1;
 			out[ 1 ] = ( in[ 1 ] + in[ 5 ] ) >> 1;
@@ -642,9 +642,9 @@ static void R_MipMap( byte *in, int width, int height )
 		return;
 	}
 
-	for( i = 0; i < height; i++, in += row )
+	for ( i = 0; i < height; i++, in += row )
 	{
-		for( j = 0; j < width; j++, out += 4, in += 8 )
+		for ( j = 0; j < width; j++, out += 4, in += 8 )
 		{
 			out[ 0 ] = ( in[ 0 ] + in[ 4 ] + in[ row + 0 ] + in[ row + 4 ] ) >> 2;
 			out[ 1 ] = ( in[ 1 ] + in[ 5 ] + in[ row + 1 ] + in[ row + 5 ] ) >> 2;
@@ -670,7 +670,7 @@ static float R_RMSE( byte *in, int width, int height )
 
 	rmse = 0.0f;
 
-	if( width <= 32 || height <= 32 )
+	if ( width <= 32 || height <= 32 )
 	{
 		return 9999.0f;
 	}
@@ -680,9 +680,9 @@ static float R_RMSE( byte *in, int width, int height )
 	width >>= 1;
 	height >>= 1;
 
-	for( i = 0; i < height; i++, in += row )
+	for ( i = 0; i < height; i++, in += row )
 	{
-		for( j = 0; j < width; j++, out += 4, in += 8 )
+		for ( j = 0; j < width; j++, out += 4, in += 8 )
 		{
 			out = ( in[ 0 ] + in[ 4 ] + in[ row + 0 ] + in[ row + 4 ] ) >> 2;
 			rtemp = ( ( Q_fabs( out - in[ 0 ] ) + Q_fabs( out - in[ 4 ] ) + Q_fabs( out - in[ row + 0 ] ) + Q_fabs( out - in[ row + 4 ] ) ) );
@@ -727,7 +727,7 @@ static void R_BlendOverTexture( byte *data, int pixelCount, byte blend[ 4 ] )
 	premult[ 1 ] = blend[ 1 ] * blend[ 3 ];
 	premult[ 2 ] = blend[ 2 ] * blend[ 3 ];
 
-	for( i = 0; i < pixelCount; i++, data += 4 )
+	for ( i = 0; i < pixelCount; i++, data += 4 )
 	{
 		data[ 0 ] = ( data[ 0 ] * inverseAlpha + premult[ 0 ] ) >> 9;
 		data[ 1 ] = ( data[ 1 ] * inverseAlpha + premult[ 1 ] ) >> 9;
@@ -809,27 +809,27 @@ static void Upload32( unsigned *data,
 	//
 	// convert to exact power of 2 sizes
 	//
-	for( scaled_width = 1; scaled_width < width; scaled_width <<= 1 )
+	for ( scaled_width = 1; scaled_width < width; scaled_width <<= 1 )
 	{
 		;
 	}
 
-	for( scaled_height = 1; scaled_height < height; scaled_height <<= 1 )
+	for ( scaled_height = 1; scaled_height < height; scaled_height <<= 1 )
 	{
 		;
 	}
 
-	if( r_roundImagesDown->integer && scaled_width > width )
+	if ( r_roundImagesDown->integer && scaled_width > width )
 	{
 		scaled_width >>= 1;
 	}
 
-	if( r_roundImagesDown->integer && scaled_height > height )
+	if ( r_roundImagesDown->integer && scaled_height > height )
 	{
 		scaled_height >>= 1;
 	}
 
-	if( scaled_width != width || scaled_height != height )
+	if ( scaled_width != width || scaled_height != height )
 	{
 		//resampledBuffer = ri.Hunk_AllocateTempMemory( scaled_width * scaled_height * 4 );
 		resampledBuffer = R_GetImageBuffer( scaled_width * scaled_height * 4, BUFFER_RESAMPLED );
@@ -842,7 +842,7 @@ static void Upload32( unsigned *data,
 	//
 	// perform optional picmip operation
 	//
-	if( picmip )
+	if ( picmip )
 	{
 		scaled_width >>= r_picmip->integer;
 		scaled_height >>= r_picmip->integer;
@@ -851,12 +851,12 @@ static void Upload32( unsigned *data,
 	//
 	// clamp to minimum size
 	//
-	if( scaled_width < 1 )
+	if ( scaled_width < 1 )
 	{
 		scaled_width = 1;
 	}
 
-	if( scaled_height < 1 )
+	if ( scaled_height < 1 )
 	{
 		scaled_height = 1;
 	}
@@ -866,7 +866,7 @@ static void Upload32( unsigned *data,
 	// scale both axis down equally so we don't have to
 	// deal with a half mip resampling
 	//
-	while( scaled_width > glConfig.maxTextureSize || scaled_height > glConfig.maxTextureSize )
+	while ( scaled_width > glConfig.maxTextureSize || scaled_height > glConfig.maxTextureSize )
 	{
 		scaled_width >>= 1;
 		scaled_height >>= 1;
@@ -883,11 +883,11 @@ static void Upload32( unsigned *data,
 	scan = ( ( byte * ) data );
 	samples = 3;
 
-	if( !lightMap )
+	if ( !lightMap )
 	{
-		for( i = 0; i < c; i++ )
+		for ( i = 0; i < c; i++ )
 		{
-			if( scan[ i * 4 + 3 ] != 255 )
+			if ( scan[ i * 4 + 3 ] != 255 )
 			{
 				samples = 4;
 				break;
@@ -895,27 +895,27 @@ static void Upload32( unsigned *data,
 		}
 
 		// select proper internal format
-		if( samples == 3 )
+		if ( samples == 3 )
 		{
 #ifdef IPHONE
 			internalFormat = GL_RGBA;
 #else
 
-			if( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC )
+			if ( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC )
 			{
 				// TODO: which format is best for which textures?
 				//internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			}
-			else if( !noCompress && glConfig.textureCompression == TC_S3TC )
+			else if ( !noCompress && glConfig.textureCompression == TC_S3TC )
 			{
 				internalFormat = GL_RGB4_S3TC;
 			}
-			else if( r_texturebits->integer == 16 )
+			else if ( r_texturebits->integer == 16 )
 			{
 				internalFormat = GL_RGB5;
 			}
-			else if( r_texturebits->integer == 32 )
+			else if ( r_texturebits->integer == 32 )
 			{
 				internalFormat = GL_RGB8;
 			}
@@ -926,23 +926,23 @@ static void Upload32( unsigned *data,
 
 #endif // IPHONE
 		}
-		else if( samples == 4 )
+		else if ( samples == 4 )
 		{
 #ifdef IPHONE
 			internalFormat = GL_RGBA;
 #else
 
-			if( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC )
+			if ( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC )
 			{
 				// TODO: which format is best for which textures?
 				//internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 			}
-			else if( r_texturebits->integer == 16 )
+			else if ( r_texturebits->integer == 16 )
 			{
 				internalFormat = GL_RGBA4;
 			}
-			else if( r_texturebits->integer == 32 )
+			else if ( r_texturebits->integer == 32 )
 			{
 				internalFormat = GL_RGBA8;
 			}
@@ -964,9 +964,9 @@ static void Upload32( unsigned *data,
 	}
 
 	// copy or resample data as appropriate for first MIP level
-	if( ( scaled_width == width ) && ( scaled_height == height ) )
+	if ( ( scaled_width == width ) && ( scaled_height == height ) )
 	{
-		if( !mipmap )
+		if ( !mipmap )
 		{
 			glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 			*pUploadWidth = scaled_width;
@@ -981,18 +981,18 @@ static void Upload32( unsigned *data,
 	else
 	{
 		// use the normal mip-mapping function to go down from here
-		while( width > scaled_width || height > scaled_height )
+		while ( width > scaled_width || height > scaled_height )
 		{
 			R_MipMap( ( byte * ) data, width, height );
 			width >>= 1;
 			height >>= 1;
 
-			if( width < 1 )
+			if ( width < 1 )
 			{
 				width = 1;
 			}
 
-			if( height < 1 )
+			if ( height < 1 )
 			{
 				height = 1;
 			}
@@ -1009,31 +1009,31 @@ static void Upload32( unsigned *data,
 
 	glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaledBuffer );
 
-	if( mipmap )
+	if ( mipmap )
 	{
 		int miplevel;
 
 		miplevel = 0;
 
-		while( scaled_width > 1 || scaled_height > 1 )
+		while ( scaled_width > 1 || scaled_height > 1 )
 		{
 			R_MipMap( ( byte * ) scaledBuffer, scaled_width, scaled_height );
 			scaled_width >>= 1;
 			scaled_height >>= 1;
 
-			if( scaled_width < 1 )
+			if ( scaled_width < 1 )
 			{
 				scaled_width = 1;
 			}
 
-			if( scaled_height < 1 )
+			if ( scaled_height < 1 )
 			{
 				scaled_height = 1;
 			}
 
 			miplevel++;
 
-			if( r_colorMipLevels->integer )
+			if ( r_colorMipLevels->integer )
 			{
 				R_BlendOverTexture( ( byte * ) scaledBuffer, scaled_width * scaled_height, mipBlendColors[ miplevel ] );
 			}
@@ -1045,7 +1045,7 @@ static void Upload32( unsigned *data,
 
 done:
 
-	if( mipmap )
+	if ( mipmap )
 	{
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
@@ -1057,7 +1057,7 @@ done:
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
 	}
 
-	if( glConfig.anisotropicAvailable )
+	if ( glConfig.anisotropicAvailable )
 	{
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_anisotropy );
 	}
@@ -1085,34 +1085,34 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 	long     hash;
 	qboolean noCompress = qfalse;
 
-	if( strlen( name ) >= MAX_QPATH )
+	if ( strlen( name ) >= MAX_QPATH )
 	{
 		ri.Error( ERR_DROP, "R_CreateImage: \"%s\" is too long\n", name );
 	}
 
-	if( !strncmp( name, "*lightmap", 9 ) )
+	if ( !strncmp( name, "*lightmap", 9 ) )
 	{
 		isLightmap = qtrue;
 		noCompress = qtrue;
 	}
 
-	if( !noCompress && strstr( name, "skies" ) )
+	if ( !noCompress && strstr( name, "skies" ) )
 	{
 		noCompress = qtrue;
 	}
 
-	if( !noCompress && strstr( name, "weapons" ) )
+	if ( !noCompress && strstr( name, "weapons" ) )
 	{
 		// don't compress view weapon skins
 		noCompress = qtrue;
 	}
 
 	// RF, if the shader hasn't specifically asked for it, don't allow compression
-	if( r_ext_compressed_textures->integer == 2 && ( tr.allowCompress != qtrue ) )
+	if ( r_ext_compressed_textures->integer == 2 && ( tr.allowCompress != qtrue ) )
 	{
 		noCompress = qtrue;
 	}
-	else if( r_ext_compressed_textures->integer == 1 && ( tr.allowCompress < 0 ) )
+	else if ( r_ext_compressed_textures->integer == 1 && ( tr.allowCompress < 0 ) )
 	{
 		noCompress = qtrue;
 	}
@@ -1121,19 +1121,19 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 	// LBO 2/8/05. Work around apparent bug in OSX. Some mipmap textures draw incorrectly when
 	// texture compression is enabled. Examples include brick edging on fueldump level appearing
 	// bluish-green from a distance.
-	else if( mipmap )
+	else if ( mipmap )
 	{
 		noCompress = qtrue;
 	}
 
 #endif
 	// ydnar: don't compress textures smaller or equal to 128x128 pixels
-	else if( ( width * height ) <= ( 128 * 128 ) )
+	else if ( ( width * height ) <= ( 128 * 128 ) )
 	{
 		noCompress = qtrue;
 	}
 
-	if( tr.numImages == MAX_DRAWIMAGES )
+	if ( tr.numImages == MAX_DRAWIMAGES )
 	{
 		ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
 	}
@@ -1166,7 +1166,7 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 	image->wrapClampMode = glWrapClampMode;
 
 	// lightmaps are always allocated on TMU 1
-	if( glActiveTextureARB && isLightmap )
+	if ( glActiveTextureARB && isLightmap )
 	{
 		image->TMU = 1;
 	}
@@ -1175,7 +1175,7 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 		image->TMU = 0;
 	}
 
-	if( glActiveTextureARB )
+	if ( glActiveTextureARB )
 	{
 		GL_SelectTexture( image->TMU );
 	}
@@ -1191,7 +1191,7 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 	// only 1.1 headers, joy
 #define GL_CLAMP_TO_EDGE 0x812F
 
-	if( r_clampToEdge->integer && glWrapClampMode == GL_CLAMP )
+	if ( r_clampToEdge->integer && glWrapClampMode == GL_CLAMP )
 	{
 		glWrapClampMode = GL_CLAMP_TO_EDGE;
 	}
@@ -1201,7 +1201,7 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 
 	glBindTexture( GL_TEXTURE_2D, 0 );
 
-	if( image->TMU == 1 )
+	if ( image->TMU == 1 )
 	{
 		GL_SelectTexture( 0 );
 	}
@@ -1261,7 +1261,7 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 	//
 	length = ri.FS_ReadFile( ( char * ) name, ( void ** ) &buffer );
 
-	if( !buffer )
+	if ( !buffer )
 	{
 		return;
 	}
@@ -1301,27 +1301,27 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 
 	memcpy( bmpHeader.palette, buf_p, sizeof( bmpHeader.palette ) );
 
-	if( bmpHeader.bitsPerPixel == 8 )
+	if ( bmpHeader.bitsPerPixel == 8 )
 	{
 		buf_p += 1024;
 	}
 
-	if( bmpHeader.id[ 0 ] != 'B' && bmpHeader.id[ 1 ] != 'M' )
+	if ( bmpHeader.id[ 0 ] != 'B' && bmpHeader.id[ 1 ] != 'M' )
 	{
 		ri.Error( ERR_DROP, "LoadBMP: only Windows-style BMP files supported (%s)\n", name );
 	}
 
-	if( bmpHeader.fileSize != length )
+	if ( bmpHeader.fileSize != length )
 	{
 		ri.Error( ERR_DROP, "LoadBMP: header size does not match file size (%lu vs. %d) (%s)\n", bmpHeader.fileSize, length, name );
 	}
 
-	if( bmpHeader.compression != 0 )
+	if ( bmpHeader.compression != 0 )
 	{
 		ri.Error( ERR_DROP, "LoadBMP: only uncompressed BMP files supported (%s)\n", name );
 	}
 
-	if( bmpHeader.bitsPerPixel < 8 )
+	if ( bmpHeader.bitsPerPixel < 8 )
 	{
 		ri.Error( ERR_DROP, "LoadBMP: monochrome and 4-bit BMP files not supported (%s)\n", name );
 	}
@@ -1329,19 +1329,19 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 	columns = bmpHeader.width;
 	rows = bmpHeader.height;
 
-	if( rows < 0 )
+	if ( rows < 0 )
 	{
 		rows = -rows;
 	}
 
 	numPixels = columns * rows;
 
-	if( width )
+	if ( width )
 	{
 		*width = columns;
 	}
 
-	if( height )
+	if ( height )
 	{
 		*height = rows;
 	}
@@ -1350,17 +1350,17 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 
 	*pic = bmpRGBA;
 
-	for( row = rows - 1; row >= 0; row-- )
+	for ( row = rows - 1; row >= 0; row-- )
 	{
 		pixbuf = bmpRGBA + row * columns * 4;
 
-		for( column = 0; column < columns; column++ )
+		for ( column = 0; column < columns; column++ )
 		{
 			unsigned char  red, green, blue, alpha;
 			int            palIndex;
 			unsigned short shortPixel;
 
-			switch( bmpHeader.bitsPerPixel )
+			switch ( bmpHeader.bitsPerPixel )
 			{
 				case 8:
 					palIndex = *buf_p++;
@@ -1444,7 +1444,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	//
 	len = ri.FS_ReadFile( ( char * ) filename, ( void ** ) &raw );
 
-	if( !raw )
+	if ( !raw )
 	{
 		return;
 	}
@@ -1458,8 +1458,8 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	xmax = LittleShort( pcx->xmax );
 	ymax = LittleShort( pcx->ymax );
 
-	if( pcx->manufacturer != 0x0a
-	    || pcx->version != 5 || pcx->encoding != 1 || pcx->bits_per_pixel != 8 || xmax >= 1024 || ymax >= 1024 )
+	if ( pcx->manufacturer != 0x0a
+	     || pcx->version != 5 || pcx->encoding != 1 || pcx->bits_per_pixel != 8 || xmax >= 1024 || ymax >= 1024 )
 	{
 		ri.Printf( PRINT_ALL, "Bad pcx file %s (%i x %i) (%i x %i)\n", filename, xmax + 1, ymax + 1, pcx->xmax, pcx->ymax );
 		return;
@@ -1471,18 +1471,18 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 
 	pix = out;
 
-	if( palette )
+	if ( palette )
 	{
 		*palette = ri.Z_Malloc( 768 );
 		memcpy( *palette, ( byte * ) pcx + len - 768, 768 );
 	}
 
-	if( width )
+	if ( width )
 	{
 		*width = xmax + 1;
 	}
 
-	if( height )
+	if ( height )
 	{
 		*height = ymax + 1;
 	}
@@ -1514,33 +1514,33 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	lsize = pcx->color_planes * pcx->bytes_per_line;
 
 	// go scanline by scanline
-	for( y = 0; y <= pcx->ymax; y++, pix += pcx->xmax + 1 )
+	for ( y = 0; y <= pcx->ymax; y++, pix += pcx->xmax + 1 )
 	{
 		// do a scanline
-		for( x = 0; x <= pcx->xmax; )
+		for ( x = 0; x <= pcx->xmax; )
 		{
 			DECODEPCX( raw, dataByte, runLength );
 
-			while( runLength-- > 0 )
+			while ( runLength-- > 0 )
 			{
 				pix[ x++ ] = dataByte;
 			}
 		}
 
 		// discard any other data
-		while( x < lsize )
+		while ( x < lsize )
 		{
 			DECODEPCX( raw, dataByte, runLength );
 			x++;
 		}
 
-		while( runLength-- > 0 )
+		while ( runLength-- > 0 )
 		{
 			x++;
 		}
 	}
 
-	if( raw - ( byte * ) pcx > len )
+	if ( raw - ( byte * ) pcx > len )
 	{
 		ri.Printf( PRINT_DEVELOPER, "PCX file %s was malformed", filename );
 		ri.Free( *pic );
@@ -1564,7 +1564,7 @@ static void LoadPCX32( const char *filename, byte **pic, int *width, int *height
 
 	LoadPCX( filename, &pic8, &palette, width, height );
 
-	if( !pic8 )
+	if ( !pic8 )
 	{
 		*pic = NULL;
 		return;
@@ -1573,7 +1573,7 @@ static void LoadPCX32( const char *filename, byte **pic, int *width, int *height
 	c = ( *width ) * ( *height );
 	pic32 = *pic = R_GetImageBuffer( 4 * c, BUFFER_IMAGE );
 
-	for( i = 0; i < c; i++ )
+	for ( i = 0; i < c; i++ )
 	{
 		p = pic8[ i ];
 		pic32[ 0 ] = palette[ p * 3 ];
@@ -1617,7 +1617,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 	//
 	ri.FS_ReadFile( ( char * ) name, ( void ** ) &buffer );
 
-	if( !buffer )
+	if ( !buffer )
 	{
 		return;
 	}
@@ -1644,17 +1644,17 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 	targa_header.pixel_size = *buf_p++;
 	targa_header.attributes = *buf_p++;
 
-	if( targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3 )
+	if ( targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3 )
 	{
 		ri.Error( ERR_DROP, "LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported\n" );
 	}
 
-	if( targa_header.colormap_type != 0 )
+	if ( targa_header.colormap_type != 0 )
 	{
 		ri.Error( ERR_DROP, "LoadTGA: colormaps not supported\n" );
 	}
 
-	if( ( targa_header.pixel_size != 32 && targa_header.pixel_size != 24 ) && targa_header.image_type != 3 )
+	if ( ( targa_header.pixel_size != 32 && targa_header.pixel_size != 24 ) && targa_header.image_type != 3 )
 	{
 		ri.Error( ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n" );
 	}
@@ -1663,12 +1663,12 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 	rows = targa_header.height;
 	numPixels = columns * rows;
 
-	if( width )
+	if ( width )
 	{
 		*width = columns;
 	}
 
-	if( height )
+	if ( height )
 	{
 		*height = rows;
 	}
@@ -1676,23 +1676,23 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 	targa_rgba = R_GetImageBuffer( numPixels * 4, BUFFER_IMAGE );
 	*pic = targa_rgba;
 
-	if( targa_header.id_length != 0 )
+	if ( targa_header.id_length != 0 )
 	{
 		buf_p += targa_header.id_length; // skip TARGA image comment
 	}
 
-	if( targa_header.image_type == 2 || targa_header.image_type == 3 )
+	if ( targa_header.image_type == 2 || targa_header.image_type == 3 )
 	{
 		// Uncompressed RGB or gray scale image
-		for( row = rows - 1; row >= 0; row-- )
+		for ( row = rows - 1; row >= 0; row-- )
 		{
 			pixbuf = targa_rgba + row * columns * 4;
 
-			for( column = 0; column < columns; column++ )
+			for ( column = 0; column < columns; column++ )
 			{
 				unsigned char red, green, blue, alphabyte;
 
-				switch( targa_header.pixel_size )
+				switch ( targa_header.pixel_size )
 				{
 					case 8:
 						blue = *buf_p++;
@@ -1732,7 +1732,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 			}
 		}
 	}
-	else if( targa_header.image_type == 10 )
+	else if ( targa_header.image_type == 10 )
 	{
 		// Runlength encoded RGB images
 		unsigned char red, green, blue, alphabyte, packetHeader, packetSize, j;
@@ -1742,19 +1742,19 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 		blue = 0;
 		alphabyte = 0xff;
 
-		for( row = rows - 1; row >= 0; row-- )
+		for ( row = rows - 1; row >= 0; row-- )
 		{
 			pixbuf = targa_rgba + row * columns * 4;
 
-			for( column = 0; column < columns; )
+			for ( column = 0; column < columns; )
 			{
 				packetHeader = *buf_p++;
 				packetSize = 1 + ( packetHeader & 0x7f );
 
-				if( packetHeader & 0x80 )
+				if ( packetHeader & 0x80 )
 				{
 					// run-length packet
-					switch( targa_header.pixel_size )
+					switch ( targa_header.pixel_size )
 					{
 						case 24:
 							blue = *buf_p++;
@@ -1775,7 +1775,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 							break;
 					}
 
-					for( j = 0; j < packetSize; j++ )
+					for ( j = 0; j < packetSize; j++ )
 					{
 						*pixbuf++ = red;
 						*pixbuf++ = green;
@@ -1783,12 +1783,12 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 						*pixbuf++ = alphabyte;
 						column++;
 
-						if( column == columns )
+						if ( column == columns )
 						{
 							// run spans across rows
 							column = 0;
 
-							if( row > 0 )
+							if ( row > 0 )
 							{
 								row--;
 							}
@@ -1804,9 +1804,9 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 				else
 				{
 					// non run-length packet
-					for( j = 0; j < packetSize; j++ )
+					for ( j = 0; j < packetSize; j++ )
 					{
-						switch( targa_header.pixel_size )
+						switch ( targa_header.pixel_size )
 						{
 							case 24:
 								blue = *buf_p++;
@@ -1837,12 +1837,12 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 
 						column++;
 
-						if( column == columns )
+						if ( column == columns )
 						{
 							// pixel packet run spans across rows
 							column = 0;
 
-							if( row > 0 )
+							if ( row > 0 )
 							{
 								row--;
 							}
@@ -1933,7 +1933,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 
 	len = ri.FS_ReadFile( ( char * ) filename, &fbuffer.v );
 
-	if( !fbuffer.b || len < 0 )
+	if ( !fbuffer.b || len < 0 )
 	{
 		return;
 	}
@@ -1992,10 +1992,10 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 
 	pixelcount = cinfo.output_width * cinfo.output_height;
 
-	if( !cinfo.output_width || !cinfo.output_height
-	    || ( ( pixelcount * 4 ) / cinfo.output_width ) / 4 != cinfo.output_height
-	    || pixelcount > 0x1FFFFFFF || cinfo.output_components != 3
-	  )
+	if ( !cinfo.output_width || !cinfo.output_height
+	     || ( ( pixelcount * 4 ) / cinfo.output_width ) / 4 != cinfo.output_height
+	     || pixelcount > 0x1FFFFFFF || cinfo.output_components != 3
+	   )
 	{
 		// Free the memory to make sure we don't leak memory
 		ri.FS_FreeFile( fbuffer.v );
@@ -2019,7 +2019,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 	/* Here we use the library's state variable cinfo.output_scanline as the
 	 * loop counter, so that we don't have to keep track ourselves.
 	 */
-	while( cinfo.output_scanline < cinfo.output_height )
+	while ( cinfo.output_scanline < cinfo.output_height )
 	{
 		/* jpeg_read_scanlines expects an array of pointers to scanlines.
 		 * Here the array is only one element long, but you could ask for
@@ -2043,7 +2043,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 		buf[ --dindex ] = buf[ --sindex ];
 		buf[ --dindex ] = buf[ --sindex ];
 	}
-	while( sindex );
+	while ( sindex );
 
 	*pic = out;
 
@@ -2162,7 +2162,7 @@ void jpegDest( j_compress_ptr cinfo, byte *outfile, int size )
 	 * manager serially with the same JPEG object, because their private object
 	 * sizes may be different.  Caveat programmer.
 	 */
-	if( cinfo->dest == NULL )
+	if ( cinfo->dest == NULL )
 	{
 		/* first time for this JPEG object? */
 		cinfo->dest = ( struct jpeg_destination_mgr * )
@@ -2218,7 +2218,7 @@ int SaveJPGToBuffer( byte *buffer, size_t bufSize, int quality, int image_width,
 	jpeg_set_quality( &cinfo, quality, TRUE /* limit to baseline-JPEG values */ );
 
 	/* If quality is set high, disable chroma subsampling */
-	if( quality >= 85 )
+	if ( quality >= 85 )
 	{
 		cinfo.comp_info[ 0 ].h_samp_factor = 1;
 		cinfo.comp_info[ 0 ].v_samp_factor = 1;
@@ -2231,7 +2231,7 @@ int SaveJPGToBuffer( byte *buffer, size_t bufSize, int quality, int image_width,
 	/*           jpeg_write_scanlines(...); */
 	row_stride = image_width * cinfo.input_components; // + padding;  /* JSAMPLEs per row in image_buffer */
 
-	while( cinfo.next_scanline < cinfo.image_height )
+	while ( cinfo.next_scanline < cinfo.image_height )
 	{
 		/* jpeg_write_scanlines expects an array of pointers to scanlines.
 		 * Here the array is only one element long, but you could pass
@@ -2289,7 +2289,7 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 
 	len = strlen( name );
 
-	if( len < 5 )
+	if ( len < 5 )
 	{
 		return;
 	}
@@ -2298,44 +2298,44 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 
 #ifdef USE_WEBP
 
-	if( !Q_stricmp( ext, "webp" ) )
+	if ( !Q_stricmp( ext, "webp" ) )
 	{
 		LoadWEBP( name, pic, width, height );
 	}
 
 #endif
 
-	if( !Q_stricmp( ext, "dds" ) )
+	if ( !Q_stricmp( ext, "dds" ) )
 	{
 		LoadDDS( name, pic, width, height );
 	}
 
-	if( !Q_stricmp( ext, "tga" ) )
+	if ( !Q_stricmp( ext, "tga" ) )
 	{
 		LoadTGA( name, pic, width, height );  // try tga first
 	}
-	else if( !Q_stricmp( ext, "pcx" ) )
+	else if ( !Q_stricmp( ext, "pcx" ) )
 	{
 		LoadPCX32( name, pic, width, height );
 	}
-	else if( !Q_stricmp( ext, "bmp" ) )
+	else if ( !Q_stricmp( ext, "bmp" ) )
 	{
 		LoadBMP( name, pic, width, height );
 	}
-	else if( !Q_stricmp( ext, "jpg" ) )
+	else if ( !Q_stricmp( ext, "jpg" ) )
 	{
 		LoadJPG( name, pic, width, height );
 	}
-	else if( !Q_stricmp( ext, "jpeg" ) )
+	else if ( !Q_stricmp( ext, "jpeg" ) )
 	{
 		LoadJPG( name, pic, width, height );
 	}
-	else if( !Q_stricmp( ext, "png" ) )
+	else if ( !Q_stricmp( ext, "png" ) )
 	{
 		LoadPNG( name, pic, width, height, 0xff );
 	}
 
-	if( !*pic )
+	if ( !*pic )
 	{
 		char filename[ MAX_QPATH ];
 
@@ -2343,36 +2343,36 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 #ifdef USE_WEBP
 		LoadWEBP( va( "%s.%s", filename, "webp" ), pic, width, height );
 
-		if( *pic ) { return; }
+		if ( *pic ) { return; }
 
 #endif
 		LoadDDS( va( "%s.%s", filename, "dds" ), pic, width, height );
 
-		if( *pic ) { return; }
+		if ( *pic ) { return; }
 
 		LoadTGA( va( "%s.%s", filename, "tga" ), pic, width, height );
 
-		if( *pic ) { return; }
+		if ( *pic ) { return; }
 
 		LoadPCX32( va( "%s.%s", filename, "pcx" ), pic, width, height );
 
-		if( *pic ) { return; }
+		if ( *pic ) { return; }
 
 		LoadBMP( va( "%s.%s", filename, "bmp" ), pic, width, height );
 
-		if( *pic ) { return; }
+		if ( *pic ) { return; }
 
 		LoadJPG( va( "%s.%s", filename, "jpg" ), pic, width, height );
 
-		if( *pic ) { return; }
+		if ( *pic ) { return; }
 
 		LoadJPG( va( "%s.%s", filename, "jpeg" ), pic, width, height );
 
-		if( *pic ) { return; }
+		if ( *pic ) { return; }
 
 		LoadPNG( va( "%s.%s", filename, "png" ), pic, width, height, 0xff );
 
-		if( *pic ) { return; }
+		if ( *pic ) { return; }
 	}
 }
 
@@ -2392,7 +2392,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	long     hash;
 	qboolean allowCompress = qfalse;
 
-	if( !name )
+	if ( !name )
 	{
 		return NULL;
 	}
@@ -2400,7 +2400,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	hash = GenerateImageHashValue( name );
 
 	// Ridah, caching
-	if( r_cacheGathering->integer )
+	if ( r_cacheGathering->integer )
 	{
 		ri.Cmd_ExecuteText( EXEC_NOW, va( "cache_usedfile image %s %i %i %i\n", name, mipmap, allowPicmip, glWrapClampMode ) );
 	}
@@ -2408,24 +2408,24 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	//
 	// see if the image is already loaded
 	//
-	for( image = r_imageHashTable[ hash ]; image; image = image->next )
+	for ( image = r_imageHashTable[ hash ]; image; image = image->next )
 	{
-		if( !strcmp( name, image->imgName ) )
+		if ( !strcmp( name, image->imgName ) )
 		{
 			// the white image can be used with any set of parms, but other mismatches are errors
-			if( strcmp( name, "*white" ) )
+			if ( strcmp( name, "*white" ) )
 			{
-				if( image->mipmap != mipmap )
+				if ( image->mipmap != mipmap )
 				{
 					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
 				}
 
-				if( image->allowPicmip != allowPicmip )
+				if ( image->allowPicmip != allowPicmip )
 				{
 					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed allowPicmip parm\n", name );
 				}
 
-				if( image->wrapClampMode != glWrapClampMode )
+				if ( image->wrapClampMode != glWrapClampMode )
 				{
 					ri.Printf( PRINT_ALL, "WARNING: reused image %s with mixed glWrapClampMode parm\n", name );
 				}
@@ -2438,11 +2438,11 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	// Ridah, check the cache
 	// TTimo: assignment used as truth value
 	// ydnar: don't do this for lightmaps
-	if( !lightmap )
+	if ( !lightmap )
 	{
 		image = R_FindCachedImage( name, hash );
 
-		if( image != NULL )
+		if ( image != NULL )
 		{
 			return image;
 		}
@@ -2453,7 +2453,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	//
 	R_LoadImage( name, &pic, &width, &height );
 
-	if( pic == NULL )
+	if ( pic == NULL )
 	{
 		// if we dont get a successful load
 // TTimo: Duane changed to _DEBUG in all cases
@@ -2472,7 +2472,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 		ri.Printf( PRINT_DEVELOPER, "trying %s...", altname );  //
 		R_LoadImage( altname, &pic, &width, &height );  //
 
-		if( pic == NULL )
+		if ( pic == NULL )
 		{
 			// if that fails
 			ri.Printf( PRINT_DEVELOPER, "no\n" );  //
@@ -2486,12 +2486,12 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	}
 
 	// Arnout: apply lightmap colouring
-	if( lightmap )
+	if ( lightmap )
 	{
 		R_ProcessLightmap( &pic, 4, width, height, &pic );
 
 		// ydnar: no texture compression
-		if( lightmap )
+		if ( lightmap )
 		{
 			allowCompress = tr.allowCompress;
 		}
@@ -2505,7 +2505,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 
 #ifdef CHECKPOWEROF2
 
-	if( ( ( width - 1 ) & width ) || ( ( height - 1 ) & height ) )
+	if ( ( ( width - 1 ) & width ) || ( ( height - 1 ) & height ) )
 	{
 		Com_Printf( "^1Image not power of 2 scaled: %s\n", name );
 		return NULL;
@@ -2518,7 +2518,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	//ri.Free( pic );
 
 	// ydnar: no texture compression
-	if( lightmap )
+	if ( lightmap )
 	{
 		tr.allowCompress = allowCompress;
 	}
@@ -2539,9 +2539,9 @@ static void R_CreateDlightImage( void )
 	int  b;
 
 	// make a centered inverse-square falloff blob for dynamic lighting
-	for( x = 0; x < DLIGHT_SIZE; x++ )
+	for ( x = 0; x < DLIGHT_SIZE; x++ )
 	{
-		for( y = 0; y < DLIGHT_SIZE; y++ )
+		for ( y = 0; y < DLIGHT_SIZE; y++ )
 		{
 			float d;
 
@@ -2549,11 +2549,11 @@ static void R_CreateDlightImage( void )
 			    ( DLIGHT_SIZE / 2 - 0.5f - y ) * ( DLIGHT_SIZE / 2 - 0.5f - y );
 			b = 4000 / d;
 
-			if( b > 255 )
+			if ( b > 255 )
 			{
 				b = 255;
 			}
-			else if( b < 75 )
+			else if ( b < 75 )
 			{
 				b = 0;
 			}
@@ -2579,7 +2579,7 @@ void R_InitFogTable( void )
 
 	exp = 0.5;
 
-	for( i = 0; i < FOG_TABLE_SIZE; i++ )
+	for ( i = 0; i < FOG_TABLE_SIZE; i++ )
 	{
 		d = pow( ( float ) i / ( FOG_TABLE_SIZE - 1 ), exp );
 
@@ -2604,17 +2604,17 @@ float R_FogFactor( float s, float t )
 
 	s -= 1.0 / 512;
 
-	if( s < 0 )
+	if ( s < 0 )
 	{
 		return 0;
 	}
 
-	if( t < 1.0 / 32 )
+	if ( t < 1.0 / 32 )
 	{
 		return 0;
 	}
 
-	if( t < 31.0 / 32 )
+	if ( t < 31.0 / 32 )
 	{
 		s *= ( t - 1.0f / 32.0f ) / ( 30.0f / 32.0f );
 	}
@@ -2622,7 +2622,7 @@ float R_FogFactor( float s, float t )
 	// we need to leave a lot of clamp range
 	s *= 8;
 
-	if( s > 1.0 )
+	if ( s > 1.0 )
 	{
 		s = 1.0;
 	}
@@ -2675,27 +2675,27 @@ static void R_CreateFogImage( void )
 	// ydnar: new, linear fog texture generating algo for GL_CLAMP_TO_EDGE (OpenGL 1.2+)
 
 	// S is distance, T is depth
-	for( x = 0; x < FOG_S; x++ )
+	for ( x = 0; x < FOG_S; x++ )
 	{
-		for( y = 0; y < FOG_T; y++ )
+		for ( y = 0; y < FOG_T; y++ )
 		{
 			alpha = 270 * ( ( float ) x / FOG_S ) * ( ( float ) y / FOG_T ); // need slop room for fp round to 0
 
-			if( alpha < 0 )
+			if ( alpha < 0 )
 			{
 				alpha = 0;
 			}
-			else if( alpha > 255 )
+			else if ( alpha > 255 )
 			{
 				alpha = 255;
 			}
 
 			// ensure edge/corner cases are fully transparent (at 0,0) or fully opaque (at 1,N where N is 0-1.0)
-			if( x == 0 )
+			if ( x == 0 )
 			{
 				alpha = 0;
 			}
-			else if( x == ( FOG_S - 1 ) )
+			else if ( x == ( FOG_S - 1 ) )
 			{
 				alpha = 255;
 			}
@@ -2738,9 +2738,9 @@ static void R_CreateDefaultImage( void )
 	// the default image will be a box, to allow you to see the mapping coordinates
 	memset( data, 0, sizeof( data ) );
 
-	for( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = 0; x < DEFAULT_SIZE; x++ )
 	{
-		for( y = 0; y < 2; y++ )
+		for ( y = 0; y < 2; y++ )
 		{
 			data[ y ][ x ][ 0 ] = 255;
 			data[ y ][ x ][ 1 ] = 128;
@@ -2785,9 +2785,9 @@ void R_CreateBuiltinImages( void )
 
 	// with overbright bits active, we need an image which is some fraction of full color,
 	// for default lightmaps, etc
-	for( x = 0; x < DEFAULT_SIZE; x++ )
+	for ( x = 0; x < DEFAULT_SIZE; x++ )
 	{
-		for( y = 0; y < DEFAULT_SIZE; y++ )
+		for ( y = 0; y < DEFAULT_SIZE; y++ )
 		{
 			data[ y ][ x ][ 0 ] = data[ y ][ x ][ 1 ] = data[ y ][ x ][ 2 ] = tr.identityLightByte;
 			data[ y ][ x ][ 3 ] = 255;
@@ -2796,7 +2796,7 @@ void R_CreateBuiltinImages( void )
 
 	tr.identityLightImage = R_CreateImage( "*identityLight", ( byte * ) data, 8, 8, qfalse, qfalse, GL_REPEAT );
 
-	for( x = 0; x < 32; x++ )
+	for ( x = 0; x < 32; x++ )
 	{
 		// scratchimage is usually used for cinematic drawing
 		tr.scratchImage[ x ] = R_CreateImage( "*scratch", ( byte * ) data, DEFAULT_SIZE, DEFAULT_SIZE, qfalse, qtrue, GL_CLAMP );
@@ -2821,34 +2821,34 @@ void R_SetColorMappings( void )
 	// setup the overbright lighting
 	tr.overbrightBits = r_overBrightBits->integer;
 
-	if( !glConfig.deviceSupportsGamma )
+	if ( !glConfig.deviceSupportsGamma )
 	{
 		tr.overbrightBits = 0; // need hardware gamma for overbright
 	}
 
 	// never overbright in windowed mode
-	if( !glConfig.isFullscreen )
+	if ( !glConfig.isFullscreen )
 	{
 		tr.overbrightBits = 0;
 	}
 
 	// allow 2 overbright bits in 24 bit, but only 1 in 16 bit
-	if( glConfig.colorBits > 16 )
+	if ( glConfig.colorBits > 16 )
 	{
-		if( tr.overbrightBits > 2 )
+		if ( tr.overbrightBits > 2 )
 		{
 			tr.overbrightBits = 2;
 		}
 	}
 	else
 	{
-		if( tr.overbrightBits > 1 )
+		if ( tr.overbrightBits > 1 )
 		{
 			tr.overbrightBits = 1;
 		}
 	}
 
-	if( tr.overbrightBits < 0 )
+	if ( tr.overbrightBits < 0 )
 	{
 		tr.overbrightBits = 0;
 	}
@@ -2856,22 +2856,22 @@ void R_SetColorMappings( void )
 	tr.identityLight = 1.0f / ( 1 << tr.overbrightBits );
 	tr.identityLightByte = 255 * tr.identityLight;
 
-	if( r_intensity->value <= 1 )
+	if ( r_intensity->value <= 1 )
 	{
 		ri.Cvar_Set( "r_intensity", "1" );
 	}
 
 #ifdef __linux__
 
-	if( r_gamma->value != -1 )
+	if ( r_gamma->value != -1 )
 	{
 #endif
 
-		if( r_gamma->value < 0.5f )
+		if ( r_gamma->value < 0.5f )
 		{
 			ri.Cvar_Set( "r_gamma", "0.5" );
 		}
-		else if( r_gamma->value > 3.0f )
+		else if ( r_gamma->value > 3.0f )
 		{
 			ri.Cvar_Set( "r_gamma", "3.0" );
 		}
@@ -2890,9 +2890,9 @@ void R_SetColorMappings( void )
 
 	shift = tr.overbrightBits;
 
-	for( i = 0; i < 256; i++ )
+	for ( i = 0; i < 256; i++ )
 	{
-		if( g == 1 )
+		if ( g == 1 )
 		{
 			inf = i;
 		}
@@ -2903,12 +2903,12 @@ void R_SetColorMappings( void )
 
 		inf <<= shift;
 
-		if( inf < 0 )
+		if ( inf < 0 )
 		{
 			inf = 0;
 		}
 
-		if( inf > 255 )
+		if ( inf > 255 )
 		{
 			inf = 255;
 		}
@@ -2916,11 +2916,11 @@ void R_SetColorMappings( void )
 		s_gammatable[ i ] = inf;
 	}
 
-	for( i = 0; i < 256; i++ )
+	for ( i = 0; i < 256; i++ )
 	{
 		j = i * r_intensity->value;
 
-		if( j > 255 )
+		if ( j > 255 )
 		{
 			j = 255;
 		}
@@ -2928,7 +2928,7 @@ void R_SetColorMappings( void )
 		s_intensitytable[ i ] = j;
 	}
 
-	if( glConfig.deviceSupportsGamma )
+	if ( glConfig.deviceSupportsGamma )
 	{
 		GLimp_SetGamma( s_gammatable, s_gammatable, s_gammatable );
 	}
@@ -2967,7 +2967,7 @@ void R_DeleteTextures( void )
 {
 	int i;
 
-	for( i = 0; i < tr.numImages; i++ )
+	for ( i = 0; i < tr.numImages; i++ )
 	{
 		glDeleteTextures( 1, &tr.images[ i ]->texnum );
 	}
@@ -2979,9 +2979,9 @@ void R_DeleteTextures( void )
 
 	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 
-	if( GLEW_ARB_multitexture )
+	if ( GLEW_ARB_multitexture )
 	{
-		if( GLEW_ARB_multitexture )
+		if ( GLEW_ARB_multitexture )
 		{
 			GL_SelectTexture( 1 );
 			glBindTexture( GL_TEXTURE_2D, 0 );
@@ -3029,11 +3029,11 @@ void SaveTGA( char *name, byte **pic, int width, int height )
 
 		outpixel = b + 18;
 
-		for( row = ( rows - 1 ); row >= 0; row-- )
+		for ( row = ( rows - 1 ); row >= 0; row-- )
 		{
 			inpixel = ( ( *pic ) + ( row * cols ) * 4 );
 
-			for( col = 0; col < cols; col++ )
+			for ( col = 0; col < cols; col++ )
 			{
 				*outpixel++ = * ( inpixel + 2 ); // blue
 				*outpixel++ = * ( inpixel + 1 ); // green
@@ -3082,11 +3082,11 @@ void SaveTGAAlpha( char *name, byte **pic, int width, int height )
 
 		outpixel = b + 18;
 
-		for( row = ( rows - 1 ); row >= 0; row-- )
+		for ( row = ( rows - 1 ); row >= 0; row-- )
 		{
 			inpixel = ( ( *pic ) + ( row * cols ) * 4 );
 
-			for( col = 0; col < cols; col++ )
+			for ( col = 0; col < cols; col++ )
 			{
 				*outpixel++ = * ( inpixel + 2 ); // blue
 				*outpixel++ = * ( inpixel + 1 ); // green
@@ -3146,7 +3146,7 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 	// load png
 	size = ri.FS_ReadFile( name, ( void ** ) &data );
 
-	if( !data )
+	if ( !data )
 	{
 		return;
 	}
@@ -3154,7 +3154,7 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 	//png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	png = png_create_read_struct( PNG_LIBPNG_VER_STRING, ( png_voidp ) NULL, png_user_error_fn, png_user_warning_fn );
 
-	if( !png )
+	if ( !png )
 	{
 		ri.Printf( PRINT_WARNING, "LoadPNG: png_create_write_struct() failed for (%s)\n", name );
 		ri.FS_FreeFile( data );
@@ -3164,7 +3164,7 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 	// allocate/initialize the memory for image information.  REQUIRED
 	info = png_create_info_struct( png );
 
-	if( !info )
+	if ( !info )
 	{
 		ri.Printf( PRINT_WARNING, "LoadPNG: png_create_info_struct() failed for (%s)\n", name );
 		ri.FS_FreeFile( data );
@@ -3177,7 +3177,7 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 	 * the normal method of doing things with libpng).  REQUIRED unless you
 	 * set up your own error handlers in the png_create_read_struct() earlier.
 	 */
-	if( setjmp( png_jmpbuf( png ) ) )
+	if ( setjmp( png_jmpbuf( png ) ) )
 	{
 		// if we get here, we had a problem reading the file
 		ri.Printf( PRINT_WARNING, "LoadPNG: first exception handler called for (%s)\n", name );
@@ -3202,13 +3202,13 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 	png_set_strip_16( png );
 
 	// expand paletted images to RGB triplets
-	if( color_type & PNG_COLOR_MASK_PALETTE )
+	if ( color_type & PNG_COLOR_MASK_PALETTE )
 	{
 		png_set_expand( png );
 	}
 
 	// expand gray-scaled images to RGB triplets
-	if( !( color_type & PNG_COLOR_MASK_COLOR ) )
+	if ( !( color_type & PNG_COLOR_MASK_COLOR ) )
 	{
 		png_set_gray_to_rgb( png );
 	}
@@ -3219,19 +3219,19 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 
 	// expand paletted or RGB images with transparency to full alpha channels
 	// so the data will be available as RGBA quartets
-	if( png_get_valid( png, info, PNG_INFO_tRNS ) )
+	if ( png_get_valid( png, info, PNG_INFO_tRNS ) )
 	{
 		png_set_tRNS_to_alpha( png );
 	}
 
 	// if there is no alpha information, fill with alphaByte
-	if( !( color_type & PNG_COLOR_MASK_ALPHA ) )
+	if ( !( color_type & PNG_COLOR_MASK_ALPHA ) )
 	{
 		png_set_filler( png, alphaByte, PNG_FILLER_AFTER );
 	}
 
 	// expand pictures with less than 8bpp to 8bpp
-	if( bit_depth < 8 )
+	if ( bit_depth < 8 )
 	{
 		png_set_packing( png );
 	}
@@ -3247,7 +3247,7 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 	row_pointers = ( png_bytep * ) ri.Hunk_AllocateTempMemory( sizeof( png_bytep ) * h );
 
 	// set a new exception handler
-	if( setjmp( png_jmpbuf( png ) ) )
+	if ( setjmp( png_jmpbuf( png ) ) )
 	{
 		ri.Printf( PRINT_WARNING, "LoadPNG: second exception handler called for (%s)\n", name );
 		ri.Hunk_FreeTempMemory( row_pointers );
@@ -3258,7 +3258,7 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 
 	rowbytes = png_get_rowbytes( png, info );
 
-	for( row = 0; row < h; row++ )
+	for ( row = 0; row < h; row++ )
 	{
 		row_pointers[ row ] = ( png_bytep )( out + ( row * 4 * w ) );
 	}
@@ -3309,7 +3309,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 
 	png = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
 
-	if( !png )
+	if ( !png )
 	{
 		return;
 	}
@@ -3317,7 +3317,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 	// Allocate/initialize the image information data
 	info = png_create_info_struct( png );
 
-	if( !info )
+	if ( !info )
 	{
 		png_destroy_write_struct( &png, ( png_infopp ) NULL );
 		return;
@@ -3327,7 +3327,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 	buffer = ri.Hunk_AllocateTempMemory( width * height * numBytes );
 
 	// set error handling
-	if( setjmp( png_jmpbuf( png ) ) )
+	if ( setjmp( png_jmpbuf( png ) ) )
 	{
 		ri.Hunk_FreeTempMemory( buffer );
 		png_destroy_write_struct( &png, &info );
@@ -3336,7 +3336,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 
 	png_set_write_fn( png, buffer, png_write_data, png_flush_data );
 
-	if( numBytes == 4 )
+	if ( numBytes == 4 )
 	{
 		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
 		              PNG_FILTER_TYPE_DEFAULT );
@@ -3353,7 +3353,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 
 	row_pointers = ri.Hunk_AllocateTempMemory( height * sizeof( png_bytep ) );
 
-	if( setjmp( png_jmpbuf( png ) ) )
+	if ( setjmp( png_jmpbuf( png ) ) )
 	{
 		ri.Hunk_FreeTempMemory( row_pointers );
 		ri.Hunk_FreeTempMemory( buffer );
@@ -3364,9 +3364,9 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 	row_stride = width * numBytes;
 	row = ( byte * ) pic + ( height - 1 ) * row_stride;
 
-	if( flip )
+	if ( flip )
 	{
-		for( i = height - 1; i >= 0; i-- )
+		for ( i = height - 1; i >= 0; i-- )
 		{
 			row_pointers[ i ] = row;
 			row -= row_stride;
@@ -3374,7 +3374,7 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 	}
 	else
 	{
-		for( i = 0; i < height; i++ )
+		for ( i = 0; i < height; i++ )
 		{
 			row_pointers[ i ] = row;
 			row -= row_stride;
@@ -3634,7 +3634,7 @@ static void DDSDecodePixelFormat( ddsBuffer_t *dds, ddsPF_t *pf )
 	unsigned int fourCC;
 
 	/* dummy check */
-	if( dds == NULL || pf == NULL )
+	if ( dds == NULL || pf == NULL )
 	{
 		return;
 	}
@@ -3643,27 +3643,27 @@ static void DDSDecodePixelFormat( ddsBuffer_t *dds, ddsPF_t *pf )
 	fourCC = dds->pixelFormat.fourCC;
 
 	/* test it */
-	if( fourCC == 0 )
+	if ( fourCC == 0 )
 	{
 		*pf = DDS_PF_ARGB8888;
 	}
-	else if( fourCC == * ( ( unsigned int * ) "DXT1" ) )
+	else if ( fourCC == * ( ( unsigned int * ) "DXT1" ) )
 	{
 		*pf = DDS_PF_DXT1;
 	}
-	else if( fourCC == * ( ( unsigned int * ) "DXT2" ) )
+	else if ( fourCC == * ( ( unsigned int * ) "DXT2" ) )
 	{
 		*pf = DDS_PF_DXT2;
 	}
-	else if( fourCC == * ( ( unsigned int * ) "DXT3" ) )
+	else if ( fourCC == * ( ( unsigned int * ) "DXT3" ) )
 	{
 		*pf = DDS_PF_DXT3;
 	}
-	else if( fourCC == * ( ( unsigned int * ) "DXT4" ) )
+	else if ( fourCC == * ( ( unsigned int * ) "DXT4" ) )
 	{
 		*pf = DDS_PF_DXT4;
 	}
-	else if( fourCC == * ( ( unsigned int * ) "DXT5" ) )
+	else if ( fourCC == * ( ( unsigned int * ) "DXT5" ) )
 	{
 		*pf = DDS_PF_DXT5;
 	}
@@ -3681,29 +3681,29 @@ extracts relevant info from a dds texture, returns 0 on success
 int DDSGetInfo( ddsBuffer_t *dds, int *width, int *height, ddsPF_t *pf )
 {
 	/* dummy test */
-	if( dds == NULL )
+	if ( dds == NULL )
 	{
 		return -1;
 	}
 
 	/* test dds header */
-	if( * ( ( int * ) dds->magic ) != * ( ( int * ) "DDS " ) )
+	if ( * ( ( int * ) dds->magic ) != * ( ( int * ) "DDS " ) )
 	{
 		return -1;
 	}
 
-	if( LittleLong( dds->size ) != 124 )
+	if ( LittleLong( dds->size ) != 124 )
 	{
 		return -1;
 	}
 
 	/* extract width and height */
-	if( width != NULL )
+	if ( width != NULL )
 	{
 		*width = LittleLong( dds->width );
 	}
 
-	if( height != NULL )
+	if ( height != NULL )
 	{
 		*height = LittleLong( dds->height );
 	}
@@ -3759,7 +3759,7 @@ static void DDSGetColorBlockColors( ddsColorBlock_t *block, ddsColor_t colors[ 4
 	colors[ 1 ].r |= ( colors[ 1 ].r >> 5 );
 
 	/* use this for all but the super-freak math method */
-	if( block->colors[ 0 ] > block->colors[ 1 ] )
+	if ( block->colors[ 0 ] > block->colors[ 1 ] )
 	{
 		/* four-color block: derive the other two colors.
 		   00 = color 0, 01 = color 1, 10 = color 2, 11 = color 3
@@ -3822,17 +3822,17 @@ static void DDSDecodeColorBlock( unsigned int *pixel, ddsColorBlock_t *block, in
 	int          shift[] = { 0, 2, 4, 6 };
 
 	/* r steps through lines in y */
-	for( r = 0; r < 4; r++, pixel += ( width - 4 ) )  /* no width * 4 as unsigned int ptr inc will * 4 */
+	for ( r = 0; r < 4; r++, pixel += ( width - 4 ) ) /* no width * 4 as unsigned int ptr inc will * 4 */
 	{
 		/* width * 4 bytes per pixel per line, each j dxtc row is 4 lines of pixels */
 
 		/* n steps through pixels */
-		for( n = 0; n < 4; n++ )
+		for ( n = 0; n < 4; n++ )
 		{
 			bits = block->row[ r ] & masks[ n ];
 			bits >>= shift[ n ];
 
-			switch( bits )
+			switch ( bits )
 			{
 				case 0:
 					*pixel = colors[ 0 ];
@@ -3880,12 +3880,12 @@ static void DDSDecodeAlphaExplicit( unsigned int *pixel, ddsAlphaBlockExplicit_t
 	color.b = 0;
 
 	/* walk rows */
-	for( row = 0; row < 4; row++, pixel += ( width - 4 ) )
+	for ( row = 0; row < 4; row++, pixel += ( width - 4 ) )
 	{
 		word = LittleShort( alphaBlock->row[ row ] );
 
 		/* walk pixels */
-		for( pix = 0; pix < 4; pix++ )
+		for ( pix = 0; pix < 4; pix++ )
 		{
 			/* zero the alpha bits of image pixel */
 			*pixel &= alphaZero;
@@ -3917,7 +3917,7 @@ static void DDSDecodeAlpha3BitLinear( unsigned int *pixel, ddsAlphaBlock3BitLine
 	alphas[ 1 ] = alphaBlock->alpha1;
 
 	/* 8-alpha block */
-	if( alphas[ 0 ] > alphas[ 1 ] )
+	if ( alphas[ 0 ] > alphas[ 1 ] )
 	{
 		/* 000 = alpha_0, 001 = alpha_1, others are interpolated */
 		alphas[ 2 ] = ( 6 * alphas[ 0 ] + alphas[ 1 ] ) / 7; /* bit code 010 */
@@ -3981,9 +3981,9 @@ static void DDSDecodeAlpha3BitLinear( unsigned int *pixel, ddsAlphaBlock3BitLine
 	bits[ 3 ][ 3 ] = ( unsigned char )( stuff & 0x00000007 );
 
 	/* decode the codes into alpha values */
-	for( row = 0; row < 4; row++ )
+	for ( row = 0; row < 4; row++ )
 	{
-		for( pix = 0; pix < 4; pix++ )
+		for ( pix = 0; pix < 4; pix++ )
 		{
 			aColors[ row ][ pix ].r = 0;
 			aColors[ row ][ pix ].g = 0;
@@ -3993,9 +3993,9 @@ static void DDSDecodeAlpha3BitLinear( unsigned int *pixel, ddsAlphaBlock3BitLine
 	}
 
 	/* write out alpha values to the image bits */
-	for( row = 0; row < 4; row++, pixel += width - 4 )
+	for ( row = 0; row < 4; row++, pixel += width - 4 )
 	{
-		for( pix = 0; pix < 4; pix++ )
+		for ( pix = 0; pix < 4; pix++ )
 		{
 			/* zero the alpha bits of image pixel */
 			*pixel &= alphaZero;
@@ -4024,13 +4024,13 @@ static int DDSDecompressDXT1( ddsBuffer_t *dds, int width, int height, unsigned 
 	yBlocks = height / 4;
 
 	/* walk y */
-	for( y = 0; y < yBlocks; y++ )
+	for ( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block */
 		block = ( ddsColorBlock_t * )( ( unsigned long ) dds->data + y * xBlocks * 8 );
 
 		/* walk x */
-		for( x = 0; x < xBlocks; x++, block++ )
+		for ( x = 0; x < xBlocks; x++, block++ )
 		{
 			DDSGetColorBlockColors( block, colors );
 			pixel = ( unsigned int * )( pixels + x * 16 + ( y * 4 ) * width * 4 );
@@ -4067,13 +4067,13 @@ static int DDSDecompressDXT3( ddsBuffer_t *dds, int width, int height, unsigned 
 	alphaZero = * ( ( unsigned int * ) &colors[ 0 ] );
 
 	/* walk y */
-	for( y = 0; y < yBlocks; y++ )
+	for ( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
 		block = ( ddsColorBlock_t * )( ( unsigned long ) dds->data + y * xBlocks * 16 );
 
 		/* walk x */
-		for( x = 0; x < xBlocks; x++, block++ )
+		for ( x = 0; x < xBlocks; x++, block++ )
 		{
 			/* get alpha block */
 			alphaBlock = ( ddsAlphaBlockExplicit_t * ) block;
@@ -4120,13 +4120,13 @@ static int DDSDecompressDXT5( ddsBuffer_t *dds, int width, int height, unsigned 
 	alphaZero = * ( ( unsigned int * ) &colors[ 0 ] );
 
 	/* walk y */
-	for( y = 0; y < yBlocks; y++ )
+	for ( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
 		block = ( ddsColorBlock_t * )( ( unsigned long ) dds->data + y * xBlocks * 16 );
 
 		/* walk x */
-		for( x = 0; x < xBlocks; x++, block++ )
+		for ( x = 0; x < xBlocks; x++, block++ )
 		{
 			/* get alpha block */
 			alphaBlock = ( ddsAlphaBlock3BitLinear_t * ) block;
@@ -4195,10 +4195,10 @@ static int DDSDecompressARGB8888( ddsBuffer_t *dds, int width, int height, unsig
 	out = pixels;
 
 	/* walk y */
-	for( y = 0; y < height; y++ )
+	for ( y = 0; y < height; y++ )
 	{
 		/* walk x */
-		for( x = 0; x < width; x++ )
+		for ( x = 0; x < width; x++ )
 		{
 			*out++ = *in++;
 			*out++ = *in++;
@@ -4224,13 +4224,13 @@ int DDSDecompress( ddsBuffer_t *dds, unsigned char *pixels )
 	/* get dds info */
 	r = DDSGetInfo( dds, &width, &height, &pf );
 
-	if( r )
+	if ( r )
 	{
 		return r;
 	}
 
 	/* decompress */
-	switch( pf )
+	switch ( pf )
 	{
 		case DDS_PF_ARGB8888:
 			/* fixme: support other [a]rgb formats */
@@ -4285,7 +4285,7 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	// load the file
 	ri.FS_ReadFile( ( char * ) name, ( void ** ) &buffer );
 
-	if( !buffer )
+	if ( !buffer )
 	{
 		return;
 	}
@@ -4296,14 +4296,14 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	*height = 0;
 
 	// get dds info
-	if( DDSGetInfo( ( ddsBuffer_t * ) buffer, &w, &h, &pf ) )
+	if ( DDSGetInfo( ( ddsBuffer_t * ) buffer, &w, &h, &pf ) )
 	{
 		ri.Error( ERR_DROP, "LoadDDS: Invalid DDS texture '%s'\n", name );
 		return;
 	}
 
 	// only certain types of dds textures are supported
-	if( pf != DDS_PF_ARGB8888 && pf != DDS_PF_DXT1 && pf != DDS_PF_DXT3 && pf != DDS_PF_DXT5 )
+	if ( pf != DDS_PF_ARGB8888 && pf != DDS_PF_DXT1 && pf != DDS_PF_DXT3 && pf != DDS_PF_DXT5 )
 	{
 		ri.Error( ERR_DROP, "LoadDDS: Only DDS texture formats ARGB8888, DXT1, DXT3, and DXT5 are supported (%d) '%s'\n", pf,
 		          name );
@@ -4374,7 +4374,7 @@ R_CacheImageAlloc
 */
 void           *R_CacheImageAlloc( int size )
 {
-	if( r_cache->integer && r_cacheShaders->integer )
+	if ( r_cache->integer && r_cacheShaders->integer )
 	{
 //      return ri.Z_Malloc( size );
 		return malloc( size );  // ri.Z_Malloc causes load times about twice as long?... Gordon
@@ -4393,7 +4393,7 @@ R_CacheImageFree
 */
 void R_CacheImageFree( void *ptr )
 {
-	if( r_cache->integer && r_cacheShaders->integer )
+	if ( r_cache->integer && r_cacheShaders->integer )
 	{
 //      ri.Free( ptr );
 		free( ptr );
@@ -4414,7 +4414,7 @@ qboolean R_TouchImage( image_t *inImage )
 	int     hash;
 	char    *name;
 
-	if( inImage == tr.dlightImage || inImage == tr.whiteImage || inImage == tr.defaultImage || inImage->imgName[ 0 ] == '*' )
+	if ( inImage == tr.dlightImage || inImage == tr.whiteImage || inImage == tr.defaultImage || inImage->imgName[ 0 ] == '*' )
 	{
 		// can't use lightmaps since they might have the same name, but different maps will have different actual lightmap pixels
 		return qfalse;
@@ -4426,12 +4426,12 @@ qboolean R_TouchImage( image_t *inImage )
 	bImage = backupHashTable[ hash ];
 	bImagePrev = NULL;
 
-	while( bImage )
+	while ( bImage )
 	{
-		if( bImage == inImage )
+		if ( bImage == inImage )
 		{
 			// add it to the current images
-			if( tr.numImages == MAX_DRAWIMAGES )
+			if ( tr.numImages == MAX_DRAWIMAGES )
 			{
 				ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
 			}
@@ -4439,7 +4439,7 @@ qboolean R_TouchImage( image_t *inImage )
 			tr.images[ tr.numImages ] = bImage;
 
 			// remove it from the backupHashTable
-			if( bImagePrev )
+			if ( bImagePrev )
 			{
 				bImagePrev->next = bImage->next;
 			}
@@ -4480,9 +4480,9 @@ void R_PurgeImage( image_t *image )
 
 	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 
-	if( GLEW_ARB_multitexture )
+	if ( GLEW_ARB_multitexture )
 	{
-		if( glActiveTextureARB )
+		if ( glActiveTextureARB )
 		{
 			GL_SelectTexture( 1 );
 			glBindTexture( GL_TEXTURE_2D, 0 );
@@ -4509,7 +4509,7 @@ void R_PurgeBackupImages( int purgeCount )
 	static int lastPurged = 0;
 	image_t    *image;
 
-	if( !numBackupImages )
+	if ( !numBackupImages )
 	{
 		// nothing to purge
 		lastPurged = 0;
@@ -4520,19 +4520,19 @@ void R_PurgeBackupImages( int purgeCount )
 
 	cnt = 0;
 
-	for( i = lastPurged; i < IMAGE_FILE_HASH_SIZE; )
+	for ( i = lastPurged; i < IMAGE_FILE_HASH_SIZE; )
 	{
 		lastPurged = i;
 
 		// TTimo: assignment used as truth value
-		if( ( image = backupHashTable[ i ] ) )
+		if ( ( image = backupHashTable[ i ] ) )
 		{
 			// kill it
 			backupHashTable[ i ] = image->next;
 			R_PurgeImage( image );
 			cnt++;
 
-			if( cnt >= purgeCount )
+			if ( cnt >= purgeCount )
 			{
 				return;
 			}
@@ -4555,12 +4555,12 @@ R_BackupImages
 */
 void R_BackupImages( void )
 {
-	if( !r_cache->integer )
+	if ( !r_cache->integer )
 	{
 		return;
 	}
 
-	if( !r_cacheShaders->integer )
+	if ( !r_cacheShaders->integer )
 	{
 		return;
 	}
@@ -4574,9 +4574,9 @@ void R_BackupImages( void )
 
 	memset( glState.currenttextures, 0, sizeof( glState.currenttextures ) );
 
-	if( GLEW_ARB_multitexture )
+	if ( GLEW_ARB_multitexture )
 	{
-		if( glActiveTextureARB )
+		if ( glActiveTextureARB )
 		{
 			GL_SelectTexture( 1 );
 			glBindTexture( GL_TEXTURE_2D, 0 );
@@ -4599,12 +4599,12 @@ image_t        *R_FindCachedImage( const char *name, int hash )
 {
 	image_t *bImage, *bImagePrev;
 
-	if( !r_cacheShaders->integer )
+	if ( !r_cacheShaders->integer )
 	{
 		return NULL;
 	}
 
-	if( !numBackupImages )
+	if ( !numBackupImages )
 	{
 		return NULL;
 	}
@@ -4612,12 +4612,12 @@ image_t        *R_FindCachedImage( const char *name, int hash )
 	bImage = backupHashTable[ hash ];
 	bImagePrev = NULL;
 
-	while( bImage )
+	while ( bImage )
 	{
-		if( !Q_stricmp( name, bImage->imgName ) )
+		if ( !Q_stricmp( name, bImage->imgName ) )
 		{
 			// add it to the current images
-			if( tr.numImages == MAX_DRAWIMAGES )
+			if ( tr.numImages == MAX_DRAWIMAGES )
 			{
 				ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
 			}
@@ -4644,9 +4644,9 @@ int R_GetTextureId( const char *name )
 
 //  ri.Printf( PRINT_ALL, "R_GetTextureId [%s].\n", name );
 
-	for( i = 0; i < tr.numImages; i++ )
+	for ( i = 0; i < tr.numImages; i++ )
 	{
-		if( !strcmp( name, tr.images[ i ]->imgName ) )
+		if ( !strcmp( name, tr.images[ i ]->imgName ) )
 		{
 //          ri.Printf( PRINT_ALL, "Found textureid %d\n", i );
 			return i;
@@ -4669,7 +4669,7 @@ R_InitTexnumImages
 static int last_i;
 void R_InitTexnumImages( qboolean force )
 {
-	if( force || !numBackupImages )
+	if ( force || !numBackupImages )
 	{
 		memset( texnumImages, 0, sizeof( texnumImages ) );
 		last_i = 0;
@@ -4688,7 +4688,7 @@ void R_FindFreeTexnum( image_t *inImage )
 
 	max = ( MAX_DRAWIMAGES * 2 );
 
-	if( last_i && !texnumImages[ last_i + 1 ] )
+	if ( last_i && !texnumImages[ last_i + 1 ] )
 	{
 		i = last_i + 1;
 	}
@@ -4697,15 +4697,15 @@ void R_FindFreeTexnum( image_t *inImage )
 		i = 0;
 		image = ( image_t ** ) &texnumImages;
 
-		while( i < max && * ( image++ ) )
+		while ( i < max && * ( image++ ) )
 		{
 			i++;
 		}
 	}
 
-	if( i < max )
+	if ( i < max )
 	{
-		if( i < max - 1 )
+		if ( i < max - 1 )
 		{
 			last_i = i;
 		}
@@ -4738,14 +4738,14 @@ void R_LoadCacheImages( void )
 	char name[ MAX_QPATH ];
 	int  parms[ 4 ], i;
 
-	if( numBackupImages )
+	if ( numBackupImages )
 	{
 		return;
 	}
 
 	len = ri.FS_ReadFile( "image.cache", NULL );
 
-	if( len <= 0 )
+	if ( len <= 0 )
 	{
 		return;
 	}
@@ -4754,11 +4754,11 @@ void R_LoadCacheImages( void )
 	ri.FS_ReadFile( "image.cache", &buf );
 	pString = buf;
 
-	while( ( token = COM_ParseExt( &pString, qtrue ) ) && token[ 0 ] )
+	while ( ( token = COM_ParseExt( &pString, qtrue ) ) && token[ 0 ] )
 	{
 		Q_strncpyz( name, token, sizeof( name ) );
 
-		for( i = 0; i < 4; i++ )
+		for ( i = 0; i < 4; i++ )
 		{
 			token = COM_ParseExt( &pString, qfalse );
 			parms[ i ] = atoi( token );

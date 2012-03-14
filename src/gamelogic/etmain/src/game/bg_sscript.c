@@ -57,7 +57,7 @@ int BG_GetIndexForSpeaker( bg_speaker_t *speaker )
 
 bg_speaker_t   *BG_GetScriptSpeaker( int index )
 {
-	if( index < 0 || index >= numScriptSpeakers )
+	if ( index < 0 || index >= numScriptSpeakers )
 	{
 		return NULL;
 	}
@@ -67,7 +67,7 @@ bg_speaker_t   *BG_GetScriptSpeaker( int index )
 
 qboolean BG_SS_DeleteSpeaker( int index )
 {
-	if( index < 0 || index >= numScriptSpeakers )
+	if ( index < 0 || index >= numScriptSpeakers )
 	{
 		return qfalse;
 	}
@@ -81,7 +81,7 @@ qboolean BG_SS_DeleteSpeaker( int index )
 
 qboolean BG_SS_StoreSpeaker( bg_speaker_t *speaker )
 {
-	if( numScriptSpeakers >= MAX_SCRIPTSPEAKERS )
+	if ( numScriptSpeakers >= MAX_SCRIPTSPEAKERS )
 	{
 		return qfalse;
 	}
@@ -123,40 +123,40 @@ static qboolean BG_SS_ParseSpeaker( int handle )
 	speaker.volume = 127;
 	speaker.range = 1250;
 
-	if( !trap_PC_ReadToken( handle, &token ) || Q_stricmp( token.string, "{" ) )
+	if ( !trap_PC_ReadToken( handle, &token ) || Q_stricmp( token.string, "{" ) )
 	{
 		return BG_SS_ParseError( handle, "expected '{'" );
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
-		if( !trap_PC_ReadToken( handle, &token ) )
+		if ( !trap_PC_ReadToken( handle, &token ) )
 		{
 			break;
 		}
 
-		if( token.string[ 0 ] == '}' )
+		if ( token.string[ 0 ] == '}' )
 		{
 			break;
 		}
 
-		if( !Q_stricmp( token.string, "noise" ) )
+		if ( !Q_stricmp( token.string, "noise" ) )
 		{
-			if( !PC_String_ParseNoAlloc( handle, speaker.filename, sizeof( speaker.filename ) ) )
+			if ( !PC_String_ParseNoAlloc( handle, speaker.filename, sizeof( speaker.filename ) ) )
 			{
 				return BG_SS_ParseError( handle, "expected sound filename" );
 			}
 		}
-		else if( !Q_stricmp( token.string, "origin" ) )
+		else if ( !Q_stricmp( token.string, "origin" ) )
 		{
-			if( !PC_Vec_Parse( handle, &speaker.origin ) )
+			if ( !PC_Vec_Parse( handle, &speaker.origin ) )
 			{
 				return BG_SS_ParseError( handle, "expected origin vector" );
 			}
 		}
-		else if( !Q_stricmp( token.string, "targetname" ) )
+		else if ( !Q_stricmp( token.string, "targetname" ) )
 		{
-			if( !PC_String_ParseNoAlloc( handle, speaker.targetname, sizeof( speaker.targetname ) ) )
+			if ( !PC_String_ParseNoAlloc( handle, speaker.targetname, sizeof( speaker.targetname ) ) )
 			{
 				return BG_SS_ParseError( handle, "expected targetname string" );
 			}
@@ -165,24 +165,24 @@ static qboolean BG_SS_ParseSpeaker( int handle )
 				speaker.targetnamehash = BG_StringHashValue( speaker.targetname );
 			}
 		}
-		else if( !Q_stricmp( token.string, "looped" ) )
+		else if ( !Q_stricmp( token.string, "looped" ) )
 		{
-			if( !trap_PC_ReadToken( handle, &token ) )
+			if ( !trap_PC_ReadToken( handle, &token ) )
 			{
 				return BG_SS_ParseError( handle, "expected loop value" );
 			}
 			else
 			{
-				if( !Q_stricmp( token.string, "no" ) )
+				if ( !Q_stricmp( token.string, "no" ) )
 				{
 					speaker.loop = S_LT_NOT_LOOPED;
 				}
-				else if( !Q_stricmp( token.string, "on" ) )
+				else if ( !Q_stricmp( token.string, "on" ) )
 				{
 					speaker.loop = S_LT_LOOPED_ON;
 					speaker.activated = qtrue;
 				}
-				else if( !Q_stricmp( token.string, "off" ) )
+				else if ( !Q_stricmp( token.string, "off" ) )
 				{
 					speaker.loop = S_LT_LOOPED_OFF;
 				}
@@ -192,23 +192,23 @@ static qboolean BG_SS_ParseSpeaker( int handle )
 				}
 			}
 		}
-		else if( !Q_stricmp( token.string, "broadcast" ) )
+		else if ( !Q_stricmp( token.string, "broadcast" ) )
 		{
-			if( !trap_PC_ReadToken( handle, &token ) )
+			if ( !trap_PC_ReadToken( handle, &token ) )
 			{
 				return BG_SS_ParseError( handle, "expected broadcast value" );
 			}
 			else
 			{
-				if( !Q_stricmp( token.string, "no" ) )
+				if ( !Q_stricmp( token.string, "no" ) )
 				{
 					speaker.broadcast = S_BT_LOCAL;
 				}
-				else if( !Q_stricmp( token.string, "global" ) )
+				else if ( !Q_stricmp( token.string, "global" ) )
 				{
 					speaker.broadcast = S_BT_GLOBAL;
 				}
-				else if( !Q_stricmp( token.string, "nopvs" ) )
+				else if ( !Q_stricmp( token.string, "nopvs" ) )
 				{
 					speaker.broadcast = S_BT_NOPVS;
 				}
@@ -218,46 +218,46 @@ static qboolean BG_SS_ParseSpeaker( int handle )
 				}
 			}
 		}
-		else if( !Q_stricmp( token.string, "wait" ) )
+		else if ( !Q_stricmp( token.string, "wait" ) )
 		{
-			if( !PC_Int_Parse( handle, &speaker.wait ) )
+			if ( !PC_Int_Parse( handle, &speaker.wait ) )
 			{
 				return BG_SS_ParseError( handle, "expected wait value" );
 			}
-			else if( speaker.wait < 0 )
+			else if ( speaker.wait < 0 )
 			{
 				return BG_SS_ParseError( handle, "wait value %i is invalid", speaker.wait );
 			}
 		}
-		else if( !Q_stricmp( token.string, "random" ) )
+		else if ( !Q_stricmp( token.string, "random" ) )
 		{
-			if( !PC_Int_Parse( handle, &speaker.random ) )
+			if ( !PC_Int_Parse( handle, &speaker.random ) )
 			{
 				return BG_SS_ParseError( handle, "expected random value" );
 			}
-			else if( speaker.random < 0 )
+			else if ( speaker.random < 0 )
 			{
 				return BG_SS_ParseError( handle, "random value %i is invalid", speaker.random );
 			}
 		}
-		else if( !Q_stricmp( token.string, "volume" ) )
+		else if ( !Q_stricmp( token.string, "volume" ) )
 		{
-			if( !PC_Int_Parse( handle, &speaker.volume ) )
+			if ( !PC_Int_Parse( handle, &speaker.volume ) )
 			{
 				return BG_SS_ParseError( handle, "expected volume value" );
 			}
-			else if( speaker.volume < 0 || speaker.volume > 65535 )
+			else if ( speaker.volume < 0 || speaker.volume > 65535 )
 			{
 				return BG_SS_ParseError( handle, "volume value %i is invalid", speaker.volume );
 			}
 		}
-		else if( !Q_stricmp( token.string, "range" ) )
+		else if ( !Q_stricmp( token.string, "range" ) )
 		{
-			if( !PC_Int_Parse( handle, &speaker.range ) )
+			if ( !PC_Int_Parse( handle, &speaker.range ) )
 			{
 				return BG_SS_ParseError( handle, "expected range value" );
 			}
-			else if( speaker.range < 0 )
+			else if ( speaker.range < 0 )
 			{
 				return BG_SS_ParseError( handle, "range value %i is invalid", speaker.range );
 			}
@@ -268,7 +268,7 @@ static qboolean BG_SS_ParseSpeaker( int handle )
 		}
 	}
 
-	if( !BG_SS_StoreSpeaker( &speaker ) )
+	if ( !BG_SS_StoreSpeaker( &speaker ) )
 	{
 		return BG_SS_ParseError( handle, "Failed to store speaker" );
 	}
@@ -283,36 +283,36 @@ qboolean BG_LoadSpeakerScript( const char *filename )
 
 	handle = trap_PC_LoadSource( filename );
 
-	if( !handle )
+	if ( !handle )
 	{
 		return qfalse;
 	}
 
-	if( !trap_PC_ReadToken( handle, &token ) || Q_stricmp( token.string, "speakerScript" ) )
+	if ( !trap_PC_ReadToken( handle, &token ) || Q_stricmp( token.string, "speakerScript" ) )
 	{
 		return BG_SS_ParseError( handle, "expected 'soundScript'" );
 	}
 
-	if( !trap_PC_ReadToken( handle, &token ) || Q_stricmp( token.string, "{" ) )
+	if ( !trap_PC_ReadToken( handle, &token ) || Q_stricmp( token.string, "{" ) )
 	{
 		return BG_SS_ParseError( handle, "expected '{'" );
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
-		if( !trap_PC_ReadToken( handle, &token ) )
+		if ( !trap_PC_ReadToken( handle, &token ) )
 		{
 			break;
 		}
 
-		if( token.string[ 0 ] == '}' )
+		if ( token.string[ 0 ] == '}' )
 		{
 			break;
 		}
 
-		if( !Q_stricmp( token.string, "speakerDef" ) )
+		if ( !Q_stricmp( token.string, "speakerDef" ) )
 		{
-			if( !BG_SS_ParseSpeaker( handle ) )
+			if ( !BG_SS_ParseSpeaker( handle ) )
 			{
 				return qfalse;
 			}

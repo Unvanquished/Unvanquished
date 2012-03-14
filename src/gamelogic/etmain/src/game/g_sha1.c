@@ -21,7 +21,7 @@ char *G_SHA1( char *string )
 	SHA1Reset( &sha );
 	SHA1Input( &sha, ( const unsigned char * ) string, strlen( string ) );
 
-	if( !SHA1Result( &sha ) )
+	if ( !SHA1Result( &sha ) )
 	{
 		G_Error( "sha1: could not compute message digest" );
 		return "";

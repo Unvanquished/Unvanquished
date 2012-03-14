@@ -68,7 +68,7 @@ sndBuffer      *SND_malloc()
 	sndBuffer *v;
 redo:
 
-	if( freelist == NULL )
+	if ( freelist == NULL )
 	{
 		S_FreeOldestSound();
 		goto redo;
@@ -102,7 +102,7 @@ void SND_setup()
 	p = buffer;;
 	q = p + scs;
 
-	while( --q > p )
+	while ( --q > p )
 	{
 		* ( sndBuffer ** ) q = q - 1;
 	}
@@ -139,12 +139,12 @@ static void ResampleSfx( sfx_t *sfx, int inrate, int inwidth, byte *data, qboole
 	fracstep = stepscale * 256;
 	chunk = sfx->soundData;
 
-	for( i = 0; i < outcount; i++ )
+	for ( i = 0; i < outcount; i++ )
 	{
 		srcsample = samplefrac >> 8;
 		samplefrac += fracstep;
 
-		if( inwidth == 2 )
+		if ( inwidth == 2 )
 		{
 			sample = LittleShort( ( ( short * ) data ) [ srcsample ] );
 		}
@@ -155,12 +155,12 @@ static void ResampleSfx( sfx_t *sfx, int inrate, int inwidth, byte *data, qboole
 
 		part = ( i & ( SND_CHUNK_SIZE - 1 ) );
 
-		if( part == 0 )
+		if ( part == 0 )
 		{
 			sndBuffer *newchunk;
 			newchunk = SND_malloc();
 
-			if( chunk == NULL )
+			if ( chunk == NULL )
 			{
 				sfx->soundData = newchunk;
 			}
@@ -198,12 +198,12 @@ static int ResampleSfxRaw( short *sfx, int inrate, int inwidth, int samples, byt
 	samplefrac = 0;
 	fracstep = stepscale * 256;
 
-	for( i = 0; i < outcount; i++ )
+	for ( i = 0; i < outcount; i++ )
 	{
 		srcsample = samplefrac >> 8;
 		samplefrac += fracstep;
 
-		if( inwidth == 2 )
+		if ( inwidth == 2 )
 		{
 			sample = LittleShort( ( ( short * ) data ) [ srcsample ] );
 		}
@@ -236,7 +236,7 @@ qboolean S_LoadSound( sfx_t *sfx )
 	//int   size;
 
 	// player specific sounds are never directly loaded
-	if( sfx->soundName[ 0 ] == '*' )
+	if ( sfx->soundName[ 0 ] == '*' )
 	{
 		return qfalse;
 	}
@@ -244,17 +244,17 @@ qboolean S_LoadSound( sfx_t *sfx )
 	// load it in
 	data = codec_load( sfx->soundName, &info );
 
-	if( !data )
+	if ( !data )
 	{
 		return qfalse;
 	}
 
-	if( info.width == 1 )
+	if ( info.width == 1 )
 	{
 		Com_DPrintf( S_COLOR_YELLOW "WARNING: %s is a 8 bit wav file\n", sfx->soundName );
 	}
 
-	if( info.rate != 22050 )
+	if ( info.rate != 22050 )
 	{
 		Com_DPrintf( S_COLOR_YELLOW "WARNING: %s is not a 22kHz wav file\n", sfx->soundName );
 	}
@@ -269,7 +269,7 @@ qboolean S_LoadSound( sfx_t *sfx )
 	// manager to do the right thing for us and page
 	// sound in as needed
 
-	if( sfx->soundCompressed == qtrue )
+	if ( sfx->soundCompressed == qtrue )
 	{
 		sfx->soundCompressionMethod = 1;
 		sfx->soundData = NULL;
@@ -277,14 +277,14 @@ qboolean S_LoadSound( sfx_t *sfx )
 		S_AdpcmEncodeSound( sfx, samples );
 #if 0
 	}
-	else if( info.samples > ( SND_CHUNK_SIZE * 16 ) && info.width > 1 )
+	else if ( info.samples > ( SND_CHUNK_SIZE * 16 ) && info.width > 1 )
 	{
 		sfx->soundCompressionMethod = 3;
 		sfx->soundData = NULL;
 		sfx->soundLength = ResampleSfxRaw( samples, info.rate, info.width, info.samples, ( data + info.dataofs ) );
 		encodeMuLaw( sfx, samples );
 	}
-	else if( info.samples > ( SND_CHUNK_SIZE * 6400 ) && info.width > 1 )
+	else if ( info.samples > ( SND_CHUNK_SIZE * 6400 ) && info.width > 1 )
 	{
 		sfx->soundCompressionMethod = 2;
 		sfx->soundData = NULL;

@@ -77,7 +77,7 @@ static int DL_cb_Progress( void *clientp, double dltotal, double dlnow, double u
 
 void DL_InitDownload()
 {
-	if( dl_initialized )
+	if ( dl_initialized )
 	{
 		return;
 	}
@@ -99,7 +99,7 @@ DL_Shutdown
 */
 void DL_Shutdown()
 {
-	if( !dl_initialized )
+	if ( !dl_initialized )
 	{
 		return;
 	}
@@ -122,13 +122,13 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 {
 	char referer[ MAX_STRING_CHARS + 5 /*"ET://" */ ];
 
-	if( dl_request )
+	if ( dl_request )
 	{
 		Com_Printf( "ERROR: DL_BeginDownload called with a download request already active\n" );
 		return 0;
 	}
 
-	if( !localName || !remoteName )
+	if ( !localName || !remoteName )
 	{
 		Com_DPrintf( "Empty download URL or empty local file name\n" );
 		return 0;
@@ -137,7 +137,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	FS_CreatePath( localName );
 	dl_file = fopen( localName, "wb+" );
 
-	if( !dl_file )
+	if ( !dl_file )
 	{
 		Com_Printf( "ERROR: DL_BeginDownload unable to open '%s' for writing\n", localName );
 		return 0;
@@ -174,28 +174,28 @@ dlStatus_t DL_DownloadLoop()
 	int        dls = 0;
 	const char *err = NULL;
 
-	if( !dl_request )
+	if ( !dl_request )
 	{
 		Com_DPrintf( "DL_DownloadLoop: unexpected call with dl_request == NULL\n" );
 		return DL_DONE;
 	}
 
-	if( ( status = curl_multi_perform( dl_multi, &dls ) ) == CURLM_CALL_MULTI_PERFORM && dls )
+	if ( ( status = curl_multi_perform( dl_multi, &dls ) ) == CURLM_CALL_MULTI_PERFORM && dls )
 	{
 		return DL_CONTINUE;
 	}
 
-	while( ( msg = curl_multi_info_read( dl_multi, &dls ) ) && msg->easy_handle != dl_request )
+	while ( ( msg = curl_multi_info_read( dl_multi, &dls ) ) && msg->easy_handle != dl_request )
 	{
 		;
 	}
 
-	if( !msg || msg->msg != CURLMSG_DONE )
+	if ( !msg || msg->msg != CURLMSG_DONE )
 	{
 		return DL_CONTINUE;
 	}
 
-	if( msg->data.result != CURLE_OK )
+	if ( msg->data.result != CURLE_OK )
 	{
 #ifdef __MACOS__ // ���
 		err = "unknown curl error.";
@@ -218,7 +218,7 @@ dlStatus_t DL_DownloadLoop()
 
 	Cvar_Set( "ui_dl_running", "0" );
 
-	if( err )
+	if ( err )
 	{
 		Com_DPrintf( "DL_DownloadLoop: request terminated with failure status '%s'\n", err );
 		return DL_FAILED;

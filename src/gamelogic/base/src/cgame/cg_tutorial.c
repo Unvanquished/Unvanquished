@@ -62,25 +62,25 @@ static void CG_GetBindings( void )
 	int  i, j, numKeys;
 	char buffer[ MAX_STRING_CHARS ];
 
-	for( i = 0; i < numBindings; i++ )
+	for ( i = 0; i < numBindings; i++ )
 	{
 		bindings[ i ].keys[ 0 ] = bindings[ i ].keys[ 1 ] = K_NONE;
 		numKeys = 0;
 
-		for( j = 0; j < K_LAST_KEY; j++ )
+		for ( j = 0; j < K_LAST_KEY; j++ )
 		{
 			trap_Key_GetBindingBuf( j, buffer, MAX_STRING_CHARS );
 
-			if( buffer[ 0 ] == 0 )
+			if ( buffer[ 0 ] == 0 )
 			{
 				continue;
 			}
 
-			if( !Q_stricmp( buffer, bindings[ i ].command ) )
+			if ( !Q_stricmp( buffer, bindings[ i ].command ) )
 			{
 				bindings[ i ].keys[ numKeys++ ] = j;
 
-				if( numKeys > 1 )
+				if ( numKeys > 1 )
 				{
 					break;
 				}
@@ -102,28 +102,28 @@ static const char *CG_KeyNameForCommand( const char *command )
 
 	buffer[ 0 ] = '\0';
 
-	for( i = 0; i < numBindings; i++ )
+	for ( i = 0; i < numBindings; i++ )
 	{
-		if( !Q_stricmp( command, bindings[ i ].command ) )
+		if ( !Q_stricmp( command, bindings[ i ].command ) )
 		{
-			if( bindings[ i ].keys[ 0 ] != K_NONE )
+			if ( bindings[ i ].keys[ 0 ] != K_NONE )
 			{
 				trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 0 ],
 				                            buffer, MAX_STRING_CHARS );
 				firstKeyLength = strlen( buffer );
 
-				for( j = 0; j < firstKeyLength; j++ )
+				for ( j = 0; j < firstKeyLength; j++ )
 				{
 					buffer[ j ] = toupper( buffer[ j ] );
 				}
 
-				if( bindings[ i ].keys[ 1 ] != K_NONE )
+				if ( bindings[ i ].keys[ 1 ] != K_NONE )
 				{
 					Q_strcat( buffer, MAX_STRING_CHARS, " or " );
 					trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 1 ],
 					                            buffer + strlen( buffer ), MAX_STRING_CHARS - strlen( buffer ) );
 
-					for( j = firstKeyLength + 4; j < strlen( buffer ); j++ )
+					for ( j = firstKeyLength + 4; j < strlen( buffer ); j++ )
 					{
 						buffer[ j ] = toupper( buffer[ j ] );
 					}
@@ -163,8 +163,8 @@ static qboolean CG_BuildableInRange( playerState_t *ps )
 
 	es = &cg_entities[ trace.entityNum ].currentState;
 
-	if( es->eType == ET_BUILDABLE &&
-	    ps->stats[ STAT_PTEAM ] == BG_FindTeamForBuildable( es->modelindex ) )
+	if ( es->eType == ET_BUILDABLE &&
+	     ps->stats[ STAT_PTEAM ] == BG_FindTeamForBuildable( es->modelindex ) )
 	{
 		return qtrue;
 	}
@@ -183,7 +183,7 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 {
 	buildable_t buildable = ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
 
-	if( buildable > BA_NONE )
+	if ( buildable > BA_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to place the %s\n",
@@ -201,7 +201,7 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 		          va( "Press %s to build a structure\n",
 		              CG_KeyNameForCommand( "+attack" ) ) );
 
-		if( CG_BuildableInRange( ps ) )
+		if ( CG_BuildableInRange( ps ) )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to destroy this structure\n",
@@ -209,9 +209,9 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 		}
 	}
 
-	if( ps->stats[ STAT_PCLASS ] == PCL_ALIEN_BUILDER0_UPG )
+	if ( ps->stats[ STAT_PCLASS ] == PCL_ALIEN_BUILDER0_UPG )
 	{
-		if( ( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) == BA_NONE )
+		if ( ( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) == BA_NONE )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to swipe\n",
@@ -257,7 +257,7 @@ static void CG_AlienLevel1Text( char *text, playerState_t *ps )
 	          va( "Press %s to swipe\n",
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
-	if( ps->stats[ STAT_PCLASS ] == PCL_ALIEN_LEVEL1_UPG )
+	if ( ps->stats[ STAT_PCLASS ] == PCL_ALIEN_LEVEL1_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to spray poisonous gas\n",
@@ -280,7 +280,7 @@ static void CG_AlienLevel2Text( char *text, playerState_t *ps )
 	          va( "Press %s to bite\n",
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
-	if( ps->stats[ STAT_PCLASS ] == PCL_ALIEN_LEVEL2_UPG )
+	if ( ps->stats[ STAT_PCLASS ] == PCL_ALIEN_LEVEL2_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to invoke an electrical attack\n",
@@ -303,7 +303,7 @@ static void CG_AlienLevel3Text( char *text, playerState_t *ps )
 	          va( "Press %s to bite\n",
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
-	if( ps->stats[ STAT_PCLASS ] == PCL_ALIEN_LEVEL3_UPG )
+	if ( ps->stats[ STAT_PCLASS ] == PCL_ALIEN_LEVEL3_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to launch a projectile\n",
@@ -340,7 +340,7 @@ static void CG_HumanCkitText( char *text, playerState_t *ps )
 {
 	buildable_t buildable = ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
 
-	if( buildable > BA_NONE )
+	if ( buildable > BA_NONE )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to place the %s\n",
@@ -358,7 +358,7 @@ static void CG_HumanCkitText( char *text, playerState_t *ps )
 		          va( "Press %s to build a structure\n",
 		              CG_KeyNameForCommand( "+attack" ) ) );
 
-		if( CG_BuildableInRange( ps ) )
+		if ( CG_BuildableInRange( ps ) )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to destroy this structure\n",
@@ -378,11 +378,11 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	int       ammo, clips;
 	upgrade_t upgrade = UP_NONE;
 
-	if( cg.weaponSelect <= 32 )
+	if ( cg.weaponSelect <= 32 )
 	{
 		name = cg_weapons[ cg.weaponSelect ].humanName;
 	}
-	else if( cg.weaponSelect > 32 )
+	else if ( cg.weaponSelect > 32 )
 	{
 		name = cg_upgrades[ cg.weaponSelect - 32 ].humanName;
 		upgrade = cg.weaponSelect - 32;
@@ -390,10 +390,10 @@ static void CG_HumanText( char *text, playerState_t *ps )
 
 	BG_UnpackAmmoArray( ps->weapon, ps->ammo, ps->powerups, &ammo, &clips );
 
-	if( !ammo && !clips && !BG_FindInfinteAmmoForWeapon( ps->weapon ) )
+	if ( !ammo && !clips && !BG_FindInfinteAmmoForWeapon( ps->weapon ) )
 	{
 		//no ammo
-		switch( ps->weapon )
+		switch ( ps->weapon )
 		{
 			case WP_MACHINEGUN:
 			case WP_CHAINGUN:
@@ -419,7 +419,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	}
 	else
 	{
-		switch( ps->weapon )
+		switch ( ps->weapon )
 		{
 			case WP_BLASTER:
 			case WP_MACHINEGUN:
@@ -480,8 +480,8 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	          va( "%s to select an upgrade\n",
 	              CG_KeyNameForCommand( "weapnext" ) ) );
 
-	if( upgrade == UP_NONE ||
-	    ( upgrade > UP_NONE && BG_FindUsableForUpgrade( upgrade ) ) )
+	if ( upgrade == UP_NONE ||
+	     ( upgrade > UP_NONE && BG_FindUsableForUpgrade( upgrade ) ) )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to use the %s\n",
@@ -489,8 +489,8 @@ static void CG_HumanText( char *text, playerState_t *ps )
 		              name ) );
 	}
 
-	if( ps->stats[ STAT_HEALTH ] <= 35 &&
-	    BG_InventoryContainsUpgrade( UP_MEDKIT, ps->stats ) )
+	if ( ps->stats[ STAT_HEALTH ] <= 35 &&
+	     BG_InventoryContainsUpgrade( UP_MEDKIT, ps->stats ) )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to use your %s\n",
@@ -510,13 +510,13 @@ CG_SpectatorText
 */
 static void CG_SpectatorText( char *text, playerState_t *ps )
 {
-	if( ps->pm_flags & PMF_FOLLOW )
+	if ( ps->pm_flags & PMF_FOLLOW )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to return to free spectator mode\n",
 		              CG_KeyNameForCommand( "+button2" ) ) );
 
-		if( CG_PlayerCount() > 1 )
+		if ( CG_PlayerCount() > 1 )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s or ",
@@ -526,13 +526,13 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 			              CG_KeyNameForCommand( "weapnext" ) ) );
 		}
 	}
-	else if( ps->pm_type == PM_SPECTATOR )
+	else if ( ps->pm_type == PM_SPECTATOR )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to join a team\n",
 		              CG_KeyNameForCommand( "+attack" ) ) );
 
-		if( CG_PlayerCount() > 0 )
+		if ( CG_PlayerCount() > 0 )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to enter spectator follow mode\n",
@@ -564,16 +564,16 @@ const char *CG_TutorialText( void )
 	text[ 0 ] = '\0';
 	ps = &cg.snap->ps;
 
-	if( !cg.intermissionStarted && !cg.demoPlayback )
+	if ( !cg.intermissionStarted && !cg.demoPlayback )
 	{
-		if( ps->persistant[ PERS_TEAM ] == TEAM_SPECTATOR ||
-		    ps->pm_flags & PMF_FOLLOW )
+		if ( ps->persistant[ PERS_TEAM ] == TEAM_SPECTATOR ||
+		     ps->pm_flags & PMF_FOLLOW )
 		{
 			CG_SpectatorText( text, ps );
 		}
-		else if( ps->stats[ STAT_HEALTH ] > 0 )
+		else if ( ps->stats[ STAT_HEALTH ] > 0 )
 		{
-			switch( ps->stats[ STAT_PCLASS ] )
+			switch ( ps->stats[ STAT_PCLASS ] )
 			{
 				case PCL_ALIEN_BUILDER0:
 				case PCL_ALIEN_BUILDER0_UPG:
@@ -611,8 +611,8 @@ const char *CG_TutorialText( void )
 					break;
 			}
 
-			if( ps->stats[ STAT_PTEAM ] == PTE_ALIENS &&
-			    BG_UpgradeClassAvailable( ps ) )
+			if ( ps->stats[ STAT_PTEAM ] == PTE_ALIENS &&
+			     BG_UpgradeClassAvailable( ps ) )
 			{
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
 				          va( "Press %s to evolve\n",

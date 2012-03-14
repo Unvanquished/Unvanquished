@@ -63,7 +63,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	token = COM_ParseExt2( &buf_p, qfalse );
 	version = atoi( token );
 
-	if( version != MD5_VERSION )
+	if ( version != MD5_VERSION )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: %s has wrong version (%i should be %i)\n", modName, version, MD5_VERSION );
 		return qfalse;
@@ -81,7 +81,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// parse numJoints <number>
 	token = COM_ParseExt2( &buf_p, qtrue );
 
-	if( Q_stricmp( token, "numJoints" ) )
+	if ( Q_stricmp( token, "numJoints" ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numJoints' found '%s' in model '%s'\n", token, modName );
 		return qfalse;
@@ -93,7 +93,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// parse numMeshes <number>
 	token = COM_ParseExt2( &buf_p, qtrue );
 
-	if( Q_stricmp( token, "numMeshes" ) )
+	if ( Q_stricmp( token, "numMeshes" ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numMeshes' found '%s' in model '%s'\n", token, modName );
 		return qfalse;
@@ -103,13 +103,13 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	md5->numSurfaces = atoi( token );
 	//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has %i surfaces\n", modName, md5->numSurfaces);
 
-	if( md5->numBones < 1 )
+	if ( md5->numBones < 1 )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: '%s' has no bones\n", modName );
 		return qfalse;
 	}
 
-	if( md5->numBones > MAX_BONES )
+	if ( md5->numBones > MAX_BONES )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: '%s' has more than %i bones (%i)\n", modName, MAX_BONES, md5->numBones );
 		return qfalse;
@@ -123,7 +123,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// parse joints {
 	token = COM_ParseExt2( &buf_p, qtrue );
 
-	if( Q_stricmp( token, "joints" ) )
+	if ( Q_stricmp( token, "joints" ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'joints' found '%s' in model '%s'\n", token, modName );
 		return qfalse;
@@ -131,13 +131,13 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	token = COM_ParseExt2( &buf_p, qfalse );
 
-	if( Q_stricmp( token, "{" ) )
+	if ( Q_stricmp( token, "{" ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '{' found '%s' in model '%s'\n", token, modName );
 		return qfalse;
 	}
 
-	for( i = 0, bone = md5->bones; i < md5->numBones; i++, bone++ )
+	for ( i = 0, bone = md5->bones; i < md5->numBones; i++, bone++ )
 	{
 		token = COM_ParseExt2( &buf_p, qtrue );
 		Q_strncpyz( bone->name, token, sizeof( bone->name ) );
@@ -149,7 +149,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has bone '%s' with parent index %i\n", modName, bone->name, bone->parentIndex);
 
-		if( bone->parentIndex >= md5->numBones )
+		if ( bone->parentIndex >= md5->numBones )
 		{
 			ri.Error( ERR_DROP, "R_LoadMD5: '%s' has bone '%s' with bad parent index %i while numBones is %i\n", modName,
 			          bone->name, bone->parentIndex, md5->numBones );
@@ -158,13 +158,13 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		// skip (
 		token = COM_ParseExt2( &buf_p, qfalse );
 
-		if( Q_stricmp( token, "(" ) )
+		if ( Q_stricmp( token, "(" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
 		}
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			token = COM_ParseExt2( &buf_p, qfalse );
 			boneOrigin[ j ] = atof( token );
@@ -173,7 +173,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		// skip )
 		token = COM_ParseExt2( &buf_p, qfalse );
 
-		if( Q_stricmp( token, ")" ) )
+		if ( Q_stricmp( token, ")" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected ')' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
@@ -182,13 +182,13 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		// skip (
 		token = COM_ParseExt2( &buf_p, qfalse );
 
-		if( Q_stricmp( token, "(" ) )
+		if ( Q_stricmp( token, "(" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
 		}
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			token = COM_ParseExt2( &buf_p, qfalse );
 			boneQuat[ j ] = atof( token );
@@ -206,7 +206,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		// skip )
 		token = COM_ParseExt2( &buf_p, qfalse );
 
-		if( Q_stricmp( token, ")" ) )
+		if ( Q_stricmp( token, ")" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
@@ -216,14 +216,14 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// parse }
 	token = COM_ParseExt2( &buf_p, qtrue );
 
-	if( Q_stricmp( token, "}" ) )
+	if ( Q_stricmp( token, "}" ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '}' found '%s' in model '%s'\n", token, modName );
 		return qfalse;
 	}
 
 	// parse all the surfaces
-	if( md5->numSurfaces < 1 )
+	if ( md5->numSurfaces < 1 )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD5: '%s' has no surfaces\n", modName );
 		return qfalse;
@@ -233,12 +233,12 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 	md5->surfaces = ri.Hunk_Alloc( sizeof( *surf ) * md5->numSurfaces, h_low );
 
-	for( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
+	for ( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
 	{
 		// parse mesh {
 		token = COM_ParseExt2( &buf_p, qtrue );
 
-		if( Q_stricmp( token, "mesh" ) )
+		if ( Q_stricmp( token, "mesh" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'mesh' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
@@ -246,7 +246,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		token = COM_ParseExt2( &buf_p, qfalse );
 
-		if( Q_stricmp( token, "{" ) )
+		if ( Q_stricmp( token, "{" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '{' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
@@ -261,7 +261,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		// parse shader <name>
 		token = COM_ParseExt2( &buf_p, qtrue );
 
-		if( Q_stricmp( token, "shader" ) )
+		if ( Q_stricmp( token, "shader" ) )
 		{
 			Q_strncpyz( surf->shader, "<default>", sizeof( surf->shader ) );
 			surf->shaderIndex = 0;
@@ -281,7 +281,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			// register the shaders
 			sh = R_FindShader( surf->shader, LIGHTMAP_NONE, qtrue );
 
-			if( sh->defaultShader )
+			if ( sh->defaultShader )
 			{
 				surf->shaderIndex = 0;
 			}
@@ -294,7 +294,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		}
 
 		// parse numVerts <number>
-		if( Q_stricmp( token, "numVerts" ) )
+		if ( Q_stricmp( token, "numVerts" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numVerts' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
@@ -303,7 +303,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		token = COM_ParseExt2( &buf_p, qfalse );
 		surf->numVerts = atoi( token );
 
-		if( surf->numVerts > SHADER_MAX_VERTEXES )
+		if ( surf->numVerts > SHADER_MAX_VERTEXES )
 		{
 			ri.Error( ERR_DROP, "R_LoadMD5: '%s' has more than %i verts on a surface (%i)",
 			          modName, SHADER_MAX_VERTEXES, surf->numVerts );
@@ -311,12 +311,12 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		surf->verts = ri.Hunk_Alloc( sizeof( *v ) * surf->numVerts, h_low );
 
-		for( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
+		for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 		{
 			// skip vert <number>
 			token = COM_ParseExt2( &buf_p, qtrue );
 
-			if( Q_stricmp( token, "vert" ) )
+			if ( Q_stricmp( token, "vert" ) )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'vert' found '%s' in model '%s'\n", token, modName );
 				return qfalse;
@@ -327,13 +327,13 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			// skip (
 			token = COM_ParseExt2( &buf_p, qfalse );
 
-			if( Q_stricmp( token, "(" ) )
+			if ( Q_stricmp( token, "(" ) )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
 				return qfalse;
 			}
 
-			for( k = 0; k < 2; k++ )
+			for ( k = 0; k < 2; k++ )
 			{
 				token = COM_ParseExt2( &buf_p, qfalse );
 				v->texCoords[ k ] = atof( token );
@@ -342,7 +342,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			// skip )
 			token = COM_ParseExt2( &buf_p, qfalse );
 
-			if( Q_stricmp( token, ")" ) )
+			if ( Q_stricmp( token, ")" ) )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected ')' found '%s' in model '%s'\n", token, modName );
 				return qfalse;
@@ -354,7 +354,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			token = COM_ParseExt2( &buf_p, qfalse );
 			v->numWeights = atoi( token );
 
-			if( v->numWeights > MAX_WEIGHTS )
+			if ( v->numWeights > MAX_WEIGHTS )
 			{
 				ri.Error( ERR_DROP, "R_LoadMD5: vertex %i requires more than %i weights on surface (%i) in model '%s'",
 				          j, MAX_WEIGHTS, i, modName );
@@ -364,7 +364,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		// parse numTris <number>
 		token = COM_ParseExt2( &buf_p, qtrue );
 
-		if( Q_stricmp( token, "numTris" ) )
+		if ( Q_stricmp( token, "numTris" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numTris' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
@@ -373,7 +373,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		token = COM_ParseExt2( &buf_p, qfalse );
 		surf->numTriangles = atoi( token );
 
-		if( surf->numTriangles > SHADER_MAX_TRIANGLES )
+		if ( surf->numTriangles > SHADER_MAX_TRIANGLES )
 		{
 			ri.Error( ERR_DROP, "R_LoadMD5: '%s' has more than %i triangles on a surface (%i)",
 			          modName, SHADER_MAX_TRIANGLES, surf->numTriangles );
@@ -381,12 +381,12 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		surf->triangles = ri.Hunk_Alloc( sizeof( *tri ) * surf->numTriangles, h_low );
 
-		for( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
+		for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
 		{
 			// skip tri <number>
 			token = COM_ParseExt2( &buf_p, qtrue );
 
-			if( Q_stricmp( token, "tri" ) )
+			if ( Q_stricmp( token, "tri" ) )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'tri' found '%s' in model '%s'\n", token, modName );
 				return qfalse;
@@ -394,7 +394,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 			COM_ParseExt2( &buf_p, qfalse );
 
-			for( k = 0; k < 3; k++ )
+			for ( k = 0; k < 3; k++ )
 			{
 				token = COM_ParseExt2( &buf_p, qfalse );
 				tri->indexes[ k ] = atoi( token );
@@ -404,7 +404,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		// parse numWeights <number>
 		token = COM_ParseExt2( &buf_p, qtrue );
 
-		if( Q_stricmp( token, "numWeights" ) )
+		if ( Q_stricmp( token, "numWeights" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'numWeights' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
@@ -415,12 +415,12 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		surf->weights = ri.Hunk_Alloc( sizeof( *weight ) * surf->numWeights, h_low );
 
-		for( j = 0, weight = surf->weights; j < surf->numWeights; j++, weight++ )
+		for ( j = 0, weight = surf->weights; j < surf->numWeights; j++, weight++ )
 		{
 			// skip weight <number>
 			token = COM_ParseExt2( &buf_p, qtrue );
 
-			if( Q_stricmp( token, "weight" ) )
+			if ( Q_stricmp( token, "weight" ) )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected 'weight' found '%s' in model '%s'\n", token, modName );
 				return qfalse;
@@ -437,13 +437,13 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			// skip (
 			token = COM_ParseExt2( &buf_p, qfalse );
 
-			if( Q_stricmp( token, "(" ) )
+			if ( Q_stricmp( token, "(" ) )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '(' found '%s' in model '%s'\n", token, modName );
 				return qfalse;
 			}
 
-			for( k = 0; k < 3; k++ )
+			for ( k = 0; k < 3; k++ )
 			{
 				token = COM_ParseExt2( &buf_p, qfalse );
 				weight->offset[ k ] = atof( token );
@@ -452,7 +452,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			// skip )
 			token = COM_ParseExt2( &buf_p, qfalse );
 
-			if( Q_stricmp( token, ")" ) )
+			if ( Q_stricmp( token, ")" ) )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadMD5: expected ')' found '%s' in model '%s'\n", token, modName );
 				return qfalse;
@@ -462,18 +462,18 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		// parse }
 		token = COM_ParseExt2( &buf_p, qtrue );
 
-		if( Q_stricmp( token, "}" ) )
+		if ( Q_stricmp( token, "}" ) )
 		{
 			ri.Printf( PRINT_WARNING, "R_LoadMD5: expected '}' found '%s' in model '%s'\n", token, modName );
 			return qfalse;
 		}
 
 		// loop trough all vertices and set up the vertex weights
-		for( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
+		for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 		{
 			v->weights = ri.Hunk_Alloc( sizeof( *v->weights ) * v->numWeights, h_low );
 
-			for( k = 0; k < v->numWeights; k++ )
+			for ( k = 0; k < v->numWeights; k++ )
 			{
 				v->weights[ k ] = surf->weights + ( v->firstWeight + k );
 			}
@@ -483,16 +483,16 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	// loading is done now calculate the bounding box and tangent spaces
 	ClearBounds( md5->bounds[ 0 ], md5->bounds[ 1 ] );
 
-	for( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
+	for ( i = 0, surf = md5->surfaces; i < md5->numSurfaces; i++, surf++ )
 	{
-		for( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
+		for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 		{
 			vec3_t      tmpVert;
 			md5Weight_t *w;
 
 			VectorClear( tmpVert );
 
-			for( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
+			for ( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
 			{
 				vec3_t offsetVec;
 
@@ -516,14 +516,14 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			vec3_t      binormal;
 			vec3_t      normal;
 
-			for( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
+			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 			{
 				VectorClear( v->tangent );
 				VectorClear( v->binormal );
 				VectorClear( v->normal );
 			}
 
-			for( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
+			for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
 			{
 				v0 = surf->verts[ tri->indexes[ 0 ] ].position;
 				v1 = surf->verts[ tri->indexes[ 1 ] ].position;
@@ -535,7 +535,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 				R_CalcNormalForTriangle( normal, v0, v1, v2 );
 
-				for( k = 0; k < 3; k++ )
+				for ( k = 0; k < 3; k++ )
 				{
 					float *v;
 
@@ -544,7 +544,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 				}
 			}
 
-			for( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
+			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )
 			{
 				VectorNormalize( v->normal );
 			}
@@ -553,16 +553,16 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 #if 0
 
 		// do another extra smoothing for normals to avoid flat shading
-		for( j = 0; j < surf->numVerts; j++ )
+		for ( j = 0; j < surf->numVerts; j++ )
 		{
-			for( k = 0; k < surf->numVerts; k++ )
+			for ( k = 0; k < surf->numVerts; k++ )
 			{
-				if( j == k )
+				if ( j == k )
 				{
 					continue;
 				}
 
-				if( VectorCompare( surf->verts[ j ].position, surf->verts[ k ].position ) )
+				if ( VectorCompare( surf->verts[ j ].position, surf->verts[ k ].position ) )
 				{
 					VectorAdd( surf->verts[ j ].normal, surf->verts[ k ].normal, surf->verts[ j ].normal );
 				}

@@ -201,13 +201,13 @@ int g_gameskill;
 //========================================================================
 bot_goalstate_t *BotGoalStateFromHandle( int handle )
 {
-	if( handle <= 0 || handle > MAX_CLIENTS )
+	if ( handle <= 0 || handle > MAX_CLIENTS )
 	{
 		botimport.Print( PRT_FATAL, "goal state handle %d out of range\n", handle );
 		return NULL;
 	} //end if
 
-	if( !botgoalstates[ handle ] )
+	if ( !botgoalstates[ handle ] )
 	{
 		botimport.Print( PRT_FATAL, "invalid goal state %d\n", handle );
 		return NULL;
@@ -280,7 +280,7 @@ itemconfig_t   *LoadItemConfig( char *filename )
 
 	max_iteminfo = ( int ) LibVarValue( "max_iteminfo", "256" );
 
-	if( max_iteminfo < 0 )
+	if ( max_iteminfo < 0 )
 	{
 		botimport.Print( PRT_ERROR, "max_iteminfo = %d\n", max_iteminfo );
 		max_iteminfo = 128;
@@ -290,7 +290,7 @@ itemconfig_t   *LoadItemConfig( char *filename )
 	strncpy( path, filename, MAX_PATH );
 	source = LoadSourceFile( path );
 
-	if( !source )
+	if ( !source )
 	{
 		botimport.Print( PRT_ERROR, "counldn't load %s\n", path );
 		return NULL;
@@ -302,11 +302,11 @@ itemconfig_t   *LoadItemConfig( char *filename )
 	ic->numiteminfo = 0;
 
 	//parse the item config file
-	while( PC_ReadToken( source, &token ) )
+	while ( PC_ReadToken( source, &token ) )
 	{
-		if( !strcmp( token.string, "iteminfo" ) )
+		if ( !strcmp( token.string, "iteminfo" ) )
 		{
-			if( ic->numiteminfo >= max_iteminfo )
+			if ( ic->numiteminfo >= max_iteminfo )
 			{
 				SourceError( source, "more than %d item info defined\n", max_iteminfo );
 				FreeMemory( ic );
@@ -317,7 +317,7 @@ itemconfig_t   *LoadItemConfig( char *filename )
 			ii = &ic->iteminfo[ ic->numiteminfo ];
 			memset( ii, 0, sizeof( iteminfo_t ) );
 
-			if( !PC_ExpectTokenType( source, TT_STRING, 0, &token ) )
+			if ( !PC_ExpectTokenType( source, TT_STRING, 0, &token ) )
 			{
 				FreeMemory( ic );
 				FreeMemory( source );
@@ -327,7 +327,7 @@ itemconfig_t   *LoadItemConfig( char *filename )
 			StripDoubleQuotes( token.string );
 			strncpy( ii->classname, token.string, sizeof( ii->classname ) - 1 );
 
-			if( !ReadStructure( source, &iteminfo_struct, ( char * ) ii ) )
+			if ( !ReadStructure( source, &iteminfo_struct, ( char * ) ii ) )
 			{
 				FreeMemory( ic );
 				FreeSource( source );
@@ -349,7 +349,7 @@ itemconfig_t   *LoadItemConfig( char *filename )
 	FreeSource( source );
 
 	//
-	if( !ic->numiteminfo )
+	if ( !ic->numiteminfo )
 	{
 		botimport.Print( PRT_WARNING, "no item info loaded\n" );
 	}
@@ -372,11 +372,11 @@ int            *ItemWeightIndex( weightconfig_t *iwc, itemconfig_t *ic )
 	//initialize item weight index
 	index = ( int * ) GetClearedMemory( sizeof( int ) * ic->numiteminfo );
 
-	for( i = 0; i < ic->numiteminfo; i++ )
+	for ( i = 0; i < ic->numiteminfo; i++ )
 	{
 		index[ i ] = FindFuzzyWeight( iwc, ic->iteminfo[ i ].classname );
 
-		if( index[ i ] < 0 )
+		if ( index[ i ] < 0 )
 		{
 			Log_Write( "item info %d \"%s\" has no fuzzy weight\r\n", i, ic->iteminfo[ i ].classname );
 		} //end if
@@ -395,7 +395,7 @@ void InitLevelItemHeap( void )
 {
 	int i, max_levelitems;
 
-	if( levelitemheap )
+	if ( levelitemheap )
 	{
 		FreeMemory( levelitemheap );
 	}
@@ -403,7 +403,7 @@ void InitLevelItemHeap( void )
 	max_levelitems = ( int ) LibVarValue( "max_levelitems", "256" );
 	levelitemheap = ( levelitem_t * ) GetMemory( max_levelitems * sizeof( levelitem_t ) );
 
-	for( i = 0; i < max_levelitems - 2; i++ )
+	for ( i = 0; i < max_levelitems - 2; i++ )
 	{
 		levelitemheap[ i ].next = &levelitemheap[ i + 1 ];
 	} //end for
@@ -425,7 +425,7 @@ levelitem_t    *AllocLevelItem( void )
 
 	li = freelevelitems;
 
-	if( !li )
+	if ( !li )
 	{
 		botimport.Print( PRT_FATAL, "out of level items\n" );
 		return NULL;
@@ -457,7 +457,7 @@ void FreeLevelItem( levelitem_t *li )
 //===========================================================================
 void AddLevelItemToList( levelitem_t *li )
 {
-	if( levelitems )
+	if ( levelitems )
 	{
 		levelitems->prev = li;
 	}
@@ -475,7 +475,7 @@ void AddLevelItemToList( levelitem_t *li )
 //===========================================================================
 void RemoveLevelItemFromList( levelitem_t *li )
 {
-	if( li->prev )
+	if ( li->prev )
 	{
 		li->prev->next = li->next;
 	}
@@ -484,7 +484,7 @@ void RemoveLevelItemFromList( levelitem_t *li )
 		levelitems = li->next;
 	}
 
-	if( li->next )
+	if ( li->next )
 	{
 		li->next->prev = li->prev;
 	}
@@ -501,7 +501,7 @@ void BotFreeInfoEntities( void )
 	maplocation_t *ml, *nextml;
 	campspot_t    *cs, *nextcs;
 
-	for( ml = maplocations; ml; ml = nextml )
+	for ( ml = maplocations; ml; ml = nextml )
 	{
 		nextml = ml->next;
 		FreeMemory( ml );
@@ -509,7 +509,7 @@ void BotFreeInfoEntities( void )
 
 	maplocations = NULL;
 
-	for( cs = campspots; cs; cs = nextcs )
+	for ( cs = campspots; cs; cs = nextcs )
 	{
 		nextcs = cs->next;
 		FreeMemory( cs );
@@ -536,15 +536,15 @@ void BotInitInfoEntities( void )
 	numlocations = 0;
 	numcampspots = 0;
 
-	for( ent = AAS_NextBSPEntity( 0 ); ent; ent = AAS_NextBSPEntity( ent ) )
+	for ( ent = AAS_NextBSPEntity( 0 ); ent; ent = AAS_NextBSPEntity( ent ) )
 	{
-		if( !AAS_ValueForBSPEpairKey( ent, "classname", classname, MAX_EPAIRKEY ) )
+		if ( !AAS_ValueForBSPEpairKey( ent, "classname", classname, MAX_EPAIRKEY ) )
 		{
 			continue;
 		}
 
 		//map locations
-		if( !strcmp( classname, "target_location" ) )
+		if ( !strcmp( classname, "target_location" ) )
 		{
 			ml = ( maplocation_t * ) GetClearedMemory( sizeof( maplocation_t ) );
 			AAS_VectorForBSPEpairKey( ent, "origin", ml->origin );
@@ -555,7 +555,7 @@ void BotInitInfoEntities( void )
 			numlocations++;
 		} //end if
 		//camp spots
-		else if( !strcmp( classname, "info_camp" ) )
+		else if ( !strcmp( classname, "info_camp" ) )
 		{
 			cs = ( campspot_t * ) GetClearedMemory( sizeof( campspot_t ) );
 			AAS_VectorForBSPEpairKey( ent, "origin", cs->origin );
@@ -567,7 +567,7 @@ void BotInitInfoEntities( void )
 			AAS_FloatForBSPEpairKey( ent, "random", &cs->random );
 			cs->areanum = AAS_PointAreaNum( cs->origin );
 
-			if( !cs->areanum )
+			if ( !cs->areanum )
 			{
 				botimport.Print( PRT_MESSAGE, "camp spot at %1.1f %1.1f %1.1f in solid\n", cs->origin[ 0 ], cs->origin[ 1 ],
 				                 cs->origin[ 2 ] );
@@ -582,7 +582,7 @@ void BotInitInfoEntities( void )
 		} //end else if
 	} //end for
 
-	if( bot_developer )
+	if ( bot_developer )
 	{
 		botimport.Print( PRT_MESSAGE, "%d map locations\n", numlocations );
 		botimport.Print( PRT_MESSAGE, "%d camp spots\n", numcampspots );
@@ -614,30 +614,30 @@ void BotInitLevelItems( void )
 	//
 	ic = itemconfig;
 
-	if( !ic )
+	if ( !ic )
 	{
 		return;
 	}
 
 	//if there's no AAS file loaded
-	if( !AAS_Loaded() )
+	if ( !AAS_Loaded() )
 	{
 		return;
 	}
 
 	//update the modelindexes of the item info
-	for( i = 0; i < ic->numiteminfo; i++ )
+	for ( i = 0; i < ic->numiteminfo; i++ )
 	{
 		//ic->iteminfo[i].modelindex = AAS_IndexFromModel(ic->iteminfo[i].model);
-		if( !ic->iteminfo[ i ].modelindex )
+		if ( !ic->iteminfo[ i ].modelindex )
 		{
 			Log_Write( "item %s has modelindex 0", ic->iteminfo[ i ].classname );
 		} //end if
 	} //end for
 
-	for( ent = AAS_NextBSPEntity( 0 ); ent; ent = AAS_NextBSPEntity( ent ) )
+	for ( ent = AAS_NextBSPEntity( 0 ); ent; ent = AAS_NextBSPEntity( ent ) )
 	{
-		if( !AAS_ValueForBSPEpairKey( ent, "classname", classname, MAX_EPAIRKEY ) )
+		if ( !AAS_ValueForBSPEpairKey( ent, "classname", classname, MAX_EPAIRKEY ) )
 		{
 			continue;
 		}
@@ -648,22 +648,22 @@ void BotInitLevelItems( void )
 
 		//FIXME: don't do this
 		// for now skip all floating entities
-		if( spawnflags & 1 )
+		if ( spawnflags & 1 )
 		{
 			continue;
 		}
 
 		//
-		for( i = 0; i < ic->numiteminfo; i++ )
+		for ( i = 0; i < ic->numiteminfo; i++ )
 		{
-			if( !strcmp( classname, ic->iteminfo[ i ].classname ) )
+			if ( !strcmp( classname, ic->iteminfo[ i ].classname ) )
 			{
 				//get the origin of the item
-				if( AAS_VectorForBSPEpairKey( ent, "origin", origin ) )
+				if ( AAS_VectorForBSPEpairKey( ent, "origin", origin ) )
 				{
 					li = AllocLevelItem();
 
-					if( !li )
+					if ( !li )
 					{
 						return;
 					}
@@ -678,9 +678,9 @@ void BotInitLevelItems( void )
 					AAS_IntForBSPEpairKey( ent, "notsingle", &li->notsingle );
 
 					//if not a stationary item
-					if( !( spawnflags & 1 ) )
+					if ( !( spawnflags & 1 ) )
 					{
-						if( !AAS_DropToFloor( origin, ic->iteminfo[ i ].mins, ic->iteminfo[ i ].maxs ) )
+						if ( !AAS_DropToFloor( origin, ic->iteminfo[ i ].mins, ic->iteminfo[ i ].maxs ) )
 						{
 							botimport.Print( PRT_MESSAGE, "%s in solid at (%1.1f %1.1f %1.1f)\n",
 							                 classname, origin[ 0 ], origin[ 1 ], origin[ 2 ] );
@@ -705,7 +705,7 @@ void BotInitLevelItems( void )
 			} //end if
 		} //end for
 
-		if( i >= ic->numiteminfo )
+		if ( i >= ic->numiteminfo )
 		{
 			Log_Write( "entity %s unknown item\r\n", classname );
 		} //end if
@@ -724,15 +724,15 @@ void BotGoalName( int number, char *name, int size )
 {
 	levelitem_t *li;
 
-	if( !itemconfig )
+	if ( !itemconfig )
 	{
 		return;
 	}
 
 	//
-	for( li = levelitems; li; li = li->next )
+	for ( li = levelitems; li; li = li->next )
 	{
-		if( li->number == number )
+		if ( li->number == number )
 		{
 			strncpy( name, itemconfig->iteminfo[ li->iteminfo ].name, size - 1 );
 			name[ size - 1 ] = '\0';
@@ -756,7 +756,7 @@ void BotResetAvoidGoals( int goalstate )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return;
 	}
@@ -779,14 +779,14 @@ void BotDumpAvoidGoals( int goalstate )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return;
 	}
 
-	for( i = 0; i < MAX_AVOIDGOALS; i++ )
+	for ( i = 0; i < MAX_AVOIDGOALS; i++ )
 	{
-		if( gs->avoidgoaltimes[ i ] >= AAS_Time() )
+		if ( gs->avoidgoaltimes[ i ] >= AAS_Time() )
 		{
 			BotGoalName( gs->avoidgoals[ i ], name, 32 );
 			Log_Write( "avoid goal %s, number %d for %f seconds", name, gs->avoidgoals[ i ], gs->avoidgoaltimes[ i ] - AAS_Time() );
@@ -804,10 +804,10 @@ void BotAddToAvoidGoals( bot_goalstate_t *gs, int number, float avoidtime )
 {
 	int i;
 
-	for( i = 0; i < MAX_AVOIDGOALS; i++ )
+	for ( i = 0; i < MAX_AVOIDGOALS; i++ )
 	{
 		//if this avoid goal has expired
-		if( gs->avoidgoaltimes[ i ] < AAS_Time() )
+		if ( gs->avoidgoaltimes[ i ] < AAS_Time() )
 		{
 			gs->avoidgoals[ i ] = number;
 			gs->avoidgoaltimes[ i ] = AAS_Time() + avoidtime;
@@ -829,15 +829,15 @@ void BotRemoveFromAvoidGoals( int goalstate, int number )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return;
 	}
 
 	//don't use the goals the bot wants to avoid
-	for( i = 0; i < MAX_AVOIDGOALS; i++ )
+	for ( i = 0; i < MAX_AVOIDGOALS; i++ )
 	{
-		if( gs->avoidgoals[ i ] == number && gs->avoidgoaltimes[ i ] >= AAS_Time() )
+		if ( gs->avoidgoals[ i ] == number && gs->avoidgoaltimes[ i ] >= AAS_Time() )
 		{
 			gs->avoidgoaltimes[ i ] = 0;
 			return;
@@ -858,15 +858,15 @@ float BotAvoidGoalTime( int goalstate, int number )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return 0;
 	}
 
 	//don't use the goals the bot wants to avoid
-	for( i = 0; i < MAX_AVOIDGOALS; i++ )
+	for ( i = 0; i < MAX_AVOIDGOALS; i++ )
 	{
-		if( gs->avoidgoals[ i ] == number && gs->avoidgoaltimes[ i ] >= AAS_Time() )
+		if ( gs->avoidgoals[ i ] == number && gs->avoidgoaltimes[ i ] >= AAS_Time() )
 		{
 			return gs->avoidgoaltimes[ i ] - AAS_Time();
 		} //end if
@@ -885,14 +885,14 @@ int BotGetLevelItemGoal( int index, char *name, bot_goal_t *goal )
 {
 	levelitem_t *li;
 
-	if( !itemconfig )
+	if ( !itemconfig )
 	{
 		return -1;
 	}
 
-	for( li = levelitems; li; li = li->next )
+	for ( li = levelitems; li; li = li->next )
 	{
-		if( li->number <= index )
+		if ( li->number <= index )
 		{
 			continue;
 		}
@@ -901,9 +901,9 @@ int BotGetLevelItemGoal( int index, char *name, bot_goal_t *goal )
 // START    Arnout changes, 28-08-2002.
 // removed gametype, added single player
 		//if (g_gametype == GT_SINGLE_PLAYER) {
-		if( g_singleplayer )
+		if ( g_singleplayer )
 		{
-			if( li->notsingle )
+			if ( li->notsingle )
 			{
 				continue;
 			}
@@ -920,7 +920,7 @@ int BotGetLevelItemGoal( int index, char *name, bot_goal_t *goal )
 		                }*/
 // END  Arnout changes, 28-08-2002.
 		//
-		if( !Q_stricmp( name, itemconfig->iteminfo[ li->iteminfo ].name ) )
+		if ( !Q_stricmp( name, itemconfig->iteminfo[ li->iteminfo ].name ) )
 		{
 			goal->areanum = li->goalareanum;
 			VectorCopy( li->goalorigin, goal->origin );
@@ -950,9 +950,9 @@ int BotGetMapLocationGoal( char *name, bot_goal_t *goal )
 		8, 8, 8
 	};
 
-	for( ml = maplocations; ml; ml = ml->next )
+	for ( ml = maplocations; ml; ml = ml->next )
 	{
-		if( !Q_stricmp( ml->name, name ) )
+		if ( !Q_stricmp( ml->name, name ) )
 		{
 			goal->areanum = ml->areanum;
 			VectorCopy( ml->origin, goal->origin );
@@ -981,16 +981,16 @@ int BotGetNextCampSpotGoal( int num, bot_goal_t *goal )
 		8, 8, 8
 	};
 
-	if( num < 0 )
+	if ( num < 0 )
 	{
 		num = 0;
 	}
 
 	i = num;
 
-	for( cs = campspots; cs; cs = cs->next )
+	for ( cs = campspots; cs; cs = cs->next )
 	{
-		if( --i < 0 )
+		if ( --i < 0 )
 		{
 			goal->areanum = cs->areanum;
 			VectorCopy( cs->origin, goal->origin );
@@ -1023,15 +1023,15 @@ void BotUpdateEntityItems( void )
 	itemconfig_t     *ic;
 
 	//timeout current entity items if necessary
-	for( li = levelitems; li; li = nextli )
+	for ( li = levelitems; li; li = nextli )
 	{
 		nextli = li->next;
 
 		//if it is a item that will time out
-		if( li->timeout )
+		if ( li->timeout )
 		{
 			//timeout the item
-			if( li->timeout < AAS_Time() )
+			if ( li->timeout < AAS_Time() )
 			{
 				RemoveLevelItemFromList( li );
 				FreeLevelItem( li );
@@ -1042,15 +1042,15 @@ void BotUpdateEntityItems( void )
 	//find new entity items
 	ic = itemconfig;
 
-	if( !itemconfig )
+	if ( !itemconfig )
 	{
 		return;
 	}
 
 	//
-	for( ent = AAS_NextEntity( 0 ); ent; ent = AAS_NextEntity( ent ) )
+	for ( ent = AAS_NextEntity( 0 ); ent; ent = AAS_NextEntity( ent ) )
 	{
-		if( AAS_EntityType( ent ) != ET_ITEM )
+		if ( AAS_EntityType( ent ) != ET_ITEM )
 		{
 			continue;
 		}
@@ -1059,7 +1059,7 @@ void BotUpdateEntityItems( void )
 		modelindex = AAS_EntityModelindex( ent );
 
 		//
-		if( !modelindex )
+		if ( !modelindex )
 		{
 			continue;
 		}
@@ -1069,31 +1069,31 @@ void BotUpdateEntityItems( void )
 
 		//FIXME: don't do this
 		//skip all floating items for now
-		if( entinfo.groundent != ENTITYNUM_WORLD )
+		if ( entinfo.groundent != ENTITYNUM_WORLD )
 		{
 			continue;
 		}
 
 		//if the entity is still moving
-		if( entinfo.origin[ 0 ] != entinfo.lastvisorigin[ 0 ] ||
-		    entinfo.origin[ 1 ] != entinfo.lastvisorigin[ 1 ] || entinfo.origin[ 2 ] != entinfo.lastvisorigin[ 2 ] )
+		if ( entinfo.origin[ 0 ] != entinfo.lastvisorigin[ 0 ] ||
+		     entinfo.origin[ 1 ] != entinfo.lastvisorigin[ 1 ] || entinfo.origin[ 2 ] != entinfo.lastvisorigin[ 2 ] )
 		{
 			continue;
 		}
 
 		//check if the level item isn't already stored
-		for( li = levelitems; li; li = li->next )
+		for ( li = levelitems; li; li = li->next )
 		{
 			//if the model of the level item and the entity are different
-			if( ic->iteminfo[ li->iteminfo ].modelindex != modelindex )
+			if ( ic->iteminfo[ li->iteminfo ].modelindex != modelindex )
 			{
 				continue;
 			}
 
 			//if the level item is linked to an entity
-			if( li->entitynum )
+			if ( li->entitynum )
 			{
-				if( li->entitynum == ent )
+				if ( li->entitynum == ent )
 				{
 					VectorCopy( entinfo.origin, li->origin );
 					break;
@@ -1104,7 +1104,7 @@ void BotUpdateEntityItems( void )
 				//check if the entity is very close
 				VectorSubtract( li->origin, entinfo.origin, dir );
 
-				if( VectorLength( dir ) < 30 )
+				if ( VectorLength( dir ) < 30 )
 				{
 					//found an entity for this level item
 					li->entitynum = ent;
@@ -1123,22 +1123,22 @@ void BotUpdateEntityItems( void )
 			} //end else
 		} //end for
 
-		if( li )
+		if ( li )
 		{
 			continue;
 		}
 
 		//check if the model is from a known item
-		for( i = 0; i < ic->numiteminfo; i++ )
+		for ( i = 0; i < ic->numiteminfo; i++ )
 		{
-			if( ic->iteminfo[ i ].modelindex == modelindex )
+			if ( ic->iteminfo[ i ].modelindex == modelindex )
 			{
 				break;
 			} //end if
 		} //end for
 
 		//if the model is not from a known item
-		if( i >= ic->numiteminfo )
+		if ( i >= ic->numiteminfo )
 		{
 			continue;
 		}
@@ -1147,7 +1147,7 @@ void BotUpdateEntityItems( void )
 		li = AllocLevelItem();
 
 		//
-		if( !li )
+		if ( !li )
 		{
 			continue;
 		}
@@ -1164,7 +1164,7 @@ void BotUpdateEntityItems( void )
 		li->goalareanum = AAS_BestReachableArea( li->origin, ic->iteminfo[ i ].mins, ic->iteminfo[ i ].maxs, li->goalorigin );
 
 		//
-		if( AAS_AreaJumpPad( li->goalareanum ) )
+		if ( AAS_AreaJumpPad( li->goalareanum ) )
 		{
 			FreeLevelItem( li );
 			continue;
@@ -1193,12 +1193,12 @@ void BotDumpGoalStack( int goalstate )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return;
 	}
 
-	for( i = 1; i <= gs->goalstacktop; i++ )
+	for ( i = 1; i <= gs->goalstacktop; i++ )
 	{
 		BotGoalName( gs->goalstack[ i ].number, name, 32 );
 		Log_Write( "%d: %s", i, name );
@@ -1217,12 +1217,12 @@ void BotPushGoal( int goalstate, bot_goal_t *goal )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return;
 	}
 
-	if( gs->goalstacktop >= MAX_GOALSTACK - 1 )
+	if ( gs->goalstacktop >= MAX_GOALSTACK - 1 )
 	{
 		botimport.Print( PRT_ERROR, "goal heap overflow\n" );
 		BotDumpGoalStack( goalstate );
@@ -1245,12 +1245,12 @@ void BotPopGoal( int goalstate )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return;
 	}
 
-	if( gs->goalstacktop > 0 )
+	if ( gs->goalstacktop > 0 )
 	{
 		gs->goalstacktop--;
 	}
@@ -1268,7 +1268,7 @@ void BotEmptyGoalStack( int goalstate )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return;
 	}
@@ -1288,12 +1288,12 @@ int BotGetTopGoal( int goalstate, bot_goal_t *goal )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return qfalse;
 	}
 
-	if( !gs->goalstacktop )
+	if ( !gs->goalstacktop )
 	{
 		return qfalse;
 	}
@@ -1314,12 +1314,12 @@ int BotGetSecondGoal( int goalstate, bot_goal_t *goal )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return qfalse;
 	}
 
-	if( gs->goalstacktop <= 1 )
+	if ( gs->goalstacktop <= 1 )
 	{
 		return qfalse;
 	}
@@ -1347,12 +1347,12 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return qfalse;
 	}
 
-	if( !gs->itemweightconfig )
+	if ( !gs->itemweightconfig )
 	{
 		return qfalse;
 	}
@@ -1361,7 +1361,7 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	areanum = BotReachabilityArea( origin, gs->client );
 
 	//if the bot is in solid or if the area the bot is in has no reachability links
-	if( !areanum || !AAS_AreaReachability( areanum ) )
+	if ( !areanum || !AAS_AreaReachability( areanum ) )
 	{
 		//use the last valid area the bot was in
 		areanum = gs->lastreachabilityarea;
@@ -1371,7 +1371,7 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	gs->lastreachabilityarea = areanum;
 
 	//if still in solid
-	if( !areanum )
+	if ( !areanum )
 	{
 		return qfalse;
 	}
@@ -1379,7 +1379,7 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	//the item configuration
 	ic = itemconfig;
 
-	if( !itemconfig )
+	if ( !itemconfig )
 	{
 		return qfalse;
 	}
@@ -1390,14 +1390,14 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	memset( &goal, 0, sizeof( bot_goal_t ) );
 
 	//go through the items in the level
-	for( li = levelitems; li; li = li->next )
+	for ( li = levelitems; li; li = li->next )
 	{
 // START    Arnout changes, 28-08-2002.
 // removed gametype, added single player
 		//if (g_gametype == GT_SINGLE_PLAYER) {
-		if( g_singleplayer )
+		if ( g_singleplayer )
 		{
-			if( li->notsingle )
+			if ( li->notsingle )
 			{
 				continue;
 			}
@@ -1414,7 +1414,7 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 		                }*/
 // END  Arnout changes, 28-08-2002.
 		//if the item is not in a possible goal area
-		if( !li->goalareanum )
+		if ( !li->goalareanum )
 		{
 			continue;
 		}
@@ -1423,13 +1423,13 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 		iteminfo = &ic->iteminfo[ li->iteminfo ];
 		weightnum = gs->itemweightindex[ iteminfo->number ];
 
-		if( weightnum < 0 )
+		if ( weightnum < 0 )
 		{
 			continue;
 		}
 
 		//if this goal is in the avoid goals
-		if( BotAvoidGoalTime( goalstate, li->number ) > 0 )
+		if ( BotAvoidGoalTime( goalstate, li->number ) > 0 )
 		{
 			continue;
 		}
@@ -1442,25 +1442,25 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 #ifdef DROPPEDWEIGHT
 
 		//HACK: to make dropped items more attractive
-		if( li->timeout )
+		if ( li->timeout )
 		{
 			weight += 1000;
 		}
 
 #endif //DROPPEDWEIGHT
 
-		if( weight > 0 )
+		if ( weight > 0 )
 		{
 			//get the travel time towards the goal area
 			t = AAS_AreaTravelTimeToGoalArea( areanum, origin, li->goalareanum, travelflags );
 
 			//if the goal is reachable
-			if( t > 0 )
+			if ( t > 0 )
 			{
 				weight /= ( float ) t * TRAVELTIME_SCALE;
 
 				//
-				if( weight > bestweight )
+				if ( weight > bestweight )
 				{
 					bestweight = weight;
 					bestitem = li;
@@ -1470,7 +1470,7 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	} //end for
 
 	//if no goal item found
-	if( !bestitem )
+	if ( !bestitem )
 	{
 		/*
 		   //if not in lava or slime
@@ -1510,13 +1510,13 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	//add the chosen goal to the goals to avoid for a while
 	avoidtime = iteminfo->respawntime * 0.5;
 
-	if( avoidtime < 10 )
+	if ( avoidtime < 10 )
 	{
 		avoidtime = AVOID_TIME;
 	}
 
 	//if it's a dropped item
-	if( bestitem->timeout )
+	if ( bestitem->timeout )
 	{
 		avoidtime = AVOIDDROPPED_TIME;
 	}
@@ -1527,7 +1527,7 @@ int BotChooseLTGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	//
 #ifdef DEBUG_AI_GOAL
 
-	if( bestitem->timeout )
+	if ( bestitem->timeout )
 	{
 		botimport.Print( PRT_MESSAGE, "new ltg dropped item %s\n", ic->iteminfo[ bestitem->iteminfo ].classname );
 	} //end if
@@ -1556,12 +1556,12 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return qfalse;
 	}
 
-	if( !gs->itemweightconfig )
+	if ( !gs->itemweightconfig )
 	{
 		return qfalse;
 	}
@@ -1570,7 +1570,7 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	areanum = BotReachabilityArea( origin, gs->client );
 
 	//if the bot is in solid or if the area the bot is in has no reachability links
-	if( !areanum || !AAS_AreaReachability( areanum ) )
+	if ( !areanum || !AAS_AreaReachability( areanum ) )
 	{
 		//use the last valid area the bot was in
 		areanum = gs->lastreachabilityarea;
@@ -1580,13 +1580,13 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	gs->lastreachabilityarea = areanum;
 
 	//if still in solid
-	if( !areanum )
+	if ( !areanum )
 	{
 		return qfalse;
 	}
 
 	//
-	if( ltg )
+	if ( ltg )
 	{
 		ltg_time = AAS_AreaTravelTimeToGoalArea( areanum, origin, ltg->areanum, travelflags );
 	}
@@ -1598,7 +1598,7 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	//the item configuration
 	ic = itemconfig;
 
-	if( !itemconfig )
+	if ( !itemconfig )
 	{
 		return qfalse;
 	}
@@ -1609,13 +1609,13 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	memset( &goal, 0, sizeof( bot_goal_t ) );
 
 	//go through the items in the level
-	for( li = levelitems; li; li = li->next )
+	for ( li = levelitems; li; li = li->next )
 	{
 // START    Arnout changes, 28-08-2002.
 // removed gametype, added single player
-		if( g_singleplayer )
+		if ( g_singleplayer )
 		{
-			if( li->notsingle )
+			if ( li->notsingle )
 			{
 				continue;
 			}
@@ -1632,7 +1632,7 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 		                }*/
 // END  Arnout changes, 28-08-2002.
 		//if the item is in a possible goal area
-		if( !li->goalareanum )
+		if ( !li->goalareanum )
 		{
 			continue;
 		}
@@ -1641,13 +1641,13 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 		iteminfo = &ic->iteminfo[ li->iteminfo ];
 		weightnum = gs->itemweightindex[ iteminfo->number ];
 
-		if( weightnum < 0 )
+		if ( weightnum < 0 )
 		{
 			continue;
 		}
 
 		//if this goal is in the avoid goals
-		if( BotAvoidGoalTime( goalstate, li->number ) > 0 )
+		if ( BotAvoidGoalTime( goalstate, li->number ) > 0 )
 		{
 			continue;
 		}
@@ -1661,36 +1661,36 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 #ifdef DROPPEDWEIGHT
 
 		//HACK: to make dropped items more attractive
-		if( li->timeout )
+		if ( li->timeout )
 		{
 			weight += 1000;
 		}
 
 #endif //DROPPEDWEIGHT
 
-		if( weight > 0 )
+		if ( weight > 0 )
 		{
 			//get the travel time towards the goal area
 			t = AAS_AreaTravelTimeToGoalArea( areanum, origin, li->goalareanum, travelflags );
 
 			//if the goal is reachable
-			if( t > 0 && t < maxtime )
+			if ( t > 0 && t < maxtime )
 			{
 				weight /= ( float ) t * TRAVELTIME_SCALE;
 
 				//
-				if( weight > bestweight )
+				if ( weight > bestweight )
 				{
 					t = 0;
 
-					if( ltg && !li->timeout )
+					if ( ltg && !li->timeout )
 					{
 						//get the travel time from the goal to the long term goal
 						t = AAS_AreaTravelTimeToGoalArea( li->goalareanum, li->goalorigin, ltg->areanum, travelflags );
 					} //end if
 
 					//if the travel back is possible and doesn't take too long
-					if( t <= ltg_time )
+					if ( t <= ltg_time )
 					{
 						bestweight = weight;
 						bestitem = li;
@@ -1701,7 +1701,7 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	} //end for
 
 	//if no goal item found
-	if( !bestitem )
+	if ( !bestitem )
 	{
 		return qfalse;
 	}
@@ -1719,13 +1719,13 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	//add the chosen goal to the goals to avoid for a while
 	avoidtime = iteminfo->respawntime * 0.5;
 
-	if( avoidtime < 10 )
+	if ( avoidtime < 10 )
 	{
 		avoidtime = AVOID_TIME;
 	}
 
 	//if it's a dropped item
-	if( bestitem->timeout )
+	if ( bestitem->timeout )
 	{
 		avoidtime = AVOIDDROPPED_TIME;
 	}
@@ -1736,7 +1736,7 @@ int BotChooseNBGItem( int goalstate, vec3_t origin, int *inventory, int travelfl
 	//
 #ifdef DEBUG_AI_GOAL
 
-	if( bestitem->timeout )
+	if ( bestitem->timeout )
 	{
 		botimport.Print( PRT_MESSAGE, "new nbg dropped item %s\n", ic->iteminfo[ bestitem->iteminfo ].classname );
 	} //end if
@@ -1770,9 +1770,9 @@ int BotTouchingGoal( vec3_t origin, bot_goal_t *goal )
 	VectorSubtract( absmaxs, safety_maxs, absmaxs );
 	VectorSubtract( absmins, safety_mins, absmins );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		if( origin[ i ] < absmins[ i ] || origin[ i ] > absmaxs[ i ] )
+		if ( origin[ i ] < absmins[ i ] || origin[ i ] > absmaxs[ i ] )
 		{
 			return qfalse;
 		}
@@ -1793,7 +1793,7 @@ int BotItemGoalInVisButNotVisible( int viewer, vec3_t eye, vec3_t viewangles, bo
 	bsp_trace_t      trace;
 	vec3_t           middle;
 
-	if( !( goal->flags & GFL_ITEM ) )
+	if ( !( goal->flags & GFL_ITEM ) )
 	{
 		return qfalse;
 	}
@@ -1806,11 +1806,11 @@ int BotItemGoalInVisButNotVisible( int viewer, vec3_t eye, vec3_t viewangles, bo
 	trace = AAS_Trace( eye, NULL, NULL, middle, viewer, CONTENTS_SOLID );
 
 	//if the goal middle point is visible
-	if( trace.fraction >= 1 )
+	if ( trace.fraction >= 1 )
 	{
 		//the goal entity number doesn't have to be valid
 		//just assume it's valid
-		if( goal->entitynum <= 0 )
+		if ( goal->entitynum <= 0 )
 		{
 			return qfalse;
 		}
@@ -1822,7 +1822,7 @@ int BotItemGoalInVisButNotVisible( int viewer, vec3_t eye, vec3_t viewangles, bo
 		//NOTE: for some wacko reason entities are sometimes
 		// not updated
 		//if (!entinfo.valid) return qtrue;
-		if( entinfo.ltime < AAS_Time() - 0.5 )
+		if ( entinfo.ltime < AAS_Time() - 0.5 )
 		{
 			return qtrue;
 		}
@@ -1843,7 +1843,7 @@ void BotResetGoalState( int goalstate )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return;
 	}
@@ -1865,7 +1865,7 @@ int BotLoadItemWeights( int goalstate, char *filename )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return BLERR_CANNOTLOADITEMWEIGHTS;
 	}
@@ -1875,14 +1875,14 @@ int BotLoadItemWeights( int goalstate, char *filename )
 	gs->itemweightconfig = ReadWeightConfig( filename );
 	PS_SetBaseFolder( "" );
 
-	if( !gs->itemweightconfig )
+	if ( !gs->itemweightconfig )
 	{
 		botimport.Print( PRT_FATAL, "couldn't load weights\n" );
 		return BLERR_CANNOTLOADITEMWEIGHTS;
 	} //end if
 
 	//if there's no item configuration
-	if( !itemconfig )
+	if ( !itemconfig )
 	{
 		return BLERR_CANNOTLOADITEMWEIGHTS;
 	}
@@ -1905,17 +1905,17 @@ void BotFreeItemWeights( int goalstate )
 
 	gs = BotGoalStateFromHandle( goalstate );
 
-	if( !gs )
+	if ( !gs )
 	{
 		return;
 	}
 
-	if( gs->itemweightconfig )
+	if ( gs->itemweightconfig )
 	{
 		FreeWeightConfig( gs->itemweightconfig );
 	}
 
-	if( gs->itemweightindex )
+	if ( gs->itemweightindex )
 	{
 		FreeMemory( gs->itemweightindex );
 	}
@@ -1931,9 +1931,9 @@ int BotAllocGoalState( int client )
 {
 	int i;
 
-	for( i = 1; i <= MAX_CLIENTS; i++ )
+	for ( i = 1; i <= MAX_CLIENTS; i++ )
 	{
-		if( !botgoalstates[ i ] )
+		if ( !botgoalstates[ i ] )
 		{
 			botgoalstates[ i ] = GetClearedMemory( sizeof( bot_goalstate_t ) );
 			botgoalstates[ i ]->client = client;
@@ -1952,13 +1952,13 @@ int BotAllocGoalState( int client )
 //========================================================================
 void BotFreeGoalState( int handle )
 {
-	if( handle <= 0 || handle > MAX_CLIENTS )
+	if ( handle <= 0 || handle > MAX_CLIENTS )
 	{
 		botimport.Print( PRT_FATAL, "goal state handle %d out of range\n", handle );
 		return;
 	} //end if
 
-	if( !botgoalstates[ handle ] )
+	if ( !botgoalstates[ handle ] )
 	{
 		botimport.Print( PRT_FATAL, "invalid goal state handle %d\n", handle );
 		return;
@@ -1995,7 +1995,7 @@ int BotSetupGoalAI( qboolean singleplayer )
 	itemconfig = LoadItemConfig( filename );
 	PS_SetBaseFolder( "" );
 
-	if( !itemconfig )
+	if ( !itemconfig )
 	{
 		botimport.Print( PRT_FATAL, "couldn't load item config\n" );
 		return BLERR_CANNOTLOADITEMCONFIG;
@@ -2015,14 +2015,14 @@ void BotShutdownGoalAI( void )
 {
 	int i;
 
-	if( itemconfig )
+	if ( itemconfig )
 	{
 		FreeMemory( itemconfig );
 	}
 
 	itemconfig = NULL;
 
-	if( levelitemheap )
+	if ( levelitemheap )
 	{
 		FreeMemory( levelitemheap );
 	}
@@ -2034,9 +2034,9 @@ void BotShutdownGoalAI( void )
 
 	BotFreeInfoEntities();
 
-	for( i = 1; i <= MAX_CLIENTS; i++ )
+	for ( i = 1; i <= MAX_CLIENTS; i++ )
 	{
-		if( botgoalstates[ i ] )
+		if ( botgoalstates[ i ] )
 		{
 			BotFreeGoalState( i );
 		} //end if

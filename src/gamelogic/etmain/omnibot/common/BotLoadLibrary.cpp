@@ -62,14 +62,14 @@ void Omnibot_strncpy( char *dest, const char *source, int count )
 {
 	// Only doing this because some engines(HL2), think it a good idea to fuck up the
 	// defines of all basic string functions throughout the entire project.
-	while( count && ( *dest++ = *source++ ) )  /* copy string */
+	while ( count && ( *dest++ = *source++ ) ) /* copy string */
 	{
 		count--;
 	}
 
-	if( count )  /* pad out with zeroes */
+	if ( count ) /* pad out with zeroes */
 	{
-		while( --count )
+		while ( --count )
 		{
 			*dest++ = '\0';
 		}
@@ -91,9 +91,9 @@ const char *Omnibot_FixPath( const char *_path )
 	// unixify the path slashes
 	char *pC = pathstr;
 
-	while( *pC != '\0' )
+	while ( *pC != '\0' )
 	{
-		if( *pC == '\\' )
+		if ( *pC == '\\' )
 		{
 			*pC = '/';
 		}
@@ -102,7 +102,7 @@ const char *Omnibot_FixPath( const char *_path )
 	}
 
 	// trim any trailing slash
-	while( *pC == '/' && pC > pathstr )
+	while ( *pC == '/' && pC > pathstr )
 	{
 		*pC = NULL;
 		--pC;
@@ -196,7 +196,7 @@ bool OB_ShowLastError( const char *context )
 	char *pMessage = ( char * ) lpMsgBuf;
 	int  i = ( int ) strlen( pMessage ) - 1;
 
-	while( pMessage[ i ] == '\n' || pMessage[ i ] == '\r' )
+	while ( pMessage[ i ] == '\n' || pMessage[ i ] == '\r' )
 	{
 		pMessage[ i-- ] = 0;
 	}
@@ -219,7 +219,7 @@ HINSTANCE Omnibot_LL( const char *file )
 	g_OmnibotLibPath = file;
 	HINSTANCE hndl = LoadLibrary( g_OmnibotLibPath.c_str() );
 
-	if( !hndl )
+	if ( !hndl )
 	{
 		OB_ShowLastError( "LoadLibrary" );
 	}
@@ -233,22 +233,22 @@ eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *pa
 	eomnibot_error r = BOT_ERROR_NONE;
 	g_BotLibrary = Omnibot_LL( OB_VA( "%s\\%s.dll", path ? path : ".", lib ) );
 
-	if( g_BotLibrary == 0 )
+	if ( g_BotLibrary == 0 )
 	{
 		g_BotLibrary = Omnibot_LL( OB_VA( ".\\%s.dll", lib ) );
 	}
 
-	if( g_BotLibrary == 0 )
+	if ( g_BotLibrary == 0 )
 	{
 		g_BotLibrary = Omnibot_LL( OB_VA( ".\\omni-bot\\%s.dll", lib ) );
 	}
 
-	if( g_BotLibrary == 0 )
+	if ( g_BotLibrary == 0 )
 	{
 		g_BotLibrary = Omnibot_LL( OB_VA( "%s.dll", lib ) );
 	}
 
-	if( g_BotLibrary == 0 )
+	if ( g_BotLibrary == 0 )
 	{
 		g_OmnibotLibPath.clear();
 		r = BOT_ERROR_CANTLOADDLL;
@@ -260,7 +260,7 @@ eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *pa
 		memset( &g_BotFunctions, 0, sizeof( g_BotFunctions ) );
 		pfnGetBotFuncs = ( pfnGetFunctionsFromDLL ) GetProcAddress( g_BotLibrary, "ExportBotFunctionsFromDLL" );
 
-		if( pfnGetBotFuncs == 0 )
+		if ( pfnGetBotFuncs == 0 )
 		{
 			r = BOT_ERROR_CANTGETBOTFUNCTIONS;
 			Omnibot_Load_PrintErr( OB_VA( "Omni-bot Failed with Error: %s", Omnibot_ErrorString( r ) ) );
@@ -269,7 +269,7 @@ eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *pa
 		{
 			r = pfnGetBotFuncs( &g_BotFunctions, sizeof( g_BotFunctions ) );
 
-			if( r == BOT_ERROR_NONE )
+			if ( r == BOT_ERROR_NONE )
 			{
 				Omnibot_Load_PrintMsg( "Omni-bot Loaded Successfully" );
 				r = g_BotFunctions.pfnInitialize( g_InterfaceFunctions, version );
@@ -277,7 +277,7 @@ eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *pa
 			}
 
 			// cs: removed else so interface errors can be printed
-			if( r != BOT_ERROR_NONE )
+			if ( r != BOT_ERROR_NONE )
 			{
 				Omnibot_Load_PrintErr( OB_VA( "Omni-bot Failed with Error: %s", Omnibot_ErrorString( r ) ) );
 				Omnibot_FreeLibrary();
@@ -290,7 +290,7 @@ eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *pa
 
 void Omnibot_FreeLibrary()
 {
-	if( g_BotLibrary )
+	if ( g_BotLibrary )
 	{
 		FreeLibrary( g_BotLibrary );
 		g_BotLibrary = 0;
@@ -366,7 +366,7 @@ void *Omnibot_LL( const char *file )
 	g_OmnibotLibPath = file;
 	void *pLib = dlopen( g_OmnibotLibPath.c_str(), RTLD_NOW );
 
-	if( !pLib )
+	if ( !pLib )
 	{
 		OB_ShowLastError( "LoadLibrary", dlerror() );
 	}
@@ -380,32 +380,32 @@ eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *pa
 	eomnibot_error r = BOT_ERROR_NONE;
 	g_BotLibrary = Omnibot_LL( OB_VA( "%s/%s.so", path ? path : ".", lib ) );
 
-	if( !g_BotLibrary )
+	if ( !g_BotLibrary )
 	{
 		g_BotLibrary = Omnibot_LL( OB_VA( "./%s.so", lib ) );
 	}
 
-	if( !g_BotLibrary )
+	if ( !g_BotLibrary )
 	{
 		char *homeDir = getenv( "HOME" );
 
-		if( homeDir )
+		if ( homeDir )
 		{
 			g_BotLibrary = Omnibot_LL( OB_VA( "%s/omni-bot/%s.so", homeDir, lib ) );
 		}
 	}
 
-	if( !g_BotLibrary )
+	if ( !g_BotLibrary )
 	{
 		char *homeDir = getenv( "HOME" );
 
-		if( homeDir )
+		if ( homeDir )
 		{
 			g_BotLibrary = Omnibot_LL( OB_VA( "%s.so", lib ) );
 		}
 	}
 
-	if( !g_BotLibrary )
+	if ( !g_BotLibrary )
 	{
 		g_OmnibotLibPath.clear();
 		r = BOT_ERROR_CANTLOADDLL;
@@ -417,7 +417,7 @@ eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *pa
 		memset( &g_BotFunctions, 0, sizeof( g_BotFunctions ) );
 		pfnGetBotFuncs = ( pfnGetFunctionsFromDLL ) GetProcAddress( g_BotLibrary, "ExportBotFunctionsFromDLL" );
 
-		if( !pfnGetBotFuncs )
+		if ( !pfnGetBotFuncs )
 		{
 			r = BOT_ERROR_CANTGETBOTFUNCTIONS;
 			Omnibot_Load_PrintErr( OB_VA( "Omni-bot Failed with Error: %s", Omnibot_ErrorString( r ) ) );
@@ -427,7 +427,7 @@ eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *pa
 		{
 			r = pfnGetBotFuncs( &g_BotFunctions, sizeof( g_BotFunctions ) );
 
-			if( r == BOT_ERROR_NONE )
+			if ( r == BOT_ERROR_NONE )
 			{
 				Omnibot_Load_PrintMsg( "Omni-bot Loaded Successfully" );
 				r = g_BotFunctions.pfnInitialize( g_InterfaceFunctions, version );
@@ -441,7 +441,7 @@ eomnibot_error Omnibot_LoadLibrary( int version, const char *lib, const char *pa
 
 void Omnibot_FreeLibrary()
 {
-	if( g_BotLibrary )
+	if ( g_BotLibrary )
 	{
 		dlclose( g_BotLibrary );
 		g_BotLibrary = 0;
@@ -502,10 +502,10 @@ bool KeyVals::SetString( const char *_key, const char *_value )
 {
 	_value = _value ? _value : "";
 
-	for( int a = 0; a < MaxArgs; ++a )
+	for ( int a = 0; a < MaxArgs; ++a )
 	{
 		// look for the first null string
-		if( m_String[ a ][ 0 ] == '\0' )
+		if ( m_String[ a ][ 0 ] == '\0' )
 		{
 			Omnibot_strncpy( &m_String[ a ][ 0 ], _value, MaxStringLength - 1 );
 			return SetKeyVal( _key, obUserData( &m_String[ a ][ 0 ] ) );
@@ -523,28 +523,28 @@ bool KeyVals::Set( const char *_key, const obUserData &_value )
 
 bool KeyVals::SetKeyVal( const char *_key, const obUserData &_ud )
 {
-	if( !_key )
+	if ( !_key )
 	{
 		return false;
 	}
 
 	int ifree = -1;
 
-	for( int i = 0; i < MaxArgs; ++i )
+	for ( int i = 0; i < MaxArgs; ++i )
 	{
-		if( ifree == -1 && m_Key[ i ][ 0 ] == 0 )
+		if ( ifree == -1 && m_Key[ i ][ 0 ] == 0 )
 		{
 			ifree = i;
 		}
 
-		if( !StringCompareNoCase( m_Key[ i ], _key ) )
+		if ( !StringCompareNoCase( m_Key[ i ], _key ) )
 		{
 			m_Value[ i ] = _ud;
 			return true;
 		}
 	}
 
-	if( ifree != -1 )
+	if ( ifree != -1 )
 	{
 		Omnibot_strncpy( &m_Key[ ifree ][ 0 ], _key, MaxArgLength - 1 );
 		m_Value[ ifree ] = _ud;
@@ -558,7 +558,7 @@ bool KeyVals::GetInt( const char *_key, int &_val ) const
 {
 	obUserData d;
 
-	if( GetKeyVal( _key, d ) )
+	if ( GetKeyVal( _key, d ) )
 	{
 		_val = d.GetInt();
 		return true;
@@ -571,7 +571,7 @@ bool KeyVals::GetFloat( const char *_key, float &_val ) const
 {
 	obUserData d;
 
-	if( GetKeyVal( _key, d ) )
+	if ( GetKeyVal( _key, d ) )
 	{
 		_val = d.GetFloat();
 		return true;
@@ -584,7 +584,7 @@ bool KeyVals::GetEntity( const char *_key, GameEntity &_val ) const
 {
 	obUserData d;
 
-	if( GetKeyVal( _key, d ) )
+	if ( GetKeyVal( _key, d ) )
 	{
 		_val = d.GetEntity();
 		return true;
@@ -597,7 +597,7 @@ bool KeyVals::GetVector( const char *_key, float &_x, float &_y, float &_z ) con
 {
 	obUserData d;
 
-	if( GetKeyVal( _key, d ) )
+	if ( GetKeyVal( _key, d ) )
 	{
 		_x = d.GetVector() [ 0 ];
 		_y = d.GetVector() [ 1 ];
@@ -612,7 +612,7 @@ bool KeyVals::GetVector( const char *_key, float *_v ) const
 {
 	obUserData d;
 
-	if( GetKeyVal( _key, d ) )
+	if ( GetKeyVal( _key, d ) )
 	{
 		_v[ 0 ] = d.GetVector() [ 0 ];
 		_v[ 1 ] = d.GetVector() [ 1 ];
@@ -627,7 +627,7 @@ bool KeyVals::GetString( const char *_key, const char *&_val ) const
 {
 	obUserData d;
 
-	if( GetKeyVal( _key, d ) )
+	if ( GetKeyVal( _key, d ) )
 	{
 		_val = d.GetString();
 		return true;
@@ -638,9 +638,9 @@ bool KeyVals::GetString( const char *_key, const char *&_val ) const
 
 bool KeyVals::GetKeyVal( const char *_key, obUserData &_ud ) const
 {
-	for( int i = 0; i < MaxArgs; ++i )
+	for ( int i = 0; i < MaxArgs; ++i )
 	{
-		if( !StringCompareNoCase( m_Key[ i ], _key ) )
+		if ( !StringCompareNoCase( m_Key[ i ], _key ) )
 		{
 			_ud = m_Value[ i ];
 			return true;

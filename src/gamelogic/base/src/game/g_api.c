@@ -182,7 +182,7 @@ void trap_DropClient( int clientNum, const char *reason, int length )
 //SV_GameSendServerCommand(args[1], VMA(2));
 void trap_SendServerCommand( int clientNum, const char *text )
 {
-	if( strlen( text ) > 1022 )
+	if ( strlen( text ) > 1022 )
 	{
 		G_LogPrintf( "%s: trap_SendServerCommand( %d, ... ) length exceeds 1022.\n", GAME_VERSION, clientNum );
 		G_LogPrintf( "%s: text [%.950s]... truncated\n", GAME_VERSION, text );

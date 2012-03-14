@@ -60,34 +60,34 @@ int QDECL CG_SortFireTeam( const void *a, const void *b )
 	cb = &cgs.clientinfo[ cnb ];
 
 	// Not on our team, so shove back
-	if( !CG_IsOnSameFireteam( cnb, cg.clientNum ) )
+	if ( !CG_IsOnSameFireteam( cnb, cg.clientNum ) )
 	{
 		return -1;
 	}
 
-	if( !CG_IsOnSameFireteam( cna, cg.clientNum ) )
+	if ( !CG_IsOnSameFireteam( cna, cg.clientNum ) )
 	{
 		return 1;
 	}
 
 	// Leader comes first
-	if( CG_IsFireTeamLeader( cna ) )
+	if ( CG_IsFireTeamLeader( cna ) )
 	{
 		return -1;
 	}
 
-	if( CG_IsFireTeamLeader( cnb ) )
+	if ( CG_IsFireTeamLeader( cnb ) )
 	{
 		return 1;
 	}
 
 	// Then higher ranks
-	if( ca->rank > cb->rank )
+	if ( ca->rank > cb->rank )
 	{
 		return -1;
 	}
 
-	if( cb->rank > ca->rank )
+	if ( cb->rank > ca->rank )
 	{
 		return 1;
 	}
@@ -109,7 +109,7 @@ void CG_SortClientFireteam()
 {
 	int i;
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		sortedFireTeamClients[ i ] = i;
 	}
@@ -137,12 +137,12 @@ void CG_ParseFireteams()
 //  qboolean onFireteam =   CG_IsOnFireteam( cg.clientNum ) ? qtrue : qfalse;
 //  qboolean isLeader =     CG_IsFireTeamLeader( cg.clientNum ) ? qtrue : qfalse;
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		cgs.clientinfo[ i ].fireteamData = NULL;
 	}
 
-	for( i = 0; i < MAX_FIRETEAMS; i++ )
+	for ( i = 0; i < MAX_FIRETEAMS; i++ )
 	{
 		char hexbuffer[ 11 ] = "0x00000000";
 
@@ -161,7 +161,7 @@ void CG_ParseFireteams()
 
 		j = atoi( Info_ValueForKey( p, "id" ) );
 
-		if( j == -1 )
+		if ( j == -1 )
 		{
 			cg.fireTeams[ i ].inuse = qfalse;
 			continue;
@@ -181,9 +181,9 @@ void CG_ParseFireteams()
 		Q_strncpyz( hexbuffer + 2, s + 8, 9 );
 		sscanf( hexbuffer, "%x", &clnts[ 0 ] );
 
-		for( j = 0; j < MAX_CLIENTS; j++ )
+		for ( j = 0; j < MAX_CLIENTS; j++ )
 		{
-			if( COM_BitCheck( clnts, j ) )
+			if ( COM_BitCheck( clnts, j ) )
 			{
 				cg.fireTeams[ i ].joinOrder[ j ] = qtrue;
 				cgs.clientinfo[ j ].fireteamData = &cg.fireTeams[ i ];
@@ -205,7 +205,7 @@ void CG_ParseFireteams()
 // Fireteam that both specified clients are on, if they both are on the same team
 fireteamData_t *CG_IsOnSameFireteam( int clientNum, int clientNum2 )
 {
-	if( CG_IsOnFireteam( clientNum ) == CG_IsOnFireteam( clientNum2 ) )
+	if ( CG_IsOnFireteam( clientNum ) == CG_IsOnFireteam( clientNum2 ) )
 	{
 		return CG_IsOnFireteam( clientNum );
 	}
@@ -218,12 +218,12 @@ fireteamData_t *CG_IsFireTeamLeader( int clientNum )
 {
 	fireteamData_t *f;
 
-	if( !( f = CG_IsOnFireteam( clientNum ) ) )
+	if ( !( f = CG_IsOnFireteam( clientNum ) ) )
 	{
 		return NULL;
 	}
 
-	if( f->leader != clientNum )
+	if ( f->leader != clientNum )
 	{
 		return NULL;
 	}
@@ -236,12 +236,12 @@ clientInfo_t   *CG_ClientInfoForPosition( int pos, int max )
 {
 	int i, cnt = 0;
 
-	for( i = 0; i < MAX_CLIENTS && cnt < max; i++ )
+	for ( i = 0; i < MAX_CLIENTS && cnt < max; i++ )
 	{
-		if( cg.clientNum != i && cgs.clientinfo[ i ].infoValid && !CG_IsOnFireteam( i ) &&
-		    cgs.clientinfo[ cg.clientNum ].team == cgs.clientinfo[ i ].team )
+		if ( cg.clientNum != i && cgs.clientinfo[ i ].infoValid && !CG_IsOnFireteam( i ) &&
+		     cgs.clientinfo[ cg.clientNum ].team == cgs.clientinfo[ i ].team )
 		{
-			if( cnt == pos )
+			if ( cnt == pos )
 			{
 				return &cgs.clientinfo[ i ];
 			}
@@ -258,11 +258,11 @@ fireteamData_t *CG_FireTeamForPosition( int pos, int max )
 {
 	int i, cnt = 0;
 
-	for( i = 0; i < MAX_FIRETEAMS && cnt < max; i++ )
+	for ( i = 0; i < MAX_FIRETEAMS && cnt < max; i++ )
 	{
-		if( cg.fireTeams[ i ].inuse && cgs.clientinfo[ cg.fireTeams[ i ].leader ].team == cgs.clientinfo[ cg.clientNum ].team )
+		if ( cg.fireTeams[ i ].inuse && cgs.clientinfo[ cg.fireTeams[ i ].leader ].team == cgs.clientinfo[ cg.clientNum ].team )
 		{
-			if( cnt == pos )
+			if ( cnt == pos )
 			{
 				return &cg.fireTeams[ i ];
 			}
@@ -280,21 +280,21 @@ clientInfo_t   *CG_FireTeamPlayerForPosition( int pos, int max )
 	int            i, cnt = 0;
 	fireteamData_t *f = CG_IsOnFireteam( cg.clientNum );
 
-	if( !f )
+	if ( !f )
 	{
 		return NULL;
 	}
 
-	for( i = 0; i < MAX_CLIENTS && cnt < max; i++ )
+	for ( i = 0; i < MAX_CLIENTS && cnt < max; i++ )
 	{
-		if( cgs.clientinfo[ i ].infoValid && cgs.clientinfo[ cg.clientNum ].team == cgs.clientinfo[ i ].team )
+		if ( cgs.clientinfo[ i ].infoValid && cgs.clientinfo[ cg.clientNum ].team == cgs.clientinfo[ i ].team )
 		{
-			if( !( f == CG_IsOnFireteam( i ) ) )
+			if ( !( f == CG_IsOnFireteam( i ) ) )
 			{
 				continue;
 			}
 
-			if( cnt == pos )
+			if ( cnt == pos )
 			{
 				return &cgs.clientinfo[ i ];
 			}
@@ -312,19 +312,19 @@ clientInfo_t   *CG_SortedFireTeamPlayerForPosition( int pos, int max )
 	int            i, cnt = 0;
 	fireteamData_t *f = CG_IsOnFireteam( cg.clientNum );
 
-	if( !f )
+	if ( !f )
 	{
 		return NULL;
 	}
 
-	for( i = 0; i < MAX_CLIENTS && cnt < max; i++ )
+	for ( i = 0; i < MAX_CLIENTS && cnt < max; i++ )
 	{
-		if( !( f == CG_IsOnFireteam( sortedFireTeamClients[ i ] ) ) )
+		if ( !( f == CG_IsOnFireteam( sortedFireTeamClients[ i ] ) ) )
 		{
 			return NULL;
 		}
 
-		if( cnt == pos )
+		if ( cnt == pos )
 		{
 			return &cgs.clientinfo[ sortedFireTeamClients[ i ] ];
 		}
@@ -357,18 +357,18 @@ void CG_DrawFireTeamOverlay( rectDef_t *rect )
 	vec4_t         bgColor = { 0.0f, 0.0f, 0.0f, 0.6f }; // window
 	vec4_t         borderColor = { 0.5f, 0.5f, 0.5f, 0.5f }; // window
 
-	if( !( f = CG_IsOnFireteam( cg.clientNum ) ) )
+	if ( !( f = CG_IsOnFireteam( cg.clientNum ) ) )
 	{
 		return;
 	}
 
 	h = 12 + 2 + 2;
 
-	for( i = 0; i < 6; i++ )
+	for ( i = 0; i < 6; i++ )
 	{
 		ci = CG_SortedFireTeamPlayerForPosition( i, 6 );
 
-		if( !ci )
+		if ( !ci )
 		{
 			break;;
 		}
@@ -391,19 +391,19 @@ void CG_DrawFireTeamOverlay( rectDef_t *rect )
 	x += 2;
 	//y += 2;
 
-	for( i = 0; i < 6; i++ )
+	for ( i = 0; i < 6; i++ )
 	{
 		y += FT_BAR_HEIGHT + FT_BAR_YSPACING;
 		x = rect->x + 2;
 
 		ci = CG_SortedFireTeamPlayerForPosition( i, 6 );
 
-		if( !ci )
+		if ( !ci )
 		{
 			break;;
 		}
 
-		if( ci->selected )
+		if ( ci->selected )
 		{
 			CG_FillRect( x, y + FT_BAR_YSPACING, 204 - 4, FT_BAR_HEIGHT, clr3 );
 		}
@@ -438,12 +438,12 @@ void CG_DrawFireTeamOverlay( rectDef_t *rect )
 		                }*/
 		x += 20;
 
-		if( ci->health > 80 )
+		if ( ci->health > 80 )
 		{
 			CG_Text_Paint_Ext( x, y + FT_BAR_HEIGHT, .2f, .2f, tclr, va( "%i", ci->health < 0 ? 0 : ci->health ), 0, 0,
 			                   ITEM_TEXTSTYLE_SHADOWED, &cgs.media.limboFont2 );
 		}
-		else if( ci->health > 0 )
+		else if ( ci->health > 0 )
 		{
 			CG_Text_Paint_Ext( x, y + FT_BAR_HEIGHT, .2f, .2f, colorYellow, va( "%i", ci->health < 0 ? 0 : ci->health ), 0, 0,
 			                   ITEM_TEXTSTYLE_SHADOWED, &cgs.media.limboFont2 );
@@ -475,9 +475,9 @@ void CG_DrawFireTeamOverlay( rectDef_t *rect )
 
 qboolean CG_FireteamGetBoxNeedsButtons()
 {
-	if( cgs.applicationEndTime > cg.time )
+	if ( cgs.applicationEndTime > cg.time )
 	{
-		if( cgs.applicationClient < 0 )
+		if ( cgs.applicationClient < 0 )
 		{
 			return qfalse;
 		}
@@ -485,9 +485,9 @@ qboolean CG_FireteamGetBoxNeedsButtons()
 		return qtrue;
 	}
 
-	if( cgs.invitationEndTime > cg.time )
+	if ( cgs.invitationEndTime > cg.time )
 	{
-		if( cgs.invitationClient < 0 )
+		if ( cgs.invitationClient < 0 )
 		{
 			return qfalse;
 		}
@@ -495,9 +495,9 @@ qboolean CG_FireteamGetBoxNeedsButtons()
 		return qtrue;
 	}
 
-	if( cgs.propositionEndTime > cg.time )
+	if ( cgs.propositionEndTime > cg.time )
 	{
-		if( cgs.propositionClient < 0 )
+		if ( cgs.propositionClient < 0 )
 		{
 			return qfalse;
 		}
@@ -510,29 +510,29 @@ qboolean CG_FireteamGetBoxNeedsButtons()
 
 const char     *CG_FireteamGetBoxText()
 {
-	if( cgs.applicationEndTime > cg.time )
+	if ( cgs.applicationEndTime > cg.time )
 	{
-		if( cgs.applicationClient == -1 )
+		if ( cgs.applicationClient == -1 )
 		{
 			return "Sent";
 		}
 
-		if( cgs.applicationClient == -2 )
+		if ( cgs.applicationClient == -2 )
 		{
 			return "Failed";
 		}
 
-		if( cgs.applicationClient == -3 )
+		if ( cgs.applicationClient == -3 )
 		{
 			return "Accepted";
 		}
 
-		if( cgs.applicationClient == -4 )
+		if ( cgs.applicationClient == -4 )
 		{
 			return "Sent";
 		}
 
-		if( cgs.applicationClient < 0 )
+		if ( cgs.applicationClient < 0 )
 		{
 			return NULL;
 		}
@@ -540,29 +540,29 @@ const char     *CG_FireteamGetBoxText()
 		return va( "Accept application from %s?", cgs.clientinfo[ cgs.applicationClient ].name );
 	}
 
-	if( cgs.invitationEndTime > cg.time )
+	if ( cgs.invitationEndTime > cg.time )
 	{
-		if( cgs.invitationClient == -1 )
+		if ( cgs.invitationClient == -1 )
 		{
 			return "Sent";
 		}
 
-		if( cgs.invitationClient == -2 )
+		if ( cgs.invitationClient == -2 )
 		{
 			return "Failed";
 		}
 
-		if( cgs.invitationClient == -3 )
+		if ( cgs.invitationClient == -3 )
 		{
 			return "Accepted";
 		}
 
-		if( cgs.invitationClient == -4 )
+		if ( cgs.invitationClient == -4 )
 		{
 			return "Sent";
 		}
 
-		if( cgs.invitationClient < 0 )
+		if ( cgs.invitationClient < 0 )
 		{
 			return NULL;
 		}
@@ -570,29 +570,29 @@ const char     *CG_FireteamGetBoxText()
 		return va( "Accept invitiation from %s?", cgs.clientinfo[ cgs.invitationClient ].name );
 	}
 
-	if( cgs.propositionEndTime > cg.time )
+	if ( cgs.propositionEndTime > cg.time )
 	{
-		if( cgs.propositionClient == -1 )
+		if ( cgs.propositionClient == -1 )
 		{
 			return "Sent";
 		}
 
-		if( cgs.propositionClient == -2 )
+		if ( cgs.propositionClient == -2 )
 		{
 			return "Failed";
 		}
 
-		if( cgs.propositionClient == -3 )
+		if ( cgs.propositionClient == -3 )
 		{
 			return "Accepted";
 		}
 
-		if( cgs.propositionClient == -4 )
+		if ( cgs.propositionClient == -4 )
 		{
 			return "Sent";
 		}
 
-		if( cgs.propositionClient < 0 )
+		if ( cgs.propositionClient < 0 )
 		{
 			return NULL;
 		}
@@ -609,33 +609,33 @@ qboolean CG_FireteamHasClass( int classnum, qboolean selectedonly )
 	fireteamData_t *ft;
 	int            i;
 
-	if( !( ft = CG_IsOnFireteam( cg.clientNum ) ) )
+	if ( !( ft = CG_IsOnFireteam( cg.clientNum ) ) )
 	{
 		return qfalse;
 	}
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		/*    if( i == cgs.clientinfo ) {
 		                        continue;
 		                }*/
 
-		if( !cgs.clientinfo[ i ].infoValid )
+		if ( !cgs.clientinfo[ i ].infoValid )
 		{
 			continue;
 		}
 
-		if( ft != CG_IsOnFireteam( i ) )
+		if ( ft != CG_IsOnFireteam( i ) )
 		{
 			continue;
 		}
 
-		if( cgs.clientinfo[ i ].cls != classnum )
+		if ( cgs.clientinfo[ i ].cls != classnum )
 		{
 			continue;
 		}
 
-		if( selectedonly && !cgs.clientinfo[ i ].selected )
+		if ( selectedonly && !cgs.clientinfo[ i ].selected )
 		{
 			continue;
 		}
@@ -655,16 +655,16 @@ const char     *CG_BuildSelectedFirteamString( void )
 
 	*buffer = '\0';
 
-	for( i = 0; i < 6; i++ )
+	for ( i = 0; i < 6; i++ )
 	{
 		ci = CG_SortedFireTeamPlayerForPosition( i, 6 );
 
-		if( !ci )
+		if ( !ci )
 		{
 			break;
 		}
 
-		if( !ci->selected )
+		if ( !ci->selected )
 		{
 			continue;
 		}
@@ -674,12 +674,12 @@ const char     *CG_BuildSelectedFirteamString( void )
 		Q_strcat( buffer, sizeof( buffer ), va( "%i ", ci->clientNum ) );
 	}
 
-	if( cnt == 0 )
+	if ( cnt == 0 )
 	{
 		return "0";
 	}
 
-	if( !cgs.clientinfo[ cg.clientNum ].selected )
+	if ( !cgs.clientinfo[ cg.clientNum ].selected )
 	{
 		Q_strcat( buffer, sizeof( buffer ), va( "%i ", cg.clientNum ) );
 		cnt++;

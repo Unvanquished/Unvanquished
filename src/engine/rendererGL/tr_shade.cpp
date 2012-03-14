@@ -54,7 +54,7 @@ static void GLSL_PrintInfoLog( GLhandleARB object, qboolean developerOnly )
 
 	glGetInfoLogARB( object, maxLength, &maxLength, msg );
 
-	if( developerOnly )
+	if ( developerOnly )
 	{
 		ri.Printf( PRINT_DEVELOPER, "compile log:\n" );
 	}
@@ -63,11 +63,11 @@ static void GLSL_PrintInfoLog( GLhandleARB object, qboolean developerOnly )
 		ri.Printf( PRINT_ALL, "compile log:\n" );
 	}
 
-	for( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += 1024 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
 
-		if( developerOnly )
+		if ( developerOnly )
 		{
 			ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
 		}
@@ -93,7 +93,7 @@ static void GLSL_PrintShaderSource( GLhandleARB object )
 
 	glGetShaderSourceARB( object, maxLength, &maxLength, msg );
 
-	for( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += 1024 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
 		ri.Printf( PRINT_ALL, "%s\n", msgPart );
@@ -123,19 +123,19 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 	libsSize = 0;
 	libsBuffer = NULL;
 
-	while( 1 )
+	while ( 1 )
 	{
 		int  libSize;
 		char *libBuffer; // single extra lib file
 
 		token = COM_ParseExt2( libs, qfalse );
 
-		if( !token[ 0 ] )
+		if ( !token[ 0 ] )
 		{
 			break;
 		}
 
-		if( shaderType == GL_VERTEX_SHADER_ARB )
+		if ( shaderType == GL_VERTEX_SHADER_ARB )
 		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", token );
 			ri.Printf( PRINT_DEVELOPER, "...loading vertex shader '%s'\n", filename );
@@ -147,7 +147,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 		libSize = ri.FS_ReadFile( filename, ( void ** ) &libBuffer );
 
-		if( !libBuffer )
+		if ( !libBuffer )
 		{
 			ri.Error( ERR_DROP, "Couldn't load %s", filename );
 		}
@@ -165,7 +165,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 	}
 
 	// load main() program
-	if( shaderType == GL_VERTEX_SHADER_ARB )
+	if ( shaderType == GL_VERTEX_SHADER_ARB )
 	{
 		Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", name );
 		ri.Printf( PRINT_DEVELOPER, "...loading vertex main() shader '%s'\n", filename );
@@ -178,7 +178,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 	mainSize = ri.FS_ReadFile( filename, ( void ** ) &mainBuffer );
 
-	if( !mainBuffer )
+	if ( !mainBuffer )
 	{
 		ri.Error( ERR_DROP, "Couldn't load %s", filename );
 	}
@@ -200,11 +200,11 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 		Com_Memset( bufferExtra, 0, sizeof( bufferExtra ) );
 
 		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
-		if( glConfig.driverType == GLDRV_OPENGL3 )
+		if ( glConfig.driverType == GLDRV_OPENGL3 )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#version 130\n" );
 
-			if( shaderType == GL_VERTEX_SHADER_ARB )
+			if ( shaderType == GL_VERTEX_SHADER_ARB )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#define attribute in\n" );
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#define varying out\n" );
@@ -224,11 +224,11 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#version 120\n" );
 		}
 
-		while( 1 )
+		while ( 1 )
 		{
 			token = COM_ParseExt2( compileMacros, qfalse );
 
-			if( !token[ 0 ] )
+			if ( !token[ 0 ] )
 			{
 				break;
 			}
@@ -305,7 +305,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 		Q_strcat( bufferExtra, sizeof( bufferExtra ),
 		          va( "#ifndef r_FBufScale\n#define r_FBufScale vec2(%f, %f)\n#endif\n", fbufWidthScale, fbufHeightScale ) );
 
-		if( glConfig2.textureNPOTAvailable )
+		if ( glConfig2.textureNPOTAvailable )
 		{
 			npotWidthScale = 1;
 			npotHeightScale = 1;
@@ -319,51 +319,51 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 		Q_strcat( bufferExtra, sizeof( bufferExtra ),
 		          va( "#ifndef r_NPOTScale\n#define r_NPOTScale vec2(%f, %f)\n#endif\n", npotWidthScale, npotHeightScale ) );
 
-		if( glConfig.driverType == GLDRV_MESA )
+		if ( glConfig.driverType == GLDRV_MESA )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLDRV_MESA\n#define GLDRV_MESA 1\n#endif\n" );
 		}
 
-		if( glConfig.hardwareType == GLHW_ATI )
+		if ( glConfig.hardwareType == GLHW_ATI )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLHW_ATI\n#define GLHW_ATI 1\n#endif\n" );
 		}
-		else if( glConfig.hardwareType == GLHW_ATI_DX10 )
+		else if ( glConfig.hardwareType == GLHW_ATI_DX10 )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLHW_ATI_DX10\n#define GLHW_ATI_DX10 1\n#endif\n" );
 		}
-		else if( glConfig.hardwareType == GLHW_NV_DX10 )
+		else if ( glConfig.hardwareType == GLHW_NV_DX10 )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLHW_NV_DX10\n#define GLHW_NV_DX10 1\n#endif\n" );
 		}
 
-		if( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
+		if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
 		{
-			if( r_shadows->integer == SHADOWING_EVSM32 )
+			if ( r_shadows->integer == SHADOWING_EVSM32 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef ESM\n#define ESM 1\n#endif\n" );
 
-				if( r_debugShadowMaps->integer )
+				if ( r_debugShadowMaps->integer )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ),
 					          va( "#ifndef DEBUG_EVSM\n#define DEBUG_EVSM %i\n#endif\n", r_debugShadowMaps->integer ) );
 				}
 
-				if( r_lightBleedReduction->value )
+				if ( r_lightBleedReduction->value )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ),
 					          va( "#ifndef r_LightBleedReduction\n#define r_LightBleedReduction %f\n#endif\n",
 					              r_lightBleedReduction->value ) );
 				}
 
-				if( r_overDarkeningFactor->value )
+				if ( r_overDarkeningFactor->value )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ),
 					          va( "#ifndef r_OverDarkeningFactor\n#define r_OverDarkeningFactor %f\n#endif\n",
 					              r_overDarkeningFactor->value ) );
 				}
 
-				if( r_shadowMapDepthScale->value )
+				if ( r_shadowMapDepthScale->value )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ),
 					          va( "#ifndef r_ShadowMapDepthScale\n#define r_ShadowMapDepthScale %f\n#endif\n",
@@ -374,12 +374,12 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM\n#define VSM 1\n#endif\n" );
 
-				if( glConfig.hardwareType == GLHW_ATI )
+				if ( glConfig.hardwareType == GLHW_ATI )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM_CLAMP\n#define VSM_CLAMP 1\n#endif\n" );
 				}
 
-				if( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
+				if ( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM_EPSILON\n#define VSM_EPSILON 0.000001\n#endif\n" );
 				}
@@ -388,13 +388,13 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 					Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM_EPSILON\n#define VSM_EPSILON 0.0001\n#endif\n" );
 				}
 
-				if( r_debugShadowMaps->integer )
+				if ( r_debugShadowMaps->integer )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ),
 					          va( "#ifndef DEBUG_VSM\n#define DEBUG_VSM %i\n#endif\n", r_debugShadowMaps->integer ) );
 				}
 
-				if( r_lightBleedReduction->value )
+				if ( r_lightBleedReduction->value )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ),
 					          va( "#ifndef r_LightBleedReduction\n#define r_LightBleedReduction %f\n#endif\n",
@@ -402,44 +402,44 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 				}
 			}
 
-			if( r_softShadows->integer == 1 )
+			if ( r_softShadows->integer == 1 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef PCF_2X2\n#define PCF_2X2 1\n#endif\n" );
 			}
-			else if( r_softShadows->integer == 2 )
+			else if ( r_softShadows->integer == 2 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef PCF_3X3\n#define PCF_3X3 1\n#endif\n" );
 			}
-			else if( r_softShadows->integer == 3 )
+			else if ( r_softShadows->integer == 3 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef PCF_4X4\n#define PCF_4X4 1\n#endif\n" );
 			}
-			else if( r_softShadows->integer == 4 )
+			else if ( r_softShadows->integer == 4 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef PCF_5X5\n#define PCF_5X5 1\n#endif\n" );
 			}
-			else if( r_softShadows->integer == 5 )
+			else if ( r_softShadows->integer == 5 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef PCF_6X6\n#define PCF_6X6 1\n#endif\n" );
 			}
-			else if( r_softShadows->integer == 6 )
+			else if ( r_softShadows->integer == 6 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef PCSS\n#define PCSS 1\n#endif\n" );
 			}
 
-			if( r_parallelShadowSplits->integer )
+			if ( r_parallelShadowSplits->integer )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ),
 				          va( "#ifndef r_ParallelShadowSplits_%i\n#define r_ParallelShadowSplits_%i\n#endif\n", r_parallelShadowSplits->integer, r_parallelShadowSplits->integer ) );
 			}
 
-			if( r_showParallelShadowSplits->integer )
+			if ( r_showParallelShadowSplits->integer )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_ShowParallelShadowSplits\n#define r_ShowParallelShadowSplits 1\n#endif\n" );
 			}
 		}
 
-		if( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_HDRRendering\n#define r_HDRRendering 1\n#endif\n" );
 
@@ -460,38 +460,38 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 			              r_hdrGamma->value ) );
 		}
 
-		if( r_precomputedLighting->integer )
+		if ( r_precomputedLighting->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ),
 			          "#ifndef r_precomputedLighting\n#define r_precomputedLighting 1\n#endif\n" );
 		}
 
-		if( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 && glConfig.driverType != GLDRV_MESA )
+		if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 && glConfig.driverType != GLDRV_MESA )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_heatHazeFix\n#define r_heatHazeFix 1\n#endif\n" );
 		}
 
-		if( r_showLightMaps->integer )
+		if ( r_showLightMaps->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_showLightMaps\n#define r_showLightMaps 1\n#endif\n" );
 		}
 
-		if( r_showDeluxeMaps->integer )
+		if ( r_showDeluxeMaps->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_showDeluxeMaps\n#define r_showDeluxeMaps 1\n#endif\n" );
 		}
 
 #ifdef EXPERIMENTAL
 
-		if( r_screenSpaceAmbientOcclusion->integer )
+		if ( r_screenSpaceAmbientOcclusion->integer )
 		{
 			int             i;
 			static vec3_t   jitter[ 32 ];
 			static qboolean jitterInit = qfalse;
 
-			if( !jitterInit )
+			if ( !jitterInit )
 			{
-				for( i = 0; i < 32; i++ )
+				for ( i = 0; i < 32; i++ )
 				{
 					float *jit = &jitter[ i ][ 0 ];
 
@@ -512,7 +512,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 #endif
 
-		if( glConfig2.vboVertexSkinningAvailable )
+		if ( glConfig2.vboVertexSkinningAvailable )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_VertexSkinning\n#define r_VertexSkinning 1\n#endif\n" );
 
@@ -528,24 +528,24 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 		   }
 		 */
 
-		if( r_normalMapping->integer )
+		if ( r_normalMapping->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_NormalMapping\n#define r_NormalMapping 1\n#endif\n" );
 		}
 
-		if( /* TODO: check for shader model 3 hardware  && */ r_normalMapping->integer && r_parallaxMapping->integer )
+		if ( /* TODO: check for shader model 3 hardware  && */ r_normalMapping->integer && r_parallaxMapping->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_ParallaxMapping\n#define r_ParallaxMapping 1\n#endif\n" );
 		}
 
-		if( r_wrapAroundLighting->value )
+		if ( r_wrapAroundLighting->value )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ),
 			          va( "#ifndef r_WrapAroundLighting\n#define r_WrapAroundLighting %f\n#endif\n",
 			              r_wrapAroundLighting->value ) );
 		}
 
-		if( r_halfLambertLighting->integer )
+		if ( r_halfLambertLighting->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_halfLambertLighting\n#define r_halfLambertLighting 1\n#endif\n" );
 		}
@@ -570,7 +570,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 		strcpy( bufferFinal, bufferExtra );
 
-		if( libsSize > 0 )
+		if ( libsSize > 0 )
 		{
 			Q_strcat( bufferFinal, sizeFinal, libsBuffer );
 		}
@@ -585,7 +585,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 			ri.Printf( PRINT_WARNING, "CONCATENATED shader '%s' ----------\n", filename );
 			ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n", filename );
 
-			for( i = 0; i < sizeFinal; i += 1024 )
+			for ( i = 0; i < sizeFinal; i += 1024 )
 			{
 				Q_strncpyz( msgPart, bufferFinal + i, sizeof( msgPart ) );
 				ri.Printf( PRINT_ALL, "%s", msgPart );
@@ -597,7 +597,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 #if defined( USE_GLSL_OPTIMIZER )
 
-		if( glConfig.driverType != GLDRV_OPENGL3 && optimize )
+		if ( glConfig.driverType != GLDRV_OPENGL3 && optimize )
 		{
 			static char         msgPart[ 1024 ];
 			int                 length = 0;
@@ -605,7 +605,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 			glslopt_shader_type glsloptShaderType;
 
-			if( shaderType == GL_FRAGMENT_SHADER_ARB )
+			if ( shaderType == GL_FRAGMENT_SHADER_ARB )
 			{
 				glsloptShaderType = kGlslOptShaderFragment;
 			}
@@ -617,7 +617,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 			glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer,
 			                                  glsloptShaderType, bufferFinal, 0 );
 
-			if( glslopt_get_status( shaderOptimized ) )
+			if ( glslopt_get_status( shaderOptimized ) )
 			{
 				const char *newSource = glslopt_get_output( shaderOptimized );
 
@@ -627,7 +627,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 				length = strlen( newSource );
 
-				for( i = 0; i < length; i += 1024 )
+				for ( i = 0; i < length; i += 1024 )
 				{
 					Q_strncpyz( msgPart, newSource + i, sizeof( msgPart ) );
 					ri.Printf( PRINT_ALL, "%s\n", msgPart );
@@ -645,7 +645,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 				length = strlen( errorLog );
 
-				for( i = 0; i < length; i += 1024 )
+				for ( i = 0; i < length; i += 1024 )
 				{
 					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
 					ri.Printf( PRINT_ALL, "%s\n", msgPart );
@@ -676,7 +676,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 	// check if shader compiled
 	glGetObjectParameterivARB( shader, GL_OBJECT_COMPILE_STATUS_ARB, &compiled );
 
-	if( !compiled )
+	if ( !compiled )
 	{
 		GLSL_PrintShaderSource( shader );
 		GLSL_PrintInfoLog( shader, qfalse );
@@ -709,7 +709,7 @@ static void GLSL_LinkProgram( GLhandleARB program )
 
 	glGetObjectParameterivARB( program, GL_OBJECT_LINK_STATUS_ARB, &linked );
 
-	if( !linked )
+	if ( !linked )
 	{
 		GLSL_PrintInfoLog( program, qfalse );
 		ri.Error( ERR_DROP, "shaders failed to link" );
@@ -724,7 +724,7 @@ void GLSL_ValidateProgram( GLhandleARB program )
 
 	glGetObjectParameterivARB( program, GL_OBJECT_VALIDATE_STATUS_ARB, &validated );
 
-	if( !validated )
+	if ( !validated )
 	{
 		GLSL_PrintInfoLog( program, qfalse );
 		ri.Error( ERR_DROP, "shaders failed to validate" );
@@ -746,7 +746,7 @@ void GLSL_ShowProgramUniforms( GLhandleARB program )
 	glGetObjectParameterivARB( program, GL_OBJECT_ACTIVE_UNIFORMS_ARB, &count );
 
 	// Loop over each of the active uniforms, and set their value
-	for( i = 0; i < count; i++ )
+	for ( i = 0; i < count; i++ )
 	{
 		glGetActiveUniformARB( program, i, sizeof( uniformName ), NULL, &size, &type, uniformName );
 
@@ -758,17 +758,17 @@ void GLSL_ShowProgramUniforms( GLhandleARB program )
 
 static void GLSL_BindAttribLocations( GLhandleARB program, uint32_t attribs )
 {
-	if( attribs & ATTR_POSITION )
+	if ( attribs & ATTR_POSITION )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_POSITION, "attr_Position" );
 	}
 
-	if( attribs & ATTR_TEXCOORD )
+	if ( attribs & ATTR_TEXCOORD )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_TEXCOORD0, "attr_TexCoord0" );
 	}
 
-	if( attribs & ATTR_LIGHTCOORD )
+	if ( attribs & ATTR_LIGHTCOORD )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_TEXCOORD1, "attr_TexCoord1" );
 	}
@@ -779,62 +779,62 @@ static void GLSL_BindAttribLocations( GLhandleARB program, uint32_t attribs )
 //  if(attribs & ATTR_TEXCOORD3)
 //      glBindAttribLocationARB(program, ATTR_INDEX_TEXCOORD3, "attr_TexCoord3");
 
-	if( attribs & ATTR_TANGENT )
+	if ( attribs & ATTR_TANGENT )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_TANGENT, "attr_Tangent" );
 	}
 
-	if( attribs & ATTR_BINORMAL )
+	if ( attribs & ATTR_BINORMAL )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_BINORMAL, "attr_Binormal" );
 	}
 
-	if( attribs & ATTR_NORMAL )
+	if ( attribs & ATTR_NORMAL )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_NORMAL, "attr_Normal" );
 	}
 
-	if( attribs & ATTR_COLOR )
+	if ( attribs & ATTR_COLOR )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_COLOR, "attr_Color" );
 	}
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 
-	if( attribs & ATTR_PAINTCOLOR )
+	if ( attribs & ATTR_PAINTCOLOR )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_PAINTCOLOR, "attr_PaintColor" );
 	}
 
-	if( attribs & ATTR_LIGHTDIRECTION )
+	if ( attribs & ATTR_LIGHTDIRECTION )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_LIGHTDIRECTION, "attr_LightDirection" );
 	}
 
 #endif
 
-	if( glConfig2.vboVertexSkinningAvailable )
+	if ( glConfig2.vboVertexSkinningAvailable )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_BONE_INDEXES, "attr_BoneIndexes" );
 		glBindAttribLocationARB( program, ATTR_INDEX_BONE_WEIGHTS, "attr_BoneWeights" );
 	}
 
-	if( attribs & ATTR_POSITION2 )
+	if ( attribs & ATTR_POSITION2 )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_POSITION2, "attr_Position2" );
 	}
 
-	if( attribs & ATTR_TANGENT2 )
+	if ( attribs & ATTR_TANGENT2 )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_TANGENT2, "attr_Tangent2" );
 	}
 
-	if( attribs & ATTR_BINORMAL2 )
+	if ( attribs & ATTR_BINORMAL2 )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_BINORMAL2, "attr_Binormal2" );
 	}
 
-	if( attribs & ATTR_NORMAL2 )
+	if ( attribs & ATTR_NORMAL2 )
 	{
 		glBindAttribLocationARB( program, ATTR_INDEX_NORMAL2, "attr_Normal2" );
 	}
@@ -845,7 +845,7 @@ static void GLSL_InitGPUShader( shaderProgram_t *program, const char *name, int 
 {
 	ri.Printf( PRINT_DEVELOPER, "------- GPU shader -------\n" );
 
-	if( strlen( name ) >= MAX_QPATH )
+	if ( strlen( name ) >= MAX_QPATH )
 	{
 		ri.Error( ERR_DROP, "GLSL_InitGPUShader: \"%s\" is too long\n", name );
 	}
@@ -969,7 +969,7 @@ void GLSL_InitGPUShaders( void )
 	gl_lightMappingShader = new GLShader_lightMapping();
 
 	// geometric-buffer fill rendering with diffuse + bump + specular
-	if( DS_STANDARD_ENABLED() )
+	if ( DS_STANDARD_ENABLED() )
 	{
 		// G-Buffer construction
 		gl_geometricFillShader = new GLShader_geometricFill();
@@ -1001,7 +1001,7 @@ void GLSL_InitGPUShaders( void )
 	tr.depthToColorShader.u_ModelViewProjectionMatrix =
 	  glGetUniformLocationARB( tr.depthToColorShader.program, "u_ModelViewProjectionMatrix" );
 
-	if( glConfig2.vboVertexSkinningAvailable )
+	if ( glConfig2.vboVertexSkinningAvailable )
 	{
 		tr.depthToColorShader.u_VertexSkinning = glGetUniformLocationARB( tr.depthToColorShader.program, "u_VertexSkinning" );
 		tr.depthToColorShader.u_BoneMatrix = glGetUniformLocationARB( tr.depthToColorShader.program, "u_BoneMatrix" );
@@ -1264,37 +1264,37 @@ void GLSL_ShutdownGPUShaders( void )
 
 	ri.Printf( PRINT_ALL, "------- GLSL_ShutdownGPUShaders -------\n" );
 
-	if( gl_genericShader )
+	if ( gl_genericShader )
 	{
 		delete gl_genericShader;
 		gl_genericShader = NULL;
 	}
 
-	if( gl_vertexLightingShader_DBS_entity )
+	if ( gl_vertexLightingShader_DBS_entity )
 	{
 		delete gl_vertexLightingShader_DBS_entity;
 		gl_vertexLightingShader_DBS_entity = NULL;
 	}
 
-	if( gl_vertexLightingShader_DBS_world )
+	if ( gl_vertexLightingShader_DBS_world )
 	{
 		delete gl_vertexLightingShader_DBS_world;
 		gl_vertexLightingShader_DBS_world = NULL;
 	}
 
-	if( gl_lightMappingShader )
+	if ( gl_lightMappingShader )
 	{
 		delete gl_lightMappingShader;
 		gl_lightMappingShader = NULL;
 	}
 
-	if( gl_geometricFillShader )
+	if ( gl_geometricFillShader )
 	{
 		delete gl_geometricFillShader;
 		gl_geometricFillShader = NULL;
 	}
 
-	if( gl_deferredLightingShader_omniXYZ )
+	if ( gl_deferredLightingShader_omniXYZ )
 	{
 		delete gl_deferredLightingShader_omniXYZ;
 		gl_deferredLightingShader_omniXYZ = NULL;
@@ -1302,7 +1302,7 @@ void GLSL_ShutdownGPUShaders( void )
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-	if( tr.depthToColorShader.program )
+	if ( tr.depthToColorShader.program )
 	{
 		glDeleteObjectARB( tr.depthToColorShader.program );
 		Com_Memset( &tr.depthToColorShader, 0, sizeof( shaderProgram_t ) );
@@ -1310,25 +1310,25 @@ void GLSL_ShutdownGPUShaders( void )
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
-	if( gl_shadowFillShader )
+	if ( gl_shadowFillShader )
 	{
 		delete gl_shadowFillShader;
 		gl_shadowFillShader = NULL;
 	}
 
-	if( gl_forwardLightingShader_omniXYZ )
+	if ( gl_forwardLightingShader_omniXYZ )
 	{
 		delete gl_forwardLightingShader_omniXYZ;
 		gl_forwardLightingShader_omniXYZ = NULL;
 	}
 
-	if( gl_forwardLightingShader_projXYZ )
+	if ( gl_forwardLightingShader_projXYZ )
 	{
 		delete gl_forwardLightingShader_projXYZ;
 		gl_forwardLightingShader_projXYZ = NULL;
 	}
 
-	if( gl_forwardLightingShader_directionalSun )
+	if ( gl_forwardLightingShader_directionalSun )
 	{
 		delete gl_forwardLightingShader_directionalSun;
 		gl_forwardLightingShader_directionalSun = NULL;
@@ -1338,7 +1338,7 @@ void GLSL_ShutdownGPUShaders( void )
 
 #ifdef VOLUMETRIC_LIGHTING
 
-	if( tr.lightVolumeShader_omni.program )
+	if ( tr.lightVolumeShader_omni.program )
 	{
 		glDeleteObjectARB( tr.lightVolumeShader_omni.program );
 		Com_Memset( &tr.lightVolumeShader_omni, 0, sizeof( shaderProgram_t ) );
@@ -1346,7 +1346,7 @@ void GLSL_ShutdownGPUShaders( void )
 
 #endif
 
-	if( tr.deferredShadowingShader_proj.program )
+	if ( tr.deferredShadowingShader_proj.program )
 	{
 		glDeleteObjectARB( tr.deferredShadowingShader_proj.program );
 		Com_Memset( &tr.deferredShadowingShader_proj, 0, sizeof( shaderProgram_t ) );
@@ -1354,79 +1354,79 @@ void GLSL_ShutdownGPUShaders( void )
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
-	if( gl_reflectionShader )
+	if ( gl_reflectionShader )
 	{
 		delete gl_reflectionShader;
 		gl_reflectionShader = NULL;
 	}
 
-	if( gl_skyboxShader )
+	if ( gl_skyboxShader )
 	{
 		delete gl_skyboxShader;
 		gl_skyboxShader = NULL;
 	}
 
-	if( gl_fogQuake3Shader )
+	if ( gl_fogQuake3Shader )
 	{
 		delete gl_fogQuake3Shader;
 		gl_fogQuake3Shader = NULL;
 	}
 
-	if( gl_fogGlobalShader )
+	if ( gl_fogGlobalShader )
 	{
 		delete gl_fogGlobalShader;
 		gl_fogGlobalShader = NULL;
 	}
 
-	if( gl_heatHazeShader )
+	if ( gl_heatHazeShader )
 	{
 		delete gl_heatHazeShader;
 		gl_heatHazeShader = NULL;
 	}
 
-	if( gl_screenShader )
+	if ( gl_screenShader )
 	{
 		delete gl_screenShader;
 		gl_screenShader = NULL;
 	}
 
-	if( gl_portalShader )
+	if ( gl_portalShader )
 	{
 		delete gl_portalShader;
 		gl_portalShader = NULL;
 	}
 
-	if( gl_toneMappingShader )
+	if ( gl_toneMappingShader )
 	{
 		delete gl_toneMappingShader;
 		gl_toneMappingShader = NULL;
 	}
 
-	if( gl_contrastShader )
+	if ( gl_contrastShader )
 	{
 		delete gl_contrastShader;
 		gl_contrastShader = NULL;
 	}
 
-	if( gl_cameraEffectsShader )
+	if ( gl_cameraEffectsShader )
 	{
 		delete gl_cameraEffectsShader;
 		gl_cameraEffectsShader = NULL;
 	}
 
-	if( gl_blurXShader )
+	if ( gl_blurXShader )
 	{
 		delete gl_blurXShader;
 		gl_blurXShader = NULL;
 	}
 
-	if( gl_blurYShader )
+	if ( gl_blurYShader )
 	{
 		delete gl_blurYShader;
 		gl_blurYShader = NULL;
 	}
 
-	if( gl_debugShadowMapShader )
+	if ( gl_debugShadowMapShader )
 	{
 		delete gl_debugShadowMapShader;
 		gl_debugShadowMapShader = NULL;
@@ -1434,13 +1434,13 @@ void GLSL_ShutdownGPUShaders( void )
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-	if( tr.liquidShader.program )
+	if ( tr.liquidShader.program )
 	{
 		glDeleteObjectARB( tr.liquidShader.program );
 		Com_Memset( &tr.liquidShader, 0, sizeof( shaderProgram_t ) );
 	}
 
-	if( tr.volumetricFogShader.program )
+	if ( tr.volumetricFogShader.program )
 	{
 		glDeleteObjectARB( tr.volumetricFogShader.program );
 		Com_Memset( &tr.volumetricFogShader, 0, sizeof( shaderProgram_t ) );
@@ -1448,7 +1448,7 @@ void GLSL_ShutdownGPUShaders( void )
 
 #ifdef EXPERIMENTAL
 
-	if( tr.screenSpaceAmbientOcclusionShader.program )
+	if ( tr.screenSpaceAmbientOcclusionShader.program )
 	{
 		glDeleteObjectARB( tr.screenSpaceAmbientOcclusionShader.program );
 		Com_Memset( &tr.screenSpaceAmbientOcclusionShader, 0, sizeof( shaderProgram_t ) );
@@ -1457,7 +1457,7 @@ void GLSL_ShutdownGPUShaders( void )
 #endif
 #ifdef EXPERIMENTAL
 
-	if( tr.depthOfFieldShader.program )
+	if ( tr.depthOfFieldShader.program )
 	{
 		glDeleteObjectARB( tr.depthOfFieldShader.program );
 		Com_Memset( &tr.depthOfFieldShader, 0, sizeof( shaderProgram_t ) );
@@ -1469,7 +1469,7 @@ void GLSL_ShutdownGPUShaders( void )
 
 	glState.currentProgram = 0;
 
-	if( glUseProgramObjectARB != NULL )
+	if ( glUseProgramObjectARB != NULL )
 	{
 		glUseProgramObjectARB( 0 );
 	}
@@ -1497,15 +1497,15 @@ void Tess_DrawElements()
 {
 	int i;
 
-	if( ( tess.numIndexes == 0 || tess.numVertexes == 0 ) && tess.multiDrawPrimitives == 0 )
+	if ( ( tess.numIndexes == 0 || tess.numVertexes == 0 ) && tess.multiDrawPrimitives == 0 )
 	{
 		return;
 	}
 
 	// move tess data through the GPU, finally
-	if( glState.currentVBO && glState.currentIBO )
+	if ( glState.currentVBO && glState.currentIBO )
 	{
-		if( tess.multiDrawPrimitives )
+		if ( tess.multiDrawPrimitives )
 		{
 			glMultiDrawElements( GL_TRIANGLES, tess.multiDrawCounts, GL_INDEX_TYPE, ( const GLvoid ** ) tess.multiDrawIndexes, tess.multiDrawPrimitives );
 
@@ -1514,7 +1514,7 @@ void Tess_DrawElements()
 
 			backEnd.pc.c_vboVertexes += tess.numVertexes;
 
-			for( i = 0; i < tess.multiDrawPrimitives; i++ )
+			for ( i = 0; i < tess.multiDrawPrimitives; i++ )
 			{
 				backEnd.pc.c_multiVboIndexes += tess.multiDrawCounts[ i ];
 				backEnd.pc.c_indexes += tess.multiDrawCounts[ i ];
@@ -1563,11 +1563,11 @@ static void BindLightMap()
 {
 	image_t *lightmap;
 
-	if( tr.fatLightmap )
+	if ( tr.fatLightmap )
 	{
 		lightmap = tr.fatLightmap;
 	}
-	else if( tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
+	else if ( tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
 	{
 		lightmap = ( image_t * ) Com_GrowListElement( &tr.lightmaps, tess.lightmapNum );
 	}
@@ -1576,7 +1576,7 @@ static void BindLightMap()
 		lightmap = NULL;
 	}
 
-	if( !tr.lightmaps.currentElements || !lightmap )
+	if ( !tr.lightmaps.currentElements || !lightmap )
 	{
 		GL_Bind( tr.whiteImage );
 		return;
@@ -1594,7 +1594,7 @@ static void BindDeluxeMap()
 {
 	image_t *deluxemap;
 
-	if( tess.lightmapNum >= 0 && tess.lightmapNum < tr.deluxemaps.currentElements )
+	if ( tess.lightmapNum >= 0 && tess.lightmapNum < tr.deluxemaps.currentElements )
 	{
 		deluxemap = ( image_t * ) Com_GrowListElement( &tr.deluxemaps, tess.lightmapNum );
 	}
@@ -1603,7 +1603,7 @@ static void BindDeluxeMap()
 		deluxemap = NULL;
 	}
 
-	if( !tr.deluxemaps.currentElements || !deluxemap )
+	if ( !tr.deluxemaps.currentElements || !deluxemap )
 	{
 		GL_Bind( tr.flatImage );
 		return;
@@ -1638,15 +1638,15 @@ static void DrawTris()
 
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
 
-	if( r_showBatches->integer || r_showLightBatches->integer )
+	if ( r_showBatches->integer || r_showLightBatches->integer )
 	{
 		gl_genericShader->SetUniform_Color( g_color_table[ backEnd.pc.c_batches % 8 ] );
 	}
-	else if( glState.currentVBO == tess.vbo )
+	else if ( glState.currentVBO == tess.vbo )
 	{
 		gl_genericShader->SetUniform_Color( colorRed );
 	}
-	else if( glState.currentVBO )
+	else if ( glState.currentVBO )
 	{
 		gl_genericShader->SetUniform_Color( colorBlue );
 	}
@@ -1660,13 +1660,13 @@ static void DrawTris()
 	gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_genericShader->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_DeformGen
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
@@ -1710,7 +1710,7 @@ void Tess_Begin( void ( *stageIteratorFunc )(),
 	tess.multiDrawPrimitives = 0;
 
 	// materials are optional
-	if( surfaceShader != NULL )
+	if ( surfaceShader != NULL )
 	{
 		state = ( surfaceShader->remappedShader ) ? surfaceShader->remappedShader : surfaceShader;
 
@@ -1734,31 +1734,31 @@ void Tess_Begin( void ( *stageIteratorFunc )(),
 	tess.stageIteratorFunc = stageIteratorFunc;
 	tess.stageIteratorFunc2 = stageIteratorFunc2;
 
-	if( !tess.stageIteratorFunc )
+	if ( !tess.stageIteratorFunc )
 	{
 		//tess.stageIteratorFunc = &Tess_StageIteratorGeneric;
 		ri.Error( ERR_FATAL, "tess.stageIteratorFunc == NULL" );
 	}
 
-	if( tess.stageIteratorFunc == &Tess_StageIteratorGeneric )
+	if ( tess.stageIteratorFunc == &Tess_StageIteratorGeneric )
 	{
-		if( isSky )
+		if ( isSky )
 		{
 			tess.stageIteratorFunc = &Tess_StageIteratorSky;
 			tess.stageIteratorFunc2 = &Tess_StageIteratorGeneric;
 		}
 	}
-	else if( tess.stageIteratorFunc == &Tess_StageIteratorDepthFill )
+	else if ( tess.stageIteratorFunc == &Tess_StageIteratorDepthFill )
 	{
-		if( isSky )
+		if ( isSky )
 		{
 			tess.stageIteratorFunc = &Tess_StageIteratorSky;
 			tess.stageIteratorFunc2 = &Tess_StageIteratorDepthFill;
 		}
 	}
-	else if( tess.stageIteratorFunc == Tess_StageIteratorGBuffer )
+	else if ( tess.stageIteratorFunc == Tess_StageIteratorGBuffer )
 	{
-		if( isSky )
+		if ( isSky )
 		{
 			tess.stageIteratorFunc = &Tess_StageIteratorSky;
 			tess.stageIteratorFunc2 = &Tess_StageIteratorGBuffer;
@@ -1770,7 +1770,7 @@ void Tess_Begin( void ( *stageIteratorFunc )(),
 	tess.lightmapNum = lightmapNum;
 	tess.fogNum = fogNum;
 
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -1807,7 +1807,7 @@ static void Render_generic( int stage )
 	// end choose right shader program ------------------------------
 
 	// set uniforms
-	if( pStage->tcGen_Environment )
+	if ( pStage->tcGen_Environment )
 	{
 		// calculate the environment texcoords in object space
 		gl_genericShader->SetUniform_ViewOrigin( backEnd.orientation.viewOrigin );
@@ -1817,7 +1817,7 @@ static void Render_generic( int stage )
 	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
 
 	// u_ColorGen
-	switch( pStage->rgbGen )
+	switch ( pStage->rgbGen )
 	{
 		case CGEN_VERTEX:
 		case CGEN_ONE_MINUS_VERTEX:
@@ -1830,7 +1830,7 @@ static void Render_generic( int stage )
 	}
 
 	// u_AlphaGen
-	switch( pStage->alphaGen )
+	switch ( pStage->alphaGen )
 	{
 		case AGEN_VERTEX:
 		case AGEN_ONE_MINUS_VERTEX:
@@ -1852,25 +1852,25 @@ static void Render_generic( int stage )
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_BoneMatrix
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_genericShader->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_genericShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
 	// u_DeformGen
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -1934,7 +1934,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	// now we are ready to set the shader program uniforms
 
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_vertexLightingShader_DBS_entity->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
@@ -1961,19 +1961,19 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	gl_vertexLightingShader_DBS_entity->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_vertexLightingShader_DBS_entity->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
 	// u_DeformGen
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_vertexLightingShader_DBS_entity->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_vertexLightingShader_DBS_entity->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if( r_parallaxMapping->integer && tess.surfaceShader->parallax )
+	if ( r_parallaxMapping->integer && tess.surfaceShader->parallax )
 	{
 		float depthScale;
 
@@ -1981,7 +1981,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 		gl_vertexLightingShader_DBS_entity->SetUniform_DepthScale( depthScale );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -1999,12 +1999,12 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_vertexLightingShader_DBS_entity->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
-	if( normalMapping )
+	if ( normalMapping )
 	{
 		// bind u_NormalMap
 		GL_SelectTexture( 1 );
 
-		if( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
+		if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
 			GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
@@ -2018,7 +2018,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 		// bind u_SpecularMap
 		GL_SelectTexture( 2 );
 
-		if( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
+		if ( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
 			GL_Bind( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
@@ -2034,7 +2034,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 			cubemapProbe_t *cubeProbeNearest;
 			cubemapProbe_t *cubeProbeSecondNearest;
 
-			if( backEnd.currentEntity && ( backEnd.currentEntity != &tr.worldEntity ) )
+			if ( backEnd.currentEntity && ( backEnd.currentEntity != &tr.worldEntity ) )
 			{
 				R_FindTwoNearestCubeMaps( backEnd.currentEntity->e.origin, &cubeProbeNearest, &cubeProbeSecondNearest );
 			}
@@ -2044,7 +2044,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				R_FindTwoNearestCubeMaps( backEnd.viewParms.orientation.origin, &cubeProbeNearest, &cubeProbeSecondNearest );
 			}
 
-			if( cubeProbeNearest == NULL && cubeProbeSecondNearest == NULL )
+			if ( cubeProbeNearest == NULL && cubeProbeSecondNearest == NULL )
 			{
 				GLimp_LogComment( "cubeProbeNearest && cubeProbeSecondNearest == NULL\n" );
 
@@ -2056,7 +2056,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				GL_SelectTexture( 4 );
 				GL_Bind( tr.whiteCubeImage );
 			}
-			else if( cubeProbeNearest == NULL )
+			else if ( cubeProbeNearest == NULL )
 			{
 				GLimp_LogComment( "cubeProbeNearest == NULL\n" );
 
@@ -2067,7 +2067,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 				// u_EnvironmentInterpolation
 				gl_vertexLightingShader_DBS_entity->SetUniform_EnvironmentInterpolation( 0.0 );
 			}
-			else if( cubeProbeSecondNearest == NULL )
+			else if ( cubeProbeSecondNearest == NULL )
 			{
 				GLimp_LogComment( "cubeProbeSecondNearest == NULL\n" );
 
@@ -2086,7 +2086,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 			{
 				float cubeProbeNearestDistance, cubeProbeSecondNearestDistance;
 
-				if( backEnd.currentEntity && ( backEnd.currentEntity != &tr.worldEntity ) )
+				if ( backEnd.currentEntity && ( backEnd.currentEntity != &tr.worldEntity ) )
 				{
 					cubeProbeNearestDistance = Distance( backEnd.currentEntity->e.origin, cubeProbeNearest->origin );
 					cubeProbeSecondNearestDistance = Distance( backEnd.currentEntity->e.origin, cubeProbeSecondNearest->origin );
@@ -2100,7 +2100,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 				float interpolate = cubeProbeNearestDistance / ( cubeProbeNearestDistance + cubeProbeSecondNearestDistance );
 
-				if( r_logFile->integer )
+				if ( r_logFile->integer )
 				{
 					GLimp_LogComment( va( "cubeProbeNearestDistance = %f, cubeProbeSecondNearestDistance = %f, interpolation = %f\n",
 					                      cubeProbeNearestDistance, cubeProbeSecondNearestDistance, interpolate ) );
@@ -2164,14 +2164,14 @@ static void Render_vertexLighting_DBS_world( int stage )
 	GL_CheckErrors();
 
 	// u_DeformGen
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_vertexLightingShader_DBS_world->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_vertexLightingShader_DBS_world->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
 	// u_ColorModulate
-	switch( pStage->rgbGen )
+	switch ( pStage->rgbGen )
 	{
 		case CGEN_VERTEX:
 		case CGEN_ONE_MINUS_VERTEX:
@@ -2183,7 +2183,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 			break;
 	}
 
-	switch( pStage->alphaGen )
+	switch ( pStage->alphaGen )
 	{
 		case AGEN_VERTEX:
 			alphaGen = pStage->alphaGen;
@@ -2225,7 +2225,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 
 	gl_vertexLightingShader_DBS_world->SetUniform_AlphaTest( pStage->stateBits );
 
-	if( r_parallaxMapping->integer )
+	if ( r_parallaxMapping->integer )
 	{
 		float depthScale;
 
@@ -2233,7 +2233,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 		gl_vertexLightingShader_DBS_world->SetUniform_DepthScale( depthScale );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -2251,12 +2251,12 @@ static void Render_vertexLighting_DBS_world( int stage )
 	GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_vertexLightingShader_DBS_world->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
-	if( normalMapping )
+	if ( normalMapping )
 	{
 		// bind u_NormalMap
 		GL_SelectTexture( 1 );
 
-		if( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
+		if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
 			GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
@@ -2270,7 +2270,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 		// bind u_SpecularMap
 		GL_SelectTexture( 2 );
 
-		if( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
+		if ( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
 			GL_Bind( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
@@ -2302,7 +2302,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	stateBits = pStage->stateBits;
 
-	switch( pStage->rgbGen )
+	switch ( pStage->rgbGen )
 	{
 		case CGEN_VERTEX:
 		case CGEN_ONE_MINUS_VERTEX:
@@ -2314,7 +2314,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 			break;
 	}
 
-	switch( pStage->alphaGen )
+	switch ( pStage->alphaGen )
 	{
 		case AGEN_VERTEX:
 		case AGEN_ONE_MINUS_VERTEX:
@@ -2326,14 +2326,14 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 			break;
 	}
 
-	if( r_showLightMaps->integer )
+	if ( r_showLightMaps->integer )
 	{
 		stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_ATEST_BITS );
 	}
 
 	GL_State( stateBits );
 
-	if( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] == NULL )
+	if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] == NULL )
 	{
 		normalMapping = false;
 	}
@@ -2357,7 +2357,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	// now we are ready to set the shader program uniforms
 
 	// u_DeformGen
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_lightMappingShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_lightMappingShader->SetUniform_Time( backEnd.refdef.floatTime );
@@ -2375,7 +2375,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	// u_Color
 	gl_lightMappingShader->SetUniform_Color( tess.svars.color );
 
-	if( r_parallaxMapping->integer )
+	if ( r_parallaxMapping->integer )
 	{
 		float depthScale;
 
@@ -2383,7 +2383,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 		gl_lightMappingShader->SetUniform_DepthScale( depthScale );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -2399,7 +2399,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	// bind u_DiffuseMap
 	GL_SelectTexture( 0 );
 
-	if( asColorMap )
+	if ( asColorMap )
 	{
 		GL_Bind( tr.whiteImage );
 	}
@@ -2409,12 +2409,12 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 		gl_lightMappingShader->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 	}
 
-	if( normalMapping )
+	if ( normalMapping )
 	{
 		// bind u_NormalMap
 		GL_SelectTexture( 1 );
 
-		if( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
+		if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
 			GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
@@ -2428,7 +2428,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 		// bind u_SpecularMap
 		GL_SelectTexture( 2 );
 
-		if( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
+		if ( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
 			GL_Bind( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
@@ -2522,26 +2522,26 @@ static void Render_geometricFill( int stage, bool cmap2black )
 	gl_geometricFillShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_BoneMatrix
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_geometricFillShader->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_geometricFillShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
 	// u_DeformParms
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_geometricFillShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_geometricFillShader->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
 	// u_DepthScale
-	if( r_parallaxMapping->integer && tess.surfaceShader->parallax )
+	if ( r_parallaxMapping->integer && tess.surfaceShader->parallax )
 	{
 		float depthScale;
 
@@ -2550,7 +2550,7 @@ static void Render_geometricFill( int stage, bool cmap2black )
 	}
 
 	// u_PortalPlane
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -2568,7 +2568,7 @@ static void Render_geometricFill( int stage, bool cmap2black )
 		// bind u_DiffuseMap
 		GL_SelectTexture( 0 );
 
-		if( cmap2black )
+		if ( cmap2black )
 		{
 			GL_Bind( tr.blackImage );
 		}
@@ -2580,12 +2580,12 @@ static void Render_geometricFill( int stage, bool cmap2black )
 		gl_geometricFillShader->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 	}
 
-	if( normalMapping )
+	if ( normalMapping )
 	{
 		// bind u_NormalMap
 		GL_SelectTexture( 1 );
 
-		if( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
+		if ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
 			GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
@@ -2596,16 +2596,16 @@ static void Render_geometricFill( int stage, bool cmap2black )
 
 		gl_geometricFillShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_NORMALMAP ] );
 
-		if( r_deferredShading->integer == DS_STANDARD )
+		if ( r_deferredShading->integer == DS_STANDARD )
 		{
 			// bind u_SpecularMap
 			GL_SelectTexture( 2 );
 
-			if( r_forceSpecular->integer )
+			if ( r_forceSpecular->integer )
 			{
 				GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 			}
-			else if( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
+			else if ( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 			{
 				GL_Bind( pStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 			}
@@ -2654,7 +2654,7 @@ static void Render_depthFill( int stage )
 	gl_genericShader->BindProgram();
 
 	// set uniforms
-	if( pStage->tcGen_Environment )
+	if ( pStage->tcGen_Environment )
 	{
 		// calculate the environment texcoords in object space
 		gl_genericShader->SetUniform_ViewOrigin( backEnd.orientation.viewOrigin );
@@ -2669,12 +2669,12 @@ static void Render_depthFill( int stage )
 	// u_Color
 #if 1
 
-	if( r_precomputedLighting->integer )
+	if ( r_precomputedLighting->integer )
 	{
 		VectorCopy( backEnd.currentEntity->ambientLight, ambientColor );
 		ClampColor( ambientColor );
 	}
-	else if( r_forceAmbient->integer )
+	else if ( r_forceAmbient->integer )
 	{
 		ambientColor[ 0 ] = r_forceAmbient->value;
 		ambientColor[ 1 ] = r_forceAmbient->value;
@@ -2694,19 +2694,19 @@ static void Render_depthFill( int stage )
 	gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_genericShader->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_DeformGen
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -2722,7 +2722,7 @@ static void Render_depthFill( int stage )
 	// bind u_ColorMap
 	GL_SelectTexture( 0 );
 
-	if( tess.surfaceShader->alphaTest )
+	if ( tess.surfaceShader->alphaTest )
 	{
 		GL_Bind( pStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
@@ -2769,7 +2769,7 @@ static void Render_shadowFill( int stage )
 
 	gl_shadowFillShader->SetRequiredVertexPointers();
 
-	if( r_debugShadowMaps->integer )
+	if ( r_debugShadowMaps->integer )
 	{
 		vec4_t shadowMapColor;
 
@@ -2780,7 +2780,7 @@ static void Render_shadowFill( int stage )
 
 	gl_shadowFillShader->SetUniform_AlphaTest( pStage->stateBits );
 
-	if( backEnd.currentLight->l.rlType != RL_DIRECTIONAL )
+	if ( backEnd.currentLight->l.rlType != RL_DIRECTIONAL )
 	{
 		gl_shadowFillShader->SetUniform_LightOrigin( backEnd.currentLight->origin );
 		gl_shadowFillShader->SetUniform_LightRadius( backEnd.currentLight->sphereRadius );
@@ -2790,25 +2790,25 @@ static void Render_shadowFill( int stage )
 	gl_shadowFillShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_BoneMatrix
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_shadowFillShader->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_shadowFillShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
 	// u_DeformGen
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_shadowFillShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_shadowFillShader->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -2824,7 +2824,7 @@ static void Render_shadowFill( int stage )
 	// bind u_ColorMap
 	GL_SelectTexture( 0 );
 
-	if( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 )
+	if ( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 )
 	{
 		GL_Bind( pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
 		gl_shadowFillShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
@@ -2879,7 +2879,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// now we are ready to set the shader program uniforms
 
 	// u_ColorModulate
-	switch( diffuseStage->rgbGen )
+	switch ( diffuseStage->rgbGen )
 	{
 		case CGEN_VERTEX:
 		case CGEN_ONE_MINUS_VERTEX:
@@ -2891,7 +2891,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 			break;
 	}
 
-	switch( diffuseStage->alphaGen )
+	switch ( diffuseStage->alphaGen )
 	{
 		case AGEN_VERTEX:
 		case AGEN_ONE_MINUS_VERTEX:
@@ -2908,7 +2908,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// u_Color
 	gl_forwardLightingShader_omniXYZ->SetUniform_Color( tess.svars.color );
 
-	if( r_parallaxMapping->integer )
+	if ( r_parallaxMapping->integer )
 	{
 		float depthScale;
 
@@ -2921,7 +2921,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	VectorCopy( light->origin, lightOrigin );
 	VectorCopy( tess.svars.color, lightColor );
 
-	if( shadowCompare )
+	if ( shadowCompare )
 	{
 		shadowTexelSize = 1.0f / shadowMapResolutions[ light->shadowLOD ];
 	}
@@ -2941,7 +2941,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 
 	GL_CheckErrors();
 
-	if( shadowCompare )
+	if ( shadowCompare )
 	{
 		gl_forwardLightingShader_omniXYZ->SetUniform_ShadowTexelSize( shadowTexelSize );
 		gl_forwardLightingShader_omniXYZ->SetUniform_ShadowBlur( r_shadowBlur->value );
@@ -2953,24 +2953,24 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_omniXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_BoneMatrix
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_forwardLightingShader_omniXYZ->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_forwardLightingShader_omniXYZ->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_forwardLightingShader_omniXYZ->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_forwardLightingShader_omniXYZ->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -2990,12 +2990,12 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_forwardLightingShader_omniXYZ->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
-	if( normalMapping )
+	if ( normalMapping )
 	{
 		// bind u_NormalMap
 		GL_SelectTexture( 1 );
 
-		if( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
+		if ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
 			GL_Bind( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
@@ -3009,11 +3009,11 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 		// bind u_SpecularMap
 		GL_SelectTexture( 2 );
 
-		if( r_forceSpecular->integer )
+		if ( r_forceSpecular->integer )
 		{
 			GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		}
-		else if( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
+		else if ( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
 			GL_Bind( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
@@ -3034,7 +3034,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	BindAnimatedImage( &attenuationZStage->bundle[ TB_COLORMAP ] );
 
 	// bind u_ShadowMap
-	if( shadowCompare )
+	if ( shadowCompare )
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.shadowCubeFBOImage[ light->shadowLOD ] );
@@ -3091,7 +3091,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	// now we are ready to set the shader program uniforms
 
 	// u_ColorModulate
-	switch( diffuseStage->rgbGen )
+	switch ( diffuseStage->rgbGen )
 	{
 		case CGEN_VERTEX:
 		case CGEN_ONE_MINUS_VERTEX:
@@ -3103,7 +3103,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 			break;
 	}
 
-	switch( diffuseStage->alphaGen )
+	switch ( diffuseStage->alphaGen )
 	{
 		case AGEN_VERTEX:
 		case AGEN_ONE_MINUS_VERTEX:
@@ -3120,7 +3120,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	// u_Color
 	gl_forwardLightingShader_projXYZ->SetUniform_Color( tess.svars.color );
 
-	if( r_parallaxMapping->integer )
+	if ( r_parallaxMapping->integer )
 	{
 		float depthScale;
 
@@ -3133,7 +3133,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	VectorCopy( light->origin, lightOrigin );
 	VectorCopy( tess.svars.color, lightColor );
 
-	if( shadowCompare )
+	if ( shadowCompare )
 	{
 		shadowTexelSize = 1.0f / shadowMapResolutions[ light->shadowLOD ];
 	}
@@ -3153,7 +3153,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 
 	GL_CheckErrors();
 
-	if( shadowCompare )
+	if ( shadowCompare )
 	{
 		gl_forwardLightingShader_projXYZ->SetUniform_ShadowTexelSize( shadowTexelSize );
 		gl_forwardLightingShader_projXYZ->SetUniform_ShadowBlur( r_shadowBlur->value );
@@ -3166,24 +3166,24 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_projXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_BoneMatrix
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_forwardLightingShader_projXYZ->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_forwardLightingShader_projXYZ->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_forwardLightingShader_projXYZ->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_forwardLightingShader_projXYZ->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -3203,12 +3203,12 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_forwardLightingShader_projXYZ->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
-	if( normalMapping )
+	if ( normalMapping )
 	{
 		// bind u_NormalMap
 		GL_SelectTexture( 1 );
 
-		if( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
+		if ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
 			GL_Bind( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
@@ -3222,11 +3222,11 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 		// bind u_SpecularMap
 		GL_SelectTexture( 2 );
 
-		if( r_forceSpecular->integer )
+		if ( r_forceSpecular->integer )
 		{
 			GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		}
-		else if( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
+		else if ( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
 			GL_Bind( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
@@ -3247,7 +3247,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	BindAnimatedImage( &attenuationZStage->bundle[ TB_COLORMAP ] );
 
 	// bind u_ShadowMap
-	if( shadowCompare )
+	if ( shadowCompare )
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.shadowMapFBOImage[ light->shadowLOD ] );
@@ -3305,7 +3305,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	// now we are ready to set the shader program uniforms
 
 	// u_ColorModulate
-	switch( diffuseStage->rgbGen )
+	switch ( diffuseStage->rgbGen )
 	{
 		case CGEN_VERTEX:
 		case CGEN_ONE_MINUS_VERTEX:
@@ -3317,7 +3317,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 			break;
 	}
 
-	switch( diffuseStage->alphaGen )
+	switch ( diffuseStage->alphaGen )
 	{
 		case AGEN_VERTEX:
 		case AGEN_ONE_MINUS_VERTEX:
@@ -3334,7 +3334,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	// u_Color
 	gl_forwardLightingShader_directionalSun->SetUniform_Color( tess.svars.color );
 
-	if( r_parallaxMapping->integer )
+	if ( r_parallaxMapping->integer )
 	{
 		float depthScale;
 
@@ -3353,7 +3353,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	VectorCopy( tess.svars.color, lightColor );
 
-	if( shadowCompare )
+	if ( shadowCompare )
 	{
 		shadowTexelSize = 1.0f / sunShadowMapResolutions[ light->shadowLOD ];
 	}
@@ -3373,7 +3373,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	GL_CheckErrors();
 
-	if( shadowCompare )
+	if ( shadowCompare )
 	{
 		gl_forwardLightingShader_directionalSun->SetUniform_ShadowMatrix( light->shadowMatricesBiased );
 		gl_forwardLightingShader_directionalSun->SetUniform_ShadowParallelSplitDistances( backEnd.viewParms.parallelSplitDistances );
@@ -3388,24 +3388,24 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	gl_forwardLightingShader_directionalSun->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_BoneMatrix
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_forwardLightingShader_directionalSun->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_forwardLightingShader_directionalSun->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_forwardLightingShader_directionalSun->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_forwardLightingShader_directionalSun->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -3425,12 +3425,12 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 	gl_forwardLightingShader_directionalSun->SetUniform_DiffuseTextureMatrix( tess.svars.texMatrices[ TB_DIFFUSEMAP ] );
 
-	if( normalMapping )
+	if ( normalMapping )
 	{
 		// bind u_NormalMap
 		GL_SelectTexture( 1 );
 
-		if( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
+		if ( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] )
 		{
 			GL_Bind( diffuseStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
 		}
@@ -3444,11 +3444,11 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 		// bind u_SpecularMap
 		GL_SelectTexture( 2 );
 
-		if( r_forceSpecular->integer )
+		if ( r_forceSpecular->integer )
 		{
 			GL_Bind( diffuseStage->bundle[ TB_DIFFUSEMAP ].image[ 0 ] );
 		}
-		else if( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
+		else if ( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] )
 		{
 			GL_Bind( diffuseStage->bundle[ TB_SPECULARMAP ].image[ 0 ] );
 		}
@@ -3461,30 +3461,30 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	}
 
 	// bind u_ShadowMap
-	if( shadowCompare )
+	if ( shadowCompare )
 	{
 		GL_SelectTexture( 5 );
 		GL_Bind( tr.sunShadowMapFBOImage[ 0 ] );
 
-		if( r_parallelShadowSplits->integer >= 1 )
+		if ( r_parallelShadowSplits->integer >= 1 )
 		{
 			GL_SelectTexture( 6 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 1 ] );
 		}
 
-		if( r_parallelShadowSplits->integer >= 2 )
+		if ( r_parallelShadowSplits->integer >= 2 )
 		{
 			GL_SelectTexture( 7 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 2 ] );
 		}
 
-		if( r_parallelShadowSplits->integer >= 3 )
+		if ( r_parallelShadowSplits->integer >= 3 )
 		{
 			GL_SelectTexture( 8 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 3 ] );
 		}
 
-		if( r_parallelShadowSplits->integer >= 4 )
+		if ( r_parallelShadowSplits->integer >= 4 )
 		{
 			GL_SelectTexture( 9 );
 			GL_Bind( tr.sunShadowMapFBOImage[ 4 ] );
@@ -3532,13 +3532,13 @@ static void Render_reflection_CB( int stage )
 	gl_reflectionShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_BoneMatrix
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_reflectionShader->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_reflectionShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
@@ -3547,7 +3547,7 @@ static void Render_reflection_CB( int stage )
 	GL_SelectTexture( 0 );
 #if 1
 
-	if( backEnd.currentEntity && ( backEnd.currentEntity != &tr.worldEntity ) )
+	if ( backEnd.currentEntity && ( backEnd.currentEntity != &tr.worldEntity ) )
 	{
 		GL_BindNearestCubeMap( backEnd.currentEntity->e.origin );
 	}
@@ -3561,7 +3561,7 @@ static void Render_reflection_CB( int stage )
 #endif
 
 	// bind u_NormalMap
-	if( normalMapping )
+	if ( normalMapping )
 	{
 		GL_SelectTexture( 1 );
 		GL_Bind( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] );
@@ -3605,11 +3605,11 @@ static void Render_dispersion_C( int stage )
 	GLSL_SetUniform_ModelMatrix( &tr.dispersionShader_C, backEnd.orientation.transformMatrix );
 	GLSL_SetUniform_ModelViewProjectionMatrix( &tr.dispersionShader_C, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	if( glConfig2.vboVertexSkinningAvailable )
+	if ( glConfig2.vboVertexSkinningAvailable )
 	{
 		GLSL_SetUniform_VertexSkinning( &tr.dispersionShader_C, tess.vboVertexSkinning );
 
-		if( tess.vboVertexSkinning )
+		if ( tess.vboVertexSkinning )
 		{
 			glUniformMatrix4fvARB( tr.dispersionShader_C.u_BoneMatrix, MAX_BONES, GL_FALSE, &tess.boneMatrices[ 0 ][ 0 ] );
 		}
@@ -3642,7 +3642,7 @@ static void Render_skybox( int stage )
 	gl_skyboxShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_PortalPlane
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -3744,7 +3744,7 @@ static void Render_heatHaze( int stage )
 
 	GLimp_LogComment( "--- Render_heatHaze ---\n" );
 
-	if( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable /*&& glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10*/ && glConfig.driverType != GLDRV_MESA )
+	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable /*&& glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10*/ && glConfig.driverType != GLDRV_MESA )
 	{
 		FBO_t    *previousFBO;
 		uint32_t stateBits;
@@ -3763,7 +3763,7 @@ static void Render_heatHaze( int stage )
 
 		previousFBO = glState.currentFBO;
 
-		if( DS_STANDARD_ENABLED() )
+		if ( DS_STANDARD_ENABLED() )
 		{
 			// copy deferredRenderFBO to occlusionRenderFBO
 			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.geometricRenderFBO->frameBuffer );
@@ -3773,7 +3773,7 @@ static void Render_heatHaze( int stage )
 			                      GL_DEPTH_BUFFER_BIT,
 			                      GL_NEAREST );
 		}
-		else if( HDR_ENABLED() )
+		else if ( HDR_ENABLED() )
 		{
 			GL_CheckErrors();
 
@@ -3843,25 +3843,25 @@ static void Render_heatHaze( int stage )
 		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// u_BoneMatrix
-		if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+		if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 		{
 			gl_genericShader->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 		}
 
 		// u_VertexInterpolation
-		if( glState.vertexAttribsInterpolation > 0 )
+		if ( glState.vertexAttribsInterpolation > 0 )
 		{
 			gl_genericShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 		}
 
 		// u_DeformGen
-		if( tess.surfaceShader->numDeforms )
+		if ( tess.surfaceShader->numDeforms )
 		{
 			gl_genericShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 			gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 		}
 
-		if( backEnd.viewParms.isPortal )
+		if ( backEnd.viewParms.isPortal )
 		{
 			float plane[ 4 ];
 
@@ -3921,19 +3921,19 @@ static void Render_heatHaze( int stage )
 	gl_heatHazeShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_BoneMatrix
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_heatHazeShader->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_heatHazeShader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
 	// u_DeformGen
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_heatHazeShader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_heatHazeShader->SetUniform_Time( backEnd.refdef.floatTime );
@@ -3947,11 +3947,11 @@ static void Render_heatHaze( int stage )
 	// bind u_CurrentMap
 	GL_SelectTexture( 1 );
 
-	if( DS_STANDARD_ENABLED() )
+	if ( DS_STANDARD_ENABLED() )
 	{
 		GL_Bind( tr.deferredRenderFBOImage );
 	}
-	else if( HDR_ENABLED() )
+	else if ( HDR_ENABLED() )
 	{
 		GL_Bind( tr.deferredRenderFBOImage );
 	}
@@ -3962,7 +3962,7 @@ static void Render_heatHaze( int stage )
 	}
 
 	// bind u_ContrastMap
-	if( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable /*&& glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10*/ && glConfig.driverType != GLDRV_MESA )
+	if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable /*&& glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10*/ && glConfig.driverType != GLDRV_MESA )
 	{
 		GL_SelectTexture( 2 );
 		GL_Bind( tr.occlusionRenderFBOImage );
@@ -4014,11 +4014,11 @@ static void Render_liquid( int stage )
 	// capture current color buffer for u_CurrentMap
 	GL_SelectTexture( 0 );
 
-	if( DS_STANDARD_ENABLED() )
+	if ( DS_STANDARD_ENABLED() )
 	{
 		GL_Bind( tr.deferredRenderFBOImage );
 	}
-	else if( HDR_ENABLED() )
+	else if ( HDR_ENABLED() )
 	{
 		GL_Bind( tr.deferredRenderFBOImage );
 	}
@@ -4035,11 +4035,11 @@ static void Render_liquid( int stage )
 	// bind u_DepthMap
 	GL_SelectTexture( 2 );
 
-	if( DS_STANDARD_ENABLED() )
+	if ( DS_STANDARD_ENABLED() )
 	{
 		GL_Bind( tr.depthRenderImage );
 	}
-	else if( HDR_ENABLED() )
+	else if ( HDR_ENABLED() )
 	{
 		GL_Bind( tr.depthRenderImage );
 	}
@@ -4074,7 +4074,7 @@ static void Render_fog()
 #if defined( COMPAT_ET )
 
 	// no fog pass in snooper
-	if( ( tr.refdef.rdflags & RDF_SNOOPERVIEW ) || tess.surfaceShader->noFog || !r_wolfFog->integer )
+	if ( ( tr.refdef.rdflags & RDF_SNOOPERVIEW ) || tess.surfaceShader->noFog || !r_wolfFog->integer )
 	{
 		return;
 	}
@@ -4082,7 +4082,7 @@ static void Render_fog()
 #endif
 
 	// ydnar: no world, no fogging
-	if( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
+	if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
 	{
 		return;
 	}
@@ -4092,14 +4092,14 @@ static void Render_fog()
 	// Tr3B: use this only to render fog brushes
 #if 1
 
-	if( fog->originalBrushNumber < 0 && tess.surfaceShader->sort <= SS_OPAQUE )
+	if ( fog->originalBrushNumber < 0 && tess.surfaceShader->sort <= SS_OPAQUE )
 	{
 		return;
 	}
 
 #endif
 
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		GLimp_LogComment( va( "--- Render_fog( fogNum = %i, originalBrushNumber = %i ) ---\n", tess.fogNum, fog->originalBrushNumber ) );
 	}
@@ -4118,7 +4118,7 @@ static void Render_fog()
 	fogDistanceVector[ 3 ] *= fog->tcScale;
 
 	// rotate the gradient vector for this orientation
-	if( fog->hasSurface )
+	if ( fog->hasSurface )
 	{
 		fogDepthVector[ 0 ] = fog->surface[ 0 ] * backEnd.orientation.axis[ 0 ][ 0 ] +
 		                      fog->surface[ 1 ] * backEnd.orientation.axis[ 0 ][ 1 ] + fog->surface[ 2 ] * backEnd.orientation.axis[ 0 ][ 2 ];
@@ -4140,7 +4140,7 @@ static void Render_fog()
 
 #if 0
 
-	if( eyeT < 0 )
+	if ( eyeT < 0 )
 	{
 		eyeOutside = qtrue;
 	}
@@ -4153,7 +4153,7 @@ static void Render_fog()
 
 	fogDistanceVector[ 3 ] += 1.0 / 512;
 
-	if( tess.surfaceShader->fogPass == FP_EQUAL )
+	if ( tess.surfaceShader->fogPass == FP_EQUAL )
 	{
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL );
 	}
@@ -4184,25 +4184,25 @@ static void Render_fog()
 	gl_fogQuake3Shader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// u_BoneMatrix
-	if( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
+	if ( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning )
 	{
 		gl_fogQuake3Shader->SetUniform_BoneMatrix( MAX_BONES, tess.boneMatrices );
 	}
 
 	// u_VertexInterpolation
-	if( glState.vertexAttribsInterpolation > 0 )
+	if ( glState.vertexAttribsInterpolation > 0 )
 	{
 		gl_fogQuake3Shader->SetUniform_VertexInterpolation( glState.vertexAttribsInterpolation );
 	}
 
 	// u_DeformGen
-	if( tess.surfaceShader->numDeforms )
+	if ( tess.surfaceShader->numDeforms )
 	{
 		gl_fogQuake3Shader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_fogQuake3Shader->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float plane[ 4 ];
 
@@ -4237,14 +4237,14 @@ static void Render_volumetricFog()
 
 	GLimp_LogComment( "--- Render_volumetricFog---\n" );
 
-	if( glConfig2.framebufferBlitAvailable )
+	if ( glConfig2.framebufferBlitAvailable )
 	{
 		FBO_t *previousFBO;
 
 		previousFBO = glState.currentFBO;
 
-		if( r_deferredShading->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable &&
-		    glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
+		if ( r_deferredShading->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable &&
+		     glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
 		{
 			// copy deferredRenderFBO to occlusionRenderFBO
 			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
@@ -4254,7 +4254,7 @@ static void Render_volumetricFog()
 			                      GL_DEPTH_BUFFER_BIT,
 			                      GL_NEAREST );
 		}
-		else if( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
+		else if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
 		{
 			// copy deferredRenderFBO to occlusionRenderFBO
 			glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, tr.deferredRenderFBO->frameBuffer );
@@ -4283,11 +4283,11 @@ static void Render_volumetricFog()
 		GLSL_SetUniform_ModelViewProjectionMatrix( &tr.depthToColorShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// Tr3B: might be cool for ghost player effects
-		if( glConfig2.vboVertexSkinningAvailable )
+		if ( glConfig2.vboVertexSkinningAvailable )
 		{
 			GLSL_SetUniform_VertexSkinning( &tr.depthToColorShader, tess.vboVertexSkinning );
 
-			if( tess.vboVertexSkinning )
+			if ( tess.vboVertexSkinning )
 			{
 				glUniformMatrix4fvARB( tr.depthToColorShader.u_BoneMatrix, MAX_BONES, GL_FALSE, &tess.boneMatrices[ 0 ][ 0 ] );
 			}
@@ -4340,12 +4340,12 @@ static void Render_volumetricFog()
 		// bind u_DepthMap
 		GL_SelectTexture( 0 );
 
-		if( r_deferredShading->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable &&
-		    glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
+		if ( r_deferredShading->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable &&
+		     glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
 		{
 			GL_Bind( tr.depthRenderImage );
 		}
-		else if( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
+		else if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
 		{
 			GL_Bind( tr.depthRenderImage );
 		}
@@ -4387,7 +4387,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	GLimp_LogComment( "--- Tess_ComputeColor ---\n" );
 
 	// rgbGen
-	switch( pStage->rgbGen )
+	switch ( pStage->rgbGen )
 	{
 		case CGEN_IDENTITY:
 			{
@@ -4429,14 +4429,14 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case CGEN_ENTITY:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					tess.svars.color[ 0 ] = Q_bound( 0.0, backEnd.currentLight->l.color[ 0 ], 1.0 );
 					tess.svars.color[ 1 ] = Q_bound( 0.0, backEnd.currentLight->l.color[ 1 ], 1.0 );
 					tess.svars.color[ 2 ] = Q_bound( 0.0, backEnd.currentLight->l.color[ 2 ], 1.0 );
 					tess.svars.color[ 3 ] = 1.0;
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					tess.svars.color[ 0 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 1.0 );
 					tess.svars.color[ 1 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 1.0 );
@@ -4456,14 +4456,14 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case CGEN_ONE_MINUS_ENTITY:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					tess.svars.color[ 0 ] = 1.0 - Q_bound( 0.0, backEnd.currentLight->l.color[ 0 ], 1.0 );
 					tess.svars.color[ 1 ] = 1.0 - Q_bound( 0.0, backEnd.currentLight->l.color[ 1 ], 1.0 );
 					tess.svars.color[ 2 ] = 1.0 - Q_bound( 0.0, backEnd.currentLight->l.color[ 2 ], 1.0 );
 					tess.svars.color[ 3 ] = 0.0; // FIXME
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					tess.svars.color[ 0 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 1.0 );
 					tess.svars.color[ 1 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 1.0 );
@@ -4488,7 +4488,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 				wf = &pStage->rgbWave;
 
-				if( wf->func == GF_NOISE )
+				if ( wf->func == GF_NOISE )
 				{
 					glow = wf->base + R_NoiseGet4f( 0, 0, 0, ( backEnd.refdef.floatTime + wf->phase ) * wf->frequency ) * wf->amplitude;
 				}
@@ -4497,11 +4497,11 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 					glow = RB_EvalWaveForm( wf ) * tr.identityLight;
 				}
 
-				if( glow < 0 )
+				if ( glow < 0 )
 				{
 					glow = 0;
 				}
-				else if( glow > 1 )
+				else if ( glow > 1 )
 				{
 					glow = 1;
 				}
@@ -4525,13 +4525,13 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case CGEN_CUSTOM_RGBs:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					red = Q_bound( 0.0, RB_EvalExpression( &pStage->redExp, backEnd.currentLight->l.color[ 0 ] ), 1.0 );
 					green = Q_bound( 0.0, RB_EvalExpression( &pStage->greenExp, backEnd.currentLight->l.color[ 1 ] ), 1.0 );
 					blue = Q_bound( 0.0, RB_EvalExpression( &pStage->blueExp, backEnd.currentLight->l.color[ 2 ] ), 1.0 );
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					red =
 					  Q_bound( 0.0, RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) ), 1.0 );
@@ -4557,14 +4557,14 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	}
 
 	// alphaGen
-	switch( pStage->alphaGen )
+	switch ( pStage->alphaGen )
 	{
 		default:
 		case AGEN_IDENTITY:
 			{
-				if( pStage->rgbGen != CGEN_IDENTITY )
+				if ( pStage->rgbGen != CGEN_IDENTITY )
 				{
-					if( ( pStage->rgbGen == CGEN_VERTEX && tr.identityLight != 1 ) || pStage->rgbGen != CGEN_VERTEX )
+					if ( ( pStage->rgbGen == CGEN_VERTEX && tr.identityLight != 1 ) || pStage->rgbGen != CGEN_VERTEX )
 					{
 						tess.svars.color[ 3 ] = 1.0;
 					}
@@ -4582,7 +4582,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case AGEN_CONST:
 			{
-				if( pStage->rgbGen != CGEN_CONST )
+				if ( pStage->rgbGen != CGEN_CONST )
 				{
 					tess.svars.color[ 3 ] = pStage->constantColor[ 3 ] * ( 1.0 / 255.0 );
 				}
@@ -4592,11 +4592,11 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case AGEN_ENTITY:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					tess.svars.color[ 3 ] = 1.0; // FIXME ?
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					tess.svars.color[ 3 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 1.0 );
 				}
@@ -4610,11 +4610,11 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case AGEN_ONE_MINUS_ENTITY:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					tess.svars.color[ 3 ] = 0.0; // FIXME ?
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					tess.svars.color[ 3 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 1.0 );
 				}
@@ -4661,13 +4661,13 @@ static void Tess_ComputeTexMatrices( shaderStage_t *pStage )
 
 	GLimp_LogComment( "--- Tess_ComputeTexMatrices ---\n" );
 
-	for( i = 0; i < MAX_TEXTURE_BUNDLES; i++ )
+	for ( i = 0; i < MAX_TEXTURE_BUNDLES; i++ )
 	{
 		matrix = tess.svars.texMatrices[ i ];
 
 		RB_CalcTexMatrix( &pStage->bundle[ i ], matrix );
 
-		if( pStage->tcGen_Lightmap && i == TB_COLORMAP )
+		if ( pStage->tcGen_Lightmap && i == TB_COLORMAP )
 		{
 			MatrixMultiplyScale( matrix,
 			                     tr.fatLightmapStep,
@@ -4690,15 +4690,15 @@ static void SetIteratorFog()
 
 	// changed for problem when you start the game with r_fastsky set to '1'
 //  if(r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) {
-	if( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
+	if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
 	{
 		RB_FogOff();
 		return;
 	}
 
-	if( backEnd.refdef.rdflags & RDF_DRAWINGSKY )
+	if ( backEnd.refdef.rdflags & RDF_DRAWINGSKY )
 	{
-		if( tr.glfogsettings[ FOG_SKY ].registered )
+		if ( tr.glfogsettings[ FOG_SKY ].registered )
 		{
 			RB_Fog( &tr.glfogsettings[ FOG_SKY ] );
 		}
@@ -4710,9 +4710,9 @@ static void SetIteratorFog()
 		return;
 	}
 
-	if( tr.world && tr.world->hasSkyboxPortal && ( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL ) )
+	if ( tr.world && tr.world->hasSkyboxPortal && ( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL ) )
 	{
-		if( tr.glfogsettings[ FOG_PORTALVIEW ].registered )
+		if ( tr.glfogsettings[ FOG_PORTALVIEW ].registered )
 		{
 			RB_Fog( &tr.glfogsettings[ FOG_PORTALVIEW ] );
 		}
@@ -4723,7 +4723,7 @@ static void SetIteratorFog()
 	}
 	else
 	{
-		if( tr.glfogNum > FOG_NONE )
+		if ( tr.glfogNum > FOG_NONE )
 		{
 			RB_Fog( &tr.glfogsettings[ FOG_CURRENT ] );
 		}
@@ -4739,7 +4739,7 @@ static void SetIteratorFog()
 void Tess_StageIteratorDebug()
 {
 	// log this call
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -4748,7 +4748,7 @@ void Tess_StageIteratorDebug()
 
 	GL_CheckErrors();
 
-	if( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
+	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		// Tr3B: FIXME analyze required vertex attribs by the current material
 		Tess_UpdateVBOs( 0 );
@@ -4762,7 +4762,7 @@ void Tess_StageIteratorGeneric()
 	int stage;
 
 	// log this call
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -4775,7 +4775,7 @@ void Tess_StageIteratorGeneric()
 
 	Tess_DeformGeometry();
 
-	if( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
+	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		// Tr3B: FIXME analyze required vertex attribs by the current material
 		Tess_UpdateVBOs( 0 );
@@ -4788,23 +4788,23 @@ void Tess_StageIteratorGeneric()
 	GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glEnable( GL_POLYGON_OFFSET_FILL );
 		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
 	}
 
 	// call shader function
-	for( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
+	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
 	{
 		shaderStage_t *pStage = tess.surfaceStages[ stage ];
 
-		if( !pStage )
+		if ( !pStage )
 		{
 			break;
 		}
 
-		if( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
+		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
 		{
 			continue;
 		}
@@ -4812,11 +4812,11 @@ void Tess_StageIteratorGeneric()
 #if 0
 
 		// Ridah, per stage fogging (detail textures)
-		if( tess.surfaceShader->noFog && pStage->isFogged )
+		if ( tess.surfaceShader->noFog && pStage->isFogged )
 		{
 			RB_FogOn();
 		}
-		else if( tess.surfaceShader->noFog && !pStage->isFogged )
+		else if ( tess.surfaceShader->noFog && !pStage->isFogged )
 		{
 			RB_FogOff();
 		}
@@ -4831,7 +4831,7 @@ void Tess_StageIteratorGeneric()
 		Tess_ComputeColor( pStage );
 		Tess_ComputeTexMatrices( pStage );
 
-		switch( pStage->type )
+		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
 				{
@@ -4855,11 +4855,11 @@ void Tess_StageIteratorGeneric()
 				{
 					//if(tess.surfaceShader->sort <= SS_OPAQUE)
 					{
-						if( r_precomputedLighting->integer || r_vertexLighting->integer )
+						if ( r_precomputedLighting->integer || r_vertexLighting->integer )
 						{
-							if( !r_vertexLighting->integer && tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
+							if ( !r_vertexLighting->integer && tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
 							{
-								if( tr.worldDeluxeMapping && r_normalMapping->integer )
+								if ( tr.worldDeluxeMapping && r_normalMapping->integer )
 								{
 									Render_lightMapping( stage, false, true );
 								}
@@ -4868,7 +4868,7 @@ void Tess_StageIteratorGeneric()
 									Render_lightMapping( stage, false, false );
 								}
 							}
-							else if( backEnd.currentEntity != &tr.worldEntity )
+							else if ( backEnd.currentEntity != &tr.worldEntity )
 							{
 								Render_vertexLighting_DBS_entity( stage );
 							}
@@ -4888,7 +4888,7 @@ void Tess_StageIteratorGeneric()
 			case ST_COLLAPSE_reflection_CB:
 			case ST_REFLECTIONMAP:
 				{
-					if( r_reflectionMapping->integer )
+					if ( r_reflectionMapping->integer )
 					{
 						Render_reflection_CB( stage );
 					}
@@ -4944,7 +4944,7 @@ void Tess_StageIteratorGeneric()
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
 
-		if( r_showLightMaps->integer && pStage->type == ST_LIGHTMAP )
+		if ( r_showLightMaps->integer && pStage->type == ST_LIGHTMAP )
 		{
 			break;
 		}
@@ -4952,13 +4952,13 @@ void Tess_StageIteratorGeneric()
 #endif
 	}
 
-	if( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass )
+	if ( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass )
 	{
 		Render_fog();
 	}
 
 	// reset polygon offset
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glDisable( GL_POLYGON_OFFSET_FILL );
 	}
@@ -4970,7 +4970,7 @@ void Tess_StageIteratorGBuffer()
 	bool diffuseRendered = false;
 
 	// log this call
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -4983,7 +4983,7 @@ void Tess_StageIteratorGBuffer()
 
 	Tess_DeformGeometry();
 
-	if( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
+	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		// Tr3B: FIXME analyze required vertex attribs by the current material
 		Tess_UpdateVBOs( 0 );
@@ -4993,23 +4993,23 @@ void Tess_StageIteratorGBuffer()
 	GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glEnable( GL_POLYGON_OFFSET_FILL );
 		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
 	}
 
 	// call shader function
-	for( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
+	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
 	{
 		shaderStage_t *pStage = tess.surfaceStages[ stage ];
 
-		if( !pStage )
+		if ( !pStage )
 		{
 			break;
 		}
 
-		if( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
+		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
 		{
 			continue;
 		}
@@ -5017,7 +5017,7 @@ void Tess_StageIteratorGBuffer()
 		Tess_ComputeColor( pStage );
 		Tess_ComputeTexMatrices( pStage );
 
-		switch( pStage->type )
+		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
 				{
@@ -5026,9 +5026,9 @@ void Tess_StageIteratorGBuffer()
 
 					Render_generic( stage );
 
-					if( tess.surfaceShader->sort <= SS_OPAQUE &&
-					    !( pStage->stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) &&
-					    !diffuseRendered )
+					if ( tess.surfaceShader->sort <= SS_OPAQUE &&
+					     !( pStage->stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) &&
+					     !diffuseRendered )
 					{
 						glDrawBuffers( 4, geometricRenderTargets );
 
@@ -5042,14 +5042,14 @@ void Tess_StageIteratorGBuffer()
 			case ST_COLLAPSE_lighting_DB:
 			case ST_COLLAPSE_lighting_DBS:
 				{
-					if( r_precomputedLighting->integer || r_vertexLighting->integer )
+					if ( r_precomputedLighting->integer || r_vertexLighting->integer )
 					{
 						R_BindFBO( tr.geometricRenderFBO );
 						glDrawBuffers( 4, geometricRenderTargets );
 
-						if( !r_vertexLighting->integer && tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
+						if ( !r_vertexLighting->integer && tess.lightmapNum >= 0 && tess.lightmapNum < tr.lightmaps.currentElements )
 						{
-							if( tr.worldDeluxeMapping && r_normalMapping->integer )
+							if ( tr.worldDeluxeMapping && r_normalMapping->integer )
 							{
 								Render_lightMapping( stage, false, true );
 								diffuseRendered = true;
@@ -5060,7 +5060,7 @@ void Tess_StageIteratorGBuffer()
 								diffuseRendered = true;
 							}
 						}
-						else if( backEnd.currentEntity != &tr.worldEntity )
+						else if ( backEnd.currentEntity != &tr.worldEntity )
 						{
 							Render_vertexLighting_DBS_entity( stage );
 							diffuseRendered = true;
@@ -5165,13 +5165,13 @@ void Tess_StageIteratorGBuffer()
 		}
 	}
 
-	if( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass )
+	if ( !r_noFog->integer && tess.fogNum >= 1 && tess.surfaceShader->fogPass )
 	{
 		Render_fog();
 	}
 
 	// reset polygon offset
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glDisable( GL_POLYGON_OFFSET_FILL );
 	}
@@ -5182,7 +5182,7 @@ void Tess_StageIteratorGBufferNormalsOnly()
 	int stage;
 
 	// log this call
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -5195,7 +5195,7 @@ void Tess_StageIteratorGBufferNormalsOnly()
 
 	Tess_DeformGeometry();
 
-	if( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
+	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		// Tr3B: FIXME analyze required vertex attribs by the current material
 		Tess_UpdateVBOs( 0 );
@@ -5205,23 +5205,23 @@ void Tess_StageIteratorGBufferNormalsOnly()
 	GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glEnable( GL_POLYGON_OFFSET_FILL );
 		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
 	}
 
 	// call shader function
-	for( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
+	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
 	{
 		shaderStage_t *pStage = tess.surfaceStages[ stage ];
 
-		if( !pStage )
+		if ( !pStage )
 		{
 			break;
 		}
 
-		if( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
+		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
 		{
 			continue;
 		}
@@ -5229,16 +5229,16 @@ void Tess_StageIteratorGBufferNormalsOnly()
 		//Tess_ComputeColor(pStage);
 		Tess_ComputeTexMatrices( pStage );
 
-		switch( pStage->type )
+		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
 				{
 #if 1
 
-					if( tess.surfaceShader->sort <= SS_OPAQUE &&
-					    !( pStage->stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) &&
-					    ( pStage->stateBits & ( GLS_DEPTHMASK_TRUE ) )
-					  )
+					if ( tess.surfaceShader->sort <= SS_OPAQUE &&
+					     !( pStage->stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) &&
+					     ( pStage->stateBits & ( GLS_DEPTHMASK_TRUE ) )
+					   )
 					{
 #if defined( OFFSCREEN_PREPASS_LIGHTING )
 						R_BindFBO( tr.geometricRenderFBO );
@@ -5272,7 +5272,7 @@ void Tess_StageIteratorGBufferNormalsOnly()
 	}
 
 	// reset polygon offset
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glDisable( GL_POLYGON_OFFSET_FILL );
 	}
@@ -5283,7 +5283,7 @@ void Tess_StageIteratorDepthFill()
 	int stage;
 
 	// log this call
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -5296,7 +5296,7 @@ void Tess_StageIteratorDepthFill()
 
 	Tess_DeformGeometry();
 
-	if( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
+	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
 	}
@@ -5305,34 +5305,34 @@ void Tess_StageIteratorDepthFill()
 	GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glEnable( GL_POLYGON_OFFSET_FILL );
 		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
 	}
 
 	// call shader function
-	for( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
+	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
 	{
 		shaderStage_t *pStage = tess.surfaceStages[ stage ];
 
-		if( !pStage )
+		if ( !pStage )
 		{
 			break;
 		}
 
-		if( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
+		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
 		{
 			continue;
 		}
 
 		Tess_ComputeTexMatrices( pStage );
 
-		switch( pStage->type )
+		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
 				{
-					if( tess.surfaceShader->sort <= SS_OPAQUE )
+					if ( tess.surfaceShader->sort <= SS_OPAQUE )
 					{
 						Render_depthFill( stage );
 					}
@@ -5372,7 +5372,7 @@ void Tess_StageIteratorShadowFill()
 	int stage;
 
 	// log this call
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -5385,7 +5385,7 @@ void Tess_StageIteratorShadowFill()
 
 	Tess_DeformGeometry();
 
-	if( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
+	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD );
 	}
@@ -5394,34 +5394,34 @@ void Tess_StageIteratorShadowFill()
 	GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glEnable( GL_POLYGON_OFFSET_FILL );
 		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
 	}
 
 	// call shader function
-	for( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
+	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
 	{
 		shaderStage_t *pStage = tess.surfaceStages[ stage ];
 
-		if( !pStage )
+		if ( !pStage )
 		{
 			break;
 		}
 
-		if( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
+		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
 		{
 			continue;
 		}
 
 		Tess_ComputeTexMatrices( pStage );
 
-		switch( pStage->type )
+		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
 				{
-					if( tess.surfaceShader->sort <= SS_OPAQUE )
+					if ( tess.surfaceShader->sort <= SS_OPAQUE )
 					{
 						Render_shadowFill( stage );
 					}
@@ -5458,7 +5458,7 @@ void Tess_StageIteratorLighting()
 	shaderStage_t *attenuationZStage;
 
 	// log this call
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -5473,20 +5473,20 @@ void Tess_StageIteratorLighting()
 
 	Tess_DeformGeometry();
 
-	if( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
+	if ( !glState.currentVBO || !glState.currentIBO || glState.currentVBO == tess.vbo || glState.currentIBO == tess.ibo )
 	{
 		// Tr3B: FIXME analyze required vertex attribs by the current material
 		Tess_UpdateVBOs( 0 );
 	}
 
 	// set OpenGL state for lighting
-	if( light->l.inverseShadows )
+	if ( light->l.inverseShadows )
 	{
 		GL_State( GLS_SRCBLEND_ZERO | GLS_DSTBLEND_ONE_MINUS_SRC_COLOR );
 	}
 	else
 	{
-		if( tess.surfaceShader->sort > SS_OPAQUE )
+		if ( tess.surfaceShader->sort > SS_OPAQUE )
 		{
 			GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 		}
@@ -5500,7 +5500,7 @@ void Tess_StageIteratorLighting()
 	GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glEnable( GL_POLYGON_OFFSET_FILL );
 		GL_PolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
@@ -5509,37 +5509,37 @@ void Tess_StageIteratorLighting()
 	// call shader function
 	attenuationZStage = tess.lightShader->stages[ 0 ];
 
-	for( i = 0; i < MAX_SHADER_STAGES; i++ )
+	for ( i = 0; i < MAX_SHADER_STAGES; i++ )
 	{
 		shaderStage_t *diffuseStage = tess.surfaceStages[ i ];
 
-		if( !diffuseStage )
+		if ( !diffuseStage )
 		{
 			break;
 		}
 
-		if( !RB_EvalExpression( &diffuseStage->ifExp, 1.0 ) )
+		if ( !RB_EvalExpression( &diffuseStage->ifExp, 1.0 ) )
 		{
 			continue;
 		}
 
 		Tess_ComputeTexMatrices( diffuseStage );
 
-		for( j = 1; j < MAX_SHADER_STAGES; j++ )
+		for ( j = 1; j < MAX_SHADER_STAGES; j++ )
 		{
 			attenuationXYStage = tess.lightShader->stages[ j ];
 
-			if( !attenuationXYStage )
+			if ( !attenuationXYStage )
 			{
 				break;
 			}
 
-			if( attenuationXYStage->type != ST_ATTENUATIONMAP_XY )
+			if ( attenuationXYStage->type != ST_ATTENUATIONMAP_XY )
 			{
 				continue;
 			}
 
-			if( !RB_EvalExpression( &attenuationXYStage->ifExp, 1.0 ) )
+			if ( !RB_EvalExpression( &attenuationXYStage->ifExp, 1.0 ) )
 			{
 				continue;
 			}
@@ -5547,23 +5547,23 @@ void Tess_StageIteratorLighting()
 			Tess_ComputeColor( attenuationXYStage );
 			R_ComputeFinalAttenuation( attenuationXYStage, light );
 
-			switch( diffuseStage->type )
+			switch ( diffuseStage->type )
 			{
 				case ST_DIFFUSEMAP:
 				case ST_COLLAPSE_lighting_DB:
 				case ST_COLLAPSE_lighting_DBS:
-					if( light->l.rlType == RL_OMNI )
+					if ( light->l.rlType == RL_OMNI )
 					{
 						Render_forwardLighting_DBS_omni( diffuseStage, attenuationXYStage, attenuationZStage, light );
 					}
-					else if( light->l.rlType == RL_PROJ )
+					else if ( light->l.rlType == RL_PROJ )
 					{
-						if( !light->l.inverseShadows )
+						if ( !light->l.inverseShadows )
 						{
 							Render_forwardLighting_DBS_proj( diffuseStage, attenuationXYStage, attenuationZStage, light );
 						}
 					}
-					else if( light->l.rlType == RL_DIRECTIONAL )
+					else if ( light->l.rlType == RL_DIRECTIONAL )
 					{
 						//if(!light->l.inverseShadows)
 						{
@@ -5580,7 +5580,7 @@ void Tess_StageIteratorLighting()
 	}
 
 	// reset polygon offset
-	if( tess.surfaceShader->polygonOffset )
+	if ( tess.surfaceShader->polygonOffset )
 	{
 		glDisable( GL_POLYGON_OFFSET_FILL );
 	}
@@ -5595,23 +5595,23 @@ Render tesselated data
 */
 void Tess_End()
 {
-	if( ( tess.numIndexes == 0 || tess.numVertexes == 0 ) && tess.multiDrawPrimitives == 0 )
+	if ( ( tess.numIndexes == 0 || tess.numVertexes == 0 ) && tess.multiDrawPrimitives == 0 )
 	{
 		return;
 	}
 
-	if( tess.indexes[ SHADER_MAX_INDEXES - 1 ] != 0 )
+	if ( tess.indexes[ SHADER_MAX_INDEXES - 1 ] != 0 )
 	{
 		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_INDEXES hit" );
 	}
 
-	if( tess.xyz[ SHADER_MAX_VERTEXES - 1 ][ 0 ] != 0 )
+	if ( tess.xyz[ SHADER_MAX_VERTEXES - 1 ][ 0 ] != 0 )
 	{
 		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_VERTEXES hit" );
 	}
 
 	// for debugging of sort order issues, stop rendering after a given sort value
-	if( r_debugSort->integer && r_debugSort->integer < tess.surfaceShader->sort )
+	if ( r_debugSort->integer && r_debugSort->integer < tess.surfaceShader->sort )
 	{
 		return;
 	}
@@ -5624,11 +5624,11 @@ void Tess_End()
 	// call off to shader specific tess end function
 	tess.stageIteratorFunc();
 
-	if( ( tess.stageIteratorFunc != Tess_StageIteratorShadowFill ) &&
-	    ( tess.stageIteratorFunc != Tess_StageIteratorDebug ) )
+	if ( ( tess.stageIteratorFunc != Tess_StageIteratorShadowFill ) &&
+	     ( tess.stageIteratorFunc != Tess_StageIteratorDebug ) )
 	{
 		// draw debugging stuff
-		if( r_showTris->integer || r_showBatches->integer || ( r_showLightBatches->integer && ( tess.stageIteratorFunc == Tess_StageIteratorLighting ) ) )
+		if ( r_showTris->integer || r_showBatches->integer || ( r_showLightBatches->integer && ( tess.stageIteratorFunc == Tess_StageIteratorLighting ) ) )
 		{
 			DrawTris();
 		}

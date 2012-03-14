@@ -75,7 +75,7 @@ static void mdfour64( uint32_t *M )
 	uint32_t X[ 16 ];
 	uint32_t A, B, C, D;
 
-	for( j = 0; j < 16; j++ )
+	for ( j = 0; j < 16; j++ )
 	{
 		X[ j ] = M[ j ];
 	}
@@ -145,7 +145,7 @@ static void mdfour64( uint32_t *M )
 	C += CC;
 	D += DD;
 
-	for( j = 0; j < 16; j++ )
+	for ( j = 0; j < 16; j++ )
 	{
 		X[ j ] = 0;
 	}
@@ -160,7 +160,7 @@ static void copy64( uint32_t *M, byte *in )
 {
 	int i;
 
-	for( i = 0; i < 16; i++ )
+	for ( i = 0; i < 16; i++ )
 	{
 		M[ i ] = ( in[ i * 4 + 3 ] << 24 ) | ( in[ i * 4 + 2 ] << 16 ) |
 		         ( in[ i * 4 + 1 ] << 8 ) | ( in[ i * 4 + 0 ] << 0 );
@@ -196,11 +196,11 @@ static void mdfour_tail( byte *in, int n )
 
 	Com_Memset( buf, 0, 128 );
 
-	if( n ) { Com_Memcpy( buf, in, n ); }
+	if ( n ) { Com_Memcpy( buf, in, n ); }
 
 	buf[ n ] = 0x80;
 
-	if( n <= 55 )
+	if ( n <= 55 )
 	{
 		copy4( buf + 56, b );
 		copy64( M, buf );
@@ -222,9 +222,9 @@ static void mdfour_update( struct mdfour *md, byte *in, int n )
 
 	m = md;
 
-	if( n == 0 ) { mdfour_tail( in, n ); }
+	if ( n == 0 ) { mdfour_tail( in, n ); }
 
-	while( n >= 64 )
+	while ( n >= 64 )
 	{
 		copy64( M, in );
 		mdfour64( M );
@@ -261,7 +261,7 @@ void mdfour_hex( const byte md4[ 16 ], char hex[ 32 ] )
 
 	int               i, j, t;
 
-	for( i = 0, j = 0; i < 16; i += 1, j += 2 )
+	for ( i = 0, j = 0; i < 16; i += 1, j += 2 )
 	{
 		// high nibble
 		t = ( md4[ i ] & 0xf0 ) >> 4;

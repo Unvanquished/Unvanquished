@@ -85,7 +85,7 @@ void QDECL AAS_Error( char *fmt, ... )
 //===========================================================================
 void AAS_SetCurrentWorld( int index )
 {
-	if( index >= MAX_AAS_WORLDS || index < 0 )
+	if ( index >= MAX_AAS_WORLDS || index < 0 )
 	{
 		AAS_Error( "AAS_SetCurrentWorld: index out of range\n" );
 		return;
@@ -105,21 +105,21 @@ void AAS_SetCurrentWorld( int index )
 //===========================================================================
 char           *AAS_StringFromIndex( char *indexname, char *stringindex[], int numindexes, int index )
 {
-	if( !( *aasworld ).indexessetup )
+	if ( !( *aasworld ).indexessetup )
 	{
 		botimport.Print( PRT_ERROR, "%s: index %d not setup\n", indexname, index );
 		return "";
 	} //end if
 
-	if( index < 0 || index >= numindexes )
+	if ( index < 0 || index >= numindexes )
 	{
 		botimport.Print( PRT_ERROR, "%s: index %d out of range\n", indexname, index );
 		return "";
 	} //end if
 
-	if( !stringindex[ index ] )
+	if ( !stringindex[ index ] )
 	{
-		if( index )
+		if ( index )
 		{
 			botimport.Print( PRT_ERROR, "%s: reference to unused index %d\n", indexname, index );
 		} //end if
@@ -140,20 +140,20 @@ int AAS_IndexFromString( char *indexname, char *stringindex[], int numindexes, c
 {
 	int i;
 
-	if( !( *aasworld ).indexessetup )
+	if ( !( *aasworld ).indexessetup )
 	{
 		botimport.Print( PRT_ERROR, "%s: index not setup \"%s\"\n", indexname, string );
 		return 0;
 	} //end if
 
-	for( i = 0; i < numindexes; i++ )
+	for ( i = 0; i < numindexes; i++ )
 	{
-		if( !stringindex[ i ] )
+		if ( !stringindex[ i ] )
 		{
 			continue;
 		}
 
-		if( !Q_stricmp( stringindex[ i ], string ) )
+		if ( !Q_stricmp( stringindex[ i ], string ) )
 		{
 			return i;
 		}
@@ -197,9 +197,9 @@ void AAS_UpdateStringIndexes( int numconfigstrings, char *configstrings[] )
 	int i;
 
 	//set string pointers and copy the strings
-	for( i = 0; i < numconfigstrings; i++ )
+	for ( i = 0; i < numconfigstrings; i++ )
 	{
-		if( configstrings[ i ] )
+		if ( configstrings[ i ] )
 		{
 			//if ((*aasworld).configstrings[i]) FreeMemory((*aasworld).configstrings[i]);
 			( *aasworld ).configstrings[ i ] = ( char * ) GetMemory( strlen( configstrings[ i ] ) + 1 );
@@ -265,19 +265,19 @@ void AAS_SetInitialized( void )
 void AAS_ContinueInit( float time )
 {
 	//if no AAS file loaded
-	if( !( *aasworld ).loaded )
+	if ( !( *aasworld ).loaded )
 	{
 		return;
 	}
 
 	//if AAS is already initialized
-	if( ( *aasworld ).initialized )
+	if ( ( *aasworld ).initialized )
 	{
 		return;
 	}
 
 	//calculate reachability, if not finished return
-	if( AAS_ContinueInitReachability( time ) )
+	if ( AAS_ContinueInitReachability( time ) )
 	{
 		return;
 	}
@@ -287,16 +287,16 @@ void AAS_ContinueInit( float time )
 
 	//if reachability has been calculated and an AAS file should be written
 	//or there is a forced data optimization
-	if( ( *aasworld ).savefile || ( ( int ) LibVarGetValue( "forcewrite" ) ) )
+	if ( ( *aasworld ).savefile || ( ( int ) LibVarGetValue( "forcewrite" ) ) )
 	{
 		//optimize the AAS data
-		if( !( ( int ) LibVarValue( "nooptimize", "1" ) ) )
+		if ( !( ( int ) LibVarValue( "nooptimize", "1" ) ) )
 		{
 			AAS_Optimize();
 		}
 
 		//save the AAS file
-		if( AAS_WriteAASFile( ( *aasworld ).filename ) )
+		if ( AAS_WriteAASFile( ( *aasworld ).filename ) )
 		{
 			botimport.Print( PRT_MESSAGE, "%s written succesfully\n", ( *aasworld ).filename );
 		}
@@ -324,7 +324,7 @@ int AAS_StartFrame( float time )
 	// Ridah, do each of the aasworlds
 	int i;
 
-	for( i = 0; i < MAX_AAS_WORLDS; i++ )
+	for ( i = 0; i < MAX_AAS_WORLDS; i++ )
 	{
 		AAS_SetCurrentWorld( i );
 
@@ -405,7 +405,7 @@ int AAS_LoadFiles( const char *mapname )
 	Com_sprintf( aasfile, MAX_PATH, "maps/%s.aas", mapname );
 	errnum = AAS_LoadAASFile( aasfile );
 
-	if( errnum != BLERR_NOERROR )
+	if ( errnum != BLERR_NOERROR )
 	{
 		return errnum;
 	}
@@ -433,7 +433,7 @@ int AAS_LoadMap( const char *mapname )
 	qboolean loaded = qfalse;
 	int      missingErrNum = 0;
 
-	for( i = 0; i < MAX_AAS_WORLDS; i++ )
+	for ( i = 0; i < MAX_AAS_WORLDS; i++ )
 	{
 		AAS_SetCurrentWorld( i );
 
@@ -443,7 +443,7 @@ int AAS_LoadMap( const char *mapname )
 		//strncat( this_mapname, intstr, 256 );
 
 		//if no mapname is provided then the string indexes are updated
-		if( !mapname )
+		if ( !mapname )
 		{
 			return 0;
 		} //end if
@@ -457,7 +457,7 @@ int AAS_LoadMap( const char *mapname )
 		//load the map
 		errnum = AAS_LoadFiles( this_mapname );
 
-		if( errnum != BLERR_NOERROR )
+		if ( errnum != BLERR_NOERROR )
 		{
 			( *aasworld ).loaded = qfalse;
 			// RF, we are allowed to skip one of the files, but not both
@@ -480,7 +480,7 @@ int AAS_LoadMap( const char *mapname )
 		AAS_InitAlternativeRouting();
 	}
 
-	if( !loaded )
+	if ( !loaded )
 	{
 		return missingErrNum;
 	}
@@ -507,7 +507,7 @@ int AAS_Setup( void )
 	( *aasworlds ).maxentities = ( int ) LibVarValue( "maxentities", "1024" );
 
 	//allocate memory for the entities
-	if( ( *aasworld ).entities )
+	if ( ( *aasworld ).entities )
 	{
 		FreeMemory( ( *aasworld ).entities );
 	}
@@ -534,7 +534,7 @@ void AAS_Shutdown( void )
 	// Ridah, do each of the worlds
 	int i;
 
-	for( i = 0; i < MAX_AAS_WORLDS; i++ )
+	for ( i = 0; i < MAX_AAS_WORLDS; i++ )
 	{
 		AAS_SetCurrentWorld( i );
 
@@ -552,10 +552,10 @@ void AAS_Shutdown( void )
 		//free the aas data
 		AAS_DumpAASData();
 
-		if( i == 0 )
+		if ( i == 0 )
 		{
 			//free the entities
-			if( ( *aasworld ).entities )
+			if ( ( *aasworld ).entities )
 			{
 				FreeMemory( ( *aasworld ).entities );
 			}

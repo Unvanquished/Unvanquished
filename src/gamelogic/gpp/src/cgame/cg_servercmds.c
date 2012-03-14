@@ -39,7 +39,7 @@ static void CG_ParseScores( void )
 
 	cg.numScores = ( trap_Argc() - 3 ) / 6;
 
-	if( cg.numScores > MAX_CLIENTS )
+	if ( cg.numScores > MAX_CLIENTS )
 	{
 		cg.numScores = MAX_CLIENTS;
 	}
@@ -49,12 +49,12 @@ static void CG_ParseScores( void )
 
 	memset( cg.scores, 0, sizeof( cg.scores ) );
 
-	if( cg_debugRandom.integer )
+	if ( cg_debugRandom.integer )
 	{
 		CG_Printf( "cg.numScores: %d\n", cg.numScores );
 	}
 
-	for( i = 0; i < cg.numScores; i++ )
+	for ( i = 0; i < cg.numScores; i++ )
 	{
 		//
 		cg.scores[ i ].client = atoi( CG_Argv( i * 6 + 3 ) );
@@ -64,7 +64,7 @@ static void CG_ParseScores( void )
 		cg.scores[ i ].weapon = atoi( CG_Argv( i * 6 + 7 ) );
 		cg.scores[ i ].upgrade = atoi( CG_Argv( i * 6 + 8 ) );
 
-		if( cg.scores[ i ].client < 0 || cg.scores[ i ].client >= MAX_CLIENTS )
+		if ( cg.scores[ i ].client < 0 || cg.scores[ i ].client >= MAX_CLIENTS )
 		{
 			cg.scores[ i ].client = 0;
 		}
@@ -91,11 +91,11 @@ static void CG_ParseTeamInfo( void )
 
 	cgs.teaminfoReceievedTime = cg.time;
 
-	for( i = 0; i < count; i++ )
+	for ( i = 0; i < count; i++ )
 	{
 		client = atoi( CG_Argv( i * 5 + 1 ) );
 
-		if( client < 0 || client >= MAX_CLIENTS )
+		if ( client < 0 || client >= MAX_CLIENTS )
 		{
 			CG_Printf( "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n", client );
 			return;
@@ -157,7 +157,7 @@ void CG_SetConfigValues( void )
 	const char *alienStages = CG_ConfigString( CS_ALIEN_STAGES );
 	const char *humanStages = CG_ConfigString( CS_HUMAN_STAGES );
 
-	if( alienStages[ 0 ] )
+	if ( alienStages[ 0 ] )
 	{
 		sscanf( alienStages, "%d %d %d", &cgs.alienStage, &cgs.alienCredits,
 		        &cgs.alienNextStageThreshold );
@@ -167,7 +167,7 @@ void CG_SetConfigValues( void )
 		cgs.alienStage = cgs.alienCredits = cgs.alienNextStageThreshold = 0;
 	}
 
-	if( humanStages[ 0 ] )
+	if ( humanStages[ 0 ] )
 	{
 		sscanf( humanStages, "%d %d %d", &cgs.humanStage, &cgs.humanCredits,
 		        &cgs.humanNextStageThreshold );
@@ -196,18 +196,18 @@ void CG_ShaderStateChanged( void )
 
 	o = CG_ConfigString( CS_SHADERSTATE );
 
-	while( o && *o )
+	while ( o && *o )
 	{
 		n = strstr( o, "=" );
 
-		if( n && *n )
+		if ( n && *n )
 		{
 			strncpy( originalShader, o, n - o );
 			originalShader[ n - o ] = 0;
 			n++;
 			t = strstr( n, ":" );
 
-			if( t && *t )
+			if ( t && *t )
 			{
 				strncpy( newShader, n, t - n );
 				newShader[ t - n ] = 0;
@@ -220,7 +220,7 @@ void CG_ShaderStateChanged( void )
 			t++;
 			o = strstr( t, "@" );
 
-			if( o )
+			if ( o )
 			{
 				strncpy( timeOffset, t, o - t );
 				timeOffset[ o - t ] = 0;
@@ -242,7 +242,7 @@ CG_AnnounceAlienStageTransistion
 */
 static void CG_AnnounceAlienStageTransistion( stage_t from, stage_t to )
 {
-	if( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
+	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
 	{
 		return;
 	}
@@ -258,7 +258,7 @@ CG_AnnounceHumanStageTransistion
 */
 static void CG_AnnounceHumanStageTransistion( stage_t from, stage_t to )
 {
-	if( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -288,28 +288,28 @@ static void CG_ConfigStringModified( void )
 	str = CG_ConfigString( num );
 
 	// do something with it if necessary
-	if( num == CS_MUSIC )
+	if ( num == CS_MUSIC )
 	{
 		CG_StartMusic();
 	}
-	else if( num == CS_SERVERINFO )
+	else if ( num == CS_SERVERINFO )
 	{
 		CG_ParseServerinfo();
 	}
-	else if( num == CS_WARMUP )
+	else if ( num == CS_WARMUP )
 	{
 		CG_ParseWarmup();
 	}
-	else if( num == CS_ALIEN_STAGES )
+	else if ( num == CS_ALIEN_STAGES )
 	{
 		stage_t oldAlienStage = cgs.alienStage;
 
-		if( str[ 0 ] )
+		if ( str[ 0 ] )
 		{
 			sscanf( str, "%d %d %d", &cgs.alienStage, &cgs.alienCredits,
 			        &cgs.alienNextStageThreshold );
 
-			if( cgs.alienStage != oldAlienStage )
+			if ( cgs.alienStage != oldAlienStage )
 			{
 				CG_AnnounceAlienStageTransistion( oldAlienStage, cgs.alienStage );
 			}
@@ -319,16 +319,16 @@ static void CG_ConfigStringModified( void )
 			cgs.alienStage = cgs.alienCredits = cgs.alienNextStageThreshold = 0;
 		}
 	}
-	else if( num == CS_HUMAN_STAGES )
+	else if ( num == CS_HUMAN_STAGES )
 	{
 		stage_t oldHumanStage = cgs.humanStage;
 
-		if( str[ 0 ] )
+		if ( str[ 0 ] )
 		{
 			sscanf( str, "%d %d %d", &cgs.humanStage, &cgs.humanCredits,
 			        &cgs.humanNextStageThreshold );
 
-			if( cgs.humanStage != oldHumanStage )
+			if ( cgs.humanStage != oldHumanStage )
 			{
 				CG_AnnounceHumanStageTransistion( oldHumanStage, cgs.humanStage );
 			}
@@ -338,84 +338,84 @@ static void CG_ConfigStringModified( void )
 			cgs.humanStage = cgs.humanCredits = cgs.humanNextStageThreshold = 0;
 		}
 	}
-	else if( num == CS_LEVEL_START_TIME )
+	else if ( num == CS_LEVEL_START_TIME )
 	{
 		cgs.levelStartTime = atoi( str );
 	}
-	else if( num >= CS_VOTE_TIME && num < CS_VOTE_TIME + NUM_TEAMS )
+	else if ( num >= CS_VOTE_TIME && num < CS_VOTE_TIME + NUM_TEAMS )
 	{
 		cgs.voteTime[ num - CS_VOTE_TIME ] = atoi( str );
 		cgs.voteModified[ num - CS_VOTE_TIME ] = qtrue;
 
-		if( num - CS_VOTE_TIME == TEAM_NONE )
+		if ( num - CS_VOTE_TIME == TEAM_NONE )
 		{
 			trap_Cvar_Set( "ui_voteActive", cgs.voteTime[ TEAM_NONE ] ? "1" : "0" );
 		}
-		else if( num - CS_VOTE_TIME == TEAM_ALIENS )
+		else if ( num - CS_VOTE_TIME == TEAM_ALIENS )
 		{
 			trap_Cvar_Set( "ui_alienTeamVoteActive",
 			               cgs.voteTime[ TEAM_ALIENS ] ? "1" : "0" );
 		}
-		else if( num - CS_VOTE_TIME == TEAM_HUMANS )
+		else if ( num - CS_VOTE_TIME == TEAM_HUMANS )
 		{
 			trap_Cvar_Set( "ui_humanTeamVoteActive",
 			               cgs.voteTime[ TEAM_HUMANS ] ? "1" : "0" );
 		}
 	}
-	else if( num >= CS_VOTE_YES && num < CS_VOTE_YES + NUM_TEAMS )
+	else if ( num >= CS_VOTE_YES && num < CS_VOTE_YES + NUM_TEAMS )
 	{
 		cgs.voteYes[ num - CS_VOTE_YES ] = atoi( str );
 		cgs.voteModified[ num - CS_VOTE_YES ] = qtrue;
 	}
-	else if( num >= CS_VOTE_NO && num < CS_VOTE_NO + NUM_TEAMS )
+	else if ( num >= CS_VOTE_NO && num < CS_VOTE_NO + NUM_TEAMS )
 	{
 		cgs.voteNo[ num - CS_VOTE_NO ] = atoi( str );
 		cgs.voteModified[ num - CS_VOTE_NO ] = qtrue;
 	}
-	else if( num >= CS_VOTE_STRING && num < CS_VOTE_STRING + NUM_TEAMS )
+	else if ( num >= CS_VOTE_STRING && num < CS_VOTE_STRING + NUM_TEAMS )
 	{
 		Q_strncpyz( cgs.voteString[ num - CS_VOTE_STRING ], str,
 		            sizeof( cgs.voteString[ num - CS_VOTE_STRING ] ) );
 	}
-	else if( num >= CS_VOTE_CALLER && num < CS_VOTE_CALLER + NUM_TEAMS )
+	else if ( num >= CS_VOTE_CALLER && num < CS_VOTE_CALLER + NUM_TEAMS )
 	{
 		Q_strncpyz( cgs.voteCaller[ num - CS_VOTE_CALLER ], str,
 		            sizeof( cgs.voteCaller[ num - CS_VOTE_CALLER ] ) );
 	}
-	else if( num == CS_INTERMISSION )
+	else if ( num == CS_INTERMISSION )
 	{
 		cg.intermissionStarted = atoi( str );
 	}
-	else if( num >= CS_MODELS && num < CS_MODELS + MAX_MODELS )
+	else if ( num >= CS_MODELS && num < CS_MODELS + MAX_MODELS )
 	{
 		cgs.gameModels[ num - CS_MODELS ] = trap_R_RegisterModel( str );
 	}
-	else if( num >= CS_SHADERS && num < CS_SHADERS + MAX_GAME_SHADERS )
+	else if ( num >= CS_SHADERS && num < CS_SHADERS + MAX_GAME_SHADERS )
 	{
 		cgs.gameShaders[ num - CS_SHADERS ] = trap_R_RegisterShader( str );
 	}
-	else if( num >= CS_PARTICLE_SYSTEMS && num < CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS )
+	else if ( num >= CS_PARTICLE_SYSTEMS && num < CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS )
 	{
 		cgs.gameParticleSystems[ num - CS_PARTICLE_SYSTEMS ] = CG_RegisterParticleSystem( ( char * ) str );
 	}
-	else if( num >= CS_SOUNDS && num < CS_SOUNDS + MAX_SOUNDS )
+	else if ( num >= CS_SOUNDS && num < CS_SOUNDS + MAX_SOUNDS )
 	{
-		if( str[ 0 ] != '*' )
+		if ( str[ 0 ] != '*' )
 		{
 			// player specific sounds don't register here
 			cgs.gameSounds[ num - CS_SOUNDS ] = trap_S_RegisterSound( str, qfalse );
 		}
 	}
-	else if( num >= CS_PLAYERS && num < CS_PLAYERS + MAX_CLIENTS )
+	else if ( num >= CS_PLAYERS && num < CS_PLAYERS + MAX_CLIENTS )
 	{
 		CG_NewClientInfo( num - CS_PLAYERS );
 		CG_BuildSpectatorString();
 	}
-	else if( num == CS_WINNER )
+	else if ( num == CS_WINNER )
 	{
 		trap_Cvar_Set( "ui_winner", str );
 	}
-	else if( num == CS_SHADERSTATE )
+	else if ( num == CS_SHADERSTATE )
 	{
 		CG_ShaderStateChanged();
 	}
@@ -434,7 +434,7 @@ require a reload of all the media
 */
 static void CG_MapRestart( void )
 {
-	if( cg_showmiss.integer )
+	if ( cg_showmiss.integer )
 	{
 		CG_Printf( "CG_MapRestart\n" );
 	}
@@ -474,7 +474,7 @@ void CG_Menu( int menu, int arg )
 	const char   *dialog;
 	dialogType_t type = 0; // controls which cg_disable var will switch it off
 
-	switch( cg.snap->ps.stats[ STAT_TEAM ] )
+	switch ( cg.snap->ps.stats[ STAT_TEAM ] )
 	{
 		case TEAM_ALIENS:
 			dialog = "menu tremulous_alien_dialog\n";
@@ -490,7 +490,7 @@ void CG_Menu( int menu, int arg )
 
 	cmd = dialog;
 
-	switch( menu )
+	switch ( menu )
 	{
 		case MN_TEAM:
 			cmd = "menu tremulous_teamselect\n";
@@ -676,7 +676,7 @@ void CG_Menu( int menu, int arg )
 			//===============================
 
 		case MN_H_NOBP:
-			if( cgs.markDeconstruct )
+			if ( cgs.markDeconstruct )
 			{
 				longMsg = "There is no power remaining. Free up power by marking "
 				          "existing buildable objects.";
@@ -897,31 +897,31 @@ void CG_Menu( int menu, int arg )
 			Com_Printf( "cgame: debug: no such menu %d\n", menu );
 	}
 
-	if( type == DT_ARMOURYEVOLVE && cg_disableUpgradeDialogs.integer )
+	if ( type == DT_ARMOURYEVOLVE && cg_disableUpgradeDialogs.integer )
 	{
 		return;
 	}
 
-	if( type == DT_BUILD && cg_disableBuildDialogs.integer )
+	if ( type == DT_BUILD && cg_disableBuildDialogs.integer )
 	{
 		return;
 	}
 
-	if( type == DT_COMMAND && cg_disableCommandDialogs.integer )
+	if ( type == DT_COMMAND && cg_disableCommandDialogs.integer )
 	{
 		return;
 	}
 
-	if( cmd != dialog )
+	if ( cmd != dialog )
 	{
 		trap_SendConsoleCommand( cmd );
 	}
-	else if( longMsg && cg_disableWarningDialogs.integer == 0 )
+	else if ( longMsg && cg_disableWarningDialogs.integer == 0 )
 	{
 		trap_Cvar_Set( "ui_dialog", longMsg );
 		trap_SendConsoleCommand( cmd );
 	}
-	else if( shortMsg && cg_disableWarningDialogs.integer < 2 )
+	else if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
 	{
 		CG_Printf( "%s\n", shortMsg );
 	}
@@ -941,45 +941,45 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 	char *color;
 	char *maybeColon;
 
-	if( clientNum >= 0 && clientNum < MAX_CLIENTS )
+	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		clientInfo_t *ci = &cgs.clientinfo[ clientNum ];
 		char         *tcolor = S_COLOR_WHITE;
 
 		name = ci->name;
 
-		if( ci->team == TEAM_ALIENS )
+		if ( ci->team == TEAM_ALIENS )
 		{
 			tcolor = S_COLOR_RED;
 		}
-		else if( ci->team == TEAM_HUMANS )
+		else if ( ci->team == TEAM_HUMANS )
 		{
 			tcolor = S_COLOR_CYAN;
 		}
 
-		if( cg_chatTeamPrefix.integer )
+		if ( cg_chatTeamPrefix.integer )
 		{
 			Com_sprintf( prefix, sizeof( prefix ), "[%s%c" S_COLOR_WHITE "] ",
 			             tcolor, toupper( * ( BG_TeamName( ci->team ) ) ) );
 		}
 
-		if( Com_ClientListContains( &cgs.ignoreList, clientNum ) )
+		if ( Com_ClientListContains( &cgs.ignoreList, clientNum ) )
 		{
 			ignore = "[skipnotify]";
 		}
 
-		if( ( mode == SAY_TEAM || mode == SAY_AREA ) &&
-		    cg.snap->ps.pm_type != PM_INTERMISSION )
+		if ( ( mode == SAY_TEAM || mode == SAY_AREA ) &&
+		     cg.snap->ps.pm_type != PM_INTERMISSION )
 		{
 			int locationNum;
 
-			if( clientNum == cg.snap->ps.clientNum )
+			if ( clientNum == cg.snap->ps.clientNum )
 			{
 				centity_t *locent;
 
 				locent = CG_GetPlayerLocation();
 
-				if( locent )
+				if ( locent )
 				{
 					locationNum = locent->currentState.generic1;
 				}
@@ -993,11 +993,11 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 				locationNum = ci->location;
 			}
 
-			if( locationNum > 0 && locationNum < MAX_LOCATIONS )
+			if ( locationNum > 0 && locationNum < MAX_LOCATIONS )
 			{
 				const char *s = CG_ConfigString( CS_LOCATIONS + locationNum );
 
-				if( *s )
+				if ( *s )
 				{
 					location = va( " (%s" S_COLOR_WHITE ")", s );
 				}
@@ -1010,7 +1010,7 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 	}
 
 	// IRC-like /me parsing
-	if( mode != SAY_RAW && Q_stricmpn( text, "/me ", 4 ) == 0 )
+	if ( mode != SAY_RAW && Q_stricmpn( text, "/me ", 4 ) == 0 )
 	{
 		text += 4;
 		Q_strcat( prefix, sizeof( prefix ), "* " );
@@ -1021,12 +1021,12 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 		maybeColon = ":";
 	}
 
-	switch( mode )
+	switch ( mode )
 	{
 		case SAY_ALL:
 
 			// might already be ignored but in that case no harm is done
-			if( cg_teamChatsOnly.integer )
+			if ( cg_teamChatsOnly.integer )
 			{
 				ignore = "[skipnotify]";
 			}
@@ -1061,12 +1061,12 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 			           ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
 			           maybeColon, color, text );
 
-			if( !ignore[ 0 ] )
+			if ( !ignore[ 0 ] )
 			{
 				CG_CenterPrint( va( "%sPrivate message from: " S_COLOR_WHITE "%s",
 				                    color, name ), 200, GIANTCHAR_WIDTH * 4 );
 
-				if( clientNum < 0 || clientNum >= MAX_CLIENTS )
+				if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
 				{
 					clientNum = cg.clientNum;
 				}
@@ -1081,17 +1081,17 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 			break;
 	}
 
-	switch( mode )
+	switch ( mode )
 	{
 		case SAY_TEAM:
 		case SAY_AREA:
 		case SAY_TPRIVMSG:
-			if( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienTalkSound, CHAN_LOCAL_SOUND );
 				break;
 			}
-			else if( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 			{
 				trap_S_StartLocalSound( cgs.media.humanTalkSound, CHAN_LOCAL_SOUND );
 				break;
@@ -1119,7 +1119,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	v = BG_VoiceByName( cgs.voices, voice );
 
-	if( !v )
+	if ( !v )
 	{
 		CG_Printf( "[skipnotify]WARNING: could not find voice \"%s\"\n", voice );
 		return NULL;
@@ -1127,7 +1127,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	c = BG_VoiceCmdByNum( v->cmds, cmd );
 
-	if( !c )
+	if ( !c )
 	{
 		CG_Printf( "[skipnotify]WARNING: could not find command %d "
 		           "in voice \"%s\"\n", cmd, voice );
@@ -1136,7 +1136,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	t = BG_VoiceTrackByNum( c->tracks, track );
 
-	if( !t )
+	if ( !t )
 	{
 		CG_Printf( "[skipnotify]WARNING: could not find track %d for command %d in "
 		           "voice \"%s\"\n", track, cmd, voice );
@@ -1161,31 +1161,31 @@ static void CG_ParseVoice( void )
 	voiceTrack_t   *track;
 	clientInfo_t   *ci;
 
-	if( trap_Argc() < 5 || trap_Argc() > 6 )
+	if ( trap_Argc() < 5 || trap_Argc() > 6 )
 	{
 		return;
 	}
 
-	if( trap_Argc() == 6 )
+	if ( trap_Argc() == 6 )
 	{
 		Q_strncpyz( sayText, CG_Argv( 5 ), sizeof( sayText ) );
 	}
 
 	clientNum = atoi( CG_Argv( 1 ) );
 
-	if( clientNum < 0 || clientNum >= MAX_CLIENTS )
+	if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
 	{
 		return;
 	}
 
 	vChan = atoi( CG_Argv( 2 ) );
 
-	if( ( unsigned ) vChan >= VOICE_CHAN_NUM_CHANS )
+	if ( ( unsigned ) vChan >= VOICE_CHAN_NUM_CHANS )
 	{
 		return;
 	}
 
-	if( cg_teamChatsOnly.integer && vChan != VOICE_CHAN_TEAM )
+	if ( cg_teamChatsOnly.integer && vChan != VOICE_CHAN_TEAM )
 	{
 		return;
 	}
@@ -1193,7 +1193,7 @@ static void CG_ParseVoice( void )
 	ci = &cgs.clientinfo[ clientNum ];
 
 	// this joker is still talking
-	if( ci->voiceTime > cg.time )
+	if ( ci->voiceTime > cg.time )
 	{
 		return;
 	}
@@ -1202,7 +1202,7 @@ static void CG_ParseVoice( void )
 
 	// keep track of how long the player will be speaking
 	// assume it takes 3s to say "*unintelligible gibberish*"
-	if( track )
+	if ( track )
 	{
 		ci->voiceTime = cg.time + track->duration;
 	}
@@ -1211,9 +1211,9 @@ static void CG_ParseVoice( void )
 		ci->voiceTime = cg.time + 3000;
 	}
 
-	if( !sayText[ 0 ] )
+	if ( !sayText[ 0 ] )
 	{
-		if( track )
+		if ( track )
 		{
 			Q_strncpyz( sayText, track->text, sizeof( sayText ) );
 		}
@@ -1223,9 +1223,9 @@ static void CG_ParseVoice( void )
 		}
 	}
 
-	if( !cg_noVoiceText.integer )
+	if ( !cg_noVoiceText.integer )
 	{
-		switch( vChan )
+		switch ( vChan )
 		{
 			case VOICE_CHAN_ALL:
 				CG_Say( clientNum, SAY_ALL, sayText );
@@ -1241,24 +1241,24 @@ static void CG_ParseVoice( void )
 	}
 
 	// playing voice audio tracks disabled
-	if( cg_noVoiceChats.integer )
+	if ( cg_noVoiceChats.integer )
 	{
 		return;
 	}
 
 	// no audio track to play
-	if( !track )
+	if ( !track )
 	{
 		return;
 	}
 
 	// don't play audio track for lamers
-	if( Com_ClientListContains( &cgs.ignoreList, clientNum ) )
+	if ( Com_ClientListContains( &cgs.ignoreList, clientNum ) )
 	{
 		return;
 	}
 
-	switch( vChan )
+	switch ( vChan )
 	{
 		case VOICE_CHAN_ALL:
 			trap_S_StartLocalSound( track->track, CHAN_VOICE );
@@ -1320,13 +1320,13 @@ CG_ServerMenu_f
 */
 static void CG_ServerMenu_f( void )
 {
-	if( !cg.demoPlayback )
+	if ( !cg.demoPlayback )
 	{
-		if( trap_Argc() == 2 )
+		if ( trap_Argc() == 2 )
 		{
 			CG_Menu( atoi( CG_Argv( 1 ) ), 0 );
 		}
-		else if( trap_Argc() == 3 )
+		else if ( trap_Argc() == 3 )
 		{
 			CG_Menu( atoi( CG_Argv( 1 ) ), atoi( CG_Argv( 2 ) ) );
 		}
@@ -1352,7 +1352,7 @@ static void CG_PoisonCloud_f( void )
 {
 	cg.poisonedTime = cg.time;
 
-	if( CG_IsParticleSystemValid( &cg.poisonCloudPS ) )
+	if ( CG_IsParticleSystemValid( &cg.poisonCloudPS ) )
 	{
 		cg.poisonCloudPS = CG_SpawnNewParticleSystem( cgs.media.poisonCloudPS );
 		CG_SetAttachmentCent( &cg.poisonCloudPS->attachment, &cg.predictedPlayerEntity );
@@ -1371,7 +1371,7 @@ static void CG_GameCmds_f( void )
 	  cmds quit
 	which would result in trap_RemoveCommand( "quit" ), which would be really bad
 	*/
-	for( i = 1; i < c; i++ )
+	for ( i = 1; i < c; i++ )
 	{
 		trap_AddCommand( CG_Argv( i ) );
 	}
@@ -1408,7 +1408,7 @@ static void CG_ServerCommand( void )
 
 	cmd = CG_Argv( 0 );
 
-	if( !cmd[ 0 ] )
+	if ( !cmd[ 0 ] )
 	{
 		return;
 	}
@@ -1417,7 +1417,7 @@ static void CG_ServerCommand( void )
 	                   sizeof( svcommands[ 0 ] ), sizeof( svcommands[ 0 ] ),
 	                   cmdcmp );
 
-	if( command )
+	if ( command )
 	{
 		command->function();
 		return;
@@ -1436,9 +1436,9 @@ with this this snapshot.
 */
 void CG_ExecuteNewServerCommands( int latestSequence )
 {
-	while( cgs.serverCommandSequence < latestSequence )
+	while ( cgs.serverCommandSequence < latestSequence )
 	{
-		if( trap_GetServerCommand( ++cgs.serverCommandSequence ) )
+		if ( trap_GetServerCommand( ++cgs.serverCommandSequence ) )
 		{
 			CG_ServerCommand();
 		}

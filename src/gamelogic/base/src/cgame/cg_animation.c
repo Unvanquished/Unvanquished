@@ -37,7 +37,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf )
 	animation_t *anim;
 
 	// debugging tool to get no animations
-	if( cg_animSpeed.integer == 0 )
+	if ( cg_animSpeed.integer == 0 )
 	{
 		lf->oldFrame = lf->frame = lf->backlerp = 0;
 		return;
@@ -45,7 +45,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf )
 
 	// if we have passed the current frame, move it to
 	// oldFrame and calculate a new frame
-	if( cg.time >= lf->frameTime )
+	if ( cg.time >= lf->frameTime )
 	{
 		lf->oldFrame = lf->frame;
 		lf->oldFrameTime = lf->frameTime;
@@ -53,12 +53,12 @@ void CG_RunLerpFrame( lerpFrame_t *lf )
 		// get the next frame based on the animation
 		anim = lf->animation;
 
-		if( !anim->frameLerp )
+		if ( !anim->frameLerp )
 		{
 			return; // shouldn't happen
 		}
 
-		if( cg.time < lf->animationTime )
+		if ( cg.time < lf->animationTime )
 		{
 			lf->frameTime = lf->animationTime; // initial lerp
 		}
@@ -70,16 +70,16 @@ void CG_RunLerpFrame( lerpFrame_t *lf )
 		f = ( lf->frameTime - lf->animationTime ) / anim->frameLerp;
 		numFrames = anim->numFrames;
 
-		if( anim->flipflop )
+		if ( anim->flipflop )
 		{
 			numFrames *= 2;
 		}
 
-		if( f >= numFrames )
+		if ( f >= numFrames )
 		{
 			f -= numFrames;
 
-			if( anim->loopFrames )
+			if ( anim->loopFrames )
 			{
 				f %= anim->loopFrames;
 				f += anim->numFrames - anim->loopFrames;
@@ -93,11 +93,11 @@ void CG_RunLerpFrame( lerpFrame_t *lf )
 			}
 		}
 
-		if( anim->reversed )
+		if ( anim->reversed )
 		{
 			lf->frame = anim->firstFrame + anim->numFrames - 1 - f;
 		}
-		else if( anim->flipflop && f >= anim->numFrames )
+		else if ( anim->flipflop && f >= anim->numFrames )
 		{
 			lf->frame = anim->firstFrame + anim->numFrames - 1 - ( f % anim->numFrames );
 		}
@@ -106,29 +106,29 @@ void CG_RunLerpFrame( lerpFrame_t *lf )
 			lf->frame = anim->firstFrame + f;
 		}
 
-		if( cg.time > lf->frameTime )
+		if ( cg.time > lf->frameTime )
 		{
 			lf->frameTime = cg.time;
 
-			if( cg_debugAnim.integer )
+			if ( cg_debugAnim.integer )
 			{
 				CG_Printf( "Clamp lf->frameTime\n" );
 			}
 		}
 	}
 
-	if( lf->frameTime > cg.time + 200 )
+	if ( lf->frameTime > cg.time + 200 )
 	{
 		lf->frameTime = cg.time;
 	}
 
-	if( lf->oldFrameTime > cg.time )
+	if ( lf->oldFrameTime > cg.time )
 	{
 		lf->oldFrameTime = cg.time;
 	}
 
 	// calculate current lerp value
-	if( lf->frameTime == lf->oldFrameTime )
+	if ( lf->frameTime == lf->oldFrameTime )
 	{
 		lf->backlerp = 0;
 	}

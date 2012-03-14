@@ -64,7 +64,7 @@ void RB_ProjectionShadowDeform( void )
 	d = DotProduct( lightDir, ground );
 
 	// don't let the shadows get too long or go negative
-	if( d < 0.5 )
+	if ( d < 0.5 )
 	{
 		VectorMA( lightDir, ( 0.5 - d ), ground, lightDir );
 		d = DotProduct( lightDir, ground );
@@ -76,7 +76,7 @@ void RB_ProjectionShadowDeform( void )
 	light[ 1 ] = lightDir[ 1 ] * d;
 	light[ 2 ] = lightDir[ 2 ] * d;
 
-	for( i = 0; i < tess.numVertexes; i++, xyz += 4 )
+	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 )
 	{
 		h = DotProduct( xyz, ground ) + groundDist;
 

@@ -87,12 +87,12 @@ void AAS_AltRoutingFloodCluster_r( int areanum )
 	//flood to other areas through the faces of this area
 	area = & ( *aasworld ).areas[ areanum ];
 
-	for( i = 0; i < area->numfaces; i++ )
+	for ( i = 0; i < area->numfaces; i++ )
 	{
 		face = & ( *aasworld ).faces[ abs( ( *aasworld ).faceindex[ area->firstface + i ] ) ];
 
 		//get the area at the other side of the face
-		if( face->frontarea == areanum )
+		if ( face->frontarea == areanum )
 		{
 			otherareanum = face->backarea;
 		}
@@ -102,13 +102,13 @@ void AAS_AltRoutingFloodCluster_r( int areanum )
 		}
 
 		//if there is an area at the other side of this face
-		if( !otherareanum )
+		if ( !otherareanum )
 		{
 			continue;
 		}
 
 		//if the other area is not a midrange area
-		if( !midrangeareas[ otherareanum ].valid )
+		if ( !midrangeareas[ otherareanum ].valid )
 		{
 			continue;
 		}
@@ -149,20 +149,20 @@ int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
 
 	startareanum = AAS_PointAreaNum( start );
 
-	if( !startareanum )
+	if ( !startareanum )
 	{
 		return 0;
 	}
 
 	goalareanum = AAS_PointAreaNum( goal );
 
-	if( !goalareanum )
+	if ( !goalareanum )
 	{
 		VectorCopy( goal, dir );
 		dir[ 2 ] += 30;
 		goalareanum = AAS_PointAreaNum( dir );
 
-		if( !goalareanum )
+		if ( !goalareanum )
 		{
 			return 0;
 		}
@@ -177,17 +177,17 @@ int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
 	nummidrangeareas = 0;
 
 	//
-	for( i = 1; i < ( *aasworld ).numareas; i++ )
+	for ( i = 1; i < ( *aasworld ).numareas; i++ )
 	{
 		//
-		if( !( ( *aasworld ).areasettings[ i ].contents & AREACONTENTS_ROUTEPORTAL ) &&
-		    !( ( *aasworld ).areasettings[ i ].contents & AREACONTENTS_CLUSTERPORTAL ) )
+		if ( !( ( *aasworld ).areasettings[ i ].contents & AREACONTENTS_ROUTEPORTAL ) &&
+		     !( ( *aasworld ).areasettings[ i ].contents & AREACONTENTS_CLUSTERPORTAL ) )
 		{
 			continue;
 		}
 
 		//if the area has no reachabilities
-		if( !AAS_AreaReachability( i ) )
+		if ( !AAS_AreaReachability( i ) )
 		{
 			continue;
 		}
@@ -195,13 +195,13 @@ int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
 		//tavel time from the area to the start area
 		starttime = AAS_AreaTravelTimeToGoalArea( startareanum, start, i, travelflags );
 
-		if( !starttime )
+		if ( !starttime )
 		{
 			continue;
 		}
 
 		//if the travel time from the start to the area is greater than the shortest goal travel time
-		if( starttime > 500 + 3.0 * goaltraveltime )
+		if ( starttime > 500 + 3.0 * goaltraveltime )
 		{
 			continue;
 		}
@@ -209,13 +209,13 @@ int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
 		//travel time from the area to the goal area
 		goaltime = AAS_AreaTravelTimeToGoalArea( i, NULL, goalareanum, travelflags );
 
-		if( !goaltime )
+		if ( !goaltime )
 		{
 			continue;
 		}
 
 		//if the travel time from the area to the goal is greater than the shortest goal travel time
-		if( goaltime > 500 + 3.0 * goaltraveltime )
+		if ( goaltime > 500 + 3.0 * goaltraveltime )
 		{
 			continue;
 		}
@@ -229,9 +229,9 @@ int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
 	} //end for
 
 	//
-	for( i = 1; i < ( *aasworld ).numareas; i++ )
+	for ( i = 1; i < ( *aasworld ).numareas; i++ )
 	{
-		if( !midrangeareas[ i ].valid )
+		if ( !midrangeareas[ i ].valid )
 		{
 			continue;
 		}
@@ -243,7 +243,7 @@ int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
 		//get the 'center' of the cluster
 		VectorClear( mid );
 
-		for( j = 0; j < numclusterareas; j++ )
+		for ( j = 0; j < numclusterareas; j++ )
 		{
 			VectorAdd( mid, ( *aasworld ).areas[ clusterareas[ j ] ].center, mid );
 		} //end for
@@ -253,12 +253,12 @@ int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
 		bestdist = 999999;
 		bestareanum = 0;
 
-		for( j = 0; j < numclusterareas; j++ )
+		for ( j = 0; j < numclusterareas; j++ )
 		{
 			VectorSubtract( mid, ( *aasworld ).areas[ clusterareas[ j ] ].center, dir );
 			dist = VectorLength( dir );
 
-			if( dist < bestdist )
+			if ( dist < bestdist )
 			{
 				bestdist = dist;
 				bestareanum = clusterareas[ j ];
@@ -266,23 +266,23 @@ int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
 		} //end for
 
 		// make sure the route to the destination isn't in the same direction as the route to the source
-		if( !AAS_AreaRouteToGoalArea
-		    ( bestareanum, ( *aasworld ).areawaypoints[ bestareanum ], goalareanum, travelflags, &time, &reachnum ) )
+		if ( !AAS_AreaRouteToGoalArea
+		     ( bestareanum, ( *aasworld ).areawaypoints[ bestareanum ], goalareanum, travelflags, &time, &reachnum ) )
 		{
 			continue;
 		}
 
 		a1 = ( *aasworld ).reachability[ reachnum ].areanum;
 
-		if( !AAS_AreaRouteToGoalArea
-		    ( bestareanum, ( *aasworld ).areawaypoints[ bestareanum ], startareanum, travelflags, &time, &reachnum ) )
+		if ( !AAS_AreaRouteToGoalArea
+		     ( bestareanum, ( *aasworld ).areawaypoints[ bestareanum ], startareanum, travelflags, &time, &reachnum ) )
 		{
 			continue;
 		}
 
 		a2 = ( *aasworld ).reachability[ reachnum ].areanum;
 
-		if( a1 == a2 )
+		if ( a1 == a2 )
 		{
 			continue;
 		}
@@ -307,7 +307,7 @@ int AAS_AlternativeRouteGoals( vec3_t start, vec3_t goal, int travelflags,
 		                //AAS_ShowArea(bestarea, qtrue);
 		#endif*/
 		//don't return more than the maximum alternative route goals
-		if( numaltroutegoals >= maxaltroutegoals )
+		if ( numaltroutegoals >= maxaltroutegoals )
 		{
 			break;
 		}
@@ -331,14 +331,14 @@ void AAS_InitAlternativeRouting( void )
 {
 #ifdef ENABLE_ALTROUTING
 
-	if( midrangeareas )
+	if ( midrangeareas )
 	{
 		FreeMemory( midrangeareas );
 	}
 
 	midrangeareas = ( midrangearea_t * ) GetMemory( ( *aasworld ).numareas * sizeof( midrangearea_t ) );
 
-	if( clusterareas )
+	if ( clusterareas )
 	{
 		FreeMemory( clusterareas );
 	}
@@ -357,14 +357,14 @@ void AAS_ShutdownAlternativeRouting( void )
 {
 #ifdef ENABLE_ALTROUTING
 
-	if( midrangeareas )
+	if ( midrangeareas )
 	{
 		FreeMemory( midrangeareas );
 	}
 
 	midrangeareas = NULL;
 
-	if( clusterareas )
+	if ( clusterareas )
 	{
 		FreeMemory( clusterareas );
 	}

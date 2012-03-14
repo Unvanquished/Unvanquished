@@ -43,12 +43,12 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace )
 	dot = DotProduct( velocity, trace->plane.normal );
 	VectorMA( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
 
-	if( ent->s.eFlags & EF_BOUNCE_HALF )
+	if ( ent->s.eFlags & EF_BOUNCE_HALF )
 	{
 		VectorScale( ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta );
 
 		// check for stop
-		if( trace->plane.normal[ 2 ] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 )
+		if ( trace->plane.normal[ 2 ] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 )
 		{
 			G_SetOrigin( ent, trace->endpos );
 			return;
@@ -83,8 +83,8 @@ void G_ExplodeMissile( gentity_t *ent )
 	ent->s.eType = ET_GENERAL;
 
 	//TA: tired... can't be fucked... hack
-	if( ent->s.weapon != WP_LOCKBLOB_LAUNCHER &&
-	    ent->s.weapon != WP_FLAMER )
+	if ( ent->s.weapon != WP_LOCKBLOB_LAUNCHER &&
+	     ent->s.weapon != WP_FLAMER )
 	{
 		G_AddEvent( ent, EV_MISSILE_MISS, DirToByte( dir ) );
 	}
@@ -92,7 +92,7 @@ void G_ExplodeMissile( gentity_t *ent )
 	ent->freeAfterEvent = qtrue;
 
 	// splash damage
-	if( ent->splashDamage )
+	if ( ent->splashDamage )
 	{
 		G_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage,
 		                ent->splashRadius, ent, ent->splashMethodOfDeath );
@@ -119,13 +119,13 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	attacker = &g_entities[ ent->r.ownerNum ];
 
 	// check for bounce
-	if( !other->takedamage &&
-	    ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) )
+	if ( !other->takedamage &&
+	     ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) )
 	{
 		G_BounceMissile( ent, trace );
 
 		//only play a sound if requested
-		if( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
+		if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
 		{
 			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
 		}
@@ -133,22 +133,22 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		return;
 	}
 
-	if( !strcmp( ent->classname, "grenade" ) )
+	if ( !strcmp( ent->classname, "grenade" ) )
 	{
 		//grenade doesn't explode on impact
 		G_BounceMissile( ent, trace );
 
 		//only play a sound if requested
-		if( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
+		if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
 		{
 			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
 		}
 
 		return;
 	}
-	else if( !strcmp( ent->classname, "lockblob" ) )
+	else if ( !strcmp( ent->classname, "lockblob" ) )
 	{
-		if( other->client && other->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS )
+		if ( other->client && other->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
 			other->client->lastLockTime = level.time;
@@ -156,9 +156,9 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			other->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
 		}
 	}
-	else if( !strcmp( ent->classname, "slowblob" ) )
+	else if ( !strcmp( ent->classname, "slowblob" ) )
 	{
-		if( other->client && other->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS )
+		if ( other->client && other->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
 			other->client->lastSlowTime = level.time;
@@ -166,11 +166,11 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			other->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
 		}
 	}
-	else if( !strcmp( ent->classname, "hive" ) )
+	else if ( !strcmp( ent->classname, "hive" ) )
 	{
-		if( other->s.eType == ET_BUILDABLE && other->s.modelindex == BA_A_HIVE )
+		if ( other->s.eType == ET_BUILDABLE && other->s.modelindex == BA_A_HIVE )
 		{
-			if( !ent->parent )
+			if ( !ent->parent )
 			{
 				G_Printf( S_COLOR_YELLOW "WARNING: hive entity has no parent in G_MissileImpact\n" );
 			}
@@ -191,7 +191,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			ent->nextthink = level.time + FRAMETIME;
 
 			//only damage humans
-			if( other->client && other->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS )
+			if ( other->client && other->client->ps.stats[ STAT_PTEAM ] == PTE_HUMANS )
 			{
 				returnAfterDamage = qtrue;
 			}
@@ -203,16 +203,16 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 
 	// impact damage
-	if( other->takedamage )
+	if ( other->takedamage )
 	{
 		// FIXME: wrong damage direction?
-		if( ent->damage )
+		if ( ent->damage )
 		{
 			vec3_t velocity;
 
 			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, velocity );
 
-			if( VectorLength( velocity ) == 0 )
+			if ( VectorLength( velocity ) == 0 )
 			{
 				velocity[ 2 ] = 1; // stepped on a grenade
 			}
@@ -222,7 +222,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		}
 	}
 
-	if( returnAfterDamage )
+	if ( returnAfterDamage )
 	{
 		return;
 	}
@@ -230,12 +230,12 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	// is it cheaper in bandwidth to just remove this ent and create a new
 	// one, rather than changing the missile into the explosion?
 
-	if( other->takedamage && other->client )
+	if ( other->takedamage && other->client )
 	{
 		G_AddEvent( ent, EV_MISSILE_HIT, DirToByte( trace->plane.normal ) );
 		ent->s.otherEntityNum = other->s.number;
 	}
-	else if( trace->surfaceFlags & SURF_METAL )
+	else if ( trace->surfaceFlags & SURF_METAL )
 	{
 		G_AddEvent( ent, EV_MISSILE_MISS_METAL, DirToByte( trace->plane.normal ) );
 	}
@@ -254,7 +254,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	G_SetOrigin( ent, trace->endpos );
 
 	// splash damage (doesn't apply to person directly hit)
-	if( ent->splashDamage )
+	if ( ent->splashDamage )
 	{
 		G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius,
 		                other, ent->splashMethodOfDeath );
@@ -284,7 +284,7 @@ void G_RunMissile( gentity_t *ent )
 	// trace a line from the previous position to the current position
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, passent, ent->clipmask );
 
-	if( tr.startsolid || tr.allsolid )
+	if ( tr.startsolid || tr.allsolid )
 	{
 		// make sure the tr.entityNum is set to the entity we're stuck in
 		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, passent, ent->clipmask );
@@ -299,13 +299,13 @@ void G_RunMissile( gentity_t *ent )
 	trap_LinkEntity( ent );
 	ent->r.contents = 0; //...encoding bbox information
 
-	if( tr.fraction != 1 )
+	if ( tr.fraction != 1 )
 	{
 		// never explode or bounce on sky
-		if( tr.surfaceFlags & SURF_NOIMPACT )
+		if ( tr.surfaceFlags & SURF_NOIMPACT )
 		{
 			// If grapple, reset owner
-			if( ent->parent && ent->parent->client && ent->parent->client->hook == ent )
+			if ( ent->parent && ent->parent->client && ent->parent->client->hook == ent )
 			{
 				ent->parent->client->hook = NULL;
 			}
@@ -316,7 +316,7 @@ void G_RunMissile( gentity_t *ent )
 
 		G_MissileImpact( ent, &tr );
 
-		if( ent->s.eType != ET_MISSILE )
+		if ( ent->s.eType != ET_MISSILE )
 		{
 			return; // exploded
 		}
@@ -478,7 +478,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir, int da
 	bolt = G_Spawn();
 	bolt->classname = "lcannon";
 
-	if( damage == LCANNON_TOTAL_CHARGE )
+	if ( damage == LCANNON_TOTAL_CHARGE )
 	{
 		bolt->nextthink = level.time;
 	}
@@ -572,7 +572,7 @@ void AHive_ReturnToHive( gentity_t *self )
 	vec3_t  dir;
 	trace_t tr;
 
-	if( !self->parent )
+	if ( !self->parent )
 	{
 		G_Printf( S_COLOR_YELLOW "WARNING: AHive_ReturnToHive called with no self->parent\n" );
 		return;
@@ -583,7 +583,7 @@ void AHive_ReturnToHive( gentity_t *self )
 	            self->parent->r.currentOrigin, self->r.ownerNum, self->clipmask );
 	trap_LinkEntity( self->parent );
 
-	if( tr.fraction < 1.0f )
+	if ( tr.fraction < 1.0f )
 	{
 		//if can't see hive then disperse
 		VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
@@ -626,9 +626,9 @@ void AHive_SearchAndDestroy( gentity_t *self )
 	            self->target_ent->r.currentOrigin, self->r.ownerNum, self->clipmask );
 
 	//if there is no LOS or the parent hive is too far away or the target is dead, return
-	if( tr.entityNum == ENTITYNUM_WORLD ||
-	    Distance( self->r.currentOrigin, self->parent->r.currentOrigin ) > ( HIVE_RANGE * 5 ) ||
-	    self->target_ent->health <= 0 )
+	if ( tr.entityNum == ENTITYNUM_WORLD ||
+	     Distance( self->r.currentOrigin, self->parent->r.currentOrigin ) > ( HIVE_RANGE * 5 ) ||
+	     self->target_ent->health <= 0 )
 	{
 		self->r.ownerNum = ENTITYNUM_WORLD;
 

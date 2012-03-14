@@ -53,9 +53,9 @@ char *findExtension( const char *fni )
 	char *fn = ( char * ) fni;
 	char *eptr = NULL;
 
-	while( *fn )
+	while ( *fn )
 	{
-		if( *fn == '.' )
+		if ( *fn == '.' )
 		{
 			eptr = fn;
 		}
@@ -72,17 +72,17 @@ static snd_codec_t *findCodec( const char *filename )
 	char        *ext = findExtension( filename );
 	snd_codec_t *codec = codecs;
 
-	if( !ext )
+	if ( !ext )
 	{
 		// No extension - auto-detect
-		while( codec )
+		while ( codec )
 		{
 			char fn[ MAX_QPATH ];
 			Q_strncpyz( fn, filename, sizeof( fn ) - 4 );
 			COM_DefaultExtension( fn, sizeof( fn ), codec->ext );
 
 			// Check it exists
-			if( FS_ReadFile( fn, NULL ) != -1 )
+			if ( FS_ReadFile( fn, NULL ) != -1 )
 			{
 				return codec;
 			}
@@ -95,9 +95,9 @@ static snd_codec_t *findCodec( const char *filename )
 		return NULL;
 	}
 
-	while( codec )
+	while ( codec )
 	{
-		if( !Q_stricmp( ext, codec->ext ) )
+		if ( !Q_stricmp( ext, codec->ext ) )
 		{
 			return codec;
 		}
@@ -138,7 +138,7 @@ void *codec_load( const char *filename, snd_info_t *info )
 
 	codec = findCodec( filename );
 
-	if( !codec )
+	if ( !codec )
 	{
 		Com_Printf( "Unknown extension for %s\n", filename );
 		return NULL;
@@ -157,7 +157,7 @@ snd_stream_t *codec_open( const char *filename )
 
 	codec = findCodec( filename );
 
-	if( !codec )
+	if ( !codec )
 	{
 		Com_Printf( "Unknown extension for %s\n", filename );
 		return NULL;
@@ -191,7 +191,7 @@ snd_stream_t *codec_util_open( const char *filename, snd_codec_t *codec )
 	// Try to open the file
 	length = FS_FOpenFileRead( filename, &hnd, qtrue );
 
-	if( !hnd )
+	if ( !hnd )
 	{
 		Com_Printf( "Can't read sound file %s\n", filename );
 		return NULL;
@@ -200,7 +200,7 @@ snd_stream_t *codec_util_open( const char *filename, snd_codec_t *codec )
 	// Allocate a stream
 	stream = calloc( 1, sizeof( snd_stream_t ) );
 
-	if( !stream )
+	if ( !stream )
 	{
 		FS_FCloseFile( hnd );
 		return NULL;

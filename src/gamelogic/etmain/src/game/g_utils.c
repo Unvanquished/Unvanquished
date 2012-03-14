@@ -63,9 +63,9 @@ void AddRemap( const char *oldShader, const char *newShader, float timeOffset )
 {
 	int i;
 
-	for( i = 0; i < remapCount; i++ )
+	for ( i = 0; i < remapCount; i++ )
 	{
-		if( Q_stricmp( oldShader, remappedShaders[ i ].oldShader ) == 0 )
+		if ( Q_stricmp( oldShader, remappedShaders[ i ].oldShader ) == 0 )
 		{
 			// found it, just update this one
 			strcpy( remappedShaders[ i ].newShader, newShader );
@@ -74,7 +74,7 @@ void AddRemap( const char *oldShader, const char *newShader, float timeOffset )
 		}
 	}
 
-	if( remapCount < MAX_SHADER_REMAPS )
+	if ( remapCount < MAX_SHADER_REMAPS )
 	{
 		strcpy( remappedShaders[ remapCount ].newShader, newShader );
 		strcpy( remappedShaders[ remapCount ].oldShader, oldShader );
@@ -91,7 +91,7 @@ const char     *BuildShaderStateConfig()
 
 	memset( buff, 0, MAX_STRING_CHARS );
 
-	for( i = 0; i < remapCount; i++ )
+	for ( i = 0; i < remapCount; i++ )
 	{
 		int i1, i2;
 
@@ -124,32 +124,32 @@ int G_FindConfigstringIndex( const char *name, int start, int max, qboolean crea
 	int  i;
 	char s[ MAX_STRING_CHARS ];
 
-	if( !name || !name[ 0 ] )
+	if ( !name || !name[ 0 ] )
 	{
 		return 0;
 	}
 
-	for( i = 1; i < max; i++ )
+	for ( i = 1; i < max; i++ )
 	{
 		trap_GetConfigstring( start + i, s, sizeof( s ) );
 
-		if( !s[ 0 ] )
+		if ( !s[ 0 ] )
 		{
 			break;
 		}
 
-		if( !strcmp( s, name ) )
+		if ( !strcmp( s, name ) )
 		{
 			return i;
 		}
 	}
 
-	if( !create )
+	if ( !create )
 	{
 		return 0;
 	}
 
-	if( i == max )
+	if ( i == max )
 	{
 		G_Error( "G_FindConfigstringIndex: overflow" );
 	}
@@ -171,25 +171,25 @@ void G_RemoveConfigstringIndex( const char *name, int start, int max )
 	int  i, j;
 	char s[ MAX_STRING_CHARS ];
 
-	if( !name || !name[ 0 ] )
+	if ( !name || !name[ 0 ] )
 	{
 		return;
 	}
 
-	for( i = 1; i < max; i++ )
+	for ( i = 1; i < max; i++ )
 	{
 		trap_GetConfigstring( start + i, s, sizeof( s ) );
 
-		if( !s[ 0 ] )
+		if ( !s[ 0 ] )
 		{
 			break;
 		}
 
-		if( strcmp( s, name ) == 0 )
+		if ( strcmp( s, name ) == 0 )
 		{
 			trap_SetConfigstring( start + i, "" );
 
-			for( j = i + 1; j < max - 1; j++ )
+			for ( j = i + 1; j < max - 1; j++ )
 			{
 				trap_GetConfigstring( start + j, s, sizeof( s ) );
 				trap_SetConfigstring( start + j, "" );
@@ -244,11 +244,11 @@ void G_TeamCommand( team_t team, char *cmd )
 {
 	int i;
 
-	for( i = 0; i < level.maxclients; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
-		if( level.clients[ i ].pers.connected == CON_CONNECTED )
+		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
-			if( level.clients[ i ].sess.sessionTeam == team )
+			if ( level.clients[ i ].sess.sessionTeam == team )
 			{
 				trap_SendServerCommand( i, va( "%s", cmd ) );
 			}
@@ -273,7 +273,7 @@ gentity_t      *G_Find( gentity_t *from, int fieldofs, const char *match )
 	char      *s;
 	gentity_t *max = &g_entities[ level.num_entities ];
 
-	if( !from )
+	if ( !from )
 	{
 		from = g_entities;
 	}
@@ -282,21 +282,21 @@ gentity_t      *G_Find( gentity_t *from, int fieldofs, const char *match )
 		from++;
 	}
 
-	for( ; from < max; from++ )
+	for ( ; from < max; from++ )
 	{
-		if( !from->inuse )
+		if ( !from->inuse )
 		{
 			continue;
 		}
 
 		s = * ( char ** )( ( byte * ) from + fieldofs );
 
-		if( !s )
+		if ( !s )
 		{
 			continue;
 		}
 
-		if( !Q_stricmp( s, match ) )
+		if ( !Q_stricmp( s, match ) )
 		{
 			return from;
 		}
@@ -315,7 +315,7 @@ gentity_t      *G_FindByTargetname( gentity_t *from, const char *match )
 	gentity_t *max = &g_entities[ level.num_entities ];
 	int       hash = BG_StringHashValue( match );
 
-	if( !from )
+	if ( !from )
 	{
 		from = g_entities;
 	}
@@ -324,14 +324,14 @@ gentity_t      *G_FindByTargetname( gentity_t *from, const char *match )
 		from++;
 	}
 
-	for( ; from < max; from++ )
+	for ( ; from < max; from++ )
 	{
-		if( !from->inuse )
+		if ( !from->inuse )
 		{
 			continue;
 		}
 
-		if( from->targetnamehash == hash && !Q_stricmp( from->targetname, match ) )
+		if ( from->targetnamehash == hash && !Q_stricmp( from->targetname, match ) )
 		{
 			return from;
 		}
@@ -345,7 +345,7 @@ gentity_t      *G_FindByTargetnameFast( gentity_t *from, const char *match, int 
 {
 	gentity_t *max = &g_entities[ level.num_entities ];
 
-	if( !from )
+	if ( !from )
 	{
 		from = g_entities;
 	}
@@ -354,14 +354,14 @@ gentity_t      *G_FindByTargetnameFast( gentity_t *from, const char *match, int 
 		from++;
 	}
 
-	for( ; from < max; from++ )
+	for ( ; from < max; from++ )
 	{
-		if( !from->inuse )
+		if ( !from->inuse )
 		{
 			continue;
 		}
 
-		if( from->targetnamehash == hash && !Q_stricmp( from->targetname, match ) )
+		if ( from->targetnamehash == hash && !Q_stricmp( from->targetname, match ) )
 		{
 			return from;
 		}
@@ -385,30 +385,30 @@ gentity_t      *G_PickTarget( char *targetname )
 	int       num_choices = 0;
 	gentity_t *choice[ MAXCHOICES ];
 
-	if( !targetname )
+	if ( !targetname )
 	{
 		//G_Printf("G_PickTarget called with NULL targetname\n");
 		return NULL;
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
 		ent = G_FindByTargetname( ent, targetname );
 
-		if( !ent )
+		if ( !ent )
 		{
 			break;
 		}
 
 		choice[ num_choices++ ] = ent;
 
-		if( num_choices == MAXCHOICES )
+		if ( num_choices == MAXCHOICES )
 		{
 			break;
 		}
 	}
 
-	if( !num_choices )
+	if ( !num_choices )
 	{
 		G_Printf( "G_PickTarget: target %s not found\n", targetname );
 		return NULL;
@@ -419,27 +419,27 @@ gentity_t      *G_PickTarget( char *targetname )
 
 qboolean G_AllowTeamsAllowed( gentity_t *ent, gentity_t *activator )
 {
-	if( ent->allowteams && activator && activator->client )
+	if ( ent->allowteams && activator && activator->client )
 	{
-		if( activator->client->sess.sessionTeam != TEAM_SPECTATOR )
+		if ( activator->client->sess.sessionTeam != TEAM_SPECTATOR )
 		{
 			int checkTeam = activator->client->sess.sessionTeam;
 
-			if( !( ent->allowteams & checkTeam ) )
+			if ( !( ent->allowteams & checkTeam ) )
 			{
-				if( ( ent->allowteams & ALLOW_DISGUISED_CVOPS ) && activator->client->ps.powerups[ PW_OPS_DISGUISED ] )
+				if ( ( ent->allowteams & ALLOW_DISGUISED_CVOPS ) && activator->client->ps.powerups[ PW_OPS_DISGUISED ] )
 				{
-					if( checkTeam == TEAM_AXIS )
+					if ( checkTeam == TEAM_AXIS )
 					{
 						checkTeam = TEAM_ALLIES;
 					}
-					else if( checkTeam == TEAM_ALLIES )
+					else if ( checkTeam == TEAM_ALLIES )
 					{
 						checkTeam = TEAM_AXIS;
 					}
 				}
 
-				if( !( ent->allowteams & checkTeam ) )
+				if ( !( ent->allowteams & checkTeam ) )
 				{
 					return qfalse;
 				}
@@ -460,7 +460,7 @@ Added to allow more checking on what uses what
 void G_UseEntity( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	// check for allowteams
-	if( !G_AllowTeamsAllowed( ent, activator ) )
+	if ( !G_AllowTeamsAllowed( ent, activator ) )
 	{
 		return;
 	}
@@ -485,12 +485,12 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator )
 	gentity_t *t;
 	int       hash;
 
-	if( !ent )
+	if ( !ent )
 	{
 		return;
 	}
 
-	if( !ent->target )
+	if ( !ent->target )
 	{
 		return;
 	}
@@ -498,15 +498,15 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator )
 	t = NULL;
 	hash = BG_StringHashValue( ent->target );
 
-	while( ( t = G_FindByTargetnameFast( t, ent->target, hash ) ) != NULL )
+	while ( ( t = G_FindByTargetnameFast( t, ent->target, hash ) ) != NULL )
 	{
-		if( t == ent )
+		if ( t == ent )
 		{
 			G_Printf( "WARNING: Entity used itself.\n" );
 		}
 		else
 		{
-			if( t->use )
+			if ( t->use )
 			{
 				//G_Printf ("ent->classname %s ent->targetname %s t->targetname %s t->s.number %d\n", ent->classname, ent->targetname, t->targetname, t->s.number);
 
@@ -517,8 +517,8 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator )
 
 				t->flags |= ( ent->flags & FL_SOFTACTIVATE ); // (SA) likewise for soft activation
 
-				if( activator &&
-				    ( ( Q_stricmp( t->classname, "func_door" ) == 0 ) || ( Q_stricmp( t->classname, "func_door_rotating" ) == 0 ) ) )
+				if ( activator &&
+				     ( ( Q_stricmp( t->classname, "func_door" ) == 0 ) || ( Q_stricmp( t->classname, "func_door_rotating" ) == 0 ) ) )
 				{
 					// check door usage rules before allowing any entity to trigger a door open
 					G_TryDoor( t, ent, activator );  // (door,other,activator)
@@ -530,7 +530,7 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator )
 			}
 		}
 
-		if( !ent->inuse )
+		if ( !ent->inuse )
 		{
 			G_Printf( "entity was removed while using targets\n" );
 			return;
@@ -621,11 +621,11 @@ void G_SetMovedir( vec3_t angles, vec3_t movedir )
 	static vec3_t VEC_DOWN = { 0, -2, 0 };
 	static vec3_t MOVEDIR_DOWN = { 0, 0, -1 };
 
-	if( VectorCompare( angles, VEC_UP ) )
+	if ( VectorCompare( angles, VEC_UP ) )
 	{
 		VectorCopy( MOVEDIR_UP, movedir );
 	}
-	else if( VectorCompare( angles, VEC_DOWN ) )
+	else if ( VectorCompare( angles, VEC_DOWN ) )
 	{
 		VectorCopy( MOVEDIR_DOWN, movedir );
 	}
@@ -665,9 +665,9 @@ int G_GentitiesAvailable()
 	int       i = 0;
 	gentity_t *e = &g_entities[ MAX_CLIENTS ];
 
-	for( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
 	{
-		if( !e->inuse )
+		if ( !e->inuse )
 		{
 			free++;
 		}
@@ -699,22 +699,22 @@ gentity_t      *G_Spawn( void )
 	e = NULL; // shut up warning
 	i = 0; // shut up warning
 
-	for( force = 0; force < 2; force++ )
+	for ( force = 0; force < 2; force++ )
 	{
 		// if we go through all entities and can't find one to free,
 		// override the normal minimum times before use
 		e = &g_entities[ MAX_CLIENTS ];
 
-		for( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
+		for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
 		{
-			if( e->inuse )
+			if ( e->inuse )
 			{
 				continue;
 			}
 
 			// the first couple seconds of server time can involve a lot of
 			// freeing and allocating, so relax the replacement policy
-			if( !force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000 )
+			if ( !force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000 )
 			{
 				continue;
 			}
@@ -724,15 +724,15 @@ gentity_t      *G_Spawn( void )
 			return e;
 		}
 
-		if( i != ENTITYNUM_MAX_NORMAL )
+		if ( i != ENTITYNUM_MAX_NORMAL )
 		{
 			break;
 		}
 	}
 
-	if( i == ENTITYNUM_MAX_NORMAL )
+	if ( i == ENTITYNUM_MAX_NORMAL )
 	{
-		for( i = 0; i < MAX_GENTITIES; i++ )
+		for ( i = 0; i < MAX_GENTITIES; i++ )
 		{
 			G_Printf( "%4i: %s\n", i, g_entities[ i ].classname );
 		}
@@ -762,9 +762,9 @@ qboolean G_EntitiesFree( void )
 
 	e = &g_entities[ MAX_CLIENTS ];
 
-	for( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
 	{
-		if( e->inuse )
+		if ( e->inuse )
 		{
 			continue;
 		}
@@ -791,14 +791,14 @@ void G_FreeEntity( gentity_t *ed )
 	Bot_Event_EntityDeleted( ed );
 #endif
 
-	if( ed->free )
+	if ( ed->free )
 	{
 		ed->free( ed );
 	}
 
 	trap_UnlinkEntity( ed );  // unlink from world
 
-	if( ed->neverFree )
+	if ( ed->neverFree )
 	{
 		return;
 	}
@@ -890,16 +890,16 @@ void G_KillBox( gentity_t *ent )
 	VectorAdd( ent->client->ps.origin, ent->r.maxs, maxs );
 	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
 
-	for( i = 0; i < num; i++ )
+	for ( i = 0; i < num; i++ )
 	{
 		hit = &g_entities[ touch[ i ] ];
 
-		if( !hit->client )
+		if ( !hit->client )
 		{
 			continue;
 		}
 
-		if( !hit->r.linked )
+		if ( !hit->r.linked )
 		{
 			// RF, inactive AI shouldn't be gibbed
 			continue;
@@ -923,7 +923,7 @@ Adds an event+parm and twiddles the event counter
 */
 void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm )
 {
-	if( !ent->client )
+	if ( !ent->client )
 	{
 		return;
 	}
@@ -942,14 +942,14 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm )
 {
 //  int     bits;
 
-	if( !event )
+	if ( !event )
 	{
 		G_Printf( "G_AddEvent: zero event added for entity %i\n", ent->s.number );
 		return;
 	}
 
 	// Ridah, use the sequential event list
-	if( ent->client )
+	if ( ent->client )
 	{
 		// NERVE - SMF - commented in - externalEvents not being handled properly in Wolf right now
 		ent->client->ps.events[ ent->client->ps.eventSequence & ( MAX_EVENTS - 1 ) ] = event;
@@ -1033,7 +1033,7 @@ void G_SetOrigin( gentity_t *ent, vec3_t origin )
 	VectorCopy( origin, ent->s.origin );  // CHRUKER: b091 - Spawnpoints not movable
 	VectorCopy( origin, ent->r.currentOrigin );
 
-	if( ent->client )
+	if ( ent->client )
 	{
 		VectorCopy( origin, ent->client->ps.origin );
 	}
@@ -1075,7 +1075,7 @@ qboolean infront( gentity_t *self, gentity_t *other )
 	dot = DotProduct( vec, forward );
 
 	// G_Printf( "other %5.2f\n",   dot);
-	if( dot > 0.0 )
+	if ( dot > 0.0 )
 	{
 		return qtrue;
 	}
@@ -1092,12 +1092,12 @@ G_ProcessTagConnect
 */
 void G_ProcessTagConnect( gentity_t *ent, qboolean clearAngles )
 {
-	if( !ent->tagName )
+	if ( !ent->tagName )
 	{
 		G_Error( "G_ProcessTagConnect: NULL ent->tagName\n" );
 	}
 
-	if( !ent->tagParent )
+	if ( !ent->tagParent )
 	{
 		G_Error( "G_ProcessTagConnect: NULL ent->tagParent\n" );
 	}
@@ -1106,7 +1106,7 @@ void G_ProcessTagConnect( gentity_t *ent, qboolean clearAngles )
 	                         MAX_TAGCONNECTS, qtrue );
 	ent->s.eFlags |= EF_TAGCONNECT;
 
-	if( ent->client )
+	if ( ent->client )
 	{
 		ent->client->ps.eFlags |= EF_TAGCONNECT;
 		ent->client->ps.eFlags &= ~EF_PRONE_MOVING;
@@ -1115,7 +1115,7 @@ void G_ProcessTagConnect( gentity_t *ent, qboolean clearAngles )
 		ent->s.eFlags &= ~EF_PRONE;
 	}
 
-	if( clearAngles )
+	if ( clearAngles )
 	{
 		// clear out the angles so it always starts out facing the tag direction
 		VectorClear( ent->s.angles );
@@ -1152,7 +1152,7 @@ int DebugLine( vec3_t start, vec3_t end, int color )
 	VectorNormalize( dir );
 	dot = DotProduct( dir, up );
 
-	if( dot > 0.99 || dot < -0.99 )
+	if ( dot > 0.99 || dot < -0.99 )
 	{
 		VectorSet( cross, 1, 0, 0 );
 	}
@@ -1180,21 +1180,21 @@ G_SetEntState
 */
 void G_SetEntState( gentity_t *ent, entState_t state )
 {
-	if( ent->entstate == state )
+	if ( ent->entstate == state )
 	{
 		G_DPrintf( "entity %i already in desired state [%i]\n", ent->s.number, state );
 		return;
 	}
 
-	switch( state )
+	switch ( state )
 	{
 		case STATE_DEFAULT:
-			if( ent->entstate == STATE_UNDERCONSTRUCTION )
+			if ( ent->entstate == STATE_UNDERCONSTRUCTION )
 			{
 				ent->clipmask = ent->realClipmask;
 				ent->r.contents = ent->realContents;
 
-				if( !ent->realNonSolidBModel )
+				if ( !ent->realNonSolidBModel )
 				{
 					ent->s.eFlags &= ~EF_NONSOLID_BMODEL;
 				}
@@ -1203,7 +1203,7 @@ void G_SetEntState( gentity_t *ent, entState_t state )
 			ent->entstate = STATE_DEFAULT;
 			ent->s.powerups = STATE_DEFAULT;
 
-			if( ent->s.eType == ET_WOLF_OBJECTIVE )
+			if ( ent->s.eType == ET_WOLF_OBJECTIVE )
 			{
 				char cs[ MAX_STRING_CHARS ];
 
@@ -1213,7 +1213,7 @@ void G_SetEntState( gentity_t *ent, entState_t state )
 				trap_SetConfigstring( ent->count, cs );
 			}
 
-			if( ent->s.eType != ET_COMMANDMAP_MARKER )
+			if ( ent->s.eType != ET_COMMANDMAP_MARKER )
 			{
 				trap_LinkEntity( ent );
 			}
@@ -1226,34 +1226,34 @@ void G_SetEntState( gentity_t *ent, entState_t state )
 
 				listedEntities = trap_EntitiesInBox( ent->r.absmin, ent->r.absmax, entityList, MAX_GENTITIES );
 
-				for( e = 0; e < listedEntities; e++ )
+				for ( e = 0; e < listedEntities; e++ )
 				{
 					check = &g_entities[ entityList[ e ] ];
 
 					// ignore everything but items, players and missiles (grenades too)
-					if( check->s.eType != ET_MISSILE && check->s.eType != ET_ITEM && check->s.eType != ET_PLAYER &&
-					    !check->physicsObject )
+					if ( check->s.eType != ET_MISSILE && check->s.eType != ET_ITEM && check->s.eType != ET_PLAYER &&
+					     !check->physicsObject )
 					{
 						continue;
 					}
 
-					if( ( block = G_TestEntityPosition( check ) ) == NULL )
+					if ( ( block = G_TestEntityPosition( check ) ) == NULL )
 					{
 						continue;
 					}
 
-					if( block != ent )
+					if ( block != ent )
 					{
 						// the entity is blocked by another entity - that block this should take care of this itself
 						continue;
 					}
 
-					if( check->client || check->s.eType == ET_CORPSE )
+					if ( check->client || check->s.eType == ET_CORPSE )
 					{
 						// gibs anything player like
 						G_Damage( check, ent, ent, NULL, NULL, 9999, DAMAGE_NO_PROTECTION, MOD_CRUSH_CONSTRUCTIONDEATH_NOATTACKER );
 					}
-					else if( check->s.eType == ET_ITEM && check->item->giType == IT_TEAM )
+					else if ( check->s.eType == ET_ITEM && check->item->giType == IT_TEAM )
 					{
 						// see if it's a critical entity, one that we can't just simply kill (basically flags)
 						Team_DroppedFlagThink( check );
@@ -1261,16 +1261,16 @@ void G_SetEntState( gentity_t *ent, entState_t state )
 					else
 					{
 						// remove the landmine from both teamlists
-						if( check->s.eType == ET_MISSILE && check->methodOfDeath == MOD_LANDMINE )
+						if ( check->s.eType == ET_MISSILE && check->methodOfDeath == MOD_LANDMINE )
 						{
 							mapEntityData_t *mEnt;
 
-							if( ( mEnt = G_FindMapEntityData( &mapEntityData[ 0 ], check - g_entities ) ) != NULL )
+							if ( ( mEnt = G_FindMapEntityData( &mapEntityData[ 0 ], check - g_entities ) ) != NULL )
 							{
 								G_FreeMapEntityData( &mapEntityData[ 0 ], mEnt );
 							}
 
-							if( ( mEnt = G_FindMapEntityData( &mapEntityData[ 1 ], check - g_entities ) ) != NULL )
+							if ( ( mEnt = G_FindMapEntityData( &mapEntityData[ 1 ], check - g_entities ) ) != NULL )
 							{
 								G_FreeMapEntityData( &mapEntityData[ 1 ], mEnt );
 							}
@@ -1290,7 +1290,7 @@ void G_SetEntState( gentity_t *ent, entState_t state )
 			ent->s.powerups = STATE_UNDERCONSTRUCTION;
 			ent->realClipmask = ent->clipmask;
 
-			if( ent->s.eType != ET_CONSTRUCTIBLE )
+			if ( ent->s.eType != ET_CONSTRUCTIBLE )
 			{
 				// don't make nonsolid as we want to make them partially solid for staged construction
 				ent->clipmask = 0;
@@ -1298,36 +1298,36 @@ void G_SetEntState( gentity_t *ent, entState_t state )
 
 			ent->realContents = ent->r.contents;
 
-			if( ent->s.eType != ET_CONSTRUCTIBLE )
+			if ( ent->s.eType != ET_CONSTRUCTIBLE )
 			{
 				ent->r.contents = 0;
 			}
 
-			if( ent->s.eFlags & EF_NONSOLID_BMODEL )
+			if ( ent->s.eFlags & EF_NONSOLID_BMODEL )
 			{
 				ent->realNonSolidBModel = qtrue;
 			}
-			else if( ent->s.eType != ET_CONSTRUCTIBLE )
+			else if ( ent->s.eType != ET_CONSTRUCTIBLE )
 			{
 				ent->s.eFlags |= EF_NONSOLID_BMODEL;
 			}
 
-			if( !Q_stricmp( ent->classname, "misc_mg42" ) )
+			if ( !Q_stricmp( ent->classname, "misc_mg42" ) )
 			{
 				// stop using the mg42
 				mg42_stopusing( ent );
 			}
 
-			if( ent->s.eType == ET_COMMANDMAP_MARKER )
+			if ( ent->s.eType == ET_COMMANDMAP_MARKER )
 			{
 				mapEntityData_t *mEnt;
 
-				if( ( mEnt = G_FindMapEntityData( &mapEntityData[ 0 ], ent - g_entities ) ) != NULL )
+				if ( ( mEnt = G_FindMapEntityData( &mapEntityData[ 0 ], ent - g_entities ) ) != NULL )
 				{
 					G_FreeMapEntityData( &mapEntityData[ 0 ], mEnt );
 				}
 
-				if( ( mEnt = G_FindMapEntityData( &mapEntityData[ 1 ], ent - g_entities ) ) != NULL )
+				if ( ( mEnt = G_FindMapEntityData( &mapEntityData[ 1 ], ent - g_entities ) ) != NULL )
 				{
 					G_FreeMapEntityData( &mapEntityData[ 1 ], mEnt );
 				}
@@ -1337,12 +1337,12 @@ void G_SetEntState( gentity_t *ent, entState_t state )
 			break;
 
 		case STATE_INVISIBLE:
-			if( ent->entstate == STATE_UNDERCONSTRUCTION )
+			if ( ent->entstate == STATE_UNDERCONSTRUCTION )
 			{
 				ent->clipmask = ent->realClipmask;
 				ent->r.contents = ent->realContents;
 
-				if( !ent->realNonSolidBModel )
+				if ( !ent->realNonSolidBModel )
 				{
 					ent->s.eFlags &= ~EF_NONSOLID_BMODEL;
 				}
@@ -1351,11 +1351,11 @@ void G_SetEntState( gentity_t *ent, entState_t state )
 			ent->entstate = STATE_INVISIBLE;
 			ent->s.powerups = STATE_INVISIBLE;
 
-			if( !Q_stricmp( ent->classname, "misc_mg42" ) )
+			if ( !Q_stricmp( ent->classname, "misc_mg42" ) )
 			{
 				mg42_stopusing( ent );
 			}
-			else if( ent->s.eType == ET_WOLF_OBJECTIVE )
+			else if ( ent->s.eType == ET_WOLF_OBJECTIVE )
 			{
 				char cs[ MAX_STRING_CHARS ];
 
@@ -1365,16 +1365,16 @@ void G_SetEntState( gentity_t *ent, entState_t state )
 				trap_SetConfigstring( ent->count, cs );
 			}
 
-			if( ent->s.eType == ET_COMMANDMAP_MARKER )
+			if ( ent->s.eType == ET_COMMANDMAP_MARKER )
 			{
 				mapEntityData_t *mEnt;
 
-				if( ( mEnt = G_FindMapEntityData( &mapEntityData[ 0 ], ent - g_entities ) ) != NULL )
+				if ( ( mEnt = G_FindMapEntityData( &mapEntityData[ 0 ], ent - g_entities ) ) != NULL )
 				{
 					G_FreeMapEntityData( &mapEntityData[ 0 ], mEnt );
 				}
 
-				if( ( mEnt = G_FindMapEntityData( &mapEntityData[ 1 ], ent - g_entities ) ) != NULL )
+				if ( ( mEnt = G_FindMapEntityData( &mapEntityData[ 1 ], ent - g_entities ) ) != NULL )
 				{
 					G_FreeMapEntityData( &mapEntityData[ 1 ], mEnt );
 				}
@@ -1394,62 +1394,62 @@ static qboolean G_LoadCampaignsFromFile( const char *filename )
 
 	handle = trap_PC_LoadSource( filename );
 
-	if( !handle )
+	if ( !handle )
 	{
 		G_Printf( S_COLOR_RED "file not found: %s\n", filename );
 		return qfalse;
 	}
 
-	if( !trap_PC_ReadToken( handle, &token ) )
+	if ( !trap_PC_ReadToken( handle, &token ) )
 	{
 		trap_PC_FreeSource( handle );
 		return qfalse;
 	}
 
-	if( *token.string != '{' )
+	if ( *token.string != '{' )
 	{
 		trap_PC_FreeSource( handle );
 		return qfalse;
 	}
 
-	while( trap_PC_ReadToken( handle, &token ) )
+	while ( trap_PC_ReadToken( handle, &token ) )
 	{
-		if( *token.string == '}' )
+		if ( *token.string == '}' )
 		{
 			level.campaignCount++;
 
 			// zinx - can't handle any more.
-			if( level.campaignCount >= MAX_CAMPAIGNS )
+			if ( level.campaignCount >= MAX_CAMPAIGNS )
 			{
 				break;
 			}
 
-			if( !trap_PC_ReadToken( handle, &token ) )
+			if ( !trap_PC_ReadToken( handle, &token ) )
 			{
 				// eof
 				trap_PC_FreeSource( handle );
 				break;
 			}
 
-			if( *token.string != '{' )
+			if ( *token.string != '{' )
 			{
 				G_Printf( S_COLOR_RED "unexpected token '%s' inside: %s\n", token.string, filename );
 				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 		}
-		else if( !Q_stricmp( token.string, "name" ) || !Q_stricmp( token.string, "description" ) || !Q_stricmp( token.string, "image" ) )
+		else if ( !Q_stricmp( token.string, "name" ) || !Q_stricmp( token.string, "description" ) || !Q_stricmp( token.string, "image" ) )
 		{
-			if( ( s = PC_String_Parse( handle ) ) == NULL )
+			if ( ( s = PC_String_Parse( handle ) ) == NULL )
 			{
 				G_Printf( S_COLOR_RED "unexpected end of file inside: %s\n", filename );
 				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 		}
-		else if( !Q_stricmp( token.string, "shortname" ) )
+		else if ( !Q_stricmp( token.string, "shortname" ) )
 		{
-			if( ( s = PC_String_Parse( handle ) ) == NULL )
+			if ( ( s = PC_String_Parse( handle ) ) == NULL )
 			{
 				G_Printf( S_COLOR_RED "unexpected end of file inside: %s\n", filename );
 				trap_PC_FreeSource( handle );
@@ -1460,9 +1460,9 @@ static qboolean G_LoadCampaignsFromFile( const char *filename )
 				Q_strncpyz( g_campaigns[ level.campaignCount ].shortname, s, sizeof( g_campaigns[ level.campaignCount ].shortname ) );
 			}
 		}
-		else if( !Q_stricmp( token.string, "next" ) )
+		else if ( !Q_stricmp( token.string, "next" ) )
 		{
-			if( ( s = PC_String_Parse( handle ) ) == NULL )
+			if ( ( s = PC_String_Parse( handle ) ) == NULL )
 			{
 				G_Printf( S_COLOR_RED "unexpected end of file inside: %s\n", filename );
 				trap_PC_FreeSource( handle );
@@ -1473,45 +1473,45 @@ static qboolean G_LoadCampaignsFromFile( const char *filename )
 				Q_strncpyz( g_campaigns[ level.campaignCount ].shortname, s, sizeof( g_campaigns[ level.campaignCount ].next ) );
 			}
 		}
-		else if( !Q_stricmp( token.string, "type" ) )
+		else if ( !Q_stricmp( token.string, "type" ) )
 		{
-			if( !trap_PC_ReadToken( handle, &token ) )
+			if ( !trap_PC_ReadToken( handle, &token ) )
 			{
 				G_Printf( S_COLOR_RED "unexpected end of file inside: %s\n", filename );
 				trap_PC_FreeSource( handle );
 				return qfalse;
 			}
 
-			if( strstr( token.string, "wolfsp" ) )
+			if ( strstr( token.string, "wolfsp" ) )
 			{
 				g_campaigns[ level.campaignCount ].typeBits |= ( 1 << GT_SINGLE_PLAYER );
 			}
 
-			if( strstr( token.string, "wolfcoop" ) )
+			if ( strstr( token.string, "wolfcoop" ) )
 			{
 				g_campaigns[ level.campaignCount ].typeBits |= ( 1 << GT_COOP );
 			}
 
-			if( strstr( token.string, "wolfmp" ) )
+			if ( strstr( token.string, "wolfmp" ) )
 			{
 				g_campaigns[ level.campaignCount ].typeBits |= ( 1 << GT_WOLF );
 			}
 
-			if( strstr( token.string, "wolfsw" ) )
+			if ( strstr( token.string, "wolfsw" ) )
 			{
 				g_campaigns[ level.campaignCount ].typeBits |= ( 1 << GT_WOLF_STOPWATCH );
 			}
 
-			if( strstr( token.string, "wolflms" ) )
+			if ( strstr( token.string, "wolflms" ) )
 			{
 				g_campaigns[ level.campaignCount ].typeBits |= ( 1 << GT_WOLF_LMS );
 			}
 		}
-		else if( !Q_stricmp( token.string, "maps" ) )
+		else if ( !Q_stricmp( token.string, "maps" ) )
 		{
 			char *ptr, mapname[ 128 ], *mapnamePtr;
 
-			if( !trap_PC_ReadToken( handle, &token ) )
+			if ( !trap_PC_ReadToken( handle, &token ) )
 			{
 				G_Printf( S_COLOR_RED "unexpected end of file inside: %s\n", filename );
 				trap_PC_FreeSource( handle );
@@ -1520,29 +1520,29 @@ static qboolean G_LoadCampaignsFromFile( const char *filename )
 
 			ptr = token.string;
 
-			while( *ptr )
+			while ( *ptr )
 			{
 				mapnamePtr = mapname;
 
-				while( *ptr && *ptr != ';' )
+				while ( *ptr && *ptr != ';' )
 				{
 					*mapnamePtr++ = *ptr++;
 				}
 
-				if( *ptr )
+				if ( *ptr )
 				{
 					ptr++;
 				}
 
 				*mapnamePtr = '\0';
 
-				if( g_gametype.integer == GT_WOLF_CAMPAIGN )
+				if ( g_gametype.integer == GT_WOLF_CAMPAIGN )
 				{
-					if( !mapFound &&
-					    !Q_stricmp( g_campaigns[ level.campaignCount ].shortname, g_currentCampaign.string ) &&
-					    !Q_stricmp( mapname, level.rawmapname ) )
+					if ( !mapFound &&
+					     !Q_stricmp( g_campaigns[ level.campaignCount ].shortname, g_currentCampaign.string ) &&
+					     !Q_stricmp( mapname, level.rawmapname ) )
 					{
-						if( g_currentCampaignMap.integer == 0 )
+						if ( g_currentCampaignMap.integer == 0 )
 						{
 							level.newCampaign = qtrue;
 						}
@@ -1551,7 +1551,7 @@ static qboolean G_LoadCampaignsFromFile( const char *filename )
 							level.newCampaign = qfalse;
 						}
 
-						if( g_campaigns[ level.campaignCount ].mapCount == g_currentCampaignMap.integer )
+						if ( g_campaigns[ level.campaignCount ].mapCount == g_currentCampaignMap.integer )
 						{
 							g_campaigns[ level.campaignCount ].current = g_campaigns[ level.campaignCount ].mapCount;
 							mapFound = qtrue;
@@ -1563,7 +1563,7 @@ static qboolean G_LoadCampaignsFromFile( const char *filename )
 				}
 
 				// rain - don't stomp out of bounds
-				if( g_campaigns[ level.campaignCount ].mapCount < MAX_MAPS_PER_CAMPAIGN )
+				if ( g_campaigns[ level.campaignCount ].mapCount < MAX_MAPS_PER_CAMPAIGN )
 				{
 					Q_strncpyz( g_campaigns[ level.campaignCount ].mapnames[ g_campaigns[ level.campaignCount ].mapCount ], mapname,
 					            MAX_QPATH );
@@ -1596,9 +1596,9 @@ qboolean G_MapIsValidCampaignStartMap( void )
 {
 	int i;
 
-	for( i = 0; i < level.campaignCount; i++ )
+	for ( i = 0; i < level.campaignCount; i++ )
 	{
-		if( !Q_stricmp( g_campaigns[ i ].mapnames[ 0 ], level.rawmapname ) )
+		if ( !Q_stricmp( g_campaigns[ i ].mapnames[ 0 ], level.rawmapname ) )
 		{
 			return qtrue;
 		}
@@ -1625,30 +1625,30 @@ void G_ParseCampaigns( void )
 	numdirs = trap_FS_GetFileList( "scripts", ".campaign", dirlist, 1024 );
 	dirptr = dirlist;
 
-	for( i = 0; i < numdirs && level.campaignCount < MAX_CAMPAIGNS; i++, dirptr += dirlen + 1 )
+	for ( i = 0; i < numdirs && level.campaignCount < MAX_CAMPAIGNS; i++, dirptr += dirlen + 1 )
 	{
 		dirlen = strlen( dirptr );
 		strcpy( filename, "scripts/" );
 		strcat( filename, dirptr );
 
-		if( G_LoadCampaignsFromFile( filename ) )
+		if ( G_LoadCampaignsFromFile( filename ) )
 		{
 			mapFound = qtrue;
 		}
 	}
 
-	if( g_gametype.integer != GT_WOLF_CAMPAIGN )
+	if ( g_gametype.integer != GT_WOLF_CAMPAIGN )
 	{
 		trap_Cvar_Set( "g_oldCampaign", "" );
 		trap_Cvar_Set( "g_currentCampaign", "" );
 		trap_Cvar_Set( "g_currentCampaignMap", "0" );
 	}
-	else if( !mapFound )
+	else if ( !mapFound )
 	{
 		// map isn't found in the current campaign, see if it's the first map in another campaign
-		for( i = 0; i < level.campaignCount; i++ )
+		for ( i = 0; i < level.campaignCount; i++ )
 		{
-			if( !Q_stricmp( g_campaigns[ i ].mapnames[ 0 ], level.rawmapname ) )
+			if ( !Q_stricmp( g_campaigns[ i ].mapnames[ 0 ], level.rawmapname ) )
 			{
 				// someone manually specified a /map command, and it's the first map in a campaign
 				trap_Cvar_Set( "g_oldCampaign", g_currentCampaign.string );
@@ -1664,11 +1664,11 @@ void G_ParseCampaigns( void )
 			}
 		}
 
-		if( i == level.campaignCount )
+		if ( i == level.campaignCount )
 		{
 			char buf[ MAX_STRING_CHARS ]; // fretn
 
-			if( trap_Argc() < 1 )
+			if ( trap_Argc() < 1 )
 			{
 				// command not found, throw error
 				G_Error( "Usage 'map <mapname>\n'" );
@@ -1676,7 +1676,7 @@ void G_ParseCampaigns( void )
 
 			trap_Argv( 0, buf, sizeof( buf ) );
 
-			if( !buf[ 0 ] )
+			if ( !buf[ 0 ] )
 			{
 				// command not found, throw error
 				G_Error( "Usage 'map <mapname>\n'" );
@@ -1692,12 +1692,12 @@ void G_ParseCampaigns( void )
 
 void G_PrintClientSpammyCenterPrint( int entityNum, char *text )
 {
-	if( !g_entities[ entityNum ].client )
+	if ( !g_entities[ entityNum ].client )
 	{
 		return;
 	}
 
-	if( level.time - g_entities[ entityNum ].client->lastSpammyCentrePrintTime < 1000 )
+	if ( level.time - g_entities[ entityNum ].client->lastSpammyCentrePrintTime < 1000 )
 	{
 		return;
 	}
@@ -1708,10 +1708,10 @@ void G_PrintClientSpammyCenterPrint( int entityNum, char *text )
 
 team_t G_GetTeamFromEntity( gentity_t *ent )
 {
-	switch( ent->s.eType )
+	switch ( ent->s.eType )
 	{
 		case ET_PLAYER:
-			if( ent->client )
+			if ( ent->client )
 			{
 				return ( ent->client->sess.sessionTeam );
 			}
@@ -1724,7 +1724,7 @@ team_t G_GetTeamFromEntity( gentity_t *ent )
 
 		case ET_MISSILE:
 		case ET_GENERAL:
-			switch( ent->methodOfDeath )
+			switch ( ent->methodOfDeath )
 			{
 				case MOD_GRENADE_LAUNCHER:
 				case MOD_GRENADE_PINEAPPLE:
@@ -1746,7 +1746,7 @@ team_t G_GetTeamFromEntity( gentity_t *ent )
 			break;
 
 		case ET_MOVER:
-			if( !Q_stricmp( ent->classname, "script_mover" ) )
+			if ( !Q_stricmp( ent->classname, "script_mover" ) )
 			{
 				return ent->s.teamNum;
 			}

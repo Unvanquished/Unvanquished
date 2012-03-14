@@ -75,15 +75,15 @@ static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL SndPrintf( int pri
 	Q_vsnprintf( msg, sizeof( msg ), fmt, argptr );
 	va_end( argptr );
 
-	if( print_level == PRINT_ALL )
+	if ( print_level == PRINT_ALL )
 	{
 		Com_Printf( "%s", msg );
 	}
-	else if( print_level == PRINT_WARNING )
+	else if ( print_level == PRINT_WARNING )
 	{
 		Com_Printf( S_COLOR_YELLOW "%s", msg );  // yellow
 	}
-	else if( print_level == PRINT_DEVELOPER )
+	else if ( print_level == PRINT_DEVELOPER )
 	{
 		Com_DPrintf( S_COLOR_RED "%s", msg );  // red
 	}
@@ -120,7 +120,7 @@ static qboolean S_InitModule()
 	Com_Printf( "using sound module %s\n", s_module->string );
 	sprintf( fn, "%s/snd_%s" DLL_EXT, Sys_Cwd(), s_module->string );
 
-	if( ( libhandle = OBJLOAD( fn ) ) == 0 )
+	if ( ( libhandle = OBJLOAD( fn ) ) == 0 )
 	{
 		Com_Printf( "can't load sound module - bailing\n" );
 		Com_Printf( "------------------------------------\n" );
@@ -129,7 +129,7 @@ static qboolean S_InitModule()
 
 	getapi = SYMLOAD( libhandle, "GetSndAPI" );
 
-	if( !getapi )
+	if ( !getapi )
 	{
 		OBJFREE( libhandle );
 		libhandle = NULL;
@@ -179,7 +179,7 @@ static qboolean S_InitModule()
 
 	se = getapi( SND_API_VERSION, &si );
 
-	if( !se )
+	if ( !se )
 	{
 		OBJFREE( libhandle );
 		libhandle = NULL;
@@ -188,7 +188,7 @@ static qboolean S_InitModule()
 		return qfalse;
 	}
 
-	if( !se->Init() )
+	if ( !se->Init() )
 	{
 		OBJFREE( libhandle );
 		libhandle = NULL;
@@ -211,7 +211,7 @@ void S_Init( void )
 
 	cv = Cvar_Get( "s_initsound", "1", 0 );
 
-	if( !cv->integer )
+	if ( !cv->integer )
 	{
 		Com_Printf( "not initializing.\n" );
 		Com_Printf( "------------------------------------\n" );
@@ -223,7 +223,7 @@ void S_Init( void )
 #ifdef USE_DYNAMIC
 	cv = Cvar_Get( "s_usemodule", "1", CVAR_ARCHIVE );
 
-	if( !cv->integer )
+	if ( !cv->integer )
 	{
 		useBuiltin = qtrue;
 	}
@@ -231,13 +231,13 @@ void S_Init( void )
 	{
 		useBuiltin = qfalse;
 
-		if( !S_InitModule() )
+		if ( !S_InitModule() )
 		{
 			useBuiltin = qtrue;
 		}
 	}
 
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		Com_Printf( "using builtin sound system\n" );
 		SOrig_Init();
@@ -253,11 +253,11 @@ void S_Init( void )
 
 void S_Shutdown( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_Shutdown();
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->Shutdown();
 		OBJFREE( libhandle );
@@ -270,11 +270,11 @@ void S_Shutdown( void )
 
 void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_StartSound( origin, entnum, entchannel, sfx );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->StartSound( origin, entnum, entchannel, sfx );
 	}
@@ -282,11 +282,11 @@ void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
 
 void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_StartSound( origin, entnum, entchannel, sfx );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->StartSound( origin, entnum, entchannel, sfx );
 	}
@@ -294,11 +294,11 @@ void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx 
 
 void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_StartLocalSound( sfx, channelNum );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->StartLocalSound( sfx, channelNum );
 	}
@@ -306,11 +306,11 @@ void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 
 void S_StartBackgroundTrack( const char *intro, const char *loop )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_StartBackgroundTrack( intro, loop );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->StartBackgroundTrack( intro, loop );
 	}
@@ -318,11 +318,11 @@ void S_StartBackgroundTrack( const char *intro, const char *loop )
 
 void S_StopBackgroundTrack( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_StopBackgroundTrack();
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->StopBackgroundTrack();
 	}
@@ -331,11 +331,11 @@ void S_StopBackgroundTrack( void )
 void S_RawSamples( int stream, int samples, int rate, int width, int channels,
                    const byte *data, float volume, int entityNum )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_RawSamples( stream, samples, rate, width, channels, data, volume, entityNum );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->RawSamples( stream, samples, rate, width, channels, data, volume, entityNum );
 	}
@@ -343,11 +343,11 @@ void S_RawSamples( int stream, int samples, int rate, int width, int channels,
 
 void S_StopAllSounds( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_StopAllSounds();
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->StopAllSounds();
 	}
@@ -355,11 +355,11 @@ void S_StopAllSounds( void )
 
 void S_ClearLoopingSounds( qboolean killall )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_ClearLoopingSounds( killall );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->ClearLoopingSounds( killall );
 	}
@@ -367,11 +367,11 @@ void S_ClearLoopingSounds( qboolean killall )
 
 void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_AddLoopingSound( entityNum, origin, velocity, sfx );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->AddLoopingSound( entityNum, origin, velocity, sfx );
 	}
@@ -379,11 +379,11 @@ void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocit
 
 void S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_AddRealLoopingSound( entityNum, origin, velocity, sfx );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->AddRealLoopingSound( entityNum, origin, velocity, sfx );
 	}
@@ -391,11 +391,11 @@ void S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t vel
 
 void S_StopLoopingSound( int entityNum )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_StopLoopingSound( entityNum );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->StopLoopingSound( entityNum );
 	}
@@ -403,11 +403,11 @@ void S_StopLoopingSound( int entityNum )
 
 void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_Respatialize( entityNum, origin, axis, inwater );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->Respatialize( entityNum, origin, axis, inwater );
 	}
@@ -415,11 +415,11 @@ void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int i
 
 void S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_UpdateEntityPosition( entityNum, origin );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->UpdateEntityPosition( entityNum, origin );
 	}
@@ -427,11 +427,11 @@ void S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 
 void S_Update( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_Update();
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->Update();
 	}
@@ -439,11 +439,11 @@ void S_Update( void )
 
 void S_DisableSounds( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_DisableSounds();
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->DisableSounds();
 	}
@@ -451,11 +451,11 @@ void S_DisableSounds( void )
 
 void S_BeginRegistration( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_BeginRegistration();
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->BeginRegistration();
 	}
@@ -463,11 +463,11 @@ void S_BeginRegistration( void )
 
 sfxHandle_t     S_RegisterSound( const char *sample, qboolean compressed )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		return SOrig_RegisterSound( sample, compressed );
 	}
-	else if( se )
+	else if ( se )
 	{
 		return se->RegisterSound( sample, compressed );
 	}
@@ -479,11 +479,11 @@ sfxHandle_t     S_RegisterSound( const char *sample, qboolean compressed )
 
 void S_ClearSoundBuffer( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_ClearSoundBuffer();
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->ClearSoundBuffer();
 	}
@@ -496,11 +496,11 @@ S_SoundDuration
 */
 int S_SoundDuration( sfxHandle_t handle )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		return SOrig_SoundDuration( handle );
 	}
-	else if( se )
+	else if ( se )
 	{
 		return se->SoundDuration( handle );
 	}
@@ -517,11 +517,11 @@ S_GetVoiceAmplitude
 */
 int S_GetVoiceAmplitude( int entnum )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		return SOrig_GetVoiceAmplitude( entnum );
 	}
-	else if( se )
+	else if ( se )
 	{
 		return se->GetVoiceAmplitude( entnum );
 	}
@@ -538,11 +538,11 @@ S_GetSoundLength
 */
 int S_GetSoundLength( sfxHandle_t sfxHandle )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		return SOrig_GetSoundLength( sfxHandle );
 	}
-	else if( se )
+	else if ( se )
 	{
 		return se->GetSoundLength( sfxHandle );
 	}
@@ -555,11 +555,11 @@ int S_GetSoundLength( sfxHandle_t sfxHandle )
 #ifdef USE_VOIP
 void S_StartCapture( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_StartCapture();
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->StartCapture();
 	}
@@ -567,11 +567,11 @@ void S_StartCapture( void )
 
 int S_AvailableCaptureSamples( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		return SOrig_AvailableCaptureSamples();
 	}
-	else if( se )
+	else if ( se )
 	{
 		return se->AvailableCaptureSamples();
 	}
@@ -583,11 +583,11 @@ int S_AvailableCaptureSamples( void )
 
 void S_Capture( int samples, byte *data )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_Capture( samples, data );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->Capture( samples, data );
 	}
@@ -595,11 +595,11 @@ void S_Capture( int samples, byte *data )
 
 void S_StopCapture( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_StopCapture();
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->StopCapture();
 	}
@@ -607,11 +607,11 @@ void S_StopCapture( void )
 
 void S_MasterGain( float gain )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		SOrig_MasterGain( gain );
 	}
-	else if( se )
+	else if ( se )
 	{
 		se->MasterGain( gain );
 	}
@@ -626,11 +626,11 @@ S_GetCurrentSoundTime
 */
 int S_GetCurrentSoundTime( void )
 {
-	if( useBuiltin )
+	if ( useBuiltin )
 	{
 		return SOrig_GetCurrentSoundTime();
 	}
-	else if( se )
+	else if ( se )
 	{
 		return se->GetCurrentSoundTime();
 	}

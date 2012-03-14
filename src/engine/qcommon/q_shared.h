@@ -919,7 +919,7 @@ extern "C" {
 
 	static ID_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 )
 	{
-		if( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] || v1[ 3 ] != v2[ 3 ] )
+		if ( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] || v1[ 3 ] != v2[ 3 ] )
 		{
 			return 0;
 		}
@@ -948,7 +948,7 @@ extern "C" {
 		d[ 1 ] = fabs( d[ 1 ] );
 		d[ 2 ] = fabs( d[ 2 ] );
 
-		if( d[ 0 ] > epsilon || d[ 1 ] > epsilon || d[ 2 ] > epsilon )
+		if ( d[ 0 ] > epsilon || d[ 1 ] > epsilon || d[ 2 ] > epsilon )
 		{
 			return 0;
 		}
@@ -1177,7 +1177,7 @@ extern "C" {
 #if 1
 		vec_t term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
 
-		if( term < 0.0 )
+		if ( term < 0.0 )
 		{
 			q[ 3 ] = 0.0;
 		}

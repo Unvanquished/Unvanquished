@@ -38,16 +38,16 @@ void G_StoreClientPosition( gentity_t *ent )
 {
 	int top;
 
-	if( !( ent->inuse &&
-	       ( ent->client->sess.sessionTeam == TEAM_AXIS || ent->client->sess.sessionTeam == TEAM_ALLIES ) &&
-	       ent->r.linked && ( ent->health > 0 ) && !( ent->client->ps.pm_flags & PMF_LIMBO ) && ( ent->client->ps.pm_type == PM_NORMAL ) ) )
+	if ( !( ent->inuse &&
+	        ( ent->client->sess.sessionTeam == TEAM_AXIS || ent->client->sess.sessionTeam == TEAM_ALLIES ) &&
+	        ent->r.linked && ( ent->health > 0 ) && !( ent->client->ps.pm_flags & PMF_LIMBO ) && ( ent->client->ps.pm_type == PM_NORMAL ) ) )
 	{
 		return;
 	}
 
 	ent->client->topMarker++;
 
-	if( ent->client->topMarker >= MAX_CLIENT_MARKERS )
+	if ( ent->client->topMarker >= MAX_CLIENT_MARKERS )
 	{
 		ent->client->topMarker = 0;
 	}
@@ -64,7 +64,7 @@ static void G_AdjustSingleClientPosition( gentity_t *ent, int time )
 {
 	int i, j;
 
-	if( time > level.time )
+	if ( time > level.time )
 	{
 		time = level.time;
 	} // no lerping forward....
@@ -74,7 +74,7 @@ static void G_AdjustSingleClientPosition( gentity_t *ent, int time )
 
 	do
 	{
-		if( ent->client->clientMarkers[ i ].time <= time )
+		if ( ent->client->clientMarkers[ i ].time <= time )
 		{
 			break;
 		}
@@ -82,21 +82,21 @@ static void G_AdjustSingleClientPosition( gentity_t *ent, int time )
 		j = i;
 		i--;
 
-		if( i < 0 )
+		if ( i < 0 )
 		{
 			i = MAX_CLIENT_MARKERS - 1;
 		}
 	}
-	while( i != ent->client->topMarker );
+	while ( i != ent->client->topMarker );
 
-	if( i == j )
+	if ( i == j )
 	{
 		// oops, no valid stored markers
 		return;
 	}
 
 	// save current position to backup
-	if( ent->client->backupMarker.time != level.time )
+	if ( ent->client->backupMarker.time != level.time )
 	{
 		VectorCopy( ent->r.currentOrigin, ent->client->backupMarker.origin );
 		VectorCopy( ent->r.mins, ent->client->backupMarker.mins );
@@ -104,7 +104,7 @@ static void G_AdjustSingleClientPosition( gentity_t *ent, int time )
 		ent->client->backupMarker.time = level.time;
 	}
 
-	if( i != ent->client->topMarker )
+	if ( i != ent->client->topMarker )
 	{
 		float frac = ( float )( time - ent->client->clientMarkers[ i ].time ) /
 		             ( float )( ent->client->clientMarkers[ j ].time - ent->client->clientMarkers[ i ].time );
@@ -125,13 +125,13 @@ static void G_AdjustSingleClientPosition( gentity_t *ent, int time )
 
 static void G_ReAdjustSingleClientPosition( gentity_t *ent )
 {
-	if( !ent || !ent->client )
+	if ( !ent || !ent->client )
 	{
 		return;
 	}
 
 	// restore from backup
-	if( ent->client->backupMarker.time == level.time )
+	if ( ent->client->backupMarker.time == level.time )
 	{
 		VectorCopy( ent->client->backupMarker.origin, ent->r.currentOrigin );
 		VectorCopy( ent->client->backupMarker.mins, ent->r.mins );
@@ -147,19 +147,19 @@ void G_AdjustClientPositions( gentity_t *ent, int time, qboolean forward )
 	int       i;
 	gentity_t *list;
 
-	for( i = 0; i < level.numConnectedClients; i++, list++ )
+	for ( i = 0; i < level.numConnectedClients; i++, list++ )
 	{
 		list = g_entities + level.sortedClients[ i ];
 
 		// Gordon: ok lets test everything under the sun
-		if( list->client &&
-		    list->inuse &&
-		    ( list->client->sess.sessionTeam == TEAM_AXIS || list->client->sess.sessionTeam == TEAM_ALLIES ) &&
-		    ( list != ent ) &&
-		    list->r.linked &&
-		    ( list->health > 0 ) && !( list->client->ps.pm_flags & PMF_LIMBO ) && ( list->client->ps.pm_type == PM_NORMAL ) )
+		if ( list->client &&
+		     list->inuse &&
+		     ( list->client->sess.sessionTeam == TEAM_AXIS || list->client->sess.sessionTeam == TEAM_ALLIES ) &&
+		     ( list != ent ) &&
+		     list->r.linked &&
+		     ( list->health > 0 ) && !( list->client->ps.pm_flags & PMF_LIMBO ) && ( list->client->ps.pm_type == PM_NORMAL ) )
 		{
-			if( forward )
+			if ( forward )
 			{
 				G_AdjustSingleClientPosition( list, time );
 			}
@@ -181,7 +181,7 @@ void G_ResetMarkers( gentity_t *ent )
 
 	period = atoi( buffer );
 
-	if( !period )
+	if ( !period )
 	{
 		period = 50;
 	}
@@ -192,7 +192,7 @@ void G_ResetMarkers( gentity_t *ent )
 
 	ent->client->topMarker = MAX_CLIENT_MARKERS - 1;
 
-	for( i = MAX_CLIENT_MARKERS - 1, time = level.time; i >= 0; i--, time -= period )
+	for ( i = MAX_CLIENT_MARKERS - 1, time = level.time; i >= 0; i--, time -= period )
 	{
 		VectorCopy( ent->r.mins, ent->client->clientMarkers[ i ].mins );
 		VectorCopy( ent->r.maxs, ent->client->clientMarkers[ i ].maxs );
@@ -206,16 +206,16 @@ void G_AttachBodyParts( gentity_t *ent )
 	int       i;
 	gentity_t *list;
 
-	for( i = 0; i < level.numConnectedClients; i++, list++ )
+	for ( i = 0; i < level.numConnectedClients; i++, list++ )
 	{
 		list = g_entities + level.sortedClients[ i ];
 
 		// Gordon: ok lets test everything under the sun
-		if( list->inuse &&
-		    ( list->client->sess.sessionTeam == TEAM_AXIS || list->client->sess.sessionTeam == TEAM_ALLIES ) &&
-		    ( list != ent ) &&
-		    list->r.linked &&
-		    ( list->health > 0 ) && !( list->client->ps.pm_flags & PMF_LIMBO ) && ( list->client->ps.pm_type == PM_NORMAL ) )
+		if ( list->inuse &&
+		     ( list->client->sess.sessionTeam == TEAM_AXIS || list->client->sess.sessionTeam == TEAM_ALLIES ) &&
+		     ( list != ent ) &&
+		     list->r.linked &&
+		     ( list->health > 0 ) && !( list->client->ps.pm_flags & PMF_LIMBO ) && ( list->client->ps.pm_type == PM_NORMAL ) )
 		{
 			list->client->tempHead = G_BuildHead( list );
 			list->client->tempLeg = G_BuildLeg( list );
@@ -233,16 +233,16 @@ void G_DettachBodyParts()
 	int       i;
 	gentity_t *list;
 
-	for( i = 0; i < level.numConnectedClients; i++, list++ )
+	for ( i = 0; i < level.numConnectedClients; i++, list++ )
 	{
 		list = g_entities + level.sortedClients[ i ];
 
-		if( list->client->tempHead )
+		if ( list->client->tempHead )
 		{
 			G_FreeEntity( list->client->tempHead );
 		}
 
-		if( list->client->tempLeg )
+		if ( list->client->tempLeg )
 		{
 			G_FreeEntity( list->client->tempLeg );
 		}
@@ -251,12 +251,12 @@ void G_DettachBodyParts()
 
 int G_SwitchBodyPartEntity( gentity_t *ent )
 {
-	if( ent->s.eType == ET_TEMPHEAD )
+	if ( ent->s.eType == ET_TEMPHEAD )
 	{
 		return ent->parent - g_entities;
 	}
 
-	if( ent->s.eType == ET_TEMPLEGS )
+	if ( ent->s.eType == ET_TEMPLEGS )
 	{
 		return ent->parent - g_entities;
 	}
@@ -280,7 +280,7 @@ void G_HistoricalTrace( gentity_t *ent, trace_t *results, const vec3_t start, co
 	int    res;
 	vec3_t dir;
 
-	if( !g_antilag.integer || !ent->client )
+	if ( !g_antilag.integer || !ent->client )
 	{
 		G_AttachBodyParts( ent );
 

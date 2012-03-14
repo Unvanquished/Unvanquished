@@ -50,9 +50,9 @@ int D_MySQL_GetFreeQueryID( void )
 {
 	int i;
 
-	for( i = 0; i < MAX_QUERYS_RESULTS; i++ )
+	for ( i = 0; i < MAX_QUERYS_RESULTS; i++ )
 	{
-		if( !querylist[ i ].results )
+		if ( !querylist[ i ].results )
 		{
 			return i;
 		}
@@ -97,15 +97,15 @@ void D_MySQL_ConnectMaster( void )
 	connection = mysql_init( connection );
 
 	//attempt to connect to mysql
-	if( !mysql_real_connect(
-	      connection,
-	      db_addressMaster->string,
-	      db_usernameMaster->string,
-	      db_passwordMaster->string,
-	      db_databaseMaster->string,
-	      0,
-	      NULL,
-	      0 ) )
+	if ( !mysql_real_connect(
+	       connection,
+	       db_addressMaster->string,
+	       db_usernameMaster->string,
+	       db_passwordMaster->string,
+	       db_databaseMaster->string,
+	       0,
+	       NULL,
+	       0 ) )
 	{
 		Com_Printf( "WARNING: MySQL loading failed: %s.\n", mysql_error( connection ) );
 		return;
@@ -122,15 +122,15 @@ void D_MySQL_ConnectSlave( void )
 	connection = mysql_init( connection );
 
 	//attempt to connect to mysql
-	if( !mysql_real_connect(
-	      connection,
-	      db_addressSlave->string,
-	      db_usernameSlave->string,
-	      db_passwordSlave->string,
-	      db_databaseSlave->string,
-	      0,
-	      NULL,
-	      0 ) )
+	if ( !mysql_real_connect(
+	       connection,
+	       db_addressSlave->string,
+	       db_usernameSlave->string,
+	       db_passwordSlave->string,
+	       db_databaseSlave->string,
+	       0,
+	       NULL,
+	       0 ) )
 	{
 		Com_Printf( "WARNING: MySQL loading failed: %s.\n", mysql_error( connection ) );
 		return;
@@ -150,9 +150,9 @@ void D_MySQL_Disconnect( void )
 	int i;
 
 	//clear all results
-	for( i = 0; i < MAX_QUERYS_RESULTS; i++ )
+	for ( i = 0; i < MAX_QUERYS_RESULTS; i++ )
 	{
-		if( querylist[ i ].results )
+		if ( querylist[ i ].results )
 		{
 			mysql_free_result( querylist[ i ].results );
 			querylist[ i ].results = NULL;
@@ -160,7 +160,7 @@ void D_MySQL_Disconnect( void )
 		}
 	}
 
-	if( connection )
+	if ( connection )
 	{
 		mysql_close( connection );
 		connection = NULL;
@@ -178,11 +178,11 @@ int D_MySQL_RunQuery( const char *query )
 
 	queryid = D_MySQL_GetFreeQueryID();
 
-	if( queryid >= 0 )
+	if ( queryid >= 0 )
 	{
-		if( connection )
+		if ( connection )
 		{
-			if( mysql_query( connection, query ) )
+			if ( mysql_query( connection, query ) )
 			{
 				Com_Printf( "WARNING: MySQL Query failed: %s\n", mysql_error( connection ) );
 				return -1;
@@ -204,7 +204,7 @@ int D_MySQL_RunQuery( const char *query )
 
 void D_MySQL_FinishQuery( int queryid )
 {
-	if( querylist[ queryid ].results )
+	if ( querylist[ queryid ].results )
 	{
 		mysql_free_result( querylist[ queryid ].results );
 		querylist[ queryid ].results = NULL;
@@ -218,13 +218,13 @@ void D_MySQL_FinishQuery( int queryid )
 
 qboolean D_MySQL_NextRow( int queryid )
 {
-	if( querylist[ queryid ].results )
+	if ( querylist[ queryid ].results )
 	{
 		//get next row
 		querylist[ queryid ].row = mysql_fetch_row( querylist[ queryid ].results );
 
 		//if its not valid return false
-		if( !querylist[ queryid ].row )
+		if ( !querylist[ queryid ].row )
 		{
 			return qfalse;
 		}
@@ -237,7 +237,7 @@ qboolean D_MySQL_NextRow( int queryid )
 
 int D_MySQL_RowCount( int queryid )
 {
-	if( querylist[ queryid ].results )
+	if ( querylist[ queryid ].results )
 	{
 		return mysql_num_rows( querylist[ queryid ].results );
 	}
@@ -251,7 +251,7 @@ int D_MySQL_RowCount( int queryid )
 
 void D_MySQL_GetFieldByID( int queryid, int fieldid, char *buffer, int len )
 {
-	if( querylist[ queryid ].row[ fieldid ] )
+	if ( querylist[ queryid ].row[ fieldid ] )
 	{
 		Q_strncpyz( buffer, querylist[ queryid ].row[ fieldid ], len );
 	}
@@ -267,18 +267,18 @@ void D_MySQL_GetFieldByName( int queryid, const char *name, char *buffer, int le
 	int         num_fields;
 	int         i;
 
-	if( querylist[ queryid ].results )
+	if ( querylist[ queryid ].results )
 	{
 		num_fields = mysql_num_fields( querylist[ queryid ].results );
 		fields = mysql_fetch_fields( querylist[ queryid ].results );
 
 		//loop through till we find the field
-		for( i = 0; i < num_fields; i++ )
+		for ( i = 0; i < num_fields; i++ )
 		{
-			if( !strcmp( fields[ i ].name, name ) )
+			if ( !strcmp( fields[ i ].name, name ) )
 			{
 				//found check for valid data
-				if( querylist[ queryid ].row[ i ] )
+				if ( querylist[ queryid ].row[ i ] )
 				{
 					Q_strncpyz( buffer, querylist[ queryid ].row[ i ], len );
 					return;
@@ -292,7 +292,7 @@ void D_MySQL_GetFieldByName( int queryid, const char *name, char *buffer, int le
 
 int D_MySQL_GetFieldByID_int( int queryid, int fieldid )
 {
-	if( querylist[ queryid ].row[ fieldid ] )
+	if ( querylist[ queryid ].row[ fieldid ] )
 	{
 		return atoi( querylist[ queryid ].row[ fieldid ] );
 	}
@@ -311,18 +311,18 @@ int D_MySQL_GetFieldByName_int( int queryid, const char *name )
 	int         num_fields;
 	int         i;
 
-	if( querylist[ queryid ].results )
+	if ( querylist[ queryid ].results )
 	{
 		num_fields = mysql_num_fields( querylist[ queryid ].results );
 		fields = mysql_fetch_fields( querylist[ queryid ].results );
 
 		//loop through till we find the field
-		for( i = 0; i < num_fields; i++ )
+		for ( i = 0; i < num_fields; i++ )
 		{
-			if( !strcmp( fields[ i ].name, name ) )
+			if ( !strcmp( fields[ i ].name, name ) )
 			{
 				//found check for valid data
-				if( querylist[ queryid ].row[ i ] )
+				if ( querylist[ queryid ].row[ i ] )
 				{
 					return atoi( querylist[ queryid ].row[ i ] );
 				}
@@ -337,7 +337,7 @@ int D_MySQL_GetFieldByName_int( int queryid, const char *name )
 
 int D_MySQL_FieldCount( int queryid )
 {
-	if( querylist[ queryid ].results )
+	if ( querylist[ queryid ].results )
 	{
 		return mysql_num_fields( querylist[ queryid ].results );
 	}
@@ -351,7 +351,7 @@ int D_MySQL_FieldCount( int queryid )
 
 void D_MySQL_CleanString( const char *in, char *out, int len )
 {
-	if( connection && len > 0 && in[ 0 ] )
+	if ( connection && len > 0 && in[ 0 ] )
 	{
 		mysql_real_escape_string( connection, out, in, len );
 	}
@@ -363,10 +363,10 @@ void D_MySQL_CleanString( const char *in, char *out, int len )
 
 void D_MySQL_CreateTable( void )
 {
-	if( db_enable->integer == 1 )
+	if ( db_enable->integer == 1 )
 	{
 		// If it is connected to database
-		if( connection )
+		if ( connection )
 		{
 			//
 			// Userinfo table structure
@@ -374,7 +374,7 @@ void D_MySQL_CreateTable( void )
 			//
 
 			// create table user_info and fill table userinfo with some values
-			if( mysql_query( connection, "CREATE TABLE IF NOT EXISTS user_info (\
+			if ( mysql_query( connection, "CREATE TABLE IF NOT EXISTS user_info (\
 									user_id mediumint(8) unsigned NOT NULL auto_increment, \
 									clan_id mediumint(8) unsigned NOT NULL default '3', \
 									user_permissions mediumtext collate utf8_bin NOT NULL, \
@@ -429,7 +429,7 @@ void D_MySQL_CreateTable( void )
 			// Ban table structure
 			//
 
-			if( mysql_query( connection, "CREATE TABLE IF NOT EXISTS user_banlist (\
+			if ( mysql_query( connection, "CREATE TABLE IF NOT EXISTS user_banlist (\
 									ban_id mediumint(8) unsigned NOT NULL auto_increment, \
 									ban_userid mediumint(8) unsigned NOT NULL default '0', \
 									ban_ip varchar(40) collate utf8_bin NOT NULL default '', \
@@ -455,7 +455,7 @@ void D_MySQL_CreateTable( void )
 			// This is copy from ban table
 			//
 
-			if( mysql_query( connection, "CREATE TABLE IF NOT EXISTS user_mutelist (\
+			if ( mysql_query( connection, "CREATE TABLE IF NOT EXISTS user_mutelist (\
 									mute_id mediumint(8) unsigned NOT NULL auto_increment, \
 									mute_userid mediumint(8) unsigned NOT NULL default '0', \
 									mute_ip varchar(40) collate utf8_bin NOT NULL default '', \
@@ -481,7 +481,7 @@ void D_MySQL_CreateTable( void )
 			//
 
 			// create table players
-			if( mysql_query( connection, "CREATE TABLE `user_players` ( \
+			if ( mysql_query( connection, "CREATE TABLE `user_players` ( \
 									`user_guid` char(36) COLLATE utf8_bin NOT NULL, \
 									`user_permissions` mediumtext COLLATE utf8_bin, \
 									`user_ip4` varchar(15) COLLATE utf8_bin DEFAULT NULL, \
@@ -507,7 +507,7 @@ void D_MySQL_CreateTable( void )
 			// NOTE : used information from VSP Stats
 
 			// create table player_stats
-			if( mysql_query( connection, "CREATE TABLE IF NOT EXISTS player_stats (\
+			if ( mysql_query( connection, "CREATE TABLE IF NOT EXISTS player_stats (\
 									playerID varchar(100) BINARY NOT NULL default '', \
 									playerName varchar(255) NOT NULL default '', \
 									skill int(10) unsigned default '0', \
@@ -529,7 +529,7 @@ void D_MySQL_CreateTable( void )
 #ifdef USE_HUB_SERVER
 
 			// actual players from game servers we run and trust
-			if( mysql_query( connection, "CREATE TABLE IF NOT EXISTS OW_HUB_Players (\
+			if ( mysql_query( connection, "CREATE TABLE IF NOT EXISTS OW_HUB_Players (\
 									user_ip varchar(40) collate utf8_bin NOT NULL default '', \
 									user_guid varchar(33) collate utf8_bin NOT NULL default '', \
 									username varchar(255) collate utf8_bin NOT NULL default '', \
@@ -547,7 +547,7 @@ void D_MySQL_CreateTable( void )
 			}
 
 			// gossip from other hubs we keep only for reference
-			if( mysql_query( connection, "CREATE TABLE IF NOT EXISTS OW_HUB_Gossips (\
+			if ( mysql_query( connection, "CREATE TABLE IF NOT EXISTS OW_HUB_Gossips (\
 									user_ip varchar(40) collate utf8_bin NOT NULL default '', \
 									user_guid varchar(33) collate utf8_bin NOT NULL default '', \
 									username varchar(255) collate utf8_bin NOT NULL default '', \
@@ -569,7 +569,7 @@ void D_MySQL_CreateTable( void )
 			}
 
 			// actual packets from game servers we run and trust
-			if( mysql_query( connection, "CREATE TABLE IF NOT EXISTS OW_HUB_FailOver ( \
+			if ( mysql_query( connection, "CREATE TABLE IF NOT EXISTS OW_HUB_FailOver ( \
 									server int(11) unsigned NOT NULL default '0', \
 									server_port int(4) unsigned NOT NULL default '0', \
 									packet int(10) unsigned NOT NULL default '0', \

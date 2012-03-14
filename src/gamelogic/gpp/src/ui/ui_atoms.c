@@ -61,9 +61,9 @@ UI_ClampCvar
 */
 float UI_ClampCvar( float min, float max, float value )
 {
-	if( value < min ) { return min; }
+	if ( value < min ) { return min; }
 
-	if( value > max ) { return max; }
+	if ( value > max ) { return max; }
 
 	return value;
 }
@@ -92,7 +92,7 @@ char *UI_ConcatArgs( int arg, char *buf, int len )
 	char *p;
 	int  c;
 
-	if( len <= 0 )
+	if ( len <= 0 )
 	{
 		return buf;
 	}
@@ -100,16 +100,16 @@ char *UI_ConcatArgs( int arg, char *buf, int len )
 	p = buf;
 	c = trap_Argc();
 
-	for( ; arg < c; arg++ )
+	for ( ; arg < c; arg++ )
 	{
 		char *argp = UI_Argv( arg );
 
-		while( *argp && p < &buf[ len - 1 ] )
+		while ( *argp && p < &buf[ len - 1 ] )
 		{
 			*p++ = *argp++;
 		}
 
-		if( p < &buf[ len - 2 ] )
+		if ( p < &buf[ len - 2 ] )
 		{
 			*p++ = ' ';
 		}
@@ -140,7 +140,7 @@ static void  UI_Cache_f( void )
 
 static void UI_Menu_f( void )
 {
-	if( Menu_Count() > 0 )
+	if ( Menu_Count() > 0 )
 	{
 		trap_Key_SetCatcher( KEYCATCH_UI );
 		Menus_ActivateByName( UI_Argv( 1 ) );
@@ -149,7 +149,7 @@ static void UI_Menu_f( void )
 
 static void UI_CloseMenus_f( void )
 {
-	if( Menu_Count() > 0 )
+	if ( Menu_Count() > 0 )
 	{
 		trap_Key_SetCatcher( trap_Key_GetCatcher() & ~KEYCATCH_UI );
 		trap_Key_ClearStates();
@@ -164,7 +164,7 @@ static void UI_MessageMode_f( void )
 
 	trap_Cvar_Set( "ui_sayBuffer", "" );
 
-	switch( arg[ 11 ] )
+	switch ( arg[ 11 ] )
 	{
 		default:
 		case '\0':
@@ -202,15 +202,15 @@ static void UI_MessageMode_f( void )
 	Menus_CloseByName( "a" );
 	Menus_CloseByName( "irc_say" );
 
-	if( uiInfo.chatTeam )
+	if ( uiInfo.chatTeam )
 	{
 		Menus_ActivateByName( "say_team" );
 	}
-	else if( uiInfo.chatAdmin )
+	else if ( uiInfo.chatAdmin )
 	{
 		Menus_ActivateByName( "a" );
 	}
-	else if( uiInfo.chatIRC )
+	else if ( uiInfo.chatIRC )
 	{
 		Menus_ActivateByName( "irc_say" );
 	}
@@ -261,7 +261,7 @@ qboolean UI_ConsoleCommand( int realTime )
 	uiInfo.uiDC.frameTime = realTime - uiInfo.uiDC.realTime;
 	uiInfo.uiDC.realTime = realTime;
 
-	if( cmd )
+	if ( cmd )
 	{
 		cmd->function();
 		return qtrue;
@@ -286,7 +286,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 	float t0;
 	float t1;
 
-	if( w < 0 )
+	if ( w < 0 )
 	{
 		// flip about vertical
 		w = -w;
@@ -299,7 +299,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 		s1 = 1;
 	}
 
-	if( h < 0 )
+	if ( h < 0 )
 	{
 		// flip about horizontal
 		h = -h;

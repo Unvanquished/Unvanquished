@@ -183,7 +183,7 @@ hashtable_t HT_Create(
 	table->GetKey = ( flags & HT_FLAG_CASE ) ? _HT_GetKey : _HT_GetCIKey;
 	table->CompareKey = ( flags & HT_FLAG_CASE ) ? strcmp : Q_strcasecmp;
 
-	if( ( flags & HT_FLAG_INTABLE ) == 0 )
+	if ( ( flags & HT_FLAG_INTABLE ) == 0 )
 	{
 		table->KeyFromEntry = key_length ? _HT_KeyFromEntryPI : _HT_KeyFromEntryPP;
 	}
@@ -195,7 +195,7 @@ hashtable_t HT_Create(
 	// Initialise table entries
 	t_item = TABLE_START( table );
 
-	while( real_size > 0 )
+	while ( real_size > 0 )
 	{
 		RESET_LIST( t_item );
 		t_item++, real_size--;
@@ -219,17 +219,17 @@ void HT_Destroy(
 	list_head = & ( table->all_items );
 	list_entry = list_head->next;
 
-	while( list_entry != list_head )
+	while ( list_entry != list_head )
 	{
 		t_entry = ( struct tentry_t * )( ( ( char * ) list_entry ) - HT_OffsetOfField( struct tentry_t, full_list ) );
 		list_entry = list_entry->next;
 
-		if( del_key )
+		if ( del_key )
 		{
 			Z_Free( table->KeyFromEntry( t_entry, table->key_offset ) );
 		}
 
-		if( ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) == HT_FLAG_FREE )
+		if ( ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) == HT_FLAG_FREE )
 		{
 			void **data = ( void ** )( ( ( char * ) t_entry ) + sizeof( struct tentry_t ) );
 			Z_Free( *data );
@@ -263,24 +263,24 @@ void *HT_GetItem(
 	list_head = ( TABLE_START( table ) + ( hash % table->size ) );
 	list_entry = list_head->next;
 
-	while( list_entry != list_head )
+	while ( list_entry != list_head )
 	{
 		t_entry = ( struct tentry_t * ) list_entry;
 
-		if( t_entry->hash > hash )
+		if ( t_entry->hash > hash )
 		{
 			break;
 		}
 
-		if( t_entry->hash == hash )
+		if ( t_entry->hash == hash )
 		{
 			char *item_key = table->KeyFromEntry( t_entry, table->key_offset );
 
-			if( !table->CompareKey( key, item_key ) )
+			if ( !table->CompareKey( key, item_key ) )
 			{
 				data = ( void * )( ( ( char * ) t_entry ) + sizeof( struct tentry_t ) );
 
-				if( created != NULL )
+				if ( created != NULL )
 				{
 					*created = qfalse;
 				}
@@ -293,7 +293,7 @@ void *HT_GetItem(
 	}
 
 	// Check if we can create the entry
-	if( created == NULL )
+	if ( created == NULL )
 	{
 		return NULL;
 	}
@@ -305,7 +305,7 @@ void *HT_GetItem(
 	// Initialise data
 	data = ( void * )( ( ( char * ) t_entry ) + sizeof( struct tentry_t ) );
 
-	if( ( table->flags & HT_FLAG_INTABLE ) == 0 )
+	if ( ( table->flags & HT_FLAG_INTABLE ) == 0 )
 	{
 		* ( void ** ) data = Z_Malloc( table->item_size );
 		data = * ( void ** ) data;
@@ -314,7 +314,7 @@ void *HT_GetItem(
 	memset( data, 0, table->item_size );
 
 	// Copy key
-	if( table->key_length == 0 )
+	if ( table->key_length == 0 )
 	{
 		char **key_ptr = ( char ** )( ( ( char * ) data ) + table->key_offset );
 		*key_ptr = Z_Malloc( strlen( key ) + 1 );
@@ -346,7 +346,7 @@ void *HT_PutItem(
 	struct tentry_t    *t_entry;
 
 	// Extract item key
-	if( table->key_length )
+	if ( table->key_length )
 	{
 		insert_key = ( ( const char * ) item ) + table->key_offset;
 	}
@@ -360,33 +360,33 @@ void *HT_PutItem(
 	list_head = ( TABLE_START( table ) + ( hash % table->size ) );
 	list_entry = list_head->next;
 
-	while( list_entry != list_head )
+	while ( list_entry != list_head )
 	{
 		t_entry = ( struct tentry_t * ) list_entry;
 
-		if( t_entry->hash > hash )
+		if ( t_entry->hash > hash )
 		{
 			break;
 		}
 
-		if( t_entry->hash == hash )
+		if ( t_entry->hash == hash )
 		{
 			const char *item_key = table->KeyFromEntry( t_entry, table->key_offset );
 			int        cres = table->CompareKey( insert_key, item_key );
 
-			if( !cres )
+			if ( !cres )
 			{
 				prev_entry = ( ( ( char * ) t_entry ) + sizeof( struct tentry_t ) );
 				ret_val = ( table->flags & HT_FLAG_INTABLE ) ? prev_entry : ( * ( void ** ) prev_entry );
 
-				if( !allow_replacement )
+				if ( !allow_replacement )
 				{
 					return ret_val;
 				}
 
 				break;
 			}
-			else if( cres > 0 )
+			else if ( cres > 0 )
 			{
 				break;
 			}
@@ -395,16 +395,16 @@ void *HT_PutItem(
 		list_entry = list_entry->next;
 	}
 
-	if( ret_val != NULL )
+	if ( ret_val != NULL )
 	{
 		// Delete previous item's key if it was a pointer and either
 		// items are in-table or should be freed automatically
-		if( table->key_length == 0 && ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) != 0 )
+		if ( table->key_length == 0 && ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) != 0 )
 		{
 			Z_Free( table->KeyFromEntry( t_entry, table->key_offset ) );
 		}
 
-		if( ( table->flags & HT_FLAG_INTABLE ) != 0 )
+		if ( ( table->flags & HT_FLAG_INTABLE ) != 0 )
 		{
 			// Copy item data
 			memcpy( prev_entry, item, table->item_size );
@@ -412,7 +412,7 @@ void *HT_PutItem(
 		}
 		else
 		{
-			if( ( table->flags & HT_FLAG_FREE ) != 0 )
+			if ( ( table->flags & HT_FLAG_FREE ) != 0 )
 			{
 				// Free previous item
 				Z_Free( ret_val );
@@ -429,7 +429,7 @@ void *HT_PutItem(
 		t_entry = _HT_CreateEntry( table, hash, list_entry, insert_key );
 		data = ( void * )( ( ( char * ) t_entry ) + sizeof( struct tentry_t ) );
 
-		if( ( table->flags & HT_FLAG_INTABLE ) != 0 )
+		if ( ( table->flags & HT_FLAG_INTABLE ) != 0 )
 		{
 			memcpy( data, item, table->item_size );
 		}
@@ -462,20 +462,20 @@ qboolean HT_DeleteItem(
 	list_head = ( TABLE_START( table ) + ( hash % table->size ) );
 	list_entry = list_head->next;
 
-	while( list_entry != list_head )
+	while ( list_entry != list_head )
 	{
 		t_entry = ( struct tentry_t * ) list_entry;
 
-		if( t_entry->hash > hash )
+		if ( t_entry->hash > hash )
 		{
 			break;
 		}
 
-		if( t_entry->hash == hash )
+		if ( t_entry->hash == hash )
 		{
 			char *item_key = table->KeyFromEntry( t_entry, table->key_offset );
 
-			if( !table->CompareKey( key, item_key ) )
+			if ( !table->CompareKey( key, item_key ) )
 			{
 				data = ( void * )( ( ( char * ) t_entry ) + sizeof( struct tentry_t ) );
 				data = ( table->flags & HT_FLAG_INTABLE ) ? data : ( * ( void ** ) data );
@@ -487,9 +487,9 @@ qboolean HT_DeleteItem(
 	}
 
 	// Did we find it?
-	if( data == NULL )
+	if ( data == NULL )
 	{
-		if( found != NULL )
+		if ( found != NULL )
 		{
 			*found = NULL;
 		}
@@ -504,13 +504,13 @@ qboolean HT_DeleteItem(
 	t_entry->full_list.next->previous = t_entry->full_list.previous;
 
 	// Delete key
-	if( table->key_length == 0 && ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) != 0 )
+	if ( table->key_length == 0 && ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) != 0 )
 	{
 		Z_Free( table->KeyFromEntry( t_entry, table->key_offset ) );
 	}
 
 	// Delete item
-	if( ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) == HT_FLAG_FREE )
+	if ( ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) == HT_FLAG_FREE )
 	{
 		Z_Free( data );
 	}
@@ -519,9 +519,9 @@ qboolean HT_DeleteItem(
 	Z_Free( t_entry );
 
 	// Set found pointer
-	if( found != NULL )
+	if ( found != NULL )
 	{
-		if( ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) != 0 )
+		if ( ( table->flags & ( HT_FLAG_INTABLE | HT_FLAG_FREE ) ) != 0 )
 		{
 			data = NULL;
 		}
@@ -545,18 +545,18 @@ void HT_Apply(
 	list_head = & ( table->all_items );
 	list_entry = list_head->next;
 
-	while( list_entry != list_head )
+	while ( list_entry != list_head )
 	{
 		void *item;
 		item = ( ( char * ) list_entry ) - HT_OffsetOfField( struct tentry_t, full_list ) + sizeof( struct tentry_t );
 		list_entry = list_entry->next;
 
-		if( ( table->flags & HT_FLAG_INTABLE ) == 0 )
+		if ( ( table->flags & HT_FLAG_INTABLE ) == 0 )
 		{
 			item = * ( void ** ) item;
 		}
 
-		if( !function( item, data ) )
+		if ( !function( item, data ) )
 		{
 			return;
 		}
@@ -573,21 +573,21 @@ static qboolean _HT_IsPrime( size_t n )
 	size_t nsq;
 	size_t inc;
 
-	if( n == 0 )
+	if ( n == 0 )
 	{
 		return qfalse;
 	}
 
 	nsq = ceil( sqrt( ( double ) n ) );
 
-	for( inc = 1, temp = 2; temp <= nsq; temp += inc )
+	for ( inc = 1, temp = 2; temp <= nsq; temp += inc )
 	{
-		if( n % temp == 0 )
+		if ( n % temp == 0 )
 		{
 			return qfalse;
 		}
 
-		if( temp == 3 )
+		if ( temp == 3 )
 		{
 			inc = 2;
 		}
@@ -600,7 +600,7 @@ static size_t _HT_NextPrime( size_t n )
 {
 	size_t value = n;
 
-	while( !_HT_IsPrime( value ) )
+	while ( !_HT_IsPrime( value ) )
 	{
 		value++;
 	}
@@ -617,7 +617,7 @@ static unsigned int _HT_GetCIKey( const char *key )
 	const char    *current = key;
 	unsigned int hash = 111119;
 
-	while( *current )
+	while ( *current )
 	{
 		hash += ( unsigned char ) tolower( *current );
 		hash += ( hash << 10 );
@@ -637,7 +637,7 @@ static unsigned int _HT_GetKey( const char *key )
 	const char    *current = key;
 	unsigned int hash = 111119;
 
-	while( *current )
+	while ( *current )
 	{
 		hash += ( unsigned char ) * current;
 		hash += ( hash << 10 );
@@ -714,7 +714,7 @@ static struct tentry_t *_HT_CreateEntry(
 
 static void _HT_InsertInGlobalList( hashtable_t table, struct tentry_t *t_entry, const char *key )
 {
-	if( ( table->flags & HT_FLAG_SORTED ) == 0 )
+	if ( ( table->flags & HT_FLAG_SORTED ) == 0 )
 	{
 		// Append to global list
 		t_entry->full_list.previous = table->all_items.previous;
@@ -726,7 +726,7 @@ static void _HT_InsertInGlobalList( hashtable_t table, struct tentry_t *t_entry,
 		// Global list must be kept sorted, find insert location
 		struct listhead_t *list_entry = table->all_items.next;
 
-		while( list_entry != & ( table->all_items ) )
+		while ( list_entry != & ( table->all_items ) )
 		{
 			struct tentry_t *ai_entry;
 
@@ -739,7 +739,7 @@ static void _HT_InsertInGlobalList( hashtable_t table, struct tentry_t *t_entry,
 
 			assert( cres != 0 );
 
-			if( cres > 0 )
+			if ( cres > 0 )
 			{
 				break;
 			}

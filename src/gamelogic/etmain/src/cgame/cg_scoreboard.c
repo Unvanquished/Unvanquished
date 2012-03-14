@@ -64,7 +64,7 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 	int        msec, mins, seconds, tens; // JPW NERVE
 	vec4_t     tclr = { 0.6f, 0.6f, 0.6f, 1.0f };
 
-	if( cg.snap->ps.pm_type == PM_INTERMISSION )
+	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		const char *s, *buf, *shader = NULL, *flagshader = NULL, *nameshader = NULL;
 
@@ -101,11 +101,11 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 		s = CG_ConfigString( CS_MULTI_MAPWINNER );
 		buf = Info_ValueForKey( s, "winner" );
 
-		if( atoi( buf ) == -1 )
+		if ( atoi( buf ) == -1 )
 		{
 			str = "ITS A TIE!";
 		}
-		else if( atoi( buf ) )
+		else if ( atoi( buf ) )
 		{
 			str = "ALLIES";
 //          shader = "ui/assets/portraits/allies_win";
@@ -132,18 +132,18 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 
 		y += SMALLCHAR_HEIGHT * ( ( rows - 2 ) / 2 );
 
-		if( flagshader )
+		if ( flagshader )
 		{
 			CG_DrawPic( 100, 10, 210, 136, trap_R_RegisterShaderNoMip( flagshader ) );
 			CG_DrawPic( 325, 10, 210, 136, trap_R_RegisterShaderNoMip( flagshader ) );
 		}
 
-		if( shader )
+		if ( shader )
 		{
 			CG_DrawPic( 229, 10, 182, 136, trap_R_RegisterShaderNoMip( shader ) );
 		}
 
-		if( nameshader )
+		if ( nameshader )
 		{
 			CG_DrawPic( 140, 50, 127, 64, trap_R_RegisterShaderNoMip( nameshader ) );
 			CG_DrawPic( 365, 50, 127, 64, trap_R_RegisterShaderNoMip( "ui/assets/portraits/text_win.tga" ) );
@@ -163,7 +163,7 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 
 		y += SMALLCHAR_HEIGHT * ( rows - 1 );
 
-		if( cgs.timelimit > 0.0f )
+		if ( cgs.timelimit > 0.0f )
 		{
 			msec = ( cgs.timelimit * 60.f * 1000.f ) - ( cg.time - cgs.levelStartTime );
 
@@ -178,13 +178,13 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 			msec = mins = tens = seconds = 0;
 		}
 
-		if( cgs.gamestate != GS_PLAYING )
+		if ( cgs.gamestate != GS_PLAYING )
 		{
 			s = va( "%s %s", CG_TranslateString( "MISSION TIME:" ), CG_TranslateString( "WARMUP" ) );
 		}
-		else if( msec < 0 && cgs.timelimit > 0.0f )
+		else if ( msec < 0 && cgs.timelimit > 0.0f )
 		{
-			if( cgs.gamestate == GS_WAITING_FOR_PLAYERS )
+			if ( cgs.gamestate == GS_WAITING_FOR_PLAYERS )
 			{
 				s = va( "%s %s", CG_TranslateString( "MISSION TIME:" ), CG_TranslateString( "GAME STOPPED" ) );
 			}
@@ -200,10 +200,10 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 
 		CG_Text_Paint_Ext( x, y + 13, 0.25f, 0.25f, tclr, s, 0, 0, 0, &cgs.media.limboFont1 );
 
-		if( cgs.gametype != GT_WOLF_LMS )
+		if ( cgs.gametype != GT_WOLF_LMS )
 		{
-			if( cgs.clientinfo[ cg.snap->ps.clientNum ].team == TEAM_AXIS ||
-			    cgs.clientinfo[ cg.snap->ps.clientNum ].team == TEAM_ALLIES )
+			if ( cgs.clientinfo[ cg.snap->ps.clientNum ].team == TEAM_AXIS ||
+			     cgs.clientinfo[ cg.snap->ps.clientNum ].team == TEAM_ALLIES )
 			{
 				msec = CG_CalculateReinfTime( qfalse ) * 1000;
 			}
@@ -213,7 +213,7 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 				msec = 0;
 			}
 
-			if( msec )
+			if ( msec )
 			{
 				seconds = msec / 1000;
 				mins = seconds / 60;
@@ -228,7 +228,7 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 		}
 
 		// NERVE - SMF
-		if( cgs.gametype == GT_WOLF_STOPWATCH )
+		if ( cgs.gametype == GT_WOLF_STOPWATCH )
 		{
 			int w;
 
@@ -238,7 +238,7 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 
 			CG_Text_Paint_Ext( x + 300 - w * 0.5f, y + 13, 0.25f, 0.25f, tclr, s, 0, 0, 0, &cgs.media.limboFont1 );
 		}
-		else if( cgs.gametype == GT_WOLF_LMS )
+		else if ( cgs.gametype == GT_WOLF_LMS )
 		{
 			int w;
 
@@ -248,7 +248,7 @@ int WM_DrawObjectives( int x, int y, int width, float fade )
 
 			CG_Text_Paint_Ext( x + 300 - w * 0.5f, y + 13, 0.25f, 0.25f, tclr, s, 0, 0, 0, &cgs.media.limboFont1 );
 		}
-		else if( cgs.gametype == GT_WOLF_CAMPAIGN )
+		else if ( cgs.gametype == GT_WOLF_CAMPAIGN )
 		{
 			int w;
 
@@ -276,14 +276,14 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 	char         buf[ 64 ];
 
 	// CHRUKER: b0?? - Was using the wrong char height for this calculation
-	if( y + SMALLCHAR_HEIGHT >= 470 )
+	if ( y + SMALLCHAR_HEIGHT >= 470 )
 	{
 		return;
 	}
 
 	ci = &cgs.clientinfo[ score->client ];
 
-	if( score->client == cg.snap->ps.clientNum )
+	if ( score->client == cg.snap->ps.clientNum )
 	{
 		hcolor[ 3 ] = fade * 0.3;
 		VectorSet( hcolor, .5f, .5f, .2f );  // DARK-RED
@@ -301,9 +301,9 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 	maxchars = 16;
 	offset = 0;
 
-	if( ci->team != TEAM_SPECTATOR )
+	if ( ci->team != TEAM_SPECTATOR )
 	{
-		if( ci->powerups & ( ( 1 << PW_REDFLAG ) | ( 1 << PW_BLUEFLAG ) ) )
+		if ( ci->powerups & ( ( 1 << PW_REDFLAG ) | ( 1 << PW_BLUEFLAG ) ) )
 		{
 			// CHRUKER: b078 - Medic, death and objective icons on the scoreboard are drawn too big
 			CG_DrawPic( tempx - 3, y + 1, 14, 14, cgs.media.objectiveShader );
@@ -313,9 +313,9 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 		}
 
 		// draw the skull icon if out of lives
-		if( score->respawnsLeft == -2 ||
-		    ( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR && ci->team == cgs.clientinfo[ cg.clientNum ].team &&
-		      cgs.clientinfo[ score->client ].health == -1 ) )
+		if ( score->respawnsLeft == -2 ||
+		     ( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR && ci->team == cgs.clientinfo[ cg.clientNum ].team &&
+		       cgs.clientinfo[ score->client ].health == -1 ) )
 		{
 			// CHRUKER: b078 - Medic, death and objective icons on the scoreboard are drawn too big
 			CG_DrawPic( tempx - 3, y + 1, 14, 14, cgs.media.scoreEliminatedShader );
@@ -323,8 +323,8 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 			tempx += 14;
 			maxchars -= 2;
 		}
-		else if( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR && ci->team == cgs.clientinfo[ cg.clientNum ].team &&
-		         cgs.clientinfo[ score->client ].health == 0 )
+		else if ( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR && ci->team == cgs.clientinfo[ cg.clientNum ].team &&
+		          cgs.clientinfo[ score->client ].health == 0 )
 		{
 			// CHRUKER: b078 - Medic, death and objective icons on the scoreboard are drawn too big
 			CG_DrawPic( tempx - 3, y + 1, 14, 14, cgs.media.medicIcon );
@@ -341,9 +341,9 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 	// draw medals
 	buf[ 0 ] = '\0';
 
-	for( i = 0; i < SK_NUM_SKILLS; i++ )
+	for ( i = 0; i < SK_NUM_SKILLS; i++ )
 	{
-		for( j = 0; j < ci->medals[ i ]; j++ )
+		for ( j = 0; j < ci->medals[ i ]; j++ )
 		{
 			Q_strcat( buf, sizeof( buf ), va( "^%c%c", COLOR_RED + i, skillNames[ i ][ 0 ] ) );
 		}
@@ -353,7 +353,7 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 
 	// CHRUKER: b032 - Medals clipped wrong in scoreboard when you're dead, because CG_DrawStringExt will draw
 	//                 everything if maxchars <= 0
-	if( maxchars > 0 )
+	if ( maxchars > 0 )
 	{
 		CG_DrawStringExt( tempx + ( BG_drawStrlen( ci->name ) * SMALLCHAR_WIDTH + SMALLCHAR_WIDTH ), y, buf, hcolor, qfalse, qfalse,
 		                  SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, maxchars );
@@ -361,7 +361,7 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 
 	tempx += INFO_PLAYER_WIDTH - offset;
 
-	if( ci->team == TEAM_SPECTATOR )
+	if ( ci->team == TEAM_SPECTATOR )
 	{
 		const char *s;
 		int        w, totalwidth;
@@ -369,7 +369,7 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 		totalwidth = INFO_CLASS_WIDTH + INFO_SCORE_WIDTH + INFO_LATENCY_WIDTH - 8;
 
 		// CHRUKER: b031 -  Show connecting people as connecting
-		if( score->ping == -1 )
+		if ( score->ping == -1 )
 		{
 			s = CG_TranslateString( "^1CONNECTING" );
 		}
@@ -384,7 +384,7 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 		return;
 	}
 	// OSP - allow MV clients see the class of its merged client's on the scoreboard
-	else if( cg.snap->ps.persistant[ PERS_TEAM ] == ci->team || CG_mvMergedClientLocate( score->client ) )
+	else if ( cg.snap->ps.persistant[ PERS_TEAM ] == ci->team || CG_mvMergedClientLocate( score->client ) )
 	{
 		CG_DrawSmallString( tempx, y, CG_TranslateString( BG_ShortClassnameForNumber( score->playerClass ) ), fade );
 	}
@@ -393,7 +393,7 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 
 	CG_DrawSmallString( tempx, y, va( "%3i", score->score ), fade );
 
-	if( cg_gameType.integer == GT_WOLF_LMS )
+	if ( cg_gameType.integer == GT_WOLF_LMS )
 	{
 		tempx += INFO_SCORE_WIDTH;
 	}
@@ -405,9 +405,9 @@ static void WM_DrawClientScore( int x, int y, score_t *score, float *color, floa
 	CG_DrawSmallString( tempx, y, va( "%4i", score->ping ), fade );
 	tempx += INFO_LATENCY_WIDTH;
 
-	if( cg_gameType.integer != GT_WOLF_LMS )
+	if ( cg_gameType.integer != GT_WOLF_LMS )
 	{
-		if( score->respawnsLeft >= 0 )
+		if ( score->respawnsLeft >= 0 )
 		{
 			CG_DrawSmallString( tempx, y, va( "%2i", score->respawnsLeft ), fade );
 		}
@@ -443,14 +443,14 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 	int          i, j;
 	char         buf[ 64 ];
 
-	if( y + MINICHAR_HEIGHT >= 470 )
+	if ( y + MINICHAR_HEIGHT >= 470 )
 	{
 		return;
 	}
 
 	ci = &cgs.clientinfo[ score->client ];
 
-	if( score->client == cg.snap->ps.clientNum )
+	if ( score->client == cg.snap->ps.clientNum )
 	{
 		hcolor[ 3 ] = fade * 0.3;
 		VectorSet( hcolor, .5f, .5f, .2f );  // DARK-RED
@@ -469,9 +469,9 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 	maxchars = 16;
 	offset = 0;
 
-	if( ci->team != TEAM_SPECTATOR )
+	if ( ci->team != TEAM_SPECTATOR )
 	{
-		if( ci->powerups & ( ( 1 << PW_REDFLAG ) | ( 1 << PW_BLUEFLAG ) ) )
+		if ( ci->powerups & ( ( 1 << PW_REDFLAG ) | ( 1 << PW_BLUEFLAG ) ) )
 		{
 			// CHRUKER: b071 - Objective carrier icon missing on compact scoreboard
 			// CHRUKER: b078 - Medic, death and objective icons on the scoreboard are drawn too big
@@ -482,9 +482,9 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 		}
 
 		// draw the skull icon if out of lives
-		if( score->respawnsLeft == -2 ||
-		    ( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR && ci->team == cgs.clientinfo[ cg.clientNum ].team &&
-		      cgs.clientinfo[ score->client ].health == -1 ) )
+		if ( score->respawnsLeft == -2 ||
+		     ( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR && ci->team == cgs.clientinfo[ cg.clientNum ].team &&
+		       cgs.clientinfo[ score->client ].health == -1 ) )
 		{
 			// CHRUKER: b078 - Medic, death and objective icons on the scoreboard are drawn too big
 			CG_DrawPic( tempx - 1, y + 1, 10, 10, cgs.media.scoreEliminatedShader );
@@ -492,8 +492,8 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 			tempx += 10;
 			maxchars -= 2;
 		}
-		else if( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR && ci->team == cgs.clientinfo[ cg.clientNum ].team &&
-		         cgs.clientinfo[ score->client ].health == 0 )
+		else if ( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR && ci->team == cgs.clientinfo[ cg.clientNum ].team &&
+		          cgs.clientinfo[ score->client ].health == 0 )
 		{
 			// CHRUKER: b078 - Medic, death and objective icons on the scoreboard are drawn too big
 			CG_DrawPic( tempx - 1, y + 1, 10, 10, cgs.media.medicIcon );
@@ -511,9 +511,9 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 
 	buf[ 0 ] = '\0';
 
-	for( i = 0; i < SK_NUM_SKILLS; i++ )
+	for ( i = 0; i < SK_NUM_SKILLS; i++ )
 	{
-		for( j = 0; j < ci->medals[ i ]; j++ )
+		for ( j = 0; j < ci->medals[ i ]; j++ )
 		{
 			Q_strcat( buf, sizeof( buf ), va( "^%c%c", COLOR_RED + i, skillNames[ i ][ 0 ] ) );
 		}
@@ -521,14 +521,14 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 
 	maxchars--;
 
-	if( maxchars > 0 ) { CG_DrawStringExt( tempx + ( BG_drawStrlen( ci->name ) * MINICHAR_WIDTH + MINICHAR_WIDTH ), y, buf, hcolor, qfalse, qfalse, MINICHAR_WIDTH, MINICHAR_HEIGHT, maxchars ); }
+	if ( maxchars > 0 ) { CG_DrawStringExt( tempx + ( BG_drawStrlen( ci->name ) * MINICHAR_WIDTH + MINICHAR_WIDTH ), y, buf, hcolor, qfalse, qfalse, MINICHAR_WIDTH, MINICHAR_HEIGHT, maxchars ); }
 
 	// b033
 
 	tempx += INFO_PLAYER_WIDTH - offset;
 	// dhm - nerve
 
-	if( ci->team == TEAM_SPECTATOR )
+	if ( ci->team == TEAM_SPECTATOR )
 	{
 		const char *s;
 		int        w, totalwidth;
@@ -536,7 +536,7 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 		totalwidth = INFO_CLASS_WIDTH + INFO_SCORE_WIDTH + INFO_LATENCY_WIDTH - 8;
 
 		// CHRUKER: b031 -  Show connecting people as connecting
-		if( score->ping == -1 )
+		if ( score->ping == -1 )
 		{
 			s = CG_TranslateString( "^1CONNECTING" );
 		}
@@ -551,7 +551,7 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 		CG_DrawStringExt( tempx + totalwidth - w, y, s, hcolor, qfalse, qfalse, MINICHAR_WIDTH, MINICHAR_HEIGHT, 0 );
 		return;
 	}
-	else if( cg.snap->ps.persistant[ PERS_TEAM ] == ci->team )
+	else if ( cg.snap->ps.persistant[ PERS_TEAM ] == ci->team )
 	{
 		CG_DrawStringExt( tempx, y, CG_TranslateString( BG_ShortClassnameForNumber( score->playerClass ) ), hcolor, qfalse, qfalse,
 		                  MINICHAR_WIDTH, MINICHAR_HEIGHT, 0 );
@@ -562,7 +562,7 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 
 	CG_DrawStringExt( tempx, y, va( "%3i", score->score ), hcolor, qfalse, qfalse, MINICHAR_WIDTH, MINICHAR_HEIGHT, 0 );
 
-	if( cg_gameType.integer == GT_WOLF_LMS )
+	if ( cg_gameType.integer == GT_WOLF_LMS )
 	{
 		tempx += INFO_SCORE_WIDTH;
 	}
@@ -574,9 +574,9 @@ static void WM_DrawClientScore_Small( int x, int y, score_t *score, float *color
 	CG_DrawStringExt( tempx, y, va( "%4i", score->ping ), hcolor, qfalse, qfalse, MINICHAR_WIDTH, MINICHAR_HEIGHT, 0 );
 	tempx += INFO_LATENCY_WIDTH;
 
-	if( cg_gameType.integer != GT_WOLF_LMS )
+	if ( cg_gameType.integer != GT_WOLF_LMS )
 	{
-		if( score->respawnsLeft >= 0 )
+		if ( score->respawnsLeft >= 0 )
 		{
 			CG_DrawStringExt( tempx, y, va( "%2i", score->respawnsLeft ), hcolor, qfalse, qfalse, MINICHAR_WIDTH, MINICHAR_HEIGHT,
 			                  0 );
@@ -596,7 +596,7 @@ static int WM_DrawInfoLine( int x, int y, float fade )
 	const char *s;
 	vec4_t     tclr = { 0.6f, 0.6f, 0.6f, 1.0f };
 
-	if( cg.snap->ps.pm_type != PM_INTERMISSION )
+	if ( cg.snap->ps.pm_type != PM_INTERMISSION )
 	{
 		return y;
 	}
@@ -610,7 +610,7 @@ static int WM_DrawInfoLine( int x, int y, float fade )
 	s = CG_ConfigString( CS_MULTI_MAPWINNER );
 	winner = atoi( Info_ValueForKey( s, "winner" ) );
 
-	if( cgs.currentRound )
+	if ( cgs.currentRound )
 	{
 		// first round
 		s = va( CG_TranslateString( "CLOCK IS NOW SET TO %s!" ), WM_TimeToString( cgs.nextTimeLimit * 60.f * 1000.f ) );
@@ -618,9 +618,9 @@ static int WM_DrawInfoLine( int x, int y, float fade )
 	else
 	{
 		// second round
-		if( !defender )
+		if ( !defender )
 		{
-			if( winner != defender )
+			if ( winner != defender )
 			{
 				s = "ALLIES SUCCESSFULLY BEAT THE CLOCK!";
 			}
@@ -631,7 +631,7 @@ static int WM_DrawInfoLine( int x, int y, float fade )
 		}
 		else
 		{
-			if( winner != defender )
+			if ( winner != defender )
 			{
 				s = "AXIS SUCCESSFULLY BEAT THE CLOCK!";
 			}
@@ -675,11 +675,11 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 	CG_DrawRect_FixedBorder( x - 5, y - 2, width + 5, 21, 1, colorBlack );
 
 	// draw header
-	if( cg_gameType.integer == GT_WOLF_LMS )
+	if ( cg_gameType.integer == GT_WOLF_LMS )
 	{
 		char *s;
 
-		if( team == TEAM_AXIS )
+		if ( team == TEAM_AXIS )
 		{
 			s = va( "%s [%d] (%d %s)", CG_TranslateString( "AXIS" ), cg.teamScores[ 0 ], cg.teamPlayers[ team ],
 			        CG_TranslateString( "PLAYERS" ) );
@@ -687,7 +687,7 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 
 			CG_Text_Paint_Ext( x, y + 13, 0.25f, 0.25f, tclr, s, 0, 0, 0, &cgs.media.limboFont1 );
 		}
-		else if( team == TEAM_ALLIES )
+		else if ( team == TEAM_ALLIES )
 		{
 			s = va( "%s [%d] (%d %s)", CG_TranslateString( "ALLIES" ), cg.teamScores[ 1 ], cg.teamPlayers[ team ],
 			        CG_TranslateString( "PLAYERS" ) );
@@ -698,13 +698,13 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 	}
 	else
 	{
-		if( team == TEAM_AXIS )
+		if ( team == TEAM_AXIS )
 		{
 			CG_Text_Paint_Ext( x, y + 13, 0.25f, 0.25f, tclr,
 			                   va( "%s [%d] (%d %s)", CG_TranslateString( "AXIS" ), cg.teamScores[ 0 ], cg.teamPlayers[ team ],
 			                       CG_TranslateString( "PLAYERS" ) ), 0, 0, 0, &cgs.media.limboFont1 );
 		}
-		else if( team == TEAM_ALLIES )
+		else if ( team == TEAM_ALLIES )
 		{
 			CG_Text_Paint_Ext( x, y + 13, 0.25f, 0.25f, tclr,
 			                   va( "%s [%d] (%d %s)", CG_TranslateString( "ALLIES" ), cg.teamScores[ 1 ], cg.teamPlayers[ team ],
@@ -729,7 +729,7 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 	CG_DrawSmallString( tempx, y, CG_TranslateString( "Class" ), fade );
 	tempx += INFO_CLASS_WIDTH;
 
-	if( cgs.gametype == GT_WOLF_LMS )
+	if ( cgs.gametype == GT_WOLF_LMS )
 	{
 		CG_DrawSmallString( tempx, y, CG_TranslateString( "Score" ), fade );
 		tempx += INFO_SCORE_WIDTH;
@@ -743,7 +743,7 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 	CG_DrawSmallString( tempx, y, CG_TranslateString( "Ping" ), fade );
 	tempx += INFO_LATENCY_WIDTH;
 
-	if( cgs.gametype != GT_WOLF_LMS )
+	if ( cgs.gametype != GT_WOLF_LMS )
 	{
 		CG_DrawPicST( tempx + 2, y, INFO_LIVES_WIDTH - 4, 16, 0.f, 0.f, 0.5f, 1.f,
 		              team == TEAM_ALLIES ? cgs.media.hudAlliedHelmet : cgs.media.hudAxisHelmet );
@@ -755,9 +755,9 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 
 	cg.teamPlayers[ team ] = 0; // JPW NERVE
 
-	for( i = 0; i < cg.numScores; i++ )
+	for ( i = 0; i < cg.numScores; i++ )
 	{
-		if( team != cgs.clientinfo[ cg.scores[ i ].client ].team )
+		if ( team != cgs.clientinfo[ cg.scores[ i ].client ].team )
 		{
 			continue;
 		}
@@ -766,7 +766,7 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 	}
 
 	// CHRUKER: b035 - Adjust maxrows
-	if( cg.teamPlayers[ team ] > maxrows )
+	if ( cg.teamPlayers[ team ] > maxrows )
 	{
 		maxrows = absmaxrows;
 		use_mini_chars = qtrue;
@@ -776,9 +776,9 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 	tempy = y;
 
 	// draw color bands
-	for( i = 0; i < maxrows; i++ )
+	for ( i = 0; i < maxrows; i++ )
 	{
-		if( i % 2 == 0 )
+		if ( i % 2 == 0 )
 		{
 			VectorSet( hcolor, ( 80.f / 255.f ), ( 80.f / 255.f ), ( 80.f / 255.f ) );  // LIGHT BLUE
 		}
@@ -789,7 +789,7 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 
 		hcolor[ 3 ] = fade * 0.3;
 
-		if( use_mini_chars )
+		if ( use_mini_chars )
 		{
 			// CHRUKER: b076 - Adjusted y height, and changed to DrawBottom instead of DrawTopBottom
 			CG_FillRect( x - 5, y, width + 5, MINICHAR_HEIGHT, hcolor );
@@ -821,15 +821,15 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 
 	count = 0;
 
-	for( i = 0; i < cg.numScores && count < maxrows; i++ )
+	for ( i = 0; i < cg.numScores && count < maxrows; i++ )
 	{
-		if( team != cgs.clientinfo[ cg.scores[ i ].client ].team )
+		if ( team != cgs.clientinfo[ cg.scores[ i ].client ].team )
 		{
 			continue;
 		}
 
 		// CHRUKER: b035 - Using the flag instead
-		if( use_mini_chars )
+		if ( use_mini_chars )
 		{
 			WM_DrawClientScore_Small( x, y, &cg.scores[ i ], hcolor, fade );
 			y += MINICHAR_HEIGHT;
@@ -845,7 +845,7 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 
 	// draw spectators
 	// CHRUKER: b035 - Missing support for mini char height scoreboard background
-	if( use_mini_chars )
+	if ( use_mini_chars )
 	{
 		y += MINICHAR_HEIGHT;
 	}
@@ -854,25 +854,25 @@ static int WM_TeamScoreboard( int x, int y, team_t team, float fade, int maxrows
 		y += SMALLCHAR_HEIGHT;
 	}
 
-	for( i = 0; i < cg.numScores; i++ )
+	for ( i = 0; i < cg.numScores; i++ )
 	{
-		if( cgs.clientinfo[ cg.scores[ i ].client ].team != TEAM_SPECTATOR )
+		if ( cgs.clientinfo[ cg.scores[ i ].client ].team != TEAM_SPECTATOR )
 		{
 			continue;
 		}
 
-		if( team == TEAM_AXIS && ( i % 2 ) )
+		if ( team == TEAM_AXIS && ( i % 2 ) )
 		{
 			continue;
 		}
 
-		if( team == TEAM_ALLIES && ( ( i + 1 ) % 2 ) )
+		if ( team == TEAM_ALLIES && ( ( i + 1 ) % 2 ) )
 		{
 			continue;
 		}
 
 		// CHRUKER: b034 - Missing support for minichars; b035 - Using the flag instead
-		if( use_mini_chars )
+		if ( use_mini_chars )
 		{
 			WM_DrawClientScore_Small( x, y, &cg.scores[ i ], hcolor, fade );
 			y += MINICHAR_HEIGHT;
@@ -908,25 +908,25 @@ qboolean CG_DrawScoreboard( void )
 	x_right = 640 - x - ( INFO_TOTAL_WIDTH - 5 );
 
 	// don't draw anything if the menu or console is up
-	if( cg_paused.integer )
+	if ( cg_paused.integer )
 	{
 		return qfalse;
 	}
 
 	// don't draw scoreboard during death while warmup up
 	// OSP - also for pesky scoreboards in demos
-	if( ( cg.warmup || ( cg.demoPlayback && cg.snap->ps.pm_type != PM_INTERMISSION ) ) && !cg.showScores )
+	if ( ( cg.warmup || ( cg.demoPlayback && cg.snap->ps.pm_type != PM_INTERMISSION ) ) && !cg.showScores )
 	{
 		return qfalse;
 	}
 
 	// don't draw if in cameramode
-	if( cg.cameraMode )
+	if ( cg.cameraMode )
 	{
 		return qtrue;
 	}
 
-	if( cg.showScores || cg.predictedPlayerState.pm_type == PM_INTERMISSION )
+	if ( cg.showScores || cg.predictedPlayerState.pm_type == PM_INTERMISSION )
 	{
 		fade = 1.0;
 		fadeColor = colorWhite;
@@ -935,7 +935,7 @@ qboolean CG_DrawScoreboard( void )
 	{
 		fadeColor = CG_FadeColor( cg.scoreFadeTime, FADE_TIME );
 
-		if( !fadeColor )
+		if ( !fadeColor )
 		{
 			// next time scoreboard comes up, don't print killer
 			*cg.killerName = 0;
@@ -947,7 +947,7 @@ qboolean CG_DrawScoreboard( void )
 
 	y = WM_DrawObjectives( x, y, 640 - 2 * x + 5, fade );
 
-	if( cgs.gametype == GT_WOLF_STOPWATCH && ( cg.snap->ps.pm_type == PM_INTERMISSION ) )
+	if ( cgs.gametype == GT_WOLF_STOPWATCH && ( cg.snap->ps.pm_type == PM_INTERMISSION ) )
 	{
 		y = WM_DrawInfoLine( x, 155, fade );
 
@@ -958,7 +958,7 @@ qboolean CG_DrawScoreboard( void )
 	}
 	else
 	{
-		if( cg.snap->ps.pm_type == PM_INTERMISSION )
+		if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 		{
 			WM_TeamScoreboard( x, y, TEAM_AXIS, fade, 9, 12 );
 			x = x_right;

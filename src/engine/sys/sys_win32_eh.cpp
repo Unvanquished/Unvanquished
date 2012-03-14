@@ -83,7 +83,7 @@ public:
 	{
 		char minibuffer[ 256 ];
 
-		switch( m_seCode )
+		switch ( m_seCode )
 		{
 			case EXCEPTION_ACCESS_VIOLATION:
 				Com_sprintf( minibuffer, sizeof( minibuffer ),
@@ -178,9 +178,9 @@ public:
 
 		sp = ( DWORD * )( m_exPointers->ContextRecord->Ebp );
 
-		for( i = 0; i < MAX_STACK_TRACE_LINES; i++ )
+		for ( i = 0; i < MAX_STACK_TRACE_LINES; i++ )
 		{
-			if( !IsBadReadPtr( sp, sizeof( DWORD ) ) && *sp )
+			if ( !IsBadReadPtr( sp, sizeof( DWORD ) ) && *sp )
 			{
 				DWORD *np = ( DWORD * ) *sp;
 				stackTrace[ i ] = * ( sp + 1 );
@@ -193,9 +193,9 @@ public:
 			}
 		}
 
-		for( i = 0; i < MAX_STACK_TRACE_LINES; i++ )
+		for ( i = 0; i < MAX_STACK_TRACE_LINES; i++ )
 		{
-			if( i == 0 )
+			if ( i == 0 )
 			{
 				Q_strcat( buffer, size, "Stack Trace    : " );
 			}
@@ -204,7 +204,7 @@ public:
 				Q_strcat( buffer, size, "               : " );
 			}
 
-			for( j = 0; j < 4 && i < MAX_STACK_TRACE_LINES; i++, j++ )
+			for ( j = 0; j < 4 && i < MAX_STACK_TRACE_LINES; i++, j++ )
 			{
 				char minibuffer[ 16 ];
 				Com_sprintf( minibuffer, sizeof( minibuffer ), "%.8x ", stackTrace[ i ] );
@@ -236,7 +236,7 @@ void RunFrame( void )
 		// run the game
 		Com_Frame();
 	}
-	catch( CWolfException *we )
+	catch ( CWolfException *we )
 	{
 		char         buffer[ 2048 ];
 		fileHandle_t handle;
@@ -260,7 +260,7 @@ void RunFrame( void )
 
 		FS_FOpenFileByMode( "crash.log", &handle, FS_APPEND );
 
-		if( handle )
+		if ( handle )
 		{
 			FS_Write( buffer, strlen( buffer ), handle );
 			FS_FCloseFile( handle );
@@ -275,7 +275,7 @@ void RunFrame( void )
 extern "C" {
 	void WinSetExceptionWnd( HWND wnd )
 	{
-		if( wnd )
+		if ( wnd )
 		{
 			_set_se_translator( WinExceptionHandler );
 		}

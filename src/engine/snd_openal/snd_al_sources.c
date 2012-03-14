@@ -99,21 +99,21 @@ qboolean al_src_init( void )
 	// Cap s_sources to MAX_SRC
 	limit = s_sources->integer;
 
-	if( limit > MAX_SRC )
+	if ( limit > MAX_SRC )
 	{
 		limit = MAX_SRC;
 	}
-	else if( limit < 16 )
+	else if ( limit < 16 )
 	{
 		limit = 16;
 	}
 
 	// Allocate as many sources as possible
-	for( i = 0; i < limit; i++ )
+	for ( i = 0; i < limit; i++ )
 	{
 		qalGenSources( 1, &srclist[ i ].source );
 
-		if( ( error = qalGetError() ) != AL_NO_ERROR )
+		if ( ( error = qalGetError() ) != AL_NO_ERROR )
 		{
 			break;
 		}
@@ -131,15 +131,15 @@ void al_src_shutdown()
 {
 	int i;
 
-	if( !src_inited )
+	if ( !src_inited )
 	{
 		return;
 	}
 
 	// Destroy all the sources
-	for( i = 0; i < src_count; i++ )
+	for ( i = 0; i < src_count; i++ )
 	{
-		if( srclist[ i ].isLocked )
+		if ( srclist[ i ].isLocked )
 		{
 			si.Printf( PRINT_DEVELOPER, "Warning: Source %d is locked\n", i );
 		}
@@ -186,7 +186,7 @@ static void al_src_setup( srcHandle_t src, sfxHandle_t sfx, int priority, int en
 	qalSourcei( srclist[ src ].source, AL_LOOPING, AL_FALSE );
 	qalSourcef( srclist[ src ].source, AL_REFERENCE_DISTANCE, s_minDistance->value );
 
-	if( local )
+	if ( local )
 	{
 		qalSourcei( srclist[ src ].source, AL_SOURCE_RELATIVE, AL_TRUE );
 		qalSourcef( srclist[ src ].source, AL_ROLLOFF_FACTOR, 0 );
@@ -201,19 +201,19 @@ static void al_src_setup( srcHandle_t src, sfxHandle_t sfx, int priority, int en
 static void al_src_kill( srcHandle_t src )
 {
 	// I'm not touching it. Unlock it first.
-	if( srclist[ src ].isLocked )
+	if ( srclist[ src ].isLocked )
 	{
 		return;
 	}
 
 	// Stop it if it's playing
-	if( srclist[ src ].isActive )
+	if ( srclist[ src ].isActive )
 	{
 		qalSourceStop( srclist[ src ].source );
 	}
 
 	// Remove the entity association
-	if( ( srclist[ src ].isLooping ) && ( srclist[ src ].entity != -1 ) )
+	if ( ( srclist[ src ].isLooping ) && ( srclist[ src ].entity != -1 ) )
 	{
 		int ent = srclist[ src ].entity;
 		entlist[ ent ].has_sfx = 0;
@@ -246,24 +246,24 @@ srcHandle_t al_src_alloc( int priority, int entnum, int channel )
 	int weakest_time = si.Milliseconds();
 	int weakest_pri = 999;
 
-	for( i = 0; i < src_count; i++ )
+	for ( i = 0; i < src_count; i++ )
 	{
 		// If it's locked, we aren't even going to look at it
-		if( srclist[ i ].isLocked )
+		if ( srclist[ i ].isLocked )
 		{
 			continue;
 		}
 
 		// Is it empty or not?
-		if( ( !srclist[ i ].isActive ) && ( empty == -1 ) )
+		if ( ( !srclist[ i ].isActive ) && ( empty == -1 ) )
 		{
 			empty = i;
 		}
-		else if( srclist[ i ].priority < priority )
+		else if ( srclist[ i ].priority < priority )
 		{
 			// If it's older or has lower priority, flag it as weak
-			if( ( srclist[ i ].priority < weakest_pri ) ||
-			    ( srclist[ i ].lastUse < weakest_time ) )
+			if ( ( srclist[ i ].priority < weakest_pri ) ||
+			     ( srclist[ i ].lastUse < weakest_time ) )
 			{
 				weakest_pri = srclist[ i ].priority;
 				weakest_time = srclist[ i ].lastUse;
@@ -272,7 +272,7 @@ srcHandle_t al_src_alloc( int priority, int entnum, int channel )
 		}
 
 		// Is it an exact match, and not on channel 0?
-		if( ( srclist[ i ].entity == entnum ) && ( srclist[ i ].channel == channel ) && ( channel != 0 ) )
+		if ( ( srclist[ i ].entity == entnum ) && ( srclist[ i ].channel == channel ) && ( channel != 0 ) )
 		{
 			al_src_kill( i );
 			return i;
@@ -280,13 +280,13 @@ srcHandle_t al_src_alloc( int priority, int entnum, int channel )
 	}
 
 	// Do we have an empty one?
-	if( empty != -1 )
+	if ( empty != -1 )
 	{
 		return empty;
 	}
 
 	// No. How about an overridable one?
-	if( weakest != -1 )
+	if ( weakest != -1 )
 	{
 		al_src_kill( weakest );
 		return weakest;
@@ -302,14 +302,14 @@ srcHandle_t al_src_find( int entnum, int channel )
 {
 	int i;
 
-	for( i = 0; i < src_count; i++ )
+	for ( i = 0; i < src_count; i++ )
 	{
-		if( !srclist[ i ].isActive )
+		if ( !srclist[ i ].isActive )
 		{
 			continue;
 		}
 
-		if( ( srclist[ i ].entity == entnum ) && ( srclist[ i ].channel == channel ) )
+		if ( ( srclist[ i ].entity == entnum ) && ( srclist[ i ].channel == channel ) )
 		{
 			return i;
 		}
@@ -334,7 +334,7 @@ void al_src_unlock( srcHandle_t src )
 // Entity position management
 void SndAl_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
-	if( entityNum < 0 || entityNum > MAX_GENTITIES )
+	if ( entityNum < 0 || entityNum > MAX_GENTITIES )
 	{
 		si.Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	}
@@ -348,7 +348,7 @@ void SndAl_StartLocalSound( sfxHandle_t sfx, int channel )
 	// Try to grab a source
 	srcHandle_t src = al_src_alloc( SRCPRI_LOCAL, -1, channel );
 
-	if( src == -1 )
+	if ( src == -1 )
 	{
 		return;
 	}
@@ -368,7 +368,7 @@ void SndAl_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sf
 	// Try to grab a source
 	srcHandle_t src = al_src_alloc( SRCPRI_ONESHOT, entnum, entchannel );
 
-	if( src == -1 )
+	if ( src == -1 )
 	{
 		return;
 	}
@@ -376,7 +376,7 @@ void SndAl_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sf
 	// Set up the effect
 	al_src_setup( src, sfx, SRCPRI_ONESHOT, entnum, entchannel, qfalse );
 
-	if( origin == NULL )
+	if ( origin == NULL )
 	{
 		srclist[ src ].isTracking = qtrue;
 		VectorScale( entlist[ entnum ].origin, POSITION_SCALE, sorigin );
@@ -407,9 +407,9 @@ void SndAl_ClearLoopingSounds( qboolean killall )
 {
 	int i;
 
-	for( i = 0; i < src_count; i++ )
+	for ( i = 0; i < src_count; i++ )
 	{
-		if( ( srclist[ i ].isLooping ) && ( srclist[ i ].entity != -1 ) )
+		if ( ( srclist[ i ].isLooping ) && ( srclist[ i ].entity != -1 ) )
 		{
 			entlist[ srclist[ i ].entity ].touched = qfalse;
 		}
@@ -423,20 +423,20 @@ void al_src_loop( int priority, sfxHandle_t sfx, const vec3_t origin, const vec3
 	vec3_t   sorigin;
 
 	// Do we need to start a new sound playing?
-	if( !entlist[ entnum ].has_sfx )
+	if ( !entlist[ entnum ].has_sfx )
 	{
 		// Try to get a channel
 		ambient_count++;
 		src = al_src_alloc( priority, entnum, -1 );
 
-		if( src == -1 )
+		if ( src == -1 )
 		{
 			return;
 		}
 
 		need_to_play = qtrue;
 	}
-	else if( srclist[ entlist[ entnum ].sfx ].sfx != sfx )
+	else if ( srclist[ entlist[ entnum ].sfx ].sfx != sfx )
 	{
 		// Need to restart. Just re-use this channel
 		src = entlist[ entnum ].sfx;
@@ -448,7 +448,7 @@ void al_src_loop( int priority, sfxHandle_t sfx, const vec3_t origin, const vec3
 		src = entlist[ entnum ].sfx;
 	}
 
-	if( need_to_play )
+	if ( need_to_play )
 	{
 		// Set up the effect
 		al_src_setup( src, sfx, priority, entnum, -1, qfalse );
@@ -470,7 +470,7 @@ void al_src_loop( int priority, sfxHandle_t sfx, const vec3_t origin, const vec3
 	entlist[ entnum ].touched = qtrue;
 
 	// Play if need be
-	if( need_to_play )
+	if ( need_to_play )
 	{
 		qalSourcePlay( srclist[ src ].source );
 	}
@@ -488,7 +488,7 @@ void SndAl_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t
 
 void SndAl_StopLoopingSound( int entityNum )
 {
-	if( entlist[ entityNum ].has_sfx )
+	if ( entlist[ entityNum ].has_sfx )
 	{
 		al_src_kill( entlist[ entityNum ].sfx );
 	}
@@ -501,14 +501,14 @@ void al_src_update()
 	int   ent;
 	ALint state;
 
-	for( i = 0; i < src_count; i++ )
+	for ( i = 0; i < src_count; i++ )
 	{
-		if( srclist[ i ].isLocked )
+		if ( srclist[ i ].isLocked )
 		{
 			continue;
 		}
 
-		if( !srclist[ i ].isActive )
+		if ( !srclist[ i ].isActive )
 		{
 			continue;
 		}
@@ -516,24 +516,24 @@ void al_src_update()
 		// Check if it's done, and flag it
 		qalGetSourcei( srclist[ i ].source, AL_SOURCE_STATE, &state );
 
-		if( state == AL_STOPPED )
+		if ( state == AL_STOPPED )
 		{
 			al_src_kill( i );
 			continue;
 		}
 
 		// Update source parameters
-		if( ( s_gain->modified ) || ( s_volume->modified ) )
+		if ( ( s_gain->modified ) || ( s_volume->modified ) )
 		{
 			qalSourcef( srclist[ i ].source, AL_GAIN, s_gain->value * s_volume->value );
 		}
 
-		if( ( s_rolloff->modified ) && ( !srclist[ i ].local ) )
+		if ( ( s_rolloff->modified ) && ( !srclist[ i ].local ) )
 		{
 			qalSourcef( srclist[ i ].source, AL_ROLLOFF_FACTOR, s_rolloff->value );
 		}
 
-		if( s_minDistance->modified )
+		if ( s_minDistance->modified )
 		{
 			qalSourcef( srclist[ i ].source, AL_REFERENCE_DISTANCE, s_minDistance->value );
 		}
@@ -541,9 +541,9 @@ void al_src_update()
 		ent = srclist[ i ].entity;
 
 		// If a looping effect hasn't been touched this frame, kill it
-		if( srclist[ i ].isLooping )
+		if ( srclist[ i ].isLooping )
 		{
-			if( !entlist[ ent ].touched )
+			if ( !entlist[ ent ].touched )
 			{
 				ambient_count--;
 				al_src_kill( i );
@@ -553,7 +553,7 @@ void al_src_update()
 		}
 
 		// See if it needs to be moved
-		if( srclist[ i ].isTracking )
+		if ( srclist[ i ].isTracking )
 		{
 			vec3_t sorigin;
 			VectorScale( entlist[ ent ].origin, POSITION_SCALE, sorigin );
@@ -566,7 +566,7 @@ void al_src_shutup()
 {
 	int i;
 
-	for( i = 0; i < src_count; i++ )
+	for ( i = 0; i < src_count; i++ )
 	{
 		al_src_kill( i );
 	}

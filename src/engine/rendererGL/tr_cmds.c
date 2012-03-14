@@ -34,7 +34,7 @@ R_PerformanceCounters
 */
 void R_PerformanceCounters( void )
 {
-	if( !r_speeds->integer )
+	if ( !r_speeds->integer )
 	{
 		// clear the counters even if we aren't printing
 		Com_Memset( &tr.pc, 0, sizeof( tr.pc ) );
@@ -42,7 +42,7 @@ void R_PerformanceCounters( void )
 		return;
 	}
 
-	if( r_speeds->integer == RSPEEDS_GENERAL )
+	if ( r_speeds->integer == RSPEEDS_GENERAL )
 	{
 		ri.Printf( PRINT_ALL, "%i views %i portals %i batches %i surfs %i leafs %i verts %i tris\n",
 		           backEnd.pc.c_views, backEnd.pc.c_portals, backEnd.pc.c_batches, backEnd.pc.c_surfaces, tr.pc.c_leafs,
@@ -67,7 +67,7 @@ void R_PerformanceCounters( void )
 		           backEnd.pc.c_multiDrawPrimitives,
 		           backEnd.pc.c_multiVboIndexes / 3 );
 	}
-	else if( r_speeds->integer == RSPEEDS_CULLING )
+	else if ( r_speeds->integer == RSPEEDS_CULLING )
 	{
 		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout\n",
 		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out );
@@ -84,11 +84,11 @@ void R_PerformanceCounters( void )
 		ri.Printf( PRINT_ALL, "(md5) %i bin %i bclip %i bout\n",
 		           tr.pc.c_box_cull_md5_in, tr.pc.c_box_cull_md5_clip, tr.pc.c_box_cull_md5_out );
 	}
-	else if( r_speeds->integer == RSPEEDS_VIEWCLUSTER )
+	else if ( r_speeds->integer == RSPEEDS_VIEWCLUSTER )
 	{
 		ri.Printf( PRINT_ALL, "viewcluster: %i\n", tr.visClusters[ tr.visIndex ] );
 	}
-	else if( r_speeds->integer == RSPEEDS_LIGHTS )
+	else if ( r_speeds->integer == RSPEEDS_LIGHTS )
 	{
 		ri.Printf( PRINT_ALL, "dlight srf:%i culled:%i\n", tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled );
 
@@ -96,21 +96,21 @@ void R_PerformanceCounters( void )
 
 		ri.Printf( PRINT_ALL, "slights:%i interactions:%i\n", tr.pc.c_slights, tr.pc.c_slightInteractions );
 	}
-	else if( r_speeds->integer == RSPEEDS_SHADOWCUBE_CULLING )
+	else if ( r_speeds->integer == RSPEEDS_SHADOWCUBE_CULLING )
 	{
 		ri.Printf( PRINT_ALL, "omni pyramid tests:%i bin:%i bclip:%i bout:%i\n",
 		           tr.pc.c_pyramidTests, tr.pc.c_pyramid_cull_ent_in, tr.pc.c_pyramid_cull_ent_clip, tr.pc.c_pyramid_cull_ent_out );
 	}
-	else if( r_speeds->integer == RSPEEDS_FOG )
+	else if ( r_speeds->integer == RSPEEDS_FOG )
 	{
 		ri.Printf( PRINT_ALL, "fog srf:%i batches:%i\n", backEnd.pc.c_fogSurfaces, backEnd.pc.c_fogBatches );
 	}
-	else if( r_speeds->integer == RSPEEDS_FLARES )
+	else if ( r_speeds->integer == RSPEEDS_FLARES )
 	{
 		ri.Printf( PRINT_ALL, "flare adds:%i tests:%i renders:%i\n",
 		           backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders );
 	}
-	else if( r_speeds->integer == RSPEEDS_OCCLUSION_QUERIES )
+	else if ( r_speeds->integer == RSPEEDS_OCCLUSION_QUERIES )
 	{
 		ri.Printf( PRINT_ALL, "occlusion queries:%i multi:%i saved:%i culled lights:%i culled entities:%i culled leafs:%i response time:%i fetch time:%i\n",
 		           backEnd.pc.c_occlusionQueries,
@@ -122,13 +122,13 @@ void R_PerformanceCounters( void )
 		           backEnd.pc.c_occlusionQueriesResponseTime,
 		           backEnd.pc.c_occlusionQueriesFetchTime );
 	}
-	else if( r_speeds->integer == RSPEEDS_DEPTH_BOUNDS_TESTS )
+	else if ( r_speeds->integer == RSPEEDS_DEPTH_BOUNDS_TESTS )
 	{
 		ri.Printf( PRINT_ALL, "depth bounds tests:%i rejected:%i\n", tr.pc.c_depthBoundsTests, tr.pc.c_depthBoundsTestsRejected );
 	}
-	else if( r_speeds->integer == RSPEEDS_SHADING_TIMES )
+	else if ( r_speeds->integer == RSPEEDS_SHADING_TIMES )
 	{
-		if( DS_STANDARD_ENABLED() )
+		if ( DS_STANDARD_ENABLED() )
 		{
 			ri.Printf( PRINT_ALL, "deferred shading times: g-buffer:%i lighting:%i translucent:%i\n", backEnd.pc.c_deferredGBufferTime,
 			           backEnd.pc.c_deferredLightingTime, backEnd.pc.c_forwardTranslucentTime );
@@ -139,7 +139,7 @@ void R_PerformanceCounters( void )
 			           backEnd.pc.c_forwardLightingTime );
 		}
 	}
-	else if( r_speeds->integer == RSPEEDS_CHC )
+	else if ( r_speeds->integer == RSPEEDS_CHC )
 	{
 		ri.Printf( PRINT_ALL, "%i CHC++ ms %i queries %i multi queries %i saved\n",
 		           tr.pc.c_CHCTime,
@@ -147,11 +147,11 @@ void R_PerformanceCounters( void )
 		           tr.pc.c_occlusionQueriesMulti,
 		           tr.pc.c_occlusionQueriesSaved );
 	}
-	else if( r_speeds->integer == RSPEEDS_NEAR_FAR )
+	else if ( r_speeds->integer == RSPEEDS_NEAR_FAR )
 	{
 		ri.Printf( PRINT_ALL, "zNear: %.0f zFar: %.0f\n", tr.viewParms.zNear, tr.viewParms.zFar );
 	}
-	else if( r_speeds->integer == RSPEEDS_DECALS )
+	else if ( r_speeds->integer == RSPEEDS_DECALS )
 	{
 		ri.Printf( PRINT_ALL, "decal projectors: %d test surfs: %d clip surfs: %d decal surfs: %d created: %d\n",
 		           tr.pc.c_decalProjectors, tr.pc.c_decalTestSurfaces, tr.pc.c_decalClipSurfaces, tr.pc.c_decalSurfaces,
@@ -171,11 +171,11 @@ void R_InitCommandBuffers( void )
 {
 	glConfig.smpActive = qfalse;
 
-	if( r_smp->integer )
+	if ( r_smp->integer )
 	{
 		ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
 
-		if( GLimp_SpawnRenderThread( RB_RenderThread ) )
+		if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
 		{
 			ri.Printf( PRINT_ALL, "...succeeded.\n" );
 			glConfig.smpActive = qtrue;
@@ -195,7 +195,7 @@ R_ShutdownCommandBuffers
 void R_ShutdownCommandBuffers( void )
 {
 	// kill the rendering thread
-	if( glConfig.smpActive )
+	if ( glConfig.smpActive )
 	{
 		GLimp_WakeRenderer( NULL );
 		glConfig.smpActive = qfalse;
@@ -222,14 +222,14 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 	// clear it out, in case this is a sync and not a buffer flip
 	cmdList->used = 0;
 
-	if( glConfig.smpActive )
+	if ( glConfig.smpActive )
 	{
 		// if the render thread is not idle, wait for it
-		if( renderThreadActive )
+		if ( renderThreadActive )
 		{
 			c_blockedOnRender++;
 
-			if( r_showSmp->integer )
+			if ( r_showSmp->integer )
 			{
 				ri.Printf( PRINT_ALL, "R" );
 			}
@@ -238,7 +238,7 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 		{
 			c_blockedOnMain++;
 
-			if( r_showSmp->integer )
+			if ( r_showSmp->integer )
 			{
 				ri.Printf( PRINT_ALL, "." );
 			}
@@ -250,16 +250,16 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 
 	// at this point, the back end thread is idle, so it is ok
 	// to look at it's performance counters
-	if( runPerformanceCounters )
+	if ( runPerformanceCounters )
 	{
 		R_PerformanceCounters();
 	}
 
 	// actually start the commands going
-	if( !r_skipBackEnd->integer )
+	if ( !r_skipBackEnd->integer )
 	{
 		// let it start on the new batch
-		if( !glConfig.smpActive )
+		if ( !glConfig.smpActive )
 		{
 			RB_ExecuteRenderCommands( cmdList->cmds );
 		}
@@ -282,14 +282,14 @@ OpenGL calls until R_IssueRenderCommands is called.
 */
 void R_SyncRenderThread( void )
 {
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
 	R_IssueRenderCommands( qfalse );
 
-	if( !glConfig.smpActive )
+	if ( !glConfig.smpActive )
 	{
 		return;
 	}
@@ -313,9 +313,9 @@ void           *R_GetCommandBuffer( int bytes )
 
 	// always leave room for the swap buffers and end of list commands
 	// RB: added swapBuffers_t from ET
-	if( cmdList->used + bytes + ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) > MAX_RENDER_COMMANDS )
+	if ( cmdList->used + bytes + ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) > MAX_RENDER_COMMANDS )
 	{
-		if( bytes > MAX_RENDER_COMMANDS - ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) )
+		if ( bytes > MAX_RENDER_COMMANDS - ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) )
 		{
 			ri.Error( ERR_FATAL, "R_GetCommandBuffer: bad size %i", bytes );
 		}
@@ -340,7 +340,7 @@ void R_AddDrawViewCmd()
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -362,21 +362,21 @@ void RE_SetColor( const float *rgba )
 {
 	setColorCommand_t *cmd;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
 
 	cmd->commandId = RC_SET_COLOR;
 
-	if( !rgba )
+	if ( !rgba )
 	{
 		static float colorWhite[ 4 ] = { 1, 1, 1, 1 };
 
@@ -396,7 +396,7 @@ RE_SetClipRegion
 */
 void RE_SetClipRegion( const float *region )
 {
-	if( region == NULL )
+	if ( region == NULL )
 	{
 		Com_Memset( tr.clipRegion, 0, sizeof( vec4_t ) );
 	}
@@ -415,14 +415,14 @@ void RE_StretchPic( float x, float y, float w, float h, float s1, float t1, floa
 {
 	stretchPicCommand_t *cmd;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -450,14 +450,14 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 {
 	poly2dCommand_t *cmd;
 
-	if( r_numPolyVerts + numverts > r_maxPolyVerts->integer )
+	if ( r_numPolyVerts + numverts > r_maxPolyVerts->integer )
 	{
 		return;
 	}
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -482,7 +482,7 @@ void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, floa
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -516,7 +516,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -532,7 +532,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 	cmd->s2 = s2;
 	cmd->t2 = t2;
 
-	if( !gradientColor )
+	if ( !gradientColor )
 	{
 		static float colorWhite[ 4 ] = { 1, 1, 1, 1 };
 
@@ -560,7 +560,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 {
 	drawBufferCommand_t *cmd;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
@@ -581,7 +581,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	// draw buffer stuff
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -591,9 +591,9 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 #else
 
 	// do overdraw measurement
-	if( r_measureOverdraw->integer )
+	if ( r_measureOverdraw->integer )
 	{
-		if( glConfig.stencilBits < 4 )
+		if ( glConfig.stencilBits < 4 )
 		{
 			ri.Printf( PRINT_ALL, "Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits );
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
@@ -614,7 +614,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	else
 	{
 		// this is only reached if it was on and is now off
-		if( r_measureOverdraw->modified )
+		if ( r_measureOverdraw->modified )
 		{
 			R_SyncRenderThread();
 			glDisable( GL_STENCIL_TEST );
@@ -624,7 +624,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	}
 
 	// texturemode stuff
-	if( r_textureMode->modified )
+	if ( r_textureMode->modified )
 	{
 		R_SyncRenderThread();
 		GL_TextureMode( r_textureMode->string );
@@ -632,7 +632,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	}
 
 	// gamma stuff
-	if( r_gamma->modified )
+	if ( r_gamma->modified )
 	{
 		r_gamma->modified = qfalse;
 
@@ -641,16 +641,16 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	}
 
 	// check for errors
-	if( !r_ignoreGLErrors->integer )
+	if ( !r_ignoreGLErrors->integer )
 	{
 		int  err;
 		char s[ 128 ];
 
 		R_SyncRenderThread();
 
-		if( ( err = glGetError() ) != GL_NO_ERROR )
+		if ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
-			switch( err )
+			switch ( err )
 			{
 				case GL_INVALID_ENUM:
 					strcpy( s, "GL_INVALID_ENUM" );
@@ -697,20 +697,20 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	// draw buffer stuff
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
 
 	cmd->commandId = RC_DRAW_BUFFER;
 
-	if( glConfig.stereoEnabled )
+	if ( glConfig.stereoEnabled )
 	{
-		if( stereoFrame == STEREO_LEFT )
+		if ( stereoFrame == STEREO_LEFT )
 		{
 			cmd->buffer = ( int ) GL_BACK_LEFT;
 		}
-		else if( stereoFrame == STEREO_RIGHT )
+		else if ( stereoFrame == STEREO_RIGHT )
 		{
 			cmd->buffer = ( int ) GL_BACK_RIGHT;
 		}
@@ -721,12 +721,12 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	}
 	else
 	{
-		if( stereoFrame != STEREO_CENTER )
+		if ( stereoFrame != STEREO_CENTER )
 		{
 			ri.Error( ERR_FATAL, "RE_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame );
 		}
 
-		if( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) )
+		if ( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) )
 		{
 			cmd->buffer = ( int ) GL_FRONT;
 		}
@@ -750,14 +750,14 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 {
 	swapBuffersCommand_t *cmd;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -770,14 +770,14 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 	// may still be rendering into the current ones
 	R_ToggleSmpFrame();
 
-	if( frontEndMsec )
+	if ( frontEndMsec )
 	{
 		*frontEndMsec = tr.frontEndMsec;
 	}
 
 	tr.frontEndMsec = 0;
 
-	if( backEndMsec )
+	if ( backEndMsec )
 	{
 		*backEndMsec = backEnd.pc.msec;
 	}
@@ -794,14 +794,14 @@ void RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encode
 {
 	videoFrameCommand_t *cmd;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -830,7 +830,7 @@ void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 
 #if 0
 
-	if( textureid > tr.numImages || textureid < 0 )
+	if ( textureid > tr.numImages || textureid < 0 )
 	{
 		ri.Printf( PRINT_ALL, "Warning: trap_R_RenderToTexture textureid %d out of range.\n", textureid );
 		return;
@@ -838,7 +838,7 @@ void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -865,7 +865,7 @@ void RE_Finish( void )
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}

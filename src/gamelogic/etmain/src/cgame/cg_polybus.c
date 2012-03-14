@@ -44,24 +44,24 @@ polyBuffer_t   *CG_PB_FindFreePolyBuffer( qhandle_t shader, int numVerts, int nu
 	int i;
 
 	// Gordon: first find one with the same shader if possible
-	for( i = 0; i < MAX_PB_BUFFERS; i++ )
+	for ( i = 0; i < MAX_PB_BUFFERS; i++ )
 	{
-		if( cg_polyBuffers[ i ].shader != shader )
+		if ( cg_polyBuffers[ i ].shader != shader )
 		{
 			continue;
 		}
 
-		if( !cg_polyBuffersInuse[ i ] )
+		if ( !cg_polyBuffersInuse[ i ] )
 		{
 			continue;
 		}
 
-		if( cg_polyBuffers[ i ].numIndicies + numIndicies >= MAX_PB_INDICIES )
+		if ( cg_polyBuffers[ i ].numIndicies + numIndicies >= MAX_PB_INDICIES )
 		{
 			continue;
 		}
 
-		if( cg_polyBuffers[ i ].numVerts + numVerts >= MAX_PB_VERTS )
+		if ( cg_polyBuffers[ i ].numVerts + numVerts >= MAX_PB_VERTS )
 		{
 			continue;
 		}
@@ -73,9 +73,9 @@ polyBuffer_t   *CG_PB_FindFreePolyBuffer( qhandle_t shader, int numVerts, int nu
 	}
 
 	// Gordon: or just find a free one
-	for( i = 0; i < MAX_PB_BUFFERS; i++ )
+	for ( i = 0; i < MAX_PB_BUFFERS; i++ )
 	{
-		if( !cg_polyBuffersInuse[ i ] )
+		if ( !cg_polyBuffersInuse[ i ] )
 		{
 			cg_polyBuffersInuse[ i ] = qtrue;
 			cg_polyBuffers[ i ].shader = shader;
@@ -99,9 +99,9 @@ void CG_PB_RenderPolyBuffers( void )
 {
 	int i;
 
-	for( i = 0; i < MAX_PB_BUFFERS; i++ )
+	for ( i = 0; i < MAX_PB_BUFFERS; i++ )
 	{
-		if( cg_polyBuffersInuse[ i ] )
+		if ( cg_polyBuffersInuse[ i ] )
 		{
 			trap_R_AddPolyBufferToScene( &cg_polyBuffers[ i ] );
 		}

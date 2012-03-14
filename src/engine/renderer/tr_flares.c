@@ -113,7 +113,7 @@ void R_ClearFlares( void )
 	r_activeFlares = NULL;
 	r_inactiveFlares = NULL;
 
-	for( i = 0; i < MAX_FLARES; i++ )
+	for ( i = 0; i < MAX_FLARES; i++ )
 	{
 		r_flareStructs[ i ].next = r_inactiveFlares;
 		r_inactiveFlares = &r_flareStructs[ i ];
@@ -146,9 +146,9 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, float s
 	//ri.Printf(PRINT_ALL, "eye:  %f  %f  %f  %f\n", eye[0], eye[1], eye[2], eye[3]);
 
 	// check to see if the point is completely off screen
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		if( clip[ i ] >= clip[ 3 ] || clip[ i ] <= -clip[ 3 ] )
+		if ( clip[ i ] >= clip[ 3 ] || clip[ i ] <= -clip[ 3 ] )
 		{
 			return;
 		}
@@ -158,8 +158,8 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, float s
 
 	//ri.Printf(PRINT_ALL, "window:  %f  %f  %f  \n", window[0], window[1], window[2]);
 
-	if( window[ 0 ] < 0 || window[ 0 ] >= backEnd.viewParms.viewportWidth
-	    || window[ 1 ] < 0 || window[ 1 ] >= backEnd.viewParms.viewportHeight )
+	if ( window[ 0 ] < 0 || window[ 0 ] >= backEnd.viewParms.viewportWidth
+	     || window[ 1 ] < 0 || window[ 1 ] >= backEnd.viewParms.viewportHeight )
 	{
 		return; // shouldn't happen, since we check the clip[] above, except for FP rounding
 	}
@@ -167,21 +167,21 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, float s
 	// see if a flare with a matching surface, scene, and view exists
 	oldest = r_flareStructs;
 
-	for( f = r_activeFlares; f; f = f->next )
+	for ( f = r_activeFlares; f; f = f->next )
 	{
 //      if ( f->surface == surface && f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal ) {
 
 		// (SA) added back in more checks for different scenes
-		if( f->id == id && f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal )
+		if ( f->id == id && f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal )
 		{
 			break;
 		}
 	}
 
 	// allocate a new one
-	if( !f )
+	if ( !f )
 	{
-		if( !r_inactiveFlares )
+		if ( !r_inactiveFlares )
 		{
 			// the list is completely full
 			return;
@@ -201,7 +201,7 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, float s
 
 	f->cgvisible = cgvisible;
 
-	if( f->addedFrame != backEnd.viewParms.frameCount - 1 )
+	if ( f->addedFrame != backEnd.viewParms.frameCount - 1 )
 	{
 		f->visible = qfalse;
 		f->fadeTime = backEnd.refdef.time - 2000;
@@ -216,7 +216,7 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, float s
 
 	// fade the intensity of the flare down as the
 	// light surface turns away from the viewer
-	if( normal )
+	if ( normal )
 	{
 		VectorSubtract( backEnd.viewParms.orientation.origin, point, local );
 		VectorNormalizeFast( local );
@@ -243,7 +243,7 @@ void RB_AddDlightFlares( void )
 	int      id = 0;
 	fog_t    *fog;
 
-	if( r_flares->integer < 2 )
+	if ( r_flares->integer < 2 )
 	{
 		return;
 	}
@@ -251,28 +251,28 @@ void RB_AddDlightFlares( void )
 	l = backEnd.refdef.dlights;
 	fog = tr.world->fogs;
 
-	for( i = 0; i < backEnd.refdef.num_dlights; i++, l++ )
+	for ( i = 0; i < backEnd.refdef.num_dlights; i++, l++ )
 	{
 		// find which fog volume the light is in
-		for( j = 1; j < tr.world->numfogs; j++ )
+		for ( j = 1; j < tr.world->numfogs; j++ )
 		{
 			fog = &tr.world->fogs[ j ];
 
-			for( k = 0; k < 3; k++ )
+			for ( k = 0; k < 3; k++ )
 			{
-				if( l->origin[ k ] < fog->bounds[ 0 ][ k ] || l->origin[ k ] > fog->bounds[ 1 ][ k ] )
+				if ( l->origin[ k ] < fog->bounds[ 0 ][ k ] || l->origin[ k ] > fog->bounds[ 1 ][ k ] )
 				{
 					break;
 				}
 			}
 
-			if( k == 3 )
+			if ( k == 3 )
 			{
 				break;
 			}
 		}
 
-		if( j == tr.world->numfogs )
+		if ( j == tr.world->numfogs )
 		{
 			j = 0;
 		}
@@ -292,12 +292,12 @@ void RB_AddCoronaFlares( void )
 	int      i, j, k;
 	fog_t    *fog;
 
-	if( r_flares->integer != 1 && r_flares->integer != 3 )
+	if ( r_flares->integer != 1 && r_flares->integer != 3 )
 	{
 		return;
 	}
 
-	if( !( tr.world ) )
+	if ( !( tr.world ) )
 	{
 		// (SA) possible currently at the player model selection menu
 		return;
@@ -306,28 +306,28 @@ void RB_AddCoronaFlares( void )
 	cor = backEnd.refdef.coronas;
 	fog = tr.world->fogs;
 
-	for( i = 0; i < backEnd.refdef.num_coronas; i++, cor++ )
+	for ( i = 0; i < backEnd.refdef.num_coronas; i++, cor++ )
 	{
 		// find which fog volume the corona is in
-		for( j = 1; j < tr.world->numfogs; j++ )
+		for ( j = 1; j < tr.world->numfogs; j++ )
 		{
 			fog = &tr.world->fogs[ j ];
 
-			for( k = 0; k < 3; k++ )
+			for ( k = 0; k < 3; k++ )
 			{
-				if( cor->origin[ k ] < fog->bounds[ 0 ][ k ] || cor->origin[ k ] > fog->bounds[ 1 ][ k ] )
+				if ( cor->origin[ k ] < fog->bounds[ 0 ][ k ] || cor->origin[ k ] > fog->bounds[ 1 ][ k ] )
 				{
 					break;
 				}
 			}
 
-			if( k == 3 )
+			if ( k == 3 )
 			{
 				break;
 			}
 		}
 
-		if( j == tr.world->numfogs )
+		if ( j == tr.world->numfogs )
 		{
 			j = 0;
 		}
@@ -379,9 +379,9 @@ void RB_TestFlare( flare_t *f )
 //  visible = qtrue;
 	visible = f->cgvisible;
 
-	if( visible )
+	if ( visible )
 	{
-		if( !f->visible )
+		if ( !f->visible )
 		{
 			f->visible = qtrue;
 			f->fadeTime = backEnd.refdef.time - 1;
@@ -391,7 +391,7 @@ void RB_TestFlare( flare_t *f )
 	}
 	else
 	{
-		if( f->visible )
+		if ( f->visible )
 		{
 			f->visible = qfalse;
 			f->fadeTime = backEnd.refdef.time - 1;
@@ -400,12 +400,12 @@ void RB_TestFlare( flare_t *f )
 		fade = 1.0f - ( ( backEnd.refdef.time - f->fadeTime ) / 1000.0f ) * r_flareFade->value;
 	}
 
-	if( fade < 0 )
+	if ( fade < 0 )
 	{
 		fade = 0;
 	}
 
-	if( fade > 1 )
+	if ( fade > 1 )
 	{
 		fade = 1;
 	}
@@ -521,7 +521,7 @@ void RB_RenderFlares( void )
 	flare_t  **prev;
 	qboolean draw;
 
-	if( !r_flares->integer )
+	if ( !r_flares->integer )
 	{
 		return;
 	}
@@ -534,10 +534,10 @@ void RB_RenderFlares( void )
 	draw = qfalse;
 	prev = &r_activeFlares;
 
-	while( ( f = *prev ) != NULL )
+	while ( ( f = *prev ) != NULL )
 	{
 		// throw out any flares that weren't added last frame
-		if( f->addedFrame < backEnd.viewParms.frameCount - 1 )
+		if ( f->addedFrame < backEnd.viewParms.frameCount - 1 )
 		{
 			*prev = f->next;
 			f->next = r_inactiveFlares;
@@ -548,11 +548,11 @@ void RB_RenderFlares( void )
 		// don't draw any here that aren't from this scene / portal
 		f->drawIntensity = 0;
 
-		if( f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal )
+		if ( f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal )
 		{
 			RB_TestFlare( f );
 
-			if( f->drawIntensity )
+			if ( f->drawIntensity )
 			{
 				draw = qtrue;
 			}
@@ -569,12 +569,12 @@ void RB_RenderFlares( void )
 		prev = &f->next;
 	}
 
-	if( !draw )
+	if ( !draw )
 	{
 		return; // none visible
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		glDisable( GL_CLIP_PLANE0 );
 	}
@@ -587,9 +587,9 @@ void RB_RenderFlares( void )
 	glOrtho( backEnd.viewParms.viewportX, backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
 	         backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight, -99999, 99999 );
 
-	for( f = r_activeFlares; f; f = f->next )
+	for ( f = r_activeFlares; f; f = f->next )
 	{
-		if( f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal && f->drawIntensity )
+		if ( f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal && f->drawIntensity )
 		{
 			RB_RenderFlare( f );
 		}

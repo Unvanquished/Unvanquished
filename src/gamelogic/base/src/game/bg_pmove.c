@@ -69,20 +69,20 @@ void PM_AddTouchEnt( int entityNum )
 {
 	int i;
 
-	if( entityNum == ENTITYNUM_WORLD )
+	if ( entityNum == ENTITYNUM_WORLD )
 	{
 		return;
 	}
 
-	if( pm->numtouch == MAXTOUCH )
+	if ( pm->numtouch == MAXTOUCH )
 	{
 		return;
 	}
 
 	// see if it is already added
-	for( i = 0; i < pm->numtouch; i++ )
+	for ( i = 0; i < pm->numtouch; i++ )
 	{
-		if( pm->touchents[ i ] == entityNum )
+		if ( pm->touchents[ i ] == entityNum )
 		{
 			return;
 		}
@@ -100,7 +100,7 @@ PM_StartTorsoAnim
 */
 static void PM_StartTorsoAnim( int anim )
 {
-	if( pm->ps->pm_type >= PM_DEAD )
+	if ( pm->ps->pm_type >= PM_DEAD )
 	{
 		return;
 	}
@@ -116,22 +116,22 @@ PM_StartLegsAnim
 */
 static void PM_StartLegsAnim( int anim )
 {
-	if( pm->ps->pm_type >= PM_DEAD )
+	if ( pm->ps->pm_type >= PM_DEAD )
 	{
 		return;
 	}
 
 	//legsTimer is clamped too tightly for nonsegmented models
-	if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 	{
-		if( pm->ps->legsTimer > 0 )
+		if ( pm->ps->legsTimer > 0 )
 		{
 			return; // a high priority animation is running
 		}
 	}
 	else
 	{
-		if( pm->ps->torsoTimer > 0 )
+		if ( pm->ps->torsoTimer > 0 )
 		{
 			return; // a high priority animation is running
 		}
@@ -148,22 +148,22 @@ PM_ContinueLegsAnim
 */
 static void PM_ContinueLegsAnim( int anim )
 {
-	if( ( pm->ps->legsAnim & ~ANIM_TOGGLEBIT ) == anim )
+	if ( ( pm->ps->legsAnim & ~ANIM_TOGGLEBIT ) == anim )
 	{
 		return;
 	}
 
 	//legsTimer is clamped too tightly for nonsegmented models
-	if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 	{
-		if( pm->ps->legsTimer > 0 )
+		if ( pm->ps->legsTimer > 0 )
 		{
 			return; // a high priority animation is running
 		}
 	}
 	else
 	{
-		if( pm->ps->torsoTimer > 0 )
+		if ( pm->ps->torsoTimer > 0 )
 		{
 			return; // a high priority animation is running
 		}
@@ -179,12 +179,12 @@ PM_ContinueTorsoAnim
 */
 static void PM_ContinueTorsoAnim( int anim )
 {
-	if( ( pm->ps->torsoAnim & ~ANIM_TOGGLEBIT ) == anim )
+	if ( ( pm->ps->torsoAnim & ~ANIM_TOGGLEBIT ) == anim )
 	{
 		return;
 	}
 
-	if( pm->ps->torsoTimer > 0 )
+	if ( pm->ps->torsoTimer > 0 )
 	{
 		return; // a high priority animation is running
 	}
@@ -200,7 +200,7 @@ PM_ForceLegsAnim
 static void PM_ForceLegsAnim( int anim )
 {
 	//legsTimer is clamped too tightly for nonsegmented models
-	if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 	{
 		pm->ps->legsTimer = 0;
 	}
@@ -229,7 +229,7 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce )
 
 	//Com_Printf( "%1.0f ", backoff );
 
-	if( backoff < 0 )
+	if ( backoff < 0 )
 	{
 		backoff *= overbounce;
 	}
@@ -238,7 +238,7 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce )
 		backoff /= overbounce;
 	}
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		change = normal[ i ] * backoff;
 		//Com_Printf( "%1.0f ", change );
@@ -267,14 +267,14 @@ static void PM_Friction( void )
 	//TA: make sure vertical velocity is NOT set to zero when wall climbing
 	VectorCopy( vel, vec );
 
-	if( pml.walking && !( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
+	if ( pml.walking && !( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
 	{
 		vec[ 2 ] = 0; // ignore slope movement
 	}
 
 	speed = VectorLength( vec );
 
-	if( speed < 1 )
+	if ( speed < 1 )
 	{
 		vel[ 0 ] = 0;
 		vel[ 1 ] = 0; // allow sinking underwater
@@ -285,12 +285,12 @@ static void PM_Friction( void )
 	drop = 0;
 
 	// apply ground friction
-	if( pm->waterlevel <= 1 )
+	if ( pm->waterlevel <= 1 )
 	{
-		if( ( pml.walking || pml.ladder ) && !( pml.groundTrace.surfaceFlags & SURF_SLICK ) )
+		if ( ( pml.walking || pml.ladder ) && !( pml.groundTrace.surfaceFlags & SURF_SLICK ) )
 		{
 			// if getting knocked back, no friction
-			if( !( pm->ps->pm_flags & PMF_TIME_KNOCKBACK ) )
+			if ( !( pm->ps->pm_flags & PMF_TIME_KNOCKBACK ) )
 			{
 				float stopSpeed = BG_FindStopSpeedForClass( pm->ps->stats[ STAT_PCLASS ] );
 
@@ -301,18 +301,18 @@ static void PM_Friction( void )
 	}
 
 	// apply water friction even if just wading
-	if( pm->waterlevel )
+	if ( pm->waterlevel )
 	{
 		drop += speed * pm_waterfriction * pm->waterlevel * pml.frametime;
 	}
 
 	// apply flying friction
-	if( pm->ps->pm_type == PM_JETPACK )
+	if ( pm->ps->pm_type == PM_JETPACK )
 	{
 		drop += speed * pm_flightfriction * pml.frametime;
 	}
 
-	if( pm->ps->pm_type == PM_SPECTATOR )
+	if ( pm->ps->pm_type == PM_SPECTATOR )
 	{
 		drop += speed * pm_spectatorfriction * pml.frametime;
 	}
@@ -320,7 +320,7 @@ static void PM_Friction( void )
 	// scale the velocity
 	newspeed = speed - drop;
 
-	if( newspeed < 0 )
+	if ( newspeed < 0 )
 	{
 		newspeed = 0;
 	}
@@ -349,19 +349,19 @@ static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel )
 	currentspeed = DotProduct( pm->ps->velocity, wishdir );
 	addspeed = wishspeed - currentspeed;
 
-	if( addspeed <= 0 )
+	if ( addspeed <= 0 )
 	{
 		return;
 	}
 
 	accelspeed = accel * pml.frametime * wishspeed;
 
-	if( accelspeed > addspeed )
+	if ( accelspeed > addspeed )
 	{
 		accelspeed = addspeed;
 	}
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		pm->ps->velocity[ i ] += accelspeed * wishdir[ i ];
 	}
@@ -379,7 +379,7 @@ static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel )
 
 	canPush = accel * pml.frametime * wishspeed;
 
-	if( canPush > pushLen )
+	if ( canPush > pushLen )
 	{
 		canPush = pushLen;
 	}
@@ -404,9 +404,9 @@ static float PM_CmdScale( usercmd_t *cmd )
 	float scale;
 	float modifier = 1.0f;
 
-	if( pm->ps->stats[ STAT_PTEAM ] == PTE_HUMANS && pm->ps->pm_type == PM_NORMAL )
+	if ( pm->ps->stats[ STAT_PTEAM ] == PTE_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
-		if( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST )
+		if ( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST )
 		{
 			modifier *= HUMAN_SPRINT_MODIFIER;
 		}
@@ -415,33 +415,33 @@ static float PM_CmdScale( usercmd_t *cmd )
 			modifier *= HUMAN_JOG_MODIFIER;
 		}
 
-		if( cmd->forwardmove < 0 )
+		if ( cmd->forwardmove < 0 )
 		{
 			//can't run backwards
 			modifier *= HUMAN_BACK_MODIFIER;
 		}
-		else if( cmd->rightmove )
+		else if ( cmd->rightmove )
 		{
 			//can't move that fast sideways
 			modifier *= HUMAN_SIDE_MODIFIER;
 		}
 
 		//must have +ve stamina to jump
-		if( pm->ps->stats[ STAT_STAMINA ] < 0 )
+		if ( pm->ps->stats[ STAT_STAMINA ] < 0 )
 		{
 			cmd->upmove = 0;
 		}
 
 		//slow down once stamina depletes
-		if( pm->ps->stats[ STAT_STAMINA ] <= -500 )
+		if ( pm->ps->stats[ STAT_STAMINA ] <= -500 )
 		{
 			modifier *= ( float )( pm->ps->stats[ STAT_STAMINA ] + 1000 ) / 500.0f;
 		}
 
-		if( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
+		if ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
 		{
-			if( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
-			    BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
+			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
+			     BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
 			{
 				modifier *= CREEP_ARMOUR_MODIFIER;
 			}
@@ -452,39 +452,39 @@ static float PM_CmdScale( usercmd_t *cmd )
 		}
 	}
 
-	if( pm->ps->weapon == WP_ALEVEL4 && pm->ps->pm_flags & PMF_CHARGE )
+	if ( pm->ps->weapon == WP_ALEVEL4 && pm->ps->pm_flags & PMF_CHARGE )
 	{
 		modifier *= ( 1.0f + ( pm->ps->stats[ STAT_MISC ] / ( float ) LEVEL4_CHARGE_TIME ) *
 		              ( LEVEL4_CHARGE_SPEED - 1.0f ) );
 	}
 
 	//slow player if charging up for a pounce
-	if( ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG ) &&
-	    cmd->buttons & BUTTON_ATTACK2 )
+	if ( ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG ) &&
+	     cmd->buttons & BUTTON_ATTACK2 )
 	{
 		modifier *= LEVEL3_POUNCE_SPEED_MOD;
 	}
 
 	//slow the player if slow locked
-	if( pm->ps->stats[ STAT_STATE ] & SS_SLOWLOCKED )
+	if ( pm->ps->stats[ STAT_STATE ] & SS_SLOWLOCKED )
 	{
 		modifier *= ABUILDER_BLOB_SPEED_MOD;
 	}
 
-	if( pm->ps->pm_type == PM_GRABBED )
+	if ( pm->ps->pm_type == PM_GRABBED )
 	{
 		modifier = 0.0f;
 	}
 
-	if( pm->ps->pm_type != PM_SPECTATOR && pm->ps->pm_type != PM_NOCLIP )
+	if ( pm->ps->pm_type != PM_SPECTATOR && pm->ps->pm_type != PM_NOCLIP )
 	{
-		if( BG_FindJumpMagnitudeForClass( pm->ps->stats[ STAT_PCLASS ] ) == 0.0f )
+		if ( BG_FindJumpMagnitudeForClass( pm->ps->stats[ STAT_PCLASS ] ) == 0.0f )
 		{
 			cmd->upmove = 0;
 		}
 
 		//prevent speed distortions for non ducking classes
-		if( !( pm->ps->pm_flags & PMF_DUCKED ) && pm->ps->pm_type != PM_JETPACK && cmd->upmove < 0 )
+		if ( !( pm->ps->pm_flags & PMF_DUCKED ) && pm->ps->pm_type != PM_JETPACK && cmd->upmove < 0 )
 		{
 			cmd->upmove = 0;
 		}
@@ -492,17 +492,17 @@ static float PM_CmdScale( usercmd_t *cmd )
 
 	max = abs( cmd->forwardmove );
 
-	if( abs( cmd->rightmove ) > max )
+	if ( abs( cmd->rightmove ) > max )
 	{
 		max = abs( cmd->rightmove );
 	}
 
-	if( abs( cmd->upmove ) > max )
+	if ( abs( cmd->upmove ) > max )
 	{
 		max = abs( cmd->upmove );
 	}
 
-	if( !max )
+	if ( !max )
 	{
 		return 0;
 	}
@@ -525,37 +525,37 @@ to the facing dir
 */
 static void PM_SetMovementDir( void )
 {
-	if( pm->cmd.forwardmove || pm->cmd.rightmove )
+	if ( pm->cmd.forwardmove || pm->cmd.rightmove )
 	{
-		if( pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0 )
+		if ( pm->cmd.rightmove == 0 && pm->cmd.forwardmove > 0 )
 		{
 			pm->ps->movementDir = 0;
 		}
-		else if( pm->cmd.rightmove < 0 && pm->cmd.forwardmove > 0 )
+		else if ( pm->cmd.rightmove < 0 && pm->cmd.forwardmove > 0 )
 		{
 			pm->ps->movementDir = 1;
 		}
-		else if( pm->cmd.rightmove < 0 && pm->cmd.forwardmove == 0 )
+		else if ( pm->cmd.rightmove < 0 && pm->cmd.forwardmove == 0 )
 		{
 			pm->ps->movementDir = 2;
 		}
-		else if( pm->cmd.rightmove < 0 && pm->cmd.forwardmove < 0 )
+		else if ( pm->cmd.rightmove < 0 && pm->cmd.forwardmove < 0 )
 		{
 			pm->ps->movementDir = 3;
 		}
-		else if( pm->cmd.rightmove == 0 && pm->cmd.forwardmove < 0 )
+		else if ( pm->cmd.rightmove == 0 && pm->cmd.forwardmove < 0 )
 		{
 			pm->ps->movementDir = 4;
 		}
-		else if( pm->cmd.rightmove > 0 && pm->cmd.forwardmove < 0 )
+		else if ( pm->cmd.rightmove > 0 && pm->cmd.forwardmove < 0 )
 		{
 			pm->ps->movementDir = 5;
 		}
-		else if( pm->cmd.rightmove > 0 && pm->cmd.forwardmove == 0 )
+		else if ( pm->cmd.rightmove > 0 && pm->cmd.forwardmove == 0 )
 		{
 			pm->ps->movementDir = 6;
 		}
-		else if( pm->cmd.rightmove > 0 && pm->cmd.forwardmove > 0 )
+		else if ( pm->cmd.rightmove > 0 && pm->cmd.forwardmove > 0 )
 		{
 			pm->ps->movementDir = 7;
 		}
@@ -565,11 +565,11 @@ static void PM_SetMovementDir( void )
 		// if they aren't actively going directly sideways,
 		// change the animation to the diagonal so they
 		// don't stop too crooked
-		if( pm->ps->movementDir == 2 )
+		if ( pm->ps->movementDir == 2 )
 		{
 			pm->ps->movementDir = 1;
 		}
-		else if( pm->ps->movementDir == 6 )
+		else if ( pm->ps->movementDir == 6 )
 		{
 			pm->ps->movementDir = 7;
 		}
@@ -583,19 +583,19 @@ PM_CheckCharge
 */
 static void PM_CheckCharge( void )
 {
-	if( pm->ps->weapon != WP_ALEVEL4 )
+	if ( pm->ps->weapon != WP_ALEVEL4 )
 	{
 		return;
 	}
 
-	if( pm->cmd.buttons & BUTTON_ATTACK2 &&
-	    !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
+	if ( pm->cmd.buttons & BUTTON_ATTACK2 &&
+	     !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
 	{
 		pm->ps->pm_flags &= ~PMF_CHARGE;
 		return;
 	}
 
-	if( pm->ps->stats[ STAT_MISC ] > 0 )
+	if ( pm->ps->stats[ STAT_MISC ] > 0 )
 	{
 		pm->ps->pm_flags |= PMF_CHARGE;
 	}
@@ -612,24 +612,24 @@ PM_CheckPounce
 */
 static qboolean PM_CheckPounce( void )
 {
-	if( pm->ps->weapon != WP_ALEVEL3 &&
-	    pm->ps->weapon != WP_ALEVEL3_UPG )
+	if ( pm->ps->weapon != WP_ALEVEL3 &&
+	     pm->ps->weapon != WP_ALEVEL3_UPG )
 	{
 		return qfalse;
 	}
 
-	if( pm->cmd.buttons & BUTTON_ATTACK2 )
+	if ( pm->cmd.buttons & BUTTON_ATTACK2 )
 	{
 		pm->ps->pm_flags &= ~PMF_CHARGE;
 		return qfalse;
 	}
 
-	if( pm->ps->pm_flags & PMF_CHARGE )
+	if ( pm->ps->pm_flags & PMF_CHARGE )
 	{
 		return qfalse;
 	}
 
-	if( pm->ps->stats[ STAT_MISC ] == 0 )
+	if ( pm->ps->stats[ STAT_MISC ] == 0 )
 	{
 		return qfalse;
 	}
@@ -645,9 +645,9 @@ static qboolean PM_CheckPounce( void )
 
 	PM_AddEvent( EV_JUMP );
 
-	if( pm->cmd.forwardmove >= 0 )
+	if ( pm->cmd.forwardmove >= 0 )
 	{
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMP );
 		}
@@ -660,7 +660,7 @@ static qboolean PM_CheckPounce( void )
 	}
 	else
 	{
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMPB );
 		}
@@ -688,25 +688,25 @@ static qboolean PM_CheckWallJump( void )
 	float  cmdFraction = 1.0f;
 	float  upFraction = 1.5f;
 
-	if( pm->ps->pm_flags & PMF_RESPAWNED )
+	if ( pm->ps->pm_flags & PMF_RESPAWNED )
 	{
 		return qfalse; // don't allow jump until all buttons are up
 	}
 
-	if( pm->cmd.upmove < 10 )
+	if ( pm->cmd.upmove < 10 )
 	{
 		// not holding jump
 		return qfalse;
 	}
 
-	if( pm->ps->pm_flags & PMF_TIME_WALLJUMP )
+	if ( pm->ps->pm_flags & PMF_TIME_WALLJUMP )
 	{
 		return qfalse;
 	}
 
 	// must wait for jump to be released
-	if( pm->ps->pm_flags & PMF_JUMP_HELD &&
-	    pm->ps->grapplePoint[ 2 ] == 1.0f )
+	if ( pm->ps->pm_flags & PMF_JUMP_HELD &&
+	     pm->ps->grapplePoint[ 2 ] == 1.0f )
 	{
 		// clear upmove so cmdscale doesn't lower running speed
 		pm->cmd.upmove = 0;
@@ -727,20 +727,20 @@ static qboolean PM_CheckWallJump( void )
 
 	VectorScale( pm->ps->grapplePoint, normalFraction, dir );
 
-	if( pm->cmd.forwardmove > 0 )
+	if ( pm->cmd.forwardmove > 0 )
 	{
 		VectorMA( dir, cmdFraction, forward, dir );
 	}
-	else if( pm->cmd.forwardmove < 0 )
+	else if ( pm->cmd.forwardmove < 0 )
 	{
 		VectorMA( dir, -cmdFraction, forward, dir );
 	}
 
-	if( pm->cmd.rightmove > 0 )
+	if ( pm->cmd.rightmove > 0 )
 	{
 		VectorMA( dir, cmdFraction, right, dir );
 	}
-	else if( pm->cmd.rightmove < 0 )
+	else if ( pm->cmd.rightmove < 0 )
 	{
 		VectorMA( dir, -cmdFraction, right, dir );
 	}
@@ -752,7 +752,7 @@ static qboolean PM_CheckWallJump( void )
 	          dir, pm->ps->velocity );
 
 	//for a long run of wall jumps the velocity can get pretty large, this caps it
-	if( VectorLength( pm->ps->velocity ) > LEVEL2_WALLJUMP_MAXSPEED )
+	if ( VectorLength( pm->ps->velocity ) > LEVEL2_WALLJUMP_MAXSPEED )
 	{
 		VectorNormalize( pm->ps->velocity );
 		VectorScale( pm->ps->velocity, LEVEL2_WALLJUMP_MAXSPEED, pm->ps->velocity );
@@ -760,9 +760,9 @@ static qboolean PM_CheckWallJump( void )
 
 	PM_AddEvent( EV_JUMP );
 
-	if( pm->cmd.forwardmove >= 0 )
+	if ( pm->cmd.forwardmove >= 0 )
 	{
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMP );
 		}
@@ -775,7 +775,7 @@ static qboolean PM_CheckWallJump( void )
 	}
 	else
 	{
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMPB );
 		}
@@ -797,57 +797,57 @@ PM_CheckJump
 */
 static qboolean PM_CheckJump( void )
 {
-	if( BG_FindJumpMagnitudeForClass( pm->ps->stats[ STAT_PCLASS ] ) == 0.0f )
+	if ( BG_FindJumpMagnitudeForClass( pm->ps->stats[ STAT_PCLASS ] ) == 0.0f )
 	{
 		return qfalse;
 	}
 
-	if( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLJUMPER ) )
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLJUMPER ) )
 	{
 		return PM_CheckWallJump();
 	}
 
 	//can't jump and pounce at the same time
-	if( ( pm->ps->weapon == WP_ALEVEL3 ||
-	      pm->ps->weapon == WP_ALEVEL3_UPG ) &&
-	    pm->ps->stats[ STAT_MISC ] > 0 )
+	if ( ( pm->ps->weapon == WP_ALEVEL3 ||
+	       pm->ps->weapon == WP_ALEVEL3_UPG ) &&
+	     pm->ps->stats[ STAT_MISC ] > 0 )
 	{
 		return qfalse;
 	}
 
 	//can't jump and charge at the same time
-	if( ( pm->ps->weapon == WP_ALEVEL4 ) &&
-	    pm->ps->stats[ STAT_MISC ] > 0 )
+	if ( ( pm->ps->weapon == WP_ALEVEL4 ) &&
+	     pm->ps->stats[ STAT_MISC ] > 0 )
 	{
 		return qfalse;
 	}
 
-	if( ( pm->ps->stats[ STAT_PTEAM ] == PTE_HUMANS ) &&
-	    ( pm->ps->stats[ STAT_STAMINA ] < 0 ) )
+	if ( ( pm->ps->stats[ STAT_PTEAM ] == PTE_HUMANS ) &&
+	     ( pm->ps->stats[ STAT_STAMINA ] < 0 ) )
 	{
 		return qfalse;
 	}
 
-	if( pm->ps->pm_flags & PMF_RESPAWNED )
+	if ( pm->ps->pm_flags & PMF_RESPAWNED )
 	{
 		return qfalse; // don't allow jump until all buttons are up
 	}
 
-	if( pm->cmd.upmove < 10 )
+	if ( pm->cmd.upmove < 10 )
 	{
 		// not holding jump
 		return qfalse;
 	}
 
 	//can't jump whilst grabbed
-	if( pm->ps->pm_type == PM_GRABBED )
+	if ( pm->ps->pm_type == PM_GRABBED )
 	{
 		pm->cmd.upmove = 0;
 		return qfalse;
 	}
 
 	// must wait for jump to be released
-	if( pm->ps->pm_flags & PMF_JUMP_HELD )
+	if ( pm->ps->pm_flags & PMF_JUMP_HELD )
 	{
 		// clear upmove so cmdscale doesn't lower running speed
 		pm->cmd.upmove = 0;
@@ -859,7 +859,7 @@ static qboolean PM_CheckJump( void )
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
 	//TA: take some stamina off
-	if( pm->ps->stats[ STAT_PTEAM ] == PTE_HUMANS )
+	if ( pm->ps->stats[ STAT_PTEAM ] == PTE_HUMANS )
 	{
 		pm->ps->stats[ STAT_STAMINA ] -= 500;
 	}
@@ -867,11 +867,11 @@ static qboolean PM_CheckJump( void )
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
 	//TA: jump away from wall
-	if( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	if ( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
 	{
 		vec3_t normal = { 0, 0, -1 };
 
-		if( !( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING ) )
+		if ( !( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING ) )
 		{
 			VectorCopy( pm->ps->grapplePoint, normal );
 		}
@@ -886,9 +886,9 @@ static qboolean PM_CheckJump( void )
 
 	PM_AddEvent( EV_JUMP );
 
-	if( pm->cmd.forwardmove >= 0 )
+	if ( pm->cmd.forwardmove >= 0 )
 	{
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMP );
 		}
@@ -901,7 +901,7 @@ static qboolean PM_CheckJump( void )
 	}
 	else
 	{
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMPB );
 		}
@@ -927,13 +927,13 @@ static qboolean PM_CheckWaterJump( void )
 	int    cont;
 	vec3_t flatforward;
 
-	if( pm->ps->pm_time )
+	if ( pm->ps->pm_time )
 	{
 		return qfalse;
 	}
 
 	// check for water jump
-	if( pm->waterlevel != 2 )
+	if ( pm->waterlevel != 2 )
 	{
 		return qfalse;
 	}
@@ -947,7 +947,7 @@ static qboolean PM_CheckWaterJump( void )
 	spot[ 2 ] += 4;
 	cont = pm->pointcontents( spot, pm->ps->clientNum );
 
-	if( !( cont & CONTENTS_SOLID ) )
+	if ( !( cont & CONTENTS_SOLID ) )
 	{
 		return qfalse;
 	}
@@ -955,7 +955,7 @@ static qboolean PM_CheckWaterJump( void )
 	spot[ 2 ] += 16;
 	cont = pm->pointcontents( spot, pm->ps->clientNum );
 
-	if( cont )
+	if ( cont )
 	{
 		return qfalse;
 	}
@@ -987,7 +987,7 @@ static void PM_WaterJumpMove( void )
 
 	pm->ps->velocity[ 2 ] -= pm->ps->gravity * pml.frametime;
 
-	if( pm->ps->velocity[ 2 ] < 0 )
+	if ( pm->ps->velocity[ 2 ] < 0 )
 	{
 		// cancel as soon as we are falling down again
 		pm->ps->pm_flags &= ~PMF_ALL_TIMES;
@@ -1010,7 +1010,7 @@ static void PM_WaterMove( void )
 	float  scale;
 	float  vel;
 
-	if( PM_CheckWaterJump() )
+	if ( PM_CheckWaterJump() )
 	{
 		PM_WaterJumpMove();
 		return;
@@ -1019,15 +1019,15 @@ static void PM_WaterMove( void )
 #if 0
 
 	// jump = head for surface
-	if( pm->cmd.upmove >= 10 )
+	if ( pm->cmd.upmove >= 10 )
 	{
-		if( pm->ps->velocity[ 2 ] > -300 )
+		if ( pm->ps->velocity[ 2 ] > -300 )
 		{
-			if( pm->watertype == CONTENTS_WATER )
+			if ( pm->watertype == CONTENTS_WATER )
 			{
 				pm->ps->velocity[ 2 ] = 100;
 			}
-			else if( pm->watertype == CONTENTS_SLIME )
+			else if ( pm->watertype == CONTENTS_SLIME )
 			{
 				pm->ps->velocity[ 2 ] = 80;
 			}
@@ -1046,7 +1046,7 @@ static void PM_WaterMove( void )
 	//
 	// user intentions
 	//
-	if( !scale )
+	if ( !scale )
 	{
 		wishvel[ 0 ] = 0;
 		wishvel[ 1 ] = 0;
@@ -1054,7 +1054,7 @@ static void PM_WaterMove( void )
 	}
 	else
 	{
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
 		}
@@ -1065,7 +1065,7 @@ static void PM_WaterMove( void )
 	VectorCopy( wishvel, wishdir );
 	wishspeed = VectorNormalize( wishdir );
 
-	if( wishspeed > pm->ps->speed * pm_swimScale )
+	if ( wishspeed > pm->ps->speed * pm_swimScale )
 	{
 		wishspeed = pm->ps->speed * pm_swimScale;
 	}
@@ -1073,7 +1073,7 @@ static void PM_WaterMove( void )
 	PM_Accelerate( wishdir, wishspeed, pm_wateraccelerate );
 
 	// make sure we can go up slopes easily under water
-	if( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0 )
+	if ( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0 )
 	{
 		vel = VectorLength( pm->ps->velocity );
 		// slide along the ground plane
@@ -1108,17 +1108,17 @@ static void PM_JetPackMove( void )
 	scale = PM_CmdScale( &pm->cmd );
 
 	// user intentions
-	for( i = 0; i < 2; i++ )
+	for ( i = 0; i < 2; i++ )
 	{
 		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
 	}
 
-	if( pm->cmd.upmove > 0.0f )
+	if ( pm->cmd.upmove > 0.0f )
 	{
 		wishvel[ 2 ] = JETPACK_FLOAT_SPEED;
 	}
 
-	if( pm->cmd.upmove < 0.0f )
+	if ( pm->cmd.upmove < 0.0f )
 	{
 		wishvel[ 2 ] = -JETPACK_SINK_SPEED;
 	}
@@ -1130,7 +1130,7 @@ static void PM_JetPackMove( void )
 
 	PM_StepSlideMove( qfalse, qfalse );
 
-	if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 	{
 		PM_ContinueLegsAnim( LEGS_LAND );
 	}
@@ -1163,7 +1163,7 @@ static void PM_FlyMove( void )
 	//
 	// user intentions
 	//
-	if( !scale )
+	if ( !scale )
 	{
 		wishvel[ 0 ] = 0;
 		wishvel[ 1 ] = 0;
@@ -1171,7 +1171,7 @@ static void PM_FlyMove( void )
 	}
 	else
 	{
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
 		}
@@ -1220,7 +1220,7 @@ static void PM_AirMove( void )
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
 
-	for( i = 0; i < 2; i++ )
+	for ( i = 0; i < 2; i++ )
 	{
 		wishvel[ i ] = pml.forward[ i ] * fmove + pml.right[ i ] * smove;
 	}
@@ -1238,7 +1238,7 @@ static void PM_AirMove( void )
 	// we may have a ground plane that is very steep, even
 	// though we don't have a groundentity
 	// slide along the steep plane
-	if( pml.groundPlane )
+	if ( pml.groundPlane )
 	{
 		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
 		                 pm->ps->velocity, OVERCLIP );
@@ -1265,17 +1265,17 @@ static void PM_ClimbMove( void )
 	float     accelerate;
 	float     vel;
 
-	if( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
+	if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
 	{
 		// begin swimming
 		PM_WaterMove();
 		return;
 	}
 
-	if( PM_CheckJump() || PM_CheckPounce() )
+	if ( PM_CheckJump() || PM_CheckPounce() )
 	{
 		// jumped away
-		if( pm->waterlevel > 1 )
+		if ( pm->waterlevel > 1 )
 		{
 			PM_WaterMove();
 		}
@@ -1305,7 +1305,7 @@ static void PM_ClimbMove( void )
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		wishvel[ i ] = pml.forward[ i ] * fmove + pml.right[ i ] * smove;
 	}
@@ -1318,23 +1318,23 @@ static void PM_ClimbMove( void )
 	wishspeed *= scale;
 
 	// clamp the speed lower if ducking
-	if( pm->ps->pm_flags & PMF_DUCKED )
+	if ( pm->ps->pm_flags & PMF_DUCKED )
 	{
-		if( wishspeed > pm->ps->speed * pm_duckScale )
+		if ( wishspeed > pm->ps->speed * pm_duckScale )
 		{
 			wishspeed = pm->ps->speed * pm_duckScale;
 		}
 	}
 
 	// clamp the speed lower if wading or walking on the bottom
-	if( pm->waterlevel )
+	if ( pm->waterlevel )
 	{
 		float waterScale;
 
 		waterScale = pm->waterlevel / 3.0;
 		waterScale = 1.0 - ( 1.0 - pm_swimScale ) * waterScale;
 
-		if( wishspeed > pm->ps->speed * waterScale )
+		if ( wishspeed > pm->ps->speed * waterScale )
 		{
 			wishspeed = pm->ps->speed * waterScale;
 		}
@@ -1342,7 +1342,7 @@ static void PM_ClimbMove( void )
 
 	// when a player gets hit, they temporarily lose
 	// full control, which allows them to be moved a bit
-	if( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
+	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
 	{
 		accelerate = BG_FindAirAccelerationForClass( pm->ps->stats[ STAT_PCLASS ] );
 	}
@@ -1353,7 +1353,7 @@ static void PM_ClimbMove( void )
 
 	PM_Accelerate( wishdir, wishspeed, accelerate );
 
-	if( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
+	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
 	{
 		pm->ps->velocity[ 2 ] -= pm->ps->gravity * pml.frametime;
 	}
@@ -1369,7 +1369,7 @@ static void PM_ClimbMove( void )
 	VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
 
 	// don't do anything if standing still
-	if( !pm->ps->velocity[ 0 ] && !pm->ps->velocity[ 1 ] && !pm->ps->velocity[ 2 ] )
+	if ( !pm->ps->velocity[ 0 ] && !pm->ps->velocity[ 1 ] && !pm->ps->velocity[ 2 ] )
 	{
 		return;
 	}
@@ -1395,17 +1395,17 @@ static void PM_WalkMove( void )
 	float     accelerate;
 	float     vel;
 
-	if( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
+	if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
 	{
 		// begin swimming
 		PM_WaterMove();
 		return;
 	}
 
-	if( PM_CheckJump() || PM_CheckPounce() )
+	if ( PM_CheckJump() || PM_CheckPounce() )
 	{
 		// jumped away
-		if( pm->waterlevel > 1 )
+		if ( pm->waterlevel > 1 )
 		{
 			PM_WaterMove();
 		}
@@ -1442,7 +1442,7 @@ static void PM_WalkMove( void )
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		wishvel[ i ] = pml.forward[ i ] * fmove + pml.right[ i ] * smove;
 	}
@@ -1455,23 +1455,23 @@ static void PM_WalkMove( void )
 	wishspeed *= scale;
 
 	// clamp the speed lower if ducking
-	if( pm->ps->pm_flags & PMF_DUCKED )
+	if ( pm->ps->pm_flags & PMF_DUCKED )
 	{
-		if( wishspeed > pm->ps->speed * pm_duckScale )
+		if ( wishspeed > pm->ps->speed * pm_duckScale )
 		{
 			wishspeed = pm->ps->speed * pm_duckScale;
 		}
 	}
 
 	// clamp the speed lower if wading or walking on the bottom
-	if( pm->waterlevel )
+	if ( pm->waterlevel )
 	{
 		float waterScale;
 
 		waterScale = pm->waterlevel / 3.0;
 		waterScale = 1.0 - ( 1.0 - pm_swimScale ) * waterScale;
 
-		if( wishspeed > pm->ps->speed * waterScale )
+		if ( wishspeed > pm->ps->speed * waterScale )
 		{
 			wishspeed = pm->ps->speed * waterScale;
 		}
@@ -1479,7 +1479,7 @@ static void PM_WalkMove( void )
 
 	// when a player gets hit, they temporarily lose
 	// full control, which allows them to be moved a bit
-	if( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
+	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
 	{
 		accelerate = BG_FindAirAccelerationForClass( pm->ps->stats[ STAT_PCLASS ] );
 	}
@@ -1493,7 +1493,7 @@ static void PM_WalkMove( void )
 	//Com_Printf("velocity = %1.1f %1.1f %1.1f\n", pm->ps->velocity[0], pm->ps->velocity[1], pm->ps->velocity[2]);
 	//Com_Printf("velocity1 = %1.1f\n", VectorLength(pm->ps->velocity));
 
-	if( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
+	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
 	{
 		pm->ps->velocity[ 2 ] -= pm->ps->gravity * pml.frametime;
 	}
@@ -1514,7 +1514,7 @@ static void PM_WalkMove( void )
 	VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
 
 	// don't do anything if standing still
-	if( !pm->ps->velocity[ 0 ] && !pm->ps->velocity[ 1 ] )
+	if ( !pm->ps->velocity[ 0 ] && !pm->ps->velocity[ 1 ] )
 	{
 		return;
 	}
@@ -1544,7 +1544,7 @@ static void PM_LadderMove( void )
 
 	scale = PM_CmdScale( &pm->cmd );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
 	}
@@ -1554,7 +1554,7 @@ static void PM_LadderMove( void )
 	VectorCopy( wishvel, wishdir );
 	wishspeed = VectorNormalize( wishdir );
 
-	if( wishspeed > pm->ps->speed * pm_swimScale )
+	if ( wishspeed > pm->ps->speed * pm_swimScale )
 	{
 		wishspeed = pm->ps->speed * pm_swimScale;
 	}
@@ -1562,7 +1562,7 @@ static void PM_LadderMove( void )
 	PM_Accelerate( wishdir, wishspeed, pm_accelerate );
 
 	//slanty ladders
-	if( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0.0f )
+	if ( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0.0f )
 	{
 		vel = VectorLength( pm->ps->velocity );
 
@@ -1590,7 +1590,7 @@ static void PM_CheckLadder( void )
 	trace_t trace;
 
 	//test if class can use ladders
-	if( !BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_CANUSELADDERS ) )
+	if ( !BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_CANUSELADDERS ) )
 	{
 		pml.ladder = qfalse;
 		return;
@@ -1603,7 +1603,7 @@ static void PM_CheckLadder( void )
 
 	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, end, pm->ps->clientNum, MASK_PLAYERSOLID );
 
-	if( ( trace.fraction < 1.0f ) && ( trace.surfaceFlags & SURF_LADDER ) )
+	if ( ( trace.fraction < 1.0f ) && ( trace.surfaceFlags & SURF_LADDER ) )
 	{
 		pml.ladder = qtrue;
 	}
@@ -1622,7 +1622,7 @@ static void PM_DeadMove( void )
 {
 	float forward;
 
-	if( !pml.walking )
+	if ( !pml.walking )
 	{
 		return;
 	}
@@ -1632,7 +1632,7 @@ static void PM_DeadMove( void )
 	forward = VectorLength( pm->ps->velocity );
 	forward -= 20;
 
-	if( forward <= 0 )
+	if ( forward <= 0 )
 	{
 		VectorClear( pm->ps->velocity );
 	}
@@ -1664,7 +1664,7 @@ static void PM_NoclipMove( void )
 
 	speed = VectorLength( pm->ps->velocity );
 
-	if( speed < 1 )
+	if ( speed < 1 )
 	{
 		VectorCopy( vec3_origin, pm->ps->velocity );
 	}
@@ -1679,7 +1679,7 @@ static void PM_NoclipMove( void )
 		// scale the velocity
 		newspeed = speed - drop;
 
-		if( newspeed < 0 )
+		if ( newspeed < 0 )
 		{
 			newspeed = 0;
 		}
@@ -1695,7 +1695,7 @@ static void PM_NoclipMove( void )
 	fmove = pm->cmd.forwardmove;
 	smove = pm->cmd.rightmove;
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		wishvel[ i ] = pml.forward[ i ] * fmove + pml.right[ i ] * smove;
 	}
@@ -1724,17 +1724,17 @@ Returns an event number apropriate for the groundsurface
 static int PM_FootstepForSurface( void )
 {
 	//TA:
-	if( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
+	if ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
 	{
 		return EV_FOOTSTEP_SQUELCH;
 	}
 
-	if( pml.groundTrace.surfaceFlags & SURF_NOSTEPS )
+	if ( pml.groundTrace.surfaceFlags & SURF_NOSTEPS )
 	{
 		return 0;
 	}
 
-	if( pml.groundTrace.surfaceFlags & SURF_METAL )
+	if ( pml.groundTrace.surfaceFlags & SURF_METAL )
 	{
 		return EV_FOOTSTEP_METAL;
 	}
@@ -1758,9 +1758,9 @@ static void PM_CrashLand( void )
 	float a, b, c, den;
 
 	// decide which landing animation to use
-	if( pm->ps->pm_flags & PMF_BACKWARDS_JUMP )
+	if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP )
 	{
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_LANDB );
 		}
@@ -1771,7 +1771,7 @@ static void PM_CrashLand( void )
 	}
 	else
 	{
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_LAND );
 		}
@@ -1781,7 +1781,7 @@ static void PM_CrashLand( void )
 		}
 	}
 
-	if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 	{
 		pm->ps->legsTimer = TIMER_LAND;
 	}
@@ -1801,7 +1801,7 @@ static void PM_CrashLand( void )
 
 	den = b * b - 4 * a * c;
 
-	if( den < 0 )
+	if ( den < 0 )
 	{
 		return;
 	}
@@ -1812,29 +1812,29 @@ static void PM_CrashLand( void )
 	delta = delta * delta * 0.0001;
 
 	// ducking while falling doubles damage
-	if( pm->ps->pm_flags & PMF_DUCKED )
+	if ( pm->ps->pm_flags & PMF_DUCKED )
 	{
 		delta *= 2;
 	}
 
 	// never take falling damage if completely underwater
-	if( pm->waterlevel == 3 )
+	if ( pm->waterlevel == 3 )
 	{
 		return;
 	}
 
 	// reduce falling damage if there is standing water
-	if( pm->waterlevel == 2 )
+	if ( pm->waterlevel == 2 )
 	{
 		delta *= 0.25;
 	}
 
-	if( pm->waterlevel == 1 )
+	if ( pm->waterlevel == 1 )
 	{
 		delta *= 0.5;
 	}
 
-	if( delta < 1 )
+	if ( delta < 1 )
 	{
 		return;
 	}
@@ -1843,25 +1843,25 @@ static void PM_CrashLand( void )
 
 	// SURF_NODAMAGE is used for bounce pads where you don't ever
 	// want to take damage or play a crunch sound
-	if( !( pml.groundTrace.surfaceFlags & SURF_NODAMAGE ) )
+	if ( !( pml.groundTrace.surfaceFlags & SURF_NODAMAGE ) )
 	{
 		pm->ps->stats[ STAT_FALLDIST ] = delta;
 
-		if( delta > AVG_FALL_DISTANCE )
+		if ( delta > AVG_FALL_DISTANCE )
 		{
 			PM_AddEvent( EV_FALL_FAR );
 		}
-		else if( delta > MIN_FALL_DISTANCE )
+		else if ( delta > MIN_FALL_DISTANCE )
 		{
 			// this is a pain grunt, so don't play it if dead
-			if( pm->ps->stats[ STAT_HEALTH ] > 0 )
+			if ( pm->ps->stats[ STAT_HEALTH ] > 0 )
 			{
 				PM_AddEvent( EV_FALL_MEDIUM );
 			}
 		}
 		else
 		{
-			if( delta > 7 )
+			if ( delta > 7 )
 			{
 				PM_AddEvent( EV_FALL_SHORT );
 			}
@@ -1886,17 +1886,17 @@ static int PM_CorrectAllSolid( trace_t *trace )
 	int    i, j, k;
 	vec3_t point;
 
-	if( pm->debugLevel )
+	if ( pm->debugLevel )
 	{
 		Com_Printf( "%i:allsolid\n", c_pmove );
 	}
 
 	// jitter around
-	for( i = -1; i <= 1; i++ )
+	for ( i = -1; i <= 1; i++ )
 	{
-		for( j = -1; j <= 1; j++ )
+		for ( j = -1; j <= 1; j++ )
 		{
-			for( k = -1; k <= 1; k++ )
+			for ( k = -1; k <= 1; k++ )
 			{
 				VectorCopy( pm->ps->origin, point );
 				point[ 0 ] += ( float ) i;
@@ -1904,7 +1904,7 @@ static int PM_CorrectAllSolid( trace_t *trace )
 				point[ 2 ] += ( float ) k;
 				pm->trace( trace, point, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 
-				if( !trace->allsolid )
+				if ( !trace->allsolid )
 				{
 					point[ 0 ] = pm->ps->origin[ 0 ];
 					point[ 1 ] = pm->ps->origin[ 1 ];
@@ -1937,10 +1937,10 @@ static void PM_GroundTraceMissed( void )
 	trace_t trace;
 	vec3_t  point;
 
-	if( pm->ps->groundEntityNum != ENTITYNUM_NONE )
+	if ( pm->ps->groundEntityNum != ENTITYNUM_NONE )
 	{
 		// we just transitioned into freefall
-		if( pm->debugLevel )
+		if ( pm->debugLevel )
 		{
 			Com_Printf( "%i:lift\n", c_pmove );
 		}
@@ -1952,11 +1952,11 @@ static void PM_GroundTraceMissed( void )
 
 		pm->trace( &trace, pm->ps->origin, NULL, NULL, point, pm->ps->clientNum, pm->tracemask );
 
-		if( trace.fraction == 1.0f )
+		if ( trace.fraction == 1.0f )
 		{
-			if( pm->cmd.forwardmove >= 0 )
+			if ( pm->cmd.forwardmove >= 0 )
 			{
-				if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ForceLegsAnim( LEGS_JUMP );
 				}
@@ -1969,7 +1969,7 @@ static void PM_GroundTraceMissed( void )
 			}
 			else
 			{
-				if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ForceLegsAnim( LEGS_JUMPB );
 				}
@@ -1983,9 +1983,9 @@ static void PM_GroundTraceMissed( void )
 		}
 	}
 
-	if( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_TAKESFALLDAMAGE ) )
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_TAKESFALLDAMAGE ) )
 	{
-		if( pm->ps->velocity[ 2 ] < FALLING_THRESHOLD && pml.previous_velocity[ 2 ] >= FALLING_THRESHOLD )
+		if ( pm->ps->velocity[ 2 ] < FALLING_THRESHOLD && pml.previous_velocity[ 2 ] >= FALLING_THRESHOLD )
 		{
 			PM_AddEvent( EV_FALLING );
 		}
@@ -2022,7 +2022,7 @@ static void PM_GroundClimbTrace( void )
 
 	//TA: If we're on the ceiling then grapplePoint is a rotation normal.. otherwise its a surface normal.
 	//    would have been nice if Carmack had left a few random variables in the ps struct for mod makers
-	if( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
+	if ( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
 	{
 		VectorCopy( ceilingNormal, surfNormal );
 	}
@@ -2037,30 +2037,30 @@ static void PM_GroundClimbTrace( void )
 
 	VectorCopy( movedir, lookdir );
 
-	if( pm->cmd.forwardmove < 0 )
+	if ( pm->cmd.forwardmove < 0 )
 	{
 		VectorNegate( movedir, movedir );
 	}
 
 	//allow strafe transitions
-	if( pm->cmd.rightmove )
+	if ( pm->cmd.rightmove )
 	{
 		VectorCopy( pml.right, movedir );
 
-		if( pm->cmd.rightmove < 0 )
+		if ( pm->cmd.rightmove < 0 )
 		{
 			VectorNegate( movedir, movedir );
 		}
 	}
 
-	for( i = 0; i <= 4; i++ )
+	for ( i = 0; i <= 4; i++ )
 	{
-		switch( i )
+		switch ( i )
 		{
 			case 0:
 
 				//we are going to step this frame so skip the transition test
-				if( PM_PredictStepMove() )
+				if ( PM_PredictStepMove() )
 				{
 					continue;
 				}
@@ -2077,7 +2077,7 @@ static void PM_GroundClimbTrace( void )
 				break;
 
 			case 2:
-				if( pml.groundPlane != qfalse && PM_PredictStepMove() )
+				if ( pml.groundPlane != qfalse && PM_PredictStepMove() )
 				{
 					//step down
 					VectorMA( pm->ps->origin, -STEPSIZE, surfNormal, point );
@@ -2093,7 +2093,7 @@ static void PM_GroundClimbTrace( void )
 			case 3:
 
 				//trace "underneath" BBOX so we can traverse angles > 180deg
-				if( pml.groundPlane != qfalse )
+				if ( pml.groundPlane != qfalse )
 				{
 					VectorMA( pm->ps->origin, -16.0f, surfNormal, point );
 					VectorMA( point, -16.0f, movedir, point );
@@ -2115,12 +2115,12 @@ static void PM_GroundClimbTrace( void )
 		}
 
 		//if we hit something
-		if( trace.fraction < 1.0f && !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
-		    !( trace.entityNum != ENTITYNUM_WORLD && i != 4 ) )
+		if ( trace.fraction < 1.0f && !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
+		     !( trace.entityNum != ENTITYNUM_WORLD && i != 4 ) )
 		{
-			if( i == 2 || i == 3 )
+			if ( i == 2 || i == 3 )
 			{
-				if( i == 2 )
+				if ( i == 2 )
 				{
 					PM_StepEvent( pm->ps->origin, trace.endpos, surfNormal );
 				}
@@ -2142,7 +2142,7 @@ static void PM_GroundClimbTrace( void )
 			traceDOTsurf = DotProduct( trace.plane.normal, surfNormal );
 			traceANGsurf = RAD2DEG( acos( traceDOTsurf ) );
 
-			if( traceANGsurf > 180.0f )
+			if ( traceANGsurf > 180.0f )
 			{
 				traceANGsurf -= 180.0f;
 			}
@@ -2151,7 +2151,7 @@ static void PM_GroundClimbTrace( void )
 			traceDOTref = DotProduct( trace.plane.normal, refNormal );
 			traceANGref = RAD2DEG( acos( traceDOTref ) );
 
-			if( traceANGref > 180.0f )
+			if ( traceANGref > 180.0f )
 			{
 				traceANGref -= 180.0f;
 			}
@@ -2160,18 +2160,18 @@ static void PM_GroundClimbTrace( void )
 			surfDOTref = DotProduct( surfNormal, refNormal );
 			surfANGref = RAD2DEG( acos( surfDOTref ) );
 
-			if( surfANGref > 180.0f )
+			if ( surfANGref > 180.0f )
 			{
 				surfANGref -= 180.0f;
 			}
 
 			//if the trace result and old surface normal are different then we must have transided to a new
 			//surface... do some stuff...
-			if( !VectorCompare( trace.plane.normal, surfNormal ) )
+			if ( !VectorCompare( trace.plane.normal, surfNormal ) )
 			{
 				//if the trace result or the old vector is not the floor or ceiling correct the YAW angle
-				if( !VectorCompare( trace.plane.normal, refNormal ) && !VectorCompare( surfNormal, refNormal ) &&
-				    !VectorCompare( trace.plane.normal, ceilingNormal ) && !VectorCompare( surfNormal, ceilingNormal ) )
+				if ( !VectorCompare( trace.plane.normal, refNormal ) && !VectorCompare( surfNormal, refNormal ) &&
+				     !VectorCompare( trace.plane.normal, ceilingNormal ) && !VectorCompare( surfNormal, ceilingNormal ) )
 				{
 					//behold the evil mindfuck from hell
 					//it has fucked mind like nothing has fucked mind before
@@ -2187,7 +2187,7 @@ static void PM_GroundClimbTrace( void )
 					rTtDOTrTsTt = DotProduct( refTOtrace, refTOsurfTOtrace );
 					rTtANGrTsTt = ANGLE2SHORT( RAD2DEG( acos( rTtDOTrTsTt ) ) );
 
-					if( rTtANGrTsTt > 32768 )
+					if ( rTtANGrTsTt > 32768 )
 					{
 						rTtANGrTsTt -= 32768;
 					}
@@ -2195,7 +2195,7 @@ static void PM_GroundClimbTrace( void )
 					CrossProduct( refTOtrace, refTOsurfTOtrace, tempVec );
 					VectorNormalize( tempVec );
 
-					if( DotProduct( trace.plane.normal, tempVec ) > 0.0f )
+					if ( DotProduct( trace.plane.normal, tempVec ) > 0.0f )
 					{
 						rTtANGrTsTt = -rTtANGrTsTt;
 					}
@@ -2213,13 +2213,13 @@ static void PM_GroundClimbTrace( void )
 				VectorAdd( pm->ps->origin, lookdir, point );
 
 				//check whether point is on one side of the plane, if so invert the correction angle
-				if( ( abc[ 0 ] * point[ 0 ] + abc[ 1 ] * point[ 1 ] + abc[ 2 ] * point[ 2 ] - d ) > 0 )
+				if ( ( abc[ 0 ] * point[ 0 ] + abc[ 1 ] * point[ 1 ] + abc[ 2 ] * point[ 2 ] - d ) > 0 )
 				{
 					traceANGsurf = -traceANGsurf;
 				}
 
 				//find the . product of the lookdir and traceCROSSsurf
-				if( ( ldDOTtCs = DotProduct( lookdir, traceCROSSsurf ) ) < 0.0f )
+				if ( ( ldDOTtCs = DotProduct( lookdir, traceCROSSsurf ) ) < 0.0f )
 				{
 					VectorInverse( traceCROSSsurf );
 					ldDOTtCs = DotProduct( lookdir, traceCROSSsurf );
@@ -2228,7 +2228,7 @@ static void PM_GroundClimbTrace( void )
 				//set the correction angle
 				traceANGsurf *= 1.0f - ldDOTtCs;
 
-				if( !( pm->ps->persistant[ PERS_STATE ] & PS_WALLCLIMBINGFOLLOW ) )
+				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_WALLCLIMBINGFOLLOW ) )
 				{
 					//correct the angle
 					pm->ps->delta_angles[ PITCH ] -= ANGLE2SHORT( traceANGsurf );
@@ -2236,7 +2236,7 @@ static void PM_GroundClimbTrace( void )
 
 				//transition from wall to ceiling
 				//normal for subsequent viewangle rotations
-				if( VectorCompare( trace.plane.normal, ceilingNormal ) )
+				if ( VectorCompare( trace.plane.normal, ceilingNormal ) )
 				{
 					CrossProduct( surfNormal, trace.plane.normal, pm->ps->grapplePoint );
 					VectorNormalize( pm->ps->grapplePoint );
@@ -2245,7 +2245,7 @@ static void PM_GroundClimbTrace( void )
 
 				//transition from ceiling to wall
 				//we need to do some different angle correction here cos GPISROTVEC
-				if( VectorCompare( surfNormal, ceilingNormal ) )
+				if ( VectorCompare( surfNormal, ceilingNormal ) )
 				{
 					vectoangles( trace.plane.normal, toAngles );
 					vectoangles( pm->ps->grapplePoint, surfAngles );
@@ -2260,7 +2260,7 @@ static void PM_GroundClimbTrace( void )
 			pm->ps->eFlags |= EF_WALLCLIMB;
 
 			//if we're not stuck to the ceiling then set grapplePoint to be a surface normal
-			if( !VectorCompare( trace.plane.normal, ceilingNormal ) )
+			if ( !VectorCompare( trace.plane.normal, ceilingNormal ) )
 			{
 				//so we know what surface we're stuck to
 				VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
@@ -2270,17 +2270,17 @@ static void PM_GroundClimbTrace( void )
 			//IMPORTANT: break out of the for loop if we've hit something
 			break;
 		}
-		else if( trace.allsolid )
+		else if ( trace.allsolid )
 		{
 			// do something corrective if the trace starts in a solid...
-			if( !PM_CorrectAllSolid( &trace ) )
+			if ( !PM_CorrectAllSolid( &trace ) )
 			{
 				return;
 			}
 		}
 	}
 
-	if( trace.fraction >= 1.0f )
+	if ( trace.fraction >= 1.0f )
 	{
 		// if the trace didn't hit anything, we are in free fall
 		PM_GroundTraceMissed();
@@ -2289,7 +2289,7 @@ static void PM_GroundClimbTrace( void )
 		pm->ps->eFlags &= ~EF_WALLCLIMB;
 
 		//just transided from ceiling to floor... apply delta correction
-		if( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
+		if ( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
 		{
 			vec3_t forward, rotated, angles;
 
@@ -2312,7 +2312,7 @@ static void PM_GroundClimbTrace( void )
 	pml.walking = qtrue;
 
 	// hitting solid ground will end a waterjump
-	if( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
+	if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
 	{
 		pm->ps->pm_flags &= ~( PMF_TIME_WATERJUMP | PMF_TIME_LAND );
 		pm->ps->pm_time = 0;
@@ -2338,54 +2338,54 @@ static void PM_GroundTrace( void )
 	vec3_t  refNormal = { 0.0f, 0.0f, 1.0f };
 	trace_t trace;
 
-	if( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLCLIMBER ) )
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLCLIMBER ) )
 	{
-		if( pm->ps->persistant[ PERS_STATE ] & PS_WALLCLIMBINGTOGGLE )
+		if ( pm->ps->persistant[ PERS_STATE ] & PS_WALLCLIMBINGTOGGLE )
 		{
 			//toggle wall climbing if holding crouch
-			if( pm->cmd.upmove < 0 && !( pm->ps->pm_flags & PMF_CROUCH_HELD ) )
+			if ( pm->cmd.upmove < 0 && !( pm->ps->pm_flags & PMF_CROUCH_HELD ) )
 			{
-				if( !( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
+				if ( !( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
 				{
 					pm->ps->stats[ STAT_STATE ] |= SS_WALLCLIMBING;
 				}
-				else if( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+				else if ( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
 				{
 					pm->ps->stats[ STAT_STATE ] &= ~SS_WALLCLIMBING;
 				}
 
 				pm->ps->pm_flags |= PMF_CROUCH_HELD;
 			}
-			else if( pm->cmd.upmove >= 0 )
+			else if ( pm->cmd.upmove >= 0 )
 			{
 				pm->ps->pm_flags &= ~PMF_CROUCH_HELD;
 			}
 		}
 		else
 		{
-			if( pm->cmd.upmove < 0 )
+			if ( pm->cmd.upmove < 0 )
 			{
 				pm->ps->stats[ STAT_STATE ] |= SS_WALLCLIMBING;
 			}
-			else if( pm->cmd.upmove >= 0 )
+			else if ( pm->cmd.upmove >= 0 )
 			{
 				pm->ps->stats[ STAT_STATE ] &= ~SS_WALLCLIMBING;
 			}
 		}
 
-		if( pm->ps->pm_type == PM_DEAD )
+		if ( pm->ps->pm_type == PM_DEAD )
 		{
 			pm->ps->stats[ STAT_STATE ] &= ~SS_WALLCLIMBING;
 		}
 
-		if( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+		if ( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
 		{
 			PM_GroundClimbTrace();
 			return;
 		}
 
 		//just transided from ceiling to floor... apply delta correction
-		if( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
+		if ( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
 		{
 			vec3_t forward, rotated, angles;
 
@@ -2411,9 +2411,9 @@ static void PM_GroundTrace( void )
 	pml.groundTrace = trace;
 
 	// do something corrective if the trace starts in a solid...
-	if( trace.allsolid )
+	if ( trace.allsolid )
 	{
-		if( !PM_CorrectAllSolid( &trace ) )
+		if ( !PM_CorrectAllSolid( &trace ) )
 		{
 			return;
 		}
@@ -2423,12 +2423,12 @@ static void PM_GroundTrace( void )
 	VectorCopy( refNormal, pm->ps->grapplePoint );
 
 	// if the trace didn't hit anything, we are in free fall
-	if( trace.fraction == 1.0f )
+	if ( trace.fraction == 1.0f )
 	{
 		qboolean steppedDown = qfalse;
 
 		// try to step down
-		if( pml.groundPlane != qfalse && PM_PredictStepMove() )
+		if ( pml.groundPlane != qfalse && PM_PredictStepMove() )
 		{
 			//step down
 			point[ 0 ] = pm->ps->origin[ 0 ];
@@ -2437,7 +2437,7 @@ static void PM_GroundTrace( void )
 			pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 
 			//if we hit something
-			if( trace.fraction < 1.0f )
+			if ( trace.fraction < 1.0f )
 			{
 				PM_StepEvent( pm->ps->origin, trace.endpos, refNormal );
 				VectorCopy( trace.endpos, pm->ps->origin );
@@ -2445,28 +2445,28 @@ static void PM_GroundTrace( void )
 			}
 		}
 
-		if( !steppedDown )
+		if ( !steppedDown )
 		{
 			PM_GroundTraceMissed();
 			pml.groundPlane = qfalse;
 			pml.walking = qfalse;
 
-			if( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLJUMPER ) )
+			if ( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLJUMPER ) )
 			{
 				ProjectPointOnPlane( movedir, pml.forward, refNormal );
 				VectorNormalize( movedir );
 
-				if( pm->cmd.forwardmove < 0 )
+				if ( pm->cmd.forwardmove < 0 )
 				{
 					VectorNegate( movedir, movedir );
 				}
 
 				//allow strafe transitions
-				if( pm->cmd.rightmove )
+				if ( pm->cmd.rightmove )
 				{
 					VectorCopy( pml.right, movedir );
 
-					if( pm->cmd.rightmove < 0 )
+					if ( pm->cmd.rightmove < 0 )
 					{
 						VectorNegate( movedir, movedir );
 					}
@@ -2476,10 +2476,10 @@ static void PM_GroundTrace( void )
 				VectorMA( pm->ps->origin, 0.25f, movedir, point );
 				pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 
-				if( trace.fraction < 1.0f && !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
-				    ( trace.entityNum == ENTITYNUM_WORLD ) )
+				if ( trace.fraction < 1.0f && !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
+				     ( trace.entityNum == ENTITYNUM_WORLD ) )
 				{
-					if( !VectorCompare( trace.plane.normal, pm->ps->grapplePoint ) )
+					if ( !VectorCompare( trace.plane.normal, pm->ps->grapplePoint ) )
 					{
 						VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
 						PM_CheckWallJump();
@@ -2492,17 +2492,17 @@ static void PM_GroundTrace( void )
 	}
 
 	// check if getting thrown off the ground
-	if( pm->ps->velocity[ 2 ] > 0.0f && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10.0f )
+	if ( pm->ps->velocity[ 2 ] > 0.0f && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10.0f )
 	{
-		if( pm->debugLevel )
+		if ( pm->debugLevel )
 		{
 			Com_Printf( "%i:kickoff\n", c_pmove );
 		}
 
 		// go into jump animation
-		if( pm->cmd.forwardmove >= 0 )
+		if ( pm->cmd.forwardmove >= 0 )
 		{
-			if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 			{
 				PM_ForceLegsAnim( LEGS_JUMP );
 			}
@@ -2515,7 +2515,7 @@ static void PM_GroundTrace( void )
 		}
 		else
 		{
-			if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 			{
 				PM_ForceLegsAnim( LEGS_JUMPB );
 			}
@@ -2534,9 +2534,9 @@ static void PM_GroundTrace( void )
 	}
 
 	// slopes that are too steep will not be considered onground
-	if( trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
+	if ( trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
 	{
-		if( pm->debugLevel )
+		if ( pm->debugLevel )
 		{
 			Com_Printf( "%i:steep\n", c_pmove );
 		}
@@ -2553,27 +2553,27 @@ static void PM_GroundTrace( void )
 	pml.walking = qtrue;
 
 	// hitting solid ground will end a waterjump
-	if( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
+	if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
 	{
 		pm->ps->pm_flags &= ~( PMF_TIME_WATERJUMP | PMF_TIME_LAND );
 		pm->ps->pm_time = 0;
 	}
 
-	if( pm->ps->groundEntityNum == ENTITYNUM_NONE )
+	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
 		// just hit the ground
-		if( pm->debugLevel )
+		if ( pm->debugLevel )
 		{
 			Com_Printf( "%i:Land\n", c_pmove );
 		}
 
-		if( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_TAKESFALLDAMAGE ) )
+		if ( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_TAKESFALLDAMAGE ) )
 		{
 			PM_CrashLand();
 		}
 
 		// don't do landing time if we were just going down a slope
-		if( pml.previous_velocity[ 2 ] < -200 )
+		if ( pml.previous_velocity[ 2 ] < -200 )
 		{
 			// don't allow another jump for a little while
 			pm->ps->pm_flags |= PMF_TIME_LAND;
@@ -2612,7 +2612,7 @@ static void PM_SetWaterLevel( void )
 	point[ 2 ] = pm->ps->origin[ 2 ] + MINS_Z + 1;
 	cont = pm->pointcontents( point, pm->ps->clientNum );
 
-	if( cont & MASK_WATER )
+	if ( cont & MASK_WATER )
 	{
 		sample2 = pm->ps->viewheight - MINS_Z;
 		sample1 = sample2 / 2;
@@ -2622,13 +2622,13 @@ static void PM_SetWaterLevel( void )
 		point[ 2 ] = pm->ps->origin[ 2 ] + MINS_Z + sample1;
 		cont = pm->pointcontents( point, pm->ps->clientNum );
 
-		if( cont & MASK_WATER )
+		if ( cont & MASK_WATER )
 		{
 			pm->waterlevel = 2;
 			point[ 2 ] = pm->ps->origin[ 2 ] + MINS_Z + sample2;
 			cont = pm->pointcontents( point, pm->ps->clientNum );
 
-			if( cont & MASK_WATER )
+			if ( cont & MASK_WATER )
 			{
 				pm->waterlevel = 3;
 			}
@@ -2653,7 +2653,7 @@ static void PM_CheckDuck( void )
 	BG_FindViewheightForClass( pm->ps->stats[ STAT_PCLASS ], &PCvh, &PCcvh );
 
 	//TA: iD bug? you can still crouch when you're a spectator
-	if( pm->ps->persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
+	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
 	{
 		PCcvh = PCvh;
 	}
@@ -2666,7 +2666,7 @@ static void PM_CheckDuck( void )
 
 	pm->mins[ 2 ] = PCmins[ 2 ];
 
-	if( pm->ps->pm_type == PM_DEAD )
+	if ( pm->ps->pm_type == PM_DEAD )
 	{
 		pm->maxs[ 2 ] = -8;
 		pm->ps->viewheight = DEAD_VIEWHEIGHT;
@@ -2674,9 +2674,9 @@ static void PM_CheckDuck( void )
 	}
 
 	//TA: If the standing and crouching viewheights are the same the class can't crouch
-	if( ( pm->cmd.upmove < 0 ) && ( PCvh != PCcvh ) &&
-	    pm->ps->pm_type != PM_JETPACK &&
-	    !BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
+	if ( ( pm->cmd.upmove < 0 ) && ( PCvh != PCcvh ) &&
+	     pm->ps->pm_type != PM_JETPACK &&
+	     !BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
 	{
 		// duck
 		pm->ps->pm_flags |= PMF_DUCKED;
@@ -2684,20 +2684,20 @@ static void PM_CheckDuck( void )
 	else
 	{
 		// stand up if possible
-		if( pm->ps->pm_flags & PMF_DUCKED )
+		if ( pm->ps->pm_flags & PMF_DUCKED )
 		{
 			// try to stand up
 			pm->maxs[ 2 ] = PCmaxs[ 2 ];
 			pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask );
 
-			if( !trace.allsolid )
+			if ( !trace.allsolid )
 			{
 				pm->ps->pm_flags &= ~PMF_DUCKED;
 			}
 		}
 	}
 
-	if( pm->ps->pm_flags & PMF_DUCKED )
+	if ( pm->ps->pm_flags & PMF_DUCKED )
 	{
 		pm->maxs[ 2 ] = PCcmaxs[ 2 ];
 		pm->ps->viewheight = PCcvh;
@@ -2726,7 +2726,7 @@ static void PM_Footsteps( void )
 	// calculate speed and cycle to be used for
 	// all cyclic walking effects
 	//
-	if( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLCLIMBER ) && ( pml.groundPlane ) )
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLCLIMBER ) && ( pml.groundPlane ) )
 	{
 		//TA: FIXME: yes yes i know this is wrong
 		pm->xyspeed = sqrt( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ]
@@ -2739,12 +2739,12 @@ static void PM_Footsteps( void )
 		                    + pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ] );
 	}
 
-	if( pm->ps->groundEntityNum == ENTITYNUM_NONE )
+	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
 		// airborne leaves position in cycle intact, but doesn't advance
-		if( pm->waterlevel > 1 )
+		if ( pm->waterlevel > 1 )
 		{
-			if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 			{
 				PM_ContinueLegsAnim( LEGS_SWIM );
 			}
@@ -2758,15 +2758,15 @@ static void PM_Footsteps( void )
 	}
 
 	// if not trying to move
-	if( !pm->cmd.forwardmove && !pm->cmd.rightmove )
+	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove )
 	{
-		if( pm->xyspeed < 5 )
+		if ( pm->xyspeed < 5 )
 		{
 			pm->ps->bobCycle = 0; // start at beginning of cycle again
 
-			if( pm->ps->pm_flags & PMF_DUCKED )
+			if ( pm->ps->pm_flags & PMF_DUCKED )
 			{
-				if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ContinueLegsAnim( LEGS_IDLECR );
 				}
@@ -2777,7 +2777,7 @@ static void PM_Footsteps( void )
 			}
 			else
 			{
-				if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ContinueLegsAnim( LEGS_IDLE );
 				}
@@ -2793,23 +2793,23 @@ static void PM_Footsteps( void )
 
 	footstep = qfalse;
 
-	if( pm->ps->pm_flags & PMF_DUCKED )
+	if ( pm->ps->pm_flags & PMF_DUCKED )
 	{
 		bobmove = 0.5; // ducked characters bob much faster
 
-		if( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
+		if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
 		{
-			if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 			{
 				PM_ContinueLegsAnim( LEGS_BACKCR );
 			}
 			else
 			{
-				if( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
+				if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
 				{
 					PM_ContinueLegsAnim( NSPA_WALKRIGHT );
 				}
-				else if( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
+				else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
 				{
 					PM_ContinueLegsAnim( NSPA_WALKLEFT );
 				}
@@ -2821,17 +2821,17 @@ static void PM_Footsteps( void )
 		}
 		else
 		{
-			if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 			{
 				PM_ContinueLegsAnim( LEGS_WALKCR );
 			}
 			else
 			{
-				if( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
+				if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
 				{
 					PM_ContinueLegsAnim( NSPA_WALKRIGHT );
 				}
-				else if( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
+				else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
 				{
 					PM_ContinueLegsAnim( NSPA_WALKLEFT );
 				}
@@ -2846,27 +2846,27 @@ static void PM_Footsteps( void )
 	}
 	else
 	{
-		if( !( pm->cmd.buttons & BUTTON_WALKING ) )
+		if ( !( pm->cmd.buttons & BUTTON_WALKING ) )
 		{
 			bobmove = 0.4f; // faster speeds bob faster
 
-			if( pm->ps->weapon == WP_ALEVEL4 && pm->ps->pm_flags & PMF_CHARGE )
+			if ( pm->ps->weapon == WP_ALEVEL4 && pm->ps->pm_flags & PMF_CHARGE )
 			{
 				PM_ContinueLegsAnim( NSPA_CHARGE );
 			}
-			else if( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
+			else if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
 			{
-				if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ContinueLegsAnim( LEGS_BACK );
 				}
 				else
 				{
-					if( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
+					if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
 					{
 						PM_ContinueLegsAnim( NSPA_RUNRIGHT );
 					}
-					else if( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
+					else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
 					{
 						PM_ContinueLegsAnim( NSPA_RUNLEFT );
 					}
@@ -2878,17 +2878,17 @@ static void PM_Footsteps( void )
 			}
 			else
 			{
-				if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ContinueLegsAnim( LEGS_RUN );
 				}
 				else
 				{
-					if( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
+					if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
 					{
 						PM_ContinueLegsAnim( NSPA_RUNRIGHT );
 					}
-					else if( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
+					else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
 					{
 						PM_ContinueLegsAnim( NSPA_RUNLEFT );
 					}
@@ -2905,19 +2905,19 @@ static void PM_Footsteps( void )
 		{
 			bobmove = 0.3f; // walking bobs slow
 
-			if( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
+			if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
 			{
-				if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ContinueLegsAnim( LEGS_BACKWALK );
 				}
 				else
 				{
-					if( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
+					if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
 					{
 						PM_ContinueLegsAnim( NSPA_WALKRIGHT );
 					}
-					else if( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
+					else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
 					{
 						PM_ContinueLegsAnim( NSPA_WALKLEFT );
 					}
@@ -2929,17 +2929,17 @@ static void PM_Footsteps( void )
 			}
 			else
 			{
-				if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ContinueLegsAnim( LEGS_WALK );
 				}
 				else
 				{
-					if( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
+					if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
 					{
 						PM_ContinueLegsAnim( NSPA_WALKRIGHT );
 					}
-					else if( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
+					else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
 					{
 						PM_ContinueLegsAnim( NSPA_WALKLEFT );
 					}
@@ -2954,7 +2954,7 @@ static void PM_Footsteps( void )
 
 	bobmove *= BG_FindBobCycleForClass( pm->ps->stats[ STAT_PCLASS ] );
 
-	if( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST )
+	if ( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST )
 	{
 		bobmove *= HUMAN_SPRINT_MODIFIER;
 	}
@@ -2964,27 +2964,27 @@ static void PM_Footsteps( void )
 	pm->ps->bobCycle = ( int )( old + bobmove * pml.msec ) & 255;
 
 	// if we just crossed a cycle boundary, play an apropriate footstep event
-	if( ( ( old + 64 ) ^ ( pm->ps->bobCycle + 64 ) ) & 128 )
+	if ( ( ( old + 64 ) ^ ( pm->ps->bobCycle + 64 ) ) & 128 )
 	{
-		if( pm->waterlevel == 0 )
+		if ( pm->waterlevel == 0 )
 		{
 			// on ground will only play sounds if running
-			if( footstep && !pm->noFootsteps )
+			if ( footstep && !pm->noFootsteps )
 			{
 				PM_AddEvent( PM_FootstepForSurface() );
 			}
 		}
-		else if( pm->waterlevel == 1 )
+		else if ( pm->waterlevel == 1 )
 		{
 			// splashing
 			PM_AddEvent( EV_FOOTSPLASH );
 		}
-		else if( pm->waterlevel == 2 )
+		else if ( pm->waterlevel == 2 )
 		{
 			// wading / swimming at surface
 			PM_AddEvent( EV_SWIM );
 		}
-		else if( pm->waterlevel == 3 )
+		else if ( pm->waterlevel == 3 )
 		{
 			// no sound when completely underwater
 		}
@@ -3004,7 +3004,7 @@ static void PM_WaterEvents( void )
 	//
 	// if just entered a water volume, play a sound
 	//
-	if( !pml.previous_waterlevel && pm->waterlevel )
+	if ( !pml.previous_waterlevel && pm->waterlevel )
 	{
 		PM_AddEvent( EV_WATER_TOUCH );
 	}
@@ -3012,7 +3012,7 @@ static void PM_WaterEvents( void )
 	//
 	// if just completely exited a water volume, play a sound
 	//
-	if( pml.previous_waterlevel && !pm->waterlevel )
+	if ( pml.previous_waterlevel && !pm->waterlevel )
 	{
 		PM_AddEvent( EV_WATER_LEAVE );
 	}
@@ -3020,7 +3020,7 @@ static void PM_WaterEvents( void )
 	//
 	// check for head just going under water
 	//
-	if( pml.previous_waterlevel != 3 && pm->waterlevel == 3 )
+	if ( pml.previous_waterlevel != 3 && pm->waterlevel == 3 )
 	{
 		PM_AddEvent( EV_WATER_UNDER );
 	}
@@ -3028,7 +3028,7 @@ static void PM_WaterEvents( void )
 	//
 	// check for head just coming out of water
 	//
-	if( pml.previous_waterlevel == 3 && pm->waterlevel != 3 )
+	if ( pml.previous_waterlevel == 3 && pm->waterlevel != 3 )
 	{
 		PM_AddEvent( EV_WATER_CLEAR );
 	}
@@ -3041,23 +3041,23 @@ PM_BeginWeaponChange
 */
 static void PM_BeginWeaponChange( int weapon )
 {
-	if( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
+	if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
 		return;
 	}
 
-	if( !BG_InventoryContainsWeapon( weapon, pm->ps->stats ) && weapon != WP_NONE )
+	if ( !BG_InventoryContainsWeapon( weapon, pm->ps->stats ) && weapon != WP_NONE )
 	{
 		return;
 	}
 
-	if( pm->ps->weaponstate == WEAPON_DROPPING )
+	if ( pm->ps->weaponstate == WEAPON_DROPPING )
 	{
 		return;
 	}
 
 	//special case to prevent storing a charged up lcannon
-	if( pm->ps->weapon == WP_LUCIFER_CANNON )
+	if ( pm->ps->weapon == WP_LUCIFER_CANNON )
 	{
 		pm->ps->stats[ STAT_MISC ] = 0;
 	}
@@ -3070,7 +3070,7 @@ static void PM_BeginWeaponChange( int weapon )
 	//reset build weapon
 	pm->ps->stats[ STAT_BUILDABLE ] = BA_NONE;
 
-	if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 	{
 		PM_StartTorsoAnim( TORSO_DROP );
 	}
@@ -3087,12 +3087,12 @@ static void PM_FinishWeaponChange( void )
 
 	weapon = pm->ps->persistant[ PERS_NEWWEAPON ];
 
-	if( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
+	if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
 		weapon = WP_NONE;
 	}
 
-	if( !BG_InventoryContainsWeapon( weapon, pm->ps->stats ) )
+	if ( !BG_InventoryContainsWeapon( weapon, pm->ps->stats ) )
 	{
 		weapon = WP_NONE;
 	}
@@ -3101,7 +3101,7 @@ static void PM_FinishWeaponChange( void )
 	pm->ps->weaponstate = WEAPON_RAISING;
 	pm->ps->weaponTime += 250;
 
-	if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 	{
 		PM_StartTorsoAnim( TORSO_RAISE );
 	}
@@ -3115,14 +3115,14 @@ PM_TorsoAnimation
 */
 static void PM_TorsoAnimation( void )
 {
-	if( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL )
+	if ( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL )
 	{
 		return;
 	}
 
-	if( pm->ps->weaponstate == WEAPON_READY )
+	if ( pm->ps->weaponstate == WEAPON_READY )
 	{
-		if( pm->ps->weapon == WP_BLASTER )
+		if ( pm->ps->weapon == WP_BLASTER )
 		{
 			PM_ContinueTorsoAnim( TORSO_STAND2 );
 		}
@@ -3149,36 +3149,36 @@ static void PM_Weapon( void )
 	qboolean attack3 = qfalse;
 
 	// don't allow attack until all buttons are up
-	if( pm->ps->pm_flags & PMF_RESPAWNED )
+	if ( pm->ps->pm_flags & PMF_RESPAWNED )
 	{
 		return;
 	}
 
 	// ignore if spectator
-	if( pm->ps->persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
+	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
 	{
 		return;
 	}
 
-	if( pm->ps->stats[ STAT_STATE ] & SS_INFESTING )
+	if ( pm->ps->stats[ STAT_STATE ] & SS_INFESTING )
 	{
 		return;
 	}
 
-	if( pm->ps->stats[ STAT_STATE ] & SS_HOVELING )
+	if ( pm->ps->stats[ STAT_STATE ] & SS_HOVELING )
 	{
 		return;
 	}
 
 	// check for dead player
-	if( pm->ps->stats[ STAT_HEALTH ] <= 0 )
+	if ( pm->ps->stats[ STAT_HEALTH ] <= 0 )
 	{
 		pm->ps->weapon = WP_NONE;
 		return;
 	}
 
 	// make weapon function
-	if( pm->ps->weaponTime > 0 )
+	if ( pm->ps->weaponTime > 0 )
 	{
 		pm->ps->weaponTime -= pml.msec;
 	}
@@ -3186,27 +3186,27 @@ static void PM_Weapon( void )
 	// check for weapon change
 	// can't change if weapon is firing, but can change
 	// again if lowering or raising
-	if( pm->ps->weaponTime <= 0 || pm->ps->weaponstate != WEAPON_FIRING )
+	if ( pm->ps->weaponTime <= 0 || pm->ps->weaponstate != WEAPON_FIRING )
 	{
 		//TA: must press use to switch weapons
-		if( pm->cmd.buttons & BUTTON_USE_HOLDABLE )
+		if ( pm->cmd.buttons & BUTTON_USE_HOLDABLE )
 		{
-			if( !( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) )
+			if ( !( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) )
 			{
-				if( pm->cmd.weapon <= 32 )
+				if ( pm->cmd.weapon <= 32 )
 				{
 					//if trying to select a weapon, select it
-					if( pm->ps->weapon != pm->cmd.weapon )
+					if ( pm->ps->weapon != pm->cmd.weapon )
 					{
 						PM_BeginWeaponChange( pm->cmd.weapon );
 					}
 				}
-				else if( pm->cmd.weapon > 32 )
+				else if ( pm->cmd.weapon > 32 )
 				{
 					//if trying to toggle an upgrade, toggle it
-					if( BG_InventoryContainsUpgrade( pm->cmd.weapon - 32, pm->ps->stats ) )   //sanity check
+					if ( BG_InventoryContainsUpgrade( pm->cmd.weapon - 32, pm->ps->stats ) )  //sanity check
 					{
-						if( BG_UpgradeIsActive( pm->cmd.weapon - 32, pm->ps->stats ) )
+						if ( BG_UpgradeIsActive( pm->cmd.weapon - 32, pm->ps->stats ) )
 						{
 							BG_DeactivateUpgrade( pm->cmd.weapon - 32, pm->ps->stats );
 						}
@@ -3226,32 +3226,32 @@ static void PM_Weapon( void )
 		}
 
 		//something external thinks a weapon change is necessary
-		if( pm->ps->pm_flags & PMF_WEAPON_SWITCH )
+		if ( pm->ps->pm_flags & PMF_WEAPON_SWITCH )
 		{
 			pm->ps->pm_flags &= ~PMF_WEAPON_SWITCH;
 			PM_BeginWeaponChange( pm->ps->persistant[ PERS_NEWWEAPON ] );
 		}
 	}
 
-	if( pm->ps->weaponTime > 0 )
+	if ( pm->ps->weaponTime > 0 )
 	{
 		return;
 	}
 
 	// change weapon if time
-	if( pm->ps->weaponstate == WEAPON_DROPPING )
+	if ( pm->ps->weaponstate == WEAPON_DROPPING )
 	{
 		PM_FinishWeaponChange();
 		return;
 	}
 
-	if( pm->ps->weaponstate == WEAPON_RAISING )
+	if ( pm->ps->weaponstate == WEAPON_RAISING )
 	{
 		pm->ps->weaponstate = WEAPON_READY;
 
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
-			if( pm->ps->weapon == WP_BLASTER )
+			if ( pm->ps->weapon == WP_BLASTER )
 			{
 				PM_ContinueTorsoAnim( TORSO_STAND2 );
 			}
@@ -3270,7 +3270,7 @@ static void PM_Weapon( void )
 	BG_FindAmmoForWeapon( pm->ps->weapon, NULL, &maxClips );
 
 	// check for out of ammo
-	if( !ammo && !clips && !BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) )
+	if ( !ammo && !clips && !BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) )
 	{
 		PM_AddEvent( EV_NOAMMO );
 		pm->ps->weaponTime += 200;
@@ -3278,16 +3278,16 @@ static void PM_Weapon( void )
 	}
 
 	//done reloading so give em some ammo
-	if( pm->ps->weaponstate == WEAPON_RELOADING )
+	if ( pm->ps->weaponstate == WEAPON_RELOADING )
 	{
-		if( maxClips > 0 )
+		if ( maxClips > 0 )
 		{
 			clips--;
 			BG_FindAmmoForWeapon( pm->ps->weapon, &ammo, NULL );
 		}
 
-		if( BG_FindUsesEnergyForWeapon( pm->ps->weapon ) &&
-		    BG_InventoryContainsUpgrade( UP_BATTPACK, pm->ps->stats ) )
+		if ( BG_FindUsesEnergyForWeapon( pm->ps->weapon ) &&
+		     BG_InventoryContainsUpgrade( UP_BATTPACK, pm->ps->stats ) )
 		{
 			ammo = ( int )( ( float ) ammo * BATTPACK_MODIFIER );
 		}
@@ -3302,7 +3302,7 @@ static void PM_Weapon( void )
 	}
 
 	// check for end of clip
-	if( ( !ammo || pm->ps->pm_flags & PMF_WEAPON_RELOAD ) && clips )
+	if ( ( !ammo || pm->ps->pm_flags & PMF_WEAPON_RELOAD ) && clips )
 	{
 		pm->ps->pm_flags &= ~PMF_WEAPON_RELOAD;
 
@@ -3318,13 +3318,13 @@ static void PM_Weapon( void )
 	}
 
 	//check if non-auto primary/secondary attacks are permited
-	switch( pm->ps->weapon )
+	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL0:
 			//venom is only autohit
 			attack1 = attack2 = attack3 = qfalse;
 
-			if( !pm->autoWeaponHit[ pm->ps->weapon ] )
+			if ( !pm->autoWeaponHit[ pm->ps->weapon ] )
 			{
 				pm->ps->weaponTime = 0;
 				pm->ps->weaponstate = WEAPON_READY;
@@ -3340,7 +3340,7 @@ static void PM_Weapon( void )
 			attack2 = pm->cmd.buttons & BUTTON_ATTACK2;
 			attack3 = pm->cmd.buttons & BUTTON_USE_HOLDABLE;
 
-			if( !pm->autoWeaponHit[ pm->ps->weapon ] && !attack1 && !attack2 && !attack3 )
+			if ( !pm->autoWeaponHit[ pm->ps->weapon ] && !attack1 && !attack2 && !attack3 )
 			{
 				pm->ps->weaponTime = 0;
 				pm->ps->weaponstate = WEAPON_READY;
@@ -3354,9 +3354,9 @@ static void PM_Weapon( void )
 			attack2 = pm->cmd.buttons & BUTTON_ATTACK2;
 			attack3 = pm->cmd.buttons & BUTTON_USE_HOLDABLE;
 
-			if( ( attack1 || pm->ps->stats[ STAT_MISC ] == 0 ) && !attack2 && !attack3 )
+			if ( ( attack1 || pm->ps->stats[ STAT_MISC ] == 0 ) && !attack2 && !attack3 )
 			{
-				if( pm->ps->stats[ STAT_MISC ] < LCANNON_TOTAL_CHARGE )
+				if ( pm->ps->stats[ STAT_MISC ] < LCANNON_TOTAL_CHARGE )
 				{
 					pm->ps->weaponTime = 0;
 					pm->ps->weaponstate = WEAPON_READY;
@@ -3369,11 +3369,11 @@ static void PM_Weapon( void )
 			}
 
 			//erp this looks confusing
-			if( pm->ps->stats[ STAT_MISC ] > LCANNON_MIN_CHARGE )
+			if ( pm->ps->stats[ STAT_MISC ] > LCANNON_MIN_CHARGE )
 			{
 				attack1 = !attack1;
 			}
-			else if( pm->ps->stats[ STAT_MISC ] > 0 )
+			else if ( pm->ps->stats[ STAT_MISC ] > 0 )
 			{
 				pm->ps->stats[ STAT_MISC ] = 0;
 				pm->ps->weaponTime = 0;
@@ -3389,7 +3389,7 @@ static void PM_Weapon( void )
 			attack2 = pm->cmd.buttons & BUTTON_ATTACK2;
 			attack3 = pm->cmd.buttons & BUTTON_USE_HOLDABLE;
 
-			if( !attack1 && !attack2 && !attack3 )
+			if ( !attack1 && !attack2 && !attack3 )
 			{
 				pm->ps->weaponTime = 0;
 				pm->ps->weaponstate = WEAPON_READY;
@@ -3400,12 +3400,12 @@ static void PM_Weapon( void )
 	}
 
 	//TA: fire events for non auto weapons
-	if( attack3 )
+	if ( attack3 )
 	{
-		if( BG_WeaponHasThirdMode( pm->ps->weapon ) )
+		if ( BG_WeaponHasThirdMode( pm->ps->weapon ) )
 		{
 			//hacky special case for slowblob
-			if( pm->ps->weapon == WP_ALEVEL3_UPG && !ammo )
+			if ( pm->ps->weapon == WP_ALEVEL3_UPG && !ammo )
 			{
 				PM_AddEvent( EV_NOAMMO );
 				pm->ps->weaponTime += 200;
@@ -3424,9 +3424,9 @@ static void PM_Weapon( void )
 			return;
 		}
 	}
-	else if( attack2 )
+	else if ( attack2 )
 	{
-		if( BG_WeaponHasAltMode( pm->ps->weapon ) )
+		if ( BG_WeaponHasAltMode( pm->ps->weapon ) )
 		{
 			pm->ps->generic1 = WPM_SECONDARY;
 			PM_AddEvent( EV_FIRE_WEAPON2 );
@@ -3440,7 +3440,7 @@ static void PM_Weapon( void )
 			return;
 		}
 	}
-	else if( attack1 )
+	else if ( attack1 )
 	{
 		pm->ps->generic1 = WPM_PRIMARY;
 		PM_AddEvent( EV_FIRE_WEAPON );
@@ -3448,9 +3448,9 @@ static void PM_Weapon( void )
 	}
 
 	//TA: fire events for autohit weapons
-	if( pm->autoWeaponHit[ pm->ps->weapon ] )
+	if ( pm->autoWeaponHit[ pm->ps->weapon ] )
 	{
-		switch( pm->ps->weapon )
+		switch ( pm->ps->weapon )
 		{
 			case WP_ALEVEL0:
 				pm->ps->generic1 = WPM_PRIMARY;
@@ -3470,13 +3470,13 @@ static void PM_Weapon( void )
 		}
 	}
 
-	if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 	{
 		//FIXME: this should be an option in the client weapon.cfg
-		switch( pm->ps->weapon )
+		switch ( pm->ps->weapon )
 		{
 			case WP_FLAMER:
-				if( pm->ps->weaponstate == WEAPON_READY )
+				if ( pm->ps->weaponstate == WEAPON_READY )
 				{
 					PM_StartTorsoAnim( TORSO_ATTACK );
 				}
@@ -3494,36 +3494,36 @@ static void PM_Weapon( void )
 	}
 	else
 	{
-		if( pm->ps->weapon == WP_ALEVEL4 )
+		if ( pm->ps->weapon == WP_ALEVEL4 )
 		{
 			//hack to get random attack animations
 			//FIXME: does pm->ps->weaponTime cycle enough?
 			int num = abs( pm->ps->weaponTime ) % 3;
 
-			if( num == 0 )
+			if ( num == 0 )
 			{
 				PM_ForceLegsAnim( NSPA_ATTACK1 );
 			}
-			else if( num == 1 )
+			else if ( num == 1 )
 			{
 				PM_ForceLegsAnim( NSPA_ATTACK2 );
 			}
-			else if( num == 2 )
+			else if ( num == 2 )
 			{
 				PM_ForceLegsAnim( NSPA_ATTACK3 );
 			}
 		}
 		else
 		{
-			if( attack1 )
+			if ( attack1 )
 			{
 				PM_ForceLegsAnim( NSPA_ATTACK1 );
 			}
-			else if( attack2 )
+			else if ( attack2 )
 			{
 				PM_ForceLegsAnim( NSPA_ATTACK2 );
 			}
-			else if( attack3 )
+			else if ( attack3 )
 			{
 				PM_ForceLegsAnim( NSPA_ATTACK3 );
 			}
@@ -3535,15 +3535,15 @@ static void PM_Weapon( void )
 	pm->ps->weaponstate = WEAPON_FIRING;
 
 	// take an ammo away if not infinite
-	if( !BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) )
+	if ( !BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) )
 	{
 		//special case for lCanon
-		if( pm->ps->weapon == WP_LUCIFER_CANNON && attack1 )
+		if ( pm->ps->weapon == WP_LUCIFER_CANNON && attack1 )
 		{
 			ammo -= ( int )( ceil( ( ( float ) pm->ps->stats[ STAT_MISC ] / ( float ) LCANNON_TOTAL_CHARGE ) * 10.0f ) );
 
 			//stay on the safe side
-			if( ammo < 0 )
+			if ( ammo < 0 )
 			{
 				ammo = 0;
 			}
@@ -3555,7 +3555,7 @@ static void PM_Weapon( void )
 
 		BG_PackAmmoArray( pm->ps->weapon, pm->ps->ammo, pm->ps->powerups, ammo, clips );
 	}
-	else if( pm->ps->weapon == WP_ALEVEL3_UPG && attack3 )
+	else if ( pm->ps->weapon == WP_ALEVEL3_UPG && attack3 )
 	{
 		//special case for slowblob
 		ammo--;
@@ -3563,10 +3563,10 @@ static void PM_Weapon( void )
 	}
 
 	//FIXME: predicted angles miss a problem??
-	if( pm->ps->weapon == WP_CHAINGUN )
+	if ( pm->ps->weapon == WP_CHAINGUN )
 	{
-		if( pm->ps->pm_flags & PMF_DUCKED ||
-		    BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
+		if ( pm->ps->pm_flags & PMF_DUCKED ||
+		     BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
 		{
 			pm->ps->delta_angles[ PITCH ] -= ANGLE2SHORT( ( ( random() * 0.5 ) - 0.125 ) * ( 30 / ( float ) addTime ) );
 			pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( ( ( random() * 0.5 ) - 0.25 ) * ( 30.0 / ( float ) addTime ) );
@@ -3588,11 +3588,11 @@ PM_Animate
 */
 static void PM_Animate( void )
 {
-	if( pm->cmd.buttons & BUTTON_GESTURE )
+	if ( pm->cmd.buttons & BUTTON_GESTURE )
 	{
-		if( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
-			if( pm->ps->torsoTimer == 0 )
+			if ( pm->ps->torsoTimer == 0 )
 			{
 				PM_StartTorsoAnim( TORSO_GESTURE );
 				pm->ps->torsoTimer = TIMER_GESTURE;
@@ -3602,7 +3602,7 @@ static void PM_Animate( void )
 		}
 		else
 		{
-			if( pm->ps->torsoTimer == 0 )
+			if ( pm->ps->torsoTimer == 0 )
 			{
 				PM_ForceLegsAnim( NSPA_GESTURE );
 				pm->ps->torsoTimer = TIMER_GESTURE;
@@ -3621,9 +3621,9 @@ PM_DropTimers
 static void PM_DropTimers( void )
 {
 	// drop misc timing counter
-	if( pm->ps->pm_time )
+	if ( pm->ps->pm_time )
 	{
-		if( pml.msec >= pm->ps->pm_time )
+		if ( pml.msec >= pm->ps->pm_time )
 		{
 			pm->ps->pm_flags &= ~PMF_ALL_TIMES;
 			pm->ps->pm_time = 0;
@@ -3635,21 +3635,21 @@ static void PM_DropTimers( void )
 	}
 
 	// drop animation counter
-	if( pm->ps->legsTimer > 0 )
+	if ( pm->ps->legsTimer > 0 )
 	{
 		pm->ps->legsTimer -= pml.msec;
 
-		if( pm->ps->legsTimer < 0 )
+		if ( pm->ps->legsTimer < 0 )
 		{
 			pm->ps->legsTimer = 0;
 		}
 	}
 
-	if( pm->ps->torsoTimer > 0 )
+	if ( pm->ps->torsoTimer > 0 )
 	{
 		pm->ps->torsoTimer -= pml.msec;
 
-		if( pm->ps->torsoTimer < 0 )
+		if ( pm->ps->torsoTimer < 0 )
 		{
 			pm->ps->torsoTimer = 0;
 		}
@@ -3671,30 +3671,30 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	vec3_t axis[ 3 ], rotaxis[ 3 ];
 	vec3_t tempang;
 
-	if( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPINTERMISSION )
+	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPINTERMISSION )
 	{
 		return; // no view changes at all
 	}
 
-	if( ps->pm_type != PM_SPECTATOR && ps->stats[ STAT_HEALTH ] <= 0 )
+	if ( ps->pm_type != PM_SPECTATOR && ps->stats[ STAT_HEALTH ] <= 0 )
 	{
 		return; // no view changes at all
 	}
 
 	// circularly clamp the angles with deltas
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		temp[ i ] = cmd->angles[ i ] + ps->delta_angles[ i ];
 
-		if( i == PITCH )
+		if ( i == PITCH )
 		{
 			// don't let the player look up or down more than 90 degrees
-			if( temp[ i ] > 16000 )
+			if ( temp[ i ] > 16000 )
 			{
 				ps->delta_angles[ i ] = 16000 - cmd->angles[ i ];
 				temp[ i ] = 16000;
 			}
-			else if( temp[ i ] < -16000 )
+			else if ( temp[ i ] < -16000 )
 			{
 				ps->delta_angles[ i ] = -16000 - cmd->angles[ i ];
 				temp[ i ] = -16000;
@@ -3707,9 +3707,9 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	//convert viewangles -> axis
 	AnglesToAxis( tempang, axis );
 
-	if( !( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) ||
-	    !BG_RotateAxis( ps->grapplePoint, axis, rotaxis, qfalse,
-	                    ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING ) )
+	if ( !( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) ||
+	     !BG_RotateAxis( ps->grapplePoint, axis, rotaxis, qfalse,
+	                     ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING ) )
 	{
 		AxisCopy( axis, rotaxis );
 	}
@@ -3718,61 +3718,61 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	AxisToAngles( rotaxis, tempang );
 
 	//force angles to -180 <= x <= 180
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		while( tempang[ i ] > 180 )
+		while ( tempang[ i ] > 180 )
 		{
 			tempang[ i ] -= 360;
 		}
 
-		while( tempang[ i ] < 180 )
+		while ( tempang[ i ] < 180 )
 		{
 			tempang[ i ] += 360;
 		}
 	}
 
 	//actually set the viewangles
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		ps->viewangles[ i ] = tempang[ i ];
 	}
 
 	//pull the view into the lock point
-	if( ps->pm_type == PM_GRABBED && !BG_InventoryContainsUpgrade( UP_BATTLESUIT, ps->stats ) )
+	if ( ps->pm_type == PM_GRABBED && !BG_InventoryContainsUpgrade( UP_BATTLESUIT, ps->stats ) )
 	{
 		vec3_t dir, angles;
 
 		ByteToDir( ps->stats[ STAT_VIEWLOCK ], dir );
 		vectoangles( dir, angles );
 
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			float diff = AngleSubtract( ps->viewangles[ i ], angles[ i ] );
 
-			while( diff > 180.0f )
+			while ( diff > 180.0f )
 			{
 				diff -= 360.0f;
 			}
 
-			while( diff < -180.0f )
+			while ( diff < -180.0f )
 			{
 				diff += 360.0f;
 			}
 
-			if( diff < -90.0f )
+			if ( diff < -90.0f )
 			{
 				ps->delta_angles[ i ] += ANGLE2SHORT( fabs( diff ) - 90.0f );
 			}
-			else if( diff > 90.0f )
+			else if ( diff > 90.0f )
 			{
 				ps->delta_angles[ i ] -= ANGLE2SHORT( fabs( diff ) - 90.0f );
 			}
 
-			if( diff < 0.0f )
+			if ( diff < 0.0f )
 			{
 				ps->delta_angles[ i ] += ANGLE2SHORT( fabs( diff ) * 0.05f );
 			}
-			else if( diff > 0.0f )
+			else if ( diff > 0.0f )
 			{
 				ps->delta_angles[ i ] -= ANGLE2SHORT( fabs( diff ) * 0.05f );
 			}
@@ -3805,20 +3805,20 @@ void PmoveSingle( pmove_t *pmove )
 	pm->watertype = 0;
 	pm->waterlevel = 0;
 
-	if( pm->ps->stats[ STAT_HEALTH ] <= 0 )
+	if ( pm->ps->stats[ STAT_HEALTH ] <= 0 )
 	{
 		pm->tracemask &= ~CONTENTS_BODY; // corpses can fly through bodies
 	}
 
 	// make sure walking button is clear if they are running, to avoid
 	// proxy no-footsteps cheats
-	if( abs( pm->cmd.forwardmove ) > 64 || abs( pm->cmd.rightmove ) > 64 )
+	if ( abs( pm->cmd.forwardmove ) > 64 || abs( pm->cmd.rightmove ) > 64 )
 	{
 		pm->cmd.buttons &= ~BUTTON_WALKING;
 	}
 
 	// set the talk balloon flag
-	if( pm->cmd.buttons & BUTTON_TALK )
+	if ( pm->cmd.buttons & BUTTON_TALK )
 	{
 		pm->ps->eFlags |= EF_TALK;
 	}
@@ -3828,9 +3828,9 @@ void PmoveSingle( pmove_t *pmove )
 	}
 
 	// set the firing flag for continuous beam weapons
-	if( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	    ( pm->cmd.buttons & BUTTON_ATTACK ) &&
-	    ( ( ammo > 0 || clips > 0 ) || BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) ) )
+	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
+	     ( pm->cmd.buttons & BUTTON_ATTACK ) &&
+	     ( ( ammo > 0 || clips > 0 ) || BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) ) )
 	{
 		pm->ps->eFlags |= EF_FIRING;
 	}
@@ -3840,9 +3840,9 @@ void PmoveSingle( pmove_t *pmove )
 	}
 
 	// set the firing flag for continuous beam weapons
-	if( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	    ( pm->cmd.buttons & BUTTON_ATTACK2 ) &&
-	    ( ( ammo > 0 || clips > 0 ) || BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) ) )
+	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
+	     ( pm->cmd.buttons & BUTTON_ATTACK2 ) &&
+	     ( ( ammo > 0 || clips > 0 ) || BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) ) )
 	{
 		pm->ps->eFlags |= EF_FIRING2;
 	}
@@ -3852,9 +3852,9 @@ void PmoveSingle( pmove_t *pmove )
 	}
 
 	// set the firing flag for continuous beam weapons
-	if( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	    ( pm->cmd.buttons & BUTTON_USE_HOLDABLE ) &&
-	    ( ( ammo > 0 || clips > 0 ) || BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) ) )
+	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
+	     ( pm->cmd.buttons & BUTTON_USE_HOLDABLE ) &&
+	     ( ( ammo > 0 || clips > 0 ) || BG_FindInfinteAmmoForWeapon( pm->ps->weapon ) ) )
 	{
 		pm->ps->eFlags |= EF_FIRING3;
 	}
@@ -3864,8 +3864,8 @@ void PmoveSingle( pmove_t *pmove )
 	}
 
 	// clear the respawned flag if attack and use are cleared
-	if( pm->ps->stats[ STAT_HEALTH ] > 0 &&
-	    !( pm->cmd.buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) )
+	if ( pm->ps->stats[ STAT_HEALTH ] > 0 &&
+	     !( pm->cmd.buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) )
 	{
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 	}
@@ -3873,7 +3873,7 @@ void PmoveSingle( pmove_t *pmove )
 	// if talk button is down, dissallow all other input
 	// this is to prevent any possible intercept proxy from
 	// adding fake talk balloons
-	if( pmove->cmd.buttons & BUTTON_TALK )
+	if ( pmove->cmd.buttons & BUTTON_TALK )
 	{
 		pmove->cmd.buttons = BUTTON_TALK;
 		pmove->cmd.forwardmove = 0;
@@ -3887,11 +3887,11 @@ void PmoveSingle( pmove_t *pmove )
 	// determine the time
 	pml.msec = pmove->cmd.serverTime - pm->ps->commandTime;
 
-	if( pml.msec < 1 )
+	if ( pml.msec < 1 )
 	{
 		pml.msec = 1;
 	}
-	else if( pml.msec > 200 )
+	else if ( pml.msec > 200 )
 	{
 		pml.msec = 200;
 	}
@@ -3908,30 +3908,30 @@ void PmoveSingle( pmove_t *pmove )
 
 	AngleVectors( pm->ps->viewangles, pml.forward, pml.right, pml.up );
 
-	if( pm->cmd.upmove < 10 )
+	if ( pm->cmd.upmove < 10 )
 	{
 		// not holding jump
 		pm->ps->pm_flags &= ~PMF_JUMP_HELD;
 	}
 
 	// decide if backpedaling animations should be used
-	if( pm->cmd.forwardmove < 0 )
+	if ( pm->cmd.forwardmove < 0 )
 	{
 		pm->ps->pm_flags |= PMF_BACKWARDS_RUN;
 	}
-	else if( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove ) )
+	else if ( pm->cmd.forwardmove > 0 || ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove ) )
 	{
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_RUN;
 	}
 
-	if( pm->ps->pm_type >= PM_DEAD )
+	if ( pm->ps->pm_type >= PM_DEAD )
 	{
 		pm->cmd.forwardmove = 0;
 		pm->cmd.rightmove = 0;
 		pm->cmd.upmove = 0;
 	}
 
-	if( pm->ps->pm_type == PM_SPECTATOR )
+	if ( pm->ps->pm_type == PM_SPECTATOR )
 	{
 		// update the viewangles
 		PM_UpdateViewAngles( pm->ps, &pm->cmd );
@@ -3941,7 +3941,7 @@ void PmoveSingle( pmove_t *pmove )
 		return;
 	}
 
-	if( pm->ps->pm_type == PM_NOCLIP )
+	if ( pm->ps->pm_type == PM_NOCLIP )
 	{
 		PM_UpdateViewAngles( pm->ps, &pm->cmd );
 		PM_NoclipMove();
@@ -3949,12 +3949,12 @@ void PmoveSingle( pmove_t *pmove )
 		return;
 	}
 
-	if( pm->ps->pm_type == PM_FREEZE )
+	if ( pm->ps->pm_type == PM_FREEZE )
 	{
 		return; // no movement at all
 	}
 
-	if( pm->ps->pm_type == PM_INTERMISSION || pm->ps->pm_type == PM_SPINTERMISSION )
+	if ( pm->ps->pm_type == PM_INTERMISSION || pm->ps->pm_type == PM_SPINTERMISSION )
 	{
 		return; // no movement at all
 	}
@@ -3974,33 +3974,33 @@ void PmoveSingle( pmove_t *pmove )
 	// update the viewangles
 	PM_UpdateViewAngles( pm->ps, &pm->cmd );
 
-	if( pm->ps->pm_type == PM_DEAD || pm->ps->pm_type == PM_GRABBED )
+	if ( pm->ps->pm_type == PM_DEAD || pm->ps->pm_type == PM_GRABBED )
 	{
 		PM_DeadMove();
 	}
 
 	PM_DropTimers();
 
-	if( pm->ps->pm_type == PM_JETPACK )
+	if ( pm->ps->pm_type == PM_JETPACK )
 	{
 		PM_JetPackMove();
 	}
-	else if( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
+	else if ( pm->ps->pm_flags & PMF_TIME_WATERJUMP )
 	{
 		PM_WaterJumpMove();
 	}
-	else if( pm->waterlevel > 1 )
+	else if ( pm->waterlevel > 1 )
 	{
 		PM_WaterMove();
 	}
-	else if( pml.ladder )
+	else if ( pml.ladder )
 	{
 		PM_LadderMove();
 	}
-	else if( pml.walking )
+	else if ( pml.walking )
 	{
-		if( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLCLIMBER ) &&
-		    ( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
+		if ( BG_ClassHasAbility( pm->ps->stats[ STAT_PCLASS ], SCA_WALLCLIMBER ) &&
+		     ( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
 		{
 			PM_ClimbMove(); //TA: walking on any surface
 		}
@@ -4053,12 +4053,12 @@ void Pmove( pmove_t *pmove )
 
 	finalTime = pmove->cmd.serverTime;
 
-	if( finalTime < pmove->ps->commandTime )
+	if ( finalTime < pmove->ps->commandTime )
 	{
 		return; // should not happen
 	}
 
-	if( finalTime > pmove->ps->commandTime + 1000 )
+	if ( finalTime > pmove->ps->commandTime + 1000 )
 	{
 		pmove->ps->commandTime = finalTime - 1000;
 	}
@@ -4067,22 +4067,22 @@ void Pmove( pmove_t *pmove )
 
 	// chop the move up if it is too long, to prevent framerate
 	// dependent behavior
-	while( pmove->ps->commandTime != finalTime )
+	while ( pmove->ps->commandTime != finalTime )
 	{
 		int msec;
 
 		msec = finalTime - pmove->ps->commandTime;
 
-		if( pmove->pmove_fixed )
+		if ( pmove->pmove_fixed )
 		{
-			if( msec > pmove->pmove_msec )
+			if ( msec > pmove->pmove_msec )
 			{
 				msec = pmove->pmove_msec;
 			}
 		}
 		else
 		{
-			if( msec > 66 )
+			if ( msec > 66 )
 			{
 				msec = 66;
 			}
@@ -4091,7 +4091,7 @@ void Pmove( pmove_t *pmove )
 		pmove->cmd.serverTime = pmove->ps->commandTime + msec;
 		PmoveSingle( pmove );
 
-		if( pmove->ps->pm_flags & PMF_JUMP_HELD )
+		if ( pmove->ps->pm_flags & PMF_JUMP_HELD )
 		{
 			pmove->cmd.upmove = 20;
 		}

@@ -140,11 +140,11 @@ unsigned short CRC_ProcessString( unsigned char *data, int length )
 
 	CRC_Init( &crcvalue );
 
-	for( i = 0; i < length; i++ )
+	for ( i = 0; i < length; i++ )
 	{
 		ind = ( crcvalue >> 8 ) ^ data[ i ];
 
-		if( ind < 0 || ind > 256 )
+		if ( ind < 0 || ind > 256 )
 		{
 			ind = 0;
 		}
@@ -165,7 +165,7 @@ void CRC_ContinueProcessString( unsigned short *crc, char *data, int length )
 {
 	int i;
 
-	for( i = 0; i < length; i++ )
+	for ( i = 0; i < length; i++ )
 	{
 		*crc = ( *crc << 8 ) ^ crctable[( *crc >> 8 ) ^ data[ i ] ];
 	} //end for

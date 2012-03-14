@@ -38,12 +38,12 @@ void *gmp_realloc( void *ptr, size_t old_size, size_t new_size )
 {
 	void *new_ptr = Z_TagMalloc( new_size, TAG_CRYPTO );
 
-	if( old_size >= new_size )
+	if ( old_size >= new_size )
 	{
 		return ptr;
 	}
 
-	if( ptr )
+	if ( ptr )
 	{
 		Com_Memcpy( new_ptr, ptr, old_size );
 		Z_Free( ptr );

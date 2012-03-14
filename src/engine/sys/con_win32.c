@@ -94,7 +94,7 @@ static void CON_HistAdd( void )
 	Q_strncpyz( qconsole_history[ qconsole_history_oldest ], qconsole_line,
 	            sizeof( qconsole_history[ qconsole_history_oldest ] ) );
 
-	if( qconsole_history_oldest >= QCONSOLE_HISTORY - 1 )
+	if ( qconsole_history_oldest >= QCONSOLE_HISTORY - 1 )
 	{
 		qconsole_history_oldest = 0;
 	}
@@ -119,7 +119,7 @@ static void CON_HistPrev( void )
 	      ( QCONSOLE_HISTORY - 1 ) : ( qconsole_history_pos - 1 );
 
 	// don' t allow looping through history
-	if( pos == qconsole_history_oldest )
+	if ( pos == qconsole_history_oldest )
 	{
 		return;
 	}
@@ -143,7 +143,7 @@ static void CON_HistNext( void )
 	      0 : ( qconsole_history_pos + 1 );
 
 	// clear the edit buffer if they try to advance to a future command
-	if( pos == qconsole_history_oldest )
+	if ( pos == qconsole_history_oldest )
 	{
 		qconsole_line[ 0 ] = '\0';
 		qconsole_linelen = 0;
@@ -173,7 +173,7 @@ static void CON_Show( void )
 	GetConsoleScreenBufferInfo( qconsole_hout, &binfo );
 
 	// if we're in the middle of printf, don't bother writing the buffer
-	if( binfo.dwCursorPosition.X != 0 )
+	if ( binfo.dwCursorPosition.X != 0 )
 	{
 		return;
 	}
@@ -184,9 +184,9 @@ static void CON_Show( void )
 	writeArea.Right = MAX_EDIT_LINE;
 
 	// build a space-padded CHAR_INFO array
-	for( i = 0; i < MAX_EDIT_LINE; i++ )
+	for ( i = 0; i < MAX_EDIT_LINE; i++ )
 	{
-		if( i < qconsole_linelen )
+		if ( i < qconsole_linelen )
 		{
 			line[ i ].Char.AsciiChar = qconsole_line[ i ];
 		}
@@ -198,7 +198,7 @@ static void CON_Show( void )
 		line[ i ].Attributes = qconsole_attrib;
 	}
 
-	if( qconsole_linelen > binfo.srWindow.Right )
+	if ( qconsole_linelen > binfo.srWindow.Right )
 	{
 		WriteConsoleOutput( qconsole_hout,
 		                    line + ( qconsole_linelen - binfo.srWindow.Right ),
@@ -240,14 +240,14 @@ void CON_Init( void )
 
 	qconsole_hin = GetStdHandle( STD_INPUT_HANDLE );
 
-	if( qconsole_hin == INVALID_HANDLE_VALUE )
+	if ( qconsole_hin == INVALID_HANDLE_VALUE )
 	{
 		return;
 	}
 
 	qconsole_hout = GetStdHandle( STD_OUTPUT_HANDLE );
 
-	if( qconsole_hout == INVALID_HANDLE_VALUE )
+	if ( qconsole_hout == INVALID_HANDLE_VALUE )
 	{
 		return;
 	}
@@ -272,7 +272,7 @@ void CON_Init( void )
 	SetConsoleCursorInfo( qconsole_hout, &curs );
 
 	// initialize history
-	for( i = 0; i < QCONSOLE_HISTORY; i++ )
+	for ( i = 0; i < QCONSOLE_HISTORY; i++ )
 	{
 		qconsole_history[ i ][ 0 ] = '\0';
 	}
@@ -291,65 +291,65 @@ char *CON_Input( void )
 	int          i;
 	int          newlinepos = -1;
 
-	if( !GetNumberOfConsoleInputEvents( qconsole_hin, &events ) )
+	if ( !GetNumberOfConsoleInputEvents( qconsole_hin, &events ) )
 	{
 		return NULL;
 	}
 
-	if( events < 1 )
+	if ( events < 1 )
 	{
 		return NULL;
 	}
 
 	// if we have overflowed, start dropping oldest input events
-	if( events >= MAX_EDIT_LINE )
+	if ( events >= MAX_EDIT_LINE )
 	{
 		ReadConsoleInput( qconsole_hin, buff, 1, &events );
 		return NULL;
 	}
 
-	if( !ReadConsoleInput( qconsole_hin, buff, events, &count ) )
+	if ( !ReadConsoleInput( qconsole_hin, buff, events, &count ) )
 	{
 		return NULL;
 	}
 
 	FlushConsoleInputBuffer( qconsole_hin );
 
-	for( i = 0; i < count; i++ )
+	for ( i = 0; i < count; i++ )
 	{
-		if( buff[ i ].EventType != KEY_EVENT )
+		if ( buff[ i ].EventType != KEY_EVENT )
 		{
 			continue;
 		}
 
-		if( !buff[ i ].Event.KeyEvent.bKeyDown )
+		if ( !buff[ i ].Event.KeyEvent.bKeyDown )
 		{
 			continue;
 		}
 
 		key = buff[ i ].Event.KeyEvent.wVirtualKeyCode;
 
-		if( key == VK_RETURN )
+		if ( key == VK_RETURN )
 		{
 			newlinepos = i;
 			break;
 		}
-		else if( key == VK_UP )
+		else if ( key == VK_UP )
 		{
 			Q_strncpyz( qconsole_line, Hist_Prev(), sizeof( qconsole_line ) );
 			qconsole_linelen = strlen( qconsole_line );
 			break;
 		}
-		else if( key == VK_DOWN )
+		else if ( key == VK_DOWN )
 		{
 			const char *history = Hist_Next();
 
-			if( history )
+			if ( history )
 			{
 				Q_strncpyz( qconsole_line, history, sizeof( qconsole_line ) );
 				qconsole_linelen = strlen( qconsole_line );
 			}
-			else if( qconsole_linelen )
+			else if ( qconsole_linelen )
 			{
 				Hist_Add( qconsole_line );
 				qconsole_line[ 0 ] = '\0';
@@ -358,7 +358,7 @@ char *CON_Input( void )
 
 			break;
 		}
-		else if( key == VK_TAB )
+		else if ( key == VK_TAB )
 		{
 			field_t f;
 
@@ -371,11 +371,11 @@ char *CON_Input( void )
 			break;
 		}
 
-		if( qconsole_linelen < sizeof( qconsole_line ) - 1 )
+		if ( qconsole_linelen < sizeof( qconsole_line ) - 1 )
 		{
 			char c = buff[ i ].Event.KeyEvent.uChar.AsciiChar;
 
-			if( key == VK_BACK )
+			if ( key == VK_BACK )
 			{
 				int pos = ( qconsole_linelen > 0 ) ?
 				          qconsole_linelen - 1 : 0;
@@ -383,7 +383,7 @@ char *CON_Input( void )
 				qconsole_line[ pos ] = '\0';
 				qconsole_linelen = pos;
 			}
-			else if( c )
+			else if ( c )
 			{
 				qconsole_line[ qconsole_linelen++ ] = c;
 				qconsole_line[ qconsole_linelen ] = '\0';
@@ -393,12 +393,12 @@ char *CON_Input( void )
 
 	CON_Show();
 
-	if( newlinepos < 0 )
+	if ( newlinepos < 0 )
 	{
 		return NULL;
 	}
 
-	if( !qconsole_linelen )
+	if ( !qconsole_linelen )
 	{
 		Com_Printf( "\n" );
 		return NULL;

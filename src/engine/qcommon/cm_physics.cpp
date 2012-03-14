@@ -105,11 +105,11 @@ void FreeMemory( void *ptr, int sizeInBytes )
 
 extern "C" void CMod_PhysicsClearBodies()
 {
-	for( std::map< int, bspCmodel >::iterator it = bspModels.begin();
-	     it != bspModels.end();
-	     ++it )
+	for ( std::map< int, bspCmodel >::iterator it = bspModels.begin();
+	      it != bspModels.end();
+	      ++it )
 	{
-		if( it->second.rigidBody == NULL )
+		if ( it->second.rigidBody == NULL )
 		{
 			continue;
 		}
@@ -120,7 +120,7 @@ extern "C" void CMod_PhysicsClearBodies()
 
 extern "C" void CMod_PhysicsShutdown()
 {
-	if( g_world != NULL )
+	if ( g_world != NULL )
 	{
 		NewtonDestroy( g_world );
 		g_world = NULL;
@@ -200,9 +200,9 @@ void TransposeMatrix( vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
 {
 	int i, j;
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			transpose[ i ][ j ] = matrix[ j ][ i ];
 		}
@@ -211,7 +211,7 @@ void TransposeMatrix( vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
 
 static void PhysicsEntitySetTransform( const NewtonBody *body, const dFloat *matrix, int threadIndex )
 {
-	if( com_sv_running->integer )
+	if ( com_sv_running->integer )
 	{
 		sharedEntity_t *ent = ( sharedEntity_t * ) NewtonBodyGetUserData( body );
 		vec3_t         newPosition;
@@ -259,7 +259,7 @@ extern "C" void CMod_PhysicsAddEntity( sharedEntity_t *gEnt )
 {
 	std::map< int, bspCmodel >::iterator it = bspModels.find( gEnt->s.modelindex );
 
-	if( it == bspModels.end() )
+	if ( it == bspModels.end() )
 	{
 		return;
 	}
@@ -314,11 +314,11 @@ extern "C" void CMod_PhysicsAddBSPModel( int index, int firstSurface, int numSur
 
 extern "C" int CMod_PhysicsBSPSurfaceIsModel( int surfaceID )
 {
-	for( std::map< int, bspCmodel >::iterator it = bspModels.begin();
-	     it != bspModels.end();
-	     ++it )
+	for ( std::map< int, bspCmodel >::iterator it = bspModels.begin();
+	      it != bspModels.end();
+	      ++it )
 	{
-		if( surfaceID >= it->second.firstSurface && surfaceID < ( it->second.firstSurface + it->second.numSurfaces ) )
+		if ( surfaceID >= it->second.firstSurface && surfaceID < ( it->second.firstSurface + it->second.numSurfaces ) )
 		{
 			return it->second.index;
 		}
@@ -331,7 +331,7 @@ extern "C" void CMod_PhysicsAddFaceToModel( int modelIndex, int surface, vec3_t 
 {
 	std::map< int, bspCmodel >::iterator it = bspModels.find( modelIndex );
 
-	if( it == bspModels.end() )
+	if ( it == bspModels.end() )
 	{
 		return;
 	}

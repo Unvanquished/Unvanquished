@@ -47,7 +47,7 @@ void CG_AdjustFrom640( float *x, float *y, float *w, float *h )
 #if 0
 
 	// adjust for wide screens
-	if( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 )
+	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 )
 	{
 		*x += 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * 640 / 480 ) );
 	}
@@ -142,38 +142,38 @@ void CG_FilledBar( float x, float y, float w, float h, float *startColor, float 
 	vec4_t backgroundcolor = { 1, 1, 1, 0.25f }, colorAtPos; // colorAtPos is the lerped color if necessary
 	int    indent = BAR_BORDERSIZE;
 
-	if( frac > 1 )
+	if ( frac > 1 )
 	{
 		frac = 1.f;
 	}
 
-	if( frac < 0 )
+	if ( frac < 0 )
 	{
 		frac = 0;
 	}
 
-	if( ( flags & BAR_BG ) && bgColor )
+	if ( ( flags & BAR_BG ) && bgColor )
 	{
 		// BAR_BG set, and color specified, use specified bg color
 		Vector4Copy( bgColor, backgroundcolor );
 	}
 
-	if( flags & BAR_LERP_COLOR )
+	if ( flags & BAR_LERP_COLOR )
 	{
 		Vector4Average( startColor, endColor, frac, colorAtPos );
 	}
 
 	// background
-	if( ( flags & BAR_BG ) )
+	if ( ( flags & BAR_BG ) )
 	{
 		// draw background at full size and shrink the remaining box to fit inside with a border.  (alternate border may be specified by a BAR_BGSPACING_xx)
 		CG_FillRect( x, y, w, h, backgroundcolor );
 
-		if( flags & BAR_BGSPACING_X0Y0 )
+		if ( flags & BAR_BGSPACING_X0Y0 )
 		{
 			// fill the whole box (no border)
 		}
-		else if( flags & BAR_BGSPACING_X0Y5 )
+		else if ( flags & BAR_BGSPACING_X0Y5 )
 		{
 			// spacing created for weapon heat
 			indent *= 3;
@@ -191,19 +191,19 @@ void CG_FilledBar( float x, float y, float w, float h, float *startColor, float 
 	}
 
 	// adjust for horiz/vertical and draw the fractional box
-	if( flags & BAR_VERT )
+	if ( flags & BAR_VERT )
 	{
-		if( flags & BAR_LEFT )
+		if ( flags & BAR_LEFT )
 		{
 			// TODO: remember to swap colors on the ends here
 			y += ( h * ( 1 - frac ) );
 		}
-		else if( flags & BAR_CENTER )
+		else if ( flags & BAR_CENTER )
 		{
 			y += ( h * ( 1 - frac ) / 2 );
 		}
 
-		if( flags & BAR_LERP_COLOR )
+		if ( flags & BAR_LERP_COLOR )
 		{
 			CG_FillRect( x, y, w, h * frac, colorAtPos );
 		}
@@ -215,17 +215,17 @@ void CG_FilledBar( float x, float y, float w, float h, float *startColor, float 
 	}
 	else
 	{
-		if( flags & BAR_LEFT )
+		if ( flags & BAR_LEFT )
 		{
 			// TODO: remember to swap colors on the ends here
 			x += ( w * ( 1 - frac ) );
 		}
-		else if( flags & BAR_CENTER )
+		else if ( flags & BAR_CENTER )
 		{
 			x += ( w * ( 1 - frac ) / 2 );
 		}
 
-		if( flags & BAR_LERP_COLOR )
+		if ( flags & BAR_LERP_COLOR )
 		{
 			CG_FillRect( x, y, w * frac, h, colorAtPos );
 		}
@@ -351,7 +351,7 @@ void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader 
 	float t0;
 	float t1;
 
-	if( width < 0 )
+	if ( width < 0 )
 	{
 		// flip about vertical
 		width = -width;
@@ -364,7 +364,7 @@ void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader 
 		s1 = 1;
 	}
 
-	if( height < 0 )
+	if ( height < 0 )
 	{
 		// flip about horizontal
 		height = -height;
@@ -415,7 +415,7 @@ void CG_DrawChar( int x, int y, int width, int height, int ch )
 
 	ch &= 255;
 
-	if( ch == ' ' )
+	if ( ch == ' ' )
 	{
 		return;
 	}
@@ -452,7 +452,7 @@ void CG_DrawChar2( int x, int y, int width, int height, int ch )
 
 	ch &= 255;
 
-	if( ch == ' ' )
+	if ( ch == ' ' )
 	{
 		return;
 	}
@@ -494,13 +494,13 @@ void CG_DrawStringExt( int x, int y, const char *string, float *setColor,
 	int        xx;
 	int        cnt;
 
-	if( maxChars <= 0 )
+	if ( maxChars <= 0 )
 	{
 		maxChars = 32767; // do them all!
 	}
 
 	// draw the drop shadow
-	if( shadow )
+	if ( shadow )
 	{
 		color[ 0 ] = color[ 1 ] = color[ 2 ] = 0;
 		color[ 3 ] = setColor[ 3 ];
@@ -509,9 +509,9 @@ void CG_DrawStringExt( int x, int y, const char *string, float *setColor,
 		xx = x;
 		cnt = 0;
 
-		while( *s && cnt < maxChars )
+		while ( *s && cnt < maxChars )
 		{
-			if( Q_IsColorString( s ) )
+			if ( Q_IsColorString( s ) )
 			{
 				s += 2;
 				continue;
@@ -530,13 +530,13 @@ void CG_DrawStringExt( int x, int y, const char *string, float *setColor,
 	cnt = 0;
 	trap_R_SetColor( setColor );
 
-	while( *s && cnt < maxChars )
+	while ( *s && cnt < maxChars )
 	{
-		if( Q_IsColorString( s ) )
+		if ( Q_IsColorString( s ) )
 		{
-			if( !forceColor )
+			if ( !forceColor )
 			{
-				if( * ( s + 1 ) == COLOR_NULL )
+				if ( * ( s + 1 ) == COLOR_NULL )
 				{
 					memcpy( color, setColor, sizeof( color ) );
 				}
@@ -584,13 +584,13 @@ void CG_DrawStringExt_Shadow( int x, int y, const char *string, const float *set
 	int        xx;
 	int        cnt;
 
-	if( maxChars <= 0 )
+	if ( maxChars <= 0 )
 	{
 		maxChars = 32767; // do them all!
 	}
 
 	// draw the drop shadow
-	if( shadow )
+	if ( shadow )
 	{
 		color[ 0 ] = color[ 1 ] = color[ 2 ] = 0;
 		color[ 3 ] = setColor[ 3 ];
@@ -599,9 +599,9 @@ void CG_DrawStringExt_Shadow( int x, int y, const char *string, const float *set
 		xx = x;
 		cnt = 0;
 
-		while( *s && cnt < maxChars )
+		while ( *s && cnt < maxChars )
 		{
-			if( Q_IsColorString( s ) )
+			if ( Q_IsColorString( s ) )
 			{
 				s += 2;
 				continue;
@@ -620,13 +620,13 @@ void CG_DrawStringExt_Shadow( int x, int y, const char *string, const float *set
 	cnt = 0;
 	trap_R_SetColor( setColor );
 
-	while( *s && cnt < maxChars )
+	while ( *s && cnt < maxChars )
 	{
-		if( Q_IsColorString( s ) )
+		if ( Q_IsColorString( s ) )
 		{
-			if( !forceColor )
+			if ( !forceColor )
 			{
-				if( * ( s + 1 ) == COLOR_NULL )
+				if ( * ( s + 1 ) == COLOR_NULL )
 				{
 					memcpy( color, setColor, sizeof( color ) );
 				}
@@ -675,7 +675,7 @@ void CG_DrawStringExt3( int x, int y, const char *string, const float *setColor,
 	int        xx;
 	int        cnt;
 
-	if( maxChars <= 0 )
+	if ( maxChars <= 0 )
 	{
 		maxChars = 32767; // do them all!
 	}
@@ -683,7 +683,7 @@ void CG_DrawStringExt3( int x, int y, const char *string, const float *setColor,
 	s = string;
 	xx = 0;
 
-	while( *s )
+	while ( *s )
 	{
 		xx += charWidth;
 		s++;
@@ -695,7 +695,7 @@ void CG_DrawStringExt3( int x, int y, const char *string, const float *setColor,
 	xx = x;
 
 	// draw the drop shadow
-	if( shadow )
+	if ( shadow )
 	{
 		color[ 0 ] = color[ 1 ] = color[ 2 ] = 0;
 		color[ 3 ] = setColor[ 3 ];
@@ -704,9 +704,9 @@ void CG_DrawStringExt3( int x, int y, const char *string, const float *setColor,
 		xx = x;
 		cnt = 0;
 
-		while( *s && cnt < maxChars )
+		while ( *s && cnt < maxChars )
 		{
-			if( Q_IsColorString( s ) )
+			if ( Q_IsColorString( s ) )
 			{
 				s += 2;
 				continue;
@@ -725,13 +725,13 @@ void CG_DrawStringExt3( int x, int y, const char *string, const float *setColor,
 	cnt = 0;
 	trap_R_SetColor( setColor );
 
-	while( *s && cnt < maxChars )
+	while ( *s && cnt < maxChars )
 	{
-		if( Q_IsColorString( s ) )
+		if ( Q_IsColorString( s ) )
 		{
-			if( !forceColor )
+			if ( !forceColor )
 			{
-				if( * ( s + 1 ) == COLOR_NULL )
+				if ( * ( s + 1 ) == COLOR_NULL )
 				{
 					memcpy( color, setColor, sizeof( color ) );
 				}
@@ -882,9 +882,9 @@ int CG_DrawStrlen( const char *str )
 	const char *s = str;
 	int        count = 0;
 
-	while( *s )
+	while ( *s )
 	{
-		if( Q_IsColorString( s ) )
+		if ( Q_IsColorString( s ) )
 		{
 			s += 2;
 		}
@@ -932,7 +932,7 @@ void CG_TileClear( void )
 	w = cgs.glconfig.vidWidth;
 	h = cgs.glconfig.vidHeight;
 
-	if( cg.refdef.x == 0 && cg.refdef.y == 0 && cg.refdef.width == w && cg.refdef.height == h )
+	if ( cg.refdef.x == 0 && cg.refdef.y == 0 && cg.refdef.width == w && cg.refdef.height == h )
 	{
 		return; // full screen rendering
 	}
@@ -965,20 +965,20 @@ float          *CG_FadeColor( int startMsec, int totalMsec )
 	static vec4_t color;
 	int           t;
 
-	if( startMsec == 0 )
+	if ( startMsec == 0 )
 	{
 		return NULL;
 	}
 
 	t = cg.time - startMsec;
 
-	if( t >= totalMsec )
+	if ( t >= totalMsec )
 	{
 		return NULL;
 	}
 
 	// fade out
-	if( totalMsec - t < FADE_TIME )
+	if ( totalMsec - t < FADE_TIME )
 	{
 		color[ 3 ] = ( totalMsec - t ) * 1.0 / FADE_TIME;
 	}
@@ -1004,7 +1004,7 @@ float          *CG_TeamColor( int team )
 	static vec4_t other = { 1, 1, 1, 1 };
 	static vec4_t spectator = { 0.7, 0.7, 0.7, 1 };
 
-	switch( team )
+	switch ( team )
 	{
 		case TEAM_AXIS:
 			return red;
@@ -1029,7 +1029,7 @@ void CG_GetColorForHealth( int health, vec4_t hcolor )
 {
 	// calculate the total points of damage that can
 	// be sustained at the current health / armor level
-	if( health <= 0 )
+	if ( health <= 0 )
 	{
 		VectorClear( hcolor );  // black
 		hcolor[ 3 ] = 1;
@@ -1040,11 +1040,11 @@ void CG_GetColorForHealth( int health, vec4_t hcolor )
 	hcolor[ 0 ] = 1.0;
 	hcolor[ 3 ] = 1.0;
 
-	if( health >= 100 )
+	if ( health >= 100 )
 	{
 		hcolor[ 2 ] = 1.0;
 	}
-	else if( health < 66 )
+	else if ( health < 66 )
 	{
 		hcolor[ 2 ] = 0;
 	}
@@ -1053,11 +1053,11 @@ void CG_GetColorForHealth( int health, vec4_t hcolor )
 		hcolor[ 2 ] = ( health - 66 ) / 33.0;
 	}
 
-	if( health > 60 )
+	if ( health > 60 )
 	{
 		hcolor[ 1 ] = 1.0;
 	}
-	else if( health < 30 )
+	else if ( health < 30 )
 	{
 		hcolor[ 1 ] = 0;
 	}
@@ -1080,7 +1080,7 @@ void CG_ColorForHealth( vec4_t hcolor )
 	// be sustained at the current health / armor level
 	health = cg.snap->ps.stats[ STAT_HEALTH ];
 
-	if( health <= 0 )
+	if ( health <= 0 )
 	{
 		VectorClear( hcolor );  // black
 		hcolor[ 3 ] = 1;
@@ -1091,11 +1091,11 @@ void CG_ColorForHealth( vec4_t hcolor )
 	hcolor[ 0 ] = 1.0;
 	hcolor[ 3 ] = 1.0;
 
-	if( health >= 100 )
+	if ( health >= 100 )
 	{
 		hcolor[ 2 ] = 1.0;
 	}
-	else if( health < 66 )
+	else if ( health < 66 )
 	{
 		hcolor[ 2 ] = 0;
 	}
@@ -1104,11 +1104,11 @@ void CG_ColorForHealth( vec4_t hcolor )
 		hcolor[ 2 ] = ( health - 66 ) / 33.0;
 	}
 
-	if( health > 60 )
+	if ( health > 60 )
 	{
 		hcolor[ 1 ] = 1.0;
 	}
-	else if( health < 30 )
+	else if ( health < 30 )
 	{
 		hcolor[ 1 ] = 0;
 	}
@@ -1297,15 +1297,15 @@ static void UI_DrawBannerString2( int x, int y, const char *str, vec4_t color )
 
 	s = str;
 
-	while( *s )
+	while ( *s )
 	{
 		ch = *s & 127;
 
-		if( ch == ' ' )
+		if ( ch == ' ' )
 		{
 			ax += ( ( float ) PROPB_SPACE_WIDTH + ( float ) PROPB_GAP_WIDTH ) * cgs.screenXScale;
 		}
-		else if( ch >= 'A' && ch <= 'Z' )
+		else if ( ch >= 'A' && ch <= 'Z' )
 		{
 			ch -= 'A';
 			fcol = ( float ) propMapB[ ch ][ 0 ] / 256.0f;
@@ -1336,15 +1336,15 @@ void UI_DrawBannerString( int x, int y, const char *str, int style, vec4_t color
 	s = str;
 	width = 0;
 
-	while( *s )
+	while ( *s )
 	{
 		ch = *s;
 
-		if( ch == ' ' )
+		if ( ch == ' ' )
 		{
 			width += PROPB_SPACE_WIDTH;
 		}
-		else if( ch >= 'A' && ch <= 'Z' )
+		else if ( ch >= 'A' && ch <= 'Z' )
 		{
 			width += propMapB[ ch - 'A' ][ 2 ] + PROPB_GAP_WIDTH;
 		}
@@ -1354,7 +1354,7 @@ void UI_DrawBannerString( int x, int y, const char *str, int style, vec4_t color
 
 	width -= PROPB_GAP_WIDTH;
 
-	switch( style & UI_FORMATMASK )
+	switch ( style & UI_FORMATMASK )
 	{
 		case UI_CENTER:
 			x -= width / 2;
@@ -1369,7 +1369,7 @@ void UI_DrawBannerString( int x, int y, const char *str, int style, vec4_t color
 			break;
 	}
 
-	if( style & UI_DROPSHADOW )
+	if ( style & UI_DROPSHADOW )
 	{
 		drawcolor[ 0 ] = drawcolor[ 1 ] = drawcolor[ 2 ] = 0;
 		drawcolor[ 3 ] = color[ 3 ];
@@ -1389,12 +1389,12 @@ int UI_ProportionalStringWidth( const char *str )
 	s = str;
 	width = 0;
 
-	while( *s )
+	while ( *s )
 	{
 		ch = *s & 127;
 		charWidth = propMap[ ch ][ 2 ];
 
-		if( charWidth != -1 )
+		if ( charWidth != -1 )
 		{
 			width += charWidth;
 			width += PROP_GAP_WIDTH;
@@ -1428,15 +1428,15 @@ static void UI_DrawProportionalString2( int x, int y, const char *str, vec4_t co
 
 	s = str;
 
-	while( *s )
+	while ( *s )
 	{
 		ch = *s & 127;
 
-		if( ch == ' ' )
+		if ( ch == ' ' )
 		{
 			aw = ( float ) PROP_SPACE_WIDTH * cgs.screenXScale * sizeScale;
 		}
-		else if( propMap[ ch ][ 2 ] != -1 )
+		else if ( propMap[ ch ][ 2 ] != -1 )
 		{
 			fcol = ( float ) propMap[ ch ][ 0 ] / 256.0f;
 			frow = ( float ) propMap[ ch ][ 1 ] / 256.0f;
@@ -1466,12 +1466,12 @@ UI_ProportionalSizeScale
 */
 float UI_ProportionalSizeScale( int style )
 {
-	if( style & UI_SMALLFONT )
+	if ( style & UI_SMALLFONT )
 	{
 		return 0.75;
 	}
 
-	if( style & UI_EXSMALLFONT )
+	if ( style & UI_EXSMALLFONT )
 	{
 		return 0.4;
 	}
@@ -1492,7 +1492,7 @@ void UI_DrawProportionalString( int x, int y, const char *str, int style, vec4_t
 
 	sizeScale = UI_ProportionalSizeScale( style );
 
-	switch( style & UI_FORMATMASK )
+	switch ( style & UI_FORMATMASK )
 	{
 		case UI_CENTER:
 			width = UI_ProportionalStringWidth( str ) * sizeScale;
@@ -1509,14 +1509,14 @@ void UI_DrawProportionalString( int x, int y, const char *str, int style, vec4_t
 			break;
 	}
 
-	if( style & UI_DROPSHADOW )
+	if ( style & UI_DROPSHADOW )
 	{
 		drawcolor[ 0 ] = drawcolor[ 1 ] = drawcolor[ 2 ] = 0;
 		drawcolor[ 3 ] = color[ 3 ];
 		UI_DrawProportionalString2( x + 2, y + 2, str, drawcolor, sizeScale, cgs.media.charsetProp );
 	}
 
-	if( style & UI_INVERSE )
+	if ( style & UI_INVERSE )
 	{
 		drawcolor[ 0 ] = color[ 0 ] * 0.8;
 		drawcolor[ 1 ] = color[ 1 ] * 0.8;
@@ -1527,7 +1527,7 @@ void UI_DrawProportionalString( int x, int y, const char *str, int style, vec4_t
 	}
 
 	// JOSEPH 12-29-99
-	if( style & UI_PULSE )
+	if ( style & UI_PULSE )
 	{
 		//drawcolor[0] = color[0] * 0.8;
 		//drawcolor[1] = color[1] * 0.8;

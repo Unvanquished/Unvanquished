@@ -81,7 +81,7 @@ SafeFS_Write
 */
 static ID_INLINE void SafeFS_Write( const void *buffer, int len, fileHandle_t f )
 {
-	if( FS_Write( buffer, len, f ) < len )
+	if ( FS_Write( buffer, len, f ) < len )
 	{
 		Com_Error( ERR_DROP, "Failed to write avi file\n" );
 	}
@@ -142,7 +142,7 @@ START_CHUNK
 */
 static ID_INLINE void START_CHUNK( const char *s )
 {
-	if( afd.chunkStackTop == MAX_RIFF_CHUNKS )
+	if ( afd.chunkStackTop == MAX_RIFF_CHUNKS )
 	{
 		Com_Error( ERR_DROP, "ERROR: Top of chunkstack breached\n" );
 	}
@@ -162,7 +162,7 @@ static ID_INLINE void END_CHUNK( void )
 {
 	int endIndex = bufIndex;
 
-	if( afd.chunkStackTop <= 0 )
+	if ( afd.chunkStackTop <= 0 )
 	{
 		Com_Error( ERR_DROP, "ERROR: Bottom of chunkstack breached\n" );
 	}
@@ -201,7 +201,7 @@ void CL_WriteAVIHeader( void )
 				WRITE_4BYTES( afd.numVideoFrames );  //dwTotalFrames
 				WRITE_4BYTES( 0 );  //dwInitialFrame
 
-				if( afd.audio )  //dwStreams
+				if ( afd.audio ) //dwStreams
 				{
 					WRITE_4BYTES( 2 );
 				}
@@ -225,7 +225,7 @@ void CL_WriteAVIHeader( void )
 					WRITE_4BYTES( 56 );  //"strh" "chunk" size
 					WRITE_STRING( "vids" );
 
-					if( afd.motionJpeg )
+					if ( afd.motionJpeg )
 					{
 						WRITE_STRING( "MJPG" );
 					}
@@ -259,7 +259,7 @@ void CL_WriteAVIHeader( void )
 					WRITE_2BYTES( 1 );  //biPlanes
 					WRITE_2BYTES( 24 );  //biBitCount
 
-					if( afd.motionJpeg )
+					if ( afd.motionJpeg )
 					{
 						//biCompression
 						WRITE_STRING( "MJPG" );
@@ -278,7 +278,7 @@ void CL_WriteAVIHeader( void )
 				}
 				END_CHUNK();
 
-				if( afd.audio )
+				if ( afd.audio )
 				{
 					START_CHUNK( "LIST" );
 					{
@@ -339,7 +339,7 @@ writing the actual data can begin
 */
 qboolean CL_OpenAVIForWriting( const char *fileName )
 {
-	if( afd.fileOpen )
+	if ( afd.fileOpen )
 	{
 		return qfalse;
 	}
@@ -347,18 +347,18 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 	Com_Memset( &afd, 0, sizeof( aviFileData_t ) );
 
 	// Don't start if a framerate has not been chosen
-	if( cl_aviFrameRate->integer <= 0 )
+	if ( cl_aviFrameRate->integer <= 0 )
 	{
 		Com_Printf( S_COLOR_RED "cl_aviFrameRate must be >= 1\n" );
 		return qfalse;
 	}
 
-	if( ( afd.f = FS_FOpenFileWrite( fileName ) ) <= 0 )
+	if ( ( afd.f = FS_FOpenFileWrite( fileName ) ) <= 0 )
 	{
 		return qfalse;
 	}
 
-	if( ( afd.idxF = FS_FOpenFileWrite( va( "%s" INDEX_FILE_EXTENSION, fileName ) ) ) <= 0 )
+	if ( ( afd.idxF = FS_FOpenFileWrite( va( "%s" INDEX_FILE_EXTENSION, fileName ) ) ) <= 0 )
 	{
 		FS_FCloseFile( afd.f );
 		return qfalse;
@@ -371,7 +371,7 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 	afd.width = cls.glconfig.vidWidth;
 	afd.height = cls.glconfig.vidHeight;
 
-	if( cl_aviMotionJpeg->integer )
+	if ( cl_aviMotionJpeg->integer )
 	{
 		afd.motionJpeg = qtrue;
 	}
@@ -394,11 +394,11 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 	afd.a.bits = dma.samplebits;
 	afd.a.sampleSize = ( afd.a.bits / 8 ) * afd.a.channels;
 
-	if( afd.a.rate % afd.frameRate )
+	if ( afd.a.rate % afd.frameRate )
 	{
 		int suggestRate = afd.frameRate;
 
-		while( ( afd.a.rate % suggestRate ) && suggestRate >= 1 )
+		while ( ( afd.a.rate % suggestRate ) && suggestRate >= 1 )
 		{
 			suggestRate--;
 		}
@@ -406,13 +406,13 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 		Com_Printf( S_COLOR_YELLOW "WARNING: cl_aviFrameRate is not a divisor " "of the audio rate, suggest %d\n", suggestRate );
 	}
 
-	if( !Cvar_VariableIntegerValue( "s_initsound" ) )
+	if ( !Cvar_VariableIntegerValue( "s_initsound" ) )
 	{
 		afd.audio = qfalse;
 	}
-	else if( Q_stricmp( Cvar_VariableString( "s_backend" ), "OpenAL" ) )
+	else if ( Q_stricmp( Cvar_VariableString( "s_backend" ), "OpenAL" ) )
 	{
-		if( afd.a.bits == 16 && afd.a.channels == 2 )
+		if ( afd.a.bits == 16 && afd.a.channels == 2 )
 		{
 			afd.audio = qtrue;
 		}
@@ -461,7 +461,7 @@ static qboolean CL_CheckFileSize( int bytesToAdd )
 
 	// I assume all the operating systems
 	// we target can handle a 2Gb file
-	if( newFileSize > INT_MAX )
+	if ( newFileSize > INT_MAX )
 	{
 		// Close the current file...
 		CL_CloseAVI();
@@ -487,13 +487,13 @@ void CL_WriteAVIVideoFrame( const byte *imageBuffer, int size )
 	int  paddingSize = PAD( size, 2 ) - size;
 	byte padding[ 4 ] = { 0 };
 
-	if( !afd.fileOpen )
+	if ( !afd.fileOpen )
 	{
 		return;
 	}
 
 	// Chunk header + contents + padding
-	if( CL_CheckFileSize( 8 + size + 2 ) )
+	if ( CL_CheckFileSize( 8 + size + 2 ) )
 	{
 		return;
 	}
@@ -510,7 +510,7 @@ void CL_WriteAVIVideoFrame( const byte *imageBuffer, int size )
 	afd.numVideoFrames++;
 	afd.moviSize += ( chunkSize + paddingSize );
 
-	if( size > afd.maxRecordSize )
+	if ( size > afd.maxRecordSize )
 	{
 		afd.maxRecordSize = size;
 	}
@@ -538,23 +538,23 @@ void CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size )
 	static byte pcmCaptureBuffer[ PCM_BUFFER_SIZE ] = { 0 };
 	static int  bytesInBuffer = 0;
 
-	if( !afd.audio )
+	if ( !afd.audio )
 	{
 		return;
 	}
 
-	if( !afd.fileOpen )
+	if ( !afd.fileOpen )
 	{
 		return;
 	}
 
 	// Chunk header + contents + padding
-	if( CL_CheckFileSize( 8 + bytesInBuffer + size + 2 ) )
+	if ( CL_CheckFileSize( 8 + bytesInBuffer + size + 2 ) )
 	{
 		return;
 	}
 
-	if( bytesInBuffer + size > PCM_BUFFER_SIZE )
+	if ( bytesInBuffer + size > PCM_BUFFER_SIZE )
 	{
 		Com_Printf( S_COLOR_YELLOW "WARNING: Audio capture buffer overflow -- truncating\n" );
 		size = PCM_BUFFER_SIZE - bytesInBuffer;
@@ -564,7 +564,7 @@ void CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size )
 	bytesInBuffer += size;
 
 	// Only write if we have a frame's worth of audio
-	if( bytesInBuffer >= ( int ) ceil( ( float ) afd.a.rate / ( float ) afd.frameRate ) * afd.a.sampleSize )
+	if ( bytesInBuffer >= ( int ) ceil( ( float ) afd.a.rate / ( float ) afd.frameRate ) * afd.a.sampleSize )
 	{
 		int  chunkOffset = afd.fileSize - afd.moviOffset - 8;
 		int  chunkSize = 8 + bytesInBuffer;
@@ -606,7 +606,7 @@ CL_TakeVideoFrame
 void CL_TakeVideoFrame( void )
 {
 	// AVI file isn't open
-	if( !afd.fileOpen )
+	if ( !afd.fileOpen )
 	{
 		return;
 	}
@@ -628,7 +628,7 @@ qboolean CL_CloseAVI( void )
 	const char *idxFileName = va( "%s" INDEX_FILE_EXTENSION, afd.fileName );
 
 	// AVI file isn't open
-	if( !afd.fileOpen )
+	if ( !afd.fileOpen )
 	{
 		return qfalse;
 	}
@@ -644,7 +644,7 @@ qboolean CL_CloseAVI( void )
 	// Write index
 
 	// Open the temp index file
-	if( ( indexSize = FS_FOpenFileRead( idxFileName, &afd.idxF, qtrue ) ) <= 0 )
+	if ( ( indexSize = FS_FOpenFileRead( idxFileName, &afd.idxF, qtrue ) ) <= 0 )
 	{
 		FS_FCloseFile( afd.f );
 		return qfalse;
@@ -653,7 +653,7 @@ qboolean CL_CloseAVI( void )
 	indexRemainder = indexSize;
 
 	// Append index to end of avi file
-	while( indexRemainder > MAX_AVI_BUFFER )
+	while ( indexRemainder > MAX_AVI_BUFFER )
 	{
 		FS_Read( buffer, MAX_AVI_BUFFER, afd.idxF );
 		SafeFS_Write( buffer, MAX_AVI_BUFFER, afd.f );

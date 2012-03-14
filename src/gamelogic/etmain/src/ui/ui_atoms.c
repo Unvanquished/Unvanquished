@@ -55,7 +55,7 @@ void QDECL Com_DPrintf( const char *fmt, ... )
 
 	developer = trap_Cvar_VariableValue( "developer" );
 
-	if( !developer )
+	if ( !developer )
 	{
 		return;
 	}
@@ -102,12 +102,12 @@ UI_ClampCvar
 */
 float UI_ClampCvar( float min, float max, float value )
 {
-	if( value < min )
+	if ( value < min )
 	{
 		return min;
 	}
 
-	if( value > max )
+	if ( value > max )
 	{
 		return max;
 	}
@@ -196,18 +196,18 @@ qboolean UI_ConsoleCommand( int realTime )
 	// ensure minimum menu data is available
 	//Menu_Cache();
 
-	if( Q_stricmp( cmd, "ui_test" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_test" ) == 0 )
 	{
 		UI_ShowPostGame( qtrue );
 	}
 
-	if( Q_stricmp( cmd, "ui_report" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_report" ) == 0 )
 	{
 		UI_Report();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "ui_load" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_load" ) == 0 )
 	{
 		UI_Load();
 		return qtrue;
@@ -226,38 +226,38 @@ qboolean UI_ConsoleCommand( int realTime )
 	   }
 	   } */
 
-	if( Q_stricmp( cmd, "postgame" ) == 0 )
+	if ( Q_stricmp( cmd, "postgame" ) == 0 )
 	{
 		UI_CalcPostGameStats();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "ui_cache" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_cache" ) == 0 )
 	{
 		UI_Cache_f();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "ui_teamOrders" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_teamOrders" ) == 0 )
 	{
 		//UI_TeamOrdersMenu_f();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "ui_cdkey" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_cdkey" ) == 0 )
 	{
 		//UI_CDKeyMenu_f();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "iamacheater" ) == 0 )
+	if ( Q_stricmp( cmd, "iamacheater" ) == 0 )
 	{
 		int i;
 
 		// unlock all available levels and campaigns for SP
-		for( i = 0; i < uiInfo.campaignCount; i++ )
+		for ( i = 0; i < uiInfo.campaignCount; i++ )
 		{
-			if( uiInfo.campaignList[ i ].typeBits & ( 1 << GT_SINGLE_PLAYER ) )
+			if ( uiInfo.campaignList[ i ].typeBits & ( 1 << GT_SINGLE_PLAYER ) )
 			{
 				uiInfo.campaignList[ i ].unlocked = qtrue;
 				uiInfo.campaignList[ i ].progress = uiInfo.campaignList[ i ].mapCount;
@@ -269,15 +269,15 @@ qboolean UI_ConsoleCommand( int realTime )
 
 	trap_GetClientState( &cstate );
 
-	if( cstate.connState == CA_DISCONNECTED )
+	if ( cstate.connState == CA_DISCONNECTED )
 	{
-		if( Q_stricmp( cmd, "campaign" ) == 0 )
+		if ( Q_stricmp( cmd, "campaign" ) == 0 )
 		{
 			UI_Campaign_f();
 			return qtrue;
 		}
 
-		if( Q_stricmp( cmd, "listcampaigns" ) == 0 )
+		if ( Q_stricmp( cmd, "listcampaigns" ) == 0 )
 		{
 			UI_ListCampaigns_f();
 			return qtrue;
@@ -335,7 +335,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 	float t0;
 	float t1;
 
-	if( w < 0 )
+	if ( w < 0 )
 	{
 		// flip about vertical
 		w = -w;
@@ -348,7 +348,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 		s1 = 1;
 	}
 
-	if( h < 0 )
+	if ( h < 0 )
 	{
 		// flip about horizontal
 		h = -h;
@@ -447,7 +447,7 @@ void UI_DrawTextBox( int x, int y, int width, int lines )
 
 qboolean UI_CursorInRect( int x, int y, int width, int height )
 {
-	if( uiInfo.uiDC.cursorx < x || uiInfo.uiDC.cursory < y || uiInfo.uiDC.cursorx > x + width || uiInfo.uiDC.cursory > y + height )
+	if ( uiInfo.uiDC.cursorx < x || uiInfo.uiDC.cursory < y || uiInfo.uiDC.cursorx > x + width || uiInfo.uiDC.cursory > y + height )
 	{
 		return qfalse;
 	}

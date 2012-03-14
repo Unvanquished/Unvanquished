@@ -66,7 +66,7 @@ static void CG_Viewpos_f( void )
 
 qboolean CG_RequestScores( void )
 {
-	if( cg.scoresRequestTime + 2000 < cg.time )
+	if ( cg.scoresRequestTime + 2000 < cg.time )
 	{
 		// the scores are more than two seconds out of data,
 		// so request new ones
@@ -84,13 +84,13 @@ qboolean CG_RequestScores( void )
 
 static void CG_ScoresDown_f( void )
 {
-	if( CG_RequestScores() )
+	if ( CG_RequestScores() )
 	{
 		// leave the current scores up if they were already
 		// displayed, but if this is the first hit, clear them out
-		if( !cg.showScores )
+		if ( !cg.showScores )
 		{
-			if( cg_debugRandom.integer )
+			if ( cg_debugRandom.integer )
 			{
 				CG_Printf( "CG_ScoresDown_f: scores out of date\n" );
 			}
@@ -109,7 +109,7 @@ static void CG_ScoresDown_f( void )
 
 static void CG_ScoresUp_f( void )
 {
-	if( cg.showScores )
+	if ( cg.showScores )
 	{
 		cg.showScores = qfalse;
 		cg.scoreFadeTime = cg.time;
@@ -124,7 +124,7 @@ static void CG_TellTarget_f( void )
 
 	clientNum = CG_CrosshairPlayer();
 
-	if( clientNum == -1 )
+	if ( clientNum == -1 )
 	{
 		return;
 	}
@@ -142,7 +142,7 @@ static void CG_TellAttacker_f( void )
 
 	clientNum = CG_LastAttacker();
 
-	if( clientNum == -1 )
+	if ( clientNum == -1 )
 	{
 		return;
 	}
@@ -200,16 +200,16 @@ qboolean CG_ConsoleCommand( void )
 	cmd = CG_Argv( 0 );
 
 	//TA: ugly hacky special case
-	if( !Q_stricmp( cmd, "ui_menu" ) )
+	if ( !Q_stricmp( cmd, "ui_menu" ) )
 	{
 		arg1 = CG_Argv( 1 );
 		trap_SendConsoleCommand( va( "menu %s\n", arg1 ) );
 		return qtrue;
 	}
 
-	for( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
 	{
-		if( !Q_stricmp( cmd, commands[ i ].cmd ) )
+		if ( !Q_stricmp( cmd, commands[ i ].cmd ) )
 		{
 			commands[ i ].function();
 			return qtrue;
@@ -231,7 +231,7 @@ void CG_InitConsoleCommands( void )
 {
 	int i;
 
-	for( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
 	{
 		trap_AddCommand( commands[ i ].cmd );
 	}
@@ -298,9 +298,9 @@ void CG_CompleteCommand( int argNum )
 
 	cmd = CG_Argv( 0 );
 
-	for( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
 	{
-		if( !Q_stricmp( cmd, commands[ i ].cmd ) )
+		if ( !Q_stricmp( cmd, commands[ i ].cmd ) )
 		{
 			commands[ i ].completer();
 			return;

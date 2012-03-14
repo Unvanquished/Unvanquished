@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static float   *TableForFunc( genFunc_t func )
 {
-	switch( func )
+	switch ( func )
 	{
 		case GF_SIN:
 			return tr.sinTable;
@@ -76,12 +76,12 @@ float RB_EvalWaveFormClamped( const waveForm_t *wf )
 {
 	float glow = RB_EvalWaveForm( wf );
 
-	if( glow < 0 )
+	if ( glow < 0 )
 	{
 		return 0;
 	}
 
-	if( glow > 1 )
+	if ( glow > 1 )
 	{
 		return 1;
 	}
@@ -94,7 +94,7 @@ static float GetOpValue( const expOperation_t *op )
 	float value;
 	float inv255 = 1.0f / 255.0f;
 
-	switch( op->type )
+	switch ( op->type )
 	{
 		case OP_NUM:
 			value = op->value;
@@ -105,12 +105,12 @@ static float GetOpValue( const expOperation_t *op )
 			break;
 
 		case OP_PARM0:
-			if( backEnd.currentLight )
+			if ( backEnd.currentLight )
 			{
 				value = backEnd.currentLight->l.color[ 0 ];
 				break;
 			}
-			else if( backEnd.currentEntity )
+			else if ( backEnd.currentEntity )
 			{
 				value = backEnd.currentEntity->e.shaderRGBA[ 0 ] * inv255;
 			}
@@ -122,12 +122,12 @@ static float GetOpValue( const expOperation_t *op )
 			break;
 
 		case OP_PARM1:
-			if( backEnd.currentLight )
+			if ( backEnd.currentLight )
 			{
 				value = backEnd.currentLight->l.color[ 1 ];
 				break;
 			}
-			else if( backEnd.currentEntity )
+			else if ( backEnd.currentEntity )
 			{
 				value = backEnd.currentEntity->e.shaderRGBA[ 1 ] * inv255;
 			}
@@ -139,12 +139,12 @@ static float GetOpValue( const expOperation_t *op )
 			break;
 
 		case OP_PARM2:
-			if( backEnd.currentLight )
+			if ( backEnd.currentLight )
 			{
 				value = backEnd.currentLight->l.color[ 2 ];
 				break;
 			}
-			else if( backEnd.currentEntity )
+			else if ( backEnd.currentEntity )
 			{
 				value = backEnd.currentEntity->e.shaderRGBA[ 2 ] * inv255;
 			}
@@ -156,12 +156,12 @@ static float GetOpValue( const expOperation_t *op )
 			break;
 
 		case OP_PARM3:
-			if( backEnd.currentLight )
+			if ( backEnd.currentLight )
 			{
 				value = 1.0;
 				break;
 			}
-			else if( backEnd.currentEntity )
+			else if ( backEnd.currentEntity )
 			{
 				value = backEnd.currentEntity->e.shaderRGBA[ 3 ] * inv255;
 			}
@@ -173,7 +173,7 @@ static float GetOpValue( const expOperation_t *op )
 			break;
 
 		case OP_PARM4:
-			if( backEnd.currentEntity )
+			if ( backEnd.currentEntity )
 			{
 				value = -backEnd.currentEntity->e.shaderTime;
 			}
@@ -243,7 +243,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 	value1 = 0;
 	value2 = 0;
 
-	if( !exp || !exp->active )
+	if ( !exp || !exp->active )
 	{
 		return defaultValue;
 	}
@@ -251,18 +251,18 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 	// http://www.qiksearch.com/articles/cs/postfix-evaluation/
 	// http://www.kyz.uklinux.net/evaluate/
 
-	for( i = 0; i < exp->numOps; i++ )
+	for ( i = 0; i < exp->numOps; i++ )
 	{
 		op = exp->ops[ i ];
 
-		switch( op.type )
+		switch ( op.type )
 		{
 			case OP_BAD:
 				return defaultValue;
 
 			case OP_NEG:
 				{
-					if( numOps < 1 )
+					if ( numOps < 1 )
 					{
 						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for unary - operator\n", tess.surfaceShader->name );
 						return defaultValue;
@@ -318,7 +318,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					int           oldIndex;
 					int           newIndex;
 
-					if( numOps < 1 )
+					if ( numOps < 1 )
 					{
 						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 1 for table operator\n", tess.surfaceShader->name );
 						return defaultValue;
@@ -337,7 +337,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					oldIndex = ( int ) index;
 					newIndex = ( int ) index + 1;
 
-					if( table->clamp )
+					if ( table->clamp )
 					{
 						// clamp indices to table-range
 						Q_clamp( oldIndex, 0, numValues - 1 );
@@ -350,7 +350,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 						newIndex %= numValues;
 					}
 
-					if( table->snap )
+					if ( table->snap )
 					{
 						// use fixed value
 						value = table->values[ oldIndex ];
@@ -372,7 +372,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 
 			default:
 				{
-					if( numOps < 2 )
+					if ( numOps < 2 )
 					{
 						ri.Printf( PRINT_ALL, "WARNING: shader %s has numOps < 2 for binary operator %s\n", tess.surfaceShader->name,
 						           opStrings[ op.type ].s );
@@ -385,7 +385,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 					value1 = GetOpValue( &ops[ numOps - 1 ] );
 					numOps--;
 
-					switch( op.type )
+					switch ( op.type )
 					{
 						case OP_LAND:
 							value = value1 && value2;
@@ -420,7 +420,7 @@ float RB_EvalExpression( const expression_t *exp, float defaultValue )
 							break;
 
 						case OP_DIV:
-							if( value2 == 0 )
+							if ( value2 == 0 )
 							{
 								// don't divide by zero
 								value = value1;
@@ -494,20 +494,20 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 
 #if defined( COMPAT_ET )
 
-	if( ds->deformationWave.frequency < 0 )
+	if ( ds->deformationWave.frequency < 0 )
 	{
 		qboolean inverse = qfalse;
 		vec3_t   worldUp;
 
 		//static vec3_t up = {0,0,1};
 
-		if( VectorCompare( backEnd.currentEntity->e.fireRiseDir, vec3_origin ) )
+		if ( VectorCompare( backEnd.currentEntity->e.fireRiseDir, vec3_origin ) )
 		{
 			VectorSet( backEnd.currentEntity->e.fireRiseDir, 0, 0, 1 );
 		}
 
 		// get the world up vector in local coordinates
-		if( backEnd.currentEntity->e.hModel )
+		if ( backEnd.currentEntity->e.hModel )
 		{
 			// world surfaces dont have an axis
 			VectorRotate( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
@@ -522,7 +522,7 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 
 		ds->deformationWave.frequency *= -1;
 
-		if( ds->deformationWave.frequency > 999 )
+		if ( ds->deformationWave.frequency > 999 )
 		{
 			// hack for negative Z deformation (ack)
 			inverse = qtrue;
@@ -531,7 +531,7 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 
 		table = TableForFunc( ds->deformationWave.func );
 
-		for( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+		for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
 		{
 			float off = ( xyz[ 0 ] + xyz[ 1 ] + xyz[ 2 ] ) * ds->deformationSpread;
 			float dot;
@@ -541,9 +541,9 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 
 			dot = DotProduct( worldUp, normal );
 
-			if( dot * scale > 0 )
+			if ( dot * scale > 0 )
 			{
-				if( inverse )
+				if ( inverse )
 				{
 					scale *= -1;
 				}
@@ -552,7 +552,7 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 			}
 		}
 
-		if( inverse )
+		if ( inverse )
 		{
 			ds->deformationWave.frequency += 999;
 		}
@@ -561,11 +561,11 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 	}
 	else
 #endif // #if defined(COMPAT_ET)
-		if( ds->deformationWave.frequency == 0 )
+		if ( ds->deformationWave.frequency == 0 )
 		{
 			scale = RB_EvalWaveForm( &ds->deformationWave );
 
-			for( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
 			{
 				VectorScale( normal, scale, offset );
 
@@ -578,7 +578,7 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 		{
 			table = TableForFunc( ds->deformationWave.func );
 
-			for( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+			for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
 			{
 				float off = ( xyz[ 0 ] + xyz[ 1 ] + xyz[ 2 ] ) * ds->deformationSpread;
 
@@ -608,7 +608,7 @@ void RB_CalcDeformNormals( deformStage_t *ds )
 	float *xyz = ( float * ) tess.xyz;
 	float *normal = ( float * ) tess.normals;
 
-	for( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
+	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
 	{
 		scale = 0.98f;
 		scale =
@@ -645,7 +645,7 @@ void RB_CalcBulgeVertexes( deformStage_t *ds )
 
 	now = backEnd.refdef.time * ds->bulgeSpeed * 0.001f;
 
-	for( i = 0; i < tess.numVertexes; i++, xyz += 4, st += 4, normal += 4 )
+	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, st += 4, normal += 4 )
 	{
 		int   off;
 		float scale;
@@ -684,7 +684,7 @@ void RB_CalcMoveVertexes( deformStage_t *ds )
 
 	xyz = ( float * ) tess.xyz;
 
-	for( i = 0; i < tess.numVertexes; i++, xyz += 4 )
+	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 )
 	{
 		VectorAdd( xyz, offset, xyz );
 	}
@@ -716,16 +716,16 @@ void DeformText( const char *text )
 	bottom = 999999;
 	top = -999999;
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
 		VectorAdd( tess.xyz[ i ], mid, mid );
 
-		if( tess.xyz[ i ][ 2 ] < bottom )
+		if ( tess.xyz[ i ][ 2 ] < bottom )
 		{
 			bottom = tess.xyz[ i ][ 2 ];
 		}
 
-		if( tess.xyz[ i ][ 2 ] > top )
+		if ( tess.xyz[ i ][ 2 ] > top )
 		{
 			top = tess.xyz[ i ][ 2 ];
 		}
@@ -750,12 +750,12 @@ void DeformText( const char *text )
 	tess.numVertexes = 0;
 
 	// draw each character
-	for( i = 0; i < len; i++ )
+	for ( i = 0; i < len; i++ )
 	{
 		ch = text[ i ];
 		ch &= 255;
 
-		if( ch != ' ' )
+		if ( ch != ' ' )
 		{
 			int   row, col;
 			float frow, fcol, size;
@@ -804,12 +804,12 @@ static void AutospriteDeform( void )
 	vec3_t left, up;
 	vec3_t leftDir, upDir;
 
-	if( tess.numVertexes & 3 )
+	if ( tess.numVertexes & 3 )
 	{
 		ri.Printf( PRINT_WARNING, "Autosprite shader %s had odd vertex count", tess.surfaceShader->name );
 	}
 
-	if( tess.numIndexes != ( tess.numVertexes >> 2 ) * 6 )
+	if ( tess.numIndexes != ( tess.numVertexes >> 2 ) * 6 )
 	{
 		ri.Printf( PRINT_WARNING, "Autosprite shader %s had odd index count", tess.surfaceShader->name );
 	}
@@ -819,7 +819,7 @@ static void AutospriteDeform( void )
 	tess.numIndexes = 0;
 	tess.multiDrawPrimitives = 0;
 
-	if( backEnd.currentEntity != &tr.worldEntity )
+	if ( backEnd.currentEntity != &tr.worldEntity )
 	{
 		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[ 1 ], leftDir );
 		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[ 2 ], upDir );
@@ -830,7 +830,7 @@ static void AutospriteDeform( void )
 		VectorCopy( backEnd.viewParms.orientation.axis[ 2 ], upDir );
 	}
 
-	for( i = 0; i < oldVerts; i += 4 )
+	for ( i = 0; i < oldVerts; i += 4 )
 	{
 		// find the midpoint
 		xyz = tess.xyz[ i ];
@@ -845,19 +845,19 @@ static void AutospriteDeform( void )
 		VectorScale( leftDir, radius, left );
 		VectorScale( upDir, radius, up );
 
-		if( backEnd.viewParms.isMirror )
+		if ( backEnd.viewParms.isMirror )
 		{
 			VectorSubtract( vec3_origin, left, left );
 		}
 
 		// compensate for scale in the axes if necessary
-		if( backEnd.currentEntity->e.nonNormalizedAxes )
+		if ( backEnd.currentEntity->e.nonNormalizedAxes )
 		{
 			float axisLength;
 
 			axisLength = VectorLength( backEnd.currentEntity->e.axis[ 0 ] );
 
-			if( !axisLength )
+			if ( !axisLength )
 			{
 				axisLength = 0;
 			}
@@ -898,17 +898,17 @@ static void Autosprite2Deform( void )
 	float  *xyz;
 	vec3_t forward;
 
-	if( tess.numVertexes & 3 )
+	if ( tess.numVertexes & 3 )
 	{
 		ri.Printf( PRINT_WARNING, "Autosprite2 shader %s had odd vertex count", tess.surfaceShader->name );
 	}
 
-	if( tess.numIndexes != ( tess.numVertexes >> 2 ) * 6 )
+	if ( tess.numIndexes != ( tess.numVertexes >> 2 ) * 6 )
 	{
 		ri.Printf( PRINT_WARNING, "Autosprite2 shader %s had odd index count", tess.surfaceShader->name );
 	}
 
-	if( backEnd.currentEntity != &tr.worldEntity )
+	if ( backEnd.currentEntity != &tr.worldEntity )
 	{
 		GlobalVectorToLocal( backEnd.viewParms.orientation.axis[ 0 ], forward );
 	}
@@ -920,7 +920,7 @@ static void Autosprite2Deform( void )
 	// this is a lot of work for two triangles...
 	// we could precalculate a lot of it is an issue, but it would mess up
 	// the shader abstraction
-	for( i = 0, indexes = 0; i < tess.numVertexes; i += 4, indexes += 6 )
+	for ( i = 0, indexes = 0; i < tess.numVertexes; i += 4, indexes += 6 )
 	{
 		float  lengths[ 2 ];
 		int    nums[ 2 ];
@@ -935,7 +935,7 @@ static void Autosprite2Deform( void )
 		nums[ 0 ] = nums[ 1 ] = 0;
 		lengths[ 0 ] = lengths[ 1 ] = 999999;
 
-		for( j = 0; j < 6; j++ )
+		for ( j = 0; j < 6; j++ )
 		{
 			float  l;
 			vec3_t temp;
@@ -947,21 +947,21 @@ static void Autosprite2Deform( void )
 
 			l = DotProduct( temp, temp );
 
-			if( l < lengths[ 0 ] )
+			if ( l < lengths[ 0 ] )
 			{
 				nums[ 1 ] = nums[ 0 ];
 				lengths[ 1 ] = lengths[ 0 ];
 				nums[ 0 ] = j;
 				lengths[ 0 ] = l;
 			}
-			else if( l < lengths[ 1 ] )
+			else if ( l < lengths[ 1 ] )
 			{
 				nums[ 1 ] = j;
 				lengths[ 1 ] = l;
 			}
 		}
 
-		for( j = 0; j < 2; j++ )
+		for ( j = 0; j < 2; j++ )
 		{
 			v1 = xyz + 4 * edgeVerts[ nums[ j ] ][ 0 ];
 			v2 = xyz + 4 * edgeVerts[ nums[ j ] ][ 1 ];
@@ -979,7 +979,7 @@ static void Autosprite2Deform( void )
 		VectorNormalize( minor );
 
 		// re-project the points
-		for( j = 0; j < 2; j++ )
+		for ( j = 0; j < 2; j++ )
 		{
 			float l;
 
@@ -990,16 +990,16 @@ static void Autosprite2Deform( void )
 
 			// we need to see which direction this edge
 			// is used to determine direction of projection
-			for( k = 0; k < 5; k++ )
+			for ( k = 0; k < 5; k++ )
 			{
-				if( tess.indexes[ indexes + k ] == i + edgeVerts[ nums[ j ] ][ 0 ]
-				    && tess.indexes[ indexes + k + 1 ] == i + edgeVerts[ nums[ j ] ][ 1 ] )
+				if ( tess.indexes[ indexes + k ] == i + edgeVerts[ nums[ j ] ][ 0 ]
+				     && tess.indexes[ indexes + k + 1 ] == i + edgeVerts[ nums[ j ] ][ 1 ] )
 				{
 					break;
 				}
 			}
 
-			if( k == 5 )
+			if ( k == 5 )
 			{
 				VectorMA( mid[ j ], l, minor, v1 );
 				VectorMA( mid[ j ], -l, minor, v2 );
@@ -1015,21 +1015,21 @@ static void Autosprite2Deform( void )
 
 qboolean ShaderRequiresCPUDeforms( const shader_t *shader )
 {
-	if( shader->numDeforms )
+	if ( shader->numDeforms )
 	{
 		int      i;
 		qboolean cpuDeforms = qfalse;
 
-		if( glConfig.driverType != GLDRV_OPENGL3 || !r_vboDeformVertexes->integer )
+		if ( glConfig.driverType != GLDRV_OPENGL3 || !r_vboDeformVertexes->integer )
 		{
 			return qtrue;
 		}
 
-		for( i = 0; i < shader->numDeforms; i++ )
+		for ( i = 0; i < shader->numDeforms; i++ )
 		{
 			const deformStage_t *ds = &shader->deforms[ 0 ];
 
-			switch( ds->deformation )
+			switch ( ds->deformation )
 			{
 				case DEFORM_WAVE:
 				case DEFORM_BULGE:
@@ -1061,7 +1061,7 @@ void Tess_DeformGeometry( void )
 	// TODO
 #else
 
-	if( glState.currentVBO != tess.vbo || glState.currentIBO != tess.ibo )
+	if ( glState.currentVBO != tess.vbo || glState.currentIBO != tess.ibo )
 	{
 		// static VBOs are incompatible with deformVertexes
 		return;
@@ -1069,17 +1069,17 @@ void Tess_DeformGeometry( void )
 
 #endif
 
-	if( !ShaderRequiresCPUDeforms( tess.surfaceShader ) )
+	if ( !ShaderRequiresCPUDeforms( tess.surfaceShader ) )
 	{
 		// we don't need the following CPU deforms
 		return;
 	}
 
-	for( i = 0; i < tess.surfaceShader->numDeforms; i++ )
+	for ( i = 0; i < tess.surfaceShader->numDeforms; i++ )
 	{
 		ds = &tess.surfaceShader->deforms[ i ];
 
-		switch( ds->deformation )
+		switch ( ds->deformation )
 		{
 			case DEFORM_NONE:
 				break;
@@ -1158,9 +1158,9 @@ void RB_CalcTexMatrix( const textureBundle_t *bundle, matrix_t matrix )
 
 	MatrixIdentity( matrix );
 
-	for( j = 0; j < bundle->numTexMods; j++ )
+	for ( j = 0; j < bundle->numTexMods; j++ )
 	{
-		switch( bundle->texMods[ j ].type )
+		switch ( bundle->texMods[ j ].type )
 		{
 			case TMOD_NONE:
 				j = TR_MAX_TEXMODS; // break out of for loop

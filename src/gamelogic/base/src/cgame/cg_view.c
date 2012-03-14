@@ -76,7 +76,7 @@ void CG_TestModel_f( void )
 	memset( &cg.testModelEntity, 0, sizeof( cg.testModelEntity ) );
 	memset( &cg.testModelBarrelEntity, 0, sizeof( cg.testModelBarrelEntity ) );
 
-	if( trap_Argc() < 2 )
+	if ( trap_Argc() < 2 )
 	{
 		return;
 	}
@@ -89,14 +89,14 @@ void CG_TestModel_f( void )
 	Q_strcat( cg.testModelBarrelName, MAX_QPATH, "_barrel.md3" );
 	cg.testModelBarrelEntity.hModel = trap_R_RegisterModel( cg.testModelBarrelName );
 
-	if( trap_Argc() == 3 )
+	if ( trap_Argc() == 3 )
 	{
 		cg.testModelEntity.backlerp = atof( CG_Argv( 2 ) );
 		cg.testModelEntity.frame = 1;
 		cg.testModelEntity.oldframe = 0;
 	}
 
-	if( !cg.testModelEntity.hModel )
+	if ( !cg.testModelEntity.hModel )
 	{
 		CG_Printf( "Can't register model\n" );
 		return;
@@ -111,7 +111,7 @@ void CG_TestModel_f( void )
 	AnglesToAxis( angles, cg.testModelEntity.axis );
 	cg.testGun = qfalse;
 
-	if( cg.testModelBarrelEntity.hModel )
+	if ( cg.testModelBarrelEntity.hModel )
 	{
 		angles[ YAW ] = 0;
 		angles[ PITCH ] = 0;
@@ -144,7 +144,7 @@ void CG_TestModelPrevFrame_f( void )
 {
 	cg.testModelEntity.frame--;
 
-	if( cg.testModelEntity.frame < 0 )
+	if ( cg.testModelEntity.frame < 0 )
 	{
 		cg.testModelEntity.frame = 0;
 	}
@@ -162,7 +162,7 @@ void CG_TestModelPrevSkin_f( void )
 {
 	cg.testModelEntity.skinNum--;
 
-	if( cg.testModelEntity.skinNum < 0 )
+	if ( cg.testModelEntity.skinNum < 0 )
 	{
 		cg.testModelEntity.skinNum = 0;
 	}
@@ -178,14 +178,14 @@ static void CG_AddTestModel( void )
 	cg.testModelEntity.hModel = trap_R_RegisterModel( cg.testModelName );
 	cg.testModelBarrelEntity.hModel = trap_R_RegisterModel( cg.testModelBarrelName );
 
-	if( !cg.testModelEntity.hModel )
+	if ( !cg.testModelEntity.hModel )
 	{
 		CG_Printf( "Can't register model\n" );
 		return;
 	}
 
 	// if testing a gun, set the origin reletive to the view origin
-	if( cg.testGun )
+	if ( cg.testGun )
 	{
 		VectorCopy( cg.refdef.vieworg, cg.testModelEntity.origin );
 		VectorCopy( cg.refdef.viewaxis[ 0 ], cg.testModelEntity.axis[ 0 ] );
@@ -193,7 +193,7 @@ static void CG_AddTestModel( void )
 		VectorCopy( cg.refdef.viewaxis[ 2 ], cg.testModelEntity.axis[ 2 ] );
 
 		// allow the position to be adjusted
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			cg.testModelEntity.origin[ i ] += cg.refdef.viewaxis[ 0 ][ i ] * cg_gun_x.value;
 			cg.testModelEntity.origin[ i ] += cg.refdef.viewaxis[ 1 ][ i ] * cg_gun_y.value;
@@ -203,7 +203,7 @@ static void CG_AddTestModel( void )
 
 	trap_R_AddRefEntityToScene( &cg.testModelEntity );
 
-	if( cg.testModelBarrelEntity.hModel )
+	if ( cg.testModelBarrelEntity.hModel )
 	{
 		CG_PositionEntityOnTag( &cg.testModelBarrelEntity, &cg.testModelEntity,
 		                        cg.testModelEntity.hModel, "tag_barrel" );
@@ -226,19 +226,19 @@ static void CG_CalcVrect( void )
 	int size;
 
 	// the intermission should allways be full screen
-	if( cg.snap->ps.pm_type == PM_INTERMISSION )
+	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		size = 100;
 	}
 	else
 	{
 		// bound normal viewsize
-		if( cg_viewsize.integer < 30 )
+		if ( cg_viewsize.integer < 30 )
 		{
 			trap_Cvar_Set( "cg_viewsize", "30" );
 			size = 30;
 		}
-		else if( cg_viewsize.integer > 100 )
+		else if ( cg_viewsize.integer > 100 )
 		{
 			trap_Cvar_Set( "cg_viewsize", "100" );
 			size = 100;
@@ -281,9 +281,9 @@ static void CG_OffsetThirdPersonView( void )
 	float         forwardScale, sideScale;
 	vec3_t        surfNormal;
 
-	if( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_WALLCLIMBING )
 	{
-		if( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
+		if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
 		{
 			VectorSet( surfNormal, 0.0f, 0.0f, -1.0f );
 		}
@@ -302,7 +302,7 @@ static void CG_OffsetThirdPersonView( void )
 	VectorCopy( cg.refdefViewAngles, focusAngles );
 
 	// if dead, look at killer
-	if( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
+	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
 	{
 		focusAngles[ YAW ] = cg.predictedPlayerState.stats[ STAT_VIEWLOCK ];
 		cg.refdefViewAngles[ YAW ] = cg.predictedPlayerState.stats[ STAT_VIEWLOCK ];
@@ -331,11 +331,11 @@ static void CG_OffsetThirdPersonView( void )
 	// trace a ray from the origin to the viewpoint to make sure the view isn't
 	// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
 
-	if( !cg_cameraMode.integer )
+	if ( !cg_cameraMode.integer )
 	{
 		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
 
-		if( trace.fraction != 1.0 )
+		if ( trace.fraction != 1.0 )
 		{
 			VectorCopy( trace.endpos, view );
 			view[ 2 ] += ( 1.0 - trace.fraction ) * 32;
@@ -353,7 +353,7 @@ static void CG_OffsetThirdPersonView( void )
 	VectorSubtract( focusPoint, cg.refdef.vieworg, focusPoint );
 	focusDist = sqrt( focusPoint[ 0 ] * focusPoint[ 0 ] + focusPoint[ 1 ] * focusPoint[ 1 ] );
 
-	if( focusDist < 1 )
+	if ( focusDist < 1 )
 	{
 		focusDist = 1; // should never happen
 	}
@@ -371,9 +371,9 @@ static void CG_StepOffset( void )
 	vec3_t        normal;
 	playerState_t *ps = &cg.predictedPlayerState;
 
-	if( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
 	{
-		if( ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
+		if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
 		{
 			VectorSet( normal, 0.0f, 0.0f, -1.0f );
 		}
@@ -392,12 +392,12 @@ static void CG_StepOffset( void )
 	// smooth out stair climbing
 	timeDelta = cg.time - cg.stepTime;
 
-	if( timeDelta < steptime )
+	if ( timeDelta < steptime )
 	{
 		float stepChange = cg.stepChange
 		                   * ( steptime - timeDelta ) / steptime;
 
-		if( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+		if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
 		{
 			VectorMA( cg.refdef.vieworg, -stepChange, normal, cg.refdef.vieworg );
 		}
@@ -434,9 +434,9 @@ static void CG_OffsetFirstPersonView( void )
 	vec3_t        normal, baseOrigin;
 	playerState_t *ps = &cg.predictedPlayerState;
 
-	if( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
 	{
-		if( ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
+		if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
 		{
 			VectorSet( normal, 0.0f, 0.0f, -1.0f );
 		}
@@ -450,7 +450,7 @@ static void CG_OffsetFirstPersonView( void )
 		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 
-	if( cg.snap->ps.pm_type == PM_INTERMISSION )
+	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		return;
 	}
@@ -461,7 +461,7 @@ static void CG_OffsetFirstPersonView( void )
 	VectorCopy( origin, baseOrigin );
 
 	// if dead, fix the angle and don't add any kick
-	if( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
+	if ( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
 	{
 		angles[ ROLL ] = 40;
 		angles[ PITCH ] = -15;
@@ -474,11 +474,11 @@ static void CG_OffsetFirstPersonView( void )
 	VectorAdd( angles, cg.kick_angles, angles );
 
 	// add angles based on damage kick
-	if( cg.damageTime )
+	if ( cg.damageTime )
 	{
 		ratio = cg.time - cg.damageTime;
 
-		if( ratio < DAMAGE_DEFLECT_TIME )
+		if ( ratio < DAMAGE_DEFLECT_TIME )
 		{
 			ratio /= DAMAGE_DEFLECT_TIME;
 			angles[ PITCH ] += ratio * cg.v_dmg_pitch;
@@ -488,7 +488,7 @@ static void CG_OffsetFirstPersonView( void )
 		{
 			ratio = 1.0 - ( ratio - DAMAGE_DEFLECT_TIME ) / DAMAGE_RETURN_TIME;
 
-			if( ratio > 0 )
+			if ( ratio > 0 )
 			{
 				angles[ PITCH ] += ratio * cg.v_dmg_pitch;
 				angles[ ROLL ] += ratio * cg.v_dmg_roll;
@@ -500,7 +500,7 @@ static void CG_OffsetFirstPersonView( void )
 #if 0
 	ratio = ( cg.time - cg.landTime ) / FALL_TIME;
 
-	if( ratio < 0 )
+	if ( ratio < 0 )
 	{
 		ratio = 0;
 	}
@@ -520,7 +520,7 @@ static void CG_OffsetFirstPersonView( void )
 	// add angles based on bob
 	//TA: bob amount is class dependant
 
-	if( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
+	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
 	{
 		bob2 = 0.0f;
 	}
@@ -532,13 +532,13 @@ static void CG_OffsetFirstPersonView( void )
 #define LEVEL4_FEEDBACK 10.0f
 
 	//give a charging player some feedback
-	if( ps->weapon == WP_ALEVEL4 )
+	if ( ps->weapon == WP_ALEVEL4 )
 	{
-		if( ps->stats[ STAT_MISC ] > 0 )
+		if ( ps->stats[ STAT_MISC ] > 0 )
 		{
 			float fraction = ( float ) ps->stats[ STAT_MISC ] / ( float ) LEVEL4_CHARGE_TIME;
 
-			if( fraction > 1.0f )
+			if ( fraction > 1.0f )
 			{
 				fraction = 1.0f;
 			}
@@ -547,14 +547,14 @@ static void CG_OffsetFirstPersonView( void )
 		}
 	}
 
-	if( bob2 != 0.0f )
+	if ( bob2 != 0.0f )
 	{
 		// make sure the bob is visible even at low speeds
 		speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
 
 		delta = cg.bobfracsin * ( bob2 ) * speed;
 
-		if( cg.predictedPlayerState.pm_flags & PMF_DUCKED )
+		if ( cg.predictedPlayerState.pm_flags & PMF_DUCKED )
 		{
 			delta *= 3; // crouching
 		}
@@ -562,12 +562,12 @@ static void CG_OffsetFirstPersonView( void )
 		angles[ PITCH ] += delta;
 		delta = cg.bobfracsin * ( bob2 ) * speed;
 
-		if( cg.predictedPlayerState.pm_flags & PMF_DUCKED )
+		if ( cg.predictedPlayerState.pm_flags & PMF_DUCKED )
 		{
 			delta *= 3; // crouching accentuates roll
 		}
 
-		if( cg.bobcycle & 1 )
+		if ( cg.bobcycle & 1 )
 		{
 			delta = -delta;
 		}
@@ -578,10 +578,10 @@ static void CG_OffsetFirstPersonView( void )
 #define LEVEL3_FEEDBACK 20.0f
 
 	//provide some feedback for pouncing
-	if( cg.predictedPlayerState.weapon == WP_ALEVEL3 ||
-	    cg.predictedPlayerState.weapon == WP_ALEVEL3_UPG )
+	if ( cg.predictedPlayerState.weapon == WP_ALEVEL3 ||
+	     cg.predictedPlayerState.weapon == WP_ALEVEL3_UPG )
 	{
-		if( cg.predictedPlayerState.stats[ STAT_MISC ] > 0 )
+		if ( cg.predictedPlayerState.stats[ STAT_MISC ] > 0 )
 		{
 			float  fraction1, fraction2;
 			vec3_t forward;
@@ -591,7 +591,7 @@ static void CG_OffsetFirstPersonView( void )
 
 			fraction1 = ( float )( cg.time - cg.weapon2Time ) / ( float ) LEVEL3_POUNCE_CHARGE_TIME;
 
-			if( fraction1 > 1.0f )
+			if ( fraction1 > 1.0f )
 			{
 				fraction1 = 1.0f;
 			}
@@ -606,7 +606,7 @@ static void CG_OffsetFirstPersonView( void )
 #define STRUGGLE_TIME 250
 
 	//allow the player to struggle a little whilst grabbed
-	if( cg.predictedPlayerState.pm_type == PM_GRABBED )
+	if ( cg.predictedPlayerState.pm_type == PM_GRABBED )
 	{
 		vec3_t    forward, right, up;
 		usercmd_t cmd;
@@ -623,17 +623,17 @@ static void CG_OffsetFirstPersonView( void )
 		rFraction = ( float )( cg.time - cg.rightMoveTime ) / STRUGGLE_TIME;
 		uFraction = ( float )( cg.time - cg.upMoveTime ) / STRUGGLE_TIME;
 
-		if( fFraction > 1.0f )
+		if ( fFraction > 1.0f )
 		{
 			fFraction = 1.0f;
 		}
 
-		if( rFraction > 1.0f )
+		if ( rFraction > 1.0f )
 		{
 			rFraction = 1.0f;
 		}
 
-		if( uFraction > 1.0f )
+		if ( uFraction > 1.0f )
 		{
 			uFraction = 1.0f;
 		}
@@ -642,11 +642,11 @@ static void CG_OffsetFirstPersonView( void )
 		rFraction2 = -sin( rFraction * M_PI / 2 );
 		uFraction2 = -sin( uFraction * M_PI / 2 );
 
-		if( cmd.forwardmove > 0 )
+		if ( cmd.forwardmove > 0 )
 		{
 			VectorMA( origin, STRUGGLE_DIST * fFraction, forward, origin );
 		}
-		else if( cmd.forwardmove < 0 )
+		else if ( cmd.forwardmove < 0 )
 		{
 			VectorMA( origin, -STRUGGLE_DIST * fFraction, forward, origin );
 		}
@@ -655,11 +655,11 @@ static void CG_OffsetFirstPersonView( void )
 			cg.forwardMoveTime = cg.time;
 		}
 
-		if( cmd.rightmove > 0 )
+		if ( cmd.rightmove > 0 )
 		{
 			VectorMA( origin, STRUGGLE_DIST * rFraction, right, origin );
 		}
-		else if( cmd.rightmove < 0 )
+		else if ( cmd.rightmove < 0 )
 		{
 			VectorMA( origin, -STRUGGLE_DIST * rFraction, right, origin );
 		}
@@ -668,11 +668,11 @@ static void CG_OffsetFirstPersonView( void )
 			cg.rightMoveTime = cg.time;
 		}
 
-		if( cmd.upmove > 0 )
+		if ( cmd.upmove > 0 )
 		{
 			VectorMA( origin, STRUGGLE_DIST * uFraction, up, origin );
 		}
-		else if( cmd.upmove < 0 )
+		else if ( cmd.upmove < 0 )
 		{
 			VectorMA( origin, -STRUGGLE_DIST * uFraction, up, origin );
 		}
@@ -682,8 +682,8 @@ static void CG_OffsetFirstPersonView( void )
 		}
 	}
 
-	if( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_POISONCLOUDED &&
-	    !( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
+	if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_POISONCLOUDED &&
+	     !( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
 	{
 		float fraction = sin( ( ( float ) cg.time / 1000.0f ) * M_PI * 2 * PCLOUD_ROLL_FREQUENCY );
 		float pitchFraction = sin( ( ( float ) cg.time / 1000.0f ) * M_PI * 5 * PCLOUD_ROLL_FREQUENCY );
@@ -697,12 +697,12 @@ static void CG_OffsetFirstPersonView( void )
 	}
 
 	//TA: this *feels* more realisitic for humans
-	if( cg.predictedPlayerState.stats[ STAT_PTEAM ] == PTE_HUMANS )
+	if ( cg.predictedPlayerState.stats[ STAT_PTEAM ] == PTE_HUMANS )
 	{
 		angles[ PITCH ] += cg.bobfracsin * bob2 * 0.5;
 
 		//TA: heavy breathing effects //FIXME: sound
-		if( cg.predictedPlayerState.stats[ STAT_STAMINA ] < 0 )
+		if ( cg.predictedPlayerState.stats[ STAT_STAMINA ] < 0 )
 		{
 			float deltaBreath = ( float )(
 			                      cg.predictedPlayerState.stats[ STAT_STAMINA ] < 0 ?
@@ -720,7 +720,7 @@ static void CG_OffsetFirstPersonView( void )
 
 	// add view height
 	//TA: when wall climbing the viewheight is not straight up
-	if( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_WALLCLIMBING )
 	{
 		VectorMA( origin, ps->viewheight, normal, origin );
 	}
@@ -732,7 +732,7 @@ static void CG_OffsetFirstPersonView( void )
 	// smooth out duck height changes
 	timeDelta = cg.time - cg.duckTime;
 
-	if( timeDelta < DUCK_TIME )
+	if ( timeDelta < DUCK_TIME )
 	{
 		cg.refdef.vieworg[ 2 ] -= cg.duckChange
 		                          * ( DUCK_TIME - timeDelta ) / DUCK_TIME;
@@ -741,13 +741,13 @@ static void CG_OffsetFirstPersonView( void )
 	// add bob height
 	bob = cg.bobfracsin * cg.xyspeed * bob2;
 
-	if( bob > 6 )
+	if ( bob > 6 )
 	{
 		bob = 6;
 	}
 
 	//TA: likewise for bob
-	if( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_WALLCLIMBING )
 	{
 		VectorMA( origin, bob, normal, origin );
 	}
@@ -759,12 +759,12 @@ static void CG_OffsetFirstPersonView( void )
 	// add fall height
 	delta = cg.time - cg.landTime;
 
-	if( delta < LAND_DEFLECT_TIME )
+	if ( delta < LAND_DEFLECT_TIME )
 	{
 		f = delta / LAND_DEFLECT_TIME;
 		cg.refdef.vieworg[ 2 ] += cg.landChange * f;
 	}
-	else if( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
+	else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
 	{
 		delta -= LAND_DEFLECT_TIME;
 		f = 1.0 - ( delta / LAND_RETURN_TIME );
@@ -783,7 +783,7 @@ static void CG_OffsetFirstPersonView( void )
 
 void CG_ZoomDown_f( void )
 {
-	if( cg.zoomed )
+	if ( cg.zoomed )
 	{
 		return;
 	}
@@ -794,7 +794,7 @@ void CG_ZoomDown_f( void )
 
 void CG_ZoomUp_f( void )
 {
-	if( !cg.zoomed )
+	if ( !cg.zoomed )
 	{
 		return;
 	}
@@ -827,8 +827,8 @@ static int CG_CalcFov( void )
 	int   inwater;
 	int   attribFov;
 
-	if( cg.predictedPlayerState.pm_type == PM_INTERMISSION ||
-	    ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR ) )
+	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ||
+	     ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR ) )
 	{
 		// if in intermission, use a fixed value
 		fov_x = 90;
@@ -839,17 +839,17 @@ static int CG_CalcFov( void )
 		attribFov = BG_FindFovForClass( cg.predictedPlayerState.stats[ STAT_PCLASS ] );
 		fov_x = attribFov;
 
-		if( fov_x < 1 )
+		if ( fov_x < 1 )
 		{
 			fov_x = 1;
 		}
-		else if( fov_x > 160 )
+		else if ( fov_x > 160 )
 		{
 			fov_x = 160;
 		}
 
-		if( cg.spawnTime > ( cg.time - FOVWARPTIME ) &&
-		    BG_ClassHasAbility( cg.predictedPlayerState.stats[ STAT_PCLASS ], SCA_FOVWARPS ) )
+		if ( cg.spawnTime > ( cg.time - FOVWARPTIME ) &&
+		     BG_ClassHasAbility( cg.predictedPlayerState.stats[ STAT_PCLASS ], SCA_FOVWARPS ) )
 		{
 			float temp, temp2;
 
@@ -864,23 +864,23 @@ static int CG_CalcFov( void )
 		// account for zooms
 		zoomFov = BG_FindZoomFovForWeapon( cg.predictedPlayerState.weapon );
 
-		if( zoomFov < 1 )
+		if ( zoomFov < 1 )
 		{
 			zoomFov = 1;
 		}
-		else if( zoomFov > attribFov )
+		else if ( zoomFov > attribFov )
 		{
 			zoomFov = attribFov;
 		}
 
 		//TA: only do all the zoom stuff if the client CAN zoom
-		if( BG_WeaponCanZoom( cg.predictedPlayerState.weapon ) )
+		if ( BG_WeaponCanZoom( cg.predictedPlayerState.weapon ) )
 		{
-			if( cg.zoomed )
+			if ( cg.zoomed )
 			{
 				f = ( cg.time - cg.zoomTime ) / ( float ) ZOOM_TIME;
 
-				if( f > 1.0 )
+				if ( f > 1.0 )
 				{
 					fov_x = zoomFov;
 				}
@@ -893,7 +893,7 @@ static int CG_CalcFov( void )
 			{
 				f = ( cg.time - cg.zoomTime ) / ( float ) ZOOM_TIME;
 
-				if( f < 1.0 )
+				if ( f < 1.0 )
 				{
 					fov_x = zoomFov + f * ( fov_x - zoomFov );
 				}
@@ -908,7 +908,7 @@ static int CG_CalcFov( void )
 	// warp if underwater
 	contents = CG_PointContents( cg.refdef.vieworg, -1 );
 
-	if( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) )
+	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) )
 	{
 		phase = cg.time / 1000.0 * WAVE_FREQUENCY * M_PI * 2;
 		v = WAVE_AMPLITUDE * sin( phase );
@@ -921,9 +921,9 @@ static int CG_CalcFov( void )
 		inwater = qfalse;
 	}
 
-	if( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_POISONCLOUDED &&
-	    cg.predictedPlayerState.stats[ STAT_HEALTH ] > 0 &&
-	    !( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
+	if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_POISONCLOUDED &&
+	     cg.predictedPlayerState.stats[ STAT_HEALTH ] > 0 &&
+	     !( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
 	{
 		phase = cg.time / 1000.0 * PCLOUD_ZOOM_FREQUENCY * M_PI * 2;
 		v = PCLOUD_ZOOM_AMPLITUDE * sin( phase );
@@ -936,7 +936,7 @@ static int CG_CalcFov( void )
 	cg.refdef.fov_x = fov_x;
 	cg.refdef.fov_y = fov_y;
 
-	if( !cg.zoomed )
+	if ( !cg.zoomed )
 	{
 		cg.zoomSensitivity = 1;
 	}
@@ -1007,10 +1007,10 @@ void CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod )
 	int i;
 
 	//iterate through smooth array
-	for( i = 0; i < MAXSMOOTHS; i++ )
+	for ( i = 0; i < MAXSMOOTHS; i++ )
 	{
 		//found an unused index in the smooth array
-		if( cg.sList[ i ].time + cg_wwSmoothTime.integer < cg.time )
+		if ( cg.sList[ i ].time + cg_wwSmoothTime.integer < cg.time )
 		{
 			//copy to array and stop
 			VectorCopy( rotAxis, cg.sList[ i ].rotAxis );
@@ -1040,14 +1040,14 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	qboolean performed = qfalse;
 	vec3_t   inAxis[ 3 ], lastAxis[ 3 ], outAxis[ 3 ];
 
-	if( cg.snap->ps.pm_flags & PMF_FOLLOW )
+	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
 		VectorCopy( in, out );
 		return;
 	}
 
 	//set surfNormal
-	if( !( ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING ) )
+	if ( !( ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING ) )
 	{
 		VectorCopy( ps->grapplePoint, surfNormal );
 	}
@@ -1059,12 +1059,12 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	AnglesToAxis( in, inAxis );
 
 	//if we are moving from one surface to another smooth the transition
-	if( !VectorCompare( surfNormal, cg.lastNormal ) )
+	if ( !VectorCompare( surfNormal, cg.lastNormal ) )
 	{
 		//if we moving from the ceiling to the floor special case
 		//( x product of colinear vectors is undefined)
-		if( VectorCompare( ceilingNormal, cg.lastNormal ) &&
-		    VectorCompare( refNormal,     surfNormal ) )
+		if ( VectorCompare( ceilingNormal, cg.lastNormal ) &&
+		     VectorCompare( refNormal,     surfNormal ) )
 		{
 			AngleVectors( in, temp, NULL, NULL );
 			ProjectPointOnPlane( rotAxis, temp, refNormal );
@@ -1098,12 +1098,12 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	}
 
 	//iterate through ops
-	for( i = MAXSMOOTHS - 1; i >= 0; i-- )
+	for ( i = MAXSMOOTHS - 1; i >= 0; i-- )
 	{
 		smoothTime = ( int )( cg_wwSmoothTime.integer * cg.sList[ i ].timeMod );
 
 		//if this op has time remaining, perform it
-		if( cg.time < cg.sList[ i ].time + smoothTime )
+		if ( cg.time < cg.sList[ i ].time + smoothTime )
 		{
 			stLocal = 1.0f - ( ( ( cg.sList[ i ].time + smoothTime ) - cg.time ) / smoothTime );
 			sFraction = - ( cos( stLocal * M_PI ) + 1.0f ) / 2.0f;
@@ -1122,7 +1122,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 
 	//if we performed any ops then return the smoothed angles
 	//otherwise simply return the in angles
-	if( performed )
+	if ( performed )
 	{
 		AxisToAngles( outAxis, out );
 	}
@@ -1148,7 +1148,7 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	qboolean performed = qfalse;
 	vec3_t   inAxis[ 3 ], outAxis[ 3 ];
 
-	if( cg.snap->ps.pm_flags & PMF_FOLLOW )
+	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
 		VectorCopy( in, out );
 		return;
@@ -1157,10 +1157,10 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	AnglesToAxis( in, inAxis );
 
 	//iterate through ops
-	for( i = MAXSMOOTHS - 1; i >= 0; i-- )
+	for ( i = MAXSMOOTHS - 1; i >= 0; i-- )
 	{
 		//if this op has time remaining, perform it
-		if( cg.time < cg.sList[ i ].time + cg_wwSmoothTime.integer )
+		if ( cg.time < cg.sList[ i ].time + cg_wwSmoothTime.integer )
 		{
 			stLocal = ( ( cg.sList[ i ].time + cg_wwSmoothTime.integer ) - cg.time ) / cg_wwSmoothTime.integer;
 			sFraction = 1.0f - ( ( cos( stLocal * M_PI * 2.0f ) + 1.0f ) / 2.0f );
@@ -1179,7 +1179,7 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 
 	//if we performed any ops then return the smoothed angles
 	//otherwise simply return the in angles
-	if( performed )
+	if ( performed )
 	{
 		AxisToAngles( outAxis, out );
 	}
@@ -1208,7 +1208,7 @@ static int CG_CalcViewValues( void )
 	ps = &cg.predictedPlayerState;
 
 	// intermission view
-	if( ps->pm_type == PM_INTERMISSION )
+	if ( ps->pm_type == PM_INTERMISSION )
 	{
 		VectorCopy( ps->origin, cg.refdef.vieworg );
 		VectorCopy( ps->viewangles, cg.refdefViewAngles );
@@ -1224,11 +1224,11 @@ static int CG_CalcViewValues( void )
 
 	VectorCopy( ps->origin, cg.refdef.vieworg );
 
-	if( BG_ClassHasAbility( ps->stats[ STAT_PCLASS ], SCA_WALLCLIMBER ) )
+	if ( BG_ClassHasAbility( ps->stats[ STAT_PCLASS ], SCA_WALLCLIMBER ) )
 	{
 		CG_smoothWWTransitions( ps, ps->viewangles, cg.refdefViewAngles );
 	}
-	else if( BG_ClassHasAbility( ps->stats[ STAT_PCLASS ], SCA_WALLJUMPER ) )
+	else if ( BG_ClassHasAbility( ps->stats[ STAT_PCLASS ], SCA_WALLJUMPER ) )
 	{
 		CG_smoothWJTransitions( ps, ps->viewangles, cg.refdefViewAngles );
 	}
@@ -1239,16 +1239,16 @@ static int CG_CalcViewValues( void )
 
 	//clumsy logic, but it needs to be this way round because the CS propogation
 	//delay screws things up otherwise
-	if( !BG_ClassHasAbility( ps->stats[ STAT_PCLASS ], SCA_WALLJUMPER ) )
+	if ( !BG_ClassHasAbility( ps->stats[ STAT_PCLASS ], SCA_WALLJUMPER ) )
 	{
-		if( !( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
+		if ( !( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
 		{
 			VectorSet( cg.lastNormal, 0.0f, 0.0f, 1.0f );
 		}
 	}
 
 	// add error decay
-	if( cg_errorDecay.value > 0 )
+	if ( cg_errorDecay.value > 0 )
 	{
 		int   t;
 		float f;
@@ -1256,7 +1256,7 @@ static int CG_CalcViewValues( void )
 		t = cg.time - cg.predictedErrorTime;
 		f = ( cg_errorDecay.value - t ) / cg_errorDecay.value;
 
-		if( f > 0 && f < 1 )
+		if ( f > 0 && f < 1 )
 		{
 			VectorMA( cg.refdef.vieworg, f, cg.predictedError, cg.refdef.vieworg );
 		}
@@ -1267,15 +1267,15 @@ static int CG_CalcViewValues( void )
 	}
 
 	//shut off the poison cloud effect if it's still on the go
-	if( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
+	if ( cg.snap->ps.stats[ STAT_HEALTH ] <= 0 )
 	{
-		if( CG_IsParticleSystemValid( &cg.poisonCloudPS ) )
+		if ( CG_IsParticleSystemValid( &cg.poisonCloudPS ) )
 		{
 			CG_DestroyParticleSystem( &cg.poisonCloudPS );
 		}
 	}
 
-	if( cg.renderingThirdPerson )
+	if ( cg.renderingThirdPerson )
 	{
 		// back away from character
 		CG_OffsetThirdPersonView();
@@ -1289,13 +1289,13 @@ static int CG_CalcViewValues( void )
 	// position eye reletive to origin
 	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
 
-	if( cg.hyperspace )
+	if ( cg.hyperspace )
 	{
 		cg.refdef.rdflags |= RDF_NOWORLDMODEL | RDF_HYPERSPACE;
 	}
 
 	//draw the surface normal looking at
-	if( cg_drawSurfNormal.integer )
+	if ( cg_drawSurfNormal.integer )
 	{
 		CG_DrawSurfNormal();
 	}
@@ -1311,7 +1311,7 @@ CG_AddBufferedSound
 */
 void CG_AddBufferedSound( sfxHandle_t sfx )
 {
-	if( !sfx )
+	if ( !sfx )
 	{
 		return;
 	}
@@ -1319,7 +1319,7 @@ void CG_AddBufferedSound( sfxHandle_t sfx )
 	cg.soundBuffer[ cg.soundBufferIn ] = sfx;
 	cg.soundBufferIn = ( cg.soundBufferIn + 1 ) % MAX_SOUNDBUFFER;
 
-	if( cg.soundBufferIn == cg.soundBufferOut )
+	if ( cg.soundBufferIn == cg.soundBufferOut )
 	{
 		cg.soundBufferOut++;
 	}
@@ -1332,9 +1332,9 @@ CG_PlayBufferedSounds
 */
 static void CG_PlayBufferedSounds( void )
 {
-	if( cg.soundTime < cg.time )
+	if ( cg.soundTime < cg.time )
 	{
-		if( cg.soundBufferOut != cg.soundBufferIn && cg.soundBuffer[ cg.soundBufferOut ] )
+		if ( cg.soundBufferOut != cg.soundBufferIn && cg.soundBuffer[ cg.soundBufferOut ] )
 		{
 			trap_S_StartLocalSound( cg.soundBuffer[ cg.soundBufferOut ], CHAN_ANNOUNCER );
 			cg.soundBuffer[ cg.soundBufferOut ] = 0;
@@ -1365,7 +1365,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 
 	// if we are only updating the screen as a loading
 	// pacifier, don't even try to read snapshots
-	if( cg.infoScreenText[ 0 ] != 0 )
+	if ( cg.infoScreenText[ 0 ] != 0 )
 	{
 		CG_DrawLoadingScreen();
 		return;
@@ -1383,7 +1383,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 
 	// if we haven't received any snapshots yet, all
 	// we can draw is the information screen
-	if( !cg.snap || ( cg.snap->snapFlags & SNAPFLAG_NOT_ACTIVE ) )
+	if ( !cg.snap || ( cg.snap->snapFlags & SNAPFLAG_NOT_ACTIVE ) )
 	{
 		CG_DrawLoadingScreen();
 		return;
@@ -1405,7 +1405,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	inwater = CG_CalcViewValues();
 
 	// build the render lists
-	if( !cg.hyperspace )
+	if ( !cg.hyperspace )
 	{
 		CG_AddPacketEntities(); // after calcViewValues, so predicted player state is correct
 		CG_AddMarks();
@@ -1414,7 +1414,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	CG_AddViewWeapon( &cg.predictedPlayerState );
 
 	//after CG_AddViewWeapon
-	if( !cg.hyperspace )
+	if ( !cg.hyperspace )
 	{
 		CG_AddParticles();
 		CG_AddTrails();
@@ -1424,7 +1424,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	CG_PlayBufferedSounds();
 
 	// finish up the rest of the refdef
-	if( cg.testModelEntity.hModel )
+	if ( cg.testModelEntity.hModel )
 	{
 		CG_AddTestModel();
 	}
@@ -1433,7 +1433,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	memcpy( cg.refdef.areamask, cg.snap->areamask, sizeof( cg.refdef.areamask ) );
 
 	//remove expired console lines
-	if( cg.consoleLines[ 0 ].time + cg_consoleLatency.integer < cg.time && cg_consoleLatency.integer > 0 )
+	if ( cg.consoleLines[ 0 ].time + cg_consoleLatency.integer < cg.time && cg_consoleLatency.integer > 0 )
 	{
 		CG_RemoveNotifyLine();
 	}
@@ -1442,11 +1442,11 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );
 
 	// make sure the lagometerSample and frame timing isn't done twice when in stereo
-	if( stereoView != STEREO_RIGHT )
+	if ( stereoView != STEREO_RIGHT )
 	{
 		cg.frametime = cg.time - cg.oldTime;
 
-		if( cg.frametime < 0 )
+		if ( cg.frametime < 0 )
 		{
 			cg.frametime = 0;
 		}
@@ -1455,13 +1455,13 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		CG_AddLagometerFrameInfo();
 	}
 
-	if( cg_timescale.value != cg_timescaleFadeEnd.value )
+	if ( cg_timescale.value != cg_timescaleFadeEnd.value )
 	{
-		if( cg_timescale.value < cg_timescaleFadeEnd.value )
+		if ( cg_timescale.value < cg_timescaleFadeEnd.value )
 		{
 			cg_timescale.value += cg_timescaleFadeSpeed.value * ( ( float ) cg.frametime ) / 1000;
 
-			if( cg_timescale.value > cg_timescaleFadeEnd.value )
+			if ( cg_timescale.value > cg_timescaleFadeEnd.value )
 			{
 				cg_timescale.value = cg_timescaleFadeEnd.value;
 			}
@@ -1470,13 +1470,13 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		{
 			cg_timescale.value -= cg_timescaleFadeSpeed.value * ( ( float ) cg.frametime ) / 1000;
 
-			if( cg_timescale.value < cg_timescaleFadeEnd.value )
+			if ( cg_timescale.value < cg_timescaleFadeEnd.value )
 			{
 				cg_timescale.value = cg_timescaleFadeEnd.value;
 			}
 		}
 
-		if( cg_timescaleFadeSpeed.value )
+		if ( cg_timescaleFadeSpeed.value )
 		{
 			trap_Cvar_Set( "timescale", va( "%f", cg_timescale.value ) );
 		}
@@ -1485,7 +1485,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// actually issue the rendering calls
 	CG_DrawActive( stereoView );
 
-	if( cg_stats.integer )
+	if ( cg_stats.integer )
 	{
 		CG_Printf( "cg.clientFrame:%i\n", cg.clientFrame );
 	}

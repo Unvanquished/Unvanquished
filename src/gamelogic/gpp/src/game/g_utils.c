@@ -41,9 +41,9 @@ void AddRemap( const char *oldShader, const char *newShader, float timeOffset )
 {
 	int i;
 
-	for( i = 0; i < remapCount; i++ )
+	for ( i = 0; i < remapCount; i++ )
 	{
-		if( Q_stricmp( oldShader, remappedShaders[ i ].oldShader ) == 0 )
+		if ( Q_stricmp( oldShader, remappedShaders[ i ].oldShader ) == 0 )
 		{
 			// found it, just update this one
 			strcpy( remappedShaders[ i ].newShader, newShader );
@@ -52,7 +52,7 @@ void AddRemap( const char *oldShader, const char *newShader, float timeOffset )
 		}
 	}
 
-	if( remapCount < MAX_SHADER_REMAPS )
+	if ( remapCount < MAX_SHADER_REMAPS )
 	{
 		strcpy( remappedShaders[ remapCount ].newShader, newShader );
 		strcpy( remappedShaders[ remapCount ].oldShader, oldShader );
@@ -69,7 +69,7 @@ const char *BuildShaderStateConfig( void )
 
 	memset( buff, 0, MAX_STRING_CHARS );
 
-	for( i = 0; i < remapCount; i++ )
+	for ( i = 0; i < remapCount; i++ )
 	{
 		Com_sprintf( out, ( MAX_QPATH * 2 ) + 5, "%s=%s:%5.2f@", remappedShaders[ i ].oldShader,
 		             remappedShaders[ i ].newShader, remappedShaders[ i ].timeOffset );
@@ -98,32 +98,32 @@ int G_FindConfigstringIndex( char *name, int start, int max, qboolean create )
 	int  i;
 	char s[ MAX_STRING_CHARS ];
 
-	if( !name || !name[ 0 ] )
+	if ( !name || !name[ 0 ] )
 	{
 		return 0;
 	}
 
-	for( i = 1; i < max; i++ )
+	for ( i = 1; i < max; i++ )
 	{
 		trap_GetConfigstring( start + i, s, sizeof( s ) );
 
-		if( !s[ 0 ] )
+		if ( !s[ 0 ] )
 		{
 			break;
 		}
 
-		if( !strcmp( s, name ) )
+		if ( !strcmp( s, name ) )
 		{
 			return i;
 		}
 	}
 
-	if( !create )
+	if ( !create )
 	{
 		return 0;
 	}
 
-	if( i == max )
+	if ( i == max )
 	{
 		G_Error( "G_FindConfigstringIndex: overflow" );
 	}
@@ -171,7 +171,7 @@ gentity_t *G_Find( gentity_t *from, int fieldofs, const char *match )
 {
 	char *s;
 
-	if( !from )
+	if ( !from )
 	{
 		from = g_entities;
 	}
@@ -180,21 +180,21 @@ gentity_t *G_Find( gentity_t *from, int fieldofs, const char *match )
 		from++;
 	}
 
-	for( ; from < &g_entities[ level.num_entities ]; from++ )
+	for ( ; from < &g_entities[ level.num_entities ]; from++ )
 	{
-		if( !from->inuse )
+		if ( !from->inuse )
 		{
 			continue;
 		}
 
 		s = * ( char ** )( ( byte * ) from + fieldofs );
 
-		if( !s )
+		if ( !s )
 		{
 			continue;
 		}
 
-		if( !Q_stricmp( s, match ) )
+		if ( !Q_stricmp( s, match ) )
 		{
 			return from;
 		}
@@ -218,30 +218,30 @@ gentity_t *G_PickTarget( char *targetname )
 	int       num_choices = 0;
 	gentity_t *choice[ MAXCHOICES ];
 
-	if( !targetname )
+	if ( !targetname )
 	{
 		G_Printf( "G_PickTarget called with NULL targetname\n" );
 		return NULL;
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
 		ent = G_Find( ent, FOFS( targetname ), targetname );
 
-		if( !ent )
+		if ( !ent )
 		{
 			break;
 		}
 
 		choice[ num_choices++ ] = ent;
 
-		if( num_choices == MAXCHOICES )
+		if ( num_choices == MAXCHOICES )
 		{
 			break;
 		}
 	}
 
-	if( !num_choices )
+	if ( !num_choices )
 	{
 		G_Printf( "G_PickTarget: target %s not found\n", targetname );
 		return NULL;
@@ -265,40 +265,40 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator )
 {
 	gentity_t *t;
 
-	if( !ent )
+	if ( !ent )
 	{
 		return;
 	}
 
-	if( ent->targetShaderName && ent->targetShaderNewName )
+	if ( ent->targetShaderName && ent->targetShaderNewName )
 	{
 		float f = level.time * 0.001;
 		AddRemap( ent->targetShaderName, ent->targetShaderNewName, f );
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 	}
 
-	if( !ent->target )
+	if ( !ent->target )
 	{
 		return;
 	}
 
 	t = NULL;
 
-	while( ( t = G_Find( t, FOFS( targetname ), ent->target ) ) != NULL )
+	while ( ( t = G_Find( t, FOFS( targetname ), ent->target ) ) != NULL )
 	{
-		if( t == ent )
+		if ( t == ent )
 		{
 			G_Printf( "WARNING: Entity used itself.\n" );
 		}
 		else
 		{
-			if( t->use )
+			if ( t->use )
 			{
 				t->use( t, ent, activator );
 			}
 		}
 
-		if( !ent->inuse )
+		if ( !ent->inuse )
 		{
 			G_Printf( "entity was removed while using targets\n" );
 			return;
@@ -346,11 +346,11 @@ void G_SetMovedir( vec3_t angles, vec3_t movedir )
 	static vec3_t VEC_DOWN = { 0, -2, 0 };
 	static vec3_t MOVEDIR_DOWN = { 0, 0, -1 };
 
-	if( VectorCompare( angles, VEC_UP ) )
+	if ( VectorCompare( angles, VEC_UP ) )
 	{
 		VectorCopy( MOVEDIR_UP, movedir );
 	}
-	else if( VectorCompare( angles, VEC_DOWN ) )
+	else if ( VectorCompare( angles, VEC_DOWN ) )
 	{
 		VectorCopy( MOVEDIR_DOWN, movedir );
 	}
@@ -393,22 +393,22 @@ gentity_t *G_Spawn( void )
 	e = NULL; // shut up warning
 	i = 0; // shut up warning
 
-	for( force = 0; force < 2; force++ )
+	for ( force = 0; force < 2; force++ )
 	{
 		// if we go through all entities and can't find one to free,
 		// override the normal minimum times before use
 		e = &g_entities[ MAX_CLIENTS ];
 
-		for( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
+		for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
 		{
-			if( e->inuse )
+			if ( e->inuse )
 			{
 				continue;
 			}
 
 			// the first couple seconds of server time can involve a lot of
 			// freeing and allocating, so relax the replacement policy
-			if( !force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000 )
+			if ( !force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000 )
 			{
 				continue;
 			}
@@ -418,15 +418,15 @@ gentity_t *G_Spawn( void )
 			return e;
 		}
 
-		if( i != MAX_GENTITIES )
+		if ( i != MAX_GENTITIES )
 		{
 			break;
 		}
 	}
 
-	if( i == ENTITYNUM_MAX_NORMAL )
+	if ( i == ENTITYNUM_MAX_NORMAL )
 	{
-		for( i = 0; i < MAX_GENTITIES; i++ )
+		for ( i = 0; i < MAX_GENTITIES; i++ )
 		{
 			G_Printf( "%4i: %s\n", i, g_entities[ i ].classname );
 		}
@@ -457,9 +457,9 @@ qboolean G_EntitiesFree( void )
 
 	e = &g_entities[ MAX_CLIENTS ];
 
-	for( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
 	{
-		if( e->inuse )
+		if ( e->inuse )
 		{
 			continue;
 		}
@@ -482,7 +482,7 @@ void G_FreeEntity( gentity_t *ent )
 {
 	trap_UnlinkEntity( ent );  // unlink from world
 
-	if( ent->neverFree )
+	if ( ent->neverFree )
 	{
 		return;
 	}
@@ -551,17 +551,17 @@ void G_KillBox( gentity_t *ent )
 	VectorAdd( ent->r.currentOrigin, ent->r.maxs, maxs );
 	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
 
-	for( i = 0; i < num; i++ )
+	for ( i = 0; i < num; i++ )
 	{
 		hit = &g_entities[ touch[ i ] ];
 
-		if( !hit->client )
+		if ( !hit->client )
 		{
 			continue;
 		}
 
 		// impossible to telefrag self
-		if( ent == hit )
+		if ( ent == hit )
 		{
 			continue;
 		}
@@ -585,7 +585,7 @@ Adds an event+parm and twiddles the event counter
 */
 void G_AddPredictableEvent( gentity_t *ent, int event, int eventParm )
 {
-	if( !ent->client )
+	if ( !ent->client )
 	{
 		return;
 	}
@@ -604,21 +604,21 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm )
 {
 	int bits;
 
-	if( !event )
+	if ( !event )
 	{
 		G_Printf( "G_AddEvent: zero event added for entity %i\n", ent->s.number );
 		return;
 	}
 
 	// eventParm is converted to uint8_t (0 - 255) in msg.c
-	if( eventParm & ~0xFF )
+	if ( eventParm & ~0xFF )
 	{
 		G_Printf( S_COLOR_YELLOW "WARNING: G_AddEvent( %s ) has eventParm %d, "
 		          "which will overflow\n", BG_EventName( event ), eventParm );
 	}
 
 	// clients need to add the event in playerState_t instead of entityState_t
-	if( ent->client )
+	if ( ent->client )
 	{
 		ent->client->ps.events[ ent->client->ps.eventSequence & ( MAX_EVENTS - 1 ) ] = event;
 		ent->client->ps.eventParms[ ent->client->ps.eventSequence & ( MAX_EVENTS - 1 ) ] = eventParm;
@@ -671,9 +671,9 @@ G_ClientIsLagging
 */
 qboolean G_ClientIsLagging( gclient_t *client )
 {
-	if( client )
+	if ( client )
 	{
-		if( client->ps.ping >= 999 )
+		if ( client->ps.ping >= 999 )
 		{
 			return qtrue;
 		}
@@ -715,7 +715,7 @@ gentity_t *G_FindRadius( gentity_t *from, vec3_t org, float rad )
 	vec3_t eorg;
 	int    j;
 
-	if( !from )
+	if ( !from )
 	{
 		from = g_entities;
 	}
@@ -724,19 +724,19 @@ gentity_t *G_FindRadius( gentity_t *from, vec3_t org, float rad )
 		from++;
 	}
 
-	for( ; from < &g_entities[ level.num_entities ]; from++ )
+	for ( ; from < &g_entities[ level.num_entities ]; from++ )
 	{
-		if( !from->inuse )
+		if ( !from->inuse )
 		{
 			continue;
 		}
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			eorg[ j ] = org[ j ] - ( from->r.currentOrigin[ j ] + ( from->r.mins[ j ] + from->r.maxs[ j ] ) * 0.5 );
 		}
 
-		if( VectorLength( eorg ) > rad )
+		if ( VectorLength( eorg ) > rad )
 		{
 			continue;
 		}
@@ -777,7 +777,7 @@ gentity_t *G_ClosestEnt( vec3_t origin, gentity_t **entities, int numEntities )
 	float     nd, d;
 	gentity_t *closestEnt;
 
-	if( numEntities <= 0 )
+	if ( numEntities <= 0 )
 	{
 		return NULL;
 	}
@@ -785,13 +785,13 @@ gentity_t *G_ClosestEnt( vec3_t origin, gentity_t **entities, int numEntities )
 	closestEnt = entities[ 0 ];
 	d = DistanceSquared( origin, closestEnt->s.origin );
 
-	for( i = 1; i < numEntities; i++ )
+	for ( i = 1; i < numEntities; i++ )
 	{
 		gentity_t *ent = entities[ i ];
 
 		nd = DistanceSquared( origin, ent->s.origin );
 
-		if( nd < d )
+		if ( nd < d )
 		{
 			d = nd;
 			closestEnt = ent;
@@ -861,15 +861,15 @@ static const char *addr4parse( const char *str, addr_t *addr )
 	memset( addr, 0, sizeof( addr_t ) );
 	addr->type = IPv4;
 
-	for( i = 0; octet < 4; i++ )
+	for ( i = 0; octet < 4; i++ )
 	{
-		if( isdigit( str[ i ] ) )
+		if ( isdigit( str[ i ] ) )
 		{
 			num = num * 10 + str[ i ] - '0';
 		}
 		else
 		{
-			if( num < 0 || num > 255 )
+			if ( num < 0 || num > 255 )
 			{
 				return NULL;
 			}
@@ -877,7 +877,7 @@ static const char *addr4parse( const char *str, addr_t *addr )
 			addr->addr[ octet ] = ( byte ) num;
 			octet++;
 
-			if( str[ i ] != '.' || str[ i + 1 ] == '.' )
+			if ( str[ i ] != '.' || str[ i + 1 ] == '.' )
 			{
 				break;
 			}
@@ -886,7 +886,7 @@ static const char *addr4parse( const char *str, addr_t *addr )
 		}
 	}
 
-	if( octet < 1 )
+	if ( octet < 1 )
 	{
 		return NULL;
 	}
@@ -906,33 +906,33 @@ static const char *addr6parse( const char *str, addr_t *addr )
 	int    num = 0;
 
 	/* 8 hexadectets unless :: is present */
-	for( i = 0; before + after <= 8; i++ )
+	for ( i = 0; before + after <= 8; i++ )
 	{
 		//num = num << 4 | str[ i ] - '0';
-		if( isdigit( str[ i ] ) )
+		if ( isdigit( str[ i ] ) )
 		{
 			num = num * 16 + str[ i ] - '0';
 		}
-		else if( str[ i ] >= 'A' && str[ i ] <= 'F' )
+		else if ( str[ i ] >= 'A' && str[ i ] <= 'F' )
 		{
 			num = num * 16 + 10 + str[ i ] - 'A';
 		}
-		else if( str[ i ] >= 'a' && str[ i ] <= 'f' )
+		else if ( str[ i ] >= 'a' && str[ i ] <= 'f' )
 		{
 			num = num * 16 + 10 + str[ i ] - 'a';
 		}
 		else
 		{
-			if( num < 0 || num > 65535 )
+			if ( num < 0 || num > 65535 )
 			{
 				return NULL;
 			}
 
-			if( i == 0 )
+			if ( i == 0 )
 			{
 				//
 			}
-			else if( seen )  // :: has been seen already
+			else if ( seen ) // :: has been seen already
 			{
 				b[ after * 2 ] = num >> 8;
 				b[ after * 2 + 1 ] = num & 0xff;
@@ -945,20 +945,20 @@ static const char *addr6parse( const char *str, addr_t *addr )
 				before++;
 			}
 
-			if( !str[ i ] )
+			if ( !str[ i ] )
 			{
 				break;
 			}
 
-			if( str[ i ] != ':' || before + after == 8 )
+			if ( str[ i ] != ':' || before + after == 8 )
 			{
 				break;
 			}
 
-			if( str[ i + 1 ] == ':' )
+			if ( str[ i + 1 ] == ':' )
 			{
 				// ::: or multiple ::
-				if( seen || str[ i + 2 ] == ':' )
+				if ( seen || str[ i + 2 ] == ':' )
 				{
 					break;
 				}
@@ -966,7 +966,7 @@ static const char *addr6parse( const char *str, addr_t *addr )
 				seen = qtrue;
 				i++;
 			}
-			else if( i == 0 )  // starts with : but not ::
+			else if ( i == 0 ) // starts with : but not ::
 			{
 				return NULL;
 			}
@@ -975,15 +975,15 @@ static const char *addr6parse( const char *str, addr_t *addr )
 		}
 	}
 
-	if( seen )
+	if ( seen )
 	{
 		// there have to be fewer than 8 hexadectets when :: is present
-		if( before + after == 8 )
+		if ( before + after == 8 )
 		{
 			return NULL;
 		}
 	}
-	else if( before + after < 8 )  // require exactly 8 hexadectets
+	else if ( before + after < 8 ) // require exactly 8 hexadectets
 	{
 		return NULL;
 	}
@@ -991,12 +991,12 @@ static const char *addr6parse( const char *str, addr_t *addr )
 	memset( addr, 0, sizeof( addr_t ) );
 	addr->type = IPv6;
 
-	if( before )
+	if ( before )
 	{
 		memcpy( addr->addr, a, before * 2 );
 	}
 
-	if( after )
+	if ( after )
 	{
 		memcpy( addr->addr + ADDRLEN - 2 * after, b, after * 2 );
 	}
@@ -1009,12 +1009,12 @@ qboolean G_AddressParse( const char *str, addr_t *addr )
 	const char *p;
 	int        max;
 
-	if( strchr( str, ':' ) )
+	if ( strchr( str, ':' ) )
 	{
 		p = addr6parse( str, addr );
 		max = 128;
 	}
-	else if( strchr( str, '.' ) )
+	else if ( strchr( str, '.' ) )
 	{
 		p = addr4parse( str, addr );
 		max = 32;
@@ -1026,23 +1026,23 @@ qboolean G_AddressParse( const char *str, addr_t *addr )
 
 	Q_strncpyz( addr->str, str, sizeof( addr->str ) );
 
-	if( !p )
+	if ( !p )
 	{
 		return qfalse;
 	}
 
-	if( *p == '/' )
+	if ( *p == '/' )
 	{
 		addr->mask = atoi( p + 1 );
 
-		if( addr->mask < 1 || addr->mask > max )
+		if ( addr->mask < 1 || addr->mask > max )
 		{
 			addr->mask = max;
 		}
 	}
 	else
 	{
-		if( *p )
+		if ( *p )
 		{
 			return qfalse;
 		}
@@ -1064,37 +1064,37 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 {
 	int i, netmask;
 
-	if( a->type != b->type )
+	if ( a->type != b->type )
 	{
 		return qfalse;
 	}
 
 	netmask = a->mask;
 
-	if( a->type == IPv4 )
+	if ( a->type == IPv4 )
 	{
-		if( netmask < 1 || netmask > 32 )
+		if ( netmask < 1 || netmask > 32 )
 		{
 			netmask = 32;
 		}
 	}
-	else if( a->type == IPv6 )
+	else if ( a->type == IPv6 )
 	{
-		if( netmask < 1 || netmask > 128 )
+		if ( netmask < 1 || netmask > 128 )
 		{
 			netmask = 128;
 		}
 	}
 
-	for( i = 0; netmask > 7; i++, netmask -= 8 )
+	for ( i = 0; netmask > 7; i++, netmask -= 8 )
 	{
-		if( a->addr[ i ] != b->addr[ i ] )
+		if ( a->addr[ i ] != b->addr[ i ] )
 		{
 			return qfalse;
 		}
 	}
 
-	if( netmask )
+	if ( netmask )
 	{
 		netmask = ( ( 1 << netmask ) - 1 ) << ( 8 - netmask );
 		return ( a->addr[ i ] & netmask ) == ( b->addr[ i ] & netmask );

@@ -83,7 +83,7 @@ int AAS_UpdateEntity( int entnum, bot_entitystate_t *state )
 	aas_entity_t *ent;
 	vec3_t       absmins, absmaxs;
 
-	if( !( *defaultaasworld ).loaded )
+	if ( !( *defaultaasworld ).loaded )
 	{
 		botimport.Print( PRT_MESSAGE, "AAS_UpdateEntity: not loaded\n" );
 		return BLERR_NOAASFILE;
@@ -118,7 +118,7 @@ int AAS_UpdateEntity( int entnum, bot_entitystate_t *state )
 	ent->i.valid = qtrue;
 	//link everything the first frame
 
-	if( ( *defaultaasworld ).numframes == 1 )
+	if ( ( *defaultaasworld ).numframes == 1 )
 	{
 		relink = qtrue;
 	}
@@ -128,10 +128,10 @@ int AAS_UpdateEntity( int entnum, bot_entitystate_t *state )
 	}
 
 	//
-	if( ent->i.solid == SOLID_BSP )
+	if ( ent->i.solid == SOLID_BSP )
 	{
 		//if the angles of the model changed
-		if( !VectorCompare( state->angles, ent->i.angles ) )
+		if ( !VectorCompare( state->angles, ent->i.angles ) )
 		{
 			VectorCopy( state->angles, ent->i.angles );
 			relink = qtrue;
@@ -145,10 +145,10 @@ int AAS_UpdateEntity( int entnum, bot_entitystate_t *state )
 		VectorCopy( state->mins, ent->i.mins );
 		VectorCopy( state->maxs, ent->i.maxs );
 	} //end if
-	else if( ent->i.solid == SOLID_BBOX )
+	else if ( ent->i.solid == SOLID_BBOX )
 	{
 		//if the bounding box size changed
-		if( !VectorCompare( state->mins, ent->i.mins ) || !VectorCompare( state->maxs, ent->i.maxs ) )
+		if ( !VectorCompare( state->mins, ent->i.mins ) || !VectorCompare( state->maxs, ent->i.maxs ) )
 		{
 			VectorCopy( state->mins, ent->i.mins );
 			VectorCopy( state->maxs, ent->i.maxs );
@@ -157,17 +157,17 @@ int AAS_UpdateEntity( int entnum, bot_entitystate_t *state )
 	} //end if
 
 	//if the origin changed
-	if( !VectorCompare( state->origin, ent->i.origin ) )
+	if ( !VectorCompare( state->origin, ent->i.origin ) )
 	{
 		VectorCopy( state->origin, ent->i.origin );
 		relink = qtrue;
 	} //end if
 
 	//if the entity should be relinked
-	if( relink )
+	if ( relink )
 	{
 		//don't link the world model
-		if( entnum != ENTITYNUM_WORLD )
+		if ( entnum != ENTITYNUM_WORLD )
 		{
 			//absolute mins and maxs
 			VectorAdd( ent->i.mins, ent->i.origin, absmins );
@@ -198,9 +198,9 @@ void AAS_EntityInfo( int entnum, aas_entityinfo_t *info )
 	// Gordon: lets not spam this message making it impossible to see anything on the console
 	static qboolean debug_msg_done = qfalse;
 
-	if( !( *defaultaasworld ).initialized )
+	if ( !( *defaultaasworld ).initialized )
 	{
-		if( !debug_msg_done )
+		if ( !debug_msg_done )
 		{
 			debug_msg_done = qtrue;
 			botimport.Print( PRT_FATAL, "AAS_EntityInfo: (*defaultaasworld) not initialized\n" );
@@ -210,10 +210,10 @@ void AAS_EntityInfo( int entnum, aas_entityinfo_t *info )
 		return;
 	} //end if
 
-	if( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
+	if ( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
 	{
 		// if it's not a bot game entity, then report it
-		if( !( entnum >= ( *defaultaasworld ).maxentities && entnum < ( *defaultaasworld ).maxentities + NUM_BOTGAMEENTITIES ) )
+		if ( !( entnum >= ( *defaultaasworld ).maxentities && entnum < ( *defaultaasworld ).maxentities + NUM_BOTGAMEENTITIES ) )
 		{
 			botimport.Print( PRT_FATAL, "AAS_EntityInfo: entnum %d out of range\n", entnum );
 		}
@@ -233,7 +233,7 @@ void AAS_EntityInfo( int entnum, aas_entityinfo_t *info )
 //===========================================================================
 void AAS_EntityOrigin( int entnum, vec3_t origin )
 {
-	if( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
+	if ( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
 	{
 		botimport.Print( PRT_FATAL, "AAS_EntityOrigin: entnum %d out of range\n", entnum );
 		VectorClear( origin );
@@ -251,7 +251,7 @@ void AAS_EntityOrigin( int entnum, vec3_t origin )
 //===========================================================================
 int AAS_EntityModelindex( int entnum )
 {
-	if( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
+	if ( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
 	{
 		botimport.Print( PRT_FATAL, "AAS_EntityModelindex: entnum %d out of range\n", entnum );
 		return 0;
@@ -268,12 +268,12 @@ int AAS_EntityModelindex( int entnum )
 //===========================================================================
 int AAS_EntityType( int entnum )
 {
-	if( !( *defaultaasworld ).initialized )
+	if ( !( *defaultaasworld ).initialized )
 	{
 		return 0;
 	}
 
-	if( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
+	if ( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
 	{
 		botimport.Print( PRT_FATAL, "AAS_EntityType: entnum %d out of range\n", entnum );
 		return 0;
@@ -290,12 +290,12 @@ int AAS_EntityType( int entnum )
 //===========================================================================
 int AAS_EntityModelNum( int entnum )
 {
-	if( !( *defaultaasworld ).initialized )
+	if ( !( *defaultaasworld ).initialized )
 	{
 		return 0;
 	}
 
-	if( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
+	if ( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
 	{
 		botimport.Print( PRT_FATAL, "AAS_EntityModelNum: entnum %d out of range\n", entnum );
 		return 0;
@@ -315,13 +315,13 @@ int AAS_OriginOfEntityWithModelNum( int modelnum, vec3_t origin )
 	int          i;
 	aas_entity_t *ent;
 
-	for( i = 0; i < ( *defaultaasworld ).maxentities; i++ )
+	for ( i = 0; i < ( *defaultaasworld ).maxentities; i++ )
 	{
 		ent = & ( *defaultaasworld ).entities[ i ];
 
-		if( ent->i.type == ET_MOVER )
+		if ( ent->i.type == ET_MOVER )
 		{
-			if( ent->i.modelindex == modelnum )
+			if ( ent->i.modelindex == modelnum )
 			{
 				VectorCopy( ent->i.origin, origin );
 				return qtrue;
@@ -342,12 +342,12 @@ void AAS_EntitySize( int entnum, vec3_t mins, vec3_t maxs )
 {
 	aas_entity_t *ent;
 
-	if( !( *defaultaasworld ).initialized )
+	if ( !( *defaultaasworld ).initialized )
 	{
 		return;
 	}
 
-	if( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
+	if ( entnum < 0 || entnum >= ( *defaultaasworld ).maxentities )
 	{
 		botimport.Print( PRT_FATAL, "AAS_EntitySize: entnum %d out of range\n", entnum );
 		return;
@@ -387,7 +387,7 @@ void AAS_ResetEntityLinks( void )
 {
 	int i;
 
-	for( i = 0; i < ( *defaultaasworld ).maxentities; i++ )
+	for ( i = 0; i < ( *defaultaasworld ).maxentities; i++ )
 	{
 		( *defaultaasworld ).entities[ i ].areas = NULL;
 		( *defaultaasworld ).entities[ i ].leaves = NULL;
@@ -404,7 +404,7 @@ void AAS_InvalidateEntities( void )
 {
 	int i;
 
-	for( i = 0; i < ( *defaultaasworld ).maxentities; i++ )
+	for ( i = 0; i < ( *defaultaasworld ).maxentities; i++ )
 	{
 		( *defaultaasworld ).entities[ i ].i.valid = qfalse;
 		( *defaultaasworld ).entities[ i ].i.number = i;
@@ -427,24 +427,24 @@ int AAS_NearestEntity( vec3_t origin, int modelindex )
 	bestentnum = 0;
 	bestdist = 99999;
 
-	for( i = 0; i < ( *defaultaasworld ).maxentities; i++ )
+	for ( i = 0; i < ( *defaultaasworld ).maxentities; i++ )
 	{
 		ent = & ( *defaultaasworld ).entities[ i ];
 
-		if( ent->i.modelindex != modelindex )
+		if ( ent->i.modelindex != modelindex )
 		{
 			continue;
 		}
 
 		VectorSubtract( ent->i.origin, origin, dir );
 
-		if( abs( dir[ 0 ] ) < 40 )
+		if ( abs( dir[ 0 ] ) < 40 )
 		{
-			if( abs( dir[ 1 ] ) < 40 )
+			if ( abs( dir[ 1 ] ) < 40 )
 			{
 				dist = VectorLength( dir );
 
-				if( dist < bestdist )
+				if ( dist < bestdist )
 				{
 					bestdist = dist;
 					bestentnum = i;
@@ -478,19 +478,19 @@ int AAS_BestReachableEntityArea( int entnum )
 //===========================================================================
 int AAS_NextEntity( int entnum )
 {
-	if( !( *defaultaasworld ).loaded )
+	if ( !( *defaultaasworld ).loaded )
 	{
 		return 0;
 	}
 
-	if( entnum < 0 )
+	if ( entnum < 0 )
 	{
 		entnum = -1;
 	}
 
-	while( ++entnum < ( *defaultaasworld ).maxentities )
+	while ( ++entnum < ( *defaultaasworld ).maxentities )
 	{
-		if( ( *defaultaasworld ).entities[ entnum ].i.valid )
+		if ( ( *defaultaasworld ).entities[ entnum ].i.valid )
 		{
 			return entnum;
 		}
@@ -511,15 +511,15 @@ int AAS_IsEntityInArea( int entnumIgnore, int entnumIgnore2, int areanum )
 	aas_link_t   *link;
 	aas_entity_t *ent;
 
-	for( link = ( *aasworld ).arealinkedentities[ areanum ]; link; link = link->next_ent )
+	for ( link = ( *aasworld ).arealinkedentities[ areanum ]; link; link = link->next_ent )
 	{
 		//ignore the pass entity
-		if( link->entnum == entnumIgnore )
+		if ( link->entnum == entnumIgnore )
 		{
 			continue;
 		}
 
-		if( link->entnum == entnumIgnore2 )
+		if ( link->entnum == entnumIgnore2 )
 		{
 			continue;
 		}
@@ -527,12 +527,12 @@ int AAS_IsEntityInArea( int entnumIgnore, int entnumIgnore2, int areanum )
 		//
 		ent = & ( *defaultaasworld ).entities[ link->entnum ];
 
-		if( !ent->i.valid )
+		if ( !ent->i.valid )
 		{
 			continue;
 		}
 
-		if( !ent->i.solid )
+		if ( !ent->i.solid )
 		{
 			continue;
 		}
@@ -579,20 +579,20 @@ void AAS_SetAASBlockingEntity( vec3_t absmin, vec3_t absmax, int blocking )
 
 	//
 	// check for resetting AAS blocking
-	if( VectorCompare( absmin, absmax ) && blocking < 0 )
+	if ( VectorCompare( absmin, absmax ) && blocking < 0 )
 	{
-		for( w = 0; w < MAX_AAS_WORLDS; w++ )
+		for ( w = 0; w < MAX_AAS_WORLDS; w++ )
 		{
 			AAS_SetCurrentWorld( w );
 
 			//
-			if( !( *aasworld ).loaded )
+			if ( !( *aasworld ).loaded )
 			{
 				continue;
 			}
 
 			// now clear blocking status
-			for( i = 1; i < ( *aasworld ).numareas; i++ )
+			for ( i = 1; i < ( *aasworld ).numareas; i++ )
 			{
 				AAS_EnableRoutingArea( i, qtrue );
 			}
@@ -603,7 +603,7 @@ void AAS_SetAASBlockingEntity( vec3_t absmin, vec3_t absmax, int blocking )
 	}
 
 	//
-	if( blocking & BLOCKINGFLAG_MOVER )
+	if ( blocking & BLOCKINGFLAG_MOVER )
 	{
 		mover = qtrue;
 		blocking &= ~BLOCKINGFLAG_MOVER;
@@ -617,12 +617,12 @@ void AAS_SetAASBlockingEntity( vec3_t absmin, vec3_t absmax, int blocking )
 areas_again:
 
 	//
-	for( w = 0; w < MAX_AAS_WORLDS; w++ )
+	for ( w = 0; w < MAX_AAS_WORLDS; w++ )
 	{
 		AAS_SetCurrentWorld( w );
 
 		//
-		if( !( *aasworld ).loaded )
+		if ( !( *aasworld ).loaded )
 		{
 			continue;
 		}
@@ -631,11 +631,11 @@ areas_again:
 		numareas = AAS_BBoxAreas( absmin, absmax, areas, 1024 );
 
 		// now set their blocking status
-		for( i = 0; i < numareas; i++ )
+		for ( i = 0; i < numareas; i++ )
 		{
-			if( mover )
+			if ( mover )
 			{
-				if( !( aasworld->areasettings[ areas[ i ] ].contents & AREACONTENTS_MOVER ) )
+				if ( !( aasworld->areasettings[ areas[ i ] ].contents & AREACONTENTS_MOVER ) )
 				{
 					continue; // this isn't a mover area, so ignore it
 				}
@@ -647,7 +647,7 @@ areas_again:
 	}
 
 	//
-	if( mover && !changed )
+	if ( mover && !changed )
 	{
 		// map must not be compiled with MOVER flags enabled, so redo the old way
 		mover = qfalse;

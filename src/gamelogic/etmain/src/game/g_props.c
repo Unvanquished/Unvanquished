@@ -49,7 +49,7 @@ void DropToFloorG( gentity_t *ent )
 	VectorSet( dest, ent->r.currentOrigin[ 0 ], ent->r.currentOrigin[ 1 ], ent->r.currentOrigin[ 2 ] - 4096 );
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
 
-	if( tr.startsolid )
+	if ( tr.startsolid )
 	{
 		return;
 	}
@@ -69,12 +69,12 @@ void DropToFloor( gentity_t *ent )
 	VectorSet( dest, ent->r.currentOrigin[ 0 ], ent->r.currentOrigin[ 1 ], ent->r.currentOrigin[ 2 ] - 4096 );
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, dest, ent->s.number, MASK_SOLID );
 
-	if( tr.startsolid )
+	if ( tr.startsolid )
 	{
 		return;
 	}
 
-	if( fabs( ent->r.currentOrigin[ 2 ] - tr.endpos[ 2 ] ) > 1.0 )
+	if ( fabs( ent->r.currentOrigin[ 2 ] - tr.endpos[ 2 ] ) > 1.0 )
 	{
 		tr.endpos[ 2 ] = ( ent->r.currentOrigin[ 2 ] - 1.0 );
 	}
@@ -112,7 +112,7 @@ void moveit( gentity_t *ent, float yaw, float dist )
 
 	trap_Trace( &tr, ent->r.currentOrigin, mins, maxs, origin, ent->s.number, MASK_SHOT );
 
-	if( ( tr.endpos[ 0 ] != origin[ 0 ] ) || ( tr.endpos[ 1 ] != origin[ 1 ] ) )
+	if ( ( tr.endpos[ 0 ] != origin[ 0 ] ) || ( tr.endpos[ 1 ] != origin[ 1 ] ) )
 	{
 		mins[ 0 ] = ent->r.mins[ 0 ] - 2.0;
 		mins[ 1 ] = ent->r.mins[ 1 ] - 2.0;
@@ -136,7 +136,7 @@ void touch_props_box_32( gentity_t *self, gentity_t *other, trace_t *trace )
 	float  ratio;
 	vec3_t v;
 
-	if( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 15 ) )
+	if ( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 15 ) )
 	{
 		return;
 	}
@@ -173,7 +173,7 @@ void touch_props_box_48( gentity_t *self, gentity_t *other, trace_t *trace )
 	float  ratio;
 	vec3_t v;
 
-	if( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 23 ) )
+	if ( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 23 ) )
 	{
 		return;
 	}
@@ -210,7 +210,7 @@ void touch_props_box_64( gentity_t *self, gentity_t *other, trace_t *trace )
 	float  ratio;
 	vec3_t v;
 
-	if( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 31 ) )
+	if ( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 31 ) )
 	{
 		return;
 	}
@@ -252,7 +252,7 @@ void Psmoke_think( gentity_t *ent )
 
 	ent->count++;
 
-	if( ent->count == 30 )
+	if ( ent->count == 30 )
 	{
 		ent->think = G_FreeEntity;
 	}
@@ -313,7 +313,7 @@ void Psparks_think( gentity_t *ent )
 //(SA) MOVE TO CLIENT!
 	return;
 
-	if( ent->spawnflags & 1 )
+	if ( ent->spawnflags & 1 )
 	{
 		tent = G_TempEntity( ent->r.currentOrigin, EV_SPARKS_ELECTRIC );
 	}
@@ -338,12 +338,12 @@ void sparks_angles_think( gentity_t *ent )
 	gentity_t *target = NULL;
 	vec3_t    vec;
 
-	if( ent->target )
+	if ( ent->target )
 	{
 		target = G_FindByTargetname( NULL, ent->target );
 	}
 
-	if( !target )
+	if ( !target )
 	{
 		VectorSet( ent->r.currentAngles, 0, 0, 1 );
 	}
@@ -358,7 +358,7 @@ void sparks_angles_think( gentity_t *ent )
 
 	ent->nextthink = level.time + FRAMETIME;
 
-	if( !Q_stricmp( ent->classname, "props_sparks" ) )
+	if ( !Q_stricmp( ent->classname, "props_sparks" ) )
 	{
 		ent->think = Psparks_think;
 	}
@@ -381,12 +381,12 @@ void SP_props_sparks( gentity_t *ent )
 	ent->think = sparks_angles_think;
 	ent->nextthink = level.time + FRAMETIME;
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 8;
 	}
 
-	if( !ent->wait )
+	if ( !ent->wait )
 	{
 		ent->wait = 1200;
 	}
@@ -395,17 +395,17 @@ void SP_props_sparks( gentity_t *ent )
 		ent->wait *= 1000;
 	}
 
-	if( !ent->start_size )
+	if ( !ent->start_size )
 	{
 		ent->start_size = 8;
 	}
 
-	if( !ent->end_size )
+	if ( !ent->end_size )
 	{
 		ent->end_size = 8;
 	}
 
-	if( !ent->speed )
+	if ( !ent->speed )
 	{
 		ent->speed = 2;
 	}
@@ -431,12 +431,12 @@ void SP_props_gunsparks( gentity_t *ent )
 	ent->think = sparks_angles_think;
 	ent->nextthink = level.time + FRAMETIME;
 
-	if( !ent->speed )
+	if ( !ent->speed )
 	{
 		ent->speed = 20;
 	}
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 4;
 	}
@@ -456,7 +456,7 @@ void smokedust_use( gentity_t *ent, gentity_t *self, gentity_t *activator )
 
 	AngleVectors( ent->r.currentAngles, forward, NULL, NULL );
 
-	for( i = 0; i < ent->health; i++ )
+	for ( i = 0; i < ent->health; i++ )
 	{
 		tent = G_TempEntity( ent->r.currentOrigin, EV_SMOKE );
 		VectorCopy( ent->r.currentOrigin, tent->s.origin );
@@ -475,7 +475,7 @@ void SP_SmokeDust( gentity_t *ent )
 	ent->r.svFlags = 0;
 	ent->s.eType = ET_GENERAL;
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 16;
 	}
@@ -493,13 +493,13 @@ void dust_use( gentity_t *ent, gentity_t *self, gentity_t *activator )
 	gentity_t *tent;
 	vec3_t    forward;
 
-	if( ent->target )
+	if ( ent->target )
 	{
 		tent = G_TempEntity( ent->r.currentOrigin, EV_DUST );
 		VectorCopy( ent->r.currentOrigin, tent->s.origin );
 		VectorCopy( ent->r.currentAngles, tent->s.angles );
 
-		if( ent->spawnflags & 1 )
+		if ( ent->spawnflags & 1 )
 		{
 			tent->s.density = 1;
 		}
@@ -512,7 +512,7 @@ void dust_use( gentity_t *ent, gentity_t *self, gentity_t *activator )
 		VectorCopy( ent->r.currentOrigin, tent->s.origin );
 		VectorCopy( forward, tent->s.angles );
 
-		if( ent->spawnflags & 1 )
+		if ( ent->spawnflags & 1 )
 		{
 			tent->s.density = 1;
 		}
@@ -526,7 +526,7 @@ void dust_angles_think( gentity_t *ent )
 
 	target = G_FindByTargetname( NULL, ent->target );
 
-	if( !target )
+	if ( !target )
 	{
 		return;
 	}
@@ -543,7 +543,7 @@ void SP_Dust( gentity_t *ent )
 	ent->r.svFlags = 0;
 	ent->s.eType = ET_GENERAL;
 
-	if( ent->target )
+	if ( ent->target )
 	{
 		ent->think = dust_angles_think;
 		ent->nextthink = level.time + FRAMETIME;
@@ -627,41 +627,41 @@ void InitProp( gentity_t *ent )
 	qboolean lightSet, colorSet;
 	char     *sound;
 
-	if( !Q_stricmp( ent->classname, "props_bench" ) )
+	if ( !Q_stricmp( ent->classname, "props_bench" ) )
 	{
 		ent->s.modelindex2 = G_ModelIndex( "models/furniture/bench/bench_sm.md3" );
 	}
-	else if( !Q_stricmp( ent->classname, "props_radio" ) )
+	else if ( !Q_stricmp( ent->classname, "props_radio" ) )
 	{
 		ent->s.modelindex2 = G_ModelIndex( "models/mapobjects/electronics/radio1.md3" );
 	}
-	else if( !Q_stricmp( ent->classname, "props_locker_tall" ) )
+	else if ( !Q_stricmp( ent->classname, "props_locker_tall" ) )
 	{
 		ent->s.modelindex2 = G_ModelIndex( "models/furniture/storage/lockertall.md3" );
 	}
-	else if( !Q_stricmp( ent->classname, "props_flippy_table" ) )
+	else if ( !Q_stricmp( ent->classname, "props_flippy_table" ) )
 	{
 		ent->s.modelindex2 = G_ModelIndex( "models/furniture/table/woodflip.md3" );
 	}
-	else if( !Q_stricmp( ent->classname, "props_crate_32x64" ) )
+	else if ( !Q_stricmp( ent->classname, "props_crate_32x64" ) )
 	{
 		ent->s.modelindex2 = G_ModelIndex( "models/furniture/crate/crate32x64.md3" );
 	}
-	else if( !Q_stricmp( ent->classname, "props_58x112tablew" ) )
+	else if ( !Q_stricmp( ent->classname, "props_58x112tablew" ) )
 	{
 		ent->s.modelindex2 = G_ModelIndex( "models/furniture/table/56x112tablew.md3" );
 	}
-	else if( !Q_stricmp( ent->classname, "props_castlebed" ) )
+	else if ( !Q_stricmp( ent->classname, "props_castlebed" ) )
 	{
 		ent->s.modelindex2 = G_ModelIndex( "models/furniture/bed/castlebed.md3" );
 	}
-	else if( !Q_stricmp( ent->classname, "props_radioSEVEN" ) )
+	else if ( !Q_stricmp( ent->classname, "props_radioSEVEN" ) )
 	{
 		ent->s.modelindex2 = G_ModelIndex( "models/mapobjects/electronics/radios.md3" );
 	}
 
 	// if the "loopsound" key is set, use a constant looping sound when moving
-	if( G_SpawnString( "noise", "100", &sound ) )
+	if ( G_SpawnString( "noise", "100", &sound ) )
 	{
 		ent->s.loopSound = G_SoundIndex( sound );
 	}
@@ -670,34 +670,34 @@ void InitProp( gentity_t *ent )
 	lightSet = G_SpawnFloat( "light", "100", &light );
 	colorSet = G_SpawnVector( "color", "1 1 1", color );
 
-	if( lightSet || colorSet )
+	if ( lightSet || colorSet )
 	{
 		int r, g, b, i;
 
 		r = color[ 0 ] * 255;
 
-		if( r > 255 )
+		if ( r > 255 )
 		{
 			r = 255;
 		}
 
 		g = color[ 1 ] * 255;
 
-		if( g > 255 )
+		if ( g > 255 )
 		{
 			g = 255;
 		}
 
 		b = color[ 2 ] * 255;
 
-		if( b > 255 )
+		if ( b > 255 )
 		{
 			b = 255;
 		}
 
 		i = light / 4;
 
-		if( i > 255 )
+		if ( i > 255 )
 		{
 			i = 255;
 		}
@@ -719,7 +719,7 @@ void props_bench_think( gentity_t *ent )
 {
 	ent->s.frame++;
 
-	if( ent->s.frame < 28 )
+	if ( ent->s.frame < 28 )
 	{
 		ent->nextthink = level.time + ( FRAMETIME / 2 );
 	}
@@ -749,7 +749,7 @@ void SP_Props_Bench( gentity_t *ent )
 
 	InitProp( ent );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 10;
 	}
@@ -781,7 +781,7 @@ health = defaults to 100
 void SP_Props_Radio( gentity_t *ent )
 {
 	// Ridah, had to add this so I could load castle18dk7
-	if( !ent->model )
+	if ( !ent->model )
 	{
 		G_Printf( S_COLOR_RED "props_radio with NULL model\n" );
 		return;
@@ -791,7 +791,7 @@ void SP_Props_Radio( gentity_t *ent )
 
 	InitProp( ent );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 100;
 	}
@@ -809,7 +809,7 @@ void props_radio_dieSEVEN( gentity_t *ent, gentity_t *inflictor, gentity_t *atta
 
 	propExplosion( ent );
 
-	for( i = 0; i < 20; i++ )
+	for ( i = 0; i < 20; i++ )
 	{
 		Spawn_Shard( ent, inflictor, 1, ent->count );
 	}
@@ -842,7 +842,7 @@ health = defaults to 100
 */
 void SP_Props_RadioSEVEN( gentity_t *ent )
 {
-	if( !ent->model )
+	if ( !ent->model )
 	{
 		G_Printf( S_COLOR_RED "props_radio with NULL model\n" );
 		return;
@@ -852,7 +852,7 @@ void SP_Props_RadioSEVEN( gentity_t *ent )
 
 	InitProp( ent );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 100;
 	}
@@ -868,7 +868,7 @@ void SP_Props_RadioSEVEN( gentity_t *ent )
 
 void locker_tall_think( gentity_t *ent )
 {
-	if( ent->s.frame == 30 )
+	if ( ent->s.frame == 30 )
 	{
 		G_UseTargets( ent, NULL );
 	}
@@ -895,7 +895,7 @@ requires an origin brush
 void SP_Props_Locker_Tall( gentity_t *ent )
 {
 	// Ridah, had to add this so I could load castle18dk7
-	if( !ent->model )
+	if ( !ent->model )
 	{
 		G_Printf( S_COLOR_RED "props_locker_tall with NULL model\n" );
 		return;
@@ -905,7 +905,7 @@ void SP_Props_Locker_Tall( gentity_t *ent )
 
 	InitProp( ent );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 100;
 	}
@@ -988,11 +988,11 @@ void Just_Got_Thrown( gentity_t *self )
 
 	len = 0;
 
-	if( self->s.groundEntityNum == -1 )
+	if ( self->s.groundEntityNum == -1 )
 	{
 		self->nextthink = level.time + FRAMETIME;
 
-		if( self->enemy )
+		if ( self->enemy )
 		{
 			prop_hits = qtrue;
 
@@ -1023,7 +1023,7 @@ void Just_Got_Thrown( gentity_t *self )
 
 			traceEnt = &g_entities[ trace.entityNum ];
 
-			if( trace.startsolid )
+			if ( trace.startsolid )
 			{
 				len = 9999;
 			}
@@ -1040,7 +1040,7 @@ void Just_Got_Thrown( gentity_t *self )
 
 	self->r.ownerNum = self->s.number;
 
-	if( len > 256 )
+	if ( len > 256 )
 	{
 		self->die( self, self, NULL, 10, 0 );
 	}
@@ -1048,9 +1048,9 @@ void Just_Got_Thrown( gentity_t *self )
 
 void Props_TurnLightsOff( gentity_t *self )
 {
-	if( !Q_stricmp( self->classname, "props_desklamp" ) )
+	if ( !Q_stricmp( self->classname, "props_desklamp" ) )
 	{
-		if( self->target )
+		if ( self->target )
 		{
 			G_UseTargets( self, NULL );
 			self->target = NULL;
@@ -1074,14 +1074,14 @@ void Props_Activated( gentity_t *self )
 
 	self->nextthink = level.time + 50;
 
-	if( !owner->client )
+	if ( !owner->client )
 	{
 		return;
 	}
 
 	Props_TurnLightsOff( self );
 
-	if( owner->active == qfalse )
+	if ( owner->active == qfalse )
 	{
 		owner->melee = NULL;
 
@@ -1165,17 +1165,17 @@ void Props_Activated( gentity_t *self )
 	}
 	else
 	{
-		if( !Q_stricmp( self->classname, "props_chair_hiback" ) )
+		if ( !Q_stricmp( self->classname, "props_chair_hiback" ) )
 		{
 			self->s.frame = 23;
 			self->s.density = 1;
 		}
-		else if( !Q_stricmp( self->classname, "props_chair" ) )
+		else if ( !Q_stricmp( self->classname, "props_chair" ) )
 		{
 			self->s.frame = 28;
 			self->s.density = 1;
 		}
-		else if( !Q_stricmp( self->classname, "props_chair_side" ) )
+		else if ( !Q_stricmp( self->classname, "props_chair_side" ) )
 		{
 			self->s.frame = 23;
 			self->s.density = 1;
@@ -1207,7 +1207,7 @@ void Props_Chair_Think( gentity_t *self )
 {
 	trace_t tr;
 
-	if( self->active )
+	if ( self->active )
 	{
 		Props_Activated( self );
 		return;
@@ -1217,7 +1217,7 @@ void Props_Chair_Think( gentity_t *self )
 
 	BG_EvaluateTrajectory( &self->s.pos, level.time, self->s.pos.trBase, qfalse, self->s.effect2Time );
 
-	if( level.time > self->s.pos.trDuration )
+	if ( level.time > self->s.pos.trDuration )
 	{
 		VectorClear( self->s.pos.trDelta );
 		self->s.pos.trDuration = 0;
@@ -1234,7 +1234,7 @@ void Props_Chair_Think( gentity_t *self )
 
 		trap_Trace( &tr, self->r.currentOrigin, mins, maxs, self->s.pos.trBase, self->s.number, MASK_SHOT );
 
-		if( tr.fraction == 1 )
+		if ( tr.fraction == 1 )
 		{
 			VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
 		}
@@ -1247,7 +1247,7 @@ void Props_Chair_Think( gentity_t *self )
 		}
 	}
 
-	if( self->s.groundEntityNum == -1 )
+	if ( self->s.groundEntityNum == -1 )
 	{
 		self->physicsObject = qtrue;
 		self->physicsBounce = 0.2;
@@ -1261,7 +1261,7 @@ void Props_Chair_Think( gentity_t *self )
 
 		self->think = Just_Got_Thrown;
 
-		if( self->s.pos.trType != TR_GRAVITY )
+		if ( self->s.pos.trType != TR_GRAVITY )
 		{
 			self->s.pos.trType = TR_GRAVITY;
 			self->s.pos.trTime = level.time;
@@ -1276,7 +1276,7 @@ void Props_Chair_Think( gentity_t *self )
 //  trap_LinkEntity (self);
 
 	//bani - prevent unneeded links
-	if( !VectorCompare( self->r.currentOrigin, self->gDelta ) )
+	if ( !VectorCompare( self->r.currentOrigin, self->gDelta ) )
 	{
 		Prop_Check_Ground( self );
 		trap_LinkEntity( self );
@@ -1293,7 +1293,7 @@ qboolean Prop_Touch( gentity_t *self, gentity_t *other, vec3_t v )
 	vec3_t  mins, maxs;
 	trace_t tr;
 
-	if( !other->client )
+	if ( !other->client )
 	{
 		return qfalse;
 	}
@@ -1316,7 +1316,7 @@ qboolean Prop_Touch( gentity_t *self, gentity_t *other, vec3_t v )
 
 	trap_Trace( &tr, start, mins, maxs, end, self->s.number, MASK_SHOT );
 
-	if( tr.fraction != 1 )
+	if ( tr.fraction != 1 )
 	{
 		return qfalse;
 	}
@@ -1349,7 +1349,7 @@ void Prop_Check_Ground( gentity_t *self )
 
 	trap_Trace( &tr, start, mins, maxs, end, self->s.number, MASK_SHOT );
 
-	if( tr.fraction == 1 )
+	if ( tr.fraction == 1 )
 	{
 		self->s.groundEntityNum = -1;
 	}
@@ -1360,17 +1360,17 @@ void Props_Chair_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	vec3_t   v;
 	qboolean has_moved;
 
-	if( !other->client )
+	if ( !other->client )
 	{
 		return;
 	}
 
-	if( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 15 ) )
+	if ( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 15 ) )
 	{
 		return;
 	}
 
-	if( self->active )
+	if ( self->active )
 	{
 		// someone has activated me
 		return;
@@ -1382,7 +1382,7 @@ void Props_Chair_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 #if 0
 
-	if( !has_moved && /* isBot */ )
+	if ( !has_moved && /* isBot */ )
 	{
 		// RF, alert AI of sound event
 //      AICast_AudibleEvent( self->s.number, self->r.currentOrigin, 384 );
@@ -1396,7 +1396,7 @@ void Props_Chair_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 	Prop_Check_Ground( self );
 
-	if( level.time > self->random && has_moved )
+	if ( level.time > self->random && has_moved )
 	{
 		// RF, alert AI of sound event
 //      AICast_AudibleEvent( self->s.number, self->r.currentOrigin, 384 );
@@ -1405,10 +1405,10 @@ void Props_Chair_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 		self->random = level.time + 1000 + ( rand() % 200 );
 	}
 
-	if( !Q_stricmp( self->classname, "props_desklamp" ) )
+	if ( !Q_stricmp( self->classname, "props_desklamp" ) )
 	{
 		// player may have picked it up before
-		if( self->target )
+		if ( self->target )
 		{
 			G_UseTargets( self, NULL );
 			self->target = NULL;
@@ -1420,9 +1420,9 @@ void Props_Chair_Animate( gentity_t *ent )
 {
 	ent->touch = NULL;
 
-	if( !Q_stricmp( ent->classname, "props_chair" ) )
+	if ( !Q_stricmp( ent->classname, "props_chair" ) )
 	{
-		if( ent->s.frame >= 27 )
+		if ( ent->s.frame >= 27 )
 		{
 			ent->s.frame = 27;
 			G_UseTargets( ent, NULL );
@@ -1437,11 +1437,11 @@ void Props_Chair_Animate( gentity_t *ent )
 			ent->nextthink = level.time + ( FRAMETIME / 2 );
 		}
 	}
-	else if( ( !Q_stricmp( ent->classname, "props_chair_side" ) ) ||
-	         ( !Q_stricmp( ent->classname, "props_chair_chat" ) ) ||
-	         ( !Q_stricmp( ent->classname, "props_chair_chatarm" ) ) || ( !Q_stricmp( ent->classname, "props_chair_hiback" ) ) )
+	else if ( ( !Q_stricmp( ent->classname, "props_chair_side" ) ) ||
+	          ( !Q_stricmp( ent->classname, "props_chair_chat" ) ) ||
+	          ( !Q_stricmp( ent->classname, "props_chair_chatarm" ) ) || ( !Q_stricmp( ent->classname, "props_chair_hiback" ) ) )
 	{
-		if( ent->s.frame >= 20 )
+		if ( ent->s.frame >= 20 )
 		{
 			ent->s.frame = 20;
 			G_UseTargets( ent, NULL );
@@ -1456,12 +1456,12 @@ void Props_Chair_Animate( gentity_t *ent )
 			ent->nextthink = level.time + ( FRAMETIME / 2 );
 		}
 	}
-	else if( !Q_stricmp( ent->classname, "props_desklamp" ) )
+	else if ( !Q_stricmp( ent->classname, "props_desklamp" ) )
 	{
-		if( ent->s.frame >= 11 )
+		if ( ent->s.frame >= 11 )
 		{
 			// player may have picked it up before
-			if( ent->target )
+			if ( ent->target )
 			{
 				G_UseTargets( ent, NULL );
 			}
@@ -1480,7 +1480,7 @@ void Props_Chair_Animate( gentity_t *ent )
 
 	ent->s.frame++;
 
-	if( ent->enemy )
+	if ( ent->enemy )
 	{
 		float  ratio;
 		vec3_t v;
@@ -1507,14 +1507,14 @@ void Spawn_Shard( gentity_t *ent, gentity_t *inflictor, int quantity, int type )
 
 	VectorCopy( ent->r.currentOrigin, start );
 
-	if( !Q_stricmp( ent->classname, "props_radioSEVEN" ) )
+	if ( !Q_stricmp( ent->classname, "props_radioSEVEN" ) )
 	{
 		start[ 0 ] += crandom() * 32;
 		start[ 1 ] += crandom() * 32;
 		VectorSubtract( inflictor->r.currentOrigin, ent->r.currentOrigin, dir );
 		VectorNormalize( dir );
 	}
-	else if( inflictor )
+	else if ( inflictor )
 	{
 		VectorSubtract( inflictor->r.currentOrigin, ent->r.currentOrigin, dir );
 		VectorNormalize( dir );
@@ -1529,7 +1529,7 @@ void Spawn_Shard( gentity_t *ent, gentity_t *inflictor, int quantity, int type )
 
 	sfx->s.density = type;
 
-	if( type < 4 )
+	if ( type < 4 )
 	{
 		start[ 2 ] += 32;
 	}
@@ -1552,7 +1552,7 @@ void Prop_Break_Sound( gentity_t *ent )
 {
 	G_AddEvent( ent, EV_FX_SOUND, FXTYPE_WOOD );
 
-	switch( ent->count )
+	switch ( ent->count )
 	{
 		case FXTYPE_WOOD:
 			G_AddEvent( ent, EV_FX_SOUND, FXTYPE_WOOD );
@@ -1610,7 +1610,7 @@ void SP_Props_Chair( gentity_t *ent )
 
 	ent->delay = 0; // inherits damage value
 
-	if( G_SpawnInt( "mass", "5", &mass ) )
+	if ( G_SpawnInt( "mass", "5", &mass ) )
 	{
 		ent->wait = mass;
 	}
@@ -1633,14 +1633,14 @@ void SP_Props_Chair( gentity_t *ent )
 	G_SetOrigin( ent, ent->s.origin );
 	G_SetAngle( ent, ent->s.angles );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 10;
 	}
 
 	ent->duration = ent->health;
 
-	if( !ent->count )
+	if ( !ent->count )
 	{
 		ent->count = FXTYPE_WOOD;
 	}
@@ -1665,7 +1665,7 @@ void SP_Props_ChairHiback( gentity_t *ent )
 
 	ent->delay = 0; // inherits damage value
 
-	if( G_SpawnInt( "mass", "5", &mass ) )
+	if ( G_SpawnInt( "mass", "5", &mass ) )
 	{
 		ent->wait = mass;
 	}
@@ -1688,14 +1688,14 @@ void SP_Props_ChairHiback( gentity_t *ent )
 	G_SetOrigin( ent, ent->s.origin );
 	G_SetAngle( ent, ent->s.angles );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 10;
 	}
 
 	ent->duration = ent->health;
 
-	if( !ent->count )
+	if ( !ent->count )
 	{
 		ent->count = FXTYPE_WOOD;
 	}
@@ -1719,7 +1719,7 @@ void SP_Props_ChairSide( gentity_t *ent )
 
 	ent->delay = 0; // inherits damage value
 
-	if( G_SpawnInt( "mass", "5", &mass ) )
+	if ( G_SpawnInt( "mass", "5", &mass ) )
 	{
 		ent->wait = mass;
 	}
@@ -1742,14 +1742,14 @@ void SP_Props_ChairSide( gentity_t *ent )
 	G_SetOrigin( ent, ent->s.origin );
 	G_SetAngle( ent, ent->s.angles );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 10;
 	}
 
 	ent->duration = ent->health;
 
-	if( !ent->count )
+	if ( !ent->count )
 	{
 		ent->count = FXTYPE_WOOD;
 	}
@@ -1782,7 +1782,7 @@ void SP_Props_ChateauChair( gentity_t *ent )
 
 	ent->delay = 0; // inherits damage value
 
-	if( G_SpawnInt( "mass", "5", &mass ) )
+	if ( G_SpawnInt( "mass", "5", &mass ) )
 	{
 		ent->wait = mass;
 	}
@@ -1805,14 +1805,14 @@ void SP_Props_ChateauChair( gentity_t *ent )
 	G_SetOrigin( ent, ent->s.origin );
 	G_SetAngle( ent, ent->s.angles );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 10;
 	}
 
 	ent->duration = ent->health;
 
-	if( !ent->count )
+	if ( !ent->count )
 	{
 		ent->count = FXTYPE_WOOD;
 	}
@@ -1860,9 +1860,9 @@ void Use_DamageInflictor( gentity_t *ent, gentity_t *other, gentity_t *activator
 
 	daent = NULL;
 
-	while( ( daent = G_FindByTargetname( daent, daent->target ) ) != NULL )
+	while ( ( daent = G_FindByTargetname( daent, daent->target ) ) != NULL )
 	{
-		if( daent == ent )
+		if ( daent == ent )
 		{
 			G_Printf( "Use_DamageInflictor damaging self.\n" );
 		}
@@ -1911,7 +1911,7 @@ void Use_Props_Shard_Generator( gentity_t *ent, gentity_t *other, gentity_t *act
 
 	inflictor = G_Find( NULL, FOFS( targetname ), ent->target );
 
-	if( inflictor )
+	if ( inflictor )
 	{
 		Spawn_Shard( ent, inflictor, quantity, type );
 	}
@@ -1926,12 +1926,12 @@ void SP_props_shard_generator( gentity_t *ent )
 	ent->s.eType = ET_GENERAL;
 	ent->use = Use_Props_Shard_Generator;
 
-	if( !ent->count )
+	if ( !ent->count )
 	{
 		ent->count = FXTYPE_WOOD;
 	}
 
-	if( !ent->wait )
+	if ( !ent->wait )
 	{
 		ent->wait = 5;
 	}
@@ -1958,7 +1958,7 @@ void SP_Props_Desklamp( gentity_t *ent )
 
 	ent->delay = 0; // inherits damage value
 
-	if( G_SpawnInt( "mass", "5", &mass ) )
+	if ( G_SpawnInt( "mass", "5", &mass ) )
 	{
 		ent->wait = mass;
 	}
@@ -1980,14 +1980,14 @@ void SP_Props_Desklamp( gentity_t *ent )
 	G_SetOrigin( ent, ent->s.origin );
 	G_SetAngle( ent, ent->s.angles );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 10;
 	}
 
 	ent->duration = ent->health;
 
-	if( !ent->count )
+	if ( !ent->count )
 	{
 		ent->count = FXTYPE_METAL;
 	}
@@ -2015,7 +2015,7 @@ void Props_Barrel_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	return; // barrels cant move
 
-	if( !( self->spawnflags & 4 ) )
+	if ( !( self->spawnflags & 4 ) )
 	{
 		Props_Chair_Touch( self, other, trace );
 	}
@@ -2026,9 +2026,9 @@ void Props_Barrel_Animate( gentity_t *ent )
 	float  ratio;
 	vec3_t v;
 
-	if( ent->s.frame == 14 )
+	if ( ent->s.frame == 14 )
 	{
-		if( ent->spawnflags & 1 )
+		if ( ent->spawnflags & 1 )
 		{
 			//  G_UseTargets (ent, NULL);
 			ent->think = G_FreeEntity;
@@ -2052,7 +2052,7 @@ void Props_Barrel_Animate( gentity_t *ent )
 
 	ent->s.frame++;
 
-	if( !( ent->spawnflags & 1 ) )
+	if ( !( ent->spawnflags & 1 ) )
 	{
 		ratio = 2.5;
 		VectorSubtract( ent->r.currentOrigin, ent->enemy->r.currentOrigin, v );
@@ -2081,7 +2081,7 @@ void smoker_think( gentity_t *ent )
 {
 	ent->count--;
 
-	if( !ent->count )
+	if ( !ent->count )
 	{
 		G_FreeEntity( ent );
 	}
@@ -2098,12 +2098,12 @@ void SP_OilSlick( gentity_t *ent )
 	gentity_t *target = NULL;
 	vec3_t    point;
 
-	if( ent->target )
+	if ( ent->target )
 	{
 		target = G_FindByTargetname( NULL, ent->target );
 	}
 
-	if( target )
+	if ( target )
 	{
 		VectorCopy( target->s.origin, point );
 		point[ 2 ] = ent->r.currentOrigin[ 2 ]; // just in case
@@ -2128,7 +2128,7 @@ void OilParticles_think( gentity_t *ent )
 
 	owner = &g_entities[ ent->s.density ];
 
-	if( owner && owner->takedamage && ent->count2 > level.time - 5000 )
+	if ( owner && owner->takedamage && ent->count2 > level.time - 5000 )
 	{
 		ent->nextthink = ( level.time + FRAMETIME / 2 );
 
@@ -2173,11 +2173,11 @@ qboolean validOilSlickSpawnPoint( vec3_t point, gentity_t *ent )
 
 	traceEnt = &g_entities[ tr.entityNum ];
 
-	if( traceEnt && traceEnt->classname )
+	if ( traceEnt && traceEnt->classname )
 	{
-		if( !Q_stricmp( traceEnt->classname, "worldspawn" ) )
+		if ( !Q_stricmp( traceEnt->classname, "worldspawn" ) )
 		{
-			if( tr.plane.normal[ 0 ] == 0 && tr.plane.normal[ 1 ] == 0 && tr.plane.normal[ 2 ] == 1 )
+			if ( tr.plane.normal[ 0 ] == 0 && tr.plane.normal[ 1 ] == 0 && tr.plane.normal[ 2 ] == 1 )
 			{
 				return qtrue;
 			}
@@ -2226,12 +2226,12 @@ void SP_OilParticles( gentity_t *ent )
 
 void Props_Barrel_Pain( gentity_t *ent, gentity_t *attacker, int damage, vec3_t point )
 {
-	if( ent->health <= 0 )
+	if ( ent->health <= 0 )
 	{
 		return;
 	}
 
-	if( !( ent->spawnflags & 8 ) )
+	if ( !( ent->spawnflags & 8 ) )
 	{
 		SP_OilSlick( ent );
 		ent->spawnflags |= 8;
@@ -2239,7 +2239,7 @@ void Props_Barrel_Pain( gentity_t *ent, gentity_t *attacker, int damage, vec3_t 
 
 	ent->count2++;
 
-	if( ent->count2 < 6 )
+	if ( ent->count2 < 6 )
 	{
 		SP_OilParticles( ent );
 	}
@@ -2271,14 +2271,14 @@ void Props_Barrel_Die( gentity_t *ent, gentity_t *inflictor, gentity_t *attacker
 	int    type;
 	vec3_t dir;
 
-	if( ent->spawnflags & 1 )
+	if ( ent->spawnflags & 1 )
 	{
 		ent->s.eFlags = EF_SMOKINGBLACK;
 	}
 
 	G_UseTargets( ent, NULL );
 
-	if( ent->spawnflags & 4 )
+	if ( ent->spawnflags & 4 )
 	{
 		OilSlick_remove( ent );
 	}
@@ -2292,7 +2292,7 @@ void Props_Barrel_Die( gentity_t *ent, gentity_t *inflictor, gentity_t *attacker
 	AngleVectors( ent->r.currentAngles, dir, NULL, NULL );
 	dir[ 2 ] = 1;
 
-	if( !( ent->spawnflags & 2 ) )
+	if ( !( ent->spawnflags & 2 ) )
 	{
 		fire_flamebarrel( ent, ent->r.currentOrigin, dir );
 	}
@@ -2309,7 +2309,7 @@ void Props_Barrel_Die( gentity_t *ent, gentity_t *inflictor, gentity_t *attacker
 	quantity = ent->wait;
 	type = ent->count;
 
-	if( inflictor )
+	if ( inflictor )
 	{
 		Spawn_Shard( ent, inflictor, quantity, type );
 	}
@@ -2335,11 +2335,11 @@ void SP_Props_Flamebarrel( gentity_t *ent )
 {
 	int mass;
 
-	if( ent->spawnflags & 4 )
+	if ( ent->spawnflags & 4 )
 	{
 		ent->s.modelindex = G_ModelIndex( "models/furniture/barrel/barrel_c.md3" );
 	}
-	else if( ent->spawnflags & 1 )
+	else if ( ent->spawnflags & 1 )
 	{
 		ent->s.modelindex = G_ModelIndex( "models/furniture/barrel/barrel_d.md3" );
 	}
@@ -2350,7 +2350,7 @@ void SP_Props_Flamebarrel( gentity_t *ent )
 
 	ent->delay = 0; // inherits damage value
 
-	if( G_SpawnInt( "mass", "5", &mass ) )
+	if ( G_SpawnInt( "mass", "5", &mass ) )
 	{
 		ent->wait = mass;
 	}
@@ -2372,7 +2372,7 @@ void SP_Props_Flamebarrel( gentity_t *ent )
 	G_SetOrigin( ent, ent->s.origin );
 	G_SetAngle( ent, ent->s.angles );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 20;
 	}
@@ -2388,7 +2388,7 @@ void SP_Props_Flamebarrel( gentity_t *ent )
 
 	ent->die = Props_Barrel_Die;
 
-	if( ent->spawnflags & 4 )
+	if ( ent->spawnflags & 4 )
 	{
 		ent->pain = Props_Barrel_Pain;
 	}
@@ -2444,7 +2444,7 @@ void touch_crate_64( gentity_t *self, gentity_t *other, trace_t *trace )
 	float  ratio;
 	vec3_t v;
 
-	if( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 31 ) )
+	if ( other->r.currentOrigin[ 2 ] > ( self->r.currentOrigin[ 2 ] + 10 + 31 ) )
 	{
 		return;
 	}
@@ -2456,7 +2456,7 @@ void touch_crate_64( gentity_t *self, gentity_t *other, trace_t *trace )
 
 void crate_animate( gentity_t *ent )
 {
-	if( ent->s.frame == 17 )
+	if ( ent->s.frame == 17 )
 	{
 		G_UseTargets( ent, NULL );
 		ent->think = G_FreeEntity;
@@ -2516,17 +2516,17 @@ void SP_crate_64( gentity_t *self )
 
 	self->takedamage = qtrue;
 
-	if( !self->health )
+	if ( !self->health )
 	{
 		self->health = 20;
 	}
 
-	if( !self->count )
+	if ( !self->count )
 	{
 		self->count = 1;
 	}
 
-	if( !self->wait )
+	if ( !self->wait )
 	{
 		self->wait = 10;
 	}
@@ -2561,17 +2561,17 @@ void SP_crate_32( gentity_t *self )
 
 	self->takedamage = qtrue;
 
-	if( !self->health )
+	if ( !self->health )
 	{
 		self->health = 20;
 	}
 
-	if( !self->count )
+	if ( !self->count )
 	{
 		self->count = 1;
 	}
 
-	if( !self->wait )
+	if ( !self->wait )
 	{
 		self->wait = 10;
 	}
@@ -2590,7 +2590,7 @@ void props_crate32x64_think( gentity_t *ent )
 {
 	ent->s.frame++;
 
-	if( ent->s.frame < 17 )
+	if ( ent->s.frame < 17 )
 	{
 		ent->nextthink = level.time + ( FRAMETIME / 2 );
 	}
@@ -2616,7 +2616,7 @@ void SP_Props_Crate32x64( gentity_t *ent )
 
 	InitProp( ent );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 10;
 	}
@@ -2643,7 +2643,7 @@ void flippy_table_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	gentity_t *slave;
 
 	// it would be odd to flip a table if your standing on it
-	if( other && other->s.groundEntityNum == ent->s.number )
+	if ( other && other->s.groundEntityNum == ent->s.number )
 	{
 		// G_Printf ("can't push table over while standing on it\n");
 		return;
@@ -2653,12 +2653,12 @@ void flippy_table_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 	is_infront = infront( ent, other );
 
-	if( is_infront )
+	if ( is_infront )
 	{
 		// need to swap the team leader with the slave
-		for( slave = ent; slave; slave = slave->teamchain )
+		for ( slave = ent; slave; slave = slave->teamchain )
 		{
-			if( slave == ent )
+			if ( slave == ent )
 			{
 				continue;
 			}
@@ -2702,7 +2702,7 @@ void flippy_table_animate( gentity_t *ent )
 {
 	return;
 
-	if( ent->s.frame == 9 )
+	if ( ent->s.frame == 9 )
 	{
 		G_UseTargets( ent, NULL );
 		ent->think = G_FreeEntity;
@@ -2734,7 +2734,7 @@ void props_flippy_blocked( gentity_t *ent, gentity_t *other )
 	// just for now
 	float  angle = ent->r.currentAngles[ YAW ];
 
-	if( other->client )
+	if ( other->client )
 	{
 		// shoot the player off of it
 		VectorCopy( ent->s.apos.trBase, angles );
@@ -2748,7 +2748,7 @@ void props_flippy_blocked( gentity_t *ent, gentity_t *other )
 		VectorScale( velocity, 32, kvel );
 		VectorAdd( other->client->ps.velocity, kvel, other->client->ps.velocity );
 	}
-	else if( other->s.eType == ET_ITEM )
+	else if ( other->s.eType == ET_ITEM )
 	{
 		VectorCopy( ent->s.apos.trBase, angles );
 		angles[ YAW ] += angle;
@@ -2776,7 +2776,7 @@ void props_flippy_blocked( gentity_t *ent, gentity_t *other )
 
 void SP_Props_Flipping_Table( gentity_t *ent )
 {
-	if( !ent->model )
+	if ( !ent->model )
 	{
 		G_Printf( S_COLOR_RED "props_Flipping_Table with NULL model\n" );
 		return;
@@ -2788,18 +2788,18 @@ void SP_Props_Flipping_Table( gentity_t *ent )
 	ent->angle = 90;
 
 	// ent->spawnflags |= 8;
-	if( !( ent->spawnflags & 4 ) && !( ent->spawnflags & 8 ) )
+	if ( !( ent->spawnflags & 4 ) && !( ent->spawnflags & 8 ) )
 	{
 		G_Printf( "you forgot to select the X or Y Axis\n" );
 	}
 
 	VectorClear( ent->rotate );
 
-	if( ent->spawnflags & 4 )
+	if ( ent->spawnflags & 4 )
 	{
 		ent->rotate[ 2 ] = 1;
 	}
-	else if( ent->spawnflags & 8 )
+	else if ( ent->spawnflags & 8 )
 	{
 		ent->rotate[ 0 ] = 1;
 	}
@@ -2818,7 +2818,7 @@ void SP_Props_Flipping_Table( gentity_t *ent )
 
 	ent->blocked = props_flippy_blocked;
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 100;
 	}
@@ -2857,7 +2857,7 @@ void props_58x112tablew_think( gentity_t *ent )
 {
 	ent->s.frame++;
 
-	if( ent->s.frame < 16 )
+	if ( ent->s.frame < 16 )
 	{
 		ent->nextthink = level.time + ( FRAMETIME / 2 );
 	}
@@ -2883,7 +2883,7 @@ void SP_Props_58x112tablew( gentity_t *ent )
 
 	InitProp( ent );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 10;
 	}
@@ -2918,12 +2918,12 @@ shard =
 
 void props_castlebed_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
-	if( !other->client )
+	if ( !other->client )
 	{
 		return;
 	}
 
-	if( other->client->ps.pm_flags & PMF_JUMP_HELD && other->s.groundEntityNum == ent->s.number && !other->client->ps.pm_time )
+	if ( other->client->ps.pm_flags & PMF_JUMP_HELD && other->s.groundEntityNum == ent->s.number && !other->client->ps.pm_time )
 	{
 		G_Damage( ent, other, other, NULL, NULL, 1, 0, MOD_CRUSH );
 
@@ -2941,7 +2941,7 @@ void props_castlebed_animate( gentity_t *ent )
 {
 	ent->s.frame++;
 
-	if( ent->s.frame < 8 )
+	if ( ent->s.frame < 8 )
 	{
 		ent->nextthink = level.time + ( FRAMETIME / 2 );
 	}
@@ -2970,7 +2970,7 @@ void SP_props_castlebed( gentity_t *ent )
 
 	InitProp( ent );
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 20;
 	}
@@ -3005,7 +3005,7 @@ void props_snowGenerator_think( gentity_t *ent )
 	int       i;
 	vec3_t    point;
 
-	if( !( ent->spawnflags & 1 ) )
+	if ( !( ent->spawnflags & 1 ) )
 	{
 		return;
 	}
@@ -3014,7 +3014,7 @@ void props_snowGenerator_think( gentity_t *ent )
 	wide = ent->r.maxs[ 1 ] - ent->r.mins[ 1 ];
 	deep = ent->r.maxs[ 0 ] - ent->r.mins[ 0 ];
 
-	for( i = 0; i < ent->count; i++ )
+	for ( i = 0; i < ent->count; i++ )
 	{
 		VectorCopy( ent->pos1, point );
 
@@ -3030,11 +3030,11 @@ void props_snowGenerator_think( gentity_t *ent )
 		tent->s.time2 = 1000; // alpha fade start
 	}
 
-	if( ent->spawnflags & 2 )
+	if ( ent->spawnflags & 2 )
 	{
 		ent->nextthink = level.time + FRAMETIME;
 	}
-	else if( ent->wait < level.time )
+	else if ( ent->wait < level.time )
 	{
 		ent->nextthink = level.time + FRAMETIME;
 	}
@@ -3042,7 +3042,7 @@ void props_snowGenerator_think( gentity_t *ent )
 
 void props_snowGenerator_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
-	if( !( ent->spawnflags & 1 ) )
+	if ( !( ent->spawnflags & 1 ) )
 	{
 		ent->spawnflags |= 1;
 		ent->think = props_snowGenerator_think;
@@ -3067,7 +3067,7 @@ void SP_props_snowGenerator( gentity_t *ent )
 
 	VectorCopy( center, ent->pos1 );
 
-	if( !ent->target )
+	if ( !ent->target )
 	{
 		G_Printf( "snowGenerator at loc %s does not have a target\n", vtos( center ) );
 		return;
@@ -3076,7 +3076,7 @@ void SP_props_snowGenerator( gentity_t *ent )
 	{
 		target = G_Find( target, FOFS( targetname ), ent->target );
 
-		if( !target )
+		if ( !target )
 		{
 			G_Printf( "error snowGenerator at loc %s does cant find target %s\n", vtos( center ), ent->target );
 			return;
@@ -3089,12 +3089,12 @@ void SP_props_snowGenerator( gentity_t *ent )
 	ent->r.contents = CONTENTS_TRIGGER;
 	ent->r.svFlags = SVF_NOCLIENT;
 
-	if( ent->spawnflags & 1 || ent->spawnflags & 2 )
+	if ( ent->spawnflags & 1 || ent->spawnflags & 2 )
 	{
 		ent->think = props_snowGenerator_think;
 		ent->nextthink = level.time + FRAMETIME;
 
-		if( ent->spawnflags & 2 )
+		if ( ent->spawnflags & 2 )
 		{
 			ent->spawnflags |= 1;
 		}
@@ -3102,7 +3102,7 @@ void SP_props_snowGenerator( gentity_t *ent )
 
 	ent->use = props_snowGenerator_use;
 
-	if( !( ent->delay ) )
+	if ( !( ent->delay ) )
 	{
 		ent->delay = 100;
 	}
@@ -3111,12 +3111,12 @@ void SP_props_snowGenerator( gentity_t *ent )
 		ent->delay *= 100;
 	}
 
-	if( !( ent->count ) )
+	if ( !( ent->count ) )
 	{
 		ent->count = 32;
 	}
 
-	if( !( ent->duration ) )
+	if ( !( ent->duration ) )
 	{
 		ent->duration = 1;
 	}
@@ -3388,13 +3388,13 @@ void props_decoration_animate( gentity_t *ent )
 	ent->s.frame++;
 	ent->s.eType = ET_GENERAL;
 
-	if( ent->s.frame > ent->count2 )
+	if ( ent->s.frame > ent->count2 )
 	{
-		if( ent->spawnflags & 32 || ent->spawnflags & 64 )
+		if ( ent->spawnflags & 32 || ent->spawnflags & 64 )
 		{
 			ent->s.frame = ent->props_frame_state;
 
-			if( !( ent->spawnflags & 64 ) )
+			if ( !( ent->spawnflags & 64 ) )
 			{
 				ent->takedamage = qfalse;
 			}
@@ -3413,7 +3413,7 @@ void props_decoration_animate( gentity_t *ent )
 
 void props_decoration_death( gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
-	if( !( ent->spawnflags & 8 ) )
+	if ( !( ent->spawnflags & 8 ) )
 	{
 		ent->clipmask = 0;
 		ent->r.contents = 0;
@@ -3425,12 +3425,12 @@ void props_decoration_death( gentity_t *ent, gentity_t *inflictor, gentity_t *at
 
 	G_UseTargets( ent, NULL );
 
-	if( ent->spawnflags & 2 )
+	if ( ent->spawnflags & 2 )
 	{
 		Spawn_Shard( ent, inflictor, ent->count, ent->key );
 	}
 
-	if( ent->spawnflags & 4 )
+	if ( ent->spawnflags & 4 )
 	{
 		ent->nextthink = level.time + 50;
 		ent->think = props_decoration_animate;
@@ -3442,12 +3442,12 @@ void props_decoration_death( gentity_t *ent, gentity_t *inflictor, gentity_t *at
 
 void Use_props_decoration( gentity_t *ent, gentity_t *self, gentity_t *activator )
 {
-	if( ent->spawnflags & 1 )
+	if ( ent->spawnflags & 1 )
 	{
 		trap_LinkEntity( ent );
 		ent->spawnflags &= ~1;
 	}
-	else if( ent->spawnflags & 4 )
+	else if ( ent->spawnflags & 4 )
 	{
 		ent->nextthink = level.time + 50;
 		ent->think = props_decoration_animate;
@@ -3461,7 +3461,7 @@ void Use_props_decoration( gentity_t *ent, gentity_t *self, gentity_t *activator
 
 void props_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	if( self->spawnflags & 16 )
+	if ( self->spawnflags & 16 )
 	{
 		props_decoration_death( self, other, other, 9999, MOD_CRUSH );
 	}
@@ -3485,22 +3485,22 @@ void SP_props_decoration( gentity_t *ent )
 
 	char     *startonframe;
 
-	if( G_SpawnString( "startonframe", "0", &startonframe ) )
+	if ( G_SpawnString( "startonframe", "0", &startonframe ) )
 	{
 		ent->s.frame = atoi( startonframe );
 	}
 
-	if( ent->model2 )
+	if ( ent->model2 )
 	{
 		ent->s.modelindex = G_ModelIndex( ent->model2 );
 	}
 
-	if( G_SpawnString( "noise", "100", &sound ) )
+	if ( G_SpawnString( "noise", "100", &sound ) )
 	{
 		ent->s.loopSound = G_SoundIndex( sound );
 	}
 
-	if( ( ent->spawnflags & 32 ) && G_SpawnString( "loop", "100", &loop ) )
+	if ( ( ent->spawnflags & 32 ) && G_SpawnString( "loop", "100", &loop ) )
 	{
 		ent->props_frame_state = atoi( loop );
 	}
@@ -3509,34 +3509,34 @@ void SP_props_decoration( gentity_t *ent )
 	lightSet = G_SpawnFloat( "light", "100", &light );
 	colorSet = G_SpawnVector( "color", "1 1 1", color );
 
-	if( lightSet || colorSet )
+	if ( lightSet || colorSet )
 	{
 		int r, g, b, i;
 
 		r = color[ 0 ] * 255;
 
-		if( r > 255 )
+		if ( r > 255 )
 		{
 			r = 255;
 		}
 
 		g = color[ 1 ] * 255;
 
-		if( g > 255 )
+		if ( g > 255 )
 		{
 			g = 255;
 		}
 
 		b = color[ 2 ] * 255;
 
-		if( b > 255 )
+		if ( b > 255 )
 		{
 			b = 255;
 		}
 
 		i = light / 4;
 
-		if( i > 255 )
+		if ( i > 255 )
 		{
 			i = 255;
 		}
@@ -3544,7 +3544,7 @@ void SP_props_decoration( gentity_t *ent )
 		ent->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
 	}
 
-	if( ent->health )
+	if ( ent->health )
 	{
 		ent->isProp = qtrue;
 		ent->takedamage = qtrue;
@@ -3552,19 +3552,19 @@ void SP_props_decoration( gentity_t *ent )
 
 		G_SpawnString( "type", "wood", &type );
 
-		if( !Q_stricmp( type, "wood" ) )
+		if ( !Q_stricmp( type, "wood" ) )
 		{
 			ent->key = 1;
 		}
-		else if( !Q_stricmp( type, "glass" ) )
+		else if ( !Q_stricmp( type, "glass" ) )
 		{
 			ent->key = 0;
 		}
-		else if( !Q_stricmp( type, "metal" ) )
+		else if ( !Q_stricmp( type, "metal" ) )
 		{
 			ent->key = 2;
 		}
-		else if( !Q_stricmp( type, "rubble" ) )
+		else if ( !Q_stricmp( type, "rubble" ) )
 		{
 			ent->key = 3;
 		}
@@ -3572,7 +3572,7 @@ void SP_props_decoration( gentity_t *ent )
 		G_SpawnString( "high", "0", &high );
 		height = atof( high );
 
-		if( !height )
+		if ( !height )
 		{
 			height = 4;
 		}
@@ -3580,14 +3580,14 @@ void SP_props_decoration( gentity_t *ent )
 		G_SpawnString( "wide", "0", &wide );
 		width = atof( wide );
 
-		if( !width )
+		if ( !width )
 		{
 			width = 4;
 		}
 
 		width /= 2;
 
-		if( Q_stricmp( ent->classname, "props_decorBRUSH" ) )
+		if ( Q_stricmp( ent->classname, "props_decorBRUSH" ) )
 		{
 			VectorSet( ent->r.mins, -width, -width, 0 );
 			VectorSet( ent->r.maxs, width, width, height );
@@ -3602,14 +3602,14 @@ void SP_props_decoration( gentity_t *ent )
 
 		ent->count2 = num_frames;
 
-		if( ent->targetname )
+		if ( ent->targetname )
 		{
 			ent->use = Use_props_decoration;
 		}
 
 		ent->touch = props_touch;
 	}
-	else if( !( ent->health ) && ent->spawnflags & 4 )
+	else if ( !( ent->health ) && ent->spawnflags & 4 )
 	{
 		G_SpawnString( "frames", "0", &frames );
 		num_frames = atof( frames );
@@ -3618,7 +3618,7 @@ void SP_props_decoration( gentity_t *ent )
 		ent->use = Use_props_decoration;
 	}
 
-	if( ent->spawnflags & 64 )
+	if ( ent->spawnflags & 64 )
 	{
 		ent->nextthink = level.time + 50;
 		ent->think = props_decoration_animate;
@@ -3629,7 +3629,7 @@ void SP_props_decoration( gentity_t *ent )
 	G_SetOrigin( ent, ent->s.origin );
 	G_SetAngle( ent, ent->s.angles );
 
-	if( !( ent->spawnflags & 1 ) )
+	if ( !( ent->spawnflags & 1 ) )
 	{
 		trap_LinkEntity( ent );
 	}
@@ -3662,7 +3662,7 @@ void SP_props_decorBRUSH( gentity_t *self )
 
 	SP_props_decoration( self );
 
-	if( self->model2 )
+	if ( self->model2 )
 	{
 		self->s.modelindex2 = G_ModelIndex( self->model2 );
 	}
@@ -3699,13 +3699,13 @@ void SP_props_decor_Scale( gentity_t *ent )
 	ent->s.eType = ET_GAMEMODEL;
 
 	// look for general scaling
-	if( G_SpawnFloat( "modelscale", "1", &scale[ 0 ] ) )
+	if ( G_SpawnFloat( "modelscale", "1", &scale[ 0 ] ) )
 	{
 		scale[ 2 ] = scale[ 1 ] = scale[ 0 ];
 	}
 
 	// look for axis specific scaling
-	if( G_SpawnVector( "modelscale_vec", "1 1 1", &scalevec[ 0 ] ) )
+	if ( G_SpawnVector( "modelscale_vec", "1 1 1", &scalevec[ 0 ] ) )
 	{
 		VectorCopy( scalevec, scale );
 	}
@@ -3776,7 +3776,7 @@ void props_statue_blocked( gentity_t *ent )
 	float     grav = 128;
 	vec3_t    kvel;
 
-	if( !Q_stricmp( ent->classname, "props_statueBRUSH" ) )
+	if ( !Q_stricmp( ent->classname, "props_statueBRUSH" ) )
 	{
 		return;
 	}
@@ -3797,7 +3797,7 @@ void props_statue_blocked( gentity_t *ent )
 
 	trap_Trace( &trace, start, mins, maxs, end, ent->s.number, MASK_SHOT );
 
-	if( trace.surfaceFlags & SURF_NOIMPACT )
+	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
 		// bogus test but just in case
 		return;
@@ -3805,7 +3805,7 @@ void props_statue_blocked( gentity_t *ent )
 
 	traceEnt = &g_entities[ trace.entityNum ];
 
-	if( traceEnt->takedamage && traceEnt->client )
+	if ( traceEnt->takedamage && traceEnt->client )
 	{
 		G_Damage( traceEnt, ent, ent, NULL, trace.endpos, ent->damage, 0, MOD_CRUSH );
 
@@ -3813,18 +3813,18 @@ void props_statue_blocked( gentity_t *ent )
 		VectorScale( forward, grav, kvel );
 		VectorAdd( traceEnt->client->ps.velocity, kvel, traceEnt->client->ps.velocity );
 
-		if( !traceEnt->client->ps.pm_time )
+		if ( !traceEnt->client->ps.pm_time )
 		{
 			int t;
 
 			t = grav * 2;
 
-			if( t < 50 )
+			if ( t < 50 )
 			{
 				t = 50;
 			}
 
-			if( t > 200 )
+			if ( t > 200 )
 			{
 				t = 200;
 			}
@@ -3846,17 +3846,17 @@ void props_statue_animate( gentity_t *ent )
 	ent->s.frame++;
 	ent->s.eType = ET_GENERAL;
 
-	if( ent->s.frame > ent->count2 )
+	if ( ent->s.frame > ent->count2 )
 	{
 		ent->s.frame = ent->count2;
 		ent->takedamage = qfalse;
 	}
 
-	if( ( ( ent->delay * 1000 ) + ent->timestamp ) > level.time )
+	if ( ( ( ent->delay * 1000 ) + ent->timestamp ) > level.time )
 	{
 		ent->count = 0;
 	}
-	else if( ent->count == 5 )
+	else if ( ent->count == 5 )
 	{
 		takeashot = qtrue;
 		ent->count = 0;
@@ -3866,12 +3866,12 @@ void props_statue_animate( gentity_t *ent )
 		ent->count++;
 	}
 
-	if( takeashot )
+	if ( takeashot )
 	{
 		props_statue_blocked( ent );
 	}
 
-	if( ent->s.frame < ent->count2 )
+	if ( ent->s.frame < ent->count2 )
 	{
 		ent->nextthink = level.time + 50;
 	}
@@ -3883,7 +3883,7 @@ void props_statue_death( gentity_t *ent, gentity_t *inflictor, gentity_t *attack
 
 	G_AddEvent( ent, EV_GENERAL_SOUND, ent->noise_index );
 
-	if( !( ent->spawnflags & 8 ) )
+	if ( !( ent->spawnflags & 8 ) )
 	{
 		ent->clipmask = 0;
 		ent->r.contents = 0;
@@ -3895,12 +3895,12 @@ void props_statue_death( gentity_t *ent, gentity_t *inflictor, gentity_t *attack
 
 	G_UseTargets( ent, NULL );
 
-	if( ent->spawnflags & 2 )
+	if ( ent->spawnflags & 2 )
 	{
 		Spawn_Shard( ent, inflictor, ent->count, ent->key );
 	}
 
-	if( ent->spawnflags & 4 )
+	if ( ent->spawnflags & 4 )
 	{
 		ent->nextthink = level.time + 50;
 		ent->think = props_statue_animate;
@@ -3929,12 +3929,12 @@ void SP_props_statue( gentity_t *ent )
 	float    width;
 	float    num_frames;
 
-	if( ent->model2 )
+	if ( ent->model2 )
 	{
 		ent->s.modelindex = G_ModelIndex( ent->model2 );
 	}
 
-	if( G_SpawnString( "noise", "100", &sound ) )
+	if ( G_SpawnString( "noise", "100", &sound ) )
 	{
 		ent->noise_index = G_SoundIndex( sound );
 	}
@@ -3943,34 +3943,34 @@ void SP_props_statue( gentity_t *ent )
 	lightSet = G_SpawnFloat( "light", "100", &light );
 	colorSet = G_SpawnVector( "color", "1 1 1", color );
 
-	if( lightSet || colorSet )
+	if ( lightSet || colorSet )
 	{
 		int r, g, b, i;
 
 		r = color[ 0 ] * 255;
 
-		if( r > 255 )
+		if ( r > 255 )
 		{
 			r = 255;
 		}
 
 		g = color[ 1 ] * 255;
 
-		if( g > 255 )
+		if ( g > 255 )
 		{
 			g = 255;
 		}
 
 		b = color[ 2 ] * 255;
 
-		if( b > 255 )
+		if ( b > 255 )
 		{
 			b = 255;
 		}
 
 		i = light / 4;
 
-		if( i > 255 )
+		if ( i > 255 )
 		{
 			i = 255;
 		}
@@ -3984,19 +3984,19 @@ void SP_props_statue( gentity_t *ent )
 
 	G_SpawnString( "type", "wood", &type );
 
-	if( !Q_stricmp( type, "wood" ) )
+	if ( !Q_stricmp( type, "wood" ) )
 	{
 		ent->key = 1;
 	}
-	else if( !Q_stricmp( type, "glass" ) )
+	else if ( !Q_stricmp( type, "glass" ) )
 	{
 		ent->key = 0;
 	}
-	else if( !Q_stricmp( type, "metal" ) )
+	else if ( !Q_stricmp( type, "metal" ) )
 	{
 		ent->key = 2;
 	}
-	else if( !Q_stricmp( type, "rubble" ) )
+	else if ( !Q_stricmp( type, "rubble" ) )
 	{
 		ent->key = 3;
 	}
@@ -4004,7 +4004,7 @@ void SP_props_statue( gentity_t *ent )
 	G_SpawnString( "high", "0", &high );
 	height = atof( high );
 
-	if( !height )
+	if ( !height )
 	{
 		height = 4;
 	}
@@ -4012,14 +4012,14 @@ void SP_props_statue( gentity_t *ent )
 	G_SpawnString( "wide", "0", &wide );
 	width = atof( wide );
 
-	if( !width )
+	if ( !width )
 	{
 		width = 4;
 	}
 
 	width /= 2;
 
-	if( Q_stricmp( ent->classname, "props_statueBRUSH" ) )
+	if ( Q_stricmp( ent->classname, "props_statueBRUSH" ) )
 	{
 		VectorSet( ent->r.mins, -width, -width, 0 );
 		VectorSet( ent->r.maxs, width, width, height );
@@ -4041,7 +4041,7 @@ void SP_props_statue( gentity_t *ent )
 	G_SetOrigin( ent, ent->s.origin );
 	G_SetAngle( ent, ent->s.angles );
 
-	if( !ent->damage )
+	if ( !ent->damage )
 	{
 		ent->damage = 1;
 	}
@@ -4073,12 +4073,12 @@ void SP_props_statueBRUSH( gentity_t *self )
 
 	SP_props_statue( self );
 
-	if( self->model2 )
+	if ( self->model2 )
 	{
 		self->s.modelindex2 = G_ModelIndex( self->model2 );
 	}
 
-	if( !( self->health ) )
+	if ( !( self->health ) )
 	{
 		self->health = 6;
 	}
@@ -4146,7 +4146,7 @@ void props_locker_endrattle( gentity_t *ent )
 
 void props_locker_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
-	if( !ent->delay )
+	if ( !ent->delay )
 	{
 		ent->s.frame = 1; // rattle when pain starts
 	}
@@ -4187,7 +4187,7 @@ void init_locker( gentity_t *ent )
 	G_SetOrigin( ent, ent->s.origin );
 	G_SetAngle( ent, ent->s.angles );
 
-	if( !( ent->health ) )
+	if ( !( ent->health ) )
 	{
 		ent->health = 1;
 	}
@@ -4202,7 +4202,7 @@ void props_locker_spawn_item( gentity_t *ent )
 
 	item = BG_FindItem( ent->spawnitem );
 
-	if( !item )
+	if ( !item )
 	{
 		// empty
 		return;
@@ -4211,7 +4211,7 @@ void props_locker_spawn_item( gentity_t *ent )
 //  drop = Drop_Item (ent, item, 0, qtrue);
 	drop = LaunchItem( item, ent->r.currentOrigin, tv( 0, 0, 20 ), ent->s.number );
 
-	if( !drop )
+	if ( !drop )
 	{
 		G_Printf( "-----> WARNING <-------\n" );
 		G_Printf( "props_locker_spawn_item at %s failed!\n", vtos( ent->r.currentOrigin ) );
@@ -4307,7 +4307,7 @@ void SP_props_footlocker( gentity_t *self )
 	// (SA) if angle is xx or yy, rotate the bounding box 90 deg to match
 	// NOTE:    Non axis-aligned orientation not allowed.  It will work, but
 	//          the bounding box will not exactly match the model.
-	if( self->s.angles[ 1 ] == 90 || self->s.angles[ 1 ] == 270 )
+	if ( self->s.angles[ 1 ] == 90 || self->s.angles[ 1 ] == 270 )
 	{
 		VectorSet( self->r.mins, -21, -12, 0 );
 		VectorSet( self->r.maxs, 21, 12, 24 );
@@ -4320,17 +4320,17 @@ void SP_props_footlocker( gentity_t *self )
 
 	self->s.modelindex = G_ModelIndex( "models/mapobjects/furniture/footlocker.md3" );
 
-	if( G_SpawnString( "noise", "NOSOUND", &sound ) )
+	if ( G_SpawnString( "noise", "NOSOUND", &sound ) )
 	{
 		self->noise_index = G_SoundIndex( sound );
 	}
 
-	if( G_SpawnString( "locknoise", "NOSOUND", &locked ) )
+	if ( G_SpawnString( "locknoise", "NOSOUND", &locked ) )
 	{
 		self->soundPos1 = G_SoundIndex( locked );
 	}
 
-	if( !( self->wait ) )
+	if ( !( self->wait ) )
 	{
 		self->wait = 1000;
 	}
@@ -4339,7 +4339,7 @@ void SP_props_footlocker( gentity_t *self )
 		self->wait *= 1000;
 	}
 
-	if( G_SpawnInt( "mass", "75", &mass ) )
+	if ( G_SpawnInt( "mass", "75", &mass ) )
 	{
 		self->count = mass;
 	}
@@ -4348,33 +4348,33 @@ void SP_props_footlocker( gentity_t *self )
 		self->count = 75;
 	}
 
-	if( G_SpawnString( "type", "wood", &type ) )
+	if ( G_SpawnString( "type", "wood", &type ) )
 	{
-		if( !Q_stricmp( type, "wood" ) )
+		if ( !Q_stricmp( type, "wood" ) )
 		{
 			self->key = FXTYPE_WOOD;
 		}
-		else if( !Q_stricmp( type, "glass" ) )
+		else if ( !Q_stricmp( type, "glass" ) )
 		{
 			self->key = FXTYPE_GLASS;
 		}
-		else if( !Q_stricmp( type, "metal" ) )
+		else if ( !Q_stricmp( type, "metal" ) )
 		{
 			self->key = FXTYPE_METAL;
 		}
-		else if( !Q_stricmp( type, "gibs" ) )
+		else if ( !Q_stricmp( type, "gibs" ) )
 		{
 			self->key = FXTYPE_GIBS;
 		}
-		else if( !Q_stricmp( type, "brick" ) )
+		else if ( !Q_stricmp( type, "brick" ) )
 		{
 			self->key = FXTYPE_BRICK;
 		}
-		else if( !Q_stricmp( type, "rock" ) )
+		else if ( !Q_stricmp( type, "rock" ) )
 		{
 			self->key = FXTYPE_STONE;
 		}
-		else if( !Q_stricmp( type, "fabric" ) )
+		else if ( !Q_stricmp( type, "fabric" ) )
 		{
 			self->key = 0; // fixme: not supported
 		}
@@ -4406,15 +4406,15 @@ void props_flamethrower_think( gentity_t *ent )
 	// TAT - actually create flamechunks that do damage in this direction
 	vec3_t    flameDir;
 
-	if( ent->spawnflags & 1 )
+	if ( ent->spawnflags & 1 )
 	{
 		// tracking
-		if( ent->target )
+		if ( ent->target )
 		{
 			target = G_FindByTargetname( NULL, ent->target );
 		}
 
-		if( !target )
+		if ( !target )
 		{
 //          VectorSet (ent->r.currentAngles, 0, 0, 1);  // (SA) wasn't working
 			VectorSet( ent->s.apos.trBase, 0, 0, 1 );
@@ -4435,12 +4435,12 @@ void props_flamethrower_think( gentity_t *ent )
 	}
 	else
 	{
-		if( ent->target )
+		if ( ent->target )
 		{
 			target = G_FindByTargetname( NULL, ent->target );
 		}
 
-		if( !target )
+		if ( !target )
 		{
 			// TAT - try that for the flame too
 			VectorSet( flameDir, 0, 0, 1 );
@@ -4452,7 +4452,7 @@ void props_flamethrower_think( gentity_t *ent )
 		}
 	}
 
-	if( ( ent->timestamp + ent->duration ) > level.time )
+	if ( ( ent->timestamp + ent->duration ) > level.time )
 	{
 		G_AddEvent( ent, EV_FLAMETHROWER_EFFECT, 0 );
 
@@ -4467,7 +4467,7 @@ void props_flamethrower_think( gentity_t *ent )
 			int rval;
 			int rnd;
 
-			if( ent->random )
+			if ( ent->random )
 			{
 				rval = ent->random * 1000;
 				rnd = rand() % rval;
@@ -4488,7 +4488,7 @@ void props_flamethrower_use( gentity_t *ent, gentity_t *other, gentity_t *activa
 	int rval;
 	int rnd;
 
-	if( ent->spawnflags & 2 )
+	if ( ent->spawnflags & 2 )
 	{
 		ent->spawnflags &= ~2;
 		ent->think = NULL; // (SA) wasn't working
@@ -4500,7 +4500,7 @@ void props_flamethrower_use( gentity_t *ent, gentity_t *other, gentity_t *activa
 		ent->spawnflags |= 2;
 	}
 
-	if( ent->random )
+	if ( ent->random )
 	{
 		rval = ent->random * 1000;
 		rnd = rand() % rval;
@@ -4522,12 +4522,12 @@ void props_flamethrower_init( gentity_t *ent )
 	vec3_t    vec;
 	vec3_t    angles;
 
-	if( ent->target )
+	if ( ent->target )
 	{
 		target = G_FindByTargetname( NULL, ent->target );
 	}
 
-	if( !target )
+	if ( !target )
 	{
 //      VectorSet (ent->r.currentAngles, 0, 0, 1);  //----(SA)
 		VectorSet( ent->s.apos.trBase, 0, 0, 1 );
@@ -4556,7 +4556,7 @@ void SP_props_flamethrower( gentity_t *ent )
 
 	G_SetOrigin( ent, ent->s.origin );
 
-	if( !( ent->duration ) )
+	if ( !( ent->duration ) )
 	{
 		ent->duration = 1000;
 	}
@@ -4568,7 +4568,7 @@ void SP_props_flamethrower( gentity_t *ent )
 	G_SpawnString( "size", "0", &size );
 	dsize = atof( size );
 
-	if( !dsize )
+	if ( !dsize )
 	{
 		dsize = 1;
 	}

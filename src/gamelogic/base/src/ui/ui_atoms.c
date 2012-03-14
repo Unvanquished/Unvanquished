@@ -63,9 +63,9 @@ UI_ClampCvar
 */
 float UI_ClampCvar( float min, float max, float value )
 {
-	if( value < min ) { return min; }
+	if ( value < min ) { return min; }
 
-	if( value > max ) { return max; }
+	if ( value > max ) { return max; }
 
 	return value;
 }
@@ -116,7 +116,7 @@ void UI_SetBestScores( postGameInfo_t *newInfo, qboolean postGame )
 	trap_Cvar_Set( "ui_scoreTime",          va( "%02i:%02i", newInfo->time / 60, newInfo->time % 60 ) );
 	trap_Cvar_Set( "ui_scoreCaptures",    va( "%i", newInfo->captures ) );
 
-	if( postGame )
+	if ( postGame )
 	{
 		trap_Cvar_Set( "ui_scoreAccuracy2",     va( "%i%%", newInfo->accuracy ) );
 		trap_Cvar_Set( "ui_scoreImpressives2",  va( "%i", newInfo->impressives ) );
@@ -144,12 +144,12 @@ void UI_LoadBestScores( const char *map, int game )
 	memset( &newInfo, 0, sizeof( postGameInfo_t ) );
 	Com_sprintf( fileName, MAX_QPATH, "games/%s_%i.game", map, game );
 
-	if( trap_FS_FOpenFile( fileName, &f, FS_READ ) >= 0 )
+	if ( trap_FS_FOpenFile( fileName, &f, FS_READ ) >= 0 )
 	{
 		int size = 0;
 		trap_FS_Read( &size, sizeof( int ), f );
 
-		if( size == sizeof( postGameInfo_t ) )
+		if ( size == sizeof( postGameInfo_t ) )
 		{
 			trap_FS_Read( &newInfo, sizeof( postGameInfo_t ), f );
 		}
@@ -162,7 +162,7 @@ void UI_LoadBestScores( const char *map, int game )
 	Com_sprintf( fileName, MAX_QPATH, "demos/%s_%d.dm_%d", map, game, ( int ) trap_Cvar_VariableValue( "protocol" ) );
 	uiInfo.demoAvailable = qfalse;
 
-	if( trap_FS_FOpenFile( fileName, &f, FS_READ ) >= 0 )
+	if ( trap_FS_FOpenFile( fileName, &f, FS_READ ) >= 0 )
 	{
 		uiInfo.demoAvailable = qtrue;
 		trap_FS_FCloseFile( f );
@@ -187,15 +187,15 @@ void UI_ClearScores( void )
 	size = sizeof( postGameInfo_t );
 	memset( &newInfo, 0, size );
 
-	if( count > 0 )
+	if ( count > 0 )
 	{
 		gameFile = gameList;
 
-		for( i = 0; i < count; i++ )
+		for ( i = 0; i < count; i++ )
 		{
 			len = strlen( gameFile );
 
-			if( trap_FS_FOpenFile( va( "games/%s", gameFile ), &f, FS_WRITE ) >= 0 )
+			if ( trap_FS_FOpenFile( va( "games/%s", gameFile ), &f, FS_WRITE ) >= 0 )
 			{
 				trap_FS_Write( &size, sizeof( int ), f );
 				trap_FS_Write( &newInfo, size, f );
@@ -239,13 +239,13 @@ static void UI_CalcPostGameStats( void )
 	// see if we have one already
 	memset( &oldInfo, 0, sizeof( postGameInfo_t ) );
 
-	if( trap_FS_FOpenFile( fileName, &f, FS_READ ) >= 0 )
+	if ( trap_FS_FOpenFile( fileName, &f, FS_READ ) >= 0 )
 	{
 		// if so load it
 		size = 0;
 		trap_FS_Read( &size, sizeof( int ), f );
 
-		if( size == sizeof( postGameInfo_t ) )
+		if ( size == sizeof( postGameInfo_t ) )
 		{
 			trap_FS_Read( &oldInfo, sizeof( postGameInfo_t ), f );
 		}
@@ -269,7 +269,7 @@ static void UI_CalcPostGameStats( void )
 	newInfo.time = ( time - trap_Cvar_VariableValue( "ui_matchStartTime" ) ) / 1000;
 	adjustedTime = uiInfo.mapList[ ui_currentMap.integer ].timeToBeat[ game ];
 
-	if( newInfo.time < adjustedTime )
+	if ( newInfo.time < adjustedTime )
 	{
 		newInfo.timeBonus = ( adjustedTime - newInfo.time ) * 10;
 	}
@@ -278,7 +278,7 @@ static void UI_CalcPostGameStats( void )
 		newInfo.timeBonus = 0;
 	}
 
-	if( newInfo.redScore > newInfo.blueScore && newInfo.blueScore <= 0 )
+	if ( newInfo.redScore > newInfo.blueScore && newInfo.blueScore <= 0 )
 	{
 		newInfo.shutoutBonus = 100;
 	}
@@ -289,7 +289,7 @@ static void UI_CalcPostGameStats( void )
 
 	newInfo.skillBonus = trap_Cvar_VariableValue( "g_spSkill" );
 
-	if( newInfo.skillBonus <= 0 )
+	if ( newInfo.skillBonus <= 0 )
 	{
 		newInfo.skillBonus = 1;
 	}
@@ -300,12 +300,12 @@ static void UI_CalcPostGameStats( void )
 	// see if the score is higher for this one
 	newHigh = ( newInfo.redScore > newInfo.blueScore && newInfo.score > oldInfo.score );
 
-	if( newHigh )
+	if ( newHigh )
 	{
 		// if so write out the new one
 		uiInfo.newHighScoreTime = uiInfo.uiDC.realTime + 20000;
 
-		if( trap_FS_FOpenFile( fileName, &f, FS_WRITE ) >= 0 )
+		if ( trap_FS_FOpenFile( fileName, &f, FS_WRITE ) >= 0 )
 		{
 			size = sizeof( postGameInfo_t );
 			trap_FS_Write( &size, sizeof( int ), f );
@@ -314,7 +314,7 @@ static void UI_CalcPostGameStats( void )
 		}
 	}
 
-	if( newInfo.time < oldInfo.time )
+	if ( newInfo.time < oldInfo.time )
 	{
 		uiInfo.newBestTime = uiInfo.uiDC.realTime + 20000;
 	}
@@ -350,26 +350,26 @@ qboolean UI_ConsoleCommand( int realTime )
 	// ensure minimum menu data is available
 	//Menu_Cache();
 
-	if( Q_stricmp( cmd, "ui_test" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_test" ) == 0 )
 	{
 		UI_ShowPostGame( qtrue );
 	}
 
-	if( Q_stricmp( cmd, "ui_report" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_report" ) == 0 )
 	{
 		UI_Report();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "ui_load" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_load" ) == 0 )
 	{
 		UI_Load();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "remapShader" ) == 0 )
+	if ( Q_stricmp( cmd, "remapShader" ) == 0 )
 	{
-		if( trap_Argc() == 4 )
+		if ( trap_Argc() == 4 )
 		{
 			char shader1[ MAX_QPATH ];
 			char shader2[ MAX_QPATH ];
@@ -380,29 +380,29 @@ qboolean UI_ConsoleCommand( int realTime )
 		}
 	}
 
-	if( Q_stricmp( cmd, "postgame" ) == 0 )
+	if ( Q_stricmp( cmd, "postgame" ) == 0 )
 	{
 		UI_CalcPostGameStats();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "ui_cache" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_cache" ) == 0 )
 	{
 		UI_Cache_f();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "ui_teamOrders" ) == 0 )
+	if ( Q_stricmp( cmd, "ui_teamOrders" ) == 0 )
 	{
 		//UI_TeamOrdersMenu_f();
 		return qtrue;
 	}
 
-	if( Q_stricmp( cmd, "menu" ) == 0 )
+	if ( Q_stricmp( cmd, "menu" ) == 0 )
 	{
 		arg1 = UI_Argv( 1 );
 
-		if( Menu_Count() > 0 )
+		if ( Menu_Count() > 0 )
 		{
 			trap_Key_SetCatcher( KEYCATCH_UI );
 			Menus_ActivateByName( arg1 );
@@ -410,9 +410,9 @@ qboolean UI_ConsoleCommand( int realTime )
 		}
 	}
 
-	if( Q_stricmp( cmd, "closemenus" ) == 0 )
+	if ( Q_stricmp( cmd, "closemenus" ) == 0 )
 	{
-		if( Menu_Count() > 0 )
+		if ( Menu_Count() > 0 )
 		{
 			trap_Key_SetCatcher( trap_Key_GetCatcher() & ~KEYCATCH_UI );
 			trap_Key_ClearStates();
@@ -473,7 +473,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 	float t0;
 	float t1;
 
-	if( w < 0 )  // flip about vertical
+	if ( w < 0 ) // flip about vertical
 	{
 		w = -w;
 		s0 = 1;
@@ -485,7 +485,7 @@ void UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader )
 		s1 = 1;
 	}
 
-	if( h < 0 )  // flip about horizontal
+	if ( h < 0 ) // flip about horizontal
 	{
 		h = -h;
 		t0 = 1;
@@ -567,10 +567,10 @@ void UI_DrawTextBox( int x, int y, int width, int lines )
 
 qboolean UI_CursorInRect( int x, int y, int width, int height )
 {
-	if( uiInfo.uiDC.cursorx < x ||
-	    uiInfo.uiDC.cursory < y ||
-	    uiInfo.uiDC.cursorx > x + width ||
-	    uiInfo.uiDC.cursory > y + height )
+	if ( uiInfo.uiDC.cursorx < x ||
+	     uiInfo.uiDC.cursory < y ||
+	     uiInfo.uiDC.cursorx > x + width ||
+	     uiInfo.uiDC.cursory > y + height )
 	{
 		return qfalse;
 	}

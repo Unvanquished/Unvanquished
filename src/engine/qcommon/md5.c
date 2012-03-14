@@ -54,7 +54,7 @@ static void byteReverse( unsigned char *buf, unsigned longs )
 		* ( uint32_t * ) buf = t;
 		buf += 4;
 	}
-	while( --longs );
+	while ( --longs );
 }
 
 #endif // Q3_BIG_ENDIAN
@@ -188,7 +188,7 @@ static void MD5Update( struct MD5Context *ctx, unsigned char const *buf,
 
 	t = ctx->bits[ 0 ];
 
-	if( ( ctx->bits[ 0 ] = t + ( ( uint32_t ) len << 3 ) ) < t )
+	if ( ( ctx->bits[ 0 ] = t + ( ( uint32_t ) len << 3 ) ) < t )
 	{
 		ctx->bits[ 1 ]++; /* Carry from low to high */
 	}
@@ -199,13 +199,13 @@ static void MD5Update( struct MD5Context *ctx, unsigned char const *buf,
 
 	/* Handle any leading odd-sized chunks */
 
-	if( t )
+	if ( t )
 	{
 		unsigned char *p = ( unsigned char * ) ctx->in + t;
 
 		t = 64 - t;
 
-		if( len < t )
+		if ( len < t )
 		{
 			memcpy( p, buf, len );
 			return;
@@ -220,7 +220,7 @@ static void MD5Update( struct MD5Context *ctx, unsigned char const *buf,
 
 	/* Process data in 64-byte chunks */
 
-	while( len >= 64 )
+	while ( len >= 64 )
 	{
 		memcpy( ctx->in, buf, 64 );
 		byteReverse( ctx->in, 16 );
@@ -255,7 +255,7 @@ static void MD5Final( struct MD5Context *ctx, unsigned char *digest )
 	count = 64 - 1 - count;
 
 	/* Pad out to 56 mod 64 */
-	if( count < 8 )
+	if ( count < 8 )
 	{
 		/* Two lots of padding:  Pad the first block to 64 bytes */
 		memset( p, 0, count );
@@ -280,7 +280,7 @@ static void MD5Final( struct MD5Context *ctx, unsigned char *digest )
 	MD5Transform( ctx->buf, ( uint32_t * ) ctx->in );
 	byteReverse( ( unsigned char * ) ctx->buf, 4 );
 
-	if( digest != NULL )
+	if ( digest != NULL )
 	{
 		memcpy( digest, ctx->buf, 16 );
 	}
@@ -304,28 +304,28 @@ char *Com_MD5File( const char *fn, int length )
 
 	filelen = FS_FOpenFileRead( fn, &f, qtrue );
 
-	if( filelen < 1 )
+	if ( filelen < 1 )
 	{
 		return final;
 	}
 
-	if( filelen < length || !length )
+	if ( filelen < length || !length )
 	{
 		length = filelen;
 	}
 
 	MD5Init( &md5 );
 
-	for( ;; )
+	for ( ;; )
 	{
 		r = FS_Read2( buffer, sizeof( buffer ), f );
 
-		if( r < 1 )
+		if ( r < 1 )
 		{
 			break;
 		}
 
-		if( r + total > length )
+		if ( r + total > length )
 		{
 			r = length - total;
 		}
@@ -333,7 +333,7 @@ char *Com_MD5File( const char *fn, int length )
 		total += r;
 		MD5Update( &md5, ( unsigned char * ) buffer, r );
 
-		if( r < sizeof( buffer ) || total >= length )
+		if ( r < sizeof( buffer ) || total >= length )
 		{
 			break;
 		}
@@ -343,7 +343,7 @@ char *Com_MD5File( const char *fn, int length )
 	MD5Final( &md5, digest );
 	final[ 0 ] = '\0';
 
-	for( i = 0; i < 16; i++ )
+	for ( i = 0; i < 16; i++ )
 	{
 		Q_strcat( final, sizeof( final ), va( "%02X", digest[ i ] ) );
 	}

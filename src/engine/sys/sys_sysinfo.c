@@ -38,7 +38,7 @@ static void PrintRawHexData( const byte *buf, size_t buf_len )
 {
 	uint i;
 
-	for( i = 0; i < buf_len; i++ )
+	for ( i = 0; i < buf_len; i++ )
 	{
 		Com_Printf( "%02X", ( int ) buf[ i ] );
 	}
@@ -57,17 +57,17 @@ static qboolean PrintCpuInfoFromRegistry( void )
 	char  name_buf[ 256 ];
 	DWORD name_buf_len;
 
-	if( RegOpenKeyEx( HKEY_LOCAL_MACHINE, "Hardware\\Description\\System\\CentralProcessor",
-	                  0, KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE, &kCpus ) != ERROR_SUCCESS )
+	if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, "Hardware\\Description\\System\\CentralProcessor",
+	                   0, KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE, &kCpus ) != ERROR_SUCCESS )
 	{
 		return qfalse;
 	}
 
 	numPrinted = 0;
 
-	for( i = 0; name_buf_len = lengthof( name_buf ),
-	     RegEnumKeyEx( kCpus, i, name_buf, &name_buf_len,
-	                   NULL, NULL, NULL, NULL ) == ERROR_SUCCESS; i++ )
+	for ( i = 0; name_buf_len = lengthof( name_buf ),
+	      RegEnumKeyEx( kCpus, i, name_buf, &name_buf_len,
+	                    NULL, NULL, NULL, NULL ) == ERROR_SUCCESS; i++ )
 	{
 		HKEY   kCpu;
 
@@ -75,7 +75,7 @@ static qboolean PrintCpuInfoFromRegistry( void )
 		LPBYTE value_buf = ( char * ) value_buf_i;
 		DWORD  value_buf_len;
 
-		if( RegOpenKeyEx( kCpus, name_buf, 0, KEY_QUERY_VALUE, &kCpu ) != ERROR_SUCCESS )
+		if ( RegOpenKeyEx( kCpus, name_buf, 0, KEY_QUERY_VALUE, &kCpu ) != ERROR_SUCCESS )
 		{
 			continue;
 		}
@@ -84,35 +84,35 @@ static qboolean PrintCpuInfoFromRegistry( void )
 
 		value_buf_len = sizeof( value_buf_i );
 
-		if( RegQueryValueEx( kCpu, "ProcessorNameString", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
+		if ( RegQueryValueEx( kCpu, "ProcessorNameString", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
 		{
 			Com_Printf( "        Name: %s\n", value_buf );
 		}
 
 		value_buf_len = sizeof( value_buf_i );
 
-		if( RegQueryValueEx( kCpu, "~MHz", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
+		if ( RegQueryValueEx( kCpu, "~MHz", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
 		{
 			Com_Printf( "        Speed: %i MHz\n", ( int ) * ( DWORD * ) value_buf_i );
 		}
 
 		value_buf_len = sizeof( value_buf_i );
 
-		if( RegQueryValueEx( kCpu, "VendorIdentifier", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
+		if ( RegQueryValueEx( kCpu, "VendorIdentifier", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
 		{
 			Com_Printf( "        Vendor: %s\n", value_buf );
 		}
 
 		value_buf_len = sizeof( value_buf_i );
 
-		if( RegQueryValueEx( kCpu, "Identifier", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
+		if ( RegQueryValueEx( kCpu, "Identifier", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
 		{
 			Com_Printf( "        Identifier: %s\n", value_buf );
 		}
 
 		value_buf_len = sizeof( value_buf_i );
 
-		if( RegQueryValueEx( kCpu, "FeatureSet", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
+		if ( RegQueryValueEx( kCpu, "FeatureSet", NULL, NULL, value_buf, &value_buf_len ) == ERROR_SUCCESS )
 		{
 			Com_Printf( "        Feature Bits: %08X\n", ( int ) * ( DWORD * ) value_buf_i );
 		}
@@ -138,7 +138,7 @@ void Sys_PrintCpuInfo( void )
 
 	GetSystemInfo( &si );
 
-	if( si.dwNumberOfProcessors == 1 )
+	if ( si.dwNumberOfProcessors == 1 )
 	{
 		Com_Printf( "Processor:\n" );
 	}
@@ -147,14 +147,14 @@ void Sys_PrintCpuInfo( void )
 		Com_Printf( "Processors (%i):\n", ( int ) si.dwNumberOfProcessors );
 	}
 
-	if( PrintCpuInfoFromRegistry() )
+	if ( PrintCpuInfoFromRegistry() )
 	{
 		return;
 	}
 
 	Com_Printf( "        Architecture: " );
 
-	switch( si.wProcessorArchitecture )
+	switch ( si.wProcessorArchitecture )
 	{
 		case PROCESSOR_ARCHITECTURE_INTEL:
 			Com_Printf( "x86" );

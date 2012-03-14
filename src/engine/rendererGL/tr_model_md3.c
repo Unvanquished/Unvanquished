@@ -41,12 +41,12 @@ static int MDXSurfaceCompare( const void *a, const void *b )
 	bb = * ( mdvSurface_t ** ) b;
 
 	// shader first
-	if( &aa->shader < &bb->shader )
+	if ( &aa->shader < &bb->shader )
 	{
 		return -1;
 	}
 
-	else if( &aa->shader > &bb->shader )
+	else if ( &aa->shader > &bb->shader )
 	{
 		return 1;
 	}
@@ -90,7 +90,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 	version = LittleLong( md3Model->version );
 
-	if( version != MD3_VERSION )
+	if ( version != MD3_VERSION )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD3: %s has wrong version (%i should be %i)\n", modName, version, MD3_VERSION );
 		return qfalse;
@@ -113,7 +113,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 	LL( md3Model->ofsSurfaces );
 	LL( md3Model->ofsEnd );
 
-	if( md3Model->numFrames < 1 )
+	if ( md3Model->numFrames < 1 )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadMD3: %s has no frames\n", modName );
 		return qfalse;
@@ -125,11 +125,11 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 	md3Frame = ( md3Frame_t * )( ( byte * ) md3Model + md3Model->ofsFrames );
 
-	for( i = 0; i < md3Model->numFrames; i++, frame++, md3Frame++ )
+	for ( i = 0; i < md3Model->numFrames; i++, frame++, md3Frame++ )
 	{
 		frame->radius = LittleFloat( md3Frame->radius );
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			frame->bounds[ 0 ][ j ] = LittleFloat( md3Frame->bounds[ 0 ][ j ] );
 			frame->bounds[ 1 ][ j ] = LittleFloat( md3Frame->bounds[ 1 ][ j ] );
@@ -143,9 +143,9 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 	md3Tag = ( md3Tag_t * )( ( byte * ) md3Model + md3Model->ofsTags );
 
-	for( i = 0; i < md3Model->numTags * md3Model->numFrames; i++, tag++, md3Tag++ )
+	for ( i = 0; i < md3Model->numTags * md3Model->numFrames; i++, tag++, md3Tag++ )
 	{
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			tag->origin[ j ] = LittleFloat( md3Tag->origin[ j ] );
 			tag->axis[ 0 ][ j ] = LittleFloat( md3Tag->axis[ 0 ][ j ] );
@@ -158,7 +158,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 	md3Tag = ( md3Tag_t * )( ( byte * ) md3Model + md3Model->ofsTags );
 
-	for( i = 0; i < md3Model->numTags; i++, tagName++, md3Tag++ )
+	for ( i = 0; i < md3Model->numTags; i++, tagName++, md3Tag++ )
 	{
 		Q_strncpyz( tagName->name, md3Tag->name, sizeof( tagName->name ) );
 	}
@@ -169,7 +169,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 	md3Surf = ( md3Surface_t * )( ( byte * ) md3Model + md3Model->ofsSurfaces );
 
-	for( i = 0; i < md3Model->numSurfaces; i++ )
+	for ( i = 0; i < md3Model->numSurfaces; i++ )
 	{
 		LL( md3Surf->ident );
 		LL( md3Surf->flags );
@@ -183,13 +183,13 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		LL( md3Surf->ofsXyzNormals );
 		LL( md3Surf->ofsEnd );
 
-		if( md3Surf->numVerts > SHADER_MAX_VERTEXES )
+		if ( md3Surf->numVerts > SHADER_MAX_VERTEXES )
 		{
 			ri.Error( ERR_DROP, "R_LoadMD3: %s has more than %i verts on a surface (%i)",
 			          modName, SHADER_MAX_VERTEXES, md3Surf->numVerts );
 		}
 
-		if( md3Surf->numTriangles * 3 > SHADER_MAX_INDEXES )
+		if ( md3Surf->numTriangles * 3 > SHADER_MAX_INDEXES )
 		{
 			ri.Error( ERR_DROP, "R_LoadMD3: %s has more than %i triangles on a surface (%i)",
 			          modName, SHADER_MAX_INDEXES / 3, md3Surf->numTriangles );
@@ -211,7 +211,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		// this is a crutch for q3data being a mess
 		j = strlen( surf->name );
 
-		if( j > 2 && surf->name[ j - 2 ] == '_' )
+		if ( j > 2 && surf->name[ j - 2 ] == '_' )
 		{
 			surf->name[ j - 2 ] = 0;
 		}
@@ -249,7 +249,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		md3Tri = ( md3Triangle_t * )( ( byte * ) md3Surf + md3Surf->ofsTriangles );
 
-		for( j = 0; j < md3Surf->numTriangles; j++, tri++, md3Tri++ )
+		for ( j = 0; j < md3Surf->numTriangles; j++, tri++, md3Tri++ )
 		{
 			tri->indexes[ 0 ] = LittleLong( md3Tri->indexes[ 0 ] );
 			tri->indexes[ 1 ] = LittleLong( md3Tri->indexes[ 1 ] );
@@ -264,7 +264,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		md3xyz = ( md3XyzNormal_t * )( ( byte * ) md3Surf + md3Surf->ofsXyzNormals );
 
-		for( j = 0; j < md3Surf->numVerts * md3Surf->numFrames; j++, md3xyz++, v++ )
+		for ( j = 0; j < md3Surf->numVerts * md3Surf->numFrames; j++, md3xyz++, v++ )
 		{
 			v->xyz[ 0 ] = LittleShort( md3xyz->xyz[ 0 ] ) * MD3_XYZ_SCALE;
 			v->xyz[ 1 ] = LittleShort( md3xyz->xyz[ 1 ] ) * MD3_XYZ_SCALE;
@@ -276,7 +276,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		md3st = ( md3St_t * )( ( byte * ) md3Surf + md3Surf->ofsSt );
 
-		for( j = 0; j < md3Surf->numVerts; j++, md3st++, st++ )
+		for ( j = 0; j < md3Surf->numVerts; j++, md3st++, st++ )
 		{
 			st->st[ 0 ] = LittleFloat( md3st->st[ 0 ] );
 			st->st[ 1 ] = LittleFloat( md3st->st[ 1 ] );
@@ -314,7 +314,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		Com_InitGrowList( &vboSurfaces, 10 );
 
-		for( i = 0, surf = mdvModel->surfaces; i < mdvModel->numSurfaces; i++, surf++ )
+		for ( i = 0, surf = mdvModel->surfaces; i < mdvModel->numSurfaces; i++, surf++ )
 		{
 			// calc tangent spaces
 			{
@@ -324,16 +324,16 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 				vec3_t      binormal;
 				vec3_t      normal;
 
-				for( j = 0, v = surf->verts; j < ( surf->numVerts * mdvModel->numFrames ); j++, v++ )
+				for ( j = 0, v = surf->verts; j < ( surf->numVerts * mdvModel->numFrames ); j++, v++ )
 				{
 					VectorClear( v->tangent );
 					VectorClear( v->binormal );
 					VectorClear( v->normal );
 				}
 
-				for( f = 0; f < mdvModel->numFrames; f++ )
+				for ( f = 0; f < mdvModel->numFrames; f++ )
 				{
-					for( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
+					for ( j = 0, tri = surf->triangles; j < surf->numTriangles; j++, tri++ )
 					{
 						v0 = surf->verts[ surf->numVerts * f + tri->indexes[ 0 ] ].xyz;
 						v1 = surf->verts[ surf->numVerts * f + tri->indexes[ 1 ] ].xyz;
@@ -350,7 +350,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 						R_CalcTangentsForTriangle( tangent, binormal, v0, v1, v2, t0, t1, t2 );
 #endif
 
-						for( k = 0; k < 3; k++ )
+						for ( k = 0; k < 3; k++ )
 						{
 							float *v;
 
@@ -366,7 +366,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					}
 				}
 
-				for( j = 0, v = surf->verts; j < ( surf->numVerts * mdvModel->numFrames ); j++, v++ )
+				for ( j = 0, v = surf->verts; j < ( surf->numVerts * mdvModel->numFrames ); j++, v++ )
 				{
 					VectorNormalize( v->tangent );
 					VectorNormalize( v->binormal );
@@ -403,11 +403,11 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			dataOfs = 0;
 
 			// feed vertex XYZ
-			for( f = 0; f < mdvModel->numFrames; f++ )
+			for ( f = 0; f < mdvModel->numFrames; f++ )
 			{
-				for( j = 0; j < vertexesNum; j++ )
+				for ( j = 0; j < vertexesNum; j++ )
 				{
-					for( k = 0; k < 3; k++ )
+					for ( k = 0; k < 3; k++ )
 					{
 						tmp[ k ] = surf->verts[ f * vertexesNum + j ].xyz[ k ];
 					}
@@ -417,7 +417,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					dataOfs += sizeof( vec4_t );
 				}
 
-				if( f == 0 )
+				if ( f == 0 )
 				{
 					sizeXYZ = dataOfs;
 				}
@@ -426,9 +426,9 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			// feed vertex texcoords
 			ofsTexCoords = dataOfs;
 
-			for( j = 0; j < vertexesNum; j++ )
+			for ( j = 0; j < vertexesNum; j++ )
 			{
-				for( k = 0; k < 2; k++ )
+				for ( k = 0; k < 2; k++ )
 				{
 					tmp[ k ] = surf->st[ j ].st[ k ];
 				}
@@ -442,11 +442,11 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			// feed vertex tangents
 			ofsTangents = dataOfs;
 
-			for( f = 0; f < mdvModel->numFrames; f++ )
+			for ( f = 0; f < mdvModel->numFrames; f++ )
 			{
-				for( j = 0; j < vertexesNum; j++ )
+				for ( j = 0; j < vertexesNum; j++ )
 				{
-					for( k = 0; k < 3; k++ )
+					for ( k = 0; k < 3; k++ )
 					{
 						tmp[ k ] = surf->verts[ f * vertexesNum + j ].tangent[ k ];
 					}
@@ -456,7 +456,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					dataOfs += sizeof( vec4_t );
 				}
 
-				if( f == 0 )
+				if ( f == 0 )
 				{
 					sizeTangents = dataOfs - ofsTangents;
 				}
@@ -465,11 +465,11 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			// feed vertex binormals
 			ofsBinormals = dataOfs;
 
-			for( f = 0; f < mdvModel->numFrames; f++ )
+			for ( f = 0; f < mdvModel->numFrames; f++ )
 			{
-				for( j = 0; j < vertexesNum; j++ )
+				for ( j = 0; j < vertexesNum; j++ )
 				{
-					for( k = 0; k < 3; k++ )
+					for ( k = 0; k < 3; k++ )
 					{
 						tmp[ k ] = surf->verts[ f * vertexesNum + j ].binormal[ k ];
 					}
@@ -479,7 +479,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					dataOfs += sizeof( vec4_t );
 				}
 
-				if( f == 0 )
+				if ( f == 0 )
 				{
 					sizeBinormals = dataOfs - ofsBinormals;
 				}
@@ -488,11 +488,11 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			// feed vertex normals
 			ofsNormals = dataOfs;
 
-			for( f = 0; f < mdvModel->numFrames; f++ )
+			for ( f = 0; f < mdvModel->numFrames; f++ )
 			{
-				for( j = 0; j < vertexesNum; j++ )
+				for ( j = 0; j < vertexesNum; j++ )
 				{
-					for( k = 0; k < 3; k++ )
+					for ( k = 0; k < 3; k++ )
 					{
 						tmp[ k ] = surf->verts[ f * vertexesNum + j ].normal[ k ];
 					}
@@ -502,7 +502,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					dataOfs += sizeof( vec4_t );
 				}
 
-				if( f == 0 )
+				if ( f == 0 )
 				{
 					sizeNormals = dataOfs - ofsNormals;
 				}
@@ -528,7 +528,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		mdvModel->numVBOSurfaces = vboSurfaces.currentElements;
 		mdvModel->vboSurfaces = ri.Hunk_Alloc( mdvModel->numVBOSurfaces * sizeof( *mdvModel->vboSurfaces ), h_low );
 
-		for( i = 0; i < mdvModel->numVBOSurfaces; i++ )
+		for ( i = 0; i < mdvModel->numVBOSurfaces; i++ )
 		{
 			mdvModel->vboSurfaces[ i ] = ( srfVBOMDVMesh_t * ) Com_GrowListElement( &vboSurfaces, i );
 		}

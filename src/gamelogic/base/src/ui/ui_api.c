@@ -349,7 +349,7 @@ sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 	int i = syscall( UI_S_REGISTERSOUND, sample, qfalse /* compressed */ );
 #ifdef DEBUG
 
-	if( i == 0 )
+	if ( i == 0 )
 	{
 		Com_Printf( "^1Warning: Failed to load sound: %s\n", sample );
 	}

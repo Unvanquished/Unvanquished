@@ -162,7 +162,7 @@ Sys_DefaultLibPath
 */
 char *Sys_DefaultLibPath( void )
 {
-	if( *libPath )
+	if ( *libPath )
 	{
 		return libPath;
 	}
@@ -238,7 +238,7 @@ qboolean Sys_WritePIDFile( void )
 	qboolean stale = qfalse;
 
 	// First, check if the pid file is already there
-	if( ( f = fopen( pidFile, "r" ) ) != NULL )
+	if ( ( f = fopen( pidFile, "r" ) ) != NULL )
 	{
 		char pidBuffer[ 64 ] = { 0 };
 		int  pid;
@@ -248,13 +248,13 @@ qboolean Sys_WritePIDFile( void )
 
 		pid = atoi( pidBuffer );
 
-		if( !Sys_PIDIsRunning( pid ) )
+		if ( !Sys_PIDIsRunning( pid ) )
 		{
 			stale = qtrue;
 		}
 	}
 
-	if( ( f = fopen( pidFile, "w" ) ) != NULL )
+	if ( ( f = fopen( pidFile, "w" ) ) != NULL )
 	{
 		fprintf( f, "%d", Sys_PID() );
 		fclose( f );
@@ -282,7 +282,7 @@ static void Sys_Exit( int exitCode )
 	SDL_Quit();
 #endif
 
-	if( exitCode < 2 )
+	if ( exitCode < 2 )
 	{
 		// Normal exit
 		remove( Sys_PIDFileName() );
@@ -314,33 +314,33 @@ cpuFeatures_t Sys_GetProcessorFeatures( void )
 
 	GetCPUInfo( &cpuinfo, CI_FALSE );
 
-	if( HasCPUID( &cpuinfo ) ) { features |= CF_RDTSC; }
+	if ( HasCPUID( &cpuinfo ) ) { features |= CF_RDTSC; }
 
-	if( HasMMX( &cpuinfo ) ) { features |= CF_MMX; }
+	if ( HasMMX( &cpuinfo ) ) { features |= CF_MMX; }
 
-	if( HasMMXExt( &cpuinfo ) ) { features |= CF_MMX_EXT; }
+	if ( HasMMXExt( &cpuinfo ) ) { features |= CF_MMX_EXT; }
 
-	if( Has3DNow( &cpuinfo ) ) { features |= CF_3DNOW; }
+	if ( Has3DNow( &cpuinfo ) ) { features |= CF_3DNOW; }
 
-	if( Has3DNowExt( &cpuinfo ) ) { features |= CF_3DNOW_EXT; }
+	if ( Has3DNowExt( &cpuinfo ) ) { features |= CF_3DNOW_EXT; }
 
-	if( HasSSE( &cpuinfo ) ) { features |= CF_SSE; }
+	if ( HasSSE( &cpuinfo ) ) { features |= CF_SSE; }
 
-	if( HasSSE2( &cpuinfo ) ) { features |= CF_SSE2; }
+	if ( HasSSE2( &cpuinfo ) ) { features |= CF_SSE2; }
 
-	if( HasSSE3( &cpuinfo ) ) { features |= CF_SSE3; }
+	if ( HasSSE3( &cpuinfo ) ) { features |= CF_SSE3; }
 
-	if( HasSSSE3( &cpuinfo ) ) { features |= CF_SSSE3; }
+	if ( HasSSSE3( &cpuinfo ) ) { features |= CF_SSSE3; }
 
-	if( HasSSE4_1( &cpuinfo ) ) { features |= CF_SSE4_1; }
+	if ( HasSSE4_1( &cpuinfo ) ) { features |= CF_SSE4_1; }
 
-	if( HasSSE4_2( &cpuinfo ) ) { features |= CF_SSE4_2; }
+	if ( HasSSE4_2( &cpuinfo ) ) { features |= CF_SSE4_2; }
 
-	if( HasHTT( &cpuinfo ) ) { features |= CF_HasHTT; }
+	if ( HasHTT( &cpuinfo ) ) { features |= CF_HasHTT; }
 
-	if( HasSerial( &cpuinfo ) ) { features |= CF_HasSerial; }
+	if ( HasSerial( &cpuinfo ) ) { features |= CF_HasSerial; }
 
-	if( Is64Bit( &cpuinfo ) ) { features |= CF_Is64Bit; }
+	if ( Is64Bit( &cpuinfo ) ) { features |= CF_Is64Bit; }
 
 	return features;
 #else
@@ -383,19 +383,19 @@ void Sys_AnsiColorPrint( const char *msg )
 		0 // COLOR_WHITE
 	};
 
-	while( *msg )
+	while ( *msg )
 	{
-		if( Q_IsColorString( msg ) || *msg == '\n' )
+		if ( Q_IsColorString( msg ) || *msg == '\n' )
 		{
 			// First empty the buffer
-			if( length > 0 )
+			if ( length > 0 )
 			{
 				buffer[ length ] = '\0';
 				fputs( buffer, stderr );
 				length = 0;
 			}
 
-			if( *msg == '\n' )
+			if ( *msg == '\n' )
 			{
 				// Issue a reset and then the newline
 				fputs( "\033[0m\n", stderr );
@@ -412,7 +412,7 @@ void Sys_AnsiColorPrint( const char *msg )
 		}
 		else
 		{
-			if( length >= MAXPRINTMSG - 1 )
+			if ( length >= MAXPRINTMSG - 1 )
 			{
 				break;
 			}
@@ -424,7 +424,7 @@ void Sys_AnsiColorPrint( const char *msg )
 	}
 
 	// Empty anything still left in the buffer
-	if( length > 0 )
+	if ( length > 0 )
 	{
 		buffer[ length ] = '\0';
 		fputs( buffer, stderr );
@@ -536,7 +536,7 @@ int Sys_FileTime( char *path )
 {
 	struct stat buf;
 
-	if( stat( path, &buf ) == -1 )
+	if ( stat( path, &buf ) == -1 )
 	{
 		return -1;
 	}
@@ -551,7 +551,7 @@ Sys_UnloadDll
 */
 void Sys_UnloadDll( void *dllHandle )
 {
-	if( !dllHandle )
+	if ( !dllHandle )
 	{
 		Com_Printf( "Sys_UnloadDll(NULL)\n" );
 		return;
@@ -595,7 +595,7 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 
 	libHandle = Sys_LoadLibrary( fn );
 
-	if( !libHandle )
+	if ( !libHandle )
 	{
 		Com_Printf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", fn, Sys_LibraryError() );
 		return NULL;
@@ -647,7 +647,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 	// if the server is pure, extract the dlls from the mp_bin.pk3 so
 	// that they can be referenced
-	if( Cvar_VariableValue( "sv_pure" ) && Q_stricmp( name, "qagame" ) )
+	if ( Cvar_VariableValue( "sv_pure" ) && Q_stricmp( name, "qagame" ) )
 	{
 		FS_CL_ExtractFromPakFile( homepath, gamedir, fname );
 	}
@@ -658,25 +658,25 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 #ifdef __FreeBSD__
 
-	if( !libHandle && libpath )
+	if ( !libHandle && libpath )
 	{
 		libHandle = Sys_TryLibraryLoad( libpath, gamedir, fname, fqpath );
 	}
 
 #endif
 
-	if( !libHandle && basepath )
+	if ( !libHandle && basepath )
 	{
 		libHandle = Sys_TryLibraryLoad( basepath, gamedir, fname, fqpath );
 	}
 
-	if( !libHandle )
+	if ( !libHandle )
 	{
 		Com_Printf( "Sys_LoadDll(%s) could not find it\n", fname );
 		return NULL;
 	}
 
-	if( !libHandle )
+	if ( !libHandle )
 	{
 		Com_Printf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", name, Sys_LibraryError() );
 		return NULL;
@@ -686,11 +686,11 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	dllEntry = Sys_LoadFunction( libHandle, "dllEntry" );
 	*entryPoint = Sys_LoadFunction( libHandle, "vmMain" );
 
-	if( !*entryPoint || !dllEntry )
+	if ( !*entryPoint || !dllEntry )
 	{
 #ifndef NDEBUG
 
-		if( !dllEntry )
+		if ( !dllEntry )
 		{
 			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%s\" !\n", name, Sys_LibraryError() );
 		}
@@ -701,7 +701,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 #else
 
-		if( !dllEntry )
+		if ( !dllEntry )
 		{
 			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%p\" !\n", name, Sys_LibraryError() );
 		}
@@ -733,10 +733,10 @@ Sys_ParseArgs
 */
 void Sys_ParseArgs( int argc, char **argv )
 {
-	if( argc == 2 )
+	if ( argc == 2 )
 	{
-		if( !strcmp( argv[ 1 ], "--version" ) ||
-		    !strcmp( argv[ 1 ], "-v" ) )
+		if ( !strcmp( argv[ 1 ], "--version" ) ||
+		     !strcmp( argv[ 1 ], "-v" ) )
 		{
 			const char *date = __DATE__;
 #ifdef DEDICATED
@@ -766,7 +766,7 @@ void Sys_SigHandler( int signal )
 {
 	static qboolean signalcaught = qfalse;
 
-	if( signalcaught )
+	if ( signalcaught )
 	{
 		VM_Forced_Unload_Start();
 		fprintf( stderr, "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n",
@@ -782,7 +782,7 @@ void Sys_SigHandler( int signal )
 		VM_Forced_Unload_Done();
 	}
 
-	if( signal == SIGTERM || signal == SIGINT )
+	if ( signal == SIGTERM || signal == SIGINT )
 	{
 		Sys_Exit( 1 );
 	}
@@ -845,8 +845,8 @@ int main( int argc, char **argv )
   XSTRING(MINSDL_MINOR) "." \
   XSTRING(MINSDL_PATCH)
 
-	if( SDL_VERSIONNUM( ver->major, ver->minor, ver->patch ) <
-	    SDL_VERSIONNUM( MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH ) )
+	if ( SDL_VERSIONNUM( ver->major, ver->minor, ver->patch ) <
+	     SDL_VERSIONNUM( MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH ) )
 	{
 		Sys_Dialog( DT_ERROR, va( "SDL version " MINSDL_VERSION " or greater is required, "
 		                          "but only version %d.%d.%d was found. You may be able to obtain a more recent copy "
@@ -871,7 +871,7 @@ int main( int argc, char **argv )
 		tid = omp_get_thread_num();
 
 		/* Only master thread does this */
-		if( tid == 0 )
+		if ( tid == 0 )
 		{
 			Com_Printf( "Thread %d getting environment info...\n", tid );
 
@@ -909,11 +909,11 @@ int main( int argc, char **argv )
 	Sys_SetDefaultInstallPath( DEFAULT_BASEDIR );
 
 	// Concatenate the command line for passing to Com_Init
-	for( i = 1; i < argc; i++ )
+	for ( i = 1; i < argc; i++ )
 	{
 #ifdef USE_CURSES
 
-		if( !strcmp( "+nocurses", argv[ i ] ) )
+		if ( !strcmp( "+nocurses", argv[ i ] ) )
 		{
 			nocurses = qtrue;
 			continue;
@@ -922,14 +922,14 @@ int main( int argc, char **argv )
 #endif
 		const qboolean containsSpaces = strchr( argv[ i ], ' ' ) != NULL;
 
-		if( containsSpaces )
+		if ( containsSpaces )
 		{
 			Q_strcat( commandLine, sizeof( commandLine ), "\"" );
 		}
 
 		Q_strcat( commandLine, sizeof( commandLine ), argv[ i ] );
 
-		if( containsSpaces )
+		if ( containsSpaces )
 		{
 			Q_strcat( commandLine, sizeof( commandLine ), "\"" );
 		}
@@ -945,7 +945,7 @@ int main( int argc, char **argv )
 	NET_Init();
 #ifdef USE_CURSES
 
-	if( nocurses )
+	if ( nocurses )
 	{
 		CON_Init_tty();
 	}
@@ -964,7 +964,7 @@ int main( int argc, char **argv )
 	signal( SIGTERM, Sys_SigHandler );
 	signal( SIGINT, Sys_SigHandler );
 
-	while( 1 )
+	while ( 1 )
 	{
 		IN_Frame();
 		Com_Frame();

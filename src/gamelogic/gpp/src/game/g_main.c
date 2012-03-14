@@ -312,7 +312,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
                           int arg5, int arg6, int arg7, int arg8, int arg9,
                           int arg10, int arg11 )
 {
-	switch( command )
+	switch ( command )
 	{
 		case GAME_INIT:
 			G_InitGame( arg0, arg1, arg2 );
@@ -400,19 +400,19 @@ void G_FindTeams( void )
 	c = 0;
 	c2 = 0;
 
-	for( i = 1, e = g_entities + i; i < level.num_entities; i++, e++ )
+	for ( i = 1, e = g_entities + i; i < level.num_entities; i++, e++ )
 	{
-		if( !e->inuse )
+		if ( !e->inuse )
 		{
 			continue;
 		}
 
-		if( !e->team )
+		if ( !e->team )
 		{
 			continue;
 		}
 
-		if( e->flags & FL_TEAMSLAVE )
+		if ( e->flags & FL_TEAMSLAVE )
 		{
 			continue;
 		}
@@ -421,24 +421,24 @@ void G_FindTeams( void )
 		c++;
 		c2++;
 
-		for( j = i + 1, e2 = e + 1; j < level.num_entities; j++, e2++ )
+		for ( j = i + 1, e2 = e + 1; j < level.num_entities; j++, e2++ )
 		{
-			if( !e2->inuse )
+			if ( !e2->inuse )
 			{
 				continue;
 			}
 
-			if( !e2->team )
+			if ( !e2->team )
 			{
 				continue;
 			}
 
-			if( e2->flags & FL_TEAMSLAVE )
+			if ( e2->flags & FL_TEAMSLAVE )
 			{
 				continue;
 			}
 
-			if( !strcmp( e->team, e2->team ) )
+			if ( !strcmp( e->team, e2->team ) )
 			{
 				c2++;
 				e2->teamchain = e->teamchain;
@@ -447,7 +447,7 @@ void G_FindTeams( void )
 				e2->flags |= FL_TEAMSLAVE;
 
 				// make sure that targets only point at the master
-				if( e2->targetname )
+				if ( e2->targetname )
 				{
 					e->targetname = e2->targetname;
 					e2->targetname = NULL;
@@ -469,17 +469,17 @@ void G_RegisterCvars( void )
 	int         i;
 	cvarTable_t *cv;
 
-	for( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
+	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
 	{
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 		                    cv->defaultString, cv->cvarFlags );
 
-		if( cv->vmCvar )
+		if ( cv->vmCvar )
 		{
 			cv->modificationCount = cv->vmCvar->modificationCount;
 		}
 
-		if( cv->explicit )
+		if ( cv->explicit )
 		{
 			strcpy( cv->explicit, cv->vmCvar->string );
 		}
@@ -496,23 +496,23 @@ void G_UpdateCvars( void )
 	int         i;
 	cvarTable_t *cv;
 
-	for( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
+	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
 	{
-		if( cv->vmCvar )
+		if ( cv->vmCvar )
 		{
 			trap_Cvar_Update( cv->vmCvar );
 
-			if( cv->modificationCount != cv->vmCvar->modificationCount )
+			if ( cv->modificationCount != cv->vmCvar->modificationCount )
 			{
 				cv->modificationCount = cv->vmCvar->modificationCount;
 
-				if( cv->trackChange )
+				if ( cv->trackChange )
 				{
 					trap_SendServerCommand( -1, va( "print \"Server: %s changed to %s\n\"",
 					                                cv->cvarName, cv->vmCvar->string ) );
 				}
 
-				if( !level.spawning && cv->explicit )
+				if ( !level.spawning && cv->explicit )
 				{
 					strcpy( cv->explicit, cv->vmCvar->string );
 				}
@@ -531,9 +531,9 @@ void G_RestoreCvars( void )
 	int         i;
 	cvarTable_t *cv;
 
-	for( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
+	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
 	{
-		if( cv->vmCvar && cv->explicit )
+		if ( cv->vmCvar && cv->explicit )
 		{
 			trap_Cvar_Set( cv->cvarName, cv->explicit );
 		}
@@ -547,12 +547,12 @@ G_MapConfigs
 */
 void G_MapConfigs( const char *mapname )
 {
-	if( !g_mapConfigs.string[ 0 ] )
+	if ( !g_mapConfigs.string[ 0 ] )
 	{
 		return;
 	}
 
-	if( trap_Cvar_VariableIntegerValue( "g_mapConfigsLoaded" ) )
+	if ( trap_Cvar_VariableIntegerValue( "g_mapConfigsLoaded" ) )
 	{
 		return;
 	}
@@ -596,9 +596,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	                            = level.startTime;
 	level.snd_fry = G_SoundIndex( "sound/misc/fry.wav" );  // FIXME standing in lava / slime
 
-	if( g_logFile.string[ 0 ] )
+	if ( g_logFile.string[ 0 ] )
 	{
-		if( g_logFileSync.integer )
+		if ( g_logFileSync.integer )
 		{
 			trap_FS_FOpenFile( g_logFile.string, &level.logFile, FS_APPEND_SYNC );
 		}
@@ -607,7 +607,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 			trap_FS_FOpenFile( g_logFile.string, &level.logFile, FS_APPEND );
 		}
 
-		if( !level.logFile )
+		if ( !level.logFile )
 		{
 			G_Printf( "WARNING: Couldn't open logfile: %s\n", g_logFile.string );
 		}
@@ -657,7 +657,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	level.clients = g_clients;
 
 	// set client fields on player ents
-	for( i = 0; i < level.maxclients; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		g_entities[ i ].client = level.clients + i;
 	}
@@ -699,7 +699,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	G_InitSpawnQueue( &level.alienSpawnQueue );
 	G_InitSpawnQueue( &level.humanSpawnQueue );
 
-	if( g_debugMapRotation.integer )
+	if ( g_debugMapRotation.integer )
 	{
 		G_PrintRotations();
 	}
@@ -721,7 +721,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	G_UpdateTeamConfigStrings();
 
-	if( g_lockTeamsAtStart.integer )
+	if ( g_lockTeamsAtStart.integer )
 	{
 		level.alienTeamLocked = qtrue;
 		level.humanTeamLocked = qtrue;
@@ -741,7 +741,7 @@ static void G_ClearVotes( void )
 	int i;
 	memset( level.voteTime, 0, sizeof( level.voteTime ) );
 
-	for( i = 0; i < NUM_TEAMS; i++ )
+	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
 		trap_SetConfigstring( CS_VOTE_TIME + i, "" );
 		trap_SetConfigstring( CS_VOTE_STRING + i, "" );
@@ -762,7 +762,7 @@ void G_ShutdownGame( int restart )
 
 	G_Printf( "==== ShutdownGame ====\n" );
 
-	if( level.logFile )
+	if ( level.logFile )
 	{
 		G_LogPrintf( "ShutdownGame:\n" );
 		G_LogPrintf( "------------------------------------------------------------\n" );
@@ -832,12 +832,12 @@ int QDECL SortRanks( const void *a, const void *b )
 	cb = &level.clients[ * ( int * ) b ];
 
 	// then sort by score
-	if( ca->ps.persistant[ PERS_SCORE ] > cb->ps.persistant[ PERS_SCORE ] )
+	if ( ca->ps.persistant[ PERS_SCORE ] > cb->ps.persistant[ PERS_SCORE ] )
 	{
 		return -1;
 	}
 
-	if( ca->ps.persistant[ PERS_SCORE ] < cb->ps.persistant[ PERS_SCORE ] )
+	if ( ca->ps.persistant[ PERS_SCORE ] < cb->ps.persistant[ PERS_SCORE ] )
 	{
 		return 1;
 	}
@@ -862,7 +862,7 @@ void G_InitSpawnQueue( spawnQueue_t *sq )
 	sq->back = QUEUE_MINUS1( sq->back );
 
 	//0 is a valid clientNum, so use something else
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		sq->clients[ i ] = -1;
 	}
@@ -879,12 +879,12 @@ int G_GetSpawnQueueLength( spawnQueue_t *sq )
 {
 	int length = sq->back - sq->front + 1;
 
-	while( length < 0 )
+	while ( length < 0 )
 	{
 		length += MAX_CLIENTS;
 	}
 
-	while( length >= MAX_CLIENTS )
+	while ( length >= MAX_CLIENTS )
 	{
 		length -= MAX_CLIENTS;
 	}
@@ -903,7 +903,7 @@ int G_PopSpawnQueue( spawnQueue_t *sq )
 {
 	int clientNum = sq->clients[ sq->front ];
 
-	if( G_GetSpawnQueueLength( sq ) > 0 )
+	if ( G_GetSpawnQueueLength( sq ) > 0 )
 	{
 		sq->clients[ sq->front ] = -1;
 		sq->front = QUEUE_PLUS1( sq->front );
@@ -941,9 +941,9 @@ qboolean G_SearchSpawnQueue( spawnQueue_t *sq, int clientNum )
 {
 	int i;
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		if( sq->clients[ i ] == clientNum )
+		if ( sq->clients[ i ] == clientNum )
 		{
 			return qtrue;
 		}
@@ -962,7 +962,7 @@ Add an element to the back of the spawn queue
 qboolean G_PushSpawnQueue( spawnQueue_t *sq, int clientNum )
 {
 	// don't add the same client more than once
-	if( G_SearchSpawnQueue( sq, clientNum ) )
+	if ( G_SearchSpawnQueue( sq, clientNum ) )
 	{
 		return qfalse;
 	}
@@ -985,11 +985,11 @@ qboolean G_RemoveFromSpawnQueue( spawnQueue_t *sq, int clientNum )
 {
 	int i = sq->front;
 
-	if( G_GetSpawnQueueLength( sq ) )
+	if ( G_GetSpawnQueueLength( sq ) )
 	{
 		do
 		{
-			if( sq->clients[ i ] == clientNum )
+			if ( sq->clients[ i ] == clientNum )
 			{
 				//and this kids is why it would have
 				//been better to use an LL for internal
@@ -1000,7 +1000,7 @@ qboolean G_RemoveFromSpawnQueue( spawnQueue_t *sq, int clientNum )
 
 					i = QUEUE_PLUS1( i );
 				}
-				while( i != QUEUE_PLUS1( sq->back ) );
+				while ( i != QUEUE_PLUS1( sq->back ) );
 
 				sq->back = QUEUE_MINUS1( sq->back );
 				g_entities[ clientNum ].client->ps.pm_flags &= ~PMF_QUEUED;
@@ -1010,7 +1010,7 @@ qboolean G_RemoveFromSpawnQueue( spawnQueue_t *sq, int clientNum )
 
 			i = QUEUE_PLUS1( i );
 		}
-		while( i != QUEUE_PLUS1( sq->back ) );
+		while ( i != QUEUE_PLUS1( sq->back ) );
 	}
 
 	return qfalse;
@@ -1027,13 +1027,13 @@ int G_GetPosInSpawnQueue( spawnQueue_t *sq, int clientNum )
 {
 	int i = sq->front;
 
-	if( G_GetSpawnQueueLength( sq ) )
+	if ( G_GetSpawnQueueLength( sq ) )
 	{
 		do
 		{
-			if( sq->clients[ i ] == clientNum )
+			if ( sq->clients[ i ] == clientNum )
 			{
-				if( i < sq->front )
+				if ( i < sq->front )
 				{
 					return i + MAX_CLIENTS - sq->front;
 				}
@@ -1045,7 +1045,7 @@ int G_GetPosInSpawnQueue( spawnQueue_t *sq, int clientNum )
 
 			i = QUEUE_PLUS1( i );
 		}
-		while( i != QUEUE_PLUS1( sq->back ) );
+		while ( i != QUEUE_PLUS1( sq->back ) );
 	}
 
 	return -1;
@@ -1065,11 +1065,11 @@ void G_PrintSpawnQueue( spawnQueue_t *sq )
 
 	G_Printf( "l:%d f:%d b:%d    :", length, sq->front, sq->back );
 
-	if( length > 0 )
+	if ( length > 0 )
 	{
 		do
 		{
-			if( sq->clients[ i ] == -1 )
+			if ( sq->clients[ i ] == -1 )
 			{
 				G_Printf( "*:" );
 			}
@@ -1080,7 +1080,7 @@ void G_PrintSpawnQueue( spawnQueue_t *sq )
 
 			i = QUEUE_PLUS1( i );
 		}
-		while( i != QUEUE_PLUS1( sq->back ) );
+		while ( i != QUEUE_PLUS1( sq->back ) );
 	}
 
 	G_Printf( "\n" );
@@ -1101,29 +1101,29 @@ void G_SpawnClients( team_t team )
 	spawnQueue_t *sq = NULL;
 	int          numSpawns = 0;
 
-	if( team == TEAM_ALIENS )
+	if ( team == TEAM_ALIENS )
 	{
 		sq = &level.alienSpawnQueue;
 		numSpawns = level.numAlienSpawns;
 	}
-	else if( team == TEAM_HUMANS )
+	else if ( team == TEAM_HUMANS )
 	{
 		sq = &level.humanSpawnQueue;
 		numSpawns = level.numHumanSpawns;
 	}
 
-	if( G_GetSpawnQueueLength( sq ) > 0 && numSpawns > 0 )
+	if ( G_GetSpawnQueueLength( sq ) > 0 && numSpawns > 0 )
 	{
 		clientNum = G_PeekSpawnQueue( sq );
 		ent = &g_entities[ clientNum ];
 
-		if( ( spawn = G_SelectTremulousSpawnPoint( team,
-		              ent->client->pers.lastDeathLocation,
-		              spawn_origin, spawn_angles ) ) )
+		if ( ( spawn = G_SelectTremulousSpawnPoint( team,
+		               ent->client->pers.lastDeathLocation,
+		               spawn_origin, spawn_angles ) ) )
 		{
 			clientNum = G_PopSpawnQueue( sq );
 
-			if( clientNum < 0 )
+			if ( clientNum < 0 )
 			{
 				return;
 			}
@@ -1152,19 +1152,19 @@ void G_CountSpawns( void )
 	level.numAlienSpawns = 0;
 	level.numHumanSpawns = 0;
 
-	for( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if( !ent->inuse || ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
+		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
 		{
 			continue;
 		}
 
-		if( ent->s.modelindex == BA_A_SPAWN )
+		if ( ent->s.modelindex == BA_A_SPAWN )
 		{
 			level.numAlienSpawns++;
 		}
 
-		if( ent->s.modelindex == BA_H_SPAWN )
+		if ( ent->s.modelindex == BA_H_SPAWN )
 		{
 			level.numHumanSpawns++;
 		}
@@ -1179,8 +1179,8 @@ G_TimeTilSuddenDeath
 #define SUDDENDEATHWARNING 60000
 int G_TimeTilSuddenDeath( void )
 {
-	if( ( !g_suddenDeathTime.integer && level.suddenDeathBeginTime == 0 ) ||
-	    ( level.suddenDeathBeginTime < 0 ) )
+	if ( ( !g_suddenDeathTime.integer && level.suddenDeathBeginTime == 0 ) ||
+	     ( level.suddenDeathBeginTime < 0 ) )
 	{
 		return SUDDENDEATHWARNING + 1; // Always some time away
 	}
@@ -1204,8 +1204,8 @@ void G_CalculateBuildPoints( void )
 	buildPointZone_t *zone;
 
 	// BP queue updates
-	while( level.alienBuildPointQueue > 0 &&
-	       level.alienNextQueueTime < level.time )
+	while ( level.alienBuildPointQueue > 0 &&
+	        level.alienNextQueueTime < level.time )
 	{
 		level.alienBuildPointQueue--;
 		level.alienNextQueueTime += G_NextQueueTime( level.alienBuildPointQueue,
@@ -1213,8 +1213,8 @@ void G_CalculateBuildPoints( void )
 		                            g_alienBuildQueueTime.integer );
 	}
 
-	while( level.humanBuildPointQueue > 0 &&
-	       level.humanNextQueueTime < level.time )
+	while ( level.humanBuildPointQueue > 0 &&
+	        level.humanNextQueueTime < level.time )
 	{
 		level.humanBuildPointQueue--;
 		level.humanNextQueueTime += G_NextQueueTime( level.humanBuildPointQueue,
@@ -1223,7 +1223,7 @@ void G_CalculateBuildPoints( void )
 	}
 
 	// Sudden Death checks
-	if( G_TimeTilSuddenDeath() <= 0 && level.suddenDeathWarning < TW_PASSED )
+	if ( G_TimeTilSuddenDeath() <= 0 && level.suddenDeathWarning < TW_PASSED )
 	{
 		G_LogPrintf( "Beginning Sudden Death\n" );
 		trap_SendServerCommand( -1, "cp \"Sudden Death!\"" );
@@ -1232,16 +1232,16 @@ void G_CalculateBuildPoints( void )
 		G_ClearDeconMarks();
 
 		// Clear blueprints, or else structs that cost 0 BP can still be built after SD
-		for( i = 0; i < level.maxclients; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
-			if( g_entities[ i ].client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
+			if ( g_entities[ i ].client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
 			{
 				g_entities[ i ].client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 			}
 		}
 	}
-	else if( G_TimeTilSuddenDeath() <= SUDDENDEATHWARNING &&
-	         level.suddenDeathWarning < TW_IMMINENT )
+	else if ( G_TimeTilSuddenDeath() <= SUDDENDEATHWARNING &&
+	          level.suddenDeathWarning < TW_IMMINENT )
 	{
 		trap_SendServerCommand( -1, va( "cp \"Sudden Death in %d seconds!\"",
 		                                ( int )( G_TimeTilSuddenDeath() / 1000 ) ) );
@@ -1254,7 +1254,7 @@ void G_CalculateBuildPoints( void )
 	level.alienBuildPoints = g_alienBuildPoints.integer - level.alienBuildPointQueue;
 
 	// Reset buildPointZones
-	for( i = 0; i < g_humanRepeaterMaxZones.integer; i++ )
+	for ( i = 0; i < g_humanRepeaterMaxZones.integer; i++ )
 	{
 		buildPointZone_t *zone = &level.buildPointZones[ i ];
 
@@ -1263,20 +1263,20 @@ void G_CalculateBuildPoints( void )
 	}
 
 	// Iterate through entities
-	for( i = MAX_CLIENTS; i < level.num_entities; i++ )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
 	{
 		gentity_t        *ent = &g_entities[ i ];
 		buildPointZone_t *zone;
 		buildable_t      buildable;
 		int              cost;
 
-		if( ent->s.eType != ET_BUILDABLE || ent->s.eFlags & EF_DEAD )
+		if ( ent->s.eType != ET_BUILDABLE || ent->s.eFlags & EF_DEAD )
 		{
 			continue;
 		}
 
 		// mark a zone as active
-		if( ent->usesBuildPointZone )
+		if ( ent->usesBuildPointZone )
 		{
 			assert( ent->buildPointZone >= 0 && ent->buildPointZone < g_humanRepeaterMaxZones.integer );
 
@@ -1288,26 +1288,26 @@ void G_CalculateBuildPoints( void )
 		buildable = ent->s.modelindex;
 		cost = BG_Buildable( buildable )->buildPoints;
 
-		if( ent->buildableTeam == TEAM_ALIENS )
+		if ( ent->buildableTeam == TEAM_ALIENS )
 		{
 			level.alienBuildPoints -= cost;
 		}
 
-		if( buildable == BA_H_REPEATER )
+		if ( buildable == BA_H_REPEATER )
 		{
 			level.humanBuildPoints -= cost;
 		}
-		else if( buildable != BA_H_REACTOR )
+		else if ( buildable != BA_H_REACTOR )
 		{
 			gentity_t *power = G_PowerEntityForEntity( ent );
 
-			if( power )
+			if ( power )
 			{
-				if( power->s.modelindex == BA_H_REACTOR )
+				if ( power->s.modelindex == BA_H_REACTOR )
 				{
 					level.humanBuildPoints -= cost;
 				}
-				else if( power->s.modelindex == BA_H_REPEATER && power->usesBuildPointZone )
+				else if ( power->s.modelindex == BA_H_REPEATER && power->usesBuildPointZone )
 				{
 					level.buildPointZones[ power->buildPointZone ].totalBuildPoints -= cost;
 				}
@@ -1317,32 +1317,32 @@ void G_CalculateBuildPoints( void )
 
 	// Finally, update repeater zones and their queues
 	// note that this has to be done after the used BP is calculated
-	for( i = MAX_CLIENTS; i < level.num_entities; i++ )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
 	{
 		gentity_t *ent = &g_entities[ i ];
 
-		if( ent->s.eType != ET_BUILDABLE || ent->s.eFlags & EF_DEAD ||
-		    ent->buildableTeam != TEAM_HUMANS )
+		if ( ent->s.eType != ET_BUILDABLE || ent->s.eFlags & EF_DEAD ||
+		     ent->buildableTeam != TEAM_HUMANS )
 		{
 			continue;
 		}
 
 		buildable = ent->s.modelindex;
 
-		if( buildable != BA_H_REPEATER )
+		if ( buildable != BA_H_REPEATER )
 		{
 			continue;
 		}
 
-		if( ent->usesBuildPointZone && level.buildPointZones[ ent->buildPointZone ].active )
+		if ( ent->usesBuildPointZone && level.buildPointZones[ ent->buildPointZone ].active )
 		{
 			zone = &level.buildPointZones[ ent->buildPointZone ];
 
-			if( G_TimeTilSuddenDeath() > 0 )
+			if ( G_TimeTilSuddenDeath() > 0 )
 			{
 				// BP queue updates
-				while( zone->queuedBuildPoints > 0 &&
-				       zone->nextQueueTime < level.time )
+				while ( zone->queuedBuildPoints > 0 &&
+				        zone->nextQueueTime < level.time )
 				{
 					zone->queuedBuildPoints--;
 					zone->nextQueueTime += G_NextQueueTime( zone->queuedBuildPoints,
@@ -1357,12 +1357,12 @@ void G_CalculateBuildPoints( void )
 		}
 	}
 
-	if( level.humanBuildPoints < 0 )
+	if ( level.humanBuildPoints < 0 )
 	{
 		level.humanBuildPoints = 0;
 	}
 
-	if( level.alienBuildPoints < 0 )
+	if ( level.alienBuildPoints < 0 )
 	{
 		level.alienBuildPoints = 0;
 	}
@@ -1381,19 +1381,19 @@ void G_CalculateStages( void )
 	static int lastAlienStageModCount = 1;
 	static int lastHumanStageModCount = 1;
 
-	if( alienPlayerCountMod < 0.1f )
+	if ( alienPlayerCountMod < 0.1f )
 	{
 		alienPlayerCountMod = 0.1f;
 	}
 
-	if( humanPlayerCountMod < 0.1f )
+	if ( humanPlayerCountMod < 0.1f )
 	{
 		humanPlayerCountMod = 0.1f;
 	}
 
-	if( g_alienCredits.integer >=
-	    ( int )( ceil( ( float ) g_alienStage2Threshold.integer * alienPlayerCountMod ) ) &&
-	    g_alienStage.integer == S1 && g_alienMaxStage.integer > S1 )
+	if ( g_alienCredits.integer >=
+	     ( int )( ceil( ( float ) g_alienStage2Threshold.integer * alienPlayerCountMod ) ) &&
+	     g_alienStage.integer == S1 && g_alienMaxStage.integer > S1 )
 	{
 		trap_Cvar_Set( "g_alienStage", va( "%d", S2 ) );
 		level.alienStage2Time = level.time;
@@ -1401,9 +1401,9 @@ void G_CalculateStages( void )
 		G_LogPrintf( "Stage: A 2: Aliens reached Stage 2\n" );
 	}
 
-	if( g_alienCredits.integer >=
-	    ( int )( ceil( ( float ) g_alienStage3Threshold.integer * alienPlayerCountMod ) ) &&
-	    g_alienStage.integer == S2 && g_alienMaxStage.integer > S2 )
+	if ( g_alienCredits.integer >=
+	     ( int )( ceil( ( float ) g_alienStage3Threshold.integer * alienPlayerCountMod ) ) &&
+	     g_alienStage.integer == S2 && g_alienMaxStage.integer > S2 )
 	{
 		trap_Cvar_Set( "g_alienStage", va( "%d", S3 ) );
 		level.alienStage3Time = level.time;
@@ -1411,9 +1411,9 @@ void G_CalculateStages( void )
 		G_LogPrintf( "Stage: A 3: Aliens reached Stage 3\n" );
 	}
 
-	if( g_humanCredits.integer >=
-	    ( int )( ceil( ( float ) g_humanStage2Threshold.integer * humanPlayerCountMod ) ) &&
-	    g_humanStage.integer == S1 && g_humanMaxStage.integer > S1 )
+	if ( g_humanCredits.integer >=
+	     ( int )( ceil( ( float ) g_humanStage2Threshold.integer * humanPlayerCountMod ) ) &&
+	     g_humanStage.integer == S1 && g_humanMaxStage.integer > S1 )
 	{
 		trap_Cvar_Set( "g_humanStage", va( "%d", S2 ) );
 		level.humanStage2Time = level.time;
@@ -1421,9 +1421,9 @@ void G_CalculateStages( void )
 		G_LogPrintf( "Stage: H 2: Humans reached Stage 2\n" );
 	}
 
-	if( g_humanCredits.integer >=
-	    ( int )( ceil( ( float ) g_humanStage3Threshold.integer * humanPlayerCountMod ) ) &&
-	    g_humanStage.integer == S2 && g_humanMaxStage.integer > S2 )
+	if ( g_humanCredits.integer >=
+	     ( int )( ceil( ( float ) g_humanStage3Threshold.integer * humanPlayerCountMod ) ) &&
+	     g_humanStage.integer == S2 && g_humanMaxStage.integer > S2 )
 	{
 		trap_Cvar_Set( "g_humanStage", va( "%d", S3 ) );
 		level.humanStage3Time = level.time;
@@ -1431,15 +1431,15 @@ void G_CalculateStages( void )
 		G_LogPrintf( "Stage: H 3: Humans reached Stage 3\n" );
 	}
 
-	if( g_alienStage.modificationCount > lastAlienStageModCount )
+	if ( g_alienStage.modificationCount > lastAlienStageModCount )
 	{
 		G_Checktrigger_stages( TEAM_ALIENS, g_alienStage.integer );
 
-		if( g_alienStage.integer == S2 )
+		if ( g_alienStage.integer == S2 )
 		{
 			level.alienStage2Time = level.time;
 		}
-		else if( g_alienStage.integer == S3 )
+		else if ( g_alienStage.integer == S3 )
 		{
 			level.alienStage3Time = level.time;
 		}
@@ -1447,15 +1447,15 @@ void G_CalculateStages( void )
 		lastAlienStageModCount = g_alienStage.modificationCount;
 	}
 
-	if( g_humanStage.modificationCount > lastHumanStageModCount )
+	if ( g_humanStage.modificationCount > lastHumanStageModCount )
 	{
 		G_Checktrigger_stages( TEAM_HUMANS, g_humanStage.integer );
 
-		if( g_humanStage.integer == S2 )
+		if ( g_humanStage.integer == S2 )
 		{
 			level.humanStage2Time = level.time;
 		}
-		else if( g_humanStage.integer == S3 )
+		else if ( g_humanStage.integer == S3 )
 		{
 			level.humanStage3Time = level.time;
 		}
@@ -1463,11 +1463,11 @@ void G_CalculateStages( void )
 		lastHumanStageModCount = g_humanStage.modificationCount;
 	}
 
-	if( g_alienStage.integer == S1 && g_alienMaxStage.integer > S1 )
+	if ( g_alienStage.integer == S1 && g_alienMaxStage.integer > S1 )
 	{
 		alienNextStageThreshold = ( int )( ceil( ( float ) g_alienStage2Threshold.integer * alienPlayerCountMod ) );
 	}
-	else if( g_alienStage.integer == S2 && g_alienMaxStage.integer > S2 )
+	else if ( g_alienStage.integer == S2 && g_alienMaxStage.integer > S2 )
 	{
 		alienNextStageThreshold = ( int )( ceil( ( float ) g_alienStage3Threshold.integer * alienPlayerCountMod ) );
 	}
@@ -1476,11 +1476,11 @@ void G_CalculateStages( void )
 		alienNextStageThreshold = -1;
 	}
 
-	if( g_humanStage.integer == S1 && g_humanMaxStage.integer > S1 )
+	if ( g_humanStage.integer == S1 && g_humanMaxStage.integer > S1 )
 	{
 		humanNextStageThreshold = ( int )( ceil( ( float ) g_humanStage2Threshold.integer * humanPlayerCountMod ) );
 	}
-	else if( g_humanStage.integer == S2 && g_humanMaxStage.integer > S2 )
+	else if ( g_humanStage.integer == S2 && g_humanMaxStage.integer > S2 )
 	{
 		humanNextStageThreshold = ( int )( ceil( ( float ) g_humanStage3Threshold.integer * humanPlayerCountMod ) );
 	}
@@ -1490,12 +1490,12 @@ void G_CalculateStages( void )
 	}
 
 	// save a lot of bandwidth by rounding thresholds up to the nearest 100
-	if( alienNextStageThreshold > 0 )
+	if ( alienNextStageThreshold > 0 )
 	{
 		alienNextStageThreshold = ceil( ( float ) alienNextStageThreshold / 100 ) * 100;
 	}
 
-	if( humanNextStageThreshold > 0 )
+	if ( humanNextStageThreshold > 0 )
 	{
 		humanNextStageThreshold = ceil( ( float ) humanNextStageThreshold / 100 ) * 100;
 	}
@@ -1521,13 +1521,13 @@ void G_CalculateAvgPlayers( void )
 	//there are no clients or only spectators connected, so
 	//reset the number of samples in order to avoid the situation
 	//where the average tends to 0
-	if( !level.numAlienClients )
+	if ( !level.numAlienClients )
 	{
 		level.numAlienSamples = 0;
 		trap_Cvar_Set( "g_alienCredits", "0" );
 	}
 
-	if( !level.numHumanClients )
+	if ( !level.numHumanClients )
 	{
 		level.numHumanSamples = 0;
 		trap_Cvar_Set( "g_humanCredits", "0" );
@@ -1569,11 +1569,11 @@ void CalculateRanks( void )
 	level.numLiveAlienClients = 0;
 	level.numLiveHumanClients = 0;
 
-	for( i = 0; i < level.maxclients; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		P[ i ] = '-';
 
-		if( level.clients[ i ].pers.connected != CON_DISCONNECTED )
+		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
 		{
 			level.sortedClients[ level.numConnectedClients ] = i;
 			level.numConnectedClients++;
@@ -1581,29 +1581,29 @@ void CalculateRanks( void )
 
 			level.numVotingClients[ TEAM_NONE ]++;
 
-			if( level.clients[ i ].pers.connected != CON_CONNECTED )
+			if ( level.clients[ i ].pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
 
-			if( level.clients[ i ].pers.teamSelection != TEAM_NONE )
+			if ( level.clients[ i ].pers.teamSelection != TEAM_NONE )
 			{
 				level.numPlayingClients++;
 
-				if( level.clients[ i ].pers.teamSelection == TEAM_ALIENS )
+				if ( level.clients[ i ].pers.teamSelection == TEAM_ALIENS )
 				{
 					level.numAlienClients++;
 
-					if( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
+					if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
 					{
 						level.numLiveAlienClients++;
 					}
 				}
-				else if( level.clients[ i ].pers.teamSelection == TEAM_HUMANS )
+				else if ( level.clients[ i ].pers.teamSelection == TEAM_HUMANS )
 				{
 					level.numHumanClients++;
 
-					if( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
+					if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
 					{
 						level.numLiveHumanClients++;
 					}
@@ -1626,7 +1626,7 @@ void CalculateRanks( void )
 	CheckExitRules();
 
 	// if we are at the intermission, send the new info to everyone
-	if( level.intermissiontime )
+	if ( level.intermissiontime )
 	{
 		SendScoreboardMessageToAllClients();
 	}
@@ -1652,9 +1652,9 @@ void SendScoreboardMessageToAllClients( void )
 {
 	int i;
 
-	for( i = 0; i < level.maxclients; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
-		if( level.clients[ i ].pers.connected == CON_CONNECTED )
+		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
 			ScoreboardMessage( g_entities + i );
 		}
@@ -1672,7 +1672,7 @@ If a new client connects, this will be called after the spawn function.
 void MoveClientToIntermission( gentity_t *ent )
 {
 	// take out of follow mode if needed
-	if( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
+	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
 	{
 		G_StopFollowing( ent );
 	}
@@ -1710,7 +1710,7 @@ void FindIntermissionPoint( void )
 	// find the intermission spot
 	ent = G_Find( NULL, FOFS( classname ), "info_player_intermission" );
 
-	if( !ent )
+	if ( !ent )
 	{
 		// the map creator forgot to put in an intermission point...
 		G_SelectSpawnPoint( vec3_origin, level.intermission_origin, level.intermission_angle );
@@ -1721,11 +1721,11 @@ void FindIntermissionPoint( void )
 		VectorCopy( ent->s.angles, level.intermission_angle );
 
 		// if it has a target, look towards it
-		if( ent->target )
+		if ( ent->target )
 		{
 			target = G_PickTarget( ent->target );
 
-			if( target )
+			if ( target )
 			{
 				VectorSubtract( target->s.origin, level.intermission_origin, dir );
 				vectoangles( dir, level.intermission_angle );
@@ -1744,7 +1744,7 @@ void BeginIntermission( void )
 	int       i;
 	gentity_t *client;
 
-	if( level.intermissiontime )
+	if ( level.intermissiontime )
 	{
 		return; // already active
 	}
@@ -1758,17 +1758,17 @@ void BeginIntermission( void )
 	FindIntermissionPoint();
 
 	// move all clients to the intermission point
-	for( i = 0; i < level.maxclients; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		client = g_entities + i;
 
-		if( !client->inuse )
+		if ( !client->inuse )
 		{
 			continue;
 		}
 
 		// respawn if dead
-		if( client->health <= 0 )
+		if ( client->health <= 0 )
 		{
 			respawn( client );
 		}
@@ -1793,16 +1793,16 @@ void ExitLevel( void )
 	int       i;
 	gclient_t *cl;
 
-	if( G_MapExists( g_nextMap.string ) )
+	if ( G_MapExists( g_nextMap.string ) )
 	{
 		trap_SendConsoleCommand( EXEC_APPEND, va( "map \"%s\"\n", g_nextMap.string ) );
 
-		if( G_MapRotationActive() )
+		if ( G_MapRotationActive() )
 		{
 			G_AdvanceMapRotation( 0 );
 		}
 	}
-	else if( G_MapRotationActive() )
+	else if ( G_MapRotationActive() )
 	{
 		G_AdvanceMapRotation( 0 );
 	}
@@ -1818,11 +1818,11 @@ void ExitLevel( void )
 	level.intermissiontime = 0;
 
 	// reset all the scores so we don't enter the intermission again
-	for( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < g_maxclients.integer; i++ )
 	{
 		cl = level.clients + i;
 
-		if( cl->pers.connected != CON_CONNECTED )
+		if ( cl->pers.connected != CON_CONNECTED )
 		{
 			continue;
 		}
@@ -1835,9 +1835,9 @@ void ExitLevel( void )
 
 	// change all client states to connecting, so the early players into the
 	// next level will know the others aren't done reconnecting
-	for( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < g_maxclients.integer; i++ )
 	{
-		if( level.clients[ i ].pers.connected == CON_CONNECTED )
+		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
 			level.clients[ i ].pers.connected = CON_CONNECTING;
 		}
@@ -1862,9 +1862,9 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	             msg );
 
 	// Send to all appropriate clients
-	for( i = 0; i < level.maxclients; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
-		if( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
+		if ( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
 		{
 			trap_SendServerCommand( i, string );
 		}
@@ -1903,13 +1903,13 @@ void QDECL G_LogPrintf( const char *fmt, ... )
 	Q_vsnprintf( string + 7, sizeof( string ) - 7, fmt, argptr );
 	va_end( argptr );
 
-	if( g_dedicated.integer )
+	if ( g_dedicated.integer )
 	{
 		G_UnEscapeString( string, decolored, sizeof( decolored ) );
 		G_Printf( "%s", decolored + 7 );
 	}
 
-	if( !level.logFile )
+	if ( !level.logFile )
 	{
 		return;
 	}
@@ -1933,14 +1933,14 @@ void G_SendGameStat( team_t team )
 	gclient_t *cl;
 
 	// games with cheats enabled are not very good for balance statistics
-	if( g_cheats.integer )
+	if ( g_cheats.integer )
 	{
 		return;
 	}
 
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
-	switch( team )
+	switch ( team )
 	{
 		case TEAM_ALIENS:
 			teamChar = 'A';
@@ -1978,13 +1978,13 @@ void G_SendGameStat( team_t team )
 
 	dataLength = strlen( data );
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		int ping;
 
 		cl = &level.clients[ level.sortedClients[ i ] ];
 
-		if( cl->pers.connected == CON_CONNECTING )
+		if ( cl->pers.connected == CON_CONNECTING )
 		{
 			ping = -1;
 		}
@@ -1993,7 +1993,7 @@ void G_SendGameStat( team_t team )
 			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
 		}
 
-		switch( cl->ps.stats[ STAT_TEAM ] )
+		switch ( cl->ps.stats[ STAT_TEAM ] )
 		{
 			case TEAM_ALIENS:
 				teamChar = 'A';
@@ -2021,7 +2021,7 @@ void G_SendGameStat( team_t team )
 
 		entryLength = strlen( entry );
 
-		if( dataLength + entryLength >= BIG_INFO_STRING )
+		if ( dataLength + entryLength >= BIG_INFO_STRING )
 		{
 			break;
 		}
@@ -2057,23 +2057,23 @@ void LogExit( const char *string )
 	// don't send more than 32 scores (FIXME?)
 	numSorted = level.numConnectedClients;
 
-	if( numSorted > 32 )
+	if ( numSorted > 32 )
 	{
 		numSorted = 32;
 	}
 
-	for( i = 0; i < numSorted; i++ )
+	for ( i = 0; i < numSorted; i++ )
 	{
 		int ping;
 
 		cl = &level.clients[ level.sortedClients[ i ] ];
 
-		if( cl->ps.stats[ STAT_TEAM ] == TEAM_NONE )
+		if ( cl->ps.stats[ STAT_TEAM ] == TEAM_NONE )
 		{
 			continue;
 		}
 
-		if( cl->pers.connected == CON_CONNECTING )
+		if ( cl->pers.connected == CON_CONNECTING )
 		{
 			continue;
 		}
@@ -2085,16 +2085,16 @@ void LogExit( const char *string )
 		             cl->pers.netname );
 	}
 
-	for( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if( !ent->inuse )
+		if ( !ent->inuse )
 		{
 			continue;
 		}
 
-		if( !Q_stricmp( ent->classname, "trigger_win" ) )
+		if ( !Q_stricmp( ent->classname, "trigger_win" ) )
 		{
-			if( level.lastWin == ent->stageTeam )
+			if ( level.lastWin == ent->stageTeam )
 			{
 				ent->use( ent, ent, ent );
 			}
@@ -2122,7 +2122,7 @@ void CheckIntermissionExit( void )
 	clientList_t readyMasks;
 
 	//if no clients are connected, just exit
-	if( level.numConnectedClients == 0 )
+	if ( level.numConnectedClients == 0 )
 	{
 		ExitLevel();
 		return;
@@ -2133,21 +2133,21 @@ void CheckIntermissionExit( void )
 	notReady = 0;
 	Com_Memset( &readyMasks, 0, sizeof( readyMasks ) );
 
-	for( i = 0; i < g_maxclients.integer; i++ )
+	for ( i = 0; i < g_maxclients.integer; i++ )
 	{
 		cl = level.clients + i;
 
-		if( cl->pers.connected != CON_CONNECTED )
+		if ( cl->pers.connected != CON_CONNECTED )
 		{
 			continue;
 		}
 
-		if( cl->ps.stats[ STAT_TEAM ] == TEAM_NONE )
+		if ( cl->ps.stats[ STAT_TEAM ] == TEAM_NONE )
 		{
 			continue;
 		}
 
-		if( cl->readyToExit )
+		if ( cl->readyToExit )
 		{
 			ready++;
 
@@ -2162,34 +2162,34 @@ void CheckIntermissionExit( void )
 	trap_SetConfigstring( CS_CLIENTS_READY, Com_ClientListString( &readyMasks ) );
 
 	// never exit in less than five seconds
-	if( level.time < level.intermissiontime + 5000 )
+	if ( level.time < level.intermissiontime + 5000 )
 	{
 		return;
 	}
 
 	// never let intermission go on for over 1 minute
-	if( level.time > level.intermissiontime + 60000 )
+	if ( level.time > level.intermissiontime + 60000 )
 	{
 		ExitLevel();
 		return;
 	}
 
 	// if nobody wants to go, clear timer
-	if( ready == 0 && notReady > 0 )
+	if ( ready == 0 && notReady > 0 )
 	{
 		level.readyToExit = qfalse;
 		return;
 	}
 
 	// if everyone wants to go, go now
-	if( notReady == 0 )
+	if ( notReady == 0 )
 	{
 		ExitLevel();
 		return;
 	}
 
 	// the first person to ready starts the thirty second timeout
-	if( !level.readyToExit )
+	if ( !level.readyToExit )
 	{
 		level.readyToExit = qtrue;
 		level.exitTime = level.time;
@@ -2197,7 +2197,7 @@ void CheckIntermissionExit( void )
 
 	// if we have waited thirty seconds since at least one player
 	// wanted to exit, go ahead
-	if( level.time < level.exitTime + 30000 )
+	if ( level.time < level.exitTime + 30000 )
 	{
 		return;
 	}
@@ -2214,7 +2214,7 @@ qboolean ScoreIsTied( void )
 {
 	int a, b;
 
-	if( level.numPlayingClients < 2 )
+	if ( level.numPlayingClients < 2 )
 	{
 		return qfalse;
 	}
@@ -2238,15 +2238,15 @@ void CheckExitRules( void )
 {
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
-	if( level.intermissiontime )
+	if ( level.intermissiontime )
 	{
 		CheckIntermissionExit();
 		return;
 	}
 
-	if( level.intermissionQueued )
+	if ( level.intermissionQueued )
 	{
-		if( level.time - level.intermissionQueued >= INTERMISSION_DELAY_TIME )
+		if ( level.time - level.intermissionQueued >= INTERMISSION_DELAY_TIME )
 		{
 			level.intermissionQueued = 0;
 			BeginIntermission();
@@ -2255,9 +2255,9 @@ void CheckExitRules( void )
 		return;
 	}
 
-	if( g_timelimit.integer )
+	if ( g_timelimit.integer )
 	{
-		if( level.time - level.startTime >= g_timelimit.integer * 60000 )
+		if ( level.time - level.startTime >= g_timelimit.integer * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print \"Timelimit hit\n\"" );
@@ -2265,25 +2265,25 @@ void CheckExitRules( void )
 			LogExit( "Timelimit hit." );
 			return;
 		}
-		else if( level.time - level.startTime >= ( g_timelimit.integer - 5 ) * 60000 &&
-		         level.timelimitWarning < TW_IMMINENT )
+		else if ( level.time - level.startTime >= ( g_timelimit.integer - 5 ) * 60000 &&
+		          level.timelimitWarning < TW_IMMINENT )
 		{
 			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
 			level.timelimitWarning = TW_IMMINENT;
 		}
-		else if( level.time - level.startTime >= ( g_timelimit.integer - 1 ) * 60000 &&
-		         level.timelimitWarning < TW_PASSED )
+		else if ( level.time - level.startTime >= ( g_timelimit.integer - 1 ) * 60000 &&
+		          level.timelimitWarning < TW_PASSED )
 		{
 			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
 			level.timelimitWarning = TW_PASSED;
 		}
 	}
 
-	if( level.uncondHumanWin ||
-	    ( !level.uncondAlienWin &&
-	      ( level.time > level.startTime + 1000 ) &&
-	      ( level.numAlienSpawns == 0 ) &&
-	      ( level.numLiveAlienClients == 0 ) ) )
+	if ( level.uncondHumanWin ||
+	     ( !level.uncondAlienWin &&
+	       ( level.time > level.startTime + 1000 ) &&
+	       ( level.numAlienSpawns == 0 ) &&
+	       ( level.numLiveAlienClients == 0 ) ) )
 	{
 		//humans win
 		level.lastWin = TEAM_HUMANS;
@@ -2291,10 +2291,10 @@ void CheckExitRules( void )
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
 		LogExit( "Humans win." );
 	}
-	else if( level.uncondAlienWin ||
-	         ( ( level.time > level.startTime + 1000 ) &&
-	           ( level.numHumanSpawns == 0 ) &&
-	           ( level.numLiveHumanClients == 0 ) ) )
+	else if ( level.uncondAlienWin ||
+	          ( ( level.time > level.startTime + 1000 ) &&
+	            ( level.numHumanSpawns == 0 ) &&
+	            ( level.numLiveHumanClients == 0 ) ) )
 	{
 		//aliens win
 		level.lastWin = TEAM_ALIENS;
@@ -2311,26 +2311,26 @@ G_Vote
 */
 void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 {
-	if( !level.voteTime[ team ] )
+	if ( !level.voteTime[ team ] )
 	{
 		return;
 	}
 
-	if( voting && ent->client->pers.voted & ( 1 << team ) )
+	if ( voting && ent->client->pers.voted & ( 1 << team ) )
 	{
 		return;
 	}
 
-	if( !voting && !( ent->client->pers.voted & ( 1 << team ) ) )
+	if ( !voting && !( ent->client->pers.voted & ( 1 << team ) ) )
 	{
 		return;
 	}
 
 	ent->client->pers.voted |= 1 << team;
 
-	if( ent->client->pers.vote & ( 1 << team ) )
+	if ( ent->client->pers.vote & ( 1 << team ) )
 	{
-		if( voting )
+		if ( voting )
 		{
 			level.voteYes[ team ]++;
 		}
@@ -2344,7 +2344,7 @@ void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 	}
 	else
 	{
-		if( voting )
+		if ( voting )
 		{
 			level.voteNo[ team ]++;
 		}
@@ -2373,7 +2373,7 @@ void G_ExecuteVote( team_t team )
 	trap_SendConsoleCommand( EXEC_APPEND, va( "%s\n",
 	                         level.voteString[ team ] ) );
 
-	if( !Q_stricmpn( level.voteString[ team ], "map", 3 ) )
+	if ( !Q_stricmpn( level.voteString[ team ], "map", 3 ) )
 	{
 		level.restarted = qtrue;
 	}
@@ -2391,38 +2391,38 @@ void G_CheckVote( team_t team )
 	char     *msg;
 	int      i;
 
-	if( level.voteExecuteTime[ team ] &&
-	    level.voteExecuteTime[ team ] < level.time )
+	if ( level.voteExecuteTime[ team ] &&
+	     level.voteExecuteTime[ team ] < level.time )
 	{
 		G_ExecuteVote( team );
 	}
 
-	if( !level.voteTime[ team ] )
+	if ( !level.voteTime[ team ] )
 	{
 		return;
 	}
 
-	if( ( level.time - level.voteTime[ team ] >= VOTE_TIME ) ||
-	    ( level.voteYes[ team ] + level.voteNo[ team ] == level.numVotingClients[ team ] ) )
+	if ( ( level.time - level.voteTime[ team ] >= VOTE_TIME ) ||
+	     ( level.voteYes[ team ] + level.voteNo[ team ] == level.numVotingClients[ team ] ) )
 	{
 		pass = ( level.voteYes[ team ] &&
 		         ( float ) level.voteYes[ team ] / ( ( float ) level.voteYes[ team ] + ( float ) level.voteNo[ team ] ) > votePassThreshold );
 	}
 	else
 	{
-		if( ( float ) level.voteYes[ team ] >
-		    ( float ) level.numVotingClients[ team ] * votePassThreshold )
+		if ( ( float ) level.voteYes[ team ] >
+		     ( float ) level.numVotingClients[ team ] * votePassThreshold )
 		{
 			pass = qtrue;
 		}
-		else if( ( float ) level.voteNo[ team ] <=
-		         ( float ) level.numVotingClients[ team ] * ( 1.0f - votePassThreshold ) )
+		else if ( ( float ) level.voteNo[ team ] <=
+		          ( float ) level.numVotingClients[ team ] * ( 1.0f - votePassThreshold ) )
 		{
 			return;
 		}
 	}
 
-	if( pass )
+	if ( pass )
 	{
 		level.voteExecuteTime[ team ] = level.time + level.voteDelay[ team ];
 	}
@@ -2436,7 +2436,7 @@ void G_CheckVote( team_t team )
 	          team == TEAM_NONE ? "V" : "Team v", pass ? "pass" : "fail",
 	          level.voteYes[ team ], level.voteNo[ team ] );
 
-	if( team == TEAM_NONE )
+	if ( team == TEAM_NONE )
 	{
 		trap_SendServerCommand( -1, msg );
 	}
@@ -2449,7 +2449,7 @@ void G_CheckVote( team_t team )
 	level.voteYes[ team ] = 0;
 	level.voteNo[ team ] = 0;
 
-	for( i = 0; i < level.maxclients; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		level.clients[ i ].pers.voted &= ~( 1 << team );
 	}
@@ -2472,11 +2472,11 @@ void CheckCvars( void )
 	static int lastSDTimeModCount = -1;
 	static int lastNumZones = 0;
 
-	if( g_password.modificationCount != lastPasswordModCount )
+	if ( g_password.modificationCount != lastPasswordModCount )
 	{
 		lastPasswordModCount = g_password.modificationCount;
 
-		if( *g_password.string && Q_stricmp( g_password.string, "none" ) )
+		if ( *g_password.string && Q_stricmp( g_password.string, "none" ) )
 		{
 			trap_Cvar_Set( "g_needpass", "1" );
 		}
@@ -2488,7 +2488,7 @@ void CheckCvars( void )
 
 	// Unmark any structures for deconstruction when
 	// the server setting is changed
-	if( g_markDeconstruct.modificationCount != lastMarkDeconModCount )
+	if ( g_markDeconstruct.modificationCount != lastMarkDeconModCount )
 	{
 		lastMarkDeconModCount = g_markDeconstruct.modificationCount;
 		G_ClearDeconMarks();
@@ -2496,14 +2496,14 @@ void CheckCvars( void )
 
 	// If we change g_suddenDeathTime during a map, we need to update
 	// when sd will begin
-	if( g_suddenDeathTime.modificationCount != lastSDTimeModCount )
+	if ( g_suddenDeathTime.modificationCount != lastSDTimeModCount )
 	{
 		lastSDTimeModCount = g_suddenDeathTime.modificationCount;
 		level.suddenDeathBeginTime = g_suddenDeathTime.integer * 60000;
 	}
 
 	// If the number of zones changes, we need a new array
-	if( g_humanRepeaterMaxZones.integer != lastNumZones )
+	if ( g_humanRepeaterMaxZones.integer != lastNumZones )
 	{
 		buildPointZone_t *newZones;
 		size_t           newsize = g_humanRepeaterMaxZones.integer * sizeof( buildPointZone_t );
@@ -2511,7 +2511,7 @@ void CheckCvars( void )
 
 		newZones = BG_Alloc( newsize );
 
-		if( level.buildPointZones )
+		if ( level.buildPointZones )
 		{
 			Com_Memcpy( newZones, level.buildPointZones, MIN( oldsize, newsize ) );
 			BG_Free( level.buildPointZones );
@@ -2537,19 +2537,19 @@ void G_RunThink( gentity_t *ent )
 
 	thinktime = ent->nextthink;
 
-	if( thinktime <= 0 )
+	if ( thinktime <= 0 )
 	{
 		return;
 	}
 
-	if( thinktime > level.time )
+	if ( thinktime > level.time )
 	{
 		return;
 	}
 
 	ent->nextthink = 0;
 
-	if( !ent->think )
+	if ( !ent->think )
 	{
 		G_Error( "NULL ent->think" );
 	}
@@ -2594,24 +2594,24 @@ void G_RunFrame( int levelTime )
 	static int ptime3000 = 0;
 
 	// if we are waiting for the level to restart, do nothing
-	if( level.restarted )
+	if ( level.restarted )
 	{
 		return;
 	}
 
-	if( level.pausedTime )
+	if ( level.pausedTime )
 	{
 		msec = levelTime - level.time - level.pausedTime;
 		level.pausedTime = levelTime - level.time;
 
 		ptime3000 += msec;
 
-		while( ptime3000 > 3000 )
+		while ( ptime3000 > 3000 )
 		{
 			ptime3000 -= 3000;
 			trap_SendServerCommand( -1, "cp \"The game has been paused. Please wait.\"" );
 
-			if( level.pausedTime >= 110000  && level.pausedTime <= 119000 )
+			if ( level.pausedTime >= 110000  && level.pausedTime <= 119000 )
 			{
 				trap_SendServerCommand( -1, va( "print \"Server: Game will auto-unpause in %d seconds\n\"",
 				                                ( int )( ( float )( 120000 - level.pausedTime ) / 1000.0f ) ) );
@@ -2619,15 +2619,15 @@ void G_RunFrame( int levelTime )
 		}
 
 		// Prevents clients from getting lagged-out messages
-		for( i = 0; i < level.maxclients; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
-			if( level.clients[ i ].pers.connected == CON_CONNECTED )
+			if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 			{
 				level.clients[ i ].ps.commandTime = levelTime;
 			}
 		}
 
-		if( level.pausedTime > 120000 )
+		if ( level.pausedTime > 120000 )
 		{
 			trap_SendServerCommand( -1, "print \"Server: The game has been unpaused automatically (2 minute max)\n\"" );
 			trap_SendServerCommand( -1, "cp \"The game has been unpaused!\"" );
@@ -2643,7 +2643,7 @@ void G_RunFrame( int levelTime )
 	msec = level.time - level.previousTime;
 
 	// generate public-key messages
-	if( g_adminPubkeyID.integer )
+	if ( g_adminPubkeyID.integer )
 	{
 		G_admin_pubkey();
 	}
@@ -2659,21 +2659,21 @@ void G_RunFrame( int levelTime )
 	//
 	ent = &g_entities[ 0 ];
 
-	for( i = 0; i < level.num_entities; i++, ent++ )
+	for ( i = 0; i < level.num_entities; i++, ent++ )
 	{
-		if( !ent->inuse )
+		if ( !ent->inuse )
 		{
 			continue;
 		}
 
 		// clear events that are too old
-		if( level.time - ent->eventTime > EVENT_VALID_MSEC )
+		if ( level.time - ent->eventTime > EVENT_VALID_MSEC )
 		{
-			if( ent->s.event )
+			if ( ent->s.event )
 			{
 				ent->s.event = 0; // &= EV_EVENT_BITS;
 
-				if( ent->client )
+				if ( ent->client )
 				{
 					ent->client->ps.externalEvent = 0;
 					//ent->client->ps.events[0] = 0;
@@ -2681,13 +2681,13 @@ void G_RunFrame( int levelTime )
 				}
 			}
 
-			if( ent->freeAfterEvent )
+			if ( ent->freeAfterEvent )
 			{
 				// tempEntities or dropped items completely go away after their event
 				G_FreeEntity( ent );
 				continue;
 			}
-			else if( ent->unlinkAfterEvent )
+			else if ( ent->unlinkAfterEvent )
 			{
 				// items that will respawn will hide themselves after their pickup event
 				ent->unlinkAfterEvent = qfalse;
@@ -2696,47 +2696,47 @@ void G_RunFrame( int levelTime )
 		}
 
 		// temporary entities don't think
-		if( ent->freeAfterEvent )
+		if ( ent->freeAfterEvent )
 		{
 			continue;
 		}
 
 		// calculate the acceleration of this entity
-		if( ent->evaluateAcceleration )
+		if ( ent->evaluateAcceleration )
 		{
 			G_EvaluateAcceleration( ent, msec );
 		}
 
-		if( !ent->r.linked && ent->neverFree )
+		if ( !ent->r.linked && ent->neverFree )
 		{
 			continue;
 		}
 
-		if( ent->s.eType == ET_MISSILE )
+		if ( ent->s.eType == ET_MISSILE )
 		{
 			G_RunMissile( ent );
 			continue;
 		}
 
-		if( ent->s.eType == ET_BUILDABLE )
+		if ( ent->s.eType == ET_BUILDABLE )
 		{
 			G_BuildableThink( ent, msec );
 			continue;
 		}
 
-		if( ent->s.eType == ET_CORPSE || ent->physicsObject )
+		if ( ent->s.eType == ET_CORPSE || ent->physicsObject )
 		{
 			G_Physics( ent, msec );
 			continue;
 		}
 
-		if( ent->s.eType == ET_MOVER )
+		if ( ent->s.eType == ET_MOVER )
 		{
 			G_RunMover( ent );
 			continue;
 		}
 
-		if( i < MAX_CLIENTS )
+		if ( i < MAX_CLIENTS )
 		{
 			G_RunClient( ent );
 			continue;
@@ -2748,9 +2748,9 @@ void G_RunFrame( int levelTime )
 	// perform final fixups on the players
 	ent = &g_entities[ 0 ];
 
-	for( i = 0; i < level.maxclients; i++, ent++ )
+	for ( i = 0; i < level.maxclients; i++, ent++ )
 	{
-		if( ent->inuse )
+		if ( ent->inuse )
 		{
 			ClientEndFrame( ent );
 		}
@@ -2775,7 +2775,7 @@ void G_RunFrame( int levelTime )
 	CheckTeamStatus();
 
 	// cancel vote if timed out
-	for( i = 0; i < NUM_TEAMS; i++ )
+	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
 		G_CheckVote( i );
 	}

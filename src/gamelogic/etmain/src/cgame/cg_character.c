@@ -63,12 +63,12 @@ static qboolean CG_ParseGibModels( bg_playerclass_t *classInfo )
 	// load the file
 	len = trap_FS_FOpenFile( va( "models/players/%s/gibs.cfg", classInfo->modelPath ), &f, FS_READ );
 
-	if( len <= 0 )
+	if ( len <= 0 )
 	{
 		return qfalse;
 	}
 
-	if( len >= sizeof( bigTextBuffer ) - 1 )
+	if ( len >= sizeof( bigTextBuffer ) - 1 )
 	{
 		CG_Printf( "File %s too long\n", va( "models/players/%s/gibs.cfg", classInfo->modelPath ) );
 		return qfalse;
@@ -81,11 +81,11 @@ static qboolean CG_ParseGibModels( bg_playerclass_t *classInfo )
 	// parse the text
 	text_p = bigTextBuffer;
 
-	for( i = 0; i < MAX_GIB_MODELS; i++ )
+	for ( i = 0; i < MAX_GIB_MODELS; i++ )
 	{
 		token = COM_Parse( &text_p );
 
-		if( !token )
+		if ( !token )
 		{
 			break;
 		}
@@ -116,12 +116,12 @@ static qboolean CG_ParseHudHeadConfig( const char *filename, animation_t *hha )
 	// load the file
 	len = trap_FS_FOpenFile( filename, &f, FS_READ );
 
-	if( len <= 0 )
+	if ( len <= 0 )
 	{
 		return qfalse;
 	}
 
-	if( len >= sizeof( bigTextBuffer ) - 1 )
+	if ( len >= sizeof( bigTextBuffer ) - 1 )
 	{
 		CG_Printf( "File %s too long\n", filename );
 		return qfalse;
@@ -134,11 +134,11 @@ static qboolean CG_ParseHudHeadConfig( const char *filename, animation_t *hha )
 	// parse the text
 	text_p = bigTextBuffer;
 
-	for( i = 0; i < MAX_HD_ANIMATIONS; i++ )
+	for ( i = 0; i < MAX_HD_ANIMATIONS; i++ )
 	{
 		token = COM_Parse( &text_p );  // first frame
 
-		if( !token )
+		if ( !token )
 		{
 			break;
 		}
@@ -147,7 +147,7 @@ static qboolean CG_ParseHudHeadConfig( const char *filename, animation_t *hha )
 
 		token = COM_Parse( &text_p );  // length
 
-		if( !token )
+		if ( !token )
 		{
 			break;
 		}
@@ -156,14 +156,14 @@ static qboolean CG_ParseHudHeadConfig( const char *filename, animation_t *hha )
 
 		token = COM_Parse( &text_p );  // fps
 
-		if( !token )
+		if ( !token )
 		{
 			break;
 		}
 
 		fps = atof( token );
 
-		if( fps == 0 )
+		if ( fps == 0 )
 		{
 			fps = 1;
 		}
@@ -173,24 +173,24 @@ static qboolean CG_ParseHudHeadConfig( const char *filename, animation_t *hha )
 
 		token = COM_Parse( &text_p );  // looping frames
 
-		if( !token )
+		if ( !token )
 		{
 			break;
 		}
 
 		hha[ i ].loopFrames = atoi( token );
 
-		if( hha[ i ].loopFrames > hha[ i ].numFrames )
+		if ( hha[ i ].loopFrames > hha[ i ].numFrames )
 		{
 			hha[ i ].loopFrames = hha[ i ].numFrames;
 		}
-		else if( hha[ i ].loopFrames < 0 )
+		else if ( hha[ i ].loopFrames < 0 )
 		{
 			hha[ i ].loopFrames = 0;
 		}
 	}
 
-	if( i != MAX_HD_ANIMATIONS )
+	if ( i != MAX_HD_ANIMATIONS )
 	{
 		CG_Printf( "Error parsing hud head animation file: %s", filename );
 		return qfalse;
@@ -220,11 +220,11 @@ static void CG_CalcMoveSpeeds( bg_character_t *character )
 
 	refent.hModel = character->mesh;
 
-	for( i = 0; i < character->animModelInfo->numAnimations; i++ )
+	for ( i = 0; i < character->animModelInfo->numAnimations; i++ )
 	{
 		anim = character->animModelInfo->animations[ i ];
 
-		if( anim->moveSpeed >= 0 )
+		if ( anim->moveSpeed >= 0 )
 		{
 			continue;
 		}
@@ -234,25 +234,25 @@ static void CG_CalcMoveSpeeds( bg_character_t *character )
 		numSpeed = 0;
 
 		// for each frame
-		for( j = 0; j < anim->numFrames; j++ )
+		for ( j = 0; j < anim->numFrames; j++ )
 		{
 			refent.frame = anim->firstFrame + j;
 			refent.oldframe = refent.frame;
 			refent.torsoFrameModel = refent.oldTorsoFrameModel = refent.frameModel = refent.oldframeModel = anim->mdxFile;
 
 			// for each foot
-			for( k = 0; k < 2; k++ )
+			for ( k = 0; k < 2; k++ )
 			{
-				if( trap_R_LerpTag( &o[ k ], &refent, tags[ k ], 0 ) < 0 )
+				if ( trap_R_LerpTag( &o[ k ], &refent, tags[ k ], 0 ) < 0 )
 				{
 					CG_Error( "CG_CalcMoveSpeeds: unable to find tag %s, cannot calculate movespeed", tags[ k ] );
 				}
 			}
 
 			// find the contact foot
-			if( anim->flags & ANIMFL_LADDERANIM )
+			if ( anim->flags & ANIMFL_LADDERANIM )
 			{
-				if( o[ 0 ].origin[ 0 ] > o[ 1 ].origin[ 0 ] )
+				if ( o[ 0 ].origin[ 0 ] > o[ 1 ].origin[ 0 ] )
 				{
 					low = 0;
 				}
@@ -265,7 +265,7 @@ static void CG_CalcMoveSpeeds( bg_character_t *character )
 			}
 			else
 			{
-				if( o[ 0 ].origin[ 2 ] < o[ 1 ].origin[ 2 ] )
+				if ( o[ 0 ].origin[ 2 ] < o[ 1 ].origin[ 2 ] )
 				{
 					low = 0;
 				}
@@ -280,7 +280,7 @@ static void CG_CalcMoveSpeeds( bg_character_t *character )
 			numSpeed++;
 
 			// save the positions
-			for( k = 0; k < 2; k++ )
+			for ( k = 0; k < 2; k++ )
 			{
 				VectorCopy( o[ k ].origin, oldPos[ k ] );
 			}
@@ -318,12 +318,12 @@ static qboolean CG_ParseAnimationFiles( bg_character_t *character, const char *a
 	// load the script file
 	len = trap_FS_FOpenFile( animationScript, &f, FS_READ );
 
-	if( len <= 0 )
+	if ( len <= 0 )
 	{
 		return qfalse;
 	}
 
-	if( len >= sizeof( bigTextBuffer ) - 1 )
+	if ( len >= sizeof( bigTextBuffer ) - 1 )
 	{
 		CG_Printf( "File %s is too long\n", filename );
 		return qfalse;
@@ -355,24 +355,24 @@ static qboolean CG_CheckForExistingAnimModelInfo( const char *animationGroup, co
 	int             i;
 	animModelInfo_t *trav, *firstFree = NULL;
 
-	for( i = 0, trav = cgs.animScriptData.modelInfo; i < MAX_ANIMSCRIPT_MODELS; i++, trav++ )
+	for ( i = 0, trav = cgs.animScriptData.modelInfo; i < MAX_ANIMSCRIPT_MODELS; i++, trav++ )
 	{
-		if( *trav->animationGroup && *trav->animationScript )
+		if ( *trav->animationGroup && *trav->animationScript )
 		{
-			if( !Q_stricmp( trav->animationGroup, animationGroup ) && !Q_stricmp( trav->animationScript, animationScript ) )
+			if ( !Q_stricmp( trav->animationGroup, animationGroup ) && !Q_stricmp( trav->animationScript, animationScript ) )
 			{
 				// found a match, use this animModelInfo
 				*animModelInfo = trav;
 				return qtrue;
 			}
 		}
-		else if( !firstFree )
+		else if ( !firstFree )
 		{
 			firstFree = trav;
 		}
 	}
 
-	if( !firstFree )
+	if ( !firstFree )
 	{
 		CG_Error( "unable to find a free modelinfo slot, cannot continue\n" );
 	}
@@ -398,7 +398,7 @@ static qboolean CG_RegisterAcc( const char *modelName, int *model, const char *s
 
 	*model = trap_R_RegisterModel( modelName );
 
-	if( !*model )
+	if ( !*model )
 	{
 		return qfalse;
 	}
@@ -453,13 +453,13 @@ qboolean CG_RegisterCharacter( const char *characterFile, bg_character_t *charac
 
 	memset( &characterDef, 0, sizeof( characterDef ) );
 
-	if( !BG_ParseCharacterFile( characterFile, &characterDef ) )
+	if ( !BG_ParseCharacterFile( characterFile, &characterDef ) )
 	{
 		return qfalse; // the parser will provide the error message
 	}
 
 	// Register Mesh
-	if( !( character->mesh = trap_R_RegisterModel( characterDef.mesh ) ) )
+	if ( !( character->mesh = trap_R_RegisterModel( characterDef.mesh ) ) )
 	{
 		CG_Printf( S_COLOR_YELLOW "WARNING: failed to register mesh '%s' referenced from '%s'\n", characterDef.mesh,
 		           characterFile );
@@ -469,19 +469,19 @@ qboolean CG_RegisterCharacter( const char *characterFile, bg_character_t *charac
 	COM_StripExtension( characterDef.mesh, buf );
 	filename = va( "%s_%s.skin", buf, characterDef.skin );
 
-	if( !( character->skin = trap_R_RegisterSkin( filename ) ) )
+	if ( !( character->skin = trap_R_RegisterSkin( filename ) ) )
 	{
 		CG_Printf( S_COLOR_YELLOW "WARNING: failed to register skin '%s' referenced from '%s'\n", filename, characterFile );
 	}
 	else
 	{
-		for( i = 0; i < cg_numAccessories; i++ )
+		for ( i = 0; i < cg_numAccessories; i++ )
 		{
-			if( trap_R_GetSkinModel( character->skin, cg_accessories[ i ].type, accessoryname ) )
+			if ( trap_R_GetSkinModel( character->skin, cg_accessories[ i ].type, accessoryname ) )
 			{
-				if( !CG_RegisterAcc
-				    ( accessoryname, &character->accModels[ cg_accessories[ i ].index ], characterDef.skin,
-				      &character->accSkins[ cg_accessories[ i ].index ] ) )
+				if ( !CG_RegisterAcc
+				     ( accessoryname, &character->accModels[ cg_accessories[ i ].index ], characterDef.skin,
+				       &character->accSkins[ cg_accessories[ i ].index ] ) )
 				{
 					CG_Printf( S_COLOR_YELLOW "WARNING: failed to register accessory '%s' referenced from '%s'->'%s'\n",
 					           accessoryname, characterFile, filename );
@@ -489,13 +489,13 @@ qboolean CG_RegisterCharacter( const char *characterFile, bg_character_t *charac
 			}
 		}
 
-		for( i = 0; i < cg_numHeadAccessories; i++ )
+		for ( i = 0; i < cg_numHeadAccessories; i++ )
 		{
-			if( trap_R_GetSkinModel( character->skin, cg_headAccessories[ i ].type, accessoryname ) )
+			if ( trap_R_GetSkinModel( character->skin, cg_headAccessories[ i ].type, accessoryname ) )
 			{
-				if( !CG_RegisterAcc
-				    ( accessoryname, &character->accModels[ cg_headAccessories[ i ].index ], characterDef.skin,
-				      &character->accSkins[ cg_headAccessories[ i ].index ] ) )
+				if ( !CG_RegisterAcc
+				     ( accessoryname, &character->accModels[ cg_headAccessories[ i ].index ], characterDef.skin,
+				       &character->accSkins[ cg_headAccessories[ i ].index ] ) )
 				{
 					CG_Printf( S_COLOR_YELLOW "WARNING: failed to register accessory '%s' referenced from '%s'->'%s'\n",
 					           accessoryname, characterFile, filename );
@@ -505,10 +505,10 @@ qboolean CG_RegisterCharacter( const char *characterFile, bg_character_t *charac
 	}
 
 	// Register Undressed Corpse Media
-	if( *characterDef.undressedCorpseModel )
+	if ( *characterDef.undressedCorpseModel )
 	{
 		// Register Undressed Corpse Model
-		if( !( character->undressedCorpseModel = trap_R_RegisterModel( characterDef.undressedCorpseModel ) ) )
+		if ( !( character->undressedCorpseModel = trap_R_RegisterModel( characterDef.undressedCorpseModel ) ) )
 		{
 			CG_Printf( S_COLOR_YELLOW "WARNING: failed to register undressed corpse model '%s' referenced from '%s'\n",
 			           characterDef.undressedCorpseModel, characterFile );
@@ -518,7 +518,7 @@ qboolean CG_RegisterCharacter( const char *characterFile, bg_character_t *charac
 		COM_StripExtension( characterDef.undressedCorpseModel, buf );
 		filename = va( "%s_%s.skin", buf, characterDef.undressedCorpseSkin );
 
-		if( !( character->undressedCorpseSkin = trap_R_RegisterSkin( filename ) ) )
+		if ( !( character->undressedCorpseSkin = trap_R_RegisterSkin( filename ) ) )
 		{
 			CG_Printf( S_COLOR_YELLOW "WARNING: failed to register undressed corpse skin '%s' referenced from '%s'\n", filename,
 			           characterFile );
@@ -526,24 +526,24 @@ qboolean CG_RegisterCharacter( const char *characterFile, bg_character_t *charac
 	}
 
 	// Register the head for the hud
-	if( *characterDef.hudhead )
+	if ( *characterDef.hudhead )
 	{
 		// Register Hud Head Model
-		if( !( character->hudhead = trap_R_RegisterModel( characterDef.hudhead ) ) )
+		if ( !( character->hudhead = trap_R_RegisterModel( characterDef.hudhead ) ) )
 		{
 			CG_Printf( S_COLOR_YELLOW "WARNING: failed to register hud head model '%s' referenced from '%s'\n",
 			           characterDef.hudhead, characterFile );
 		}
 
-		if( *characterDef.hudheadskin && !( character->hudheadskin = trap_R_RegisterSkin( characterDef.hudheadskin ) ) )
+		if ( *characterDef.hudheadskin && !( character->hudheadskin = trap_R_RegisterSkin( characterDef.hudheadskin ) ) )
 		{
 			CG_Printf( S_COLOR_YELLOW "WARNING: failed to register hud head skin '%s' referenced from '%s'\n",
 			           characterDef.hudheadskin, characterFile );
 		}
 
-		if( *characterDef.hudheadanims )
+		if ( *characterDef.hudheadanims )
 		{
-			if( !CG_ParseHudHeadConfig( characterDef.hudheadanims, character->hudheadanimations ) )
+			if ( !CG_ParseHudHeadConfig( characterDef.hudheadanims, character->hudheadanimations ) )
 			{
 				CG_Printf( S_COLOR_YELLOW "WARNING: failed to register hud head animations '%s' referenced from '%s'\n",
 				           characterDef.hudheadanims, characterFile );
@@ -556,9 +556,9 @@ qboolean CG_RegisterCharacter( const char *characterFile, bg_character_t *charac
 	}
 
 	// Parse Animation Files
-	if( !CG_CheckForExistingAnimModelInfo( characterDef.animationGroup, characterDef.animationScript, &character->animModelInfo ) )
+	if ( !CG_CheckForExistingAnimModelInfo( characterDef.animationGroup, characterDef.animationScript, &character->animModelInfo ) )
 	{
-		if( !CG_ParseAnimationFiles( character, characterDef.animationGroup, characterDef.animationScript ) )
+		if ( !CG_ParseAnimationFiles( character, characterDef.animationGroup, characterDef.animationScript ) )
 		{
 			CG_Printf( S_COLOR_YELLOW "WARNING: failed to load animation files referenced from '%s'\n", characterFile );
 			return qfalse;
@@ -574,15 +574,15 @@ bg_character_t *CG_CharacterForClientinfo( clientInfo_t *ci, centity_t *cent )
 {
 	int team, cls;
 
-	if( cent && cent->currentState.eType == ET_CORPSE )
+	if ( cent && cent->currentState.eType == ET_CORPSE )
 	{
-		if( cent->currentState.onFireStart >= 0 )
+		if ( cent->currentState.onFireStart >= 0 )
 		{
 			return cgs.gameCharacters[ cent->currentState.onFireStart ];
 		}
 		else
 		{
-			if( cent->currentState.modelindex < 4 )
+			if ( cent->currentState.modelindex < 4 )
 			{
 				return BG_GetCharacter( cent->currentState.modelindex, cent->currentState.modelindex2 );
 			}
@@ -593,7 +593,7 @@ bg_character_t *CG_CharacterForClientinfo( clientInfo_t *ci, centity_t *cent )
 		}
 	}
 
-	if( cent && cent->currentState.powerups & ( 1 << PW_OPS_DISGUISED ) )
+	if ( cent && cent->currentState.powerups & ( 1 << PW_OPS_DISGUISED ) )
 	{
 		team = ci->team == TEAM_AXIS ? TEAM_ALLIES : TEAM_AXIS;
 
@@ -602,7 +602,7 @@ bg_character_t *CG_CharacterForClientinfo( clientInfo_t *ci, centity_t *cent )
 		return BG_GetCharacter( team, cls );
 	}
 
-	if( ci->character )
+	if ( ci->character )
 	{
 		return ci->character;
 	}
@@ -614,23 +614,23 @@ bg_character_t *CG_CharacterForPlayerstate( playerState_t *ps )
 {
 	int team, cls;
 
-	if( ps->powerups[ PW_OPS_DISGUISED ] )
+	if ( ps->powerups[ PW_OPS_DISGUISED ] )
 	{
 		team = cgs.clientinfo[ ps->clientNum ].team == TEAM_AXIS ? TEAM_ALLIES : TEAM_AXIS;
 
 		cls = 0;
 
-		if( ps->powerups[ PW_OPS_CLASS_1 ] )
+		if ( ps->powerups[ PW_OPS_CLASS_1 ] )
 		{
 			cls |= 1;
 		}
 
-		if( ps->powerups[ PW_OPS_CLASS_2 ] )
+		if ( ps->powerups[ PW_OPS_CLASS_2 ] )
 		{
 			cls |= 2;
 		}
 
-		if( ps->powerups[ PW_OPS_CLASS_3 ] )
+		if ( ps->powerups[ PW_OPS_CLASS_3 ] )
 		{
 			cls |= 4;
 		}
@@ -652,29 +652,29 @@ void CG_RegisterPlayerClasses( void )
 	bg_character_t   *character;
 	int              team, cls;
 
-	for( team = TEAM_AXIS; team <= TEAM_ALLIES; team++ )
+	for ( team = TEAM_AXIS; team <= TEAM_ALLIES; team++ )
 	{
-		for( cls = PC_SOLDIER; cls < NUM_PLAYER_CLASSES; cls++ )
+		for ( cls = PC_SOLDIER; cls < NUM_PLAYER_CLASSES; cls++ )
 		{
 			classInfo = BG_GetPlayerClassInfo( team, cls );
 			character = BG_GetCharacter( team, cls );
 
 			Q_strncpyz( character->characterFile, classInfo->characterFile, sizeof( character->characterFile ) );
 
-			if( !CG_RegisterCharacter( character->characterFile, character ) )
+			if ( !CG_RegisterCharacter( character->characterFile, character ) )
 			{
 				CG_Error( "ERROR: CG_RegisterPlayerClasses: failed to load character file '%s' for the %s %s\n",
 				          character->characterFile, ( team == TEAM_AXIS ? "Axis" : "Allied" ),
 				          BG_ClassnameForNumber( classInfo->classNum ) );
 			}
 
-			if( !( classInfo->icon = trap_R_RegisterShaderNoMip( classInfo->iconName ) ) )
+			if ( !( classInfo->icon = trap_R_RegisterShaderNoMip( classInfo->iconName ) ) )
 			{
 				CG_Printf( S_COLOR_YELLOW "WARNING: failed to load class icon '%s' for the %s %s\n", classInfo->iconName,
 				           ( team == TEAM_AXIS ? "Axis" : "Allied" ), BG_ClassnameForNumber( classInfo->classNum ) );
 			}
 
-			if( !( classInfo->arrow = trap_R_RegisterShaderNoMip( classInfo->iconArrow ) ) )
+			if ( !( classInfo->arrow = trap_R_RegisterShaderNoMip( classInfo->iconArrow ) ) )
 			{
 				CG_Printf( S_COLOR_YELLOW "WARNING: failed to load icon arrow '%s' for the %s %s\n", classInfo->iconArrow,
 				           ( team == TEAM_AXIS ? "Axis" : "Allied" ), BG_ClassnameForNumber( classInfo->classNum ) );

@@ -106,15 +106,15 @@ void G_InitSessionData( gclient_t *client, char *userinfo )
 	// initial team determination
 	value = Info_ValueForKey( userinfo, "team" );
 
-	if( value[ 0 ] == 's' )
+	if ( value[ 0 ] == 's' )
 	{
 		// a willing spectator, not a waiting-in-line
 		sess->spectatorState = SPECTATOR_FREE;
 	}
 	else
 	{
-		if( g_maxGameClients.integer > 0 &&
-		    level.numNonSpectatorClients >= g_maxGameClients.integer )
+		if ( g_maxGameClients.integer > 0 &&
+		     level.numNonSpectatorClients >= g_maxGameClients.integer )
 		{
 			sess->spectatorState = SPECTATOR_FREE;
 		}
@@ -146,9 +146,9 @@ void G_WriteSessionData( void )
 	//FIXME: What's this for?
 	trap_Cvar_Set( "session", va( "%i", 0 ) );
 
-	for( i = 0; i < level.maxclients; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
-		if( level.clients[ i ].pers.connected == CON_CONNECTED )
+		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
 			G_WriteClientSessionData( &level.clients[ i ] );
 		}

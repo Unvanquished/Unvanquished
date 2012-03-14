@@ -133,13 +133,13 @@ qboolean G_commandCheck( gentity_t *ent, char *cmd, qboolean fDoAnytime )
 	unsigned int          i, cCommands = sizeof( aCommandInfo ) / sizeof( aCommandInfo[ 0 ] );
 	const cmd_reference_t *pCR;
 
-	for( i = 0; i < cCommands; i++ )
+	for ( i = 0; i < cCommands; i++ )
 	{
 		pCR = &aCommandInfo[ i ];
 
-		if( NULL != pCR->pCommand && pCR->fAnytime == fDoAnytime && 0 == Q_stricmp( cmd, pCR->pszCommandName ) )
+		if ( NULL != pCR->pCommand && pCR->fAnytime == fDoAnytime && 0 == Q_stricmp( cmd, pCR->pszCommandName ) )
 		{
-			if( !G_commandHelp( ent, cmd, i ) )
+			if ( !G_commandHelp( ent, cmd, i ) )
 			{
 				pCR->pCommand( ent, i, pCR->fValue );
 			}
@@ -156,14 +156,14 @@ qboolean G_commandHelp( gentity_t *ent, char *pszCommand, unsigned int dwCommand
 {
 	char arg[ MAX_TOKEN_CHARS ];
 
-	if( !ent )
+	if ( !ent )
 	{
 		return ( qfalse );
 	}
 
 	trap_Argv( 1, arg, sizeof( arg ) );
 
-	if( !Q_stricmp( arg, "?" ) )
+	if ( !Q_stricmp( arg, "?" ) )
 	{
 		CP( va( "print \"\n^3%s%s\n\n\"", pszCommand, aCommandInfo[ dwCommand ].pszHelpInfo ) );
 		return ( qtrue );
@@ -175,7 +175,7 @@ qboolean G_commandHelp( gentity_t *ent, char *pszCommand, unsigned int dwCommand
 // Debounces cmd request as necessary.
 qboolean G_cmdDebounce( gentity_t *ent, const char *pszCommandName )
 {
-	if( ent->client->pers.cmd_debounce > level.time )
+	if ( ent->client->pers.cmd_debounce > level.time )
 	{
 		CP( va( "print \"Wait another %.1fs to issue ^3%s\n\"", 1.0 * ( float )( ent->client->pers.cmd_debounce - level.time ) / 1000.0,
 		        pszCommandName ) );
@@ -206,12 +206,12 @@ void G_commands_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 
 	rows = num_cmds / HELP_COLUMNS;
 
-	if( num_cmds % HELP_COLUMNS )
+	if ( num_cmds % HELP_COLUMNS )
 	{
 		rows++;
 	}
 
-	if( rows < 0 )
+	if ( rows < 0 )
 	{
 		return;
 	}
@@ -219,20 +219,20 @@ void G_commands_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 	// CHRUKER: b046 - Was using the cpm command, but this is really just for the console.
 	CP( "print \"^5\nAvailable OSP Game-Commands:\n----------------------------\n\"" );
 
-	for( i = 0; i < rows; i++ )
+	for ( i = 0; i < rows; i++ )
 	{
-		if( i + rows * 3 + 1 <= num_cmds )
+		if ( i + rows * 3 + 1 <= num_cmds )
 		{
 			CP( va( "print \"^3%-17s%-17s%-17s%-17s\n\"", aCommandInfo[ i ].pszCommandName,
 			        aCommandInfo[ i + rows ].pszCommandName,
 			        aCommandInfo[ i + rows * 2 ].pszCommandName, aCommandInfo[ i + rows * 3 ].pszCommandName ) );
 		}
-		else if( i + rows * 2 + 1 <= num_cmds )
+		else if ( i + rows * 2 + 1 <= num_cmds )
 		{
 			CP( va( "print \"^3%-17s%-17s%-17s\n\"", aCommandInfo[ i ].pszCommandName,
 			        aCommandInfo[ i + rows ].pszCommandName, aCommandInfo[ i + rows * 2 ].pszCommandName ) );
 		}
-		else if( i + rows + 1 <= num_cmds )
+		else if ( i + rows + 1 <= num_cmds )
 		{
 			CP( va( "print \"^3%-17s%-17s\n\"", aCommandInfo[ i ].pszCommandName, aCommandInfo[ i + rows ].pszCommandName ) );
 		}
@@ -253,22 +253,22 @@ void G_lock_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fLock )
 {
 	int tteam;
 
-	if( team_nocontrols.integer )
+	if ( team_nocontrols.integer )
 	{
 		G_noTeamControls( ent );
 		return;
 	}
 
-	if( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
+	if ( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
 	{
 		return;
 	}
 
 	tteam = G_teamID( ent );
 
-	if( tteam == TEAM_AXIS || tteam == TEAM_ALLIES )
+	if ( tteam == TEAM_AXIS || tteam == TEAM_ALLIES )
 	{
-		if( teamInfo[ tteam ].team_lock == fLock )
+		if ( teamInfo[ tteam ].team_lock == fLock )
 		{
 			CP( va( "print \"^3Your team is already %sed!\n\"", lock_status[ fLock ] ) );
 		}
@@ -294,20 +294,20 @@ void G_pause_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fPause )
 {
 	char *status[ 2 ] = { "^5UN", "^1" };
 
-	if( team_nocontrols.integer )
+	if ( team_nocontrols.integer )
 	{
 		G_noTeamControls( ent );
 		return;
 	}
 
-	if( ( PAUSE_UNPAUSING >= level.match_pause && !fPause ) || ( PAUSE_NONE != level.match_pause && fPause ) )
+	if ( ( PAUSE_UNPAUSING >= level.match_pause && !fPause ) || ( PAUSE_NONE != level.match_pause && fPause ) )
 	{
 		CP( va( "print \"The match is already %sPAUSED^7!\n\"", status[ fPause ] ) );
 		return;
 	}
 
 	// Alias for referees
-	if( ent->client->sess.referee )
+	if ( ent->client->sess.referee )
 	{
 		G_refPause_cmd( ent, fPause );
 	}
@@ -315,15 +315,15 @@ void G_pause_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fPause )
 	{
 		int tteam = G_teamID( ent );
 
-		if( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
+		if ( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
 		{
 			return;
 		}
 
 		// Trigger the auto-handling of pauses
-		if( fPause )
+		if ( fPause )
 		{
-			if( 0 == teamInfo[ tteam ].timeouts )
+			if ( 0 == teamInfo[ tteam ].timeouts )
 			{
 				CP( "cpm \"^3Your team has no more timeouts remaining!\n\"" );
 				return;
@@ -342,7 +342,7 @@ void G_pause_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fPause )
 				trap_SetConfigstring( CS_SERVERTOGGLES, va( "%d", level.server_settings ) );
 			}
 		}
-		else if( tteam + 128 != level.match_pause )
+		else if ( tteam + 128 != level.match_pause )
 		{
 			CP( "cpm \"^3Your team didn't call the timeout!\n\"" );
 			return;
@@ -369,9 +369,9 @@ void G_players_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 	char      n2[ MAX_NETNAME ], ready[ 16 ], ref[ 16 ], rate[ 256 ];
 	char      *s, *tc, *coach, userinfo[ MAX_INFO_STRING ];
 
-	if( g_gamestate.integer == GS_PLAYING )
+	if ( g_gamestate.integer == GS_PLAYING )
 	{
-		if( ent )
+		if ( ent )
 		{
 			CP( "print \"\n^3 ID^1 : ^3Player                    Nudge  Rate  MaxPkts  Snaps\n\"" );
 			CP( "print \"^1-----------------------------------------------------------^7\n\"" );
@@ -384,7 +384,7 @@ void G_players_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 	}
 	else
 	{
-		if( ent )
+		if ( ent )
 		{
 			CP( "print \"\n^3Status^1   : ^3ID^1 : ^3Player                    Nudge  Rate  MaxPkts  Snaps\n\"" );
 			CP( "print \"^1---------------------------------------------------------------------^7\n\"" );
@@ -398,7 +398,7 @@ void G_players_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 
 	max_rate = trap_Cvar_VariableIntegerValue( "sv_maxrate" );
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		idnum = level.sortedClients[ i ]; //level.sortedNames[i];
 		cl = &level.clients[ idnum ];
@@ -410,11 +410,11 @@ void G_players_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 		ready[ 0 ] = 0;
 
 		// Rate info
-		if( cl_ent->r.svFlags & SVF_BOT )
+		if ( cl_ent->r.svFlags & SVF_BOT )
 		{
 			strcpy( rate, va( "%s%s%s%s", "[BOT]", " -----", "       --", "     --" ) );
 		}
-		else if( cl->pers.connected == CON_CONNECTING )
+		else if ( cl->pers.connected == CON_CONNECTING )
 		{
 			strcpy( rate, va( "%s", "^3>>> CONNECTING <<<" ) );
 		}
@@ -429,13 +429,13 @@ void G_players_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 			strcpy( rate, va( "%5d%6d%9d%7d", cl->pers.clientTimeNudge, user_rate, cl->pers.clientMaxPackets, user_snaps ) );
 		}
 
-		if( g_gamestate.integer != GS_PLAYING )
+		if ( g_gamestate.integer != GS_PLAYING )
 		{
-			if( cl->sess.sessionTeam == TEAM_SPECTATOR || cl->pers.connected == CON_CONNECTING )
+			if ( cl->sess.sessionTeam == TEAM_SPECTATOR || cl->pers.connected == CON_CONNECTING )
 			{
 				strcpy( ready, ( ( ent ) ? "^5--------^1 :" : "-------- :" ) );
 			}
-			else if( cl->pers.ready || ( g_entities[ idnum ].r.svFlags & SVF_BOT ) )
+			else if ( cl->pers.ready || ( g_entities[ idnum ].r.svFlags & SVF_BOT ) )
 			{
 				strcpy( ready, ( ( ent ) ? "^3(READY)^1  :" : "(READY)  :" ) );
 			}
@@ -445,12 +445,12 @@ void G_players_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 			}
 		}
 
-		if( cl->sess.referee )
+		if ( cl->sess.referee )
 		{
 			strcpy( ref, "REF" );
 		}
 
-		if( cl->sess.coach_team )
+		if ( cl->sess.coach_team )
 		{
 			tteam = cl->sess.coach_team;
 			coach = ( ent ) ? "^3C" : "C";
@@ -463,20 +463,20 @@ void G_players_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 
 		tc = ( ent ) ? "^7 " : " ";
 
-		if( g_gametype.integer >= GT_WOLF )
+		if ( g_gametype.integer >= GT_WOLF )
 		{
-			if( tteam == TEAM_AXIS )
+			if ( tteam == TEAM_AXIS )
 			{
 				tc = ( ent ) ? "^1X^7" : "X";
 			}
 
-			if( tteam == TEAM_ALLIES )
+			if ( tteam == TEAM_ALLIES )
 			{
 				tc = ( ent ) ? "^4L^7" : "L";
 			}
 		}
 
-		if( ent )
+		if ( ent )
 		{
 			CP( va
 			    ( "print \"%s%s%2d%s^1:%s %-26s^7%s  ^3%s\n\"", ready, tc, idnum, coach, ( ( ref[ 0 ] ) ? "^3" : "^7" ), n2, rate, ref ) );
@@ -489,7 +489,7 @@ void G_players_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 		cnt++;
 	}
 
-	if( ent )
+	if ( ent )
 	{
 		CP( va( "print \"\n^3%2d^7 total players\n\n\"", cnt ) );
 	}
@@ -499,13 +499,13 @@ void G_players_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 	}
 
 	// Team speclock info
-	if( g_gametype.integer >= GT_WOLF )
+	if ( g_gametype.integer >= GT_WOLF )
 	{
-		for( i = TEAM_AXIS; i <= TEAM_ALLIES; i++ )
+		for ( i = TEAM_AXIS; i <= TEAM_ALLIES; i++ )
 		{
-			if( teamInfo[ i ].spec_lock )
+			if ( teamInfo[ i ].spec_lock )
 			{
-				if( ent )
+				if ( ent )
 				{
 					CP( va( "print \"** %s team is speclocked.\n\"", aTeams[ i ] ) );
 				}
@@ -525,38 +525,38 @@ void G_ready_cmd( gentity_t *ent, unsigned int dwCommand, qboolean state )
 {
 	char *status[ 2 ] = { " NOT", "" };
 
-	if( g_gamestate.integer == GS_PLAYING || g_gamestate.integer == GS_INTERMISSION )
+	if ( g_gamestate.integer == GS_PLAYING || g_gamestate.integer == GS_INTERMISSION )
 	{
 		CP( "cpm \"Match is already in progress!\n\"" );
 		return;
 	}
 
-	if( !state && g_gamestate.integer == GS_WARMUP_COUNTDOWN )
+	if ( !state && g_gamestate.integer == GS_WARMUP_COUNTDOWN )
 	{
 		CP( "cpm \"Countdown started.... ^3notready^7 ignored!\n\"" );
 		return;
 	}
 
-	if( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
 	{
 		CP( "cpm \"You must be in the game to be ^3ready^7!\n\"" );
 		return;
 	}
 
 	// Can't ready until enough players.
-	if( level.numPlayingClients < match_minplayers.integer )
+	if ( level.numPlayingClients < match_minplayers.integer )
 	{
 		CP( "cpm \"Not enough players to start match!\n\"" );
 		return;
 	}
 
-	if( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
+	if ( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
 	{
 		return;
 	}
 
 	// Move them to correct ready state
-	if( ent->client->pers.ready == state )
+	if ( ent->client->pers.ready == state )
 	{
 		CP( va( "print \"You are already%s ready!\n\"", status[ state ] ) );
 	}
@@ -564,9 +564,9 @@ void G_ready_cmd( gentity_t *ent, unsigned int dwCommand, qboolean state )
 	{
 		ent->client->pers.ready = state;
 
-		if( !level.intermissiontime )
+		if ( !level.intermissiontime )
 		{
-			if( state )
+			if ( state )
 			{
 				G_MakeReady( ent );
 			}
@@ -608,22 +608,22 @@ void G_specinvite_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fLock )
 	gentity_t *player;
 	char      arg[ MAX_TOKEN_CHARS ];
 
-	if( team_nocontrols.integer )
+	if ( team_nocontrols.integer )
 	{
 		G_noTeamControls( ent );
 		return;
 	}
 
-	if( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
+	if ( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
 	{
 		return;
 	}
 
 	tteam = G_teamID( ent );
 
-	if( tteam == TEAM_AXIS || tteam == TEAM_ALLIES )
+	if ( tteam == TEAM_AXIS || tteam == TEAM_ALLIES )
 	{
-		if( !teamInfo[ tteam ].spec_lock )
+		if ( !teamInfo[ tteam ].spec_lock )
 		{
 			CP( "cpm \"Your team isn't locked from spectators!\n\"" );
 			return;
@@ -632,7 +632,7 @@ void G_specinvite_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fLock )
 		// Find the player to invite.
 		trap_Argv( 1, arg, sizeof( arg ) );
 
-		if( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
+		if ( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
 		{
 			return;
 		}
@@ -640,14 +640,14 @@ void G_specinvite_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fLock )
 		player = g_entities + pid;
 
 		// Can't invite self
-		if( player->client == ent->client )
+		if ( player->client == ent->client )
 		{
 			CP( "cpm \"You can't specinvite yourself!\n\"" );
 			return;
 		}
 
 		// Can't invite an active player.
-		if( player->client->sess.sessionTeam != TEAM_SPECTATOR )
+		if ( player->client->sess.sessionTeam != TEAM_SPECTATOR )
 		{
 			CP( "cpm \"You can't specinvite a non-spectator!\n\"" );
 			return;
@@ -672,22 +672,22 @@ void G_speclock_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fLock )
 {
 	int tteam;
 
-	if( team_nocontrols.integer )
+	if ( team_nocontrols.integer )
 	{
 		G_noTeamControls( ent );
 		return;
 	}
 
-	if( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
+	if ( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
 	{
 		return;
 	}
 
 	tteam = G_teamID( ent );
 
-	if( tteam == TEAM_AXIS || tteam == TEAM_ALLIES )
+	if ( tteam == TEAM_AXIS || tteam == TEAM_ALLIES )
 	{
-		if( teamInfo[ tteam ].spec_lock == fLock )
+		if ( teamInfo[ tteam ].spec_lock == fLock )
 		{
 			CP( va( "print \"\n^3Your team is already %sed from spectators!\n\n\"", lock_status[ fLock ] ) );
 		}
@@ -696,7 +696,7 @@ void G_speclock_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fLock )
 			G_printFull( va( "The %s team is now %sed from spectators", aTeams[ tteam ], lock_status[ fLock ] ), NULL );
 			G_updateSpecLock( tteam, fLock );
 
-			if( fLock )
+			if ( fLock )
 			{
 				CP( "cpm \"Use ^3specinvite^7 to invite people to spectate.\n\"" );
 			}
@@ -724,11 +724,11 @@ void G_statsall_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fDump )
 	int       i;
 	gentity_t *player;
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		player = &g_entities[ level.sortedClients[ i ] ];
 
-		if( player->client->sess.sessionTeam == TEAM_SPECTATOR )
+		if ( player->client->sess.sessionTeam == TEAM_SPECTATOR )
 		{
 			continue;
 		}
@@ -745,36 +745,36 @@ void G_teamready_cmd( gentity_t *ent, unsigned int dwCommand, qboolean state )
 	int       i, tteam = G_teamID( ent );
 	gclient_t *cl;
 
-	if( g_gamestate.integer == GS_PLAYING || g_gamestate.integer == GS_INTERMISSION )
+	if ( g_gamestate.integer == GS_PLAYING || g_gamestate.integer == GS_INTERMISSION )
 	{
 		CP( "cpm \"Match is already in progress!\n\"" );
 		return;
 	}
 
-	if( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR )
 	{
 		CP( "cpm \"Spectators can't ready a team!\n\"" );
 		return;
 	}
 
 	// Can't ready until enough players.
-	if( level.numPlayingClients < match_minplayers.integer )
+	if ( level.numPlayingClients < match_minplayers.integer )
 	{
 		CP( "cpm \"Not enough players to start match!\n\"" );
 		return;
 	}
 
-	if( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
+	if ( !G_cmdDebounce( ent, aCommandInfo[ dwCommand ].pszCommandName ) )
 	{
 		return;
 	}
 
 	// Move them to correct ready state
-	for( i = 0; i < level.numPlayingClients; i++ )
+	for ( i = 0; i < level.numPlayingClients; i++ )
 	{
 		cl = level.clients + level.sortedClients[ i ];
 
-		if( cl->sess.sessionTeam == tteam )
+		if ( cl->sess.sessionTeam == tteam )
 		{
 			cl->pers.ready = qtrue;
 
@@ -826,32 +826,32 @@ int QDECL SortStats( const void *a, const void *b )
 	cb = &level.clients[ * ( int * ) b ];
 
 	// then connecting clients
-	if( ca->pers.connected == CON_CONNECTING )
+	if ( ca->pers.connected == CON_CONNECTING )
 	{
 		return ( 1 );
 	}
 
-	if( cb->pers.connected == CON_CONNECTING )
+	if ( cb->pers.connected == CON_CONNECTING )
 	{
 		return ( -1 );
 	}
 
-	if( ca->sess.sessionTeam == TEAM_SPECTATOR )
+	if ( ca->sess.sessionTeam == TEAM_SPECTATOR )
 	{
 		return ( 1 );
 	}
 
-	if( cb->sess.sessionTeam == TEAM_SPECTATOR )
+	if ( cb->sess.sessionTeam == TEAM_SPECTATOR )
 	{
 		return ( -1 );
 	}
 
-	if( ( ca->sess.aWeaponStats[ iWeap ].atts ) < cQualifyingShots[ iWeap ] )
+	if ( ( ca->sess.aWeaponStats[ iWeap ].atts ) < cQualifyingShots[ iWeap ] )
 	{
 		return ( 1 );
 	}
 
-	if( ( cb->sess.aWeaponStats[ iWeap ].atts ) < cQualifyingShots[ iWeap ] )
+	if ( ( cb->sess.aWeaponStats[ iWeap ].atts ) < cQualifyingShots[ iWeap ] )
 	{
 		return ( -1 );
 	}
@@ -860,7 +860,7 @@ int QDECL SortStats( const void *a, const void *b )
 	accB = ( float )( cb->sess.aWeaponStats[ iWeap ].hits * 100.0 ) / ( float )( cb->sess.aWeaponStats[ iWeap ].atts );
 
 	// then sort by accuracy
-	if( accA > accB )
+	if ( accA > accB )
 	{
 		return ( -1 );
 	}
@@ -880,30 +880,30 @@ void G_weaponStatsLeaders_cmd( gentity_t *ent, qboolean doTop, qboolean doWindow
 
 	z[ 0 ] = 0;
 
-	for( iWeap = WS_KNIFE; iWeap < WS_MAX; iWeap++ )
+	for ( iWeap = WS_KNIFE; iWeap < WS_MAX; iWeap++ )
 	{
 		wBestAcc = ( doTop ) ? 0 : 99999;
 		cClients = 0;
 		cPlaces = 0;
 
 		// suckfest - needs two passes, in case there are ties
-		for( i = 0; i < level.numConnectedClients; i++ )
+		for ( i = 0; i < level.numConnectedClients; i++ )
 		{
 			cl = &level.clients[ level.sortedClients[ i ] ];
 
-			if( cl->sess.sessionTeam == TEAM_SPECTATOR )
+			if ( cl->sess.sessionTeam == TEAM_SPECTATOR )
 			{
 				continue;
 			}
 
 			shots = cl->sess.aWeaponStats[ iWeap ].atts;
 
-			if( shots >= cQualifyingShots[ iWeap ] )
+			if ( shots >= cQualifyingShots[ iWeap ] )
 			{
 				acc = ( float )( ( cl->sess.aWeaponStats[ iWeap ].hits ) * 100.0 ) / ( float ) shots;
 				aClients[ cClients++ ] = level.sortedClients[ i ];
 
-				if( ( ( doTop ) ? acc : ( float ) wBestAcc ) > ( ( doTop ) ? wBestAcc : acc ) )
+				if ( ( ( doTop ) ? acc : ( float ) wBestAcc ) > ( ( doTop ) ? wBestAcc : acc ) )
 				{
 					wBestAcc = ( int ) acc;
 					cPlaces++;
@@ -911,17 +911,17 @@ void G_weaponStatsLeaders_cmd( gentity_t *ent, qboolean doTop, qboolean doWindow
 			}
 		}
 
-		if( !doTop && cPlaces < 2 )
+		if ( !doTop && cPlaces < 2 )
 		{
 			continue;
 		}
 
-		for( i = 0; i < cClients; i++ )
+		for ( i = 0; i < cClients; i++ )
 		{
 			cl = &level.clients[ aClients[ i ] ];
 			acc = ( float )( cl->sess.aWeaponStats[ iWeap ].hits * 100.0 ) / ( float )( cl->sess.aWeaponStats[ iWeap ].atts );
 
-			if( ( ( doTop ) ? acc : ( float ) wBestAcc + 0.999 ) >= ( ( doTop ) ? wBestAcc : acc ) )
+			if ( ( ( doTop ) ? acc : ( float ) wBestAcc + 0.999 ) >= ( ( doTop ) ? wBestAcc : acc ) )
 			{
 				Q_strcat( z, sizeof( z ), va( " %d %d %d %d %d %d", iWeap + 1, aClients[ i ],
 				                              cl->sess.aWeaponStats[ iWeap ].hits,
@@ -943,7 +943,7 @@ void G_weaponRankings_cmd( gentity_t *ent, unsigned int dwCommand, qboolean stat
 	unsigned int shots; // CHRUKER: b068 - unsigned
 	char         z[ MAX_STRING_CHARS ];
 
-	if( trap_Argc() < 2 )
+	if ( trap_Argc() < 2 )
 	{
 		G_weaponStatsLeaders_cmd( ent, state, qfalse );
 		return;
@@ -954,24 +954,24 @@ void G_weaponRankings_cmd( gentity_t *ent, unsigned int dwCommand, qboolean stat
 	// Find the weapon
 	trap_Argv( 1, z, sizeof( z ) );
 
-	if( ( iWeap = atoi( z ) ) == 0 || iWeap < WS_KNIFE || iWeap >= WS_MAX )
+	if ( ( iWeap = atoi( z ) ) == 0 || iWeap < WS_KNIFE || iWeap >= WS_MAX )
 	{
-		for( iWeap = WS_SYRINGE; iWeap >= WS_KNIFE; iWeap-- )
+		for ( iWeap = WS_SYRINGE; iWeap >= WS_KNIFE; iWeap-- )
 		{
-			if( !Q_stricmp( z, aWeaponInfo[ iWeap ].pszCode ) )
+			if ( !Q_stricmp( z, aWeaponInfo[ iWeap ].pszCode ) )
 			{
 				break;
 			}
 		}
 	}
 
-	if( iWeap < WS_KNIFE )
+	if ( iWeap < WS_KNIFE )
 	{
 		G_commandHelp( ent, ( state ) ? "topshots" : "bottomshots", dwCommand );
 
 		Q_strncpyz( z, "^3Available weapon codes:^7\n", sizeof( z ) );
 
-		for( i = WS_KNIFE; i < WS_MAX; i++ )
+		for ( i = WS_KNIFE; i < WS_MAX; i++ )
 		{
 			Q_strcat( z, sizeof( z ), va( "  %s - %s\n", aWeaponInfo[ i ].pszCode, aWeaponInfo[ i ].pszName ) );
 		}
@@ -985,18 +985,18 @@ void G_weaponRankings_cmd( gentity_t *ent, unsigned int dwCommand, qboolean stat
 
 	z[ 0 ] = 0;
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		cl = &level.clients[ level.sortedStats[ i ] ];
 
-		if( cl->sess.sessionTeam == TEAM_SPECTATOR )
+		if ( cl->sess.sessionTeam == TEAM_SPECTATOR )
 		{
 			continue;
 		}
 
 		shots = cl->sess.aWeaponStats[ iWeap ].atts;
 
-		if( shots >= cQualifyingShots[ iWeap ] )
+		if ( shots >= cQualifyingShots[ iWeap ] )
 		{
 			float acc = ( float )( cl->sess.aWeaponStats[ iWeap ].hits * 100.0 ) / ( float ) shots;
 

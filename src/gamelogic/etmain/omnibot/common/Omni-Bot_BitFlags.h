@@ -31,7 +31,7 @@ public:
 
 	void SetFlag( obint32 _flag, bool _set )
 	{
-		if( _set )
+		if ( _set )
 		{
 			SetFlag( _flag );
 		}
@@ -133,7 +133,7 @@ public:
 
 	void SetFlag( obint32 _flag, bool _set )
 	{
-		if( _set )
+		if ( _set )
 		{
 			SetFlag( _flag );
 		}

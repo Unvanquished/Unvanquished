@@ -322,21 +322,21 @@ extern "C" {
 
 	static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 	{
-		if( shouldBeIntegral )
+		if ( shouldBeIntegral )
 		{
-			if( ( int ) cv->value != cv->integer )
+			if ( ( int ) cv->value != cv->integer )
 			{
 				ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value );
 				ri.Cvar_Set( cv->name, va( "%d", cv->integer ) );
 			}
 		}
 
-		if( cv->value < minVal )
+		if ( cv->value < minVal )
 		{
 			ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal );
 			ri.Cvar_Set( cv->name, va( "%f", minVal ) );
 		}
-		else if( cv->value > maxVal )
+		else if ( cv->value > maxVal )
 		{
 			ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal );
 			ri.Cvar_Set( cv->name, va( "%f", maxVal ) );
@@ -368,11 +368,11 @@ extern "C" {
 		//      - r_gamma
 		//
 
-		if( glConfig.vidWidth == 0 )
+		if ( glConfig.vidWidth == 0 )
 		{
 			GLint temp;
 
-			if( !GLimp_Init() )
+			if ( !GLimp_Init() )
 			{
 				return qfalse;
 			}
@@ -387,7 +387,7 @@ extern "C" {
 			glConfig.maxTextureSize = temp;
 
 			// stubbed or broken drivers may have reported 0...
-			if( glConfig.maxTextureSize <= 0 )
+			if ( glConfig.maxTextureSize <= 0 )
 			{
 				glConfig.maxTextureSize = 0;
 			}
@@ -426,25 +426,25 @@ extern "C" {
 		int  err;
 		char s[ 128 ];
 
-		if( glConfig.smpActive )
+		if ( glConfig.smpActive )
 		{
 			// we can't print onto the console while rendering in another thread
 			return;
 		}
 
-		if( r_ignoreGLErrors->integer )
+		if ( r_ignoreGLErrors->integer )
 		{
 			return;
 		}
 
 		err = glGetError();
 
-		if( err == GL_NO_ERROR )
+		if ( err == GL_NO_ERROR )
 		{
 			return;
 		}
 
-		switch( err )
+		switch ( err )
 		{
 			case GL_INVALID_ENUM:
 				strcpy( s, "GL_INVALID_ENUM" );
@@ -525,17 +525,17 @@ extern "C" {
 	{
 		vidmode_t *vm;
 
-		if( mode < -1 )
+		if ( mode < -1 )
 		{
 			return qfalse;
 		}
 
-		if( mode >= s_numVidModes )
+		if ( mode >= s_numVidModes )
 		{
 			return qfalse;
 		}
 
-		if( mode == -1 )
+		if ( mode == -1 )
 		{
 			*width = r_customwidth->integer;
 			*height = r_customheight->integer;
@@ -561,7 +561,7 @@ extern "C" {
 
 		ri.Printf( PRINT_ALL, "\n" );
 
-		for( i = 0; i < s_numVidModes; i++ )
+		for ( i = 0; i < s_numVidModes; i++ )
 		{
 			ri.Printf( PRINT_ALL, "%s\n", r_vidModes[ i ].description );
 		}
@@ -613,7 +613,7 @@ extern "C" {
 		glReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels );
 
 		// Drop alignment and line padding bytes
-		for( i = 0; i < height; ++i )
+		for ( i = 0; i < height; ++i )
 		{
 			memmove( buffer + offset + i * lineLen, pixels + i * paddedLineLen, lineLen );
 		}
@@ -648,14 +648,14 @@ extern "C" {
 		// swap RGB to BGR
 		end = buffer + 18 + dataSize;
 
-		for( p = buffer + 18; p < end; p += 3 )
+		for ( p = buffer + 18; p < end; p += 3 )
 		{
 			byte temp = p[ 0 ];
 			p[ 0 ] = p[ 2 ];
 			p[ 2 ] = temp;
 		}
 
-		if( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
+		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
 		{
 			R_GammaCorrect( buffer + 18, dataSize );
 		}
@@ -674,7 +674,7 @@ extern "C" {
 	{
 		byte *buffer = RB_ReadPixels( x, y, width, height, 0 );
 
-		if( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
+		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
 		{
 			R_GammaCorrect( buffer, 3 * width * height );
 		}
@@ -692,7 +692,7 @@ extern "C" {
 	{
 		byte *buffer = RB_ReadPixels( x, y, width, height, 0 );
 
-		if( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
+		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
 		{
 			R_GammaCorrect( buffer, 3 * width * height );
 		}
@@ -712,7 +712,7 @@ extern "C" {
 
 		cmd = ( const screenshotCommand_t * ) data;
 
-		switch( cmd->format )
+		switch ( cmd->format )
 		{
 			case SSF_TGA:
 				RB_TakeScreenshot( cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName );
@@ -743,12 +743,12 @@ extern "C" {
 
 		cmd = ( screenshotCommand_t * ) R_GetCommandBuffer( sizeof( *cmd ) );
 
-		if( !cmd )
+		if ( !cmd )
 		{
 			return;
 		}
 
-		if( ri.Cmd_Argc() == 2 )
+		if ( ri.Cmd_Argc() == 2 )
 		{
 			Com_sprintf( fileName, sizeof( fileName ), "screenshots/" PRODUCT_NAME_LOWER "-%s.%s", ri.Cmd_Argv( 1 ), name );
 		}
@@ -759,18 +759,18 @@ extern "C" {
 			ri.RealTime( &t );
 
 			// scan for a free filename
-			for( lastNumber = 0; lastNumber <= 999; lastNumber++ )
+			for ( lastNumber = 0; lastNumber <= 999; lastNumber++ )
 			{
 				Com_sprintf( fileName, sizeof( fileName ), "screenshots/" PRODUCT_NAME_LOWER "_%04d-%02d-%02d_%02d%02d%02d_%03d.%s",
 				             1900 + t.tm_year, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec, lastNumber, name );
 
-				if( !ri.FS_FileExists( fileName ) )
+				if ( !ri.FS_FileExists( fileName ) )
 				{
 					break; // file doesn't exist
 				}
 			}
 
-			if( lastNumber == 1000 )
+			if ( lastNumber == 1000 )
 			{
 				ri.Printf( PRINT_ALL, "ScreenShot: Couldn't create a file\n" );
 				return;
@@ -991,7 +991,7 @@ extern "C" {
 
 		// RB: it is possible to we still have a videoFrameCommand_t but we already stopped
 		// video recording
-		if( ri.CL_VideoRecording() )
+		if ( ri.CL_VideoRecording() )
 		{
 			// take care of alignment issues for reading RGB images..
 
@@ -1003,16 +1003,16 @@ extern "C" {
 			pixels = ( byte * ) PADP( cmd->captureBuffer, packAlign );
 			glReadPixels( 0, 0, cmd->width, cmd->height, GL_RGB, GL_UNSIGNED_BYTE, pixels );
 
-			if( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
+			if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
 			{
 				// this also runs over the padding...
 				R_GammaCorrect( pixels, captureLineLen * cmd->height );
 			}
 
-			if( cmd->motionJpeg )
+			if ( cmd->motionJpeg )
 			{
 				// Drop alignment and line padding bytes
-				for( i = 0; i < cmd->height; ++i )
+				for ( i = 0; i < cmd->height; ++i )
 				{
 					memmove( cmd->captureBuffer + i * lineLen, pixels + i * captureLineLen, lineLen );
 				}
@@ -1024,16 +1024,16 @@ extern "C" {
 			{
 				aviLineLen = PAD( lineLen, AVI_LINE_PADDING );
 
-				for( i = 0; i < cmd->height; ++i )
+				for ( i = 0; i < cmd->height; ++i )
 				{
-					for( j = 0; j < lineLen; j += 3 )
+					for ( j = 0; j < lineLen; j += 3 )
 					{
 						cmd->encodeBuffer[ i * aviLineLen + j + 0 ] = pixels[ i * captureLineLen + j + 2 ];
 						cmd->encodeBuffer[ i * aviLineLen + j + 1 ] = pixels[ i * captureLineLen + j + 1 ];
 						cmd->encodeBuffer[ i * aviLineLen + j + 2 ] = pixels[ i * captureLineLen + j + 0 ];
 					}
 
-					while( j < aviLineLen )
+					while ( j < aviLineLen )
 					{
 						cmd->encodeBuffer[ i * aviLineLen + j++ ] = 0;
 					}
@@ -1059,7 +1059,7 @@ extern "C" {
 
 		GL_ClearDepth( 1.0f );
 
-		if( glConfig.stencilBits >= 4 )
+		if ( glConfig.stencilBits >= 4 )
 		{
 			GL_ClearStencil( 128 );
 		}
@@ -1078,9 +1078,9 @@ extern "C" {
 
 		// initialize downstream texture units if we're running
 		// in a multitexture environment
-		if( glConfig.driverType == GLDRV_OPENGL3 )
+		if ( glConfig.driverType == GLDRV_OPENGL3 )
 		{
-			for( i = 31; i >= 0; i-- )
+			for ( i = 31; i >= 0; i-- )
 			{
 				GL_SelectTexture( i );
 				GL_TextureMode( r_textureMode->string );
@@ -1088,9 +1088,9 @@ extern "C" {
 		}
 		else
 		{
-			if( GLEW_ARB_multitexture )
+			if ( GLEW_ARB_multitexture )
 			{
-				for( i = glConfig.maxActiveTextures - 1; i >= 0; i-- )
+				for ( i = glConfig.maxActiveTextures - 1; i >= 0; i-- )
 				{
 					GL_SelectTexture( i );
 					GL_TextureMode( r_textureMode->string );
@@ -1136,7 +1136,7 @@ extern "C" {
 		   bound.
 		 */
 
-		if( glConfig2.framebufferObjectAvailable )
+		if ( glConfig2.framebufferObjectAvailable )
 		{
 			glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 			glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
@@ -1166,7 +1166,7 @@ extern "C" {
 
 		glState.stackIndex = 0;
 
-		for( i = 0; i < MAX_GLSTACK; i++ )
+		for ( i = 0; i < MAX_GLSTACK; i++ )
 		{
 			MatrixIdentity( glState.modelViewMatrix[ i ] );
 			MatrixIdentity( glState.projectionMatrix[ i ] );
@@ -1197,7 +1197,7 @@ extern "C" {
 		ri.Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
 		ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 
-		if( glConfig.driverType != GLDRV_OPENGL3 )
+		if ( glConfig.driverType != GLDRV_OPENGL3 )
 		{
 			ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_UNITS_ARB: %d\n", glConfig.maxActiveTextures );
 		}
@@ -1215,22 +1215,22 @@ extern "C" {
 //	ri.Printf(PRINT_ALL, "GL_MAX_VARYING_FLOATS_ARB %d\n", glConfig2.maxVaryingFloats);
 		ri.Printf( PRINT_ALL, "GL_MAX_VERTEX_ATTRIBS_ARB %d\n", glConfig2.maxVertexAttribs );
 
-		if( glConfig2.occlusionQueryAvailable )
+		if ( glConfig2.occlusionQueryAvailable )
 		{
 			ri.Printf( PRINT_ALL, "%d occlusion query bits\n", glConfig2.occlusionQueryBits );
 		}
 
-		if( glConfig2.drawBuffersAvailable )
+		if ( glConfig2.drawBuffersAvailable )
 		{
 			ri.Printf( PRINT_ALL, "GL_MAX_DRAW_BUFFERS_ARB: %d\n", glConfig2.maxDrawBuffers );
 		}
 
-		if( glConfig2.textureAnisotropyAvailable )
+		if ( glConfig2.textureAnisotropyAvailable )
 		{
 			ri.Printf( PRINT_ALL, "GL_TEXTURE_MAX_ANISOTROPY_EXT: %f\n", glConfig2.maxTextureAnisotropy );
 		}
 
-		if( glConfig2.framebufferObjectAvailable )
+		if ( glConfig2.framebufferObjectAvailable )
 		{
 			ri.Printf( PRINT_ALL, "GL_MAX_RENDERBUFFER_SIZE_EXT: %d\n", glConfig2.maxRenderbufferSize );
 			ri.Printf( PRINT_ALL, "GL_MAX_COLOR_ATTACHMENTS_EXT: %d\n", glConfig2.maxColorAttachments );
@@ -1241,7 +1241,7 @@ extern "C" {
 		ri.Printf( PRINT_ALL, "MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight,
 		           fsstrings[ r_fullscreen->integer == 1 ] );
 
-		if( glConfig.displayFrequency )
+		if ( glConfig.displayFrequency )
 		{
 			ri.Printf( PRINT_ALL, "%d\n", glConfig.displayFrequency );
 		}
@@ -1250,7 +1250,7 @@ extern "C" {
 			ri.Printf( PRINT_ALL, "N/A\n" );
 		}
 
-		if( glConfig.deviceSupportsGamma )
+		if ( glConfig.deviceSupportsGamma )
 		{
 			ri.Printf( PRINT_ALL, "GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits );
 		}
@@ -1262,7 +1262,7 @@ extern "C" {
 		ri.Printf( PRINT_ALL, "texturemode: %s\n", r_textureMode->string );
 		ri.Printf( PRINT_ALL, "picmip: %d\n", r_picmip->integer );
 
-		if( glConfig.driverType == GLDRV_OPENGL3 )
+		if ( glConfig.driverType == GLDRV_OPENGL3 )
 		{
 			int contextFlags, profile;
 
@@ -1271,7 +1271,7 @@ extern "C" {
 			// check if we have a core-profile
 			glGetIntegerv( GL_CONTEXT_PROFILE_MASK, &profile );
 
-			if( profile == GL_CONTEXT_CORE_PROFILE_BIT )
+			if ( profile == GL_CONTEXT_CORE_PROFILE_BIT )
 			{
 				ri.Printf( PRINT_ALL, S_COLOR_GREEN "Having a core profile\n" );
 			}
@@ -1283,7 +1283,7 @@ extern "C" {
 			// check if context is forward compatible
 			glGetIntegerv( GL_CONTEXT_FLAGS, &contextFlags );
 
-			if( contextFlags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT )
+			if ( contextFlags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT )
 			{
 				ri.Printf( PRINT_ALL, S_COLOR_GREEN "Context is forward compatible\n" );
 			}
@@ -1293,37 +1293,37 @@ extern "C" {
 			}
 		}
 
-		if( glConfig.hardwareType == GLHW_ATI )
+		if ( glConfig.hardwareType == GLHW_ATI )
 		{
 			ri.Printf( PRINT_ALL, "HACK: ATI approximations\n" );
 		}
 
-		if( glConfig.textureCompression != TC_NONE )
+		if ( glConfig.textureCompression != TC_NONE )
 		{
 			ri.Printf( PRINT_ALL, "Using S3TC (DXTC) texture compression\n" );
 		}
 
-		if( glConfig.hardwareType == GLHW_ATI_DX10 )
+		if ( glConfig.hardwareType == GLHW_ATI_DX10 )
 		{
 			ri.Printf( PRINT_ALL, "Using ATI DirectX 10 hardware features\n" );
 		}
 
-		if( glConfig.hardwareType == GLHW_NV_DX10 )
+		if ( glConfig.hardwareType == GLHW_NV_DX10 )
 		{
 			ri.Printf( PRINT_ALL, "Using NVIDIA DirectX 10 hardware features\n" );
 		}
 
-		if( glConfig2.vboVertexSkinningAvailable )
+		if ( glConfig2.vboVertexSkinningAvailable )
 		{
 			ri.Printf( PRINT_ALL, "Using GPU vertex skinning with max %i bones in a single pass\n", glConfig2.maxVertexSkinningBones );
 		}
 
-		if( glConfig.smpActive )
+		if ( glConfig.smpActive )
 		{
 			ri.Printf( PRINT_ALL, "Using dual processor acceleration\n" );
 		}
 
-		if( r_finish->integer )
+		if ( r_finish->integer )
 		{
 			ri.Printf( PRINT_ALL, "Forcing glFinish\n" );
 		}
@@ -1505,7 +1505,7 @@ extern "C" {
 		r_hdrRendering = ri.Cvar_Get( "r_hdrRendering", "0", CVAR_ARCHIVE | CVAR_LATCH );
 
 		// HACK turn off HDR for development
-		if( r_deferredShading->integer )
+		if ( r_deferredShading->integer )
 		{
 			AssertCvarRange( r_hdrRendering, 0, 0, qtrue );
 		}
@@ -1738,22 +1738,22 @@ extern "C" {
 		Com_Memset( &backEnd, 0, sizeof( backEnd ) );
 		Com_Memset( &tess, 0, sizeof( tess ) );
 
-		if( ( intptr_t ) tess.xyz & 15 )
+		if ( ( intptr_t ) tess.xyz & 15 )
 		{
 			Com_Printf( "WARNING: tess.xyz not 16 byte aligned\n" );
 		}
 
 		// init function tables
-		for( i = 0; i < FUNCTABLE_SIZE; i++ )
+		for ( i = 0; i < FUNCTABLE_SIZE; i++ )
 		{
 			tr.sinTable[ i ] = sin( DEG2RAD( i * 360.0f / ( ( float )( FUNCTABLE_SIZE - 1 ) ) ) );
 			tr.squareTable[ i ] = ( i < FUNCTABLE_SIZE / 2 ) ? 1.0f : -1.0f;
 			tr.sawToothTable[ i ] = ( float ) i / FUNCTABLE_SIZE;
 			tr.inverseSawToothTable[ i ] = 1.0f - tr.sawToothTable[ i ];
 
-			if( i < FUNCTABLE_SIZE / 2 )
+			if ( i < FUNCTABLE_SIZE / 2 )
 			{
-				if( i < FUNCTABLE_SIZE / 4 )
+				if ( i < FUNCTABLE_SIZE / 4 )
 				{
 					tr.triangleTable[ i ] = ( float ) i / ( FUNCTABLE_SIZE / 4 );
 				}
@@ -1776,7 +1776,7 @@ extern "C" {
 
 #if defined( USE_D3D10 )
 
-		if( glConfig.vidWidth == 0 )
+		if ( glConfig.vidWidth == 0 )
 		{
 			DXGI_SWAP_CHAIN_DESC sd;
 			SDL_SysWMinfo        info;
@@ -1799,7 +1799,7 @@ extern "C" {
 
 			SDL_VERSION( &info.version );
 
-			if( !SDL_GetWMInfo( &info ) )
+			if ( !SDL_GetWMInfo( &info ) )
 			{
 				ri.Error( ERR_FATAL, "R_Init: Failed to obtain HWND from SDL (InputRegistry)" );
 			}
@@ -1840,23 +1840,23 @@ extern "C" {
 			ri.Printf( PRINT_ALL, "Looking for PerfHUD..." );
 			bool gotPerfHUD = false;
 
-			while( pDXGIFactory->EnumAdapters( nAdapter, &adapter ) != DXGI_ERROR_NOT_FOUND )
+			while ( pDXGIFactory->EnumAdapters( nAdapter, &adapter ) != DXGI_ERROR_NOT_FOUND )
 			{
-				if( adapter )
+				if ( adapter )
 				{
 					DXGI_ADAPTER_DESC adaptDesc;
 
-					if( SUCCEEDED( adapter->GetDesc( &adaptDesc ) ) )
+					if ( SUCCEEDED( adapter->GetDesc( &adaptDesc ) ) )
 					{
 						const bool isPerfHUD = wcscmp( adaptDesc.Description, L"NVIDIA PerfHUD" ) == 0;
 
 						// Select the first adapter in normal circumstances or the PerfHUD one if it exists.
-						if( nAdapter == 0 || isPerfHUD )
+						if ( nAdapter == 0 || isPerfHUD )
 						{
 							selectedAdapter = adapter;
 						}
 
-						if( isPerfHUD )
+						if ( isPerfHUD )
 						{
 							gotPerfHUD = true;
 							ri.Printf( PRINT_ALL, "found\n" );
@@ -1869,7 +1869,7 @@ extern "C" {
 				++nAdapter;
 			}
 
-			if( !gotPerfHUD )
+			if ( !gotPerfHUD )
 			{
 				ri.Printf( PRINT_ALL, "failed\n" );
 			}
@@ -1877,24 +1877,24 @@ extern "C" {
 			hr = D3D10CreateDeviceAndSwapChain( selectedAdapter, dx.driverType, NULL, createDeviceFlags,
 			                                    D3D10_SDK_VERSION, &sd, &dx.swapChain, &dx.d3dDevice );
 
-			if( FAILED( hr ) )
+			if ( FAILED( hr ) )
 #endif
 			{
 				ri.Printf( PRINT_ALL, "R_Init: Failed to find PerfHUD" );
 
-				for( i = 0; i < numDriverTypes; i++ )
+				for ( i = 0; i < numDriverTypes; i++ )
 				{
 					dx.driverType = driverTypes[ i ];
 					hr = D3D10CreateDeviceAndSwapChain( NULL, dx.driverType, NULL, createDeviceFlags,
 					                                    D3D10_SDK_VERSION, &sd, &dx.swapChain, &dx.d3dDevice );
 
-					if( SUCCEEDED( hr ) )
+					if ( SUCCEEDED( hr ) )
 					{
 						break;
 					}
 				}
 
-				if( FAILED( hr ) )
+				if ( FAILED( hr ) )
 				{
 					ri.Error( ERR_FATAL, "R_Init: Failed to create a D3D10 device and swap chain" );
 				}
@@ -1903,7 +1903,7 @@ extern "C" {
 			// create a render target view
 			hr = dx.swapChain->GetBuffer( 0, __uuidof( ID3D10Texture2D ), ( LPVOID * ) &backBuffer );
 
-			if( FAILED( hr ) )
+			if ( FAILED( hr ) )
 			{
 				ri.Error( ERR_FATAL, "R_Init: Failed to get a D3D10 back buffer" );
 			}
@@ -1911,7 +1911,7 @@ extern "C" {
 			hr = dx.d3dDevice->CreateRenderTargetView( backBuffer, NULL, &dx.renderTargetView );
 			backBuffer->Release();
 
-			if( FAILED( hr ) )
+			if ( FAILED( hr ) )
 			{
 				ri.Error( ERR_FATAL, "R_Init: Failed to create a D3D10 render target view" );
 			}
@@ -1946,7 +1946,7 @@ extern "C" {
 
 			effectBufferLen = ri.FS_ReadFile( "shaders/Generic.fx", ( void ** ) &effectBuffer );
 
-			if( effectBufferLen == 0 )
+			if ( effectBufferLen == 0 )
 			{
 				ri.Error( ERR_FATAL, "The FX file cannot be located.  Please run this executable from the directory that contains the FX file." );
 			}
@@ -1954,7 +1954,7 @@ extern "C" {
 			hr = D3DX10CreateEffectFromMemory( effectBuffer, effectBufferLen, "shaders/Generic.fx", NULL, NULL, "fx_4_0", dwShaderFlags, 0,
 			                                   dx.d3dDevice, NULL, NULL, &dx.genericEffect, NULL, NULL );
 
-			if( FAILED( hr ) )
+			if ( FAILED( hr ) )
 			{
 				ri.Error( ERR_FATAL, "D3DX10CreateEffect failed %i", hr );
 			}
@@ -1976,7 +1976,7 @@ extern "C" {
 			hr = dx.d3dDevice->CreateInputLayout( layout, numElements, PassDesc.pIAInputSignature,
 			                                      PassDesc.IAInputSignatureSize, &dx.vertexLayout );
 
-			if( FAILED( hr ) )
+			if ( FAILED( hr ) )
 			{
 				ri.Error( ERR_FATAL, "R_Init: Failed to create a D3D10 input layout" );
 			}
@@ -2001,7 +2001,7 @@ extern "C" {
 			InitData.pSysMem = vertices;
 			hr = dx.d3dDevice->CreateBuffer( &bd, &InitData, &dx.vertexBuffer );
 
-			if( FAILED( hr ) )
+			if ( FAILED( hr ) )
 			{
 				ri.Error( ERR_FATAL, "R_Init: Failed to create a D3D10 input layout" );
 			}
@@ -2028,7 +2028,7 @@ extern "C" {
 		//D3D10_SetDefaultState();
 #else
 
-		if( !InitOpenGL() )
+		if ( !InitOpenGL() )
 		{
 			return qfalse;
 		}
@@ -2044,7 +2044,7 @@ extern "C" {
 		backEndData[ 0 ]->polyVerts = ( polyVert_t * ) ri.Hunk_Alloc( r_maxPolyVerts->integer * sizeof( polyVert_t ), h_low );
 		backEndData[ 0 ]->polybuffers = ( srfPolyBuffer_t * ) ri.Hunk_Alloc( r_maxPolys->integer * sizeof( srfPolyBuffer_t ), h_low );
 
-		if( r_smp->integer )
+		if ( r_smp->integer )
 		{
 			backEndData[ 1 ] = ( backEndData_t * ) ri.Hunk_Alloc( sizeof( *backEndData[ 1 ] ), h_low );
 			backEndData[ 1 ]->polys = ( srfPoly_t * ) ri.Hunk_Alloc( r_maxPolys->integer * sizeof( srfPoly_t ), h_low );
@@ -2062,7 +2062,7 @@ extern "C" {
 
 		R_InitFBOs();
 
-		if( glConfig.driverType == GLDRV_OPENGL3 )
+		if ( glConfig.driverType == GLDRV_OPENGL3 )
 		{
 			tr.vao = 0;
 			glGenVertexArrays( 1, &tr.vao );
@@ -2083,12 +2083,12 @@ extern "C" {
 
 		R_InitFreeType();
 
-		if( glConfig2.textureAnisotropyAvailable )
+		if ( glConfig2.textureAnisotropyAvailable )
 		{
 			AssertCvarRange( r_ext_texture_filter_anisotropic, 0, glConfig2.maxTextureAnisotropy, qfalse );
 		}
 
-		if( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
+		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
 		{
 			glGenQueriesARB( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 		}
@@ -2128,7 +2128,7 @@ extern "C" {
 
 		ri.Cmd_RemoveCommand( "glsl_restart" );
 
-		if( tr.registered )
+		if ( tr.registered )
 		{
 			R_SyncRenderThread();
 
@@ -2137,23 +2137,23 @@ extern "C" {
 			R_ShutdownVBOs();
 			R_ShutdownFBOs();
 
-			if( glConfig.driverType == GLDRV_OPENGL3 )
+			if ( glConfig.driverType == GLDRV_OPENGL3 )
 			{
 				glDeleteVertexArrays( 1, &tr.vao );
 				tr.vao = 0;
 			}
 
-			if( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
+			if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
 			{
 				glDeleteQueriesARB( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 
-				if( tr.world )
+				if ( tr.world )
 				{
 					int       j;
 					bspNode_t *node;
 					//trRefLight_t   *light;
 
-					for( j = 0; j < tr.world->numnodes; j++ )
+					for ( j = 0; j < tr.world->numnodes; j++ )
 					{
 						node = &tr.world->nodes[ j ];
 
@@ -2189,7 +2189,7 @@ extern "C" {
 
 #if !defined( SMP ) // && !defined(USE_JAVA)
 
-		if( destroyWindow )
+		if ( destroyWindow )
 #endif
 		{
 #if defined( GLSL_COMPILE_STARTUP_ONLY )
@@ -2200,22 +2200,22 @@ extern "C" {
 
 #if defined( USE_D3D10 )
 
-			if( dx.d3dDevice )
+			if ( dx.d3dDevice )
 			{
 				dx.d3dDevice->ClearState();
 			}
 
-			if( dx.renderTargetView )
+			if ( dx.renderTargetView )
 			{
 				dx.renderTargetView->Release();
 			}
 
-			if( dx.swapChain )
+			if ( dx.swapChain )
 			{
 				dx.swapChain->Release();
 			}
 
-			if( dx.d3dDevice )
+			if ( dx.d3dDevice )
 			{
 				dx.d3dDevice->Release();
 			}
@@ -2274,7 +2274,7 @@ extern "C" {
 
 		Com_Memset( &re, 0, sizeof( re ) );
 
-		if( apiVersion != REF_API_VERSION )
+		if ( apiVersion != REF_API_VERSION )
 		{
 			ri.Printf( PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n", REF_API_VERSION, apiVersion );
 			return NULL;

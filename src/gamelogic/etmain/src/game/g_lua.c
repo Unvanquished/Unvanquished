@@ -29,7 +29,7 @@ void QDECL LOG( const char *fmt, ... )
 	Q_vsnprintf( buff, sizeof( buff ), fmt, argptr );
 	va_end( argptr );
 
-	if( g_dedicated.integer )
+	if ( g_dedicated.integer )
 	{
 		trap_Print( buff );
 	}
@@ -47,11 +47,11 @@ static int _et_RegisterModname( lua_State *L )
 {
 	const char *modname = luaL_checkstring( L, 1 );
 
-	if( modname )
+	if ( modname )
 	{
 		lua_vm_t *vm = G_LuaGetVM( L );
 
-		if( vm )
+		if ( vm )
 		{
 			Q_strncpyz( vm->mod_name, modname, sizeof( vm->mod_name ) );
 		}
@@ -65,7 +65,7 @@ static int _et_FindSelf( lua_State *L )
 {
 	lua_vm_t *vm = G_LuaGetVM( L );
 
-	if( vm )
+	if ( vm )
 	{
 		lua_pushinteger( L, vm->id );
 	}
@@ -83,7 +83,7 @@ static int _et_FindMod( lua_State *L )
 	int      vmnumber = luaL_checkint( L, 1 );
 	lua_vm_t *vm = lVM[ vmnumber ];
 
-	if( vm )
+	if ( vm )
 	{
 		lua_pushstring( L, vm->mod_name );
 		lua_pushstring( L, vm->mod_signature );
@@ -106,21 +106,21 @@ static int _et_IPCSend( lua_State *L )
 	lua_vm_t   *sender = G_LuaGetVM( L );
 	lua_vm_t   *vm = lVM[ vmnumber ];
 
-	if( !vm || vm->err )
+	if ( !vm || vm->err )
 	{
 		lua_pushinteger( L, 0 );
 		return 1;
 	}
 
 	// Find callback
-	if( !G_LuaGetNamedFunction( vm, "et_IPCReceive" ) )
+	if ( !G_LuaGetNamedFunction( vm, "et_IPCReceive" ) )
 	{
 		lua_pushinteger( L, 0 );
 		return 1;
 	}
 
 	// Arguments
-	if( sender )
+	if ( sender )
 	{
 		lua_pushinteger( vm->L, sender->id );
 	}
@@ -132,7 +132,7 @@ static int _et_IPCSend( lua_State *L )
 	lua_pushstring( vm->L, message );
 
 	// Call
-	if( !G_LuaCall( vm, "et.IPCSend", 2, 0 ) )
+	if ( !G_LuaCall( vm, "et.IPCSend", 2, 0 ) )
 	{
 		//G_LuaStopVM(vm);
 		lua_pushinteger( L, 0 );
@@ -176,14 +176,14 @@ static int _et_ConcatArgs( lua_State *L )
 	int  index = luaL_optint( L, 1, 0 );
 	int  count = trap_Argc() - index;
 
-	if( count < 0 ) { count = 0; }
+	if ( count < 0 ) { count = 0; }
 
-	for( i = index; i < index + count; i++ )
+	for ( i = index; i < index + count; i++ )
 	{
 		trap_Argv( i, buff, sizeof( buff ) );
 		len = strlen( buff );
 
-		if( i < index + count - 1 && len < sizeof( buff ) - 2 )
+		if ( i < index + count - 1 && len < sizeof( buff ) - 2 )
 		{
 			buff[ len ] = ' ';
 			buff[ len + 1 ] = '\0';
@@ -319,7 +319,7 @@ static int _et_ClientNumberFromString( lua_State *L )
 	int        pids[ MAX_CLIENTS ];
 
 	// only send exact matches, otherwise -1
-	if( ClientNumbersFromString( ( char * ) search, pids ) == 1 )
+	if ( ClientNumbersFromString( ( char * ) search, pids ) == 1 )
 	{
 		lua_pushinteger( L, pids[ 0 ] );
 	}
@@ -760,20 +760,20 @@ gentity_field_t *_et_gentity_getfield( gentity_t *ent, char *fieldname )
 	int i;
 
 	// search through client fields first
-	if( ent->client )
+	if ( ent->client )
 	{
-		for( i = 0; gclient_fields[ i ].name; i++ )
+		for ( i = 0; gclient_fields[ i ].name; i++ )
 		{
-			if( Q_stricmp( fieldname, gclient_fields[ i ].name ) == 0 )
+			if ( Q_stricmp( fieldname, gclient_fields[ i ].name ) == 0 )
 			{
 				return ( gentity_field_t * ) &gclient_fields[ i ];
 			}
 		}
 	}
 
-	for( i = 0; gentity_fields[ i ].name; i++ )
+	for ( i = 0; gentity_fields[ i ].name; i++ )
 	{
-		if( Q_stricmp( fieldname, gentity_fields[ i ].name ) == 0 )
+		if ( Q_stricmp( fieldname, gentity_fields[ i ].name ) == 0 )
 		{
 			return ( gentity_field_t * ) &gentity_fields[ i ];
 		}
@@ -904,13 +904,13 @@ int _et_G_GetSpawnVar( lua_State *L )
 	int         ofs;
 
 	// break on invalid gentity field
-	if( index == -1 )
+	if ( index == -1 )
 	{
 		luaL_error( L, "field \"%s\" index is -1", key );
 		return 0;
 	}
 
-	if( entnum < 0 || entnum >= MAX_GENTITIES )
+	if ( entnum < 0 || entnum >= MAX_GENTITIES )
 	{
 		luaL_error( L, "entnum \"%d\" is out of range", entnum );
 		return 0;
@@ -919,7 +919,7 @@ int _et_G_GetSpawnVar( lua_State *L )
 	ent = &g_entities[ entnum ];
 
 	// If the entity is not in use, return nil
-	if( !ent->inuse )
+	if ( !ent->inuse )
 	{
 		lua_pushnil( L );
 		return 1;
@@ -927,7 +927,7 @@ int _et_G_GetSpawnVar( lua_State *L )
 
 	ofs = fields[ index ].ofs;
 
-	switch( type )
+	switch ( type )
 	{
 		case F_INT:
 			lua_pushinteger( L, * ( int * )( ( byte * ) ent + ofs ) );
@@ -941,7 +941,7 @@ int _et_G_GetSpawnVar( lua_State *L )
 
 		case F_LSTRING:
 		case F_GSTRING:
-			if( fields[ index ].flags & FIELD_FLAG_NOPTR )
+			if ( fields[ index ].flags & FIELD_FLAG_NOPTR )
 			{
 				lua_pushstring( L, ( char * )( ( byte * ) ent + ofs ) );
 			}
@@ -986,13 +986,13 @@ static int _et_G_SetSpawnVar( lua_State *L )
 	const char  *buffer;
 
 	// break on invalid gentity field
-	if( index == -1 )
+	if ( index == -1 )
 	{
 		luaL_error( L, "field \"%s\" index is -1", key );
 		return 0;
 	}
 
-	if( entnum < 0 || entnum >= MAX_GENTITIES )
+	if ( entnum < 0 || entnum >= MAX_GENTITIES )
 	{
 		luaL_error( L, "entnum \"%d\" is out of range", entnum );
 		return 0;
@@ -1001,7 +1001,7 @@ static int _et_G_SetSpawnVar( lua_State *L )
 	ent = &g_entities[ entnum ];
 
 	// If the entity is not in use, return nil
-	if( !ent->inuse )
+	if ( !ent->inuse )
 	{
 		lua_pushnil( L );
 		return 1;
@@ -1009,7 +1009,7 @@ static int _et_G_SetSpawnVar( lua_State *L )
 
 	ofs = fields[ index ].ofs;
 
-	switch( type )
+	switch ( type )
 	{
 		case F_INT:
 			* ( int * )( ( byte * ) ent + ofs ) = luaL_checkint( L, 3 );
@@ -1025,7 +1025,7 @@ static int _et_G_SetSpawnVar( lua_State *L )
 		case F_GSTRING:
 			buffer = luaL_checkstring( L, 3 );
 
-			if( fields[ index ].flags & FIELD_FLAG_NOPTR )
+			if ( fields[ index ].flags & FIELD_FLAG_NOPTR )
 			{
 				Q_strncpyz( ( char * )( ( byte * ) ent + ofs ), buffer, MAX_STRING_CHARS );
 			}
@@ -1090,13 +1090,13 @@ int _et_gentity_get( lua_State *L )
 	unsigned long   addr;
 
 	// break on invalid gentity field
-	if( !field )
+	if ( !field )
 	{
 		luaL_error( L, "tried to get invalid gentity field \"%s\"", fieldname );
 		return 0;
 	}
 
-	if( field->flags & FIELD_FLAG_GENTITY )
+	if ( field->flags & FIELD_FLAG_GENTITY )
 	{
 		addr = ( unsigned long ) ent;
 	}
@@ -1106,7 +1106,7 @@ int _et_gentity_get( lua_State *L )
 	}
 
 	// for NULL entities, return nil (prevents server crashes!)
-	if( !addr )
+	if ( !addr )
 	{
 		lua_pushnil( L );
 		return 1;
@@ -1114,14 +1114,14 @@ int _et_gentity_get( lua_State *L )
 
 	addr += ( unsigned long ) field->mapping;
 
-	switch( field->type )
+	switch ( field->type )
 	{
 		case FIELD_INT:
 			lua_pushinteger( L, * ( int * ) addr );
 			return 1;
 
 		case FIELD_STRING:
-			if( field->flags & FIELD_FLAG_NOPTR )
+			if ( field->flags & FIELD_FLAG_NOPTR )
 			{
 				lua_pushstring( L, ( char * ) addr );
 			}
@@ -1170,20 +1170,20 @@ static int _et_gentity_set( lua_State *L )
 	const char      *buffer;
 
 	// break on invalid gentity field
-	if( !field )
+	if ( !field )
 	{
 		luaL_error( L, "tried to set invalid gentity field \"%s\"", fieldname );
 		return 0;
 	}
 
 	// break on read-only gentity field
-	if( field->flags & FIELD_FLAG_READONLY )
+	if ( field->flags & FIELD_FLAG_READONLY )
 	{
 		luaL_error( L, "tried to set read-only gentity field \"%s\"", fieldname );
 		return 0;
 	}
 
-	if( field->flags & FIELD_FLAG_GENTITY )
+	if ( field->flags & FIELD_FLAG_GENTITY )
 	{
 		addr = ( unsigned long ) ent;
 	}
@@ -1193,7 +1193,7 @@ static int _et_gentity_set( lua_State *L )
 	}
 
 	// for NULL entities, return nil (prevents server crashes!)
-	if( !addr )
+	if ( !addr )
 	{
 		lua_pushnil( L );
 		return 1;
@@ -1201,7 +1201,7 @@ static int _et_gentity_set( lua_State *L )
 
 	addr += ( unsigned long ) field->mapping;
 
-	switch( field->type )
+	switch ( field->type )
 	{
 		case FIELD_INT:
 			* ( int * ) addr = luaL_checkint( L, 3 );
@@ -1210,7 +1210,7 @@ static int _et_gentity_set( lua_State *L )
 		case FIELD_STRING:
 			buffer = luaL_checkstring( L, 3 );
 
-			if( field->flags & FIELD_FLAG_NOPTR )
+			if ( field->flags & FIELD_FLAG_NOPTR )
 			{
 				Q_strncpyz( ( char * ) addr, buffer, strlen( ( char * ) addr ) );
 			}
@@ -1271,7 +1271,7 @@ static int _et_G_admin_permission( lua_State *L )
 	char      flag = luaL_checkstring( L, 2 ) [ 0 ];
 	gentity_t *ent = NULL;
 
-	if( entnum > -1 )
+	if ( entnum > -1 )
 	{
 		ent = g_entities + entnum;
 	}
@@ -1286,7 +1286,7 @@ static int _et_G_admin_level( lua_State *L )
 	int       entnum = luaL_optint( L, 1, -1 );
 	gentity_t *ent = NULL;
 
-	if( entnum > -1 )
+	if ( entnum > -1 )
 	{
 		ent = g_entities + entnum;
 	}
@@ -1387,7 +1387,7 @@ qboolean G_LuaInit()
 	fileHandle_t f;
 	lua_vm_t     *vm;
 
-	if( !lua_modules.string[ 0 ] )
+	if ( !lua_modules.string[ 0 ] )
 	{
 		return qtrue;
 	}
@@ -1396,25 +1396,25 @@ qboolean G_LuaInit()
 	len = strlen( buff );
 	crt = buff;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		lVM[ i ] = NULL;
 	}
 
-	for( i = 0; i <= len; i++ )
+	for ( i = 0; i <= len; i++ )
 	{
-		if( buff[ i ] == ' ' || buff[ i ] == '\0' || buff[ i ] == ',' || buff[ i ] == ';' )
+		if ( buff[ i ] == ' ' || buff[ i ] == '\0' || buff[ i ] == ',' || buff[ i ] == ';' )
 		{
 			buff[ i ] = '\0';
 
 			// try to open lua file
 			flen = trap_FS_FOpenFile( crt, &f, FS_READ );
 
-			if( flen < 0 )
+			if ( flen < 0 )
 			{
 				LOG( "Lua API: can not open file %s\n", crt );
 			}
-			else if( flen > LUA_MAX_FSIZE )
+			else if ( flen > LUA_MAX_FSIZE )
 			{
 				// quad: Let's not load arbitrarily big files to memory.
 				// If your lua file exceeds the limit, let me know.
@@ -1429,8 +1429,8 @@ qboolean G_LuaInit()
 				trap_FS_FCloseFile( f );
 				signature = G_SHA1( code );
 
-				if( Q_stricmp( lua_allowedModules.string, "" ) &&
-				    !strstr( lua_allowedModules.string, signature ) )
+				if ( Q_stricmp( lua_allowedModules.string, "" ) &&
+				     !strstr( lua_allowedModules.string, signature ) )
 				{
 					// don't load disallowed lua modules into vm
 					LOG( "Lua API: Lua module [%s] [%s] disallowed by ACL\n", crt, signature );
@@ -1448,7 +1448,7 @@ qboolean G_LuaInit()
 					vm->err = 0;
 
 					// Start lua virtual machine
-					if( G_LuaStartVM( vm ) == qfalse )
+					if ( G_LuaStartVM( vm ) == qfalse )
 					{
 						G_LuaStopVM( vm );
 						vm = NULL;
@@ -1463,7 +1463,7 @@ qboolean G_LuaInit()
 			}
 
 			// prepare for next iteration
-			if( i + 1 < len )
+			if ( i + 1 < len )
 			{
 				crt = buff + i + 1;
 			}
@@ -1472,7 +1472,7 @@ qboolean G_LuaInit()
 				crt = NULL;
 			}
 
-			if( num_vm >= LUA_NUM_VM )
+			if ( num_vm >= LUA_NUM_VM )
 			{
 				LOG( "Lua API: too many lua files specified, only the first %d have been loaded\n", LUA_NUM_VM );
 				break;
@@ -1490,7 +1490,7 @@ qboolean G_LuaCall( lua_vm_t *vm, char *func, int nargs, int nresults )
 {
 	int res = lua_pcall( vm->L, nargs, nresults, 0 );
 
-	if( res == LUA_ERRRUN )
+	if ( res == LUA_ERRRUN )
 	{
 		// pheno: made output more ETPro compatible
 		LOG( "Lua API: %s error running lua script: %s\n", func, lua_tostring( vm->L, -1 ) );
@@ -1498,13 +1498,13 @@ qboolean G_LuaCall( lua_vm_t *vm, char *func, int nargs, int nresults )
 		vm->err++;
 		return qfalse;
 	}
-	else if( res == LUA_ERRMEM )
+	else if ( res == LUA_ERRMEM )
 	{
 		LOG( "Lua API: memory allocation error #2 ( %s )\n", vm->file_name );
 		vm->err++;
 		return qfalse;
 	}
-	else if( res == LUA_ERRERR )
+	else if ( res == LUA_ERRERR )
 	{
 		LOG( "Lua API: traceback error ( %s )\n", vm->file_name );
 		vm->err++;
@@ -1520,11 +1520,11 @@ qboolean G_LuaCall( lua_vm_t *vm, char *func, int nargs, int nresults )
  */
 qboolean G_LuaGetNamedFunction( lua_vm_t *vm, char *name )
 {
-	if( vm->L )
+	if ( vm->L )
 	{
 		lua_getglobal( vm->L, name );
 
-		if( lua_isfunction( vm->L, -1 ) )
+		if ( lua_isfunction( vm->L, -1 ) )
 		{
 			return qtrue;
 		}
@@ -1552,7 +1552,7 @@ qboolean G_LuaStartVM( lua_vm_t *vm )
 	// Open a new lua state
 	vm->L = luaL_newstate();
 
-	if( !vm->L )
+	if ( !vm->L )
 	{
 		LOG( "Lua API: Lua failed to initialise.\n" );
 		return qfalse;
@@ -1574,7 +1574,7 @@ qboolean G_LuaStartVM( lua_vm_t *vm )
 	               homepath, LUA_DIRSEP, gamepath, LUA_DIRSEP, LUA_DIRSEP, EXTENSION );
 
 	// add fs_basepath if different from fs_homepath
-	if( Q_stricmp( basepath, homepath ) )
+	if ( Q_stricmp( basepath, homepath ) )
 	{
 		luaPath = va( "%s%s%s%s?.lua;%s%s%s%slualibs%s?.lua;%s",
 		              basepath, LUA_DIRSEP, gamepath, LUA_DIRSEP,
@@ -1587,7 +1587,7 @@ qboolean G_LuaStartVM( lua_vm_t *vm )
 
 	lua_getglobal( vm->L, LUA_LOADLIBNAME );
 
-	if( lua_istable( vm->L, -1 ) )
+	if ( lua_istable( vm->L, -1 ) )
 	{
 		lua_pushstring( vm->L, luaPath );
 		lua_setfield( vm->L, -2, "path" );
@@ -1627,7 +1627,7 @@ qboolean G_LuaStartVM( lua_vm_t *vm )
 
 	res = luaL_loadbuffer( vm->L, vm->code, vm->code_size, vm->file_name );
 
-	if( res == LUA_ERRSYNTAX )
+	if ( res == LUA_ERRSYNTAX )
 	{
 		LOG( "Lua API: syntax error during pre-compilation: %s\n",
 		     lua_tostring( vm->L, -1 ) );
@@ -1635,7 +1635,7 @@ qboolean G_LuaStartVM( lua_vm_t *vm )
 		vm->err++;
 		return qfalse;
 	}
-	else if( res == LUA_ERRMEM )
+	else if ( res == LUA_ERRMEM )
 	{
 		LOG( "Lua API: memory allocation error #1 ( %s )\n", vm->file_name );
 		vm->err++;
@@ -1643,7 +1643,7 @@ qboolean G_LuaStartVM( lua_vm_t *vm )
 	}
 
 	// Execute the code
-	if( !G_LuaCall( vm, "G_LuaStartVM", 0, 0 ) )
+	if ( !G_LuaCall( vm, "G_LuaStartVM", 0, 0 ) )
 	{
 		return qfalse;
 	}
@@ -1656,20 +1656,20 @@ qboolean G_LuaStartVM( lua_vm_t *vm )
  */
 void G_LuaStopVM( lua_vm_t *vm )
 {
-	if( vm == NULL )
+	if ( vm == NULL )
 	{
 		return;
 	}
 
-	if( vm->code != NULL )
+	if ( vm->code != NULL )
 	{
 		free( vm->code );
 		vm->code = NULL;
 	}
 
-	if( vm->L )
+	if ( vm->L )
 	{
-		if( G_LuaGetNamedFunction( vm, "et_Quit" ) )
+		if ( G_LuaGetNamedFunction( vm, "et_Quit" ) )
 		{
 			G_LuaCall( vm, "et_Quit", 0, 0 );
 		}
@@ -1678,14 +1678,14 @@ void G_LuaStopVM( lua_vm_t *vm )
 		vm->L = NULL;
 	}
 
-	if( vm->id >= 0 )
+	if ( vm->id >= 0 )
 	{
-		if( lVM[ vm->id ] == vm )
+		if ( lVM[ vm->id ] == vm )
 		{
 			lVM[ vm->id ] = NULL;
 		}
 
-		if( !vm->err )
+		if ( !vm->err )
 		{
 			LOG( "Lua API: Lua module [%s] [%s] unloaded.\n", vm->file_name, vm->mod_signature );
 		}
@@ -1702,11 +1702,11 @@ void G_LuaShutdown()
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
 			G_LuaStopVM( vm );
 		}
@@ -1720,20 +1720,20 @@ void G_LuaStatus( gentity_t *ent )
 {
 	int i, cnt = 0;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
-		if( lVM[ i ] )
+		if ( lVM[ i ] )
 		{
 			cnt++;
 		}
 	}
 
-	if( cnt == 0 )
+	if ( cnt == 0 )
 	{
 		G_refPrintf( ent, "Lua API: no scripts loaded." );
 		return;
 	}
-	else if( cnt == 1 )
+	else if ( cnt == 1 )
 	{
 		G_refPrintf( ent, "Lua API: showing lua information ( 1 module loaded )" );
 	}
@@ -1745,9 +1745,9 @@ void G_LuaStatus( gentity_t *ent )
 	G_refPrintf( ent, "%-2s %-24s %-40s %-24s", "VM", "Modname", "Signature", "Filename" );
 	G_refPrintf( ent, "-- ------------------------ ---------------------------------------- ------------------------" );
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
-		if( lVM[ i ] )
+		if ( lVM[ i ] )
 		{
 			G_refPrintf( ent, "%2d %-24s %-40s %-24s", lVM[ i ]->id, lVM[ i ]->mod_name, lVM[ i ]->mod_signature, lVM[ i ]->file_name );
 		}
@@ -1763,9 +1763,9 @@ lua_vm_t *G_LuaGetVM( lua_State *L )
 {
 	int i;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
-		if( lVM[ i ] && lVM[ i ]->L == L )
+		if ( lVM[ i ] && lVM[ i ]->L == L )
 		{
 			return lVM[ i ];
 		}
@@ -1790,18 +1790,18 @@ void G_LuaHook_InitGame( int levelTime, int randomSeed, int restart )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_InitGame" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_InitGame" ) )
 			{
 				continue;
 			}
@@ -1812,7 +1812,7 @@ void G_LuaHook_InitGame( int levelTime, int randomSeed, int restart )
 			lua_pushinteger( vm->L, restart );
 
 			// Call
-			if( !G_LuaCall( vm, "et_InitGame", 3, 0 ) )
+			if ( !G_LuaCall( vm, "et_InitGame", 3, 0 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
@@ -1831,18 +1831,18 @@ void G_LuaHook_ShutdownGame( int restart )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_ShutdownGame" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_ShutdownGame" ) )
 			{
 				continue;
 			}
@@ -1851,7 +1851,7 @@ void G_LuaHook_ShutdownGame( int restart )
 			lua_pushinteger( vm->L, restart );
 
 			// Call
-			if( !G_LuaCall( vm, "et_ShutdownGame", 1, 0 ) )
+			if ( !G_LuaCall( vm, "et_ShutdownGame", 1, 0 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
@@ -1870,18 +1870,18 @@ void G_LuaHook_RunFrame( int levelTime )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_RunFrame" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_RunFrame" ) )
 			{
 				continue;
 			}
@@ -1890,7 +1890,7 @@ void G_LuaHook_RunFrame( int levelTime )
 			lua_pushinteger( vm->L, levelTime );
 
 			// Call
-			if( !G_LuaCall( vm, "et_RunFrame", 1, 0 ) )
+			if ( !G_LuaCall( vm, "et_RunFrame", 1, 0 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
@@ -1909,18 +1909,18 @@ qboolean G_LuaHook_ClientConnect( int clientNum, qboolean firstTime, qboolean is
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_ClientConnect" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_ClientConnect" ) )
 			{
 				continue;
 			}
@@ -1931,14 +1931,14 @@ qboolean G_LuaHook_ClientConnect( int clientNum, qboolean firstTime, qboolean is
 			lua_pushinteger( vm->L, ( int ) isBot );
 
 			// Call
-			if( !G_LuaCall( vm, "et_ClientConnect", 3, 1 ) )
+			if ( !G_LuaCall( vm, "et_ClientConnect", 3, 1 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
 			}
 
 			// Return values
-			if( lua_isstring( vm->L, -1 ) )
+			if ( lua_isstring( vm->L, -1 ) )
 			{
 				Q_strncpyz( reason, lua_tostring( vm->L, -1 ), MAX_STRING_CHARS );
 				return qtrue;
@@ -1957,18 +1957,18 @@ void G_LuaHook_ClientDisconnect( int clientNum )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_ClientDisconnect" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_ClientDisconnect" ) )
 			{
 				continue;
 			}
@@ -1977,7 +1977,7 @@ void G_LuaHook_ClientDisconnect( int clientNum )
 			lua_pushinteger( vm->L, clientNum );
 
 			// Call
-			if( !G_LuaCall( vm, "et_ClientDisconnect", 1, 0 ) )
+			if ( !G_LuaCall( vm, "et_ClientDisconnect", 1, 0 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
@@ -1996,18 +1996,18 @@ void G_LuaHook_ClientBegin( int clientNum )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_ClientBegin" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_ClientBegin" ) )
 			{
 				continue;
 			}
@@ -2016,7 +2016,7 @@ void G_LuaHook_ClientBegin( int clientNum )
 			lua_pushinteger( vm->L, clientNum );
 
 			// Call
-			if( !G_LuaCall( vm, "et_ClientBegin", 1, 0 ) )
+			if ( !G_LuaCall( vm, "et_ClientBegin", 1, 0 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
@@ -2035,18 +2035,18 @@ void G_LuaHook_ClientUserinfoChanged( int clientNum )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_ClientUserinfoChanged" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_ClientUserinfoChanged" ) )
 			{
 				continue;
 			}
@@ -2055,7 +2055,7 @@ void G_LuaHook_ClientUserinfoChanged( int clientNum )
 			lua_pushinteger( vm->L, clientNum );
 
 			// Call
-			if( !G_LuaCall( vm, "et_ClientUserinfoChanged", 1, 0 ) )
+			if ( !G_LuaCall( vm, "et_ClientUserinfoChanged", 1, 0 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
@@ -2074,18 +2074,18 @@ void G_LuaHook_ClientSpawn( int clientNum, qboolean revived, qboolean teamChange
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_ClientSpawn" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_ClientSpawn" ) )
 			{
 				continue;
 			}
@@ -2097,7 +2097,7 @@ void G_LuaHook_ClientSpawn( int clientNum, qboolean revived, qboolean teamChange
 			lua_pushinteger( vm->L, ( int ) restoreHealth );
 
 			// Call
-			if( !G_LuaCall( vm, "et_ClientSpawn", 4, 0 ) )
+			if ( !G_LuaCall( vm, "et_ClientSpawn", 4, 0 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
@@ -2116,18 +2116,18 @@ qboolean G_LuaHook_ClientCommand( int clientNum, char *command )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_ClientCommand" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_ClientCommand" ) )
 			{
 				continue;
 			}
@@ -2137,16 +2137,16 @@ qboolean G_LuaHook_ClientCommand( int clientNum, char *command )
 			lua_pushstring( vm->L, command );
 
 			// Call
-			if( !G_LuaCall( vm, "et_ClientCommand", 2, 1 ) )
+			if ( !G_LuaCall( vm, "et_ClientCommand", 2, 1 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
 			}
 
 			// Return values
-			if( lua_isnumber( vm->L, -1 ) )
+			if ( lua_isnumber( vm->L, -1 ) )
 			{
-				if( lua_tointeger( vm->L, -1 ) == 1 )
+				if ( lua_tointeger( vm->L, -1 ) == 1 )
 				{
 					return qtrue;
 				}
@@ -2165,18 +2165,18 @@ qboolean G_LuaHook_ConsoleCommand( char *command )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_ConsoleCommand" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_ConsoleCommand" ) )
 			{
 				continue;
 			}
@@ -2185,16 +2185,16 @@ qboolean G_LuaHook_ConsoleCommand( char *command )
 			lua_pushstring( vm->L, command );
 
 			// Call
-			if( !G_LuaCall( vm, "et_ConsoleCommand", 1, 1 ) )
+			if ( !G_LuaCall( vm, "et_ConsoleCommand", 1, 1 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
 			}
 
 			// Return values
-			if( lua_isnumber( vm->L, -1 ) )
+			if ( lua_isnumber( vm->L, -1 ) )
 			{
-				if( lua_tointeger( vm->L, -1 ) == 1 )
+				if ( lua_tointeger( vm->L, -1 ) == 1 )
 				{
 					return qtrue;
 				}
@@ -2213,18 +2213,18 @@ qboolean G_LuaHook_UpgradeSkill( int cno, skillType_t skill )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_UpgradeSkill" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_UpgradeSkill" ) )
 			{
 				continue;
 			}
@@ -2234,16 +2234,16 @@ qboolean G_LuaHook_UpgradeSkill( int cno, skillType_t skill )
 			lua_pushinteger( vm->L, ( int ) skill );
 
 			// Call
-			if( !G_LuaCall( vm, "et_UpgradeSkill", 2, 1 ) )
+			if ( !G_LuaCall( vm, "et_UpgradeSkill", 2, 1 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
 			}
 
 			// Return values
-			if( lua_isnumber( vm->L, -1 ) )
+			if ( lua_isnumber( vm->L, -1 ) )
 			{
-				if( lua_tointeger( vm->L, -1 ) == -1 )
+				if ( lua_tointeger( vm->L, -1 ) == -1 )
 				{
 					return qtrue;
 				}
@@ -2262,18 +2262,18 @@ qboolean G_LuaHook_SetPlayerSkill( int cno, skillType_t skill )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_SetPlayerSkill" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_SetPlayerSkill" ) )
 			{
 				continue;
 			}
@@ -2283,16 +2283,16 @@ qboolean G_LuaHook_SetPlayerSkill( int cno, skillType_t skill )
 			lua_pushinteger( vm->L, ( int ) skill );
 
 			// Call
-			if( !G_LuaCall( vm, "et_SetPlayerSkill", 2, 1 ) )
+			if ( !G_LuaCall( vm, "et_SetPlayerSkill", 2, 1 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;
 			}
 
 			// Return values
-			if( lua_isnumber( vm->L, -1 ) )
+			if ( lua_isnumber( vm->L, -1 ) )
 			{
-				if( lua_tointeger( vm->L, -1 ) == -1 )
+				if ( lua_tointeger( vm->L, -1 ) == -1 )
 				{
 					return qtrue;
 				}
@@ -2311,18 +2311,18 @@ void G_LuaHook_Print( char *text )
 	int      i;
 	lua_vm_t *vm;
 
-	for( i = 0; i < LUA_NUM_VM; i++ )
+	for ( i = 0; i < LUA_NUM_VM; i++ )
 	{
 		vm = lVM[ i ];
 
-		if( vm )
+		if ( vm )
 		{
-			if( vm->id < 0 /*|| vm->err*/ )
+			if ( vm->id < 0 /*|| vm->err*/ )
 			{
 				continue;
 			}
 
-			if( !G_LuaGetNamedFunction( vm, "et_Print" ) )
+			if ( !G_LuaGetNamedFunction( vm, "et_Print" ) )
 			{
 				continue;
 			}
@@ -2331,7 +2331,7 @@ void G_LuaHook_Print( char *text )
 			lua_pushstring( vm->L, text );
 
 			// Call
-			if( !G_LuaCall( vm, "et_Print", 1, 0 ) )
+			if ( !G_LuaCall( vm, "et_Print", 1, 0 ) )
 			{
 				//G_LuaStopVM(vm);
 				continue;

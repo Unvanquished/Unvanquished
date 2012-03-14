@@ -250,7 +250,7 @@ CG_DrawConnectScreen
 
 const char     *CG_LoadPanel_GameTypeName( gametype_t gt )
 {
-	switch( gt )
+	switch ( gt )
 	{
 		case GT_SINGLE_PLAYER:
 			return "Single Player";
@@ -284,19 +284,19 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 
 	bg_loadscreeninteractive = interactive;
 
-	if( !DC )
+	if ( !DC )
 	{
 		return;
 	}
 
-	if( inside )
+	if ( inside )
 	{
 		return;
 	}
 
 	inside = qtrue;
 
-	if( !bg_loadscreeninited )
+	if ( !bg_loadscreeninited )
 	{
 		trap_Cvar_Set( "ui_connecting", "0" );
 
@@ -324,14 +324,14 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 
 	BG_PanelButtonsRender( loadpanelButtons );
 
-	if( interactive )
+	if ( interactive )
 	{
 		DC->drawHandlePic( DC->cursorx, DC->cursory, 32, 32, DC->Assets.cursor );
 	}
 
 	DC->getConfigString( CS_SERVERINFO, buffer, sizeof( buffer ) );
 
-	if( *buffer )
+	if ( *buffer )
 	{
 		const char *str;
 		qboolean   enabled = qfalse;
@@ -357,11 +357,11 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 
 		y += 14;
 
-		for( i = 0; i < MAX_MOTDLINES; i++ )
+		for ( i = 0; i < MAX_MOTDLINES; i++ )
 		{
 			str = CG_ConfigString( CS_CUSTMOTD + i );
 
-			if( !str || !*str )
+			if ( !str || !*str )
 			{
 				break;
 			}
@@ -375,17 +375,17 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 
 		str = Info_ValueForKey( buffer, "g_friendlyfire" );
 
-		if( str && *str && atoi( str ) )
+		if ( str && *str && atoi( str ) )
 		{
 			x = 461;
 			CG_DrawPic( x, y, 16, 16, bg_filter_ff );
 		}
 
-		if( atoi( Info_ValueForKey( buffer, "g_gametype" ) ) != GT_WOLF_LMS )
+		if ( atoi( Info_ValueForKey( buffer, "g_gametype" ) ) != GT_WOLF_LMS )
 		{
 			str = Info_ValueForKey( buffer, "g_alliedmaxlives" );
 
-			if( str && *str && atoi( str ) )
+			if ( str && *str && atoi( str ) )
 			{
 				enabled = qtrue;
 			}
@@ -393,7 +393,7 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 			{
 				str = Info_ValueForKey( buffer, "g_axismaxlives" );
 
-				if( str && *str && atoi( str ) )
+				if ( str && *str && atoi( str ) )
 				{
 					enabled = qtrue;
 				}
@@ -401,7 +401,7 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 				{
 					str = Info_ValueForKey( buffer, "g_maxlives" );
 
-					if( str && *str && atoi( str ) )
+					if ( str && *str && atoi( str ) )
 					{
 						enabled = qtrue;
 					}
@@ -409,7 +409,7 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 			}
 		}
 
-		if( enabled )
+		if ( enabled )
 		{
 			x = 489;
 			CG_DrawPic( x, y, 16, 16, bg_filter_lv );
@@ -417,7 +417,7 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 
 		str = Info_ValueForKey( buffer, "sv_punkbuster" );
 
-		if( str && *str && atoi( str ) )
+		if ( str && *str && atoi( str ) )
 		{
 			x = 518;
 			CG_DrawPic( x, y, 16, 16, bg_filter_pb );
@@ -425,7 +425,7 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 
 		str = Info_ValueForKey( buffer, "g_heavyWeaponRestriction" );
 
-		if( str && *str && atoi( str ) != 100 )
+		if ( str && *str && atoi( str ) != 100 )
 		{
 			x = 546;
 			CG_DrawPic( x, y, 16, 16, bg_filter_hw );
@@ -433,7 +433,7 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 
 		str = Info_ValueForKey( buffer, "g_antilag" );
 
-		if( str && *str && atoi( str ) )
+		if ( str && *str && atoi( str ) )
 		{
 			x = 575;
 			CG_DrawPic( x, y, 16, 16, bg_filter_al );
@@ -441,20 +441,20 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 
 		str = Info_ValueForKey( buffer, "g_balancedteams" );
 
-		if( str && *str && atoi( str ) )
+		if ( str && *str && atoi( str ) )
 		{
 			x = 604;
 			CG_DrawPic( x, y, 16, 16, bg_filter_bt );
 		}
 	}
 
-	if( *cgs.rawmapname )
+	if ( *cgs.rawmapname )
 	{
-		if( !bg_mappic )
+		if ( !bg_mappic )
 		{
 			bg_mappic = DC->registerShaderNoMip( va( "levelshots/%s", cgs.rawmapname ) );
 
-			if( !bg_mappic )
+			if ( !bg_mappic )
 			{
 				bg_mappic = DC->registerShaderNoMip( "levelshots/unknownmap" );
 			}
@@ -469,7 +469,7 @@ void CG_DrawConnectScreen( qboolean interactive, qboolean forcerefresh )
 		CG_DrawPic( 16 + 80, 2 + 6, 20, 20, bg_pin );
 	}
 
-	if( forcerefresh )
+	if ( forcerefresh )
 	{
 		DC->updateScreen();
 	}
@@ -484,19 +484,19 @@ void CG_LoadPanel_RenderLoadingBar( panel_button_t *button )
 
 	trap_GetHunkData( &hunkused, &hunkexpected );
 
-	if( hunkexpected <= 0 )
+	if ( hunkexpected <= 0 )
 	{
 		return;
 	}
 
 	frac = hunkused / ( float ) hunkexpected;
 
-	if( frac < 0.f )
+	if ( frac < 0.f )
 	{
 		frac = 0.f;
 	}
 
-	if( frac > 1.f )
+	if ( frac > 1.f )
 	{
 		frac = 1.f;
 	}
@@ -531,11 +531,11 @@ void CG_LoadPanel_RenderCampaignNameText( panel_button_t *button )
 	//cs = Info_ValueForKey( buffer, "g_gametype" );
 	//gametype = atoi(cs);
 
-	if( cgs.gametype == GT_WOLF_CAMPAIGN )
+	if ( cgs.gametype == GT_WOLF_CAMPAIGN )
 	{
 		cs = DC->nameForCampaign();
 
-		if( !cs )
+		if ( !cs )
 		{
 			return;
 		}
@@ -548,7 +548,7 @@ void CG_LoadPanel_RenderCampaignNameText( panel_button_t *button )
 	}
 	else
 	{
-		if( !cgs.arenaInfoLoaded )
+		if ( !cgs.arenaInfoLoaded )
 		{
 			return;
 		}
@@ -574,20 +574,20 @@ void CG_LoadPanel_RenderMissionDescriptionText( panel_button_t *button )
 
 //  DC->fillRect( button->rect.x, button->rect.y, button->rect.w, button->rect.h, colorRed );
 
-	if( cgs.gametype == GT_WOLF_CAMPAIGN )
+	if ( cgs.gametype == GT_WOLF_CAMPAIGN )
 	{
 		cs = DC->descriptionForCampaign();
 
-		if( !cs )
+		if ( !cs )
 		{
 			return;
 		}
 	}
-	else if( cgs.gametype == GT_WOLF_LMS )
+	else if ( cgs.gametype == GT_WOLF_LMS )
 	{
 		//cs = CG_ConfigString( CS_MULTI_MAPDESC3 );
 
-		if( !cgs.arenaInfoLoaded )
+		if ( !cgs.arenaInfoLoaded )
 		{
 			return;
 		}
@@ -596,7 +596,7 @@ void CG_LoadPanel_RenderMissionDescriptionText( panel_button_t *button )
 	}
 	else
 	{
-		if( !cgs.arenaInfoLoaded )
+		if ( !cgs.arenaInfoLoaded )
 		{
 			return;
 		}
@@ -606,7 +606,7 @@ void CG_LoadPanel_RenderMissionDescriptionText( panel_button_t *button )
 
 	Q_strncpyz( buffer, cs, sizeof( buffer ) );
 
-	while( ( s = strchr( buffer, '*' ) ) )
+	while ( ( s = strchr( buffer, '*' ) ) )
 	{
 		*s = '\n';
 	}
@@ -617,9 +617,9 @@ void CG_LoadPanel_RenderMissionDescriptionText( panel_button_t *button )
 
 	s = p = buffer;
 
-	while( *p )
+	while ( *p )
 	{
-		if( *p == '\n' )
+		if ( *p == '\n' )
 		{
 			*p++ = '\0';
 			DC->drawTextExt( button->rect.x + 4, y, button->font->scalex, button->font->scaley, button->font->colour, s, 0, 0, 0,
@@ -636,7 +636,7 @@ void CG_LoadPanel_RenderMissionDescriptionText( panel_button_t *button )
 
 void CG_LoadPanel_KeyHandling( int key, qboolean down )
 {
-	if( BG_PanelButtonsKeyEvent( key, down, loadpanelButtons ) )
+	if ( BG_PanelButtonsKeyEvent( key, down, loadpanelButtons ) )
 	{
 		return;
 	}
@@ -644,7 +644,7 @@ void CG_LoadPanel_KeyHandling( int key, qboolean down )
 
 qboolean CG_LoadPanel_ContinueButtonKeyDown( panel_button_t *button, int key )
 {
-	if( key == K_MOUSE1 )
+	if ( key == K_MOUSE1 )
 	{
 		CG_EventHandling( CGAME_EVENT_GAMEVIEW, qfalse );
 		return qtrue;
@@ -661,7 +661,7 @@ void CG_LoadPanel_DrawPin( const char *text, float px, float py, float sx, float
 
 	w = DC->textWidthExt( text, sx, 0, &bg_loadscreenfont2 );
 
-	if( px + 30 + w > 440 )
+	if ( px + 30 + w > 440 )
 	{
 		DC->fillRect( px - w - 28 + 2, py - ( backheight / 2.f ) + 2, 28 + w, backheight, colourFadedBlack );
 		DC->fillRect( px - w - 28, py - ( backheight / 2.f ), 28 + w, backheight, colorBlack );
@@ -679,7 +679,7 @@ void CG_LoadPanel_DrawPin( const char *text, float px, float py, float sx, float
 
 	DC->drawHandlePic( x, y, w, h, shader );
 
-	if( px + 30 + w > 440 )
+	if ( px + 30 + w > 440 )
 	{
 		DC->drawTextExt( px - 12 - w - 28, py + 4, sx, sy, colorWhite, text, 0, 0, 0, &bg_loadscreenfont2 );
 	}
@@ -702,11 +702,11 @@ void CG_LoadPanel_RenderCampaignPins( panel_button_t *button )
 	   s = Info_ValueForKey( buffer, "g_gametype" );
 	   gametype = atoi(s); */
 
-	if( cgs.gametype == GT_WOLF_STOPWATCH || cgs.gametype == GT_WOLF_LMS || cgs.gametype == GT_WOLF )
+	if ( cgs.gametype == GT_WOLF_STOPWATCH || cgs.gametype == GT_WOLF_LMS || cgs.gametype == GT_WOLF )
 	{
 		float px, py;
 
-		if( !cgs.arenaInfoLoaded )
+		if ( !cgs.arenaInfoLoaded )
 		{
 			return;
 		}
@@ -718,23 +718,23 @@ void CG_LoadPanel_RenderCampaignPins( panel_button_t *button )
 	}
 	else
 	{
-		if( !cgs.campaignInfoLoaded )
+		if ( !cgs.campaignInfoLoaded )
 		{
 			return;
 		}
 
-		for( i = 0; i < cgs.campaignData.mapCount; i++ )
+		for ( i = 0; i < cgs.campaignData.mapCount; i++ )
 		{
 			float px, py;
 
 			cg.teamWonRounds[ 1 ] = atoi( CG_ConfigString( CS_ROUNDSCORES1 ) );
 			cg.teamWonRounds[ 0 ] = atoi( CG_ConfigString( CS_ROUNDSCORES2 ) );
 
-			if( cg.teamWonRounds[ 1 ] & ( 1 << i ) )
+			if ( cg.teamWonRounds[ 1 ] & ( 1 << i ) )
 			{
 				shader = bg_axispin;
 			}
-			else if( cg.teamWonRounds[ 0 ] & ( 1 << i ) )
+			else if ( cg.teamWonRounds[ 0 ] & ( 1 << i ) )
 			{
 				shader = bg_alliedpin;
 			}

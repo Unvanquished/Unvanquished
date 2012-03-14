@@ -42,7 +42,7 @@ void G_LogDeath( gentity_t *ent, weapon_t weap )
 {
 	weap = BG_DuplicateWeapon( weap );
 
-	if( !ent->client )
+	if ( !ent->client )
 	{
 		return;
 	}
@@ -54,7 +54,7 @@ void G_LogKill( gentity_t *ent, weapon_t weap )
 {
 	weap = BG_DuplicateWeapon( weap );
 
-	if( !ent->client )
+	if ( !ent->client )
 	{
 		return;
 	}
@@ -66,7 +66,7 @@ void G_LogTeamKill( gentity_t *ent, weapon_t weap )
 {
 	weap = BG_DuplicateWeapon( weap );
 
-	if( !ent->client )
+	if ( !ent->client )
 	{
 		return;
 	}
@@ -76,7 +76,7 @@ void G_LogTeamKill( gentity_t *ent, weapon_t weap )
 
 void G_LogRegionHit( gentity_t *ent, hitRegion_t hr )
 {
-	if( !ent->client )
+	if ( !ent->client )
 	{
 		return;
 	}
@@ -91,9 +91,9 @@ void G_PrintAccuracyLog( gentity_t *ent )
 
 	Q_strncpyz( buffer, "WeaponStats", 2048 );
 
-	for( i = 0; i < WP_NUM_WEAPONS; i++ )
+	for ( i = 0; i < WP_NUM_WEAPONS; i++ )
 	{
-		if( !BG_ValidStatWeapon( i ) )
+		if ( !BG_ValidStatWeapon( i ) )
 		{
 			continue;
 		}
@@ -106,14 +106,14 @@ void G_PrintAccuracyLog( gentity_t *ent )
 
 	Q_strcat( buffer, 2048, va( " %i", ent->client->pers.playerStats.suicides ) );
 
-	for( i = 0; i < HR_NUM_HITREGIONS; i++ )
+	for ( i = 0; i < HR_NUM_HITREGIONS; i++ )
 	{
 		Q_strcat( buffer, 2048, va( " %i", ent->client->pers.playerStats.hitRegions[ i ] ) );
 	}
 
 	Q_strcat( buffer, 2048, va( " %i", 6 /*level.numOidTriggers */ ) );
 
-	for( i = 0; i < 6 /*level.numOidTriggers */; i++ )
+	for ( i = 0; i < 6 /*level.numOidTriggers */; i++ )
 	{
 		Q_strcat( buffer, 2048, va( " %i", ent->client->pers.playerStats.objectiveStats[ i ] ) );
 		Q_strcat( buffer, 2048,
@@ -128,7 +128,7 @@ void G_SetPlayerScore( gclient_t *client )
 {
 	int i;
 
-	for( client->ps.persistant[ PERS_SCORE ] = 0, i = 0; i < SK_NUM_SKILLS; i++ )
+	for ( client->ps.persistant[ PERS_SCORE ] = 0, i = 0; i < SK_NUM_SKILLS; i++ )
 	{
 		client->ps.persistant[ PERS_SCORE ] += client->sess.skillpoints[ i ];
 	}
@@ -141,16 +141,16 @@ void G_SetPlayerSkill( gclient_t *client, skillType_t skill )
 #ifdef LUA_SUPPORT
 
 	// Lua API callbacks
-	if( G_LuaHook_SetPlayerSkill( client - level.clients, skill ) )
+	if ( G_LuaHook_SetPlayerSkill( client - level.clients, skill ) )
 	{
 		return;
 	}
 
 #endif // LUA_SUPPORT
 
-	for( i = NUM_SKILL_LEVELS - 1; i >= 0; i-- )
+	for ( i = NUM_SKILL_LEVELS - 1; i >= 0; i-- )
 	{
-		if( client->sess.skillpoints[ skill ] >= skillLevels[ i ] )
+		if ( client->sess.skillpoints[ skill ] >= skillLevels[ i ] )
 		{
 			client->sess.skill[ skill ] = i;
 			break;
@@ -169,14 +169,14 @@ static void G_UpgradeSkill( gentity_t *ent, skillType_t skill )
 	int i, cnt = 0;
 
 	// See if this is the first time we've reached this skill level
-	for( i = 0; i < SK_NUM_SKILLS; i++ )
+	for ( i = 0; i < SK_NUM_SKILLS; i++ )
 	{
-		if( i == skill )
+		if ( i == skill )
 		{
 			continue;
 		}
 
-		if( ent->client->sess.skill[ skill ] <= ent->client->sess.skill[ i ] )
+		if ( ent->client->sess.skill[ skill ] <= ent->client->sess.skill[ i ] )
 		{
 			break;
 		}
@@ -185,7 +185,7 @@ static void G_UpgradeSkill( gentity_t *ent, skillType_t skill )
 #ifdef LUA_SUPPORT
 
 	// Lua API callbacks
-	if( G_LuaHook_UpgradeSkill( g_entities - ent, skill ) )
+	if ( G_LuaHook_UpgradeSkill( g_entities - ent, skill ) )
 	{
 		return;
 	}
@@ -194,18 +194,18 @@ static void G_UpgradeSkill( gentity_t *ent, skillType_t skill )
 
 	G_DebugAddSkillLevel( ent, skill );
 
-	if( i == SK_NUM_SKILLS )
+	if ( i == SK_NUM_SKILLS )
 	{
 		// increase rank
 		ent->client->sess.rank++;
 	}
 
-	if( ent->client->sess.rank >= 4 )
+	if ( ent->client->sess.rank >= 4 )
 	{
 		// Gordon: count the number of maxed out skills
-		for( i = 0; i < SK_NUM_SKILLS; i++ )
+		for ( i = 0; i < SK_NUM_SKILLS; i++ )
 		{
-			if( ent->client->sess.skill[ i ] >= 4 )
+			if ( ent->client->sess.skill[ i ] >= 4 )
 			{
 				cnt++;
 			}
@@ -213,7 +213,7 @@ static void G_UpgradeSkill( gentity_t *ent, skillType_t skill )
 
 		ent->client->sess.rank = cnt + 3;
 
-		if( ent->client->sess.rank > 10 )
+		if ( ent->client->sess.rank > 10 )
 		{
 			ent->client->sess.rank = 10;
 		}
@@ -222,14 +222,14 @@ static void G_UpgradeSkill( gentity_t *ent, skillType_t skill )
 	ClientUserinfoChanged( ent - g_entities );
 
 	// Give em rightaway
-	if( skill == SK_BATTLE_SENSE && ent->client->sess.skill[ skill ] == 1 )
+	if ( skill == SK_BATTLE_SENSE && ent->client->sess.skill[ skill ] == 1 )
 	{
-		if( AddWeaponToPlayer( ent->client, WP_BINOCULARS, 1, 0, qfalse ) )
+		if ( AddWeaponToPlayer( ent->client, WP_BINOCULARS, 1, 0, qfalse ) )
 		{
 			ent->client->ps.stats[ STAT_KEYS ] |= ( 1 << INV_BINOCS );
 		}
 	}
-	else if( skill == SK_FIRST_AID && ent->client->sess.playerType == PC_MEDIC && ent->client->sess.skill[ skill ] == 4 )
+	else if ( skill == SK_FIRST_AID && ent->client->sess.playerType == PC_MEDIC && ent->client->sess.skill[ skill ] == 4 )
 	{
 		AddWeaponToPlayer( ent->client, WP_MEDIC_ADRENALINE, ent->client->ps.ammo[ BG_FindAmmoForWeapon( WP_MEDIC_ADRENALINE ) ],
 		                   ent->client->ps.ammoclip[ BG_FindClipForWeapon( WP_MEDIC_ADRENALINE ) ], qfalse );
@@ -241,23 +241,23 @@ void G_LoseSkillPoints( gentity_t *ent, skillType_t skill, float points )
 	int   oldskill;
 	float oldskillpoints;
 
-	if( !ent->client )
+	if ( !ent->client )
 	{
 		return;
 	}
 
 	// no skill loss during warmup
-	if( g_gamestate.integer != GS_PLAYING )
+	if ( g_gamestate.integer != GS_PLAYING )
 	{
 		return;
 	}
 
-	if( ent->client->sess.sessionTeam != TEAM_AXIS && ent->client->sess.sessionTeam != TEAM_ALLIES )
+	if ( ent->client->sess.sessionTeam != TEAM_AXIS && ent->client->sess.sessionTeam != TEAM_ALLIES )
 	{
 		return;
 	}
 
-	if( g_gametype.integer == GT_WOLF_LMS )
+	if ( g_gametype.integer == GT_WOLF_LMS )
 	{
 		return; // Gordon: no xp in LMS
 	}
@@ -269,7 +269,7 @@ void G_LoseSkillPoints( gentity_t *ent, skillType_t skill, float points )
 	oldskill = ent->client->sess.skill[ skill ];
 	G_SetPlayerSkill( ent->client, skill );
 
-	if( oldskill != ent->client->sess.skill[ skill ] )
+	if ( oldskill != ent->client->sess.skill[ skill ] )
 	{
 		ent->client->sess.skill[ skill ] = oldskill;
 		ent->client->sess.skillpoints[ skill ] = skillLevels[ oldskill ];
@@ -287,23 +287,23 @@ void G_AddSkillPoints( gentity_t *ent, skillType_t skill, float points )
 {
 	int oldskill;
 
-	if( !ent->client )
+	if ( !ent->client )
 	{
 		return;
 	}
 
 	// no skill gaining during warmup
-	if( g_gamestate.integer != GS_PLAYING )
+	if ( g_gamestate.integer != GS_PLAYING )
 	{
 		return;
 	}
 
-	if( ent->client->sess.sessionTeam != TEAM_AXIS && ent->client->sess.sessionTeam != TEAM_ALLIES )
+	if ( ent->client->sess.sessionTeam != TEAM_AXIS && ent->client->sess.sessionTeam != TEAM_ALLIES )
 	{
 		return;
 	}
 
-	if( g_gametype.integer == GT_WOLF_LMS )
+	if ( g_gametype.integer == GT_WOLF_LMS )
 	{
 		return; // Gordon: no xp in LMS
 	}
@@ -321,7 +321,7 @@ void G_AddSkillPoints( gentity_t *ent, skillType_t skill, float points )
 	oldskill = ent->client->sess.skill[ skill ];
 	G_SetPlayerSkill( ent->client, skill );
 
-	if( oldskill != ent->client->sess.skill[ skill ] )
+	if ( oldskill != ent->client->sess.skill[ skill ] )
 	{
 		// TAT - call the new func that encapsulates the skill giving behavior
 		G_UpgradeSkill( ent, skill );
@@ -332,12 +332,12 @@ void G_LoseKillSkillPoints( gentity_t *tker, meansOfDeath_t mod, hitRegion_t hr,
 {
 	// for evil tkers :E
 
-	if( !tker->client )
+	if ( !tker->client )
 	{
 		return;
 	}
 
-	switch( mod )
+	switch ( mod )
 	{
 			// light weapons
 		case MOD_KNIFE:
@@ -412,12 +412,12 @@ void G_LoseKillSkillPoints( gentity_t *tker, meansOfDeath_t mod, hitRegion_t hr,
 
 void G_AddKillSkillPoints( gentity_t *attacker, meansOfDeath_t mod, hitRegion_t hr, qboolean splash )
 {
-	if( !attacker->client )
+	if ( !attacker->client )
 	{
 		return;
 	}
 
-	switch( mod )
+	switch ( mod )
 	{
 			// light weapons
 		case MOD_KNIFE:
@@ -443,7 +443,7 @@ void G_AddKillSkillPoints( gentity_t *attacker, meansOfDeath_t mod, hitRegion_t 
 		case MOD_AKIMBO_LUGER:
 		case MOD_AKIMBO_SILENCEDCOLT:
 		case MOD_AKIMBO_SILENCEDLUGER:
-			switch( hr )
+			switch ( hr )
 			{
 				case HR_HEAD:
 					G_AddSkillPoints( attacker, SK_LIGHT_WEAPONS, 5.f );
@@ -483,7 +483,7 @@ void G_AddKillSkillPoints( gentity_t *attacker, meansOfDeath_t mod, hitRegion_t 
 		case MOD_GARAND_SCOPE:
 		case MOD_K43_SCOPE:
 		case MOD_FG42SCOPE:
-			switch( hr )
+			switch ( hr )
 			{
 				case HR_HEAD:
 					G_AddSkillPoints( attacker, SK_MILITARY_INTELLIGENCE_AND_SCOPED_WEAPONS, 5.f );
@@ -527,7 +527,7 @@ void G_AddKillSkillPoints( gentity_t *attacker, meansOfDeath_t mod, hitRegion_t 
 			break;
 
 		case MOD_PANZERFAUST:
-			if( splash )
+			if ( splash )
 			{
 				G_AddSkillPoints( attacker, SK_HEAVY_WEAPONS, 3.f );
 				G_DebugAddSkillPoints( attacker, SK_HEAVY_WEAPONS, 3.f, "panzerfaust splash damage kill" );
@@ -546,7 +546,7 @@ void G_AddKillSkillPoints( gentity_t *attacker, meansOfDeath_t mod, hitRegion_t 
 			break;
 
 		case MOD_MORTAR:
-			if( splash )
+			if ( splash )
 			{
 				G_AddSkillPoints( attacker, SK_HEAVY_WEAPONS, 3.f );
 				G_DebugAddSkillPoints( attacker, SK_HEAVY_WEAPONS, 3.f, "mortar splash damage kill" );
@@ -598,7 +598,7 @@ void G_AddKillSkillPoints( gentity_t *attacker, meansOfDeath_t mod, hitRegion_t 
 
 void G_AddKillSkillPointsForDestruction( gentity_t *attacker, meansOfDeath_t mod, g_constructible_stats_t *constructibleStats )
 {
-	switch( mod )
+	switch ( mod )
 	{
 		case MOD_GRENADE_LAUNCHER:
 		case MOD_GRENADE_PINEAPPLE:
@@ -650,7 +650,7 @@ void G_DebugOpenSkillLog( void )
 	qtime_t  ct;
 	char     *s;
 
-	if( g_debugSkills.integer < 2 )
+	if ( g_debugSkills.integer < 2 )
 	{
 		return;
 	}
@@ -659,10 +659,10 @@ void G_DebugOpenSkillLog( void )
 
 	trap_RealTime( &ct );
 
-	if( trap_FS_FOpenFile( va( "skills_%04i-%02i-%02i_%02i%02i%02i_%s.log",
-	                           1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday,
-	                           ct.tm_hour, ct.tm_min, ct.tm_sec, mapname.string ),
-	                       &skillDebugLog, FS_APPEND_SYNC ) < 0 )
+	if ( trap_FS_FOpenFile( va( "skills_%04i-%02i-%02i_%02i%02i%02i_%s.log",
+	                            1900 + ct.tm_year, ct.tm_mon + 1, ct.tm_mday,
+	                            ct.tm_hour, ct.tm_min, ct.tm_sec, mapname.string ),
+	                        &skillDebugLog, FS_APPEND_SYNC ) < 0 )
 	{
 		return;
 	}
@@ -678,7 +678,7 @@ void G_DebugCloseSkillLog( void )
 	qtime_t ct;
 	char    *s;
 
-	if( skillDebugLog == -1 )
+	if ( skillDebugLog == -1 )
 	{
 		return;
 	}
@@ -697,7 +697,7 @@ void G_DebugAddSkillLevel( gentity_t *ent, skillType_t skill )
 {
 	qtime_t ct;
 
-	if( !g_debugSkills.integer )
+	if ( !g_debugSkills.integer )
 	{
 		return;
 	}
@@ -710,7 +710,7 @@ void G_DebugAddSkillLevel( gentity_t *ent, skillType_t skill )
 
 	trap_RealTime( &ct );
 
-	if( g_debugSkills.integer >= 2 && skillDebugLog != -1 )
+	if ( g_debugSkills.integer >= 2 && skillDebugLog != -1 )
 	{
 		// CHRUKER: b013 - Was printing the float with 6.2 as max. numbers
 		char *s = va( "%02d:%02d:%02d : ^%c(SK: %2i XP: %.0f) %s: %s raised in skill level to %i.\n",
@@ -726,7 +726,7 @@ void G_DebugAddSkillPoints( gentity_t *ent, skillType_t skill, float points, con
 {
 	qtime_t ct;
 
-	if( !g_debugSkills.integer )
+	if ( !g_debugSkills.integer )
 	{
 		return;
 	}
@@ -738,7 +738,7 @@ void G_DebugAddSkillPoints( gentity_t *ent, skillType_t skill, float points, con
 
 	trap_RealTime( &ct );
 
-	if( g_debugSkills.integer >= 2 && skillDebugLog != -1 )
+	if ( g_debugSkills.integer >= 2 && skillDebugLog != -1 )
 	{
 		// CHRUKER: b013 - Was printing the float with 6.2 as max. numbers
 		char *s = va( "%02d:%02d:%02d : ^%c(SK: %2i XP: %.0f) %s: %s gained %.0fXP, reason: %s.\n",
@@ -848,7 +848,7 @@ void G_BuildEndgameStats( void )
 
 	G_CalcClientAccuracies();
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		level.clients[ i ].hasaward = qfalse;
 	}

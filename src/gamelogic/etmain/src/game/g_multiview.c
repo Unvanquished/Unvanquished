@@ -41,30 +41,30 @@ qboolean G_smvCommands( gentity_t *ent, char *cmd )
 {
 #ifdef MV_SUPPORT
 
-	if( !Q_stricmp( cmd, "mvadd" ) )
+	if ( !Q_stricmp( cmd, "mvadd" ) )
 	{
 		G_smvAdd_cmd( ent );
 	}
-	else if( !Q_stricmp( cmd, "mvdel" ) )
+	else if ( !Q_stricmp( cmd, "mvdel" ) )
 	{
 		G_smvDel_cmd( ent );
 	}
-	else if( !Q_stricmp( cmd, "mvallies" ) )
+	else if ( !Q_stricmp( cmd, "mvallies" ) )
 	{
 		G_smvAddTeam_cmd( ent, TEAM_ALLIES );
 	}
-	else if( !Q_stricmp( cmd, "mvaxis" ) )
+	else if ( !Q_stricmp( cmd, "mvaxis" ) )
 	{
 		G_smvAddTeam_cmd( ent, TEAM_AXIS );
 	}
-	else if( !Q_stricmp( cmd, "mvall" ) )
+	else if ( !Q_stricmp( cmd, "mvall" ) )
 	{
 		G_smvAddTeam_cmd( ent, TEAM_ALLIES );
 		G_smvAddTeam_cmd( ent, TEAM_AXIS );
 	}
-	else if( !Q_stricmp( cmd, "mvnone" ) )
+	else if ( !Q_stricmp( cmd, "mvnone" ) )
 	{
-		if( ent->client->pers.mvCount > 0 )
+		if ( ent->client->pers.mvCount > 0 )
 		{
 			G_smvRemoveInvalidClients( ent, TEAM_AXIS );
 			G_smvRemoveInvalidClients( ent, TEAM_ALLIES );
@@ -93,19 +93,19 @@ void G_smvAdd_cmd( gentity_t *ent )
 	trap_Argv( 1, str, sizeof( str ) );
 	pID = atoi( str );
 
-	if( pID < 0 || pID > level.maxclients || g_entities[ pID ].client->pers.connected != CON_CONNECTED )
+	if ( pID < 0 || pID > level.maxclients || g_entities[ pID ].client->pers.connected != CON_CONNECTED )
 	{
 		CP( va( "print \"[lof]** [lon]Client[lof] %d [lon]is not connected[lof]!\n\"", pID ) );
 		return;
 	}
 
-	if( g_entities[ pID ].client->sess.sessionTeam == TEAM_SPECTATOR )
+	if ( g_entities[ pID ].client->sess.sessionTeam == TEAM_SPECTATOR )
 	{
 		CP( va( "print \"[lof]** [lon]Client[lof] %s^7 [lon]is not in the game[lof]!\n\"", level.clients[ pID ].pers.netname ) );
 		return;
 	}
 
-	if( !G_allowFollow( ent, G_teamID( &g_entities[ pID ] ) ) )
+	if ( !G_allowFollow( ent, G_teamID( &g_entities[ pID ] ) ) )
 	{
 		CP( va( "print \"[lof]** [lon]The %s team is locked from spectators[lof]!\n\"", aTeams[ G_teamID( &g_entities[ pID ] ) ] ) );
 		return;
@@ -118,24 +118,24 @@ void G_smvAddTeam_cmd( gentity_t *ent, int nTeam )
 {
 	int i, pID;
 
-	if( !G_allowFollow( ent, nTeam ) )
+	if ( !G_allowFollow( ent, nTeam ) )
 	{
 		CP( va( "print \"[lof]** [lon]The %s team is locked from spectators[lof]!\n\"", aTeams[ nTeam ] ) );
 		return;
 	}
 
 	// For limbo'd MV action
-	if( ent->client->sess.sessionTeam != TEAM_SPECTATOR &&
-	    ( !( ent->client->ps.pm_flags & PMF_LIMBO ) || ent->client->sess.sessionTeam != nTeam ) )
+	if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR &&
+	     ( !( ent->client->ps.pm_flags & PMF_LIMBO ) || ent->client->sess.sessionTeam != nTeam ) )
 	{
 		return;
 	}
 
-	for( i = 0; i < level.numPlayingClients; i++ )
+	for ( i = 0; i < level.numPlayingClients; i++ )
 	{
 		pID = level.sortedClients[ i ];
 
-		if( g_entities[ pID ].client->sess.sessionTeam == nTeam && ent != &g_entities[ pID ] )
+		if ( g_entities[ pID ].client->sess.sessionTeam == nTeam && ent != &g_entities[ pID ] )
 		{
 			G_smvAddView( ent, pID );
 		}
@@ -151,7 +151,7 @@ void G_smvDel_cmd( gentity_t *ent )
 	trap_Argv( 1, str, sizeof( str ) );
 	pID = atoi( str );
 
-	if( !G_smvLocateEntityInMVList( ent, pID, qtrue ) )
+	if ( !G_smvLocateEntityInMVList( ent, pID, qtrue ) )
 	{
 		CP( va( "print \"[lof]** [lon]Client[lof] %s^7 [lon]is not currently viewed[lof]!\n\"", level.clients[ pID ].pers.netname ) );
 	}
@@ -164,21 +164,21 @@ void G_smvAddView( gentity_t *ent, int pID )
 	mview_t   *mv = NULL;
 	gentity_t *v;
 
-	if( pID >= MAX_MVCLIENTS || G_smvLocateEntityInMVList( ent, pID, qfalse ) )
+	if ( pID >= MAX_MVCLIENTS || G_smvLocateEntityInMVList( ent, pID, qfalse ) )
 	{
 		return;
 	}
 
-	for( i = 0; i < MULTIVIEW_MAXVIEWS; i++ )
+	for ( i = 0; i < MULTIVIEW_MAXVIEWS; i++ )
 	{
-		if( !ent->client->pers.mv[ i ].fActive )
+		if ( !ent->client->pers.mv[ i ].fActive )
 		{
 			mv = &ent->client->pers.mv[ i ];
 			break;
 		}
 	}
 
-	if( mv == NULL )
+	if ( mv == NULL )
 	{
 		CP( va( "print \"[lof]** [lon]Sorry, no more MV slots available (all[lof] %d [lon]in use)[lof]\n\"", MULTIVIEW_MAXVIEWS ) );
 		return;
@@ -186,17 +186,17 @@ void G_smvAddView( gentity_t *ent, int pID )
 
 	mv->camera = G_Spawn();
 
-	if( mv->camera == NULL )
+	if ( mv->camera == NULL )
 	{
 		return;
 	}
 
-	if( ent->client->sess.sessionTeam == TEAM_SPECTATOR &&  /*ent->client->sess.sessionTeam != TEAM_SPECTATOR || */
-	    ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR && /*ent->client->sess.sessionTeam != TEAM_SPECTATOR || */
+	     ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
 	{
 		SetTeam( ent, "s", qtrue, -1, -1, qfalse );
 	}
-	else if( ent->client->sess.sessionTeam != TEAM_SPECTATOR && !( ent->client->ps.pm_flags & PMF_LIMBO ) )
+	else if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR && !( ent->client->ps.pm_flags & PMF_LIMBO ) )
 	{
 		limbo( ent, qtrue );
 	}
@@ -230,13 +230,13 @@ qboolean G_smvLocateEntityInMVList( gentity_t *ent, int pID, qboolean fRemove )
 {
 	int i;
 
-	if( ent->client->pers.mvCount > 0 )
+	if ( ent->client->pers.mvCount > 0 )
 	{
-		for( i = 0; i < MULTIVIEW_MAXVIEWS; i++ )
+		for ( i = 0; i < MULTIVIEW_MAXVIEWS; i++ )
 		{
-			if( ent->client->pers.mv[ i ].fActive && ent->client->pers.mv[ i ].entID == pID )
+			if ( ent->client->pers.mv[ i ].fActive && ent->client->pers.mv[ i ].entID == pID )
 			{
-				if( fRemove )
+				if ( fRemove )
 				{
 					G_smvRemoveEntityInMVList( ent, &ent->client->pers.mv[ i ] );
 				}
@@ -266,9 +266,9 @@ unsigned int G_smvGenerateClientList( gentity_t *ent )
 {
 	unsigned int i, mClients = 0;
 
-	for( i = 0; i < MULTIVIEW_MAXVIEWS; i++ )
+	for ( i = 0; i < MULTIVIEW_MAXVIEWS; i++ )
 	{
-		if( ent->client->pers.mv[ i ].fActive )
+		if ( ent->client->pers.mv[ i ].fActive )
 		{
 			mClients |= 1 << ent->client->pers.mv[ i ].entID;
 		}
@@ -282,9 +282,9 @@ void G_smvRegenerateClients( gentity_t *ent, int clientList )
 {
 	int i;
 
-	for( i = 0; i < MAX_MVCLIENTS; i++ )
+	for ( i = 0; i < MAX_MVCLIENTS; i++ )
 	{
-		if( clientList & ( 1 << i ) )
+		if ( clientList & ( 1 << i ) )
 		{
 			G_smvAddView( ent, i );
 		}
@@ -303,16 +303,16 @@ void G_smvRemoveInvalidClients( gentity_t *ent, int nTeam )
 {
 	int i, id;
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		id = level.sortedClients[ i ];
 
-		if( level.clients[ id ].sess.sessionTeam == TEAM_SPECTATOR )
+		if ( level.clients[ id ].sess.sessionTeam == TEAM_SPECTATOR )
 		{
 			continue;
 		}
 
-		if( level.clients[ id ].sess.sessionTeam != nTeam && ent->client->sess.sessionTeam == TEAM_SPECTATOR )
+		if ( level.clients[ id ].sess.sessionTeam != nTeam && ent->client->sess.sessionTeam == TEAM_SPECTATOR )
 		{
 			continue;
 		}
@@ -327,11 +327,11 @@ void G_smvAllRemoveSingleClient( int pID )
 	int       i;
 	gentity_t *ent;
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		ent = g_entities + level.sortedClients[ i ];
 
-		if( ent->client->pers.mvCount < 1 )
+		if ( ent->client->pers.mvCount < 1 )
 		{
 			continue;
 		}
@@ -348,25 +348,25 @@ qboolean G_smvRunCamera( gentity_t *ent )
 	playerState_t *tps, *ps;
 
 	// Opt out if not a real MV portal
-	if( ent->tagParent == NULL || ent->tagParent->client == NULL )
+	if ( ent->tagParent == NULL || ent->tagParent->client == NULL )
 	{
 		return ( qfalse );
 	}
 
-	if( ( ps = &ent->tagParent->client->ps ) == NULL )
+	if ( ( ps = &ent->tagParent->client->ps ) == NULL )
 	{
 		return ( qfalse );
 	}
 
 	// If viewing client is no longer connected, delete this camera
-	if( ent->tagParent->client->pers.connected != CON_CONNECTED )
+	if ( ent->tagParent->client->pers.connected != CON_CONNECTED )
 	{
 		G_FreeEntity( ent );
 		return ( qtrue );
 	}
 
 	// Also remove if the target player is no longer in the game playing
-	if( ent->target_ent->client->pers.connected != CON_CONNECTED || ent->target_ent->client->sess.sessionTeam == TEAM_SPECTATOR )
+	if ( ent->target_ent->client->pers.connected != CON_CONNECTED || ent->target_ent->client->sess.sessionTeam == TEAM_SPECTATOR )
 	{
 		G_smvLocateEntityInMVList( ent->tagParent, ent->target_ent - g_entities, qtrue );
 		return ( qtrue );
@@ -384,26 +384,26 @@ qboolean G_smvRunCamera( gentity_t *ent )
 	trap_LinkEntity( ent );
 
 	// Only allow client ids 0 to (MAX_MVCLIENTS-1) to be updated with extra info
-	if( id >= MAX_MVCLIENTS )
+	if ( id >= MAX_MVCLIENTS )
 	{
 		return ( qtrue );
 	}
 
 	tps = &ent->target_ent->client->ps;
 
-	if( tps->stats[ STAT_PLAYER_CLASS ] == PC_ENGINEER )
+	if ( tps->stats[ STAT_PLAYER_CLASS ] == PC_ENGINEER )
 	{
 		chargeTime = g_engineerChargeTime.value;
 	}
-	else if( tps->stats[ STAT_PLAYER_CLASS ] == PC_MEDIC )
+	else if ( tps->stats[ STAT_PLAYER_CLASS ] == PC_MEDIC )
 	{
 		chargeTime = g_medicChargeTime.value;
 	}
-	else if( tps->stats[ STAT_PLAYER_CLASS ] == PC_FIELDOPS )
+	else if ( tps->stats[ STAT_PLAYER_CLASS ] == PC_FIELDOPS )
 	{
 		chargeTime = g_LTChargeTime.value;
 	}
-	else if( tps->stats[ STAT_PLAYER_CLASS ] == PC_COVERTOPS )
+	else if ( tps->stats[ STAT_PLAYER_CLASS ] == PC_COVERTOPS )
 	{
 		chargeTime = g_covertopsChargeTime.value;
 	}
@@ -429,7 +429,7 @@ qboolean G_smvRunCamera( gentity_t *ent )
 	// ammoclip-1: 16
 	id = MAX_WEAPONS - 1 - ( id * 2 );
 
-	if( tps->pm_flags & PMF_LIMBO )
+	if ( tps->pm_flags & PMF_LIMBO )
 	{
 		ps->ammo[ id ] = 0;
 		ps->ammo[ id - 1 ] = 0;

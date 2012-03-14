@@ -55,16 +55,16 @@ float AngleDifference( float ang1, float ang2 )
 
 	diff = ang1 - ang2;
 
-	if( ang1 > ang2 )
+	if ( ang1 > ang2 )
 	{
-		if( diff > 180.0 )
+		if ( diff > 180.0 )
 		{
 			diff -= 360.0;
 		}
 	}
 	else
 	{
-		if( diff < -180.0 )
+		if ( diff < -180.0 )
 		{
 			diff += 360.0;
 		}
@@ -91,7 +91,7 @@ Used as a positional target for calculations in the utilities (spotlights, etc),
 void SP_info_null( gentity_t *self )
 {
 	// Gordon: if it has a targetname, let it stick around for a few frames
-	if( !self->targetname || !*self->targetname )
+	if ( !self->targetname || !*self->targetname )
 	{
 		G_FreeEntity( self );
 	}
@@ -192,7 +192,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles )
 	// use the precise origin for linking
 	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
 
-	if( player->client->sess.sessionTeam != TEAM_SPECTATOR )
+	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR )
 	{
 		trap_LinkEntity( player );
 	}
@@ -232,7 +232,7 @@ grabber_think_idle
 */
 void grabber_think_idle( gentity_t *ent )
 {
-	if( ent->s.frame > 1 )
+	if ( ent->s.frame > 1 )
 	{
 		// non-idle status
 		ent->s.frame = rand() % 2;
@@ -304,7 +304,7 @@ grabber_close
 */
 void grabber_close( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
-	if( ent->parent->nextthink > level.time )
+	if ( ent->parent->nextthink > level.time )
 	{
 		return;
 	}
@@ -340,7 +340,7 @@ void grabber_wake( gentity_t *ent )
 	VectorCopy( parent->s.origin, ent->r.mins );
 	VectorCopy( parent->s.origin, ent->r.maxs );
 
-	if( 1 )
+	if ( 1 )
 	{
 		// temp fast trigger
 		VectorAdd( ent->r.mins, tv( - ( ent->random ), - ( ent->random ), - ( ent->random ) ), ent->r.mins );
@@ -381,7 +381,7 @@ void grabber_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	G_Printf( "grabber_use: %d\n", level.time );
 
-	if( !ent->active )
+	if ( !ent->active )
 	{
 		grabber_wake( ent );
 	}
@@ -452,12 +452,12 @@ void SP_misc_grabber_trap( gentity_t *ent )
 	VectorCopy( ent->s.angles, ent->s.apos.trBase );
 	ent->s.apos.trBase[ YAW ] -= 90; // adjust for model rotation
 
-	if( !ent->health )
+	if ( !ent->health )
 	{
 		ent->health = 100; // default to 100
 	}
 
-	if( !ent->damage )
+	if ( !ent->damage )
 	{
 		ent->damage = 10; // default to 10
 	}
@@ -486,7 +486,7 @@ void SP_misc_grabber_trap( gentity_t *ent )
 	trig->random = bdist;
 
 	// just make an even trigger box around the ent (do properly sized/oriented trigger after it's working)
-	if( 1 )
+	if ( 1 )
 	{
 		// temp fast trigger
 		VectorAdd( trig->r.mins, tv( - ( trig->count ), - ( trig->count ), - ( trig->count ) ), trig->r.mins );
@@ -504,7 +504,7 @@ void use_spotlight( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	gentity_t *tent;
 
-	if( ent->r.linked )
+	if ( ent->r.linked )
 	{
 		trap_UnlinkEntity( ent );
 	}
@@ -520,7 +520,7 @@ void use_spotlight( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 void spotlight_finish_spawning( gentity_t *ent )
 {
-	if( ent->spawnflags & 1 )
+	if ( ent->spawnflags & 1 )
 	{
 		// START_ON
 		ent->active = 0;
@@ -548,7 +548,7 @@ void SP_misc_spotlight( gentity_t *ent )
 	ent->think = spotlight_finish_spawning;
 	ent->nextthink = level.time + 100;
 
-	if( ent->model )
+	if ( ent->model )
 	{
 		ent->s.modelindex = G_ModelIndex( ent->model );
 	}
@@ -557,7 +557,7 @@ void SP_misc_spotlight( gentity_t *ent )
 		ent->s.modelindex = G_ModelIndex( "models/mapobjects/light/searchlight_pivot.md3" );
 	}
 
-	if( ent->target )
+	if ( ent->target )
 	{
 		ent->s.density = G_FindConfigstringIndex( ent->target, CS_SPLINES, MAX_SPLINE_CONFIGSTRINGS, qtrue );
 	}
@@ -610,7 +610,7 @@ void SP_misc_gamemodel( gentity_t *ent )
 	qboolean reverse = qfalse;
 
 	// Gordon: static gamemodels client side only now :D so server can just wave bye-bye
-	if( !ent->scriptName && !ent->targetname && !ent->spawnflags )
+	if ( !ent->scriptName && !ent->targetname && !ent->spawnflags )
 	{
 		G_FreeEntity( ent );
 		return;
@@ -621,18 +621,18 @@ void SP_misc_gamemodel( gentity_t *ent )
 
 	ent->s.modelindex2 = G_SkinIndex( ent->aiSkin );
 
-	if( ent->spawnflags & 2 )
+	if ( ent->spawnflags & 2 )
 	{
 		G_SpawnInt( "frames", "0", &num_frames );
 		G_SpawnInt( "start", "0", &start_frame );
 		G_SpawnInt( "fps", "20", &fps );
 
-		if( G_SpawnString( "reverse", "", &dummy ) )
+		if ( G_SpawnString( "reverse", "", &dummy ) )
 		{
 			reverse = qtrue;
 		}
 
-		if( num_frames == 0 )
+		if ( num_frames == 0 )
 		{
 			G_Error( "'misc_model' with ANIMATE spawnflag set has 'frames' set to 0\n" );
 		}
@@ -648,7 +648,7 @@ void SP_misc_gamemodel( gentity_t *ent )
 		ent->s.teamNum = 0;
 	}
 
-	if( ent->model )
+	if ( ent->model )
 	{
 		COM_StripExtension( ent->model, tagname );
 		Q_strcat( tagname, MAX_QPATH, ".tag" );
@@ -660,9 +660,9 @@ void SP_misc_gamemodel( gentity_t *ent )
 		                }*/
 	}
 
-	if( !G_SpawnVector( "modelscale_vec", "1 1 1", vScale ) )
+	if ( !G_SpawnVector( "modelscale_vec", "1 1 1", vScale ) )
 	{
-		if( G_SpawnFloat( "modelscale", "1", &scale ) )
+		if ( G_SpawnFloat( "modelscale", "1", &scale ) )
 		{
 			VectorSet( vScale, scale, scale, scale );
 		}
@@ -670,12 +670,12 @@ void SP_misc_gamemodel( gentity_t *ent )
 
 	G_SpawnInt( "trunk", "0", &trunksize );
 
-	if( !G_SpawnInt( "trunkhight", "0", &trunkheight ) )
+	if ( !G_SpawnInt( "trunkhight", "0", &trunkheight ) )
 	{
 		trunkheight = 256;
 	}
 
-	if( trunksize )
+	if ( trunksize )
 	{
 		float rad;
 
@@ -696,7 +696,7 @@ void SP_misc_gamemodel( gentity_t *ent )
 	VectorCopy( ent->s.angles, ent->s.apos.trBase );
 
 	// Gordon: hmmmmm, think this flag is prolly b0rked
-	if( ent->spawnflags & 1 )
+	if ( ent->spawnflags & 1 )
 	{
 		ent->s.apos.trType = 1; // misc_gamemodels (since they have no movement) will use type = 0 for static models, type = 1 for auto-aligning models
 	}
@@ -710,7 +710,7 @@ void locateMaster( gentity_t *ent )
 {
 	ent->target_ent = G_FindByTargetname( NULL, ent->target );
 
-	if( ent->target_ent )
+	if ( ent->target_ent )
 	{
 		ent->s.otherEntityNum = ent->target_ent->s.number;
 	}
@@ -728,7 +728,7 @@ For safety, you should have each dummy only point at one entity (however, it's o
 */
 void SP_misc_vis_dummy( gentity_t *ent )
 {
-	if( !ent->target )
+	if ( !ent->target )
 	{
 		//----(SA)    added safety check
 		G_Printf( "No target specified for misc_vis_dummy at %s\n", vtos( ent->r.currentOrigin ) );
@@ -753,7 +753,7 @@ This entity was created to have multiple speakers targeting it
 */
 void SP_misc_vis_dummy_multiple( gentity_t *ent )
 {
-	if( !ent->targetname )
+	if ( !ent->targetname )
 	{
 		G_Printf( "misc_vis_dummy_multiple needs a targetname at %s\n", vtos( ent->r.currentOrigin ) );
 		G_FreeEntity( ent );
@@ -790,7 +790,7 @@ void locateCamera( gentity_t *ent )
 
 	owner = G_PickTarget( ent->target );
 
-	if( !owner )
+	if ( !owner )
 	{
 		G_Printf( "Couldn't find target for misc_partal_surface\n" );
 		G_FreeEntity( ent );
@@ -800,11 +800,11 @@ void locateCamera( gentity_t *ent )
 	ent->r.ownerNum = owner->s.number;
 
 	// frame holds the rotate speed
-	if( owner->spawnflags & 1 )
+	if ( owner->spawnflags & 1 )
 	{
 		ent->s.frame = 25;
 	}
-	else if( owner->spawnflags & 2 )
+	else if ( owner->spawnflags & 2 )
 	{
 		ent->s.frame = 75;
 	}
@@ -817,7 +817,7 @@ void locateCamera( gentity_t *ent )
 	// see if the portal_camera has a target
 	target = G_PickTarget( owner->target );
 
-	if( target )
+	if ( target )
 	{
 		VectorSubtract( target->s.origin, owner->s.origin, dir );
 		VectorNormalize( dir );
@@ -843,7 +843,7 @@ void SP_misc_portal_surface( gentity_t *ent )
 	ent->r.svFlags = SVF_PORTAL;
 	ent->s.eType = ET_PORTAL;
 
-	if( !ent->target )
+	if ( !ent->target )
 	{
 		VectorCopy( ent->s.origin, ent->s.origin2 );
 	}
@@ -886,7 +886,7 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	vec3_t up, right;
 
 	// see if we have a target
-	if( ent->enemy )
+	if ( ent->enemy )
 	{
 		VectorSubtract( ent->enemy->r.currentOrigin, ent->s.origin, dir );
 		VectorNormalize( dir );
@@ -896,7 +896,7 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		VectorCopy( ent->movedir, dir );
 	}
 
-	if( ent->s.weapon == WP_MAPMORTAR )
+	if ( ent->s.weapon == WP_MAPMORTAR )
 	{
 		AimAtTarget( ent );  // store in ent->s.origin2 the direction/force needed to pass through the target
 		VectorCopy( ent->s.origin2, dir );
@@ -914,7 +914,7 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 	VectorNormalize( dir );
 
-	switch( ent->s.weapon )
+	switch ( ent->s.weapon )
 	{
 		case WP_GRENADE_LAUNCHER:
 			VectorScale( dir, 700, dir );  //----(SA)    had to add this as fire_grenade now expects a non-normalized direction vector
@@ -956,7 +956,7 @@ void InitShooter( gentity_t *ent, int weapon )
 
 	G_SetMovedir( ent->s.angles, ent->movedir );
 
-	if( !ent->random )
+	if ( !ent->random )
 	{
 		ent->random = 1.0;
 	}
@@ -964,7 +964,7 @@ void InitShooter( gentity_t *ent, int weapon )
 	ent->random = sin( M_PI * ent->random / 180 );
 
 	// target might be a moving object, so we can't set movedir for it
-	if( ent->target )
+	if ( ent->target )
 	{
 		ent->think = InitShooter_Finish;
 		ent->nextthink = level.time + 500;
@@ -984,12 +984,12 @@ void SP_shooter_mortar( gentity_t *ent )
 	// (SA) TODO: must have a self->target.  Do a check/print if this is not the case.
 	InitShooter( ent, WP_MAPMORTAR );
 
-	if( ent->spawnflags & 1 )
+	if ( ent->spawnflags & 1 )
 	{
 		// smoke at source
 	}
 
-	if( ent->spawnflags & 2 )
+	if ( ent->spawnflags & 2 )
 	{
 		// muzzle flash at source
 	}
@@ -1037,7 +1037,7 @@ use_corona
 */
 void use_corona( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
-	if( ent->r.linked )
+	if ( ent->r.linked )
 	{
 		trap_UnlinkEntity( ent );
 	}
@@ -1059,8 +1059,8 @@ void SP_corona( gentity_t *ent )
 
 	ent->s.eType = ET_CORONA;
 
-	if( ent->dl_color[ 0 ] <= 0 &&  // if it's black or has no color assigned
-	    ent->dl_color[ 1 ] <= 0 && ent->dl_color[ 2 ] <= 0 )
+	if ( ent->dl_color[ 0 ] <= 0 && // if it's black or has no color assigned
+	     ent->dl_color[ 1 ] <= 0 && ent->dl_color[ 2 ] <= 0 )
 	{
 		ent->dl_color[ 0 ] = ent->dl_color[ 1 ] = ent->dl_color[ 2 ] = 1; // set white
 	}
@@ -1076,7 +1076,7 @@ void SP_corona( gentity_t *ent )
 
 	ent->use = use_corona;
 
-	if( !( ent->spawnflags & 1 ) )
+	if ( !( ent->spawnflags & 1 ) )
 	{
 		trap_LinkEntity( ent );
 	}
@@ -1168,7 +1168,7 @@ shutoff_dlight
 */
 void shutoff_dlight( gentity_t *ent )
 {
-	if( !( ent->r.linked ) )
+	if ( !( ent->r.linked ) )
 	{
 		return;
 	}
@@ -1185,7 +1185,7 @@ use_dlight
 */
 void use_dlight( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
-	if( ent->r.linked )
+	if ( ent->r.linked )
 	{
 		trap_UnlinkEntity( ent );
 	}
@@ -1194,7 +1194,7 @@ void use_dlight( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		ent->active = 0;
 		trap_LinkEntity( ent );
 
-		if( ent->spawnflags & 4 )
+		if ( ent->spawnflags & 4 )
 		{
 			// ONETIME
 			ent->think = shutoff_dlight;
@@ -1223,16 +1223,16 @@ void SP_dlight( gentity_t *ent )
 	G_SpawnInt( "atten", "0", &atten );  //
 	G_SpawnString( "shader", "", &shader );  // name of shader to use for this dlight image
 
-	if( G_SpawnString( "sound", "0", &snd ) )
+	if ( G_SpawnString( "sound", "0", &snd ) )
 	{
 		ent->soundLoop = G_SoundIndex( snd );
 	}
 
-	if( ent->dl_stylestring && strlen( ent->dl_stylestring ) )
+	if ( ent->dl_stylestring && strlen( ent->dl_stylestring ) )
 	{
 		// if they're specified in a string, use em
 	}
-	else if( style )
+	else if ( style )
 	{
 		style = max( 1, style );  // clamp to predefined range
 		style = min( 19, style );
@@ -1254,7 +1254,7 @@ void SP_dlight( gentity_t *ent )
 
 	ent->think = dlight_finish_spawning;
 
-	if( !dlightstarttime )
+	if ( !dlightstarttime )
 	{
 		// sync up all the dlights
 		dlightstarttime = level.time + 100;
@@ -1262,8 +1262,8 @@ void SP_dlight( gentity_t *ent )
 
 	ent->nextthink = dlightstarttime;
 
-	if( ent->dl_color[ 0 ] <= 0 &&  // if it's black or has no color assigned, make it white
-	    ent->dl_color[ 1 ] <= 0 && ent->dl_color[ 2 ] <= 0 )
+	if ( ent->dl_color[ 0 ] <= 0 && // if it's black or has no color assigned, make it white
+	     ent->dl_color[ 1 ] <= 0 && ent->dl_color[ 2 ] <= 0 )
 	{
 		ent->dl_color[ 0 ] = ent->dl_color[ 1 ] = ent->dl_color[ 2 ] = 1;
 	}
@@ -1279,7 +1279,7 @@ void SP_dlight( gentity_t *ent )
 
 	ent->use = use_dlight;
 
-	if( !( ent->spawnflags & 2 ) )
+	if ( !( ent->spawnflags & 2 ) )
 	{
 		trap_LinkEntity( ent );
 	}
@@ -1335,14 +1335,14 @@ void Fire_Lead_Ext( gentity_t *ent, gentity_t *activator, float spread, int dama
 	G_HistoricalTrace( activator, &tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT );
 
 	// bullet debugging using Q3A's railtrail
-	if( g_debugBullets.integer & 1 )
+	if ( g_debugBullets.integer & 1 )
 	{
 		tent = G_TempEntity( muzzle, EV_RAILTRAIL );
 		VectorCopy( tr.endpos, tent->s.origin2 );
 		tent->s.otherEntityNum2 = activator->s.number;
 	}
 
-	if( tr.surfaceFlags & SURF_NOIMPACT )
+	if ( tr.surfaceFlags & SURF_NOIMPACT )
 	{
 		tent = G_TempEntity( tr.endpos, EV_MG42BULLET_HIT_WALL );
 		tent->s.otherEntityNum = ent->s.number;
@@ -1358,7 +1358,7 @@ void Fire_Lead_Ext( gentity_t *ent, gentity_t *activator, float spread, int dama
 	SnapVectorTowards( tr.endpos, muzzle );
 
 	// send bullet impact
-	if( traceEnt->takedamage && traceEnt->client )
+	if ( traceEnt->takedamage && traceEnt->client )
 	{
 		tent = G_TempEntity( tr.endpos, EV_MG42BULLET_HIT_FLESH );
 		tent->s.eventParm = traceEnt->s.number;
@@ -1375,7 +1375,7 @@ void Fire_Lead_Ext( gentity_t *ent, gentity_t *activator, float spread, int dama
 		tent = G_TempEntity( tr.endpos, EV_MG42BULLET_HIT_WALL );
 
 		// Gordon: bleugh, lets broadcast this in SP, (trainwreck issues)
-		if( G_IsSinglePlayerGame() )
+		if ( G_IsSinglePlayerGame() )
 		{
 			tent->r.svFlags |= SVF_BROADCAST;
 		}
@@ -1390,7 +1390,7 @@ void Fire_Lead_Ext( gentity_t *ent, gentity_t *activator, float spread, int dama
 		tent->s.effect1Time = seed;
 	}
 
-	if( traceEnt->takedamage )
+	if ( traceEnt->takedamage )
 	{
 		G_Damage( traceEnt, ent, activator, forward, tr.endpos, damage, 0, mod );
 	}
@@ -1406,7 +1406,7 @@ void clamp_playerbehindgun( gentity_t *self, gentity_t *other, vec3_t dang )
 
 	AngleVectors( self->s.apos.trBase, forward, right, up );
 
-	if( self->s.eType == ET_AAGUN )
+	if ( self->s.eType == ET_AAGUN )
 	{
 		VectorMA( self->r.currentOrigin, -40, forward, point );
 	}
@@ -1444,13 +1444,13 @@ void clamp_hweapontofirearc( gentity_t *self, vec3_t dang )
 	VectorCopy( self->s.angles, dang );
 	yawspeed = MG42_IDLEYAWSPEED;
 
-	if( dang[ 0 ] < 0 && dang[ 0 ] < - ( self->varc ) )
+	if ( dang[ 0 ] < 0 && dang[ 0 ] < - ( self->varc ) )
 	{
 		clamped = qtrue;
 		dang[ 0 ] = - ( self->varc );
 	}
 
-	if( dang[ 0 ] > 0 && dang[ 0 ] > ( self->varc / 2 ) )
+	if ( dang[ 0 ] > 0 && dang[ 0 ] > ( self->varc / 2 ) )
 	{
 		clamped = qtrue;
 		dang[ 0 ] = self->varc / 2;
@@ -1459,11 +1459,11 @@ void clamp_hweapontofirearc( gentity_t *self, vec3_t dang )
 	// sanity check the angles again to make sure we don't go passed the harc
 	diff = AngleDifference( self->s.angles[ YAW ], dang[ YAW ] );
 
-	if( fabs( diff ) > self->harc )
+	if ( fabs( diff ) > self->harc )
 	{
 		clamped = qtrue;
 
-		if( diff > 0 )
+		if ( diff > 0 )
 		{
 			dang[ YAW ] = AngleMod( self->s.angles[ YAW ] - self->harc );
 		}
@@ -1485,7 +1485,7 @@ void aagun_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	gentity_t *owner = &g_entities[ ent->r.ownerNum ];
 
-	if( owner && owner->client )
+	if ( owner && owner->client )
 	{
 		ent->r.ownerNum = ent->s.number;
 		ent->s.otherEntityNum = ent->s.number;
@@ -1504,19 +1504,19 @@ void aagun_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 
 void aagun_track( gentity_t *self, gentity_t *other )
 {
-	if( !self->active )
+	if ( !self->active )
 	{
 		return;
 	}
 
-	if( other->active )
+	if ( other->active )
 	{
 		int i;
 
 		// move to the position over the next frame
 		VectorSubtract( other->client->ps.viewangles, self->s.apos.trBase, self->s.apos.trDelta );
 
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			self->s.apos.trDelta[ i ] = AngleNormalize180( self->s.apos.trDelta[ i ] );
 		}
@@ -1535,7 +1535,7 @@ void aagun_think( gentity_t *self )
 	gentity_t *owner;
 	int       i;
 
-	if( g_gamestate.integer == GS_INTERMISSION )
+	if ( g_gamestate.integer == GS_INTERMISSION )
 	{
 		return;
 	}
@@ -1545,21 +1545,21 @@ void aagun_think( gentity_t *self )
 	owner = &g_entities[ self->r.ownerNum ];
 
 	// move to the current angles
-	if( self->timestamp > level.time )
+	if ( self->timestamp > level.time )
 	{
 		BG_EvaluateTrajectory( &self->s.apos, level.time, self->s.apos.trBase, qfalse, 0 );
 	}
 
 //  self->s.frame++;
 
-	if( owner->client )
+	if ( owner->client )
 	{
 		vec3_t dang;
 		int    i;
 
 		VectorSubtract( self->r.currentOrigin, owner->r.currentOrigin, vec );
 
-		if( VectorLengthSquared( vec ) < SQR( 96 ) && owner->active && owner->health > 0 )
+		if ( VectorLengthSquared( vec ) < SQR( 96 ) && owner->active && owner->health > 0 )
 		{
 			self->active = qtrue;
 			owner->client->ps.persistant[ PERS_HWEAPON_USE ] = 2;
@@ -1567,7 +1567,7 @@ void aagun_think( gentity_t *self )
 			self->nextthink = level.time + 50;
 			self->timestamp = level.time + 1000;
 
-			for( i = 0; i < 3; i++ )
+			for ( i = 0; i < 3; i++ )
 			{
 				dang[ i ] = SHORT2ANGLE( owner->client->pers.cmd.angles[ i ] );
 			}
@@ -1583,7 +1583,7 @@ void aagun_think( gentity_t *self )
 
 	self->active = qfalse;
 
-	if( owner->client )
+	if ( owner->client )
 	{
 		owner->client->ps.persistant[ PERS_HWEAPON_USE ] = 0;
 		owner->client->ps.viewlocked = 0; // let them look around
@@ -1593,14 +1593,14 @@ void aagun_think( gentity_t *self )
 	self->r.ownerNum = self->s.number;
 	self->s.otherEntityNum = self->s.number;
 
-	if( self->timestamp > level.time )
+	if ( self->timestamp > level.time )
 	{
 		// slowly rotate back to position
 		clamp_hweapontofirearc( self, vec );
 		// move to the position over the next frame
 		VectorSubtract( vec, self->s.apos.trBase, self->s.apos.trDelta );
 
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			self->s.apos.trDelta[ i ] = AngleNormalize180( self->s.apos.trDelta[ i ] );
 		}
@@ -1621,7 +1621,7 @@ void aagun_stopusing( gentity_t *self )
 
 	owner = &g_entities[ self->r.ownerNum ];
 
-	if( owner && owner->client )
+	if ( owner && owner->client )
 	{
 		owner->client->ps.eFlags &= ~EF_AAGUN_ACTIVE;
 		owner->client->ps.persistant[ PERS_HWEAPON_USE ] = 0;
@@ -1729,14 +1729,14 @@ void mg42_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	vec3_t dang;
 	int    i;
 
-	if( !self->active )
+	if ( !self->active )
 	{
 		return;
 	}
 
-	if( other->active )
+	if ( other->active )
 	{
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			dang[ i ] = SHORT2ANGLE( other->client->pers.cmd.angles[ i ] );
 		}
@@ -1772,7 +1772,7 @@ void mg42_fire( gentity_t *other )
 	// Arnout: disabled this as it was causing troubles with murderholes. Why was it there? Maybe
 	// for beach to let the mg42 point down and still shoot over teh concrete?
 	// FIX: make the HIGH spawnflag actually work
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		VectorMA( muzzle, 16, up, muzzle );
 	}
@@ -1790,17 +1790,17 @@ void mg42_track( gentity_t *self, gentity_t *other )
 {
 	int i;
 
-	if( !self->active )
+	if ( !self->active )
 	{
 		return;
 	}
 
-	if( other->active )
+	if ( other->active )
 	{
 		// move to the position over the next frame
 		VectorSubtract( other->client->ps.viewangles, self->s.apos.trBase, self->s.apos.trDelta );
 
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			self->s.apos.trDelta[ i ] = AngleNormalize180( self->s.apos.trDelta[ i ] );
 		}
@@ -1821,7 +1821,7 @@ void mg42_think( gentity_t *self )
 	float     len;
 	float     usedist;
 
-	if( g_gamestate.integer == GS_INTERMISSION )
+	if ( g_gamestate.integer == GS_INTERMISSION )
 	{
 		return;
 	}
@@ -1831,26 +1831,26 @@ void mg42_think( gentity_t *self )
 	owner = &g_entities[ self->r.ownerNum ];
 
 	// move to the current angles
-	if( self->timestamp > level.time )
+	if ( self->timestamp > level.time )
 	{
 		BG_EvaluateTrajectory( &self->s.apos, level.time, self->s.apos.trBase, qfalse, 0 );
 	}
 
 	// heat handling
-	if( owner->client )
+	if ( owner->client )
 	{
 		self->mg42weapHeat = owner->client->ps.weapHeat[ WP_DUMMY_MG42 ];
 	}
 
 	// overheated mg42 smokes
-	if( self->mg42weapHeat >= MAX_MG42_HEAT )
+	if ( self->mg42weapHeat >= MAX_MG42_HEAT )
 	{
 		self->s.eFlags |= EF_OVERHEATING;
 
-		if( self->flameQuotaTime < level.time )
+		if ( self->flameQuotaTime < level.time )
 		{
 			// try to get smoke time from client
-			if( owner->client )
+			if ( owner->client )
 			{
 				self->flameQuotaTime = level.time + owner->client->ps.weaponTime;
 			}
@@ -1860,20 +1860,20 @@ void mg42_think( gentity_t *self )
 			}
 		}
 	}
-	else if( self->flameQuotaTime < level.time && ( self->s.eFlags & EF_OVERHEATING ) == EF_OVERHEATING )
+	else if ( self->flameQuotaTime < level.time && ( self->s.eFlags & EF_OVERHEATING ) == EF_OVERHEATING )
 	{
 		self->s.eFlags &= ~EF_OVERHEATING;
 		self->flameQuotaTime = 0;
 	}
 
-	if( owner->client )
+	if ( owner->client )
 	{
 		VectorSubtract( self->r.currentOrigin, owner->r.currentOrigin, vec );
 		len = VectorLength( vec );
 
 		usedist = 128;
 
-		if( len < usedist && owner->active && owner->health > 0 )
+		if ( len < usedist && owner->active && owner->health > 0 )
 		{
 			// ATVI Wolfenstein Misc #433
 			owner->client->ps.pm_flags &= ~PMF_DUCKED;
@@ -1894,7 +1894,7 @@ void mg42_think( gentity_t *self )
 
 	self->active = qfalse;
 
-	if( owner->client )
+	if ( owner->client )
 	{
 		owner->client->ps.persistant[ PERS_HWEAPON_USE ] = 0;
 		owner->client->ps.viewlocked = 0; // let them look around
@@ -1905,21 +1905,21 @@ void mg42_think( gentity_t *self )
 		self->backupWeaponTime = owner->client->ps.weaponTime;
 	}
 
-	if( self->mg42weapHeat )
+	if ( self->mg42weapHeat )
 	{
 		self->mg42weapHeat -= ( 300.f * FRAMETIME * 0.001 ); //%   -= (300.f * 50 * 0.001);
 
-		if( self->mg42weapHeat < 0 )
+		if ( self->mg42weapHeat < 0 )
 		{
 			self->mg42weapHeat = 0;
 		}
 	}
 
-	if( self->backupWeaponTime )
+	if ( self->backupWeaponTime )
 	{
 		self->backupWeaponTime -= 50;
 
-		if( self->backupWeaponTime < 0 )
+		if ( self->backupWeaponTime < 0 )
 		{
 			self->backupWeaponTime = 0;
 		}
@@ -1928,14 +1928,14 @@ void mg42_think( gentity_t *self )
 	self->r.ownerNum = self->s.number;
 	self->s.otherEntityNum = self->s.number;
 
-	if( self->timestamp > level.time )
+	if ( self->timestamp > level.time )
 	{
 		// slowly rotate back to position
 		clamp_hweapontofirearc( self, vec );
 		// move to the position over the next frame
 		VectorSubtract( vec, self->s.apos.trBase, self->s.apos.trDelta );
 
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			self->s.apos.trDelta[ i ] = AngleNormalize180( self->s.apos.trDelta[ i ] );
 		}
@@ -1957,7 +1957,7 @@ void mg42_stopusing( gentity_t *self )
 
 	owner = &g_entities[ self->r.ownerNum ];
 
-	if( owner && owner->client )
+	if ( owner && owner->client )
 	{
 		owner->client->ps.eFlags &= ~EF_MG42_ACTIVE; // DHM - Nerve :: unset flag
 		owner->client->ps.persistant[ PERS_HWEAPON_USE ] = 0;
@@ -1985,7 +1985,7 @@ void mg42_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 	trace_t   tr;
 
 	// DHM - Nerve :: self->chain not set if no tripod
-	if( self->chain )
+	if ( self->chain )
 	{
 		gun = self->chain;
 	}
@@ -1998,7 +1998,7 @@ void mg42_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 
 	owner = &g_entities[ gun->r.ownerNum ];
 
-	if( gun && self->health <= 0 )
+	if ( gun && self->health <= 0 )
 	{
 		gun->s.frame = 2;
 		gun->takedamage = qfalse;
@@ -2011,13 +2011,13 @@ void mg42_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 
 	self->takedamage = qfalse;
 
-	if( owner && owner->client )
+	if ( owner && owner->client )
 	{
 		// Restore original position if current position is bad
 		trap_Trace( &tr, owner->r.currentOrigin, owner->r.mins, owner->r.maxs, owner->r.currentOrigin, owner->s.number,
 		            MASK_PLAYERSOLID );
 
-		if( tr.startsolid )
+		if ( tr.startsolid )
 		{
 			VectorCopy( owner->TargetAngles, owner->client->ps.origin );
 			VectorCopy( owner->TargetAngles, owner->r.currentOrigin );
@@ -2053,7 +2053,7 @@ void mg42_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 	owner = &g_entities[ ent->r.ownerNum ];
 
-	if( owner && owner->client )
+	if ( owner && owner->client )
 	{
 		owner->client->ps.persistant[ PERS_HWEAPON_USE ] = 0;
 		ent->r.ownerNum = ent->s.number;
@@ -2077,13 +2077,13 @@ void mg42_spawn( gentity_t *ent )
 	vec3_t    offset;
 
 	// Xian -- If in knifeonly mode, prevent MG42's from spawning
-	if( g_knifeonly.integer != 1 )
+	if ( g_knifeonly.integer != 1 )
 	{
 		// Need to spawn the base even when no tripod cause the gun itself isn't solid
 		base = G_Spawn();
 		base->classname = "misc_mg42base"; // Arnout - ease tracking
 
-		if( !( ent->spawnflags & 2 ) )
+		if ( !( ent->spawnflags & 2 ) )
 		{
 			// no tripod
 			base->clipmask = CONTENTS_SOLID;
@@ -2180,7 +2180,7 @@ void mg42_spawn( gentity_t *ent )
 		// Arnout: copy state over from original entity
 		G_SetEntState( gun, ent->entstate );
 
-		if( !( ent->spawnflags & 2 ) )
+		if ( !( ent->spawnflags & 2 ) )
 		{
 			// no tripod
 			gun->mg42BaseEnt = base->s.number;
@@ -2191,7 +2191,7 @@ void mg42_spawn( gentity_t *ent )
 			gun->mg42BaseEnt = -1;
 		}
 
-		if( gun->spawnflags & 1 )
+		if ( gun->spawnflags & 1 )
 		{
 			gun->s.onFireStart = 1;
 		}
@@ -2214,24 +2214,24 @@ void SP_mg42( gentity_t *self )
 	char *damage;
 	char *accuracy;
 
-	if( !self->harc )
+	if ( !self->harc )
 	{
 		self->harc = 57.5;
 	}
 	else
 	{
-		if( self->harc < 45 )
+		if ( self->harc < 45 )
 		{
 			self->harc = 45;
 		}
 	}
 
-	if( !self->varc )
+	if ( !self->varc )
 	{
 		self->varc = 45.0;
 	}
 
-	if( !self->health )
+	if ( !self->health )
 	{
 		self->health = MG42_MULTIPLAYER_HEALTH;
 	}
@@ -2239,7 +2239,7 @@ void SP_mg42( gentity_t *self )
 	self->think = mg42_spawn;
 	self->nextthink = level.time + FRAMETIME;
 
-	if( G_SpawnString( "damage", "0", &damage ) )
+	if ( G_SpawnString( "damage", "0", &damage ) )
 	{
 		self->damage = atoi( damage );
 	}
@@ -2248,12 +2248,12 @@ void SP_mg42( gentity_t *self )
 
 	self->accuracy = atof( accuracy );
 
-	if( !self->accuracy )
+	if ( !self->accuracy )
 	{
 		self->accuracy = 1;
 	}
 
-	if( !self->damage )
+	if ( !self->damage )
 	{
 		self->damage = 25;
 	}
@@ -2276,51 +2276,51 @@ void Flak_Animate( gentity_t *ent )
 {
 	//G_Printf ("frame %i\n", ent->s.frame);
 
-	if( ent->s.frame == GUN1_IDLE || ent->s.frame == GUN2_IDLE || ent->s.frame == GUN3_IDLE || ent->s.frame == GUN4_IDLE )
+	if ( ent->s.frame == GUN1_IDLE || ent->s.frame == GUN2_IDLE || ent->s.frame == GUN3_IDLE || ent->s.frame == GUN4_IDLE )
 	{
 		return;
 	}
 
-	if( ent->count == 1 )
+	if ( ent->count == 1 )
 	{
-		if( ent->s.frame == GUN1_LASTFIRE )
+		if ( ent->s.frame == GUN1_LASTFIRE )
 		{
 			ent->s.frame = GUN2_IDLE;
 		}
-		else if( ent->s.frame > GUN1_IDLE )
+		else if ( ent->s.frame > GUN1_IDLE )
 		{
 			ent->s.frame++;
 		}
 	}
-	else if( ent->count == 2 )
+	else if ( ent->count == 2 )
 	{
-		if( ent->s.frame == GUN2_LASTFIRE )
+		if ( ent->s.frame == GUN2_LASTFIRE )
 		{
 			ent->s.frame = GUN3_IDLE;
 		}
-		else if( ent->s.frame > GUN2_IDLE )
+		else if ( ent->s.frame > GUN2_IDLE )
 		{
 			ent->s.frame++;
 		}
 	}
-	else if( ent->count == 3 )
+	else if ( ent->count == 3 )
 	{
-		if( ent->s.frame == GUN3_LASTFIRE )
+		if ( ent->s.frame == GUN3_LASTFIRE )
 		{
 			ent->s.frame = GUN4_IDLE;
 		}
-		else if( ent->s.frame > GUN3_IDLE )
+		else if ( ent->s.frame > GUN3_IDLE )
 		{
 			ent->s.frame++;
 		}
 	}
-	else if( ent->count == 4 )
+	else if ( ent->count == 4 )
 	{
-		if( ent->s.frame == GUN4_LASTFIRE )
+		if ( ent->s.frame == GUN4_LASTFIRE )
 		{
 			ent->s.frame = GUN1_IDLE;
 		}
-		else if( ent->s.frame > GUN4_IDLE )
+		else if ( ent->s.frame > GUN4_IDLE )
 		{
 			ent->s.frame++;
 		}
@@ -2366,24 +2366,24 @@ void flak_spawn( gentity_t *ent )
 */
 void SP_misc_flak( gentity_t *self )
 {
-	if( !self->harc )
+	if ( !self->harc )
 	{
 		self->harc = 180;
 	}
 	else
 	{
-		if( self->harc < 90 )
+		if ( self->harc < 90 )
 		{
 			self->harc = 115;
 		}
 	}
 
-	if( !self->varc )
+	if ( !self->varc )
 	{
 		self->varc = 90.0;
 	}
 
-	if( !self->health )
+	if ( !self->health )
 	{
 		self->health = 100;
 	}
@@ -2410,7 +2410,7 @@ void misc_spawner_think( gentity_t *ent )
 
 	drop = Drop_Item( ent, item, 0, qfalse );
 
-	if( !drop )
+	if ( !drop )
 	{
 		G_Printf( "-----> WARNING <-------\n" );
 		G_Printf( "misc_spawner used at %s failed to drop!\n", vtos( ent->r.currentOrigin ) );
@@ -2432,7 +2432,7 @@ void misc_spawner_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 void SP_misc_spawner( gentity_t *ent )
 {
-	if( !ent->spawnitem )
+	if ( !ent->spawnitem )
 	{
 		G_Printf( "-----> WARNING <-------\n" );
 		G_Printf( "misc_spawner at loc %s has no spawnitem!\n", vtos( ent->s.origin ) );
@@ -2632,7 +2632,7 @@ void firetrail_die( gentity_t *ent )
 
 void firetrail_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
-	if( ent->s.eType == ET_RAMJET )
+	if ( ent->s.eType == ET_RAMJET )
 	{
 		ent->s.eType = ET_GENERAL;
 	}
@@ -2658,7 +2658,7 @@ void misc_firetrails_think( gentity_t *ent )
 
 	airplane = G_FindByTargetname( NULL, ent->target );
 
-	if( !airplane )
+	if ( !airplane )
 	{
 		G_Error( "can't find airplane with targetname \"%s\" for firetrails", ent->target );
 	}
@@ -2712,7 +2712,7 @@ void constructiblemarker_setup( gentity_t *ent )
 {
 	ent->target_ent = G_FindByTargetname( NULL, ent->target );
 
-	if( !ent->target_ent )
+	if ( !ent->target_ent )
 	{
 		G_Error( "'misc_constructiblemarker' has a missing target '%s'\n", ent->target );
 	}
@@ -2726,17 +2726,17 @@ void SP_misc_constructiblemarker( gentity_t *ent )
 
 	ent->s.eType = ET_CONSTRUCTIBLE_MARKER;
 
-	if( ent->model2 )
+	if ( ent->model2 )
 	{
 		ent->s.modelindex2 = G_ModelIndex( ent->model2 );
 	}
 
-	if( ent->aiSkin )
+	if ( ent->aiSkin )
 	{
 		ent->s.effect1Time = G_SkinIndex( ent->aiSkin );
 	}
 
-	if( G_SpawnString( "description", "", &s ) )
+	if ( G_SpawnString( "description", "", &s ) )
 	{
 		char cs[ MAX_INFO_STRING ];
 
@@ -2785,9 +2785,9 @@ void landmine_setup( gentity_t *ent )
 	end[ 2 ] -= 64;
 	trap_Trace( &tr, ent->s.origin, NULL, NULL, end, ent->s.number, ent->clipmask );
 
-	if( tr.startsolid || tr.fraction == 1.f || !( tr.surfaceFlags & ( SURF_GRASS | SURF_SNOW | SURF_GRAVEL | SURF_LANDMINE ) ) ||
-	    ( tr.entityNum != ENTITYNUM_WORLD &&
-	      ( !g_entities[ tr.entityNum ].inuse || g_entities[ tr.entityNum ].s.eType != ET_CONSTRUCTIBLE ) ) )
+	if ( tr.startsolid || tr.fraction == 1.f || !( tr.surfaceFlags & ( SURF_GRASS | SURF_SNOW | SURF_GRAVEL | SURF_LANDMINE ) ) ||
+	     ( tr.entityNum != ENTITYNUM_WORLD &&
+	       ( !g_entities[ tr.entityNum ].inuse || g_entities[ tr.entityNum ].s.eType != ET_CONSTRUCTIBLE ) ) )
 	{
 		G_Printf( "^3WARNING: 'misc_landmine' entity at %.2f %.2f %.2f doesn't have a surface to settle on\n", ent->s.origin[ 0 ],
 		          ent->s.origin[ 1 ], ent->s.origin[ 2 ] );
@@ -2829,7 +2829,7 @@ void landmine_setup( gentity_t *ent )
 
 	ent->damage = 0;
 
-	if( ent->s.teamNum == TEAM_AXIS )
+	if ( ent->s.teamNum == TEAM_AXIS )
 	{
 		// store team so we can generate red or blue smoke
 		ent->s.otherEntityNum2 = 1;
@@ -2844,11 +2844,11 @@ void landmine_setup( gentity_t *ent )
 
 void SP_misc_landmine( gentity_t *ent )
 {
-	if( ent->spawnflags & 1 )
+	if ( ent->spawnflags & 1 )
 	{
 		ent->s.teamNum = TEAM_AXIS;
 	}
-	else if( ent->spawnflags & 2 )
+	else if ( ent->spawnflags & 2 )
 	{
 		ent->s.teamNum = TEAM_ALLIES;
 	}
@@ -2887,9 +2887,9 @@ void G_ResetTempTraceIgnoreEnts( void )
 {
 	int i;
 
-	for( i = 0; i < MAX_GENTITIES; i++ )
+	for ( i = 0; i < MAX_GENTITIES; i++ )
 	{
-		if( level.tempTraceIgnoreEnts[ i ] )
+		if ( level.tempTraceIgnoreEnts[ i ] )
 		{
 			g_entities[ i ].r.linked = qtrue;
 
@@ -2900,7 +2900,7 @@ void G_ResetTempTraceIgnoreEnts( void )
 
 void G_TempTraceIgnoreEntity( gentity_t *ent )
 {
-	if( !ent->r.linked )
+	if ( !ent->r.linked )
 	{
 		return;
 	}
@@ -2913,12 +2913,12 @@ void G_TempTraceIgnorePlayersAndBodies( void )
 {
 	int i;
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		G_TempTraceIgnoreEntity( &g_entities[ i ] );
 	}
 
-	for( i = 0; i < BODY_QUEUE_SIZE; i++ )
+	for ( i = 0; i < BODY_QUEUE_SIZE; i++ )
 	{
 		G_TempTraceIgnoreEntity( level.bodyQue[ i ] );
 	}
@@ -2929,12 +2929,12 @@ void G_TempTraceIgnorePlayersAndBodies( void )
 // returns qtrue if a construction is under way on this ent, even before it hits any stages
 qboolean G_ConstructionBegun( gentity_t *ent )
 {
-	if( G_ConstructionIsPartlyBuilt( ent ) )
+	if ( G_ConstructionIsPartlyBuilt( ent ) )
 	{
 		return qtrue;
 	}
 
-	if( ent->s.angles2[ 0 ] )
+	if ( ent->s.angles2[ 0 ] )
 	{
 		return qtrue;
 	}
@@ -2945,7 +2945,7 @@ qboolean G_ConstructionBegun( gentity_t *ent )
 // returns qtrue if all stage are built
 qboolean G_ConstructionIsFullyBuilt( gentity_t *ent )
 {
-	if( ent->s.angles2[ 1 ] != 1 )
+	if ( ent->s.angles2[ 1 ] != 1 )
 	{
 		return qfalse;
 	}
@@ -2956,14 +2956,14 @@ qboolean G_ConstructionIsFullyBuilt( gentity_t *ent )
 // returns qtrue if 1 stage or more is built
 qboolean G_ConstructionIsPartlyBuilt( gentity_t *ent )
 {
-	if( G_ConstructionIsFullyBuilt( ent ) )
+	if ( G_ConstructionIsFullyBuilt( ent ) )
 	{
 		return qtrue;
 	}
 
-	if( ent->count2 )
+	if ( ent->count2 )
 	{
-		if( !ent->grenadeFired )
+		if ( !ent->grenadeFired )
 		{
 			return qfalse;
 		}
@@ -2978,12 +2978,12 @@ qboolean G_ConstructionIsPartlyBuilt( gentity_t *ent )
 
 qboolean G_ConstructionIsDestroyable( gentity_t *ent )
 {
-	if( !G_ConstructionIsPartlyBuilt( ent ) )
+	if ( !G_ConstructionIsPartlyBuilt( ent ) )
 	{
 		return qfalse;
 	}
 
-	if( ent->s.angles2[ 0 ] )
+	if ( ent->s.angles2[ 0 ] )
 	{
 		return qfalse;
 	}
@@ -2996,21 +2996,21 @@ gentity_t      *G_ConstructionForTeam( gentity_t *toi, team_t team )
 {
 	gentity_t *targ = toi->target_ent;
 
-	if( !targ || targ->s.eType != ET_CONSTRUCTIBLE )
+	if ( !targ || targ->s.eType != ET_CONSTRUCTIBLE )
 	{
 		return NULL;
 	}
 
-	if( targ->spawnflags & 4 )
+	if ( targ->spawnflags & 4 )
 	{
-		if( team == TEAM_ALLIES )
+		if ( team == TEAM_ALLIES )
 		{
 			return targ->chain;
 		}
 	}
-	else if( targ->spawnflags & 8 )
+	else if ( targ->spawnflags & 8 )
 	{
-		if( team == TEAM_AXIS )
+		if ( team == TEAM_AXIS )
 		{
 			return targ->chain;
 		}
@@ -3023,22 +3023,22 @@ gentity_t      *G_IsConstructible( team_t team, gentity_t *toi )
 {
 	gentity_t *ent;
 
-	if( !toi || toi->s.eType != ET_OID_TRIGGER )
+	if ( !toi || toi->s.eType != ET_OID_TRIGGER )
 	{
 		return NULL;
 	}
 
-	if( !( ent = G_ConstructionForTeam( toi, team ) ) )
+	if ( !( ent = G_ConstructionForTeam( toi, team ) ) )
 	{
 		return NULL;
 	}
 
-	if( G_ConstructionIsFullyBuilt( ent ) )
+	if ( G_ConstructionIsFullyBuilt( ent ) )
 	{
 		return NULL;
 	}
 
-	if( ent->chain && G_ConstructionBegun( ent->chain ) )
+	if ( ent->chain && G_ConstructionBegun( ent->chain ) )
 	{
 		return NULL;
 	}
@@ -3055,17 +3055,17 @@ char           *stristr( char *str, char *charset )
 {
 	int i;
 
-	while( *str )
+	while ( *str )
 	{
-		for( i = 0; charset[ i ] && str[ i ]; i++ )
+		for ( i = 0; charset[ i ] && str[ i ]; i++ )
 		{
-			if( toupper( charset[ i ] ) != toupper( str[ i ] ) )
+			if ( toupper( charset[ i ] ) != toupper( str[ i ] ) )
 			{
 				break;
 			}
 		}
 
-		if( !charset[ i ] )
+		if ( !charset[ i ] )
 		{
 			return str;
 		}
@@ -3085,7 +3085,7 @@ char *ClientName( int client, char *name, int size )
 {
 	char buf[ MAX_INFO_STRING ];
 
-	if( client < 0 || client >= MAX_CLIENTS )
+	if ( client < 0 || client >= MAX_CLIENTS )
 	{
 		G_Printf( "ClientName: client out of range\n" );
 		return "[client out of range]";
@@ -3108,23 +3108,23 @@ int FindClientByName( char *name )
 	int  i, j;
 	char buf[ MAX_INFO_STRING ];
 
-	for( j = 0; j < level.numConnectedClients; j++ )
+	for ( j = 0; j < level.numConnectedClients; j++ )
 	{
 		i = level.sortedClients[ j ];
 		ClientName( i, buf, sizeof( buf ) );
 
-		if( !Q_stricmp( buf, name ) )
+		if ( !Q_stricmp( buf, name ) )
 		{
 			return i;
 		}
 	}
 
-	for( j = 0; j < level.numConnectedClients; j++ )
+	for ( j = 0; j < level.numConnectedClients; j++ )
 	{
 		i = level.sortedClients[ j ];
 		ClientName( i, buf, sizeof( buf ) );
 
-		if( stristr( buf, name ) )
+		if ( stristr( buf, name ) )
 		{
 			return i;
 		}

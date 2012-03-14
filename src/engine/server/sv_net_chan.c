@@ -51,7 +51,7 @@ static void SV_Netchan_Encode( client_t *client, msg_t *msg, char *commandString
 	byte                                     key, *string;
 	int                                      srdc, sbit, soob;
 
-	if( msg->cursize < SV_ENCODE_START )
+	if ( msg->cursize < SV_ENCODE_START )
 	{
 		return;
 	}
@@ -77,15 +77,15 @@ static void SV_Netchan_Encode( client_t *client, msg_t *msg, char *commandString
 	// xor the client challenge with the netchan sequence number
 	key = client->challenge ^ client->netchan.outgoingSequence;
 
-	for( i = SV_ENCODE_START; i < msg->cursize; i++ )
+	for ( i = SV_ENCODE_START; i < msg->cursize; i++ )
 	{
 		// modify the key with the last received and with this message acknowledged client command
-		if( !string[ index ] )
+		if ( !string[ index ] )
 		{
 			index = 0;
 		}
 
-		if( string[ index ] > 127 || string[ index ] == '%' )
+		if ( string[ index ] > 127 || string[ index ] == '%' )
 		{
 			key ^= '.' << ( i & 1 );
 		}
@@ -136,15 +136,15 @@ static void SV_Netchan_Decode( client_t *client, msg_t *msg )
 	//
 	key = client->challenge ^ serverId ^ messageAcknowledge;
 
-	for( i = msg->readcount + SV_DECODE_START; i < msg->cursize; i++ )
+	for ( i = msg->readcount + SV_DECODE_START; i < msg->cursize; i++ )
 	{
 		// modify the key with the last sent and acknowledged server command
-		if( !string[ index ] )
+		if ( !string[ index ] )
 		{
 			index = 0;
 		}
 
-		if( string[ index ] > 127 || string[ index ] == '%' )
+		if ( string[ index ] > 127 || string[ index ] == '%' )
 		{
 			key ^= '.' << ( i & 1 );
 		}
@@ -168,7 +168,7 @@ void SV_Netchan_FreeQueue( client_t *client )
 {
 	netchan_buffer_t *netbuf, *next;
 
-	for( netbuf = client->netchan_start_queue; netbuf; netbuf = next )
+	for ( netbuf = client->netchan_start_queue; netbuf; netbuf = next )
 	{
 		next = netbuf->next;
 		Z_Free( netbuf );
@@ -187,7 +187,7 @@ void SV_Netchan_TransmitNextFragment( client_t *client )
 {
 	Netchan_TransmitNextFragment( &client->netchan );
 
-	while( !client->netchan.unsentFragments && client->netchan_start_queue )
+	while ( !client->netchan.unsentFragments && client->netchan_start_queue )
 	{
 		// make sure the netchan queue has been properly initialized (you never know)
 		//% if (!client->netchan_end_queue) {
@@ -199,12 +199,12 @@ void SV_Netchan_TransmitNextFragment( client_t *client )
 		// pop from queue
 		client->netchan_start_queue = netbuf->next;
 
-		if( !client->netchan_start_queue )
+		if ( !client->netchan_start_queue )
 		{
 			client->netchan_end_queue = NULL;
 		}
 
-		if( !SV_GameIsSinglePlayer() )
+		if ( !SV_GameIsSinglePlayer() )
 		{
 			SV_Netchan_Encode( client, &netbuf->msg, netbuf->lastClientCommandString );
 		}
@@ -222,14 +222,14 @@ SV_WriteBinaryMessage
 */
 static void SV_WriteBinaryMessage( msg_t *msg, client_t *cl )
 {
-	if( !cl->binaryMessageLength )
+	if ( !cl->binaryMessageLength )
 	{
 		return;
 	}
 
 	MSG_Uncompressed( msg );
 
-	if( ( msg->cursize + cl->binaryMessageLength ) >= msg->maxsize )
+	if ( ( msg->cursize + cl->binaryMessageLength ) >= msg->maxsize )
 	{
 		cl->binaryMessageOverflowed = qtrue;
 		return;
@@ -257,7 +257,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg )
 	MSG_WriteByte( msg, svc_EOF );
 	SV_WriteBinaryMessage( msg, client );
 
-	if( client->netchan.unsentFragments )
+	if ( client->netchan.unsentFragments )
 	{
 		netchan_buffer_t *netbuf;
 
@@ -277,7 +277,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg )
 		//% client->netchan_end_queue = &(*client->netchan_end_queue)->next;
 		netbuf->next = NULL;
 
-		if( !client->netchan_start_queue )
+		if ( !client->netchan_start_queue )
 		{
 			client->netchan_start_queue = netbuf;
 		}
@@ -293,7 +293,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg )
 	}
 	else
 	{
-		if( !SV_GameIsSinglePlayer() )
+		if ( !SV_GameIsSinglePlayer() )
 		{
 			SV_Netchan_Encode( client, msg, client->lastClientCommandString );
 		}
@@ -313,12 +313,12 @@ qboolean SV_Netchan_Process( client_t *client, msg_t *msg )
 
 	ret = Netchan_Process( &client->netchan, msg );
 
-	if( !ret )
+	if ( !ret )
 	{
 		return qfalse;
 	}
 
-	if( !SV_GameIsSinglePlayer() )
+	if ( !SV_GameIsSinglePlayer() )
 	{
 		SV_Netchan_Decode( client, msg );
 	}

@@ -69,9 +69,9 @@ protected:
 
 	~GLShader()
 	{
-		for( std::size_t i = 0; i < _shaderPrograms.size(); i++ )
+		for ( std::size_t i = 0; i < _shaderPrograms.size(); i++ )
 		{
-			if( _shaderPrograms[ i ].program )
+			if ( _shaderPrograms[ i ].program )
 			{
 				glDeleteObjectARB( _shaderPrograms[ i ].program );
 			}
@@ -87,7 +87,7 @@ public:
 
 	void RegisterCompileMacro( GLCompileMacro *compileMacro )
 	{
-		if( _compileMacros.size() >= 9 )
+		if ( _compileMacros.size() >= 9 )
 		{
 			ri.Error( ERR_DROP, "Can't register more than 9 compile macros for a single shader" );
 		}
@@ -246,7 +246,7 @@ public:
 	{
 		int bit = GetBit();
 
-		if( !_shader->IsMacroSet( bit ) )
+		if ( !_shader->IsMacroSet( bit ) )
 		{
 			_shader->AddMacroBit( bit );
 			//_shader->SelectProgram();
@@ -257,7 +257,7 @@ public:
 	{
 		int bit = GetBit();
 
-		if( _shader->IsMacroSet( bit ) )
+		if ( _shader->IsMacroSet( bit ) )
 		{
 			_shader->DelMacroBit( bit );
 			//_shader->SelectProgram();
@@ -302,7 +302,7 @@ public:
 
 	void SetAlphaTesting( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -344,7 +344,7 @@ public:
 
 	void SetPortalClipping( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -386,7 +386,7 @@ public:
 
 	void SetFrustumClipping( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -436,7 +436,7 @@ public:
 
 	void SetVertexSkinning( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableVertexSkinning();
 		}
@@ -481,7 +481,7 @@ public:
 
 	void SetVertexAnimation( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableVertexAnimation();
 		}
@@ -520,7 +520,7 @@ public:
 
 	void EnableDeformVertexes()
 	{
-		if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+		if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 		{
 			EnableMacro();
 		}
@@ -537,7 +537,7 @@ public:
 
 	void SetDeformVertexes( bool enable )
 	{
-		if( enable && ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer ) )
+		if ( enable && ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer ) )
 		{
 			EnableMacro();
 		}
@@ -584,7 +584,7 @@ public:
 
 	void SetTCGenEnvironment( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -631,7 +631,7 @@ public:
 
 	void SetTCGenLightmap( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -678,7 +678,7 @@ public:
 
 	void SetNormalMapping( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -722,7 +722,7 @@ public:
 
 	void SetParallaxMapping( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -766,7 +766,7 @@ public:
 
 	void SetReflectiveSpecular( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -814,7 +814,7 @@ public:
 
 	void SetMacro_TWOSIDED( cullType_t cullType )
 	{
-		if( cullType == CT_TWO_SIDED || cullType == CT_BACK_SIDED )
+		if ( cullType == CT_TWO_SIDED || cullType == CT_BACK_SIDED )
 		{
 			EnableMacro();
 		}
@@ -856,7 +856,7 @@ public:
 
 	void SetMacro_EYE_OUTSIDE( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -898,7 +898,7 @@ public:
 
 	void SetMacro_BRIGHTPASS_FILTER( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -940,7 +940,7 @@ public:
 
 	void SetMacro_LIGHT_DIRECTIONAL( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -982,7 +982,7 @@ public:
 
 	void SetShadowing( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -1024,7 +1024,7 @@ public:
 
 	void SetMacro_USE_GBUFFER( bool enable )
 	{
-		if( enable )
+		if ( enable )
 		{
 			EnableMacro();
 		}
@@ -1485,7 +1485,7 @@ public:
 
 #if 0
 
-		if( memcmp( program->t_LightFrustum, m ) )
+		if ( memcmp( program->t_LightFrustum, m ) )
 		{
 			return;
 		}
@@ -1494,7 +1494,7 @@ public:
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- SetUniform_LightFrustum( program = %s, "
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
@@ -1993,18 +1993,18 @@ public:
 		float deformParms[ MAX_SHADER_DEFORM_PARMS ];
 		int   deformOfs = 0;
 
-		if( numDeforms > MAX_SHADER_DEFORMS )
+		if ( numDeforms > MAX_SHADER_DEFORMS )
 		{
 			numDeforms = MAX_SHADER_DEFORMS;
 		}
 
 		deformParms[ deformOfs++ ] = numDeforms;
 
-		for( int i = 0; i < numDeforms; i++ )
+		for ( int i = 0; i < numDeforms; i++ )
 		{
 			deformStage_t *ds = &deforms[ i ];
 
-			switch( ds->deformation )
+			switch ( ds->deformation )
 			{
 				case DEFORM_WAVE:
 					deformParms[ deformOfs++ ] = DEFORM_WAVE;
@@ -2109,12 +2109,12 @@ public:
 	{
 		vec4_t v;
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- u_ColorModulate::SetUniform_ColorModulate( program = %s, colorGen = %i, alphaGen = %i ) ---\n", _shader->GetProgram()->name, colorGen, alphaGen ) );
 		}
 
-		switch( colorGen )
+		switch ( colorGen )
 		{
 			case CGEN_VERTEX:
 				_shader->AddVertexAttribBit( ATTR_COLOR );
@@ -2132,7 +2132,7 @@ public:
 				break;
 		}
 
-		switch( alphaGen )
+		switch ( alphaGen )
 		{
 			case AGEN_VERTEX:
 				_shader->AddVertexAttribBit( ATTR_COLOR );
@@ -2178,7 +2178,7 @@ public:
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( Vector4Compare( program->t_FogDistanceVector, v ) )
+		if ( Vector4Compare( program->t_FogDistanceVector, v ) )
 		{
 			return;
 		}
@@ -2188,7 +2188,7 @@ public:
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- SetUniform_FogDistanceVector( program = %s, vector = ( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
 		}
@@ -2224,7 +2224,7 @@ public:
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( Vector4Compare( program->t_FogDepthVector, v ) )
+		if ( Vector4Compare( program->t_FogDepthVector, v ) )
 		{
 			return;
 		}
@@ -2234,7 +2234,7 @@ public:
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- SetUniform_FogDepthVector( program = %s, vector = ( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
 		}
@@ -2270,7 +2270,7 @@ public:
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_FogEyeT == value )
+		if ( program->t_FogEyeT == value )
 		{
 			return;
 		}
@@ -2280,7 +2280,7 @@ public:
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- SetUniform_FogEyeT( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2316,7 +2316,7 @@ public:
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_DeformMagnitude == value )
+		if ( program->t_DeformMagnitude == value )
 		{
 			return;
 		}
@@ -2326,7 +2326,7 @@ public:
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- SetUniform_DeformMagnitude( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2362,7 +2362,7 @@ public:
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_HDRKey == value )
+		if ( program->t_HDRKey == value )
 		{
 			return;
 		}
@@ -2372,7 +2372,7 @@ public:
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- SetUniform_HDRKey( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2408,7 +2408,7 @@ public:
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_HDRAverageLuminance == value )
+		if ( program->t_HDRAverageLuminance == value )
 		{
 			return;
 		}
@@ -2418,7 +2418,7 @@ public:
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- SetUniform_HDRAverageLuminance( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2454,7 +2454,7 @@ public:
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_HDRMaxLuminance == value )
+		if ( program->t_HDRMaxLuminance == value )
 		{
 			return;
 		}
@@ -2464,7 +2464,7 @@ public:
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- SetUniform_HDRMaxLuminance( program = %s, value = %f ) ---\n", program->name, value ) );
 		}

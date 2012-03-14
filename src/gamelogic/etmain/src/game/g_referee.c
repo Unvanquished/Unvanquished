@@ -49,63 +49,63 @@ Maryland 20850 USA.
 //
 qboolean G_refCommandCheck( gentity_t *ent, char *cmd )
 {
-	if( !Q_stricmp( cmd, "allready" ) )
+	if ( !Q_stricmp( cmd, "allready" ) )
 	{
 		G_refAllReady_cmd( ent );
 	}
-	else if( !Q_stricmp( cmd, "lock" ) )
+	else if ( !Q_stricmp( cmd, "lock" ) )
 	{
 		G_refLockTeams_cmd( ent, qtrue );
 	}
-	else if( !Q_stricmp( cmd, "help" ) )
+	else if ( !Q_stricmp( cmd, "help" ) )
 	{
 		G_refHelp_cmd( ent );
 	}
-	else if( !Q_stricmp( cmd, "pause" ) )
+	else if ( !Q_stricmp( cmd, "pause" ) )
 	{
 		G_refPause_cmd( ent, qtrue );
 	}
-	else if( !Q_stricmp( cmd, "putallies" ) )
+	else if ( !Q_stricmp( cmd, "putallies" ) )
 	{
 		G_refPlayerPut_cmd( ent, TEAM_ALLIES );
 	}
-	else if( !Q_stricmp( cmd, "putaxis" ) )
+	else if ( !Q_stricmp( cmd, "putaxis" ) )
 	{
 		G_refPlayerPut_cmd( ent, TEAM_AXIS );
 	}
-	else if( !Q_stricmp( cmd, "remove" ) )
+	else if ( !Q_stricmp( cmd, "remove" ) )
 	{
 		G_refRemove_cmd( ent );
 	}
-	else if( !Q_stricmp( cmd, "speclock" ) )
+	else if ( !Q_stricmp( cmd, "speclock" ) )
 	{
 		G_refSpeclockTeams_cmd( ent, qtrue );
 	}
-	else if( !Q_stricmp( cmd, "specunlock" ) )
+	else if ( !Q_stricmp( cmd, "specunlock" ) )
 	{
 		G_refSpeclockTeams_cmd( ent, qfalse );
 	}
-	else if( !Q_stricmp( cmd, "unlock" ) )
+	else if ( !Q_stricmp( cmd, "unlock" ) )
 	{
 		G_refLockTeams_cmd( ent, qfalse );
 	}
-	else if( !Q_stricmp( cmd, "unpause" ) )
+	else if ( !Q_stricmp( cmd, "unpause" ) )
 	{
 		G_refPause_cmd( ent, qfalse );
 	}
-	else if( !Q_stricmp( cmd, "warmup" ) )
+	else if ( !Q_stricmp( cmd, "warmup" ) )
 	{
 		G_refWarmup_cmd( ent );
 	}
-	else if( !Q_stricmp( cmd, "warn" ) )
+	else if ( !Q_stricmp( cmd, "warn" ) )
 	{
 		G_refWarning_cmd( ent );
 	}
-	else if( !Q_stricmp( cmd, "mute" ) )
+	else if ( !Q_stricmp( cmd, "mute" ) )
 	{
 		G_refMute_cmd( ent, qtrue );
 	}
-	else if( !Q_stricmp( cmd, "unmute" ) )
+	else if ( !Q_stricmp( cmd, "unmute" ) )
 	{
 		G_refMute_cmd( ent, qfalse );
 	}
@@ -121,9 +121,9 @@ qboolean G_refCommandCheck( gentity_t *ent, char *cmd )
 void G_refHelp_cmd( gentity_t *ent )
 {
 	// List commands only for enabled refs.
-	if( ent )
+	if ( ent )
 	{
-		if( !ent->client->sess.referee )
+		if ( !ent->client->sess.referee )
 		{
 			CP( "cpm \"Sorry, you are not a referee!\n" );
 			return;
@@ -167,7 +167,7 @@ void G_ref_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 	char arg[ MAX_TOKEN_CHARS ];
 
 	// Roll through ref commands if already a ref
-	if( ent == NULL || ent->client->sess.referee )
+	if ( ent == NULL || ent->client->sess.referee )
 	{
 		voteInfo_t votedata;
 
@@ -175,7 +175,7 @@ void G_ref_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 
 		memcpy( &votedata, &level.voteInfo, sizeof( voteInfo_t ) );
 
-		if( Cmd_CallVote_f( ent, 0, qtrue ) )
+		if ( Cmd_CallVote_f( ent, 0, qtrue ) )
 		{
 			memcpy( &level.voteInfo, &votedata, sizeof( voteInfo_t ) );
 			return;
@@ -184,7 +184,7 @@ void G_ref_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 		{
 			memcpy( &level.voteInfo, &votedata, sizeof( voteInfo_t ) );
 
-			if( G_refCommandCheck( ent, arg ) )
+			if ( G_refCommandCheck( ent, arg ) )
 			{
 				return;
 			}
@@ -197,16 +197,16 @@ void G_ref_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 		return;
 	}
 
-	if( ent )
+	if ( ent )
 	{
-		if( !Q_stricmp( refereePassword.string, "none" ) || !refereePassword.string[ 0 ] )
+		if ( !Q_stricmp( refereePassword.string, "none" ) || !refereePassword.string[ 0 ] )
 		{
 			// CHRUKER: b046 - Was using the cpm command, but this is really just for the console.
 			CP( "print \"Sorry, referee status disabled on this server.\n\"" );
 			return;
 		}
 
-		if( trap_Argc() < 2 )
+		if ( trap_Argc() < 2 )
 		{
 			// CHRUKER: b046 - Was using the cpm command, but this is really just for the console.
 			CP( "print \"Usage: ref [password]\n\"" );
@@ -215,7 +215,7 @@ void G_ref_cmd( gentity_t *ent, unsigned int dwCommand, qboolean fValue )
 
 		trap_Argv( 1, arg, sizeof( arg ) );
 
-		if( Q_stricmp( arg, refereePassword.string ) )
+		if ( Q_stricmp( arg, refereePassword.string ) )
 		{
 			// CHRUKER: b046 - Was using the cpm command, but this is really just for the console.
 			CP( "print \"Invalid referee password!\n\"" );
@@ -235,7 +235,7 @@ void G_refAllReady_cmd( gentity_t *ent )
 	int       i;
 	gclient_t *cl;
 
-	if( g_gamestate.integer == GS_PLAYING )
+	if ( g_gamestate.integer == GS_PLAYING )
 	{
 // rain - #105 - allow allready in intermission
 //  || g_gamestate.integer == GS_INTERMISSION) {
@@ -244,11 +244,11 @@ void G_refAllReady_cmd( gentity_t *ent )
 	}
 
 	// Ready them all and lock the teams
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		cl = level.clients + level.sortedClients[ i ];
 
-		if( cl->sess.sessionTeam != TEAM_SPECTATOR )
+		if ( cl->sess.sessionTeam != TEAM_SPECTATOR )
 		{
 			cl->pers.ready = qtrue;
 		}
@@ -273,7 +273,7 @@ void G_refLockTeams_cmd( gentity_t *ent, qboolean fLock )
 	G_printFull( status, NULL );
 	G_refPrintf( ent, "You have %sLOCKED teams", ( ( fLock ) ? "" : "UN" ) );  // CHRUKER: b047 - Removed unneeded linebreak
 
-	if( fLock )
+	if ( fLock )
 	{
 		level.server_settings |= CV_SVS_LOCKTEAMS;
 	}
@@ -291,19 +291,19 @@ void G_refPause_cmd( gentity_t *ent, qboolean fPause )
 	char *status[ 2 ] = { "^5UN", "^1" };
 	char *referee = ( ent ) ? "Referee" : "ref";
 
-	if( ( PAUSE_UNPAUSING >= level.match_pause && !fPause ) || ( PAUSE_NONE != level.match_pause && fPause ) )
+	if ( ( PAUSE_UNPAUSING >= level.match_pause && !fPause ) || ( PAUSE_NONE != level.match_pause && fPause ) )
 	{
 		G_refPrintf( ent, "The match is already %sPAUSED!", status[ fPause ] );  // CHRUKER: b047 - Removed unneeded \" and linebreak
 		return;
 	}
 
-	if( ent && !G_cmdDebounce( ent, ( ( fPause ) ? "pause" : "unpause" ) ) )
+	if ( ent && !G_cmdDebounce( ent, ( ( fPause ) ? "pause" : "unpause" ) ) )
 	{
 		return;
 	}
 
 	// Trigger the auto-handling of pauses
-	if( fPause )
+	if ( fPause )
 	{
 		level.match_pause = 100 + ( ( ent ) ? ( 1 + ent - g_entities ) : 0 );
 		G_globalSound( "sound/misc/referee.wav" );
@@ -331,7 +331,7 @@ void G_refPlayerPut_cmd( gentity_t *ent, int team_id )
 	gentity_t *player;
 
 	// Works for teamplayish matches
-	if( g_gametype.integer < GT_WOLF )
+	if ( g_gametype.integer < GT_WOLF )
 	{
 		G_refPrintf( ent, "\"put[allies|axis]\" only for team-based games!" );
 		return;
@@ -340,7 +340,7 @@ void G_refPlayerPut_cmd( gentity_t *ent, int team_id )
 	// Find the player to place.
 	trap_Argv( 2, arg, sizeof( arg ) );
 
-	if( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
+	if ( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
 	{
 		return;
 	}
@@ -348,13 +348,13 @@ void G_refPlayerPut_cmd( gentity_t *ent, int team_id )
 	player = g_entities + pid;
 
 	// Can only move to other teams.
-	if( player->client->sess.sessionTeam == team_id )
+	if ( player->client->sess.sessionTeam == team_id )
 	{
 		G_refPrintf( ent, "\"%s\" is already on team %s!", player->client->pers.netname, aTeams[ team_id ] );  // CHRUKER: b047 - Removed unneeded linebreak
 		return;
 	}
 
-	if( team_maxplayers.integer && TeamCount( -1, team_id ) >= team_maxplayers.integer )
+	if ( team_maxplayers.integer && TeamCount( -1, team_id ) >= team_maxplayers.integer )
 	{
 		G_refPrintf( ent, "Sorry, the %s team is already full!", aTeams[ team_id ] );  // CHRUKER: b047 - Removed unneeded linebreak
 		return;
@@ -363,7 +363,7 @@ void G_refPlayerPut_cmd( gentity_t *ent, int team_id )
 	player->client->pers.invite = team_id;
 	player->client->pers.ready = qfalse;
 
-	if( team_id == TEAM_AXIS )
+	if ( team_id == TEAM_AXIS )
 	{
 		SetTeam( player, "red", qtrue, -1, -1, qfalse );
 	}
@@ -372,7 +372,7 @@ void G_refPlayerPut_cmd( gentity_t *ent, int team_id )
 		SetTeam( player, "blue", qtrue, -1, -1, qfalse );
 	}
 
-	if( g_gamestate.integer == GS_WARMUP || g_gamestate.integer == GS_WARMUP_COUNTDOWN )
+	if ( g_gamestate.integer == GS_WARMUP || g_gamestate.integer == GS_WARMUP_COUNTDOWN )
 	{
 		G_readyMatchState();
 	}
@@ -386,7 +386,7 @@ void G_refRemove_cmd( gentity_t *ent )
 	gentity_t *player;
 
 	// Works for teamplayish matches
-	if( g_gametype.integer < GT_WOLF )
+	if ( g_gametype.integer < GT_WOLF )
 	{
 		G_refPrintf( ent, "\"remove\" only for team-based games!" );
 		return;
@@ -395,7 +395,7 @@ void G_refRemove_cmd( gentity_t *ent )
 	// Find the player to remove.
 	trap_Argv( 2, arg, sizeof( arg ) );
 
-	if( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
+	if ( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
 	{
 		return;
 	}
@@ -403,7 +403,7 @@ void G_refRemove_cmd( gentity_t *ent )
 	player = g_entities + pid;
 
 	// Can only remove active players.
-	if( player->client->sess.sessionTeam == TEAM_SPECTATOR )
+	if ( player->client->sess.sessionTeam == TEAM_SPECTATOR )
 	{
 		G_refPrintf( ent, "You can only remove people in the game!" );
 		return;
@@ -415,7 +415,7 @@ void G_refRemove_cmd( gentity_t *ent )
 
 	SetTeam( player, "s", qtrue, -1, -1, qfalse );
 
-	if( g_gamestate.integer == GS_WARMUP || g_gamestate.integer == GS_WARMUP_COUNTDOWN )
+	if ( g_gamestate.integer == GS_WARMUP || g_gamestate.integer == GS_WARMUP_COUNTDOWN )
 	{
 		G_readyMatchState();
 	}
@@ -438,7 +438,7 @@ void G_refSpeclockTeams_cmd( gentity_t *ent, qboolean fLock )
 	// Update viewers as necessary
 //  G_pollMultiPlayers();
 
-	if( fLock )
+	if ( fLock )
 	{
 		level.server_settings |= CV_SVS_LOCKSPECS;
 	}
@@ -456,7 +456,7 @@ void G_refWarmup_cmd( gentity_t *ent )
 
 	trap_Argv( 2, cmd, sizeof( cmd ) );
 
-	if( !*cmd || atoi( cmd ) < 0 )
+	if ( !*cmd || atoi( cmd ) < 0 )
 	{
 		trap_Cvar_VariableStringBuffer( "g_warmup", cmd, sizeof( cmd ) );
 		G_refPrintf( ent, "Warmup Time: %d", atoi( cmd ) );   // CHRUKER: b047 - Removed unneeded linebreak
@@ -474,7 +474,7 @@ void G_refWarning_cmd( gentity_t *ent )
 
 	trap_Argv( 2, cmd, sizeof( cmd ) );
 
-	if( !*cmd )
+	if ( !*cmd )
 	{
 		G_refPrintf( ent, "usage: ref warn <clientname> [reason]." );
 		return;
@@ -484,10 +484,10 @@ void G_refWarning_cmd( gentity_t *ent )
 
 	kicknum = G_refClientnumForName( ent, cmd );
 
-	if( kicknum != MAX_CLIENTS )
+	if ( kicknum != MAX_CLIENTS )
 	{
-		if( level.clients[ kicknum ].sess.referee == RL_NONE ||
-		    ( ( !ent || ent->client->sess.referee == RL_RCON ) && level.clients[ kicknum ].sess.referee <= RL_REFEREE ) )
+		if ( level.clients[ kicknum ].sess.referee == RL_NONE ||
+		     ( ( !ent || ent->client->sess.referee == RL_RCON ) && level.clients[ kicknum ].sess.referee <= RL_REFEREE ) )
 		{
 			trap_SendServerCommand( -1,
 			                        va( "cpm \"%s^7 was issued a ^1Warning^7 (%s)\n\"\n", level.clients[ kicknum ].pers.netname,
@@ -510,7 +510,7 @@ void G_refMute_cmd( gentity_t *ent, qboolean mute )
 	// Find the player to mute.
 	trap_Argv( 2, arg, sizeof( arg ) );
 
-	if( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
+	if ( ( pid = ClientNumberFromString( ent, arg ) ) == -1 )
 	{
 		return;
 	}
@@ -518,19 +518,19 @@ void G_refMute_cmd( gentity_t *ent, qboolean mute )
 	player = g_entities + pid;
 
 	// CHRUKER: b060 - Added mute check so that players that are muted before granted referee status, can be unmuted
-	if( player->client->sess.referee != RL_NONE && mute )
+	if ( player->client->sess.referee != RL_NONE && mute )
 	{
 		G_refPrintf( ent, "Cannot mute a referee." );  // CHRUKER: b047 - Removed unneeded linebreak
 		return;
 	}
 
-	if( player->client->sess.muted == mute )
+	if ( player->client->sess.muted == mute )
 	{
 		G_refPrintf( ent, "\"%s^*\" %s", player->client->pers.netname, mute ? "is already muted!" : "is not muted!" );  // CHRUKER: b047 - Removed unneeded linebreak
 		return;
 	}
 
-	if( mute )
+	if ( mute )
 	{
 		CPx( pid, "print \"^5You've been muted\n\"" );
 		player->client->sess.muted = qtrue;
@@ -556,7 +556,7 @@ void Cmd_AuthRcon_f( gentity_t *ent )
 	trap_Cvar_VariableStringBuffer( "rconPassword", buf, sizeof( buf ) );
 	trap_Argv( 1, cmd, sizeof( cmd ) );
 
-	if( *buf && !strcmp( buf, cmd ) )
+	if ( *buf && !strcmp( buf, cmd ) )
 	{
 		ent->client->sess.referee = RL_RCON;
 	}
@@ -572,7 +572,7 @@ void G_PlayerBan()
 
 	trap_Argv( 1, cmd, sizeof( cmd ) );
 
-	if( !*cmd )
+	if ( !*cmd )
 	{
 		G_Printf( "usage: ban <clientname>." );
 		return;
@@ -580,7 +580,7 @@ void G_PlayerBan()
 
 	bannum = G_refClientnumForName( NULL, cmd );
 
-	if( bannum != MAX_CLIENTS )
+	if ( bannum != MAX_CLIENTS )
 	{
 //      if( level.clients[bannum].sess.referee != RL_RCON ) {
 		const char *value;
@@ -603,7 +603,7 @@ void G_MakeReferee()
 
 	trap_Argv( 1, cmd, sizeof( cmd ) );
 
-	if( !*cmd )
+	if ( !*cmd )
 	{
 		G_Printf( "usage: MakeReferee <clientname>." );
 		return;
@@ -611,9 +611,9 @@ void G_MakeReferee()
 
 	cnum = G_refClientnumForName( NULL, cmd );
 
-	if( cnum != MAX_CLIENTS )
+	if ( cnum != MAX_CLIENTS )
 	{
-		if( level.clients[ cnum ].sess.referee == RL_NONE )
+		if ( level.clients[ cnum ].sess.referee == RL_NONE )
 		{
 			level.clients[ cnum ].sess.referee = RL_REFEREE;
 			AP( va( "cp \"%s\n^3has been made a referee\n\"", cmd ) );
@@ -633,7 +633,7 @@ void G_RemoveReferee()
 
 	trap_Argv( 1, cmd, sizeof( cmd ) );
 
-	if( !*cmd )
+	if ( !*cmd )
 	{
 		G_Printf( "usage: RemoveReferee <clientname>." );
 		return;
@@ -641,9 +641,9 @@ void G_RemoveReferee()
 
 	cnum = G_refClientnumForName( NULL, cmd );
 
-	if( cnum != MAX_CLIENTS )
+	if ( cnum != MAX_CLIENTS )
 	{
-		if( level.clients[ cnum ].sess.referee == RL_REFEREE )
+		if ( level.clients[ cnum ].sess.referee == RL_REFEREE )
 		{
 			level.clients[ cnum ].sess.referee = RL_NONE;
 			G_Printf( "%s is no longer a referee.\n", cmd );
@@ -662,7 +662,7 @@ void G_MuteClient()
 
 	trap_Argv( 1, cmd, sizeof( cmd ) );
 
-	if( !*cmd )
+	if ( !*cmd )
 	{
 		G_Printf( "usage: Mute <clientname>." );
 		return;
@@ -670,9 +670,9 @@ void G_MuteClient()
 
 	cnum = G_refClientnumForName( NULL, cmd );
 
-	if( cnum != MAX_CLIENTS )
+	if ( cnum != MAX_CLIENTS )
 	{
-		if( level.clients[ cnum ].sess.referee != RL_RCON )
+		if ( level.clients[ cnum ].sess.referee != RL_RCON )
 		{
 			trap_SendServerCommand( cnum, va( "cpm \"^3You have been muted\"" ) );
 			level.clients[ cnum ].sess.muted = qtrue;
@@ -693,7 +693,7 @@ void G_UnMuteClient()
 
 	trap_Argv( 1, cmd, sizeof( cmd ) );
 
-	if( !*cmd )
+	if ( !*cmd )
 	{
 		G_Printf( "usage: Unmute <clientname>.\n" );
 		return;
@@ -701,9 +701,9 @@ void G_UnMuteClient()
 
 	cnum = G_refClientnumForName( NULL, cmd );
 
-	if( cnum != MAX_CLIENTS )
+	if ( cnum != MAX_CLIENTS )
 	{
-		if( level.clients[ cnum ].sess.muted )
+		if ( level.clients[ cnum ].sess.muted )
 		{
 			trap_SendServerCommand( cnum, va( "cpm \"^2You have been un-muted\"" ) );
 			level.clients[ cnum ].sess.muted = qfalse;
@@ -725,17 +725,17 @@ int G_refClientnumForName( gentity_t *ent, const char *name )
 	char cleanName[ MAX_TOKEN_CHARS ];
 	int  i;
 
-	if( !*name )
+	if ( !*name )
 	{
 		return ( MAX_CLIENTS );
 	}
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
 		Q_strncpyz( cleanName, level.clients[ level.sortedClients[ i ] ].pers.netname, sizeof( cleanName ) );
 		Q_CleanStr( cleanName );
 
-		if( !Q_stricmp( cleanName, name ) )
+		if ( !Q_stricmp( cleanName, name ) )
 		{
 			return ( level.sortedClients[ i ] );
 		}
@@ -755,7 +755,7 @@ void G_refPrintf( gentity_t *ent, const char *fmt, ... )
 	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
 	va_end( argptr );
 
-	if( ent == NULL )
+	if ( ent == NULL )
 	{
 		trap_Print( va( "%s\n", text ) );   // CHRUKER: b047 - Added linebreak to the string
 	}

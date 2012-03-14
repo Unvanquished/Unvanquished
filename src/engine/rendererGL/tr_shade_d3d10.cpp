@@ -38,7 +38,7 @@ Tess_DrawElements
 */
 void Tess_DrawElements()
 {
-	if( tess.numIndexes == 0 || tess.numVertexes == 0 )
+	if ( tess.numIndexes == 0 || tess.numVertexes == 0 )
 	{
 		return;
 	}
@@ -93,7 +93,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	GLimp_LogComment( "--- Tess_ComputeColor ---\n" );
 
 	// rgbGen
-	switch( pStage->rgbGen )
+	switch ( pStage->rgbGen )
 	{
 		case CGEN_IDENTITY:
 			{
@@ -125,14 +125,14 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case CGEN_ENTITY:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					tess.svars.color[ 0 ] = Q_bound( 0.0, backEnd.currentLight->l.color[ 0 ], 1.0 );
 					tess.svars.color[ 1 ] = Q_bound( 0.0, backEnd.currentLight->l.color[ 1 ], 1.0 );
 					tess.svars.color[ 2 ] = Q_bound( 0.0, backEnd.currentLight->l.color[ 2 ], 1.0 );
 					tess.svars.color[ 3 ] = 1.0;
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					tess.svars.color[ 0 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 1.0 );
 					tess.svars.color[ 1 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 1.0 );
@@ -152,14 +152,14 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case CGEN_ONE_MINUS_ENTITY:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					tess.svars.color[ 0 ] = 1.0 - Q_bound( 0.0, backEnd.currentLight->l.color[ 0 ], 1.0 );
 					tess.svars.color[ 1 ] = 1.0 - Q_bound( 0.0, backEnd.currentLight->l.color[ 1 ], 1.0 );
 					tess.svars.color[ 2 ] = 1.0 - Q_bound( 0.0, backEnd.currentLight->l.color[ 2 ], 1.0 );
 					tess.svars.color[ 3 ] = 0.0; // FIXME
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					tess.svars.color[ 0 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ), 1.0 );
 					tess.svars.color[ 1 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 ), 1.0 );
@@ -184,7 +184,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 				wf = &pStage->rgbWave;
 
-				if( wf->func == GF_NOISE )
+				if ( wf->func == GF_NOISE )
 				{
 					glow = wf->base + R_NoiseGet4f( 0, 0, 0, ( backEnd.refdef.floatTime + wf->phase ) * wf->frequency ) * wf->amplitude;
 				}
@@ -193,11 +193,11 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 					glow = RB_EvalWaveForm( wf ) * tr.identityLight;
 				}
 
-				if( glow < 0 )
+				if ( glow < 0 )
 				{
 					glow = 0;
 				}
-				else if( glow > 1 )
+				else if ( glow > 1 )
 				{
 					glow = 1;
 				}
@@ -221,13 +221,13 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case CGEN_CUSTOM_RGBs:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					red = Q_bound( 0.0, RB_EvalExpression( &pStage->redExp, backEnd.currentLight->l.color[ 0 ] ), 1.0 );
 					green = Q_bound( 0.0, RB_EvalExpression( &pStage->greenExp, backEnd.currentLight->l.color[ 1 ] ), 1.0 );
 					blue = Q_bound( 0.0, RB_EvalExpression( &pStage->blueExp, backEnd.currentLight->l.color[ 2 ] ), 1.0 );
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					red =
 					  Q_bound( 0.0, RB_EvalExpression( &pStage->redExp, backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 ) ), 1.0 );
@@ -253,12 +253,12 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 	}
 
 	// alphaGen
-	switch( pStage->alphaGen )
+	switch ( pStage->alphaGen )
 	{
 		default:
 		case AGEN_IDENTITY:
 			{
-				if( pStage->rgbGen != CGEN_IDENTITY )
+				if ( pStage->rgbGen != CGEN_IDENTITY )
 				{
 					tess.svars.color[ 3 ] = 1.0;
 				}
@@ -268,7 +268,7 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case AGEN_CONST:
 			{
-				if( pStage->rgbGen != CGEN_CONST )
+				if ( pStage->rgbGen != CGEN_CONST )
 				{
 					tess.svars.color[ 3 ] = pStage->constantColor[ 3 ] * ( 1.0 / 255.0 );
 				}
@@ -278,11 +278,11 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case AGEN_ENTITY:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					tess.svars.color[ 3 ] = 1.0; // FIXME ?
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					tess.svars.color[ 3 ] = Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 1.0 );
 				}
@@ -296,11 +296,11 @@ void Tess_ComputeColor( shaderStage_t *pStage )
 
 		case AGEN_ONE_MINUS_ENTITY:
 			{
-				if( backEnd.currentLight )
+				if ( backEnd.currentLight )
 				{
 					tess.svars.color[ 3 ] = 0.0; // FIXME ?
 				}
-				else if( backEnd.currentEntity )
+				else if ( backEnd.currentEntity )
 				{
 					tess.svars.color[ 3 ] = 1.0 - Q_bound( 0.0, backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 ), 1.0 );
 				}
@@ -347,7 +347,7 @@ static void Tess_ComputeTexMatrices( shaderStage_t *pStage )
 
 	GLimp_LogComment( "--- Tess_ComputeTexMatrices ---\n" );
 
-	for( i = 0; i < MAX_TEXTURE_BUNDLES; i++ )
+	for ( i = 0; i < MAX_TEXTURE_BUNDLES; i++ )
 	{
 		matrix = tess.svars.texMatrices[ i ];
 
@@ -360,7 +360,7 @@ void Tess_StageIteratorGeneric()
 	int stage;
 
 	// log this call
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -401,16 +401,16 @@ void Tess_StageIteratorGeneric()
 	*/
 
 	// call shader function
-	for( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
+	for ( stage = 0; stage < MAX_SHADER_STAGES; stage++ )
 	{
 		shaderStage_t *pStage = tess.surfaceStages[ stage ];
 
-		if( !pStage )
+		if ( !pStage )
 		{
 			break;
 		}
 
-		if( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
+		if ( !RB_EvalExpression( &pStage->ifExp, 1.0 ) )
 		{
 			continue;
 		}
@@ -418,7 +418,7 @@ void Tess_StageIteratorGeneric()
 		Tess_ComputeColor( pStage );
 		Tess_ComputeTexMatrices( pStage );
 
-		switch( pStage->type )
+		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
 				{
@@ -569,7 +569,7 @@ void            Tess_Begin( void ( *stageIteratorFunc )(),
 	tess.multiDrawPrimitives = 0;
 
 	// materials are optional
-	if( surfaceShader != NULL )
+	if ( surfaceShader != NULL )
 	{
 		state = ( surfaceShader->remappedShader ) ? surfaceShader->remappedShader : surfaceShader;
 
@@ -593,15 +593,15 @@ void            Tess_Begin( void ( *stageIteratorFunc )(),
 	tess.stageIteratorFunc = stageIteratorFunc;
 	tess.stageIteratorFunc2 = stageIteratorFunc2;
 
-	if( !tess.stageIteratorFunc )
+	if ( !tess.stageIteratorFunc )
 	{
 		//tess.stageIteratorFunc = &Tess_StageIteratorGeneric;
 		ri.Error( ERR_FATAL, "tess.stageIteratorFunc == NULL" );
 	}
 
-	if( tess.stageIteratorFunc == &Tess_StageIteratorGeneric )
+	if ( tess.stageIteratorFunc == &Tess_StageIteratorGeneric )
 	{
-		if( isSky )
+		if ( isSky )
 		{
 			tess.stageIteratorFunc = &Tess_StageIteratorSky;
 			tess.stageIteratorFunc2 = &Tess_StageIteratorGeneric;
@@ -609,17 +609,17 @@ void            Tess_Begin( void ( *stageIteratorFunc )(),
 	}
 
 #if 0
-	else if( tess.stageIteratorFunc == &Tess_StageIteratorDepthFill )
+	else if ( tess.stageIteratorFunc == &Tess_StageIteratorDepthFill )
 	{
-		if( isSky )
+		if ( isSky )
 		{
 			tess.stageIteratorFunc = &Tess_StageIteratorSky;
 			tess.stageIteratorFunc2 = &Tess_StageIteratorDepthFill;
 		}
 	}
-	else if( tess.stageIteratorFunc == Tess_StageIteratorGBuffer )
+	else if ( tess.stageIteratorFunc == Tess_StageIteratorGBuffer )
 	{
-		if( isSky )
+		if ( isSky )
 		{
 			tess.stageIteratorFunc = &Tess_StageIteratorSky;
 			tess.stageIteratorFunc2 = &Tess_StageIteratorGBuffer;
@@ -632,7 +632,7 @@ void            Tess_Begin( void ( *stageIteratorFunc )(),
 	//tess.shadowVolume = shadowVolume;
 	tess.lightmapNum = lightmapNum;
 
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
@@ -649,23 +649,23 @@ Render tesselated data
 */
 void Tess_End()
 {
-	if( tess.numIndexes == 0 || tess.numVertexes == 0 )
+	if ( tess.numIndexes == 0 || tess.numVertexes == 0 )
 	{
 		return;
 	}
 
-	if( tess.indexes[ SHADER_MAX_INDEXES - 1 ] != 0 )
+	if ( tess.indexes[ SHADER_MAX_INDEXES - 1 ] != 0 )
 	{
 		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_INDEXES hit" );
 	}
 
-	if( tess.xyz[ SHADER_MAX_VERTEXES - 1 ][ 0 ] != 0 )
+	if ( tess.xyz[ SHADER_MAX_VERTEXES - 1 ][ 0 ] != 0 )
 	{
 		ri.Error( ERR_DROP, "Tess_End() - SHADER_MAX_VERTEXES hit" );
 	}
 
 	// for debugging of sort order issues, stop rendering after a given sort value
-	if( r_debugSort->integer && r_debugSort->integer < tess.surfaceShader->sort )
+	if ( r_debugSort->integer && r_debugSort->integer < tess.surfaceShader->sort )
 	{
 		return;
 	}

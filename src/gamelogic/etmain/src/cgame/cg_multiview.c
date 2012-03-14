@@ -47,7 +47,7 @@ void CG_DrawPlayerWeaponIcon( rectDef_t *rect, qboolean drawHighlighted, int ali
 // Explicit server command to add a view to the client's snapshot
 void CG_mvNew_f( void )
 {
-	if( cg.demoPlayback || trap_Argc() < 2 )
+	if ( cg.demoPlayback || trap_Argc() < 2 )
 	{
 		return;
 	}
@@ -59,7 +59,7 @@ void CG_mvNew_f( void )
 		trap_Args( aName, sizeof( aName ) );
 		pID = CG_findClientNum( aName );
 
-		if( pID >= 0 && !CG_mvMergedClientLocate( pID ) )
+		if ( pID >= 0 && !CG_mvMergedClientLocate( pID ) )
 		{
 			trap_SendClientCommand( va( "mvadd %d\n", pID ) );
 		}
@@ -69,7 +69,7 @@ void CG_mvNew_f( void )
 // Explicit server command to remove a view from the client's snapshot
 void CG_mvDelete_f( void )
 {
-	if( cg.demoPlayback )
+	if ( cg.demoPlayback )
 	{
 		return;
 	}
@@ -77,7 +77,7 @@ void CG_mvDelete_f( void )
 	{
 		int pID = -1;
 
-		if( trap_Argc() > 1 )
+		if ( trap_Argc() > 1 )
 		{
 			char aName[ 64 ];
 
@@ -88,13 +88,13 @@ void CG_mvDelete_f( void )
 		{
 			cg_window_t *w = cg.mvCurrentActive;
 
-			if( w != NULL )
+			if ( w != NULL )
 			{
 				pID = ( w->mvInfo & MV_PID );
 			}
 		}
 
-		if( pID >= 0 && CG_mvMergedClientLocate( pID ) )
+		if ( pID >= 0 && CG_mvMergedClientLocate( pID ) )
 		{
 			trap_SendClientCommand( va( "mvdel %d\n", pID ) );
 		}
@@ -104,7 +104,7 @@ void CG_mvDelete_f( void )
 // Swap highlighted window with main view
 void CG_mvSwapViews_f( void )
 {
-	if( cg.mv_cnt >= 2 && cg.mvCurrentActive != cg.mvCurrentMainview )
+	if ( cg.mv_cnt >= 2 && cg.mvCurrentActive != cg.mvCurrentMainview )
 	{
 		CG_mvMainviewSwap( cg.mvCurrentActive );
 	}
@@ -113,7 +113,7 @@ void CG_mvSwapViews_f( void )
 // Shut down a window view for a particular MV client
 void CG_mvHideView_f( void )
 {
-	if( cg.mvCurrentActive == NULL || cg.mvCurrentMainview == cg.mvCurrentActive )
+	if ( cg.mvCurrentActive == NULL || cg.mvCurrentMainview == cg.mvCurrentActive )
 	{
 		return;
 	}
@@ -126,11 +126,11 @@ void CG_mvShowView_f( void )
 {
 	int i;
 
-	for( i = 0; i < cg.mvTotalClients; i++ )
+	for ( i = 0; i < cg.mvTotalClients; i++ )
 	{
-		if( cg.mvOverlay[ i ].fActive )
+		if ( cg.mvOverlay[ i ].fActive )
 		{
-			if( cg.mvOverlay[ i ].w == NULL )
+			if ( cg.mvOverlay[ i ].w == NULL )
 			{
 				CG_mvCreate( cg.mvOverlay[ i ].pID );
 				CG_mvOverlayUpdate();
@@ -146,11 +146,11 @@ void CG_mvToggleView_f( void )
 {
 	int i;
 
-	for( i = 0; i < cg.mvTotalClients; i++ )
+	for ( i = 0; i < cg.mvTotalClients; i++ )
 	{
-		if( cg.mvOverlay[ i ].fActive )
+		if ( cg.mvOverlay[ i ].fActive )
 		{
-			if( cg.mvOverlay[ i ].w != NULL )
+			if ( cg.mvOverlay[ i ].w != NULL )
 			{
 				CG_mvHideView_f();
 			}
@@ -168,11 +168,11 @@ void CG_mvToggleView_f( void )
 // Toggle all views
 void CG_mvToggleAll_f( void )
 {
-	if( !cg.demoPlayback )
+	if ( !cg.demoPlayback )
 	{
 		trap_SendClientCommand( ( cg.mvTotalClients > 0 ) ? "mvnone\n" : "mvall\n" );
 
-		if( cg.mvTotalClients > 0 )
+		if ( cg.mvTotalClients > 0 )
 		{
 			CG_EventHandling( -CGAME_EVENT_MULTIVIEW, qfalse );
 		}
@@ -192,14 +192,14 @@ void CG_mvCreate( int pID )
 {
 	cg_window_t *w;
 
-	if( CG_mvClientLocate( pID ) != NULL )
+	if ( CG_mvClientLocate( pID ) != NULL )
 	{
 		return;
 	}
 
 	w = CG_windowAlloc( WFX_MULTIVIEW, 100 );
 
-	if( w == NULL )
+	if ( w == NULL )
 	{
 		return;
 	}
@@ -213,12 +213,12 @@ void CG_mvCreate( int pID )
 	w->mvInfo = ( pID & MV_PID ) | MV_SELECTED;
 	w->state = ( cg.mv_cnt == 0 ) ? WSTATE_COMPLETE : WSTATE_START;
 
-	if( cg.mv_cnt == 0 )
+	if ( cg.mv_cnt == 0 )
 	{
 		cg.mvCurrentMainview = w;
 		cg.mvCurrentActive = cg.mvCurrentMainview;
 
-		if( cg_specHelp.integer > 0 && !cg.demoPlayback )
+		if ( cg_specHelp.integer > 0 && !cg.demoPlayback )
 		{
 			CG_ShowHelp_On( &cg.spechelpWindow );
 			CG_EventHandling( CGAME_EVENT_MULTIVIEW, qfalse );
@@ -235,7 +235,7 @@ void CG_mvFree( int pID )
 {
 	cg_window_t *w = CG_mvClientLocate( pID );
 
-	if( w != NULL )
+	if ( w != NULL )
 	{
 		// Free it in mvDraw()
 		w->targetTime = 100;
@@ -250,11 +250,11 @@ cg_window_t    *CG_mvClientLocate( int pID )
 	cg_window_t        *w;
 	cg_windowHandler_t *wh = &cg.winHandler;
 
-	for( i = 0; i < wh->numActiveWindows; i++ )
+	for ( i = 0; i < wh->numActiveWindows; i++ )
 	{
 		w = &wh->window[ wh->activeWindows[ i ] ];
 
-		if( ( w->effects & WFX_MULTIVIEW ) && ( w->mvInfo & MV_PID ) == pID )
+		if ( ( w->effects & WFX_MULTIVIEW ) && ( w->mvInfo & MV_PID ) == pID )
 		{
 			return ( w );
 		}
@@ -283,24 +283,24 @@ void CG_mvProcessClientList( void )
 
 	cg.mvTotalClients = 0;
 
-	for( i = 0; i < MAX_MVCLIENTS; i++ )
+	for ( i = 0; i < MAX_MVCLIENTS; i++ )
 	{
 		bit = 1 << i;
 
-		if( ( cg.mvClientList & bit ) != ( newList & bit ) )
+		if ( ( cg.mvClientList & bit ) != ( newList & bit ) )
 		{
-			if( ( newList & bit ) == 0 )
+			if ( ( newList & bit ) == 0 )
 			{
 				CG_mvFree( i );
 			}
 			// If no active views at all, start up with the first one
-			else if( cg.mvCurrentMainview == NULL )
+			else if ( cg.mvCurrentMainview == NULL )
 			{
 				CG_mvCreate( i );
 			}
 		}
 
-		if( newList & bit )
+		if ( newList & bit )
 		{
 			cg.mvTotalClients++;
 		}
@@ -317,11 +317,11 @@ cg_window_t    *CG_mvCurrent( void )
 	cg_window_t        *w;
 	cg_windowHandler_t *wh = &cg.winHandler;
 
-	for( i = 0; i < wh->numActiveWindows; i++ )
+	for ( i = 0; i < wh->numActiveWindows; i++ )
 	{
 		w = &wh->window[ wh->activeWindows[ i ] ];
 
-		if( ( w->effects & WFX_MULTIVIEW ) && ( w->mvInfo & MV_SELECTED ) )
+		if ( ( w->effects & WFX_MULTIVIEW ) && ( w->mvInfo & MV_SELECTED ) )
 		{
 			return ( w );
 		}
@@ -338,9 +338,9 @@ cg_window_t    *CG_mvFindNonMainview( void )
 	cg_windowHandler_t *wh = &cg.winHandler;
 
 	// First, find a non-windowed client
-	for( i = 0; i < cg.mvTotalClients; i++ )
+	for ( i = 0; i < cg.mvTotalClients; i++ )
 	{
-		if( cg.mvOverlay[ i ].w == NULL )
+		if ( cg.mvOverlay[ i ].w == NULL )
 		{
 			cg.mvCurrentMainview->mvInfo = ( cg.mvCurrentMainview->mvInfo & ~MV_PID ) | ( cg.mvOverlay[ i ].pID & MV_PID );
 
@@ -350,11 +350,11 @@ cg_window_t    *CG_mvFindNonMainview( void )
 	}
 
 	// If none available, pull one from a window
-	for( i = 0; i < wh->numActiveWindows; i++ )
+	for ( i = 0; i < wh->numActiveWindows; i++ )
 	{
 		w = &wh->window[ wh->activeWindows[ i ] ];
 
-		if( ( w->effects & WFX_MULTIVIEW ) && w != cg.mvCurrentMainview )
+		if ( ( w->effects & WFX_MULTIVIEW ) && w != cg.mvCurrentMainview )
 		{
 			CG_mvMainviewSwap( w );
 			return ( w );
@@ -375,7 +375,7 @@ cg_window_t    *CG_mvFindNonMainview( void )
 //
 void CG_mvUpdateClientInfo( int pID )
 {
-	if( pID >= 0 && pID < MAX_MVCLIENTS && ( cg.mvClientList & ( 1 << pID ) ) )
+	if ( pID >= 0 && pID < MAX_MVCLIENTS && ( cg.mvClientList & ( 1 << pID ) ) )
 	{
 		int           weap = cg_entities[ pID ].currentState.weapon;
 		int           id = MAX_WEAPONS - 1 - ( pID * 2 );
@@ -400,24 +400,24 @@ void CG_mvUpdateClientInfo( int pID )
 		ci->hintTime = ( ci->hintTime == 0 ) ? -1 : ( int )( 100.0f * ( float )( ci->hintTime - 1 ) / 15.0f );
 		ci->sprintTime = ( ci->sprintTime == 0 ) ? -1 : ( int )( 100.0f * ( float )( ci->sprintTime - 1 ) / 7.0f );
 
-		if( ci->health == 0 )
+		if ( ci->health == 0 )
 		{
 			ci->weaponState = WSTATE_IDLE;
 		}
 
 		// Handle grenade pulsing for the main view
-		if( ci->weaponState != ci->weaponState_last )
+		if ( ci->weaponState != ci->weaponState_last )
 		{
 			ci->weaponState_last = ci->weaponState;
 			ci->grenadeTimeStart = ( ci->weaponState == WSTATE_FIRE &&
 			                         ( weap == WP_GRENADE_LAUNCHER || weap == WP_GRENADE_PINEAPPLE ) ) ? 4000 + cg.time : 0;
 		}
 
-		if( ci->weaponState == WSTATE_FIRE && ( weap == WP_GRENADE_LAUNCHER || weap == WP_GRENADE_PINEAPPLE ) )
+		if ( ci->weaponState == WSTATE_FIRE && ( weap == WP_GRENADE_LAUNCHER || weap == WP_GRENADE_PINEAPPLE ) )
 		{
 			ci->grenadeTimeLeft = ci->grenadeTimeStart - cg.time;
 
-			if( ci->grenadeTimeLeft < 0 )
+			if ( ci->grenadeTimeLeft < 0 )
 			{
 				ci->grenadeTimeLeft = 0;
 			}
@@ -450,19 +450,19 @@ void CG_mvTransitionPlayerState( playerState_t *ps )
 
 	x = cent->currentState.teamNum;
 
-	if( x == PC_MEDIC )
+	if ( x == PC_MEDIC )
 	{
 		mult = cg.medicChargeTime[ ci->team - 1 ];
 	}
-	else if( x == PC_ENGINEER )
+	else if ( x == PC_ENGINEER )
 	{
 		mult = cg.engineerChargeTime[ ci->team - 1 ];
 	}
-	else if( x == PC_FIELDOPS )
+	else if ( x == PC_FIELDOPS )
 	{
 		mult = cg.ltChargeTime[ ci->team - 1 ];
 	}
-	else if( x == PC_COVERTOPS )
+	else if ( x == PC_COVERTOPS )
 	{
 		mult = cg.covertopsChargeTime[ ci->team - 1 ];
 	}
@@ -524,13 +524,13 @@ void CG_mvDraw( cg_window_t *sw )
 	rd_h = sw->h;
 
 	// Cool zoomin/out effect
-	if( sw->state != WSTATE_COMPLETE )
+	if ( sw->state != WSTATE_COMPLETE )
 	{
 		int tmp = trap_Milliseconds() - sw->time;
 
-		if( sw->state == WSTATE_START )
+		if ( sw->state == WSTATE_START )
 		{
-			if( tmp < sw->targetTime )
+			if ( tmp < sw->targetTime )
 			{
 				s = ( float ) tmp / ( float ) sw->targetTime;
 				rd_x += rd_w * 0.5f * ( 1.0f - s );
@@ -543,9 +543,9 @@ void CG_mvDraw( cg_window_t *sw )
 				sw->state = WSTATE_COMPLETE;
 			}
 		}
-		else if( sw->state == WSTATE_SHUTDOWN )
+		else if ( sw->state == WSTATE_SHUTDOWN )
 		{
-			if( tmp < sw->targetTime )
+			if ( tmp < sw->targetTime )
 			{
 				s = ( float ) tmp / ( float ) sw->targetTime;
 				rd_x += rd_w * 0.5f * s;
@@ -554,7 +554,7 @@ void CG_mvDraw( cg_window_t *sw )
 				rd_w *= s;
 				rd_h *= s;
 
-				if( sw == cg.mvCurrentMainview )
+				if ( sw == cg.mvCurrentMainview )
 				{
 					trap_R_ClearScene();
 				}
@@ -563,11 +563,11 @@ void CG_mvDraw( cg_window_t *sw )
 			{
 				// Main window is shutting down.
 				// Try to swap it with another MV client, if available
-				if( sw == cg.mvCurrentMainview )
+				if ( sw == cg.mvCurrentMainview )
 				{
 					sw = CG_mvFindNonMainview();
 
-					if( cg.mvTotalClients > 0 )
+					if ( cg.mvTotalClients > 0 )
 					{
 						cg.mvCurrentMainview->targetTime = 100;
 						cg.mvCurrentMainview->time = trap_Milliseconds();
@@ -576,7 +576,7 @@ void CG_mvDraw( cg_window_t *sw )
 
 					// If we swap with a window, hang around so we can delete the window
 					// Otherwise, if there are still active MV clients, don't close the mainview
-					if( sw == cg.mvCurrentMainview && cg.mvTotalClients > 0 )
+					if ( sw == cg.mvCurrentMainview && cg.mvTotalClients > 0 )
 					{
 						return;
 					}
@@ -586,12 +586,12 @@ void CG_mvDraw( cg_window_t *sw )
 
 				// We were on the last viewed client when the shutdown was issued,
 				// go ahead and shut down the mainview window *sniff*
-				if( --cg.mv_cnt <= 0 )
+				if ( --cg.mv_cnt <= 0 )
 				{
 					cg.mv_cnt = 0;
 					cg.mvCurrentMainview = NULL;
 
-					if( cg.spechelpWindow == SHOW_ON )
+					if ( cg.spechelpWindow == SHOW_ON )
 					{
 						CG_ShowHelp_Off( &cg.spechelpWindow );
 					}
@@ -633,7 +633,7 @@ void CG_mvDraw( cg_window_t *sw )
 
 	trap_R_ClearScene();
 
-	if( sw == cg.mvCurrentMainview && cg.renderingThirdPerson )
+	if ( sw == cg.mvCurrentMainview && cg.renderingThirdPerson )
 	{
 		cg.renderingThirdPerson = qtrue;
 //      VectorCopy(cent->lerpOrigin, refdef.vieworg);
@@ -649,7 +649,7 @@ void CG_mvDraw( cg_window_t *sw )
 	CG_SetupFrustum();
 	CG_DrawSkyBoxPortal( qfalse );
 
-	if( !cg.hyperspace )
+	if ( !cg.hyperspace )
 	{
 		CG_AddPacketEntities();
 		CG_AddMarks();
@@ -663,11 +663,11 @@ void CG_mvDraw( cg_window_t *sw )
 		CG_AddTrails(); // this must come last, so the trails dropped this frame get drawn
 	}
 
-	if( sw == cg.mvCurrentMainview )
+	if ( sw == cg.mvCurrentMainview )
 	{
 		CG_DrawActive( STEREO_CENTER );
 
-		if( cg.mvCurrentActive == cg.mvCurrentMainview )
+		if ( cg.mvCurrentActive == cg.mvCurrentMainview )
 		{
 			trap_S_Respatialize( cg.clientNum, refdef.vieworg, refdef.viewaxis, qfalse );
 		}
@@ -694,7 +694,7 @@ void CG_mvDraw( cg_window_t *sw )
 
 	CG_mvWindowOverlay( pID, b_x, b_y, b_w, b_h, s, sw->state, ( sw == cg.mvCurrentActive ) );
 
-	if( sw == cg.mvCurrentActive )
+	if ( sw == cg.mvCurrentActive )
 	{
 		trap_S_Respatialize( cg.clientNum, refdef.vieworg, refdef.viewaxis, qfalse );
 	}
@@ -716,10 +716,10 @@ void CG_mvWindowOverlay( int pID, float b_x, float b_y, float b_w, float b_h, fl
 	vec4_t       *noSelectBorder = &colorDkGrey;
 
 	// Overlays for zoomed views
-	if( ci->health > 0 )
+	if ( ci->health > 0 )
 	{
 		/*if(cent->currentState.weapon == WP_SNIPERRIFLE) CG_mvZoomSniper(b_x, b_y, b_w, b_h);  // ARNOUT: this needs updating?
-		   else */if( cent->currentState.eFlags & EF_ZOOMING )
+		   else */if ( cent->currentState.eFlags & EF_ZOOMING )
 		{
 			CG_mvZoomBinoc( b_x, b_y, b_w, b_h );
 		}
@@ -730,27 +730,27 @@ void CG_mvWindowOverlay( int pID, float b_x, float b_y, float b_w, float b_h, fl
 	fh *= s;
 	x = cent->currentState.teamNum;
 
-	if( x == PC_SOLDIER )
+	if ( x == PC_SOLDIER )
 	{
 		p_class = "^1S";
 		noSelectBorder = &colorMdRed;
 	}
-	else if( x == PC_MEDIC )
+	else if ( x == PC_MEDIC )
 	{
 		p_class = "^7M";
 		noSelectBorder = &colorMdGrey;
 	}
-	else if( x == PC_ENGINEER )
+	else if ( x == PC_ENGINEER )
 	{
 		p_class = "^5E";
 		noSelectBorder = &colorMdBlue;
 	}
-	else if( x == PC_FIELDOPS )
+	else if ( x == PC_FIELDOPS )
 	{
 		p_class = "^2F";
 		noSelectBorder = &colorMdGreen;
 	}
-	else if( x == PC_COVERTOPS )
+	else if ( x == PC_COVERTOPS )
 	{
 		p_class = "^3C";
 		noSelectBorder = &colorMdYellow;
@@ -776,7 +776,7 @@ void CG_mvWindowOverlay( int pID, float b_x, float b_y, float b_w, float b_h, fl
 	                           ( ci->weaponState == WSTATE_FIRE ) ? &colorRed : &colorYellow ) );
 
 	// Sprint charge info
-	if( ci->sprintTime >= 0 )
+	if ( ci->sprintTime >= 0 )
 	{
 		p_class = va( "^2S^7%d%%", ci->sprintTime );
 		rect.y -= ( fh + 1 );
@@ -785,7 +785,7 @@ void CG_mvWindowOverlay( int pID, float b_x, float b_y, float b_w, float b_h, fl
 	}
 
 	// Weapon charge info
-	if( ci->chargeTime >= 0 )
+	if ( ci->chargeTime >= 0 )
 	{
 		p_class = va( "^1C^7%d%%", ci->chargeTime );
 		rect.y -= ( fh + 1 );
@@ -794,7 +794,7 @@ void CG_mvWindowOverlay( int pID, float b_x, float b_y, float b_w, float b_h, fl
 	}
 
 	// Cursorhint work
-	if( ci->hintTime >= 0 )
+	if ( ci->hintTime >= 0 )
 	{
 		p_class = va( "^3W:^7%d%%", ci->hintTime );
 		rect.y -= ( fh + 1 );
@@ -804,13 +804,13 @@ void CG_mvWindowOverlay( int pID, float b_x, float b_y, float b_w, float b_h, fl
 	}
 
 	// Finally, the window border
-	if( fSelected && wState == WSTATE_COMPLETE )
+	if ( fSelected && wState == WSTATE_COMPLETE )
 	{
 		int    t = trap_Milliseconds() & 0x07FF; // 2047
 		float  scale;
 		vec4_t borderColor;
 
-		if( t > 1024 )
+		if ( t > 1024 )
 		{
 			t = 2047 - t;
 		}
@@ -818,7 +818,7 @@ void CG_mvWindowOverlay( int pID, float b_x, float b_y, float b_w, float b_h, fl
 		memcpy( &borderColor, *noSelectBorder, sizeof( vec4_t ) );
 		scale = ( ( float ) t / 1137.38f ) + 0.5f;
 
-		if( scale <= 1.0 )
+		if ( scale <= 1.0 )
 		{
 			borderColor[ 0 ] *= scale;
 			borderColor[ 1 ] *= scale;
@@ -865,7 +865,7 @@ void CG_mvOverlayClientUpdate( int pID, int index )
 	w = CG_mvClientLocate( pID );
 	cg.mvOverlay[ index ].w = w;
 
-	if( w != NULL )
+	if ( w != NULL )
 	{
 		strcpy( cg.mvOverlay[ index ].info, va( "%s%s%2d",
 		                                        strClassHighlights[ cg.mvOverlay[ index ].classID * 2 ],
@@ -884,9 +884,9 @@ void CG_mvOverlayUpdate( void )
 {
 	int i, cnt;
 
-	for( i = 0, cnt = 0; i < MAX_MVCLIENTS && cnt < cg.mvTotalClients; i++ )
+	for ( i = 0, cnt = 0; i < MAX_MVCLIENTS && cnt < cg.mvTotalClients; i++ )
 	{
-		if( cg.mvClientList & ( 1 << i ) )
+		if ( cg.mvClientList & ( 1 << i ) )
 		{
 			CG_mvOverlayClientUpdate( i, cnt++ );
 		}
@@ -898,9 +898,9 @@ qboolean CG_mvMergedClientLocate( int pID )
 {
 	int i;
 
-	for( i = 0; i < cg.mvTotalClients; i++ )
+	for ( i = 0; i < cg.mvTotalClients; i++ )
 	{
-		if( cg.mvOverlay[ i ].pID == pID )
+		if ( cg.mvOverlay[ i ].pID == pID )
 		{
 			return ( qtrue );
 		}
@@ -915,28 +915,28 @@ void CG_mvOverlayDisplay( void )
 	int         j, i, x, y, pID;
 	cg_mvinfo_t *o;
 
-	if( cg.mvTotalClients < 1 )
+	if ( cg.mvTotalClients < 1 )
 	{
 		return;
 	}
 
 	y = MVINFO_TOP - ( 2 * ( MVINFO_TEXTSIZE + 1 ) );
 
-	for( j = TEAM_AXIS; j <= TEAM_ALLIES; j++ )
+	for ( j = TEAM_AXIS; j <= TEAM_ALLIES; j++ )
 	{
 		cg.mvTotalTeam[ j ] = 0;
 
-		for( i = 0; i < cg.mvTotalClients; i++ )
+		for ( i = 0; i < cg.mvTotalClients; i++ )
 		{
 			o = &cg.mvOverlay[ i ];
 			pID = o->pID;
 
-			if( cgs.clientinfo[ pID ].team != j )
+			if ( cgs.clientinfo[ pID ].team != j )
 			{
 				continue;
 			}
 
-			if( cg.mvTotalTeam[ j ] == 0 )
+			if ( cg.mvTotalTeam[ j ] == 0 )
 			{
 				char *flag = ( j == TEAM_AXIS ) ? "ui/assets/ger_flag.tga" : "ui/assets/usa_flag.tga";
 
@@ -950,7 +950,7 @@ void CG_mvOverlayDisplay( void )
 			cg.mvTotalTeam[ j ]++;
 
 			// Update any class changes
-			if( o->classID != cg_entities[ pID ].currentState.teamNum )
+			if ( o->classID != cg_entities[ pID ].currentState.teamNum )
 			{
 				CG_mvOverlayClientUpdate( o->pID, i );
 			}
@@ -958,12 +958,12 @@ void CG_mvOverlayDisplay( void )
 			x = MVINFO_RIGHT - o->width;
 			y += MVINFO_TEXTSIZE + 1;
 
-			if( o->fActive )
+			if ( o->fActive )
 			{
 				CG_FillRect( x - 1, y, o->width + 2, MVINFO_TEXTSIZE + 2, colorMdYellow );
 
 				// Draw name info only if we're hovering over the text element
-				if( !( cg.mvCurrentActive->mvInfo & MV_SELECTED ) || cg.mvCurrentActive == cg.mvCurrentMainview )
+				if ( !( cg.mvCurrentActive->mvInfo & MV_SELECTED ) || cg.mvCurrentActive == cg.mvCurrentMainview )
 				{
 					int w = CG_DrawStrlen( cgs.clientinfo[ pID ].name ) * ( MVINFO_TEXTSIZE - 1 );
 
@@ -994,7 +994,7 @@ void CG_mvZoomSniper( float x, float y, float w, float h )
 	CG_FillRect( x + 560.0f * ws, y, 80.0f * ws, 480.0f * hs, colorBlack );
 
 	// center
-	if( cgs.media.reticleShaderSimple )
+	if ( cgs.media.reticleShaderSimple )
 	{
 		CG_DrawPic( x + 80.0f * ws, y, 480.0f * ws, 480.0f * hs, cgs.media.reticleShaderSimple );
 	}
@@ -1012,7 +1012,7 @@ void CG_mvZoomBinoc( float x, float y, float w, float h )
 	float hs = h / 480;
 
 	// an alternative.  This gives nice sharp lines at the expense of a few extra polys
-	if( cgs.media.binocShaderSimple )
+	if ( cgs.media.binocShaderSimple )
 	{
 		CG_DrawPic( x, y, 640.0f * ws, 480.0f * ws, cgs.media.binocShaderSimple );
 	}
@@ -1034,24 +1034,24 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 	int key = _key;
 
 	// Avoid active console keypress issues
-	if( !down && !cgs.fKeyPressed[ key ] )
+	if ( !down && !cgs.fKeyPressed[ key ] )
 	{
 		return;
 	}
 
 	cgs.fKeyPressed[ key ] = down;
 
-	switch( key )
+	switch ( key )
 	{
 		case K_TAB:
-			if( down ) { CG_ScoresDown_f(); }
+			if ( down ) { CG_ScoresDown_f(); }
 			else { CG_ScoresUp_f(); }
 
 			return;
 
 			// Help info
 		case K_BACKSPACE:
-			if( !down )
+			if ( !down )
 			{
 				// Dushan - fixed comiler warning
 				CG_toggleSpecHelp_f();
@@ -1061,12 +1061,12 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 
 			// Screenshot keys
 		case K_F11:
-			if( !down ) { trap_SendConsoleCommand( va( "screenshot%s\n", ( ( cg_useScreenshotJPEG.integer ) ? "JPEG" : "" ) ) ); }
+			if ( !down ) { trap_SendConsoleCommand( va( "screenshot%s\n", ( ( cg_useScreenshotJPEG.integer ) ? "JPEG" : "" ) ) ); }
 
 			return;
 
 		case K_F12:
-			if( !down ) { CG_autoScreenShot_f(); }
+			if ( !down ) { CG_autoScreenShot_f(); }
 
 			return;
 
@@ -1082,7 +1082,7 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 			return;
 
 		case K_MOUSE2:
-			if( !down )
+			if ( !down )
 			{
 				CG_mvSwapViews_f(); // Swap the window with the main view
 			}
@@ -1092,7 +1092,7 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 		case K_INS:
 		case K_KP_PGUP:
 		case K_MWHEELDOWN:
-			if( !down )
+			if ( !down )
 			{
 				CG_mvShowView_f(); // Make a window for the client
 			}
@@ -1102,7 +1102,7 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 		case K_DEL:
 		case K_KP_PGDN:
 		case K_MWHEELUP:
-			if( !down )
+			if ( !down )
 			{
 				CG_mvHideView_f(); // Delete the window for the client
 			}
@@ -1110,7 +1110,7 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 			return;
 
 		case K_MOUSE3:
-			if( !down )
+			if ( !down )
 			{
 				CG_mvToggleView_f(); // Toggle a window for the client
 			}
@@ -1119,7 +1119,7 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 
 		case 'm':
 		case 'M':
-			if( !down )
+			if ( !down )
 			{
 				CG_mvToggleAll_f();
 			}
@@ -1133,7 +1133,7 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 
 			// Third-person controls
 		case K_ENTER:
-			if( !down )
+			if ( !down )
 			{
 				trap_Cvar_Set( "cg_thirdperson", ( ( cg_thirdPerson.integer == 0 ) ? "1" : "0" ) );
 			}
@@ -1141,7 +1141,7 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 			return;
 
 		case K_UPARROW:
-			if( milli > cgs.thirdpersonUpdate )
+			if ( milli > cgs.thirdpersonUpdate )
 			{
 				float range = cg_thirdPersonRange.value;
 
@@ -1153,7 +1153,7 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 			return;
 
 		case K_DOWNARROW:
-			if( milli > cgs.thirdpersonUpdate )
+			if ( milli > cgs.thirdpersonUpdate )
 			{
 				float range = cg_thirdPersonRange.value;
 
@@ -1165,13 +1165,13 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 			return;
 
 		case K_RIGHTARROW:
-			if( milli > cgs.thirdpersonUpdate )
+			if ( milli > cgs.thirdpersonUpdate )
 			{
 				float angle = cg_thirdPersonAngle.value - DEMO_ANGLEDELTA;
 
 				cgs.thirdpersonUpdate = milli + DEMO_THIRDPERSONUPDATE;
 
-				if( angle < 0 ) { angle += 360.0f; }
+				if ( angle < 0 ) { angle += 360.0f; }
 
 				trap_Cvar_Set( "cg_thirdPersonAngle", va( "%f", angle ) );
 			}
@@ -1179,13 +1179,13 @@ void CG_mv_KeyHandling( int _key, qboolean down )
 			return;
 
 		case K_LEFTARROW:
-			if( milli > cgs.thirdpersonUpdate )
+			if ( milli > cgs.thirdpersonUpdate )
 			{
 				float angle = cg_thirdPersonAngle.value + DEMO_ANGLEDELTA;
 
 				cgs.thirdpersonUpdate = milli + DEMO_THIRDPERSONUPDATE;
 
-				if( angle >= 360.0f ) { angle -= 360.0f; }
+				if ( angle >= 360.0f ) { angle -= 360.0f; }
 
 				trap_Cvar_Set( "cg_thirdPersonAngle", va( "%f", angle ) );
 			}

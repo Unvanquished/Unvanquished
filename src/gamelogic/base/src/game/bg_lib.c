@@ -104,7 +104,7 @@ char *a, *b;
 
 int n, swaptype;
 {
-	if( swaptype <= 1 )
+	if ( swaptype <= 1 )
 	{
 		swapcode( long, a, b, n )
 		else
@@ -148,12 +148,12 @@ loop:
 	SWAPINIT( a, es );
 	swap_cnt = 0;
 
-	if( n < 7 )
+	if ( n < 7 )
 	{
-		for( pm = ( char * ) a + es; pm < ( char * ) a + n * es; pm += es )
+		for ( pm = ( char * ) a + es; pm < ( char * ) a + n * es; pm += es )
 		{
-			for( pl = pm; pl > ( char * ) a && cmp( pl - es, pl ) > 0;
-			     pl -= es )
+			for ( pl = pm; pl > ( char * ) a && cmp( pl - es, pl ) > 0;
+			      pl -= es )
 			{
 				swap( pl, pl - es );
 			}
@@ -164,12 +164,12 @@ loop:
 
 	pm = ( char * ) a + ( n / 2 ) * es;
 
-	if( n > 7 )
+	if ( n > 7 )
 	{
 		pl = a;
 		pn = ( char * ) a + ( n - 1 ) * es;
 
-		if( n > 40 )
+		if ( n > 40 )
 		{
 			d = ( n / 8 ) * es;
 			pl = med3( pl, pl + d, pl + 2 * d, cmp );
@@ -185,11 +185,11 @@ loop:
 
 	pc = pd = ( char * ) a + ( n - 1 ) * es;
 
-	for( ;; )
+	for ( ;; )
 	{
-		while( pb <= pc && ( r = cmp( pb, a ) ) <= 0 )
+		while ( pb <= pc && ( r = cmp( pb, a ) ) <= 0 )
 		{
-			if( r == 0 )
+			if ( r == 0 )
 			{
 				swap_cnt = 1;
 				swap( pa, pb );
@@ -199,9 +199,9 @@ loop:
 			pb += es;
 		}
 
-		while( pb <= pc && ( r = cmp( pc, a ) ) >= 0 )
+		while ( pb <= pc && ( r = cmp( pc, a ) ) >= 0 )
 		{
-			if( r == 0 )
+			if ( r == 0 )
 			{
 				swap_cnt = 1;
 				swap( pc, pd );
@@ -211,7 +211,7 @@ loop:
 			pc -= es;
 		}
 
-		if( pb > pc )
+		if ( pb > pc )
 		{
 			break;
 		}
@@ -222,12 +222,12 @@ loop:
 		pc -= es;
 	}
 
-	if( swap_cnt == 0 )  /* Switch to insertion sort */
+	if ( swap_cnt == 0 ) /* Switch to insertion sort */
 	{
-		for( pm = ( char * ) a + es; pm < ( char * ) a + n * es; pm += es )
+		for ( pm = ( char * ) a + es; pm < ( char * ) a + n * es; pm += es )
 		{
-			for( pl = pm; pl > ( char * ) a && cmp( pl - es, pl ) > 0;
-			     pl -= es )
+			for ( pl = pm; pl > ( char * ) a && cmp( pl - es, pl ) > 0;
+			      pl -= es )
 			{
 				swap( pl, pl - es );
 			}
@@ -242,12 +242,12 @@ loop:
 	r = min( pd - pc, pn - pd - es );
 	vecswap( pb, pn - r, r );
 
-	if( ( r = pb - pa ) > es )
+	if ( ( r = pb - pa ) > es )
 	{
 		qsort( a, r / es, es, cmp );
 	}
 
-	if( ( r = pd - pc ) > es )
+	if ( ( r = pd - pc ) > es )
 	{
 		/* Iterate rather than recurse to save stack space */
 		a = pn - r;
@@ -271,7 +271,7 @@ size_t strlen( const char *string )
 
 	s = string;
 
-	while( *s )
+	while ( *s )
 	{
 		s++;
 	}
@@ -285,12 +285,12 @@ char *strcat( char *strDestination, const char *strSource )
 
 	s = strDestination;
 
-	while( *s )
+	while ( *s )
 	{
 		s++;
 	}
 
-	while( *strSource )
+	while ( *strSource )
 	{
 		*s++ = *strSource++;
 	}
@@ -305,7 +305,7 @@ char *strcpy( char *strDestination, const char *strSource )
 
 	s = strDestination;
 
-	while( *strSource )
+	while ( *strSource )
 	{
 		*s++ = *strSource++;
 	}
@@ -316,7 +316,7 @@ char *strcpy( char *strDestination, const char *strSource )
 
 int strcmp( const char *string1, const char *string2 )
 {
-	while( *string1 == *string2 && *string1 && *string2 )
+	while ( *string1 == *string2 && *string1 && *string2 )
 	{
 		string1++;
 		string2++;
@@ -331,11 +331,11 @@ char *strrchr( const char *string, int c )
 	int  i, length = strlen( string );
 	char *p;
 
-	for( i = length - 1; i >= 0; i-- )
+	for ( i = length - 1; i >= 0; i-- )
 	{
 		p = ( char * ) &string[ i ];
 
-		if( *p == c )
+		if ( *p == c )
 		{
 			return ( char * ) p;
 		}
@@ -346,9 +346,9 @@ char *strrchr( const char *string, int c )
 
 char *strchr( const char *string, int c )
 {
-	while( *string )
+	while ( *string )
 	{
-		if( *string == c )
+		if ( *string == c )
 		{
 			return ( char * ) string;
 		}
@@ -361,19 +361,19 @@ char *strchr( const char *string, int c )
 
 char *strstr( const char *string, const char *strCharSet )
 {
-	while( *string )
+	while ( *string )
 	{
 		int i;
 
-		for( i = 0; strCharSet[ i ]; i++ )
+		for ( i = 0; strCharSet[ i ]; i++ )
 		{
-			if( string[ i ] != strCharSet[ i ] )
+			if ( string[ i ] != strCharSet[ i ] )
 			{
 				break;
 			}
 		}
 
-		if( !strCharSet[ i ] )
+		if ( !strCharSet[ i ] )
 		{
 			return ( char * ) string;
 		}
@@ -390,7 +390,7 @@ char *strstr( const char *string, const char *strCharSet )
 
 int tolower( int c )
 {
-	if( c >= 'A' && c <= 'Z' )
+	if ( c >= 'A' && c <= 'Z' )
 	{
 		c += 'a' - 'A';
 	}
@@ -400,7 +400,7 @@ int tolower( int c )
 
 int toupper( int c )
 {
-	if( c >= 'a' && c <= 'z' )
+	if ( c >= 'a' && c <= 'z' )
 	{
 		c += 'A' - 'a';
 	}
@@ -414,16 +414,16 @@ void *memmove( void *dest, const void *src, size_t count )
 {
 	int i;
 
-	if( dest > src )
+	if ( dest > src )
 	{
-		for( i = count - 1; i >= 0; i-- )
+		for ( i = count - 1; i >= 0; i-- )
 		{
 			( ( char * ) dest ) [ i ] = ( ( char * ) src ) [ i ];
 		}
 	}
 	else
 	{
-		for( i = 0; i < count; i++ )
+		for ( i = 0; i < count; i++ )
 		{
 			( ( char * ) dest ) [ i ] = ( ( char * ) src ) [ i ];
 		}
@@ -441,7 +441,7 @@ double floor( double x )
 
 void *memset( void *dest, int c, size_t count )
 {
-	while( count-- )
+	while ( count-- )
 	{
 		( ( char * ) dest ) [ count ] = c;
 	}
@@ -451,7 +451,7 @@ void *memset( void *dest, int c, size_t count )
 
 void *memcpy( void *dest, const void *src, size_t count )
 {
-	while( count-- )
+	while ( count-- )
 	{
 		( ( char * ) dest ) [ count ] = ( ( char * ) src ) [ count ];
 	}
@@ -465,13 +465,13 @@ char *strncpy( char *strDest, const char *strSource, size_t count )
 
 	s = strDest;
 
-	while( *strSource && count )
+	while ( *strSource && count )
 	{
 		*s++ = *strSource++;
 		count--;
 	}
 
-	while( count-- )
+	while ( count-- )
 	{
 		*s++ = 0;
 	}
@@ -485,7 +485,7 @@ double sqrt( double x )
 	float delta;
 	float maxError;
 
-	if( x <= 0 )
+	if ( x <= 0 )
 	{
 		return 0;
 	}
@@ -501,7 +501,7 @@ double sqrt( double x )
 		delta = ( y * y ) - x;
 		y -= delta / ( 2 * y );
 	}
-	while( delta > maxError || delta < -maxError );
+	while ( delta > maxError || delta < -maxError );
 
 	return y;
 }
@@ -647,7 +647,7 @@ double sin( double x )
 	quad = ( index >> 10 ) & 3;
 	index &= 1023;
 
-	switch( quad )
+	switch ( quad )
 	{
 		case 0:
 			return sintable[ index ];
@@ -674,7 +674,7 @@ double cos( double x )
 	quad = ( index >> 10 ) & 3;
 	index &= 1023;
 
-	switch( quad )
+	switch ( quad )
 	{
 		case 3:
 			return sintable[ index ];
@@ -847,12 +847,12 @@ double acos( double x )
 {
 	int index;
 
-	if( x < -1 )
+	if ( x < -1 )
 	{
 		x = -1;
 	}
 
-	if( x > 1 )
+	if ( x > 1 )
 	{
 		x = 1;
 	}
@@ -869,9 +869,9 @@ double atan2( double y, double x )
 	float test;
 	int   i;
 
-	if( x < 0 )
+	if ( x < 0 )
 	{
-		if( y >= 0 )
+		if ( y >= 0 )
 		{
 			// quad 1
 			base = M_PI / 2;
@@ -889,7 +889,7 @@ double atan2( double y, double x )
 	}
 	else
 	{
-		if( y < 0 )
+		if ( y < 0 )
 		{
 			// quad 3
 			base = 3 * M_PI / 2;
@@ -899,7 +899,7 @@ double atan2( double y, double x )
 		}
 	}
 
-	if( y > x )
+	if ( y > x )
 	{
 		base += M_PI / 2;
 		temp = x;
@@ -913,18 +913,18 @@ double atan2( double y, double x )
 	}
 
 	// calcualte angle in octant 0
-	if( x == 0 )
+	if ( x == 0 )
 	{
 		return base;
 	}
 
 	y /= x;
 
-	for( i = 0; i < 512; i++ )
+	for ( i = 0; i < 512; i++ )
 	{
 		test = sintable[ i ] / sintable[ 1023 - i ];
 
-		if( test > y )
+		if ( test > y )
 		{
 			break;
 		}
@@ -944,7 +944,7 @@ rint
 */
 float rint( float v )
 {
-	if( v >= 0.5f ) { return ceilf( v ); }
+	if ( v >= 0.5f ) { return ceilf( v ); }
 	else { return floorf( v ); }
 }
 
@@ -1022,10 +1022,10 @@ double acos( double x )
 	GET_FLOAT_WORD( hx, x );
 	ix = hx & 0x7fffffff;
 
-	if( ix == 0x3f800000 )
+	if ( ix == 0x3f800000 )
 	{
 		// |x|==1
-		if( hx > 0 )
+		if ( hx > 0 )
 		{
 			return 0.0; // acos(1) = 0
 		}
@@ -1034,16 +1034,16 @@ double acos( double x )
 			return pi + ( float ) 2.0 * pio2_lo; // acos(-1)= pi
 		}
 	}
-	else if( ix > 0x3f800000 )
+	else if ( ix > 0x3f800000 )
 	{
 		// |x| >= 1
 		return ( x - x ) / ( x - x ); // acos(|x|>1) is NaN
 	}
 
-	if( ix < 0x3f000000 )
+	if ( ix < 0x3f000000 )
 	{
 		// |x| < 0.5
-		if( ix <= 0x23000000 )
+		if ( ix <= 0x23000000 )
 		{
 			return pio2_hi + pio2_lo; //if|x|<2**-57
 		}
@@ -1056,7 +1056,7 @@ double acos( double x )
 		r = p / q;
 		return pio2_hi - ( x - ( pio2_lo - x * r ) );
 	}
-	else if( hx < 0 )
+	else if ( hx < 0 )
 	{
 		// x < -0.5
 		z = ( 1.0 + x ) * ( float ) 0.5;
@@ -1153,10 +1153,10 @@ static float __scalbnf( float x, int n )
 
 	k = ( ix & 0x7f800000 ) >> 23; /* extract exponent */
 
-	if( k == 0 )
+	if ( k == 0 )
 	{
 		/* 0 or subnormal x */
-		if( ( ix & 0x7fffffff ) == 0 )
+		if ( ( ix & 0x7fffffff ) == 0 )
 		{
 			return x; /* +-0 */
 		}
@@ -1166,30 +1166,30 @@ static float __scalbnf( float x, int n )
 		k = ( ( ix & 0x7f800000 ) >> 23 ) - 25;
 	}
 
-	if( k == 0xff )
+	if ( k == 0xff )
 	{
 		return x + x; /* NaN or Inf */
 	}
 
 	k = k + n;
 
-	if( n > 50000 || k > 0xfe )
+	if ( n > 50000 || k > 0xfe )
 	{
 		return huge * copysignf( huge, x );  /* overflow  */
 	}
 
-	if( n < -50000 )
+	if ( n < -50000 )
 	{
 		return tiny * copysignf( tiny, x );  /*underflow*/
 	}
 
-	if( k > 0 )  /* normal result */
+	if ( k > 0 ) /* normal result */
 	{
 		SET_FLOAT_WORD( x, ( ix & 0x807fffff ) | ( k << 23 ) );
 		return x;
 	}
 
-	if( k <= -25 )
+	if ( k <= -25 )
 	{
 		return tiny * copysignf( tiny, x );  /*underflow*/
 	}
@@ -1214,7 +1214,7 @@ float pow( float x, float y )
 	/*TA: for some reason the Q3 VM goes apeshit when x = 1.0
 	      and y > 1.0. Curiously this doesn't happen with gcc
 	      hence this hack*/
-	if( x == 1.0 )
+	if ( x == 1.0 )
 	{
 		return x;
 	}
@@ -1225,13 +1225,13 @@ float pow( float x, float y )
 	iy = hy & 0x7fffffff;
 
 	/* y==zero: x**0 = 1 */
-	if( iy == 0 )
+	if ( iy == 0 )
 	{
 		return one;
 	}
 
 	/* +-NaN return x+y */
-	if( ix > 0x7f800000 || iy > 0x7f800000 )
+	if ( ix > 0x7f800000 || iy > 0x7f800000 )
 	{
 		return x + y;
 	}
@@ -1243,18 +1243,18 @@ float pow( float x, float y )
 	 */
 	yisint = 0;
 
-	if( hx < 0 )
+	if ( hx < 0 )
 	{
-		if( iy >= 0x4b800000 )
+		if ( iy >= 0x4b800000 )
 		{
 			yisint = 2; /* even integer y */
 		}
-		else if( iy >= 0x3f800000 )
+		else if ( iy >= 0x3f800000 )
 		{
 			k = ( iy >> 23 ) - 0x7f; /* exponent */
 			j = iy >> ( 23 - k );
 
-			if( ( j << ( 23 - k ) ) == iy )
+			if ( ( j << ( 23 - k ) ) == iy )
 			{
 				yisint = 2 - ( j & 1 );
 			}
@@ -1262,14 +1262,14 @@ float pow( float x, float y )
 	}
 
 	/* special value of y */
-	if( iy == 0x7f800000 )
+	if ( iy == 0x7f800000 )
 	{
 		/* y is +-inf */
-		if( ix == 0x3f800000 )
+		if ( ix == 0x3f800000 )
 		{
 			return y - y; /* inf**+-1 is NaN */
 		}
-		else if( ix > 0x3f800000 )  /* (|x|>1)**+-inf = inf,0 */
+		else if ( ix > 0x3f800000 ) /* (|x|>1)**+-inf = inf,0 */
 		{
 			return ( hy >= 0 ) ? y : zero;
 		}
@@ -1279,10 +1279,10 @@ float pow( float x, float y )
 		}
 	}
 
-	if( iy == 0x3f800000 )
+	if ( iy == 0x3f800000 )
 	{
 		/* y is  +-1 */
-		if( hy < 0 )
+		if ( hy < 0 )
 		{
 			return one / x;
 		}
@@ -1292,15 +1292,15 @@ float pow( float x, float y )
 		}
 	}
 
-	if( hy == 0x40000000 )
+	if ( hy == 0x40000000 )
 	{
 		return x * x; /* y is  2 */
 	}
 
-	if( hy == 0x3f000000 )
+	if ( hy == 0x3f000000 )
 	{
 		/* y is  0.5 */
-		if( hx >= 0 )  /* x >= +0 */
+		if ( hx >= 0 ) /* x >= +0 */
 		{
 			return sqrt( x );
 		}
@@ -1309,22 +1309,22 @@ float pow( float x, float y )
 	ax = fabs( x );
 
 	/* special value of x */
-	if( ix == 0x7f800000 || ix == 0 || ix == 0x3f800000 )
+	if ( ix == 0x7f800000 || ix == 0 || ix == 0x3f800000 )
 	{
 		z = ax; /*x is +-0,+-inf,+-1*/
 
-		if( hy < 0 )
+		if ( hy < 0 )
 		{
 			z = one / z; /* z = (1/|x|) */
 		}
 
-		if( hx < 0 )
+		if ( hx < 0 )
 		{
-			if( ( ( ix - 0x3f800000 ) | yisint ) == 0 )
+			if ( ( ( ix - 0x3f800000 ) | yisint ) == 0 )
 			{
 				z = ( z - z ) / ( z - z ); /* (-1)**non-int is NaN */
 			}
-			else if( yisint == 1 )
+			else if ( yisint == 1 )
 			{
 				z = -z; /* (x<0)**odd = -(|x|**odd) */
 			}
@@ -1334,22 +1334,22 @@ float pow( float x, float y )
 	}
 
 	/* (x<0)**(non-int) is NaN */
-	if( ( ( ( ( unsigned int ) hx >> 31 ) - 1 ) | yisint ) == 0 )
+	if ( ( ( ( ( unsigned int ) hx >> 31 ) - 1 ) | yisint ) == 0 )
 	{
 		return ( x - x ) / ( x - x );
 	}
 
 	/* |y| is huge */
-	if( iy > 0x4d000000 )
+	if ( iy > 0x4d000000 )
 	{
 		/* if |y| > 2**27 */
 		/* over/underflow if x is not close to one */
-		if( ix < 0x3f7ffff8 )
+		if ( ix < 0x3f7ffff8 )
 		{
 			return ( hy < 0 ) ? huge * huge : tiny * tiny;
 		}
 
-		if( ix > 0x3f800007 )
+		if ( ix > 0x3f800007 )
 		{
 			return ( hy > 0 ) ? huge * huge : tiny * tiny;
 		}
@@ -1371,7 +1371,7 @@ float pow( float x, float y )
 		n = 0;
 
 		/* take care subnormal number */
-		if( ix < 0x00800000 )
+		if ( ix < 0x00800000 )
 		{
 			ax *= two24;
 			n -= 24;
@@ -1384,11 +1384,11 @@ float pow( float x, float y )
 		/* determine interval */
 		ix = j | 0x3f800000; /* normalize ix */
 
-		if( j <= 0x1cc471 )
+		if ( j <= 0x1cc471 )
 		{
 			k = 0; /* |x|<sqrt(3/2) */
 		}
-		else if( j < 0x5db3d7 )
+		else if ( j < 0x5db3d7 )
 		{
 			k = 1; /* |x|<sqrt(3)   */
 		}
@@ -1443,7 +1443,7 @@ float pow( float x, float y )
 
 	s = one; /* s (sign of result -ve**odd) = -1 else = 1 */
 
-	if( ( ( ( ( unsigned int ) hx >> 31 ) - 1 ) | ( yisint - 1 ) ) == 0 )
+	if ( ( ( ( ( unsigned int ) hx >> 31 ) - 1 ) | ( yisint - 1 ) ) == 0 )
 	{
 		s = -one; /* (-ve)**(odd int) */
 	}
@@ -1456,26 +1456,26 @@ float pow( float x, float y )
 	z = p_l + p_h;
 	GET_FLOAT_WORD( j, z );
 
-	if( j > 0x43000000 )  /* if z > 128 */
+	if ( j > 0x43000000 ) /* if z > 128 */
 	{
 		return s * huge * huge; /* overflow */
 	}
-	else if( j == 0x43000000 )
+	else if ( j == 0x43000000 )
 	{
 		/* if z == 128 */
-		if( p_l + ovt > z - p_h )
+		if ( p_l + ovt > z - p_h )
 		{
 			return s * huge * huge; /* overflow */
 		}
 	}
-	else if( ( j & 0x7fffffff ) > 0x43160000 )  /* z <= -150 */
+	else if ( ( j & 0x7fffffff ) > 0x43160000 ) /* z <= -150 */
 	{
 		return s * tiny * tiny; /* underflow */
 	}
-	else if( ( unsigned int ) j == 0xc3160000 )
+	else if ( ( unsigned int ) j == 0xc3160000 )
 	{
 		/* z == -150 */
-		if( p_l <= z - p_h )
+		if ( p_l <= z - p_h )
 		{
 			return s * tiny * tiny; /* underflow */
 		}
@@ -1488,7 +1488,7 @@ float pow( float x, float y )
 	k = ( i >> 23 ) - 0x7f;
 	n = 0;
 
-	if( i > 0x3f000000 )
+	if ( i > 0x3f000000 )
 	{
 		/* if |z| > 0.5, set n = [z+0.5] */
 		n = j + ( 0x00800000 >> ( k + 1 ) );
@@ -1496,7 +1496,7 @@ float pow( float x, float y )
 		SET_FLOAT_WORD( t, n & ~( 0x007fffff >> k ) );
 		n = ( ( n & 0x007fffff ) | 0x00800000 ) >> ( 23 - k );
 
-		if( j < 0 )
+		if ( j < 0 )
 		{
 			n = -n;
 		}
@@ -1520,7 +1520,7 @@ float pow( float x, float y )
 	GET_FLOAT_WORD( j, z );
 	j += ( n << 23 );
 
-	if( ( j >> 23 ) <= 0 )
+	if ( ( j >> 23 ) <= 0 )
 	{
 		z = __scalbnf( z, n );  /* subnormal output */
 	}
@@ -1554,9 +1554,9 @@ double atof( const char *string )
 	int   c;
 
 	// skip whitespace
-	while( *string <= ' ' )
+	while ( *string <= ' ' )
 	{
-		if( !*string )
+		if ( !*string )
 		{
 			return 0;
 		}
@@ -1565,7 +1565,7 @@ double atof( const char *string )
 	}
 
 	// check sign
-	switch( *string )
+	switch ( *string )
 	{
 		case '+':
 			string++;
@@ -1586,13 +1586,13 @@ double atof( const char *string )
 	value = 0;
 	c = string[ 0 ];
 
-	if( c != '.' )
+	if ( c != '.' )
 	{
 		do
 		{
 			c = *string++;
 
-			if( c < '0' || c > '9' )
+			if ( c < '0' || c > '9' )
 			{
 				break;
 			}
@@ -1600,7 +1600,7 @@ double atof( const char *string )
 			c -= '0';
 			value = value * 10 + c;
 		}
-		while( 1 );
+		while ( 1 );
 	}
 	else
 	{
@@ -1608,7 +1608,7 @@ double atof( const char *string )
 	}
 
 	// check for decimal point
-	if( c == '.' )
+	if ( c == '.' )
 	{
 		double fraction;
 
@@ -1618,7 +1618,7 @@ double atof( const char *string )
 		{
 			c = *string++;
 
-			if( c < '0' || c > '9' )
+			if ( c < '0' || c > '9' )
 			{
 				break;
 			}
@@ -1627,7 +1627,7 @@ double atof( const char *string )
 			value += c * fraction;
 			fraction *= 0.1;
 		}
-		while( 1 );
+		while ( 1 );
 	}
 
 	// not handling 10e10 notation...
@@ -1645,9 +1645,9 @@ double _atof( const char **stringPtr )
 	string = *stringPtr;
 
 	// skip whitespace
-	while( *string <= ' ' )
+	while ( *string <= ' ' )
 	{
-		if( !*string )
+		if ( !*string )
 		{
 			*stringPtr = string;
 			return 0;
@@ -1657,7 +1657,7 @@ double _atof( const char **stringPtr )
 	}
 
 	// check sign
-	switch( *string )
+	switch ( *string )
 	{
 		case '+':
 			string++;
@@ -1677,13 +1677,13 @@ double _atof( const char **stringPtr )
 	// read digits
 	value = 0;
 
-	if( string[ 0 ] != '.' )
+	if ( string[ 0 ] != '.' )
 	{
 		do
 		{
 			c = *string++;
 
-			if( c < '0' || c > '9' )
+			if ( c < '0' || c > '9' )
 			{
 				break;
 			}
@@ -1691,11 +1691,11 @@ double _atof( const char **stringPtr )
 			c -= '0';
 			value = value * 10 + c;
 		}
-		while( 1 );
+		while ( 1 );
 	}
 
 	// check for decimal point
-	if( c == '.' )
+	if ( c == '.' )
 	{
 		double fraction;
 
@@ -1705,7 +1705,7 @@ double _atof( const char **stringPtr )
 		{
 			c = *string++;
 
-			if( c < '0' || c > '9' )
+			if ( c < '0' || c > '9' )
 			{
 				break;
 			}
@@ -1714,7 +1714,7 @@ double _atof( const char **stringPtr )
 			value += c * fraction;
 			fraction *= 0.1;
 		}
-		while( 1 );
+		while ( 1 );
 	}
 
 	// not handling 10e10 notation...
@@ -1732,9 +1732,9 @@ int atoi( const char *string )
 	int c;
 
 	// skip whitespace
-	while( *string <= ' ' )
+	while ( *string <= ' ' )
 	{
-		if( !*string )
+		if ( !*string )
 		{
 			return 0;
 		}
@@ -1743,7 +1743,7 @@ int atoi( const char *string )
 	}
 
 	// check sign
-	switch( *string )
+	switch ( *string )
 	{
 		case '+':
 			string++;
@@ -1767,7 +1767,7 @@ int atoi( const char *string )
 	{
 		c = *string++;
 
-		if( c < '0' || c > '9' )
+		if ( c < '0' || c > '9' )
 		{
 			break;
 		}
@@ -1775,7 +1775,7 @@ int atoi( const char *string )
 		c -= '0';
 		value = value * 10 + c;
 	}
-	while( 1 );
+	while ( 1 );
 
 	// not handling 10e10 notation...
 
@@ -1792,9 +1792,9 @@ int _atoi( const char **stringPtr )
 	string = *stringPtr;
 
 	// skip whitespace
-	while( *string <= ' ' )
+	while ( *string <= ' ' )
 	{
-		if( !*string )
+		if ( !*string )
 		{
 			return 0;
 		}
@@ -1803,7 +1803,7 @@ int _atoi( const char **stringPtr )
 	}
 
 	// check sign
-	switch( *string )
+	switch ( *string )
 	{
 		case '+':
 			string++;
@@ -1827,7 +1827,7 @@ int _atoi( const char **stringPtr )
 	{
 		c = *string++;
 
-		if( c < '0' || c > '9' )
+		if ( c < '0' || c > '9' )
 		{
 			break;
 		}
@@ -1835,7 +1835,7 @@ int _atoi( const char **stringPtr )
 		c -= '0';
 		value = value * 10 + c;
 	}
-	while( 1 );
+	while ( 1 );
 
 	// not handling 10e10 notation...
 
@@ -1880,7 +1880,7 @@ void AddInt( char **buf_p, int val, int width, int flags )
 	digits = 0;
 	signedVal = val;
 
-	if( val < 0 )
+	if ( val < 0 )
 	{
 		val = -val;
 	}
@@ -1890,33 +1890,33 @@ void AddInt( char **buf_p, int val, int width, int flags )
 		text[ digits++ ] = '0' + val % 10;
 		val /= 10;
 	}
-	while( val );
+	while ( val );
 
-	if( signedVal < 0 )
+	if ( signedVal < 0 )
 	{
 		text[ digits++ ] = '-';
 	}
 
 	buf = *buf_p;
 
-	if( !( flags & LADJUST ) )
+	if ( !( flags & LADJUST ) )
 	{
-		while( digits < width )
+		while ( digits < width )
 		{
 			*buf++ = ( flags & ZEROPAD ) ? '0' : ' ';
 			width--;
 		}
 	}
 
-	while( digits-- )
+	while ( digits-- )
 	{
 		*buf++ = text[ digits ];
 		width--;
 	}
 
-	if( flags & LADJUST )
+	if ( flags & LADJUST )
 	{
-		while( width-- )
+		while ( width-- )
 		{
 			*buf++ = ( flags & ZEROPAD ) ? '0' : ' ';
 		}
@@ -1936,7 +1936,7 @@ void AddFloat( char **buf_p, float fval, int width, int prec )
 	// get the sign
 	signedVal = fval;
 
-	if( fval < 0 )
+	if ( fval < 0 )
 	{
 		fval = -fval;
 	}
@@ -1950,30 +1950,30 @@ void AddFloat( char **buf_p, float fval, int width, int prec )
 		text[ digits++ ] = '0' + val % 10;
 		val /= 10;
 	}
-	while( val );
+	while ( val );
 
-	if( signedVal < 0 )
+	if ( signedVal < 0 )
 	{
 		text[ digits++ ] = '-';
 	}
 
 	buf = *buf_p;
 
-	while( digits < width )
+	while ( digits < width )
 	{
 		*buf++ = ' ';
 	}
 
 	width--;
 
-	while( digits-- )
+	while ( digits-- )
 	{
 		*buf++ = text[ digits ];
 	}
 
 	*buf_p = buf;
 
-	if( prec < 0 )
+	if ( prec < 0 )
 	{
 		prec = 6;
 	}
@@ -1981,7 +1981,7 @@ void AddFloat( char **buf_p, float fval, int width, int prec )
 	// write the fraction
 	digits = 0;
 
-	while( digits < prec )
+	while ( digits < prec )
 	{
 		fval -= ( int ) fval;
 		fval *= 10.0;
@@ -1989,12 +1989,12 @@ void AddFloat( char **buf_p, float fval, int width, int prec )
 		text[ digits++ ] = '0' + val % 10;
 	}
 
-	if( digits > 0 )
+	if ( digits > 0 )
 	{
 		buf = *buf_p;
 		*buf++ = '.';
 
-		for( prec = 0; prec < digits; prec++ )
+		for ( prec = 0; prec < digits; prec++ )
 		{
 			*buf++ = text[ prec ];
 		}
@@ -2033,17 +2033,17 @@ void AddString( char **buf_p, char *string, int width, int prec )
 
 	buf = *buf_p;
 
-	if( string == NULL )
+	if ( string == NULL )
 	{
 		string = "(null)";
 		prec = -1;
 	}
 
-	if( prec >= 0 )
+	if ( prec >= 0 )
 	{
-		for( size = 0; size < prec; size++ )
+		for ( size = 0; size < prec; size++ )
 		{
-			if( string[ size ] == '\0' )
+			if ( string[ size ] == '\0' )
 			{
 				break;
 			}
@@ -2056,12 +2056,12 @@ void AddString( char **buf_p, char *string, int width, int prec )
 
 	width -= size;
 
-	while( size-- )
+	while ( size-- )
 	{
 		*buf++ = *string++;
 	}
 
-	while( width-- > 0 )
+	while ( width-- > 0 )
 	{
 		*buf++ = ' ';
 	}
@@ -2091,15 +2091,15 @@ int vsprintf( char *buffer, const char *fmt, va_list argptr )
 	buf_p = buffer;
 	arg = ( int * ) argptr;
 
-	while( qtrue )
+	while ( qtrue )
 	{
 		// run through the format string until we hit a '%' or '\0'
-		for( ch = *fmt; ( ch = *fmt ) != '\0' && ch != '%'; fmt++ )
+		for ( ch = *fmt; ( ch = *fmt ) != '\0' && ch != '%'; fmt++ )
 		{
 			*buf_p++ = ch;
 		}
 
-		if( ch == '\0' )
+		if ( ch == '\0' )
 		{
 			goto done;
 		}
@@ -2117,7 +2117,7 @@ rflag:
 		ch = *fmt++;
 reswitch:
 
-		switch( ch )
+		switch ( ch )
 		{
 			case '-':
 				flags |= LADJUST;
@@ -2126,7 +2126,7 @@ reswitch:
 			case '.':
 				n = 0;
 
-				while( is_digit( ( ch = *fmt++ ) ) )
+				while ( is_digit( ( ch = *fmt++ ) ) )
 				{
 					n = 10 * n + ( ch - '0' );
 				}
@@ -2154,7 +2154,7 @@ reswitch:
 					n = 10 * n + ( ch - '0' );
 					ch = *fmt++;
 				}
-				while( is_digit( ch ) );
+				while ( is_digit( ch ) );
 
 				width = n;
 				goto reswitch;
@@ -2215,9 +2215,9 @@ int sscanf( const char *buffer, const char *fmt, ... )
 	arg = ( int ** ) &fmt + 1;
 	count = 0;
 
-	while( *fmt )
+	while ( *fmt )
 	{
-		if( fmt[ 0 ] != '%' )
+		if ( fmt[ 0 ] != '%' )
 		{
 			fmt++;
 			continue;
@@ -2226,7 +2226,7 @@ int sscanf( const char *buffer, const char *fmt, ... )
 		cmd = fmt[ 1 ];
 		fmt += 2;
 
-		switch( cmd )
+		switch ( cmd )
 		{
 			case 'i':
 			case 'd':

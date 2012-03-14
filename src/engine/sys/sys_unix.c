@@ -66,9 +66,9 @@ char *Sys_DefaultHomePath( void )
 {
 	char *p;
 
-	if( !*homePath )
+	if ( !*homePath )
 	{
-		if( ( p = getenv( "HOME" ) ) != NULL )
+		if ( ( p = getenv( "HOME" ) ) != NULL )
 		{
 			Q_strncpyz( homePath, p, sizeof( homePath ) );
 #ifdef MACOS_X
@@ -94,7 +94,7 @@ const char *Sys_TempPath( void )
 {
 	const char *TMPDIR = getenv( "TMPDIR" );
 
-	if( TMPDIR == NULL || TMPDIR[ 0 ] == '\0' )
+	if ( TMPDIR == NULL || TMPDIR[ 0 ] == '\0' )
 	{
 		return "/tmp";
 	}
@@ -117,7 +117,7 @@ void Sys_Chmod( char *file, int mode )
 
 	int         perm;
 
-	if( stat( file, &s_buf ) != 0 )
+	if ( stat( file, &s_buf ) != 0 )
 	{
 		Com_Printf( "stat('%s')  failed: errno %d\n", file, errno );
 		return;
@@ -125,7 +125,7 @@ void Sys_Chmod( char *file, int mode )
 
 	perm = s_buf.st_mode | mode;
 
-	if( chmod( file, perm ) != 0 )
+	if ( chmod( file, perm ) != 0 )
 	{
 		Com_Printf( "chmod('%s', %d) failed: errno %d\n", file, perm, errno );
 	}
@@ -171,12 +171,12 @@ qboolean Sys_RandomBytes( byte *string, int len )
 
 	fp = fopen( "/dev/urandom", "r" );
 
-	if( !fp )
+	if ( !fp )
 	{
 		return qfalse;
 	}
 
-	if( !fread( string, sizeof( byte ), len, fp ) )
+	if ( !fread( string, sizeof( byte ), len, fp ) )
 	{
 		fclose( fp );
 		return qfalse;
@@ -195,7 +195,7 @@ char *Sys_GetCurrentUser( void )
 {
 	struct passwd *p;
 
-	if( ( p = getpwuid( getuid() ) ) == NULL )
+	if ( ( p = getpwuid( getuid() ) ) == NULL )
 	{
 		return "player";
 	}
@@ -260,7 +260,7 @@ qboolean Sys_Mkdir( const char *path )
 {
 	int result = mkdir( path, 0750 );
 
-	if( result != 0 )
+	if ( result != 0 )
 	{
 		return errno == EEXIST;
 	}
@@ -278,7 +278,7 @@ char *Sys_Cwd( void )
 #ifdef MACOS_X
 	char *apppath = Sys_DefaultAppPath();
 
-	if( apppath[ 0 ] && apppath[ 0 ] != '.' )
+	if ( apppath[ 0 ] && apppath[ 0 ] != '.' )
 	{
 		return apppath;
 	}
@@ -289,7 +289,7 @@ char *Sys_Cwd( void )
 
 	char        *result = getcwd( cwd, sizeof( cwd ) - 1 );
 
-	if( result != cwd )
+	if ( result != cwd )
 	{
 		return NULL;
 	}
@@ -323,12 +323,12 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 
 	struct stat   st;
 
-	if( *numfiles >= MAX_FOUND_FILES - 1 )
+	if ( *numfiles >= MAX_FOUND_FILES - 1 )
 	{
 		return;
 	}
 
-	if( strlen( subdirs ) )
+	if ( strlen( subdirs ) )
 	{
 		Com_sprintf( search, sizeof( search ), "%s/%s", basedir, subdirs );
 	}
@@ -337,25 +337,25 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		Com_sprintf( search, sizeof( search ), "%s", basedir );
 	}
 
-	if( ( fdir = opendir( search ) ) == NULL )
+	if ( ( fdir = opendir( search ) ) == NULL )
 	{
 		return;
 	}
 
-	while( ( d = readdir( fdir ) ) != NULL )
+	while ( ( d = readdir( fdir ) ) != NULL )
 	{
 		Com_sprintf( filename, sizeof( filename ), "%s/%s", search, d->d_name );
 
-		if( stat( filename, &st ) == -1 )
+		if ( stat( filename, &st ) == -1 )
 		{
 			continue;
 		}
 
-		if( st.st_mode & S_IFDIR )
+		if ( st.st_mode & S_IFDIR )
 		{
-			if( Q_stricmp( d->d_name, "." ) && Q_stricmp( d->d_name, ".." ) )
+			if ( Q_stricmp( d->d_name, "." ) && Q_stricmp( d->d_name, ".." ) )
 			{
-				if( strlen( subdirs ) )
+				if ( strlen( subdirs ) )
 				{
 					Com_sprintf( newsubdirs, sizeof( newsubdirs ), "%s/%s", subdirs, d->d_name );
 				}
@@ -368,14 +368,14 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 			}
 		}
 
-		if( *numfiles >= MAX_FOUND_FILES - 1 )
+		if ( *numfiles >= MAX_FOUND_FILES - 1 )
 		{
 			break;
 		}
 
 		Com_sprintf( filename, sizeof( filename ), "%s/%s", subdirs, d->d_name );
 
-		if( !Com_FilterPath( filter, filename, qfalse ) )
+		if ( !Com_FilterPath( filter, filename, qfalse ) )
 		{
 			continue;
 		}
@@ -407,7 +407,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 
 //	int           extLen;
 
-	if( filter )
+	if ( filter )
 	{
 		nfiles = 0;
 		Sys_ListFilteredFiles( directory, "", filter, list, &nfiles );
@@ -415,14 +415,14 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		list[ nfiles ] = NULL;
 		*numfiles = nfiles;
 
-		if( !nfiles )
+		if ( !nfiles )
 		{
 			return NULL;
 		}
 
 		listCopy = Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
 
-		for( i = 0; i < nfiles; i++ )
+		for ( i = 0; i < nfiles; i++ )
 		{
 			listCopy[ i ] = list[ i ];
 		}
@@ -432,12 +432,12 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		return listCopy;
 	}
 
-	if( !extension )
+	if ( !extension )
 	{
 		extension = "";
 	}
 
-	if( extension[ 0 ] == '/' && extension[ 1 ] == 0 )
+	if ( extension[ 0 ] == '/' && extension[ 1 ] == 0 )
 	{
 		extension = "";
 		dironly = qtrue;
@@ -448,39 +448,39 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 	// search
 	nfiles = 0;
 
-	if( ( fdir = opendir( directory ) ) == NULL )
+	if ( ( fdir = opendir( directory ) ) == NULL )
 	{
 		*numfiles = 0;
 		return NULL;
 	}
 
-	while( ( d = readdir( fdir ) ) != NULL )
+	while ( ( d = readdir( fdir ) ) != NULL )
 	{
 		Com_sprintf( search, sizeof( search ), "%s/%s", directory, d->d_name );
 
-		if( stat( search, &st ) == -1 )
+		if ( stat( search, &st ) == -1 )
 		{
 			continue;
 		}
 
-		if( ( dironly && !( st.st_mode & S_IFDIR ) ) ||
-		    ( !dironly && ( st.st_mode & S_IFDIR ) ) )
+		if ( ( dironly && !( st.st_mode & S_IFDIR ) ) ||
+		     ( !dironly && ( st.st_mode & S_IFDIR ) ) )
 		{
 			continue;
 		}
 
-		if( *extension )
+		if ( *extension )
 		{
-			if( strlen( d->d_name ) < strlen( extension ) ||
-			    Q_stricmp(
-			      d->d_name + strlen( d->d_name ) - strlen( extension ),
-			      extension ) )
+			if ( strlen( d->d_name ) < strlen( extension ) ||
+			     Q_stricmp(
+			       d->d_name + strlen( d->d_name ) - strlen( extension ),
+			       extension ) )
 			{
 				continue; // didn't match
 			}
 		}
 
-		if( nfiles == MAX_FOUND_FILES - 1 )
+		if ( nfiles == MAX_FOUND_FILES - 1 )
 		{
 			break;
 		}
@@ -496,14 +496,14 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 	// return a copy of the list
 	*numfiles = nfiles;
 
-	if( !nfiles )
+	if ( !nfiles )
 	{
 		return NULL;
 	}
 
 	listCopy = Z_Malloc( ( nfiles + 1 ) * sizeof( *listCopy ) );
 
-	for( i = 0; i < nfiles; i++ )
+	for ( i = 0; i < nfiles; i++ )
 	{
 		listCopy[ i ] = list[ i ];
 	}
@@ -522,12 +522,12 @@ void Sys_FreeFileList( char **list )
 {
 	int i;
 
-	if( !list )
+	if ( !list )
 	{
 		return;
 	}
 
-	for( i = 0; list[ i ]; i++ )
+	for ( i = 0; list[ i ]; i++ )
 	{
 		Z_Free( list[ i ] );
 	}
@@ -544,19 +544,19 @@ Block execution for msec or until input is recieved.
 */
 void Sys_Sleep( int msec )
 {
-	if( msec == 0 )
+	if ( msec == 0 )
 	{
 		return;
 	}
 
-	if( stdinIsATTY )
+	if ( stdinIsATTY )
 	{
 		fd_set fdset;
 
 		FD_ZERO( &fdset );
 		FD_SET( STDIN_FILENO, &fdset );
 
-		if( msec < 0 )
+		if ( msec < 0 )
 		{
 			select( STDIN_FILENO + 1, &fdset, NULL, NULL, NULL );
 		}
@@ -572,7 +572,7 @@ void Sys_Sleep( int msec )
 	else
 	{
 		// With nothing to select() on, we can't wait indefinitely
-		if( msec < 0 )
+		if ( msec < 0 )
 		{
 			msec = 10;
 		}
@@ -605,7 +605,7 @@ void Sys_ErrorDialog( const char *error )
 #endif
 
 	// Make sure the write path for the crashlog exists...
-	if( FS_CreatePath( ospath ) )
+	if ( FS_CreatePath( ospath ) )
 	{
 		Com_Printf( "ERROR: couldn't create path '%s' for crash log.\n", ospath );
 		return;
@@ -616,16 +616,16 @@ void Sys_ErrorDialog( const char *error )
 	// calling FS_FOpenFileWrite()...use the Unix system APIs instead.
 	f = open( ospath, O_CREAT | O_TRUNC | O_WRONLY, 0640 );
 
-	if( f == -1 )
+	if ( f == -1 )
 	{
 		Com_Printf( "ERROR: couldn't open %s\n", fileName );
 		return;
 	}
 
 	// We're crashing, so we don't care much if write() or close() fails.
-	while( ( size = CON_LogRead( buffer, sizeof( buffer ) ) ) > 0 )
+	while ( ( size = CON_LogRead( buffer, sizeof( buffer ) ) ) > 0 )
 	{
-		if( write( f, buffer, size ) != size )
+		if ( write( f, buffer, size ) != size )
 		{
 			Com_Printf( "ERROR: couldn't fully write to %s\n", fileName );
 			break;
@@ -647,7 +647,7 @@ static int Sys_ZenityCommand( dialogType_t type, const char *message, const char
 	const char *options = "";
 	char       command[ 1024 ];
 
-	switch( type )
+	switch ( type )
 	{
 		default:
 		case DT_INFO:
@@ -687,7 +687,7 @@ static int Sys_KdialogCommand( dialogType_t type, const char *message, const cha
 	const char *options = "";
 	char       command[ 1024 ];
 
-	switch( type )
+	switch ( type )
 	{
 		default:
 		case DT_INFO:
@@ -727,7 +727,7 @@ static int Sys_XmessageCommand( dialogType_t type, const char *message, const ch
 	const char *options = "";
 	char       command[ 1024 ];
 
-	switch( type )
+	switch ( type )
 	{
 		default:
 			options = "-buttons OK";
@@ -777,34 +777,34 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 	commands[ XMESSAGE ] = &Sys_XmessageCommand;
 
 	// This may not be the best way
-	if( !Q_stricmp( session, "gnome" ) )
+	if ( !Q_stricmp( session, "gnome" ) )
 	{
 		preferredCommandType = ZENITY;
 	}
-	else if( !Q_stricmp( session, "kde" ) )
+	else if ( !Q_stricmp( session, "kde" ) )
 	{
 		preferredCommandType = KDIALOG;
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
 		int i;
 		int exitCode;
 
-		for( i = NONE + 1; i < NUM_DIALOG_PROGRAMS; i++ )
+		for ( i = NONE + 1; i < NUM_DIALOG_PROGRAMS; i++ )
 		{
-			if( preferredCommandType != NONE && preferredCommandType != i )
+			if ( preferredCommandType != NONE && preferredCommandType != i )
 			{
 				continue;
 			}
 
-			if( !tried[ i ] )
+			if ( !tried[ i ] )
 			{
 				exitCode = commands[ i ]( type, message, title );
 
-				if( exitCode >= 0 )
+				if ( exitCode >= 0 )
 				{
-					switch( type )
+					switch ( type )
 					{
 						case DT_YES_NO:
 							return exitCode ? DR_NO : DR_YES;
@@ -820,7 +820,7 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 				tried[ i ] = qtrue;
 
 				// The preference failed, so start again in order
-				if( preferredCommandType != NONE )
+				if ( preferredCommandType != NONE )
 				{
 					preferredCommandType = NONE;
 					break;
@@ -828,9 +828,9 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 			}
 		}
 
-		for( i = NONE + 1; i < NUM_DIALOG_PROGRAMS; i++ )
+		for ( i = NONE + 1; i < NUM_DIALOG_PROGRAMS; i++ )
 		{
-			if( !tried[ i ] )
+			if ( !tried[ i ] )
 			{
 				continue;
 			}
@@ -865,14 +865,14 @@ UGLY HACK:
 */
 void Sys_DoStartProcess( char *cmdline )
 {
-	switch( fork() )
+	switch ( fork() )
 	{
 		case -1:
 			// main thread
 			break;
 
 		case 0:
-			if( strchr( cmdline, ' ' ) )
+			if ( strchr( cmdline, ' ' ) )
 			{
 				system( cmdline );
 			}
@@ -898,7 +898,7 @@ NOTE: might even want to add a small delay?
 */
 void Sys_StartProcess( char *cmdline, qboolean doexit )
 {
-	if( doexit )
+	if ( doexit )
 	{
 		Com_DPrintf( "Sys_StartProcess %s (delaying to final exit)\n", cmdline );
 		Q_strncpyz( exit_cmdline, cmdline, MAX_CMD );
@@ -924,7 +924,7 @@ void Sys_OpenURL( const char *url, qboolean doexit )
 
 	static qboolean doexit_spamguard = qfalse;
 
-	if( doexit_spamguard )
+	if ( doexit_spamguard )
 	{
 		Com_DPrintf( "Sys_OpenURL: already in a doexit sequence, ignoring %s\n", url );
 		return;
@@ -942,21 +942,21 @@ void Sys_OpenURL( const char *url, qboolean doexit )
 	pwdpath = Sys_Cwd();
 	Com_sprintf( fn, MAX_OSPATH, "%s/%s", pwdpath, fname );
 
-	if( access( fn, X_OK ) == -1 )
+	if ( access( fn, X_OK ) == -1 )
 	{
 		Com_DPrintf( "%s not found\n", fn );
 		// try in home path
 		homepath = Cvar_VariableString( "fs_homepath" );
 		Com_sprintf( fn, MAX_OSPATH, "%s/%s", homepath, fname );
 
-		if( access( fn, X_OK ) == -1 )
+		if ( access( fn, X_OK ) == -1 )
 		{
 			Com_DPrintf( "%s not found\n", fn );
 			// basepath, last resort
 			basepath = Cvar_VariableString( "fs_basepath" );
 			Com_sprintf( fn, MAX_OSPATH, "%s/%s", basepath, fname );
 
-			if( access( fn, X_OK ) == -1 )
+			if ( access( fn, X_OK ) == -1 )
 			{
 				Com_DPrintf( "%s not found\n", fn );
 				Com_Printf( "Can't find script '%s' to open requested URL (use +set developer 1 for more verbosity)\n", fname );
@@ -967,7 +967,7 @@ void Sys_OpenURL( const char *url, qboolean doexit )
 	}
 
 	// show_bug.cgi?id=612
-	if( doexit )
+	if ( doexit )
 	{
 		doexit_spamguard = qtrue;
 	}
@@ -987,17 +987,17 @@ qboolean Sys_OpenUrl( const char *url )
 	char *gnome_session = getenv( "GNOME_DESKTOP_SESSION_ID" );
 
 	//Try to use xdg-open, if not, try default, then kde, gnome
-	if( browser )
+	if ( browser )
 	{
 		Sys_Fork( browser, url );
 		return qtrue;
 	}
-	else if( kde_session && Q_stricmp( "true", kde_session ) == 0 )
+	else if ( kde_session && Q_stricmp( "true", kde_session ) == 0 )
 	{
 		Sys_Fork( "konqueror", url );
 		return qtrue;
 	}
-	else if( gnome_session )
+	else if ( gnome_session )
 	{
 		Sys_Fork( "gnome-open", url );
 		return qtrue;
@@ -1017,12 +1017,12 @@ qboolean Sys_Fork( const char *path, const char *cmdLine )
 
 	pid = fork();
 
-	if( pid == 0 )
+	if ( pid == 0 )
 	{
 		struct stat filestat;
 
 		//Try to set the executable bit
-		if( stat( path, &filestat ) == 0 )
+		if ( stat( path, &filestat ) == 0 )
 		{
 			chmod( path, filestat.st_mode | S_IXUSR );
 		}
@@ -1031,7 +1031,7 @@ qboolean Sys_Fork( const char *path, const char *cmdLine )
 		printf( "Exec Failed for: %s\n", path );
 		_exit( 255 );
 	}
-	else if( pid == -1 )
+	else if ( pid == -1 )
 	{
 		return qfalse;
 	}
@@ -1100,7 +1100,7 @@ set/unset environment variables (empty value removes it)
 
 void Sys_SetEnv( const char *name, const char *value )
 {
-	if( value && *value )
+	if ( value && *value )
 	{
 		setenv( name, value, 1 );
 	}

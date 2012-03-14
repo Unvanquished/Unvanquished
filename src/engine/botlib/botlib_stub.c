@@ -258,7 +258,7 @@ int PC_ReadTokenHandle( int handle, pc_token_t *token )
 	token->linescrossed = t.linescrossed;
 
 	// gamecode doesn't want the quotes on the string
-	if( token->type == TT_STRING )
+	if ( token->type == TT_STRING )
 	{
 		StripDoubleQuotes( token->string );
 	}

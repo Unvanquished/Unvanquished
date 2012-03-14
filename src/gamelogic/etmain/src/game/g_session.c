@@ -58,7 +58,7 @@ void G_WriteClientSessionData( gclient_t *client, qboolean restart )
 	const char *s;
 
 	// OSP -- stats reset check
-	if( level.fResetStats )
+	if ( level.fResetStats )
 	{
 		G_deleteStats( client - level.clients );
 	}
@@ -88,7 +88,7 @@ void G_WriteClientSessionData( gclient_t *client, qboolean restart )
 
 	// Arnout: store the clients stats (7) and medals (7)
 	// addition: but only if it isn't a forced map_restart (done by someone on the console)
-	if( !( restart && !level.warmupTime ) )
+	if ( !( restart && !level.warmupTime ) )
 	{
 		s = va( "%.2f %.2f %.2f %.2f %.2f %.2f %.2f %i %i %i %i %i %i %i",
 		        client->sess.skillpoints[ 0 ],
@@ -107,7 +107,7 @@ void G_WriteClientSessionData( gclient_t *client, qboolean restart )
 	}
 
 	// OSP -- save weapon stats too
-	if( !level.fResetStats )
+	if ( !level.fResetStats )
 	{
 		trap_Cvar_Set( va( "wstats%li", ( long )( client - level.clients ) ), G_createStats( &g_entities[ client - level.clients ] ) );
 	}
@@ -126,22 +126,22 @@ void G_ClientSwap( gclient_t *client )
 {
 	int flags = 0;
 
-	if( client->sess.sessionTeam == TEAM_AXIS )
+	if ( client->sess.sessionTeam == TEAM_AXIS )
 	{
 		client->sess.sessionTeam = TEAM_ALLIES;
 	}
-	else if( client->sess.sessionTeam == TEAM_ALLIES )
+	else if ( client->sess.sessionTeam == TEAM_ALLIES )
 	{
 		client->sess.sessionTeam = TEAM_AXIS;
 	}
 
 	// Swap spec invites as well
-	if( client->sess.spec_invite & TEAM_AXIS )
+	if ( client->sess.spec_invite & TEAM_AXIS )
 	{
 		flags |= TEAM_ALLIES;
 	}
 
-	if( client->sess.spec_invite & TEAM_ALLIES )
+	if ( client->sess.spec_invite & TEAM_ALLIES )
 	{
 		flags |= TEAM_AXIS;
 	}
@@ -151,12 +151,12 @@ void G_ClientSwap( gclient_t *client )
 	// Swap spec follows as well
 	flags = 0;
 
-	if( client->sess.spec_team & TEAM_AXIS )
+	if ( client->sess.spec_team & TEAM_AXIS )
 	{
 		flags |= TEAM_ALLIES;
 	}
 
-	if( client->sess.spec_team & TEAM_ALLIES )
+	if ( client->sess.spec_team & TEAM_ALLIES )
 	{
 		flags |= TEAM_AXIS;
 	}
@@ -168,11 +168,11 @@ void G_CalcRank( gclient_t *client )
 {
 	int i, highestskill = 0;
 
-	for( i = 0; i < SK_NUM_SKILLS; i++ )
+	for ( i = 0; i < SK_NUM_SKILLS; i++ )
 	{
 		G_SetPlayerSkill( client, i );
 
-		if( client->sess.skill[ i ] > highestskill )
+		if ( client->sess.skill[ i ] > highestskill )
 		{
 			highestskill = client->sess.skill[ i ];
 		}
@@ -181,14 +181,14 @@ void G_CalcRank( gclient_t *client )
 	// set rank
 	client->sess.rank = highestskill;
 
-	if( client->sess.rank >= 4 )
+	if ( client->sess.rank >= 4 )
 	{
 		int cnt = 0;
 
 		// Gordon: count the number of maxed out skills
-		for( i = 0; i < SK_NUM_SKILLS; i++ )
+		for ( i = 0; i < SK_NUM_SKILLS; i++ )
 		{
-			if( client->sess.skill[ i ] >= 4 )
+			if ( client->sess.skill[ i ] >= 4 )
 			{
 				cnt++;
 			}
@@ -196,7 +196,7 @@ void G_CalcRank( gclient_t *client )
 
 		client->sess.rank = cnt + 3;
 
-		if( client->sess.rank > 10 )
+		if ( client->sess.rank > 10 )
 		{
 			client->sess.rank = 10;
 		}
@@ -246,11 +246,11 @@ void G_ReadSessionData( gclient_t *client )
 	*s = 0;
 	trap_Cvar_VariableStringBuffer( va( "wstats%li", ( long )( client - level.clients ) ), s, sizeof( s ) );
 
-	if( *s )
+	if ( *s )
 	{
 		G_parseStats( s );
 
-		if( g_gamestate.integer == GS_PLAYING )
+		if ( g_gamestate.integer == GS_PLAYING )
 		{
 			client->sess.rounds++;
 		}
@@ -259,12 +259,12 @@ void G_ReadSessionData( gclient_t *client )
 	// OSP
 
 	// Arnout: likely there are more cases in which we don't want this
-	if( g_gametype.integer != GT_SINGLE_PLAYER &&
-	    g_gametype.integer != GT_COOP &&
-	    g_gametype.integer != GT_WOLF &&
-	    g_gametype.integer != GT_WOLF_STOPWATCH &&
-	    !( g_gametype.integer == GT_WOLF_CAMPAIGN && ( g_campaigns[ level.currentCampaign ].current == 0 || level.newCampaign ) ) &&
-	    !( g_gametype.integer == GT_WOLF_LMS && g_currentRound.integer == 0 ) )
+	if ( g_gametype.integer != GT_SINGLE_PLAYER &&
+	     g_gametype.integer != GT_COOP &&
+	     g_gametype.integer != GT_WOLF &&
+	     g_gametype.integer != GT_WOLF_STOPWATCH &&
+	     !( g_gametype.integer == GT_WOLF_CAMPAIGN && ( g_campaigns[ level.currentCampaign ].current == 0 || level.newCampaign ) ) &&
+	     !( g_gametype.integer == GT_WOLF_LMS && g_currentRound.integer == 0 ) )
 	{
 		trap_Cvar_VariableStringBuffer( va( "sessionstats%li", ( long )( client - level.clients ) ), s, sizeof( s ) );
 
@@ -287,12 +287,12 @@ void G_ReadSessionData( gclient_t *client )
 
 	test = ( g_altStopwatchMode.integer != 0 || g_currentRound.integer == 1 );
 
-	if( g_gametype.integer == GT_WOLF_STOPWATCH && g_gamestate.integer != GS_PLAYING && test )
+	if ( g_gametype.integer == GT_WOLF_STOPWATCH && g_gamestate.integer != GS_PLAYING && test )
 	{
 		G_ClientSwap( client );
 	}
 
-	if( g_swapteams.integer )
+	if ( g_swapteams.integer )
 	{
 		trap_Cvar_Set( "g_swapteams", "0" );
 		G_ClientSwap( client );
@@ -303,7 +303,7 @@ void G_ReadSessionData( gclient_t *client )
 
 		client->sess.startxptotal = 0;
 
-		for( j = 0; j < SK_NUM_SKILLS; j++ )
+		for ( j = 0; j < SK_NUM_SKILLS; j++ )
 		{
 			client->sess.startskillpoints[ j ] = client->sess.skillpoints[ j ];
 			client->sess.startxptotal += client->sess.skillpoints[ j ];
@@ -378,7 +378,7 @@ void G_InitWorldSession( void )
 
 	// if the gametype changed since the last session, don't use any
 	// client sessions
-	if( g_gametype.integer != gt )
+	if ( g_gametype.integer != gt )
 	{
 		level.newSession = qtrue;
 		level.fResetStats = qtrue;
@@ -399,14 +399,14 @@ void G_InitWorldSession( void )
 
 		// See if we need to clear player stats
 		// FIXME: deal with the multi-map missions
-		if( g_gametype.integer != GT_WOLF_CAMPAIGN )
+		if ( g_gametype.integer != GT_WOLF_CAMPAIGN )
 		{
-			if( ( tmp = strchr( va( "%s", tmp ), ' ' ) ) != NULL )
+			if ( ( tmp = strchr( va( "%s", tmp ), ' ' ) ) != NULL )
 			{
 				tmp++;
 				trap_GetServerinfo( s, sizeof( s ) );
 
-				if( Q_stricmp( tmp, Info_ValueForKey( s, "mapname" ) ) )
+				if ( Q_stricmp( tmp, Info_ValueForKey( s, "mapname" ) ) )
 				{
 					level.fResetStats = qtrue;
 					G_Printf( "Map changed, clearing player stats.\n" );
@@ -415,18 +415,18 @@ void G_InitWorldSession( void )
 		}
 
 		// OSP - have to make sure spec locks follow the right teams
-		if( g_gametype.integer == GT_WOLF_STOPWATCH && g_gamestate.integer != GS_PLAYING && test )
+		if ( g_gametype.integer == GT_WOLF_STOPWATCH && g_gamestate.integer != GS_PLAYING && test )
 		{
 			G_swapTeamLocks();
 		}
 
-		if( g_swapteams.integer )
+		if ( g_swapteams.integer )
 		{
 			G_swapTeamLocks();
 		}
 	}
 
-	for( i = 0; i < MAX_FIRETEAMS; i++ )
+	for ( i = 0; i < MAX_FIRETEAMS; i++ )
 	{
 		char *p, *c;
 
@@ -445,7 +445,7 @@ void G_InitWorldSession( void )
 		p = Info_ValueForKey( s, "id" );
 		j = atoi( p );
 
-		if( !*p || j == -1 )
+		if ( !*p || j == -1 )
 		{
 			level.fireTeams[ i ].inuse = qfalse;
 		}
@@ -463,16 +463,16 @@ void G_InitWorldSession( void )
 
 		j = 0;
 
-		if( p && *p )
+		if ( p && *p )
 		{
 			c = p;
 
-			for( c = strchr( c, ' ' ) + 1; c && *c; )
+			for ( c = strchr( c, ' ' ) + 1; c && *c; )
 			{
 				char str[ 8 ];
 				char *l = strchr( c, ' ' );
 
-				if( !l )
+				if ( !l )
 				{
 					break;
 				}
@@ -484,7 +484,7 @@ void G_InitWorldSession( void )
 			}
 		}
 
-		for( ; j < MAX_CLIENTS; j++ )
+		for ( ; j < MAX_CLIENTS; j++ )
 		{
 			level.fireTeams[ i ].joinOrder[ j ] = -1;
 		}
@@ -515,34 +515,34 @@ void G_WriteSessionData( qboolean restart )
 	                              Info_ValueForKey( strServerInfo, "mapname" ) ) );
 
 	// Keep stats for all players in sync
-	for( i = 0; !level.fResetStats && i < level.numConnectedClients; i++ )
+	for ( i = 0; !level.fResetStats && i < level.numConnectedClients; i++ )
 	{
-		if( ( g_gamestate.integer == GS_WARMUP_COUNTDOWN &&
-		      ( ( g_gametype.integer == GT_WOLF_STOPWATCH && level.clients[ level.sortedClients[ i ] ].sess.rounds >= 2 ) ||
-		        ( g_gametype.integer != GT_WOLF_STOPWATCH && level.clients[ level.sortedClients[ i ] ].sess.rounds >= 1 ) ) ) )
+		if ( ( g_gamestate.integer == GS_WARMUP_COUNTDOWN &&
+		       ( ( g_gametype.integer == GT_WOLF_STOPWATCH && level.clients[ level.sortedClients[ i ] ].sess.rounds >= 2 ) ||
+		         ( g_gametype.integer != GT_WOLF_STOPWATCH && level.clients[ level.sortedClients[ i ] ].sess.rounds >= 1 ) ) ) )
 		{
 			level.fResetStats = qtrue;
 		}
 	}
 
-	for( i = 0; i < level.numConnectedClients; i++ )
+	for ( i = 0; i < level.numConnectedClients; i++ )
 	{
-		if( level.clients[ level.sortedClients[ i ] ].pers.connected == CON_CONNECTED )
+		if ( level.clients[ level.sortedClients[ i ] ].pers.connected == CON_CONNECTED )
 		{
 			G_WriteClientSessionData( &level.clients[ level.sortedClients[ i ] ], restart );
 			// For slow connecters and a short warmup
 		}
-		else if( level.fResetStats )
+		else if ( level.fResetStats )
 		{
 			G_deleteStats( level.sortedClients[ i ] );
 		}
 	}
 
-	for( i = 0; i < MAX_FIRETEAMS; i++ )
+	for ( i = 0; i < MAX_FIRETEAMS; i++ )
 	{
 		char buffer[ MAX_STRING_CHARS ];
 
-		if( !level.fireTeams[ i ].inuse )
+		if ( !level.fireTeams[ i ].inuse )
 		{
 			Com_sprintf( buffer, MAX_STRING_CHARS, "\\id\\-1" );
 		}
@@ -552,7 +552,7 @@ void G_WriteSessionData( qboolean restart )
 
 			*buffer2 = '\0';
 
-			for( j = 0; j < MAX_CLIENTS; j++ )
+			for ( j = 0; j < MAX_CLIENTS; j++ )
 			{
 				char p[ 8 ];
 

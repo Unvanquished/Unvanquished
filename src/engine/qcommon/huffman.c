@@ -51,7 +51,7 @@ void Huff_putBit( int bit, byte *fout, int *offset )
 	x = bloc >> 3;
 	y = bloc & 7;
 
-	if( !y )
+	if ( !y )
 	{
 		fout[ x ] = 0;
 	}
@@ -93,7 +93,7 @@ static void add_bit( char bit, byte *fout )
 	y = bloc >> 3;
 	x = bloc++ & 7;
 
-	if( !x )
+	if ( !x )
 	{
 		fout[ y ] = 0;
 	}
@@ -116,7 +116,7 @@ static node_t **get_ppnode( huff_t *huff )
 {
 	node_t **tppnode;
 
-	if( !huff->freelist )
+	if ( !huff->freelist )
 	{
 		return & ( huff->nodePtrs[ huff->blocPtrs++ ] );
 	}
@@ -142,9 +142,9 @@ static void swap( huff_t *huff, node_t *node1, node_t *node2 )
 	par1 = node1->parent;
 	par2 = node2->parent;
 
-	if( par1 )
+	if ( par1 )
 	{
-		if( par1->left == node1 )
+		if ( par1->left == node1 )
 		{
 			par1->left = node2;
 		}
@@ -158,9 +158,9 @@ static void swap( huff_t *huff, node_t *node1, node_t *node2 )
 		huff->tree = node2;
 	}
 
-	if( par2 )
+	if ( par2 )
 	{
-		if( par2->left == node2 )
+		if ( par2->left == node2 )
 		{
 			par2->left = node1;
 		}
@@ -191,32 +191,32 @@ static void swaplist( node_t *node1, node_t *node2 )
 	node1->prev = node2->prev;
 	node2->prev = par1;
 
-	if( node1->next == node1 )
+	if ( node1->next == node1 )
 	{
 		node1->next = node2;
 	}
 
-	if( node2->next == node2 )
+	if ( node2->next == node2 )
 	{
 		node2->next = node1;
 	}
 
-	if( node1->next )
+	if ( node1->next )
 	{
 		node1->next->prev = node1;
 	}
 
-	if( node2->next )
+	if ( node2->next )
 	{
 		node2->next->prev = node2;
 	}
 
-	if( node1->prev )
+	if ( node1->prev )
 	{
 		node1->prev->next = node1;
 	}
 
-	if( node2->prev )
+	if ( node2->prev )
 	{
 		node2->prev->next = node2;
 	}
@@ -227,16 +227,16 @@ static void increment( huff_t *huff, node_t *node )
 {
 	node_t *lnode;
 
-	if( !node )
+	if ( !node )
 	{
 		return;
 	}
 
-	if( node->next != NULL && node->next->weight == node->weight )
+	if ( node->next != NULL && node->next->weight == node->weight )
 	{
 		lnode = *node->head;
 
-		if( lnode != node->parent )
+		if ( lnode != node->parent )
 		{
 			swap( huff, lnode, node );
 		}
@@ -244,7 +244,7 @@ static void increment( huff_t *huff, node_t *node )
 		swaplist( lnode, node );
 	}
 
-	if( node->prev && node->prev->weight == node->weight )
+	if ( node->prev && node->prev->weight == node->weight )
 	{
 		*node->head = node->prev;
 	}
@@ -256,7 +256,7 @@ static void increment( huff_t *huff, node_t *node )
 
 	node->weight++;
 
-	if( node->next && node->next->weight == node->weight )
+	if ( node->next && node->next->weight == node->weight )
 	{
 		node->head = node->next->head;
 	}
@@ -266,15 +266,15 @@ static void increment( huff_t *huff, node_t *node )
 		*node->head = node;
 	}
 
-	if( node->parent )
+	if ( node->parent )
 	{
 		increment( huff, node->parent );
 
-		if( node->prev == node->parent )
+		if ( node->prev == node->parent )
 		{
 			swaplist( node, node->parent );
 
-			if( *node->head == node )
+			if ( *node->head == node )
 			{
 				*node->head = node->parent;
 			}
@@ -286,7 +286,7 @@ void Huff_addRef( huff_t *huff, byte ch )
 {
 	node_t *tnode, *tnode2;
 
-	if( huff->loc[ ch ] == NULL )
+	if ( huff->loc[ ch ] == NULL )
 	{
 		/* if this is the first transmission of this node */
 		tnode = & ( huff->nodeList[ huff->blocNode++ ] );
@@ -296,11 +296,11 @@ void Huff_addRef( huff_t *huff, byte ch )
 		tnode2->weight = 1;
 		tnode2->next = huff->lhead->next;
 
-		if( huff->lhead->next )
+		if ( huff->lhead->next )
 		{
 			huff->lhead->next->prev = tnode2;
 
-			if( huff->lhead->next->weight == 1 )
+			if ( huff->lhead->next->weight == 1 )
 			{
 				tnode2->head = huff->lhead->next->head;
 			}
@@ -323,11 +323,11 @@ void Huff_addRef( huff_t *huff, byte ch )
 		tnode->weight = 1;
 		tnode->next = huff->lhead->next;
 
-		if( huff->lhead->next )
+		if ( huff->lhead->next )
 		{
 			huff->lhead->next->prev = tnode;
 
-			if( huff->lhead->next->weight == 1 )
+			if ( huff->lhead->next->weight == 1 )
 			{
 				tnode->head = huff->lhead->next->head;
 			}
@@ -349,9 +349,9 @@ void Huff_addRef( huff_t *huff, byte ch )
 		tnode->prev = huff->lhead;
 		tnode->left = tnode->right = NULL;
 
-		if( huff->lhead->parent )
+		if ( huff->lhead->parent )
 		{
-			if( huff->lhead->parent->left == huff->lhead )
+			if ( huff->lhead->parent->left == huff->lhead )
 			{
 				/* lhead is guaranteed to by the NYT */
 				huff->lhead->parent->left = tnode2;
@@ -385,9 +385,9 @@ void Huff_addRef( huff_t *huff, byte ch )
 /* Get a symbol */
 int Huff_Receive( node_t *node, int *ch, byte *fin )
 {
-	while( node && node->symbol == INTERNAL_NODE )
+	while ( node && node->symbol == INTERNAL_NODE )
 	{
-		if( get_bit( fin ) )
+		if ( get_bit( fin ) )
 		{
 			node = node->right;
 		}
@@ -397,7 +397,7 @@ int Huff_Receive( node_t *node, int *ch, byte *fin )
 		}
 	}
 
-	if( !node )
+	if ( !node )
 	{
 		return 0;
 //      Com_Error(ERR_DROP, "Illegal tree!\n");
@@ -411,9 +411,9 @@ void Huff_offsetReceive( node_t *node, int *ch, byte *fin, int *offset )
 {
 	bloc = *offset;
 
-	while( node && node->symbol == INTERNAL_NODE )
+	while ( node && node->symbol == INTERNAL_NODE )
 	{
-		if( get_bit( fin ) )
+		if ( get_bit( fin ) )
 		{
 			node = node->right;
 		}
@@ -423,7 +423,7 @@ void Huff_offsetReceive( node_t *node, int *ch, byte *fin, int *offset )
 		}
 	}
 
-	if( !node )
+	if ( !node )
 	{
 		*ch = 0;
 		return;
@@ -437,14 +437,14 @@ void Huff_offsetReceive( node_t *node, int *ch, byte *fin, int *offset )
 /* Send the prefix code for this node */
 static void send( node_t *node, node_t *child, byte *fout )
 {
-	if( node->parent )
+	if ( node->parent )
 	{
 		send( node->parent, node, fout );
 	}
 
-	if( child )
+	if ( child )
 	{
-		if( node->right == child )
+		if ( node->right == child )
 		{
 			add_bit( 1, fout );
 		}
@@ -460,12 +460,12 @@ void Huff_transmit( huff_t *huff, int ch, byte *fout )
 {
 	int i;
 
-	if( huff->loc[ ch ] == NULL )
+	if ( huff->loc[ ch ] == NULL )
 	{
 		/* node_t hasn't been transmitted, send a NYT, then the symbol */
 		Huff_transmit( huff, NYT, fout );
 
-		for( i = 7; i >= 0; i-- )
+		for ( i = 7; i >= 0; i-- )
 		{
 			add_bit( ( char )( ( ch >> i ) & 0x1 ), fout );
 		}
@@ -493,7 +493,7 @@ void Huff_Decompress( msg_t *mbuf, int offset )
 	size = mbuf->cursize - offset;
 	buffer = mbuf->data + offset;
 
-	if( size <= 0 )
+	if ( size <= 0 )
 	{
 		return;
 	}
@@ -509,20 +509,20 @@ void Huff_Decompress( msg_t *mbuf, int offset )
 	cch = buffer[ 0 ] * 256 + buffer[ 1 ];
 
 	// don't overflow with bad messages
-	if( cch > mbuf->maxsize - offset )
+	if ( cch > mbuf->maxsize - offset )
 	{
 		cch = mbuf->maxsize - offset;
 	}
 
 	bloc = 16;
 
-	for( j = 0; j < cch; j++ )
+	for ( j = 0; j < cch; j++ )
 	{
 		ch = 0;
 
 		// don't overflow reading from the messages
 		// FIXME: would it be better to have a overflow check in get_bit ?
-		if( ( bloc >> 3 ) > size )
+		if ( ( bloc >> 3 ) > size )
 		{
 			seq[ j ] = 0;
 			break;
@@ -530,12 +530,12 @@ void Huff_Decompress( msg_t *mbuf, int offset )
 
 		Huff_Receive( huff.tree, &ch, buffer );  /* Get a character */
 
-		if( ch == NYT )
+		if ( ch == NYT )
 		{
 			/* We got a NYT, get the symbol associated with it */
 			ch = 0;
 
-			for( i = 0; i < 8; i++ )
+			for ( i = 0; i < 8; i++ )
 			{
 				ch = ( ch << 1 ) + get_bit( buffer );
 			}
@@ -562,7 +562,7 @@ void Huff_Compress( msg_t *mbuf, int offset )
 	size = mbuf->cursize - offset;
 	buffer = mbuf->data + +offset;
 
-	if( size <= 0 )
+	if ( size <= 0 )
 	{
 		return;
 	}
@@ -581,7 +581,7 @@ void Huff_Compress( msg_t *mbuf, int offset )
 
 	bloc = 16;
 
-	for( i = 0; i < size; i++ )
+	for ( i = 0; i < size; i++ )
 	{
 		ch = buffer[ i ];
 		Huff_transmit( &huff, ch, seq );  /* Transmit symbol */

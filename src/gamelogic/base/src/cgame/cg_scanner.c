@@ -38,9 +38,9 @@ void CG_UpdateEntityPositions( void )
 	centity_t *cent = NULL;
 	int       i;
 
-	if( cg.predictedPlayerState.stats[ STAT_PTEAM ] == PTE_HUMANS )
+	if ( cg.predictedPlayerState.stats[ STAT_PTEAM ] == PTE_HUMANS )
 	{
-		if( entityPositions.lastUpdateTime + HUMAN_SCANNER_UPDATE_PERIOD > cg.time )
+		if ( entityPositions.lastUpdateTime + HUMAN_SCANNER_UPDATE_PERIOD > cg.time )
 		{
 			return;
 		}
@@ -55,56 +55,56 @@ void CG_UpdateEntityPositions( void )
 	entityPositions.numAlienClients = 0;
 	entityPositions.numHumanClients = 0;
 
-	for( i = 0; i < cg.snap->numEntities; i++ )
+	for ( i = 0; i < cg.snap->numEntities; i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 
-		if( cent->currentState.eType == ET_BUILDABLE )
+		if ( cent->currentState.eType == ET_BUILDABLE )
 		{
 			//TA: add to list of item positions (for creep)
-			if( cent->currentState.modelindex2 == BIT_ALIENS )
+			if ( cent->currentState.modelindex2 == BIT_ALIENS )
 			{
 				VectorCopy( cent->lerpOrigin, entityPositions.alienBuildablePos[
 				              entityPositions.numAlienBuildables ] );
 				entityPositions.alienBuildableTimes[
 				  entityPositions.numAlienBuildables ] = cent->miscTime;
 
-				if( entityPositions.numAlienBuildables < MAX_GENTITIES )
+				if ( entityPositions.numAlienBuildables < MAX_GENTITIES )
 				{
 					entityPositions.numAlienBuildables++;
 				}
 			}
-			else if( cent->currentState.modelindex2 == BIT_HUMANS )
+			else if ( cent->currentState.modelindex2 == BIT_HUMANS )
 			{
 				VectorCopy( cent->lerpOrigin, entityPositions.humanBuildablePos[
 				              entityPositions.numHumanBuildables ] );
 
-				if( entityPositions.numHumanBuildables < MAX_GENTITIES )
+				if ( entityPositions.numHumanBuildables < MAX_GENTITIES )
 				{
 					entityPositions.numHumanBuildables++;
 				}
 			}
 		}
-		else if( cent->currentState.eType == ET_PLAYER )
+		else if ( cent->currentState.eType == ET_PLAYER )
 		{
 			int team = cent->currentState.powerups & 0x00FF;
 
-			if( team == PTE_ALIENS )
+			if ( team == PTE_ALIENS )
 			{
 				VectorCopy( cent->lerpOrigin, entityPositions.alienClientPos[
 				              entityPositions.numAlienClients ] );
 
-				if( entityPositions.numAlienClients < MAX_CLIENTS )
+				if ( entityPositions.numAlienClients < MAX_CLIENTS )
 				{
 					entityPositions.numAlienClients++;
 				}
 			}
-			else if( team == PTE_HUMANS )
+			else if ( team == PTE_HUMANS )
 			{
 				VectorCopy( cent->lerpOrigin, entityPositions.humanClientPos[
 				              entityPositions.numHumanClients ] );
 
-				if( entityPositions.numHumanClients < MAX_CLIENTS )
+				if ( entityPositions.numHumanClients < MAX_CLIENTS )
 				{
 					entityPositions.numHumanClients++;
 				}
@@ -149,18 +149,18 @@ static void CG_DrawBlips( rectDef_t *rect, vec3_t origin, vec4_t colour )
 	localColour[ 3 ] *= alphaMod;
 	localColour[ 3 ] *= ( 0.5f + ( timeFractionSinceRefresh * 0.5f ) );
 
-	if( localColour[ 3 ] > 1.0f )
+	if ( localColour[ 3 ] > 1.0f )
 	{
 		localColour[ 3 ] = 1.0f;
 	}
-	else if( localColour[ 3 ] < 0.0f )
+	else if ( localColour[ 3 ] < 0.0f )
 	{
 		localColour[ 3 ] = 0.0f;
 	}
 
 	trap_R_SetColor( localColour );
 
-	if( drawOrigin[ 2 ] > 0 )
+	if ( drawOrigin[ 2 ] > 0 )
 	{
 		CG_DrawPic( rect->x + ( rect->w / 2 ) - ( STALKWIDTH / 2 ) - drawOrigin[ 0 ],
 		            rect->y + ( rect->h / 2 ) + drawOrigin[ 1 ] - drawOrigin[ 2 ],
@@ -200,9 +200,9 @@ static void CG_DrawDir( rectDef_t *rect, vec3_t origin, vec4_t colour )
 	float         angle;
 	playerState_t *ps = &cg.snap->ps;
 
-	if( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
 	{
-		if( ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
+		if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBINGCEILING )
 		{
 			VectorSet( normal, 0.0f, 0.0f, -1.0f );
 		}
@@ -231,7 +231,7 @@ static void CG_DrawDir( rectDef_t *rect, vec3_t origin, vec4_t colour )
 	//decide which way to rotate
 	VectorSubtract( normal, antinormal, normalDiff );
 
-	if( VectorLength( normalDiff ) < 1.0f )
+	if ( VectorLength( normalDiff ) < 1.0f )
 	{
 		angle = 360.0f - angle;
 	}
@@ -261,24 +261,24 @@ void CG_AlienSense( rectDef_t *rect )
 	VectorCopy( entityPositions.origin, origin );
 
 	//draw human buildables
-	for( i = 0; i < entityPositions.numHumanBuildables; i++ )
+	for ( i = 0; i < entityPositions.numHumanBuildables; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanBuildablePos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < ALIENSENSE_RANGE )
+		if ( VectorLength( relOrigin ) < ALIENSENSE_RANGE )
 		{
 			CG_DrawDir( rect, relOrigin, buildable );
 		}
 	}
 
 	//draw human clients
-	for( i = 0; i < entityPositions.numHumanClients; i++ )
+	for ( i = 0; i < entityPositions.numHumanClients; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanClientPos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < ALIENSENSE_RANGE )
+		if ( VectorLength( relOrigin ) < ALIENSENSE_RANGE )
 		{
 			CG_DrawDir( rect, relOrigin, client );
 		}
@@ -307,54 +307,54 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 	VectorCopy( entityPositions.origin, origin );
 
 	//draw human buildables below scanner plane
-	for( i = 0; i < entityPositions.numHumanBuildables; i++ )
+	for ( i = 0; i < entityPositions.numHumanBuildables; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanBuildablePos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
+		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
 			CG_DrawBlips( rect, relOrigin, hIbelow );
 		}
 	}
 
 	//draw alien buildables below scanner plane
-	for( i = 0; i < entityPositions.numAlienBuildables; i++ )
+	for ( i = 0; i < entityPositions.numAlienBuildables; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.alienBuildablePos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
+		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
 			CG_DrawBlips( rect, relOrigin, aIbelow );
 		}
 	}
 
 	//draw human clients below scanner plane
-	for( i = 0; i < entityPositions.numHumanClients; i++ )
+	for ( i = 0; i < entityPositions.numHumanClients; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanClientPos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
+		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
 			CG_DrawBlips( rect, relOrigin, hIbelow );
 		}
 	}
 
 	//draw alien buildables below scanner plane
-	for( i = 0; i < entityPositions.numAlienClients; i++ )
+	for ( i = 0; i < entityPositions.numAlienClients; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.alienClientPos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
+		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
 			CG_DrawBlips( rect, relOrigin, aIbelow );
 		}
 	}
 
-	if( !cg_disableScannerPlane.integer )
+	if ( !cg_disableScannerPlane.integer )
 	{
 		trap_R_SetColor( color );
 		CG_DrawPic( rect->x, rect->y, rect->w, rect->h, shader );
@@ -362,48 +362,48 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 	}
 
 	//draw human buildables above scanner plane
-	for( i = 0; i < entityPositions.numHumanBuildables; i++ )
+	for ( i = 0; i < entityPositions.numHumanBuildables; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanBuildablePos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
+		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
 			CG_DrawBlips( rect, relOrigin, hIabove );
 		}
 	}
 
 	//draw alien buildables above scanner plane
-	for( i = 0; i < entityPositions.numAlienBuildables; i++ )
+	for ( i = 0; i < entityPositions.numAlienBuildables; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.alienBuildablePos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
+		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
 			CG_DrawBlips( rect, relOrigin, aIabove );
 		}
 	}
 
 	//draw human clients above scanner plane
-	for( i = 0; i < entityPositions.numHumanClients; i++ )
+	for ( i = 0; i < entityPositions.numHumanClients; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanClientPos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
+		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
 			CG_DrawBlips( rect, relOrigin, hIabove );
 		}
 	}
 
 	//draw alien clients above scanner plane
-	for( i = 0; i < entityPositions.numAlienClients; i++ )
+	for ( i = 0; i < entityPositions.numAlienClients; i++ )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.alienClientPos[ i ], origin, relOrigin );
 
-		if( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
+		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
 			CG_DrawBlips( rect, relOrigin, aIabove );
 		}

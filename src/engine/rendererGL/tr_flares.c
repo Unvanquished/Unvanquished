@@ -95,7 +95,7 @@ void R_ClearFlares( void )
 	r_activeFlares = NULL;
 	r_inactiveFlares = NULL;
 
-	for( i = 0; i < MAX_FLARES; i++ )
+	for ( i = 0; i < MAX_FLARES; i++ )
 	{
 		r_flareStructs[ i ].next = r_inactiveFlares;
 		r_inactiveFlares = &r_flareStructs[ i ];
@@ -126,9 +126,9 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 	R_TransformModelToClip( point, backEnd.orientation.modelViewMatrix, backEnd.viewParms.projectionMatrix, eye, clip );
 
 	// check to see if the point is completely off screen
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		if( clip[ i ] >= clip[ 3 ] || clip[ i ] <= -clip[ 3 ] )
+		if ( clip[ i ] >= clip[ 3 ] || clip[ i ] <= -clip[ 3 ] )
 		{
 			return;
 		}
@@ -136,27 +136,27 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 
 	R_TransformClipToWindow( clip, &backEnd.viewParms, normalized, window );
 
-	if( window[ 0 ] < 0 || window[ 0 ] >= backEnd.viewParms.viewportWidth ||
-	    window[ 1 ] < 0 || window[ 1 ] >= backEnd.viewParms.viewportHeight )
+	if ( window[ 0 ] < 0 || window[ 0 ] >= backEnd.viewParms.viewportWidth ||
+	     window[ 1 ] < 0 || window[ 1 ] >= backEnd.viewParms.viewportHeight )
 	{
 		return; // shouldn't happen, since we check the clip[] above, except for FP rounding
 	}
 
 	// see if a flare with a matching surface, scene, and view exists
 	//oldest = r_flareStructs;
-	for( f = r_activeFlares; f; f = f->next )
+	for ( f = r_activeFlares; f; f = f->next )
 	{
-		if( f->surface == surface && f->frameSceneNum == backEnd.viewParms.frameSceneNum &&
-		    f->inPortal == backEnd.viewParms.isPortal )
+		if ( f->surface == surface && f->frameSceneNum == backEnd.viewParms.frameSceneNum &&
+		     f->inPortal == backEnd.viewParms.isPortal )
 		{
 			break;
 		}
 	}
 
 	// allocate a new one
-	if( !f )
+	if ( !f )
 	{
-		if( !r_inactiveFlares )
+		if ( !r_inactiveFlares )
 		{
 			// the list is completely full
 			return;
@@ -173,7 +173,7 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 		f->addedFrame = -1;
 	}
 
-	if( f->addedFrame != backEnd.viewParms.frameCount - 1 )
+	if ( f->addedFrame != backEnd.viewParms.frameCount - 1 )
 	{
 		f->visible = qfalse;
 		f->fadeTime = backEnd.refdef.time - 2000;
@@ -187,9 +187,9 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 	d2 = 0.0;
 	d2 = -eye[ 2 ];
 
-	if( d2 > distBias )
+	if ( d2 > distBias )
 	{
-		if( d2 > ( distBias * 2.0 ) )
+		if ( d2 > ( distBias * 2.0 ) )
 		{
 			d2 = ( distBias * 2.0 );
 		}
@@ -205,7 +205,7 @@ void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t 
 
 	// fade the intensity of the flare down as the
 	// light surface turns away from the viewer
-	if( normal )
+	if ( normal )
 	{
 		VectorSubtract( backEnd.viewParms.orientation.origin, point, local );
 		VectorNormalize( local );
@@ -234,7 +234,7 @@ void RB_AddLightFlares( void )
 	trRefLight_t *l;
 	fog_t        *fog;
 
-	if( !r_flares->integer )
+	if ( !r_flares->integer )
 	{
 		return;
 	}
@@ -242,33 +242,33 @@ void RB_AddLightFlares( void )
 	l = backEnd.refdef.lights;
 	fog = tr.world->fogs;
 
-	for( i = 0; i < backEnd.refdef.numLights; i++, l++ )
+	for ( i = 0; i < backEnd.refdef.numLights; i++, l++ )
 	{
-		if( !l->isStatic )
+		if ( !l->isStatic )
 		{
 			continue;
 		}
 
 		// find which fog volume the light is in
-		for( j = 1; j < tr.world->numFogs; j++ )
+		for ( j = 1; j < tr.world->numFogs; j++ )
 		{
 			fog = &tr.world->fogs[ j ];
 
-			for( k = 0; k < 3; k++ )
+			for ( k = 0; k < 3; k++ )
 			{
-				if( l->l.origin[ k ] < fog->bounds[ 0 ][ k ] || l->l.origin[ k ] > fog->bounds[ 1 ][ k ] )
+				if ( l->l.origin[ k ] < fog->bounds[ 0 ][ k ] || l->l.origin[ k ] > fog->bounds[ 1 ][ k ] )
 				{
 					break;
 				}
 			}
 
-			if( k == 3 )
+			if ( k == 3 )
 			{
 				break;
 			}
 		}
 
-		if( j == tr.world->numFogs )
+		if ( j == tr.world->numFogs )
 		{
 			j = 0;
 		}
@@ -311,9 +311,9 @@ void RB_TestFlare( flare_t *f )
 
 	visible = ( -f->eyeZ - -screenZ ) < 24;
 
-	if( visible )
+	if ( visible )
 	{
-		if( !f->visible )
+		if ( !f->visible )
 		{
 			f->visible = qtrue;
 			f->fadeTime = backEnd.refdef.time - 1500;
@@ -323,7 +323,7 @@ void RB_TestFlare( flare_t *f )
 	}
 	else
 	{
-		if( f->visible )
+		if ( f->visible )
 		{
 			f->visible = qfalse;
 			f->fadeTime = backEnd.refdef.time - 1;
@@ -332,12 +332,12 @@ void RB_TestFlare( flare_t *f )
 		fade = 1.0f - ( ( backEnd.refdef.time - f->fadeTime ) / 1000.0f ) * r_flareFade->value;
 	}
 
-	if( fade < 0 )
+	if ( fade < 0 )
 	{
 		fade = 0;
 	}
 
-	if( fade > 1 )
+	if ( fade > 1 )
 	{
 		fade = 1;
 	}
@@ -379,7 +379,7 @@ void RB_RenderFlare( flare_t *f )
 	float distance, intensity, factor;
 
 	// We don't want too big values anyways when dividing by distance
-	if( f->eyeZ > -1.0f )
+	if ( f->eyeZ > -1.0f )
 	{
 		distance = 1.0f;
 	}
@@ -493,16 +493,16 @@ void RB_RenderFlares( void )
 	qboolean draw;
 	matrix_t ortho;
 
-	if( !r_flares->integer )
+	if ( !r_flares->integer )
 	{
 		return;
 	}
 
 #if 0
 
-	if( r_flareCoeff->modified )
+	if ( r_flareCoeff->modified )
 	{
-		if( r_flareCoeff->value == 0.0f )
+		if ( r_flareCoeff->value == 0.0f )
 		{
 			flareCoeff = atof( "150" );
 		}
@@ -522,7 +522,7 @@ void RB_RenderFlares( void )
 	backEnd.orientation = backEnd.viewParms.world;
 	GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 
-	if( tr.world != NULL )  // thx Thilo
+	if ( tr.world != NULL ) // thx Thilo
 	{
 		RB_AddLightFlares();
 	}
@@ -531,10 +531,10 @@ void RB_RenderFlares( void )
 	draw = qfalse;
 	prev = &r_activeFlares;
 
-	while( ( f = *prev ) != NULL )
+	while ( ( f = *prev ) != NULL )
 	{
 		// throw out any flares that weren't added last frame
-		if( f->addedFrame < backEnd.viewParms.frameCount - 1 )
+		if ( f->addedFrame < backEnd.viewParms.frameCount - 1 )
 		{
 			*prev = f->next;
 			f->next = r_inactiveFlares;
@@ -545,11 +545,11 @@ void RB_RenderFlares( void )
 		// don't draw any here that aren't from this scene / portal
 		f->drawIntensity = 0;
 
-		if( f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal )
+		if ( f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal )
 		{
 			RB_TestFlare( f );
 
-			if( f->drawIntensity )
+			if ( f->drawIntensity )
 			{
 				draw = qtrue;
 			}
@@ -566,13 +566,13 @@ void RB_RenderFlares( void )
 		prev = &f->next;
 	}
 
-	if( !draw )
+	if ( !draw )
 	{
 		// none visible
 		return;
 	}
 
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		glDisable( GL_CLIP_PLANE0 );
 	}
@@ -587,9 +587,9 @@ void RB_RenderFlares( void )
 	GL_LoadProjectionMatrix( ortho );
 	GL_LoadModelViewMatrix( matrixIdentity );
 
-	for( f = r_activeFlares; f; f = f->next )
+	for ( f = r_activeFlares; f; f = f->next )
 	{
-		if( f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal && f->drawIntensity )
+		if ( f->frameSceneNum == backEnd.viewParms.frameSceneNum && f->inPortal == backEnd.viewParms.isPortal && f->drawIntensity )
 		{
 			RB_RenderFlare( f );
 		}

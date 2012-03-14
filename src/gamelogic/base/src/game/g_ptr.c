@@ -38,14 +38,14 @@ static qboolean G_CheckForUniquePTRC( int code )
 {
 	int i;
 
-	if( code == 0 )
+	if ( code == 0 )
 	{
 		return qfalse;
 	}
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		if( connections[ i ].ptrCode == code )
+		if ( connections[ i ].ptrCode == code )
 		{
 			return qfalse;
 		}
@@ -63,7 +63,7 @@ Update the data in a connection record
 */
 void G_UpdatePTRConnection( gclient_t *client )
 {
-	if( client && client->pers.connection )
+	if ( client && client->pers.connection )
 	{
 		client->pers.connection->clientTeam = client->ps.stats[ STAT_PTEAM ];
 		client->pers.connection->clientCredit = client->ps.persistant[ PERS_CREDIT ];
@@ -91,12 +91,12 @@ connectionRecord_t *G_GenerateNewConnection( gclient_t *client )
 	{
 		code = rand();
 	}
-	while( !G_CheckForUniquePTRC( code ) );
+	while ( !G_CheckForUniquePTRC( code ) );
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		//found an unused slot
-		if( !connections[ i ].ptrCode )
+		if ( !connections[ i ].ptrCode )
 		{
 			connections[ i ].ptrCode = code;
 			connections[ i ].clientNum = client->ps.clientNum;
@@ -121,14 +121,14 @@ qboolean G_VerifyPTRC( int code )
 {
 	int i;
 
-	if( code == 0 )
+	if ( code == 0 )
 	{
 		return qfalse;
 	}
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		if( connections[ i ].ptrCode == code )
+		if ( connections[ i ].ptrCode == code )
 		{
 			return qtrue;
 		}
@@ -148,14 +148,14 @@ connectionRecord_t *G_FindConnectionForCode( int code )
 {
 	int i;
 
-	if( code == 0 )
+	if ( code == 0 )
 	{
 		return NULL;
 	}
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		if( connections[ i ].ptrCode == code )
+		if ( connections[ i ].ptrCode == code )
 		{
 			return &connections[ i ];
 		}
@@ -173,7 +173,7 @@ Finds a connection and deletes it
 */
 void G_DeletePTRConnection( connectionRecord_t *connection )
 {
-	if( connection )
+	if ( connection )
 	{
 		memset( connection, 0, sizeof( connectionRecord_t ) );
 	}

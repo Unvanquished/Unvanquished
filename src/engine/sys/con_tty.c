@@ -93,7 +93,7 @@ static void CON_FlushIn( void )
 {
 	char key;
 
-	while( read( STDIN_FILENO, &key, 1 ) != -1 ) {; }
+	while ( read( STDIN_FILENO, &key, 1 ) != -1 ) {; }
 }
 
 /*
@@ -130,19 +130,19 @@ bring cursor back to beginning of line
 */
 static void CON_Hide( void )
 {
-	if( ttycon_on )
+	if ( ttycon_on )
 	{
 		int i;
 
-		if( ttycon_hide )
+		if ( ttycon_hide )
 		{
 			ttycon_hide++;
 			return;
 		}
 
-		if( TTY_con.cursor > 0 )
+		if ( TTY_con.cursor > 0 )
 		{
-			for( i = 0; i < TTY_con.cursor; i++ )
+			for ( i = 0; i < TTY_con.cursor; i++ )
 			{
 				CON_Back();
 			}
@@ -163,21 +163,21 @@ FIXME need to position the cursor if needed?
 */
 static void CON_Show( void )
 {
-	if( ttycon_on )
+	if ( ttycon_on )
 	{
 		int i;
 
 		assert( ttycon_hide > 0 );
 		ttycon_hide--;
 
-		if( ttycon_hide == 0 )
+		if ( ttycon_hide == 0 )
 		{
 //			size_t size;
 			write( STDOUT_FILENO, "]", 1 );
 
-			if( TTY_con.cursor )
+			if ( TTY_con.cursor )
 			{
-				for( i = 0; i < TTY_con.cursor; i++ )
+				for ( i = 0; i < TTY_con.cursor; i++ )
 				{
 					write( STDOUT_FILENO, TTY_con.buffer + i, 1 );
 				}
@@ -195,7 +195,7 @@ Never exit without calling this, or your terminal will be left in a pretty bad s
 */
 void CON_Shutdown( void )
 {
-	if( ttycon_on )
+	if ( ttycon_on )
 	{
 		CON_Back(); // Delete "]"
 		tcsetattr( STDIN_FILENO, TCSADRAIN, &TTY_tc );
@@ -242,7 +242,7 @@ void CON_Init( void )
 	// Make stdin reads non-blocking
 	fcntl( STDIN_FILENO, F_SETFL, fcntl( STDIN_FILENO, F_GETFL, 0 ) | O_NONBLOCK );
 
-	if( !stdinIsATTY )
+	if ( !stdinIsATTY )
 	{
 		Com_Printf( "tty console mode disabled\n" );
 		ttycon_on = qfalse;
@@ -292,18 +292,18 @@ char *CON_Input( void )
 	const char  *history;
 //	size_t size;
 
-	if( ttycon_on )
+	if ( ttycon_on )
 	{
 		avail = read( STDIN_FILENO, &key, 1 );
 
-		if( avail != -1 )
+		if ( avail != -1 )
 		{
 			// we have something
 			// backspace?
 			// NOTE TTimo testing a lot of values .. seems it's the only way to get it to work everywhere
-			if( ( key == TTY_erase ) || ( key == 127 ) || ( key == 8 ) )
+			if ( ( key == TTY_erase ) || ( key == 127 ) || ( key == 8 ) )
 			{
-				if( TTY_con.cursor > 0 )
+				if ( TTY_con.cursor > 0 )
 				{
 					TTY_con.cursor--;
 					TTY_con.buffer[ TTY_con.cursor ] = '\0';
@@ -314,9 +314,9 @@ char *CON_Input( void )
 			}
 
 			// check if this is a control char
-			if( ( key ) && ( key ) < ' ' )
+			if ( ( key ) && ( key ) < ' ' )
 			{
-				if( key == '\n' )
+				if ( key == '\n' )
 				{
 					// push it in history
 					Hist_Add( TTY_con.buffer );
@@ -328,7 +328,7 @@ char *CON_Input( void )
 					return text;
 				}
 
-				if( key == '\t' )
+				if ( key == '\t' )
 				{
 					CON_Hide();
 					field_t *edit = &TTY_con;
@@ -340,16 +340,16 @@ char *CON_Input( void )
 
 				avail = read( STDIN_FILENO, &key, 1 );
 
-				if( avail != -1 )
+				if ( avail != -1 )
 				{
 					// VT 100 keys
-					if( key == '[' || key == 'O' )
+					if ( key == '[' || key == 'O' )
 					{
 						avail = read( STDIN_FILENO, &key, 1 );
 
-						if( avail != -1 )
+						if ( avail != -1 )
 						{
-							switch( key )
+							switch ( key )
 							{
 								case 'A':
 									CON_Hide();
@@ -363,12 +363,12 @@ char *CON_Input( void )
 									history = Hist_Next();
 									CON_Hide();
 
-									if( history )
+									if ( history )
 									{
 										Q_strncpyz( TTY_con.buffer, history, sizeof( TTY_con.buffer ) );
 										TTY_con.cursor = strlen( TTY_con.buffer );
 									}
-									else if( TTY_con.buffer[ 0 ] )
+									else if ( TTY_con.buffer[ 0 ] )
 									{
 										Hist_Add( TTY_con.buffer );
 										Field_Clear( &TTY_con );
@@ -394,7 +394,7 @@ char *CON_Input( void )
 				return NULL;
 			}
 
-			if( TTY_con.cursor >= sizeof( text ) - 1 )
+			if ( TTY_con.cursor >= sizeof( text ) - 1 )
 			{
 				return NULL;
 			}
@@ -408,7 +408,7 @@ char *CON_Input( void )
 
 		return NULL;
 	}
-	else if( stdin_active )
+	else if ( stdin_active )
 	{
 		int            len;
 		fd_set         fdset;
@@ -419,21 +419,21 @@ char *CON_Input( void )
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 0;
 
-		if( select( STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout ) == -1 || !FD_ISSET( STDIN_FILENO, &fdset ) )
+		if ( select( STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout ) == -1 || !FD_ISSET( STDIN_FILENO, &fdset ) )
 		{
 			return NULL;
 		}
 
 		len = read( STDIN_FILENO, text, sizeof( text ) );
 
-		if( len == 0 )
+		if ( len == 0 )
 		{
 			// eof!
 			stdin_active = qfalse;
 			return NULL;
 		}
 
-		if( len < 1 )
+		if ( len < 1 )
 		{
 			return NULL;
 		}
@@ -455,7 +455,7 @@ void CON_Print( const char *msg )
 {
 	CON_Hide();
 
-	if( com_ansiColor && com_ansiColor->integer )
+	if ( com_ansiColor && com_ansiColor->integer )
 	{
 		Sys_AnsiColorPrint( msg );
 	}

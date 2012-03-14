@@ -55,7 +55,7 @@ void CG_InitMarkPolys( void )
 	cg_activeMarkPolys.prevMark = &cg_activeMarkPolys;
 	cg_freeMarkPolys = cg_markPolys;
 
-	for( i = 0; i < MAX_MARK_POLYS - 1; i++ )
+	for ( i = 0; i < MAX_MARK_POLYS - 1; i++ )
 	{
 		cg_markPolys[ i ].nextMark = &cg_markPolys[ i + 1 ];
 	}
@@ -68,7 +68,7 @@ CG_FreeMarkPoly
 */
 void CG_FreeMarkPoly( markPoly_t *le )
 {
-	if( !le->prevMark )
+	if ( !le->prevMark )
 	{
 		CG_Error( "CG_FreeLocalEntity: not active" );
 	}
@@ -94,13 +94,13 @@ markPoly_t *CG_AllocMark( void )
 	markPoly_t *le;
 	int        time;
 
-	if( !cg_freeMarkPolys )
+	if ( !cg_freeMarkPolys )
 	{
 		// no free entities, so free the one at the end of the chain
 		// remove the oldest active entity
 		time = cg_activeMarkPolys.prevMark->time;
 
-		while( cg_activeMarkPolys.prevMark && time == cg_activeMarkPolys.prevMark->time )
+		while ( cg_activeMarkPolys.prevMark && time == cg_activeMarkPolys.prevMark->time )
 		{
 			CG_FreeMarkPoly( cg_activeMarkPolys.prevMark );
 		}
@@ -147,12 +147,12 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	vec3_t         markPoints[ MAX_MARK_POINTS ];
 	vec3_t         projection;
 
-	if( !cg_addMarks.integer )
+	if ( !cg_addMarks.integer )
 	{
 		return;
 	}
 
-	if( radius <= 0 )
+	if ( radius <= 0 )
 	{
 		CG_Error( "CG_ImpactMark called with <= 0 radius" );
 	}
@@ -170,7 +170,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	texCoordScale = 0.5 * 1.0 / radius;
 
 	// create the full polygon
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		originalPoints[ 0 ][ i ] = origin[ i ] - radius * axis[ 1 ][ i ] - radius * axis[ 2 ][ i ];
 		originalPoints[ 1 ][ i ] = origin[ i ] + radius * axis[ 1 ][ i ] - radius * axis[ 2 ][ i ];
@@ -189,7 +189,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	colors[ 2 ] = blue * 255;
 	colors[ 3 ] = alpha * 255;
 
-	for( i = 0, mf = markFragments; i < numFragments; i++, mf++ )
+	for ( i = 0, mf = markFragments; i < numFragments; i++, mf++ )
 	{
 		polyVert_t *v;
 		polyVert_t verts[ MAX_VERTS_ON_POLY ];
@@ -197,12 +197,12 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 
 		// we have an upper limit on the complexity of polygons
 		// that we store persistantly
-		if( mf->numPoints > MAX_VERTS_ON_POLY )
+		if ( mf->numPoints > MAX_VERTS_ON_POLY )
 		{
 			mf->numPoints = MAX_VERTS_ON_POLY;
 		}
 
-		for( j = 0, v = verts; j < mf->numPoints; j++, v++ )
+		for ( j = 0, v = verts; j < mf->numPoints; j++, v++ )
 		{
 			vec3_t delta;
 
@@ -215,7 +215,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 		}
 
 		// if it is a temporary (shadow) mark, add it immediately and forget about it
-		if( temporary )
+		if ( temporary )
 		{
 			trap_R_AddPolyToScene( markShader, mf->numPoints, verts );
 			continue;
@@ -251,21 +251,21 @@ void CG_AddMarks( void )
 	int        t;
 	int        fade;
 
-	if( !cg_addMarks.integer )
+	if ( !cg_addMarks.integer )
 	{
 		return;
 	}
 
 	mp = cg_activeMarkPolys.nextMark;
 
-	for( ; mp != &cg_activeMarkPolys; mp = next )
+	for ( ; mp != &cg_activeMarkPolys; mp = next )
 	{
 		// grab next now, so if the local entity is freed we
 		// still have it
 		next = mp->nextMark;
 
 		// see if it is time to completely remove it
-		if( cg.time > mp->time + MARK_TOTAL_TIME )
+		if ( cg.time > mp->time + MARK_TOTAL_TIME )
 		{
 			CG_FreeMarkPoly( mp );
 			continue;
@@ -274,20 +274,20 @@ void CG_AddMarks( void )
 		// fade all marks out with time
 		t = mp->time + MARK_TOTAL_TIME - cg.time;
 
-		if( t < MARK_FADE_TIME )
+		if ( t < MARK_FADE_TIME )
 		{
 			fade = 255 * t / MARK_FADE_TIME;
 
-			if( mp->alphaFade )
+			if ( mp->alphaFade )
 			{
-				for( j = 0; j < mp->poly.numVerts; j++ )
+				for ( j = 0; j < mp->poly.numVerts; j++ )
 				{
 					mp->verts[ j ].modulate[ 3 ] = fade;
 				}
 			}
 			else
 			{
-				for( j = 0; j < mp->poly.numVerts; j++ )
+				for ( j = 0; j < mp->poly.numVerts; j++ )
 				{
 					mp->verts[ j ].modulate[ 0 ] = mp->color[ 0 ] * fade;
 					mp->verts[ j ].modulate[ 1 ] = mp->color[ 1 ] * fade;

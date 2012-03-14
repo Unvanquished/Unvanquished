@@ -54,16 +54,16 @@ int SV_BotAllocateClient( int clientNum )
 	client_t *cl;
 
 	// Arnout: added possibility to request a clientnum
-	if( clientNum > 0 )
+	if ( clientNum > 0 )
 	{
-		if( clientNum >= sv_maxclients->integer )
+		if ( clientNum >= sv_maxclients->integer )
 		{
 			return -1;
 		}
 
 		cl = &svs.clients[ clientNum ];
 
-		if( cl->state != CS_FREE )
+		if ( cl->state != CS_FREE )
 		{
 			return -1;
 		}
@@ -75,23 +75,23 @@ int SV_BotAllocateClient( int clientNum )
 	else
 	{
 		// find a client slot
-		for( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
+		for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 		{
 			// Wolfenstein, never use the first slot, otherwise if a bot connects before the first client on a listen server, game won't start
-			if( i < 1 )
+			if ( i < 1 )
 			{
 				continue;
 			}
 
 			// done.
-			if( cl->state == CS_FREE )
+			if ( cl->state == CS_FREE )
 			{
 				break;
 			}
 		}
 	}
 
-	if( i == sv_maxclients->integer )
+	if ( i == sv_maxclients->integer )
 	{
 		return -1;
 	}
@@ -115,7 +115,7 @@ void SV_BotFreeClient( int clientNum )
 {
 	client_t *cl;
 
-	if( clientNum < 0 || clientNum >= sv_maxclients->integer )
+	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
 	{
 		Com_Error( ERR_DROP, "SV_BotFreeClient: bad clientNum: %i", clientNum );
 	}
@@ -124,7 +124,7 @@ void SV_BotFreeClient( int clientNum )
 	cl->state = CS_FREE;
 	cl->name[ 0 ] = 0;
 
-	if( cl->gentity )
+	if ( cl->gentity )
 	{
 		cl->gentity->r.svFlags &= ~SVF_BOT;
 	}
@@ -147,76 +147,76 @@ void BotDrawDebugPolygons( BotPolyFunc drawPoly, int value )
 	return;
 #endif
 
-	if( !bot_enable )
+	if ( !bot_enable )
 	{
 		return;
 	}
 
 	//bot debugging
-	if( !bot_debug )
+	if ( !bot_debug )
 	{
 		bot_debug = Cvar_Get( "bot_debug", "0", 0 );
 	}
 
 	//show reachabilities
-	if( !bot_reachability )
+	if ( !bot_reachability )
 	{
 		bot_reachability = Cvar_Get( "bot_reachability", "0", 0 );
 	}
 
 	//show ground faces only
-	if( !bot_groundonly )
+	if ( !bot_groundonly )
 	{
 		bot_groundonly = Cvar_Get( "bot_groundonly", "1", 0 );
 	}
 
 	//get the hightlight area
-	if( !bot_highlightarea )
+	if ( !bot_highlightarea )
 	{
 		bot_highlightarea = Cvar_Get( "bot_highlightarea", "0", 0 );
 	}
 
 	//
-	if( !bot_testhidepos )
+	if ( !bot_testhidepos )
 	{
 		bot_testhidepos = Cvar_Get( "bot_testhidepos", "0", 0 );
 	}
 
 	//
-	if( !debugSurface )
+	if ( !debugSurface )
 	{
 		debugSurface = Cvar_Get( "r_debugSurface", "0", 0 );
 	}
 
 	//
-	if( bot_debug->integer == 1 || bot_debug->integer == 9 )
+	if ( bot_debug->integer == 1 || bot_debug->integer == 9 )
 	{
 		parm0 = 0;
 
-		if( svs.clients[ 0 ].lastUsercmd.buttons & BUTTON_ATTACK )
+		if ( svs.clients[ 0 ].lastUsercmd.buttons & BUTTON_ATTACK )
 		{
 			parm0 |= 1;
 		}
 
-		if( bot_reachability->integer )
+		if ( bot_reachability->integer )
 		{
 			parm0 |= 2;
 		}
 
-		if( bot_groundonly->integer )
+		if ( bot_groundonly->integer )
 		{
 			parm0 |= 4;
 		}
 
-		if( debugSurface->integer == 3 )
+		if ( debugSurface->integer == 3 )
 		{
 			parm0 |= 8;
 		}
-		else if( debugSurface->integer == 4 )
+		else if ( debugSurface->integer == 4 )
 		{
 			parm0 |= 4 | 8;
 		}
-		else if( debugSurface->integer == 5 )
+		else if ( debugSurface->integer == 5 )
 		{
 			parm0 |= 8 | 16;
 		}
@@ -227,11 +227,11 @@ void BotDrawDebugPolygons( BotPolyFunc drawPoly, int value )
 		botlib_export->Test( parm0, NULL, svs.clients[ 0 ].gentity->r.currentOrigin, svs.clients[ 0 ].gentity->r.currentAngles );
 	} //end if
 
-	for( i = 0; i < MAX_DEBUGPOLYS; i++ )
+	for ( i = 0; i < MAX_DEBUGPOLYS; i++ )
 	{
 		poly = &debugpolygons[ i ];
 
-		if( !poly->inuse )
+		if ( !poly->inuse )
 		{
 			continue;
 		}
@@ -255,7 +255,7 @@ void QDECL __attribute__( ( format( printf, 2, 3 ) ) ) BotImport_Print( int type
 	Q_vsnprintf( str, sizeof( str ), fmt, ap );
 	va_end( ap );
 
-	switch( type )
+	switch ( type )
 	{
 		case PRT_MESSAGE:
 			{
@@ -396,30 +396,30 @@ void BotImport_BSPModelMinsMaxsOrigin( int modelnum, vec3_t angles, vec3_t outmi
 	CM_ModelBounds( h, mins, maxs );
 
 	//if the model is rotated
-	if( ( angles[ 0 ] || angles[ 1 ] || angles[ 2 ] ) )
+	if ( ( angles[ 0 ] || angles[ 1 ] || angles[ 2 ] ) )
 	{
 		// expand for rotation
 
 		max = RadiusFromBounds( mins, maxs );
 
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			mins[ i ] = -max;
 			maxs[ i ] = max;
 		}
 	}
 
-	if( outmins )
+	if ( outmins )
 	{
 		VectorCopy( mins, outmins );
 	}
 
-	if( outmaxs )
+	if ( outmaxs )
 	{
 		VectorCopy( maxs, outmaxs );
 	}
 
-	if( origin )
+	if ( origin )
 	{
 		VectorClear( origin );
 	}
@@ -465,7 +465,7 @@ BotImport_HunkAlloc
 */
 void           *BotImport_HunkAlloc( int size )
 {
-	if( Hunk_CheckMark() )
+	if ( Hunk_CheckMark() )
 	{
 		Com_Error( ERR_DROP, "SV_Bot_HunkAlloc: Alloc with marks already set\n" );
 	}
@@ -483,15 +483,15 @@ int BotImport_DebugPolygonCreate( int color, int numPoints, vec3_t *points )
 	bot_debugpoly_t *poly;
 	int             i;
 
-	for( i = 1; i < MAX_DEBUGPOLYS; i++ )
+	for ( i = 1; i < MAX_DEBUGPOLYS; i++ )
 	{
-		if( !debugpolygons[ i ].inuse )
+		if ( !debugpolygons[ i ].inuse )
 		{
 			break;
 		}
 	}
 
-	if( i >= MAX_DEBUGPOLYS )
+	if ( i >= MAX_DEBUGPOLYS )
 	{
 		return 0;
 	}
@@ -514,9 +514,9 @@ bot_debugpoly_t *BotImport_GetFreeDebugPolygon( void )
 {
 	int i;
 
-	for( i = 1; i < MAX_DEBUGPOLYS; i++ )
+	for ( i = 1; i < MAX_DEBUGPOLYS; i++ )
 	{
-		if( !debugpolygons[ i ].inuse )
+		if ( !debugpolygons[ i ].inuse )
 		{
 			return &debugpolygons[ i ];
 		}
@@ -604,7 +604,7 @@ void BotImport_DebugLineShow( int line, vec3_t start, vec3_t end, int color )
 	VectorNormalize( dir );
 	dot = DotProduct( dir, up );
 
-	if( dot > 0.99 || dot < -0.99 )
+	if ( dot > 0.99 || dot < -0.99 )
 	{
 		VectorSet( cross, 1, 0, 0 );
 	}
@@ -664,13 +664,13 @@ void SV_BotFrame( int time )
 	return;
 #endif
 
-	if( !bot_enable )
+	if ( !bot_enable )
 	{
 		return;
 	}
 
 	//NOTE: maybe the game is already shutdown
-	if( !gvm )
+	if ( !gvm )
 	{
 		return;
 	}
@@ -692,12 +692,12 @@ int SV_BotLibSetup( void )
 	return 0;
 #endif
 
-	if( !bot_enable )
+	if ( !bot_enable )
 	{
 		return 0;
 	}
 
-	if( !botlib_export )
+	if ( !botlib_export )
 	{
 		Com_Printf( S_COLOR_RED "Error: SV_BotLibSetup without SV_BotInitBotLib\n" );
 		return -1;
@@ -708,7 +708,7 @@ int SV_BotLibSetup( void )
 	botlib_export->BotLibVarSet( "bot_norcd", bot_norcd->string );
 
 	// RF, set AAS routing max per frame
-	if( SV_GameIsSinglePlayer() )
+	if ( SV_GameIsSinglePlayer() )
 	{
 		bot_frameroutingupdates = Cvar_Get( "bot_frameroutingupdates", "9999999", 0 );
 	}
@@ -736,7 +736,7 @@ it is changing to a different game directory.
 */
 int SV_BotLibShutdown( void )
 {
-	if( !botlib_export )
+	if ( !botlib_export )
 	{
 		return -1;
 	}
@@ -862,7 +862,7 @@ int SV_BotGetConsoleMessage( int client, char *buf, int size )
 	cl = &svs.clients[ client ];
 	cl->lastPacketTime = svs.time;
 
-	if( cl->reliableAcknowledge == cl->reliableSequence )
+	if ( cl->reliableAcknowledge == cl->reliableSequence )
 	{
 		return qfalse;
 	}
@@ -870,7 +870,7 @@ int SV_BotGetConsoleMessage( int client, char *buf, int size )
 	cl->reliableAcknowledge++;
 	index = cl->reliableAcknowledge & ( MAX_RELIABLE_COMMANDS - 1 );
 
-	if( !cl->reliableCommands[ index ][ 0 ] )
+	if ( !cl->reliableCommands[ index ][ 0 ] )
 	{
 		return qfalse;
 	}
@@ -895,9 +895,9 @@ int EntityInPVS( int client, int entityNum )
 	cl = &svs.clients[ client ];
 	frame = &cl->frames[ cl->netchan.outgoingSequence & PACKET_MASK ];
 
-	for( i = 0; i < frame->num_entities; i++ )
+	for ( i = 0; i < frame->num_entities; i++ )
 	{
-		if( svs.snapshotEntities[( frame->first_entity + i ) % svs.numSnapshotEntities ].number == entityNum )
+		if ( svs.snapshotEntities[( frame->first_entity + i ) % svs.numSnapshotEntities ].number == entityNum )
 		{
 			return qtrue;
 		}
@@ -921,7 +921,7 @@ int SV_BotGetSnapshotEntity( int client, int sequence )
 	cl = &svs.clients[ client ];
 	frame = &cl->frames[ cl->netchan.outgoingSequence & PACKET_MASK ];
 
-	if( sequence < 0 || sequence >= frame->num_entities )
+	if ( sequence < 0 || sequence >= frame->num_entities )
 	{
 		return -1;
 	}

@@ -176,17 +176,17 @@ static void EmitPtr( void *ptr )
 
 static int Hex( int c )
 {
-	if( c >= 'a' && c <= 'f' )
+	if ( c >= 'a' && c <= 'f' )
 	{
 		return 10 + c - 'a';
 	}
 
-	if( c >= 'A' && c <= 'F' )
+	if ( c >= 'A' && c <= 'F' )
 	{
 		return 10 + c - 'A';
 	}
 
-	if( c >= '0' && c <= '9' )
+	if ( c >= '0' && c <= '9' )
 	{
 		return c - '0';
 	}
@@ -202,7 +202,7 @@ static void EmitString( const char *string )
 	int c1, c2;
 	int v;
 
-	while( 1 )
+	while ( 1 )
 	{
 		c1 = string[ 0 ];
 		c2 = string[ 1 ];
@@ -210,7 +210,7 @@ static void EmitString( const char *string )
 		v = ( Hex( c1 ) << 4 ) | Hex( c2 );
 		Emit1( v );
 
-		if( !string[ 2 ] )
+		if ( !string[ 2 ] )
 		{
 			break;
 		}
@@ -223,7 +223,7 @@ static void EmitRexString( byte rex, const char *string )
 {
 #if idx64
 
-	if( rex )
+	if ( rex )
 	{
 		Emit1( rex );
 	}
@@ -250,7 +250,7 @@ static void EmitRexString( byte rex, const char *string )
 
 static void EmitCommand( ELastCommand command )
 {
-	switch( command )
+	switch ( command )
 	{
 		case LAST_COMMAND_MOV_STACK_EAX:
 			EmitString( "89 04 9F" );  // mov dword ptr [edi + ebx * 4], eax
@@ -273,9 +273,9 @@ static void EmitCommand( ELastCommand command )
 
 static void EmitPushStack( vm_t *vm )
 {
-	if( !jlabel )
+	if ( !jlabel )
 	{
-		if( LastCommand == LAST_COMMAND_SUB_BL_1 )
+		if ( LastCommand == LAST_COMMAND_SUB_BL_1 )
 		{
 			// sub bl, 1
 			compiledOfs -= 3;
@@ -283,7 +283,7 @@ static void EmitPushStack( vm_t *vm )
 			return;
 		}
 
-		if( LastCommand == LAST_COMMAND_SUB_BL_2 )
+		if ( LastCommand == LAST_COMMAND_SUB_BL_2 )
 		{
 			// sub bl, 2
 			compiledOfs -= 3;
@@ -298,22 +298,22 @@ static void EmitPushStack( vm_t *vm )
 
 static void EmitMovEAXStack( vm_t *vm, int andit )
 {
-	if( !jlabel )
+	if ( !jlabel )
 	{
-		if( LastCommand == LAST_COMMAND_MOV_STACK_EAX )
+		if ( LastCommand == LAST_COMMAND_MOV_STACK_EAX )
 		{
 			// mov [edi + ebx * 4], eax
 			compiledOfs -= 3;
 			vm->instructionPointers[ instruction - 1 ] = compiledOfs;
 		}
-		else if( pop1 == OP_CONST && buf[ compiledOfs - 7 ] == 0xC7 && buf[ compiledOfs - 6 ] == 0x04 && buf[ compiledOfs - 5 ] == 0x9F )
+		else if ( pop1 == OP_CONST && buf[ compiledOfs - 7 ] == 0xC7 && buf[ compiledOfs - 6 ] == 0x04 && buf[ compiledOfs - 5 ] == 0x9F )
 		{
 			// mov [edi + ebx * 4], 0x12345678
 			compiledOfs -= 7;
 			vm->instructionPointers[ instruction - 1 ] = compiledOfs;
 			EmitString( "B8" );  // mov  eax, 0x12345678
 
-			if( andit )
+			if ( andit )
 			{
 				Emit4( lastConst & andit );
 			}
@@ -324,8 +324,8 @@ static void EmitMovEAXStack( vm_t *vm, int andit )
 
 			return;
 		}
-		else if( pop1 != OP_DIVI && pop1 != OP_DIVU && pop1 != OP_MULI && pop1 != OP_MULU &&
-		         pop1 != OP_STORE4 && pop1 != OP_STORE2 && pop1 != OP_STORE1 )
+		else if ( pop1 != OP_DIVI && pop1 != OP_DIVU && pop1 != OP_MULI && pop1 != OP_MULU &&
+		          pop1 != OP_STORE4 && pop1 != OP_STORE2 && pop1 != OP_STORE1 )
 		{
 			EmitString( "8B 04 9F" );  // mov eax, dword ptr [edi + ebx * 4]
 		}
@@ -335,7 +335,7 @@ static void EmitMovEAXStack( vm_t *vm, int andit )
 		EmitString( "8B 04 9F" );  // mov eax, dword ptr [edi + ebx * 4]
 	}
 
-	if( andit )
+	if ( andit )
 	{
 		EmitString( "25" );  // and eax, 0x12345678
 		Emit4( andit );
@@ -344,9 +344,9 @@ static void EmitMovEAXStack( vm_t *vm, int andit )
 
 void EmitMovECXStack( vm_t *vm )
 {
-	if( !jlabel )
+	if ( !jlabel )
 	{
-		if( LastCommand == LAST_COMMAND_MOV_STACK_EAX )  // mov [edi + ebx * 4], eax
+		if ( LastCommand == LAST_COMMAND_MOV_STACK_EAX ) // mov [edi + ebx * 4], eax
 		{
 			compiledOfs -= 3;
 			vm->instructionPointers[ instruction - 1 ] = compiledOfs;
@@ -354,8 +354,8 @@ void EmitMovECXStack( vm_t *vm )
 			return;
 		}
 
-		if( pop1 == OP_DIVI || pop1 == OP_DIVU || pop1 == OP_MULI || pop1 == OP_MULU ||
-		    pop1 == OP_STORE4 || pop1 == OP_STORE2 || pop1 == OP_STORE1 )
+		if ( pop1 == OP_DIVI || pop1 == OP_DIVU || pop1 == OP_MULI || pop1 == OP_MULU ||
+		     pop1 == OP_STORE4 || pop1 == OP_STORE2 || pop1 == OP_STORE1 )
 		{
 			EmitString( "89 C1" );  // mov ecx, eax
 			return;
@@ -367,9 +367,9 @@ void EmitMovECXStack( vm_t *vm )
 
 void EmitMovEDXStack( vm_t *vm, int andit )
 {
-	if( !jlabel )
+	if ( !jlabel )
 	{
-		if( LastCommand == LAST_COMMAND_MOV_STACK_EAX )
+		if ( LastCommand == LAST_COMMAND_MOV_STACK_EAX )
 		{
 			// mov dword ptr [edi + ebx * 4], eax
 			compiledOfs -= 3;
@@ -377,19 +377,19 @@ void EmitMovEDXStack( vm_t *vm, int andit )
 
 			EmitString( "8B D0" );  // mov edx, eax
 		}
-		else if( pop1 == OP_DIVI || pop1 == OP_DIVU || pop1 == OP_MULI || pop1 == OP_MULU ||
-		         pop1 == OP_STORE4 || pop1 == OP_STORE2 || pop1 == OP_STORE1 )
+		else if ( pop1 == OP_DIVI || pop1 == OP_DIVU || pop1 == OP_MULI || pop1 == OP_MULU ||
+		          pop1 == OP_STORE4 || pop1 == OP_STORE2 || pop1 == OP_STORE1 )
 		{
 			EmitString( "8B D0" );  // mov edx, eax
 		}
-		else if( pop1 == OP_CONST && buf[ compiledOfs - 7 ] == 0xC7 && buf[ compiledOfs - 6 ] == 0x07 && buf[ compiledOfs - 5 ] == 0x9F )
+		else if ( pop1 == OP_CONST && buf[ compiledOfs - 7 ] == 0xC7 && buf[ compiledOfs - 6 ] == 0x07 && buf[ compiledOfs - 5 ] == 0x9F )
 		{
 			// mov dword ptr [edi + ebx * 4], 0x12345678
 			compiledOfs -= 7;
 			vm->instructionPointers[ instruction - 1 ] = compiledOfs;
 			EmitString( "BA" );  // mov edx, 0x12345678
 
-			if( andit )
+			if ( andit )
 			{
 				Emit4( lastConst & andit );
 			}
@@ -410,7 +410,7 @@ void EmitMovEDXStack( vm_t *vm, int andit )
 		EmitString( "8B 14 9F" );  // mov edx, dword ptr [edi + ebx * 4]
 	}
 
-	if( andit )
+	if ( andit )
 	{
 		MASK_REG( "E2", andit );  // and edx, 0x12345678
 	}
@@ -492,7 +492,7 @@ static void DoSyscall( void )
 	// modify VM stack pointer for recursive VM entry
 	currentVM->programStack = programStack - 4;
 
-	if( syscallNum < 0 )
+	if ( syscallNum < 0 )
 	{
 		int      *data;
 #if idx64
@@ -505,7 +505,7 @@ static void DoSyscall( void )
 #if idx64
 		args[ 0 ] = ~syscallNum;
 
-		for( index = 1; index < ARRAY_LEN( args ); index++ )
+		for ( index = 1; index < ARRAY_LEN( args ); index++ )
 		{
 			args[ index ] = data[ index ];
 		}
@@ -518,14 +518,14 @@ static void DoSyscall( void )
 	}
 	else
 	{
-		switch( syscallNum )
+		switch ( syscallNum )
 		{
 			case VM_JMP_VIOLATION:
 					ErrJump();
 				break;
 
 			case VM_BLOCK_COPY:
-					if( opStackOfs < 1 )
+					if ( opStackOfs < 1 )
 					{
 						Com_Error( ERR_DROP, "VM_BLOCK_COPY failed due to corrupted opStack" );
 					}
@@ -695,7 +695,7 @@ void EmitJumpIns( vm_t *vm, const char *jmpop, int cdest )
 	EmitString( jmpop );  // j??? 0x12345678
 
 	// we only know all the jump addresses in the third pass
-	if( pass == 2 )
+	if ( pass == 2 )
 	{
 		Emit4( vm->instructionPointers[ cdest ] - compiledOfs - 4 );
 	}
@@ -719,7 +719,7 @@ void EmitCallIns( vm_t *vm, int cdest )
 	EmitString( "E8" );  // call 0x12345678
 
 	// we only know all the jump addresses in the third pass
-	if( pass == 2 )
+	if ( pass == 2 )
 	{
 		Emit4( vm->instructionPointers[ cdest ] - compiledOfs - 4 );
 	}
@@ -738,7 +738,7 @@ Call to constant instruction number or syscall
 
 void EmitCallConst( vm_t *vm, int cdest, int callProcOfsSyscall )
 {
-	if( cdest < 0 )
+	if ( cdest < 0 )
 	{
 		EmitString( "B8" );  // mov eax, cdest
 		Emit4( cdest );
@@ -759,7 +759,7 @@ Emits x86 branch condition as given in op
 */
 void EmitBranchConditions( vm_t *vm, int op )
 {
-	switch( op )
+	switch ( op )
 	{
 		case OP_EQ:
 				EmitJumpIns( vm, "0F 84", Constant4() );  // je 0x12345678
@@ -818,7 +818,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 
 	// we can safely perform optimizations only in case if
 	// we are 100% sure that next instruction is not a jump label
-	if( vm->jumpTableTargets && !jused[ instruction ] )
+	if ( vm->jumpTableTargets && !jused[ instruction ] )
 	{
 		op1 = code[ pc + 4 ];
 	}
@@ -827,7 +827,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 		return qfalse;
 	}
 
-	switch( op1 )
+	switch ( op1 )
 	{
 		case OP_LOAD4:
 				EmitPushStack( vm );
@@ -930,7 +930,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 
 			EmitMovEAXStack( vm, 0 );
 
-			if( iss8( v ) )
+			if ( iss8( v ) )
 			{
 				EmitString( "83 C0" );  // add eax, 0x7F
 				Emit1( v );
@@ -952,7 +952,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 
 			EmitMovEAXStack( vm, 0 );
 
-			if( iss8( v ) )
+			if ( iss8( v ) )
 			{
 				EmitString( "83 E8" );  // sub eax, 0x7F
 				Emit1( v );
@@ -974,7 +974,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 
 			EmitMovEAXStack( vm, 0 );
 
-			if( iss8( v ) )
+			if ( iss8( v ) )
 			{
 				EmitString( "6B C0" );  // imul eax, 0x7F
 				Emit1( v );
@@ -994,7 +994,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 		case OP_LSH:
 				v = NextConstant4();
 
-			if( v < 0 || v > 31 )
+			if ( v < 0 || v > 31 )
 			{
 				break;
 			}
@@ -1011,7 +1011,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 		case OP_RSHI:
 				v = NextConstant4();
 
-			if( v < 0 || v > 31 )
+			if ( v < 0 || v > 31 )
 			{
 				break;
 			}
@@ -1028,7 +1028,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 		case OP_RSHU:
 				v = NextConstant4();
 
-			if( v < 0 || v > 31 )
+			if ( v < 0 || v > 31 )
 			{
 				break;
 			}
@@ -1047,7 +1047,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 
 			EmitMovEAXStack( vm, 0 );
 
-			if( iss8( v ) )
+			if ( iss8( v ) )
 			{
 				EmitString( "83 E0" );  // and eax, 0x7F
 				Emit1( v );
@@ -1069,7 +1069,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 
 			EmitMovEAXStack( vm, 0 );
 
-			if( iss8( v ) )
+			if ( iss8( v ) )
 			{
 				EmitString( "83 C8" );  // or eax, 0x7F
 				Emit1( v );
@@ -1091,7 +1091,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 
 			EmitMovEAXStack( vm, 0 );
 
-			if( iss8( v ) )
+			if ( iss8( v ) )
 			{
 				EmitString( "83 F0" );  // xor eax, 0x7F
 				Emit1( v );
@@ -1131,7 +1131,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 
 		case OP_EQF:
 			case OP_NEF:
-					if( NextConstant4() )
+					if ( NextConstant4() )
 					{
 						break;
 					}
@@ -1144,7 +1144,7 @@ qboolean ConstOptimize( vm_t *vm, int callProcOfsSyscall )
 			EmitString( "25" );  // and eax, 0x7FFFFFFF
 			Emit4( 0x7FFFFFFF );
 
-			if( op1 == OP_EQF )
+			if ( op1 == OP_EQF )
 			{
 				EmitJumpIns( vm, "0F 84", Constant4() );  // jz 0x12345678
 			}
@@ -1210,7 +1210,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 	// ensure that the optimisation pass knows about all the jump
 	// table targets
-	for( i = 0; i < vm->numJumpTableTargets; i++ )
+	for ( i = 0; i < vm->numJumpTableTargets; i++ )
 	{
 		jused[ * ( int * )( vm->jumpTableTargets + ( i * sizeof( int ) ) ) ] = 1;
 	}
@@ -1223,7 +1223,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 	callProcOfsSyscall = EmitCallProcedure( vm, callDoSyscallOfs );
 	vm->entryOfs = compiledOfs;
 
-	for( pass = 0; pass < 3; pass++ )
+	for ( pass = 0; pass < 3; pass++ )
 	{
 		oc0 = -23423;
 		oc1 = -234354;
@@ -1238,9 +1238,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 		LastCommand = LAST_COMMAND_NONE;
 
-		while( instruction < header->instructionCount )
+		while ( instruction < header->instructionCount )
 		{
-			if( compiledOfs > maxLength - 16 )
+			if ( compiledOfs > maxLength - 16 )
 			{
 				VMFREE_BUFFERS();
 				Com_Error( ERR_DROP, "VM_CompileX86: maxLength exceeded" );
@@ -1248,7 +1248,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 			vm->instructionPointers[ instruction ] = compiledOfs;
 
-			if( !vm->jumpTableTargets )
+			if ( !vm->jumpTableTargets )
 			{
 				jlabel = 1;
 			}
@@ -1259,7 +1259,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 			instruction++;
 
-			if( pc > header->codeLength )
+			if ( pc > header->codeLength )
 			{
 				VMFREE_BUFFERS();
 				Com_Error( ERR_DROP, "VM_CompileX86: pc > header->codeLength" );
@@ -1268,7 +1268,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 			op = code[ pc ];
 			pc++;
 
-			switch( op )
+			switch ( op )
 			{
 				case 0:
 						break;
@@ -1283,7 +1283,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_CONST:
-						if( ConstOptimize( vm, callProcOfsSyscall ) )
+						if ( ConstOptimize( vm, callProcOfsSyscall ) )
 						{
 							break;
 						}
@@ -1294,7 +1294,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 					Emit4( lastConst );
 
-					if( code[ pc ] == OP_JUMP )
+					if ( code[ pc ] == OP_JUMP )
 					{
 						JUSED( lastConst );
 					}
@@ -1345,9 +1345,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					break;
 
 				case OP_LOAD4:
-						if( code[ pc ] == OP_CONST && code[ pc + 5 ] == OP_ADD && code[ pc + 6 ] == OP_STORE4 )
+						if ( code[ pc ] == OP_CONST && code[ pc + 5 ] == OP_ADD && code[ pc + 6 ] == OP_STORE4 )
 						{
-							if( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
+							if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 							{
 								compiledOfs -= 12;
 								vm->instructionPointers[ instruction - 1 ] = compiledOfs;
@@ -1358,7 +1358,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 							EmitMovEDXStack( vm, vm->dataMask );
 
-							if( v == 1 && oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
+							if ( v == 1 && oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 							{
 #if idx64
 								EmitRexString( 0x41, "FF 04 11" );  // inc dword ptr [r9 + edx]
@@ -1378,7 +1378,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 								EmitString( "05" );  // add eax, v
 								Emit4( v );
 
-								if( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
+								if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 								{
 #if idx64
 									EmitRexString( 0x41, "89 04 11" );  // mov dword ptr [r9 + edx], eax
@@ -1408,9 +1408,9 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 							break;
 						}
 
-					if( code[ pc ] == OP_CONST && code[ pc + 5 ] == OP_SUB && code[ pc + 6 ] == OP_STORE4 )
+					if ( code[ pc ] == OP_CONST && code[ pc + 5 ] == OP_SUB && code[ pc + 6 ] == OP_STORE4 )
 					{
-						if( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
+						if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 						{
 							compiledOfs -= 12;
 							vm->instructionPointers[ instruction - 1 ] = compiledOfs;
@@ -1421,7 +1421,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 						EmitMovEDXStack( vm, vm->dataMask );
 
-						if( v == 1 && oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
+						if ( v == 1 && oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 						{
 #if idx64
 							EmitRexString( 0x41, "FF 0C 11" );  // dec dword ptr [r9 + edx]
@@ -1441,7 +1441,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 							EmitString( "2D" );  // sub eax, v
 							Emit4( v );
 
-							if( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
+							if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL )
 							{
 #if idx64
 								EmitRexString( 0x41, "89 04 11" );  // mov dword ptr [r9 + edx], eax
@@ -1471,7 +1471,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 						break;
 					}
 
-					if( buf[ compiledOfs - 3 ] == 0x89 && buf[ compiledOfs - 2 ] == 0x04 && buf[ compiledOfs - 1 ] == 0x9F )
+					if ( buf[ compiledOfs - 3 ] == 0x89 && buf[ compiledOfs - 2 ] == 0x04 && buf[ compiledOfs - 1 ] == 0x9F )
 					{
 						compiledOfs -= 3;
 						vm->instructionPointers[ instruction - 1 ] = compiledOfs;
@@ -1586,7 +1586,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					EmitString( "D8 5C 9F 08" );  // fcomp dword ptr 8[edi + ebx * 4]
 					EmitString( "DF E0" );  // fnstsw ax
 
-					switch( op )
+					switch ( op )
 					{
 						case OP_EQF:
 								EmitString( "F6 C4 40" );  // test  ah,0x40
@@ -1830,7 +1830,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 #ifdef VM_X86_MMAP
 	vm->codeBase = mmap( NULL, compiledOfs, PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0 );
 
-	if( vm->codeBase == MAP_FAILED )
+	if ( vm->codeBase == MAP_FAILED )
 	{
 		Com_Error( ERR_FATAL, "VM_CompileX86: can't mmap memory" );
 	}
@@ -1839,7 +1839,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 	// allocate memory with EXECUTE permissions under windows.
 	vm->codeBase = VirtualAlloc( NULL, compiledOfs, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
 
-	if( !vm->codeBase )
+	if ( !vm->codeBase )
 	{
 		Com_Error( ERR_FATAL, "VM_CompileX86: VirtualAlloc failed" );
 	}
@@ -1847,7 +1847,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 #else
 	vm->codeBase = malloc( compiledOfs );
 
-	if( !vm->codeBase )
+	if ( !vm->codeBase )
 	{
 		Com_Error( ERR_FATAL, "VM_CompileX86: malloc failed" );
 	}
@@ -1858,7 +1858,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 
 #ifdef VM_X86_MMAP
 
-	if( mprotect( vm->codeBase, compiledOfs, PROT_READ | PROT_EXEC ) )
+	if ( mprotect( vm->codeBase, compiledOfs, PROT_READ | PROT_EXEC ) )
 	{
 		Com_Error( ERR_FATAL, "VM_CompileX86: mprotect failed" );
 	}
@@ -1868,7 +1868,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 		DWORD oldProtect = 0;
 
 		// remove write permissions.
-		if( !VirtualProtect( vm->codeBase, compiledOfs, PAGE_EXECUTE_READ, &oldProtect ) )
+		if ( !VirtualProtect( vm->codeBase, compiledOfs, PAGE_EXECUTE_READ, &oldProtect ) )
 		{
 			Com_Error( ERR_FATAL, "VM_CompileX86: VirtualProtect failed" );
 		}
@@ -1883,7 +1883,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 	vm->destroy = VM_Destroy_Compiled;
 
 	// offset all the instruction pointers for the new location
-	for( i = 0; i < header->instructionCount; i++ )
+	for ( i = 0; i < header->instructionCount; i++ )
 	{
 		vm->instructionPointers[ i ] += ( intptr_t ) vm->codeBase;
 	}
@@ -1997,12 +1997,12 @@ int VM_CallCompiled( vm_t *vm, int *args )
 	);
 #endif
 
-	if( opStackOfs != 1 || *opStack != 0xDEADBEEF )
+	if ( opStackOfs != 1 || *opStack != 0xDEADBEEF )
 	{
 		Com_Error( ERR_DROP, "opStack corrupted in compiled code" );
 	}
 
-	if( programStack != stackOnEntry - 48 )
+	if ( programStack != stackOnEntry - 48 )
 	{
 		Com_Error( ERR_DROP, "programStack corrupted in compiled code" );
 	}

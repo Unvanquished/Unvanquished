@@ -52,11 +52,11 @@ float LibVarStringValue( char *string )
 	int   dotfound = 0;
 	float value = 0;
 
-	while( *string )
+	while ( *string )
 	{
-		if( *string < '0' || *string > '9' )
+		if ( *string < '0' || *string > '9' )
 		{
-			if( dotfound || *string != '.' )
+			if ( dotfound || *string != '.' )
 			{
 				return 0;
 			} //end if
@@ -67,7 +67,7 @@ float LibVarStringValue( char *string )
 			} //end if
 		} //end if
 
-		if( dotfound )
+		if ( dotfound )
 		{
 			value = value + ( float )( *string - '0' ) / ( float ) dotfound;
 			dotfound *= 10;
@@ -111,7 +111,7 @@ libvar_t       *LibVarAlloc( char *var_name )
 //===========================================================================
 void LibVarDeAlloc( libvar_t *v )
 {
-	if( v->string )
+	if ( v->string )
 	{
 		FreeMemory( v->string );
 	}
@@ -129,7 +129,7 @@ void LibVarDeAllocAll( void )
 {
 	libvar_t *v;
 
-	for( v = libvarlist; v; v = libvarlist )
+	for ( v = libvarlist; v; v = libvarlist )
 	{
 		libvarlist = libvarlist->next;
 		LibVarDeAlloc( v );
@@ -148,9 +148,9 @@ libvar_t       *LibVarGet( char *var_name )
 {
 	libvar_t *v;
 
-	for( v = libvarlist; v; v = v->next )
+	for ( v = libvarlist; v; v = v->next )
 	{
-		if( !Q_stricmp( v->name, var_name ) )
+		if ( !Q_stricmp( v->name, var_name ) )
 		{
 			return v;
 		} //end if
@@ -171,7 +171,7 @@ char           *LibVarGetString( char *var_name )
 
 	v = LibVarGet( var_name );
 
-	if( v )
+	if ( v )
 	{
 		return v->string;
 	} //end if
@@ -193,7 +193,7 @@ float LibVarGetValue( char *var_name )
 
 	v = LibVarGet( var_name );
 
-	if( v )
+	if ( v )
 	{
 		return v->value;
 	} //end if
@@ -215,7 +215,7 @@ libvar_t       *LibVar( char *var_name, char *value )
 
 	v = LibVarGet( var_name );
 
-	if( v )
+	if ( v )
 	{
 		return v;
 	}
@@ -273,7 +273,7 @@ void LibVarSet( char *var_name, char *value )
 
 	v = LibVarGet( var_name );
 
-	if( v )
+	if ( v )
 	{
 		FreeMemory( v->string );
 	} //end if
@@ -303,7 +303,7 @@ qboolean LibVarChanged( char *var_name )
 
 	v = LibVarGet( var_name );
 
-	if( v )
+	if ( v )
 	{
 		return v->modified;
 	} //end if
@@ -325,7 +325,7 @@ void LibVarSetNotModified( char *var_name )
 
 	v = LibVarGet( var_name );
 
-	if( v )
+	if ( v )
 	{
 		v->modified = qfalse;
 	} //end if

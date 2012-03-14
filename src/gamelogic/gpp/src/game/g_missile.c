@@ -43,12 +43,12 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace )
 	dot = DotProduct( velocity, trace->plane.normal );
 	VectorMA( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
 
-	if( ent->s.eFlags & EF_BOUNCE_HALF )
+	if ( ent->s.eFlags & EF_BOUNCE_HALF )
 	{
 		VectorScale( ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta );
 
 		// check for stop
-		if( trace->plane.normal[ 2 ] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 )
+		if ( trace->plane.normal[ 2 ] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 )
 		{
 			G_SetOrigin( ent, trace->endpos );
 			return;
@@ -82,8 +82,8 @@ void G_ExplodeMissile( gentity_t *ent )
 
 	ent->s.eType = ET_GENERAL;
 
-	if( ent->s.weapon != WP_LOCKBLOB_LAUNCHER &&
-	    ent->s.weapon != WP_FLAMER )
+	if ( ent->s.weapon != WP_LOCKBLOB_LAUNCHER &&
+	     ent->s.weapon != WP_FLAMER )
 	{
 		G_AddEvent( ent, EV_MISSILE_MISS, DirToByte( dir ) );
 	}
@@ -91,7 +91,7 @@ void G_ExplodeMissile( gentity_t *ent )
 	ent->freeAfterEvent = qtrue;
 
 	// splash damage
-	if( ent->splashDamage )
+	if ( ent->splashDamage )
 	{
 		G_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage,
 		                ent->splashRadius, ent, ent->splashMethodOfDeath );
@@ -118,13 +118,13 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	attacker = &g_entities[ ent->r.ownerNum ];
 
 	// check for bounce
-	if( !other->takedamage &&
-	    ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) )
+	if ( !other->takedamage &&
+	     ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) )
 	{
 		G_BounceMissile( ent, trace );
 
 		//only play a sound if requested
-		if( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
+		if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
 		{
 			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
 		}
@@ -132,22 +132,22 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		return;
 	}
 
-	if( !strcmp( ent->classname, "grenade" ) )
+	if ( !strcmp( ent->classname, "grenade" ) )
 	{
 		//grenade doesn't explode on impact
 		G_BounceMissile( ent, trace );
 
 		//only play a sound if requested
-		if( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
+		if ( !( ent->s.eFlags & EF_NO_BOUNCE_SOUND ) )
 		{
 			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
 		}
 
 		return;
 	}
-	else if( !strcmp( ent->classname, "lockblob" ) )
+	else if ( !strcmp( ent->classname, "lockblob" ) )
 	{
-		if( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+		if ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
 			other->client->lastLockTime = level.time;
@@ -155,9 +155,9 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			other->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
 		}
 	}
-	else if( !strcmp( ent->classname, "slowblob" ) )
+	else if ( !strcmp( ent->classname, "slowblob" ) )
 	{
-		if( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+		if ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
 			other->client->lastSlowTime = level.time;
@@ -165,11 +165,11 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			other->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
 		}
 	}
-	else if( !strcmp( ent->classname, "hive" ) )
+	else if ( !strcmp( ent->classname, "hive" ) )
 	{
-		if( other->s.eType == ET_BUILDABLE && other->s.modelindex == BA_A_HIVE )
+		if ( other->s.eType == ET_BUILDABLE && other->s.modelindex == BA_A_HIVE )
 		{
-			if( !ent->parent )
+			if ( !ent->parent )
 			{
 				G_Printf( S_COLOR_YELLOW "WARNING: hive entity has no parent in G_MissileImpact\n" );
 			}
@@ -190,7 +190,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			ent->nextthink = level.time + FRAMETIME;
 
 			//only damage humans
-			if( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			if ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 			{
 				returnAfterDamage = qtrue;
 			}
@@ -202,16 +202,16 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 
 	// impact damage
-	if( other->takedamage )
+	if ( other->takedamage )
 	{
 		// FIXME: wrong damage direction?
-		if( ent->damage )
+		if ( ent->damage )
 		{
 			vec3_t velocity;
 
 			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, velocity );
 
-			if( VectorLength( velocity ) == 0 )
+			if ( VectorLength( velocity ) == 0 )
 			{
 				velocity[ 2 ] = 1; // stepped on a grenade
 			}
@@ -221,7 +221,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		}
 	}
 
-	if( returnAfterDamage )
+	if ( returnAfterDamage )
 	{
 		return;
 	}
@@ -229,13 +229,13 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	// is it cheaper in bandwidth to just remove this ent and create a new
 	// one, rather than changing the missile into the explosion?
 
-	if( other->takedamage &&
-	    ( other->s.eType == ET_PLAYER || other->s.eType == ET_BUILDABLE ) )
+	if ( other->takedamage &&
+	     ( other->s.eType == ET_PLAYER || other->s.eType == ET_BUILDABLE ) )
 	{
 		G_AddEvent( ent, EV_MISSILE_HIT, DirToByte( trace->plane.normal ) );
 		ent->s.otherEntityNum = other->s.number;
 	}
-	else if( trace->surfaceFlags & SURF_METAL )
+	else if ( trace->surfaceFlags & SURF_METAL )
 	{
 		G_AddEvent( ent, EV_MISSILE_MISS_METAL, DirToByte( trace->plane.normal ) );
 	}
@@ -254,7 +254,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	G_SetOrigin( ent, trace->endpos );
 
 	// splash damage (doesn't apply to person directly hit)
-	if( ent->splashDamage )
+	if ( ent->splashDamage )
 	{
 		G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius,
 		                other, ent->splashMethodOfDeath );
@@ -286,15 +286,15 @@ void G_RunMissile( gentity_t *ent )
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
 	            origin, passent, ent->clipmask );
 
-	if( tr.startsolid || tr.allsolid )
+	if ( tr.startsolid || tr.allsolid )
 	{
 		tr.fraction = 0.0f;
 		VectorCopy( ent->r.currentOrigin, tr.endpos );
 	}
 
-	if( tr.fraction < 1.0f )
+	if ( tr.fraction < 1.0f )
 	{
-		if( !ent->pointAgainstWorld || tr.contents & CONTENTS_BODY )
+		if ( !ent->pointAgainstWorld || tr.contents & CONTENTS_BODY )
 		{
 			// We hit an entity or we don't care
 			impact = qtrue;
@@ -304,14 +304,14 @@ void G_RunMissile( gentity_t *ent )
 			trap_Trace( &tr, ent->r.currentOrigin, NULL, NULL, origin,
 			            passent, ent->clipmask );
 
-			if( tr.fraction < 1.0f )
+			if ( tr.fraction < 1.0f )
 			{
 				// Hit the world with point trace
 				impact = qtrue;
 			}
 			else
 			{
-				if( tr.contents & CONTENTS_BODY )
+				if ( tr.contents & CONTENTS_BODY )
 				{
 					// Hit an entity
 					impact = qtrue;
@@ -321,7 +321,7 @@ void G_RunMissile( gentity_t *ent )
 					trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
 					            origin, passent, CONTENTS_BODY );
 
-					if( tr.fraction < 1.0f )
+					if ( tr.fraction < 1.0f )
 					{
 						impact = qtrue;
 					}
@@ -332,9 +332,9 @@ void G_RunMissile( gentity_t *ent )
 
 	VectorCopy( tr.endpos, ent->r.currentOrigin );
 
-	if( impact )
+	if ( impact )
 	{
-		if( tr.surfaceFlags & SURF_NOIMPACT )
+		if ( tr.surfaceFlags & SURF_NOIMPACT )
 		{
 			// Never explode or bounce on sky
 			G_FreeEntity( ent );
@@ -343,7 +343,7 @@ void G_RunMissile( gentity_t *ent )
 
 		G_MissileImpact( ent, &tr );
 
-		if( ent->s.eType != ET_MISSILE )
+		if ( ent->s.eType != ET_MISSILE )
 		{
 			return; // exploded
 		}
@@ -517,7 +517,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	bolt->classname = "lcannon";
 	bolt->pointAgainstWorld = qtrue;
 
-	if( damage == LCANNON_DAMAGE )
+	if ( damage == LCANNON_DAMAGE )
 	{
 		bolt->nextthink = level.time;
 	}
@@ -551,7 +551,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	charge = ( float )( damage - LCANNON_SECONDARY_DAMAGE ) / LCANNON_DAMAGE;
 	bolt->s.torsoAnim = charge * 255;
 
-	if( bolt->s.torsoAnim < 0 )
+	if ( bolt->s.torsoAnim < 0 )
 	{
 		bolt->s.torsoAnim = 0;
 	}
@@ -630,7 +630,7 @@ void AHive_SearchAndDestroy( gentity_t *self )
 	int       i;
 	float     d, nearest;
 
-	if( level.time > self->timestamp )
+	if ( level.time > self->timestamp )
 	{
 		VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
 		self->s.pos.trType = TR_STATIONARY;
@@ -645,24 +645,24 @@ void AHive_SearchAndDestroy( gentity_t *self )
 	nearest = DistanceSquared( self->r.currentOrigin, self->target_ent->r.currentOrigin );
 
 	//find the closest human
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		ent = &g_entities[ i ];
 
-		if( ent->flags & FL_NOTARGET )
+		if ( ent->flags & FL_NOTARGET )
 		{
 			continue;
 		}
 
-		if( ent->client &&
-		    ent->health > 0 &&
-		    ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
-		    nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
+		if ( ent->client &&
+		     ent->health > 0 &&
+		     ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
+		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
 			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
 			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask );
 
-			if( tr.entityNum != ENTITYNUM_WORLD )
+			if ( tr.entityNum != ENTITYNUM_WORLD )
 			{
 				nearest = d;
 				self->target_ent = ent;

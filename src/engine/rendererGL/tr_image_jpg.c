@@ -109,7 +109,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 
 	len = ri.FS_ReadFile( ( char * ) filename, &fbuffer.v );
 
-	if( !fbuffer.b || len < 0 )
+	if ( !fbuffer.b || len < 0 )
 	{
 		return;
 	}
@@ -168,9 +168,9 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 
 	pixelcount = cinfo.output_width * cinfo.output_height;
 
-	if( !cinfo.output_width || !cinfo.output_height
-	    || ( ( pixelcount * 4 ) / cinfo.output_width ) / 4 != cinfo.output_height
-	    || pixelcount > 0x1FFFFFFF || cinfo.output_components != 3 )
+	if ( !cinfo.output_width || !cinfo.output_height
+	     || ( ( pixelcount * 4 ) / cinfo.output_width ) / 4 != cinfo.output_height
+	     || pixelcount > 0x1FFFFFFF || cinfo.output_components != 3 )
 	{
 		// Free the memory to make sure we don't leak memory
 		ri.FS_FreeFile( fbuffer.v );
@@ -194,7 +194,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 	/* Here we use the library's state variable cinfo.output_scanline as the
 	 * loop counter, so that we don't have to keep track ourselves.
 	 */
-	while( cinfo.output_scanline < cinfo.output_height )
+	while ( cinfo.output_scanline < cinfo.output_height )
 	{
 		/* jpeg_read_scanlines expects an array of pointers to scanlines.
 		 * Here the array is only one element long, but you could ask for
@@ -218,7 +218,7 @@ void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height
 		buf[ --dindex ] = buf[ --sindex ];
 		buf[ --dindex ] = buf[ --sindex ];
 	}
-	while( sindex );
+	while ( sindex );
 
 	*pic = out;
 
@@ -346,7 +346,7 @@ static void jpegDest( j_compress_ptr cinfo, byte *outfile, int size )
 	 * manager serially with the same JPEG object, because their private object
 	 * sizes may be different.  Caveat programmer.
 	 */
-	if( cinfo->dest == NULL )
+	if ( cinfo->dest == NULL )
 	{
 		/* first time for this JPEG object? */
 		cinfo->dest = ( struct jpeg_destination_mgr * )
@@ -402,7 +402,7 @@ int SaveJPGToBuffer( byte *buffer, size_t bufSize, int quality, int image_width,
 	jpeg_set_quality( &cinfo, quality, TRUE /* limit to baseline-JPEG values */ );
 
 	/* If quality is set high, disable chroma subsampling */
-	if( quality >= 85 )
+	if ( quality >= 85 )
 	{
 		cinfo.comp_info[ 0 ].h_samp_factor = 1;
 		cinfo.comp_info[ 0 ].v_samp_factor = 1;
@@ -415,7 +415,7 @@ int SaveJPGToBuffer( byte *buffer, size_t bufSize, int quality, int image_width,
 	/*           jpeg_write_scanlines(...); */
 	row_stride = image_width * cinfo.input_components; // + padding;  /* JSAMPLEs per row in image_buffer */
 
-	while( cinfo.next_scanline < cinfo.image_height )
+	while ( cinfo.next_scanline < cinfo.image_height )
 	{
 		/* jpeg_write_scanlines expects an array of pointers to scanlines.
 		 * Here the array is only one element long, but you could pass

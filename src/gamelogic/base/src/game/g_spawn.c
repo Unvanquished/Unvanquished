@@ -27,15 +27,15 @@ qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
 {
 	int i;
 
-	if( !level.spawning )
+	if ( !level.spawning )
 	{
 		*out = ( char * ) defaultString;
 //    G_Error( "G_SpawnString() called while not spawning" );
 	}
 
-	for( i = 0; i < level.numSpawnVars; i++ )
+	for ( i = 0; i < level.numSpawnVars; i++ )
 	{
-		if( !Q_stricmp( key, level.spawnVars[ i ][ 0 ] ) )
+		if ( !Q_stricmp( key, level.spawnVars[ i ][ 0 ] ) )
 		{
 			*out = level.spawnVars[ i ][ 1 ];
 			return qtrue;
@@ -319,16 +319,16 @@ qboolean G_CallSpawn( gentity_t *ent )
 	spawn_t     *s;
 	buildable_t buildable;
 
-	if( !ent->classname )
+	if ( !ent->classname )
 	{
 		G_Printf( "G_CallSpawn: NULL classname\n" );
 		return qfalse;
 	}
 
 	//check buildable spawn functions
-	if( ( buildable = BG_FindBuildNumForEntityName( ent->classname ) ) != BA_NONE )
+	if ( ( buildable = BG_FindBuildNumForEntityName( ent->classname ) ) != BA_NONE )
 	{
-		if( buildable == BA_A_SPAWN || buildable == BA_H_SPAWN )
+		if ( buildable == BA_A_SPAWN || buildable == BA_H_SPAWN )
 		{
 			ent->s.angles[ YAW ] += 180.0f;
 			AngleNormalize360( ent->s.angles[ YAW ] );
@@ -339,9 +339,9 @@ qboolean G_CallSpawn( gentity_t *ent )
 	}
 
 	// check normal spawn functions
-	for( s = spawns; s->name; s++ )
+	for ( s = spawns; s->name; s++ )
 	{
-		if( !strcmp( s->name, ent->classname ) )
+		if ( !strcmp( s->name, ent->classname ) )
 		{
 			// found it
 			s->spawn( ent );
@@ -373,13 +373,13 @@ char *G_NewString( const char *string )
 	new_p = newb;
 
 	// turn \n into a real linefeed
-	for( i = 0; i < l; i++ )
+	for ( i = 0; i < l; i++ )
 	{
-		if( string[ i ] == '\\' && i < l - 1 )
+		if ( string[ i ] == '\\' && i < l - 1 )
 		{
 			i++;
 
-			if( string[ i ] == 'n' )
+			if ( string[ i ] == 'n' )
 			{
 				*new_p++ = '\n';
 			}
@@ -413,14 +413,14 @@ void G_ParseField( const char *key, const char *value, gentity_t *ent )
 	vec3_t  vec;
 	vec4_t  vec4;
 
-	for( f = fields; f->name; f++ )
+	for ( f = fields; f->name; f++ )
 	{
-		if( !Q_stricmp( f->name, key ) )
+		if ( !Q_stricmp( f->name, key ) )
 		{
 			// found it
 			b = ( byte * ) ent;
 
-			switch( f->type )
+			switch ( f->type )
 			{
 				case F_LSTRING:
 					* ( char ** )( b + f->ofs ) = G_NewString( value );
@@ -484,14 +484,14 @@ void G_SpawnGEntityFromSpawnVars( void )
 	// get the next free entity
 	ent = G_Spawn();
 
-	for( i = 0; i < level.numSpawnVars; i++ )
+	for ( i = 0; i < level.numSpawnVars; i++ )
 	{
 		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], ent );
 	}
 
 	G_SpawnInt( "notq3a", "0", &i );
 
-	if( i )
+	if ( i )
 	{
 		G_FreeEntity( ent );
 		return;
@@ -502,7 +502,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
 
 	// if we didn't get a classname, don't bother spawning anything
-	if( !G_CallSpawn( ent ) )
+	if ( !G_CallSpawn( ent ) )
 	{
 		G_FreeEntity( ent );
 	}
@@ -520,7 +520,7 @@ char *G_AddSpawnVarToken( const char *string )
 
 	l = strlen( string );
 
-	if( level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
+	if ( level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
 	{
 		G_Error( "G_AddSpawnVarToken: MAX_SPAWN_CHARS" );
 	}
@@ -552,43 +552,43 @@ qboolean G_ParseSpawnVars( void )
 	level.numSpawnVarChars = 0;
 
 	// parse the opening brace
-	if( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
+	if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
 	{
 		// end of spawn string
 		return qfalse;
 	}
 
-	if( com_token[ 0 ] != '{' )
+	if ( com_token[ 0 ] != '{' )
 	{
 		G_Error( "G_ParseSpawnVars: found %s when expecting {", com_token );
 	}
 
 	// go through all the key / value pairs
-	while( 1 )
+	while ( 1 )
 	{
 		// parse key
-		if( !trap_GetEntityToken( keyname, sizeof( keyname ) ) )
+		if ( !trap_GetEntityToken( keyname, sizeof( keyname ) ) )
 		{
 			G_Error( "G_ParseSpawnVars: EOF without closing brace" );
 		}
 
-		if( keyname[ 0 ] == '}' )
+		if ( keyname[ 0 ] == '}' )
 		{
 			break;
 		}
 
 		// parse value
-		if( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
+		if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
 		{
 			G_Error( "G_ParseSpawnVars: EOF without closing brace" );
 		}
 
-		if( com_token[ 0 ] == '}' )
+		if ( com_token[ 0 ] == '}' )
 		{
 			G_Error( "G_ParseSpawnVars: closing brace without data" );
 		}
 
-		if( level.numSpawnVars == MAX_SPAWN_VARS )
+		if ( level.numSpawnVars == MAX_SPAWN_VARS )
 		{
 			G_Error( "G_ParseSpawnVars: MAX_SPAWN_VARS" );
 		}
@@ -614,7 +614,7 @@ void SP_worldspawn( void )
 
 	G_SpawnString( "classname", "", &s );
 
-	if( Q_stricmp( s, "worldspawn" ) )
+	if ( Q_stricmp( s, "worldspawn" ) )
 	{
 		G_Error( "SP_worldspawn: The first entity isn't 'worldspawn'" );
 	}
@@ -680,12 +680,12 @@ void SP_worldspawn( void )
 	// see if we want a warmup time
 	trap_SetConfigstring( CS_WARMUP, "" );
 
-	if( g_restarted.integer )
+	if ( g_restarted.integer )
 	{
 		trap_Cvar_Set( "g_restarted", "0" );
 		level.warmupTime = 0;
 	}
-	else if( g_doWarmup.integer )
+	else if ( g_doWarmup.integer )
 	{
 		// Turn it on
 		level.warmupTime = -1;
@@ -710,7 +710,7 @@ void G_SpawnEntitiesFromString( void )
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
 	// needed by a level (setting configstrings or cvars, etc)
-	if( !G_ParseSpawnVars() )
+	if ( !G_ParseSpawnVars() )
 	{
 		G_Error( "SpawnEntities: no entities" );
 	}
@@ -718,7 +718,7 @@ void G_SpawnEntitiesFromString( void )
 	SP_worldspawn();
 
 	// parse ents
-	while( G_ParseSpawnVars() )
+	while ( G_ParseSpawnVars() )
 	{
 		G_SpawnGEntityFromSpawnVars();
 	}

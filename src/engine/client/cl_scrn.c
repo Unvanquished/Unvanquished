@@ -77,7 +77,7 @@ void SCR_AdjustFrom640( float *x, float *y, float *w, float *h )
 #if 0
 
 	// adjust for wide screens
-	if( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
+	if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
 	{
 		*x += 0.5 * ( cls.glconfig.vidWidth - ( cls.glconfig.vidHeight * 640 / 480 ) );
 	}
@@ -88,22 +88,22 @@ void SCR_AdjustFrom640( float *x, float *y, float *w, float *h )
 	xscale = cls.glconfig.vidWidth / 640.0;
 	yscale = cls.glconfig.vidHeight / 480.0;
 
-	if( x )
+	if ( x )
 	{
 		*x *= xscale;
 	}
 
-	if( y )
+	if ( y )
 	{
 		*y *= yscale;
 	}
 
-	if( w )
+	if ( w )
 	{
 		*w *= xscale;
 	}
 
-	if( h )
+	if ( h )
 	{
 		*h *= yscale;
 	}
@@ -151,12 +151,12 @@ static void SCR_DrawChar( int x, int y, float size, int ch )
 
 	ch &= 255;
 
-	if( ch == ' ' )
+	if ( ch == ' ' )
 	{
 		return;
 	}
 
-	if( y < -size )
+	if ( y < -size )
 	{
 		return;
 	}
@@ -187,13 +187,13 @@ void SCR_DrawConsoleFontChar( float x, float y, int ch )
 	float       yadj = glyph->top;
 	float       xadj = ( SCR_ConsoleFontCharWidth( ch ) - glyph->xSkip ) / 2.0;
 
-	if( cls.useLegacyConsoleFont )
+	if ( cls.useLegacyConsoleFont )
 	{
 		SCR_DrawSmallChar( ( int ) x, ( int ) y, ch );
 		return;
 	}
 
-	if( ch == ' ' ) { return; }
+	if ( ch == ' ' ) { return; }
 
 	re.DrawStretchPic( x + xadj, y - yadj, glyph->imageWidth, glyph->imageHeight,
 	                   glyph->s, glyph->t,
@@ -213,12 +213,12 @@ void SCR_DrawSmallChar( int x, int y, int ch )
 
 	ch &= 255;
 
-	if( ch == ' ' )
+	if ( ch == ' ' )
 	{
 		return;
 	}
 
-	if( y < -SMALLCHAR_HEIGHT )
+	if ( y < -SMALLCHAR_HEIGHT )
 	{
 		return;
 	}
@@ -256,9 +256,9 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 	s = string;
 	xx = x;
 
-	while( *s )
+	while ( *s )
 	{
-		if( !noColorEscape && Q_IsColorString( s ) )
+		if ( !noColorEscape && Q_IsColorString( s ) )
 		{
 			s += 2;
 			continue;
@@ -274,13 +274,13 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 	xx = x;
 	re.SetColor( setColor );
 
-	while( *s )
+	while ( *s )
 	{
-		if( Q_IsColorString( s ) )
+		if ( Q_IsColorString( s ) )
 		{
-			if( !forceColor )
+			if ( !forceColor )
 			{
-				if( * ( s + 1 ) == COLOR_NULL )
+				if ( * ( s + 1 ) == COLOR_NULL )
 				{
 					memcpy( color, setColor, sizeof( color ) );
 				}
@@ -294,7 +294,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 				re.SetColor( color );
 			}
 
-			if( !noColorEscape )
+			if ( !noColorEscape )
 			{
 				s += 2;
 				continue;
@@ -344,13 +344,13 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 	xx = x;
 	re.SetColor( setColor );
 
-	while( *s )
+	while ( *s )
 	{
-		if( Q_IsColorString( s ) )
+		if ( Q_IsColorString( s ) )
 		{
-			if( !forceColor )
+			if ( !forceColor )
 			{
-				if( * ( s + 1 ) == COLOR_NULL )
+				if ( * ( s + 1 ) == COLOR_NULL )
 				{
 					memcpy( color, setColor, sizeof( color ) );
 				}
@@ -363,7 +363,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 				re.SetColor( color );
 			}
 
-			if( !noColorEscape )
+			if ( !noColorEscape )
 			{
 				s += 2;
 				continue;
@@ -386,9 +386,9 @@ static int SCR_Strlen( const char *str )
 	const char *s = str;
 	int        count = 0;
 
-	while( *s )
+	while ( *s )
 	{
-		if( Q_IsColorString( s ) )
+		if ( Q_IsColorString( s ) )
 		{
 			s += 2;
 		}
@@ -419,7 +419,7 @@ SCR_DrawDemoRecording
 */
 void SCR_DrawDemoRecording( void )
 {
-	if( !clc.demorecording )
+	if ( !clc.demorecording )
 	{
 		return;
 	}
@@ -441,44 +441,44 @@ void SCR_DrawVoipMeter( void )
 	char string[ 256 ];
 	int  limit, i;
 
-	if( !cl_voipShowMeter->integer )
+	if ( !cl_voipShowMeter->integer )
 	{
 		return; // player doesn't want to show meter at all.
 	}
-	else if( !cl_voipSend->integer )
+	else if ( !cl_voipSend->integer )
 	{
 		return; // not recording at the moment.
 	}
-	else if( cls.state != CA_ACTIVE )
+	else if ( cls.state != CA_ACTIVE )
 	{
 		return; // not connected to a server.
 	}
-	else if( !clc.voipEnabled )
+	else if ( !clc.voipEnabled )
 	{
 		return; // server doesn't support VoIP.
 	}
-	else if( clc.demoplaying )
+	else if ( clc.demoplaying )
 	{
 		return; // playing back a demo.
 	}
-	else if( !cl_voip->integer )
+	else if ( !cl_voip->integer )
 	{
 		return; // client has VoIP support disabled.
 	}
 
 	limit = ( int )( clc.voipPower * 10.0f );
 
-	if( limit > 10 )
+	if ( limit > 10 )
 	{
 		limit = 10;
 	}
 
-	for( i = 0; i < limit; i++ )
+	for ( i = 0; i < limit; i++ )
 	{
 		buffer[ i ] = '*';
 	}
 
-	while( i < 10 )
+	while ( i < 10 )
 	{
 		buffer[ i++ ] = ' ';
 	}
@@ -499,48 +499,48 @@ void SCR_DrawVoipSender( void )
 	char string[ 256 ];
 
 	// Little bit of a hack here, but its the only thing i could come up with :
-	if( cls.voipTime > cls.realtime )
+	if ( cls.voipTime > cls.realtime )
 	{
-		if( !cl_voipShowSender->integer )
+		if ( !cl_voipShowSender->integer )
 		{
 			return; // They don't want this on :(
 		}
-		else if( cls.state != CA_ACTIVE )
+		else if ( cls.state != CA_ACTIVE )
 		{
 			return; // not connected to a server.
 		}
-		else if( !clc.voipEnabled )
+		else if ( !clc.voipEnabled )
 		{
 			return; // server doesn't support VoIP.
 		}
-		else if( clc.demoplaying )
+		else if ( clc.demoplaying )
 		{
 			return; // playing back a demo.
 		}
-		else if( !cl_voip->integer )
+		else if ( !cl_voip->integer )
 		{
 			return; // client has VoIP support disabled.
 		}
 
 		sprintf( string, "Talker's number: %i", cls.voipSender );
 
-		if( cl_voipSenderPos->integer == 0 )  // Lower right-hand corner, above HUD
+		if ( cl_voipSenderPos->integer == 0 ) // Lower right-hand corner, above HUD
 		{
 			SCR_DrawStringExt( 320 - strlen( string ) * -8, 365, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
-		else if( cl_voipSenderPos->integer == 1 )  // Lower left-hand corner, above HUD
+		else if ( cl_voipSenderPos->integer == 1 ) // Lower left-hand corner, above HUD
 		{
 			SCR_DrawStringExt( 320 - strlen( string ) * 17, 365, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
-		else if( cl_voipSenderPos->integer == 2 )  // Top right-hand corner, below lag-o-meter/time
+		else if ( cl_voipSenderPos->integer == 2 ) // Top right-hand corner, below lag-o-meter/time
 		{
 			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
-		else if( cl_voipSenderPos->integer == 3 )  // Top center, below VOIP bar when its displayed
+		else if ( cl_voipSenderPos->integer == 3 ) // Top center, below VOIP bar when its displayed
 		{
 			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
-		else if( cl_voipSenderPos->integer == 4 )  // Bottom center, above HUD
+		else if ( cl_voipSenderPos->integer == 4 ) // Bottom center, above HUD
 		{
 			SCR_DrawStringExt( 320 - strlen( string ) * 4, 400, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
@@ -603,14 +603,14 @@ void SCR_DrawDebugGraph( void )
 	re.DrawStretchPic( x, y - cl_graphheight->integer, w, cl_graphheight->integer, 0, 0, 0, 0, cls.whiteShader );
 	re.SetColor( NULL );
 
-	for( a = 0; a < w; a++ )
+	for ( a = 0; a < w; a++ )
 	{
 		i = ( current - 1 - a + 1024 ) & 1023;
 		v = values[ i ].value;
 //		color = values[i].color;
 		v = v * cl_graphscale->integer + cl_graphshift->integer;
 
-		if( v < 0 )
+		if ( v < 0 )
 		{
 			v += cl_graphheight->integer * ( 1 + ( int )( -v / cl_graphheight->integer ) );
 		}
@@ -653,9 +653,9 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 
 	// wide aspect ratio screens need to have the sides cleared
 	// unless they are displaying game renderings
-	if( cls.state != CA_ACTIVE )
+	if ( cls.state != CA_ACTIVE )
 	{
-		if( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
+		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
 		{
 			re.SetColor( g_color_table[ 0 ] );
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
@@ -663,9 +663,9 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 		}
 	}
 
-	if( uivm && !VM_Call( uivm, UI_IS_FULLSCREEN ) )
+	if ( uivm && !VM_Call( uivm, UI_IS_FULLSCREEN ) )
 	{
-		switch( cls.state )
+		switch ( cls.state )
 		{
 			default:
 				Com_Error( ERR_FATAL, "SCR_DrawScreenField: bad cls.state" );
@@ -691,7 +691,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				break;
 
 				// Ridah, if the cgame is valid, fall through to there
-				if( !cls.cgameStarted || !com_sv_running->integer )
+				if ( !cls.cgameStarted || !com_sv_running->integer )
 				{
 					// connecting clients will only show the connection dialog
 					VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, qfalse );
@@ -722,7 +722,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 	}
 
 	// the menu draws next
-	if( cls.keyCatchers & KEYCATCH_UI && uivm )
+	if ( cls.keyCatchers & KEYCATCH_UI && uivm )
 	{
 		VM_Call( uivm, UI_REFRESH, cls.realtime );
 	}
@@ -731,7 +731,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 	Con_DrawConsole();
 
 	// debug graph can be drawn on top of anything
-	if( cl_debuggraph->integer || cl_timegraph->integer || cl_debugMove->integer )
+	if ( cl_debuggraph->integer || cl_timegraph->integer || cl_debugMove->integer )
 	{
 		SCR_DrawDebugGraph();
 	}
@@ -749,12 +749,12 @@ void SCR_UpdateScreen( void )
 {
 	static int recursive = 0;
 
-	if( !scr_initialized )
+	if ( !scr_initialized )
 	{
 		return; // not initialized yet
 	}
 
-	if( ++recursive >= 2 )
+	if ( ++recursive >= 2 )
 	{
 		recursive = 0;
 		// Gordon: i'm breaking this again, because we've removed most of our cases but still have one which will not fix easily
@@ -766,12 +766,12 @@ void SCR_UpdateScreen( void )
 
 	// If there is no VM, there are also no rendering commands issued. Stop the renderer in
 	// that case.
-	if( uivm || com_dedicated->integer )
+	if ( uivm || com_dedicated->integer )
 	{
 		// XXX
 //		extern cvar_t* r_anaglyphMode;
 		// if running in stereo, we need to draw the frame twice
-		if( cls.glconfig.stereoEnabled )
+		if ( cls.glconfig.stereoEnabled )
 		{
 			SCR_DrawScreenField( STEREO_LEFT );
 			SCR_DrawScreenField( STEREO_RIGHT );
@@ -781,7 +781,7 @@ void SCR_UpdateScreen( void )
 			SCR_DrawScreenField( STEREO_CENTER );
 		}
 
-		if( com_speeds->integer )
+		if ( com_speeds->integer )
 		{
 			re.EndFrame( &time_frontend, &time_backend );
 		}
@@ -800,7 +800,7 @@ float SCR_ConsoleFontCharWidth( int ch )
 	glyphInfo_t *glyph = &font->glyphs[ ch ];
 	float       width = glyph->xSkip + cl_consoleFontKerning->value;
 
-	if( cls.useLegacyConsoleFont ) { return SMALLCHAR_WIDTH; }
+	if ( cls.useLegacyConsoleFont ) { return SMALLCHAR_WIDTH; }
 
 	return ( width );
 }
@@ -812,7 +812,7 @@ float SCR_ConsoleFontCharHeight()
 	glyphInfo_t *glyph = &font->glyphs[ ch ];
 	float       vpadding = 0.3 * cl_consoleFontSize->value;
 
-	if( cls.useLegacyConsoleFont ) { return SMALLCHAR_HEIGHT; }
+	if ( cls.useLegacyConsoleFont ) { return SMALLCHAR_HEIGHT; }
 
 	return ( glyph->imageHeight + vpadding );
 }
@@ -823,9 +823,9 @@ float SCR_ConsoleFontStringWidth( const char *s, int len )
 	fontInfo_t *font = &cls.consoleFont;
 	float      width = 0;
 
-	if( cls.useLegacyConsoleFont ) { return len * SMALLCHAR_WIDTH; }
+	if ( cls.useLegacyConsoleFont ) { return len * SMALLCHAR_WIDTH; }
 
-	for( i = 0; i < len; i++ )
+	for ( i = 0; i < len; i++ )
 	{
 		int         ch = s[ i ] & 0xff;
 		glyphInfo_t *glyph = &font->glyphs[ ch ];

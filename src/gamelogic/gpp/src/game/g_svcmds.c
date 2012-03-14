@@ -37,16 +37,16 @@ void  Svcmd_EntityList_f( void )
 
 	check = g_entities;
 
-	for( e = 0; e < level.num_entities; e++, check++ )
+	for ( e = 0; e < level.num_entities; e++, check++ )
 	{
-		if( !check->inuse )
+		if ( !check->inuse )
 		{
 			continue;
 		}
 
 		G_Printf( "%3i:", e );
 
-		switch( check->s.eType )
+		switch ( check->s.eType )
 		{
 			case ET_GENERAL:
 				G_Printf( "ET_GENERAL          " );
@@ -137,7 +137,7 @@ void  Svcmd_EntityList_f( void )
 				break;
 		}
 
-		if( check->classname )
+		if ( check->classname )
 		{
 			G_Printf( "%s", check->classname );
 		}
@@ -153,7 +153,7 @@ static gclient_t *ClientForString( char *s )
 
 	idnum = G_ClientNumberFromString( s, err, sizeof( err ) );
 
-	if( idnum == -1 )
+	if ( idnum == -1 )
 	{
 		G_Printf( "%s", err );
 		return NULL;
@@ -171,9 +171,9 @@ static void Svcmd_Status_f( void )
 	G_Printf( "slot score ping address               rate     name\n" );
 	G_Printf( "---- ----- ---- -------               ----     ----\n" );
 
-	for( i = 0, cl = level.clients; i < level.maxclients; i++, cl++ )
+	for ( i = 0, cl = level.clients; i < level.maxclients; i++, cl++ )
 	{
-		if( cl->pers.connected == CON_DISCONNECTED )
+		if ( cl->pers.connected == CON_DISCONNECTED )
 		{
 			continue;
 		}
@@ -181,7 +181,7 @@ static void Svcmd_Status_f( void )
 		G_Printf( "%-4d ", i );
 		G_Printf( "%-5d ", cl->ps.persistant[ PERS_SCORE ] );
 
-		if( cl->pers.connected == CON_CONNECTING )
+		if ( cl->pers.connected == CON_CONNECTING )
 		{
 			G_Printf( "CNCT " );
 		}
@@ -210,7 +210,7 @@ static void Svcmd_ForceTeam_f( void )
 	char      str[ MAX_TOKEN_CHARS ];
 	team_t    team;
 
-	if( trap_Argc() != 3 )
+	if ( trap_Argc() != 3 )
 	{
 		G_Printf( "usage: forceteam <player> <team>\n" );
 		return;
@@ -219,7 +219,7 @@ static void Svcmd_ForceTeam_f( void )
 	trap_Argv( 1, str, sizeof( str ) );
 	cl = ClientForString( str );
 
-	if( !cl )
+	if ( !cl )
 	{
 		return;
 	}
@@ -227,7 +227,7 @@ static void Svcmd_ForceTeam_f( void )
 	trap_Argv( 2, str, sizeof( str ) );
 	team = G_TeamFromString( str );
 
-	if( team == NUM_TEAMS )
+	if ( team == NUM_TEAMS )
 	{
 		G_Printf( "forceteam: invalid team \"%s\"\n", str );
 		return;
@@ -250,7 +250,7 @@ static void Svcmd_LayoutSave_f( void )
 	char *s;
 	int  i = 0;
 
-	if( trap_Argc() != 2 )
+	if ( trap_Argc() != 2 )
 	{
 		G_Printf( "usage: layoutsave <name>\n" );
 		return;
@@ -261,9 +261,9 @@ static void Svcmd_LayoutSave_f( void )
 	// sanitize name
 	s = &str[ 0 ];
 
-	while( *s && i < sizeof( str2 ) - 1 )
+	while ( *s && i < sizeof( str2 ) - 1 )
 	{
-		if( isalnum( *s ) || *s == '-' || *s == '_' )
+		if ( isalnum( *s ) || *s == '-' || *s == '_' )
 		{
 			str2[ i++ ] = *s;
 			str2[ i ] = '\0';
@@ -272,7 +272,7 @@ static void Svcmd_LayoutSave_f( void )
 		s++;
 	}
 
-	if( !str2[ 0 ] )
+	if ( !str2[ 0 ] )
 	{
 		G_Printf( "layoutsave: invalid name \"%s\"\n", str );
 		return;
@@ -299,7 +299,7 @@ static void Svcmd_LayoutLoad_f( void )
 	char layouts[ MAX_CVAR_VALUE_STRING ];
 	char *s;
 
-	if( trap_Argc() < 2 )
+	if ( trap_Argc() < 2 )
 	{
 		G_Printf( "usage: layoutload <name> ...\n" );
 		return;
@@ -317,7 +317,7 @@ static void Svcmd_AdmitDefeat_f( void )
 	int  team;
 	char teamNum[ 2 ];
 
-	if( trap_Argc() != 2 )
+	if ( trap_Argc() != 2 )
 	{
 		G_Printf( "admitdefeat: must provide a team\n" );
 		return;
@@ -326,12 +326,12 @@ static void Svcmd_AdmitDefeat_f( void )
 	trap_Argv( 1, teamNum, sizeof( teamNum ) );
 	team = G_TeamFromString( teamNum );
 
-	if( team == TEAM_ALIENS )
+	if ( team == TEAM_ALIENS )
 	{
 		G_TeamCommand( TEAM_ALIENS, "cp \"Hivemind Link Broken\" 1" );
 		trap_SendServerCommand( -1, "print \"Alien team has admitted defeat\n\"" );
 	}
-	else if( team == TEAM_HUMANS )
+	else if ( team == TEAM_HUMANS )
 	{
 		G_TeamCommand( TEAM_HUMANS, "cp \"Life Support Terminated\" 1" );
 		trap_SendServerCommand( -1, "print \"Human team has admitted defeat\n\"" );
@@ -352,7 +352,7 @@ static void Svcmd_TeamWin_f( void )
 	char cmd[ 6 ];
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	switch( G_TeamFromString( cmd ) )
+	switch ( G_TeamFromString( cmd ) )
 	{
 		case TEAM_ALIENS:
 			G_BaseSelfDestruct( TEAM_HUMANS );
@@ -379,7 +379,7 @@ static void Svcmd_MapRotation_f( void )
 {
 	char rotationName[ MAX_QPATH ];
 
-	if( trap_Argc() != 2 )
+	if ( trap_Argc() != 2 )
 	{
 		G_Printf( "usage: maprotation <name>\n" );
 		return;
@@ -389,7 +389,7 @@ static void Svcmd_MapRotation_f( void )
 
 	trap_Argv( 1, rotationName, sizeof( rotationName ) );
 
-	if( !G_StartMapRotation( rotationName, qfalse, qtrue, qfalse, 0 ) )
+	if ( !G_StartMapRotation( rotationName, qfalse, qtrue, qfalse, 0 ) )
 	{
 		G_Printf( "maprotation: invalid map rotation \"%s\"\n", rotationName );
 	}
@@ -400,7 +400,7 @@ static void Svcmd_TeamMessage_f( void )
 	char   teamNum[ 2 ];
 	team_t team;
 
-	if( trap_Argc() < 3 )
+	if ( trap_Argc() < 3 )
 	{
 		G_Printf( "usage: say_team <team> <message>\n" );
 		return;
@@ -409,7 +409,7 @@ static void Svcmd_TeamMessage_f( void )
 	trap_Argv( 1, teamNum, sizeof( teamNum ) );
 	team = G_TeamFromString( teamNum );
 
-	if( team == NUM_TEAMS )
+	if ( team == NUM_TEAMS )
 	{
 		G_Printf( "say_team: invalid team \"%s\"\n", teamNum );
 		return;
@@ -421,7 +421,7 @@ static void Svcmd_TeamMessage_f( void )
 
 static void Svcmd_CenterPrint_f( void )
 {
-	if( trap_Argc() < 2 )
+	if ( trap_Argc() < 2 )
 	{
 		G_Printf( "usage: cp <message>\n" );
 		return;
@@ -434,7 +434,7 @@ static void Svcmd_EjectClient_f( void )
 {
 	char *reason, name[ MAX_STRING_CHARS ];
 
-	if( trap_Argc() < 2 )
+	if ( trap_Argc() < 2 )
 	{
 		G_Printf( "usage: eject <player|-1> <reason>\n" );
 		return;
@@ -443,18 +443,18 @@ static void Svcmd_EjectClient_f( void )
 	trap_Argv( 1, name, sizeof( name ) );
 	reason = ConcatArgs( 2 );
 
-	if( atoi( name ) == -1 )
+	if ( atoi( name ) == -1 )
 	{
 		int i;
 
-		for( i = 0; i < level.maxclients; i++ )
+		for ( i = 0; i < level.maxclients; i++ )
 		{
-			if( level.clients[ i ].pers.connected == CON_DISCONNECTED )
+			if ( level.clients[ i ].pers.connected == CON_DISCONNECTED )
 			{
 				continue;
 			}
 
-			if( level.clients[ i ].pers.localClient )
+			if ( level.clients[ i ].pers.localClient )
 			{
 				continue;
 			}
@@ -466,12 +466,12 @@ static void Svcmd_EjectClient_f( void )
 	{
 		gclient_t *cl = ClientForString( name );
 
-		if( !cl )
+		if ( !cl )
 		{
 			return;
 		}
 
-		if( cl->pers.localClient )
+		if ( cl->pers.localClient )
 		{
 			G_Printf( "eject: cannot eject local clients\n" );
 			return;
@@ -488,7 +488,7 @@ static void Svcmd_DumpUser_f( void )
 	const char *info;
 	gclient_t  *cl;
 
-	if( trap_Argc() != 2 )
+	if ( trap_Argc() != 2 )
 	{
 		G_Printf( "usage: dumpuser <player>\n" );
 		return;
@@ -497,7 +497,7 @@ static void Svcmd_DumpUser_f( void )
 	trap_Argv( 1, name, sizeof( name ) );
 	cl = ClientForString( name );
 
-	if( !cl )
+	if ( !cl )
 	{
 		return;
 	}
@@ -507,11 +507,11 @@ static void Svcmd_DumpUser_f( void )
 	G_Printf( "userinfo\n--------\n" );
 
 	//Info_Print( userinfo );
-	while( 1 )
+	while ( 1 )
 	{
 		Info_NextPair( &info, key, value );
 
-		if( !*info )
+		if ( !*info )
 		{
 			return;
 		}
@@ -525,7 +525,7 @@ static void Svcmd_Pr_f( void )
 	char targ[ 4 ];
 	int  cl;
 
-	if( trap_Argc() < 3 )
+	if ( trap_Argc() < 3 )
 	{
 		G_Printf( "usage: <clientnum|-1> <message>\n" );
 		return;
@@ -534,7 +534,7 @@ static void Svcmd_Pr_f( void )
 	trap_Argv( 1, targ, sizeof( targ ) );
 	cl = atoi( targ );
 
-	if( cl >= MAX_CLIENTS || cl < -1 )
+	if ( cl >= MAX_CLIENTS || cl < -1 )
 	{
 		G_Printf( "invalid clientnum %d\n", cl );
 		return;
@@ -547,7 +547,7 @@ static void Svcmd_PrintQueue_f( void )
 {
 	char team[ MAX_STRING_CHARS ];
 
-	if( trap_Argc() != 2 )
+	if ( trap_Argc() != 2 )
 	{
 		G_Printf( "usage: printqueue <team>\n" );
 		return;
@@ -555,7 +555,7 @@ static void Svcmd_PrintQueue_f( void )
 
 	trap_Argv( 1, team, sizeof( team ) );
 
-	switch( G_TeamFromString( team ) )
+	switch ( G_TeamFromString( team ) )
 	{
 		case TEAM_ALIENS:
 			G_PrintSpawnQueue( &level.alienSpawnQueue );
@@ -576,19 +576,19 @@ static void Svcmd_MessageWrapper( void )
 	char cmd[ 5 ];
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	if( !Q_stricmp( cmd, "a" ) )
+	if ( !Q_stricmp( cmd, "a" ) )
 	{
 		Cmd_AdminMessage_f( NULL );
 	}
-	else if( !Q_stricmp( cmd, "m" ) )
+	else if ( !Q_stricmp( cmd, "m" ) )
 	{
 		Cmd_PrivateMessage_f( NULL );
 	}
-	else if( !Q_stricmp( cmd, "say" ) )
+	else if ( !Q_stricmp( cmd, "say" ) )
 	{
 		G_Say( NULL, SAY_ALL, ConcatArgs( 1 ) );
 	}
-	else if( !Q_stricmp( cmd, "chat" ) )
+	else if ( !Q_stricmp( cmd, "chat" ) )
 	{
 		G_Say( NULL, SAY_RAW, ConcatArgs( 1 ) );
 	}
@@ -674,15 +674,15 @@ qboolean  ConsoleCommand( void )
 	command = bsearch( cmd, svcmds, sizeof( svcmds ) / sizeof( struct svcmd ),
 	                   sizeof( struct svcmd ), cmdcmp );
 
-	if( !command )
+	if ( !command )
 	{
 		// see if this is an admin command
-		if( G_admin_cmd_check( NULL ) )
+		if ( G_admin_cmd_check( NULL ) )
 		{
 			return qtrue;
 		}
 
-		if( g_dedicated.integer )
+		if ( g_dedicated.integer )
 		{
 			G_Printf( "unknown command: %s\n", cmd );
 		}
@@ -690,7 +690,7 @@ qboolean  ConsoleCommand( void )
 		return qfalse;
 	}
 
-	if( command->dedicated && !g_dedicated.integer )
+	if ( command->dedicated && !g_dedicated.integer )
 	{
 		return qfalse;
 	}
@@ -703,9 +703,9 @@ void G_RegisterCommands( void )
 {
 	int i;
 
-	for( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
 	{
-		if( svcmds[ i ].dedicated && !g_dedicated.integer )
+		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
 		{
 			continue;
 		}
@@ -720,9 +720,9 @@ void G_UnregisterCommands( void )
 {
 	int i;
 
-	for( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
 	{
-		if( svcmds[ i ].dedicated && !g_dedicated.integer )
+		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
 		{
 			continue;
 		}

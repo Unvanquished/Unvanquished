@@ -85,7 +85,7 @@ void LinkMemoryBlock( memoryblock_t *block )
 	block->prev = NULL;
 	block->next = memory;
 
-	if( memory )
+	if ( memory )
 	{
 		memory->prev = block;
 	}
@@ -101,7 +101,7 @@ void LinkMemoryBlock( memoryblock_t *block )
 //===========================================================================
 void UnlinkMemoryBlock( memoryblock_t *block )
 {
-	if( block->prev )
+	if ( block->prev )
 	{
 		block->prev->next = block->next;
 	}
@@ -110,7 +110,7 @@ void UnlinkMemoryBlock( memoryblock_t *block )
 		memory = block->next;
 	}
 
-	if( block->next )
+	if ( block->next )
 	{
 		block->next->prev = block->prev;
 	}
@@ -236,7 +236,7 @@ memoryblock_t  *BlockFromPointer( void *ptr, char *str )
 {
 	memoryblock_t *block;
 
-	if( !ptr )
+	if ( !ptr )
 	{
 #ifdef MEMDEBUG
 		//char *crash = (char *) NULL;
@@ -248,13 +248,13 @@ memoryblock_t  *BlockFromPointer( void *ptr, char *str )
 
 	block = ( memoryblock_t * )( ( char * ) ptr - sizeof( memoryblock_t ) );
 
-	if( block->id != MEM_ID && block->id != HUNK_ID )
+	if ( block->id != MEM_ID && block->id != HUNK_ID )
 	{
 		botimport.Print( PRT_FATAL, "%s: invalid memory block\n", str );
 		return NULL;
 	} //end if
 
-	if( block->ptr != ptr )
+	if ( block->ptr != ptr )
 	{
 		botimport.Print( PRT_FATAL, "%s: memory block pointer invalid\n", str );
 		return NULL;
@@ -275,7 +275,7 @@ void FreeMemory( void *ptr )
 
 	block = BlockFromPointer( ptr, "FreeMemory" );
 
-	if( !block )
+	if ( !block )
 	{
 		return;
 	}
@@ -286,7 +286,7 @@ void FreeMemory( void *ptr )
 	numblocks--;
 
 	//
-	if( block->id == MEM_ID )
+	if ( block->id == MEM_ID )
 	{
 		botimport.FreeMemory( block );
 	} //end if
@@ -304,7 +304,7 @@ int MemoryByteSize( void *ptr )
 
 	block = BlockFromPointer( ptr, "MemoryByteSize" );
 
-	if( !block )
+	if ( !block )
 	{
 		return 0;
 	}
@@ -340,11 +340,11 @@ void PrintMemoryLabels( void )
 	i = 0;
 	Log_Write( "\r\n" );
 
-	for( block = memory; block; block = block->next )
+	for ( block = memory; block; block = block->next )
 	{
 #ifdef MEMDEBUG
 
-		if( block->id == HUNK_ID )
+		if ( block->id == HUNK_ID )
 		{
 			Log_Write( "%6d, hunk %p, %8d: %24s line %6d: %s\r\n", i, block->ptr, block->size, block->file, block->line,
 			           block->label );
@@ -370,7 +370,7 @@ void DumpMemory( void )
 {
 	memoryblock_t *block;
 
-	for( block = memory; block; block = memory )
+	for ( block = memory; block; block = memory )
 	{
 		FreeMemory( block->ptr );
 	} //end for
@@ -398,7 +398,7 @@ void           *GetMemory( unsigned long size )
 
 	ptr = botimport.GetMemory( size + sizeof( unsigned long int ) );
 
-	if( !ptr )
+	if ( !ptr )
 	{
 		return NULL;
 	}
@@ -448,7 +448,7 @@ void           *GetHunkMemory( unsigned long size )
 
 	ptr = botimport.HunkAlloc( size + sizeof( unsigned long int ) );
 
-	if( !ptr )
+	if ( !ptr )
 	{
 		return NULL;
 	}
@@ -493,7 +493,7 @@ void FreeMemory( void *ptr )
 
 	memid = ( unsigned long int * )( ( char * ) ptr - sizeof( unsigned long int ) );
 
-	if( *memid == MEM_ID )
+	if ( *memid == MEM_ID )
 	{
 		botimport.FreeMemory( memid );
 	} //end if

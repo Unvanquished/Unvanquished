@@ -144,7 +144,7 @@ static void *GPA( char *str )
 
 	rv = SYMLOAD( OpenALLib, str );
 
-	if( !rv )
+	if ( !rv )
 	{
 		si.Printf( PRINT_ALL, " Can't load symbol %s\n", str );
 		alinit_fail = qtrue;
@@ -161,14 +161,14 @@ static void *GPA( char *str )
 
 qboolean QAL_Init( const char *libname )
 {
-	if( OpenALLib )
+	if ( OpenALLib )
 	{
 		return qtrue;
 	}
 
 	si.Printf( PRINT_ALL, "loading %s\n", libname );
 
-	if( ( OpenALLib = OBJLOAD( libname ) ) == 0 )
+	if ( ( OpenALLib = OBJLOAD( libname ) ) == 0 )
 	{
 #ifdef _WIN32
 		si.Printf( PRINT_ALL, " Can't load %s\n", libname );
@@ -178,7 +178,7 @@ qboolean QAL_Init( const char *libname )
 		strncat( fn, "/", sizeof( fn ) - strlen( getcwd( fn, sizeof( fn ) ) ) - 1 );
 		strncat( fn, libname, sizeof( fn ) - strlen( fn ) - 1 );
 
-		if( ( OpenALLib = OBJLOAD( fn ) ) == 0 )
+		if ( ( OpenALLib = OBJLOAD( fn ) ) == 0 )
 		{
 			si.Printf( PRINT_ALL, " Can't load %s\n", libname );
 			return qfalse;
@@ -265,7 +265,7 @@ qboolean QAL_Init( const char *libname )
 	qalcCaptureStop = GPA( "alcCaptureStop" );
 	qalcCaptureSamples = GPA( "alcCaptureSamples" );
 
-	if( alinit_fail )
+	if ( alinit_fail )
 	{
 		QAL_Shutdown();
 		si.Printf( PRINT_ALL, " One or more symbols not found\n" );
@@ -277,7 +277,7 @@ qboolean QAL_Init( const char *libname )
 
 void QAL_Shutdown()
 {
-	if( OpenALLib )
+	if ( OpenALLib )
 	{
 		OBJFREE( OpenALLib );
 		OpenALLib = NULL;

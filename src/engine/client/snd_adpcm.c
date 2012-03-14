@@ -78,7 +78,7 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 	outputbuffer = 0; // quiet a compiler warning
 	bufferstep = 1;
 
-	for( ; len > 0; len-- )
+	for ( ; len > 0; len-- )
 	{
 		val = *inp++;
 
@@ -86,7 +86,7 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 		diff = val - valpred;
 		sign = ( diff < 0 ) ? 8 : 0;
 
-		if( sign )
+		if ( sign )
 		{
 			diff = ( -diff );
 		}
@@ -104,7 +104,7 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 		delta = 0;
 		vpdiff = ( step >> 3 );
 
-		if( diff >= step )
+		if ( diff >= step )
 		{
 			delta = 4;
 			diff -= step;
@@ -113,7 +113,7 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 
 		step >>= 1;
 
-		if( diff >= step )
+		if ( diff >= step )
 		{
 			delta |= 2;
 			diff -= step;
@@ -122,14 +122,14 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 
 		step >>= 1;
 
-		if( diff >= step )
+		if ( diff >= step )
 		{
 			delta |= 1;
 			vpdiff += step;
 		}
 
 		/* Step 3 - Update previous value */
-		if( sign )
+		if ( sign )
 		{
 			valpred -= vpdiff;
 		}
@@ -139,11 +139,11 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 		}
 
 		/* Step 4 - Clamp previous value to 16 bits */
-		if( valpred > 32767 )
+		if ( valpred > 32767 )
 		{
 			valpred = 32767;
 		}
-		else if( valpred < -32768 )
+		else if ( valpred < -32768 )
 		{
 			valpred = -32768;
 		}
@@ -153,12 +153,12 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 
 		index += indexTable[ delta ];
 
-		if( index < 0 )
+		if ( index < 0 )
 		{
 			index = 0;
 		}
 
-		if( index > 88 )
+		if ( index > 88 )
 		{
 			index = 88;
 		}
@@ -166,7 +166,7 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 		step = stepsizeTable[ index ];
 
 		/* Step 6 - Output value */
-		if( bufferstep )
+		if ( bufferstep )
 		{
 			outputbuffer = ( delta << 4 ) & 0xf0;
 		}
@@ -179,7 +179,7 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 	}
 
 	/* Output last step, if needed */
-	if( !bufferstep )
+	if ( !bufferstep )
 	{
 		*outp++ = outputbuffer;
 	}
@@ -211,10 +211,10 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 	bufferstep = 0;
 	inputbuffer = 0; // quiet a compiler warning
 
-	for( ; len > 0; len-- )
+	for ( ; len > 0; len-- )
 	{
 		/* Step 1 - get the delta value */
-		if( bufferstep )
+		if ( bufferstep )
 		{
 			delta = inputbuffer & 0xf;
 		}
@@ -229,12 +229,12 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 		/* Step 2 - Find new index value (for later) */
 		index += indexTable[ delta ];
 
-		if( index < 0 )
+		if ( index < 0 )
 		{
 			index = 0;
 		}
 
-		if( index > 88 )
+		if ( index > 88 )
 		{
 			index = 88;
 		}
@@ -251,22 +251,22 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 		 */
 		vpdiff = step >> 3;
 
-		if( delta & 4 )
+		if ( delta & 4 )
 		{
 			vpdiff += step;
 		}
 
-		if( delta & 2 )
+		if ( delta & 2 )
 		{
 			vpdiff += step >> 1;
 		}
 
-		if( delta & 1 )
+		if ( delta & 1 )
 		{
 			vpdiff += step >> 2;
 		}
 
-		if( sign )
+		if ( sign )
 		{
 			valpred -= vpdiff;
 		}
@@ -276,11 +276,11 @@ void S_AdpcmEncode( short indata[], char outdata[], int len, struct adpcm_state 
 		}
 
 		/* Step 5 - clamp output value */
-		if( valpred > 32767 )
+		if ( valpred > 32767 )
 		{
 			valpred = 32767;
 		}
-		else if( valpred < -32768 )
+		else if ( valpred < -32768 )
 		{
 			valpred = -32768;
 		}
@@ -324,7 +324,7 @@ int S_AdpcmMemoryNeeded( const wavinfo_t *info )
 	// calc number of sample blocks needed of PAINTBUFFER_SIZE
 	blockCount = scaledSampleCount / PAINTBUFFER_SIZE;
 
-	if( scaledSampleCount % PAINTBUFFER_SIZE )
+	if ( scaledSampleCount % PAINTBUFFER_SIZE )
 	{
 		blockCount++;
 	}
@@ -375,18 +375,18 @@ void S_AdpcmEncodeSound( sfx_t *sfx, short *samples )
 
 	chunk = NULL;
 
-	while( count )
+	while ( count )
 	{
 		n = count;
 
-		if( n > SND_CHUNK_SIZE_BYTE * 2 )
+		if ( n > SND_CHUNK_SIZE_BYTE * 2 )
 		{
 			n = SND_CHUNK_SIZE_BYTE * 2;
 		}
 
 		newchunk = SND_malloc();
 
-		if( sfx->soundData == NULL )
+		if ( sfx->soundData == NULL )
 		{
 			sfx->soundData = newchunk;
 		}

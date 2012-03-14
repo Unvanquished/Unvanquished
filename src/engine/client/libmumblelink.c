@@ -81,21 +81,21 @@ int mumble_link( const char *name )
 {
 #ifdef WIN32
 
-	if( lm )
+	if ( lm )
 	{
 		return 0;
 	}
 
 	hMapObject = OpenFileMappingW( FILE_MAP_ALL_ACCESS, FALSE, L"MumbleLink" );
 
-	if( hMapObject == NULL )
+	if ( hMapObject == NULL )
 	{
 		return -1;
 	}
 
 	lm = ( LinkedMem * ) MapViewOfFile( hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, sizeof( LinkedMem ) );
 
-	if( lm == NULL )
+	if ( lm == NULL )
 	{
 		CloseHandle( hMapObject );
 		hMapObject = NULL;
@@ -106,7 +106,7 @@ int mumble_link( const char *name )
 	char file[ 256 ];
 	int  shmfd;
 
-	if( lm )
+	if ( lm )
 	{
 		return 0;
 	}
@@ -114,14 +114,14 @@ int mumble_link( const char *name )
 	snprintf( file, sizeof( file ), "/MumbleLink.%d", getuid() );
 	shmfd = shm_open( file, O_RDWR, S_IRUSR | S_IWUSR );
 
-	if( shmfd < 0 )
+	if ( shmfd < 0 )
 	{
 		return -1;
 	}
 
 	lm = ( LinkedMem * )( mmap( NULL, sizeof( LinkedMem ), PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0 ) );
 
-	if( lm == ( void * )( -1 ) )
+	if ( lm == ( void * )( -1 ) )
 	{
 		lm = NULL;
 		close( shmfd );
@@ -144,7 +144,7 @@ void mumble_update_coordinates( float fPosition[ 3 ], float fFront[ 3 ], float f
 void mumble_update_coordinates2( float fAvatarPosition[ 3 ], float fAvatarFront[ 3 ], float fAvatarTop[ 3 ],
                                  float fCameraPosition[ 3 ], float fCameraFront[ 3 ], float fCameraTop[ 3 ] )
 {
-	if( !lm )
+	if ( !lm )
 	{
 		return;
 	}
@@ -163,7 +163,7 @@ void mumble_set_identity( const char *identity )
 {
 	size_t len;
 
-	if( !lm )
+	if ( !lm )
 	{
 		return;
 	}
@@ -174,7 +174,7 @@ void mumble_set_identity( const char *identity )
 
 void mumble_set_context( const unsigned char *context, size_t len )
 {
-	if( !lm )
+	if ( !lm )
 	{
 		return;
 	}
@@ -188,7 +188,7 @@ void mumble_set_description( const char *description )
 {
 	size_t len;
 
-	if( !lm )
+	if ( !lm )
 	{
 		return;
 	}
@@ -199,7 +199,7 @@ void mumble_set_description( const char *description )
 
 void mumble_unlink()
 {
-	if( !lm )
+	if ( !lm )
 	{
 		return;
 	}

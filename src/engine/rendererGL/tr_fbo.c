@@ -42,14 +42,14 @@ qboolean R_CheckFBO( const FBO_t *fbo )
 
 	code = glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT );
 
-	if( code == GL_FRAMEBUFFER_COMPLETE_EXT )
+	if ( code == GL_FRAMEBUFFER_COMPLETE_EXT )
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, id );
 		return qtrue;
 	}
 
 	// an error occured
-	switch( code )
+	switch ( code )
 	{
 		case GL_FRAMEBUFFER_COMPLETE_EXT:
 			break;
@@ -114,22 +114,22 @@ FBO_t          *R_CreateFBO( const char *name, int width, int height )
 #else
 	FBO_t *fbo;
 
-	if( strlen( name ) >= MAX_QPATH )
+	if ( strlen( name ) >= MAX_QPATH )
 	{
 		ri.Error( ERR_DROP, "R_CreateFBO: \"%s\" is too long\n", name );
 	}
 
-	if( width <= 0 || width > glConfig2.maxRenderbufferSize )
+	if ( width <= 0 || width > glConfig2.maxRenderbufferSize )
 	{
 		ri.Error( ERR_DROP, "R_CreateFBO: bad width %i", width );
 	}
 
-	if( height <= 0 || height > glConfig2.maxRenderbufferSize )
+	if ( height <= 0 || height > glConfig2.maxRenderbufferSize )
 	{
 		ri.Error( ERR_DROP, "R_CreateFBO: bad height %i", height );
 	}
 
-	if( tr.numFBOs == MAX_FBOS )
+	if ( tr.numFBOs == MAX_FBOS )
 	{
 		ri.Error( ERR_DROP, "R_CreateFBO: MAX_FBOS hit" );
 	}
@@ -160,7 +160,7 @@ void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 #else
 	qboolean absent;
 
-	if( index < 0 || index >= glConfig2.maxColorAttachments )
+	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBOColorBuffer: invalid attachment index %i\n", index );
 		return;
@@ -168,9 +168,9 @@ void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 
 #if 0
 
-	if( format != GL_RGB &&
-	    format != GL_RGBA &&
-	    format != GL_RGB16F_ARB && format != GL_RGBA16F_ARB && format != GL_RGB32F_ARB && format != GL_RGBA32F_ARB )
+	if ( format != GL_RGB &&
+	     format != GL_RGBA &&
+	     format != GL_RGB16F_ARB && format != GL_RGBA16F_ARB && format != GL_RGB32F_ARB && format != GL_RGBA32F_ARB )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBOColorBuffer: format %i is not color-renderable\n", format );
 		//return;
@@ -182,7 +182,7 @@ void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 
 	absent = fbo->colorBuffers[ index ] == 0;
 
-	if( absent )
+	if ( absent )
 	{
 		glGenRenderbuffersEXT( 1, &fbo->colorBuffers[ index ] );
 	}
@@ -190,7 +190,7 @@ void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 	glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, fbo->colorBuffers[ index ] );
 	glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, format, fbo->width, fbo->height );
 
-	if( absent )
+	if ( absent )
 	{
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + index, GL_RENDERBUFFER_EXT,
 		                              fbo->colorBuffers[ index ] );
@@ -212,8 +212,8 @@ void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 #else
 	qboolean absent;
 
-	if( format != GL_DEPTH_COMPONENT &&
-	    format != GL_DEPTH_COMPONENT16_ARB && format != GL_DEPTH_COMPONENT24_ARB && format != GL_DEPTH_COMPONENT32_ARB )
+	if ( format != GL_DEPTH_COMPONENT &&
+	     format != GL_DEPTH_COMPONENT16_ARB && format != GL_DEPTH_COMPONENT24_ARB && format != GL_DEPTH_COMPONENT32_ARB )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBODepthBuffer: format %i is not depth-renderable\n", format );
 		return;
@@ -223,7 +223,7 @@ void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 
 	absent = fbo->depthBuffer == 0;
 
-	if( absent )
+	if ( absent )
 	{
 		glGenRenderbuffersEXT( 1, &fbo->depthBuffer );
 	}
@@ -231,7 +231,7 @@ void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 	glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, fbo->depthBuffer );
 	glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, fbo->depthFormat, fbo->width, fbo->height );
 
-	if( absent )
+	if ( absent )
 	{
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fbo->depthBuffer );
 	}
@@ -252,10 +252,10 @@ void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 #else
 	qboolean absent;
 
-	if( format != GL_STENCIL_INDEX &&
-	    //format != GL_STENCIL_INDEX_EXT &&
-	    format != GL_STENCIL_INDEX1_EXT &&
-	    format != GL_STENCIL_INDEX4_EXT && format != GL_STENCIL_INDEX8_EXT && format != GL_STENCIL_INDEX16_EXT )
+	if ( format != GL_STENCIL_INDEX &&
+	     //format != GL_STENCIL_INDEX_EXT &&
+	     format != GL_STENCIL_INDEX1_EXT &&
+	     format != GL_STENCIL_INDEX4_EXT && format != GL_STENCIL_INDEX8_EXT && format != GL_STENCIL_INDEX16_EXT )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBOStencilBuffer: format %i is not stencil-renderable\n", format );
 		return;
@@ -265,7 +265,7 @@ void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 
 	absent = fbo->stencilBuffer == 0;
 
-	if( absent )
+	if ( absent )
 	{
 		glGenRenderbuffersEXT( 1, &fbo->stencilBuffer );
 	}
@@ -274,7 +274,7 @@ void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 	glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, fbo->stencilFormat, fbo->width, fbo->height );
 	GL_CheckErrors();
 
-	if( absent )
+	if ( absent )
 	{
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fbo->stencilBuffer );
 	}
@@ -295,7 +295,7 @@ void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 #else
 	qboolean absent;
 
-	if( format != GL_DEPTH_STENCIL_EXT && format != GL_DEPTH24_STENCIL8_EXT )
+	if ( format != GL_DEPTH_STENCIL_EXT && format != GL_DEPTH24_STENCIL8_EXT )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBOPackedDepthStencilBuffer: format %i is not depth-stencil-renderable\n", format );
 		return;
@@ -305,7 +305,7 @@ void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 
 	absent = fbo->packedDepthStencilBuffer == 0;
 
-	if( absent )
+	if ( absent )
 	{
 		glGenRenderbuffersEXT( 1, &fbo->packedDepthStencilBuffer );
 	}
@@ -314,7 +314,7 @@ void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 	glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, fbo->packedDepthStencilFormat, fbo->width, fbo->height );
 	GL_CheckErrors();
 
-	if( absent )
+	if ( absent )
 	{
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
 		                              fbo->packedDepthStencilBuffer );
@@ -337,7 +337,7 @@ void R_AttachFBOTexture1D( int texId, int index )
 	// TODO
 #else
 
-	if( index < 0 || index >= glConfig2.maxColorAttachments )
+	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
 		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture1D: invalid attachment index %i\n", index );
 		return;
@@ -358,13 +358,13 @@ void R_AttachFBOTexture2D( int target, int texId, int index )
 	// TODO
 #else
 
-	if( target != GL_TEXTURE_2D && ( target < GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB || target > GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB ) )
+	if ( target != GL_TEXTURE_2D && ( target < GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB || target > GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture2D: invalid target %i\n", target );
 		return;
 	}
 
-	if( index < 0 || index >= glConfig2.maxColorAttachments )
+	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
 		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture2D: invalid attachment index %i\n", index );
 		return;
@@ -385,7 +385,7 @@ void R_AttachFBOTexture3D( int texId, int index, int zOffset )
 	// TODO
 #else
 
-	if( index < 0 || index >= glConfig2.maxColorAttachments )
+	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
 		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture3D: invalid attachment index %i\n", index );
 		return;
@@ -435,19 +435,19 @@ void R_BindFBO( FBO_t *fbo )
 	// TODO
 #else
 
-	if( !fbo )
+	if ( !fbo )
 	{
 		R_BindNullFBO();
 		return;
 	}
 
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		// don't just call LogComment, or we will get a call to va() every frame!
 		GLimp_LogComment( va( "--- R_BindFBO( %s ) ---\n", fbo->name ) );
 	}
 
-	if( glState.currentFBO != fbo )
+	if ( glState.currentFBO != fbo )
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fbo->frameBuffer );
 
@@ -483,12 +483,12 @@ void R_BindNullFBO( void )
 	// TODO
 #else
 
-	if( r_logFile->integer )
+	if ( r_logFile->integer )
 	{
 		GLimp_LogComment( "--- R_BindNullFBO ---\n" );
 	}
 
-	if( glState.currentFBO )
+	if ( glState.currentFBO )
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 		glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
@@ -510,7 +510,7 @@ void R_InitFBOs( void )
 
 	ri.Printf( PRINT_ALL, "------- R_InitFBOs -------\n" );
 
-	if( !glConfig2.framebufferObjectAvailable )
+	if ( !glConfig2.framebufferObjectAvailable )
 	{
 		return;
 	}
@@ -528,12 +528,12 @@ void R_InitFBOs( void )
 	// TODO
 #else
 
-	if( DS_STANDARD_ENABLED() )
+	if ( DS_STANDARD_ENABLED() )
 	{
 		// geometricRender FBO as G-Buffer for deferred shading
 		ri.Printf( PRINT_ALL, "Deferred Shading enabled\n" );
 
-		if( glConfig2.textureNPOTAvailable )
+		if ( glConfig2.textureNPOTAvailable )
 		{
 			width = glConfig.vidWidth;
 			height = glConfig.vidHeight;
@@ -549,13 +549,13 @@ void R_InitFBOs( void )
 
 #if 0
 
-		if( glConfig2.framebufferPackedDepthStencilAvailable )
+		if ( glConfig2.framebufferPackedDepthStencilAvailable )
 		{
 			R_CreateFBOPackedDepthStencilBuffer( tr.geometricRenderFBO, GL_DEPTH24_STENCIL8_EXT );
 			R_AttachFBOTexturePackedDepthStencil( tr.depthRenderImage->texnum );
 		}
 
-		else if( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 )  // || glConfig.hardwareType == GLHW_NV_DX10)
+		else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
 		{
 			R_CreateFBODepthBuffer( tr.geometricRenderFBO, GL_DEPTH_COMPONENT16_ARB );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
@@ -588,7 +588,7 @@ void R_InitFBOs( void )
 	{
 		// forward shading
 
-		if( glConfig2.textureNPOTAvailable )
+		if ( glConfig2.textureNPOTAvailable )
 		{
 			width = glConfig.vidWidth;
 			height = glConfig.vidHeight;
@@ -603,7 +603,7 @@ void R_InitFBOs( void )
 		tr.deferredRenderFBO = R_CreateFBO( "_deferredRender", width, height );
 		R_BindFBO( tr.deferredRenderFBO );
 
-		if( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
 			R_CreateFBOColorBuffer( tr.deferredRenderFBO, GL_RGBA16F_ARB, 0 );
 		}
@@ -616,12 +616,12 @@ void R_InitFBOs( void )
 
 #if 0
 
-		if( glConfig2.framebufferPackedDepthStencilAvailable )
+		if ( glConfig2.framebufferPackedDepthStencilAvailable )
 		{
 			R_CreateFBOPackedDepthStencilBuffer( tr.deferredRenderFBO, GL_DEPTH24_STENCIL8_EXT );
 			R_AttachFBOTexturePackedDepthStencil( tr.depthRenderImage->texnum );
 		}
-		else if( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 )  // || glConfig.hardwareType == GLHW_NV_DX10)
+		else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
 		{
 			R_CreateFBODepthBuffer( tr.deferredRenderFBO, GL_DEPTH_COMPONENT16_ARB );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
@@ -636,9 +636,9 @@ void R_InitFBOs( void )
 		R_CheckFBO( tr.deferredRenderFBO );
 	}
 
-	if( glConfig2.framebufferBlitAvailable )
+	if ( glConfig2.framebufferBlitAvailable )
 	{
-		if( glConfig2.textureNPOTAvailable )
+		if ( glConfig2.textureNPOTAvailable )
 		{
 			width = glConfig.vidWidth;
 			height = glConfig.vidHeight;
@@ -652,17 +652,17 @@ void R_InitFBOs( void )
 		tr.occlusionRenderFBO = R_CreateFBO( "_occlusionRender", width, height );
 		R_BindFBO( tr.occlusionRenderFBO );
 
-		if( glConfig.hardwareType == GLHW_ATI_DX10 )
+		if ( glConfig.hardwareType == GLHW_ATI_DX10 )
 		{
 			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA16F_ARB, 0);
 			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT16_ARB );
 		}
-		else if( glConfig.hardwareType == GLHW_NV_DX10 )
+		else if ( glConfig.hardwareType == GLHW_NV_DX10 )
 		{
 			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA32F_ARB, 0);
 			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24_ARB );
 		}
-		else if( glConfig2.framebufferPackedDepthStencilAvailable )
+		else if ( glConfig2.framebufferPackedDepthStencilAvailable )
 		{
 			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA32F_ARB, 0);
 			R_CreateFBOPackedDepthStencilBuffer( tr.occlusionRenderFBO, GL_DEPTH24_STENCIL8_EXT );
@@ -679,29 +679,29 @@ void R_InitFBOs( void )
 		R_CheckFBO( tr.occlusionRenderFBO );
 	}
 
-	if( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable )
+	if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable )
 	{
 		// shadowMap FBOs for shadow mapping offscreen rendering
-		for( i = 0; i < MAX_SHADOWMAPS; i++ )
+		for ( i = 0; i < MAX_SHADOWMAPS; i++ )
 		{
 			width = height = shadowMapResolutions[ i ];
 
 			tr.shadowMapFBO[ i ] = R_CreateFBO( va( "_shadowMap%d", i ), width, height );
 			R_BindFBO( tr.shadowMapFBO[ i ] );
 
-			if( ( glConfig.driverType == GLDRV_OPENGL3 ) || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
+			if ( ( glConfig.driverType == GLDRV_OPENGL3 ) || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
 			{
-				if( r_shadows->integer == SHADOWING_ESM32 )
+				if ( r_shadows->integer == SHADOWING_ESM32 )
 				{
 					R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_ALPHA32F_ARB, 0 );
 				}
-				else if( r_shadows->integer == SHADOWING_VSM32 )
+				else if ( r_shadows->integer == SHADOWING_VSM32 )
 				{
 					R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_LUMINANCE_ALPHA32F_ARB, 0 );
 				}
-				else if( r_shadows->integer == SHADOWING_EVSM32 )
+				else if ( r_shadows->integer == SHADOWING_EVSM32 )
 				{
-					if( r_evsmPostProcess->integer )
+					if ( r_evsmPostProcess->integer )
 					{
 						R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_ALPHA32F_ARB, 0 );
 					}
@@ -717,11 +717,11 @@ void R_InitFBOs( void )
 			}
 			else
 			{
-				if( r_shadows->integer == SHADOWING_ESM16 )
+				if ( r_shadows->integer == SHADOWING_ESM16 )
 				{
 					R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_ALPHA16F_ARB, 0 );
 				}
-				else if( r_shadows->integer == SHADOWING_VSM16 )
+				else if ( r_shadows->integer == SHADOWING_VSM16 )
 				{
 					R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_LUMINANCE_ALPHA16F_ARB, 0 );
 				}
@@ -737,26 +737,26 @@ void R_InitFBOs( void )
 		}
 
 		// sun requires different resolutions
-		for( i = 0; i < MAX_SHADOWMAPS; i++ )
+		for ( i = 0; i < MAX_SHADOWMAPS; i++ )
 		{
 			width = height = sunShadowMapResolutions[ i ];
 
 			tr.sunShadowMapFBO[ i ] = R_CreateFBO( va( "_sunShadowMap%d", i ), width, height );
 			R_BindFBO( tr.sunShadowMapFBO[ i ] );
 
-			if( ( glConfig.driverType == GLDRV_OPENGL3 ) || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
+			if ( ( glConfig.driverType == GLDRV_OPENGL3 ) || ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) )
 			{
-				if( r_shadows->integer == SHADOWING_ESM32 )
+				if ( r_shadows->integer == SHADOWING_ESM32 )
 				{
 					R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_ALPHA32F_ARB, 0 );
 				}
-				else if( r_shadows->integer == SHADOWING_VSM32 )
+				else if ( r_shadows->integer == SHADOWING_VSM32 )
 				{
 					R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_LUMINANCE_ALPHA32F_ARB, 0 );
 				}
-				else if( r_shadows->integer == SHADOWING_EVSM32 )
+				else if ( r_shadows->integer == SHADOWING_EVSM32 )
 				{
-					if( !r_evsmPostProcess->integer )
+					if ( !r_evsmPostProcess->integer )
 					{
 						R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_RGBA32F_ARB, 0 );
 					}
@@ -768,11 +768,11 @@ void R_InitFBOs( void )
 			}
 			else
 			{
-				if( r_shadows->integer == SHADOWING_ESM16 )
+				if ( r_shadows->integer == SHADOWING_ESM16 )
 				{
 					R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_ALPHA16F_ARB, 0 );
 				}
-				else if( r_shadows->integer == SHADOWING_VSM16 )
+				else if ( r_shadows->integer == SHADOWING_VSM16 )
 				{
 					R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_LUMINANCE_ALPHA16F_ARB, 0 );
 				}
@@ -784,7 +784,7 @@ void R_InitFBOs( void )
 
 			R_CreateFBODepthBuffer( tr.sunShadowMapFBO[ i ], GL_DEPTH_COMPONENT24_ARB );
 
-			if( r_shadows->integer == SHADOWING_EVSM32 && r_evsmPostProcess->integer )
+			if ( r_shadows->integer == SHADOWING_EVSM32 && r_evsmPostProcess->integer )
 			{
 				R_AttachFBOTextureDepth( tr.sunShadowMapFBOImage[ i ]->texnum );
 
@@ -802,7 +802,7 @@ void R_InitFBOs( void )
 	}
 
 	{
-		if( glConfig2.textureNPOTAvailable )
+		if ( glConfig2.textureNPOTAvailable )
 		{
 			width = glConfig.vidWidth;
 			height = glConfig.vidHeight;
@@ -817,7 +817,7 @@ void R_InitFBOs( void )
 		tr.portalRenderFBO = R_CreateFBO( "_portalRender", width, height );
 		R_BindFBO( tr.portalRenderFBO );
 
-		if( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
 			R_CreateFBOColorBuffer( tr.portalRenderFBO, GL_RGBA16F_ARB, 0 );
 		}
@@ -832,7 +832,7 @@ void R_InitFBOs( void )
 	}
 
 	{
-		if( glConfig2.textureNPOTAvailable )
+		if ( glConfig2.textureNPOTAvailable )
 		{
 			width = glConfig.vidWidth * 0.25f;
 			height = glConfig.vidHeight * 0.25f;
@@ -846,7 +846,7 @@ void R_InitFBOs( void )
 		tr.downScaleFBO_quarter = R_CreateFBO( "_downScale_quarter", width, height );
 		R_BindFBO( tr.downScaleFBO_quarter );
 
-		if( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
 			R_CreateFBOColorBuffer( tr.downScaleFBO_quarter, GL_RGBA16F_ARB, 0 );
 		}
@@ -861,7 +861,7 @@ void R_InitFBOs( void )
 		tr.downScaleFBO_64x64 = R_CreateFBO( "_downScale_64x64", 64, 64 );
 		R_BindFBO( tr.downScaleFBO_64x64 );
 
-		if( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
 			R_CreateFBOColorBuffer( tr.downScaleFBO_64x64, GL_RGBA16F_ARB, 0 );
 		}
@@ -877,7 +877,7 @@ void R_InitFBOs( void )
 		tr.downScaleFBO_16x16 = R_CreateFBO( "_downScale_16x16", 16, 16 );
 		R_BindFBO( tr.downScaleFBO_16x16 );
 
-		if( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
 			R_CreateFBOColorBuffer( tr.downScaleFBO_16x16, GL_RGBA16F_ARB, 0 );
 		}
@@ -892,7 +892,7 @@ void R_InitFBOs( void )
 		tr.downScaleFBO_4x4 = R_CreateFBO( "_downScale_4x4", 4, 4 );
 		R_BindFBO( tr.downScaleFBO_4x4 );
 
-		if( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
 			R_CreateFBOColorBuffer( tr.downScaleFBO_4x4, GL_RGBA16F_ARB, 0 );
 		}
@@ -907,7 +907,7 @@ void R_InitFBOs( void )
 		tr.downScaleFBO_1x1 = R_CreateFBO( "_downScale_1x1", 1, 1 );
 		R_BindFBO( tr.downScaleFBO_1x1 );
 
-		if( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
 			R_CreateFBOColorBuffer( tr.downScaleFBO_1x1, GL_RGBA16F_ARB, 0 );
 		}
@@ -920,7 +920,7 @@ void R_InitFBOs( void )
 		R_CheckFBO( tr.downScaleFBO_1x1 );
 #endif
 
-		if( glConfig2.textureNPOTAvailable )
+		if ( glConfig2.textureNPOTAvailable )
 		{
 			width = glConfig.vidWidth * 0.25f;
 			height = glConfig.vidHeight * 0.25f;
@@ -934,7 +934,7 @@ void R_InitFBOs( void )
 		tr.contrastRenderFBO = R_CreateFBO( "_contrastRender", width, height );
 		R_BindFBO( tr.contrastRenderFBO );
 
-		if( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
 			R_CreateFBOColorBuffer( tr.contrastRenderFBO, GL_RGBA16F_ARB, 0 );
 		}
@@ -947,12 +947,12 @@ void R_InitFBOs( void )
 
 		R_CheckFBO( tr.contrastRenderFBO );
 
-		for( i = 0; i < 2; i++ )
+		for ( i = 0; i < 2; i++ )
 		{
 			tr.bloomRenderFBO[ i ] = R_CreateFBO( va( "_bloomRender%d", i ), width, height );
 			R_BindFBO( tr.bloomRenderFBO[ i ] );
 
-			if( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
+			if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 			{
 				R_CreateFBOColorBuffer( tr.bloomRenderFBO[ i ], GL_RGBA16F_ARB, 0 );
 			}
@@ -987,7 +987,7 @@ void R_ShutdownFBOs( void )
 
 #if !defined( USE_D3D10 )
 
-	if( !glConfig2.framebufferObjectAvailable )
+	if ( !glConfig2.framebufferObjectAvailable )
 	{
 		return;
 	}
@@ -996,7 +996,7 @@ void R_ShutdownFBOs( void )
 
 	R_BindNullFBO();
 
-	for( i = 0; i < tr.numFBOs; i++ )
+	for ( i = 0; i < tr.numFBOs; i++ )
 	{
 		fbo = tr.fbos[ i ];
 
@@ -1004,25 +1004,25 @@ void R_ShutdownFBOs( void )
 		// TODO
 #else
 
-		for( j = 0; j < glConfig2.maxColorAttachments; j++ )
+		for ( j = 0; j < glConfig2.maxColorAttachments; j++ )
 		{
-			if( fbo->colorBuffers[ j ] )
+			if ( fbo->colorBuffers[ j ] )
 			{
 				glDeleteRenderbuffersEXT( 1, &fbo->colorBuffers[ j ] );
 			}
 		}
 
-		if( fbo->depthBuffer )
+		if ( fbo->depthBuffer )
 		{
 			glDeleteRenderbuffersEXT( 1, &fbo->depthBuffer );
 		}
 
-		if( fbo->stencilBuffer )
+		if ( fbo->stencilBuffer )
 		{
 			glDeleteRenderbuffersEXT( 1, &fbo->stencilBuffer );
 		}
 
-		if( fbo->frameBuffer )
+		if ( fbo->frameBuffer )
 		{
 			glDeleteFramebuffersEXT( 1, &fbo->frameBuffer );
 		}
@@ -1043,7 +1043,7 @@ void R_FBOList_f( void )
 
 #if !defined( USE_D3D10 )
 
-	if( !glConfig2.framebufferObjectAvailable )
+	if ( !glConfig2.framebufferObjectAvailable )
 	{
 		ri.Printf( PRINT_ALL, "GL_EXT_framebuffer_object is not available.\n" );
 		return;
@@ -1054,7 +1054,7 @@ void R_FBOList_f( void )
 	ri.Printf( PRINT_ALL, "             size       name\n" );
 	ri.Printf( PRINT_ALL, "----------------------------------------------------------\n" );
 
-	for( i = 0; i < tr.numFBOs; i++ )
+	for ( i = 0; i < tr.numFBOs; i++ )
 	{
 		fbo = tr.fbos[ i ];
 

@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 void InitTrigger( gentity_t *self )
 {
-	if( !VectorCompare( self->s.angles, vec3_origin ) )
+	if ( !VectorCompare( self->s.angles, vec3_origin ) )
 	{
 		G_SetMovedir( self->s.angles, self->movedir );
 	}
@@ -48,21 +48,21 @@ void multi_trigger( gentity_t *ent, gentity_t *activator )
 {
 	ent->activator = activator;
 
-	if( ent->nextthink )
+	if ( ent->nextthink )
 	{
 		return; // can't retrigger until the wait is over
 	}
 
-	if( activator && activator->client )
+	if ( activator && activator->client )
 	{
-		if( ( ent->spawnflags & 1 ) &&
-		    activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+		if ( ( ent->spawnflags & 1 ) &&
+		     activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
 		{
 			return;
 		}
 
-		if( ( ent->spawnflags & 2 ) &&
-		    activator->client->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
+		if ( ( ent->spawnflags & 2 ) &&
+		     activator->client->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
 		{
 			return;
 		}
@@ -70,7 +70,7 @@ void multi_trigger( gentity_t *ent, gentity_t *activator )
 
 	G_UseTargets( ent, ent->activator );
 
-	if( ent->wait > 0 )
+	if ( ent->wait > 0 )
 	{
 		ent->think = multi_wait;
 		ent->nextthink = level.time + ( ent->wait + ent->random * crandom() ) * 1000;
@@ -92,7 +92,7 @@ void Use_Multi( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 void Touch_Multi( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	if( !other->client && other->s.eType != ET_BUILDABLE )
+	if ( !other->client && other->s.eType != ET_BUILDABLE )
 	{
 		return;
 	}
@@ -112,7 +112,7 @@ void SP_trigger_multiple( gentity_t *ent )
 	G_SpawnFloat( "wait", "0.5", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
 
-	if( ent->random >= ent->wait && ent->wait >= 0 )
+	if ( ent->random >= ent->wait && ent->wait >= 0 )
 	{
 		ent->random = ent->wait - FRAMETIME;
 		G_Printf( "trigger_multiple has random >= wait\n" );
@@ -159,7 +159,7 @@ trigger_push
 
 void trigger_push_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	if( !other->client )
+	if ( !other->client )
 	{
 		return;
 	}
@@ -184,7 +184,7 @@ void AimAtTarget( gentity_t *self )
 
 	ent = G_PickTarget( self->target );
 
-	if( !ent )
+	if ( !ent )
 	{
 		G_FreeEntity( self );
 		return;
@@ -194,7 +194,7 @@ void AimAtTarget( gentity_t *self )
 	gravity = g_gravity.value;
 	time = sqrt( height / ( 0.5 * gravity ) );
 
-	if( !time )
+	if ( !time )
 	{
 		G_FreeEntity( self );
 		return;
@@ -231,12 +231,12 @@ void SP_trigger_push( gentity_t *self )
 
 void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	if( !activator || !activator->client )
+	if ( !activator || !activator->client )
 	{
 		return;
 	}
 
-	if( activator->client->ps.pm_type != PM_NORMAL )
+	if ( activator->client->ps.pm_type != PM_NORMAL )
 	{
 		return;
 	}
@@ -250,7 +250,7 @@ Pushes the activator in the direction.of angle, or towards a target apex.
 */
 void SP_target_push( gentity_t *self )
 {
-	if( !self->speed )
+	if ( !self->speed )
 	{
 		self->speed = 1000;
 	}
@@ -258,7 +258,7 @@ void SP_target_push( gentity_t *self )
 	G_SetMovedir( self->s.angles, self->s.origin2 );
 	VectorScale( self->s.origin2, self->speed, self->s.origin2 );
 
-	if( self->target )
+	if ( self->target )
 	{
 		VectorCopy( self->s.origin, self->r.absmin );
 		VectorCopy( self->s.origin, self->r.absmax );
@@ -281,31 +281,31 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 {
 	gentity_t *dest;
 
-	if( self->s.eFlags & EF_NODRAW )
+	if ( self->s.eFlags & EF_NODRAW )
 	{
 		return;
 	}
 
-	if( !other->client )
+	if ( !other->client )
 	{
 		return;
 	}
 
-	if( other->client->ps.pm_type == PM_DEAD )
+	if ( other->client->ps.pm_type == PM_DEAD )
 	{
 		return;
 	}
 
 	// Spectators only?
-	if( ( self->spawnflags & 1 ) &&
-	    other->client->sess.spectatorState == SPECTATOR_NOT )
+	if ( ( self->spawnflags & 1 ) &&
+	     other->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		return;
 	}
 
 	dest = G_PickTarget( self->target );
 
-	if( !dest )
+	if ( !dest )
 	{
 		G_Printf( "Couldn't find teleporter destination\n" );
 		return;
@@ -338,7 +338,7 @@ void SP_trigger_teleport( gentity_t *self )
 
 	// unlike other triggers, we need to send this one to the client
 	// unless is a spectator trigger
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		self->r.svFlags |= SVF_NOCLIENT;
 	}
@@ -348,7 +348,7 @@ void SP_trigger_teleport( gentity_t *self )
 	}
 
 	// SPAWN_DISABLED
-	if( self->spawnflags & 2 )
+	if ( self->spawnflags & 2 )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}
@@ -382,7 +382,7 @@ NO_PROTECTION *nothing* stops the damage
 */
 void hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	if( self->r.linked )
+	if ( self->r.linked )
 	{
 		trap_UnlinkEntity( self );
 	}
@@ -396,17 +396,17 @@ void hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	int dflags;
 
-	if( !other->takedamage )
+	if ( !other->takedamage )
 	{
 		return;
 	}
 
-	if( self->timestamp > level.time )
+	if ( self->timestamp > level.time )
 	{
 		return;
 	}
 
-	if( self->spawnflags & 16 )
+	if ( self->spawnflags & 16 )
 	{
 		self->timestamp = level.time + 1000;
 	}
@@ -416,12 +416,12 @@ void hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	}
 
 	// play sound
-	if( !( self->spawnflags & 4 ) )
+	if ( !( self->spawnflags & 4 ) )
 	{
 		G_Sound( other, CHAN_AUTO, self->noise_index );
 	}
 
-	if( self->spawnflags & 8 )
+	if ( self->spawnflags & 8 )
 	{
 		dflags = DAMAGE_NO_PROTECTION;
 	}
@@ -440,20 +440,20 @@ void SP_trigger_hurt( gentity_t *self )
 	self->noise_index = G_SoundIndex( "sound/misc/electro.wav" );
 	self->touch = hurt_touch;
 
-	if( self->damage <= 0 )
+	if ( self->damage <= 0 )
 	{
 		self->damage = 5;
 	}
 
 	self->r.contents = CONTENTS_TRIGGER;
 
-	if( self->spawnflags & 2 )
+	if ( self->spawnflags & 2 )
 	{
 		self->use = hurt_use;
 	}
 
 	// link in to the world if starting active
-	if( !( self->spawnflags & 1 ) )
+	if ( !( self->spawnflags & 1 ) )
 	{
 		trap_LinkEntity( self );
 	}
@@ -490,7 +490,7 @@ void func_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	self->activator = activator;
 
 	// if on, turn it off
-	if( self->nextthink )
+	if ( self->nextthink )
 	{
 		self->nextthink = 0;
 		return;
@@ -508,13 +508,13 @@ void SP_func_timer( gentity_t *self )
 	self->use = func_timer_use;
 	self->think = func_timer_think;
 
-	if( self->random >= self->wait )
+	if ( self->random >= self->wait )
 	{
 		self->random = self->wait - FRAMETIME;
 		G_Printf( "func_timer at %s has random >= wait\n", vtos( self->s.origin ) );
 	}
 
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		self->nextthink = level.time + FRAMETIME;
 		self->activator = self;
@@ -535,16 +535,16 @@ void G_Checktrigger_stages( team_t team, stage_t stage )
 	int       i;
 	gentity_t *ent;
 
-	for( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if( !ent->inuse )
+		if ( !ent->inuse )
 		{
 			continue;
 		}
 
-		if( !Q_stricmp( ent->classname, "trigger_stage" ) )
+		if ( !Q_stricmp( ent->classname, "trigger_stage" ) )
 		{
-			if( team == ent->stageTeam && stage == ent->stageStage )
+			if ( team == ent->stageTeam && stage == ent->stageStage )
 			{
 				ent->use( ent, ent, ent );
 			}
@@ -600,22 +600,22 @@ qboolean trigger_buildable_match( gentity_t *self, gentity_t *activator )
 {
 	int i = 0;
 
-	if( !activator )
+	if ( !activator )
 	{
 		return qfalse;
 	}
 
 	//if there is no buildable list every buildable triggers
-	if( self->bTriggers[ i ] == BA_NONE )
+	if ( self->bTriggers[ i ] == BA_NONE )
 	{
 		return qtrue;
 	}
 	else
 	{
 		//otherwise check against the list
-		for( i = 0; self->bTriggers[ i ] != BA_NONE; i++ )
+		for ( i = 0; self->bTriggers[ i ] != BA_NONE; i++ )
 		{
-			if( activator->s.modelindex == self->bTriggers[ i ] )
+			if ( activator->s.modelindex == self->bTriggers[ i ] )
 			{
 				return qtrue;
 			}
@@ -634,32 +634,32 @@ void trigger_buildable_trigger( gentity_t *self, gentity_t *activator )
 {
 	self->activator = activator;
 
-	if( self->s.eFlags & EF_NODRAW )
+	if ( self->s.eFlags & EF_NODRAW )
 	{
 		return;
 	}
 
-	if( self->nextthink )
+	if ( self->nextthink )
 	{
 		return; // can't retrigger until the wait is over
 	}
 
-	if( self->s.eFlags & EF_DEAD )
+	if ( self->s.eFlags & EF_DEAD )
 	{
-		if( !trigger_buildable_match( self, activator ) )
+		if ( !trigger_buildable_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
 		}
 	}
 	else
 	{
-		if( trigger_buildable_match( self, activator ) )
+		if ( trigger_buildable_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
 		}
 	}
 
-	if( self->wait > 0 )
+	if ( self->wait > 0 )
 	{
 		self->think = multi_wait;
 		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
@@ -682,7 +682,7 @@ trigger_buildable_touch
 void trigger_buildable_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
 	//only triggered by buildables
-	if( !other || other->s.eType != ET_BUILDABLE )
+	if ( !other || other->s.eType != ET_BUILDABLE )
 	{
 		return;
 	}
@@ -712,7 +712,7 @@ void SP_trigger_buildable( gentity_t *self )
 	G_SpawnFloat( "wait", "0.5", &self->wait );
 	G_SpawnFloat( "random", "0", &self->random );
 
-	if( self->random >= self->wait && self->wait >= 0 )
+	if ( self->random >= self->wait && self->wait >= 0 )
 	{
 		self->random = self->wait - FRAMETIME;
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_buildable has random >= wait\n" );
@@ -726,13 +726,13 @@ void SP_trigger_buildable( gentity_t *self )
 	self->use = trigger_buildable_use;
 
 	// SPAWN_DISABLED
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}
 
 	// NEGATE
-	if( self->spawnflags & 2 )
+	if ( self->spawnflags & 2 )
 	{
 		self->s.eFlags |= EF_DEAD;
 	}
@@ -750,22 +750,22 @@ qboolean trigger_class_match( gentity_t *self, gentity_t *activator )
 {
 	int i = 0;
 
-	if( !activator )
+	if ( !activator )
 	{
 		return qfalse;
 	}
 
 	//if there is no class list every class triggers (stupid case)
-	if( self->cTriggers[ i ] == PCL_NONE )
+	if ( self->cTriggers[ i ] == PCL_NONE )
 	{
 		return qtrue;
 	}
 	else
 	{
 		//otherwise check against the list
-		for( i = 0; self->cTriggers[ i ] != PCL_NONE; i++ )
+		for ( i = 0; self->cTriggers[ i ] != PCL_NONE; i++ )
 		{
-			if( activator->client->ps.stats[ STAT_CLASS ] == self->cTriggers[ i ] )
+			if ( activator->client->ps.stats[ STAT_CLASS ] == self->cTriggers[ i ] )
 			{
 				return qtrue;
 			}
@@ -783,44 +783,44 @@ trigger_class_trigger
 void trigger_class_trigger( gentity_t *self, gentity_t *activator )
 {
 	//sanity check
-	if( !activator || !activator->client )
+	if ( !activator || !activator->client )
 	{
 		return;
 	}
 
-	if( activator->client->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
+	if ( activator->client->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
 	{
 		return;
 	}
 
-	if( self->s.eFlags & EF_NODRAW )
+	if ( self->s.eFlags & EF_NODRAW )
 	{
 		return;
 	}
 
 	self->activator = activator;
 
-	if( self->nextthink )
+	if ( self->nextthink )
 	{
 		return; // can't retrigger until the wait is over
 	}
 
-	if( self->s.eFlags & EF_DEAD )
+	if ( self->s.eFlags & EF_DEAD )
 	{
-		if( !trigger_class_match( self, activator ) )
+		if ( !trigger_class_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
 		}
 	}
 	else
 	{
-		if( trigger_class_match( self, activator ) )
+		if ( trigger_class_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
 		}
 	}
 
-	if( self->wait > 0 )
+	if ( self->wait > 0 )
 	{
 		self->think = multi_wait;
 		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
@@ -843,7 +843,7 @@ trigger_class_touch
 void trigger_class_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
 	//only triggered by clients
-	if( !other->client )
+	if ( !other->client )
 	{
 		return;
 	}
@@ -873,7 +873,7 @@ void SP_trigger_class( gentity_t *self )
 	G_SpawnFloat( "wait", "0.5", &self->wait );
 	G_SpawnFloat( "random", "0", &self->random );
 
-	if( self->random >= self->wait && self->wait >= 0 )
+	if ( self->random >= self->wait && self->wait >= 0 )
 	{
 		self->random = self->wait - FRAMETIME;
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_class has random >= wait\n" );
@@ -887,13 +887,13 @@ void SP_trigger_class( gentity_t *self )
 	self->use = trigger_class_use;
 
 	// SPAWN_DISABLED
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}
 
 	// NEGATE
-	if( self->spawnflags & 2 )
+	if ( self->spawnflags & 2 )
 	{
 		self->s.eFlags |= EF_DEAD;
 	}
@@ -911,30 +911,30 @@ qboolean trigger_equipment_match( gentity_t *self, gentity_t *activator )
 {
 	int i = 0;
 
-	if( !activator )
+	if ( !activator )
 	{
 		return qfalse;
 	}
 
 	//if there is no equipment list all equipment triggers (stupid case)
-	if( self->wTriggers[ i ] == WP_NONE && self->uTriggers[ i ] == UP_NONE )
+	if ( self->wTriggers[ i ] == WP_NONE && self->uTriggers[ i ] == UP_NONE )
 	{
 		return qtrue;
 	}
 	else
 	{
 		//otherwise check against the lists
-		for( i = 0; self->wTriggers[ i ] != WP_NONE; i++ )
+		for ( i = 0; self->wTriggers[ i ] != WP_NONE; i++ )
 		{
-			if( BG_InventoryContainsWeapon( self->wTriggers[ i ], activator->client->ps.stats ) )
+			if ( BG_InventoryContainsWeapon( self->wTriggers[ i ], activator->client->ps.stats ) )
 			{
 				return qtrue;
 			}
 		}
 
-		for( i = 0; self->uTriggers[ i ] != UP_NONE; i++ )
+		for ( i = 0; self->uTriggers[ i ] != UP_NONE; i++ )
 		{
-			if( BG_InventoryContainsUpgrade( self->uTriggers[ i ], activator->client->ps.stats ) )
+			if ( BG_InventoryContainsUpgrade( self->uTriggers[ i ], activator->client->ps.stats ) )
 			{
 				return qtrue;
 			}
@@ -952,44 +952,44 @@ trigger_equipment_trigger
 void trigger_equipment_trigger( gentity_t *self, gentity_t *activator )
 {
 	//sanity check
-	if( !activator || !activator->client )
+	if ( !activator || !activator->client )
 	{
 		return;
 	}
 
-	if( activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	if ( activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}
 
-	if( self->s.eFlags & EF_NODRAW )
+	if ( self->s.eFlags & EF_NODRAW )
 	{
 		return;
 	}
 
 	self->activator = activator;
 
-	if( self->nextthink )
+	if ( self->nextthink )
 	{
 		return; // can't retrigger until the wait is over
 	}
 
-	if( self->s.eFlags & EF_DEAD )
+	if ( self->s.eFlags & EF_DEAD )
 	{
-		if( !trigger_equipment_match( self, activator ) )
+		if ( !trigger_equipment_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
 		}
 	}
 	else
 	{
-		if( trigger_equipment_match( self, activator ) )
+		if ( trigger_equipment_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
 		}
 	}
 
-	if( self->wait > 0 )
+	if ( self->wait > 0 )
 	{
 		self->think = multi_wait;
 		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
@@ -1012,7 +1012,7 @@ trigger_equipment_touch
 void trigger_equipment_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
 	//only triggered by clients
-	if( !other->client )
+	if ( !other->client )
 	{
 		return;
 	}
@@ -1042,7 +1042,7 @@ void SP_trigger_equipment( gentity_t *self )
 	G_SpawnFloat( "wait", "0.5", &self->wait );
 	G_SpawnFloat( "random", "0", &self->random );
 
-	if( self->random >= self->wait && self->wait >= 0 )
+	if ( self->random >= self->wait && self->wait >= 0 )
 	{
 		self->random = self->wait - FRAMETIME;
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_equipment has random >= wait\n" );
@@ -1057,13 +1057,13 @@ void SP_trigger_equipment( gentity_t *self )
 	self->use = trigger_equipment_use;
 
 	// SPAWN_DISABLED
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}
 
 	// NEGATE
-	if( self->spawnflags & 2 )
+	if ( self->spawnflags & 2 )
 	{
 		self->s.eFlags |= EF_DEAD;
 	}
@@ -1080,7 +1080,7 @@ trigger_gravity_touch
 void trigger_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
 	//only triggered by clients
-	if( !other->client )
+	if ( !other->client )
 	{
 		return;
 	}
@@ -1095,7 +1095,7 @@ trigger_gravity_use
 */
 void trigger_gravity_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
-	if( ent->r.linked )
+	if ( ent->r.linked )
 	{
 		trap_UnlinkEntity( ent );
 	}
@@ -1128,7 +1128,7 @@ trigger_heal_use
 */
 void trigger_heal_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	if( self->r.linked )
+	if ( self->r.linked )
 	{
 		trap_UnlinkEntity( self );
 	}
@@ -1147,17 +1147,17 @@ void trigger_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	int max;
 
-	if( !other->client )
+	if ( !other->client )
 	{
 		return;
 	}
 
-	if( self->timestamp > level.time )
+	if ( self->timestamp > level.time )
 	{
 		return;
 	}
 
-	if( self->spawnflags & 2 )
+	if ( self->spawnflags & 2 )
 	{
 		self->timestamp = level.time + 1000;
 	}
@@ -1170,7 +1170,7 @@ void trigger_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 	other->health += self->damage;
 
-	if( other->health > max )
+	if ( other->health > max )
 	{
 		other->health = max;
 	}
@@ -1187,7 +1187,7 @@ void SP_trigger_heal( gentity_t *self )
 {
 	G_SpawnInt( "heal", "5", &self->damage );
 
-	if( self->damage <= 0 )
+	if ( self->damage <= 0 )
 	{
 		self->damage = 1;
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_heal with negative damage key\n" );
@@ -1199,7 +1199,7 @@ void SP_trigger_heal( gentity_t *self )
 	InitTrigger( self );
 
 	// link in to the world if starting active
-	if( !( self->spawnflags & 1 ) )
+	if ( !( self->spawnflags & 1 ) )
 	{
 		trap_LinkEntity( self );
 	}
@@ -1215,39 +1215,39 @@ void trigger_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	int      maxClips, maxAmmo;
 	weapon_t weapon;
 
-	if( !other->client )
+	if ( !other->client )
 	{
 		return;
 	}
 
-	if( other->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	if ( other->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}
 
-	if( self->timestamp > level.time )
+	if ( self->timestamp > level.time )
 	{
 		return;
 	}
 
-	if( other->client->ps.weaponstate != WEAPON_READY )
+	if ( other->client->ps.weaponstate != WEAPON_READY )
 	{
 		return;
 	}
 
 	weapon = BG_PrimaryWeapon( other->client->ps.stats );
 
-	if( BG_Weapon( weapon )->usesEnergy && self->spawnflags & 2 )
+	if ( BG_Weapon( weapon )->usesEnergy && self->spawnflags & 2 )
 	{
 		return;
 	}
 
-	if( !BG_Weapon( weapon )->usesEnergy && self->spawnflags & 4 )
+	if ( !BG_Weapon( weapon )->usesEnergy && self->spawnflags & 4 )
 	{
 		return;
 	}
 
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		self->timestamp = level.time + 1000;
 	}
@@ -1259,9 +1259,9 @@ void trigger_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 	maxClips = BG_Weapon( weapon )->maxClips;
 
-	if( ( other->client->ps.Ammo + self->damage ) > maxAmmo )
+	if ( ( other->client->ps.Ammo + self->damage ) > maxAmmo )
 	{
-		if( other->client->ps.clips < maxClips )
+		if ( other->client->ps.clips < maxClips )
 		{
 			other->client->ps.clips++;
 			other->client->ps.Ammo = 1;
@@ -1286,7 +1286,7 @@ void SP_trigger_ammo( gentity_t *self )
 {
 	G_SpawnInt( "ammo", "1", &self->damage );
 
-	if( self->damage <= 0 )
+	if ( self->damage <= 0 )
 	{
 		self->damage = 1;
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_ammo with negative ammo key\n" );

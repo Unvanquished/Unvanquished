@@ -95,16 +95,16 @@ int terminate_handler( HTRequest *request, HTResponse *response, void *param, in
 BOOL HTAlertCallback_progress( HTRequest *request, HTAlertOpcode op,
                                int msgnum, const char *dfault, void *input, HTAlertPar *reply )
 {
-	if( op == HT_PROG_READ )
+	if ( op == HT_PROG_READ )
 	{
-		if( !dl_is_ftp )
+		if ( !dl_is_ftp )
 		{
 			Cvar_SetValue( "cl_downloadCount", ( float ) HTRequest_bytesRead( request ) );
 		}
 		else
 		{
 			/* show_bug.cgi?id=605 */
-			if( !HTNet_rawBytesCount( request->net ) )
+			if ( !HTNet_rawBytesCount( request->net ) )
 			{
 				Com_DPrintf( "Force raw byte count on request->net %p\n", request->net );
 				HTFTP_setRawBytesCount( request );
@@ -126,7 +126,7 @@ BOOL HTAlertCallback_confirm( HTRequest *request, HTAlertOpcode op,
                               int msgnum, const char *dfault, void *input, HTAlertPar *reply )
 {
 	// some predefined messages we know the answer to
-	if( msgnum == HT_MSG_FILE_REPLACE )
+	if ( msgnum == HT_MSG_FILE_REPLACE )
 	{
 		Com_Printf( "Replace existing download target file\n" );
 		return YES;
@@ -154,7 +154,7 @@ BOOL HTAlertCallback_prompt( HTRequest *request, HTAlertOpcode op,
 
 void DL_InitDownload()
 {
-	if( dl_initialized )
+	if ( dl_initialized )
 	{
 		return;
 	}
@@ -198,7 +198,7 @@ DL_Shutdown
 */
 void DL_Shutdown()
 {
-	if( !dl_initialized )
+	if ( !dl_initialized )
 	{
 		return;
 	}
@@ -228,7 +228,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	char *path = NULL;
 	char *ptr = NULL;
 
-	if( dl_running )
+	if ( dl_running )
 	{
 		Com_Printf( "ERROR: DL_BeginDownload called with a download request already active\n" );
 		return 0;
@@ -238,14 +238,14 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 #ifdef HTDEBUG
 
-	if( debug )
+	if ( debug )
 	{
 		WWWTRACE = SHOW_ALL_TRACE;
 	}
 
 #endif
 
-	if( !localName || !remoteName )
+	if ( !localName || !remoteName )
 	{
 		Com_DPrintf( "Empty download URL or empty local file name\n" );
 		return 0;
@@ -264,7 +264,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	   In case of ftp download, we leave no timeout during connect phase cause of libwww bugs
 	   show_bug.cgi?id=605
 	 */
-	if( !Q_stricmp( access, "ftp" ) )
+	if ( !Q_stricmp( access, "ftp" ) )
 	{
 		dl_is_ftp = 1;
 		HTHost_setEventTimeout( -1 );
@@ -278,7 +278,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	dl_request = HTRequest_new();
 
 	/* HTTP Basic Auth */
-	if( !Q_stricmp( access, "http" ) )
+	if ( !Q_stricmp( access, "http" ) )
 	{
 		HTBasic *basic;
 
@@ -286,7 +286,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 		path = HTParse( remoteName, "", PARSE_PATH + PARSE_PUNCTUATION );
 		ptr = strchr( login, '@' );
 
-		if( ptr )
+		if ( ptr )
 		{
 			/* Uid and/or passwd specified */
 			char *passwd;
@@ -294,7 +294,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 			*ptr = '\0';
 			passwd = strchr( login, ':' );
 
-			if( passwd )
+			if ( passwd )
 			{
 				/* Passwd specified */
 				*passwd++ = '\0';
@@ -330,7 +330,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	FS_CreatePath( localName );
 
 	/* Start the load */
-	if( HTLoadToFile( url, dl_request, localName ) != YES )
+	if ( HTLoadToFile( url, dl_request, localName ) != YES )
 	{
 		Com_DPrintf( "HTLoadToFile failed\n" );
 		HT_FREE( url );
@@ -346,7 +346,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	path = HTParse( remoteName, "", PARSE_PATH + PARSE_PUNCTUATION );
 	ptr = strchr( login, '@' );
 
-	if( ptr )
+	if ( ptr )
 	{
 		/* Uid and/or passwd specified */
 		Cvar_Set( "cl_downloadName", va( "%s://*:*%s%s", access, ptr, path ) );
@@ -360,7 +360,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	HT_FREE( login );
 	HT_FREE( access );
 
-	if( dl_is_ftp )
+	if ( dl_is_ftp )
 	{
 		HTHost_setEventTimeout( 30000 );
 	}
@@ -376,13 +376,13 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 // (maybe this should be CL_DL_DownloadLoop)
 dlStatus_t DL_DownloadLoop()
 {
-	if( !dl_running )
+	if ( !dl_running )
 	{
 		Com_DPrintf( "DL_DownloadLoop: unexpected call with dl_running == qfalse\n" );
 		return DL_DONE;
 	}
 
-	if( HTEventList_pump() )
+	if ( HTEventList_pump() )
 	{
 		return DL_CONTINUE;
 	}
@@ -402,7 +402,7 @@ dlStatus_t DL_DownloadLoop()
 	Cvar_Set( "ui_dl_running", "0" );
 
 	/* NOTE: there is HTEventList_status, but it says != HT_OK as soon as HTEventList_pump returns NO */
-	if( terminate_status < 0 )
+	if ( terminate_status < 0 )
 	{
 		Com_DPrintf( "DL_DownloadLoop: request terminated with failure status %d\n", terminate_status );
 		return DL_FAILED;

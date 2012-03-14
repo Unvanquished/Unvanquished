@@ -88,14 +88,14 @@ qboolean R_CompareVert( srfVert_t *v1, srfVert_t *v2, qboolean checkST )
 {
 	int i;
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		if( floor( v1->xyz[ i ] + 0.1 ) != floor( v2->xyz[ i ] + 0.1 ) )
+		if ( floor( v1->xyz[ i ] + 0.1 ) != floor( v2->xyz[ i ] + 0.1 ) )
 		{
 			return qfalse;
 		}
 
-		if( checkST && ( ( v1->st[ 0 ] != v2->st[ 0 ] ) || ( v1->st[ 1 ] != v2->st[ 1 ] ) ) )
+		if ( checkST && ( ( v1->st[ 0 ] != v2->st[ 0 ] ) || ( v1->st[ 1 ] != v2->st[ 1 ] ) ) )
 		{
 			return qfalse;
 		}
@@ -135,7 +135,7 @@ void R_CalcTangentsForTriangle( vec3_t tangent, vec3_t binormal,
 	vec3_t planes[ 3 ];
 	vec3_t u, v;
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		VectorSet( u, v1[ i ] - v0[ i ], t1[ 0 ] - t0[ 0 ], t1[ 1 ] - t0[ 1 ] );
 		VectorSet( v, v2[ i ] - v0[ i ], t2[ 0 ] - t0[ 0 ], t2[ 1 ] - t0[ 1 ] );
@@ -181,7 +181,7 @@ void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
 
 	CrossProduct( u, v, cp );
 
-	if( fabs( cp[ 0 ] ) > 10e-6 )
+	if ( fabs( cp[ 0 ] ) > 10e-6 )
 	{
 		tangent[ 0 ] = -cp[ 1 ] / cp[ 0 ];
 		binormal[ 0 ] = -cp[ 2 ] / cp[ 0 ];
@@ -192,7 +192,7 @@ void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
 
 	CrossProduct( u, v, cp );
 
-	if( fabs( cp[ 0 ] ) > 10e-6 )
+	if ( fabs( cp[ 0 ] ) > 10e-6 )
 	{
 		tangent[ 1 ] = -cp[ 1 ] / cp[ 0 ];
 		binormal[ 1 ] = -cp[ 2 ] / cp[ 0 ];
@@ -203,7 +203,7 @@ void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
 
 	CrossProduct( u, v, cp );
 
-	if( fabs( cp[ 0 ] ) > 10e-6 )
+	if ( fabs( cp[ 0 ] ) > 10e-6 )
 	{
 		tangent[ 2 ] = -cp[ 1 ] / cp[ 0 ];
 		binormal[ 2 ] = -cp[ 2 ] / cp[ 0 ];
@@ -232,7 +232,7 @@ void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	CrossProduct( tangent, binormal, normal );
 	VectorNormalize( normal );
 
-	if( DotProduct( normal, faceNormal ) < 0 )
+	if ( DotProduct( normal, faceNormal ) < 0 )
 	{
 		//VectorInverse(normal);
 		//VectorInverse(tangent);
@@ -261,7 +261,7 @@ void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
 
 	CrossProduct( u, v, cp );
 
-	if( fabs( cp[ 0 ] ) > 10e-6 )
+	if ( fabs( cp[ 0 ] ) > 10e-6 )
 	{
 		tangent[ 0 ] = -cp[ 1 ] / cp[ 0 ];
 		binormal[ 0 ] = -cp[ 2 ] / cp[ 0 ];
@@ -272,7 +272,7 @@ void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
 
 	CrossProduct( u, v, cp );
 
-	if( fabs( cp[ 0 ] ) > 10e-6 )
+	if ( fabs( cp[ 0 ] ) > 10e-6 )
 	{
 		tangent[ 1 ] = -cp[ 1 ] / cp[ 0 ];
 		binormal[ 1 ] = -cp[ 2 ] / cp[ 0 ];
@@ -283,7 +283,7 @@ void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
 
 	CrossProduct( u, v, cp );
 
-	if( fabs( cp[ 0 ] ) > 10e-6 )
+	if ( fabs( cp[ 0 ] ) > 10e-6 )
 	{
 		tangent[ 2 ] = -cp[ 1 ] / cp[ 0 ];
 		binormal[ 2 ] = -cp[ 2 ] / cp[ 0 ];
@@ -304,7 +304,7 @@ void R_CalcTangentSpaceFast( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	CrossProduct( tangent, binormal, normal );
 	VectorNormalizeFast( normal );
 
-	if( DotProduct( normal, faceNormal ) < 0 )
+	if ( DotProduct( normal, faceNormal ) < 0 )
 	{
 		VectorInverse( normal );
 		//VectorInverse(tangent);
@@ -416,7 +416,7 @@ void R_CalcTBN2( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	denominator = c2c1_T * c3c1_B - c3c1_T * c2c1_B;
 
 	//if(ROUNDOFF(fDenominator) == 0.0f)
-	if( denominator == 0.0f )
+	if ( denominator == 0.0f )
 	{
 		// We won't risk a divide by zero, so set the tangent matrix to the identity matrix
 		VectorSet( tangent, 1, 0, 0 );
@@ -488,13 +488,13 @@ qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] )
 	/* calculate barycentric basis for the triangle */
 	bb = ( dv[ 1 ]->st[ 0 ] - dv[ 0 ]->st[ 0 ] ) * ( dv[ 2 ]->st[ 1 ] - dv[ 0 ]->st[ 1 ] ) - ( dv[ 2 ]->st[ 0 ] - dv[ 0 ]->st[ 0 ] ) * ( dv[ 1 ]->st[ 1 ] - dv[ 0 ]->st[ 1 ] );
 
-	if( fabs( bb ) < 0.00000001f )
+	if ( fabs( bb ) < 0.00000001f )
 	{
 		return qfalse;
 	}
 
 	/* do each vertex */
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		// calculate s tangent vector
 		s = dv[ i ]->st[ 0 ] + 10.0f;
@@ -547,27 +547,27 @@ static int R_FindSurfaceTriangleWithEdge( int numTriangles, srfTriangle_t *trian
 	count = 0;
 	match = -1;
 
-	for( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
+	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
 	{
-		if( ( tri->indexes[ 0 ] == start && tri->indexes[ 1 ] == end ) ||
-		    ( tri->indexes[ 1 ] == start && tri->indexes[ 2 ] == end ) || ( tri->indexes[ 2 ] == start && tri->indexes[ 0 ] == end ) )
+		if ( ( tri->indexes[ 0 ] == start && tri->indexes[ 1 ] == end ) ||
+		     ( tri->indexes[ 1 ] == start && tri->indexes[ 2 ] == end ) || ( tri->indexes[ 2 ] == start && tri->indexes[ 0 ] == end ) )
 		{
-			if( i != ignore )
+			if ( i != ignore )
 			{
 				match = i;
 			}
 
 			count++;
 		}
-		else if( ( tri->indexes[ 1 ] == start && tri->indexes[ 0 ] == end ) ||
-		         ( tri->indexes[ 2 ] == start && tri->indexes[ 1 ] == end ) || ( tri->indexes[ 0 ] == start && tri->indexes[ 2 ] == end ) )
+		else if ( ( tri->indexes[ 1 ] == start && tri->indexes[ 0 ] == end ) ||
+		          ( tri->indexes[ 2 ] == start && tri->indexes[ 1 ] == end ) || ( tri->indexes[ 0 ] == start && tri->indexes[ 2 ] == end ) )
 		{
 			count++;
 		}
 	}
 
 	// detect edges shared by three triangles and make them seams
-	if( count > 2 )
+	if ( count > 2 )
 	{
 		match = -1;
 	}
@@ -586,7 +586,7 @@ void R_CalcSurfaceTriangleNeighbors( int numTriangles, srfTriangle_t *triangles 
 	int           i;
 	srfTriangle_t *tri;
 
-	for( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
+	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
 	{
 		tri->neighbors[ 0 ] = R_FindSurfaceTriangleWithEdge( numTriangles, triangles, tri->indexes[ 1 ], tri->indexes[ 0 ], i );
 		tri->neighbors[ 1 ] = R_FindSurfaceTriangleWithEdge( numTriangles, triangles, tri->indexes[ 2 ], tri->indexes[ 1 ], i );
@@ -604,7 +604,7 @@ void R_CalcSurfaceTrianglePlanes( int numTriangles, srfTriangle_t *triangles, sr
 	int           i;
 	srfTriangle_t *tri;
 
-	for( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
+	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
 	{
 		float  *v1, *v2, *v3;
 		vec3_t d1, d2;
@@ -655,13 +655,13 @@ cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 	int      anyBack;
 	int      front, back;
 
-	if( r_nocull->integer )
+	if ( r_nocull->integer )
 	{
 		return CULL_CLIP;
 	}
 
 	// transform into world space
-	for( i = 0; i < 8; i++ )
+	for ( i = 0; i < 8; i++ )
 	{
 		v[ 0 ] = localBounds[ i & 1 ][ 0 ];
 		v[ 1 ] = localBounds[( i >> 1 ) & 1 ][ 1 ];
@@ -673,21 +673,21 @@ cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 	// check against frustum planes
 	anyBack = 0;
 
-	for( i = 0; i < FRUSTUM_PLANES; i++ )
+	for ( i = 0; i < FRUSTUM_PLANES; i++ )
 	{
 		frust = &tr.viewParms.frustums[ 0 ][ i ];
 
 		front = back = 0;
 
-		for( j = 0; j < 8; j++ )
+		for ( j = 0; j < 8; j++ )
 		{
 			dists[ j ] = DotProduct( transformed[ j ], frust->normal );
 
-			if( dists[ j ] > frust->dist )
+			if ( dists[ j ] > frust->dist )
 			{
 				front = 1;
 
-				if( back )
+				if ( back )
 				{
 					break; // a point is in front
 				}
@@ -698,7 +698,7 @@ cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 			}
 		}
 
-		if( !front )
+		if ( !front )
 		{
 			// all points were behind one of the planes
 			return CULL_OUT;
@@ -707,7 +707,7 @@ cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 		anyBack |= back;
 	}
 
-	if( !anyBack )
+	if ( !anyBack )
 	{
 		return CULL_IN; // completely inside frustum
 	}
@@ -722,7 +722,7 @@ cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 	int      r;
 	vec3_t   worldBounds[ 2 ];
 
-	if( r_nocull->integer )
+	if ( r_nocull->integer )
 	{
 		return CULL_CLIP;
 	}
@@ -730,7 +730,7 @@ cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 	// transform into world space
 	ClearBounds( worldBounds[ 0 ], worldBounds[ 1 ] );
 
-	for( j = 0; j < 8; j++ )
+	for ( j = 0; j < 8; j++ )
 	{
 		v[ 0 ] = localBounds[ j & 1 ][ 0 ];
 		v[ 1 ] = localBounds[( j >> 1 ) & 1 ][ 1 ];
@@ -744,25 +744,25 @@ cullResult_t R_CullLocalBox( vec3_t localBounds[ 2 ] )
 	// check against frustum planes
 	anyClip = qfalse;
 
-	for( i = 0; i < FRUSTUM_PLANES; i++ )
+	for ( i = 0; i < FRUSTUM_PLANES; i++ )
 	{
 		frust = &tr.viewParms.frustums[ 0 ][ i ];
 
 		r = BoxOnPlaneSide( worldBounds[ 0 ], worldBounds[ 1 ], frust );
 
-		if( r == 2 )
+		if ( r == 2 )
 		{
 			// completely outside frustum
 			return CULL_OUT;
 		}
 
-		if( r == 3 )
+		if ( r == 3 )
 		{
 			anyClip = qtrue;
 		}
 	}
 
-	if( !anyClip )
+	if ( !anyClip )
 	{
 		// completely inside frustum
 		return CULL_IN;
@@ -799,29 +799,29 @@ int R_CullPointAndRadius( vec3_t pt, float radius )
 	cplane_t *frust;
 	qboolean mightBeClipped = qfalse;
 
-	if( r_nocull->integer )
+	if ( r_nocull->integer )
 	{
 		return CULL_CLIP;
 	}
 
 	// check against frustum planes
-	for( i = 0; i < FRUSTUM_PLANES; i++ )
+	for ( i = 0; i < FRUSTUM_PLANES; i++ )
 	{
 		frust = &tr.viewParms.frustums[ 0 ][ i ];
 
 		dist = DotProduct( pt, frust->normal ) - frust->dist;
 
-		if( dist < -radius )
+		if ( dist < -radius )
 		{
 			return CULL_OUT;
 		}
-		else if( dist <= radius )
+		else if ( dist <= radius )
 		{
 			mightBeClipped = qtrue;
 		}
 	}
 
-	if( mightBeClipped )
+	if ( mightBeClipped )
 	{
 		return CULL_CLIP;
 	}
@@ -853,30 +853,30 @@ int R_FogPointAndRadius( const vec3_t pt, float radius )
 	int   i, j;
 	fog_t *fog;
 
-	if( tr.refdef.rdflags & RDF_NOWORLDMODEL )
+	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL )
 	{
 		return 0;
 	}
 
 	// FIXME: non-normalized axis issues
-	for( i = 1; i < tr.world->numFogs; i++ )
+	for ( i = 1; i < tr.world->numFogs; i++ )
 	{
 		fog = &tr.world->fogs[ i ];
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
-			if( pt[ j ] - radius >= fog->bounds[ 1 ][ j ] )
+			if ( pt[ j ] - radius >= fog->bounds[ 1 ][ j ] )
 			{
 				break;
 			}
 
-			if( pt[ j ] + radius <= fog->bounds[ 0 ][ j ] )
+			if ( pt[ j ] + radius <= fog->bounds[ 0 ][ j ] )
 			{
 				break;
 			}
 		}
 
-		if( j == 3 )
+		if ( j == 3 )
 		{
 			return i;
 		}
@@ -895,29 +895,29 @@ int R_FogWorldBox( vec3_t bounds[ 2 ] )
 	int   i, j;
 	fog_t *fog;
 
-	if( tr.refdef.rdflags & RDF_NOWORLDMODEL )
+	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL )
 	{
 		return 0;
 	}
 
-	for( i = 1; i < tr.world->numFogs; i++ )
+	for ( i = 1; i < tr.world->numFogs; i++ )
 	{
 		fog = &tr.world->fogs[ i ];
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
-			if( bounds[ 0 ][ j ] >= fog->bounds[ 1 ][ j ] )
+			if ( bounds[ 0 ][ j ] >= fog->bounds[ 1 ][ j ] )
 			{
 				break;
 			}
 
-			if( bounds[ 1 ][ j ] <= fog->bounds[ 0 ][ j ] )
+			if ( bounds[ 1 ][ j ] <= fog->bounds[ 0 ][ j ] )
 			{
 				break;
 			}
 		}
 
-		if( j == 3 )
+		if ( j == 3 )
 		{
 			return i;
 		}
@@ -1014,7 +1014,7 @@ float R_ProjectRadius( float r, vec3_t location )
 	c = DotProduct( tr.viewParms.orientation.axis[ 0 ], tr.viewParms.orientation.origin );
 	dist = DotProduct( tr.viewParms.orientation.axis[ 0 ], location ) - c;
 
-	if( dist <= 0 )
+	if ( dist <= 0 )
 	{
 		return 0;
 	}
@@ -1037,7 +1037,7 @@ float R_ProjectRadius( float r, vec3_t location )
 
 	pr = projected[ 1 ] / projected[ 3 ];
 
-	if( pr > 1.0f )
+	if ( pr > 1.0f )
 	{
 		pr = 1.0f;
 	}
@@ -1058,7 +1058,7 @@ void R_SetupEntityWorldBounds( trRefEntity_t *ent )
 
 	ClearBounds( ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] );
 
-	for( j = 0; j < 8; j++ )
+	for ( j = 0; j < 8; j++ )
 	{
 		v[ 0 ] = ent->localBounds[ j & 1 ][ 0 ];
 		v[ 1 ] = ent->localBounds[( j >> 1 ) & 1 ][ 1 ];
@@ -1085,7 +1085,7 @@ void R_RotateEntityForViewParms( const trRefEntity_t *ent, const viewParms_t *vi
 	vec3_t delta;
 	float  axisLength;
 
-	if( ent->e.reType != RT_MODEL )
+	if ( ent->e.reType != RT_MODEL )
 	{
 		* or = viewParms->world;
 		return;
@@ -1106,11 +1106,11 @@ void R_RotateEntityForViewParms( const trRefEntity_t *ent, const viewParms_t *vi
 	VectorSubtract( viewParms->orientation.origin, or ->origin, delta );
 
 	// compensate for scale in the axes if necessary
-	if( ent->e.nonNormalizedAxes )
+	if ( ent->e.nonNormalizedAxes )
 	{
 		axisLength = VectorLength( ent->e.axis[ 0 ] );
 
-		if( !axisLength )
+		if ( !axisLength )
 		{
 			axisLength = 0;
 		}
@@ -1143,7 +1143,7 @@ void R_RotateEntityForLight( const trRefEntity_t *ent, const trRefLight_t *light
 	vec3_t delta;
 	float  axisLength;
 
-	if( ent->e.reType != RT_MODEL )
+	if ( ent->e.reType != RT_MODEL )
 	{
 		Com_Memset( or , 0, sizeof( * or ) );
 
@@ -1176,11 +1176,11 @@ void R_RotateEntityForLight( const trRefEntity_t *ent, const trRefLight_t *light
 	VectorSubtract( light->l.origin, or ->origin, delta );
 
 	// compensate for scale in the axes if necessary
-	if( ent->e.nonNormalizedAxes )
+	if ( ent->e.nonNormalizedAxes )
 	{
 		axisLength = VectorLength( ent->e.axis[ 0 ] );
 
-		if( !axisLength )
+		if ( !axisLength )
 		{
 			axisLength = 0;
 		}
@@ -1306,7 +1306,7 @@ void R_RotateForViewer( void )
 #if 0
 
 	// Tr3B: support mirrors
-	if( tr.viewParms.isMirror )
+	if ( tr.viewParms.isMirror )
 	{
 		vec4_t   plane;
 		vec4_t   plane2;
@@ -1367,7 +1367,7 @@ static void SetFarClip( void )
 
 	// if not rendering the world (icons, menus, etc)
 	// set a 2k far clip plane
-	if( tr.refdef.rdflags & RDF_NOWORLDMODEL )
+	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL )
 	{
 		tr.viewParms.zFar = 2048;
 		return;
@@ -1382,11 +1382,11 @@ static void SetFarClip( void )
 	farthestCornerDistance = 0;
 
 	// check visBounds
-	for( i = 0; i < 8; i++ )
+	for ( i = 0; i < 8; i++ )
 	{
 		int j;
 
-		if( i & 1 )
+		if ( i & 1 )
 		{
 			v[ 0 ] = tr.viewParms.visBounds[ 0 ][ 0 ];
 		}
@@ -1395,7 +1395,7 @@ static void SetFarClip( void )
 			v[ 0 ] = tr.viewParms.visBounds[ 1 ][ 0 ];
 		}
 
-		if( i & 2 )
+		if ( i & 2 )
 		{
 			v[ 1 ] = tr.viewParms.visBounds[ 0 ][ 1 ];
 		}
@@ -1404,7 +1404,7 @@ static void SetFarClip( void )
 			v[ 1 ] = tr.viewParms.visBounds[ 1 ][ 1 ];
 		}
 
-		if( i & 4 )
+		if ( i & 4 )
 		{
 			v[ 2 ] = tr.viewParms.visBounds[ 0 ][ 2 ];
 		}
@@ -1413,7 +1413,7 @@ static void SetFarClip( void )
 			v[ 2 ] = tr.viewParms.visBounds[ 1 ][ 2 ];
 		}
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			eye[ j ] =
 			  v[ 0 ] * modelMatrix[ j + 0 * 4 ] +
@@ -1426,13 +1426,13 @@ static void SetFarClip( void )
 #if 0
 
 	// check lightBounds
-	if( tr.refdef.numLights )
+	if ( tr.refdef.numLights )
 	{
-		for( i = 0; i < 8; i++ )
+		for ( i = 0; i < 8; i++ )
 		{
 			int j;
 
-			if( i & 1 )
+			if ( i & 1 )
 			{
 				v[ 0 ] = tr.viewParms.lightBounds[ 0 ][ 0 ];
 			}
@@ -1441,7 +1441,7 @@ static void SetFarClip( void )
 				v[ 0 ] = tr.viewParms.lightBounds[ 1 ][ 0 ];
 			}
 
-			if( i & 2 )
+			if ( i & 2 )
 			{
 				v[ 1 ] = tr.viewParms.lightBounds[ 0 ][ 1 ];
 			}
@@ -1450,7 +1450,7 @@ static void SetFarClip( void )
 				v[ 1 ] = tr.viewParms.lightBounds[ 1 ][ 1 ];
 			}
 
-			if( i & 4 )
+			if ( i & 4 )
 			{
 				v[ 2 ] = tr.viewParms.lightBounds[ 0 ][ 2 ];
 			}
@@ -1459,7 +1459,7 @@ static void SetFarClip( void )
 				v[ 2 ] = tr.viewParms.lightBounds[ 1 ][ 2 ];
 			}
 
-			for( j = 0; j < 3; j++ )
+			for ( j = 0; j < 3; j++ )
 			{
 				eye[ j ] =
 				  v[ 0 ] * modelMatrix[ j + 0 * 4 ] +
@@ -1476,12 +1476,12 @@ static void SetFarClip( void )
 	farthestCornerDistance = 0;
 
 	// check visBounds
-	for( i = 0; i < 8; i++ )
+	for ( i = 0; i < 8; i++ )
 	{
 		vec3_t v;
 		float  distance;
 
-		if( i & 1 )
+		if ( i & 1 )
 		{
 			v[ 0 ] = tr.viewParms.visBounds[ 0 ][ 0 ];
 		}
@@ -1490,7 +1490,7 @@ static void SetFarClip( void )
 			v[ 0 ] = tr.viewParms.visBounds[ 1 ][ 0 ];
 		}
 
-		if( i & 2 )
+		if ( i & 2 )
 		{
 			v[ 1 ] = tr.viewParms.visBounds[ 0 ][ 1 ];
 		}
@@ -1499,7 +1499,7 @@ static void SetFarClip( void )
 			v[ 1 ] = tr.viewParms.visBounds[ 1 ][ 1 ];
 		}
 
-		if( i & 4 )
+		if ( i & 4 )
 		{
 			v[ 2 ] = tr.viewParms.visBounds[ 0 ][ 2 ];
 		}
@@ -1510,7 +1510,7 @@ static void SetFarClip( void )
 
 		distance = DistanceSquared( v, tr.viewParms.orientation.origin );
 
-		if( distance > farthestCornerDistance )
+		if ( distance > farthestCornerDistance )
 		{
 			farthestCornerDistance = distance;
 		}
@@ -1519,13 +1519,13 @@ static void SetFarClip( void )
 #if 0
 
 	// check lightBounds
-	for( i = 0; i < 8; i++ )
+	for ( i = 0; i < 8; i++ )
 	{
 		vec3_t v;
 		vec3_t vecTo;
 		float  distance;
 
-		if( i & 1 )
+		if ( i & 1 )
 		{
 			v[ 0 ] = tr.viewParms.lightBounds[ 0 ][ 0 ];
 		}
@@ -1534,7 +1534,7 @@ static void SetFarClip( void )
 			v[ 0 ] = tr.viewParms.lightBounds[ 1 ][ 0 ];
 		}
 
-		if( i & 2 )
+		if ( i & 2 )
 		{
 			v[ 1 ] = tr.viewParms.lightBounds[ 0 ][ 1 ];
 		}
@@ -1543,7 +1543,7 @@ static void SetFarClip( void )
 			v[ 1 ] = tr.viewParms.lightBounds[ 1 ][ 1 ];
 		}
 
-		if( i & 4 )
+		if ( i & 4 )
 		{
 			v[ 2 ] = tr.viewParms.lightBounds[ 0 ][ 2 ];
 		}
@@ -1556,7 +1556,7 @@ static void SetFarClip( void )
 
 		distance = vecTo[ 0 ] * vecTo[ 0 ] + vecTo[ 1 ] * vecTo[ 1 ] + vecTo[ 2 ] * vecTo[ 2 ];
 
-		if( distance > farthestCornerDistance )
+		if ( distance > farthestCornerDistance )
 		{
 			farthestCornerDistance = distance;
 		}
@@ -1570,8 +1570,8 @@ static void SetFarClip( void )
 	// ydnar: add global q3 fog
 #if 0
 
-	if( tr.world != NULL && tr.world->globalFog >= 0 &&
-	    tr.world->fogs[ tr.world->globalFog ].fogParms.depthForOpaque < tr.viewParms.zFar )
+	if ( tr.world != NULL && tr.world->globalFog >= 0 &&
+	     tr.world->fogs[ tr.world->globalFog ].fogParms.depthForOpaque < tr.viewParms.zFar )
 	{
 		tr.viewParms.zFar = tr.world->fogs[ tr.world->globalFog ].fogParms.depthForOpaque;
 	}
@@ -1595,11 +1595,11 @@ static void R_SetupProjection( qboolean infiniteFarClip )
 
 	zNear = tr.viewParms.zNear = r_znear->value;
 
-	if( r_zfar->value )
+	if ( r_zfar->value )
 	{
 		zFar = tr.viewParms.zFar = Q_max( tr.viewParms.zFar, r_zfar->value );
 	}
-	else if( infiniteFarClip )
+	else if ( infiniteFarClip )
 	{
 		zFar = tr.viewParms.zFar = 0;
 	}
@@ -1622,7 +1622,7 @@ static void R_SetupProjection( qboolean infiniteFarClip )
 		height = yMax - yMin;
 		depth = zFar - zNear;
 
-		if( zFar <= 0 || infiniteFarClip )
+		if ( zFar <= 0 || infiniteFarClip )
 		{
 			// Tr3B: far plane at infinity, see RobustShadowVolumes.pdf by Nvidia
 			proj[ 0 ] = 2 * zNear / width;
@@ -1665,7 +1665,7 @@ static void R_SetupProjection( qboolean infiniteFarClip )
 	}
 #else
 
-	if( zFar <= 0 || infiniteFarClip )  // || r_showBspNodes->integer)
+	if ( zFar <= 0 || infiniteFarClip ) // || r_showBspNodes->integer)
 	{
 		MatrixPerspectiveProjectionFovXYInfiniteRH( proj, tr.refdef.fov_x, tr.refdef.fov_y, zNear );
 	}
@@ -1689,7 +1689,7 @@ static void R_SetupProjection( qboolean infiniteFarClip )
 	Vector4Set( axis[ 1 ], 0, 1, 0, 1 );
 	Vector4Set( axis[ 2 ], 0, 0, 1, 1 );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		MatrixTransform4( mvp, axis[ i ], trans );
 
@@ -1762,7 +1762,7 @@ static void R_SetupFrustum( void )
 	VectorScale( tr.viewParms.orientation.axis[ 0 ], xs, tr.viewParms.frustums[ 0 ][ 3 ].normal );
 	VectorMA( tr.viewParms.frustums[ 0 ][ 3 ].normal, -xc, tr.viewParms.orientation.axis[ 2 ], tr.viewParms.frustums[ 0 ][ 3 ].normal );
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
 		tr.viewParms.frustums[ 0 ][ i ].type = PLANE_NON_AXIAL;
 		tr.viewParms.frustums[ 0 ][ i ].dist = DotProduct( tr.viewParms.orientation.origin, tr.viewParms.frustums[ 0 ][ i ].normal );
@@ -1827,7 +1827,7 @@ void R_SetupFrustum2( frustum_t frustum, const matrix_t mvp )
 	frustum[ FRUSTUM_FAR ].normal[ 2 ] = mvp[ 11 ] - mvp[ 10 ];
 	frustum[ FRUSTUM_FAR ].dist = - ( mvp[ 15 ] - mvp[ 14 ] );
 
-	for( i = 0; i < 6; i++ )
+	for ( i = 0; i < 6; i++ )
 	{
 		vec_t length, ilength;
 
@@ -1836,7 +1836,7 @@ void R_SetupFrustum2( frustum_t frustum, const matrix_t mvp )
 		// normalize
 		length = VectorLength( frustum[ i ].normal );
 
-		if( length )
+		if ( length )
 		{
 			ilength = 1.0 / length;
 			frustum[ i ].normal[ 0 ] *= ilength;
@@ -1872,18 +1872,18 @@ static void R_SetupSplitFrustums( void )
 	lambda = r_parallelShadowSplitWeight->value;
 	ratio = tr.viewParms.zFar / tr.viewParms.zNear;
 
-	for( j = 0; j < 5; j++ )
+	for ( j = 0; j < 5; j++ )
 	{
 		CopyPlane( &tr.viewParms.frustums[ 0 ][ j ], &tr.viewParms.frustums[ 1 ][ j ] );
 	}
 
-	for( i = 1; i <= ( r_parallelShadowSplits->integer + 1 ); i++ )
+	for ( i = 1; i <= ( r_parallelShadowSplits->integer + 1 ); i++ )
 	{
 		float si = i / ( float )( r_parallelShadowSplits->integer + 1 );
 
 		zFar = 1.005f * lambda * ( tr.viewParms.zNear * powf( ratio, si ) ) + ( 1 - lambda ) * ( tr.viewParms.zNear + ( tr.viewParms.zFar - tr.viewParms.zNear ) * si );
 
-		if( i <= r_parallelShadowSplits->integer )
+		if ( i <= r_parallelShadowSplits->integer )
 		{
 			tr.viewParms.parallelSplitDistances[ i - 1 ] = zFar;
 		}
@@ -1895,7 +1895,7 @@ static void R_SetupSplitFrustums( void )
 		tr.viewParms.frustums[ i ][ FRUSTUM_FAR ].dist = DotProduct( planeOrigin, tr.viewParms.frustums[ i ][ FRUSTUM_FAR ].normal );
 		SetPlaneSignbits( &tr.viewParms.frustums[ i ][ FRUSTUM_FAR ] );
 
-		if( i <= ( r_parallelShadowSplits->integer ) )
+		if ( i <= ( r_parallelShadowSplits->integer ) )
 		{
 			zNear = zFar - ( zFar * 0.005f );
 			tr.viewParms.frustums[ i + 1 ][ FRUSTUM_NEAR ].type = PLANE_NON_AXIAL;
@@ -1906,7 +1906,7 @@ static void R_SetupSplitFrustums( void )
 			SetPlaneSignbits( &tr.viewParms.frustums[ i + 1 ][ FRUSTUM_NEAR ] );
 		}
 
-		for( j = 0; j < 4; j++ )
+		for ( j = 0; j < 4; j++ )
 		{
 			CopyPlane( &tr.viewParms.frustums[ 0 ][ j ], &tr.viewParms.frustums[ i ][ j ] );
 		}
@@ -1929,7 +1929,7 @@ void R_MirrorPoint( vec3_t in, orientation_t *surface, orientation_t *camera, ve
 
 	VectorClear( transformed );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		d = DotProduct( local, surface->axis[ i ] );
 		VectorMA( transformed, d, camera->axis[ i ], transformed );
@@ -1945,7 +1945,7 @@ void R_MirrorVector( vec3_t in, orientation_t *surface, orientation_t *camera, v
 
 	VectorClear( out );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		d = DotProduct( in, surface->axis[ i ] );
 		VectorMA( out, d, camera->axis[ i ], out );
@@ -1964,14 +1964,14 @@ void R_PlaneForSurface( surfaceType_t *surfType, cplane_t *plane )
 	srfVert_t      *v1, *v2, *v3;
 	vec4_t         plane4;
 
-	if( !surfType )
+	if ( !surfType )
 	{
 		Com_Memset( plane, 0, sizeof( *plane ) );
 		plane->normal[ 0 ] = 1;
 		return;
 	}
 
-	switch( *surfType )
+	switch ( *surfType )
 	{
 		case SF_FACE:
 			*plane = ( ( srfSurfaceFace_t * ) surfType )->plane;
@@ -2026,7 +2026,7 @@ static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *su
 	//ri.Printf(PRINT_ALL, "R_GetPortalOrientations: original plane = (%5.3f, %5.3f, %5.3f)\n", originalPlane.normal[0], originalPlane.normal[1], originalPlane.normal[2]);
 
 	// rotate the plane if necessary
-	if( drawSurf->entity != &tr.worldEntity )
+	if ( drawSurf->entity != &tr.worldEntity )
 	{
 		tr.currentEntity = drawSurf->entity;
 
@@ -2054,7 +2054,7 @@ static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *su
 	// Doom3 style mirror support
 	shader = tr.sortedShaders[ drawSurf->shaderNum ];
 
-	if( shader->isMirror )
+	if ( shader->isMirror )
 	{
 		//ri.Printf(PRINT_ALL, "Portal surface with a mirror\n");
 
@@ -2073,18 +2073,18 @@ static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *su
 	// locate the portal entity closest to this plane.
 	// origin will be the origin of the portal, origin2 will be
 	// the origin of the camera
-	for( i = 0; i < tr.refdef.numEntities; i++ )
+	for ( i = 0; i < tr.refdef.numEntities; i++ )
 	{
 		e = &tr.refdef.entities[ i ];
 
-		if( e->e.reType != RT_PORTALSURFACE )
+		if ( e->e.reType != RT_PORTALSURFACE )
 		{
 			continue;
 		}
 
 		d = DotProduct( e->e.origin, originalPlane.normal ) - originalPlane.dist;
 
-		if( d > 64 || d < -64 )
+		if ( d > 64 || d < -64 )
 		{
 			continue;
 		}
@@ -2093,7 +2093,7 @@ static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *su
 		VectorCopy( e->e.oldorigin, pvsOrigin );
 
 		// if the entity is just a mirror, don't use as a camera point
-		if( e->e.oldorigin[ 0 ] == e->e.origin[ 0 ] && e->e.oldorigin[ 1 ] == e->e.origin[ 1 ] && e->e.oldorigin[ 2 ] == e->e.origin[ 2 ] )
+		if ( e->e.oldorigin[ 0 ] == e->e.origin[ 0 ] && e->e.oldorigin[ 1 ] == e->e.origin[ 1 ] && e->e.oldorigin[ 2 ] == e->e.origin[ 2 ] )
 		{
 			//ri.Printf(PRINT_ALL, "Portal surface with a mirror entity\n");
 
@@ -2119,10 +2119,10 @@ static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *su
 		VectorSubtract( vec3_origin, camera->axis[ 1 ], camera->axis[ 1 ] );
 
 		// optionally rotate
-		if( e->e.oldframe )
+		if ( e->e.oldframe )
 		{
 			// if a speed is specified
-			if( e->e.frame )
+			if ( e->e.frame )
 			{
 				// continuous rotate
 				d = ( tr.refdef.time / 1000.0f ) * e->e.frame;
@@ -2140,7 +2140,7 @@ static qboolean R_GetPortalOrientations( drawSurf_t *drawSurf, orientation_t *su
 				CrossProduct( camera->axis[ 0 ], camera->axis[ 1 ], camera->axis[ 2 ] );
 			}
 		}
-		else if( e->e.skinNum )
+		else if ( e->e.skinNum )
 		{
 			d = e->e.skinNum;
 			VectorCopy( camera->axis[ 1 ], transformed );
@@ -2179,7 +2179,7 @@ static qboolean IsMirror( const drawSurf_t *drawSurf )
 	R_PlaneForSurface( drawSurf->surface, &originalPlane );
 
 	// rotate the plane if necessary
-	if( tr.currentEntity != &tr.worldEntity )
+	if ( tr.currentEntity != &tr.worldEntity )
 	{
 		// get the orientation of the entity
 		R_RotateEntityForViewParms( tr.currentEntity, &tr.viewParms, &tr.orientation );
@@ -2200,24 +2200,24 @@ static qboolean IsMirror( const drawSurf_t *drawSurf )
 	// locate the portal entity closest to this plane.
 	// origin will be the origin of the portal, origin2 will be
 	// the origin of the camera
-	for( i = 0; i < tr.refdef.numEntities; i++ )
+	for ( i = 0; i < tr.refdef.numEntities; i++ )
 	{
 		e = &tr.refdef.entities[ i ];
 
-		if( e->e.reType != RT_PORTALSURFACE )
+		if ( e->e.reType != RT_PORTALSURFACE )
 		{
 			continue;
 		}
 
 		d = DotProduct( e->e.origin, originalPlane.normal ) - originalPlane.dist;
 
-		if( d > 64 || d < -64 )
+		if ( d > 64 || d < -64 )
 		{
 			continue;
 		}
 
 		// if the entity is just a mirror, don't use as a camera point
-		if( e->e.oldorigin[ 0 ] == e->e.origin[ 0 ] && e->e.oldorigin[ 1 ] == e->e.origin[ 1 ] && e->e.oldorigin[ 2 ] == e->e.origin[ 2 ] )
+		if ( e->e.oldorigin[ 0 ] == e->e.origin[ 0 ] && e->e.oldorigin[ 1 ] == e->e.origin[ 1 ] && e->e.oldorigin[ 2 ] == e->e.origin[ 2 ] )
 		{
 			return qtrue;
 		}
@@ -2243,7 +2243,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 	unsigned int pointOr = 0;
 	unsigned int pointAnd = ( unsigned int ) ~0;
 
-	if( glConfig.smpActive )
+	if ( glConfig.smpActive )
 	{
 		// FIXME!  we can't do Tess_Begin/Tess_End stuff with smp!
 		return qfalse;
@@ -2253,7 +2253,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 	shader = tr.sortedShaders[ drawSurf->shaderNum ];
 
 	// rotate if necessary
-	if( tr.currentEntity != &tr.worldEntity )
+	if ( tr.currentEntity != &tr.worldEntity )
 	{
 		//ri.Printf(PRINT_ALL, "entity portal surface\n");
 		R_RotateEntityForViewParms( tr.currentEntity, &tr.viewParms, &tr.orientation );
@@ -2268,25 +2268,25 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 	rb_surfaceTable[ *drawSurf->surface ]( drawSurf->surface );
 
 	// Tr3B: former assertion
-	if( tess.numVertexes >= 128 )
+	if ( tess.numVertexes >= 128 )
 	{
 		return qfalse;
 	}
 
-	for( i = 0; i < tess.numVertexes; i++ )
+	for ( i = 0; i < tess.numVertexes; i++ )
 	{
 		int          j;
 		unsigned int pointFlags = 0;
 
 		R_TransformModelToClip( tess.xyz[ i ], tr.orientation.modelViewMatrix, tr.viewParms.projectionMatrix, eye, clip );
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
-			if( clip[ j ] >= clip[ 3 ] )
+			if ( clip[ j ] >= clip[ 3 ] )
 			{
 				pointFlags |= ( 1 << ( j * 2 ) );
 			}
-			else if( clip[ j ] <= -clip[ 3 ] )
+			else if ( clip[ j ] <= -clip[ 3 ] )
 			{
 				pointFlags |= ( 1 << ( j * 2 + 1 ) );
 			}
@@ -2297,7 +2297,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 	}
 
 	// trivially reject
-	if( pointAnd )
+	if ( pointAnd )
 	{
 		return qtrue;
 	}
@@ -2309,7 +2309,7 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 	// we have in the game right now.
 	numTriangles = tess.numIndexes / 3;
 
-	for( i = 0; i < tess.numIndexes; i += 3 )
+	for ( i = 0; i < tess.numIndexes; i += 3 )
 	{
 		vec3_t normal;
 		float  dot;
@@ -2319,18 +2319,18 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 
 		len = VectorLengthSquared( normal );  // lose the sqrt
 
-		if( len < shortest )
+		if ( len < shortest )
 		{
 			shortest = len;
 		}
 
-		if( ( dot = DotProduct( normal, tess.normals[ tess.indexes[ i ] ] ) ) >= 0 )
+		if ( ( dot = DotProduct( normal, tess.normals[ tess.indexes[ i ] ] ) ) >= 0 )
 		{
 			numTriangles--;
 		}
 	}
 
-	if( !numTriangles )
+	if ( !numTriangles )
 	{
 		//ri.Printf(PRINT_ALL, "entity portal surface triangles culled\n");
 		return qtrue;
@@ -2338,12 +2338,12 @@ static qboolean SurfIsOffscreen( const drawSurf_t *drawSurf, vec4_t clipDest[ 12
 
 	// mirrors can early out at this point, since we don't do a fade over distance
 	// with them (although we could)
-	if( IsMirror( drawSurf ) )
+	if ( IsMirror( drawSurf ) )
 	{
 		return qfalse;
 	}
 
-	if( shortest > ( tess.surfaceShader->portalRange * tess.surfaceShader->portalRange ) )
+	if ( shortest > ( tess.surfaceShader->portalRange * tess.surfaceShader->portalRange ) )
 	{
 		return qtrue;
 	}
@@ -2366,19 +2366,19 @@ static qboolean R_MirrorViewBySurface( drawSurf_t *drawSurf )
 	orientation_t surface, camera;
 
 	// don't recursively mirror
-	if( tr.viewParms.isPortal )
+	if ( tr.viewParms.isPortal )
 	{
 		ri.Printf( PRINT_DEVELOPER, "WARNING: recursive mirror/portal found\n" );
 		return qfalse;
 	}
 
-	if( r_noportals->integer )
+	if ( r_noportals->integer )
 	{
 		return qfalse;
 	}
 
 	// trivially reject portal/mirror
-	if( SurfIsOffscreen( drawSurf, clipDest ) )
+	if ( SurfIsOffscreen( drawSurf, clipDest ) )
 	{
 		//ri.Printf(PRINT_ALL, "WARNING: offscreen mirror/portal surface\n");
 		return qfalse;
@@ -2390,7 +2390,7 @@ static qboolean R_MirrorViewBySurface( drawSurf_t *drawSurf )
 	newParms = tr.viewParms;
 	newParms.isPortal = qtrue;
 
-	if( !R_GetPortalOrientations( drawSurf, &surface, &camera, newParms.pvsOrigin, &newParms.isMirror ) )
+	if ( !R_GetPortalOrientations( drawSurf, &surface, &camera, newParms.pvsOrigin, &newParms.isMirror ) )
 	{
 		return qfalse; // bad portal, no portalentity
 	}
@@ -2430,29 +2430,29 @@ int R_SpriteFogNum( trRefEntity_t *ent )
 	int   i, j;
 	fog_t *fog;
 
-	if( tr.refdef.rdflags & RDF_NOWORLDMODEL )
+	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL )
 	{
 		return 0;
 	}
 
-	for( i = 1; i < tr.world->numFogs; i++ )
+	for ( i = 1; i < tr.world->numFogs; i++ )
 	{
 		fog = &tr.world->fogs[ i ];
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
-			if( ent->e.origin[ j ] - ent->e.radius >= fog->bounds[ 1 ][ j ] )
+			if ( ent->e.origin[ j ] - ent->e.radius >= fog->bounds[ 1 ][ j ] )
 			{
 				break;
 			}
 
-			if( ent->e.origin[ j ] + ent->e.radius <= fog->bounds[ 0 ][ j ] )
+			if ( ent->e.origin[ j ] + ent->e.radius <= fog->bounds[ 0 ][ j ] )
 			{
 				break;
 			}
 		}
 
-		if( j == 3 )
+		if ( j == 3 )
 		{
 			return i;
 		}
@@ -2497,12 +2497,12 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by shader
-	if( ( ( drawSurf_t * ) a )->shaderNum < ( ( drawSurf_t * ) b )->shaderNum )
+	if ( ( ( drawSurf_t * ) a )->shaderNum < ( ( drawSurf_t * ) b )->shaderNum )
 	{
 		return -1;
 	}
 
-	else if( ( ( drawSurf_t * ) a )->shaderNum > ( ( drawSurf_t * ) b )->shaderNum )
+	else if ( ( ( drawSurf_t * ) a )->shaderNum > ( ( drawSurf_t * ) b )->shaderNum )
 	{
 		return 1;
 	}
@@ -2512,12 +2512,12 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by lightmap
-	if( ( ( drawSurf_t * ) a )->lightmapNum < ( ( drawSurf_t * ) b )->lightmapNum )
+	if ( ( ( drawSurf_t * ) a )->lightmapNum < ( ( drawSurf_t * ) b )->lightmapNum )
 	{
 		return -1;
 	}
 
-	else if( ( ( drawSurf_t * ) a )->lightmapNum > ( ( drawSurf_t * ) b )->lightmapNum )
+	else if ( ( ( drawSurf_t * ) a )->lightmapNum > ( ( drawSurf_t * ) b )->lightmapNum )
 	{
 		return 1;
 	}
@@ -2527,22 +2527,22 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by entity
-	if( ( ( drawSurf_t * ) a )->entity == &tr.worldEntity && ( ( drawSurf_t * ) b )->entity != &tr.worldEntity )
+	if ( ( ( drawSurf_t * ) a )->entity == &tr.worldEntity && ( ( drawSurf_t * ) b )->entity != &tr.worldEntity )
 	{
 		return -1;
 	}
 
-	else if( ( ( drawSurf_t * ) a )->entity != &tr.worldEntity && ( ( drawSurf_t * ) b )->entity == &tr.worldEntity )
+	else if ( ( ( drawSurf_t * ) a )->entity != &tr.worldEntity && ( ( drawSurf_t * ) b )->entity == &tr.worldEntity )
 	{
 		return 1;
 	}
 
-	else if( ( ( drawSurf_t * ) a )->entity < ( ( drawSurf_t * ) b )->entity )
+	else if ( ( ( drawSurf_t * ) a )->entity < ( ( drawSurf_t * ) b )->entity )
 	{
 		return -1;
 	}
 
-	else if( ( ( drawSurf_t * ) a )->entity > ( ( drawSurf_t * ) b )->entity )
+	else if ( ( ( drawSurf_t * ) a )->entity > ( ( drawSurf_t * ) b )->entity )
 	{
 		return 1;
 	}
@@ -2552,12 +2552,12 @@ static int DrawSurfCompare( const void *a, const void *b )
 #if 1
 
 	// by fog
-	if( ( ( drawSurf_t * ) a )->fogNum < ( ( drawSurf_t * ) b )->fogNum )
+	if ( ( ( drawSurf_t * ) a )->fogNum < ( ( drawSurf_t * ) b )->fogNum )
 	{
 		return -1;
 	}
 
-	else if( ( ( drawSurf_t * ) a )->fogNum > ( ( drawSurf_t * ) b )->fogNum )
+	else if ( ( ( drawSurf_t * ) a )->fogNum > ( ( drawSurf_t * ) b )->fogNum )
 	{
 		return 1;
 	}
@@ -2579,7 +2579,7 @@ static void R_SortDrawSurfs( void )
 	int        i;
 
 	// it is possible for some views to not have any surfaces
-	if( tr.viewParms.numDrawSurfs < 1 )
+	if ( tr.viewParms.numDrawSurfs < 1 )
 	{
 		// we still need to add it for hyperspace cases
 		R_AddDrawViewCmd();
@@ -2589,7 +2589,7 @@ static void R_SortDrawSurfs( void )
 	// if we overflowed MAX_DRAWSURFS, the drawsurfs
 	// wrapped around in the buffer and we will be missing
 	// the first surfaces, not the last ones
-	if( tr.viewParms.numDrawSurfs > MAX_DRAWSURFS )
+	if ( tr.viewParms.numDrawSurfs > MAX_DRAWSURFS )
 	{
 		tr.viewParms.numDrawSurfs = MAX_DRAWSURFS;
 	}
@@ -2597,7 +2597,7 @@ static void R_SortDrawSurfs( void )
 	// if we overflowed MAX_INTERACTIONS, the interactions
 	// wrapped around in the buffer and we will be missing
 	// the first interactions, not the last ones
-	if( tr.viewParms.numInteractions > MAX_INTERACTIONS )
+	if ( tr.viewParms.numInteractions > MAX_INTERACTIONS )
 	{
 		interaction_t *ia;
 
@@ -2614,20 +2614,20 @@ static void R_SortDrawSurfs( void )
 
 	// check for any pass through drawing, which
 	// may cause another view to be rendered first
-	for( i = 0, drawSurf = tr.viewParms.drawSurfs; i < tr.viewParms.numDrawSurfs; i++, drawSurf++ )
+	for ( i = 0, drawSurf = tr.viewParms.drawSurfs; i < tr.viewParms.numDrawSurfs; i++, drawSurf++ )
 	{
 		shader = tr.sortedShaders[ drawSurf->shaderNum ];
 
 #if 1
 
-		if( shader->sort > SS_PORTAL )
+		if ( shader->sort > SS_PORTAL )
 		{
 			break;
 		}
 
 #else
 
-		if( !shader->isPortal )
+		if ( !shader->isPortal )
 		{
 			continue;
 		}
@@ -2637,16 +2637,16 @@ static void R_SortDrawSurfs( void )
 		//ri.Printf(PRINT_ALL, "portal or mirror surface\n");
 
 		// no shader should ever have this sort type
-		if( shader->sort == SS_BAD )
+		if ( shader->sort == SS_BAD )
 		{
 			ri.Error( ERR_DROP, "Shader '%s'with sort == SS_BAD", shader->name );
 		}
 
 		// if the mirror was completely clipped away, we may need to check another surface
-		if( R_MirrorViewBySurface( drawSurf ) )
+		if ( R_MirrorViewBySurface( drawSurf ) )
 		{
 			// this is a debug option to see exactly what is being mirrored
-			if( r_portalOnly->integer )
+			if ( r_portalOnly->integer )
 			{
 				return;
 			}
@@ -2670,12 +2670,12 @@ void R_AddEntitySurfaces( void )
 	trRefEntity_t *ent;
 	shader_t      *shader;
 
-	if( !r_drawentities->integer )
+	if ( !r_drawentities->integer )
 	{
 		return;
 	}
 
-	for( i = 0; i < tr.refdef.numEntities; i++ )
+	for ( i = 0; i < tr.refdef.numEntities; i++ )
 	{
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
 
@@ -2684,13 +2684,13 @@ void R_AddEntitySurfaces( void )
 		// we don't want the hacked weapon position showing in
 		// mirrors, because the true body position will already be drawn
 		//
-		if( ( ent->e.renderfx & RF_FIRST_PERSON ) && ( tr.viewParms.isPortal || tr.viewParms.isMirror ) )
+		if ( ( ent->e.renderfx & RF_FIRST_PERSON ) && ( tr.viewParms.isPortal || tr.viewParms.isMirror ) )
 		{
 			continue;
 		}
 
 		// simple generated models, like sprites and beams, are not culled
-		switch( ent->e.reType )
+		switch ( ent->e.reType )
 		{
 			case RT_PORTALSURFACE:
 				break; // don't draw anything
@@ -2706,7 +2706,7 @@ void R_AddEntitySurfaces( void )
 				// self blood sprites, talk balloons, etc should not be drawn in the primary
 				// view.  We can't just do this check for all entities, because md3
 				// entities may still want to cast shadows from them
-				if( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal )
+				if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal )
 				{
 					continue;
 				}
@@ -2721,13 +2721,13 @@ void R_AddEntitySurfaces( void )
 
 				tr.currentModel = R_GetModelByHandle( ent->e.hModel );
 
-				if( !tr.currentModel )
+				if ( !tr.currentModel )
 				{
 					R_AddDrawSurf( &entitySurface, tr.defaultShader, -1, 0 );
 				}
 				else
 				{
-					switch( tr.currentModel->type )
+					switch ( tr.currentModel->type )
 					{
 						case MOD_MESH:
 							R_AddMDVSurfaces( ent );
@@ -2755,7 +2755,7 @@ void R_AddEntitySurfaces( void )
 							break;
 
 						case MOD_BAD: // null model axis
-							if( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal )
+							if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal )
 							{
 								break;
 							}
@@ -2792,12 +2792,12 @@ void R_AddEntityInteractions( trRefLight_t *light )
 	int           i;
 	trRefEntity_t *ent;
 
-	if( !r_drawentities->integer )
+	if ( !r_drawentities->integer )
 	{
 		return;
 	}
 
-	for( i = 0; i < tr.refdef.numEntities; i++ )
+	for ( i = 0; i < tr.refdef.numEntities; i++ )
 	{
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
 
@@ -2806,13 +2806,13 @@ void R_AddEntityInteractions( trRefLight_t *light )
 		// we don't want the hacked weapon position showing in
 		// mirrors, because the true body position will already be drawn
 		//
-		if( ( ent->e.renderfx & RF_FIRST_PERSON ) && ( tr.viewParms.isPortal || tr.viewParms.isMirror ) )
+		if ( ( ent->e.renderfx & RF_FIRST_PERSON ) && ( tr.viewParms.isPortal || tr.viewParms.isMirror ) )
 		{
 			continue;
 		}
 
 		// simple generated models, like sprites and beams, are not culled
-		switch( ent->e.reType )
+		switch ( ent->e.reType )
 		{
 			case RT_PORTALSURFACE:
 				break; // don't draw anything
@@ -2829,13 +2829,13 @@ void R_AddEntityInteractions( trRefLight_t *light )
 			case RT_MODEL:
 				tr.currentModel = R_GetModelByHandle( ent->e.hModel );
 
-				if( !tr.currentModel )
+				if ( !tr.currentModel )
 				{
 					//R_AddDrawSurf(&entitySurface, tr.defaultShader, 0);
 				}
 				else
 				{
-					switch( tr.currentModel->type )
+					switch ( tr.currentModel->type )
 					{
 						case MOD_MESH:
 							R_AddMDVInteractions( ent, light );
@@ -2892,18 +2892,18 @@ void R_AddPolygonInteractions( trRefLight_t *light )
 	srfPoly_t *poly;
 	vec3_t    worldBounds[ 2 ];
 
-	if( light->l.inverseShadows )
+	if ( light->l.inverseShadows )
 	{
 		return;
 	}
 
 	tr.currentEntity = &tr.worldEntity;
 
-	for( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys; i++, poly++ )
+	for ( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys; i++, poly++ )
 	{
 		shader = R_GetShaderByHandle( poly->hShader );
 
-		if( !shader->interactLight )
+		if ( !shader->interactLight )
 		{
 			continue;
 		}
@@ -2911,13 +2911,13 @@ void R_AddPolygonInteractions( trRefLight_t *light )
 		// calc AABB of the triangle
 		ClearBounds( worldBounds[ 0 ], worldBounds[ 1 ] );
 
-		for( j = 0; j < poly->numVerts; j++ )
+		for ( j = 0; j < poly->numVerts; j++ )
 		{
 			AddPointToBounds( poly->verts[ j ].xyz, worldBounds[ 0 ], worldBounds[ 1 ] );
 		}
 
 		// do a quick AABB cull
-		if( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], worldBounds[ 0 ], worldBounds[ 1 ] ) )
+		if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], worldBounds[ 0 ], worldBounds[ 1 ] ) )
 		{
 			continue;
 		}
@@ -2939,13 +2939,13 @@ void R_AddLightInteractions()
 	bspNode_t    *leaf;
 	link_t       *l; //, *sentinel; //unused
 
-	for( i = 0; i < tr.refdef.numLights; i++ )
+	for ( i = 0; i < tr.refdef.numLights; i++ )
 	{
 		light = tr.currentLight = &tr.refdef.lights[ i ];
 
-		if( light->isStatic )
+		if ( light->isStatic )
 		{
-			if( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
+			if ( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
 			{
 				light->cull = CULL_OUT;
 				continue;
@@ -2953,7 +2953,7 @@ void R_AddLightInteractions()
 		}
 		else
 		{
-			if( !r_dynamicLight->integer )
+			if ( !r_dynamicLight->integer )
 			{
 				light->cull = CULL_OUT;
 				continue;
@@ -2964,20 +2964,20 @@ void R_AddLightInteractions()
 		R_RotateLightForViewParms( light, &tr.viewParms, &tr.orientation );
 
 		// calc local bounds for culling
-		if( light->isStatic )
+		if ( light->isStatic )
 		{
 #if 1
 
 			// ignore if not in PVS
-			if( !r_noLightVisCull->integer )
+			if ( !r_noLightVisCull->integer )
 			{
-				if( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
+				if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
 				{
 					int numVisibleLeafs = 0;
 
-					for( l = light->leafs.next; l != &light->leafs; l = l->next )
+					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 					{
-						if( !l || !l->data )
+						if ( !l || !l->data )
 						{
 							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
 							break;
@@ -2987,13 +2987,13 @@ void R_AddLightInteractions()
 
 						//ri.Printf(PRINT_ALL, "leaf %i: visible = %i, %i\n", leaf - tr.world->nodes, leaf->visible[tr.viewCount], tr.viewCount);
 
-						if( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
+						if ( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
 						{
 							numVisibleLeafs++;
 						}
 					}
 
-					if( numVisibleLeafs == 0 )
+					if ( numVisibleLeafs == 0 )
 					{
 						tr.pc.c_pvs_cull_light_out++;
 						light->cull = CULL_OUT;
@@ -3002,9 +3002,9 @@ void R_AddLightInteractions()
 				}
 				else
 				{
-					for( l = light->leafs.next; l != &light->leafs; l = l->next )
+					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 					{
-						if( !l || !l->data )
+						if ( !l || !l->data )
 						{
 							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
 							break;
@@ -3012,13 +3012,13 @@ void R_AddLightInteractions()
 
 						leaf = ( bspNode_t * ) l->data;
 
-						if( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
+						if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 						{
 							light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
 						}
 					}
 
-					if( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
+					if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 					{
 						tr.pc.c_pvs_cull_light_out++;
 						light->cull = CULL_OUT;
@@ -3028,7 +3028,7 @@ void R_AddLightInteractions()
 			}
 
 			// look if we have to draw the light including its interactions
-			switch( R_CullLocalBox( light->localBounds ) )
+			switch ( R_CullLocalBox( light->localBounds ) )
 			{
 				case CULL_IN:
 				default:
@@ -3068,7 +3068,7 @@ void R_AddLightInteractions()
 			R_SetupLightLocalBounds( light );
 
 			// look if we have to draw the light including its interactions
-			switch( R_CullLocalBox( light->localBounds ) )
+			switch ( R_CullLocalBox( light->localBounds ) )
 			{
 				case CULL_IN:
 				default:
@@ -3095,8 +3095,8 @@ void R_AddLightInteractions()
 			R_SetupLightFrustum( light );
 
 			// ignore if not in visible bounds
-			if( !BoundsIntersect
-			    ( light->worldBounds[ 0 ], light->worldBounds[ 1 ], tr.viewParms.visBounds[ 0 ], tr.viewParms.visBounds[ 1 ] ) )
+			if ( !BoundsIntersect
+			     ( light->worldBounds[ 0 ], light->worldBounds[ 1 ], tr.viewParms.visBounds[ 0 ], tr.viewParms.visBounds[ 1 ] ) )
 			{
 				light->cull = CULL_OUT;
 				continue;
@@ -3124,7 +3124,7 @@ void R_AddLightInteractions()
 		light->numLightOnlyInteractions = 0;
 		light->noSort = qfalse;
 
-		if( r_deferredShading->integer && r_shadows->integer < SHADOWING_ESM16 )
+		if ( r_deferredShading->integer && r_shadows->integer < SHADOWING_ESM16 )
 		{
 			// add one fake interaction for this light
 			// because the renderer backend only loops through interactions
@@ -3132,7 +3132,7 @@ void R_AddLightInteractions()
 		}
 		else
 		{
-			if( light->isStatic )
+			if ( light->isStatic )
 			{
 				R_AddPrecachedWorldInteractions( light );
 			}
@@ -3147,11 +3147,11 @@ void R_AddLightInteractions()
 			//R_AddPolygonInteractions(light);
 		}
 
-		if( light->numInteractions && light->numInteractions != light->numShadowOnlyInteractions )
+		if ( light->numInteractions && light->numInteractions != light->numShadowOnlyInteractions )
 		{
 			R_SortInteractions( light );
 
-			if( light->isStatic )
+			if ( light->isStatic )
 			{
 				tr.pc.c_slights++;
 			}
@@ -3178,13 +3178,13 @@ void R_AddLightBoundsToVisBounds()
 	bspNode_t    *leaf;
 	link_t       *l; //, *sentinel; //unused
 
-	for( i = 0; i < tr.refdef.numLights; i++ )
+	for ( i = 0; i < tr.refdef.numLights; i++ )
 	{
 		light = tr.currentLight = &tr.refdef.lights[ i ];
 
-		if( light->isStatic )
+		if ( light->isStatic )
 		{
-			if( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
+			if ( !r_staticLight->integer || ( ( r_precomputedLighting->integer || r_vertexLighting->integer ) && !light->noRadiosity ) )
 			{
 				//light->cull = CULL_OUT;
 				continue;
@@ -3192,7 +3192,7 @@ void R_AddLightBoundsToVisBounds()
 		}
 		else
 		{
-			if( !r_dynamicLight->integer )
+			if ( !r_dynamicLight->integer )
 			{
 				//light->cull = CULL_OUT;
 				continue;
@@ -3203,18 +3203,18 @@ void R_AddLightBoundsToVisBounds()
 		R_RotateLightForViewParms( light, &tr.viewParms, &tr.orientation );
 
 		// calc local bounds for culling
-		if( light->isStatic )
+		if ( light->isStatic )
 		{
 			// ignore if not in PVS
-			if( !r_noLightVisCull->integer )
+			if ( !r_noLightVisCull->integer )
 			{
-				if( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
+				if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicBspOcclusionCulling->integer )
 				{
 					int numVisibleLeafs = 0;
 
-					for( l = light->leafs.next; l != &light->leafs; l = l->next )
+					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 					{
-						if( !l || !l->data )
+						if ( !l || !l->data )
 						{
 							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
 							break;
@@ -3224,13 +3224,13 @@ void R_AddLightBoundsToVisBounds()
 
 						//ri.Printf(PRINT_ALL, "leaf %i: visible = %i, %i\n", leaf - tr.world->nodes, leaf->visible[tr.viewCount], tr.viewCount);
 
-						if( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
+						if ( leaf->visible[ tr.viewCount ] && ( tr.frameCount - leaf->lastVisited[ tr.viewCount ] ) <= r_chcMaxVisibleFrames->integer )
 						{
 							numVisibleLeafs++;
 						}
 					}
 
-					if( numVisibleLeafs == 0 )
+					if ( numVisibleLeafs == 0 )
 					{
 						//tr.pc.c_pvs_cull_light_out++;
 						//light->cull = CULL_OUT;
@@ -3239,9 +3239,9 @@ void R_AddLightBoundsToVisBounds()
 				}
 				else
 				{
-					for( l = light->leafs.next; l != &light->leafs; l = l->next )
+					for ( l = light->leafs.next; l != &light->leafs; l = l->next )
 					{
-						if( !l || !l->data )
+						if ( !l || !l->data )
 						{
 							// something odd happens with the prev/next pointers if ri.Hunk_Alloc was used
 							break;
@@ -3249,13 +3249,13 @@ void R_AddLightBoundsToVisBounds()
 
 						leaf = ( bspNode_t * ) l->data;
 
-						if( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
+						if ( leaf->visCounts[ tr.visIndex ] == tr.visCounts[ tr.visIndex ] )
 						{
 							light->visCounts[ tr.visIndex ] = tr.visCounts[ tr.visIndex ];
 						}
 					}
 
-					if( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
+					if ( light->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 					{
 						//tr.pc.c_pvs_cull_light_out++;
 						//light->cull = CULL_OUT;
@@ -3265,7 +3265,7 @@ void R_AddLightBoundsToVisBounds()
 			}
 
 			// look if we have to draw the light including its interactions
-			switch( R_CullLocalBox( light->localBounds ) )
+			switch ( R_CullLocalBox( light->localBounds ) )
 			{
 				case CULL_IN:
 				default:
@@ -3296,7 +3296,7 @@ void R_AddLightBoundsToVisBounds()
 			R_SetupLightLocalBounds( light );
 
 			// look if we have to draw the light including its interactions
-			switch( R_CullLocalBox( light->localBounds ) )
+			switch ( R_CullLocalBox( light->localBounds ) )
 			{
 				case CULL_IN:
 				default:
@@ -3314,32 +3314,32 @@ void R_AddLightBoundsToVisBounds()
 		}
 
 		// add to z buffer bounds
-		if( light->worldBounds[ 0 ][ 0 ] < tr.viewParms.visBounds[ 0 ][ 0 ] )
+		if ( light->worldBounds[ 0 ][ 0 ] < tr.viewParms.visBounds[ 0 ][ 0 ] )
 		{
 			tr.viewParms.visBounds[ 0 ][ 0 ] = light->worldBounds[ 0 ][ 0 ];
 		}
 
-		if( light->worldBounds[ 0 ][ 1 ] < tr.viewParms.visBounds[ 0 ][ 1 ] )
+		if ( light->worldBounds[ 0 ][ 1 ] < tr.viewParms.visBounds[ 0 ][ 1 ] )
 		{
 			tr.viewParms.visBounds[ 0 ][ 1 ] = light->worldBounds[ 0 ][ 1 ];
 		}
 
-		if( light->worldBounds[ 0 ][ 2 ] < tr.viewParms.visBounds[ 0 ][ 2 ] )
+		if ( light->worldBounds[ 0 ][ 2 ] < tr.viewParms.visBounds[ 0 ][ 2 ] )
 		{
 			tr.viewParms.visBounds[ 0 ][ 2 ] = light->worldBounds[ 0 ][ 2 ];
 		}
 
-		if( light->worldBounds[ 1 ][ 0 ] > tr.viewParms.visBounds[ 1 ][ 0 ] )
+		if ( light->worldBounds[ 1 ][ 0 ] > tr.viewParms.visBounds[ 1 ][ 0 ] )
 		{
 			tr.viewParms.visBounds[ 1 ][ 0 ] = light->worldBounds[ 1 ][ 0 ];
 		}
 
-		if( light->worldBounds[ 1 ][ 1 ] > tr.viewParms.visBounds[ 1 ][ 1 ] )
+		if ( light->worldBounds[ 1 ][ 1 ] > tr.viewParms.visBounds[ 1 ][ 1 ] )
 		{
 			tr.viewParms.visBounds[ 1 ][ 1 ] = light->worldBounds[ 1 ][ 1 ];
 		}
 
-		if( light->worldBounds[ 1 ][ 2 ] > tr.viewParms.visBounds[ 1 ][ 2 ] )
+		if ( light->worldBounds[ 1 ][ 2 ] > tr.viewParms.visBounds[ 1 ][ 2 ] )
 		{
 			tr.viewParms.visBounds[ 1 ][ 2 ] = light->worldBounds[ 1 ][ 2 ];
 		}
@@ -3404,7 +3404,7 @@ void R_DebugBoundingBox( const vec3_t origin, const vec3_t mins, const vec3_t ma
 	// lower corners
 	Com_Memcpy( corners[ 4 ], corners[ 0 ], sizeof( vec3_t ) * 4 );
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
 		corners[ 4 + i ][ 2 ] = origin[ 2 ] + mins[ 2 ];
 	}
@@ -3413,7 +3413,7 @@ void R_DebugBoundingBox( const vec3_t origin, const vec3_t mins, const vec3_t ma
 	glBegin( GL_LINES );
 	glVertexAttrib4fvARB( ATTR_INDEX_COLOR, color );
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
 		// top plane
 		glVertex3fv( corners[ i ] );
@@ -3450,7 +3450,7 @@ void R_DebugPolygon( int color, int numPoints, float *points )
 	glColor3f( color & 1, ( color >> 1 ) & 1, ( color >> 2 ) & 1 );
 	glBegin( GL_POLYGON );
 
-	for( i = 0; i < numPoints; i++ )
+	for ( i = 0; i < numPoints; i++ )
 	{
 		glVertex3fv( points + i * 3 );
 	}
@@ -3463,7 +3463,7 @@ void R_DebugPolygon( int color, int numPoints, float *points )
 	glColor3f( 1, 1, 1 );
 	glBegin( GL_POLYGON );
 
-	for( i = 0; i < numPoints; i++ )
+	for ( i = 0; i < numPoints; i++ )
 	{
 		glVertex3fv( points + i * 3 );
 	}
@@ -3482,7 +3482,7 @@ void R_DebugText( const vec3_t org, float r, float g, float b, const char *text,
 {
 #if 0
 
-	if( neverOcclude )
+	if ( neverOcclude )
 	{
 		glDepthRange( 0, 0 );  // never occluded
 	}
@@ -3495,7 +3495,7 @@ void R_DebugText( const vec3_t org, float r, float g, float b, const char *text,
 	glListBase( 0 );
 	glPopAttrib();
 
-	if( neverOcclude )
+	if ( neverOcclude )
 	{
 		glDepthRange( 0, 1 );
 	}
@@ -3516,7 +3516,7 @@ static void R_DebugGraphics( void )
 	// TODO
 #else
 
-	if( r_debugSurface->integer )
+	if ( r_debugSurface->integer )
 	{
 		// the render thread can't make callbacks to the main thread
 		R_SyncRenderThread();
@@ -3545,7 +3545,7 @@ void R_RenderView( viewParms_t *parms )
 	int      firstInteraction;
 	matrix_t mvp;
 
-	if( parms->viewportWidth <= 0 || parms->viewportHeight <= 0 )
+	if ( parms->viewportWidth <= 0 || parms->viewportHeight <= 0 )
 	{
 		return;
 	}
@@ -3553,7 +3553,7 @@ void R_RenderView( viewParms_t *parms )
 	tr.viewCount++;
 	tr.viewCountNoReset++;
 
-	if( tr.viewCount >= MAX_VIEWS )
+	if ( tr.viewCount >= MAX_VIEWS )
 	{
 		ri.Printf( PRINT_ALL, "MAX_VIEWS (%i) hit. Don't add more mirrors or portals. Skipping view ...\n", MAX_VIEWS );
 		return;

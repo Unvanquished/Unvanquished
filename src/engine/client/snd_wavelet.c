@@ -46,13 +46,13 @@ void daub4( float b[], unsigned long n, int isign )
 
 	unsigned long nh, nh1, i, j;
 
-	if( n < 4 ) { return; }
+	if ( n < 4 ) { return; }
 
 	nh1 = ( nh = n >> 1 ) + 1;
 
-	if( isign >= 0 )
+	if ( isign >= 0 )
 	{
-		for( i = 1, j = 1; j <= n - 3; j += 2, i++ )
+		for ( i = 1, j = 1; j <= n - 3; j += 2, i++ )
 		{
 			wksp[ i ] = C0 * a[ j ] + C1 * a[ j + 1 ] + C2 * a[ j + 2 ] + C3 * a[ j + 3 ];
 			wksp[ i + nh ] = C3 * a[ j ] - C2 * a[ j + 1 ] + C1 * a[ j + 2 ] - C0 * a[ j + 3 ];
@@ -66,14 +66,14 @@ void daub4( float b[], unsigned long n, int isign )
 		wksp[ 1 ] = C2 * a[ nh ] + C1 * a[ n ] + C0 * a[ 1 ] + C3 * a[ nh1 ];
 		wksp[ 2 ] = C3 * a[ nh ] - C0 * a[ n ] + C1 * a[ 1 ] - C2 * a[ nh1 ];
 
-		for( i = 1, j = 3; i < nh; i++ )
+		for ( i = 1, j = 3; i < nh; i++ )
 		{
 			wksp[ j++ ] = C2 * a[ i ] + C1 * a[ i + nh ] + C0 * a[ i + 1 ] + C3 * a[ i + nh1 ];
 			wksp[ j++ ] = C3 * a[ i ] - C0 * a[ i + nh ] + C1 * a[ i + 1 ] - C2 * a[ i + nh1 ];
 		}
 	}
 
-	for( i = 1; i <= n; i++ )
+	for ( i = 1; i <= n; i++ )
 	{
 		a[ i ] = wksp[ i ];
 	}
@@ -84,15 +84,15 @@ void wt1( float a[], unsigned long n, int isign )
 	unsigned long nn;
 	int           inverseStartLength = n / 4;
 
-	if( n < inverseStartLength ) { return; }
+	if ( n < inverseStartLength ) { return; }
 
-	if( isign >= 0 )
+	if ( isign >= 0 )
 	{
-		for( nn = n; nn >= inverseStartLength; nn >>= 1 ) { daub4( a, nn, isign ); }
+		for ( nn = n; nn >= inverseStartLength; nn >>= 1 ) { daub4( a, nn, isign ); }
 	}
 	else
 	{
-		for( nn = inverseStartLength; nn <= n; nn <<= 1 ) { daub4( a, nn, isign ); }
+		for ( nn = inverseStartLength; nn <= n; nn <<= 1 ) { daub4( a, nn, isign ); }
 	}
 }
 
@@ -116,12 +116,12 @@ byte MuLawEncode( short s )
 
 	sign = ( s < 0 ) ? 0 : 0x80;
 
-	if( s < 0 ) { s = -s; }
+	if ( s < 0 ) { s = -s; }
 
 	adjusted = ( long ) s << ( 16 - sizeof( short ) * 8 );
 	adjusted += 128L + 4L;
 
-	if( adjusted > 32767 ) { adjusted = 32767; }
+	if ( adjusted > 32767 ) { adjusted = 32767; }
 
 	exponent = numBits[( adjusted >> 7 ) & 0xff ] - 1;
 	mantissa = ( adjusted >> ( exponent + 3 ) ) & 0xf;
@@ -158,9 +158,9 @@ void encodeWavelet( sfx_t *sfx, short *packets )
 	sndBuffer *newchunk, *chunk;
 	byte      *out;
 
-	if( !madeTable )
+	if ( !madeTable )
 	{
-		for( i = 0; i < 256; i++ )
+		for ( i = 0; i < 256; i++ )
 		{
 			mulawToShort[ i ] = ( float ) MuLawDecode( ( byte ) i );
 		}
@@ -172,23 +172,23 @@ void encodeWavelet( sfx_t *sfx, short *packets )
 
 	samples = sfx->soundLength;
 
-	while( samples > 0 )
+	while ( samples > 0 )
 	{
 		size = samples;
 
-		if( size > ( SND_CHUNK_SIZE * 2 ) )
+		if ( size > ( SND_CHUNK_SIZE * 2 ) )
 		{
 			size = ( SND_CHUNK_SIZE * 2 );
 		}
 
-		if( size < 4 )
+		if ( size < 4 )
 		{
 			size = 4;
 		}
 
 		newchunk = SND_malloc();
 
-		if( sfx->soundData == NULL )
+		if ( sfx->soundData == NULL )
 		{
 			sfx->soundData = newchunk;
 		}
@@ -199,7 +199,7 @@ void encodeWavelet( sfx_t *sfx, short *packets )
 
 		chunk = newchunk;
 
-		for( i = 0; i < size; i++ )
+		for ( i = 0; i < size; i++ )
 		{
 			wksp[ i ] = *packets;
 			packets++;
@@ -208,12 +208,12 @@ void encodeWavelet( sfx_t *sfx, short *packets )
 		wt1( wksp, size, 1 );
 		out = ( byte * ) chunk->sndChunk;
 
-		for( i = 0; i < size; i++ )
+		for ( i = 0; i < size; i++ )
 		{
 			temp = wksp[ i ];
 
-			if( temp > 32767 ) { temp = 32767; }
-			else if( temp < -32768 ) { temp = -32768; }
+			if ( temp > 32767 ) { temp = 32767; }
+			else if ( temp < -32768 ) { temp = -32768; }
 
 			out[ i ] = MuLawEncode( ( short ) temp );
 		}
@@ -233,16 +233,16 @@ void decodeWavelet( sndBuffer *chunk, short *to )
 
 	out = ( byte * ) chunk->sndChunk;
 
-	for( i = 0; i < size; i++ )
+	for ( i = 0; i < size; i++ )
 	{
 		wksp[ i ] = mulawToShort[ out[ i ] ];
 	}
 
 	wt1( wksp, size, -1 );
 
-	if( !to ) { return; }
+	if ( !to ) { return; }
 
-	for( i = 0; i < size; i++ )
+	for ( i = 0; i < size; i++ )
 	{
 		to[ i ] = wksp[ i ];
 	}
@@ -254,9 +254,9 @@ void encodeMuLaw( sfx_t *sfx, short *packets )
 	sndBuffer *newchunk, *chunk;
 	byte      *out;
 
-	if( !madeTable )
+	if ( !madeTable )
 	{
-		for( i = 0; i < 256; i++ )
+		for ( i = 0; i < 256; i++ )
 		{
 			mulawToShort[ i ] = ( float ) MuLawDecode( ( byte ) i );
 		}
@@ -268,18 +268,18 @@ void encodeMuLaw( sfx_t *sfx, short *packets )
 	samples = sfx->soundLength;
 	grade = 0;
 
-	while( samples > 0 )
+	while ( samples > 0 )
 	{
 		size = samples;
 
-		if( size > ( SND_CHUNK_SIZE * 2 ) )
+		if ( size > ( SND_CHUNK_SIZE * 2 ) )
 		{
 			size = ( SND_CHUNK_SIZE * 2 );
 		}
 
 		newchunk = SND_malloc();
 
-		if( sfx->soundData == NULL )
+		if ( sfx->soundData == NULL )
 		{
 			sfx->soundData = newchunk;
 		}
@@ -291,15 +291,15 @@ void encodeMuLaw( sfx_t *sfx, short *packets )
 		chunk = newchunk;
 		out = ( byte * ) chunk->sndChunk;
 
-		for( i = 0; i < size; i++ )
+		for ( i = 0; i < size; i++ )
 		{
 			poop = packets[ 0 ] + grade;
 
-			if( poop > 32767 )
+			if ( poop > 32767 )
 			{
 				poop = 32767;
 			}
-			else if( poop < -32768 )
+			else if ( poop < -32768 )
 			{
 				poop = -32768;
 			}
@@ -323,7 +323,7 @@ void decodeMuLaw( sndBuffer *chunk, short *to )
 
 	out = ( byte * ) chunk->sndChunk;
 
-	for( i = 0; i < size; i++ )
+	for ( i = 0; i < size; i++ )
 	{
 		to[ i ] = mulawToShort[ out[ i ] ];
 	}

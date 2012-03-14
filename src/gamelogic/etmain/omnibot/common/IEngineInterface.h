@@ -122,19 +122,19 @@ public:
 	{
 		int n = 0;
 
-		for( int i = 0; i < MaxPlayers; ++i )
+		for ( int i = 0; i < MaxPlayers; ++i )
 		{
-			if( m_Players[ i ].m_Team == 0 )
+			if ( m_Players[ i ].m_Team == 0 )
 			{
 				continue;
 			}
 
-			if( t != OB_TEAM_ALL && m_Players[ i ].m_Team != t )
+			if ( t != OB_TEAM_ALL && m_Players[ i ].m_Team != t )
 			{
 				continue;
 			}
 
-			if( c != Both && m_Players[ i ].m_Controller != c )
+			if ( c != Both && m_Players[ i ].m_Controller != c )
 			{
 				continue;
 			}
@@ -157,7 +157,7 @@ public:
 
 	obPlayerInfo()
 	{
-		for( int i = 0; i < MaxPlayers; ++i )
+		for ( int i = 0; i < MaxPlayers; ++i )
 		{
 			m_Players[ i ] = PInfo();
 		}

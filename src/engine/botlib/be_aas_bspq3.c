@@ -139,9 +139,9 @@ void PrintContents( int contents )
 {
 	int i;
 
-	for( i = 0; contentnames[ i ].value; i++ )
+	for ( i = 0; contentnames[ i ].value; i++ )
 	{
-		if( contents & contentnames[ i ].value )
+		if ( contents & contentnames[ i ].value )
 		{
 			botimport.Print( PRT_MESSAGE, "%s\n", contentnames[ i ].name );
 		} //end if
@@ -189,7 +189,7 @@ qboolean AAS_EntityCollision( int entnum,
 
 	botimport.EntityTrace( &enttrace, start, boxmins, boxmaxs, end, entnum, contentmask );
 
-	if( enttrace.fraction < trace->fraction )
+	if ( enttrace.fraction < trace->fraction )
 	{
 		memcpy( trace, &enttrace, sizeof( bsp_trace_t ) );
 		return qtrue;
@@ -276,7 +276,7 @@ int AAS_NextBSPEntity( int ent )
 {
 	ent++;
 
-	if( ent >= 1 && ent < bspworld.numentities )
+	if ( ent >= 1 && ent < bspworld.numentities )
 	{
 		return ent;
 	}
@@ -292,7 +292,7 @@ int AAS_NextBSPEntity( int ent )
 //===========================================================================
 int AAS_BSPEntityInRange( int ent )
 {
-	if( ent <= 0 || ent >= bspworld.numentities )
+	if ( ent <= 0 || ent >= bspworld.numentities )
 	{
 		botimport.Print( PRT_MESSAGE, "bsp entity out of range\n" );
 		return qfalse;
@@ -313,14 +313,14 @@ int AAS_ValueForBSPEpairKey( int ent, char *key, char *value, int size )
 
 	value[ 0 ] = '\0';
 
-	if( !AAS_BSPEntityInRange( ent ) )
+	if ( !AAS_BSPEntityInRange( ent ) )
 	{
 		return qfalse;
 	}
 
-	for( epair = bspworld.entities[ ent ].epairs; epair; epair = epair->next )
+	for ( epair = bspworld.entities[ ent ].epairs; epair; epair = epair->next )
 	{
-		if( !strcmp( epair->key, key ) )
+		if ( !strcmp( epair->key, key ) )
 		{
 			strncpy( value, epair->value, size - 1 );
 			value[ size - 1 ] = '\0';
@@ -344,7 +344,7 @@ int AAS_VectorForBSPEpairKey( int ent, char *key, vec3_t v )
 
 	VectorClear( v );
 
-	if( !AAS_ValueForBSPEpairKey( ent, key, buf, MAX_EPAIRKEY ) )
+	if ( !AAS_ValueForBSPEpairKey( ent, key, buf, MAX_EPAIRKEY ) )
 	{
 		return qfalse;
 	}
@@ -370,7 +370,7 @@ int AAS_FloatForBSPEpairKey( int ent, char *key, float *value )
 
 	*value = 0;
 
-	if( !AAS_ValueForBSPEpairKey( ent, key, buf, MAX_EPAIRKEY ) )
+	if ( !AAS_ValueForBSPEpairKey( ent, key, buf, MAX_EPAIRKEY ) )
 	{
 		return qfalse;
 	}
@@ -391,7 +391,7 @@ int AAS_IntForBSPEpairKey( int ent, char *key, int *value )
 
 	*value = 0;
 
-	if( !AAS_ValueForBSPEpairKey( ent, key, buf, MAX_EPAIRKEY ) )
+	if ( !AAS_ValueForBSPEpairKey( ent, key, buf, MAX_EPAIRKEY ) )
 	{
 		return qfalse;
 	}
@@ -428,7 +428,7 @@ void AAS_FreeBSPEntities( void )
 	                } //end for
 	        } //end for
 	*/
-	if( bspworld.ebuffer )
+	if ( bspworld.ebuffer )
 	{
 		FreeMemory( bspworld.ebuffer );
 	}
@@ -461,9 +461,9 @@ void AAS_ParseBSPEntities( void )
 
 	bufsize = 0;
 
-	while( PS_ReadToken( script, &token ) )
+	while ( PS_ReadToken( script, &token ) )
 	{
-		if( strcmp( token.string, "{" ) )
+		if ( strcmp( token.string, "{" ) )
 		{
 			ScriptError( script, "invalid %s\n", token.string );
 			AAS_FreeBSPEntities();
@@ -471,22 +471,22 @@ void AAS_ParseBSPEntities( void )
 			return;
 		} //end if
 
-		if( bspworld.numentities >= MAX_BSPENTITIES )
+		if ( bspworld.numentities >= MAX_BSPENTITIES )
 		{
 			botimport.Print( PRT_MESSAGE, "too many entities in BSP file\n" );
 			break;
 		} //end if
 
-		while( PS_ReadToken( script, &token ) )
+		while ( PS_ReadToken( script, &token ) )
 		{
-			if( !strcmp( token.string, "}" ) )
+			if ( !strcmp( token.string, "}" ) )
 			{
 				break;
 			}
 
 			bufsize += sizeof( bsp_epair_t );
 
-			if( token.type != TT_STRING )
+			if ( token.type != TT_STRING )
 			{
 				ScriptError( script, "invalid %s\n", token.string );
 				AAS_FreeBSPEntities();
@@ -497,7 +497,7 @@ void AAS_ParseBSPEntities( void )
 			StripDoubleQuotes( token.string );
 			bufsize += strlen( token.string ) + 1;
 
-			if( !PS_ExpectTokenType( script, TT_STRING, 0, &token ) )
+			if ( !PS_ExpectTokenType( script, TT_STRING, 0, &token ) )
 			{
 				AAS_FreeBSPEntities();
 				FreeScript( script );
@@ -508,7 +508,7 @@ void AAS_ParseBSPEntities( void )
 			bufsize += strlen( token.string ) + 1;
 		} //end while
 
-		if( strcmp( token.string, "}" ) )
+		if ( strcmp( token.string, "}" ) )
 		{
 			ScriptError( script, "missing }\n" );
 			AAS_FreeBSPEntities();
@@ -531,15 +531,15 @@ void AAS_ParseBSPEntities( void )
 
 	bspworld.numentities = 1;
 
-	while( PS_ReadToken( script, &token ) )
+	while ( PS_ReadToken( script, &token ) )
 	{
 		ent = &bspworld.entities[ bspworld.numentities ];
 		bspworld.numentities++;
 		ent->epairs = NULL;
 
-		while( PS_ReadToken( script, &token ) )
+		while ( PS_ReadToken( script, &token ) )
 		{
-			if( !strcmp( token.string, "}" ) )
+			if ( !strcmp( token.string, "}" ) )
 			{
 				break;
 			}
@@ -553,7 +553,7 @@ void AAS_ParseBSPEntities( void )
 			buftrav += ( strlen( token.string ) + 1 );
 			strcpy( epair->key, token.string );
 
-			if( !PS_ExpectTokenType( script, TT_STRING, 0, &token ) )
+			if ( !PS_ExpectTokenType( script, TT_STRING, 0, &token ) )
 			{
 				AAS_FreeBSPEntities();
 				FreeScript( script );
@@ -591,7 +591,7 @@ void AAS_DumpBSPData( void )
 {
 	AAS_FreeBSPEntities();
 
-	if( bspworld.dentdata )
+	if ( bspworld.dentdata )
 	{
 		FreeMemory( bspworld.dentdata );
 	}

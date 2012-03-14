@@ -56,34 +56,34 @@ void *BG_Alloc( int size )
 	smallest = NULL;
 	smallestsize = POOLSIZE + 1; // Guaranteed not to miss any slots :)
 
-	for( fmn = freeHead; fmn; fmn = fmn->next )
+	for ( fmn = freeHead; fmn; fmn = fmn->next )
 	{
-		if( fmn->cookie != FREEMEMCOOKIE )
+		if ( fmn->cookie != FREEMEMCOOKIE )
 		{
 			Com_Error( ERR_DROP, "BG_Alloc: Memory corruption detected!\n" );
 		}
 
-		if( fmn->size >= allocsize )
+		if ( fmn->size >= allocsize )
 		{
 			// We've got a block
-			if( fmn->size == allocsize )
+			if ( fmn->size == allocsize )
 			{
 				// Same size, just remove
 
 				prev = fmn->prev;
 				next = fmn->next;
 
-				if( prev )
+				if ( prev )
 				{
 					prev->next = next; // Point previous node to next
 				}
 
-				if( next )
+				if ( next )
 				{
 					next->prev = prev; // Point next node to previous
 				}
 
-				if( fmn == freeHead )
+				if ( fmn == freeHead )
 				{
 					freeHead = next; // Set head pointer to next
 				}
@@ -94,7 +94,7 @@ void *BG_Alloc( int size )
 			else
 			{
 				// Keep track of the smallest free slot
-				if( fmn->size < smallestsize )
+				if ( fmn->size < smallestsize )
 				{
 					smallest = fmn;
 					smallestsize = fmn->size;
@@ -103,7 +103,7 @@ void *BG_Alloc( int size )
 		}
 	}
 
-	if( !ptr && smallest )
+	if ( !ptr && smallest )
 	{
 		// We found a slot big enough
 		smallest->size -= allocsize;
@@ -111,7 +111,7 @@ void *BG_Alloc( int size )
 		ptr = ( int * ) endptr;
 	}
 
-	if( ptr )
+	if ( ptr )
 	{
 		freeMem -= allocsize;
 		memset( ptr, 0, allocsize );
@@ -136,11 +136,11 @@ void BG_Free( void *ptr )
 
 	freeMem += *freeptr;
 
-	for( fmn = freeHead; fmn; fmn = fmn->next )
+	for ( fmn = freeHead; fmn; fmn = fmn->next )
 	{
 		freeend = ( ( char * ) fmn ) + fmn->size;
 
-		if( freeend == ( char * ) freeptr )
+		if ( freeend == ( char * ) freeptr )
 		{
 			// Released block can be merged to an existing node
 
@@ -180,29 +180,29 @@ void BG_DefragmentMemory( void )
 
 	freeMemNode_t *startfmn, *endfmn, *fmn;
 
-	for( startfmn = freeHead; startfmn; )
+	for ( startfmn = freeHead; startfmn; )
 	{
 		endfmn = ( freeMemNode_t * )( ( ( char * ) startfmn ) + startfmn->size );
 
-		for( fmn = freeHead; fmn; )
+		for ( fmn = freeHead; fmn; )
 		{
-			if( fmn->cookie != FREEMEMCOOKIE )
+			if ( fmn->cookie != FREEMEMCOOKIE )
 			{
 				Com_Error( ERR_DROP, "BG_DefragmentMemory: Memory corruption detected!\n" );
 			}
 
-			if( fmn == endfmn )
+			if ( fmn == endfmn )
 			{
 				// We can add fmn onto startfmn.
 
-				if( fmn->prev )
+				if ( fmn->prev )
 				{
 					fmn->prev->next = fmn->next;
 				}
 
-				if( fmn->next )
+				if ( fmn->next )
 				{
-					if( !( fmn->next->prev = fmn->prev ) )
+					if ( !( fmn->next->prev = fmn->prev ) )
 					{
 						freeHead = fmn->next; // We're removing the head node
 					}
@@ -220,7 +220,7 @@ void BG_DefragmentMemory( void )
 			}
 		}
 
-		if( endfmn )
+		if ( endfmn )
 		{
 			startfmn = startfmn->next; // endfmn acts as a 'restart' flag here
 		}
@@ -239,19 +239,19 @@ void BG_MemoryInfo( void )
 	Com_Printf( "%p-%p: %d out of %d bytes allocated\n",
 	            fmn, end, POOLSIZE - freeMem, POOLSIZE );
 
-	while( fmn < end )
+	while ( fmn < end )
 	{
 		size = chunks = 0;
 		p = fmn;
 
-		while( fmn < end && fmn->cookie == FREEMEMCOOKIE )
+		while ( fmn < end && fmn->cookie == FREEMEMCOOKIE )
 		{
 			size += fmn->size;
 			chunks++;
 			fmn = ( freeMemNode_t * )( ( char * ) fmn + fmn->size );
 		}
 
-		if( size )
+		if ( size )
 		{
 			Com_Printf( "  %p: %d bytes free (%d chunks)\n", p, size, chunks );
 		}
@@ -259,14 +259,14 @@ void BG_MemoryInfo( void )
 		size = chunks = 0;
 		p = fmn;
 
-		while( fmn < end && fmn->cookie != FREEMEMCOOKIE )
+		while ( fmn < end && fmn->cookie != FREEMEMCOOKIE )
 		{
 			size += * ( int * ) fmn;
 			chunks++;
 			fmn = ( freeMemNode_t * )( ( size_t ) fmn + * ( int * ) fmn );
 		}
 
-		if( size )
+		if ( size )
 		{
 			Com_Printf( "  %p: %d bytes allocated (%d chunks)\n", p, size, chunks );
 		}

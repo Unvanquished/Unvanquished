@@ -53,12 +53,12 @@ GLShader_debugShadowMap                  *gl_debugShadowMapShader = NULL;
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( int permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
-	for( size_t i = 0; i < macros.size(); i++ )
+	for ( size_t i = 0; i < macros.size(); i++ )
 	{
 		GLCompileMacro *macro = macros[ i ];
 
 		//if(GLCompileMacro_USE_VERTEX_ANIMATION* m = dynamic_cast<GLCompileMacro_USE_VERTEX_ANIMATION*>(macro))
-		if( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_ANIMATION )
+		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_ANIMATION )
 		{
 			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s' \n", GetName(), macro->GetName());
 			return true;
@@ -77,11 +77,11 @@ bool GLCompileMacro_USE_VERTEX_ANIMATION::HasConflictingMacros( int permutation,
 {
 #if 1
 
-	for( size_t i = 0; i < macros.size(); i++ )
+	for ( size_t i = 0; i < macros.size(); i++ )
 	{
 		GLCompileMacro *macro = macros[ i ];
 
-		if( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_SKINNING )
+		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_VERTEX_SKINNING )
 		{
 			//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s' vs. '%s' \n", GetName(), macro->GetName());
 			return true;
@@ -96,7 +96,7 @@ uint32_t        GLCompileMacro_USE_VERTEX_ANIMATION::GetRequiredVertexAttributes
 {
 	uint32_t attribs = ATTR_NORMAL | ATTR_POSITION2 | ATTR_NORMAL2;
 
-	if( r_normalMapping->integer )
+	if ( r_normalMapping->integer )
 	{
 		attribs |= ATTR_TANGENT2 | ATTR_BINORMAL2;
 	}
@@ -113,17 +113,17 @@ bool GLCompileMacro_USE_PARALLAX_MAPPING::MissesRequiredMacros( int permutation,
 {
 	bool foundUSE_NORMAL_MAPPING = false;
 
-	for( size_t i = 0; i < macros.size(); i++ )
+	for ( size_t i = 0; i < macros.size(); i++ )
 	{
 		GLCompileMacro *macro = macros[ i ];
 
-		if( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
+		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
 		{
 			foundUSE_NORMAL_MAPPING = true;
 		}
 	}
 
-	if( !foundUSE_NORMAL_MAPPING )
+	if ( !foundUSE_NORMAL_MAPPING )
 	{
 		//ri.Printf(PRINT_ALL, "missing macro! canceling '%s' <= '%s' \n", GetName(), "USE_NORMAL_MAPPING");
 		return true;
@@ -136,17 +136,17 @@ bool GLCompileMacro_USE_REFLECTIVE_SPECULAR::MissesRequiredMacros( int permutati
 {
 	bool foundUSE_NORMAL_MAPPING = false;
 
-	for( size_t i = 0; i < macros.size(); i++ )
+	for ( size_t i = 0; i < macros.size(); i++ )
 	{
 		GLCompileMacro *macro = macros[ i ];
 
-		if( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
+		if ( ( permutation & macro->GetBit() ) != 0 && macro->GetType() == USE_NORMAL_MAPPING )
 		{
 			foundUSE_NORMAL_MAPPING = true;
 		}
 	}
 
-	if( !foundUSE_NORMAL_MAPPING )
+	if ( !foundUSE_NORMAL_MAPPING )
 	{
 		//ri.Printf(PRINT_ALL, "missing macro! canceling '%s' <= '%s' \n", GetName(), "USE_NORMAL_MAPPING");
 		return true;
@@ -159,19 +159,19 @@ bool GLShader::GetCompileMacrosString( int permutation, std::string &compileMacr
 {
 	compileMacrosOut = "";
 
-	for( size_t j = 0; j < _compileMacros.size(); j++ )
+	for ( size_t j = 0; j < _compileMacros.size(); j++ )
 	{
 		GLCompileMacro *macro = _compileMacros[ j ];
 
-		if( permutation & macro->GetBit() )
+		if ( permutation & macro->GetBit() )
 		{
-			if( macro->HasConflictingMacros( permutation, _compileMacros ) )
+			if ( macro->HasConflictingMacros( permutation, _compileMacros ) )
 			{
 				//ri.Printf(PRINT_ALL, "conflicting macro! canceling '%s'\n", macro->GetName());
 				return false;
 			}
 
-			if( macro->MissesRequiredMacros( permutation, _compileMacros ) )
+			if ( macro->MissesRequiredMacros( permutation, _compileMacros ) )
 			{
 				return false;
 			}
@@ -188,7 +188,7 @@ void GLShader::UpdateShaderProgramUniformLocations( shaderProgram_t *shaderProgr
 {
 	size_t numUniforms = _uniforms.size();
 
-	for( size_t j = 0; j < numUniforms; j++ )
+	for ( size_t j = 0; j < numUniforms; j++ )
 	{
 		GLUniform *uniform = _uniforms[ j ];
 
@@ -218,19 +218,19 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 	libsSize = 0;
 	libsBuffer = NULL;
 
-	while( 1 )
+	while ( 1 )
 	{
 		int  libSize;
 		char *libBuffer; // single extra lib file
 
 		token = COM_ParseExt2( libs, qfalse );
 
-		if( !token[ 0 ] )
+		if ( !token[ 0 ] )
 		{
 			break;
 		}
 
-		if( shaderType == GL_VERTEX_SHADER_ARB )
+		if ( shaderType == GL_VERTEX_SHADER_ARB )
 		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", token );
 			ri.Printf( PRINT_ALL, "...loading vertex shader '%s'\n", filename );
@@ -243,7 +243,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 		libSize = ri.FS_ReadFile( filename, ( void ** ) &libBuffer );
 
-		if( !libBuffer )
+		if ( !libBuffer )
 		{
 			ri.Error( ERR_DROP, "Couldn't load %s", filename );
 		}
@@ -261,7 +261,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 	}
 
 	// load main() program
-	if( shaderType == GL_VERTEX_SHADER_ARB )
+	if ( shaderType == GL_VERTEX_SHADER_ARB )
 	{
 		Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", mainShaderName );
 		ri.Printf( PRINT_ALL, "...loading vertex main() shader '%s'\n", filename );
@@ -274,7 +274,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 	mainSize = ri.FS_ReadFile( filename, ( void ** ) &mainBuffer );
 
-	if( !mainBuffer )
+	if ( !mainBuffer )
 	{
 		ri.Error( ERR_DROP, "Couldn't load %s", filename );
 	}
@@ -404,7 +404,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		Q_strcat( bufferExtra, sizeof( bufferExtra ),
 		          va( "#ifndef r_FBufScale\n#define r_FBufScale vec2(%f, %f)\n#endif\n", fbufWidthScale, fbufHeightScale ) );
 
-		if( glConfig2.textureNPOTAvailable )
+		if ( glConfig2.textureNPOTAvailable )
 		{
 			npotWidthScale = 1;
 			npotHeightScale = 1;
@@ -418,31 +418,31 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		Q_strcat( bufferExtra, sizeof( bufferExtra ),
 		          va( "#ifndef r_NPOTScale\n#define r_NPOTScale vec2(%f, %f)\n#endif\n", npotWidthScale, npotHeightScale ) );
 
-		if( glConfig.driverType == GLDRV_MESA )
+		if ( glConfig.driverType == GLDRV_MESA )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLDRV_MESA\n#define GLDRV_MESA 1\n#endif\n" );
 		}
 
-		if( glConfig.hardwareType == GLHW_ATI )
+		if ( glConfig.hardwareType == GLHW_ATI )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLHW_ATI\n#define GLHW_ATI 1\n#endif\n" );
 		}
-		else if( glConfig.hardwareType == GLHW_ATI_DX10 )
+		else if ( glConfig.hardwareType == GLHW_ATI_DX10 )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLHW_ATI_DX10\n#define GLHW_ATI_DX10 1\n#endif\n" );
 		}
-		else if( glConfig.hardwareType == GLHW_NV_DX10 )
+		else if ( glConfig.hardwareType == GLHW_NV_DX10 )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef GLHW_NV_DX10\n#define GLHW_NV_DX10 1\n#endif\n" );
 		}
 
-		if( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
+		if ( r_shadows->integer >= SHADOWING_ESM16 && glConfig2.textureFloatAvailable && glConfig2.framebufferObjectAvailable )
 		{
-			if( r_shadows->integer == SHADOWING_ESM16 || r_shadows->integer == SHADOWING_ESM32 )
+			if ( r_shadows->integer == SHADOWING_ESM16 || r_shadows->integer == SHADOWING_ESM32 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef ESM\n#define ESM 1\n#endif\n" );
 			}
-			else if( r_shadows->integer == SHADOWING_EVSM32 )
+			else if ( r_shadows->integer == SHADOWING_EVSM32 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef EVSM\n#define EVSM 1\n#endif\n" );
 
@@ -452,7 +452,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 				Q_strcat( bufferExtra, sizeof( bufferExtra ),
 				          va( "#ifndef r_EVSMExponents\n#define r_EVSMExponents vec2(%f, %f)\n#endif\n", 42.0f, 42.0f ) );
 
-				if( r_evsmPostProcess->integer )
+				if ( r_evsmPostProcess->integer )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_EVSMPostProcess\n#define r_EVSMPostProcess 1\n#endif\n" );
 				}
@@ -461,13 +461,13 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM\n#define VSM 1\n#endif\n" );
 
-				if( glConfig.hardwareType == GLHW_ATI )
+				if ( glConfig.hardwareType == GLHW_ATI )
 				{
 					Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM_CLAMP\n#define VSM_CLAMP 1\n#endif\n" );
 				}
 			}
 
-			if( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
+			if ( ( glConfig.hardwareType == GLHW_NV_DX10 || glConfig.hardwareType == GLHW_ATI_DX10 ) && r_shadows->integer == SHADOWING_VSM32 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM_EPSILON\n#define VSM_EPSILON 0.000001\n#endif\n" );
 			}
@@ -476,28 +476,28 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef VSM_EPSILON\n#define VSM_EPSILON 0.0001\n#endif\n" );
 			}
 
-			if( r_lightBleedReduction->value )
+			if ( r_lightBleedReduction->value )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ),
 				          va( "#ifndef r_LightBleedReduction\n#define r_LightBleedReduction %f\n#endif\n",
 				              r_lightBleedReduction->value ) );
 			}
 
-			if( r_overDarkeningFactor->value )
+			if ( r_overDarkeningFactor->value )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ),
 				          va( "#ifndef r_OverDarkeningFactor\n#define r_OverDarkeningFactor %f\n#endif\n",
 				              r_overDarkeningFactor->value ) );
 			}
 
-			if( r_shadowMapDepthScale->value )
+			if ( r_shadowMapDepthScale->value )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ),
 				          va( "#ifndef r_ShadowMapDepthScale\n#define r_ShadowMapDepthScale %f\n#endif\n",
 				              r_shadowMapDepthScale->value ) );
 			}
 
-			if( r_debugShadowMaps->integer )
+			if ( r_debugShadowMaps->integer )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ),
 				          va( "#ifndef r_DebugShadowMaps\n#define r_DebugShadowMaps %i\n#endif\n", r_debugShadowMaps->integer ) );
@@ -525,38 +525,38 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 			        Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef PCF_6X6\n#define PCF_6X6 1\n#endif\n");
 			}
 			*/
-			if( r_softShadows->integer == 6 )
+			if ( r_softShadows->integer == 6 )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef PCSS\n#define PCSS 1\n#endif\n" );
 			}
-			else if( r_softShadows->integer )
+			else if ( r_softShadows->integer )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ),
 				          va( "#ifndef r_PCFSamples\n#define r_PCFSamples %1.1f\n#endif\n", r_softShadows->value + 1.0f ) );
 			}
 
-			if( r_parallelShadowSplits->integer )
+			if ( r_parallelShadowSplits->integer )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ),
 				          va( "#ifndef r_ParallelShadowSplits_%i\n#define r_ParallelShadowSplits_%i\n#endif\n", r_parallelShadowSplits->integer, r_parallelShadowSplits->integer ) );
 			}
 
-			if( r_showParallelShadowSplits->integer )
+			if ( r_showParallelShadowSplits->integer )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_ShowParallelShadowSplits\n#define r_ShowParallelShadowSplits 1\n#endif\n" );
 			}
 		}
 
-		if( r_deferredShading->integer && glConfig2.maxColorAttachments >= 4 && glConfig2.textureFloatAvailable &&
-		    glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
+		if ( r_deferredShading->integer && glConfig2.maxColorAttachments >= 4 && glConfig2.textureFloatAvailable &&
+		     glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4 )
 		{
-			if( r_deferredShading->integer == DS_STANDARD )
+			if ( r_deferredShading->integer == DS_STANDARD )
 			{
 				Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_DeferredShading\n#define r_DeferredShading 1\n#endif\n" );
 			}
 		}
 
-		if( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
+		if ( r_hdrRendering->integer && glConfig2.framebufferObjectAvailable && glConfig2.textureFloatAvailable )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_HDRRendering\n#define r_HDRRendering 1\n#endif\n" );
 
@@ -577,38 +577,38 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 			              r_hdrGamma->value ) );
 		}
 
-		if( r_precomputedLighting->integer )
+		if ( r_precomputedLighting->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ),
 			          "#ifndef r_precomputedLighting\n#define r_precomputedLighting 1\n#endif\n" );
 		}
 
-		if( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
+		if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_heatHazeFix\n#define r_heatHazeFix 1\n#endif\n" );
 		}
 
-		if( r_showLightMaps->integer )
+		if ( r_showLightMaps->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_showLightMaps\n#define r_showLightMaps 1\n#endif\n" );
 		}
 
-		if( r_showDeluxeMaps->integer )
+		if ( r_showDeluxeMaps->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_showDeluxeMaps\n#define r_showDeluxeMaps 1\n#endif\n" );
 		}
 
 #ifdef EXPERIMENTAL
 
-		if( r_screenSpaceAmbientOcclusion->integer )
+		if ( r_screenSpaceAmbientOcclusion->integer )
 		{
 			int             i;
 			static vec3_t   jitter[ 32 ];
 			static qboolean jitterInit = qfalse;
 
-			if( !jitterInit )
+			if ( !jitterInit )
 			{
-				for( i = 0; i < 32; i++ )
+				for ( i = 0; i < 32; i++ )
 				{
 					float *jit = &jitter[ i ][ 0 ];
 
@@ -629,7 +629,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 #endif
 
-		if( glConfig2.vboVertexSkinningAvailable )
+		if ( glConfig2.vboVertexSkinningAvailable )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_VertexSkinning\n#define r_VertexSkinning 1\n#endif\n" );
 
@@ -650,29 +650,29 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		   }
 		 */
 
-		if( r_normalMapping->integer )
+		if ( r_normalMapping->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_NormalMapping\n#define r_NormalMapping 1\n#endif\n" );
 		}
 
-		if( /* TODO: check for shader model 3 hardware  && */ r_normalMapping->integer && r_parallaxMapping->integer )
+		if ( /* TODO: check for shader model 3 hardware  && */ r_normalMapping->integer && r_parallaxMapping->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_ParallaxMapping\n#define r_ParallaxMapping 1\n#endif\n" );
 		}
 
-		if( r_wrapAroundLighting->value )
+		if ( r_wrapAroundLighting->value )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ),
 			          va( "#ifndef r_WrapAroundLighting\n#define r_WrapAroundLighting %f\n#endif\n",
 			              r_wrapAroundLighting->value ) );
 		}
 
-		if( r_halfLambertLighting->integer )
+		if ( r_halfLambertLighting->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_HalfLambertLighting\n#define r_HalfLambertLighting 1\n#endif\n" );
 		}
 
-		if( r_rimLighting->integer )
+		if ( r_rimLighting->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_RimLighting\n#define r_RimLighting 1\n#endif\n" );
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_RimColor\n#define r_RimColor vec4(0.26, 0.19, 0.16, 0.0)\n#endif\n" );
@@ -693,7 +693,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 		strcpy( bufferFinal, bufferExtra );
 
-		if( libsSize > 0 )
+		if ( libsSize > 0 )
 		{
 			Q_strcat( bufferFinal, sizeFinal, libsBuffer );
 		}
@@ -708,7 +708,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 			ri.Printf( PRINT_WARNING, "CONCATENATED shader '%s' ----------\n", filename );
 			ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n", filename );
 
-			for( i = 0; i < sizeFinal; i += 1024 )
+			for ( i = 0; i < sizeFinal; i += 1024 )
 			{
 				Q_strncpyz( msgPart, bufferFinal + i, sizeof( msgPart ) );
 				ri.Printf( PRINT_ALL, "%s", msgPart );
@@ -720,7 +720,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 #if defined( USE_GLSL_OPTIMIZER )
 
-		if( glConfig.driverType != GLDRV_OPENGL3 && optimize )
+		if ( glConfig.driverType != GLDRV_OPENGL3 && optimize )
 		{
 			static char         msgPart[ 1024 ];
 			int                 length = 0;
@@ -728,7 +728,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 			glslopt_shader_type glsloptShaderType;
 
-			if( shaderType == GL_FRAGMENT_SHADER_ARB )
+			if ( shaderType == GL_FRAGMENT_SHADER_ARB )
 			{
 				glsloptShaderType = kGlslOptShaderFragment;
 			}
@@ -740,7 +740,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 			glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer,
 			                                  glsloptShaderType, bufferFinal, 0 );
 
-			if( glslopt_get_status( shaderOptimized ) )
+			if ( glslopt_get_status( shaderOptimized ) )
 			{
 				const char *newSource = glslopt_get_output( shaderOptimized );
 
@@ -750,7 +750,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 				length = strlen( newSource );
 
-				for( i = 0; i < length; i += 1024 )
+				for ( i = 0; i < length; i += 1024 )
 				{
 					Q_strncpyz( msgPart, newSource + i, sizeof( msgPart ) );
 					ri.Printf( PRINT_ALL, "%s\n", msgPart );
@@ -769,7 +769,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 				length = strlen( errorLog );
 
-				for( i = 0; i < length; i += 1024 )
+				for ( i = 0; i < length; i += 1024 )
 				{
 					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
 					ri.Printf( PRINT_ALL, "%s\n", msgPart );
@@ -810,7 +810,7 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 
 #if 0
 
-	if( !compileMacros.empty() )
+	if ( !compileMacros.empty() )
 	{
 		program->compileMacros = ( char * ) ri.Hunk_Alloc( sizeof( char ) * compileMacros.length() + 1, h_low );
 		Q_strncpyz( program->compileMacros, compileMacros.c_str(), compileMacros.length() + 1 );
@@ -828,7 +828,7 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 	std::string vertexHeader;
 	std::string fragmentHeader;
 
-	if( glConfig.driverType == GLDRV_OPENGL3 )
+	if ( glConfig.driverType == GLDRV_OPENGL3 )
 	{
 		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
 
@@ -860,17 +860,17 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 	// permutation macros
 	std::string macrosString;
 
-	if( !compileMacros.empty() )
+	if ( !compileMacros.empty() )
 	{
 		const char *compileMacros_ = compileMacros.c_str();
 		char       **compileMacrosP = ( char ** ) &compileMacros_;
 		char       *token;
 
-		while( 1 )
+		while ( 1 )
 		{
 			token = COM_ParseExt2( compileMacrosP, qfalse );
 
-			if( !token[ 0 ] )
+			if ( !token[ 0 ] )
 			{
 				break;
 			}
@@ -907,7 +907,7 @@ void GLShader::CompileGPUShader( GLhandleARB program, const char *programName, c
 	GLint compiled;
 	glGetObjectParameterivARB( shader, GL_OBJECT_COMPILE_STATUS_ARB, &compiled );
 
-	if( !compiled )
+	if ( !compiled )
 	{
 		PrintShaderSource( shader );
 		PrintInfoLog( shader, qfalse );
@@ -931,7 +931,7 @@ void GLShader::PrintShaderText( const std::string &shaderText ) const
 {
 	static char msgPart[ 1024 ];
 
-	for( size_t i = 0; i < shaderText.length(); i += 1024 )
+	for ( size_t i = 0; i < shaderText.length(); i += 1024 )
 	{
 		Q_strncpyz( msgPart, shaderText.c_str() + i, sizeof( msgPart ) );
 		ri.Printf( PRINT_ALL, "%s\n", msgPart );
@@ -951,7 +951,7 @@ void GLShader::PrintShaderSource( GLhandleARB object ) const
 
 	glGetShaderSourceARB( object, maxLength, &maxLength, msg );
 
-	for( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += 1024 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
 		ri.Printf( PRINT_ALL, "%s\n", msgPart );
@@ -973,7 +973,7 @@ void GLShader::PrintInfoLog( GLhandleARB object, bool developerOnly ) const
 
 	glGetInfoLogARB( object, maxLength, &maxLength, msg );
 
-	if( developerOnly )
+	if ( developerOnly )
 	{
 		ri.Printf( PRINT_DEVELOPER, "compile log:\n" );
 	}
@@ -982,11 +982,11 @@ void GLShader::PrintInfoLog( GLhandleARB object, bool developerOnly ) const
 		ri.Printf( PRINT_ALL, "compile log:\n" );
 	}
 
-	for( i = 0; i < maxLength; i += 1024 )
+	for ( i = 0; i < maxLength; i += 1024 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
 
-		if( developerOnly )
+		if ( developerOnly )
 		{
 			ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
 		}
@@ -1007,7 +1007,7 @@ void GLShader::LinkProgram( GLhandleARB program ) const
 
 	glGetObjectParameterivARB( program, GL_OBJECT_LINK_STATUS_ARB, &linked );
 
-	if( !linked )
+	if ( !linked )
 	{
 		PrintInfoLog( program, qfalse );
 		ri.Error( ERR_DROP, "Shaders failed to link!!!" );
@@ -1022,7 +1022,7 @@ void GLShader::ValidateProgram( GLhandleARB program ) const
 
 	glGetObjectParameterivARB( program, GL_OBJECT_VALIDATE_STATUS_ARB, &validated );
 
-	if( !validated )
+	if ( !validated )
 	{
 		PrintInfoLog( program, qfalse );
 		ri.Error( ERR_DROP, "Shaders failed to validate!!!" );
@@ -1044,7 +1044,7 @@ void GLShader::ShowProgramUniforms( GLhandleARB program ) const
 	glGetObjectParameterivARB( program, GL_OBJECT_ACTIVE_UNIFORMS_ARB, &count );
 
 	// Loop over each of the active uniforms, and set their value
-	for( i = 0; i < count; i++ )
+	for ( i = 0; i < count; i++ )
 	{
 		glGetActiveUniformARB( program, i, sizeof( uniformName ), NULL, &size, &type, uniformName );
 
@@ -1116,9 +1116,9 @@ void GLShader::SelectProgram()
 
 	size_t numMacros = _compileMacros.size();
 
-	for( size_t i = 0; i < numMacros; i++ )
+	for ( size_t i = 0; i < numMacros; i++ )
 	{
-		if( _activeMacros & BIT( i ) )
+		if ( _activeMacros & BIT( i ) )
 		{
 			index += BIT( i );
 		}
@@ -1131,18 +1131,18 @@ void GLShader::BindProgram()
 {
 	SelectProgram();
 
-	if( _currentProgram->program == 0 )
+	if ( _currentProgram->program == 0 )
 	{
 		std::string activeMacros = "";
 		size_t      numMacros = _compileMacros.size();
 
-		for( size_t j = 0; j < numMacros; j++ )
+		for ( size_t j = 0; j < numMacros; j++ )
 		{
 			GLCompileMacro *macro = _compileMacros[ j ];
 
 			int           bit = macro->GetBit();
 
-			if( IsMacroSet( bit ) )
+			if ( IsMacroSet( bit ) )
 			{
 				activeMacros += macro->GetName();
 				activeMacros += " ";
@@ -1160,13 +1160,13 @@ void GLShader::SetRequiredVertexPointers()
 	uint32_t macroVertexAttribs = 0;
 	size_t   numMacros = _compileMacros.size();
 
-	for( size_t j = 0; j < numMacros; j++ )
+	for ( size_t j = 0; j < numMacros; j++ )
 	{
 		GLCompileMacro *macro = _compileMacros[ j ];
 
 		int           bit = macro->GetBit();
 
-		if( IsMacroSet( bit ) )
+		if ( IsMacroSet( bit ) )
 		{
 			macroVertexAttribs |= macro->GetRequiredVertexAttributes();
 		}
@@ -1208,7 +1208,7 @@ GLShader_generic::GLShader_generic() :
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -1224,20 +1224,20 @@ GLShader_generic::GLShader_generic() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -1248,7 +1248,7 @@ GLShader_generic::GLShader_generic() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			ri.Printf( PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str() );
 
@@ -1319,7 +1319,7 @@ GLShader_lightMapping::GLShader_lightMapping() :
 
 	std::string vertexInlines = "";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -1335,20 +1335,20 @@ GLShader_lightMapping::GLShader_lightMapping() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -1359,7 +1359,7 @@ GLShader_lightMapping::GLShader_lightMapping() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "TWOSIDED ";
 
@@ -1444,7 +1444,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity() :
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -1460,20 +1460,20 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -1484,7 +1484,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "TWOSIDED ";
 
@@ -1566,7 +1566,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world() :
 
 	std::string vertexInlines = "";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -1582,20 +1582,20 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -1606,7 +1606,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "TWOSIDED ";
 
@@ -1691,7 +1691,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ() :
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -1707,20 +1707,20 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -1731,7 +1731,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "TWOSIDED ";
 
@@ -1831,7 +1831,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ() :
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -1847,20 +1847,20 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -1871,7 +1871,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "LIGHT_PROJ ";
 			compileMacros += "TWOSIDED ";
@@ -1974,7 +1974,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -1990,20 +1990,20 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -2014,7 +2014,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "LIGHT_DIRECTIONAL ";
 			compileMacros += "TWOSIDED ";
@@ -2116,20 +2116,20 @@ GLShader_deferredLighting_omniXYZ::GLShader_deferredLighting_omniXYZ() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -2140,7 +2140,7 @@ GLShader_deferredLighting_omniXYZ::GLShader_deferredLighting_omniXYZ() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//compileMacros += "TWOSIDED ";
 
@@ -2238,20 +2238,20 @@ GLShader_deferredLighting_projXYZ::GLShader_deferredLighting_projXYZ() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -2262,7 +2262,7 @@ GLShader_deferredLighting_projXYZ::GLShader_deferredLighting_projXYZ() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "LIGHT_PROJ ";
 
@@ -2362,20 +2362,20 @@ GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalS
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -2386,7 +2386,7 @@ GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalS
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "LIGHT_DIRECTIONAL ";
 
@@ -2482,7 +2482,7 @@ GLShader_geometricFill::GLShader_geometricFill() :
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -2498,20 +2498,20 @@ GLShader_geometricFill::GLShader_geometricFill() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -2522,7 +2522,7 @@ GLShader_geometricFill::GLShader_geometricFill() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "TWOSIDED ";
 
@@ -2598,7 +2598,7 @@ GLShader_shadowFill::GLShader_shadowFill() :
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -2614,20 +2614,20 @@ GLShader_shadowFill::GLShader_shadowFill() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -2638,7 +2638,7 @@ GLShader_shadowFill::GLShader_shadowFill() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -2702,7 +2702,7 @@ GLShader_reflection::GLShader_reflection() :
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -2718,20 +2718,20 @@ GLShader_reflection::GLShader_reflection() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -2742,7 +2742,7 @@ GLShader_reflection::GLShader_reflection() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			compileMacros += "TWOSIDED ";
 
@@ -2811,20 +2811,20 @@ GLShader_skybox::GLShader_skybox() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -2835,7 +2835,7 @@ GLShader_skybox::GLShader_skybox() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -2897,7 +2897,7 @@ GLShader_fogQuake3::GLShader_fogQuake3() :
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -2913,20 +2913,20 @@ GLShader_fogQuake3::GLShader_fogQuake3() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -2937,7 +2937,7 @@ GLShader_fogQuake3::GLShader_fogQuake3() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -3001,20 +3001,20 @@ GLShader_fogGlobal::GLShader_fogGlobal() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -3025,7 +3025,7 @@ GLShader_fogGlobal::GLShader_fogGlobal() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -3094,7 +3094,7 @@ GLShader_heatHaze::GLShader_heatHaze() :
 
 	std::string vertexInlines = "vertexSkinning vertexAnimation ";
 
-	if( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
+	if ( glConfig.driverType == GLDRV_OPENGL3 && r_vboDeformVertexes->integer )
 	{
 		vertexInlines += "deformVertexes ";
 	}
@@ -3110,20 +3110,20 @@ GLShader_heatHaze::GLShader_heatHaze() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -3134,7 +3134,7 @@ GLShader_heatHaze::GLShader_heatHaze() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -3151,7 +3151,7 @@ GLShader_heatHaze::GLShader_heatHaze() :
 			shaderProgram->u_NormalMap = glGetUniformLocationARB( shaderProgram->program, "u_NormalMap" );
 			shaderProgram->u_CurrentMap = glGetUniformLocationARB( shaderProgram->program, "u_CurrentMap" );
 
-			if( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
+			if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
 			{
 				shaderProgram->u_ContrastMap = glGetUniformLocationARB( shaderProgram->program, "u_ContrastMap" );
 			}
@@ -3160,7 +3160,7 @@ GLShader_heatHaze::GLShader_heatHaze() :
 			glUniform1iARB( shaderProgram->u_NormalMap, 0 );
 			glUniform1iARB( shaderProgram->u_CurrentMap, 1 );
 
-			if( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
+			if ( r_heatHazeFix->integer && glConfig2.framebufferBlitAvailable && /*glConfig.hardwareType != GLHW_ATI && glConfig.hardwareType != GLHW_ATI_DX10 &&*/ glConfig.driverType != GLDRV_MESA )
 			{
 				glUniform1iARB( shaderProgram->u_ContrastMap, 2 );
 			}
@@ -3202,11 +3202,11 @@ GLShader_screen::GLShader_screen() :
 	size_t      numPermutations = ( 1 << _compileMacros.size() ); // same as 2^n, n = no. compile macros
 	size_t      numCompiled = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			ri.Printf( PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str() );
 
@@ -3261,11 +3261,11 @@ GLShader_portal::GLShader_portal() :
 	size_t      numPermutations = ( 1 << _compileMacros.size() ); // same as 2^n, n = no. compile macros
 	size_t      numCompiled = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			ri.Printf( PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str() );
 
@@ -3327,20 +3327,20 @@ GLShader_toneMapping::GLShader_toneMapping() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -3351,7 +3351,7 @@ GLShader_toneMapping::GLShader_toneMapping() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -3411,20 +3411,20 @@ GLShader_contrast::GLShader_contrast() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -3435,7 +3435,7 @@ GLShader_contrast::GLShader_contrast() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -3497,20 +3497,20 @@ GLShader_cameraEffects::GLShader_cameraEffects() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -3521,7 +3521,7 @@ GLShader_cameraEffects::GLShader_cameraEffects() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -3586,20 +3586,20 @@ GLShader_blurX::GLShader_blurX() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -3610,7 +3610,7 @@ GLShader_blurX::GLShader_blurX() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -3671,20 +3671,20 @@ GLShader_blurY::GLShader_blurY() :
 	size_t tics = 0;
 	size_t nextTicCount = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
-		if( ( i + 1 ) >= nextTicCount )
+		if ( ( i + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( i + 1 ) / numPermutations ) * 50.0 );
 
 			do { ri.Printf( PRINT_ALL, "*" ); }
-			while( ++tics < ticsNeeded );
+			while ( ++tics < ticsNeeded );
 
 			nextTicCount = ( size_t )( ( tics / 50.0 ) * numPermutations );
 
-			if( i == ( numPermutations - 1 ) )
+			if ( i == ( numPermutations - 1 ) )
 			{
-				if( tics < 51 )
+				if ( tics < 51 )
 				{
 					ri.Printf( PRINT_ALL, "*" );
 				}
@@ -3695,7 +3695,7 @@ GLShader_blurY::GLShader_blurY() :
 
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
@@ -3750,11 +3750,11 @@ GLShader_debugShadowMap::GLShader_debugShadowMap() :
 	size_t      numPermutations = ( 1 << _compileMacros.size() ); // same as 2^n, n = no. compile macros
 	size_t      numCompiled = 0;
 
-	for( size_t i = 0; i < numPermutations; i++ )
+	for ( size_t i = 0; i < numPermutations; i++ )
 	{
 		std::string compileMacros;
 
-		if( GetCompileMacrosString( i, compileMacros ) )
+		if ( GetCompileMacrosString( i, compileMacros ) )
 		{
 			ri.Printf( PRINT_DEVELOPER, "Compile macros: '%s'\n", compileMacros.c_str() );
 

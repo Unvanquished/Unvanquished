@@ -229,12 +229,12 @@ float Q_crandom( int *seed )
 
 byte ClampByte( int i )
 {
-	if( i < 0 )
+	if ( i < 0 )
 	{
 		return 0;
 	}
 
-	if( i > 255 )
+	if ( i > 255 )
 	{
 		return 255;
 	}
@@ -244,12 +244,12 @@ byte ClampByte( int i )
 
 signed char ClampChar( int i )
 {
-	if( i < -128 )
+	if ( i < -128 )
 	{
 		return -128;
 	}
 
-	if( i > 127 )
+	if ( i > 127 )
 	{
 		return 127;
 	}
@@ -259,12 +259,12 @@ signed char ClampChar( int i )
 
 signed short ClampShort( int i )
 {
-	if( i < -32768 )
+	if ( i < -32768 )
 	{
 		return -32768;
 	}
 
-	if( i > 0x7fff )
+	if ( i > 0x7fff )
 	{
 		return 0x7fff;
 	}
@@ -278,7 +278,7 @@ int DirToByte( vec3_t dir )
 	int   i, best;
 	float d, bestd;
 
-	if( !dir )
+	if ( !dir )
 	{
 		return 0;
 	}
@@ -286,11 +286,11 @@ int DirToByte( vec3_t dir )
 	bestd = 0;
 	best = 0;
 
-	for( i = 0; i < NUMVERTEXNORMALS; i++ )
+	for ( i = 0; i < NUMVERTEXNORMALS; i++ )
 	{
 		d = DotProduct( dir, bytedirs[ i ] );
 
-		if( d > bestd )
+		if ( d > bestd )
 		{
 			bestd = d;
 			best = i;
@@ -302,7 +302,7 @@ int DirToByte( vec3_t dir )
 
 void ByteToDir( int b, vec3_t dir )
 {
-	if( b < 0 || b >= NUMVERTEXNORMALS )
+	if ( b < 0 || b >= NUMVERTEXNORMALS )
 	{
 		VectorCopy( vec3_origin, dir );
 		return;
@@ -340,17 +340,17 @@ float NormalizeColor( const vec3_t in, vec3_t out )
 
 	max = in[ 0 ];
 
-	if( in[ 1 ] > max )
+	if ( in[ 1 ] > max )
 	{
 		max = in[ 1 ];
 	}
 
-	if( in[ 2 ] > max )
+	if ( in[ 2 ] > max )
 	{
 		max = in[ 2 ];
 	}
 
-	if( !max )
+	if ( !max )
 	{
 		VectorClear( out );
 	}
@@ -368,14 +368,14 @@ void ClampColor( vec4_t color )
 {
 	int i;
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
-		if( color[ i ] < 0 )
+		if ( color[ i ] < 0 )
 		{
 			color[ i ] = 0;
 		}
 
-		if( color[ i ] > 1 )
+		if ( color[ i ] > 1 )
 		{
 			color[ i ] = 1;
 		}
@@ -388,7 +388,7 @@ vec_t PlaneNormalize( vec4_t plane )
 
 	length = sqrt( plane[ 0 ] * plane[ 0 ] + plane[ 1 ] * plane[ 1 ] + plane[ 2 ] * plane[ 2 ] );
 
-	if( length == 0 )
+	if ( length == 0 )
 	{
 		VectorClear( plane );
 		return 0;
@@ -419,7 +419,7 @@ qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const ve
 	VectorSubtract( c, a, d2 );
 	CrossProduct( d2, d1, plane );
 
-	if( VectorNormalize( plane ) == 0 )
+	if ( VectorNormalize( plane ) == 0 )
 	{
 		return qfalse;
 	}
@@ -442,7 +442,7 @@ qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, con
 	VectorSubtract( b, a, d1 );
 	VectorSubtract( c, a, d2 );
 
-	if( cw )
+	if ( cw )
 	{
 		CrossProduct( d2, d1, plane );
 	}
@@ -451,7 +451,7 @@ qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, con
 		CrossProduct( d1, d2, plane );
 	}
 
-	if( VectorNormalize( plane ) == 0 )
+	if ( VectorNormalize( plane ) == 0 )
 	{
 		return qfalse;
 	}
@@ -479,7 +479,7 @@ qboolean PlanesGetIntersectionPoint( const vec4_t plane1, const vec4_t plane2, c
 	denom = DotProduct( n1, n2n3 );
 
 	// check if the denominator is zero (which would mean that no intersection is to be found
-	if( denom == 0 )
+	if ( denom == 0 )
 	{
 		// no intersection could be found, return <0,0,0>
 		VectorClear( out );
@@ -531,7 +531,7 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 	vf[ 1 ] = dir[ 1 ];
 	vf[ 2 ] = dir[ 2 ];
 
-	if( VectorNormalize( vf ) == 0 || degrees == 0.0f )
+	if ( VectorNormalize( vf ) == 0 || degrees == 0.0f )
 	{
 		// degenerate case
 		VectorCopy( point, dst );
@@ -574,7 +574,7 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 	AxisMultiply( m, zrot, tmpmat );
 	AxisMultiply( tmpmat, im, rot );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		dst[ i ] = rot[ i ][ 0 ] * point[ 0 ] + rot[ i ][ 1 ] * point[ 1 ] + rot[ i ][ 2 ] * point[ 2 ];
 	}
@@ -633,7 +633,7 @@ void RotateAroundDirection( vec3_t axis[ 3 ], float yaw )
 	PerpendicularVector( axis[ 1 ], axis[ 0 ] );
 
 	// rotate it around axis[0] by yaw
-	if( yaw )
+	if ( yaw )
 	{
 		vec3_t temp;
 
@@ -672,11 +672,11 @@ void vectoangles( const vec3_t value1, vec3_t angles )
 	float forward;
 	float yaw, pitch;
 
-	if( value1[ 1 ] == 0 && value1[ 0 ] == 0 )
+	if ( value1[ 1 ] == 0 && value1[ 0 ] == 0 )
 	{
 		yaw = 0;
 
-		if( value1[ 2 ] > 0 )
+		if ( value1[ 2 ] > 0 )
 		{
 			pitch = 90;
 		}
@@ -687,11 +687,11 @@ void vectoangles( const vec3_t value1, vec3_t angles )
 	}
 	else
 	{
-		if( value1[ 0 ] )
+		if ( value1[ 0 ] )
 		{
 			yaw = ( atan2( value1[ 1 ], value1[ 0 ] ) * 180 / M_PI );
 		}
-		else if( value1[ 1 ] > 0 )
+		else if ( value1[ 1 ] > 0 )
 		{
 			yaw = 90;
 		}
@@ -700,7 +700,7 @@ void vectoangles( const vec3_t value1, vec3_t angles )
 			yaw = 270;
 		}
 
-		if( yaw < 0 )
+		if ( yaw < 0 )
 		{
 			yaw += 360;
 		}
@@ -708,7 +708,7 @@ void vectoangles( const vec3_t value1, vec3_t angles )
 		forward = sqrt( value1[ 0 ] * value1[ 0 ] + value1[ 1 ] * value1[ 1 ] );
 		pitch = ( atan2( value1[ 2 ], forward ) * 180 / M_PI );
 
-		if( pitch < 0 )
+		if ( pitch < 0 )
 		{
 			pitch += 360;
 		}
@@ -830,12 +830,12 @@ LerpAngle
 */
 float LerpAngle( float from, float to, float frac )
 {
-	if( to - from > 180 )
+	if ( to - from > 180 )
 	{
 		to -= 360;
 	}
 
-	if( to - from < -180 )
+	if ( to - from < -180 )
 	{
 		to += 360;
 	}
@@ -869,12 +869,12 @@ float AngleSubtract( float a1, float a2 )
 {
 	float a = a1 - a2;
 
-	while( a > 180 )
+	while ( a > 180 )
 	{
 		a -= 360;
 	}
 
-	while( a < -180 )
+	while ( a < -180 )
 	{
 		a += 360;
 	}
@@ -929,7 +929,7 @@ float AngleNormalize180( float angle )
 {
 	angle = AngleNormalize360( angle );
 
-	if( angle > 180.0 )
+	if ( angle > 180.0 )
 	{
 		angle -= 360.0;
 	}
@@ -963,7 +963,7 @@ float AngleBetweenVectors( const vec3_t a, const vec3_t b )
 	alen = VectorLength( a );
 	blen = VectorLength( b );
 
-	if( !alen || !blen )
+	if ( !alen || !blen )
 	{
 		return 0;
 	}
@@ -989,9 +989,9 @@ void SetPlaneSignbits( cplane_t *out )
 	// for fast box on planeside test
 	bits = 0;
 
-	for( j = 0; j < 3; j++ )
+	for ( j = 0; j < 3; j++ )
 	{
-		if( out->normal[ j ] < 0 )
+		if ( out->normal[ j ] < 0 )
 		{
 			bits |= 1 << j;
 		}
@@ -1052,14 +1052,14 @@ int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *p )
 	int   sides;
 
 	// fast axial cases
-	if( p->type < 3 )
+	if ( p->type < 3 )
 	{
-		if( p->dist <= emins[ p->type ] )
+		if ( p->dist <= emins[ p->type ] )
 		{
 			return 1;
 		}
 
-		if( p->dist >= emaxs[ p->type ] )
+		if ( p->dist >= emaxs[ p->type ] )
 		{
 			return 2;
 		}
@@ -1068,7 +1068,7 @@ int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *p )
 	}
 
 	// general case
-	switch( p->signbits )
+	switch ( p->signbits )
 	{
 		case 0:
 			dist1 = p->normal[ 0 ] * emaxs[ 0 ] + p->normal[ 1 ] * emaxs[ 1 ] + p->normal[ 2 ] * emaxs[ 2 ];
@@ -1117,12 +1117,12 @@ int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *p )
 
 	sides = 0;
 
-	if( dist1 >= p->dist )
+	if ( dist1 >= p->dist )
 	{
 		sides = 1;
 	}
 
-	if( dist2 < p->dist )
+	if ( dist2 < p->dist )
 	{
 		sides |= 2;
 	}
@@ -1367,14 +1367,14 @@ int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *p )
 {
 	// fast axial cases
 
-	if( p->type < 3 )
+	if ( p->type < 3 )
 	{
-		if( p->dist <= emins[ p->type ] )
+		if ( p->dist <= emins[ p->type ] )
 		{
 			return 1;
 		}
 
-		if( p->dist >= emaxs[ p->type ] )
+		if ( p->dist >= emaxs[ p->type ] )
 		{
 			return 2;
 		}
@@ -1403,7 +1403,7 @@ float RadiusFromBounds( const vec3_t mins, const vec3_t maxs )
 	vec3_t corner;
 	float  a, b;
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		a = Q_fabs( mins[ i ] );
 		b = Q_fabs( maxs[ i ] );
@@ -1427,32 +1427,32 @@ void ClearBounds( vec3_t mins, vec3_t maxs )
 
 void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs )
 {
-	if( v[ 0 ] < mins[ 0 ] )
+	if ( v[ 0 ] < mins[ 0 ] )
 	{
 		mins[ 0 ] = v[ 0 ];
 	}
 
-	if( v[ 0 ] > maxs[ 0 ] )
+	if ( v[ 0 ] > maxs[ 0 ] )
 	{
 		maxs[ 0 ] = v[ 0 ];
 	}
 
-	if( v[ 1 ] < mins[ 1 ] )
+	if ( v[ 1 ] < mins[ 1 ] )
 	{
 		mins[ 1 ] = v[ 1 ];
 	}
 
-	if( v[ 1 ] > maxs[ 1 ] )
+	if ( v[ 1 ] > maxs[ 1 ] )
 	{
 		maxs[ 1 ] = v[ 1 ];
 	}
 
-	if( v[ 2 ] < mins[ 2 ] )
+	if ( v[ 2 ] < mins[ 2 ] )
 	{
 		mins[ 2 ] = v[ 2 ];
 	}
 
-	if( v[ 2 ] > maxs[ 2 ] )
+	if ( v[ 2 ] > maxs[ 2 ] )
 	{
 		maxs[ 2 ] = v[ 2 ];
 	}
@@ -1460,32 +1460,32 @@ void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs )
 
 qboolean PointInBounds( const vec3_t v, const vec3_t mins, const vec3_t maxs )
 {
-	if( v[ 0 ] < mins[ 0 ] )
+	if ( v[ 0 ] < mins[ 0 ] )
 	{
 		return qfalse;
 	}
 
-	if( v[ 0 ] > maxs[ 0 ] )
+	if ( v[ 0 ] > maxs[ 0 ] )
 	{
 		return qfalse;
 	}
 
-	if( v[ 1 ] < mins[ 1 ] )
+	if ( v[ 1 ] < mins[ 1 ] )
 	{
 		return qfalse;
 	}
 
-	if( v[ 1 ] > maxs[ 1 ] )
+	if ( v[ 1 ] > maxs[ 1 ] )
 	{
 		return qfalse;
 	}
 
-	if( v[ 2 ] < mins[ 2 ] )
+	if ( v[ 2 ] < mins[ 2 ] )
 	{
 		return qfalse;
 	}
 
-	if( v[ 2 ] > maxs[ 2 ] )
+	if ( v[ 2 ] > maxs[ 2 ] )
 	{
 		return qfalse;
 	}
@@ -1495,32 +1495,32 @@ qboolean PointInBounds( const vec3_t v, const vec3_t mins, const vec3_t maxs )
 
 void BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 )
 {
-	if( mins2[ 0 ] < mins[ 0 ] )
+	if ( mins2[ 0 ] < mins[ 0 ] )
 	{
 		mins[ 0 ] = mins2[ 0 ];
 	}
 
-	if( mins2[ 1 ] < mins[ 1 ] )
+	if ( mins2[ 1 ] < mins[ 1 ] )
 	{
 		mins[ 1 ] = mins2[ 1 ];
 	}
 
-	if( mins2[ 2 ] < mins[ 2 ] )
+	if ( mins2[ 2 ] < mins[ 2 ] )
 	{
 		mins[ 2 ] = mins2[ 2 ];
 	}
 
-	if( maxs2[ 0 ] > maxs[ 0 ] )
+	if ( maxs2[ 0 ] > maxs[ 0 ] )
 	{
 		maxs[ 0 ] = maxs2[ 0 ];
 	}
 
-	if( maxs2[ 1 ] > maxs[ 1 ] )
+	if ( maxs2[ 1 ] > maxs[ 1 ] )
 	{
 		maxs[ 1 ] = maxs2[ 1 ];
 	}
 
-	if( maxs2[ 2 ] > maxs[ 2 ] )
+	if ( maxs2[ 2 ] > maxs[ 2 ] )
 	{
 		maxs[ 2 ] = maxs2[ 2 ];
 	}
@@ -1528,8 +1528,8 @@ void BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2
 
 qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 )
 {
-	if( maxs[ 0 ] < mins2[ 0 ] ||
-	    maxs[ 1 ] < mins2[ 1 ] || maxs[ 2 ] < mins2[ 2 ] || mins[ 0 ] > maxs2[ 0 ] || mins[ 1 ] > maxs2[ 1 ] || mins[ 2 ] > maxs2[ 2 ] )
+	if ( maxs[ 0 ] < mins2[ 0 ] ||
+	     maxs[ 1 ] < mins2[ 1 ] || maxs[ 2 ] < mins2[ 2 ] || mins[ 0 ] > maxs2[ 0 ] || mins[ 1 ] > maxs2[ 1 ] || mins[ 2 ] > maxs2[ 2 ] )
 	{
 		return qfalse;
 	}
@@ -1539,10 +1539,10 @@ qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t min
 
 qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius )
 {
-	if( origin[ 0 ] - radius > maxs[ 0 ] ||
-	    origin[ 0 ] + radius < mins[ 0 ] ||
-	    origin[ 1 ] - radius > maxs[ 1 ] ||
-	    origin[ 1 ] + radius < mins[ 1 ] || origin[ 2 ] - radius > maxs[ 2 ] || origin[ 2 ] + radius < mins[ 2 ] )
+	if ( origin[ 0 ] - radius > maxs[ 0 ] ||
+	     origin[ 0 ] + radius < mins[ 0 ] ||
+	     origin[ 1 ] - radius > maxs[ 1 ] ||
+	     origin[ 1 ] + radius < mins[ 1 ] || origin[ 2 ] - radius > maxs[ 2 ] || origin[ 2 ] + radius < mins[ 2 ] )
 	{
 		return qfalse;
 	}
@@ -1552,8 +1552,8 @@ qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3
 
 qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin )
 {
-	if( origin[ 0 ] > maxs[ 0 ] ||
-	    origin[ 0 ] < mins[ 0 ] || origin[ 1 ] > maxs[ 1 ] || origin[ 1 ] < mins[ 1 ] || origin[ 2 ] > maxs[ 2 ] || origin[ 2 ] < mins[ 2 ] )
+	if ( origin[ 0 ] > maxs[ 0 ] ||
+	     origin[ 0 ] < mins[ 0 ] || origin[ 1 ] > maxs[ 1 ] || origin[ 1 ] < mins[ 1 ] || origin[ 2 ] > maxs[ 2 ] || origin[ 2 ] < mins[ 2 ] )
 	{
 		return qfalse;
 	}
@@ -1563,7 +1563,7 @@ qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_
 
 int VectorCompare( const vec3_t v1, const vec3_t v2 )
 {
-	if( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] )
+	if ( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] )
 	{
 		return 0;
 	}
@@ -1578,7 +1578,7 @@ vec_t VectorNormalize( vec3_t v )
 	length = v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ];
 	length = sqrt( length );
 
-	if( length )
+	if ( length )
 	{
 		ilength = 1 / length;
 		v[ 0 ] *= ilength;
@@ -1611,7 +1611,7 @@ vec_t VectorNormalize2( const vec3_t v, vec3_t out )
 	length = v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ];
 	length = sqrt( length );
 
-	if( length )
+	if ( length )
 	{
 		ilength = 1 / length;
 		out[ 0 ] = v[ 0 ] * ilength;
@@ -1718,7 +1718,7 @@ int NearestPowerOfTwo( int val )
 {
 	int answer;
 
-	for( answer = 1; answer < val; answer <<= 1 )
+	for ( answer = 1; answer < val; answer <<= 1 )
 	{
 		;
 	}
@@ -1732,7 +1732,7 @@ int Q_log2( int val )
 
 	answer = 0;
 
-	while( ( val >>= 1 ) != 0 )
+	while ( ( val >>= 1 ) != 0 )
 	{
 		answer++;
 	}
@@ -1759,12 +1759,12 @@ float Q_acos( float c )
 
 	angle = acos( c );
 
-	if( angle > M_PI )
+	if ( angle > M_PI )
 	{
 		return ( float ) M_PI;
 	}
 
-	if( angle < -M_PI )
+	if ( angle < -M_PI )
 	{
 		return ( float ) M_PI;
 	}
@@ -1830,21 +1830,21 @@ void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up 
 	sr = sin( angle );
 	cr = cos( angle );
 
-	if( forward )
+	if ( forward )
 	{
 		forward[ 0 ] = cp * cy;
 		forward[ 1 ] = cp * sy;
 		forward[ 2 ] = -sp;
 	}
 
-	if( right )
+	if ( right )
 	{
 		right[ 0 ] = ( -1 * sr * sp * cy + -1 * cr * -sy );
 		right[ 1 ] = ( -1 * sr * sp * sy + -1 * cr * cy );
 		right[ 2 ] = -1 * sr * cp;
 	}
 
-	if( up )
+	if ( up )
 	{
 		up[ 0 ] = ( cr * sp * cy + -sr * -sy );
 		up[ 1 ] = ( cr * sp * sy + -sr * cy );
@@ -1869,9 +1869,9 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 	/*
 	 ** find the smallest magnitude axially aligned vector
 	 */
-	for( pos = 0, i = 0; i < 3; i++ )
+	for ( pos = 0, i = 0; i < 3; i++ )
 	{
-		if( Q_fabs( src[ i ] ) < minelem )
+		if ( Q_fabs( src[ i ] ) < minelem )
 		{
 			pos = i;
 			minelem = Q_fabs( src[ i ] );
@@ -1960,7 +1960,7 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 	e = DotProduct( tMag, diff );
 	sD = tD = D = a * c - b * b;
 
-	if( D < LINE_DISTANCE_EPSILON )
+	if ( D < LINE_DISTANCE_EPSILON )
 	{
 		// the lines are almost parallel
 		sN = 0.0; // force using point P0 on segment S1
@@ -1974,14 +1974,14 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 		sN = ( b * e - c * d );
 		tN = ( a * e - b * d );
 
-		if( sN < 0.0 )
+		if ( sN < 0.0 )
 		{
 			// sN < 0 => the s=0 edge is visible
 			sN = 0.0;
 			tN = e;
 			tD = c;
 		}
-		else if( sN > sD )
+		else if ( sN > sD )
 		{
 			// sN > sD => the s=1 edge is visible
 			sN = sD;
@@ -1990,17 +1990,17 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 		}
 	}
 
-	if( tN < 0.0 )
+	if ( tN < 0.0 )
 	{
 		// tN < 0 => the t=0 edge is visible
 		tN = 0.0;
 
 		// recompute sN for this edge
-		if( -d < 0.0 )
+		if ( -d < 0.0 )
 		{
 			sN = 0.0;
 		}
-		else if( -d > a )
+		else if ( -d > a )
 		{
 			sN = sD;
 		}
@@ -2010,17 +2010,17 @@ vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 			sD = a;
 		}
 	}
-	else if( tN > tD )
+	else if ( tN > tD )
 	{
 		// tN > tD => the t=1 edge is visible
 		tN = tD;
 
 		// recompute sN for this edge
-		if( ( -d + b ) < 0.0 )
+		if ( ( -d + b ) < 0.0 )
 		{
 			sN = 0;
 		}
-		else if( ( -d + b ) > a )
+		else if ( ( -d + b ) > a )
 		{
 			sN = sD;
 		}
@@ -2074,17 +2074,17 @@ void ProjectPointOntoVectorBounded( vec3_t point, vec3_t vStart, vec3_t vEnd, ve
 	VectorMA( vStart, DotProduct( pVec, vec ), vec, vProj );
 
 	// check bounds
-	for( j = 0; j < 3; j++ )
+	for ( j = 0; j < 3; j++ )
 	{
-		if( ( vProj[ j ] > vStart[ j ] && vProj[ j ] > vEnd[ j ] ) || ( vProj[ j ] < vStart[ j ] && vProj[ j ] < vEnd[ j ] ) )
+		if ( ( vProj[ j ] > vStart[ j ] && vProj[ j ] > vEnd[ j ] ) || ( vProj[ j ] < vStart[ j ] && vProj[ j ] < vEnd[ j ] ) )
 		{
 			break;
 		}
 	}
 
-	if( j < 3 )
+	if ( j < 3 )
 	{
-		if( Q_fabs( vProj[ j ] - vStart[ j ] ) < Q_fabs( vProj[ j ] - vEnd[ j ] ) )
+		if ( Q_fabs( vProj[ j ] - vStart[ j ] ) < Q_fabs( vProj[ j ] - vEnd[ j ] ) )
 		{
 			VectorCopy( vStart, vProj );
 		}
@@ -2107,17 +2107,17 @@ float DistanceFromLineSquared( vec3_t p, vec3_t lp1, vec3_t lp2 )
 
 	ProjectPointOntoVector( p, lp1, lp2, proj );
 
-	for( j = 0; j < 3; j++ )
+	for ( j = 0; j < 3; j++ )
 	{
-		if( ( proj[ j ] > lp1[ j ] && proj[ j ] > lp2[ j ] ) || ( proj[ j ] < lp1[ j ] && proj[ j ] < lp2[ j ] ) )
+		if ( ( proj[ j ] > lp1[ j ] && proj[ j ] > lp2[ j ] ) || ( proj[ j ] < lp1[ j ] && proj[ j ] < lp2[ j ] ) )
 		{
 			break;
 		}
 	}
 
-	if( j < 3 )
+	if ( j < 3 )
 	{
-		if( Q_fabs( proj[ j ] - lp1[ j ] ) < Q_fabs( proj[ j ] - lp2[ j ] ) )
+		if ( Q_fabs( proj[ j ] - lp1[ j ] ) < Q_fabs( proj[ j ] - lp2[ j ] ) )
 		{
 			VectorSubtract( p, lp1, t );
 		}
@@ -2151,17 +2151,17 @@ float vectoyaw( const vec3_t vec )
 {
 	float yaw;
 
-	if( vec[ YAW ] == 0 && vec[ PITCH ] == 0 )
+	if ( vec[ YAW ] == 0 && vec[ PITCH ] == 0 )
 	{
 		yaw = 0;
 	}
 	else
 	{
-		if( vec[ PITCH ] )
+		if ( vec[ PITCH ] )
 		{
 			yaw = ( atan2( vec[ YAW ], vec[ PITCH ] ) * 180 / M_PI );
 		}
-		else if( vec[ YAW ] > 0 )
+		else if ( vec[ YAW ] > 0 )
 		{
 			yaw = 90;
 		}
@@ -2170,7 +2170,7 @@ float vectoyaw( const vec3_t vec )
 			yaw = 270;
 		}
 
-		if( yaw < 0 )
+		if ( yaw < 0 )
 		{
 			yaw += 360;
 		}
@@ -2194,11 +2194,11 @@ void AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles )
 	float length1;
 	float yaw, pitch, roll = 0.0f;
 
-	if( axis[ 0 ][ 1 ] == 0 && axis[ 0 ][ 0 ] == 0 )
+	if ( axis[ 0 ][ 1 ] == 0 && axis[ 0 ][ 0 ] == 0 )
 	{
 		yaw = 0;
 
-		if( axis[ 0 ][ 2 ] > 0 )
+		if ( axis[ 0 ][ 2 ] > 0 )
 		{
 			pitch = 90;
 		}
@@ -2209,11 +2209,11 @@ void AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles )
 	}
 	else
 	{
-		if( axis[ 0 ][ 0 ] )
+		if ( axis[ 0 ][ 0 ] )
 		{
 			yaw = ( atan2( axis[ 0 ][ 1 ], axis[ 0 ][ 0 ] ) * 180 / M_PI );
 		}
-		else if( axis[ 0 ][ 1 ] > 0 )
+		else if ( axis[ 0 ][ 1 ] > 0 )
 		{
 			yaw = 90;
 		}
@@ -2222,7 +2222,7 @@ void AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles )
 			yaw = 270;
 		}
 
-		if( yaw < 0 )
+		if ( yaw < 0 )
 		{
 			yaw += 360;
 		}
@@ -2230,14 +2230,14 @@ void AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles )
 		length1 = sqrt( axis[ 0 ][ 0 ] * axis[ 0 ][ 0 ] + axis[ 0 ][ 1 ] * axis[ 0 ][ 1 ] );
 		pitch = ( atan2( axis[ 0 ][ 2 ], length1 ) * 180 / M_PI );
 
-		if( pitch < 0 )
+		if ( pitch < 0 )
 		{
 			pitch += 360;
 		}
 
 		roll = ( atan2( axis[ 1 ][ 2 ], axis[ 2 ][ 2 ] ) * 180 / M_PI );
 
-		if( roll < 0 )
+		if ( roll < 0 )
 		{
 			roll += 360;
 		}
@@ -2277,12 +2277,12 @@ float VectorMaxComponent( vec3_t v )
 {
 	float biggest = v[ 0 ];
 
-	if( v[ 1 ] > biggest )
+	if ( v[ 1 ] > biggest )
 	{
 		biggest = v[ 1 ];
 	}
 
-	if( v[ 2 ] > biggest )
+	if ( v[ 2 ] > biggest )
 	{
 		biggest = v[ 2 ];
 	}
@@ -2301,12 +2301,12 @@ float VectorMinComponent( vec3_t v )
 {
 	float smallest = v[ 0 ];
 
-	if( v[ 1 ] < smallest )
+	if ( v[ 1 ] < smallest )
 	{
 		smallest = v[ 1 ];
 	}
 
-	if( v[ 2 ] < smallest )
+	if ( v[ 2 ] < smallest )
 	{
 		smallest = v[ 2 ];
 	}
@@ -2548,29 +2548,29 @@ static void m4_submat( matrix_t mr, matrix3x3_t mb, int i, int j )
 {
 	int ti, tj, idst = 0, jdst = 0;
 
-	for( ti = 0; ti < 4; ti++ )
+	for ( ti = 0; ti < 4; ti++ )
 	{
-		if( ti < i )
+		if ( ti < i )
 		{
 			idst = ti;
 		}
-		else if( ti > i )
+		else if ( ti > i )
 		{
 			idst = ti - 1;
 		}
 
-		for( tj = 0; tj < 4; tj++ )
+		for ( tj = 0; tj < 4; tj++ )
 		{
-			if( tj < j )
+			if ( tj < j )
 			{
 				jdst = tj;
 			}
-			else if( tj > j )
+			else if ( tj > j )
 			{
 				jdst = tj - 1;
 			}
 
-			if( ti != i && tj != j )
+			if ( ti != i && tj != j )
 			{
 				mb[ idst * 3 + jdst ] = mr[ ti * 4 + tj ];
 			}
@@ -2584,7 +2584,7 @@ static float m4_det( matrix_t mr )
 	matrix3x3_t msub3;
 	int         n;
 
-	for( n = 0; n < 4; n++, i *= -1 )
+	for ( n = 0; n < 4; n++, i *= -1 )
 	{
 		m4_submat( mr, msub3, 0, n );
 
@@ -2604,7 +2604,7 @@ qboolean MatrixInverse( matrix_t matrix )
 
 #if 0
 
-	if( fabs( mdet ) < 0.0000000001 )
+	if ( fabs( mdet ) < 0.0000000001 )
 	{
 		return qtrue;
 	}
@@ -2613,9 +2613,9 @@ qboolean MatrixInverse( matrix_t matrix )
 
 	MatrixCopy( matrix, m4x4_temp );
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
-		for( j = 0; j < 4; j++ )
+		for ( j = 0; j < 4; j++ )
 		{
 			sign = 1 - ( ( i + j ) % 2 ) * 2;
 
@@ -2767,7 +2767,7 @@ void MatrixMultiply( const matrix_t a, const matrix_t b, matrix_t out )
 	_t6 = _mm_loadu_ps( &a[ 8 ] );
 	_t7 = _mm_loadu_ps( &a[ 12 ] );
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
 		_t0 = _mm_load1_ps( &b[ i * 4 + 0 ] );
 		_t0 = _mm_mul_ps( _t4, _t0 );
@@ -2898,11 +2898,11 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 	sp = m[ 2 ];
 
 	// cap off our sin value so that we don't get any NANs
-	if( sp > 1.0 )
+	if ( sp > 1.0 )
 	{
 		sp = 1.0;
 	}
-	else if( sp < -1.0 )
+	else if ( sp < -1.0 )
 	{
 		sp = -1.0;
 	}
@@ -2910,7 +2910,7 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 	theta = -asin( sp );
 	cp = cos( theta );
 
-	if( cp > 8192 * FLT_EPSILON )
+	if ( cp > 8192 * FLT_EPSILON )
 	{
 		angles[ PITCH ] = RAD2DEG( theta );
 		angles[ YAW ] = RAD2DEG( atan2( m[ 1 ], m[ 0 ] ) );
@@ -2930,7 +2930,7 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 	a = asin( -m[ 2 ] );
 	ca = cos( a );
 
-	if( fabs( ca ) > 0.005 )   // Gimbal lock?
+	if ( fabs( ca ) > 0.005 )  // Gimbal lock?
 	{
 		angles[ PITCH ] = RAD2DEG( atan2( m[ 6 ] / ca, m[ 10 ] / ca ) );
 		angles[ YAW ] = RAD2DEG( a );
@@ -3153,21 +3153,21 @@ void MatrixFromPlanes( matrix_t m, const vec4_t left, const vec4_t right, const 
 
 void MatrixToVectorsFLU( const matrix_t m, vec3_t forward, vec3_t left, vec3_t up )
 {
-	if( forward )
+	if ( forward )
 	{
 		forward[ 0 ] = m[ 0 ]; // cp*cy;
 		forward[ 1 ] = m[ 1 ]; // cp*sy;
 		forward[ 2 ] = m[ 2 ]; //-sp;
 	}
 
-	if( left )
+	if ( left )
 	{
 		left[ 0 ] = m[ 4 ]; // sr*sp*cy+cr*-sy;
 		left[ 1 ] = m[ 5 ]; // sr*sp*sy+cr*cy;
 		left[ 2 ] = m[ 6 ]; // sr*cp;
 	}
 
-	if( up )
+	if ( up )
 	{
 		up[ 0 ] = m[ 8 ]; // cr*sp*cy+-sr*-sy;
 		up[ 1 ] = m[ 9 ]; // cr*sp*sy+-sr*cy;
@@ -3177,21 +3177,21 @@ void MatrixToVectorsFLU( const matrix_t m, vec3_t forward, vec3_t left, vec3_t u
 
 void MatrixToVectorsFRU( const matrix_t m, vec3_t forward, vec3_t right, vec3_t up )
 {
-	if( forward )
+	if ( forward )
 	{
 		forward[ 0 ] = m[ 0 ];
 		forward[ 1 ] = m[ 1 ];
 		forward[ 2 ] = m[ 2 ];
 	}
 
-	if( right )
+	if ( right )
 	{
 		right[ 0 ] = -m[ 4 ];
 		right[ 1 ] = -m[ 5 ];
 		right[ 2 ] = -m[ 6 ];
 	}
 
-	if( up )
+	if ( up )
 	{
 		up[ 0 ] = m[ 8 ];
 		up[ 1 ] = m[ 9 ];
@@ -3844,7 +3844,7 @@ vec_t QuatNormalize( quat_t q )
 	length = q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ];
 	length = sqrt( length );
 
-	if( length )
+	if ( length )
 	{
 		ilength = 1 / length;
 		q[ 0 ] *= ilength;
@@ -3896,7 +3896,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 	 */
 	float t, s;
 
-	if( m[ 0 ] + m[ 5 ] + m[ 10 ] > 0.0f )
+	if ( m[ 0 ] + m[ 5 ] + m[ 10 ] > 0.0f )
 	{
 		t = m[ 0 ] + m[ 5 ] + m[ 10 ] + 1.0f;
 		s = ( 1.0f / sqrtf( t ) ) * 0.5f;
@@ -3906,7 +3906,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 		q[ 1 ] = ( m[ 8 ] - m[ 2 ] ) * s;
 		q[ 0 ] = ( m[ 6 ] - m[ 9 ] ) * s;
 	}
-	else if( m[ 0 ] > m[ 5 ] && m[ 0 ] > m[ 10 ] )
+	else if ( m[ 0 ] > m[ 5 ] && m[ 0 ] > m[ 10 ] )
 	{
 		t = m[ 0 ] - m[ 5 ] - m[ 10 ] + 1.0f;
 		s = ( 1.0f / sqrtf( t ) ) * 0.5f;
@@ -3916,7 +3916,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 		q[ 2 ] = ( m[ 8 ] + m[ 2 ] ) * s;
 		q[ 3 ] = ( m[ 6 ] - m[ 9 ] ) * s;
 	}
-	else if( m[ 5 ] > m[ 10 ] )
+	else if ( m[ 5 ] > m[ 10 ] )
 	{
 		t = -m[ 0 ] + m[ 5 ] - m[ 10 ] + 1.0f;
 		s = ( 1.0f / sqrtf( t ) ) * 0.5f;
@@ -3944,7 +3944,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 
 	trace = 1.0f + m[ 0 ] + m[ 5 ] + m[ 10 ];
 
-	if( trace > 0.0f )
+	if ( trace > 0.0f )
 	{
 		vec_t s = 0.5f / sqrt( trace );
 
@@ -3955,7 +3955,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 	}
 	else
 	{
-		if( m[ 0 ] > m[ 5 ] && m[ 0 ] > m[ 10 ] )
+		if ( m[ 0 ] > m[ 5 ] && m[ 0 ] > m[ 10 ] )
 		{
 			// column 0
 			float s = sqrt( 1.0f + m[ 0 ] - m[ 5 ] - m[ 10 ] ) * 2.0f;
@@ -3965,7 +3965,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 			q[ 2 ] = ( m[ 8 ] + m[ 2 ] ) / s;
 			q[ 3 ] = ( m[ 9 ] - m[ 6 ] ) / s;
 		}
-		else if( m[ 5 ] > m[ 10 ] )
+		else if ( m[ 5 ] > m[ 10 ] )
 		{
 			// column 1
 			float s = sqrt( 1.0f + m[ 5 ] - m[ 0 ] - m[ 10 ] ) * 2.0f;
@@ -4086,7 +4086,7 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 
 	cosom = from[ 0 ] * to[ 0 ] + from[ 1 ] * to[ 1 ] + from[ 2 ] * to[ 2 ] + from[ 3 ] * to[ 3 ];
 
-	if( cosom < 0.0 )
+	if ( cosom < 0.0 )
 	{
 		cosom = -cosom;
 
@@ -4098,7 +4098,7 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 		QuatCopy( to, to1 );
 	}
 
-	if( ( 1.0 - cosom ) > 0 )
+	if ( ( 1.0 - cosom ) > 0 )
 	{
 		omega = acos( cosom );
 		sinom = sin( omega );
@@ -4126,19 +4126,19 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 	 */
 	float cosom, absCosom, sinom, sinSqr, omega, scale0, scale1;
 
-	if( frac <= 0.0f )
+	if ( frac <= 0.0f )
 	{
 		QuatCopy( from, out );
 		return;
 	}
 
-	if( frac >= 1.0f )
+	if ( frac >= 1.0f )
 	{
 		QuatCopy( to, out );
 		return;
 	}
 
-	if( QuatCompare( from, to ) )
+	if ( QuatCompare( from, to ) )
 	{
 		QuatCopy( from, out );
 		return;
@@ -4147,7 +4147,7 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 	cosom = from[ 0 ] * to[ 0 ] + from[ 1 ] * to[ 1 ] + from[ 2 ] * to[ 2 ] + from[ 3 ] * to[ 3 ];
 	absCosom = fabs( cosom );
 
-	if( ( 1.0f - absCosom ) > 1e-6f )
+	if ( ( 1.0f - absCosom ) > 1e-6f )
 	{
 		sinSqr = 1.0f - absCosom * absCosom;
 		sinom = 1.0f / sqrt( sinSqr );

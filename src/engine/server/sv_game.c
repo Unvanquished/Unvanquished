@@ -84,7 +84,7 @@ playerState_t  *SV_GameClientNum( int num )
 
 svEntity_t     *SV_SvEntityForGentity( sharedEntity_t *gEnt )
 {
-	if( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
+	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
 	{
 		Com_Error( ERR_DROP, "SV_SvEntityForGentity: bad gEnt" );
 	}
@@ -109,13 +109,13 @@ Sends a command string to a client
 */
 void SV_GameSendServerCommand( int clientNum, const char *text )
 {
-	if( clientNum == -1 )
+	if ( clientNum == -1 )
 	{
 		SV_SendServerCommand( NULL, "%s", text );
 	}
 	else
 	{
-		if( clientNum < 0 || clientNum >= sv_maxclients->integer )
+		if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
 		{
 			return;
 		}
@@ -133,14 +133,14 @@ Disconnects the client with a message
 */
 void SV_GameDropClient( int clientNum, const char *reason, int length )
 {
-	if( clientNum < 0 || clientNum >= sv_maxclients->integer )
+	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
 	{
 		return;
 	}
 
 	SV_DropClient( svs.clients + clientNum, reason );
 
-	if( length )
+	if ( length )
 	{
 		SV_TempBanNetAddress( svs.clients[ clientNum ].netchan.remoteAddress, length );
 	}
@@ -168,7 +168,7 @@ int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
 	retval = mpz_set_str( public_key.n, pubkey, 16 ) + 1;
 
-	if( retval )
+	if ( retval )
 	{
 		rsa_public_key_prepare( &public_key );
 		retval = rsa_encrypt( &public_key, NULL, qnettle_random, RSA_KEY_LENGTH / 8 - 11, buffer, message );
@@ -195,12 +195,12 @@ void SV_SetBrushModel( sharedEntity_t *ent, const char *name )
 	clipHandle_t h;
 	vec3_t       mins, maxs;
 
-	if( !name )
+	if ( !name )
 	{
 		Com_Error( ERR_DROP, "SV_SetBrushModel: NULL" );
 	}
 
-	if( name[ 0 ] != '*' )
+	if ( name[ 0 ] != '*' )
 	{
 		Com_Error( ERR_DROP, "SV_SetBrushModel: %s isn't a brush model", name );
 	}
@@ -241,12 +241,12 @@ qboolean SV_inPVS( const vec3_t p1, const vec3_t p2 )
 	cluster = CM_LeafCluster( leafnum );
 	area2 = CM_LeafArea( leafnum );
 
-	if( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
+	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
 	{
 		return qfalse;
 	}
 
-	if( !CM_AreasConnected( area1, area2 ) )
+	if ( !CM_AreasConnected( area1, area2 ) )
 	{
 		return qfalse; // a door blocks sight
 	}
@@ -277,7 +277,7 @@ qboolean SV_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 )
 	cluster = CM_LeafCluster( leafnum );
 //	area2 = CM_LeafArea(leafnum); //Doesn't modify anything.
 
-	if( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
+	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
 	{
 		return qfalse;
 	}
@@ -296,7 +296,7 @@ void SV_AdjustAreaPortalState( sharedEntity_t *ent, qboolean open )
 
 	svEnt = SV_SvEntityForGentity( ent );
 
-	if( svEnt->areanum2 == -1 )
+	if ( svEnt->areanum2 == -1 )
 	{
 		return;
 	}
@@ -333,7 +333,7 @@ SV_GetServerinfo
 */
 void SV_GetServerinfo( char *buffer, int bufferSize )
 {
-	if( bufferSize < 1 )
+	if ( bufferSize < 1 )
 	{
 		Com_Error( ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize );
 	}
@@ -366,7 +366,7 @@ SV_GetUsercmd
 */
 void SV_GetUsercmd( int clientNum, usercmd_t *cmd )
 {
-	if( clientNum < 0 || clientNum >= sv_maxclients->integer )
+	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
 	{
 		Com_Error( ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum );
 	}
@@ -381,13 +381,13 @@ SV_SendBinaryMessage
 */
 static void SV_SendBinaryMessage( int cno, char *buf, int buflen )
 {
-	if( cno < 0 || cno >= sv_maxclients->integer )
+	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
 		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno );
 		return;
 	}
 
-	if( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
+	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
 	{
 		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen );
 		svs.clients[ cno ].binaryMessageLength = 0;
@@ -405,17 +405,17 @@ SV_BinaryMessageStatus
 */
 static int SV_BinaryMessageStatus( int cno )
 {
-	if( cno < 0 || cno >= sv_maxclients->integer )
+	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
 		return qfalse;
 	}
 
-	if( svs.clients[ cno ].binaryMessageLength == 0 )
+	if ( svs.clients[ cno ].binaryMessageLength == 0 )
 	{
 		return MESSAGE_EMPTY;
 	}
 
-	if( svs.clients[ cno ].binaryMessageOverflowed )
+	if ( svs.clients[ cno ].binaryMessageOverflowed )
 	{
 		return MESSAGE_WAITING_OVERFLOW;
 	}
@@ -485,7 +485,7 @@ The module is making a system call
 */
 intptr_t SV_GameSystemCalls( intptr_t *args )
 {
-	switch( args[ 0 ] )
+	switch ( args[ 0 ] )
 	{
 		case G_PRINT:
 			Com_Printf( "%s", ( char * ) VMA( 1 ) );
@@ -657,7 +657,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 				s = COM_Parse( &sv.entityParsePoint );
 				Q_strncpyz( VMA( 1 ), s, args[ 2 ] );
 
-				if( !sv.entityParsePoint && !s[ 0 ] )
+				if ( !sv.entityParsePoint && !s[ 0 ] )
 				{
 					return qfalse;
 				}
@@ -1388,7 +1388,7 @@ Called every time a map changes
 */
 void SV_ShutdownGameProgs( void )
 {
-	if( !gvm )
+	if ( !gvm )
 	{
 		return;
 	}
@@ -1397,7 +1397,7 @@ void SV_ShutdownGameProgs( void )
 	VM_Free( gvm );
 	gvm = NULL;
 
-	if( sv_newGameShlib->string[ 0 ] )
+	if ( sv_newGameShlib->string[ 0 ] )
 	{
 		FS_Rename( sv_newGameShlib->string, "game" DLL_EXT );
 		Cvar_Set( "sv_newGameShlib", "" );
@@ -1420,7 +1420,7 @@ static void SV_InitGameVM( qboolean restart )
 
 	// clear all gentity pointers that might still be set from
 	// a previous level
-	for( i = 0; i < sv_maxclients->integer; i++ )
+	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
 		svs.clients[ i ].gentity = NULL;
 	}
@@ -1439,7 +1439,7 @@ Called on a map_restart, but not on a normal map change
 */
 void SV_RestartGameProgs( void )
 {
-	if( !gvm )
+	if ( !gvm )
 	{
 		return;
 	}
@@ -1453,7 +1453,7 @@ void SV_RestartGameProgs( void )
 	// do a restart instead of a free
 	gvm = VM_Restart( gvm );
 
-	if( !gvm )
+	if ( !gvm )
 	{
 		// bk001212 - as done below
 		Com_Error( ERR_FATAL, "VM_Restart on game failed" );
@@ -1477,7 +1477,7 @@ void SV_InitGameProgs( void )
 	// load the dll or bytecode
 	gvm = VM_Create( "qagame", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
 
-	if( !gvm )
+	if ( !gvm )
 	{
 		Com_Error( ERR_FATAL, "VM_Create on game failed" );
 	}
@@ -1494,7 +1494,7 @@ See if the current console command is claimed by the game
 */
 qboolean SV_GameCommand( void )
 {
-	if( sv.state != SS_GAME )
+	if ( sv.state != SS_GAME )
 	{
 		return qfalse;
 	}
@@ -1537,12 +1537,12 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation
 {
 	int i;
 
-	if( tagFileNumber > 0 && tagFileNumber <= sv.num_tagheaders )
+	if ( tagFileNumber > 0 && tagFileNumber <= sv.num_tagheaders )
 	{
-		for( i = sv.tagHeadersExt[ tagFileNumber - 1 ].start;
-		     i < sv.tagHeadersExt[ tagFileNumber - 1 ].start + sv.tagHeadersExt[ tagFileNumber - 1 ].count; i++ )
+		for ( i = sv.tagHeadersExt[ tagFileNumber - 1 ].start;
+		      i < sv.tagHeadersExt[ tagFileNumber - 1 ].start + sv.tagHeadersExt[ tagFileNumber - 1 ].count; i++ )
 		{
-			if( !Q_stricmp( sv.tags[ i ].name, tagname ) )
+			if ( !Q_stricmp( sv.tags[ i ].name, tagname ) )
 			{
 				VectorCopy( sv.tags[ i ].origin, or ->origin );
 				VectorCopy( sv.tags[ i ].axis[ 0 ], or ->axis[ 0 ] );
@@ -1557,7 +1557,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation
 	// Gordon: bleh, some code in clientthink_real really relies on this working on player models...
 #ifndef DEDICATED // TTimo: dedicated only binary defines DEDICATED
 
-	if( com_dedicated->integer )
+	if ( com_dedicated->integer )
 	{
 		return qfalse;
 	}

@@ -44,15 +44,15 @@ qboolean CG_SpawnString( const char *key, const char *defaultString, char **out 
 {
 	int i;
 
-	if( !cg.spawning )
+	if ( !cg.spawning )
 	{
 		*out = ( char * ) defaultString;
 		CG_Error( "CG_SpawnString() called while not spawning" );
 	}
 
-	for( i = 0; i < cg.numSpawnVars; i++ )
+	for ( i = 0; i < cg.numSpawnVars; i++ )
 	{
-		if( !strcmp( key, cg.spawnVars[ i ][ 0 ] ) )
+		if ( !strcmp( key, cg.spawnVars[ i ][ 0 ] ) )
 		{
 			*out = cg.spawnVars[ i ][ 1 ];
 			return qtrue;
@@ -134,10 +134,10 @@ void SP_path_corner_2( void )
 	CG_SpawnString( "targetname", "", &targetname );
 	CG_SpawnVector( "origin", "0 0 0", origin );
 
-	if( !*targetname )
+	if ( !*targetname )
 	{
 		// XreaL BEGIN
-		if( !CG_SpawnString( "name", "", &targetname ) )
+		if ( !CG_SpawnString( "name", "", &targetname ) )
 			// XreaL END
 		{
 			CG_Error( "path_corner_2 with no targetname at %s\n", vtos( origin ) );
@@ -145,7 +145,7 @@ void SP_path_corner_2( void )
 		}
 	}
 
-	if( numPathCorners >= MAX_PATH_CORNERS )
+	if ( numPathCorners >= MAX_PATH_CORNERS )
 	{
 		CG_Error( "Maximum path_corners hit\n" );
 		return;
@@ -164,15 +164,15 @@ void SP_info_train_spline_main( void )
 	char         *end;
 	splinePath_t *spline;
 
-	if( !CG_SpawnVector( "origin", "0 0 0", origin ) )
+	if ( !CG_SpawnVector( "origin", "0 0 0", origin ) )
 	{
 		CG_Error( "info_train_spline_main with no origin\n" );
 	}
 
-	if( !CG_SpawnString( "targetname", "", &targetname ) )
+	if ( !CG_SpawnString( "targetname", "", &targetname ) )
 	{
 		// XreaL BEGIN
-		if( !CG_SpawnString( "name", "", &targetname ) )
+		if ( !CG_SpawnString( "name", "", &targetname ) )
 			// XreaL END
 		{
 			CG_Error( "info_train_spline_main with no targetname at %s\n", vtos( origin ) );
@@ -183,18 +183,18 @@ void SP_info_train_spline_main( void )
 
 	spline = BG_AddSplinePath( targetname, target, origin );
 
-	if( CG_SpawnString( "end", "", &end ) )
+	if ( CG_SpawnString( "end", "", &end ) )
 	{
 		spline->isEnd = qtrue;
 	}
-	else if( CG_SpawnString( "start", "", &end ) )
+	else if ( CG_SpawnString( "start", "", &end ) )
 	{
 		spline->isStart = qtrue;
 	}
 
-	for( i = 1;; i++ )
+	for ( i = 1;; i++ )
 	{
-		if( !CG_SpawnString( i == 1 ? va( "control" ) : va( "control%i", i ), "", &control ) )
+		if ( !CG_SpawnString( i == 1 ? va( "control" ) : va( "control%i", i ), "", &control ) )
 		{
 			break;
 		}
@@ -218,14 +218,14 @@ void SP_misc_gamemodel( void )
 
 	int            i;
 
-	if( CG_SpawnString( "targetname", "", &model ) || CG_SpawnString( "scriptname", "", &model ) ||
-	    CG_SpawnString( "spawnflags", "", &model ) )
+	if ( CG_SpawnString( "targetname", "", &model ) || CG_SpawnString( "scriptname", "", &model ) ||
+	     CG_SpawnString( "spawnflags", "", &model ) )
 	{
 		// Gordon: this model may not be static, so let the server handle it
 		return;
 	}
 
-	if( cg.numMiscGameModels >= MAX_STATIC_GAMEMODELS )
+	if ( cg.numMiscGameModels >= MAX_STATIC_GAMEMODELS )
 	{
 		CG_Error( "^1MAX_STATIC_GAMEMODELS(%i) hit", MAX_STATIC_GAMEMODELS );
 	}
@@ -234,17 +234,17 @@ void SP_misc_gamemodel( void )
 
 	CG_SpawnVector( "origin", "0 0 0", org );
 
-	if( !CG_SpawnVector( "angles", "0 0 0", angles ) )
+	if ( !CG_SpawnVector( "angles", "0 0 0", angles ) )
 	{
-		if( CG_SpawnFloat( "angle", "0", &angle ) )
+		if ( CG_SpawnFloat( "angle", "0", &angle ) )
 		{
 			angles[ YAW ] = angle;
 		}
 	}
 
-	if( !CG_SpawnVector( "modelscale_vec", "1 1 1", vScale ) )
+	if ( !CG_SpawnVector( "modelscale_vec", "1 1 1", vScale ) )
 	{
-		if( CG_SpawnFloat( "modelscale", "1", &scale ) )
+		if ( CG_SpawnFloat( "modelscale", "1", &scale ) )
 		{
 			VectorSet( vScale, scale, scale, scale );
 		}
@@ -254,20 +254,20 @@ void SP_misc_gamemodel( void )
 	gamemodel->model = trap_R_RegisterModel( model );
 	AnglesToAxis( angles, gamemodel->axes );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		VectorScale( gamemodel->axes[ i ], vScale[ i ], gamemodel->axes[ i ] );
 	}
 
 	VectorCopy( org, gamemodel->org );
 
-	if( gamemodel->model )
+	if ( gamemodel->model )
 	{
 		vec3_t mins, maxs;
 
 		trap_R_ModelBounds( gamemodel->model, mins, maxs );
 
-		for( i = 0; i < 3; i++ )
+		for ( i = 0; i < 3; i++ )
 		{
 			mins[ i ] *= vScale[ i ];
 			maxs[ i ] *= vScale[ i ];
@@ -329,16 +329,16 @@ void CG_ParseEntityFromSpawnVars( void )
 	// check for "notteam" / "notfree" flags
 	CG_SpawnInt( "notteam", "0", &i );
 
-	if( i )
+	if ( i )
 	{
 		return;
 	}
 
-	if( CG_SpawnString( "classname", "", &classname ) )
+	if ( CG_SpawnString( "classname", "", &classname ) )
 	{
-		for( i = 0; i < NUMSPAWNS; i++ )
+		for ( i = 0; i < NUMSPAWNS; i++ )
 		{
-			if( !Q_stricmp( spawns[ i ].name, classname ) )
+			if ( !Q_stricmp( spawns[ i ].name, classname ) )
 			{
 				spawns[ i ].spawn();
 				break;
@@ -359,7 +359,7 @@ char           *CG_AddSpawnVarToken( const char *string )
 
 	l = strlen( string );
 
-	if( cg.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
+	if ( cg.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
 	{
 		CG_Error( "CG_AddSpawnVarToken: MAX_SPAWN_VARS" );
 	}
@@ -391,43 +391,43 @@ qboolean CG_ParseSpawnVars( void )
 	cg.numSpawnVarChars = 0;
 
 	// parse the opening brace
-	if( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
+	if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
 	{
 		// end of spawn string
 		return qfalse;
 	}
 
-	if( com_token[ 0 ] != '{' )
+	if ( com_token[ 0 ] != '{' )
 	{
 		CG_Error( "CG_ParseSpawnVars: found %s when expecting {", com_token );
 	}
 
 	// go through all the key / value pairs
-	while( 1 )
+	while ( 1 )
 	{
 		// parse key
-		if( !trap_GetEntityToken( keyname, sizeof( keyname ) ) )
+		if ( !trap_GetEntityToken( keyname, sizeof( keyname ) ) )
 		{
 			CG_Error( "CG_ParseSpawnVars: EOF without closing brace" );
 		}
 
-		if( keyname[ 0 ] == '}' )
+		if ( keyname[ 0 ] == '}' )
 		{
 			break;
 		}
 
 		// parse value
-		if( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
+		if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
 		{
 			CG_Error( "CG_ParseSpawnVars: EOF without closing brace" );
 		}
 
-		if( com_token[ 0 ] == '}' )
+		if ( com_token[ 0 ] == '}' )
 		{
 			CG_Error( "CG_ParseSpawnVars: closing brace without data" );
 		}
 
-		if( cg.numSpawnVars == MAX_SPAWN_VARS )
+		if ( cg.numSpawnVars == MAX_SPAWN_VARS )
 		{
 			CG_Error( "CG_ParseSpawnVars: MAX_SPAWN_VARS" );
 		}
@@ -447,15 +447,15 @@ void SP_worldspawn( void )
 
 	CG_SpawnString( "classname", "", &s );
 
-	if( Q_stricmp( s, "worldspawn" ) )
+	if ( Q_stricmp( s, "worldspawn" ) )
 	{
 		CG_Error( "SP_worldspawn: The first entity isn't 'worldspawn'" );
 	}
 
 	cgs.ccLayers = 0;
 
-	if( CG_SpawnVector2D( "mapcoordsmins", "-128 128", cg.mapcoordsMins ) &&   // top left
-	    CG_SpawnVector2D( "mapcoordsmaxs", "128 -128", cg.mapcoordsMaxs ) )
+	if ( CG_SpawnVector2D( "mapcoordsmins", "-128 128", cg.mapcoordsMins ) &&  // top left
+	     CG_SpawnVector2D( "mapcoordsmaxs", "128 -128", cg.mapcoordsMaxs ) )
 	{
 		// bottom right
 		cg.mapcoordsValid = qtrue;
@@ -471,13 +471,13 @@ void SP_worldspawn( void )
 	cgs.ccLayers = atoi( s );
 
 	// CHRUKER: b043 - Make sure the maximum commandmaps, doesn't overflow the maximum allowed command map layers
-	if( cgs.ccLayers > MAX_COMMANDMAP_LAYERS )
+	if ( cgs.ccLayers > MAX_COMMANDMAP_LAYERS )
 	{
 		cgs.ccLayers = MAX_COMMANDMAP_LAYERS;
 		CG_Printf( "^3Warning: The maximum number (%i) of command map layers is exceeded.\n", MAX_COMMANDMAP_LAYERS );
 	}
 
-	for( i = 0; i < cgs.ccLayers; i++ )
+	for ( i = 0; i < cgs.ccLayers; i++ )
 	{
 		CG_SpawnString( va( "cclayerceil%i", i ), "0", &s );
 		cgs.ccLayerCeils[ i ] = atoi( s );
@@ -513,11 +513,11 @@ void SP_worldspawn( void )
 	Q_strncpyz( cg.thirtySecondSound_a, s, sizeof( cg.thirtySecondSound_a ) );
 
 	// 5 minute axis
-	if( !*cg.fiveMinuteSound_g )
+	if ( !*cg.fiveMinuteSound_g )
 	{
 		cgs.media.fiveMinuteSound_g = 0;
 	}
-	else if( strstr( cg.fiveMinuteSound_g, ".wav" ) )
+	else if ( strstr( cg.fiveMinuteSound_g, ".wav" ) )
 	{
 		cgs.media.fiveMinuteSound_g = trap_S_RegisterSound( cg.fiveMinuteSound_g, qtrue );
 	}
@@ -527,11 +527,11 @@ void SP_worldspawn( void )
 	}
 
 	// 5 minute allied
-	if( !*cg.fiveMinuteSound_a )
+	if ( !*cg.fiveMinuteSound_a )
 	{
 		cgs.media.fiveMinuteSound_a = 0;
 	}
-	else if( strstr( cg.fiveMinuteSound_a, ".wav" ) )
+	else if ( strstr( cg.fiveMinuteSound_a, ".wav" ) )
 	{
 		cgs.media.fiveMinuteSound_a = trap_S_RegisterSound( cg.fiveMinuteSound_a, qtrue );
 	}
@@ -541,11 +541,11 @@ void SP_worldspawn( void )
 	}
 
 	// 2 minute axis
-	if( !*cg.twoMinuteSound_g )
+	if ( !*cg.twoMinuteSound_g )
 	{
 		cgs.media.twoMinuteSound_g = 0;
 	}
-	else if( strstr( cg.twoMinuteSound_g, ".wav" ) )
+	else if ( strstr( cg.twoMinuteSound_g, ".wav" ) )
 	{
 		cgs.media.twoMinuteSound_g = trap_S_RegisterSound( cg.twoMinuteSound_g, qtrue );
 	}
@@ -555,11 +555,11 @@ void SP_worldspawn( void )
 	}
 
 	// 2 minute allied
-	if( !*cg.twoMinuteSound_a )
+	if ( !*cg.twoMinuteSound_a )
 	{
 		cgs.media.twoMinuteSound_a = 0;
 	}
-	else if( strstr( cg.twoMinuteSound_a, ".wav" ) )
+	else if ( strstr( cg.twoMinuteSound_a, ".wav" ) )
 	{
 		cgs.media.twoMinuteSound_a = trap_S_RegisterSound( cg.twoMinuteSound_a, qtrue );
 	}
@@ -569,11 +569,11 @@ void SP_worldspawn( void )
 	}
 
 	// 30 seconds axis
-	if( !*cg.thirtySecondSound_g )
+	if ( !*cg.thirtySecondSound_g )
 	{
 		cgs.media.thirtySecondSound_g = 0;
 	}
-	else if( strstr( cg.thirtySecondSound_g, ".wav" ) )
+	else if ( strstr( cg.thirtySecondSound_g, ".wav" ) )
 	{
 		cgs.media.thirtySecondSound_g = trap_S_RegisterSound( cg.thirtySecondSound_g, qtrue );
 	}
@@ -583,11 +583,11 @@ void SP_worldspawn( void )
 	}
 
 	// 30 seconds allied
-	if( !*cg.thirtySecondSound_a )
+	if ( !*cg.thirtySecondSound_a )
 	{
 		cgs.media.thirtySecondSound_a = 0;
 	}
-	else if( strstr( cg.thirtySecondSound_a, ".wav" ) )
+	else if ( strstr( cg.thirtySecondSound_a, ".wav" ) )
 	{
 		cgs.media.thirtySecondSound_a = trap_S_RegisterSound( cg.thirtySecondSound_a, qtrue );
 	}
@@ -614,7 +614,7 @@ void CG_ParseEntitiesFromString( void )
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
 	// needed by a level (setting configstrings or cvars, etc)
-	if( !CG_ParseSpawnVars() )
+	if ( !CG_ParseSpawnVars() )
 	{
 		CG_Error( "ParseEntities: no entities" );
 	}
@@ -622,7 +622,7 @@ void CG_ParseEntitiesFromString( void )
 	SP_worldspawn();
 
 	// parse ents
-	while( CG_ParseSpawnVars() )
+	while ( CG_ParseSpawnVars() )
 	{
 		CG_ParseEntityFromSpawnVars();
 	}

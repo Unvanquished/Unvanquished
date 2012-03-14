@@ -223,7 +223,7 @@ extern "C" {
 		link_t *top;
 		void  *data;
 
-		if( l->next == l )
+		if ( l->next == l )
 		{
 			return NULL;
 		}
@@ -1533,7 +1533,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_ColorTextureMatrix, m ) )
+		if ( MatrixCompare( program->t_ColorTextureMatrix, m ) )
 		{
 			return;
 		}
@@ -1548,7 +1548,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_DiffuseTextureMatrix, m ) )
+		if ( MatrixCompare( program->t_DiffuseTextureMatrix, m ) )
 		{
 			return;
 		}
@@ -1563,7 +1563,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_NormalTextureMatrix, m ) )
+		if ( MatrixCompare( program->t_NormalTextureMatrix, m ) )
 		{
 			return;
 		}
@@ -1578,7 +1578,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_SpecularTextureMatrix, m ) )
+		if ( MatrixCompare( program->t_SpecularTextureMatrix, m ) )
 		{
 			return;
 		}
@@ -1595,7 +1595,7 @@ extern "C" {
 	{
 		alphaTest_t value;
 
-		switch( stateBits & GLS_ATEST_BITS )
+		switch ( stateBits & GLS_ATEST_BITS )
 		{
 			case GLS_ATEST_GT_0:
 				value = ATEST_GT_0;
@@ -1616,7 +1616,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			// don't just call LogComment, or we will get
 			// a call to va() every frame!
@@ -1627,7 +1627,7 @@ extern "C" {
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_AlphaTest == value )
+		if ( program->t_AlphaTest == value )
 		{
 			return;
 		}
@@ -1642,7 +1642,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( VectorCompare( program->t_ViewOrigin, v ) )
+		if ( VectorCompare( program->t_ViewOrigin, v ) )
 		{
 			return;
 		}
@@ -1652,7 +1652,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ViewOrigin( program = %s, viewOrigin = ( %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ] ) );
 		}
@@ -1666,7 +1666,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( Vector4Compare( program->t_Color, v ) )
+		if ( Vector4Compare( program->t_Color, v ) )
 		{
 			return;
 		}
@@ -1676,7 +1676,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_Color( program = %s, color = ( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
 		}
@@ -1690,7 +1690,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( Vector4Compare( program->t_ColorModulate, v ) )
+		if ( Vector4Compare( program->t_ColorModulate, v ) )
 		{
 			return;
 		}
@@ -1700,7 +1700,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ColorModulate( program = %s, color = ( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
 		}
@@ -1714,7 +1714,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( VectorCompare( program->t_AmbientColor, v ) )
+		if ( VectorCompare( program->t_AmbientColor, v ) )
 		{
 			return;
 		}
@@ -1724,7 +1724,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_AmbientColor( program = %s, color = ( %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ] ) );
 		}
@@ -1738,7 +1738,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( VectorCompare( program->t_LightDir, v ) )
+		if ( VectorCompare( program->t_LightDir, v ) )
 		{
 			return;
 		}
@@ -1748,7 +1748,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_LightDir( program = %s, direction = ( %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ] ) );
 		}
@@ -1762,7 +1762,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( VectorCompare( program->t_LightOrigin, v ) )
+		if ( VectorCompare( program->t_LightOrigin, v ) )
 		{
 			return;
 		}
@@ -1772,7 +1772,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_LightOrigin( program = %s, origin = ( %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ] ) );
 		}
@@ -1786,7 +1786,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( VectorCompare( program->t_LightColor, v ) )
+		if ( VectorCompare( program->t_LightColor, v ) )
 		{
 			return;
 		}
@@ -1796,7 +1796,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_LightColor( program = %s, color = ( %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ] ) );
 		}
@@ -1810,7 +1810,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_LightRadius == value )
+		if ( program->t_LightRadius == value )
 		{
 			return;
 		}
@@ -1820,7 +1820,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_LightRadius( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -1834,7 +1834,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_LightParallel == value )
+		if ( program->t_LightParallel == value )
 		{
 			return;
 		}
@@ -1844,7 +1844,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_LightParallel( program = %s, value = %i ) ---\n", program->name, value ) );
 		}
@@ -1858,7 +1858,7 @@ extern "C" {
 	{
 #if 0
 
-		if( DS_PREPASS_LIGHTING_ENABLED() )
+		if ( DS_PREPASS_LIGHTING_ENABLED() )
 		{
 			value -= ( r_lightScale->value - 1 );
 			value = Q_max( value, 0 );
@@ -1868,7 +1868,7 @@ extern "C" {
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_LightScale == value )
+		if ( program->t_LightScale == value )
 		{
 			return;
 		}
@@ -1878,7 +1878,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_LightScale( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -1892,7 +1892,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_LightWrapAround == value )
+		if ( program->t_LightWrapAround == value )
 		{
 			return;
 		}
@@ -1902,7 +1902,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_LightWrapAround( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -1916,7 +1916,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_LightAttenuationMatrix, m ) )
+		if ( MatrixCompare( program->t_LightAttenuationMatrix, m ) )
 		{
 			return;
 		}
@@ -1939,11 +1939,11 @@ extern "C" {
 		*/
 
 #if defined( LOG_GLSL_UNIFORMS )
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			int i;
 
-			for( i = 0; i < MAX_SHADOWMAPS; i++ )
+			for ( i = 0; i < MAX_SHADOWMAPS; i++ )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_ShadowMatrix( program = %s, "
 				                      "matrix(%i) = \n"
@@ -1969,7 +1969,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_ShadowCompare == value )
+		if ( program->t_ShadowCompare == value )
 		{
 			return;
 		}
@@ -1979,7 +1979,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ShadowCompare( program = %s, value = %i ) ---\n", program->name, value ) );
 		}
@@ -1993,7 +1993,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_ShadowTexelSize == value )
+		if ( program->t_ShadowTexelSize == value )
 		{
 			return;
 		}
@@ -2003,7 +2003,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ShadowTexelSize( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2017,7 +2017,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_ShadowBlur == value )
+		if ( program->t_ShadowBlur == value )
 		{
 			return;
 		}
@@ -2027,7 +2027,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ShadowBlur( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2041,7 +2041,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( Vector4Compare( program->t_ShadowParallelSplitDistances, v ) )
+		if ( Vector4Compare( program->t_ShadowParallelSplitDistances, v ) )
 		{
 			return;
 		}
@@ -2051,7 +2051,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ShadowParallelSplitDistances( program = %s, distances = ( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
 		}
@@ -2065,7 +2065,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_RefractionIndex == value )
+		if ( program->t_RefractionIndex == value )
 		{
 			return;
 		}
@@ -2075,7 +2075,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_RefractionIndex( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2089,7 +2089,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_ParallaxMapping == value )
+		if ( program->t_ParallaxMapping == value )
 		{
 			return;
 		}
@@ -2099,7 +2099,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ParallaxMapping( program = %s, value = %i ) ---\n", program->name, value ) );
 		}
@@ -2113,7 +2113,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_DepthScale == value )
+		if ( program->t_DepthScale == value )
 		{
 			return;
 		}
@@ -2123,7 +2123,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_DepthScale( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2137,7 +2137,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_EnvironmentInterpolation == value )
+		if ( program->t_EnvironmentInterpolation == value )
 		{
 			return;
 		}
@@ -2147,7 +2147,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_EnvironmentInterpolation( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2161,7 +2161,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_PortalClipping == value )
+		if ( program->t_PortalClipping == value )
 		{
 			return;
 		}
@@ -2171,7 +2171,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_PortalClipping( program = %s, value = %i ) ---\n", program->name, value ) );
 		}
@@ -2185,7 +2185,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( Vector4Compare( program->t_PortalPlane, v ) )
+		if ( Vector4Compare( program->t_PortalPlane, v ) )
 		{
 			return;
 		}
@@ -2195,7 +2195,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_PortalPlane( program = %s, plane = ( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
 		}
@@ -2209,7 +2209,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_PortalRange == value )
+		if ( program->t_PortalRange == value )
 		{
 			return;
 		}
@@ -2219,7 +2219,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_PortalRange( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2233,7 +2233,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_ModelMatrix, m ) )
+		if ( MatrixCompare( program->t_ModelMatrix, m ) )
 		{
 			return;
 		}
@@ -2243,7 +2243,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ModelMatrix( program = %s, "
 			                      "matrix = \n"
@@ -2267,7 +2267,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_ViewMatrix, m ) )
+		if ( MatrixCompare( program->t_ViewMatrix, m ) )
 		{
 			return;
 		}
@@ -2282,7 +2282,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_ModelViewMatrix, m ) )
+		if ( MatrixCompare( program->t_ModelViewMatrix, m ) )
 		{
 			return;
 		}
@@ -2297,7 +2297,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_ModelViewMatrixTranspose, m ) )
+		if ( MatrixCompare( program->t_ModelViewMatrixTranspose, m ) )
 		{
 			return;
 		}
@@ -2312,7 +2312,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_ProjectionMatrix, m ) )
+		if ( MatrixCompare( program->t_ProjectionMatrix, m ) )
 		{
 			return;
 		}
@@ -2327,7 +2327,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_ProjectionMatrixTranspose, m ) )
+		if ( MatrixCompare( program->t_ProjectionMatrixTranspose, m ) )
 		{
 			return;
 		}
@@ -2342,7 +2342,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_ModelViewProjectionMatrix, m ) )
+		if ( MatrixCompare( program->t_ModelViewProjectionMatrix, m ) )
 		{
 			return;
 		}
@@ -2352,7 +2352,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ModelViewProjectionMatrix( program = %s, "
 			                      "matrix = \n"
@@ -2376,7 +2376,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( MatrixCompare( program->t_UnprojectMatrix, m ) )
+		if ( MatrixCompare( program->t_UnprojectMatrix, m ) )
 		{
 			return;
 		}
@@ -2391,7 +2391,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_VertexSkinning == value )
+		if ( program->t_VertexSkinning == value )
 		{
 			return;
 		}
@@ -2401,7 +2401,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_VertexSkinning( program = %s, value = %i ) ---\n", program->name, value ) );
 		}
@@ -2415,7 +2415,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_VertexInterpolation == value )
+		if ( program->t_VertexInterpolation == value )
 		{
 			return;
 		}
@@ -2425,7 +2425,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_VertexInterpolation( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
@@ -2439,7 +2439,7 @@ extern "C" {
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if( program->t_Time == value )
+		if ( program->t_Time == value )
 		{
 			return;
 		}
@@ -2449,7 +2449,7 @@ extern "C" {
 
 #if defined( LOG_GLSL_UNIFORMS )
 
-		if( r_logFile->integer )
+		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_Time( program = %s, value = %f ) ---\n", program->name, value ) );
 		}

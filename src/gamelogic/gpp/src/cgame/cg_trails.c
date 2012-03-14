@@ -51,7 +51,7 @@ static void CG_CalculateBeamNodeProperties( trailBeam_t *tb )
 	vec3_t          colorRange;
 	float           fadeAlpha = 1.0f;
 
-	if( !tb || !tb->nodes )
+	if ( !tb || !tb->nodes )
 	{
 		return;
 	}
@@ -59,11 +59,11 @@ static void CG_CalculateBeamNodeProperties( trailBeam_t *tb )
 	ts = tb->parent;
 	btb = tb->class;
 
-	if( ts->destroyTime > 0 && btb->fadeOutTime )
+	if ( ts->destroyTime > 0 && btb->fadeOutTime )
 	{
 		fadeAlpha -= ( float )( cg.time - ts->destroyTime ) / btb->fadeOutTime;
 
-		if( fadeAlpha < 0.0f )
+		if ( fadeAlpha < 0.0f )
 		{
 			fadeAlpha = 0.0f;
 		}
@@ -78,27 +78,27 @@ alphaRange = tb->class->backAlpha -
 	VectorSubtract( tb->class->backColor,
 	                tb->class->frontColor, colorRange );
 
-	for( i = tb->nodes; i && i->next; i = i->next )
+	for ( i = tb->nodes; i && i->next; i = i->next )
 {
 		nodeDistances[ numNodes++ ] =
 		  Distance( i->position, i->next->position );
 	}
 
-	for( j = 0; j < numNodes; j++ )
+	for ( j = 0; j < numNodes; j++ )
 	{
 		totalDistance += nodeDistances[ j ];
 	}
 
-	for( j = 0, i = tb->nodes; i; i = i->next, j++ )
+	for ( j = 0, i = tb->nodes; i; i = i->next, j++ )
 	{
-		if( tb->class->textureType == TBTT_STRETCH )
+		if ( tb->class->textureType == TBTT_STRETCH )
 		{
 			i->textureCoord = tb->class->frontTextureCoord +
 					                  ( ( position / totalDistance ) * TCRange );
 		}
-		else if( tb->class->textureType == TBTT_REPEAT )
+		else if ( tb->class->textureType == TBTT_REPEAT )
 	{
-			if( tb->class->clampToBack )
+			if ( tb->class->clampToBack )
 			{
 				i->textureCoord = ( totalDistance - position ) /
 				                  tb->class->repeatLength;
@@ -134,7 +134,7 @@ static void CG_LightVertex( vec3_t point, byte alpha, byte *rgba )
 
 	trap_R_LightForPoint( point, alight, dlight, lightdir );
 
-	for( i = 0; i <= 2; i++ )
+	for ( i = 0; i <= 2; i++ )
 	{
 		rgba[ i ] = ( int ) alight[ i ];
 	}
@@ -161,7 +161,7 @@ static void CG_RenderBeam( trailBeam_t *tb )
 	trailSystem_t     *ts;
 	baseTrailSystem_t *bts;
 
-	if( !tb || !tb->nodes )
+	if ( !tb || !tb->nodes )
 	{
 		return;
 	}
@@ -170,10 +170,10 @@ static void CG_RenderBeam( trailBeam_t *tb )
 	ts = tb->parent;
 	bts = ts->class;
 
-	if( bts->thirdPersonOnly &&
-	    ( CG_AttachmentCentNum( &ts->frontAttachment ) == cg.snap->ps.clientNum ||
-	      CG_AttachmentCentNum( &ts->backAttachment ) == cg.snap->ps.clientNum ) &&
-	    !cg.renderingThirdPerson )
+	if ( bts->thirdPersonOnly &&
+	     ( CG_AttachmentCentNum( &ts->frontAttachment ) == cg.snap->ps.clientNum ||
+	       CG_AttachmentCentNum( &ts->backAttachment ) == cg.snap->ps.clientNum ) &&
+	     !cg.renderingThirdPerson )
 	{
 		return;
 	}
@@ -187,17 +187,17 @@ static void CG_RenderBeam( trailBeam_t *tb )
 		prev = i->prev;
 		next = i->next;
 
-		if( prev && next )
+		if ( prev && next )
 		{
 			//this node has two neighbours
 			GetPerpendicularViewVector( cg.refdef.vieworg, next->position, prev->position, up );
 		}
-		else if( !prev && next )
+		else if ( !prev && next )
 		{
 			//this is the front
 			GetPerpendicularViewVector( cg.refdef.vieworg, next->position, i->position, up );
 		}
-		else if( prev && !next )
+		else if ( prev && !next )
 		{
 			//this is the back
 			GetPerpendicularViewVector( cg.refdef.vieworg, i->position, prev->position, up );
@@ -207,13 +207,13 @@ static void CG_RenderBeam( trailBeam_t *tb )
 			break;
 		}
 
-		if( prev )
+		if ( prev )
 		{
 			VectorMA( i->position, i->halfWidth, up, verts[ numVerts ].xyz );
 			verts[ numVerts ].st[ 0 ] = i->textureCoord;
 			verts[ numVerts ].st[ 1 ] = 1.0f;
 
-			if( btb->realLight )
+			if ( btb->realLight )
 			{
 				CG_LightVertex( verts[ numVerts ].xyz, i->alpha, verts[ numVerts ].modulate );
 			}
@@ -229,7 +229,7 @@ static void CG_RenderBeam( trailBeam_t *tb )
 			verts[ numVerts ].st[ 0 ] = i->textureCoord;
 			verts[ numVerts ].st[ 1 ] = 0.0f;
 
-			if( btb->realLight )
+			if ( btb->realLight )
 			{
 				CG_LightVertex( verts[ numVerts ].xyz, i->alpha, verts[ numVerts ].modulate );
 			}
@@ -242,13 +242,13 @@ static void CG_RenderBeam( trailBeam_t *tb )
 			numVerts++;
 		}
 
-		if( next )
+		if ( next )
 		{
 			VectorMA( i->position, -i->halfWidth, up, verts[ numVerts ].xyz );
 			verts[ numVerts ].st[ 0 ] = i->textureCoord;
 			verts[ numVerts ].st[ 1 ] = 0.0f;
 
-			if( btb->realLight )
+			if ( btb->realLight )
 			{
 				CG_LightVertex( verts[ numVerts ].xyz, i->alpha, verts[ numVerts ].modulate );
 			}
@@ -264,7 +264,7 @@ static void CG_RenderBeam( trailBeam_t *tb )
 			verts[ numVerts ].st[ 0 ] = i->textureCoord;
 			verts[ numVerts ].st[ 1 ] = 1.0f;
 
-			if( btb->realLight )
+			if ( btb->realLight )
 			{
 				CG_LightVertex( verts[ numVerts ].xyz, i->alpha, verts[ numVerts ].modulate );
 			}
@@ -279,7 +279,7 @@ static void CG_RenderBeam( trailBeam_t *tb )
 
 		i = i->next;
 	}
-	while( i );
+	while ( i );
 
 	trap_R_AddPolysToScene( tb->class->shader, 4, &verts[ 0 ], numVerts / 4 );
 }
@@ -297,11 +297,11 @@ static trailBeamNode_t *CG_AllocateBeamNode( trailBeam_t *tb )
 	int             i;
 	trailBeamNode_t *tbn;
 
-	for( i = 0; i < MAX_TRAIL_BEAM_NODES; i++ )
+	for ( i = 0; i < MAX_TRAIL_BEAM_NODES; i++ )
 	{
 		tbn = &tb->nodePool[ i ];
 
-		if( !tbn->used )
+		if ( !tbn->used )
 		{
 			tbn->timeLeft = btb->segmentTime;
 			tbn->prev = NULL;
@@ -327,9 +327,9 @@ static trailBeamNode_t *CG_DestroyBeamNode( trailBeamNode_t *tbn )
 {
 	trailBeamNode_t *newHead = NULL;
 
-	if( tbn->prev )
+	if ( tbn->prev )
 	{
-		if( tbn->next )
+		if ( tbn->next )
 		{
 			// node is in the middle
 			tbn->prev->next = tbn->next;
@@ -343,12 +343,12 @@ static trailBeamNode_t *CG_DestroyBeamNode( trailBeamNode_t *tbn )
 		// find the new head (shouldn't have changed)
 		newHead = tbn->prev;
 
-		while( newHead->prev )
+		while ( newHead->prev )
 		{
 			newHead = newHead->prev;
 		}
 	}
-	else if( tbn->next )
+	else if ( tbn->next )
 	{
 		//node is at the front
 		tbn->next->prev = NULL;
@@ -373,7 +373,7 @@ static trailBeamNode_t *CG_FindLastBeamNode( trailBeam_t *tb )
 {
 	trailBeamNode_t *i = tb->nodes;
 
-	while( i && i->next )
+	while ( i && i->next )
 	{
 		i = i->next;
 	}
@@ -393,7 +393,7 @@ static int CG_CountBeamNodes( trailBeam_t *tb )
 	trailBeamNode_t *i = tb->nodes;
 	int             numNodes = 0;
 
-	while( i )
+	while ( i )
 	{
 		numNodes++;
 		i = i->next;
@@ -414,12 +414,12 @@ static trailBeamNode_t *CG_PrependBeamNode( trailBeam_t *tb )
 {
 	trailBeamNode_t *i;
 
-	if( tb->nodes )
+	if ( tb->nodes )
 	{
 		// prepend another node
 		i = CG_AllocateBeamNode( tb );
 
-		if( i )
+		if ( i )
 		{
 			i->next = tb->nodes;
 			tb->nodes->prev = i;
@@ -430,7 +430,7 @@ static trailBeamNode_t *CG_PrependBeamNode( trailBeam_t *tb )
 	{
 		i = CG_AllocateBeamNode( tb );
 
-		if( i )
+		if ( i )
 		{
 			tb->nodes = i;
 		}
@@ -451,13 +451,13 @@ static trailBeamNode_t *CG_AppendBeamNode( trailBeam_t *tb )
 {
 	trailBeamNode_t *last, *i;
 
-	if( tb->nodes )
+	if ( tb->nodes )
 	{
 		// append another node
 		last = CG_FindLastBeamNode( tb );
 		i = CG_AllocateBeamNode( tb );
 
-		if( i )
+		if ( i )
 		{
 			last->next = i;
 			i->prev = last;
@@ -468,7 +468,7 @@ static trailBeamNode_t *CG_AppendBeamNode( trailBeam_t *tb )
 	{
 		i = CG_AllocateBeamNode( tb );
 
-		if( i )
+		if ( i )
 		{
 			tb->nodes = i;
 		}
@@ -491,7 +491,7 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 	trailBeamNode_t *start;
 	trailBeamNode_t *end;
 
-	if( !tb || !tb->nodes )
+	if ( !tb || !tb->nodes )
 	{
 		return;
 	}
@@ -499,11 +499,11 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 	btb = tb->class;
 	ts = tb->parent;
 
-	for( j = 0; j < btb->numJitters; j++ )
+	for ( j = 0; j < btb->numJitters; j++ )
 	{
-		if( tb->nextJitterTimes[ j ] <= cg.time )
+		if ( tb->nextJitterTimes[ j ] <= cg.time )
 		{
-			for( i = tb->nodes; i; i = i->next )
+			for ( i = tb->nodes; i; i = i->next )
 			{
 				i->jitters[ j ][ 0 ] = ( crandom() * btb->jitters[ j ].magnitude );
 				i->jitters[ j ][ 1 ] = ( crandom() * btb->jitters[ j ].magnitude );
@@ -516,20 +516,20 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 	start = tb->nodes;
 	end = CG_FindLastBeamNode( tb );
 
-	if( !btb->jitterAttachments )
+	if ( !btb->jitterAttachments )
 	{
-		if( CG_Attached( &ts->frontAttachment ) && start->next )
+		if ( CG_Attached( &ts->frontAttachment ) && start->next )
 		{
 			start = start->next;
 		}
 
-		if( CG_Attached( &ts->backAttachment ) && end->prev )
+		if ( CG_Attached( &ts->backAttachment ) && end->prev )
 		{
 			end = end->prev;
 		}
 	}
 
-	for( i = start; i; i = i->next )
+	for ( i = start; i; i = i->next )
 	{
 		vec3_t          forward, right, up;
 		trailBeamNode_t *prev;
@@ -539,19 +539,19 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 		prev = i->prev;
 		next = i->next;
 
-		if( prev && next )
+		if ( prev && next )
 		{
 			//this node has two neighbours
 			GetPerpendicularViewVector( cg.refdef.vieworg, next->position, prev->position, up );
 			VectorSubtract( next->position, prev->position, forward );
 		}
-		else if( !prev && next )
+		else if ( !prev && next )
 		{
 			//this is the front
 			GetPerpendicularViewVector( cg.refdef.vieworg, next->position, i->position, up );
 			VectorSubtract( next->position, i->position, forward );
 		}
-		else if( prev && !next )
+		else if ( prev && !next )
 		{
 			//this is the back
 			GetPerpendicularViewVector( cg.refdef.vieworg, i->position, prev->position, up );
@@ -562,7 +562,7 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 		CrossProduct( forward, up, right );
 		VectorNormalize( right );
 
-		for( j = 0; j < btb->numJitters; j++ )
+		for ( j = 0; j < btb->numJitters; j++ )
 		{
 			upJitter += i->jitters[ j ][ 0 ];
 			rightJitter += i->jitters[ j ][ 1 ];
@@ -571,7 +571,7 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 		VectorMA( i->position, upJitter, up, i->position );
 		VectorMA( i->position, rightJitter, right, i->position );
 
-		if( i == end )
+		if ( i == end )
 		{
 			break;
 		}
@@ -595,7 +595,7 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 	int             j;
 	int             numNodes;
 
-	if( !tb )
+	if ( !tb )
 	{
 		return;
 	}
@@ -607,18 +607,18 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 	tb->lastEvalTime = cg.time;
 
 	// first make sure this beam has enough nodes
-	if( ts->destroyTime <= 0 )
+	if ( ts->destroyTime <= 0 )
 	{
 		nodesToAdd = btb->numSegments - CG_CountBeamNodes( tb ) + 1;
 
-		while( nodesToAdd-- )
+		while ( nodesToAdd-- )
 		{
 			i = CG_AppendBeamNode( tb );
 
-			if( !tb->nodes->next && CG_Attached( &ts->frontAttachment ) )
+			if ( !tb->nodes->next && CG_Attached( &ts->frontAttachment ) )
 			{
 				// this is the first node to be added
-				if( !CG_AttachmentPoint( &ts->frontAttachment, i->refPosition ) )
+				if ( !CG_AttachmentPoint( &ts->frontAttachment, i->refPosition ) )
 				{
 					CG_DestroyTrailSystem( &ts );
 				}
@@ -632,69 +632,69 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 
 	numNodes = CG_CountBeamNodes( tb );
 
-	for( i = tb->nodes; i; i = i->next )
+	for ( i = tb->nodes; i; i = i->next )
 	{
 		VectorCopy( i->refPosition, i->position );
 	}
 
-	if( CG_Attached( &ts->frontAttachment ) && CG_Attached( &ts->backAttachment ) )
+	if ( CG_Attached( &ts->frontAttachment ) && CG_Attached( &ts->backAttachment ) )
 	{
 		// beam between two attachments
 		vec3_t dir, front, back;
 
-		if( ts->destroyTime > 0 && ( cg.time - ts->destroyTime ) >= btb->fadeOutTime )
+		if ( ts->destroyTime > 0 && ( cg.time - ts->destroyTime ) >= btb->fadeOutTime )
 		{
 			tb->valid = qfalse;
 			return;
 		}
 
-		if( !CG_AttachmentPoint( &ts->frontAttachment, front ) )
+		if ( !CG_AttachmentPoint( &ts->frontAttachment, front ) )
 		{
 			CG_DestroyTrailSystem( &ts );
 		}
 
-		if( !CG_AttachmentPoint( &ts->backAttachment, back ) )
+		if ( !CG_AttachmentPoint( &ts->backAttachment, back ) )
 		{
 			CG_DestroyTrailSystem( &ts );
 		}
 
 		VectorSubtract( back, front, dir );
 
-		for( j = 0, i = tb->nodes; i; i = i->next, j++ )
+		for ( j = 0, i = tb->nodes; i; i = i->next, j++ )
 		{
 			float scale = ( float ) j / ( float )( numNodes - 1 );
 
 			VectorMA( front, scale, dir, i->position );
 		}
 	}
-	else if( CG_Attached( &ts->frontAttachment ) )
+	else if ( CG_Attached( &ts->frontAttachment ) )
 	{
 		// beam from one attachment
 
 		// cull the trail tail
 		i = CG_FindLastBeamNode( tb );
 
-		if( i && i->timeLeft >= 0 )
+		if ( i && i->timeLeft >= 0 )
 		{
 			i->timeLeft -= deltaTime;
 
-			if( i->timeLeft < 0 )
+			if ( i->timeLeft < 0 )
 			{
 				tb->nodes = CG_DestroyBeamNode( i );
 
-				if( !tb->nodes )
+				if ( !tb->nodes )
 				{
 					tb->valid = qfalse;
 					return;
 				}
 
 				// if the ts has been destroyed, stop creating new nodes
-				if( ts->destroyTime <= 0 )
+				if ( ts->destroyTime <= 0 )
 				{
 					CG_PrependBeamNode( tb );
 				}
 			}
-			else if( i->timeLeft >= 0 && i->prev )
+			else if ( i->timeLeft >= 0 && i->prev )
 			{
 				vec3_t dir;
 				float  length;
@@ -707,9 +707,9 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 			}
 		}
 
-		if( tb->nodes )
+		if ( tb->nodes )
 		{
-			if( !CG_AttachmentPoint( &ts->frontAttachment, tb->nodes->refPosition ) )
+			if ( !CG_AttachmentPoint( &ts->frontAttachment, tb->nodes->refPosition ) )
 			{
 				CG_DestroyTrailSystem( &ts );
 			}
@@ -731,11 +731,11 @@ static qboolean CG_ParseTrailBeamColor( byte *c, char **text_p )
 	char *token;
 	int  i;
 
-	for( i = 0; i <= 2; i++ )
+	for ( i = 0; i <= 2; i++ )
 	{
 		token = COM_Parse( text_p );
 
-		if( !Q_stricmp( token, "" ) )
+		if ( !Q_stricmp( token, "" ) )
 		{
 			return qfalse;
 		}
@@ -758,27 +758,27 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 	char *token;
 
 	// read optional parameters
-	while( 1 )
+	while ( 1 )
 	{
 		token = COM_Parse( text_p );
 
-		if( !Q_stricmp( token, "" ) )
+		if ( !Q_stricmp( token, "" ) )
 		{
 			return qfalse;
 		}
 
-		if( !Q_stricmp( token, "segments" ) )
+		if ( !Q_stricmp( token, "segments" ) )
 		{
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
 
 			btb->numSegments = atoi_neg( token, qfalse );
 
-			if( btb->numSegments >= MAX_TRAIL_BEAM_NODES )
+			if ( btb->numSegments >= MAX_TRAIL_BEAM_NODES )
 			{
 				btb->numSegments = MAX_TRAIL_BEAM_NODES - 1;
 				CG_Printf( S_COLOR_YELLOW "WARNING: too many segments in trail beam\n" );
@@ -786,11 +786,11 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "width" ) )
+		else if ( !Q_stricmp( token, "width" ) )
 		{
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
@@ -799,12 +799,12 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
 
-			if( !Q_stricmp( token, "-" ) )
+			if ( !Q_stricmp( token, "-" ) )
 			{
 				btb->backWidth = btb->frontWidth;
 			}
@@ -815,11 +815,11 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "alpha" ) )
+		else if ( !Q_stricmp( token, "alpha" ) )
 		{
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
@@ -828,12 +828,12 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
 
-			if( !Q_stricmp( token, "-" ) )
+			if ( !Q_stricmp( token, "-" ) )
 			{
 				btb->backAlpha = btb->frontAlpha;
 			}
@@ -844,25 +844,25 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "color" ) )
+		else if ( !Q_stricmp( token, "color" ) )
 		{
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
 
-			if( !Q_stricmp( token, "{" ) )
+			if ( !Q_stricmp( token, "{" ) )
 			{
-				if( !CG_ParseTrailBeamColor( btb->frontColor, text_p ) )
+				if ( !CG_ParseTrailBeamColor( btb->frontColor, text_p ) )
 				{
 					break;
 				}
 
 				token = COM_Parse( text_p );
 
-				if( Q_stricmp( token, "}" ) )
+				if ( Q_stricmp( token, "}" ) )
 				{
 					CG_Printf( S_COLOR_RED "ERROR: missing '}'\n" );
 					break;
@@ -870,27 +870,27 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				token = COM_Parse( text_p );
 
-				if( !Q_stricmp( token, "" ) )
+				if ( !Q_stricmp( token, "" ) )
 				{
 					break;
 				}
 
-				if( !Q_stricmp( token, "-" ) )
+				if ( !Q_stricmp( token, "-" ) )
 				{
 					btb->backColor[ 0 ] = btb->frontColor[ 0 ];
 					btb->backColor[ 1 ] = btb->frontColor[ 1 ];
 					btb->backColor[ 2 ] = btb->frontColor[ 2 ];
 				}
-				else if( !Q_stricmp( token, "{" ) )
+				else if ( !Q_stricmp( token, "{" ) )
 				{
-					if( !CG_ParseTrailBeamColor( btb->backColor, text_p ) )
+					if ( !CG_ParseTrailBeamColor( btb->backColor, text_p ) )
 					{
 						break;
 					}
 
 					token = COM_Parse( text_p );
 
-					if( Q_stricmp( token, "}" ) )
+					if ( Q_stricmp( token, "}" ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: missing '}'\n" );
 						break;
@@ -910,11 +910,11 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "segmentTime" ) )
+		else if ( !Q_stricmp( token, "segmentTime" ) )
 		{
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
@@ -922,11 +922,11 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			btb->segmentTime = atoi_neg( token, qfalse );
 			continue;
 		}
-		else if( !Q_stricmp( token, "fadeOutTime" ) )
+		else if ( !Q_stricmp( token, "fadeOutTime" ) )
 		{
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
@@ -934,11 +934,11 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			btb->fadeOutTime = atoi_neg( token, qfalse );
 			continue;
 		}
-		else if( !Q_stricmp( token, "shader" ) )
+		else if ( !Q_stricmp( token, "shader" ) )
 		{
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
@@ -947,22 +947,22 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "textureType" ) )
+		else if ( !Q_stricmp( token, "textureType" ) )
 		{
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
 
-			if( !Q_stricmp( token, "stretch" ) )
+			if ( !Q_stricmp( token, "stretch" ) )
 			{
 				btb->textureType = TBTT_STRETCH;
 
 				token = COM_Parse( text_p );
 
-				if( !Q_stricmp( token, "" ) )
+				if ( !Q_stricmp( token, "" ) )
 				{
 					break;
 				}
@@ -971,29 +971,29 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				token = COM_Parse( text_p );
 
-				if( !Q_stricmp( token, "" ) )
+				if ( !Q_stricmp( token, "" ) )
 				{
 					break;
 				}
 
 				btb->backTextureCoord = atof_neg( token, qfalse );
 			}
-			else if( !Q_stricmp( token, "repeat" ) )
+			else if ( !Q_stricmp( token, "repeat" ) )
 			{
 				btb->textureType = TBTT_REPEAT;
 
 				token = COM_Parse( text_p );
 
-				if( !Q_stricmp( token, "" ) )
+				if ( !Q_stricmp( token, "" ) )
 				{
 					break;
 				}
 
-				if( !Q_stricmp( token, "front" ) )
+				if ( !Q_stricmp( token, "front" ) )
 				{
 					btb->clampToBack = qfalse;
 				}
-				else if( !Q_stricmp( token, "back" ) )
+				else if ( !Q_stricmp( token, "back" ) )
 				{
 					btb->clampToBack = qtrue;
 				}
@@ -1005,7 +1005,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				token = COM_Parse( text_p );
 
-				if( !Q_stricmp( token, "" ) )
+				if ( !Q_stricmp( token, "" ) )
 				{
 					break;
 				}
@@ -1020,15 +1020,15 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "realLight" ) )
+		else if ( !Q_stricmp( token, "realLight" ) )
 		{
 			btb->realLight = qtrue;
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "jitter" ) )
+		else if ( !Q_stricmp( token, "jitter" ) )
 		{
-			if( btb->numJitters == MAX_TRAIL_BEAM_JITTERS )
+			if ( btb->numJitters == MAX_TRAIL_BEAM_JITTERS )
 			{
 				CG_Printf( S_COLOR_RED "ERROR: too many jitters\n" );
 				break;
@@ -1036,7 +1036,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
@@ -1045,7 +1045,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
@@ -1056,13 +1056,13 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "jitterAttachments" ) )
+		else if ( !Q_stricmp( token, "jitterAttachments" ) )
 		{
 			btb->jitterAttachments = qtrue;
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "}" ) )
+		else if ( !Q_stricmp( token, "}" ) )
 		{
 			return qtrue; //reached the end of this trail beam
 		}
@@ -1110,31 +1110,31 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 	char *token;
 
 	// read optional parameters
-	while( 1 )
+	while ( 1 )
 	{
 		token = COM_Parse( text_p );
 
-		if( !Q_stricmp( token, "" ) )
+		if ( !Q_stricmp( token, "" ) )
 		{
 			return qfalse;
 		}
 
-		if( !Q_stricmp( token, "{" ) )
+		if ( !Q_stricmp( token, "{" ) )
 		{
 			CG_InitialiseBaseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ] );
 
-			if( !CG_ParseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ], text_p ) )
+			if ( !CG_ParseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ], text_p ) )
 			{
 				CG_Printf( S_COLOR_RED "ERROR: failed to parse trail beam\n" );
 				return qfalse;
 			}
 
-			if( bts->numBeams == MAX_BEAMS_PER_SYSTEM )
+			if ( bts->numBeams == MAX_BEAMS_PER_SYSTEM )
 			{
 				CG_Printf( S_COLOR_RED "ERROR: trail system has > %d beams\n", MAX_BEAMS_PER_SYSTEM );
 				return qfalse;
 			}
-			else if( numBaseTrailBeams == MAX_BASETRAIL_BEAMS )
+			else if ( numBaseTrailBeams == MAX_BASETRAIL_BEAMS )
 			{
 				CG_Printf( S_COLOR_RED "ERROR: maximum number of trail beams (%d) reached\n",
 				           MAX_BASETRAIL_BEAMS );
@@ -1150,15 +1150,15 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 
 			continue;
 		}
-		else if( !Q_stricmp( token, "thirdPersonOnly" ) )
+		else if ( !Q_stricmp( token, "thirdPersonOnly" ) )
 		{
 			bts->thirdPersonOnly = qtrue;
 		}
-		else if( !Q_stricmp( token, "lifeTime" ) )
+		else if ( !Q_stricmp( token, "lifeTime" ) )
 		{
 			token = COM_Parse( text_p );
 
-			if( !Q_stricmp( token, "" ) )
+			if ( !Q_stricmp( token, "" ) )
 			{
 				break;
 			}
@@ -1166,13 +1166,13 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 			bts->lifeTime = atoi_neg( token, qfalse );
 			continue;
 		}
-		else if( !Q_stricmp( token, "beam" ) )   //acceptable text
+		else if ( !Q_stricmp( token, "beam" ) )  //acceptable text
 		{
 			continue;
 		}
-		else if( !Q_stricmp( token, "}" ) )
+		else if ( !Q_stricmp( token, "}" ) )
 		{
-			if( cg_debugTrails.integer >= 1 )
+			if ( cg_debugTrails.integer >= 1 )
 			{
 				CG_Printf( "Parsed trail system %s\n", name );
 			}
@@ -1210,12 +1210,12 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 	// load the file
 	len = trap_FS_FOpenFile( fileName, &f, FS_READ );
 
-	if( len <= 0 )
+	if ( len <= 0 )
 	{
 		return qfalse;
 	}
 
-	if( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( S_COLOR_RED "ERROR: trail file %s is %s\n", fileName,
@@ -1231,23 +1231,23 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 	text_p = text;
 
 	// read optional parameters
-	while( 1 )
+	while ( 1 )
 	{
 		token = COM_Parse( &text_p );
 
-		if( !Q_stricmp( token, "" ) )
+		if ( !Q_stricmp( token, "" ) )
 		{
 			break;
 		}
 
-		if( !Q_stricmp( token, "{" ) )
+		if ( !Q_stricmp( token, "{" ) )
 		{
-			if( tsNameSet )
+			if ( tsNameSet )
 			{
 				//check for name space clashes
-				for( i = 0; i < numBaseTrailSystems; i++ )
+				for ( i = 0; i < numBaseTrailSystems; i++ )
 				{
-					if( !Q_stricmp( baseTrailSystems[ i ].name, tsName ) )
+					if ( !Q_stricmp( baseTrailSystems[ i ].name, tsName ) )
 					{
 						CG_Printf( S_COLOR_RED "ERROR: a trail system is already named %s\n", tsName );
 						return qfalse;
@@ -1256,7 +1256,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 
 				Q_strncpyz( baseTrailSystems[ numBaseTrailSystems ].name, tsName, MAX_QPATH );
 
-				if( !CG_ParseTrailSystem( &baseTrailSystems[ numBaseTrailSystems ], &text_p, tsName ) )
+				if ( !CG_ParseTrailSystem( &baseTrailSystems[ numBaseTrailSystems ], &text_p, tsName ) )
 				{
 					CG_Printf( S_COLOR_RED "ERROR: %s: failed to parse trail system %s\n", fileName, tsName );
 					return qfalse;
@@ -1265,7 +1265,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 				//start parsing trail systems again
 				tsNameSet = qfalse;
 
-				if( numBaseTrailSystems == MAX_BASETRAIL_SYSTEMS )
+				if ( numBaseTrailSystems == MAX_BASETRAIL_SYSTEMS )
 				{
 					CG_Printf( S_COLOR_RED "ERROR: maximum number of trail systems (%d) reached\n",
 					           MAX_BASETRAIL_SYSTEMS );
@@ -1285,7 +1285,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 			}
 		}
 
-		if( !tsNameSet )
+		if ( !tsNameSet )
 		{
 			Q_strncpyz( tsName, token, sizeof( tsName ) );
 			tsNameSet = qtrue;
@@ -1318,13 +1318,13 @@ void CG_LoadTrailSystems( void )
 	numBaseTrailSystems = 0;
 	numBaseTrailBeams = 0;
 
-	for( i = 0; i < MAX_BASETRAIL_SYSTEMS; i++ )
+	for ( i = 0; i < MAX_BASETRAIL_SYSTEMS; i++ )
 	{
 		baseTrailSystem_t *bts = &baseTrailSystems[ i ];
 		memset( bts, 0, sizeof( baseTrailSystem_t ) );
 	}
 
-	for( i = 0; i < MAX_BASETRAIL_BEAMS; i++ )
+	for ( i = 0; i < MAX_BASETRAIL_BEAMS; i++ )
 	{
 		baseTrailBeam_t *btb = &baseTrailBeams[ i ];
 		memset( btb, 0, sizeof( baseTrailBeam_t ) );
@@ -1335,7 +1335,7 @@ void CG_LoadTrailSystems( void )
 	                                fileList, MAX_TRAIL_FILES * MAX_QPATH );
 	filePtr = fileList;
 
-	for( i = 0; i < numFiles; i++, filePtr += fileLen + 1 )
+	for ( i = 0; i < numFiles; i++, filePtr += fileLen + 1 )
 	{
 		fileLen = strlen( filePtr );
 		strcpy( fileName, "scripts/" );
@@ -1358,26 +1358,26 @@ qhandle_t CG_RegisterTrailSystem( char *name )
 	baseTrailSystem_t *bts;
 	baseTrailBeam_t   *btb;
 
-	for( i = 0; i < MAX_BASETRAIL_SYSTEMS; i++ )
+	for ( i = 0; i < MAX_BASETRAIL_SYSTEMS; i++ )
 	{
 		bts = &baseTrailSystems[ i ];
 
-		if( !Q_stricmp( bts->name, name ) )
+		if ( !Q_stricmp( bts->name, name ) )
 		{
 			//already registered
-			if( bts->registered )
+			if ( bts->registered )
 			{
 				return i + 1;
 			}
 
-			for( j = 0; j < bts->numBeams; j++ )
+			for ( j = 0; j < bts->numBeams; j++ )
 			{
 				btb = bts->beams[ j ];
 
 				btb->shader = trap_R_RegisterShader( btb->shaderName );
 			}
 
-			if( cg_debugTrails.integer >= 1 )
+			if ( cg_debugTrails.integer >= 1 )
 			{
 				CG_Printf( "Registered trail system %s\n", name );
 			}
@@ -1407,11 +1407,11 @@ static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
 	trailBeam_t   *tb = NULL;
 	trailSystem_t *ts = parent;
 
-	for( i = 0; i < MAX_TRAIL_BEAMS; i++ )
+	for ( i = 0; i < MAX_TRAIL_BEAMS; i++ )
 	{
 		tb = &trailBeams[ i ];
 
-		if( !tb->valid )
+		if ( !tb->valid )
 		{
 			memset( tb, 0, sizeof( trailBeam_t ) );
 
@@ -1421,7 +1421,7 @@ static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
 
 			tb->valid = qtrue;
 
-			if( cg_debugTrails.integer >= 1 )
+			if ( cg_debugTrails.integer >= 1 )
 			{
 				CG_Printf( "TB %s created\n", ts->class->name );
 			}
@@ -1430,7 +1430,7 @@ static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
 		}
 	}
 
-	if( cg_debugTrails.integer >= 1 )
+	if ( cg_debugTrails.integer >= 1 )
 	{
 		CG_Printf( "MAX_TRAIL_BEAMS\n" );
 	}
@@ -1451,17 +1451,17 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 	trailSystem_t     *ts = NULL;
 	baseTrailSystem_t *bts = &baseTrailSystems[ psHandle - 1 ];
 
-	if( !bts->registered )
+	if ( !bts->registered )
 	{
 		CG_Printf( S_COLOR_RED "ERROR: a trail system has not been registered yet\n" );
 		return NULL;
 	}
 
-	for( i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
+	for ( i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
 	{
 		ts = &trailSystems[ i ];
 
-		if( !ts->valid )
+		if ( !ts->valid )
 		{
 			memset( ts, 0, sizeof( trailSystem_t ) );
 
@@ -1472,12 +1472,12 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 			ts->destroyTime = -1;
 			ts->birthTime = cg.time;
 
-			for( j = 0; j < bts->numBeams; j++ )
+			for ( j = 0; j < bts->numBeams; j++ )
 			{
 				CG_SpawnNewTrailBeam( bts->beams[ j ], ts );
 			}
 
-			if( cg_debugTrails.integer >= 1 )
+			if ( cg_debugTrails.integer >= 1 )
 			{
 				CG_Printf( "TS %s created\n", bts->name );
 			}
@@ -1486,7 +1486,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 		}
 	}
 
-	if( cg_debugTrails.integer >= 1 )
+	if ( cg_debugTrails.integer >= 1 )
 	{
 		CG_Printf( "MAX_TRAIL_SYSTEMS\n" );
 	}
@@ -1505,8 +1505,8 @@ void CG_DestroyTrailSystem( trailSystem_t **ts )
 {
 	( *ts )->destroyTime = cg.time;
 
-	if( CG_Attached( & ( *ts )->frontAttachment ) &&
-	    !CG_Attached( & ( *ts )->backAttachment ) )
+	if ( CG_Attached( & ( *ts )->frontAttachment ) &&
+	     !CG_Attached( & ( *ts )->backAttachment ) )
 	{
 		vec3_t v;
 
@@ -1530,9 +1530,9 @@ Test a trail system for validity
 */
 qboolean CG_IsTrailSystemValid( trailSystem_t **ts )
 {
-	if( *ts == NULL || ( *ts && !( *ts )->valid ) )
+	if ( *ts == NULL || ( *ts && !( *ts )->valid ) )
 	{
-		if( *ts && !( *ts )->valid )
+		if ( *ts && !( *ts )->valid )
 		{
 			*ts = NULL;
 		}
@@ -1557,65 +1557,65 @@ static void CG_GarbageCollectTrailSystems( void )
 	trailBeam_t   *tb;
 	int           centNum;
 
-	for( i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
+	for ( i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
 	{
 		ts = &trailSystems[ i ];
 		count = 0;
 
 		//don't bother checking already invalid systems
-		if( !ts->valid )
+		if ( !ts->valid )
 		{
 			continue;
 		}
 
-		for( j = 0; j < MAX_TRAIL_BEAMS; j++ )
+		for ( j = 0; j < MAX_TRAIL_BEAMS; j++ )
 		{
 			tb = &trailBeams[ j ];
 
-			if( tb->valid && tb->parent == ts )
+			if ( tb->valid && tb->parent == ts )
 			{
 				count++;
 			}
 		}
 
-		if( !count )
+		if ( !count )
 		{
 			ts->valid = qfalse;
 		}
 
 		//check systems where the parent cent has left the PVS
 		//( local player entity is always valid )
-		if( ( centNum = CG_AttachmentCentNum( &ts->frontAttachment ) ) >= 0 &&
-		    centNum != cg.snap->ps.clientNum )
+		if ( ( centNum = CG_AttachmentCentNum( &ts->frontAttachment ) ) >= 0 &&
+		     centNum != cg.snap->ps.clientNum )
 		{
 			trailSystem_t *tempTS = ts;
 
-			if( !cg_entities[ centNum ].valid )
+			if ( !cg_entities[ centNum ].valid )
 			{
 				CG_DestroyTrailSystem( &tempTS );
 			}
 		}
 
-		if( ( centNum = CG_AttachmentCentNum( &ts->backAttachment ) ) >= 0 &&
-		    centNum != cg.snap->ps.clientNum )
+		if ( ( centNum = CG_AttachmentCentNum( &ts->backAttachment ) ) >= 0 &&
+		     centNum != cg.snap->ps.clientNum )
 		{
 			trailSystem_t *tempTS = ts;
 
-			if( !cg_entities[ centNum ].valid )
+			if ( !cg_entities[ centNum ].valid )
 			{
 				CG_DestroyTrailSystem( &tempTS );
 			}
 		}
 
 		// lifetime expired
-		if( ts->destroyTime <= 0 && ts->class->lifeTime &&
-		    ts->birthTime + ts->class->lifeTime < cg.time )
+		if ( ts->destroyTime <= 0 && ts->class->lifeTime &&
+		     ts->birthTime + ts->class->lifeTime < cg.time )
 		{
 			trailSystem_t *tempTS = ts;
 
 			CG_DestroyTrailSystem( &tempTS );
 
-			if( cg_debugTrails.integer >= 1 )
+			if ( cg_debugTrails.integer >= 1 )
 			{
 				CG_Printf( "TS %s expired (born %d, lives %d, now %d)\n",
 				           ts->class->name, ts->birthTime, ts->class->lifeTime,
@@ -1623,7 +1623,7 @@ static void CG_GarbageCollectTrailSystems( void )
 			}
 		}
 
-		if( cg_debugTrails.integer >= 1 && !ts->valid )
+		if ( cg_debugTrails.integer >= 1 && !ts->valid )
 		{
 			CG_Printf( "TS %s garbage collected\n", ts->class->name );
 		}
@@ -1646,30 +1646,30 @@ void CG_AddTrails( void )
 	//remove expired trail systems
 	CG_GarbageCollectTrailSystems();
 
-	for( i = 0; i < MAX_TRAIL_BEAMS; i++ )
+	for ( i = 0; i < MAX_TRAIL_BEAMS; i++ )
 	{
 		tb = &trailBeams[ i ];
 
-		if( tb->valid )
+		if ( tb->valid )
 		{
 			CG_UpdateBeam( tb );
 			CG_RenderBeam( tb );
 		}
 	}
 
-	if( cg_debugTrails.integer >= 2 )
+	if ( cg_debugTrails.integer >= 2 )
 	{
-		for( i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
+		for ( i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
 		{
-			if( trailSystems[ i ].valid )
+			if ( trailSystems[ i ].valid )
 			{
 				numTS++;
 			}
 		}
 
-		for( i = 0; i < MAX_TRAIL_BEAMS; i++ )
+		for ( i = 0; i < MAX_TRAIL_BEAMS; i++ )
 		{
-			if( trailBeams[ i ].valid )
+			if ( trailBeams[ i ].valid )
 			{
 				numTB++;
 			}
@@ -1691,7 +1691,7 @@ Destroy the test a trail system
 */
 void CG_DestroyTestTS_f( void )
 {
-	if( CG_IsTrailSystemValid( &testTS ) )
+	if ( CG_IsTrailSystemValid( &testTS ) )
 	{
 		CG_DestroyTrailSystem( &testTS );
 	}
@@ -1708,7 +1708,7 @@ void CG_TestTS_f( void )
 {
 	char tsName[ MAX_QPATH ];
 
-	if( trap_Argc() < 2 )
+	if ( trap_Argc() < 2 )
 	{
 		return;
 	}
@@ -1716,13 +1716,13 @@ void CG_TestTS_f( void )
 	Q_strncpyz( tsName, CG_Argv( 1 ), MAX_QPATH );
 	testTSHandle = CG_RegisterTrailSystem( tsName );
 
-	if( testTSHandle )
+	if ( testTSHandle )
 	{
 		CG_DestroyTestTS_f();
 
 		testTS = CG_SpawnNewTrailSystem( testTSHandle );
 
-		if( CG_IsTrailSystemValid( &testTS ) )
+		if ( CG_IsTrailSystemValid( &testTS ) )
 		{
 			CG_SetAttachmentCent( &testTS->frontAttachment, &cg_entities[ 0 ] );
 			CG_AttachToCent( &testTS->frontAttachment );

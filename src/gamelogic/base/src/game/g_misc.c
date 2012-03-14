@@ -85,7 +85,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles )
 	SetClientViewAngle( player, angles );
 
 	// kill anything at the destination
-	if( player->client->sess.sessionTeam != TEAM_SPECTATOR )
+	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR )
 	{
 		G_KillBox( player );
 	}
@@ -96,7 +96,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles )
 	// use the precise origin for linking
 	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
 
-	if( player->client->sess.sessionTeam != TEAM_SPECTATOR )
+	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR )
 	{
 		trap_LinkEntity( player );
 	}
@@ -141,7 +141,7 @@ void locateCamera( gentity_t *ent )
 
 	owner = G_PickTarget( ent->target );
 
-	if( !owner )
+	if ( !owner )
 	{
 		G_Printf( "Couldn't find target for misc_partal_surface\n" );
 		G_FreeEntity( ent );
@@ -151,17 +151,17 @@ void locateCamera( gentity_t *ent )
 	ent->r.ownerNum = owner->s.number;
 
 	// frame holds the rotate speed
-	if( owner->spawnflags & 1 )
+	if ( owner->spawnflags & 1 )
 	{
 		ent->s.frame = 25;
 	}
-	else if( owner->spawnflags & 2 )
+	else if ( owner->spawnflags & 2 )
 	{
 		ent->s.frame = 75;
 	}
 
 	// swing camera ?
-	if( owner->spawnflags & 4 )
+	if ( owner->spawnflags & 4 )
 	{
 		// set to 0 for no rotation at all
 		ent->s.powerups = 0;
@@ -179,7 +179,7 @@ void locateCamera( gentity_t *ent )
 	// see if the portal_camera has a target
 	target = G_PickTarget( owner->target );
 
-	if( target )
+	if ( target )
 	{
 		VectorSubtract( target->s.origin, owner->s.origin, dir );
 		VectorNormalize( dir );
@@ -205,7 +205,7 @@ void SP_misc_portal_surface( gentity_t *ent )
 	ent->r.svFlags = SVF_PORTAL;
 	ent->s.eType = ET_PORTAL;
 
-	if( !ent->target )
+	if ( !ent->target )
 	{
 		VectorCopy( ent->s.origin, ent->s.origin2 );
 	}
@@ -273,7 +273,7 @@ void SP_misc_particle_system( gentity_t *self )
 	//add the particle system to the client precache list
 	self->s.modelindex = G_ParticleSystemIndex( s );
 
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}
@@ -292,11 +292,11 @@ Use function for anim model
 */
 void SP_use_anim_model( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		//if spawnflag 1 is set
 		//toggle EF_NODRAW
-		if( self->s.eFlags & EF_NODRAW )
+		if ( self->s.eFlags & EF_NODRAW )
 		{
 			self->s.eFlags &= ~EF_NODRAW;
 		}
@@ -309,7 +309,7 @@ void SP_use_anim_model( gentity_t *self, gentity_t *other, gentity_t *activator 
 	{
 		//if the animation loops then toggle the animation
 		//toggle EF_MOVER_STOP
-		if( self->s.eFlags & EF_MOVER_STOP )
+		if ( self->s.eFlags & EF_MOVER_STOP )
 		{
 			self->s.eFlags &= ~EF_MOVER_STOP;
 		}
@@ -374,11 +374,11 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 	VectorClear( total );
 
 	//54(!) traces to test for empty spots
-	for( i = -1; i <= 1; i++ )
+	for ( i = -1; i <= 1; i++ )
 	{
-		for( j = -1; j <= 1; j++ )
+		for ( j = -1; j <= 1; j++ )
 		{
-			for( k = -1; k <= 1; k++ )
+			for ( k = -1; k <= 1; k++ )
 			{
 				VectorSet( delta, ( i * radius ),
 				           ( j * radius ),
@@ -388,7 +388,7 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 
 				trap_Trace( &tr, test, NULL, NULL, test, -1, MASK_SOLID );
 
-				if( !tr.allsolid )
+				if ( !tr.allsolid )
 				{
 					trap_Trace( &tr, test, NULL, NULL, origin, -1, MASK_SOLID );
 					VectorScale( delta, tr.fraction, delta );
@@ -427,7 +427,7 @@ void SP_misc_light_flare( gentity_t *self )
 
 	G_SpawnInt( "mindist", "0", &self->s.generic1 );
 
-	if( self->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}

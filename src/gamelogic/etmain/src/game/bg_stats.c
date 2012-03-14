@@ -114,9 +114,9 @@ extWeaponStats_t BG_WeapStatForWeapon( weapon_t iWeaponID )
 {
 	weapon_t i;
 
-	for( i = WP_NONE; i < WP_NUM_WEAPONS; i++ )
+	for ( i = WP_NONE; i < WP_NUM_WEAPONS; i++ )
 	{
-		if( iWeaponID == aWeapID[ i ].iWeapon )
+		if ( iWeaponID == aWeapID[ i ].iWeapon )
 		{
 			return aWeapID[ i ].iWS;
 		}

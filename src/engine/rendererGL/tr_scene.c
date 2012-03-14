@@ -53,7 +53,7 @@ R_ToggleSmpFrame
 */
 void R_ToggleSmpFrame( void )
 {
-	if( r_smp->integer )
+	if ( r_smp->integer )
 	{
 		// use the other buffers next frame, because another CPU
 		// may still be rendering into the current ones
@@ -123,14 +123,14 @@ void R_AddPolygonSurfaces( void )
 	shader_t  *sh;
 	srfPoly_t *poly;
 
-	if( !r_drawpolies->integer )
+	if ( !r_drawpolies->integer )
 	{
 		return;
 	}
 
 	tr.currentEntity = &tr.worldEntity;
 
-	for( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys; i++, poly++ )
+	for ( i = 0, poly = tr.refdef.polys; i < tr.refdef.numPolys; i++, poly++ )
 	{
 		sh = R_GetShaderByHandle( poly->hShader );
 		R_AddDrawSurf( ( void * ) poly, sh, -1, poly->fogIndex );
@@ -152,7 +152,7 @@ void R_AddPolygonBufferSurfaces( void )
 
 	tr.currentEntity = &tr.worldEntity;
 
-	for( i = 0, polybuffer = tr.refdef.polybuffers; i < tr.refdef.numPolybuffers; i++, polybuffer++ )
+	for ( i = 0, polybuffer = tr.refdef.polybuffers; i < tr.refdef.numPolybuffers; i++, polybuffer++ )
 	{
 		sh = R_GetShaderByHandle( polybuffer->pPolyBuffer->shader );
 
@@ -174,25 +174,25 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 	fog_t     *fog;
 	vec3_t    bounds[ 2 ];
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
-	if( !r_drawpolies->integer )
+	if ( !r_drawpolies->integer )
 	{
 		return;
 	}
 
-	if( !hShader )
+	if ( !hShader )
 	{
 		ri.Printf( PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: NULL poly shader\n" );
 		return;
 	}
 
-	for( j = 0; j < numPolys; j++ )
+	for ( j = 0; j < numPolys; j++ )
 	{
-		if( r_numPolyVerts + numVerts >= r_maxPolyVerts->integer || r_numPolys >= r_maxPolys->integer )
+		if ( r_numPolyVerts + numVerts >= r_maxPolyVerts->integer || r_numPolys >= r_maxPolys->integer )
 		{
 			/*
 			   NOTE TTimo this was initially a PRINT_WARNING
@@ -217,12 +217,12 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 		r_numPolyVerts += numVerts;
 
 		// if no world is loaded
-		if( tr.world == NULL )
+		if ( tr.world == NULL )
 		{
 			fogIndex = 0;
 		}
 		// see if it is in a fog volume
-		else if( tr.world->numFogs == 1 )
+		else if ( tr.world->numFogs == 1 )
 		{
 			fogIndex = 0;
 		}
@@ -232,22 +232,22 @@ static void R_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t
 			VectorCopy( poly->verts[ 0 ].xyz, bounds[ 0 ] );
 			VectorCopy( poly->verts[ 0 ].xyz, bounds[ 1 ] );
 
-			for( i = 1; i < poly->numVerts; i++ )
+			for ( i = 1; i < poly->numVerts; i++ )
 			{
 				AddPointToBounds( poly->verts[ i ].xyz, bounds[ 0 ], bounds[ 1 ] );
 			}
 
-			for( fogIndex = 1; fogIndex < tr.world->numFogs; fogIndex++ )
+			for ( fogIndex = 1; fogIndex < tr.world->numFogs; fogIndex++ )
 			{
 				fog = &tr.world->fogs[ fogIndex ];
 
-				if( BoundsIntersect( bounds[ 0 ], bounds[ 1 ], fog->bounds[ 0 ], fog->bounds[ 1 ] ) )
+				if ( BoundsIntersect( bounds[ 0 ], bounds[ 1 ], fog->bounds[ 0 ], fog->bounds[ 1 ] ) )
 				{
 					break;
 				}
 			}
 
-			if( fogIndex == tr.world->numFogs )
+			if ( fogIndex == tr.world->numFogs )
 			{
 				fogIndex = 0;
 			}
@@ -295,12 +295,12 @@ void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer )
 	vec3_t          bounds[ 2 ];
 	int             i;
 
-	if( !r_drawpolies->integer )
+	if ( !r_drawpolies->integer )
 	{
 		return;
 	}
 
-	if( r_numPolybuffers >= r_maxPolyVerts->integer )
+	if ( r_numPolybuffers >= r_maxPolyVerts->integer )
 	{
 		return;
 	}
@@ -314,22 +314,22 @@ void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer )
 	VectorCopy( pPolyBuffer->xyz[ 0 ], bounds[ 0 ] );
 	VectorCopy( pPolyBuffer->xyz[ 0 ], bounds[ 1 ] );
 
-	for( i = 1; i < pPolyBuffer->numVerts; i++ )
+	for ( i = 1; i < pPolyBuffer->numVerts; i++ )
 	{
 		AddPointToBounds( pPolyBuffer->xyz[ i ], bounds[ 0 ], bounds[ 1 ] );
 	}
 
-	for( fogIndex = 1; fogIndex < tr.world->numFogs; fogIndex++ )
+	for ( fogIndex = 1; fogIndex < tr.world->numFogs; fogIndex++ )
 	{
 		fog = &tr.world->fogs[ fogIndex ];
 
-		if( BoundsIntersect( bounds[ 0 ], bounds[ 1 ], fog->bounds[ 0 ], fog->bounds[ 1 ] ) )
+		if ( BoundsIntersect( bounds[ 0 ], bounds[ 1 ], fog->bounds[ 0 ], fog->bounds[ 1 ] ) )
 		{
 			break;
 		}
 	}
 
-	if( fogIndex == tr.world->numFogs )
+	if ( fogIndex == tr.world->numFogs )
 	{
 		fogIndex = 0;
 	}
@@ -346,18 +346,18 @@ RE_AddRefEntityToScene
 */
 void RE_AddRefEntityToScene( const refEntity_t *ent )
 {
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
 	// Tr3B: fixed was ENTITYNUM_WORLD
-	if( r_numEntities >= MAX_REF_ENTITIES )
+	if ( r_numEntities >= MAX_REF_ENTITIES )
 	{
 		return;
 	}
 
-	if( ( unsigned ) ent->reType >= RT_MAX_REF_ENTITY_TYPE )
+	if ( ( unsigned ) ent->reType >= RT_MAX_REF_ENTITY_TYPE )
 	{
 		ri.Error( ERR_DROP, "RE_AddRefEntityToScene: bad reType %i", ent->reType );
 	}
@@ -378,22 +378,22 @@ void RE_AddRefLightToScene( const refLight_t *l )
 {
 	trRefLight_t *light;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
-	if( r_numLights >= MAX_REF_LIGHTS )
+	if ( r_numLights >= MAX_REF_LIGHTS )
 	{
 		return;
 	}
 
-	if( l->radius[ 0 ] <= 0 && !VectorLength( l->radius ) && !VectorLength( l->projTarget ) )
+	if ( l->radius[ 0 ] <= 0 && !VectorLength( l->radius ) && !VectorLength( l->projTarget ) )
 	{
 		return;
 	}
 
-	if( ( unsigned ) l->rlType >= RL_MAX_REF_LIGHT_TYPE )
+	if ( ( unsigned ) l->rlType >= RL_MAX_REF_LIGHT_TYPE )
 	{
 		ri.Error( ERR_DROP, "RE_AddRefLightToScene: bad rlType %i", l->rlType );
 	}
@@ -404,20 +404,20 @@ void RE_AddRefLightToScene( const refLight_t *l )
 	light->isStatic = qfalse;
 	light->additive = qtrue;
 
-	if( light->l.scale <= 0 )
+	if ( light->l.scale <= 0 )
 	{
 		light->l.scale = r_lightScale->value;
 	}
 
-	if( !HDR_ENABLED() )
+	if ( !HDR_ENABLED() )
 	{
-		if( light->l.scale >= r_lightScale->value )
+		if ( light->l.scale >= r_lightScale->value )
 		{
 			light->l.scale = r_lightScale->value;
 		}
 	}
 
-	if( !r_dynamicLightCastShadows->integer && !light->l.inverseShadows )
+	if ( !r_dynamicLightCastShadows->integer && !light->l.inverseShadows )
 	{
 		light->l.noShadows = qtrue;
 	}
@@ -433,21 +433,21 @@ static void R_AddWorldLightsToScene()
 	int          i;
 	trRefLight_t *light;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
-	if( tr.refdef.rdflags & RDF_NOWORLDMODEL )
+	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL )
 	{
 		return;
 	}
 
-	for( i = 0; i < tr.world->numLights; i++ )
+	for ( i = 0; i < tr.world->numLights; i++ )
 	{
 		light = tr.currentLight = &tr.world->lights[ i ];
 
-		if( r_numLights >= MAX_REF_LIGHTS )
+		if ( r_numLights >= MAX_REF_LIGHTS )
 		{
 			return;
 		}
@@ -459,7 +459,7 @@ static void R_AddWorldLightsToScene()
 		   }
 		 */
 
-		if( !light->firstInteractionCache )
+		if ( !light->firstInteractionCache )
 		{
 			// this light has no interactions precached
 			continue;
@@ -481,17 +481,17 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 {
 	trRefLight_t *light;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
-	if( r_numLights >= MAX_REF_LIGHTS )
+	if ( r_numLights >= MAX_REF_LIGHTS )
 	{
 		return;
 	}
 
-	if( intensity <= 0 || radius <= 0 )
+	if ( intensity <= 0 || radius <= 0 )
 	{
 		return;
 	}
@@ -509,7 +509,7 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 #if 0
 	dl->shader = R_GetShaderByHandle( hShader );
 
-	if( dl->shader == tr.defaultShader )
+	if ( dl->shader == tr.defaultShader )
 	{
 		dl->shader = NULL;
 	}
@@ -534,7 +534,7 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	light->l.scale = intensity;
 #if 0
 
-	if( light->l.scale <= r_lightScale->value )
+	if ( light->l.scale <= r_lightScale->value )
 	{
 		light->l.scale = r_lightScale->value;
 	}
@@ -559,12 +559,12 @@ void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float sca
 #if 0
 	corona_t *cor;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
-	if( r_numcoronas >= MAX_CORONAS )
+	if ( r_numcoronas >= MAX_CORONAS )
 	{
 		return;
 	}
@@ -596,21 +596,21 @@ void RE_RenderScene( const refdef_t *fd )
 	viewParms_t parms;
 	int         startTime;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
 	GLimp_LogComment( "====== RE_RenderScene =====\n" );
 
-	if( r_norefresh->integer )
+	if ( r_norefresh->integer )
 	{
 		return;
 	}
 
 	startTime = ri.Milliseconds();
 
-	if( !tr.world && !( fd->rdflags & RDF_NOWORLDMODEL ) )
+	if ( !tr.world && !( fd->rdflags & RDF_NOWORLDMODEL ) )
 	{
 		ri.Error( ERR_DROP, "R_RenderScene: NULL worldmodel" );
 	}
@@ -643,7 +643,7 @@ void RE_RenderScene( const refdef_t *fd )
 	// will force a reset of the visible leafs even if the view hasn't moved
 	tr.refdef.areamaskModified = qfalse;
 
-	if( !( tr.refdef.rdflags & RDF_NOWORLDMODEL ) && !( ( tr.refdef.rdflags & RDF_SKYBOXPORTAL ) && tr.world->numSkyNodes > 0 ) )
+	if ( !( tr.refdef.rdflags & RDF_NOWORLDMODEL ) && !( ( tr.refdef.rdflags & RDF_SKYBOXPORTAL ) && tr.world->numSkyNodes > 0 ) )
 	{
 		int areaDiff;
 		int i;
@@ -651,13 +651,13 @@ void RE_RenderScene( const refdef_t *fd )
 		// compare the area bits
 		areaDiff = 0;
 
-		for( i = 0; i < MAX_MAP_AREA_BYTES / 4; i++ )
+		for ( i = 0; i < MAX_MAP_AREA_BYTES / 4; i++ )
 		{
 			areaDiff |= ( ( int * ) tr.refdef.areamask ) [ i ] ^ ( ( int * ) fd->areamask ) [ i ];
 			( ( int * ) tr.refdef.areamask ) [ i ] = ( ( int * ) fd->areamask ) [ i ];
 		}
 
-		if( areaDiff )
+		if ( areaDiff )
 		{
 			// a door just opened or something
 			tr.refdef.areamaskModified = qtrue;
@@ -716,7 +716,7 @@ void RE_RenderScene( const refdef_t *fd )
 
 #if 1
 
-	if( tr.refdef.pixelTarget == NULL )
+	if ( tr.refdef.pixelTarget == NULL )
 	{
 		parms.viewportX = tr.refdef.x;
 		parms.viewportY = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );

@@ -61,9 +61,9 @@ extern          "C"
 
 		floatbuf = hdrImage;
 
-		for( i = 0; i < ( w * h ); i++ )
+		for ( i = 0; i < ( w * h ); i++ )
 		{
-			for( j = 0; j < 3; j++ )
+			for ( j = 0; j < 3; j++ )
 			{
 				sample[ j ] = *floatbuf++;
 			}
@@ -88,9 +88,9 @@ extern          "C"
 		halfbuf = *halfImage;
 		floatbuf = hdrImage;
 
-		for( i = 0; i < ( w * h ); i++ )
+		for ( i = 0; i < ( w * h ); i++ )
 		{
-			for( j = 0; j < 3; j++ )
+			for ( j = 0; j < 3; j++ )
 			{
 				half sample( *floatbuf++ );
 				*halfbuf++ = sample.bits();

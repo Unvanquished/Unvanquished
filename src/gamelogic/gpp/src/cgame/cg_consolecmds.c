@@ -66,7 +66,7 @@ static void CG_Viewpos_f( void )
 
 qboolean CG_RequestScores( void )
 {
-	if( cg.scoresRequestTime + 2000 < cg.time )
+	if ( cg.scoresRequestTime + 2000 < cg.time )
 	{
 		// the scores are more than two seconds out of data,
 		// so request new ones
@@ -85,7 +85,7 @@ extern menuDef_t *menuScoreboard;
 
 static void CG_scrollScoresDown_f( void )
 {
-	if( menuScoreboard && cg.scoreBoardShowing )
+	if ( menuScoreboard && cg.scoreBoardShowing )
 	{
 		Menu_ScrollFeeder( menuScoreboard, FEEDER_ALIENTEAM_LIST, qtrue );
 		Menu_ScrollFeeder( menuScoreboard, FEEDER_HUMANTEAM_LIST, qtrue );
@@ -94,7 +94,7 @@ static void CG_scrollScoresDown_f( void )
 
 static void CG_scrollScoresUp_f( void )
 {
-	if( menuScoreboard && cg.scoreBoardShowing )
+	if ( menuScoreboard && cg.scoreBoardShowing )
 	{
 		Menu_ScrollFeeder( menuScoreboard, FEEDER_ALIENTEAM_LIST, qfalse );
 		Menu_ScrollFeeder( menuScoreboard, FEEDER_HUMANTEAM_LIST, qfalse );
@@ -103,19 +103,19 @@ static void CG_scrollScoresUp_f( void )
 
 static void CG_ScoresDown_f( void )
 {
-	if( !cg.showScores )
+	if ( !cg.showScores )
 	{
 		Menu_SetFeederSelection( menuScoreboard, FEEDER_ALIENTEAM_LIST, 0, NULL );
 		Menu_SetFeederSelection( menuScoreboard, FEEDER_HUMANTEAM_LIST, 0, NULL );
 	}
 
-	if( CG_RequestScores() )
+	if ( CG_RequestScores() )
 	{
 		// leave the current scores up if they were already
 		// displayed, but if this is the first hit, clear them out
-		if( !cg.showScores )
+		if ( !cg.showScores )
 		{
-			if( cg_debugRandom.integer )
+			if ( cg_debugRandom.integer )
 			{
 				CG_Printf( "CG_ScoresDown_f: scores out of date\n" );
 			}
@@ -134,7 +134,7 @@ static void CG_ScoresDown_f( void )
 
 static void CG_ScoresUp_f( void )
 {
-	if( cg.showScores )
+	if ( cg.showScores )
 	{
 		cg.showScores = qfalse;
 		cg.scoreFadeTime = cg.time;
@@ -147,16 +147,16 @@ void CG_ClientList_f( void )
 	int          i;
 	int          count = 0;
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		ci = &cgs.clientinfo[ i ];
 
-		if( !ci->infoValid )
+		if ( !ci->infoValid )
 		{
 			continue;
 		}
 
-		switch( ci->team )
+		switch ( ci->team )
 		{
 			case TEAM_ALIENS:
 				Com_Printf( "%2d " S_COLOR_RED "A   " S_COLOR_WHITE "%s\n", i,
@@ -192,7 +192,7 @@ static void CG_ReloadHUD_f( void )
 	trap_Cvar_VariableStringBuffer( "cg_hudFiles", buff, sizeof( buff ) );
 	hudSet = buff;
 
-	if( !cg_hudFilesEnable.integer || hudSet[ 0 ] == '\0' )
+	if ( !cg_hudFilesEnable.integer || hudSet[ 0 ] == '\0' )
 	{
 		hudSet = "ui/hud.txt";
 	}
@@ -215,7 +215,7 @@ static void CG_CompleteClass( void )
 {
 	int i = 0;
 
-	if( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
+	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
 	{
 		static const char classes[][ 12 ] =
 		{
@@ -223,16 +223,16 @@ static void CG_CompleteClass( void )
 			"level2upg", "level3",     "level3upg", "level4"
 		};
 
-		for( i = 0; i < ARRAY_LEN( classes ); i++ )
+		for ( i = 0; i < ARRAY_LEN( classes ); i++ )
 		{
 			trap_CompleteCallback( classes[ i ] );
 		}
 	}
-	else if( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
+	else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
 	{
 		static const char classes[][ 12 ] = { "rifle", "ckit" };
 
-		for( i = 0; i < ARRAY_LEN( classes ); i++ )
+		for ( i = 0; i < ARRAY_LEN( classes ); i++ )
 		{
 			trap_CompleteCallback( classes[ i ] );
 		}
@@ -250,9 +250,9 @@ static void CG_CompleteBuySell( qboolean buying )
 		"jetpack", "ammo"
 	};
 
-	if( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
+	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
 	{
-		for( /**/; i < ARRAY_LEN( items ); i++ )
+		for ( /**/; i < ARRAY_LEN( items ); i++ )
 		{
 			trap_CompleteCallback( items[ i ] );
 		}
@@ -273,7 +273,7 @@ static void CG_CompleteBuild( void )
 {
 	int i = 0;
 
-	if( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
+	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
 	{
 		static const char structs[][ 12 ] =
 		{
@@ -281,19 +281,19 @@ static void CG_CompleteBuild( void )
 			"booster", "hive"
 		};
 
-		for( i = 0; i < ARRAY_LEN( structs ); i++ )
+		for ( i = 0; i < ARRAY_LEN( structs ); i++ )
 		{
 			trap_CompleteCallback( structs[ i ] );
 		}
 	}
-	else if( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
+	else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
 	{
 		static const char structs[][ 12 ] =
 		{
 			"telenode", "mgturret", "tesla", "arm", "dcc", "medistat", "reactor", "repeater"
 		};
 
-		for( i = 0; i < ARRAY_LEN( structs ); i++ )
+		for ( i = 0; i < ARRAY_LEN( structs ); i++ )
 		{
 			trap_CompleteCallback( structs[ i ] );
 		}
@@ -353,7 +353,7 @@ qboolean CG_ConsoleCommand( void )
 	               sizeof( commands ) / sizeof( commands[ 0 ] ), sizeof( commands[ 0 ] ),
 	               cmdcmp );
 
-	if( !cmd || !cmd->function )
+	if ( !cmd || !cmd->function )
 	{
 		return qfalse;
 	}
@@ -374,7 +374,7 @@ void CG_InitConsoleCommands( void )
 {
 	int i;
 
-	for( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
 	{
 		trap_AddCommand( commands[ i ].cmd );
 	}
@@ -432,14 +432,14 @@ void CG_CompleteCommand( int argNum )
 
 	cmd = CG_Argv( 0 );
 
-	while( *cmd == '\\' || *cmd == '/' )
+	while ( *cmd == '\\' || *cmd == '/' )
 	{
 		cmd++;
 	}
 
-	for( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
 	{
-		if( !Q_stricmp( cmd, commands[ i ].cmd ) )
+		if ( !Q_stricmp( cmd, commands[ i ].cmd ) )
 		{
 			commands[ i ].completer();
 			return;

@@ -136,9 +136,9 @@ int AAS_RT_GetValidVisibleAreasCount( aas_area_buildlocalinfo_t *localinfo, aas_
 
 	cnt = 1; // assume it can reach itself
 
-	for( i = 0; i < localinfo->numvisible; i++ )
+	for ( i = 0; i < localinfo->numvisible; i++ )
 	{
-		if( childlocaldata[ localinfo->visible[ i ] ] )
+		if ( childlocaldata[ localinfo->visible[ i ] ] )
 		{
 			continue;
 		}
@@ -177,12 +177,12 @@ void AAS_RT_CalcTravelTimesToGoalArea( int goalarea )
 	aas_rt_route_t *rt;
 	int            reach, travel;
 
-	for( i = 0; i < childcount; i++ )
+	for ( i = 0; i < childcount; i++ )
 	{
 		rt = &routetable[ i ][ -1 + rev_filtered_areas[ goalarea ] ];
 
-		if( AAS_AreaRouteToGoalArea
-		    ( filtered_areas[ i ], ( *aasworld ).areas[ filtered_areas[ i ] ].center, goalarea, ~RTB_BADTRAVELFLAGS, &travel, &reach ) )
+		if ( AAS_AreaRouteToGoalArea
+		     ( filtered_areas[ i ], ( *aasworld ).areas[ filtered_areas[ i ] ].center, goalarea, ~RTB_BADTRAVELFLAGS, &travel, &reach ) )
 		{
 			rt->reachable_index = reach;
 			rt->travel_time = travel;
@@ -210,7 +210,7 @@ void AAS_RT_CalculateRouteTable( aas_rt_route_t **parmroutetable )
 
 	routetable = parmroutetable;
 
-	for( i = 0; i < childcount; i++ )
+	for ( i = 0; i < childcount; i++ )
 	{
 		AAS_RT_CalcTravelTimesToGoalArea( filtered_areas[ i ] );
 	}
@@ -282,7 +282,7 @@ void AAS_RT_WriteRouteTable()
 	botimport.Print( PRT_MESSAGE, "\nsaving route-table to %s\n", filename );
 	botimport.FS_FOpenFile( filename, &fp, FS_WRITE );
 
-	if( !fp )
+	if ( !fp )
 	{
 		AAS_Error( "Unable to open file: %s\n", filename );
 		return;
@@ -374,7 +374,7 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp )
 	AAS_RT_DBG_Read( &ident, sizeof( ident ), fp );
 	ident = LittleLong( ident ) + 0;  // silence the warning
 
-	if( ident != RTBID )
+	if ( ident != RTBID )
 	{
 		AAS_Error( "File is not an RTB file\n" );
 		botimport.FS_FCloseFile( fp );
@@ -385,7 +385,7 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp )
 	AAS_RT_DBG_Read( &version, sizeof( version ), fp );
 	version = LittleLong( version ) + 0;  // silence the warning
 
-	if( version != RTBVERSION )
+	if ( version != RTBVERSION )
 	{
 		AAS_Error( "File is version %i not %i\n", version, RTBVERSION );
 		botimport.FS_FCloseFile( fp );
@@ -399,7 +399,7 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp )
 	// calculate a CRC on the AAS areas
 	crc_aas = CRC_ProcessString( ( unsigned char * )( *aasworld ).areas, sizeof( aas_area_t ) * ( *aasworld ).numareas );
 
-	if( crc != crc_aas )
+	if ( crc != crc_aas )
 	{
 		AAS_Error( "Route-table is from different AAS file, ignoring.\n" );
 		botimport.FS_FCloseFile( fp );
@@ -415,9 +415,9 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp )
 	botimport.FS_Read( routetable->children, routetable->numChildren * sizeof( aas_rt_child_t ), fp );
 	child = &routetable->children[ 0 ];
 
-	if( doswap )
+	if ( doswap )
 	{
-		for( i = 0; i < routetable->numChildren; i++, child++ )
+		for ( i = 0; i < routetable->numChildren; i++, child++ )
 		{
 			child->areanum = LittleShort( child->areanum );
 			child->numParentLinks = LittleLong( child->numParentLinks );
@@ -432,9 +432,9 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp )
 	botimport.FS_Read( routetable->parents, routetable->numParents * sizeof( aas_rt_parent_t ), fp );
 	parent = &routetable->parents[ 0 ];
 
-	if( doswap )
+	if ( doswap )
 	{
-		for( i = 0; i < routetable->numParents; i++, parent++ )
+		for ( i = 0; i < routetable->numParents; i++, parent++ )
 		{
 			parent->areanum = LittleShort( parent->areanum );
 			parent->numParentChildren = LittleLong( parent->numParentChildren );
@@ -452,9 +452,9 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp )
 	botimport.FS_Read( routetable->parentChildren, routetable->numParentChildren * sizeof( unsigned short int ), fp );
 	psi = &routetable->parentChildren[ 0 ];
 
-	if( doswap )
+	if ( doswap )
 	{
-		for( i = 0; i < routetable->numParentChildren; i++, psi++ )
+		for ( i = 0; i < routetable->numParentChildren; i++, psi++ )
 		{
 			*psi = LittleShort( *psi );
 		}
@@ -468,9 +468,9 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp )
 	botimport.FS_Read( routetable->visibleParents, routetable->numVisibleParents * sizeof( unsigned short int ), fp );
 	psi = &routetable->visibleParents[ 0 ];
 
-	if( doswap )
+	if ( doswap )
 	{
-		for( i = 0; i < routetable->numVisibleParents; i++, psi++ )
+		for ( i = 0; i < routetable->numVisibleParents; i++, psi++ )
 		{
 			*psi = LittleShort( *psi );
 		}
@@ -484,9 +484,9 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp )
 	botimport.FS_Read( routetable->parentLinks, routetable->numParentLinks * sizeof( aas_parent_link_t ), fp );
 	plink = &routetable->parentLinks[ 0 ];
 
-	if( doswap )
+	if ( doswap )
 	{
-		for( i = 0; i < routetable->numParentLinks; i++, plink++ )
+		for ( i = 0; i < routetable->numParentLinks; i++, plink++ )
 		{
 			plink->childIndex = LittleShort( plink->childIndex );
 			plink->parent = LittleShort( plink->parent );
@@ -498,7 +498,7 @@ qboolean AAS_RT_ReadRouteTable( fileHandle_t fp )
 	  ( unsigned short int * ) AAS_RT_GetClearedMemory( ( *aasworld ).numareas * sizeof( unsigned short int ) );
 	child = routetable->children;
 
-	for( i = 0; i < routetable->numChildren; i++, child++ )
+	for ( i = 0; i < routetable->numChildren; i++, child++ )
 	{
 		routetable->areaChildIndexes[ child->areanum ] = i + 1;
 	}
@@ -523,7 +523,7 @@ int AAS_RT_NumParentLinks( aas_area_childlocaldata_t *child )
 	i = 0;
 	plink = child->parentlink;
 
-	while( plink )
+	while ( plink )
 	{
 		i++;
 		plink = plink->next;
@@ -586,10 +586,10 @@ void AAS_RT_BuildRouteTable( void )
 	botimport.Print( PRT_MESSAGE, "\ntrying to load %s\n", filename );
 	botimport.FS_FOpenFile( filename, &fp, FS_READ );
 
-	if( fp )
+	if ( fp )
 	{
 		// read in the table..
-		if( AAS_RT_ReadRouteTable( fp ) )
+		if ( AAS_RT_ReadRouteTable( fp ) )
 		{
 			AAS_RT_PrintMemoryUsage();
 
@@ -625,19 +625,19 @@ void AAS_RT_BuildRouteTable( void )
 	// do this so we can check for filtered areas
 	AAS_CreateAllRoutingCache();
 
-	for( i = 0; i < ( *aasworld ).numareas; i++ )
+	for ( i = 0; i < ( *aasworld ).numareas; i++ )
 	{
 		srcarea = & ( *aasworld ).areas[ i ];
 		srcsettings = & ( *aasworld ).areasettings[ i ];
 
 #ifdef FILTERAREAS
 
-		if( !( srcsettings->areaflags & ( AREA_USEFORROUTING ) ) )
+		if ( !( srcsettings->areaflags & ( AREA_USEFORROUTING ) ) )
 		{
 			continue;
 		}
 
-		if( !( srcsettings->areaflags & ( AREA_GROUNDED | AREA_LIQUID | AREA_LADDER ) ) )
+		if ( !( srcsettings->areaflags & ( AREA_GROUNDED | AREA_LIQUID | AREA_LADDER ) ) )
 		{
 			continue;
 		}
@@ -652,7 +652,7 @@ void AAS_RT_BuildRouteTable( void )
 	// allocate and calculate the travel times
 	filteredroutetable = ( aas_rt_route_t ** ) AAS_RT_GetClearedMemory( childcount * sizeof( aas_rt_route_t * ) );
 
-	for( i = 0; i < childcount; i++ )
+	for ( i = 0; i < childcount; i++ )
 	{
 		filteredroutetable[ i ] = ( aas_rt_route_t * ) AAS_RT_GetClearedMemory( childcount * sizeof( aas_rt_route_t ) );
 	}
@@ -664,7 +664,7 @@ void AAS_RT_BuildRouteTable( void )
 	// allocate for the temporary build local data
 	area_localinfos = ( aas_area_buildlocalinfo_t ** ) AAS_RT_GetClearedMemory( childcount * sizeof( aas_area_buildlocalinfo_t * ) );
 
-	for( i = 0; i < childcount; i++ )
+	for ( i = 0; i < childcount; i++ )
 	{
 		srcarea = & ( *aasworld ).areas[ filtered_areas[ i ] ];
 		srcsettings = & ( *aasworld ).areasettings[ filtered_areas[ i ] ];
@@ -673,9 +673,9 @@ void AAS_RT_BuildRouteTable( void )
 		area_localinfos[ i ] = ( aas_area_buildlocalinfo_t * ) AAS_RT_GetClearedMemory( sizeof( aas_area_buildlocalinfo_t ) );
 		localinfo = area_localinfos[ i ];
 
-		for( j = 0; j < childcount; j++ )
+		for ( j = 0; j < childcount; j++ )
 		{
-			if( i == j )
+			if ( i == j )
 			{
 				continue;
 			}
@@ -686,13 +686,13 @@ void AAS_RT_BuildRouteTable( void )
 			// Get the travel time from i to j
 			traveltime = ( int ) filteredroutetable[ i ][ j ].travel_time;
 
-			if( !traveltime )
+			if ( !traveltime )
 			{
 				noroutecount++;
 				continue;
 			}
 
-			if( traveltime > MAX_LOCALTRAVELTIME )
+			if ( traveltime > MAX_LOCALTRAVELTIME )
 			{
 				continue;
 			}
@@ -703,7 +703,7 @@ void AAS_RT_BuildRouteTable( void )
 			localinfo->visible[ localinfo->numvisible++ ] = j;
 			totalcount++;
 
-			if( localinfo->numvisible >= MAX_VISIBLE_AREAS )
+			if ( localinfo->numvisible >= MAX_VISIBLE_AREAS )
 			{
 				botimport.Print( PRT_MESSAGE, "MAX_VISIBLE_AREAS exceeded, lower MAX_VISIBLE_RANGE\n" );
 				break;
@@ -717,35 +717,35 @@ void AAS_RT_BuildRouteTable( void )
 	area_childlocaldata =
 	  ( aas_area_childlocaldata_t ** ) AAS_RT_GetClearedMemory( childcount * sizeof( aas_area_childlocaldata_t * ) );
 
-	for( i = 0; i < childcount; i++ )
+	for ( i = 0; i < childcount; i++ )
 	{
 		area_childlocaldata[ i ] = ( aas_area_childlocaldata_t * ) AAS_RT_GetClearedMemory( sizeof( aas_area_childlocaldata_t ) );
 		area_childlocaldata[ i ]->areanum = filtered_areas[ i ];
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
 		bestchild = -1;
 		bestcount = 99999;
 
 		// find the area with the least number of visible areas
-		for( i = 0; i < childcount; i++ )
+		for ( i = 0; i < childcount; i++ )
 		{
-			if( area_childlocaldata[ i ]->parentlink )
+			if ( area_childlocaldata[ i ]->parentlink )
 			{
 				continue; // already has been allocated to a parent
 			}
 
 			cnt = AAS_RT_GetValidVisibleAreasCount( area_localinfos[ i ], area_childlocaldata );
 
-			if( cnt < bestcount )
+			if ( cnt < bestcount )
 			{
 				bestcount = area_localinfos[ i ]->numvisible;
 				bestchild = i;
 			}
 		}
 
-		if( bestchild < 0 )
+		if ( bestchild < 0 )
 		{
 			break; // our job is done
 		}
@@ -755,9 +755,9 @@ void AAS_RT_BuildRouteTable( void )
 		// look through this area's list of visible areas, and pick the one with the most VALID visible areas
 		bestparent = bestchild;
 
-		for( i = 0; i < localinfo->numvisible; i++ )
+		for ( i = 0; i < localinfo->numvisible; i++ )
 		{
-			if( area_childlocaldata[ localinfo->visible[ i ] ]->parentlink )
+			if ( area_childlocaldata[ localinfo->visible[ i ] ]->parentlink )
 			{
 				continue; // already has been allocated to a parent
 			}
@@ -765,7 +765,7 @@ void AAS_RT_BuildRouteTable( void )
 			// calculate how many of children are valid
 			cnt = AAS_RT_GetValidVisibleAreasCount( area_localinfos[ localinfo->visible[ i ] ], area_childlocaldata );
 
-			if( cnt > bestcount )
+			if ( cnt > bestcount )
 			{
 				bestcount = cnt;
 				bestparent = localinfo->visible[ i ];
@@ -791,18 +791,18 @@ void AAS_RT_BuildRouteTable( void )
 		thisparent->children[ thisparent->numchildren++ ] = filtered_areas[ bestparent ];
 
 		// loop around all the parent's visible list, and make them children if they're aren't already assigned to a parent
-		for( i = 0; i < localinfo->numvisible; i++ )
+		for ( i = 0; i < localinfo->numvisible; i++ )
 		{
 			// create the childlocaldata
 			child = area_childlocaldata[ localinfo->visible[ i ] ];
 
 			// Ridah, only one parent per child in the new system
-			if( child->parentlink )
+			if ( child->parentlink )
 			{
 				continue; // already has been allocated to a parent
 			}
 
-			if( child->areanum != thisparent->areanum )
+			if ( child->areanum != thisparent->areanum )
 			{
 				AAS_RT_AddParentLink( child, num_parents, thisparent->numchildren );
 				thisparent->children[ thisparent->numchildren++ ] = filtered_areas[ localinfo->visible[ i ] ];
@@ -810,7 +810,7 @@ void AAS_RT_BuildRouteTable( void )
 		}
 
 		// now setup the list of children and the route-tables
-		for( i = 0; i < thisparent->numchildren; i++ )
+		for ( i = 0; i < thisparent->numchildren; i++ )
 		{
 			child = area_childlocaldata[ -1 + rev_filtered_areas[ thisparent->children[ i ] ] ];
 			localinfo = area_localinfos[ -1 + rev_filtered_areas[ thisparent->children[ i ] ] ];
@@ -819,17 +819,17 @@ void AAS_RT_BuildRouteTable( void )
 			  ( unsigned short int * ) AAS_RT_GetClearedMemory( thisparent->numchildren * sizeof( unsigned short int ) );
 
 			// now setup the indexes
-			for( j = 0; j < thisparent->numchildren; j++ )
+			for ( j = 0; j < thisparent->numchildren; j++ )
 			{
 				// find this child in our list of visibles
-				if( j == child->parentlink->childindex )
+				if ( j == child->parentlink->childindex )
 				{
 					continue;
 				}
 
-				for( k = 0; k < localinfo->numvisible; k++ )
+				for ( k = 0; k < localinfo->numvisible; k++ )
 				{
-					if( thisparent->children[ j ] == filtered_areas[ localinfo->visible[ k ] ] )
+					if ( thisparent->children[ j ] == filtered_areas[ localinfo->visible[ k ] ] )
 					{
 						// found a match
 						child->parentlink->routeindexes[ j ] = ( unsigned short int ) k;
@@ -837,10 +837,10 @@ void AAS_RT_BuildRouteTable( void )
 					}
 				}
 
-				if( k == localinfo->numvisible )
+				if ( k == localinfo->numvisible )
 				{
 					// didn't find it, so add it to our list
-					if( localinfo->numvisible >= MAX_VISIBLE_AREAS )
+					if ( localinfo->numvisible >= MAX_VISIBLE_AREAS )
 					{
 						botimport.Print( PRT_MESSAGE, "MAX_VISIBLE_AREAS exceeded, lower MAX_VISIBLE_RANGE\n" );
 					}
@@ -858,7 +858,7 @@ void AAS_RT_BuildRouteTable( void )
 	}
 
 	// place all the visible areas from each child, into their childlocaldata route-table
-	for( i = 0; i < childcount; i++ )
+	for ( i = 0; i < childcount; i++ )
 	{
 		localinfo = area_localinfos[ i ];
 		child = area_childlocaldata[ i ];
@@ -866,14 +866,14 @@ void AAS_RT_BuildRouteTable( void )
 		child->numlocal = localinfo->numvisible;
 		child->localroutes = ( aas_rt_route_t * ) AAS_RT_GetClearedMemory( localinfo->numvisible * sizeof( aas_rt_route_t ) );
 
-		for( j = 0; j < localinfo->numvisible; j++ )
+		for ( j = 0; j < localinfo->numvisible; j++ )
 		{
 			child->localroutes[ j ] = filteredroutetable[ i ][ localinfo->visible[ j ] ];
 		}
 
 		child->parentroutes = ( aas_rt_route_t * ) AAS_RT_GetClearedMemory( num_parents * sizeof( aas_rt_route_t ) );
 
-		for( j = 0; j < num_parents; j++ )
+		for ( j = 0; j < num_parents; j++ )
 		{
 			child->parentroutes[ j ] = filteredroutetable[ i ][ -1 + rev_filtered_areas[ area_parents[ j ]->areanum ] ];
 		}
@@ -882,18 +882,18 @@ void AAS_RT_BuildRouteTable( void )
 	// build the visibleParents lists
 	visibleParents = ( unsigned short int * ) AAS_RT_GetClearedMemory( num_parents * sizeof( unsigned short int ) );
 
-	for( i = 0; i < num_parents; i++ )
+	for ( i = 0; i < num_parents; i++ )
 	{
 		area_parents[ i ]->numVisibleParents = 0;
 
-		for( j = 0; j < num_parents; j++ )
+		for ( j = 0; j < num_parents; j++ )
 		{
-			if( i == j )
+			if ( i == j )
 			{
 				continue;
 			}
 
-			if( !AAS_inPVS( ( *aasworld ).areas[ area_parents[ i ]->areanum ].center, ( *aasworld ).areas[ area_parents[ j ]->areanum ].center ) )
+			if ( !AAS_inPVS( ( *aasworld ).areas[ area_parents[ i ]->areanum ].center, ( *aasworld ).areas[ area_parents[ j ]->areanum ].center ) )
 			{
 				continue;
 			}
@@ -950,7 +950,7 @@ void AAS_RT_BuildRouteTable( void )
 		// areaChildIndexes
 		rt->areaChildIndexes = ( unsigned short int * ) AAS_RT_GetClearedMemory( ( *aasworld ).numareas * sizeof( unsigned short int ) );
 
-		for( i = 0; i < childcount; i++ )
+		for ( i = 0; i < childcount; i++ )
 		{
 			rt->areaChildIndexes[ filtered_areas[ i ] ] = i + 1;
 		}
@@ -960,7 +960,7 @@ void AAS_RT_BuildRouteTable( void )
 		rt->children = ( aas_rt_child_t * ) AAS_RT_GetClearedMemory( rt->numChildren * sizeof( aas_rt_child_t ) );
 		child = rt->children;
 
-		for( i = 0; i < childcount; i++, child++ )
+		for ( i = 0; i < childcount; i++, child++ )
 		{
 			chloc = area_childlocaldata[ i ];
 
@@ -977,7 +977,7 @@ void AAS_RT_BuildRouteTable( void )
 		rt->parents = ( aas_rt_parent_t * ) AAS_RT_GetClearedMemory( rt->numParents * sizeof( aas_rt_parent_t ) );
 		parent = rt->parents;
 
-		for( i = 0; i < num_parents; i++, parent++ )
+		for ( i = 0; i < num_parents; i++, parent++ )
 		{
 			apar = area_parents[ i ];
 
@@ -997,11 +997,11 @@ void AAS_RT_BuildRouteTable( void )
 		rt->parentChildren = ( unsigned short int * ) AAS_RT_GetClearedMemory( parentChildrenCount * sizeof( unsigned short int ) );
 		psi = rt->parentChildren;
 
-		for( i = 0; i < num_parents; i++ )
+		for ( i = 0; i < num_parents; i++ )
 		{
 			apar = area_parents[ i ];
 
-			for( j = 0; j < apar->numchildren; j++, psi++ )
+			for ( j = 0; j < apar->numchildren; j++, psi++ )
 			{
 				*psi = apar->children[ j ];
 			}
@@ -1012,11 +1012,11 @@ void AAS_RT_BuildRouteTable( void )
 		rt->visibleParents = ( unsigned short int * ) AAS_RT_GetClearedMemory( rt->numVisibleParents * sizeof( unsigned short int ) );
 		psi = rt->visibleParents;
 
-		for( i = 0; i < num_parents; i++ )
+		for ( i = 0; i < num_parents; i++ )
 		{
 			apar = area_parents[ i ];
 
-			for( j = 0; j < apar->numVisibleParents; j++, psi++ )
+			for ( j = 0; j < apar->numVisibleParents; j++, psi++ )
 			{
 				*psi = apar->visibleParents[ j ];
 			}
@@ -1027,11 +1027,11 @@ void AAS_RT_BuildRouteTable( void )
 		rt->parentLinks = ( aas_rt_parent_link_t * ) AAS_RT_GetClearedMemory( parentLinkCount * sizeof( aas_rt_parent_link_t ) );
 		plink = rt->parentLinks;
 
-		for( i = 0; i < childcount; i++ )
+		for ( i = 0; i < childcount; i++ )
 		{
 			chloc = area_childlocaldata[ i ];
 
-			for( oplink = chloc->parentlink; oplink; plink++, oplink = oplink->next )
+			for ( oplink = chloc->parentlink; oplink; plink++, oplink = oplink->next )
 			{
 				plink->childIndex = oplink->childindex;
 				plink->parent = oplink->parent;
@@ -1056,7 +1056,7 @@ void AAS_RT_BuildRouteTable( void )
 //  AAS_FreeRoutingCaches();
 //#endif
 
-	for( i = 0; i < childcount; i++ )
+	for ( i = 0; i < childcount; i++ )
 	{
 		AAS_RT_FreeMemory( area_localinfos[ i ] );
 #ifdef CHECK_TRAVEL_TIMES
@@ -1068,13 +1068,13 @@ void AAS_RT_BuildRouteTable( void )
 		aas_parent_link_t *next, *trav;
 
 		// kill the client areas
-		for( i = 0; i < childcount; i++ )
+		for ( i = 0; i < childcount; i++ )
 		{
 			// kill the parent links
 			next = area_childlocaldata[ i ]->parentlink;
 
 			// TTimo gcc: suggests () around assignment used as truth value
-			while( ( trav = next ) )
+			while ( ( trav = next ) )
 			{
 				next = next->next;
 
@@ -1088,7 +1088,7 @@ void AAS_RT_BuildRouteTable( void )
 		}
 
 		// kill the parents
-		for( i = 0; i < num_parents; i++ )
+		for ( i = 0; i < num_parents; i++ )
 		{
 			AAS_RT_FreeMemory( area_parents[ i ]->children );
 			AAS_RT_FreeMemory( area_parents[ i ]->visibleParents );
@@ -1121,7 +1121,7 @@ void AAS_RT_BuildRouteTable( void )
 //===========================================================================
 void AAS_RT_ShutdownRouteTable( void )
 {
-	if( !aasworld->routetable )
+	if ( !aasworld->routetable )
 	{
 		return;
 	}
@@ -1166,7 +1166,7 @@ aas_rt_child_t *AAS_RT_GetChild( int areanum )
 
 	i = ( int ) aasworld->routetable->areaChildIndexes[ areanum ] - 1;
 
-	if( i >= 0 )
+	if ( i >= 0 )
 	{
 		return &aasworld->routetable->children[ i ];
 	}
@@ -1198,25 +1198,25 @@ aas_rt_route_t *AAS_RT_GetRoute( int srcnum, vec3_t origin, int destnum )
 
 //  static int tfl = TFL_DEFAULT & ~(TFL_JUMPPAD|TFL_ROCKETJUMP|TFL_BFGJUMP|TFL_GRAPPLEHOOK|TFL_DOUBLEJUMP|TFL_RAMPJUMP|TFL_STRAFEJUMP|TFL_SLIME|TFL_LAVA);
 
-	if( !( rt = aasworld->routetable ) )
+	if ( !( rt = aasworld->routetable ) )
 	{
 		// no route table present
 		return NULL;
 	}
 
-	if( disable_routetable )
+	if ( disable_routetable )
 	{
 		return NULL;
 	}
 
-	if( ++routeIndex >= GETROUTE_NUMROUTES )
+	if ( ++routeIndex >= GETROUTE_NUMROUTES )
 	{
 		routeIndex = 0;
 	}
 
 	thisroute = &routes[ routeIndex ];
 
-	if( AAS_AreaRouteToGoalArea( srcnum, origin, destnum, tfl, &traveltime, &reach ) )
+	if ( AAS_AreaRouteToGoalArea( srcnum, origin, destnum, tfl, &traveltime, &reach ) )
 	{
 		thisroute->reachable_index = reach;
 		thisroute->travel_time = traveltime;

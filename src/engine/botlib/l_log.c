@@ -68,13 +68,13 @@ static logfile_t logfile;
 //===========================================================================
 void Log_AlwaysOpen( char *filename )
 {
-	if( !filename || !strlen( filename ) )
+	if ( !filename || !strlen( filename ) )
 	{
 		botimport.Print( PRT_MESSAGE, "openlog <filename>\n" );
 		return;
 	} //end if
 
-	if( logfile.fp )
+	if ( logfile.fp )
 	{
 		botimport.Print( PRT_ERROR, "log file %s is already opened\n", logfile.filename );
 		return;
@@ -82,7 +82,7 @@ void Log_AlwaysOpen( char *filename )
 
 	logfile.fp = fopen( filename, "wb" );
 
-	if( !logfile.fp )
+	if ( !logfile.fp )
 	{
 		botimport.Print( PRT_ERROR, "can't open the log file %s\n", filename );
 		return;
@@ -100,7 +100,7 @@ void Log_AlwaysOpen( char *filename )
 //===========================================================================
 void Log_Open( char *filename )
 {
-	if( !LibVarValue( "log", "0" ) )
+	if ( !LibVarValue( "log", "0" ) )
 	{
 		return;
 	}
@@ -116,12 +116,12 @@ void Log_Open( char *filename )
 //===========================================================================
 void Log_Close( void )
 {
-	if( !logfile.fp )
+	if ( !logfile.fp )
 	{
 		return;
 	}
 
-	if( fclose( logfile.fp ) )
+	if ( fclose( logfile.fp ) )
 	{
 		botimport.Print( PRT_ERROR, "can't close log file %s\n", logfile.filename );
 		return;
@@ -139,7 +139,7 @@ void Log_Close( void )
 //===========================================================================
 void Log_Shutdown( void )
 {
-	if( logfile.fp )
+	if ( logfile.fp )
 	{
 		Log_Close();
 	}
@@ -155,7 +155,7 @@ void QDECL __attribute__( ( format( printf, 1, 2 ) ) ) Log_Write( char *fmt, ...
 {
 	va_list ap;
 
-	if( !logfile.fp )
+	if ( !logfile.fp )
 	{
 		return;
 	}
@@ -177,7 +177,7 @@ void QDECL __attribute__( ( format( printf, 1, 2 ) ) ) Log_WriteTimeStamped( cha
 {
 	va_list ap;
 
-	if( !logfile.fp )
+	if ( !logfile.fp )
 	{
 		return;
 	}
@@ -214,7 +214,7 @@ FILE           *Log_FilePointer( void )
 //===========================================================================
 void Log_Flush( void )
 {
-	if( logfile.fp )
+	if ( logfile.fp )
 	{
 		fflush( logfile.fp );
 	}

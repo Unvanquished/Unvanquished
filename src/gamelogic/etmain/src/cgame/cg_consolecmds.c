@@ -48,7 +48,7 @@ void CG_TargetCommand_f( void )
 
 	targetNum = CG_CrosshairPlayer();
 
-	if( !targetNum )
+	if ( !targetNum )
 	{
 		return;
 	}
@@ -72,7 +72,7 @@ static void CG_Viewpos_f( void )
 
 void CG_LimboMenu_f( void )
 {
-	if( cg.showGameView )
+	if ( cg.showGameView )
 	{
 		CG_EventHandling( CGAME_EVENT_NONE, qfalse );
 	}
@@ -84,28 +84,28 @@ void CG_LimboMenu_f( void )
 
 static void CG_StatsDown_f( void )
 {
-	if( !cg.demoPlayback )
+	if ( !cg.demoPlayback )
 	{
 		int i = ( cg.mvTotalClients > 0 ) ? ( cg.mvCurrentActive->mvInfo & MV_PID ) : cg.snap->ps.clientNum;
 
-		if( cg.mvTotalClients < 1 && cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
+		if ( cg.mvTotalClients < 1 && cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
 		{
 			Pri( "You must be a player or following a player to use +stats\n" );
 			return;
 		}
 
-		if( cgs.gamestats.show == SHOW_SHUTDOWN && cg.time < cgs.gamestats.fadeTime )
+		if ( cgs.gamestats.show == SHOW_SHUTDOWN && cg.time < cgs.gamestats.fadeTime )
 		{
 			cgs.gamestats.fadeTime = 2 * cg.time + STATS_FADE_TIME - cgs.gamestats.fadeTime;
 		}
-		else if( cgs.gamestats.show != SHOW_ON )
+		else if ( cgs.gamestats.show != SHOW_ON )
 		{
 			cgs.gamestats.fadeTime = cg.time + STATS_FADE_TIME;
 		}
 
 		cgs.gamestats.show = SHOW_ON;
 
-		if( cgs.gamestats.requestTime < cg.time )
+		if ( cgs.gamestats.requestTime < cg.time )
 		{
 			cgs.gamestats.requestTime = cg.time + 2000;
 			trap_SendClientCommand( va( "sgstats %d", i ) );
@@ -115,11 +115,11 @@ static void CG_StatsDown_f( void )
 
 static void CG_StatsUp_f( void )
 {
-	if( cgs.gamestats.show == SHOW_ON )
+	if ( cgs.gamestats.show == SHOW_ON )
 	{
 		cgs.gamestats.show = SHOW_SHUTDOWN;
 
-		if( cg.time < cgs.gamestats.fadeTime )
+		if ( cg.time < cgs.gamestats.fadeTime )
 		{
 			cgs.gamestats.fadeTime = 2 * cg.time + STATS_FADE_TIME - cgs.gamestats.fadeTime;
 		}
@@ -132,20 +132,20 @@ static void CG_StatsUp_f( void )
 
 void CG_topshotsDown_f( void )
 {
-	if( !cg.demoPlayback )
+	if ( !cg.demoPlayback )
 	{
-		if( cgs.topshots.show == SHOW_SHUTDOWN && cg.time < cgs.topshots.fadeTime )
+		if ( cgs.topshots.show == SHOW_SHUTDOWN && cg.time < cgs.topshots.fadeTime )
 		{
 			cgs.topshots.fadeTime = 2 * cg.time + STATS_FADE_TIME - cgs.topshots.fadeTime;
 		}
-		else if( cgs.topshots.show != SHOW_ON )
+		else if ( cgs.topshots.show != SHOW_ON )
 		{
 			cgs.topshots.fadeTime = cg.time + STATS_FADE_TIME;
 		}
 
 		cgs.topshots.show = SHOW_ON;
 
-		if( cgs.topshots.requestTime < cg.time )
+		if ( cgs.topshots.requestTime < cg.time )
 		{
 			cgs.topshots.requestTime = cg.time + 2000;
 			trap_SendClientCommand( "stshots" );
@@ -155,11 +155,11 @@ void CG_topshotsDown_f( void )
 
 void CG_topshotsUp_f( void )
 {
-	if( cgs.topshots.show == SHOW_ON )
+	if ( cgs.topshots.show == SHOW_ON )
 	{
 		cgs.topshots.show = SHOW_SHUTDOWN;
 
-		if( cg.time < cgs.topshots.fadeTime )
+		if ( cg.time < cgs.topshots.fadeTime )
 		{
 			cgs.topshots.fadeTime = 2 * cg.time + STATS_FADE_TIME - cgs.topshots.fadeTime;
 		}
@@ -172,25 +172,25 @@ void CG_topshotsUp_f( void )
 
 void CG_ScoresDown_f( void )
 {
-	if( cg.scoresRequestTime + 2000 < cg.time )
+	if ( cg.scoresRequestTime + 2000 < cg.time )
 	{
 		// the scores are more than two seconds out of data,
 		// so request new ones
 		cg.scoresRequestTime = cg.time;
 
 		// OSP - we get periodic score updates if we are merging clients
-		if( !cg.demoPlayback && cg.mvTotalClients < 1 )
+		if ( !cg.demoPlayback && cg.mvTotalClients < 1 )
 		{
 			trap_SendClientCommand( "score" );
 		}
 
 		// leave the current scores up if they were already
 		// displayed, but if this is the first hit, clear them out
-		if( !cg.showScores )
+		if ( !cg.showScores )
 		{
 			cg.showScores = qtrue;
 
-			if( !cg.demoPlayback && cg.mvTotalClients < 1 )
+			if ( !cg.demoPlayback && cg.mvTotalClients < 1 )
 			{
 				cg.numScores = 0;
 			}
@@ -206,7 +206,7 @@ void CG_ScoresDown_f( void )
 
 void CG_ScoresUp_f( void )
 {
-	if( cg.showScores )
+	if ( cg.showScores )
 	{
 		cg.showScores = qfalse;
 		cg.scoreFadeTime = cg.time;
@@ -224,10 +224,10 @@ static void CG_LoadWeapons_f( void )
 {
 	int i;
 
-	for( i = WP_KNIFE; i < WP_NUM_WEAPONS; i++ )
+	for ( i = WP_KNIFE; i < WP_NUM_WEAPONS; i++ )
 	{
 		// DHM - Nerve :: Only register weapons we use in WolfMP
-		if( BG_WeaponInWolfMP( i ) )
+		if ( BG_WeaponInWolfMP( i ) )
 		{
 			CG_RegisterWeapon( i, qtrue );
 		}
@@ -253,7 +253,7 @@ static void CG_TellTarget_f( void )
 
 	clientNum = CG_CrosshairPlayer();
 
-	if( clientNum == -1 )
+	if ( clientNum == -1 )
 	{
 		return;
 	}
@@ -271,7 +271,7 @@ static void CG_TellAttacker_f( void )
 
 	clientNum = CG_LastAttacker();
 
-	if( clientNum == -1 )
+	if ( clientNum == -1 )
 	{
 		return;
 	}
@@ -290,12 +290,12 @@ int CG_LoadCamera( const char *name )
 {
 	int i;
 
-	for( i = 1; i < MAX_CAMERAS; i++ )
+	for ( i = 1; i < MAX_CAMERAS; i++ )
 	{
 		// start at '1' since '0' is always taken by the cutscene camera
-		if( !cameraInuse[ i ] )
+		if ( !cameraInuse[ i ] )
 		{
-			if( trap_loadCamera( i, name ) )
+			if ( trap_loadCamera( i, name ) )
 			{
 				cameraInuse[ i ] = qtrue;
 				return i;
@@ -342,11 +342,11 @@ void CG_StartCamera( const char *name, qboolean startBlack )
 	COM_StripExtension( name, lname );  //----(SA)    added
 	strcat( lname, ".camera" );
 
-	if( trap_loadCamera( CAM_PRIMARY, va( "cameras/%s", lname ) ) )
+	if ( trap_loadCamera( CAM_PRIMARY, va( "cameras/%s", lname ) ) )
 	{
 		cg.cameraMode = qtrue; // camera on in cgame
 
-		if( startBlack )
+		if ( startBlack )
 		{
 			CG_Fade( 0, 0, 0, 255, cg.time, 0 );  // go black
 		}
@@ -375,7 +375,7 @@ CG_StartInitialCamera
 void CG_StartInitialCamera()
 {
 	// See if we've got a camera name
-	if( g_initialCamera[ 0 ] != 0 )
+	if ( g_initialCamera[ 0 ] != 0 )
 	{
 		// Start a camera with the initial data we stored.
 		CG_StartCamera( g_initialCamera, g_initialCameraStartBlack );
@@ -408,7 +408,7 @@ static void CG_Fade_f( void )
 	int   r, g, b, a;
 	float duration;
 
-	if( trap_Argc() < 6 )
+	if ( trap_Argc() < 6 )
 	{
 		return;
 	}
@@ -425,14 +425,14 @@ static void CG_Fade_f( void )
 
 void CG_QuickMessage_f( void )
 {
-	if( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR )
+	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR )
 	{
 		return;
 	}
 
 	CG_EventHandling( CGAME_EVENT_NONE, qfalse );
 
-	if( cg_quickMessageAlt.integer )
+	if ( cg_quickMessageAlt.integer )
 	{
 		trap_UI_Popup( UIMENU_WM_QUICKMESSAGEALT );
 	}
@@ -444,14 +444,14 @@ void CG_QuickMessage_f( void )
 
 void CG_QuickFireteamMessage_f( void )
 {
-	if( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR )
+	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR )
 	{
 		return;
 	}
 
 	CG_EventHandling( CGAME_EVENT_NONE, qfalse );
 
-	if( cg_quickMessageAlt.integer )
+	if ( cg_quickMessageAlt.integer )
 	{
 		trap_UI_Popup( UIMENU_WM_FTQUICKMESSAGEALT );
 	}
@@ -465,9 +465,9 @@ void CG_QuickFireteamAdmin_f( void )
 {
 	trap_UI_Popup( UIMENU_NONE );
 
-	if( cg.showFireteamMenu )
+	if ( cg.showFireteamMenu )
 	{
-		if( cgs.ftMenuMode == 1 )
+		if ( cgs.ftMenuMode == 1 )
 		{
 			CG_EventHandling( CGAME_EVENT_NONE, qfalse );
 		}
@@ -476,7 +476,7 @@ void CG_QuickFireteamAdmin_f( void )
 			cgs.ftMenuMode = 1;
 		}
 	}
-	else if( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR )
+	else if ( cgs.clientinfo[ cg.clientNum ].team != TEAM_SPECTATOR )
 	{
 		CG_EventHandling( CGAME_EVENT_FIRETEAMMSG, qfalse );
 		cgs.ftMenuMode = 1;
@@ -485,9 +485,9 @@ void CG_QuickFireteamAdmin_f( void )
 
 static void CG_QuickFireteams_f( void )
 {
-	if( cg.showFireteamMenu )
+	if ( cg.showFireteamMenu )
 	{
-		if( cgs.ftMenuMode == 0 )
+		if ( cgs.ftMenuMode == 0 )
 		{
 			CG_EventHandling( CGAME_EVENT_NONE, qfalse );
 		}
@@ -496,7 +496,7 @@ static void CG_QuickFireteams_f( void )
 			cgs.ftMenuMode = 0;
 		}
 	}
-	else if( CG_IsOnFireteam( cg.clientNum ) )
+	else if ( CG_IsOnFireteam( cg.clientNum ) )
 	{
 		CG_EventHandling( CGAME_EVENT_FIRETEAMMSG, qfalse );
 		cgs.ftMenuMode = 0;
@@ -510,19 +510,19 @@ static void CG_FTSayPlayerClass_f( void )
 
 	playerType = cgs.clientinfo[ cg.clientNum ].cls;
 
-	if( playerType == PC_MEDIC )
+	if ( playerType == PC_MEDIC )
 	{
 		s = "IamMedic";
 	}
-	else if( playerType == PC_ENGINEER )
+	else if ( playerType == PC_ENGINEER )
 	{
 		s = "IamEngineer";
 	}
-	else if( playerType == PC_FIELDOPS )
+	else if ( playerType == PC_FIELDOPS )
 	{
 		s = "IamFieldOps";
 	}
-	else if( playerType == PC_COVERTOPS )
+	else if ( playerType == PC_COVERTOPS )
 	{
 		s = "IamCovertOps";
 	}
@@ -531,9 +531,9 @@ static void CG_FTSayPlayerClass_f( void )
 		s = "IamSoldier";
 	}
 
-	if( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
+	if ( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
 	{
-		if( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
+		if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
 		{
 			CG_Printf( CG_TranslateString( "Can't team voice chat as a spectator.\n" ) );
 			return;
@@ -550,19 +550,19 @@ static void CG_SayPlayerClass_f( void )
 
 	playerType = cgs.clientinfo[ cg.clientNum ].cls;
 
-	if( playerType == PC_MEDIC )
+	if ( playerType == PC_MEDIC )
 	{
 		s = "IamMedic";
 	}
-	else if( playerType == PC_ENGINEER )
+	else if ( playerType == PC_ENGINEER )
 	{
 		s = "IamEngineer";
 	}
-	else if( playerType == PC_FIELDOPS )
+	else if ( playerType == PC_FIELDOPS )
 	{
 		s = "IamFieldOps";
 	}
-	else if( playerType == PC_COVERTOPS )
+	else if ( playerType == PC_COVERTOPS )
 	{
 		s = "IamCovertOps";
 	}
@@ -571,9 +571,9 @@ static void CG_SayPlayerClass_f( void )
 		s = "IamSoldier";
 	}
 
-	if( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
+	if ( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
 	{
-		if( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
+		if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
 		{
 			CG_Printf( CG_TranslateString( "Can't team voice chat as a spectator.\n" ) );
 			return;
@@ -587,16 +587,16 @@ static void CG_VoiceChat_f( void )
 {
 	char chatCmd[ 64 ];
 
-	if( trap_Argc() != 2 )
+	if ( trap_Argc() != 2 )
 	{
 		return;
 	}
 
 	// NERVE - SMF - don't let spectators voice chat
 	// NOTE - This cg.snap will be the person you are following, but its just for intermission test
-	if( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
+	if ( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
 	{
-		if( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
+		if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
 		{
 			CG_Printf( CG_TranslateString( "Can't voice chat as a spectator.\n" ) );
 			return;
@@ -612,16 +612,16 @@ static void CG_TeamVoiceChat_f( void )
 {
 	char chatCmd[ 64 ];
 
-	if( trap_Argc() != 2 )
+	if ( trap_Argc() != 2 )
 	{
 		return;
 	}
 
 	// NERVE - SMF - don't let spectators voice chat
 	// NOTE - This cg.snap will be the person you are following, but its just for intermission test
-	if( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
+	if ( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
 	{
-		if( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
+		if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
 		{
 			CG_Printf( CG_TranslateString( "Can't team voice chat as a spectator.\n" ) );
 			return;
@@ -637,16 +637,16 @@ static void CG_BuddyVoiceChat_f( void )
 {
 	char chatCmd[ 64 ];
 
-	if( trap_Argc() != 2 )
+	if ( trap_Argc() != 2 )
 	{
 		return;
 	}
 
 	// NERVE - SMF - don't let spectators voice chat
 	// NOTE - This cg.snap will be the person you are following, but its just for intermission test
-	if( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
+	if ( cg.snap && ( cg.snap->ps.pm_type != PM_INTERMISSION ) )
 	{
-		if( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
+		if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_SPECTATOR || cgs.clientinfo[ cg.clientNum ].team == TEAM_FREE )
 		{
 			CG_Printf( CG_TranslateString( "Can't buddy voice chat as a spectator.\n" ) );
 			return;
@@ -663,7 +663,7 @@ static void CG_MessageMode_f( void )
 {
 	char cmd[ 64 ];
 
-	if( cgs.eventHandling != CGAME_EVENT_NONE )
+	if ( cgs.eventHandling != CGAME_EVENT_NONE )
 	{
 		return;
 	}
@@ -672,12 +672,12 @@ static void CG_MessageMode_f( void )
 	trap_Argv( 0, cmd, 64 );
 
 	// team say
-	if( !Q_stricmp( cmd, "messagemode2" ) )
+	if ( !Q_stricmp( cmd, "messagemode2" ) )
 	{
 		trap_Cvar_Set( "cg_messageType", "2" );
 	}
 	// fireteam say
-	else if( !Q_stricmp( cmd, "messagemode3" ) )
+	else if ( !Q_stricmp( cmd, "messagemode3" ) )
 	{
 		trap_Cvar_Set( "cg_messageType", "3" );
 	}
@@ -710,19 +710,19 @@ static void CG_MessageSend_f( void )
 	trap_Cvar_Set( "cg_messagePlayer", "" );
 
 	// don't send empty messages
-	if( messageText[ 0 ] == '\0' )
+	if ( messageText[ 0 ] == '\0' )
 	{
 		return;
 	}
 
 	// team say
-	if( messageType == 2 )
+	if ( messageType == 2 )
 	{
 		trap_SendConsoleCommand( va( "say_team \"%s\"\n", messageText ) );
 
 		// fireteam say
 	}
-	else if( messageType == 3 )
+	else if ( messageType == 3 )
 	{
 		trap_SendConsoleCommand( va( "say_buddy \"%s\"\n", messageText ) );
 
@@ -755,7 +755,7 @@ static void CG_SelectBuddy_f( void )
 	// -1 = none
 	// -2 = all
 
-	switch( pos )
+	switch ( pos )
 	{
 		case 0:
 		case 1:
@@ -763,14 +763,14 @@ static void CG_SelectBuddy_f( void )
 		case 3:
 		case 4:
 		case 5:
-			if( !CG_IsOnFireteam( cg.clientNum ) )
+			if ( !CG_IsOnFireteam( cg.clientNum ) )
 			{
 				break; // Gordon: we aren't a leader, so dont allow selection
 			}
 
 			ci = CG_SortedFireTeamPlayerForPosition( pos, 6 );
 
-			if( !ci )
+			if ( !ci )
 			{
 				break; // there was no-one in this position
 			}
@@ -780,16 +780,16 @@ static void CG_SelectBuddy_f( void )
 			break;
 
 		case -1:
-			if( !CG_IsOnFireteam( cg.clientNum ) )
+			if ( !CG_IsOnFireteam( cg.clientNum ) )
 			{
 				break; // Gordon: we aren't a leader, so dont allow selection
 			}
 
-			for( i = 0; i < 6; i++ )
+			for ( i = 0; i < 6; i++ )
 			{
 				ci = CG_SortedFireTeamPlayerForPosition( i, 6 );
 
-				if( !ci )
+				if ( !ci )
 				{
 					break; // there was no-one in this position
 				}
@@ -800,16 +800,16 @@ static void CG_SelectBuddy_f( void )
 			break;
 
 		case -2:
-			if( !CG_IsOnFireteam( cg.clientNum ) )
+			if ( !CG_IsOnFireteam( cg.clientNum ) )
 			{
 				break; // Gordon: we aren't a leader, so dont allow selection
 			}
 
-			for( i = 0; i < 6; i++ )
+			for ( i = 0; i < 6; i++ )
 			{
 				ci = CG_SortedFireTeamPlayerForPosition( i, 6 );
 
-				if( !ci )
+				if ( !ci )
 				{
 					break; // there was no-one in this position
 				}
@@ -825,7 +825,7 @@ extern void CG_AdjustAutomapZoom( int zoomIn );
 
 static void CG_AutomapZoomIn_f( void )
 {
-	if( !cgs.autoMapOff )
+	if ( !cgs.autoMapOff )
 	{
 		CG_AdjustAutomapZoom( qtrue );
 	}
@@ -833,7 +833,7 @@ static void CG_AutomapZoomIn_f( void )
 
 static void CG_AutomapZoomOut_f( void )
 {
-	if( !cgs.autoMapOff )
+	if ( !cgs.autoMapOff )
 	{
 		CG_AdjustAutomapZoom( qfalse );
 	}
@@ -841,11 +841,11 @@ static void CG_AutomapZoomOut_f( void )
 
 static void CG_AutomapExpandDown_f( void )
 {
-	if( !cgs.autoMapExpanded )
+	if ( !cgs.autoMapExpanded )
 	{
 		cgs.autoMapExpanded = qtrue;
 
-		if( cg.time - cgs.autoMapExpandTime < 250.f )
+		if ( cg.time - cgs.autoMapExpandTime < 250.f )
 		{
 			cgs.autoMapExpandTime = cg.time - ( 250.f - ( cg.time - cgs.autoMapExpandTime ) );
 		}
@@ -858,11 +858,11 @@ static void CG_AutomapExpandDown_f( void )
 
 static void CG_AutomapExpandUp_f( void )
 {
-	if( cgs.autoMapExpanded )
+	if ( cgs.autoMapExpanded )
 	{
 		cgs.autoMapExpanded = qfalse;
 
-		if( cg.time - cgs.autoMapExpandTime < 250.f )
+		if ( cg.time - cgs.autoMapExpandTime < 250.f )
 		{
 			cgs.autoMapExpandTime = cg.time - ( 250.f - ( cg.time - cgs.autoMapExpandTime ) );
 		}
@@ -903,7 +903,7 @@ void CG_autoScreenShot_f( void )
 void CG_vstrDown_f( void )
 {
 	// The engine also passes back the key code and time of the key press
-	if( trap_Argc() == 5 )
+	if ( trap_Argc() == 5 )
 	{
 		trap_SendConsoleCommand( va( "vstr %s;", CG_Argv( 1 ) ) );
 	}
@@ -916,7 +916,7 @@ void CG_vstrDown_f( void )
 void CG_vstrUp_f( void )
 {
 	// The engine also passes back the key code and time of the key press
-	if( trap_Argc() == 5 )
+	if ( trap_Argc() == 5 )
 	{
 		trap_SendConsoleCommand( va( "vstr %s;", CG_Argv( 2 ) ) );
 	}
@@ -928,13 +928,13 @@ void CG_vstrUp_f( void )
 
 void CG_keyOn_f( void )
 {
-	if( !cg.demoPlayback )
+	if ( !cg.demoPlayback )
 	{
 		CG_Printf( "[cgnotify]^3*** NOT PLAYING A DEMO!!\n" );
 		return;
 	}
 
-	if( demo_infoWindow.integer > 0 )
+	if ( demo_infoWindow.integer > 0 )
 	{
 		CG_ShowHelp_On( &cg.demohelpWindow );
 	}
@@ -944,7 +944,7 @@ void CG_keyOn_f( void )
 
 void CG_keyOff_f( void )
 {
-	if( !cg.demoPlayback )
+	if ( !cg.demoPlayback )
 	{
 		return;
 	}
@@ -954,7 +954,7 @@ void CG_keyOff_f( void )
 
 void CG_dumpStats_f( void )
 {
-	if( cgs.dumpStatsTime < cg.time )
+	if ( cgs.dumpStatsTime < cg.time )
 	{
 		cgs.dumpStatsTime = cg.time + 2000;
 		trap_SendClientCommand( ( cg.mvTotalClients < 1 ) ? "weaponstats" : "statsall" );
@@ -965,13 +965,13 @@ void CG_wStatsDown_f( void )
 {
 	int i = ( cg.mvTotalClients > 0 ) ? ( cg.mvCurrentActive->mvInfo & MV_PID ) : cg.snap->ps.clientNum;
 
-	if( cg.mvTotalClients < 1 && cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
+	if ( cg.mvTotalClients < 1 && cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_SPECTATOR )
 	{
 		Pri( "You must be a player or following a player to use +wstats\n" );
 		return;
 	}
 
-	if( cg.statsRequestTime < cg.time )
+	if ( cg.statsRequestTime < cg.time )
 	{
 		cg.statsRequestTime = cg.time + 500;
 		trap_SendClientCommand( va( "wstats %d", i ) );
@@ -989,13 +989,13 @@ void CG_wStatsUp_f( void )
 
 void CG_toggleSpecHelp_f( void )
 {
-	if( cg.mvTotalClients > 0 && !cg.demoPlayback )
+	if ( cg.mvTotalClients > 0 && !cg.demoPlayback )
 	{
-		if( cg.spechelpWindow != SHOW_ON && cg_specHelp.integer > 0 )
+		if ( cg.spechelpWindow != SHOW_ON && cg_specHelp.integer > 0 )
 		{
 			CG_ShowHelp_On( &cg.spechelpWindow );
 		}
-		else if( cg.spechelpWindow == SHOW_ON )
+		else if ( cg.spechelpWindow == SHOW_ON )
 		{
 			CG_ShowHelp_Off( &cg.spechelpWindow );
 		}
@@ -1011,7 +1011,7 @@ void CG_Obj_f( void )
 
 static void CG_EditSpeakers_f( void )
 {
-	if( cg.editingSpeakers )
+	if ( cg.editingSpeakers )
 	{
 		CG_DeActivateEditSoundMode();
 	}
@@ -1019,7 +1019,7 @@ static void CG_EditSpeakers_f( void )
 	{
 		const char *s = Info_ValueForKey( CG_ConfigString( CS_SYSTEMINFO ), "sv_cheats" );
 
-		if( s[ 0 ] != '1' )
+		if ( s[ 0 ] != '1' )
 		{
 			CG_Printf( "editSpeakers is cheat protected.\n" );
 			return;
@@ -1107,7 +1107,7 @@ static void CG_DumpSpeaker_f( void )
 	trace_t      tr;
 	vec3_t       end;
 
-	if( !cg.editingSpeakers )
+	if ( !cg.editingSpeakers )
 	{
 		CG_Printf( "Speaker Edit mode needs to be activated to dump speakers\n" );
 		return;
@@ -1121,7 +1121,7 @@ static void CG_DumpSpeaker_f( void )
 	VectorMA( cg.refdef_current->vieworg, 32, cg.refdef_current->viewaxis[ 0 ], end );
 	CG_Trace( &tr, cg.refdef_current->vieworg, NULL, NULL, end, -1, MASK_SOLID );
 
-	if( tr.fraction < 1.f )
+	if ( tr.fraction < 1.f )
 	{
 		VectorCopy( tr.endpos, speaker.origin );
 		VectorMA( speaker.origin, -4, cg.refdef_current->viewaxis[ 0 ], speaker.origin );
@@ -1131,7 +1131,7 @@ static void CG_DumpSpeaker_f( void )
 		VectorCopy( tr.endpos, speaker.origin );
 	}
 
-	if( !BG_SS_StoreSpeaker( &speaker ) )
+	if ( !BG_SS_StoreSpeaker( &speaker ) )
 	{
 		CG_Printf( S_COLOR_RED "ERROR: Failed to store speaker\n" );
 	}
@@ -1139,7 +1139,7 @@ static void CG_DumpSpeaker_f( void )
 
 static void CG_ModifySpeaker_f( void )
 {
-	if( cg.editingSpeakers )
+	if ( cg.editingSpeakers )
 	{
 		CG_ModifyEditSpeaker();
 	}
@@ -1147,7 +1147,7 @@ static void CG_ModifySpeaker_f( void )
 
 static void CG_UndoSpeaker_f( void )
 {
-	if( cg.editingSpeakers )
+	if ( cg.editingSpeakers )
 	{
 		CG_UndoEditSpeaker();
 	}
@@ -1280,16 +1280,16 @@ qboolean CG_ConsoleCommand( void )
 	int        i;
 
 	// Arnout - don't allow console commands until a snapshot is present
-	if( !cg.snap )
+	if ( !cg.snap )
 	{
 		return qfalse;
 	}
 
 	cmd = CG_Argv( 0 );
 
-	for( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
 	{
-		if( !Q_stricmp( cmd, commands[ i ].cmd ) )
+		if ( !Q_stricmp( cmd, commands[ i ].cmd ) )
 		{
 			commands[ i ].function();
 			return qtrue;
@@ -1311,7 +1311,7 @@ void CG_InitConsoleCommands( void )
 {
 	int i;
 
-	for( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
 	{
 		trap_AddCommand( commands[ i ].cmd );
 	}

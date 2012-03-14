@@ -44,7 +44,7 @@ This must be the very first function compiled into the .q3vm file
 */
 intptr_t vmMain( intptr_t command, intptr_t arg0, intptr_t arg1, intptr_t arg2, intptr_t arg3, intptr_t arg4, intptr_t arg5, intptr_t arg6, intptr_t arg7, intptr_t arg8, intptr_t arg9, intptr_t arg10, intptr_t arg11 )
 {
-	switch( command )
+	switch ( command )
 	{
 		case CG_INIT:
 			CG_Init( arg0, arg1, arg2 );
@@ -392,7 +392,7 @@ void CG_RegisterCvars( void )
 	cvarTable_t *cv;
 	char        var[ MAX_TOKEN_CHARS ];
 
-	for( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
+	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 		                    cv->defaultString, cv->cvarFlags );
@@ -421,13 +421,13 @@ static void CG_ForceModelChange( void )
 {
 	int i;
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		const char *clientInfo;
 
 		clientInfo = CG_ConfigString( CS_PLAYERS + i );
 
-		if( !clientInfo[ 0 ] )
+		if ( !clientInfo[ 0 ] )
 		{
 			continue;
 		}
@@ -446,7 +446,7 @@ void CG_UpdateCvars( void )
 	int         i;
 	cvarTable_t *cv;
 
-	for( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
+	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{
 		trap_Cvar_Update( cv->vmCvar );
 	}
@@ -454,7 +454,7 @@ void CG_UpdateCvars( void )
 	// check for modications here
 
 	// if force model changed
-	if( forceModelModificationCount != cg_forceModel.modificationCount )
+	if ( forceModelModificationCount != cg_forceModel.modificationCount )
 	{
 		forceModelModificationCount = cg_forceModel.modificationCount;
 		CG_ForceModelChange();
@@ -463,7 +463,7 @@ void CG_UpdateCvars( void )
 
 int CG_CrosshairPlayer( void )
 {
-	if( cg.time > ( cg.crosshairClientTime + 1000 ) )
+	if ( cg.time > ( cg.crosshairClientTime + 1000 ) )
 	{
 		return -1;
 	}
@@ -473,7 +473,7 @@ int CG_CrosshairPlayer( void )
 
 int CG_LastAttacker( void )
 {
-	if( !cg.attackerTime )
+	if ( !cg.attackerTime )
 	{
 		return -1;
 	}
@@ -490,7 +490,7 @@ void CG_RemoveNotifyLine( void )
 {
 	int i, offset, totalLength;
 
-	if( cg.numConsoleLines == 0 )
+	if ( cg.numConsoleLines == 0 )
 	{
 		return;
 	}
@@ -499,13 +499,13 @@ void CG_RemoveNotifyLine( void )
 	totalLength = strlen( cg.consoleText ) - offset;
 
 	//slide up consoleText
-	for( i = 0; i <= totalLength; i++ )
+	for ( i = 0; i <= totalLength; i++ )
 	{
 		cg.consoleText[ i ] = cg.consoleText[ i + offset ];
 	}
 
 	//pop up the first consoleLine
-	for( i = 0; i < cg.numConsoleLines; i++ )
+	for ( i = 0; i < cg.numConsoleLines; i++ )
 	{
 		cg.consoleLines[ i ] = cg.consoleLines[ i + 1 ];
 	}
@@ -524,14 +524,14 @@ void CG_AddNotifyText( void )
 
 	trap_LiteralArgs( buffer, BIG_INFO_STRING );
 
-	if( !buffer[ 0 ] )
+	if ( !buffer[ 0 ] )
 	{
 		cg.consoleText[ 0 ] = '\0';
 		cg.numConsoleLines = 0;
 		return;
 	}
 
-	if( cg.numConsoleLines == MAX_CONSOLE_LINES )
+	if ( cg.numConsoleLines == MAX_CONSOLE_LINES )
 	{
 		CG_RemoveNotifyLine();
 	}
@@ -617,7 +617,7 @@ qboolean CG_FileExists( char *filename )
 {
 	fileHandle_t f;
 
-	if( trap_FS_FOpenFile( filename, &f, FS_READ ) > 0 )
+	if ( trap_FS_FOpenFile( filename, &f, FS_READ ) > 0 )
 	{
 		//file exists so close it
 		trap_FS_FCloseFile( f );
@@ -668,7 +668,7 @@ static void CG_RegisterSounds( void )
 
 	cgs.media.disconnectSound = trap_S_RegisterSound( "sound/misc/disconnect.wav", qfalse );
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
 		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/step%i.wav", i + 1 );
 		cgs.media.footsteps[ FOOTSTEP_NORMAL ][ i ] = trap_S_RegisterSound( name, qfalse );
@@ -683,16 +683,16 @@ static void CG_RegisterSounds( void )
 		cgs.media.footsteps[ FOOTSTEP_METAL ][ i ] = trap_S_RegisterSound( name, qfalse );
 	}
 
-	for( i = 1; i < MAX_SOUNDS; i++ )
+	for ( i = 1; i < MAX_SOUNDS; i++ )
 	{
 		soundName = CG_ConfigString( CS_SOUNDS + i );
 
-		if( !soundName[ 0 ] )
+		if ( !soundName[ 0 ] )
 		{
 			break;
 		}
 
-		if( soundName[ 0 ] == '*' )
+		if ( soundName[ 0 ] == '*' )
 		{
 			continue; // custom sound
 		}
@@ -715,7 +715,7 @@ static void CG_RegisterSounds( void )
 	cgs.media.humanBuildableExplosion = trap_S_RegisterSound( "sound/buildables/human/explosion.wav", qfalse );
 	cgs.media.humanBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/human/prebuild.wav", qfalse );
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
 		cgs.media.humanBuildableDamage[ i ] = trap_S_RegisterSound(
 		                                        va( "sound/buildables/human/damage%d.wav", i ), qfalse );
@@ -777,7 +777,7 @@ static void CG_RegisterGraphics( void )
 	trap_R_LoadWorldMap( cgs.mapname );
 	CG_UpdateMediaFraction( 0.66f );
 
-	for( i = 0; i < 11; i++ )
+	for ( i = 0; i < 11; i++ )
 	{
 		cgs.media.numberShaders[ i ] = trap_R_RegisterShader( sb_nums[ i ] );
 	}
@@ -801,7 +801,7 @@ static void CG_RegisterGraphics( void )
 	cgs.media.noPowerShader = trap_R_RegisterShader( "gfx/misc/nopower" );
 	cgs.media.humanSpawningShader = trap_R_RegisterShader( "models/buildables/telenode/rep_cyl" );
 
-	for( i = 0; i < 8; i++ )
+	for ( i = 0; i < 8; i++ )
 	{
 		cgs.media.buildWeaponTimerPie[ i ] = trap_R_RegisterShader( buildWeaponTimerPieShaders[ i ] );
 	}
@@ -839,7 +839,7 @@ static void CG_RegisterGraphics( void )
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
 
-	for( i = 1; i < cgs.numInlineModels; i++ )
+	for ( i = 1; i < cgs.numInlineModels; i++ )
 	{
 		char   name[ 10 ];
 		vec3_t mins, maxs;
@@ -850,20 +850,20 @@ static void CG_RegisterGraphics( void )
 		cgs.inlineDrawModel[ i ] = trap_R_RegisterModel( name );
 		trap_R_ModelBounds( cgs.inlineDrawModel[ i ], mins, maxs );
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			cgs.inlineModelMidpoints[ i ][ j ] = mins[ j ] + 0.5 * ( maxs[ j ] - mins[ j ] );
 		}
 	}
 
 	// register all the server specified models
-	for( i = 1; i < MAX_MODELS; i++ )
+	for ( i = 1; i < MAX_MODELS; i++ )
 	{
 		const char *modelName;
 
 		modelName = CG_ConfigString( CS_MODELS + i );
 
-		if( !modelName[ 0 ] )
+		if ( !modelName[ 0 ] )
 		{
 			break;
 		}
@@ -874,13 +874,13 @@ static void CG_RegisterGraphics( void )
 	CG_UpdateMediaFraction( 0.8f );
 
 	// register all the server specified shaders
-	for( i = 1; i < MAX_GAME_SHADERS; i++ )
+	for ( i = 1; i < MAX_GAME_SHADERS; i++ )
 	{
 		const char *shaderName;
 
 		shaderName = CG_ConfigString( CS_SHADERS + i );
 
-		if( !shaderName[ 0 ] )
+		if ( !shaderName[ 0 ] )
 		{
 			break;
 		}
@@ -891,13 +891,13 @@ static void CG_RegisterGraphics( void )
 	CG_UpdateMediaFraction( 0.9f );
 
 	// register all the server specified particle systems
-	for( i = 1; i < MAX_GAME_PARTICLE_SYSTEMS; i++ )
+	for ( i = 1; i < MAX_GAME_PARTICLE_SYSTEMS; i++ )
 	{
 		const char *psName;
 
 		psName = CG_ConfigString( CS_PARTICLE_SYSTEMS + i );
 
-		if( !psName[ 0 ] )
+		if ( !psName[ 0 ] )
 		{
 			break;
 		}
@@ -918,9 +918,9 @@ void CG_BuildSpectatorString( void )
 
 	cg.spectatorList[ 0 ] = 0;
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		if( cgs.clientinfo[ i ].infoValid && cgs.clientinfo[ i ].team == PTE_NONE )
+		if ( cgs.clientinfo[ i ].infoValid && cgs.clientinfo[ i ].team == PTE_NONE )
 		{
 			Q_strcat( cg.spectatorList, sizeof( cg.spectatorList ), va( "%s     " S_COLOR_WHITE, cgs.clientinfo[ i ].name ) );
 		}
@@ -928,7 +928,7 @@ void CG_BuildSpectatorString( void )
 
 	i = strlen( cg.spectatorList );
 
-	if( i != cg.spectatorLen )
+	if ( i != cg.spectatorLen )
 	{
 		cg.spectatorLen = i;
 		cg.spectatorWidth = -1;
@@ -948,7 +948,7 @@ static void CG_RegisterClients( void )
 	cg.charModelFraction = 0.0f;
 
 	//precache all the models/sounds/etc
-	for( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
+	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
 		CG_PrecacheClientInfo( i, BG_FindModelNameForClass( i ),
 		                       BG_FindSkinNameForClass( i ) );
@@ -969,13 +969,13 @@ static void CG_RegisterClients( void )
 	trap_UpdateScreen();
 
 	//load all the clientinfos of clients already connected to the server
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		const char *clientInfo;
 
 		clientInfo = CG_ConfigString( CS_PLAYERS + i );
 
-		if( !clientInfo[ 0 ] )
+		if ( !clientInfo[ 0 ] )
 		{
 			continue;
 		}
@@ -995,7 +995,7 @@ CG_ConfigString
 */
 const char *CG_ConfigString( int index )
 {
-	if( index < 0 || index >= MAX_CONFIGSTRINGS )
+	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
 		CG_Error( "CG_ConfigString: bad index: %i", index );
 	}
@@ -1035,10 +1035,10 @@ int CG_PlayerCount( void )
 
 	CG_RequestScores();
 
-	for( i = 0; i < cg.numScores; i++ )
+	for ( i = 0; i < cg.numScores; i++ )
 	{
-		if( cg.scores[ i ].team == PTE_ALIENS ||
-		    cg.scores[ i ].team == PTE_HUMANS )
+		if ( cg.scores[ i ].team == PTE_ALIENS ||
+		     cg.scores[ i ].team == PTE_HUMANS )
 		{
 			count++;
 		}
@@ -1060,13 +1060,13 @@ char *CG_GetMenuBuffer( const char *filename )
 
 	len = trap_FS_FOpenFile( filename, &f, FS_READ );
 
-	if( !f )
+	if ( !f )
 	{
 		trap_Print( va( S_COLOR_RED "menu file not found: %s, using default\n", filename ) );
 		return NULL;
 	}
 
-	if( len >= MAX_MENUFILE )
+	if ( len >= MAX_MENUFILE )
 	{
 		trap_Print( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i",
 		                filename, len, MAX_MENUFILE ) );
@@ -1086,34 +1086,34 @@ qboolean CG_Asset_Parse( int handle )
 	pc_token_t token;
 	const char *tempStr;
 
-	if( !trap_PC_ReadToken( handle, &token ) )
+	if ( !trap_PC_ReadToken( handle, &token ) )
 	{
 		return qfalse;
 	}
 
-	if( Q_stricmp( token.string, "{" ) != 0 )
+	if ( Q_stricmp( token.string, "{" ) != 0 )
 	{
 		return qfalse;
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
-		if( !trap_PC_ReadToken( handle, &token ) )
+		if ( !trap_PC_ReadToken( handle, &token ) )
 		{
 			return qfalse;
 		}
 
-		if( Q_stricmp( token.string, "}" ) == 0 )
+		if ( Q_stricmp( token.string, "}" ) == 0 )
 		{
 			return qtrue;
 		}
 
 		// font
-		if( Q_stricmp( token.string, "font" ) == 0 )
+		if ( Q_stricmp( token.string, "font" ) == 0 )
 		{
 			int pointSize;
 
-			if( !PC_String_Parse( handle, &tempStr ) || !PC_Int_Parse( handle, &pointSize ) )
+			if ( !PC_String_Parse( handle, &tempStr ) || !PC_Int_Parse( handle, &pointSize ) )
 			{
 				return qfalse;
 			}
@@ -1123,11 +1123,11 @@ qboolean CG_Asset_Parse( int handle )
 		}
 
 		// smallFont
-		if( Q_stricmp( token.string, "smallFont" ) == 0 )
+		if ( Q_stricmp( token.string, "smallFont" ) == 0 )
 		{
 			int pointSize;
 
-			if( !PC_String_Parse( handle, &tempStr ) || !PC_Int_Parse( handle, &pointSize ) )
+			if ( !PC_String_Parse( handle, &tempStr ) || !PC_Int_Parse( handle, &pointSize ) )
 			{
 				return qfalse;
 			}
@@ -1137,11 +1137,11 @@ qboolean CG_Asset_Parse( int handle )
 		}
 
 		// font
-		if( Q_stricmp( token.string, "bigfont" ) == 0 )
+		if ( Q_stricmp( token.string, "bigfont" ) == 0 )
 		{
 			int pointSize;
 
-			if( !PC_String_Parse( handle, &tempStr ) || !PC_Int_Parse( handle, &pointSize ) )
+			if ( !PC_String_Parse( handle, &tempStr ) || !PC_Int_Parse( handle, &pointSize ) )
 			{
 				return qfalse;
 			}
@@ -1151,9 +1151,9 @@ qboolean CG_Asset_Parse( int handle )
 		}
 
 		// gradientbar
-		if( Q_stricmp( token.string, "gradientbar" ) == 0 )
+		if ( Q_stricmp( token.string, "gradientbar" ) == 0 )
 		{
-			if( !PC_String_Parse( handle, &tempStr ) )
+			if ( !PC_String_Parse( handle, &tempStr ) )
 			{
 				return qfalse;
 			}
@@ -1163,9 +1163,9 @@ qboolean CG_Asset_Parse( int handle )
 		}
 
 		// enterMenuSound
-		if( Q_stricmp( token.string, "menuEnterSound" ) == 0 )
+		if ( Q_stricmp( token.string, "menuEnterSound" ) == 0 )
 		{
-			if( !PC_String_Parse( handle, &tempStr ) )
+			if ( !PC_String_Parse( handle, &tempStr ) )
 			{
 				return qfalse;
 			}
@@ -1175,9 +1175,9 @@ qboolean CG_Asset_Parse( int handle )
 		}
 
 		// exitMenuSound
-		if( Q_stricmp( token.string, "menuExitSound" ) == 0 )
+		if ( Q_stricmp( token.string, "menuExitSound" ) == 0 )
 		{
-			if( !PC_String_Parse( handle, &tempStr ) )
+			if ( !PC_String_Parse( handle, &tempStr ) )
 			{
 				return qfalse;
 			}
@@ -1187,9 +1187,9 @@ qboolean CG_Asset_Parse( int handle )
 		}
 
 		// itemFocusSound
-		if( Q_stricmp( token.string, "itemFocusSound" ) == 0 )
+		if ( Q_stricmp( token.string, "itemFocusSound" ) == 0 )
 		{
-			if( !PC_String_Parse( handle, &tempStr ) )
+			if ( !PC_String_Parse( handle, &tempStr ) )
 			{
 				return qfalse;
 			}
@@ -1199,9 +1199,9 @@ qboolean CG_Asset_Parse( int handle )
 		}
 
 		// menuBuzzSound
-		if( Q_stricmp( token.string, "menuBuzzSound" ) == 0 )
+		if ( Q_stricmp( token.string, "menuBuzzSound" ) == 0 )
 		{
-			if( !PC_String_Parse( handle, &tempStr ) )
+			if ( !PC_String_Parse( handle, &tempStr ) )
 			{
 				return qfalse;
 			}
@@ -1210,9 +1210,9 @@ qboolean CG_Asset_Parse( int handle )
 			continue;
 		}
 
-		if( Q_stricmp( token.string, "cursor" ) == 0 )
+		if ( Q_stricmp( token.string, "cursor" ) == 0 )
 		{
-			if( !PC_String_Parse( handle, &cgDC.Assets.cursorStr ) )
+			if ( !PC_String_Parse( handle, &cgDC.Assets.cursorStr ) )
 			{
 				return qfalse;
 			}
@@ -1221,9 +1221,9 @@ qboolean CG_Asset_Parse( int handle )
 			continue;
 		}
 
-		if( Q_stricmp( token.string, "fadeClamp" ) == 0 )
+		if ( Q_stricmp( token.string, "fadeClamp" ) == 0 )
 		{
-			if( !PC_Float_Parse( handle, &cgDC.Assets.fadeClamp ) )
+			if ( !PC_Float_Parse( handle, &cgDC.Assets.fadeClamp ) )
 			{
 				return qfalse;
 			}
@@ -1231,9 +1231,9 @@ qboolean CG_Asset_Parse( int handle )
 			continue;
 		}
 
-		if( Q_stricmp( token.string, "fadeCycle" ) == 0 )
+		if ( Q_stricmp( token.string, "fadeCycle" ) == 0 )
 		{
-			if( !PC_Int_Parse( handle, &cgDC.Assets.fadeCycle ) )
+			if ( !PC_Int_Parse( handle, &cgDC.Assets.fadeCycle ) )
 			{
 				return qfalse;
 			}
@@ -1241,9 +1241,9 @@ qboolean CG_Asset_Parse( int handle )
 			continue;
 		}
 
-		if( Q_stricmp( token.string, "fadeAmount" ) == 0 )
+		if ( Q_stricmp( token.string, "fadeAmount" ) == 0 )
 		{
-			if( !PC_Float_Parse( handle, &cgDC.Assets.fadeAmount ) )
+			if ( !PC_Float_Parse( handle, &cgDC.Assets.fadeAmount ) )
 			{
 				return qfalse;
 			}
@@ -1251,9 +1251,9 @@ qboolean CG_Asset_Parse( int handle )
 			continue;
 		}
 
-		if( Q_stricmp( token.string, "shadowX" ) == 0 )
+		if ( Q_stricmp( token.string, "shadowX" ) == 0 )
 		{
-			if( !PC_Float_Parse( handle, &cgDC.Assets.shadowX ) )
+			if ( !PC_Float_Parse( handle, &cgDC.Assets.shadowX ) )
 			{
 				return qfalse;
 			}
@@ -1261,9 +1261,9 @@ qboolean CG_Asset_Parse( int handle )
 			continue;
 		}
 
-		if( Q_stricmp( token.string, "shadowY" ) == 0 )
+		if ( Q_stricmp( token.string, "shadowY" ) == 0 )
 		{
-			if( !PC_Float_Parse( handle, &cgDC.Assets.shadowY ) )
+			if ( !PC_Float_Parse( handle, &cgDC.Assets.shadowY ) )
 			{
 				return qfalse;
 			}
@@ -1271,9 +1271,9 @@ qboolean CG_Asset_Parse( int handle )
 			continue;
 		}
 
-		if( Q_stricmp( token.string, "shadowColor" ) == 0 )
+		if ( Q_stricmp( token.string, "shadowColor" ) == 0 )
 		{
-			if( !PC_Color_Parse( handle, &cgDC.Assets.shadowColor ) )
+			if ( !PC_Color_Parse( handle, &cgDC.Assets.shadowColor ) )
 			{
 				return qfalse;
 			}
@@ -1293,19 +1293,19 @@ void CG_ParseMenu( const char *menuFile )
 
 	handle = trap_PC_LoadSource( menuFile );
 
-	if( !handle )
+	if ( !handle )
 	{
 		handle = trap_PC_LoadSource( "ui/testhud.menu" );
 	}
 
-	if( !handle )
+	if ( !handle )
 	{
 		return;
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
-		if( !trap_PC_ReadToken( handle, &token ) )
+		if ( !trap_PC_ReadToken( handle, &token ) )
 		{
 			break;
 		}
@@ -1320,14 +1320,14 @@ void CG_ParseMenu( const char *menuFile )
 		//  break;
 		//}
 
-		if( token.string[ 0 ] == '}' )
+		if ( token.string[ 0 ] == '}' )
 		{
 			break;
 		}
 
-		if( Q_stricmp( token.string, "assetGlobalDef" ) == 0 )
+		if ( Q_stricmp( token.string, "assetGlobalDef" ) == 0 )
 		{
-			if( CG_Asset_Parse( handle ) )
+			if ( CG_Asset_Parse( handle ) )
 			{
 				continue;
 			}
@@ -1337,7 +1337,7 @@ void CG_ParseMenu( const char *menuFile )
 			}
 		}
 
-		if( Q_stricmp( token.string, "menudef" ) == 0 )
+		if ( Q_stricmp( token.string, "menudef" ) == 0 )
 		{
 			// start a new menu
 			Menu_New( handle );
@@ -1353,21 +1353,21 @@ qboolean CG_Load_Menu( char **p )
 
 	token = COM_ParseExt( p, qtrue );
 
-	if( token[ 0 ] != '{' )
+	if ( token[ 0 ] != '{' )
 	{
 		return qfalse;
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
 		token = COM_ParseExt( p, qtrue );
 
-		if( Q_stricmp( token, "}" ) == 0 )
+		if ( Q_stricmp( token, "}" ) == 0 )
 		{
 			return qtrue;
 		}
 
-		if( !token || token[ 0 ] == 0 )
+		if ( !token || token[ 0 ] == 0 )
 		{
 			return qfalse;
 		}
@@ -1390,18 +1390,18 @@ void CG_LoadMenus( const char *menuFile )
 
 	len = trap_FS_FOpenFile( menuFile, &f, FS_READ );
 
-	if( !f )
+	if ( !f )
 	{
 		CG_Printf( S_COLOR_YELLOW "menu file not found: %s, using default\n", menuFile );
 		len = trap_FS_FOpenFile( "ui/hud.txt", &f, FS_READ );
 
-		if( !f )
+		if ( !f )
 		{
 			trap_Error( S_COLOR_RED "default menu file not found: ui/hud.txt, unable to continue!\n" );
 		}
 	}
 
-	if( len >= MAX_MENUDEFFILE )
+	if ( len >= MAX_MENUDEFFILE )
 	{
 		trap_Error( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i",
 		                menuFile, len, MAX_MENUDEFFILE ) );
@@ -1419,23 +1419,23 @@ void CG_LoadMenus( const char *menuFile )
 
 	p = buf;
 
-	while( 1 )
+	while ( 1 )
 	{
 		token = COM_ParseExt( &p, qtrue );
 
-		if( !token || token[ 0 ] == 0 || token[ 0 ] == '}' )
+		if ( !token || token[ 0 ] == 0 || token[ 0 ] == '}' )
 		{
 			break;
 		}
 
-		if( Q_stricmp( token, "}" ) == 0 )
+		if ( Q_stricmp( token, "}" ) == 0 )
 		{
 			break;
 		}
 
-		if( Q_stricmp( token, "loadmenu" ) == 0 )
+		if ( Q_stricmp( token, "loadmenu" ) == 0 )
 		{
-			if( CG_Load_Menu( &p ) )
+			if ( CG_Load_Menu( &p ) )
 			{
 				continue;
 			}
@@ -1458,21 +1458,21 @@ static int CG_FeederCount( float feederID )
 {
 	int i, count = 0;
 
-	if( feederID == FEEDER_ALIENTEAM_LIST )
+	if ( feederID == FEEDER_ALIENTEAM_LIST )
 	{
-		for( i = 0; i < cg.numScores; i++ )
+		for ( i = 0; i < cg.numScores; i++ )
 		{
-			if( cg.scores[ i ].team == PTE_ALIENS )
+			if ( cg.scores[ i ].team == PTE_ALIENS )
 			{
 				count++;
 			}
 		}
 	}
-	else if( feederID == FEEDER_HUMANTEAM_LIST )
+	else if ( feederID == FEEDER_HUMANTEAM_LIST )
 	{
-		for( i = 0; i < cg.numScores; i++ )
+		for ( i = 0; i < cg.numScores; i++ )
 		{
-			if( cg.scores[ i ].team == PTE_HUMANS )
+			if ( cg.scores[ i ].team == PTE_HUMANS )
 			{
 				count++;
 			}
@@ -1491,24 +1491,24 @@ void CG_SetScoreSelection( void *p )
 
 	alien = human = 0;
 
-	for( i = 0; i < cg.numScores; i++ )
+	for ( i = 0; i < cg.numScores; i++ )
 	{
-		if( cg.scores[ i ].team == PTE_ALIENS )
+		if ( cg.scores[ i ].team == PTE_ALIENS )
 		{
 			alien++;
 		}
-		else if( cg.scores[ i ].team == PTE_HUMANS )
+		else if ( cg.scores[ i ].team == PTE_HUMANS )
 		{
 			human++;
 		}
 
-		if( ps->clientNum == cg.scores[ i ].client )
+		if ( ps->clientNum == cg.scores[ i ].client )
 		{
 			cg.selectedScore = i;
 		}
 	}
 
-	if( menu == NULL )
+	if ( menu == NULL )
 	{
 		// just interested in setting the selected score
 		return;
@@ -1517,7 +1517,7 @@ void CG_SetScoreSelection( void *p )
 	feeder = FEEDER_ALIENTEAM_LIST;
 	i = alien;
 
-	if( cg.scores[ cg.selectedScore ].team == PTE_HUMANS )
+	if ( cg.scores[ cg.selectedScore ].team == PTE_HUMANS )
 	{
 		feeder = FEEDER_HUMANTEAM_LIST;
 		i = human;
@@ -1532,11 +1532,11 @@ static clientInfo_t *CG_InfoFromScoreIndex( int index, int team, int *scoreIndex
 	int i, count;
 	count = 0;
 
-	for( i = 0; i < cg.numScores; i++ )
+	for ( i = 0; i < cg.numScores; i++ )
 	{
-		if( cg.scores[ i ].team == team )
+		if ( cg.scores[ i ].team == team )
 		{
-			if( count == index )
+			if ( count == index )
 			{
 				*scoreIndex = i;
 				return &cgs.clientinfo[ cg.scores[ i ].client ];
@@ -1560,11 +1560,11 @@ static const char *CG_FeederItemText( float feederID, int index, int column, qha
 
 	*handle = -1;
 
-	if( feederID == FEEDER_ALIENTEAM_LIST )
+	if ( feederID == FEEDER_ALIENTEAM_LIST )
 	{
 		team = PTE_ALIENS;
 	}
-	else if( feederID == FEEDER_HUMANTEAM_LIST )
+	else if ( feederID == FEEDER_HUMANTEAM_LIST )
 	{
 		team = PTE_HUMANS;
 	}
@@ -1572,25 +1572,25 @@ static const char *CG_FeederItemText( float feederID, int index, int column, qha
 	info = CG_InfoFromScoreIndex( index, team, &scoreIndex );
 	sp = &cg.scores[ scoreIndex ];
 
-	if( ( atoi( CG_ConfigString( CS_CLIENTS_READY ) ) & ( 1 << sp->client ) ) &&
-	    cg.intermissionStarted )
+	if ( ( atoi( CG_ConfigString( CS_CLIENTS_READY ) ) & ( 1 << sp->client ) ) &&
+	     cg.intermissionStarted )
 	{
 		showIcons = qfalse;
 	}
-	else if( cg.snap->ps.pm_type == PM_SPECTATOR || cg.snap->ps.pm_flags & PMF_FOLLOW ||
-	         team == cg.snap->ps.stats[ STAT_PTEAM ] || cg.intermissionStarted )
+	else if ( cg.snap->ps.pm_type == PM_SPECTATOR || cg.snap->ps.pm_flags & PMF_FOLLOW ||
+	          team == cg.snap->ps.stats[ STAT_PTEAM ] || cg.intermissionStarted )
 	{
 		showIcons = qtrue;
 	}
 
-	if( info && info->infoValid )
+	if ( info && info->infoValid )
 	{
-		switch( column )
+		switch ( column )
 		{
 			case 0:
-				if( showIcons )
+				if ( showIcons )
 				{
-					if( sp->weapon != WP_NONE )
+					if ( sp->weapon != WP_NONE )
 					{
 						*handle = cg_weapons[ sp->weapon ].weaponIcon;
 					}
@@ -1599,15 +1599,15 @@ static const char *CG_FeederItemText( float feederID, int index, int column, qha
 				break;
 
 			case 1:
-				if( showIcons )
+				if ( showIcons )
 				{
-					if( sp->team == PTE_HUMANS && sp->upgrade != UP_NONE )
+					if ( sp->team == PTE_HUMANS && sp->upgrade != UP_NONE )
 					{
 						*handle = cg_upgrades[ sp->upgrade ].upgradeIcon;
 					}
-					else if( sp->team == PTE_ALIENS )
+					else if ( sp->team == PTE_ALIENS )
 					{
-						switch( sp->weapon )
+						switch ( sp->weapon )
 						{
 							case WP_ABUILD2:
 							case WP_ALEVEL1_UPG:
@@ -1625,8 +1625,8 @@ static const char *CG_FeederItemText( float feederID, int index, int column, qha
 				break;
 
 			case 2:
-				if( ( atoi( CG_ConfigString( CS_CLIENTS_READY ) ) & ( 1 << sp->client ) ) &&
-				    cg.intermissionStarted )
+				if ( ( atoi( CG_ConfigString( CS_CLIENTS_READY ) ) & ( 1 << sp->client ) ) &&
+				     cg.intermissionStarted )
 				{
 					return "Ready";
 				}
@@ -1646,7 +1646,7 @@ static const char *CG_FeederItemText( float feederID, int index, int column, qha
 				break;
 
 			case 6:
-				if( sp->ping == -1 )
+				if ( sp->ping == -1 )
 				{
 					return "connecting";
 				}
@@ -1670,11 +1670,11 @@ static void CG_FeederSelection( float feederID, int index )
 	int team = ( feederID == FEEDER_ALIENTEAM_LIST ) ? PTE_ALIENS : PTE_HUMANS;
 	count = 0;
 
-	for( i = 0; i < cg.numScores; i++ )
+	for ( i = 0; i < cg.numScores; i++ )
 	{
-		if( cg.scores[ i ].team == team )
+		if ( cg.scores[ i ].team == team )
 		{
-			if( index == count )
+			if ( index == count )
 			{
 				cg.selectedScore = i;
 			}
@@ -1701,7 +1701,7 @@ void CG_Text_PaintWithCursor( float x, float y, float scale, vec4_t color, const
 
 static int CG_OwnerDrawWidth( int ownerDraw, float scale )
 {
-	switch( ownerDraw )
+	switch ( ownerDraw )
 	{
 		case CG_KILLER:
 			return CG_Text_Width( CG_GetKillerText(), scale, 0 );
@@ -1805,7 +1805,7 @@ void CG_LoadHudMenu( void )
 	trap_Cvar_VariableStringBuffer( "cg_hudFiles", buff, sizeof( buff ) );
 	hudSet = buff;
 
-	if( hudSet[ 0 ] == '\0' )
+	if ( hudSet[ 0 ] == '\0' )
 	{
 		hudSet = "ui/hud.txt";
 	}
@@ -1890,7 +1890,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	// check version
 	s = CG_ConfigString( CS_GAME_VERSION );
 
-	if( strcmp( s, GAME_VERSION ) )
+	if ( strcmp( s, GAME_VERSION ) )
 	{
 		CG_Error( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
 	}

@@ -70,7 +70,7 @@ static void al_mus_source_get( void )
 	// Allocate a source at high priority
 	source_handle = al_src_alloc( SRCPRI_STREAM, -2, 0 );
 
-	if( source_handle == -1 )
+	if ( source_handle == -1 )
 	{
 		return;
 	}
@@ -102,12 +102,12 @@ void al_mus_process( ALuint b )
 
 	l = si.StreamRead( mus_stream, BUFFER_SIZE, decode_buffer );
 
-	if( l == 0 )
+	if ( l == 0 )
 	{
 		si.StreamClose( mus_stream );
 		mus_stream = si.StreamOpen( s_backgroundLoop );
 
-		if( !mus_stream )
+		if ( !mus_stream )
 		{
 			SndAl_StopBackgroundTrack();
 			return;
@@ -130,17 +130,17 @@ void SndAl_StartBackgroundTrack( const char *intro, const char *loop )
 	// Stop any existing music that might be playing
 	SndAl_StopBackgroundTrack();
 
-	if( !intro || !intro[ 0 ] )
+	if ( !intro || !intro[ 0 ] )
 	{
 		intro = loop;
 	}
 
-	if( !loop || !loop[ 0 ] )
+	if ( !loop || !loop[ 0 ] )
 	{
 		loop = intro;
 	}
 
-	if( ( !intro || !intro[ 0 ] ) && ( !intro || !intro[ 0 ] ) )
+	if ( ( !intro || !intro[ 0 ] ) && ( !intro || !intro[ 0 ] ) )
 	{
 		return;
 	}
@@ -151,7 +151,7 @@ void SndAl_StartBackgroundTrack( const char *intro, const char *loop )
 	// Open the intro
 	mus_stream = si.StreamOpen( intro );
 
-	if( !mus_stream )
+	if ( !mus_stream )
 	{
 		return;
 	}
@@ -159,7 +159,7 @@ void SndAl_StartBackgroundTrack( const char *intro, const char *loop )
 	// Allocate a source
 	al_mus_source_get();
 
-	if( source_handle == -1 )
+	if ( source_handle == -1 )
 	{
 		return;
 	}
@@ -168,7 +168,7 @@ void SndAl_StartBackgroundTrack( const char *intro, const char *loop )
 	qalGenBuffers( BUFFERS, buffers );
 
 	// Queue the buffers up
-	for( i = 0; i < BUFFERS; i++ )
+	for ( i = 0; i < BUFFERS; i++ )
 	{
 		al_mus_process( buffers[ i ] );
 	}
@@ -183,7 +183,7 @@ void SndAl_StartBackgroundTrack( const char *intro, const char *loop )
 
 void SndAl_StopBackgroundTrack( void )
 {
-	if( !mus_playing )
+	if ( !mus_playing )
 	{
 		return;
 	}
@@ -201,7 +201,7 @@ void SndAl_StopBackgroundTrack( void )
 	al_mus_source_free();
 
 	// Unload the stream
-	if( mus_stream )
+	if ( mus_stream )
 	{
 		si.StreamClose( mus_stream );
 	}
@@ -216,16 +216,16 @@ void al_mus_update( void )
 	int   processed;
 	ALint state;
 
-	if( !mus_playing )
+	if ( !mus_playing )
 	{
 		return;
 	}
 
 	qalGetSourcei( source, AL_BUFFERS_PROCESSED, &processed );
 
-	if( processed )
+	if ( processed )
 	{
-		while( processed-- )
+		while ( processed-- )
 		{
 			ALuint b;
 			qalSourceUnqueueBuffers( source, 1, &b );
@@ -237,7 +237,7 @@ void al_mus_update( void )
 	// If it's not still playing, give it a kick
 	qalGetSourcei( source, AL_SOURCE_STATE, &state );
 
-	if( state == AL_STOPPED )
+	if ( state == AL_STOPPED )
 	{
 		si.Printf( PRINT_ALL, "Musical kick\n" );
 		qalSourcePlay( source );

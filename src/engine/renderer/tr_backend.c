@@ -54,7 +54,7 @@ void GL_Bind( image_t *image )
 {
 	int texnum;
 
-	if( !image )
+	if ( !image )
 	{
 		ri.Printf( PRINT_WARNING, "GL_Bind: NULL image\n" );
 		texnum = tr.defaultImage->texnum;
@@ -64,13 +64,13 @@ void GL_Bind( image_t *image )
 		texnum = image->texnum;
 	}
 
-	if( r_nobind->integer && tr.dlightImage )
+	if ( r_nobind->integer && tr.dlightImage )
 	{
 		// performance evaluation option
 		texnum = tr.dlightImage->texnum;
 	}
 
-	if( glState.currenttextures[ glState.currenttmu ] != texnum )
+	if ( glState.currenttextures[ glState.currenttmu ] != texnum )
 	{
 		image->frameUsed = tr.frameCount;
 		glState.currenttextures[ glState.currenttmu ] = texnum;
@@ -83,19 +83,19 @@ void GL_Bind( image_t *image )
 */
 void GL_SelectTexture( int unit )
 {
-	if( glState.currenttmu == unit )
+	if ( glState.currenttmu == unit )
 	{
 		return;
 	}
 
-	if( unit == 0 )
+	if ( unit == 0 )
 	{
 		glActiveTextureARB( GL_TEXTURE0_ARB );
 		GLimp_LogComment( "glActiveTextureARB( GL_TEXTURE0_ARB )\n" );
 		glClientActiveTextureARB( GL_TEXTURE0_ARB );
 		GLimp_LogComment( "glClientActiveTextureARB( GL_TEXTURE0_ARB )\n" );
 	}
-	else if( unit == 1 )
+	else if ( unit == 1 )
 	{
 		glActiveTextureARB( GL_TEXTURE1_ARB );
 		GLimp_LogComment( "glActiveTextureARB( GL_TEXTURE1_ARB )\n" );
@@ -120,13 +120,13 @@ void GL_BindMultitexture( image_t *image0, GLuint env0, image_t *image1, GLuint 
 	texnum0 = image0->texnum;
 	texnum1 = image1->texnum;
 
-	if( r_nobind->integer && tr.dlightImage )
+	if ( r_nobind->integer && tr.dlightImage )
 	{
 		// performance evaluation option
 		texnum0 = texnum1 = tr.dlightImage->texnum;
 	}
 
-	if( glState.currenttextures[ 1 ] != texnum1 )
+	if ( glState.currenttextures[ 1 ] != texnum1 )
 	{
 		GL_SelectTexture( 1 );
 		image1->frameUsed = tr.frameCount;
@@ -134,7 +134,7 @@ void GL_BindMultitexture( image_t *image0, GLuint env0, image_t *image1, GLuint 
 		glBindTexture( GL_TEXTURE_2D, texnum1 );
 	}
 
-	if( glState.currenttextures[ 0 ] != texnum0 )
+	if ( glState.currenttextures[ 0 ] != texnum0 )
 	{
 		GL_SelectTexture( 0 );
 		image0->frameUsed = tr.frameCount;
@@ -148,14 +148,14 @@ void GL_BindMultitexture( image_t *image0, GLuint env0, image_t *image1, GLuint 
 */
 void GL_Cull( int cullType )
 {
-	if( glState.faceCulling == cullType )
+	if ( glState.faceCulling == cullType )
 	{
 		return;
 	}
 
 	glState.faceCulling = cullType;
 
-	if( cullType == CT_TWO_SIDED )
+	if ( cullType == CT_TWO_SIDED )
 	{
 		glDisable( GL_CULL_FACE );
 	}
@@ -163,9 +163,9 @@ void GL_Cull( int cullType )
 	{
 		glEnable( GL_CULL_FACE );
 
-		if( cullType == CT_BACK_SIDED )
+		if ( cullType == CT_BACK_SIDED )
 		{
-			if( backEnd.viewParms.isMirror )
+			if ( backEnd.viewParms.isMirror )
 			{
 				glCullFace( GL_FRONT );
 			}
@@ -176,7 +176,7 @@ void GL_Cull( int cullType )
 		}
 		else
 		{
-			if( backEnd.viewParms.isMirror )
+			if ( backEnd.viewParms.isMirror )
 			{
 				glCullFace( GL_BACK );
 			}
@@ -193,14 +193,14 @@ void GL_Cull( int cullType )
 */
 void GL_TexEnv( int env )
 {
-	if( env == glState.texEnv[ glState.currenttmu ] )
+	if ( env == glState.texEnv[ glState.currenttmu ] )
 	{
 		return;
 	}
 
 	glState.texEnv[ glState.currenttmu ] = env;
 
-	switch( env )
+	switch ( env )
 	{
 		case GL_MODULATE:
 			glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
@@ -234,7 +234,7 @@ void GL_State( unsigned long stateBits )
 {
 	unsigned long diff = stateBits ^ glState.glStateBits;
 
-	if( !diff )
+	if ( !diff )
 	{
 		return;
 	}
@@ -242,9 +242,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// check depthFunc bits
 	//
-	if( diff & GLS_DEPTHFUNC_EQUAL )
+	if ( diff & GLS_DEPTHFUNC_EQUAL )
 	{
-		if( stateBits & GLS_DEPTHFUNC_EQUAL )
+		if ( stateBits & GLS_DEPTHFUNC_EQUAL )
 		{
 			glDepthFunc( GL_EQUAL );
 		}
@@ -257,13 +257,13 @@ void GL_State( unsigned long stateBits )
 	//
 	// check blend bits
 	//
-	if( diff & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) )
+	if ( diff & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) )
 	{
 		GLenum srcFactor, dstFactor;
 
-		if( stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) )
+		if ( stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) )
 		{
-			switch( stateBits & GLS_SRCBLEND_BITS )
+			switch ( stateBits & GLS_SRCBLEND_BITS )
 			{
 				case GLS_SRCBLEND_ZERO:
 					srcFactor = GL_ZERO;
@@ -307,7 +307,7 @@ void GL_State( unsigned long stateBits )
 					break;
 			}
 
-			switch( stateBits & GLS_DSTBLEND_BITS )
+			switch ( stateBits & GLS_DSTBLEND_BITS )
 			{
 				case GLS_DSTBLEND_ZERO:
 					dstFactor = GL_ZERO;
@@ -359,9 +359,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// check depthmask
 	//
-	if( diff & GLS_DEPTHMASK_TRUE )
+	if ( diff & GLS_DEPTHMASK_TRUE )
 	{
-		if( stateBits & GLS_DEPTHMASK_TRUE )
+		if ( stateBits & GLS_DEPTHMASK_TRUE )
 		{
 			glDepthMask( GL_TRUE );
 		}
@@ -374,9 +374,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// fill/line mode
 	//
-	if( diff & GLS_POLYMODE_LINE )
+	if ( diff & GLS_POLYMODE_LINE )
 	{
-		if( stateBits & GLS_POLYMODE_LINE )
+		if ( stateBits & GLS_POLYMODE_LINE )
 		{
 			glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		}
@@ -389,9 +389,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// depthtest
 	//
-	if( diff & GLS_DEPTHTEST_DISABLE )
+	if ( diff & GLS_DEPTHTEST_DISABLE )
 	{
-		if( stateBits & GLS_DEPTHTEST_DISABLE )
+		if ( stateBits & GLS_DEPTHTEST_DISABLE )
 		{
 			glDisable( GL_DEPTH_TEST );
 		}
@@ -404,9 +404,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// alpha test
 	//
-	if( diff & GLS_ATEST_BITS )
+	if ( diff & GLS_ATEST_BITS )
 	{
-		switch( stateBits & GLS_ATEST_BITS )
+		switch ( stateBits & GLS_ATEST_BITS )
 		{
 			case 0:
 				glDisable( GL_ALPHA_TEST );
@@ -447,7 +447,7 @@ static void RB_Hyperspace( void )
 {
 	float c;
 
-	if( !backEnd.isHyperspace )
+	if ( !backEnd.isHyperspace )
 	{
 		// do initialization shit
 	}
@@ -485,13 +485,13 @@ void RB_BeginDrawingView( void )
 	int clearBits = 0;
 
 	// sync with gl if needed
-	if( r_finish->integer == 1 && !glState.finishCalled )
+	if ( r_finish->integer == 1 && !glState.finishCalled )
 	{
 		glFinish();
 		glState.finishCalled = qtrue;
 	}
 
-	if( r_finish->integer == 0 )
+	if ( r_finish->integer == 0 )
 	{
 		glState.finishCalled = qtrue;
 	}
@@ -513,7 +513,7 @@ void RB_BeginDrawingView( void )
 	// clear relevant buffers
 	clearBits = 0;
 
-	if( r_measureOverdraw->integer || r_shadows->integer == 2 )
+	if ( r_measureOverdraw->integer || r_shadows->integer == 2 )
 	{
 		clearBits |= GL_STENCIL_BUFFER_BIT;
 	}
@@ -522,7 +522,7 @@ void RB_BeginDrawingView( void )
 //      clearBits = GL_DEPTH_BUFFER_BIT;    // (SA) always just clear depth for menus
 //  } else
 	// ydnar: global q3 fog volume
-	if( tr.world && tr.world->globalFog >= 0 )
+	if ( tr.world && tr.world->globalFog >= 0 )
 	{
 		clearBits |= GL_DEPTH_BUFFER_BIT;
 		clearBits |= GL_COLOR_BUFFER_BIT;
@@ -531,25 +531,25 @@ void RB_BeginDrawingView( void )
 		              tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color[ 1 ] * tr.identityLight,
 		              tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color[ 2 ] * tr.identityLight, 1.0 );
 	}
-	else if( skyboxportal )
+	else if ( skyboxportal )
 	{
-		if( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL )
+		if ( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL )
 		{
 			// portal scene, clear whatever is necessary
 			clearBits |= GL_DEPTH_BUFFER_BIT;
 
-			if( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
+			if ( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
 			{
 				// fastsky: clear color
 				// try clearing first with the portal sky fog color, then the world fog color, then finally a default
 				clearBits |= GL_COLOR_BUFFER_BIT;
 
-				if( glfogsettings[ FOG_PORTALVIEW ].registered )
+				if ( glfogsettings[ FOG_PORTALVIEW ].registered )
 				{
 					glClearColor( glfogsettings[ FOG_PORTALVIEW ].color[ 0 ], glfogsettings[ FOG_PORTALVIEW ].color[ 1 ],
 					              glfogsettings[ FOG_PORTALVIEW ].color[ 2 ], glfogsettings[ FOG_PORTALVIEW ].color[ 3 ] );
 				}
-				else if( glfogNum > FOG_NONE && glfogsettings[ FOG_CURRENT ].registered )
+				else if ( glfogNum > FOG_NONE && glfogsettings[ FOG_CURRENT ].registered )
 				{
 					glClearColor( glfogsettings[ FOG_CURRENT ].color[ 0 ], glfogsettings[ FOG_CURRENT ].color[ 1 ],
 					              glfogsettings[ FOG_CURRENT ].color[ 2 ], glfogsettings[ FOG_CURRENT ].color[ 3 ] );
@@ -563,12 +563,12 @@ void RB_BeginDrawingView( void )
 			else
 			{
 				// rendered sky (either clear color or draw quake sky)
-				if( glfogsettings[ FOG_PORTALVIEW ].registered )
+				if ( glfogsettings[ FOG_PORTALVIEW ].registered )
 				{
 					glClearColor( glfogsettings[ FOG_PORTALVIEW ].color[ 0 ], glfogsettings[ FOG_PORTALVIEW ].color[ 1 ],
 					              glfogsettings[ FOG_PORTALVIEW ].color[ 2 ], glfogsettings[ FOG_PORTALVIEW ].color[ 3 ] );
 
-					if( glfogsettings[ FOG_PORTALVIEW ].clearscreen )
+					if ( glfogsettings[ FOG_PORTALVIEW ].clearscreen )
 					{
 						// portal fog requests a screen clear (distance fog rather than quake sky)
 						clearBits |= GL_COLOR_BUFFER_BIT;
@@ -581,16 +581,16 @@ void RB_BeginDrawingView( void )
 			// world scene with portal sky, don't clear any buffers, just set the fog color if there is one
 			clearBits |= GL_DEPTH_BUFFER_BIT; // this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
 
-			if( glfogNum > FOG_NONE && glfogsettings[ FOG_CURRENT ].registered )
+			if ( glfogNum > FOG_NONE && glfogsettings[ FOG_CURRENT ].registered )
 			{
-				if( backEnd.refdef.rdflags & RDF_UNDERWATER )
+				if ( backEnd.refdef.rdflags & RDF_UNDERWATER )
 				{
-					if( glfogsettings[ FOG_CURRENT ].mode == GL_LINEAR )
+					if ( glfogsettings[ FOG_CURRENT ].mode == GL_LINEAR )
 					{
 						clearBits |= GL_COLOR_BUFFER_BIT;
 					}
 				}
-				else if( !( r_portalsky->integer ) )
+				else if ( !( r_portalsky->integer ) )
 				{
 					// portal skies have been manually turned off, clear bg color
 					clearBits |= GL_COLOR_BUFFER_BIT;
@@ -599,7 +599,7 @@ void RB_BeginDrawingView( void )
 				glClearColor( glfogsettings[ FOG_CURRENT ].color[ 0 ], glfogsettings[ FOG_CURRENT ].color[ 1 ],
 				              glfogsettings[ FOG_CURRENT ].color[ 2 ], glfogsettings[ FOG_CURRENT ].color[ 3 ] );
 			}
-			else if( !( r_portalsky->integer ) )
+			else if ( !( r_portalsky->integer ) )
 			{
 				// ydnar: portal skies have been manually turned off, clear bg color
 				clearBits |= GL_COLOR_BUFFER_BIT;
@@ -613,16 +613,16 @@ void RB_BeginDrawingView( void )
 		clearBits |= GL_DEPTH_BUFFER_BIT;
 
 		// NERVE - SMF - we don't want to clear the buffer when no world model is specified
-		if( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
+		if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
 		{
 			clearBits &= ~GL_COLOR_BUFFER_BIT;
 		}
 		// -NERVE - SMF
-		else if( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
+		else if ( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
 		{
 			clearBits |= GL_COLOR_BUFFER_BIT;
 
-			if( glfogsettings[ FOG_CURRENT ].registered )
+			if ( glfogsettings[ FOG_CURRENT ].registered )
 			{
 				// try to clear fastsky with current fog color
 				glClearColor( glfogsettings[ FOG_CURRENT ].color[ 0 ], glfogsettings[ FOG_CURRENT ].color[ 1 ],
@@ -637,13 +637,13 @@ void RB_BeginDrawingView( void )
 		else
 		{
 			// world scene, no portal sky, not fastsky, clear color if fog says to, otherwise, just set the clearcolor
-			if( glfogsettings[ FOG_CURRENT ].registered )
+			if ( glfogsettings[ FOG_CURRENT ].registered )
 			{
 				// try to clear fastsky with current fog color
 				glClearColor( glfogsettings[ FOG_CURRENT ].color[ 0 ], glfogsettings[ FOG_CURRENT ].color[ 1 ],
 				              glfogsettings[ FOG_CURRENT ].color[ 2 ], glfogsettings[ FOG_CURRENT ].color[ 3 ] );
 
-				if( glfogsettings[ FOG_CURRENT ].clearscreen )
+				if ( glfogsettings[ FOG_CURRENT ].clearscreen )
 				{
 					// world fog requests a screen clear (distance fog rather than quake sky)
 					clearBits |= GL_COLOR_BUFFER_BIT;
@@ -653,19 +653,19 @@ void RB_BeginDrawingView( void )
 	}
 
 	// ydnar: don't clear the color buffer when no world model is specified
-	if( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
+	if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
 	{
 		clearBits &= ~GL_COLOR_BUFFER_BIT;
 	}
 
-	if( clearBits )
+	if ( clearBits )
 	{
 		glClear( clearBits );
 	}
 
 //----(SA)  done
 
-	if( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
+	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
 	{
 		RB_Hyperspace();
 		return;
@@ -681,7 +681,7 @@ void RB_BeginDrawingView( void )
 	backEnd.skyRenderedThisView = qfalse;
 
 	// clip to the plane of the portal
-	if( backEnd.viewParms.isPortal )
+	if ( backEnd.viewParms.isPortal )
 	{
 		float  plane[ 4 ];
 #ifdef IPHONE
@@ -758,9 +758,9 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
 
 	backEnd.pc.c_surfaces += numDrawSurfs;
 
-	for( i = 0, drawSurf = drawSurfs; i < numDrawSurfs; i++, drawSurf++ )
+	for ( i = 0, drawSurf = drawSurfs; i < numDrawSurfs; i++, drawSurf++ )
 	{
-		if( drawSurf->sort == oldSort )
+		if ( drawSurf->sort == oldSort )
 		{
 			// fast path, same as previous sort
 			rb_surfaceTable[ *drawSurf->surface ]( drawSurf->surface );
@@ -774,17 +774,17 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
 		// change the tess parameters if needed
 		// a "entityMergable" shader is a shader that can have surfaces from seperate
 		// entities merged into a single batch, like smoke and blood puff sprites
-		if( shader != oldShader || fogNum != oldFogNum || dlighted != oldDlighted
-		    || ( entityNum != oldEntityNum && !shader->entityMergable ) )
+		if ( shader != oldShader || fogNum != oldFogNum || dlighted != oldDlighted
+		     || ( entityNum != oldEntityNum && !shader->entityMergable ) )
 		{
-			if( oldShader != NULL )
+			if ( oldShader != NULL )
 			{
 #ifdef __MACOS__ // crutch up the mac's limited buffer queue size
 				int t;
 
 				t = ri.Milliseconds();
 
-				if( t > macEventTime )
+				if ( t > macEventTime )
 				{
 					macEventTime = t + MAC_EVENT_PUMP_MSEC;
 					Sys_PumpEvents();
@@ -803,11 +803,11 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
 		//
 		// change the modelview matrix if needed
 		//
-		if( entityNum != oldEntityNum )
+		if ( entityNum != oldEntityNum )
 		{
 			depthRange = qfalse;
 
-			if( entityNum != ENTITYNUM_WORLD )
+			if ( entityNum != ENTITYNUM_WORLD )
 			{
 				backEnd.currentEntity = &backEnd.refdef.entities[ entityNum ];
 				backEnd.refdef.floatTime = originalTime; // - backEnd.currentEntity->e.shaderTime; // JPW NERVE pulled this to match q3ta
@@ -820,12 +820,12 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
 				R_RotateForEntity( backEnd.currentEntity, &backEnd.viewParms, &backEnd.orientation );
 
 				// set up the dynamic lighting if needed
-				if( backEnd.currentEntity->needDlights )
+				if ( backEnd.currentEntity->needDlights )
 				{
 					R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.orientation );
 				}
 
-				if( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK )
+				if ( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK )
 				{
 					// hack the depth range to prevent view model from poking into walls
 					depthRange = qtrue;
@@ -849,9 +849,9 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
 			//
 			// change depthrange if needed
 			//
-			if( oldDepthRange != depthRange )
+			if ( oldDepthRange != depthRange )
 			{
-				if( depthRange )
+				if ( depthRange )
 				{
 					glDepthRange( 0, 0.3 );
 				}
@@ -871,7 +871,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
 	}
 
 	// draw the contents of the last shader batch
-	if( oldShader != NULL )
+	if ( oldShader != NULL )
 	{
 		RB_EndSurface();
 	}
@@ -884,7 +884,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
 
 	glLoadMatrixf( backEnd.viewParms.world.modelMatrix );
 
-	if( depthRange )
+	if ( depthRange )
 	{
 		glDepthRange( 0, 1 );
 	}
@@ -926,7 +926,7 @@ void RB_SetGL2D( void )
 	// set 2D virtual screen size
 #ifdef IPHONE
 
-	if( glConfig.vidRotation == 90.0 || glConfig.vidRotation == 270.0 )
+	if ( glConfig.vidRotation == 90.0 || glConfig.vidRotation == 270.0 )
 	{
 		glViewport( 0, 0, glConfig.vidHeight, glConfig.vidWidth );
 		glScissor( 0, 0, glConfig.vidHeight, glConfig.vidWidth );
@@ -972,7 +972,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	int i, j;
 	int start, end;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
@@ -984,21 +984,21 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 
 	start = end = 0;
 
-	if( r_speeds->integer )
+	if ( r_speeds->integer )
 	{
 		start = ri.Milliseconds();
 	}
 
 	// make sure rows and cols are powers of 2
-	for( i = 0; ( 1 << i ) < cols; i++ )
+	for ( i = 0; ( 1 << i ) < cols; i++ )
 	{
 	}
 
-	for( j = 0; ( 1 << j ) < rows; j++ )
+	for ( j = 0; ( 1 << j ) < rows; j++ )
 	{
 	}
 
-	if( ( 1 << i ) != cols || ( 1 << j ) != rows )
+	if ( ( 1 << i ) != cols || ( 1 << j ) != rows )
 	{
 		ri.Error( ERR_DROP, "Draw_StretchRaw: size not a power of 2: %i by %i", cols, rows );
 	}
@@ -1006,7 +1006,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	GL_Bind( tr.scratchImage[ client ] );
 
 	// if the scratchImage isn't in the format we want, specify it as a new texture
-	if( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
+	if ( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
 	{
 		tr.scratchImage[ client ]->width = tr.scratchImage[ client ]->uploadWidth = cols;
 		tr.scratchImage[ client ]->height = tr.scratchImage[ client ]->uploadHeight = rows;
@@ -1022,7 +1022,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	}
 	else
 	{
-		if( dirty )
+		if ( dirty )
 		{
 			// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 			// it and don't try and do a texture compression
@@ -1030,7 +1030,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 		}
 	}
 
-	if( r_speeds->integer )
+	if ( r_speeds->integer )
 	{
 		end = ri.Milliseconds();
 		ri.Printf( PRINT_ALL, "glTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
@@ -1057,7 +1057,7 @@ void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int
 	GL_Bind( tr.scratchImage[ client ] );
 
 	// if the scratchImage isn't in the format we want, specify it as a new texture
-	if( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
+	if ( cols != tr.scratchImage[ client ]->width || rows != tr.scratchImage[ client ]->height )
 	{
 		tr.scratchImage[ client ]->width = tr.scratchImage[ client ]->uploadWidth = cols;
 		tr.scratchImage[ client ]->height = tr.scratchImage[ client ]->uploadHeight = rows;
@@ -1073,7 +1073,7 @@ void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int
 	}
 	else
 	{
-		if( dirty )
+		if ( dirty )
 		{
 			// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 			// it and don't try and do a texture compression
@@ -1115,16 +1115,16 @@ const void     *RB_StretchPic( const void *data )
 
 	cmd = ( const stretchPicCommand_t * ) data;
 
-	if( !backEnd.projection2D )
+	if ( !backEnd.projection2D )
 	{
 		RB_SetGL2D();
 	}
 
 	shader = cmd->shader;
 
-	if( shader != tess.shader )
+	if ( shader != tess.shader )
 	{
-		if( tess.numIndexes )
+		if ( tess.numIndexes )
 		{
 			RB_EndSurface();
 		}
@@ -1190,16 +1190,16 @@ const void     *RB_Draw2dPolys( const void *data )
 
 	cmd = ( const poly2dCommand_t * ) data;
 
-	if( !backEnd.projection2D )
+	if ( !backEnd.projection2D )
 	{
 		RB_SetGL2D();
 	}
 
 	shader = cmd->shader;
 
-	if( shader != tess.shader )
+	if ( shader != tess.shader )
 	{
-		if( tess.numIndexes )
+		if ( tess.numIndexes )
 		{
 			RB_EndSurface();
 		}
@@ -1210,7 +1210,7 @@ const void     *RB_Draw2dPolys( const void *data )
 
 	RB_CHECKOVERFLOW( cmd->numverts, ( cmd->numverts - 2 ) * 3 );
 
-	for( i = 0; i < cmd->numverts - 2; i++ )
+	for ( i = 0; i < cmd->numverts - 2; i++ )
 	{
 		tess.indexes[ tess.numIndexes + 0 ] = tess.numVertexes;
 		tess.indexes[ tess.numIndexes + 1 ] = tess.numVertexes + i + 1;
@@ -1218,7 +1218,7 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.numIndexes += 3;
 	}
 
-	for( i = 0; i < cmd->numverts; i++ )
+	for ( i = 0; i < cmd->numverts; i++ )
 	{
 		tess.xyz[ tess.numVertexes ].v[ 0 ] = cmd->verts[ i ].xyz[ 0 ];
 		tess.xyz[ tess.numVertexes ].v[ 1 ] = cmd->verts[ i ].xyz[ 1 ];
@@ -1253,16 +1253,16 @@ const void     *RB_RotatedPic( const void *data )
 
 	cmd = ( const stretchPicCommand_t * ) data;
 
-	if( !backEnd.projection2D )
+	if ( !backEnd.projection2D )
 	{
 		RB_SetGL2D();
 	}
 
 	shader = cmd->shader;
 
-	if( shader != tess.shader )
+	if ( shader != tess.shader )
 	{
-		if( tess.numIndexes )
+		if ( tess.numIndexes )
 		{
 			RB_EndSurface();
 		}
@@ -1344,16 +1344,16 @@ const void     *RB_StretchPicGradient( const void *data )
 
 	cmd = ( const stretchPicCommand_t * ) data;
 
-	if( !backEnd.projection2D )
+	if ( !backEnd.projection2D )
 	{
 		RB_SetGL2D();
 	}
 
 	shader = cmd->shader;
 
-	if( shader != tess.shader )
+	if ( shader != tess.shader )
 	{
-		if( tess.numIndexes )
+		if ( tess.numIndexes )
 		{
 			RB_EndSurface();
 		}
@@ -1427,7 +1427,7 @@ const void     *RB_DrawSurfs( const void *data )
 	const drawSurfsCommand_t *cmd;
 
 	// finish any 2D drawing if needed
-	if( tess.numIndexes )
+	if ( tess.numIndexes )
 	{
 		RB_EndSurface();
 	}
@@ -1457,7 +1457,7 @@ const void     *RB_DrawBuffer( const void *data )
 	glDrawBuffer( cmd->buffer );
 
 	// clear screen for debugging
-	if( r_clear->integer )
+	if ( r_clear->integer )
 	{
 		glClearColor( 1, 0, 0.5, 1 );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -1483,7 +1483,7 @@ void RB_ShowImages( void )
 	float   x, y, w, h;
 	int     start, end;
 
-	if( !backEnd.projection2D )
+	if ( !backEnd.projection2D )
 	{
 		RB_SetGL2D();
 	}
@@ -1494,7 +1494,7 @@ void RB_ShowImages( void )
 
 	start = ri.Milliseconds();
 
-	for( i = 0; i < tr.numImages; i++ )
+	for ( i = 0; i < tr.numImages; i++ )
 	{
 		image = tr.images[ i ];
 
@@ -1505,7 +1505,7 @@ void RB_ShowImages( void )
 		y = i / 30 * h;
 
 		// show in proportional size in mode 2
-		if( r_showImages->integer == 2 )
+		if ( r_showImages->integer == 2 )
 		{
 			w *= image->uploadWidth / 512.0f;
 			h *= image->uploadHeight / 512.0f;
@@ -1590,13 +1590,13 @@ const void     *RB_SwapBuffers( const void *data )
 	const swapBuffersCommand_t *cmd;
 
 	// finish any 2D drawing if needed
-	if( tess.numIndexes )
+	if ( tess.numIndexes )
 	{
 		RB_EndSurface();
 	}
 
 	// texture swapping test
-	if( r_showImages->integer )
+	if ( r_showImages->integer )
 	{
 		RB_ShowImages();
 	}
@@ -1607,7 +1607,7 @@ const void     *RB_SwapBuffers( const void *data )
 
 	// we measure overdraw by reading back the stencil buffer and
 	// counting up the number of increments that have happened
-	if( r_measureOverdraw->integer )
+	if ( r_measureOverdraw->integer )
 	{
 		int           i;
 		long          sum = 0;
@@ -1616,7 +1616,7 @@ const void     *RB_SwapBuffers( const void *data )
 		stencilReadback = ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight );
 		glReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback );
 
-		for( i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++ )
+		for ( i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++ )
 		{
 			sum += stencilReadback[ i ];
 		}
@@ -1627,7 +1627,7 @@ const void     *RB_SwapBuffers( const void *data )
 
 #endif // !IPHONE
 
-	if( !glState.finishCalled )
+	if ( !glState.finishCalled )
 	{
 		glFinish();
 	}
@@ -1702,7 +1702,7 @@ void RB_ExecuteRenderCommands( const void *data )
 
 	t1 = ri.Milliseconds();
 
-	if( !r_smp->integer || data == backEndData[ 0 ]->commands.cmds )
+	if ( !r_smp->integer || data == backEndData[ 0 ]->commands.cmds )
 	{
 		backEnd.smpFrame = 0;
 	}
@@ -1711,9 +1711,9 @@ void RB_ExecuteRenderCommands( const void *data )
 		backEnd.smpFrame = 1;
 	}
 
-	while( 1 )
+	while ( 1 )
 	{
-		switch( * ( const int * ) data )
+		switch ( * ( const int * ) data )
 		{
 			case RC_SET_COLOR:
 				data = RB_SetColor( data );
@@ -1781,12 +1781,12 @@ void RB_RenderThread( void )
 	const void *data;
 
 	// wait for either a rendering command or a quit command
-	while( 1 )
+	while ( 1 )
 	{
 		// sleep until we have work to do
 		data = GLimp_RendererSleep();
 
-		if( !data )
+		if ( !data )
 		{
 			return; // all done, renderer is shutting down
 		}

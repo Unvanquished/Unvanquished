@@ -45,7 +45,7 @@ R_PerformanceCounters
 */
 void R_PerformanceCounters( void )
 {
-	if( !r_speeds->integer )
+	if ( !r_speeds->integer )
 	{
 		// clear the counters even if we aren't printing
 		memset( &tr.pc, 0, sizeof( tr.pc ) );
@@ -53,7 +53,7 @@ void R_PerformanceCounters( void )
 		return;
 	}
 
-	if( r_speeds->integer )
+	if ( r_speeds->integer )
 	{
 		//%  == 1)
 		ri.Printf( PRINT_ALL, "%i/%i shaders/surfs %i leafs %i verts %i/%i tris %.2f mtex %.2f dc\n",
@@ -62,7 +62,7 @@ void R_PerformanceCounters( void )
 		           R_SumOfUsedImages() / ( 1000000.0f ), backEnd.pc.c_overDraw / ( float )( glConfig.vidWidth * glConfig.vidHeight ) );
 	}
 
-	if( r_speeds->integer == 2 )
+	if ( r_speeds->integer == 2 )
 	{
 		ri.Printf( PRINT_ALL, "(patch) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
 		           tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip, tr.pc.c_sphere_cull_patch_out,
@@ -73,22 +73,22 @@ void R_PerformanceCounters( void )
 		ri.Printf( PRINT_ALL, "(gen) %i sin %i sout %i pin %i pout\n",
 		           tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out, tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out );
 	}
-	else if( r_speeds->integer == 3 )
+	else if ( r_speeds->integer == 3 )
 	{
 		ri.Printf( PRINT_ALL, "viewcluster: %i\n", tr.viewCluster );
 	}
-	else if( r_speeds->integer == 4 )
+	else if ( r_speeds->integer == 4 )
 	{
 		ri.Printf( PRINT_ALL, "dlight srf:%i  culled:%i  verts:%i  tris:%i\n",
 		           tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled,
 		           backEnd.pc.c_dlightVertexes, backEnd.pc.c_dlightIndexes / 3 );
 	}
-	else if( r_speeds->integer == 6 )
+	else if ( r_speeds->integer == 6 )
 	{
 		ri.Printf( PRINT_ALL, "flare adds:%i tests:%i renders:%i\n",
 		           backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders );
 	}
-	else if( r_speeds->integer == 7 )
+	else if ( r_speeds->integer == 7 )
 	{
 		ri.Printf( PRINT_ALL, "decal projectors: %d test surfs: %d clip surfs: %d decal surfs: %d created: %d\n",
 		           tr.pc.c_decalProjectors, tr.pc.c_decalTestSurfaces, tr.pc.c_decalClipSurfaces, tr.pc.c_decalSurfaces,
@@ -108,11 +108,11 @@ void R_InitCommandBuffers( void )
 {
 	glConfig.smpActive = qfalse;
 
-	if( r_smp->integer )
+	if ( r_smp->integer )
 	{
 		ri.Printf( PRINT_ALL, "Trying SMP acceleration...\n" );
 
-		if( GLimp_SpawnRenderThread( RB_RenderThread ) )
+		if ( GLimp_SpawnRenderThread( RB_RenderThread ) )
 		{
 			ri.Printf( PRINT_ALL, "...succeeded.\n" );
 			glConfig.smpActive = qtrue;
@@ -132,7 +132,7 @@ R_ShutdownCommandBuffers
 void R_ShutdownCommandBuffers( void )
 {
 	// kill the rendering thread
-	if( glConfig.smpActive )
+	if ( glConfig.smpActive )
 	{
 		GLimp_WakeRenderer( NULL );
 		glConfig.smpActive = qfalse;
@@ -159,14 +159,14 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 	// clear it out, in case this is a sync and not a buffer flip
 	cmdList->used = 0;
 
-	if( glConfig.smpActive )
+	if ( glConfig.smpActive )
 	{
 		// if the render thread is not idle, wait for it
-		if( renderThreadActive )
+		if ( renderThreadActive )
 		{
 			c_blockedOnRender++;
 
-			if( r_showSmp->integer )
+			if ( r_showSmp->integer )
 			{
 				ri.Printf( PRINT_ALL, "R" );
 			}
@@ -175,7 +175,7 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 		{
 			c_blockedOnMain++;
 
-			if( r_showSmp->integer )
+			if ( r_showSmp->integer )
 			{
 				ri.Printf( PRINT_ALL, "." );
 			}
@@ -187,16 +187,16 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 
 	// at this point, the back end thread is idle, so it is ok
 	// to look at it's performance counters
-	if( runPerformanceCounters )
+	if ( runPerformanceCounters )
 	{
 		R_PerformanceCounters();
 	}
 
 	// actually start the commands going
-	if( !r_skipBackEnd->integer )
+	if ( !r_skipBackEnd->integer )
 	{
 		// let it start on the new batch
-		if( !glConfig.smpActive )
+		if ( !glConfig.smpActive )
 		{
 			RB_ExecuteRenderCommands( cmdList->cmds );
 		}
@@ -219,14 +219,14 @@ OpenGL calls until R_IssueRenderCommands is called.
 */
 void R_SyncRenderThread( void )
 {
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
 	R_IssueRenderCommands( qfalse );
 
-	if( !glConfig.smpActive )
+	if ( !glConfig.smpActive )
 	{
 		return;
 	}
@@ -249,9 +249,9 @@ void           *R_GetCommandBuffer( int bytes )
 	cmdList = &backEndData[ tr.smpFrame ]->commands;
 
 	// always leave room for the swap buffers and end of list commands
-	if( cmdList->used + bytes + ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) > MAX_RENDER_COMMANDS )
+	if ( cmdList->used + bytes + ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) > MAX_RENDER_COMMANDS )
 	{
-		if( bytes > MAX_RENDER_COMMANDS - ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) )
+		if ( bytes > MAX_RENDER_COMMANDS - ( sizeof( swapBuffersCommand_t ) + sizeof( int ) ) )
 		{
 			ri.Error( ERR_FATAL, "R_GetCommandBuffer: bad size %i", bytes );
 		}
@@ -277,7 +277,7 @@ void R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs )
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -304,14 +304,14 @@ void RE_SetColor( const float *rgba )
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
 
 	cmd->commandId = RC_SET_COLOR;
 
-	if( !rgba )
+	if ( !rgba )
 	{
 		static float colorWhite[ 4 ] = { 1, 1, 1, 1 };
 
@@ -331,7 +331,7 @@ RE_SetClipRegion
 */
 void RE_SetClipRegion( const float *region )
 {
-	if( region == NULL )
+	if ( region == NULL )
 	{
 		Com_Memset( tr.clipRegion, 0, sizeof( vec4_t ) );
 	}
@@ -352,7 +352,7 @@ void RE_StretchPic( float x, float y, float w, float h, float s1, float t1, floa
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -380,14 +380,14 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 {
 	poly2dCommand_t *cmd;
 
-	if( r_numpolyverts + numverts > max_polyverts )
+	if ( r_numpolyverts + numverts > max_polyverts )
 	{
 		return;
 	}
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -412,7 +412,7 @@ void RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, floa
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -446,7 +446,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -462,7 +462,7 @@ void RE_StretchPicGradient( float x, float y, float w, float h,
 	cmd->s2 = s2;
 	cmd->t2 = t2;
 
-	if( !gradientColor )
+	if ( !gradientColor )
 	{
 		static float colorWhite[ 4 ] = { 1, 1, 1, 1 };
 
@@ -490,9 +490,9 @@ RE_SetGlobalFog
 */
 void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque )
 {
-	if( restore )
+	if ( restore )
 	{
-		if( duration > 0 )
+		if ( duration > 0 )
 		{
 			VectorCopy( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color, tr.world->globalTransStartFog );
 			tr.world->globalTransStartFog[ 3 ] = tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque;
@@ -515,7 +515,7 @@ void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b,
 	}
 	else
 	{
-		if( duration > 0 )
+		if ( duration > 0 )
 		{
 			VectorCopy( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color, tr.world->globalTransStartFog );
 			tr.world->globalTransStartFog[ 3 ] = tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque;
@@ -551,7 +551,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 {
 	drawBufferCommand_t *cmd;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
@@ -568,15 +568,15 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	//
 	// do overdraw measurement
 	//
-	if( r_measureOverdraw->integer )
+	if ( r_measureOverdraw->integer )
 	{
-		if( glConfig.stencilBits < 4 )
+		if ( glConfig.stencilBits < 4 )
 		{
 			ri.Printf( PRINT_ALL, "Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits );
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
 			r_measureOverdraw->modified = qfalse;
 		}
-		else if( r_shadows->integer == 2 )
+		else if ( r_shadows->integer == 2 )
 		{
 			ri.Printf( PRINT_ALL, "Warning: stencil shadows and overdraw measurement are mutually exclusive\n" );
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
@@ -597,7 +597,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	else
 	{
 		// this is only reached if it was on and is now off
-		if( r_measureOverdraw->modified )
+		if ( r_measureOverdraw->modified )
 		{
 			R_SyncRenderThread();
 			glDisable( GL_STENCIL_TEST );
@@ -609,7 +609,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	//
 	// texturemode stuff
 	//
-	if( r_textureMode->modified )
+	if ( r_textureMode->modified )
 	{
 		R_SyncRenderThread();
 		GL_TextureMode( r_textureMode->string );
@@ -619,7 +619,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	//
 	// anisotropic filtering stuff
 	//
-	if( r_textureAnisotropy->modified )
+	if ( r_textureAnisotropy->modified )
 	{
 		R_SyncRenderThread();
 		GL_TextureAnisotropy( r_textureAnisotropy->value );
@@ -631,19 +631,19 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	//
 
 	// fog control
-	if( glConfig.NVFogAvailable && r_nv_fogdist_mode->modified )
+	if ( glConfig.NVFogAvailable && r_nv_fogdist_mode->modified )
 	{
 		r_nv_fogdist_mode->modified = qfalse;
 
-		if( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE_ABSOLUTE_NV" ) )
+		if ( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE_ABSOLUTE_NV" ) )
 		{
 			glConfig.NVFogMode = ( int ) GL_EYE_PLANE_ABSOLUTE_NV;
 		}
-		else if( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE" ) )
+		else if ( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE" ) )
 		{
 			glConfig.NVFogMode = ( int ) GL_EYE_PLANE;
 		}
-		else if( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_RADIAL_NV" ) )
+		else if ( !Q_stricmp( r_nv_fogdist_mode->string, "GL_EYE_RADIAL_NV" ) )
 		{
 			glConfig.NVFogMode = ( int ) GL_EYE_RADIAL_NV;
 		}
@@ -658,7 +658,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	//
 	// gamma stuff
 	//
-	if( r_gamma->modified )
+	if ( r_gamma->modified )
 	{
 		r_gamma->modified = qfalse;
 
@@ -667,13 +667,13 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	}
 
 	// check for errors
-	if( !r_ignoreGLErrors->integer )
+	if ( !r_ignoreGLErrors->integer )
 	{
 		int err;
 
 		R_SyncRenderThread();
 
-		if( ( err = glGetError() ) != GL_NO_ERROR )
+		if ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
 			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (0x%x)!\n", err );
 		}
@@ -684,20 +684,20 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	//
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
 
 	cmd->commandId = RC_DRAW_BUFFER;
 
-	if( glConfig.stereoEnabled )
+	if ( glConfig.stereoEnabled )
 	{
-		if( stereoFrame == STEREO_LEFT )
+		if ( stereoFrame == STEREO_LEFT )
 		{
 			cmd->buffer = ( int ) GL_BACK_LEFT;
 		}
-		else if( stereoFrame == STEREO_RIGHT )
+		else if ( stereoFrame == STEREO_RIGHT )
 		{
 			cmd->buffer = ( int ) GL_BACK_RIGHT;
 		}
@@ -708,12 +708,12 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	}
 	else
 	{
-		if( stereoFrame != STEREO_CENTER )
+		if ( stereoFrame != STEREO_CENTER )
 		{
 			ri.Error( ERR_FATAL, "RE_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame );
 		}
 
-		if( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) )
+		if ( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) )
 		{
 			cmd->buffer = ( int ) GL_FRONT;
 		}
@@ -735,7 +735,7 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 {
 	renderCommandList_t *cmdList;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
@@ -753,14 +753,14 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec )
 	// may still be rendering into the current ones
 	R_ToggleSmpFrame();
 
-	if( frontEndMsec )
+	if ( frontEndMsec )
 	{
 		*frontEndMsec = tr.frontEndMsec;
 	}
 
 	tr.frontEndMsec = 0;
 
-	if( backEndMsec )
+	if ( backEndMsec )
 	{
 		*backEndMsec = backEnd.pc.msec;
 	}
@@ -777,14 +777,14 @@ void RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encode
 {
 	videoFrameCommand_t *cmd;
 
-	if( !tr.registered )
+	if ( !tr.registered )
 	{
 		return;
 	}
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -811,7 +811,7 @@ void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 
 //  ri.Printf( PRINT_ALL, "RE_RenderToTexture\n" );
 
-	if( textureid > tr.numImages || textureid < 0 )
+	if ( textureid > tr.numImages || textureid < 0 )
 	{
 		ri.Printf( PRINT_ALL, "Warning: trap_R_RenderToTexture textureid %d out of range.\n", textureid );
 		return;
@@ -819,7 +819,7 @@ void RE_RenderToTexture( int textureid, int x, int y, int w, int h )
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}
@@ -847,7 +847,7 @@ void RE_Finish( void )
 
 	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
 
-	if( !cmd )
+	if ( !cmd )
 	{
 		return;
 	}

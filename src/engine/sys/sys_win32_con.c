@@ -104,7 +104,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	float           sx, sy;
 	float           x, y, w, h;
 
-	switch( uMsg )
+	switch ( uMsg )
 	{
 		case WM_SIZE:
 			// NERVE - SMF
@@ -146,24 +146,24 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 
 		case WM_ACTIVATE:
-			if( LOWORD( wParam ) != WA_INACTIVE )
+			if ( LOWORD( wParam ) != WA_INACTIVE )
 			{
 				SetFocus( s_wcd.hwndInputLine );
 			}
 
-			if( com_viewlog && ( com_dedicated && !com_dedicated->integer ) )
+			if ( com_viewlog && ( com_dedicated && !com_dedicated->integer ) )
 			{
 				// if the viewlog is open, check to see if it's being minimized
-				if( com_viewlog->integer == 1 )
+				if ( com_viewlog->integer == 1 )
 				{
-					if( HIWORD( wParam ) )   // minimized flag
+					if ( HIWORD( wParam ) )  // minimized flag
 					{
 						Cvar_Set( "viewlog", "2" );
 					}
 				}
-				else if( com_viewlog->integer == 2 )
+				else if ( com_viewlog->integer == 2 )
 				{
-					if( !HIWORD( wParam ) )   // minimized flag
+					if ( !HIWORD( wParam ) )  // minimized flag
 					{
 						Cvar_Set( "viewlog", "1" );
 					}
@@ -173,12 +173,12 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 
 		case WM_CLOSE:
-			if( ( com_dedicated && com_dedicated->integer ) )
+			if ( ( com_dedicated && com_dedicated->integer ) )
 			{
 				cmdString = CopyString( "quit" );
 				Sys_QueEvent( 0, SE_CONSOLE, 0, 0, strlen( cmdString ) + 1, cmdString );
 			}
-			else if( s_wcd.quitOnClose )
+			else if ( s_wcd.quitOnClose )
 			{
 				PostQuitMessage( 0 );
 			}
@@ -191,16 +191,16 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			return 0;
 
 		case WM_CTLCOLORSTATIC:
-			if( ( HWND ) lParam == s_wcd.hwndBuffer )
+			if ( ( HWND ) lParam == s_wcd.hwndBuffer )
 			{
 				SetBkColor( ( HDC ) wParam, RGB( 204, 204, 204 ) );
 				SetTextColor( ( HDC ) wParam, RGB( 0, 0, 0 ) );
 
 #if 0 // this draws a background in the edit box, but there are issues with this
 
-				if( ( hdcScaled = CreateCompatibleDC( ( HDC ) wParam ) ) != 0 )
+				if ( ( hdcScaled = CreateCompatibleDC( ( HDC ) wParam ) ) != 0 )
 				{
-					if( SelectObject( ( HDC ) hdcScaled, s_wcd.hbmLogo ) )
+					if ( SelectObject( ( HDC ) hdcScaled, s_wcd.hbmLogo ) )
 					{
 						StretchBlt( ( HDC ) wParam, 0, 0, 512, 384,
 						            hdcScaled, 0, 0, 512, 384,
@@ -213,9 +213,9 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 #endif
 				return ( long ) s_wcd.hbrEditBackground;
 			}
-			else if( ( HWND ) lParam == s_wcd.hwndErrorBox )
+			else if ( ( HWND ) lParam == s_wcd.hwndErrorBox )
 			{
-				if( s_timePolarity & 1 )
+				if ( s_timePolarity & 1 )
 				{
 					SetBkColor( ( HDC ) wParam, RGB( 0x80, 0x80, 0x80 ) );
 					SetTextColor( ( HDC ) wParam, RGB( 0xff, 0x0, 0x00 ) );
@@ -232,14 +232,14 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 
 		case WM_COMMAND:
-			if( wParam == COPY_ID )
+			if ( wParam == COPY_ID )
 			{
 				SendMessage( s_wcd.hwndBuffer, EM_SETSEL, 0, -1 );
 				SendMessage( s_wcd.hwndBuffer, WM_COPY, 0, 0 );
 			}
-			else if( wParam == QUIT_ID )
+			else if ( wParam == QUIT_ID )
 			{
-				if( s_wcd.quitOnClose )
+				if ( s_wcd.quitOnClose )
 				{
 					PostQuitMessage( 0 );
 				}
@@ -249,7 +249,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 					Sys_QueEvent( 0, SE_CONSOLE, 0, 0, strlen( cmdString ) + 1, cmdString );
 				}
 			}
-			else if( wParam == CLEAR_ID )
+			else if ( wParam == CLEAR_ID )
 			{
 				SendMessage( s_wcd.hwndBuffer, EM_SETSEL, 0, -1 );
 				SendMessage( s_wcd.hwndBuffer, EM_REPLACESEL, FALSE, ( LPARAM ) "" );
@@ -275,12 +275,12 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			hdcScaled = CreateCompatibleDC( ( HDC ) wParam );
 			assert( hdcScaled != 0 );
 
-			if( hdcScaled )
+			if ( hdcScaled )
 			{
 				oldObject = SelectObject( ( HDC ) hdcScaled, s_wcd.hbmLogo );
 				assert( oldObject != 0 );
 
-				if( oldObject )
+				if ( oldObject )
 				{
 					StretchBlt( ( HDC ) wParam, 0, 0, s_wcd.windowWidth, s_wcd.windowHeight,
 					            hdcScaled, 0, 0, 512, 384,
@@ -307,7 +307,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 				assert( hbrClearBrush != 0 );
 
-				if( hbrClearBrush )
+				if ( hbrClearBrush )
 				{
 					FillRect( ( HDC ) wParam, &r, hbrClearBrush );
 					DeleteObject( hbrClearBrush );
@@ -319,11 +319,11 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			return DefWindowProc( hWnd, uMsg, wParam, lParam );
 
 		case WM_TIMER:
-			if( wParam == 1 )
+			if ( wParam == 1 )
 			{
 				s_timePolarity = !s_timePolarity;
 
-				if( s_wcd.hwndErrorBox )
+				if ( s_wcd.hwndErrorBox )
 				{
 					InvalidateRect( s_wcd.hwndErrorBox, NULL, FALSE );
 				}
@@ -358,12 +358,12 @@ static int     win_historyLine = 0;
 
 static void Win_FindIndexMatch( const char *s )
 {
-	if( Q_stricmpn( s, win_completionString, strlen( win_completionString ) ) )
+	if ( Q_stricmpn( s, win_completionString, strlen( win_completionString ) ) )
 	{
 		return;
 	}
 
-	if( win_findMatchIndex == win_matchIndex )
+	if ( win_findMatchIndex == win_matchIndex )
 	{
 		Q_strncpyz( win_currentMatch, s, sizeof( win_currentMatch ) );
 	}
@@ -375,23 +375,23 @@ static void Win_FindMatches( const char *s )
 {
 	int i;
 
-	if( Q_stricmpn( s, win_completionString, strlen( win_completionString ) ) )
+	if ( Q_stricmpn( s, win_completionString, strlen( win_completionString ) ) )
 	{
 		return;
 	}
 
 	win_matchCount++;
 
-	if( win_matchCount == 1 )
+	if ( win_matchCount == 1 )
 	{
 		Q_strncpyz( win_currentMatch, s, sizeof( win_currentMatch ) );
 		return;
 	}
 
 	// cut currentMatch to the amount common with s
-	for( i = 0; s[ i ]; i++ )
+	for ( i = 0; s[ i ]; i++ )
 	{
-		if( tolower( win_currentMatch[ i ] ) != tolower( s[ i ] ) )
+		if ( tolower( win_currentMatch[ i ] ) != tolower( s[ i ] ) )
 		{
 			win_currentMatch[ i ] = 0;
 		}
@@ -405,14 +405,14 @@ static void Win_KeyConcatArgs( void )
 	int  i;
 	char *arg;
 
-	for( i = 1; i < Cmd_Argc(); i++ )
+	for ( i = 1; i < Cmd_Argc(); i++ )
 	{
 		Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), " " );
 		arg = Cmd_Argv( i );
 
-		while( *arg )
+		while ( *arg )
 		{
-			if( *arg == ' ' )
+			if ( *arg == ' ' )
 			{
 				Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ),  "\"" );
 				break;
@@ -423,7 +423,7 @@ static void Win_KeyConcatArgs( void )
 
 		Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ),  Cmd_Argv( i ) );
 
-		if( *arg == ' ' )
+		if ( *arg == ' ' )
 		{
 			Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ),  "\"" );
 		}
@@ -436,7 +436,7 @@ static void Win_ConcatRemaining( const char *src, const char *start )
 
 	str = strstr( src, start );
 
-	if( !str )
+	if ( !str )
 	{
 		Win_KeyConcatArgs();
 		return;
@@ -448,7 +448,7 @@ static void Win_ConcatRemaining( const char *src, const char *start )
 
 static void Win_PrintMatches( const char *s )
 {
-	if( !Q_stricmpn( s, win_currentMatch, win_acLength ) )
+	if ( !Q_stricmpn( s, win_currentMatch, win_acLength ) )
 	{
 		Sys_Print( va( "  ^9%s^0\n", s ) );
 	}
@@ -457,7 +457,7 @@ static void Win_PrintMatches( const char *s )
 // ydnar: to display cvar values
 static void Win_PrintCvarMatches( const char *s )
 {
-	if( !Q_stricmpn( s, win_currentMatch, win_acLength ) )
+	if ( !Q_stricmpn( s, win_currentMatch, win_acLength ) )
 	{
 		Sys_Print( va( "  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) ) );
 	}
@@ -470,14 +470,14 @@ static void Win_CompleteCommand( qboolean showMatches )
 
 	edit = &win_consoleField;
 
-	if( win_acLength == 0 )
+	if ( win_acLength == 0 )
 	{
 		// only look at the first token for completion purposes
 		Cmd_TokenizeString( edit->buffer );
 
 		Q_strncpyz( win_completionString, Cmd_Argv( 0 ), sizeof( win_completionString ) );
 
-		if( win_completionString[ 0 ] == '\\' || win_completionString[ 0 ] == '/' )
+		if ( win_completionString[ 0 ] == '\\' || win_completionString[ 0 ] == '/' )
 		{
 			Q_strncpyz( win_completionString, win_completionString + 1, sizeof( win_completionString ) );
 		}
@@ -486,7 +486,7 @@ static void Win_CompleteCommand( qboolean showMatches )
 		win_matchIndex = 0;
 		win_currentMatch[ 0 ] = 0;
 
-		if( strlen( win_completionString ) == 0 )
+		if ( strlen( win_completionString ) == 0 )
 		{
 			return;
 		}
@@ -494,18 +494,18 @@ static void Win_CompleteCommand( qboolean showMatches )
 		Cmd_CommandCompletion( Win_FindMatches );
 		Cvar_CommandCompletion( Win_FindMatches );
 
-		if( win_matchCount == 0 )
+		if ( win_matchCount == 0 )
 		{
 			return; // no matches
 		}
 
 		Com_Memcpy( &temp, edit, sizeof( field_t ) );
 
-		if( win_matchCount == 1 )
+		if ( win_matchCount == 1 )
 		{
 			Com_sprintf( edit->buffer, sizeof( edit->buffer ), "%s", win_currentMatch );
 
-			if( Cmd_Argc() == 1 )
+			if ( Cmd_Argc() == 1 )
 			{
 				Q_strcat( win_consoleField.buffer, sizeof( win_consoleField.buffer ), " " );
 			}
@@ -525,7 +525,7 @@ static void Win_CompleteCommand( qboolean showMatches )
 			showMatches = qtrue;
 		}
 	}
-	else if( win_matchCount != 1 )
+	else if ( win_matchCount != 1 )
 	{
 		// get the next match and show instead
 		char lastMatch[ MAX_TOKEN_CHARS ];
@@ -534,7 +534,7 @@ static void Win_CompleteCommand( qboolean showMatches )
 
 		win_matchIndex++;
 
-		if( win_matchIndex == win_matchCount )
+		if ( win_matchIndex == win_matchCount )
 		{
 			win_matchIndex = 0;
 		}
@@ -552,13 +552,13 @@ static void Win_CompleteCommand( qboolean showMatches )
 	}
 
 	// hijack it
-	if( win_matchCount == 1 )
+	if ( win_matchCount == 1 )
 	{
 		win_acLength = strlen( win_currentMatch );
 	}
 
 	// run through again, printing matches
-	if( showMatches && win_matchCount > 0 )
+	if ( showMatches && win_matchCount > 0 )
 	{
 		memcpy( &temp, edit, sizeof( *edit ) );
 		temp.buffer[ win_acLength ] = '\0';
@@ -570,11 +570,11 @@ static void Win_CompleteCommand( qboolean showMatches )
 
 LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
-	switch( uMsg )
+	switch ( uMsg )
 	{
 		case WM_KILLFOCUS:
-			if( ( HWND ) wParam == s_wcd.hWnd ||
-			    ( HWND ) wParam == s_wcd.hwndErrorBox )
+			if ( ( HWND ) wParam == s_wcd.hWnd ||
+			     ( HWND ) wParam == s_wcd.hwndErrorBox )
 			{
 				SetFocus( hWnd );
 				return 0;
@@ -583,12 +583,12 @@ LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 			break;
 
 		case WM_KEYDOWN:
-			switch( wParam )
+			switch ( wParam )
 			{
 				case VK_UP:
 
 					// previous history item
-					if( ( win_nextHistoryLine - win_historyLine < WIN_COMMAND_HISTORY ) && win_historyLine > 0 )
+					if ( ( win_nextHistoryLine - win_historyLine < WIN_COMMAND_HISTORY ) && win_historyLine > 0 )
 					{
 						win_historyLine--;
 					}
@@ -602,7 +602,7 @@ LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 				case VK_DOWN:
 
 					// next history item
-					if( win_historyLine < win_nextHistoryLine )
+					if ( win_historyLine < win_nextHistoryLine )
 					{
 						win_historyLine++;
 						win_consoleField = win_historyEditLines[ win_historyLine % WIN_COMMAND_HISTORY ];
@@ -624,7 +624,7 @@ LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 			win_consoleField.scroll = 0;
 
 			// handle enter key
-			if( wParam == 13 )
+			if ( wParam == 13 )
 			{
 				strncat( s_wcd.consoleText, win_consoleField.buffer, sizeof( s_wcd.consoleText ) - strlen( s_wcd.consoleText ) - 5 );
 				strcat( s_wcd.consoleText, "\n" );
@@ -636,7 +636,7 @@ LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 				win_acLength = 0;
 
 				// copy line to history buffer
-				if( win_consoleField.buffer[ 0 ] != '\0' )
+				if ( win_consoleField.buffer[ 0 ] != '\0' )
 				{
 					win_historyEditLines[ win_nextHistoryLine % WIN_COMMAND_HISTORY ] = win_consoleField;
 					win_nextHistoryLine++;
@@ -646,14 +646,14 @@ LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 				return 0;
 			}
 			// ydnar: handle tab key (commandline completion)
-			else if( wParam == 9 )
+			else if ( wParam == 9 )
 			{
 				// enable this code for tab double-tap show matching
 #if 0
 				{
 					int tabTime = Sys_Milliseconds();
 
-					if( ( tabTime - win_tabTime ) < 100 )
+					if ( ( tabTime - win_tabTime ) < 100 )
 					{
 						Win_CompleteCommand( qtrue );
 						win_tabTime = 0;
@@ -716,7 +716,7 @@ void Sys_CreateConsole( void )
 	wc.lpszMenuName = 0;
 	wc.lpszClassName = DEDCLASS;
 
-	if( !RegisterClass( &wc ) )
+	if ( !RegisterClass( &wc ) )
 	{
 		return;
 	}
@@ -745,7 +745,7 @@ void Sys_CreateConsole( void )
 	                             g_wv.hInstance,
 	                             NULL );
 
-	if( s_wcd.hWnd == NULL )
+	if ( s_wcd.hWnd == NULL )
 	{
 		return;
 	}
@@ -835,7 +835,7 @@ void Sys_CreateConsole( void )
 */
 void Sys_DestroyConsole( void )
 {
-	if( s_wcd.hWnd )
+	if ( s_wcd.hWnd )
 	{
 		ShowWindow( s_wcd.hWnd, SW_HIDE );
 		CloseWindow( s_wcd.hWnd );
@@ -851,19 +851,19 @@ void Sys_ShowConsole( int visLevel, qboolean quitOnClose )
 {
 	s_wcd.quitOnClose = quitOnClose;
 
-	if( visLevel == s_wcd.visLevel )
+	if ( visLevel == s_wcd.visLevel )
 	{
 		return;
 	}
 
 	s_wcd.visLevel = visLevel;
 
-	if( !s_wcd.hWnd )
+	if ( !s_wcd.hWnd )
 	{
 		return;
 	}
 
-	switch( visLevel )
+	switch ( visLevel )
 	{
 		case 0:
 			ShowWindow( s_wcd.hWnd, SW_HIDE );
@@ -916,7 +916,7 @@ void Conbuf_AppendText( const char *pMsg )
 	//
 	// if the message is REALLY long, use just the last portion of it
 	//
-	if( strlen( pMsg ) > CONSOLE_BUFFER_SIZE - 1 )
+	if ( strlen( pMsg ) > CONSOLE_BUFFER_SIZE - 1 )
 	{
 		msg = pMsg + strlen( pMsg ) - CONSOLE_BUFFER_SIZE + 1;
 	}
@@ -928,28 +928,28 @@ void Conbuf_AppendText( const char *pMsg )
 	//
 	// copy into an intermediate buffer
 	//
-	while( msg[ i ] && ( ( b - buffer ) < sizeof( buffer ) - 1 ) )
+	while ( msg[ i ] && ( ( b - buffer ) < sizeof( buffer ) - 1 ) )
 	{
-		if( msg[ i ] == '\n' && msg[ i + 1 ] == '\r' )
+		if ( msg[ i ] == '\n' && msg[ i + 1 ] == '\r' )
 		{
 			b[ 0 ] = '\r';
 			b[ 1 ] = '\n';
 			b += 2;
 			i++;
 		}
-		else if( msg[ i ] == '\r' )
+		else if ( msg[ i ] == '\r' )
 		{
 			b[ 0 ] = '\r';
 			b[ 1 ] = '\n';
 			b += 2;
 		}
-		else if( msg[ i ] == '\n' )
+		else if ( msg[ i ] == '\n' )
 		{
 			b[ 0 ] = '\r';
 			b[ 1 ] = '\n';
 			b += 2;
 		}
-		else if( Q_IsColorString( &msg[ i ] ) )
+		else if ( Q_IsColorString( &msg[ i ] ) )
 		{
 			i++;
 		}
@@ -970,7 +970,7 @@ void Conbuf_AppendText( const char *pMsg )
 	//
 	// replace selection instead of appending if we're overflowing
 	//
-	if( s_totalChars > CONSOLE_BUFFER_SIZE )
+	if ( s_totalChars > CONSOLE_BUFFER_SIZE )
 	{
 		SendMessage( s_wcd.hwndBuffer, EM_SETSEL, 0, -1 );
 		s_totalChars = bufLen;
@@ -996,7 +996,7 @@ void Sys_SetErrorText( const char *buf )
 {
 	Q_strncpyz( s_wcd.errorString, buf, sizeof( s_wcd.errorString ) );
 
-	if( !s_wcd.hwndErrorBox )
+	if ( !s_wcd.hwndErrorBox )
 	{
 		s_wcd.hwndErrorBox = CreateWindow( "static", NULL, WS_CHILD | WS_VISIBLE | SS_SUNKEN,
 		                                   6, 5, 526, 30,

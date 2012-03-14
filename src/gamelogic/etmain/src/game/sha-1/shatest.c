@@ -44,7 +44,7 @@ int main()
 	SHA1Reset( &sha );
 	SHA1Input( &sha, ( const unsigned char * ) TESTA, strlen( TESTA ) );
 
-	if( !SHA1Result( &sha ) )
+	if ( !SHA1Result( &sha ) )
 	{
 		fprintf( stderr, "ERROR-- could not compute message digest\n" );
 	}
@@ -52,7 +52,7 @@ int main()
 	{
 		printf( "\t" );
 
-		for( i = 0; i < 5; i++ )
+		for ( i = 0; i < 5; i++ )
 		{
 			printf( "%X ", sha.Message_Digest[ i ] );
 		}
@@ -70,7 +70,7 @@ int main()
 	SHA1Reset( &sha );
 	SHA1Input( &sha, ( const unsigned char * ) TESTB, strlen( TESTB ) );
 
-	if( !SHA1Result( &sha ) )
+	if ( !SHA1Result( &sha ) )
 	{
 		fprintf( stderr, "ERROR-- could not compute message digest\n" );
 	}
@@ -78,7 +78,7 @@ int main()
 	{
 		printf( "\t" );
 
-		for( i = 0; i < 5; i++ )
+		for ( i = 0; i < 5; i++ )
 		{
 			printf( "%X ", sha.Message_Digest[ i ] );
 		}
@@ -95,12 +95,12 @@ int main()
 
 	SHA1Reset( &sha );
 
-	for( i = 1; i <= 1000000; i++ )
+	for ( i = 1; i <= 1000000; i++ )
 	{
 		SHA1Input( &sha, ( const unsigned char * ) TESTC, 1 );
 	}
 
-	if( !SHA1Result( &sha ) )
+	if ( !SHA1Result( &sha ) )
 	{
 		fprintf( stderr, "ERROR-- could not compute message digest\n" );
 	}
@@ -108,7 +108,7 @@ int main()
 	{
 		printf( "\t" );
 
-		for( i = 0; i < 5; i++ )
+		for ( i = 0; i < 5; i++ )
 		{
 			printf( "%X ", sha.Message_Digest[ i ] );
 		}

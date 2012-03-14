@@ -64,7 +64,7 @@ void R_AddEdgeDef( int i1, int i2, int facing )
 
 	c = numEdgeDefs[ i1 ];
 
-	if( c == MAX_EDGE_DEFS )
+	if ( c == MAX_EDGE_DEFS )
 	{
 		return; // overflow
 	}
@@ -85,11 +85,11 @@ void R_RenderShadowEdges( void )
 	// dumb way -- render every triangle's edges
 	numTris = tess.numIndexes / 3;
 
-	for( i = 0; i < numTris; i++ )
+	for ( i = 0; i < numTris; i++ )
 	{
 		int i1, i2, i3;
 
-		if( !facing[ i ] )
+		if ( !facing[ i ] )
 		{
 			continue;
 		}
@@ -124,13 +124,13 @@ void R_RenderShadowEdges( void )
 	c_edges = 0;
 	c_rejected = 0;
 
-	for( i = 0; i < tess.numVertexes; i++ )
+	for ( i = 0; i < tess.numVertexes; i++ )
 	{
 		c = numEdgeDefs[ i ];
 
-		for( j = 0; j < c; j++ )
+		for ( j = 0; j < c; j++ )
 		{
-			if( !edgeDefs[ i ][ j ].facing )
+			if ( !edgeDefs[ i ][ j ].facing )
 			{
 				continue;
 			}
@@ -141,9 +141,9 @@ void R_RenderShadowEdges( void )
 			i2 = edgeDefs[ i ][ j ].i2;
 			c2 = numEdgeDefs[ i2 ];
 
-			for( k = 0; k < c2; k++ )
+			for ( k = 0; k < c2; k++ )
 			{
-				if( edgeDefs[ i2 ][ k ].i2 == i )
+				if ( edgeDefs[ i2 ][ k ].i2 == i )
 				{
 					hit[ edgeDefs[ i2 ][ k ].facing ]++;
 				}
@@ -151,7 +151,7 @@ void R_RenderShadowEdges( void )
 
 			// if it doesn't share the edge with another front facing
 			// triangle, it is a sil edge
-			if( hit[ 1 ] == 0 )
+			if ( hit[ 1 ] == 0 )
 			{
 				glBegin( GL_TRIANGLE_STRIP );
 				glVertex3fv( tess.xyz[ i ].v );
@@ -190,12 +190,12 @@ void RB_ShadowTessEnd( void )
 	vec3_t lightDir;
 
 	// we can only do this if we have enough space in the vertex buffers
-	if( tess.numVertexes >= tess.maxShaderVerts / 2 )
+	if ( tess.numVertexes >= tess.maxShaderVerts / 2 )
 	{
 		return;
 	}
 
-	if( glConfig.stencilBits < 4 )
+	if ( glConfig.stencilBits < 4 )
 	{
 		return;
 	}
@@ -203,7 +203,7 @@ void RB_ShadowTessEnd( void )
 	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
 
 	// project vertexes away from light direction
-	for( i = 0; i < tess.numVertexes; i++ )
+	for ( i = 0; i < tess.numVertexes; i++ )
 	{
 		VectorMA( tess.xyz[ i ].v, -512, lightDir, tess.xyz[ i + tess.numVertexes ].v );
 	}
@@ -213,7 +213,7 @@ void RB_ShadowTessEnd( void )
 
 	numTris = tess.numIndexes / 3;
 
-	for( i = 0; i < numTris; i++ )
+	for ( i = 0; i < numTris; i++ )
 	{
 		int    i1, i2, i3;
 		vec3_t d1, d2, normal;
@@ -234,7 +234,7 @@ void RB_ShadowTessEnd( void )
 
 		d = DotProduct( normal, lightDir );
 
-		if( d > 0 )
+		if ( d > 0 )
 		{
 			facing[ i ] = 1;
 		}
@@ -263,7 +263,7 @@ void RB_ShadowTessEnd( void )
 	glStencilFunc( GL_ALWAYS, 1, 255 );
 
 	// mirrors have the culling order reversed
-	if( backEnd.viewParms.isMirror )
+	if ( backEnd.viewParms.isMirror )
 	{
 		glCullFace( GL_FRONT );
 		glStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
@@ -304,12 +304,12 @@ overlap and double darken.
 */
 void RB_ShadowFinish( void )
 {
-	if( r_shadows->integer != 2 )
+	if ( r_shadows->integer != 2 )
 	{
 		return;
 	}
 
-	if( glConfig.stencilBits < 4 )
+	if ( glConfig.stencilBits < 4 )
 	{
 		return;
 	}
@@ -370,7 +370,7 @@ void RB_ProjectionShadowDeform( void )
 	d = DotProduct( lightDir, ground );
 
 	// don't let the shadows get too long or go negative
-	if( d < 0.5 )
+	if ( d < 0.5 )
 	{
 		VectorMA( lightDir, ( 0.5 - d ), ground, lightDir );
 		d = DotProduct( lightDir, ground );
@@ -382,7 +382,7 @@ void RB_ProjectionShadowDeform( void )
 	light[ 1 ] = lightDir[ 1 ] * d;
 	light[ 2 ] = lightDir[ 2 ] * d;
 
-	for( i = 0; i < tess.numVertexes; i++, xyz += 4 )
+	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 )
 	{
 		h = DotProduct( xyz, ground ) + groundDist;
 

@@ -88,7 +88,7 @@ void CG_AdjustFrom640( float *x, float *y, float *w, float *h )
 #if 0
 
 	// adjust for wide screens
-	if( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 )
+	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 )
 	{
 		*x += 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * 640 / 480 ) );
 	}
@@ -210,9 +210,9 @@ int CG_DrawStrlen( const char *str )
 	const char *s = str;
 	int        count = 0;
 
-	while( *s )
+	while ( *s )
 	{
-		if( Q_IsColorString( s ) )
+		if ( Q_IsColorString( s ) )
 		{
 			s += 2;
 		}
@@ -260,8 +260,8 @@ void CG_TileClear( void )
 	w = cgs.glconfig.vidWidth;
 	h = cgs.glconfig.vidHeight;
 
-	if( cg.refdef.x == 0 && cg.refdef.y == 0 &&
-	    cg.refdef.width == w && cg.refdef.height == h )
+	if ( cg.refdef.x == 0 && cg.refdef.y == 0 &&
+	     cg.refdef.width == w && cg.refdef.height == h )
 	{
 		return; // full screen rendering
 	}
@@ -294,20 +294,20 @@ float *CG_FadeColor( int startMsec, int totalMsec )
 	static vec4_t color;
 	int           t;
 
-	if( startMsec == 0 )
+	if ( startMsec == 0 )
 	{
 		return NULL;
 	}
 
 	t = cg.time - startMsec;
 
-	if( t >= totalMsec )
+	if ( t >= totalMsec )
 	{
 		return NULL;
 	}
 
 	// fade out
-	if( totalMsec - t < FADE_TIME )
+	if ( totalMsec - t < FADE_TIME )
 	{
 		color[ 3 ] = ( totalMsec - t ) * 1.0 / FADE_TIME;
 	}

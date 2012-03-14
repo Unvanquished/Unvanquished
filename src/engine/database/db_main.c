@@ -53,33 +53,33 @@ static dbinterface_t dbi;
 
 qboolean DB_ValidateInterface( dbinterface_t *dbi )
 {
-	if( !dbi->DBConnectMaster ) { return qfalse; }
+	if ( !dbi->DBConnectMaster ) { return qfalse; }
 
-	if( !dbi->DBConnectSlave ) { return qfalse; }
+	if ( !dbi->DBConnectSlave ) { return qfalse; }
 
-	if( !dbi->DBStatus ) { return qfalse; }
+	if ( !dbi->DBStatus ) { return qfalse; }
 
-	if( !dbi->DBDisconnect ) { return qfalse; }
+	if ( !dbi->DBDisconnect ) { return qfalse; }
 
-	if( !dbi->RunQuery ) { return qfalse; }
+	if ( !dbi->RunQuery ) { return qfalse; }
 
-	if( !dbi->FinishQuery ) { return qfalse; }
+	if ( !dbi->FinishQuery ) { return qfalse; }
 
-	if( !dbi->NextRow ) { return qfalse; }
+	if ( !dbi->NextRow ) { return qfalse; }
 
-	if( !dbi->RowCount ) { return qfalse; }
+	if ( !dbi->RowCount ) { return qfalse; }
 
-	if( !dbi->GetFieldByID ) { return qfalse; }
+	if ( !dbi->GetFieldByID ) { return qfalse; }
 
-	if( !dbi->GetFieldByName ) { return qfalse; }
+	if ( !dbi->GetFieldByName ) { return qfalse; }
 
-	if( !dbi->GetFieldByID_int ) { return qfalse; }
+	if ( !dbi->GetFieldByID_int ) { return qfalse; }
 
-	if( !dbi->GetFieldByName_int ) { return qfalse; }
+	if ( !dbi->GetFieldByName_int ) { return qfalse; }
 
-	if( !dbi->FieldCount ) { return qfalse; }
+	if ( !dbi->FieldCount ) { return qfalse; }
 
-	if( !dbi->CleanString ) { return qfalse; }
+	if ( !dbi->CleanString ) { return qfalse; }
 
 	return qtrue;
 }
@@ -109,13 +109,13 @@ void D_Init( void )
 	db_passwordSlave = Cvar_Get( "db_passwordslave", "", CVAR_ARCHIVE );
 	db_databaseSlave = Cvar_Get( "db_databaseslave", "test", CVAR_ARCHIVE );
 
-	if( db_enable->integer == 0 )
+	if ( db_enable->integer == 0 )
 	{
 		Com_Printf( "Database Disabled.\n" );
 	}
 	else
 	{
-		if( strstr( db_backend->string, "MySQL" ) )
+		if ( strstr( db_backend->string, "MySQL" ) )
 		{
 			started = D_MySQL_Init( &dbi );
 		}
@@ -125,9 +125,9 @@ void D_Init( void )
 			Com_Printf( "Database was set enabled but no valid backend specified.\n" );
 		}
 
-		if( started )
+		if ( started )
 		{
-			if( !DB_ValidateInterface( &dbi ) )
+			if ( !DB_ValidateInterface( &dbi ) )
 			{
 				Com_Error( ERR_FATAL, "Database interface invalid." );
 			}
@@ -138,19 +138,19 @@ void D_Init( void )
 		}
 	}
 
-	if( dbi.DBConnectMaster )
+	if ( dbi.DBConnectMaster )
 	{
 		dbi.DBConnectMaster();
 		Cvar_Set( "db_statusmaster", "1" );
 	}
 
-	if( dbi.DBConnectSlave )
+	if ( dbi.DBConnectSlave )
 	{
 		dbi.DBConnectSlave();
 		Cvar_Set( "db_statusslave", "1" );
 	}
 
-	if( db_enable->integer == 1 )
+	if ( db_enable->integer == 1 )
 	{
 		Com_DPrintf( "Master MySQL Database connected.\n" );
 		Com_DPrintf( "Slave MySQL Database connected.\n" );
@@ -161,7 +161,7 @@ void D_Init( void )
 
 void D_Shutdown( void )
 {
-	if( dbi.DBDisconnect )
+	if ( dbi.DBDisconnect )
 	{
 		dbi.DBDisconnect();
 		Cvar_Set( "db_statusmaster", "0" );
@@ -172,14 +172,14 @@ void D_Shutdown( void )
 void D_Connect( void )
 {
 	// MySQL Master Server
-	if( dbi.DBConnectMaster )
+	if ( dbi.DBConnectMaster )
 	{
 		dbi.DBConnectMaster();
 		Cvar_Set( "db_statusmaster", "1" );
 	}
 
 	// MySQL Slave Server
-	if( dbi.DBConnectSlave )
+	if ( dbi.DBConnectSlave )
 	{
 		dbi.DBConnectSlave();
 		Cvar_Set( "db_statusslave", "1" );
@@ -188,7 +188,7 @@ void D_Connect( void )
 
 void D_Status( void )
 {
-	if( dbi.DBStatus )
+	if ( dbi.DBStatus )
 	{
 		dbi.DBStatus();
 	}
@@ -196,7 +196,7 @@ void D_Status( void )
 
 void D_Disconnect( void )
 {
-	if( dbi.DBDisconnect )
+	if ( dbi.DBDisconnect )
 	{
 		dbi.DBDisconnect();
 		Cvar_Set( "db_statusmaster", "0" );
@@ -206,7 +206,7 @@ void D_Disconnect( void )
 
 int D_RunQuery( const char *query )
 {
-	if( dbi.RunQuery )
+	if ( dbi.RunQuery )
 	{
 		return dbi.RunQuery( query );
 	}
@@ -216,7 +216,7 @@ int D_RunQuery( const char *query )
 
 void D_FinishQuery( int queryid )
 {
-	if( dbi.FinishQuery )
+	if ( dbi.FinishQuery )
 	{
 		dbi.FinishQuery( queryid );
 	}
@@ -224,7 +224,7 @@ void D_FinishQuery( int queryid )
 
 qboolean D_NextRow( int queryid )
 {
-	if( dbi.NextRow )
+	if ( dbi.NextRow )
 	{
 		return dbi.NextRow( queryid );
 	}
@@ -234,7 +234,7 @@ qboolean D_NextRow( int queryid )
 
 int D_RowCount( int queryid )
 {
-	if( dbi.RowCount )
+	if ( dbi.RowCount )
 	{
 		return dbi.RowCount( queryid );
 	}
@@ -244,7 +244,7 @@ int D_RowCount( int queryid )
 
 void D_GetFieldByID( int queryid, int fieldid, char *buffer, int len )
 {
-	if( dbi.GetFieldByID )
+	if ( dbi.GetFieldByID )
 	{
 		dbi.GetFieldByID( queryid, fieldid, buffer, len );
 	}
@@ -252,7 +252,7 @@ void D_GetFieldByID( int queryid, int fieldid, char *buffer, int len )
 
 void D_GetFieldByName( int queryid, const char *name, char *buffer, int len )
 {
-	if( dbi.GetFieldByName )
+	if ( dbi.GetFieldByName )
 	{
 		dbi.GetFieldByName( queryid, name, buffer, len );
 	}
@@ -260,7 +260,7 @@ void D_GetFieldByName( int queryid, const char *name, char *buffer, int len )
 
 int D_GetFieldByID_int( int queryid, int fieldid )
 {
-	if( dbi.GetFieldByID_int )
+	if ( dbi.GetFieldByID_int )
 	{
 		return dbi.GetFieldByID_int( queryid, fieldid );
 	}
@@ -270,7 +270,7 @@ int D_GetFieldByID_int( int queryid, int fieldid )
 
 int D_GetFieldByName_int( int queryid, const char *name )
 {
-	if( dbi.GetFieldByName_int )
+	if ( dbi.GetFieldByName_int )
 	{
 		return dbi.GetFieldByName_int( queryid, name );
 	}
@@ -280,7 +280,7 @@ int D_GetFieldByName_int( int queryid, const char *name )
 
 int D_FieldCount( int queryid )
 {
-	if( dbi.FieldCount )
+	if ( dbi.FieldCount )
 	{
 		return dbi.FieldCount( queryid );
 	}
@@ -290,7 +290,7 @@ int D_FieldCount( int queryid )
 
 void D_CleanString( const char *in, char *out, int len )
 {
-	if( dbi.CleanString )
+	if ( dbi.CleanString )
 	{
 		dbi.CleanString( in, out, len );
 	}

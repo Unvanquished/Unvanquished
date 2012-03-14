@@ -35,7 +35,7 @@ qboolean CG_AttachmentPoint( attachment_t *a, vec3_t v )
 {
 	centity_t *cent;
 
-	if( !a )
+	if ( !a )
 	{
 		return qfalse;
 	}
@@ -43,10 +43,10 @@ qboolean CG_AttachmentPoint( attachment_t *a, vec3_t v )
 	// if it all breaks, then use the last point we know was correct
 	VectorCopy( a->lastValidAttachmentPoint, v );
 
-	switch( a->type )
+	switch ( a->type )
 	{
 		case AT_STATIC:
-			if( !a->staticValid )
+			if ( !a->staticValid )
 			{
 				return qfalse;
 			}
@@ -55,7 +55,7 @@ qboolean CG_AttachmentPoint( attachment_t *a, vec3_t v )
 			break;
 
 		case AT_TAG:
-			if( !a->tagValid )
+			if ( !a->tagValid )
 			{
 				return qfalse;
 			}
@@ -67,12 +67,12 @@ qboolean CG_AttachmentPoint( attachment_t *a, vec3_t v )
 			break;
 
 		case AT_CENT:
-			if( !a->centValid )
+			if ( !a->centValid )
 			{
 				return qfalse;
 			}
 
-			if( a->centNum == cg.predictedPlayerState.clientNum )
+			if ( a->centNum == cg.predictedPlayerState.clientNum )
 			{
 				// this is smoother if it's the local client
 				VectorCopy( cg.predictedPlayerState.origin, v );
@@ -86,12 +86,12 @@ qboolean CG_AttachmentPoint( attachment_t *a, vec3_t v )
 			break;
 
 		case AT_PARTICLE:
-			if( !a->particleValid )
+			if ( !a->particleValid )
 			{
 				return qfalse;
 			}
 
-			if( !a->particle->valid )
+			if ( !a->particle->valid )
 			{
 				a->particleValid = qfalse;
 				return qfalse;
@@ -108,7 +108,7 @@ qboolean CG_AttachmentPoint( attachment_t *a, vec3_t v )
 			break;
 	}
 
-	if( a->hasOffset )
+	if ( a->hasOffset )
 	{
 		VectorAdd( v, a->offset, v );
 	}
@@ -130,19 +130,19 @@ qboolean CG_AttachmentDir( attachment_t *a, vec3_t v )
 	vec3_t    forward;
 	centity_t *cent;
 
-	if( !a )
+	if ( !a )
 	{
 		return qfalse;
 	}
 
-	switch( a->type )
+	switch ( a->type )
 	{
 		case AT_STATIC:
 			return qfalse;
 			break;
 
 		case AT_TAG:
-			if( !a->tagValid )
+			if ( !a->tagValid )
 			{
 				return qfalse;
 			}
@@ -151,7 +151,7 @@ qboolean CG_AttachmentDir( attachment_t *a, vec3_t v )
 			break;
 
 		case AT_CENT:
-			if( !a->centValid )
+			if ( !a->centValid )
 			{
 				return qfalse;
 			}
@@ -162,12 +162,12 @@ qboolean CG_AttachmentDir( attachment_t *a, vec3_t v )
 			break;
 
 		case AT_PARTICLE:
-			if( !a->particleValid )
+			if ( !a->particleValid )
 			{
 				return qfalse;
 			}
 
-			if( !a->particle->valid )
+			if ( !a->particle->valid )
 			{
 				a->particleValid = qfalse;
 				return qfalse;
@@ -199,19 +199,19 @@ qboolean CG_AttachmentAxis( attachment_t *a, vec3_t axis[ 3 ] )
 {
 	centity_t *cent;
 
-	if( !a )
+	if ( !a )
 	{
 		return qfalse;
 	}
 
-	switch( a->type )
+	switch ( a->type )
 	{
 		case AT_STATIC:
 			return qfalse;
 			break;
 
 		case AT_TAG:
-			if( !a->tagValid )
+			if ( !a->tagValid )
 			{
 				return qfalse;
 			}
@@ -220,7 +220,7 @@ qboolean CG_AttachmentAxis( attachment_t *a, vec3_t axis[ 3 ] )
 			break;
 
 		case AT_CENT:
-			if( !a->centValid )
+			if ( !a->centValid )
 			{
 				return qfalse;
 			}
@@ -250,17 +250,17 @@ If the attachment can have velocity, return it
 */
 qboolean CG_AttachmentVelocity( attachment_t *a, vec3_t v )
 {
-	if( !a )
+	if ( !a )
 	{
 		return qfalse;
 	}
 
-	if( a->particleValid && a->particle->valid )
+	if ( a->particleValid && a->particle->valid )
 	{
 		VectorCopy( a->particle->velocity, v );
 		return qtrue;
 	}
-	else if( a->centValid )
+	else if ( a->centValid )
 	{
 		centity_t *cent = &cg_entities[ a->centNum ];
 
@@ -280,7 +280,7 @@ If the attachment has a centNum, return it
 */
 int CG_AttachmentCentNum( attachment_t *a )
 {
-	if( !a || !a->centValid )
+	if ( !a || !a->centValid )
 	{
 		return -1;
 	}
@@ -297,7 +297,7 @@ If the attachment is valid, return qtrue
 */
 qboolean CG_Attached( attachment_t *a )
 {
-	if( !a )
+	if ( !a )
 	{
 		return qfalse;
 	}
@@ -314,7 +314,7 @@ Attach to a point in space
 */
 void CG_AttachToPoint( attachment_t *a )
 {
-	if( !a || !a->staticValid )
+	if ( !a || !a->staticValid )
 	{
 		return;
 	}
@@ -332,7 +332,7 @@ Attach to a centity_t
 */
 void CG_AttachToCent( attachment_t *a )
 {
-	if( !a || !a->centValid )
+	if ( !a || !a->centValid )
 	{
 		return;
 	}
@@ -350,7 +350,7 @@ Attach to a model tag
 */
 void CG_AttachToTag( attachment_t *a )
 {
-	if( !a || !a->tagValid )
+	if ( !a || !a->tagValid )
 	{
 		return;
 	}
@@ -368,7 +368,7 @@ Attach to a particle
 */
 void CG_AttachToParticle( attachment_t *a )
 {
-	if( !a || !a->particleValid )
+	if ( !a || !a->particleValid )
 	{
 		return;
 	}
@@ -384,7 +384,7 @@ CG_SetAttachmentPoint
 */
 void CG_SetAttachmentPoint( attachment_t *a, vec3_t v )
 {
-	if( !a )
+	if ( !a )
 	{
 		return;
 	}
@@ -400,7 +400,7 @@ CG_SetAttachmentCent
 */
 void CG_SetAttachmentCent( attachment_t *a, centity_t *cent )
 {
-	if( !a || !cent )
+	if ( !a || !cent )
 	{
 		return;
 	}
@@ -417,7 +417,7 @@ CG_SetAttachmentTag
 void CG_SetAttachmentTag( attachment_t *a, refEntity_t parent,
                           qhandle_t model, char *tagName )
 {
-	if( !a )
+	if ( !a )
 	{
 		return;
 	}
@@ -435,7 +435,7 @@ CG_SetAttachmentParticle
 */
 void CG_SetAttachmentParticle( attachment_t *a, particle_t *p )
 {
-	if( !a )
+	if ( !a )
 	{
 		return;
 	}
@@ -451,7 +451,7 @@ CG_SetAttachmentOffset
 */
 void CG_SetAttachmentOffset( attachment_t *a, vec3_t v )
 {
-	if( !a )
+	if ( !a )
 	{
 		return;
 	}

@@ -51,7 +51,7 @@ void CG_ModelDoor( centity_t *cent )
 
 	es = &cent->currentState;
 
-	if( !es->modelindex )
+	if ( !es->modelindex )
 	{
 		return;
 	}
@@ -84,7 +84,7 @@ void CG_ModelDoor( centity_t *cent )
 	anim.initialLerp = 1000 / es->torsoAnim;
 
 	//door changed state
-	if( es->legsAnim != cent->doorState )
+	if ( es->legsAnim != cent->doorState )
 	{
 		lf->animationTime = lf->frameTime + anim.initialLerp;
 		cent->doorState = es->legsAnim;
@@ -105,12 +105,12 @@ CG_AMOAnimation
 */
 static void CG_AMOAnimation( centity_t *cent, int *old, int *now, float *backLerp )
 {
-	if( !( cent->currentState.eFlags & EF_MOVER_STOP ) )
+	if ( !( cent->currentState.eFlags & EF_MOVER_STOP ) )
 	{
 		int delta = cg.time - cent->miscTime;
 
 		//hack to prevent "pausing" mucking up the lerping
-		if( delta > 900 )
+		if ( delta > 900 )
 		{
 			cent->lerpFrame.oldFrameTime += delta;
 			cent->lerpFrame.frameTime += delta;
@@ -140,7 +140,7 @@ void CG_AnimMapObj( centity_t *cent )
 	es = &cent->currentState;
 
 	// if set to invisible, skip
-	if( !es->modelindex || ( es->eFlags & EF_NODRAW ) )
+	if ( !es->modelindex || ( es->eFlags & EF_NODRAW ) )
 	{
 		return;
 	}
@@ -158,7 +158,7 @@ void CG_AnimMapObj( centity_t *cent )
 	ent.nonNormalizedAxes = qfalse;
 
 	//scale the model
-	if( es->angles2[ 0 ] )
+	if ( es->angles2[ 0 ] )
 	{
 		scale = es->angles2[ 0 ];
 		VectorScale( ent.axis[ 0 ], scale, ent.axis[ 0 ] );
@@ -174,7 +174,7 @@ void CG_AnimMapObj( centity_t *cent )
 	anim.flipflop = qfalse;
 
 	// if numFrames is negative the animation is reversed
-	if( anim.numFrames < 0 )
+	if ( anim.numFrames < 0 )
 	{
 		anim.numFrames = -anim.numFrames;
 		anim.reversed = qtrue;
@@ -182,7 +182,7 @@ void CG_AnimMapObj( centity_t *cent )
 
 	anim.loopFrames = es->torsoAnim;
 
-	if( !es->legsAnim )
+	if ( !es->legsAnim )
 	{
 		anim.frameLerp = 1000;
 		anim.initialLerp = 1000;

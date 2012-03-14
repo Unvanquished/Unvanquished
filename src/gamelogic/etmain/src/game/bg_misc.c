@@ -2625,9 +2625,9 @@ gitem_t        *BG_FindItemForHoldable( holdable_t pw )
 {
 	int i;
 
-	for( i = 0; i < bg_numItems; i++ )
+	for ( i = 0; i < bg_numItems; i++ )
 	{
-		if( bg_itemlist[ i ].giType == IT_HOLDABLE && bg_itemlist[ i ].giTag == pw )
+		if ( bg_itemlist[ i ].giType == IT_HOLDABLE && bg_itemlist[ i ].giTag == pw )
 		{
 			return &bg_itemlist[ i ];
 		}
@@ -2648,9 +2648,9 @@ gitem_t        *BG_FindItemForWeapon( weapon_t weapon )
 {
 	gitem_t *it;
 
-	for( it = bg_itemlist + 1; it->classname; it++ )
+	for ( it = bg_itemlist + 1; it->classname; it++ )
 	{
-		if( it->giType == IT_WEAPON && it->giTag == weapon )
+		if ( it->giType == IT_WEAPON && it->giTag == weapon )
 		{
 			return it;
 		}
@@ -2673,9 +2673,9 @@ weapon_t BG_FindClipForWeapon( weapon_t weapon )
 {
 	gitem_t *it;
 
-	for( it = bg_itemlist + 1; it->classname; it++ )
+	for ( it = bg_itemlist + 1; it->classname; it++ )
 	{
-		if( it->giType == IT_WEAPON && it->giTag == weapon )
+		if ( it->giType == IT_WEAPON && it->giTag == weapon )
 		{
 			return it->giClipIndex;
 		}
@@ -2693,9 +2693,9 @@ weapon_t BG_FindAmmoForWeapon( weapon_t weapon )
 {
 	gitem_t *it;
 
-	for( it = bg_itemlist + 1; it->classname; it++ )
+	for ( it = bg_itemlist + 1; it->classname; it++ )
 	{
-		if( it->giType == IT_WEAPON && it->giTag == weapon )
+		if ( it->giType == IT_WEAPON && it->giTag == weapon )
 		{
 			return it->giAmmoIndex;
 		}
@@ -2712,18 +2712,18 @@ BG_AkimboFireSequence
 */
 qboolean BG_AkimboFireSequence( int weapon, int akimboClip, int mainClip )
 {
-	if( !BG_IsAkimboWeapon( weapon ) )
+	if ( !BG_IsAkimboWeapon( weapon ) )
 	{
 		return qfalse;
 	}
 
-	if( !akimboClip )
+	if ( !akimboClip )
 	{
 		return qfalse;
 	}
 
 	// no ammo in main weapon, must be akimbo turn
-	if( !mainClip )
+	if ( !mainClip )
 	{
 		return qtrue;
 	}
@@ -2731,7 +2731,7 @@ qboolean BG_AkimboFireSequence( int weapon, int akimboClip, int mainClip )
 	// at this point, both have ammo
 
 	// now check 'cycle'   // (removed old method 11/5/2001)
-	if( ( akimboClip + mainClip ) & 1 )
+	if ( ( akimboClip + mainClip ) & 1 )
 	{
 		return qfalse;
 	}
@@ -2746,8 +2746,8 @@ BG_IsAkimboWeapon
 */
 qboolean BG_IsAkimboWeapon( int weaponNum )
 {
-	if( weaponNum == WP_AKIMBO_COLT ||
-	    weaponNum == WP_AKIMBO_SILENCEDCOLT || weaponNum == WP_AKIMBO_LUGER || weaponNum == WP_AKIMBO_SILENCEDLUGER )
+	if ( weaponNum == WP_AKIMBO_COLT ||
+	     weaponNum == WP_AKIMBO_SILENCEDCOLT || weaponNum == WP_AKIMBO_LUGER || weaponNum == WP_AKIMBO_SILENCEDLUGER )
 	{
 		return qtrue;
 	}
@@ -2764,10 +2764,10 @@ BG_IsAkimboSideArm
 */
 qboolean BG_IsAkimboSideArm( int weaponNum, playerState_t *ps )
 {
-	switch( weaponNum )
+	switch ( weaponNum )
 	{
 		case WP_COLT:
-			if( ps->weapon == WP_AKIMBO_COLT || ps->weapon == WP_AKIMBO_SILENCEDCOLT )
+			if ( ps->weapon == WP_AKIMBO_COLT || ps->weapon == WP_AKIMBO_SILENCEDCOLT )
 			{
 				return qtrue;
 			}
@@ -2775,7 +2775,7 @@ qboolean BG_IsAkimboSideArm( int weaponNum, playerState_t *ps )
 			break;
 
 		case WP_LUGER:
-			if( ps->weapon == WP_AKIMBO_LUGER || ps->weapon == WP_AKIMBO_SILENCEDLUGER )
+			if ( ps->weapon == WP_AKIMBO_LUGER || ps->weapon == WP_AKIMBO_SILENCEDLUGER )
 			{
 				return qtrue;
 			}
@@ -2793,7 +2793,7 @@ BG_AkimboSidearm
 */
 int BG_AkimboSidearm( int weaponNum )
 {
-	switch( weaponNum )
+	switch ( weaponNum )
 	{
 		case WP_AKIMBO_COLT:
 			return WP_COLT;
@@ -2872,9 +2872,9 @@ gitem_t        *BG_FindItemForAmmo( int ammo )
 {
 	int i = 0;
 
-	for( ; i < bg_numItems; i++ )
+	for ( ; i < bg_numItems; i++ )
 	{
-		if( bg_itemlist[ i ].giType == IT_AMMO && bg_itemlist[ i ].giAmmoIndex == ammo )
+		if ( bg_itemlist[ i ].giType == IT_AMMO && bg_itemlist[ i ].giAmmoIndex == ammo )
 		{
 			return &bg_itemlist[ i ];
 		}
@@ -2895,9 +2895,9 @@ gitem_t        *BG_FindItem( const char *pickupName )
 {
 	gitem_t *it;
 
-	for( it = bg_itemlist + 1; it->classname; it++ )
+	for ( it = bg_itemlist + 1; it->classname; it++ )
 	{
-		if( !Q_stricmp( it->pickup_name, pickupName ) )
+		if ( !Q_stricmp( it->pickup_name, pickupName ) )
 		{
 			return it;
 		}
@@ -2910,9 +2910,9 @@ gitem_t        *BG_FindItemForClassName( const char *className )
 {
 	gitem_t *it;
 
-	for( it = bg_itemlist + 1; it->classname; it++ )
+	for ( it = bg_itemlist + 1; it->classname; it++ )
 	{
-		if( !Q_stricmp( it->classname, className ) )
+		if ( !Q_stricmp( it->classname, className ) )
 		{
 			return it;
 		}
@@ -2925,7 +2925,7 @@ gitem_t        *BG_FindItemForClassName( const char *className )
 // Gordon: FIXME: er, we shouldnt really need this, just remove all the weapons we dont actually want :)
 qboolean BG_WeaponInWolfMP( int weapon )
 {
-	switch( weapon )
+	switch ( weapon )
 	{
 		case WP_KNIFE:
 		case WP_LUGER:
@@ -2997,10 +2997,10 @@ qboolean BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTim
 	BG_EvaluateTrajectory( &item->pos, atTime, origin, qfalse, item->effect2Time );
 
 	// we are ignoring ducked differences here
-	if( ps->origin[ 0 ] - origin[ 0 ] > 36
-	    || ps->origin[ 0 ] - origin[ 0 ] < -36
-	    || ps->origin[ 1 ] - origin[ 1 ] > 36
-	    || ps->origin[ 1 ] - origin[ 1 ] < -36 || ps->origin[ 2 ] - origin[ 2 ] > 36 || ps->origin[ 2 ] - origin[ 2 ] < -36 )
+	if ( ps->origin[ 0 ] - origin[ 0 ] > 36
+	     || ps->origin[ 0 ] - origin[ 0 ] < -36
+	     || ps->origin[ 1 ] - origin[ 1 ] > 36
+	     || ps->origin[ 1 ] - origin[ 1 ] < -36 || ps->origin[ 2 ] - origin[ 2 ] > 36 || ps->origin[ 2 ] - origin[ 2 ] < -36 )
 	{
 		return qfalse;
 	}
@@ -3019,10 +3019,10 @@ WARNING: when numOfClips is 0, DO NOT CHANGE ANYTHING under ps.
 */
 int BG_GrenadesForClass( int cls, int *skills )
 {
-	switch( cls )
+	switch ( cls )
 	{
 		case PC_MEDIC:
-			if( skills[ SK_FIRST_AID ] >= 1 )
+			if ( skills[ SK_FIRST_AID ] >= 1 )
 			{
 				return 2;
 			}
@@ -3036,7 +3036,7 @@ int BG_GrenadesForClass( int cls, int *skills )
 			return 8;
 
 		case PC_FIELDOPS:
-			if( skills[ SK_SIGNALS ] >= 1 )
+			if ( skills[ SK_SIGNALS ] >= 1 )
 			{
 				return 2;
 			}
@@ -3052,7 +3052,7 @@ int BG_GrenadesForClass( int cls, int *skills )
 
 weapon_t BG_GrenadeTypeForTeam( team_t team )
 {
-	switch( team )
+	switch ( team )
 	{
 		case TEAM_AXIS:
 			return WP_GRENADE_LAUNCHER;
@@ -3080,10 +3080,10 @@ qboolean BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfC
 
 	clip = BG_FindClipForWeapon( weapon );
 
-	if( ps->ammoclip[ clip ] < i )
+	if ( ps->ammoclip[ clip ] < i )
 	{
 		// Gordon: early out
-		if( !numOfClips )
+		if ( !numOfClips )
 		{
 			return qtrue;
 		}
@@ -3094,21 +3094,21 @@ qboolean BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfC
 
 		COM_BitSet( ps->weapons, weapon );
 
-		if( ps->ammoclip[ clip ] > i )
+		if ( ps->ammoclip[ clip ] > i )
 		{
 			ps->ammoclip[ clip ] = i;
 		}
 	}
 
-	if( COM_BitCheck( ps->weapons, WP_MEDIC_SYRINGE ) )
+	if ( COM_BitCheck( ps->weapons, WP_MEDIC_SYRINGE ) )
 	{
 		i = skill[ SK_FIRST_AID ] >= 2 ? 12 : 10;
 
 		clip = BG_FindClipForWeapon( WP_MEDIC_SYRINGE );
 
-		if( ps->ammoclip[ clip ] < i )
+		if ( ps->ammoclip[ clip ] < i )
 		{
-			if( !numOfClips )
+			if ( !numOfClips )
 			{
 				return qtrue;
 			}
@@ -3117,7 +3117,7 @@ qboolean BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfC
 
 			ammoAdded = qtrue;
 
-			if( ps->ammoclip[ clip ] > i )
+			if ( ps->ammoclip[ clip ] > i )
 			{
 				ps->ammoclip[ clip ] = i;
 			}
@@ -3125,23 +3125,23 @@ qboolean BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfC
 	}
 
 	// Gordon: now other weapons
-	for( i = 0; reloadableWeapons[ i ] >= 0; i++ )
+	for ( i = 0; reloadableWeapons[ i ] >= 0; i++ )
 	{
 		weapon = reloadableWeapons[ i ];
 
-		if( COM_BitCheck( ps->weapons, weapon ) )
+		if ( COM_BitCheck( ps->weapons, weapon ) )
 		{
 			maxammo = BG_MaxAmmoForWeapon( weapon, skill );
 
 			// Handle weapons that just use clip, and not ammo
-			if( weapon == WP_FLAMETHROWER )
+			if ( weapon == WP_FLAMETHROWER )
 			{
 				clip = BG_FindAmmoForWeapon( weapon );
 
-				if( ps->ammoclip[ clip ] < maxammo )
+				if ( ps->ammoclip[ clip ] < maxammo )
 				{
 					// early out
-					if( !numOfClips )
+					if ( !numOfClips )
 					{
 						return qtrue;
 					}
@@ -3150,15 +3150,15 @@ qboolean BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfC
 					ps->ammoclip[ clip ] = maxammo;
 				}
 			}
-			else if( weapon == WP_PANZERFAUST )
+			else if ( weapon == WP_PANZERFAUST )
 			{
 				//%    || weapon == WP_MORTAR ) {
 				clip = BG_FindAmmoForWeapon( weapon );
 
-				if( ps->ammoclip[ clip ] < maxammo )
+				if ( ps->ammoclip[ clip ] < maxammo )
 				{
 					// early out
-					if( !numOfClips )
+					if ( !numOfClips )
 					{
 						return qtrue;
 					}
@@ -3166,7 +3166,7 @@ qboolean BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfC
 					ammoAdded = qtrue;
 					ps->ammoclip[ clip ] += numOfClips;
 
-					if( ps->ammoclip[ clip ] >= maxammo )
+					if ( ps->ammoclip[ clip ] >= maxammo )
 					{
 						ps->ammoclip[ clip ] = maxammo;
 					}
@@ -3176,17 +3176,17 @@ qboolean BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfC
 			{
 				clip = BG_FindAmmoForWeapon( weapon );
 
-				if( ps->ammo[ clip ] < maxammo )
+				if ( ps->ammo[ clip ] < maxammo )
 				{
 					// early out
-					if( !numOfClips )
+					if ( !numOfClips )
 					{
 						return qtrue;
 					}
 
 					ammoAdded = qtrue;
 
-					if( BG_IsAkimboWeapon( weapon ) )
+					if ( BG_IsAkimboWeapon( weapon ) )
 					{
 						weapNumOfClips = numOfClips * 2; // double clips babeh!
 					}
@@ -3198,7 +3198,7 @@ qboolean BG_AddMagicAmmo( playerState_t *ps, int *skill, int teamNum, int numOfC
 					// add and limit check
 					ps->ammo[ clip ] += weapNumOfClips * GetAmmoTableData( weapon )->maxclip;
 
-					if( ps->ammo[ clip ] > maxammo )
+					if ( ps->ammo[ clip ] > maxammo )
 					{
 						ps->ammo[ clip ] = maxammo;
 					}
@@ -3222,18 +3222,18 @@ qboolean BG_CanUseWeapon( int classNum, int teamNum, weapon_t weapon )
 	// TAT 1/11/2003 - is this SP game? - different weapons available in SP
 	qboolean isSinglePlayer = BG_IsSinglePlayerGame() ? qtrue : qfalse;
 
-	switch( classNum )
+	switch ( classNum )
 	{
 		case PC_ENGINEER:
-			if( weapon == WP_PLIERS || weapon == WP_DYNAMITE || weapon == WP_LANDMINE )
+			if ( weapon == WP_PLIERS || weapon == WP_DYNAMITE || weapon == WP_LANDMINE )
 			{
 				return qtrue;
 			}
-			else if( weapon == WP_MP40 || weapon == WP_KAR98 )
+			else if ( weapon == WP_MP40 || weapon == WP_KAR98 )
 			{
 				return ( teamNum == TEAM_AXIS );
 			}
-			else if( weapon == WP_THOMPSON || weapon == WP_CARBINE )
+			else if ( weapon == WP_THOMPSON || weapon == WP_CARBINE )
 			{
 				return ( teamNum == TEAM_ALLIES );
 			}
@@ -3241,20 +3241,20 @@ qboolean BG_CanUseWeapon( int classNum, int teamNum, weapon_t weapon )
 		case PC_FIELDOPS:
 
 			// TAT 1/11/2003 - in SP, field op can only use handgun, check after switch below
-			if( isSinglePlayer && teamNum == TEAM_ALLIES )
+			if ( isSinglePlayer && teamNum == TEAM_ALLIES )
 			{
 				break;
 			}
 
-			if( weapon == WP_STEN )
+			if ( weapon == WP_STEN )
 			{
 				return qtrue;
 			}
-			else if( weapon == WP_MP40 )
+			else if ( weapon == WP_MP40 )
 			{
 				return ( teamNum == TEAM_AXIS );
 			}
-			else if( weapon == WP_THOMPSON )
+			else if ( weapon == WP_THOMPSON )
 			{
 				return ( teamNum == TEAM_ALLIES );
 			}
@@ -3262,18 +3262,18 @@ qboolean BG_CanUseWeapon( int classNum, int teamNum, weapon_t weapon )
 			break;
 
 		case PC_SOLDIER:
-			if( weapon == WP_STEN || weapon == WP_PANZERFAUST || weapon == WP_FLAMETHROWER
-			    // Gordon: shouldn't this only be for cvt ops?
-			    || weapon == WP_FG42
-			    || weapon == WP_MOBILE_MG42 || weapon == WP_MOBILE_MG42_SET || weapon == WP_MORTAR || weapon == WP_MORTAR_SET )
+			if ( weapon == WP_STEN || weapon == WP_PANZERFAUST || weapon == WP_FLAMETHROWER
+			     // Gordon: shouldn't this only be for cvt ops?
+			     || weapon == WP_FG42
+			     || weapon == WP_MOBILE_MG42 || weapon == WP_MOBILE_MG42_SET || weapon == WP_MORTAR || weapon == WP_MORTAR_SET )
 			{
 				return qtrue;
 			}
-			else if( weapon == WP_MP40 )
+			else if ( weapon == WP_MP40 )
 			{
 				return ( teamNum == TEAM_AXIS );
 			}
-			else if( weapon == WP_THOMPSON )
+			else if ( weapon == WP_THOMPSON )
 			{
 				return ( teamNum == TEAM_ALLIES );
 			}
@@ -3281,20 +3281,20 @@ qboolean BG_CanUseWeapon( int classNum, int teamNum, weapon_t weapon )
 			break;
 
 		case PC_MEDIC:
-			if( weapon == WP_MEDIC_SYRINGE || weapon == WP_MEDKIT )
+			if ( weapon == WP_MEDIC_SYRINGE || weapon == WP_MEDKIT )
 			{
 				return qtrue;
 			}
 			// TAT 1/11/2003 - in SP, medic can only use handgun, check after switch below
-			else if( isSinglePlayer && teamNum == TEAM_ALLIES )
+			else if ( isSinglePlayer && teamNum == TEAM_ALLIES )
 			{
 				break;
 			}
-			else if( weapon == WP_MP40 )
+			else if ( weapon == WP_MP40 )
 			{
 				return ( teamNum == TEAM_AXIS );
 			}
-			else if( weapon == WP_THOMPSON )
+			else if ( weapon == WP_THOMPSON )
 			{
 				return ( teamNum == TEAM_ALLIES );
 			}
@@ -3302,17 +3302,17 @@ qboolean BG_CanUseWeapon( int classNum, int teamNum, weapon_t weapon )
 			break;
 
 		case PC_COVERTOPS:
-			if( weapon == WP_STEN || weapon == WP_SMOKE_BOMB || weapon == WP_SATCHEL || weapon == WP_AMMO
-			    // Gordon: this is a cvt ops weapon in single player too, right?
-			    || weapon == WP_FG42 )
+			if ( weapon == WP_STEN || weapon == WP_SMOKE_BOMB || weapon == WP_SATCHEL || weapon == WP_AMMO
+			     // Gordon: this is a cvt ops weapon in single player too, right?
+			     || weapon == WP_FG42 )
 			{
 				return qtrue;
 			}
-			else if( weapon == WP_K43 )
+			else if ( weapon == WP_K43 )
 			{
 				return ( teamNum == TEAM_AXIS );
 			}
-			else if( weapon == WP_GARAND )
+			else if ( weapon == WP_GARAND )
 			{
 				return ( teamNum == TEAM_ALLIES );
 			}
@@ -3320,7 +3320,7 @@ qboolean BG_CanUseWeapon( int classNum, int teamNum, weapon_t weapon )
 			break;
 	}
 
-	if( weapon == WP_NONE || weapon == WP_KNIFE || weapon == WP_LUGER || weapon == WP_COLT )
+	if ( weapon == WP_NONE || weapon == WP_KNIFE || weapon == WP_LUGER || weapon == WP_COLT )
 	{
 		return qtrue;
 	}
@@ -3343,17 +3343,17 @@ qboolean BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps,
 {
 	gitem_t *item;
 
-	if( ent->modelindex < 1 || ent->modelindex >= bg_numItems )
+	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems )
 	{
 		Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
 	}
 
 	item = &bg_itemlist[ ent->modelindex ];
 
-	switch( item->giType )
+	switch ( item->giType )
 	{
 		case IT_WEAPON:
-			if( item->giTag == WP_AMMO )
+			if ( item->giTag == WP_AMMO )
 			{
 				// magic ammo for any two-handed weapon
 				// xkan, 11/21/2002 - only pick up if ammo is not full, numClips is 0, so ps will
@@ -3373,17 +3373,17 @@ qboolean BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps,
 		case IT_HEALTH:
 
 			// Gordon: ps->teamNum is really class.... thx whoever decided on that...
-			if( ps->teamNum == PC_MEDIC )
+			if ( ps->teamNum == PC_MEDIC )
 			{
 				// Gordon: medics can go up to 12% extra on max health as they have perm. regen
-				if( ps->stats[ STAT_HEALTH ] >= ( int )( ps->stats[ STAT_MAX_HEALTH ] * 1.12 ) )
+				if ( ps->stats[ STAT_HEALTH ] >= ( int )( ps->stats[ STAT_MAX_HEALTH ] * 1.12 ) )
 				{
 					return qfalse;
 				}
 			}
 			else
 			{
-				if( ps->stats[ STAT_HEALTH ] >= ps->stats[ STAT_MAX_HEALTH ] )
+				if ( ps->stats[ STAT_HEALTH ] >= ps->stats[ STAT_MAX_HEALTH ] )
 				{
 					return qfalse;
 				}
@@ -3394,8 +3394,8 @@ qboolean BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps,
 		case IT_TEAM: // team items, such as flags
 
 			// density tracks how many uses left
-			if( ( ent->density < 1 ) ||
-			    ( ( ( ps->persistant[ PERS_TEAM ] == TEAM_AXIS ) ? ps->powerups[ PW_BLUEFLAG ] : ps->powerups[ PW_REDFLAG ] ) != 0 ) )
+			if ( ( ent->density < 1 ) ||
+			     ( ( ( ps->persistant[ PERS_TEAM ] == TEAM_AXIS ) ? ps->powerups[ PW_BLUEFLAG ] : ps->powerups[ PW_REDFLAG ] ) != 0 ) )
 			{
 				return qfalse;
 			}
@@ -3404,18 +3404,18 @@ qboolean BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps,
 			// ent->modelindex2 is non-zero on items if they are dropped
 			// we need to know this because we can pick up our dropped flag (and return it)
 			// but we can't pick up our flag at base
-			if( ps->persistant[ PERS_TEAM ] == TEAM_AXIS )
+			if ( ps->persistant[ PERS_TEAM ] == TEAM_AXIS )
 			{
-				if( item->giTag == PW_BLUEFLAG || ( item->giTag == PW_REDFLAG && ent->otherEntityNum2 /*ent->modelindex2 */ ) ||
-				    ( item->giTag == PW_REDFLAG && ps->powerups[ PW_BLUEFLAG ] ) )
+				if ( item->giTag == PW_BLUEFLAG || ( item->giTag == PW_REDFLAG && ent->otherEntityNum2 /*ent->modelindex2 */ ) ||
+				     ( item->giTag == PW_REDFLAG && ps->powerups[ PW_BLUEFLAG ] ) )
 				{
 					return qtrue;
 				}
 			}
-			else if( ps->persistant[ PERS_TEAM ] == TEAM_ALLIES )
+			else if ( ps->persistant[ PERS_TEAM ] == TEAM_ALLIES )
 			{
-				if( item->giTag == PW_REDFLAG || ( item->giTag == PW_BLUEFLAG && ent->otherEntityNum2 /*ent->modelindex2 */ ) ||
-				    ( item->giTag == PW_BLUEFLAG && ps->powerups[ PW_REDFLAG ] ) )
+				if ( item->giTag == PW_REDFLAG || ( item->giTag == PW_BLUEFLAG && ent->otherEntityNum2 /*ent->modelindex2 */ ) ||
+				     ( item->giTag == PW_BLUEFLAG && ps->powerups[ PW_REDFLAG ] ) )
 				{
 					return qtrue;
 				}
@@ -3450,12 +3450,12 @@ void BG_CalculateSpline_r( splinePath_t *spline, vec3_t out1, vec3_t out2, float
 
 	VectorCopy( spline->point.origin, points[ 0 ] );
 
-	for( i = 0; i < spline->numControls; i++ )
+	for ( i = 0; i < spline->numControls; i++ )
 	{
 		VectorCopy( spline->controls[ i ].origin, points[ i + 1 ] );
 	}
 
-	if( !spline->next )
+	if ( !spline->next )
 	{
 		return;
 //      Com_Error( ERR_DROP, "Spline (%s) with no target referenced", spline->point.name );
@@ -3463,9 +3463,9 @@ void BG_CalculateSpline_r( splinePath_t *spline, vec3_t out1, vec3_t out2, float
 
 	VectorCopy( spline->next->point.origin, points[ i + 1 ] );
 
-	while( count > 2 )
+	while ( count > 2 )
 	{
-		for( i = 0; i < count - 1; i++ )
+		for ( i = 0; i < count - 1; i++ )
 		{
 			VectorSubtract( points[ i + 1 ], points[ i ], dist );
 			VectorMA( points[ i ], tension, dist, points[ i ] );
@@ -3482,12 +3482,12 @@ qboolean BG_TraverseSpline( float *deltaTime, splinePath_t **pSpline )
 {
 	float dist;
 
-	while( ( *deltaTime ) > 1 )
+	while ( ( *deltaTime ) > 1 )
 	{
 		( *deltaTime ) -= 1;
 		dist = ( *pSpline )->length * ( *deltaTime );
 
-		if( !( *pSpline )->next || !( *pSpline )->next->length )
+		if ( !( *pSpline )->next || !( *pSpline )->next->length )
 		{
 			return qfalse;
 //          Com_Error( ERR_DROP, "Spline path end passed (%s)", (*pSpline)->point.name );
@@ -3497,11 +3497,11 @@ qboolean BG_TraverseSpline( float *deltaTime, splinePath_t **pSpline )
 		*deltaTime = dist / ( *pSpline )->length;
 	}
 
-	while( ( *deltaTime ) < 0 )
+	while ( ( *deltaTime ) < 0 )
 	{
 		dist = - ( ( *pSpline )->length * ( *deltaTime ) );
 
-		if( !( *pSpline )->prev || !( *pSpline )->prev->length )
+		if ( !( *pSpline )->prev || !( *pSpline )->prev->length )
 		{
 			return qfalse;
 //          Com_Error( ERR_DROP, "Spline path end passed (%s)", (*pSpline)->point.name );
@@ -3533,7 +3533,7 @@ qboolean BG_RaySphereIntersection( float radius, vec3_t origin, splineSegment_t 
 
 	d = ( b * b ) - ( 4 * c );
 
-	if( d < 0 )
+	if ( d < 0 )
 	{
 		return qfalse;
 	}
@@ -3556,7 +3556,7 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 //  int x = 0;
 //  splinePath_t* start = *pSpline;
 
-	if( i >= MAX_SPLINE_SEGMENTS )
+	if ( i >= MAX_SPLINE_SEGMENTS )
 	{
 		i = MAX_SPLINE_SEGMENTS - 1;
 		frac = 1.f;
@@ -3566,29 +3566,29 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 		frac = ( ( ( *deltaTime ) * ( MAX_SPLINE_SEGMENTS ) ) - i );
 	}
 
-	while( qtrue )
+	while ( qtrue )
 	{
 		float t0, t1;
 
-		while( qtrue )
+		while ( qtrue )
 		{
-			if( BG_RaySphereIntersection( radius, result, & ( *pSpline )->segments[ i ], &t0, &t1 ) )
+			if ( BG_RaySphereIntersection( radius, result, & ( *pSpline )->segments[ i ], &t0, &t1 ) )
 			{
 				qboolean found = qfalse;
 
 				t0 /= ( *pSpline )->segments[ i ].length;
 				t1 /= ( *pSpline )->segments[ i ].length;
 
-				if( first )
+				if ( first )
 				{
-					if( radius < 0 )
+					if ( radius < 0 )
 					{
-						if( t0 < frac && ( t0 >= 0.f && t0 <= 1.f ) )
+						if ( t0 < frac && ( t0 >= 0.f && t0 <= 1.f ) )
 						{
 							t = t0;
 							found = qtrue;
 						}
-						else if( t1 < frac )
+						else if ( t1 < frac )
 						{
 							t = t1;
 							found = qtrue;
@@ -3596,12 +3596,12 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 					}
 					else
 					{
-						if( t0 > frac && ( t0 >= 0.f && t0 <= 1.f ) )
+						if ( t0 > frac && ( t0 >= 0.f && t0 <= 1.f ) )
 						{
 							t = t0;
 							found = qtrue;
 						}
-						else if( t1 > frac )
+						else if ( t1 > frac )
 						{
 							t = t1;
 							found = qtrue;
@@ -3610,9 +3610,9 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 				}
 				else
 				{
-					if( radius < 0 )
+					if ( radius < 0 )
 					{
-						if( t0 < t1 && ( t0 >= 0.f && t0 <= 1.f ) )
+						if ( t0 < t1 && ( t0 >= 0.f && t0 <= 1.f ) )
 						{
 							t = t0;
 							found = qtrue;
@@ -3625,7 +3625,7 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 					}
 					else
 					{
-						if( t0 > t1 && ( t0 >= 0.f && t0 <= 1.f ) )
+						if ( t0 > t1 && ( t0 >= 0.f && t0 <= 1.f ) )
 						{
 							t = t0;
 							found = qtrue;
@@ -3638,9 +3638,9 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 					}
 				}
 
-				if( found )
+				if ( found )
 				{
-					if( t >= 0.f && t <= 1.f )
+					if ( t >= 0.f && t <= 1.f )
 					{
 						*deltaTime = ( i / ( float )( MAX_SPLINE_SEGMENTS ) ) + ( t / ( float )( MAX_SPLINE_SEGMENTS ) );
 						VectorMA( ( *pSpline )->segments[ i ].start, t * ( *pSpline )->segments[ i ].length,
@@ -3654,11 +3654,11 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 
 			first = qfalse;
 
-			if( radius < 0 )
+			if ( radius < 0 )
 			{
 				i--;
 
-				if( i < 0 )
+				if ( i < 0 )
 				{
 					i = MAX_SPLINE_SEGMENTS - 1;
 					break;
@@ -3668,7 +3668,7 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 			{
 				i++;
 
-				if( i >= MAX_SPLINE_SEGMENTS )
+				if ( i >= MAX_SPLINE_SEGMENTS )
 				{
 					i = 0;
 					break;
@@ -3676,9 +3676,9 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 			}
 		}
 
-		if( radius < 0 )
+		if ( radius < 0 )
 		{
-			if( !( *pSpline )->prev )
+			if ( !( *pSpline )->prev )
 			{
 				return;
 //              Com_Error( ERR_DROP, "End of spline reached (%s)\n", start->point.name );
@@ -3688,7 +3688,7 @@ void BG_LinearPathOrigin2( float radius, splinePath_t **pSpline, float *deltaTim
 		}
 		else
 		{
-			if( !( *pSpline )->next )
+			if ( !( *pSpline )->next )
 			{
 				return;
 //              Com_Error( ERR_DROP, "End of spline reached (%s)\n", start->point.name );
@@ -3705,7 +3705,7 @@ void BG_ComputeSegments( splinePath_t *pSpline )
 	float  granularity = 1 / ( ( float )( MAX_SPLINE_SEGMENTS ) );
 	vec3_t vec[ 4 ];
 
-	for( i = 0; i < MAX_SPLINE_SEGMENTS; i++ )
+	for ( i = 0; i < MAX_SPLINE_SEGMENTS; i++ )
 	{
 		BG_CalculateSpline_r( pSpline, vec[ 0 ], vec[ 1 ], i * granularity );
 		VectorSubtract( vec[ 1 ], vec[ 0 ], pSpline->segments[ i ].start );
@@ -3738,7 +3738,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 	qboolean     backwards = qfalse;
 	float        deltaTime2;
 
-	switch( tr->trType )
+	switch ( tr->trType )
 	{
 		case TR_STATIONARY:
 		case TR_INTERPOLATE:
@@ -3759,14 +3759,14 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 
 //----(SA)  removed
 		case TR_LINEAR_STOP:
-			if( atTime > tr->trTime + tr->trDuration )
+			if ( atTime > tr->trTime + tr->trDuration )
 			{
 				atTime = tr->trTime + tr->trDuration;
 			}
 
 			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 
-			if( deltaTime < 0 )
+			if ( deltaTime < 0 )
 			{
 				deltaTime = 0;
 			}
@@ -3798,7 +3798,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 //----(SA)  end
 			// RF, acceleration
 		case TR_ACCELERATE: // trDelta is the ultimate speed
-			if( atTime > tr->trTime + tr->trDuration )
+			if ( atTime > tr->trTime + tr->trDuration )
 			{
 				atTime = tr->trTime + tr->trDuration;
 			}
@@ -3813,7 +3813,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 			break;
 
 		case TR_DECCELERATE: // trDelta is the starting speed
-			if( atTime > tr->trTime + tr->trDuration )
+			if ( atTime > tr->trTime + tr->trDuration )
 			{
 				atTime = tr->trTime + tr->trDuration;
 			}
@@ -3830,23 +3830,23 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 			break;
 
 		case TR_SPLINE:
-			if( !( pSpline = BG_GetSplineData( splinePath, &backwards ) ) )
+			if ( !( pSpline = BG_GetSplineData( splinePath, &backwards ) ) )
 			{
 				return;
 			}
 
 			deltaTime = tr->trDuration ? ( atTime - tr->trTime ) / ( ( float ) tr->trDuration ) : 0;
 
-			if( deltaTime < 0.f )
+			if ( deltaTime < 0.f )
 			{
 				deltaTime = 0.f;
 			}
-			else if( deltaTime > 1.f )
+			else if ( deltaTime > 1.f )
 			{
 				deltaTime = 1.f;
 			}
 
-			if( backwards )
+			if ( backwards )
 			{
 				deltaTime = 1 - deltaTime;
 			}
@@ -3861,13 +3861,13 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 
 			BG_CalculateSpline_r( pSpline, vec[ 0 ], vec[ 1 ], deltaTime );
 
-			if( isAngle )
+			if ( isAngle )
 			{
 				qboolean dampin = qfalse;
 				qboolean dampout = qfalse;
 				float    base1;
 
-				if( tr->trBase[ 0 ] )
+				if ( tr->trBase[ 0 ] )
 				{
 //              int pos = 0;
 					vec3_t       result2;
@@ -3875,7 +3875,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 
 					deltaTime2 += tr->trBase[ 0 ] / pSpline->length;
 
-					if( BG_TraverseSpline( &deltaTime2, &pSp2 ) )
+					if ( BG_TraverseSpline( &deltaTime2, &pSp2 ) )
 					{
 						VectorSubtract( vec[ 1 ], vec[ 0 ], result );
 						VectorMA( vec[ 0 ], deltaTime, result, result );
@@ -3885,7 +3885,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 						VectorSubtract( vec[ 1 ], vec[ 0 ], result2 );
 						VectorMA( vec[ 0 ], deltaTime2, result2, result2 );
 
-						if( tr->trBase[ 0 ] < 0 )
+						if ( tr->trBase[ 0 ] < 0 )
 						{
 							VectorSubtract( result, result2, result );
 						}
@@ -3908,11 +3908,11 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 
 				base1 = tr->trBase[ 1 ];
 
-				if( base1 >= 10000 || base1 < -10000 )
+				if ( base1 >= 10000 || base1 < -10000 )
 				{
 					dampin = qtrue;
 
-					if( base1 < 0 )
+					if ( base1 < 0 )
 					{
 						base1 += 10000;
 					}
@@ -3922,11 +3922,11 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 					}
 				}
 
-				if( base1 >= 1000 || base1 < -1000 )
+				if ( base1 >= 1000 || base1 < -1000 )
 				{
 					dampout = qtrue;
 
-					if( base1 < 0 )
+					if ( base1 < 0 )
 					{
 						base1 += 1000;
 					}
@@ -3936,15 +3936,15 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 					}
 				}
 
-				if( dampin && dampout )
+				if ( dampin && dampout )
 				{
 					result[ ROLL ] = base1 + ( ( sin( ( ( deltaTime * 2 ) - 1 ) * M_PI * 0.5f ) + 1 ) * 0.5f * tr->trBase[ 2 ] );
 				}
-				else if( dampin )
+				else if ( dampin )
 				{
 					result[ ROLL ] = base1 + ( sin( deltaTime * M_PI * 0.5f ) * tr->trBase[ 2 ] );
 				}
-				else if( dampout )
+				else if ( dampout )
 				{
 					result[ ROLL ] = base1 + ( ( 1 - sin( ( 1 - deltaTime ) * M_PI * 0.5f ) ) * tr->trBase[ 2 ] );
 				}
@@ -3962,33 +3962,33 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 			break;
 
 		case TR_LINEAR_PATH:
-			if( !( pSpline = BG_GetSplineData( splinePath, &backwards ) ) )
+			if ( !( pSpline = BG_GetSplineData( splinePath, &backwards ) ) )
 			{
 				return;
 			}
 
 			deltaTime = tr->trDuration ? ( atTime - tr->trTime ) / ( ( float ) tr->trDuration ) : 0;
 
-			if( deltaTime < 0.f )
+			if ( deltaTime < 0.f )
 			{
 				deltaTime = 0.f;
 			}
-			else if( deltaTime > 1.f )
+			else if ( deltaTime > 1.f )
 			{
 				deltaTime = 1.f;
 			}
 
-			if( backwards )
+			if ( backwards )
 			{
 				deltaTime = 1 - deltaTime;
 			}
 
-			if( isAngle )
+			if ( isAngle )
 			{
 				int   pos = floor( deltaTime * ( MAX_SPLINE_SEGMENTS ) );
 				float frac;
 
-				if( pos >= MAX_SPLINE_SEGMENTS )
+				if ( pos >= MAX_SPLINE_SEGMENTS )
 				{
 					pos = MAX_SPLINE_SEGMENTS - 1;
 					frac = pSpline->segments[ pos ].length;
@@ -3998,14 +3998,14 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 					frac = ( ( deltaTime * ( MAX_SPLINE_SEGMENTS ) ) - pos ) * pSpline->segments[ pos ].length;
 				}
 
-				if( tr->trBase[ 0 ] )
+				if ( tr->trBase[ 0 ] )
 				{
 					VectorMA( pSpline->segments[ pos ].start, frac, pSpline->segments[ pos ].v_norm, result );
 					VectorCopy( result, v );
 
 					BG_LinearPathOrigin2( tr->trBase[ 0 ], &pSpline, &deltaTime, v, backwards );
 
-					if( tr->trBase[ 0 ] < 0 )
+					if ( tr->trBase[ 0 ] < 0 )
 					{
 						VectorSubtract( v, result, result );
 					}
@@ -4026,7 +4026,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result, q
 				int   pos = floor( deltaTime * ( MAX_SPLINE_SEGMENTS ) );
 				float frac;
 
-				if( pos >= MAX_SPLINE_SEGMENTS )
+				if ( pos >= MAX_SPLINE_SEGMENTS )
 				{
 					pos = MAX_SPLINE_SEGMENTS - 1;
 					frac = pSpline->segments[ pos ].length;
@@ -4059,7 +4059,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 	float deltaTime;
 	float phase;
 
-	switch( tr->trType )
+	switch ( tr->trType )
 	{
 		case TR_STATIONARY:
 		case TR_INTERPOLATE:
@@ -4079,7 +4079,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 
 //----(SA)  removed
 		case TR_LINEAR_STOP:
-			if( atTime > tr->trTime + tr->trDuration )
+			if ( atTime > tr->trTime + tr->trDuration )
 			{
 				VectorClear( result );
 				return;
@@ -4112,7 +4112,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 //----(SA)  end
 			// RF, acceleration
 		case TR_ACCELERATE: // trDelta is eventual speed
-			if( atTime > tr->trTime + tr->trDuration )
+			if ( atTime > tr->trTime + tr->trDuration )
 			{
 				VectorClear( result );
 				return;
@@ -4124,7 +4124,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 			break;
 
 		case TR_DECCELERATE: // trDelta is breaking force
-			if( atTime > tr->trTime + tr->trDuration )
+			if ( atTime > tr->trTime + tr->trDuration )
 			{
 				VectorClear( result );
 				return;
@@ -4161,13 +4161,13 @@ void BG_GetMarkDir( const vec3_t dir, const vec3_t normal, vec3_t out )
 	float  minDot = 0.3;
 	int    x = 0;
 
-	if( dir[ 0 ] < 0.001 && dir[ 1 ] < 0.001 )
+	if ( dir[ 0 ] < 0.001 && dir[ 1 ] < 0.001 )
 	{
 		VectorCopy( dir, out );
 		return;
 	}
 
-	if( VectorLengthSquared( normal ) < SQR( 1.f ) )
+	if ( VectorLengthSquared( normal ) < SQR( 1.f ) )
 	{
 		// this is needed to get rid of (0,0,0) normals (happens with entities?)
 		VectorSet( lnormal, 0.f, 0.f, 1.f );
@@ -4182,13 +4182,13 @@ void BG_GetMarkDir( const vec3_t dir, const vec3_t normal, vec3_t out )
 	VectorNegate( dir, ndir );
 	VectorNormalize( ndir );
 
-	if( normal[ 2 ] > .8f )
+	if ( normal[ 2 ] > .8f )
 	{
 		minDot = .7f;
 	}
 
 	// make sure it makrs the impact surface
-	while( DotProduct( ndir, lnormal ) < minDot && x < 10 )
+	while ( DotProduct( ndir, lnormal ) < minDot && x < 10 )
 	{
 		VectorMA( ndir, .5, lnormal, ndir );
 		VectorNormalize( ndir );
@@ -4198,9 +4198,9 @@ void BG_GetMarkDir( const vec3_t dir, const vec3_t normal, vec3_t out )
 
 #ifdef GAMEDLL
 
-	if( x >= 10 )
+	if ( x >= 10 )
 	{
-		if( g_developer.integer )
+		if ( g_developer.integer )
 		{
 			Com_Printf( "BG_GetMarkDir loops: %i\n", x );
 		}
@@ -4362,7 +4362,7 @@ void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerSta
 
 		trap_Cvar_VariableStringBuffer( "showevents", buf, sizeof( buf ) );
 
-		if( atof( buf ) != 0 )
+		if ( atof( buf ) != 0 )
 		{
 #ifdef QAGAME
 			Com_Printf( " game event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount /*ps->commandTime */,
@@ -4410,12 +4410,12 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 {
 	int i;
 
-	if( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR )
+	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR )
 	{
 		// || ps->pm_flags & PMF_LIMBO ) { // JPW NERVE limbo
 		s->eType = ET_INVISIBLE;
 	}
-	else if( ps->stats[ STAT_HEALTH ] <= GIB_HEALTH )
+	else if ( ps->stats[ STAT_HEALTH ] <= GIB_HEALTH )
 	{
 		s->eType = ET_INVISIBLE;
 	}
@@ -4429,7 +4429,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	s->pos.trType = TR_INTERPOLATE;
 	VectorCopy( ps->origin, s->pos.trBase );
 
-	if( snap )
+	if ( snap )
 	{
 		SnapVector( s->pos.trBase );
 	}
@@ -4437,12 +4437,12 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	s->apos.trType = TR_INTERPOLATE;
 	VectorCopy( ps->viewangles, s->apos.trBase );
 
-	if( snap )
+	if ( snap )
 	{
 		SnapVector( s->apos.trBase );
 	}
 
-	if( ps->movementDir > 128 )
+	if ( ps->movementDir > 128 )
 	{
 		s->angles2[ YAW ] = ( float ) ps->movementDir - 256;
 	}
@@ -4458,7 +4458,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	// Ridah, let clients know if this person is using a mounted weapon
 	// so they don't show any client muzzle flashes
 
-	if( ps->eFlags & EF_MOUNTEDTANK )
+	if ( ps->eFlags & EF_MOUNTEDTANK )
 	{
 		ps->eFlags &= ~EF_MG42_ACTIVE;
 		ps->eFlags &= ~EF_AAGUN_ACTIVE;
@@ -4470,7 +4470,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 
 	s->eFlags = ps->eFlags;
 
-	if( ps->stats[ STAT_HEALTH ] <= 0 )
+	if ( ps->stats[ STAT_HEALTH ] <= 0 )
 	{
 		s->eFlags |= EF_DEAD;
 	}
@@ -4480,16 +4480,16 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	}
 
 // from MP
-	if( ps->externalEvent )
+	if ( ps->externalEvent )
 	{
 		s->event = ps->externalEvent;
 		s->eventParm = ps->externalEventParm;
 	}
-	else if( ps->entityEventSequence < ps->eventSequence )
+	else if ( ps->entityEventSequence < ps->eventSequence )
 	{
 		int seq;
 
-		if( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
+		if ( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
 		{
 			ps->entityEventSequence = ps->eventSequence - MAX_EVENTS;
 		}
@@ -4504,7 +4504,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	// Ridah, now using a circular list of events for all entities
 	// add any new events that have been added to the playerState_t
 	// (possibly overwriting entityState_t events)
-	for( i = ps->oldEventSequence; i != ps->eventSequence; i++ )
+	for ( i = ps->oldEventSequence; i != ps->eventSequence; i++ )
 	{
 		s->events[ s->eventSequence & ( MAX_EVENTS - 1 ) ] = ps->events[ i & ( MAX_EVENTS - 1 ) ];
 		s->eventParms[ s->eventSequence & ( MAX_EVENTS - 1 ) ] = ps->eventParms[ i & ( MAX_EVENTS - 1 ) ];
@@ -4518,9 +4518,9 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 
 	s->powerups = 0;
 
-	for( i = 0; i < MAX_POWERUPS; i++ )
+	for ( i = 0; i < MAX_POWERUPS; i++ )
 	{
-		if( ps->powerups[ i ] )
+		if ( ps->powerups[ i ] )
 		{
 			s->powerups |= 1 << i;
 		}
@@ -4544,12 +4544,12 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 {
 	int i;
 
-	if( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR )
+	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR )
 	{
 		// || ps->pm_flags & PMF_LIMBO ) { // JPW NERVE limbo
 		s->eType = ET_INVISIBLE;
 	}
-	else if( ps->stats[ STAT_HEALTH ] <= GIB_HEALTH )
+	else if ( ps->stats[ STAT_HEALTH ] <= GIB_HEALTH )
 	{
 		s->eType = ET_INVISIBLE;
 	}
@@ -4563,7 +4563,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	s->pos.trType = TR_LINEAR_STOP;
 	VectorCopy( ps->origin, s->pos.trBase );
 
-	if( snap )
+	if ( snap )
 	{
 		SnapVector( s->pos.trBase );
 	}
@@ -4578,7 +4578,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	s->apos.trType = TR_INTERPOLATE;
 	VectorCopy( ps->viewangles, s->apos.trBase );
 
-	if( snap )
+	if ( snap )
 	{
 		SnapVector( s->apos.trBase );
 	}
@@ -4589,7 +4589,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	s->clientNum = ps->clientNum; // ET_PLAYER looks here instead of at number
 	// so corpses can also reference the proper config
 
-	if( ps->eFlags & EF_MOUNTEDTANK )
+	if ( ps->eFlags & EF_MOUNTEDTANK )
 	{
 		ps->eFlags &= ~EF_MG42_ACTIVE;
 		ps->eFlags &= ~EF_AAGUN_ACTIVE;
@@ -4601,7 +4601,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 	s->eFlags = ps->eFlags;
 
-	if( ps->stats[ STAT_HEALTH ] <= 0 )
+	if ( ps->stats[ STAT_HEALTH ] <= 0 )
 	{
 		s->eFlags |= EF_DEAD;
 	}
@@ -4610,16 +4610,16 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 		s->eFlags &= ~EF_DEAD;
 	}
 
-	if( ps->externalEvent )
+	if ( ps->externalEvent )
 	{
 		s->event = ps->externalEvent;
 		s->eventParm = ps->externalEventParm;
 	}
-	else if( ps->entityEventSequence < ps->eventSequence )
+	else if ( ps->entityEventSequence < ps->eventSequence )
 	{
 		int seq;
 
-		if( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
+		if ( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
 		{
 			ps->entityEventSequence = ps->eventSequence - MAX_EVENTS;
 		}
@@ -4633,7 +4633,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	// Ridah, now using a circular list of events for all entities
 	// add any new events that have been added to the playerState_t
 	// (possibly overwriting entityState_t events)
-	for( i = ps->oldEventSequence; i != ps->eventSequence; i++ )
+	for ( i = ps->oldEventSequence; i != ps->eventSequence; i++ )
 	{
 		s->events[ s->eventSequence & ( MAX_EVENTS - 1 ) ] = ps->events[ i & ( MAX_EVENTS - 1 ) ];
 		s->eventParms[ s->eventSequence & ( MAX_EVENTS - 1 ) ] = ps->eventParms[ i & ( MAX_EVENTS - 1 ) ];
@@ -4647,9 +4647,9 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 	s->powerups = 0;
 
-	for( i = 0; i < MAX_POWERUPS; i++ )
+	for ( i = 0; i < MAX_POWERUPS; i++ )
 	{
-		if( ps->powerups[ i ] )
+		if ( ps->powerups[ i ] )
 		{
 			s->powerups |= 1 << i;
 		}
@@ -4663,7 +4663,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 // Gordon: some weapons are duplicated for code puposes.... just want to treat them as a single
 weapon_t BG_DuplicateWeapon( weapon_t weap )
 {
-	switch( weap )
+	switch ( weap )
 	{
 		case WP_M7:
 			return WP_GPG40;
@@ -4686,7 +4686,7 @@ gitem_t        *BG_ValidStatWeapon( weapon_t weap )
 {
 	weapon_t weap2;
 
-	switch( weap )
+	switch ( weap )
 	{
 		case WP_MEDKIT:
 		case WP_PLIERS:
@@ -4700,14 +4700,14 @@ gitem_t        *BG_ValidStatWeapon( weapon_t weap )
 			break;
 	}
 
-	if( !BG_WeaponInWolfMP( weap ) )
+	if ( !BG_WeaponInWolfMP( weap ) )
 	{
 		return NULL;
 	}
 
 	weap2 = BG_DuplicateWeapon( weap );
 
-	if( weap != weap2 )
+	if ( weap != weap2 )
 	{
 		return NULL;
 	}
@@ -4719,9 +4719,9 @@ weapon_t BG_WeaponForMOD( int MOD )
 {
 	weapon_t i;
 
-	for( i = 0; i < WP_NUM_WEAPONS; i++ )
+	for ( i = 0; i < WP_NUM_WEAPONS; i++ )
 	{
-		if( GetAmmoTableData( i )->mod == MOD )
+		if ( GetAmmoTableData( i )->mod == MOD )
 		{
 			return i;
 		}
@@ -4829,9 +4829,9 @@ pathCorner_t   *BG_Find_PathCorner( const char *match )
 {
 	int i;
 
-	for( i = 0; i < numPathCorners; i++ )
+	for ( i = 0; i < numPathCorners; i++ )
 	{
-		if( !Q_stricmp( pathCorners[ i ].name, match ) )
+		if ( !Q_stricmp( pathCorners[ i ].name, match ) )
 		{
 			return &pathCorners[ i ];
 		}
@@ -4847,7 +4847,7 @@ BG_AddPathCorner
 */
 void BG_AddPathCorner( const char *name, vec3_t origin )
 {
-	if( numPathCorners >= MAX_PATH_CORNERS )
+	if ( numPathCorners >= MAX_PATH_CORNERS )
 	{
 		Com_Error( ERR_DROP, "MAX PATH CORNERS (%i) hit", MAX_PATH_CORNERS );
 	}
@@ -4866,9 +4866,9 @@ splinePath_t   *BG_Find_Spline( const char *match )
 {
 	int i;
 
-	for( i = 0; i < numSplinePaths; i++ )
+	for ( i = 0; i < numSplinePaths; i++ )
 	{
-		if( !Q_stricmp( splinePaths[ i ].point.name, match ) )
+		if ( !Q_stricmp( splinePaths[ i ].point.name, match ) )
 		{
 			return &splinePaths[ i ];
 		}
@@ -4881,7 +4881,7 @@ splinePath_t   *BG_AddSplinePath( const char *name, const char *target, vec3_t o
 {
 	splinePath_t *spline;
 
-	if( numSplinePaths >= MAX_SPLINE_PATHS )
+	if ( numSplinePaths >= MAX_SPLINE_PATHS )
 	{
 		Com_Error( ERR_DROP, "MAX SPLINES (%i) hit", MAX_SPLINE_PATHS );
 	}
@@ -4904,7 +4904,7 @@ splinePath_t   *BG_AddSplinePath( const char *name, const char *target, vec3_t o
 
 void BG_AddSplineControl( splinePath_t *spline, const char *name )
 {
-	if( spline->numControls >= MAX_SPLINE_CONTROLS )
+	if ( spline->numControls >= MAX_SPLINE_CONTROLS )
 	{
 		Com_Error( ERR_DROP, "MAX SPLINE CONTROLS (%i) hit", MAX_SPLINE_CONTROLS );
 	}
@@ -4930,7 +4930,7 @@ float BG_SplineLength( splinePath_t *pSpline )
 	//»lastPoint[1]« may be used uninitialized in this function bg_misc.c /ET-XreaL/etmain/src/game line 4711 C/C++ Problem
 	VectorClear( lastPoint );
 
-	for( i = 0; i <= 1.f; i += granularity )
+	for ( i = 0; i <= 1.f; i += granularity )
 	{
 		/*    if(pSpline->isStart) {
 		                        tension = 1 - sin((1 - i) * M_PI * 0.5f);
@@ -4944,7 +4944,7 @@ float BG_SplineLength( splinePath_t *pSpline )
 		VectorSubtract( vec[ 1 ], vec[ 0 ], result );
 		VectorMA( vec[ 0 ], i, result, result );
 
-		if( i != 0 )
+		if ( i != 0 )
 		{
 			VectorSubtract( result, lastPoint, vec[ 0 ] );
 			dist += VectorLength( vec[ 0 ] );
@@ -4962,17 +4962,17 @@ void BG_BuildSplinePaths()
 	pathCorner_t *pnt;
 	splinePath_t *spline, *st;
 
-	for( i = 0; i < numSplinePaths; i++ )
+	for ( i = 0; i < numSplinePaths; i++ )
 	{
 		spline = &splinePaths[ i ];
 
-		if( *spline->strTarget )
+		if ( *spline->strTarget )
 		{
-			for( j = 0; j < spline->numControls; j++ )
+			for ( j = 0; j < spline->numControls; j++ )
 			{
 				pnt = BG_Find_PathCorner( spline->controls[ j ].name );
 
-				if( !pnt )
+				if ( !pnt )
 				{
 					Com_Printf( "^1Cant find control point (%s) for spline (%s)\n", spline->controls[ j ].name, spline->point.name );
 					// Gordon: Just changing to a warning for now, easier for region compiles...
@@ -4986,7 +4986,7 @@ void BG_BuildSplinePaths()
 
 			st = BG_Find_Spline( spline->strTarget );
 
-			if( !st )
+			if ( !st )
 			{
 				Com_Printf( "^1Cant find target point (%s) for spline (%s)\n", spline->strTarget, spline->point.name );
 				// Gordon: Just changing to a warning for now, easier for region compiles...
@@ -5000,11 +5000,11 @@ void BG_BuildSplinePaths()
 		}
 	}
 
-	for( i = 0; i < numSplinePaths; i++ )
+	for ( i = 0; i < numSplinePaths; i++ )
 	{
 		spline = &splinePaths[ i ];
 
-		if( spline->next )
+		if ( spline->next )
 		{
 			spline->next->prev = spline;
 		}
@@ -5013,7 +5013,7 @@ void BG_BuildSplinePaths()
 
 splinePath_t   *BG_GetSplineData( int number, qboolean *backwards )
 {
-	if( number < 0 )
+	if ( number < 0 )
 	{
 		*backwards = qtrue;
 		number = -number;
@@ -5025,7 +5025,7 @@ splinePath_t   *BG_GetSplineData( int number, qboolean *backwards )
 
 	number--;
 
-	if( number < 0 || number >= numSplinePaths )
+	if ( number < 0 || number >= numSplinePaths )
 	{
 		return NULL;
 	}
@@ -5035,7 +5035,7 @@ splinePath_t   *BG_GetSplineData( int number, qboolean *backwards )
 
 int BG_MaxAmmoForWeapon( weapon_t weaponNum, int *skill )
 {
-	switch( weaponNum )
+	switch ( weaponNum )
 	{
 			//case WP_KNIFE:
 		case WP_LUGER:
@@ -5045,7 +5045,7 @@ int BG_MaxAmmoForWeapon( weapon_t weaponNum, int *skill )
 		case WP_CARBINE:
 		case WP_KAR98:
 		case WP_SILENCED_COLT:
-			if( skill[ SK_LIGHT_WEAPONS ] >= 1 )
+			if ( skill[ SK_LIGHT_WEAPONS ] >= 1 )
 			{
 				return ( GetAmmoTableData( weaponNum )->maxammo + GetAmmoTableData( weaponNum )->maxclip );
 			}
@@ -5058,7 +5058,7 @@ int BG_MaxAmmoForWeapon( weapon_t weaponNum, int *skill )
 
 		case WP_MP40:
 		case WP_THOMPSON:
-			if( skill[ SK_FIRST_AID ] >= 1 || skill[ SK_LIGHT_WEAPONS ] >= 1 )
+			if ( skill[ SK_FIRST_AID ] >= 1 || skill[ SK_LIGHT_WEAPONS ] >= 1 )
 			{
 				return ( GetAmmoTableData( weaponNum )->maxammo + GetAmmoTableData( weaponNum )->maxclip );
 			}
@@ -5071,7 +5071,7 @@ int BG_MaxAmmoForWeapon( weapon_t weaponNum, int *skill )
 
 		case WP_M7:
 		case WP_GPG40:
-			if( skill[ SK_EXPLOSIVES_AND_CONSTRUCTION ] >= 1 )
+			if ( skill[ SK_EXPLOSIVES_AND_CONSTRUCTION ] >= 1 )
 			{
 				return ( GetAmmoTableData( weaponNum )->maxammo + 4 );
 			}
@@ -5086,11 +5086,11 @@ int BG_MaxAmmoForWeapon( weapon_t weaponNum, int *skill )
 		case WP_GRENADE_LAUNCHER:
 
 			// FIXME: this is class dependant, not ammo table
-			if( skill[ SK_EXPLOSIVES_AND_CONSTRUCTION ] >= 1 )
+			if ( skill[ SK_EXPLOSIVES_AND_CONSTRUCTION ] >= 1 )
 			{
 				return ( GetAmmoTableData( weaponNum )->maxammo + 4 );
 			}
-			else if( skill[ SK_FIRST_AID ] >= 1 )
+			else if ( skill[ SK_FIRST_AID ] >= 1 )
 			{
 				return ( GetAmmoTableData( weaponNum )->maxammo + 1 );
 			}
@@ -5117,7 +5117,7 @@ int BG_MaxAmmoForWeapon( weapon_t weaponNum, int *skill )
 			   return( GetAmmoTableData(weaponNum)->maxammo );
 			   break; */
 		case WP_MEDIC_SYRINGE:
-			if( skill[ SK_FIRST_AID ] >= 2 )
+			if ( skill[ SK_FIRST_AID ] >= 2 )
 			{
 				return ( GetAmmoTableData( weaponNum )->maxammo + 2 );
 			}
@@ -5131,7 +5131,7 @@ int BG_MaxAmmoForWeapon( weapon_t weaponNum, int *skill )
 		case WP_GARAND:
 		case WP_K43:
 		case WP_FG42:
-			if( skill[ SK_MILITARY_INTELLIGENCE_AND_SCOPED_WEAPONS ] >= 1 || skill[ SK_LIGHT_WEAPONS ] >= 1 )
+			if ( skill[ SK_MILITARY_INTELLIGENCE_AND_SCOPED_WEAPONS ] >= 1 || skill[ SK_LIGHT_WEAPONS ] >= 1 )
 			{
 				return ( GetAmmoTableData( weaponNum )->maxammo + GetAmmoTableData( weaponNum )->maxclip );
 			}
@@ -5145,7 +5145,7 @@ int BG_MaxAmmoForWeapon( weapon_t weaponNum, int *skill )
 		case WP_GARAND_SCOPE:
 		case WP_K43_SCOPE:
 		case WP_FG42SCOPE:
-			if( skill[ SK_MILITARY_INTELLIGENCE_AND_SCOPED_WEAPONS ] >= 1 )
+			if ( skill[ SK_MILITARY_INTELLIGENCE_AND_SCOPED_WEAPONS ] >= 1 )
 			{
 				return ( GetAmmoTableData( weaponNum )->maxammo + GetAmmoTableData( weaponNum )->maxclip );
 			}
@@ -5182,9 +5182,9 @@ void BG_TransposeMatrix( const vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
 {
 	int i, j;
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
 			transpose[ i ][ j ] = matrix[ j ][ i ];
 		}
@@ -5213,7 +5213,7 @@ BG_AdjustAAGunMuzzleForBarrel
 */
 void BG_AdjustAAGunMuzzleForBarrel( vec_t *origin, vec_t *forward, vec_t *right, vec_t *up, int barrel )
 {
-	switch( barrel )
+	switch ( barrel )
 	{
 		case 0:
 			VectorMA( origin, 64, forward, origin );
@@ -5301,14 +5301,14 @@ qboolean PC_Float_Parse( int handle, float *f )
 	pc_token_t token;
 	int        negative = qfalse;
 
-	if( !trap_PC_ReadToken( handle, &token ) )
+	if ( !trap_PC_ReadToken( handle, &token ) )
 	{
 		return qfalse;
 	}
 
-	if( token.string[ 0 ] == '-' )
+	if ( token.string[ 0 ] == '-' )
 	{
-		if( !trap_PC_ReadToken( handle, &token ) )
+		if ( !trap_PC_ReadToken( handle, &token ) )
 		{
 			return qfalse;
 		}
@@ -5316,13 +5316,13 @@ qboolean PC_Float_Parse( int handle, float *f )
 		negative = qtrue;
 	}
 
-	if( token.type != TT_NUMBER )
+	if ( token.type != TT_NUMBER )
 	{
 		PC_SourceError( handle, "expected float but found %s\n", token.string );
 		return qfalse;
 	}
 
-	if( negative )
+	if ( negative )
 	{
 		*f = -token.floatvalue;
 	}
@@ -5344,9 +5344,9 @@ qboolean PC_Color_Parse( int handle, vec4_t *c )
 	int   i;
 	float f;
 
-	for( i = 0; i < 4; i++ )
+	for ( i = 0; i < 4; i++ )
 	{
-		if( !PC_Float_Parse( handle, &f ) )
+		if ( !PC_Float_Parse( handle, &f ) )
 		{
 			return qfalse;
 		}
@@ -5367,9 +5367,9 @@ qboolean PC_Vec_Parse( int handle, vec3_t *c )
 	int   i;
 	float f;
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		if( !PC_Float_Parse( handle, &f ) )
+		if ( !PC_Float_Parse( handle, &f ) )
 		{
 			return qfalse;
 		}
@@ -5390,14 +5390,14 @@ qboolean PC_Int_Parse( int handle, int *i )
 	pc_token_t token;
 	int        negative = qfalse;
 
-	if( !trap_PC_ReadToken( handle, &token ) )
+	if ( !trap_PC_ReadToken( handle, &token ) )
 	{
 		return qfalse;
 	}
 
-	if( token.string[ 0 ] == '-' )
+	if ( token.string[ 0 ] == '-' )
 	{
-		if( !trap_PC_ReadToken( handle, &token ) )
+		if ( !trap_PC_ReadToken( handle, &token ) )
 		{
 			return qfalse;
 		}
@@ -5405,7 +5405,7 @@ qboolean PC_Int_Parse( int handle, int *i )
 		negative = qtrue;
 	}
 
-	if( token.type != TT_NUMBER )
+	if ( token.type != TT_NUMBER )
 	{
 		PC_SourceError( handle, "expected integer but found %s\n", token.string );
 		return qfalse;
@@ -5413,7 +5413,7 @@ qboolean PC_Int_Parse( int handle, int *i )
 
 	*i = token.intvalue;
 
-	if( negative )
+	if ( negative )
 	{
 		*i = -*i;
 	}
@@ -5433,7 +5433,7 @@ const char     *PC_String_Parse( int handle )
 	static char buf[ MAX_TOKEN_CHARS ];
 	pc_token_t  token;
 
-	if( !trap_PC_ReadToken( handle, &token ) )
+	if ( !trap_PC_ReadToken( handle, &token ) )
 	{
 		return NULL;
 	}
@@ -5453,7 +5453,7 @@ qboolean PC_String_Parse( int handle, const char **out )
 {
 	pc_token_t token;
 
-	if( !trap_PC_ReadToken( handle, &token ) )
+	if ( !trap_PC_ReadToken( handle, &token ) )
 	{
 		return qfalse;
 	}
@@ -5475,7 +5475,7 @@ qboolean PC_String_ParseNoAlloc( int handle, char *out, size_t size )
 {
 	pc_token_t token;
 
-	if( !trap_PC_ReadToken( handle, &token ) )
+	if ( !trap_PC_ReadToken( handle, &token ) )
 	{
 		return qfalse;
 	}
@@ -5550,7 +5550,7 @@ const weap_ws_t    aWeaponInfo[ WS_MAX ] =
 // Multiview: Convert weaponstate to simpler format
 int BG_simpleWeaponState( int ws )
 {
-	switch( ws )
+	switch ( ws )
 	{
 		case WEAPON_READY:
 		case WEAPON_READYING:
@@ -5578,22 +5578,22 @@ int BG_simpleWeaponState( int ws )
 // cursorHintVal
 int BG_simpleHintsCollapse( int hint, int val )
 {
-	switch( hint )
+	switch ( hint )
 	{
 		case HINT_DISARM:
-			if( val > 0 )
+			if ( val > 0 )
 			{
 				return ( 0 );
 			}
 
 		case HINT_BUILD:
-			if( val > 0 )
+			if ( val > 0 )
 			{
 				return ( 1 );
 			}
 
 		case HINT_BREAKABLE:
-			if( val == 0 )
+			if ( val == 0 )
 			{
 				return ( 1 );
 			}
@@ -5601,13 +5601,13 @@ int BG_simpleHintsCollapse( int hint, int val )
 		case HINT_DOOR_ROTATING:
 		case HINT_BUTTON:
 		case HINT_MG42:
-			if( val == 0 )
+			if ( val == 0 )
 			{
 				return ( 2 );
 			}
 
 		case HINT_BREAKABLE_DYNAMITE:
-			if( val == 0 )
+			if ( val == 0 )
 			{
 				return ( 3 );
 			}
@@ -5621,7 +5621,7 @@ int BG_simpleHintsCollapse( int hint, int val )
 // in all cases.
 int BG_simpleHintsExpand( int hint, int val )
 {
-	switch( hint )
+	switch ( hint )
 	{
 		case 0:
 			return ( ( val >= 0 ) ? HINT_DISARM : 0 );
@@ -5644,9 +5644,9 @@ int BG_drawStrlen( const char *str )
 {
 	int cnt = 0;
 
-	while( *str )
+	while ( *str )
 	{
-		if( Q_IsColorString( str ) )
+		if ( Q_IsColorString( str ) )
 		{
 			str += 2;
 		}
@@ -5675,11 +5675,11 @@ int BG_colorstrncpyz( char *in, char *out, int str_max, int out_max )
 
 	out_max--;
 
-	while( *in && out_len < out_max && str_len < str_max )
+	while ( *in && out_len < out_max && str_len < str_max )
 	{
-		if( *in == '^' )
+		if ( *in == '^' )
 		{
-			if( out_len + 2 >= in_len && out_len + 2 >= out_max )
+			if ( out_len + 2 >= in_len && out_len + 2 >= out_max )
 			{
 				break;
 			}
@@ -5705,9 +5705,9 @@ int BG_strRelPos( char *in, int index )
 	int        cPrintable = 0;
 	const char *ref = in;
 
-	while( *ref && cPrintable < index )
+	while ( *ref && cPrintable < index )
 	{
-		if( Q_IsColorString( ref ) )
+		if ( Q_IsColorString( ref ) )
 		{
 			ref += 2;
 		}
@@ -5729,13 +5729,13 @@ int BG_cleanName( const char *pszIn, char *pszOut, int dwMaxLength, qboolean fCR
 	const char *pInCopy = pszIn;
 	const char *pszOutStart = pszOut;
 
-	while( *pInCopy && ( pszOut - pszOutStart < dwMaxLength - 1 ) )
+	while ( *pInCopy && ( pszOut - pszOutStart < dwMaxLength - 1 ) )
 	{
-		if( *pInCopy == '^' )
+		if ( *pInCopy == '^' )
 		{
 			pInCopy += ( ( pInCopy[ 1 ] == 0 ) ? 1 : 2 );
 		}
-		else if( ( *pInCopy < 32 && ( !fCRLF || *pInCopy != '\n' ) ) || ( *pInCopy > 126 ) )
+		else if ( ( *pInCopy < 32 && ( !fCRLF || *pInCopy != '\n' ) ) || ( *pInCopy > 126 ) )
 		{
 			pInCopy++;
 		}
@@ -5792,12 +5792,12 @@ void BG_setCrosshair( char *colString, float *col, float alpha, char *cvarName )
 	col[ 2 ] = 1.0f;
 	col[ 3 ] = ( alpha > 1.0f ) ? 1.0f : ( alpha < 0.0f ) ? 0.0f : alpha;
 
-	if( *s == '0' && ( * ( s + 1 ) == 'x' || * ( s + 1 ) == 'X' ) )
+	if ( *s == '0' && ( * ( s + 1 ) == 'x' || * ( s + 1 ) == 'X' ) )
 	{
 		s += 2;
 
 		//parse rrggbb
-		if( Q_IsHexColorString( s ) )
+		if ( Q_IsHexColorString( s ) )
 		{
 			col[ 0 ] = ( ( float )( gethex( * ( s ) ) * 16 + gethex( * ( s + 1 ) ) ) ) / 255.00;
 			col[ 1 ] = ( ( float )( gethex( * ( s + 2 ) ) * 16 + gethex( * ( s + 3 ) ) ) ) / 255.00;
@@ -5809,9 +5809,9 @@ void BG_setCrosshair( char *colString, float *col, float alpha, char *cvarName )
 	{
 		int i = 0;
 
-		while( OSP_Colortable[ i ].colorname != NULL )
+		while ( OSP_Colortable[ i ].colorname != NULL )
 		{
-			if( Q_stricmp( s, OSP_Colortable[ i ].colorname ) == 0 )
+			if ( Q_stricmp( s, OSP_Colortable[ i ].colorname ) == 0 )
 			{
 				col[ 0 ] = ( *OSP_Colortable[ i ].color ) [ 0 ];
 				col[ 1 ] = ( *OSP_Colortable[ i ].color ) [ 1 ];
@@ -5828,10 +5828,10 @@ void BG_setCrosshair( char *colString, float *col, float alpha, char *cvarName )
 
 qboolean BG_isLightWeaponSupportingFastReload( int weapon )
 {
-	if( weapon == WP_LUGER ||
-	    weapon == WP_COLT ||
-	    weapon == WP_MP40 ||
-	    weapon == WP_THOMPSON || weapon == WP_STEN || weapon == WP_SILENCER || weapon == WP_FG42 || weapon == WP_SILENCED_COLT )
+	if ( weapon == WP_LUGER ||
+	     weapon == WP_COLT ||
+	     weapon == WP_MP40 ||
+	     weapon == WP_THOMPSON || weapon == WP_STEN || weapon == WP_SILENCER || weapon == WP_FG42 || weapon == WP_SILENCED_COLT )
 	{
 		return qtrue;
 	}
@@ -5841,7 +5841,7 @@ qboolean BG_isLightWeaponSupportingFastReload( int weapon )
 
 qboolean BG_IsScopedWeapon( int weapon )
 {
-	switch( weapon )
+	switch ( weapon )
 	{
 		case WP_GARAND_SCOPE:
 		case WP_K43_SCOPE:
@@ -5868,12 +5868,12 @@ void BG_InitLocations( vec2_t world_mins, vec2_t world_maxs )
 	locInfo.gridStep[ 1 ] = 1200.f;
 
 	// ensure minimal grid density
-	while( ( world_maxs[ 0 ] - world_mins[ 0 ] ) / locInfo.gridStep[ 0 ] < 7 )
+	while ( ( world_maxs[ 0 ] - world_mins[ 0 ] ) / locInfo.gridStep[ 0 ] < 7 )
 	{
 		locInfo.gridStep[ 0 ] -= 50.f;
 	}
 
-	while( ( world_mins[ 1 ] - world_maxs[ 1 ] ) / locInfo.gridStep[ 1 ] < 7 )
+	while ( ( world_mins[ 1 ] - world_maxs[ 1 ] ) / locInfo.gridStep[ 1 ] < 7 )
 	{
 		locInfo.gridStep[ 1 ] -= 50.f;
 	}
@@ -5900,12 +5900,12 @@ char           *BG_GetLocationString( vec_t *pos )
 	x = ( pos[ 0 ] - locInfo.gridStartCoord[ 0 ] ) / locInfo.gridStep[ 0 ];
 	y = ( locInfo.gridStartCoord[ 1 ] - pos[ 1 ] ) / locInfo.gridStep[ 1 ];
 
-	if( x < 0 )
+	if ( x < 0 )
 	{
 		x = 0;
 	}
 
-	if( y < 0 )
+	if ( y < 0 )
 	{
 		y = 0;
 	}
@@ -5919,14 +5919,14 @@ qboolean BG_BBoxCollision( vec3_t min1, vec3_t max1, vec3_t min2, vec3_t max2 )
 {
 	int i;
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		if( min1[ i ] > max2[ i ] )
+		if ( min1[ i ] > max2[ i ] )
 		{
 			return qfalse;
 		}
 
-		if( min2[ i ] > max1[ i ] )
+		if ( min2[ i ] > max1[ i ] )
 		{
 			return qfalse;
 		}
@@ -5949,47 +5949,47 @@ weapon_t bg_heavyWeapons[ NUM_HEAVY_WEAPONS ] =
 
 int BG_FootstepForSurface( int surfaceFlags )
 {
-	if( surfaceFlags & SURF_NOSTEPS )
+	if ( surfaceFlags & SURF_NOSTEPS )
 	{
 		return FOOTSTEP_TOTAL;
 	}
 
-	if( surfaceFlags & SURF_METAL )
+	if ( surfaceFlags & SURF_METAL )
 	{
 		return FOOTSTEP_METAL;
 	}
 
-	if( surfaceFlags & SURF_WOOD )
+	if ( surfaceFlags & SURF_WOOD )
 	{
 		return FOOTSTEP_WOOD;
 	}
 
-	if( surfaceFlags & SURF_GRASS )
+	if ( surfaceFlags & SURF_GRASS )
 	{
 		return FOOTSTEP_GRASS;
 	}
 
-	if( surfaceFlags & SURF_GRAVEL )
+	if ( surfaceFlags & SURF_GRAVEL )
 	{
 		return FOOTSTEP_GRAVEL;
 	}
 
-	if( surfaceFlags & SURF_ROOF )
+	if ( surfaceFlags & SURF_ROOF )
 	{
 		return FOOTSTEP_ROOF;
 	}
 
-	if( surfaceFlags & SURF_SNOW )
+	if ( surfaceFlags & SURF_SNOW )
 	{
 		return FOOTSTEP_SNOW;
 	}
 
-	if( surfaceFlags & SURF_CARPET )
+	if ( surfaceFlags & SURF_CARPET )
 	{
 		return FOOTSTEP_CARPET;
 	}
 
-	if( surfaceFlags & SURF_SPLASH )
+	if ( surfaceFlags & SURF_SPLASH )
 	{
 		return FOOTSTEP_SPLASH;
 	}

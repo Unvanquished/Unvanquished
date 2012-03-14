@@ -267,10 +267,10 @@ typedef struct AABB_t
 
 	bool IsZero() const
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
-			if( m_Mins[ i ] != 0.f ||
-			    m_Maxs[ i ] != 0.f )
+			if ( m_Mins[ i ] != 0.f ||
+			     m_Maxs[ i ] != 0.f )
 			{
 				return false;
 			}
@@ -281,7 +281,7 @@ typedef struct AABB_t
 
 	void Set( const float _pt[ 3 ] )
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] = _pt[ i ];
 			m_Maxs[ i ] = _pt[ i ];
@@ -290,7 +290,7 @@ typedef struct AABB_t
 
 	void Set( const float _min[ 3 ], const float _max[ 3 ] )
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] = _min[ i ] < _max[ i ] ? _min[ i ] : _max[ i ];
 			m_Maxs[ i ] = _min[ i ] > _max[ i ] ? _min[ i ] : _max[ i ];
@@ -320,7 +320,7 @@ typedef struct AABB_t
 
 	void SetCenter( const float _out[ 3 ] )
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] += _out[ i ];
 			m_Maxs[ i ] += _out[ i ];
@@ -329,14 +329,14 @@ typedef struct AABB_t
 
 	void Expand( const float _pt[ 3 ] )
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
-			if( _pt[ i ] < m_Mins[ i ] )
+			if ( _pt[ i ] < m_Mins[ i ] )
 			{
 				m_Mins[ i ] = _pt[ i ];
 			}
 
-			if( _pt[ i ] > m_Maxs[ i ] )
+			if ( _pt[ i ] > m_Maxs[ i ] )
 			{
 				m_Maxs[ i ] = _pt[ i ];
 			}
@@ -351,9 +351,9 @@ typedef struct AABB_t
 
 	bool Intersects( const AABB_t &_bbox ) const
 	{
-		for( int i = 0; i < 3; i++ )
+		for ( int i = 0; i < 3; i++ )
 		{
-			if( m_Maxs[ i ] < _bbox.m_Mins[ i ] || m_Mins[ i ] > _bbox.m_Maxs[ i ] )
+			if ( m_Maxs[ i ] < _bbox.m_Mins[ i ] || m_Mins[ i ] > _bbox.m_Maxs[ i ] )
 			{
 				return false;
 			}
@@ -364,9 +364,9 @@ typedef struct AABB_t
 
 	bool Contains( const float _pt[ 3 ] ) const
 	{
-		for( int i = 0; i < 3; i++ )
+		for ( int i = 0; i < 3; i++ )
 		{
-			if( m_Maxs[ i ] < _pt[ i ] || m_Mins[ i ] > _pt[ i ] )
+			if ( m_Maxs[ i ] < _pt[ i ] || m_Mins[ i ] > _pt[ i ] )
 			{
 				return false;
 			}
@@ -377,11 +377,11 @@ typedef struct AABB_t
 
 	bool FindIntersection( const AABB_t &_bbox, AABB_t &_overlap ) const
 	{
-		if( Intersects( _bbox ) )
+		if ( Intersects( _bbox ) )
 		{
-			for( int i = 0; i < 3; i++ )
+			for ( int i = 0; i < 3; i++ )
 			{
-				if( m_Maxs[ i ] <= _bbox.m_Maxs[ i ] )
+				if ( m_Maxs[ i ] <= _bbox.m_Maxs[ i ] )
 				{
 					_overlap.m_Maxs[ i ] = m_Maxs[ i ];
 				}
@@ -390,7 +390,7 @@ typedef struct AABB_t
 					_overlap.m_Maxs[ i ] = _bbox.m_Maxs[ i ];
 				}
 
-				if( m_Mins[ i ] <= _bbox.m_Mins[ i ] )
+				if ( m_Mins[ i ] <= _bbox.m_Mins[ i ] )
 				{
 					_overlap.m_Mins[ i ] = _bbox.m_Mins[ i ];
 				}
@@ -428,7 +428,7 @@ typedef struct AABB_t
 
 	void Scale( float _scale )
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] *= _scale;
 			m_Maxs[ i ] *= _scale;
@@ -439,7 +439,7 @@ typedef struct AABB_t
 	{
 		AABB_t out = *this; // cs: was AABB, but gcc said NO
 
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			out.m_Mins[ i ] *= _scale;
 			out.m_Maxs[ i ] *= _scale;
@@ -450,7 +450,7 @@ typedef struct AABB_t
 
 	void Expand( float _expand )
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] -= _expand;
 			m_Maxs[ i ] += _expand;
@@ -465,7 +465,7 @@ typedef struct AABB_t
 
 	void FlipHorizontalAxis()
 	{
-		for( int i = 0; i < 2; ++i )
+		for ( int i = 0; i < 2; ++i )
 		{
 			float tmp = m_Mins[ i ];
 			m_Mins[ i ] = m_Maxs[ i ];
@@ -503,7 +503,7 @@ typedef struct AABB_t
 
 	void Translate( const float _pos[ 3 ] )
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] += _pos[ i ];
 			m_Maxs[ i ] += _pos[ i ];
@@ -512,7 +512,7 @@ typedef struct AABB_t
 
 	void UnTranslate( const float _pos[ 3 ] )
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] -= _pos[ i ];
 			m_Maxs[ i ] -= _pos[ i ];
@@ -523,7 +523,7 @@ typedef struct AABB_t
 	{
 		AABB_t aabb = *this;
 
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			aabb.m_Mins[ i ] += _pos[ i ];
 			aabb.m_Maxs[ i ] += _pos[ i ];
@@ -544,7 +544,7 @@ typedef struct AABB_t
 
 	AABB_t()
 	{
-		for( int i = 0; i < 3; ++i )
+		for ( int i = 0; i < 3; ++i )
 		{
 			m_Mins[ i ] = 0.f;
 			m_Maxs[ i ] = 0.f;
@@ -1090,12 +1090,12 @@ typedef struct obUserData_t
 	};
 	inline float GetNumAsFloat() const
 	{
-		if( IsFloat() )
+		if ( IsFloat() )
 		{
 			return GetFloat();
 		}
 
-		if( IsInt() )
+		if ( IsInt() )
 		{
 			return ( float ) GetInt();
 		}
@@ -1104,12 +1104,12 @@ typedef struct obUserData_t
 	};
 	inline int GetNumAsInt() const
 	{
-		if( IsFloat() )
+		if ( IsFloat() )
 		{
 			return ( int ) GetFloat();
 		}
 
-		if( IsInt() )
+		if ( IsInt() )
 		{
 			return GetInt();
 		}
@@ -1120,7 +1120,7 @@ typedef struct obUserData_t
 	//////////////////////////////////////////////////////////////////////////
 	bool Get( float &_val )
 	{
-		if( IsFloat() )
+		if ( IsFloat() )
 		{
 			_val = GetFloat();
 			return true;
@@ -1131,7 +1131,7 @@ typedef struct obUserData_t
 
 	bool Get( int &_val )
 	{
-		if( IsInt() )
+		if ( IsInt() )
 		{
 			_val = GetInt();
 			return true;
@@ -1142,7 +1142,7 @@ typedef struct obUserData_t
 
 	bool Get( float *_val )
 	{
-		if( IsVector() )
+		if ( IsVector() )
 		{
 			_val[ 0 ] = GetVector() [ 0 ];
 			_val[ 1 ] = GetVector() [ 1 ];
@@ -1155,7 +1155,7 @@ typedef struct obUserData_t
 
 	bool Get( bool &_val )
 	{
-		if( IsInt() )
+		if ( IsInt() )
 		{
 			_val = GetInt() != 0;
 			return true;
@@ -1238,7 +1238,7 @@ typedef struct TriggerInfo_t
 #ifdef __cplusplus
 	TriggerInfo_t()
 	{
-		for( int i = 0; i < TriggerBufferSize; ++i )
+		for ( int i = 0; i < TriggerBufferSize; ++i )
 		{
 			m_TagName[ i ] = m_Action[ i ] = 0;
 		}
@@ -1249,7 +1249,7 @@ typedef struct TriggerInfo_t
 		m_Entity = _ti.m_Entity;
 		m_Activator = _ti.m_Activator;
 
-		for( int i = 0; i < TriggerBufferSize; ++i )
+		for ( int i = 0; i < TriggerBufferSize; ++i )
 		{
 			m_TagName[ i ] = _ti.m_TagName[ i ];
 			m_Action[ i ] = _ti.m_Action[ i ];
@@ -1366,7 +1366,7 @@ public:
 
 	Arguments() : m_NumArgs( 0 )
 	{
-		for( int i = 0; i < MaxArgs; ++i )
+		for ( int i = 0; i < MaxArgs; ++i )
 		{
 			m_Args[ i ][ 0 ] = 0;
 		}

@@ -88,7 +88,7 @@ void CG_AdjustFrom640( float *x, float *y, float *w, float *h )
 #if 0
 
 	// adjust for wide screens
-	if( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 )
+	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 )
 	{
 		*x += 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * 640 / 480 ) );
 	}
@@ -243,9 +243,9 @@ int CG_DrawStrlen( const char *str )
 	const char *s = str;
 	int        count = 0;
 
-	while( *s )
+	while ( *s )
 	{
-		if( Q_IsColorString( s ) )
+		if ( Q_IsColorString( s ) )
 		{
 			s += 2;
 		}
@@ -293,8 +293,8 @@ void CG_TileClear( void )
 	w = cgs.glconfig.vidWidth;
 	h = cgs.glconfig.vidHeight;
 
-	if( cg.refdef.x == 0 && cg.refdef.y == 0 &&
-	    cg.refdef.width == w && cg.refdef.height == h )
+	if ( cg.refdef.x == 0 && cg.refdef.y == 0 &&
+	     cg.refdef.width == w && cg.refdef.height == h )
 	{
 		return; // full screen rendering
 	}
@@ -327,20 +327,20 @@ float *CG_FadeColor( int startMsec, int totalMsec )
 	static vec4_t color;
 	int           t;
 
-	if( startMsec == 0 )
+	if ( startMsec == 0 )
 	{
 		return NULL;
 	}
 
 	t = cg.time - startMsec;
 
-	if( t >= totalMsec )
+	if ( t >= totalMsec )
 	{
 		return NULL;
 	}
 
 	// fade out
-	if( totalMsec - t < FADE_TIME )
+	if ( totalMsec - t < FADE_TIME )
 	{
 		color[ 3 ] = ( totalMsec - t ) * 1.0 / FADE_TIME;
 	}
@@ -376,17 +376,17 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 
 	z = DotProduct( trans, cg.refdef.viewaxis[ 0 ] );
 
-	if( z <= 0.001f )
+	if ( z <= 0.001f )
 	{
 		return qfalse;
 	}
 
-	if( x )
+	if ( x )
 	{
 		*x = 320.0f - DotProduct( trans, cg.refdef.viewaxis[ 1 ] ) * xc / ( z * px );
 	}
 
-	if( y )
+	if ( y )
 	{
 		*y = 240.0f - DotProduct( trans, cg.refdef.viewaxis[ 2 ] ) * yc / ( z * py );
 	}
@@ -408,18 +408,18 @@ char *CG_KeyBinding( const char *bind )
 	key[ 0 ] = '\0';
 
 	// NOTE: change K_LAST_KEY to MAX_KEYS for full key support (eventually)
-	for( i = 0; i < K_LAST_KEY; i++ )
+	for ( i = 0; i < K_LAST_KEY; i++ )
 	{
 		trap_Key_GetBindingBuf( i, bindbuff, sizeof( bindbuff ) );
 
-		if( !Q_stricmp( bindbuff, bind ) )
+		if ( !Q_stricmp( bindbuff, bind ) )
 		{
 			trap_Key_KeynumToStringBuf( i, key, sizeof( key ) );
 			break;
 		}
 	}
 
-	if( !key[ 0 ] )
+	if ( !key[ 0 ] )
 	{
 		Q_strncpyz( key, "\\", sizeof( key ) );
 		Q_strcat( key, sizeof( key ), bind );
@@ -440,7 +440,7 @@ char CG_GetColorCharForHealth( int clientnum )
 	int  maxHealth;
 	int  curWeaponClass = cgs.clientinfo[ clientnum ].curWeaponClass;
 
-	if( cgs.clientinfo[ clientnum ].team == TEAM_ALIENS )
+	if ( cgs.clientinfo[ clientnum ].team == TEAM_ALIENS )
 	{
 		maxHealth = BG_Class( curWeaponClass )->health;
 	}
@@ -452,11 +452,11 @@ char CG_GetColorCharForHealth( int clientnum )
 	healthPercent = ( int )( 100.0f * ( float ) cgs.clientinfo[ clientnum ].health /
 	                         ( float ) maxHealth );
 
-	if( healthPercent < 33 )
+	if ( healthPercent < 33 )
 	{
 		health_char = '1';
 	}
-	else if( healthPercent < 67 )
+	else if ( healthPercent < 67 )
 	{
 		health_char = '3';
 	}
@@ -479,11 +479,11 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const f
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if( shaderRGBA != NULL )
+	if ( shaderRGBA != NULL )
 	{
 		int i;
 
-		for( i = 0; i < 4; ++i )
+		for ( i = 0; i < 4; ++i )
 		{
 			re.shaderRGBA[ i ] = 255 * shaderRGBA[ i ];
 		}
@@ -516,11 +516,11 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-	if( shaderRGBA != NULL )
+	if ( shaderRGBA != NULL )
 	{
 		int i;
 
-		for( i = 0; i < 4; ++i )
+		for ( i = 0; i < 4; ++i )
 		{
 			re.shaderRGBA[ i ] = 255 * shaderRGBA[ i ];
 		}
@@ -547,7 +547,7 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
                          qboolean drawSurface, qboolean drawIntersection, qboolean drawFrontline,
                          const vec3_t rgb, float surfaceOpacity, float lineOpacity, float lineThickness )
 {
-	if( drawSurface )
+	if ( drawSurface )
 	{
 		qhandle_t pcsh;
 		vec4_t    rgba;
@@ -556,38 +556,38 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 		VectorCopy( rgb, rgba );
 		rgba[ 3 ] = surfaceOpacity;
 
-		if( rmType == 0 )
+		if ( rmType == 0 )
 		{
 			CG_DrawSphere( origin, range, pcsh, rgba );
 		}
-		else if( rmType == 1 )
+		else if ( rmType == 1 )
 		{
 			CG_DrawSphericalCone( origin, angles, range, qfalse, pcsh, rgba );
 		}
-		else if( rmType == 2 )
+		else if ( rmType == 2 )
 		{
 			CG_DrawSphericalCone( origin, angles, range, qtrue, pcsh, rgba );
 		}
 	}
 
-	if( drawIntersection || drawFrontline )
+	if ( drawIntersection || drawFrontline )
 	{
 		const cgMediaBinaryShader_t *mbsh;
 		cgBinaryShaderSetting_t     *bshs;
 		int                         i;
 
-		if( cg.numBinaryShadersUsed >= NUM_BINARY_SHADERS )
+		if ( cg.numBinaryShadersUsed >= NUM_BINARY_SHADERS )
 		{
 			return;
 		}
 
 		mbsh = &cgs.media.binaryShaders[ cg.numBinaryShadersUsed ];
 
-		if( rmType == 0 )
+		if ( rmType == 0 )
 		{
-			if( range > lineThickness / 2 )
+			if ( range > lineThickness / 2 )
 			{
-				if( drawIntersection )
+				if ( drawIntersection )
 				{
 					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, NULL );
 				}
@@ -595,14 +595,14 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, NULL );
 			}
 
-			if( drawIntersection )
+			if ( drawIntersection )
 			{
 				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, NULL );
 			}
 
 			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, NULL );
 		}
-		else if( rmType == 1 || rmType == 2 )
+		else if ( rmType == 1 || rmType == 2 )
 		{
 			qboolean t2;
 			float    f, r;
@@ -613,11 +613,11 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 			r = f + lineThickness * ( t2 ? 0.23f : 0.43f );
 			AngleVectors( angles, forward, NULL, NULL );
 
-			if( range > r )
+			if ( range > r )
 			{
 				VectorMA( origin, f, forward, tip );
 
-				if( drawIntersection )
+				if ( drawIntersection )
 				{
 					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, NULL );
 				}
@@ -627,7 +627,7 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 
 			VectorMA( origin, -f, forward, tip );
 
-			if( drawIntersection )
+			if ( drawIntersection )
 			{
 				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, NULL );
 			}
@@ -637,7 +637,7 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 
 		bshs = &cg.binaryShaderSettings[ cg.numBinaryShadersUsed ];
 
-		for( i = 0; i < 3; ++i )
+		for ( i = 0; i < 3; ++i )
 		{
 			bshs->color[ i ] = 255 * lineOpacity * rgb[ i ];
 		}

@@ -137,17 +137,17 @@ static int GLimp_CompareModes( const void *a, const void *b )
 	float       aspectDiffB = fabs( ( ( float ) modeB->w / ( float ) modeB->h ) - displayAspect );
 	float       aspectDiffsDiff = aspectDiffA - aspectDiffB;
 
-	if( aspectDiffsDiff > ASPECT_EPSILON )
+	if ( aspectDiffsDiff > ASPECT_EPSILON )
 	{
 		return 1;
 	}
-	else if( aspectDiffsDiff < -ASPECT_EPSILON )
+	else if ( aspectDiffsDiff < -ASPECT_EPSILON )
 	{
 		return -1;
 	}
 	else
 	{
-		if( modeA->w == modeB->w )
+		if ( modeA->w == modeB->w )
 		{
 			return modeA->h - modeB->h;
 		}
@@ -172,31 +172,31 @@ static void GLimp_DetectAvailableModes( void )
 
 	modes = SDL_ListModes( NULL, SDL_OPENGL | SDL_FULLSCREEN );
 
-	if( !modes )
+	if ( !modes )
 	{
 		ri.Printf( PRINT_WARNING, "Can't get list of available modes\n" );
 		return;
 	}
 
-	if( modes == ( SDL_Rect ** ) - 1 )
+	if ( modes == ( SDL_Rect ** ) - 1 )
 	{
 		ri.Printf( PRINT_ALL, "Display supports any resolution\n" );
 		return; // can set any resolution
 	}
 
-	for( numModes = 0; modes[ numModes ]; numModes++ ) {; }
+	for ( numModes = 0; modes[ numModes ]; numModes++ ) {; }
 
-	if( numModes > 1 )
+	if ( numModes > 1 )
 	{
 		//qsort(modes + 1, numModes - 1, sizeof(SDL_Rect *), GLimp_CompareModes);
 		qsort( modes, numModes, sizeof( SDL_Rect * ), GLimp_CompareModes );
 	}
 
-	for( i = 0; i < numModes; i++ )
+	for ( i = 0; i < numModes; i++ )
 	{
 		const char *newModeString = va( "%ux%u ", modes[ i ]->w, modes[ i ]->h );
 
-		if( strlen( newModeString ) < ( int ) sizeof( buf ) - strlen( buf ) )
+		if ( strlen( newModeString ) < ( int ) sizeof( buf ) - strlen( buf ) )
 		{
 			Q_strcat( buf, sizeof( buf ), newModeString );
 		}
@@ -206,7 +206,7 @@ static void GLimp_DetectAvailableModes( void )
 		}
 	}
 
-	if( *buf )
+	if ( *buf )
 	{
 		buf[ strlen( buf ) - 1 ] = 0;
 		ri.Printf( PRINT_ALL, "Available modes: '%s'\n", buf );
@@ -231,12 +231,12 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 
 	ri.Printf( PRINT_ALL, "Initializing Direct3D display\n" );
 
-	if( r_allowResize->integer )
+	if ( r_allowResize->integer )
 	{
 		flags |= SDL_RESIZABLE;
 	}
 
-	if( displayAspect == 0.0f )
+	if ( displayAspect == 0.0f )
 	{
 #if !SDL_VERSION_ATLEAST(1, 2, 10)
 		// 1.2.10 is needed to get the desktop resolution
@@ -254,7 +254,7 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 
 	ri.Printf( PRINT_ALL, "...setting mode %d:", mode );
 
-	if( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) )
+	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) )
 	{
 		ri.Printf( PRINT_ALL, " invalid mode\n" );
 		return RSERR_INVALID_MODE;
@@ -262,7 +262,7 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 
 	ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight );
 
-	if( fullscreen )
+	if ( fullscreen )
 	{
 		flags |= SDL_FULLSCREEN;
 		glConfig.isFullscreen = qtrue;
@@ -272,7 +272,7 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 		glConfig.isFullscreen = qfalse;
 	}
 
-	if( !r_colorbits->value )
+	if ( !r_colorbits->value )
 	{
 		colorbits = 24;
 	}
@@ -281,7 +281,7 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 		colorbits = r_colorbits->value;
 	}
 
-	if( !r_depthbits->value )
+	if ( !r_depthbits->value )
 	{
 		depthbits = 24;
 	}
@@ -292,19 +292,19 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 
 	stencilbits = r_stencilbits->value;
 
-	for( i = 0; i < 16; i++ )
+	for ( i = 0; i < 16; i++ )
 	{
 		// 0 - default
 		// 1 - minus colorbits
 		// 2 - minus depthbits
 		// 3 - minus stencil
-		if( ( i % 4 ) == 0 && i )
+		if ( ( i % 4 ) == 0 && i )
 		{
 			// one pass, reduce
-			switch( i / 4 )
+			switch ( i / 4 )
 			{
 				case 2:
-					if( colorbits == 24 )
+					if ( colorbits == 24 )
 					{
 						colorbits = 16;
 					}
@@ -312,21 +312,21 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 					break;
 
 				case 1:
-					if( depthbits == 24 )
+					if ( depthbits == 24 )
 					{
 						depthbits = 16;
 					}
-					else if( depthbits == 16 )
+					else if ( depthbits == 16 )
 					{
 						depthbits = 8;
 					}
 
 				case 3:
-					if( stencilbits == 24 )
+					if ( stencilbits == 24 )
 					{
 						stencilbits = 16;
 					}
-					else if( stencilbits == 16 )
+					else if ( stencilbits == 16 )
 					{
 						stencilbits = 8;
 					}
@@ -337,36 +337,36 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 		tdepthbits = depthbits;
 		tstencilbits = stencilbits;
 
-		if( ( i % 4 ) == 3 )
+		if ( ( i % 4 ) == 3 )
 		{
 			// reduce colorbits
-			if( tcolorbits == 24 )
+			if ( tcolorbits == 24 )
 			{
 				tcolorbits = 16;
 			}
 		}
 
-		if( ( i % 4 ) == 2 )
+		if ( ( i % 4 ) == 2 )
 		{
 			// reduce depthbits
-			if( tdepthbits == 24 )
+			if ( tdepthbits == 24 )
 			{
 				tdepthbits = 16;
 			}
-			else if( tdepthbits == 16 )
+			else if ( tdepthbits == 16 )
 			{
 				tdepthbits = 8;
 			}
 		}
 
-		if( ( i % 4 ) == 1 )
+		if ( ( i % 4 ) == 1 )
 		{
 			// reduce stencilbits
-			if( tstencilbits == 24 )
+			if ( tstencilbits == 24 )
 			{
 				tstencilbits = 16;
 			}
-			else if( tstencilbits == 16 )
+			else if ( tstencilbits == 16 )
 			{
 				tstencilbits = 8;
 			}
@@ -378,7 +378,7 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 
 		sdlcolorbits = 4;
 
-		if( tcolorbits == 24 )
+		if ( tcolorbits == 24 )
 		{
 			sdlcolorbits = 8;
 		}
@@ -390,7 +390,7 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 		SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, tstencilbits );
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-		if( SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, r_swapInterval->integer ) < 0 )
+		if ( SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, r_swapInterval->integer ) < 0 )
 		{
 			ri.Printf( PRINT_ALL, "r_swapInterval requires libSDL >= 1.2.10\n" );
 		}
@@ -417,7 +417,7 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 		SDL_WM_SetCaption( CLIENT_WINDOW_TITLE, CLIENT_WINDOW_MIN_TITLE );
 		SDL_ShowCursor( 0 );
 
-		if( !( vidscreen = SDL_SetVideoMode( glConfig.vidWidth, glConfig.vidHeight, colorbits, flags ) ) )
+		if ( !( vidscreen = SDL_SetVideoMode( glConfig.vidWidth, glConfig.vidHeight, colorbits, flags ) ) )
 		{
 			ri.Printf( PRINT_DEVELOPER, "SDL_SetVideoMode failed: %s\n", SDL_GetError() );
 			continue;
@@ -436,7 +436,7 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 
 	GLimp_DetectAvailableModes();
 
-	if( !vidscreen )
+	if ( !vidscreen )
 	{
 		ri.Printf( PRINT_ALL, "Couldn't get a visual\n" );
 		return RSERR_INVALID_MODE;
@@ -459,13 +459,13 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, int fullscreen, int nobor
 {
 	rserr_t err;
 
-	if( !SDL_WasInit( SDL_INIT_VIDEO ) )
+	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
 		char driverName[ 64 ];
 
 		ri.Printf( PRINT_ALL, "SDL_Init( SDL_INIT_VIDEO )... " );
 
-		if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) == -1 )
+		if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) == -1 )
 		{
 			ri.Printf( PRINT_ALL, "SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) FAILED (%s)\n", SDL_GetError() );
 			return qfalse;
@@ -476,7 +476,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, int fullscreen, int nobor
 		ri.Cvar_Set( "r_sdlDriver", driverName );
 	}
 
-	if( fullscreen && ri.Cvar_VariableIntegerValue( "in_nograb" ) )
+	if ( fullscreen && ri.Cvar_VariableIntegerValue( "in_nograb" ) )
 	{
 		ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n" );
 		ri.Cvar_Set( "r_fullscreen", "0" );
@@ -486,7 +486,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, int fullscreen, int nobor
 
 	err = GLimp_SetMode( mode, fullscreen, noborder );
 
-	switch( err )
+	switch ( err )
 	{
 		case RSERR_INVALID_FULLSCREEN:
 			ri.Printf( PRINT_ALL, "...WARNING: fullscreen unavailable in this mode\n" );
@@ -532,7 +532,7 @@ void GLimp_Init( void )
 	r_allowResize = ri.Cvar_Get( "r_allowResize", "0", CVAR_ARCHIVE );
 	r_centerWindow = ri.Cvar_Get( "r_centerWindow", "0", CVAR_ARCHIVE );
 
-	if( ri.Cvar_VariableIntegerValue( "com_abnormalExit" ) )
+	if ( ri.Cvar_VariableIntegerValue( "com_abnormalExit" ) )
 	{
 		ri.Cvar_Set( "r_mode", va( "%d", R_MODE_FALLBACK ) );
 		ri.Cvar_Set( "r_fullscreen", "0" );
@@ -542,12 +542,12 @@ void GLimp_Init( void )
 
 #if 0 //def WIN32 || __WIN64__
 
-	if( !SDL_VIDEODRIVER_externallySet )
+	if ( !SDL_VIDEODRIVER_externallySet )
 	{
 		// It's a little bit weird having in_mouse control the
 		// video driver, but from ioq3's point of view they're
 		// virtually the same except for the mouse input anyway
-		if( ri.Cvar_VariableIntegerValue( "in_mouse" ) == -1 )
+		if ( ri.Cvar_VariableIntegerValue( "in_mouse" ) == -1 )
 		{
 			// Use the windib SDL backend, which is closest to
 			// the behaviour of idq3 with in_mouse set to -1
@@ -563,13 +563,13 @@ void GLimp_Init( void )
 #endif
 
 	// create the window and set up the context
-	if( !GLimp_StartDriverAndSetMode( r_mode->integer, r_fullscreen->integer, qfalse ) )
+	if ( !GLimp_StartDriverAndSetMode( r_mode->integer, r_fullscreen->integer, qfalse ) )
 	{
-		if( r_mode->integer != R_MODE_FALLBACK )
+		if ( r_mode->integer != R_MODE_FALLBACK )
 		{
 			ri.Printf( PRINT_ALL, "Setting r_mode %d failed, falling back on r_mode %d\n", r_mode->integer, R_MODE_FALLBACK );
 
-			if( !GLimp_StartDriverAndSetMode( R_MODE_FALLBACK, r_fullscreen->integer, qfalse ) )
+			if ( !GLimp_StartDriverAndSetMode( R_MODE_FALLBACK, r_fullscreen->integer, qfalse ) )
 			{
 				success = qfalse;
 			}
@@ -580,7 +580,7 @@ void GLimp_Init( void )
 		}
 	}
 
-	if( !success )
+	if ( !success )
 	{
 		ri.Error( ERR_FATAL, "GLimp_Init() - could not load Direct3D subsystem\n" );
 	}
@@ -593,7 +593,7 @@ void GLimp_Init( void )
 	Q_strncpyz( glConfig.vendor_string, "Microsoft", sizeof( glConfig.vendor_string ) );
 	Q_strncpyz( glConfig.renderer_string, "D3D", sizeof( glConfig.renderer_string ) );
 
-	if( *glConfig.renderer_string && glConfig.renderer_string[ strlen( glConfig.renderer_string ) - 1 ] == '\n' )
+	if ( *glConfig.renderer_string && glConfig.renderer_string[ strlen( glConfig.renderer_string ) - 1 ] == '\n' )
 	{
 		glConfig.renderer_string[ strlen( glConfig.renderer_string ) - 1 ] = 0;
 	}

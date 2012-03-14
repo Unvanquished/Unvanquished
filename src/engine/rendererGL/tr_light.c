@@ -41,9 +41,9 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light )
 
 	// cull the entire model if it is outside the view frustum
 	// and we don't care about proper shadowing
-	if( ent->cull == CULL_OUT )
+	if ( ent->cull == CULL_OUT )
 	{
-		if( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
+		if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
 		{
 			return;
 		}
@@ -56,16 +56,16 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light )
 	// avoid drawing of certain objects
 #if defined( USE_REFENTITY_NOSHADOWID )
 
-	if( light->l.inverseShadows )
+	if ( light->l.inverseShadows )
 	{
-		if( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
+		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID != ent->e.noShadowID ) ) )
 		{
 			return;
 		}
 	}
 	else
 	{
-		if( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
+		if ( iaType != IA_LIGHTONLY && ( light->l.noShadowID && ( light->l.noShadowID == ent->e.noShadowID ) ) )
 		{
 			return;
 		}
@@ -77,16 +77,16 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light )
 	bspModel = pModel->bsp;
 
 	// do a quick AABB cull
-	if( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] ) )
+	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], ent->worldBounds[ 0 ], ent->worldBounds[ 1 ] ) )
 	{
 		tr.pc.c_dlightSurfacesCulled += bspModel->numSurfaces;
 		return;
 	}
 
 	// do a more expensive and precise light frustum cull
-	if( !r_noLightFrustums->integer )
+	if ( !r_noLightFrustums->integer )
 	{
-		if( R_CullLightWorldBounds( light, ent->worldBounds ) == CULL_OUT )
+		if ( R_CullLightWorldBounds( light, ent->worldBounds ) == CULL_OUT )
 		{
 			tr.pc.c_dlightSurfacesCulled += bspModel->numSurfaces;
 			return;
@@ -95,19 +95,19 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light )
 
 	cubeSideBits = R_CalcLightCubeSideBits( light, ent->worldBounds );
 
-	if( r_vboModels->integer && bspModel->numVBOSurfaces )
+	if ( r_vboModels->integer && bspModel->numVBOSurfaces )
 	{
 		srfVBOMesh_t *vboSurface;
 		shader_t     *shader;
 
 		// static VBOs are fine for lighting and shadow mapping
-		for( i = 0; i < bspModel->numVBOSurfaces; i++ )
+		for ( i = 0; i < bspModel->numVBOSurfaces; i++ )
 		{
 			vboSurface = bspModel->vboSurfaces[ i ];
 			shader = vboSurface->shader;
 
 			// skip all surfaces that don't matter for lighting only pass
-			if( shader->isSky || ( !shader->interactLight && shader->noShadows ) )
+			if ( shader->isSky || ( !shader->interactLight && shader->noShadows ) )
 			{
 				continue;
 			}
@@ -119,7 +119,7 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light )
 	else
 	{
 		// set the light bits in all the surfaces
-		for( i = 0; i < bspModel->numSurfaces; i++ )
+		for ( i = 0; i < bspModel->numSurfaces; i++ )
 		{
 			surf = bspModel->firstSurface + i;
 
@@ -141,7 +141,7 @@ void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light )
 			 */
 
 			// skip all surfaces that don't matter for lighting only pass
-			if( surf->shader->isSky || ( !surf->shader->interactLight && surf->shader->noShadows ) )
+			if ( surf->shader->isSky || ( !surf->shader->interactLight && surf->shader->noShadows ) )
 			{
 				continue;
 			}
@@ -177,13 +177,13 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 	vec3_t         direction;
 	float          totalFactor;
 
-	if( forcedOrigin )
+	if ( forcedOrigin )
 	{
 		VectorCopy( forcedOrigin, lightOrigin );
 	}
 	else
 	{
-		if( ent->e.renderfx & RF_LIGHTING_ORIGIN )
+		if ( ent->e.renderfx & RF_LIGHTING_ORIGIN )
 		{
 			// seperate lightOrigins are needed so an object that is
 			// sinking into the ground can still be lit, and so
@@ -198,7 +198,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 
 	VectorSubtract( lightOrigin, tr.world->lightGridOrigin, lightOrigin );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		float v;
 
@@ -206,11 +206,11 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 		pos[ i ] = floor( v );
 		frac[ i ] = v - pos[ i ];
 
-		if( pos[ i ] < 0 )
+		if ( pos[ i ] < 0 )
 		{
 			pos[ i ] = 0;
 		}
-		else if( pos[ i ] >= tr.world->lightGridBounds[ i ] - 1 )
+		else if ( pos[ i ] >= tr.world->lightGridBounds[ i ] - 1 )
 		{
 			pos[ i ] = tr.world->lightGridBounds[ i ] - 1;
 		}
@@ -228,16 +228,16 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 
 	totalFactor = 0;
 
-	for( i = 0; i < 8; i++ )
+	for ( i = 0; i < 8; i++ )
 	{
 		float factor;
 
 		factor = 1.0;
 		gridPoint2 = gridPoint;
 
-		for( j = 0; j < 3; j++ )
+		for ( j = 0; j < 3; j++ )
 		{
-			if( i & ( 1 << j ) )
+			if ( i & ( 1 << j ) )
 			{
 				factor *= frac[ j ];
 				gridPoint2 += gridStep[ j ];
@@ -248,7 +248,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 			}
 		}
 
-		if( !( gridPoint2->ambientColor[ 0 ] + gridPoint2->ambientColor[ 1 ] + gridPoint2->ambientColor[ 2 ] ) )
+		if ( !( gridPoint2->ambientColor[ 0 ] + gridPoint2->ambientColor[ 1 ] + gridPoint2->ambientColor[ 2 ] ) )
 		{
 			continue; // ignore samples in walls
 		}
@@ -268,7 +268,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 
 #if 1
 
-	if( totalFactor > 0 && totalFactor < 0.99 )
+	if ( totalFactor > 0 && totalFactor < 0.99 )
 	{
 		totalFactor = 1.0f / totalFactor;
 		VectorScale( ent->ambientLight, totalFactor, ent->ambientLight );
@@ -279,7 +279,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 
 	VectorNormalize2( direction, ent->lightDir );
 
-	if( VectorLength( ent->ambientLight ) < r_forceAmbient->value )
+	if ( VectorLength( ent->ambientLight ) < r_forceAmbient->value )
 	{
 		ent->ambientLight[ 0 ] = r_forceAmbient->value;
 		ent->ambientLight[ 1 ] = r_forceAmbient->value;
@@ -288,12 +288,12 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent, vec3_t forcedOrigin )
 
 //----(SA)  added
 	// cheats?  check for single player?
-	if( tr.lightGridMulDirected )
+	if ( tr.lightGridMulDirected )
 	{
 		VectorScale( ent->directedLight, tr.lightGridMulDirected, ent->directedLight );
 	}
 
-	if( tr.lightGridMulAmbient )
+	if ( tr.lightGridMulAmbient )
 	{
 		VectorScale( ent->ambientLight, tr.lightGridMulAmbient, ent->ambientLight );
 	}
@@ -311,29 +311,29 @@ static void LogLight( trRefEntity_t *ent )
 {
 	int max1, max2;
 
-	if( !( ent->e.renderfx & RF_FIRST_PERSON ) )
+	if ( !( ent->e.renderfx & RF_FIRST_PERSON ) )
 	{
 		return;
 	}
 
 	max1 = ent->ambientLight[ 0 ];
 
-	if( ent->ambientLight[ 1 ] > max1 )
+	if ( ent->ambientLight[ 1 ] > max1 )
 	{
 		max1 = ent->ambientLight[ 1 ];
 	}
-	else if( ent->ambientLight[ 2 ] > max1 )
+	else if ( ent->ambientLight[ 2 ] > max1 )
 	{
 		max1 = ent->ambientLight[ 2 ];
 	}
 
 	max2 = ent->directedLight[ 0 ];
 
-	if( ent->directedLight[ 1 ] > max2 )
+	if ( ent->directedLight[ 1 ] > max2 )
 	{
 		max2 = ent->directedLight[ 1 ];
 	}
-	else if( ent->directedLight[ 2 ] > max2 )
+	else if ( ent->directedLight[ 2 ] > max2 )
 	{
 		max2 = ent->directedLight[ 2 ];
 	}
@@ -358,7 +358,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 	//float           d;
 
 	// lighting calculations
-	if( ent->lightingCalculated )
+	if ( ent->lightingCalculated )
 	{
 		return;
 	}
@@ -388,7 +388,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 	*/
 
 	// if NOWORLDMODEL, only use dynamic lights (menu system, etc)
-	if( !( refdef->rdflags & RDF_NOWORLDMODEL ) && tr.world && tr.world->lightGridData )
+	if ( !( refdef->rdflags & RDF_NOWORLDMODEL ) && tr.world && tr.world->lightGridData )
 	{
 		R_SetupEntityLightingGrid( ent, forcedOrigin );
 	}
@@ -396,7 +396,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 	{
 #if 0
 
-		if( !( refdef->rdflags & RDF_NOWORLDMODEL ) )
+		if ( !( refdef->rdflags & RDF_NOWORLDMODEL ) )
 		{
 			ent->ambientLight[ 0 ] = tr.worldEntity.ambientLight[ 0 ];
 			ent->ambientLight[ 1 ] = tr.worldEntity.ambientLight[ 1 ];
@@ -411,7 +411,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 
 		ent->directedLight[ 0 ] = ent->directedLight[ 1 ] = ent->directedLight[ 2 ] = tr.identityLight * ( 150.0f / 255.0f );
 
-		if( ent->e.renderfx & RF_LIGHTING_ORIGIN )
+		if ( ent->e.renderfx & RF_LIGHTING_ORIGIN )
 		{
 			VectorSubtract( ent->e.lightingOrigin, ent->e.origin, ent->lightDir );
 			VectorNormalize( ent->lightDir );
@@ -440,14 +440,14 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 
 #if 1
 
-	if( ent->e.hilightIntensity )
+	if ( ent->e.hilightIntensity )
 	{
 		// level of intensity was set because the item was looked at
 		ent->ambientLight[ 0 ] += tr.identityLight * 0.5f * ent->e.hilightIntensity;
 		ent->ambientLight[ 1 ] += tr.identityLight * 0.5f * ent->e.hilightIntensity;
 		ent->ambientLight[ 2 ] += tr.identityLight * 0.5f * ent->e.hilightIntensity;
 	}
-	else if( ( ent->e.renderfx & RF_MINLIGHT ) )  // && VectorLength(ent->ambientLight) <= 0)
+	else if ( ( ent->e.renderfx & RF_MINLIGHT ) ) // && VectorLength(ent->ambientLight) <= 0)
 	{
 		// give everything a minimum light add
 		ent->ambientLight[ 0 ] += tr.identityLight * 0.125f;
@@ -460,9 +460,9 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 #if 0
 
 	// clamp ambient
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
-		if( ent->ambientLight[ i ] > tr.identityLight )
+		if ( ent->ambientLight[ i ] > tr.identityLight )
 		{
 			ent->ambientLight[ i ] = tr.identityLight;
 		}
@@ -472,7 +472,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t
 
 #if defined( COMPAT_ET )
 
-	if( ent->e.entityNum < MAX_CLIENTS && ( refdef->rdflags & RDF_SNOOPERVIEW ) )
+	if ( ent->e.entityNum < MAX_CLIENTS && ( refdef->rdflags & RDF_SNOOPERVIEW ) )
 	{
 		VectorSet( ent->ambientLight, 0.96f, 0.96f, 0.96f );  // allow a little room for flicker from directed light
 	}
@@ -501,7 +501,7 @@ int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, ve
 	trRefEntity_t ent;
 
 	// bk010103 - this segfaults with -nolight maps
-	if( tr.world->lightGridData == NULL )
+	if ( tr.world->lightGridData == NULL )
 	{
 		return qfalse;
 	}
@@ -526,11 +526,11 @@ void R_SetupLightOrigin( trRefLight_t *light )
 {
 	vec3_t transformed;
 
-	if( light->l.rlType == RL_DIRECTIONAL )
+	if ( light->l.rlType == RL_DIRECTIONAL )
 	{
 #if 1
 
-		if( !VectorCompare( light->l.center, vec3_origin ) )
+		if ( !VectorCompare( light->l.center, vec3_origin ) )
 		{
 			MatrixTransformPoint( light->transformMatrix, light->l.center, transformed );
 			VectorSubtract( transformed, light->l.origin, light->direction );
@@ -565,7 +565,7 @@ R_SetupLightLocalBounds
 */
 void R_SetupLightLocalBounds( trRefLight_t *light )
 {
-	switch( light->l.rlType )
+	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
@@ -605,7 +605,7 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 				PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
 				PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
 
-				if( !VectorCompare( light->l.projStart, vec3_origin ) )
+				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
 				{
 					vec3_t nearCorners[ 4 ];
 
@@ -615,7 +615,7 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
 					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
 
-					for( j = 0; j < 4; j++ )
+					for ( j = 0; j < 4; j++ )
 					{
 						AddPointToBounds( farCorners[ j ], light->localBounds[ 0 ], light->localBounds[ 1 ] );
 						AddPointToBounds( nearCorners[ j ], light->localBounds[ 0 ], light->localBounds[ 1 ] );
@@ -628,7 +628,7 @@ void R_SetupLightLocalBounds( trRefLight_t *light )
 					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
 					AddPointToBounds( top, light->localBounds[ 0 ], light->localBounds[ 1 ] );
 
-					for( j = 0; j < 4; j++ )
+					for ( j = 0; j < 4; j++ )
 					{
 						AddPointToBounds( farCorners[ j ], light->localBounds[ 0 ], light->localBounds[ 1 ] );
 					}
@@ -657,7 +657,7 @@ void R_SetupLightWorldBounds( trRefLight_t *light )
 
 	ClearBounds( light->worldBounds[ 0 ], light->worldBounds[ 1 ] );
 
-	for( j = 0; j < 8; j++ )
+	for ( j = 0; j < 8; j++ )
 	{
 		v[ 0 ] = light->localBounds[ j & 1 ][ 0 ];
 		v[ 1 ] = light->localBounds[( j >> 1 ) & 1 ][ 1 ];
@@ -677,7 +677,7 @@ R_SetupLightView
 */
 void R_SetupLightView( trRefLight_t *light )
 {
-	switch( light->l.rlType )
+	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
 		case RL_PROJ:
@@ -713,7 +713,7 @@ R_SetupLightFrustum
 */
 void R_SetupLightFrustum( trRefLight_t *light )
 {
-	switch( light->l.rlType )
+	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
@@ -725,7 +725,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 
 				QuatToAxis( light->l.rotation, axis );
 
-				for( i = 0; i < 3; i++ )
+				for ( i = 0; i < 3; i++ )
 				{
 					VectorMA( light->l.origin, light->l.radius[ i ], axis[ i ], planeOrigin );
 					VectorNegate( axis[ i ], planeNormal );
@@ -735,7 +735,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 					light->frustum[ i ].dist = DotProduct( planeOrigin, planeNormal );
 				}
 
-				for( i = 0; i < 3; i++ )
+				for ( i = 0; i < 3; i++ )
 				{
 					VectorMA( light->l.origin, -light->l.radius[ i ], axis[ i ], planeOrigin );
 					VectorCopy( axis[ i ], planeNormal );
@@ -745,7 +745,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 					light->frustum[ i + 3 ].dist = DotProduct( planeOrigin, planeNormal );
 				}
 
-				for( i = 0; i < 6; i++ )
+				for ( i = 0; i < 6; i++ )
 				{
 					vec_t length, ilength;
 
@@ -754,7 +754,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 					// normalize
 					length = VectorLength( light->frustum[ i ].normal );
 
-					if( length )
+					if ( length )
 					{
 						ilength = 1.0 / length;
 						light->frustum[ i ].normal[ 0 ] *= ilength;
@@ -775,13 +775,13 @@ void R_SetupLightFrustum( trRefLight_t *light )
 				vec4_t worldFrustum[ 6 ];
 
 				// transform local frustum to world space
-				for( i = 0; i < 6; i++ )
+				for ( i = 0; i < 6; i++ )
 				{
 					MatrixTransformPlane( light->transformMatrix, light->localFrustum[ i ], worldFrustum[ i ] );
 				}
 
 				// normalize all frustum planes
-				for( i = 0; i < 6; i++ )
+				for ( i = 0; i < 6; i++ )
 				{
 					PlaneNormalize( worldFrustum[ i ] );
 
@@ -800,14 +800,14 @@ void R_SetupLightFrustum( trRefLight_t *light )
 			break;
 	}
 
-	if( light->isStatic )
+	if ( light->isStatic )
 	{
 		int           i, j;
 		vec4_t        quadVerts[ 4 ];
 		srfVert_t     *verts;
 		srfTriangle_t *triangles;
 
-		if( glConfig.smpActive )
+		if ( glConfig.smpActive )
 		{
 			ri.Error( ERR_FATAL, "R_SetupLightFrustum: FIXME SMP" );
 		}
@@ -816,7 +816,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 
-		switch( light->l.rlType )
+		switch ( light->l.rlType )
 		{
 			case RL_OMNI:
 			case RL_DIRECTIONAL:
@@ -831,12 +831,12 @@ void R_SetupLightFrustum( trRefLight_t *light )
 					verts = ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( srfVert_t ) );
 					triangles = ri.Hunk_AllocateTempMemory( ( tess.numIndexes / 3 ) * sizeof( srfTriangle_t ) );
 
-					for( i = 0; i < tess.numVertexes; i++ )
+					for ( i = 0; i < tess.numVertexes; i++ )
 					{
 						VectorCopy( tess.xyz[ i ], verts[ i ].xyz );
 					}
 
-					for( i = 0; i < ( tess.numIndexes / 3 ); i++ )
+					for ( i = 0; i < ( tess.numIndexes / 3 ); i++ )
 					{
 						triangles[ i ].indexes[ 0 ] = tess.indexes[ i * 3 + 0 ];
 						triangles[ i ].indexes[ 1 ] = tess.indexes[ i * 3 + 1 ];
@@ -860,7 +860,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 					vec4_t frustum[ 6 ];
 
 					// transform local frustum to world space
-					for( i = 0; i < 6; i++ )
+					for ( i = 0; i < 6; i++ )
 					{
 						MatrixTransformPlane( light->transformMatrix, light->localFrustum[ i ], frustum[ i ] );
 					}
@@ -870,7 +870,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
 					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
 
-					if( !VectorCompare( light->l.projStart, vec3_origin ) )
+					if ( !VectorCompare( light->l.projStart, vec3_origin ) )
 					{
 						vec3_t nearCorners[ 4 ];
 
@@ -881,7 +881,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
 
 						// draw outer surfaces
-						for( j = 0; j < 4; j++ )
+						for ( j = 0; j < 4; j++ )
 						{
 							Vector4Set( quadVerts[ 3 ], nearCorners[ j ][ 0 ], nearCorners[ j ][ 1 ], nearCorners[ j ][ 2 ], 1 );
 							Vector4Set( quadVerts[ 2 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
@@ -912,7 +912,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
 
 						// draw pyramid
-						for( j = 0; j < 4; j++ )
+						for ( j = 0; j < 4; j++ )
 						{
 							VectorCopy( top, tess.xyz[ tess.numVertexes ] );
 							Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
@@ -940,12 +940,12 @@ void R_SetupLightFrustum( trRefLight_t *light )
 					verts = ri.Hunk_AllocateTempMemory( tess.numVertexes * sizeof( srfVert_t ) );
 					triangles = ri.Hunk_AllocateTempMemory( ( tess.numIndexes / 3 ) * sizeof( srfTriangle_t ) );
 
-					for( i = 0; i < tess.numVertexes; i++ )
+					for ( i = 0; i < tess.numVertexes; i++ )
 					{
 						VectorCopy( tess.xyz[ i ], verts[ i ].xyz );
 					}
 
-					for( i = 0; i < ( tess.numIndexes / 3 ); i++ )
+					for ( i = 0; i < ( tess.numIndexes / 3 ); i++ )
 					{
 						triangles[ i ].indexes[ 0 ] = tess.indexes[ i * 3 + 0 ];
 						triangles[ i ].indexes[ 1 ] = tess.indexes[ i * 3 + 1 ];
@@ -981,7 +981,7 @@ R_SetupLightProjection
 // *INDENT-OFF*
 void R_SetupLightProjection( trRefLight_t *light )
 {
-	switch( light->l.rlType )
+	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
 		case RL_DIRECTIONAL:
@@ -1019,7 +1019,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 
 				dist = DotProduct( light->l.projTarget, normal );
 
-				if( dist < 0 )
+				if ( dist < 0 )
 				{
 					dist = -dist;
 					VectorInverse( normal );
@@ -1050,7 +1050,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 					Vector4MA( lightProject[ 1 ], ofs, lightProject[ 2 ], lightProject[ 1 ] );
 				}
 
-				if( !VectorCompare( light->l.projStart, vec3_origin ) )
+				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
 				{
 					VectorCopy( light->l.projStart, start );
 				}
@@ -1059,7 +1059,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 					VectorClear( start );
 				}
 
-				if( !VectorCompare( light->l.projEnd, vec3_origin ) )
+				if ( !VectorCompare( light->l.projEnd, vec3_origin ) )
 				{
 					VectorCopy( light->l.projEnd, stop );
 				}
@@ -1072,7 +1072,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 				VectorSubtract( stop, start, falloff );
 				light->falloffLength = falloffLen = VectorNormalize( falloff );
 
-				if( falloffLen <= 0 )
+				if ( falloffLen <= 0 )
 				{
 					falloffLen = 1;
 				}
@@ -1110,7 +1110,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 
 				ri.Printf( PRINT_ALL, "unnormalized frustum:\n" );
 
-				for( i = 0; i < 6; i++ )
+				for ( i = 0; i < 6; i++ )
 				{
 					ri.Printf( PRINT_ALL, "(%5.6f, %5.6f, %5.6f, %5.6f)\n", frustum[ i ][ 0 ], frustum[ i ][ 1 ], frustum[ i ][ 2 ], frustum[ i ][ 3 ] );
 				}
@@ -1129,7 +1129,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 				//proj[10] *= 0.5f;
 
 				// normalise all frustum planes
-				for( i = 0; i < 6; i++ )
+				for ( i = 0; i < 6; i++ )
 				{
 					PlaneNormalize( frustum[ i ] );
 				}
@@ -1137,7 +1137,7 @@ void R_SetupLightProjection( trRefLight_t *light )
 #if 0
 				ri.Printf( PRINT_ALL, "normalized frustum:\n" );
 
-				for( i = 0; i < 6; i++ )
+				for ( i = 0; i < 6; i++ )
 				{
 					ri.Printf( PRINT_ALL, "(%5.3f, %5.3f, %5.3f, %5.3f)\n", light->frustum[ i ].normal[ 0 ], frustum[ i ][ 1 ], frustum[ i ][ 2 ], frustum[ i ][ 3 ] );
 				}
@@ -1165,9 +1165,9 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	interaction_t *ia;
 
 	// skip all surfaces that don't matter for lighting only pass
-	if( surfaceShader )
+	if ( surfaceShader )
 	{
-		if( surfaceShader->isSky || ( !surfaceShader->interactLight && surfaceShader->noShadows ) )
+		if ( surfaceShader->isSky || ( !surfaceShader->interactLight && surfaceShader->noShadows ) )
 		{
 			return qfalse;
 		}
@@ -1182,12 +1182,12 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	light->noSort = iaIndex == 0;
 
 	// connect to interaction grid
-	if( !light->firstInteraction )
+	if ( !light->firstInteraction )
 	{
 		light->firstInteraction = ia;
 	}
 
-	if( light->lastInteraction )
+	if ( light->lastInteraction )
 	{
 		light->lastInteraction->next = ia;
 	}
@@ -1197,7 +1197,7 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	// update counters
 	light->numInteractions++;
 
-	switch( iaType )
+	switch ( iaType )
 	{
 		case IA_SHADOWONLY:
 			light->numShadowOnlyInteractions++;
@@ -1236,12 +1236,12 @@ qboolean R_AddLightInteraction( trRefLight_t *light, surfaceType_t *surface, sha
 	}
 	*/
 
-	if( glConfig2.occlusionQueryAvailable )
+	if ( glConfig2.occlusionQueryAvailable )
 	{
 		ia->noOcclusionQueries = light->noOcclusionQueries;
 	}
 
-	if( light->isStatic )
+	if ( light->isStatic )
 	{
 		tr.pc.c_slightInteractions++;
 	}
@@ -1264,12 +1264,12 @@ static int InteractionCompare( const void *a, const void *b )
 #if 1
 
 	// shader first
-	if( ( ( interaction_t * ) a )->surfaceShader < ( ( interaction_t * ) b )->surfaceShader )
+	if ( ( ( interaction_t * ) a )->surfaceShader < ( ( interaction_t * ) b )->surfaceShader )
 	{
 		return -1;
 	}
 
-	else if( ( ( interaction_t * ) a )->surfaceShader > ( ( interaction_t * ) b )->surfaceShader )
+	else if ( ( ( interaction_t * ) a )->surfaceShader > ( ( interaction_t * ) b )->surfaceShader )
 	{
 		return 1;
 	}
@@ -1279,22 +1279,22 @@ static int InteractionCompare( const void *a, const void *b )
 #if 1
 
 	// then entity
-	if( ( ( interaction_t * ) a )->entity == &tr.worldEntity && ( ( interaction_t * ) b )->entity != &tr.worldEntity )
+	if ( ( ( interaction_t * ) a )->entity == &tr.worldEntity && ( ( interaction_t * ) b )->entity != &tr.worldEntity )
 	{
 		return -1;
 	}
 
-	else if( ( ( interaction_t * ) a )->entity != &tr.worldEntity && ( ( interaction_t * ) b )->entity == &tr.worldEntity )
+	else if ( ( ( interaction_t * ) a )->entity != &tr.worldEntity && ( ( interaction_t * ) b )->entity == &tr.worldEntity )
 	{
 		return 1;
 	}
 
-	else if( ( ( interaction_t * ) a )->entity < ( ( interaction_t * ) b )->entity )
+	else if ( ( ( interaction_t * ) a )->entity < ( ( interaction_t * ) b )->entity )
 	{
 		return -1;
 	}
 
-	else if( ( ( interaction_t * ) a )->entity > ( ( interaction_t * ) b )->entity )
+	else if ( ( ( interaction_t * ) a )->entity > ( ( interaction_t * ) b )->entity )
 	{
 		return 1;
 	}
@@ -1317,12 +1317,12 @@ void R_SortInteractions( trRefLight_t *light )
 	interaction_t *ia;
 	interaction_t *iaLast;
 
-	if( r_noInteractionSort->integer )
+	if ( r_noInteractionSort->integer )
 	{
 		return;
 	}
 
-	if( !light->numInteractions || light->noSort )
+	if ( !light->numInteractions || light->noSort )
 	{
 		return;
 	}
@@ -1336,11 +1336,11 @@ void R_SortInteractions( trRefLight_t *light )
 	// fix linked list
 	iaLast = NULL;
 
-	for( i = 0; i < light->numInteractions; i++ )
+	for ( i = 0; i < light->numInteractions; i++ )
 	{
 		ia = &tr.refdef.interactions[ iaFirstIndex + i ];
 
-		if( iaLast )
+		if ( iaLast )
 		{
 			iaLast->next = ia;
 		}
@@ -1379,22 +1379,22 @@ static void R_AddPointToLightScissor( trRefLight_t *light, const vec3_t world )
 	R_TransformWorldToClip( world, tr.viewParms.world.viewMatrix, tr.viewParms.projectionMatrix, eye, clip );
 	R_TransformClipToWindow( clip, &tr.viewParms, normalized, window );
 
-	if( window[ 0 ] > light->scissor.coords[ 2 ] )
+	if ( window[ 0 ] > light->scissor.coords[ 2 ] )
 	{
 		light->scissor.coords[ 2 ] = ( int ) window[ 0 ];
 	}
 
-	if( window[ 0 ] < light->scissor.coords[ 0 ] )
+	if ( window[ 0 ] < light->scissor.coords[ 0 ] )
 	{
 		light->scissor.coords[ 0 ] = ( int ) window[ 0 ];
 	}
 
-	if( window[ 1 ] > light->scissor.coords[ 3 ] )
+	if ( window[ 1 ] > light->scissor.coords[ 3 ] )
 	{
 		light->scissor.coords[ 3 ] = ( int ) window[ 1 ];
 	}
 
-	if( window[ 1 ] < light->scissor.coords[ 1 ] )
+	if ( window[ 1 ] < light->scissor.coords[ 1 ] )
 	{
 		light->scissor.coords[ 1 ] = ( int ) window[ 1 ];
 	}
@@ -1413,7 +1413,7 @@ static void R_AddEdgeToLightScissor( trRefLight_t *light, vec3_t local1, vec3_t 
 	qboolean side1, side2;
 	cplane_t *frust;
 
-	for( i = 0; i < FRUSTUM_PLANES; i++ )
+	for ( i = 0; i < FRUSTUM_PLANES; i++ )
 	{
 		R_LocalPointToWorld( local1, world1 );
 		R_LocalPointToWorld( local2, world2 );
@@ -1424,29 +1424,29 @@ static void R_AddEdgeToLightScissor( trRefLight_t *light, vec3_t local1, vec3_t 
 		side1 = ( ( DotProduct( frust->normal, world1 ) - frust->dist ) >= 0.0 );
 		side2 = ( ( DotProduct( frust->normal, world2 ) - frust->dist ) >= 0.0 );
 
-		if( glConfig2.occlusionQueryAvailable && i == FRUSTUM_NEAR )
+		if ( glConfig2.occlusionQueryAvailable && i == FRUSTUM_NEAR )
 		{
-			if( !side1 || !side2 )
+			if ( !side1 || !side2 )
 			{
 				light->noOcclusionQueries = qtrue;
 			}
 		}
 
-		if( !side1 && !side2 )
+		if ( !side1 && !side2 )
 		{
 			continue; // edge behind plane
 		}
 
-		if( !side1 || !side2 )
+		if ( !side1 || !side2 )
 		{
 			R_IntersectRayPlane( world1, world2, frust, intersect );
 		}
 
-		if( !side1 )
+		if ( !side1 )
 		{
 			VectorCopy( intersect, world1 );
 		}
-		else if( !side2 )
+		else if ( !side2 )
 		{
 			VectorCopy( intersect, world2 );
 		}
@@ -1475,15 +1475,15 @@ void R_SetupLightScissor( trRefLight_t *light )
 
 	light->clipsNearPlane = ( BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], &tr.viewParms.frustums[ 0 ][ FRUSTUM_NEAR ] ) == 3 );
 
-	if( glConfig2.occlusionQueryAvailable )
+	if ( glConfig2.occlusionQueryAvailable )
 	{
 		light->noOcclusionQueries = qfalse;
 	}
 
 	// check if the light volume clips agains the near plane
-	if( r_noLightScissors->integer || light->clipsNearPlane )
+	if ( r_noLightScissors->integer || light->clipsNearPlane )
 	{
-		if( glConfig2.occlusionQueryAvailable )
+		if ( glConfig2.occlusionQueryAvailable )
 		{
 			light->noOcclusionQueries = qtrue;
 		}
@@ -1491,7 +1491,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 		return;
 	}
 
-	if( !r_dynamicBspOcclusionCulling->integer )
+	if ( !r_dynamicBspOcclusionCulling->integer )
 	{
 		// don't calculate the light scissors because there are up to 500 realtime lights in the view frustum
 		// that were not killed by the PVS
@@ -1505,7 +1505,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 	light->scissor.coords[ 2 ] = -100000000;
 	light->scissor.coords[ 3 ] = -100000000;
 
-	switch( light->l.rlType )
+	switch ( light->l.rlType )
 	{
 		case RL_OMNI:
 			{
@@ -1574,7 +1574,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 				PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
 #if 1
 
-				if( !VectorCompare( light->l.projStart, vec3_origin ) )
+				if ( !VectorCompare( light->l.projStart, vec3_origin ) )
 				{
 					vec3_t nearCorners[ 4 ];
 
@@ -1584,7 +1584,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
 					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
 
-					for( j = 0; j < 4; j++ )
+					for ( j = 0; j < 4; j++ )
 					{
 						// outer quad
 						R_AddEdgeToLightScissor( light, nearCorners[ j ], farCorners[ j ] );
@@ -1607,7 +1607,7 @@ void R_SetupLightScissor( trRefLight_t *light )
 					// no light_start, just use the top vertex (doesn't need to be mirrored)
 					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
 
-					for( j = 0; j < 4; j++ )
+					for ( j = 0; j < 4; j++ )
 					{
 						R_AddEdgeToLightScissor( light, farCorners[ j ], farCorners[( j + 1 ) % 4 ] );
 						R_AddEdgeToLightScissor( light, top, farCorners[ j ] );
@@ -1641,14 +1641,14 @@ void R_SetupLightDepthBounds( trRefLight_t *light )
 	vec4_t eye, clip, normalized, window;
 	float  depthMin, depthMax;
 
-	if( r_shadows->integer == SHADOWING_STENCIL && glDepthBoundsEXT )
+	if ( r_shadows->integer == SHADOWING_STENCIL && glDepthBoundsEXT )
 	{
 		tr.pc.c_depthBoundsTestsRejected++;
 
 		depthMin = 1.0;
 		depthMax = 0.0;
 
-		for( j = 0; j < 8; j++ )
+		for ( j = 0; j < 8; j++ )
 		{
 			v[ 0 ] = light->localBounds[ j & 1 ][ 0 ];
 			v[ 1 ] = light->localBounds[( j >> 1 ) & 1 ][ 1 ];
@@ -1661,9 +1661,9 @@ void R_SetupLightDepthBounds( trRefLight_t *light )
 			//R_TransformModelToClip(v, tr.or.modelViewMatrix, tr.viewParms.projectionMatrix, eye, clip);
 
 			// check to see if the point is completely off screen
-			for( i = 0; i < 3; i++ )
+			for ( i = 0; i < 3; i++ )
 			{
-				if( clip[ i ] >= clip[ 3 ] || clip[ i ] <= -clip[ 3 ] )
+				if ( clip[ i ] >= clip[ 3 ] || clip[ i ] <= -clip[ 3 ] )
 				{
 					light->noDepthBoundsTest = qtrue;
 					return;
@@ -1672,8 +1672,8 @@ void R_SetupLightDepthBounds( trRefLight_t *light )
 
 			R_TransformClipToWindow( clip, &tr.viewParms, normalized, window );
 
-			if( window[ 0 ] < 0 || window[ 0 ] >= tr.viewParms.viewportWidth
-			    || window[ 1 ] < 0 || window[ 1 ] >= tr.viewParms.viewportHeight )
+			if ( window[ 0 ] < 0 || window[ 0 ] >= tr.viewParms.viewportWidth
+			     || window[ 1 ] < 0 || window[ 1 ] >= tr.viewParms.viewportHeight )
 			{
 				// shouldn't happen, since we check the clip[] above, except for FP rounding
 				light->noDepthBoundsTest = qtrue;
@@ -1684,7 +1684,7 @@ void R_SetupLightDepthBounds( trRefLight_t *light )
 			depthMax = max( normalized[ 2 ], depthMax );
 		}
 
-		if( depthMin > depthMax )
+		if ( depthMin > depthMax )
 		{
 			// light behind near plane or clipped
 			light->noDepthBoundsTest = qtrue;
@@ -1731,9 +1731,9 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	static int count = 0;
 	cubeSideBits = 0;
 
-	for( cubeSide = 0; cubeSide < 6; cubeSide++ )
+	for ( cubeSide = 0; cubeSide < 6; cubeSide++ )
 	{
-		if( count % 2 == 0 )
+		if ( count % 2 == 0 )
 		{
 			cubeSideBits |= ( 1 << cubeSide );
 		}
@@ -1742,16 +1742,16 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	return cubeSideBits;
 #endif
 
-	if( light->l.rlType != RL_OMNI || r_shadows->integer < SHADOWING_ESM16 || r_noShadowPyramids->integer )
+	if ( light->l.rlType != RL_OMNI || r_shadows->integer < SHADOWING_ESM16 || r_noShadowPyramids->integer )
 	{
 		return CUBESIDE_CLIPALL;
 	}
 
 	cubeSideBits = 0;
 
-	for( cubeSide = 0; cubeSide < 6; cubeSide++ )
+	for ( cubeSide = 0; cubeSide < 6; cubeSide++ )
 	{
-		switch( cubeSide )
+		switch ( cubeSide )
 		{
 			case 0:
 				{
@@ -1850,27 +1850,27 @@ byte R_CalcLightCubeSideBits( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 		anyClip = qfalse;
 		culled = qfalse;
 
-		for( i = 0; i < 5; i++ )
+		for ( i = 0; i < 5; i++ )
 		{
 			clipPlane = &frustum[ i ];
 
 			r = BoxOnPlaneSide( worldBounds[ 0 ], worldBounds[ 1 ], clipPlane );
 
-			if( r == 2 )
+			if ( r == 2 )
 			{
 				culled = qtrue;
 				break;
 			}
 
-			if( r == 3 )
+			if ( r == 3 )
 			{
 				anyClip = qtrue;
 			}
 		}
 
-		if( !culled )
+		if ( !culled )
 		{
-			if( !anyClip )
+			if ( !anyClip )
 			{
 				// completely inside frustum
 				tr.pc.c_pyramid_cull_ent_in++;
@@ -1910,7 +1910,7 @@ void R_SetupLightLOD( trRefLight_t *light )
 	int   lod;
 	int   numLods;
 
-	if( light->l.noShadows )
+	if ( light->l.noShadows )
 	{
 		light->shadowLOD = -1;
 		return;
@@ -1922,11 +1922,11 @@ void R_SetupLightLOD( trRefLight_t *light )
 	// and use that as a criteria for selecting LOD
 	radius = light->sphereRadius;
 
-	if( ( projectedRadius = R_ProjectRadius( radius, light->l.origin ) ) != 0 )
+	if ( ( projectedRadius = R_ProjectRadius( radius, light->l.origin ) ) != 0 )
 	{
 		lodscale = r_shadowLodScale->value;
 
-		if( lodscale > 20 )
+		if ( lodscale > 20 )
 		{
 			lodscale = 20;
 		}
@@ -1942,23 +1942,23 @@ void R_SetupLightLOD( trRefLight_t *light )
 	flod *= numLods;
 	lod = XreaL_Q_ftol( flod );
 
-	if( lod < 0 )
+	if ( lod < 0 )
 	{
 		lod = 0;
 	}
-	else if( lod >= numLods )
+	else if ( lod >= numLods )
 	{
 		//lod = numLods - 1;
 	}
 
 	lod += r_shadowLodBias->integer;
 
-	if( lod < 0 )
+	if ( lod < 0 )
 	{
 		lod = 0;
 	}
 
-	if( lod >= numLods )
+	if ( lod >= numLods )
 	{
 		// don't draw any shadow
 		lod = -1;
@@ -1967,7 +1967,7 @@ void R_SetupLightLOD( trRefLight_t *light )
 	}
 
 	// never give ultra quality for point lights
-	if( lod == 0 && light->l.rlType == RL_OMNI )
+	if ( lod == 0 && light->l.rlType == RL_OMNI )
 	{
 		lod = 1;
 	}
@@ -1982,11 +1982,11 @@ R_SetupLightShader
 */
 void R_SetupLightShader( trRefLight_t *light )
 {
-	if( !light->l.attenuationShader )
+	if ( !light->l.attenuationShader )
 	{
-		if( light->isStatic )
+		if ( light->isStatic )
 		{
-			switch( light->l.rlType )
+			switch ( light->l.rlType )
 			{
 				default:
 				case RL_OMNI:
@@ -2000,7 +2000,7 @@ void R_SetupLightShader( trRefLight_t *light )
 		}
 		else
 		{
-			switch( light->l.rlType )
+			switch ( light->l.rlType )
 			{
 				default:
 				case RL_OMNI:
@@ -2049,13 +2049,13 @@ int R_CullLightPoint( trRefLight_t *light, const vec3_t p )
 	float    dist;
 
 	// check against frustum planes
-	for( i = 0; i < 6; i++ )
+	for ( i = 0; i < 6; i++ )
 	{
 		frust = &light->frustum[ i ];
 
 		dist = DotProduct( p, frust->normal ) - frust->dist;
 
-		if( dist < 0 )
+		if ( dist < 0 )
 		{
 			// completely outside frustum
 			return CULL_OUT;
@@ -2078,7 +2078,7 @@ int R_CullLightTriangle( trRefLight_t *light, vec3_t verts[ 3 ] )
 	int    i;
 	vec3_t worldBounds[ 2 ];
 
-	if( r_nocull->integer )
+	if ( r_nocull->integer )
 	{
 		return CULL_CLIP;
 	}
@@ -2086,7 +2086,7 @@ int R_CullLightTriangle( trRefLight_t *light, vec3_t verts[ 3 ] )
 	// calc AABB of the triangle
 	ClearBounds( worldBounds[ 0 ], worldBounds[ 1 ] );
 
-	for( i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		AddPointToBounds( verts[ i ], worldBounds[ 0 ], worldBounds[ 1 ] );
 	}
@@ -2108,7 +2108,7 @@ int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	qboolean anyClip;
 	int      r;
 
-	if( r_nocull->integer )
+	if ( r_nocull->integer )
 	{
 		return CULL_CLIP;
 	}
@@ -2116,25 +2116,25 @@ int R_CullLightWorldBounds( trRefLight_t *light, vec3_t worldBounds[ 2 ] )
 	// check against frustum planes
 	anyClip = qfalse;
 
-	for( i = 0; i < 6; i++ )
+	for ( i = 0; i < 6; i++ )
 	{
 		frust = &light->frustum[ i ];
 
 		r = BoxOnPlaneSide( worldBounds[ 0 ], worldBounds[ 1 ], frust );
 
-		if( r == 2 )
+		if ( r == 2 )
 		{
 			// completely outside frustum
 			return CULL_OUT;
 		}
 
-		if( r == 3 )
+		if ( r == 3 )
 		{
 			anyClip = qtrue;
 		}
 	}
 
-	if( !anyClip )
+	if ( !anyClip )
 	{
 		// completely inside frustum
 		return CULL_IN;

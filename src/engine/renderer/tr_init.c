@@ -258,21 +258,21 @@ MAX_PN_TRIANGLES_TESSELATION_LEVEL_ATI  GetIntegerv Z+    1                     
 
 static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 {
-	if( shouldBeIntegral )
+	if ( shouldBeIntegral )
 	{
-		if( ( int ) cv->value != cv->integer )
+		if ( ( int ) cv->value != cv->integer )
 		{
 			ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value );
 			ri.Cvar_Set( cv->name, va( "%d", cv->integer ) );
 		}
 	}
 
-	if( cv->value < minVal )
+	if ( cv->value < minVal )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal );
 		ri.Cvar_Set( cv->name, va( "%f", minVal ) );
 	}
-	else if( cv->value > maxVal )
+	else if ( cv->value > maxVal )
 	{
 		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal );
 		ri.Cvar_Set( cv->name, va( "%f", maxVal ) );
@@ -303,7 +303,7 @@ static void InitOpenGL( void )
 	//      - r_gamma
 	//
 
-	if( glConfig.vidWidth == 0 )
+	if ( glConfig.vidWidth == 0 )
 	{
 		GLint temp;
 
@@ -317,7 +317,7 @@ static void InitOpenGL( void )
 		glConfig.maxTextureSize = temp;
 
 		// stubbed or broken drivers may have reported 0...
-		if( glConfig.maxTextureSize <= 0 )
+		if ( glConfig.maxTextureSize <= 0 )
 		{
 			glConfig.maxTextureSize = 0;
 		}
@@ -343,25 +343,25 @@ void GL_CheckErrors_( const char *fileName, int line )
 	int  err;
 	char s[ 128 ];
 
-	if( glConfig.smpActive )
+	if ( glConfig.smpActive )
 	{
 		// we can't print onto the console while rendering in another thread
 		return;
 	}
 
-	if( r_ignoreGLErrors->integer )
+	if ( r_ignoreGLErrors->integer )
 	{
 		return;
 	}
 
 	err = glGetError();
 
-	if( err == GL_NO_ERROR )
+	if ( err == GL_NO_ERROR )
 	{
 		return;
 	}
 
-	switch( err )
+	switch ( err )
 	{
 		case GL_INVALID_ENUM:
 			strcpy( s, "GL_INVALID_ENUM" );
@@ -434,17 +434,17 @@ qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode )
 {
 	vidmode_t *vm;
 
-	if( mode < -1 )
+	if ( mode < -1 )
 	{
 		return qfalse;
 	}
 
-	if( mode >= s_numVidModes )
+	if ( mode >= s_numVidModes )
 	{
 		return qfalse;
 	}
 
-	if( mode == -1 )
+	if ( mode == -1 )
 	{
 		*width = r_customwidth->integer;
 		*height = r_customheight->integer;
@@ -470,7 +470,7 @@ static void R_ModeList_f( void )
 
 	ri.Printf( PRINT_ALL, "\n" );
 
-	for( i = 0; i < s_numVidModes; i++ )
+	for ( i = 0; i < s_numVidModes; i++ )
 	{
 		ri.Printf( PRINT_ALL, "%s\n", r_vidModes[ i ].description );
 	}
@@ -515,7 +515,7 @@ static byte *RB_ReadPixels( int x, int y, int width, int height, size_t offset )
 	glReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels );
 
 	// Drop alignment and line padding bytes
-	for( i = 0; i < height; ++i )
+	for ( i = 0; i < height; ++i )
 	{
 		memmove( buffer + offset + i * lineLen, pixels + i * paddedLineLen, lineLen );
 	}
@@ -550,14 +550,14 @@ static void R_TakeScreenshot( int x, int y, int width, int height, char *fileNam
 	// RGB to BGR
 	end = buffer + 18 + dataSize;
 
-	for( p = buffer + 18; p < end; p += 3 )
+	for ( p = buffer + 18; p < end; p += 3 )
 	{
 		byte temp = p[ 0 ];
 		p[ 0 ] = p[ 2 ];
 		p[ 2 ] = temp;
 	}
 
-	if( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
+	if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
 	{
 		R_GammaCorrect( buffer + 18, dataSize );
 	}
@@ -576,7 +576,7 @@ static void R_TakeScreenshotJPEG( int x, int y, int width, int height, char *fil
 {
 	byte *buffer = RB_ReadPixels( x, y, width, height, 0 );
 
-	if( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
+	if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
 	{
 		R_GammaCorrect( buffer, 3 * width * height );
 	}
@@ -594,7 +594,7 @@ static void R_TakeScreenshotPNG( int x, int y, int width, int height, char *file
 {
 	byte *buffer = RB_ReadPixels( x, y, width, height, 0 );
 
-	if( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
+	if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
 	{
 		R_GammaCorrect( buffer, 3 * width * height );
 	}
@@ -610,7 +610,7 @@ R_ScreenshotFilename
 */
 void R_ScreenshotFilename( int lastNumber, char *fileName )
 {
-	if( lastNumber < 0 || lastNumber > 9999 )
+	if ( lastNumber < 0 || lastNumber > 9999 )
 	{
 		Com_sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.tga" );
 		return;
@@ -626,7 +626,7 @@ R_ScreenshotFilenameJPEG
 */
 void R_ScreenshotFilenameJPEG( int lastNumber, char *fileName )
 {
-	if( lastNumber < 0 || lastNumber > 9999 )
+	if ( lastNumber < 0 || lastNumber > 9999 )
 	{
 		Com_sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.jpg" );
 		return;
@@ -642,7 +642,7 @@ R_ScreenshotFilenamePNG
 */
 void R_ScreenshotFilenamePNG( int lastNumber, char *fileName )
 {
-	if( lastNumber < 0 || lastNumber > 9999 )
+	if ( lastNumber < 0 || lastNumber > 9999 )
 	{
 		Com_sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.png" );
 		return;
@@ -666,11 +666,11 @@ void R_ScreenShot_f( void )
 	ssFormat_t format;
 	qboolean   silent;
 
-	if( !Q_stricmp( ri.Cmd_Argv( 0 ), "screenshotJPEG" ) )
+	if ( !Q_stricmp( ri.Cmd_Argv( 0 ), "screenshotJPEG" ) )
 	{
 		format = SSF_JPEG;
 	}
-	else if( !Q_stricmp( ri.Cmd_Argv( 0 ), "screenshotPNG" ) )
+	else if ( !Q_stricmp( ri.Cmd_Argv( 0 ), "screenshotPNG" ) )
 	{
 		format = SSF_PNG;
 	}
@@ -679,7 +679,7 @@ void R_ScreenShot_f( void )
 		format = SSF_TGA;
 	}
 
-	if( !strcmp( ri.Cmd_Argv( 1 ), "silent" ) )
+	if ( !strcmp( ri.Cmd_Argv( 1 ), "silent" ) )
 	{
 		silent = qtrue;
 	}
@@ -688,10 +688,10 @@ void R_ScreenShot_f( void )
 		silent = qfalse;
 	}
 
-	if( ri.Cmd_Argc() == 2 && !silent )
+	if ( ri.Cmd_Argc() == 2 && !silent )
 	{
 		// explicit filename
-		switch( format )
+		switch ( format )
 		{
 			case SSF_TGA:
 				Com_sprintf( checkname, MAX_OSPATH, "screenshots/%s.tga", ri.Cmd_Argv( 1 ) );
@@ -713,15 +713,15 @@ void R_ScreenShot_f( void )
 		// if we have saved a previous screenshot, don't scan
 		// again, because recording demo avis can involve
 		// thousands of shots
-		if( lastNumber == -1 )
+		if ( lastNumber == -1 )
 		{
 			lastNumber = 0;
 		}
 
 		// scan for a free number
-		for( ; lastNumber <= 9999; lastNumber++ )
+		for ( ; lastNumber <= 9999; lastNumber++ )
 		{
-			switch( format )
+			switch ( format )
 			{
 				case SSF_TGA:
 					R_ScreenshotFilename( lastNumber, checkname );
@@ -738,13 +738,13 @@ void R_ScreenShot_f( void )
 
 			len = ri.FS_ReadFile( checkname, NULL );
 
-			if( len <= 0 )
+			if ( len <= 0 )
 			{
 				break; // file doesn't exist
 			}
 		}
 
-		if( lastNumber >= 10000 )
+		if ( lastNumber >= 10000 )
 		{
 			ri.Printf( PRINT_ALL, "ScreenShot: Couldn't create a file\n" );
 			return;
@@ -753,7 +753,7 @@ void R_ScreenShot_f( void )
 		lastNumber++;
 	}
 
-	switch( format )
+	switch ( format )
 	{
 		case SSF_TGA:
 			R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname );
@@ -768,7 +768,7 @@ void R_ScreenShot_f( void )
 			break;
 	}
 
-	if( !silent )
+	if ( !silent )
 	{
 		ri.Printf( PRINT_ALL, "Wrote %s\n", checkname );
 	}
@@ -796,7 +796,7 @@ const void     *RB_TakeVideoFrameCmd( const void *data )
 
 	// RB: it is possible to we still have a videoFrameCommand_t but we already stopped
 	// video recording
-	if( ri.CL_VideoRecording() )
+	if ( ri.CL_VideoRecording() )
 	{
 		// take care of alignment issues for reading RGB images..
 
@@ -808,16 +808,16 @@ const void     *RB_TakeVideoFrameCmd( const void *data )
 		pixels = ( byte * ) PADP( cmd->captureBuffer, packAlign );
 		glReadPixels( 0, 0, cmd->width, cmd->height, GL_RGB, GL_UNSIGNED_BYTE, pixels );
 
-		if( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
+		if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma )
 		{
 			// this also runs over the padding...
 			R_GammaCorrect( pixels, captureLineLen * cmd->height );
 		}
 
-		if( cmd->motionJpeg )
+		if ( cmd->motionJpeg )
 		{
 			// Drop alignment and line padding bytes
-			for( i = 0; i < cmd->height; ++i )
+			for ( i = 0; i < cmd->height; ++i )
 			{
 				memmove( cmd->captureBuffer + i * lineLen, pixels + i * captureLineLen, lineLen );
 			}
@@ -829,16 +829,16 @@ const void     *RB_TakeVideoFrameCmd( const void *data )
 		{
 			aviLineLen = PAD( lineLen, AVI_LINE_PADDING );
 
-			for( i = 0; i < cmd->height; ++i )
+			for ( i = 0; i < cmd->height; ++i )
 			{
-				for( j = 0; j < lineLen; j += 3 )
+				for ( j = 0; j < lineLen; j += 3 )
 				{
 					cmd->encodeBuffer[ i * aviLineLen + j + 0 ] = pixels[ i * captureLineLen + j + 2 ];
 					cmd->encodeBuffer[ i * aviLineLen + j + 1 ] = pixels[ i * captureLineLen + j + 1 ];
 					cmd->encodeBuffer[ i * aviLineLen + j + 2 ] = pixels[ i * captureLineLen + j + 0 ];
 				}
 
-				while( j < aviLineLen )
+				while ( j < aviLineLen )
 				{
 					cmd->encodeBuffer[ i * aviLineLen + j++ ] = 0;
 				}
@@ -866,7 +866,7 @@ void GL_SetDefaultState( void )
 
 	// initialize downstream texture unit if we're running
 	// in a multitexture environment
-	if( GLEW_ARB_multitexture )
+	if ( GLEW_ARB_multitexture )
 	{
 		GL_SelectTexture( 1 );
 		GL_TextureMode( r_textureMode->string );
@@ -904,7 +904,7 @@ void GL_SetDefaultState( void )
 #if 0
 
 	// ATI pn_triangles
-	if( GLEW_ATI_pn_triangles )
+	if ( GLEW_ATI_pn_triangles )
 	{
 		int maxtess;
 
@@ -917,7 +917,7 @@ void GL_SetDefaultState( void )
 #endif
 
 		// cap if necessary
-		if( r_ati_truform_tess->value > maxtess )
+		if ( r_ati_truform_tess->value > maxtess )
 		{
 			ri.Cvar_Set( "r_ati_truform_tess", va( "%d", maxtess ) );
 		}
@@ -928,7 +928,7 @@ void GL_SetDefaultState( void )
 
 #endif
 
-	if( glConfig.anisotropicAvailable )
+	if ( glConfig.anisotropicAvailable )
 	{
 		float maxAnisotropy;
 
@@ -972,7 +972,7 @@ void GfxInfo_f( void )
 	ri.Printf( PRINT_ALL, "MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight,
 	           fsstrings[ r_fullscreen->integer == 1 ] );
 
-	if( glConfig.displayFrequency )
+	if ( glConfig.displayFrequency )
 	{
 		ri.Printf( PRINT_ALL, "%d\n", glConfig.displayFrequency );
 	}
@@ -981,7 +981,7 @@ void GfxInfo_f( void )
 		ri.Printf( PRINT_ALL, "N/A\n" );
 	}
 
-	if( glConfig.deviceSupportsGamma )
+	if ( glConfig.deviceSupportsGamma )
 	{
 		ri.Printf( PRINT_ALL, "GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits );
 	}
@@ -1000,9 +1000,9 @@ void GfxInfo_f( void )
 		ri.Printf( PRINT_ALL, "rendering primitives: " );
 		primitives = r_primitives->integer;
 
-		if( primitives == 0 )
+		if ( primitives == 0 )
 		{
-			if( GL_EXT_compiled_vertex_array )
+			if ( GL_EXT_compiled_vertex_array )
 			{
 				primitives = 2;
 			}
@@ -1012,19 +1012,19 @@ void GfxInfo_f( void )
 			}
 		}
 
-		if( primitives == -1 )
+		if ( primitives == -1 )
 		{
 			ri.Printf( PRINT_ALL, "none\n" );
 		}
-		else if( primitives == 2 )
+		else if ( primitives == 2 )
 		{
 			ri.Printf( PRINT_ALL, "single glDrawElements\n" );
 		}
-		else if( primitives == 1 )
+		else if ( primitives == 1 )
 		{
 			ri.Printf( PRINT_ALL, "multiple glArrayElement\n" );
 		}
-		else if( primitives == 3 )
+		else if ( primitives == 3 )
 		{
 			ri.Printf( PRINT_ALL, "multiple glColor4ubv + glTexCoord2fv + glVertex3fv\n" );
 		}
@@ -1041,32 +1041,32 @@ void GfxInfo_f( void )
 
 	ri.Printf( PRINT_ALL, "NV distance fog: %s\n", enablestrings[ glConfig.NVFogAvailable != 0 ] );
 
-	if( glConfig.NVFogAvailable )
+	if ( glConfig.NVFogAvailable )
 	{
 		ri.Printf( PRINT_ALL, "Fog Mode: %s\n", r_nv_fogdist_mode->string );
 	}
 
-	if( glConfig.hardwareType == GLHW_PERMEDIA2 )
+	if ( glConfig.hardwareType == GLHW_PERMEDIA2 )
 	{
 		ri.Printf( PRINT_ALL, "HACK: using vertex lightmap approximation\n" );
 	}
 
-	if( glConfig.hardwareType == GLHW_RAGEPRO )
+	if ( glConfig.hardwareType == GLHW_RAGEPRO )
 	{
 		ri.Printf( PRINT_ALL, "HACK: ragePro approximations\n" );
 	}
 
-	if( glConfig.hardwareType == GLHW_RIVA128 )
+	if ( glConfig.hardwareType == GLHW_RIVA128 )
 	{
 		ri.Printf( PRINT_ALL, "HACK: riva128 approximations\n" );
 	}
 
-	if( glConfig.smpActive )
+	if ( glConfig.smpActive )
 	{
 		ri.Printf( PRINT_ALL, "Using dual processor acceleration\n" );
 	}
 
-	if( r_finish->integer )
+	if ( r_finish->integer )
 	{
 		ri.Printf( PRINT_ALL, "Forcing glFinish\n" );
 	}
@@ -1321,7 +1321,7 @@ void R_Init( void )
 	tess.maxShaderVerts = SHADER_MAX_VERTEXES;
 	tess.maxShaderIndicies = SHADER_MAX_INDEXES;
 
-	if( ( intptr_t ) tess.xyz & 15 )
+	if ( ( intptr_t ) tess.xyz & 15 )
 	{
 		Com_Printf( "WARNING: tess.xyz not 16 byte aligned\n" );
 	}
@@ -1331,16 +1331,16 @@ void R_Init( void )
 	//
 	// init function tables
 	//
-	for( i = 0; i < FUNCTABLE_SIZE; i++ )
+	for ( i = 0; i < FUNCTABLE_SIZE; i++ )
 	{
 		tr.sinTable[ i ] = sin( DEG2RAD( i * 360.0f / ( ( float )( FUNCTABLE_SIZE - 1 ) ) ) );
 		tr.squareTable[ i ] = ( i < FUNCTABLE_SIZE / 2 ) ? 1.0f : -1.0f;
 		tr.sawToothTable[ i ] = ( float ) i / FUNCTABLE_SIZE;
 		tr.inverseSawToothTable[ i ] = 1.0f - tr.sawToothTable[ i ];
 
-		if( i < FUNCTABLE_SIZE / 2 )
+		if ( i < FUNCTABLE_SIZE / 2 )
 		{
-			if( i < FUNCTABLE_SIZE / 4 )
+			if ( i < FUNCTABLE_SIZE / 4 )
 			{
 				tr.triangleTable[ i ] = ( float ) i / ( FUNCTABLE_SIZE / 4 );
 			}
@@ -1366,14 +1366,14 @@ void R_Init( void )
 
 	max_polys = r_maxpolys->integer;
 
-	if( max_polys < MAX_POLYS )
+	if ( max_polys < MAX_POLYS )
 	{
 		max_polys = MAX_POLYS;
 	}
 
 	max_polyverts = r_maxpolyverts->integer;
 
-	if( max_polyverts < MAX_POLYVERTS )
+	if ( max_polyverts < MAX_POLYVERTS )
 	{
 		max_polyverts = MAX_POLYVERTS;
 	}
@@ -1382,7 +1382,7 @@ void R_Init( void )
 	backEndData[ 0 ] =
 	  ri.Hunk_Alloc( sizeof( *backEndData[ 0 ] ) + sizeof( srfPoly_t ) * max_polys + sizeof( polyVert_t ) * max_polyverts, h_low );
 
-	if( r_smp->integer )
+	if ( r_smp->integer )
 	{
 //      backEndData[1] = ri.Hunk_Alloc( sizeof( *backEndData[1] ), h_low );
 		backEndData[ 1 ] =
@@ -1454,11 +1454,11 @@ void RE_Shutdown( qboolean destroyWindow )
 	// clean out any remaining unused media from the last backup
 	R_PurgeCache();
 
-	if( r_cache->integer )
+	if ( r_cache->integer )
 	{
-		if( tr.registered )
+		if ( tr.registered )
 		{
-			if( destroyWindow )
+			if ( destroyWindow )
 			{
 				R_SyncRenderThread();
 				R_ShutdownCommandBuffers();
@@ -1475,7 +1475,7 @@ void RE_Shutdown( qboolean destroyWindow )
 			}
 		}
 	}
-	else if( tr.registered )
+	else if ( tr.registered )
 	{
 		R_SyncRenderThread();
 		R_ShutdownCommandBuffers();
@@ -1485,7 +1485,7 @@ void RE_Shutdown( qboolean destroyWindow )
 	R_DoneFreeType();
 
 	// shut down platform specific OpenGL stuff
-	if( destroyWindow )
+	if ( destroyWindow )
 	{
 		GLimp_Shutdown();
 
@@ -1536,7 +1536,7 @@ extern "C" {
 
 		memset( &re, 0, sizeof( re ) );
 
-		if( apiVersion != REF_API_VERSION )
+		if ( apiVersion != REF_API_VERSION )
 		{
 			ri.Printf( PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n", REF_API_VERSION, apiVersion );
 			return NULL;
