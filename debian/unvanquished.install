@@ -9,5 +9,7 @@ src/gamelogic/base/ui			usr/lib/games/unvanquished/base/
 main					usr/lib/games/unvanquished/
 src/gamelogic/gpp/ui			usr/lib/games/unvanquished/gpp/
 
-debian/unvanquished*.sh			usr/games/
+debian/unvanquished.sh			usr/games/
+debian/unvanquished-server.sh		usr/games/
+debian/unvanquished-download-paks.sh	usr/sbin/
 download-pk3.sh				usr/lib/games/unvanquished/
