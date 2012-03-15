@@ -3199,7 +3199,7 @@ void StoreSurfaceLightmaps(void)
 			{
 				sprintf(filename, "%s/" EXTERNAL_LIGHTMAP, dirname, numExtLightmaps);
 				Sys_FPrintf(SYS_VRB, "\nwriting %s", filename);
-				WritePNG(filename, olm->bspLightBytes, olm->customWidth, olm->customHeight, 3, qtrue);
+				WriteTGA24(filename, olm->bspLightBytes, olm->customWidth, olm->customHeight, qtrue);
 			}
 			numExtLightmaps++;
 
@@ -3208,7 +3208,7 @@ void StoreSurfaceLightmaps(void)
 			{
 				sprintf(filename, "%s/" EXTERNAL_LIGHTMAP, dirname, numExtLightmaps);
 				Sys_FPrintf(SYS_VRB, "\nwriting %s", filename);
-				WritePNG(filename, olm->bspDirBytes, olm->customWidth, olm->customHeight, 3, qtrue);
+				WriteTGA24(filename, olm->bspDirBytes, olm->customWidth, olm->customHeight,qtrue);
 				numExtLightmaps++;
 
 				if(debugDeluxemap)

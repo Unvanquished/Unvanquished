@@ -305,7 +305,7 @@ abstracted bsp file
 ------------------------------------------------------------------------------- */
 
 #define EXTERNAL_OLDLIGHTMAP	"lm_%04d.tga"
-#define EXTERNAL_LIGHTMAP		"lm_%04d.png"
+#define EXTERNAL_LIGHTMAP		"lm_%04d.tga"
 #define EXTERNAL_HDRLIGHTMAP	"lm_%04d.hdr"
 
 #define MAX_LIGHTMAPS			4	/* RBSP */
@@ -2309,7 +2309,7 @@ Q_EXTERN float				bounceScale Q_ASSIGN( 0.25f );
 
 /* jal: alternative angle attenuation curve */
 Q_EXTERN qboolean			lightAngleHL Q_ASSIGN( qfalse );
- 
+
 /* vortex: gridscale and gridambientscale */
 Q_EXTERN float				gridScale Q_ASSIGN( 1.0f );
 Q_EXTERN float				gridAmbientScale Q_ASSIGN( 1.0f );
