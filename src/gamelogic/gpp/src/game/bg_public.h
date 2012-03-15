@@ -974,7 +974,7 @@ typedef enum
   S3
 } stage_t;
 
-#define MAX_BUILDABLE_MODELS 4
+#define MAX_BUILDABLE_MODELS 3
 
 // buildable item record
 typedef struct
