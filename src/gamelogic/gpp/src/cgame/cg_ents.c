@@ -308,7 +308,7 @@ static void CG_EntityEffects( centity_t *cent )
 		g = ( cl >> 8 ) & 255;
 		b = ( cl >> 16 ) & 255;
 		i = ( ( cl >> 24 ) & 255 ) * 4;
-		trap_R_AddLightToScene( cent->lerpOrigin, rand() & 20, i, r, g, b, 0, 0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, cl, i, r, g, b, 0, 0 );
 	}
 
 	if ( CG_IsTrailSystemValid( &cent->muzzleTS ) )
@@ -491,7 +491,7 @@ static void CG_Missile( centity_t *cent )
 	// add dynamic light
 	if ( wim->missileDlight )
 	{
-		trap_R_AddLightToScene( cent->lerpOrigin, rand() & 20, wim->missileDlight,
+		trap_R_AddLightToScene( cent->lerpOrigin, wim->missileDlight, wim->missileDlight,
 		                        wim->missileDlightColor[ 0 ],
 		                        wim->missileDlightColor[ 1 ],
 		                        wim->missileDlightColor[ 2 ], 0, 0 );

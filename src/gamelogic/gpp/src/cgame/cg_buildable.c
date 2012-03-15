@@ -2052,7 +2052,8 @@ void CG_Buildable( centity_t *cent )
 			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ] ||
 			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ] )
 			{
-				trap_R_AddLightToScene( cent->lerpOrigin, rand() & 20, 300 + ( rand() & 31 ),
+				trap_R_AddLightToScene( cent->lerpOrigin, weapon->wim[ WPM_PRIMARY ].flashDlight,
+							weapon->wim[ WPM_PRIMARY ].flashDlightIntensity,
 				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
 				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
 				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
