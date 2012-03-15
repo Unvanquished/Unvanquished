@@ -1988,6 +1988,8 @@ Q_EXTERN game_t				games[]
 								,
                                 #include "game_tremulous.h"
                                 ,
+                                #include "game_unvanquished.h"
+                                ,
 								{ NULL }	/* null game */
 							};
 #endif
