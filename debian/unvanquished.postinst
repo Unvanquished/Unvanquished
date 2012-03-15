@@ -3,5 +3,9 @@
 #DEBHELPER#
 
 if test "$1" = "configure"; then
-  /usr/games/unvanquished-download-paks.sh
+  /usr/sbin/unvanquished-download-paks.sh || {
+    echo 'You can retry this by running unvanquished-download-paks.sh (as root).'
+    echo 'You may not be able to play Unvanquished until you do so.'
+    echo '(However, any previously-downloaded files not replaced remain available.)'
+  }
 fi
