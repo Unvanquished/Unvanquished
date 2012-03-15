@@ -1786,6 +1786,11 @@ void CG_DrawBuildableStatus( void )
 	int           buildableList[ MAX_ENTITIES_IN_SNAPSHOT ];
 	int           buildables = 0;
 
+	if ( !cg_drawBuildableHealth.integer )
+	{
+		return;
+	}
+
 	for ( i = 0; i < cg.snap->numEntities; i++ )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];

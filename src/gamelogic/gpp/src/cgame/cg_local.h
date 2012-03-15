@@ -1511,6 +1511,7 @@ extern  vmCvar_t            cg_drawSnapshot;
 extern  vmCvar_t            cg_drawChargeBar;
 extern  vmCvar_t            cg_drawCrosshair;
 extern  vmCvar_t            cg_drawCrosshairNames;
+extern  vmCvar_t            cg_drawBuildableHealth;
 extern  vmCvar_t            cg_crosshairSize;
 extern  vmCvar_t            cg_drawTeamOverlay;
 extern  vmCvar_t            cg_teamOverlaySortMode;
