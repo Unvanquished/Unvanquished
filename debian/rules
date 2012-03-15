@@ -19,7 +19,7 @@ override_dh_auto_configure:
 	mkdir -p obj-${DEB_HOST_GNU_TYPE}
 	cd obj-${DEB_HOST_GNU_TYPE} && \
 	cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
-		 -DCMAKE_BUILD_TYPE=Release \
+		 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		 -DCMAKE_SKIP_RPATH=ON \
 		 -DCMAKE_EXE_LINKER_FLAGS=-Wl,--as-needed \
 		 -DCMAKE_SHARED_LINKER_FLAGS=-Wl,--as-needed \

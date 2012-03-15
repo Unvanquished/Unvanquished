@@ -1,3 +1,9 @@
+unvanquished (0.2.5+git7270e68-3) unstable; urgency=low
+
+  * Menu file, desktop file & icons.
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Thu, 15 Mar 2012 19:23:25 +0000
+
 unvanquished (0.2.5+git7270e68-2) unstable; urgency=low
 
   * Move unvanquished-download-paks.sh to /usr/sbin.

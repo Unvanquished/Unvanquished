@@ -13,3 +13,6 @@ debian/unvanquished.sh			usr/games/
 debian/unvanquished-server.sh		usr/games/
 debian/unvanquished-download-paks.sh	usr/sbin/
 download-pk3.sh				usr/lib/games/unvanquished/
+
+debian/unvanquished.desktop		usr/share/applications/
+debian/unvanquished.png			usr/share/icons/hicolor/128x128/apps/
