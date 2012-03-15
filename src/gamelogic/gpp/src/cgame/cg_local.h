@@ -794,6 +794,7 @@ typedef struct
 typedef struct weaponInfoMode_s
 {
 	float       flashDlight;
+	float       flashDlightIntensity;
 	vec3_t      flashDlightColor;
 	sfxHandle_t flashSound[ 4 ]; // fast firing weapons randomly choose
 	qboolean    continuousFlash;

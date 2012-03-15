@@ -103,6 +103,9 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 	char *token;
 	int  i;
 
+	wim->flashDlight = 0;
+	wim->flashDlightIntensity = 0;
+
 	// read optional parameters
 	while ( 1 )
 	{
@@ -409,6 +412,32 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 		else if ( !Q_stricmp( token, "alwaysImpact" ) )
 		{
 			wim->alwaysImpact = qtrue;
+
+			continue;
+		}
+		else if ( !Q_stricmp( token, "flashDLight" ) )
+		{
+			token = COM_Parse( text_p );
+
+			if ( !token )
+			{
+				break;
+			}
+
+			wim->flashDlight = atof( token );
+
+			continue;
+		}
+		else if ( !Q_stricmp( token, "flashDLightInt" ) )
+		{
+			token = COM_Parse( text_p );
+
+			if ( !token )
+			{
+				break;
+			}
+
+			wim->flashDlightIntensity = atof( token );
 
 			continue;
 		}
@@ -1528,7 +1557,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		     weapon->wim[ weaponMode ].flashDlightColor[ 1 ] ||
 		     weapon->wim[ weaponMode ].flashDlightColor[ 2 ] )
 		{
-			trap_R_AddLightToScene( flash.origin, rand() & 10, 300 + ( rand() & 31 ),
+			trap_R_AddLightToScene( flash.origin, weapon->wim[ weaponMode ].flashDlight,
+						weapon->wim[ weaponMode ].flashDlightIntensity,
 			                        weapon->wim[ weaponMode ].flashDlightColor[ 0 ],
 			                        weapon->wim[ weaponMode ].flashDlightColor[ 1 ],
 			                        weapon->wim[ weaponMode ].flashDlightColor[ 2 ], 0, 0 );
