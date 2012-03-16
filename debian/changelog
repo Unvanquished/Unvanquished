@@ -3,8 +3,9 @@ unvanquished (0.2.5+git7270e68-3) unstable; urgency=low
   * Menu file, desktop file & icons.
   * Add unvanquished-dbg (debug info).
   * Dropped all resource files in favour of the pak files.
+  * Tweaked the download script a little for clarity.
 
- -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Fri, 16 Mar 2012 01:29:00 +0000
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Fri, 16 Mar 2012 19:07:45 +0000
 
 unvanquished (0.2.5+git7270e68-2) unstable; urgency=low
 
