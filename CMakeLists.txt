@@ -1238,9 +1238,6 @@ endif()
 
 if( BUILD_CLIENT )
   find_package( OpenGL REQUIRED )
-  if( USE_CURL )
-    find_package( CURL REQUIRED )
-  endif()
   
   if( USE_SYSTEM_HEADERS )
     find_package( JPEG )
@@ -1260,7 +1257,7 @@ if( BUILD_CLIENT )
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     link_directories( ${CMAKE_BINARY_DIR} /opt/local/lib )
   else()
-    link_directories( ${CMAKE_BINARY_DIR})
+    link_directories( ${CMAKE_BINARY_DIR} )
   endif()
 
   if( NOT USE_INTERNAL_ZLIB )
@@ -1353,14 +1350,26 @@ endif()
 ################
 
 if( BUILD_SERVER )
-  if( USE_CURL )
-    find_package( CURL REQUIRED )
-  endif()
+
+  add_executable( server ${SERVERLIST}  ${SDLBASELIST} ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
+      ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
+      
   if( USE_SYSTEM_HEADERS )
     find_package( SDL REQUIRED )
+    find_package( GMP REQUIRED )
+    include_directories( ${SDL_INCLUDE_DIR} )
+    target_link_libraries( server ${SDL_LIBRARY} )
+    include_directories( ${GMP_INCLUDES} )
+    target_link_libraries( server ${GMP_LIBRARY} )
   else() 
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
   endif()
+  
+  # MYSQL find module is called at start of file. does not need to be called again
+  if( USE_MYSQL )
+      target_link_libraries( server ${MYSQL_LIBRARY} )
+  endif()
+  
   link_directories( ${CMAKE_BINARY_DIR} )
   
   if( NOT USE_INTERNAL_ZLIB )
@@ -1368,12 +1377,13 @@ if( BUILD_SERVER )
     set( ZLIBLIST )
   endif()
 
-  add_executable( server ${SERVERLIST}  ${SDLBASELIST} ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
-      ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
+
 
   if( USE_CURL )
     find_package( CURL REQUIRED )
     add_definitions( -DUSE_CURL )
+    include_directories( ${CURL_INCLUDE_DIR} )
+    target_link_libraries( server ${CURSES_LIBRARY} )
     if( USE_CURL_DLOPEN )
       add_definitions( -DUSE_CURL_DLOPEN )
     endif()
@@ -1383,6 +1393,8 @@ if( BUILD_SERVER )
     set( CURSES_NEED_NCURSES 1 )
     find_package( Curses REQUIRED )
     add_definitions( -DUSE_CURSES )
+    include_directories( ${CURSES_INCLUDE_DIR} )
+    target_link_libraries( server ${CURL_LIBRARY} )
   endif()
 
   if( USE_VOIP )
@@ -1392,10 +1404,12 @@ if( BUILD_SERVER )
   if( USE_PHYSICS )
     find_package( TinyXML REQUIRED )
     add_definitions( -DUSE_PHYSICS )
+    include_directories( ${TINYXML_INCLUDE_DIR} )
+    target_link_libraries( server ${TINYXML_LIBRARY} )
   endif()
  
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${SDL_INCLUDE_DIR} ${CURL_INCLUDE_DIR} ${TINYXML_INCLUDE_DIR} ${CURSES_INCLUDE_DIR} ${GMP_INCLUDES} ${NEWTON_INCLUDES} )
-  target_link_libraries( server ${OS_LIBRARIES} ${SDL_LIBRARY} ${CURL_LIBRARY} ${TINYXML_LIBRARY} ${NEWTON_LIBRARY} ${MYSQL_LIBRARY} ${CURSES_LIBRARY} ${GMP_LIBRARY} ${MYSQL_LIBRARIES} )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex      ${NEWTON_INCLUDES} )
+  target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install(TARGETS server
