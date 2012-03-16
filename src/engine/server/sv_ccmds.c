@@ -489,13 +489,6 @@ static void SV_MapRestart_f( void )
 		delay = atoi( Cmd_Argv( 1 ) );
 	}
 
-	if ( delay )
-	{
-		sv.restartTime = svs.time + delay * 1000;
-		SV_SetConfigstring( CS_WARMUP, va( "%i", sv.restartTime ) );
-		return;
-	}
-
 	// NERVE - SMF - read in gamestate or just default to GS_PLAYING
 	old_gs = atoi( Cvar_VariableString( "gamestate" ) );
 

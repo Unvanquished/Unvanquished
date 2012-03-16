@@ -1485,13 +1485,6 @@ void SV_Frame( int msec )
 		cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	}
 
-	// NERVE - SMF
-	if ( cvar_modifiedFlags & CVAR_WOLFINFO )
-	{
-		SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO ) );
-		cvar_modifiedFlags &= ~CVAR_WOLFINFO;
-	}
-
 	if ( com_speeds->integer )
 	{
 		startTime = Sys_Milliseconds();

@@ -918,10 +918,6 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
 	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
-	// NERVE - SMF
-	SV_SetConfigstring( CS_WOLFINFO, Cvar_InfoString( CVAR_WOLFINFO ) );
-	cvar_modifiedFlags &= ~CVAR_WOLFINFO;
-
 	// any media configstring setting now should issue a warning
 	// and any configstring changes should be reliably transmitted
 	// to all clients
