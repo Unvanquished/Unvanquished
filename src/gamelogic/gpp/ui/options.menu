@@ -167,7 +167,7 @@
     {
       type ITEM_TYPE_YESNO
       text "OpenAL Sound:"
-      cvar "s_useOpenAL"
+      cvar "s_usemodule"
       rect X (Y+(6*(ELEM_H+ELEM_GAP))) W ELEM_H
       textalign ALIGN_RIGHT
       textalignx TOFF_X
