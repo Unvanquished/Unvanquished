@@ -5,9 +5,9 @@ obj-*-*-*/main/*.so			usr/lib/games/unvanquished/main/
 #src/gamelogic/base/ui			usr/share/games/unvanquished/base/
 #main					usr/share/games/unvanquished/
 #src/gamelogic/gpp/ui			usr/share/games/unvanquished/gpp/
-src/gamelogic/base/ui			usr/lib/games/unvanquished/base/
-main					usr/lib/games/unvanquished/
-src/gamelogic/gpp/ui			usr/lib/games/unvanquished/gpp/
+#src/gamelogic/base/ui			usr/lib/games/unvanquished/base/
+#main					usr/lib/games/unvanquished/
+#src/gamelogic/gpp/ui			usr/lib/games/unvanquished/gpp/
 
 debian/unvanquished.sh			usr/games/
 debian/unvanquished-server.sh		usr/games/
