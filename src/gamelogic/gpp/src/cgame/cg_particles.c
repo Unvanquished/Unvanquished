@@ -2847,7 +2847,8 @@ static void CG_RenderParticle( particle_t *p )
 	{
 		trap_R_AddLightToScene( p->origin,
 		                        CG_LerpValues( p->dLightRadius.initial, p->dLightRadius.final,
-		                                       CG_CalculateTimeFrac( p->birthTime, p->lifeTime, p->dLightRadius.delay ) ), 3,
+		                            CG_CalculateTimeFrac( p->birthTime, p->lifeTime, p->dLightRadius.delay ) ),
+		                        3,
 		                        ( float ) bp->dLightColor[ 0 ] / ( float ) 0xFF,
 		                        ( float ) bp->dLightColor[ 1 ] / ( float ) 0xFF,
 		                        ( float ) bp->dLightColor[ 2 ] / ( float ) 0xFF, 0, 0 );

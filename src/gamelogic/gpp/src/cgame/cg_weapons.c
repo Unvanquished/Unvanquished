@@ -1558,7 +1558,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		     weapon->wim[ weaponMode ].flashDlightColor[ 2 ] )
 		{
 			trap_R_AddLightToScene( flash.origin, weapon->wim[ weaponMode ].flashDlight,
-						weapon->wim[ weaponMode ].flashDlightIntensity,
+			                        weapon->wim[ weaponMode ].flashDlightIntensity,
 			                        weapon->wim[ weaponMode ].flashDlightColor[ 0 ],
 			                        weapon->wim[ weaponMode ].flashDlightColor[ 1 ],
 			                        weapon->wim[ weaponMode ].flashDlightColor[ 2 ], 0, 0 );
