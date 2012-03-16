@@ -626,9 +626,10 @@ R_MarkFragments
 
 =================
 */
-int R_MarkFragments( int orientation, const vec3_t *points, const vec3_t projection,
+int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection,
                      int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer )
 {
+	int              orientation = 0;
 	int              numsurfaces, numPlanes;
 	int              i, j, k, m, n;
 	surfaceType_t    *surfaces[ 4096 ];
@@ -654,7 +655,6 @@ int R_MarkFragments( int orientation, const vec3_t *points, const vec3_t project
 	float            texCoordScale;
 
 	//float         dot;
-	int              numPoints = 4; // Ridah, we were only ever passing in 4, so I made this local and used the parameter for the orientation
 	qboolean         oldMapping = qfalse;
 
 	//increment view count for double check prevention
@@ -1139,14 +1139,14 @@ int R_MarkFragments( int orientation, const vec3_t *points, const vec3_t project
 
 				for ( k = 0; k < numPoints; k++ )
 				{
-					VectorNegate( normals[ k ], lnormals[ k ] );
-					ldists[ k ] = -dists[ k ];
+					VectorCopy( normals[ k ], lnormals[ k ] );
+					ldists[ k ] = dists[ k ];
 				}
 
-				VectorNegate( normals[ numPoints ], lnormals[ numPoints ] );
-				ldists[ numPoints ] = dists[ numPoints + 1 ];
-				VectorNegate( normals[ numPoints + 1 ], lnormals[ numPoints + 1 ] );
-				ldists[ numPoints + 1 ] = dists[ numPoints ];
+				VectorCopy( normals[ numPoints ], lnormals[ numPoints ] );
+				ldists[ numPoints ] = dists[ numPoints ];
+				VectorCopy( normals[ numPoints + 1 ], lnormals[ numPoints + 1 ] );
+				ldists[ numPoints + 1 ] = dists[ numPoints + 1 ];
 
 				indexes = cts->indexes;
 
