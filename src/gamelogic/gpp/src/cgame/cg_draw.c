@@ -4735,7 +4735,7 @@ static void CG_DrawBinaryShadersFinalPhases( void )
 
 	ss = sqrt( ss );
 
-	f = cg_draw2D.value; // FIXME: is this a good choice to avoid near-clipping?
+	f = 1.01f; // FIXME: is this a good choice to avoid near-clipping?
 	l = f * tan( DEG2RAD( cg.refdef.fov_x / 2 ) ) * ss;
 	u = f * tan( DEG2RAD( cg.refdef.fov_y / 2 ) ) * ss;
 
