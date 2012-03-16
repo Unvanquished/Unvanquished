@@ -188,7 +188,7 @@ static void R_DrawElements( int numIndexes, const glIndex_t *indexes )
 	// default is to use triangles if compiled vertex arrays are present
 	if ( primitives == 0 )
 	{
-		if ( GLEW_EXT_compiled_vertex_array )
+		if ( GL_EXT_compiled_vertex_array )
 		{
 			primitives = 2;
 		}
