@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../../engine/qcommon/q_shared.h"
 #include "../../../../engine/renderer/tr_types.h"
 #include "../../../../engine/client/ui_api.h"
-#include "../../../etmain/src/ui/keycodes.h"
+#include "keycodes.h"
 #include "../game/bg_public.h"
 #include "ui_shared.h"
 
