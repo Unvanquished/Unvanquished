@@ -3190,6 +3190,7 @@ CL_MotdPacket
 void CL_MotdPacket( netadr_t from, const char *info )
 {
 	const char *v;
+	char *w;
 
 	// if not from our server, ignore it
 	if ( !NET_CompareAdr( from, cls.updateServer ) )
@@ -3216,11 +3217,11 @@ void CL_MotdPacket( netadr_t from, const char *info )
 	}
 
 	v = Info_ValueForKey( info, "motd" );
-	v = str_replace( v, "|", "\n" );
+	w = str_replace( v, "|", "\n" );
 
 	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
-	Cvar_Set( "cl_newsString", v );
-	free(v);
+	Cvar_Set( "cl_newsString", w );
+	free( w );
 }
 
 /*
