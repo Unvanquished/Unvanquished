@@ -280,8 +280,8 @@ void FPrintf(int flag, char *buf)
 #if defined(USE_XML)
 	xmlNodePtr      node;
 	static qboolean bGotXML = qfalse;
-#endif
 	char            level[2];
+#endif
 
 	printf("%s", buf);
 

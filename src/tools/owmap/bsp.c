@@ -438,8 +438,9 @@ void ProcessWorldModel(void)
 	qboolean        ignoreLeaks, leaked;
 #if defined(USE_XML)
 	xmlNodePtr      polyline, leaknode;
+	char            level[2];
 #endif
-	char            level[2], shader[1024];
+	char            shader[1024];
 	const char     *value;
 
 	/* sets integer blockSize from worldspawn "_blocksize" key if it exists */

@@ -44,8 +44,6 @@ cvar_t          *s_sdlMixSamps;
 static int      dmapos = 0;
 static int      dmasize = 0;
 
-static qboolean use_custom_memset = qfalse;
-
 /*
 ===============
 Snd_Memset
@@ -53,6 +51,8 @@ Snd_Memset
 */
 
 #ifdef __linux__
+
+static qboolean use_custom_memset = qfalse;
 
 #ifdef Snd_Memset
 #undef Snd_Memset
