@@ -3216,7 +3216,7 @@ void CG_Player( centity_t *cent )
 		vec3_t legsAngles, torsoAngles, headAngles, playerMins, playerMaxs;
 
 		quat_t torsoQuat;
-		quat_t headQuat;
+		//quat_t headQuat;
 		quat_t legsQuat;
 		int    i;
 		int    boneIndex;

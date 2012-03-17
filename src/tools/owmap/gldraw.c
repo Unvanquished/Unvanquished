@@ -71,8 +71,8 @@ static void Reshape(int width, int height)
 
 static void Draw_BeginScene(void)
 {
-	int             w, h, g;
-	vec_t           mx, my;
+	//int             w, h, g;
+	//vec_t           mx, my;
 	const char     *glString;
 
 	if(!drawInit)

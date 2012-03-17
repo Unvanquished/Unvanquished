@@ -588,7 +588,7 @@ static void DrawTreePortals_r(node_t * node)
 static void DrawTreeNodes_r(node_t * node)
 {
 	vec4_t			nodeColor = {1, 1, 0, 0.3};
-	vec4_t			leafColor = {0, 0, 1, 0.3};
+	//vec4_t			leafColor = {0, 0, 1, 0.3};
 
 	if(!node)
 		return;

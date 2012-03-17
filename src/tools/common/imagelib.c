@@ -1310,7 +1310,8 @@ void LoadJPGBuffer(const char *filename, byte * fbuffer, int fbufferSize, byte *
 	JSAMPARRAY      buffer;		/* Output row buffer */
 	unsigned        row_stride;	/* physical row width in output buffer */
 	unsigned        pixelcount;
-	unsigned char  *out, *out_converted;
+	unsigned char  *out;
+	//unsigned char  *out_converted;
 	byte           *bbuf;
 
 	/* In this example we want to open the input file before doing anything else,
@@ -1510,7 +1511,7 @@ void LoadPNGBuffer(byte * data, byte ** pic, int *width, int *height)
 	png_structp     png;
 	png_bytep      *row_pointers;
 	byte           *out;
-	int             size;
+	//int             size;
 	byte            alphaByte = 255;
 
 	// load png

@@ -136,11 +136,12 @@ sets the model numbers for brush entities
 
 static void SetCloneModelNumbers(void)
 {
-	int             i, j;
+	int             i;
+	//int             j;
 	entity_t       *ent;
 	int             models;
 	char            modelValue[10];
-	const char     *value, *value2, *value3;
+	//const char     *value, *value2, *value3;
 	const char     *classname;
 	const char     *model;
 
@@ -365,7 +366,7 @@ static void DrawTreeNodes_r(node_t * node)
 	int             i;
 	brush_t        *b;
 	winding_t      *w;
-	vec4_t			nodeColor = {1, 1, 0, 0.3};
+	//vec4_t			nodeColor = {1, 1, 0, 0.3};
 	vec4_t			leafColor = {0, 0, 1, 0.3};
 
 	if(!node)

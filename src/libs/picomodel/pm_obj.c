@@ -217,7 +217,7 @@ static void FreeObjVertexData( TObjVertexData *vertexData )
 
 static int _obj_mtl_load( picoModel_t *model )
 {
-	picoShader_t *curShader = NULL;
+	//picoShader_t *curShader = NULL;
 	picoParser_t *p;
 	picoByte_t   *mtlBuffer;
 	int			  mtlBufSize;

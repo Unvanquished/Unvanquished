@@ -118,7 +118,7 @@ void WriteRGBE(char *filename, float * data, int width, int height)
 {
 	int             i, c;
 	FILE           *file;
-	unsigned char   rgbe[4];
+	//unsigned char   rgbe[4];
 	float			rgb[3];
 
 	file = fopen(filename, "wb");

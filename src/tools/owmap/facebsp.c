@@ -95,7 +95,7 @@ static void SelectSplitPlaneNum(node_t * node, face_t * list, int *splitPlaneNum
 	vec3_t          normal;
 	float           dist;
 	int             planenum;
-	float           sizeBias;
+	//float           sizeBias;
 	//int				checks;
 	int				frontC, backC, splitsC, facingC;
 
