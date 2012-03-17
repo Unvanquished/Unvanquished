@@ -3220,6 +3220,7 @@ void CL_MotdPacket( netadr_t from, const char *info )
 
 	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
 	Cvar_Set( "cl_newsString", v );
+	free(v);
 }
 
 /*
