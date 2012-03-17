@@ -1782,7 +1782,7 @@ void SetupGrid(void)
 
 	/* print it */
 	Sys_Printf("BSP bounds = { %1.0f, %1.0f, %1.0f }\n",	(bspModels[0].mins[0] + bspModels[0].maxs[0]),
-															(bspModels[0].mins[1] + bspModels[0].maxs[1]), 
+															(bspModels[0].mins[1] + bspModels[0].maxs[1]),
 															(bspModels[0].mins[2] + bspModels[0].maxs[2]));
 
 	Sys_Printf("Grid size = { %1.0f, %1.0f, %1.0f }\n", gridSize[0], gridSize[1], gridSize[2]);
@@ -1841,7 +1841,7 @@ void LightWorld(void)
 	vec3_t          color;
 	float           f;
 	int             b, bt;
-	qboolean        minVertex, minGrid, ps;
+	qboolean        minVertex, minGrid;
 	const char     *value;
 
 

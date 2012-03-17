@@ -93,7 +93,7 @@ static void ProcessAdvertisements(void)
 
 					adSurface = &bspDrawSurfaces[adModel->firstBSPSurface];
 
-					// store the normal for use at run time.. all ad verts are assumed to 
+					// store the normal for use at run time.. all ad verts are assumed to
 					// have identical normals (because they should be a simple rectangle)
 					// so just use the first vert's normal
 					VectorCopy(bspDrawVerts[adSurface->firstVert].normal, bspAds[numBSPAds].normal);
@@ -326,7 +326,7 @@ static void DrawPortal(portal_t * p, qboolean areaportal)
 static void DrawTreePortals_r(node_t * node)
 {
 	int             s;
-	portal_t       *p, *nextp;
+	portal_t       *p;
 	winding_t      *w;
 
 	if(node->planenum != PLANENUM_LEAF)
@@ -362,7 +362,7 @@ static void DrawTreePortals(void)
 
 static void DrawTreeNodes_r(node_t * node)
 {
-	int             i, s;
+	int             i;
 	brush_t        *b;
 	winding_t      *w;
 	vec4_t			nodeColor = {1, 1, 0, 0.3};

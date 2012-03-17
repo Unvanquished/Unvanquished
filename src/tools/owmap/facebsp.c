@@ -178,10 +178,10 @@ static void SelectSplitPlaneNum(node_t * node, face_t * list, int *splitPlaneNum
 
 		if(bspAlternateSplitWeights)
 		{
-			//Base score = 20000 perfectly balanced 
+			//Base score = 20000 perfectly balanced
 			value = 0;//20000;
 			value -= abs(front - back);	// prefer centered planes
-			value -= plane->counter;	// if we've already used this plane sometime in the past try not to use it again 
+			value -= plane->counter;	// if we've already used this plane sometime in the past try not to use it again
 			value += facing * 5;		// if we're going to have alot of other surfs use this plane, we want to get it in quickly.
 			value -= splits * 5;		// more splits = bad
 			//value += sizeBias * 10;		// we want a huge score bias based on plane size
@@ -209,12 +209,12 @@ static void SelectSplitPlaneNum(node_t * node, face_t * list, int *splitPlaneNum
 					plane = &mapplanes[n->planenum];
 
 					if(n->children[0] == node)
-					{						
+					{
 						// take front
 						ChopWindingInPlace(&w, plane->normal, plane->dist, 0.001);	// BASE_WINDING_EPSILON
 					}
 					else
-					{						
+					{
 						// take back
 						VectorNegate(plane->normal, normal);
 						dist = -plane->dist;
@@ -252,7 +252,7 @@ static void SelectSplitPlaneNum(node_t * node, face_t * list, int *splitPlaneNum
 		{
 			bestValue = value;
 			bestSplit = split;
-			
+
 			frontC = front;
 			backC = back;
 			splitsC = splits;
@@ -309,9 +309,6 @@ int CountFaceList(face_t * list)
 static tree_t  *drawTree = NULL;
 static void DrawTreeNodes_r(node_t * node)
 {
-	int             s;
-	portal_t       *p, *nextp;
-	winding_t      *w;
 	vec4_t			nodeColor = {1, 1, 0, 0.3};
 	vec4_t			leafColor = {0, 0, 1, 0.3};
 
@@ -340,7 +337,7 @@ static void DrawPartitions()
 {
 	face_t         *face;
 	winding_t      *w;
-	
+
 	// create temporary winding to draw the split plane
 	w = BaseWindingForNode(drawSplitNode);
 
