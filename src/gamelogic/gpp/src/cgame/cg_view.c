@@ -1207,26 +1207,22 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 
 	AnglesToAxis( in, inAxis );
 
-	//if we are moving from one surface to another smooth the transition
-	if ( !VectorCompare( surfNormal, cg.lastNormal ) )
-	{
-		//if we moving from the ceiling to the floor special case
-		//( x product of colinear vectors is undefined)
-		if ( VectorCompare( ceilingNormal, cg.lastNormal ) &&
-		     VectorCompare( refNormal,     surfNormal ) )
-		{
-			AngleVectors( in, temp, NULL, NULL );
-			ProjectPointOnPlane( rotAxis, temp, refNormal );
-			VectorNormalize( rotAxis );
-			rotAngle = 180.0f;
-			timeMod = 1.5f;
-		}
-		else
-		{
-			AnglesToAxis( cg.lastVangles, lastAxis );
-			rotAngle = DotProduct( inAxis[ 0 ], lastAxis[ 0 ] ) +
-			           DotProduct( inAxis[ 1 ], lastAxis[ 1 ] ) +
-			           DotProduct( inAxis[ 2 ], lastAxis[ 2 ] );
+  //if we are moving from one surface to another smooth the transition
+  if( !VectorCompareEpsilon( surfNormal, cg.lastNormal,.01 ) )
+  {
+    //if we are moving from the ceiling to the floor special case
+    if( cg.lastNormal[2] < 0 && VectorCompareEpsilon(refNormal, surfNormal, .01) )
+    {
+      VectorCopy(inAxis[0],rotAxis);
+      rotAngle = 180.0f;
+      timeMod = 1.5f;
+    }
+    else
+    {
+      AnglesToAxis( cg.lastVangles, lastAxis );
+      rotAngle = DotProduct( inAxis[ 0 ], lastAxis[ 0 ] ) +
+                 DotProduct( inAxis[ 1 ], lastAxis[ 1 ] ) +
+                 DotProduct( inAxis[ 2 ], lastAxis[ 2 ] );
 
 			rotAngle = RAD2DEG( acos( ( rotAngle - 1.0f ) / 2.0f ) );
 

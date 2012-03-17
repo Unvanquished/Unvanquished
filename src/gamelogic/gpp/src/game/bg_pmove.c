@@ -2575,21 +2575,37 @@ static void PM_GroundClimbTrace( void )
 		PM_GroundTraceMissed();
 		pml.groundPlane = qfalse;
 		pml.walking = qfalse;
-		pm->ps->eFlags &= ~EF_WALLCLIMB;
 
 		//just transided from ceiling to floor... apply delta correction
-		if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
+		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
-			vec3_t forward, rotated, angles;
+		  vec3_t  forward, rotated, angles;
+		  vec3_t surfNormal = {0,0,-1};
 
+		  if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
+			VectorCopy(pm->ps->grapplePoint,surfNormal);
+
+		  //only correct if we were on a ceiling
+		  if(surfNormal[2] < 0)
+		  {
 			AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
 
-			RotatePointAroundVector( rotated, pm->ps->grapplePoint, forward, 180.0f );
+			if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
+			{
+			  RotatePointAroundVector(rotated, pm->ps->grapplePoint, forward, 180);
+			} else
+			{
+			  VectorCopy(forward,rotated);
+			  rotated[0] = -rotated[0];
+			  rotated[2] = -rotated[2]; //we will turn upside down, invert the z coordinate to keep aiming the same direction
+			}
+
 			vectoangles( rotated, angles );
-
 			pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
+			pm->ps->delta_angles[PITCH] -= ANGLE2SHORT( angles[ PITCH ] - pm->ps->viewangles[ PITCH ]);
+		  }
 		}
-
+		pm->ps->eFlags &= ~EF_WALLCLIMB;
 		pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
 
 		//we get very bizarre effects if we don't do this :0
@@ -2673,16 +2689,33 @@ static void PM_GroundTrace( void )
 		}
 
 		//just transided from ceiling to floor... apply delta correction
-		if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
+		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
-			vec3_t forward, rotated, angles;
+		  vec3_t  forward, rotated, angles;
+		  vec3_t surfNormal = {0,0,-1};
 
+		  if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
+			VectorCopy(pm->ps->grapplePoint,surfNormal);
+
+		  //only correct if we were on a ceiling
+		  if(surfNormal[2] < 0)
+		  {
 			AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
 
-			RotatePointAroundVector( rotated, pm->ps->grapplePoint, forward, 180.0f );
-			vectoangles( rotated, angles );
+			if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
+			{
+			  RotatePointAroundVector(rotated, pm->ps->grapplePoint, forward, 180);
+			} else
+			{
+			  VectorCopy(forward,rotated);
+			  rotated[0] = -rotated[0];
+			  rotated[2] = -rotated[2]; //we will turn upside down, invert the z coordinate to keep aiming the same direction
+			}
 
+			vectoangles( rotated, angles );
 			pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
+			pm->ps->delta_angles[PITCH] -= ANGLE2SHORT( angles[ PITCH ] - pm->ps->viewangles[ PITCH ]);
+		  }
 		}
 	}
 
