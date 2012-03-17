@@ -787,7 +787,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	ADMBP_begin();
 	ADMBP( va( "%s:\n", mapRotation->name ) );
 
-	while ( node = mapRotation->nodes[ i++ ] )
+	while ( ( node = mapRotation->nodes[ i++ ] ) )
 	{
 		int  colour = 7;
 		char *prefix = "";
