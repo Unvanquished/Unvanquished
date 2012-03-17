@@ -634,12 +634,12 @@ int MiniMapBSPMain(int argc, char **argv)
 		else if(!strcmp(argv[i], "-keepaspect"))
 		{
 			keepaspect = qtrue;
-			Sys_Printf("Keeping aspect ratio by letterboxing\n", border);
+			Sys_Printf("Keeping aspect ratio by letterboxing\n");
 		}
 		else if(!strcmp(argv[i], "-nokeepaspect"))
 		{
 			keepaspect = qfalse;
-			Sys_Printf("Not keeping aspect ratio\n", border);
+			Sys_Printf("Not keeping aspect ratio\n");
 		}
 		else if(!strcmp(argv[i], "-o"))
 		{

@@ -570,7 +570,7 @@ void SetBrushContents(brush_t * b)
 #if defined(USE_XML)
 		xml_Select("Mixed detail and structural (defaulting to structural)", mapEnt->mapEntityNum, entitySourceBrushes, qfalse);
 #else
-		Sys_Printf("Entity %i, Brush %i: Mixed detail and structural (defaulting to structural)\n", mapEnt->mapEntityNum, entitySourceBrushes, qfalse);
+		Sys_Printf("Entity %i, Brush %i: Mixed detail and structural (defaulting to structural)\n", mapEnt->mapEntityNum, entitySourceBrushes);
 #endif
 		compileFlags &= ~C_DETAIL;
 	}

@@ -2258,7 +2258,7 @@ int LightMain(int argc, char **argv)
 		else if(!strcmp(argv[i], "-randomsamples"))
 		{
 			lightRandomSamples = qtrue;
-			Sys_Printf("Random sampling enabled\n", lightRandomSamples);
+			Sys_Printf("Random sampling enabled\n");
 		}
 
 		else if(!strcmp(argv[i], "-samples"))
@@ -2283,7 +2283,7 @@ int LightMain(int argc, char **argv)
 			if(lightSamplesSearchBoxSize > 4)
 				lightSamplesSearchBoxSize = 4;	/* more makes no sense */
 			else if(lightSamplesSearchBoxSize != 1)
-				Sys_Printf("Adaptive supersampling uses %f times the normal search box size\n", lightSamplesSearchBoxSize);
+				Sys_Printf("Adaptive supersampling uses %i times the normal search box size\n", lightSamplesSearchBoxSize);
 			i++;
 		}
 

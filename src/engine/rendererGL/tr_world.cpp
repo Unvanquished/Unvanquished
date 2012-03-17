@@ -1623,7 +1623,7 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 
 	if ( !glIsQueryARB( node->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
-		ri.Error( ERR_FATAL, "IssueOcclusionQuery: node %li has no occlusion query object in slot %i: %i", node - tr.world->nodes, tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
+		ri.Error( ERR_FATAL, "IssueOcclusionQuery: node %li has no occlusion query object in slot %i: %i", (long)( node - tr.world->nodes ), tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
 	}
 
 #endif
