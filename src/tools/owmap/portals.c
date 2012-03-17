@@ -587,9 +587,6 @@ static void DrawTreePortals_r(node_t * node)
 
 static void DrawTreeNodes_r(node_t * node)
 {
-	int             s;
-	portal_t       *p, *nextp;
-	winding_t      *w;
 	vec4_t			nodeColor = {1, 1, 0, 0.3};
 	vec4_t			leafColor = {0, 0, 1, 0.3};
 
@@ -609,7 +606,6 @@ static void DrawTreeNodes_r(node_t * node)
 }
 
 static tree_t  *drawTree = NULL;
-static int		drawTreeNodesNum;
 static void DrawTreePortals(void)
 {
 	DrawTreePortals_r(drawTree->headnode);

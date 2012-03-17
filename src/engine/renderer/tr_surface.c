@@ -1674,8 +1674,6 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	md5Vertex_t     *v;
 	md5Bone_t       *bone;
 	md5Triangle_t   *tri;
-	vec3_t          lightOrigin;
-	float           *xyzw, *xyzw2;
 	static matrix_t boneMatrices[ MAX_BONES ];
 	vec3_t          tmpVert;
 	vec3_t          tmpPosition;

@@ -3636,7 +3636,6 @@ static void Cmd_Pubkey_f( gentity_t *ent )
 static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 {
 	char            buffer[ MAX_STRING_CHARS ];
-	char            userinfo[ MAX_INFO_STRING ];
 	g_admin_admin_t *admin = ent->client->pers.admin;
 
 	if ( !g_adminPubkeyID.integer || trap_Argc() != 2 )

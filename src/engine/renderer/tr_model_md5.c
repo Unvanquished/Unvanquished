@@ -46,14 +46,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 	quat_t        boneQuat;
 	matrix_t      boneMat;
 
-	int           numRemaining;
-	growList_t    sortedTriangles;
-	growList_t    vboTriangles;
-	growList_t    vboSurfaces;
-
-	int           numBoneReferences;
-	int           boneReferences[ MAX_BONES ];
-
 	buf_p = ( char * ) buffer;
 
 	// skip MD5Version indent string
@@ -512,8 +504,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		{
 			const float *v0, *v1, *v2;
 			const float *t0, *t1, *t2;
-			vec3_t      tangent;
-			vec3_t      binormal;
 			vec3_t      normal;
 
 			for ( j = 0, v = surf->verts; j < surf->numVerts; j++, v++ )

@@ -2381,8 +2381,7 @@ static void CG_DrawClock( rectDef_t *rect, float text_x, float text_y,
 {
 	char    *s;
 	float   tx, ty;
-	int     i;
-	float   w, h, maxX;
+	float   maxX;
 	qtime_t qt;
 	int     t;
 

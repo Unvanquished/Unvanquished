@@ -1521,12 +1521,12 @@ static int cmplevel( const void *a, const void *b )
 
 void G_admin_pubkey( void )
 {
-	int             i;
 	g_admin_admin_t *highest = NULL, *a = NULL;
 
 	// Uncomment this if your server lags (shouldn't happen unless you are on a *very* old computer)
 	// Will only regenrate messages when there are no active client (When they are all loading the map)
 #if 0
+	int             i;
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{

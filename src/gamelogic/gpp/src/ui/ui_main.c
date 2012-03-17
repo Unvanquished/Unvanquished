@@ -5403,7 +5403,6 @@ void UI_DrawConnectScreen( qboolean overlay )
 		case CA_CONNECTED:
 			{
 				char downloadName[ MAX_INFO_VALUE ];
-				int prompt = trap_Cvar_VariableValue( "com_downloadPrompt" );
 
 				trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
 

@@ -1046,7 +1046,6 @@ Think function for Alien Overmind
 */
 void AOvermind_Think( gentity_t *self )
 {
-	vec3_t range = { OVERMIND_ATTACK_RANGE, OVERMIND_ATTACK_RANGE, OVERMIND_ATTACK_RANGE };
 	int    i;
 
 	if ( self->spawned && ( self->health > 0 ) )

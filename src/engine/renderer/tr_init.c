@@ -1301,7 +1301,6 @@ R_Init
 */
 void R_Init( void )
 {
-	int err;
 	int i;
 
 	ri.Printf( PRINT_ALL, "----- R_Init -----\n" );
