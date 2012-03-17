@@ -4132,6 +4132,7 @@ static void Render_fog()
 	}
 	else
 	{
+		Vector4Set( fogDepthVector, 0, 0, 0, 1 );
 		eyeT = 1; // non-surface fog always has eye inside
 	}
 

@@ -1995,6 +1995,8 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
 
 		fps = 1000 * FPS_FRAMES / total;
 	}
+	else
+		fps = 0;
 
 	s = va( "%d %s", fps, FPS_STRING );
 	maxX = rect->x + rect->w;
