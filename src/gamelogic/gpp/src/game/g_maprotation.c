@@ -790,7 +790,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	while ( ( node = mapRotation->nodes[ i++ ] ) )
 	{
 		int  colour = 7;
-		char *prefix = "";
+		char *prefix;
 		char *suffix = "";
 
 		switch ( node->type )
@@ -809,6 +809,10 @@ void G_PrintCurrentRotation( gentity_t *ent )
 
 			case NT_RESUME:
 				prefix = "resume: ";
+				break;
+
+			default:
+				prefix = "";
 				break;
 		}
 

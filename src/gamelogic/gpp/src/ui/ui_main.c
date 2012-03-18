@@ -5083,6 +5083,10 @@ void UI_SetActiveMenu( uiMenuCommand_t menu )
 				UI_BuildPlayerList();
 				Menus_CloseAll();
 				Menus_ActivateByName( "ingame" );
+
+				return;
+
+			default:
 				return;
 		}
 	}
