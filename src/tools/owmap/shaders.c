@@ -672,7 +672,8 @@ void FinishShader(shaderInfo_t * si)
 {
 	int             x, y;
 	float           st[2], o[2], dist, bestDist;
-	vec4_t          color, bestColor, delta;
+	vec4_t          color;
+	vec3_t          delta;
 
 
 	/* don't double-dip */
@@ -708,12 +709,10 @@ void FinishShader(shaderInfo_t * si)
 
 			/* determine error squared */
 			VectorSubtract(color, si->averageColor, delta);
-			delta[3] = color[3] - si->averageColor[3];
-			dist = delta[0] * delta[0] + delta[1] * delta[1] + delta[2] * delta[2] + delta[3] * delta[3];
+			//delta[3] = color[3] - si->averageColor[3];
+			dist = delta[0] * delta[0] + delta[1] * delta[1] + delta[2] * delta[2];
 			if(dist < bestDist)
 			{
-				VectorCopy(color, bestColor);
-				bestColor[3] = color[3];
 				si->stFlat[0] = st[0];
 				si->stFlat[1] = st[1];
 			}
@@ -735,7 +734,7 @@ ydnar: image.c made this a bit simpler
 static void LoadShaderImages(shaderInfo_t * si)
 {
 	int             i, count;
-	float           color[4];
+	float           color[3];
 
 
 	/* nodraw shaders don't need images */
@@ -784,13 +783,13 @@ static void LoadShaderImages(shaderInfo_t * si)
 	/* create default and average colors */
 	count = si->lightImage->width * si->lightImage->height;
 	VectorClear(color);
-	color[3] = 0.0f;
+	//color[3] = 0.0f;
 	for(i = 0; i < count; i++)
 	{
 		color[0] += si->lightImage->pixels[i * 4 + 0];
 		color[1] += si->lightImage->pixels[i * 4 + 1];
 		color[2] += si->lightImage->pixels[i * 4 + 2];
-		color[3] += si->lightImage->pixels[i * 4 + 3];
+		//color[3] += si->lightImage->pixels[i * 4 + 3];
 	}
 
 	if(VectorLength(si->color) <= 0.0f)
