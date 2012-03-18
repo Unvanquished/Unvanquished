@@ -1212,23 +1212,28 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
 
   if( BUILD_NEW_RENDERER )
     add_library( rendererGL SHARED  ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/libs/libpng/pngerror.c ${MOUNT_DIR}/libs/jpeg/jdatasrc.c )
-    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${WEBP_INCLUDE_DIR} )
+    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
-    target_link_libraries( rendererGL ${OS_LIBRARIES} ${WEBP_LIBRARY} ${PNG_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} ${SDL_LIBRARY} )
+    target_link_libraries( rendererGL ${OS_LIBRARIES} ${PNG_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} ${SDL_LIBRARY} )
     set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "librendererGL3${BUILD_ARCH}" PREFIX "" )
+    if( WEBP_FOUND )
+      set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+      include_directories( ${WEBP_INCLUDE_DIR} )
+      target_link_libraries( rendererGL ${WEBP_LIBRARY} )
+    endif()
   endif()
 
   if( BUILD_OLD_RENDERER )
     add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} )
-    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${WEBP_INCLUDE_DIR} )
+    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
-    target_link_libraries( renderer ${PNG_LIBRARY} ${WEBP_LIBRARY} ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
+    target_link_libraries( renderer ${PNG_LIBRARY}  ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
     set_target_properties( renderer PROPERTIES OUTPUT_NAME "librendererGL${BUILD_ARCH}" PREFIX "" )
-  endif()
-
-  # Enable WEBP in code if WEBP is found
-  if( WEBP_FOUND )
-    set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+    if( WEBP_FOUND )
+      set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+      include_directories( ${WEBP_INCLUDE_DIR} )
+      target_link_libraries( renderer ${WEBP_LIBRARY} )
+    endif()
   endif()
 endif()
 
@@ -1237,40 +1242,53 @@ endif()
 ################
 
 if( BUILD_CLIENT )
+  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
+    ${CPUINFOLIST} ${SDLLIST} ${OS_BUILD} ${QCOMMONLIST} ${SHAREDLIST}
+    ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
   find_package( OpenGL REQUIRED )
-  if( USE_CURL )
-    find_package( CURL REQUIRED )
-  endif()
+  include_directories( ${OPENGL_INCLUDE_DIR} )
+  target_link_libraries( client ${OPENGL_LIBRARY} )
   
   if( USE_SYSTEM_HEADERS )
     find_package( JPEG )
-    find_package( SDL REQUIRED )
     find_package( PNG )
-    find_package( Freetype REQUIRED )
+    find_package( SDL REQUIRED )
+    find_package( Freetype REQUIRED ) # FreeType uses non-standard INCLUDE_DIRS
     find_package( GLEW REQUIRED )
     find_package( GMP REQUIRED )
-  else() 
+    
+    if( JPEG_FOUND )
+      include_directories( ${JPEG_INCLUDE_DIR} )
+      target_link_libraries( client ${JPEG_LIBRARY} )
+    endif()
+    
+    if( PNG_FOUND )
+      include_directories( ${PNG_INCLUDE_DIR} )
+      target_link_libraries( client ${PNG_LIBRARY} )
+    endif()
+    
+    include_directories( ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} )
+    target_link_libraries( client ${SDL_LIBRARY} ${FREETYPE_LIBRARY} ${GLEW_LIBRARY} ${GMP_LIBRARY} )
+  else()
     set( PNG_PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
     set( JPEG_INCLUDE_DIR ${MOUNT_DIR}/libs/jpeg )
     set( FREETYPE_INCLUDE_DIRS ${MOUNT_DIR}/libs/freetype/include/freetype2 )
     set( GLEW_INCLUDE_DIR ${MOUNT_DIR}/libs/glew/include )
+    include_directories( ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} )
+    target_link_libraries( client ${JPEG_LIBRARY} ${PNG_LIBRARY} ${SDL_LIBRARY} ${FREETYPE_LIBRARY} ${GLEW_LIBRARY} )
   endif()
 
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     link_directories( ${CMAKE_BINARY_DIR} /opt/local/lib )
   else()
-    link_directories( ${CMAKE_BINARY_DIR})
+    link_directories( ${CMAKE_BINARY_DIR} )
   endif()
 
   if( NOT USE_INTERNAL_ZLIB )
     find_package(ZLIB REQUIRED)
     set( ZLIBLIST )
   endif()
-
-  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
-    ${CPUINFOLIST} ${SDLLIST} ${OS_BUILD} ${QCOMMONLIST} ${SHAREDLIST}
-    ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
 
   if( USE_OPENAL )
     find_package( OpenAL REQUIRED )
@@ -1283,6 +1301,8 @@ if( BUILD_CLIENT )
   if( USE_CURL )
     find_package( CURL REQUIRED )
     add_definitions( -DUSE_CURL )
+    include_directories( ${CURL_INCLUDE_DIR} )
+    target_link_libraries( client ${CURL_LIBRARY} )
     if( USE_CURL_DLOPEN )
       add_definitions( -DUSE_CURL_DLOPEN )
     endif()
@@ -1292,6 +1312,8 @@ if( BUILD_CLIENT )
     set( CURSES_NEED_NCURSES 1 )
     find_package( Curses REQUIRED )
     add_definitions( -DUSE_CURSES )
+    include_directories( ${CURSES_INCLUDE_DIR} )
+    target_link_libraries( client ${CURSES_LIBRARY} )
   endif()
 
   if( USE_VOIP )
@@ -1302,31 +1324,50 @@ if( BUILD_CLIENT )
     find_package( Vorbis REQUIRED )
     find_package( Ogg REQUIRED )
     add_definitions( -DUSE_CODEC_VORBIS )
+    include_directories( ${VORBIS_INCLUDE_DIR} } )
+    target_link_libraries( client ${VORBIS_LIBRARY} )
+    include_directories( ${OGG_INCLUDE_DIR} )
+    target_link_libraries( client ${OGG_LIBRARY} )
   endif()
 
   if( USE_CIN_THEORA )
     find_package( Theora REQUIRED )
-    if( ${VORBIS_FOUND} AND ${THEORA_FOUND} )
+    if( USE_CODEC_VORBIS )
       add_definitions( -DUSE_CIN_THEORA )
+      include_directories( ${THEORA_INCLUDE_DIR} )
+      target_link_libraries( client ${THEORA_LIBRARY} )
     else()
       message( FATAL_ERROR "Vorbis must be enabled to use CIN_THEORA" )
     endif()
   endif()
      
- if( USE_MUMBLE )
-   add_definitions( -DUSE_MUMBLE )
- endif()
+  if( USE_MUMBLE )
+    add_definitions( -DUSE_MUMBLE )
+  endif()
  
   if( USE_PHYSICS )
     find_package( TinyXML REQUIRED )
     add_definitions( -DUSE_PHYSICS )
+    include_directories( ${TINYXML_INCLUDE_DIR} )
+    target_link_libraries( client ${TINYXML_LIBRARY} )
     add_dependencies( client newton )
     target_link_libraries( client ${NEWTON_LIBRARY} )
   endif( )
+  
+  # MYSQL find module is called at start of file. does not need to be called again
+  if( USE_MYSQL )
+    include_directories( ${MYSQL_INCLUDE_DIR} )
+    target_link_libraries( client ${MYSQL_LIBRARY} )
+  endif()
+  
+  # XVID find module is called at start of file. does not need to be called again
+  if( USE_CIN_XVID)
+    target_link_libraries( client ${XVID_LIBRARY} )
+  endif()
     
   add_dependencies( client rendererGL )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${PNG_PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${CURL_INCLUDE_DIR} ${VORBIS_INCLUDE_DIR} ${OGG_INCLUDE_DIR} ${THEORA_INCLUDE_DIR} ${TINYXML_INCLUDE_DIR} ${CURSES_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${GMP_INCLUDES} ${NEWTON_INCLUDES} ${LIB_DIR}/xvidcore/include )
-  target_link_libraries( client ${OS_LIBRARIES} ${PNG_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} ${GLEW_LIBRARY} ${CURL_LIBRARY} ${VORBIS_LIBRARY} ${OGG_LIBRARY} ${THEORA_LIBRARY} ${TINYXML_LIBRARY} ${NEWTON_LIBRARY} ${MYSQL_LIBRARIES} ${CURSES_LIBRARY} ${GMP_LIBRARY} ${XVID_LIBRARY} )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex            ${NEWTON_INCLUDES} ${LIB_DIR}/xvidcore/include )
+  target_link_libraries( client ${OS_LIBRARIES}  ${NEWTON_LIBRARY} )
   set_property( TARGET client PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER BOTLIB BOTLIB_STATIC COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install(TARGETS client
@@ -1353,14 +1394,24 @@ endif()
 ################
 
 if( BUILD_SERVER )
-  if( USE_CURL )
-    find_package( CURL REQUIRED )
-  endif()
+
+  add_executable( server ${SERVERLIST}  ${SDLBASELIST} ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
+      ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
+      
   if( USE_SYSTEM_HEADERS )
     find_package( SDL REQUIRED )
+    find_package( GMP REQUIRED )
+    include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDES}  )
+    target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARY} )
   else() 
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
   endif()
+  
+  # MYSQL find module is called at start of file. does not need to be called again
+  if( USE_MYSQL )
+    target_link_libraries( server ${MYSQL_LIBRARY} )
+  endif()
+  
   link_directories( ${CMAKE_BINARY_DIR} )
   
   if( NOT USE_INTERNAL_ZLIB )
@@ -1368,12 +1419,11 @@ if( BUILD_SERVER )
     set( ZLIBLIST )
   endif()
 
-  add_executable( server ${SERVERLIST}  ${SDLBASELIST} ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
-      ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
-
   if( USE_CURL )
     find_package( CURL REQUIRED )
     add_definitions( -DUSE_CURL )
+    include_directories( ${CURL_INCLUDE_DIR} )
+    target_link_libraries( server ${CURSES_LIBRARY} )
     if( USE_CURL_DLOPEN )
       add_definitions( -DUSE_CURL_DLOPEN )
     endif()
@@ -1383,6 +1433,8 @@ if( BUILD_SERVER )
     set( CURSES_NEED_NCURSES 1 )
     find_package( Curses REQUIRED )
     add_definitions( -DUSE_CURSES )
+    include_directories( ${CURSES_INCLUDE_DIR} )
+    target_link_libraries( server ${CURL_LIBRARY} )
   endif()
 
   if( USE_VOIP )
@@ -1392,10 +1444,12 @@ if( BUILD_SERVER )
   if( USE_PHYSICS )
     find_package( TinyXML REQUIRED )
     add_definitions( -DUSE_PHYSICS )
+    include_directories( ${TINYXML_INCLUDE_DIR} )
+    target_link_libraries( server ${TINYXML_LIBRARY} )
   endif()
  
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${SDL_INCLUDE_DIR} ${CURL_INCLUDE_DIR} ${TINYXML_INCLUDE_DIR} ${CURSES_INCLUDE_DIR} ${GMP_INCLUDES} ${NEWTON_INCLUDES} )
-  target_link_libraries( server ${OS_LIBRARIES} ${SDL_LIBRARY} ${CURL_LIBRARY} ${TINYXML_LIBRARY} ${NEWTON_LIBRARY} ${MYSQL_LIBRARY} ${CURSES_LIBRARY} ${GMP_LIBRARY} ${MYSQL_LIBRARIES} )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex      ${NEWTON_INCLUDES} )
+  target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install(TARGETS server
@@ -1409,19 +1463,35 @@ endif()
 # Build OWMap  #
 ################
 if( BUILD_OWMAP )
- find_package( OpenGL REQUIRED )
+  # Create OWMap target
+  add_executable( owmap ${OWMAPLIST} )
+  # This section finds and provides dependencies to OWMap target
+  find_package( OpenGL REQUIRED )
+  include_directories( ${OPENGL_INCLUDE_DIR} )
+  target_link_libraries( owmap ${OPENGL_LIBRARY} )
+  
   if( USE_SYSTEM_HEADERS )
     find_package( SDL REQUIRED )
-    find_package( JPEG  REQUIRED )
-    find_package( PNG  REQUIRED )
+    find_package( JPEG REQUIRED )
+    find_package( PNG REQUIRED )
+    include_directories( SDL_INCLUDE_DIR JPEG_INCLUDE_DIR PNG_INCLUDE_DIR )
+    target_link_libraries( owmap SDL_LIBRARY JPEG_LIBRARY PNG_LIBRARY )
   endif()
-  add_executable( owmap ${OWMAPLIST} )
+  
+  # FIXME - GLIB needs to be converted to a find module
   pkg_check_modules( GLIB glib-2.0 )
-  if( NOT GLIB_FOUND )
+  if( GLIB_FOUND )
+  include_directories( ${GLIB_INCLUDE_DIRS} )
+  target_link_libraries( owmap ${GLIB_LIBRARIES} )
+  else()
     message( FATAL_ERROR "Glib not found" )
   endif()
-  include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${LIB_DIR}/zlib ${MOUNT_DIR}/tools/common ${GLIB_INCLUDE_DIRS} ${PNG_PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} )
-  target_link_libraries( owmap ${OS_LIBRARIES} ${SDL_LIBRARY} ${GLIB_LIBRARIES} ${PNG_LIBRARY} ${JPEG_LIBRARY} ${OPENGL_LIBRARY} )
+  
+  # The following libraries/include_directories are always available and as
+  # such don't need to be checked before being provided
+  include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${LIB_DIR}/zlib ${MOUNT_DIR}/tools/common  )
+  target_link_libraries( owmap ${OS_LIBRARIES} )
+  # This section sets various properties to the target owmap
   set_property( TARGET owmap PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
   set_target_properties( owmap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
   install(TARGETS owmap
