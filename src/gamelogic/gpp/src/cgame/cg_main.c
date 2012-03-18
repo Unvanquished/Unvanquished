@@ -2289,6 +2289,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_ShaderStateChanged();
 
 	trap_S_ClearLoopingSounds( qtrue );
+	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 }
 
 /*
