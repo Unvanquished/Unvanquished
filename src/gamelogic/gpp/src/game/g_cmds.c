@@ -2963,7 +2963,7 @@ void Cmd_BuildDist_f( gentity_t *ent )
 		offset = atoi( offs );
 	}
 
-	ps->Ammo += add ? offset : -offset; // Use ammo since it is not used for the ckit.
+	ps->Ammo += add ? -offset : offset; // Use ammo since it is not used for the ckit.
 
 	// Make sure we cannot build further than the buildDist
 	if( BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - ps->Ammo > BG_Class( ps->stats[ STAT_CLASS ] )->buildDist )
