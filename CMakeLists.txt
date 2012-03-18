@@ -44,14 +44,14 @@ endif()
 option( USE_CURL             "Use curl"                                    1 )
 if( USE_CURL )
   option( USE_CURL_DLOPEN    "Use dlopen to load curl"                     1 )
-option( USE_LLVM             "Use LLVM"                                    0 ) 
+option( USE_LLVM             "Use LLVM"                                    0 )
 endif()
 if( WIN32 )
   option( USE_SYSTEM_HEADERS "Use local headers"                           0 )
 else()
   option( USE_SYSTEM_HEADERS "Use local headers"                           1 )
 endif()
-option( USE_CPUINFO          "Use CPUInfo (if compile fails, disable this" 1 ) 
+option( USE_CPUINFO          "Use CPUInfo (if compile fails, disable this" 1 )
 option( USE_INTERNAL_ZLIB    "Use internal zlib"                           0 )
 option( USE_CURSES           "Use the curses console"                      1 )
 option( USE_CODEC_VORBIS     "Compile with support for Vorbis"             1 )
@@ -184,7 +184,7 @@ set( OGGLIST
 )
 
 set( VORBISLIST
-  ${MOUNT_DIR}/libs/vorbis/lib/analysis.c 
+  ${MOUNT_DIR}/libs/vorbis/lib/analysis.c
   ${MOUNT_DIR}/libs/vorbis/lib/bitrate.c
   ${MOUNT_DIR}/libs/vorbis/lib/codebook.c
   ${MOUNT_DIR}/libs/vorbis/lib/floor0.c
@@ -1048,10 +1048,10 @@ set( OWMAPLIST
 
 if( USE_PHYSICS )
   set( NEWTON_INCLUDES
-    ${MOUNT_DIR}/libs/libnewton/include 
-    ${MOUNT_DIR}/libs/libnewton/include/dAnimation 
-    ${MOUNT_DIR}/libs/libnewton/include/dContainers 
-    ${MOUNT_DIR}/libs/libnewton/include/dCustomJoints 
+    ${MOUNT_DIR}/libs/libnewton/include
+    ${MOUNT_DIR}/libs/libnewton/include/dAnimation
+    ${MOUNT_DIR}/libs/libnewton/include/dContainers
+    ${MOUNT_DIR}/libs/libnewton/include/dCustomJoints
     ${MOUNT_DIR}/libs/libnewton/include/dMath
   )
 endif()
@@ -1097,7 +1097,7 @@ if( BUILD_GAME_SO_ET )
   set_property( TARGET cgame PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( cgame PROPERTIES
     OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-    PREFIX "" 
+    PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "etmain"
   )
   add_library( ui SHARED ${SHAREDLIST} ${UILIST} )
@@ -1126,7 +1126,7 @@ if( BUILD_GAME_SO_TREM )
   set_property( TARGET cgametrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( cgametrem PROPERTIES
     OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-    PREFIX "" 
+    PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "base"
   )
   add_library( uitrem SHARED ${UITREM} )
@@ -1149,7 +1149,7 @@ if( BUILD_GAME_SO_GPP )
   set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( gpptrem PROPERTIES
     OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-    PREFIX "" 
+    PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "main" )
   add_library( gppui SHARED ${UIGPP} )
   set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
@@ -1248,7 +1248,7 @@ if( BUILD_CLIENT )
   find_package( OpenGL REQUIRED )
   include_directories( ${OPENGL_INCLUDE_DIR} )
   target_link_libraries( client ${OPENGL_LIBRARY} )
-  
+
   if( USE_SYSTEM_HEADERS )
     find_package( JPEG )
     find_package( PNG )
@@ -1256,17 +1256,17 @@ if( BUILD_CLIENT )
     find_package( Freetype REQUIRED ) # FreeType uses non-standard INCLUDE_DIRS
     find_package( GLEW REQUIRED )
     find_package( GMP REQUIRED )
-    
+
     if( JPEG_FOUND )
       include_directories( ${JPEG_INCLUDE_DIR} )
       target_link_libraries( client ${JPEG_LIBRARY} )
     endif()
-    
+
     if( PNG_FOUND )
       include_directories( ${PNG_INCLUDE_DIR} )
       target_link_libraries( client ${PNG_LIBRARY} )
     endif()
-    
+
     include_directories( ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} )
     target_link_libraries( client ${SDL_LIBRARY} ${FREETYPE_LIBRARY} ${GLEW_LIBRARY} ${GMP_LIBRARY} )
   else()
@@ -1340,11 +1340,11 @@ if( BUILD_CLIENT )
       message( FATAL_ERROR "Vorbis must be enabled to use CIN_THEORA" )
     endif()
   endif()
-     
+
   if( USE_MUMBLE )
     add_definitions( -DUSE_MUMBLE )
   endif()
- 
+
   if( USE_PHYSICS )
     find_package( TinyXML REQUIRED )
     add_definitions( -DUSE_PHYSICS )
@@ -1353,18 +1353,18 @@ if( BUILD_CLIENT )
     add_dependencies( client newton )
     target_link_libraries( client ${NEWTON_LIBRARY} )
   endif( )
-  
+
   # MYSQL find module is called at start of file. does not need to be called again
   if( USE_MYSQL )
     include_directories( ${MYSQL_INCLUDE_DIR} )
     target_link_libraries( client ${MYSQL_LIBRARY} )
   endif()
-  
+
   # XVID find module is called at start of file. does not need to be called again
   if( USE_CIN_XVID)
     target_link_libraries( client ${XVID_LIBRARY} )
   endif()
-    
+
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex            ${NEWTON_INCLUDES} ${LIB_DIR}/xvidcore/include )
   target_link_libraries( client ${OS_LIBRARIES}  ${NEWTON_LIBRARY} )
@@ -1397,23 +1397,23 @@ if( BUILD_SERVER )
 
   add_executable( server ${SERVERLIST}  ${SDLBASELIST} ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
       ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
-      
+
   if( USE_SYSTEM_HEADERS )
     find_package( SDL REQUIRED )
     find_package( GMP REQUIRED )
     include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDES}  )
     target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARY} )
-  else() 
+  else()
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
   endif()
-  
+
   # MYSQL find module is called at start of file. does not need to be called again
   if( USE_MYSQL )
     target_link_libraries( server ${MYSQL_LIBRARY} )
   endif()
-  
+
   link_directories( ${CMAKE_BINARY_DIR} )
-  
+
   if( NOT USE_INTERNAL_ZLIB )
     find_package(ZLIB REQUIRED)
     set( ZLIBLIST )
@@ -1440,14 +1440,14 @@ if( BUILD_SERVER )
   if( USE_VOIP )
     add_definitions( -DUSE_VOIP -DFLOATING_POINT )
   endif()
- 
+
   if( USE_PHYSICS )
     find_package( TinyXML REQUIRED )
     add_definitions( -DUSE_PHYSICS )
     include_directories( ${TINYXML_INCLUDE_DIR} )
     target_link_libraries( server ${TINYXML_LIBRARY} )
   endif()
- 
+
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex      ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
@@ -1469,15 +1469,15 @@ if( BUILD_OWMAP )
   find_package( OpenGL REQUIRED )
   include_directories( ${OPENGL_INCLUDE_DIR} )
   target_link_libraries( owmap ${OPENGL_LIBRARY} )
-  
+
   if( USE_SYSTEM_HEADERS )
     find_package( SDL REQUIRED )
     find_package( JPEG REQUIRED )
     find_package( PNG REQUIRED )
-    include_directories( SDL_INCLUDE_DIR JPEG_INCLUDE_DIR PNG_INCLUDE_DIR )
-    target_link_libraries( owmap SDL_LIBRARY JPEG_LIBRARY PNG_LIBRARY )
+    include_directories( ${SDL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
+    target_link_libraries( owmap ${SDL_LIBRARY} ${JPEG_LIBRARY} ${PNG_LIBRARY} )
   endif()
-  
+
   # FIXME - GLIB needs to be converted to a find module
   pkg_check_modules( GLIB glib-2.0 )
   if( GLIB_FOUND )
@@ -1486,7 +1486,7 @@ if( BUILD_OWMAP )
   else()
     message( FATAL_ERROR "Glib not found" )
   endif()
-  
+
   # The following libraries/include_directories are always available and as
   # such don't need to be checked before being provided
   include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${LIB_DIR}/zlib ${MOUNT_DIR}/tools/common  )
