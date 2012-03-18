@@ -4335,7 +4335,7 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	float  dist;
 	vec3_t origin, normal;
 
-	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist;
+	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist - ent->client->ps.Ammo;
 
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal ) )
 	{

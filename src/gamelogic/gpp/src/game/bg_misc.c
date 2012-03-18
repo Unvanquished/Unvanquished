@@ -3501,7 +3501,7 @@ void BG_PositionBuildableRelativeToPlayer( const playerState_t *ps,
 
 	VectorCopy( ps->viewangles, angles );
 	VectorCopy( ps->origin, playerOrigin );
-	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist;
+	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - ps->Ammo;
 
 	AngleVectors( angles, forward, NULL, NULL );
 	ProjectPointOnPlane( forward, forward, playerNormal );
