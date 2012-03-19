@@ -353,7 +353,7 @@ typedef struct
 	char cinfo[ MAX_CLIENTS ][ 16 ];
 } clientPersistant_t;
 
-#define MAX_UNLAGGED_MARKERS 10
+#define MAX_UNLAGGED_MARKERS 256
 typedef struct unlagged_s
 {
 	vec3_t   origin;
