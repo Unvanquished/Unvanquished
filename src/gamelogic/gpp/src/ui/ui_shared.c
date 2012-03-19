@@ -4883,7 +4883,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 				break;
 			}
 
-			if ( !previousCharIsSpace && isspace( *q ) )
+			if ( !previousCharIsSpace && isspace((unsigned char) *q ) )
 			{
 				eol = q;
 			}
