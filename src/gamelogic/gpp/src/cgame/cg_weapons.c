@@ -501,6 +501,27 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			continue;
 		}
+		else if ( !Q_stricmp( token, "missileDlightIntensity" ) ) 
+		{
+			int intensity = 0;
+
+			token = COM_Parse( text_p );
+			
+			if ( !token ) 
+			{
+				break;
+			}
+			
+			intensity = atoi(token);
+
+			if( intensity < 0 )
+			{
+				intensity = 0;
+			}
+
+			wim->missileDlightIntensity = intensity;
+
+		}
 		else if ( !Q_stricmp( token, "firingSound" ) )
 		{
 			token = COM_Parse( text_p );

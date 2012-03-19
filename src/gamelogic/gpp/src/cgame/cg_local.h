@@ -802,6 +802,7 @@ typedef struct weaponInfoMode_s
 	qhandle_t   missileModel;
 	sfxHandle_t missileSound;
 	float       missileDlight;
+	float       missileDlightIntensity;
 	vec3_t      missileDlightColor;
 	int         missileRenderfx;
 	qboolean    usesSpriteMissle;
