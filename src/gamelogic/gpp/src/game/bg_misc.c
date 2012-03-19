@@ -907,7 +907,7 @@ static const classAttributes_t bg_classList[] =
 		600, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		100.0f, //float   stopSpeed;
 		270.0f, //float   jumpMagnitude;
 		1.0f, //float   knockbackScale;
@@ -934,7 +934,7 @@ static const classAttributes_t bg_classList[] =
 		ABUILDER_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		100.0f, //float   stopSpeed;
 		195.0f, //float   jumpMagnitude;
 		1.0f, //float   knockbackScale;
@@ -962,7 +962,7 @@ static const classAttributes_t bg_classList[] =
 		ABUILDER_UPG_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		100.0f, //float   stopSpeed;
 		270.0f, //float   jumpMagnitude;
 		1.0f, //float   knockbackScale;
@@ -989,7 +989,7 @@ static const classAttributes_t bg_classList[] =
 		LEVEL0_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		400.0f, //float   stopSpeed;
 		250.0f, //float   jumpMagnitude;
 		2.0f, //float   knockbackScale;
@@ -1018,7 +1018,7 @@ static const classAttributes_t bg_classList[] =
 		LEVEL1_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		300.0f, //float   stopSpeed;
 		310.0f, //float   jumpMagnitude;
 		1.2f, //float   knockbackScale;
@@ -1047,7 +1047,7 @@ static const classAttributes_t bg_classList[] =
 		LEVEL1_UPG_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		300.0f, //float   stopSpeed;
 		310.0f, //float   jumpMagnitude;
 		1.1f, //float   knockbackScale;
@@ -1074,7 +1074,7 @@ static const classAttributes_t bg_classList[] =
 		LEVEL2_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		3.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		100.0f, //float   stopSpeed;
 		340.0f, //float   jumpMagnitude; 380 -> 340
 		0.8f, //float   knockbackScale;
@@ -1101,7 +1101,7 @@ static const classAttributes_t bg_classList[] =
 		LEVEL2_UPG_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		3.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		100.0f, //float   stopSpeed;
 		340.0f, //float   jumpMagnitude; // 380 -> 340
 		0.7f, //float   knockbackScale;
@@ -1129,7 +1129,7 @@ static const classAttributes_t bg_classList[] =
 		LEVEL3_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		200.0f, //float   stopSpeed;
 		270.0f, //float   jumpMagnitude;
 		0.5f, //float   knockbackScale;
@@ -1157,7 +1157,7 @@ static const classAttributes_t bg_classList[] =
 		LEVEL3_UPG_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		200.0f, //float   stopSpeed;
 		270.0f, //float   jumpMagnitude;
 		0.4f, //float   knockbackScale;
@@ -1186,7 +1186,7 @@ static const classAttributes_t bg_classList[] =
 		LEVEL4_SPEED, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		100.0f, //float   stopSpeed;
 		170.0f, //float   jumpMagnitude;
 		0.1f, //float   knockbackScale;
@@ -1212,7 +1212,7 @@ static const classAttributes_t bg_classList[] =
 		1.0f, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		100.0f, //float   stopSpeed;
 		220.0f, //float   jumpMagnitude;
 		1.0f, //float   knockbackScale;
@@ -1239,7 +1239,7 @@ static const classAttributes_t bg_classList[] =
 		1.0f, //float   speed;
 		10.0f, //float   acceleration;
 		1.0f, //float   airAcceleration;
-		6.0f, //float   friction;
+		6.5f, //float   friction;
 		100.0f, //float   stopSpeed;
 		220.0f, //float   jumpMagnitude;
 		1.0f, //float   knockbackScale;
@@ -3511,7 +3511,7 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 
 	VectorCopy( ps->viewangles, angles );
 	VectorCopy( ps->origin, playerOrigin );
-	
+
 	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - ps->Ammo;
 
 	AngleVectors( angles, forward, NULL, NULL );
