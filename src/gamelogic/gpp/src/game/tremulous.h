@@ -624,14 +624,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_DODGE_SIDE_MODIFIER     2.9f
 #define HUMAN_DODGE_SLOWED_MODIFIER   0.9f
 #define HUMAN_DODGE_UP_MODIFIER       0.5f
-#define HUMAN_DODGE_TIMEOUT           5000
+#define HUMAN_DODGE_TIMEOUT           2500 // Ishq: Reduced dodge cooldown.
 #define HUMAN_LAND_FRICTION           3.0f
 
 #define STAMINA_STOP_RESTORE          30
 #define STAMINA_WALK_RESTORE          15
 #define STAMINA_MEDISTAT_RESTORE      30 // stacked on STOP or WALK
 #define STAMINA_SPRINT_TAKE           6
-#define STAMINA_JUMP_TAKE             250
+#define STAMINA_JUMP_TAKE             500 // Ishq: Doubled jump requirement. Can perform ~6 jumps.
 #define STAMINA_DODGE_TAKE            750 // Whales: Tripled dodge stamina requirement.
 #define STAMINA_MAX                   3000 //Whales: Tripled maximum stamina.
 #define STAMINA_BREATHING_LEVEL       0
