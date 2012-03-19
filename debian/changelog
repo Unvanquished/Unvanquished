@@ -5,6 +5,7 @@ unvanquished (0.2.5+git7270e68-3) unstable; urgency=low
   * Dropped all resource files in favour of the pak files.
   * Tweaked the download script a little for clarity.
   * Fixed building on squeeze/i386.
+  * unvanquished: should depend on curl (for the download script).
 
  -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 19 Mar 2012 18:24:16 +0000
 
