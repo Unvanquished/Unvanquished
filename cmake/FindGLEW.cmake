@@ -3,12 +3,12 @@
 # Once done this will define
 #
 # GLEW_FOUND
-# GLEW_INCLUDE_PATH
+# GLEW_INCLUDE_DIR
 # GLEW_LIBRARY
 # 
 
 IF (WIN32)
-    FIND_PATH( GLEW_INCLUDE_PATH GL/glew.h
+    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
         $ENV{PROGRAMFILES}/GLEW/include
         ${PROJECT_SOURCE_DIR}/src/nvgl/glew/include
         DOC "The directory where GL/glew.h resides")
@@ -20,7 +20,7 @@ IF (WIN32)
         ${PROJECT_SOURCE_DIR}/src/nvgl/glew/lib
         DOC "The GLEW library")
 ELSE (WIN32)
-    FIND_PATH( GLEW_INCLUDE_PATH GL/glew.h
+    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
         /usr/include
         /usr/local/include
         /sw/include
@@ -38,10 +38,10 @@ ELSE (WIN32)
         DOC "The GLEW library")
 ENDIF (WIN32)
 
-IF (GLEW_INCLUDE_PATH)
-    SET( GLEW_FOUND 1 CACHE STRING "Set to 1 if GLEW is found, 0 otherwise")
-ELSE (GLEW_INCLUDE_PATH)
-    SET( GLEW_FOUND 0 CACHE STRING "Set to 1 if GLEW is found, 0 otherwise")
-ENDIF (GLEW_INCLUDE_PATH)
+# handle the QUIETLY and REQUIRED arguments and set GLEW_FOUND to TRUE if 
+# all listed variables are TRUE
+INCLUDE(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GLEW DEFAULT_MSG GLEW_LIBRARY GLEW_INCLUDE_DIR)
 
-MARK_AS_ADVANCED( GLEW_FOUND )
+MARK_AS_ADVANCED(GLEW_INCLUDE_DIR)
+MARK_AS_ADVANCED(GLEW_LIBRARY)
