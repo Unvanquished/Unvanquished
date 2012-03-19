@@ -300,6 +300,24 @@ static void CG_CompleteBuild( void )
 	}
 }
 
+static void CG_CompleteName( void )
+{
+	int           i;
+	clientInfo_t *ci;
+
+	for ( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		ci = &cgs.clientinfo[ i ];
+
+		if ( !ci->infoValid )
+		{
+			continue;
+		}
+
+		trap_CompleteCallback( ci->name );
+	}
+}
+
 static struct
 {
 	char *cmd;
@@ -316,6 +334,9 @@ static struct
 	{ "clientlist",    CG_ClientList_f,         NULL             },
 	{ "destroyTestPS", CG_DestroyTestPS_f,      NULL             },
 	{ "destroyTestTS", CG_DestroyTestTS_f,      NULL             },
+	{ "follow",        NULL,                    CG_CompleteName  },
+	{ "m",             NULL,                    CG_CompleteName  },
+	{ "mt",            NULL,                    CG_CompleteName  },
 	{ "nextframe",     CG_TestModelNextFrame_f, NULL             },
 	{ "nextskin",      CG_TestModelNextSkin_f,  NULL             },
 	{ "prevframe",     CG_TestModelPrevFrame_f, NULL             },
