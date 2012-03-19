@@ -92,9 +92,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL2_WALLJUMP_MAXSPEED      1000.0f
 
 #define LEVEL3_CLAW_DMG               ADM(80)
-#define LEVEL3_CLAW_RANGE             82.0f // Whales: Increased claw range
+#define LEVEL3_CLAW_RANGE             80.0f // Whales: Increased claw range
 #define LEVEL3_CLAW_UPG_RANGE         LEVEL3_CLAW_RANGE + 3.0f
-#define LEVEL3_CLAW_WIDTH             13.5f // Whales: Increased claw width
+#define LEVEL3_CLAW_WIDTH             11.0f // Whales: Increased claw width
 #define LEVEL3_CLAW_REPEAT            750 // Whales: Lowered repeat
 #define LEVEL3_CLAW_K_SCALE           1.0f
 #define LEVEL3_CLAW_U_REPEAT          700 // Whales: Lowered repeat for Adv. Goon. Standard value is 100ms below standard goon, but 650 is a bit fast for my taste.
@@ -103,8 +103,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL3_POUNCE_RANGE           55.0f // Whales: Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
 #define LEVEL3_POUNCE_UPG_RANGE       LEVEL3_POUNCE_RANGE + 3.0f
 #define LEVEL3_POUNCE_WIDTH           12.0f // Whales: Pounce width narrowed. May scale this down even further.
-#define LEVEL3_POUNCE_TIME            700 // Whales: Reduced this by 100ms, may need nerfing.
-#define LEVEL3_POUNCE_TIME_UPG        700 // Whales: Evened with standard goon. I'd like to keep this here even if standard goon charge time is raised.
+#define LEVEL3_POUNCE_TIME            800 // Whales: Reduced this by 100ms, may need nerfing.
+#define LEVEL3_POUNCE_TIME_UPG        800 // Whales: Evened with standard goon. I'd like to keep this here even if standard goon charge time is raised.
 #define LEVEL3_POUNCE_TIME_MIN        200 // msec before which pounce cancels
 #define LEVEL3_POUNCE_REPEAT          400 // msec before a new pounce starts
 #define LEVEL3_POUNCE_SPEED_MOD       0.85f // Whales: Reduced the slowdown from a charged pounce by 0.10
