@@ -1394,61 +1394,67 @@ endif()
 ################
 
 if( BUILD_SERVER )
-
-  add_executable( server ${SERVERLIST}  ${SDLBASELIST} ${CPUINFOLIST} ${QCOMMONLIST} ${SHAREDLIST}
-      ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST} ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
-
+  # Create the target Server
+  add_executable( server ${SERVERLIST}  ${SDLBASELIST} ${CPUINFOLIST}
+    ${QCOMMONLIST} ${SHAREDLIST} ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST}
+    ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c
+    ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
+    ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
+  # The following section finds the required dependencies and makes them
+  # available to the target
   if( USE_SYSTEM_HEADERS )
     find_package( SDL REQUIRED )
     find_package( GMP REQUIRED )
-    include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDES}  )
-    target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARY} )
+    include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR}  )
+    target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} )
   else()
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
+    set( GMP_INCLUDE_DIR ${MOUNT_DIR}/libs/gmp/include )
+    include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR}  )
   endif()
 
-  # MYSQL find module is called at start of file. does not need to be called again
   if( USE_MYSQL )
-    target_link_libraries( server ${MYSQL_LIBRARY} )
+    find_package( MySQL REQUIRED )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ET_MYSQL )
+    target_link_libraries( server ${MYSQL_LIBRARIES} )
   endif()
-
-  link_directories( ${CMAKE_BINARY_DIR} )
 
   if( NOT USE_INTERNAL_ZLIB )
-    find_package(ZLIB REQUIRED)
+    find_package(ZLIB REQUIRED) # Only used to check if ZLIB exists
     set( ZLIBLIST )
   endif()
 
   if( USE_CURL )
     find_package( CURL REQUIRED )
-    add_definitions( -DUSE_CURL )
-    include_directories( ${CURL_INCLUDE_DIR} )
-    target_link_libraries( server ${CURSES_LIBRARY} )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_CURL )
+    include_directories( ${CURL_INCLUDE_DIRS} )
+    target_link_libraries( server ${CURL_LIBRARIES} )
     if( USE_CURL_DLOPEN )
-      add_definitions( -DUSE_CURL_DLOPEN )
+      set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_CURL_DLOPEN )
     endif()
   endif()
 
   if( USE_CURSES )
-    set( CURSES_NEED_NCURSES 1 )
+    set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
     find_package( Curses REQUIRED )
-    add_definitions( -DUSE_CURSES )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_CURSES )
     include_directories( ${CURSES_INCLUDE_DIR} )
-    target_link_libraries( server ${CURL_LIBRARY} )
+    target_link_libraries( server ${CURSES_LIBRARIES} )
   endif()
 
   if( USE_VOIP )
-    add_definitions( -DUSE_VOIP -DFLOATING_POINT )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP FLOATING_POINT )
   endif()
 
   if( USE_PHYSICS )
     find_package( TinyXML REQUIRED )
-    add_definitions( -DUSE_PHYSICS )
-    include_directories( ${TINYXML_INCLUDE_DIR} )
-    target_link_libraries( server ${TINYXML_LIBRARY} )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_PHYSICS )
+    include_directories( ${TINYXML_INCLUDE_DIRS} )
+    target_link_libraries( server ${TINYXML_LIBRARIES} )
   endif()
 
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/gmp/include ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex      ${NEWTON_INCLUDES} )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle
+    ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
