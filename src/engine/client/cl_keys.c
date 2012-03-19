@@ -1509,6 +1509,18 @@ void Key_CompleteBind( char *args, int argNum )
 	}
 }
 
+static void Key_CompleteEditbind( char *args, int argNum )
+{
+	char *p;
+
+	p = Com_SkipTokens( args, 1, " " );
+
+	if ( p > args )
+	{
+		Field_CompleteKeyname();
+	}
+}
+
 /*
 ===================
 CL_InitKeyCommands
@@ -1524,6 +1536,7 @@ void CL_InitKeyCommands( void )
 	Cmd_AddCommand( "unbindall", Key_Unbindall_f );
 	Cmd_AddCommand( "bindlist", Key_Bindlist_f );
 	Cmd_AddCommand( "editbind", Key_EditBind_f );
+	Cmd_SetCommandCompletionFunc( "editbind", Key_CompleteEditbind );
 }
 
 /*
