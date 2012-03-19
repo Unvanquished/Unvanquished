@@ -631,12 +631,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define STAMINA_WALK_RESTORE          15
 #define STAMINA_MEDISTAT_RESTORE      30 // stacked on STOP or WALK
 #define STAMINA_SPRINT_TAKE           6
-#define STAMINA_JUMP_TAKE             500 // Doubled jump requirement. Can perform ~6 jumps.
+#define STAMINA_JUMP_TAKE             250 // Doubled jump requirement. Can perform ~6 jumps.
 #define STAMINA_DODGE_TAKE            750 // Tripled dodge stamina requirement.
-#define STAMINA_MAX                   3000 // Tripled maximum stamina.
+#define STAMINA_MAX                   2000 // Doubled maximum stamina.
 #define STAMINA_BREATHING_LEVEL       0
-#define STAMINA_SLOW_LEVEL            -500
-#define STAMINA_BLACKOUT_LEVEL        -800
+#define STAMINA_SLOW_LEVEL            -1000 // doubled to match doubled stamina
+#define STAMINA_BLACKOUT_LEVEL        -1600 // Doubled to match doubled stamina
 
 #define HUMAN_SPAWN_REPEAT_TIME       10000
 #define HUMAN_REGEN_DAMAGE_TIME       2000 //msec since damage before dcc repairs
