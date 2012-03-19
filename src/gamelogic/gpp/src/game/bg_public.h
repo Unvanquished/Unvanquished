@@ -1108,7 +1108,7 @@ qboolean BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
                         vec3_t outAxis[ 3 ], qboolean inverse, qboolean ceiling );
 void     BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 void     BG_GetClientViewOrigin( const playerState_t *ps, vec3_t viewOrigin );
-void     BG_PositionBuildableRelativeToPlayer( const playerState_t *ps,
+void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
     const vec3_t mins, const vec3_t maxs,
     void ( *trace )( trace_t *, const vec3_t, const vec3_t,
                      const vec3_t, const vec3_t, int, int ),

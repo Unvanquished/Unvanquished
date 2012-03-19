@@ -2930,11 +2930,11 @@ void Cmd_BuildDist_f( gentity_t *ent )
 {
 	playerState_t *ps = &ent->client->ps;
 	int            offset;
-	buildable_t    buildable = ent->client->ps.stats[ STAT_BUILDABLE ];
+	buildable_t    buildable = ent->client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
 	char           offs[3], cmd[12];
 	qboolean       add;
 
-	if( ps->weapon != WP_HBUILD && ps->weapon != WP_ABUILD ) // Don't have a ckit or are not an advanced granger.
+	if( ps->weapon != WP_HBUILD && ps->weapon != WP_ABUILD && ps->weapon != WP_ABUILD2) // Don't have a ckit or are not an advanced granger.
 	{
 		return;
 	}
@@ -2963,18 +2963,8 @@ void Cmd_BuildDist_f( gentity_t *ent )
 		offset = atoi( offs );
 	}
 
-	ps->Ammo += add ? -offset : offset; // Use ammo since it is not used for the ckit.
-
-	// Make sure we cannot build further than the buildDist
-	if( BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - ps->Ammo > BG_Class( ps->stats[ STAT_CLASS ] )->buildDist )
-	{
-		ps->Ammo = 0;
-	}
-	// Make sure we do not build it on ourselves.
-	if( BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - ps->Ammo < 40 )
-	{
-		ps->Ammo = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - 40;
-	}
+	ps->Ammo += add ? -offset : offset;
+	//ps->Ammo is clamped in BG_PositionBuilableRelativeToPlayer
 }
 
 

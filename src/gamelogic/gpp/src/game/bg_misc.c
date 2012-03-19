@@ -3487,7 +3487,7 @@ BG_PositionBuildableRelativeToPlayer
 Find a place to build a buildable
 ===============
 */
-void BG_PositionBuildableRelativeToPlayer( const playerState_t *ps,
+void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
     const vec3_t mins, const vec3_t maxs,
     void ( *trace )( trace_t *, const vec3_t, const vec3_t,
                      const vec3_t, const vec3_t, int, int ),
@@ -3496,11 +3496,22 @@ void BG_PositionBuildableRelativeToPlayer( const playerState_t *ps,
 	vec3_t forward, entityOrigin, targetOrigin;
 	vec3_t angles, playerOrigin, playerNormal;
 	float  buildDist;
-
+	float  minDist;
+	vec3_t pmaxs,bmaxs;
 	BG_GetClientNormal( ps, playerNormal );
+
+	//find the closest the building can be to the player
+	BG_ClassBoundingBox( ps->stats[STAT_CLASS], NULL, pmaxs, NULL, NULL, NULL );
+	ProjectPointOnPlane( pmaxs, pmaxs, playerNormal );
+	ProjectPointOnPlane( bmaxs, maxs, playerNormal );
+	minDist = VectorLength( pmaxs ) + VectorLength( bmaxs );
+
+	//clamp the offset to the min and max distance
+	ps->Ammo = Com_Clamp( 0, BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - minDist, ps->Ammo );
 
 	VectorCopy( ps->viewangles, angles );
 	VectorCopy( ps->origin, playerOrigin );
+	
 	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - ps->Ammo;
 
 	AngleVectors( angles, forward, NULL, NULL );
