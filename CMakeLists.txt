@@ -1070,11 +1070,6 @@ elseif( UNIX )
   endif()
 endif()
 
-# GLEW
-set( GLEW_INCLUDE_DIR "${MOUNT_DIR}/libs/glew/include" )
-
-
-
 ###############################
 # Build Game/Cgame/Ui DLL/.so #
 ###############################
@@ -1157,13 +1152,6 @@ endif()
 # Build Renderers #
 ###################
 
-# set( GLEW_LIBRARY CACHE FILEPATH "Location of the GLEW Library" )
-# set( MYSQL_LIBRARY CACHE FILEPATH "Location of the MYSQL library" )
-# set( MYSQL_INCLUDES CACHE PATH ADVANCED "Location of the MYSQL includes" )
-# set( GMP_LIBRARY CACHE FILEPATH "Location of the GMP Library" )
-# set( GMP_INCLUDES CACHE PATH ADVANCED "Location of the GMP Includes" )
-# set( XVID_LIBRARY CACHE FILEPATH "Location of the XviD library" )
-
 if( USE_WEBP )
   find_package( WebP REQUIRED )
 endif()
@@ -1172,7 +1160,7 @@ if( USE_PHYSICS )
   if( LINUX )
     if( CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux64/libNewton.a" )
-    elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i[3-6]86")
+    elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux32/libNewton.a" )
     endif()
   else()
@@ -1188,9 +1176,8 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
     find_package( PNG  REQUIRED )
     find_package( Freetype REQUIRED )
     find_package( GLEW REQUIRED )
-    set( GLEW_INCLUDE_DIR ${MOUNT_DIR}/libs/glew/include )
   else()
-    set( PNG_PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
+    set( PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
     set( JPEG_INCLUDE_DIR ${MOUNT_DIR}/libs/jpeg )
     set( FREETYPE_INCLUDE_DIRS ${MOUNT_DIR}/libs/freetype/include/freetype2 )
@@ -1206,14 +1193,14 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
 
   if( BUILD_NEW_RENDERER )
     add_library( rendererGL SHARED  ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/libs/libpng/pngerror.c ${MOUNT_DIR}/libs/jpeg/jdatasrc.c )
-    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
+    include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
-    target_link_libraries( rendererGL ${OS_LIBRARIES} ${PNG_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} ${SDL_LIBRARY} )
+    target_link_libraries( rendererGL ${OS_LIBRARIES} ${PNG_LIBRARIES} ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
     set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "librendererGL3${BUILD_ARCH}" PREFIX "" )
     if( WEBP_FOUND )
       set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-      include_directories( ${WEBP_INCLUDE_DIR} )
-      target_link_libraries( rendererGL ${WEBP_LIBRARY} )
+      include_directories( ${WEBP_INCLUDE_DIRS} )
+      target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
     endif()
   endif()
 
@@ -1363,7 +1350,7 @@ if( BUILD_CLIENT )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${NEWTON_INCLUDES} ${MOUNT_DIR}/libs/gmp/include )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER BOTLIB BOTLIB_STATIC COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER BOTLIB BOTLIB_STATIC COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install(TARGETS client
           RUNTIME DESTINATION bin
@@ -1449,9 +1436,9 @@ if( BUILD_SERVER )
   endif()
 
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle
-    ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${NEWTON_INCLUDES} ${MOUNT_DIR}/libs/gmp/include ) )
+    ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${NEWTON_INCLUDES} ${MOUNT_DIR}/libs/gmp/include )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET server PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
+  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install(TARGETS server
           RUNTIME DESTINATION bin
@@ -1493,7 +1480,7 @@ if( BUILD_OWMAP )
   include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${LIB_DIR}/zlib ${MOUNT_DIR}/tools/common  )
   target_link_libraries( owmap ${OS_LIBRARIES} )
   # This section sets various properties to the target owmap
-  set_property( TARGET owmap PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
+  set_property( TARGET owmap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
   set_target_properties( owmap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
   install(TARGETS owmap
 	    RUNTIME DESTINATION bin
