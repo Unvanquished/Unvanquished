@@ -3504,15 +3504,12 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 	BG_ClassBoundingBox( ps->stats[STAT_CLASS], NULL, pmaxs, NULL, NULL, NULL );
 	ProjectPointOnPlane( pmaxs, pmaxs, playerNormal );
 	ProjectPointOnPlane( bmaxs, maxs, playerNormal );
-	minDist = VectorLength( pmaxs ) + VectorLength( bmaxs );
-
-	//clamp the offset to the min and max distance
-	ps->Ammo = Com_Clamp( 0, BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - minDist, ps->Ammo );
 
 	VectorCopy( ps->viewangles, angles );
 	VectorCopy( ps->origin, playerOrigin );
 
-	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist - ps->Ammo;
+	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist * cos( DEG2RAD( ps->viewangles[ PITCH ] ) );
+	buildDist = Com_Clamp( /*minDist*/ 0, BG_Class( ps->stats[ STAT_CLASS ] )->buildDist, buildDist );
 
 	AngleVectors( angles, forward, NULL, NULL );
 	ProjectPointOnPlane( forward, forward, playerNormal );

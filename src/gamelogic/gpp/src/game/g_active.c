@@ -751,7 +751,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				// Set validity bit on buildable
 				if ( ( client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) > BA_NONE )
 				{
-					int    dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist - ent->client->ps.Ammo;
+					int    dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * cos( DEG2RAD( ent->client->ps.viewangles[ PITCH ] ) );
 					vec3_t dummy, dummy2;
 
 					if ( G_CanBuild( ent, client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT,

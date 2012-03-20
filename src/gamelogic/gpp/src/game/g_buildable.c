@@ -3859,7 +3859,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	BG_BuildableBoundingBox( buildable, mins, maxs );
 
 	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, trap_Trace, entity_origin, angles, &tr1 );
-	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ent->s.number, MASK_PLAYERSOLID );
+	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, -1, MASK_PLAYERSOLID ); // Setting entnum to -1 means that the player isn't ignored
 	trap_Trace( &tr3, ps->origin, NULL, NULL, entity_origin, ent->s.number, MASK_PLAYERSOLID );
 
 	VectorCopy( entity_origin, origin );
@@ -4335,7 +4335,7 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	float  dist;
 	vec3_t origin, normal;
 
-	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist - ent->client->ps.Ammo;
+	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * cos( DEG2RAD( ent->client->ps.viewangles[ PITCH ] ) );
 
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal ) )
 	{

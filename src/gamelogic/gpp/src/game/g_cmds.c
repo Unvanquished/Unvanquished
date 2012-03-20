@@ -2844,7 +2844,7 @@ void Cmd_Build_f( gentity_t *ent )
 	       ( team == TEAM_HUMANS && BG_BuildableAllowedInStage( buildable, g_humanStage.integer ) ) ) )
 	{
 		dynMenu_t err;
-		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist;
+		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * cos( DEG2RAD( ent->client->ps.viewangles[ PITCH ] ) );
 
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 
@@ -2919,55 +2919,6 @@ void Cmd_Build_f( gentity_t *ent )
 		G_TriggerMenu( ent->client->ps.clientNum, MN_B_CANNOT );
 	}
 }
-
-/*
-=================
-Cmd_BuildDist_f
-=================
-*/
-
-void Cmd_BuildDist_f( gentity_t *ent )
-{
-	playerState_t *ps = &ent->client->ps;
-	int            offset;
-	buildable_t    buildable = ent->client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
-	char           offs[3], cmd[12];
-	qboolean       add;
-
-	if( ps->weapon != WP_HBUILD && ps->weapon != WP_ABUILD && ps->weapon != WP_ABUILD2) // Don't have a ckit or are not an advanced granger.
-	{
-		return;
-	}
-
-	trap_Argv( 0, cmd, sizeof( cmd ) );
-	if( !Q_stricmp( cmd, "build++" ) )
-	{
-		add = qtrue;
-	}
-	else if( !Q_stricmp( cmd, "build--" ) )
-	{
-		add = qfalse;
-	}
-	else
-	{
-		return;
-	}
-
-	if( trap_Argc() < 2 )
-	{
-		offset = 10;
-	}
-	else
-	{
-		trap_Argv( 1, offs, sizeof( offs ) );
-		offset = atoi( offs );
-	}
-
-	ps->Ammo += add ? -offset : offset;
-	//ps->Ammo is clamped in BG_PositionBuilableRelativeToPlayer
-}
-
-
 
 /*
 =================
@@ -3715,8 +3666,6 @@ commands_t    cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
 	{ "build",           CMD_TEAM | CMD_LIVING,               Cmd_Build_f            },
-	{ "build++",         CMD_TEAM | CMD_LIVING,               Cmd_BuildDist_f        },
-	{ "build--",         CMD_TEAM | CMD_LIVING,               Cmd_BuildDist_f        },
 	{ "buy",             CMD_HUMAN | CMD_LIVING,              Cmd_Buy_f              },
 	{ "callteamvote",    CMD_MESSAGE | CMD_TEAM,              Cmd_CallVote_f         },
 	{ "callvote",        CMD_MESSAGE,                         Cmd_CallVote_f         },
