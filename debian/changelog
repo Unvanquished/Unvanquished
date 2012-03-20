@@ -1,3 +1,9 @@
+unvanquished (0.2.5+git7270e68-4) unstable; urgency=low
+
+  * Work around lack of jpeg_mem_info() in libjpeg62.
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Tue, 20 Mar 2012 21:17:09 +0000
+
 unvanquished (0.2.5+git7270e68-3) unstable; urgency=low
 
   * Menu file, desktop file & icons.

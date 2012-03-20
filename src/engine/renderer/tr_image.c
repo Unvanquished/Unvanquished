@@ -50,8 +50,16 @@ Maryland 20850 USA.
  */
 
 #define JPEG_INTERNALS
-#include "../../libs/jpeg/jpeglib.h"
-#include <png.h>
+#ifdef SYSTEM_JPEG
+#	include <jpeglib.h>
+#else
+#	include "../../libs/jpeg/jpeglib.h"
+#endif
+#ifdef SYSTEM_PNG
+#	include <png.h>
+#else
+#	include "../../libs/libpng/png.h"
+#endif
 
 
 static void     LoadBMP(const char *name, byte ** pic, int *width, int *height);
@@ -1810,6 +1818,9 @@ void LoadJPG(const char *filename, unsigned char **pic, int *width, int *height)
 		void *v;
 	} fbuffer;
   byte  *buf;
+#if JPEG_LIB_VERSION < 80
+	FILE           *jpegfd;
+#endif
 
   /* In this example we want to open the input file before doing anything else,
    * so that the setjmp() error recovery below can assume the file is open.
@@ -1838,7 +1849,12 @@ void LoadJPG(const char *filename, unsigned char **pic, int *width, int *height)
 
   /* Step 2: specify data source (eg, a file) */
 
+#if JPEG_LIB_VERSION < 80
+	jpegfd = fmemopen( fbuffer.b, len, "r" );
+	jpeg_stdio_src( &cinfo, jpegfd );
+#else
   jpeg_mem_src(&cinfo, fbuffer.b, len);
+#endif
 
   /* Step 3: read file parameters with jpeg_read_header() */
 
@@ -1882,6 +1898,9 @@ void LoadJPG(const char *filename, unsigned char **pic, int *width, int *height)
     // Free the memory to make sure we don't leak memory
     ri.FS_FreeFile (fbuffer.v);
     jpeg_destroy_decompress(&cinfo);
+#if JPEG_LIB_VERSION < 80
+		fclose( jpegfd );
+#endif
   
     ri.Error(ERR_DROP, "LoadJPG: %s has an invalid image format: %dx%d*4=%d, components: %d", filename,
 		    cinfo.output_width, cinfo.output_height, pixelcount * 4, cinfo.output_components);
@@ -1944,6 +1963,9 @@ void LoadJPG(const char *filename, unsigned char **pic, int *width, int *height)
    * so as to simplify the setjmp error logic above.  (Actually, I don't
    * think that jpeg_destroy can do an error exit, but why assume anything...)
    */
+#if JPEG_LIB_VERSION < 80
+	fclose( jpegfd );
+#endif
   ri.FS_FreeFile (fbuffer.v);
 
   /* At this point you may want to check to see whether any corrupt-data
