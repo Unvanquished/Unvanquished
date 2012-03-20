@@ -314,7 +314,7 @@ static void CG_CompleteName( void )
 			continue;
 		}
 
-		trap_CompleteCallback( ci->name );
+		trap_CompleteCallback( va( "%s", Q_CleanStr( ci->name ) ) );
 	}
 }
 
