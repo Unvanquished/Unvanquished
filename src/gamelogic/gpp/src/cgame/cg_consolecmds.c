@@ -307,14 +307,16 @@ static void CG_CompleteName( void )
 
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
+		char name[ MAX_NAME_LENGTH ];
 		ci = &cgs.clientinfo[ i ];
+		strcpy( name, ci->name );
 
 		if ( !ci->infoValid )
 		{
 			continue;
 		}
 
-		trap_CompleteCallback( Q_CleanStr( ci->name ) );
+		trap_CompleteCallback( Q_CleanStr( name ) );
 	}
 }
 
