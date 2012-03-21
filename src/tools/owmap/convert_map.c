@@ -152,7 +152,7 @@ void GetBestSurfaceTriangleMatchForBrushside(side_t * buildSide, bspDrawVert_t *
 
 static void ConvertOriginBrush(FILE * f, int num, vec3_t origin)
 {
-	char            pattern[6][5][3] = {
+	char            pattern[6][5][4] = {
 		{"+++", "+-+", "-++", " - ", "-  "},
 		{"+++", "-++", "++-", "+  ", "  +"},
 		{"+++", "++-", "+-+", " - ", "  +"},
