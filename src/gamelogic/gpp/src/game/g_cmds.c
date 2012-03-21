@@ -2853,7 +2853,14 @@ void Cmd_Build_f( gentity_t *ent )
 	       ( team == TEAM_HUMANS && BG_BuildableAllowedInStage( buildable, g_humanStage.integer ) ) ) )
 	{
 		dynMenu_t err;
-		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * cos( DEG2RAD( ent->client->ps.viewangles[ PITCH ] ) );
+		vec3_t forward, aimDir;
+
+		BG_GetClientNormal( &ent->client->ps, normal );
+		AngleVectors( ent->client->ps.viewangles, aimDir, NULL, NULL );
+		ProjectPointOnPlane( forward, aimDir, normal);
+		VectorNormalize( forward );
+
+		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 

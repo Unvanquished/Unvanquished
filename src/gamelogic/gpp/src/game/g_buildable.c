@@ -4334,8 +4334,13 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 {
 	float  dist;
 	vec3_t origin, normal;
+	vec3_t forward, aimDir;
 
-	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * cos( DEG2RAD( ent->client->ps.viewangles[ PITCH ] ) );
+	BG_GetClientNormal( &ent->client->ps, normal);
+	AngleVectors( ent->client->ps.viewangles, aimDir, NULL, NULL );
+	ProjectPointOnPlane( forward, aimDir, normal );
+	VectorNormalize( forward );
+	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal ) )
 	{

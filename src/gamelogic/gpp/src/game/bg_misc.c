@@ -3493,27 +3493,20 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
                      const vec3_t, const vec3_t, int, int ),
     vec3_t outOrigin, vec3_t outAngles, trace_t *tr )
 {
-	vec3_t forward, entityOrigin, targetOrigin;
+	vec3_t aimDir, forward, entityOrigin, targetOrigin;
 	vec3_t angles, playerOrigin, playerNormal;
 	float  buildDist;
-	float  minDist;
-	vec3_t pmaxs,bmaxs;
-	BG_GetClientNormal( ps, playerNormal );
 
-	//find the closest the building can be to the player
-	BG_ClassBoundingBox( ps->stats[STAT_CLASS], NULL, pmaxs, NULL, NULL, NULL );
-	ProjectPointOnPlane( pmaxs, pmaxs, playerNormal );
-	ProjectPointOnPlane( bmaxs, maxs, playerNormal );
+	BG_GetClientNormal( ps, playerNormal );
 
 	VectorCopy( ps->viewangles, angles );
 	VectorCopy( ps->origin, playerOrigin );
 
-	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist * cos( DEG2RAD( ps->viewangles[ PITCH ] ) );
-	buildDist = Com_Clamp( /*minDist*/ 0, BG_Class( ps->stats[ STAT_CLASS ] )->buildDist, buildDist );
-
-	AngleVectors( angles, forward, NULL, NULL );
-	ProjectPointOnPlane( forward, forward, playerNormal );
+	AngleVectors( angles, aimDir, NULL, NULL );
+	ProjectPointOnPlane( forward, aimDir, playerNormal );
 	VectorNormalize( forward );
+
+	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
 	VectorMA( playerOrigin, buildDist, forward, entityOrigin );
 
