@@ -1369,6 +1369,9 @@ if( USE_OPENAL )
   target_link_libraries( al ${OPENAL_LIBRARY} )
   set_property( TARGET al PROPERTY COMPILE_DEFINITIONS )
   set_target_properties( al PROPERTIES OUTPUT_NAME "snd_openal" PREFIX "" )
+  if( USE_VOIP )
+    set_property( TARGET al APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP FLOATING_POINT )
+  endif()
 endif()
 
 ################
