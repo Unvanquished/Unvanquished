@@ -22,8 +22,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifndef USE_OPENAL_DLOPEN
 
-#include <AL/al.h>
-#include <AL/alc.h>
+#if _WIN32
+#	include <al.h>
+#	include <alc.h>
+#elif MACOS_X
+#	include <OpenAl/al.h>
+#	include <OpenAl/alc.h>
+#else
+#	include <AL/al.h>
+#	include <AL/alc.h>
+#endif
 
 #define qalEnable               alEnable
 #define qalDisable              alDisable
@@ -125,14 +133,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ALC_NO_PROTOTYPES
 
 #if _WIN32
-#include <al.h>
-#include <alc.h>
+#	include <al.h>
+#	include <alc.h>
 #elif MACOS_X
-#include <OpenAl/al.h>
-#include <OpenAl/alc.h>
+#	include <OpenAl/al.h>
+#	include <OpenAl/alc.h>
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
+#	include <AL/al.h>
+#	include <AL/alc.h>
 #endif
 
 extern LPALENABLE               qalEnable;
