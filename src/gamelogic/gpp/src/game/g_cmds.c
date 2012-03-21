@@ -691,7 +691,8 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// Cannot leave a team while in combat.
-	if ( g_combatCooldown.integer &&
+	if ( !g_cheats.integer && 
+	     g_combatCooldown.integer &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
 	     ent->health > 0 &&
@@ -700,7 +701,7 @@ void Cmd_Team_f( gentity_t *ent )
 		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
 
 		trap_SendServerCommand( ent - g_entities,
-		    va( "print \"You cannot leave your team until %i second%s after combat. Try again in %i second%s.\n\"",
+		    va( "print \"You cannot leave your team until %i second%s after combat. Try again in %.0f second%s.\n\"",
 		        g_combatCooldown.integer,
 		        g_combatCooldown.integer == 1 ? "" : "s",
 		        remaining,
