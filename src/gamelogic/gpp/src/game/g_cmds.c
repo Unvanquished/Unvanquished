@@ -690,14 +690,22 @@ void Cmd_Team_f( gentity_t *ent )
 		return;
 	}
 
-	// stop switching teams for gameplay exploit reasons by enforcing a long
-	// wait before they can come back
-	if ( !force && !g_cheats.integer && ent->client->pers.aliveSeconds &&
-	     level.time - ent->client->pers.teamChangeTime < 30000 )
+	// Cannot leave a team while in combat.
+	if ( g_combatCooldown.integer &&
+	     ent->client->lastCombatTime &&
+	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
+	     ent->health > 0 &&
+	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
 	{
+		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
+
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print \"You must wait another %d seconds before changing teams again\n\"",
-		                            ( int )( ( 30000 - ( level.time - ent->client->pers.teamChangeTime ) ) / 1000.f ) ) );
+		    va( "print \"You cannot leave your team until %i second%s after combat. Try again in %i second%s.\n\"",
+		        g_combatCooldown.integer,
+		        g_combatCooldown.integer == 1 ? "" : "s",
+		        remaining,
+		        remaining == 1.0f ? "" : "s" ) );
+
 		return;
 	}
 

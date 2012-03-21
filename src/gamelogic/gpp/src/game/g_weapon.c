@@ -1075,10 +1075,18 @@ void CheckGrabAttack( gentity_t *ent )
 		if ( ent->client->ps.weapon == WP_ALEVEL1 )
 		{
 			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_TIME;
+
+			// Update the last combat time.
+			ent->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
+			traceEnt->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
 		}
 		else if ( ent->client->ps.weapon == WP_ALEVEL1_UPG )
 		{
 			traceEnt->client->grabExpiryTime = level.time + LEVEL1_GRAB_U_TIME;
+
+			// Update the last combat time.
+			ent->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
+			traceEnt->client->lastCombatTime = level.time + LEVEL1_GRAB_TIME;
 		}
 	}
 }

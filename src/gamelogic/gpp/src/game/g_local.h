@@ -435,6 +435,7 @@ struct gclient_s
 	int        medKitHealthToRestore;
 	int        medKitIncrementTime;
 	int        lastCreepSlowTime; // time until creep can be removed
+	int        lastCombatTime; // time of last damage received/dealt or held by basilisk
 
 	qboolean   charging;
 
@@ -1194,6 +1195,7 @@ extern  vmCvar_t g_allowTeamOverlay;
 extern  vmCvar_t g_censorship;
 
 extern  vmCvar_t g_showKillerHP;
+extern  vmCvar_t g_combatCooldown;
 
 void             trap_Print( const char *fmt );
 void             trap_Error( const char *fmt );

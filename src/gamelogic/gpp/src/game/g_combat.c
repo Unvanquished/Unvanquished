@@ -1259,6 +1259,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
+	if ( targ && targ->client && attacker && attacker->client )
+	{
+		// Update the last combat time.
+		targ->client->lastCombatTime = level.time;
+		attacker->client->lastCombatTime = level.time;
+	}
+
 	// add to the attacker's hit counter
 	if ( attacker->client && targ != attacker && targ->health > 0
 	     && targ->s.eType != ET_MISSILE
