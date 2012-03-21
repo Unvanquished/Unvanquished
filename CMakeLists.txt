@@ -1225,7 +1225,7 @@ endif()
 if( BUILD_CLIENT )
   # Create target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
-    ${CPUINFOLIST} ${SDLLIST} ${OS_BUILD} ${QCOMMONLIST} ${SHAREDLIST}
+    ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST}
     ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
   # This section finds and provides dependencies to target client
