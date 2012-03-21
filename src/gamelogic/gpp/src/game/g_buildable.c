@@ -3479,7 +3479,7 @@ Determine if enough build points can be released for the buildable
 and list the buildables that must be destroyed if this is the case
 ===============
 */
-static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
+itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
     vec3_t          origin )
 {
 	int              i;
