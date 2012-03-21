@@ -144,7 +144,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CompileAs>CompileAsC</CompileAs>
+      <CompileAs>Default</CompileAs>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -263,6 +263,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\libs\detour\DetourAlloc.cpp" />
+    <ClCompile Include="..\..\..\..\libs\detour\DetourCommon.cpp" />
+    <ClCompile Include="..\..\..\..\libs\detour\DetourNavMesh.cpp" />
+    <ClCompile Include="..\..\..\..\libs\detour\DetourNavMeshBuilder.cpp" />
+    <ClCompile Include="..\..\..\..\libs\detour\DetourNavMeshQuery.cpp" />
+    <ClCompile Include="..\..\..\..\libs\detour\DetourNode.cpp" />
+    <ClCompile Include="..\..\..\..\libs\detour\DetourPathCorridor.cpp" />
     <ClCompile Include="bg_alloc.c" />
     <ClCompile Include="bg_lib.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -330,7 +337,9 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN32;NDEBUG;_WINDOWS;GLOBALRANK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="g_admin.c" />
-    <ClCompile Include="g_alienbot.cpp" />
+    <ClCompile Include="g_alienbot.cpp">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</CompileAs>
+    </ClCompile>
     <ClCompile Include="g_api.c" />
     <ClCompile Include="g_bot.cpp" />
     <ClCompile Include="g_buildable.c" />
@@ -370,6 +379,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_WINDOWS;GLOBALRANK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN32;NDEBUG;_WINDOWS;GLOBALRANK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="g_humanbot.cpp" />
     <ClCompile Include="g_main.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
@@ -420,6 +430,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN32;NDEBUG;_WINDOWS;GLOBALRANK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="g_namelog.c" />
+    <ClCompile Include="g_nav.cpp" />
     <ClCompile Include="g_physics.c" />
     <ClCompile Include="g_session.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
@@ -523,6 +534,16 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\engine\qcommon\surfaceflags.h" />
     <ClInclude Include="..\..\..\..\engine\server\g_api.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourAlloc.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourAssert.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourCommon.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourNavMesh.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourNavMeshBuilder.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourNavMeshQuery.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourNode.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourPathCorridor.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourStatus.h" />
+    <ClInclude Include="..\..\..\..\libs\detour\DetourTileCache.h" />
     <ClInclude Include="bg_lib.h" />
     <ClInclude Include="bg_local.h" />
     <ClInclude Include="bg_public.h" />

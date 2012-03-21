@@ -22,7 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // g_local.h -- local definitions for game module
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "../../../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 #include "../../../../engine/server/g_api.h"
@@ -74,6 +76,7 @@ typedef enum
 #define SP_PODIUM_MODEL "models/mapobjects/podium/podium4.md3"
 
 //============================================================================
+#define MAX_BOT_BUILDINGS 300
 
 typedef enum{  
   BOT_IDLE,  
@@ -402,6 +405,8 @@ struct gentity_s
 
 	int         buildPointZone; // index for zone
 	int         usesBuildPointZone; // does it use a zone?
+
+	botMemory_t *botMind;
 };
 
 typedef enum
@@ -845,6 +850,8 @@ typedef struct
 	buildLog_t       buildLog[ MAX_BUILDLOG ];
 	int              buildId;
 	int              numBuildLogs;
+
+	botBuildLayout_t botBuildLayout;
 } level_locals_t;
 
 #define CMD_CHEAT        0x0001
@@ -1368,6 +1375,43 @@ extern  vmCvar_t g_censorship;
 extern  vmCvar_t g_showKillerHP;
 extern  vmCvar_t g_combatCooldown;
 
+// <bot stuff>
+// bot buy cvars
+extern vmCvar_t g_bot_buy;
+extern vmCvar_t g_bot_rifle;
+extern vmCvar_t g_bot_painsaw;
+extern vmCvar_t g_bot_shotgun;
+extern vmCvar_t g_bot_lasgun;
+extern vmCvar_t g_bot_mdriver;
+extern vmCvar_t g_bot_chaingun;
+extern vmCvar_t g_bot_prifle;
+extern vmCvar_t g_bot_flamer;
+extern vmCvar_t g_bot_lcannon;
+// bot evolution cvars
+extern vmCvar_t g_bot_evolve;
+extern vmCvar_t g_bot_level1;
+extern vmCvar_t g_bot_level1upg;
+extern vmCvar_t g_bot_level2;
+extern vmCvar_t g_bot_level2upg;
+extern vmCvar_t g_bot_level3;
+extern vmCvar_t g_bot_level3upg;
+extern vmCvar_t g_bot_level4;
+//misc bot cvars
+extern vmCvar_t g_bot_attackStruct;
+extern vmCvar_t g_bot_roam;
+extern vmCvar_t g_bot_rush;
+extern vmCvar_t g_bot_build;
+extern vmCvar_t g_bot_repair;
+extern vmCvar_t g_bot_retreat;
+//extern vmCvar_t g_bot_camp;
+extern vmCvar_t g_bot_infinite_funds;
+extern vmCvar_t g_bot_survival;
+extern vmCvar_t g_bot_wave_interval;
+extern vmCvar_t g_bot_numInGroup;
+extern vmCvar_t g_bot_persistent;
+extern vmCvar_t g_bot_buildLayout;
+//</bot stuff>
+
 void             trap_Print( const char *fmt );
 void             trap_Error( const char *fmt );
 int              trap_Milliseconds( void );
@@ -1599,3 +1643,6 @@ void             trap_SQL_CleanString( const char *in, char *out, int len );
 
 #endif
 int              trap_RSA_GenerateMessage( const char *public_key, char *cleartext, char *encrypted );
+#ifdef __cplusplus
+}
+#endif

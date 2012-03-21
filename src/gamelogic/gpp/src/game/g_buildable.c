@@ -4077,7 +4077,7 @@ G_Build
 Spawns a buildable
 ================
 */
-static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
+gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
                            const vec3_t origin, const vec3_t normal, const vec3_t angles )
 {
 	gentity_t  *built;

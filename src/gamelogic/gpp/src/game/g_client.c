@@ -1177,11 +1177,13 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
 	int             i;
+	qboolean        isBot;
 	g_admin_admin_t *admin;
 
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];
 
+	isBot = (ent->r.svFlags & SVF_BOT);
 	// ignore if client already connected
 	if ( client->pers.connected != CON_DISCONNECTED )
 	{
@@ -1222,7 +1224,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	}
 
 	// check for admin ban
-	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) )
+	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) && !isBot )
 	{
 		return va( "%s", reason );
 	}
@@ -1231,7 +1233,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	value = Info_ValueForKey( userinfo, "password" );
 
 	if ( g_password.string[ 0 ] && Q_stricmp( g_password.string, "none" ) &&
-	     strcmp( g_password.string, value ) != 0 )
+	     strcmp( g_password.string, value ) != 0  && !isBot)
 	{
 		return "Invalid password";
 	}
@@ -1240,7 +1242,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	for ( i = 0; i < sizeof( client->pers.guid ) - 1 &&
 	      isxdigit( client->pers.guid[ i ] ); i++ ) {; }
 
-	if ( i < sizeof( client->pers.guid ) - 1 )
+	if ( i < sizeof( client->pers.guid ) - 1  && !isBot)
 	{
 		return "Invalid GUID";
 	}
@@ -1252,7 +1254,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 			continue;
 		}
 
-		if ( !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
+		if ( !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) && !isBot )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
 			{

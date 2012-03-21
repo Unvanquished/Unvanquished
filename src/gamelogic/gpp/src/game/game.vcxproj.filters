@@ -12,6 +12,9 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{d6f24f5e-77fd-43de-a82f-61e605b17b9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Detour">
+      <UniqueIdentifier>{fb152c7d-0c8d-4868-9fcd-f04a1fee87c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="g_weapon.c">
@@ -104,6 +107,39 @@
     <ClCompile Include="..\..\..\..\engine\qcommon\q_math.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="g_alienbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_bot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="g_nav.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\detour\DetourAlloc.cpp">
+      <Filter>Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\detour\DetourCommon.cpp">
+      <Filter>Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\detour\DetourNavMesh.cpp">
+      <Filter>Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\detour\DetourNavMeshBuilder.cpp">
+      <Filter>Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\detour\DetourNavMeshQuery.cpp">
+      <Filter>Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\detour\DetourNode.cpp">
+      <Filter>Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\libs\detour\DetourPathCorridor.cpp">
+      <Filter>Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="g_humanbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bg_local.h">
@@ -135,6 +171,36 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\engine\qcommon\surfaceflags.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourAlloc.h">
+      <Filter>Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourAssert.h">
+      <Filter>Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourCommon.h">
+      <Filter>Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourNavMesh.h">
+      <Filter>Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourNavMeshBuilder.h">
+      <Filter>Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourNavMeshQuery.h">
+      <Filter>Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourNode.h">
+      <Filter>Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourPathCorridor.h">
+      <Filter>Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourStatus.h">
+      <Filter>Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\libs\detour\DetourTileCache.h">
+      <Filter>Detour</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

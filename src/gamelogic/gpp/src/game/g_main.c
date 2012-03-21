@@ -153,6 +153,47 @@ vmCvar_t           g_tag;
 vmCvar_t           g_showKillerHP;
 vmCvar_t           g_combatCooldown;
 
+// <bot stuff>
+
+// bot buy cvars
+vmCvar_t g_bot_buy;
+vmCvar_t g_bot_rifle;
+vmCvar_t g_bot_painsaw;
+vmCvar_t g_bot_shotgun;
+vmCvar_t g_bot_lasgun;
+vmCvar_t g_bot_mdriver;
+vmCvar_t g_bot_chaingun;
+vmCvar_t g_bot_prifle;
+vmCvar_t g_bot_flamer;
+vmCvar_t g_bot_lcannon;
+
+// bot evolution cvars
+vmCvar_t g_bot_evolve;
+vmCvar_t g_bot_level1;
+vmCvar_t g_bot_level1upg;
+vmCvar_t g_bot_level2;
+vmCvar_t g_bot_level2upg;
+vmCvar_t g_bot_level3;
+vmCvar_t g_bot_level3upg;
+vmCvar_t g_bot_level4;
+
+// misc bot cvars
+vmCvar_t g_bot_attackStruct;
+vmCvar_t g_bot_roam;
+vmCvar_t g_bot_rush;
+vmCvar_t g_bot_repair;
+vmCvar_t g_bot_build;
+vmCvar_t g_bot_retreat;
+vmCvar_t g_bot_infinite_funds;
+vmCvar_t g_bot_survival;
+vmCvar_t g_bot_wave_interval;
+vmCvar_t g_bot_numInGroup;
+vmCvar_t g_bot_persistent;
+vmCvar_t g_bot_debug;
+vmCvar_t g_bot_buildLayout;
+
+//</bot stuff>
+
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
 static char        cv_humanMaxStage[ MAX_CVAR_VALUE_STRING ];
@@ -289,7 +330,45 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_tag,                         "g_tag",                         "gpp",                              CVAR_INIT,                                       0, qfalse           },
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           }
+	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	// <bot stuff>
+	// bot buy cvars
+	{ &g_bot_buy, "g_bot_buy", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_rifle, "g_bot_rifle", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_painsaw, "g_bot_painsaw", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_shotgun, "g_bot_shotgun", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_lasgun, "g_bot_lasgun", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_mdriver, "g_bot_mdriver", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_chaingun, "g_bot_chain", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_prifle, "g_bot_prifle", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_flamer, "g_bot_flamer", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_lcannon, "g_bot_lcannon", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+
+	// bot evolution cvars
+	{ &g_bot_evolve, "g_bot_evolve", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level1, "g_bot_level1", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level1upg, "g_bot_level1upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2, "g_bot_level2", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2upg, "g_bot_level2upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3, "g_bot_level3", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3upg, "g_bot_level3upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level4, "g_bot_level4", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+
+	// misc bot cvars
+	{ &g_bot_attackStruct, "g_bot_attackStruct", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_roam, "g_bot_roam", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_rush, "g_bot_rush", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_repair, "g_bot_repair", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_build, "g_bot_build", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_retreat, "g_bot_retreat", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_survival, "g_bot_survival", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_wave_interval, "g_bot_wave_interval", "60", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_numInGroup, "g_bot_numInGroup", "3", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_persistent, "g_bot_persistent", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_debug, "g_bot_debug", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse }
+	// </bot stuff>
 };
 
 static int         gameCvarTableSize = sizeof( gameCvarTable ) / sizeof( gameCvarTable[ 0 ] );
@@ -688,6 +767,12 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
 
+	  // load a bot layout
+	G_BotLoadBuildLayout();
+
+	// load the navmesh for bots
+	G_NavMeshInit( );
+
 	// the map might disable some things
 	BG_InitAllowedGameElements();
 
@@ -777,6 +862,7 @@ void G_ShutdownGame( int restart )
 
 	G_admin_cleanup();
 	G_namelog_cleanup();
+	G_NavMeshCleanup( );
 	G_UnregisterCommands();
 
 	G_ShutdownMapRotations();

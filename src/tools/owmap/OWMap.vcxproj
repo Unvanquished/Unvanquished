@@ -210,6 +210,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\libs\recast\Recast.h" />
+    <ClInclude Include="..\..\libs\recast\RecastAlloc.h" />
+    <ClInclude Include="..\..\libs\recast\RecastAssert.h" />
     <ClInclude Include="..\common\cmdlib.h" />
     <ClInclude Include="..\common\ddslib.h" />
     <ClInclude Include="..\common\imagelib.h" />
@@ -224,6 +227,8 @@
     <ClInclude Include="..\common\vfs.h" />
     <ClInclude Include="game_openwolf.h" />
     <ClInclude Include="game_tremulous.h" />
+    <ClInclude Include="game_unvanquished.h" />
+    <ClInclude Include="nav.h" />
     <ClInclude Include="q3map2.h" />
     <ClInclude Include="..\..\libs\picomodel\picointernal.h" />
     <ClInclude Include="..\..\libs\picomodel\picomodel.h" />
@@ -231,11 +236,21 @@
     <ClInclude Include="..\..\libs\picomodel\lwo\lwo2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\libs\recast\Recast.cpp" />
+    <ClCompile Include="..\..\libs\recast\RecastAlloc.cpp" />
+    <ClCompile Include="..\..\libs\recast\RecastArea.cpp" />
+    <ClCompile Include="..\..\libs\recast\RecastContour.cpp" />
+    <ClCompile Include="..\..\libs\recast\RecastFilter.cpp" />
+    <ClCompile Include="..\..\libs\recast\RecastLayers.cpp" />
+    <ClCompile Include="..\..\libs\recast\RecastMesh.cpp" />
+    <ClCompile Include="..\..\libs\recast\RecastMeshDetail.cpp" />
+    <ClCompile Include="..\..\libs\recast\RecastRasterization.cpp" />
+    <ClCompile Include="..\..\libs\recast\RecastRegion.cpp" />
     <ClCompile Include="..\common\cmdlib.c">
     </ClCompile>
     <ClCompile Include="..\common\ddslib.c">
-	 <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
-	</ClCompile>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
+    </ClCompile>
     <ClCompile Include="..\common\imagelib.c">
     </ClCompile>
     <ClCompile Include="..\common\inout.c">
@@ -304,6 +319,7 @@
     </ClCompile>
     <ClCompile Include="model.c">
     </ClCompile>
+    <ClCompile Include="nav.cpp" />
     <ClCompile Include="patch.c">
     </ClCompile>
     <ClCompile Include="path_init.c">

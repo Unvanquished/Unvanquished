@@ -204,6 +204,7 @@ qboolean        G_admin_l0( gentity_t *ent );  // AA-QVM 1.2
 qboolean        G_admin_l1( gentity_t *ent );  // AA-QVM 1.2
 qboolean        G_admin_register( gentity_t *ent );  // AA-QVM 1.2
 qboolean        G_admin_unregister( gentity_t *ent );  // AA-QVM 1.2
+qboolean        G_admin_bot( gentity_t *ent );
 
 void            G_admin_print( gentity_t *ent, char *m );
 void            G_admin_buffer_print( gentity_t *ent, char *m );
