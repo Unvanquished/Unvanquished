@@ -49,7 +49,6 @@ Maryland 20850 USA.
  * You may also wish to include "jerror.h".
  */
 
-#define JPEG_INTERNALS
 #ifdef SYSTEM_JPEG
 #	include <jpeglib.h>
 #else
