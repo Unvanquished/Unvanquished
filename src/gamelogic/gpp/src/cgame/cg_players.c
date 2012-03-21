@@ -3213,7 +3213,7 @@ void CG_Player( centity_t *cent )
 
 	if ( ci->bodyModel )
 	{
-		vec3_t legsAngles, torsoAngles, headAngles, playerMins, playerMaxs;
+		vec3_t legsAngles, torsoAngles, headAngles;
 
 		quat_t torsoQuat;
 		//quat_t headQuat;
@@ -3336,8 +3336,7 @@ void CG_Player( centity_t *cent )
 				VectorCopy( cent->currentState.angles2, surfNormal );
 			}
 
-			VectorCopy( playerMins, mins );
-			VectorCopy( playerMaxs, maxs );
+			BG_ClassBoundingBox( class, mins, maxs, NULL, NULL, NULL );
 
 			VectorMA( cent->lerpOrigin, -TRACE_DEPTH, surfNormal, end );
 			VectorMA( cent->lerpOrigin, 1.0f, surfNormal, start );
@@ -3350,7 +3349,7 @@ void CG_Player( centity_t *cent )
 				VectorCopy( tr.endpos, playerOrigin );
 
 				// MD5 player models have their model origin at (0 0 0)
-				VectorMA( playerOrigin, playerMins[ 2 ], surfNormal, body.origin );
+				VectorMA( playerOrigin, mins[ 2 ], surfNormal, body.origin );
 			}
 			else
 			{
