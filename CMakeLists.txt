@@ -68,6 +68,7 @@ if( USE_VOIP )
   option( USE_INTERNAL_SPEEX "Use internal speex"                          0 )
 endif()
 option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
+option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
 
 # Package info
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
@@ -880,23 +881,25 @@ if( USE_VOIP )
   endif()
 endif()
 
-set( CRYPTOLIST
-  ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
-  ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
-  ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
-  ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
-  ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
-)
+if( USE_INTERNAL_CRYPTO )
+  set( CRYPTOLIST
+    ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
+    ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
+    ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
+    ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
+    ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
+  )
+endif()
 
 set( OWMAPLIST
   ${MOUNT_DIR}/tools/common/cmdlib.c
@@ -1330,6 +1333,12 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${SPEEX_LIBRARIES} )
   endif()
 
+  if( NOT USE_INTERNAL_CRYPTO )
+    find_package( Nettle REQUIRED )
+    include_directories( ${NETTLE_INCLUDE_DIRS} )
+    target_link_libraries( client ${NETTLE_LIBRARIES} )
+  endif()
+
   if( USE_OPENAL )
     find_package( OpenAL REQUIRED )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL )
@@ -1465,6 +1474,12 @@ if( BUILD_SERVER )
     find_package( ZLIB REQUIRED ) # Only used to check if ZLIB exists
     include_directories( ${ZLIB_INCLUDE_DIRS} )
     target_link_libraries( server ${ZLIB_LIBRARIES} )
+  endif()
+
+  if( NOT USE_INTERNAL_CRYPTO )
+    find_package( Nettle REQUIRED )
+    include_directories( ${NETTLE_INCLUDE_DIRS} )
+    target_link_libraries( server ${NETTLE_LIBRARIES} )
   endif()
 
   if( USE_CURL )
