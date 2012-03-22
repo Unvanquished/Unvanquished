@@ -64,6 +64,9 @@ option( USE_PHYSICS          "Compile with Newton Physics"                 0 )
 option( USE_WEBP             "Compile with WebP loader"                    1 )
 option( USE_MYSQL            "Compile with MYSQL support"                  0 )
 option( USE_VOIP             "Compile with VOIP support"                   1 )
+if( USE_VOIP )
+  option( USE_INTERNAL_SPEEX "Use internal speex"                          0 )
+endif()
 option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
 
 # Package info
@@ -831,48 +834,50 @@ set( UIGPP
 )
 
 if( USE_VOIP )
-  set( SPEEXLIST
-    ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
-  )
+  if( USE_INTERNAL_SPEEX )
+    set( SPEEXLIST
+      ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
+    )
+  endif()
 endif()
 
 set( CRYPTOLIST
@@ -1319,6 +1324,12 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${ZLIB_LIBRARIES} )
   endif()
 
+  if( NOT USE_INTERNAL_SPEEX )
+    find_package( Speex REQUIRED )
+    include_directories( ${SPEEX_INCLUDE_DIRS} )
+    target_link_libraries( client ${SPEEX_LIBRARIES} )
+  endif()
+
   if( USE_OPENAL )
     find_package( OpenAL REQUIRED )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL )
@@ -1428,7 +1439,7 @@ endif()
 if( BUILD_SERVER )
   # Create the target Server
   add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST}
+    ${QCOMMONLIST} ${SHAREDLIST} ${BOTLIBLIST} ${ZLIBLIST}
     ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
