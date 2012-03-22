@@ -164,20 +164,22 @@ set( PNGLIST
   ${MOUNT_DIR}/libs/libpng/pngpread.c
 )
 
-set( ZLIBLIST
-  ${MOUNT_DIR}/libs/zlib/adler32.c
-  ${MOUNT_DIR}/libs/zlib/compress.c
-  ${MOUNT_DIR}/libs/zlib/crc32.c
-  ${MOUNT_DIR}/libs/zlib/gzio.c
-  ${MOUNT_DIR}/libs/zlib/uncompr.c
-  ${MOUNT_DIR}/libs/zlib/deflate.c
-  ${MOUNT_DIR}/libs/zlib/trees.c
-  ${MOUNT_DIR}/libs/zlib/zutil.c
-  ${MOUNT_DIR}/libs/zlib/inflate.c
-  ${MOUNT_DIR}/libs/zlib/infback.c
-  ${MOUNT_DIR}/libs/zlib/inftrees.c
-  ${MOUNT_DIR}/libs/zlib/inffast.c
-)
+if( USE_INTERNAL_ZLIB )
+  set( ZLIBLIST
+    ${MOUNT_DIR}/libs/zlib/adler32.c
+    ${MOUNT_DIR}/libs/zlib/compress.c
+    ${MOUNT_DIR}/libs/zlib/crc32.c
+    ${MOUNT_DIR}/libs/zlib/gzio.c
+    ${MOUNT_DIR}/libs/zlib/uncompr.c
+    ${MOUNT_DIR}/libs/zlib/deflate.c
+    ${MOUNT_DIR}/libs/zlib/trees.c
+    ${MOUNT_DIR}/libs/zlib/zutil.c
+    ${MOUNT_DIR}/libs/zlib/inflate.c
+    ${MOUNT_DIR}/libs/zlib/infback.c
+    ${MOUNT_DIR}/libs/zlib/inftrees.c
+    ${MOUNT_DIR}/libs/zlib/inffast.c
+  )
+endif()
 
 set( OGGLIST
   ${MOUNT_DIR}/libs/ogg/src/bitwise.c
@@ -1313,7 +1315,8 @@ if( BUILD_CLIENT )
 
   if( NOT USE_INTERNAL_ZLIB )
     find_package( ZLIB REQUIRED ) # This is used to check that ZLIB is available
-    set( ZLIBLIST )
+    include_directories( ${ZLIB_INCLUDE_DIRS} )
+    target_link_libraries( client ${ZLIB_LIBRARIES} )
   endif()
 
   if( USE_OPENAL )
@@ -1449,7 +1452,8 @@ if( BUILD_SERVER )
 
   if( NOT USE_INTERNAL_ZLIB )
     find_package( ZLIB REQUIRED ) # Only used to check if ZLIB exists
-    set( ZLIBLIST )
+    include_directories( ${ZLIB_INCLUDE_DIRS} )
+    target_link_libraries( server ${ZLIB_LIBRARIES} )
   endif()
 
   if( USE_CURL )
