@@ -734,7 +734,7 @@ qboolean BotNav_Trace(dtNavMeshQuery* navQuery, dtQueryFilter* navFilter, vec3_t
   status = navQuery->findNearestPoly(start,extents,navFilter,&startRef,nearPoint);
   if(dtStatusFailed(status) || startRef == 0) {
     //try larger extents
-    extents[2] += 500;
+    extents[1] += 500;
     status = navQuery->findNearestPoly(start,extents,navFilter,&startRef,nearPoint);
     if(dtStatusFailed(status) || startRef == 0) {
       *numHit = 0;
