@@ -46,11 +46,12 @@ if( USE_CURL )
   option( USE_CURL_DLOPEN    "Use dlopen to load curl"                     1 )
 option( USE_LLVM             "Use LLVM"                                    0 )
 endif()
-if( WIN32 )
-  option( USE_SYSTEM_HEADERS "Use local headers"                           0 )
-else()
-  option( USE_SYSTEM_HEADERS "Use local headers"                           1 )
-endif()
+option( USE_SYSTEM_HEADERS "Use local headers"                             1 )
+#if( WIN32 )
+#  option( USE_SYSTEM_HEADERS "Use local headers"                           0 )
+#else()
+#  option( USE_SYSTEM_HEADERS "Use local headers"                           1 )
+#endif()
 option( USE_CPUINFO          "Use CPUInfo (if compile fails, disable this" 1 )
 option( USE_INTERNAL_ZLIB    "Use internal zlib"                           0 )
 option( USE_CURSES           "Use the curses console"                      1 )
@@ -1052,7 +1053,7 @@ endif()
 if( WIN32 )
   add_definitions( -DWINVER=0x501 )
   #set( OS_LIBRARIES m winmm wsock32 gdi32 ole32 ws2_32 psapi Iphlpapi advapi32 shell32 user32 )
-  set( OS_LIBRARIES m winmm ws2_32 psapi )
+  set( OS_LIBRARIES m winmm ws2_32 psapi libz )
   set( EXTRALIBS dinput dsound )
   set( OS_BUILD )
 elseif( UNIX )
@@ -1130,22 +1131,46 @@ endif()
 if( BUILD_GAME_SO_GPP )
   add_library( gppgame  SHARED ${GAMEGPP} )
   set_property( TARGET gppgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-  set_target_properties( gppgame PROPERTIES
-    OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY "main" )
+  if( WIN32 )
+    set_target_properties( gppgame PROPERTIES
+      OUTPUT_NAME "qagame_mp_${BUILD_ARCH}"
+      PREFIX ""
+      RUNTIME_OUTPUT_DIRECTORY "main"
+      ARCHIVE_OUTPUT_DIRECTORY "main" )
+  else()
+    set_target_properties( gppgame PROPERTIES
+      OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
+      PREFIX ""
+      LIBRARY_OUTPUT_DIRECTORY "main" )
+  endif()
   add_library( gpptrem SHARED ${CGAMEGPP} )
   set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-  set_target_properties( gpptrem PROPERTIES
-    OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY "main" )
+  if( WIN32 )
+    set_target_properties( gpptrem PROPERTIES
+      OUTPUT_NAME "cgame_mp_${BUILD_ARCH}"
+      PREFIX ""
+      RUNTIME_OUTPUT_DIRECTORY "main"
+      ARCHIVE_OUTPUT_DIRECTORY "main" )
+  else()
+    set_target_properties( gpptrem PROPERTIES
+      OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
+      PREFIX ""
+      LIBRARY_OUTPUT_DIRECTORY "main" )
+  endif()
   add_library( gppui SHARED ${UIGPP} )
   set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-  set_target_properties( gppui PROPERTIES
-    OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY "main" )
+  if( WIN32 )
+    set_target_properties( gppui PROPERTIES
+      OUTPUT_NAME "ui_mp_${BUILD_ARCH}"
+      PREFIX ""
+      RUNTIME_OUTPUT_DIRECTORY "main"
+      ARCHIVE_OUTPUT_DIRECTORY "main" )
+  else()  
+    set_target_properties( gppui PROPERTIES
+      OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
+      PREFIX ""
+      LIBRARY_OUTPUT_DIRECTORY "main" )
+  endif()
 endif()
 
 ###################
@@ -1196,7 +1221,11 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
     include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
     target_link_libraries( rendererGL ${OS_LIBRARIES} ${PNG_LIBRARIES} ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
-    set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "librendererGL3${BUILD_ARCH}" PREFIX "" )
+    if( WIN32 )
+      set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" PREFIX "" )
+    else()
+      set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "librendererGL3${BUILD_ARCH}" PREFIX "" )
+    endif()
     if( WEBP_FOUND )
       set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
       include_directories( ${WEBP_INCLUDE_DIRS} )
@@ -1215,7 +1244,11 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
     include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
     target_link_libraries( renderer ${PNG_LIBRARY}  ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
-    set_target_properties( renderer PROPERTIES OUTPUT_NAME "librendererGL${BUILD_ARCH}" PREFIX "" )
+    if( WIN32 )
+      set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" PREFIX "" )
+    else()
+      set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "librendererGL${BUILD_ARCH}" PREFIX "" )
+    endif()
     if( WEBP_FOUND )
       set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
       include_directories( ${WEBP_INCLUDE_DIR} )
