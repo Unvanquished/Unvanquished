@@ -101,7 +101,6 @@ int DistanceToGoal(gentity_t *self);
 int DistanceToGoalSquared(gentity_t *self);
 int BotGetStrafeDirection(void);
 void PlantEntityOnGround(gentity_t *ent, vec3_t groundPos);
-qboolean BotFindRandomPoint(gentity_t *ent, vec3_t point);
 
 extern dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
 extern dtQueryFilter navFilters[PCL_NUM_CLASSES];
@@ -180,7 +179,7 @@ static inline bool BotChangeTarget(gentity_t *self, gentity_t *target, vec3_t *p
 	BotSetGoal(self, target, pos);
 	if( !self->botMind->goal.inuse )
 		return false;
-	if( FindRouteToTarget(self, self->botMind->goal) & STATUS_PARTIAL ) {
+	if( FindRouteToTarget(self, self->botMind->goal) & (STATUS_PARTIAL|STATUS_FAILED) ) {
 		return false;
 	}
 	self->botMind->needNewGoal = qfalse;
@@ -190,7 +189,7 @@ static inline bool BotChangeTarget(gentity_t *self, gentity_t *target, vec3_t *p
 static inline bool BotChangeTarget(gentity_t *self, botTarget_t target) {
 	if( !target.inuse )
 		return false;
-	if( FindRouteToTarget(self, target) & STATUS_PARTIAL) {
+	if( FindRouteToTarget(self, target) & (STATUS_PARTIAL | STATUS_FAILED)) {
 		return false;
 	}
 	self->botMind->needNewGoal = qfalse;

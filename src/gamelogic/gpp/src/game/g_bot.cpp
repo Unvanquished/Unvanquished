@@ -1012,7 +1012,7 @@ return qfalse;
 return qtrue;
 }*/
 
-botTarget_t BotGetRoamTarget(gentity_t *self) {
+/*botTarget_t BotGetRoamTarget(gentity_t *self) {
   vec3_t point;
   botTarget_t target;
   if(!BotFindRandomPoint(self, point)) {
@@ -1020,6 +1020,33 @@ botTarget_t BotGetRoamTarget(gentity_t *self) {
 	  return target;
   }
   BotSetTarget(&target,NULL,&point);
+  return target;*/
+//This function is expensive since we check the route first!
+//Pls use with caution
+//returns true if successful, false if unsuccessful
+botTarget_t BotGetRoamTarget(gentity_t *self) {
+  int result;
+  botTarget_t target;
+  int numTiles = 0;
+  const dtNavMesh *navMesh = self->botMind->navQuery->getAttachedNavMesh();
+  numTiles = navMesh->getMaxTiles();
+  const dtMeshTile *tile;
+  vec3_t targetPos;
+
+  //pick a random tile
+  do {
+    tile = navMesh->getTile(rand() % numTiles);
+  } while(!tile->header->vertCount);
+
+  //pick a random vertex in the tile
+  int vertStart = 3 * (rand() % tile->header->vertCount);
+  
+  //convert from recast to quake3
+  float *v = &tile->verts[vertStart];
+  VectorCopy(v, targetPos);
+  recast2quake(targetPos);
+
+  BotSetTarget(&target, NULL, &targetPos);
   return target;
 }
 
@@ -1585,7 +1612,7 @@ botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer) {
   if(BotRoutePermission(self,BOT_TASK_ROAM)) {
-	if( !BotChangeTarget(self, BotGetRoamTarget(self)) )
+	if( !BotChangeTarget(self, BotGetRoamTarget(self) ) )
 		return TASK_STOPPED;
 	self->botMind->task = BOT_TASK_ROAM;
   }

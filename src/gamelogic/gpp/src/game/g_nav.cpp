@@ -649,28 +649,13 @@ qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer ) {
   }
   return qtrue;
 }
+
 /*
 ========================
 Bot Navigation Querys
 ========================
 */
 
-//wrapper around macro so we can pass it to the findrandompoint function
-static float frand() {
- return random();
-}
-qboolean BotFindRandomPoint(gentity_t *ent, vec3_t point) {
-  dtPolyRef end;
-  dtStatus status;
-  status = ent->botMind->navQuery->findRandomPoint(ent->botMind->navFilter, frand, &end, point);
-  if(dtStatusSucceed(status)) {
-    recast2quake(point);
-    return qtrue;
-  } else {
-    VectorClear(point);
-    return qfalse;
-  }
-}
 void BotGetAgentExtents(gentity_t *ent, vec3_t extents) {
   VectorSet(extents, ent->r.maxs[0] * 5,  2 * (ent->r.maxs[2] - ent->r.mins[2]), ent->r.maxs[1] * 5);
 }
