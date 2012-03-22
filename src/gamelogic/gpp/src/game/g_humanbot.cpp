@@ -562,18 +562,14 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	//if we dont have enough bp, or we are trying to build a reactor, go and decon something
     if(G_GetBuildPoints(origin, BotGetTeam(self)) < BG_Buildable(building)->buildPoints || (G_Reactor() && building == BA_H_REACTOR)) {
 		
-		
         int deconNum = ENTITYNUM_NONE;
         vec3_t targetPos;
 		//set the current goal to best building to decon
 		if(BotRoutePermission(self, BOT_TASK_BUILD)) {
             //find the best building to decon
 		    deconNum = BotFindBestHDecon(self, building,origin);
-
-			BotSetGoal(self, &g_entities[deconNum], NULL);
-			FindRouteToTarget(self, self->botMind->goal);
+			BotChangeTarget(self, &g_entities[deconNum],NULL);
             self->botMind->task = BOT_TASK_BUILD;
-			self->botMind->needNewGoal = qfalse;
 		}
         deconNum = BotGetTargetEntityNumber(self->botMind->goal);
 
@@ -604,10 +600,8 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		}
 	} else if(BotRoutePermission(self, BOT_TASK_BUILD)) {
 		//set the target coordinate where we will place the building
-		BotSetGoal(self,NULL, (vec3_t*)&origin);
-        FindRouteToTarget(self, self->botMind->goal);
+		BotChangeTarget(self, NULL, (vec3_t*)&origin);
         self->botMind->task = BOT_TASK_BUILD;
-		self->botMind->needNewGoal = qfalse;
 	} else if(DistanceToGoalSquared(self) > Square(dist)) {
 		//move to where we will place the building until close enough to place it
 		BotMoveToGoal(self, botCmdBuffer);
@@ -684,9 +678,7 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 	}
 
 	if(BotRoutePermission(self, BOT_TASK_BUY)) {
-		BotSetGoal(self, self->botMind->closestBuildings.armoury.ent,NULL);
-		FindRouteToTarget(self, self->botMind->goal);
-		self->botMind->needNewGoal = qfalse;
+		BotChangeTarget(self, self->botMind->closestBuildings.armoury.ent, NULL);
 		self->botMind->task = BOT_TASK_BUY;
 	}
 
@@ -743,13 +735,8 @@ botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 	//find a new route if we have to
 	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
-          BotSetGoal(self, self->botMind->closestBuildings.medistation.ent,NULL);
-		if(FindRouteToTarget(self, self->botMind->goal) & STATUS_SUCCEED) {
-			self->botMind->task = BOT_TASK_HEAL;
-			self->botMind->needNewGoal = qfalse;
-		} else {
-			return TASK_STOPPED;
-		}
+		BotChangeTarget(self, self->botMind->closestBuildings.medistation.ent,NULL);
+		self->botMind->task = BOT_TASK_HEAL;
 	}
 
 	//safety check
@@ -792,9 +779,7 @@ botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer) {
 		return TASK_STOPPED;
 
 	if(BotRoutePermission(self, BOT_TASK_REPAIR)) {
-		BotSetGoal(self, self->botMind->closestDamagedBuilding.ent,NULL);
-		FindRouteToTarget(self, self->botMind->goal);
-		self->botMind->needNewGoal = qfalse;
+		BotChangeTarget(self, self->botMind->closestDamagedBuilding.ent, NULL);
 		self->botMind->task = BOT_TASK_REPAIR;
 	}
 

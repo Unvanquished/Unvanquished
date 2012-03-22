@@ -1024,16 +1024,12 @@ return qfalse;
 return qtrue;
 }*/
 
-qboolean BotSetRoamGoal(gentity_t *self) {
+botTarget_t BotGetRoamTarget(gentity_t *self) {
   vec3_t point;
-  if(BotFindRandomPoint(self, point)) {
-    BotSetGoal(self, NULL, &point);
-	FindRouteToTarget(self, self->botMind->goal);
-    return qtrue;
-  } else {
-    return qfalse;
-  }
-
+  botTarget_t target;
+  BotFindRandomPoint(self, point);
+  BotSetTarget(&target,NULL,&point);
+  return target;
 }
 
 /*
@@ -1419,10 +1415,8 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
   if(BotRoutePermission(self,BOT_TASK_FIGHT)) {
     if(!self->botMind->bestEnemy.ent) //no enemy, stop the task
       return TASK_STOPPED;
-    BotSetGoal(self, self->botMind->bestEnemy.ent,NULL);
-    FindRouteToTarget(self, self->botMind->goal);
+    BotChangeTarget(self, self->botMind->bestEnemy.ent, NULL);
     self->botMind->task = BOT_TASK_FIGHT;
-    self->botMind->needNewGoal = qfalse;
   }
 
   //safety check
@@ -1458,7 +1452,7 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
   //we can't see our target
   if(!BotTargetIsVisible(self, self->botMind->goal, MASK_SHOT)) {
     //we can see another enemy (not our target)
-    if(self->botMind->bestEnemy.ent && G_Visible(self, self->botMind->bestEnemy.ent, MASK_SHOT) {
+    if(self->botMind->bestEnemy.ent && G_Visible(self, self->botMind->bestEnemy.ent, MASK_SHOT)) {
       //change targets
       self->botMind->needNewGoal = qtrue;
       return TASK_RUNNING;
@@ -1564,9 +1558,7 @@ botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer) {
     return TASK_STOPPED;
 
   if(BotRoutePermission(self, BOT_TASK_RETREAT)) {
-    self->botMind->goal = BotGetRetreatTarget(self);
-    FindRouteToTarget(self, self->botMind->goal);
-    self->botMind->needNewGoal = qfalse;
+    BotChangeTarget(self, BotGetRetreatTarget(self));
     self->botMind->task = BOT_TASK_RETREAT;
   }
   if(!BotTargetIsEntity(self->botMind->goal)) {
@@ -1585,9 +1577,7 @@ botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer) {
     return TASK_STOPPED;
   }
   if(BotRoutePermission(self,BOT_TASK_RUSH)) {
-    self->botMind->goal = BotGetRushTarget(self);
-    FindRouteToTarget(self, self->botMind->goal);
-    self->botMind->needNewGoal = qfalse;
+    BotChangeTarget(self, BotGetRushTarget(self));
     self->botMind->task = BOT_TASK_RUSH;
   }
   if(!BotTargetIsEntity(self->botMind->goal)) {
@@ -1606,12 +1596,13 @@ botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer) {
   if(BotRoutePermission(self,BOT_TASK_ROAM)) {
-    if(BotSetRoamGoal(self)) {
-      self->botMind->needNewGoal = qfalse;
-      self->botMind->task = BOT_TASK_ROAM;
-    } else {
-      return TASK_STOPPED; //do nothing until we have a route
-    }
+      botTarget_t target = BotGetRoamTarget(self);
+	  if(!target.inuse)
+		return TASK_STOPPED;
+	  else {
+		  BotChangeTarget(self,target);
+		  self->botMind->task = BOT_TASK_ROAM;
+	  }
   }
   if(DistanceToGoalSquared(self) > Square(70)) {
     BotMoveToGoal(self, botCmdBuffer);
