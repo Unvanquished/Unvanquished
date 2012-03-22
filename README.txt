@@ -34,6 +34,12 @@ Build Instructions
     Press 'c' and then 'g'
     make
     (use `make -jN` where N is your number of CPU cores to speed up compilation)
+    
+    MINGW + MSYS
+    ------------
+    mkdir build && cd build (from Unvanquished root directory)
+    cmake -G "MSYS Makefiles" -DCMAKE_PREFIX_PATH="C:\MINGW"  ..
+    make
 
 Run Instructions for Unvanquished
 ----------------------------------

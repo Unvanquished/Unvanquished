@@ -35,13 +35,12 @@
 #ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 #POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
-
 # Look for the header file.
 FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
 MARK_AS_ADVANCED(GLEW_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(GLEW_LIBRARY NAMES GLEW)
+FIND_LIBRARY(GLEW_LIBRARY NAMES GLEW glew32)
 MARK_AS_ADVANCED(GLEW_LIBRARY)
 
 # handle the QUIETLY and REQUIRED arguments and set GLEW_FOUND to TRUE if 
