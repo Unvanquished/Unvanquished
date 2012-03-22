@@ -35,9 +35,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * You may also wish to include "jerror.h".
  */
 
-#define JPEG_INTERNALS
-#include "../jpeg/jpeglib.h"
-#include "../libpng/png.h"
+#ifdef SYSTEM_JPEG
+#	include <jpeglib.h>
+#else
+#	include "../../libs/jpeg/jpeglib.h"
+#endif
+#ifdef SYSTEM_PNG
+#	include <png.h>
+#else
+#	include "../../libs/libpng/png.h"
+#endif
 
 
 int fgetLittleShort(FILE * f)
@@ -1313,6 +1320,9 @@ void LoadJPGBuffer(const char *filename, byte * fbuffer, int fbufferSize, byte *
 	unsigned char  *out;
 	//unsigned char  *out_converted;
 	byte           *bbuf;
+#if JPEG_LIB_VERSION < 80
+	FILE           *jpegfd;
+#endif
 
 	/* In this example we want to open the input file before doing anything else,
 	 * so that the setjmp() error recovery below can assume the file is open.
@@ -1341,7 +1351,12 @@ void LoadJPGBuffer(const char *filename, byte * fbuffer, int fbufferSize, byte *
 
 	/* Step 2: specify data source (eg, a file) */
 
+#if JPEG_LIB_VERSION < 80
+	jpegfd = fmemopen( fbuffer, fbufferSize, "r" );
+	jpeg_stdio_src( &cinfo, jpegfd );
+#else
 	jpeg_mem_src(&cinfo, fbuffer, fbufferSize);
+#endif
 
 	/* Step 3: read file parameters with jpeg_read_header() */
 
@@ -1462,6 +1477,9 @@ void LoadJPGBuffer(const char *filename, byte * fbuffer, int fbufferSize, byte *
 	 * so as to simplify the setjmp error logic above.  (Actually, I don't
 	 * think that jpeg_destroy can do an error exit, but why assume anything...)
 	 */
+#if JPEG_LIB_VERSION < 80
+	fclose( jpegfd );
+#endif
 //  free(fbuffer);
 
 	/* At this point you may want to check to see whether any corrupt-data
