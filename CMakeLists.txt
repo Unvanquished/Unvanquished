@@ -1161,7 +1161,7 @@ if( BUILD_GAME_SO_TREM )
 endif()
 
 if( BUILD_GAME_SO_GPP )
-  add_library( gppgame  SHARED ${GAMEGPP} )
+  add_library( gppgame  SHARED ${GAMEGPP} ${RECASTLIST} ${DETOURLIST} )
   set_property( TARGET gppgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( gppgame PROPERTIES
     OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
