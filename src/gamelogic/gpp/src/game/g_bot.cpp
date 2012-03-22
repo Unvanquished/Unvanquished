@@ -1028,6 +1028,7 @@ qboolean BotSetRoamGoal(gentity_t *self) {
   vec3_t point;
   if(BotFindRandomPoint(self, point)) {
     BotSetGoal(self, NULL, &point);
+	FindRouteToTarget(self, self->botMind->goal);
     return qtrue;
   } else {
     return qfalse;
