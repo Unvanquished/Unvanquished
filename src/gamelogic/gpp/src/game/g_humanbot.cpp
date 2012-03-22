@@ -678,7 +678,8 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 	}
 
 	if(BotRoutePermission(self, BOT_TASK_BUY)) {
-		BotChangeTarget(self, self->botMind->closestBuildings.armoury.ent, NULL);
+		if(!BotChangeTarget(self, self->botMind->closestBuildings.armoury.ent, NULL)) 
+			return TASK_STOPPED;
 		self->botMind->task = BOT_TASK_BUY;
 	}
 
@@ -735,7 +736,8 @@ botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 	//find a new route if we have to
 	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
-		BotChangeTarget(self, self->botMind->closestBuildings.medistation.ent,NULL);
+		if(!BotChangeTarget(self, self->botMind->closestBuildings.medistation.ent,NULL))
+			return TASK_STOPPED;
 		self->botMind->task = BOT_TASK_HEAL;
 	}
 
@@ -779,7 +781,8 @@ botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer) {
 		return TASK_STOPPED;
 
 	if(BotRoutePermission(self, BOT_TASK_REPAIR)) {
-		BotChangeTarget(self, self->botMind->closestDamagedBuilding.ent, NULL);
+		if( !BotChangeTarget(self, self->botMind->closestDamagedBuilding.ent, NULL) )
+			return TASK_STOPPED;
 		self->botMind->task = BOT_TASK_REPAIR;
 	}
 

@@ -173,19 +173,29 @@ static inline int BotGetTargetType( botTarget_t target) {
 }
 
 static inline bool BotRoutePermission(gentity_t *self, botTask_t task) {
-  return (self->botMind->needNewGoal || self->botMind->task != task);
+  return (!self->botMind->goal.inuse || self->botMind->needNewGoal || self->botMind->task != task);
 }
 
-static inline void BotChangeTarget(gentity_t *self, gentity_t *target, vec3_t *pos) {
-	self->botMind->needNewGoal = qfalse;
+static inline bool BotChangeTarget(gentity_t *self, gentity_t *target, vec3_t *pos) {
 	BotSetGoal(self, target, pos);
-	FindRouteToTarget(self, self->botMind->goal);
+	if( !self->botMind->goal.inuse )
+		return false;
+	if( FindRouteToTarget(self, self->botMind->goal) & STATUS_PARTIAL ) {
+		return false;
+	}
+	self->botMind->needNewGoal = qfalse;
+	return true;
 }
 
-static inline void BotChangeTarget(gentity_t *self, botTarget_t target) {
+static inline bool BotChangeTarget(gentity_t *self, botTarget_t target) {
+	if( !target.inuse )
+		return false;
+	if( FindRouteToTarget(self, target) & STATUS_PARTIAL) {
+		return false;
+	}
 	self->botMind->needNewGoal = qfalse;
 	self->botMind->goal = target;
-	FindRouteToTarget(self, self->botMind->goal);
+	return true;
 }
 //configureable constants
 //For a reference of how far a number represents, take a look at tremulous.h

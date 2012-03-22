@@ -660,19 +660,12 @@ static float frand() {
  return random();
 }
 qboolean BotFindRandomPoint(gentity_t *ent, vec3_t point) {
-  dtPolyRef start, end;
-  vec3_t pos;
+  dtPolyRef end;
   dtStatus status;
-  if(BotFindNearestPoly(ent, ent,&start,pos)) {
-    quake2recast(pos);
-    status = ent->botMind->navQuery->findRandomPointAroundCircle(start, pos, 1000, ent->botMind->navFilter, frand, &end, point);
-    if(dtStatusSucceed(status)) {
-      recast2quake(point);
-      return qtrue;
-    } else {
-      VectorClear(point);
-      return qfalse;
-    }
+  status = ent->botMind->navQuery->findRandomPoint(ent->botMind->navFilter, frand, &end, point);
+  if(dtStatusSucceed(status)) {
+    recast2quake(point);
+    return qtrue;
   } else {
     VectorClear(point);
     return qfalse;
