@@ -89,7 +89,7 @@ bool G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
 botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer);
 
 //g_nav.cpp
-qboolean BotFindNearestPoly(gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint);
+qboolean BotFindNearestPoly( gentity_t *self, gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint);
 qboolean BotNav_Trace(dtNavMeshQuery *navQuery, dtQueryFilter* navFilter, vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies);
 qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target);
 qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer );

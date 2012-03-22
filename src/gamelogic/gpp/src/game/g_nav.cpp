@@ -620,13 +620,13 @@ void UpdatePathCorridor(gentity_t *self) {
   //check for replans
   //THIS STILL DOESNT WORK 100% OF THE TIME GRRRRRRR
   if(self->client->time1000 % 500 == 0) {
-    if(BotFindNearestPoly(self,&check,pos) && self->client->ps.groundEntityNum != ENTITYNUM_NONE) {
+    if(BotFindNearestPoly(self, self,&check,pos) && self->client->ps.groundEntityNum != ENTITYNUM_NONE) {
       if(check != self->botMind->pathCorridor->getFirstPoly())
         FindRouteToTarget(self, self->botMind->goal);
     }
     if(BotTargetIsPlayer(self->botMind->goal)) {
       if(self->botMind->goal.ent->client->ps.groundEntityNum != ENTITYNUM_NONE) {
-        if(BotFindNearestPoly(self->botMind->goal.ent,&check,pos)) {
+        if(BotFindNearestPoly(self, self->botMind->goal.ent,&check,pos)) {
           if(check != self->botMind->pathCorridor->getLastPoly())
             FindRouteToTarget(self, self->botMind->goal);
         }
@@ -663,7 +663,7 @@ qboolean BotFindRandomPoint(gentity_t *ent, vec3_t point) {
   dtPolyRef start, end;
   vec3_t pos;
   dtStatus status;
-  if(BotFindNearestPoly(ent,&start,pos)) {
+  if(BotFindNearestPoly(ent, ent,&start,pos)) {
     quake2recast(pos);
     status = ent->botMind->navQuery->findRandomPointAroundCircle(start, pos, 1000, ent->botMind->navFilter, frand, &end, point);
     if(dtStatusSucceed(status)) {
@@ -754,7 +754,7 @@ qboolean BotNav_Trace(dtNavMeshQuery* navQuery, dtQueryFilter* navFilter, vec3_t
     return qtrue;
   }
 }
-qboolean BotFindNearestPoly(gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint) {
+qboolean BotFindNearestPoly(gentity_t *self, gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint) {
   vec3_t extents;
   vec3_t start;
   vec3_t viewNormal;
@@ -763,12 +763,12 @@ qboolean BotFindNearestPoly(gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearP
   dtQueryFilter* navFilter;
   if(ent->client) {
     BG_GetClientNormal(&ent->client->ps,viewNormal);
-    navQuery = navQuerys[ent->client->ps.stats[STAT_CLASS]];
-    navFilter = &navFilters[ent->client->ps.stats[STAT_CLASS]];
+    navQuery = self->botMind->navQuery;
+    navFilter = self->botMind->navFilter;
   } else {
     VectorSet(viewNormal,0,0,1);
-    navQuery = navQuerys[PCL_ALIEN_LEVEL0];
-    navFilter = &navFilters[PCL_ALIEN_LEVEL0];
+    navQuery = self->botMind->navQuery;
+    navFilter = self->botMind->navFilter;
   }
   VectorMA(ent->s.origin,ent->r.mins[2],viewNormal,start);
   quake2recast(start);
@@ -786,11 +786,11 @@ qboolean BotFindNearestPoly(gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearP
   return qtrue;
     
 }
-qboolean BotFindNearestPoly(vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint) {
+qboolean BotFindNearestPoly(gentity_t *self, vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint) {
   vec3_t start,extents;
   dtStatus status;
-  dtNavMeshQuery* navQuery = navQuerys[PCL_ALIEN_LEVEL0];
-  dtQueryFilter* navFilter = &navFilters[PCL_ALIEN_LEVEL0];
+  dtNavMeshQuery* navQuery = self->botMind->navQuery;
+  dtQueryFilter* navFilter = self->botMind->navFilter;
   VectorSet(extents,640,96,640);
   VectorCopy(coord, start);
   quake2recast(start);
@@ -836,15 +836,15 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
     BotGetTargetPos(target,targetPos);
   }
 
-  if(!BotFindNearestPoly(self, &startRef, start)) {
+  if(!BotFindNearestPoly(self, self, &startRef, start)) {
     trap_Print("Failed to find a polygon near the bot\n");
     return STATUS_FAILED | STATUS_NOPOLYNEARSELF;
   }
   
   if(BotTargetIsEntity(target)) {
-    result = BotFindNearestPoly(target.ent,&endRef,end);
+    result = BotFindNearestPoly(self, target.ent,&endRef,end);
   } else {
-    result = BotFindNearestPoly(targetPos,&endRef,end);
+    result = BotFindNearestPoly(self, targetPos,&endRef,end);
   }
 
   if(!result) {
