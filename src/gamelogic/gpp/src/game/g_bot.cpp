@@ -776,23 +776,8 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount) {
   //take the current aim Vector
   AngleVectors( self->client->ps.viewangles, forward, NULL, NULL);
 
-  /*Math FTW*/
-  //use the cosine of the angle between our current aim, and the desired aim
-  float cosAngle = DotProduct(forward,aimVec);
 
-  //apply transformations
-  cosAngle += 1;
-  cosAngle /= 2;
-  //the value is now between 0 and 1
-
-  //The slow value defines the maximum amount that we will turn at once
-  //the bot will turn more slowly as the angle from the target decreases
-  slowness = slow * (1-Square(cosAngle));
-
-  //clamp the value so it doesnt get too low
-  if(slowness < Square(slow)) slowness = Square(slow);
-
-  VectorLerp( forward, aimVec, slowness, skilledVec);
+  VectorLerp( forward, aimVec, slow, skilledVec);
 
   //now find a point to return, this point will be aimed at
   VectorMA(viewBase, length, skilledVec,target);

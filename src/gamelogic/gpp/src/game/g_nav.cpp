@@ -619,7 +619,7 @@ void UpdatePathCorridor(gentity_t *self) {
 
   //check for replans
   //THIS STILL DOESNT WORK 100% OF THE TIME GRRRRRRR
-  if(self->client->time1000 % 500 == 0) {
+  if(self->client->time10000 % 5000 == 0) {
     if(BotFindNearestPoly(self, self,&check,pos) && self->client->ps.groundEntityNum != ENTITYNUM_NONE) {
       if(check != self->botMind->pathCorridor->getFirstPoly())
         FindRouteToTarget(self, self->botMind->goal);
@@ -678,8 +678,8 @@ qboolean BotFindRandomPoint(gentity_t *ent, vec3_t point) {
     return qfalse;
   }
 }
-void BotGetAgentExtents(gentity_t *ent, vec3_t *extents) {
-  VectorSet(*extents, ent->r.maxs[0] * 5, 2 * (ent->r.maxs[2] - ent->r.mins[2]), ent->r.maxs[1] * 5);
+void BotGetAgentExtents(gentity_t *ent, vec3_t extents) {
+  VectorSet(extents, ent->r.maxs[0] * 5,  2 * (ent->r.maxs[2] - ent->r.mins[2]), ent->r.maxs[1] * 5);
 }
 int DistanceToGoal(gentity_t *self) {
   vec3_t targetPos;
@@ -772,11 +772,11 @@ qboolean BotFindNearestPoly(gentity_t *self, gentity_t *ent, dtPolyRef *nearestP
   }
   VectorMA(ent->s.origin,ent->r.mins[2],viewNormal,start);
   quake2recast(start);
-  BotGetAgentExtents(ent,&extents);
+  BotGetAgentExtents(ent,extents);
   status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
   if(dtStatusFailed(status) || *nearestPoly == 0) {
     //try larger extents
-    extents[2] += 900;
+    extents[1] += 900;
     status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
     if(dtStatusFailed(status) || *nearestPoly == 0) {
       return qfalse; // failed
@@ -797,7 +797,7 @@ qboolean BotFindNearestPoly(gentity_t *self, vec3_t coord, dtPolyRef *nearestPol
   status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
   if(dtStatusFailed(status) || *nearestPoly == 0) {
     //try larger extents
-    extents[2] += 900;
+    extents[1] += 900;
     status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
     if(dtStatusFailed(status) || *nearestPoly == 0) {
       return qfalse; // failed
