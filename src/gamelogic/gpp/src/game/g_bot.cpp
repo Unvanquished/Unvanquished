@@ -1561,10 +1561,9 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
   }
 
   //we can't see our target
-  if(!BotTargetIsVisible(self, self->botMind->goal,MASK_SHOT)) {
-    
+  if(!BotTargetIsVisible(self, self->botMind->goal, MASK_SHOT)) {
     //we can see another enemy (not our target)
-    if(self->botMind->bestEnemy.ent != self->botMind->goal.ent) {
+    if(self->botMind->bestEnemy.ent && G_Visible(self, self->botMind->bestEnemy.ent, MASK_SHOT) {
       //change targets
       self->botMind->needNewGoal = qtrue;
       return TASK_RUNNING;
