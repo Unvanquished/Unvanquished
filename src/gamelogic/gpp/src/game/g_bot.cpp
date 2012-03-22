@@ -776,8 +776,11 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount) {
   //take the current aim Vector
   AngleVectors( self->client->ps.viewangles, forward, NULL, NULL);
 
-
-  VectorLerp( forward, aimVec, slow, skilledVec);
+  float cosAngle = DotProduct(forward,aimVec);
+  cosAngle = (cosAngle + 1)/2;
+  cosAngle = 1 - cosAngle;
+  cosAngle = Com_Clamp(0.1,0.5,cosAngle);
+  VectorLerp( forward, aimVec, slow * (cosAngle), skilledVec);
 
   //now find a point to return, this point will be aimed at
   VectorMA(viewBase, length, skilledVec,target);
@@ -1012,7 +1015,7 @@ return qtrue;
 botTarget_t BotGetRoamTarget(gentity_t *self) {
   vec3_t point;
   botTarget_t target;
-  BotFindRandomPoint(self, point);
+  assert(BotFindRandomPoint(self, point));
   BotSetTarget(&target,NULL,&point);
   return target;
 }
