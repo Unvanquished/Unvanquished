@@ -1037,6 +1037,7 @@ set( OWMAPLIST
   ${MOUNT_DIR}/tools/owmap/tree.c
   ${MOUNT_DIR}/tools/owmap/vis.c
   ${MOUNT_DIR}/tools/owmap/visflow.c
+  ${MOUNT_DIR}/tools/owmap/nav.cpp
 )
 
 set( DETOURLIST
@@ -1487,7 +1488,7 @@ endif()
 ################
 if( BUILD_OWMAP )
   # Create OWMap target
-  add_executable( owmap ${OWMAPLIST} )
+  add_executable( owmap ${OWMAPLIST} ${DETOURLIST} ${RECASTLIST} )
   # This section finds and provides dependencies to OWMap target
   find_package( OpenGL REQUIRED )
   include_directories( ${OPENGL_INCLUDE_DIR} )
