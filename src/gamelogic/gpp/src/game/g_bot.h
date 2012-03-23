@@ -29,13 +29,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../../libs/detour/DetourPathCorridor.h"
 
 typedef enum {
-  TASK_STOPPED = 0,
-  TASK_RUNNING
+	TASK_STOPPED = 0,
+	TASK_RUNNING
 } botTaskStatus_t;
 
 typedef enum {
-  MODUS_STOPPED = 0,
-  MODUS_RUNNING
+	MODUS_STOPPED = 0,
+	MODUS_RUNNING
 } botModusStatus_t;
 
 //g_bot.cpp
@@ -109,70 +109,70 @@ extern qboolean navMeshLoaded;
 
 //coordinate conversion
 static inline void quake2recast(vec3_t vec) {
-    vec_t temp = vec[1];
-    vec[0] = -vec[0];
-    vec[1] = vec[2];
-    vec[2] = -temp;
+	vec_t temp = vec[1];
+	vec[0] = -vec[0];
+	vec[1] = vec[2];
+	vec[2] = -temp;
 }
 
 static inline void recast2quake(vec3_t vec) {
-    vec_t temp = vec[1];
-    vec[0] = -vec[0];
-    vec[1] = -vec[2];
-    vec[2] = temp;
+	vec_t temp = vec[1];
+	vec[0] = -vec[0];
+	vec[1] = -vec[2];
+	vec[2] = temp;
 }
 
 //botTarget_t helpers
 static inline bool BotTargetIsEntity(botTarget_t target) {
-  return (target.ent && target.ent->inuse);
+	return (target.ent && target.ent->inuse);
 }
 
 static inline bool BotTargetIsPlayer(botTarget_t target) {
-  return (target.ent && target.ent->inuse && target.ent->client);
+	return (target.ent && target.ent->inuse && target.ent->client);
 }
 
 static inline int BotGetTargetEntityNumber(botTarget_t target) {
-  if(BotTargetIsEntity(target)) 
-    return target.ent->s.number;
-  else
-    return ENTITYNUM_NONE;
+	if(BotTargetIsEntity(target)) 
+		return target.ent->s.number;
+	else
+		return ENTITYNUM_NONE;
 }
 
 static inline void BotGetTargetPos(botTarget_t target, vec3_t rVec) {
-  if(BotTargetIsEntity(target))
-    VectorCopy( target.ent->s.origin, rVec);
-  else
-    VectorCopy(target.coord, rVec);
+	if(BotTargetIsEntity(target))
+		VectorCopy( target.ent->s.origin, rVec);
+	else
+		VectorCopy(target.coord, rVec);
 }
 
 static inline team_t BotGetTeam(gentity_t *ent) {
-  if(!ent)
-    return TEAM_NONE;
-  if(ent->client) {
-    return ent->client->pers.teamSelection;
-  } else if(ent->s.eType == ET_BUILDABLE) {
-    return ent->buildableTeam;
-  } else {
-    return TEAM_NONE;
-  }
+	if(!ent)
+		return TEAM_NONE;
+	if(ent->client) {
+		return ent->client->pers.teamSelection;
+	} else if(ent->s.eType == ET_BUILDABLE) {
+		return ent->buildableTeam;
+	} else {
+		return TEAM_NONE;
+	}
 }
 
 static inline team_t BotGetTeam( botTarget_t target) {
-  if(BotTargetIsEntity(target)) {
-    return BotGetTeam(target.ent);
-  } else
-    return TEAM_NONE;
+	if(BotTargetIsEntity(target)) {
+		return BotGetTeam(target.ent);
+	} else
+		return TEAM_NONE;
 }
 
 static inline int BotGetTargetType( botTarget_t target) {
-  if(BotTargetIsEntity(target))
-    return target.ent->s.eType;
-  else
-    return -1;
+	if(BotTargetIsEntity(target))
+		return target.ent->s.eType;
+	else
+		return -1;
 }
 
 static inline bool BotRoutePermission(gentity_t *self, botTask_t task) {
-  return (!self->botMind->goal.inuse || self->botMind->needNewGoal || self->botMind->task != task);
+	return (!self->botMind->goal.inuse || self->botMind->needNewGoal || self->botMind->task != task);
 }
 
 static inline bool BotChangeTarget(gentity_t *self, gentity_t *target, vec3_t *pos) {

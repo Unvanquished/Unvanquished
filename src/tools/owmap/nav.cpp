@@ -68,83 +68,83 @@ rcConfig cfg;
 
 const int numSkipEntities = 18;
 const char *skipEntities[18] = {"func_door"				, "team_alien_trapper"	, 
-								"team_alien_booster"	, "team_alien_barricade", 
-								"team_alien_spawn"		, "team_alien_acid_tube", 
-								"team_alien_overmind"	, "team_human_spawn"	, 
-								"team_human_mgturret"	, "team_human_medistat"	, 
-								"team_human_armoury"	, "team_human_reactor"	, 
-								"team_human_repeater"	, "team_human_tesla"	, 
-								"team_human_dcc"		, "func_door_model"		,
-								"func_train"			, "func_door_rotating" };
+	"team_alien_booster"	, "team_alien_barricade", 
+	"team_alien_spawn"		, "team_alien_acid_tube", 
+	"team_alien_overmind"	, "team_human_spawn"	, 
+	"team_human_mgturret"	, "team_human_medistat"	, 
+	"team_human_armoury"	, "team_human_reactor"	, 
+	"team_human_repeater"	, "team_human_tesla"	, 
+	"team_human_dcc"		, "func_door_model"		,
+	"func_train"			, "func_door_rotating" };
 
 
 typedef struct {
-  const char* name;   //appended to filename
-  const short radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
-  const short height; //height of agents (BBox maxs[2] - BBox mins[2])
+	const char* name;   //appended to filename
+	const short radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
+	const short height; //height of agents (BBox maxs[2] - BBox mins[2])
 } tremClass_t;
 
 const tremClass_t tremClasses[12] = {
-  {
-    "builder",
-    20,
-    40,
-  },
-  { 
-    "builderupg",
-    20,
-    40,
-  },
-  {
-    "human_base",
-    15,
-    56,
-  },
-  {
-    "human_bsuit",
-    15,
-    76,
-  },
-  {
-    "level0",
-    15,
-    30,
-  },
-  {
-    "level1",
-    18,
-    36
-  },
-  { 
-    "level1upg",
-    21,
-    42
-  },
-  {
-    "level2",
-    23,
-    36
-  },
-  {
-    "level2upg",
-    25,
-    40
-  },
-  {
-    "level3",
-    26,
-    55
-  },
-  {
-    "level3upg",
-    26,
-    66
-  },
-  {
-    "level4",
-    32,
-    92
-  }
+	{
+		"builder",
+			20,
+			40,
+	},
+	{ 
+		"builderupg",
+			20,
+			40,
+		},
+		{
+			"human_base",
+				15,
+				56,
+		},
+		{
+			"human_bsuit",
+				15,
+				76,
+			},
+			{
+				"level0",
+					15,
+					30,
+			},
+			{
+				"level1",
+					18,
+					36
+				},
+				{ 
+					"level1upg",
+						21,
+						42
+				},
+				{
+					"level2",
+						23,
+						36
+					},
+					{
+						"level2upg",
+							25,
+							40
+					},
+					{
+						"level3",
+							26,
+							55
+						},
+						{
+							"level3upg",
+								26,
+								66
+						},
+						{
+							"level4",
+								32,
+								92
+							}
 };
 
 
@@ -154,138 +154,138 @@ qboolean median = qfalse;
 //flag for optimistic walkableclimb projection
 qboolean optimistic = qfalse;
 static void quake2recast(vec3_t vec) {
-  vec_t temp = vec[1];
-  vec[0] = -vec[0];
-  vec[1] = vec[2];
-  vec[2] = -temp;
+	vec_t temp = vec[1];
+	vec[0] = -vec[0];
+	vec[1] = vec[2];
+	vec[2] = -temp;
 }
 static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, const rcPolyMeshDetail *detailedPolyMesh, const rcConfig *cfg )
 {
-    FILE *file;
-    NavMeshHeader_t navHeader;
-    char filename[1024];
-    StripExtension(source);
-    strcpy(filename,source);
-    sprintf(filename,"%s-%s",filename,agentname);
-    DefaultExtension(filename, ".navMesh");
-    Sys_Printf(" writing %s\n", filename);
-    file = fopen(filename, "w");
-    if(!file) {
-      Error("Error opening %s: %s", filename, strerror(errno));
-    }
-    memset(&navHeader,0, sizeof(NavMeshHeader_t));
+	FILE *file;
+	NavMeshHeader_t navHeader;
+	char filename[1024];
+	StripExtension(source);
+	strcpy(filename,source);
+	sprintf(filename,"%s-%s",filename,agentname);
+	DefaultExtension(filename, ".navMesh");
+	Sys_Printf(" writing %s\n", filename);
+	file = fopen(filename, "w");
+	if(!file) {
+		Error("Error opening %s: %s", filename, strerror(errno));
+	}
+	memset(&navHeader,0, sizeof(NavMeshHeader_t));
 
-    //print header info
-    navHeader.version = 1;
-    Sys_Printf(" file version: %i\n",navHeader.version);
+	//print header info
+	navHeader.version = 1;
+	Sys_Printf(" file version: %i\n",navHeader.version);
 
-    navHeader.numVerts = polyMesh->nverts;
-    Sys_Printf(" numVerts: %i\n", navHeader.numVerts);
- 
-    navHeader.numPolys = polyMesh->npolys;
-    Sys_Printf(" numPolys: %i\n", navHeader.numPolys);
+	navHeader.numVerts = polyMesh->nverts;
+	Sys_Printf(" numVerts: %i\n", navHeader.numVerts);
 
-    navHeader.numVertsPerPoly = polyMesh->nvp;
-    Sys_Printf(" numVertsPerPoly: %i\n", navHeader.numVertsPerPoly);
+	navHeader.numPolys = polyMesh->npolys;
+	Sys_Printf(" numPolys: %i\n", navHeader.numPolys);
 
-    VectorCopy (polyMesh->bmin, navHeader.mins);
-    Sys_Printf(" min bounds: %f %f %f\n", navHeader.mins[0], navHeader.mins[1], navHeader.mins[2]);
+	navHeader.numVertsPerPoly = polyMesh->nvp;
+	Sys_Printf(" numVertsPerPoly: %i\n", navHeader.numVertsPerPoly);
 
-    VectorCopy (polyMesh->bmax, navHeader.maxs);
-    Sys_Printf(" max bounds: %f %f %f\n", navHeader.maxs[0], navHeader.maxs[1], navHeader.maxs[2]);
+	VectorCopy (polyMesh->bmin, navHeader.mins);
+	Sys_Printf(" min bounds: %f %f %f\n", navHeader.mins[0], navHeader.mins[1], navHeader.mins[2]);
 
-    navHeader.dNumMeshes = detailedPolyMesh->nmeshes;
-    Sys_Printf(" dNumMeshes: %i\n", navHeader.dNumMeshes);
+	VectorCopy (polyMesh->bmax, navHeader.maxs);
+	Sys_Printf(" max bounds: %f %f %f\n", navHeader.maxs[0], navHeader.maxs[1], navHeader.maxs[2]);
 
-    navHeader.dNumVerts = detailedPolyMesh->nverts;
-    Sys_Printf(" dNumVerts: %i\n", navHeader.dNumVerts);
+	navHeader.dNumMeshes = detailedPolyMesh->nmeshes;
+	Sys_Printf(" dNumMeshes: %i\n", navHeader.dNumMeshes);
 
-    navHeader.dNumTris = detailedPolyMesh->ntris;
-    Sys_Printf(" dNumTris: %i\n", navHeader.dNumTris);
+	navHeader.dNumVerts = detailedPolyMesh->nverts;
+	Sys_Printf(" dNumVerts: %i\n", navHeader.dNumVerts);
 
-    navHeader.cellSize = cfg->cs;
-    Sys_Printf(" cellSize: %f\n", navHeader.cellSize);
+	navHeader.dNumTris = detailedPolyMesh->ntris;
+	Sys_Printf(" dNumTris: %i\n", navHeader.dNumTris);
 
-    navHeader.cellHeight = cfg->ch;
-    Sys_Printf(" cellHeight: %f\n", navHeader.cellHeight);
+	navHeader.cellSize = cfg->cs;
+	Sys_Printf(" cellSize: %f\n", navHeader.cellSize);
+
+	navHeader.cellHeight = cfg->ch;
+	Sys_Printf(" cellHeight: %f\n", navHeader.cellHeight);
 
 	//write header
-    fprintf(file, "%d ", navHeader.version);
-    fprintf(file, "%d %d %d ", navHeader.numVerts,navHeader.numPolys,navHeader.numVertsPerPoly);
-    fprintf(file, "%f %f %f ", navHeader.mins[0],navHeader.mins[1],navHeader.mins[2]);
-    fprintf(file, "%f %f %f ", navHeader.maxs[0], navHeader.maxs[1], navHeader.maxs[2]);
-    fprintf(file, "%d %d %d ",navHeader.dNumMeshes, navHeader.dNumVerts, navHeader.dNumTris);
-    fprintf(file, "%f %f\n", navHeader.cellSize, navHeader.cellHeight);
+	fprintf(file, "%d ", navHeader.version);
+	fprintf(file, "%d %d %d ", navHeader.numVerts,navHeader.numPolys,navHeader.numVertsPerPoly);
+	fprintf(file, "%f %f %f ", navHeader.mins[0],navHeader.mins[1],navHeader.mins[2]);
+	fprintf(file, "%f %f %f ", navHeader.maxs[0], navHeader.maxs[1], navHeader.maxs[2]);
+	fprintf(file, "%d %d %d ",navHeader.dNumMeshes, navHeader.dNumVerts, navHeader.dNumTris);
+	fprintf(file, "%f %f\n", navHeader.cellSize, navHeader.cellHeight);
 
 
 	//write verts
 	for ( int i = 0, j = 0; i < polyMesh->nverts; i++, j += 3 )
 	{
-        fprintf(file, "%d %d %d\n", polyMesh->verts[j], polyMesh->verts[j+1], polyMesh->verts[j+2]);
+		fprintf(file, "%d %d %d\n", polyMesh->verts[j], polyMesh->verts[j+1], polyMesh->verts[j+2]);
 	}
 
 	//write polys
 	for ( int i = 0, j = 0; i < polyMesh->npolys; i++, j += polyMesh->nvp * 2 )
 	{
-        fprintf(file, "%d %d %d %d %d %d %d %d %d %d %d %d\n", polyMesh->polys[j], polyMesh->polys[j+1], polyMesh->polys[j+2],
-                                                              polyMesh->polys[j+3], polyMesh->polys[j+4], polyMesh->polys[j+5],
-                                                              polyMesh->polys[j+6], polyMesh->polys[j+7], polyMesh->polys[j+8],
-                                                              polyMesh->polys[j+9], polyMesh->polys[j+10], polyMesh->polys[j+11]);
+		fprintf(file, "%d %d %d %d %d %d %d %d %d %d %d %d\n", polyMesh->polys[j], polyMesh->polys[j+1], polyMesh->polys[j+2],
+			polyMesh->polys[j+3], polyMesh->polys[j+4], polyMesh->polys[j+5],
+			polyMesh->polys[j+6], polyMesh->polys[j+7], polyMesh->polys[j+8],
+			polyMesh->polys[j+9], polyMesh->polys[j+10], polyMesh->polys[j+11]);
 	}
 
-    //write areas
-    for( int i=0;i<polyMesh->npolys;i++) {
-      fprintf(file, "%d ", polyMesh->areas[i]);
-    }
-    fprintf(file, "\n");
+	//write areas
+	for( int i=0;i<polyMesh->npolys;i++) {
+		fprintf(file, "%d ", polyMesh->areas[i]);
+	}
+	fprintf(file, "\n");
 
 	//write flags
 	for ( int i = 0; i < polyMesh->npolys; i++ )
 	{
-        fprintf(file, "%d ", polyMesh->flags[i]);
+		fprintf(file, "%d ", polyMesh->flags[i]);
 	}
-    fprintf(file, "\n");
+	fprintf(file, "\n");
 
 	//write detail meshes
 	for ( int i = 0, j = 0; i < detailedPolyMesh->nmeshes; i++, j += 4 )
 	{
-        fprintf(file, "%d %d %d %d\n", detailedPolyMesh->meshes[j], detailedPolyMesh->meshes[j+1],
-                                       detailedPolyMesh->meshes[j+2], detailedPolyMesh->meshes[j+3]);
+		fprintf(file, "%d %d %d %d\n", detailedPolyMesh->meshes[j], detailedPolyMesh->meshes[j+1],
+			detailedPolyMesh->meshes[j+2], detailedPolyMesh->meshes[j+3]);
 	}
 
 	//write detail verts
-	  for ( int i = 0, j = 0; i < detailedPolyMesh->nverts; i++, j += 3 )
+	for ( int i = 0, j = 0; i < detailedPolyMesh->nverts; i++, j += 3 )
 	{
-        fprintf(file, "%d %d %d\n", detailedPolyMesh->verts[j], detailedPolyMesh->verts[j+1],
-                                    detailedPolyMesh->verts[j+2]);
+		fprintf(file, "%d %d %d\n", detailedPolyMesh->verts[j], detailedPolyMesh->verts[j+1],
+			detailedPolyMesh->verts[j+2]);
 	}
 
 	//write detail tris
 	for ( int i = 0, j = 0; i < detailedPolyMesh->ntris; i++, j += 4 )
 	{
-        fprintf(file, "%d %d %d %d\n", detailedPolyMesh->tris[j], detailedPolyMesh->tris[j+1],
-                                       detailedPolyMesh->tris[j+2], detailedPolyMesh->tris[j+3]);
+		fprintf(file, "%d %d %d %d\n", detailedPolyMesh->tris[j], detailedPolyMesh->tris[j+1],
+			detailedPolyMesh->tris[j+2], detailedPolyMesh->tris[j+3]);
 	}
 	Sys_Printf("Navigation Mesh file written: %d bytes\n", ftell(file));
-    fclose(file);
+	fclose(file);
 }
 
 static void UpdatePolyFlags(void){
 
-    Sys_Printf(" updating flags...\n");
-     // Update poly flags from areas.
-    for (int i = 0; i < polyMesh->npolys; ++i)
-    {
-        if (polyMesh->areas[i] == RC_WALKABLE_AREA) {
-            polyMesh->areas[i] = POLYAREA_GROUND;
-            polyMesh->flags[i] = POLYFLAGS_WALK;
+	Sys_Printf(" updating flags...\n");
+	// Update poly flags from areas.
+	for (int i = 0; i < polyMesh->npolys; ++i)
+	{
+		if (polyMesh->areas[i] == RC_WALKABLE_AREA) {
+			polyMesh->areas[i] = POLYAREA_GROUND;
+			polyMesh->flags[i] = POLYFLAGS_WALK;
 		} else if (polyMesh->areas[i] == POLYAREA_WATER) {
-            polyMesh->flags[i] = POLYFLAGS_SWIM;
-        }
-        else if (polyMesh->areas[i] == POLYAREA_DOOR) {
-            polyMesh->flags[i] = POLYFLAGS_WALK | POLYFLAGS_DOOR;
-        }
-    }
+			polyMesh->flags[i] = POLYFLAGS_SWIM;
+		}
+		else if (polyMesh->areas[i] == POLYAREA_DOOR) {
+			polyMesh->flags[i] = POLYFLAGS_WALK | POLYFLAGS_DOOR;
+		}
+	}
 
 }
 static qboolean skipEntity(const entity_t *ent) {
@@ -297,98 +297,98 @@ static qboolean skipEntity(const entity_t *ent) {
 	return qfalse;
 }
 /*static void UpdatePolyAreas(void) {
-	entity_t *e;
-	const bspModel_t *model;
-	const bspDrawSurface_t *surface;
-	int modelNum;
-	const char *value;
-	Sys_Printf("updating poly areas..\n");
-	for(int i=0;i<numEntities;i++) {
-		e = &entities[i];
-		if(skipEntity(e))
-			continue;
-		//get model num
-		if(i == 0)
-			modelNum = 0;
-		else
-		{
-			value = ValueForKey(e, "model");
-			if(value[0] == '*')
-				modelNum = atoi(value + 1);
-			else
-				modelNum = -1;
-		}
-		model = &bspModels[modelNum];
-		for(int n=model->firstBSPSurface,k=0;k < model->numBSPSurfaces;k++,n++) {
-			surface = &bspDrawSurfaces[n];
-			if( bspShaders[surface->shaderNum].surfaceFlags & ( SURF_SKIP | SURF_SKY | SURF_SLICK | SURF_HINT | SURF_NONSOLID))
-			{
-				continue;
-			}
+entity_t *e;
+const bspModel_t *model;
+const bspDrawSurface_t *surface;
+int modelNum;
+const char *value;
+Sys_Printf("updating poly areas..\n");
+for(int i=0;i<numEntities;i++) {
+e = &entities[i];
+if(skipEntity(e))
+continue;
+//get model num
+if(i == 0)
+modelNum = 0;
+else
+{
+value = ValueForKey(e, "model");
+if(value[0] == '*')
+modelNum = atoi(value + 1);
+else
+modelNum = -1;
+}
+model = &bspModels[modelNum];
+for(int n=model->firstBSPSurface,k=0;k < model->numBSPSurfaces;k++,n++) {
+surface = &bspDrawSurfaces[n];
+if( bspShaders[surface->shaderNum].surfaceFlags & ( SURF_SKIP | SURF_SKY | SURF_SLICK | SURF_HINT | SURF_NONSOLID))
+{
+continue;
+}
 
-			if ( surface->surfaceType != MST_PLANAR && surface->surfaceType != MST_TRIANGLE_SOUP )
-			{
-				continue;
-			}
-			//find the verticies
-			float *verts = (float*)malloc(sizeof(float) * 3 * surface->numVerts);
-			for(int j=surface->firstVert,m=0;m < surface->numVerts;m+=3,n++) {
-				verts[m] = -bspDrawVerts[j].xyz[0];
-				verts[m+1] = bspDrawVerts[j].xyz[2];
-				verts[m+2] = -bspDrawVerts[j].xyz[1];
-			}
-			if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_WATER)
-				rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_WATER, *compHeightField);
-			if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_JUMPPAD) 
-				rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_JUMPPAD, *compHeightField);
-			if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_TELEPORTER)
-				rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_TELEPORTER, *compHeightField);
-			free(verts);
-		}
-	}
+if ( surface->surfaceType != MST_PLANAR && surface->surfaceType != MST_TRIANGLE_SOUP )
+{
+continue;
+}
+//find the verticies
+float *verts = (float*)malloc(sizeof(float) * 3 * surface->numVerts);
+for(int j=surface->firstVert,m=0;m < surface->numVerts;m+=3,n++) {
+verts[m] = -bspDrawVerts[j].xyz[0];
+verts[m+1] = bspDrawVerts[j].xyz[2];
+verts[m+2] = -bspDrawVerts[j].xyz[1];
+}
+if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_WATER)
+rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_WATER, *compHeightField);
+if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_JUMPPAD) 
+rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_JUMPPAD, *compHeightField);
+if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_TELEPORTER)
+rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_TELEPORTER, *compHeightField);
+free(verts);
+}
+}
 }*/
 
 static void CreateDetailMesh ( void )
 {
-    Sys_Printf(" creating detail mesh...\n");
+	Sys_Printf(" creating detail mesh...\n");
 
-    detailedPolyMesh = rcAllocPolyMeshDetail();
-    if ( !rcBuildPolyMeshDetail (&context, *polyMesh, *compHeightField, cfg.detailSampleDist, cfg.detailSampleMaxError, *detailedPolyMesh) )
-    {
-        Error ("Failed to create detail mesh for navigation mesh.\n");
-    }
+	detailedPolyMesh = rcAllocPolyMeshDetail();
+	if ( !rcBuildPolyMeshDetail (&context, *polyMesh, *compHeightField, cfg.detailSampleDist, cfg.detailSampleMaxError, *detailedPolyMesh) )
+	{
+		Error ("Failed to create detail mesh for navigation mesh.\n");
+	}
 }
 
 static void BuildMeshFromContours ( void )
 {
-    Sys_Printf(" building mesh from contours...\n");
+	Sys_Printf(" building mesh from contours...\n");
 
-    polyMesh = rcAllocPolyMesh();
-    if ( !rcBuildPolyMesh (&context, *contours, cfg.maxVertsPerPoly, *polyMesh) )
-    {
-        Error ("Failed to triangulate contours.\n");
-    }
+	polyMesh = rcAllocPolyMesh();
+	if ( !rcBuildPolyMesh (&context, *contours, cfg.maxVertsPerPoly, *polyMesh) )
+	{
+		Error ("Failed to triangulate contours.\n");
+	}
 }
 static void CreateContours( void )
 {
-    Sys_Printf(" creating contours...\n");
+	Sys_Printf(" creating contours...\n");
 
-    contours = rcAllocContourSet();
-    if ( !rcBuildContours (&context, *compHeightField, cfg.maxSimplificationError, cfg.maxEdgeLen, *contours) )
-    {
-        Error ("Failed to create contour set for navigation mesh.\n");
-    }
+	contours = rcAllocContourSet();
+	if ( !rcBuildContours (&context, *compHeightField, cfg.maxSimplificationError, cfg.maxEdgeLen, *contours) )
+	{
+		Error ("Failed to create contour set for navigation mesh.\n");
+	}
 }
 
 static void CreateRegions ( void )
 {
-    Sys_Printf(" creating compact heightfield...\n");
+	Sys_Printf(" creating compact heightfield...\n");
 
-    compHeightField = rcAllocCompactHeightfield();
-    if ( !rcBuildCompactHeightfield (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField, *compHeightField) )
-    {
-        Error ("Failed to create compact heightfield for navigation mesh.\n");
-    }
+	compHeightField = rcAllocCompactHeightfield();
+	if ( !rcBuildCompactHeightfield (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField, *compHeightField) )
+	{
+		Error ("Failed to create compact heightfield for navigation mesh.\n");
+	}
 	if(median) {
 		Sys_Printf(" applying median filter...\n");
 		if(!rcMedianFilterWalkableArea(&context, *compHeightField))
@@ -397,59 +397,59 @@ static void CreateRegions ( void )
 		}
 	}
 	Sys_Printf(" eroding the walkable surface...\n");
-    if ( !rcErodeWalkableArea (&context, cfg.walkableRadius, *compHeightField) )
-    {
-        Error ("Unable to erode walkable surfaces.\n");
-    }
+	if ( !rcErodeWalkableArea (&context, cfg.walkableRadius, *compHeightField) )
+	{
+		Error ("Unable to erode walkable surfaces.\n");
+	}
 	Sys_Printf(" building the distance field...\n");
-    if ( !rcBuildDistanceField (&context, *compHeightField) )
-    {
-        Error ("Failed to build distance field for navigation mesh.\n");
-    }
+	if ( !rcBuildDistanceField (&context, *compHeightField) )
+	{
+		Error ("Failed to build distance field for navigation mesh.\n");
+	}
 
 	Sys_Printf(" building regions...\n");
-    if ( !rcBuildRegions (&context, *compHeightField, 0, cfg.minRegionArea, cfg.mergeRegionArea) )
-    {
-        Error ("Failed to build regions for navigation mesh.\n");
-    }
+	if ( !rcBuildRegions (&context, *compHeightField, 0, cfg.minRegionArea, cfg.mergeRegionArea) )
+	{
+		Error ("Failed to build regions for navigation mesh.\n");
+	}
 }
 
 static void FilterSurfaces ()
 {
-    Sys_Printf(" filtering surfaces...\n");
+	Sys_Printf(" filtering surfaces...\n");
 
-    rcFilterLowHangingWalkableObstacles (&context, cfg.walkableClimb, *heightField);
-    rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField);
-    rcFilterWalkableLowHeightSpans (&context, cfg.walkableHeight, *heightField);
+	rcFilterLowHangingWalkableObstacles (&context, cfg.walkableClimb, *heightField);
+	rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField);
+	rcFilterWalkableLowHeightSpans (&context, cfg.walkableHeight, *heightField);
 }
 
 static void CreateHeightfield ( void )
 {
-    Sys_Printf(" creating heightfield...\n");
+	Sys_Printf(" creating heightfield...\n");
 
-    heightField = rcAllocHeightfield();
-    if ( !rcCreateHeightfield (&context, *heightField, cfg.width, cfg.height, cfg.bmin, cfg.bmax, cfg.cs, cfg.ch) )
-    {
-        Error ("Failed to create heightfield for navigation mesh.\n");
-    }
-    unsigned char *triareas = new unsigned char[numtris];
-    memset (triareas, 0, numtris);
+	heightField = rcAllocHeightfield();
+	if ( !rcCreateHeightfield (&context, *heightField, cfg.width, cfg.height, cfg.bmin, cfg.bmax, cfg.cs, cfg.ch) )
+	{
+		Error ("Failed to create heightfield for navigation mesh.\n");
+	}
+	unsigned char *triareas = new unsigned char[numtris];
+	memset (triareas, 0, numtris);
 	Sys_Printf(" marking walkable triangles...\n");
-    rcMarkWalkableTriangles (&context, cfg.walkableSlopeAngle, verts, numverts, tris, numtris, triareas);
+	rcMarkWalkableTriangles (&context, cfg.walkableSlopeAngle, verts, numverts, tris, numtris, triareas);
 	Sys_Printf(" rasterizing triangles...\n");
-    rcRasterizeTriangles (&context, verts, triareas, numtris, *heightField, cfg.walkableClimb);
-    delete[] triareas;
-    triareas = NULL;
+	rcRasterizeTriangles (&context, verts, triareas, numtris, *heightField, cfg.walkableClimb);
+	delete[] triareas;
+	triareas = NULL;
 }
 static void ConfigureRecast ( int agentRadius, int agentHeight, float cellSize, float cellHeight, float stepSize )
 {
-    Sys_Printf("    configuring recast options...\n");
+	Sys_Printf("    configuring recast options...\n");
 
-    memset (&cfg, 0, sizeof (cfg));
-    VectorCopy (mapmaxs, cfg.bmax);
-    VectorCopy (mapmins, cfg.bmin);
+	memset (&cfg, 0, sizeof (cfg));
+	VectorCopy (mapmaxs, cfg.bmax);
+	VectorCopy (mapmins, cfg.bmin);
 
- 	cfg.cs = cellSize;
+	cfg.cs = cellSize;
 	cfg.ch = cellHeight;
 	cfg.walkableSlopeAngle = 46; //max slope is 45, but recast checks for < 45 so we need 46
 	cfg.maxEdgeLen = 64;
@@ -460,11 +460,11 @@ static void ConfigureRecast ( int agentRadius, int agentHeight, float cellSize, 
 	cfg.minRegionArea = rcSqr(8);
 	cfg.mergeRegionArea = rcSqr(30);
 	cfg.walkableHeight = (int) ceilf(agentHeight / cfg.ch);
-    cfg.walkableClimb = (int) floorf(stepSize/cfg.ch);
-    cfg.walkableRadius = (int) ceilf(agentRadius / cfg.cs);
+	cfg.walkableClimb = (int) floorf(stepSize/cfg.ch);
+	cfg.walkableRadius = (int) ceilf(agentRadius / cfg.cs);
 	//cfg.borderSize = cfg.walkableRadius + 3;
 
-    rcCalcGridSize (cfg.bmin, cfg.bmax, cfg.cs, &cfg.width, &cfg.height);
+	rcCalcGridSize (cfg.bmin, cfg.bmax, cfg.cs, &cfg.width, &cfg.height);
 	Sys_Printf(" using %d x %d cells\n",cfg.width,cfg.height);
 }
 
@@ -501,7 +501,7 @@ static void CountPatchVertsTris(bspDrawSurface_t **surfaces, int numSurfaces, in
 		//int iterations = IterationsForCurve(surface->longestCurve, patchSubdivisions);
 		mesh_t *subdivided = SubdivideMesh2(src, 2);
 
-					
+
 		PutMeshOnCurve(*subdivided);
 		mesh_t *mesh = RemoveLinearMeshColumnsRows(subdivided);
 		FreeMesh(subdivided);
@@ -511,12 +511,12 @@ static void CountPatchVertsTris(bspDrawSurface_t **surfaces, int numSurfaces, in
 		{
 			for(int x = 0; x < (mesh->width - 1); x++)
 			{
-				
+
 				/* triangle 1 */
-					v+=3;					
+				v+=3;					
 
 				/* triangle 2 */
-					v+=3;
+				v+=3;
 			}
 		}
 		//FreeMesh(mesh);
@@ -526,8 +526,8 @@ static void CountPatchVertsTris(bspDrawSurface_t **surfaces, int numSurfaces, in
 	*numtris = v/3;
 }
 static void AddVertToStrip(float **verts, vec3_t vert,int currentIndex) {
-    vec3_t recastVert;
-    VectorCopy(vert,recastVert);
+	vec3_t recastVert;
+	VectorCopy(vert,recastVert);
 	quake2recast(recastVert);
 	for(int i=0;i<3;i++) {
 		(*verts)[currentIndex+i] = recastVert[i];
@@ -571,7 +571,7 @@ static void LoadPatchTris(bspDrawSurface_t **surfaces, int numSurfaces, int star
 		//cSurfaceCollide_t *collideSurf = CM_GeneratePatchCollide(surface->patchWidth, surface->patchHeight, curveVerts);
 		/* subdivide each quad to place the models */
 		/*if(!mesh)
-			continue;*/
+		continue;*/
 		int pw[5];
 		for(int y = 0; y < (mesh->height - 1); y++)
 		{
@@ -588,26 +588,26 @@ static void LoadPatchTris(bspDrawSurface_t **surfaces, int numSurfaces, int star
 				int r = (x + y) & 1;
 
 				/* triangle 1 */
-					AddVertToStrip(&verts,mesh->verts[pw[r]].xyz,v*3);
-					tris[v] = v;
-					v++;
-					AddVertToStrip(&verts,mesh->verts[pw[r+1]].xyz,v*3);
-					tris[v] = v;
-					v++;
-					AddVertToStrip(&verts,mesh->verts[pw[r+2]].xyz,v*3);
-					tris[v] = v;
-					v++;						
+				AddVertToStrip(&verts,mesh->verts[pw[r]].xyz,v*3);
+				tris[v] = v;
+				v++;
+				AddVertToStrip(&verts,mesh->verts[pw[r+1]].xyz,v*3);
+				tris[v] = v;
+				v++;
+				AddVertToStrip(&verts,mesh->verts[pw[r+2]].xyz,v*3);
+				tris[v] = v;
+				v++;						
 
 				/* triangle 2 */
-					AddVertToStrip(&verts,mesh->verts[pw[r]].xyz,v*3);
-					tris[v] = v;
-					v++;
-					AddVertToStrip(&verts,mesh->verts[pw[r+2]].xyz,v*3);
-					tris[v] = v;
-					v++;
-					AddVertToStrip(&verts,mesh->verts[pw[r+3]].xyz,v*3);
-					tris[v] = v;
-					v++;
+				AddVertToStrip(&verts,mesh->verts[pw[r]].xyz,v*3);
+				tris[v] = v;
+				v++;
+				AddVertToStrip(&verts,mesh->verts[pw[r+2]].xyz,v*3);
+				tris[v] = v;
+				v++;
+				AddVertToStrip(&verts,mesh->verts[pw[r+3]].xyz,v*3);
+				tris[v] = v;
+				v++;
 			}
 		}
 		//FreeMesh(mesh);
@@ -639,7 +639,7 @@ static int CountSurfaces() {
 				modelNum = -1;
 		}
 		if(modelNum >= 0) {
-		
+
 			/* get model, index 0 is worldspawn entity */
 			model = &bspModels[modelNum];
 			for ( int k = model->firstBSPSurface, n = 0; n < model->numBSPSurfaces; k++,n++)
@@ -658,7 +658,7 @@ static int CountSurfaces() {
 			}
 		}
 	}
-    return count;
+	return count;
 }
 static bspDrawSurface_t **ParseSurfaces(int numSurfaces) {
 	int count = 0;
@@ -684,7 +684,7 @@ static bspDrawSurface_t **ParseSurfaces(int numSurfaces) {
 				modelNum = -1;
 		}
 		if(modelNum >= 0) {
-		
+
 			/* get model, index 0 is worldspawn entity */
 			model = &bspModels[modelNum];
 			for ( int k = model->firstBSPSurface, n = 0; n < model->numBSPSurfaces; k++,n++)
@@ -704,7 +704,7 @@ static bspDrawSurface_t **ParseSurfaces(int numSurfaces) {
 			}
 		}
 	}
-    return surfaces;
+	return surfaces;
 }
 /*
 SnapWeldVector() - ydnar
@@ -838,7 +838,7 @@ static winding_t** CreateBrushWindings(int *numwindings, int *numverts, int *num
 				modelNum = -1;
 		}
 		if(modelNum >= 0) {
-		
+
 			/* get model, index 0 is worldspawn entity */
 			model = &bspModels[modelNum];
 
@@ -846,30 +846,30 @@ static winding_t** CreateBrushWindings(int *numwindings, int *numverts, int *num
 			for(int i=model->firstBSPBrush,m=0;m<model->numBSPBrushes;i++,m++) {
 				int numSides = bspBrushes[i].numSides;
 				int firstSide = bspBrushes[i].firstSide;
-                qboolean isClip = qfalse;
-                bspShader_t brushShader = bspShaders[bspBrushes[i].shaderNum];
-                if(brushShader.contentFlags & (CONTENTS_PLAYERCLIP | CONTENTS_BOTCLIP | CONTENTS_MONSTERCLIP))
-                  isClip = qtrue;
+				qboolean isClip = qfalse;
+				bspShader_t brushShader = bspShaders[bspBrushes[i].shaderNum];
+				if(brushShader.contentFlags & (CONTENTS_PLAYERCLIP | CONTENTS_BOTCLIP | CONTENTS_MONSTERCLIP))
+					isClip = qtrue;
 				//if not one of these brushes, not used for nav
 				if(!(brushShader.contentFlags & ( CONTENTS_SOLID
-										| CONTENTS_BOTCLIP
-										| CONTENTS_PLAYERCLIP
-                                        | CONTENTS_MONSTERCLIP
-										| CONTENTS_CLUSTERPORTAL
-										| CONTENTS_DONOTENTER
-										| CONTENTS_DONOTENTER_LARGE
-										| CONTENTS_TELEPORTER
-										| CONTENTS_JUMPPAD
-										| CONTENTS_WATER
-										| CONTENTS_LAVA
-										| CONTENTS_SLIME
-										| CONTENTS_MOVER
-										) )) {
-					continue;
+					| CONTENTS_BOTCLIP
+					| CONTENTS_PLAYERCLIP
+					| CONTENTS_MONSTERCLIP
+					| CONTENTS_CLUSTERPORTAL
+					| CONTENTS_DONOTENTER
+					| CONTENTS_DONOTENTER_LARGE
+					| CONTENTS_TELEPORTER
+					| CONTENTS_JUMPPAD
+					| CONTENTS_WATER
+					| CONTENTS_LAVA
+					| CONTENTS_SLIME
+					| CONTENTS_MOVER
+					) )) {
+						continue;
 				}
-                //dont care about detail brushes
-                //if(bspShaders[bspBrushes[i].shaderNum].contentFlags & CONTENTS_DETAIL)
-                  //continue;
+				//dont care about detail brushes
+				//if(bspShaders[bspBrushes[i].shaderNum].contentFlags & CONTENTS_DETAIL)
+				//continue;
 				/* walk the list of brush sides */
 				for(int p = 0; p < numSides; p++)
 				{
@@ -877,25 +877,25 @@ static winding_t** CreateBrushWindings(int *numwindings, int *numverts, int *num
 					side = &bspBrushSides[p+firstSide];
 					plane = &bspPlanes[side->planeNum];
 
-                    //we dont use these surfaces for generating the navmesh because they arnt used in collision in game
-                    if(bspShaders[side->shaderNum].surfaceFlags & (SURF_SKIP | SURF_SKY | SURF_HINT | SURF_NONSOLID)) {
-                      continue;
-                    }
-                    if(bspShaders[side->shaderNum].contentFlags & (CONTENTS_PLAYERCLIP | CONTENTS_BOTCLIP | CONTENTS_MONSTERCLIP))
-                      isClip = qtrue;
-                    else
-                      isClip = qfalse;
-                    if(bspShaders[side->shaderNum].surfaceFlags & SURF_SLICK)
-                      isClip = qtrue;
-                    if((bspShaders[side->shaderNum].surfaceFlags & SURF_NODRAW) && !isClip)
-                      continue;
+					//we dont use these surfaces for generating the navmesh because they arnt used in collision in game
+					if(bspShaders[side->shaderNum].surfaceFlags & (SURF_SKIP | SURF_SKY | SURF_HINT | SURF_NONSOLID)) {
+						continue;
+					}
+					if(bspShaders[side->shaderNum].contentFlags & (CONTENTS_PLAYERCLIP | CONTENTS_BOTCLIP | CONTENTS_MONSTERCLIP))
+						isClip = qtrue;
+					else
+						isClip = qfalse;
+					if(bspShaders[side->shaderNum].surfaceFlags & SURF_SLICK)
+						isClip = qtrue;
+					if((bspShaders[side->shaderNum].surfaceFlags & SURF_NODRAW) && !isClip)
+						continue;
 					/* make huge winding */
 					w = BaseWindingForPlane(plane->normal, plane->dist);
 
 					/* walk the list of brush sides */
 					for(j = 0; j < numSides && w != NULL; j++)
 					{
-				
+
 						if(p == j)
 							continue;
 						if(bspBrushSides[j+firstSide].planeNum == (side->planeNum ^ 1))
@@ -955,7 +955,7 @@ static void LoadGeometry()
 {
 	Sys_Printf(" loading geometry...\n");
 
-    //count surfaces
+	//count surfaces
 	int numSurfaces = CountSurfaces();
 
 	//parse Surfaces
@@ -974,34 +974,34 @@ static void LoadGeometry()
 	LoadBrushTris(windings,numWindings,0);
 	LoadPatchTris(surfaces,numSurfaces,numBrushTris);
 
-    // find bounds
-    for(int i=0;i<numverts;i++) {
-      vec3_t vert;
-      VectorSet(vert,verts[i*3],verts[i*3+1],verts[i*3+2]);
-      AddPointToBounds(vert, mapmins,mapmaxs);
-    }
+	// find bounds
+	for(int i=0;i<numverts;i++) {
+		vec3_t vert;
+		VectorSet(vert,verts[i*3],verts[i*3+1],verts[i*3+2]);
+		AddPointToBounds(vert, mapmins,mapmaxs);
+	}
 
-    Sys_Printf(" set world bounds to\n");
-    Sys_Printf(" min: %f %f %f\n", mapmins[0], mapmins[1], mapmins[2]);
-    Sys_Printf(" max: %f %f %f\n", mapmaxs[0], mapmaxs[1], mapmaxs[2]);
+	Sys_Printf(" set world bounds to\n");
+	Sys_Printf(" min: %f %f %f\n", mapmins[0], mapmins[1], mapmins[2]);
+	Sys_Printf(" max: %f %f %f\n", mapmaxs[0], mapmaxs[1], mapmaxs[2]);
 	delete surfaces;
 }
 
 static void LoadRecast()
 {
-    Sys_Printf(" setting up recast...\n");
+	Sys_Printf(" setting up recast...\n");
 
-    VectorClear(mapmins);
-    VectorClear(mapmaxs);
+	VectorClear(mapmins);
+	VectorClear(mapmaxs);
 
-    verts = NULL;
-    numverts = 0;
-    tris = NULL;
-    numtris = 0;
-    contours = NULL;
-    compHeightField = NULL;
-    polyMesh = NULL;
-    detailedPolyMesh = NULL;
+	verts = NULL;
+	numverts = 0;
+	tris = NULL;
+	numtris = 0;
+	contours = NULL;
+	compHeightField = NULL;
+	polyMesh = NULL;
+	detailedPolyMesh = NULL;
 
 }
 
@@ -1012,11 +1012,11 @@ NavMain
 */
 extern "C" int NavMain(int argc, char **argv)
 {
-    float temp;
+	float temp;
 	float cellSize = 8;
-    float cellHeight = 6;
-    float stepSize = STEPSIZE;
-    qboolean obj = qfalse;
+	float cellHeight = 6;
+	float stepSize = STEPSIZE;
+	qboolean obj = qfalse;
 	/* note it */
 	Sys_Printf("--- Nav ---\n");
 	int i;
@@ -1027,27 +1027,27 @@ extern "C" int NavMain(int argc, char **argv)
 			i++;
 			if(i<(argc - 1)) {
 				temp = atof(argv[i]);
-                if(temp > 0) {
-                  cellSize = temp;
-                }
+				if(temp > 0) {
+					cellSize = temp;
+				}
 			}
-		
-		} else if(!Q_stricmp(argv[i],"-cellheight")) {
-            i++;
-            if(i<(argc - 1)) {
-              temp = atof(argv[i]);
-              if(temp > 0) {
-                cellHeight = temp;
-              }
-            }
 
-        } else if (!Q_stricmp(argv[i], "-optimistic")){
-            stepSize = 20;
-            cellHeight = stepSize/6;
+		} else if(!Q_stricmp(argv[i],"-cellheight")) {
+			i++;
+			if(i<(argc - 1)) {
+				temp = atof(argv[i]);
+				if(temp > 0) {
+					cellHeight = temp;
+				}
+			}
+
+		} else if (!Q_stricmp(argv[i], "-optimistic")){
+			stepSize = 20;
+			cellHeight = stepSize/6;
 		} else if(!Q_stricmp(argv[i], "-median")) {
 			median = qtrue;
-        } else if(!Q_stricmp(argv[i], "-obj")) {
-            obj = qtrue;
+		} else if(!Q_stricmp(argv[i], "-obj")) {
+			obj = qtrue;
 		} else {
 			Sys_Printf("WARNING: Unknown option \"%s\"\n", argv[i]);
 		}
@@ -1066,58 +1066,58 @@ extern "C" int NavMain(int argc, char **argv)
 	ParseEntities();
 
 	/* set up recast */
-    LoadRecast();
+	LoadRecast();
 
-    /* get the data into recast */
-    LoadGeometry();
+	/* get the data into recast */
+	LoadGeometry();
 
-    for(int i=0;i<12;i++) {
-      Sys_Printf("Making NavMesh for %s\n",tremClasses[i].name);
+	for(int i=0;i<12;i++) {
+		Sys_Printf("Making NavMesh for %s\n",tremClasses[i].name);
 
-      /* configure recast */
-      ConfigureRecast(tremClasses[i].radius , tremClasses[i].height, cellSize,cellHeight,stepSize);
+		/* configure recast */
+		ConfigureRecast(tremClasses[i].radius , tremClasses[i].height, cellSize,cellHeight,stepSize);
 
-      //only need to do this once
-      if(i==0) {
-        /* create recast height field */
-        CreateHeightfield();
-      }
+		//only need to do this once
+		if(i==0) {
+			/* create recast height field */
+			CreateHeightfield();
+		}
 
-      /* filter walkable surfaces */
-      FilterSurfaces ();
+		/* filter walkable surfaces */
+		FilterSurfaces ();
 
-      /* partition walkable surface to simple regions */
-      CreateRegions ();
+		/* partition walkable surface to simple regions */
+		CreateRegions ();
 
-      /* create contours */
-      CreateContours();
+		/* create contours */
+		CreateContours();
 
-      /* build polygons mesh from contours */
-      BuildMeshFromContours();
+		/* build polygons mesh from contours */
+		BuildMeshFromContours();
 
-      /* Create detail mesh */
-      CreateDetailMesh();
+		/* Create detail mesh */
+		CreateDetailMesh();
 
-	  /* Update poly areas */
-	  //UpdatePolyAreas();
+		/* Update poly areas */
+		//UpdatePolyAreas();
 
-      /* Update poly flags */
-      UpdatePolyFlags();
+		/* Update poly flags */
+		UpdatePolyFlags();
 
-      /* write navigation data to disk */
-      WriteRecastData( tremClasses[i].name, polyMesh, detailedPolyMesh, &cfg );
+		/* write navigation data to disk */
+		WriteRecastData( tremClasses[i].name, polyMesh, detailedPolyMesh, &cfg );
 
-      
 
-      rcFreeCompactHeightfield (compHeightField);
-      rcFreeContourSet (contours);
-      rcFreePolyMesh (polyMesh);
-      rcFreePolyMeshDetail (detailedPolyMesh);
-    }
-    /* clean up */
-    Sys_Printf(" cleaning up recast...\n");
-    rcFreeHeightField (heightField);
-    delete[] verts;
-    delete[] tris;
-    return 0;
+
+		rcFreeCompactHeightfield (compHeightField);
+		rcFreeContourSet (contours);
+		rcFreePolyMesh (polyMesh);
+		rcFreePolyMeshDetail (detailedPolyMesh);
+	}
+	/* clean up */
+	Sys_Printf(" cleaning up recast...\n");
+	rcFreeHeightField (heightField);
+	delete[] verts;
+	delete[] tris;
+	return 0;
 }
