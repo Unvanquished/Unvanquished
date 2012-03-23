@@ -64,7 +64,11 @@ option( USE_PHYSICS          "Compile with Newton Physics"                 0 )
 option( USE_WEBP             "Compile with WebP loader"                    1 )
 option( USE_MYSQL            "Compile with MYSQL support"                  0 )
 option( USE_VOIP             "Compile with VOIP support"                   1 )
+if( USE_VOIP )
+  option( USE_INTERNAL_SPEEX "Use internal speex"                          0 )
+endif()
 option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
+option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
 
 # Package info
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
@@ -164,20 +168,22 @@ set( PNGLIST
   ${MOUNT_DIR}/libs/libpng/pngpread.c
 )
 
-set( ZLIBLIST
-  ${MOUNT_DIR}/libs/zlib/adler32.c
-  ${MOUNT_DIR}/libs/zlib/compress.c
-  ${MOUNT_DIR}/libs/zlib/crc32.c
-  ${MOUNT_DIR}/libs/zlib/gzio.c
-  ${MOUNT_DIR}/libs/zlib/uncompr.c
-  ${MOUNT_DIR}/libs/zlib/deflate.c
-  ${MOUNT_DIR}/libs/zlib/trees.c
-  ${MOUNT_DIR}/libs/zlib/zutil.c
-  ${MOUNT_DIR}/libs/zlib/inflate.c
-  ${MOUNT_DIR}/libs/zlib/infback.c
-  ${MOUNT_DIR}/libs/zlib/inftrees.c
-  ${MOUNT_DIR}/libs/zlib/inffast.c
-)
+if( USE_INTERNAL_ZLIB )
+  set( ZLIBLIST
+    ${MOUNT_DIR}/libs/zlib/adler32.c
+    ${MOUNT_DIR}/libs/zlib/compress.c
+    ${MOUNT_DIR}/libs/zlib/crc32.c
+    ${MOUNT_DIR}/libs/zlib/gzio.c
+    ${MOUNT_DIR}/libs/zlib/uncompr.c
+    ${MOUNT_DIR}/libs/zlib/deflate.c
+    ${MOUNT_DIR}/libs/zlib/trees.c
+    ${MOUNT_DIR}/libs/zlib/zutil.c
+    ${MOUNT_DIR}/libs/zlib/inflate.c
+    ${MOUNT_DIR}/libs/zlib/infback.c
+    ${MOUNT_DIR}/libs/zlib/inftrees.c
+    ${MOUNT_DIR}/libs/zlib/inffast.c
+  )
+endif()
 
 set( OGGLIST
   ${MOUNT_DIR}/libs/ogg/src/bitwise.c
@@ -829,67 +835,71 @@ set( UIGPP
 )
 
 if( USE_VOIP )
-  set( SPEEXLIST
-    ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
-  )
+  if( USE_INTERNAL_SPEEX )
+    set( SPEEXLIST
+      ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
+    )
+  endif()
 endif()
 
-set( CRYPTOLIST
-  ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
-  ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
-  ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
-  ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
-  ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
-)
+if( USE_INTERNAL_CRYPTO )
+  set( CRYPTOLIST
+    ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
+    ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
+    ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
+    ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
+    ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
+  )
+endif()
 
 set( OWMAPLIST
   ${MOUNT_DIR}/tools/common/cmdlib.c
@@ -1214,7 +1224,14 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
   endif()
 
   if( BUILD_NEW_RENDERER )
-    add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/libs/libpng/pngerror.c ${MOUNT_DIR}/libs/jpeg/jdatasrc.c )
+    set( EXTRA_RENDERERGL_FILES )
+    if( NOT JPEG_FOUND )
+      set( EXTRA_RENDERERGL_FILES ${EXTRA_RENDERERGL_FILES} ${MOUNT_DIR}/libs/jpeg/jdatasrc.c )
+    endif()
+    if( NOT PNG_FOUND )
+      set( EXTRA_RENDERERGL_FILES ${EXTRA_RENDERERGL_FILES}  ${MOUNT_DIR}/libs/libpng/pngerror.c )
+    endif()
+    add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${EXTRA_RENDERERGL_FILES} )
     include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
     target_link_libraries( rendererGL ${OS_LIBRARIES} ${PNG_LIBRARIES} ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
@@ -1313,7 +1330,20 @@ if( BUILD_CLIENT )
 
   if( NOT USE_INTERNAL_ZLIB )
     find_package( ZLIB REQUIRED ) # This is used to check that ZLIB is available
-    set( ZLIBLIST )
+    include_directories( ${ZLIB_INCLUDE_DIRS} )
+    target_link_libraries( client ${ZLIB_LIBRARIES} )
+  endif()
+
+  if( NOT USE_INTERNAL_SPEEX )
+    find_package( Speex REQUIRED )
+    include_directories( ${SPEEX_INCLUDE_DIRS} )
+    target_link_libraries( client ${SPEEX_LIBRARIES} )
+  endif()
+
+  if( NOT USE_INTERNAL_CRYPTO )
+    find_package( Nettle REQUIRED )
+    include_directories( ${NETTLE_INCLUDE_DIRS} )
+    target_link_libraries( client ${NETTLE_LIBRARIES} )
   endif()
 
   if( USE_OPENAL )
@@ -1425,7 +1455,7 @@ endif()
 if( BUILD_SERVER )
   # Create the target Server
   add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST}
+    ${QCOMMONLIST} ${SHAREDLIST} ${BOTLIBLIST} ${ZLIBLIST}
     ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
@@ -1449,7 +1479,14 @@ if( BUILD_SERVER )
 
   if( NOT USE_INTERNAL_ZLIB )
     find_package( ZLIB REQUIRED ) # Only used to check if ZLIB exists
-    set( ZLIBLIST )
+    include_directories( ${ZLIB_INCLUDE_DIRS} )
+    target_link_libraries( server ${ZLIB_LIBRARIES} )
+  endif()
+
+  if( NOT USE_INTERNAL_CRYPTO )
+    find_package( Nettle REQUIRED )
+    include_directories( ${NETTLE_INCLUDE_DIRS} )
+    target_link_libraries( server ${NETTLE_LIBRARIES} )
   endif()
 
   if( USE_CURL )
