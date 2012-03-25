@@ -1638,18 +1638,18 @@ static void CG_RegisterGraphics( void )
 	{
 		for ( i = 0; i < cgs.ccLayers; i++ )
 		{
-			cgs.media.commandCentreMapShader[i] = trap_R_RegisterShaderNoMip( va( "levelshots / % s_ % i_cc.tga ", cgs.rawmapname, i ) );
+			cgs.media.commandCentreMapShader[i] = trap_R_RegisterShaderNoMip( va( "levelshots / %s_ % i_cc.tga ", cgs.rawmapname, i ) );
 			cgs.media.commandCentreMapShaderTrans[i] =
-			  trap_R_RegisterShaderNoMip( va( "levelshots / % s_ % i_cc_trans ", cgs.rawmapname, i ) );
+			  trap_R_RegisterShaderNoMip( va( "levelshots / %s_ % i_cc_trans ", cgs.rawmapname, i ) );
 			cgs.media.commandCentreAutomapShader[i] =
-			  trap_R_RegisterShaderNoMip( va( "levelshots / % s_ % i_cc_automap ", cgs.rawmapname, i ) );
+			  trap_R_RegisterShaderNoMip( va( "levelshots / %s_ % i_cc_automap ", cgs.rawmapname, i ) );
 		}
 	}
 	else
 	{
-		cgs.media.commandCentreMapShader[0] = trap_R_RegisterShaderNoMip( va( "levelshots / % s_cc.tga ", cgs.rawmapname ) );
-		cgs.media.commandCentreMapShaderTrans[0] = trap_R_RegisterShaderNoMip( va( "levelshots / % s_cc_trans ", cgs.rawmapname ) );
-		cgs.media.commandCentreAutomapShader[0] = trap_R_RegisterShaderNoMip( va( "levelshots / % s_cc_automap ", cgs.rawmapname ) );
+		cgs.media.commandCentreMapShader[0] = trap_R_RegisterShaderNoMip( va( "levelshots / %s_cc.tga ", cgs.rawmapname ) );
+		cgs.media.commandCentreMapShaderTrans[0] = trap_R_RegisterShaderNoMip( va( "levelshots / %s_cc_trans ", cgs.rawmapname ) );
+		cgs.media.commandCentreAutomapShader[0] = trap_R_RegisterShaderNoMip( va( "levelshots / %s_cc_automap ", cgs.rawmapname ) );
 	}
 
 	cgs.media.commandCentreAutomapMaskShader = trap_R_RegisterShaderNoMip( "levelshots / automap_mask " );
@@ -1676,8 +1676,8 @@ static void CG_RegisterGraphics( void )
 
 	for ( i = 0; i < NUM_CROSSHAIRS; i++ )
 	{
-		cgs.media.crosshairShader[i] = trap_R_RegisterShader( va( "gfx / 2d / crosshair % c ", 'a' + i ) );
-		cg.crosshairShaderAlt[i] = trap_R_RegisterShader( va( "gfx / 2d / crosshair % c_alt ", 'a' + i ) );
+		cgs.media.crosshairShader[i] = trap_R_RegisterShader( va( "gfx / 2d / crosshair %c ", 'a' + i ) );
+		cg.crosshairShaderAlt[i] = trap_R_RegisterShader( va( "gfx / 2d / crosshair %c_alt ", 'a' + i ) );
 	}
 
 	for ( i = 0; i < SK_NUM_SKILLS; i++ )
@@ -1983,8 +1983,8 @@ static void CG_RegisterGraphics( void )
 	// TAT 12/23/2002 - as a safety check, let's not let the number of models exceed MAX_MODELS
 	if ( cgs.numInlineModels > MAX_MODELS )
 	{
-		CG_Error( "CG_RegisterGraphics : Too many inline models : % i \ n ", cgs.numInlineModels );
-		//CG_Printf( S_COLOR_RED "WARNING : CG_RegisterGraphics : Too many inline models : % i \ n ", cgs.numInlineModels );
+		CG_Error( "CG_RegisterGraphics : Too many inline models : % i \n ", cgs.numInlineModels );
+		//CG_Printf( S_COLOR_RED "WARNING : CG_RegisterGraphics : Too many inline models : % i \n ", cgs.numInlineModels );
 		//cgs.numInlineModels = MAX_MODELS;
 	}
 
@@ -2070,7 +2070,7 @@ static void CG_RegisterGraphics( void )
 
 			if ( !CG_RegisterCharacter( characterName, cgs.gameCharacters[i] ) )
 			{
-				CG_Error( "ERROR : CG_RegisterGraphics : failed to load character file '%s' \ n ", characterName );
+				CG_Error( "ERROR : CG_RegisterGraphics : failed to load character file '%s' \n ", characterName );
 			}
 		}
 	}
@@ -2309,13 +2309,13 @@ char           *CG_GetMenuBuffer( const char *filename )
 
 	if ( !f )
 	{
-		trap_Print( va( S_COLOR_RED "menu file not found : % s, using default \ n ", filename ) );
+		trap_Print( va( S_COLOR_RED "menu file not found : %s, using default \n ", filename ) );
 		return NULL;
 	}
 
 	if ( len >= MAX_MENUFILE )
 	{
-		trap_Print( va( S_COLOR_RED "menu file too large : % s is % i, max allowed is % i ", filename, len, MAX_MENUFILE ) );
+		trap_Print( va( S_COLOR_RED "menu file too large : %s is % i, max allowed is % i ", filename, len, MAX_MENUFILE ) );
 		trap_FS_FCloseFile( f );
 		return NULL;
 	}
@@ -2539,12 +2539,12 @@ void CG_ParseMenu( const char *menuFile )
 		}
 
 		//if ( Q_stricmp( token, " { " ) ) {
-		//  Com_Printf( "Missing { in menu file \ n " );
+		//  Com_Printf( "Missing { in menu file \n " );
 		//  break;
 		//}
 
 		//if ( menuCount == MAX_MENUS ) {
-		//  Com_Printf( "Too many menus !\ n " );
+		//  Com_Printf( "Too many menus !\n " );
 		//  break;
 		//}
 
@@ -2624,18 +2624,18 @@ void CG_LoadMenus( const char *menuFile )
 
 	if ( !f )
 	{
-		Com_Printf( S_COLOR_YELLOW "menu file not found : % s, using default \ n ", menuFile );
+		Com_Printf( S_COLOR_YELLOW "menu file not found : %s, using default \n ", menuFile );
 		len = trap_FS_FOpenFile( "ui / hud.txt ", &f, FS_READ );
 
 		if ( !f )
 		{
-			trap_Error( S_COLOR_RED "default menu file not found : ui / hud.txt, unable to continue !\ n " );
+			trap_Error( S_COLOR_RED "default menu file not found : ui / hud.txt, unable to continue !\n " );
 		}
 	}
 
 	if ( len >= MAX_MENUDEFFILE )
 	{
-		trap_Error( va( S_COLOR_RED "menu file too large : % s is % i, max allowed is % i ", menuFile, len, MAX_MENUDEFFILE ) );
+		trap_Error( va( S_COLOR_RED "menu file too large : %s is % i, max allowed is % i ", menuFile, len, MAX_MENUDEFFILE ) );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -2660,12 +2660,12 @@ void CG_LoadMenus( const char *menuFile )
 		}
 
 		//if ( Q_stricmp( token, " { " ) ) {
-		//  Com_Printf( "Missing { in menu file \ n " );
+		//  Com_Printf( "Missing { in menu file \n " );
 		//  break;
 		//}
 
 		//if ( menuCount == MAX_MENUS ) {
-		//  Com_Printf( "Too many menus !\ n " );
+		//  Com_Printf( "Too many menus !\n " );
 		//  break;
 		//}
 
@@ -2687,7 +2687,7 @@ void CG_LoadMenus( const char *menuFile )
 		}
 	}
 
-	Com_Printf( "UI menu load time = % d milli seconds \ n ", trap_Milliseconds() - start );
+	Com_Printf( "UI menu load time = % d milli seconds \n ", trap_Milliseconds() - start );
 
 }
 
@@ -3012,7 +3012,7 @@ Will perform callbacks to make the loading info screen update.
 */
 #ifdef _DEBUG
 #define DEBUG_INITPROFILE_INIT int elapsed, dbgTime = trap_Milliseconds();
-#define DEBUG_INITPROFILE_EXEC( f ) if ( developer.integer ) { CG_Printf( " ^ 5 % s passed in % i msec \ n ", f, elapsed = trap_Milliseconds() - dbgTime );  dbgTime += elapsed; }
+#define DEBUG_INITPROFILE_EXEC( f ) if ( developer.integer ) { CG_Printf( " ^ 5 %s passed in % i msec \n ", f, elapsed = trap_Milliseconds() - dbgTime );  dbgTime += elapsed; }
 #endif              // _DEBUG
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, qboolean demoPlayback )
 {
@@ -3229,7 +3229,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum, qb
 	// OSP
 	cgs.dumpStatsFile = 0;
 	cgs.dumpStatsTime = 0;
-//  CG_Printf("Time taken : % i \ n ", trap_Milliseconds() - startat);
+//  CG_Printf("Time taken : % i \n ", trap_Milliseconds() - startat);
 }
 
 /*

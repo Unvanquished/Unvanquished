@@ -691,7 +691,7 @@ static void CG_MessageMode_f( void )
 	trap_Cvar_Set( "cg_messageText", "" );
 
 	// open the menu
-	trap_UI_Popup( UIMENU_INGAME_MESSAGEMODE );
+	//trap_UI_Popup( UIMENU_INGAME_MESSAGEMODE );
 }
 
 static void CG_MessageSend_f( void )

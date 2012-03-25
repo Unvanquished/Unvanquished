@@ -7340,6 +7340,9 @@ void _UI_SetActiveMenu( uiMenuCommand_t menu )
 				Menus_CloseAll();
 				Menus_ActivateByName( "ingame" );
 				return;
+
+			default:
+				return;
 		}
 	}
 }
