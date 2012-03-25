@@ -1499,6 +1499,8 @@ static ID_INLINE GLenum RB_StencilOp( int op )
 		return GL_INCR_WRAP;
 	case STO_DECR:
 		return GL_DECR_WRAP;
+	default:
+		return GL_KEEP;
 	}
 }
 static void RB_SetStencil( GLenum side, stencil_t *stencil )
