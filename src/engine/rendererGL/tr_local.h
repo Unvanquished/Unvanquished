@@ -954,6 +954,46 @@ extern "C" {
 	  COLLAPSE_color_lightmap
 	} collapseType_t;
 
+	// StencilFuncs
+	typedef enum
+	{
+		STF_ALWAYS  = 0x00,
+		STF_NEVER   = 0x01,
+		STF_LESS    = 0x02,
+		STF_LEQUAL  = 0x03,
+		STF_GREATER = 0x04,
+		STF_GEQUAL  = 0x05,
+		STF_EQUAL   = 0x06,
+		STF_NEQUAL  = 0x07,
+		STF_MASK    = 0x07
+	} stencilFunc_t;
+
+	// StencilOps
+	typedef enum
+	{
+		STO_KEEP    = 0x00,
+		STO_ZERO    = 0x01,
+		STO_REPLACE = 0x02,
+		STO_INVERT  = 0x03,
+		STO_INCR    = 0x04,
+		STO_DECR    = 0x05,
+		STO_MASK    = 0x07
+	} stencilOp_t;
+
+	// shifts
+	typedef enum
+	{
+		STS_SFAIL   = 4,
+		STS_ZFAIL   = 8,
+		STS_ZPASS   = 12
+	} stencilShift_t;
+
+	typedef struct stencil_s {
+		short         flags;
+		byte          ref;
+		byte          mask;
+	} stencil_t;
+
 	typedef struct
 	{
 		stageType_t     type;
@@ -985,6 +1025,8 @@ extern "C" {
 		uint32_t        stateBits; // GLS_xxxx mask
 
 		acff_t          adjustColorsForFog;
+
+		stencil_t       frontStencil, backStencil;
 
 		qboolean        overrideNoPicMip; // for images that must always be full resolution
 		qboolean        overrideFilterType; // for console fonts, 2D elements, etc.

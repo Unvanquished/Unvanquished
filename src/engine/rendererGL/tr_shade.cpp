@@ -4758,6 +4758,70 @@ void Tess_StageIteratorDebug()
 	Tess_DrawElements();
 }
 
+static ID_INLINE GLenum RB_StencilOp( int op )
+{
+	switch( op & STO_MASK ) {
+	case STO_KEEP:
+		return GL_KEEP;
+	case STO_ZERO:
+		return GL_ZERO;
+	case STO_REPLACE:
+		return GL_REPLACE;
+	case STO_INVERT:
+		return GL_INVERT;
+	case STO_INCR:
+		return GL_INCR_WRAP;
+	case STO_DECR:
+		return GL_DECR_WRAP;
+	}
+}
+static void RB_SetStencil( GLenum side, stencil_t *stencil )
+{
+	GLenum  sfailOp, zfailOp, zpassOp;
+
+	if( !side ) {
+		glDisable( GL_STENCIL_TEST );
+		return;
+	}
+
+	if( !stencil->flags ) {
+		return;
+	}
+
+	glEnable( GL_STENCIL_TEST );
+	switch( stencil->flags & STF_MASK ) {
+	case STF_ALWAYS:
+		glStencilFuncSeparate( side, GL_ALWAYS, stencil->ref, stencil->mask);
+		break;
+	case STF_NEVER:
+		glStencilFuncSeparate( side, GL_NEVER, stencil->ref, stencil->mask);
+		break;
+	case STF_LESS:
+		glStencilFuncSeparate( side, GL_LESS, stencil->ref, stencil->mask);
+		break;
+	case STF_LEQUAL:
+		glStencilFuncSeparate( side, GL_LEQUAL, stencil->ref, stencil->mask);
+		break;
+	case STF_GREATER:
+		glStencilFuncSeparate( side, GL_GREATER, stencil->ref, stencil->mask);
+		break;
+	case STF_GEQUAL:
+		glStencilFuncSeparate( side, GL_GEQUAL, stencil->ref, stencil->mask);
+		break;
+	case STF_EQUAL:
+		glStencilFuncSeparate( side, GL_EQUAL, stencil->ref, stencil->mask);
+		break;
+	case STF_NEQUAL:
+		glStencilFuncSeparate( side, GL_NOTEQUAL, stencil->ref, stencil->mask);
+		break;
+	}
+
+	sfailOp = RB_StencilOp( stencil->flags >> STS_SFAIL );
+	zfailOp = RB_StencilOp( stencil->flags >> STS_ZFAIL );
+	zpassOp = RB_StencilOp( stencil->flags >> STS_ZPASS );
+	glStencilOpSeparate( side, sfailOp, zfailOp, zpassOp );
+}
+
 void Tess_StageIteratorGeneric()
 {
 	int stage;
@@ -4832,6 +4896,11 @@ void Tess_StageIteratorGeneric()
 		Tess_ComputeColor( pStage );
 		Tess_ComputeTexMatrices( pStage );
 
+		if( pStage->frontStencil.flags || pStage->backStencil.flags ) {
+			RB_SetStencil( GL_FRONT, &pStage->frontStencil );
+			RB_SetStencil( GL_BACK, &pStage->backStencil );
+		}
+ 
 		switch ( pStage->type )
 		{
 			case ST_COLORMAP:
@@ -4941,6 +5010,10 @@ void Tess_StageIteratorGeneric()
 
 			default:
 				break;
+		}
+
+		if( pStage->frontStencil.flags || pStage->backStencil.flags ) {
+			RB_SetStencil( 0, NULL );
 		}
 
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )

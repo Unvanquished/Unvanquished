@@ -1096,6 +1096,163 @@ static genFunc_t NameToGenFunc( const char *funcname )
 }
 
 /*
+===============
+NameToStencilOp
+===============
+*/
+static int NameToStencilOp( char *name )
+{
+	if ( !Q_stricmp( name, "keep" ) )
+	{
+		return STO_KEEP;
+	}
+	else if ( !Q_stricmp( name, "zero" ) )
+	{
+		return STO_ZERO;
+	}
+	else if ( !Q_stricmp( name, "replace" ) )
+	{
+		return STO_REPLACE;
+	}
+	else if ( !Q_stricmp( name, "invert" ) )
+	{
+		return STO_INVERT;
+	}
+	else if ( !Q_stricmp( name, "incr" ) )
+	{
+		return STO_INCR;
+	}
+	else if ( !Q_stricmp( name, "decr" ) )
+	{
+		return STO_DECR;
+	}
+	else {
+		ri.Printf( PRINT_WARNING, "WARNING: invalid stencil op name '%s' in shader '%s'\n", name, shader.name );
+		return STO_KEEP;
+	}
+}
+
+/*
+===============
+ParseStencil
+===============
+*/
+static void ParseStencil( char **text, stencil_t *stencil )
+{
+	char *token;
+
+	stencil->flags = 0;
+	stencil->mask  = 0xff;
+	stencil->ref   = 1;
+
+	// [mask <mask>]
+	token = COM_ParseExt( text, qfalse );
+
+	if ( token[ 0 ] == 0 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: missing stencil ref value in shader '%s'\n", shader.name );
+		return;
+	}
+
+	if ( !Q_stricmp( token, "mask" ) ) {
+		token = COM_ParseExt( text, qfalse );
+		if ( token[ 0 ] == 0 )
+		{
+			ri.Printf( PRINT_WARNING, "WARNING: missing stencil mask value in shader '%s'\n", shader.name );
+			return;
+		}
+		stencil->mask = atoi(token);
+
+		token = COM_ParseExt( text, qfalse );
+	}
+
+	// <ref>
+	if ( token[ 0 ] == 0 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: missing stencil ref value in shader '%s'\n", shader.name );
+		return;
+	}
+
+	stencil->ref = atoi(token);
+
+	// <op>
+	token = COM_ParseExt( text, qfalse );
+
+	if ( token[ 0 ] == 0 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: missing stencil test op in shader '%s'\n", shader.name );
+		return;
+	}
+	else if ( !Q_stricmp( token, "always" ) )
+	{
+		stencil->flags |= STF_ALWAYS;
+	}
+	else if ( !Q_stricmp( token, "never" ) )
+	{
+		stencil->flags |= STF_NEVER;
+	}
+	else if ( !Q_stricmp( token, "less" ) )
+	{
+		stencil->flags |= STF_LESS;
+	}
+	else if ( !Q_stricmp( token, "lequal" ) )
+	{
+		stencil->flags |= STF_LEQUAL;
+	}
+	else if ( !Q_stricmp( token, "greater" ) )
+	{
+		stencil->flags |= STF_GREATER;
+	}
+	else if ( !Q_stricmp( token, "gequal" ) )
+	{
+		stencil->flags |= STF_GEQUAL;
+	}
+	else if ( !Q_stricmp( token, "equal" ) )
+	{
+		stencil->flags |= STF_EQUAL;
+	}
+	else if ( !Q_stricmp( token, "nequal" ) )
+	{
+		stencil->flags |= STF_NEQUAL;
+	}
+	else
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: missing stencil test op in shader '%s'\n", shader.name );
+		return;
+	}
+
+	// <sfail>
+	token = COM_ParseExt( text, qfalse );
+
+	if ( token[ 0 ] == 0 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: missing stencil sfail op in shader '%s'\n", shader.name );
+		return;
+	}
+	stencil->flags |= NameToStencilOp( token ) << STS_SFAIL;
+
+	// <zfail>
+	token = COM_ParseExt( text, qfalse );
+
+	if ( token[ 0 ] == 0 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: missing stencil zfail op in shader '%s'\n", shader.name );
+		return;
+	}
+	stencil->flags |= NameToStencilOp( token ) << STS_ZFAIL;
+
+	// <zpass>
+	token = COM_ParseExt( text, qfalse );
+
+	if ( token[ 0 ] == 0 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: missing stencil zpass op in shader '%s'\n", shader.name );
+		return;
+	}
+	stencil->flags |= NameToStencilOp( token ) << STS_ZPASS;
+}
+
+/*
 ===================
 ParseWaveForm
 ===================
@@ -1837,6 +1994,36 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 				continue;
 			}
 		}
+		// stencil <side> [mask <mask>] <ref> <op> <sfail> <zfail> <zpass>
+		else if ( !Q_stricmp( token, "stencil" ) )
+		{
+			token = COM_ParseExt( text, qfalse );
+
+			if ( !token[ 0 ] )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: missing parameter for 'stencil' keyword in shader '%s'\n", shader.name );
+				return qfalse;
+			}
+
+			if ( !Q_stricmp( token, "front" ) )
+			{
+				ParseStencil( text, &stage->frontStencil );
+			}
+			else if ( !Q_stricmp( token, "back" ) )
+			{
+				ParseStencil( text, &stage->backStencil );
+			}
+			else if ( !Q_stricmp( token, "both" ) )
+			{
+				ParseStencil( text, &stage->frontStencil );
+				Com_Memcpy( &stage->backStencil, &stage->frontStencil, sizeof( stencil_t ) );
+			}
+			else
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: unknown stencil side '%s' in shader '%s'\n", token, shader.name );
+				continue;
+			}
+		}
 		// ignoreAlphaTest
 		else if ( !Q_stricmp( token, "ignoreAlphaTest" ) )
 		{
@@ -2532,6 +2719,11 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		else if ( !Q_stricmp( token, "maskColor" ) )
 		{
 			colorMaskBits |= GLS_REDMASK_FALSE | GLS_GREENMASK_FALSE | GLS_BLUEMASK_FALSE;
+		}
+		// maskColorAlpha
+		else if ( !Q_stricmp( token, "maskColorAlpha" ) )
+		{
+			colorMaskBits |= GLS_REDMASK_FALSE | GLS_GREENMASK_FALSE | GLS_BLUEMASK_FALSE | GLS_ALPHAMASK_FALSE;
 		}
 		// maskDepth
 		else if ( !Q_stricmp( token, "maskDepth" ) )

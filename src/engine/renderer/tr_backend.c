@@ -144,6 +144,22 @@ void GL_BindMultitexture( image_t *image0, GLuint env0, image_t *image1, GLuint 
 }
 
 /*
+** GL_ColorMask
+*/
+void GL_ColorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha )
+{
+	if ( glState.colorMaskRed != red || glState.colorMaskGreen != green || glState.colorMaskBlue != blue || glState.colorMaskAlpha != alpha )
+	{
+		glState.colorMaskRed = red;
+		glState.colorMaskGreen = green;
+		glState.colorMaskBlue = blue;
+		glState.colorMaskAlpha = alpha;
+
+		glColorMask( red, green, blue, alpha );
+	}
+}
+
+/*
 ** GL_Cull
 */
 void GL_Cull( int cullType )
@@ -371,6 +387,15 @@ void GL_State( unsigned long stateBits )
 		}
 	}
 
+	// check colormask
+	if ( diff & GLS_COLORMASK_BITS )
+	{
+		GL_ColorMask( ( stateBits & GLS_COLORMASK_RED ) ? GL_FALSE : GL_TRUE,
+			      ( stateBits & GLS_COLORMASK_GREEN ) ? GL_FALSE : GL_TRUE,
+			      ( stateBits & GLS_COLORMASK_BLUE ) ? GL_FALSE : GL_TRUE,
+			      ( stateBits & GLS_COLORMASK_ALPHA ) ? GL_FALSE : GL_TRUE );
+	}
+
 	//
 	// fill/line mode
 	//
@@ -513,10 +538,7 @@ void RB_BeginDrawingView( void )
 	// clear relevant buffers
 	clearBits = 0;
 
-	if ( r_measureOverdraw->integer || r_shadows->integer == 2 )
-	{
-		clearBits |= GL_STENCIL_BUFFER_BIT;
-	}
+	clearBits |= GL_STENCIL_BUFFER_BIT;
 
 //  if(r_uiFullScreen->integer) {
 //      clearBits = GL_DEPTH_BUFFER_BIT;    // (SA) always just clear depth for menus
