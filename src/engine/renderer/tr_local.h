@@ -457,6 +457,7 @@ typedef struct stencil_s {
         short         flags;
 	byte          ref;
 	byte          mask;
+        byte          writeMask;
 } stencil_t;
 
 typedef struct

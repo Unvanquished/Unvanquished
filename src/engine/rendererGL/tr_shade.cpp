@@ -4822,6 +4822,8 @@ static void RB_SetStencil( GLenum side, stencil_t *stencil )
 	zfailOp = RB_StencilOp( stencil->flags >> STS_ZFAIL );
 	zpassOp = RB_StencilOp( stencil->flags >> STS_ZPASS );
 	glStencilOpSeparate( side, sfailOp, zfailOp, zpassOp );
+
+	glStencilMaskSeparate( side, (GLuint) stencil->writeMask );
 }
 
 void Tess_StageIteratorGeneric()

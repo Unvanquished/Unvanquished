@@ -1142,7 +1142,7 @@ static void ParseStencil( char **text, stencil_t *stencil )
 	char *token;
 
 	stencil->flags = 0;
-	stencil->mask  = 0xff;
+	stencil->mask  = stencil->writeMask = 0xff;
 	stencil->ref   = 1;
 
 	// [mask <mask>]
@@ -1162,6 +1162,25 @@ static void ParseStencil( char **text, stencil_t *stencil )
 			return;
 		}
 		stencil->mask = atoi(token);
+
+		token = COM_ParseExt( text, qfalse );
+	}
+
+	if ( token[ 0 ] == 0 )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: missing stencil ref value in shader '%s'\n", shader.name );
+		return;
+	}
+
+	// [writemask <mask>]
+	if ( !Q_stricmp( token, "writeMask" ) ) {
+		token = COM_ParseExt( text, qfalse );
+		if ( token[ 0 ] == 0 )
+		{
+			ri.Printf( PRINT_WARNING, "WARNING: missing stencil writeMask value in shader '%s'\n", shader.name );
+			return;
+		}
+		stencil->writeMask = atoi(token);
 
 		token = COM_ParseExt( text, qfalse );
 	}
@@ -1994,7 +2013,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 				continue;
 			}
 		}
-		// stencil <side> [mask <mask>] <ref> <op> <sfail> <zfail> <zpass>
+		// stencil <side> [mask <mask>] [writeMask <mask>] <ref> <op> <sfail> <zfail> <zpass>
 		else if ( !Q_stricmp( token, "stencil" ) )
 		{
 			token = COM_ParseExt( text, qfalse );
