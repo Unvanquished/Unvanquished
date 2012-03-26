@@ -1569,7 +1569,7 @@ if( BUILD_OWMAP )
   endif()
 
   # The following libraries/include_directories are always available and as such don't need to be checked before being provided
-  include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${LIB_DIR}/zlib ${MOUNT_DIR}/tools/common )
+  include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${MOUNT_DIR}/tools/common )
   target_link_libraries( owmap ${OS_LIBRARIES} )
   # This section sets various properties to the target owmap
   set_property( TARGET owmap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
