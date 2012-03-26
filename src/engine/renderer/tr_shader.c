@@ -5588,6 +5588,7 @@ static void ScanAndLoadShaderFiles( void )
 	char *buffers[ MAX_SHADER_FILES ];
 	int  buffersize[ MAX_SHADER_FILES ];
 	char *p;
+	const char *token;
 	int  numShaders;
 	int  i;
 
@@ -5623,12 +5624,35 @@ static void ScanAndLoadShaderFiles( void )
 
 		ri.Printf( PRINT_DEVELOPER, "...loading '%s'\n", filename );  // JPW NERVE was PRINT_ALL
 		buffersize[ i ] = ri.FS_ReadFile( filename, ( void ** ) &buffers[ i ] );
-		sum += buffersize[ i ];
 
 		if ( !buffers[ i ] )
 		{
 			ri.Error( ERR_DROP, "Couldn't load %s", filename );
 		}
+
+		// Do a simple check on the shader structure in that file to make sure one bad shader file cannot fuck up all other shaders.
+		p = buffers[ i ];
+		for (;;)
+		{
+			token = COM_ParseExt( &p, qtrue );
+
+			if ( !token[ 0 ] )
+			{
+				break;
+			}
+
+			token = COM_ParseExt( &p, qtrue );
+			if ( token[ 0 ] != '{' || token[ 1 ] != '\0' || !SkipBracedSection_Depth( &p, 1 ) )
+			{
+				ri.Printf( PRINT_WARNING, "WARNING: Bad shader file %s has incorrect syntax.\n", filename );
+				ri.FS_FreeFile( buffers[ i ] );
+				buffers[ i ] = NULL;
+				break;
+			}
+		}
+
+		if ( buffers [ i ] )
+			sum += buffersize[ i ];
 	}
 
 	// build single large buffer
@@ -5640,10 +5664,13 @@ static void ScanAndLoadShaderFiles( void )
 	// free in reverse order, so the temp files are all dumped
 	for ( i = numShaders - 1; i >= 0; i-- )
 	{
+		if ( !buffers[ i ] )
+		{
+			continue;
+		}
 		strcpy( p++, "\n" );
 		strcpy( p, buffers[ i ] );
 		ri.FS_FreeFile( buffers[ i ] );
-		buffers[ i ] = p;
 		p += buffersize[ i ];
 	}
 

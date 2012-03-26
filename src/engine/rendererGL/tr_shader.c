@@ -6817,20 +6817,15 @@ static void ScanAndLoadShaderFiles( void )
 				}
 			}
 
-			oldp = p;
-
 			token = COM_ParseExt2( &p, qtrue );
 
-			if ( token[ 0 ] != '{' && token[ 1 ] != '\0' )
+			if ( token[ 0 ] != '{' || token[ 1 ] != '\0' || !SkipBracedSection_Depth( &p, 1 ) )
 			{
 				ri.Printf( PRINT_WARNING, "WARNING: Bad shader file %s has incorrect syntax.\n", filename );
 				ri.FS_FreeFile( buffers[ i ] );
 				buffers[ i ] = NULL;
 				break;
 			}
-
-			SkipBracedSection( &oldp );
-			p = oldp;
 		}
 
 		if ( buffers[ i ] )
