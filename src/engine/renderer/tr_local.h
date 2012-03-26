@@ -428,6 +428,38 @@ typedef struct
 
 #define NUM_TEXTURE_BUNDLES 2
 
+// StencilFuncs
+#define STF_ALWAYS  0x00
+#define STF_NEVER   0x01
+#define STF_LESS    0x02
+#define STF_LEQUAL  0x03
+#define STF_GREATER 0x04
+#define STF_GEQUAL  0x05
+#define STF_EQUAL   0x06
+#define STF_NEQUAL  0x07
+#define STF_MASK    0x07
+
+// StencilOps
+#define STO_KEEP    0x00
+#define STO_ZERO    0x01
+#define STO_REPLACE 0x02
+#define STO_INVERT  0x03
+#define STO_INCR    0x04
+#define STO_DECR    0x05
+#define STO_MASK    0x07
+
+// shifts
+#define STS_SFAIL   4
+#define STS_ZFAIL   8
+#define STS_ZPASS   12
+
+typedef struct stencil_s {
+        short         flags;
+	byte          ref;
+	byte          mask;
+        byte          writeMask;
+} stencil_t;
+
 typedef struct
 {
 	qboolean        active;
@@ -447,6 +479,8 @@ typedef struct
 	unsigned        stateBits; // GLS_xxxx mask
 
 	acff_t          adjustColorsForFog;
+
+	stencil_t	frontStencil, backStencil;
 
 	// Ridah
 	float    zFadeBounds[ 2 ];
@@ -1391,6 +1425,7 @@ typedef struct
 	int           texEnv[ 2 ];
 	int           faceCulling;
 	unsigned long glStateBits;
+	GLboolean     colorMaskRed, colorMaskGreen, colorMaskBlue, colorMaskAlpha;
 } glstate_t;
 
 typedef struct
@@ -1792,6 +1827,12 @@ void GL_Cull( int cullType );
 
 #define GLS_DEPTHTEST_DISABLE            0x00010000
 #define GLS_DEPTHFUNC_EQUAL              0x00020000
+
+#define GLS_COLORMASK_RED                0x00100000
+#define GLS_COLORMASK_GREEN              0x00200000
+#define GLS_COLORMASK_BLUE               0x00400000
+#define GLS_COLORMASK_ALPHA              0x00800000
+#define GLS_COLORMASK_BITS               (GLS_COLORMASK_RED | GLS_COLORMASK_GREEN | GLS_COLORMASK_BLUE | GLS_COLORMASK_ALPHA)
 
 #define GLS_ATEST_GT_0                   0x10000000
 #define GLS_ATEST_LT_80                  0x20000000

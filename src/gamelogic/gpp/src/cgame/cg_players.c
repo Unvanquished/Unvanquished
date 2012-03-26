@@ -3367,7 +3367,9 @@ void CG_Player( centity_t *cent )
 		{
 			VectorCopy( cent->lerpOrigin, playerOrigin );
 			VectorCopy( playerOrigin, body.origin );
-			body.origin[ 2 ] -= 24;
+			body.origin[ 0 ] -= ci->headOffset[ 0 ];
+			body.origin[ 1 ] -= ci->headOffset[ 1 ];
+			body.origin[ 2 ] -= 24 + ci->headOffset[ 2 ];
 		}
 
 		VectorCopy( body.origin, body.lightingOrigin );

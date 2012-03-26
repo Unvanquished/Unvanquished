@@ -607,17 +607,10 @@ void GL_State( uint32_t stateBits )
 	// check colormask
 	if ( diff & GLS_COLORMASK_BITS )
 	{
-		if ( stateBits & GLS_COLORMASK_BITS )
-		{
-			GL_ColorMask( ( stateBits & GLS_REDMASK_FALSE ) ? GL_FALSE : GL_TRUE,
-			              ( stateBits & GLS_GREENMASK_FALSE ) ? GL_FALSE : GL_TRUE,
-			              ( stateBits & GLS_BLUEMASK_FALSE ) ? GL_FALSE : GL_TRUE,
-			              ( stateBits & GLS_ALPHAMASK_FALSE ) ? GL_FALSE : GL_TRUE );
-		}
-		else
-		{
-			GL_ColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
-		}
+		GL_ColorMask( ( stateBits & GLS_REDMASK_FALSE ) ? GL_FALSE : GL_TRUE,
+			      ( stateBits & GLS_GREENMASK_FALSE ) ? GL_FALSE : GL_TRUE,
+			      ( stateBits & GLS_BLUEMASK_FALSE ) ? GL_FALSE : GL_TRUE,
+			      ( stateBits & GLS_ALPHAMASK_FALSE ) ? GL_FALSE : GL_TRUE );
 	}
 
 	// check depthmask
@@ -10519,7 +10512,7 @@ static void RB_RenderView( void )
 		//R_BindFBO(tr.deferredRenderFBO);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		clearBits = GL_DEPTH_BUFFER_BIT;
+		clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
 		/*
 		   if(r_measureOverdraw->integer || r_shadows->integer == SHADOWING_STENCIL)

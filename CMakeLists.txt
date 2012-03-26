@@ -1,10 +1,12 @@
 #
-#  CMakeLists.txt
+# CMakeLists.txt
 #
 # cmake required (http://www.cmake.org/)
 #
+
 cmake_minimum_required( VERSION 2.8 )
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "" )
 set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "" )
 set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "" )
@@ -15,9 +17,7 @@ set( CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_MINSIZEREL ${CMAKE_C_FLAGS_MINSIZEREL} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO} CACHE STRING "" )
-set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-set( CMAKE_BUILD_TYPE Release CACHE STRING
-	"Build configuration (Debug, Release, RelWithDebInfo, MinSizeRel)" )
+set( CMAKE_BUILD_TYPE Release CACHE STRING "Build configuration (Debug, Release, RelWithDebInfo, MinSizeRel)" )
 
 # This line has to appear before 'PROJECT' in order to be able to disable incremental linking
 set( MSVC_INCREMENTAL_DEFAULT ON )
@@ -44,15 +44,15 @@ endif()
 option( USE_CURL             "Use curl"                                    1 )
 if( USE_CURL )
   option( USE_CURL_DLOPEN    "Use dlopen to load curl"                     1 )
-option( USE_LLVM             "Use LLVM"                                    0 )
 endif()
-option( USE_SYSTEM_HEADERS "Use local headers"                             1 )
+option( USE_LLVM             "Use LLVM"                                    0 )
+option( USE_SYSTEM_HEADERS   "Use local headers"                           1 )
 #if( WIN32 )
 #  option( USE_SYSTEM_HEADERS "Use local headers"                           0 )
 #else()
 #  option( USE_SYSTEM_HEADERS "Use local headers"                           1 )
 #endif()
-option( USE_CPUINFO          "Use CPUInfo (if compile fails, disable this" 1 )
+option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 )
 option( USE_INTERNAL_ZLIB    "Use internal zlib"                           0 )
 option( USE_CURSES           "Use the curses console"                      1 )
 option( USE_CODEC_VORBIS     "Compile with support for Vorbis"             1 )
@@ -60,23 +60,27 @@ if( USE_CODEC_VORBIS )
   option( USE_CIN_THEORA     "Compile with support for Theora"             1 )
 endif()
 option( USE_MUMBLE           "Compile with support for Mumble"             1 )
-option( USE_PHYSICS	     "Compile with Newton Physics"                 0 )
-option( USE_WEBP	     "Compile with WebP loader"                    1 )
-option( USE_MYSQL	     "Compile with MYSQL support"                  0 )
-option( USE_VOIP	     "Compile with VOIP support"                   1 )
-option( USE_CIN_XVID	     "Encode videos with XViD"                     1 )
+option( USE_PHYSICS          "Compile with Newton Physics"                 0 )
+option( USE_WEBP             "Compile with WebP loader"                    1 )
+option( USE_MYSQL            "Compile with MYSQL support"                  0 )
+option( USE_VOIP             "Compile with VOIP support"                   1 )
+if( USE_VOIP )
+  option( USE_INTERNAL_SPEEX "Use internal speex"                          0 )
+endif()
+option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
+option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
 
 # Package info
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt")
-include(CPack)
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
+set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
+include( CPack )
 
-set( MOUNT_DIR   ${CMAKE_SOURCE_DIR}/src )
-set( GAME_DIR	 ${CMAKE_SOURCE_DIR}/src/gamelogic/etmain )
-set( BASE_DIR	 ${CMAKE_SOURCE_DIR}/src/gamelogic/base )
-set( GPP_DIR	 ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
-set( LIB_DIR     ${CMAKE_SOURCE_DIR}/src/libs )
+set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
+set( GAME_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/etmain )
+set( BASE_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/base )
+set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
+set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs )
 
 find_package( PkgConfig )
 
@@ -164,20 +168,22 @@ set( PNGLIST
   ${MOUNT_DIR}/libs/libpng/pngpread.c
 )
 
-set( ZLIBLIST
-  ${MOUNT_DIR}/libs/zlib/adler32.c
-  ${MOUNT_DIR}/libs/zlib/compress.c
-  ${MOUNT_DIR}/libs/zlib/crc32.c
-  ${MOUNT_DIR}/libs/zlib/gzio.c
-  ${MOUNT_DIR}/libs/zlib/uncompr.c
-  ${MOUNT_DIR}/libs/zlib/deflate.c
-  ${MOUNT_DIR}/libs/zlib/trees.c
-  ${MOUNT_DIR}/libs/zlib/zutil.c
-  ${MOUNT_DIR}/libs/zlib/inflate.c
-  ${MOUNT_DIR}/libs/zlib/infback.c
-  ${MOUNT_DIR}/libs/zlib/inftrees.c
-  ${MOUNT_DIR}/libs/zlib/inffast.c
-)
+if( USE_INTERNAL_ZLIB )
+  set( ZLIBLIST
+    ${MOUNT_DIR}/libs/zlib/adler32.c
+    ${MOUNT_DIR}/libs/zlib/compress.c
+    ${MOUNT_DIR}/libs/zlib/crc32.c
+    ${MOUNT_DIR}/libs/zlib/gzio.c
+    ${MOUNT_DIR}/libs/zlib/uncompr.c
+    ${MOUNT_DIR}/libs/zlib/deflate.c
+    ${MOUNT_DIR}/libs/zlib/trees.c
+    ${MOUNT_DIR}/libs/zlib/zutil.c
+    ${MOUNT_DIR}/libs/zlib/inflate.c
+    ${MOUNT_DIR}/libs/zlib/infback.c
+    ${MOUNT_DIR}/libs/zlib/inftrees.c
+    ${MOUNT_DIR}/libs/zlib/inffast.c
+  )
+endif()
 
 set( OGGLIST
   ${MOUNT_DIR}/libs/ogg/src/bitwise.c
@@ -274,8 +280,8 @@ set( THEORALIST
 )
 
 set( SHAREDLIST
- ${MOUNT_DIR}/engine/qcommon/q_shared.c
- ${MOUNT_DIR}/engine/qcommon/q_math.c
+  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/q_math.c
 )
 
 set( OPENEXRLIST
@@ -415,8 +421,6 @@ if( USE_MYSQL )
     ${MOUNT_DIR}/engine/database/db_main.c
     ${MOUNT_DIR}/engine/database/db_mysql.c
   )
-else()
-  set( DATABASELIST )
 endif()
 
 set( CLIENTLIST
@@ -457,17 +461,14 @@ set( ALLIST
   ${MOUNT_DIR}/engine/snd_openal/snd_al_stream.c
 )
 
-
 if( USE_CPUINFO )
   set( CPUINFOLIST
-  ${MOUNT_DIR}/libs/cpuinfo/CPUInfo.c
+    ${MOUNT_DIR}/libs/cpuinfo/CPUInfo.c
   )
   add_definitions( -DNOCPUINFO )
-else()
-  set( CPUINFOLIST )
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
   set( SDLBASELIST
     ${MOUNT_DIR}/engine/sys/sys_unix.c
     ${MOUNT_DIR}/engine/sys/sys_osx.m
@@ -493,7 +494,6 @@ set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
 )
 
-
 set( LINUXSOURCESLIST
   ${MOUNT_DIR}/libs/glew/src/glew.c
 )
@@ -516,7 +516,6 @@ set( MACSOURCESLIST
   ${MOUNT_DIR}/engine/mac/AGLUtils.cpp
   ${MOUNT_DIR}/engine/mac/CDrawSprocket.cpp
 )
-
 
 set( BOTLIBLIST
   ${MOUNT_DIR}/engine/botlib/be_aas_bspq3.c
@@ -754,73 +753,74 @@ set( UITREM
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${BASE_DIR}/src/ui/ui_api.c
 )
+
 set( CGAMEGPP
- ${GPP_DIR}/src/cgame/cg_main.c
- ${GPP_DIR}/src/game/bg_misc.c
- ${GPP_DIR}/src/game/bg_pmove.c
- ${GPP_DIR}/src/game/bg_slidemove.c
- ${GPP_DIR}/src/game/bg_lib.c
- ${GPP_DIR}/src/game/bg_alloc.c
- ${GPP_DIR}/src/game/bg_voice.c
- ${GPP_DIR}/src/cgame/cg_consolecmds.c
- ${GPP_DIR}/src/cgame/cg_buildable.c
- ${GPP_DIR}/src/cgame/cg_animation.c
- ${GPP_DIR}/src/cgame/cg_animmapobj.c
- ${GPP_DIR}/src/cgame/cg_draw.c
- ${GPP_DIR}/src/cgame/cg_drawtools.c
- ${GPP_DIR}/src/cgame/cg_ents.c
- ${GPP_DIR}/src/cgame/cg_event.c
- ${GPP_DIR}/src/cgame/cg_marks.c
- ${GPP_DIR}/src/cgame/cg_players.c
- ${GPP_DIR}/src/cgame/cg_playerstate.c
- ${GPP_DIR}/src/cgame/cg_predict.c
- ${GPP_DIR}/src/cgame/cg_servercmds.c
- ${GPP_DIR}/src/cgame/cg_snapshot.c
- ${GPP_DIR}/src/cgame/cg_view.c
- ${GPP_DIR}/src/cgame/cg_weapons.c
- ${GPP_DIR}/src/cgame/cg_scanner.c
- ${GPP_DIR}/src/cgame/cg_attachment.c
- ${GPP_DIR}/src/cgame/cg_trails.c
- ${GPP_DIR}/src/cgame/cg_particles.c
- ${GPP_DIR}/src/cgame/cg_tutorial.c
- ${GPP_DIR}/src/ui/ui_shared.c
- ${MOUNT_DIR}/engine/qcommon/q_math.c
- ${MOUNT_DIR}/engine/qcommon/q_shared.c
- ${GPP_DIR}/src/cgame/cg_api.c
+  ${GPP_DIR}/src/cgame/cg_main.c
+  ${GPP_DIR}/src/game/bg_misc.c
+  ${GPP_DIR}/src/game/bg_pmove.c
+  ${GPP_DIR}/src/game/bg_slidemove.c
+  ${GPP_DIR}/src/game/bg_lib.c
+  ${GPP_DIR}/src/game/bg_alloc.c
+  ${GPP_DIR}/src/game/bg_voice.c
+  ${GPP_DIR}/src/cgame/cg_consolecmds.c
+  ${GPP_DIR}/src/cgame/cg_buildable.c
+  ${GPP_DIR}/src/cgame/cg_animation.c
+  ${GPP_DIR}/src/cgame/cg_animmapobj.c
+  ${GPP_DIR}/src/cgame/cg_draw.c
+  ${GPP_DIR}/src/cgame/cg_drawtools.c
+  ${GPP_DIR}/src/cgame/cg_ents.c
+  ${GPP_DIR}/src/cgame/cg_event.c
+  ${GPP_DIR}/src/cgame/cg_marks.c
+  ${GPP_DIR}/src/cgame/cg_players.c
+  ${GPP_DIR}/src/cgame/cg_playerstate.c
+  ${GPP_DIR}/src/cgame/cg_predict.c
+  ${GPP_DIR}/src/cgame/cg_servercmds.c
+  ${GPP_DIR}/src/cgame/cg_snapshot.c
+  ${GPP_DIR}/src/cgame/cg_view.c
+  ${GPP_DIR}/src/cgame/cg_weapons.c
+  ${GPP_DIR}/src/cgame/cg_scanner.c
+  ${GPP_DIR}/src/cgame/cg_attachment.c
+  ${GPP_DIR}/src/cgame/cg_trails.c
+  ${GPP_DIR}/src/cgame/cg_particles.c
+  ${GPP_DIR}/src/cgame/cg_tutorial.c
+  ${GPP_DIR}/src/ui/ui_shared.c
+  ${MOUNT_DIR}/engine/qcommon/q_math.c
+  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${GPP_DIR}/src/cgame/cg_api.c
 #   ${GPP_DIR}/src/cgame/cg_nav.c
 )
 
 set( GAMEGPP
- ${GPP_DIR}/src/game/g_main.c
- ${GPP_DIR}/src/game/bg_misc.c
- ${GPP_DIR}/src/game/bg_pmove.c
- ${GPP_DIR}/src/game/bg_slidemove.c
- ${GPP_DIR}/src/game/bg_lib.c
- ${GPP_DIR}/src/game/bg_alloc.c
- ${GPP_DIR}/src/game/bg_voice.c
- ${GPP_DIR}/src/game/g_active.c
- ${GPP_DIR}/src/game/g_client.c
- ${GPP_DIR}/src/game/g_cmds.c
- ${GPP_DIR}/src/game/g_combat.c
- ${GPP_DIR}/src/game/g_physics.c
- ${GPP_DIR}/src/game/g_buildable.c
- ${GPP_DIR}/src/game/g_misc.c
- ${GPP_DIR}/src/game/g_missile.c
- ${GPP_DIR}/src/game/g_mover.c
- ${GPP_DIR}/src/game/g_session.c
- ${GPP_DIR}/src/game/g_spawn.c
- ${GPP_DIR}/src/game/g_svcmds.c
- ${GPP_DIR}/src/game/g_target.c
- ${GPP_DIR}/src/game/g_team.c
- ${GPP_DIR}/src/game/g_trigger.c
- ${GPP_DIR}/src/game/g_utils.c
- ${GPP_DIR}/src/game/g_maprotation.c
- ${GPP_DIR}/src/game/g_weapon.c
- ${GPP_DIR}/src/game/g_admin.c
- ${GPP_DIR}/src/game/g_namelog.c
- ${MOUNT_DIR}/engine/qcommon/q_math.c
- ${MOUNT_DIR}/engine/qcommon/q_shared.c
- ${GPP_DIR}/src/game/g_api.c
+  ${GPP_DIR}/src/game/g_main.c
+  ${GPP_DIR}/src/game/bg_misc.c
+  ${GPP_DIR}/src/game/bg_pmove.c
+  ${GPP_DIR}/src/game/bg_slidemove.c
+  ${GPP_DIR}/src/game/bg_lib.c
+  ${GPP_DIR}/src/game/bg_alloc.c
+  ${GPP_DIR}/src/game/bg_voice.c
+  ${GPP_DIR}/src/game/g_active.c
+  ${GPP_DIR}/src/game/g_client.c
+  ${GPP_DIR}/src/game/g_cmds.c
+  ${GPP_DIR}/src/game/g_combat.c
+  ${GPP_DIR}/src/game/g_physics.c
+  ${GPP_DIR}/src/game/g_buildable.c
+  ${GPP_DIR}/src/game/g_misc.c
+  ${GPP_DIR}/src/game/g_missile.c
+  ${GPP_DIR}/src/game/g_mover.c
+  ${GPP_DIR}/src/game/g_session.c
+  ${GPP_DIR}/src/game/g_spawn.c
+  ${GPP_DIR}/src/game/g_svcmds.c
+  ${GPP_DIR}/src/game/g_target.c
+  ${GPP_DIR}/src/game/g_team.c
+  ${GPP_DIR}/src/game/g_trigger.c
+  ${GPP_DIR}/src/game/g_utils.c
+  ${GPP_DIR}/src/game/g_maprotation.c
+  ${GPP_DIR}/src/game/g_weapon.c
+  ${GPP_DIR}/src/game/g_admin.c
+  ${GPP_DIR}/src/game/g_namelog.c
+  ${MOUNT_DIR}/engine/qcommon/q_math.c
+  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${GPP_DIR}/src/game/g_api.c
  ${GPP_DIR}/src/game/g_bot.cpp
  ${GPP_DIR}/src/game/g_alienbot.cpp
  ${GPP_DIR}/src/game/g_humanbot.cpp
@@ -828,81 +828,83 @@ set( GAMEGPP
 )
 
 set( UIGPP
- ${GPP_DIR}/src/ui/ui_main.c
- ${GPP_DIR}/src/ui/ui_atoms.c
- ${GPP_DIR}/src/ui/ui_shared.c
- ${GPP_DIR}/src/ui/ui_gameinfo.c
- ${GPP_DIR}/src/game/bg_misc.c
- ${GPP_DIR}/src/game/bg_lib.c
- ${MOUNT_DIR}/engine/qcommon/q_math.c
- ${MOUNT_DIR}/engine/qcommon/q_shared.c
- ${GPP_DIR}/src/ui/ui_api.c
+  ${GPP_DIR}/src/ui/ui_main.c
+  ${GPP_DIR}/src/ui/ui_atoms.c
+  ${GPP_DIR}/src/ui/ui_shared.c
+  ${GPP_DIR}/src/ui/ui_gameinfo.c
+  ${GPP_DIR}/src/game/bg_misc.c
+  ${GPP_DIR}/src/game/bg_lib.c
+  ${MOUNT_DIR}/engine/qcommon/q_math.c
+  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${GPP_DIR}/src/ui/ui_api.c
 )
 
 if( USE_VOIP )
-  set( SPEEXLIST
-    ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
-    ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
-  )
-else()
-  set( SPEEXLIST )
+  if( USE_INTERNAL_SPEEX )
+    set( SPEEXLIST
+      ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
+      ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
+    )
+  endif()
 endif()
 
-set( CRYPTOLIST
-  ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
-  ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
-  ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
-  ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
-  ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
-  ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
-  ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
-)
+if( USE_INTERNAL_CRYPTO )
+  set( CRYPTOLIST
+    ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
+    ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
+    ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
+    ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
+    ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
+    ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
+    ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
+  )
+endif()
 
 set( OWMAPLIST
   ${MOUNT_DIR}/tools/common/cmdlib.c
@@ -1109,7 +1111,7 @@ endif()
 ###############################
 
 if( BUILD_GAME_SO_ET )
-  add_library( game  SHARED ${SHAREDLIST} ${QAGAMELIST} )
+  add_library( game SHARED ${SHAREDLIST} ${QAGAMELIST} )
   set_property( TARGET game PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( game PROPERTIES
     OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
@@ -1130,7 +1132,7 @@ if( BUILD_GAME_SO_ET )
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "etmain"
   )
-  install(TARGETS game cgame ui
+  install( TARGETS game cgame ui
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
@@ -1138,7 +1140,7 @@ if( BUILD_GAME_SO_ET )
 endif()
 
 if( BUILD_GAME_SO_TREM )
-  add_library( tremgame  SHARED ${GAMETREM} )
+  add_library( tremgame SHARED ${GAMETREM} )
   set_property( TARGET tremgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( tremgame PROPERTIES
     OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
@@ -1169,12 +1171,15 @@ if( BUILD_GAME_SO_GPP )
       OUTPUT_NAME "qagame_mp_${BUILD_ARCH}"
       PREFIX ""
       RUNTIME_OUTPUT_DIRECTORY "main"
-      ARCHIVE_OUTPUT_DIRECTORY "main" )
+      ARCHIVE_OUTPUT_DIRECTORY "main"
+    )
   else()
     set_target_properties( gppgame PROPERTIES
       OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
       PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main" )
+      LIBRARY_OUTPUT_DIRECTORY "main"
+    )
+    target_link_libraries( gppgame -lm )
   endif()
   add_library( gpptrem SHARED ${CGAMEGPP} )
   set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
@@ -1183,12 +1188,15 @@ if( BUILD_GAME_SO_GPP )
       OUTPUT_NAME "cgame_mp_${BUILD_ARCH}"
       PREFIX ""
       RUNTIME_OUTPUT_DIRECTORY "main"
-      ARCHIVE_OUTPUT_DIRECTORY "main" )
+      ARCHIVE_OUTPUT_DIRECTORY "main"
+    )
   else()
     set_target_properties( gpptrem PROPERTIES
       OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
       PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main" )
+      LIBRARY_OUTPUT_DIRECTORY "main"
+    )
+    target_link_libraries( gpptrem -lm )
   endif()
   add_library( gppui SHARED ${UIGPP} )
   set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
@@ -1197,12 +1205,15 @@ if( BUILD_GAME_SO_GPP )
       OUTPUT_NAME "ui_mp_${BUILD_ARCH}"
       PREFIX ""
       RUNTIME_OUTPUT_DIRECTORY "main"
-      ARCHIVE_OUTPUT_DIRECTORY "main" )
-  else()  
+      ARCHIVE_OUTPUT_DIRECTORY "main"
+    )
+  else()
     set_target_properties( gppui PROPERTIES
       OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
       PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main" )
+      LIBRARY_OUTPUT_DIRECTORY "main"
+    )
+    target_link_libraries( gppui -lm )
   endif()
 endif()
 
@@ -1218,7 +1229,7 @@ if( USE_PHYSICS )
   if( LINUX )
     if( CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux64/libNewton.a" )
-    elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
+    elseif( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86" )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux32/libNewton.a" )
     endif()
   else()
@@ -1230,8 +1241,8 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
   find_package( OpenGL REQUIRED )
   if( USE_SYSTEM_HEADERS )
     find_package( SDL REQUIRED )
-    find_package( JPEG  REQUIRED )
-    find_package( PNG  REQUIRED )
+    find_package( JPEG REQUIRED )
+    find_package( PNG REQUIRED )
     find_package( Freetype REQUIRED )
     find_package( GLEW REQUIRED )
   else()
@@ -1250,7 +1261,14 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
   endif()
 
   if( BUILD_NEW_RENDERER )
-    add_library( rendererGL SHARED  ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/libs/libpng/pngerror.c ${MOUNT_DIR}/libs/jpeg/jdatasrc.c )
+    set( EXTRA_RENDERERGL_FILES )
+    if( NOT JPEG_FOUND )
+      set( EXTRA_RENDERERGL_FILES ${EXTRA_RENDERERGL_FILES} ${MOUNT_DIR}/libs/jpeg/jdatasrc.c )
+    endif()
+    if( NOT PNG_FOUND )
+      set( EXTRA_RENDERERGL_FILES ${EXTRA_RENDERERGL_FILES}  ${MOUNT_DIR}/libs/libpng/pngerror.c )
+    endif()
+    add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${EXTRA_RENDERERGL_FILES} )
     include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
     target_link_libraries( rendererGL ${OS_LIBRARIES} ${PNG_LIBRARIES} ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
@@ -1258,6 +1276,7 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
       set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" PREFIX "" )
     else()
       set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "librendererGL3${BUILD_ARCH}" PREFIX "" )
+      target_link_libraries( rendererGL -lm )
     endif()
     if( WEBP_FOUND )
       set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
@@ -1276,11 +1295,12 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
     add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} )
     include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
-    target_link_libraries( renderer ${PNG_LIBRARY}  ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
+    target_link_libraries( renderer ${PNG_LIBRARY} ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
     if( WIN32 )
       set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" PREFIX "" )
     else()
       set_target_properties( renderer PROPERTIES OUTPUT_NAME "librendererGL${BUILD_ARCH}" PREFIX "" )
+      target_link_libraries( renderer -lm )
     endif()
     if( WEBP_FOUND )
       set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
@@ -1317,7 +1337,7 @@ if( BUILD_CLIENT )
     find_package( SDL REQUIRED )
     find_package( Freetype REQUIRED )
     find_package( GLEW REQUIRED )
-     # The included gmp.h should be used instead of the local header.
+    # The included gmp.h should be used instead of the local header.
     find_package( GMP REQUIRED )
 
     if( JPEG_FOUND )
@@ -1343,13 +1363,26 @@ if( BUILD_CLIENT )
     include_directories( ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} )
   endif()
 
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     link_directories( /opt/local/lib )
   endif()
 
   if( NOT USE_INTERNAL_ZLIB )
-    find_package(ZLIB REQUIRED) # This is used to check that ZLIB is available
-    set( ZLIBLIST )
+    find_package( ZLIB REQUIRED ) # This is used to check that ZLIB is available
+    include_directories( ${ZLIB_INCLUDE_DIRS} )
+    target_link_libraries( client ${ZLIB_LIBRARIES} )
+  endif()
+
+  if( NOT USE_INTERNAL_SPEEX )
+    find_package( Speex REQUIRED )
+    include_directories( ${SPEEX_INCLUDE_DIRS} )
+    target_link_libraries( client ${SPEEX_LIBRARIES} )
+  endif()
+
+  if( NOT USE_INTERNAL_CRYPTO )
+    find_package( Nettle REQUIRED )
+    include_directories( ${NETTLE_INCLUDE_DIRS} )
+    target_link_libraries( client ${NETTLE_LIBRARIES} )
   endif()
 
   if( USE_OPENAL )
@@ -1420,7 +1453,7 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${MYSQL_LIBRARIES} )
   endif()
 
-  if( USE_CIN_XVID)
+  if( USE_CIN_XVID )
     find_package( xvid REQUIRED )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_CIN_XVID )
     include_directories( ${XVID_INCLUDE_DIR} )
@@ -1432,10 +1465,10 @@ if( BUILD_CLIENT )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER BOTLIB BOTLIB_STATIC COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
-  install(TARGETS client
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib
+  install( TARGETS client
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
   )
 endif()
 
@@ -1460,13 +1493,12 @@ endif()
 
 if( BUILD_SERVER )
   # Create the target Server
-  add_executable( server ${SERVERLIST}  ${SDLBASELIST} ${CPUINFOLIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${BOTLIBLIST} ${SPEEXLIST} ${ZLIBLIST}
+  add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
+    ${QCOMMONLIST} ${SHAREDLIST} ${BOTLIBLIST} ${ZLIBLIST}
     ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
-  # The following section finds the required dependencies and makes them
-  # available to the target
+  # The following section finds the required dependencies and makes them available to the target
   if( USE_SYSTEM_HEADERS )
     find_package( SDL REQUIRED )
     # The included gmp.h should be used instead of the local header.
@@ -1485,8 +1517,15 @@ if( BUILD_SERVER )
   endif()
 
   if( NOT USE_INTERNAL_ZLIB )
-    find_package(ZLIB REQUIRED) # Only used to check if ZLIB exists
-    set( ZLIBLIST )
+    find_package( ZLIB REQUIRED ) # Only used to check if ZLIB exists
+    include_directories( ${ZLIB_INCLUDE_DIRS} )
+    target_link_libraries( server ${ZLIB_LIBRARIES} )
+  endif()
+
+  if( NOT USE_INTERNAL_CRYPTO )
+    find_package( Nettle REQUIRED )
+    include_directories( ${NETTLE_INCLUDE_DIRS} )
+    target_link_libraries( server ${NETTLE_LIBRARIES} )
   endif()
 
   if( USE_CURL )
@@ -1523,10 +1562,10 @@ if( BUILD_SERVER )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
-  install(TARGETS server
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib
+  install( TARGETS server
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
   )
 endif()
 
@@ -1564,16 +1603,15 @@ if( BUILD_OWMAP )
     message( FATAL_ERROR "Glib not found" )
   endif()
 
-  # The following libraries/include_directories are always available and as
-  # such don't need to be checked before being provided
-  include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${LIB_DIR}/zlib ${MOUNT_DIR}/tools/common  )
+  # The following libraries/include_directories are always available and as such don't need to be checked before being provided
+  include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${LIB_DIR}/zlib ${MOUNT_DIR}/tools/common )
   target_link_libraries( owmap ${OS_LIBRARIES} )
   # This section sets various properties to the target owmap
   set_property( TARGET owmap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
   set_target_properties( owmap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
-  install(TARGETS owmap
-	    RUNTIME DESTINATION bin
-	    LIBRARY DESTINATION lib
-	    ARCHIVE DESTINATION lib
+  install( TARGETS owmap
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
   )
 endif()
