@@ -991,7 +991,8 @@ static void CG_DrawPlayerPoisonBarbs( rectDef_t *rect, vec4_t color, qhandle_t s
 	int           width = rect->w;
 	int           height = rect->h;
 	qboolean      vertical;
-	int           iconsize, numBarbs, i;
+	int           iconsize, numBarbs;
+	iconsize = numBarbs = 0;
 
 	BG_UnpackAmmoArray( ps->weapon, ps->ammo, ps->powerups, &numBarbs, NULL );
 
@@ -1011,6 +1012,7 @@ static void CG_DrawPlayerPoisonBarbs( rectDef_t *rect, vec4_t color, qhandle_t s
 		trap_R_SetColor( color );
 	}
 
+	int i;
 	for ( i = 0; i < numBarbs; i++ )
 	{
 		if ( vertical )
