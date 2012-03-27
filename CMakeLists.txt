@@ -1523,7 +1523,7 @@ if( BUILD_SERVER )
   endif()
 
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle
-    ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${NEWTON_INCLUDES} ${MOUNT_DIR}/libs/gmp/include )
+    ${NEWTON_INCLUDES} ${MOUNT_DIR}/libs/gmp/include )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
