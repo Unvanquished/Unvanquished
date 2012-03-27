@@ -52,6 +52,7 @@ Maryland 20850 USA.
 #ifdef SYSTEM_JPEG
 #	include <jpeglib.h>
 #else
+#	define JPEG_INTERNALS
 #	include "../../libs/jpeg/jpeglib.h"
 #endif
 #ifdef SYSTEM_PNG

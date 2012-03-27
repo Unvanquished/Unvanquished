@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef SYSTEM_JPEG
 #	include <jpeglib.h>
 #else
+#	define JPEG_INTERNALS
 #	include "../../libs/jpeg/jpeglib.h"
 #endif
 #ifdef SYSTEM_PNG
