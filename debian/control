@@ -2,7 +2,7 @@ Source: unvanquished
 Section: contrib/games
 Priority: extra
 Maintainer: Darren Salt <linux@youmustbejoking.demon.co.uk>
-Build-Depends: debhelper (>= 8.0.0), cmake, curl,
+Build-Depends: debhelper (>= 8.0.0), cmake,
 	libcurl4-gnutls-dev,
 	libfreetype6-dev,
 	libgl1-mesa-dev,
@@ -15,7 +15,7 @@ Build-Depends: debhelper (>= 8.0.0), cmake, curl,
 	libncurses5-dev,
 	libogg-dev,
 	libopenal-dev,
-	libpng12-dev,
+	libpng-dev | libpng12-dev,
 	libsdl1.2-dev,
 	libsm-dev,
 	libtheora-dev,
@@ -33,7 +33,17 @@ Vcs-Browser: http://github.com/TremZ/Unvanquished
 
 Package: unvanquished
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, curl
 Description: Team-based FPS game, aliens v. humans
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
+
+Package: unvanquished-dbg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Team-based FPS game, aliens v. humans - debug info
+ Build a base, defend it against the other team, gain credits for better
+ weapons or more advanced aliens, try to wipe them out.
+ .
+ This package contains debug information needed to generate useable
+ backtraces etc.

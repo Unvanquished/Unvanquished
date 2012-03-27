@@ -25,6 +25,9 @@ cleanup ()
 }
 trap cleanup EXIT
 
+echo "[1;32mCache directory:    [33m$CACHE
+[1;32mDownload directory: [33m$DEST_DIR[m"
+
 # Create directories if needed
 mkdir -p "$DEST_DIR" "$CACHE"
 
@@ -57,9 +60,10 @@ grep -sqve '^[0-9a-f]\{32\}  [^ ]\+$' "$CACHE/md5sums" && exit 1
 echo '[32mSuccessful.[m'
 
 # List the files whose checksums are listed
-echo '[33mFound files:[m'
+echo '[33mListed files:[m'
 cut -d' ' -f2- <"$CACHE/md5sums"
 
+echo "[33mDownloading missing or updated files...[m"
 # Download those files unless the local copies match the checksums
 (set -e; cd "$DEST_DIR"; LANG=C md5sum -c "$CACHE/md5sums" 2>/dev/null) |
   sed -e '/: OK$/ d; s/: FAILED\( open or read\)\?$//' |

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Unvanquished
+Comment=First-person shooter game - aliens vs humans
+Icon=unvanquished
+Terminal=false
+Type=Application
+Exec=/usr/games/unvanquished.sh
+Categories=Game;ActionGame;StrategyGame;
