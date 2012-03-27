@@ -3049,8 +3049,6 @@ void Com_ClientListParse( clientList_t *list, const char *s )
 		return;
 	}
 
-	//TODO: no field width limits in this sscanf can cause a crash with huge input data!
-	//		We should to add a field width specifier like: sscanf( s, "%64x%64x", &list->hi, &list->lo );
 	sscanf( s, "%x%x", &list->hi, &list->lo );
 }
 
