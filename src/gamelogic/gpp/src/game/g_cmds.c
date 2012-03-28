@@ -56,6 +56,59 @@ void G_SanitiseString( char *in, char *out, int len )
 
 /*
 ==================
+G_MatchOnePlayer
+
+This is a companion function to G_ClientNumbersFromString()
+
+returns qtrue if the int array plist only has one client id, false otherwise
+In the case of false, err will be populated with an error message.
+==================
+*/
+qboolean G_MatchOnePlayer( const int *plist, int found, char *err, int len )
+{
+	gclient_t *cl;
+	int       p;
+	char      line[ MAX_NAME_LENGTH + 10 ] = { "" };
+
+	err[ 0 ] = '\0';
+
+	if ( found <= 0 )
+	{
+		Q_strcat( err, len, "no connected player by that name or slot #" );
+		return qfalse;
+	}
+
+	if ( found > 1 )
+	{
+		Q_strcat( err, len, "more than one player name matches. "
+		          "be more specific or use the slot #:\n" );
+
+		for ( p = 0; p < found; p++ )
+		{
+			cl = &level.clients[ plist[p] ];
+
+			if ( cl->pers.connected == CON_CONNECTED )
+			{
+				Com_sprintf( line, sizeof( line ), "%2i - %s^7\n",
+				             plist[p], cl->pers.netname );
+
+				if ( strlen( err ) + strlen( line ) > len )
+				{
+					break;
+				}
+
+				Q_strcat( err, len, line );
+			}
+		}
+
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
+/*
+==================
 G_ClientNumberFromString
 
 Returns a player number for either a number or name string
