@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#ifdef USE_LLVM
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,8 +29,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-#ifdef USE_LLVM
 
 #include "vm_llvm.h"
 
