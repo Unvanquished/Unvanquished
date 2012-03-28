@@ -102,6 +102,43 @@ void G_TeamCommand( team_t team, char *cmd )
 }
 
 /*
+================
+G_AreaTeamCommand
+
+Broadcasts a command to only a specific team within a specific range
+================
+*/
+void G_AreaTeamCommand( gentity_t *ent, char *cmd )
+{
+	int    entityList[ MAX_GENTITIES ];
+	int    num, i;
+	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
+	vec3_t mins, maxs;
+	team_t team = ent->client->pers.teamSelection;
+
+	for ( i = 0; i < 3; i++ )
+	{
+		range[ i ] = g_sayAreaRange.value;
+	}
+
+	VectorAdd( ent->s.origin, range, maxs );
+	VectorSubtract( ent->s.origin, range, mins );
+
+	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+
+	for ( i = 0; i < num; i++ )
+	{
+		if ( g_entities[ entityList[ i ] ].client && g_entities[ entityList[ i ] ].client->pers.connected == CON_CONNECTED )
+		{
+			if ( g_entities[ entityList[ i ] ].client->pers.teamSelection == team )
+			{
+				trap_SendServerCommand( entityList[ i ], cmd );
+			}
+		}
+	}
+}
+
+/*
 ==============
 OnSameTeam
 ==============

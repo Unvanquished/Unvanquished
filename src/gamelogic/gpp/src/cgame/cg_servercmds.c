@@ -1050,6 +1050,7 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 			break;
 
 		case SAY_AREA:
+		case SAY_AREA_TEAM:
 			CG_Printf( "%s%s<%s" S_COLOR_WHITE ">%s%s " S_COLOR_BLUE "%s\n",
 			           ignore, prefix, name, location, maybeColon, text );
 			break;
@@ -1233,6 +1234,10 @@ static void CG_ParseVoice( void )
 
 			case VOICE_CHAN_TEAM:
 				CG_Say( clientNum, SAY_TEAM, sayText );
+				break;
+
+			case VOICE_CHAN_LOCAL:
+				CG_Say( clientNum, SAY_AREA_TEAM, sayText );
 				break;
 
 			default:

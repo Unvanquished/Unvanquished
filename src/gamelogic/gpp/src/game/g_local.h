@@ -1042,6 +1042,7 @@ void G_RunClient( gentity_t *ent );
 //
 team_t    G_TeamFromString( char *str );
 void      G_TeamCommand( team_t team, char *cmd );
+void      G_AreaTeamCommand( gentity_t *ent, char *cmd );
 qboolean  OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
 void      G_LeaveTeam( gentity_t *self );
 void      G_ChangeTeam( gentity_t *ent, team_t newTeam );
