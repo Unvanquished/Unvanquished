@@ -277,6 +277,12 @@ g_admin_cmd_t     g_admin_cmds[] =
 		"unregister",   G_admin_unregister,  qfalse, "unregister",
 		"unregister your name so that it can be used by other players.",
 		""
+	},
+
+	{
+		"warn",         G_admin_warn,        qfalse, "warn",
+		"warn a player about his behaviour",
+		"[^3name|slot#^7] [^3reason^7]"
 	}
 };
 
@@ -2770,6 +2776,47 @@ qboolean G_admin_changemap( gentity_t *ent )
 	AP( va( "print \"^3changemap: ^7map '%s' started by %s^7 %s\n\"", map,
 	        ( ent ) ? ent->client->pers.netname : "console",
 	        ( layout[ 0 ] ) ? va( "(forcing layout '%s')", layout ) : "" ) );
+	return qtrue;
+}
+
+qboolean G_admin_warn( gentity_t *ent )
+{
+	char      reason[ 64 ];
+	int       pids[ MAX_CLIENTS ], found;
+	char      name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
+	gentity_t *vic;
+
+	if( trap_Argc() < 3 )
+	{
+		ADMP( va( "^3warn: ^7usage: warn [name|slot#] [reason]\n" ) );
+		return qfalse;
+	}
+
+	trap_Argv( 1, name, sizeof( name ) );
+
+	if( ( found = G_ClientNumbersFromString( name, pids, MAX_CLIENTS ) ) != 1 )
+	{
+		G_MatchOnePlayer( pids, found, err, sizeof( err ) );
+		ADMP( va( "^3warn: ^7%s\n", err ) );
+		return qfalse;
+	}
+
+	if( !admin_higher( ent, &g_entities[ pids[ 0 ] ] ) )
+	{
+		ADMP( "^3warn: ^7sorry, but your intended victim has a higher admin level than you\n" );
+		return qfalse;
+	}
+
+	vic = &g_entities[ pids[ 0 ] ];
+
+	G_DecolorString( ConcatArgs( 2 ), reason, sizeof( reason ) );
+	CPx( pids[ 0 ], va( "cp \"^1You have been warned by an administrator:\n^3%s\"",
+	                    reason ) );
+	AP( va( "print \"^3warn: ^7%s^7 has been warned: '%s' by %s\n\"",
+	        vic->client->pers.netname,
+	        reason,
+	        ( ent ) ? ent->client->pers.netname : "console" ) );
+
 	return qtrue;
 }
 
