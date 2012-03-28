@@ -121,10 +121,10 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug Dedicated|x64'">.\Debug_Dedicated\x64\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug Dedicated|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug Dedicated|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\bin\win32\release</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\Release\x64\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\bin\win32\release</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\Release\x64\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\bin\win64\release</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\bin\win64\release</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\bin\win64\release</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\bin\win64\release</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Dedicated|Win32'">.\Release_Dedicated\x32\</OutDir>
@@ -440,7 +440,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>dinput8.lib;winmm.lib;wsock32.lib;Iphlpapi.lib;libcurl_imp.lib;ws2_32.lib;glu32.lib;libmysql.lib;xvidcore.lib;psapi.lib;opengl32.lib;SDL.lib;SDLMain.lib;newton.lib;glew32.lib;CPUInfo.lib;advapi32.lib;GlU32.Lib;libeay32.lib;zlibwapi.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;libtheora.lib;OpenAL32.lib;bass.lib;libbz2.lib;mpir.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\bin\win32\release\Daemon.exe</OutputFile>
+      <OutputFile>..\..\bin\win64\release\Daemon.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\libs\libvorbis\libs\win32\Release;..\libs\curl-7.21.6\lib\win32\release;..\libs\mysql\lib\win32;..\libs\xvidcore\lib;..\libs\libsdl\libs\x32;..\libs\zlibwapi\lib\x32;..\libs\glew\lib\x32;..\libs\cpuinfo\lib\x32\release;..\libs\ruby\lib;..\libs\openssl\libs\win32;..\libs\libogg\libs\win32\release;..\libs\libvorbis\libs\Win32\release;..\libs\libtheora\libs\win32\release;..\libs\Ruby\lib;..\libs\openal\libs\win32;..\libs\bass\libs\win32;..\libs\libbz2\libs\x32;..\libs\libnewton\libs\win32;..\libs\gmp\libs\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ManifestFile>../../Daemon.intermediate.manifest</ManifestFile>
