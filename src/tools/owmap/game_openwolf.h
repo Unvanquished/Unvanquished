@@ -67,9 +67,8 @@ content and surface flags
 #define W_CONT_TRANSLUCENT                      0x00400000 /* don't consume surface fragments inside */
 #define W_CONT_TRIGGER                          0x00800000
 #define W_CONT_NODROP                           0x01000000 /* don't leave bodies or items (death fog, lava) */
-#define	W_CONT_CLIPSHOT							0x02000000 /* wolf shot clip */
+#define	W_CONT_CLIPSHOT                         0x02000000 /* wolf shot clip */
 
-// Dushan - Tremulous
 // custominfoparms below
 #define	UNVANQUISHED_CONT_NOALIENBUILD                  0x00000001 /* disallow alien building */
 #define	UNVANQUISHED_CONT_NOHUMANBUILD                  0x00000002 /* disallow human building */

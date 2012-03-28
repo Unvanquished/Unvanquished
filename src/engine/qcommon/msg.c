@@ -1740,7 +1740,6 @@ netField_t playerStateFields[] =
 	,
 	{ PSF( aiState ),              2               }
 	,
-	// Dushan - Tremulous
 	{ PSF( generic1 ),             10              }
 	,
 	{ PSF( loopSound ),            16              }

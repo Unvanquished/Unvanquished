@@ -32,7 +32,6 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// Dushan
 #include <CPUInfo.h>
 // the CPUInfo.h implemntation of lengthof is unsafe, so use the one
 // from q_shared.h
