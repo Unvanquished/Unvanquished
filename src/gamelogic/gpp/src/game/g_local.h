@@ -214,6 +214,7 @@ struct gentity_s
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on
 	// every single frame.. so only do it periodically
 	int         clientSpawnTime; // the time until this spawn can spawn a client
+	int         spawnBlockTime; // timer for anti spawn-block
 
 	int         credits[ MAX_CLIENTS ]; // human credits for each client
 	int         killedBy; // clientNum of killer
@@ -1176,6 +1177,7 @@ extern  vmCvar_t g_floodMaxDemerits;
 extern  vmCvar_t g_floodMinTime;
 
 extern  vmCvar_t g_shove;
+extern  vmCvar_t g_antiSpawnBlock;
 
 extern  vmCvar_t g_mapConfigs;
 
