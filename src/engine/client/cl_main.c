@@ -4324,7 +4324,7 @@ qboolean CL_InitRenderer( void )
 
 	// Register console font specified by cl_consoleFont, if any
 	// filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is NULL
-	if ( *cl_consoleFont->string )
+	if ( cl_consoleFont->string[0] )
 	{
 		if ( FS_FOpenFileByMode( cl_consoleFont->string, &f, FS_READ ) >= 0 )
 		{
