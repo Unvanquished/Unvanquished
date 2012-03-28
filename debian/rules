@@ -21,13 +21,8 @@ override_dh_auto_configure:
 	cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
 		 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		 -DCMAKE_SKIP_RPATH=ON \
-		 -DCMAKE_EXE_LINKER_FLAGS=-Wl,--as-needed \
-		 -DCMAKE_SHARED_LINKER_FLAGS=-Wl,--as-needed \
 		 $(shell test -f /usr/include/xvid.f || echo -DUSE_CIN_XVID=OFF) \
 		 $(shell test -d /usr/include/webp || echo -DUSE_WEBP=OFF)
-	# Force a few flags: remove -rpath, add --as-needed
-	# sed -i -e 's/-Wl,-rpath,"[^"]*"/-Wl,--as-needed/' obj-*-*-*/CMakeFiles/*/link.txt;
-
 
 override_dh_auto_install:
 
