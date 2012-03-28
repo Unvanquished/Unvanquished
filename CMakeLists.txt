@@ -110,6 +110,41 @@ else()
   set( BUILD_ARCH ${CMAKE_SYSTEM_PROCESSOR} )
 endif()
 
+##############
+# Link flags #
+##############
+
+macro( try_linker_flag PROP FLAG )
+  set( SAVED_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} )
+  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" )
+  # test it on an executable
+  if( NOT ${PROP}_CACHED )
+    try_compile( ${PROP} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
+                 CMAKE_FLAGS -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS} )
+    set( ${PROP} ${${PROP}} CACHE INTERNAL "Set if linker option ${FLAG} is available." )
+  endif()
+  if( ${PROP} )
+    if( NOT ${PROP}_CACHED )
+      message( STATUS "Using linker flag ${FLAG}" )
+    endif()
+    # assume that it works for shared & static libs too
+    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${FLAG}" )
+    set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${FLAG}" )
+  else()
+    if( NOT ${PROP}_CACHED )
+      message( STATUS "Linker flag ${FLAG} is not available" )
+    endif()
+    set( CMAKE_EXE_LINKER_FLAGS "${SAVED_EXE_LINKER_FLAGS}" )
+  endif()
+  set( ${PROP}_CACHED TRUE CACHE INTERNAL "Set if linker option ${FLAG} has been checked for." )
+endmacro()
+
+# Can we get rid of unneeded external libraries?
+try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
+
+# If we can, fail if there are unresolved symbols
+try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
+
 ######################
 # Define Build Files #
 ######################
