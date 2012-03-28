@@ -942,8 +942,6 @@ SV_Init
 Only called at main exe startup, not for each game
 ===============
 */
-void SV_BotInitBotLib( void );
-
 void SV_Init( void )
 {
 	SV_AddOperatorCommands();
@@ -1074,12 +1072,6 @@ void SV_Init( void )
 	sv_owHubHost = Cvar_Get( "sv_owHubHost", "", CVAR_LATCH );
 	sv_owHubKey = Cvar_Get( "sv_owHubKey", "defaultkey123456", CVAR_ARCHIVE );
 #endif
-
-	// initialize bot cvars so they arelisted and can be set before loading the botlib
-	SV_BotInitCvars();
-
-	// init the botlib here because we need the pre-compiler in the UI
-	SV_BotInitBotLib();
 
 	svs.serverLoad = -1;
 }

@@ -517,38 +517,6 @@ set( MACSOURCESLIST
   ${MOUNT_DIR}/engine/mac/CDrawSprocket.cpp
 )
 
-set( BOTLIBLIST
-  ${MOUNT_DIR}/engine/botlib/be_aas_bspq3.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_cluster.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_debug.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_entity.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_file.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_main.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_move.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_optimize.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_reach.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_route.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_routealt.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_routetable.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_sample.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_char.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_chat.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_gen.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_goal.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_move.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_weap.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_weight.c
-  ${MOUNT_DIR}/engine/botlib/be_ea.c
-  ${MOUNT_DIR}/engine/botlib/be_interface.c
-  ${MOUNT_DIR}/engine/botlib/l_crc.c
-  ${MOUNT_DIR}/engine/botlib/l_libvar.c
-  ${MOUNT_DIR}/engine/botlib/l_log.c
-  ${MOUNT_DIR}/engine/botlib/l_memory.c
-  ${MOUNT_DIR}/engine/botlib/l_precomp.c
-  ${MOUNT_DIR}/engine/botlib/l_script.c
-  ${MOUNT_DIR}/engine/botlib/l_struct.c
-)
-
 set( QAGAMELIST
   ${GAME_DIR}/src/game/bg_animation.c
   ${GAME_DIR}/src/game/bg_animgroup.c
@@ -1293,7 +1261,7 @@ if( BUILD_CLIENT )
   # Create target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST}
-    ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST}
+    ${ZLIBLIST} ${DATABASELIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
   # This section finds and provides dependencies to target client
   find_package( OpenGL REQUIRED )
@@ -1438,7 +1406,7 @@ if( BUILD_CLIENT )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER BOTLIB BOTLIB_STATIC COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install( TARGETS client
     RUNTIME DESTINATION bin
@@ -1476,7 +1444,7 @@ endif()
 if( BUILD_SERVER )
   # Create the target Server
   add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${BOTLIBLIST} ${ZLIBLIST}
+    ${QCOMMONLIST} ${SHAREDLIST} ${ZLIBLIST}
     ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
@@ -1543,7 +1511,7 @@ if( BUILD_SERVER )
 
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
+  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install( TARGETS server
     RUNTIME DESTINATION bin

@@ -34,10 +34,6 @@ Maryland 20850 USA.
 
 #include "client.h"
 
-#include "../botlib/botlib.h"
-
-extern botlib_export_t *botlib_export;
-
 vm_t                   *uivm;
 
 // ydnar: can we put this in a header, pls?
@@ -1440,29 +1436,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_PARSE_SOURCE_FILE_AND_LINE:
 			return Parse_SourceFileAndLine( args[ 1 ], VMA( 2 ), VMA( 3 ) );
-
-		case UI_PC_ADD_GLOBAL_DEFINE:
-			return botlib_export->PC_AddGlobalDefine( VMA( 1 ) );
-
-		case UI_PC_REMOVE_ALL_GLOBAL_DEFINES:
-			botlib_export->PC_RemoveAllGlobalDefines();
-			return 0;
-
-		case UI_PC_LOAD_SOURCE:
-			return botlib_export->PC_LoadSourceHandle( VMA( 1 ) );
-
-		case UI_PC_FREE_SOURCE:
-			return botlib_export->PC_FreeSourceHandle( args[ 1 ] );
-
-		case UI_PC_READ_TOKEN:
-			return botlib_export->PC_ReadTokenHandle( args[ 1 ], VMA( 2 ) );
-
-		case UI_PC_SOURCE_FILE_AND_LINE:
-			return botlib_export->PC_SourceFileAndLine( args[ 1 ], VMA( 2 ), VMA( 3 ) );
-
-		case UI_PC_UNREAD_TOKEN:
-			botlib_export->PC_UnreadLastTokenHandle( args[ 1 ] );
-			return 0;
 
 		case UI_S_STOPBACKGROUNDTRACK:
 			S_StopBackgroundTrack();
