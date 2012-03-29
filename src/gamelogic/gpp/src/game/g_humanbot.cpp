@@ -534,10 +534,10 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		G_ForceWeaponChange(self, WP_HBUILD);
 
 	BG_BuildableBoundingBox( building, mins, maxs );
-
 	VectorAdd(origin,maxs,searchMaxs);
 	VectorAdd(origin,mins,searchMins);
-
+	VectorAdd(searchMaxs,instriceq,searchMaxs);
+	VectorSubtract(searchMins,instriceq,searchMins);
 	//check for anything blocking the placement of the building
 	int numEntities = trap_EntitiesInBox(searchMins,searchMaxs,entityList,MAX_GENTITIES);
 
@@ -547,9 +547,12 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	qboolean tooClose = qfalse; //flag telling if the bot is too close to where the building will be placed
 
 	for(int i=0;i<numEntities;i++) {
-		if(g_entities[entityList[i]].health <= 0)
+		gentity_t *ent = &g_entities[entityList[i]];
+
+		if(ent->health <= 0)
 			continue;
-		if(g_entities[entityList[i]].s.eType == ET_BUILDABLE)
+
+		if(ent->s.eType == ET_BUILDABLE && BotGetTeam(ent) == BotGetTeam(self))
 			blockingBuildingNum = entityList[i];
 		else if(entityList[i] == self->s.number)
 			tooClose = qtrue;
