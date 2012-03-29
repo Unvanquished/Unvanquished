@@ -646,6 +646,9 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			SV_BotFreeClient( args[ 1 ] );
 			return 0;
 
+		case BOT_GET_CONSOLE_MESSAGE:
+			return SV_BotGetConsoleMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );
+
 		case G_GET_USERCMD:
 			SV_GetUsercmd( args[ 1 ], VMA( 2 ) );
 			return 0;
