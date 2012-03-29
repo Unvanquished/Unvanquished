@@ -1094,6 +1094,7 @@ if( BUILD_GAME_SO_ET )
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "etmain"
   )
+  target_link_libraries( game -lm )
   add_library( cgame SHARED ${SHAREDLIST} ${CGAMELIST} )
   set_property( TARGET cgame PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( cgame PROPERTIES
@@ -1101,6 +1102,7 @@ if( BUILD_GAME_SO_ET )
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "etmain"
   )
+  target_link_libraries( cgame -lm )
   add_library( ui SHARED ${SHAREDLIST} ${UILIST} )
   set_property( TARGET ui PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( ui PROPERTIES
@@ -1108,6 +1110,7 @@ if( BUILD_GAME_SO_ET )
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "etmain"
   )
+  target_link_libraries( ui -lm )
   install( TARGETS game cgame ui
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
@@ -1118,6 +1121,7 @@ endif()
 if( BUILD_GAME_SO_TREM )
   add_library( tremgame SHARED ${GAMETREM} )
   set_property( TARGET tremgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  target_link_libraries( tremgame -lm )
   set_target_properties( tremgame PROPERTIES
     OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
     PREFIX ""
@@ -1125,6 +1129,7 @@ if( BUILD_GAME_SO_TREM )
   )
   add_library( cgametrem SHARED ${CGAMETREM} )
   set_property( TARGET cgametrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  target_link_libraries( cgametrem -lm )
   set_target_properties( cgametrem PROPERTIES
     OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
     PREFIX ""
@@ -1132,6 +1137,7 @@ if( BUILD_GAME_SO_TREM )
   )
   add_library( uitrem SHARED ${UITREM} )
   set_property( TARGET uitrem PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  target_link_libraries( uitrem -lm )
   set_target_properties( uitrem PROPERTIES
     OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
     PREFIX ""
