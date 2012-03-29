@@ -664,7 +664,6 @@ entityDef func_door
 	"notsingle"					"0"
 }
 
-// Dushan
 entityDef func_dynamic {   
 	"editor_color"				"0 .5 .8"
 	"editor_usage"				"Dynamic entity, a rigid body controlled by realtime physics simulation."

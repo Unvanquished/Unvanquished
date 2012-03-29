@@ -34,11 +34,15 @@
     <ClInclude Include="servers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="owmaster.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="openwolf.ico" />
+    <None Include="unvanquished.ico" />
   </ItemGroup>
 </Project>

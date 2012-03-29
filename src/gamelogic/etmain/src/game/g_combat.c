@@ -1376,7 +1376,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 	}
 	else if ( targ->s.eType == ET_EXPLOSIVE )
 	{
-		/*/ / 32 Explosive
+		// 32 Explosive
 		// 64 Dynamite only
 		// 256 Airstrike/artillery only
 		// 512 Satchel only
@@ -1420,7 +1420,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 		  if( targ->s.teamNum == inflictor->s.teamNum ) {
 		    return;
 		  }
-		} * /
+		}
 
 		if(targ->parent && G_GetWeaponClassForMOD(mod) == 2)
 		{

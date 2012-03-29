@@ -1051,6 +1051,8 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 		case ET_MISSILE:
 			CG_LaunchMissile( cent );
 			break;
+		default:
+			break;
 	}
 
 	//clear any particle systems from previous uses of this centity_t
@@ -1094,7 +1096,9 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 					CG_DestroyTrailSystem( &cent->level2ZapTS[ i ] );
 				}
 			}
+			break;
 
+		default:
 			break;
 	}
 }

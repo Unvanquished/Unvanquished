@@ -87,6 +87,7 @@
     <ClInclude Include="game_tremulous.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="game_unvanquished.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -542,5 +543,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="openwolf.ico" />
+    <None Include="unvanquished.ico" />
   </ItemGroup>
 </Project>

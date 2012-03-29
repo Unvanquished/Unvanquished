@@ -110,6 +110,41 @@ else()
   set( BUILD_ARCH ${CMAKE_SYSTEM_PROCESSOR} )
 endif()
 
+##############
+# Link flags #
+##############
+
+macro( try_linker_flag PROP FLAG )
+  set( SAVED_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} )
+  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" )
+  # test it on an executable
+  if( NOT ${PROP}_CACHED )
+    try_compile( ${PROP} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
+                 CMAKE_FLAGS -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS} )
+    set( ${PROP} ${${PROP}} CACHE INTERNAL "Set if linker option ${FLAG} is available." )
+  endif()
+  if( ${PROP} )
+    if( NOT ${PROP}_CACHED )
+      message( STATUS "Using linker flag ${FLAG}" )
+    endif()
+    # assume that it works for shared & static libs too
+    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${FLAG}" )
+    set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${FLAG}" )
+  else()
+    if( NOT ${PROP}_CACHED )
+      message( STATUS "Linker flag ${FLAG} is not available" )
+    endif()
+    set( CMAKE_EXE_LINKER_FLAGS "${SAVED_EXE_LINKER_FLAGS}" )
+  endif()
+  set( ${PROP}_CACHED TRUE CACHE INTERNAL "Set if linker option ${FLAG} has been checked for." )
+endmacro()
+
+# Can we get rid of unneeded external libraries?
+try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
+
+# If we can, fail if there are unresolved symbols
+try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
+
 ######################
 # Define Build Files #
 ######################
@@ -515,38 +550,6 @@ set( MACSOURCESLIST
   ${MOUNT_DIR}/engine/mac/mac_specific.cpp
   ${MOUNT_DIR}/engine/mac/AGLUtils.cpp
   ${MOUNT_DIR}/engine/mac/CDrawSprocket.cpp
-)
-
-set( BOTLIBLIST
-  ${MOUNT_DIR}/engine/botlib/be_aas_bspq3.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_cluster.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_debug.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_entity.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_file.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_main.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_move.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_optimize.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_reach.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_route.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_routealt.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_routetable.c
-  ${MOUNT_DIR}/engine/botlib/be_aas_sample.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_char.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_chat.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_gen.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_goal.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_move.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_weap.c
-  ${MOUNT_DIR}/engine/botlib/be_ai_weight.c
-  ${MOUNT_DIR}/engine/botlib/be_ea.c
-  ${MOUNT_DIR}/engine/botlib/be_interface.c
-  ${MOUNT_DIR}/engine/botlib/l_crc.c
-  ${MOUNT_DIR}/engine/botlib/l_libvar.c
-  ${MOUNT_DIR}/engine/botlib/l_log.c
-  ${MOUNT_DIR}/engine/botlib/l_memory.c
-  ${MOUNT_DIR}/engine/botlib/l_precomp.c
-  ${MOUNT_DIR}/engine/botlib/l_script.c
-  ${MOUNT_DIR}/engine/botlib/l_struct.c
 )
 
 set( QAGAMELIST
@@ -1101,7 +1104,7 @@ elseif( UNIX )
     set( OS_LIBRARIES ${OS_LIBRARIES} "-framework AGL -framework OpenGL -framework Carbon -framework IOKit" )
     set( OS_BUILD ${LINUXSOURCESLIST} )
   else()
-    set( OS_LIBRARIES dl m z rt )
+    set( OS_LIBRARIES ${CMAKE_DL_LIBS} m z rt )
     set( OS_BUILD ${LINUXSOURCESLIST} )
   endif()
 endif()
@@ -1245,6 +1248,9 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
     find_package( PNG REQUIRED )
     find_package( Freetype REQUIRED )
     find_package( GLEW REQUIRED )
+    if( PNG_PNG_INCLUDE_DIR )
+      set( PNG_INCLUDE_DIR ${PNG_PNG_INCLUDE_DIR} )
+    endif()
   else()
     set( PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
@@ -1293,7 +1299,7 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
 
   if( BUILD_OLD_RENDERER )
     add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} )
-    include_directories( ${PNG_PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
+    include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
     target_link_libraries( renderer ${PNG_LIBRARY} ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
     if( WIN32 )
@@ -1324,7 +1330,7 @@ if( BUILD_CLIENT )
   # Create target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST}
-    ${BOTLIBLIST} ${ZLIBLIST} ${DATABASELIST}
+    ${ZLIBLIST} ${DATABASELIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
   # This section finds and provides dependencies to target client
   find_package( OpenGL REQUIRED )
@@ -1347,12 +1353,15 @@ if( BUILD_CLIENT )
     endif()
 
     if( PNG_FOUND )
+      if( PNG_PNG_INCLUDE_DIR )
+        set( PNG_INCLUDE_DIR ${PNG_PNG_INCLUDE_DIR} )
+      endif()
       include_directories( ${PNG_INCLUDE_DIR} )
       target_link_libraries( client ${PNG_LIBRARIES} )
       add_definitions( -DSYSTEM_PNG )
     endif()
 
-    include_directories( ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} )
+    include_directories( ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} )
     target_link_libraries( client ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} )
   else()
     set( PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
@@ -1360,7 +1369,7 @@ if( BUILD_CLIENT )
     set( JPEG_INCLUDE_DIR ${MOUNT_DIR}/libs/jpeg )
     set( FREETYPE_INCLUDE_DIRS ${MOUNT_DIR}/libs/freetype/include/freetype2 )
     set( GLEW_INCLUDE_DIR ${MOUNT_DIR}/libs/glew/include )
-    include_directories( ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} )
+    include_directories( ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${MOUNT_DIR}/libs/gmp/include )
   endif()
 
   if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
@@ -1373,13 +1382,9 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${ZLIB_LIBRARIES} )
   endif()
 
-  if( NOT USE_INTERNAL_SPEEX )
-    find_package( Speex REQUIRED )
-    include_directories( ${SPEEX_INCLUDE_DIRS} )
-    target_link_libraries( client ${SPEEX_LIBRARIES} )
-  endif()
-
-  if( NOT USE_INTERNAL_CRYPTO )
+  if( USE_INTERNAL_CRYPTO )
+    include_directories( ${MOUNT_DIR}/libs/nettle )
+  else()
     find_package( Nettle REQUIRED )
     include_directories( ${NETTLE_INCLUDE_DIRS} )
     target_link_libraries( client ${NETTLE_LIBRARIES} )
@@ -1413,6 +1418,13 @@ if( BUILD_CLIENT )
 
   if( USE_VOIP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP FLOATING_POINT )
+    if( USE_INTERNAL_SPEEX )
+      include_directories( ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex )
+    else()
+      find_package( Speex REQUIRED )
+      include_directories( ${SPEEX_INCLUDE_DIRS} )
+      target_link_libraries( client ${SPEEX_LIBRARIES} )
+    endif()
   endif()
 
   if( USE_CODEC_VORBIS )
@@ -1461,9 +1473,9 @@ if( BUILD_CLIENT )
   endif()
 
   add_dependencies( client rendererGL )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${NEWTON_INCLUDES} ${MOUNT_DIR}/libs/gmp/include )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER BOTLIB BOTLIB_STATIC COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install( TARGETS client
     RUNTIME DESTINATION bin
@@ -1479,9 +1491,16 @@ endif()
 if( USE_OPENAL )
   find_package( OpenAL REQUIRED )
   add_library( al SHARED ${ALLIST} )
+  if( USE_SYSTEM_HEADERS )
+    include_directories( ${OPENAL_INCLUDE_DIRS} )
+  endif()
   target_link_libraries( al ${OPENAL_LIBRARY} )
   set_property( TARGET al PROPERTY COMPILE_DEFINITIONS )
   set_target_properties( al PROPERTIES OUTPUT_NAME "snd_openal" PREFIX "" )
+  if( USE_OPENAL_DLOPEN )
+    set_property( TARGET al APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL_DLOPEN )
+    target_link_libraries( al ${CMAKE_DL_LIBS} )
+  endif()
   if( USE_VOIP )
     set_property( TARGET al APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP FLOATING_POINT )
   endif()
@@ -1494,7 +1513,7 @@ endif()
 if( BUILD_SERVER )
   # Create the target Server
   add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${BOTLIBLIST} ${ZLIBLIST}
+    ${QCOMMONLIST} ${SHAREDLIST} ${ZLIBLIST}
     ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
@@ -1503,11 +1522,11 @@ if( BUILD_SERVER )
     find_package( SDL REQUIRED )
     # The included gmp.h should be used instead of the local header.
     find_package( GMP REQUIRED )
-    include_directories( ${SDL_INCLUDE_DIR} )
+    include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} )
     target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} )
   else()
     set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
-    include_directories( ${SDL_INCLUDE_DIR} )
+    include_directories( ${SDL_INCLUDE_DIR} ${MOUNT_DIR}/libs/gmp/include )
   endif()
 
   if( USE_MYSQL )
@@ -1522,7 +1541,9 @@ if( BUILD_SERVER )
     target_link_libraries( server ${ZLIB_LIBRARIES} )
   endif()
 
-  if( NOT USE_INTERNAL_CRYPTO )
+  if( USE_INTERNAL_CRYPTO )
+    include_directories( ${MOUNT_DIR}/libs/nettle )
+  else()
     find_package( Nettle REQUIRED )
     include_directories( ${NETTLE_INCLUDE_DIRS} )
     target_link_libraries( server ${NETTLE_LIBRARIES} )
@@ -1557,10 +1578,9 @@ if( BUILD_SERVER )
     target_link_libraries( server ${TINYXML_LIBRARIES} )
   endif()
 
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${MOUNT_DIR}/libs/nettle
-    ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex ${NEWTON_INCLUDES} ${MOUNT_DIR}/libs/gmp/include )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED BOTLIB BOTLIB_STATIC COMPAT_ET USE_CRYPTO )
+  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install( TARGETS server
     RUNTIME DESTINATION bin
@@ -1584,7 +1604,9 @@ if( BUILD_OWMAP )
     find_package( SDL REQUIRED )
     find_package( JPEG REQUIRED )
     find_package( PNG REQUIRED )
-    include_directories( ${SDL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
+    if( PNG_PNG_INCLUDE_DIR )
+      set( PNG_INCLUDE_DIR ${PNG_PNG_INCLUDE_DIR} )
+    endif()
     target_link_libraries( owmap ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} )
     if( JPEG_FOUND )
       add_definitions( -DSYSTEM_JPEG )
@@ -1592,6 +1614,10 @@ if( BUILD_OWMAP )
     if( PNG_FOUND )
       add_definitions( -DSYSTEM_PNG )
     endif()
+  else()
+    set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
+    set( JPEG_INCLUDE_DIR ${MOUNT_DIR}/libs/jpeg )
+    set( PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
   endif()
 
   # FIXME - GLIB needs to be converted to a find module
@@ -1604,7 +1630,7 @@ if( BUILD_OWMAP )
   endif()
 
   # The following libraries/include_directories are always available and as such don't need to be checked before being provided
-  include_directories( ${LIB_DIR}/picomodel ${LIB_DIR}/jpeg ${LIB_DIR}/zlib ${MOUNT_DIR}/tools/common )
+  include_directories( ${LIB_DIR}/picomodel ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${MOUNT_DIR}/tools/common )
   target_link_libraries( owmap ${OS_LIBRARIES} )
   # This section sets various properties to the target owmap
   set_property( TARGET owmap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )

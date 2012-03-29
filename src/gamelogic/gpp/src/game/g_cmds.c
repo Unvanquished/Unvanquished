@@ -691,7 +691,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// Cannot leave a team while in combat.
-	if ( !g_cheats.integer && 
+	if ( !g_cheats.integer &&
 	     g_combatCooldown.integer &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
@@ -1172,6 +1172,56 @@ static void Cmd_SayArea_f( gentity_t *ent )
 	}
 }
 
+static void Cmd_SayAreaTeam_f( gentity_t *ent )
+{
+	int    entityList[ MAX_GENTITIES ];
+	int    num, i;
+	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
+	vec3_t mins, maxs;
+	char   *msg;
+
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( "usage: say_area_team [message]\n" );
+		return;
+	}
+
+	msg = ConcatArgs( 1 );
+
+	for ( i = 0; i < 3; i++ )
+	{
+		range[ i ] = g_sayAreaRange.value;
+	}
+
+	G_LogPrintf( "SayAreaTeam: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_BLUE "%s\n",
+	             ( int )( ent - g_entities ), ent->client->pers.netname, msg );
+
+	VectorAdd( ent->s.origin, range, maxs );
+	VectorSubtract( ent->s.origin, range, mins );
+
+	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+
+	for ( i = 0; i < num; i++ )
+	{
+		if ( g_entities[ entityList[ i ] ].client &&
+			ent->client->pers.teamSelection == g_entities[ entityList[ i ] ].client->pers.teamSelection )
+		{
+			G_SayTo( ent, &g_entities[ entityList[ i ] ], SAY_AREA_TEAM, msg );
+		}
+	}
+
+	//Send to ADMF_SPEC_ALLCHAT candidates
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		if ( g_entities[ i ].client->pers.teamSelection == TEAM_NONE &&
+		     G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
+		{
+			G_SayTo( ent, &g_entities[ i ], SAY_AREA_TEAM, msg );
+		}
+	}
+}
+
+
 /*
 ==================
 Cmd_Say_f
@@ -1251,7 +1301,7 @@ void Cmd_VSay_f( gentity_t *ent )
 
 	if ( !Q_stricmp( arg, "vsay" ) )
 	{
-		vchan = VOICE_CHAN_ALL;
+		vchan = VOICE_CHAN_LOCAL;
 	}
 	else if ( !Q_stricmp( arg, "vsay_team" ) )
 	{
@@ -1331,7 +1381,6 @@ void Cmd_VSay_f( gentity_t *ent )
 	switch ( vchan )
 	{
 		case VOICE_CHAN_ALL:
-		case VOICE_CHAN_LOCAL:
 			trap_SendServerCommand( -1, va(
 			                          "voice %ld %d %d %d \"%s\"\n",
 			                          ( long )( ent - g_entities ), vchan, cmdNum, trackNum, text ) );
@@ -1339,6 +1388,12 @@ void Cmd_VSay_f( gentity_t *ent )
 
 		case VOICE_CHAN_TEAM:
 			G_TeamCommand( ent->client->pers.teamSelection, va(
+			                 "voice %ld %d %d %d \"%s\"\n",
+			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, text ) );
+			break;
+
+		case VOICE_CHAN_LOCAL:
+			G_AreaTeamCommand( ent, va(
 			                 "voice %ld %d %d %d \"%s\"\n",
 			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, text ) );
 			break;
@@ -3710,6 +3765,7 @@ commands_t    cmds[] =
 	{ "reload",          CMD_HUMAN | CMD_LIVING,              Cmd_Reload_f           },
 	{ "say",             CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
 	{ "say_area",        CMD_MESSAGE | CMD_TEAM | CMD_LIVING, Cmd_SayArea_f          },
+	{ "say_area_team",   CMD_MESSAGE | CMD_TEAM | CMD_LIVING, Cmd_SayAreaTeam_f      },
 	{ "say_team",        CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
 	{ "score",           CMD_INTERMISSION,                    ScoreboardMessage      },
 	{ "sell",            CMD_HUMAN | CMD_LIVING,              Cmd_Sell_f             },

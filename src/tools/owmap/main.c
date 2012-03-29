@@ -1909,7 +1909,6 @@ int main(int argc, char **argv)
 
 	Sys_Printf("q3map              - v1.0r (c) 1999-2006 Id Software Inc.\n");
 	Sys_Printf("q3map2 (ydnar)     - v2.5.16\n");
-	Sys_Printf("owmap (TheDushan)  - v" Q3MAP_VERSION "\n");
 //  Sys_Printf("GtkRadiant         - v" RADIANT_VERSION " " __DATE__ " " __TIME__ "\n");
 
 	/* ydnar: new path initialization */

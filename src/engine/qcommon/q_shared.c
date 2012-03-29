@@ -1404,7 +1404,7 @@ SkipBracedSection_Depth
 
 =================
 */
-void SkipBracedSection_Depth( char **program, int depth )
+qboolean SkipBracedSection_Depth( char **program, int depth )
 {
 	char *token;
 
@@ -1425,6 +1425,8 @@ void SkipBracedSection_Depth( char **program, int depth )
 		}
 	}
 	while ( depth && *program );
+
+	return depth == 0;
 }
 
 /*
@@ -1432,11 +1434,12 @@ void SkipBracedSection_Depth( char **program, int depth )
 SkipBracedSection
 
 The next token should be an open brace.
-Skips until a matching close brace is found.
+Skips until a matching close brace is found or the end of the input is reached.
 Internal brace depths are properly skipped.
+Returns whether the close brace was found.
 =================
 */
-void SkipBracedSection( char **program )
+qboolean SkipBracedSection( char **program )
 {
 	char *token;
 	int  depth;
@@ -1460,6 +1463,8 @@ void SkipBracedSection( char **program )
 		}
 	}
 	while ( depth && *program );
+
+	return depth == 0;
 }
 
 /*

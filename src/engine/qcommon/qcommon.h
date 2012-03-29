@@ -38,8 +38,6 @@ Maryland 20850 USA.
 
 #include "../qcommon/cm_public.h"
 
-#include "../qcommon/crypto.h"
-
 //bani
 #if defined __GNUC__ || defined __clang__
 #define _attribute( x ) __attribute__( x )

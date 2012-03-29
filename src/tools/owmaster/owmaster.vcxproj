@@ -181,6 +181,7 @@
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="messages.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="servers.h" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="openwolf.ico" />
+    <None Include="unvanquished.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

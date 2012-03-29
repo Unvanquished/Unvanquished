@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "botlib", "botlib\botlib.vcxproj", "{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Daemon", "Daemon.vcxproj", "{B604B554-38D6-4BC8-9F7F-D6BC8719A653}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glew", "..\libs\glew\build\vc6\glew_shared.vcxproj", "{583B8B2E-E56E-4A63-8697-0942C654AC5F}"
@@ -73,22 +71,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Debug Dedicated|Win32.ActiveCfg = Debug|Win32
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Debug Dedicated|Win32.Build.0 = Debug|Win32
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Debug Dedicated|x64.ActiveCfg = Debug|x64
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Debug Dedicated|x64.Build.0 = Debug|x64
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Debug|Win32.ActiveCfg = Debug|Win32
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Debug|Win32.Build.0 = Debug|Win32
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Debug|x64.ActiveCfg = Debug|x64
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Debug|x64.Build.0 = Debug|x64
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Release Dedicated|Win32.ActiveCfg = Release|Win32
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Release Dedicated|Win32.Build.0 = Release|Win32
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Release Dedicated|x64.ActiveCfg = Release|x64
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Release Dedicated|x64.Build.0 = Release|x64
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Release|Win32.ActiveCfg = Release|Win32
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Release|Win32.Build.0 = Release|Win32
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Release|x64.ActiveCfg = Release|x64
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7}.Release|x64.Build.0 = Release|x64
 		{B604B554-38D6-4BC8-9F7F-D6BC8719A653}.Debug Dedicated|Win32.ActiveCfg = Debug Dedicated|Win32
 		{B604B554-38D6-4BC8-9F7F-D6BC8719A653}.Debug Dedicated|Win32.Build.0 = Debug Dedicated|Win32
 		{B604B554-38D6-4BC8-9F7F-D6BC8719A653}.Debug Dedicated|x64.ActiveCfg = Debug Dedicated|x64
@@ -292,7 +274,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B604B554-38D6-4BC8-9F7F-D6BC8719A653} = {82A5BFC3-148E-44BA-B3D1-0BF97DC11E19}
-		{EFA65954-05A8-43C4-B4FE-FAFE8E678AB7} = {82A5BFC3-148E-44BA-B3D1-0BF97DC11E19}
 		{26EFB790-E3D6-436F-A7FC-36B9A00240D1} = {82A5BFC3-148E-44BA-B3D1-0BF97DC11E19}
 		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68} = {19015845-C78A-430B-BD2A-E864DC1C285A}
 		{DA956FD3-E142-46F2-9DD5-C78BEBB56B7A} = {19015845-C78A-430B-BD2A-E864DC1C285A}

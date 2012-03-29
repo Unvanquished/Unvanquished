@@ -37,7 +37,7 @@ Maryland 20850 USA.
 
 #include "../../../../engine/qcommon/q_shared.h"
 #include "../../../../engine/renderer/tr_types.h"
-#include "keycodes.h"
+#include "../../../gpp/src/ui/keycodes.h"
 #include "../game/bg_public.h"
 #include "ui_shared.h"
 #include "../../../../engine/client/ui_api.h"
