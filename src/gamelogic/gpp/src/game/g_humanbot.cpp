@@ -635,6 +635,9 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		botCmdBuffer->forwardmove = 0;
 		botCmdBuffer->upmove = 0;
 		botCmdBuffer->rightmove = 0;
+	} else if(self->client->ps.stats[STAT_MISC] > 0) {
+		//aim at the place we will put the building while we wait for our build timer to go down
+		BotAimAtLocation(self,origin,botCmdBuffer);
 	} else if(self->client->ps.stats[STAT_MISC] == 0) {
 		//build the building
 		BotAimAtLocation(self,origin,botCmdBuffer);
