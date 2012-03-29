@@ -52,6 +52,10 @@ cvar_t *cl_wavefilerecord;
 #include "libmumblelink.h"
 #endif
 
+#ifdef USE_CRYPTO
+#include "../qcommon/crypto.h"
+#endif
+
 #ifdef USE_MUMBLE
 cvar_t *cl_useMumble;
 cvar_t *cl_mumbleScale;

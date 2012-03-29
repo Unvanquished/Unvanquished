@@ -43,6 +43,10 @@ Maryland 20850 USA.
 #include "client.h"
 #include "libmumblelink.h"
 
+#ifdef USE_CRYPTO
+#include "../qcommon/crypto.h"
+#endif
+
 extern qboolean        loadCamera( int camNum, const char *name );
 extern void            startCamera( int camNum, int time );
 extern qboolean        getCameraInfo( int camNum, int time, vec3_t *origin, vec3_t *angles, float *fov );

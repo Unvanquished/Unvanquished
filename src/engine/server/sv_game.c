@@ -36,6 +36,10 @@ Maryland 20850 USA.
 
 #include "server.h"
 
+#ifdef USE_CRYPTO
+#include "../qcommon/crypto.h"
+#endif
+
 void            CMod_PhysicsAddEntity( sharedEntity_t *gEnt );
 void            CMod_PhysicsAddStatic( const sharedEntity_t *gEnt );
 
