@@ -1793,18 +1793,20 @@ extern "C" void G_BotSpectatorThink( gentity_t *self ) {
 				G_PushSpawnQueue( sq, self->s.number );
 			}
 		}
-		//we want to spawn with a ckit if we need to build
-		if(BotShouldBuild(self)) {
-			if(self->client->pers.humanItemSelection != WP_HBUILD) {
+		if(BotGetTeam(self) == TEAM_HUMANS) {
+			//we want to spawn with a ckit if we need to build
+			if(BotShouldBuild(self)) {
+				if(self->client->pers.humanItemSelection != WP_HBUILD) {
+					G_RemoveFromSpawnQueue(&level.humanSpawnQueue, self->s.number);
+					self->client->pers.humanItemSelection = WP_HBUILD;
+					G_PushSpawnQueue( &level.humanSpawnQueue, self->s.number);
+				}
+			} else if(self->client->pers.humanItemSelection != WP_MACHINEGUN && g_bot_rifle.integer) {
+				//we should not build, so spawn with a rifle
 				G_RemoveFromSpawnQueue(&level.humanSpawnQueue, self->s.number);
-				self->client->pers.humanItemSelection = WP_HBUILD;
+				self->client->pers.humanItemSelection = WP_MACHINEGUN;
 				G_PushSpawnQueue( &level.humanSpawnQueue, self->s.number);
 			}
-		} else if(self->client->pers.humanItemSelection != WP_MACHINEGUN && g_bot_rifle.integer) {
-			//we should not build, so spawn with a rifle
-			G_RemoveFromSpawnQueue(&level.humanSpawnQueue, self->s.number);
-			self->client->pers.humanItemSelection = WP_MACHINEGUN;
-			G_PushSpawnQueue( &level.humanSpawnQueue, self->s.number);
 		}
 
 		return;
