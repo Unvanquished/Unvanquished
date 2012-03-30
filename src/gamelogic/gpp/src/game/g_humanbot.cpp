@@ -505,12 +505,12 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	float dist = BG_Class((class_t) self->client->ps.stats[ STAT_CLASS ] )->buildDist;
 	vec3_t normal;
 	vec3_t forward;
-	vec3_t instriceq = {-.01,-.01,-.01};
+	trace_t trace;
+
 	AngleVectors(self->client->ps.viewangles, forward, NULL,NULL);
-	vec3_t mins,maxs,searchMins, searchMaxs;
+	vec3_t mins,maxs;
 	buildable_t building;
 	vec3_t origin;
-	int entityList[MAX_GENTITIES];
 
 	//checks
 	if(!BG_InventoryContainsWeapon(WP_HBUILD,self->client->ps.stats))
@@ -523,30 +523,25 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		G_ForceWeaponChange(self, WP_HBUILD);
 
 	BG_BuildableBoundingBox( building, mins, maxs );
-	VectorAdd(origin,maxs,searchMaxs);
-	VectorAdd(origin,mins,searchMins);
-	VectorAdd(searchMaxs,instriceq,searchMaxs);
-	VectorSubtract(searchMins,instriceq,searchMins);
+
 	//check for anything blocking the placement of the building
-	int numEntities = trap_EntitiesInBox(searchMins,searchMaxs,entityList,MAX_GENTITIES);
+	trap_Trace(&trace,origin,mins,maxs,origin,-1,MASK_PLAYERSOLID);
 
 
 	int blockingBuildingNum = ENTITYNUM_NONE; //entity number of a blocking building
 	int blockerNum = ENTITYNUM_NONE; //entity number of a non-building blocker
 	qboolean tooClose = qfalse; //flag telling if the bot is too close to where the building will be placed
 
-	for(int i=0;i<numEntities;i++) {
-		gentity_t *ent = &g_entities[entityList[i]];
-
-		if(ent->health <= 0)
-			continue;
+	if(trace.entityNum < ENTITYNUM_MAX_NORMAL) {
+		gentity_t *ent = &g_entities[trace.entityNum];
 
 		if(ent->s.eType == ET_BUILDABLE && BotGetTeam(ent) == BotGetTeam(self))
-			blockingBuildingNum = entityList[i];
-		else if(entityList[i] == self->s.number)
+			blockingBuildingNum = trace.entityNum;
+		else if(trace.entityNum == self->s.number)
 			tooClose = qtrue;
-		else if(entityList[i] < ENTITYNUM_MAX_NORMAL)
-			blockerNum = entityList[i];
+		else
+			blockerNum = trace.entityNum;
+
 	}
 
 
