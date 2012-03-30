@@ -520,143 +520,118 @@ void BotSetGoal(gentity_t *self, gentity_t *ent, vec3_t *pos) {
 }
 
 qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
-	float range,secondaryRange;
+	float range, secondaryRange;
 	vec3_t forward,right,up;
-	vec3_t muzzle, targetPos;
-	vec3_t myMaxs, targetMaxs;
-	vec3_t myMins;
-	vec3_t pounceTarget;
-	vec3_t traceMaxs, traceMins;
+	vec3_t muzzle;
+	vec3_t maxs, mins;
+	vec3_t targetPos;
+	vec3_t end;
 	trace_t trace;
-	int distance, myMax, targetMax;
-	int radius;
+	float width = 0, height = 0;
 	AngleVectors( self->client->ps.viewangles, forward, right, up);
-
 	CalcMuzzlePoint( self, forward, right, up , muzzle);
-	BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], myMins, myMaxs, NULL, NULL, NULL);
-
-	if(BotTargetIsEntity(target) && target.ent->client)
-		BG_ClassBoundingBox((class_t)target.ent->client->ps.stats[STAT_CLASS], NULL,targetMaxs, NULL, NULL, NULL);
-	else if(BotTargetIsEntity(target) && BotGetTargetType(target) == ET_BUILDABLE)
-		BG_BuildableBoundingBox((buildable_t)target.ent->s.modelindex, NULL, targetMaxs);
-	else 
-		VectorSet(targetMaxs, 0, 0, 0);
-	targetMax = VectorLengthSquared(targetMaxs);
-	myMax = VectorLengthSquared(myMaxs);
-	BotGetTargetPos(target, targetPos);
-
+	BotGetTargetPos(target,targetPos);
 	switch(self->client->ps.weapon) {
-	case WP_ABUILD:
-		range = 0; //poor granger :(
-		secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_ABUILD2:
-		range = ABUILDER_CLAW_RANGE;
-		secondaryRange = 300; //An arbitrary value for the blob launcher, has nothing to do with actual range
-		radius = 0;
-		break;
-	case WP_ALEVEL0:
-		range = LEVEL0_BITE_RANGE;
-		secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_ALEVEL1:
-		range = LEVEL1_CLAW_RANGE;
-		secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_ALEVEL1_UPG:
-		range = LEVEL1_CLAW_RANGE;
-		secondaryRange = LEVEL1_PCLOUD_RANGE;
-		radius  = 0;
-		break;
-	case WP_ALEVEL2:
-		range = LEVEL2_CLAW_RANGE;
-		secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_ALEVEL2_UPG:
-		range = LEVEL2_CLAW_RANGE;
-		secondaryRange = LEVEL2_AREAZAP_RANGE;
-		radius = 0;
-		break;
-	case WP_ALEVEL3:
-		range = LEVEL3_CLAW_RANGE;
-		//need to check if we can pounce to the target
-		VectorCopy(targetPos,pounceTarget);
-		trap_Trace(&trace,self->s.origin,NULL,NULL,pounceTarget,self->s.number,MASK_SHOT);
-		if(trace.entityNum == BotGetTargetEntityNumber(target))
+		case WP_ABUILD:
+			range = 0; //poor granger :(
+			secondaryRange = 0;
+			break;
+		case WP_ABUILD2:
+			range = ABUILDER_CLAW_RANGE;
+			secondaryRange = 300; //An arbitrary value for the blob launcher, has nothing to do with actual range
+			width = height = ABUILDER_CLAW_WIDTH;
+			break;
+		case WP_ALEVEL0:
+			range = LEVEL0_BITE_RANGE;
+			secondaryRange = 0;
+			break;
+		case WP_ALEVEL1:
+			range = LEVEL1_CLAW_RANGE;
+			secondaryRange = 0;
+			width = height = LEVEL1_CLAW_WIDTH;
+			break;
+		case WP_ALEVEL1_UPG:
+			range = LEVEL1_CLAW_RANGE;
+			secondaryRange = LEVEL1_PCLOUD_RANGE;
+			width = height = LEVEL1_CLAW_WIDTH;
+			break;
+		case WP_ALEVEL2:
+			range = LEVEL2_CLAW_RANGE;
+			secondaryRange = 0;
+			width = height = LEVEL2_CLAW_WIDTH;
+			break;
+		case WP_ALEVEL2_UPG:
+			range = LEVEL2_CLAW_RANGE;
+			secondaryRange = LEVEL2_AREAZAP_RANGE;
+			width = height = LEVEL2_CLAW_WIDTH;
+			break;
+		case WP_ALEVEL3:
+			range = LEVEL3_CLAW_RANGE;
+			//need to check if we can pounce to the target
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG; //An arbitrary value for pounce, has nothing to do with actual range
-		else
-			secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_ALEVEL3_UPG:
-		range = LEVEL3_CLAW_RANGE;
-		//need to check if we can pounce to the target
-		VectorCopy(targetPos,pounceTarget);
-		pounceTarget[2] -= myMins[2];
-		trap_Trace(&trace,self->s.origin,myMins,myMaxs,pounceTarget,self->s.number,MASK_SHOT);
-		//we can pounce, or we have barbs
-		if(trace.entityNum == BotGetTargetEntityNumber(target) || self->client->ps.ammo[WP_ALEVEL3_UPG] > 0)
+			break;
+		case WP_ALEVEL3_UPG:
+			range = LEVEL3_CLAW_RANGE;
+			//we can pounce, or we have barbs
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; //An arbitrary value for pounce and barbs, has nothing to do with actual range
-		else if(self->client->ps.Ammo > 0)
-			secondaryRange = 900;
-		else
+			if(self->client->ps.Ammo > 0)
+				secondaryRange = 900;
+			width = height = LEVEL3_CLAW_WIDTH;
+			break;
+		case WP_ALEVEL4:
+			range = LEVEL4_CLAW_RANGE;
+			secondaryRange = 0; //Using 0 since tyrant rush is basically just movement, not a ranged attack
+			break;
+		case WP_HBUILD:
+			range = 100;
 			secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_ALEVEL4:
-		range = LEVEL4_CLAW_RANGE;
-		secondaryRange = 0; //Using 0 since tyrant rush is basically just movement, not a ranged attack
-		radius = 0;
-		break;
-	case WP_HBUILD:
-		range = 100;
-		secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_PAIN_SAW:
-		range = PAINSAW_RANGE;
-		secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_FLAMER:
-		range = FLAMER_SPEED;
-		secondaryRange = 0;
-		radius = FLAMER_SIZE;
-		break;
-	case WP_SHOTGUN:
-		range = (50 * 8192)/SHOTGUN_SPREAD; //50 is the maximum radius we want the spread to be
-		secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_MACHINEGUN:
-		range = (100 * 8192)/RIFLE_SPREAD; //100 is the maximum radius we want the spread to be
-		secondaryRange = 0;
-		radius = 0;
-		break;
-	case WP_CHAINGUN:
-		range = (60 * 8192)/CHAINGUN_SPREAD; //60 is the maximum radius we want the spread to be
-		secondaryRange = 0;
-		radius = 0;
-		break;
-	default:
-		range = 4098 * 4; //large range for guns because guns have large ranges :)
-		secondaryRange = 0; //no secondary attack
-		radius = 0;
-	}
-	VectorSet(traceMaxs, radius, radius, radius);
-	VectorSet(traceMins, -radius, -radius, -radius);
-	trap_Trace(&trace,muzzle,traceMins,traceMaxs,targetPos,self->s.number,MASK_SHOT);
-	distance = DistanceToGoalSquared(self);
-	distance = (int) distance - myMax/2 - targetMax/2;
+			break;
+		case WP_PAIN_SAW:
+			range = PAINSAW_RANGE;
+			secondaryRange = 0;
+			break;
+		case WP_FLAMER:
+			range = FLAMER_SPEED;
+			secondaryRange = 0;
+			width = height = FLAMER_SIZE;
+			// Correct muzzle so that the missile does not start in the ceiling
+			VectorMA( muzzle, -7.0f, up, muzzle );
 
-	if((distance <= Square(range) || distance <= Square(secondaryRange))
-		&&(trace.entityNum == BotGetTargetEntityNumber(target) || trace.fraction == 1.0f))
-		return qtrue;
-	else
+			// Correct muzzle so that the missile fires from the player's hand
+			VectorMA( muzzle, 4.5f, right, muzzle);
+			break;
+		case WP_SHOTGUN:
+			range = (50 * 8192)/SHOTGUN_SPREAD; //50 is the maximum radius we want the spread to be
+			secondaryRange = 0;
+			break;
+		case WP_MACHINEGUN:
+			range = (100 * 8192)/RIFLE_SPREAD; //100 is the maximum radius we want the spread to be
+			secondaryRange = 0;
+			break;
+		case WP_CHAINGUN:
+			range = (60 * 8192)/CHAINGUN_SPREAD; //60 is the maximum radius we want the spread to be
+			secondaryRange = 0;
+			break;
+		default:
+			range = 4098 * 4; //large range for guns because guns have large ranges :)
+			secondaryRange = 0; //no secondary attack
+		}
+	VectorSet(maxs, width, width, width);
+	VectorSet(mins, -width, -width, -height);
+	VectorSubtract(targetPos,muzzle,forward);
+	VectorNormalize(forward);
+	VectorScale(forward,max(range,secondaryRange),end);
+	trap_Trace(&trace,muzzle,mins,maxs,targetPos,self->s.number,MASK_SHOT);
+
+	if(trace.entityNum < ENTITYNUM_MAX_NORMAL && Distance(muzzle,trace.endpos) <= max(range,secondaryRange)) {
+		trap_Trace(&trace,muzzle,mins,maxs,end,self->s.number,MASK_SHOT);
+
+		if(BotGetTeam(self) != BotGetTeam(&g_entities[trace.entityNum]) 
+			&& BotAimNegligence(self,target) <= BOT_AIM_NEGLIGENCE)
+			return qtrue;
+		else
+			return qfalse;
+	} else
 		return qfalse;
 }
 

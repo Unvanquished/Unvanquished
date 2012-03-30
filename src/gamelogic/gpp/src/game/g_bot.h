@@ -49,6 +49,7 @@ void BotGetIdealAimLocation(gentity_t *self, botTarget_t target, vec3_t aimLocat
 void BotSlowAim( gentity_t *self, vec3_t target, float slow);
 void BotShakeAim( gentity_t *self, vec3_t rVec );
 void BotAimAtLocation( gentity_t *self, vec3_t target , usercmd_t *rAngles);
+float BotAimNegligence(gentity_t *self, botTarget_t target);
 
 void BotSetTarget(botTarget_t *target, gentity_t *ent, vec3_t *pos);
 void BotSetGoal(gentity_t *self, gentity_t *ent, vec3_t *pos);
@@ -206,6 +207,9 @@ static inline bool BotChangeTarget(gentity_t *self, botTarget_t target) {
 
 //when closer to the enemy than this range, the human bots will backup
 #define BOT_BACKUP_RANGE 300.0f
+
+//how far off can our aim can be from true in order to try to hit the enemy
+#define BOT_AIM_NEGLIGENCE 30.0f
 
 //How long in milliseconds the bots will chase an enemy if he goes out of their sight (humans) or radar (aliens)
 #define BOT_ENEMY_CHASETIME 5000
