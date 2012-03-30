@@ -202,5 +202,8 @@
     <ClInclude Include="..\..\..\..\libs\detour\DetourTileCache.h">
       <Filter>Detour</Filter>
     </ClInclude>
+    <ClInclude Include="g_bot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

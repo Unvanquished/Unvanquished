@@ -548,6 +548,7 @@
     <ClInclude Include="bg_local.h" />
     <ClInclude Include="bg_public.h" />
     <ClInclude Include="g_admin.h" />
+    <ClInclude Include="g_bot.h" />
     <ClInclude Include="g_local.h" />
     <ClInclude Include="..\..\..\..\engine\qcommon\q_platform.h" />
     <ClInclude Include="..\..\..\..\engine\qcommon\q_shared.h" />
