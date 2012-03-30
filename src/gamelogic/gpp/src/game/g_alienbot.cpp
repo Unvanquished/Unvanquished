@@ -256,3 +256,50 @@ botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer) {
 	return TASK_STOPPED; //TODO: Implement
 }
 
+botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
+	int maxHealth = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health;
+	if(!self->botMind->closestBuildings.booster.ent && 
+		!self->botMind->closestBuildings.egg.ent &&
+		!self->botMind->closestBuildings.overmind.ent)
+		return TASK_STOPPED;
+
+	if(BotGetTeam(self) != TEAM_ALIENS)
+		return TASK_STOPPED;
+
+	//check conditions upon entering task first time
+	if(self->botMind->task != BOT_TASK_HEAL)
+		if(((float)self->health / maxHealth) > BOT_LOW_HP / 100)
+			return TASK_STOPPED;
+
+	//we are fully healed 
+	if(maxHealth == self->health)
+		return TASK_STOPPED;
+
+	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
+		gentity_t *healTarget = NULL;
+		if(!(healTarget = self->botMind->closestBuildings.booster.ent))
+			if(!(healTarget = self->botMind->closestBuildings.egg.ent))
+				healTarget = self->botMind->closestBuildings.overmind.ent;
+
+		if(!BotChangeTarget(self, healTarget,NULL)) {
+			return TASK_STOPPED;
+		}
+		self->botMind->task = BOT_TASK_HEAL;
+	}
+
+	if(!BotTargetIsEntity(self->botMind->goal)) {
+		self->botMind->needNewGoal = qtrue;
+		return TASK_RUNNING;
+	}
+
+	//target has died, signal goal is unusable
+	if(self->botMind->goal.ent->health <= 0) {
+		self->botMind->needNewGoal = qtrue;
+		return TASK_RUNNING;
+	}
+
+	if(DistanceToGoalSquared(self) > Square(self->r.maxs[0]+100))
+		BotMoveToGoal(self, botCmdBuffer);
+	return TASK_RUNNING;
+}
+

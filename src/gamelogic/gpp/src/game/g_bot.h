@@ -60,6 +60,7 @@ botModusStatus_t BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer);
 botModusStatus_t BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer);
@@ -78,7 +79,7 @@ qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t *origin, buildable_t *bui
 botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskBuy(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades,int numUpgrades, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer);
 
 //g_alienbot.cpp
@@ -87,6 +88,7 @@ float CalcBarbAimPitch(gentity_t *self, botTarget_t target);
 botTaskStatus_t BotTaskEvolve( gentity_t *self , usercmd_t *botCmdBuffer);
 bool G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
 botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer);
+botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer);
 
 //g_nav.cpp
 qboolean BotFindNearestPoly( gentity_t *self, gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint);
@@ -218,7 +220,7 @@ static inline bool BotChangeTarget(gentity_t *self, botTarget_t target) {
 #define BOT_LOW_AMMO 0.50f
 
 //when human bots reach this health or below (and no medkit/enemy) they will head back to the base to heal
-#define BOT_LOW_HP 50
+#define BOT_LOW_HP 50.0f
 
 //how long the bot will continue retreating after loseing sight of the enemy
 #define BOT_RETREAT_TIME 5000

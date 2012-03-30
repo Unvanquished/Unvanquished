@@ -714,7 +714,7 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 		return TASK_STOPPED;
 	}
 }
-botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer) {
+botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	vec3_t targetPos;
 	vec3_t myPos;
 

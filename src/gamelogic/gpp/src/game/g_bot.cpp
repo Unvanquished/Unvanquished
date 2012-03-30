@@ -1569,6 +1569,12 @@ botTaskStatus_t BotTaskGroup(gentity_t *self, usercmd_t *botCmdBuffer) {
 	return TASK_STOPPED;
 }
 
+botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer) {
+	if(BotGetTeam(self) == TEAM_HUMANS)
+		return BotTaskHealH(self, botCmdBuffer);
+	else 
+		return BotTaskHealA(self, botCmdBuffer);
+}
 botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(!g_bot_retreat.integer)
 		return TASK_STOPPED;
