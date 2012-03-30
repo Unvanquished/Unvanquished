@@ -462,54 +462,42 @@ int BotFindBestHDecon(gentity_t *self, buildable_t building, vec3_t origin) {
 
 	return bestBuild;
 }
-qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t *origin, buildable_t *building) {
+qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, buildable_t *building) {
 	if(!level.botBuildLayout.numBuildings) {
 		return qfalse;
 	}
 	//NOTE: Until alien building is (re)implemented, the only buildings in level.botLayout are ones on the human team
 
 	//check all buildings in the current bot layout and see if we need to build them
-	qboolean needsToBuild = qfalse;
 	for(int i=0;i<level.botBuildLayout.numBuildings;i++) {
-		vec3_t neededOrigin;
-		buildable_t neededBuilding;
 		trace_t trace;
-		VectorCopy(level.botBuildLayout.buildings[i].origin,neededOrigin);
-		neededBuilding = level.botBuildLayout.buildings[i].type;
+		VectorCopy(level.botBuildLayout.buildings[i].origin,origin);
+		*building = level.botBuildLayout.buildings[i].type;
 
 		//cant build stuff if we arnt in the right stage
-		if(!BG_BuildableAllowedInStage(neededBuilding,(stage_t) g_humanStage.integer))
+		if(!BG_BuildableAllowedInStage(*building,(stage_t) g_humanStage.integer))
 			continue;
 
 		//check if we have enough buildpoints in a location to build something
-		if(G_GetBuildPoints(neededOrigin,BotGetTeam(self)) < BG_Buildable(neededBuilding)->buildPoints) {
+		if(G_GetBuildPoints(origin,BotGetTeam(self)) < BG_Buildable(*building)->buildPoints) {
 			//not enough build points, check if there is something we can decon to make room
-			if(BotFindBestHDecon(self, neededBuilding, neededOrigin) == ENTITYNUM_NONE) {
+			if(BotFindBestHDecon(self, *building, origin) == ENTITYNUM_NONE) {
 				//there is nothing we can decon without deconning stuff the bot made
 				continue;
 			} else {
-				*building = neededBuilding;
-				needsToBuild = qtrue;
-				VectorCopy(neededOrigin, *origin);
-				break;
+				return qtrue;
 			}
 		}
 
-		trap_Trace(&trace,neededOrigin,NULL,NULL,neededOrigin,ENTITYNUM_NONE,MASK_SHOT);
+		trap_Trace(&trace,origin,NULL,NULL,origin,ENTITYNUM_NONE,MASK_SHOT);
 		if(trace.entityNum >= ENTITYNUM_MAX_NORMAL) {
-			VectorCopy(neededOrigin,*origin);
-			*building = neededBuilding;
-			needsToBuild = qtrue;
-			break;
+			return qtrue;
 		}
-		if(g_entities[trace.entityNum].s.modelindex != neededBuilding) {
-			VectorCopy(neededOrigin,*origin);
-			*building = neededBuilding;
-			needsToBuild = qtrue;
-			break;
+		if(g_entities[trace.entityNum].s.modelindex != *building) {
+			return qtrue;
 		}
 	}
-	return needsToBuild;
+	return qfalse;
 }
 
 botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
@@ -517,6 +505,7 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	float dist = BG_Class((class_t) self->client->ps.stats[ STAT_CLASS ] )->buildDist;
 	vec3_t normal;
 	vec3_t forward;
+	vec3_t instriceq = {-.01,-.01,-.01};
 	AngleVectors(self->client->ps.viewangles, forward, NULL,NULL);
 	vec3_t mins,maxs,searchMins, searchMaxs;
 	buildable_t building;
@@ -527,7 +516,7 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(!BG_InventoryContainsWeapon(WP_HBUILD,self->client->ps.stats))
 		return TASK_STOPPED;
 
-	if(!BotGetBuildingToBuild(self, &origin, &building))
+	if(!BotGetBuildingToBuild(self, origin, &building))
 		return TASK_STOPPED;
 
 	if(self->client->ps.weapon != WP_HBUILD)

@@ -19,9 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 
-extern "C" {
 #include "g_local.h"
-}
 #include "g_bot.h"
 #include "../../../../engine/botlib/nav.h"
 
@@ -888,7 +886,7 @@ Boolean Functions for determining actions
 qboolean BotWillBuildSomething(gentity_t *self) {
 	vec3_t origin;
 	buildable_t buildable;
-	return BotGetBuildingToBuild(self, &origin, &buildable);
+	return BotGetBuildingToBuild(self, origin, &buildable);
 }
 qboolean BotShouldBuild(gentity_t *self) {
 	if(BotGetTeam(self) != TEAM_HUMANS)

@@ -76,7 +76,7 @@ qboolean BotNeedsItem(gentity_t *self);
 qboolean BotCanShop(gentity_t *self);
 qboolean BotStructureIsDamaged(team_t team);
 qboolean buildableIsDamaged(gentity_t *building);
-qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t *origin, buildable_t *building);
+qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, buildable_t *building);
 botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskBuy(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades,int numUpgrades, usercmd_t *botCmdBuffer);
