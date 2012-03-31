@@ -1028,10 +1028,6 @@ void SV_Init( void )
 	Cvar_Get( "g_altStopwatchMode", "0", CVAR_ARCHIVE );
 	Cvar_Get( "g_minGameClients", "8", CVAR_SERVERINFO );
 	Cvar_Get( "g_complaintlimit", "6", CVAR_ARCHIVE );
-	Cvar_Get( "gamestate", "-1", CVAR_WOLFINFO | CVAR_ROM );
-	Cvar_Get( "g_currentRound", "0", CVAR_WOLFINFO );
-	Cvar_Get( "g_nextTimeLimit", "0", CVAR_WOLFINFO );
-	// -NERVE - SMF
 
 	// TTimo - some UI additions
 	// NOTE: sucks to have this hardcoded really, I suppose this should be in UI
