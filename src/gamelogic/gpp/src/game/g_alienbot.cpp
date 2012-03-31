@@ -28,8 +28,13 @@ float CalcAimPitch(gentity_t *self, botTarget_t target, vec_t launchSpeed ) {
 	vec3_t startPos;
 	vec3_t targetPos;
 	float initialHeight;
+	vec3_t forward,right,up;
+	vec3_t muzzle;
+
 	BotGetTargetPos(target, targetPos);
-	VectorCopy(self->s.origin, startPos);
+	AngleVectors(self->s.origin,forward,right,up);
+	CalcMuzzlePoint(self,forward,right,up,muzzle);
+	VectorCopy(muzzle, startPos);
 
 	//project everything onto a 2D plane with initial position at (0,0)
 	initialHeight = startPos[2];
@@ -60,7 +65,7 @@ float CalcAimPitch(gentity_t *self, botTarget_t target, vec_t launchSpeed ) {
 	//take the smaller angle
 	float angle = (angle1 < angle2) ? angle1 : angle2;
 
-	//convert to degress (ps.viewangles units)
+	//convert to degrees (ps.viewangles units)
 	angle = RAD2DEG(angle);
 	return angle;
 }
