@@ -41,6 +41,7 @@ private:
 	GLShader &operator             = ( const GLShader & );
 
 	std::string                    _name;
+	bool                           cacheable;
 protected:
 	int                            _activeMacros;
 
@@ -65,6 +66,8 @@ protected:
 		//_vertexAttribsUnsupported(vertexAttribsUnsupported)
 	{
 		//ri.Printf(PRINT_ALL, "/// -------------------------------------------------\n");
+		// Possible to cache compiled shaders?
+		cacheable = glewIsSupported( "GL_ARB_get_program_binary" ); // !!glGetProgramBinary
 	}
 
 	~GLShader()
