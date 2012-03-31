@@ -401,6 +401,7 @@ typedef enum
 
 typedef enum
 {
+  GLDRV_UNKNOWN = -1,
   GLDRV_ICD, // driver is integrated with window system
   // WARNING: there are tests that check for
   // > GLDRV_ICD for minidriverness, so this
@@ -417,6 +418,7 @@ typedef enum
 
 typedef enum
 {
+  GLHW_UNKNOWN = -1,
   GLHW_GENERIC, // where everthing works the way it should
   GLHW_3DFX_2D3D, // Voodoo Banshee or Voodoo3, relevant since if this is
   // the hardware type then there can NOT exist a secondary
