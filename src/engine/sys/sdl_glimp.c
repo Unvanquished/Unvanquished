@@ -2052,15 +2052,17 @@ success:
 			glConfig.hardwareType = GLHW_NV_DX10;
 		}
 	}
-	else if ( Q_stristr( glConfig.renderer_string, "rv770" ) )
+	else if ( Q_stristr( glConfig.renderer_string, "gallium" ) &&
+	          Q_stristr( glConfig.renderer_string, " amd " ) )
 	{
+		// anything prior to R600 is listed as ATI.
 		glConfig.hardwareType = GLHW_ATI_DX10;
 	}
-	else if ( Q_stristr( glConfig.renderer_string, "radeon hd" ) )
-	{
-		glConfig.hardwareType = GLHW_ATI_DX10;
-	}
-	else if ( Q_stristr( glConfig.renderer_string, "eah4850" ) || Q_stristr( glConfig.renderer_string, "eah4870" ) )
+	else if ( Q_stristr( glConfig.renderer_string, "rv770" ) ||
+	          Q_stristr( glConfig.renderer_string, "eah4850" ) ||
+	          Q_stristr( glConfig.renderer_string, "eah4870" ) ||
+	          // previous three are too specific?
+	          Q_stristr( glConfig.renderer_string, "radeon hd" ) )
 	{
 		glConfig.hardwareType = GLHW_ATI_DX10;
 	}
