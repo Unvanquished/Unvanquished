@@ -262,29 +262,41 @@ botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer) {
 }
 
 botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
-	int maxHealth = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health;
-	if(!self->botMind->closestBuildings.booster.ent && 
-		!self->botMind->closestBuildings.egg.ent &&
-		!self->botMind->closestBuildings.overmind.ent)
+	const int maxHealth = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health;
+	gentity_t *healTarget = NULL;
+	float distToHealTarget = 0;
+
+	//find best heal target
+	if(!(healTarget = self->botMind->closestBuildings.booster.ent)) {
+		if(!(healTarget = self->botMind->closestBuildings.egg.ent)) {
+				healTarget = self->botMind->closestBuildings.overmind.ent;
+				distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.overmind.distance);
+		} else {
+			distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.egg.distance);
+		}
+	} else {
+		distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.booster.distance);
+	}
+
+	if(!healTarget)
 		return TASK_STOPPED;
 
 	if(BotGetTeam(self) != TEAM_ALIENS)
 		return TASK_STOPPED;
 
-	//check conditions upon entering task first time
-	if(self->botMind->task != BOT_TASK_HEAL)
-		if(((float)self->health / maxHealth) > BOT_LOW_HP / 100)
-			return TASK_STOPPED;
-
-	//we are fully healed 
+		//we are fully healed 
 	if(maxHealth == self->health)
 		return TASK_STOPPED;
 
+	//check conditions upon entering task first time
+	if(self->botMind->task != BOT_TASK_HEAL) {
+		float percentHealth = ((float) self->health / maxHealth);
+		if(distToHealTarget * percentHealth > BOT_FUZZY_HEAL_VALUE)
+			return TASK_STOPPED;
+	}
+
 	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
 		gentity_t *healTarget = NULL;
-		if(!(healTarget = self->botMind->closestBuildings.booster.ent))
-			if(!(healTarget = self->botMind->closestBuildings.egg.ent))
-				healTarget = self->botMind->closestBuildings.overmind.ent;
 
 		if(!BotChangeTarget(self, healTarget,NULL)) {
 			return TASK_STOPPED;

@@ -717,11 +717,14 @@ botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 	//check conditions upon entering task first time
 	if(self->botMind->task != BOT_TASK_HEAL) {
-		if(self->health > BOT_USEMEDKIT_HP && BG_InventoryContainsUpgrade(UP_MEDKIT,self->client->ps.stats))
+		int maxHealth = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health;
+		float percentHealth = ((float)self->health / maxHealth);
+		float distToMedi = Com_Clamp(0,MAX_HEAL_DIST, self->botMind->closestBuildings.medistation.distance);
+		if(self->health > BOT_USEMEDKIT_HP  && BG_InventoryContainsUpgrade(UP_MEDKIT,self->client->ps.stats))
 			return TASK_STOPPED;
 		if(BG_UpgradeIsActive(UP_MEDKIT, self->client->ps.stats))
 			return TASK_STOPPED;
-		if(self->health > BOT_LOW_HP)
+		if(percentHealth * distToMedi > distToMedi * percentHealth )
 			return TASK_STOPPED;
 	}
 

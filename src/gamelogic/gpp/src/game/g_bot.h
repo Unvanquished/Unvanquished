@@ -223,8 +223,12 @@ static inline bool BotChangeTarget(gentity_t *self, botTarget_t target) {
 //when human bots reach this ammo percentage left or less(and no enemy), they will head back to the base to refuel ammo
 #define BOT_LOW_AMMO 0.50f
 
-//when human bots reach this health or below (and no medkit/enemy) they will head back to the base to heal
-#define BOT_LOW_HP 50.0f
+//used for clamping distance to heal structure when deciding whether to go heal
+#define MAX_HEAL_DIST 2000
+
+//compared to heal logic value to decide if the bot should return to base to heal
+//heal logic value <= BOT_FUZZY_HEAL_VALUE means bot will go heal
+#define BOT_FUZZY_HEAL_VALUE MAX_HEAL_DIST / 4
 
 //how long the bot will continue retreating after loseing sight of the enemy
 #define BOT_RETREAT_TIME 5000
