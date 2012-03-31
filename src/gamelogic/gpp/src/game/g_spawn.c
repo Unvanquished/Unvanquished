@@ -230,12 +230,12 @@ spawn_t spawns[] =
 	{ "func_door",                SP_func_door                },
 	{ "func_door_model",          SP_func_door_model          },
 	{ "func_door_rotating",       SP_func_door_rotating       },
+	{ "func_dynamic",             SP_func_dynamic             },
 	{ "func_group",               SP_info_null                },
 	{ "func_pendulum",            SP_func_pendulum            },
 	{ "func_plat",                SP_func_plat                },
 	{ "func_rotating",            SP_func_rotating            },
 	{ "func_static",              SP_func_static              },
-	{ "func_dynamic",             SP_func_dynamic             },
 	{ "func_timer",               SP_func_timer               }, // rename trigger_timer?
 	{ "func_train",               SP_func_train               },
 
