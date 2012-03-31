@@ -348,26 +348,14 @@ void BotFindClosestBuildings(gentity_t *self, botClosestBuildings_t *closest) {
 }
 
 gentity_t* BotFindBestEnemy( gentity_t *self ) {
-	int vectorRange = ALIENSENSE_RANGE;
-	int numEntities;
-	int entityList[MAX_GENTITIES];
 	float newScore;
 	float bestVisibleEnemyScore = 0;
 	float bestInvisibleEnemyScore = 0;
 	gentity_t* bestVisibleEnemy = NULL;
 	gentity_t* bestInvisibleEnemy = NULL;
-	vec3_t range;
-	vec3_t mins,maxs;
-	gentity_t *target;
+	gentity_t *target = g_entities;
 
-	range[0] = range[1] = range[2] = vectorRange;
-	VectorSubtract(self->client->ps.origin,range,mins);
-	VectorAdd(self->client->ps.origin, range, maxs);
-	numEntities = trap_EntitiesInBox(mins,maxs,entityList,MAX_GENTITIES);
-
-	for(int i=0;i<numEntities;i++) {
-		target = &g_entities[entityList[i]];
-
+	for(int i=0;i<level.num_entities;i++,target++) {
 		//ignore entities that arnt in use
 		if(!target->inuse)
 			continue;
@@ -395,7 +383,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self ) {
 			//store the new score and the index of the entity
 			bestVisibleEnemyScore = newScore;
 			bestVisibleEnemy = target;
-		} else if(newScore > bestInvisibleEnemyScore && BotGetTeam(self) == TEAM_ALIENS) {
+		} else if(newScore > bestInvisibleEnemyScore && BotGetTeam(self) == TEAM_ALIENS && DistanceSquared(self->s.origin,target->s.origin) <= Square(ALIENSENSE_RANGE)) {
 			bestInvisibleEnemyScore = newScore;
 			bestInvisibleEnemy = target;
 		}
