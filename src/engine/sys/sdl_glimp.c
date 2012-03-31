@@ -2069,6 +2069,69 @@ success:
 		glConfig.hardwareType = GLHW_ATI;
 	}
 
+	{ // allow overriding where the user really does know better
+		cvar_t *forceGL;
+
+		forceGL = ri.Cvar_Get( "r_glForceDriver", "", CVAR_LATCH );
+
+		if      ( !Q_stricmp( forceGL->string, "icd" ))
+		{
+			glConfig.driverType = GLDRV_ICD;
+		}
+		else if ( !Q_stricmp( forceGL->string, "standalone" ))
+		{
+			glConfig.driverType = GLDRV_STANDALONE;
+		}
+		else if ( !Q_stricmp( forceGL->string, "voodoo" ))
+		{
+			glConfig.driverType = GLDRV_VOODOO;
+		}
+		else if ( !Q_stricmp( forceGL->string, "opengl3" ))
+		{
+			glConfig.driverType = GLDRV_OPENGL3;
+		}
+		else if ( !Q_stricmp( forceGL->string, "mesa" ))
+		{
+			glConfig.driverType = GLDRV_MESA;
+		}
+
+		forceGL = ri.Cvar_Get( "r_glForceHardware", "", CVAR_LATCH );
+
+		if      ( !Q_stricmp( forceGL->string, "generic" ))
+		{
+			glConfig.hardwareType = GLHW_GENERIC;
+		}
+		else if ( !Q_stricmp( forceGL->string, "voodoo" ))
+		{
+			glConfig.hardwareType = GLHW_3DFX_2D3D;
+		}
+		else if ( !Q_stricmp( forceGL->string, "riva128" ))
+		{
+			glConfig.hardwareType = GLHW_RIVA128;
+		}
+		else if ( !Q_stricmp( forceGL->string, "ragepro" ))
+		{
+			glConfig.hardwareType = GLHW_RAGEPRO;
+		}
+		else if ( !Q_stricmp( forceGL->string, "permedia2" ))
+		{
+			glConfig.hardwareType = GLHW_PERMEDIA2;
+		}
+		else if ( !Q_stricmp( forceGL->string, "ati" ))
+		{
+			glConfig.hardwareType = GLHW_ATI;
+		}
+		else if ( !Q_stricmp( forceGL->string, "atidx10" ) ||
+		          !Q_stricmp( forceGL->string, "radeonhd" ))
+		{
+			glConfig.hardwareType = GLHW_ATI_DX10;
+		}
+		else if ( !Q_stricmp( forceGL->string, "nvdx10" ))
+		{
+			glConfig.hardwareType = GLHW_NV_DX10;
+		}
+	}
+
 	// initialize extensions
 #if defined USE_XREAL_RENDERER
 	GLimp_XreaLInitExtensions();
