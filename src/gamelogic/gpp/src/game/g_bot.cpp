@@ -1076,6 +1076,7 @@ void BotClassMovement(gentity_t *self, usercmd_t *botCmdBuffer) {
 				botCmdBuffer->rightmove = 0;
 				botCmdBuffer->upmove = 0;
 		}
+		break;
 	case PCL_ALIEN_LEVEL4:
 		//use rush to approach faster
 		if(DistanceToGoalSquared(self) > Square(LEVEL4_CLAW_RANGE))
