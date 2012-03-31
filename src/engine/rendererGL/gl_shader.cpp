@@ -645,7 +645,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		/*
 		   if(glConfig.drawBuffersAvailable && glConfig.maxDrawBuffers >= 4)
 		   {
-		   //Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef GL_ARB_draw_buffers\n#define GL_draw_buffers 1\n#endif\n");
+		   //Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef GL_ARB_draw_buffers\n#define GL_ARB_draw_buffers 1\n#endif\n");
 		   Q_strcat(bufferExtra, sizeof(bufferExtra), "#extension GL_ARB_draw_buffers : enable\n");
 		   }
 		 */
@@ -830,7 +830,7 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 	}
 
 	// Get the binaryFormat from the file
-	memcpy( &binaryFormat, binary, sizeof( GLenum ) );
+	binaryFormat = *(GLenum *)binary;
 
 	glProgramBinary( program, binaryFormat, (char*)binary + sizeof( GLenum ), binaryLength - sizeof( GLenum ) );
 
@@ -870,67 +870,62 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 	program->program = glCreateProgram();
 	program->attribs = _vertexAttribsRequired; // | _vertexAttribsOptional;
 
-	// header of the glsl shader
-	std::string vertexHeader;
-	std::string fragmentHeader;
-
-	if ( glConfig.driverType == GLDRV_OPENGL3 )
+	if( r_recompileShaders->integer || !LoadShaderProgram( program->program, programName, iteration ) )
 	{
-		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
+		// header of the glsl shader
+		std::string vertexHeader;
+		std::string fragmentHeader;
 
-		vertexHeader += "#version 130\n";
-		fragmentHeader += "#version 130\n";
-
-		//if(shaderType == GL_VERTEX_SHADER)
+		if ( glConfig.driverType == GLDRV_OPENGL3 )
 		{
+			// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
+
+			vertexHeader += "#version 130\n";
+			fragmentHeader += "#version 130\n";
+
 			vertexHeader += "#define attribute in\n";
 			vertexHeader += "#define varying out\n";
-		}
-		//else
-		{
+
 			fragmentHeader += "#define varying in\n";
 
 			fragmentHeader += "out vec4 out_Color;\n";
 			fragmentHeader += "#define gl_FragColor out_Color\n";
+
+			vertexHeader += "#define textureCube texture\n";
+			fragmentHeader += "#define textureCube texture\n";
 		}
-
-		vertexHeader += "#define textureCube texture\n";
-		fragmentHeader += "#define textureCube texture\n";
-	}
-	else
-	{
-		vertexHeader += "#version 120\n";
-		fragmentHeader += "#version 120\n";
-	}
-
-	// permutation macros
-	std::string macrosString;
-
-	if ( !compileMacros.empty() )
-	{
-		const char *compileMacros_ = compileMacros.c_str();
-		char       **compileMacrosP = ( char ** ) &compileMacros_;
-		char       *token;
-
-		while ( 1 )
+		else
 		{
-			token = COM_ParseExt2( compileMacrosP, qfalse );
-
-			if ( !token[ 0 ] )
-			{
-				break;
-			}
-
-			macrosString += va( "#ifndef %s\n#define %s 1\n#endif\n", token, token );
+			vertexHeader += "#version 120\n";
+			fragmentHeader += "#version 120\n";
 		}
-	}
 
-	// add them
-	std::string vertexShaderTextWithMacros = vertexHeader + macrosString + vertexShaderText;
-	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + fragmentShaderText;
+		// permutation macros
+		std::string macrosString;
 
-	if( r_recompileShaders->integer || !LoadShaderProgram( program->program, programName, iteration ) )
-	{
+		if ( !compileMacros.empty() )
+		{
+			const char *compileMacros_ = compileMacros.c_str();
+			char       **compileMacrosP = ( char ** ) &compileMacros_;
+			char       *token;
+
+			while ( 1 )
+			{
+				token = COM_ParseExt2( compileMacrosP, qfalse );
+
+				if ( !token[ 0 ] )
+				{
+					break;
+				}
+
+				macrosString += va( "#ifndef %s\n#define %s 1\n#endif\n", token, token );
+			}
+		}
+
+		// add them
+		std::string vertexShaderTextWithMacros = vertexHeader + macrosString + vertexShaderText;
+		std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + fragmentShaderText;
+
 		CompileGPUShader( program->program, programName, vertexShaderTextWithMacros.c_str(), strlen( vertexShaderTextWithMacros.c_str() ), GL_VERTEX_SHADER );
 		CompileGPUShader( program->program, programName, fragmentShaderTextWithMacros.c_str(), strlen( fragmentShaderTextWithMacros.c_str() ), GL_FRAGMENT_SHADER );
 		BindAttribLocations( program->program );  //, _vertexAttribsRequired | _vertexAttribsOptional);
