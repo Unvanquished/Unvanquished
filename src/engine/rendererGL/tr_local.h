@@ -1364,7 +1364,7 @@ extern "C" {
 		char        name[ MAX_QPATH ];
 		char        *compileMacros;
 
-		GLhandleARB program;
+		GLuint program;
 		uint32_t    attribs; // vertex array attributes
 
 		// uniform parameters
@@ -4156,6 +4156,7 @@ extern "C" {
 	extern cvar_t *r_compressNormalMaps;
 	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
+	extern cvar_t *r_recompileShaders;
 
 	extern cvar_t *r_norefresh; // bypasses the ref rendering
 	extern cvar_t *r_drawentities; // disable/enable entity rendering
