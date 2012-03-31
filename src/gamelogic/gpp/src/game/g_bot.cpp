@@ -1086,17 +1086,22 @@ void BotClassMovement(gentity_t *self, usercmd_t *botCmdBuffer) {
 }
 void BotFireWeaponAI(gentity_t *self, usercmd_t *botCmdBuffer) {
 	float distance;
-	vec3_t viewOrigin;
 	vec3_t targetPos;
-	BG_GetClientViewOrigin(&self->client->ps,viewOrigin);
-	BotGetTargetPos(self->botMind->goal, targetPos);
-	distance = Distance(viewOrigin, targetPos);
+	vec3_t forward,right,up;
+	vec3_t muzzle;
+	trace_t trace;
+	AngleVectors(self->client->ps.viewangles,forward,right,up);
+	CalcMuzzlePoint(self,forward,right,up,muzzle);
+	BotGetIdealAimLocation(self,self->botMind->goal,targetPos);
+
+	trap_Trace(&trace,muzzle,NULL,NULL,targetPos,-1,MASK_SHOT);
+	distance = Distance(muzzle, trace.endpos);
 	switch(self->s.weapon) {
 	case WP_ABUILD:
 		botCmdBuffer->buttons |= BUTTON_GESTURE; //make cute granger sounds to ward off the would be attackers
 		break;
 	case WP_ABUILD2:
-		if(distance < ABUILDER_CLAW_RANGE)
+		if(distance <= ABUILDER_CLAW_RANGE)
 			BotFireWeapon(WPM_SECONDARY,botCmdBuffer); //swipe
 		else
 			BotFireWeapon(WPM_TERTIARY, botCmdBuffer); //blob launcher
@@ -1107,7 +1112,7 @@ void BotFireWeaponAI(gentity_t *self, usercmd_t *botCmdBuffer) {
 		BotFireWeapon(WPM_PRIMARY, botCmdBuffer); //basi swipe
 		break;
 	case WP_ALEVEL1_UPG:
-		if(distance < LEVEL1_CLAW_U_RANGE)
+		if(distance <= LEVEL1_CLAW_U_RANGE)
 			BotFireWeapon(WPM_PRIMARY, botCmdBuffer); //basi swipe
 		/*
 		else
@@ -1118,7 +1123,7 @@ void BotFireWeaponAI(gentity_t *self, usercmd_t *botCmdBuffer) {
 		BotFireWeapon(WPM_PRIMARY, botCmdBuffer); //mara swipe
 		break;
 	case WP_ALEVEL2_UPG:
-		if(distance < LEVEL2_CLAW_U_RANGE)
+		if(distance <= LEVEL2_CLAW_U_RANGE)
 			BotFireWeapon(WPM_PRIMARY,botCmdBuffer); //mara swipe
 		else
 			BotFireWeapon(WPM_SECONDARY, botCmdBuffer); //mara lightning
@@ -1147,9 +1152,8 @@ void BotFireWeaponAI(gentity_t *self, usercmd_t *botCmdBuffer) {
 			BotFireWeapon(WPM_PRIMARY,botCmdBuffer); //rant swipe
 		break;
 	case WP_LUCIFER_CANNON:
-		if( self->client->time10000 % 2000 ) {
+		if( self->client->ps.stats[STAT_MISC] < LCANNON_CHARGE_TIME_MAX * Com_Clamp(0.5,1,random()))
 			BotFireWeapon(WPM_PRIMARY, botCmdBuffer);
-		}
 		break;
 	default: BotFireWeapon(WPM_PRIMARY,botCmdBuffer);
 	}
