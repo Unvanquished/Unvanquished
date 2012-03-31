@@ -807,8 +807,8 @@ void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) con
 	// Don't even try if the necessary functions aren't available
 	if( !cacheable )
 	{
-	        return;
-        }
+		return;
+	}
 
 	glGetProgramiv( program, GL_PROGRAM_BINARY_LENGTH, &binaryLength );
 
@@ -830,8 +830,8 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 	// Don't even try if the necessary functions aren't available
 	if( !cacheable )
 	{
-	        return false;
-        }
+		return false;
+	}
 
 	binaryLength = ri.FS_ReadFile( va( "glsl/%s_%d.bin", pname, i ), (void **) &binary );
 
@@ -1062,8 +1062,8 @@ void GLShader::LinkProgram( GLuint program ) const
 	// Apparently, this is necessary to get the binary program via glGetProgramBinary
 	if( cacheable )
 	{
-	        glProgramParameteri( program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE );
-        }
+		glProgramParameteri( program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE );
+	}
 	glLinkProgram( program );
 
 	glGetProgramiv( program, GL_LINK_STATUS, &linked );
