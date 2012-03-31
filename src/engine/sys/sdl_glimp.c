@@ -1870,7 +1870,7 @@ static void reportHardwareType( qboolean force )
 	if (glConfig.hardwareType > GLDRV_UNKNOWN && glConfig.driverType < sizeof( hardware ) / sizeof( hardware[0] ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
-		           force ? "Detected" : "User has forced",
+		           force ? "User has forced" : "Detected",
 		           hardware[glConfig.hardwareType] );
 	}
 }
