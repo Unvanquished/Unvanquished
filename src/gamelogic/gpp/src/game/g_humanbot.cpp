@@ -474,26 +474,26 @@ qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, buildable_t *buil
 		VectorCopy(level.botBuildLayout.buildings[i].origin,origin);
 		*building = level.botBuildLayout.buildings[i].type;
 
-		//cant build stuff if we arnt in the right stage
+		//make sure we have a reactor
+		if(!G_Reactor() && *building != BA_H_REACTOR)
+			continue;
+
+		//cant build some stuff if we arnt in the right stage
 		if(!BG_BuildableAllowedInStage(*building,(stage_t) g_humanStage.integer))
 			continue;
 
-		//check if we have enough buildpoints in a location to build something
-		if(G_GetBuildPoints(origin,BotGetTeam(self)) < BG_Buildable(*building)->buildPoints) {
-			//not enough build points, check if there is something we can decon to make room
-			if(BotFindBestHDecon(self, *building, origin) == ENTITYNUM_NONE) {
-				//there is nothing we can decon without deconning stuff the bot made
-				continue;
-			} else {
-				return qtrue;
-			}
-		}
-
 		trap_Trace(&trace,origin,NULL,NULL,origin,ENTITYNUM_NONE,MASK_SHOT);
-		if(trace.entityNum >= ENTITYNUM_MAX_NORMAL) {
-			return qtrue;
-		}
-		if(g_entities[trace.entityNum].s.modelindex != *building) {
+		if(g_entities[trace.entityNum].s.modelindex != *building || trace.fraction == 1) {
+			//check if we have enough buildpoints in a location to build something
+			if(G_GetBuildPoints(origin,BotGetTeam(self)) < BG_Buildable(*building)->buildPoints) {
+				//not enough build points, check if there is something we can decon to make room
+				if(BotFindBestHDecon(self, *building, origin) == ENTITYNUM_NONE) {
+					//there is nothing we can decon without deconning stuff the bot made
+					continue;
+				} else {
+					return qtrue;
+				}
+			}
 			return qtrue;
 		}
 	}
@@ -506,7 +506,6 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	vec3_t normal;
 	vec3_t forward;
 	trace_t trace;
-
 	AngleVectors(self->client->ps.viewangles, forward, NULL,NULL);
 	vec3_t mins,maxs;
 	buildable_t building;
@@ -518,6 +517,9 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 	if(!BotGetBuildingToBuild(self, origin, &building))
 		return TASK_STOPPED;
+
+	vec3_t targetPos;
+	BotGetTargetPos(self->botMind->goal,targetPos);
 
 	if(self->client->ps.weapon != WP_HBUILD)
 		G_ForceWeaponChange(self, WP_HBUILD);
@@ -570,24 +572,28 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		//head to the building if not close enough to decon
 		if(!BotTargetIsVisible(self,self->botMind->goal,MASK_SHOT) || DistanceToGoalSquared(self) > Square(100))
 			BotMoveToGoal(self, botCmdBuffer);
-		else if(self->client->ps.stats[STAT_MISC] == 0){ //only decon if our build timer lets us
-			gentity_t *block = &g_entities[deconNum];
-
-			//aim at the building and decon it
+		else { 
 			BotAimAtLocation(self,targetPos,botCmdBuffer);
-			if( !g_cheats.integer ) // add a bit to the build timer if cheats arnt enabled
-			{
-				self->client->ps.stats[ STAT_MISC ] +=
-					BG_Buildable((buildable_t) block->s.modelindex )->buildTime / 4;
+			//only decon if our build timer lets us
+			if(self->client->ps.stats[STAT_MISC] == 0) {
+				gentity_t *block = &g_entities[deconNum];
+
+				//aim at the building and decon it
+			
+				if( !g_cheats.integer ) // add a bit to the build timer if cheats arnt enabled
+				{
+					self->client->ps.stats[ STAT_MISC ] +=
+						BG_Buildable((buildable_t) block->s.modelindex )->buildTime / 4;
+				}
+				G_Damage( block, self, self, forward, targetPos,
+					block->health, 0, MOD_DECONSTRUCT );
+				G_FreeEntity(block);
+				self->botMind->needNewGoal = qtrue;
 			}
-			G_Damage( block, self, self, forward, targetPos,
-				block->health, 0, MOD_DECONSTRUCT );
-			G_FreeEntity(block);
-			self->botMind->needNewGoal = qtrue;
 		}
-	} else if(BotRoutePermission(self, BOT_TASK_BUILD)) {
+	} else if(!VectorCompare(origin,targetPos) || BotRoutePermission(self, BOT_TASK_BUILD)) {
 		//set the target coordinate where we will place the building
-		BotChangeTarget(self, NULL, (vec3_t*)&origin);
+		BotChangeTarget(self, NULL, &origin);
 		self->botMind->task = BOT_TASK_BUILD;
 	} else if(DistanceToGoalSquared(self) > Square(dist)) {
 		//move to where we will place the building until close enough to place it
@@ -595,7 +601,7 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	} else if(tooClose){
 		//we are too close to the building placement, back up and move around to try to get out of the way
 		botCmdBuffer->forwardmove = -127;
-		botCmdBuffer->rightmove = ((level.time % 5000) < 2500) ? 127 : -127;
+		botCmdBuffer->rightmove = ((level.time % 10000) < 5000) ? 127 : -127;
 
 	} else if(blockingBuildingNum != ENTITYNUM_NONE){
 
