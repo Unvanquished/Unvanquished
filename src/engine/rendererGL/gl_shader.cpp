@@ -805,7 +805,7 @@ void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) con
 	GLenum  binaryFormat;
 
 	// Don't even try if the necessary functions aren't available
-	if( !cacheable )
+	if( !GLEW_ARB_get_program_binary )
 	{
 		return;
 	}
@@ -828,7 +828,7 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 	GLenum binaryFormat;
 
 	// Don't even try if the necessary functions aren't available
-	if( !cacheable )
+	if( !GLEW_ARB_get_program_binary )
 	{
 		return false;
 	}
@@ -1060,7 +1060,7 @@ void GLShader::LinkProgram( GLuint program ) const
 	GLint linked;
 
 	// Apparently, this is necessary to get the binary program via glGetProgramBinary
-	if( cacheable )
+	if( GLEW_ARB_get_program_binary )
 	{
 		glProgramParameteri( program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE );
 	}
