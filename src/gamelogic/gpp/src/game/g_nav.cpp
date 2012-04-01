@@ -601,11 +601,18 @@ void UpdatePathCorridor(gentity_t *self) {
 	if(!self->botMind->pathCorridor->getPathCount())
 		return;
 	if(BotTargetIsEntity(self->botMind->goal)) {
-		PlantEntityOnGround(self->botMind->goal.ent,targetPos);
-	} else {
+		if(self->botMind->goal.ent->s.groundEntityNum == -1 || self->botMind->goal.ent->s.groundEntityNum == ENTITYNUM_NONE)
+			PlantEntityOnGround(self->botMind->goal.ent,targetPos);
+		else
+			BotGetTargetPos(self->botMind->goal, targetPos);
+	} else 
 		BotGetTargetPos(self->botMind->goal, targetPos);
-	}
-	PlantEntityOnGround(self,selfPos);
+
+	if(self->s.groundEntityNum == -1 || self->s.groundEntityNum == ENTITYNUM_NONE)
+		PlantEntityOnGround(self,selfPos);
+	else
+		VectorCopy(self->s.origin,selfPos);
+
 	quake2recast(selfPos);
 	quake2recast(targetPos);
 
