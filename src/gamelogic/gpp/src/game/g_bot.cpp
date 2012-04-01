@@ -719,7 +719,6 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount) {
 	vec3_t aimVec, forward;
 	vec3_t skilledVec;
 	float length;
-	float slowness;
 	float slow;
 
 	if( !(self && self->client) )
@@ -986,7 +985,6 @@ return target;*/
 //Pls use with caution
 //returns true if successful, false if unsuccessful
 botTarget_t BotGetRoamTarget(gentity_t *self) {
-	int result;
 	botTarget_t target;
 	int numTiles = 0;
 	const dtNavMesh *navMesh = self->botMind->navQuery->getAttachedNavMesh();
@@ -1204,7 +1202,7 @@ extern "C" void G_BotLoadBuildLayout() {
 				" skipping\n", buildName );
 			else if(level.botBuildLayout.numBuildings == MAX_BOT_BUILDINGS) {
 				G_Printf( S_COLOR_YELLOW "WARNING: reached max buildings for bot layout (%d)."
-					" skipping\n",MAX_BOT_BUILDINGS, buildName );
+					" skipping\n",MAX_BOT_BUILDINGS );
 			} else if(BG_Buildable(buildable)->team == TEAM_HUMANS && level.botBuildLayout.numBuildings < MAX_BOT_BUILDINGS) {
 				level.botBuildLayout.buildings[level.botBuildLayout.numBuildings].type = buildable;
 				VectorCopy(origin, level.botBuildLayout.buildings[level.botBuildLayout.numBuildings].origin);
