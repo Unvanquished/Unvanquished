@@ -28,7 +28,7 @@ override_dh_auto_install:
 
 override_dh_install:
 	dh_install
-	sed -i -e 's/@ARCH@/'${DEB_HOST_ARCH_CPU}'/' debian/unvanquished/usr/games/unvanquished*.sh
+	sed -i -e 's/@ARCH@/'${DEB_HOST_GNU_CPU}'/' debian/unvanquished/usr/games/unvanquished*.sh
 	rename 's/\.*$$//' debian/unvanquished/usr/lib/games/unvanquished/daemon*
 
 override_dh_strip:
