@@ -296,8 +296,6 @@ botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
 	}
 
 	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
-		gentity_t *healTarget = NULL;
-
 		if(!BotChangeTarget(self, healTarget,NULL)) {
 			return TASK_STOPPED;
 		}
