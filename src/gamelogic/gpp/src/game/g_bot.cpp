@@ -351,8 +351,6 @@ gentity_t* BotFindBestEnemy( gentity_t *self ) {
 	float newScore;
 	float bestVisibleEnemyScore = 0;
 	float bestInvisibleEnemyScore = 0;
-	int numNearby = 0;
-	gentity_t *nearbyEntities[MAX_GENTITIES];
 	gentity_t* bestVisibleEnemy = NULL;
 	gentity_t* bestInvisibleEnemy = NULL;
 	gentity_t *target;
@@ -380,11 +378,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self ) {
 
 		if(DistanceSquared(self->s.origin,target->s.origin) > Square(ALIENSENSE_RANGE))
 			continue;
-		nearbyEntities[numNearby++] = target;
-	}
 
-	for(int i=0;i<numNearby;i++) {
-		target = nearbyEntities[i];
 		newScore = BotGetEnemyPriority(self, target);
 
 		if(newScore > bestVisibleEnemyScore && G_Visible(self,target,MASK_SHOT)) {
