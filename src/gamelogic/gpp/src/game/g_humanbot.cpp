@@ -470,7 +470,7 @@ qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, buildable_t *buil
 
 	//check all buildings in the current bot layout and see if we need to build them
 	for(int i=0;i<level.botBuildLayout.numBuildings;i++) {
-		trace_t trace;
+		int block;
 		VectorCopy(level.botBuildLayout.buildings[i].origin,origin);
 		*building = level.botBuildLayout.buildings[i].type;
 
@@ -482,18 +482,16 @@ qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, buildable_t *buil
 		if(!BG_BuildableAllowedInStage(*building,(stage_t) g_humanStage.integer))
 			continue;
 
-		trap_Trace(&trace,origin,NULL,NULL,origin,ENTITYNUM_NONE,MASK_SHOT);
-		if(g_entities[trace.entityNum].s.modelindex != *building || trace.fraction == 1) {
-			//check if we have enough buildpoints in a location to build something
-			if(G_GetBuildPoints(origin,BotGetTeam(self)) < BG_Buildable(*building)->buildPoints) {
-				//not enough build points, check if there is something we can decon to make room
-				if(BotFindBestHDecon(self, *building, origin) == ENTITYNUM_NONE) {
-					//there is nothing we can decon without deconning stuff the bot made
-					continue;
-				} else {
-					return qtrue;
-				}
+		//check if we have enough buildpoints in a location to build something
+		if(G_GetBuildPoints(origin,BotGetTeam(self)) < BG_Buildable(*building)->buildPoints) {
+			//not enough build points, check if there is something we can decon to make room
+			if(BotFindBestHDecon(self, *building, origin) == ENTITYNUM_NONE) {
+				continue;
 			}
+		}
+
+		int num = trap_EntitiesInBox(origin,origin,&block,1);
+		if(g_entities[block].s.modelindex != *building || num == 0 ) {
 			return qtrue;
 		}
 	}
