@@ -444,7 +444,14 @@ set( QCOMMONLIST
 
 if( USE_LLVM )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
-  add_definitions( -DUSE_LLVM )
+  add_definitions( -DUSE_LLVM -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS )
+  find_program(LLVM_CONFIG llvm-config)
+  execute_process(COMMAND ${LLVM_CONFIG} --libfiles
+  			    OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  separate_arguments(LLVM_LIBS)
 endif()
 
 if( USE_PHYSICS )
@@ -1438,6 +1445,11 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${XVID_LIBRARY} )
   endif()
 
+  if( USE_LLVM )
+    include_directories( ${LLVM_INCLUDE_DIR} )
+    target_link_libraries( client ${LLVM_LIBS} )
+  endif()
+
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
@@ -1542,6 +1554,11 @@ if( BUILD_SERVER )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_PHYSICS )
     include_directories( ${TINYXML_INCLUDE_DIRS} )
     target_link_libraries( server ${TINYXML_LIBRARIES} )
+  endif()
+
+  if( USE_LLVM )
+    include_directories( ${LLVM_INCLUDE_DIR} )
+    target_link_libraries( server ${LLVM_LIBS} )
   endif()
 
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )

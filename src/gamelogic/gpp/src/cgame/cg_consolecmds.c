@@ -462,7 +462,7 @@ void CG_CompleteCommand( int argNum )
 
 	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
 	{
-		if ( !Q_stricmp( cmd, commands[ i ].cmd ) )
+		if ( !Q_stricmp( cmd, commands[ i ].cmd ) && commands[ i ].completer )
 		{
 			commands[ i ].completer();
 			return;
