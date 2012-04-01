@@ -4470,7 +4470,7 @@ qboolean G_admin_bot( gentity_t *ent ) {
 	int skill_int;
 	int i;
 	if(trap_Argc() < min_args) {
-		ADMP( "^3bot: ^7usage: bot [^5add|del^7] [^5name^7] (5aliens/humans^7) (^5skill^7)\n" );
+		ADMP( "^3bot: ^7usage: bot [^5add|del^7] [^5name^7] [^5aliens/humans^7] (^5skill^7)\n" );
 		return qfalse;
 	}
 	trap_Argv(1, arg1, sizeof(arg1));
@@ -4483,7 +4483,7 @@ qboolean G_admin_bot( gentity_t *ent ) {
 			return qfalse;
 		}
 		if(trap_Argc() < min_args) {
-			ADMP( "^3bot: ^7usage: bot [^5add|del^7] [^5name^7] (5aliens/humans^7) (^5skill^7)\n" );
+			ADMP( "^3bot: ^7usage: bot [^5add|del^7] [^5name^7] [^5aliens/humans^7] (^5skill^7)\n" );
 			return qfalse;
 		}
 		trap_Argv(3, team, sizeof(team));
@@ -4516,7 +4516,7 @@ qboolean G_admin_bot( gentity_t *ent ) {
 			}
 		} else {
 			ADMP( "Invalid team name\n");
-			ADMP( "^3bot: ^7usage: bot [^5add|del^7] [^5name^7] (5aliens/humans^7) (^5skill^7)\n" );
+			ADMP( "^3bot: ^7usage: bot [^5add|del^7] [^5name^7] [^5aliens/humans^7] (^5skill^7)\n" );
 			return qfalse;
 		}
 	} else if(!Q_stricmp(arg1, "del")) {
@@ -4536,7 +4536,7 @@ qboolean G_admin_bot( gentity_t *ent ) {
 		G_BotDel(clientNum); //delete the bot
 	} else {
 		ADMP("Invalid command\n");
-		ADMP( "^3bot: ^7usage: bot [^5add|del^7] [^5name^7] (5aliens/humans^7) (^5skill^7)\n" );
+		ADMP( "^3bot: ^7usage: bot [^5add|del^7] [^5name^7] [^5aliens/humans^7] (^5skill^7)\n" );
 		return qfalse;
 	}
 	return qtrue;
