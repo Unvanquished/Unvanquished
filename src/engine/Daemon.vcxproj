@@ -1218,10 +1218,7 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug Dedicated|x64'">Assembling...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Dedicated|x64'">$(IntDir)%(FileName).obj;%(Outputs)</Outputs>
     </CustomBuild>
-    <None Include="sys\icon2.ico" />
-    <None Include="sys\openwolf.ico" />
     <None Include="sys\unvanquished.ico" />
-    <None Include="unvanquished.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="sys\winquake.rc" />

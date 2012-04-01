@@ -181,15 +181,14 @@
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="messages.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="servers.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="owmaster.rc" />
+    <None Include="unvanquished.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="openwolf.ico" />
-    <None Include="unvanquished.ico" />
+    <ResourceCompile Include="DaemonMaster.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
