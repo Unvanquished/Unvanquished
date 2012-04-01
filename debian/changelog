@@ -1,6 +1,7 @@
 unvanquished (0.3.0-1) unstable; urgency=low
 
   * Release of alpha 2.
+  * Build-depend on nettle-dev & libspeexdsp-dev.
 
  -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Sun, 01 Apr 2012 19:56:35 +0100
 
