@@ -351,11 +351,13 @@ gentity_t* BotFindBestEnemy( gentity_t *self ) {
 	float newScore;
 	float bestVisibleEnemyScore = 0;
 	float bestInvisibleEnemyScore = 0;
+	int numNearby = 0;
+	gentity_t *nearbyEntities[MAX_GENTITIES];
 	gentity_t* bestVisibleEnemy = NULL;
 	gentity_t* bestInvisibleEnemy = NULL;
-	gentity_t *target = g_entities;
+	gentity_t *target;
 
-	for(int i=0;i<level.num_entities;i++,target++) {
+	for(target=g_entities;target<&g_entities[level.num_entities];target++) {
 		//ignore entities that arnt in use
 		if(!target->inuse)
 			continue;
@@ -376,14 +378,20 @@ gentity_t* BotFindBestEnemy( gentity_t *self ) {
 		if(BotGetTeam(target) == BotGetTeam(self))
 			continue;
 
+		if(DistanceSquared(self->s.origin,target->s.origin) > Square(ALIENSENSE_RANGE))
+			continue;
+		nearbyEntities[numNearby++] = target;
+	}
+
+	for(int i=0;i<numNearby;i++) {
+		target = nearbyEntities[i];
 		newScore = BotGetEnemyPriority(self, target);
-		botTarget_t temp;
-		BotSetTarget(&temp, target, NULL);
-		if(newScore > bestVisibleEnemyScore && BotTargetIsVisible(self, temp, MASK_SHOT)) {
+
+		if(newScore > bestVisibleEnemyScore && G_Visible(self,target,MASK_SHOT)) {
 			//store the new score and the index of the entity
 			bestVisibleEnemyScore = newScore;
 			bestVisibleEnemy = target;
-		} else if(newScore > bestInvisibleEnemyScore && BotGetTeam(self) == TEAM_ALIENS && DistanceSquared(self->s.origin,target->s.origin) <= Square(ALIENSENSE_RANGE)) {
+		} else if(newScore > bestInvisibleEnemyScore && BotGetTeam(self) == TEAM_ALIENS) {
 			bestInvisibleEnemyScore = newScore;
 			bestInvisibleEnemy = target;
 		}
