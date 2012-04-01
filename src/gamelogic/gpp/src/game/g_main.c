@@ -2590,6 +2590,14 @@ void CheckCvars( void )
 		level.suddenDeathBeginTime = g_suddenDeathTime.integer * 60000;
 	}
 
+	// FIXME: workaround for a segfault (NULL deref)
+	// All should be 0 on dlopen(), but isn't necessarily; unknown reason.
+	if ( lastNumZones && !level.buildPointZones )
+	{
+		G_Printf( S_COLOR_YELLOW "Ouch. buildPointZones is NULL and lastNumZones should be 0 but is %d\n", lastNumZones );
+		lastNumZones = 0;
+	}
+
 	// If the number of zones changes, we need a new array
 	if ( g_humanRepeaterMaxZones.integer != lastNumZones )
 	{
