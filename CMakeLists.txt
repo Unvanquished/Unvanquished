@@ -69,6 +69,7 @@ if( USE_VOIP )
 endif()
 option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
 option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
+option( NO_UNTRUSTED_PLUGINS "Don't load native plugins from the user dir" 0 )
 
 # Package info
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
@@ -1080,6 +1081,10 @@ elseif( UNIX )
     set( OS_LIBRARIES ${CMAKE_DL_LIBS} m z rt )
     set( OS_BUILD ${LINUXSOURCESLIST} )
   endif()
+endif()
+
+if( NO_UNTRUSTED_PLUGINS )
+  add_definitions( -DNO_UNTRUSTED_PLUGINS )
 endif()
 
 ###############################

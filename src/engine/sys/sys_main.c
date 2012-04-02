@@ -645,7 +645,11 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 #endif
 
+#ifdef NO_UNTRUSTED_PLUGINS
+	libHandle = NULL;
+#else
 	libHandle = Sys_TryLibraryLoad( homepath, gamedir, fname, fqpath );
+#endif
 
 	if ( !libHandle && libpath && libpath[0] )
 	{

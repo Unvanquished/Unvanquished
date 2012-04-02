@@ -4,6 +4,7 @@ unvanquished (0.3.0-2) unstable; urgency=low
     This means that the pak?.pk3 symlinks can be dropped, but also means
     that the downloaded files have to be moved.
     *** NOTE: downgrades are NOT supported!
+  * Don't load native plugins from the user directory.
 
  -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 02 Apr 2012 21:23:10 +0100
 
