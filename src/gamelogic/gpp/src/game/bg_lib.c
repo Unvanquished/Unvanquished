@@ -95,20 +95,6 @@ static void swapfunc( char *, char *, int, int );
 #define SWAPINIT(a, es)                 swaptype = ((char *)a - (char *)0 ) % sizeof( long ) || \
                                                    es % sizeof( long ) ? 2 : es == sizeof( long ) ? 0 : 1;
 
-static void
-swapfunc( a, b, n, swaptype )
-char *a, *b;
-
-int n, swaptype;
-{
-	if ( swaptype <= 1 )
-	{
-		swapcode( long, a, b, n )
-		else
-		{
-			swapcode( char, a, b, n )
-		}
-
 #define swap(a, b)          \
   if (swaptype == 0) {        \
     long t = *(long *)( a );      \
@@ -119,24 +105,26 @@ int n, swaptype;
 
 #define vecswap(a, b, n) if (( n ) > 0) swapfunc(a, b, n, swaptype)
 
-		static char *
-		med3( a, b, c, cmp )
-		char *a, *b, *c;
+static void swapfunc( char *a, char *b, int n, int swaptype )
+{
+	if ( swaptype <= 1 )
+	{
+		swapcode( long, a, b, n )
+	}
+	else
+	{
+		swapcode( char, a, b, n )
 	}
 }
-cmp_t *cmp;
+
+static char *med3( char *a, char *b, char *c, cmp_t *cmp )
 {
 	return cmp( a, b ) < 0 ?
 	       ( cmp( b, c ) < 0 ? b : ( cmp( a, c ) < 0 ? c : a ) )
 		       : ( cmp( b, c ) > 0 ? b : ( cmp( a, c ) < 0 ? a : c ) );
 }
 
-void
-qsort( a, n, es, cmp )
-void *a;
-
-size_t n, es;
-cmp_t  *cmp;
+void qsort( void *a, size_t n, size_t es, cmp_t *cmp )
 {
 	char *pa, *pb, *pc, *pd, *pl, *pm, *pn;
 	int  d, r, swaptype, swap_cnt;
