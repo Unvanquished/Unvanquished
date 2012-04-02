@@ -38,6 +38,7 @@ Maryland 20850 USA.
 // one file. That's what this is about.
 #ifdef Q3_VM
 #define __Q3_VM_MATH
+#define FLT_EPSILON 1.19209290E-07F
 #endif
 
 #include "q_shared.h"
