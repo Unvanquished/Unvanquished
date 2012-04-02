@@ -263,9 +263,7 @@ static cvar_t *fs_debug;
 static cvar_t *fs_homepath;
 static cvar_t *fs_basepath;
 
-#ifdef __FreeBSD__
 static cvar_t *fs_libpath;
-#endif
 
 #ifdef MACOS_X
 // Also search the .app bundle for .pk3 files
@@ -4172,9 +4170,7 @@ static void FS_Startup( const char *gameName )
 	fs_buildpath = Cvar_Get( "fs_buildpath", "", CVAR_INIT );
 	fs_buildgame = Cvar_Get( "fs_buildgame", BASEGAME, CVAR_INIT );
 	fs_basegame = Cvar_Get( "fs_basegame", "", CVAR_INIT );
-#ifdef __FreeBSD__
 	fs_libpath = Cvar_Get( "fs_libpath", Sys_DefaultLibPath(), CVAR_INIT );
-#endif
 #ifdef MACOS_X
 	fs_apppath = Cvar_Get( "fs_apppath", Sys_DefaultAppPath(), CVAR_INIT );
 #endif

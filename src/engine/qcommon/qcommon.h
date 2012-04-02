@@ -1359,11 +1359,8 @@ char     *Sys_DefaultAppPath( void );
 
 #endif
 
-#ifdef __FreeBSD__
 void Sys_SetDefaultLibPath( const char *path );
 char *Sys_DefaultLibPath( void );
-
-#endif
 
 char         *Sys_DefaultHomePath( void );
 qboolean     Sys_Fork( const char *path, const char *cmdLine );

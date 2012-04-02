@@ -1,3 +1,12 @@
+unvanquished (0.3.0-2) unstable; urgency=low
+
+  * Enable fs_libpath and use it.
+    This means that the pak?.pk3 symlinks can be dropped, but also means
+    that the downloaded files have to be moved.
+    *** NOTE: downgrades are NOT supported!
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 02 Apr 2012 21:23:10 +0100
+
 unvanquished (0.3.0-1) unstable; urgency=low
 
   * Release of alpha 2.
