@@ -49,17 +49,8 @@ Maryland 20850 USA.
  * You may also wish to include "jerror.h".
  */
 
-#ifdef SYSTEM_JPEG
-#	include <jpeglib.h>
-#else
-#	define JPEG_INTERNALS
-#	include "../../libs/jpeg/jpeglib.h"
-#endif
-#ifdef SYSTEM_PNG
-#	include <png.h>
-#else
-#	include "../../libs/libpng/png.h"
-#endif
+#include <jpeglib.h>
+#include <png.h>
 
 static void          LoadBMP( const char *name, byte **pic, int *width, int *height );
 static void          LoadTGA( const char *name, byte **pic, int *width, int *height );
