@@ -952,8 +952,7 @@ if( BUILD_CLIENT )
   # Setup target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST}
-    ${ZLIBLIST} ${DATABASELIST}
-    ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c )
+    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
