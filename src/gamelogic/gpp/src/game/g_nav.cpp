@@ -42,11 +42,12 @@ qboolean G_NavLoad(dtNavMeshCreateParams *navParams, class_t classt) {
 	char mapname[MAX_QPATH];
 	long len;
 	char text[Square(MAX_STRING_CHARS)];
-	char *text_p;
+	char *text_p = NULL;
 	fileHandle_t f;
 	NavMeshHeader_t navHeader;
-
 	char gameName[MAX_STRING_CHARS];
+
+	memset(&navHeader,0,sizeof(NavMeshHeader_t));
 
 	trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
 	trap_Cvar_VariableStringBuffer("fs_game", gameName, sizeof(gameName));
@@ -186,11 +187,14 @@ qboolean G_NavLoad(dtNavMeshCreateParams *navParams, class_t classt) {
 }
 extern "C" void G_NavMeshInit() {
 	Com_Printf("==== Bot Navigation Initialization ==== \n");
-	dtNavMeshCreateParams navParams;
-	unsigned char *navData = NULL;
-	int navDataSize = 0;
-
+	memset(navMeshes,0,sizeof(*navMeshes));
+	memset(navQuerys,0,sizeof(*navQuerys));
 	for(int i=PCL_NONE+1;i<PCL_NUM_CLASSES;i++) {
+		dtNavMeshCreateParams navParams;
+		unsigned char *navData = NULL;
+		int navDataSize = 0;
+		memset(&navParams,0,sizeof(dtNavMeshCreateParams));
+
 		if(!G_NavLoad(&navParams, (class_t)i)) {
 
 			return;
@@ -207,6 +211,7 @@ extern "C" void G_NavMeshInit() {
 		if (!navMeshes[i])
 		{
 			dtFree(navData);
+			navData = NULL;
 			Com_Printf ("Could not allocate Detour Navigation Mesh for class %s\n",BG_Class((class_t)i)->name);
 			return;
 		}
@@ -214,22 +219,35 @@ extern "C" void G_NavMeshInit() {
 		if (dtStatusFailed(navMeshes[i]->init(navData, navDataSize, DT_TILE_FREE_DATA)))
 		{
 			dtFree(navData);
+			navData = NULL;
+			dtFreeNavMesh(navMeshes[i]);
+			navMeshes[i] = NULL;
 			Com_Printf ("Could not init Detour Navigation Mesh for class %s\n", BG_Class((class_t)i)->name);
 			return;
 		}
 
 		navQuerys[i] = dtAllocNavMeshQuery();
 		if(!navQuerys[i]) {
+			dtFree(navData);
+			navData = NULL;
+			dtFreeNavMesh(navMeshes[i]);
+			navMeshes[i] = NULL;
 			Com_Printf("Could not allocate Detour Navigation Mesh Query for class %s\n",BG_Class((class_t)i)->name);
 			return;
 		}
 		if (dtStatusFailed(navQuerys[i]->init(navMeshes[i], 65536)))
-		{
+		{	
+			dtFreeNavMeshQuery(navQuerys[i]);
+			navQuerys[i] = NULL;
+			dtFree(navData);
+			navData = NULL;
+			dtFreeNavMesh(navMeshes[i]);
+			navMeshes[i] = NULL;
 			Com_Printf("Could not init Detour Navigation Mesh Query for class %s",BG_Class((class_t)i)->name);
 			return;
 		}
 		navFilters[i].setIncludeFlags(POLYFLAGS_WALK);
-		navFilters[i].setExcludeFlags((unsigned short) 0x0);
+		navFilters[i].setExcludeFlags(0);
 	}
 	for(int i=0;i<MAX_CLIENTS;i++) {
 		if(!pathCorridor[i].init(MAX_PATH_POLYS)) {
