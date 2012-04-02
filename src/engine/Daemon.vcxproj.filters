@@ -993,9 +993,6 @@
     <None Include="..\..\etmain\scripts\z_light.shader">
       <Filter>main\scripts</Filter>
     </None>
-    <None Include="sys\icon2.ico" />
-    <None Include="sys\openwolf.ico" />
-    <None Include="unvanquished.ico" />
     <None Include="sys\unvanquished.ico" />
   </ItemGroup>
   <ItemGroup>

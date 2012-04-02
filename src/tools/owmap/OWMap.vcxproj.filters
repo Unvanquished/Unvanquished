@@ -488,10 +488,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="owmap.rc" />
+    <None Include="unvanquished.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="openwolf.ico" />
-    <None Include="unvanquished.ico" />
+    <ResourceCompile Include="DaemonMap.rc" />
   </ItemGroup>
 </Project>
