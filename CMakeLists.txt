@@ -41,19 +41,8 @@ option( USE_OPENAL           "Use OpenAL"                                  1 )
 if( USE_OPENAL )
   option( USE_OPENAL_DLOPEN  "Use dlopen to load OpenAL"                   1 )
 endif()
-option( USE_CURL             "Use curl"                                    1 )
-if( USE_CURL )
-  option( USE_CURL_DLOPEN    "Use dlopen to load curl"                     1 )
-endif()
 option( USE_LLVM             "Use LLVM"                                    0 )
-option( USE_SYSTEM_HEADERS   "Use local headers"                           1 )
-#if( WIN32 )
-#  option( USE_SYSTEM_HEADERS "Use local headers"                           0 )
-#else()
-#  option( USE_SYSTEM_HEADERS "Use local headers"                           1 )
-#endif()
 option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 )
-option( USE_INTERNAL_ZLIB    "Use internal zlib"                           0 )
 option( USE_CURSES           "Use the curses console"                      1 )
 option( USE_CODEC_VORBIS     "Compile with support for Vorbis"             1 )
 if( USE_CODEC_VORBIS )
@@ -64,11 +53,7 @@ option( USE_PHYSICS          "Compile with Newton Physics"                 0 )
 option( USE_WEBP             "Compile with WebP loader"                    1 )
 option( USE_MYSQL            "Compile with MYSQL support"                  0 )
 option( USE_VOIP             "Compile with VOIP support"                   1 )
-if( USE_VOIP )
-  option( USE_INTERNAL_SPEEX "Use internal speex"                          0 )
-endif()
 option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
-option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
 
 # Package info
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
@@ -148,171 +133,6 @@ try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
 ######################
 # Define Build Files #
 ######################
-
-set( JPEGLIST
-  ${MOUNT_DIR}/libs/jpeg/jcapimin.c
-  ${MOUNT_DIR}/libs/jpeg/jchuff.c
-  ${MOUNT_DIR}/libs/jpeg/jcinit.c
-  ${MOUNT_DIR}/libs/jpeg/jccoefct.c
-  ${MOUNT_DIR}/libs/jpeg/jccolor.c
-  ${MOUNT_DIR}/libs/jpeg/jfdctflt.c
-  ${MOUNT_DIR}/libs/jpeg/jcdctmgr.c
-  ${MOUNT_DIR}/libs/jpeg/jcmainct.c
-  ${MOUNT_DIR}/libs/jpeg/jcmarker.c
-  ${MOUNT_DIR}/libs/jpeg/jcmaster.c
-  ${MOUNT_DIR}/libs/jpeg/jcomapi.c
-  ${MOUNT_DIR}/libs/jpeg/jcparam.c
-  ${MOUNT_DIR}/libs/jpeg/jcprepct.c
-  ${MOUNT_DIR}/libs/jpeg/jcsample.c
-  ${MOUNT_DIR}/libs/jpeg/jdapimin.c
-  ${MOUNT_DIR}/libs/jpeg/jdapistd.c
-  ${MOUNT_DIR}/libs/jpeg/jdatasrc.c
-  ${MOUNT_DIR}/libs/jpeg/jdcoefct.c
-  ${MOUNT_DIR}/libs/jpeg/jdcolor.c
-  ${MOUNT_DIR}/libs/jpeg/jddctmgr.c
-  ${MOUNT_DIR}/libs/jpeg/jdhuff.c
-  ${MOUNT_DIR}/libs/jpeg/jdinput.c
-  ${MOUNT_DIR}/libs/jpeg/jdmainct.c
-  ${MOUNT_DIR}/libs/jpeg/jdmarker.c
-  ${MOUNT_DIR}/libs/jpeg/jdmaster.c
-  ${MOUNT_DIR}/libs/jpeg/jdpostct.c
-  ${MOUNT_DIR}/libs/jpeg/jdsample.c
-  ${MOUNT_DIR}/libs/jpeg/jdtrans.c
-  ${MOUNT_DIR}/libs/jpeg/jerror.c
-  ${MOUNT_DIR}/libs/jpeg/jidctflt.c
-  ${MOUNT_DIR}/libs/jpeg/jmemmgr.c
-  ${MOUNT_DIR}/libs/jpeg/jmemnobs.c
-  ${MOUNT_DIR}/libs/jpeg/jutils.c
-)
-
-set( PNGLIST
-  ${MOUNT_DIR}/libs/libpng/png.c
-  ${MOUNT_DIR}/libs/libpng/pngset.c
-  ${MOUNT_DIR}/libs/libpng/pngget.c
-  ${MOUNT_DIR}/libs/libpng/pngrutil.c
-  ${MOUNT_DIR}/libs/libpng/pngtrans.c
-  ${MOUNT_DIR}/libs/libpng/pngwutil.c
-  ${MOUNT_DIR}/libs/libpng/pngread.c
-  ${MOUNT_DIR}/libs/libpng/pngrio.c
-  ${MOUNT_DIR}/libs/libpng/pngwio.c
-  ${MOUNT_DIR}/libs/libpng/pngwrite.c
-  ${MOUNT_DIR}/libs/libpng/pngrtran.c
-  ${MOUNT_DIR}/libs/libpng/pngwtran.c
-  ${MOUNT_DIR}/libs/libpng/pngmem.c
-  ${MOUNT_DIR}/libs/libpng/pngerror.c
-  ${MOUNT_DIR}/libs/libpng/pngpread.c
-)
-
-if( USE_INTERNAL_ZLIB )
-  set( ZLIBLIST
-    ${MOUNT_DIR}/libs/zlib/adler32.c
-    ${MOUNT_DIR}/libs/zlib/compress.c
-    ${MOUNT_DIR}/libs/zlib/crc32.c
-    ${MOUNT_DIR}/libs/zlib/gzio.c
-    ${MOUNT_DIR}/libs/zlib/uncompr.c
-    ${MOUNT_DIR}/libs/zlib/deflate.c
-    ${MOUNT_DIR}/libs/zlib/trees.c
-    ${MOUNT_DIR}/libs/zlib/zutil.c
-    ${MOUNT_DIR}/libs/zlib/inflate.c
-    ${MOUNT_DIR}/libs/zlib/infback.c
-    ${MOUNT_DIR}/libs/zlib/inftrees.c
-    ${MOUNT_DIR}/libs/zlib/inffast.c
-  )
-endif()
-
-set( OGGLIST
-  ${MOUNT_DIR}/libs/ogg/src/bitwise.c
-  ${MOUNT_DIR}/libs/ogg/src/framing.c
-)
-
-set( VORBISLIST
-  ${MOUNT_DIR}/libs/vorbis/lib/analysis.c
-  ${MOUNT_DIR}/libs/vorbis/lib/bitrate.c
-  ${MOUNT_DIR}/libs/vorbis/lib/codebook.c
-  ${MOUNT_DIR}/libs/vorbis/lib/floor0.c
-  ${MOUNT_DIR}/libs/vorbis/lib/info.c
-  ${MOUNT_DIR}/libs/vorbis/lib/lpc.c
-  ${MOUNT_DIR}/libs/vorbis/lib/mapping0.c
-  ${MOUNT_DIR}/libs/vorbis/lib/psy.c
-  ${MOUNT_DIR}/libs/vorbis/lib/registry.c
-  ${MOUNT_DIR}/libs/vorbis/lib/sharedbook.c
-  ${MOUNT_DIR}/libs/vorbis/lib/synthesis.c
-  ${MOUNT_DIR}/libs/vorbis/lib/vorbisenc.c
-  ${MOUNT_DIR}/libs/vorbis/lib/window.c
-  #${MOUNT_DIR}/libs/vorbis/lib/barkmel.c
-  ${MOUNT_DIR}/libs/vorbis/lib/block.c
-  ${MOUNT_DIR}/libs/vorbis/lib/envelope.c
-  ${MOUNT_DIR}/libs/vorbis/lib/floor1.c
-  ${MOUNT_DIR}/libs/vorbis/lib/lookup.c
-  ${MOUNT_DIR}/libs/vorbis/lib/lsp.c
-  ${MOUNT_DIR}/libs/vorbis/lib/mdct.c
-  #${MOUNT_DIR}/libs/vorbis/lib/psytune.c
-  ${MOUNT_DIR}/libs/vorbis/lib/res0.c
-  ${MOUNT_DIR}/libs/vorbis/lib/smallft.c
-  #${MOUNT_DIR}/libs/vorbis/lib/tone.c
-  ${MOUNT_DIR}/libs/vorbis/lib/vorbisfile.c
-)
-
-set( THEORALIST
-  ${MOUNT_DIR}/libs/theora/lib/dec/fragment.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/decinfo.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/internal.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/decode.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/state.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/bitpack.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/quant.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/x86/mmxstate.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/x86/x86state.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/x86/mmxidct.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/x86/mmxfrag.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/huffdec.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/thinfo.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/x86_vc/mmxstate.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/x86_vc/x86state.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/x86_vc/mmxidct.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/x86_vc/mmxfrag.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/x86_vc/mmxloopfilter.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/idct.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/decapiwrapper.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/apiwrapper.c
-  ${MOUNT_DIR}/libs/theora/lib/dec/dequant.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/pb.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/mcomp.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_64/dsp_mmxext.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_64/idct_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_64/dct_decode_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_64/recon_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_64/fdct_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_64/dsp_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/frinit.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/reconstruct.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/dct.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/encoder_idct.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/encoder_toplevel.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/encode.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/blockmap.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/dsp.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/encoder_huffman.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/scan.c
-  #${MOUNT_DIR}/libs/theora/lib/enc/x86_32_vs/recon_mmx.c # Non-portable inline asm
-  #${MOUNT_DIR}/libs/theora/lib/enc/x86_32_vs/fdct_mmx.c
-  #${MOUNT_DIR}/libs/theora/lib/enc/x86_32_vs/dsp_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/pp.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_32/dsp_mmxext.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_32/idct_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_32/dct_decode_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_32/recon_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_32/fdct_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/x86_32/dsp_mmx.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/misc_common.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/encapiwrapper.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/encoder_quant.c
-  #${MOUNT_DIR}/libs/theora/lib/enc/encoder_disabled.c # Just stubs
-  ${MOUNT_DIR}/libs/theora/lib/enc/frarray.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/dct_encode.c
-  ${MOUNT_DIR}/libs/theora/lib/enc/dct_decode.c
-  ${MOUNT_DIR}/libs/theora/lib/cpu.c
-)
 
 set( SHAREDLIST
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
@@ -534,29 +354,6 @@ endif()
 set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_input.c
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
-)
-
-set( LINUXSOURCESLIST
-  ${MOUNT_DIR}/libs/glew/src/glew.c
-)
-
-set( MACSOURCESLIST
-  ${MOUNT_DIR}/engine/mac/mac_main.cpp
-  ${MOUNT_DIR}/engine/mac/mac_input.cpp
-  ${MOUNT_DIR}/engine/mac/mac_glimp.cpp
-  ${MOUNT_DIR}/engine/mac/mac_files.cpp
-  ${MOUNT_DIR}/engine/mac/mac_net.cpp
-  ${MOUNT_DIR}/engine/mac/mac_console.c
-  ${MOUNT_DIR}/engine/mac/mac_snddma.c
-  ${MOUNT_DIR}/engine/mac/CarbonMouse.cpp
-  ${MOUNT_DIR}/engine/mac/mac_event.cpp
-  ${MOUNT_DIR}/engine/mac/MacPrefs.cpp
-  ${MOUNT_DIR}/engine/mac/PickMonitor/pickmonitor.cpp
-  ${MOUNT_DIR}/engine/mac/PickMonitor/userpane.cpp
-  ${MOUNT_DIR}/engine/mac/mac_qgl.c
-  ${MOUNT_DIR}/engine/mac/mac_specific.cpp
-  ${MOUNT_DIR}/engine/mac/AGLUtils.cpp
-  ${MOUNT_DIR}/engine/mac/CDrawSprocket.cpp
 )
 
 set( QAGAMELIST
@@ -844,73 +641,6 @@ set( UIGPP
   ${GPP_DIR}/src/ui/ui_api.c
 )
 
-if( USE_VOIP )
-  if( USE_INTERNAL_SPEEX )
-    set( SPEEXLIST
-      ${MOUNT_DIR}/libs/libspeex/libspeex/bits.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/buffer.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/cb_search.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_16_table.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_10_32_table.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_20_32_table.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_256_table.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_5_64_table.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/exc_8_128_table.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/fftwrap.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/filterbank.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/filters.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/gain_table_lbr.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_10_32_table.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/hexc_table.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/high_lsp_tables.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/jitter.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fft.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/kiss_fftr.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/lpc.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/lsp.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/lsp_tables_nb.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/ltp.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/mdf.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/modes.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/modes_wb.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/nb_celp.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/preprocess.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/quant_lsp.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/resample.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/sb_celp.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/smallft.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/speex.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/speex_callbacks.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/speex_header.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/stereo.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/vbr.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/vq.c
-      ${MOUNT_DIR}/libs/libspeex/libspeex/window.c
-    )
-  endif()
-endif()
-
-if( USE_INTERNAL_CRYPTO )
-  set( CRYPTOLIST
-    ${MOUNT_DIR}/libs/nettle/nettle/bignum.c
-    ${MOUNT_DIR}/libs/nettle/nettle/bignum-random.c
-    ${MOUNT_DIR}/libs/nettle/nettle/buffer-init.c
-    ${MOUNT_DIR}/libs/nettle/nettle/nettle-buffer.c
-    ${MOUNT_DIR}/libs/nettle/nettle/nettle-internal.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa2sexp.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa-decrypt.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa-encrypt.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa-keygen.c
-    ${MOUNT_DIR}/libs/nettle/nettle/rsa-sign.c
-    ${MOUNT_DIR}/libs/nettle/nettle/sexp2bignum.c
-    ${MOUNT_DIR}/libs/nettle/nettle/sexp2rsa.c
-    ${MOUNT_DIR}/libs/nettle/nettle/sexp.c
-    ${MOUNT_DIR}/libs/nettle/nettle/sexp-format.c
-  )
-endif()
-
 set( OWMAPLIST
   ${MOUNT_DIR}/tools/common/cmdlib.c
   ${MOUNT_DIR}/tools/common/imagelib.c
@@ -947,65 +677,6 @@ set( OWMAPLIST
   ${MOUNT_DIR}/libs/picomodel/lwo/surface.c
   ${MOUNT_DIR}/libs/picomodel/lwo/vecmath.c
   ${MOUNT_DIR}/libs/picomodel/lwo/vmap.c
-  #${MOUNT_DIR}/libs/jpeg/jaricom.c
-  #${MOUNT_DIR}/libs/jpeg/jcapimin.c
-  #${MOUNT_DIR}/libs/jpeg/jcapistd.c
-  #${MOUNT_DIR}/libs/jpeg/jcarith.c
-  #${MOUNT_DIR}/libs/jpeg/jccoefct.c
-  #${MOUNT_DIR}/libs/jpeg/jccolor.c
-  #${MOUNT_DIR}/libs/jpeg/jcdctmgr.c
-  #${MOUNT_DIR}/libs/jpeg/jchuff.c
-  #${MOUNT_DIR}/libs/jpeg/jcinit.c
-  #${MOUNT_DIR}/libs/jpeg/jcmainct.c
-  #${MOUNT_DIR}/libs/jpeg/jcmarker.c
-  #${MOUNT_DIR}/libs/jpeg/jcmaster.c
-  #${MOUNT_DIR}/libs/jpeg/jcomapi.c
-  #${MOUNT_DIR}/libs/jpeg/jcparam.c
-  #${MOUNT_DIR}/libs/jpeg/jcprepct.c
-  #${MOUNT_DIR}/libs/jpeg/jcsample.c
-  #${MOUNT_DIR}/libs/jpeg/jctrans.c
-  #${MOUNT_DIR}/libs/jpeg/jdapimin.c
-  #${MOUNT_DIR}/libs/jpeg/jdapistd.c
-  #${MOUNT_DIR}/libs/jpeg/jdarith.c
-  #${MOUNT_DIR}/libs/jpeg/jdatadst.c
-  #${MOUNT_DIR}/libs/jpeg/jdatasrc.c
-  #${MOUNT_DIR}/libs/jpeg/jdcoefct.c
-  #${MOUNT_DIR}/libs/jpeg/jdcolor.c
-  #${MOUNT_DIR}/libs/jpeg/jddctmgr.c
-  #${MOUNT_DIR}/libs/jpeg/jdhuff.c
-  #${MOUNT_DIR}/libs/jpeg/jdinput.c
-  #${MOUNT_DIR}/libs/jpeg/jdmainct.c
-  #${MOUNT_DIR}/libs/jpeg/jdmarker.c
-  #${MOUNT_DIR}/libs/jpeg/jdmaster.c
-  #${MOUNT_DIR}/libs/jpeg/jdmerge.c
-  #${MOUNT_DIR}/libs/jpeg/jdpostct.c
-  #${MOUNT_DIR}/libs/jpeg/jdsample.c
-  #${MOUNT_DIR}/libs/jpeg/jdtrans.c
-  #${MOUNT_DIR}/libs/jpeg/jerror.c
-  #${MOUNT_DIR}/libs/jpeg/jfdctflt.c
-  #${MOUNT_DIR}/libs/jpeg/jfdctfst.c
-  #${MOUNT_DIR}/libs/jpeg/jfdctint.c
-  #${MOUNT_DIR}/libs/jpeg/jidctflt.c
-  #${MOUNT_DIR}/libs/jpeg/jidctfst.c
-  #${MOUNT_DIR}/libs/jpeg/jidctint.c
-  #${MOUNT_DIR}/libs/jpeg/jmemmgr.c
-  #${MOUNT_DIR}/libs/jpeg/jmemnobs.c
-  #${MOUNT_DIR}/libs/jpeg/jquant1.c
-  #${MOUNT_DIR}/libs/jpeg/jquant2.c
-  #${MOUNT_DIR}/libs/jpeg/jutils.c
-  ${MOUNT_DIR}/libs/zlib/adler32.c
-  ${MOUNT_DIR}/libs/zlib/compress.c
-  ${MOUNT_DIR}/libs/zlib/crc32.c
-  ${MOUNT_DIR}/libs/zlib/deflate.c
-  ${MOUNT_DIR}/libs/zlib/gzio.c
-  ${MOUNT_DIR}/libs/zlib/infback.c
-  ${MOUNT_DIR}/libs/zlib/inffast.c
-  ${MOUNT_DIR}/libs/zlib/inflate.c
-  ${MOUNT_DIR}/libs/zlib/inftrees.c
-  ${MOUNT_DIR}/libs/zlib/ioapi.c
-  ${MOUNT_DIR}/libs/zlib/trees.c
-  ${MOUNT_DIR}/libs/zlib/uncompr.c
-  ${MOUNT_DIR}/libs/zlib/zutil.c
   ${MOUNT_DIR}/tools/owmap/brush.c
   ${MOUNT_DIR}/tools/owmap/fog.c
   ${MOUNT_DIR}/tools/owmap/brush_primit.c
@@ -1045,6 +716,19 @@ set( OWMAPLIST
   ${MOUNT_DIR}/tools/owmap/tree.c
   ${MOUNT_DIR}/tools/owmap/vis.c
   ${MOUNT_DIR}/tools/owmap/visflow.c
+  ${MOUNT_DIR}/libs/zlib/adler32.c
+  ${MOUNT_DIR}/libs/zlib/compress.c
+  ${MOUNT_DIR}/libs/zlib/crc32.c
+  ${MOUNT_DIR}/libs/zlib/deflate.c
+  ${MOUNT_DIR}/libs/zlib/gzio.c
+  ${MOUNT_DIR}/libs/zlib/infback.c
+  ${MOUNT_DIR}/libs/zlib/inffast.c
+  ${MOUNT_DIR}/libs/zlib/inflate.c
+  ${MOUNT_DIR}/libs/zlib/inftrees.c
+  ${MOUNT_DIR}/libs/zlib/ioapi.c
+  ${MOUNT_DIR}/libs/zlib/trees.c
+  ${MOUNT_DIR}/libs/zlib/uncompr.c
+  ${MOUNT_DIR}/libs/zlib/zutil.c
 )
 
 ####################
@@ -1066,19 +750,15 @@ if( WIN32 )
   #set( OS_LIBRARIES m winmm wsock32 gdi32 ole32 ws2_32 psapi Iphlpapi advapi32 shell32 user32 )
   set( OS_LIBRARIES m winmm ws2_32 psapi libz )
   set( EXTRALIBS dinput dsound )
-  set( OS_BUILD )
 elseif( UNIX )
   if( CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" )
     set( OS_LIBRARIES m z )
-    set( OS_BUILD )
   elseif( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
     set( OS_LIBRARIES dl m z )
     # FIXME This looks wrong.
     set( OS_LIBRARIES ${OS_LIBRARIES} "-framework AGL -framework OpenGL -framework Carbon -framework IOKit" )
-    set( OS_BUILD ${LINUXSOURCESLIST} )
   else()
     set( OS_LIBRARIES ${CMAKE_DL_LIBS} m z rt )
-    set( OS_BUILD ${LINUXSOURCESLIST} )
   endif()
 endif()
 
@@ -1221,39 +901,14 @@ endif()
 
 if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
   find_package( OpenGL REQUIRED )
-  if( USE_SYSTEM_HEADERS )
-    find_package( SDL REQUIRED )
-    find_package( JPEG REQUIRED )
-    find_package( PNG REQUIRED )
-    find_package( Freetype REQUIRED )
-    find_package( GLEW REQUIRED )
-    if( PNG_PNG_INCLUDE_DIR )
-      set( PNG_INCLUDE_DIR ${PNG_PNG_INCLUDE_DIR} )
-    endif()
-  else()
-    set( PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
-    set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
-    set( JPEG_INCLUDE_DIR ${MOUNT_DIR}/libs/jpeg )
-    set( FREETYPE_INCLUDE_DIRS ${MOUNT_DIR}/libs/freetype/include/freetype2 )
-    set( GLEW_INCLUDE_DIR ${MOUNT_DIR}/libs/glew/include )
-    mark_as_advanced( PNG_LIBRARY )
-    set( PNG_LIBRARY CACHE FILEPATH "Location of the PNG library" )
-    mark_as_advanced( FREETYPE_LIBRARY )
-    set( FREETYPE_LIBRARY CACHE FILEPATH "Location of the Freetype library" )
-    mark_as_advanced( FORCE GLEW_LIBRARY )
-    mark_as_advanced( SDL_LIBRARY )
-    set( SDL_LIBRARY CACHE FILEPATH "Location of the SDL Library" )
-  endif()
+  find_package( SDL REQUIRED )
+  find_package( JPEG REQUIRED )
+  find_package( PNG REQUIRED )
+  find_package( Freetype REQUIRED )
+  find_package( GLEW REQUIRED )
 
   if( BUILD_NEW_RENDERER )
-    set( EXTRA_RENDERERGL_FILES )
-    if( NOT JPEG_FOUND )
-      set( EXTRA_RENDERERGL_FILES ${EXTRA_RENDERERGL_FILES} ${MOUNT_DIR}/libs/jpeg/jdatasrc.c )
-    endif()
-    if( NOT PNG_FOUND )
-      set( EXTRA_RENDERERGL_FILES ${EXTRA_RENDERERGL_FILES}  ${MOUNT_DIR}/libs/libpng/pngerror.c )
-    endif()
-    add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${EXTRA_RENDERERGL_FILES} )
+    add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c )
     include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
     set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
     target_link_libraries( rendererGL ${OS_LIBRARIES} ${PNG_LIBRARIES} ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
@@ -1267,12 +922,6 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
       set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
       include_directories( ${WEBP_INCLUDE_DIRS} )
       target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
-    endif()
-    if( JPEG_FOUND )
-      add_definitions( -DSYSTEM_JPEG )
-    endif()
-    if( PNG_FOUND )
-      add_definitions( -DSYSTEM_PNG )
     endif()
   endif()
 
@@ -1292,12 +941,6 @@ if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
       include_directories( ${WEBP_INCLUDE_DIR} )
       target_link_libraries( renderer ${WEBP_LIBRARY} )
     endif()
-    if( JPEG_FOUND )
-      add_definitions( -DSYSTEM_JPEG )
-    endif()
-    if( PNG_FOUND )
-      add_definitions( -DSYSTEM_PNG )
-    endif()
   endif()
 endif()
 
@@ -1306,84 +949,56 @@ endif()
 ################
 
 if( BUILD_CLIENT )
-  # Create target client
+  # Setup target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST}
-    ${ZLIBLIST} ${DATABASELIST}
-    ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${CRYPTOLIST} )
-  # This section finds and provides dependencies to target client
+    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c )
+  add_dependencies( client rendererGL )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
+  target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
+  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
+  install( TARGETS client
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
+
+  # This section finds and provides REQUIRED dependencies to target client
   find_package( OpenGL REQUIRED )
-  include_directories( ${OPENGL_INCLUDE_DIR} )
-  target_link_libraries( client ${OPENGL_LIBRARIES} )
+  find_package( JPEG )
+  find_package( PNG )
+  find_package( SDL REQUIRED )
+  find_package( Freetype REQUIRED )
+  find_package( GLEW REQUIRED )
+  find_package( GMP REQUIRED )
+  find_package( ZLIB REQUIRED )
+  find_package( Nettle REQUIRED )
+  find_package( CURL REQUIRED )
 
-  if( USE_SYSTEM_HEADERS )
-    find_package( JPEG )
-    find_package( PNG )
-    find_package( SDL REQUIRED )
-    find_package( Freetype REQUIRED )
-    find_package( GLEW REQUIRED )
-    # The included gmp.h should be used instead of the local header.
-    find_package( GMP REQUIRED )
-
-    if( JPEG_FOUND )
-      include_directories( ${JPEG_INCLUDE_DIR} )
-      target_link_libraries( client ${JPEG_LIBRARIES} )
-      add_definitions( -DSYSTEM_JPEG )
-    endif()
-
-    if( PNG_FOUND )
-      if( PNG_PNG_INCLUDE_DIR )
-        set( PNG_INCLUDE_DIR ${PNG_PNG_INCLUDE_DIR} )
-      endif()
-      include_directories( ${PNG_INCLUDE_DIR} )
-      target_link_libraries( client ${PNG_LIBRARIES} )
-      add_definitions( -DSYSTEM_PNG )
-    endif()
-
-    include_directories( ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} )
-    target_link_libraries( client ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} )
-  else()
-    set( PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
-    set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
-    set( JPEG_INCLUDE_DIR ${MOUNT_DIR}/libs/jpeg )
-    set( FREETYPE_INCLUDE_DIRS ${MOUNT_DIR}/libs/freetype/include/freetype2 )
-    set( GLEW_INCLUDE_DIR ${MOUNT_DIR}/libs/glew/include )
-    include_directories( ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${MOUNT_DIR}/libs/gmp/include )
+  if( JPEG_FOUND )
+    include_directories( ${JPEG_INCLUDE_DIR} )
+    target_link_libraries( client ${JPEG_LIBRARIES} )
   endif()
+
+  if( PNG_FOUND )
+    include_directories( ${PNG_INCLUDE_DIR} )
+    target_link_libraries( client ${PNG_LIBRARIES} )
+  endif()
+
+    include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${NETTLE_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
+    target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${NETTLE_LIBRARIES} ${CURL_LIBRARIES} )
 
   if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
     link_directories( /opt/local/lib )
   endif()
 
-  if( NOT USE_INTERNAL_ZLIB )
-    find_package( ZLIB REQUIRED ) # This is used to check that ZLIB is available
-    include_directories( ${ZLIB_INCLUDE_DIRS} )
-    target_link_libraries( client ${ZLIB_LIBRARIES} )
-  endif()
-
-  if( USE_INTERNAL_CRYPTO )
-    include_directories( ${MOUNT_DIR}/libs/nettle )
-  else()
-    find_package( Nettle REQUIRED )
-    include_directories( ${NETTLE_INCLUDE_DIRS} )
-    target_link_libraries( client ${NETTLE_LIBRARIES} )
-  endif()
-
+  # This section finds and provides OPTIONAL dependencies to target client
   if( USE_OPENAL )
     find_package( OpenAL REQUIRED )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL )
     if( USE_OPENAL_DLOPEN )
       set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL_DLOPEN )
-    endif()
-  endif()
-
-  if( USE_CURL )
-    find_package( CURL REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_CURL )
-    include_directories( ${CURL_INCLUDE_DIRS} )
-    target_link_libraries( client ${CURL_LIBRARIES} )
-    if( USE_CURL_DLOPEN )
-      set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_CURL_DLOPEN )
     endif()
   endif()
 
@@ -1397,13 +1012,9 @@ if( BUILD_CLIENT )
 
   if( USE_VOIP )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP FLOATING_POINT )
-    if( USE_INTERNAL_SPEEX )
-      include_directories( ${MOUNT_DIR}/libs/libspeex/include ${MOUNT_DIR}/libs/libspeex/libspeex )
-    else()
-      find_package( Speex REQUIRED )
-      include_directories( ${SPEEX_INCLUDE_DIRS} )
-      target_link_libraries( client ${SPEEX_LIBRARIES} )
-    endif()
+    find_package( Speex REQUIRED )
+    include_directories( ${SPEEX_INCLUDE_DIRS} )
+    target_link_libraries( client ${SPEEX_LIBRARIES} )
   endif()
 
   if( USE_CODEC_VORBIS )
@@ -1455,17 +1066,6 @@ if( BUILD_CLIENT )
     include_directories( ${LLVM_INCLUDE_DIR} )
     target_link_libraries( client ${LLVM_LIBS} )
   endif()
-
-  add_dependencies( client rendererGL )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
-  target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
-  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
-  install( TARGETS client
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
 endif()
 
 ################
@@ -1475,9 +1075,7 @@ endif()
 if( USE_OPENAL )
   find_package( OpenAL REQUIRED )
   add_library( al SHARED ${ALLIST} )
-  if( USE_SYSTEM_HEADERS )
-    include_directories( ${OPENAL_INCLUDE_DIRS} )
-  endif()
+  include_directories( ${OPENAL_INCLUDE_DIRS} )
   target_link_libraries( al ${OPENAL_LIBRARY} )
   set_property( TARGET al PROPERTY COMPILE_DEFINITIONS )
   set_target_properties( al PROPERTIES OUTPUT_NAME "snd_openal" PREFIX "" )
@@ -1495,52 +1093,34 @@ endif()
 ################
 
 if( BUILD_SERVER )
-  # Create the target Server
+  # Setup the target Server
   add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
-    ${QCOMMONLIST} ${SHAREDLIST} ${ZLIBLIST}
-    ${DATABASELIST} ${CRYPTOLIST} ${MOUNT_DIR}/engine/null/null_client.c
+    ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST}
+    ${MOUNT_DIR}/engine/null/null_client.c
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
-  # The following section finds the required dependencies and makes them available to the target
-  if( USE_SYSTEM_HEADERS )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
+  target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
+  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET USE_CRYPTO )
+  set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
+  install( TARGETS server
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
+  # The following section finds the REQUIRED dependencies and makes them available to the target
     find_package( SDL REQUIRED )
-    # The included gmp.h should be used instead of the local header.
     find_package( GMP REQUIRED )
-    include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} )
-    target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} )
-  else()
-    set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
-    include_directories( ${SDL_INCLUDE_DIR} ${MOUNT_DIR}/libs/gmp/include )
-  endif()
-
+    find_package( ZLIB REQUIRED )
+    find_package( Nettle REQUIRED )
+    find_package( CURL REQUIRED )
+    include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${NETTLE_INCLUDE_DIRS}  ${CURL_INCLUDE_DIRS} )
+    target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${NETTLE_LIBRARIES} ${CURL_LIBRARIES} )
+  # The following section finds the OPTIONAL dependencies and makes them available to the target
   if( USE_MYSQL )
     find_package( MySQL REQUIRED )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ET_MYSQL )
     target_link_libraries( server ${MYSQL_LIBRARIES} )
-  endif()
-
-  if( NOT USE_INTERNAL_ZLIB )
-    find_package( ZLIB REQUIRED ) # Only used to check if ZLIB exists
-    include_directories( ${ZLIB_INCLUDE_DIRS} )
-    target_link_libraries( server ${ZLIB_LIBRARIES} )
-  endif()
-
-  if( USE_INTERNAL_CRYPTO )
-    include_directories( ${MOUNT_DIR}/libs/nettle )
-  else()
-    find_package( Nettle REQUIRED )
-    include_directories( ${NETTLE_INCLUDE_DIRS} )
-    target_link_libraries( server ${NETTLE_LIBRARIES} )
-  endif()
-
-  if( USE_CURL )
-    find_package( CURL REQUIRED )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_CURL )
-    include_directories( ${CURL_INCLUDE_DIRS} )
-    target_link_libraries( server ${CURL_LIBRARIES} )
-    if( USE_CURL_DLOPEN )
-      set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_CURL_DLOPEN )
-    endif()
   endif()
 
   if( USE_CURSES )
@@ -1566,67 +1146,38 @@ if( BUILD_SERVER )
     include_directories( ${LLVM_INCLUDE_DIR} )
     target_link_libraries( server ${LLVM_LIBS} )
   endif()
-
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
-  target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET USE_CRYPTO )
-  set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
-  install( TARGETS server
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
 endif()
 
 ################
 # Build OWMap  #
 ################
 if( BUILD_OWMAP )
-  # Create OWMap target
+  # Setup OWMap target
   add_executable( owmap ${OWMAPLIST} )
-  # This section finds and provides dependencies to OWMap target
-  find_package( OpenGL REQUIRED )
-  include_directories( ${OPENGL_INCLUDE_DIR} )
-  target_link_libraries( owmap ${OPENGL_LIBRARIES} )
-
-  if( USE_SYSTEM_HEADERS )
-    find_package( SDL REQUIRED )
-    find_package( JPEG REQUIRED )
-    find_package( PNG REQUIRED )
-    if( PNG_PNG_INCLUDE_DIR )
-      set( PNG_INCLUDE_DIR ${PNG_PNG_INCLUDE_DIR} )
-    endif()
-    target_link_libraries( owmap ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} )
-    if( JPEG_FOUND )
-      add_definitions( -DSYSTEM_JPEG )
-    endif()
-    if( PNG_FOUND )
-      add_definitions( -DSYSTEM_PNG )
-    endif()
-  else()
-    set( SDL_INCLUDE_DIR ${MOUNT_DIR}/libs/libsdl/include )
-    set( JPEG_INCLUDE_DIR ${MOUNT_DIR}/libs/jpeg )
-    set( PNG_INCLUDE_DIR ${MOUNT_DIR}/libs/libpng )
-  endif()
-
-  # FIXME - GLIB needs to be converted to a find module
-  pkg_check_modules( GLIB glib-2.0 )
-  if( GLIB_FOUND )
-  include_directories( ${GLIB_INCLUDE_DIRS} )
-  target_link_libraries( owmap ${GLIB_LIBRARIES} )
-  else()
-    message( FATAL_ERROR "Glib not found" )
-  endif()
-
-  # The following libraries/include_directories are always available and as such don't need to be checked before being provided
-  include_directories( ${LIB_DIR}/picomodel ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${MOUNT_DIR}/tools/common )
+  include_directories( ${LIB_DIR}/picomodel ${MOUNT_DIR}/tools/common )
   target_link_libraries( owmap ${OS_LIBRARIES} )
-  # This section sets various properties to the target owmap
   set_property( TARGET owmap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
   set_target_properties( owmap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
   install( TARGETS owmap
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
-  )
+  )  
+  # This section finds and provides REQUIRED dependencies to OWMap target
+  find_package( OpenGL REQUIRED )
+  find_package( SDL REQUIRED )
+  find_package( JPEG REQUIRED )
+  find_package( PNG REQUIRED )
+  find_package( ZLIB REQUIRED )
+  target_link_libraries( owmap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} )
+
+  # FIXME - GLIB needs to be converted to a find module
+  pkg_check_modules( GLIB glib-2.0 )
+  if( GLIB_FOUND )
+    include_directories( ${GLIB_INCLUDE_DIRS} )
+    target_link_libraries( owmap ${GLIB_LIBRARIES} )
+  else()
+    message( FATAL_ERROR "Glib not found" )
+  endif()
 endif()
