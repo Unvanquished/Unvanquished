@@ -271,7 +271,7 @@ static void CG_EntityEffects( centity_t *cent )
 
 		if ( cent->currentState.eType == ET_SPEAKER )
 		{
-			int volume = cent->currentState.onFireStart;
+			//int volume = cent->currentState.onFireStart;
 
 			if ( cent->currentState.dmgFlags )
 			{
@@ -1233,7 +1233,7 @@ static void CG_Missile( centity_t *cent )
 				{
 					// have a quick fade in so we don't have a pop
 					vec3_t velocity;
-					int    volume = flytime > 375 ? 255 : ( 75.f / ( ( float ) flytime - 300.f ) ) * 255;
+					//int    volume = flytime > 375 ? 255 : ( 75.f / ( ( float ) flytime - 300.f ) ) * 255;
 
 					BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity, qfalse, -1 );
 					//trap_S_AddLoopingSound(cent->lerpOrigin, velocity, weapon->missileSound, volume, 0);

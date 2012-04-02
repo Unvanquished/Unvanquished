@@ -1756,8 +1756,6 @@ netField_t playerStateFields[] =
 	,
 	{ PSF( tauntTimer ),           12              }
 	,
-	{ PSF( weaponAnim ),           12              }
-	,
 	{ PSF( otherEntityNum ),       10              }
 	,
 	{ PSF( weaponAnim ),           ANIM_BITS       }

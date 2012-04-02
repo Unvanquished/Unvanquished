@@ -1846,6 +1846,35 @@ static void GLimp_InitExtensions( void )
 
 #define R_MODE_FALLBACK 3 // 640 * 480
 
+/* Support code for GLimp_Init */
+
+static void reportDriverType( qboolean force )
+{
+	static const char *const drivers[] = {
+		"integrated", "stand-alone", "Voodoo", "OpenGL 3+", "Mesa"
+	};
+	if (glConfig.driverType > GLDRV_UNKNOWN && glConfig.driverType < sizeof( drivers ) / sizeof( drivers[0] ) )
+	{
+		ri.Printf( PRINT_ALL, "%s graphics driver class '%s'\n",
+		           force ? "User has forced" : "Detected",
+		           drivers[glConfig.driverType] );
+	}
+}
+
+static void reportHardwareType( qboolean force )
+{
+	static const char *const hardware[] = {
+		"generic", "Voodoo", "Riva 128", "Rage Pro", "Permedia 2",
+		"ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
+	};
+	if (glConfig.hardwareType > GLDRV_UNKNOWN && glConfig.driverType < sizeof( hardware ) / sizeof( hardware[0] ) )
+	{
+		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
+		           force ? "User has forced" : "Detected",
+		           hardware[glConfig.hardwareType] );
+	}
+}
+
 /*
 ===============
 GLimp_Init
@@ -2071,66 +2100,83 @@ success:
 		glConfig.hardwareType = GLHW_ATI;
 	}
 
+	reportDriverType( qfalse );
+	reportHardwareType( qfalse );
+
 	{ // allow overriding where the user really does know better
-		cvar_t *forceGL;
+		cvar_t          *forceGL;
+		glDriverType_t   driverType   = GLDRV_UNKNOWN;
+		glHardwareType_t hardwareType = GLHW_UNKNOWN;
 
 		forceGL = ri.Cvar_Get( "r_glForceDriver", "", CVAR_LATCH );
 
 		if      ( !Q_stricmp( forceGL->string, "icd" ))
 		{
-			glConfig.driverType = GLDRV_ICD;
+			driverType = GLDRV_ICD;
 		}
 		else if ( !Q_stricmp( forceGL->string, "standalone" ))
 		{
-			glConfig.driverType = GLDRV_STANDALONE;
+			driverType = GLDRV_STANDALONE;
 		}
 		else if ( !Q_stricmp( forceGL->string, "voodoo" ))
 		{
-			glConfig.driverType = GLDRV_VOODOO;
+			driverType = GLDRV_VOODOO;
 		}
 		else if ( !Q_stricmp( forceGL->string, "opengl3" ))
 		{
-			glConfig.driverType = GLDRV_OPENGL3;
+			driverType = GLDRV_OPENGL3;
 		}
 		else if ( !Q_stricmp( forceGL->string, "mesa" ))
 		{
-			glConfig.driverType = GLDRV_MESA;
+			driverType = GLDRV_MESA;
 		}
 
 		forceGL = ri.Cvar_Get( "r_glForceHardware", "", CVAR_LATCH );
 
 		if      ( !Q_stricmp( forceGL->string, "generic" ))
 		{
-			glConfig.hardwareType = GLHW_GENERIC;
+			hardwareType = GLHW_GENERIC;
 		}
 		else if ( !Q_stricmp( forceGL->string, "voodoo" ))
 		{
-			glConfig.hardwareType = GLHW_3DFX_2D3D;
+			hardwareType = GLHW_3DFX_2D3D;
 		}
 		else if ( !Q_stricmp( forceGL->string, "riva128" ))
 		{
-			glConfig.hardwareType = GLHW_RIVA128;
+			hardwareType = GLHW_RIVA128;
 		}
 		else if ( !Q_stricmp( forceGL->string, "ragepro" ))
 		{
-			glConfig.hardwareType = GLHW_RAGEPRO;
+			hardwareType = GLHW_RAGEPRO;
 		}
 		else if ( !Q_stricmp( forceGL->string, "permedia2" ))
 		{
-			glConfig.hardwareType = GLHW_PERMEDIA2;
+			hardwareType = GLHW_PERMEDIA2;
 		}
 		else if ( !Q_stricmp( forceGL->string, "ati" ))
 		{
-			glConfig.hardwareType = GLHW_ATI;
+			hardwareType = GLHW_ATI;
 		}
 		else if ( !Q_stricmp( forceGL->string, "atidx10" ) ||
 		          !Q_stricmp( forceGL->string, "radeonhd" ))
 		{
-			glConfig.hardwareType = GLHW_ATI_DX10;
+			hardwareType = GLHW_ATI_DX10;
 		}
 		else if ( !Q_stricmp( forceGL->string, "nvdx10" ))
 		{
-			glConfig.hardwareType = GLHW_NV_DX10;
+			hardwareType = GLHW_NV_DX10;
+		}
+
+		if ( driverType != GLDRV_UNKNOWN )
+		{
+			glConfig.hardwareType = hardwareType;
+			reportDriverType( qtrue );
+		}
+
+		if ( hardwareType != GLHW_UNKNOWN )
+		{
+			glConfig.hardwareType = hardwareType;
+			reportHardwareType( qtrue );
 		}
 	}
 

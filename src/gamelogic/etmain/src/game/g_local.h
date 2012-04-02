@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #include "../../../../engine/server/g_api.h"
 #include "../../../../engine/renderer/tr_types.h"
 
-#include "../../../../engine/botlib/be_aas.h"
+//#include "../../../../engine/botlib/be_aas.h"
 
 typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;

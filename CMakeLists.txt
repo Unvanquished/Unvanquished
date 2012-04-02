@@ -444,7 +444,14 @@ set( QCOMMONLIST
 
 if( USE_LLVM )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
-  add_definitions( -DUSE_LLVM )
+  add_definitions( -DUSE_LLVM -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS )
+  find_program(LLVM_CONFIG llvm-config)
+  execute_process(COMMAND ${LLVM_CONFIG} --libfiles
+  			    OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  separate_arguments(LLVM_LIBS)
 endif()
 
 if( USE_PHYSICS )
@@ -1121,6 +1128,7 @@ if( BUILD_GAME_SO_ET )
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "etmain"
   )
+  target_link_libraries( game -lm )
   add_library( cgame SHARED ${SHAREDLIST} ${CGAMELIST} )
   set_property( TARGET cgame PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( cgame PROPERTIES
@@ -1128,6 +1136,7 @@ if( BUILD_GAME_SO_ET )
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "etmain"
   )
+  target_link_libraries( cgame -lm )
   add_library( ui SHARED ${SHAREDLIST} ${UILIST} )
   set_property( TARGET ui PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( ui PROPERTIES
@@ -1135,6 +1144,7 @@ if( BUILD_GAME_SO_ET )
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY "etmain"
   )
+  target_link_libraries( ui -lm )
   install( TARGETS game cgame ui
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
@@ -1145,6 +1155,7 @@ endif()
 if( BUILD_GAME_SO_TREM )
   add_library( tremgame SHARED ${GAMETREM} )
   set_property( TARGET tremgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  target_link_libraries( tremgame -lm )
   set_target_properties( tremgame PROPERTIES
     OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
     PREFIX ""
@@ -1152,6 +1163,7 @@ if( BUILD_GAME_SO_TREM )
   )
   add_library( cgametrem SHARED ${CGAMETREM} )
   set_property( TARGET cgametrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  target_link_libraries( cgametrem -lm )
   set_target_properties( cgametrem PROPERTIES
     OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
     PREFIX ""
@@ -1159,6 +1171,7 @@ if( BUILD_GAME_SO_TREM )
   )
   add_library( uitrem SHARED ${UITREM} )
   set_property( TARGET uitrem PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
+  target_link_libraries( uitrem -lm )
   set_target_properties( uitrem PROPERTIES
     OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
     PREFIX ""
@@ -1472,6 +1485,11 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${XVID_LIBRARY} )
   endif()
 
+  if( USE_LLVM )
+    include_directories( ${LLVM_INCLUDE_DIR} )
+    target_link_libraries( client ${LLVM_LIBS} )
+  endif()
+
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
@@ -1576,6 +1594,11 @@ if( BUILD_SERVER )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_PHYSICS )
     include_directories( ${TINYXML_INCLUDE_DIRS} )
     target_link_libraries( server ${TINYXML_LIBRARIES} )
+  endif()
+
+  if( USE_LLVM )
+    include_directories( ${LLVM_INCLUDE_DIR} )
+    target_link_libraries( server ${LLVM_LIBS} )
   endif()
 
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )

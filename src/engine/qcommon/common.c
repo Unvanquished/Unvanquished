@@ -3258,6 +3258,8 @@ qboolean Com_WriteProfile( char *profile_path )
 	return qtrue;
 }
 
+qboolean Crypto_Init( void );
+
 /*
 =================
 Com_Init
