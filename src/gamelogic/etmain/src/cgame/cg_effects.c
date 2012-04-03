@@ -1664,7 +1664,7 @@ void CG_RenderSmokeGrenadeSmoke( centity_t *cent, const weaponInfo_t *weapon )
 
 	if ( cent->currentState.effect1Time > 16 )
 	{
-		int volume = 16 + ( ( cent->currentState.effect1Time / 640.f ) * ( 100 - 16 ) );
+		//int volume = 16 + ( ( cent->currentState.effect1Time / 640.f ) * ( 100 - 16 ) );
 
 		if ( !cent->dl_atten ||
 		     cent->currentState.pos.trType != TR_STATIONARY ||

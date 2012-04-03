@@ -3,6 +3,11 @@
 #DEBHELPER#
 
 if test "$1" = "configure"; then
+  if dpkg --compare-versions "$2" '<' 0.3.0-1; then
+    cd /var/lib/games/unvanquished
+    # move data files from the old (<= 0.3.0-1) location
+    ls | grep -ve md5sums -e main | while read FN; do mv -f "$FN" main; done
+  fi
   /usr/sbin/unvanquished-download-paks.sh || {
     echo 'You can retry this by running unvanquished-download-paks.sh (as root).'
     echo 'You may not be able to play Unvanquished until you do so.'

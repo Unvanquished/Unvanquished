@@ -4707,7 +4707,9 @@ CG_DrawBinaryShadersFinalPhases
 */
 static void CG_DrawBinaryShadersFinalPhases( void )
 {
-	float      ss, f, l, u;
+	float      ss;
+	char       str[ 20 ];
+	float      f, l, u;
 	polyVert_t verts[ 4 ] =
 	{
 		{ { 0, 0, 0 }, { 0, 0 }, { 255, 255, 255, 255 } },
@@ -4736,7 +4738,8 @@ static void CG_DrawBinaryShadersFinalPhases( void )
 
 	ss = sqrt( ss );
 
-	f = 1.01f; // FIXME: is this a good choice to avoid near-clipping?
+	trap_Cvar_VariableStringBuffer( "r_znear", str, sizeof( str ) );
+	f = atof( str ) + 0.01;
 	l = f * tan( DEG2RAD( cg.refdef.fov_x / 2 ) ) * ss;
 	u = f * tan( DEG2RAD( cg.refdef.fov_y / 2 ) ) * ss;
 

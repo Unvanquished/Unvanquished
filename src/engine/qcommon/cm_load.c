@@ -872,8 +872,10 @@ void CMod_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexesLump )
 		else if ( LittleLong( in->surfaceType ) == MST_PATCH )
 		{
 			int j = 0;
+#ifdef USE_PHYSICS
 			int rowLimit = in->patchHeight - 1;
 			int colLimit = in->patchWidth - 1;
+#endif
 
 			// FIXME: check for non-colliding patches
 			cm.surfaces[ i ] = surface = Hunk_Alloc( sizeof( *surface ), h_high );
