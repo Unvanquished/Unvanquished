@@ -818,7 +818,7 @@ int FindBots(int *botEntityNumbers, int maxBots, team_t team) {
 	for(int i=0;i<MAX_CLIENTS;i++) {
 		testEntity = &g_entities[i];
 		if(testEntity->r.svFlags & SVF_BOT) {
-			if(BotGetTeam(testEntity) == team && numBots < maxBots) {
+			if(testEntity->client->pers.teamSelection == team && numBots < maxBots) {
 				botEntityNumbers[numBots++] = i;
 			}
 		}
@@ -834,10 +834,10 @@ qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 	int botPos = 0, lastPlayerPos = 0;
 	spawnQueue_t *sq;
 
-	if(BotGetTeam(self) == TEAM_HUMANS)
+	if(self->client->pers.teamSelection == TEAM_HUMANS)
 		sq = &level.humanSpawnQueue;
 
-	else if(BotGetTeam(self) == TEAM_ALIENS)
+	else if(self->client->pers.teamSelection == TEAM_ALIENS)
 		sq = &level.alienSpawnQueue;
 	else
 		return qfalse;
@@ -1789,7 +1789,7 @@ extern "C" void G_BotSpectatorThink( gentity_t *self ) {
 				G_PushSpawnQueue( sq, self->s.number );
 			}
 		}
-		if(BotGetTeam(self) == TEAM_HUMANS) {
+		if(self->client->pers.teamSelection == TEAM_HUMANS) {
 			//we want to spawn with a ckit if we need to build
 			if(BotShouldBuild(self)) {
 				if(self->client->pers.humanItemSelection != WP_HBUILD) {
@@ -1817,7 +1817,7 @@ extern "C" void G_BotSpectatorThink( gentity_t *self ) {
 	self->botMind->timeFoundEnemy = 0;
 	self->botMind->enemyLastSeen = 0;
 	if( self->client->sess.restartTeam == TEAM_NONE ) {
-		int teamnum = BotGetTeam(self);
+		int teamnum = self->client->pers.teamSelection;
 		int clientNum = self->client->ps.clientNum;
 
 		if( teamnum == TEAM_HUMANS ) {

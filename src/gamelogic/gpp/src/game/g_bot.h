@@ -152,7 +152,7 @@ static inline team_t BotGetTeam(gentity_t *ent) {
 	if(!ent)
 		return TEAM_NONE;
 	if(ent->client) {
-		return ent->client->pers.teamSelection;
+		return (team_t)ent->client->ps.stats[STAT_TEAM];
 	} else if(ent->s.eType == ET_BUILDABLE) {
 		return ent->buildableTeam;
 	} else {
