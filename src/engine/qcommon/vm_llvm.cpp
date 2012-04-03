@@ -66,6 +66,8 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	Com_sprintf( filename, sizeof(filename), "vm/%s_64.bc", name );
 #elif defined(__i386__) || defined(_WIN32)
 	Com_sprintf( filename, sizeof(filename), "vm/%s_32.bc", name );
+#else
+	Com_sprintf( filename, sizeof(filename), "vm/%s.bc", name );
 #endif
 
 	int len = FS_ReadFile( filename, (void **)&bytes );
