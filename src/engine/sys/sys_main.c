@@ -580,7 +580,7 @@ Sys_TryLibraryLoad
 */
 static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const char *fname, char *fqpath )
 {
-	void *libHandle;
+	void *libHandle = NULL;
 	char *fn;
 
 	*fqpath = 0;
@@ -616,7 +616,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
                          intptr_t ( QDECL  * *entryPoint )( int, ... ),
                          intptr_t ( QDECL *systemcalls )( intptr_t, ... ) )
 {
-	void *libHandle;
+	void *libHandle = NULL;
 	void ( QDECL * dllEntry )( intptr_t ( QDECL * syscallptr )( intptr_t, ... ) );
 	char fname[ MAX_QPATH ];
 	char *basepath;
