@@ -643,7 +643,7 @@ extern "C" {
 	extern int ( QDECL *Q_VMftol )( void );
 	extern void ( QDECL *Q_SnapVector )( vec3_t vec );
 #else
-#define 4 (f) lrintf(( f ))
+#define Q_ftol lrintf
 #define Q_SnapVector(vec) \
         do \
   { \
