@@ -558,7 +558,9 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		if(BotRoutePermission(self, BOT_TASK_BUILD)) {
 			//find the best building to decon
 			deconNum = BotFindBestHDecon(self, building,origin);
-			BotChangeTarget(self, &g_entities[deconNum],NULL);
+			if(!BotChangeTarget(self, &g_entities[deconNum],NULL)) {
+				return TASK_RUNNING;
+			}
 			self->botMind->task = BOT_TASK_BUILD;
 		}
 		deconNum = BotGetTargetEntityNumber(self->botMind->goal);
@@ -594,7 +596,8 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		}
 	} else if(!VectorCompare(origin,targetPos) || BotRoutePermission(self, BOT_TASK_BUILD)) {
 		//set the target coordinate where we will place the building
-		BotChangeTarget(self, NULL, &origin);
+		if(!BotChangeTarget(self, NULL, &origin))
+			return TASK_RUNNING;
 		self->botMind->task = BOT_TASK_BUILD;
 	} else if(DistanceToGoalSquared(self) > Square(dist)) {
 		//move to where we will place the building until close enough to place it
