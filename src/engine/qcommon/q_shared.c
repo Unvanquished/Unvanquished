@@ -2479,7 +2479,7 @@ char     *QDECL va( const char *format, ... )
 	int         len;
 
 	va_start( argptr, format );
-	vsprintf( temp_buffer, format, argptr );
+	Q_vsnprintf( temp_buffer, sizeof( string ), format, argptr );
 	va_end( argptr );
 
 	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING )
