@@ -30,12 +30,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * (stdio.h is sufficient on ANSI-conforming systems.)
  * You may also wish to include "jerror.h".
  */
-#ifdef SYSTEM_JPEG
-#	include <jpeglib.h>
-#else
-#	define JPEG_INTERNALS
-#	include "../../libs/jpeg/jpeglib.h"
-#endif
+
+#include <jpeglib.h>
+
 
 /*
 =========================================================

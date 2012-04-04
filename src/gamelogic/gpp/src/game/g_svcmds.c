@@ -373,6 +373,7 @@ static void Svcmd_Evacuation_f( void )
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
 	LogExit( "Evacuation." );
+	G_MapLog_Result( 'd' );
 }
 
 static void Svcmd_MapRotation_f( void )
@@ -604,6 +605,11 @@ static void Svcmd_ListRotationWrapper( void )
 	G_PrintCurrentRotation( NULL );
 }
 
+static void Svcmd_MapLogWrapper( void )
+{
+	Cmd_MapLog_f( NULL );
+}
+
 static void Svcmd_SuddenDeath_f( void )
 {
 	char secs[ 5 ];
@@ -648,6 +654,7 @@ struct svcmd
 	{ "listrotation",       qtrue,  Svcmd_ListRotationWrapper    },
 	{ "loadcensors",        qfalse, G_LoadCensors                },
 	{ "m",                  qtrue,  Svcmd_MessageWrapper         },
+	{ "maplog",             qtrue,  Svcmd_MapLogWrapper          },
 	{ "mapRotation",        qfalse, Svcmd_MapRotation_f          },
 	{ "pr",                 qfalse, Svcmd_Pr_f                   },
 	{ "printqueue",         qfalse, Svcmd_PrintQueue_f           },

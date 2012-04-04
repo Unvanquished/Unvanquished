@@ -119,11 +119,13 @@ vmCvar_t           g_mapRotationNodes;
 vmCvar_t           g_mapRotationStack;
 vmCvar_t           g_nextMap;
 vmCvar_t           g_initialMapRotation;
+vmCvar_t           g_mapLog;
 
 vmCvar_t           g_debugVoices;
 vmCvar_t           g_voiceChats;
 
 vmCvar_t           g_shove;
+vmCvar_t           g_antiSpawnBlock;
 
 vmCvar_t           g_mapConfigs;
 vmCvar_t           g_sayAreaRange;
@@ -263,9 +265,11 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, qtrue            },
 	{ &g_initialMapRotation,          "g_initialMapRotation",          "rotation1",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_mapLog,                      "g_mapLog",                      "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                0,                                               0, qfalse           },
 	{ &g_voiceChats,                  "g_voiceChats",                  "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_shove,                       "g_shove",                       "0.0",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_antiSpawnBlock,              "g_antiSpawnBlock",              "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mapConfigs,                  "g_mapConfigs",                  "",                                 CVAR_ARCHIVE,                                    0, qfalse           },
 	{ NULL,                           "g_mapConfigsLoaded",            "0",                                CVAR_ROM,                                        0, qfalse           },
 
@@ -722,6 +726,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	G_CountSpawns();
 
 	G_UpdateTeamConfigStrings();
+
+	G_MapLog_NewMap();
 
 	if ( g_lockTeamsAtStart.integer )
 	{
@@ -2265,6 +2271,7 @@ void CheckExitRules( void )
 			trap_SendServerCommand( -1, "print \"Timelimit hit\n\"" );
 			trap_SetConfigstring( CS_WINNER, "Stalemate" );
 			LogExit( "Timelimit hit." );
+			G_MapLog_Result( 't' );
 			return;
 		}
 		else if ( level.time - level.startTime >= ( g_timelimit.integer - 5 ) * 60000 &&
@@ -2292,6 +2299,7 @@ void CheckExitRules( void )
 		trap_SendServerCommand( -1, "print \"Humans win\n\"" );
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
 		LogExit( "Humans win." );
+		G_MapLog_Result( 'h' );
 	}
 	else if ( level.uncondAlienWin ||
 	          ( ( level.time > level.startTime + 1000 ) &&
@@ -2303,6 +2311,7 @@ void CheckExitRules( void )
 		trap_SendServerCommand( -1, "print \"Aliens win\n\"" );
 		trap_SetConfigstring( CS_WINNER, "Aliens Win" );
 		LogExit( "Aliens win." );
+		G_MapLog_Result( 'a' );
 	}
 }
 
@@ -2375,8 +2384,14 @@ void G_ExecuteVote( team_t team )
 	trap_SendConsoleCommand( EXEC_APPEND, va( "%s\n",
 	                         level.voteString[ team ] ) );
 
-	if ( !Q_stricmpn( level.voteString[ team ], "map", 3 ) )
+	if ( !Q_stricmp( level.voteString[ team ], "map_restart" ) )
 	{
+		G_MapLog_Result( 'r' );
+		level.restarted = qtrue;
+	}
+	else if ( !Q_stricmpn( level.voteString[ team ], "map", 3 ) )
+	{
+		G_MapLog_Result( 'm' );
 		level.restarted = qtrue;
 	}
 }
