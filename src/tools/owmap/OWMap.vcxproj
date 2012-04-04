@@ -229,13 +229,14 @@
     <ClInclude Include="..\..\libs\picomodel\picomodel.h" />
     <ClInclude Include="..\..\libs\picomodel\pm_fm.h" />
     <ClInclude Include="..\..\libs\picomodel\lwo\lwo2.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\cmdlib.c">
     </ClCompile>
     <ClCompile Include="..\common\ddslib.c">
-	 <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
-	</ClCompile>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
+    </ClCompile>
     <ClCompile Include="..\common\imagelib.c">
     </ClCompile>
     <ClCompile Include="..\common\inout.c">
@@ -500,10 +501,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="owmap.rc" />
+    <None Include="unvanquished.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="openwolf.ico" />
+    <ResourceCompile Include="DaemonMap.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

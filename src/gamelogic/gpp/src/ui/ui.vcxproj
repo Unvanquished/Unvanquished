@@ -111,7 +111,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>../../../../../bin/win32/release/gpp/ui_mp_x86.dll</OutputFile>
+      <OutputFile>../../../../../bin/win32/release/main/ui_mp_x86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ui.def</ModuleDefinitionFile>
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
@@ -158,7 +158,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>../../../../../bin/win64/release/gpp/ui_mp_x86_64.dll</OutputFile>
+      <OutputFile>../../../../../bin/win64/release/main/ui_mp_x86_64.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ui.def</ModuleDefinitionFile>
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
@@ -203,13 +203,13 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../../../../bin/win32/debug/gpp/ui_mp_x86.dll</OutputFile>
+      <OutputFile>../../../../../bin/win32/debug/main/ui_mp_x86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ui.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>../../../bin/win32/debug/gpp/ui_mp_x86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>../../../bin/win32/debug/main/ui_mp_x86.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>../../../bin/win32/debug/gpp/ui_mp_x86.map</MapFileName>
+      <MapFileName>../../../bin/win32/debug/main/ui_mp_x86.map</MapFileName>
       <BaseAddress>0x40000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
@@ -250,13 +250,13 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../../../../bin/win64/debug/gpp/ui_mp_x86_64.dll</OutputFile>
+      <OutputFile>../../../../../bin/win64/debug/main/ui_mp_x86_64.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ui.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>../../../bin/win64/debug/gpp/ui_mp_x86_64.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>../../../bin/win64/debug/main/ui_mp_x86_64.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>../../../bin/win64/debug/gpp/ui_mp_x86_64.map</MapFileName>
+      <MapFileName>../../../bin/win64/debug/main/ui_mp_x86_64.map</MapFileName>
       <BaseAddress>0x40000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>

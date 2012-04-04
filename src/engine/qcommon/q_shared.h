@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.2.5"
+#define PRODUCT_VERSION         "0.3.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.2.0"
+#define ENGINE_VERSION          "0.2.5"
 
 #ifdef SVN_VERSION
 # define Q3_VERSION             PRODUCT_NAME " " SVN_VERSION
@@ -643,7 +643,7 @@ extern "C" {
 	extern int ( QDECL *Q_VMftol )( void );
 	extern void ( QDECL *Q_SnapVector )( vec3_t vec );
 #else
-#define 4 (f) lrintf(( f ))
+#define Q_ftol lrintf
 #define Q_SnapVector(vec) \
         do \
   { \

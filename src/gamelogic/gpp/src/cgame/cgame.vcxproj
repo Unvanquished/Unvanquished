@@ -106,13 +106,13 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../../../../bin/win32/debug/gpp/cgame_mp_x86.dll</OutputFile>
+      <OutputFile>../../../../../bin/win32/debug/main/cgame_mp_x86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\cgame.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>../../../bin/win32/debug/gpp/cgame_mp_x86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>../../../bin/win32/debug/main/cgame_mp_x86.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>../../../bin/win32/debug/gpp/cgame_mp_x86.map</MapFileName>
+      <MapFileName>../../../bin/win32/debug/main/cgame_mp_x86.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <BaseAddress>0x30000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -153,13 +153,13 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../../../../bin/win64/debug/gpp/cgame_mp_x86_64.dll</OutputFile>
+      <OutputFile>../../../../../bin/win64/debug/main/cgame_mp_x86_64.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\cgame.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>../../../bin/win64/debug/gpp/cgame_mp_x86_64.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>../../../bin/win64/debug/main/cgame_mp_x86_64.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>../../../bin/win64/debug/gpp/cgame_mp_x86_64.map</MapFileName>
+      <MapFileName>../../../bin/win64/debug/main/cgame_mp_x86_64.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <BaseAddress>0x30000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -201,7 +201,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../../../../bin/win32/release/gpp/cgame_mp_x86.dll</OutputFile>
+      <OutputFile>../../../../../bin/win32/release/main/cgame_mp_x86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\cgame.def</ModuleDefinitionFile>
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
@@ -251,7 +251,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../../../../bin/win64/release/gpp/cgame_mp_x86_64.dll</OutputFile>
+      <OutputFile>../../../../../bin/win64/release/main/cgame_mp_x86_64.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\cgame.def</ModuleDefinitionFile>
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>

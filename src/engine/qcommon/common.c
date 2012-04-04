@@ -3258,6 +3258,8 @@ qboolean Com_WriteProfile( char *profile_path )
 	return qtrue;
 }
 
+qboolean Crypto_Init( void );
+
 /*
 =================
 Com_Init
@@ -3485,7 +3487,7 @@ void Com_Init( char *commandLine )
 
 	s = va( "%s %s %s", Q3_VERSION, ARCH_STRING, __DATE__ );
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
-	com_protocol = Cvar_Get( "protocol", va( "%i", ETPROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ARCHIVE );
+	com_protocol = Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ARCHIVE );
 
 	Sys_Init();
 	Netchan_Init( Com_Milliseconds() & 0xffff );  // pick a port value that should be nice and random

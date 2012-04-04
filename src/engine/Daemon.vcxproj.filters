@@ -664,6 +664,9 @@
     <ClInclude Include="qcommon\surfaceflags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sys\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\etmain\ui\addfilter.menu">
@@ -990,6 +993,7 @@
     <None Include="..\..\etmain\scripts\z_light.shader">
       <Filter>main\scripts</Filter>
     </None>
+    <None Include="sys\unvanquished.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="sys\winquake.rc">

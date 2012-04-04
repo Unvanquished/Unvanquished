@@ -38,8 +38,6 @@ Maryland 20850 USA.
 
 #include "../qcommon/cm_public.h"
 
-#include "../qcommon/crypto.h"
-
 //bani
 #if defined __GNUC__ || defined __clang__
 #define _attribute( x ) __attribute__( x )
@@ -283,17 +281,8 @@ The server you attempted to join is running an incompatible version of the game.
 You or the server may be running older versions of the game. Press the auto-update\
  button if it appears on the Main Menu screen."
 
-#define GAMENAME_STRING              "et"
-#ifndef PRE_RELEASE_DEMO
-// 2.56 - protocol 83
-// 2.4 - protocol 80
-// 1.33 - protocol 59
-// 1.4 - protocol 60
-#define ETPROTOCOL_VERSION 84
-#else
-// the demo uses a different protocol version for independant browsing
-#define ETPROTOCOL_VERSION 72
-#endif
+#define GAMENAME_STRING "unv"
+#define PROTOCOL_VERSION 84
 
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
@@ -301,9 +290,12 @@ extern int demo_protocols[];
 
 // NERVE - SMF - wolf multiplayer master servers
 #ifndef MASTER_SERVER_NAME
-#define MASTER_SERVER_NAME    "unvanquished.net"
+# define MASTER_SERVER_NAME    "unvanquished.net"
 #endif
-#define MOTD_SERVER_NAME      "unvanquished.net" //"etmotd.idsoftware.com"          // ?.?.?.?
+
+#ifndef MOTD_SERVER_NAME
+# define MOTD_SERVER_NAME      "unvanquished.net"
+#endif
 
 #ifdef AUTHORIZE_SUPPORT
 #define AUTHORIZE_SERVER_NAME "wolfauthorize.idsoftware.com"
@@ -1367,11 +1359,8 @@ char     *Sys_DefaultAppPath( void );
 
 #endif
 
-#ifdef __FreeBSD__
 void Sys_SetDefaultLibPath( const char *path );
 char *Sys_DefaultLibPath( void );
-
-#endif
 
 char         *Sys_DefaultHomePath( void );
 qboolean     Sys_Fork( const char *path, const char *cmdLine );

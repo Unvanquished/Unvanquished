@@ -84,6 +84,7 @@
     <ClInclude Include="game_tremulous.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\cmdlib.c">
@@ -487,9 +488,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="owmap.rc" />
+    <None Include="unvanquished.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="openwolf.ico" />
+    <ResourceCompile Include="DaemonMap.rc" />
   </ItemGroup>
 </Project>

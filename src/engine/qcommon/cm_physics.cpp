@@ -247,7 +247,7 @@ static void PhysicsEntitySetTransform( const NewtonBody *body, const dFloat *mat
 
 		SV_LinkEntity( ent );
 
-		Com_Printf( "PHYSICS: updating %d new position %s\n", ent->s.number, vtos( newPosition ) );
+		Com_DPrintf( "PHYSICS: updating %d new position %s\n", ent->s.number, vtos( newPosition ) );
 	}
 }
 

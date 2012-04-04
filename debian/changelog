@@ -1,8 +1,20 @@
-unvanquished (0.3.0~git-1) unstable; urgency=low
+unvanquished (0.3.0-2) unstable; urgency=low
 
-  * Git snapshot.
+  * Enable fs_libpath and use it.
+    This means that the pak?.pk3 symlinks can be dropped, but also means
+    that the downloaded files have to be moved.
+    *** NOTE: downgrades are NOT supported!
 
- -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Tue, 27 Mar 2012 23:50:09 +0100
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 02 Apr 2012 21:23:10 +0100
+
+unvanquished (0.3.0-1) unstable; urgency=low
+
+  * Release of alpha 2.
+  * Build-depend on nettle-dev & libspeexdsp-dev.
+  * Update the menu icon.
+  * Fix the launcher scripts where the arch name doesn't match the CPU name.
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Sun, 01 Apr 2012 19:56:35 +0100
 
 unvanquished (0.2.5+git7270e68-4) unstable; urgency=low
 
