@@ -2773,6 +2773,7 @@ qboolean G_admin_changemap( gentity_t *ent )
 
 	trap_SendConsoleCommand( EXEC_APPEND, va( "map %s", map ) );
 	level.restarted = qtrue;
+	G_MapLog_Result( 'M' );
 	AP( va( "print \"^3changemap: ^7map '%s' started by %s^7 %s\n\"", map,
 	        ( ent ) ? ent->client->pers.netname : "console",
 	        ( layout[ 0 ] ) ? va( "(forcing layout '%s')", layout ) : "" ) );
@@ -3691,6 +3692,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, "map_restart" );
+	G_MapLog_Result( 'R' );
 
 	AP( va( "print \"^3restart: ^7map restarted by %s %s %s\n\"",
 	        ( ent ) ? ent->client->pers.netname : "console",
@@ -3707,6 +3709,7 @@ qboolean G_admin_nextmap( gentity_t *ent )
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
 	LogExit( va( "nextmap was run by %s",
 	             ( ent ) ? ent->client->pers.netname : "console" ) );
+	G_MapLog_Result( 'N' );
 	return qtrue;
 }
 

@@ -1074,6 +1074,9 @@ void     G_InitMapRotations( void );
 void     G_ShutdownMapRotations( void );
 qboolean G_MapExists( char *name );
 void     G_ClearRotationStack( void );
+void     G_MapLog_NewMap( void );
+void     G_MapLog_Result( char result );
+void     Cmd_MapLog_f( gentity_t *ent );
 
 //
 // g_namelog.c
@@ -1168,6 +1171,7 @@ extern  vmCvar_t g_mapRotationNodes;
 extern  vmCvar_t g_mapRotationStack;
 extern  vmCvar_t g_nextMap;
 extern  vmCvar_t g_initialMapRotation;
+extern  vmCvar_t g_mapLog;
 extern  vmCvar_t g_sayAreaRange;
 
 extern  vmCvar_t g_debugVoices;

@@ -3638,6 +3638,170 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	ADMBP_end();
 }
 
+#define MAX_MAPLOGS 5
+
+typedef struct {
+	char flag;
+	char *description;
+} mapLogResult_t;
+
+static const mapLogResult_t maplog_table[] = {
+	{ 't', "^7tie"                                  },
+	{ 'a', "^1Alien win"                            },
+	{ 'A', "^1Alien win ^7/ Humans admitted defeat" },
+	{ 'h', "^5Human win"                            },
+	{ 'H', "^5Human win ^7/ Aliens admitted defeat" },
+	{ 'd', "^2draw vote"                            },
+	{ 'm', "^2map vote"                             },
+	{ 'r', "^2restart vote"                         },
+	{ 'M', "^6admin changed map"                    },
+	{ 'N', "^6admin loaded next map"                },
+	{ 'R', "^6admin restarted map"                  },
+	{ '\0', "" }
+};
+
+void G_MapLog_NewMap( void )
+{
+	char maplog[ MAX_CVAR_VALUE_STRING ];
+	char map[ MAX_QPATH ];
+	char *ptr;
+	int  count = 0;
+
+	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
+	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
+	ptr = maplog;
+
+	while ( *ptr && count < MAX_MAPLOGS )
+	{
+		while ( *ptr && *ptr != ' ' )
+		{
+			ptr++;
+		}
+		count++;
+
+		if ( count == MAX_MAPLOGS )
+		{
+			*ptr = '\0';
+		}
+
+		if ( *ptr == ' ' )
+		{
+			ptr++;
+		}
+	}
+
+	trap_Cvar_Set( "g_mapLog",
+	               va( "%s%s%s", map, maplog[ 0 ] ? " " : "", maplog ) );
+}
+
+void G_MapLog_Result( char result )
+{
+	static int lastTime = 0;
+	char   maplog[ MAX_CVAR_VALUE_STRING ];
+	int    t;
+
+	// there is a chance is called more than once per frame
+	if ( level.time == lastTime )
+	{
+		return;
+	}
+
+	lastTime = level.time;
+
+	// check for earlier result
+	if ( g_mapLog.string[ 0 ] && g_mapLog.string[ 1 ] == ';' )
+	{
+		return;
+	}
+
+	if ( level.surrenderTeam != TEAM_NONE )
+	{
+		if ( result == 'a' && level.surrenderTeam == TEAM_HUMANS )
+		{
+			result = 'A';
+		}
+		else if ( result == 'h' && level.surrenderTeam == TEAM_ALIENS )
+		{
+			result = 'H';
+		}
+	}
+
+	t = ( level.time - level.startTime ) / 1000;
+	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
+	trap_Cvar_Set( "g_mapLog",
+	               va( "%c;%d:%02d;%s", result, t / 60, t % 60, maplog ) );
+}
+
+/*
+=================
+Cmd_MapLog_f
+
+Print recent map results
+=================
+*/
+void Cmd_MapLog_f( gentity_t *ent )
+{
+	char maplog[ MAX_CVAR_VALUE_STRING ];
+	char *ptr;
+	int  i;
+
+	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
+	ptr = maplog;
+
+	ADMBP_begin( );
+	ADMBP( "^3maplog: ^7recent map results, newest first\n" );
+
+	while( *ptr )
+	{
+		char *clock = "  -:--";
+		char *result = "^1unknown";
+		char *end = ptr;
+
+		while ( *end && *end != ' ' )
+		{
+			end++;
+		}
+
+		if ( *end == ' ' )
+		{
+			*end++ = '\0';
+		}
+
+		if ( ptr[ 0 ] && ptr[ 1 ] == ';' )
+		{
+			for ( i = 0; maplog_table[ i ].flag; i++ )
+			{
+				if ( maplog_table[ i ].flag == *ptr )
+				{
+					result = maplog_table[ i ].description;
+					break;
+				}
+			}
+			ptr += 2;
+			clock = ptr;
+			while( *ptr && *ptr != ';' )
+			{
+				ptr++;
+			}
+
+			if( *ptr == ';' )
+			{
+				*ptr++ = '\0';
+			}
+		}
+		else if ( ptr == maplog )
+		{
+			result = "^7current map";
+		}
+
+		ADMBP( va( "  ^%s%-20s %6s %s^7\n",
+		           ptr == maplog ? "2" : "7",
+		           ptr, clock, result ) );
+		ptr = end;
+	}
+	ADMBP_end();
+}
+
 /*
 =================
 Cmd_Test_f
@@ -3810,6 +3974,7 @@ commands_t    cmds[] =
 	{ "listmaps",        CMD_MESSAGE | CMD_INTERMISSION,      Cmd_ListMaps_f         },
 	{ "listrotation",    CMD_MESSAGE | CMD_INTERMISSION,      G_PrintCurrentRotation },
 	{ "m",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
+	{ "maplog",          CMD_MESSAGE | CMD_INTERMISSION,      Cmd_MapLog_f           },
 	{ "mt",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
 	{ "noclip",          CMD_CHEAT_TEAM,                      Cmd_Noclip_f           },
 	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_LIVING,   Cmd_Notarget_f         },
