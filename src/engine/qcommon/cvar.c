@@ -549,6 +549,12 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 			return var;
 		}
 
+		if ( var->flags & CVAR_SHADER )
+		{
+			Com_Printf( "%s will be changed upon recompiling shaders.\n", var_name );
+			Cvar_Set( "r_recompileShaders", "1" );
+		}
+
 		if ( var->flags & CVAR_LATCH )
 		{
 			if ( var->latchedString )
@@ -573,12 +579,6 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 			var->modified = qtrue;
 			var->modificationCount++;
 			return var;
-		}
-
-		if ( var->flags & CVAR_SHADER )
-		{
-			Com_Printf( "%s will be changed upon recompiling shaders.\n", var_name );
-			Cvar_Set( "r_recompileShaders", "1" );
 		}
 	}
 	else
