@@ -753,19 +753,19 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 			{
 				const char *newSource = glslopt_get_output( shaderOptimized );
 
-				ri.Printf( PRINT_WARNING, "----------------------------------------------------------\n", filename );
-				ri.Printf( PRINT_WARNING, "OPTIMIZED shader '%s' ----------\n", filename );
-				ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n", filename );
+				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n", filename );
+				ri.Printf( PRINT_DEVELOPER, "OPTIMIZED shader '%s' ----------\n", filename );
+				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n", filename );
 
 				length = strlen( newSource );
 
 				for ( i = 0; i < length; i += 1024 )
 				{
 					Q_strncpyz( msgPart, newSource + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_ALL, "%s\n", msgPart );
+					ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
 				}
 
-				ri.Printf( PRINT_WARNING, " END-- ---------------------------------------------------\n", filename );
+				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n", filename );
 				shaderText = std::string( newSource, length );
 			}
 			else
