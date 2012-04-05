@@ -3490,18 +3490,6 @@ void CG_Player( centity_t *cent )
 			CG_AddPlayerWeapon( &body, NULL, cent );
 		}
 
-		// add powerups floating behind the player
-
-		// add the bounding box (if cg_drawPlayerCollision is 1)
-		if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == BOTH_DEATH1 )
-		{
-			vec3_t tmp;
-			VectorCopy( body.axis[ 2 ], tmp );
-			VectorCopy( body.axis[ 1 ], body.axis[ 2 ] );
-			VectorCopy( body.axis[ 0 ], body.axis[ 1 ] );
-			VectorCopy( tmp, body.axis[ 0 ] );
-		}
-
 		trap_R_AddRefEntityToScene( &body );
 		VectorCopy( surfNormal, cent->pe.lastNormal );
 		return;
