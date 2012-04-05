@@ -729,7 +729,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 #if defined( USE_GLSL_OPTIMIZER )
 
-		if ( GLDRV_OPENGL3 && optimize )
+		if ( optimize )
 		{
 			static char         msgPart[ 1024 ];
 			int                 length = 0;
