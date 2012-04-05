@@ -24,15 +24,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 #include "gl_shader.h"
 
-//#define USE_GLSL_OPTIMIZER 1
-
 #if defined( USE_GLSL_OPTIMIZER )
 #include "../../libs/glsl-optimizer/src/glsl/glsl_optimizer.h"
-
-static struct glslopt_ctx *s_glslOptimizer;
-
 #endif
-
 /*
 =================================================================================
 THIS ENTIRE FILE IS BACK END!
@@ -595,76 +589,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 		}
 #endif
 
-#if defined( USE_GLSL_OPTIMIZER )
-
-		if ( glConfig.driverType != GLDRV_OPENGL3 && optimize )
-		{
-			static char         msgPart[ 1024 ];
-			int                 length = 0;
-			int                 i;
-
-			glslopt_shader_type glsloptShaderType;
-
-			if ( shaderType == GL_FRAGMENT_SHADER_ARB )
-			{
-				glsloptShaderType = kGlslOptShaderFragment;
-			}
-			else
-			{
-				glsloptShaderType = kGlslOptShaderVertex;
-			}
-
-			glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer,
-			                                  glsloptShaderType, bufferFinal, 0 );
-
-			if ( glslopt_get_status( shaderOptimized ) )
-			{
-				const char *newSource = glslopt_get_output( shaderOptimized );
-
-				ri.Printf( PRINT_WARNING, "----------------------------------------------------------\n", filename );
-				ri.Printf( PRINT_WARNING, "OPTIMIZED shader '%s' ----------\n", filename );
-				ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n", filename );
-
-				length = strlen( newSource );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, newSource + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_ALL, "%s\n", msgPart );
-				}
-
-				ri.Printf( PRINT_WARNING, " END-- ---------------------------------------------------\n", filename );
-
-				glShaderSourceARB( shader, 1, ( const GLcharARB ** ) &newSource, &length );
-			}
-			else
-			{
-				const char *errorLog = glslopt_get_log( shaderOptimized );
-
-				//ri.Printf(PRINT_WARNING, "Couldn't optimize '%s'", filename);
-
-				length = strlen( errorLog );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_ALL, "%s\n", msgPart );
-				}
-
-				ri.Error( ERR_FATAL, "Couldn't optimize %s", filename );
-			}
-
-			glslopt_shader_delete( shaderOptimized );
-		}
-		else
-		{
-			glShaderSourceARB( shader, 1, ( const GLcharARB ** ) &bufferFinal, &sizeFinal );
-		}
-
-#else
 		glShaderSourceARB( shader, 1, ( const GLcharARB ** ) &bufferFinal, &sizeFinal );
-#endif
-
 		ri.Hunk_FreeTempMemory( bufferFinal );
 	}
 
@@ -951,7 +876,7 @@ void GLSL_InitGPUShaders( void )
 	GL_CheckErrors();
 
 #if defined( USE_GLSL_OPTIMIZER )
-	s_glslOptimizer = glslopt_initialize();
+	s_glslOptimizer = glslopt_initialize( true );
 #endif
 
 	startTime = ri.Milliseconds();
@@ -1256,6 +1181,11 @@ void GLSL_InitGPUShaders( void )
 #endif
 
 	ri.Printf( PRINT_ALL, "GLSL shaders load time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
+
+	if( r_recompileShaders->integer )
+	{
+		ri.Cvar_Set( "r_recompileShaders", "0" );
+	}
 }
 
 void GLSL_ShutdownGPUShaders( void )
@@ -4904,7 +4834,7 @@ void Tess_StageIteratorGeneric()
 			RB_SetStencil( GL_FRONT, &pStage->frontStencil );
 			RB_SetStencil( GL_BACK, &pStage->backStencil );
 		}
- 
+
 		switch ( pStage->type )
 		{
 			case ST_COLORMAP:

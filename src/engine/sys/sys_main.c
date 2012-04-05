@@ -70,9 +70,7 @@ Maryland 20850 USA.
 
 static char binaryPath[ MAX_OSPATH ] = { 0 };
 static char installPath[ MAX_OSPATH ] = { 0 };
-#ifdef __FreeBSD__
 static char libPath[ MAX_OSPATH ] = { 0 };
-#endif
 
 #ifdef USE_CURSES
 static qboolean nocurses = qfalse;
@@ -142,7 +140,6 @@ char *Sys_DefaultInstallPath( void )
 	return installdir;
 }
 
-#ifdef __FreeBSD__
 
 /*
 =================
@@ -171,7 +168,6 @@ char *Sys_DefaultLibPath( void )
 	}
 }
 
-#endif
 
 /*
 =================
@@ -584,7 +580,7 @@ Sys_TryLibraryLoad
 */
 static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const char *fname, char *fqpath )
 {
-	void *libHandle;
+	void *libHandle = NULL;
 	char *fn;
 
 	*fqpath = 0;
@@ -613,22 +609,20 @@ Sys_LoadDll
 Used to load a development dll instead of a virtual machine
 #1 look in fs_homepath
 #2 look in fs_basepath
-#4 look in fs_libpath under FreeBSD
+#4 look in fs_libpath (if not "")
 =================
 */
 void *QDECL Sys_LoadDll( const char *name, char *fqpath,
                          intptr_t ( QDECL  * *entryPoint )( int, ... ),
                          intptr_t ( QDECL *systemcalls )( intptr_t, ... ) )
 {
-	void *libHandle;
+	void *libHandle = NULL;
 	void ( QDECL * dllEntry )( intptr_t ( QDECL * syscallptr )( intptr_t, ... ) );
 	char fname[ MAX_QPATH ];
 	char *basepath;
 	char *homepath;
 	char *gamedir;
-#ifdef __FreeBSD__
 	char *libpath;
-#endif
 
 	assert( name );
 
@@ -638,9 +632,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	basepath = Cvar_VariableString( "fs_basepath" );
 	homepath = Cvar_VariableString( "fs_homepath" );
 	gamedir = Cvar_VariableString( "fs_game" );
-#ifdef __FreeBSD__
 	libpath = Cvar_VariableString( "fs_libpath" );
-#endif
 
 #ifndef DEDICATED
 
@@ -655,14 +647,11 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 	libHandle = Sys_TryLibraryLoad( homepath, gamedir, fname, fqpath );
 
-#ifdef __FreeBSD__
-
-	if ( !libHandle && libpath )
+	if ( !libHandle && libpath && libpath[0] )
 	{
 		libHandle = Sys_TryLibraryLoad( libpath, gamedir, fname, fqpath );
 	}
 
-#endif
 
 	if ( !libHandle && basepath )
 	{

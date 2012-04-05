@@ -60,14 +60,6 @@ theora:
 #ifdef USE_CIN_XVID
 #include <xvid.h>
 
-#if defined( WIN32 ) || defined( __i386__ )
-#define ARCH_IS_32BIT
-#define ARCH_IS_IA32
-#else
-#define ARCH_IS_64BIT
-#define ARCH_IS_IA64
-#endif
-
 #endif
 
 #ifdef USE_CIN_THEORA
