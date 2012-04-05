@@ -23,6 +23,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "gl_shader.h"
 
+#if defined( USE_GLSL_OPTIMIZER )
+#include "../../libs/glsl-optimizer/src/glsl/glsl_optimizer.h"
+
+struct glslopt_ctx *s_glslOptimizer;
+
+#endif
 // *INDENT-OFF*
 
 GLShader_generic                         *gl_genericShader = NULL;
@@ -209,6 +215,9 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 	char        *libsBuffer; // all libs concatenated
 
 	char        **libs = ( char ** ) &libShaderNames;
+#ifdef USE_GLSL_OPTIMIZER
+	bool        optimize = true;
+#endif
 
 	std::string shaderText;
 
@@ -720,7 +729,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 #if defined( USE_GLSL_OPTIMIZER )
 
-		if ( glConfig.driverType != GLDRV_OPENGL3 && optimize )
+		if ( GLDRV_OPENGL3 && optimize )
 		{
 			static char         msgPart[ 1024 ];
 			int                 length = 0;
@@ -757,8 +766,6 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 				}
 
 				ri.Printf( PRINT_WARNING, " END-- ---------------------------------------------------\n", filename );
-
-				glShaderSource( shader, 1, ( const GLchar ** ) &newSource, &length );
 				shaderText = std::string( newSource, length );
 			}
 			else
@@ -775,7 +782,8 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 					ri.Printf( PRINT_ALL, "%s\n", msgPart );
 				}
 
-				ri.Error( ERR_FATAL, "Couldn't optimize %s", filename );
+				ri.Printf( PRINT_ALL, "^1Couldn't optimize %s", filename );
+				shaderText = std::string( bufferFinal, sizeFinal );
 			}
 
 			glslopt_shader_delete( shaderOptimized );
@@ -1705,11 +1713,6 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world() :
 
 	int endTime = ri.Milliseconds();
 	ri.Printf( PRINT_ALL, "...compiled %i vertexLighting_DBS_world shader permutations in %5.2f seconds\n", ( int ) numCompiled, ( endTime - startTime ) / 1000.0 );
-
-	if( r_recompileShaders->integer )
-	{
-		r_recompileShaders->integer = 0;
-	}
 }
 
 GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ() :

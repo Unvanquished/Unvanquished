@@ -3044,4 +3044,8 @@ extern GLShader_blurX                           *gl_blurXShader;
 extern GLShader_blurY                           *gl_blurYShader;
 extern GLShader_debugShadowMap                  *gl_debugShadowMapShader;
 
+#ifdef USE_GLSL_OPTIMIZER
+extern struct glslopt_ctx *s_glslOptimizer;
+#endif
+
 #endif // GL_SHADER_H
