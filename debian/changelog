@@ -5,6 +5,7 @@ unvanquished (0.3.0-2) unstable; urgency=low
     that the downloaded files have to be moved.
     *** NOTE: downgrades are NOT supported!
   * Don't load native plugins from the user directory.
+  * Fix r_glForceDriver.
 
  -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 02 Apr 2012 21:23:10 +0100
 
