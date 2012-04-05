@@ -546,7 +546,7 @@ void RunThreadsOn(int workcnt, qboolean showpacifier, void (*func) (int))
 		for(i = 0; i < numthreads; i++)
 		{
 			/* Default pthread attributes: joinable & non-realtime scheduling */
-			if(pthread_create(&work_threads[i], NULL, (void *)func, (void *)i) != 0)
+			if(pthread_create(&work_threads[i], NULL, (void *(*)(void *))func, (void *)(long)i) != 0) // long should be intptr_t
 				Error("pthread_create failed");
 		}
 		for(i = 0; i < numthreads; i++)

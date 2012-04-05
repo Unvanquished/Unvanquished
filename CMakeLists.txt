@@ -332,7 +332,7 @@ if( USE_CPUINFO )
   set( CPUINFOLIST
     ${MOUNT_DIR}/libs/cpuinfo/CPUInfo.c
   )
-  add_definitions( -DNOCPUINFO )
+  add_definitions( -DUSE_CPUINFO )
 endif()
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
@@ -1062,8 +1062,6 @@ if( BUILD_CLIENT )
 
   # This section finds and provides REQUIRED dependencies to target client
   find_package( OpenGL REQUIRED )
-  find_package( JPEG )
-  find_package( PNG )
   find_package( SDL REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
@@ -1078,16 +1076,6 @@ if( BUILD_CLIENT )
     find_package( Nettle REQUIRED )
     include_directories( ${NETTLE_INCLUDE_DIRS} )
     target_link_libraries( client ${NETTLE_LIBRARIES} )
-  endif()
-
-  if( JPEG_FOUND )
-    include_directories( ${JPEG_INCLUDE_DIR} )
-    target_link_libraries( client ${JPEG_LIBRARIES} )
-  endif()
-
-  if( PNG_FOUND )
-    include_directories( ${PNG_INCLUDE_DIR} )
-    target_link_libraries( client ${PNG_LIBRARIES} )
   endif()
 
     include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
