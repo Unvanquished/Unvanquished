@@ -214,6 +214,7 @@ struct gentity_s
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on
 	// every single frame.. so only do it periodically
 	int         clientSpawnTime; // the time until this spawn can spawn a client
+	int         spawnBlockTime; // timer for anti spawn-block
 
 	int         credits[ MAX_CLIENTS ]; // human credits for each client
 	int         killedBy; // clientNum of killer
@@ -731,6 +732,7 @@ void     G_StopFromFollowing( gentity_t *ent );
 void     G_FollowLockView( gentity_t *ent );
 qboolean G_FollowNewClient( gentity_t *ent, int dir );
 void     G_ToggleFollow( gentity_t *ent );
+qboolean G_MatchOnePlayer( const int *plist, int found, char *err, int len );
 int      G_ClientNumberFromString( char *s, char *err, int len );
 int      G_ClientNumbersFromString( char *s, int *plist, int max );
 char     *ConcatArgs( int start );
@@ -1072,6 +1074,9 @@ void     G_InitMapRotations( void );
 void     G_ShutdownMapRotations( void );
 qboolean G_MapExists( char *name );
 void     G_ClearRotationStack( void );
+void     G_MapLog_NewMap( void );
+void     G_MapLog_Result( char result );
+void     Cmd_MapLog_f( gentity_t *ent );
 
 //
 // g_namelog.c
@@ -1166,6 +1171,7 @@ extern  vmCvar_t g_mapRotationNodes;
 extern  vmCvar_t g_mapRotationStack;
 extern  vmCvar_t g_nextMap;
 extern  vmCvar_t g_initialMapRotation;
+extern  vmCvar_t g_mapLog;
 extern  vmCvar_t g_sayAreaRange;
 
 extern  vmCvar_t g_debugVoices;
@@ -1175,6 +1181,7 @@ extern  vmCvar_t g_floodMaxDemerits;
 extern  vmCvar_t g_floodMinTime;
 
 extern  vmCvar_t g_shove;
+extern  vmCvar_t g_antiSpawnBlock;
 
 extern  vmCvar_t g_mapConfigs;
 

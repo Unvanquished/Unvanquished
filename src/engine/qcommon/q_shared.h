@@ -1570,7 +1570,7 @@ extern "C" {
 #define CVAR_TEMP                256 // can be set even when cheats are disabled, but is not archived
 #define CVAR_CHEAT               512 // can not be changed if cheats are disabled
 #define CVAR_NORESTART           1024 // do not clear when a cvar_restart is issued
-#define CVAR_WOLFINFO            2048 // DHM - NERVE :: Like userinfo, but for wolf multiplayer info
+#define CVAR_SHADER              2048 // tell renderer to recompile shaders.
 
 #define CVAR_UNSAFE              4096 // ydnar: unsafe system cvars (renderer, sound settings, anything that might cause a crash)
 #define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: WONT automatically send this to clients, but server browsers will see it

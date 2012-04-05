@@ -630,8 +630,19 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 		if ( level.time > client->inactivityTime &&
 		     !G_admin_permission( ent, ADMF_ACTIVITY ) )
 		{
-			trap_DropClient( client - level.clients, "Dropped due to inactivity", 0 );
-			return qfalse;
+			if( strchr( g_inactivity.string, 's' ) )
+			{
+				trap_SendServerCommand( -1,
+				                        va( "print \"%s^7 moved from %s to spectators due to inactivity\n\"",
+				                            client->pers.netname, BG_TeamName( client->pers.teamSelection ) ) );
+				G_LogPrintf( "Inactivity: %d", (int)( client - level.clients ) );
+				G_ChangeTeam( ent, TEAM_NONE );
+			}
+			else
+			{
+				trap_DropClient( client - level.clients, "Dropped due to inactivity", 0 );
+				return qfalse;
+			}
 		}
 
 		if ( level.time > client->inactivityTime - 10000 &&
@@ -639,7 +650,9 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 		     !G_admin_permission( ent, ADMF_ACTIVITY ) )
 		{
 			client->inactivityWarning = qtrue;
-			trap_SendServerCommand( client - level.clients, "cp \"Ten seconds until inactivity drop!\n\"" );
+			trap_SendServerCommand( client - level.clients,
+			                        va( "cp \"Ten seconds until inactivity %s!\n\"",
+			                            strchr( g_inactivity.string, 's' ) ? "spectate" : "drop" ) );
 		}
 	}
 

@@ -121,6 +121,46 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 	return NULL;
 }
 
+/*
+===============
+G_PuntBlocker
+
+Move spawn blockers
+===============
+*/
+static void G_PuntBlocker( gentity_t *self, gentity_t *blocker )
+{
+	vec3_t nudge;
+	if( self )
+	{
+		if( !self->spawnBlockTime )
+		{
+			// begin timer
+			self->spawnBlockTime = level.time;
+			return;
+		}
+		else if( level.time - self->spawnBlockTime > 10000 )
+		{
+			// still blocked, get rid of them
+			G_Damage( blocker, NULL, NULL, NULL, NULL, 10000, 0, MOD_TRIGGER_HURT );
+			self->spawnBlockTime = 0;
+			return;
+		}
+		else if( level.time - self->spawnBlockTime < 5000 )
+		{
+			// within grace period
+			return;
+		}
+	}
+
+	nudge[ 0 ] = crandom() * 100.0f;
+	nudge[ 1 ] = crandom() * 100.0f;
+	nudge[ 2 ] = 75.0f;
+
+	VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
+	trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
+}
+
 #define POWER_REFRESH_TIME 2000
 
 /*
@@ -1017,11 +1057,20 @@ void ASpawn_Think( gentity_t *self )
 					G_Damage( self, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
 					return;
 				}
+				else if( g_antiSpawnBlock.integer &&
+				         ent->client && ent->client->pers.teamSelection == TEAM_ALIENS )
+				{
+					G_PuntBlocker( self, ent );
+				}
 
 				if ( ent->s.eType == ET_CORPSE )
 				{
 					G_FreeEntity( ent );  //quietly remove
 				}
+			}
+			else
+			{
+				self->spawnBlockTime = 0;
 			}
 		}
 	}
@@ -1929,11 +1978,20 @@ void HSpawn_Think( gentity_t *self )
 					G_Damage( self, NULL, NULL, NULL, NULL, self->health, 0, MOD_SUICIDE );
 					return;
 				}
+				else if( g_antiSpawnBlock.integer &&
+				         ent->client && ent->client->pers.teamSelection == TEAM_HUMANS )
+				{
+					G_PuntBlocker( self, ent );
+				}
 
 				if ( ent->s.eType == ET_CORPSE )
 				{
 					G_FreeEntity( ent );  //quietly remove
 				}
+			}
+			else
+			{
+				self->spawnBlockTime = 0;
 			}
 		}
 	}
