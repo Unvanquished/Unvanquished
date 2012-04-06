@@ -31,6 +31,7 @@ extern "C" {
 #ifdef USE_LLVM
 
 #include "vm_llvm.h"
+#include "../sys/sys_loadlib.h"
 #include <stdint.h>
 #include <ctype.h>
 #include <llvm/Module.h>
@@ -53,6 +54,35 @@ extern "C" {
 #endif
 
 static ExecutionEngine *engine = NULL;
+
+static void *VM_LookupSym( const std::string& symbol )
+{
+#define EXPORTFUNC(fn) { #fn, (void *) fn }
+	static const struct {
+		const char *name;
+		void       *func;
+	} lookup[] = {
+		EXPORTFUNC(Q_strncpyz),
+		EXPORTFUNC(Q_vsnprintf),
+		{}
+	};
+
+	if ( com_developer->integer ) {
+		Com_Printf( "-> Look up symbol %s\n", symbol.c_str() );
+	}
+
+	// our symbols
+	for (int i = 0; lookup[ i ].name; ++i) {
+		if ( symbol == lookup[ i ].name ) {
+			return lookup[ i ].func;
+		}
+	}
+
+	// imported symbols (using global scope)
+	// ** Once we have things working properly, should return NULL
+	//    for most, if not all, symbol names
+	return Sys_LoadFunction( NULL, symbol.c_str() );
+}
 
 void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	char name[MAX_QPATH];
@@ -117,6 +147,8 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 			Com_Printf("Couldn't create ExecutionEngine: %s\n", str.c_str());
 			return NULL;
 		}
+		engine->DisableSymbolSearching();
+		engine->InstallLazyFunctionCreator( VM_LookupSym );
 	} else {
 		engine->addModule( module );
 	}
