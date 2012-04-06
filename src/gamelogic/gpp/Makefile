@@ -39,17 +39,14 @@ CGAMEFLAGS := -DCGAMEDLL -DCGAME
 UIFLAGS    := -DUIDLL
 
 vms-unv.pk3: bitcode
-	zip -9 vms-unv.pk3 *.bc
+	zip -9 vms-unv.pk3 vm/*.bc
 
 all32: build
 	$(MAKE) ARCH=32 .all
 all64: build
 	$(MAKE) ARCH=64 .all
 
-build:
-	mkdir -p build
-
-.all: ui$(APPEND).bc # game$(APPEND).bc cgame$(APPEND).bc
+.all: vm/ui$(APPEND).bc # vm/game$(APPEND).bc vm/cgame$(APPEND).bc
 
 build/q_shared$(APPEND).game.bc: ../../../src/engine/qcommon/q_shared.c
 	@$(ECHO) Compiling: $<
@@ -75,15 +72,15 @@ build/q_math$(APPEND).ui.bc: ../../../src/engine/qcommon/q_math.c
 	@$(ECHO) Compiling: $<
 	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
 
-%$(APPEND).game.bc: %.c
+build/%$(APPEND).game.bc: %.c
 	@$(ECHO) Compiling: $<
 	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
 
-%$(APPEND).cgame.bc: %.c
+build/%$(APPEND).cgame.bc: %.c
 	@$(ECHO) Compiling: $<
 	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
 
-%$(APPEND).ui.bc: %.c
+build/%$(APPEND).ui.bc: %.c
 	@$(ECHO) Compiling: $<
 	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
 
@@ -119,11 +116,11 @@ GAME_SOURCES := \
 	../../../src/engine/qcommon/q_shared.c \
 	src/game/g_api.c
 
-GAME_OBJS := $(subst ../../../src/engine/qcommon/,build/,$(GAME_SOURCES:.c=$(APPEND).game.bc))
+GAME_OBJS := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(GAME_SOURCES:.c=$(APPEND).game.bc)))
 
-game$(APPEND).bc: TARGETFLAGS=$(GAMEFLAGS)
-game$(APPEND).bc: TARGET=.game
-game$(APPEND).bc: $(GAME_OBJS)
+vm/game$(APPEND).bc: TARGETFLAGS=$(GAMEFLAGS)
+vm/game$(APPEND).bc: TARGET=.game
+vm/game$(APPEND).bc: vm $(GAME_OBJS)
 	@$(ECHO) Linking: $@
 	@$(SHLINK) $(GAME_OBJS) -o $@
 
@@ -161,11 +158,11 @@ CGAME_SOURCES := \
 	../../../src/engine/qcommon/q_shared.c \
 	src/cgame/cg_api.c
 
-CGAME_OBJS := $(subst ../../../src/engine/qcommon/,build/,$(CGAME_SOURCES:.c=$(APPEND).cgame.bc))
+CGAME_OBJS := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(CGAME_SOURCES:.c=$(APPEND).cgame.bc)))
 
-cgame$(APPEND).bc: TARGETFLAGS=$(CGAMEFLAGS)
-cgame$(APPEND).bc: TARGET=.cgame
-cgame$(APPEND).bc: $(CGAME_OBJS)
+vm/cgame$(APPEND).bc: TARGETFLAGS=$(CGAMEFLAGS)
+vm/cgame$(APPEND).bc: TARGET=.cgame
+vm/cgame$(APPEND).bc: vm $(CGAME_OBJS)
 	@$(ECHO) Linking: $@
 	@$(SHLINK) $(CGAME_OBJS) -o $@
 
@@ -180,16 +177,25 @@ UI_SOURCES := \
 	../../../src/engine/qcommon/q_shared.c \
 	src/ui/ui_api.c
 
-UI_OBJS := $(subst ../../../src/engine/qcommon/,build/,$(UI_SOURCES:.c=$(APPEND).ui.bc))
+UI_OBJS := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(UI_SOURCES:.c=$(APPEND).ui.bc)))
 
-ui$(APPEND).bc: TARGETFLAGS=$(CGAMEFLAGS)
-ui$(APPEND).bc: TARGET=.ui
-ui$(APPEND).bc: $(UI_OBJS)
+vm/ui$(APPEND).bc: TARGETFLAGS=$(CGAMEFLAGS)
+vm/ui$(APPEND).bc: TARGET=.ui
+vm/ui$(APPEND).bc: vm $(UI_OBJS)
 	@$(ECHO) Linking: $@
 	@$(SHLINK) $(UI_OBJS) -o $@
+
+vm:
+	mkdir vm
+
+$(GAME_OBJS) $(CGAME_OBJS) $(UI_OBJS): build
+
+build:
+	mkdir -p $(dir $(GAME_OBJS) $(CGAME_OBJS) $(UI_OBJS))
 
 clean:
 	@$(ECHO) Removing "build" directory from ./
 	@rm -rf build/
 	@$(ECHO) Removing "*.bc" files
 	@find -name '*.bc' -delete
+	@rm -rf vm
