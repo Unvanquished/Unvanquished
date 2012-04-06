@@ -44,7 +44,7 @@ all pk3: vms-unv.pk3
 vms-unv.pk3: bitcode
 	zip -9 vms-unv.pk3 vm/*.bc
 
-bitcode: vm/ui.bc # vm/qagame.bc vm/cgame.bc
+bitcode: vm/ui.bc vm/qagame.bc vm/cgame.bc
 
 vm/cgame.bc vm/qagame.bc vm/ui.bc: vm/%.bc: vm vm/%_32.bc vm/%_64.bc
 
