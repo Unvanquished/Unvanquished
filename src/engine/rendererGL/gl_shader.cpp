@@ -808,6 +808,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) const
 {
+#ifdef GLEW_ARB_get_program_binary
 	GLint   binaryLength;
 	GLvoid  *binary;
 	GLenum  binaryFormat;
@@ -827,10 +828,12 @@ void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) con
 	ri.FS_WriteFile( va( "glsl/%s_%d.bin", pname, i ), binary, binaryLength + sizeof( GLenum ) );
 
 	free( binary );
+#endif
 }
 
 bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) const
 {
+#ifdef GLEW_ARB_get_program_binary
 	GLint  binaryLength, success;
 	GLvoid *binary;
 	GLenum binaryFormat;
@@ -862,6 +865,9 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 		return false;
 	}
 	return true;
+#else
+        return false;
+#endif
 }
 
 void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
@@ -1067,11 +1073,13 @@ void GLShader::LinkProgram( GLuint program ) const
 {
 	GLint linked;
 
+#ifdef GLEW_ARB_get_program_binary
 	// Apparently, this is necessary to get the binary program via glGetProgramBinary
 	if( GLEW_ARB_get_program_binary )
 	{
 		glProgramParameteri( program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE );
 	}
+#endif
 	glLinkProgram( program );
 
 	glGetProgramiv( program, GL_LINK_STATUS, &linked );
