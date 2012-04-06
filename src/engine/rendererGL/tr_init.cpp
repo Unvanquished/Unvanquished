@@ -526,7 +526,7 @@ extern "C" {
 	{
 		vidmode_t *vm;
 
-		if ( mode < -1 )
+		if ( mode < -2 )
 		{
 			return qfalse;
 		}
@@ -536,19 +536,25 @@ extern "C" {
 			return qfalse;
 		}
 
-		if ( mode == -1 )
+		if( mode == -2) 
+		{
+			// Must set width and height to display size before calling this function!
+			*windowAspect = ( float ) *width / *height;
+		}
+		else if ( mode == -1 )
 		{
 			*width = r_customwidth->integer;
 			*height = r_customheight->integer;
 			*windowAspect = r_customaspect->value;
-			return qtrue;
+		} 
+		else 
+		{
+			vm = &r_vidModes[ mode ];
+
+			*width = vm->width;
+			*height = vm->height;
+			*windowAspect = ( float ) vm->width / ( vm->height * vm->pixelAspect );
 		}
-
-		vm = &r_vidModes[ mode ];
-
-		*width = vm->width;
-		*height = vm->height;
-		*windowAspect = ( float ) vm->width / ( vm->height * vm->pixelAspect );
 
 		return qtrue;
 	}
