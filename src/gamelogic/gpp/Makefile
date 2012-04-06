@@ -44,15 +44,15 @@ all pk3: vms-unv.pk3
 vms-unv.pk3: bitcode
 	zip -9 vms-unv.pk3 vm/*.bc
 
-bitcode: vm/ui.bc # vm/game.bc vm/cgame.bc
+bitcode: vm/ui.bc # vm/qagame.bc vm/cgame.bc
 
-vm/cgame.bc vm/game.bc vm/ui.bc: vm/%.bc: vm vm/%_32.bc vm/%_64.bc
+vm/cgame.bc vm/qagame.bc vm/ui.bc: vm/%.bc: vm vm/%_32.bc vm/%_64.bc
 
-vm/cgame_32.bc vm/game_32.bc vm/ui_32.bc: ARCHFLAG = -m32
-vm/cgame_32.bc vm/game_32.bc vm/ui_32.bc: APPEND = _32
+vm/cgame_32.bc vm/qagame_32.bc vm/ui_32.bc: ARCHFLAG = -m32
+vm/cgame_32.bc vm/qagame_32.bc vm/ui_32.bc: APPEND = _32
 
-vm/cgame_64.bc vm/game_64.bc vm/ui_64.bc: ARCHFLAG = -m64
-vm/cgame_64.bc vm/game_64.bc vm/ui_64.bc: APPEND = _64
+vm/cgame_64.bc vm/qagame_64.bc vm/ui_64.bc: ARCHFLAG = -m64
+vm/cgame_64.bc vm/qagame_64.bc vm/ui_64.bc: APPEND = _64
 
 # Sources
 
@@ -163,13 +163,13 @@ GAME_SOURCES := \
 GAME_OBJS_32 := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(GAME_SOURCES:.c=_32.game.bc)))
 GAME_OBJS_64 := $(subst _32,_64,$(GAME_OBJS_32))
 
-vm/game_32.bc vm/game_64.bc: TARGETFLAGS=$(GAMEFLAGS)
+vm/qagame_32.bc vm/qagame_64.bc: TARGETFLAGS=$(GAMEFLAGS)
 
-vm/game_32.bc: build vm $(GAME_OBJS_32)
+vm/qagame_32.bc: build vm $(GAME_OBJS_32)
 	$(ECHOLINK)
 	$(AT)$(SHLINK) $(GAME_OBJS_32) -o $@
 
-vm/game_64.bc: build vm $(GAME_OBJS_64)
+vm/qagame_64.bc: build vm $(GAME_OBJS_64)
 	$(ECHOLINK)
 	$(AT)$(SHLINK) $(GAME_OBJS_64) -o $@
 
