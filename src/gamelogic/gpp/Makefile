@@ -234,7 +234,7 @@ UI_SOURCES := \
 UI_OBJS_32 := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(UI_SOURCES:.c=_32.ui.bc)))
 UI_OBJS_64 := $(subst _32,_64,$(UI_OBJS_32))
 
-vm/ui_32.bc vm/ui_64.bc: TARGETFLAGS=$(CGAMEFLAGS)
+vm/ui_32.bc vm/ui_64.bc: TARGETFLAGS=$(UIFLAGS)
 
 vm/ui_32.bc: vm $(UI_OBJS_32)
 	$(ECHOLINK)
