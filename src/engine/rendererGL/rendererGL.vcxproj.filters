@@ -31,6 +31,15 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{22494e89-45fb-425e-97bc-b5b0d3bf7f5c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Libs\glsl_optimizer">
+      <UniqueIdentifier>{2b80e230-d6a4-45f3-a49f-610c28996774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\glsl_optimizer\Source Files">
+      <UniqueIdentifier>{c463220d-9860-4b41-8e37-96ab63f6f63b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs\glsl_optimizer\Header Files">
+      <UniqueIdentifier>{d7fa0273-fb51-476c-b2c3-164a3e64c151}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gl_shader.cpp">
@@ -312,6 +321,234 @@
     <ClCompile Include="tr_image_webp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ast_expr.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ast_function.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ast_to_hir.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ast_type.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\builtin_function.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\glsl_lexer.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\glsl_optimizer.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\glsl_parser.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\glsl_parser_extras.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\glsl_symbol_table.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\glsl_types.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\hir_field_selection.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_basic_block.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_clone.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_constant_expression.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_expression_flattening.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_function.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_function_can_inline.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_function_detect_recursion.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_hierarchical_visitor.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_hv_accept.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_import_prototypes.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_print_glsl_visitor.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_print_visitor.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_reader.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_rvalue_visitor.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_set_program_inouts.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_unused_structs.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_validate.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_variable.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ir_variable_refcount.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\link_functions.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\linker.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\loop_analysis.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\loop_controls.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\loop_unroll.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_discard.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_if_to_cond_assign.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_instructions.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_jumps.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_mat_op_to_vec.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_noise.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_texture_projection.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_variable_index_to_cond_assign.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_vec_index_to_cond_assign.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_vec_index_to_swizzle.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\lower_vector.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\main.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_algebraic.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_constant_folding.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_constant_propagation.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_constant_variable.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_copy_propagation.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_copy_propagation_elements.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_dead_code.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_dead_code_local.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_dead_functions.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_discard_simplification.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_function_inlining.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_if_simplification.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_noop_swizzle.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_redundant_jumps.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_structure_splitting.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_swizzle_swizzle.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\opt_tree_grafting.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\s_expression.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\standalone_scaffolding.cpp">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\glcpp\glcpp-lex.c">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\glcpp\glcpp-parse.c">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\glcpp\pp.c">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\ralloc.c">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\glsl\strtod.c">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\mesa\program\hash_table.c">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\mesa\program\symbol_table.c">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\glsl-optimizer\src\getopt\getopt_long.c">
+      <Filter>Libs\glsl_optimizer\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gl_shader.h">
@@ -373,6 +610,102 @@
     </ClInclude>
     <ClInclude Include="..\renderer\tr_types.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ast.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\builtin_types.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\builtin_variables.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\glsl_optimizer.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\glsl_parser.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\glsl_parser_extras.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\glsl_symbol_table.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\glsl_types.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_basic_block.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_expression_flattening.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_function_inlining.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_hierarchical_visitor.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_optimization.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_print_glsl_visitor.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_print_visitor.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_reader.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_rvalue_visitor.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_unused_structs.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_variable_refcount.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ir_visitor.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\linker.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\list.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\loop_analysis.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\program.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ralloc.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\s_expression.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\standalone_scaffolding.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\strtod.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\glcpp\glcpp.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\glcpp\glcpp-parse.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\getopt\getopt.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
