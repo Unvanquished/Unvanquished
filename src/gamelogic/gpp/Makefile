@@ -1,10 +1,6 @@
 # Author: Zoltán Kéri <k.z0lik4@gmail.com>
 # Heavily rewritten by Darren Salt
 
-all pk3: vms-unv.pk3
-
-bitcode: all32 all64
-
 CC       := clang
 SHLINK   := llvm-link
 MARCH    := $(shell uname -m)
@@ -22,13 +18,16 @@ else
     CCFLAGS := -w -DNDEBUG -DQ3_VM -g -O4 -emit-llvm -nostdinc -S
 endif
 
-ifeq ($(ARCH), 32)
-    CCFLAGS += -m32
-    APPEND = _32
-endif
-ifeq ($(ARCH), 64)
-    CCFLAGS += -m64
-    APPEND = _64
+ifeq ($(VERBOSE),)
+    ECHO := @echo
+    ECHOCOMPILE = @echo "   LLVMCC" $@
+    ECHOLINK = @echo "   LLVMLD" $@
+    AT := @
+else
+    ECHO := @:
+    ECHOCOMPILE := @
+    ECHOLINK := @
+    AT :=
 endif
 
 # CCFLAGS := -w -DNDEBUG -O4 -emit-llvm -S
@@ -38,51 +37,96 @@ GAMEFLAGS  := -DGAMEDLL
 CGAMEFLAGS := -DCGAMEDLL -DCGAME
 UIFLAGS    := -DUIDLL
 
+# Main targets
+
+all pk3: vms-unv.pk3
+
 vms-unv.pk3: bitcode
 	zip -9 vms-unv.pk3 vm/*.bc
 
-all32: build
-	$(MAKE) ARCH=32 .all
-all64: build
-	$(MAKE) ARCH=64 .all
+bitcode: vm/ui.bc # vm/game.bc vm/cgame.bc
 
-.all: vm/ui$(APPEND).bc # vm/game$(APPEND).bc vm/cgame$(APPEND).bc
+vm/cgame.bc vm/game.bc vm/ui.bc: vm/%.bc: vm vm/%_32.bc vm/%_64.bc
 
-build/q_shared$(APPEND).game.bc: ../../../src/engine/qcommon/q_shared.c
-	@$(ECHO) Compiling: $<
-	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
+vm/cgame_32.bc vm/game_32.bc vm/ui_32.bc: ARCHFLAG = -m32
+vm/cgame_32.bc vm/game_32.bc vm/ui_32.bc: APPEND = _32
 
-build/q_shared$(APPEND).cgame.bc: ../../../src/engine/qcommon/q_shared.c
-	@$(ECHO) Compiling: $<
-	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
+vm/cgame_64.bc vm/game_64.bc vm/ui_64.bc: ARCHFLAG = -m64
+vm/cgame_64.bc vm/game_64.bc vm/ui_64.bc: APPEND = _64
 
-build/q_shared$(APPEND).ui.bc: ../../../src/engine/qcommon/q_shared.c
-	@$(ECHO) Compiling: $<
-	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
+# Sources
 
-build/q_math$(APPEND).game.bc: ../../../src/engine/qcommon/q_math.c
-	@$(ECHO) Compiling: $<
-	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
+build/q_shared_32.game.bc: ../../../src/engine/qcommon/q_shared.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
 
-build/q_math$(APPEND).cgame.bc: ../../../src/engine/qcommon/q_math.c
-	@$(ECHO) Compiling: $<
-	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
+build/q_shared_64.game.bc: ../../../src/engine/qcommon/q_shared.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
 
-build/q_math$(APPEND).ui.bc: ../../../src/engine/qcommon/q_math.c
-	@$(ECHO) Compiling: $<
-	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
+build/q_shared_32.cgame.bc: ../../../src/engine/qcommon/q_shared.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
 
-build/%$(APPEND).game.bc: %.c
-	@$(ECHO) Compiling: $<
-	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
+build/q_shared_64.cgame.bc: ../../../src/engine/qcommon/q_shared.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
 
-build/%$(APPEND).cgame.bc: %.c
-	@$(ECHO) Compiling: $<
-	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
+build/q_shared_32.ui.bc: ../../../src/engine/qcommon/q_shared.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
 
-build/%$(APPEND).ui.bc: %.c
-	@$(ECHO) Compiling: $<
-	@$(CC) $(CCFLAGS) $(TARGETFLAGS) $< -o $@
+build/q_shared_64.ui.bc: ../../../src/engine/qcommon/q_shared.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/q_math_32.game.bc: ../../../src/engine/qcommon/q_math.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/q_math_64.game.bc: ../../../src/engine/qcommon/q_math.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/q_math_32.cgame.bc: ../../../src/engine/qcommon/q_math.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/q_math_64.cgame.bc: ../../../src/engine/qcommon/q_math.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/q_math_32.ui.bc: ../../../src/engine/qcommon/q_math.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/q_math_64.ui.bc: ../../../src/engine/qcommon/q_math.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/%_32.game.bc: %.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/%_64.game.bc: %.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/%_32.cgame.bc: %.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/%_64.cgame.bc: %.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/%_32.ui.bc: %.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
+
+build/%_64.ui.bc: %.c
+	$(ECHOCOMPILE)
+	$(AT)$(CC) $(CCFLAGS) $(ARCHFLAG) $(TARGETFLAGS) $< -o $@
 
 GAME_SOURCES := \
 	src/game/g_main.c \
@@ -116,13 +160,18 @@ GAME_SOURCES := \
 	../../../src/engine/qcommon/q_shared.c \
 	src/game/g_api.c
 
-GAME_OBJS := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(GAME_SOURCES:.c=$(APPEND).game.bc)))
+GAME_OBJS_32 := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(GAME_SOURCES:.c=_32.game.bc)))
+GAME_OBJS_64 := $(subst _32,_64,$(GAME_OBJS_32))
 
-vm/game$(APPEND).bc: TARGETFLAGS=$(GAMEFLAGS)
-vm/game$(APPEND).bc: TARGET=.game
-vm/game$(APPEND).bc: vm $(GAME_OBJS)
-	@$(ECHO) Linking: $@
-	@$(SHLINK) $(GAME_OBJS) -o $@
+vm/game_32.bc vm/game_64.bc: TARGETFLAGS=$(GAMEFLAGS)
+
+vm/game_32.bc: build vm $(GAME_OBJS_32)
+	$(ECHOLINK)
+	$(AT)$(SHLINK) $(GAME_OBJS_32) -o $@
+
+vm/game_64.bc: build vm $(GAME_OBJS_64)
+	$(ECHOLINK)
+	$(AT)$(SHLINK) $(GAME_OBJS_64) -o $@
 
 CGAME_SOURCES := \
 	src/cgame/cg_main.c \
@@ -158,13 +207,18 @@ CGAME_SOURCES := \
 	../../../src/engine/qcommon/q_shared.c \
 	src/cgame/cg_api.c
 
-CGAME_OBJS := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(CGAME_SOURCES:.c=$(APPEND).cgame.bc)))
+CGAME_OBJS_32 := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(CGAME_SOURCES:.c=_32.cgame.bc)))
+CGAME_OBJS_64 := $(subst _32,_64,$(CGAME_OBJS_32))
 
-vm/cgame$(APPEND).bc: TARGETFLAGS=$(CGAMEFLAGS)
-vm/cgame$(APPEND).bc: TARGET=.cgame
-vm/cgame$(APPEND).bc: vm $(CGAME_OBJS)
-	@$(ECHO) Linking: $@
-	@$(SHLINK) $(CGAME_OBJS) -o $@
+vm/cgame_32.bc vm/cgame_64.bc: TARGETFLAGS=$(CGAMEFLAGS)
+
+vm/cgame_32.bc: vm $(CGAME_OBJS_32)
+	$(ECHOLINK)
+	$(AT)$(SHLINK) $(CGAME_OBJS_32) -o $@
+
+vm/cgame_64.bc: vm $(CGAME_OBJS_64)
+	$(ECHOLINK)
+	$(AT)$(SHLINK) $(CGAME_OBJS_64) -o $@
 
 UI_SOURCES := \
 	src/ui/ui_main.c \
@@ -177,25 +231,32 @@ UI_SOURCES := \
 	../../../src/engine/qcommon/q_shared.c \
 	src/ui/ui_api.c
 
-UI_OBJS := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(UI_SOURCES:.c=$(APPEND).ui.bc)))
+UI_OBJS_32 := $(addprefix build/,$(subst ../../../src/engine/qcommon/,,$(UI_SOURCES:.c=_32.ui.bc)))
+UI_OBJS_64 := $(subst _32,_64,$(UI_OBJS_32))
 
-vm/ui$(APPEND).bc: TARGETFLAGS=$(CGAMEFLAGS)
-vm/ui$(APPEND).bc: TARGET=.ui
-vm/ui$(APPEND).bc: vm $(UI_OBJS)
-	@$(ECHO) Linking: $@
-	@$(SHLINK) $(UI_OBJS) -o $@
+vm/ui_32.bc vm/ui_64.bc: TARGETFLAGS=$(CGAMEFLAGS)
 
-vm:
-	mkdir vm
+vm/ui_32.bc: vm $(UI_OBJS_32)
+	$(ECHOLINK)
+	$(AT)$(SHLINK) $(UI_OBJS_32) -o $@
+
+vm/ui_64.bc: vm $(UI_OBJS_64)
+	$(ECHOLINK)
+	$(AT)$(SHLINK) $(UI_OBJS_64) -o $@
+
+vm: build
+	$(ECHO) "   MKDIR  vm"
+	$(AT)mkdir -p vm
 
 $(GAME_OBJS) $(CGAME_OBJS) $(UI_OBJS): build
 
 build:
-	mkdir -p $(dir $(GAME_OBJS) $(CGAME_OBJS) $(UI_OBJS))
+	$(ECHO) "   MKDIR  build tree"
+	$(AT)mkdir -p $(dir $(GAME_OBJS_32) $(CGAME_OBJS_32) $(UI_OBJS_32))
 
 clean:
-	@$(ECHO) Removing "build" directory from ./
-	@rm -rf build/
-	@$(ECHO) Removing "*.bc" files
-	@find -name '*.bc' -delete
-	@rm -rf vm
+	$(ECHO) Removing "build" directory from ./
+	$(AT)rm -rf build/
+	$(ECHO) Removing "*.bc" files
+	$(AT)find -name '*.bc' -delete
+	$(AT)rm -rf vm
