@@ -1444,8 +1444,8 @@ botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer) {
 }
 botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 	//don't enter this task until we are given enough time to react to seeing the enemy
-	if(self->botMind->task != BOT_TASK_FIGHT && level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME)
-		return TASK_STOPPED;
+	if(level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME)
+		return TASK_RUNNING;
 
 	if(BotRoutePermission(self,BOT_TASK_FIGHT)) {
 		if(!self->botMind->bestEnemy.ent)
@@ -1778,8 +1778,9 @@ extern "C" void G_BotThink( gentity_t *self) {
 	gentity_t* bestEnemy = BotFindBestEnemy(self);
 
 	//if we do not already have an enemy, and we found an enemy, update the time that we found an enemy
-	if(!self->botMind->bestEnemy.ent && bestEnemy)
+	if(!self->botMind->bestEnemy.ent && bestEnemy && level.time - self->botMind->enemyLastSeen > BOT_ENEMY_CHASETIME) {
 		self->botMind->timeFoundEnemy = level.time;
+	} 
 
 	self->botMind->bestEnemy.ent = bestEnemy;
 	self->botMind->bestEnemy.distance = (!bestEnemy) ? 0 : Distance(self->s.origin,bestEnemy->s.origin);
