@@ -226,30 +226,10 @@ gentity_t* BotFindBuilding(gentity_t *self, int buildingType) {
 
 void BotFindClosestBuildings(gentity_t *self, botClosestBuildings_t *closest) {
 
-	botEntityAndDistance_t clear;
-	clear.ent = NULL;
-	clear.distance = -1;
+	memset(closest,0,sizeof(botClosestBuildings_t));
 
-	//reset closest struct
-	closest->egg =
-		closest->overmind =
-		closest->barricade =
-		closest->acidtube =
-		closest->trapper =
-		closest->booster =
-		closest->hive =
-		closest->telenode =
-		closest->turret =
-		closest->tesla =
-		closest->armoury =
-		closest->dcc =
-		closest->medistation =
-		closest->reactor =
-		closest->repeater = clear;
-
-	float newDist;
-	gentity_t *testEnt = &g_entities[MAX_CLIENTS];
-	for(int i=MAX_CLIENTS;i<ENTITYNUM_MAX_NORMAL;i++,testEnt++) {
+	for(gentity_t *testEnt = &g_entities[MAX_CLIENTS];testEnt<&g_entities[level.num_entities-1];testEnt++) {
+		float newDist;
 		//ignore entities that arnt in use
 		if(!testEnt->inuse)
 			continue;
@@ -262,115 +242,114 @@ void BotFindClosestBuildings(gentity_t *self, botClosestBuildings_t *closest) {
 		if(testEnt->s.eType != ET_BUILDABLE)
 			continue;
 
-		//skip human buildings that are curretly building or arn't powered
+		//skip human buildings that are currently building or arn't powered
 		if(testEnt->buildableTeam == TEAM_HUMANS && (!testEnt->powered || !testEnt->spawned))
 			continue;
 
 		newDist = Distance(self->s.origin,testEnt->s.origin);
 		switch(testEnt->s.modelindex) {
-		case BA_A_SPAWN:
-			if(newDist < closest->egg.distance || closest->egg.distance == -1) {
-				closest->egg.ent = testEnt;
-				closest->egg.distance = newDist;
-			}
-			break;
-		case BA_A_OVERMIND:
-			if(newDist < closest->overmind.distance || closest->overmind.distance == -1) {
-				closest->overmind.ent = testEnt;
-				closest->overmind.distance = newDist;
-			}
-			break;
-		case BA_A_BARRICADE:
-			if(newDist < closest->barricade.distance || closest->barricade.distance == -1) {
-				closest->barricade.ent = testEnt;
-				closest->barricade.distance = newDist;
-			}
-			break;
-		case BA_A_ACIDTUBE:
-			if(newDist < closest->acidtube.distance || closest->acidtube.distance == -1) {
-				closest->acidtube.ent = testEnt;
-				closest->acidtube.distance = newDist;
-			}
-			break;
-		case BA_A_TRAPPER:
-			if(newDist < closest->trapper.distance || closest->trapper.distance == -1) {
-				closest->trapper.ent = testEnt;
-				closest->trapper.distance = newDist;
-			}
-			break;
-		case BA_A_BOOSTER:
-			if(newDist < closest->booster.distance || closest->booster.distance == -1) {
-				closest->booster.ent = testEnt;
-				closest->booster.distance = newDist;
-			}
-			break;
-		case BA_A_HIVE:
-			if(newDist < closest->hive.distance || closest->hive.distance == -1) {
-				closest->hive.ent = testEnt;
-				closest->hive.distance = newDist;
-			}
-			break;
-		case BA_H_SPAWN:
-			if(newDist < closest->telenode.distance || closest->telenode.distance == -1) {
-				closest->telenode.ent = testEnt;
-				closest->telenode.distance = newDist;
-			}
-			break;
-		case BA_H_MGTURRET:
-			if(newDist < closest->turret.distance || closest->turret.distance == -1) {
-				closest->turret.ent = testEnt;
-				closest->turret.distance = newDist;
-			}
-			break;
-		case BA_H_TESLAGEN:
-			if(newDist < closest->tesla.distance || closest->tesla.distance == -1) {
-				closest->tesla.ent = testEnt;
-				closest->tesla.distance = newDist;
-			}
-			break;
-		case BA_H_ARMOURY:
-			if(newDist < closest->armoury.distance || closest->armoury.distance == -1) {
-				closest->armoury.ent = testEnt;
-				closest->armoury.distance = newDist;
-			}
-			break;
-		case BA_H_DCC:
-			if(newDist < closest->dcc.distance || closest->dcc.distance == -1) {
-				closest->dcc.ent = testEnt;
-				closest->dcc.distance = newDist;
-			}
-			break;
-		case BA_H_MEDISTAT:
-			if(newDist < closest->medistation.distance || closest->medistation.distance == -1) {
-				closest->medistation.ent = testEnt;
-				closest->medistation.distance = newDist;
-			}
-			break;
-		case BA_H_REACTOR:
-			if(newDist < closest->reactor.distance || closest->reactor.distance == -1) {
-				closest->reactor.ent = testEnt;
-				closest->reactor.distance = sqrt(newDist);
-			}
-			break;
-		case BA_H_REPEATER:
-			if(newDist < closest->repeater.distance || closest->repeater.distance == -1) {
-				closest->repeater.ent = testEnt;
-				closest->repeater.distance = newDist;
-			}
-			break;
+			case BA_A_SPAWN:
+				if(newDist < closest->egg.distance || closest->egg.distance == 0) {
+					closest->egg.ent = testEnt;
+					closest->egg.distance = newDist;
+				}
+				break;
+			case BA_A_OVERMIND:
+				if(newDist < closest->overmind.distance || closest->overmind.distance == 0) {
+					closest->overmind.ent = testEnt;
+					closest->overmind.distance = newDist;
+				}
+				break;
+			case BA_A_BARRICADE:
+				if(newDist < closest->barricade.distance || closest->barricade.distance == 0) {
+					closest->barricade.ent = testEnt;
+					closest->barricade.distance = newDist;
+				}
+				break;
+			case BA_A_ACIDTUBE:
+				if(newDist < closest->acidtube.distance || closest->acidtube.distance == 0) {
+					closest->acidtube.ent = testEnt;
+					closest->acidtube.distance = newDist;
+				}
+				break;
+			case BA_A_TRAPPER:
+				if(newDist < closest->trapper.distance || closest->trapper.distance == 0) {
+					closest->trapper.ent = testEnt;
+					closest->trapper.distance = newDist;
+				}
+				break;
+			case BA_A_BOOSTER:
+				if(newDist < closest->booster.distance || closest->booster.distance == 0) {
+					closest->booster.ent = testEnt;
+					closest->booster.distance = newDist;
+				}
+				break;
+			case BA_A_HIVE:
+				if(newDist < closest->hive.distance || closest->hive.distance == 0) {
+					closest->hive.ent = testEnt;
+					closest->hive.distance = newDist;
+				}
+				break;
+			case BA_H_SPAWN:
+				if(newDist < closest->telenode.distance || closest->telenode.distance == 0) {
+					closest->telenode.ent = testEnt;
+					closest->telenode.distance = newDist;
+				}
+				break;
+			case BA_H_MGTURRET:
+				if(newDist < closest->turret.distance || closest->turret.distance == 0) {
+					closest->turret.ent = testEnt;
+					closest->turret.distance = newDist;
+				}
+				break;
+			case BA_H_TESLAGEN:
+				if(newDist < closest->tesla.distance || closest->tesla.distance == 0) {
+					closest->tesla.ent = testEnt;
+					closest->tesla.distance = newDist;
+				}
+				break;
+			case BA_H_ARMOURY:
+				if(newDist < closest->armoury.distance || closest->armoury.distance == 0) {
+					closest->armoury.ent = testEnt;
+					closest->armoury.distance = newDist;
+				}
+				break;
+			case BA_H_DCC:
+				if(newDist < closest->dcc.distance || closest->dcc.distance == 0) {
+					closest->dcc.ent = testEnt;
+					closest->dcc.distance = newDist;
+				}
+				break;
+			case BA_H_MEDISTAT:
+				if(newDist < closest->medistation.distance || closest->medistation.distance == 0) {
+					closest->medistation.ent = testEnt;
+					closest->medistation.distance = newDist;
+				}
+				break;
+			case BA_H_REACTOR:
+				if(newDist < closest->reactor.distance || closest->reactor.distance == 0) {
+					closest->reactor.ent = testEnt;
+					closest->reactor.distance = sqrt(newDist);
+				}
+				break;
+			case BA_H_REPEATER:
+				if(newDist < closest->repeater.distance || closest->repeater.distance == 0) {
+					closest->repeater.ent = testEnt;
+					closest->repeater.distance = newDist;
+				}
+				break;
 		}
 	}
 }
 
 gentity_t* BotFindBestEnemy( gentity_t *self ) {
-	float newScore;
 	float bestVisibleEnemyScore = 0;
 	float bestInvisibleEnemyScore = 0;
-	gentity_t* bestVisibleEnemy = NULL;
-	gentity_t* bestInvisibleEnemy = NULL;
-	gentity_t *target;
+	gentity_t *bestVisibleEnemy = NULL;
+	gentity_t *bestInvisibleEnemy = NULL;
 
-	for(target=g_entities;target<&g_entities[level.num_entities];target++) {
+	for(gentity_t *target=g_entities;target<&g_entities[level.num_entities-1];target++) {
+		float newScore;
 		//ignore entities that arnt in use
 		if(!target->inuse)
 			continue;
@@ -418,24 +397,10 @@ gentity_t* BotFindBestEnemy( gentity_t *self ) {
 }
 
 gentity_t* BotFindClosestEnemy( gentity_t *self ) {
-	int vectorRange = MGTURRET_RANGE * 3;
-	int numEntities;
-	int entityList[ MAX_GENTITIES ];
-	float minDistance = Square(MGTURRET_RANGE * 3);
 	gentity_t* closestEnemy = NULL;
-	float newDistance;
-	vec3_t range;
-	vec3_t mins, maxs;
-	gentity_t *target;
-
-	VectorSet( range, vectorRange, vectorRange, vectorRange );
-	VectorAdd( self->client->ps.origin, range, maxs );
-	VectorSubtract( self->client->ps.origin, range, mins );
-	numEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-	for(int i=0;i<numEntities;i++) {
-		target = &g_entities[entityList[i]];
-
+	float minDistance = Square(ALIENSENSE_RANGE);
+	for(gentity_t *target = g_entities;target<&g_entities[level.num_entities-1];target++) {
+		float newDistance;
 		//ignore entities that arnt in use
 		if(!target->inuse)
 			continue;
@@ -462,7 +427,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self ) {
 				continue;
 		}
 		newDistance = DistanceSquared(self->s.origin,target->s.origin);
-		if(newDistance < minDistance) {
+		if(newDistance <= minDistance) {
 			minDistance = newDistance;
 			closestEnemy = target;
 		} 

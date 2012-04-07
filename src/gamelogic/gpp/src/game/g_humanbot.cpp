@@ -831,49 +831,31 @@ botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer) {
 }
 gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
 {
-	// The range of our scanning field.
-	int vectorRange = MGTURRET_RANGE * 5;
-	// vectorRange converted to a vector
-	vec3_t range;
-	// Lower bound vector
-	vec3_t mins;
-	// Upper bound vector
-	vec3_t maxs;
-	// Indexing field
-	int i;
-	// Entities located in scanning field
-	int total_entities;
-	//entitynumber fo the closest building
+	//closest building
 	gentity_t* closestBuilding = NULL;
 
-	//current test distance
-	long distance;
+	//minimum distance found
+	float minDistance = Square(ALIENSENSE_RANGE);
 
-	//minimun distance found
-	long minDistance = -1;
-	// Array which contains the located entities
-	int entityList[ MAX_GENTITIES ];
-	// Temporary entitiy
-	gentity_t *target;
-
-	VectorSet( range, vectorRange, vectorRange, vectorRange );
-	VectorAdd( self->client->ps.origin, range, maxs );
-	VectorSubtract( self->client->ps.origin, range, mins );
-
-	// Fetch all entities in the bounding box and iterate over them
-	// to locate the structures that belong to the team of the bot and that
-	// are not at full health.
-	total_entities = trap_EntitiesInBox(mins, maxs, entityList, MAX_GENTITIES);
-	for( i = 0; i < total_entities; ++i )
+	for( gentity_t *target = &g_entities[MAX_CLIENTS];target<&g_entities[level.num_entities-1]; target++ )
 	{
-		target = &g_entities[entityList[i]];
+		float distance;
+
+		if(target->s.eType != ET_BUILDABLE)
+			continue;
+		if(target->buildableTeam != TEAM_HUMANS)
+			continue;
+		if(target->health >= BG_Buildable((buildable_t)target->s.modelindex)->health)
+			continue;
+		if(target->health <= 0)
+			continue;
+		if(!target->spawned || !target->powered)
+			continue;
+
 		distance = DistanceSquared(self->s.origin, target->s.origin);
-		if(target->s.eType == ET_BUILDABLE && target->buildableTeam == TEAM_HUMANS &&
-			target->health < BG_Buildable((buildable_t)target->s.modelindex)->health 
-			&& target->health > 0 && target->spawned && target->powered && 
-			(distance < minDistance || minDistance == -1)) {
-				minDistance = distance;
-				closestBuilding = target;
+		if( distance <= minDistance ) {
+			minDistance = distance;
+			closestBuilding = target;
 		}
 	}
 	return closestBuilding;
