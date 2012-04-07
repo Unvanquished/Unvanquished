@@ -1496,12 +1496,12 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 			BotMoveToGoal(self, botCmdBuffer);
 		}
 	} else { //we see our target!!
-
+		qboolean inAttackRange;
 		//record the time we saw him
 		self->botMind->enemyLastSeen = level.time;
 
 		//only enter attacking AI if we can walk in a straight line to the enemy or we can hit him from our current position
-		if(self->botMind->numCorners == 1 || BotTargetInAttackRange(self, self->botMind->goal)) {
+		if(self->botMind->numCorners == 1 || (inAttackRange = BotTargetInAttackRange(self, self->botMind->goal))) {
 			vec3_t tmpVec;
 
 			//aim at the enemy
@@ -1516,7 +1516,7 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 			//fire our weapon if we are in range or have pain saw
 			//TODO: Make this better with BotAimNegligence?
-			if(BotTargetInAttackRange(self, self->botMind->goal) || self->client->ps.weapon == WP_PAIN_SAW) 
+			if(inAttackRange || self->client->ps.weapon == WP_PAIN_SAW) 
 				BotFireWeaponAI(self, botCmdBuffer);
 
 			//human specific attacking AI
