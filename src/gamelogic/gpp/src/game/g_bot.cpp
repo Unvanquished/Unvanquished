@@ -1776,9 +1776,10 @@ extern "C" void G_BotThink( gentity_t *self) {
 	//return;
 	//update closest structs
 	gentity_t* bestEnemy = BotFindBestEnemy(self);
-
+	botTarget_t target;
+	BotSetTarget(&target, bestEnemy, NULL);
 	//if we do not already have an enemy, and we found an enemy, update the time that we found an enemy
-	if(!self->botMind->bestEnemy.ent && bestEnemy && level.time - self->botMind->enemyLastSeen > BOT_ENEMY_CHASETIME) {
+	if(!self->botMind->bestEnemy.ent && bestEnemy && level.time - self->botMind->enemyLastSeen > BOT_ENEMY_CHASETIME && BotAimNegligence(self,target) > 45) {
 		self->botMind->timeFoundEnemy = level.time;
 	} 
 
