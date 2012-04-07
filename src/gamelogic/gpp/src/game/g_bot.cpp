@@ -1443,10 +1443,9 @@ botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer) {
 	}
 }
 botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
-
 	//don't enter this task until we are given enough time to react to seeing the enemy
 	if(level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME)
-		return TASK_STOPPED;
+		return TASK_RUNNING;
 
 	if(BotRoutePermission(self,BOT_TASK_FIGHT)) {
 		if(!BotChangeTarget(self, self->botMind->bestEnemy.ent, NULL)) {
@@ -1779,22 +1778,17 @@ extern "C" void G_BotThink( gentity_t *self) {
 	gentity_t* bestEnemy = BotFindBestEnemy(self);
 
 	//if we do not already have an enemy, and we found an enemy, update the time that we found an enemy
-	if(!self->botMind->bestEnemy.ent && bestEnemy)
+	if(self->botMind->task != BOT_TASK_FIGHT && bestEnemy)
 		self->botMind->timeFoundEnemy = level.time;
 
-	//if we did not find an enemy, but we have an enemy currently, then our enemy has been obstructed
-	//so we record the last time we saw our current enemy
-	else if(!bestEnemy && self->botMind->bestEnemy.ent)
-		self->botMind->enemyLastSeen = level.time;
-
 	self->botMind->bestEnemy.ent = bestEnemy;
-	self->botMind->bestEnemy.distance = (!bestEnemy) ? -1 : Distance(self->s.origin,bestEnemy->s.origin);
+	self->botMind->bestEnemy.distance = (!bestEnemy) ? 0 : Distance(self->s.origin,bestEnemy->s.origin);
 
 	BotFindClosestBuildings(self, &self->botMind->closestBuildings);
 
 	gentity_t* bestDamaged = BotFindDamagedFriendlyStructure(self);
 	self->botMind->closestDamagedBuilding.ent = bestDamaged;
-	self->botMind->closestDamagedBuilding.distance = (!bestDamaged) ? -1 :  Distance(self->s.origin,bestDamaged->s.origin);
+	self->botMind->closestDamagedBuilding.distance = (!bestDamaged) ? 0 :  Distance(self->s.origin,bestDamaged->s.origin);
 
 	//use medkit when hp is low
 	if(self->health < BOT_USEMEDKIT_HP && BG_InventoryContainsUpgrade(UP_MEDKIT,self->client->ps.stats))
