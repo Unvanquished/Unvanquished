@@ -391,6 +391,12 @@ gentity_t* BotFindBestEnemy( gentity_t *self ) {
 		if(BotGetTeam(target) == BotGetTeam(self))
 			continue;
 
+		//ignore spectators
+		if(target->client) {
+			if(target->client->sess.spectatorState != SPECTATOR_NOT)
+				continue;
+		}
+
 		if(DistanceSquared(self->s.origin,target->s.origin) > Square(ALIENSENSE_RANGE))
 			continue;
 
@@ -450,6 +456,11 @@ gentity_t* BotFindClosestEnemy( gentity_t *self ) {
 		if(BotGetTeam(target) == BotGetTeam(self))
 			continue;
 
+		//ignore spectators
+		if(target->client) {
+			if(target->client->sess.spectatorState != SPECTATOR_NOT)
+				continue;
+		}
 		newDistance = DistanceSquared(self->s.origin,target->s.origin);
 		if(newDistance < minDistance) {
 			minDistance = newDistance;
