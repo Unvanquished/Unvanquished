@@ -468,7 +468,7 @@ qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec, usercmd_t *botCmdBuffer
 		return qfalse;
 	gentity_t *blocker = BotGetPathBlocker(self);
 	if(blocker) {
-		//if(blocker->s.number != ENTITYNUM_WORLD) {
+		if(blocker->s.number != ENTITYNUM_WORLD) {
 			if(blocker->s.number != ENTITYNUM_WORLD && BotShouldJump(self, blocker)) {
 				//jump if we have enough stamina
 				if(self->client->ps.stats[STAT_STAMINA] >= STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE) {
@@ -490,7 +490,7 @@ qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec, usercmd_t *botCmdBuffer
 					botCmdBuffer->forwardmove = -127; //backup
 				}
 			}
-	//	}
+		}
 	}
 	return qfalse;
 }
