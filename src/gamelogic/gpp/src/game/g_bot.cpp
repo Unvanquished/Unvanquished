@@ -1016,14 +1016,14 @@ void BotFireWeapon(weaponMode_t mode, usercmd_t *botCmdBuffer) {
 		botCmdBuffer->buttons |= BUTTON_USE_HOLDABLE;
 	}
 }
-void BotClassMovement(gentity_t *self, usercmd_t *botCmdBuffer) {
+void BotClassMovement(gentity_t *self, qboolean inAttackRange, usercmd_t *botCmdBuffer) {
 	switch(self->client->ps.stats[STAT_CLASS]) {
 	case PCL_ALIEN_LEVEL0:
 		BotDodge(self, botCmdBuffer);
 		break;
 	case PCL_ALIEN_LEVEL1:
 	case PCL_ALIEN_LEVEL1_UPG:
-		if(BotTargetIsPlayer(self->botMind->goal) && (self->botMind->goal.ent->client->ps.stats[STAT_STATE] & SS_GRABBED)) {
+		if(BotTargetIsPlayer(self->botMind->goal) && (self->botMind->goal.ent->client->ps.stats[STAT_STATE] & SS_GRABBED) && inAttackRange) {
 			if(self->botMind->botSkill.level == 10) {
 				botCmdBuffer->forwardmove = 0;
 				botCmdBuffer->upmove = 0;
@@ -1049,7 +1049,7 @@ void BotClassMovement(gentity_t *self, usercmd_t *botCmdBuffer) {
 		break;
 	case PCL_ALIEN_LEVEL3_UPG:
 		if(BotGetTargetType(self->botMind->goal) == ET_BUILDABLE && self->client->ps.Ammo > 0 
-			&& BotTargetInAttackRange(self, self->botMind->goal)) {
+			&& inAttackRange) {
 				//dont move when sniping buildings
 				botCmdBuffer->forwardmove = 0;
 				botCmdBuffer->rightmove = 0;
@@ -1058,7 +1058,7 @@ void BotClassMovement(gentity_t *self, usercmd_t *botCmdBuffer) {
 		break;
 	case PCL_ALIEN_LEVEL4:
 		//use rush to approach faster
-		if(DistanceToGoalSquared(self) > Square(LEVEL4_CLAW_RANGE))
+		if(!inAttackRange)
 			BotFireWeapon(WPM_SECONDARY, botCmdBuffer);
 		break;
 	default: break;
@@ -1565,7 +1565,7 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 			} else if(BotGetTeam(self) == TEAM_ALIENS) {
 				//alien specific attacking AI
 
-				BotClassMovement(self, botCmdBuffer); //FIXME: aliens are so much dumber :'(
+				BotClassMovement(self,inAttackRange, botCmdBuffer); //FIXME: aliens are so much dumber :'(
 
 				// enable wallwalk for classes that can wallwalk
 				if( BG_ClassHasAbility( (class_t) self->client->ps.stats[STAT_CLASS], SCA_WALLCLIMBER ) )
