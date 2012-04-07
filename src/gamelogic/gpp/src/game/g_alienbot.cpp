@@ -290,6 +290,10 @@ botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(maxHealth == self->health)
 		return TASK_STOPPED;
 
+	if(self->botMind->bestEnemy.ent) {
+		if(self->botMind->bestEnemy.distance <= BOT_ENGAGE_DIST)
+			return TASK_STOPPED;
+	}
 	//check conditions upon entering task first time
 	if(self->botMind->task != BOT_TASK_HEAL) {
 		float percentHealth = ((float) self->health / maxHealth);
@@ -301,18 +305,15 @@ botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
 		if(!BotChangeTarget(self, healTarget,NULL)) {
 			return TASK_STOPPED;
 		}
-		self->botMind->task = BOT_TASK_HEAL;
 	}
 
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	//target has died, signal goal is unusable
 	if(self->botMind->goal.ent->health <= 0) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	if(DistanceToGoalSquared(self) > Square(self->r.maxs[0]+100))

@@ -32,7 +32,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 botMemory_t g_botMind[MAX_CLIENTS];
 
-void BotDPrintf(const char* fmt, ...) {	if(g_bot_debug.integer) {		va_list argptr;		char    text[ 1024 ];		va_start( argptr, fmt );		Q_vsnprintf( text, sizeof( text ), fmt, argptr );		va_end( argptr );		trap_Print( text );	}}/*
+void BotDPrintf(const char* fmt, ...) {
+	if(g_bot_debug.integer) {
+		va_list argptr;
+		char    text[ 1024 ];
+
+		va_start( argptr, fmt );
+		Q_vsnprintf( text, sizeof( text ), fmt, argptr );
+		va_end( argptr );
+
+		trap_Print( text );
+	}
+}
+/*
 =======================
 Scoring functions for logic
 =======================
@@ -469,7 +481,7 @@ botTarget_t BotGetRushTarget(gentity_t *self) {
 
 botTarget_t BotGetRetreatTarget(gentity_t *self) {
 	botTarget_t target;
-	gentity_t* retreatTarget;
+	gentity_t* retreatTarget = NULL;
 	//FIXME, this seems like it could be done better...
 	if(self->client->ps.stats[STAT_TEAM] == TEAM_HUMANS) {
 		if(self->botMind->closestBuildings.reactor.ent) {
@@ -1169,7 +1181,7 @@ extern "C" void G_BotLoadBuildLayout() {
 		return;
 
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-
+	trap_Print("Attempting to Load Bot Build Layout File...\n");
 	len = trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, g_bot_buildLayout.string ),
 		&f, FS_READ );
 	if( len < 0 )
@@ -1317,24 +1329,75 @@ extern "C" void G_BotAssignGroups(void) {
 		}
 	}
 }
+
+
 /*
 =======================
 Bot Modus
 =======================
 */
+void EvaluateTasks(gentity_t *self, usercmd_t *botCmdBuffer) {
+	if(self->botMind->task == BOT_TASK_NONE) {
+		//our task stack is empty, lets start it
+		if(!BotBuildModus(self,botCmdBuffer))
+			BotAttackModus(self,botCmdBuffer);
+	} else {
+		//execute the task we are in
+		botTask_t task = self->botMind->task;
+		botTaskStatus_t taskStatus;
+		switch(task) {
+			case BOT_TASK_FIGHT:
+				taskStatus = BotTaskFight(self, botCmdBuffer);
+				break;
+			case BOT_TASK_BUILD:
+				taskStatus = BotTaskBuild(self, botCmdBuffer);
+				break;
+			case BOT_TASK_ROAM:
+				taskStatus = BotTaskRoam(self, botCmdBuffer);
+				break;
+			case BOT_TASK_BUY:
+				taskStatus = BotTaskBuy(self, botCmdBuffer);
+				break;
+			case BOT_TASK_HEAL:
+				taskStatus = BotTaskHeal(self, botCmdBuffer);
+				break;
+			case BOT_TASK_REPAIR:
+				taskStatus = BotTaskRepair(self, botCmdBuffer);
+				break;
+			case BOT_TASK_RUSH:
+				taskStatus = BotTaskRush(self, botCmdBuffer);
+				break;
+			case BOT_TASK_RETREAT:
+				taskStatus = BotTaskRetreat(self, botCmdBuffer);
+				break;
+			default:
+				taskStatus = TASK_STOPPED;
+		}
+		if(taskStatus == TASK_STOPPED) {
+			self->botMind->task = BOT_TASK_NONE; //the task has ended
+			self->botMind->needNewGoal = qtrue;
+		}
+	}
+}
 botModusStatus_t BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer) {
 	self->botMind->modus = BOT_MODUS_ATTACK;
 	if(BotTaskFight(self, botCmdBuffer)) {
+		BotChangeTask(self, BOT_TASK_FIGHT);
 		return MODUS_RUNNING;
 	} else if(BotTaskHeal(self, botCmdBuffer)) {
+		BotChangeTask(self, BOT_TASK_HEAL);
 		return MODUS_RUNNING;
 	} else if(BotTaskBuy(self, botCmdBuffer)) {
+		BotChangeTask(self, BOT_TASK_BUY);
 		return MODUS_RUNNING;
 	} else if(BotTaskEvolve(self, botCmdBuffer)) {
+		BotChangeTask(self, BOT_TASK_EVOLVE);
 		return MODUS_RUNNING;
 	} else if(BotShouldRushEnemyBase(self) && BotTaskRush(self, botCmdBuffer)) {
+		BotChangeTask(self, BOT_TASK_RUSH);
 		return MODUS_RUNNING;
 	} else if(BotTaskRoam(self, botCmdBuffer)) {
+		BotChangeTask(self, BOT_TASK_ROAM);
 		return MODUS_RUNNING;
 	} else {
 		return MODUS_STOPPED;
@@ -1352,25 +1415,35 @@ botModusStatus_t BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 	if(self->botMind->bestEnemy.ent || level.time - self->botMind->enemyLastSeen <= BOT_RETREAT_TIME) {
 		if(!BG_InventoryContainsWeapon(WP_HBUILD,self->client->ps.stats)) {
-			if(!BotTaskFight(self, botCmdBuffer))
-				self->botMind->enemyLastSeen = 0; //fighting is over and the enemy is dead, we dont care about the enemy now
-		} else if(!BotTaskRetreat(self, botCmdBuffer)) {
-			BotTaskFight(self, botCmdBuffer);
+			if(BotTaskFight(self, botCmdBuffer))
+				BotChangeTask(self, BOT_TASK_FIGHT);
+			else
+				goto rest;
+		} else {
+			rest:
+			if(BotTaskRetreat(self, botCmdBuffer)) {
+				BotChangeTask(self, BOT_TASK_RETREAT);
+			} else {
+				BotChangeTask(self, BOT_TASK_FIGHT);
+			}
 		}
 		return MODUS_RUNNING;
-	} else if(BotTaskBuy(self, WP_HBUILD, NULL, 0, botCmdBuffer)) {
+	} else if(BotTaskBuy(self, botCmdBuffer)) {
+		BotChangeTask(self, BOT_TASK_BUY);
 		return MODUS_RUNNING;
 	} else if(BotTaskHeal(self, botCmdBuffer)) {
+		BotChangeTask(self, BOT_TASK_HEAL);
 		return MODUS_RUNNING;
 	} else if(BotTaskBuild(self, botCmdBuffer)) {
+		BotChangeTask(self, BOT_TASK_BUILD);
 		return MODUS_RUNNING;
 	} else if(BotTaskRepair(self, botCmdBuffer)){
+		BotChangeTask(self, BOT_TASK_REPAIR);
 		return MODUS_RUNNING;
 	} else {
 		return MODUS_STOPPED;
 	}
 }
-
 /*
 =======================
 General Bot Tasks
@@ -1400,30 +1473,26 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 		return TASK_STOPPED;
 
 	if(BotRoutePermission(self,BOT_TASK_FIGHT)) {
-		if(!self->botMind->bestEnemy.ent) //no enemy, stop the task
+		if(!BotChangeTarget(self, self->botMind->bestEnemy.ent, NULL)) {
 			return TASK_STOPPED;
-		BotChangeTarget(self, self->botMind->bestEnemy.ent, NULL); //we dont care about the return value
-		self->botMind->task = BOT_TASK_FIGHT;
+		}
 	}
 
 	//safety check
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING; //we dont want to end this task yet incase there is another enemy
+		return TASK_STOPPED; //we dont want to end this task yet incase there is another enemy
 	}
 
 	//enemy has switched teams so signal that the goal is unusable
 	if(BotGetTeam(self->botMind->goal) == BotGetTeam(self) || BotGetTeam(self->botMind->goal) == TEAM_NONE) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	//enemy has died so signal that the goal is unusable
 	if(self->botMind->goal.ent->health <= 0 || 
 		(BotTargetIsPlayer(self->botMind->goal) && self->botMind->goal.ent->client->ps.pm_type == PM_DEAD)) 
 	{
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	//switch to blaster if we need to
@@ -1443,8 +1512,7 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 		//we can see another enemy (not our target)
 		if(self->botMind->bestEnemy.ent && BotPathIsWalkable(self,proposedTarget)) {
 			//change targets
-			self->botMind->needNewGoal = qtrue;
-			return TASK_RUNNING;
+			return TASK_STOPPED;
 		} else if(level.time - self->botMind->enemyLastSeen >= BOT_ENEMY_CHASETIME) {
 			//we have chased our current (invisible) target for a while, but have not caught sight of him again, so end this task
 			return TASK_STOPPED;
@@ -1553,14 +1621,14 @@ botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(BotRoutePermission(self, BOT_TASK_RETREAT)) {
 		if(!BotChangeTarget(self, BotGetRetreatTarget(self)))
 			return TASK_STOPPED;
-		self->botMind->task = BOT_TASK_RETREAT;
 	}
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 	if(DistanceToGoalSquared(self) > Square(70))
 		BotMoveToGoal(self, botCmdBuffer);
+	else
+		return TASK_STOPPED;
 	return TASK_RUNNING;
 }
 
@@ -1568,37 +1636,44 @@ botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(!g_bot_rush.integer)
 		return TASK_STOPPED;
 
+	//engage any enemies we find
+	if(self->botMind->bestEnemy.ent) {
+		return TASK_STOPPED;
+	}
+
 	if(BotRoutePermission(self,BOT_TASK_RUSH)) {
 		if(!BotChangeTarget(self, BotGetRushTarget(self)))
 			return TASK_STOPPED;
-		self->botMind->task = BOT_TASK_RUSH;
 	}
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 	if(self->botMind->goal.ent->health <= 0) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 	if(DistanceToGoalSquared(self) > Square(70)) {
 		BotMoveToGoal(self, botCmdBuffer);
+	} else {
+		return TASK_STOPPED;
 	}
 	return TASK_RUNNING;
 }
 
 botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer) {
+	//engage any enemies we find
+	if(self->botMind->bestEnemy.ent) {
+		return TASK_STOPPED;
+	}
+
 	if(BotRoutePermission(self,BOT_TASK_ROAM)) {
 		if( !BotChangeTarget(self, BotGetRoamTarget(self) ) )
 			return TASK_STOPPED;
-		self->botMind->task = BOT_TASK_ROAM;
 	}
-	vec3_t goalPos;
-	BotGetTargetPos(self->botMind->goal,goalPos);
+
 	if(DistanceToGoalSquared(self) > Square(70)) {
 		BotMoveToGoal(self, botCmdBuffer);
 	} else {
-		self->botMind->needNewGoal = qtrue;
+		return TASK_STOPPED;
 	}
 	return TASK_RUNNING;
 }
@@ -1640,6 +1715,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 	bot->botMind->currentBuilding = 0;
 	bot->botMind->maxBuildings  = 0;
 	bot->botMind->modus = BOT_MODUS_IDLE;
+	bot->botMind->task = BOT_TASK_NONE;
 	bot->botMind->pathCorridor = &pathCorridor[clientNum];
 	BotSetSkillLevel(bot, skill);
 
@@ -1755,9 +1831,8 @@ extern "C" void G_BotThink( gentity_t *self) {
 	//hacky ping fix
 	self->client->ps.ping = rand() % 50 + 50;
 
-	//top level
-	if(BotBuildModus(self, &botCmdBuffer));
-	else BotAttackModus(self, &botCmdBuffer);
+	//Execute the bot's tasks (The actual AI of the bot)
+	EvaluateTasks(self, &botCmdBuffer);
 
 
 	self->client->pers.cmd = botCmdBuffer;
@@ -1816,6 +1891,7 @@ extern "C" void G_BotSpectatorThink( gentity_t *self ) {
 	self->botMind->bestEnemy.ent = NULL;
 	self->botMind->timeFoundEnemy = 0;
 	self->botMind->enemyLastSeen = 0;
+	self->botMind->task = BOT_TASK_NONE;
 	if( self->client->sess.restartTeam == TEAM_NONE ) {
 		int teamnum = self->client->pers.teamSelection;
 		int clientNum = self->client->ps.clientNum;

@@ -298,6 +298,13 @@ void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3
 	int credits = self->client->ps.persistant[PERS_CREDIT];
 	int usableCapital = credits + equipmentPrice;
 
+	//we want to buy a ckit
+	if(self->botMind->modus == BOT_MODUS_BUILD) {
+		*weapon = WP_HBUILD;
+		*numUpgrades = 0;
+		return;
+	}
+
 	//decide what upgrade(s) to buy
 	if(g_humanStage.integer >= 2 && usableCapital >= (PAINSAW_PRICE + BSUIT_PRICE )) {
 		(*upgrades)[0] = UP_BATTLESUIT;
@@ -519,6 +526,9 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(!BotGetBuildingToBuild(self, origin, &building))
 		return TASK_STOPPED;
 
+	if(self->botMind->bestEnemy.ent)
+		return TASK_STOPPED;
+
 	vec3_t targetPos;
 	BotGetTargetPos(self->botMind->goal,targetPos);
 
@@ -559,16 +569,14 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 			//find the best building to decon
 			deconNum = BotFindBestHDecon(self, building,origin);
 			if(!BotChangeTarget(self, &g_entities[deconNum],NULL)) {
-				return TASK_RUNNING;
+				return TASK_STOPPED;
 			}
-			self->botMind->task = BOT_TASK_BUILD;
 		}
 		deconNum = BotGetTargetEntityNumber(self->botMind->goal);
 
 		//make sure nothing happened to our decon target
 		if(!BotTargetIsEntity(self->botMind->goal)) {
-			self->botMind->needNewGoal = qtrue;
-			return TASK_RUNNING;
+			return TASK_STOPPED;
 		}
 		BotGetTargetPos(self->botMind->goal,targetPos);
 
@@ -597,8 +605,7 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	} else if(!VectorCompare(origin,targetPos) || BotRoutePermission(self, BOT_TASK_BUILD)) {
 		//set the target coordinate where we will place the building
 		if(!BotChangeTarget(self, NULL, &origin))
-			return TASK_RUNNING;
-		self->botMind->task = BOT_TASK_BUILD;
+			return TASK_STOPPED;
 	} else if(DistanceToGoalSquared(self) > Square(dist)) {
 		//move to where we will place the building until close enough to place it
 		BotMoveToGoal(self, botCmdBuffer);
@@ -658,7 +665,10 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 		return TASK_STOPPED;
 	if(!self->botMind->closestBuildings.armoury.ent)
 		return TASK_STOPPED; //no armoury, so fail
-
+	if(self->botMind->bestEnemy.ent) {
+		if(self->botMind->bestEnemy.distance <= BOT_ENGAGE_DIST)
+			return TASK_STOPPED;
+	}
 	//check if we already have everything
 	if(BG_InventoryContainsWeapon(weapon,self->client->ps.stats) || weapon == WP_NONE) {
 		//cant buy more than 3 upgrades
@@ -680,16 +690,13 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 	if(BotRoutePermission(self, BOT_TASK_BUY)) {
 		if(!BotChangeTarget(self, self->botMind->closestBuildings.armoury.ent, NULL)) 
 			return TASK_STOPPED;
-		self->botMind->task = BOT_TASK_BUY;
 	}
 
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 	if(self->botMind->goal.ent->health <= 0) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	if(self->botMind->closestBuildings.armoury.distance > 100) {
@@ -719,6 +726,11 @@ botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(self->client->ps.stats[STAT_TEAM] != TEAM_HUMANS)
 		return TASK_STOPPED;
 
+	if(self->botMind->bestEnemy.ent) {
+		if(self->botMind->bestEnemy.distance <= BOT_ENGAGE_DIST)
+			return TASK_STOPPED;
+	}
+
 	//check conditions upon entering task first time
 	if(self->botMind->task != BOT_TASK_HEAL) {
 		int maxHealth = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health;
@@ -741,24 +753,20 @@ botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
 		if(!BotChangeTarget(self, self->botMind->closestBuildings.medistation.ent,NULL))
 			return TASK_STOPPED;
-		self->botMind->task = BOT_TASK_HEAL;
 	}
 
 	//safety check
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	//the medi has died so signal that the goal is unusable
 	if(self->botMind->goal.ent->health <= 0) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 	//this medi is no longer powered so signal that the goal is unusable
 	if(!self->botMind->goal.ent->powered) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	BotGetTargetPos(self->botMind->goal, targetPos);
@@ -786,25 +794,21 @@ botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(BotRoutePermission(self, BOT_TASK_REPAIR)) {
 		if( !BotChangeTarget(self, self->botMind->closestDamagedBuilding.ent, NULL) )
 			return TASK_STOPPED;
-		self->botMind->task = BOT_TASK_REPAIR;
 	}
 
 	//safety check
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	//the target building has died so signal that the goal is unusable
 	if(self->botMind->goal.ent->health <= 0) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	//the target has been healed
 	if(self->botMind->goal.ent->health >= BG_Buildable((buildable_t)self->botMind->goal.ent->s.modelindex)->health) {
-		self->botMind->needNewGoal = qtrue;
-		return TASK_RUNNING;
+		return TASK_STOPPED;
 	}
 
 	if(self->client->ps.weapon != WP_HBUILD)

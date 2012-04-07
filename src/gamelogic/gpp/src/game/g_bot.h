@@ -56,8 +56,8 @@ void BotSetTarget(botTarget_t *target, gentity_t *ent, vec3_t *pos);
 void BotSetGoal(gentity_t *self, gentity_t *ent, vec3_t *pos);
 
 qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
-qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target);
 
+qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target);
 botModusStatus_t BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer);
 botModusStatus_t BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer);
 botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer);
@@ -200,6 +200,10 @@ static inline bool BotChangeTarget(gentity_t *self, botTarget_t target) {
 	self->botMind->goal = target;
 	return true;
 }
+
+static inline void BotChangeTask(gentity_t *self, botTask_t task) {
+	self->botMind->task = task;
+}
 //configureable constants
 //For a reference of how far a number represents, take a look at tremulous.h
 
@@ -214,6 +218,9 @@ static inline bool BotChangeTarget(gentity_t *self, botTarget_t target) {
 
 //How long in milliseconds the bots will chase an enemy if he goes out of their sight (humans) or radar (aliens)
 #define BOT_ENEMY_CHASETIME 5000
+
+//How close does the enemy have to be for the bot to engage him/her when doing a task other than fight/roam
+#define BOT_ENGAGE_DIST 500
 
 //How long in milliseconds it takes the bot to react upon seeing an enemy
 #define BOT_REACTION_TIME 500

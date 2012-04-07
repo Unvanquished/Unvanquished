@@ -102,6 +102,7 @@ typedef enum {
   BOT_TASK_FIGHT,	
   BOT_TASK_BUILD,	
   BOT_TASK_BUY,	
+  BOT_TASK_EVOLVE,
   BOT_TASK_GROUP,	
   BOT_TASK_HEAL,	
   BOT_TASK_REPAIR,	
@@ -200,7 +201,7 @@ typedef struct{
   //skill structure    
   botSkill_t botSkill;	
   botModus_t modus;	
-  botTask_t task;	
+  botTask_t task;
   botEntityAndDistance_t bestEnemy;	
   botEntityAndDistance_t closestDamagedBuilding;	
   botClosestBuildings_t closestBuildings;
@@ -1418,6 +1419,7 @@ extern vmCvar_t g_bot_wave_interval;
 extern vmCvar_t g_bot_numInGroup;
 extern vmCvar_t g_bot_persistent;
 extern vmCvar_t g_bot_buildLayout;
+extern vmCvar_t g_bot_debug;
 //</bot stuff>
 
 void             trap_Print( const char *fmt );
