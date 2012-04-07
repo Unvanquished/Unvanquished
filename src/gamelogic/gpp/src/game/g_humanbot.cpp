@@ -480,7 +480,7 @@ qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, buildable_t *buil
 
 	//check all buildings in the current bot layout and see if we need to build them
 	for(int i=0;i<level.botBuildLayout.numBuildings;i++) {
-		int block;
+		int block = 0;
 		VectorCopy(level.botBuildLayout.buildings[i].origin,origin);
 		*building = level.botBuildLayout.buildings[i].type;
 
@@ -501,7 +501,7 @@ qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, buildable_t *buil
 		}
 
 		int num = trap_EntitiesInBox(origin,origin,&block,1);
-		if(g_entities[block].s.modelindex != *building || num == 0 ) {
+		if(num == 0 || g_entities[block].s.modelindex != *building) {
 			return qtrue;
 		}
 	}
