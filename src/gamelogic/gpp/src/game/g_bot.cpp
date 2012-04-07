@@ -1444,13 +1444,13 @@ botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer) {
 }
 botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 	//don't enter this task until we are given enough time to react to seeing the enemy
-	if(level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME)
-		return TASK_RUNNING;
+	if(self->botMind->task != BOT_TASK_FIGHT && level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME)
+		return TASK_STOPPED;
 
 	if(BotRoutePermission(self,BOT_TASK_FIGHT)) {
-		if(!BotChangeTarget(self, self->botMind->bestEnemy.ent, NULL)) {
+		if(!self->botMind->bestEnemy.ent)
 			return TASK_STOPPED;
-		}
+		BotChangeTarget(self, self->botMind->bestEnemy.ent, NULL);
 	}
 
 	//safety check
@@ -1778,7 +1778,7 @@ extern "C" void G_BotThink( gentity_t *self) {
 	gentity_t* bestEnemy = BotFindBestEnemy(self);
 
 	//if we do not already have an enemy, and we found an enemy, update the time that we found an enemy
-	if(self->botMind->task != BOT_TASK_FIGHT && bestEnemy)
+	if(!self->botMind->bestEnemy.ent && bestEnemy)
 		self->botMind->timeFoundEnemy = level.time;
 
 	self->botMind->bestEnemy.ent = bestEnemy;
