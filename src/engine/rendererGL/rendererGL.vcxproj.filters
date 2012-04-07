@@ -704,6 +704,9 @@
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\glcpp\glcpp-parse.h">
       <Filter>Libs\glsl_optimizer\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\getopt\getopt.h">
+      <Filter>Libs\glsl_optimizer\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="rendererGL3.def">

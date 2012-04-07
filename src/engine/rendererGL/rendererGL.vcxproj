@@ -205,7 +205,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;..\..\libs\glew\include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;..\..\libs\libwebp\Include;..\libs\glsl-optimizer\include\c99;..\libs\glsl-optimizer\include;..\libs\glsl-optimizer\src\mesa;..\libs\glsl-optimizer\src\glsl;..\libs\glsl-optimizer\src\getopt;..\libs\glsl-optimizer\src\mapi</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;..\..\libs\glew\include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;..\..\libs\libwebp\Include;..\..\libs\glsl-optimizer\include\c99;..\..\libs\glsl-optimizer\include;..\..\libs\glsl-optimizer\src\mesa;..\..\libs\glsl-optimizer\src\glsl;..\..\libs\glsl-optimizer\src\getopt;..\..\libs\glsl-optimizer\src\mapi</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_GLSL_OPTIMIZER;NDEBUG;WIN32;__WIN64__;WIN64;_WINDOWS;_CRT_SECURE_NO_WARNINGS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -408,6 +408,7 @@
     <ClCompile Include="..\..\libs\openexr\half.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\libs\glsl-optimizer\src\getopt\getopt.h" />
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\ast.h" />
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\builtin_types.h" />
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\builtin_variables.h" />

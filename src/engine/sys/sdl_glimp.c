@@ -2169,7 +2169,7 @@ success:
 
 		if ( driverType != GLDRV_UNKNOWN )
 		{
-			glConfig.hardwareType = hardwareType;
+			glConfig.driverType = driverType;
 			reportDriverType( qtrue );
 		}
 
