@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 botMemory_t g_botMind[MAX_CLIENTS];
 
-/*
+void BotDPrintf(const char* fmt, ...) {	if(g_bot_debug.integer) {		va_list argptr;		char    text[ 1024 ];		va_start( argptr, fmt );		Q_vsnprintf( text, sizeof( text ), fmt, argptr );		va_end( argptr );		trap_Print( text );	}}/*
 =======================
 Scoring functions for logic
 =======================

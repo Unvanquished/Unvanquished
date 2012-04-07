@@ -52,7 +52,7 @@ qboolean G_NavLoad(dtNavMeshCreateParams *navParams, class_t classt) {
 	trap_Cvar_VariableStringBuffer("mapname", mapname, sizeof(mapname));
 	trap_Cvar_VariableStringBuffer("fs_game", gameName, sizeof(gameName));
 	Com_sprintf(filename, sizeof(filename), "maps/%s-%s.navMesh", mapname, BG_Class(classt)->name);
-	Com_Printf(" loading navigation mesh file '%s'...\n", filename);
+	Com_Printf(" loading navigation mesh file '%s'...", filename);
 
 	// load the file
 	len = trap_FS_FOpenFile( filename, &f, FS_READ );
@@ -827,7 +827,7 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 		return STATUS_FAILED;
 
 	if(!self->botMind->navQuery) {
-		trap_Print("Cannot query the Navmesh!\n");
+		BotDPrintf("Cannot query the Navmesh!\n");
 		return STATUS_FAILED;
 	}
 
@@ -840,7 +840,7 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 	}
 
 	if(!BotFindNearestPoly(self, self, &startRef, start)) {
-		trap_Print("Failed to find a polygon near the bot\n");
+		BotDPrintf("Failed to find a polygon near the bot\n");
 		return STATUS_FAILED | STATUS_NOPOLYNEARSELF;
 	}
 
@@ -851,7 +851,7 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 	}
 
 	if(!result) {
-		trap_Print("Failed to find a polygon near the target\n");
+		BotDPrintf("Failed to find a polygon near the target\n");
 		return STATUS_FAILED | STATUS_NOPOLYNEARTARGET;
 	}
 	quake2recast(selfPos);
@@ -864,7 +864,7 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 	status = self->botMind->navQuery->findPath(startRef, endRef, start, end, self->botMind->navFilter, pathPolys, &pathNumPolys, MAX_PATH_POLYS);
 
 	if(dtStatusFailed(status)) {
-		trap_Print("Could not find path\n");
+		BotDPrintf("Could not find path\n");
 		return STATUS_FAILED;
 	}
 	self->botMind->pathCorridor->reset(startRef, selfPos);
