@@ -936,12 +936,12 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ NSPA_ATTACK3 ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUN, "run", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUN, "run", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_RUN ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNBACK, "run_backwards", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNBACK, "run", qtrue, qtrue, qfalse ) )
 			{
 				ci->animations[ NSPA_RUNBACK ] = ci->animations[ NSPA_STAND ];
 			}
@@ -956,27 +956,27 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ NSPA_RUNRIGHT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALK, "walk", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALK, "walk", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_WALK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKBACK, "walk_backwards", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKBACK, "walk", qtrue, qtrue, qfalse ) )
 			{
 				ci->animations[ NSPA_WALKBACK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKLEFT, "walk_left", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKLEFT, "walk_left", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_WALKLEFT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKRIGHT, "walk_right", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKRIGHT, "walk_right", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_WALKRIGHT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_SWIM, "swim", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_SWIM, "swim", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_SWIM ] = ci->animations[ NSPA_STAND ];
 			}
@@ -1001,7 +1001,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ NSPA_LANDBACK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_TURN, "turn", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_TURN, "turn", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_TURN ] = ci->animations[ NSPA_STAND ];
 			}
