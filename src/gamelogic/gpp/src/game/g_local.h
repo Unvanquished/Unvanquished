@@ -1414,8 +1414,6 @@ extern vmCvar_t g_bot_repair;
 extern vmCvar_t g_bot_retreat;
 //extern vmCvar_t g_bot_camp;
 extern vmCvar_t g_bot_infinite_funds;
-extern vmCvar_t g_bot_survival;
-extern vmCvar_t g_bot_wave_interval;
 extern vmCvar_t g_bot_numInGroup;
 extern vmCvar_t g_bot_persistent;
 extern vmCvar_t g_bot_buildLayout;

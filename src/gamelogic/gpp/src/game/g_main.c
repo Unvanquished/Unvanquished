@@ -187,8 +187,6 @@ vmCvar_t g_bot_repair;
 vmCvar_t g_bot_build;
 vmCvar_t g_bot_retreat;
 vmCvar_t g_bot_infinite_funds;
-vmCvar_t g_bot_survival;
-vmCvar_t g_bot_wave_interval;
 vmCvar_t g_bot_numInGroup;
 vmCvar_t g_bot_persistent;
 vmCvar_t g_bot_debug;
@@ -366,10 +364,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_build, "g_bot_build", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_retreat, "g_bot_retreat", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_survival, "g_bot_survival", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_wave_interval, "g_bot_wave_interval", "60", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_numInGroup, "g_bot_numInGroup", "3", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
-	{ &g_bot_persistent, "g_bot_persistent", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_debug, "g_bot_debug", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse }
 	// </bot stuff>
