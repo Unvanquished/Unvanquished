@@ -342,10 +342,12 @@ qboolean BotShouldJump(gentity_t *self, gentity_t *blocker) {
 	if(BotGetTeam(self) != BotGetTeam(blocker))
 		return qfalse;
 
+	VectorSubtract(self->botMind->route[0], self->s.origin, forward);
 	//get the forward vector, ignoring z axis
-	forward[0] = cos(DEG2RAD(self->client->ps.viewangles[YAW]));
+	/*forward[0] = cos(DEG2RAD(self->client->ps.viewangles[YAW]));
 	forward[1] = sin(DEG2RAD(self->client->ps.viewangles[YAW]));
-	forward[2] = 0;
+	forward[2] = 0;*/
+	VectorNormalize(forward);
 
 	//already normalized
 	VectorCopy(forward,moveDir);
@@ -359,10 +361,10 @@ qboolean BotShouldJump(gentity_t *self, gentity_t *blocker) {
 	VectorMA(self->s.origin, TRACE_LENGTH, moveDir, end);
 
 	//make sure we are moving into a block
-	//trap_Trace(&trace,self->s.origin,playerMins,playerMaxs,end,self->s.number,MASK_SHOT);
-	//if(trace.fraction >= 1.0f) {
-	//  return qfalse;
-	//}
+	trap_Trace(&trace,self->s.origin,playerMins,playerMaxs,end,self->s.number,MASK_SHOT);
+	if(trace.fraction >= 1.0f || blocker != &g_entities[trace.entityNum]) {
+	  return qfalse;
+	}
 
 	jumpMagnitude = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->jumpMagnitude;
 
@@ -466,8 +468,8 @@ qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec, usercmd_t *botCmdBuffer
 		return qfalse;
 	gentity_t *blocker = BotGetPathBlocker(self);
 	if(blocker) {
-		if(blocker->s.number != ENTITYNUM_WORLD) {
-			if(BotShouldJump(self, blocker)) {
+		//if(blocker->s.number != ENTITYNUM_WORLD) {
+			if(blocker->s.number != ENTITYNUM_WORLD && BotShouldJump(self, blocker)) {
 				//jump if we have enough stamina
 				if(self->client->ps.stats[STAT_STAMINA] >= STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE) {
 					botCmdBuffer->upmove = 127;
@@ -488,7 +490,7 @@ qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec, usercmd_t *botCmdBuffer
 					botCmdBuffer->forwardmove = -127; //backup
 				}
 			}
-		}
+	//	}
 	}
 	return qfalse;
 }
@@ -531,7 +533,7 @@ void BotSteer(gentity_t *self, vec3_t target) {
 	BG_GetClientViewOrigin(&self->client->ps,viewBase); 
 	//get the Vector from the bot to the enemy (aim Vector)
 	VectorSubtract( target, viewBase, aimVec );
-	float length = VectorLength(aimVec);
+	float length = VectorNormalize(aimVec);
 
 	const int ip0 = 0;
 	const int ip1 = min(1,self->botMind->numCorners - 1);
@@ -553,7 +555,7 @@ void BotSteer(gentity_t *self, vec3_t target) {
 
 	skilledVec[0] = dir0[0] - dir1[0]*len0*0.5f;
 	skilledVec[1] = dir0[1] - dir1[1]*len0*0.5f;
-	skilledVec[2] = 0;
+	skilledVec[2] = aimVec[2];
 
 	VectorNormalize(skilledVec);
 	VectorScale(skilledVec, length, skilledVec);
