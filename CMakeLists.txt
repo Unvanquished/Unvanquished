@@ -269,6 +269,12 @@ set( QCOMMONLIST
 )
 
 if( USE_LLVM )
+  find_program( CLANG clang )
+  find_program( LLVM_LINK llvm-link )
+  if( NOT CLANG OR NOT LLVM_LINK )
+    message( FATAL_ERROR "clang is not installed" )
+  endif()
+
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
   add_definitions( -DUSE_LLVM -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS )
   find_program(LLVM_CONFIG llvm-config)
@@ -901,56 +907,93 @@ if( BUILD_GAME_SO_TREM )
 endif()
 
 if( BUILD_GAME_SO_GPP )
-  add_library( gppgame SHARED ${GAMEGPP} )
-  set_property( TARGET gppgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-  if( WIN32 )
-    set_target_properties( gppgame PROPERTIES
-      OUTPUT_NAME "qagame_mp_${BUILD_ARCH}"
-      PREFIX ""
-      RUNTIME_OUTPUT_DIRECTORY "main"
-      ARCHIVE_OUTPUT_DIRECTORY "main"
-    )
+  if( USE_LLVM )
+    # LLVM code
+    set( CLANG_CMD ${CLANG} -w -I. -I../../../src/engine/qcommon -Isrc/game -Isrc/cgame -Isrc/ui -DNDEBUG -DQ3_VM -emit-llvm -nostdinc -S)
+    set( BC_S_DIR ${Daemon_BINARY_DIR}/CMakeFiles/Bitcode.dir)
+    set( BC_O_DIR ${Daemon_BINARY_DIR}/main/vm)
+
+    macro( build_llvm_plugin PLUGIN SOURCELIST SUFFIX EXTRA )
+      set( ${SOURCELIST}${SUFFIX}_BC )
+      file( MAKE_DIRECTORY ${BC_S_DIR}/${PLUGIN} ${BC_O_DIR} )
+      foreach( BCFILE ${${SOURCELIST}} )
+        get_filename_component( LEAF ${BCFILE} NAME )
+        set( ${SOURCELIST}${SUFFIX}_BC ${${SOURCELIST}${SUFFIX}_BC} ${BC_S_DIR}/${PLUGIN}/${LEAF}${SUFFIX}.s )
+        add_custom_command( OUTPUT ${BC_S_DIR}/${PLUGIN}/${LEAF}${SUFFIX}.s
+                            COMMAND ${CLANG_CMD} ${EXTRA} -o ${BC_S_DIR}/${PLUGIN}/${LEAF}${SUFFIX}.s ${BCFILE}
+                            WORKING_DIRECTORY src/gamelogic/gpp )
+      endforeach()
+      add_custom_command( OUTPUT ${BC_O_DIR}/${PLUGIN}${SUFFIX}.bc
+                          COMMAND ${LLVM_LINK} ${${SOURCELIST}${SUFFIX}_BC} -o ${BC_O_DIR}/${PLUGIN}${SUFFIX}.bc
+                          DEPENDS ${${SOURCELIST}${SUFFIX}_BC}
+                          WORKING_DIRECTORY src/gamelogic/gpp )
+    endmacro()
+
+    foreach( ARCH 32 64 )
+      build_llvm_plugin( qagame GAMEGPP  _${ARCH} "-m${ARCH};-DGAMEDLL" )
+      build_llvm_plugin( cgame  CGAMEGPP _${ARCH} "-m${ARCH};-DCGAMEDLL;-DCGAME" )
+      build_llvm_plugin( ui     UIGPP    _${ARCH} "-m${ARCH};-DUIDLL" )
+    endforeach()
+
+    # Build
+    add_custom_target( Bitcode ALL
+                       DEPENDS ${BC_O_DIR}/qagame_32.bc ${BC_O_DIR}/qagame_64.bc
+                               ${BC_O_DIR}/cgame_32.bc  ${BC_O_DIR}/cgame_64.bc
+                               ${BC_O_DIR}/ui_32.bc     ${BC_O_DIR}/ui_64.bc
+                     )
   else()
-    set_target_properties( gppgame PROPERTIES
-      OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main"
-    )
-    target_link_libraries( gppgame -lm )
-  endif()
-  add_library( gpptrem SHARED ${CGAMEGPP} )
-  set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-  if( WIN32 )
-    set_target_properties( gpptrem PROPERTIES
-      OUTPUT_NAME "cgame_mp_${BUILD_ARCH}"
-      PREFIX ""
-      RUNTIME_OUTPUT_DIRECTORY "main"
-      ARCHIVE_OUTPUT_DIRECTORY "main"
-    )
-  else()
-    set_target_properties( gpptrem PROPERTIES
-      OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main"
-    )
-    target_link_libraries( gpptrem -lm )
-  endif()
-  add_library( gppui SHARED ${UIGPP} )
-  set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-  if( WIN32 )
-    set_target_properties( gppui PROPERTIES
-      OUTPUT_NAME "ui_mp_${BUILD_ARCH}"
-      PREFIX ""
-      RUNTIME_OUTPUT_DIRECTORY "main"
-      ARCHIVE_OUTPUT_DIRECTORY "main"
-    )
-  else()
-    set_target_properties( gppui PROPERTIES
-      OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main"
-    )
-    target_link_libraries( gppui -lm )
+    # Native code
+    add_library( gppgame SHARED ${GAMEGPP} )
+    set_property( TARGET gppgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
+    if( WIN32 )
+      set_target_properties( gppgame PROPERTIES
+        OUTPUT_NAME "qagame_mp_${BUILD_ARCH}"
+        PREFIX ""
+        RUNTIME_OUTPUT_DIRECTORY "main"
+        ARCHIVE_OUTPUT_DIRECTORY "main"
+      )
+    else()
+      set_target_properties( gppgame PROPERTIES
+        OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
+        PREFIX ""
+        LIBRARY_OUTPUT_DIRECTORY "main"
+      )
+      target_link_libraries( gppgame -lm )
+    endif()
+    add_library( gpptrem SHARED ${CGAMEGPP} )
+    set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
+    if( WIN32 )
+      set_target_properties( gpptrem PROPERTIES
+        OUTPUT_NAME "cgame_mp_${BUILD_ARCH}"
+        PREFIX ""
+        RUNTIME_OUTPUT_DIRECTORY "main"
+        ARCHIVE_OUTPUT_DIRECTORY "main"
+      )
+    else()
+      set_target_properties( gpptrem PROPERTIES
+        OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
+        PREFIX ""
+        LIBRARY_OUTPUT_DIRECTORY "main"
+      )
+      target_link_libraries( gpptrem -lm )
+    endif()
+    add_library( gppui SHARED ${UIGPP} )
+    set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
+    if( WIN32 )
+      set_target_properties( gppui PROPERTIES
+        OUTPUT_NAME "ui_mp_${BUILD_ARCH}"
+        PREFIX ""
+        RUNTIME_OUTPUT_DIRECTORY "main"
+        ARCHIVE_OUTPUT_DIRECTORY "main"
+      )
+    else()
+      set_target_properties( gppui PROPERTIES
+        OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
+        PREFIX ""
+        LIBRARY_OUTPUT_DIRECTORY "main"
+      )
+      target_link_libraries( gppui -lm )
+    endif()
   endif()
 endif()
 
