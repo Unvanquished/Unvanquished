@@ -472,7 +472,7 @@ int BotFindBestHDecon(gentity_t *self, buildable_t building, vec3_t origin) {
 
 	return bestBuild;
 }
-qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, buildable_t *building) {
+qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building) {
 	if(!level.botBuildLayout.numBuildings) {
 		return qfalse;
 	}
@@ -482,6 +482,7 @@ qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, buildable_t *buil
 	for(int i=0;i<level.botBuildLayout.numBuildings;i++) {
 		int block = 0;
 		VectorCopy(level.botBuildLayout.buildings[i].origin,origin);
+		VectorCopy(level.botBuildLayout.buildings[i].normal,normal);
 		*building = level.botBuildLayout.buildings[i].type;
 
 		//make sure we have a reactor
@@ -523,7 +524,7 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(!BG_InventoryContainsWeapon(WP_HBUILD,self->client->ps.stats))
 		return TASK_STOPPED;
 
-	if(!BotGetBuildingToBuild(self, origin, &building))
+	if(!BotGetBuildingToBuild(self, origin, normal, &building))
 		return TASK_STOPPED;
 
 	if(self->botMind->bestEnemy.ent)

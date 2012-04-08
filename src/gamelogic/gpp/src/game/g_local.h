@@ -142,7 +142,8 @@ typedef struct {
 } botClosestBuildings_t;
 
 typedef struct{  
-  buildable_t type;  
+  buildable_t type;
+  vec3_t normal;
   vec3_t origin;
 } botBuilding_t;
 

@@ -865,8 +865,9 @@ Boolean Functions for determining actions
 */
 qboolean BotWillBuildSomething(gentity_t *self) {
 	vec3_t origin;
+	vec3_t normal;
 	buildable_t buildable;
-	return BotGetBuildingToBuild(self, origin, &buildable);
+	return BotGetBuildingToBuild(self, origin, normal, &buildable);
 }
 qboolean BotShouldBuild(gentity_t *self) {
 	if(BotGetTeam(self) != TEAM_HUMANS)
@@ -1199,6 +1200,7 @@ extern "C" void G_BotLoadBuildLayout() {
 			} else if(BG_Buildable(buildable)->team == TEAM_HUMANS && level.botBuildLayout.numBuildings < MAX_BOT_BUILDINGS) {
 				level.botBuildLayout.buildings[level.botBuildLayout.numBuildings].type = buildable;
 				VectorCopy(origin, level.botBuildLayout.buildings[level.botBuildLayout.numBuildings].origin);
+				VectorCopy(origin2, level.botBuildLayout.buildings[level.botBuildLayout.numBuildings].normal);
 				level.botBuildLayout.numBuildings++;
 			}
 
