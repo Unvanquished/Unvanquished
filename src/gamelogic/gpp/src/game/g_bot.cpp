@@ -1502,12 +1502,12 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 			BotMoveToGoal(self, botCmdBuffer);
 		}
 	} else { //we see our target!!
-		qboolean inAttackRange = qfalse;
+		qboolean inAttackRange;
 		//record the time we saw him
 		self->botMind->enemyLastSeen = level.time;
 
 		//only enter attacking AI if we can walk in a straight line to the enemy or we can hit him from our current position
-		if(self->botMind->numCorners == 1 || (inAttackRange = BotTargetInAttackRange(self, self->botMind->goal))) {
+		if((inAttackRange = BotTargetInAttackRange(self, self->botMind->goal)) || self->botMind->numCorners == 1) {
 			vec3_t tmpVec;
 
 			//aim at the enemy
