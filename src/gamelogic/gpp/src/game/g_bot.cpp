@@ -1444,8 +1444,12 @@ botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer) {
 }
 botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 	//don't enter this task until we are given enough time to react to seeing the enemy
-	if(level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME)
+	if(level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME) {
+		if(self->botMind->goal.inuse) {
+			BotMoveToGoal(self, botCmdBuffer); //continue moving to our previous goal
+		}
 		return TASK_RUNNING;
+	}
 
 	if(BotRoutePermission(self,BOT_TASK_FIGHT)) {
 		if(!self->botMind->bestEnemy.ent)
