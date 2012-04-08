@@ -242,9 +242,6 @@ static inline void BotChangeTask(gentity_t *self, botTask_t task) {
 //how long the bot will continue retreating after loseing sight of the enemy
 #define BOT_RETREAT_TIME 5000
 
-//how close the enemy has to be to make the bot engage the enemy when the bot is retreating
-#define BOT_RETREAT_ENGAGE_DIST 300
-
 //how far away we can be before we stop going forward when fighting an alien
 #define MAX_HUMAN_DANCE_DIST 300
 
