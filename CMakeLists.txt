@@ -63,7 +63,7 @@ option( NO_UNTRUSTED_PLUGINS "Don't load native plugins from the user dir" 0 )
 
 option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
-option( ENABLE_HARDENING     "Enable various hardening options"            0 )
+option( ENABLE_HARDENING     "Enable various hardening options"            1 )
 if( ENABLE_HARDENING )
   option( ENABLE_FSTACKPROT  "Enable stack protection if available"        1 )
   option( ENABLE_RELRO       "Enable relro & bindnow if available"         1 )
