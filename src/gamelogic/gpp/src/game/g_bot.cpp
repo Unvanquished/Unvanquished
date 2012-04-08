@@ -51,22 +51,22 @@ Scoring functions for logic
 */
 float BotGetBaseRushScore(gentity_t *ent) {
 	switch(ent->s.weapon) {
-	case WP_LUCIFER_CANNON: return 1.0f; break;
-	case WP_MACHINEGUN: return 0.4f; break;
-	case WP_PULSE_RIFLE: return 0.7f; break;
-	case WP_LAS_GUN: return 0.7f; break;
-	case WP_SHOTGUN: return 0.2f; break;
-	case WP_CHAINGUN: if(BG_InventoryContainsUpgrade(UP_BATTLESUIT,ent->client->ps.stats)) 
-						  return 0.5f;
-					  else 
-						  return 0.2f; 
-		break;
-	case WP_ALEVEL0: return 0.0f; break;
-	case WP_ALEVEL1: return 0.2f; break;
-	case WP_ALEVEL2: return 0.7f; break;
-	case WP_ALEVEL3: return 0.8f; break;
-	case WP_ALEVEL4: return 1.0f; break;
-	default: return 0.5f; break;
+		case WP_LUCIFER_CANNON: return 1.0f; break;
+		case WP_MACHINEGUN: return 0.5f; break;
+		case WP_PULSE_RIFLE: return 0.7f; break;
+		case WP_LAS_GUN: return 0.7f; break;
+		case WP_SHOTGUN: return 0.2f; break;
+		case WP_CHAINGUN: if(BG_InventoryContainsUpgrade(UP_BATTLESUIT,ent->client->ps.stats)) 
+							  return 0.5f;
+						  else 
+							  return 0.2f; 
+			break;
+		case WP_ALEVEL0: return 0.0f; break;
+		case WP_ALEVEL1: return 0.2f; break;
+		case WP_ALEVEL2: return 0.7f; break;
+		case WP_ALEVEL3: return 0.8f; break;
+		case WP_ALEVEL4: return 1.0f; break;
+		default: return 0.5f; break;
 	}
 }
 
@@ -1626,6 +1626,10 @@ botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(!g_bot_rush.integer)
+		return TASK_STOPPED;
+
+	//dont start rushing immediately afer spawning to help avoid congestion when bots all take the same path
+	if(self->client->pers.aliveSeconds < 5)
 		return TASK_STOPPED;
 
 	//engage any enemies we find
