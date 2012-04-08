@@ -740,7 +740,7 @@ botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer) {
 			return TASK_STOPPED;
 		if(BG_UpgradeIsActive(UP_MEDKIT, self->client->ps.stats))
 			return TASK_STOPPED;
-		if(percentHealth * distToMedi > distToMedi * percentHealth )
+		if(percentHealth * distToMedi > BOT_FUZZY_HEAL_VALUE )
 			return TASK_STOPPED;
 	}
 
