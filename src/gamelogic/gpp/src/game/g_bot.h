@@ -211,9 +211,6 @@ static inline void BotChangeTask(gentity_t *self, botTask_t task) {
 //how long our traces are for obstacle avoidence
 #define BOT_OBSTACLE_AVOID_RANGE 50.0f
 
-//when closer to the enemy than this range, the human bots will backup
-#define BOT_BACKUP_RANGE 300.0f
-
 //how far off can our aim can be from true in order to try to hit the enemy
 #define BOT_AIM_NEGLIGENCE 30.0f
 
