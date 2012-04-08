@@ -273,7 +273,140 @@ extern "C" void G_NavMeshCleanup(void) {
 	}
 	navMeshLoaded = qfalse;
 }
+/*
+========================
+Bot Navigation Querys
+========================
+*/
 
+void BotGetAgentExtents(gentity_t *ent, vec3_t extents) {
+	VectorSet(extents, ent->r.maxs[0] * 5,  2 * (ent->r.maxs[2] - ent->r.mins[2]), ent->r.maxs[1] * 5);
+}
+int DistanceToGoal(gentity_t *self) {
+	vec3_t targetPos;
+	vec3_t selfPos;
+	//safety check for morons who use this incorrectly
+	if(!(self->botMind)) {
+		return -1;
+	}
+	BotGetTargetPos(self->botMind->goal,targetPos);
+	VectorCopy(self->s.origin,selfPos);
+	return Distance(selfPos,targetPos);
+}
+int DistanceToGoalSquared(gentity_t *self) {
+	vec3_t targetPos;
+	vec3_t selfPos;
+	//safety check for morons who use this incorrectly
+	if(!(self->botMind)) {
+		return -1;
+	}
+	BotGetTargetPos(self->botMind->goal,targetPos);
+	VectorCopy(self->s.origin,selfPos);
+	return DistanceSquared(selfPos,targetPos);
+}
+qboolean BotNav_Trace(dtNavMeshQuery* navQuery, dtQueryFilter* navFilter, vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies) {
+	vec3_t nearPoint;
+	dtPolyRef startRef;
+	dtStatus status;
+	vec3_t extents = {75,96,75};
+	quake2recast(start);
+	quake2recast(end);
+	status = navQuery->findNearestPoly(start,extents,navFilter,&startRef,nearPoint);
+	if(dtStatusFailed(status) || startRef == 0) {
+		//try larger extents
+		extents[1] += 500;
+		status = navQuery->findNearestPoly(start,extents,navFilter,&startRef,nearPoint);
+		if(dtStatusFailed(status) || startRef == 0) {
+			*numHit = 0;
+			*hit = 0;
+			VectorSet(normal,0,0,0);
+			if(maxPolies > 0) {
+				pathPolys[0] = startRef;
+				*numHit = 1;
+			}
+			return qfalse;
+		}
+	}
+	status = navQuery->raycast(startRef,start,end,navFilter, hit, normal, pathPolys, numHit, maxPolies);
+	if(dtStatusFailed(status)) {
+		return qfalse;
+	} else {
+		return qtrue;
+	}
+}
+qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target) {
+	dtPolyRef pathPolys[MAX_PATH_POLYS];
+	vec3_t selfPos, targetPos;
+	float hit;
+	int numPolys;
+	vec3_t hitNormal;
+	vec3_t viewNormal;
+	BG_GetClientNormal(&self->client->ps,viewNormal);
+	VectorMA(self->s.origin,self->r.mins[2],viewNormal,selfPos);
+	BotGetTargetPos(target, targetPos);
+	//quake2recast(selfPos);
+	//quake2recast(targetPos);
+
+	if(!BotNav_Trace(self->botMind->navQuery, self->botMind->navFilter, selfPos,targetPos,&hit,hitNormal,pathPolys,&numPolys,MAX_PATH_POLYS))
+		return qfalse;
+
+	if(hit == FLT_MAX)
+		return qtrue;
+	else
+		return qfalse;
+}
+qboolean BotFindNearestPoly(gentity_t *self, gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint) {
+	vec3_t extents;
+	vec3_t start;
+	vec3_t viewNormal;
+	dtStatus status;
+	dtNavMeshQuery* navQuery;
+	dtQueryFilter* navFilter;
+	if(ent->client) {
+		BG_GetClientNormal(&ent->client->ps,viewNormal);
+		navQuery = self->botMind->navQuery;
+		navFilter = self->botMind->navFilter;
+	} else {
+		VectorSet(viewNormal,0,0,1);
+		navQuery = self->botMind->navQuery;
+		navFilter = self->botMind->navFilter;
+	}
+	VectorMA(ent->s.origin,ent->r.mins[2],viewNormal,start);
+	quake2recast(start);
+	BotGetAgentExtents(ent,extents);
+	status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
+	if(dtStatusFailed(status) || *nearestPoly == 0) {
+		//try larger extents
+		extents[1] += 900;
+		status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
+		if(dtStatusFailed(status) || *nearestPoly == 0) {
+			return qfalse; // failed
+		}
+	}
+	recast2quake(nearPoint);
+	return qtrue;
+
+}
+qboolean BotFindNearestPoly(gentity_t *self, vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint) {
+	vec3_t start,extents;
+	dtStatus status;
+	dtNavMeshQuery* navQuery = self->botMind->navQuery;
+	dtQueryFilter* navFilter = self->botMind->navFilter;
+	VectorSet(extents,640,96,640);
+	VectorCopy(coord, start);
+	quake2recast(start);
+	status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
+	if(dtStatusFailed(status) || *nearestPoly == 0) {
+		//try larger extents
+		extents[1] += 900;
+		status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
+		if(dtStatusFailed(status) || *nearestPoly == 0) {
+			return qfalse; // failed
+		}
+	}
+	recast2quake(nearPoint);
+	return qtrue;
+}
 /*
 ========================
 Local Bot Navigation
@@ -677,141 +810,6 @@ qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer ) {
 		BotGoto( self, target, botCmdBuffer );
 		return qfalse;
 	}
-	return qtrue;
-}
-
-/*
-========================
-Bot Navigation Querys
-========================
-*/
-
-void BotGetAgentExtents(gentity_t *ent, vec3_t extents) {
-	VectorSet(extents, ent->r.maxs[0] * 5,  2 * (ent->r.maxs[2] - ent->r.mins[2]), ent->r.maxs[1] * 5);
-}
-int DistanceToGoal(gentity_t *self) {
-	vec3_t targetPos;
-	vec3_t selfPos;
-	//safety check for morons who use this incorrectly
-	if(!(self->botMind)) {
-		return -1;
-	}
-	BotGetTargetPos(self->botMind->goal,targetPos);
-	VectorCopy(self->s.origin,selfPos);
-	return Distance(selfPos,targetPos);
-}
-int DistanceToGoalSquared(gentity_t *self) {
-	vec3_t targetPos;
-	vec3_t selfPos;
-	//safety check for morons who use this incorrectly
-	if(!(self->botMind)) {
-		return -1;
-	}
-	BotGetTargetPos(self->botMind->goal,targetPos);
-	VectorCopy(self->s.origin,selfPos);
-	return DistanceSquared(selfPos,targetPos);
-}
-qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target) {
-	dtPolyRef pathPolys[MAX_PATH_POLYS];
-	vec3_t selfPos, targetPos;
-	float hit;
-	int numPolys;
-	vec3_t hitNormal;
-	vec3_t viewNormal;
-	BG_GetClientNormal(&self->client->ps,viewNormal);
-	VectorMA(self->s.origin,self->r.mins[2],viewNormal,selfPos);
-	BotGetTargetPos(target, targetPos);
-	//quake2recast(selfPos);
-	//quake2recast(targetPos);
-
-	if(!BotNav_Trace(self->botMind->navQuery, self->botMind->navFilter, selfPos,targetPos,&hit,hitNormal,pathPolys,&numPolys,MAX_PATH_POLYS))
-		return qfalse;
-
-	if(hit == FLT_MAX)
-		return qtrue;
-	else
-		return qfalse;
-}
-qboolean BotNav_Trace(dtNavMeshQuery* navQuery, dtQueryFilter* navFilter, vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies) {
-	vec3_t nearPoint;
-	dtPolyRef startRef;
-	dtStatus status;
-	vec3_t extents = {75,96,75};
-	quake2recast(start);
-	quake2recast(end);
-	status = navQuery->findNearestPoly(start,extents,navFilter,&startRef,nearPoint);
-	if(dtStatusFailed(status) || startRef == 0) {
-		//try larger extents
-		extents[1] += 500;
-		status = navQuery->findNearestPoly(start,extents,navFilter,&startRef,nearPoint);
-		if(dtStatusFailed(status) || startRef == 0) {
-			*numHit = 0;
-			*hit = 0;
-			VectorSet(normal,0,0,0);
-			if(maxPolies > 0) {
-				pathPolys[0] = startRef;
-				*numHit = 1;
-			}
-			return qfalse;
-		}
-	}
-	status = navQuery->raycast(startRef,start,end,navFilter, hit, normal, pathPolys, numHit, maxPolies);
-	if(dtStatusFailed(status)) {
-		return qfalse;
-	} else {
-		return qtrue;
-	}
-}
-qboolean BotFindNearestPoly(gentity_t *self, gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint) {
-	vec3_t extents;
-	vec3_t start;
-	vec3_t viewNormal;
-	dtStatus status;
-	dtNavMeshQuery* navQuery;
-	dtQueryFilter* navFilter;
-	if(ent->client) {
-		BG_GetClientNormal(&ent->client->ps,viewNormal);
-		navQuery = self->botMind->navQuery;
-		navFilter = self->botMind->navFilter;
-	} else {
-		VectorSet(viewNormal,0,0,1);
-		navQuery = self->botMind->navQuery;
-		navFilter = self->botMind->navFilter;
-	}
-	VectorMA(ent->s.origin,ent->r.mins[2],viewNormal,start);
-	quake2recast(start);
-	BotGetAgentExtents(ent,extents);
-	status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
-	if(dtStatusFailed(status) || *nearestPoly == 0) {
-		//try larger extents
-		extents[1] += 900;
-		status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
-		if(dtStatusFailed(status) || *nearestPoly == 0) {
-			return qfalse; // failed
-		}
-	}
-	recast2quake(nearPoint);
-	return qtrue;
-
-}
-qboolean BotFindNearestPoly(gentity_t *self, vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint) {
-	vec3_t start,extents;
-	dtStatus status;
-	dtNavMeshQuery* navQuery = self->botMind->navQuery;
-	dtQueryFilter* navFilter = self->botMind->navFilter;
-	VectorSet(extents,640,96,640);
-	VectorCopy(coord, start);
-	quake2recast(start);
-	status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
-	if(dtStatusFailed(status) || *nearestPoly == 0) {
-		//try larger extents
-		extents[1] += 900;
-		status = navQuery->findNearestPoly(start,extents,navFilter,nearestPoly,nearPoint);
-		if(dtStatusFailed(status) || *nearestPoly == 0) {
-			return qfalse; // failed
-		}
-	}
-	recast2quake(nearPoint);
 	return qtrue;
 }
 
