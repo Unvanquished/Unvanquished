@@ -218,11 +218,6 @@ typedef struct{
   //this bot's leader (NULL if no leader)	
   gentity_t *leader;	
 
-  //for bot builders	
-  int currentBuilding;	
-  int maxBuildings;
-  botBuildLayout_t layout;
-
   //navigation classes
   //not for use outside C++ code
 #ifdef __cplusplus

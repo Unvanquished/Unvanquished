@@ -1500,7 +1500,7 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 			BotMoveToGoal(self, botCmdBuffer);
 		}
 	} else { //we see our target!!
-		qboolean inAttackRange;
+		qboolean inAttackRange = qfalse;
 		//record the time we saw him
 		self->botMind->enemyLastSeen = level.time;
 
@@ -1691,8 +1691,6 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 	bot->botMind->command = BOT_AUTO;
 	bot->botMind->spawnItem = WP_HBUILD;
 	bot->botMind->needNewGoal = qtrue;
-	bot->botMind->currentBuilding = 0;
-	bot->botMind->maxBuildings  = 0;
 	bot->botMind->modus = BOT_MODUS_IDLE;
 	bot->botMind->task = BOT_TASK_NONE;
 	bot->botMind->pathCorridor = &pathCorridor[clientNum];

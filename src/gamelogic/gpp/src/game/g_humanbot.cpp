@@ -646,7 +646,6 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 			self->client->ps.stats[STAT_MISC] += BG_Buildable(building)->buildTime;
 		}
 		G_Build(self, building, origin,normal,self->client->ps.viewangles);
-		self->botMind->currentBuilding++;
 		self->botMind->needNewGoal = qtrue;
 	}
 	return TASK_RUNNING;
