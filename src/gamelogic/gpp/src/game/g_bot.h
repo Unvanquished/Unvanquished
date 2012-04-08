@@ -220,7 +220,7 @@ static inline void BotChangeTask(gentity_t *self, botTask_t task) {
 #define BOT_ENEMY_CHASETIME 5000
 
 //How close does the enemy have to be for the bot to engage him/her when doing a task other than fight/roam
-#define BOT_ENGAGE_DIST 500
+#define BOT_ENGAGE_DIST 200
 
 //How long in milliseconds it takes the bot to react upon seeing an enemy
 #define BOT_REACTION_TIME 500
