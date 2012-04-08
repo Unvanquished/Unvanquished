@@ -453,7 +453,7 @@ static void ConfigureRecast ( int agentRadius, int agentHeight, float cellSize, 
 	cfg.ch = cellHeight;
 	cfg.walkableSlopeAngle = 46; //max slope is 45, but recast checks for < 45 so we need 46
 	cfg.maxEdgeLen = 64;
-	cfg.maxSimplificationError = agentRadius / 4;
+	cfg.maxSimplificationError = 1;
 	cfg.maxVertsPerPoly = 6;
 	cfg.detailSampleDist = cfg.cs * 6.0f;
 	cfg.detailSampleMaxError = cfg.ch * 1.0f;
@@ -462,7 +462,7 @@ static void ConfigureRecast ( int agentRadius, int agentHeight, float cellSize, 
 	cfg.walkableHeight = (int) ceilf(agentHeight / cfg.ch);
 	cfg.walkableClimb = (int) floorf(stepSize/cfg.ch);
 	cfg.walkableRadius = (int) ceilf(agentRadius / cfg.cs);
-	//cfg.borderSize = cfg.walkableRadius + 3;
+	cfg.borderSize = cfg.walkableRadius + 3;
 
 	rcCalcGridSize (cfg.bmin, cfg.bmax, cfg.cs, &cfg.width, &cfg.height);
 	Sys_Printf(" using %d x %d cells\n",cfg.width,cfg.height);
@@ -1013,7 +1013,7 @@ NavMain
 extern "C" int NavMain(int argc, char **argv)
 {
 	float temp;
-	float cellSize = 8;
+	float cellSize = 6;
 	float cellHeight = 6;
 	float stepSize = STEPSIZE;
 	qboolean obj = qfalse;
