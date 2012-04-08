@@ -268,11 +268,11 @@ botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 	//find best heal target
 	if(!(healTarget = self->botMind->closestBuildings.booster.ent)) {
-		if(!(healTarget = self->botMind->closestBuildings.egg.ent)) {
-				healTarget = self->botMind->closestBuildings.overmind.ent;
-				distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.overmind.distance);
+		if(!(healTarget = self->botMind->closestBuildings.overmind.ent)) {
+				healTarget = self->botMind->closestBuildings.egg.ent;
+				distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.egg.distance);
 		} else {
-			distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.egg.distance);
+			distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.overmind.distance);
 		}
 	} else {
 		distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.booster.distance);
