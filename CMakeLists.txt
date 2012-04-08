@@ -59,7 +59,7 @@ if( USE_VOIP )
 endif()
 option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
 option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
-option( NO_UNTRUSTED_PLUGINS "Don't load native plugins from the user dir" 0 )
+option( NO_UNTRUSTED_PLUGINS "Don't load native plugins from the user dir" 1 )
 
 option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
