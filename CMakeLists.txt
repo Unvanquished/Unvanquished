@@ -61,6 +61,14 @@ option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
 option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
 option( NO_UNTRUSTED_PLUGINS "Don't load native plugins from the user dir" 0 )
 
+option( ENABLE_W_ALL         "Use -Wall"                                   0 )
+option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
+option( ENABLE_HARDENING     "Enable various hardening options"            1 )
+if( ENABLE_HARDENING )
+  option( ENABLE_FSTACKPROT  "Enable stack protection if available"        1 )
+  option( ENABLE_RELRO       "Enable relro & bindnow if available"         1 )
+endif()
+
 # Package info
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
 set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
@@ -101,18 +109,84 @@ else()
   set( BUILD_ARCH ${CMAKE_SYSTEM_PROCESSOR} )
 endif()
 
+#################
+# Compile flags #
+#################
+
+macro( try_compiler_flag_internal PROP FLAG CC SUFFIX LABEL )
+  set( SAVED_FLAGS "${CMAKE_${CC}_FLAGS}" )
+  set( CMAKE_${CC}_FLAGS "${CMAKE_${CC}_FLAGS} ${FLAG}" )
+  # test it on an executable
+  if( NOT ${PROP}_${CC}_CACHED )
+    try_compile( ${PROP}_${CC} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.${SUFFIX}
+                 CMAKE_FLAGS "-DCMAKE_${CC}_FLAGS=${CMAKE_${CC}_FLAGS}" )
+  endif()
+  if( ${PROP}_${CC} )
+    if( NOT ${PROP}_${CC}_CACHED )
+      message( STATUS "Using ${LABEL} flag ${FLAG}" )
+    endif()
+  else()
+    if( NOT ${PROP}_${CC}_CACHED )
+      message( STATUS "${LABEL} flag ${FLAG} is not available" )
+    endif()
+    set( CMAKE_${CC}_FLAGS "${SAVED_FLAGS}" )
+  endif()
+  set( ${PROP}_${CC}_CACHED TRUE CACHE INTERNAL "Set if ${LABEL} option ${FLAG} has been checked for." )
+endmacro()
+
+macro( try_c_flag PROP FLAG )
+  try_compiler_flag_internal( ${PROP} ${FLAG} C c C )
+endmacro()
+
+macro( try_cxx_flag PROP FLAG )
+  try_compiler_flag_internal( ${PROP} ${FLAG} CXX cxx C++)
+endmacro()
+
+macro( try_c_cxx_flag PROP FLAG )
+  try_c_flag( ${PROP} ${FLAG} )
+  try_cxx_flag( ${PROP} ${FLAG} )
+endmacro()
+
+# Various warnings
+if( ENABLE_W_ALL )
+  try_c_cxx_flag( HAVE_W_ALL              -Wall )
+endif()
+if( ENABLE_WARNINGS )
+  try_c_cxx_flag( HAVE_W_FORMAT2          -Wformat=2 )
+  if( NOT HAVE_W_FORMAT2_C )
+    try_c_cxx_flag( HAVE_W_FORMAT         -Wformat )
+  endif()
+  try_c_flag    ( HAVE_W_0LEN_FMT         -Wno-format-zero-length )
+  try_c_cxx_flag( HAVE_W_FORMAT_SECURITY  -Wformat-security )
+  try_c_cxx_flag( HAVE_W_STRICT_ALIAS_2   -Wstrict-aliasing=2 )
+  try_c_cxx_flag( HAVE_W_MISSING_FMT_ATTR -Wmissing-format-attribute )
+  try_c_cxx_flag( HAVE_W_MISSING_NORETURN -Wmissing-noreturn )
+  try_c_flag    ( HAVE_W_IMPLICIT_FN      -Wimplicit-function-declaration )
+  if( HAVE_W_IMPLICIT_FN_C )
+    try_c_cxx_flag( HAVE_W_ERR_IMPLICIT_FN  -Werror=implicit-function-declaration )
+  endif()
+  try_c_cxx_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
+  if( HAVE_W_FMT_SECURITY_C )
+    try_c_cxx_flag( HAVE_W_ERR_FMT_SECURITY -Werror=format-security )
+  endif()
+endif()
+
+# Hardening
+if( ENABLE_HARDENING )
+  try_c_cxx_flag( HAVE_F_STACK_PROTECTOR  -fstack-protector )
+endif()
+
 ##############
 # Link flags #
 ##############
 
 macro( try_linker_flag PROP FLAG )
-  set( SAVED_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} )
+  set( SAVED_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" )
   set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" )
   # test it on an executable
   if( NOT ${PROP}_CACHED )
     try_compile( ${PROP} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
                  CMAKE_FLAGS -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS} )
-    set( ${PROP} ${${PROP}} CACHE INTERNAL "Set if linker option ${FLAG} is available." )
   endif()
   if( ${PROP} )
     if( NOT ${PROP}_CACHED )
@@ -125,7 +199,7 @@ macro( try_linker_flag PROP FLAG )
     if( NOT ${PROP}_CACHED )
       message( STATUS "Linker flag ${FLAG} is not available" )
     endif()
-    set( CMAKE_EXE_LINKER_FLAGS "${SAVED_EXE_LINKER_FLAGS}" )
+    set( CMAKE_EXE_LINKER_FLAGS "${SAVED_FLAGS}" )
   endif()
   set( ${PROP}_CACHED TRUE CACHE INTERNAL "Set if linker option ${FLAG} has been checked for." )
 endmacro()
@@ -135,6 +209,15 @@ try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
 
 # If we can, fail if there are unresolved symbols
 try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
+
+if( ENABLE_HARDENING )
+  if( ENABLE_FSTACKPROT )
+    try_linker_flag( HAVE_FSTACKPROT "-fstack-protector --param=ssp-buffer-size=4" )
+  endif()
+  if( ENABLE_RELRO )
+    try_linker_flag( HAVE_Z_RELRO_Z_NOW -Wl,-z,relro,-z,now )
+  endif()
+endif()
 
 ######################
 # Define Build Files #
