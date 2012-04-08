@@ -96,6 +96,7 @@ botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer);
 qboolean BotFindNearestPoly( gentity_t *self, gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint);
 qboolean BotNav_Trace(dtNavMeshQuery *navQuery, dtQueryFilter* navFilter, vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies);
 qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target);
+void UpdatePathCorridor(gentity_t *self);
 qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer );
 void BotDodge(gentity_t *self, usercmd_t *botCmdBuffer);
 void BotGoto(gentity_t *self, botTarget_t target, usercmd_t *botCmdBuffer);

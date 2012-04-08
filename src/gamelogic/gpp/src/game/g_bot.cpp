@@ -1509,7 +1509,8 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 		//only enter attacking AI if we can walk in a straight line to the enemy or we can hit him from our current position
 		if((inAttackRange = BotTargetInAttackRange(self, self->botMind->goal)) || self->botMind->numCorners == 1) {
 			vec3_t tmpVec;
-
+			//update the path corridor
+			UpdatePathCorridor(self);
 			//aim at the enemy
 			BotGetIdealAimLocation(self, self->botMind->goal, tmpVec);
 			BotSlowAim(self, tmpVec, self->botMind->botSkill.aimSlowness);
