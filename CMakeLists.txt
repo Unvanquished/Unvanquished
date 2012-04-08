@@ -921,12 +921,12 @@ if( BUILD_GAME_SO_GPP )
         set( ${SOURCELIST}${SUFFIX}_BC ${${SOURCELIST}${SUFFIX}_BC} ${BC_S_DIR}/${PLUGIN}/${LEAF}${SUFFIX}.s )
         add_custom_command( OUTPUT ${BC_S_DIR}/${PLUGIN}/${LEAF}${SUFFIX}.s
                             COMMAND ${CLANG_CMD} ${EXTRA} -o ${BC_S_DIR}/${PLUGIN}/${LEAF}${SUFFIX}.s ${BCFILE}
-                            WORKING_DIRECTORY src/gamelogic/gpp )
+                            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
       endforeach()
       add_custom_command( OUTPUT ${BC_O_DIR}/${PLUGIN}${SUFFIX}.bc
                           COMMAND ${LLVM_LINK} ${${SOURCELIST}${SUFFIX}_BC} -o ${BC_O_DIR}/${PLUGIN}${SUFFIX}.bc
                           DEPENDS ${${SOURCELIST}${SUFFIX}_BC}
-                          WORKING_DIRECTORY src/gamelogic/gpp )
+                          WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
     endmacro()
 
     foreach( ARCH 32 64 )
