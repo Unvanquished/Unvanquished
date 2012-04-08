@@ -597,6 +597,7 @@ void FindWaypoints(gentity_t *self) {
 	dtPolyRef cornerPolys[MAX_ROUTE_NODES];
 
 	if(!self->botMind->pathCorridor->getPathCount()) {
+		BotDPrintf(S_COLOR_RED "ERROR: FindWaypoints Called without a path!\n");
 		self->botMind->numCorners = 0;
 		return;
 	}
@@ -618,8 +619,10 @@ float Distance2D(vec3_t pos1, vec3_t pos2) {
 }
 void UpdatePathCorridor(gentity_t *self) {
 	vec3_t selfPos, targetPos;
-	if(!self->botMind->pathCorridor->getPathCount())
+	if(!self->botMind->pathCorridor->getPathCount()) {
+		BotDPrintf(S_COLOR_RED "ERROR: UpdatePathCorridor called without a path!\n");
 		return;
+	}
 	if(BotTargetIsEntity(self->botMind->goal)) {
 		if(self->botMind->goal.ent->s.groundEntityNum == -1 || self->botMind->goal.ent->s.groundEntityNum == ENTITYNUM_NONE)
 			PlantEntityOnGround(self->botMind->goal.ent,targetPos);
@@ -873,8 +876,10 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 	self->botMind->pathCorridor->setCorridor(targetPos, pathPolys, pathNumPolys);
 
 	FindWaypoints(self);
-	if(status & DT_PARTIAL_RESULT)
+	if(status & DT_PARTIAL_RESULT) {
+		BotDPrintf("Found a partial path\n");
 		return STATUS_SUCCEED | STATUS_PARTIAL;
+	}
 
 	return STATUS_SUCCEED;
 }
