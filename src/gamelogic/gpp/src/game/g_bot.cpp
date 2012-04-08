@@ -512,8 +512,9 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 	BotGetTargetPos(target,targetPos);
 	switch(self->client->ps.weapon) {
 		case WP_ABUILD:
-			range = 0; //poor granger :(
+			range = ABUILDER_CLAW_RANGE;
 			secondaryRange = 0;
+			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ABUILD2:
 			range = ABUILDER_CLAW_RANGE;
@@ -1079,11 +1080,14 @@ void BotFireWeaponAI(gentity_t *self, usercmd_t *botCmdBuffer) {
 	distance = Distance(muzzle, trace.endpos);
 	switch(self->s.weapon) {
 	case WP_ABUILD:
-		botCmdBuffer->buttons |= BUTTON_GESTURE; //make cute granger sounds to ward off the would be attackers
+		if(distance <= ABUILDER_CLAW_RANGE)
+			BotFireWeapon(WPM_SECONDARY, botCmdBuffer);
+		else
+			botCmdBuffer->buttons |= BUTTON_GESTURE; //make cute granger sounds to ward off the would be attackers
 		break;
 	case WP_ABUILD2:
 		if(distance <= ABUILDER_CLAW_RANGE)
-			BotFireWeapon(WPM_SECONDARY,botCmdBuffer); //swipe
+			BotFireWeapon(WPM_SECONDARY, botCmdBuffer); //swipe
 		else
 			BotFireWeapon(WPM_TERTIARY, botCmdBuffer); //blob launcher
 		break;
