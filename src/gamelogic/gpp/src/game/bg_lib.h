@@ -33,9 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 
-#if defined( __clang__ )
-#include <stdarg.h>
-#elif defined( __GNUC__ )
+#if defined( __clang__ ) || defined( __GNUC__ )
 typedef __builtin_va_list va_list;
 #define va_start(ap,v) __builtin_va_start(ap,v)
 #define va_arg(ap,t)   __builtin_va_arg(ap,t)
