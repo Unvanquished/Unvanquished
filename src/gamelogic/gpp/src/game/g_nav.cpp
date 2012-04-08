@@ -453,7 +453,7 @@ gentity_t* BotGetPathBlocker(gentity_t *self) {
 
 	VectorMA(self->s.origin, TRACE_LENGTH, moveDir, end);
 
-	trap_Trace(&trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT);
+	trap_Trace(&trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, CONTENTS_BODY);
 	if(trace.entityNum != ENTITYNUM_NONE && trace.fraction < 1.0f) {
 		return &g_entities[trace.entityNum];
 	} else {
@@ -480,6 +480,7 @@ qboolean BotShouldJump(gentity_t *self, gentity_t *blocker) {
 	/*forward[0] = cos(DEG2RAD(self->client->ps.viewangles[YAW]));
 	forward[1] = sin(DEG2RAD(self->client->ps.viewangles[YAW]));
 	forward[2] = 0;*/
+	forward[2] = 0;
 	VectorNormalize(forward);
 
 	//already normalized
@@ -601,27 +602,25 @@ qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec, usercmd_t *botCmdBuffer
 		return qfalse;
 	gentity_t *blocker = BotGetPathBlocker(self);
 	if(blocker) {
-		if(blocker->s.number != ENTITYNUM_WORLD) {
-			if(blocker->s.number != ENTITYNUM_WORLD && BotShouldJump(self, blocker)) {
-				//jump if we have enough stamina
-				if(self->client->ps.stats[STAT_STAMINA] >= STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE) {
-					botCmdBuffer->upmove = 127;
-				} else if(BotGetTeam(self) == BotGetTeam(blocker) || blocker->s.number == ENTITYNUM_WORLD){
-					botCmdBuffer->forwardmove = 0;
-					botCmdBuffer->rightmove = 0;
-				}
-				return qfalse;
-			} else {
-				vec3_t newAimPos;
+		if(BotShouldJump(self, blocker)) {
+			//jump if we have enough stamina
+			if(self->client->ps.stats[STAT_STAMINA] >= STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE) {
+				botCmdBuffer->upmove = 127;
+			} else if(BotGetTeam(self) == BotGetTeam(blocker) || blocker->s.number == ENTITYNUM_WORLD){
+				botCmdBuffer->forwardmove = 0;
+				botCmdBuffer->rightmove = 0;
+			}
+			return qfalse;
+		} else {
+			vec3_t newAimPos;
 				//we should not jump, try to get around the obstruction
-				if(BotFindSteerTarget(self, newAimPos)) {
-					//found a steer target
-					VectorCopy(newAimPos,rVec);
-					return qtrue;
-				} else {
-					botCmdBuffer->rightmove = BotGetStrafeDirection();
-					botCmdBuffer->forwardmove = -127; //backup
-				}
+			if(BotFindSteerTarget(self, newAimPos)) {
+				//found a steer target
+				VectorCopy(newAimPos,rVec);
+				return qtrue;
+			} else {
+				botCmdBuffer->rightmove = BotGetStrafeDirection();
+				botCmdBuffer->forwardmove = -127; //backup
 			}
 		}
 	}
@@ -905,7 +904,7 @@ void PlantEntityOnGround(gentity_t *ent, vec3_t groundPos) {
 	vec3_t mins,maxs;
 	trace_t trace;
 	vec3_t realPos;
-	const int traceLength = 10000;
+	const int traceLength = 1000;
 	vec3_t endPos;
 	vec3_t traceDir;
 	if(ent->client) {
@@ -920,7 +919,7 @@ void PlantEntityOnGround(gentity_t *ent, vec3_t groundPos) {
 	VectorSet(traceDir,0,0,-1);
 	VectorCopy(ent->s.origin, realPos);
 	VectorMA(realPos,traceLength,traceDir,endPos);
-	trap_Trace(&trace,ent->s.origin,mins,maxs,endPos,ent->s.number,MASK_SHOT);
+	trap_Trace(&trace,ent->s.origin,mins,maxs,endPos,ent->s.number,CONTENTS_SOLID);
 	if(trace.fraction != 1.0f) {
 		VectorCopy(trace.endpos,groundPos);
 	} else {
