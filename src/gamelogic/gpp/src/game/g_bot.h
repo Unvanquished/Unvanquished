@@ -245,6 +245,12 @@ static inline void BotChangeTask(gentity_t *self, botTask_t task) {
 //how close the enemy has to be to make the bot engage the enemy when the bot is retreating
 #define BOT_RETREAT_ENGAGE_DIST 300
 
+//how far away we can be before we stop going forward when fighting an alien
+#define MAX_HUMAN_DANCE_DIST 300
+
+//how far away we can be before we try to go around an alien when fighting an alien
+#define MIN_HUMAN_DANCE_DIST 100
+
 #define BOT_LEADER_WAIT_RANGE 250 //should be > BOT_FOLLOW_RANGE + BOT_FOLLOW_RANGE_NEGLIGENCE
 #define BOT_FOLLOW_RANGE 100
 #define BOT_FOLLOW_RANGE_NEGLIGENCE 30

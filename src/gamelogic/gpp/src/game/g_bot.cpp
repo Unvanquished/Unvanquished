@@ -1528,14 +1528,13 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 			//human specific attacking AI
 			if(BotGetTeam(self) == TEAM_HUMANS) {
-
 				//dont back away unless skill > 3 + distance logic
-				if(self->botMind->botSkill.level >= 3 && DistanceToGoalSquared(self) < Square(300) 
-					&& (DistanceToGoalSquared(self) > Square(100) || self->botMind->botSkill.level < 5)
+				if(self->botMind->botSkill.level >= 3 && DistanceToGoalSquared(self) < Square(MAX_HUMAN_DANCE_DIST) 
+					&& (DistanceToGoalSquared(self) > Square(MIN_HUMAN_DANCE_DIST) || self->botMind->botSkill.level < 5)
 					&& self->client->ps.weapon != WP_PAIN_SAW)
 				{
 					botCmdBuffer->forwardmove = -127; //max backward speed
-				} else if(DistanceToGoalSquared(self) <= Square(100)) { //we wont hit this if skill < 5
+				} else if(DistanceToGoalSquared(self) <= Square(MIN_HUMAN_DANCE_DIST)) { //we wont hit this if skill < 5
 					//we will be moving toward enemy, strafe too
 					//the result: we go around the enemy
 					botCmdBuffer->rightmove = BotGetStrafeDirection();
@@ -1550,6 +1549,13 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 						botCmdBuffer->buttons |= WBUTTON_PRONE;
 						botCmdBuffer->forwardmove = 0;
 					}
+				} else {
+					//we should be >= MAX_HUMAN_DANCE_DIST from the enemy
+					//dont go forward
+					botCmdBuffer->forwardmove = 0;
+
+					//strafe randomly
+					botCmdBuffer->rightmove = BotGetStrafeDirection();
 				}
 
 				//humans should not move if they are targeting, and can hit, a building
