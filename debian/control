@@ -30,8 +30,8 @@ Build-Depends: debhelper (>= 8.0.0), cmake,
 	zlib1g-dev
 Standards-Version: 3.9.2
 Homepage: http://www.unvanquished.net/
-Vcs-Git: git://github.com/TremZ/Unvanquished.git
-Vcs-Browser: http://github.com/TremZ/Unvanquished
+Vcs-Git: git://github.com/Unvanquished/Unvanquished.git
+Vcs-Browser: http://github.com/Unvanquished/Unvanquished
 
 Package: unvanquished
 Architecture: any

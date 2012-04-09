@@ -6,8 +6,9 @@ unvanquished (0.3.0-2) unstable; urgency=low
     *** NOTE: downgrades are NOT supported!
   * Don't load native plugins from the user directory.
   * Fix r_glForceDriver.
+  * debian/control: Update source repository location.
 
- -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 02 Apr 2012 21:23:10 +0100
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 09 Apr 2012 11:30:56 +0100
 
 unvanquished (0.3.0-1) unstable; urgency=low
 
