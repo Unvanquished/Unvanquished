@@ -62,13 +62,25 @@ static void *VM_LookupSym( const std::string& symbol )
 		const char *name;
 		void       *func;
 	} lookup[] = {
-		EXPORTFUNC(Q_strncpyz),
-		EXPORTFUNC(Q_vsnprintf),
+		EXPORTFUNC( Q_snprintf ),
+		EXPORTFUNC( Q_strncpyz ),
+		EXPORTFUNC( Q_vsnprintf ),
+		EXPORTFUNC( atan2 ),
+		EXPORTFUNC( ceil ),
+		EXPORTFUNC( cos ),
+		EXPORTFUNC( floor ),
+		EXPORTFUNC( memcpy ),
+		EXPORTFUNC( memmove ),
+		EXPORTFUNC( memset ),
+		EXPORTFUNC( powf ),
+		EXPORTFUNC( realloc ), // FIXME - don't really want this one exported
+		EXPORTFUNC( sin ),
+		EXPORTFUNC( strncpy ),
 		{}
 	};
 
 	if ( com_developer->integer ) {
-		Com_Printf( "-> Look up symbol %s\n", symbol.c_str() );
+		Com_Printf( "LLVM: Look up symbol %s\n", symbol.c_str() );
 	}
 
 	// our symbols
@@ -78,10 +90,11 @@ static void *VM_LookupSym( const std::string& symbol )
 		}
 	}
 
-	// imported symbols (using global scope)
-	// ** Once we have things working properly, should return NULL
-	//    for most, if not all, symbol names
-	return Sys_LoadFunction( NULL, symbol.c_str() );
+	// return Sys_LoadFunction( NULL, symbol.c_str() );
+
+	// this is about to crash and burn, so report the symbol
+	Com_Printf( "LLVM: ^3Unparsed symbol %s^7\n", symbol.c_str() );
+	return NULL;
 }
 
 void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
