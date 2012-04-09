@@ -1182,7 +1182,7 @@ static float __scalbnf( float x, int n )
 pow
 ==================
 */
-float pow( float x, float y )
+float powf( float x, float y )
 {
 	float z, ax, z_h, z_l, p_h, p_l;
 	float y1, subt1, t1, t2, subr, r, s, t, u, v, w;

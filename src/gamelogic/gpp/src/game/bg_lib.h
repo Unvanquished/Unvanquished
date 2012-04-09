@@ -159,7 +159,7 @@ double tan( double x );
 int    abs( int n );
 double fabs( double x );
 double acos( double x );
-float  pow( float x, float y );
+float  powf( float x, float y );
 double rint( double v );
 
 #endif // BG_LIB_H
