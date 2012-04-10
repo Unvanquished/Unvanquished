@@ -1478,6 +1478,17 @@ extern "C" {
 
 //=============================================
 
+int Q_UTF8Width( const char *str );
+int Q_UTF8Strlen( const char *str );
+int Q_UTF8PrintStrlen( const char *str );
+qboolean Q_UTF8ContByte( char c );
+unsigned long Q_UTF8CodePoint( const char *str );
+char *Q_UTF8Encode( unsigned long codepoint );
+int Q_UTF8Store( const char *s );
+char *Q_UTF8Unstore( int e );
+
+//=============================================
+
 // 64-bit integers for global rankings interface
 // implemented as a struct for qvm compatibility
 	typedef struct

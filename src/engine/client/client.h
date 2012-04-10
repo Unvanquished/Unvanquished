@@ -738,7 +738,8 @@ typedef struct
 {
 	qboolean initialized;
 
-	short    text[ CON_TEXTSIZE ];
+	char     text[ CON_TEXTSIZE ];
+	char     tcolor[ CON_TEXTSIZE ];
 	int      current; // line where next message will be printed
 	int      x; // offset in current line for next print
 	int      display; // bottom of console displays this line
@@ -801,9 +802,9 @@ void  SCR_DrawNamedPic( float x, float y, float width, float height, const char 
 void  SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noColorEscape );  // draws a string with embedded color control characters with fade
 void  SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean noColorEscape );  // ignores embedded color control characters
 void  SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape );
-void  SCR_DrawSmallChar( int x, int y, int ch );
-void  SCR_DrawConsoleFontChar( float x, float y, int ch );
-float SCR_ConsoleFontCharWidth( int ch );
+void  SCR_DrawSmallChar( int x, int y, const char *s );
+void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
+float SCR_ConsoleFontCharWidth( const char *s );
 float SCR_ConsoleFontCharHeight( void );
 float SCR_ConsoleFontStringWidth( const char *s, int len );
 
