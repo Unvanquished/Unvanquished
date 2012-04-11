@@ -95,18 +95,18 @@ if( WIN32 )
   set( CONSOLE "win32" )
 elseif( UNIX )
   if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-    add_definitions( -DMACOS_X -DMACOS_X_ACCELERATION_HACK -D USE_FILE32API -DMACOS_X_CURSOR_HACK )
+    add_definitions( -DMACOS_X -DMACOS_X_ACCELERATION_HACK -DUSE_FILE32API -DMACOS_X_CURSOR_HACK )
   endif()
   set( PLATFORM "unix" )
 endif()
 
-# Determine arch
-if( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64" )
+# Determine arch. Note this will be incorrect for PPC/ARM/etc.
+if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
   set( BUILD_ARCH "x86_64" )
-elseif( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86" )
+elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
   set( BUILD_ARCH "i386" )
 else()
-  set( BUILD_ARCH ${CMAKE_SYSTEM_PROCESSOR} )
+  set( BUILD_ARCH "unknown" )
 endif()
 
 #################
@@ -1047,9 +1047,9 @@ endif()
 
 if( USE_PHYSICS )
   if( LINUX )
-    if( CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" )
+    if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux64/libNewton.a" )
-    elseif( ${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86" )
+    elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux32/libNewton.a" )
     endif()
   else()
@@ -1140,13 +1140,25 @@ if( BUILD_CLIENT )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO  )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
   install( TARGETS client
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
   )
+
+  # Mac OS X specific settings
+  if( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" )
+    # Mac OS X does not provide a SDLMain.dylib so we must compile our own
+    add_library( INTERNAL_SDLMain ${MOUNT_DIR}/engine/sys/SDLMain.m )
+    target_link_libraries( client INTERNAL_SDLMain )
+    # Mac OS X has some trouble with PIC code under X86/32.
+    if( CMAKE_SIZEOF_VOID_P EQUAL 4)
+      set_target_properties( client PROPERTIES COMPILE_FLAGS -fno-pic LINK_FLAGS "-read_only_relocs suppress" )
+    endif()
+  endif()
+
 
   # This section finds and provides REQUIRED dependencies to target client
   find_package( OpenGL REQUIRED )
@@ -1168,10 +1180,6 @@ if( BUILD_CLIENT )
 
     include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
     target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
-
-  if( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-    link_directories( /opt/local/lib )
-  endif()
 
   # This section finds and provides OPTIONAL dependencies to target client
   if( USE_OPENAL )
@@ -1293,6 +1301,12 @@ if( BUILD_SERVER )
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
   )
+
+  # Mac OS X has some trouble with PIC code under X86/32.
+  if( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" AND CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    set_target_properties( server PROPERTIES COMPILE_FLAGS -fno-pic LINK_FLAGS "-read_only_relocs suppress" )
+  endif()
+
   # The following section finds the REQUIRED dependencies and makes them available to the target
     find_package( SDL REQUIRED )
     find_package( GMP REQUIRED )
