@@ -946,7 +946,17 @@ endif()
 # Build Game/Cgame/Ui DLL/.so #
 ###############################
 
+
+
 if( BUILD_GAME_SO_ET )
+  # Xcode places the game libraries in the incorrect location. This should fix it
+  if( XCODE_VERSION )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/etmain" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/etmain" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/etmain" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/etmain" )
+  endif()
+
   add_library( game SHARED ${SHAREDLIST} ${QAGAMELIST} )
   set_property( TARGET game PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( game PROPERTIES
@@ -979,6 +989,14 @@ if( BUILD_GAME_SO_ET )
 endif()
 
 if( BUILD_GAME_SO_TREM )
+  # Xcode places the game libraries in the incorrect location. This should fix it
+  if( XCODE_VERSION )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/base" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/base" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/base" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/base" )
+  endif()
+
   add_library( tremgame SHARED ${GAMETREM} )
   set_property( TARGET tremgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
   target_link_libraries( tremgame -lm )
@@ -1006,6 +1024,13 @@ if( BUILD_GAME_SO_TREM )
 endif()
 
 if( BUILD_GAME_SO_GPP )
+  if( XCODE_VERSION )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/main" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/main" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/main" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/main" )
+  endif()
+
   add_library( gppgame SHARED ${GAMEGPP} )
   set_property( TARGET gppgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
   if( WIN32 )
@@ -1037,6 +1062,7 @@ if( BUILD_GAME_SO_GPP )
       OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
       PREFIX ""
       LIBRARY_OUTPUT_DIRECTORY "main"
+      CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "main"
     )
     target_link_libraries( gpptrem -lm )
   endif()
@@ -1052,11 +1078,19 @@ if( BUILD_GAME_SO_GPP )
   else()
     set_target_properties( gppui PROPERTIES
       OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
-      PREFIX ""
+      PREFIX "/"
       LIBRARY_OUTPUT_DIRECTORY "main"
     )
     target_link_libraries( gppui -lm )
   endif()
+endif()
+
+# Disable fixes for game libraries under Xcode
+if( XCODE_VERSION )
+  unset( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE )
+  unset( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG )
+  unset( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL )
+  unset( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO )
 endif()
 
 ###################
