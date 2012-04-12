@@ -100,14 +100,36 @@ elseif( UNIX )
   set( PLATFORM "unix" )
 endif()
 
-# Determine arch. Note this will be incorrect for PPC/ARM/etc.
-if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-  set( BUILD_ARCH "x86_64" )
-elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-  set( BUILD_ARCH "i386" )
+# Determine arch.
+if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" )
+  # CMAKE_SYSTEM_PROCESSOR always returns i386 for x86 and x86_64 on Mac
+  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    set( BUILD_ARCH "x86_64" )
+  elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" )
+    set( BUILD_ARCH "i386" )
+  elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 AND CMAKE_SYSTEM_PROCESSOR STREQUAL "ppc" )
+    set( BUILD_ARCH "ppc" )
+  else()
+    set( BUILD_ARCH "Unknown" )
+  endif()
+elseif( WIN32 )
+  # CMAKE_SYSTEM_PROCESSOR is not reliable under windows
+  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    set( BUILD_ARCH "x86_64" )
+  elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    set( BUILD_ARCH "i386" )
+  endif()
 else()
-  set( BUILD_ARCH "unknown" )
+  # CMAKE_SYSTEM_PROCESSOR is reliable for *nix
+  if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" )
+    set( BUILD_ARCH "i386" )
+  elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+    set( BUILD_ARCH "x86_64" )
+  else()
+    set( BUILD_ARCH ${CMAKE_SYSTEM_PROCESSOR} )
+  endif()
 endif()
+
 
 #################
 # Compile flags #
@@ -1047,9 +1069,9 @@ endif()
 
 if( USE_PHYSICS )
   if( LINUX )
-    if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    if( BUILD_ARCH STREQUAL "x86_64" )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux64/libNewton.a" )
-    elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    elseif( BUILD_ARCH STREQUAL "i386" )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/linux32/libNewton.a" )
     endif()
   else()
@@ -1154,8 +1176,8 @@ if( BUILD_CLIENT )
     add_library( INTERNAL_SDLMain ${MOUNT_DIR}/engine/sys/SDLMain.m )
     target_link_libraries( client INTERNAL_SDLMain )
     # Mac OS X has some trouble with PIC code under X86/32.
-    if( CMAKE_SIZEOF_VOID_P EQUAL 4)
-      set_target_properties( client PROPERTIES COMPILE_FLAGS -fno-pic LINK_FLAGS "-read_only_relocs suppress" )
+    if( BUILD_ARCH STREQUAL "i386" )
+      set_target_properties( client PROPERTIES COMPILE_FLAGS "-mdynamic-no-pic" LINK_FLAGS "-read_only_relocs suppress" )
     endif()
   endif()
 
@@ -1303,7 +1325,7 @@ if( BUILD_SERVER )
   )
 
   # Mac OS X has some trouble with PIC code under X86/32.
-  if( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" AND CMAKE_SIZEOF_VOID_P EQUAL 4 )
+  if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND BUILD_ARCH STREQUAL "i386" )
     set_target_properties( server PROPERTIES COMPILE_FLAGS -fno-pic LINK_FLAGS "-read_only_relocs suppress" )
   endif()
 
