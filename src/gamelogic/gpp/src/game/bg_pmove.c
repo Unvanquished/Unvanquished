@@ -2573,34 +2573,33 @@ static void PM_GroundClimbTrace( void )
 		pml.groundPlane = qfalse;
 		pml.walking = qfalse;
 
-		//just transided from ceiling to floor... apply delta correction
+		//just transitioned from ceiling to floor... apply delta correction
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
-		  vec3_t  forward, rotated, angles;
-		  vec3_t surfNormal = {0,0,-1};
+			vec3_t  forward, rotated, angles;
+			vec3_t  surfNormal = {0,0,-1};
+		
+			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
+				VectorCopy(pm->ps->grapplePoint,surfNormal);
 
-		  if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
-			VectorCopy(pm->ps->grapplePoint,surfNormal);
-
-		  //only correct if we were on a ceiling
-		  if(surfNormal[2] < 0)
-		  {
-			AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
-
-			if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
+			//only correct if we were on a ceiling
+			if(surfNormal[2] < 0)
 			{
-			  RotatePointAroundVector(rotated, pm->ps->grapplePoint, forward, 180);
-			} else
-			{
-			  VectorCopy(forward,rotated);
-			  rotated[0] = -rotated[0];
-			  rotated[2] = -rotated[2]; //we will turn upside down, invert the z coordinate to keep aiming the same direction
+				//The actual problem is with BG_RotateAxis()
+				//The rotation applied there causes our view to turn around
+				//We correct this here
+				vec3_t xNormal;
+				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
+				if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
+					VectorCopy(pm->ps->grapplePoint, xNormal);
+				else {
+					CrossProduct( surfNormal, refNormal, xNormal );
+					VectorNormalize( xNormal );
+				}
+				RotatePointAroundVector(rotated, xNormal, forward, 180);
+				vectoangles( rotated, angles );
+				pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
 			}
-
-			vectoangles( rotated, angles );
-			pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
-			pm->ps->delta_angles[PITCH] -= ANGLE2SHORT( angles[ PITCH ] - pm->ps->viewangles[ PITCH ]);
-		  }
 		}
 		pm->ps->eFlags &= ~EF_WALLCLIMB;
 		pm->ps->eFlags &= ~EF_WALLCLIMBCEILING;
@@ -2685,34 +2684,33 @@ static void PM_GroundTrace( void )
 			return;
 		}
 
-		//just transided from ceiling to floor... apply delta correction
+		//just transitioned from ceiling to floor... apply delta correction
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
-		  vec3_t  forward, rotated, angles;
-		  vec3_t surfNormal = {0,0,-1};
+			vec3_t  forward, rotated, angles;
+			vec3_t  surfNormal = {0,0,-1};
+		
+			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
+				VectorCopy(pm->ps->grapplePoint,surfNormal);
 
-		  if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
-			VectorCopy(pm->ps->grapplePoint,surfNormal);
-
-		  //only correct if we were on a ceiling
-		  if(surfNormal[2] < 0)
-		  {
-			AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
-
-			if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
+			//only correct if we were on a ceiling
+			if(surfNormal[2] < 0)
 			{
-			  RotatePointAroundVector(rotated, pm->ps->grapplePoint, forward, 180);
-			} else
-			{
-			  VectorCopy(forward,rotated);
-			  rotated[0] = -rotated[0];
-			  rotated[2] = -rotated[2]; //we will turn upside down, invert the z coordinate to keep aiming the same direction
+				//The actual problem is with BG_RotateAxis()
+				//The rotation applied there causes our view to turn around
+				//We correct this here
+				vec3_t xNormal;
+				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
+				if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
+					VectorCopy(pm->ps->grapplePoint, xNormal);
+				else {
+					CrossProduct( surfNormal, refNormal, xNormal );
+					VectorNormalize( xNormal );
+				}
+				RotatePointAroundVector(rotated, xNormal, forward, 180);
+				vectoangles( rotated, angles );
+				pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
 			}
-
-			vectoangles( rotated, angles );
-			pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
-			pm->ps->delta_angles[PITCH] -= ANGLE2SHORT( angles[ PITCH ] - pm->ps->viewangles[ PITCH ]);
-		  }
 		}
 	}
 
