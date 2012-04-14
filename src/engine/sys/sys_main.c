@@ -269,7 +269,7 @@ Sys_Exit
 Single exit point (regular exit or in case of error)
 =================
 */
-static void Sys_Exit( int exitCode )
+static void __attribute__((noreturn)) Sys_Exit( int exitCode )
 {
 	CON_Shutdown();
 

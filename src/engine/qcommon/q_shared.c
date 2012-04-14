@@ -2457,6 +2457,247 @@ int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... )
 }
 
 /*
+============================================================================
+
+ UTF-8
+
+============================================================================
+*/
+
+// never returns more than 4
+int Q_UTF8Width( const char *str )
+{
+  int                 ewidth;
+  const unsigned char *s = (const unsigned char *)str;
+
+  if( !str )
+    return 0;
+
+  if     ( 0x00 <= *s && *s <= 0x7F )
+    ewidth = 0;
+  else if( 0xC2 <= *s && *s <= 0xDF )
+    ewidth = 1;
+  else if( 0xE0 <= *s && *s <= 0xEF )
+    ewidth = 2;
+  else if( 0xF0 <= *s && *s <= 0xF4 )
+    ewidth = 3;
+  else
+    ewidth = 0;
+
+  for( ; *s && ewidth > 0; s++, ewidth-- );
+
+  return s - (const unsigned char *)str + 1;
+}
+
+int Q_UTF8Strlen( const char *str )
+{
+  int l = 0;
+
+  while( *str )
+  {
+    l++;
+
+    str += Q_UTF8Width( str );
+  }
+
+  return l;
+}
+
+int Q_UTF8PrintStrlen( const char *str )
+{
+  int l = 0;
+
+  while( *str )
+  {
+    if( Q_IsColorString( str ) )
+    {
+      str += 2;
+      continue;
+    }
+
+    l++;
+
+    str += Q_UTF8Width( str );
+  }
+
+  return l;
+}
+
+qboolean Q_UTF8ContByte( char c )
+{
+  return (unsigned char )0x80 <= (unsigned char)c && (unsigned char)c <= (unsigned char )0xBF;
+}
+
+static qboolean getbit(const unsigned char *p, int pos)
+{
+  p   += pos / 8;
+  pos %= 8;
+
+  return (*p & (1 << (7 - pos))) != 0;
+}
+
+static void setbit(unsigned char *p, int pos, qboolean on)
+{
+  p   += pos / 8;
+  pos %= 8;
+
+  if( on )
+    *p |= 1 << (7 - pos);
+  else
+    *p &= ~(1 << (7 - pos));
+}
+
+static void shiftbitsright(unsigned char *p, unsigned long num, unsigned long by)
+{
+  int step, off;
+  unsigned char *e;
+
+  if( by >= num )
+  {
+    for( ; num > 8; p++, num -= 8 )
+      *p = 0;
+
+    *p &= (~0x00) >> num;
+
+    return;
+  }
+
+  step = by / 8;
+  off  = by % 8;
+
+  for( e = p + (num + 7) / 8 - 1; e > p + step; e-- )
+    *e = (*(e - step) >> off) | (*(e - step - 1) << (8 - off));
+
+  *e = *(e - step) >> off;
+
+  for( e = p; e < p + step; e++ )
+    *e = 0;
+}
+
+unsigned long Q_UTF8CodePoint( const char *str )
+{
+  int i, j;
+  int n = 0;
+  int size = Q_UTF8Width( str );
+  unsigned long codepoint = 0;
+  unsigned char *p = (unsigned char *) &codepoint;
+
+  if( size > sizeof( codepoint ) )
+    size = sizeof( codepoint );
+  else if( size < 1 )
+    size = 1;
+
+  for( i = (size > 1 ? size + 1 : 1); i < 8; i++ )
+    setbit(p, n++, getbit((const unsigned char *)str, i));
+  for( i = 1; i < size; i++ )
+    for( j = 2; j < 8; j++ )
+      setbit(p, n++, getbit(((const unsigned char *)str) + i, j));
+
+  /*
+  if( n > 8 * sizeof(codepoint) )
+  {
+		Com_Error( ERR_DROP, "Q_UTF8CodePoint: overflow caught" );
+
+    return 0;
+  }
+  */
+
+  shiftbitsright(p, 8 * sizeof(codepoint), 8 * sizeof(codepoint) - n);
+
+#ifndef Q3_BIG_ENDIAN
+  for( i = 0; i < sizeof(codepoint) / 2; i++ )
+  {
+    p[i] ^= p[sizeof(codepoint) - 1 - i];
+    p[sizeof(codepoint) - 1 - i] ^= p[i];
+    p[i] ^= p[sizeof(codepoint) - 1 - i];
+  }
+#endif
+
+  return codepoint;
+}
+
+char *Q_UTF8Encode( unsigned long codepoint )
+{
+  static char sbuf[2][5];
+  static int index = 0;
+  char *buf = sbuf[index++ & 1];
+
+  if     (                        codepoint <= 0x007F )
+  {
+    buf[0] = codepoint;
+    buf[1] = 0;
+  }
+  else if( 0x0080 <= codepoint && codepoint <= 0x07FF )
+  {
+    buf[0] = 0xC0 | ((codepoint & 0x0700) >> 6) | ((codepoint & 0x00C0) >> 6);
+    buf[1] = 0x80 | (codepoint & 0x003F);
+    buf[2] = 0;
+  }
+  else if( 0x0800 <= codepoint && codepoint <= 0xFFFF )
+  {
+    buf[0] = 0xE0 | ((codepoint & 0xF000) >> 12);
+    buf[1] = 0x80 | ((codepoint & 0x0F00) >> 6) | ((codepoint & 0x00C0) >> 6);
+    buf[2] = 0x80 | (codepoint & 0x003F);
+    buf[3] = 0;
+  }
+  else if( 0x010000 <= codepoint && codepoint <= 0x10FFFF )
+  {
+    buf[0] = 0xF0 | ((codepoint & 0x1C0000 >> 18));
+    buf[1] = 0x80 | ((codepoint & 0x030000 >> 16)) | ((codepoint & 0x00F000) >> 12);
+    buf[2] = 0x80 | ((codepoint & 0x000F00) >> 6) | ((codepoint & 0x0000C0) >> 6);
+    buf[3] = 0x80 | (codepoint & 0x00003F);
+    buf[4] = 0;
+  }
+  else
+  {
+    buf[0] = 0;
+  }
+
+  return buf;
+}
+
+// s needs to have at least sizeof(int) allocated
+int Q_UTF8Store( const char *s )
+{
+#ifdef Q3_BIG_ENDIAN
+  int r = *(int *)s, i;
+  unsigned char *p = (unsigned char *) &r;
+  for( i = 0; i < sizeof(r) / 2; i++ )
+  {
+    p[i] ^= p[sizeof(r) - 1 - i];
+    p[sizeof(r) - 1 - i] ^= p[i];
+    p[i] ^= p[sizeof(r) - 1 - i];
+  }
+  return r;
+#else
+  return *(int *)s;
+#endif
+}
+
+char *Q_UTF8Unstore( int e )
+{
+  static char sbuf[2][5];
+  static int index = 0;
+  char *buf = sbuf[index++ & 1];
+
+#ifdef Q3_BIG_ENDIAN
+  int i;
+  unsigned char *p = (unsigned char *) buf;
+  *(int *)buf = e;
+  for( i = 0; i < sizeof(e) / 2; i++ )
+  {
+    p[i] ^= p[sizeof(e) - 1 - i];
+    p[sizeof(e) - 1 - i] ^= p[i];
+    p[i] ^= p[sizeof(e) - 1 - i];
+  }
+#else
+  *(int *)buf = e;
+#endif
+
+  return buf;
+}
+
+/*
 ============
 va
 
