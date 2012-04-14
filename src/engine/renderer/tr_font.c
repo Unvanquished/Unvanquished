@@ -155,7 +155,8 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 	return NULL;
 }
 
-static glyphInfo_t *RE_ConstructGlyphInfo( int max, unsigned char *imageOut, int *xOut, int *yOut, int *maxHeight, FT_Face face, const unsigned long c, qboolean calcHeight )
+static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, int *yOut,
+    int *maxHeight, FT_Face face, const unsigned char c, qboolean calcHeight )
 {
 	int                i;
 	static glyphInfo_t glyph;
@@ -168,13 +169,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( int max, unsigned char *imageOut, int
 	// make sure everything is here
 	if ( face != NULL )
 	{
-		FT_UInt ci = FT_Get_Char_Index( face, c );
-		if( !ci )
-		{
-			ri.Printf(PRINT_ALL, "Unrecognized character\n");
-			return &glyph;
-		}
-		FT_Load_Glyph(face, ci, FT_LOAD_DEFAULT );
+		FT_Load_Glyph( face, FT_Get_Char_Index( face, c ), FT_LOAD_DEFAULT );
 		bitmap = R_RenderGlyph( face->glyph, &glyph );
 
 		if ( bitmap )
@@ -211,9 +206,9 @@ static glyphInfo_t *RE_ConstructGlyphInfo( int max, unsigned char *imageOut, int
 		scaledHeight = glyph.height;
 
 		// we need to make sure we fit
-		if ( *xOut + scaledWidth + 1 >= ( max - 1 ) )
+		if ( *xOut + scaledWidth + 1 >= ( FONT_SIZE - 1 ) )
 		{
-			if ( *yOut + ( *maxHeight + 1 ) * 2 >= ( max - 1 ) )
+			if ( *yOut + ( *maxHeight + 1 ) * 2 >= ( FONT_SIZE - 1 ) )
 				//if(*yOut + scaledHeight + 1 >= 255)
 			{
 				//ri.Printf(PRINT_WARNING, "RE_ConstructGlyphInfo: character %c does not fit width and height\n", c);
@@ -232,7 +227,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( int max, unsigned char *imageOut, int
 				*yOut += *maxHeight + 1;
 			}
 		}
-		else if ( *yOut + *maxHeight + 1 >= ( max - 1 ) )
+		else if ( *yOut + *maxHeight + 1 >= ( FONT_SIZE - 1 ) )
 		{
 			//ri.Printf(PRINT_WARNING, "RE_ConstructGlyphInfo: character %c does not fit height\n", c);
 
@@ -244,7 +239,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( int max, unsigned char *imageOut, int
 		}
 
 		src = bitmap->buffer;
-		dst = imageOut + ( *yOut * max ) + *xOut;
+		dst = imageOut + ( *yOut * FONT_SIZE ) + *xOut;
 
 		if ( bitmap->pixel_mode == ft_pixel_mode_mono )
 		{
@@ -279,7 +274,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( int max, unsigned char *imageOut, int
 				}
 
 				src += glyph.pitch;
-				dst += max;
+				dst += FONT_SIZE;
 			}
 		}
 		else
@@ -288,7 +283,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( int max, unsigned char *imageOut, int
 			{
 				Com_Memcpy( dst, src, glyph.pitch );
 				src += glyph.pitch;
-				dst += max;
+				dst += FONT_SIZE;
 			}
 		}
 
@@ -297,10 +292,10 @@ static glyphInfo_t *RE_ConstructGlyphInfo( int max, unsigned char *imageOut, int
 
 		glyph.imageHeight = scaledHeight;
 		glyph.imageWidth = scaledWidth;
-		glyph.s = ( float ) * xOut / max;
-		glyph.t = ( float ) * yOut / max;
-		glyph.s2 = glyph.s + ( float ) scaledWidth / max;
-		glyph.t2 = glyph.t + ( float ) scaledHeight / max;
+		glyph.s = ( float ) * xOut / FONT_SIZE;
+		glyph.t = ( float ) * yOut / FONT_SIZE;
+		glyph.s2 = glyph.s + ( float ) scaledWidth / FONT_SIZE;
+		glyph.t2 = glyph.t + ( float ) scaledHeight / FONT_SIZE;
 
 		*xOut += scaledWidth + 1;
 	}
@@ -535,7 +530,7 @@ void RE_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo
 	}
 
 	Com_Memset(buf, 0, sizeof(buf));
-	tmp = RE_ConstructGlyphInfo(32, buf, &x, &y, &maxHeight, ftFace, Q_UTF8CodePoint( str ), qfalse);
+	tmp = RE_ConstructGlyphInfo(buf, &x, &y, &maxHeight, ftFace, Q_UTF8CodePoint( str ), qfalse);
 	if( x == -1 || y == -1 )
 	{
 		Com_Memset(buf, 0, sizeof(buf));
@@ -882,7 +877,7 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 
 	for ( i = GLYPH_START; i < GLYPH_END; i++ )
 	{
-		glyph = RE_ConstructGlyphInfo(256, out, &xOut, &yOut, &maxHeight, face, (unsigned char)i, qtrue);
+		glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, face, ( unsigned char ) i, qtrue );
 	}
 
 	//ri.Printf(PRINT_WARNING, "RE_RegisterFont: max glyph height for font %s is %i\n", strippedName, maxHeight);
@@ -893,45 +888,46 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 	lastStart = i;
 	imageNumber = 0;
 
-	while(i <= GLYPH_END)
+	while ( i <= GLYPH_END )
 	{
-		glyph = RE_ConstructGlyphInfo(256, out, &xOut, &yOut, &maxHeight, face, (unsigned char)i, qfalse);
+		glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, face, ( unsigned char ) i, qfalse );
 
-		if(xOut == -1 || yOut == -1 || i == GLYPH_END)
+		if ( xOut == -1 || yOut == -1 || i == GLYPH_END )
 		{
-			if(xOut == -1 || yOut == -1)
+			if ( xOut == -1 || yOut == -1 )
 			{
 				//ri.Printf(PRINT_WARNING, "RE_RegisterFont: character %c does not fit image number %i\n", (unsigned char) i, imageNumber);
 			}
 
 			// ran out of room
 			// we need to create an image from the bitmap, set all the handles in the glyphs to this point
-			scaledSize = 256*256;
+			scaledSize = FONT_SIZE * FONT_SIZE;
 			newSize = scaledSize * 4;
-			imageBuff = ri.Z_Malloc(newSize);
+			imageBuff = ri.Z_Malloc( newSize );
 			left = 0;
 			max = 0;
 			satLevels = 255;
-			for(k = 0; k < (scaledSize); k++)
+
+			for ( k = 0; k < ( scaledSize ); k++ )
 			{
-				if(max < out[k])
+				if ( max < out[ k ] )
 				{
-					max = out[k];
+					max = out[ k ];
 				}
 			}
 
-			if(max > 0)
+			if ( max > 0 )
 			{
-				max = 255/max;
+				max = 255 / max;
 			}
 
-			for(k = 0; k < (scaledSize); k++)
+			for ( k = 0; k < ( scaledSize ); k++ )
 			{
-				imageBuff[left++] = 255;
-				imageBuff[left++] = 255;
-				imageBuff[left++] = 255;
+				imageBuff[ left++ ] = 255;
+				imageBuff[ left++ ] = 255;
+				imageBuff[ left++ ] = 255;
 
-				imageBuff[left++] = ((float)out[k] * max);
+				imageBuff[ left++ ] = ( ( float ) out[ k ] * max );
 			}
 
 			Com_sprintf( fileName, sizeof( fileName ), "%s_%i_%i.png", strippedName, imageNumber++, pointSize );
