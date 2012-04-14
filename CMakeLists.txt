@@ -36,7 +36,7 @@ option( BUILD_GAME_SO_ET     "Build game logic shared libraries for ET"    0 )
 option( BUILD_GAME_SO_TREM   "Build game logic shared libs for Trem"       0 )
 option( BUILD_GAME_SO_GPP    "Build GPP Tremulous game logic libs"         1 )
 option( BUILD_MASTER         "Build master server"                         1 )
-option( BUILD_OWMAP          "Build Mapping tool"                          0 )
+option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
 option( USE_OPENAL           "Use OpenAL"                                  1 )
 if( USE_OPENAL )
   option( USE_OPENAL_DLOPEN  "Use dlopen to load OpenAL"                   1 )
@@ -728,7 +728,7 @@ set( UIGPP
   ${GPP_DIR}/src/ui/ui_api.c
 )
 
-set( OWMAPLIST
+set( DAEMONMAPLIST
   ${MOUNT_DIR}/tools/common/cmdlib.c
   ${MOUNT_DIR}/tools/common/imagelib.c
   ${MOUNT_DIR}/tools/common/inout.c
@@ -1340,28 +1340,28 @@ if( BUILD_SERVER )
   endif()
 endif()
 
-################
-# Build OWMap  #
-################
-if( BUILD_OWMAP )
-  # Setup OWMap target
-  add_executable( owmap ${OWMAPLIST} )
+###################
+# Build DaemonMap #
+###################
+if( BUILD_DAEMONMAP )
+  # Setup DaemonMap target
+  add_executable( daemonMap ${DAEMONMAPLIST} )
   include_directories( ${LIB_DIR}/picomodel ${MOUNT_DIR}/tools/common )
-  target_link_libraries( owmap ${OS_LIBRARIES} )
-  set_property( TARGET owmap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
-  set_target_properties( owmap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
-  install( TARGETS owmap
+  target_link_libraries( daemonMap ${OS_LIBRARIES} )
+  set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
+  set_target_properties( daemonMap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
+  install( TARGETS daemonMap
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
   )
-  # This section finds and provides REQUIRED dependencies to OWMap target
+  # This section finds and provides REQUIRED dependencies to DaemonMap target
   find_package( OpenGL REQUIRED )
   find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( ZLIB REQUIRED )
   find_package( GLib2 REQUIRED )
-  target_link_libraries( owmap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${GLIB_LIBRARIES} )
+  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${GLIB_LIBRARIES} )
   include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS} )
 endif()
