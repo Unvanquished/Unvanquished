@@ -1514,6 +1514,33 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 		case UI_R_ANIMFRAMERATE:
 			return re.AnimFrameRate( args[ 1 ] );
 #endif
+		case UI_GETTEXT:
+			strncpy( VMA(1), VMA(2), args[3] );
+			return 0;
+
+		case UI_R_LOADFACE:
+			re.LoadFace( VMA(1), args[2], VMA(3), VMA(4) );
+			return 0;
+
+		case UI_R_FREEFACE:
+			re.FreeFace( VMA(1) );
+			return 0;
+
+		case UI_R_LOADGLYPH:
+			re.LoadGlyph( VMA(1), VMA(2), args[3], VMA(4) );
+			return 0;
+
+		case UI_R_FREEGLYPH:
+			re.FreeGlyph( VMA(1), args[2], VMA(3) );
+			return 0;
+
+		case UI_R_GLYPH:
+			re.Glyph( VMA(1), VMA(2), VMA(3), VMA(4) );
+			break;
+
+		case UI_R_FREECACHEDGLYPHS:
+			re.FreeCachedGlyphs( VMA(1) );
+			break;
 
 		default:
 			Com_Error( ERR_DROP, "Bad UI system trap: %ld", ( long int ) args[ 0 ] );

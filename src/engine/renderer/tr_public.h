@@ -72,6 +72,12 @@ typedef struct
 	qhandle_t ( *RegisterShaderLightAttenuation )( const char *name );
 #endif
 	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
+	void	(*LoadFace)(const char *fileName, int pointSize, const char *name, face_t *face);
+	void	(*FreeFace)(face_t *face);
+	void	(*LoadGlyph)(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo);
+	void	(*FreeGlyph)(face_t *face, int img, glyphInfo_t *glyphInfo);
+	void	(*Glyph)( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph );
+	void	(*FreeCachedGlyphs)(face_t *face);
 
 	void ( *LoadWorld )( const char *name );
 	qboolean( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );                  //----(SA) added
@@ -245,6 +251,11 @@ typedef struct
 	void ( *FS_FreeFileList )( char **filelist );
 	void ( *FS_WriteFile )( const char *qpath, const void *buffer, int size );
 	qboolean( *FS_FileExists )( const char *file );
+	int ( *FS_Seek )( fileHandle_t f, long offset, int origin );
+	int ( *FS_FTell )( fileHandle_t f );
+	int ( *FS_Read )( void *buffer, int len, fileHandle_t f );
+	void ( *FS_FCloseFile )( fileHandle_t f );
+	int ( *FS_FOpenFileRead )( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
 
 	// cinematic stuff
 	void ( *CIN_UploadCinematic )( int handle );

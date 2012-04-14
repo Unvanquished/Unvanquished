@@ -587,6 +587,11 @@ void Cvar_Set( const char *var_name, const char *value );
 
 // will create the variable with no flags if it doesn't exist
 
+void Cvar_SetIFlag( const char *var_name );
+
+// sets the cvar by the name that begins with a backslash to "1"
+
+
 void Cvar_SetLatched( const char *var_name, const char *value );
 
 // don't set the cvar immediately
@@ -1156,7 +1161,7 @@ void     CL_Frame( int msec );
 qboolean CL_GameCommand( void );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
 
-void     CL_CharEvent( int key );
+void     CL_CharEvent( const char *key );
 
 // char events are for field typing, not game control
 

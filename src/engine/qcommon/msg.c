@@ -443,7 +443,7 @@ void MSG_WriteString( msg_t *sb, const char *s )
 	}
 	else
 	{
-		int  l, i;
+		int  l;
 		char string[ MAX_STRING_CHARS ];
 
 		l = strlen( s );
@@ -457,15 +457,6 @@ void MSG_WriteString( msg_t *sb, const char *s )
 
 		Q_strncpyz( string, s, sizeof( string ) );
 
-		// get rid of 0xff chars, because old clients don't like them
-		for ( i = 0; i < l; i++ )
-		{
-			if ( ( ( byte * ) string ) [ i ] > 127 )
-			{
-				string[ i ] = '.';
-			}
-		}
-
 		MSG_WriteData( sb, string, l + 1 );
 	}
 }
@@ -478,7 +469,7 @@ void MSG_WriteBigString( msg_t *sb, const char *s )
 	}
 	else
 	{
-		int  l, i;
+		int  l;
 		char string[ BIG_INFO_STRING ];
 
 		l = strlen( s );
@@ -491,15 +482,6 @@ void MSG_WriteBigString( msg_t *sb, const char *s )
 		}
 
 		Q_strncpyz( string, s, sizeof( string ) );
-
-		// get rid of 0xff chars, because old clients don't like them
-		for ( i = 0; i < l; i++ )
-		{
-			if ( ( ( byte * ) string ) [ i ] > 127 )
-			{
-				string[ i ] = '.';
-			}
-		}
 
 		MSG_WriteData( sb, string, l + 1 );
 	}
@@ -627,12 +609,6 @@ char           *MSG_ReadString( msg_t *msg )
 
 		// translate all fmt spec to avoid crash bugs
 		if ( c == '%' )
-		{
-			c = '.';
-		}
-
-		// don't allow higher ascii values
-		if ( c > 127 )
 		{
 			c = '.';
 		}

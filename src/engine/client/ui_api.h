@@ -155,6 +155,13 @@ typedef enum
   UI_R_ANIMNUMFRAMES,
   UI_R_ANIMFRAMERATE,
 #endif
+  UI_GETTEXT = 300,
+  UI_R_LOADFACE,
+  UI_R_FREEFACE,
+  UI_R_LOADGLYPH,
+  UI_R_FREEGLYPH,
+  UI_R_GLYPH,
+  UI_R_FREECACHEDGLYPHS
 } uiImport_t;
 
 typedef struct

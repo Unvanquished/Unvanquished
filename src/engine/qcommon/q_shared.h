@@ -1746,6 +1746,11 @@ char *Q_UTF8Unstore( int e );
 #define KEYCATCH_MESSAGE 0x0004
 #define KEYCATCH_CGAME   0x0008
 
+#define KEYEVSTATE_DOWN 0
+#define KEYEVSTATE_CHAR 1
+#define KEYEVSTATE_BIT  2
+#define KEYEVSTATE_SUP  3
+
 // sound channels
 // channel 0 never willingly overrides
 // other channels will allways override a playing sound on that channel
@@ -2342,29 +2347,41 @@ char *Q_UTF8Unstore( int e );
 #define GLYPH_CHARSTART 32
 #define GLYPH_CHAREND   127
 #define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
-	typedef struct
-	{
-		int       height; // number of scan lines
-		int       top; // top of glyph in buffer
-		int       bottom; // bottom of glyph in buffer
-		int       pitch; // width for copying
-		int       xSkip; // x adjustment
-		int       imageWidth; // width of actual image
-		int       imageHeight; // height of actual image
-		float     s; // x offset in image where glyph starts
-		float     t; // y offset in image where glyph starts
-		float     s2;
-		float     t2;
-		qhandle_t glyph; // handle to the shader with the glyph
-		char      shaderName[ 32 ];
-	} glyphInfo_t;
+typedef struct
+{
+	int       height; // number of scan lines
+	int       top; // top of glyph in buffer
+	int       bottom; // bottom of glyph in buffer
+	int       pitch; // width for copying
+	int       xSkip; // x adjustment
+	int       imageWidth; // width of actual image
+	int       imageHeight; // height of actual image
+	float     s; // x offset in image where glyph starts
+	float     t; // y offset in image where glyph starts
+	float     s2;
+	float     t2;
+	qhandle_t glyph; // handle to the shader with the glyph
+	char      shaderName[ 32 ];
+} glyphInfo_t;
 
-	typedef struct
-	{
-		glyphInfo_t glyphs [ GLYPHS_PER_FONT ];
-		float       glyphScale;
-		char        name[ MAX_QPATH ];
-	} fontInfo_t;
+typedef struct
+{
+	glyphInfo_t glyphs [ GLYPHS_PER_FONT ];
+	float       glyphScale;
+	char        name[ MAX_QPATH ];
+} fontInfo_t;
+
+
+#define MAX_FACE_GLYPHS 384
+
+typedef struct {
+	void *opaque;
+	void *mem;
+	void *images[MAX_FACE_GLYPHS];
+	char name[MAX_QPATH];
+	float glyphScale;
+} face_t;
+
 
 #define Square( x ) ( ( x ) * ( x ) )
 

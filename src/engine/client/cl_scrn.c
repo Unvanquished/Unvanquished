@@ -139,12 +139,13 @@ void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader
 	re.DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
-// TODO ASAP
-
 static glyphInfo_t *Glyph( const char *s )
 {
-	fontInfo_t  *font = &cls.consoleFont;
-	glyphInfo_t *glyph = &font->glyphs[ (int) *s ];
+	static glyphInfo_t glyphs[8];
+	static int index = 0;
+	glyphInfo_t *glyph = &glyphs[ index++ & 7 ];
+
+	re.Glyph( &cls.consoleFont, &cls.consoleFace, s, glyph );
 
 	return glyph;
 }
@@ -155,14 +156,9 @@ static glyphInfo_t *Glyph( const char *s )
 */
 static void SCR_DrawChar( int x, int y, float size, const char *s )
 {
-	int   row, col;
-	float frow, fcol;
 	float ax, ay, aw, ah;
 
-	char ch = *s;
-	ch &= 255;
-
-	if ( ch == ' ' )
+	if ( *s == ' ' )
 	{
 		return;
 	}
@@ -178,17 +174,33 @@ static void SCR_DrawChar( int x, int y, float size, const char *s )
 	ah = size;
 	SCR_AdjustFrom640( &ax, &ay, &aw, &ah );
 
-	row = ch >> 4;
-	col = ch & 15;
+	if( cls.useLegacyConsoleFace )
+	{
+		int row, col;
+		float frow, fcol;
+		char ch = *s;
 
-	frow = row * 0.0625;
-	fcol = col * 0.0625;
-	size = 0.0625;
+		row = ch >> 4;
+		col = ch & 15;
 
-	re.DrawStretchPic( ax, ay, aw, ah,
-	                   fcol, frow,
-	                   fcol + size, frow + size,
-	                   cls.charSetShader );
+		frow = row * 0.0625;
+		fcol = col * 0.0625;
+		size = 0.0625;
+
+		re.DrawStretchPic( ax, ay, aw, ah,
+				fcol, frow,
+				fcol + size, frow + size,
+				cls.charSetShader );
+	}
+	else
+	{
+	glyphInfo_t *glyph = Glyph( s );
+
+	re.DrawStretchPic( ax, ay, aw, glyph->imageHeight,
+		glyph->s, glyph->t,
+		glyph->s2, glyph->t2,
+		glyph->glyph );
+	}
 }
 
 void SCR_DrawConsoleFontChar( float x, float y, const char *s )
@@ -203,7 +215,10 @@ void SCR_DrawConsoleFontChar( float x, float y, const char *s )
 		return;
 	}
 
-	if ( *s == ' ' ) { return; }
+	if ( *s == ' ' )
+	{
+		return;
+	}
 
 	re.DrawStretchPic( x + xadj, y - yadj, glyph->imageWidth, glyph->imageHeight,
 	                   glyph->s, glyph->t,
@@ -258,11 +273,11 @@ void SCR_DrawSmallChar( int x, int y, const char *s )
 
 // 	row = ch >> 4;
 // 	col = ch & 15;
-// 
+//
 // 	frow = row * 0.0625;
 // 	fcol = col * 0.0625;
 // 	size = 0.0625;
-// 
+//
 // 	re.DrawStretchPic( x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls.charSetShader );
 }
 
@@ -833,7 +848,10 @@ float SCR_ConsoleFontCharWidth( const char *s )
 	glyphInfo_t *glyph = Glyph( s );
 	float       width = glyph->xSkip + cl_consoleFontKerning->value;
 
-	if ( cls.useLegacyConsoleFont ) { return SMALLCHAR_WIDTH; }
+	if ( cls.useLegacyConsoleFont )
+	{
+		return SMALLCHAR_WIDTH;
+	}
 
 	return ( width );
 }
@@ -845,29 +863,42 @@ float SCR_ConsoleFontCharHeight()
 	glyphInfo_t *glyph = &font->glyphs[ ch ];
 	float       vpadding = 0.3 * cl_consoleFontSize->value;
 
-	if ( cls.useLegacyConsoleFont ) { return SMALLCHAR_HEIGHT; }
+	if ( cls.useLegacyConsoleFont )
+	{
+		return SMALLCHAR_HEIGHT;
+	}
 
 	return ( glyph->imageHeight + vpadding );
 }
 
-float SCR_ConsoleFontStringWidth( const char *s, int len )
+float SCR_ConsoleFontStringWidth( const char* s, int len )
 {
 	float width = 0;
 
-	if( cls.useLegacyConsoleFont ) {
-		int l = 0;
-		const char *str = s;
-
-		while( *str && str - s < len ) {
-			l++;
-
-			str += Q_UTF8Width( str );
+	if( cls.useLegacyConsoleFont )
+	{
+		if( cls.useLegacyConsoleFace )
+		{
+			return len * SMALLCHAR_WIDTH;
 		}
+		else
+		{
+			int l = 0;
+			const char *str = s;
 
-		return l * SMALLCHAR_WIDTH;
+			while( *str && str - s < len )
+			{
+				l++;
+
+				str += Q_UTF8Width( str );
+			}
+
+			return l * SMALLCHAR_WIDTH;
+		}
 	}
 
-	while( *s && len > 0 ) {
+	while( *s && len > 0 )
+	{
 		width += SCR_ConsoleFontCharWidth( s );
 
 		s += Q_UTF8Width( s );

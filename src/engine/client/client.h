@@ -421,7 +421,9 @@ typedef struct
 	qhandle_t   consoleShader;
 	qhandle_t   consoleShader2; // NERVE - SMF - merged from WolfSP
 	qboolean    useLegacyConsoleFont;
+	qboolean    useLegacyConsoleFace;
 	fontInfo_t  consoleFont;
+	face_t      consoleFace;
 
 	// www downloading
 	// in the static stuff since this may have to survive server disconnects
@@ -532,6 +534,7 @@ extern cvar_t  *cl_defaultProfile;
 
 extern cvar_t  *cl_consoleKeys;
 extern  cvar_t *cl_consoleFont;
+extern  cvar_t *cl_consoleDynFont;
 extern  cvar_t *cl_consoleFontSize;
 extern  cvar_t *cl_consoleFontKerning;
 extern  cvar_t *cl_consolePrompt;
