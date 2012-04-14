@@ -1318,8 +1318,8 @@ void                  *Sys_GetSystemHandles( void );
 
 char                  *Sys_GetCurrentUser( void );
 
-void QDECL            Sys_Error( const char *error, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
-void                  Sys_Quit( void );
+void QDECL            Sys_Error( const char *error, ... ) __attribute__(( format( printf, 1, 2 ), noreturn ));
+void                  Sys_Quit( void ) __attribute__((noreturn));
 char                  *Sys_GetClipboardData( void );  // note that this isn't journaled...
 
 void                  Sys_Print( const char *msg );
