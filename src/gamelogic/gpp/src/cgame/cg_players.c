@@ -3808,6 +3808,25 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.oldframe = legs.frame = torso.oldframe = torso.frame = 0;
 	}
+	else if ( ci->bodyModel )
+	{
+		if ( ci->gender == GENDER_NEUTER )
+		{
+			memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
+			CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_DEATH1, 1 );
+			legs.oldframe = cent->pe.nonseg.oldFrame;
+			legs.frame = cent->pe.nonseg.frame;
+			legs.backlerp = cent->pe.nonseg.backlerp;
+		}
+		else
+		{
+			memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
+			CG_RunPlayerLerpFrame( ci, &cent->pe.legs, BOTH_DEATH1, 1 );
+			legs.oldframe = cent->pe.legs.oldFrame;
+			legs.frame = cent->pe.legs.frame;
+			legs.backlerp = cent->pe.legs.backlerp;
+		}
+	}
 	else if ( !ci->nonsegmented )
 	{
 		memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
@@ -3848,6 +3867,8 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
+		memcpy( &legs.skeleton, &cent->pe.legs.skeleton, sizeof( refSkeleton_t ) );
+		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
 	}
 
 	//
@@ -3875,7 +3896,7 @@ void CG_Corpse( centity_t *cent )
 	//rescale the model
 	scale = BG_ClassConfig( es->clientNum )->modelScale;
 
-	if ( scale != 1.0f )
+	if ( scale != 1.0f && !ci->bodyModel )
 	{
 		VectorScale( legs.axis[ 0 ], scale, legs.axis[ 0 ] );
 		VectorScale( legs.axis[ 1 ], scale, legs.axis[ 1 ] );
@@ -3884,20 +3905,10 @@ void CG_Corpse( centity_t *cent )
 		legs.nonNormalizedAxes = qtrue;
 	}
 
-	if ( ci->bodyModel )
-	{
-		vec3_t tmp;
-		VectorCopy( legs.axis[ 2 ], tmp );
-		VectorCopy( legs.axis[ 1 ], legs.axis[ 2 ] );
-		VectorCopy( legs.axis[ 0 ], legs.axis[ 1 ] );
-		VectorCopy( tmp, legs.axis[ 0 ] );
-		legs.origin[ 2 ] -= 22;
-	}
-
 	trap_R_AddRefEntityToScene( &legs );
 
-	// if the model failed, allow the default nullmodel to be displayed
-	if ( !legs.hModel )
+	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
+	if ( !legs.hModel || ci->bodyModel )
 	{
 		return;
 	}
