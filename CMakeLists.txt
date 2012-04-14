@@ -944,41 +944,62 @@ endif()
 # Build Game/Cgame/Ui DLL/.so #
 ###############################
 
+# Function to setup all the Game/Cgame/UI libraries
+include( CMakeParseArguments )
+function( GAMELIB )
+  # ParseArguments setup
+  set( oneValueArgs LIB_NAME OUTPUT_NAME OUTPUT_DIR  )
+  set( multiValueArgs COMPILE_DEF LIB_FILES )
+  cmake_parse_arguments(GAMELIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  
+  # Xcode places the game libraries in the incorrect location. This should fix it
+  if( XCODE_VERSION )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
+  endif()
+  
+  add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} )
+  target_link_libraries( ${GAMELIB_LIB_NAME} m )
+  set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+    ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+    COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
+  )
+  
+  if( WIN32 )
+    set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_mp_${BUILD_ARCH}" )
+  else()
+    set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}.mp.${BUILD_ARCH}" )
+  endif()
+endfunction()
 
 
 if( BUILD_GAME_SO_ET )
-  # Xcode places the game libraries in the incorrect location. This should fix it
-  if( XCODE_VERSION )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/etmain" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/etmain" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/etmain" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/etmain" )
-  endif()
+  GAMELIB( LIB_NAME game
+    OUTPUT_NAME qagame
+    OUTPUT_DIR etmain
+    COMPILE_DEF GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
+    LIB_FILES ${SHAREDLIST} ${QAGAMELIST}
+  )
+  
+  GAMELIB( LIB_NAME cgame
+    OUTPUT_NAME cgame
+    OUTPUT_DIR etmain
+    COMPILE_DEF CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
+    LIB_FILES ${SHAREDLIST} ${CGAMELIST}
+  )
+  
+  GAMELIB( LIB_NAME ui
+    OUTPUT_NAME ui
+    OUTPUT_DIR etmain
+    COMPILE_DEF UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM
+    LIB_FILES ${SHAREDLIST} ${UILIST}
+  )
 
-  add_library( game SHARED ${SHAREDLIST} ${QAGAMELIST} )
-  set_property( TARGET game PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
-  set_target_properties( game PROPERTIES
-    OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY "etmain"
-  )
-  target_link_libraries( game -lm )
-  add_library( cgame SHARED ${SHAREDLIST} ${CGAMELIST} )
-  set_property( TARGET cgame PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
-  set_target_properties( cgame PROPERTIES
-    OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY "etmain"
-  )
-  target_link_libraries( cgame -lm )
-  add_library( ui SHARED ${SHAREDLIST} ${UILIST} )
-  set_property( TARGET ui PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
-  set_target_properties( ui PROPERTIES
-    OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY "etmain"
-  )
-  target_link_libraries( ui -lm )
   install( TARGETS game cgame ui
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
@@ -987,108 +1008,49 @@ if( BUILD_GAME_SO_ET )
 endif()
 
 if( BUILD_GAME_SO_TREM )
-  # Xcode places the game libraries in the incorrect location. This should fix it
-  if( XCODE_VERSION )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/base" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/base" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/base" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/base" )
-  endif()
+  GAMELIB( LIB_NAME tremgame
+    OUTPUT_NAME qagame
+    OUTPUT_DIR base
+    COMPILE_DEF GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
+    LIB_FILES ${GAMETREM}
+  )
 
-  add_library( tremgame SHARED ${GAMETREM} )
-  set_property( TARGET tremgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
-  target_link_libraries( tremgame -lm )
-  set_target_properties( tremgame PROPERTIES
-    OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY "base"
+  GAMELIB( LIB_NAME cgametrem
+    OUTPUT_NAME cgame
+    OUTPUT_DIR base
+    COMPILE_DEF CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
+    LIB_FILES ${CGAMETREM}
   )
-  add_library( cgametrem SHARED ${CGAMETREM} )
-  set_property( TARGET cgametrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM )
-  target_link_libraries( cgametrem -lm )
-  set_target_properties( cgametrem PROPERTIES
-    OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY "base"
-  )
-  add_library( uitrem SHARED ${UITREM} )
-  set_property( TARGET uitrem PROPERTY COMPILE_DEFINITIONS UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM )
-  target_link_libraries( uitrem -lm )
-  set_target_properties( uitrem PROPERTIES
-    OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY "base"
+  
+  GAMELIB( LIB_NAME uitrem
+    OUTPUT_NAME uitrem
+    OUTPUT_DIR base
+    COMPILE_DEF UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM
+    LIB_FILES ${UITREM}
   )
 endif()
 
 if( BUILD_GAME_SO_GPP )
-  if( XCODE_VERSION )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/main" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/main" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/main" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/main" )
-  endif()
-
-  add_library( gppgame SHARED ${GAMEGPP} )
-  set_property( TARGET gppgame PROPERTY COMPILE_DEFINITIONS GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-  if( WIN32 )
-    set_target_properties( gppgame PROPERTIES
-      OUTPUT_NAME "qagame_mp_${BUILD_ARCH}"
-      PREFIX ""
-      RUNTIME_OUTPUT_DIRECTORY "main"
-      ARCHIVE_OUTPUT_DIRECTORY "main"
-    )
-  else()
-    set_target_properties( gppgame PROPERTIES
-      OUTPUT_NAME "qagame.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main"
-    )
-    target_link_libraries( gppgame -lm )
-  endif()
-  add_library( gpptrem SHARED ${CGAMEGPP} )
-  set_property( TARGET gpptrem PROPERTY COMPILE_DEFINITIONS CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-  if( WIN32 )
-    set_target_properties( gpptrem PROPERTIES
-      OUTPUT_NAME "cgame_mp_${BUILD_ARCH}"
-      PREFIX ""
-      RUNTIME_OUTPUT_DIRECTORY "main"
-      ARCHIVE_OUTPUT_DIRECTORY "main"
-    )
-  else()
-    set_target_properties( gpptrem PROPERTIES
-      OUTPUT_NAME "cgame.mp.${BUILD_ARCH}"
-      PREFIX ""
-      LIBRARY_OUTPUT_DIRECTORY "main"
-      CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "main"
-    )
-    target_link_libraries( gpptrem -lm )
-  endif()
-  add_library( gppui SHARED ${UIGPP} )
-  set_property( TARGET gppui PROPERTY COMPILE_DEFINITIONS UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM )
-  if( WIN32 )
-    set_target_properties( gppui PROPERTIES
-      OUTPUT_NAME "ui_mp_${BUILD_ARCH}"
-      PREFIX ""
-      RUNTIME_OUTPUT_DIRECTORY "main"
-      ARCHIVE_OUTPUT_DIRECTORY "main"
-    )
-  else()
-    set_target_properties( gppui PROPERTIES
-      OUTPUT_NAME "ui.mp.${BUILD_ARCH}"
-      PREFIX "/"
-      LIBRARY_OUTPUT_DIRECTORY "main"
-    )
-    target_link_libraries( gppui -lm )
-  endif()
-endif()
-
-# Disable fixes for game libraries under Xcode
-if( XCODE_VERSION )
-  unset( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE )
-  unset( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG )
-  unset( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL )
-  unset( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO )
+  GAMELIB( LIB_NAME gppgame
+    OUTPUT_NAME qagame
+    OUTPUT_DIR main
+    COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
+    LIB_FILES ${GAMEGPP}
+  )
+  
+  GAMELIB( LIB_NAME gpptrem
+    OUTPUT_NAME cgame
+    OUTPUT_DIR main
+    COMPILE_DEF CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
+    LIB_FILES ${CGAMEGPP}
+  )
+  
+  GAMELIB( LIB_NAME gppui
+    OUTPUT_NAME ui
+    OUTPUT_DIR main
+    COMPILE_DEF UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
+    LIB_FILES ${UIGPP}
+  )
 endif()
 
 ###################
