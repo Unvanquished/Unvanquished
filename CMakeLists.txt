@@ -1315,26 +1315,26 @@ if( BUILD_SERVER )
 
   # Mac OS X has some trouble with PIC code under X86/32.
   if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND BUILD_ARCH STREQUAL "i386" )
-    set_target_properties( server PROPERTIES COMPILE_FLAGS -fno-pic LINK_FLAGS "-read_only_relocs suppress" )
+    set_target_properties( server PROPERTIES COMPILE_FLAGS -mdynamic-no-pic LINK_FLAGS "-read_only_relocs suppress" )
   endif()
 
   # The following section finds the REQUIRED dependencies and makes them available to the target
-    find_package( SDL REQUIRED )
-    find_package( GMP REQUIRED )
-    find_package( ZLIB REQUIRED )
-    find_package( CURL REQUIRED )
+  find_package( SDL REQUIRED )
+  find_package( GMP REQUIRED )
+  find_package( ZLIB REQUIRED )
+  find_package( CURL REQUIRED )
 
-    if( USE_INTERNAL_CRYPTO )
-      # BEFORE is required to prevent system headers from being used
-      include_directories( BEFORE ${MOUNT_DIR}/libs/nettle )
-    else()
-      find_package( Nettle REQUIRED )
-      include_directories( ${NETTLE_INCLUDE_DIRS} )
-      target_link_libraries( server ${NETTLE_LIBRARIES} )
-    endif()
+  if( USE_INTERNAL_CRYPTO )
+    # BEFORE is required to prevent system headers from being used
+    include_directories( BEFORE ${MOUNT_DIR}/libs/nettle )
+  else()
+    find_package( Nettle REQUIRED )
+    include_directories( ${NETTLE_INCLUDE_DIRS} )
+    target_link_libraries( server ${NETTLE_LIBRARIES} )
+  endif()
 
-    include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-    target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+  include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
+  target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
   # The following section finds the OPTIONAL dependencies and makes them available to the target
   if( USE_MYSQL )
     find_package( MySQL REQUIRED )
