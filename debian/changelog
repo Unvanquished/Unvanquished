@@ -1,3 +1,11 @@
+unvanquished (0.3.0-3) unstable; urgency=low
+
+  * Tidy up Build-Depends.
+    - Get rid of unneeded dependencies (pulled in by others).
+    - Add an alternative, libglew1.6-dev, for Ubuntu users.
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Sun, 15 Apr 2012 14:18:26 +0100
+
 unvanquished (0.3.0-2) unstable; urgency=low
 
   * Enable fs_libpath and use it.
@@ -5,8 +13,10 @@ unvanquished (0.3.0-2) unstable; urgency=low
     that the downloaded files have to be moved.
     *** NOTE: downgrades are NOT supported!
   * Don't load native plugins from the user directory.
+  * Fix r_glForceDriver.
+  * debian/control: Update source repository location.
 
- -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 02 Apr 2012 21:23:10 +0100
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 09 Apr 2012 11:30:56 +0100
 
 unvanquished (0.3.0-1) unstable; urgency=low
 
