@@ -1,7 +1,8 @@
 # - Find Theora library
-# Find the native Theora headers and libraries.
+# Find the native Theora headers and libraries.Theora depends on Ogg and will
+# provide Ogg headers/libraries as well.
 #
-#  THEORA_INCLUDE_DIRS - where to find theora/theora.h, etc.
+#  THEORA_INCLUDE_DIRS - where to find theora/theora.h, ogg/ogg.h, etc.
 #  THEORA_LIBRARIES    - List of libraries when using theora.
 #  THEORA_FOUND        - True if theora is found.
 
@@ -36,18 +37,31 @@
 #POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
+# Find Ogg
+if( Vorbis_FIND_REQUIRED )
+  set( OGG_ARG "REQUIRED" )
+elseif( Vorbis_FIND_QUIETLY )
+  set( OGG_ARG "QUIETLY" )
+endif()
+
+find_package( Ogg ${OGG_ARG} )
+
 # Look for the header file.
-FIND_PATH(THEORA_INCLUDE_DIR NAMES theora/theora.h)
-MARK_AS_ADVANCED(THEORA_INCLUDE_DIR)
+find_path( THEORA_INCLUDE_DIR
+  NAMES theora/theora.h
+  DOC "Theora include directory" )
+mark_as_advanced( THEORA_INCLUDE_DIR )
 
 # Look for the library.
-FIND_LIBRARY(THEORA_LIBRARY NAMES theora)
-MARK_AS_ADVANCED(THEORA_LIBRARY)
+find_library( THEORA_LIBRARY
+  NAMES theora
+  DOC "Path to Theora library" )
+mark_as_advanced( THEORA_LIBRARY )
 
 # handle the QUIETLY and REQUIRED arguments and set THEORA_FOUND to TRUE if 
 # all listed variables are TRUE
-INCLUDE(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Theora DEFAULT_MSG THEORA_LIBRARY THEORA_INCLUDE_DIR)
+include( ${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake )
+FIND_PACKAGE_HANDLE_STANDARD_ARGS( Theora DEFAULT_MSG THEORA_LIBRARY THEORA_INCLUDE_DIR )
 
-SET(THEORA_LIBRARIES ${THEORA_LIBRARY})
-SET(THEORA_INCLUDE_DIRS ${THEORA_INCLUDE_DIR})
+set( THEORA_LIBRARIES ${THEORA_LIBRARY} ${OGG_LIBRARIES} )
+set( THEORA_INCLUDE_DIRS ${THEORA_INCLUDE_DIR} ${OGG_INCLUDE_DIRS} )
