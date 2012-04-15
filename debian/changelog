@@ -1,3 +1,9 @@
+unvanquished (0.3.0+git-0) unstable; urgency=low
+
+  * Git snapshot.
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Sun, 15 Apr 2012 14:18:26 +0100
+
 unvanquished (0.3.0-3) unstable; urgency=low
 
   * Tidy up Build-Depends.
