@@ -905,6 +905,93 @@ if( USE_INTERNAL_CRYPTO )
   )
 endif()
 
+set( GLCPPLIST
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp-lex.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp-parse.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/pp.c
+)
+
+set( MESALIST
+  ${LIB_DIR}/glsl-optimizer/src/mesa/program/hash_table.c
+  ${LIB_DIR}/glsl-optimizer/src/mesa/program/symbol_table.c
+)
+
+set( GLSLLIST
+  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_analysis.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_jumps.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_function.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_type.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hv_accept.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_types.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_reader.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/hir_field_selection.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_functions.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_variable.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_redundant_jumps.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_tree_grafting.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_instructions.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code_local.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_detect_recursion.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_if_to_cond_assign.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_symbol_table.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_rvalue_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_unroll.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_if_simplification.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_expr.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_validate.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vector.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_variable_refcount.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_set_program_inouts.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_noise.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_swizzle_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_parser.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_structure_splitting.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_import_prototypes.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_basic_block.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/s_expression.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_texture_projection.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_variable.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_to_hir.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/linker.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_noop_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/standalone_scaffolding.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_can_inline.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_discard.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_controls.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_propagation.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_function_inlining.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/link_functions.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/builtin_function.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_mat_op_to_vec.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_glsl_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_optimizer.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_cond_assign.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation_elements.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_unused_structs.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_folding.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_lexer.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_clone.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_variable_index_to_cond_assign.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hierarchical_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_algebraic.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_expression_flattening.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_constant_expression.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_parser_extras.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_discard_simplification.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp-parse.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp-lex.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/pp.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ralloc.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/strtod.c
+)
+
 ####################
 # End of file list #
 ####################
@@ -1053,14 +1140,6 @@ if( BUILD_GAME_SO_GPP )
   )
 endif()
 
-###################
-# Build Renderers #
-###################
-
-if( USE_WEBP )
-  find_package( WebP REQUIRED )
-endif()
-
 if( USE_PHYSICS )
   if( LINUX )
     if( BUILD_ARCH STREQUAL "x86_64" )
@@ -1073,75 +1152,93 @@ if( USE_PHYSICS )
   endif()
 endif()
 
-if( BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER )
+######################
+# Build Old Renderer #
+######################
+
+if( BUILD_OLD_RENDERER )
+  # Setup target renderer
+  add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} )
+  set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" )
+  target_link_libraries( renderer m )
+  
+  # This section finds and provides REQUIRED dependencies to target renderer
   find_package( OpenGL REQUIRED )
   find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
-  if( USE_GLSL_OPTIMIZER AND BUILD_NEW_RENDERER )
+
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
+  target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
+  
+  # This section finds and provides OPTIONAL dependencies to target renderer
+  if( USE_WEBP )
+    find_package( WebP REQUIRED )
+    set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+    include_directories( ${WEBP_INCLUDE_DIRS} )
+    target_link_libraries( renderer ${WEBP_LIBRARIES} )
+  endif()
+endif()
+
+######################
+# Build New Renderer #
+######################
+
+if( BUILD_NEW_RENDERER )
+  # Setup target rendererGL
+  add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c )
+  set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
+  set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
+  target_link_libraries( rendererGL ${OS_LIBRARIES} )
+  
+  # This section finds and provides REQUIRED dependencies to target rendererGL
+  find_package( OpenGL REQUIRED )
+  find_package( SDL REQUIRED )
+  find_package( JPEG REQUIRED )
+  find_package( PNG REQUIRED )
+  find_package( Freetype REQUIRED )
+  find_package( GLEW REQUIRED )
+  
+  include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
+  target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
+  
+  # This section finds and provides OPTIONAL dependencies to target rendererGL
+  if( USE_WEBP )
+    find_package( WebP REQUIRED )
+    set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+    include_directories( ${WEBP_INCLUDE_DIRS} )
+    target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
+  endif()
+  
+  if( USE_GLSL_OPTIMIZER )
     include_directories( ${LIB_DIR}/glsl-optimizer/include )
-    include_directories( ${LIB_DIR}/glsl-optimizer/src/mesa )
-    include_directories( ${LIB_DIR}/glsl-optimizer/src/mapi )
-    include_directories( ${LIB_DIR}/glsl-optimizer/src/glsl )
-    file(GLOB glcpp-library_sources ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/*.c)
-    file(GLOB glcpp-library_sources_remove ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp.c)
-    list(REMOVE_ITEM glcpp-library_sources ${glcpp-library_sources_remove})
-    set_source_files_properties( ${glcpp-library_sources} PROPERTIES COMPILE_FLAGS "-fPIC" )
-    add_library(glcpp-library ${glcpp-library_sources})
-
-    file(GLOB mesa_sources ${LIB_DIR}/glsl-optimizer/src/mesa/program/*.c)
-    set_source_files_properties( ${mesa_sources} PROPERTIES COMPILE_FLAGS "-fPIC" )
-    add_library(mesa ${mesa_sources})
-
-    file(GLOB glsl_sources ${LIB_DIR}/glsl-optimizer/src/glsl/*.cpp ${LIB_DIR}/glsl-optimizer/src/glsl/*.c)
-    file(GLOB glsl_sources_remove ${LIB_DIR}/glsl-optimizer/src/glsl/main.cpp ${LIB_DIR}/glsl-optimizer/src/glsl/builtin_stubs.cpp)
-    list(REMOVE_ITEM glsl_sources ${glsl_sources_remove})
-    set_source_files_properties( ${glsl_sources} PROPERTIES COMPILE_FLAGS "-fPIC" )
-    add_library(glsl_optimizer ${glsl_sources})
-    target_link_libraries(glsl_optimizer glcpp-library mesa)
+    target_link_libraries( rendererGL glsl_optimizer )
+    set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_GLSL_OPTIMIZER )
   endif()
-  if( BUILD_NEW_RENDERER )
-    add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c )
-    include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
-    set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
-    if( USE_GLSL_OPTIMIZER )
-      include_directories( ${LIB_DIR}/glsl-optimizer/include )
-      target_link_libraries( rendererGL glsl_optimizer )
-      set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_GLSL_OPTIMIZER )
-    endif()
-    target_link_libraries( rendererGL ${OS_LIBRARIES} ${PNG_LIBRARIES} ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
-    if( WIN32 )
-      set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" PREFIX "" )
-    else()
-      set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "librendererGL3${BUILD_ARCH}" PREFIX "" )
-      target_link_libraries( rendererGL -lm )
-    endif()
-    if( WEBP_FOUND )
-      set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-      include_directories( ${WEBP_INCLUDE_DIRS} )
-      target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
-    endif()
-  endif()
+endif()
 
-  if( BUILD_OLD_RENDERER )
-    add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} )
-    include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${SDL_INCLUDE_DIR} )
-    set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
-    target_link_libraries( renderer ${PNG_LIBRARY} ${SDL_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${JPEG_LIBRARY} ${FREETYPE_LIBRARY} )
-    if( WIN32 )
-      set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" PREFIX "" )
-    else()
-      set_target_properties( renderer PROPERTIES OUTPUT_NAME "librendererGL${BUILD_ARCH}" PREFIX "" )
-      target_link_libraries( renderer -lm )
-    endif()
-    if( WEBP_FOUND )
-      set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-      include_directories( ${WEBP_INCLUDE_DIR} )
-      target_link_libraries( renderer ${WEBP_LIBRARY} )
-    endif()
-  endif()
+########################
+# Build GLSL Optimizer #
+########################
+
+if( USE_GLSL_OPTIMIZER )
+  include_directories( ${LIB_DIR}/glsl-optimizer/include )
+  include_directories( ${LIB_DIR}/glsl-optimizer/src/mesa )
+  include_directories( ${LIB_DIR}/glsl-optimizer/src/mapi )
+  include_directories( ${LIB_DIR}/glsl-optimizer/src/glsl )
+  
+  add_library( glcpp-library ${GLCPPLIST} )
+  set_target_properties( glcpp-library PROPERTIES COMPILE_FLAGS "-fPIC" )
+
+  add_library( mesa ${MESALIST} )
+  set_target_properties( mesa PROPERTIES COMPILE_FLAGS "-fPIC" )
+
+  add_library( glsl_optimizer ${GLSLLIST} )
+  set_target_properties( glsl_optimizer PROPERTIES COMPILE_FLAGS "-fPIC" )
+  target_link_libraries( glsl_optimizer glcpp-library mesa )
 endif()
 
 ################
@@ -1175,7 +1272,6 @@ if( BUILD_CLIENT )
     endif()
   endif()
 
-
   # This section finds and provides REQUIRED dependencies to target client
   find_package( OpenGL REQUIRED )
   find_package( SDL REQUIRED )
@@ -1194,8 +1290,8 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${NETTLE_LIBRARIES} )
   endif()
 
-    include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-    target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
+  target_link_libraries( client ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${FREETYPE_LIBRARIES} ${GLEW_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
 
   # This section finds and provides OPTIONAL dependencies to target client
   if( USE_OPENAL )
