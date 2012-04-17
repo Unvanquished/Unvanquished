@@ -1309,9 +1309,8 @@ extern "C" {
 #define MIN(x,y) (( x ) < ( y ) ? ( x ) : ( y ))
 #endif
 
-#ifdef _MSC_VER
-	float rint( float v );
-
+#if defined( _MSC_VER ) || defined( Q3_VM )
+	float rintf( float v );
 #endif
 
 //=============================================

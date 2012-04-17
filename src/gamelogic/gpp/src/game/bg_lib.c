@@ -928,6 +928,21 @@ double rint( double v )
 	}
 }
 
+float rintf( float v )
+{
+        return (float) rint( v );
+}
+
+float floorf( float v )
+{
+        return (float) floor( v );
+}
+
+float ceilf( float v )
+{
+        return (float) ceil( v );
+}
+
 double tan( double x )
 {
 	return sin( x ) / cos( x );

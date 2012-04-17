@@ -150,7 +150,9 @@ void   *memcpy( void *dest, const void *src, size_t count );
 
 // Math functions
 double ceil( double x );
+float  ceilf( float x );
 double floor( double x );
+float  floorf( float x );
 double sqrt( double x );
 double sin( double x );
 double cos( double x );
@@ -161,5 +163,6 @@ double fabs( double x );
 double acos( double x );
 float  powf( float x, float y );
 double rint( double v );
+float  rintf( float v );
 
 #endif // BG_LIB_H
