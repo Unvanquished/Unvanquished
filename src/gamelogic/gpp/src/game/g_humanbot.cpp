@@ -450,7 +450,7 @@ int BotFindBestHDecon(gentity_t *self, buildable_t building, vec3_t origin) {
 	gentity_t *powerEntity = G_PowerEntityForPoint(origin);
 	int numBuildings = BotFindBuildingsPoweredBy(powerEntity,buildings,100);
 	//there is nothing providing power here, nothing to decon
-	if(powerEntity == NULL) 
+	if(powerEntity == 0)
 		return ENTITYNUM_NONE;
 
 	int bestBuild = BotFindBuildingInList(buildings,numBuildings, BA_H_MGTURRET);
@@ -515,7 +515,7 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 	vec3_t normal;
 	vec3_t forward;
 	trace_t trace;
-	AngleVectors(self->client->ps.viewangles, forward, NULL,NULL);
+	AngleVectors(self->client->ps.viewangles, forward, 0,0);
 	vec3_t mins,maxs;
 	buildable_t building;
 	vec3_t origin;
@@ -569,7 +569,7 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		if(BotRoutePermission(self, BOT_TASK_BUILD)) {
 			//find the best building to decon
 			deconNum = BotFindBestHDecon(self, building,origin);
-			if(!BotChangeTarget(self, &g_entities[deconNum],NULL)) {
+			if(!BotChangeTarget(self, &g_entities[deconNum],0)) {
 				return TASK_STOPPED;
 			}
 		}
@@ -605,7 +605,7 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		}
 	} else if(!VectorCompare(origin,targetPos) || BotRoutePermission(self, BOT_TASK_BUILD)) {
 		//set the target coordinate where we will place the building
-		if(!BotChangeTarget(self, NULL, &origin))
+		if(!BotChangeTarget(self, 0, &origin))
 			return TASK_STOPPED;
 	} else if(DistanceToGoalSquared(self) > Square(dist)) {
 		//move to where we will place the building until close enough to place it
@@ -688,7 +688,7 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 	}
 
 	if(BotRoutePermission(self, BOT_TASK_BUY)) {
-		if(!BotChangeTarget(self, self->botMind->closestBuildings.armoury.ent, NULL)) 
+		if(!BotChangeTarget(self, self->botMind->closestBuildings.armoury.ent, 0))
 			return TASK_STOPPED;
 	}
 
@@ -751,7 +751,7 @@ botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 	//find a new route if we have to
 	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
-		if(!BotChangeTarget(self, self->botMind->closestBuildings.medistation.ent,NULL))
+		if(!BotChangeTarget(self, self->botMind->closestBuildings.medistation.ent,0))
 			return TASK_STOPPED;
 	}
 
@@ -792,7 +792,7 @@ botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer) {
 		return TASK_STOPPED;
 
 	if(BotRoutePermission(self, BOT_TASK_REPAIR)) {
-		if( !BotChangeTarget(self, self->botMind->closestDamagedBuilding.ent, NULL) )
+		if( !BotChangeTarget(self, self->botMind->closestDamagedBuilding.ent, 0) )
 			return TASK_STOPPED;
 	}
 
@@ -814,7 +814,7 @@ botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(self->client->ps.weapon != WP_HBUILD)
 		G_ForceWeaponChange( self, WP_HBUILD );
 
-	AngleVectors(self->client->ps.viewangles,forward,NULL,NULL);
+	AngleVectors(self->client->ps.viewangles,forward,0,0);
 	BotGetTargetPos(self->botMind->goal, targetPos);
 	VectorMA(self->s.origin,self->r.maxs[1],forward,selfPos);
 
@@ -832,7 +832,7 @@ botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer) {
 gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
 {
 	//closest building
-	gentity_t* closestBuilding = NULL;
+	gentity_t* closestBuilding = 0;
 
 	//minimum distance found
 	float minDistance = Square(ALIENSENSE_RANGE);
