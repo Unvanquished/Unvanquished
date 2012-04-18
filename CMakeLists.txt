@@ -71,10 +71,13 @@ endif()
 
 if( USE_LLVM )
   include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake )
+  include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMXXInformation.cmake )
 #  file( READ ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake LLVMINFO)
 #  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMCompiler.cmake "${LLVMINFO}" )
   file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMCompiler.cmake )
+  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMXXCompiler.cmake )
   enable_language( LLVM )
+  enable_language( LLVMXX )
   message( STATUS "Using LLVM" )
 endif()
 
@@ -1093,7 +1096,16 @@ function( GAMELIB )
 
     set( GAMELIB_LLVM_FLAGS "-w -emit-llvm -DQ3_VM -nostdinc -I${GAMELIB_SOURCE_NAME} -Isrc/engine/qcommon -I${GAMELIB_SOURCE_NAME}/src/game -I${GAMELIB_SOURCE_NAME}/src/cgame -I${GAMELIB_SOURCE_NAME}/src/ui" )
 
+    set( GAMELIB_LIB_CXX )
+    foreach( FILE ${GAMELIB_LIB_FILES} )
+      if( FILE MATCHES "\\.cpp$" )
+        set( GAMELIB_LIB_CXX ${GAMELIB_LIB_CXX} ${FILE} )
+      endif()
+    endforeach()
+
     set_source_files_properties( ${GAMELIB_LIB_FILES} PROPERTIES LANGUAGE LLVM )
+    set_source_files_properties( ${GAMELIB_LIB_CXX} PROPERTIES LANGUAGE LLVMXX )
+
     # First target is for at least i386
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
       PREFIX "vm/"

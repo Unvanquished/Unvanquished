@@ -1,5 +1,4 @@
 find_program( CLANG clang )
-#find_program( CLANGXX clang++ )
 find_program( LLVM_LINK llvm-link )
 if( NOT CLANG OR NOT LLVM_LINK )
   message( FATAL_ERROR "clang is not installed" )
