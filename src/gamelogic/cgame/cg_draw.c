@@ -4503,6 +4503,8 @@ static qboolean CG_DrawScoreboard( void )
 		return qfalse;
 	}
 
+	CG_RequestScores();
+
 	if ( menuScoreboard == NULL )
 	{
 		menuScoreboard = Menus_FindByName( "teamscore_menu" );
