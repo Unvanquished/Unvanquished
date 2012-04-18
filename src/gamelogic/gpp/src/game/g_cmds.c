@@ -1847,6 +1847,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( vote, "admitdefeat" ) )
 	{
+		if ( !g_admitDefeatVotesPercent.integer )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        "print \"Admit Defeat votes have been disabled\n\"" );
+			return;
+		}
+
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
 		             "admitdefeat %d", team );
 		strcpy( level.voteDisplayString[ team ], "Admit Defeat" );
