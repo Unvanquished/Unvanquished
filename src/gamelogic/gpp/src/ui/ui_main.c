@@ -3653,6 +3653,14 @@ static void UI_RunMenuScript( char **args )
 			trap_Cvar_Set( "cl_paused", "0" );
 			Menus_CloseAll();
 		}
+		else if ( Q_stricmp( name, "voteDraw" ) == 0 )
+		{
+			char buffer[ MAX_CVAR_VALUE_STRING ];
+			trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote draw %s\n", buffer ) );
+			trap_Cvar_Set( "ui_reason", "" );
+		}
 		else if ( Q_stricmp( name, "voteMap" ) == 0 )
 		{
 			if ( ui_selectedMap.integer >= 0 && ui_selectedMap.integer < uiInfo.mapCount )

@@ -1495,7 +1495,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 	trap_Argv( 1, vote, sizeof( vote ) );
 	trap_Argv( 2, arg, sizeof( arg ) );
-	creason = ConcatArgs( 3 );
+	creason = ConcatArgs( Q_stricmp( vote, "draw" ) ? 3 : 2 );
 	G_DecolorString( creason, reason, sizeof( reason ) );
 
 	if ( !Q_stricmp( cmd, "callteamvote" ) )
@@ -1711,8 +1711,21 @@ void Cmd_CallVote_f( gentity_t *ent )
 		}
 		else if ( !Q_stricmp( vote, "draw" ) )
 		{
+			if ( g_drawVoteReasonRequired.integer && !reason[ 0 ] && !G_admin_permission( ent, ADMF_UNACCOUNTABLE ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print \"%s: You must provide a reason\n\"", cmd ) );
+				return;
+			}
+
 			strcpy( level.voteString[ team ], "evacuation" );
 			strcpy( level.voteDisplayString[ team ], "End match in a draw" );
+			if ( reason[ 0 ] )
+			{
+				Q_strcat( level.voteDisplayString[ team ],
+						  sizeof( level.voteDisplayString[ team ] ), va( " because '%s'", reason ) );
+			}
+
 			level.voteDelay[ team ] = 3000;
 			level.voteThreshold[ team ] = g_drawVotesPercent.integer;
 		}
