@@ -1135,6 +1135,7 @@ extern  vmCvar_t g_mapVotesPercent;
 extern  vmCvar_t g_mapVotesBefore;
 extern  vmCvar_t g_drawVotesPercent;
 extern  vmCvar_t g_drawVotesAfter;
+extern  vmCvar_t g_drawVoteReasonRequired;
 extern  vmCvar_t g_admitDefeatVotesPercent;
 extern  vmCvar_t g_teamForceBalance;
 extern  vmCvar_t g_smoothClients;
