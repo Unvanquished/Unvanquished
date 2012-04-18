@@ -1669,6 +1669,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 		}
 		else if ( !Q_stricmp( vote, "map" ) )
 		{
+			if( g_mapVotesBefore.integer && ( level.time - level.startTime ) >= ( g_mapVotesBefore.integer * 60000 ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print \"Change-map votes are not allowed once %d minutes have passed\n\"", g_mapVotesBefore.integer ) );
+				return;
+			}
+
 			if ( !G_MapExists( arg ) )
 			{
 				trap_SendServerCommand( ent - g_entities,
@@ -1711,6 +1718,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 		}
 		else if ( !Q_stricmp( vote, "draw" ) )
 		{
+			if( ( level.time - level.startTime ) < ( g_drawVotesAfter.integer * 60000 ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print \"Draw votes are not allowed until %d minutes have passed\n\"", g_drawVotesAfter.integer ) );
+				return;
+			}
+
 			strcpy( level.voteString[ team ], "evacuation" );
 			strcpy( level.voteDisplayString[ team ], "End match in a draw" );
 			level.voteDelay[ team ] = 3000;
@@ -1751,6 +1765,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 		else if ( !Q_stricmp( vote, "layout" ) )
 		{
 			char map[ 64 ];
+
+			if( g_mapVotesBefore.integer && ( level.time - level.startTime ) >= ( g_mapVotesBefore.integer * 60000 ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print \"Change-layout votes are not allowed once %d minutes have passed\n\"", g_mapVotesBefore.integer ) );
+				return;
+			}
 
 			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
