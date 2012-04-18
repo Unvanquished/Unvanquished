@@ -215,7 +215,6 @@
         play "sound/misc/menu1.wav";
         hide gameGrp;
         show playervote;
-        show reasonfield;
         show vote;
       }
     }
@@ -238,10 +237,11 @@
         play "sound/misc/menu1.wav";
         hide gameGrp;
         show teamvote;
-        show reasonfield;
         show vote;
       }
     }
+
+///// Vote reason
 
     itemDef
     {
@@ -252,7 +252,7 @@
       text "Reason:"
       cvar "ui_reason"
       maxChars 50
-      rect PBUTT_X (PBUTT_Y+PBUTT_H) PBUTT_W PBUTT_H
+      rect PBUTT_X (H/2-PBUTT_H*3/2) PBUTT_W PBUTT_H
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
       textscale .25
@@ -262,6 +262,82 @@
       border WINDOW_BORDER_NONE
       bordercolor 0 0 0 0
       visible MENU_FALSE
+    }
+
+    itemDef
+    {
+      name voteMute
+      group gameGrp
+      text "Mute Player"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        uiScript voteMute;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name voteKick
+      group gameGrp
+      text "Kick Player"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        uiScript voteKick;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name voteTeamKick
+      group gameGrp
+      text "Kick Teammate"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        uiScript voteTeamKick;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name voteTeamDenyBuild
+      group gameGrp
+      text "Deny Building For Teammate"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        uiScript voteTeamDenyBuild;
+        uiScript closeingame
+      }
     }
 
 ///// Map Vote
@@ -439,8 +515,9 @@
       action
       {
         play "sound/misc/menu1.wav";
-        uiScript voteMute;
-        uiScript closeingame
+        hide gamegrp;
+        show reasonfield;
+        show voteMute
       }
     }
 
@@ -479,8 +556,9 @@
       action
       {
         play "sound/misc/menu1.wav";
-        uiScript voteKick;
-        uiScript closeingame
+        hide gamegrp;
+        show reasonfield;
+        show voteKick
       }
     }
 
@@ -521,8 +599,9 @@
       action
       {
         play "sound/misc/menu1.wav";
-        uiScript voteTeamKick;
-        uiScript closeingame
+        hide gamegrp;
+        show reasonfield;
+        show voteTeamKick
       }
     }
 
@@ -541,8 +620,9 @@
       action
       {
         play "sound/misc/menu1.wav";
-        uiScript voteTeamDenyBuild;
-        uiScript closeingame
+        hide gamegrp;
+        show reasonfield;
+        show voteTeamDenyBuild
       }
     }
 
