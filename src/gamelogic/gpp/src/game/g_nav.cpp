@@ -42,7 +42,7 @@ qboolean G_NavLoad(dtNavMeshCreateParams *navParams, class_t classt) {
 	char mapname[MAX_QPATH];
 	long len;
 	char text[Square(MAX_STRING_CHARS)];
-	char *text_p = 0;
+	char *text_p = NULL;
 	fileHandle_t f;
 	NavMeshHeader_t navHeader;
 	char gameName[MAX_STRING_CHARS];
@@ -191,7 +191,7 @@ extern "C" void G_NavMeshInit() {
 	memset(navQuerys,0,sizeof(*navQuerys));
 	for(int i=PCL_NONE+1;i<PCL_NUM_CLASSES;i++) {
 		dtNavMeshCreateParams navParams;
-		unsigned char *navData = 0;
+		unsigned char *navData = NULL;
 		int navDataSize = 0;
 		memset(&navParams,0,sizeof(dtNavMeshCreateParams));
 
@@ -211,7 +211,7 @@ extern "C" void G_NavMeshInit() {
 		if (!navMeshes[i])
 		{
 			dtFree(navData);
-			navData = 0;
+			navData = NULL;
 			Com_Printf ("Could not allocate Detour Navigation Mesh for class %s\n",BG_Class((class_t)i)->name);
 			return;
 		}
@@ -219,9 +219,9 @@ extern "C" void G_NavMeshInit() {
 		if (dtStatusFailed(navMeshes[i]->init(navData, navDataSize, DT_TILE_FREE_DATA)))
 		{
 			dtFree(navData);
-			navData = 0;
+			navData = NULL;
 			dtFreeNavMesh(navMeshes[i]);
-			navMeshes[i] = 0;
+			navMeshes[i] = NULL;
 			Com_Printf ("Could not init Detour Navigation Mesh for class %s\n", BG_Class((class_t)i)->name);
 			return;
 		}
@@ -229,20 +229,20 @@ extern "C" void G_NavMeshInit() {
 		navQuerys[i] = dtAllocNavMeshQuery();
 		if(!navQuerys[i]) {
 			dtFree(navData);
-			navData = 0;
+			navData = NULL;
 			dtFreeNavMesh(navMeshes[i]);
-			navMeshes[i] = 0;
+			navMeshes[i] = NULL;
 			Com_Printf("Could not allocate Detour Navigation Mesh Query for class %s\n",BG_Class((class_t)i)->name);
 			return;
 		}
 		if (dtStatusFailed(navQuerys[i]->init(navMeshes[i], 65536)))
 		{	
 			dtFreeNavMeshQuery(navQuerys[i]);
-			navQuerys[i] = 0;
+			navQuerys[i] = NULL;
 			dtFree(navData);
-			navData = 0;
+			navData = NULL;
 			dtFreeNavMesh(navMeshes[i]);
-			navMeshes[i] = 0;
+			navMeshes[i] = NULL;
 			Com_Printf("Could not init Detour Navigation Mesh Query for class %s",BG_Class((class_t)i)->name);
 			return;
 		}
@@ -260,11 +260,11 @@ extern "C" void G_NavMeshCleanup(void) {
 	for(int i=PCL_NONE+1;i<PCL_NUM_CLASSES;i++) {
 		if(navQuerys[i]) {
 			dtFreeNavMeshQuery(navQuerys[i]);
-			navQuerys[i] = 0;
+			navQuerys[i] = NULL;
 		}
 		if(navMeshes[i]) {
 			dtFreeNavMesh(navMeshes[i]);
-			navMeshes[i] = 0;
+			navMeshes[i] = NULL;
 		}
 	}
 	for(int i=0;i<MAX_CLIENTS;i++) {
@@ -433,7 +433,7 @@ gentity_t* BotGetPathBlocker(gentity_t *self) {
 	const int TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 
 	if(!(self && self->client))
-		return 0;
+		return NULL;
 
 	//get the forward vector, ignoring pitch
 	forward[0] = cos(DEG2RAD(self->client->ps.viewangles[YAW]));
@@ -445,7 +445,7 @@ gentity_t* BotGetPathBlocker(gentity_t *self) {
 	//already normalized
 	VectorCopy(forward,moveDir);
 
-	BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], playerMins,playerMaxs,0,0,0);
+	BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], playerMins,playerMaxs,NULL,NULL,NULL);
 
 	//account for how large we can step
 	playerMins[2] += STEPSIZE;
@@ -457,7 +457,7 @@ gentity_t* BotGetPathBlocker(gentity_t *self) {
 	if(trace.entityNum != ENTITYNUM_NONE && trace.fraction < 1.0f) {
 		return &g_entities[trace.entityNum];
 	} else {
-		return 0;
+		return NULL;
 	}
 }
 
@@ -485,7 +485,7 @@ qboolean BotShouldJump(gentity_t *self, gentity_t *blocker) {
 
 	//already normalized
 	VectorCopy(forward,moveDir);
-	BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], playerMins,playerMaxs,0,0,0);
+	BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], playerMins,playerMaxs,NULL,NULL,NULL);
 
 	playerMins[2] += STEPSIZE;
 	playerMaxs[2] += STEPSIZE;
@@ -537,7 +537,7 @@ qboolean BotFindSteerTarget(gentity_t *self, vec3_t aimPos) {
 		return qfalse;
 
 	//get bbox
-	BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], playerMins,playerMaxs,0,0,0);
+	BG_ClassBoundingBox((class_t) self->client->ps.stats[STAT_CLASS], playerMins,playerMaxs,NULL,NULL,NULL);
 
 	//account for stepsize
 	playerMins[2] += STEPSIZE;
@@ -637,10 +637,10 @@ qboolean BotOnLadder( gentity_t *self )
 	if( !BG_ClassHasAbility( (class_t) self->client->ps.stats[ STAT_CLASS ], SCA_CANUSELADDERS ) )
 		return qfalse;
 
-	AngleVectors( self->client->ps.viewangles, forward, 0, 0);
+	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL);
 
 	forward[ 2 ] = 0.0f;
-	BG_ClassBoundingBox( (class_t) self->client->ps.stats[ STAT_CLASS ], mins, maxs, 0, 0, 0 );
+	BG_ClassBoundingBox( (class_t) self->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
 	VectorMA( self->s.origin, 1.0f, forward, end );
 
 	trap_Trace( &trace, self->s.origin, mins, maxs, end, self->s.number, MASK_PLAYERSOLID );
@@ -805,7 +805,7 @@ qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer ) {
 	UpdatePathCorridor(self);
 
 	if(self->botMind->numCorners > 0) {
-		BotSetTarget(&target,0, &self->botMind->route[0]);
+		BotSetTarget(&target,NULL, &self->botMind->route[0]);
 		BotGoto( self, target, botCmdBuffer );
 		return qfalse;
 	}
@@ -908,7 +908,7 @@ void PlantEntityOnGround(gentity_t *ent, vec3_t groundPos) {
 	vec3_t endPos;
 	vec3_t traceDir;
 	if(ent->client) {
-		BG_ClassBoundingBox((class_t)ent->client->ps.stats[STAT_CLASS],mins,maxs,0,0,0);
+		BG_ClassBoundingBox((class_t)ent->client->ps.stats[STAT_CLASS],mins,maxs,NULL,NULL,NULL);
 	} else if(ent->s.eType == ET_BUILDABLE) {
 		BG_BuildableBoundingBox((buildable_t)ent->s.modelindex, mins,maxs);
 	} else {

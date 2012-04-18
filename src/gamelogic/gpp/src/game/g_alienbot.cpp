@@ -94,8 +94,8 @@ bool G_RoomForClassChange( gentity_t *ent, class_t classt,
 	float     maxHorizGrowth;
 	class_t   oldClass = (class_t)ent->client->ps.stats[ STAT_CLASS ];
 
-	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, 0, 0, 0 );
-	BG_ClassBoundingBox( classt, toMins, toMaxs, 0, 0, 0 );
+	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
+	BG_ClassBoundingBox( classt, toMins, toMaxs, NULL, NULL, NULL );
 
 	VectorCopy( ent->s.origin, newOrigin );
 
@@ -263,7 +263,7 @@ botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
 	const int maxHealth = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health;
-	gentity_t *healTarget = 0;
+	gentity_t *healTarget = NULL;
 	float distToHealTarget = 0;
 
 	//find best heal target
@@ -300,7 +300,7 @@ botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
 	}
 
 	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
-		if(!BotChangeTarget(self, healTarget,0)) {
+		if(!BotChangeTarget(self, healTarget,NULL)) {
 			return TASK_STOPPED;
 		}
 	}

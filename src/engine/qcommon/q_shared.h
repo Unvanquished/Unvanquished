@@ -1024,7 +1024,7 @@ extern "C" {
 
 	static ID_INLINE void AnglesToVector( const vec3_t angles, vec3_t out )
 	{
-		AngleVectors( angles, out, 0, 0 );
+		AngleVectors( angles, out, NULL, NULL );
 	}
 
 	void  VectorToAngles( const vec3_t value1, vec3_t angles );
