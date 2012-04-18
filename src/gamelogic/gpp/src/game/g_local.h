@@ -1132,6 +1132,8 @@ extern  vmCvar_t g_extendVotesTime;
 extern  vmCvar_t g_extendVotesCount;
 extern  vmCvar_t g_kickVotesPercent;
 extern  vmCvar_t g_mapVotesPercent;
+extern  vmCvar_t g_drawVotesPercent;
+extern  vmCvar_t g_admitDefeatVotesPercent;
 extern  vmCvar_t g_teamForceBalance;
 extern  vmCvar_t g_smoothClients;
 extern  vmCvar_t pmove_fixed;

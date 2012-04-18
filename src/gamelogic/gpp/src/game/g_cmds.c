@@ -1683,6 +1683,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			             sizeof( level.voteDisplayString[ team ] ),
 			             "Change to map '%s'", arg );
 			level.voteDelay[ team ] = 3000;
+			level.voteThreshold[ team ] = g_mapVotesPercent.integer;
 		}
 		else if ( !Q_stricmp( vote, "nextmap" ) )
 		{
@@ -1713,6 +1714,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			strcpy( level.voteString[ team ], "evacuation" );
 			strcpy( level.voteDisplayString[ team ], "End match in a draw" );
 			level.voteDelay[ team ] = 3000;
+			level.voteThreshold[ team ] = g_drawVotesPercent.integer;
 		}
 		else if ( !Q_stricmp( vote, "sudden_death" ) )
 		{
@@ -1849,6 +1851,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		             "admitdefeat %d", team );
 		strcpy( level.voteDisplayString[ team ], "Admit Defeat" );
 		level.voteDelay[ team ] = 3000;
+		level.voteThreshold[ team ] = g_admitDefeatVotesPercent.integer;
 	}
 	else
 	{
