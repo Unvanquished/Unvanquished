@@ -266,6 +266,25 @@
 
     itemDef
     {
+      name voteDraw
+      group gameGrp
+      text "End Match In Draw"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        uiScript voteDraw;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
       name voteMute
       group gameGrp
       text "Mute Player"
@@ -461,8 +480,35 @@
 
     itemDef
     {
+      // Reason-required variant
       name mapvote
       group gameGrp
+      cvartest "g_drawVoteReasonRequired"
+      hidecvar {0}
+      text "End Match In Draw"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect MAPBUTT_X (MAPBUTT_Y+(4*MAPBUTT_H)) MAPBUTT_W MAPBUTT_H
+      textalign ALIGN_LEFT
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gamegrp;
+        show reasonfield;
+        show voteDraw
+      }
+    }
+
+    itemDef
+    {
+      // No-reason variant
+      name mapvote
+      group gameGrp
+      cvartest "g_drawVoteReasonRequired"
+      hidecvar {1}
       text "End Match In Draw"
       type ITEM_TYPE_BUTTON
       textscale .25
