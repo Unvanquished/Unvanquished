@@ -1,10 +1,9 @@
-# - Find Theora library
-# Find the native Theora headers and libraries.Theora depends on Ogg and will
-# provide Ogg headers/libraries as well.
+# - Find GLib-2.0 library
+# Find the native GLib headers and libraries.
 #
-#  THEORA_INCLUDE_DIRS - where to find theora/theora.h, ogg/ogg.h, etc.
-#  THEORA_LIBRARIES    - List of libraries when using theora.
-#  THEORA_FOUND        - True if theora is found.
+#  GLIB_INCLUDE_DIRS - where to glib.h, glibconfig.h etc.
+#  GLIB_LIBRARIES    - List of libraries when using GLib.
+#  GLIB_FOUND        - True if Glib is found.
 
 #=============================================================================
 #Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
@@ -37,31 +36,33 @@
 #POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
-# Find Ogg
-if( Vorbis_FIND_REQUIRED )
-  set( OGG_ARG "REQUIRED" )
-elseif( Vorbis_FIND_QUIETLY )
-  set( OGG_ARG "QUIETLY" )
-endif()
-
-find_package( Ogg ${OGG_ARG} )
-
 # Look for the header file.
-find_path( THEORA_INCLUDE_DIR
-  NAMES theora/theora.h
-  DOC "Theora include directory" )
-mark_as_advanced( THEORA_INCLUDE_DIR )
+FIND_PATH(GLIB_INCLUDE_DIR NAMES glib.h 
+  PATH_SUFFIXES glib-2.0
+  DOC "The GLib include directory" )
+MARK_AS_ADVANCED(GLIB_INCLUDE_DIR)
+
+# glibconfig.h is sometimes stored in strange places. Use pkg-config to find it.
+FIND_PACKAGE( PkgConfig )
+IF( PKG_CONFIG_FOUND )
+  PKG_CHECK_MODULES( GLIB2  glib-2.0 )
+ENDIF()
+
+FIND_PATH(GLIBCONFIG_INCLUDE_DIR NAMES glibconfig.h 
+  PATH_SUFFIXES glib-2.0
+  HINTS ${GLIB2_INCLUDE_DIRS}
+  DOC "The glibconfig.h include directory" )
+MARK_AS_ADVANCED(GLIBCONFIG_INCLUDE_DIR)
 
 # Look for the library.
-find_library( THEORA_LIBRARY
-  NAMES theora
-  DOC "Path to Theora library" )
-mark_as_advanced( THEORA_LIBRARY )
+FIND_LIBRARY(GLIB_LIBRARY NAMES glib-2.0
+  DOC "The GLib library" )
+MARK_AS_ADVANCED(GLIB_LIBRARY)
 
-# handle the QUIETLY and REQUIRED arguments and set THEORA_FOUND to TRUE if 
+# handle the QUIETLY and REQUIRED arguments and set GLIBFOUND_FOUND to TRUE if 
 # all listed variables are TRUE
-include( ${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake )
-FIND_PACKAGE_HANDLE_STANDARD_ARGS( Theora DEFAULT_MSG THEORA_LIBRARY THEORA_INCLUDE_DIR )
+INCLUDE( ${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake )
+FIND_PACKAGE_HANDLE_STANDARD_ARGS( GLib DEFAULT_MSG GLIB_LIBRARY GLIB_INCLUDE_DIR GLIBCONFIG_INCLUDE_DIR )
 
-set( THEORA_LIBRARIES ${THEORA_LIBRARY} ${OGG_LIBRARIES} )
-set( THEORA_INCLUDE_DIRS ${THEORA_INCLUDE_DIR} ${OGG_INCLUDE_DIRS} )
+SET( GLIB_LIBRARIES ${GLIB_LIBRARY} )
+SET( GLIB_INCLUDE_DIRS ${GLIB_INCLUDE_DIR} ${GLIBCONFIG_INCLUDE_DIR} )

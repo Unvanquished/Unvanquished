@@ -903,7 +903,18 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			ri.Printf( PRINT_ALL, "Cannot estimate display aspect, assuming 1.333\n" );
 		}
 	}
-
+	if ( videoInfo->current_h > 0 ) 
+	{
+		glConfig.vidWidth = videoInfo->current_w;
+		glConfig.vidHeight = videoInfo->current_h;
+	} 
+	else 
+	{
+		glConfig.vidWidth = 480;
+		glConfig.vidHeight = 640;
+		ri.Printf( PRINT_ALL, "Cannot determine display resolution, assuming 640x480\n" );
+	}
+	
 	ri.Printf( PRINT_ALL, "...setting mode %d:", mode );
 
 	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) )
@@ -1050,7 +1061,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			ri.Printf( PRINT_ALL, "r_swapInterval requires libSDL >= 1.2.10\n" );
 		}
 
-#ifdef USE_ICON
+//#ifdef USE_ICON
 		{
 			SDL_Surface *icon = SDL_CreateRGBSurfaceFrom( ( void * ) CLIENT_WINDOW_ICON.pixel_data,
 			                    CLIENT_WINDOW_ICON.width,
@@ -1067,7 +1078,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			SDL_WM_SetIcon( icon, NULL );
 			SDL_FreeSurface( icon );
 		}
-#endif
+//#endif
 
 		SDL_WM_SetCaption( CLIENT_WINDOW_TITLE, CLIENT_WINDOW_MIN_TITLE );
 		SDL_ShowCursor( 0 );

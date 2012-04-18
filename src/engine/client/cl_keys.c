@@ -383,6 +383,11 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 		drawLen = len - prestep;
 	}
 
+	while ( Q_UTF8ContByte( edit->buffer[ prestep + drawLen ] ) && prestep + drawLen < len )
+	{
+		++drawLen;
+	}
+
 	// extract <drawLen> characters from the field at <prestep>
 	if ( drawLen >= MAX_STRING_CHARS )
 	{
@@ -428,8 +433,10 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 
 		if ( size == SMALLCHAR_WIDTH )
 		{
+			static char c;
 			float xlocation = x + SCR_ConsoleFontStringWidth( str + prestep, edit->cursor - prestep );
-			SCR_DrawConsoleFontChar( xlocation, y, cursorChar );
+			c = (char) cursorChar & 0x7F;
+			SCR_DrawConsoleFontChar( xlocation, y, &c );
 		}
 		else
 		{

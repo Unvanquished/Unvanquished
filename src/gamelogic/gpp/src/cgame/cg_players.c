@@ -936,47 +936,47 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ NSPA_ATTACK3 ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUN, "run", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUN, "run", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_RUN ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNBACK, "run_backwards", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNBACK, "run_backwards", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_RUNBACK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNLEFT, "run_left", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNLEFT, "run_left", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_RUNLEFT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNRIGHT, "run_right", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_RUNRIGHT, "run_right", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_RUNRIGHT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALK, "walk", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALK, "walk", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_WALK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKBACK, "walk_backwards", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKBACK, "walk", qtrue, qtrue, qfalse ) )
 			{
 				ci->animations[ NSPA_WALKBACK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKLEFT, "walk_left", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKLEFT, "walk_left", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_WALKLEFT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKRIGHT, "walk_right", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_WALKRIGHT, "walk_right", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_WALKRIGHT ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_SWIM, "swim", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_SWIM, "swim", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_SWIM ] = ci->animations[ NSPA_STAND ];
 			}
@@ -1001,7 +1001,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ NSPA_LANDBACK ] = ci->animations[ NSPA_STAND ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_TURN, "turn", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_TURN, "turn", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_TURN ] = ci->animations[ NSPA_STAND ];
 			}
@@ -3808,6 +3808,25 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.oldframe = legs.frame = torso.oldframe = torso.frame = 0;
 	}
+	else if ( ci->bodyModel )
+	{
+		if ( ci->gender == GENDER_NEUTER )
+		{
+			memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
+			CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_DEATH1, 1 );
+			legs.oldframe = cent->pe.nonseg.oldFrame;
+			legs.frame = cent->pe.nonseg.frame;
+			legs.backlerp = cent->pe.nonseg.backlerp;
+		}
+		else
+		{
+			memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
+			CG_RunPlayerLerpFrame( ci, &cent->pe.legs, BOTH_DEATH1, 1 );
+			legs.oldframe = cent->pe.legs.oldFrame;
+			legs.frame = cent->pe.legs.frame;
+			legs.backlerp = cent->pe.legs.backlerp;
+		}
+	}
 	else if ( !ci->nonsegmented )
 	{
 		memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
@@ -3848,6 +3867,8 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
+		memcpy( &legs.skeleton, &cent->pe.legs.skeleton, sizeof( refSkeleton_t ) );
+		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
 	}
 
 	//
@@ -3875,7 +3896,7 @@ void CG_Corpse( centity_t *cent )
 	//rescale the model
 	scale = BG_ClassConfig( es->clientNum )->modelScale;
 
-	if ( scale != 1.0f )
+	if ( scale != 1.0f && !ci->bodyModel )
 	{
 		VectorScale( legs.axis[ 0 ], scale, legs.axis[ 0 ] );
 		VectorScale( legs.axis[ 1 ], scale, legs.axis[ 1 ] );
@@ -3884,20 +3905,10 @@ void CG_Corpse( centity_t *cent )
 		legs.nonNormalizedAxes = qtrue;
 	}
 
-	if ( ci->bodyModel )
-	{
-		vec3_t tmp;
-		VectorCopy( legs.axis[ 2 ], tmp );
-		VectorCopy( legs.axis[ 1 ], legs.axis[ 2 ] );
-		VectorCopy( legs.axis[ 0 ], legs.axis[ 1 ] );
-		VectorCopy( tmp, legs.axis[ 0 ] );
-		legs.origin[ 2 ] -= 22;
-	}
-
 	trap_R_AddRefEntityToScene( &legs );
 
-	// if the model failed, allow the default nullmodel to be displayed
-	if ( !legs.hModel )
+	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
+	if ( !legs.hModel || ci->bodyModel )
 	{
 		return;
 	}

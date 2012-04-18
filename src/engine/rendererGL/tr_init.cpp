@@ -497,36 +497,36 @@ extern "C" {
 		float      pixelAspect; // pixel width / height
 	} vidmode_t;
 
-	vidmode_t  r_vidModes[] =
+	static const vidmode_t r_vidModes[] =
 	{
-		{ "Mode  0: 320x240",           320,  240,  1 },
-		{ "Mode  1: 400x300",           400,  300,  1 },
-		{ "Mode  2: 512x384",           512,  384,  1 },
-		{ "Mode  3: 640x480",           640,  480,  1 },
-		{ "Mode  4: 800x600",           800,  600,  1 },
-		{ "Mode  5: 960x720",           960,  720,  1 },
-		{ "Mode  6: 1024x768",          1024, 768,  1 },
-		{ "Mode  7: 1152x864",          1152, 864,  1 },
-		{ "Mode  8: 1280x720 (16:9)",   1280, 720,  1 },
-		{ "Mode  9: 1280x768 (16:10)",  1280, 768,  1 },
-		{ "Mode 10: 1280x800 (16:10)",  1280, 800,  1 },
-		{ "Mode 11: 1280x1024",         1280, 1024, 1 },
-		{ "Mode 12: 1360x768 (16:9)",   1360, 768,  1 },
-		{ "Mode 13: 1440x900 (16:10)",  1440, 900,  1 },
-		{ "Mode 14: 1680x1050 (16:10)", 1680, 1050, 1 },
-		{ "Mode 15: 1600x1200",         1600, 1200, 1 },
-		{ "Mode 16: 1920x1080 (16:9)",  1920, 1080, 1 },
-		{ "Mode 17: 1920x1200 (16:10)", 1920, 1200, 1 },
-		{ "Mode 18: 2048x1536",         2048, 1536, 1 },
-		{ "Mode 19: 2560x1600 (16:10)", 2560, 1600, 1 },
+		{ " 320x240",           320,  240, 1 },
+		{ " 400x300",           400,  300, 1 },
+		{ " 512x384",           512,  384, 1 },
+		{ " 640x480",           640,  480, 1 },
+		{ " 800x600",           800,  600, 1 },
+		{ " 960x720",           960,  720, 1 },
+		{ "1024x768",          1024,  768, 1 },
+		{ "1152x864",          1152,  864, 1 },
+		{ "1280x720  (16:9)",  1280,  720, 1 },
+		{ "1280x768  (16:10)", 1280,  768, 1 },
+		{ "1280x800  (16:10)", 1280,  800, 1 },
+		{ "1280x1024",         1280, 1024, 1 },
+		{ "1360x768  (16:9)",  1360,  768,  1 },
+		{ "1440x900  (16:10)", 1440,  900, 1 },
+		{ "1680x1050 (16:10)", 1680, 1050, 1 },
+		{ "1600x1200",         1600, 1200, 1 },
+		{ "1920x1080 (16:9)",  1920, 1080, 1 },
+		{ "1920x1200 (16:10)", 1920, 1200, 1 },
+		{ "2048x1536",         2048, 1536, 1 },
+		{ "2560x1600 (16:10)", 2560, 1600, 1 },
 	};
-	static int s_numVidModes = ( sizeof( r_vidModes ) / sizeof( r_vidModes[ 0 ] ) );
+	static const int s_numVidModes = ( sizeof( r_vidModes ) / sizeof( r_vidModes[ 0 ] ) );
 
 	qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode )
 	{
-		vidmode_t *vm;
+		const vidmode_t *vm;
 
-		if ( mode < -1 )
+		if ( mode < -2 )
 		{
 			return qfalse;
 		}
@@ -536,19 +536,25 @@ extern "C" {
 			return qfalse;
 		}
 
-		if ( mode == -1 )
+		if( mode == -2) 
+		{
+			// Must set width and height to display size before calling this function!
+			*windowAspect = ( float ) *width / *height;
+		}
+		else if ( mode == -1 )
 		{
 			*width = r_customwidth->integer;
 			*height = r_customheight->integer;
 			*windowAspect = r_customaspect->value;
-			return qtrue;
+		} 
+		else 
+		{
+			vm = &r_vidModes[ mode ];
+
+			*width = vm->width;
+			*height = vm->height;
+			*windowAspect = ( float ) vm->width / ( vm->height * vm->pixelAspect );
 		}
-
-		vm = &r_vidModes[ mode ];
-
-		*width = vm->width;
-		*height = vm->height;
-		*windowAspect = ( float ) vm->width / ( vm->height * vm->pixelAspect );
 
 		return qtrue;
 	}
@@ -564,7 +570,7 @@ extern "C" {
 
 		for ( i = 0; i < s_numVidModes; i++ )
 		{
-			ri.Printf( PRINT_ALL, "%s\n", r_vidModes[ i ].description );
+			ri.Printf( PRINT_ALL, "Mode %-2d: %s\n", i, r_vidModes[ i ].description );
 		}
 
 		ri.Printf( PRINT_ALL, "\n" );
@@ -1384,7 +1390,7 @@ extern "C" {
 		r_stencilbits = ri.Cvar_Get( "r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH );
 		r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );
-		r_mode = ri.Cvar_Get( "r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH );
+		r_mode = ri.Cvar_Get( "r_mode", "6", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER );
 		r_fullscreen = ri.Cvar_Get( "r_fullscreen", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_customwidth = ri.Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH );
 		r_customheight = ri.Cvar_Get( "r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH );

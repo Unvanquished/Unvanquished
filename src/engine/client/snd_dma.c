@@ -1611,18 +1611,12 @@ void S_Music_f( void )
 
 void S_SoundList_f( void )
 {
-	int   i;
+	int   i, size, total;
 	sfx_t *sfx;
-	int   size, total;
-	char  type[ 4 ][ 16 ];
-	char  mem[ 2 ][ 16 ];
 
-	strcpy( type[ 0 ], "16bit" );
-	strcpy( type[ 1 ], "adpcm" );
-	strcpy( type[ 2 ], "daub4" );
-	strcpy( type[ 3 ], "mulaw" );
-	strcpy( mem[ 0 ], "paged out" );
-	strcpy( mem[ 1 ], "resident " );
+	static const char type[][ 8 ] = { "16bit", "adpcm", "daub4", "mulaw" };
+	static const char mem[][ 16 ] = { "paged out", "resident" };
+
 	total = 0;
 
 	for ( sfx = s_knownSfx, i = 0; i < s_numSfx; i++, sfx++ )
