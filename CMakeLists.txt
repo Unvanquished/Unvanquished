@@ -70,10 +70,16 @@ if( ENABLE_HARDENING )
 endif()
 
 if( USE_LLVM )
+  find_program(LLVM_CONFIG llvm-config)
+  execute_process(COMMAND ${LLVM_CONFIG} --libfiles
+                  OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  separate_arguments(LLVM_LIBS)
+
   include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake )
   include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMXXInformation.cmake )
-#  file( READ ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake LLVMINFO)
-#  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMCompiler.cmake "${LLVMINFO}" )
   file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMCompiler.cmake )
   file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMXXCompiler.cmake )
   enable_language( LLVM )
