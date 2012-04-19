@@ -10778,19 +10778,12 @@ static void RB_RenderView( void )
 		GL_State( GLS_DEFAULT );
 
 		// clear relevant buffers
-		clearBits = GL_DEPTH_BUFFER_BIT;
-
-		if ( r_measureOverdraw->integer )
-		{
-			clearBits |= GL_STENCIL_BUFFER_BIT;
-		}
+		clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
 #if defined( COMPAT_ET )
 		// ydnar: global q3 fog volume
-		else if ( tr.world && tr.world->globalFog >= 0 )
+		if ( tr.world && tr.world->globalFog >= 0 )
 		{
-			clearBits |= GL_DEPTH_BUFFER_BIT;
-
 			if ( !( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) )
 			{
 				clearBits |= GL_COLOR_BUFFER_BIT;
@@ -10805,7 +10798,6 @@ static void RB_RenderView( void )
 			if ( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL )
 			{
 				// portal scene, clear whatever is necessary
-				clearBits |= GL_DEPTH_BUFFER_BIT;
 
 				if ( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
 				{
@@ -10849,7 +10841,6 @@ static void RB_RenderView( void )
 			else
 			{
 				// world scene with portal sky, don't clear any buffers, just set the fog color if there is one
-				clearBits |= GL_DEPTH_BUFFER_BIT; // this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
 
 				if ( tr.glfogNum > FOG_NONE && tr.glfogsettings[ FOG_CURRENT ].registered )
 				{
@@ -10880,7 +10871,6 @@ static void RB_RenderView( void )
 		else
 		{
 			// world scene with no portal sky
-			clearBits |= GL_DEPTH_BUFFER_BIT;
 
 			// NERVE - SMF - we don't want to clear the buffer when no world model is specified
 			if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
