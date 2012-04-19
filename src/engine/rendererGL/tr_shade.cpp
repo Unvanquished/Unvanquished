@@ -44,7 +44,7 @@ static void GLSL_PrintInfoLog( GLhandleARB object, qboolean developerOnly )
 
 	glGetObjectParameterivARB( object, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength );
 
-	msg = ( char * ) Com_Allocate( maxLength );
+	msg = ( char * ) ri.Hunk_AllocateTempMemory( maxLength );
 
 	glGetInfoLogARB( object, maxLength, &maxLength, msg );
 
@@ -71,7 +71,7 @@ static void GLSL_PrintInfoLog( GLhandleARB object, qboolean developerOnly )
 		}
 	}
 
-	Com_Dealloc( msg );
+	ri.Hunk_FreeTempMemory( msg );
 }
 
 static void GLSL_PrintShaderSource( GLhandleARB object )
@@ -83,7 +83,7 @@ static void GLSL_PrintShaderSource( GLhandleARB object )
 
 	glGetObjectParameterivARB( object, GL_OBJECT_SHADER_SOURCE_LENGTH_ARB, &maxLength );
 
-	msg = ( char * ) Com_Allocate( maxLength );
+	msg = ( char * ) ri.Hunk_AllocateTempMemory( maxLength );
 
 	glGetShaderSourceARB( object, maxLength, &maxLength, msg );
 
@@ -93,7 +93,7 @@ static void GLSL_PrintShaderSource( GLhandleARB object )
 		ri.Printf( PRINT_ALL, "%s\n", msgPart );
 	}
 
-	Com_Dealloc( msg );
+	ri.Hunk_FreeTempMemory( msg );
 }
 
 static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const char *_libs, const char *_compileMacros, GLenum shaderType, qboolean optimize )

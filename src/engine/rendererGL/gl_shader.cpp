@@ -822,12 +822,12 @@ void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) con
 	glGetProgramiv( program, GL_PROGRAM_BINARY_LENGTH, &binaryLength );
 
 	// Allocate enough for the binary and the binaryFormat
-	binary = (GLvoid*)malloc( binaryLength + sizeof( GLenum ) );
+	binary = (GLvoid*)ri.Hunk_AllocateTempMemory( binaryLength + sizeof( GLenum ) );
 	glGetProgramBinary( program, binaryLength, NULL, (GLenum*)binary, (char*)binary + sizeof( GLenum ) );
 
 	ri.FS_WriteFile( va( "glsl/%s_%d.bin", pname, i ), binary, binaryLength + sizeof( GLenum ) );
 
-	free( binary );
+	ri.Hunk_FreeTempMemory( binary );
 #endif
 }
 
@@ -1017,7 +1017,7 @@ void GLShader::PrintShaderSource( GLuint object ) const
 
 	glGetShaderiv( object, GL_SHADER_SOURCE_LENGTH, &maxLength );
 
-	msg = ( char * ) Com_Allocate( maxLength );
+	msg = ( char * ) ri.Hunk_AllocateTempMemory( maxLength );
 
 	glGetShaderSource( object, maxLength, &maxLength, msg );
 
@@ -1027,7 +1027,7 @@ void GLShader::PrintShaderSource( GLuint object ) const
 		ri.Printf( PRINT_ALL, "%s\n", msgPart );
 	}
 
-	Com_Dealloc( msg );
+	ri.Hunk_FreeTempMemory( msg );
 }
 
 void GLShader::PrintInfoLog( GLuint object, bool developerOnly ) const
@@ -1039,7 +1039,7 @@ void GLShader::PrintInfoLog( GLuint object, bool developerOnly ) const
 
 	glGetShaderiv( object, GL_INFO_LOG_LENGTH, &maxLength );
 
-	msg = ( char * ) Com_Allocate( maxLength );
+	msg = ( char * ) ri.Hunk_AllocateTempMemory( maxLength );
 
 	glGetShaderInfoLog( object, maxLength, &maxLength, msg );
 
@@ -1066,7 +1066,7 @@ void GLShader::PrintInfoLog( GLuint object, bool developerOnly ) const
 		}
 	}
 
-	Com_Dealloc( msg );
+	ri.Hunk_FreeTempMemory( msg );
 }
 
 void GLShader::LinkProgram( GLuint program ) const
