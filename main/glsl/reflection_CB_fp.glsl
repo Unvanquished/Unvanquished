@@ -57,7 +57,7 @@ void	main()
 		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 	
 	// transform normal into world space
-	N = tangentToWorldMatrix * N;
+	N = normalize(tangentToWorldMatrix * N);
 
 #else
 
