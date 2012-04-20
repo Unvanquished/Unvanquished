@@ -138,7 +138,7 @@ void	main()
 #endif // USE_PARALLAX_MAPPING
 
 	// compute normal in world space from normalmap
-	vec3 N = tangentToWorldMatrix * (2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5));
+	vec3 N = normalize(tangentToWorldMatrix * (2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5)));
 	
 #if !defined(r_DeferredLighting)
 	

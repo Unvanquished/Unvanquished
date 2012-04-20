@@ -1014,7 +1014,7 @@ void	main()
 	#endif
 
 	// transform normal into world space
-	N = tangentToWorldMatrix * N;
+	N = normalize(tangentToWorldMatrix * N);
 
 	
 #else // USE_NORMAL_MAPPING
