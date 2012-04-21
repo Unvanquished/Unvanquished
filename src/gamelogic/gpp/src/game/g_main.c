@@ -78,6 +78,11 @@ vmCvar_t           g_extendVotesTime;
 vmCvar_t           g_extendVotesCount;
 vmCvar_t           g_kickVotesPercent;
 vmCvar_t           g_mapVotesPercent;
+vmCvar_t           g_mapVotesBefore;
+vmCvar_t           g_drawVotesPercent;
+vmCvar_t           g_drawVotesAfter;
+vmCvar_t           g_drawVoteReasonRequired;
+vmCvar_t           g_admitDefeatVotesPercent;
 vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
 vmCvar_t           pmove_fixed;
@@ -258,6 +263,11 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_extendVotesCount,            "g_extendVotesCount",            "2",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_mapVotesBefore,              "g_mapVotesBefore",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
 

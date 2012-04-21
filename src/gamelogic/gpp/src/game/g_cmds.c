@@ -1495,7 +1495,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 	trap_Argv( 1, vote, sizeof( vote ) );
 	trap_Argv( 2, arg, sizeof( arg ) );
-	creason = ConcatArgs( 3 );
+	creason = ConcatArgs( Q_stricmp( vote, "draw" ) ? 3 : 2 );
 	G_DecolorString( creason, reason, sizeof( reason ) );
 
 	if ( !Q_stricmp( cmd, "callteamvote" ) )
@@ -1669,6 +1669,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 		}
 		else if ( !Q_stricmp( vote, "map" ) )
 		{
+			if( g_mapVotesBefore.integer && ( level.time - level.startTime ) >= ( g_mapVotesBefore.integer * 60000 ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print \"Change-map votes are not allowed once %d minutes have passed\n\"", g_mapVotesBefore.integer ) );
+				return;
+			}
+
 			if ( !G_MapExists( arg ) )
 			{
 				trap_SendServerCommand( ent - g_entities,
@@ -1683,6 +1690,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			             sizeof( level.voteDisplayString[ team ] ),
 			             "Change to map '%s'", arg );
 			level.voteDelay[ team ] = 3000;
+			level.voteThreshold[ team ] = g_mapVotesPercent.integer;
 		}
 		else if ( !Q_stricmp( vote, "nextmap" ) )
 		{
@@ -1710,9 +1718,30 @@ void Cmd_CallVote_f( gentity_t *ent )
 		}
 		else if ( !Q_stricmp( vote, "draw" ) )
 		{
+			if( ( level.time - level.startTime ) < ( g_drawVotesAfter.integer * 60000 ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print \"Draw votes are not allowed until %d minutes have passed\n\"", g_drawVotesAfter.integer ) );
+				return;
+			}
+
+			if ( g_drawVoteReasonRequired.integer && !reason[ 0 ] && !G_admin_permission( ent, ADMF_UNACCOUNTABLE ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print \"%s: You must provide a reason\n\"", cmd ) );
+				return;
+			}
+
 			strcpy( level.voteString[ team ], "evacuation" );
 			strcpy( level.voteDisplayString[ team ], "End match in a draw" );
+			if ( reason[ 0 ] )
+			{
+				Q_strcat( level.voteDisplayString[ team ],
+						  sizeof( level.voteDisplayString[ team ] ), va( " because '%s'", reason ) );
+			}
+
 			level.voteDelay[ team ] = 3000;
+			level.voteThreshold[ team ] = g_drawVotesPercent.integer;
 		}
 		else if ( !Q_stricmp( vote, "sudden_death" ) )
 		{
@@ -1749,6 +1778,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 		else if ( !Q_stricmp( vote, "layout" ) )
 		{
 			char map[ 64 ];
+
+			if( g_mapVotesBefore.integer && ( level.time - level.startTime ) >= ( g_mapVotesBefore.integer * 60000 ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+				                        va( "print \"Change-layout votes are not allowed once %d minutes have passed\n\"", g_mapVotesBefore.integer ) );
+				return;
+			}
 
 			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
@@ -1845,10 +1881,18 @@ void Cmd_CallVote_f( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( vote, "admitdefeat" ) )
 	{
+		if ( !g_admitDefeatVotesPercent.integer )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        "print \"Admit Defeat votes have been disabled\n\"" );
+			return;
+		}
+
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
 		             "admitdefeat %d", team );
 		strcpy( level.voteDisplayString[ team ], "Admit Defeat" );
 		level.voteDelay[ team ] = 3000;
+		level.voteThreshold[ team ] = g_admitDefeatVotesPercent.integer;
 	}
 	else
 	{

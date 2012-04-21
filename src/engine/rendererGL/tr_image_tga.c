@@ -308,7 +308,7 @@ breakOut:
 
 		//ri.Printf(PRINT_WARNING, "WARNING: '%s' TGA file header declares top-down image, flipping\n", name);
 
-		flip = ( unsigned char * ) malloc( columns * 4 );
+		flip = ( unsigned char * ) ri.Hunk_AllocateTempMemory( columns * 4 );
 
 		for ( row = 0; row < rows / 2; row++ )
 		{
@@ -320,7 +320,7 @@ breakOut:
 			memcpy( dst, flip, columns * 4 );
 		}
 
-		free( flip );
+		ri.Hunk_FreeTempMemory( flip );
 	}
 
 #else
