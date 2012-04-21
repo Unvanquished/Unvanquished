@@ -239,6 +239,10 @@ vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_animBlend;
 vmCvar_t        cg_core;
 
+vmCvar_t        cg_highPolyPlayerModels;
+vmCvar_t        cg_highPolyBuildableModels;
+vmCvar_t        cg_highPolyWeaponModels;
+
 typedef struct
 {
 	vmCvar_t *vmCvar;
@@ -390,7 +394,10 @@ static cvarTable_t cvarTable[] =
 	{ &cg_animBlend,                   "cg_animblend",                   "5.0",          CVAR_ARCHIVE                 },
 	{ &cg_core,                        "cg_core",                        "3",            CVAR_ARCHIVE                 },
 
-	{ &cg_chatTeamPrefix,              "cg_chatTeamPrefix",              "1",            CVAR_ARCHIVE                 }
+	{ &cg_chatTeamPrefix,              "cg_chatTeamPrefix",              "1",            CVAR_ARCHIVE                 },
+	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 };
 
 static int         cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
