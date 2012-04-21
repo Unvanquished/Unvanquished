@@ -916,6 +916,16 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 			CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH1, "die", qfalse, qfalse, qfalse );
 
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH2, "die2", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ NSPA_DEATH2 ] = ci->animations[ NSPA_DEATH1 ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH3, "die3", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ NSPA_DEATH3 ] = ci->animations[ NSPA_DEATH1 ];
+			}
+
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_GESTURE, "gesture", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ NSPA_GESTURE ] = ci->animations[ NSPA_STAND ];
