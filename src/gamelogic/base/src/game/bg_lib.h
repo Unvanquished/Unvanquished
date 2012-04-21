@@ -29,7 +29,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define BG_LIB_H
 
 #ifndef NULL
-#define NULL ((void *)0 )
+#ifdef __cplusplus
+#define NULL ( 0L )
+#else
+#define NULL ( (void *)0 )
+#endif
 #endif
 
 typedef int  size_t;

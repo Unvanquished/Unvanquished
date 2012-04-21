@@ -39,7 +39,7 @@ typedef enum {
 } botModusStatus_t;
 
 //g_bot.cpp
-void BotDPrintf(const char* fmt, ... );
+void BotDPrintf(const char* fmt, ... ) __attribute__(( format( printf, 1, 2 ) ));
 gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
 void BotFindClosestBuildings(gentity_t *self, botClosestBuildings_t *closest);
