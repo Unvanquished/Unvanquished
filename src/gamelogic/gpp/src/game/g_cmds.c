@@ -1600,8 +1600,11 @@ void Cmd_CallVote_f( gentity_t *ent )
 			if ( ( team == TEAM_NONE && voteInfo[voteId].type != V_TEAM   ) ||
 			     ( team != TEAM_NONE && voteInfo[voteId].type != V_PUBLIC ) )
 			{
-			    Q_strcat( cmd, sizeof( cmd ), va( "%s%s", added ? ", " : "", voteInfo[voteId].name ) );
-			    added = qtrue;
+				if ( !voteInfo[voteId].percentage || voteInfo[voteId].percentage->integer > 0 )
+				{
+					Q_strcat( cmd, sizeof( cmd ), va( "%s%s", added ? ", " : "", voteInfo[voteId].name ) );
+					added = qtrue;
+				}
 			}
 		}
 
