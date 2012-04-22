@@ -1518,8 +1518,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 		{ "kick",         V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
 		{ "mute",         V_PUBLIC, T_PLAYER,  qtrue,   qtrue },
 		{ "unmute",       V_PUBLIC, T_PLAYER,  qfalse,  qfalse },
-		{ "denybuild",    V_TEAM,   T_PLAYER,  qtrue,   qtrue },
-		{ "allowbuild",   V_TEAM,   T_PLAYER,  qfalse,  qfalse },
+		{ "denybuild",    V_TEAM,   T_PLAYER,  qtrue,   qtrue,  NULL,                       VOTE_NOT_SD },
+		{ "allowbuild",   V_TEAM,   T_PLAYER,  qfalse,  qfalse, NULL,                       VOTE_NOT_SD },
 		{ "sudden_death", V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_suddenDeathVotePercent,  VOTE_NOT_SD },
 		{ "extend",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
 		{ "admitdefeat",  V_TEAM,   T_NONE,    qfalse,  qfalse, &g_admitDefeatVotesPercent },
@@ -1660,8 +1660,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 		if ( level.time - level.startTime < ( g_timelimit.integer - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"callvote: Extend votes only allowed with less than %d minutes remaining\n\"",
-			                            voteInfo[voteId].specialCvar->integer / 2 ) );
+			                        va( "print \"'%s' votes are only allowed with less than %d minutes remaining\n\"",
+			                            voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer / 2 ) );
 			return;
 		}
 
@@ -1671,7 +1671,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		if ( G_TimeTilSuddenDeath() <= 0 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"callvote: Sudden Death has already begun\n\"" ) );
+			                        va( "print \"Sudden Death has already begun\n\"" ) );
 			return;
 		}
 
@@ -1679,7 +1679,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		     G_TimeTilSuddenDeath() <= g_suddenDeathVoteDelay.integer * 1000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"callvote: Sudden Death is imminent\n\"" ) );
+			                        va( "print \"Sudden Death is imminent - this vote may have no effect\n\"" ) );
 			// DON'T stop the vote. It might pass or fail before SD starts.
 		}
 
