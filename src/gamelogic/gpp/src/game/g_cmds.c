@@ -1516,6 +1516,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	} voteInfo[] = {
 		// Name           Type      Target     Immune   Reason  Vote percentage var        Extra
 		{ "kick",         V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
+		{ "spectate",     V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
 		{ "mute",         V_PUBLIC, T_PLAYER,  qtrue,   qtrue },
 		{ "unmute",       V_PUBLIC, T_PLAYER,  qfalse,  qfalse },
 		{ "denybuild",    V_TEAM,   T_PLAYER,  qtrue,   qtrue,  NULL,                       VOTE_NOT_SD },
@@ -1533,6 +1534,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	// Items in this enum MUST correspond to the above entries, else Things Break
 	enum voteType_t {
 		VOTE_KICK,
+		VOTE_SPECTATE,
 		VOTE_MUTE,
 		VOTE_UNMUTE,
 		VOTE_DENYBUILD,
@@ -1772,6 +1774,14 @@ void Cmd_CallVote_f( gentity_t *ent )
 		             g_adminTempBan.string, reason );
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ), "Kick player '%s'", name );
+		break;
+
+	case VOTE_SPECTATE:
+		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+		             "putteam %d s", clientNum );
+		Com_sprintf( level.voteDisplayString[ team ],
+		             sizeof( level.voteDisplayString[ team ] ),
+		             "Move player '%s' to spectators", name );
 		break;
 
 	case VOTE_MUTE:
