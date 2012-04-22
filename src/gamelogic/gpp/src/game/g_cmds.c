@@ -1783,10 +1783,10 @@ void Cmd_CallVote_f( gentity_t *ent )
 		}
 
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-					 "mute %d", id );
+		             "mute %d", id );
 		Com_sprintf( level.voteDisplayString[ team ],
-					 sizeof( level.voteDisplayString[ team ] ),
-					 "Mute player '%s'", name );
+		             sizeof( level.voteDisplayString[ team ] ),
+		             "Mute player '%s'", name );
 		break;
 
 	case VOTE_UNMUTE:
@@ -1956,7 +1956,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	if ( reason[ 0 ] )
 	{
 		Q_strcat( level.voteDisplayString[ team ],
-				  sizeof( level.voteDisplayString[ team ] ), va( " for '%s'", reason ) );
+		          sizeof( level.voteDisplayString[ team ] ), va( " for '%s'", reason ) );
 	}
 
 	G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\": %s\n",
