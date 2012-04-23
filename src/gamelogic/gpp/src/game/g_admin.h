@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_ADMIN_FLAG_LEN   20
 #define MAX_ADMIN_FLAGS      1024
 #define MAX_ADMIN_CMD_LEN    20
-#define MAX_ADMIN_BAN_REASON 50
+#define MAX_ADMIN_BAN_REASON 100
 
 /*
  * IMMUNITY - cannot be vote kicked, vote muted

@@ -1773,8 +1773,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 	{
 	case VOTE_KICK:
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "ban %s \"1s%s\" vote kick (%s)", level.clients[ clientNum ].pers.ip.str,
-		             g_adminTempBan.string, reason );
+		             "ban %s \"1s%s\" %s ^7called vote kick (%s^7)", level.clients[ clientNum ].pers.ip.str,
+		             g_adminTempBan.string, ent->client->pers.netname, reason );
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ), "Kick player '%s'", name );
 		break;
