@@ -726,6 +726,9 @@ void Cmd_Team_f( gentity_t *ent )
 	qboolean force = G_admin_permission( ent, ADMF_FORCETEAMCHANGE );
 	int      aliens = level.numAlienClients;
 	int      humans = level.numHumanClients;
+	int      t;
+
+	const g_admin_spec_t *specOnly;
 
 	if ( oldteam == TEAM_ALIENS )
 	{
@@ -852,6 +855,30 @@ void Cmd_Team_f( gentity_t *ent )
 				                        va( "print \"Unknown team: %s\n\"", s ) );
 				return;
 		}
+	}
+
+	// Cannot join a team for a while after a locking putteam.
+	t = trap_RealTime( NULL );
+
+	if ( team != TEAM_NONE && ( specOnly = G_admin_match_spec( ent ) ) )
+	{
+		if ( specOnly->expires == -1 )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        "print \"You cannot join a team until the next game.\n\"" );
+			return;
+		}
+
+		if ( specOnly->expires - t > 0 )
+		{
+			int remaining = specOnly->expires - t;
+
+			trap_SendServerCommand( ent - g_entities,
+			                        va( "print \"You cannot join a team for another %d second%s.\n\"",
+			                            remaining, remaining == 1 ? "" : "s" ) );
+			return;
+		}
+
 	}
 
 	// stop team join spam
@@ -1781,7 +1808,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	case VOTE_SPECTATE:
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "putteam %d s", clientNum );
+		             "speclock %d \"1s%s\"", clientNum, g_adminTempBan.string );
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             "Move player '%s' to spectators", name );
