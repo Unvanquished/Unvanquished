@@ -1524,7 +1524,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		enum {
 			T_NONE, T_PLAYER, T_OTHER
 		}               target;
-		qboolean        adminImmune;
+		qboolean        adminImmune; // from needing a reason and from being the target
 		qboolean        reasonNeeded;
 		const vmCvar_t *percentage;
 		enum {
@@ -1547,7 +1547,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		{ "sudden_death", V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_suddenDeathVotePercent,  VOTE_NOT_SD },
 		{ "extend",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
 		{ "admitdefeat",  V_TEAM,   T_NONE,    qfalse,  qfalse, &g_admitDefeatVotesPercent },
-		{ "draw",         V_PUBLIC, T_NONE,    qfalse,  qtrue,  &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+		{ "draw",         V_PUBLIC, T_NONE,    qtrue,   qtrue,  &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
 		{ "map_restart",  V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_mapVotesPercent },
 		{ "map",          V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 		{ "layout",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
@@ -1783,13 +1783,15 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		if ( voteInfo[voteId].reasonNeeded && !reason[ 0 ] && !G_admin_permission( ent, ADMF_UNACCOUNTABLE ) &&
-		     !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->integer ) )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"%s: You must provide a reason\n\"", cmd ) );
-			return;
-		}
+	}
+
+	if ( voteInfo[voteId].reasonNeeded && !reason[ 0 ] &&
+	     !( voteInfo[voteId].adminImmune && G_admin_permission( ent, ADMF_UNACCOUNTABLE ) ) &&
+	     !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->integer ) )
+	{
+		trap_SendServerCommand( ent - g_entities,
+		                        va( "print \"%s: You must provide a reason\n\"", cmd ) );
+		return;
 	}
 
 	switch( voteId )
