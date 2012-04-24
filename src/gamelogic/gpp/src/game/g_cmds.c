@@ -1533,6 +1533,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			VOTE_AFTER,  // not within the first N minutes
 			VOTE_REMAIN, // within N/2 minutes before SD
 			VOTE_NOT_SD, // doesn't make sense during SD
+			VOTE_NO_AUTO,// don't automatically vote 'yes'
 		}               special;
 		const vmCvar_t *specialCvar;
 		const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
@@ -1552,7 +1553,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		{ "map",          V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 		{ "layout",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 		{ "nextmap",      V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
-		{ "poll",         V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent },
+		{ "poll",         V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
 		{}
 	};
 	// Items in this enum MUST correspond to the above entries, else Things Break
@@ -2054,9 +2055,12 @@ void Cmd_CallVote_f( gentity_t *ent )
 	trap_SetConfigstring( CS_VOTE_CALLER + team,
 	                      caller );
 
-	ent->client->pers.namelog->voteCount++;
-	ent->client->pers.vote |= 1 << team;
-	G_Vote( ent, team, qtrue );
+	if ( voteInfo[voteId].special != VOTE_NO_AUTO )
+	{
+		ent->client->pers.namelog->voteCount++;
+		ent->client->pers.vote |= 1 << team;
+		G_Vote( ent, team, qtrue );
+	}
 }
 
 /*
