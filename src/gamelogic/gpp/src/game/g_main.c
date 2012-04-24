@@ -2422,7 +2422,7 @@ void G_CheckVote( team_t team )
 {
 	float    votePassThreshold = ( float ) level.voteThreshold[ team ] / 100.0f;
 	qboolean pass = qfalse;
-	char     *msg;
+	char     *cmd, msg[ 256 ];
 	int      i;
 
 	if ( level.voteExecuteTime[ team ] &&
@@ -2466,17 +2466,20 @@ void G_CheckVote( team_t team )
 	             pass ? "pass" : "fail",
 	             level.voteYes[ team ], level.voteNo[ team ], level.numVotingClients[ team ] );
 
-	msg = va( "print \"%sote %sed (%d - %d)\n\"",
-	          team == TEAM_NONE ? "V" : "Team v", pass ? "pass" : "fail",
-	          level.voteYes[ team ], level.voteNo[ team ] );
+	Q_snprintf( msg, sizeof (msg),
+		  ( team == TEAM_NONE ) ? ( pass ? "Vote passed (%d - %d)" : "Vote failed (%d - %d; %.0f%% needed)" )
+		                        : ( pass ? "Team vote passed (%d - %d)" : "Team vote failed (%d - %d; %.0f%% needed)" ),
+	          level.voteYes[ team ], level.voteNo[ team ],
+	          votePassThreshold * 100);
+	cmd = va( "print \"%s\n\"", msg );
 
 	if ( team == TEAM_NONE )
 	{
-		trap_SendServerCommand( -1, msg );
+		trap_SendServerCommand( -1, cmd );
 	}
 	else
 	{
-		G_TeamCommand( team, msg );
+		G_TeamCommand( team, cmd );
 	}
 
 	level.voteTime[ team ] = 0;
