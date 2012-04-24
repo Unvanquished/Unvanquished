@@ -757,11 +757,8 @@ void Cmd_Team_f( gentity_t *ent )
 		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
 
 		trap_SendServerCommand( ent - g_entities,
-		    va( "print \"You cannot leave your team until %i second%s after combat. Try again in %.0f second%s.\n\"",
-		        g_combatCooldown.integer,
-		        g_combatCooldown.integer == 1 ? "" : "s",
-		        remaining,
-		        remaining == 1.0f ? "" : "s" ) );
+		    va( "print \"You cannot leave your team until %is after combat. Try again in %.0fs.\n\"",
+		        g_combatCooldown.integer, remaining ) );
 
 		return;
 	}
@@ -874,8 +871,7 @@ void Cmd_Team_f( gentity_t *ent )
 			int remaining = specOnly->expires - t;
 
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"You cannot join a team for another %d second%s.\n\"",
-			                            remaining, remaining == 1 ? "" : "s" ) );
+			                        va( "print \"You cannot join a team for another %ds.\n\"", remaining ) );
 			return;
 		}
 
@@ -4375,8 +4371,10 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 		ADMP( va( "^%cPrivate message: ^7%s\n", color, text ) );
 		// remove trailing ", "
 		recipients[ strlen( recipients ) - 2 ] = '\0';
-		ADMP( va( "^%csent to %i player%s: " S_COLOR_WHITE "%s\n", color, count,
-		          count == 1 ? "" : "s", recipients ) );
+		ADMP( va( N_( "^%csent to %i player: "  S_COLOR_WHITE "%s\n",
+		              "^%csent to %i players: " S_COLOR_WHITE "%s\n",
+                      count ),
+		          color, count, recipients ) );
 
 		G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\" \"%s\": ^%c%s\n",
 		             ( teamonly ) ? "TPrivMsg" : "PrivMsg",

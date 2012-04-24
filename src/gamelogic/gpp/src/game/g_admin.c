@@ -4148,9 +4148,18 @@ qboolean G_admin_lock( gentity_t *ent )
 	}
 
 	admin_log( BG_TeamName( team ) );
-	AP( va( "print \"^3%s: ^7the %s team has been %slocked by %s\n\"",
-	        command, BG_TeamName( team ), lock ? "" : "un",
-	        ent ? ent->client->pers.netname : "console" ) );
+	if ( lock )
+	{
+		AP( va( "print \"^3%s: ^7the %s team has been locked by %s\n\"",
+		        command, BG_TeamName( team ),
+		        ent ? ent->client->pers.netname : "console" ) );
+	}
+	else
+	{
+		AP( va( "print \"^3%s: ^7the %s team has been unlocked by %s\n\"",
+		        command, BG_TeamName( team ),
+		        ent ? ent->client->pers.netname : "console" ) );
+	}
 
 	return qtrue;
 }
