@@ -1540,18 +1540,18 @@ void Cmd_CallVote_f( gentity_t *ent )
 		// Name           Type      Target     Immune   Reason  Vote percentage var        Extra
 		{ "kick",         V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
 		{ "spectate",     V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
-		{ "mute",         V_PUBLIC, T_PLAYER,  qtrue,   qtrue },
-		{ "unmute",       V_PUBLIC, T_PLAYER,  qfalse,  qfalse },
-		{ "denybuild",    V_TEAM,   T_PLAYER,  qtrue,   qtrue,  NULL,                       VOTE_NOT_SD },
-		{ "allowbuild",   V_TEAM,   T_PLAYER,  qfalse,  qfalse, NULL,                       VOTE_NOT_SD },
+		{ "mute",         V_PUBLIC, T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent },
+		{ "unmute",       V_PUBLIC, T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent },
+		{ "denybuild",    V_TEAM,   T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent,        VOTE_NOT_SD },
+		{ "allowbuild",   V_TEAM,   T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent,        VOTE_NOT_SD },
 		{ "sudden_death", V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_suddenDeathVotePercent,  VOTE_NOT_SD },
 		{ "extend",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
 		{ "admitdefeat",  V_TEAM,   T_NONE,    qfalse,  qfalse, &g_admitDefeatVotesPercent },
-		{ "draw",         V_PUBLIC, T_NONE,    qfalse,  qtrue,  NULL,                       VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+		{ "draw",         V_PUBLIC, T_NONE,    qfalse,  qtrue,  &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
 		{ "map_restart",  V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_mapVotesPercent },
 		{ "map",          V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-		{ "layout",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, NULL,                       VOTE_BEFORE, &g_mapVotesBefore },
-		{ "nextmap",      V_PUBLIC, T_OTHER,   qfalse,  qfalse },
+		{ "layout",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+		{ "nextmap",      V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
 		{}
 	};
 	// Items in this enum MUST correspond to the above entries, else Things Break
