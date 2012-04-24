@@ -885,10 +885,12 @@ static void UI_BuildFindPlayerList( qboolean force )
 		}
 		else
 		{
-			Com_sprintf( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ],
+		        int count = uiInfo.numFoundPlayerServers - 1;
+			Com_sprintf( uiInfo.foundPlayerServerNames[ count ],
 			             sizeof( uiInfo.foundPlayerServerAddresses[ 0 ] ),
-			             "%d server%s found with player %s", uiInfo.numFoundPlayerServers - 1,
-			             uiInfo.numFoundPlayerServers == 2 ? "" : "s", uiInfo.findPlayerName );
+			             N_( "%d server found with player %s",
+			                 "%d servers found with player %s", count ),
+                                     count, uiInfo.findPlayerName );
 		}
 
 		uiInfo.nextFindPlayerRefresh = 0;
@@ -3652,6 +3654,14 @@ static void UI_RunMenuScript( char **args )
 			trap_Key_ClearStates();
 			trap_Cvar_Set( "cl_paused", "0" );
 			Menus_CloseAll();
+		}
+		else if ( Q_stricmp( name, "voteDraw" ) == 0 )
+		{
+			char buffer[ MAX_CVAR_VALUE_STRING ];
+			trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote draw %s\n", buffer ) );
+			trap_Cvar_Set( "ui_reason", "" );
 		}
 		else if ( Q_stricmp( name, "voteMap" ) == 0 )
 		{

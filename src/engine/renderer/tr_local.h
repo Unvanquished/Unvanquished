@@ -1950,6 +1950,7 @@ void       GLimp_ReleaseGL( void );
 void     GLimp_EndFrame( void );
 
 qboolean GLimp_SpawnRenderThread( void ( *function )( void ) );
+void     GLimp_ShutdownRenderThread( void );
 void     *GLimp_RendererSleep( void );
 void     GLimp_FrontEndSleep( void );
 void     GLimp_WakeRenderer( void *data );

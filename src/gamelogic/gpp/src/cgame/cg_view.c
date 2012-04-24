@@ -276,10 +276,7 @@ void CG_OffsetThirdPersonView( void )
 	// If cg_thirdpersonShoulderViewMode == 2, do shoulder view instead
 	// If cg_thirdpersonShoulderViewMode == 1, do shoulder view when chasing
 	//   a wallwalker because it's really erratic to watch
-	if ( ( cg_thirdPersonShoulderViewMode.integer == 2 ) ||
-	     ( ( cg_thirdPersonShoulderViewMode.integer == 1 ) &&
-	       ( cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING ) &&
-	       ( cg.snap->ps.stats[ STAT_HEALTH ] > 0 ) ) )
+	if ( cg_thirdPersonShoulderViewMode.integer == 2 )
 	{
 		CG_OffsetShoulderView();
 		return;

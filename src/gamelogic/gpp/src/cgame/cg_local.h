@@ -1615,20 +1615,24 @@ extern  vmCvar_t            ui_voteActive;
 extern  vmCvar_t            ui_alienTeamVoteActive;
 extern  vmCvar_t            ui_humanTeamVoteActive;
 
-extern  vmCvar_t            cg_debugRandom;
+extern vmCvar_t             cg_debugRandom;
 
-extern  vmCvar_t            cg_optimizePrediction;
-extern  vmCvar_t            cg_projectileNudge;
+extern vmCvar_t             cg_optimizePrediction;
+extern vmCvar_t             cg_projectileNudge;
 
-extern  vmCvar_t            cg_voice;
+extern vmCvar_t             cg_voice;
 
-extern  vmCvar_t            cg_emoticons;
+extern vmCvar_t             cg_emoticons;
 
-extern  vmCvar_t            cg_chatTeamPrefix;
+extern vmCvar_t             cg_chatTeamPrefix;
 
 extern vmCvar_t             cg_animSpeed;
 extern vmCvar_t             cg_animBlend;
 extern vmCvar_t             cg_core;
+
+extern vmCvar_t             cg_highPolyPlayerModels;
+extern vmCvar_t             cg_highPolyBuildableModels;
+extern vmCvar_t             cg_highPolyWeaponModels;
 
 //
 // cg_main.c

@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_ADMIN_FLAG_LEN   20
 #define MAX_ADMIN_FLAGS      1024
 #define MAX_ADMIN_CMD_LEN    20
-#define MAX_ADMIN_BAN_REASON 50
+#define MAX_ADMIN_BAN_REASON 100
 
 /*
  * IMMUNITY - cannot be vote kicked, vote muted
@@ -144,6 +144,15 @@ typedef struct g_admin_ban
 
 g_admin_ban_t;
 
+typedef struct g_admin_spec
+{
+	struct g_admin_spec *next;
+	char               guid[ 33 ];
+	int                expires;
+}
+
+g_admin_spec_t;
+
 typedef struct g_admin_command
 {
 	struct g_admin_command *next;
@@ -170,6 +179,8 @@ qboolean        G_admin_name_check( gentity_t *ent, char *name, char *err, int l
 g_admin_admin_t *G_admin_admin( const char *guid );
 void            G_admin_authlog( gentity_t *ent );
 
+g_admin_spec_t  *G_admin_match_spec( gentity_t *ent );
+
 // admin command functions
 qboolean        G_admin_time( gentity_t *ent );
 qboolean        G_admin_setlevel( gentity_t *ent );
@@ -178,6 +189,8 @@ qboolean        G_admin_adjustban( gentity_t *ent );
 qboolean        G_admin_ban( gentity_t *ent );
 qboolean        G_admin_unban( gentity_t *ent );
 qboolean        G_admin_putteam( gentity_t *ent );
+qboolean        G_admin_speclock( gentity_t *ent );
+qboolean        G_admin_specunlock( gentity_t *ent );
 qboolean        G_admin_listadmins( gentity_t *ent );
 qboolean        G_admin_listlayouts( gentity_t *ent );
 qboolean        G_admin_listplayers( gentity_t *ent );

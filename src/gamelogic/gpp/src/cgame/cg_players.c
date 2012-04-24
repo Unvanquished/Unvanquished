@@ -762,8 +762,11 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 {
 	char filename[ MAX_QPATH * 2 ];
 
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
-	ci->bodyModel = trap_R_RegisterModel( filename );
+	if ( cg_highPolyPlayerModels.integer )
+	{
+		Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
+		ci->bodyModel = trap_R_RegisterModel( filename );
+	}
 
 	if ( ci->bodyModel )
 	{
@@ -915,6 +918,16 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			// FIXME add death animations
 
 			CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH1, "die", qfalse, qfalse, qfalse );
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH2, "die2", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ NSPA_DEATH2 ] = ci->animations[ NSPA_DEATH1 ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH3, "die3", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ NSPA_DEATH3 ] = ci->animations[ NSPA_DEATH1 ];
+			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_GESTURE, "gesture", qfalse, qfalse, qfalse ) )
 			{

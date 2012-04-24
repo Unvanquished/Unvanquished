@@ -2390,7 +2390,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 	int  x, y, x2, y2;
 	byte *out, *tmp;
 
-	tmp = Com_Allocate( width * height * 4 );
+	tmp = ri.Hunk_AllocateTempMemory( width * height * 4 );
 
 	// rotate into tmp buffer
 	for ( y = 0; y < height; y++ )
@@ -2446,7 +2446,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 		}
 	}
 
-	Com_Dealloc( tmp );
+	ri.Hunk_FreeTempMemory( tmp );
 }
 
 /*

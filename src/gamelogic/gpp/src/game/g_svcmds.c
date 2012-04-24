@@ -618,9 +618,7 @@ static void Svcmd_SuddenDeath_f( void )
 	offset = atoi( secs );
 
 	level.suddenDeathBeginTime = level.time - level.startTime + offset * 1000;
-	trap_SendServerCommand( -1,
-	                        va( "cp \"Sudden Death will begin in %d second%s\"",
-	                            offset, offset == 1 ? "" : "s" ) );
+	trap_SendServerCommand( -1, va( "cp \"Sudden Death will begin in %ds\"", offset ) );
 }
 
 static void Svcmd_G_AdvanceMapRotation_f( void )
