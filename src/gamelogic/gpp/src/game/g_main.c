@@ -85,6 +85,7 @@ vmCvar_t           g_drawVotesAfter;
 vmCvar_t           g_drawVoteReasonRequired;
 vmCvar_t           g_admitDefeatVotesPercent;
 vmCvar_t           g_nextMapVotesPercent;
+vmCvar_t           g_pollVotesPercent;
 
 vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
@@ -234,6 +235,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
 

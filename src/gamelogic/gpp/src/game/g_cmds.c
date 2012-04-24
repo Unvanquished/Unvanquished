@@ -1552,6 +1552,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		{ "map",          V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 		{ "layout",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 		{ "nextmap",      V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
+		{ "poll",         V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent },
 		{}
 	};
 	// Items in this enum MUST correspond to the above entries, else Things Break
@@ -1569,7 +1570,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 		VOTE_MAP_RESTART,
 		VOTE_MAP,
 		VOTE_LAYOUT,
-		VOTE_NEXT_MAP
+		VOTE_NEXT_MAP,
+		VOTE_POLL
 	};
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
@@ -1985,6 +1987,14 @@ void Cmd_CallVote_f( gentity_t *ent )
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             "Set the next map to '%s'", arg );
+		break;
+
+	case VOTE_POLL:
+		level.voteString[ team ][0] = '\0';
+		Com_sprintf( level.voteDisplayString[ team ],
+		             sizeof( level.voteDisplayString[ team ] ),
+		             "(poll) %s", reason );
+		reason[0] = '\0'; // nullify since we've used it here...
 		break;
 
 	//default:;
