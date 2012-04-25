@@ -1196,6 +1196,13 @@ extern  vmCvar_t g_pulseHalfLifeTime;
 extern  vmCvar_t g_pulseFullPowerTime;
 extern  vmCvar_t g_flameFadeout;
 
+extern  vmCvar_t g_alienAnticampBonusMax;
+extern  vmCvar_t g_alienAnticampBonus1;
+extern  vmCvar_t g_alienAnticampRange;
+extern  vmCvar_t g_humanAnticampBonusMax;
+extern  vmCvar_t g_humanAnticampBonus1;
+extern  vmCvar_t g_humanAnticampRange;
+
 extern  vmCvar_t g_unlagged;
 
 extern  vmCvar_t g_disabledEquipment;

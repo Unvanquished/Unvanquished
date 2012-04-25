@@ -123,6 +123,13 @@ vmCvar_t           g_pulseHalfLifeTime;
 vmCvar_t           g_pulseFullPowerTime;
 vmCvar_t           g_flameFadeout;
 
+vmCvar_t           g_alienAnticampBonusMax;
+vmCvar_t           g_alienAnticampBonus1;
+vmCvar_t           g_alienAnticampRange;
+vmCvar_t           g_humanAnticampBonusMax;
+vmCvar_t           g_humanAnticampBonus1;
+vmCvar_t           g_humanAnticampRange;
+
 vmCvar_t           g_unlagged;
 
 vmCvar_t           g_disabledEquipment;
@@ -280,6 +287,13 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_pulseHalfLifeTime,           "g_pulseHalfLifeTime",           "768",                              CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pulseFullPowerTime,          "g_pulseFullPowerTime",          "0"  ,                              CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_flameFadeout,                "g_flameFadeout",                "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
+
+	{ &g_alienAnticampBonusMax,       "g_alienAnticampBonusMax",       "1",                                0,                                               0, qfalse           },
+	{ &g_alienAnticampBonus1,         "g_alienAnticampBonus1",         "0.3",                              0,                                               0, qfalse           },
+	{ &g_alienAnticampRange,          "g_alienAnticampRange",          "600",                              0,                                               0, qfalse           },
+	{ &g_humanAnticampBonusMax,       "g_humanAnticampBonusMax",       "1",                                0,                                               0, qfalse           },
+	{ &g_humanAnticampBonus1,         "g_humanAnticampBonus1",         "0.3",                              0,                                               0, qfalse           },
+	{ &g_humanAnticampRange,          "g_humanAnticampRange",          "800",                              0,                                               0, qfalse           },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
 
