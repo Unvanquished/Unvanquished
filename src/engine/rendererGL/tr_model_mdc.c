@@ -43,7 +43,7 @@ Maryland 20850 USA.
 
 // *INDENT-OFF*
 #if 0
-static float r_anormals[ NUMMDCVERTEXNORMALS ][ 3 ] =
+static const float r_anormals[ NUMMDCVERTEXNORMALS ][ 3 ] =
 {
 	{ 1.000000,  0.000000,  0.000000  },
 	{ 0.980785,  0.195090,  0.000000  },

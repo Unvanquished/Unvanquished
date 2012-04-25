@@ -1192,7 +1192,7 @@ extern "C" {
 		        "disabled",
 		        "enabled"
 		};*/
-		const char *fsstrings[] =
+		static const char fsstrings[][16] =
 		{
 			"windowed",
 			"fullscreen"

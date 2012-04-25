@@ -37,7 +37,7 @@ Maryland 20850 USA.
 backEndData_t  *backEndData[ SMP_FRAMES ];
 backEndState_t backEnd;
 
-static float   s_flipMatrix[ 16 ] =
+static const float   s_flipMatrix[ 16 ] =
 {
 	// convert from our coordinate system (looking down X)
 	// to OpenGL's coordinate system (looking down -Z)

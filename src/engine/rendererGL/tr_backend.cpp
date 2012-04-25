@@ -2299,7 +2299,7 @@ static void RB_RenderInteractionsShadowMapped()
 	int            cubeSide;
 	int            splitFrustumIndex;
 	int            startTime = 0, endTime = 0;
-	const matrix_t bias = {        0.5, 0.0, 0.0, 0.0,
+	static const matrix_t bias = { 0.5,     0.0, 0.0, 0.0,
 	                               0.0,     0.5, 0.0, 0.0,
 	                               0.0,     0.0, 0.5, 0.0,
 	                               0.5,     0.5, 0.5, 1.0
@@ -4363,7 +4363,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 	int            cubeSide;
 
 	int            splitFrustumIndex;
-	const matrix_t bias = {        0.5,  0.0, 0.0, 0.0,
+	static const matrix_t bias = { 0.5, 0.0, 0.0, 0.0,
 	                               0.0, 0.5, 0.0, 0.0,
 	                               0.0, 0.0, 0.5, 0.0,
 	                               0.5, 0.5, 0.5, 1.0
@@ -4675,7 +4675,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 									matrix_t       postMatrix;
 									matrix_t       projectionCenter;
 
-									const matrix_t switchToArticle =
+									static const matrix_t switchToArticle =
 									{
 										1, 0,  0, 0,
 										0, 0,  1, 0,
@@ -4683,7 +4683,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 										0, 0,  0, 1
 									};
 
-									const matrix_t switchToGL =
+									static const matrix_t switchToGL =
 									{
 										1, 0, 0,  0,
 										0, 0, -1, 0,
@@ -8830,8 +8830,8 @@ static void RB_RenderDebugUtils()
 		vec4_t        lightColor; //unused
 		vec4_t        quadVerts[ 4 ];
 
-		vec3_t        minSize = { -2, -2, -2 };
-		vec3_t        maxSize = { 2,  2,  2 };
+		static const vec3_t minSize = { -2, -2, -2 };
+		static const vec3_t maxSize = { 2,  2,  2 };
 
 		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->DisablePortalClipping();
@@ -9211,8 +9211,9 @@ static void RB_RenderDebugUtils()
 		trRefEntity_t *entity;
 		surfaceType_t *surface;
 		vec4_t        lightColor;
-		vec3_t        mins = { -1, -1, -1 };
-		vec3_t        maxs = { 1, 1, 1 };
+
+		static const vec3_t mins = { -1, -1, -1 };
+		static const vec3_t maxs = { 1, 1, 1 };
 
 		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->DisablePortalClipping();
@@ -9400,8 +9401,8 @@ static void RB_RenderDebugUtils()
 	{
 		trRefEntity_t *ent;
 		int           i;
-		vec3_t        mins = { -1, -1, -1 };
-		vec3_t        maxs = { 1, 1, 1 };
+		static const vec3_t mins = { -1, -1, -1 };
+		static const vec3_t maxs = { 1, 1, 1 };
 
 		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->DisablePortalClipping();
@@ -9812,8 +9813,8 @@ static void RB_RenderDebugUtils()
 		cubemapProbe_t *cubeProbe;
 		int            j;
 //		vec4_t          quadVerts[4];
-		vec3_t         mins = { -8, -8, -8 };
-		vec3_t         maxs = { 8,  8,  8 };
+		static const vec3_t mins = { -8, -8, -8 };
+		static const vec3_t maxs = { 8,  8,  8 };
 		//vec3_t      viewOrigin;
 
 		if ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOCUBEMAP ) )
@@ -10386,8 +10387,8 @@ static void RB_RenderDebugUtils()
 		int              i;
 		decalProjector_t *dp;
 		srfDecal_t       *srfDecal;
-		vec3_t           mins = { -1, -1, -1 };
-		vec3_t           maxs = { 1, 1, 1 };
+		static const vec3_t mins = { -1, -1, -1 };
+		static const vec3_t maxs = { 1, 1, 1 };
 
 		if ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL ) )
 		{
@@ -10420,7 +10421,7 @@ static void RB_RenderDebugUtils()
 		GL_Bind( tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-		GL_CheckErrors();
+		GL_CheckErrors();              
 
 		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
 
