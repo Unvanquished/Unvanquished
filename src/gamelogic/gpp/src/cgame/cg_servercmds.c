@@ -1382,7 +1382,7 @@ static void CG_GameCmds_f( void )
 	}
 }
 
-static consoleCommand_t svcommands[] =
+static const consoleCommand_t svcommands[] =
 {
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },

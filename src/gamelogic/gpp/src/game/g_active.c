@@ -368,7 +368,7 @@ void  G_TouchTriggers( gentity_t *ent )
 	trace_t          trace;
 	vec3_t           mins, maxs;
 	vec3_t           pmins, pmaxs;
-	static    vec3_t range = { 10, 10, 10 };
+	static const     vec3_t range = { 10, 10, 10 };
 
 	if ( !ent->client )
 	{

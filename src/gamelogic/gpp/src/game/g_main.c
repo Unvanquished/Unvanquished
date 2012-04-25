@@ -27,12 +27,12 @@ level_locals_t level;
 
 typedef struct
 {
-	vmCvar_t *vmCvar;
-	char     *cvarName;
-	char     *defaultString;
-	int      cvarFlags;
-	int      modificationCount; // for tracking changes
-	qboolean trackChange; // track this variable, and announce if changed
+	vmCvar_t   *vmCvar;
+	const char *cvarName;
+	const char *defaultString;
+	int        cvarFlags;
+	int        modificationCount; // for tracking changes
+	qboolean   trackChange; // track this variable, and announce if changed
 
 	/* certain cvars can be set in worldspawn, but we don't want those values to
 	   persist, so keep track of non-worldspawn changes and restore that on map

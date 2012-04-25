@@ -35,7 +35,7 @@ The server says this item is used on this level
 void CG_RegisterUpgrade( int upgradeNum )
 {
 	upgradeInfo_t *upgradeInfo;
-	char          *icon;
+	const char    *icon;
 
 	if ( upgradeNum <= UP_NONE || upgradeNum >= UP_NUM_UPGRADES )
 	{
@@ -1987,9 +1987,9 @@ CG_DrawItemSelectText
 */
 void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 {
-	int   x, w;
-	char  *name;
-	float *color;
+	int        x, w;
+	const char *name;
+	float      *color;
 
 	color = CG_FadeColor( cg.weaponSelectTime, WEAPON_SELECT_TIME );
 

@@ -261,7 +261,7 @@ qboolean  PM_SlideMove( qboolean gravity )
 PM_StepEvent
 ==================
 */
-void PM_StepEvent( vec3_t from, vec3_t to, vec3_t normal )
+void PM_StepEvent( const vec3_t from, const vec3_t to, const vec3_t normal )
 {
 	float  size;
 	vec3_t delta, dNormal;

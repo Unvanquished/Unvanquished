@@ -320,9 +320,9 @@ static void CG_CompleteName( void )
 	}
 }
 
-static struct
+static const struct
 {
-	char *cmd;
+	const char *cmd;
 	void ( *function )( void );
 	void ( *completer )( void );
 } commands[] =

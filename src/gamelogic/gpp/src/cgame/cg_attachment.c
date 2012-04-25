@@ -415,7 +415,7 @@ CG_SetAttachmentTag
 ===============
 */
 void CG_SetAttachmentTag( attachment_t *a, refEntity_t parent,
-                          qhandle_t model, char *tagName )
+                          qhandle_t model, const char *tagName )
 {
 	if ( !a )
 	{

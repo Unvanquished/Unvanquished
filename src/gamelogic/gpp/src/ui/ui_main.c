@@ -33,7 +33,7 @@ USER INTERFACE MAIN
 
 uiInfo_t          uiInfo;
 
-static const char *netSources[] =
+static const char *const netSources[] =
 {
 	"LAN",
 	"Internet",
@@ -42,7 +42,7 @@ static const char *netSources[] =
 
 static const int  numNetSources = sizeof( netSources ) / sizeof( const char * );
 
-static const char *netnames[] =
+static const char *const netnames[] =
 {
 	"???",
 	"UDP",
@@ -101,7 +101,7 @@ vmCvar_t                   ui_ingameFiles;
 vmCvar_t                   ui_teamFiles;
 vmCvar_t                   ui_helpFiles;
 
-static cvarTable_t         cvarTable[] =
+static const cvarTable_t   cvarTable[] =
 {
 	{ &ui_assetScale,          "ui_assetScale",               "1",                         CVAR_ARCHIVE | CVAR_LATCH },
 
@@ -138,7 +138,7 @@ static cvarTable_t         cvarTable[] =
 	{ &ui_helpFiles,           "ui_helpFiles",                "ui/menu/help/help.txt",     CVAR_ARCHIVE              }
 };
 
-static int                 cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
+static const int           cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
 
 static char                translated_yes[ 4 ], translated_no[ 4 ];
 
@@ -442,7 +442,7 @@ typedef struct
 
 serverStatusCvar_t;
 
-serverStatusCvar_t serverStatusCvars[] =
+static const serverStatusCvar_t serverStatusCvars[] =
 {
 	{ "sv_hostname", "Name"      },
 	{ "Address",     ""          },
@@ -5246,9 +5246,9 @@ void Text_PaintCenter_AutoWrapped( float x, float y, float xmax, float ystep, fl
 
 static void UI_DisplayDownloadInfo( const char *downloadName, float centerPoint, float yStart, float scale )
 {
-	static char dlText[] = "Downloading:";
-	static char etaText[] = "Estimated time left:";
-	static char xferText[] = "Transfer rate:";
+	static const char dlText[] = "Downloading:";
+	static const char etaText[] = "Estimated time left:";
+	static const char xferText[] = "Transfer rate:";
 
 	int downloadSize, downloadCount, downloadTime;
 	char dlSizeBuf[ 64 ], totalSizeBuf[ 64 ], xferRateBuf[ 64 ], dlTimeBuf[ 64 ];
@@ -5456,7 +5456,7 @@ UI_RegisterCvars
 void UI_RegisterCvars( void )
 {
 	int     i;
-	cvarTable_t *cv;
+	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{
@@ -5472,7 +5472,7 @@ UI_UpdateCvars
 void UI_UpdateCvars( void )
 {
 	int     i;
-	cvarTable_t *cv;
+	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{

@@ -72,12 +72,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // member of a struct at init time.  flag has been converted to char*
 typedef struct
 {
-	char     *keyword;
-	qboolean( * handler )( gentity_t *ent );
-	qboolean silent;
-	char     *flag;
-	char     *function; // used for !help
-	char     *syntax; // used for !help
+	const char *keyword;
+	qboolean  ( *handler )( gentity_t *ent );
+	qboolean   silent;
+	const char *flag;
+	const char *function; // used for !help
+	const char *syntax; // used for !help
 }
 
 g_admin_cmd_t;
@@ -175,7 +175,7 @@ qboolean        G_admin_ban_check( gentity_t *ent, char *reason, int rlen );
 qboolean        G_admin_cmd_check( gentity_t *ent );
 qboolean        G_admin_readconfig( gentity_t *ent );
 qboolean        G_admin_permission( gentity_t *ent, const char *flag );
-qboolean        G_admin_name_check( gentity_t *ent, char *name, char *err, int len );
+qboolean        G_admin_name_check( gentity_t *ent, const char *name, char *err, int len );
 g_admin_admin_t *G_admin_admin( const char *guid );
 void            G_admin_authlog( gentity_t *ent );
 
@@ -219,8 +219,8 @@ qboolean        G_admin_l1( gentity_t *ent );  // AA-QVM 1.2
 qboolean        G_admin_register( gentity_t *ent );  // AA-QVM 1.2
 qboolean        G_admin_unregister( gentity_t *ent );  // AA-QVM 1.2
 
-void            G_admin_print( gentity_t *ent, char *m );
-void            G_admin_buffer_print( gentity_t *ent, char *m );
+void            G_admin_print( gentity_t *ent, const char *m );
+void            G_admin_buffer_print( gentity_t *ent, const char *m );
 void            G_admin_buffer_begin( void );
 void            G_admin_buffer_end( gentity_t *ent );
 

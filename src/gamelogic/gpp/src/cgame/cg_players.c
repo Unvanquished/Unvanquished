@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-char *cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
+static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
 {
 	"*death1.wav",
 	"*death2.wav",
@@ -1315,7 +1315,7 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci )
 CG_PrecacheClientInfo
 ======================
 */
-void CG_PrecacheClientInfo( class_t class, char *model, char *skin )
+void CG_PrecacheClientInfo( class_t class, const char *model, const char *skin )
 {
 	clientInfo_t *ci;
 	clientInfo_t newInfo;

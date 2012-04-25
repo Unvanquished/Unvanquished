@@ -229,7 +229,7 @@ static void UI_Me_f( void )
 	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say \"/me %s\"", buf ) );
 }
 
-struct uicmd
+static const struct uicmd
 {
 	char *cmd;
 	void ( *function )( void );

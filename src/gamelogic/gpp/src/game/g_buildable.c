@@ -4565,7 +4565,7 @@ void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 G_LayoutSave
 ============
 */
-void G_LayoutSave( char *name )
+void G_LayoutSave( const char *name )
 {
 	char         map[ MAX_QPATH ];
 	char         fileName[ MAX_OSPATH ];
