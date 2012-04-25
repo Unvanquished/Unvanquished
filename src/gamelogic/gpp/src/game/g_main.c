@@ -77,12 +77,16 @@ vmCvar_t           g_extendVotesPercent;
 vmCvar_t           g_extendVotesTime;
 vmCvar_t           g_extendVotesCount;
 vmCvar_t           g_kickVotesPercent;
+vmCvar_t           g_denyVotesPercent;
 vmCvar_t           g_mapVotesPercent;
 vmCvar_t           g_mapVotesBefore;
 vmCvar_t           g_drawVotesPercent;
 vmCvar_t           g_drawVotesAfter;
 vmCvar_t           g_drawVoteReasonRequired;
 vmCvar_t           g_admitDefeatVotesPercent;
+vmCvar_t           g_nextMapVotesPercent;
+vmCvar_t           g_pollVotesPercent;
+
 vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
 vmCvar_t           pmove_fixed;
@@ -262,12 +266,15 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesCount,            "g_extendVotesCount",            "2",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_denyVotesPercent,            "g_denyVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_mapVotesBefore,              "g_mapVotesBefore",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_nextMapVotesPercent,         "g_nextMapVotesPercent",         "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
 
@@ -2496,7 +2503,7 @@ void G_CheckVote( team_t team )
 {
 	float    votePassThreshold = ( float ) level.voteThreshold[ team ] / 100.0f;
 	qboolean pass = qfalse;
-	char     *msg;
+	char     *cmd, msg[ 256 ];
 	int      i;
 
 	if ( level.voteExecuteTime[ team ] &&
@@ -2540,17 +2547,20 @@ void G_CheckVote( team_t team )
 	             pass ? "pass" : "fail",
 	             level.voteYes[ team ], level.voteNo[ team ], level.numVotingClients[ team ] );
 
-	msg = va( "print \"%sote %sed (%d - %d)\n\"",
-	          team == TEAM_NONE ? "V" : "Team v", pass ? "pass" : "fail",
-	          level.voteYes[ team ], level.voteNo[ team ] );
+	Q_snprintf( msg, sizeof (msg),
+		  ( team == TEAM_NONE ) ? ( pass ? "Vote passed (%d - %d)" : "Vote failed (%d - %d; %.0f%% needed)" )
+		                        : ( pass ? "Team vote passed (%d - %d)" : "Team vote failed (%d - %d; %.0f%% needed)" ),
+	          level.voteYes[ team ], level.voteNo[ team ],
+	          votePassThreshold * 100);
+	cmd = va( "print \"%s\n\"", msg );
 
 	if ( team == TEAM_NONE )
 	{
-		trap_SendServerCommand( -1, msg );
+		trap_SendServerCommand( -1, cmd );
 	}
 	else
 	{
-		G_TeamCommand( team, msg );
+		G_TeamCommand( team, cmd );
 	}
 
 	level.voteTime[ team ] = 0;

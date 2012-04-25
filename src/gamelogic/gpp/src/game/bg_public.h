@@ -39,6 +39,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CROUCH_VIEWHEIGHT  12
 #define DEAD_VIEWHEIGHT    4 // height from ground
 
+// localisation
+#if 0
+#	define _(text)              gettext( text )
+#	define N_(one, many, count) ngettext( (one), (many), (count) )
+#else
+#	define _(text)              (text)
+#	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
+#endif
+
 // player teams
 typedef enum
 {

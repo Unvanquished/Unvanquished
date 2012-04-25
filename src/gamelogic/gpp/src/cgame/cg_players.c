@@ -762,8 +762,11 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 {
 	char filename[ MAX_QPATH * 2 ];
 
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
-	ci->bodyModel = trap_R_RegisterModel( filename );
+	if ( cg_highPolyPlayerModels.integer )
+	{
+		Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
+		ci->bodyModel = trap_R_RegisterModel( filename );
+	}
 
 	if ( ci->bodyModel )
 	{
