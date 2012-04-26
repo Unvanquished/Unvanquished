@@ -421,7 +421,7 @@ void CG_InitBuildables( void )
 		//Load models
 		//Prefer md5 models over md3
 
-		if ( ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
+		if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = qtrue;
 		}
