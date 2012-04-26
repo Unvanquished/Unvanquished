@@ -4047,8 +4047,8 @@ int G_FloodLimited( gentity_t *ent )
 	}
 
 	trap_SendServerCommand( ent - g_entities, va( "print \"You are flooding: "
-	                        "please wait %d second%s before trying again\n",
-	                        ( ms + 999 ) / 1000, ( ms > 1000 ) ? "s" : "" ) );
+	                        "please wait %ds before trying again\n",
+	                        ( ms + 999 ) / 1000 ) );
 	return ms;
 }
 
