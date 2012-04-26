@@ -1674,22 +1674,43 @@ void CalculateRanks( void )
 
 		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
 		{
+			int team = level.clients[ i ].pers.teamSelection;
+			qboolean bot = qfalse;
+			int j;
+
+			for ( j = 0; j < level.num_entities; ++j)
+			{
+				if ( level.gentities[ i ].client == &level.clients[ i ] )
+				{
+					bot = !!(level.gentities[ i ].r.svFlags & SVF_BOT);
+					break;
+				}
+			}
+
 			level.sortedClients[ level.numConnectedClients ] = i;
 			level.numConnectedClients++;
-			P[ i ] = ( char ) '0' + level.clients[ i ].pers.teamSelection;
+			P[ i ] = ( char ) '0' + team;
 
-			level.numVotingClients[ TEAM_NONE ]++;
+			if ( !bot )
+			{
+				level.numVotingClients[ TEAM_NONE ]++;
+			}
 
 			if ( level.clients[ i ].pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
 
-			if ( level.clients[ i ].pers.teamSelection != TEAM_NONE )
+			if ( team != TEAM_NONE )
 			{
 				level.numPlayingClients++;
 
-				if ( level.clients[ i ].pers.teamSelection == TEAM_ALIENS )
+				if ( !bot )
+				{
+					level.numVotingClients[ team ]++;
+				}
+
+				if ( team == TEAM_ALIENS )
 				{
 					level.numAlienClients++;
 
@@ -1698,7 +1719,7 @@ void CalculateRanks( void )
 						level.numLiveAlienClients++;
 					}
 				}
-				else if ( level.clients[ i ].pers.teamSelection == TEAM_HUMANS )
+				else if ( team == TEAM_HUMANS )
 				{
 					level.numHumanClients++;
 
@@ -1713,8 +1734,6 @@ void CalculateRanks( void )
 
 	level.numNonSpectatorClients = level.numLiveAlienClients +
 	                               level.numLiveHumanClients;
-	level.numVotingClients[ TEAM_ALIENS ] = level.numAlienClients;
-	level.numVotingClients[ TEAM_HUMANS ] = level.numHumanClients;
 	P[ i ] = '\0';
 	trap_Cvar_Set( "P", P );
 
