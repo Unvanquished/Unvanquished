@@ -3071,7 +3071,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 	char            c, t; // color and team letter
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
-	char            muted, denied;
+	char            bot, muted, denied;
 	int             colorlen;
 	int             authed = 1;
 	char            namecleaned[ MAX_NAME_LENGTH ];
@@ -3087,6 +3087,8 @@ qboolean G_admin_listplayers( gentity_t *ent )
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
+		int j;
+
 		p = &level.clients[ i ];
 
 		if ( p->pers.connected == CON_DISCONNECTED )
@@ -3114,6 +3116,16 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			else
 			{
 				c = COLOR_WHITE;
+			}
+		}
+
+		bot = ' ';
+		for ( j = 0; j < level.num_entities; ++j)
+		{
+			if ( level.gentities[ i ].client == p )
+			{
+				bot = (level.gentities[ i ].r.svFlags & SVF_BOT) ? 'R' : ' ';
+				break;
 			}
 		}
 
@@ -3161,7 +3173,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
-		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^1%c%c^7 %s^7 %s%s%s %s\n",
+		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c^7 %s^7 %s%s%s %s\n",
 		           i,
 		           c,
 		           t,
@@ -3169,6 +3181,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 		           hint ? '*' : ' ',
 		           admin_level_maxname + colorlen,
 		           lname,
+		           bot,
 		           muted,
 		           denied,
 		           p->pers.netname,
