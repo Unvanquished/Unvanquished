@@ -1554,7 +1554,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		{ "layout",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 		{ "nextmap",      V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
 		{ "poll",         V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
-		{}
+		{ NULL }
 	};
 	// Items in this enum MUST correspond to the above entries, else Things Break
 	enum voteType_t {
