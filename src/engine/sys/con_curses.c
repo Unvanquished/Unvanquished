@@ -94,18 +94,45 @@ Use grey instead of black
 */
 static inline void CON_SetColor( WINDOW *win, int color )
 {
-	if ( com_ansiColor && !com_ansiColor->integer )
-	{
-		color = 7;
-	}
+	// Approximations of g_color_table (q_math.c)
+	// ... using 8 colours, bold & dim
+	static const int colour16map[2][32] = {
+		{ // Variant 1 (xterm)
+			1 | A_BOLD, 2,          3,          4,
+			5,          6,          7,          8,
+			4 | A_DIM,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
+			3 | A_DIM,  4 | A_DIM,  5 | A_DIM,  2 | A_DIM,
+			4 | A_DIM,  4 | A_DIM,  6 | A_DIM,  7 | A_DIM,
+			6 | A_DIM,  7 | A_DIM,  6 | A_DIM,  3 | A_BOLD,
+			3 | A_DIM,  2,          2 | A_DIM,  4 | A_DIM,
+			4 | A_DIM,  3 | A_DIM,  7,          4 | A_BOLD
+		},
+		{ // Variant 2 (vte)
+			1 | A_BOLD, 2,          3,          4 | A_BOLD,
+			5,          6,          7,          8,
+			4        ,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
+			3 | A_DIM,  4,          5 | A_DIM,  2 | A_DIM,
+			4 | A_DIM,  4 | A_DIM,  6 | A_DIM,  7 | A_DIM,
+			6 | A_DIM,  7 | A_DIM,  6 | A_DIM,  3 | A_BOLD,
+			3 | A_DIM,  2,          2 | A_DIM,  4 | A_DIM,
+			4 | A_DIM,  3 | A_DIM,  7,          4 | A_BOLD
+		}
+	};
 
-	if ( color == 0 )
+	if ( !com_ansiColor || !com_ansiColor->integer )
 	{
-		wattrset( win, COLOR_PAIR( color + 1 ) | A_BOLD );
+		wattrset( win, COLOR_PAIR( 7 ) );
 	}
 	else
 	{
-		wattrset( win, COLOR_PAIR( color + 1 ) | A_NORMAL );
+		int index = com_ansiColor->integer - 1;
+
+		if ( index >= sizeof( colour16map ) / sizeof( colour16map[0] ) )
+		{
+			index = 0;
+		}
+
+		wattrset( win, COLOR_PAIR( colour16map[index][ color ] & 0xF ) | ( colour16map[index][color] & ~0xF ) );
 	}
 }
 
