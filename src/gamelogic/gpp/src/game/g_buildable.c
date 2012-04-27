@@ -1380,7 +1380,8 @@ void AAcidTube_Think( gentity_t *self )
 		{
 			enemy = &g_entities[ entityList[ i ] ];
 
-			if ( enemy->flags & FL_NOTARGET )
+			// fast checks first: not a target, or not human
+			if ( ( enemy->flags & FL_NOTARGET ) || !enemy->client || enemy->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
 			{
 				continue;
 			}
@@ -1390,7 +1391,6 @@ void AAcidTube_Think( gentity_t *self )
 				continue;
 			}
 
-			if ( enemy->client && enemy->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 			{
 				// start the attack animation
 				if ( level.time >= self->timestamp + ACIDTUBE_REPEAT_ANIM )
