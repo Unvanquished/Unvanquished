@@ -1728,11 +1728,11 @@ void ATrapper_FindEnemy( gentity_t *ent, int range )
 
 	// iterate through entities
 	// note that if we exist then level.num_entities != 0
-	start = rand() / ( RAND_MAX / level.num_entities + 1 );
+	start = rand() / ( RAND_MAX / MAX_CLIENTS + 1 );
 
-	for ( i = start; i < level.num_entities + start; i++ )
+	for ( i = start; i < MAX_CLIENTS + start; i++ )
 	{
-		target = g_entities + ( i % level.num_entities );
+		target = g_entities + ( i % MAX_CLIENTS );
 
 		//if target is not valid keep searching
 		if ( !ATrapper_CheckTarget( ent, target, range ) )
