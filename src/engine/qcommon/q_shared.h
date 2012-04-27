@@ -2483,8 +2483,6 @@ char *Q_UTF8Unstore( int e );
 	char     *Com_ClientListString( const clientList_t *list );
 	void     Com_ClientListParse( clientList_t *list, const char *s );
 
-#define SQR( a ) ( ( a ) * ( a ) )
-
 	enum
 	{
 	  AUTHORIZE_BAD,
