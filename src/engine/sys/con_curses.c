@@ -42,11 +42,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <sys/ioctl.h>
 #endif
 
-// default to 8-colour term support
-#ifndef COLORS
-#define COLORS (8)
-#endif
-
 #define TITLE         "^4---[ ^3" CLIENT_WINDOW_TITLE " Console ^4]---"
 #define PROMPT        "^3-> "
 #define INPUT_SCROLL  15
