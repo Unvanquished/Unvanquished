@@ -224,15 +224,15 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_PRIFLE:
 				if ( gender == GENDER_FEMALE )
 				{
-					message = "pulse rifled herself\n";
+					message = "%s ^7pulse rifled herself\n";
 				}
 				else if ( gender == GENDER_NEUTER )
 				{
-					message = "pulse rifled itself\n";
+					message = "%s ^7pulse rifled itself\n";
 				}
 				else
 				{
-					message = "pulse rifled himself\n";
+					message = "%s ^7pulse rifled himself\n";
 				}
 
 				break;
@@ -315,11 +315,11 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_FLAMER:
-				message = "%s ^7was grilled by %s%s's flamer\n";
+				message = "%s ^7was grilled by %s%s^7's flamer\n";
 				break;
 
 			case MOD_FLAMER_SPLASH:
-				message = "%s ^7was toasted by %s%s's flamer\n";
+				message = "%s ^7was toasted by %s%s^7's flamer\n";
 				break;
 
 			case MOD_LCANNON:
@@ -409,13 +409,13 @@ static void CG_Obituary( entityState_t *ent )
 			// Argument order: victim, "TEAMMATE" (if appropriate), attacker, alien class
 			CG_Printf( message,
 			           targetName,
-			           ( teamKill ) ? "^1TEAM MATE^7 " : "",
+			           ( teamKill ) ? "^1TEAMMATE^7 " : "",
 			           attackerName,
 			           ( attackerClass != -1 ) ? BG_ClassConfig( attackerClass )->humanName : NULL );
 
 			if ( teamKill && attacker == cg.clientNum )
 			{
-				CG_CenterPrint( va( "You killed ^1TEAM MATE^7 %s", targetName ),
+				CG_CenterPrint( va( "You killed ^1TEAMMATE^7 %s", targetName ),
 				                SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 			}
 
