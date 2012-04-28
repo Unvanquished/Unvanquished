@@ -74,9 +74,11 @@ static inline void G_MissileDistancePowerReduce( gentity_t *self )
 	int   fullPower = g_luciFullPowerDistance.integer;
 	int   halfLife = g_luciHalfLifeDistance.integer;
 
-	// unreasonable value? default
-	if ( fullPower < 1 ) { fullPower = 512; }
-	if ( halfLife  < 1 ) { halfLife  = 512; }
+	// allow disabling via the half-life setting
+	if ( halfLife < 1 )
+	{
+		return;
+	}
 
 	distance = travelled + fullPower - halfLife;
 
