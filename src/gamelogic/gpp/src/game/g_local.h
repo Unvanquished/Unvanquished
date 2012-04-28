@@ -1165,6 +1165,12 @@ extern  vmCvar_t g_alienStage3Threshold;
 extern  vmCvar_t g_teamImbalanceWarnings;
 extern  vmCvar_t g_freeFundPeriod;
 
+extern  vmCvar_t g_luciHalfLifeTime;
+extern  vmCvar_t g_luciFullPowerTime;
+extern  vmCvar_t g_pulseHalfLifeTime;
+extern  vmCvar_t g_pulseFullPowerTime;
+extern  vmCvar_t g_flameFadeout;
+
 extern  vmCvar_t g_unlagged;
 
 extern  vmCvar_t g_disabledEquipment;
