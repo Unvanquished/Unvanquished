@@ -1454,6 +1454,45 @@ static void CG_DrawPlayerStaminaBar( rectDef_t *rect, vec4_t foreColor, qhandle_
 	CG_DrawPlayerProgressBar( rect, foreColor, progress, -0.3, shader );
 }
 
+static void CG_DrawPlayerBuildTimerBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
+{
+	playerState_t *ps = &cg.snap->ps;
+	float         progress;
+	int           failedAttempt;
+	static int    misc = 0;
+	static int    max;
+
+	// Not building anything
+	if( ps->stats[ STAT_MISC ] <= 0 )
+	{
+		misc = ps->stats[ STAT_MISC ];
+		return;
+	}
+
+	// We are building something new. Change the max value
+	if( ps->stats[ STAT_MISC ] > 0 && misc <= 0 )
+	{
+		max = ps->stats[ STAT_MISC ];
+	}
+
+	misc = ps->stats[ STAT_MISC ];
+	progress = (float)misc/(float)max;
+
+	if ( cg.time - cg.lastBuildAttempt <= BUILD_DELAY_TIME &&
+	     ( ( cg.time - cg.lastBuildAttempt ) / 300 ) % 2 )
+	{
+		failedAttempt = -1;
+	}
+	else
+	{
+		failedAttempt = 0;
+	}
+
+
+	CG_DrawPlayerProgressBar( rect, foreColor, 1-progress, 0.9, shader );
+}
+
+
 static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                                   float scale, int textalign, int textvalign,
                                   const char *s, float fraction )
@@ -3712,6 +3751,9 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 			CG_DrawPlayerBuildTimer( &rect, foreColor );
 			break;
 
+		case CG_PLAYER_BUILD_TIMER_BAR:
+			CG_DrawPlayerBuildTimerBar( &rect, foreColor, shader );
+			break;
 		case CG_PLAYER_HEALTH:
 			CG_DrawPlayerHealthValue( &rect, foreColor );
 			break;
