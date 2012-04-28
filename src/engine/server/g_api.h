@@ -71,8 +71,8 @@ typedef struct
 	vec3_t currentOrigin;
 	vec3_t currentAngles;
 
-	// Initial position, should distance travelled be a factor
-	vec3_t startOrigin;
+	// Creation time, for entities which need it
+	int    startTime;
 
 	// when a trace call is made and the specified pass entity isn't none,
 	//  then a given entity will be excluded from testing if:

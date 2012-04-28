@@ -62,17 +62,15 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace )
 
 /*
 ================
-G_MissileDistancePowerReduce
+G_MissileTimePowerReduce
 
-Reduce the power of e.g. a luciball over distance
+Reduce the power of e.g. a luciball relative to time spent travelling.
 ================
 */
-static inline void G_MissileDistancePowerReduce( gentity_t *self )
+static inline void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife )
 {
-	float travelled = Distance( self->r.startOrigin, self->r.currentOrigin );
-	float distance;
-	int   fullPower = g_luciFullPowerDistance.integer;
-	int   halfLife = g_luciHalfLifeDistance.integer;
+	int lifetime = level.time - self->r.startTime;
+	float travelled;
 
 	// allow disabling via the half-life setting
 	if ( halfLife < 1 )
@@ -80,12 +78,12 @@ static inline void G_MissileDistancePowerReduce( gentity_t *self )
 		return;
 	}
 
-	distance = travelled + fullPower - halfLife;
+	travelled = lifetime + fullPower - halfLife;
 
 	if ( travelled > halfLife )
 	{
 		float divider = Q_rsqrt( travelled / halfLife );
-//		Com_Printf("Luciball travelled %.1f units. Power reduced to %.4f%%.\n", travelled, divider);
+//		Com_Printf("Luciball travelled for %dms. Power scaled to %.2f%%.\n", (int)travelled, divider * 100.0);
 		self->damage *= divider;
 		self->splashDamage *= divider;
 	}
@@ -123,7 +121,8 @@ void G_ExplodeMissile( gentity_t *ent )
 
 	if ( !strcmp( ent->classname, "lcannon" ) )
 	{
-		G_MissileDistancePowerReduce( ent );
+		G_MissileTimePowerReduce( ent, g_luciFullPowerTime.integer,
+		                              g_luciHalfLifeTime.integer );
 	}
 
 	// splash damage
@@ -238,7 +237,8 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 	else if ( !strcmp( ent->classname, "lcannon" ) )
 	{
-		G_MissileDistancePowerReduce( ent );
+		G_MissileTimePowerReduce( ent, g_luciFullPowerTime.integer,
+		                              g_luciHalfLifeTime.integer );
 	}
 
 	// impact damage
@@ -603,8 +603,9 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	VectorCopy( start, bolt->r.startOrigin ); // for distance travelled
+	bolt->r.startTime = level.time; // for power fall-off
 
+//	Com_Printf("Luciball power = %d, speed = %d/s.\n", damage, speed);
 	return bolt;
 }
 
