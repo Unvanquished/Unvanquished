@@ -62,6 +62,38 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace )
 
 /*
 ================
+G_LuciferDistanceReduce
+
+Reduce the power of a luciball over distance
+================
+*/
+// 32 units per metre
+#define MOD_LCANNON_HALVE_DISTANCE   (32 * 15)
+#define MOD_LCANNON_NO_LOSS_DISTANCE (32 * 15)
+static inline void G_LuciferDistanceReduce( gentity_t *self )
+{
+	float travelled = Distance( self->r.startOrigin, self->r.currentOrigin );
+	float distance;
+	int   fullPower = g_luciFullPowerDistance.integer;
+	int   halfLife = g_luciHalfLifeDistance.integer;
+
+	// unreasonable value? default
+	if ( fullPower < 1 ) { fullPower = 512; }
+	if ( halfLife  < 1 ) { halfLife  = 512; }
+
+	distance = travelled + fullPower - halfLife;
+
+	if ( travelled > halfLife )
+	{
+		float divider = Q_rsqrt( travelled / halfLife );
+//		Com_Printf("Luciball travelled %.1f units. Power reduced to %.4f%%.\n", travelled, divider);
+		self->damage *= divider;
+		self->splashDamage *= divider;
+	}
+}
+
+/*
+================
 G_ExplodeMissile
 
 Explode a missile without an impact
@@ -89,6 +121,11 @@ void G_ExplodeMissile( gentity_t *ent )
 	}
 
 	ent->freeAfterEvent = qtrue;
+
+	if ( !strcmp( ent->classname, "lcannon" ) )
+	{
+		G_LuciferDistanceReduce( ent );
+	}
 
 	// splash damage
 	if ( ent->splashDamage )
@@ -199,6 +236,10 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 				return;
 			}
 		}
+	}
+	else if ( !strcmp( ent->classname, "lcannon" ) )
+	{
+		G_LuciferDistanceReduce( ent );
 	}
 
 	// impact damage
@@ -563,6 +604,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
+	VectorCopy( start, bolt->r.startOrigin ); // for distance travelled
 
 	return bolt;
 }

@@ -114,6 +114,9 @@ vmCvar_t           g_alienStage3Threshold;
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
 
+vmCvar_t           g_luciHalfLifeDistance;
+vmCvar_t           g_luciFullPowerDistance;
+
 vmCvar_t           g_unlagged;
 
 vmCvar_t           g_disabledEquipment;
@@ -262,6 +265,9 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_alienStage3Threshold,        "g_alienStage3Threshold",        DEFAULT_ALIEN_STAGE3_THRESH,        0,                                               0, qfalse           },
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
+
+	{ &g_luciHalfLifeDistance,        "g_luciHalfLifeDistance",        "512",                              0,                                               0, qtrue            },
+	{ &g_luciFullPowerDistance,       "g_luciFullPowerDistance",       "512",                              0,                                               0, qtrue            },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
 
