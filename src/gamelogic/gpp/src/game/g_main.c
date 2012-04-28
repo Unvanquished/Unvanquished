@@ -270,7 +270,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
 
 	{ &g_luciHalfLifeTime,            "g_luciHalfLifeTime",            "512",                              CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_luciFullPowerTime,           "g_luciFullPowerTime",           "512",                              CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_luciFullPowerTime,           "g_luciFullPowerTime",           "0" /*"512"*/,                      CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pulseHalfLifeTime,           "g_pulseHalfLifeTime",           "768",                              CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pulseFullPowerTime,          "g_pulseFullPowerTime",          "0"  ,                              CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_flameFadeout,                "g_flameFadeout",                "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
