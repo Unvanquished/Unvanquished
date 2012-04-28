@@ -62,15 +62,12 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace )
 
 /*
 ================
-G_LuciferDistanceReduce
+G_MissileDistancePowerReduce
 
-Reduce the power of a luciball over distance
+Reduce the power of e.g. a luciball over distance
 ================
 */
-// 32 units per metre
-#define MOD_LCANNON_HALVE_DISTANCE   (32 * 15)
-#define MOD_LCANNON_NO_LOSS_DISTANCE (32 * 15)
-static inline void G_LuciferDistanceReduce( gentity_t *self )
+static inline void G_MissileDistancePowerReduce( gentity_t *self )
 {
 	float travelled = Distance( self->r.startOrigin, self->r.currentOrigin );
 	float distance;
@@ -124,7 +121,7 @@ void G_ExplodeMissile( gentity_t *ent )
 
 	if ( !strcmp( ent->classname, "lcannon" ) )
 	{
-		G_LuciferDistanceReduce( ent );
+		G_MissileDistancePowerReduce( ent );
 	}
 
 	// splash damage
@@ -239,7 +236,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	}
 	else if ( !strcmp( ent->classname, "lcannon" ) )
 	{
-		G_LuciferDistanceReduce( ent );
+		G_MissileDistancePowerReduce( ent );
 	}
 
 	// impact damage
