@@ -1492,6 +1492,15 @@ static void CG_DrawPlayerBuildTimerBar( rectDef_t *rect, vec4_t foreColor, qhand
 	CG_DrawPlayerProgressBar( rect, foreColor, 1-progress, 0.9, shader );
 }
 
+static void CG_DrawPlayerHealthBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
+{
+	playerState_t *ps = &cg.snap->ps;
+
+	float progress = (float)ps->stats[ STAT_HEALTH ] / (float)BG_Class( ps->stats[ STAT_CLASS ] )->health;
+	CG_DrawPlayerProgressBar( rect, foreColor, progress, -0.3, shader );
+}
+
+
 
 static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                                   float scale, int textalign, int textvalign,
@@ -3757,7 +3766,9 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 		case CG_PLAYER_HEALTH:
 			CG_DrawPlayerHealthValue( &rect, foreColor );
 			break;
-
+		case CG_PLAYER_HEALTH_BAR:
+			CG_DrawPlayerHealthBar( &rect, foreColor, shader );
+			break;
 		case CG_PLAYER_HEALTH_CROSS:
 			CG_DrawPlayerHealthCross( &rect, foreColor );
 			break;
