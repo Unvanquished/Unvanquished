@@ -116,6 +116,8 @@ vmCvar_t           g_freeFundPeriod;
 
 vmCvar_t           g_luciHalfLifeTime;
 vmCvar_t           g_luciFullPowerTime;
+vmCvar_t           g_pulseHalfLifeTime;
+vmCvar_t           g_pulseFullPowerTime;
 vmCvar_t           g_flameFadeout;
 
 vmCvar_t           g_unlagged;
@@ -269,6 +271,8 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_luciHalfLifeTime,            "g_luciHalfLifeTime",            "512",                              0,                                               0, qtrue            },
 	{ &g_luciFullPowerTime,           "g_luciFullPowerTime",           "512",                              0,                                               0, qtrue            },
+	{ &g_pulseHalfLifeTime,           "g_pulseHalfLifeTime",           "768",                              0,                                               0, qtrue            },
+	{ &g_pulseFullPowerTime,          "g_pulseFullPowerTime",          "0"  ,                              0,                                               0, qtrue            },
 	{ &g_flameFadeout,                "g_flameFadeout",                "1",                                0,                                               0, qtrue            },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },

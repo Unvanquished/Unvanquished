@@ -123,6 +123,12 @@ static inline G_DoMissileTimePowerReduce( gentity_t *ent )
 		                               g_luciHalfLifeTime.integer,
 		                               PR_INVERSE_SQUARE );
 	}
+	else if ( !strcmp( ent->classname, "pulse" ) )
+	{
+		G_MissileTimePowerReduce( ent, g_pulseFullPowerTime.integer,
+		                               g_pulseHalfLifeTime.integer,
+		                               PR_INVERSE_SQUARE );
+	}
 	else if ( !strcmp( ent->classname, "flame" ) )
 	{
 		G_MissileTimePowerReduce( ent, FLAMER_LIFETIME, g_flameFadeout.integer,
@@ -570,6 +576,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
+	bolt->r.startTime = level.time; // for power fall-off
 
 	return bolt;
 }
