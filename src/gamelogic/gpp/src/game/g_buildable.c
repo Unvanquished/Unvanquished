@@ -5175,7 +5175,7 @@ void G_UpdateBuildableRangeMarkers( void )
 
 			wantsToSee = !!( client->pers.buildableRangeMarkerMask & ( 1 << bType ) );
 
-			if ( ( team == TEAM_NONE || ( team == bTeam && weaponDisplays ) ) && wantsToSee )
+			if ( ( team == bTeam && weaponDisplays ) && wantsToSee )
 			{
 				if ( i >= 32 )
 				{
