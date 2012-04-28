@@ -837,7 +837,7 @@ typedef struct weaponInfo_s
 {
 	qboolean         registered;
 	qboolean         md5;
-	char             *humanName;
+	const char       *humanName;
 
 	qhandle_t        handsModel; // the hands don't actually draw, they just position the weapon
 	qhandle_t        weaponModel;
@@ -873,7 +873,7 @@ typedef struct weaponInfo_s
 typedef struct upgradeInfo_s
 {
 	qboolean  registered;
-	char      *humanName;
+	const char *humanName;
 
 	qhandle_t upgradeIcon;
 } upgradeInfo_t;
@@ -1460,8 +1460,8 @@ typedef struct
 
 typedef struct
 {
-	char *cmd;
-	void ( *function )( void );
+	const char *cmd;
+	void     ( *function )( void );
 } consoleCommand_t;
 
 typedef enum
@@ -1658,7 +1658,7 @@ void       CG_SetScoreSelection( void *menu );
 qboolean   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString( void );
 
-qboolean   CG_FileExists( char *filename );
+qboolean   CG_FileExists( const char *filename );
 void       CG_RemoveNotifyLine( void );
 void       CG_AddNotifyText( void );
 qboolean   CG_GetRangeMarkerPreferences( qboolean *drawSurface, qboolean *drawIntersection,
@@ -1689,6 +1689,7 @@ void     CG_DrawPlane( vec3_t origin, vec3_t down, vec3_t right, qhandle_t shade
 void     CG_AdjustFrom640( float *x, float *y, float *w, float *h );
 void     CG_FillRect( float x, float y, float width, float height, const float *color );
 void     CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
+void     CG_DrawNoStretchPic( float x, float y, float width, float height, qhandle_t hShader );
 void     CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
                          vec4_t tcolor, float amount, qhandle_t hShader );
 void     CG_SetClipRegion( float x, float y, float w, float h );
@@ -1744,7 +1745,7 @@ void        CG_Corpse( centity_t *cent );
 void        CG_ResetPlayerEntity( centity_t *cent );
 void        CG_NewClientInfo( int clientNum );
 
-void        CG_PrecacheClientInfo( class_t class, char *model, char *skin );
+void        CG_PrecacheClientInfo( class_t class, const char *model, const char *skin );
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
 void        CG_Bleed( vec3_t origin, vec3_t normal, int entityNum );
@@ -1806,9 +1807,9 @@ void CG_Beam( centity_t *cent );
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out );
 
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-                             qhandle_t parentModel, char *tagName );
+                             qhandle_t parentModel, const char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-                                    qhandle_t parentModel, char *tagName );
+                                    qhandle_t parentModel, const char *tagName );
 void CG_RangeMarker( centity_t *cent );
 void CG_TransformSkeleton( refSkeleton_t *skel, const vec3_t scale );
 
@@ -1903,7 +1904,7 @@ void     CG_AttachToParticle( attachment_t *a );
 void     CG_SetAttachmentPoint( attachment_t *a, vec3_t v );
 void     CG_SetAttachmentCent( attachment_t *a, centity_t *cent );
 void     CG_SetAttachmentTag( attachment_t *a, refEntity_t parent,
-                              qhandle_t model, char *tagName );
+                              qhandle_t model, const char *tagName );
 void     CG_SetAttachmentParticle( attachment_t *a, particle_t *p );
 
 void     CG_SetAttachmentOffset( attachment_t *a, vec3_t v );
@@ -1912,7 +1913,7 @@ void     CG_SetAttachmentOffset( attachment_t *a, vec3_t v );
 // cg_particles.c
 //
 void             CG_LoadParticleSystems( void );
-qhandle_t        CG_RegisterParticleSystem( char *name );
+qhandle_t        CG_RegisterParticleSystem( const char *name );
 
 particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle );
 void             CG_DestroyParticleSystem( particleSystem_t **ps );
@@ -1933,7 +1934,7 @@ void             CG_DestroyTestPS_f( void );
 // cg_trails.c
 //
 void          CG_LoadTrailSystems( void );
-qhandle_t     CG_RegisterTrailSystem( char *name );
+qhandle_t     CG_RegisterTrailSystem( const char *name );
 
 trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle );
 void          CG_DestroyTrailSystem( trailSystem_t **ts );

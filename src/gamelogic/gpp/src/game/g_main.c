@@ -27,12 +27,12 @@ level_locals_t level;
 
 typedef struct
 {
-	vmCvar_t *vmCvar;
-	char     *cvarName;
-	char     *defaultString;
-	int      cvarFlags;
-	int      modificationCount; // for tracking changes
-	qboolean trackChange; // track this variable, and announce if changed
+	vmCvar_t   *vmCvar;
+	const char *cvarName;
+	const char *defaultString;
+	int        cvarFlags;
+	int        modificationCount; // for tracking changes
+	qboolean   trackChange; // track this variable, and announce if changed
 
 	/* certain cvars can be set in worldspawn, but we don't want those values to
 	   persist, so keep track of non-worldspawn changes and restore that on map
@@ -113,6 +113,12 @@ vmCvar_t           g_alienStage2Threshold;
 vmCvar_t           g_alienStage3Threshold;
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
+
+vmCvar_t           g_luciHalfLifeTime;
+vmCvar_t           g_luciFullPowerTime;
+vmCvar_t           g_pulseHalfLifeTime;
+vmCvar_t           g_pulseFullPowerTime;
+vmCvar_t           g_flameFadeout;
 
 vmCvar_t           g_unlagged;
 
@@ -301,6 +307,12 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_alienStage3Threshold,        "g_alienStage3Threshold",        DEFAULT_ALIEN_STAGE3_THRESH,        0,                                               0, qfalse           },
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
+
+	{ &g_luciHalfLifeTime,            "g_luciHalfLifeTime",            "512",                              CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_luciFullPowerTime,           "g_luciFullPowerTime",           "0" /*"512"*/,                      CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_pulseHalfLifeTime,           "g_pulseHalfLifeTime",           "768",                              CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_pulseFullPowerTime,          "g_pulseFullPowerTime",          "0"  ,                              CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_flameFadeout,                "g_flameFadeout",                "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
 

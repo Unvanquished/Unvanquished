@@ -31,22 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 pmove_t *pm;
 pml_t   pml;
 
-// movement parameters
-float   pm_stopspeed = 100.0f;
-float   pm_duckScale = 0.25f;
-float   pm_swimScale = 0.50f;
-float   pm_wadeScale = 0.70f;
-
-float   pm_accelerate = 10.0f;
-float   pm_airaccelerate = 1.0f;
-float   pm_wateraccelerate = 4.0f;
-float   pm_flyaccelerate = 4.0f;
-
-float   pm_friction = 6.0f;
-float   pm_waterfriction = 1.0f;
-float   pm_flightfriction = 6.0f;
-float   pm_spectatorfriction = 5.0f;
-
 int     c_pmove = 0;
 
 /*
@@ -250,7 +234,7 @@ PM_ClipVelocity
 Slide off of the impacting surface
 ==================
 */
-void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce )
+void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out, float overbounce )
 {
 	float backoff;
 	float change;
@@ -371,7 +355,7 @@ PM_Accelerate
 Handles user intended acceleration
 ==============
 */
-static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel )
+static void PM_Accelerate( const vec3_t wishdir, float wishspeed, float accel )
 {
 #if 1
 	// q2 style
@@ -787,11 +771,12 @@ PM_CheckWallJump
 static qboolean PM_CheckWallJump( void )
 {
 	vec3_t  dir, forward, right, movedir, point;
-	vec3_t  refNormal = { 0.0f, 0.0f, 1.0f };
 	float   normalFraction = 1.5f;
 	float   cmdFraction = 1.0f;
 	float   upFraction = 1.5f;
 	trace_t trace;
+
+	static const vec3_t  refNormal = { 0.0f, 0.0f, 1.0f };
 
 	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLJUMPER ) )
 	{
@@ -2296,8 +2281,6 @@ PM_GroundClimbTrace
 static void PM_GroundClimbTrace( void )
 {
 	vec3_t      surfNormal, movedir, lookdir, point;
-	vec3_t      refNormal = { 0.0f, 0.0f, 1.0f };
-	vec3_t      ceilingNormal = { 0.0f, 0.0f, -1.0f };
 	vec3_t      toAngles, surfAngles;
 	trace_t     trace;
 	int         i;
@@ -2307,11 +2290,14 @@ static void PM_GroundClimbTrace( void )
 	vec3_t      traceCROSSsurf, traceCROSSref, surfCROSSref;
 	float       traceDOTsurf, traceDOTref, surfDOTref, rTtDOTrTsTt;
 	float       traceANGsurf, traceANGref, surfANGref;
-	vec3_t      horizontal = { 1.0f, 0.0f, 0.0f }; //arbituary vector perpendicular to refNormal
 	vec3_t      refTOtrace, refTOsurfTOtrace, tempVec;
 	int         rTtANGrTsTt;
 	float       ldDOTtCs, d;
 	vec3_t      abc;
+
+	static const vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
+	static const vec3_t ceilingNormal = { 0.0f, 0.0f, -1.0f };
+	static const vec3_t horizontal = { 1.0f, 0.0f, 0.0f }; //arbituary vector perpendicular to refNormal
 
 	BG_GetClientNormal( pm->ps, surfNormal );
 
@@ -2635,8 +2621,9 @@ PM_GroundTrace
 static void PM_GroundTrace( void )
 {
 	vec3_t  point;
-	vec3_t  refNormal = { 0.0f, 0.0f, 1.0f };
 	trace_t trace;
+
+	static const vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
 
 	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLCLIMBER ) )
 	{

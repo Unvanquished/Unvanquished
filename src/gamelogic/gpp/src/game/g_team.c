@@ -55,7 +55,7 @@ G_TeamFromString
 Return the team referenced by a string
 ================
 */
-team_t G_TeamFromString( char *str )
+team_t G_TeamFromString( const char *str )
 {
 	switch ( tolower( *str ) )
 	{
@@ -83,7 +83,7 @@ G_TeamCommand
 Broadcasts a command to only a specific team
 ================
 */
-void G_TeamCommand( team_t team, char *cmd )
+void G_TeamCommand( team_t team, const char *cmd )
 {
 	int i;
 
@@ -108,7 +108,7 @@ G_AreaTeamCommand
 Broadcasts a command to only a specific team within a specific range
 ================
 */
-void G_AreaTeamCommand( gentity_t *ent, char *cmd )
+void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 {
 	int    entityList[ MAX_GENTITIES ];
 	int    num, i;

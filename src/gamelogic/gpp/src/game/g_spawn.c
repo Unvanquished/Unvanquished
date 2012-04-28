@@ -107,13 +107,13 @@ typedef enum
 
 typedef struct
 {
-	char        *name;
+	const char  *name;
 	int         ofs;
 	fieldtype_t type;
 	int         flags;
 } field_t;
 
-field_t fields[] =
+static const field_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration ),        F_VECTOR    },
 	{ "alpha",               FOFS( pos1 ),                F_VECTOR    },
@@ -145,8 +145,8 @@ field_t fields[] =
 
 typedef struct
 {
-	char *name;
-	void ( *spawn )( gentity_t *ent );
+	const char *name;
+	void      ( *spawn )( gentity_t *ent );
 } spawn_t;
 
 void    SP_info_player_start( gentity_t *ent );
@@ -223,7 +223,7 @@ void    SP_misc_particle_system( gentity_t *ent );
 void    SP_misc_anim_model( gentity_t *ent );
 void    SP_misc_light_flare( gentity_t *ent );
 
-spawn_t spawns[] =
+static const spawn_t spawns[] =
 {
 	{ "func_bobbing",             SP_func_bobbing             },
 	{ "func_button",              SP_func_button              },

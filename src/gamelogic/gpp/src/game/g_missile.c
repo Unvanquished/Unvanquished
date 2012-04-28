@@ -62,6 +62,82 @@ void G_BounceMissile( gentity_t *ent, trace_t *trace )
 
 /*
 ================
+G_MissileTimePowerReduce
+
+Reduce the power of e.g. a luciball relative to time spent travelling.
+================
+*/
+typedef enum {
+	PR_INVERSE_SQUARE, // params: full power time, half-life time
+	PR_COSINE,         // params: lifetime, unused (but >0)
+	PR_END             // unused; here so that we can have the comma above for C89
+} powerReduce_t;
+
+static inline void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
+{
+	int lifetime = level.time - self->r.startTime;
+	float travelled;
+	float divider = 1;
+
+	// allow disabling via the half-life setting
+	if ( halfLife < 1 )
+	{
+		return;
+	}
+
+
+	switch ( type )
+	{
+	case PR_INVERSE_SQUARE:
+		if ( travelled > halfLife )
+		{
+			travelled = lifetime + fullPower - halfLife;
+			divider = Q_rsqrt( travelled / halfLife );
+		}
+		break;
+
+	case PR_COSINE:
+		travelled = lifetime;;
+		divider = MAX( 0.0, cos( travelled * M_PI / 2.0 / ( fullPower + 1 ) ) );
+		break;
+	}
+
+	self->damage *= divider;
+	self->splashDamage *= divider;
+
+//	Com_Printf("%s shot travelled for %dms. Power scaled to %.2f%%.\n", self->classname, (int)travelled, divider * 100.0);
+}
+
+/*
+================
+G_DoMissileTimePowerReduce
+
+Called on missile explosion or impact if the missile is otherwise not specially handled
+================
+*/
+static inline G_DoMissileTimePowerReduce( gentity_t *ent )
+{
+	if ( !strcmp( ent->classname, "lcannon" ) )
+	{
+		G_MissileTimePowerReduce( ent, g_luciFullPowerTime.integer,
+		                               g_luciHalfLifeTime.integer,
+		                               PR_INVERSE_SQUARE );
+	}
+	else if ( !strcmp( ent->classname, "pulse" ) )
+	{
+		G_MissileTimePowerReduce( ent, g_pulseFullPowerTime.integer,
+		                               g_pulseHalfLifeTime.integer,
+		                               PR_INVERSE_SQUARE );
+	}
+	else if ( !strcmp( ent->classname, "flame" ) )
+	{
+		G_MissileTimePowerReduce( ent, FLAMER_LIFETIME, g_flameFadeout.integer,
+		                               PR_COSINE );
+	}
+}
+
+/*
+================
 G_ExplodeMissile
 
 Explode a missile without an impact
@@ -89,6 +165,8 @@ void G_ExplodeMissile( gentity_t *ent )
 	}
 
 	ent->freeAfterEvent = qtrue;
+
+	G_DoMissileTimePowerReduce( ent );
 
 	// splash damage
 	if ( ent->splashDamage )
@@ -199,6 +277,10 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 				return;
 			}
 		}
+	}
+	else
+	{
+		G_DoMissileTimePowerReduce( ent );
 	}
 
 	// impact damage
@@ -401,6 +483,7 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
+	bolt->r.startTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -493,6 +576,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
+	bolt->r.startTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -563,7 +647,9 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
+	bolt->r.startTime = level.time; // for power fall-off
 
+//	Com_Printf("Luciball power = %d, speed = %d/s.\n", damage, speed);
 	return bolt;
 }
 

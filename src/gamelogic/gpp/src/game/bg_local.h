@@ -61,27 +61,28 @@ extern  pmove_t *pm;
 extern  pml_t   pml;
 
 // movement parameters
-extern  float   pm_stopspeed;
-extern  float   pm_duckScale;
-extern  float   pm_swimScale;
-extern  float   pm_wadeScale;
+#define pm_stopspeed         (100.0f)
+#define pm_duckScale         (0.25f)
+#define pm_swimScale         (0.50f)
+#define pm_wadeScale         (0.70f)
 
-extern  float   pm_accelerate;
-extern  float   pm_airaccelerate;
-extern  float   pm_wateraccelerate;
-extern  float   pm_flyaccelerate;
+#define pm_accelerate        (10.0f)
+#define pm_airaccelerate     (1.0f)
+#define pm_wateraccelerate   (4.0f)
+#define pm_flyaccelerate     (4.0f)
 
-extern  float   pm_friction;
-extern  float   pm_waterfriction;
-extern  float   pm_flightfriction;
+#define pm_friction          (6.0f)
+#define pm_waterfriction     (1.0f)
+#define pm_flightfriction    (6.0f)
+#define pm_spectatorfriction (5.0f)
 
 extern  int     c_pmove;
 
-void            PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce );
+void            PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out, float overbounce );
 void            PM_AddTouchEnt( int entityNum );
 void            PM_AddEvent( int newEvent );
 
 qboolean        PM_SlideMove( qboolean gravity );
-void            PM_StepEvent( vec3_t from, vec3_t to, vec3_t normal );
+void            PM_StepEvent( const vec3_t from, const vec3_t to, const vec3_t normal );
 qboolean        PM_StepSlideMove( qboolean gravity, qboolean predictive );
 qboolean        PM_PredictStepMove( void );

@@ -1352,7 +1352,7 @@ CG_RegisterTrailSystem
 Load the media that a trail system needs
 ===============
 */
-qhandle_t CG_RegisterTrailSystem( char *name )
+qhandle_t CG_RegisterTrailSystem( const char *name )
 {
 	int               i, j;
 	baseTrailSystem_t *bts;

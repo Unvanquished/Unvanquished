@@ -177,6 +177,23 @@ void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader 
 
 /*
 ================
+CG_DrawNoStretchPic
+
+Coordinates are 640*480 virtual values
+=================
+*/
+void CG_DrawNoStretchPic( float x, float y, float width, float height, qhandle_t hShader )
+{
+	float ratio = cgs.glconfig.vidWidth / width;
+	x *= ratio;
+	y *= cgs.screenYScale;
+	width *= ratio;
+	height *= ratio;
+	trap_R_DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
+}
+
+/*
+================
 CG_SetClipRegion
 =================
 */

@@ -1380,7 +1380,8 @@ void AAcidTube_Think( gentity_t *self )
 		{
 			enemy = &g_entities[ entityList[ i ] ];
 
-			if ( enemy->flags & FL_NOTARGET )
+			// fast checks first: not a target, or not human
+			if ( ( enemy->flags & FL_NOTARGET ) || !enemy->client || enemy->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
 			{
 				continue;
 			}
@@ -1390,7 +1391,6 @@ void AAcidTube_Think( gentity_t *self )
 				continue;
 			}
 
-			if ( enemy->client && enemy->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 			{
 				// start the attack animation
 				if ( level.time >= self->timestamp + ACIDTUBE_REPEAT_ANIM )
@@ -1728,11 +1728,11 @@ void ATrapper_FindEnemy( gentity_t *ent, int range )
 
 	// iterate through entities
 	// note that if we exist then level.num_entities != 0
-	start = rand() / ( RAND_MAX / level.num_entities + 1 );
+	start = rand() / ( RAND_MAX / MAX_CLIENTS + 1 );
 
-	for ( i = start; i < level.num_entities + start; i++ )
+	for ( i = start; i < MAX_CLIENTS + start; i++ )
 	{
-		target = g_entities + ( i % level.num_entities );
+		target = g_entities + ( i % MAX_CLIENTS );
 
 		//if target is not valid keep searching
 		if ( !ATrapper_CheckTarget( ent, target, range ) )
@@ -4565,7 +4565,7 @@ void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 G_LayoutSave
 ============
 */
-void G_LayoutSave( char *name )
+void G_LayoutSave( const char *name )
 {
 	char         map[ MAX_QPATH ];
 	char         fileName[ MAX_OSPATH ];
@@ -5175,7 +5175,7 @@ void G_UpdateBuildableRangeMarkers( void )
 
 			wantsToSee = !!( client->pers.buildableRangeMarkerMask & ( 1 << bType ) );
 
-			if ( ( team == TEAM_NONE || ( team == bTeam && weaponDisplays ) ) && wantsToSee )
+			if ( ( team == bTeam && weaponDisplays ) && wantsToSee )
 			{
 				if ( i >= 32 )
 				{

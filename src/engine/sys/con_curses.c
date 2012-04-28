@@ -92,20 +92,51 @@ CON_SetColor
 Use grey instead of black
 ==================
 */
-static inline void CON_SetColor( WINDOW *win, int color )
+static void CON_SetColor( WINDOW *win, int color )
 {
-	if ( com_ansiColor && !com_ansiColor->integer )
-	{
-		color = 7;
-	}
+	// Approximations of g_color_table (q_math.c)
+	// Colours are hard-wired below; see init_pair() calls
+	static const int colour16map[2][32] = {
+		{ // Variant 1 (xterm)
+			1 | A_BOLD, 2,          3,          4,
+			5,          6,          7,          8,
+			4 | A_DIM,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
+			3 | A_DIM,  4 | A_DIM,  5 | A_DIM,  2 | A_DIM,
+			4 | A_DIM,  4 | A_DIM,  6 | A_DIM,  7 | A_DIM,
+			6 | A_DIM,  7 | A_DIM,  6 | A_DIM,  3 | A_BOLD,
+			3 | A_DIM,  2,          2 | A_DIM,  4 | A_DIM,
+			4 | A_DIM,  3 | A_DIM,  7,          4 | A_BOLD
+		},
+		{ // Variant 2 (vte)
+			1 | A_BOLD, 2,          3,          4 | A_BOLD,
+			5,          6,          7,          8,
+			4        ,  8 | A_DIM,  8 | A_DIM,  8 | A_DIM,
+			3 | A_DIM,  4,          5 | A_DIM,  2 | A_DIM,
+			4 | A_DIM,  4 | A_DIM,  6 | A_DIM,  7 | A_DIM,
+			6 | A_DIM,  7 | A_DIM,  6 | A_DIM,  3 | A_BOLD,
+			3 | A_DIM,  2,          2 | A_DIM,  4 | A_DIM,
+			4 | A_DIM,  3 | A_DIM,  7,          4 | A_BOLD
+		}
+	};
 
-	if ( color == 0 )
+	if ( !com_ansiColor || !com_ansiColor->integer )
 	{
-		wattrset( win, COLOR_PAIR( color + 1 ) | A_BOLD );
+		wattrset( win, COLOR_PAIR( 0 ) );
+	}
+	else if ( COLORS >= 256 && com_ansiColor->integer > 0 )
+	{
+		wattrset( win, COLOR_PAIR( color + 9 ) ); // hardwired below; see init_pair() calls
 	}
 	else
 	{
-		wattrset( win, COLOR_PAIR( color + 1 ) | A_NORMAL );
+		int index = abs( com_ansiColor->integer ) - 1;
+
+		if ( index >= sizeof( colour16map ) / sizeof( colour16map[0] ) )
+		{
+			index = 0;
+		}
+
+		wattrset( win, COLOR_PAIR( colour16map[index][ color ] & 0xF ) | ( colour16map[index][color] & ~0xF ) );
 	}
 }
 
@@ -385,16 +416,28 @@ void CON_Init( void )
 		// Set up colors
 		if ( has_colors() )
 		{
+			// Mappings used in CON_SetColor()
+			static const unsigned char colourmap[] = {
+				0, // <- dummy entry
+				// 8-colour terminal mappings (modified later with bold/dim)
+				COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW,
+				COLOR_BLUE, COLOR_CYAN, COLOR_MAGENTA, COLOR_WHITE,
+				// 256-colour terminal mappings
+				239, 196,  46, 226,  21,  51, 201, 231,
+				208, 244, 250, 250,  28, 100,  18,  88,
+				 94, 209,  30,  90,  33,  93,  68, 194,
+				 29, 197, 124,  94, 173, 101, 229, 228
+			};
+			int i;
+
 			use_default_colors();
 			start_color();
-			init_pair( 1, COLOR_BLACK, -1 );
-			init_pair( 2, COLOR_RED, -1 );
-			init_pair( 3, COLOR_GREEN, -1 );
-			init_pair( 4, COLOR_YELLOW, -1 );
-			init_pair( 5, COLOR_BLUE, -1 );
-			init_pair( 6, COLOR_CYAN, -1 );
-			init_pair( 7, COLOR_MAGENTA, -1 );
-			init_pair( 8, -1, -1 );
+			init_pair( 0, -1, -1 );
+
+			for ( i = ( COLORS >= 256 ) ? 40 : 8; i; --i )
+			{
+				init_pair( i, colourmap[i], -1 );
+			}
 		}
 
 		// Prevent bad libraries from messing up the console

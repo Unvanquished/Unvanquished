@@ -26,12 +26,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef struct
 {
-	char     *command;
-	char     *humanName;
+	const char *command;
+	const char *humanName;
 	keyNum_t keys[ 2 ];
 } bind_t;
 
-static bind_t    bindings[] =
+static bind_t bindings[] =
 {
 	{ "+button2",       "Activate Upgrade",                            { -1, -1 } },
 	{ "+speed",         "Run/Walk",                                    { -1, -1 } },
@@ -418,7 +418,7 @@ CG_HumanText
 */
 static void CG_HumanText( char *text, playerState_t *ps )
 {
-	char      *name;
+	const char *name;
 	upgrade_t upgrade = UP_NONE;
 
 	if ( cg.weaponSelect < 32 )

@@ -245,13 +245,13 @@ vmCvar_t        cg_highPolyWeaponModels;
 
 typedef struct
 {
-	vmCvar_t *vmCvar;
-	char     *cvarName;
-	char     *defaultString;
-	int      cvarFlags;
+	vmCvar_t   *vmCvar;
+	const char *cvarName;
+	const char *defaultString;
+	int        cvarFlags;
 } cvarTable_t;
 
-static cvarTable_t cvarTable[] =
+static const cvarTable_t cvarTable[] =
 {
 	{ &cg_drawGun,                     "cg_drawGun",                     "1",            CVAR_ARCHIVE                 },
 	{ &cg_viewsize,                    "cg_viewsize",                    "100",          CVAR_ARCHIVE                 },
@@ -410,7 +410,7 @@ CG_RegisterCvars
 void CG_RegisterCvars( void )
 {
 	int         i;
-	cvarTable_t *cv;
+	const cvarTable_t *cv;
 	char        var[ MAX_TOKEN_CHARS ];
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
@@ -732,7 +732,7 @@ CG_UpdateCvars
 void CG_UpdateCvars( void )
 {
 	int         i;
-	cvarTable_t *cv;
+	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{
@@ -911,7 +911,7 @@ CG_FileExists
 Test if a specific file exists or not
 =================
 */
-qboolean CG_FileExists( char *filename )
+qboolean CG_FileExists( const char *filename )
 {
 	return trap_FS_FOpenFile( filename, NULL, FS_READ );
 }
@@ -1033,7 +1033,7 @@ This function may execute for a couple of minutes with a slow disk.
 static void CG_RegisterGraphics( void )
 {
 	int         i;
-	static char *sb_nums[ 11 ] =
+	static const char *const sb_nums[ 11 ] =
 	{
 		"gfx/2d/numbers/zero_32b",
 		"gfx/2d/numbers/one_32b",
@@ -1047,7 +1047,7 @@ static void CG_RegisterGraphics( void )
 		"gfx/2d/numbers/nine_32b",
 		"gfx/2d/numbers/minus_32b",
 	};
-	static char *buildWeaponTimerPieShaders[ 8 ] =
+	static const char *const buildWeaponTimerPieShaders[ 8 ] =
 	{
 		"ui/assets/neutral/1_5pie",
 		"ui/assets/neutral/3_0pie",
@@ -2081,6 +2081,7 @@ void CG_LoadHudMenu( void )
 	cgDC.registerShaderNoMip = &trap_R_RegisterShaderNoMip;
 	cgDC.setColor = &trap_R_SetColor;
 	cgDC.drawHandlePic = &CG_DrawPic;
+	cgDC.drawNoStretchPic = &CG_DrawNoStretchPic;
 	cgDC.drawStretchPic = &trap_R_DrawStretchPic;
 	cgDC.registerModel = &trap_R_RegisterModel;
 	cgDC.modelBounds = &trap_R_ModelBounds;

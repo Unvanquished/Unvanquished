@@ -212,7 +212,7 @@ static qboolean ParseVector( char **text, int count, float *v )
 	return qtrue;
 }
 
-opstring_t opStrings[] =
+static const opstring_t opStrings[] =
 {
 	{ "bad",                OP_BAD                }
 	,
@@ -318,7 +318,7 @@ opstring_t opStrings[] =
 
 static void GetOpType( char *token, expOperation_t *op )
 {
-	opstring_t *opString;
+	const opstring_t *opString;
 
 	if ( ( token[ 0 ] >= '0' && token[ 0 ] <= '9' ) ||
 	     //(token[0] == '-' && token[1] >= '0' && token[1] <= '9')   ||
@@ -448,11 +448,11 @@ static char    *ParseExpressionElement( char **data_p )
 {
 	int         c = 0, len;
 	char        *data;
-	const char  **punc;
+	const char  *const *punc;
 	static char token[ MAX_TOKEN_CHARS ];
 
 	// multiple character punctuation tokens
-	const char  *punctuation[] =
+	static const char *const punctuation[] =
 	{
 		"&&", "||", "<=", ">=", "==", "!=", NULL
 	};
@@ -2789,7 +2789,7 @@ skyParms <outerbox> <cloudheight> <innerbox>
 static void ParseSkyParms( char **text )
 {
 	char        *token;
-	static char *suf[ 6 ] = { "rt", "bk", "lf", "ft", "up", "dn" };
+	static const char suf[ 6 ][ 4 ] = { "rt", "bk", "lf", "ft", "up", "dn" };
 	char        pathname[ MAX_QPATH ];
 	int         i;
 
@@ -2923,11 +2923,11 @@ void ParseSort( char **text )
 
 typedef struct
 {
-	char *name;
-	int  clearSolid, surfaceFlags, contents;
+	const char *name;
+	int        clearSolid, surfaceFlags, contents;
 } infoParm_t;
 
-infoParm_t infoParms[] =
+static const infoParm_t infoParms[] =
 {
 	// server relevant contents
 
@@ -3771,7 +3771,7 @@ typedef struct
 	int multitextureBlend;
 } collapse_t;
 
-static collapse_t collapse[] =
+static const  collapse_t collapse[] =
 {
 	{
 		0,                                          GLS_DSTBLEND_SRC_COLOR | GLS_SRCBLEND_ZERO,

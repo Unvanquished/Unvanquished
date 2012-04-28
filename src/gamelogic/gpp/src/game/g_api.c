@@ -439,7 +439,7 @@ int trap_GetSoundLength( sfxHandle_t sfxHandle )
 
 //54.
 //return Parse_AddGlobalDefine( VMA(1) );
-int trap_Parse_AddGlobalDefine( char *define )
+int trap_Parse_AddGlobalDefine( const char *define )
 {
 	return syscall( G_PARSE_ADD_GLOBAL_DEFINE, define );
 }
@@ -626,7 +626,7 @@ void trap_SQL_CleanString( const char *in, char *out, int len )
 
 //86.
 //return SV_RSAGenMsg( VMA(1), VMA(2), VMA(3) );
-int trap_RSA_GenerateMessage( const char *public_key, char *cleartext, char *encrypted )
+int trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted )
 {
 	return syscall( G_RSA_GENMSG, public_key, cleartext, encrypted );
 }

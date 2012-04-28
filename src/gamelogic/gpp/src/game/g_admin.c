@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static char       g_bfb[ 32000 ];
 
 // note: list ordered alphabetically
-g_admin_cmd_t     g_admin_cmds[] =
+static const g_admin_cmd_t     g_admin_cmds[] =
 {
 	{
 		"adjustban",    G_admin_adjustban,   qfalse, "ban",
@@ -304,7 +304,7 @@ g_admin_cmd_t     g_admin_cmds[] =
 	}
 };
 
-static size_t     adminNumCmds = sizeof( g_admin_cmds ) / sizeof( g_admin_cmds[ 0 ] );
+static const size_t adminNumCmds = sizeof( g_admin_cmds ) / sizeof( g_admin_cmds[ 0 ] );
 
 static int        admin_level_maxname = 0;
 g_admin_level_t   *g_admin_levels = NULL;
@@ -497,7 +497,7 @@ qboolean G_admin_permission( gentity_t *ent, const char *flag )
 	return qfalse;
 }
 
-qboolean G_admin_name_check( gentity_t *ent, char *name, char *err, int len )
+qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 {
 	int             i;
 	gclient_t       *client;
@@ -4297,7 +4297,7 @@ qboolean G_admin_pause( gentity_t *ent )
 	return qtrue;
 }
 
-static char *fates[] =
+static const char *const fates[] =
 {
 	"^2built^7",
 	"^3deconstructed^7",
@@ -4617,7 +4617,7 @@ qboolean G_admin_unregister( gentity_t *ent )
  that it prints the message to the server console if ent is not defined.
 ================
 */
-void G_admin_print( gentity_t *ent, char *m )
+void G_admin_print( gentity_t *ent, const char *m )
 {
 	if ( ent )
 	{
@@ -4649,7 +4649,7 @@ void G_admin_buffer_end( gentity_t *ent )
 	ADMP( g_bfb );
 }
 
-void G_admin_buffer_print( gentity_t *ent, char *m )
+void G_admin_buffer_print( gentity_t *ent, const char *m )
 {
 	// 1022 - strlen("print 64 \"\"") - 1
 	if ( strlen( m ) + strlen( g_bfb ) >= 1009 )

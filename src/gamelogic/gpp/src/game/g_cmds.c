@@ -30,7 +30,7 @@ G_SanitiseString
 Remove color codes and non-alphanumeric characters from a string
 ==================
 */
-void G_SanitiseString( char *in, char *out, int len )
+void G_SanitiseString( const char *in, char *out, int len )
 {
 	len--;
 
@@ -116,7 +116,7 @@ Returns -1 and optionally sets err if invalid or not exactly 1 match
 err will have a trailing \n if set
 ==================
 */
-int G_ClientNumberFromString( char *s, char *err, int len )
+int G_ClientNumberFromString( const char *s, char *err, int len )
 {
 	gclient_t *cl;
 	int       i, found = 0, m = -1;
@@ -235,7 +235,7 @@ names that are a partial match for s.
 Returns number of matching clientids up to max.
 ==================
 */
-int G_ClientNumbersFromString( char *s, int *plist, int max )
+int G_ClientNumbersFromString( const char *s, int *plist, int max )
 {
 	gclient_t *p;
 	int       i, found = 0;
@@ -1554,7 +1554,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		{ "layout",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 		{ "nextmap",      V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
 		{ "poll",         V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
-		{}
+		{ NULL }
 	};
 	// Items in this enum MUST correspond to the above entries, else Things Break
 	enum voteType_t {
@@ -3793,8 +3793,8 @@ void Cmd_ListMaps_f( gentity_t *ent )
 #define MAX_MAPLOGS 5
 
 typedef struct {
-	char flag;
-	char *description;
+	char       flag;
+	const char *description;
 } mapLogResult_t;
 
 static const mapLogResult_t maplog_table[] = {
@@ -3905,9 +3905,9 @@ void Cmd_MapLog_f( gentity_t *ent )
 
 	while( *ptr )
 	{
-		char *clock = "  -:--";
-		char *result = "^1unknown";
-		char *end = ptr;
+		const char *clock = "  -:--";
+		const char *result = "^1unknown";
+		char       *end = ptr;
 
 		while ( *end && *end != ' ' )
 		{
@@ -4102,7 +4102,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 	CP( "cp \"^2Pubkey authenticated\"\n" );
 }
 
-commands_t    cmds[] =
+static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
 	{ "build",           CMD_TEAM | CMD_LIVING,               Cmd_Build_f            },
@@ -4150,7 +4150,7 @@ commands_t    cmds[] =
 	{ "vsay_team",       CMD_MESSAGE | CMD_INTERMISSION,      Cmd_VSay_f             },
 	{ "where",           0,                                   Cmd_Where_f            }
 };
-static size_t numCmds = sizeof( cmds ) / sizeof( cmds[ 0 ] );
+static const size_t numCmds = sizeof( cmds ) / sizeof( cmds[ 0 ] );
 
 /*
 =================
@@ -4278,7 +4278,7 @@ void G_ListCommands( gentity_t *ent )
 	G_admin_cmdlist( ent );
 }
 
-void G_DecolorString( char *in, char *out, int len )
+void G_DecolorString( const char *in, char *out, int len )
 {
 	qboolean decolor = qtrue;
 
@@ -4306,7 +4306,7 @@ void G_DecolorString( char *in, char *out, int len )
 	*out = '\0';
 }
 
-void G_UnEscapeString( char *in, char *out, int len )
+void G_UnEscapeString( const char *in, char *out, int len )
 {
 	len--;
 

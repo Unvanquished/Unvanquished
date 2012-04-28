@@ -64,6 +64,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define WINDOW_BACKCOLORSET        0x00400000 // backcolor was explicitly set
 #define WINDOW_TIMEDVISIBLE        0x00800000 // visibility timing ( NOT implemented )
 #define WINDOW_DRAG                0x01000000 // KTW: Added for draggable windows
+#define WINDOW_NOSTRETCH           0x02000000 // Keep the window's aspect ratio constant
 
 // CGAME cursor type bits
 #define CURSOR_NONE                0x00000001
@@ -407,6 +408,7 @@ typedef struct
 	qhandle_t ( *registerShaderNoMip )( const char *p );
 	void ( *setColor )( const vec4_t v );
 	void ( *drawHandlePic )( float x, float y, float w, float h, qhandle_t asset );
+	void ( *drawNoStretchPic ) ( float x, float y, float w, float h, qhandle_t asset );
 	void ( *drawStretchPic )( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
 	qhandle_t ( *registerModel )( const char *p );
 	void ( *modelBounds )( qhandle_t model, vec3_t min, vec3_t max );

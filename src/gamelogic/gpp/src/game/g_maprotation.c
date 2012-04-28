@@ -118,7 +118,7 @@ G_MapExists
 Check if a map exists
 ===============
 */
-qboolean G_MapExists( char *name )
+qboolean G_MapExists( const char *name )
 {
 	return trap_FS_FOpenFile( va( "maps/%s.bsp", name ), NULL, FS_READ );
 }
@@ -130,7 +130,7 @@ G_RotationExists
 Check if a rotation exists
 ===============
 */
-static qboolean G_RotationExists( char *name )
+static qboolean G_RotationExists( const char *name )
 {
 	int i;
 
@@ -152,7 +152,7 @@ G_LabelExists
 Check if a label exists in a rotation
 ===============
 */
-static qboolean G_LabelExists( int rotation, char *name )
+static qboolean G_LabelExists( int rotation, const char *name )
 {
 	mapRotation_t *mr = &mapRotations.rotations[ rotation ];
 	int           i;
@@ -1330,7 +1330,7 @@ G_StartMapRotation
 Switch to a new map rotation
 ===============
 */
-qboolean G_StartMapRotation( char *name, qboolean advance,
+qboolean G_StartMapRotation( const char *name, qboolean advance,
                              qboolean putOnStack, qboolean reset_index, int depth )
 {
 	int i;

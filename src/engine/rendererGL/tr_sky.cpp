@@ -38,7 +38,7 @@ POLYGON TO BOX SIDE PROJECTION
 ===================================================================================
 */
 
-static vec3_t sky_clip[ 6 ] =
+static const vec3_t sky_clip[ 6 ] =
 {
 	{ 1,  1,  0 },
 	{ 1,  -1, 0 },
@@ -65,7 +65,7 @@ static void AddSkyPolygon( int nump, vec3_t vecs )
 	float      *vp;
 
 	// s = [0]/[2], t = [1]/[2]
-	static int vec_to_st[ 6 ][ 3 ] =
+	static const int vec_to_st[ 6 ][ 3 ] =
 	{
 		{ -2, 3,  1  },
 		{ 2,  3,  -1 },
@@ -199,7 +199,7 @@ ClipSkyPolygon
 */
 static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 {
-	float    *norm;
+	const float *norm;
 	float    *v;
 	qboolean front, back;
 	float    d, e;
@@ -359,7 +359,7 @@ CLOUD VERTEX GENERATION
 static void MakeSkyVec( float s, float t, int axis, vec4_t outSt, vec4_t outXYZ )
 {
 	// 1 = s, 2 = t, 3 = 2048
-	static int st_to_vec[ 6 ][ 3 ] =
+	static const int st_to_vec[ 6 ][ 3 ] =
 	{
 		{ 3,  -1, 2 },
 		{ -3, 1,  2 },

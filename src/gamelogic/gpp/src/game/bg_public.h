@@ -923,8 +923,8 @@ typedef struct
 {
 	class_t  number;
 
-	char     *name;
-	char     *info;
+	const char *name;
+	const char *info;
 
 	int      stages;
 
@@ -991,10 +991,10 @@ typedef struct
 {
 	buildable_t number;
 
-	char        *name;
-	char        *humanName;
-	char        *info;
-	char        *entityName;
+	const char  *name;
+	const char  *humanName;
+	const char  *info;
+	const char  *entityName;
 
 	trType_t    traj;
 	float       bounce;
@@ -1056,9 +1056,9 @@ typedef struct
 
 	int      slots;
 
-	char     *name;
-	char     *humanName;
-	char     *info;
+	const char *name;
+	const char *humanName;
+	const char *info;
 
 	int      maxAmmo;
 	int      maxClips;
@@ -1093,11 +1093,11 @@ typedef struct
 
 	int       slots;
 
-	char      *name;
-	char      *humanName;
-	char      *info;
+	const char *name;
+	const char *humanName;
+	const char *info;
 
-	char      *icon;
+	const char *icon;
 
 	qboolean  purchasable;
 	qboolean  usable;
@@ -1272,8 +1272,8 @@ typedef struct voice_s
 voice_t      *BG_VoiceInit( void );
 void         BG_PrintVoices( voice_t *voices, int debugLevel );
 
-voice_t      *BG_VoiceByName( voice_t *head, char *name );
-voiceCmd_t   *BG_VoiceCmdFind( voiceCmd_t *head, char *name, int *cmdNum );
+voice_t      *BG_VoiceByName( voice_t *head, const char *name );
+voiceCmd_t   *BG_VoiceCmdFind( voiceCmd_t *head, const char *name, int *cmdNum );
 voiceCmd_t   *BG_VoiceCmdByNum( voiceCmd_t *head, int num );
 voiceTrack_t *BG_VoiceTrackByNum( voiceTrack_t *head, int num );
 

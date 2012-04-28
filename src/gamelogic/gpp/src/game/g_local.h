@@ -246,7 +246,7 @@ struct gentity_s
 
 	qboolean         inuse;
 
-	char             *classname; // set in QuakeEd
+	const char       *classname; // set in QuakeEd
 	int              spawnflags; // set in QuakeEd
 
 	qboolean         neverFree; // if true, FreeEntity will only unlink
@@ -864,9 +864,9 @@ typedef struct
 
 typedef struct
 {
-	char *cmdName;
-	int  cmdFlags;
-	void ( *cmdHandler )( gentity_t *ent );
+	const char *cmdName;
+	int        cmdFlags;
+	void      ( *cmdHandler )( gentity_t *ent );
 } commands_t;
 
 //
@@ -906,14 +906,14 @@ void     G_FollowLockView( gentity_t *ent );
 qboolean G_FollowNewClient( gentity_t *ent, int dir );
 void     G_ToggleFollow( gentity_t *ent );
 qboolean G_MatchOnePlayer( const int *plist, int found, char *err, int len );
-int      G_ClientNumberFromString( char *s, char *err, int len );
-int      G_ClientNumbersFromString( char *s, int *plist, int max );
+int      G_ClientNumberFromString( const char *s, char *err, int len );
+int      G_ClientNumbersFromString( const char *s, int *plist, int max );
 char     *ConcatArgs( int start );
 char     *ConcatArgsPrintable( int start );
 void     G_Say( gentity_t *ent, saymode_t mode, const char *chatText );
-void     G_DecolorString( char *in, char *out, int len );
-void     G_UnEscapeString( char *in, char *out, int len );
-void     G_SanitiseString( char *in, char *out, int len );
+void     G_DecolorString( const char *in, char *out, int len );
+void     G_UnEscapeString( const char *in, char *out, int len );
+void     G_SanitiseString( const char *in, char *out, int len );
 void     Cmd_PrivateMessage_f( gentity_t *ent );
 void     Cmd_ListMaps_f( gentity_t *ent );
 void     Cmd_Test_f( gentity_t *ent );
@@ -981,7 +981,7 @@ void             G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim,
 void             G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim );
 void             G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
 void             FinishSpawningBuildable( gentity_t *ent );
-void             G_LayoutSave( char *name );
+void             G_LayoutSave( const char *name );
 int              G_LayoutList( const char *map, char *list, int len );
 void             G_LayoutSelect( void );
 void             G_LayoutLoad( void );
@@ -1010,13 +1010,13 @@ void             G_UpdateBuildableRangeMarkers( void );
 qboolean   G_AddressParse( const char *str, addr_t *addr );
 qboolean   G_AddressCompare( const addr_t *a, const addr_t *b );
 
-int        G_ParticleSystemIndex( char *name );
-int        G_ShaderIndex( char *name );
-int        G_ModelIndex( char *name );
-int        G_SoundIndex( char *name );
+int        G_ParticleSystemIndex( const char *name );
+int        G_ShaderIndex( const char *name );
+int        G_ModelIndex( const char *name );
+int        G_SoundIndex( const char *name );
 void       G_KillBox( gentity_t *ent );
 gentity_t  *G_Find( gentity_t *from, int fieldofs, const char *match );
-gentity_t  *G_PickTarget( char *targetname );
+gentity_t  *G_PickTarget( const char *targetname );
 void       G_UseTargets( gentity_t *ent, gentity_t *activator );
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
 
@@ -1217,9 +1217,9 @@ void G_RunClient( gentity_t *ent );
 //
 // g_team.c
 //
-team_t    G_TeamFromString( char *str );
-void      G_TeamCommand( team_t team, char *cmd );
-void      G_AreaTeamCommand( gentity_t *ent, char *cmd );
+team_t    G_TeamFromString( const char *str );
+void      G_TeamCommand( team_t team, const char *cmd );
+void      G_AreaTeamCommand( gentity_t *ent, const char *cmd );
 qboolean  OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
 void      G_LeaveTeam( gentity_t *self );
 void      G_ChangeTeam( gentity_t *ent, team_t newTeam );
@@ -1241,13 +1241,13 @@ void G_WriteSessionData( void );
 void     G_PrintRotations( void );
 void     G_PrintCurrentRotation( gentity_t *ent );
 void     G_AdvanceMapRotation( int depth );
-qboolean G_StartMapRotation( char *name, qboolean advance,
+qboolean G_StartMapRotation( const char *name, qboolean advance,
                              qboolean putOnStack, qboolean reset_index, int depth );
 void     G_StopMapRotation( void );
 qboolean G_MapRotationActive( void );
 void     G_InitMapRotations( void );
 void     G_ShutdownMapRotations( void );
-qboolean G_MapExists( char *name );
+qboolean G_MapExists( const char *name );
 void     G_ClearRotationStack( void );
 void     G_MapLog_NewMap( void );
 void     G_MapLog_Result( char result );
@@ -1339,6 +1339,12 @@ extern  vmCvar_t g_alienStage2Threshold;
 extern  vmCvar_t g_alienStage3Threshold;
 extern  vmCvar_t g_teamImbalanceWarnings;
 extern  vmCvar_t g_freeFundPeriod;
+
+extern  vmCvar_t g_luciHalfLifeTime;
+extern  vmCvar_t g_luciFullPowerTime;
+extern  vmCvar_t g_pulseHalfLifeTime;
+extern  vmCvar_t g_pulseFullPowerTime;
+extern  vmCvar_t g_flameFadeout;
 
 extern  vmCvar_t g_unlagged;
 
@@ -1481,7 +1487,7 @@ qboolean         trap_GetTag( int clientNum, int tagFileNumber, char *tagName, o
 qboolean         trap_LoadTag( const char *filename );
 sfxHandle_t      trap_RegisterSound( const char *sample, qboolean compressed );
 int              trap_GetSoundLength( sfxHandle_t sfxHandle );
-int              trap_Parse_AddGlobalDefine( char *define );
+int              trap_Parse_AddGlobalDefine( const char *define );
 int              trap_Parse_LoadSource( const char *filename );
 int              trap_Parse_FreeSource( int handle );
 int              trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
@@ -1510,7 +1516,7 @@ int              trap_SQL_FieldCount( int queryid );
 void             trap_SQL_CleanString( const char *in, char *out, int len );
 
 #endif
-int              trap_RSA_GenerateMessage( const char *public_key, char *cleartext, char *encrypted );
+int              trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted );
 #ifdef __cplusplus
 }
 #endif

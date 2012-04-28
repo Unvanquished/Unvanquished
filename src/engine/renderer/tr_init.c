@@ -964,12 +964,12 @@ GfxInfo_f
 void GfxInfo_f( void )
 {
 	cvar_t     *sys_cpustring = ri.Cvar_Get( "sys_cpustring", "", 0 );
-	const char *enablestrings[] =
+	static const char enablestrings[][16] =
 	{
 		"disabled",
 		"enabled"
 	};
-	const char *fsstrings[] =
+	static const char fsstrings[][16] =
 	{
 		"windowed",
 		"fullscreen"

@@ -626,9 +626,9 @@ static void Svcmd_G_AdvanceMapRotation_f( void )
 	G_AdvanceMapRotation( 0 );
 }
 
-struct svcmd
+static const struct svcmd
 {
-	char     *cmd;
+	const char *cmd;
 	qboolean dedicated;
 	void ( *function )( void );
 } svcmds[] =

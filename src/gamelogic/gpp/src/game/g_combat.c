@@ -78,7 +78,7 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
 }
 
 // these are just for logging, the client prints its own messages
-char *modNames[] =
+static const char *const modNames[] =
 {
 	"MOD_UNKNOWN",
 	"MOD_SHOTGUN",
@@ -260,7 +260,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	int       anim;
 	int       killer;
 	int       i;
-	char      *killerName, *obit;
+	const char *killerName, *obit;
 
 	if ( self->client->ps.pm_type == PM_DEAD )
 	{
@@ -965,7 +965,7 @@ G_InitDamageLocations
 */
 void G_InitDamageLocations( void )
 {
-	char         *modelName;
+	const char   *modelName;
 	char         filename[ MAX_QPATH ];
 	int          i;
 	int          len;
