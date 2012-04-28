@@ -1689,6 +1689,7 @@ void     CG_DrawPlane( vec3_t origin, vec3_t down, vec3_t right, qhandle_t shade
 void     CG_AdjustFrom640( float *x, float *y, float *w, float *h );
 void     CG_FillRect( float x, float y, float width, float height, const float *color );
 void     CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
+void     CG_DrawNoStretchPic( float x, float y, float width, float height, qhandle_t hShader );
 void     CG_DrawFadePic( float x, float y, float width, float height, vec4_t fcolor,
                          vec4_t tcolor, float amount, qhandle_t hShader );
 void     CG_SetClipRegion( float x, float y, float w, float h );

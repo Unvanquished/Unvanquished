@@ -4869,6 +4869,7 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.registerShaderNoMip = &trap_R_RegisterShaderNoMip;
 	uiInfo.uiDC.setColor = &UI_SetColor;
 	uiInfo.uiDC.drawHandlePic = &UI_DrawHandlePic;
+	uiInfo.uiDC.drawNoStretchPic = &UI_DrawNoStretchPic;
 	uiInfo.uiDC.drawStretchPic = &trap_R_DrawStretchPic;
 	uiInfo.uiDC.registerModel = &trap_R_RegisterModel;
 	uiInfo.uiDC.modelBounds = &trap_R_ModelBounds;

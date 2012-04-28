@@ -320,8 +320,10 @@ qboolean        UI_ConsoleCommand( int realTime );
 char            *UI_Cvar_VariableString( const char *var_name );
 void            UI_SetColor( const float *rgba );
 void            UI_AdjustFrom640( float *x, float *y, float *w, float *h );
+void            UI_AdjustFrom640NoStretch( float *x, float *y, float *w, float *h );
 void            UI_Refresh( int time );
 void            UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader );
+void            UI_DrawNoStretchPic( float x, float y, float w, float h, qhandle_t hShader );
 void            UI_FillRect( float x, float y, float width, float height, const float *color );
 
 #endif

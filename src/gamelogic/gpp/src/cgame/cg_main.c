@@ -2081,6 +2081,7 @@ void CG_LoadHudMenu( void )
 	cgDC.registerShaderNoMip = &trap_R_RegisterShaderNoMip;
 	cgDC.setColor = &trap_R_SetColor;
 	cgDC.drawHandlePic = &CG_DrawPic;
+	cgDC.drawNoStretchPic = &CG_DrawNoStretchPic;
 	cgDC.drawStretchPic = &trap_R_DrawStretchPic;
 	cgDC.registerModel = &trap_R_RegisterModel;
 	cgDC.modelBounds = &trap_R_ModelBounds;

@@ -1145,8 +1145,14 @@ static void Window_Paint( Window *w, float fadeAmount, float fadeClamp, float fa
 		{
 			DC->setColor( w->foreColor );
 		}
-
-		DC->drawHandlePic( fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background );
+		if ( w->flags & WINDOW_NOSTRETCH )
+		{
+			DC->drawNoStretchPic( fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background );
+		}
+		else
+		{
+			DC->drawHandlePic( fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background );
+		}
 		DC->setColor( NULL );
 	}
 	else if ( w->style == WINDOW_STYLE_CINEMATIC )
@@ -2307,6 +2313,29 @@ void UI_AdjustFrom640( float *x, float *y, float *w, float *h )
 	*y *= DC->yscale;
 	*w *= DC->xscale;
 	*h *= DC->yscale;
+}
+
+/*
+================
+UI_AdjustFrom640NoStretch
+
+Adjusted for resolution while maintaining aspect ratio
+================
+*/
+void UI_AdjustFrom640NoStretch( float *x, float *y, float *w, float *h )
+{
+	// Get the origin of the picture
+	*x += (*w/2);
+	*y -= (*h/2);
+	// Scale it
+	*x *= DC->xscale;
+	*y *= DC->yscale;
+	*w *= DC->yscale;
+	*h *= DC->yscale;
+	// Calculate the top left hand corner
+	*x -= (*w/2);
+	*y += (*h/2);
+
 }
 
 /*
@@ -8064,6 +8093,14 @@ qboolean ItemParse_hideCvar( itemDef_t *item, int handle )
 	return qfalse;
 }
 
+// nostretch
+qboolean ItemParse_nostretch( itemDef_t *item, int handle )
+{
+	item->window.flags |= WINDOW_NOSTRETCH;
+	return qtrue;
+}
+
+
 static keywordHash_t itemParseKeywords[] =
 {
 	{ "name",                ItemParse_name,                TYPE_ANY   },
@@ -8133,6 +8170,7 @@ static keywordHash_t itemParseKeywords[] =
 	{ "hideCvar",            ItemParse_hideCvar,            TYPE_ANY   },
 	{ "cinematic",           ItemParse_cinematic,           TYPE_ANY   },
 	{ "doubleclick",         ItemParse_doubleClick,         TYPE_LIST  },
+	{ "nostretch",           ItemParse_nostretch,           TYPE_ANY   },
 	{ NULL,                  voidFunction2 }
 };
 
