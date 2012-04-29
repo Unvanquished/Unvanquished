@@ -394,16 +394,6 @@ void IN_AttackUp( void )
 	IN_KeyUp( &kb[ KB_ATTACK ] );
 }
 
-void IN_TalkDown( void )
-{
-	IN_KeyDown( &kb[ KB_TALK ] );
-}
-
-void IN_TalkUp( void )
-{
-	IN_KeyUp( &kb[ KB_TALK ] );
-}
-
 void IN_UseItemDown( void )
 {
 	IN_KeyDown( &kb[ KB_USEITEM ] );
@@ -444,15 +434,14 @@ void IN_ActivateUp( void )
 	IN_KeyUp( &kb[ KB_ACTIVATE ] );
 }
 
-// wbuttons (wolf buttons)
-void IN_Wbutton0Down( void )
+void IN_SecondaryAttackDown( void )
 {
-	IN_KeyDown( &kb[ KB_WBUTTONS0 ] );
+	IN_KeyDown( &kb[ KB_SECATTACK ] );
 } //----(SA) secondary fire button
 
-void IN_Wbutton0Up( void )
+void IN_SecondaryAttackUp( void )
 {
-	IN_KeyUp( &kb[ KB_WBUTTONS0 ] );
+	IN_KeyUp( &kb[ KB_SECATTACK ] );
 }
 
 void IN_ZoomDown( void )
@@ -1499,8 +1488,6 @@ void CL_InitInput( void )
 
 	Cmd_AddCommand( "+attack", IN_AttackDown );  // Primary attack
 	Cmd_AddCommand( "-attack", IN_AttackUp );
-	Cmd_AddCommand( "+talk", IN_TalkDown );
-	Cmd_AddCommand( "-talk", IN_TalkUp );
 	Cmd_AddCommand( "+useitem", IN_UseItemDown ); // Use an item
 	Cmd_AddCommand( "-useitem", IN_UseItemUp );
 	Cmd_AddCommand( "+taunt", IN_TauntDown );  // Taunt ("COME ON!")
@@ -1510,8 +1497,8 @@ void CL_InitInput( void )
 	Cmd_AddCommand( "+activate", IN_ActivateDown );
 	Cmd_AddCommand( "-activate", IN_ActivateUp );
 
-	Cmd_AddCommand( "+attack2", IN_Wbutton0Down );  //----(SA) secondary firing
-	Cmd_AddCommand( "-attack2", IN_Wbutton0Up );
+	Cmd_AddCommand( "+attack2", IN_SecondaryAttackDown );  //----(SA) secondary firing
+	Cmd_AddCommand( "-attack2", IN_SecondaryAttackUp );
 	Cmd_AddCommand( "+zoom", IN_ZoomDown );  //
 	Cmd_AddCommand( "-zoom", IN_ZoomUp );
 	Cmd_AddCommand( "+reload", IN_ReloadDown );  //

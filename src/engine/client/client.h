@@ -649,18 +649,18 @@ typedef enum
 
   KB_BUTTONS_GROUP_1,
   KB_ATTACK = KB_BUTTONS_GROUP_1,
-  KB_TALK,
+  KB_TALKING, // set when console or chat is open
   KB_USEITEM,
   KB_TAUNT,
-  KB_BUTTONS4,
+  KB_WALKING, // set when the player is walking
   KB_SPRINT,
   KB_ACTIVATE,
-  KB_ANY, // not available
+  KB_ANY,     // set when any key is pressed
 
   KB_BUTTONS_GROUP_2,
-  KB_WBUTTONS0 = KB_BUTTONS_GROUP_2,
+  KB_SECATTACK = KB_BUTTONS_GROUP_2,
   KB_ZOOM,
-  KB_WBUTTONS2,
+  KB_WBUTTONS2, // spare
   KB_RELOAD,
   KB_LEANLEFT,
   KB_LEANRIGHT,
