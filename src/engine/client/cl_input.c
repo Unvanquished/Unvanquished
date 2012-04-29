@@ -582,11 +582,11 @@ void CL_KeyMove( usercmd_t *cmd )
 	if ( kb[ KB_SPEED ].active ^ cl_run->integer )
 	{
 		movespeed = 127;
-		cmd->buttons &= ~BUTTON_WALKING;
+		usercmdReleaseButton( cmd->buttons, BUTTON_WALKING );
 	}
 	else
 	{
-		cmd->buttons |= BUTTON_WALKING;
+		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 		movespeed = 64;
 	}
 
@@ -604,15 +604,15 @@ void CL_KeyMove( usercmd_t *cmd )
 	side -= movespeed * CL_KeyState( &kb[ KB_MOVELEFT ] );
 
 //----(SA)  added
-	if ( cmd->buttons & BUTTON_ACTIVATE )
+	if ( usercmdButtonPressed( cmd->buttons, BUTTON_ACTIVATE) )
 	{
 		if ( side > 0 )
 		{
-			cmd->wbuttons |= WBUTTON_LEANRIGHT;
+			usercmdPressButton( cmd->buttons, BUTTON_LEANRIGHT );
 		}
 		else if ( side < 0 )
 		{
-			cmd->wbuttons |= WBUTTON_LEANLEFT;
+			usercmdPressButton( cmd->buttons, BUTTON_LEANLEFT );
 		}
 
 		side = 0; // disallow the strafe when holding 'activate'
@@ -758,7 +758,7 @@ void CL_JoystickMove( usercmd_t *cmd )
 
 	if ( !( kb[ KB_SPEED ].active ^ cl_run->integer ) )
 	{
-		cmd->buttons |= BUTTON_WALKING;
+		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 	}
 
 	if ( kb[ KB_SPEED ].active )
@@ -814,7 +814,7 @@ void CL_Xbox360ControllerMove( usercmd_t *cmd )
 
 	if ( !( kb[ KB_SPEED ].active ^ cl_run->integer ) )
 	{
-		cmd->buttons |= BUTTON_WALKING;
+		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 	}
 
 	if ( kb[ KB_SPEED ].active )
@@ -954,41 +954,49 @@ void CL_CmdButtons( usercmd_t *cmd )
 {
 	int i;
 
+	static const byte kb_to_button[] = {
+		BUTTON_TALK,
+		BUTTON_WALKING,
+		BUTTON_ANY,
+		BUTTON_ATTACK,
+		BUTTON_ATTACK2,
+		BUTTON_USE_HOLDABLE,
+		BUTTON_GESTURE,
+		BUTTON_SPRINT,
+		BUTTON_ACTIVATE,
+		BUTTON_DODGE,
+		// etmain follows
+		BUTTON_ZOOM,
+		BUTTON_RELOAD,
+		BUTTON_LEANLEFT,
+		BUTTON_LEANRIGHT,
+	};
+
 	//
 	// figure button bits
 	// send a button bit even if the key was pressed and released in
 	// less than a frame
 	//
-	for ( i = 0; i < 8; i++ )
+	for ( i = 0; i < sizeof( kb_to_button ) / sizeof( kb_to_button[0] ); ++i )
 	{
-		if ( kb[ KB_BUTTONS_GROUP_1 + i ].active || kb[ KB_BUTTONS_GROUP_1 + i ].wasPressed )
+		if ( kb[ KB_BUTTONS + i ].active || kb[ KB_BUTTONS + i ].wasPressed )
 		{
-			cmd->buttons |= 1 << i;
+			usercmdPressButton( cmd->buttons, kb_to_button[i] );
 		}
 
-		kb[ KB_BUTTONS_GROUP_1 + i ].wasPressed = qfalse;
-	}
-
-	for ( i = 0; i < 8; i++ )
-	{
-		if ( kb[ KB_BUTTONS_GROUP_2 + i ].active || kb[ KB_BUTTONS_GROUP_2 + i ].wasPressed )
-		{
-			cmd->wbuttons |= 1 << i;
-		}
-
-		kb[ KB_BUTTONS_GROUP_2 + i ].wasPressed = qfalse;
+		kb[ KB_BUTTONS + i ].wasPressed = qfalse;
 	}
 
 	if ( cls.keyCatchers && !cl_bypassMouseInput->integer )
 	{
-		cmd->buttons |= BUTTON_TALK;
+		usercmdPressButton( cmd->buttons, BUTTON_TALK );
 	}
 
 	// allow the game to know if any key at all is
 	// currently pressed, even if it isn't bound to anything
 	if ( anykeydown && ( !cls.keyCatchers || cl_bypassMouseInput->integer ) )
 	{
-		cmd->buttons |= BUTTON_ANY;
+		usercmdPressButton( cmd->buttons, BUTTON_ANY );
 	}
 
 	// Arnout: clear 'waspressed' from double tap buttons

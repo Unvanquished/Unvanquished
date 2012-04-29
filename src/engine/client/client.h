@@ -647,28 +647,27 @@ typedef enum
   KB_UP,
   KB_DOWN,
 
-  KB_BUTTONS_GROUP_1,
-  KB_ATTACK = KB_BUTTONS_GROUP_1,
-  KB_TALKING, // set when console or chat is open
+  KB_MLOOK,
+  KB_VOIPRECORD,
+
+  // these must be last and must match ordering in cl_input.c
+  // (there's a translation table in CL_CmdButtons)
+  KB_BUTTONS,
+  KB_TALKING = KB_BUTTONS, // set when console or chat is open
+  KB_WALKING, // set when the player is walking
+  KB_ANY,     // set when any key is pressed
+  KB_ATTACK,
+  KB_SECATTACK,
   KB_USEITEM,
   KB_TAUNT,
-  KB_WALKING, // set when the player is walking
   KB_SPRINT,
   KB_ACTIVATE,
-  KB_ANY,     // set when any key is pressed
-
-  KB_BUTTONS_GROUP_2,
-  KB_SECATTACK = KB_BUTTONS_GROUP_2,
+  KB_DODGE,
   KB_ZOOM,
-  KB_WBUTTONS2, // spare
   KB_RELOAD,
   KB_LEANLEFT,
   KB_LEANRIGHT,
-  KB_WBUTTONS6,
-  KB_DODGE,
 
-  KB_MLOOK,
-  KB_VOIPRECORD,
   NUM_BUTTONS
 } kbuttons_t;
 

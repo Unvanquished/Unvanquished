@@ -385,9 +385,9 @@ struct gclient_s
 	int                lastCmdTime; // level.time of last usercmd_t, for EF_CONNECTION
 	// we can't just use pers.lastCommand.time, because
 	// of the g_sycronousclients case
-	int    buttons;
-	int    oldbuttons;
-	int    latched_buttons;
+	byte   buttons[ USERCMD_BUTTONS / 8 ];
+	byte   oldbuttons[ USERCMD_BUTTONS / 8 ];
+	byte   latched_buttons[ USERCMD_BUTTONS / 8 ];
 
 	vec3_t oldOrigin;
 
