@@ -1198,7 +1198,7 @@
       group optionsGrp
       type ITEM_TYPE_BIND
       text "Activate Upgrade:"
-      cvar "+button2"
+      cvar "+useitem"
       rect SCONTENT_X (SCONTENT_Y+(4*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
@@ -1322,7 +1322,7 @@
       group optionsGrp
       type ITEM_TYPE_BIND
       text "Gesture:"
-      cvar "+button3"
+      cvar "+taunt"
       rect SCONTENT_X (SCONTENT_Y+(0*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
