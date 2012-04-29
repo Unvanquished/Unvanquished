@@ -5541,7 +5541,7 @@ configcvar_t;
 static bind_t g_bindings[] =
 {
 	{ "+scores",        K_TAB,              -1,            -1, -1 },
-	{ "+button2",       K_ENTER,            -1,            -1, -1 },
+	{ "+useitem",       K_ENTER,            -1,            -1, -1 },
 	{ "+speed",         K_SHIFT,            -1,            -1, -1 },
 	{ "+dodge",         'z',                -1,            -1, -1 }, // human dodging
 	{ "+sprint",        'x',                -1,            -1, -1 },
@@ -5581,8 +5581,7 @@ static bind_t g_bindings[] =
 	{ "deconstruct",    'e',                -1,            -1, -1 }, // buildable destroy
 	{ "weapprev",       '[',                -1,            -1, -1 },
 	{ "weapnext",       ']',                -1,            -1, -1 },
-	{ "+button3",       K_MOUSE3,           -1,            -1, -1 },
-	{ "+button4",       K_MOUSE4,           -1,            -1, -1 },
+	{ "+taunt",         K_MOUSE3,           -1,            -1, -1 },
 	{ "vote yes",       K_F1,               -1,            -1, -1 },
 	{ "vote no",        K_F2,               -1,            -1, -1 },
 	{ "teamvote yes",   K_F3,               -1,            -1, -1 },
