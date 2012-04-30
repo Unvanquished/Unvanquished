@@ -2478,11 +2478,19 @@ void G_CheckVote( team_t team )
 	             pass ? "pass" : "fail",
 	             level.voteYes[ team ], level.voteNo[ team ], level.numVotingClients[ team ] );
 
-	Q_snprintf( msg, sizeof (msg),
-		  ( team == TEAM_NONE ) ? ( pass ? "Vote passed (%d - %d)" : "Vote failed (%d - %d; %.0f%% needed)" )
-		                        : ( pass ? "Team vote passed (%d - %d)" : "Team vote failed (%d - %d; %.0f%% needed)" ),
-	          level.voteYes[ team ], level.voteNo[ team ],
-	          votePassThreshold * 100);
+	if ( pass )
+	{
+		Q_snprintf( msg, sizeof (msg),
+		            ( team == TEAM_NONE ) ? "Vote passed (%d - %d)" : "Team vote passed (%d - %d)",
+		            level.voteYes[ team ], level.voteNo[ team ] );
+	}
+	else
+	{
+		Q_snprintf( msg, sizeof (msg),
+		            ( team == TEAM_NONE ) ? "Vote failed (%d - %d; %.0f%% needed)" : "Team vote failed (%d - %d; %.0f%% needed)",
+		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
+	}
+
 	cmd = va( "print \"%s\n\"", msg );
 
 	if ( team == TEAM_NONE )

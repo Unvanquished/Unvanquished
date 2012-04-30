@@ -89,17 +89,19 @@ static inline void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int
 	switch ( type )
 	{
 	case PR_INVERSE_SQUARE:
+		travelled = lifetime + fullPower - halfLife;
 		if ( travelled > halfLife )
 		{
-			travelled = lifetime + fullPower - halfLife;
 			divider = Q_rsqrt( travelled / halfLife );
 		}
 		break;
 
 	case PR_COSINE:
-		travelled = lifetime;;
+		travelled = lifetime;
 		divider = MAX( 0.0, cos( travelled * M_PI / 2.0 / ( fullPower + 1 ) ) );
 		break;
+
+	case PR_END:; // compiler, do shut up :-)
 	}
 
 	self->damage *= divider;
@@ -115,7 +117,7 @@ G_DoMissileTimePowerReduce
 Called on missile explosion or impact if the missile is otherwise not specially handled
 ================
 */
-static inline G_DoMissileTimePowerReduce( gentity_t *ent )
+static inline void G_DoMissileTimePowerReduce( gentity_t *ent )
 {
 	if ( !strcmp( ent->classname, "lcannon" ) )
 	{
