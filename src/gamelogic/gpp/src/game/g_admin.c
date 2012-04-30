@@ -493,6 +493,15 @@ qboolean G_admin_permission( gentity_t *ent, const char *flag )
 	return qfalse;
 }
 
+static qboolean G_IsUnnamed( const char *name )
+{
+	char testName[ MAX_NAME_LENGTH ];
+
+	G_SanitiseString( name, testName, sizeof( testName ) );
+
+	return Q_stricmp( testName, UNNAMED_PLAYER ) ? qfalse : qtrue;
+}
+
 qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 {
 	int             i;
@@ -504,7 +513,7 @@ qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int le
 
 	G_SanitiseString( name, name2, sizeof( name2 ) );
 
-	if ( !strcmp( name2, "unnamedplayer" ) )
+	if ( !Q_stricmp( name2, UNNAMED_PLAYER ) )
 	{
 		return qtrue;
 	}
@@ -2057,6 +2066,12 @@ qboolean G_admin_setlevel( gentity_t *ent )
 			admin_listadmins( ent, 0, name );
 			return qfalse;
 		}
+	}
+
+	if ( l->level && G_IsUnnamed( vic->client->pers.netname ) )
+	{
+		ADMP( "^3setlevel: ^7your intended victim has the default name\n" );
+		return qfalse;
 	}
 
 	if ( ent && !admin_higher_admin( ent->client->pers.admin, a ) )
@@ -4533,6 +4548,7 @@ qboolean G_admin_l1( gentity_t *ent )
 	}
 
 	trap_Argv( 1, name, sizeof( name ) );
+
 	id = admin_find_admin( ent, name, "l1", &vic, &a );
 
 	if ( id < 0 )
@@ -4543,6 +4559,12 @@ qboolean G_admin_l1( gentity_t *ent )
 	if ( !a || a->level != 0 )
 	{
 		ADMP( "^3l1: ^7your intended victim is not level 0\n" );
+		return qfalse;
+	}
+
+	if ( G_IsUnnamed( vic->client->pers.netname ) )
+	{
+		ADMP( "^3l1: ^7your intended victim has the default name\n" );
 		return qfalse;
 	}
 
@@ -4557,7 +4579,6 @@ qboolean G_admin_l1( gentity_t *ent )
 qboolean G_admin_register( gentity_t *ent )
 {
 	int level = 1;
-	char testName[ MAX_NAME_LENGTH ] = { "" };
 
 	if ( !ent )
 	{
@@ -4569,9 +4590,7 @@ qboolean G_admin_register( gentity_t *ent )
 		level = ent->client->pers.admin->level;
 	}
 
-	G_SanitiseString( ent->client->pers.netname, testName, sizeof( testName ) );
-
-	if ( !Q_stricmp( testName, UNNAMED_PLAYER ) )
+	if ( G_IsUnnamed( ent->client->pers.netname ) )
 	{
 		ADMP( "^3register: ^7you must first change your name\n" );
 		return qfalse;
