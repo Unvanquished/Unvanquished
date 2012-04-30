@@ -3655,125 +3655,90 @@ static void UI_RunMenuScript( char **args )
 			trap_Cvar_Set( "cl_paused", "0" );
 			Menus_CloseAll();
 		}
-		else if ( Q_stricmp( name, "voteDraw" ) == 0 )
+		else if ( Q_strnicmp( name, "vote", 4 ) == 0 )
 		{
-			char buffer[ MAX_CVAR_VALUE_STRING ];
-			trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+			static const struct {
+				const char vote[16];
+				const char call[16];
+				enum {
+					V_NONE, V_MAP, V_PLAYER, V_TEAMMATE
+				}          type;
+				qboolean   reason;
+			} voteInfo[] = {
+				{ "Draw",           "draw",       V_NONE,     qtrue  },
+				{ "Map",            "map",        V_MAP,      qfalse },
+				{ "NextMap",        "nextmap",    V_MAP,      qfalse },
+				{ "Kick",           "kick",       V_PLAYER,   qtrue  },
+				{ "Spectate",       "spectate",   V_PLAYER,   qtrue  },
+				{ "Mute",           "mute",       V_PLAYER,   qtrue  },
+				{ "UnMute",         "unmute",     V_PLAYER,   qfalse },
+				{ "TeamKick",       "kick",       V_TEAMMATE, qtrue  },
+				{ "TeamSpectate",   "spectate",   V_TEAMMATE, qtrue  },
+				{ "TeamDenyBuild",  "denybuild",  V_TEAMMATE, qtrue  },
+				{ "TeamAllowBuild", "allowbuild", V_TEAMMATE, qfalse },
+			};
+			int i;
 
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote draw %s\n", buffer ) );
-			trap_Cvar_Set( "ui_reason", "" );
-		}
-		else if ( Q_stricmp( name, "voteMap" ) == 0 )
-		{
-			if ( ui_selectedMap.integer >= 0 && ui_selectedMap.integer < uiInfo.mapCount )
+			for ( i = 0; i < sizeof( voteInfo ) / sizeof( voteInfo[0] ); ++i )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote map %s\n",
-				                                       uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ) );
-			}
-		}
-		else if ( Q_stricmp( name, "voteNextMap" ) == 0 )
-		{
-			if ( ui_selectedMap.integer >= 0 && ui_selectedMap.integer < uiInfo.mapCount )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote nextmap %s\n",
-				                                       uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ) );
-			}
-		}
-		else if ( Q_stricmp( name, "voteKick" ) == 0 )
-		{
-			if ( uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount )
-			{
-				char buffer[ MAX_CVAR_VALUE_STRING ];
-				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+				if ( Q_stricmp( name + 4, voteInfo[i].vote ) == 0 )
+				{
+					char buffer[ MAX_CVAR_VALUE_STRING ];
 
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote kick %d %s\n",
-				                                       uiInfo.clientNums[ uiInfo.playerIndex ],
-				                                       buffer ) );
-				trap_Cvar_Set( "ui_reason", "" );
-			}
-		}
-		else if ( Q_stricmp( name, "voteSpectate" ) == 0 )
-		{
-			if ( uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount )
-			{
-				char buffer[ MAX_CVAR_VALUE_STRING ];
-				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+					buffer[0] = 0;
 
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote spectate %d %s\n",
-				                                       uiInfo.clientNums[ uiInfo.playerIndex ],
-				                                       buffer ) );
-				trap_Cvar_Set( "ui_reason", "" );
-			}
-		}
-		else if ( Q_stricmp( name, "voteMute" ) == 0 )
-		{
-			if ( uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount )
-			{
-				char buffer[ MAX_CVAR_VALUE_STRING ];
-				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+					if ( voteInfo[i].reason )
+					{
+						trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+					}
 
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote mute %d %s\n",
-				                                       uiInfo.clientNums[ uiInfo.playerIndex ],
-				                                       buffer ) );
-				trap_Cvar_Set( "ui_reason", "" );
-			}
-		}
-		else if ( Q_stricmp( name, "voteUnMute" ) == 0 )
-		{
-			if ( uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote unmute %d\n",
-				                                       uiInfo.clientNums[ uiInfo.playerIndex ] ) );
-			}
-		}
-		else if ( Q_stricmp( name, "voteTeamKick" ) == 0 )
-		{
-			if ( uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount )
-			{
-				char buffer[ MAX_CVAR_VALUE_STRING ];
-				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+					switch ( voteInfo[i].type )
+					{
+					case V_NONE:;
+						trap_Cmd_ExecuteText( EXEC_APPEND,
+						                      va( "callvote %s %s\n",
+						                          voteInfo[i].call, buffer ) );
+						break;
 
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callteamvote kick %d %s\n",
-				                                       uiInfo.teamClientNums[ uiInfo.teamPlayerIndex ],
-				                                       buffer ) );
-				trap_Cvar_Set( "ui_reason", "" );
-			}
-		}
-		else if ( Q_stricmp( name, "voteTeamSpectate" ) == 0 )
-		{
-			if ( uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount )
-			{
-				char buffer[ MAX_CVAR_VALUE_STRING ];
-				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+					case V_MAP:
+						if ( ui_selectedMap.integer >= 0 && ui_selectedMap.integer < uiInfo.mapCount )
+						{
+							trap_Cmd_ExecuteText( EXEC_APPEND,
+												  va( "callvote %s %s %s\n",
+													  voteInfo[i].call,
+													  uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName,
+													  buffer ) );
+						}
+						break;
 
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callteamvote spectate %d %s\n",
-				                                       uiInfo.teamClientNums[ uiInfo.teamPlayerIndex ],
-				                                       buffer ) );
-				trap_Cvar_Set( "ui_reason", "" );
-			}
-		}
-		else if ( Q_stricmp( name, "voteTeamDenyBuild" ) == 0 )
-		{
-			if ( uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount )
-			{
-				char buffer[ MAX_CVAR_VALUE_STRING ];
-				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+					case V_PLAYER:;
+						if ( uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount )
+						{
+							trap_Cmd_ExecuteText( EXEC_APPEND,
+							                      va( "callvote %s %d %s\n",
+													  voteInfo[i].call,
+							                          uiInfo.clientNums[ uiInfo.playerIndex ],
+							                          buffer ) );
+						}
+						break;
 
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callteamvote denybuild %d %s\n",
-				                                       uiInfo.teamClientNums[ uiInfo.teamPlayerIndex ],
-				                                       buffer ) );
-				trap_Cvar_Set( "ui_reason", "" );
-			}
-		}
-		else if ( Q_stricmp( name, "voteTeamAllowBuild" ) == 0 )
-		{
-			if ( uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callteamvote allowbuild %d\n",
-				                                       uiInfo.teamClientNums[ uiInfo.teamPlayerIndex ] ) );
-			}
-		}
+					case V_TEAMMATE:;
+						if ( uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount )
+						{
+							trap_Cmd_ExecuteText( EXEC_APPEND,
+							                      va( "callteamvote %s %d %s\n",
+													  voteInfo[i].call,
+							                          uiInfo.clientNums[ uiInfo.playerIndex ],
+							                          buffer ) );
+						}
+						break;
+					}
 
+					trap_Cvar_Set( "ui_reason", "" );
+					break;
+				}
+			}
+		}
 		else if ( Q_stricmp( name, "addFavorite" ) == 0 )
 		{
 			if ( ui_netSource.integer != AS_FAVORITES )
