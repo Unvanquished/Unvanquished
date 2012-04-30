@@ -202,6 +202,7 @@ vmCvar_t        cg_rangeMarkerLineOpacity;
 vmCvar_t        cg_rangeMarkerLineThickness;
 vmCvar_t        cg_rangeMarkerForBlueprint;
 vmCvar_t        cg_rangeMarkerBuildableTypes;
+vmCvar_t        cg_rangeMarkerSpectate;
 vmCvar_t        cg_binaryShaderScreenScale;
 
 vmCvar_t        cg_painBlendUpRate;
@@ -339,6 +340,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_rangeMarkerLineThickness,    "cg_rangeMarkerLineThickness",    "4.0",          CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerForBlueprint,     "cg_rangeMarkerForBlueprint",     "1",            CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerBuildableTypes,   "cg_rangeMarkerBuildableTypes",   "support",      CVAR_ARCHIVE                 },
+	{ &cg_rangeMarkerSpectate,         "cg_rangeMarkerSpectate",         "0",            CVAR_ARCHIVE                 },
 	{ NULL,                            "cg_buildableRangeMarkerMask",    "",             CVAR_USERINFO                },
 	{ &cg_binaryShaderScreenScale,     "cg_binaryShaderScreenScale",     "1.0",          CVAR_ARCHIVE                 },
 
@@ -618,16 +620,18 @@ CG_UpdateBuildableRangeMarkerMask
 */
 void CG_UpdateBuildableRangeMarkerMask( void )
 {
-	static int mc = 0;
+	static int btmc = 0;
+	static int spmc = 0;
 
-	if ( cg_rangeMarkerBuildableTypes.modificationCount != mc )
+	if ( cg_rangeMarkerBuildableTypes.modificationCount != btmc ||
+	     cg_rangeMarkerSpectate.modificationCount != spmc )
 	{
 		int         brmMask;
 		char        buffer[ MAX_CVAR_VALUE_STRING ];
 		char        *p, *q;
 		buildable_t buildable;
 
-		brmMask = 0;
+		brmMask = cg_rangeMarkerSpectate.integer ? ( 1 << BA_NONE ) : 0;
 
 		if ( !cg_rangeMarkerBuildableTypes.string[ 0 ] )
 		{
@@ -720,7 +724,8 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 empty:
 		trap_Cvar_Set( "cg_buildableRangeMarkerMask", va( "%i", brmMask ) );
 
-		mc = cg_rangeMarkerBuildableTypes.modificationCount;
+		btmc = cg_rangeMarkerBuildableTypes.modificationCount;
+		spmc = cg_rangeMarkerSpectate.modificationCount;
 	}
 }
 
