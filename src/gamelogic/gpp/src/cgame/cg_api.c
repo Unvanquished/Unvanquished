@@ -1249,3 +1249,9 @@ void trap_CompleteCallback( const char *complete )
 {
 	syscall( CG_COMPLETE_CALLBACK, complete );
 }
+
+//173.
+void trap_RegisterButtonCommands( const char *cmds )
+{
+	syscall( CG_REGISTER_BUTTON_COMMANDS, cmds );
+}

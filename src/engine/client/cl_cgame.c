@@ -1376,6 +1376,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return re.AnimFrameRate( args[ 1 ] );
 #endif
 
+		case CG_REGISTER_BUTTON_COMMANDS:
+			CL_RegisterButtonCommands( VMA( 1 ) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}

@@ -247,7 +247,8 @@ typedef enum
   CG_R_ANIMNUMFRAMES,
   CG_R_ANIMFRAMERATE,
 //#endif
-  CG_COMPLETE_CALLBACK
+  CG_COMPLETE_CALLBACK,
+  CG_REGISTER_BUTTON_COMMANDS
 } cgameImport_t;
 
 typedef enum
@@ -491,3 +492,5 @@ int             trap_R_AnimFrameRate( qhandle_t hAnim );
 
 #endif
 void            trap_CompleteCallback( const char *complete );
+
+void            trap_RegisterButtonCommands( const char *cmds );
