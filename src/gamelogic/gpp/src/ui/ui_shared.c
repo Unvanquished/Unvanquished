@@ -3414,8 +3414,9 @@ qboolean Item_ComboBox_HandleKey( itemDef_t *item, int key, qboolean down, qbool
 
 qboolean Item_YesNo_HandleKey( itemDef_t *item, int key )
 {
-	if ( Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) &&
-	     item->window.flags & WINDOW_HASFOCUS && item->cvar )
+	if ( item->cvar &&
+	     ( ( item->window.flags & WINDOW_HASFOCUS ) ||
+	       Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) ) )
 	{
 		if ( key == K_MOUSE1 || key == K_ENTER || key == K_MOUSE2 || key == K_MOUSE3 )
 		{
