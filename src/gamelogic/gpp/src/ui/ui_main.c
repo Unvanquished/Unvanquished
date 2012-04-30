@@ -3692,6 +3692,19 @@ static void UI_RunMenuScript( char **args )
 				trap_Cvar_Set( "ui_reason", "" );
 			}
 		}
+		else if ( Q_stricmp( name, "voteSpectate" ) == 0 )
+		{
+			if ( uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount )
+			{
+				char buffer[ MAX_CVAR_VALUE_STRING ];
+				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote spectate %d %s\n",
+				                                       uiInfo.clientNums[ uiInfo.playerIndex ],
+				                                       buffer ) );
+				trap_Cvar_Set( "ui_reason", "" );
+			}
+		}
 		else if ( Q_stricmp( name, "voteMute" ) == 0 )
 		{
 			if ( uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount )
@@ -3721,6 +3734,19 @@ static void UI_RunMenuScript( char **args )
 				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
 
 				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callteamvote kick %d %s\n",
+				                                       uiInfo.teamClientNums[ uiInfo.teamPlayerIndex ],
+				                                       buffer ) );
+				trap_Cvar_Set( "ui_reason", "" );
+			}
+		}
+		else if ( Q_stricmp( name, "voteTeamSpectate" ) == 0 )
+		{
+			if ( uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount )
+			{
+				char buffer[ MAX_CVAR_VALUE_STRING ];
+				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callteamvote spectate %d %s\n",
 				                                       uiInfo.teamClientNums[ uiInfo.teamPlayerIndex ],
 				                                       buffer ) );
 				trap_Cvar_Set( "ui_reason", "" );
