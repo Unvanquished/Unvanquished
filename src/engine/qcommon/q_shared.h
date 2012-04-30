@@ -2082,7 +2082,7 @@ char *Q_UTF8Unstore( int e );
 	  DT_MOVERIGHT,
 	  DT_FORWARD,
 	  DT_BACK,
-	  DT_LEANLEFT,
+	  DT_LEANLEFT,   // etmain
 	  DT_LEANRIGHT,
 	  DT_UP,
 	  DT_NUM

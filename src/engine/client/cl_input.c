@@ -70,8 +70,8 @@ static kbuttons_t dtmapping[] =
 	KB_MOVERIGHT, // DT_MOVERIGHT
 	KB_FORWARD, // DT_FORWARD
 	KB_BACK, // DT_BACK
-//	KB_LEANLEFT, // DT_LEANLEFT
-//	KB_LEANRIGHT, // DT_LEANRIGHT
+	-1, // DT_LEANLEFT
+	-1, // DT_LEANRIGHT
 	KB_UP // DT_UP
 };
 
@@ -424,7 +424,7 @@ void CL_KeyMove( usercmd_t *cmd )
 
 		for ( i = 1; i < DT_NUM; i++ )
 		{
-			key_down = kb[ dtmapping[ i ] ].active || kb[ dtmapping[ i ] ].wasPressed;
+			key_down = dtmapping[ i ] == -1 || kb[ dtmapping[ i ] ].active || kb[ dtmapping[ i ] ].wasPressed;
 
 			if ( key_down && !cl.doubleTap.pressedTime[ i ] )
 			{
@@ -764,7 +764,10 @@ void CL_CmdButtons( usercmd_t *cmd )
 	// Arnout: clear 'waspressed' from double tap buttons
 	for ( i = 1; i < DT_NUM; i++ )
 	{
-		kb[ dtmapping[ i ] ].wasPressed = qfalse;
+		if ( dtmapping[ i ] != -1 )
+		{
+			kb[ dtmapping[ i ] ].wasPressed = qfalse;
+		}
 	}
 }
 
