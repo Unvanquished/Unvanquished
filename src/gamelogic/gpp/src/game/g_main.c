@@ -773,16 +773,41 @@ G_ClearVotes
 remove all currently active votes
 ==================
 */
-static void G_ClearVotes( void )
+static void G_ClearVotes( qboolean all )
 {
 	int i;
-	memset( level.voteTime, 0, sizeof( level.voteTime ) );
 
 	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
-		trap_SetConfigstring( CS_VOTE_TIME + i, "" );
-		trap_SetConfigstring( CS_VOTE_STRING + i, "" );
+		if ( all || G_CheckStopVote( i ) )
+		{
+			level.voteTime[ i ] = 0;
+			trap_SetConfigstring( CS_VOTE_TIME + i, "" );
+			trap_SetConfigstring( CS_VOTE_STRING + i, "" );
+		}
 	}
+}
+
+/*
+==================
+G_VotesRunning
+
+Check if there are any votes currently running
+==================
+*/
+static qboolean G_VotesRunning( voidl )
+{
+	int i;
+
+	for ( i = 0; i < NUM_TEAMS; i++ )
+	{
+		if ( level.voteTime[ i ] )
+		{
+			return qtrue;
+		}
+	}
+
+	return qfalse;
 }
 
 /*
@@ -793,7 +818,7 @@ G_ShutdownGame
 void G_ShutdownGame( int restart )
 {
 	// in case of a map_restart
-	G_ClearVotes();
+	G_ClearVotes( qtrue );
 
 	G_RestoreCvars();
 
@@ -1788,7 +1813,7 @@ void BeginIntermission( void )
 
 	level.intermissiontime = level.time;
 
-	G_ClearVotes();
+	G_ClearVotes( qfalse );
 
 	G_UpdateTeamConfigStrings();
 
@@ -2157,9 +2182,10 @@ void CheckIntermissionExit( void )
 	int          i;
 	gclient_t    *cl;
 	clientList_t readyMasks;
+	qboolean     voting = G_VotesRunning();
 
 	//if no clients are connected, just exit
-	if ( level.numConnectedClients == 0 )
+	if ( level.numConnectedClients == 0 && !voting)
 	{
 		ExitLevel();
 		return;
@@ -2198,8 +2224,8 @@ void CheckIntermissionExit( void )
 
 	trap_SetConfigstring( CS_CLIENTS_READY, Com_ClientListString( &readyMasks ) );
 
-	// never exit in less than five seconds
-	if ( level.time < level.intermissiontime + 5000 )
+	// never exit in less than five seconds or if there's an ongoing vote
+	if ( voting || level.time < level.intermissiontime + 5000 )
 	{
 		return;
 	}
