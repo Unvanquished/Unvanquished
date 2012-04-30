@@ -3173,19 +3173,9 @@ static void UI_Update( const char *name )
 	}
 	else if ( Q_stricmp( name, "r_lodbias" ) == 0 )
 	{
-		switch ( val )
+	        if ( (unsigned int) val < 3 )
 		{
-			case 0:
-				trap_Cvar_SetValue( "r_subdivisions", 4 );
-				break;
-
-			case 1:
-				trap_Cvar_SetValue( "r_subdivisions", 12 );
-				break;
-
-			case 2:
-				trap_Cvar_SetValue( "r_subdivisions", 20 );
-				break;
+			trap_Cvar_SetValue( "r_subdivisions", 4 + 8 * val );
 		}
 	}
 	else if ( Q_stricmp( name, "ui_glCustom" ) == 0 )
@@ -3217,9 +3207,9 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_texturebits", 0 );
 				trap_Cvar_SetValue( "r_fastSky", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
-				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
 			case 2: // fast
@@ -3230,9 +3220,9 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_depthbits", 0 );
 				trap_Cvar_SetValue( "r_picmip", 1 );
 				trap_Cvar_SetValue( "r_texturebits", 0 );
-				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "r_fastSky", 1 );
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
+				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
@@ -3245,9 +3235,9 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_depthbits", 16 );
 				trap_Cvar_SetValue( "r_picmip", 2 );
 				trap_Cvar_SetValue( "r_texturebits", 16 );
-				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "r_fastSky", 1 );
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
+				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
