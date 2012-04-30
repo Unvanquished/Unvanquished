@@ -829,7 +829,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize )
 	// if something made the name bad, put them back to UnnamedPlayer
 	if ( invalid )
 	{
-		Q_strncpyz( p, "UnnamedPlayer", outSize );
+		Q_strncpyz( p, UNNAMED_PLAYER, outSize );
 	}
 }
 
@@ -985,7 +985,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 		if ( revertName )
 		{
-			Q_strncpyz( client->pers.netname, *oldname ? oldname : "UnnamedPlayer",
+			Q_strncpyz( client->pers.netname, *oldname ? oldname : UNNAMED_PLAYER,
 			            sizeof( client->pers.netname ) );
 			Info_SetValueForKey( userinfo, "name", oldname );
 			trap_SetUserinfo( clientNum, userinfo );

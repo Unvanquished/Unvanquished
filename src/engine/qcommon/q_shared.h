@@ -81,6 +81,7 @@ extern "C" {
 
 #define NEW_ANIMS
 #define MAX_TEAMNAME 32
+#define UNNAMED_PLAYER "UnnamedPlayer"
 
 #define DEMOEXT      "dm_" // standard demo extension
 
