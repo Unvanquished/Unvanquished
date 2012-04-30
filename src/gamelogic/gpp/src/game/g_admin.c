@@ -4557,6 +4557,7 @@ qboolean G_admin_l1( gentity_t *ent )
 qboolean G_admin_register( gentity_t *ent )
 {
 	int level = 1;
+	char testName[ MAX_NAME_LENGTH ] = { "" };
 
 	if ( !ent )
 	{
@@ -4566,6 +4567,14 @@ qboolean G_admin_register( gentity_t *ent )
 	if ( ent->client->pers.admin && ent->client->pers.admin->level != 0 )
 	{
 		level = ent->client->pers.admin->level;
+	}
+
+	G_SanitiseString( ent->client->pers.netname, testName, sizeof( testName ) );
+
+	if ( !Q_stricmp( testName, UNNAMED_PLAYER ) )
+	{
+		ADMP( "^3register: ^7you must first change your name\n" );
+		return qfalse;
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, va( "setlevel %d %d;",
