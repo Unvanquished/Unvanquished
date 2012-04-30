@@ -1261,8 +1261,8 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 
 		term = strchr( cmd_names, ',' );
 
-		snprintf( name + 1, sizeof( name ) - 1, "%.*s",
-		          (int)( term ? ( term - cmd_names ) : sizeof ( name ) - 1 ), cmd_names );
+		Q_snprintf( name + 1, sizeof( name ) - 1, "%.*s",
+		            (int)( term ? ( term - cmd_names ) : sizeof ( name ) - 1 ), cmd_names );
 
 		if ( Cmd_AddButtonCommand( name + 1, KB_BUTTONS + i ) )
 		{
