@@ -4462,11 +4462,18 @@ static rectDef_t *Item_CorrectedTextRect( itemDef_t *item )
 
 void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 {
+	static qboolean shift = qfalse;
+
 	int       i;
 	itemDef_t *item = NULL;
 	qboolean  inHandler = qfalse;
 
 	inHandler = qtrue;
+
+	if ( key == K_SHIFT )
+	{
+		shift = down;
+	}
 
 // KTW: Draggable Windows
 	if ( key == K_MOUSE1 && down && Rect_ContainsPoint( &menu->window.rect, DC->cursorx, DC->cursory ) &&
@@ -4583,6 +4590,13 @@ void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 			break;
 
 		case K_TAB:
+			if ( shift )
+			{
+				Menu_SetPrevCursorItem( menu );
+				break;
+			}
+			// else
+
 		case K_KP_DOWNARROW:
 		case K_DOWNARROW:
 			Menu_SetNextCursorItem( menu );
