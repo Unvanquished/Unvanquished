@@ -1590,8 +1590,16 @@ void G_admin_pubkey( void )
 			highest = a;
 			break;
 		}
-		else if ( a->counter == 0 || !a->pubkey[ 0 ] )
+		else if (!a->pubkey[ 0 ] )
 		{
+			continue;
+		}
+		else if ( a->counter == 0 )
+		{
+			if ( !a->msg2[ 0 ] )
+			{
+				a->counter = -1;
+			}
 			continue;
 		}
 		else if ( !highest )
