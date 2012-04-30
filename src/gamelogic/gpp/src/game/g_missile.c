@@ -73,7 +73,7 @@ typedef enum {
 	PR_END             // unused; here so that we can have the comma above for C89
 } powerReduce_t;
 
-static inline void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
+static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
 {
 	int lifetime = level.time - self->r.startTime;
 	float travelled;
@@ -117,7 +117,7 @@ G_DoMissileTimePowerReduce
 Called on missile explosion or impact if the missile is otherwise not specially handled
 ================
 */
-static inline void G_DoMissileTimePowerReduce( gentity_t *ent )
+static void G_DoMissileTimePowerReduce( gentity_t *ent )
 {
 	if ( !strcmp( ent->classname, "lcannon" ) )
 	{
