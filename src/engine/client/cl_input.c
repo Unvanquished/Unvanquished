@@ -494,9 +494,10 @@ void IN_DodgeUp( void )
 	IN_KeyUp( &kb[ KB_DODGE ] );
 }
 
-/*void IN_CenterView (void) {
+void IN_CenterView (void)
+{
         cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
-}*/
+}
 
 void IN_Notebook( void )
 {
@@ -1459,7 +1460,7 @@ CL_InitInput
 */
 void CL_InitInput( void )
 {
-//	Cmd_AddCommand ("centerview", IN_CenterView);
+	Cmd_AddCommand ("centerview", IN_CenterView);
 
 	Cmd_AddCommand( "+moveup", IN_UpDown );
 	Cmd_AddCommand( "-moveup", IN_UpUp );
