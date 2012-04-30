@@ -2109,27 +2109,27 @@ char *Q_UTF8Unstore( int e );
 	} usercmd_t;
 
 // Some functions for buttons manipulation & testing
-	static inline __attribute__(( always_inline )) void usercmdPressButton( byte *buttons, int bit )
+	static ID_INLINE __attribute__(( always_inline )) void usercmdPressButton( byte *buttons, int bit )
 	{
 		buttons[bit / 8] |= 1 << ( bit & 7 );
 	}
 
-	static inline __attribute__(( always_inline )) void usercmdReleaseButton( byte *buttons, int bit )
+	static ID_INLINE __attribute__(( always_inline )) void usercmdReleaseButton( byte *buttons, int bit )
 	{
 		buttons[bit / 8] &= ~( 1 << ( bit & 7 ) );
 	}
 
-	static inline __attribute__(( always_inline )) void usercmdClearButtons( byte *buttons )
+	static ID_INLINE __attribute__(( always_inline )) void usercmdClearButtons( byte *buttons )
 	{
 		memset( buttons, 0, USERCMD_BUTTONS / 8 );
 	}
 
-	static inline __attribute__(( always_inline )) void usercmdCopyButtons( byte *dest, const byte *source )
+	static ID_INLINE __attribute__(( always_inline )) void usercmdCopyButtons( byte *dest, const byte *source )
 	{
 		memcpy( dest, source, USERCMD_BUTTONS / 8 );
 	}
 
-	static inline __attribute__(( always_inline )) void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld )
+	static ID_INLINE __attribute__(( always_inline )) void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld )
 	{
 		int i;
 		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
@@ -2138,12 +2138,12 @@ char *Q_UTF8Unstore( int e );
 		}
 	}
 
-	static inline __attribute__(( always_inline )) qboolean usercmdButtonPressed( const byte *buttons, int bit )
+	static ID_INLINE __attribute__(( always_inline )) qboolean usercmdButtonPressed( const byte *buttons, int bit )
 	{
 		return ( buttons[bit / 8] & ( 1 << ( bit & 7 ) ) ) ? qtrue : qfalse;
 	}
 
-	static inline __attribute__(( always_inline )) qboolean usercmdButtonsDiffer( const byte *a, const byte *b )
+	static ID_INLINE __attribute__(( always_inline )) qboolean usercmdButtonsDiffer( const byte *a, const byte *b )
 	{
 		return memcmp( a, b, USERCMD_BUTTONS / 8 ) ? qtrue : qfalse;
 	}
