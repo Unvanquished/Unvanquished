@@ -696,6 +696,8 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 
 	VectorCopy( start, bolt->r.currentOrigin );
 
+	trap_SendServerCommand( self - g_entities, "vcommand grenade" );
+
 	return bolt;
 }
 
