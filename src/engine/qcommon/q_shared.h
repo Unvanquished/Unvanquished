@@ -1480,6 +1480,7 @@ extern "C" {
 //=============================================
 
 int Q_UTF8Width( const char *str );
+int Q_UTF8WidthCP( int ch );
 int Q_UTF8Strlen( const char *str );
 int Q_UTF8PrintStrlen( const char *str );
 qboolean Q_UTF8ContByte( char c );

@@ -77,6 +77,7 @@ typedef struct
 	void	(*LoadGlyph)(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo);
 	void	(*FreeGlyph)(face_t *face, int img, glyphInfo_t *glyphInfo);
 	void	(*Glyph)( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph );
+	void	(*GlyphChar)( fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph );
 	void	(*FreeCachedGlyphs)(face_t *face);
 
 	void ( *LoadWorld )( const char *name );

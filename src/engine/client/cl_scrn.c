@@ -78,6 +78,7 @@ void SCR_AdjustFrom640( float *x, float *y, float *w, float *h )
 
 	// adjust for wide screens
 	if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 )
+1
 	{
 		*x += 0.5 * ( cls.glconfig.vidWidth - ( cls.glconfig.vidHeight * 640 / 480 ) );
 	}
@@ -139,26 +140,26 @@ void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader
 	re.DrawStretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
-static glyphInfo_t *Glyph( const char *s )
+static glyphInfo_t *Glyph( int ch )
 {
 	static glyphInfo_t glyphs[8];
 	static int index = 0;
 	glyphInfo_t *glyph = &glyphs[ index++ & 7 ];
 
-	re.Glyph( &cls.consoleFont, &cls.consoleFace, s, glyph );
+	re.GlyphChar( &cls.consoleFont, &cls.consoleFace, ch, glyph );
 
 	return glyph;
 }
 
 /*
-** SCR_DrawChar
+** SCR_DrawUnichar
 ** chars are drawn at 640*480 virtual screen size
 */
-static void SCR_DrawChar( int x, int y, float size, const char *s )
+static void SCR_DrawUnichar( int x, int y, float size, int ch )
 {
 	float ax, ay, aw, ah;
 
-	if ( *s == ' ' )
+	if ( ch == ' ' )
 	{
 		return;
 	}
@@ -178,7 +179,8 @@ static void SCR_DrawChar( int x, int y, float size, const char *s )
 	{
 		int row, col;
 		float frow, fcol;
-		char ch = *s;
+
+		if ( ch >= 0x100 ) { ch = '\0'; }
 
 		row = ch >> 4;
 		col = ch & 15;
@@ -194,7 +196,7 @@ static void SCR_DrawChar( int x, int y, float size, const char *s )
 	}
 	else
 	{
-	glyphInfo_t *glyph = Glyph( s );
+	glyphInfo_t *glyph = Glyph( ch );
 
 	re.DrawStretchPic( ax, ay, aw, glyph->imageHeight,
 		glyph->s, glyph->t,
@@ -203,19 +205,19 @@ static void SCR_DrawChar( int x, int y, float size, const char *s )
 	}
 }
 
-void SCR_DrawConsoleFontChar( float x, float y, const char *s )
+void SCR_DrawConsoleFontUnichar( float x, float y, int ch )
 {
-	glyphInfo_t *glyph = Glyph( s );
+	glyphInfo_t *glyph = Glyph( ch );
 	float       yadj = glyph->top;
-	float       xadj = ( SCR_ConsoleFontCharWidth( s ) - glyph->xSkip ) / 2.0;
+	float       xadj = ( SCR_ConsoleFontUnicharWidth( ch ) - glyph->xSkip ) / 2.0;
 
 	if ( cls.useLegacyConsoleFont )
 	{
-		SCR_DrawSmallChar( ( int ) x, ( int ) y, s );
+		SCR_DrawSmallUnichar( ( int ) x, ( int ) y, ch );
 		return;
 	}
 
-	if ( *s == ' ' )
+	if ( ch == ' ' )
 	{
 		return;
 	}
@@ -226,21 +228,23 @@ void SCR_DrawConsoleFontChar( float x, float y, const char *s )
 	                   glyph->glyph );
 }
 
+void SCR_DrawConsoleFontChar( float x, float y, const char *s )
+{
+	SCR_DrawConsoleFontUnichar( x, y, Q_UTF8CodePoint( s ) );
+}
+
 /*
-** SCR_DrawSmallChar
+** SCR_DrawSmallUnichar
 ** small chars are drawn at native screen resolution
 */
-void SCR_DrawSmallChar( int x, int y, const char *s )
+void SCR_DrawSmallUnichar( int x, int y, int ch )
 {
 	int   row, col;
 	float frow, fcol;
 	float size;
 
-	if( Q_UTF8Width( s ) <= 1 ) {
-		int ch = (int) *s;
-
-		ch &= 255;
-
+	if ( ch < 0x100 )
+	{
 		if ( ch == ' ' ) {
 			return;
 		}
@@ -261,7 +265,7 @@ void SCR_DrawSmallChar( int x, int y, const char *s )
 				fcol + size, frow + size,
 				cls.charSetShader );
 	} else {
-		glyphInfo_t *glyph = Glyph( s );
+		glyphInfo_t *glyph = Glyph( ch );
 
 		re.DrawStretchPic( x, y, SMALLCHAR_WIDTH, glyph->imageHeight,
 				glyph->s,
@@ -307,15 +311,18 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 
 	while ( *s )
 	{
+		int ch;
+
 		if ( !noColorEscape && Q_IsColorString( s ) )
 		{
 			s += 2;
 			continue;
 		}
 
-		SCR_DrawChar( xx + 2, y + 2, size, s );
+		ch = Q_UTF8CodePoint( s );
+		SCR_DrawUnichar( xx + 2, y + 2, size, ch );
 		xx += size;
-		s += Q_UTF8Width( s );
+		s += Q_UTF8WidthCP( ch );
 	}
 
 	// draw the colored text
@@ -325,6 +332,8 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 
 	while ( *s )
 	{
+		int ch;
+
 		if ( Q_IsColorString( s ) )
 		{
 			if ( !forceColor )
@@ -350,9 +359,10 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			}
 		}
 
-		SCR_DrawChar( xx, y, size, s );
+		ch = Q_UTF8CodePoint( s );
+		SCR_DrawUnichar( xx, y, size, ch );
 		xx += size;
-		s += Q_UTF8Width( s );
+		s += Q_UTF8WidthCP( ch );
 	}
 
 	re.SetColor( NULL );
@@ -395,6 +405,8 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 
 	while ( *s )
 	{
+		int ch;
+
 		if ( Q_IsColorString( s ) )
 		{
 			if ( !forceColor )
@@ -419,9 +431,10 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 			}
 		}
 
-		SCR_DrawConsoleFontChar( xx, y, s );
-		xx += SCR_ConsoleFontCharWidth( s );
-		s += Q_UTF8Width( s );
+		ch = Q_UTF8CodePoint( s );
+		SCR_DrawConsoleFontUnichar( xx, y, ch );
+		xx += SCR_ConsoleFontUnicharWidth( ch );
+		s += Q_UTF8WidthCP( ch );
 	}
 
 	re.SetColor( NULL );
@@ -444,7 +457,7 @@ static int SCR_Strlen( const char *str )
 		else
 		{
 			count++;
-			s++;
+			s += Q_UTF8Width( s );
 		}
 	}
 
@@ -843,9 +856,9 @@ void SCR_UpdateScreen( void )
 	recursive = 0;
 }
 
-float SCR_ConsoleFontCharWidth( const char *s )
+float SCR_ConsoleFontUnicharWidth( int ch )
 {
-	glyphInfo_t *glyph = Glyph( s );
+	glyphInfo_t *glyph = Glyph( ch );
 	float       width = glyph->xSkip + cl_consoleFontKerning->value;
 
 	if ( cls.useLegacyConsoleFont )
@@ -854,6 +867,11 @@ float SCR_ConsoleFontCharWidth( const char *s )
 	}
 
 	return ( width );
+}
+
+float SCR_ConsoleFontCharWidth( const char *s )
+{
+	return SCR_ConsoleFontUnicharWidth( Q_UTF8CodePoint( s ) );
 }
 
 float SCR_ConsoleFontCharHeight()

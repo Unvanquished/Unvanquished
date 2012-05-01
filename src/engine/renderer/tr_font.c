@@ -506,7 +506,7 @@ void RE_FreeFace(face_t *face)
 	}
 }
 
-void RE_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo)
+void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 {
 	FT_Face ftFace = face ? (FT_Face) face->opaque : NULL;
 	glyphInfo_t *tmp;
@@ -530,7 +530,7 @@ void RE_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo
 	}
 
 	Com_Memset(buf, 0, sizeof(buf));
-	tmp = RE_ConstructGlyphInfo(buf, &x, &y, &maxHeight, ftFace, Q_UTF8CodePoint( str ), qfalse);
+	tmp = RE_ConstructGlyphInfo(buf, &x, &y, &maxHeight, ftFace, ch, qfalse);
 	if( x == -1 || y == -1 )
 	{
 		Com_Memset(buf, 0, sizeof(buf));
@@ -578,6 +578,12 @@ void RE_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo
 	glyphInfo->glyph = h;
 	strncpy( glyphInfo->shaderName, name, sizeof( glyphInfo->shaderName ) );
 }
+
+void RE_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo)
+{
+	RE_LoadGlyphChar( face, Q_UTF8CodePoint( str ), img, glyphInfo );
+}
+
 void RE_FreeGlyph(face_t *face, int img, glyphInfo_t *glyphInfo)
 {
 	image_t *image;
@@ -603,21 +609,21 @@ void RE_FreeGlyph(face_t *face, int img, glyphInfo_t *glyphInfo)
 typedef struct
 {
 	qboolean    used;
-	char        str[5];
+	int         ch;
 	glyphInfo_t glyph;
 	face_t      *face;
 } glyphCache_t;
 
 static glyphCache_t glyphCache[MAX_FACE_GLYPHS] = {{0}}, *nextCache = glyphCache;
 
-void RE_Glyph( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph )
+void RE_GlyphChar( fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph )
 {
 	int    i;
 	int    width;
 
-	if( !str || !*str || !face || ( width = Q_UTF8Width( str ) ) <= 1 )
+	if( ch < 0x100 || !face )
 	{
-		memcpy( glyph, &font->glyphs[ (int)*str ], sizeof( *glyph ) );
+		memcpy( glyph, &font->glyphs[ ch ], sizeof( *glyph ) );
 		return;
 	}
 
@@ -632,17 +638,10 @@ void RE_Glyph( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *gly
 				// was freed
 				c->used = qfalse;
 			}
-			else
+			else if ( ch == c->ch )
 			{
-				const char *s, *cs;
-
-				for( s = str, cs = c->str; *s && *cs && *s == *cs && s - str < width ; s++, cs++ );
-
-			  if( !*cs && s - str == width)
-			  {
-				  memcpy( glyph, &c->glyph, sizeof( *glyph ) );
-				  return;
-			  }
+				memcpy( glyph, &c->glyph, sizeof( *glyph ) );
+				return;
 			}
 		}
 	}
@@ -652,16 +651,21 @@ void RE_Glyph( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *gly
 		RE_FreeGlyph( nextCache->face, nextCache - glyphCache, &nextCache->glyph );
 	}
 
-	RE_LoadGlyph( face, str, nextCache - glyphCache, &nextCache->glyph );
+	RE_LoadGlyphChar( face, ch, nextCache - glyphCache, &nextCache->glyph );
 	nextCache->face = face;
 
-	strncpy( nextCache->str, str, width );  // This should never cause an overflow since Q_UTF8Width never returns a width larger than 4
+	nextCache->ch = ch;
 	nextCache->used = qtrue;
 
 	if( ++nextCache - glyphCache >= MAX_FACE_GLYPHS )
 		nextCache = glyphCache;
 
 	memcpy( glyph, &nextCache->glyph, sizeof( *glyph ) );
+}
+
+void RE_Glyph( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph )
+{
+	RE_GlyphChar( font, face, Q_UTF8CodePoint( str ), glyph );
 }
 
 void RE_FreeCachedGlyphs( face_t *face )

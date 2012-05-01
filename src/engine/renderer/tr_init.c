@@ -1573,6 +1573,7 @@ extern "C" {
 		re.LoadGlyph = RE_LoadGlyph;
 		re.FreeGlyph = RE_FreeGlyph;
 		re.Glyph = RE_Glyph;
+		re.GlyphChar = RE_GlyphChar;
 		re.FreeCachedGlyphs = RE_FreeCachedGlyphs;
 		re.LoadWorld = RE_LoadWorldMap;
 //----(SA) added

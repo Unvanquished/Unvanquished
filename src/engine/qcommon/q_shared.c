@@ -2489,6 +2489,15 @@ int Q_UTF8Width( const char *str )
   return s - (const unsigned char *)str + 1;
 }
 
+int Q_UTF8WidthCP( int ch )
+{
+	if ( ch <=   0x007F ) { return 1; }
+	if ( ch <=   0x07FF ) { return 2; }
+	if ( ch <=   0xFFFF ) { return 3; }
+	if ( ch <= 0x10FFFF ) { return 4; }
+	return 0;
+}
+
 int Q_UTF8Strlen( const char *str )
 {
   int l = 0;
