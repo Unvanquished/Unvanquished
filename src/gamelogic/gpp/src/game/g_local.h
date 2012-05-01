@@ -536,6 +536,24 @@ typedef struct
 	int         powerValue;
 } buildLog_t;
 
+typedef enum {
+	VOTE_KICK,
+	VOTE_SPECTATE,
+	VOTE_MUTE,
+	VOTE_UNMUTE,
+	VOTE_DENYBUILD,
+	VOTE_ALLOWBUILD,
+	VOTE_SUDDEN_DEATH,
+	VOTE_EXTEND,
+	VOTE_ADMIT_DEFEAT,
+	VOTE_DRAW,
+	VOTE_MAP_RESTART,
+	VOTE_MAP,
+	VOTE_LAYOUT,
+	VOTE_NEXT_MAP,
+	VOTE_POLL
+} voteType_t;
+
 //
 // this structure is cleared as each map is entered
 //
@@ -584,6 +602,7 @@ typedef struct
 	int      warmupModificationCount; // for detecting if g_warmup is changed
 
 	// voting state
+	voteType_t voteType[ NUM_TEAMS ];
 	int  voteThreshold[ NUM_TEAMS ]; // need at least this percent to pass
 	char voteString[ NUM_TEAMS ][ MAX_STRING_CHARS ];
 	char voteDisplayString[ NUM_TEAMS ][ MAX_STRING_CHARS ];
@@ -749,6 +768,7 @@ int      G_FloodLimited( gentity_t *ent );
 void     G_ListCommands( gentity_t *ent );
 void     G_LoadCensors( void );
 void     G_CensorString( char *out, const char *in, int len, gentity_t *ent );
+qboolean G_CheckStopVote( team_t );
 
 //
 // g_physics.c
