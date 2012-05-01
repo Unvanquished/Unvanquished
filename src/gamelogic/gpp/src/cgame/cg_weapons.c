@@ -35,7 +35,7 @@ The server says this item is used on this level
 void CG_RegisterUpgrade( int upgradeNum )
 {
 	upgradeInfo_t *upgradeInfo;
-	char          *icon;
+	const char    *icon;
 
 	if ( upgradeNum <= UP_NONE || upgradeNum >= UP_NUM_UPGRADES )
 	{
@@ -501,17 +501,17 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			continue;
 		}
-		else if ( !Q_stricmp( token, "missileDlightIntensity" ) ) 
+		else if ( !Q_stricmp( token, "missileDlightIntensity" ) )
 		{
 			int intensity = 0;
 
 			token = COM_Parse( text_p );
-			
-			if ( !token ) 
+
+			if ( !token )
 			{
 				break;
 			}
-			
+
 			intensity = atoi(token);
 
 			if( intensity < 0 )
@@ -741,7 +741,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 
 			COM_StripExtension( token, token2 );
 
-			if ( ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.md5mesh", token2 ) ) ) )
+			if ( cg_highPolyWeaponModels.integer && ( wi->weaponModel = trap_R_RegisterModel( va( "%s_view.md5mesh", token2 ) ) ) )
 			{
 				wi->md5 = qtrue;
 
@@ -1987,9 +1987,9 @@ CG_DrawItemSelectText
 */
 void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 {
-	int   x, w;
-	char  *name;
-	float *color;
+	int        x, w;
+	const char *name;
+	float      *color;
 
 	color = CG_FadeColor( cg.weaponSelectTime, WEAPON_SELECT_TIME );
 

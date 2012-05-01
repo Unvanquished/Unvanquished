@@ -530,7 +530,7 @@ CG_RegisterParticleSystem
 Load the shaders required for a particle system
 ===============
 */
-qhandle_t CG_RegisterParticleSystem( char *name )
+qhandle_t CG_RegisterParticleSystem( const char *name )
 {
 	int                   i, j, k, l;
 	baseParticleSystem_t  *bps;

@@ -237,10 +237,10 @@ void CG_ShaderStateChanged( void )
 
 /*
 ================
-CG_AnnounceAlienStageTransistion
+CG_AnnounceAlienStageTransition
 ================
 */
-static void CG_AnnounceAlienStageTransistion( stage_t from, stage_t to )
+static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
 {
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
 	{
@@ -253,10 +253,10 @@ static void CG_AnnounceAlienStageTransistion( stage_t from, stage_t to )
 
 /*
 ================
-CG_AnnounceHumanStageTransistion
+CG_AnnounceHumanStageTransition
 ================
 */
-static void CG_AnnounceHumanStageTransistion( stage_t from, stage_t to )
+static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
 {
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
 	{
@@ -311,7 +311,7 @@ static void CG_ConfigStringModified( void )
 
 			if ( cgs.alienStage != oldAlienStage )
 			{
-				CG_AnnounceAlienStageTransistion( oldAlienStage, cgs.alienStage );
+				CG_AnnounceAlienStageTransition( oldAlienStage, cgs.alienStage );
 			}
 		}
 		else
@@ -330,7 +330,7 @@ static void CG_ConfigStringModified( void )
 
 			if ( cgs.humanStage != oldHumanStage )
 			{
-				CG_AnnounceHumanStageTransistion( oldHumanStage, cgs.humanStage );
+				CG_AnnounceHumanStageTransition( oldHumanStage, cgs.humanStage );
 			}
 		}
 		else
@@ -1382,7 +1382,7 @@ static void CG_GameCmds_f( void )
 	}
 }
 
-static consoleCommand_t svcommands[] =
+static const consoleCommand_t svcommands[] =
 {
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },

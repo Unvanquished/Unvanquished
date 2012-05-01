@@ -592,8 +592,8 @@ image_t        *R_LoadDDSImageData( void *pImageData, const char *name, int bits
 	GLuint   internal_format = 0;
 	GLenum   type = GL_UNSIGNED_BYTE;
 
-	vec4_t   zeroClampBorder = { 0, 0, 0, 1 };
-	vec4_t   alphaZeroClampBorder = { 0, 0, 0, 0 };
+	static const vec4_t   zeroClampBorder = { 0, 0, 0, 1 };
+	static const vec4_t   alphaZeroClampBorder = { 0, 0, 0, 0 };
 
 	//comes from R_CreateImage
 

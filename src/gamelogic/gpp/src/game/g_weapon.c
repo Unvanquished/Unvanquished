@@ -746,10 +746,12 @@ void LCChargeFire( gentity_t *ent, qboolean secondary )
 	}
 	else
 	{
+		float scaler = LCANNON_CHARGE_TIME_MAX - ent->client->ps.stats[ STAT_MISC ];
+
 		fire_luciferCannon( ent, muzzle, forward,
-		                    ent->client->ps.stats[ STAT_MISC ] *
-		                    LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX,
-		                    LCANNON_RADIUS, LCANNON_SPEED );
+		                    ent->client->ps.stats[ STAT_MISC ] * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX,
+		                    LCANNON_RADIUS,
+		                    LCANNON_SPEED + ( LCANNON_SECONDARY_SPEED - LCANNON_SPEED ) * scaler / LCANNON_CHARGE_TIME_MAX );
 	}
 
 	ent->client->ps.stats[ STAT_MISC ] = 0;

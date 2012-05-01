@@ -202,6 +202,7 @@ vmCvar_t        cg_rangeMarkerLineOpacity;
 vmCvar_t        cg_rangeMarkerLineThickness;
 vmCvar_t        cg_rangeMarkerForBlueprint;
 vmCvar_t        cg_rangeMarkerBuildableTypes;
+vmCvar_t        cg_rangeMarkerWhenSpectating;
 vmCvar_t        cg_binaryShaderScreenScale;
 
 vmCvar_t        cg_painBlendUpRate;
@@ -239,15 +240,19 @@ vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_animBlend;
 vmCvar_t        cg_core;
 
+vmCvar_t        cg_highPolyPlayerModels;
+vmCvar_t        cg_highPolyBuildableModels;
+vmCvar_t        cg_highPolyWeaponModels;
+
 typedef struct
 {
-	vmCvar_t *vmCvar;
-	char     *cvarName;
-	char     *defaultString;
-	int      cvarFlags;
+	vmCvar_t   *vmCvar;
+	const char *cvarName;
+	const char *defaultString;
+	int        cvarFlags;
 } cvarTable_t;
 
-static cvarTable_t cvarTable[] =
+static const cvarTable_t cvarTable[] =
 {
 	{ &cg_drawGun,                     "cg_drawGun",                     "1",            CVAR_ARCHIVE                 },
 	{ &cg_viewsize,                    "cg_viewsize",                    "100",          CVAR_ARCHIVE                 },
@@ -335,6 +340,7 @@ static cvarTable_t cvarTable[] =
 	{ &cg_rangeMarkerLineThickness,    "cg_rangeMarkerLineThickness",    "4.0",          CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerForBlueprint,     "cg_rangeMarkerForBlueprint",     "1",            CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerBuildableTypes,   "cg_rangeMarkerBuildableTypes",   "support",      CVAR_ARCHIVE                 },
+	{ &cg_rangeMarkerWhenSpectating,         "cg_rangeMarkerWhenSpectating",         "0",            CVAR_ARCHIVE                 },
 	{ NULL,                            "cg_buildableRangeMarkerMask",    "",             CVAR_USERINFO                },
 	{ &cg_binaryShaderScreenScale,     "cg_binaryShaderScreenScale",     "1.0",          CVAR_ARCHIVE                 },
 
@@ -390,7 +396,10 @@ static cvarTable_t cvarTable[] =
 	{ &cg_animBlend,                   "cg_animblend",                   "5.0",          CVAR_ARCHIVE                 },
 	{ &cg_core,                        "cg_core",                        "3",            CVAR_ARCHIVE                 },
 
-	{ &cg_chatTeamPrefix,              "cg_chatTeamPrefix",              "1",            CVAR_ARCHIVE                 }
+	{ &cg_chatTeamPrefix,              "cg_chatTeamPrefix",              "1",            CVAR_ARCHIVE                 },
+	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 };
 
 static int         cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
@@ -403,7 +412,7 @@ CG_RegisterCvars
 void CG_RegisterCvars( void )
 {
 	int         i;
-	cvarTable_t *cv;
+	const cvarTable_t *cv;
 	char        var[ MAX_TOKEN_CHARS ];
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
@@ -611,16 +620,18 @@ CG_UpdateBuildableRangeMarkerMask
 */
 void CG_UpdateBuildableRangeMarkerMask( void )
 {
-	static int mc = 0;
+	static int btmc = 0;
+	static int spmc = 0;
 
-	if ( cg_rangeMarkerBuildableTypes.modificationCount != mc )
+	if ( cg_rangeMarkerBuildableTypes.modificationCount != btmc ||
+	     cg_rangeMarkerWhenSpectating.modificationCount != spmc )
 	{
 		int         brmMask;
 		char        buffer[ MAX_CVAR_VALUE_STRING ];
 		char        *p, *q;
 		buildable_t buildable;
 
-		brmMask = 0;
+		brmMask = cg_rangeMarkerWhenSpectating.integer ? ( 1 << BA_NONE ) : 0;
 
 		if ( !cg_rangeMarkerBuildableTypes.string[ 0 ] )
 		{
@@ -713,7 +724,8 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 empty:
 		trap_Cvar_Set( "cg_buildableRangeMarkerMask", va( "%i", brmMask ) );
 
-		mc = cg_rangeMarkerBuildableTypes.modificationCount;
+		btmc = cg_rangeMarkerBuildableTypes.modificationCount;
+		spmc = cg_rangeMarkerWhenSpectating.modificationCount;
 	}
 }
 
@@ -725,7 +737,7 @@ CG_UpdateCvars
 void CG_UpdateCvars( void )
 {
 	int         i;
-	cvarTable_t *cv;
+	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{
@@ -904,7 +916,7 @@ CG_FileExists
 Test if a specific file exists or not
 =================
 */
-qboolean CG_FileExists( char *filename )
+qboolean CG_FileExists( const char *filename )
 {
 	return trap_FS_FOpenFile( filename, NULL, FS_READ );
 }
@@ -1026,7 +1038,7 @@ This function may execute for a couple of minutes with a slow disk.
 static void CG_RegisterGraphics( void )
 {
 	int         i;
-	static char *sb_nums[ 11 ] =
+	static const char *const sb_nums[ 11 ] =
 	{
 		"gfx/2d/numbers/zero_32b",
 		"gfx/2d/numbers/one_32b",
@@ -1040,7 +1052,7 @@ static void CG_RegisterGraphics( void )
 		"gfx/2d/numbers/nine_32b",
 		"gfx/2d/numbers/minus_32b",
 	};
-	static char *buildWeaponTimerPieShaders[ 8 ] =
+	static const char *const buildWeaponTimerPieShaders[ 8 ] =
 	{
 		"ui/assets/neutral/1_5pie",
 		"ui/assets/neutral/3_0pie",
@@ -2074,6 +2086,7 @@ void CG_LoadHudMenu( void )
 	cgDC.registerShaderNoMip = &trap_R_RegisterShaderNoMip;
 	cgDC.setColor = &trap_R_SetColor;
 	cgDC.drawHandlePic = &CG_DrawPic;
+	cgDC.drawNoStretchPic = &CG_DrawNoStretchPic;
 	cgDC.drawStretchPic = &trap_R_DrawStretchPic;
 	cgDC.registerModel = &trap_R_RegisterModel;
 	cgDC.modelBounds = &trap_R_ModelBounds;

@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-char               *cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
+static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 {
 	"construct1.wav",
 	"construct2.wav",
@@ -391,8 +391,8 @@ void CG_InitBuildables( void )
 {
 	char         filename[ MAX_QPATH ];
 	char         soundfile[ MAX_QPATH ];
-	char         *buildableName;
-	char         *modelFile;
+	const char   *buildableName;
+	const char   *modelFile;
 	int          i;
 	int          j;
 	int          n;
@@ -421,7 +421,7 @@ void CG_InitBuildables( void )
 		//Load models
 		//Prefer md5 models over md3
 
-		if ( ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
+		if ( cg_highPolyBuildableModels.integer && ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh", buildableName, buildableName ) ) ) )
 		{
 			bi->md5 = qtrue;
 		}

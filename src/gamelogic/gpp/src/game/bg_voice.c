@@ -361,7 +361,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 BG_VoiceParse
 ============
 */
-static voiceCmd_t *BG_VoiceParse( char *name )
+static voiceCmd_t *BG_VoiceParse( const char *name )
 {
 	voiceCmd_t *voiceCmds = NULL;
 	voiceCmd_t *top = NULL;
@@ -538,7 +538,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 BG_VoiceByName
 ============
 */
-voice_t *BG_VoiceByName( voice_t *head, char *name )
+voice_t *BG_VoiceByName( voice_t *head, const char *name )
 {
 	voice_t *v = head;
 
@@ -560,7 +560,7 @@ voice_t *BG_VoiceByName( voice_t *head, char *name )
 BG_VoiceCmdFind
 ============
 */
-voiceCmd_t *BG_VoiceCmdFind( voiceCmd_t *head, char *name, int *cmdNum )
+voiceCmd_t *BG_VoiceCmdFind( voiceCmd_t *head, const char *name, int *cmdNum )
 {
 	voiceCmd_t *vc = head;
 	int        i = 0;

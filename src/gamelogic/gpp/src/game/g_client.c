@@ -25,8 +25,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // g_client.c -- client functions that don't happen every frame
 
-static vec3_t playerMins = { -15, -15, -24 };
-static vec3_t playerMaxs = { 15, 15, 32 };
+static const vec3_t playerMins = { -15, -15, -24 };
+static const vec3_t playerMaxs = { 15, 15, 32 };
 
 /*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) initial
 potential spawning position for deathmatch games.
@@ -829,7 +829,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize )
 	// if something made the name bad, put them back to UnnamedPlayer
 	if ( invalid )
 	{
-		Q_strncpyz( p, "UnnamedPlayer", outSize );
+		Q_strncpyz( p, UNNAMED_PLAYER, outSize );
 	}
 }
 
@@ -985,7 +985,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 		if ( revertName )
 		{
-			Q_strncpyz( client->pers.netname, *oldname ? oldname : "UnnamedPlayer",
+			Q_strncpyz( client->pers.netname, *oldname ? oldname : UNNAMED_PLAYER,
 			            sizeof( client->pers.netname ) );
 			Info_SetValueForKey( userinfo, "name", oldname );
 			trap_SetUserinfo( clientNum, userinfo );

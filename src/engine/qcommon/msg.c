@@ -606,13 +606,13 @@ char           *MSG_ReadString( msg_t *msg )
 		{
 			break;
 		}
-
+/*
 		// translate all fmt spec to avoid crash bugs
 		if ( c == '%' )
 		{
 			c = '.';
 		}
-
+*/
 		string[ l ] = c;
 		l++;
 	}
@@ -638,13 +638,13 @@ char           *MSG_ReadBigString( msg_t *msg )
 		{
 			break;
 		}
-
+/*
 		// translate all fmt spec to avoid crash bugs
 		if ( c == '%' )
 		{
 			c = '.';
 		}
-
+*/
 		string[ l ] = c;
 		l++;
 	}
@@ -670,13 +670,13 @@ char           *MSG_ReadStringLine( msg_t *msg )
 		{
 			break;
 		}
-
+/*
 		// translate all fmt spec to avoid crash bugs
 		if ( c == '%' )
 		{
 			c = '.';
 		}
-
+*/
 		string[ l ] = c;
 		l++;
 	}

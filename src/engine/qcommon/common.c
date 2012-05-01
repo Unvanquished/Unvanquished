@@ -1816,7 +1816,7 @@ void Com_InitSmallZoneMemory( void )
 
 	if ( !smallzone )
 	{
-		Com_Error( ERR_FATAL, "Small zone data failed to allocate %1.1f megs", ( float ) s_smallZoneTotal / ( 1024 * 1024 ) );
+		Com_Error( ERR_FATAL, "Small zone data failed to allocate %1.1fMB", ( float ) s_smallZoneTotal / ( 1024 * 1024 ) );
 	}
 
 	Z_ClearZone( smallzone, s_smallZoneTotal );
@@ -1846,7 +1846,7 @@ void Com_InitZoneMemory( void )
 
 	if ( !mainzone )
 	{
-		Com_Error( ERR_FATAL, "Zone data failed to allocate %i megs", s_zoneTotal / ( 1024 * 1024 ) );
+		Com_Error( ERR_FATAL, "Zone data failed to allocate %iMB", s_zoneTotal / ( 1024 * 1024 ) );
 	}
 
 	Z_ClearZone( mainzone, s_zoneTotal );
@@ -1983,12 +1983,12 @@ void Com_InitHunkMemory( void )
 	if ( com_dedicated && com_dedicated->integer )
 	{
 		nMinAlloc = MIN_DEDICATED_COMHUNKMEGS;
-		pMsg = "Minimum com_hunkMegs for a dedicated server is %i, allocating %i megs.\n";
+		pMsg = "Minimum com_hunkMegs for a dedicated server is %i, allocating %iMB.\n";
 	}
 	else
 	{
 		nMinAlloc = MIN_COMHUNKMEGS;
-		pMsg = "Minimum com_hunkMegs is %i, allocating %i megs.\n";
+		pMsg = "Minimum com_hunkMegs is %i, allocating %iMB.\n";
 	}
 
 	if ( cv->integer < nMinAlloc )
@@ -2005,7 +2005,7 @@ void Com_InitHunkMemory( void )
 
 	if ( !s_hunkData )
 	{
-		Com_Error( ERR_FATAL, "Hunk data failed to allocate %i megs", s_hunkTotal / ( 1024 * 1024 ) );
+		Com_Error( ERR_FATAL, "Hunk data failed to allocate %iMB", s_hunkTotal / ( 1024 * 1024 ) );
 	}
 
 	// cacheline align

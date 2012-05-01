@@ -2299,7 +2299,7 @@ static void RB_RenderInteractionsShadowMapped()
 	int            cubeSide;
 	int            splitFrustumIndex;
 	int            startTime = 0, endTime = 0;
-	const matrix_t bias = {        0.5, 0.0, 0.0, 0.0,
+	static const matrix_t bias = { 0.5,     0.0, 0.0, 0.0,
 	                               0.0,     0.5, 0.0, 0.0,
 	                               0.0,     0.0, 0.5, 0.0,
 	                               0.5,     0.5, 0.5, 1.0
@@ -4363,7 +4363,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 	int            cubeSide;
 
 	int            splitFrustumIndex;
-	const matrix_t bias = {        0.5,  0.0, 0.0, 0.0,
+	static const matrix_t bias = { 0.5, 0.0, 0.0, 0.0,
 	                               0.0, 0.5, 0.0, 0.0,
 	                               0.0, 0.0, 0.5, 0.0,
 	                               0.5, 0.5, 0.5, 1.0
@@ -4675,7 +4675,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 									matrix_t       postMatrix;
 									matrix_t       projectionCenter;
 
-									const matrix_t switchToArticle =
+									static const matrix_t switchToArticle =
 									{
 										1, 0,  0, 0,
 										0, 0,  1, 0,
@@ -4683,7 +4683,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 										0, 0,  0, 1
 									};
 
-									const matrix_t switchToGL =
+									static const matrix_t switchToGL =
 									{
 										1, 0, 0,  0,
 										0, 0, -1, 0,
@@ -8830,8 +8830,8 @@ static void RB_RenderDebugUtils()
 		vec4_t        lightColor; //unused
 		vec4_t        quadVerts[ 4 ];
 
-		vec3_t        minSize = { -2, -2, -2 };
-		vec3_t        maxSize = { 2,  2,  2 };
+		static const vec3_t minSize = { -2, -2, -2 };
+		static const vec3_t maxSize = { 2,  2,  2 };
 
 		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->DisablePortalClipping();
@@ -9211,8 +9211,9 @@ static void RB_RenderDebugUtils()
 		trRefEntity_t *entity;
 		surfaceType_t *surface;
 		vec4_t        lightColor;
-		vec3_t        mins = { -1, -1, -1 };
-		vec3_t        maxs = { 1, 1, 1 };
+
+		static const vec3_t mins = { -1, -1, -1 };
+		static const vec3_t maxs = { 1, 1, 1 };
 
 		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->DisablePortalClipping();
@@ -9400,8 +9401,8 @@ static void RB_RenderDebugUtils()
 	{
 		trRefEntity_t *ent;
 		int           i;
-		vec3_t        mins = { -1, -1, -1 };
-		vec3_t        maxs = { 1, 1, 1 };
+		static const vec3_t mins = { -1, -1, -1 };
+		static const vec3_t maxs = { 1, 1, 1 };
 
 		gl_genericShader->DisableAlphaTesting();
 		gl_genericShader->DisablePortalClipping();
@@ -9812,8 +9813,8 @@ static void RB_RenderDebugUtils()
 		cubemapProbe_t *cubeProbe;
 		int            j;
 //		vec4_t          quadVerts[4];
-		vec3_t         mins = { -8, -8, -8 };
-		vec3_t         maxs = { 8,  8,  8 };
+		static const vec3_t mins = { -8, -8, -8 };
+		static const vec3_t maxs = { 8,  8,  8 };
 		//vec3_t      viewOrigin;
 
 		if ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOCUBEMAP ) )
@@ -10386,8 +10387,8 @@ static void RB_RenderDebugUtils()
 		int              i;
 		decalProjector_t *dp;
 		srfDecal_t       *srfDecal;
-		vec3_t           mins = { -1, -1, -1 };
-		vec3_t           maxs = { 1, 1, 1 };
+		static const vec3_t mins = { -1, -1, -1 };
+		static const vec3_t maxs = { 1, 1, 1 };
 
 		if ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL ) )
 		{
@@ -10420,7 +10421,7 @@ static void RB_RenderDebugUtils()
 		GL_Bind( tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-		GL_CheckErrors();
+		GL_CheckErrors();              
 
 		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
 
@@ -10778,19 +10779,12 @@ static void RB_RenderView( void )
 		GL_State( GLS_DEFAULT );
 
 		// clear relevant buffers
-		clearBits = GL_DEPTH_BUFFER_BIT;
-
-		if ( r_measureOverdraw->integer )
-		{
-			clearBits |= GL_STENCIL_BUFFER_BIT;
-		}
+		clearBits = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 
 #if defined( COMPAT_ET )
 		// ydnar: global q3 fog volume
-		else if ( tr.world && tr.world->globalFog >= 0 )
+		if ( tr.world && tr.world->globalFog >= 0 )
 		{
-			clearBits |= GL_DEPTH_BUFFER_BIT;
-
 			if ( !( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) )
 			{
 				clearBits |= GL_COLOR_BUFFER_BIT;
@@ -10805,7 +10799,6 @@ static void RB_RenderView( void )
 			if ( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL )
 			{
 				// portal scene, clear whatever is necessary
-				clearBits |= GL_DEPTH_BUFFER_BIT;
 
 				if ( r_fastsky->integer || backEnd.refdef.rdflags & RDF_NOWORLDMODEL )
 				{
@@ -10849,7 +10842,6 @@ static void RB_RenderView( void )
 			else
 			{
 				// world scene with portal sky, don't clear any buffers, just set the fog color if there is one
-				clearBits |= GL_DEPTH_BUFFER_BIT; // this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
 
 				if ( tr.glfogNum > FOG_NONE && tr.glfogsettings[ FOG_CURRENT ].registered )
 				{
@@ -10880,7 +10872,6 @@ static void RB_RenderView( void )
 		else
 		{
 			// world scene with no portal sky
-			clearBits |= GL_DEPTH_BUFFER_BIT;
 
 			// NERVE - SMF - we don't want to clear the buffer when no world model is specified
 			if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL )

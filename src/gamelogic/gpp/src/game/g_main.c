@@ -27,12 +27,12 @@ level_locals_t level;
 
 typedef struct
 {
-	vmCvar_t *vmCvar;
-	char     *cvarName;
-	char     *defaultString;
-	int      cvarFlags;
-	int      modificationCount; // for tracking changes
-	qboolean trackChange; // track this variable, and announce if changed
+	vmCvar_t   *vmCvar;
+	const char *cvarName;
+	const char *defaultString;
+	int        cvarFlags;
+	int        modificationCount; // for tracking changes
+	qboolean   trackChange; // track this variable, and announce if changed
 
 	/* certain cvars can be set in worldspawn, but we don't want those values to
 	   persist, so keep track of non-worldspawn changes and restore that on map
@@ -77,7 +77,16 @@ vmCvar_t           g_extendVotesPercent;
 vmCvar_t           g_extendVotesTime;
 vmCvar_t           g_extendVotesCount;
 vmCvar_t           g_kickVotesPercent;
+vmCvar_t           g_denyVotesPercent;
 vmCvar_t           g_mapVotesPercent;
+vmCvar_t           g_mapVotesBefore;
+vmCvar_t           g_drawVotesPercent;
+vmCvar_t           g_drawVotesAfter;
+vmCvar_t           g_drawVoteReasonRequired;
+vmCvar_t           g_admitDefeatVotesPercent;
+vmCvar_t           g_nextMapVotesPercent;
+vmCvar_t           g_pollVotesPercent;
+
 vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
 vmCvar_t           pmove_fixed;
@@ -104,6 +113,12 @@ vmCvar_t           g_alienStage2Threshold;
 vmCvar_t           g_alienStage3Threshold;
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
+
+vmCvar_t           g_luciHalfLifeTime;
+vmCvar_t           g_luciFullPowerTime;
+vmCvar_t           g_pulseHalfLifeTime;
+vmCvar_t           g_pulseFullPowerTime;
+vmCvar_t           g_flameFadeout;
 
 vmCvar_t           g_unlagged;
 
@@ -218,7 +233,15 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesCount,            "g_extendVotesCount",            "2",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_denyVotesPercent,            "g_denyVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_mapVotesBefore,              "g_mapVotesBefore",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_nextMapVotesPercent,         "g_nextMapVotesPercent",         "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
 
@@ -245,6 +268,12 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_alienStage3Threshold,        "g_alienStage3Threshold",        DEFAULT_ALIEN_STAGE3_THRESH,        0,                                               0, qfalse           },
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
+
+	{ &g_luciHalfLifeTime,            "g_luciHalfLifeTime",            "512",                              CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_luciFullPowerTime,           "g_luciFullPowerTime",           "0" /*"512"*/,                      CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_pulseHalfLifeTime,           "g_pulseHalfLifeTime",           "768",                              CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_pulseFullPowerTime,          "g_pulseFullPowerTime",          "0"  ,                              CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_flameFadeout,                "g_flameFadeout",                "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
 
@@ -2405,7 +2434,7 @@ void G_CheckVote( team_t team )
 {
 	float    votePassThreshold = ( float ) level.voteThreshold[ team ] / 100.0f;
 	qboolean pass = qfalse;
-	char     *msg;
+	char     *cmd, msg[ 256 ];
 	int      i;
 
 	if ( level.voteExecuteTime[ team ] &&
@@ -2449,17 +2478,28 @@ void G_CheckVote( team_t team )
 	             pass ? "pass" : "fail",
 	             level.voteYes[ team ], level.voteNo[ team ], level.numVotingClients[ team ] );
 
-	msg = va( "print \"%sote %sed (%d - %d)\n\"",
-	          team == TEAM_NONE ? "V" : "Team v", pass ? "pass" : "fail",
-	          level.voteYes[ team ], level.voteNo[ team ] );
-
-	if ( team == TEAM_NONE )
+	if ( pass )
 	{
-		trap_SendServerCommand( -1, msg );
+		Q_snprintf( msg, sizeof (msg),
+		            ( team == TEAM_NONE ) ? "Vote passed (%d - %d)" : "Team vote passed (%d - %d)",
+		            level.voteYes[ team ], level.voteNo[ team ] );
 	}
 	else
 	{
-		G_TeamCommand( team, msg );
+		Q_snprintf( msg, sizeof (msg),
+		            ( team == TEAM_NONE ) ? "Vote failed (%d - %d; %.0f%% needed)" : "Team vote failed (%d - %d; %.0f%% needed)",
+		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
+	}
+
+	cmd = va( "print \"%s\n\"", msg );
+
+	if ( team == TEAM_NONE )
+	{
+		trap_SendServerCommand( -1, cmd );
+	}
+	else
+	{
+		G_TeamCommand( team, cmd );
 	}
 
 	level.voteTime[ team ] = 0;

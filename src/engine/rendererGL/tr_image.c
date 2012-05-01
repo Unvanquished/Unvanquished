@@ -49,11 +49,11 @@ void R_GammaCorrect( byte *buffer, int bufSize )
 #if !defined( USE_D3D10 )
 typedef struct
 {
-	char *name;
+	const char *name;
 	int  minimize, maximize;
 } textureMode_t;
 
-textureMode_t modes[] =
+static const textureMode_t modes[] =
 {
 	{ "GL_NEAREST",                GL_NEAREST,                GL_NEAREST },
 	{ "GL_LINEAR",                 GL_LINEAR,                 GL_LINEAR  },
@@ -1001,7 +1001,7 @@ R_BlendOverTexture
 Apply a color blend over a set of pixels
 ==================
 */
-static void R_BlendOverTexture( byte *data, int pixelCount, byte blend[ 4 ] )
+static void R_BlendOverTexture( byte *data, int pixelCount, const byte blend[ 4 ] )
 {
 	int i;
 	int inverseAlpha;
@@ -1020,7 +1020,7 @@ static void R_BlendOverTexture( byte *data, int pixelCount, byte blend[ 4 ] )
 	}
 }
 
-byte mipBlendColors[ 16 ][ 4 ] =
+static const byte mipBlendColors[ 16 ][ 4 ] =
 {
 	{ 0,   0,   0,   0   }
 	,
@@ -1983,7 +1983,7 @@ typedef struct
 
 // Note that the ordering indicates the order of preference used
 // when there are multiple images of different formats available
-static imageExtToLoaderMap_t imageLoaders[] =
+static const imageExtToLoaderMap_t imageLoaders[] =
 {
 #ifdef USE_WEBP
 	{ "webp", LoadWEBP },
@@ -2390,7 +2390,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 	int  x, y, x2, y2;
 	byte *out, *tmp;
 
-	tmp = Com_Allocate( width * height * 4 );
+	tmp = ri.Hunk_AllocateTempMemory( width * height * 4 );
 
 	// rotate into tmp buffer
 	for ( y = 0; y < height; y++ )
@@ -2446,7 +2446,7 @@ static void R_Rotate( byte *in, int width, int height, int degrees )
 		}
 	}
 
-	Com_Dealloc( tmp );
+	ri.Hunk_FreeTempMemory( tmp );
 }
 
 /*

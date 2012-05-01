@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-char *cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
+static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
 {
 	"*death1.wav",
 	"*death2.wav",
@@ -762,8 +762,11 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 {
 	char filename[ MAX_QPATH * 2 ];
 
-	Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
-	ci->bodyModel = trap_R_RegisterModel( filename );
+	if ( cg_highPolyPlayerModels.integer )
+	{
+		Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
+		ci->bodyModel = trap_R_RegisterModel( filename );
+	}
 
 	if ( ci->bodyModel )
 	{
@@ -915,6 +918,16 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			// FIXME add death animations
 
 			CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH1, "die", qfalse, qfalse, qfalse );
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH2, "die2", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ NSPA_DEATH2 ] = ci->animations[ NSPA_DEATH1 ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_DEATH3, "die3", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ NSPA_DEATH3 ] = ci->animations[ NSPA_DEATH1 ];
+			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_GESTURE, "gesture", qfalse, qfalse, qfalse ) )
 			{
@@ -1302,7 +1315,7 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci )
 CG_PrecacheClientInfo
 ======================
 */
-void CG_PrecacheClientInfo( class_t class, char *model, char *skin )
+void CG_PrecacheClientInfo( class_t class, const char *model, const char *skin )
 {
 	clientInfo_t *ci;
 	clientInfo_t newInfo;

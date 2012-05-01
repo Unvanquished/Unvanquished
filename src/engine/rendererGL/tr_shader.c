@@ -195,7 +195,7 @@ static qboolean ParseVector( char **text, int count, float *v )
 	return qtrue;
 }
 
-opstring_t opStrings[] =
+const opstring_t opStrings[] =
 {
 	{ "bad",                OP_BAD                }
 	,
@@ -301,7 +301,7 @@ opstring_t opStrings[] =
 
 static void GetOpType( char *token, expOperation_t *op )
 {
-	opstring_t    *opString;
+	const opstring_t *opString;
 	char          tableName[ MAX_QPATH ];
 	int           hash;
 	shaderTable_t *tb;
@@ -448,11 +448,11 @@ static char    *ParseExpressionElement( char **data_p )
 {
 	int         c = 0, len;
 	char        *data;
-	const char  **punc;
+	const char  *const *punc;
 	static char token[ MAX_TOKEN_CHARS ];
 
 	// multiple character punctuation tokens
-	const char  *punctuation[] =
+	static const char *const punctuation[] =
 	{
 		"&&", "||", "<=", ">=", "==", "!=", NULL
 	};
@@ -3260,12 +3260,12 @@ static void ParseSort( char **text )
 
 typedef struct
 {
-	char *name;
+	const char *name;
 	int  clearSolid, surfaceFlags, contents;
 } infoParm_t;
 
 // *INDENT-OFF*
-infoParm_t infoParms[] =
+static const infoParm_t infoParms[] =
 {
 	// server relevant contents
 

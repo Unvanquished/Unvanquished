@@ -148,7 +148,7 @@ typedef struct
 	int  minimize, maximize;
 } textureMode_t;
 
-textureMode_t modes[] =
+static const textureMode_t modes[] =
 {
 	{ "GL_NEAREST",                GL_NEAREST,                GL_NEAREST },
 	{ "GL_LINEAR",                 GL_LINEAR,                 GL_LINEAR  },
@@ -715,7 +715,7 @@ R_BlendOverTexture
 Apply a color blend over a set of pixels
 ==================
 */
-static void R_BlendOverTexture( byte *data, int pixelCount, byte blend[ 4 ] )
+static void R_BlendOverTexture( byte *data, int pixelCount, const byte blend[ 4 ] )
 {
 	int i;
 	int inverseAlpha;
@@ -734,7 +734,7 @@ static void R_BlendOverTexture( byte *data, int pixelCount, byte blend[ 4 ] )
 	}
 }
 
-byte mipBlendColors[ 16 ][ 4 ] =
+static const byte mipBlendColors[ 16 ][ 4 ] =
 {
 	{ 0,   0,   0,   0   }
 	,
@@ -3831,8 +3831,9 @@ static void DDSDecodeColorBlock( unsigned int *pixel, ddsColorBlock_t *block, in
 {
 	int          r, n;
 	unsigned int bits;
-	unsigned int masks[] = { 3, 12, 3 << 4, 3 << 6 }; /* bit masks = 00000011, 00001100, 00110000, 11000000 */
-	int          shift[] = { 0, 2, 4, 6 };
+
+	static const unsigned int masks[] = { 3, 12, 3 << 4, 3 << 6 }; /* bit masks = 00000011, 00001100, 00110000, 11000000 */
+	static const int          shift[] = { 0, 2, 4, 6 };
 
 	/* r steps through lines in y */
 	for ( r = 0; r < 4; r++, pixel += ( width - 4 ) ) /* no width * 4 as unsigned int ptr inc will * 4 */

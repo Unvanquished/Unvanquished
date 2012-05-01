@@ -26,14 +26,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef struct
 {
-	char     *command;
-	char     *humanName;
+	const char *command;
+	const char *humanName;
 	keyNum_t keys[ 2 ];
 } bind_t;
 
-static bind_t    bindings[] =
+static bind_t bindings[] =
 {
-	{ "+button2",       "Activate Upgrade",                            { -1, -1 } },
+	{ "+useitem",       "Activate Upgrade",                            { -1, -1 } },
 	{ "+speed",         "Run/Walk",                                    { -1, -1 } },
 	{ "+dodge",         "Dodge",                                       { -1, -1 } },
 	{ "+sprint",        "Sprint",                                      { -1, -1 } },
@@ -245,7 +245,7 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to launch a projectile\n",
-		              CG_KeyNameForCommand( "+button2" ) ) );
+		              CG_KeyNameForCommand( "+useitem" ) ) );
 
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to walk on walls\n",
@@ -332,7 +332,7 @@ static void CG_AlienLevel3Text( char *text, playerState_t *ps )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to launch a projectile\n",
-		              CG_KeyNameForCommand( "+button2" ) ) );
+		              CG_KeyNameForCommand( "+useitem" ) ) );
 	}
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
@@ -418,7 +418,7 @@ CG_HumanText
 */
 static void CG_HumanText( char *text, playerState_t *ps )
 {
-	char      *name;
+	const char *name;
 	upgrade_t upgrade = UP_NONE;
 
 	if ( cg.weaponSelect < 32 )
@@ -525,7 +525,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to use the %s\n",
-		              CG_KeyNameForCommand( "+button2" ),
+		              CG_KeyNameForCommand( "+useitem" ),
 		              name ) );
 	}
 
@@ -621,19 +621,19 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to switch to chase-cam spectator mode\n",
-			              CG_KeyNameForCommand( "+button2" ) ) );
+			              CG_KeyNameForCommand( "+useitem" ) ) );
 		}
 		else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to return to free spectator mode\n",
-			              CG_KeyNameForCommand( "+button2" ) ) );
+			              CG_KeyNameForCommand( "+useitem" ) ) );
 		}
 		else
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( "Press %s to stop following\n",
-			              CG_KeyNameForCommand( "+button2" ) ) );
+			              CG_KeyNameForCommand( "+useitem" ) ) );
 		}
 
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
@@ -647,7 +647,7 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( "Press %s to follow a player\n",
-		              CG_KeyNameForCommand( "+button2" ) ) );
+		              CG_KeyNameForCommand( "+useitem" ) ) );
 	}
 }
 
@@ -732,7 +732,7 @@ const char *CG_TutorialText( void )
 				{
 					Q_strcat( text, MAX_TUTORIAL_TEXT,
 					          va( "Press %s to evolve\n",
-					              CG_KeyNameForCommand( "+actviate" ) ) );
+					              CG_KeyNameForCommand( "+activate" ) ) );
 				}
 			}
 		}

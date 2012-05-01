@@ -43,7 +43,7 @@ Maryland 20850 USA.
 
 trGlobals_t  tr;
 
-static float s_flipMatrix[ 16 ] =
+static const float s_flipMatrix[ 16 ] =
 {
 	// convert from our coordinate system (looking down X)
 	// to OpenGL's coordinate system (looking down -Z)

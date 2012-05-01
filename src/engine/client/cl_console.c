@@ -329,7 +329,6 @@ Find all console lines containing a string
 void Con_Grep_f( void )
 {
 	int   l, x, i;
-	char  *line;
 	char  buffer[ 1024 ];
 	char  buffer2[ 1024 ];
 	char  printbuf[ CON_TEXTSIZE ];
@@ -345,7 +344,7 @@ void Con_Grep_f( void )
 	// skip empty lines
 	for ( l = con.current - con.totallines + 1; l <= con.current; l++ )
 	{
-		line = con.text + ( l % con.totallines ) * con.linewidth;
+		char *line = con.text + ( l % con.totallines ) * con.linewidth;
 
 		for ( x = 0; x < con.linewidth; x++ )
 		{
@@ -369,19 +368,9 @@ void Con_Grep_f( void )
 
 	for ( ; l <= con.current; l++ )
 	{
-		line = con.text + ( l % con.totallines ) * con.linewidth;
+		int offset = ( l % con.totallines ) * con.linewidth;
 
-		for ( i = 0, x = 0; i < con.linewidth; i++ )
-		{
-			if ( line[ i ] >> 8 != lastcolor )
-			{
-				lastcolor = line[ i ] >> 8;
-				buffer[ x++ ] = Q_COLOR_ESCAPE;
-				buffer[ x++ ] = lastcolor + '0';
-			}
-
-			buffer[ x++ ] = line[ i ] & 0xff;
-		}
+		memcpy( buffer, con.text + offset, con.linewidth );
 
 		for ( x = con.linewidth - 1; x >= 0; x-- )
 		{
@@ -395,13 +384,21 @@ void Con_Grep_f( void )
 			}
 		}
 
-		// Don't search commands
-		strcpy( buffer2, buffer );
-		Q_CleanStr( buffer2 );
-
-		if ( Q_stristr( buffer2, search ) )
+		if ( Q_stristr( buffer, search ) )
 		{
-			strcat( printbuf, buffer );
+			for ( i = 0, x = 0; i < con.linewidth; i++ )
+			{
+				if ( con.tcolor[ offset + i ] != lastcolor )
+				{
+					lastcolor = con.tcolor[ offset + i ];
+					buffer2[ x++ ] = Q_COLOR_ESCAPE;
+					buffer2[ x++ ] = lastcolor + '0';
+				}
+
+				buffer2[ x++ ] = buffer[ i ];
+			}
+
+			strcat( printbuf, buffer2 );
 			strcat( printbuf, "\n" );
 		}
 	}

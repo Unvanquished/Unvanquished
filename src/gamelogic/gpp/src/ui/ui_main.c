@@ -33,7 +33,7 @@ USER INTERFACE MAIN
 
 uiInfo_t          uiInfo;
 
-static const char *netSources[] =
+static const char *const netSources[] =
 {
 	"LAN",
 	"Internet",
@@ -42,7 +42,7 @@ static const char *netSources[] =
 
 static const int  numNetSources = sizeof( netSources ) / sizeof( const char * );
 
-static const char *netnames[] =
+static const char *const netnames[] =
 {
 	"???",
 	"UDP",
@@ -101,7 +101,7 @@ vmCvar_t                   ui_ingameFiles;
 vmCvar_t                   ui_teamFiles;
 vmCvar_t                   ui_helpFiles;
 
-static cvarTable_t         cvarTable[] =
+static const cvarTable_t   cvarTable[] =
 {
 	{ &ui_assetScale,          "ui_assetScale",               "1",                         CVAR_ARCHIVE | CVAR_LATCH },
 
@@ -138,7 +138,7 @@ static cvarTable_t         cvarTable[] =
 	{ &ui_helpFiles,           "ui_helpFiles",                "ui/menu/help/help.txt",     CVAR_ARCHIVE              }
 };
 
-static int                 cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
+static const int           cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
 
 static char                translated_yes[ 4 ], translated_no[ 4 ];
 
@@ -442,7 +442,7 @@ typedef struct
 
 serverStatusCvar_t;
 
-serverStatusCvar_t serverStatusCvars[] =
+static const serverStatusCvar_t serverStatusCvars[] =
 {
 	{ "sv_hostname", "Name"      },
 	{ "Address",     ""          },
@@ -885,10 +885,12 @@ static void UI_BuildFindPlayerList( qboolean force )
 		}
 		else
 		{
-			Com_sprintf( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ],
+		        int count = uiInfo.numFoundPlayerServers - 1;
+			Com_sprintf( uiInfo.foundPlayerServerNames[ count ],
 			             sizeof( uiInfo.foundPlayerServerAddresses[ 0 ] ),
-			             "%d server%s found with player %s", uiInfo.numFoundPlayerServers - 1,
-			             uiInfo.numFoundPlayerServers == 2 ? "" : "s", uiInfo.findPlayerName );
+			             N_( "%d server found with player %s",
+			                 "%d servers found with player %s", count ),
+                                     count, uiInfo.findPlayerName );
 		}
 
 		uiInfo.nextFindPlayerRefresh = 0;
@@ -3653,6 +3655,14 @@ static void UI_RunMenuScript( char **args )
 			trap_Cvar_Set( "cl_paused", "0" );
 			Menus_CloseAll();
 		}
+		else if ( Q_stricmp( name, "voteDraw" ) == 0 )
+		{
+			char buffer[ MAX_CVAR_VALUE_STRING ];
+			trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote draw %s\n", buffer ) );
+			trap_Cvar_Set( "ui_reason", "" );
+		}
 		else if ( Q_stricmp( name, "voteMap" ) == 0 )
 		{
 			if ( ui_selectedMap.integer >= 0 && ui_selectedMap.integer < uiInfo.mapCount )
@@ -3677,6 +3687,19 @@ static void UI_RunMenuScript( char **args )
 				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
 
 				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote kick %d %s\n",
+				                                       uiInfo.clientNums[ uiInfo.playerIndex ],
+				                                       buffer ) );
+				trap_Cvar_Set( "ui_reason", "" );
+			}
+		}
+		else if ( Q_stricmp( name, "voteSpectate" ) == 0 )
+		{
+			if ( uiInfo.playerIndex >= 0 && uiInfo.playerIndex < uiInfo.playerCount )
+			{
+				char buffer[ MAX_CVAR_VALUE_STRING ];
+				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callvote spectate %d %s\n",
 				                                       uiInfo.clientNums[ uiInfo.playerIndex ],
 				                                       buffer ) );
 				trap_Cvar_Set( "ui_reason", "" );
@@ -3711,6 +3734,19 @@ static void UI_RunMenuScript( char **args )
 				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
 
 				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callteamvote kick %d %s\n",
+				                                       uiInfo.teamClientNums[ uiInfo.teamPlayerIndex ],
+				                                       buffer ) );
+				trap_Cvar_Set( "ui_reason", "" );
+			}
+		}
+		else if ( Q_stricmp( name, "voteTeamSpectate" ) == 0 )
+		{
+			if ( uiInfo.teamPlayerIndex >= 0 && uiInfo.teamPlayerIndex < uiInfo.myTeamCount )
+			{
+				char buffer[ MAX_CVAR_VALUE_STRING ];
+				trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "callteamvote spectate %d %s\n",
 				                                       uiInfo.teamClientNums[ uiInfo.teamPlayerIndex ],
 				                                       buffer ) );
 				trap_Cvar_Set( "ui_reason", "" );
@@ -4859,6 +4895,7 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.registerShaderNoMip = &trap_R_RegisterShaderNoMip;
 	uiInfo.uiDC.setColor = &UI_SetColor;
 	uiInfo.uiDC.drawHandlePic = &UI_DrawHandlePic;
+	uiInfo.uiDC.drawNoStretchPic = &UI_DrawNoStretchPic;
 	uiInfo.uiDC.drawStretchPic = &trap_R_DrawStretchPic;
 	uiInfo.uiDC.registerModel = &trap_R_RegisterModel;
 	uiInfo.uiDC.modelBounds = &trap_R_ModelBounds;
@@ -5236,9 +5273,9 @@ void Text_PaintCenter_AutoWrapped( float x, float y, float xmax, float ystep, fl
 
 static void UI_DisplayDownloadInfo( const char *downloadName, float centerPoint, float yStart, float scale )
 {
-	static char dlText[] = "Downloading:";
-	static char etaText[] = "Estimated time left:";
-	static char xferText[] = "Transfer rate:";
+	static const char dlText[] = "Downloading:";
+	static const char etaText[] = "Estimated time left:";
+	static const char xferText[] = "Transfer rate:";
 
 	int downloadSize, downloadCount, downloadTime;
 	char dlSizeBuf[ 64 ], totalSizeBuf[ 64 ], xferRateBuf[ 64 ], dlTimeBuf[ 64 ];
@@ -5446,7 +5483,7 @@ UI_RegisterCvars
 void UI_RegisterCvars( void )
 {
 	int     i;
-	cvarTable_t *cv;
+	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{
@@ -5462,7 +5499,7 @@ UI_UpdateCvars
 void UI_UpdateCvars( void )
 {
 	int     i;
-	cvarTable_t *cv;
+	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{

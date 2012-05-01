@@ -1145,8 +1145,14 @@ static void Window_Paint( Window *w, float fadeAmount, float fadeClamp, float fa
 		{
 			DC->setColor( w->foreColor );
 		}
-
-		DC->drawHandlePic( fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background );
+		if ( w->flags & WINDOW_NOSTRETCH )
+		{
+			DC->drawNoStretchPic( fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background );
+		}
+		else
+		{
+			DC->drawHandlePic( fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background );
+		}
 		DC->setColor( NULL );
 	}
 	else if ( w->style == WINDOW_STYLE_CINEMATIC )
@@ -2311,6 +2317,29 @@ void UI_AdjustFrom640( float *x, float *y, float *w, float *h )
 
 /*
 ================
+UI_AdjustFrom640NoStretch
+
+Adjusted for resolution while maintaining aspect ratio
+================
+*/
+void UI_AdjustFrom640NoStretch( float *x, float *y, float *w, float *h )
+{
+	// Get the origin of the picture
+	*x += (*w/2);
+	*y -= (*h/2);
+	// Scale it
+	*x *= DC->xscale;
+	*y *= DC->yscale;
+	*w *= DC->yscale;
+	*h *= DC->yscale;
+	// Calculate the top left hand corner
+	*x -= (*w/2);
+	*y += (*h/2);
+
+}
+
+/*
+================
 UI_SetClipRegion
 =================
 */
@@ -2559,7 +2588,7 @@ void UI_Text_PaintWithCursor( float x, float y, float scale, vec4_t color, const
 	                       limit, NULL, cursorPos, cursor );
 }
 
-commandDef_t  commandList[] =
+static const commandDef_t commandList[] =
 {
 	{ "close",           &Script_Close           }, // menu
 	{ "conditionalopen", &Script_ConditionalOpen }, // menu
@@ -2584,7 +2613,7 @@ commandDef_t  commandList[] =
 	{ "transition",      &Script_Transition      }, // group/name
 };
 
-static size_t scriptCommandCount = sizeof( commandList ) / sizeof( commandDef_t );
+static const size_t scriptCommandCount = sizeof( commandList ) / sizeof( commandDef_t );
 
 // despite what lcc thinks, we do not get cmdcmp here
 static int commandComp( const void *a, const void *b )
@@ -3385,8 +3414,9 @@ qboolean Item_ComboBox_HandleKey( itemDef_t *item, int key, qboolean down, qbool
 
 qboolean Item_YesNo_HandleKey( itemDef_t *item, int key )
 {
-	if ( Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) &&
-	     item->window.flags & WINDOW_HASFOCUS && item->cvar )
+	if ( item->cvar &&
+	     ( ( item->window.flags & WINDOW_HASFOCUS ) ||
+	       Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) ) )
 	{
 		if ( key == K_MOUSE1 || key == K_ENTER || key == K_MOUSE2 || key == K_MOUSE3 )
 		{
@@ -4432,11 +4462,18 @@ static rectDef_t *Item_CorrectedTextRect( itemDef_t *item )
 
 void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 {
+	static qboolean shift = qfalse;
+
 	int       i;
 	itemDef_t *item = NULL;
 	qboolean  inHandler = qfalse;
 
 	inHandler = qtrue;
+
+	if ( key == K_SHIFT )
+	{
+		shift = down;
+	}
 
 // KTW: Draggable Windows
 	if ( key == K_MOUSE1 && down && Rect_ContainsPoint( &menu->window.rect, DC->cursorx, DC->cursory ) &&
@@ -4553,6 +4590,13 @@ void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 			break;
 
 		case K_TAB:
+			if ( shift )
+			{
+				Menu_SetPrevCursorItem( menu );
+				break;
+			}
+			// else
+
 		case K_KP_DOWNARROW:
 		case K_DOWNARROW:
 			Menu_SetNextCursorItem( menu );
@@ -5509,10 +5553,10 @@ typedef struct
 
 configcvar_t;
 
-static bind_t    g_bindings[] =
+static bind_t g_bindings[] =
 {
 	{ "+scores",        K_TAB,              -1,            -1, -1 },
-	{ "+button2",       K_ENTER,            -1,            -1, -1 },
+	{ "+useitem",       K_ENTER,            -1,            -1, -1 },
 	{ "+speed",         K_SHIFT,            -1,            -1, -1 },
 	{ "+dodge",         'z',                -1,            -1, -1 }, // human dodging
 	{ "+sprint",        'x',                -1,            -1, -1 },
@@ -5552,8 +5596,7 @@ static bind_t    g_bindings[] =
 	{ "deconstruct",    'e',                -1,            -1, -1 }, // buildable destroy
 	{ "weapprev",       '[',                -1,            -1, -1 },
 	{ "weapnext",       ']',                -1,            -1, -1 },
-	{ "+button3",       K_MOUSE3,           -1,            -1, -1 },
-	{ "+button4",       K_MOUSE4,           -1,            -1, -1 },
+	{ "+taunt",         K_MOUSE3,           -1,            -1, -1 },
 	{ "vote yes",       K_F1,               -1,            -1, -1 },
 	{ "vote no",        K_F2,               -1,            -1, -1 },
 	{ "teamvote yes",   K_F3,               -1,            -1, -1 },
@@ -7027,7 +7070,7 @@ Keyword Hash
 
 typedef struct keywordHash_s
 {
-	char *keyword;
+	const char *keyword;
 	qboolean( *func )( itemDef_t *item, int handle );
 
 	int                  param;
@@ -7037,7 +7080,7 @@ typedef struct keywordHash_s
 
 keywordHash_t;
 
-int KeywordHash_Key( char *keyword )
+int KeywordHash_Key( const char *keyword )
 {
 	register int hash, i;
 
@@ -7072,7 +7115,7 @@ void KeywordHash_Add( keywordHash_t *table[], keywordHash_t *key )
 	table[ hash ] = key;
 }
 
-keywordHash_t *KeywordHash_Find( keywordHash_t *table[], char *keyword )
+keywordHash_t *KeywordHash_Find( keywordHash_t *const table[], const char *keyword )
 {
 	keywordHash_t *key;
 	int           hash;
@@ -8064,7 +8107,15 @@ qboolean ItemParse_hideCvar( itemDef_t *item, int handle )
 	return qfalse;
 }
 
-keywordHash_t itemParseKeywords[] =
+// nostretch
+qboolean ItemParse_nostretch( itemDef_t *item, int handle )
+{
+	item->window.flags |= WINDOW_NOSTRETCH;
+	return qtrue;
+}
+
+
+static keywordHash_t itemParseKeywords[] =
 {
 	{ "name",                ItemParse_name,                TYPE_ANY   },
 	{ "type",                ItemParse_type,                TYPE_ANY   },
@@ -8133,10 +8184,11 @@ keywordHash_t itemParseKeywords[] =
 	{ "hideCvar",            ItemParse_hideCvar,            TYPE_ANY   },
 	{ "cinematic",           ItemParse_cinematic,           TYPE_ANY   },
 	{ "doubleclick",         ItemParse_doubleClick,         TYPE_LIST  },
+	{ "nostretch",           ItemParse_nostretch,           TYPE_ANY   },
 	{ NULL,                  voidFunction2 }
 };
 
-keywordHash_t *itemParseKeywordHash[ KEYWORDHASH_SIZE ];
+static keywordHash_t *itemParseKeywordHash[ KEYWORDHASH_SIZE ];
 
 /*
 ===============
@@ -8663,7 +8715,7 @@ qboolean MenuParse_itemDef( itemDef_t *item, int handle )
 	return qtrue;
 }
 
-keywordHash_t menuParseKeywords[] =
+static keywordHash_t menuParseKeywords[] =
 {
 	{ "font",             MenuParse_font          },
 	{ "name",             MenuParse_name          },
@@ -8697,7 +8749,7 @@ keywordHash_t menuParseKeywords[] =
 	{ NULL,               voidFunction2           }
 };
 
-keywordHash_t *menuParseKeywordHash[ KEYWORDHASH_SIZE ];
+static keywordHash_t *menuParseKeywordHash[ KEYWORDHASH_SIZE ];
 
 /*
 ===============

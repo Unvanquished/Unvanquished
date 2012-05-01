@@ -145,7 +145,7 @@ void	main()
 	//N.x = -N.x;
 	//N = normalize(N);
 	//N = normalize(var_Normal.xyz);
-	N = tangentToWorldMatrix * N;
+	N = normalize(tangentToWorldMatrix * N);
 	
 	// compute light direction in world space
 	vec3 L = 2.0 * (texture2D(u_DeluxeMap, var_TexLight).xyz - 0.5);

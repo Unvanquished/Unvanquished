@@ -69,8 +69,8 @@ static kbuttons_t dtmapping[] =
 	KB_MOVERIGHT, // DT_MOVERIGHT
 	KB_FORWARD, // DT_FORWARD
 	KB_BACK, // DT_BACK
-	KB_WBUTTONS4, // DT_LEANLEFT
-	KB_WBUTTONS5, // DT_LEANRIGHT
+	KB_LEANLEFT, // DT_LEANLEFT
+	KB_LEANRIGHT, // DT_LEANRIGHT
 	KB_UP // DT_UP
 };
 
@@ -384,284 +384,120 @@ void IN_VoipRecordUp( void )
 
 #endif
 
-void IN_Button0Down( void )
+void IN_AttackDown( void )
 {
-	IN_KeyDown( &kb[ KB_BUTTONS0 ] );
+	IN_KeyDown( &kb[ KB_ATTACK ] );
 }
 
-void IN_Button0Up( void )
+void IN_AttackUp( void )
 {
-	IN_KeyUp( &kb[ KB_BUTTONS0 ] );
-}
-
-void IN_Button1Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS1 ] );
-}
-
-void IN_Button1Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS1 ] );
+	IN_KeyUp( &kb[ KB_ATTACK ] );
 }
 
 void IN_UseItemDown( void )
 {
-	IN_KeyDown( &kb[ KB_BUTTONS2 ] );
+	IN_KeyDown( &kb[ KB_USEITEM ] );
 }
 
 void IN_UseItemUp( void )
 {
-	IN_KeyUp( &kb[ KB_BUTTONS2 ] );
+	IN_KeyUp( &kb[ KB_USEITEM ] );
 }
 
-void IN_Button2Down( void )
+void IN_TauntDown( void )
 {
-	IN_KeyDown( &kb[ KB_BUTTONS2 ] );
+	IN_KeyDown( &kb[ KB_TAUNT ] );
 }
 
-void IN_Button2Up( void )
+void IN_TauntUp( void )
 {
-	IN_KeyUp( &kb[ KB_BUTTONS2 ] );
+	IN_KeyUp( &kb[ KB_TAUNT ] );
 }
-
-void IN_Button3Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS3 ] );
-}
-
-void IN_Button3Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS3 ] );
-}
-
-void IN_Button4Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS4 ] );
-}
-
-void IN_Button4Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS4 ] );
-}
-
-void IN_Button5Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS5 ] );
-}
-
-void IN_Button5Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS5 ] );
-}
-
-void IN_Button6Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS6 ] );
-}
-
-void IN_Button6Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS6 ] );
-}
-
-//
-void IN_Button7Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS7 ] );
-}
-
-void IN_Button7Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS7 ] );
-}
-
-//
-void IN_Button8Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS8 ] );
-}
-
-void IN_Button8Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS8 ] );
-}
-
-//
-void IN_Button9Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS9 ] );
-}
-
-void IN_Button9Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS9 ] );
-}
-
-//
-void IN_Button10Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS10 ] );
-}
-
-void IN_Button10Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS10 ] );
-}
-
-//
-void IN_Button11Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS11 ] );
-}
-
-void IN_Button11Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS11 ] );
-}
-
-//
-void IN_Button12Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS12 ] );
-}
-
-void IN_Button12Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS12 ] );
-}
-
-//
-void IN_Button13Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS13 ] );
-}
-
-void IN_Button13Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS13 ] );
-}
-
-//
-void IN_Button14Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS14 ] );
-}
-
-void IN_Button14Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS14 ] );
-}
-
-//
-void IN_Button15Down( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS15 ] );
-}
-
-void IN_Button15Up( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS15 ] );
-}
-
-// Rafael activate
-void IN_ActivateDown( void )
-{
-	IN_KeyDown( &kb[ KB_BUTTONS6 ] );
-}
-
-void IN_ActivateUp( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS6 ] );
-}
-
-// done.
 
 void IN_SprintDown( void )
 {
-	IN_KeyDown( &kb[ KB_BUTTONS5 ] );
+	IN_KeyDown( &kb[ KB_SPRINT ] );
 }
 
 void IN_SprintUp( void )
 {
-	IN_KeyUp( &kb[ KB_BUTTONS5 ] );
+	IN_KeyUp( &kb[ KB_SPRINT ] );
 }
 
-// wbuttons (wolf buttons)
-void IN_Wbutton0Down( void )
+void IN_ActivateDown( void )
 {
-	IN_KeyDown( &kb[ KB_WBUTTONS0 ] );
+	IN_KeyDown( &kb[ KB_ACTIVATE ] );
+}
+
+void IN_ActivateUp( void )
+{
+	IN_KeyUp( &kb[ KB_ACTIVATE ] );
+}
+
+void IN_SecondaryAttackDown( void )
+{
+	IN_KeyDown( &kb[ KB_SECATTACK ] );
 } //----(SA) secondary fire button
 
-void IN_Wbutton0Up( void )
+void IN_SecondaryAttackUp( void )
 {
-	IN_KeyUp( &kb[ KB_WBUTTONS0 ] );
+	IN_KeyUp( &kb[ KB_SECATTACK ] );
 }
 
 void IN_ZoomDown( void )
 {
-	IN_KeyDown( &kb[ KB_WBUTTONS1 ] );
+	IN_KeyDown( &kb[ KB_ZOOM ] );
 } //----(SA)  zoom key
 
 void IN_ZoomUp( void )
 {
-	IN_KeyUp( &kb[ KB_WBUTTONS1 ] );
+	IN_KeyUp( &kb[ KB_ZOOM ] );
 }
 
 void IN_ReloadDown( void )
 {
-	IN_KeyDown( &kb[ KB_WBUTTONS3 ] );
+	IN_KeyDown( &kb[ KB_RELOAD ] );
 } //----(SA)  manual weapon re-load
 
 void IN_ReloadUp( void )
 {
-	IN_KeyUp( &kb[ KB_WBUTTONS3 ] );
+	IN_KeyUp( &kb[ KB_RELOAD ] );
 }
 
 void IN_LeanLeftDown( void )
 {
-	IN_KeyDown( &kb[ KB_WBUTTONS4 ] );
+	IN_KeyDown( &kb[ KB_LEANLEFT ] );
 } //----(SA)  lean left
 
 void IN_LeanLeftUp( void )
 {
-	IN_KeyUp( &kb[ KB_WBUTTONS4 ] );
+	IN_KeyUp( &kb[ KB_LEANLEFT ] );
 }
 
 void IN_LeanRightDown( void )
 {
-	IN_KeyDown( &kb[ KB_WBUTTONS5 ] );
+	IN_KeyDown( &kb[ KB_LEANRIGHT ] );
 } //----(SA)  lean right
 
 void IN_LeanRightUp( void )
 {
-	IN_KeyUp( &kb[ KB_WBUTTONS5 ] );
+	IN_KeyUp( &kb[ KB_LEANRIGHT ] );
 }
 
-// Rafael Kick
-// Arnout: now wbutton prone
-void IN_ProneDown( void )
+void IN_DodgeDown( void )
 {
-	IN_KeyDown( &kb[ KB_WBUTTONS7 ] );
+	IN_KeyDown( &kb[ KB_DODGE ] );
 }
 
-void IN_ProneUp( void )
+void IN_DodgeUp( void )
 {
-	IN_KeyUp( &kb[ KB_WBUTTONS7 ] );
+	IN_KeyUp( &kb[ KB_DODGE ] );
 }
 
-void IN_ButtonDown( void )
+void IN_CenterView (void)
 {
-	IN_KeyDown( &kb[ KB_BUTTONS1 ] );
-}
-
-void IN_ButtonUp( void )
-{
-	IN_KeyUp( &kb[ KB_BUTTONS1 ] );
-}
-
-/*void IN_CenterView (void) {
         cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
-}*/
+}
 
 void IN_Notebook( void )
 {
@@ -1124,25 +960,24 @@ void CL_CmdButtons( usercmd_t *cmd )
 	// send a button bit even if the key was pressed and released in
 	// less than a frame
 	//
-	for ( i = 0; i < 16; i++ )
+	for ( i = 0; i < 8; i++ )
 	{
-		if ( kb[ KB_BUTTONS0 + i ].active || kb[ KB_BUTTONS0 + i ].wasPressed )
+		if ( kb[ KB_BUTTONS_GROUP_1 + i ].active || kb[ KB_BUTTONS_GROUP_1 + i ].wasPressed )
 		{
 			cmd->buttons |= 1 << i;
 		}
 
-		kb[ KB_BUTTONS0 + i ].wasPressed = qfalse;
+		kb[ KB_BUTTONS_GROUP_1 + i ].wasPressed = qfalse;
 	}
 
 	for ( i = 0; i < 8; i++ )
 	{
-		// Arnout: this was i < 7, but there are 8 wbuttons
-		if ( kb[ KB_WBUTTONS0 + i ].active || kb[ KB_WBUTTONS0 + i ].wasPressed )
+		if ( kb[ KB_BUTTONS_GROUP_2 + i ].active || kb[ KB_BUTTONS_GROUP_2 + i ].wasPressed )
 		{
 			cmd->wbuttons |= 1 << i;
 		}
 
-		kb[ KB_WBUTTONS0 + i ].wasPressed = qfalse;
+		kb[ KB_BUTTONS_GROUP_2 + i ].wasPressed = qfalse;
 	}
 
 	if ( cls.keyCatchers && !cl_bypassMouseInput->integer )
@@ -1625,7 +1460,7 @@ CL_InitInput
 */
 void CL_InitInput( void )
 {
-//	Cmd_AddCommand ("centerview", IN_CenterView);
+	Cmd_AddCommand ("centerview", IN_CenterView);
 
 	Cmd_AddCommand( "+moveup", IN_UpDown );
 	Cmd_AddCommand( "-moveup", IN_UpUp );
@@ -1652,79 +1487,19 @@ void CL_InitInput( void )
 	Cmd_AddCommand( "+speed", IN_SpeedDown );
 	Cmd_AddCommand( "-speed", IN_SpeedUp );
 
-	Cmd_AddCommand( "+attack", IN_Button0Down );  // ---- id   (primary firing)
-	Cmd_AddCommand( "-attack", IN_Button0Up );
-
-	Cmd_AddCommand( "+button0", IN_Button0Down );
-	Cmd_AddCommand( "-button0", IN_Button0Up );
-
-	Cmd_AddCommand( "+button1", IN_Button1Down );
-	Cmd_AddCommand( "-button1", IN_Button1Up );
-
-	Cmd_AddCommand( "+button2", IN_Button2Down );
-	Cmd_AddCommand( "-button2", IN_Button2Up );
-
-	Cmd_AddCommand( "+useitem", IN_UseItemDown );
+	Cmd_AddCommand( "+attack", IN_AttackDown );  // Primary attack
+	Cmd_AddCommand( "-attack", IN_AttackUp );
+	Cmd_AddCommand( "+useitem", IN_UseItemDown ); // Use an item
 	Cmd_AddCommand( "-useitem", IN_UseItemUp );
-
-	Cmd_AddCommand( "+salute", IN_Button3Down );  //----(SA) salute
-	Cmd_AddCommand( "-salute", IN_Button3Up );
-	Cmd_AddCommand( "+button3", IN_Button3Down );
-	Cmd_AddCommand( "-button3", IN_Button3Up );
-
-	Cmd_AddCommand( "+button4", IN_Button4Down );
-	Cmd_AddCommand( "-button4", IN_Button4Up );
-
-	Cmd_AddCommand( "+button5", IN_Button5Down );
-	Cmd_AddCommand( "-button5", IN_Button5Up );
-
-	Cmd_AddCommand( "+button6", IN_Button6Down );
-	Cmd_AddCommand( "-button6", IN_Button6Up );
-
-	Cmd_AddCommand( "+button7", IN_Button7Down );
-	Cmd_AddCommand( "-button7", IN_Button7Up );
-
-	Cmd_AddCommand( "+button8", IN_Button8Down );
-	Cmd_AddCommand( "-button8", IN_Button8Up );
-
-	Cmd_AddCommand( "+button9", IN_Button9Down );
-	Cmd_AddCommand( "-button9", IN_Button9Up );
-
-	Cmd_AddCommand( "+button10", IN_Button10Down );
-	Cmd_AddCommand( "-button10", IN_Button10Up );
-
-	Cmd_AddCommand( "+button11", IN_Button11Down );
-	Cmd_AddCommand( "-button11", IN_Button11Up );
-
-	Cmd_AddCommand( "+button12", IN_Button12Down );
-	Cmd_AddCommand( "-button12", IN_Button12Up );
-
-	Cmd_AddCommand( "+button13", IN_Button13Down );
-	Cmd_AddCommand( "-button13", IN_Button13Up );
-
-	Cmd_AddCommand( "+button14", IN_Button14Down );
-	Cmd_AddCommand( "-button14", IN_Button14Up );
-
-	// Rafael Activate
-	Cmd_AddCommand( "+activate", IN_ActivateDown );
-	Cmd_AddCommand( "-activate", IN_ActivateUp );
-	// done.
-
-	// Rafael Kick
-	// Arnout: now prone
-	Cmd_AddCommand( "+prone", IN_ProneDown );
-	Cmd_AddCommand( "-prone", IN_ProneUp );
-	// done
-
-	Cmd_AddCommand( "+dodge", IN_ProneDown );
-	Cmd_AddCommand( "-dodge", IN_ProneUp );
-
+	Cmd_AddCommand( "+taunt", IN_TauntDown );  // Taunt ("COME ON!")
+	Cmd_AddCommand( "-taunt", IN_TauntUp );
 	Cmd_AddCommand( "+sprint", IN_SprintDown );
 	Cmd_AddCommand( "-sprint", IN_SprintUp );
+	Cmd_AddCommand( "+activate", IN_ActivateDown );
+	Cmd_AddCommand( "-activate", IN_ActivateUp );
 
-	// wolf buttons
-	Cmd_AddCommand( "+attack2", IN_Wbutton0Down );  //----(SA) secondary firing
-	Cmd_AddCommand( "-attack2", IN_Wbutton0Up );
+	Cmd_AddCommand( "+attack2", IN_SecondaryAttackDown );  //----(SA) secondary firing
+	Cmd_AddCommand( "-attack2", IN_SecondaryAttackUp );
 	Cmd_AddCommand( "+zoom", IN_ZoomDown );  //
 	Cmd_AddCommand( "-zoom", IN_ZoomUp );
 	Cmd_AddCommand( "+reload", IN_ReloadDown );  //
@@ -1733,6 +1508,8 @@ void CL_InitInput( void )
 	Cmd_AddCommand( "-leanleft", IN_LeanLeftUp );
 	Cmd_AddCommand( "+leanright", IN_LeanRightDown );
 	Cmd_AddCommand( "-leanright", IN_LeanRightUp );
+	Cmd_AddCommand( "+dodge", IN_DodgeDown );
+	Cmd_AddCommand( "-dodge", IN_DodgeUp );
 
 	Cmd_AddCommand( "+mlook", IN_MLookDown );
 	Cmd_AddCommand( "-mlook", IN_MLookUp );

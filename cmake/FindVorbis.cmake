@@ -1,10 +1,9 @@
 # - Find vorbis library
-# Find the native Vorbis headers and libraries.
+# Find the native Vorbis headers and libraries.Vorbis depends on Ogg and will
+# provide Ogg headers/libraries as well.
 #
-#  VORBIS_INCLUDE_DIR    - where to find vorbis/vorbis.h, codec.h, etc
+#  VORBIS_INCLUDE_DIRS   - where to find vorbis/vorbis.h, ogg/ogg.h, etc
 #  VORBIS_LIBRARIES      - List of libraries when using libvorbis
-#  VORBISFILE_LIBRARY    - Location of vorbisfile library
-#  VORBIS_VORBIS_LIBRARY - location of vorbis library
 #  VORBIS_FOUND          - True if vorbis is found.
 
 
@@ -39,25 +38,39 @@
 #POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
+# Find Ogg
+if( Vorbis_FIND_REQUIRED )
+  set( OGG_ARG "REQUIRED" )
+elseif( Vorbis_FIND_QUIETLY )
+  set( OGG_ARG "QUIETLY" )
+endif()
+
+find_package( Ogg ${OGG_ARG} )
+
 # Look for the vorbisfile header file.
-FIND_PATH(VORBIS_INCLUDE_DIR NAMES vorbis/vorbisfile.h)
-MARK_AS_ADVANCED(VORBIS_INCLUDE_DIR)
+find_path( VORBIS_INCLUDE_DIR
+  NAMES vorbis/vorbisfile.h
+  DOC "Vorbis include directory" )
+mark_as_advanced( VORBIS_INCLUDE_DIR )
 
 # Look for the vorbisfile library.
-FIND_LIBRARY(VORBISFILE_LIBRARY NAMES vorbisfile )
-MARK_AS_ADVANCED(VORBISFILE_LIBRARY)
+find_library( VORBISFILE_LIBRARY
+  NAMES vorbisfile
+  DOC "Path to VorbisFile library" )
+mark_as_advanced( VORBISFILE_LIBRARY )
 
 # Look for the vorbis library.
-FIND_LIBRARY(VORBIS_VORBIS_LIBRARY NAMES vorbis )
-MARK_AS_ADVANCED(VORBIS_VORBIS_LIBRARY)
+find_library( VORBIS_LIBRARY
+  NAMES vorbis
+  DOC "Path to Vorbis library" )
+mark_as_advanced( VORBIS_LIBRARY )
 
 
 
 # handle the QUIETLY and REQUIRED arguments and set VORBISFILE_FOUND to TRUE if 
 # all listed variables are TRUE
-INCLUDE(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Vorbis DEFAULT_MSG VORBIS_VORBIS_LIBRARY VORBIS_INCLUDE_DIR)
+include( ${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake )
+FIND_PACKAGE_HANDLE_STANDARD_ARGS( Vorbis DEFAULT_MSG VORBIS_LIBRARY VORBIS_INCLUDE_DIR )
 
-SET(VORBIS_LIBRARIES ${VORBISFILE_LIBRARY} ${VORBIS_VORBIS_LIBRARY})
-SET(VORBIS_LIBRARY ${VORBIS_LIBRARIES}) #FIXME This should be removed
-SET(VORBIS_INCLUDE_DIRS ${VORBIS_INCLUDE_DIR})
+set( VORBIS_LIBRARIES ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY} ${OGG_LIBRARIES} )
+set( VORBIS_INCLUDE_DIRS ${VORBIS_INCLUDE_DIR} ${OGG_INCLUDE_DIRS} )

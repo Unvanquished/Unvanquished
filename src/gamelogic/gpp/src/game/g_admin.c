@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static char       g_bfb[ 32000 ];
 
 // note: list ordered alphabetically
-g_admin_cmd_t     g_admin_cmds[] =
+static const g_admin_cmd_t     g_admin_cmds[] =
 {
 	{
 		"adjustban",    G_admin_adjustban,   qfalse, "ban",
@@ -250,6 +250,20 @@ g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"speclock",      G_admin_speclock,   qfalse, "kick",
+		"move a player to spectators and prevent from joining a team"
+		" duration is specified as numbers followed by units 'h' (hours) or 'm' (minutes), "
+		"or seconds if no units are specified. End-of-game automatically revokes this",
+		"[^3name|slot#^7] [^3duration^7]"
+	},
+
+	{
+		"specunlock",    G_admin_specunlock, qfalse, "ban",
+		"allow a player to join any team again",
+		"[^3name|slot#^7]"
+	},
+
+	{
 		"time",         G_admin_time,        qtrue,  "time",
 		"show the current local server time",
 		""
@@ -286,12 +300,13 @@ g_admin_cmd_t     g_admin_cmds[] =
 	}
 };
 
-static size_t     adminNumCmds = sizeof( g_admin_cmds ) / sizeof( g_admin_cmds[ 0 ] );
+static const size_t adminNumCmds = sizeof( g_admin_cmds ) / sizeof( g_admin_cmds[ 0 ] );
 
 static int        admin_level_maxname = 0;
 g_admin_level_t   *g_admin_levels = NULL;
 g_admin_admin_t   *g_admin_admins = NULL;
 g_admin_ban_t     *g_admin_bans = NULL;
+g_admin_spec_t    *g_admin_specs = NULL;
 g_admin_command_t *g_admin_commands = NULL;
 
 void G_admin_register_cmds( void )
@@ -478,7 +493,16 @@ qboolean G_admin_permission( gentity_t *ent, const char *flag )
 	return qfalse;
 }
 
-qboolean G_admin_name_check( gentity_t *ent, char *name, char *err, int len )
+static qboolean G_IsUnnamed( const char *name )
+{
+	char testName[ MAX_NAME_LENGTH ];
+
+	G_SanitiseString( name, testName, sizeof( testName ) );
+
+	return Q_stricmp( testName, UNNAMED_PLAYER ) ? qfalse : qtrue;
+}
+
+qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 {
 	int             i;
 	gclient_t       *client;
@@ -489,7 +513,7 @@ qboolean G_admin_name_check( gentity_t *ent, char *name, char *err, int len )
 
 	G_SanitiseString( name, name2, sizeof( name2 ) );
 
-	if ( !strcmp( name2, "unnamedplayer" ) )
+	if ( !Q_stricmp( name2, UNNAMED_PLAYER ) )
 	{
 		return qtrue;
 	}
@@ -836,7 +860,7 @@ static void admin_default_levels( void )
 	l->level = level++;
 	Q_strncpyz( l->name, "^2Junior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
-	            "listplayers admintest adminhelp time putteam spec999 kick mute ADMINCHAT "
+	            "listplayers admintest adminhelp time putteam spec999 warn kick mute ADMINCHAT "
 	            "register unregister l0 l1",
 	            sizeof( l->flags ) );
 
@@ -844,7 +868,7 @@ static void admin_default_levels( void )
 	l->level = level++;
 	Q_strncpyz( l->name, "^3Senior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
-	            "listplayers admintest adminhelp time putteam spec999 kick mute showbans ban "
+	            "listplayers admintest adminhelp time putteam spec999 warn kick mute showbans ban "
 	            "namelog ADMINCHAT register unregister l0 l1",
 	            sizeof( l->flags ) );
 
@@ -1370,6 +1394,29 @@ qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 	return qfalse;
 }
 
+g_admin_spec_t *G_admin_match_spec( gentity_t *ent )
+{
+	int            t;
+	g_admin_spec_t *spec;
+
+	t = trap_RealTime( NULL );
+
+	if ( ent->client->pers.localClient )
+	{
+		return NULL;
+	}
+
+	for ( spec = g_admin_specs; spec; spec = spec->next )
+	{
+		if ( !Q_stricmp( spec->guid, ent->client->pers.guid ) )
+		{
+			return spec;
+		}
+	}
+
+	return NULL;
+}
+
 qboolean G_admin_cmd_check( gentity_t *ent )
 {
 	char              command[ MAX_ADMIN_CMD_LEN ];
@@ -1552,8 +1599,16 @@ void G_admin_pubkey( void )
 			highest = a;
 			break;
 		}
-		else if ( a->counter == 0 || !a->pubkey[ 0 ] )
+		else if (!a->pubkey[ 0 ] )
 		{
+			continue;
+		}
+		else if ( a->counter == 0 )
+		{
+			if ( !a->msg2[ 0 ] )
+			{
+				a->counter = -1;
+			}
 			continue;
 		}
 		else if ( !highest )
@@ -2011,6 +2066,12 @@ qboolean G_admin_setlevel( gentity_t *ent )
 			admin_listadmins( ent, 0, name );
 			return qfalse;
 		}
+	}
+
+	if ( l->level && G_IsUnnamed( vic->client->pers.netname ) )
+	{
+		ADMP( "^3setlevel: ^7your intended victim has the default name\n" );
+		return qfalse;
 	}
 
 	if ( ent && !admin_higher_admin( ent->client->pers.admin, a ) )
@@ -2729,6 +2790,138 @@ qboolean G_admin_putteam( gentity_t *ent )
 	AP( va( "print \"^3putteam: ^7%s^7 put %s^7 on to the %s team\n\"",
 	        ( ent ) ? ent->client->pers.netname : "console",
 	        vic->client->pers.netname, BG_TeamName( teamnum ) ) );
+	return qtrue;
+}
+
+qboolean G_admin_speclock( gentity_t *ent )
+{
+	int            pid, lockTime = 0;
+	char           name[ MAX_NAME_LENGTH ], lock[ MAX_STRING_CHARS ],
+	               err[ MAX_STRING_CHARS ], duration[ MAX_DURATION_LENGTH ];
+
+	gentity_t      *vic;
+	g_admin_spec_t *spec;
+
+	if ( trap_Argc() < 3 )
+	{
+		ADMP( "^3speclock: ^7usage: speclock [name] [duration]\n" );
+		return qfalse;
+	}
+
+	trap_Argv( 1, name, sizeof( name ) );
+	trap_Argv( 2, lock, sizeof( lock ) );
+
+	if ( ( pid = G_ClientNumberFromString( name, err, sizeof( err ) ) ) == -1 )
+	{
+		ADMP( va( "^3speclock: ^7%s", err ) );
+		return qfalse;
+	}
+
+	vic = &g_entities[ pid ];
+
+	if ( !admin_higher( ent, vic ) )
+	{
+		ADMP( "^3speclock: ^7sorry, but your intended victim has a higher "
+		      " admin level than you\n" );
+		return qfalse;
+	}
+
+	spec = G_admin_match_spec( vic );
+	lockTime = G_admin_parse_time( lock );
+
+	if ( lockTime == -1 )
+	{
+		lockTime = G_admin_parse_time( g_adminTempBan.string );
+
+		if ( lockTime == -1 )
+		{
+			lockTime = 120;
+		}
+	}
+
+	if ( !spec )
+	{
+		spec = BG_Alloc( sizeof( g_admin_spec_t ) );
+		spec->next = g_admin_specs;
+		g_admin_specs = spec;
+	}
+
+	Q_strncpyz( spec->guid, vic->client->pers.guid, sizeof( spec->guid ) );
+
+	lockTime = MIN( 86400, lockTime );
+	if ( lockTime )
+	{
+		G_admin_duration( lockTime, duration, sizeof( duration ) );
+		spec->expires = trap_RealTime( NULL ) + lockTime;
+	}
+	else
+	{
+		strcpy( duration, "this game" );
+		spec->expires = -1;
+	}
+
+	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\" SPECTATE %s", pid, vic->client->pers.guid,
+	               vic->client->pers.netname, duration ) );
+
+	if ( vic->client->pers.teamSelection != TEAM_NONE )
+	{
+		G_ChangeTeam( vic, TEAM_NONE );
+		AP( va( "print \"^3speclock: ^7%s^7 put %s^7 on to the spectators team and blocked team-change for %s\n\"",
+		        ( ent ) ? ent->client->pers.netname : "console",
+		        vic->client->pers.netname, duration ) );
+	}
+	else
+	{
+		AP( va( "print \"^3speclock: ^7%s^7 blocked team-change for %s^7 for %s\n\"",
+		        ( ent ) ? ent->client->pers.netname : "console",
+		        vic->client->pers.netname, duration ) );
+	}
+
+	return qtrue;
+}
+
+qboolean G_admin_specunlock( gentity_t *ent )
+{
+	int            pid, lockTime = 0;
+	char           name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
+	gentity_t      *vic;
+	g_admin_spec_t *spec;
+
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( "^3specunlock: ^7usage: specunlock [name]\n" );
+		return qfalse;
+	}
+
+	trap_Argv( 1, name, sizeof( name ) );
+
+	if ( ( pid = G_ClientNumberFromString( name, err, sizeof( err ) ) ) == -1 )
+	{
+		ADMP( va( "^3specunlock: ^7%s", err ) );
+		return qfalse;
+	}
+
+	vic = &g_entities[ pid ];
+
+	if ( !admin_higher( ent, vic ) )
+	{
+		ADMP( "^3specunlock: ^7sorry, but your intended victim has a higher "
+		      " admin level than you\n" );
+		return qfalse;
+	}
+
+	spec = G_admin_match_spec( vic );
+
+	if ( spec )
+	{
+		spec->expires = 0;
+		admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\" SPECTATE -", pid, vic->client->pers.guid,
+			               vic->client->pers.netname ) );
+			AP( va( "print \"^3specunlock: ^7%s^7 unblocked team-change for %s\n\"",
+			        ( ent ) ? ent->client->pers.netname : "console",
+			        vic->client->pers.netname ) );
+	}
+
 	return qtrue;
 }
 
@@ -3978,9 +4171,18 @@ qboolean G_admin_lock( gentity_t *ent )
 	}
 
 	admin_log( BG_TeamName( team ) );
-	AP( va( "print \"^3%s: ^7the %s team has been %slocked by %s\n\"",
-	        command, BG_TeamName( team ), lock ? "" : "un",
-	        ent ? ent->client->pers.netname : "console" ) );
+	if ( lock )
+	{
+		AP( va( "print \"^3%s: ^7the %s team has been locked by %s\n\"",
+		        command, BG_TeamName( team ),
+		        ent ? ent->client->pers.netname : "console" ) );
+	}
+	else
+	{
+		AP( va( "print \"^3%s: ^7the %s team has been unlocked by %s\n\"",
+		        command, BG_TeamName( team ),
+		        ent ? ent->client->pers.netname : "console" ) );
+	}
 
 	return qtrue;
 }
@@ -4101,7 +4303,7 @@ qboolean G_admin_pause( gentity_t *ent )
 	return qtrue;
 }
 
-static char *fates[] =
+static const char *const fates[] =
 {
 	"^2built^7",
 	"^3deconstructed^7",
@@ -4346,6 +4548,7 @@ qboolean G_admin_l1( gentity_t *ent )
 	}
 
 	trap_Argv( 1, name, sizeof( name ) );
+
 	id = admin_find_admin( ent, name, "l1", &vic, &a );
 
 	if ( id < 0 )
@@ -4356,6 +4559,12 @@ qboolean G_admin_l1( gentity_t *ent )
 	if ( !a || a->level != 0 )
 	{
 		ADMP( "^3l1: ^7your intended victim is not level 0\n" );
+		return qfalse;
+	}
+
+	if ( G_IsUnnamed( vic->client->pers.netname ) )
+	{
+		ADMP( "^3l1: ^7your intended victim has the default name\n" );
 		return qfalse;
 	}
 
@@ -4379,6 +4588,12 @@ qboolean G_admin_register( gentity_t *ent )
 	if ( ent->client->pers.admin && ent->client->pers.admin->level != 0 )
 	{
 		level = ent->client->pers.admin->level;
+	}
+
+	if ( G_IsUnnamed( ent->client->pers.netname ) )
+	{
+		ADMP( "^3register: ^7you must first change your name\n" );
+		return qfalse;
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, va( "setlevel %d %d;",
@@ -4421,7 +4636,7 @@ qboolean G_admin_unregister( gentity_t *ent )
  that it prints the message to the server console if ent is not defined.
 ================
 */
-void G_admin_print( gentity_t *ent, char *m )
+void G_admin_print( gentity_t *ent, const char *m )
 {
 	if ( ent )
 	{
@@ -4453,7 +4668,7 @@ void G_admin_buffer_end( gentity_t *ent )
 	ADMP( g_bfb );
 }
 
-void G_admin_buffer_print( gentity_t *ent, char *m )
+void G_admin_buffer_print( gentity_t *ent, const char *m )
 {
 	// 1022 - strlen("print 64 \"\"") - 1
 	if ( strlen( m ) + strlen( g_bfb ) >= 1009 )
@@ -4470,6 +4685,7 @@ void G_admin_cleanup( void )
 	g_admin_level_t   *l;
 	g_admin_admin_t   *a;
 	g_admin_ban_t     *b;
+	g_admin_spec_t    *s;
 	g_admin_command_t *c;
 	void              *n;
 
@@ -4496,6 +4712,14 @@ void G_admin_cleanup( void )
 	}
 
 	g_admin_bans = NULL;
+
+	for ( s = g_admin_specs; s; s = n )
+	{
+		n = s->next;
+		BG_Free( s );
+	}
+
+	g_admin_specs = NULL;
 
 	for ( c = g_admin_commands; c; c = n )
 	{

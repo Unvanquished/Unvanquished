@@ -77,7 +77,7 @@
   "Sprint"
   {
     "The sprint bind has changed from \"boost\" to \"+sprint\"; you can bind it "
-    "in the options menu or in the console (\\bind shift +button8). Now, instead "
+    "in the options menu or in the console (\\bind shift +sprint). Now, instead "
     "of tapping the button while moving to start sprinting, just hold it down "
     "and let go to stop. Alternately, you can change this to a toggle behavior "
     "with cg_sprintToggle. \n\n"
