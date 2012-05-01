@@ -153,19 +153,23 @@ const char *Con_GetText( int console )
 
 /*
 ================
+Con_Clear
+================
+*/
+static ID_INLINE void Con_Clear( void )
+{
+	memset( con.text, ' ', CON_TEXTSIZE );
+	memset( con.tcolor, ColorIndex( CONSOLE_COLOR ), CON_TEXTSIZE );
+}
+
+/*
+================
 Con_Clear_f
 ================
 */
 void Con_Clear_f( void )
 {
-	int i;
-
-	for ( i = 0; i < CON_TEXTSIZE; i++ )
-	{
-		con.text[ i ] = ' ';
-		con.tcolor[ i ] = ColorIndex( CONSOLE_COLOR );
-	}
-
+	Con_Clear();
 	Con_Bottom(); // go to end
 }
 
@@ -225,10 +229,7 @@ void Con_Dump_f( void )
 	{
 		line = con.text + ( l % con.totallines ) * con.linewidth;
 
-		for ( i = 0; i < con.linewidth; i++ )
-		{
-			buffer[ i ] = line[ i ] & 0xff;
-		}
+		memcpy( buffer, line, con.linewidth );
 
 		for ( x = con.linewidth - 1; x >= 0; x-- )
 		{
@@ -286,10 +287,7 @@ void Con_Search_f( void )
 	{
 		line = con.text + ( l % con.totallines ) * con.linewidth;
 
-		for ( i = 0; i < con.linewidth; i++ )
-		{
-			buffer[ i ] = line[ i ] & 0xff;
-		}
+		memcpy( buffer, line, con.linewidth );
 
 		for ( x = con.linewidth - 1; x >= 0; x-- )
 		{
@@ -467,12 +465,7 @@ void Con_CheckResize( void )
 		width = DEFAULT_CONSOLE_WIDTH;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
-
-		for ( i = 0; i < CON_TEXTSIZE; i++ )
-		{
-			con.text[ i ] = ' ';
-			con.tcolor[ i ] = ColorIndex( COLOR_WHITE );
-		}
+		Con_Clear();
 	}
 	else
 	{
@@ -496,12 +489,7 @@ void Con_CheckResize( void )
 
 		Com_Memcpy( tbuf, con.text, CON_TEXTSIZE /* * sizeof( short )*/ );
 		Com_Memcpy( cbuf, con.tcolor, CON_TEXTSIZE );
-
-		for ( i = 0; i < CON_TEXTSIZE; i++ )
-		{
-			con.text[ i ] = ' ';
-			con.tcolor[ i ] = ColorIndex( COLOR_WHITE );
-		}
+		Con_Clear();
 
 		for ( i = 0; i < numlines; i++ )
 		{
@@ -572,7 +560,7 @@ Con_Linefeed
 */
 void Con_Linefeed( qboolean skipnotify )
 {
-	int i;
+	int offs;
 
 	// mark time for transparent overlay
 	if ( con.current >= 0 )
@@ -596,12 +584,9 @@ void Con_Linefeed( qboolean skipnotify )
 
 	con.current++;
 
-	for ( i = 0; i < con.linewidth; ++i )
-	{
-		int offs = ( con.current % con.totallines ) * con.linewidth + i;
-		con.text[ offs ] = ' ';
-		con.tcolor[ offs ] = ColorIndex( CONSOLE_COLOR );
-	}
+	offs = ( con.current % con.totallines ) * con.linewidth;
+	memset( con.text + offs, ' ', con.linewidth );
+	memset( con.tcolor + offs, ColorIndex( CONSOLE_COLOR ), con.linewidth );
 }
 
 /*
