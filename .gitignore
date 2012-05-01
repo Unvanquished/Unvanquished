@@ -1,3 +1,16 @@
 *~
 build/*
 *.DS_STORE
+CMakeCache.txt
+CMakeFiles
+CPackConfig.cmake
+CPackSourceConfig.cmake
+Makefile
+cmake_install.cmake
+daemon.*
+daemonded.*
+librendererGL*
+main/cgame.mp.*
+main/qagame.mp.*
+main/ui.mp.*
+snd_openal.*

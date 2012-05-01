@@ -50,8 +50,8 @@ extern "C" {
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          "0.3.0"
 
-#ifdef SVN_VERSION
-# define Q3_VERSION             PRODUCT_NAME " " SVN_VERSION
+#ifdef GIT_VERSION
+# define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION" " GIT_VERSION
 #else
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION
 #endif

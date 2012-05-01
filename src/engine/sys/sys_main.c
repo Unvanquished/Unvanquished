@@ -32,6 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "git_version.h"
+
 #include <CPUInfo.h>
 // the CPUInfo.h implemntation of lengthof is unsafe, so use the one
 // from q_shared.h

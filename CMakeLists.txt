@@ -130,6 +130,32 @@ else()
   endif()
 endif()
 
+# Report the git commit identification, if possible
+
+set( GIT_DESCRIBE "?" CACHE STRING "commit id reported by git" FORCE )
+
+if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
+  find_package( Git )
+  if( GIT_FOUND )
+    execute_process( COMMAND git describe --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+    message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
+    # this may fail with annotated non-release tags
+    if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
+      set( GIT_DESCRIBE_REPORT )
+    endif()
+  endif()
+endif()
+
+if( NOT GIT_DESCRIBE STREQUAL GIT_DESCRIBE_REPORT )
+  if( GIT_DESCRIBE_REPORT )
+    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "#define GIT_VERSION \"${GIT_DESCRIBE_REPORT}\"" )
+  else()
+    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" )
+  endif()
+  set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} )
+endif()
+
+include_directories( "${CMAKE_BINARY_DIR}/CMakeFiles" )
 
 #################
 # Compile flags #
