@@ -5,6 +5,7 @@
 #
 
 cmake_minimum_required( VERSION 2.8 )
+cmake_policy( SET CMP0017 NEW )
 
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "" )
