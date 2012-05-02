@@ -577,6 +577,8 @@ void        CL_FlushMemory( void );
 void        CL_ShutdownAll( void );
 void        CL_AddReliableCommand( const char *cmd );
 
+void        CL_RegisterButtonCommands( const char *cmdList );
+
 void        CL_StartHunkUsers( void );
 
 void        CL_CheckAutoUpdate( void );
@@ -647,29 +649,11 @@ typedef enum
   KB_UP,
   KB_DOWN,
 
-  KB_BUTTONS_GROUP_1,
-  KB_ATTACK = KB_BUTTONS_GROUP_1,
-  KB_TALKING, // set when console or chat is open
-  KB_USEITEM,
-  KB_TAUNT,
-  KB_WALKING, // set when the player is walking
-  KB_SPRINT,
-  KB_ACTIVATE,
-  KB_ANY,     // set when any key is pressed
-
-  KB_BUTTONS_GROUP_2,
-  KB_SECATTACK = KB_BUTTONS_GROUP_2,
-  KB_ZOOM,
-  KB_WBUTTONS2, // spare
-  KB_RELOAD,
-  KB_LEANLEFT,
-  KB_LEANRIGHT,
-  KB_WBUTTONS6,
-  KB_DODGE,
-
   KB_MLOOK,
   KB_VOIPRECORD,
-  NUM_BUTTONS
+
+  KB_BUTTONS, // must be second-last
+  NUM_BUTTONS = KB_BUTTONS + USERCMD_BUTTONS
 } kbuttons_t;
 
 void CL_ClearKeys( void );

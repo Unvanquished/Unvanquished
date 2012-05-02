@@ -62,6 +62,7 @@ at the same time.
 static kbutton_t  kb[ NUM_BUTTONS ];
 
 // Arnout: doubleTap button mapping
+// FIXME: should be registered by cgame code
 static kbuttons_t dtmapping[] =
 {
 	-1, // DT_NONE
@@ -69,8 +70,8 @@ static kbuttons_t dtmapping[] =
 	KB_MOVERIGHT, // DT_MOVERIGHT
 	KB_FORWARD, // DT_FORWARD
 	KB_BACK, // DT_BACK
-	KB_LEANLEFT, // DT_LEANLEFT
-	KB_LEANRIGHT, // DT_LEANRIGHT
+	-1, // DT_LEANLEFT
+	-1, // DT_LEANRIGHT
 	KB_UP // DT_UP
 };
 
@@ -247,124 +248,14 @@ float CL_KeyState( kbutton_t *key )
 	return val;
 }
 
-void IN_UpDown( void )
+void IN_ButtonDown( int arg )
 {
-	IN_KeyDown( &kb[ KB_UP ] );
+	IN_KeyDown( &kb[ arg ] );
 }
 
-void IN_UpUp( void )
+void IN_ButtonUp( int arg )
 {
-	IN_KeyUp( &kb[ KB_UP ] );
-}
-
-void IN_DownDown( void )
-{
-	IN_KeyDown( &kb[ KB_DOWN ] );
-}
-
-void IN_DownUp( void )
-{
-	IN_KeyUp( &kb[ KB_DOWN ] );
-}
-
-void IN_LeftDown( void )
-{
-	IN_KeyDown( &kb[ KB_LEFT ] );
-}
-
-void IN_LeftUp( void )
-{
-	IN_KeyUp( &kb[ KB_LEFT ] );
-}
-
-void IN_RightDown( void )
-{
-	IN_KeyDown( &kb[ KB_RIGHT ] );
-}
-
-void IN_RightUp( void )
-{
-	IN_KeyUp( &kb[ KB_RIGHT ] );
-}
-
-void IN_ForwardDown( void )
-{
-	IN_KeyDown( &kb[ KB_FORWARD ] );
-}
-
-void IN_ForwardUp( void )
-{
-	IN_KeyUp( &kb[ KB_FORWARD ] );
-}
-
-void IN_BackDown( void )
-{
-	IN_KeyDown( &kb[ KB_BACK ] );
-}
-
-void IN_BackUp( void )
-{
-	IN_KeyUp( &kb[ KB_BACK ] );
-}
-
-void IN_LookupDown( void )
-{
-	IN_KeyDown( &kb[ KB_LOOKUP ] );
-}
-
-void IN_LookupUp( void )
-{
-	IN_KeyUp( &kb[ KB_LOOKUP ] );
-}
-
-void IN_LookdownDown( void )
-{
-	IN_KeyDown( &kb[ KB_LOOKDOWN ] );
-}
-
-void IN_LookdownUp( void )
-{
-	IN_KeyUp( &kb[ KB_LOOKDOWN ] );
-}
-
-void IN_MoveleftDown( void )
-{
-	IN_KeyDown( &kb[ KB_MOVELEFT ] );
-}
-
-void IN_MoveleftUp( void )
-{
-	IN_KeyUp( &kb[ KB_MOVELEFT ] );
-}
-
-void IN_MoverightDown( void )
-{
-	IN_KeyDown( &kb[ KB_MOVERIGHT ] );
-}
-
-void IN_MoverightUp( void )
-{
-	IN_KeyUp( &kb[ KB_MOVERIGHT ] );
-}
-
-void IN_SpeedDown( void )
-{
-	IN_KeyDown( &kb[ KB_SPEED ] );
-}
-
-void IN_SpeedUp( void )
-{
-	IN_KeyUp( &kb[ KB_SPEED ] );
-}
-
-void IN_StrafeDown( void )
-{
-	IN_KeyDown( &kb[ KB_STRAFE ] );
-}
-
-void IN_StrafeUp( void )
-{
-	IN_KeyUp( &kb[ KB_STRAFE ] );
+	IN_KeyUp( &kb[ arg ] );
 }
 
 #ifdef USE_VOIP
@@ -381,118 +272,7 @@ void IN_VoipRecordUp( void )
 	IN_KeyUp( &kb[ KB_VOIPRECORD ] );
 	Cvar_Set( "cl_voipSend", "0" );
 }
-
 #endif
-
-void IN_AttackDown( void )
-{
-	IN_KeyDown( &kb[ KB_ATTACK ] );
-}
-
-void IN_AttackUp( void )
-{
-	IN_KeyUp( &kb[ KB_ATTACK ] );
-}
-
-void IN_UseItemDown( void )
-{
-	IN_KeyDown( &kb[ KB_USEITEM ] );
-}
-
-void IN_UseItemUp( void )
-{
-	IN_KeyUp( &kb[ KB_USEITEM ] );
-}
-
-void IN_TauntDown( void )
-{
-	IN_KeyDown( &kb[ KB_TAUNT ] );
-}
-
-void IN_TauntUp( void )
-{
-	IN_KeyUp( &kb[ KB_TAUNT ] );
-}
-
-void IN_SprintDown( void )
-{
-	IN_KeyDown( &kb[ KB_SPRINT ] );
-}
-
-void IN_SprintUp( void )
-{
-	IN_KeyUp( &kb[ KB_SPRINT ] );
-}
-
-void IN_ActivateDown( void )
-{
-	IN_KeyDown( &kb[ KB_ACTIVATE ] );
-}
-
-void IN_ActivateUp( void )
-{
-	IN_KeyUp( &kb[ KB_ACTIVATE ] );
-}
-
-void IN_SecondaryAttackDown( void )
-{
-	IN_KeyDown( &kb[ KB_SECATTACK ] );
-} //----(SA) secondary fire button
-
-void IN_SecondaryAttackUp( void )
-{
-	IN_KeyUp( &kb[ KB_SECATTACK ] );
-}
-
-void IN_ZoomDown( void )
-{
-	IN_KeyDown( &kb[ KB_ZOOM ] );
-} //----(SA)  zoom key
-
-void IN_ZoomUp( void )
-{
-	IN_KeyUp( &kb[ KB_ZOOM ] );
-}
-
-void IN_ReloadDown( void )
-{
-	IN_KeyDown( &kb[ KB_RELOAD ] );
-} //----(SA)  manual weapon re-load
-
-void IN_ReloadUp( void )
-{
-	IN_KeyUp( &kb[ KB_RELOAD ] );
-}
-
-void IN_LeanLeftDown( void )
-{
-	IN_KeyDown( &kb[ KB_LEANLEFT ] );
-} //----(SA)  lean left
-
-void IN_LeanLeftUp( void )
-{
-	IN_KeyUp( &kb[ KB_LEANLEFT ] );
-}
-
-void IN_LeanRightDown( void )
-{
-	IN_KeyDown( &kb[ KB_LEANRIGHT ] );
-} //----(SA)  lean right
-
-void IN_LeanRightUp( void )
-{
-	IN_KeyUp( &kb[ KB_LEANRIGHT ] );
-}
-
-void IN_DodgeDown( void )
-{
-	IN_KeyDown( &kb[ KB_DODGE ] );
-}
-
-void IN_DodgeUp( void )
-{
-	IN_KeyUp( &kb[ KB_DODGE ] );
-}
 
 void IN_CenterView (void)
 {
@@ -583,11 +363,11 @@ void CL_KeyMove( usercmd_t *cmd )
 	if ( kb[ KB_SPEED ].active ^ cl_run->integer )
 	{
 		movespeed = 127;
-		cmd->buttons &= ~BUTTON_WALKING;
+		usercmdReleaseButton( cmd->buttons, BUTTON_WALKING );
 	}
 	else
 	{
-		cmd->buttons |= BUTTON_WALKING;
+		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 		movespeed = 64;
 	}
 
@@ -605,15 +385,15 @@ void CL_KeyMove( usercmd_t *cmd )
 	side -= movespeed * CL_KeyState( &kb[ KB_MOVELEFT ] );
 
 //----(SA)  added
-	if ( cmd->buttons & BUTTON_ACTIVATE )
+	if ( usercmdButtonPressed( cmd->buttons, BUTTON_ACTIVATE) )
 	{
 		if ( side > 0 )
 		{
-			cmd->wbuttons |= WBUTTON_LEANRIGHT;
+			usercmdPressButton( cmd->buttons, BUTTON_LEANRIGHT );
 		}
 		else if ( side < 0 )
 		{
-			cmd->wbuttons |= WBUTTON_LEANLEFT;
+			usercmdPressButton( cmd->buttons, BUTTON_LEANLEFT );
 		}
 
 		side = 0; // disallow the strafe when holding 'activate'
@@ -645,7 +425,7 @@ void CL_KeyMove( usercmd_t *cmd )
 
 		for ( i = 1; i < DT_NUM; i++ )
 		{
-			key_down = kb[ dtmapping[ i ] ].active || kb[ dtmapping[ i ] ].wasPressed;
+			key_down = dtmapping[ i ] == -1 || kb[ dtmapping[ i ] ].active || kb[ dtmapping[ i ] ].wasPressed;
 
 			if ( key_down && !cl.doubleTap.pressedTime[ i ] )
 			{
@@ -759,7 +539,7 @@ void CL_JoystickMove( usercmd_t *cmd )
 
 	if ( !( kb[ KB_SPEED ].active ^ cl_run->integer ) )
 	{
-		cmd->buttons |= BUTTON_WALKING;
+		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 	}
 
 	if ( kb[ KB_SPEED ].active )
@@ -815,7 +595,7 @@ void CL_Xbox360ControllerMove( usercmd_t *cmd )
 
 	if ( !( kb[ KB_SPEED ].active ^ cl_run->integer ) )
 	{
-		cmd->buttons |= BUTTON_WALKING;
+		usercmdPressButton( cmd->buttons, BUTTON_WALKING );
 	}
 
 	if ( kb[ KB_SPEED ].active )
@@ -960,42 +740,35 @@ void CL_CmdButtons( usercmd_t *cmd )
 	// send a button bit even if the key was pressed and released in
 	// less than a frame
 	//
-	for ( i = 0; i < 8; i++ )
+	for ( i = 0; i < USERCMD_BUTTONS; ++i )
 	{
-		if ( kb[ KB_BUTTONS_GROUP_1 + i ].active || kb[ KB_BUTTONS_GROUP_1 + i ].wasPressed )
+		if ( kb[ KB_BUTTONS + i ].active || kb[ KB_BUTTONS + i ].wasPressed )
 		{
-			cmd->buttons |= 1 << i;
+			usercmdPressButton( cmd->buttons, i );
 		}
 
-		kb[ KB_BUTTONS_GROUP_1 + i ].wasPressed = qfalse;
-	}
-
-	for ( i = 0; i < 8; i++ )
-	{
-		if ( kb[ KB_BUTTONS_GROUP_2 + i ].active || kb[ KB_BUTTONS_GROUP_2 + i ].wasPressed )
-		{
-			cmd->wbuttons |= 1 << i;
-		}
-
-		kb[ KB_BUTTONS_GROUP_2 + i ].wasPressed = qfalse;
+		kb[ KB_BUTTONS + i ].wasPressed = qfalse;
 	}
 
 	if ( cls.keyCatchers && !cl_bypassMouseInput->integer )
 	{
-		cmd->buttons |= BUTTON_TALK;
+		usercmdPressButton( cmd->buttons, BUTTON_TALK );
 	}
 
 	// allow the game to know if any key at all is
 	// currently pressed, even if it isn't bound to anything
 	if ( anykeydown && ( !cls.keyCatchers || cl_bypassMouseInput->integer ) )
 	{
-		cmd->buttons |= BUTTON_ANY;
+		usercmdPressButton( cmd->buttons, BUTTON_ANY );
 	}
 
 	// Arnout: clear 'waspressed' from double tap buttons
 	for ( i = 1; i < DT_NUM; i++ )
 	{
-		kb[ dtmapping[ i ] ].wasPressed = qfalse;
+		if ( dtmapping[ i ] != -1 )
+		{
+			kb[ dtmapping[ i ] ].wasPressed = qfalse;
+		}
 	}
 }
 
@@ -1455,6 +1228,61 @@ void CL_SendCmd( void )
 
 /*
 ============
+CL_RegisterButtonCommands
+============
+*/
+void CL_RegisterButtonCommands( const char *cmd_names )
+{
+	static char    *registered[ USERCMD_BUTTONS ] = { NULL };
+	char           name[ 100 ];
+	int            i;
+
+	for ( i = 0; i < USERCMD_BUTTONS; ++i )
+	{
+		if ( registered[ i ] )
+		{
+			Cmd_RemoveCommand( registered[ i ] );
+			registered[ i ][ 0 ] = '-';
+			Cmd_RemoveCommand( registered[ i ] );
+			Z_Free( registered[ i ] );
+			registered[ i ] = NULL;
+		}
+	}
+
+	for ( i = 0; cmd_names && i < USERCMD_BUTTONS; ++i )
+	{
+		char *term;
+
+		if ( *cmd_names == ',' )
+		{
+			// no command for this button - do the next one
+			++cmd_names;
+			continue;
+		}
+
+		term = strchr( cmd_names, ',' );
+
+		Q_snprintf( name + 1, sizeof( name ) - 1, "%.*s",
+		            (int)( term ? ( term - cmd_names ) : sizeof ( name ) - 1 ), cmd_names );
+
+		if ( Cmd_AddButtonCommand( name + 1, KB_BUTTONS + i ) )
+		{
+			// store a copy of the name, '+'-prefixed ready for unregistration
+			name[0] = '+';
+			registered[i] = CopyString( name );
+		}
+
+		cmd_names = term + !!term;
+	}
+
+	if ( cmd_names )
+	{
+		Com_Printf( "^1BUG: cgame: some button commands left unregistered (\"%s\")\n", cmd_names );
+	}
+}
+
+/*
+============
 CL_InitInput
 ============
 */
@@ -1462,57 +1290,19 @@ void CL_InitInput( void )
 {
 	Cmd_AddCommand ("centerview", IN_CenterView);
 
-	Cmd_AddCommand( "+moveup", IN_UpDown );
-	Cmd_AddCommand( "-moveup", IN_UpUp );
-	Cmd_AddCommand( "+movedown", IN_DownDown );
-	Cmd_AddCommand( "-movedown", IN_DownUp );
-	Cmd_AddCommand( "+left", IN_LeftDown );
-	Cmd_AddCommand( "-left", IN_LeftUp );
-	Cmd_AddCommand( "+right", IN_RightDown );
-	Cmd_AddCommand( "-right", IN_RightUp );
-	Cmd_AddCommand( "+forward", IN_ForwardDown );
-	Cmd_AddCommand( "-forward", IN_ForwardUp );
-	Cmd_AddCommand( "+back", IN_BackDown );
-	Cmd_AddCommand( "-back", IN_BackUp );
-	Cmd_AddCommand( "+lookup", IN_LookupDown );
-	Cmd_AddCommand( "-lookup", IN_LookupUp );
-	Cmd_AddCommand( "+lookdown", IN_LookdownDown );
-	Cmd_AddCommand( "-lookdown", IN_LookdownUp );
-	Cmd_AddCommand( "+strafe", IN_StrafeDown );
-	Cmd_AddCommand( "-strafe", IN_StrafeUp );
-	Cmd_AddCommand( "+moveleft", IN_MoveleftDown );
-	Cmd_AddCommand( "-moveleft", IN_MoveleftUp );
-	Cmd_AddCommand( "+moveright", IN_MoverightDown );
-	Cmd_AddCommand( "-moveright", IN_MoverightUp );
-	Cmd_AddCommand( "+speed", IN_SpeedDown );
-	Cmd_AddCommand( "-speed", IN_SpeedUp );
-
-	Cmd_AddCommand( "+attack", IN_AttackDown );  // Primary attack
-	Cmd_AddCommand( "-attack", IN_AttackUp );
-	Cmd_AddCommand( "+useitem", IN_UseItemDown ); // Use an item
-	Cmd_AddCommand( "-useitem", IN_UseItemUp );
-	Cmd_AddCommand( "+taunt", IN_TauntDown );  // Taunt ("COME ON!")
-	Cmd_AddCommand( "-taunt", IN_TauntUp );
-	Cmd_AddCommand( "+sprint", IN_SprintDown );
-	Cmd_AddCommand( "-sprint", IN_SprintUp );
-	Cmd_AddCommand( "+activate", IN_ActivateDown );
-	Cmd_AddCommand( "-activate", IN_ActivateUp );
-
-	Cmd_AddCommand( "+attack2", IN_SecondaryAttackDown );  //----(SA) secondary firing
-	Cmd_AddCommand( "-attack2", IN_SecondaryAttackUp );
-	Cmd_AddCommand( "+zoom", IN_ZoomDown );  //
-	Cmd_AddCommand( "-zoom", IN_ZoomUp );
-	Cmd_AddCommand( "+reload", IN_ReloadDown );  //
-	Cmd_AddCommand( "-reload", IN_ReloadUp );
-	Cmd_AddCommand( "+leanleft", IN_LeanLeftDown );
-	Cmd_AddCommand( "-leanleft", IN_LeanLeftUp );
-	Cmd_AddCommand( "+leanright", IN_LeanRightDown );
-	Cmd_AddCommand( "-leanright", IN_LeanRightUp );
-	Cmd_AddCommand( "+dodge", IN_DodgeDown );
-	Cmd_AddCommand( "-dodge", IN_DodgeUp );
-
-	Cmd_AddCommand( "+mlook", IN_MLookDown );
-	Cmd_AddCommand( "-mlook", IN_MLookUp );
+	Cmd_AddButtonCommand( "moveup",     KB_UP );
+	Cmd_AddButtonCommand( "movedown",   KB_DOWN );
+	Cmd_AddButtonCommand( "left",       KB_LEFT );
+	Cmd_AddButtonCommand( "right",      KB_RIGHT );
+	Cmd_AddButtonCommand( "forward",    KB_FORWARD );
+	Cmd_AddButtonCommand( "back",       KB_BACK );
+	Cmd_AddButtonCommand( "lookup",     KB_LOOKUP );
+	Cmd_AddButtonCommand( "lookdown",   KB_LOOKDOWN );
+	Cmd_AddButtonCommand( "strafe",     KB_STRAFE );
+	Cmd_AddButtonCommand( "moveleft",   KB_MOVELEFT );
+	Cmd_AddButtonCommand( "moveright",  KB_MOVERIGHT );
+	Cmd_AddButtonCommand( "speed",      KB_SPEED );
+	Cmd_AddButtonCommand( "mlook",      KB_MLOOK );
 
 	//Cmd_AddCommand ("notebook",IN_Notebook);
 	Cmd_AddCommand( "help", IN_Help );
