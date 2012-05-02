@@ -1,5 +1,7 @@
 unvanquished (0.3.5-2) unstable; urgency=low
 
+  * Separate package for the dedicated server.
+    - Uses files from tremulous-server (Debian).
   * fs_libpath should be in the search path.
 
  -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Wed, 02 May 2012 18:20:14 +0100
