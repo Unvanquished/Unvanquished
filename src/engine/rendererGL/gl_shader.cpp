@@ -215,9 +215,6 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 	char        *libsBuffer; // all libs concatenated
 
 	char        **libs = ( char ** ) &libShaderNames;
-#ifdef USE_GLSL_OPTIMIZER
-	bool        optimize = r_glslOptimizer->integer ? true : false;
-#endif
 
 	std::string shaderText;
 
@@ -727,7 +724,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		}
 #endif
 
-#if defined( USE_GLSL_OPTIMIZER )
+#if 0
 
 		if ( optimize )
 		{
@@ -753,19 +750,19 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 			{
 				const char *newSource = glslopt_get_output( shaderOptimized );
 
-				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n", filename );
-				ri.Printf( PRINT_DEVELOPER, "OPTIMIZED shader '%s' ----------\n", filename );
-				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n", filename );
+				ri.Printf( PRINT_WARNING, "----------------------------------------------------------\n", filename );
+				ri.Printf( PRINT_WARNING, "OPTIMIZED shader '%s' ----------\n", filename );
+				ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n", filename );
 
 				length = strlen( newSource );
 
 				for ( i = 0; i < length; i += 1024 )
 				{
 					Q_strncpyz( msgPart, newSource + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
+					ri.Printf( PRINT_WARNING, "%s\n", msgPart );
 				}
 
-				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n", filename );
+				ri.Printf( PRINT_WARNING, " END-- ---------------------------------------------------\n", filename );
 				shaderText = std::string( newSource, length );
 			}
 			else
@@ -782,7 +779,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 					ri.Printf( PRINT_ALL, "%s\n", msgPart );
 				}
 
-				ri.Printf( PRINT_ALL, "^1Couldn't optimize %s", filename );
+				ri.Printf( PRINT_ALL, "^1Couldn't optimize %s\n", filename );
 				shaderText = std::string( bufferFinal, sizeFinal );
 			}
 
@@ -876,6 +873,10 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
     const std::string &fragmentShaderText,
     const std::string &compileMacros, int iteration ) const
 {
+#ifdef USE_GLSL_OPTIMIZER
+	bool        optimize = r_glslOptimizer->integer ? true : false;
+#endif
+
 	//ri.Printf(PRINT_DEVELOPER, "------- GPU shader -------\n");
 
 	Q_strncpyz( program->name, programName, sizeof( program->name ) );
@@ -951,7 +952,85 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 		// add them
 		std::string vertexShaderTextWithMacros = vertexHeader + macrosString + vertexShaderText;
 		std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + fragmentShaderText;
+#ifdef USE_GLSL_OPTIMIZER
+		if( optimize )
+		{
+			static char         msgPart[ 1024 ];
+			int                 length = 0;
+			int                 i;
 
+			glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer, kGlslOptShaderVertex, vertexShaderTextWithMacros.c_str(), 0 );
+			if( glslopt_get_status( shaderOptimized ) )
+			{
+				vertexShaderTextWithMacros = glslopt_get_output( shaderOptimized );
+
+				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
+				ri.Printf( PRINT_DEVELOPER, "OPTIMIZED VERTEX shader '%s' ----------\n", programName );
+				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
+
+				length = strlen( vertexShaderTextWithMacros.c_str() );
+
+				for ( i = 0; i < length; i += 1024 )
+				{
+					Q_strncpyz( msgPart, vertexShaderTextWithMacros.c_str() + i, sizeof( msgPart ) );
+					ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
+				}
+
+				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
+			}
+			else
+			{
+				const char *errorLog = glslopt_get_log( shaderOptimized );
+
+				length = strlen( errorLog );
+
+				for ( i = 0; i < length; i += 1024 )
+				{
+					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
+					ri.Printf( PRINT_WARNING, "%s\n", msgPart );
+				}
+
+				ri.Printf( PRINT_WARNING, "^1Couldn't optimize VERTEX shader %s\n", programName );
+			}
+			glslopt_shader_delete( shaderOptimized );
+
+
+			glslopt_shader *shaderOptimized1 = glslopt_optimize( s_glslOptimizer, kGlslOptShaderFragment, fragmentShaderTextWithMacros.c_str(), 0 );
+			if( glslopt_get_status( shaderOptimized1 ) )
+			{
+				fragmentShaderTextWithMacros = glslopt_get_output( shaderOptimized1 );
+
+				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
+				ri.Printf( PRINT_DEVELOPER, "OPTIMIZED FRAGMENT shader '%s' ----------\n", programName );
+				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
+
+				length = strlen( fragmentShaderTextWithMacros.c_str() );
+
+				for ( i = 0; i < length; i += 1024 )
+				{
+					Q_strncpyz( msgPart, fragmentShaderTextWithMacros.c_str() + i, sizeof( msgPart ) );
+					ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
+				}
+
+				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
+			}
+			else
+			{
+				const char *errorLog = glslopt_get_log( shaderOptimized1 );
+
+				length = strlen( errorLog );
+
+				for ( i = 0; i < length; i += 1024 )
+				{
+					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
+					ri.Printf( PRINT_WARNING, "%s\n", msgPart );
+				}
+
+				ri.Printf( PRINT_WARNING, "^1Couldn't optimize FRAGMENT shader %s\n", programName );
+			}
+			glslopt_shader_delete( shaderOptimized1 );
+		}
+#endif
 		CompileGPUShader( program->program, programName, vertexShaderTextWithMacros.c_str(), strlen( vertexShaderTextWithMacros.c_str() ), GL_VERTEX_SHADER );
 		CompileGPUShader( program->program, programName, fragmentShaderTextWithMacros.c_str(), strlen( fragmentShaderTextWithMacros.c_str() ), GL_FRAGMENT_SHADER );
 		BindAttribLocations( program->program );  //, _vertexAttribsRequired | _vertexAttribsOptional);
