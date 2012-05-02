@@ -127,7 +127,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	text_p = text;
 	skip = 0; // quite the compiler warning
 
-//      ci->footsteps = FOOTSTEP_STONE;
+        ci->footsteps = FOOTSTEP_NORMAL;
 	VectorClear( ci->headOffset );
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
@@ -151,41 +151,40 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			break;
 		}
 
-//              if(!Q_stricmp(token, "footsteps"))
-//              {
-//                      token = COM_Parse(&text_p);
-//                      if(!token)
-//                      {
-//                              break;
-//                      }
-//                      if(!Q_stricmp(token, "default") || !Q_stricmp(token, "normal") || !Q_stricmp(token, "stone"))
-//                      {
-//                              ci->footsteps = FOOTSTEP_STONE;
-//                      }
-//                      else if(!Q_stricmp(token, "boot"))
-//                      {
-//                              ci->footsteps = FOOTSTEP_BOOT;
-//                      }
-//                      else if(!Q_stricmp(token, "flesh"))
-//                      {
-//                              ci->footsteps = FOOTSTEP_FLESH;
-//                      }
-//                      else if(!Q_stricmp(token, "mech"))
-//                      {
-//                              ci->footsteps = FOOTSTEP_MECH;
-//                      }
-//                      else if(!Q_stricmp(token, "energy"))
-//                      {
-//                              ci->footsteps = FOOTSTEP_ENERGY;
-//                      }
-//                      else
-//                      {
-//                              CG_Printf("Bad footsteps parm in %s: %s\n", filename, token);
-//                      }
-//                      continue;
-//              }
-//		else
-		if ( !Q_stricmp( token, "headoffset" ) )
+		if(!Q_stricmp(token, "footsteps"))
+		{
+			token = COM_Parse(&text_p);
+			if(!token)
+			{
+				break;
+			}
+			if( !Q_stricmp( token, "default" ) || !Q_stricmp( token, "normal" ) )
+			{
+				ci->footsteps = FOOTSTEP_NORMAL;
+			}
+			else if( !Q_stricmp( token, "flesh") )
+			{
+				ci->footsteps = FOOTSTEP_FLESH;
+			}
+			else if( !Q_stricmp( token, "metal") )
+			{
+				ci->footsteps = FOOTSTEP_METAL;
+			}
+			else if( !Q_stricmp(token, "splash") )
+			{
+				ci->footsteps = FOOTSTEP_SPLASH;
+			}
+			else if( !Q_stricmp(token, "none") )
+			{
+				ci->footsteps = FOOTSTEP_NONE;
+			}
+			else
+			{
+				CG_Printf("Bad footsteps parm in %s: %s\n", filename, token);
+			}
+			continue;
+		}
+		else if ( !Q_stricmp( token, "headoffset" ) )
 		{
 			for ( i = 0; i < 3; i++ )
 			{
