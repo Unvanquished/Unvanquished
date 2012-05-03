@@ -713,9 +713,9 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		{
 			static char msgPart[ 1024 ];
 			int         i;
-			ri.Printf( PRINT_WARNING, "----------------------------------------------------------\n", filename );
+			ri.Printf( PRINT_WARNING, "----------------------------------------------------------\n" );
 			ri.Printf( PRINT_WARNING, "CONCATENATED shader '%s' ----------\n", filename );
-			ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n", filename );
+			ri.Printf( PRINT_WARNING, " BEGIN ---------------------------------------------------\n" );
 
 			for ( i = 0; i < sizeFinal; i += 1024 )
 			{
@@ -723,7 +723,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 				ri.Printf( PRINT_ALL, "%s", msgPart );
 			}
 
-			ri.Printf( PRINT_WARNING, " END-- ---------------------------------------------------\n", filename );
+			ri.Printf( PRINT_WARNING, " END-- ---------------------------------------------------\n" );
 		}
 #endif
 
@@ -753,9 +753,9 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 			{
 				const char *newSource = glslopt_get_output( shaderOptimized );
 
-				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n", filename );
+				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
 				ri.Printf( PRINT_DEVELOPER, "OPTIMIZED shader '%s' ----------\n", filename );
-				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n", filename );
+				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
 
 				length = strlen( newSource );
 
@@ -765,7 +765,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 					ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
 				}
 
-				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n", filename );
+				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
 				shaderText = std::string( newSource, length );
 			}
 			else
