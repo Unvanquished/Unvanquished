@@ -34,6 +34,8 @@ Maryland 20850 USA.
 
 // console.c
 
+#include "git_version.h"
+
 #include "client.h"
 
 int g_console_field_width = 78;
@@ -151,19 +153,23 @@ const char *Con_GetText( int console )
 
 /*
 ================
+Con_Clear
+================
+*/
+static ID_INLINE void Con_Clear( void )
+{
+	memset( con.text, ' ', CON_TEXTSIZE );
+	memset( con.tcolor, ColorIndex( CONSOLE_COLOR ), CON_TEXTSIZE );
+}
+
+/*
+================
 Con_Clear_f
 ================
 */
 void Con_Clear_f( void )
 {
-	int i;
-
-	for ( i = 0; i < CON_TEXTSIZE; i++ )
-	{
-		con.text[ i ] = ' ';
-		con.tcolor[ i ] = ColorIndex( CONSOLE_COLOR );
-	}
-
+	Con_Clear();
 	Con_Bottom(); // go to end
 }
 
@@ -223,10 +229,7 @@ void Con_Dump_f( void )
 	{
 		line = con.text + ( l % con.totallines ) * con.linewidth;
 
-		for ( i = 0; i < con.linewidth; i++ )
-		{
-			buffer[ i ] = line[ i ] & 0xff;
-		}
+		memcpy( buffer, line, con.linewidth );
 
 		for ( x = con.linewidth - 1; x >= 0; x-- )
 		{
@@ -284,10 +287,7 @@ void Con_Search_f( void )
 	{
 		line = con.text + ( l % con.totallines ) * con.linewidth;
 
-		for ( i = 0; i < con.linewidth; i++ )
-		{
-			buffer[ i ] = line[ i ] & 0xff;
-		}
+		memcpy( buffer, line, con.linewidth );
 
 		for ( x = con.linewidth - 1; x >= 0; x-- )
 		{
@@ -329,7 +329,6 @@ Find all console lines containing a string
 void Con_Grep_f( void )
 {
 	int   l, x, i;
-	char  *line;
 	char  buffer[ 1024 ];
 	char  buffer2[ 1024 ];
 	char  printbuf[ CON_TEXTSIZE ];
@@ -345,7 +344,7 @@ void Con_Grep_f( void )
 	// skip empty lines
 	for ( l = con.current - con.totallines + 1; l <= con.current; l++ )
 	{
-		line = con.text + ( l % con.totallines ) * con.linewidth;
+		char *line = con.text + ( l % con.totallines ) * con.linewidth;
 
 		for ( x = 0; x < con.linewidth; x++ )
 		{
@@ -369,19 +368,9 @@ void Con_Grep_f( void )
 
 	for ( ; l <= con.current; l++ )
 	{
-		line = con.text + ( l % con.totallines ) * con.linewidth;
+		int offset = ( l % con.totallines ) * con.linewidth;
 
-		for ( i = 0, x = 0; i < con.linewidth; i++ )
-		{
-			if ( line[ i ] >> 8 != lastcolor )
-			{
-				lastcolor = line[ i ] >> 8;
-				buffer[ x++ ] = Q_COLOR_ESCAPE;
-				buffer[ x++ ] = lastcolor + '0';
-			}
-
-			buffer[ x++ ] = line[ i ] & 0xff;
-		}
+		memcpy( buffer, con.text + offset, con.linewidth );
 
 		for ( x = con.linewidth - 1; x >= 0; x-- )
 		{
@@ -395,13 +384,21 @@ void Con_Grep_f( void )
 			}
 		}
 
-		// Don't search commands
-		strcpy( buffer2, buffer );
-		Q_CleanStr( buffer2 );
-
-		if ( Q_stristr( buffer2, search ) )
+		if ( Q_stristr( buffer, search ) )
 		{
-			strcat( printbuf, buffer );
+			for ( i = 0, x = 0; i < con.linewidth; i++ )
+			{
+				if ( con.tcolor[ offset + i ] != lastcolor )
+				{
+					lastcolor = con.tcolor[ offset + i ];
+					buffer2[ x++ ] = Q_COLOR_ESCAPE;
+					buffer2[ x++ ] = lastcolor + '0';
+				}
+
+				buffer2[ x++ ] = buffer[ i ];
+			}
+
+			strcat( printbuf, buffer2 );
 			strcat( printbuf, "\n" );
 		}
 	}
@@ -468,12 +465,7 @@ void Con_CheckResize( void )
 		width = DEFAULT_CONSOLE_WIDTH;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
-
-		for ( i = 0; i < CON_TEXTSIZE; i++ )
-		{
-			con.text[ i ] = ' ';
-			con.tcolor[ i ] = ColorIndex( COLOR_WHITE );
-		}
+		Con_Clear();
 	}
 	else
 	{
@@ -497,12 +489,7 @@ void Con_CheckResize( void )
 
 		Com_Memcpy( tbuf, con.text, CON_TEXTSIZE /* * sizeof( short )*/ );
 		Com_Memcpy( cbuf, con.tcolor, CON_TEXTSIZE );
-
-		for ( i = 0; i < CON_TEXTSIZE; i++ )
-		{
-			con.text[ i ] = ' ';
-			con.tcolor[ i ] = ColorIndex( COLOR_WHITE );
-		}
+		Con_Clear();
 
 		for ( i = 0; i < numlines; i++ )
 		{
@@ -573,7 +560,7 @@ Con_Linefeed
 */
 void Con_Linefeed( qboolean skipnotify )
 {
-	int i;
+	int offs;
 
 	// mark time for transparent overlay
 	if ( con.current >= 0 )
@@ -597,12 +584,9 @@ void Con_Linefeed( qboolean skipnotify )
 
 	con.current++;
 
-	for ( i = 0; i < con.linewidth; ++i )
-	{
-		int offs = ( con.current % con.totallines ) * con.linewidth + i;
-		con.text[ offs ] = ' ';
-		con.tcolor[ offs ] = ColorIndex( CONSOLE_COLOR );
-	}
+	offs = ( con.current % con.totallines ) * con.linewidth;
+	memset( con.text + offs, ' ', con.linewidth );
+	memset( con.tcolor + offs, ColorIndex( CONSOLE_COLOR ), con.linewidth );
 }
 
 /*

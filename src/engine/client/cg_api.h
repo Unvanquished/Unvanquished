@@ -137,14 +137,14 @@ typedef enum
   CG_R_REGISTERSHADER,
   CG_R_REGISTERFONT,
   CG_R_REGISTERSHADERNOMIP,
-#if defined( USE_REFLIGHT )
+//#if defined( USE_REFLIGHT )
   CG_R_REGISTERSHADERLIGHTATTENUATION,
-#endif
+//#endif
   CG_R_CLEARSCENE,
   CG_R_ADDREFENTITYTOSCENE,
-#if defined( USE_REFLIGHT )
+//#if defined( USE_REFLIGHT )
   CG_R_ADDREFLIGHTSTOSCENE,
-#endif
+//#endif
   CG_R_ADDPOLYTOSCENE,
   CG_R_ADDPOLYSTOSCENE,
   CG_R_ADDPOLYBUFFERTOSCENE,
@@ -238,7 +238,7 @@ typedef enum
   CG_GETDEMONAME,
   CG_R_LIGHTFORPOINT,
   CG_S_SOUNDDURATION,
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
+//#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
   CG_R_REGISTERANIMATION,
   CG_R_CHECKSKELETON,
   CG_R_BUILDSKELETON,
@@ -246,8 +246,9 @@ typedef enum
   CG_R_BONEINDEX,
   CG_R_ANIMNUMFRAMES,
   CG_R_ANIMFRAMERATE,
-#endif
-  CG_COMPLETE_CALLBACK
+//#endif
+  CG_COMPLETE_CALLBACK,
+  CG_REGISTER_BUTTON_COMMANDS
 } cgameImport_t;
 
 typedef enum
@@ -491,3 +492,5 @@ int             trap_R_AnimFrameRate( qhandle_t hAnim );
 
 #endif
 void            trap_CompleteCallback( const char *complete );
+
+void            trap_RegisterButtonCommands( const char *cmds );

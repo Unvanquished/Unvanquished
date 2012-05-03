@@ -3414,8 +3414,9 @@ qboolean Item_ComboBox_HandleKey( itemDef_t *item, int key, qboolean down, qbool
 
 qboolean Item_YesNo_HandleKey( itemDef_t *item, int key )
 {
-	if ( Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) &&
-	     item->window.flags & WINDOW_HASFOCUS && item->cvar )
+	if ( item->cvar &&
+	     ( ( item->window.flags & WINDOW_HASFOCUS ) ||
+	       Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) ) )
 	{
 		if ( key == K_MOUSE1 || key == K_ENTER || key == K_MOUSE2 || key == K_MOUSE3 )
 		{
@@ -4461,11 +4462,18 @@ static rectDef_t *Item_CorrectedTextRect( itemDef_t *item )
 
 void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 {
+	static qboolean shift = qfalse;
+
 	int       i;
 	itemDef_t *item = NULL;
 	qboolean  inHandler = qfalse;
 
 	inHandler = qtrue;
+
+	if ( key == K_SHIFT )
+	{
+		shift = down;
+	}
 
 // KTW: Draggable Windows
 	if ( key == K_MOUSE1 && down && Rect_ContainsPoint( &menu->window.rect, DC->cursorx, DC->cursory ) &&
@@ -4582,6 +4590,13 @@ void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 			break;
 
 		case K_TAB:
+			if ( shift )
+			{
+				Menu_SetPrevCursorItem( menu );
+				break;
+			}
+			// else
+
 		case K_KP_DOWNARROW:
 		case K_DOWNARROW:
 			Menu_SetNextCursorItem( menu );
@@ -5541,7 +5556,7 @@ configcvar_t;
 static bind_t g_bindings[] =
 {
 	{ "+scores",        K_TAB,              -1,            -1, -1 },
-	{ "+button2",       K_ENTER,            -1,            -1, -1 },
+	{ "+useitem",       K_ENTER,            -1,            -1, -1 },
 	{ "+speed",         K_SHIFT,            -1,            -1, -1 },
 	{ "+dodge",         'z',                -1,            -1, -1 }, // human dodging
 	{ "+sprint",        'x',                -1,            -1, -1 },
@@ -5581,8 +5596,7 @@ static bind_t g_bindings[] =
 	{ "deconstruct",    'e',                -1,            -1, -1 }, // buildable destroy
 	{ "weapprev",       '[',                -1,            -1, -1 },
 	{ "weapnext",       ']',                -1,            -1, -1 },
-	{ "+button3",       K_MOUSE3,           -1,            -1, -1 },
-	{ "+button4",       K_MOUSE4,           -1,            -1, -1 },
+	{ "+taunt",         K_MOUSE3,           -1,            -1, -1 },
 	{ "vote yes",       K_F1,               -1,            -1, -1 },
 	{ "vote no",        K_F2,               -1,            -1, -1 },
 	{ "teamvote yes",   K_F3,               -1,            -1, -1 },

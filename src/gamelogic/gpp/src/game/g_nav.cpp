@@ -712,8 +712,8 @@ void BotGoto(gentity_t *self, botTarget_t target, usercmd_t *botCmdBuffer) {
 
 	//dont sprint or dodge if we dont have enough stamina and are about to slow
 	if(BotGetTeam(self) == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL) {
-		botCmdBuffer->buttons &= ~BUTTON_SPRINT;
-		botCmdBuffer->buttons &= ~BUTTON_DODGE;
+		usercmdReleaseButton(botCmdBuffer->buttons, BUTTON_SPRINT);
+		usercmdReleaseButton(botCmdBuffer->buttons, BUTTON_DODGE);
 	}
 }
 

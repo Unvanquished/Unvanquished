@@ -34,6 +34,8 @@ Maryland 20850 USA.
 
 // common.c -- misc functions used in client and server
 
+#include "git_version.h"
+
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
 #include "../database/database.h"

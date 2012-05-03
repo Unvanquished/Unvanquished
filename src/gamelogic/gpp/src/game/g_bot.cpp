@@ -1011,11 +1011,11 @@ Misc Bot Stuff
 */
 void BotFireWeapon(weaponMode_t mode, usercmd_t *botCmdBuffer) {
 	if(mode == WPM_PRIMARY) {
-		botCmdBuffer->buttons |= BUTTON_ATTACK;
+		usercmdPressButton(botCmdBuffer->buttons, BUTTON_ATTACK);
 	} else if(mode == WPM_SECONDARY) {
-		botCmdBuffer->wbuttons |= WBUTTON_ATTACK2;
+		usercmdPressButton(botCmdBuffer->buttons, BUTTON_ATTACK2);
 	} else if(mode == WPM_TERTIARY) {
-		botCmdBuffer->buttons |= BUTTON_USE_HOLDABLE;
+		usercmdPressButton(botCmdBuffer->buttons, BUTTON_USE_HOLDABLE);
 	}
 }
 void BotClassMovement(gentity_t *self, qboolean inAttackRange, usercmd_t *botCmdBuffer) {
@@ -1083,7 +1083,7 @@ void BotFireWeaponAI(gentity_t *self, usercmd_t *botCmdBuffer) {
 		if(distance <= ABUILDER_CLAW_RANGE)
 			BotFireWeapon(WPM_SECONDARY, botCmdBuffer);
 		else
-			botCmdBuffer->buttons |= BUTTON_GESTURE; //make cute granger sounds to ward off the would be attackers
+			usercmdPressButton(botCmdBuffer->buttons, BUTTON_GESTURE); //make cute granger sounds to ward off the would be attackers
 		break;
 	case WP_ABUILD2:
 		if(distance <= ABUILDER_CLAW_RANGE)
@@ -1550,7 +1550,7 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 						&& !(self->client->ps.pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ))
 						&& self->client->ps.groundEntityNum != ENTITYNUM_NONE) 
 					{  
-						botCmdBuffer->buttons |= WBUTTON_PRONE;
+						usercmdPressButton(botCmdBuffer->buttons, BUTTON_DODGE);
 						botCmdBuffer->forwardmove = 0;
 					}
 				} else {
@@ -1572,11 +1572,11 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 
 				if(self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL && self->botMind->botSkill.level >= 5) {
-					botCmdBuffer->buttons |= BUTTON_SPRINT;
+					usercmdPressButton(botCmdBuffer->buttons, BUTTON_SPRINT);
 				} else {
 					//dont sprint or dodge, we are about to slow
-					botCmdBuffer->buttons &= ~BUTTON_SPRINT;
-					botCmdBuffer->buttons &= ~WBUTTON_PRONE;
+					usercmdReleaseButton(botCmdBuffer->buttons, BUTTON_SPRINT);
+					usercmdReleaseButton(botCmdBuffer->buttons, BUTTON_DODGE);
 				}
 
 			} else if(BotGetTeam(self) == TEAM_ALIENS) {
@@ -1781,8 +1781,7 @@ extern "C" void G_BotThink( gentity_t *self) {
 	usercmd_t  botCmdBuffer = self->client->pers.cmd;
 
 	//reset command buffer
-	botCmdBuffer.buttons = 0;
-	botCmdBuffer.wbuttons = 0;
+	usercmdClearButtons(botCmdBuffer.buttons);
 	botCmdBuffer.forwardmove = 0;
 	botCmdBuffer.rightmove = 0;
 	botCmdBuffer.upmove = 0;

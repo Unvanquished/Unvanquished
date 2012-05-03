@@ -829,7 +829,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize )
 	// if something made the name bad, put them back to UnnamedPlayer
 	if ( invalid )
 	{
-		Q_strncpyz( p, "UnnamedPlayer", outSize );
+		Q_strncpyz( p, UNNAMED_PLAYER, outSize );
 	}
 }
 
@@ -985,7 +985,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 		if ( revertName )
 		{
-			Q_strncpyz( client->pers.netname, *oldname ? oldname : "UnnamedPlayer",
+			Q_strncpyz( client->pers.netname, *oldname ? oldname : UNNAMED_PLAYER,
 			            sizeof( client->pers.netname ) );
 			Info_SetValueForKey( userinfo, "name", oldname );
 			trap_SetUserinfo( clientNum, userinfo );
@@ -1690,7 +1690,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles
 	ent->nextRegenTime = level.time;
 
 	client->inactivityTime = level.time + g_inactivity.integer * 1000;
-	client->latched_buttons = 0;
+	usercmdClearButtons( client->latched_buttons );
 
 	// set default animations
 	client->ps.torsoAnim = TORSO_STAND;

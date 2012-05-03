@@ -147,7 +147,7 @@ CON_UpdateCursor
 Update the cursor position
 ==================
 */
-static inline void CON_UpdateCursor( void )
+static ID_INLINE void CON_UpdateCursor( void )
 {
 // pdcurses uses a different mechanism to move the cursor than ncurses
 #ifdef _WIN32

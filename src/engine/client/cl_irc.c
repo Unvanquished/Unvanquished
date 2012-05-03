@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #include "config.h"
 #endif
 
+#include "git_version.h"
+
 #include "client.h"
 #include "../qcommon/htable.h"
 

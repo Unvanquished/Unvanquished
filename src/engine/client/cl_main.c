@@ -34,6 +34,8 @@ Maryland 20850 USA.
 
 // cl_main.c  -- client main loop
 
+#include "git_version.h"
+
 #include "client.h"
 #include <limits.h>
 
@@ -5120,7 +5122,7 @@ void CL_Init( void )
 
 	Cvar_Get( "cl_maxPing", "800", CVAR_ARCHIVE );
 	// userinfo
-	Cvar_Get( "name", "UnnamedPlayer", CVAR_USERINFO | CVAR_ARCHIVE );
+	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "snaps", "120", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );  // temp until we have an skeletal american model

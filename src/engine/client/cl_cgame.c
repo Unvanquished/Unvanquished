@@ -499,11 +499,18 @@ rescan:
 		return qfalse;
 	}
 
-	if ( cl_pubkeyID->integer && !strcmp( cmd, "pubkey_decrypt" ) && argc > 1 )
+	if ( cl_pubkeyID->integer && !strcmp( cmd, "pubkey_decrypt" ) )
 	{
 		char         buffer[ MAX_STRING_CHARS ] = "pubkey_identify ";
 		unsigned int msg_len = MAX_STRING_CHARS - 16;
 		mpz_t        message;
+
+		if ( argc == 1 )
+		{
+			Com_Printf( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" );
+			return qfalse;
+		}
+
 		mpz_init_set_str( message, Cmd_Argv( 1 ), 16 );
 
 		if ( rsa_decrypt( &private_key, &msg_len, ( unsigned char * ) buffer + 16, message ) )
@@ -1368,6 +1375,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_ANIMFRAMERATE:
 			return re.AnimFrameRate( args[ 1 ] );
 #endif
+
+		case CG_REGISTER_BUTTON_COMMANDS:
+			CL_RegisterButtonCommands( VMA( 1 ) );
+			return 0;
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );

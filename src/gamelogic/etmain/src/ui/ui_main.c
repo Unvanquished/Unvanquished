@@ -40,6 +40,8 @@ USER INTERFACE MAIN
 =======================================================================
 */
 
+#include "git_version.h"
+
 #include "ui_local.h"
 
 // NERVE - SMF

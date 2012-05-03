@@ -4391,6 +4391,9 @@ extern "C" {
 
 	extern cvar_t *r_evsmPostProcess;
 
+#ifdef USE_GLSL_OPTIMIZER
+	extern cvar_t *r_glslOptimizer;
+#endif
 //====================================================================
 
 #define IMAGE_FILE_HASH_SIZE 4096

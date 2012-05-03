@@ -577,6 +577,8 @@ void        CL_FlushMemory( void );
 void        CL_ShutdownAll( void );
 void        CL_AddReliableCommand( const char *cmd );
 
+void        CL_RegisterButtonCommands( const char *cmdList );
+
 void        CL_StartHunkUsers( void );
 
 void        CL_CheckAutoUpdate( void );
@@ -644,35 +646,14 @@ typedef enum
   KB_MOVERIGHT,
   KB_STRAFE,
   KB_SPEED,
-  KB_UP = 10,
+  KB_UP,
   KB_DOWN,
-  KB_BUTTONS0,
-  KB_BUTTONS1,
-  KB_BUTTONS2,
-  KB_BUTTONS3,
-  KB_BUTTONS4,
-  KB_BUTTONS5,
-  KB_BUTTONS6,
-  KB_BUTTONS7,
-  KB_BUTTONS8 = 20,
-  KB_BUTTONS9,
-  KB_BUTTONS10,
-  KB_BUTTONS11,
-  KB_BUTTONS12,
-  KB_BUTTONS13,
-  KB_BUTTONS14,
-  KB_BUTTONS15,
-  KB_WBUTTONS0,
-  KB_WBUTTONS1,
-  KB_WBUTTONS2 = 30,
-  KB_WBUTTONS3,
-  KB_WBUTTONS4,
-  KB_WBUTTONS5,
-  KB_WBUTTONS6,
-  KB_WBUTTONS7,
+
   KB_MLOOK,
   KB_VOIPRECORD,
-  NUM_BUTTONS
+
+  KB_BUTTONS, // must be second-last
+  NUM_BUTTONS = KB_BUTTONS + USERCMD_BUTTONS
 } kbuttons_t;
 
 void CL_ClearKeys( void );

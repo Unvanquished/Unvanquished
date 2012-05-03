@@ -497,6 +497,15 @@ qboolean G_admin_permission( gentity_t *ent, const char *flag )
 	return qfalse;
 }
 
+static qboolean G_IsUnnamed( const char *name )
+{
+	char testName[ MAX_NAME_LENGTH ];
+
+	G_SanitiseString( name, testName, sizeof( testName ) );
+
+	return Q_stricmp( testName, UNNAMED_PLAYER ) ? qfalse : qtrue;
+}
+
 qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 {
 	int             i;
@@ -508,7 +517,7 @@ qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int le
 
 	G_SanitiseString( name, name2, sizeof( name2 ) );
 
-	if ( !strcmp( name2, "unnamedplayer" ) )
+	if ( !Q_stricmp( name2, UNNAMED_PLAYER ) )
 	{
 		return qtrue;
 	}
@@ -1594,8 +1603,16 @@ void G_admin_pubkey( void )
 			highest = a;
 			break;
 		}
-		else if ( a->counter == 0 || !a->pubkey[ 0 ] )
+		else if (!a->pubkey[ 0 ] )
 		{
+			continue;
+		}
+		else if ( a->counter == 0 )
+		{
+			if ( !a->msg2[ 0 ] )
+			{
+				a->counter = -1;
+			}
 			continue;
 		}
 		else if ( !highest )
@@ -2053,6 +2070,12 @@ qboolean G_admin_setlevel( gentity_t *ent )
 			admin_listadmins( ent, 0, name );
 			return qfalse;
 		}
+	}
+
+	if ( l->level && G_IsUnnamed( vic->client->pers.netname ) )
+	{
+		ADMP( "^3setlevel: ^7your intended victim has the default name\n" );
+		return qfalse;
 	}
 
 	if ( ent && !admin_higher_admin( ent->client->pers.admin, a ) )
@@ -4542,6 +4565,7 @@ qboolean G_admin_l1( gentity_t *ent )
 	}
 
 	trap_Argv( 1, name, sizeof( name ) );
+
 	id = admin_find_admin( ent, name, "l1", &vic, &a );
 
 	if ( id < 0 )
@@ -4552,6 +4576,12 @@ qboolean G_admin_l1( gentity_t *ent )
 	if ( !a || a->level != 0 )
 	{
 		ADMP( "^3l1: ^7your intended victim is not level 0\n" );
+		return qfalse;
+	}
+
+	if ( G_IsUnnamed( vic->client->pers.netname ) )
+	{
+		ADMP( "^3l1: ^7your intended victim has the default name\n" );
 		return qfalse;
 	}
 
@@ -4575,6 +4605,12 @@ qboolean G_admin_register( gentity_t *ent )
 	if ( ent->client->pers.admin && ent->client->pers.admin->level != 0 )
 	{
 		level = ent->client->pers.admin->level;
+	}
+
+	if ( G_IsUnnamed( ent->client->pers.netname ) )
+	{
+		ADMP( "^3register: ^7you must first change your name\n" );
+		return qfalse;
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND, va( "setlevel %d %d;",

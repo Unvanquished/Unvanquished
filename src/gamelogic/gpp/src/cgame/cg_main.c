@@ -202,6 +202,7 @@ vmCvar_t        cg_rangeMarkerLineOpacity;
 vmCvar_t        cg_rangeMarkerLineThickness;
 vmCvar_t        cg_rangeMarkerForBlueprint;
 vmCvar_t        cg_rangeMarkerBuildableTypes;
+vmCvar_t        cg_rangeMarkerWhenSpectating;
 vmCvar_t        cg_binaryShaderScreenScale;
 
 vmCvar_t        cg_painBlendUpRate;
@@ -332,13 +333,14 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_tutorial,                    "cg_tutorial",                    "1",            CVAR_ARCHIVE                 },
 
 	{ &cg_rangeMarkerDrawSurface,      "cg_rangeMarkerDrawSurface",      "1",            CVAR_ARCHIVE                 },
-	{ &cg_rangeMarkerDrawIntersection, "cg_rangeMarkerDrawIntersection", "1",            CVAR_ARCHIVE                 },
-	{ &cg_rangeMarkerDrawFrontline,    "cg_rangeMarkerDrawFrontline",    "1",            CVAR_ARCHIVE                 },
+	{ &cg_rangeMarkerDrawIntersection, "cg_rangeMarkerDrawIntersection", "0",            CVAR_ARCHIVE                 },
+	{ &cg_rangeMarkerDrawFrontline,    "cg_rangeMarkerDrawFrontline",    "0",            CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerSurfaceOpacity,   "cg_rangeMarkerSurfaceOpacity",   "0.08",         CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerLineOpacity,      "cg_rangeMarkerLineOpacity",      "0.4",          CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerLineThickness,    "cg_rangeMarkerLineThickness",    "4.0",          CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerForBlueprint,     "cg_rangeMarkerForBlueprint",     "1",            CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerBuildableTypes,   "cg_rangeMarkerBuildableTypes",   "support",      CVAR_ARCHIVE                 },
+	{ &cg_rangeMarkerWhenSpectating,   "cg_rangeMarkerWhenSpectating",   "0",            CVAR_ARCHIVE                 },
 	{ NULL,                            "cg_buildableRangeMarkerMask",    "",             CVAR_USERINFO                },
 	{ &cg_binaryShaderScreenScale,     "cg_binaryShaderScreenScale",     "1.0",          CVAR_ARCHIVE                 },
 
@@ -618,16 +620,18 @@ CG_UpdateBuildableRangeMarkerMask
 */
 void CG_UpdateBuildableRangeMarkerMask( void )
 {
-	static int mc = 0;
+	static int btmc = 0;
+	static int spmc = 0;
 
-	if ( cg_rangeMarkerBuildableTypes.modificationCount != mc )
+	if ( cg_rangeMarkerBuildableTypes.modificationCount != btmc ||
+	     cg_rangeMarkerWhenSpectating.modificationCount != spmc )
 	{
 		int         brmMask;
 		char        buffer[ MAX_CVAR_VALUE_STRING ];
 		char        *p, *q;
 		buildable_t buildable;
 
-		brmMask = 0;
+		brmMask = cg_rangeMarkerWhenSpectating.integer ? ( 1 << BA_NONE ) : 0;
 
 		if ( !cg_rangeMarkerBuildableTypes.string[ 0 ] )
 		{
@@ -720,7 +724,8 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 empty:
 		trap_Cvar_Set( "cg_buildableRangeMarkerMask", va( "%i", brmMask ) );
 
-		mc = cg_rangeMarkerBuildableTypes.modificationCount;
+		btmc = cg_rangeMarkerBuildableTypes.modificationCount;
+		spmc = cg_rangeMarkerWhenSpectating.modificationCount;
 	}
 }
 
