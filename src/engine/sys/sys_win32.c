@@ -32,6 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "git_version.h"
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"

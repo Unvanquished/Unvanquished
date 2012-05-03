@@ -216,7 +216,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 	char        **libs = ( char ** ) &libShaderNames;
 #ifdef USE_GLSL_OPTIMIZER
-	bool        optimize = true;
+	bool        optimize = r_glslOptimizer->integer ? true : false;
 #endif
 
 	std::string shaderText;

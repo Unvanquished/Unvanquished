@@ -79,7 +79,16 @@ typedef struct cmd_function_s
 	struct cmd_function_s *next;
 
 	char                  *name;
-	xcommand_t            function;
+#ifdef DEDICATED
+	xcommand_t        function;
+#else
+	union {
+		xcommand_t        function;
+		xcommand_arg_t    buttonFunction;
+	};
+	qboolean              isButtonCommand;
+#endif
+	int                   parameter;
 	completionFunc_t      complete;
 } cmd_function_t;
 
@@ -2052,6 +2061,26 @@ void Cmd_TokenizeStringParseCvar( const char *text_in )
 
 /*
 ============
+Cmd_CommandExists
+============
+*/
+qboolean Cmd_CommandExists( const char *cmd_name )
+{
+	cmd_function_t *cmd;
+
+	for ( cmd = cmd_functions; cmd; cmd = cmd->next )
+	{
+		if ( !strcmp( cmd_name, cmd->name ) )
+		{
+			return qtrue;
+		}
+	}
+
+	return qfalse;
+}
+
+/*
+============
 Cmd_AddCommand
 ============
 */
@@ -2060,28 +2089,87 @@ void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 	cmd_function_t *cmd;
 
 	// fail if the command already exists
-	for ( cmd = cmd_functions; cmd; cmd = cmd->next )
+	if ( Cmd_CommandExists( cmd_name ) )
 	{
-		if ( !strcmp( cmd_name, cmd->name ) )
+		// allow completion-only commands to be silently doubled
+		if ( function != NULL )
 		{
-			// allow completion-only commands to be silently doubled
-			if ( function != NULL )
-			{
-				Com_Printf( "Cmd_AddCommand: %s already defined\n", cmd_name );
-			}
-
-			return;
+			Com_Printf( "Cmd_AddCommand: %s already defined\n", cmd_name );
 		}
+
+		return;
 	}
 
 	// use a small malloc to avoid zone fragmentation
 	cmd = S_Malloc( sizeof( cmd_function_t ) );
 	cmd->name = CopyString( cmd_name );
 	cmd->function = function;
+#ifndef DEDICATED
+	cmd->isButtonCommand = qfalse;
+#endif
 	cmd->next = cmd_functions;
 	cmd->complete = NULL;
 	cmd_functions = cmd;
 }
+
+/*
+============
+Cmd_AddButtonCommand
+============
+*/
+#ifndef DEDICATED
+qboolean Cmd_AddButtonCommand( const char *cmd_name, int parameter )
+{
+	char           *prefixed_name;
+	cmd_function_t *cmd;
+
+	prefixed_name = S_Malloc( strlen( cmd_name ) + 2 );
+	prefixed_name[0] = '-';
+	strcpy( prefixed_name + 1, cmd_name );
+
+	// fail if the command already exists
+	if ( Cmd_CommandExists( prefixed_name ) )
+	{
+		goto fail;
+	}
+
+	prefixed_name[0] = '+';
+
+	if ( Cmd_CommandExists( prefixed_name ) )
+	{
+		goto fail;
+	}
+
+	// + form
+	// (prefix is already in place)
+	cmd = S_Malloc( sizeof( cmd_function_t ) );
+	cmd->name = CopyString( prefixed_name );
+	cmd->buttonFunction = IN_ButtonDown;
+	cmd->isButtonCommand = qtrue;
+	cmd->parameter = parameter;
+	cmd->next = cmd_functions;
+	cmd->complete = NULL;
+	cmd_functions = cmd;
+
+	// - form
+	prefixed_name[0] = '-';
+	cmd = S_Malloc( sizeof( cmd_function_t ) );
+	cmd->name = prefixed_name;
+	cmd->buttonFunction = IN_ButtonUp;
+	cmd->isButtonCommand = qtrue;
+	cmd->parameter = parameter;
+	cmd->next = cmd_functions;
+	cmd->complete = NULL;
+	cmd_functions = cmd;
+
+	return qtrue;
+
+fail:
+	Z_Free( prefixed_name );
+	Com_Printf( "Cmd_AddButtonCommand: +/-%s already defined\n", cmd_name );
+	return qfalse;
+}
+#endif
 
 /*
 ============
@@ -2205,17 +2293,22 @@ void Cmd_ExecuteString( const char *text )
 			cmd_functions = cmdFunc;
 
 			// perform the action
-			if ( !cmdFunc->function )
+#ifndef DEDICATED
+			if ( cmdFunc->isButtonCommand )
 			{
-				// let the cgame or game handle it
-				break;
+				cmdFunc->buttonFunction( cmdFunc->parameter );
+				return;
 			}
 			else
+#endif
+			if ( cmdFunc->function )
 			{
 				cmdFunc->function();
+				return;
 			}
 
-			return;
+			// let the cgame or game handle it
+			break;
 		}
 	}
 

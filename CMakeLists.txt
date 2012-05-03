@@ -5,6 +5,7 @@
 #
 
 cmake_minimum_required( VERSION 2.8 )
+cmake_policy( SET CMP0017 NEW )
 
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "" )
@@ -32,8 +33,6 @@ option( BUILD_CLIENT         "Build Daemon client"                         1 )
 option( BUILD_OLD_RENDERER   "Build old renderer library"                  1 )
 option( BUILD_NEW_RENDERER   "Build new renderer library"                  1 )
 option( BUILD_SERVER         "Build Daemonded server"                      1 )
-option( BUILD_GAME_SO_ET     "Build game logic shared libraries for ET"    0 )
-option( BUILD_GAME_SO_TREM   "Build game logic shared libs for Trem"       0 )
 option( BUILD_GAME_SO_GPP    "Build GPP Tremulous game logic libs"         1 )
 option( BUILD_MASTER         "Build master server"                         1 )
 option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
@@ -43,6 +42,7 @@ if( USE_OPENAL )
 endif()
 option( USE_LLVM             "Use LLVM"                                    0 )
 option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 )
+option( HAVE_BZIP2           "Compile with BZip2 support"                  0 )
 option( USE_CURSES           "Use the curses console"                      1 )
 option( USE_CODEC_VORBIS     "Compile with support for Vorbis"             1 )
 if( USE_CODEC_VORBIS )
@@ -76,8 +76,6 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
 include( CPack )
 
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( GAME_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/etmain )
-set( BASE_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/base )
 set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
 set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs )
 
@@ -128,6 +126,30 @@ else()
   endif()
 endif()
 
+# Report the git commit identification, if possible
+
+if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
+  find_package( Git )
+  if( GIT_FOUND )
+    execute_process( COMMAND git describe --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+    message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
+    # this may fail with annotated non-release tags
+    if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
+      set( GIT_DESCRIBE_REPORT )
+    endif()
+  endif()
+endif()
+
+if( NOT GIT_DESCRIBE STREQUAL GIT_DESCRIBE_REPORT )
+  if( GIT_DESCRIBE_REPORT )
+    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "#define GIT_VERSION \"${GIT_DESCRIBE_REPORT}\"" )
+  else()
+    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" )
+  endif()
+  set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by git" FORCE )
+endif()
+
+include_directories( "${CMAKE_BINARY_DIR}/CMakeFiles" )
 
 #################
 # Compile flags #
@@ -1038,7 +1060,7 @@ function( GAMELIB )
   set( oneValueArgs LIB_NAME OUTPUT_NAME OUTPUT_DIR  )
   set( multiValueArgs COMPILE_DEF LIB_FILES )
   cmake_parse_arguments(GAMELIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-  
+
   # Xcode places the game libraries in the incorrect location. This should fix it
   if( XCODE_VERSION )
     set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
@@ -1046,7 +1068,7 @@ function( GAMELIB )
     set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
     set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
   endif()
-  
+
   add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} )
   target_link_libraries( ${GAMELIB_LIB_NAME} m )
   set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
@@ -1056,66 +1078,13 @@ function( GAMELIB )
     ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
     COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
   )
-  
+
   if( WIN32 )
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_mp_${BUILD_ARCH}" )
   else()
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}.mp.${BUILD_ARCH}" )
   endif()
 endfunction()
-
-
-if( BUILD_GAME_SO_ET )
-  GAMELIB( LIB_NAME game
-    OUTPUT_NAME qagame
-    OUTPUT_DIR etmain
-    COMPILE_DEF GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${SHAREDLIST} ${QAGAMELIST}
-  )
-  
-  GAMELIB( LIB_NAME cgame
-    OUTPUT_NAME cgame
-    OUTPUT_DIR etmain
-    COMPILE_DEF CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${SHAREDLIST} ${CGAMELIST}
-  )
-  
-  GAMELIB( LIB_NAME ui
-    OUTPUT_NAME ui
-    OUTPUT_DIR etmain
-    COMPILE_DEF UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${SHAREDLIST} ${UILIST}
-  )
-
-  install( TARGETS game cgame ui
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
-endif()
-
-if( BUILD_GAME_SO_TREM )
-  GAMELIB( LIB_NAME tremgame
-    OUTPUT_NAME qagame
-    OUTPUT_DIR base
-    COMPILE_DEF GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${GAMETREM}
-  )
-
-  GAMELIB( LIB_NAME cgametrem
-    OUTPUT_NAME cgame
-    OUTPUT_DIR base
-    COMPILE_DEF CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${CGAMETREM}
-  )
-  
-  GAMELIB( LIB_NAME uitrem
-    OUTPUT_NAME uitrem
-    OUTPUT_DIR base
-    COMPILE_DEF UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${UITREM}
-  )
-endif()
 
 if( BUILD_GAME_SO_GPP )
   GAMELIB( LIB_NAME gppgame
@@ -1124,14 +1093,14 @@ if( BUILD_GAME_SO_GPP )
     COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
     LIB_FILES ${GAMEGPP}
   )
-  
+
   GAMELIB( LIB_NAME gpptrem
     OUTPUT_NAME cgame
     OUTPUT_DIR main
     COMPILE_DEF CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
     LIB_FILES ${CGAMEGPP}
   )
-  
+
   GAMELIB( LIB_NAME gppui
     OUTPUT_NAME ui
     OUTPUT_DIR main
@@ -1162,7 +1131,7 @@ if( BUILD_OLD_RENDERER )
   set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" )
   target_link_libraries( renderer m )
-  
+
   # This section finds and provides REQUIRED dependencies to target renderer
   find_package( OpenGL REQUIRED )
   find_package( SDL REQUIRED )
@@ -1173,7 +1142,7 @@ if( BUILD_OLD_RENDERER )
 
   include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
   target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
-  
+
   # This section finds and provides OPTIONAL dependencies to target renderer
   if( USE_WEBP )
     find_package( WebP REQUIRED )
@@ -1193,7 +1162,7 @@ if( BUILD_NEW_RENDERER )
   set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
   target_link_libraries( rendererGL ${OS_LIBRARIES} )
-  
+
   # This section finds and provides REQUIRED dependencies to target rendererGL
   find_package( OpenGL REQUIRED )
   find_package( SDL REQUIRED )
@@ -1201,10 +1170,10 @@ if( BUILD_NEW_RENDERER )
   find_package( PNG REQUIRED )
   find_package( Freetype REQUIRED )
   find_package( GLEW REQUIRED )
-  
+
   include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
   target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
-  
+
   # This section finds and provides OPTIONAL dependencies to target rendererGL
   if( USE_WEBP )
     find_package( WebP REQUIRED )
@@ -1212,7 +1181,7 @@ if( BUILD_NEW_RENDERER )
     include_directories( ${WEBP_INCLUDE_DIRS} )
     target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
   endif()
-  
+
   if( USE_GLSL_OPTIMIZER )
     include_directories( ${LIB_DIR}/glsl-optimizer/include )
     target_link_libraries( rendererGL glsl_optimizer )
@@ -1229,7 +1198,7 @@ if( USE_GLSL_OPTIMIZER )
   include_directories( ${LIB_DIR}/glsl-optimizer/src/mesa )
   include_directories( ${LIB_DIR}/glsl-optimizer/src/mapi )
   include_directories( ${LIB_DIR}/glsl-optimizer/src/glsl )
-  
+
   add_library( glcpp-library ${GLCPPLIST} )
   set_target_properties( glcpp-library PROPERTIES COMPILE_FLAGS "-fPIC" )
 
@@ -1362,6 +1331,13 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${XVID_LIBRARY} )
   endif()
 
+  if( HAVE_BZIP2 )
+    find_package( BZip2 REQUIRED )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BZIP2 )
+    include_directories( ${BZIP2_INCLUDE_DIR} )
+    target_link_libraries( client ${BZIP2_LIBRARY} )
+  endif()
+
   if( USE_LLVM )
     include_directories( ${LLVM_INCLUDE_DIR} )
     target_link_libraries( client ${LLVM_LIBS} )
@@ -1456,6 +1432,14 @@ if( BUILD_SERVER )
     include_directories( ${TINYXML_INCLUDE_DIRS} )
     target_link_libraries( server ${TINYXML_LIBRARIES} )
   endif()
+
+  if( HAVE_BZIP2 )
+    find_package( BZip2 REQUIRED )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BZIP2 )
+    include_directories( ${BZIP2_INCLUDE_DIR} )
+    target_link_libraries( server ${BZIP2_LIBRARY} )
+  endif()
+
 
   if( USE_LLVM )
     include_directories( ${LLVM_INCLUDE_DIR} )

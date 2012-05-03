@@ -66,3 +66,9 @@ qboolean        Key_GetOverstrikeMode( void );
 void            Key_SetOverstrikeMode( qboolean state );
 void            Key_ClearStates( void );
 int             Key_GetKey( const char *binding );
+
+#ifndef DEDICATED
+// from cl_input.c
+void IN_ButtonDown( int );
+void IN_ButtonUp( int );
+#endif

@@ -1497,6 +1497,61 @@ void Cmd_Where_f( gentity_t *ent )
 	                            ent->s.origin[ 2 ] ) );
 }
 
+
+// Basic vote information
+// Entries must be in the same order as for voteType_t
+static const struct {
+	const char     *name;
+	qboolean        stopOnIntermission;
+	enum {
+		V_TEAM, V_PUBLIC, V_ANY
+	}               type;
+	enum {
+		T_NONE, T_PLAYER, T_OTHER
+	}               target;
+	qboolean        adminImmune; // from needing a reason and from being the target
+	qboolean        reasonNeeded;
+	const vmCvar_t *percentage;
+	enum {
+		VOTE_ALWAYS, // default
+		VOTE_BEFORE, // within the first N minutes
+		VOTE_AFTER,  // not within the first N minutes
+		VOTE_REMAIN, // within N/2 minutes before SD
+		VOTE_NOT_SD, // doesn't make sense during SD
+		VOTE_NO_AUTO,// don't automatically vote 'yes'
+	}               special;
+	const vmCvar_t *specialCvar;
+	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
+} voteInfo[] = {
+	// Name           Stop?   Type      Target     Immune   Reason  Vote percentage var        Extra
+	{ "kick",         qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
+	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
+	{ "mute",         qtrue,  V_PUBLIC, T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent },
+	{ "unmute",       qtrue,  V_PUBLIC, T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent },
+	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent,        VOTE_NOT_SD },
+	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent,        VOTE_NOT_SD },
+	{ "sudden_death", qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_suddenDeathVotePercent,  VOTE_NOT_SD },
+	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
+	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qfalse, &g_admitDefeatVotesPercent },
+	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qtrue,  &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_mapVotesPercent },
+	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
+	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
+	{ NULL }
+};
+
+/*
+==================
+G_CheckStopVote
+==================
+*/
+qboolean G_CheckStopVote( team_t team )
+{
+	return level.voteTime[ team ] && voteInfo[ level.voteType[ team ] ].stopOnIntermission;
+}
+
 /*
 ==================
 Cmd_CallVote_f
@@ -1514,66 +1569,6 @@ void Cmd_CallVote_f( gentity_t *ent )
 	int    id = -1;
 	int    voteId;
 	team_t team;
-
-	// Basic vote information
-	static const struct {
-		const char     *name;
-		enum {
-			V_TEAM, V_PUBLIC, V_ANY
-		}               type;
-		enum {
-			T_NONE, T_PLAYER, T_OTHER
-		}               target;
-		qboolean        adminImmune; // from needing a reason and from being the target
-		qboolean        reasonNeeded;
-		const vmCvar_t *percentage;
-		enum {
-			VOTE_ALWAYS, // default
-			VOTE_BEFORE, // within the first N minutes
-			VOTE_AFTER,  // not within the first N minutes
-			VOTE_REMAIN, // within N/2 minutes before SD
-			VOTE_NOT_SD, // doesn't make sense during SD
-			VOTE_NO_AUTO,// don't automatically vote 'yes'
-		}               special;
-		const vmCvar_t *specialCvar;
-		const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
-	} voteInfo[] = {
-		// Name           Type      Target     Immune   Reason  Vote percentage var        Extra
-		{ "kick",         V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
-		{ "spectate",     V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
-		{ "mute",         V_PUBLIC, T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent },
-		{ "unmute",       V_PUBLIC, T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent },
-		{ "denybuild",    V_TEAM,   T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent,        VOTE_NOT_SD },
-		{ "allowbuild",   V_TEAM,   T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent,        VOTE_NOT_SD },
-		{ "sudden_death", V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_suddenDeathVotePercent,  VOTE_NOT_SD },
-		{ "extend",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
-		{ "admitdefeat",  V_TEAM,   T_NONE,    qfalse,  qfalse, &g_admitDefeatVotesPercent },
-		{ "draw",         V_PUBLIC, T_NONE,    qtrue,   qtrue,  &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-		{ "map_restart",  V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_mapVotesPercent },
-		{ "map",          V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-		{ "layout",       V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-		{ "nextmap",      V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
-		{ "poll",         V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
-		{ NULL }
-	};
-	// Items in this enum MUST correspond to the above entries, else Things Break
-	enum voteType_t {
-		VOTE_KICK,
-		VOTE_SPECTATE,
-		VOTE_MUTE,
-		VOTE_UNMUTE,
-		VOTE_DENYBUILD,
-		VOTE_ALLOWBUILD,
-		VOTE_SUDDEN_DEATH,
-		VOTE_EXTEND,
-		VOTE_ADMIT_DEFEAT,
-		VOTE_DRAW,
-		VOTE_MAP_RESTART,
-		VOTE_MAP,
-		VOTE_LAYOUT,
-		VOTE_NEXT_MAP,
-		VOTE_POLL
-	};
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 	team = ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.teamSelection : TEAM_NONE;
@@ -1649,6 +1644,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 		                          cmd, g_voteLimit.integer ) );
 		return;
 	}
+
+	level.voteType[ team ] = voteId;
 
 	// Vote time, percentage for pass
 	level.voteDelay[ team ] = 0;
@@ -4141,10 +4138,10 @@ static const commands_t cmds[] =
 	{ "sell",            CMD_HUMAN | CMD_LIVING,              Cmd_Sell_f             },
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
 	{ "team",            0,                                   Cmd_Team_f             },
-	{ "teamvote",        CMD_TEAM,                            Cmd_Vote_f             },
+	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
 	{ "test",            CMD_CHEAT,                           Cmd_Test_f             },
 	{ "unignore",        0,                                   Cmd_Ignore_f           },
-	{ "vote",            0,                                   Cmd_Vote_f             },
+	{ "vote",            CMD_INTERMISSION,                    Cmd_Vote_f             },
 	{ "vsay",            CMD_MESSAGE | CMD_INTERMISSION,      Cmd_VSay_f             },
 	{ "vsay_local",      CMD_MESSAGE | CMD_INTERMISSION,      Cmd_VSay_f             },
 	{ "vsay_team",       CMD_MESSAGE | CMD_INTERMISSION,      Cmd_VSay_f             },

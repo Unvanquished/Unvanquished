@@ -784,12 +784,12 @@ void R_InitSkyTexCoords( float heightCloud )
 				// compute parametric value 'p' that intersects with cloud layer
 				p = ( 1.0f / ( 2 * DotProduct( skyVec, skyVec ) ) ) *
 				    ( -2 * skyVec[ 2 ] * radiusWorld +
-				      2 * sqrt( SQR( skyVec[ 2 ] ) * SQR( radiusWorld ) +
-				                2 * SQR( skyVec[ 0 ] ) * radiusWorld * heightCloud +
-				                SQR( skyVec[ 0 ] ) * SQR( heightCloud ) +
-				                2 * SQR( skyVec[ 1 ] ) * radiusWorld * heightCloud +
-				                SQR( skyVec[ 1 ] ) * SQR( heightCloud ) +
-				                2 * SQR( skyVec[ 2 ] ) * radiusWorld * heightCloud + SQR( skyVec[ 2 ] ) * SQR( heightCloud ) ) );
+				      2 * sqrt( Square( skyVec[ 2 ] ) * Square( radiusWorld ) +
+				                2 * Square( skyVec[ 0 ] ) * radiusWorld * heightCloud +
+				                Square( skyVec[ 0 ] ) * Square( heightCloud ) +
+				                2 * Square( skyVec[ 1 ] ) * radiusWorld * heightCloud +
+				                Square( skyVec[ 1 ] ) * Square( heightCloud ) +
+				                2 * Square( skyVec[ 2 ] ) * radiusWorld * heightCloud + Square( skyVec[ 2 ] ) * Square( heightCloud ) ) );
 
 				s_cloudTexP[ i ][ t ][ s ] = p;
 

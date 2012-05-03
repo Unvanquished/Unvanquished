@@ -333,14 +333,14 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_tutorial,                    "cg_tutorial",                    "1",            CVAR_ARCHIVE                 },
 
 	{ &cg_rangeMarkerDrawSurface,      "cg_rangeMarkerDrawSurface",      "1",            CVAR_ARCHIVE                 },
-	{ &cg_rangeMarkerDrawIntersection, "cg_rangeMarkerDrawIntersection", "1",            CVAR_ARCHIVE                 },
-	{ &cg_rangeMarkerDrawFrontline,    "cg_rangeMarkerDrawFrontline",    "1",            CVAR_ARCHIVE                 },
+	{ &cg_rangeMarkerDrawIntersection, "cg_rangeMarkerDrawIntersection", "0",            CVAR_ARCHIVE                 },
+	{ &cg_rangeMarkerDrawFrontline,    "cg_rangeMarkerDrawFrontline",    "0",            CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerSurfaceOpacity,   "cg_rangeMarkerSurfaceOpacity",   "0.08",         CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerLineOpacity,      "cg_rangeMarkerLineOpacity",      "0.4",          CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerLineThickness,    "cg_rangeMarkerLineThickness",    "4.0",          CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerForBlueprint,     "cg_rangeMarkerForBlueprint",     "1",            CVAR_ARCHIVE                 },
 	{ &cg_rangeMarkerBuildableTypes,   "cg_rangeMarkerBuildableTypes",   "support",      CVAR_ARCHIVE                 },
-	{ &cg_rangeMarkerWhenSpectating,         "cg_rangeMarkerWhenSpectating",         "0",            CVAR_ARCHIVE                 },
+	{ &cg_rangeMarkerWhenSpectating,   "cg_rangeMarkerWhenSpectating",   "0",            CVAR_ARCHIVE                 },
 	{ NULL,                            "cg_buildableRangeMarkerMask",    "",             CVAR_USERINFO                },
 	{ &cg_binaryShaderScreenScale,     "cg_binaryShaderScreenScale",     "1.0",          CVAR_ARCHIVE                 },
 

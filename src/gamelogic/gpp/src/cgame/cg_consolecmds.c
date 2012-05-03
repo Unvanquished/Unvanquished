@@ -437,6 +437,11 @@ void CG_InitConsoleCommands( void )
 	trap_AddCommand( "deconstruct" );
 	trap_AddCommand( "ignore" );
 	trap_AddCommand( "unignore" );
+
+	trap_RegisterButtonCommands(
+	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.
+	      "attack,,useitem,taunt,,sprint,activate,,attack2,,,,,,,dodge"
+	    );
 }
 
 /*

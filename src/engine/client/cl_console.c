@@ -34,6 +34,8 @@ Maryland 20850 USA.
 
 // console.c
 
+#include "git_version.h"
+
 #include "client.h"
 
 int g_console_field_width = 78;

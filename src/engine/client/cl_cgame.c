@@ -1375,6 +1375,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_ANIMFRAMERATE:
 			return re.AnimFrameRate( args[ 1 ] );
 #endif
+
+		case CG_REGISTER_BUTTON_COMMANDS:
+			CL_RegisterButtonCommands( VMA( 1 ) );
+			return 0;
+
 		case CG_GETTEXT:
 			strncpy( VMA(1), VMA(2), args[3] );
 			return 0;

@@ -321,6 +321,10 @@ extern "C" {
 
 	cvar_t      *r_evsmPostProcess;
 
+#ifdef USE_GLSL_OPTIMIZER
+	cvar_t      *r_glslOptimizer;
+#endif
+
 	static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 	{
 		if ( shouldBeIntegral )
@@ -1703,6 +1707,9 @@ extern "C" {
 		r_showDeferredRender = ri.Cvar_Get( "r_showDeferredRender", "0", CVAR_CHEAT );
 		r_showDeferredLight = ri.Cvar_Get( "r_showDeferredLight", "0", CVAR_CHEAT );
 
+#ifdef USE_GLSL_OPTIMIZER
+		r_glslOptimizer = ri.Cvar_Get( "r_glslOptimizer", "1", CVAR_ARCHIVE | CVAR_SHADER );
+#endif
 		// make sure all the commands added here are also removed in R_Shutdown
 		ri.Cmd_AddCommand( "imagelist", R_ImageList_f );
 		ri.Cmd_AddCommand( "shaderlist", R_ShaderList_f );

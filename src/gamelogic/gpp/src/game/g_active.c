@@ -450,15 +450,17 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	int       clientNum;
 	qboolean  attack1, attack3, following, queued;
 
+	usercmd_t old;
+
 	client = ent->client;
 
-	client->oldbuttons = client->buttons;
-	client->buttons = ucmd->buttons;
+	usercmdCopyButtons( client->oldbuttons, client->buttons );
+	usercmdCopyButtons( client->buttons, ucmd->buttons );
 
-	attack1 = ( client->buttons & BUTTON_ATTACK ) &&
-	          !( client->oldbuttons & BUTTON_ATTACK );
-	attack3 = ( client->buttons & BUTTON_USE_HOLDABLE ) &&
-	          !( client->oldbuttons & BUTTON_USE_HOLDABLE );
+	attack1 = usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
+	          !usercmdButtonPressed( client->oldbuttons, BUTTON_ATTACK );
+	attack3 = usercmdButtonPressed( client->buttons, BUTTON_USE_HOLDABLE ) &&
+	          !usercmdButtonPressed( client->oldbuttons, BUTTON_USE_HOLDABLE );
 
 	// We are in following mode only if we are following a non-spectating client
 	following = client->sess.spectatorState == SPECTATOR_FOLLOW;
@@ -620,7 +622,7 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 	else if ( client->pers.cmd.forwardmove ||
 	          client->pers.cmd.rightmove ||
 	          client->pers.cmd.upmove ||
-	          ( client->pers.cmd.buttons & BUTTON_ATTACK ) )
+	          usercmdButtonPressed( client->pers.cmd.buttons, BUTTON_ATTACK ) )
 	{
 		client->inactivityTime = level.time + g_inactivity.integer * 1000;
 		client->inactivityWarning = qfalse;
@@ -721,7 +723,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			client->ps.stats[ STAT_STAMINA ] += STAMINA_STOP_RESTORE;
 		}
 		else if ( ( client->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST ) &&
-		          !( client->buttons & BUTTON_WALKING ) )  // walk overrides sprint
+		          !usercmdButtonPressed( client->buttons, BUTTON_WALKING ) )  // walk overrides sprint
 		{
 			client->ps.stats[ STAT_STAMINA ] -= STAMINA_SPRINT_TAKE;
 		}
@@ -988,10 +990,13 @@ void ClientIntermissionThink( gclient_t *client )
 	// the level will exit when everyone wants to or after timeouts
 
 	// swap and latch button actions
-	client->oldbuttons = client->buttons;
-	client->buttons = client->pers.cmd.buttons;
 
-	if ( client->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) & ( client->oldbuttons ^ client->buttons ) )
+	usercmdCopyButtons( client->oldbuttons, client->buttons );
+	usercmdCopyButtons( client->buttons, client->pers.cmd.buttons );
+
+	if ( ( usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) ||
+	       usercmdButtonPressed( client->buttons, BUTTON_USE_HOLDABLE ) ) &&
+	     usercmdButtonsDiffer( client->oldbuttons, client->buttons ) )
 	{
 		client->readyToExit = 1;
 	}
@@ -1867,7 +1872,7 @@ void ClientThink_real( gentity_t *ent )
 	if ( ent->flags & FL_FORCE_GESTURE )
 	{
 		ent->flags &= ~FL_FORCE_GESTURE;
-		ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
+		usercmdPressButton( ent->client->pers.cmd.buttons, BUTTON_GESTURE );
 	}
 
 	// clear fall velocity before every pmove
@@ -2022,11 +2027,11 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// swap and latch button actions
-	client->oldbuttons = client->buttons;
-	client->buttons = ucmd->buttons;
-	client->latched_buttons |= client->buttons & ~client->oldbuttons;
+	usercmdCopyButtons( client->oldbuttons, client->buttons );
+	usercmdCopyButtons( client->buttons, ucmd->buttons );
+	usercmdLatchButtons( client->latched_buttons, client->buttons, client->oldbuttons );
 
-	if ( ( client->buttons & BUTTON_ACTIVATE ) && !( client->oldbuttons & BUTTON_ACTIVATE ) &&
+	if ( usercmdButtonPressed( client->buttons, BUTTON_ACTIVATE ) && !usercmdButtonPressed( client->oldbuttons, BUTTON_ACTIVATE ) &&
 	     client->ps.stats[ STAT_HEALTH ] > 0 )
 	{
 		trace_t   trace;

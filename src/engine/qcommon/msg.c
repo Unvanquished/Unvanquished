@@ -877,6 +877,8 @@ MSG_WriteDeltaUsercmd
 */
 void MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 {
+	int i;
+
 	if ( to->serverTime - from->serverTime < 256 )
 	{
 		MSG_WriteBits( msg, 1, 1 );
@@ -894,8 +896,10 @@ void MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 	MSG_WriteDelta( msg, from->forwardmove, to->forwardmove, 8 );
 	MSG_WriteDelta( msg, from->rightmove, to->rightmove, 8 );
 	MSG_WriteDelta( msg, from->upmove, to->upmove, 8 );
-	MSG_WriteDelta( msg, from->buttons, to->buttons, 8 );
-	MSG_WriteDelta( msg, from->wbuttons, to->wbuttons, 8 );
+	for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
+	{
+		MSG_WriteDelta( msg, from->buttons[i], to->buttons[i], 8 );
+	}
 	MSG_WriteDelta( msg, from->weapon, to->weapon, 8 );
 	MSG_WriteDelta( msg, from->flags, to->flags, 8 );
 	MSG_WriteDelta( msg, from->doubleTap, to->doubleTap, 3 );
@@ -909,6 +913,8 @@ MSG_ReadDeltaUsercmd
 */
 void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 {
+	int i;
+
 	if ( MSG_ReadBits( msg, 1 ) )
 	{
 		to->serverTime = from->serverTime + MSG_ReadBits( msg, 8 );
@@ -924,8 +930,10 @@ void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 	to->forwardmove = MSG_ReadDelta( msg, from->forwardmove, 8 );
 	to->rightmove = MSG_ReadDelta( msg, from->rightmove, 8 );
 	to->upmove = MSG_ReadDelta( msg, from->upmove, 8 );
-	to->buttons = MSG_ReadDelta( msg, from->buttons, 8 );
-	to->wbuttons = MSG_ReadDelta( msg, from->wbuttons, 8 );
+	for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
+	{
+		MSG_WriteDelta( msg, from->buttons[i], to->buttons[i], 8 );
+	}
 	to->weapon = MSG_ReadDelta( msg, from->weapon, 8 );
 	to->flags = MSG_ReadDelta( msg, from->flags, 8 );
 	to->doubleTap = MSG_ReadDelta( msg, from->doubleTap, 3 ) & 0x7;
@@ -939,6 +947,8 @@ MSG_WriteDeltaUsercmd
 */
 void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to )
 {
+	int i;
+
 	if ( to->serverTime - from->serverTime < 256 )
 	{
 		MSG_WriteBits( msg, 1, 1 );
@@ -956,8 +966,7 @@ void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *
 	     from->forwardmove == to->forwardmove &&
 	     from->rightmove == to->rightmove &&
 	     from->upmove == to->upmove &&
-	     from->buttons == to->buttons &&
-	     from->wbuttons == to->wbuttons &&
+	     !memcmp( from->buttons, to->buttons, sizeof( from->buttons ) ) &&
 	     from->weapon == to->weapon &&
 	     from->flags == to->flags && from->doubleTap == to->doubleTap && from->identClient == to->identClient )
 	{
@@ -975,8 +984,10 @@ void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *
 	MSG_WriteDeltaKey( msg, key, from->forwardmove, to->forwardmove, 8 );
 	MSG_WriteDeltaKey( msg, key, from->rightmove, to->rightmove, 8 );
 	MSG_WriteDeltaKey( msg, key, from->upmove, to->upmove, 8 );
-	MSG_WriteDeltaKey( msg, key, from->buttons, to->buttons, 8 );
-	MSG_WriteDeltaKey( msg, key, from->wbuttons, to->wbuttons, 8 );
+	for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
+	{
+		MSG_WriteDeltaKey( msg, key, from->buttons[i], to->buttons[i], 8 );
+	}
 	MSG_WriteDeltaKey( msg, key, from->weapon, to->weapon, 8 );
 	MSG_WriteDeltaKey( msg, key, from->flags, to->flags, 8 );
 	MSG_WriteDeltaKey( msg, key, from->doubleTap, to->doubleTap, 3 );
@@ -990,6 +1001,8 @@ MSG_ReadDeltaUsercmd
 */
 void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to )
 {
+	int i;
+
 	if ( MSG_ReadBits( msg, 1 ) )
 	{
 		to->serverTime = from->serverTime + MSG_ReadBits( msg, 8 );
@@ -1008,8 +1021,10 @@ void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 		to->forwardmove = MSG_ReadDeltaKey( msg, key, from->forwardmove, 8 );
 		to->rightmove = MSG_ReadDeltaKey( msg, key, from->rightmove, 8 );
 		to->upmove = MSG_ReadDeltaKey( msg, key, from->upmove, 8 );
-		to->buttons = MSG_ReadDeltaKey( msg, key, from->buttons, 8 );
-		to->wbuttons = MSG_ReadDeltaKey( msg, key, from->wbuttons, 8 );
+		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
+		{
+			to->buttons[i] = MSG_ReadDeltaKey( msg, key, from->buttons[i], 8 );
+		}
 		to->weapon = MSG_ReadDeltaKey( msg, key, from->weapon, 8 );
 		to->flags = MSG_ReadDeltaKey( msg, key, from->flags, 8 );
 		to->doubleTap = MSG_ReadDeltaKey( msg, key, from->doubleTap, 3 ) & 0x7;
@@ -1023,8 +1038,7 @@ void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 		to->forwardmove = from->forwardmove;
 		to->rightmove = from->rightmove;
 		to->upmove = from->upmove;
-		to->buttons = from->buttons;
-		to->wbuttons = from->wbuttons;
+		usercmdCopyButtons( to->buttons, from->buttons );
 		to->weapon = from->weapon;
 		to->flags = from->flags;
 		to->doubleTap = from->doubleTap;

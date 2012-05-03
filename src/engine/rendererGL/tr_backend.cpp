@@ -9984,7 +9984,7 @@ static void RB_RenderDebugUtils()
 		{
 			gridPoint = &tr.world->lightGridData[ j ];
 
-			if ( VectorDistanceSquared( gridPoint->origin, backEnd.viewParms.orientation.origin ) > SQR( 1024 ) )
+			if ( VectorDistanceSquared( gridPoint->origin, backEnd.viewParms.orientation.origin ) > Square( 1024 ) )
 			{
 				continue;
 			}
@@ -10427,7 +10427,7 @@ static void RB_RenderDebugUtils()
 
 		for ( i = 0, dp = backEnd.refdef.decalProjectors; i < backEnd.refdef.numDecalProjectors; i++, dp++ )
 		{
-			if ( VectorDistanceSquared( dp->center, backEnd.viewParms.orientation.origin ) > SQR( 1024 ) )
+			if ( VectorDistanceSquared( dp->center, backEnd.viewParms.orientation.origin ) > Square( 1024 ) )
 			{
 				continue;
 			}

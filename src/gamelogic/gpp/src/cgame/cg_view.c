@@ -944,7 +944,7 @@ static int CG_CalcFov( void )
 	trap_GetUserCmd( cmdNum - 1, &oldcmd );
 
 	// switch follow modes if necessary: cycle between free -> follow -> third-person follow
-	if ( cmd.buttons & BUTTON_USE_HOLDABLE && !( oldcmd.buttons & BUTTON_USE_HOLDABLE ) )
+	if ( usercmdButtonPressed( cmd.buttons, BUTTON_USE_HOLDABLE ) && !usercmdButtonPressed( oldcmd.buttons, BUTTON_USE_HOLDABLE ) )
 	{
 		if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 		{
@@ -1024,7 +1024,7 @@ static int CG_CalcFov( void )
 				}
 
 				// WBUTTON_ATTACK2 isn't held so unzoom next time
-				if ( !( cmd.wbuttons & WBUTTON_ATTACK2 ) )
+				if ( !usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) )
 				{
 					cg.zoomed = qfalse;
 					cg.zoomTime = MIN( cg.time,
@@ -1041,7 +1041,7 @@ static int CG_CalcFov( void )
 				}
 
 				// WBUTTON_ATTACK2 is held so zoom next time
-				if ( cmd.wbuttons & WBUTTON_ATTACK2 )
+				if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) )
 				{
 					cg.zoomed = qtrue;
 					cg.zoomTime = MIN( cg.time,
