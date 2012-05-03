@@ -9,6 +9,7 @@ Makefile
 cmake_install.cmake
 daemon.*
 daemonded.*
+daemonmap.*
 librendererGL*
 main/cgame.mp.*
 main/qagame.mp.*
