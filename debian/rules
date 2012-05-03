@@ -23,7 +23,7 @@ override_dh_auto_configure:
 		 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		 -DCMAKE_SKIP_RPATH=ON \
 		 -DNO_UNTRUSTED_PLUGINS=ON \
-		 $(shell test -f /usr/include/xvid.f || echo -DUSE_CIN_XVID=OFF) \
+		 $(shell test -f /usr/include/xvid.h || echo -DUSE_CIN_XVID=OFF) \
 		 $(shell test -d /usr/include/webp || echo -DUSE_WEBP=OFF)
 
 override_dh_auto_install:
