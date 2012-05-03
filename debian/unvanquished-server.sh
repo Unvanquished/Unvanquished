@@ -1,3 +1,3 @@
 #! /bin/sh
-cd /usr/lib/games/unvanquished
-exec ./daemonded.@ARCH@ +set fs_libpath "$PWD" +set fs_basepath /var/lib/games/unvanquished "$@"
+cd /var/games/unvanquished-server
+exec /usr/lib/games/unvanquished/unvanquishedded +set fs_libpath /usr/lib/games/unvanquished +set fs_basepath /var/lib/games/unvanquished +exec server.cfg "$@"

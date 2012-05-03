@@ -4,6 +4,29 @@ unvanquished (0.3.5+git-0) unstable; urgency=low
 
  -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Tue, 01 May 2012 23:07:32 +0100
 
+unvanquished (0.3.5-2) unstable; urgency=low
+
+  * Separate package for the dedicated server.
+    - Uses files from tremulous-server (Debian).
+  * fs_libpath should be in the search path.
+  * Fixed a typo which prevented use of xvid for demo video encoding.
+  * Silence CMP0017 warnings.
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Thu, 03 May 2012 22:22:21 +0100
+
+unvanquished (0.3.5-1) unstable; urgency=low
+
+  * Patch pulled in from the master branch:
+    - Walking dretches had footsteps.
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Wed, 02 May 2012 02:49:32 +0100
+
+unvanquished (0.3.5-0) unstable; urgency=low
+
+  * Release of alpha 3.
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Tue, 01 May 2012 20:10:43 +0100
+
 unvanquished (0.3.0-3) unstable; urgency=low
 
   * Tidy up Build-Depends.
