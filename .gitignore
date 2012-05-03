@@ -14,3 +14,6 @@ main/cgame.mp.*
 main/qagame.mp.*
 main/ui.mp.*
 snd_openal.*
+libglcpp-library.a
+libglsl_optimizer.a
+libmesa.a
