@@ -384,23 +384,6 @@ void CL_KeyMove( usercmd_t *cmd )
 	side += movespeed * CL_KeyState( &kb[ KB_MOVERIGHT ] );
 	side -= movespeed * CL_KeyState( &kb[ KB_MOVELEFT ] );
 
-//----(SA)  added
-	if ( usercmdButtonPressed( cmd->buttons, BUTTON_ACTIVATE) )
-	{
-		if ( side > 0 )
-		{
-			usercmdPressButton( cmd->buttons, BUTTON_LEANRIGHT );
-		}
-		else if ( side < 0 )
-		{
-			usercmdPressButton( cmd->buttons, BUTTON_LEANLEFT );
-		}
-
-		side = 0; // disallow the strafe when holding 'activate'
-	}
-
-//----(SA)  end
-
 	up += movespeed * CL_KeyState( &kb[ KB_UP ] );
 	up -= movespeed * CL_KeyState( &kb[ KB_DOWN ] );
 

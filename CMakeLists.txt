@@ -33,8 +33,6 @@ option( BUILD_CLIENT         "Build Daemon client"                         1 )
 option( BUILD_OLD_RENDERER   "Build old renderer library"                  1 )
 option( BUILD_NEW_RENDERER   "Build new renderer library"                  1 )
 option( BUILD_SERVER         "Build Daemonded server"                      1 )
-option( BUILD_GAME_SO_ET     "Build game logic shared libraries for ET"    0 )
-option( BUILD_GAME_SO_TREM   "Build game logic shared libs for Trem"       0 )
 option( BUILD_GAME_SO_GPP    "Build GPP Tremulous game logic libs"         1 )
 option( BUILD_MASTER         "Build master server"                         1 )
 option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
@@ -78,8 +76,6 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
 include( CPack )
 
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( GAME_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/etmain )
-set( BASE_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/base )
 set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
 set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs )
 
@@ -1091,59 +1087,6 @@ function( GAMELIB )
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}.mp.${BUILD_ARCH}" )
   endif()
 endfunction()
-
-
-if( BUILD_GAME_SO_ET )
-  GAMELIB( LIB_NAME game
-    OUTPUT_NAME qagame
-    OUTPUT_DIR etmain
-    COMPILE_DEF GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${SHAREDLIST} ${QAGAMELIST}
-  )
-
-  GAMELIB( LIB_NAME cgame
-    OUTPUT_NAME cgame
-    OUTPUT_DIR etmain
-    COMPILE_DEF CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${SHAREDLIST} ${CGAMELIST}
-  )
-
-  GAMELIB( LIB_NAME ui
-    OUTPUT_NAME ui
-    OUTPUT_DIR etmain
-    COMPILE_DEF UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${SHAREDLIST} ${UILIST}
-  )
-
-  install( TARGETS game cgame ui
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
-endif()
-
-if( BUILD_GAME_SO_TREM )
-  GAMELIB( LIB_NAME tremgame
-    OUTPUT_NAME qagame
-    OUTPUT_DIR base
-    COMPILE_DEF GAME GAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${GAMETREM}
-  )
-
-  GAMELIB( LIB_NAME cgametrem
-    OUTPUT_NAME cgame
-    OUTPUT_DIR base
-    COMPILE_DEF CGAME CGAMEDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${CGAMETREM}
-  )
-
-  GAMELIB( LIB_NAME uitrem
-    OUTPUT_NAME uitrem
-    OUTPUT_DIR base
-    COMPILE_DEF UI UIDLL USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${UITREM}
-  )
-endif()
 
 if( BUILD_GAME_SO_GPP )
   GAMELIB( LIB_NAME gppgame
