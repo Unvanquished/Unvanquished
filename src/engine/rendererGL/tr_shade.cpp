@@ -876,7 +876,7 @@ void GLSL_InitGPUShaders( void )
 	GL_CheckErrors();
 
 #if defined( USE_GLSL_OPTIMIZER )
-	s_glslOptimizer = glslopt_initialize( true );
+	s_glslOptimizer = glslopt_initialize( false );
 #endif
 
 	startTime = ri.Milliseconds();
