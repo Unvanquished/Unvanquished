@@ -3706,6 +3706,23 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				DC->setCVar( item->cvar, buff );
 			}
+			else if ( chr == 'd' - 'a' + 1 )
+			{
+				// ctrl-d is delete
+				goto deleteRight;
+			}
+			else if ( chr == 'c' - 'a' + 1 || chr == 'u' - 'a' + 1 )
+			{
+				// ctrl-c, ctrl-u: clear buffer
+				item->cursorPos = 0;
+				DC->setCVar( item->cvar, "" );
+			}
+			else if ( chr == 'k' - 'a' + 1 )
+			{
+				// ctrl-k: delete to end
+				buff[ ui_CursorToOffset( buff, item->cursorPos ) ] = '\0';
+				DC->setCVar( item->cvar, buff );
+			}
 			else if ( chr < 32 || chr == 127 || !item->cvar )
 			{
 				// Ignore any non printable chars
@@ -3747,6 +3764,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 			{
 				case K_DEL:
 				case K_KP_DEL:
+					deleteRight:
 					if ( item->cursorPos < lenChars )
 					{
 						int index = ui_CursorToOffset( buff, item->cursorPos );

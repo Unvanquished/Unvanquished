@@ -600,6 +600,12 @@ void Field_CharEvent( field_t *edit, const char *s )
 		return;
 	}
 
+	if ( *s == 'k' - 'a' + 1 ) // ctrl-k clears to the end of the field
+	{
+		edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
+		return;
+	}
+
 	len = strlen( edit->buffer );
 
 	if ( *s == 'h' - 'a' + 1 ) // ctrl-h is backspace
@@ -618,6 +624,19 @@ void Field_CharEvent( field_t *edit, const char *s )
 			{
 				edit->scroll--;
 			}
+		}
+
+		return;
+	}
+
+	if ( *s == 'd' - 'a' + 1 || *s == 0x7F ) // ctrl-d is delete forward
+	{
+		int posTo = Field_CursorToOffset( edit );
+
+		if ( edit->buffer[ posTo ] )
+		{
+			int posFrom = posTo + Q_UTF8Width( edit->buffer + posFrom );
+			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
 		}
 
 		return;
