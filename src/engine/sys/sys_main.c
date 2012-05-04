@@ -32,7 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifdef USING_CMAKE
 #include "git_version.h"
+#endif
 
 #include <CPUInfo.h>
 // the CPUInfo.h implemntation of lengthof is unsafe, so use the one

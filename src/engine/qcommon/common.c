@@ -34,7 +34,9 @@ Maryland 20850 USA.
 
 // common.c -- misc functions used in client and server
 
+#ifdef USING_CMAKE
 #include "git_version.h"
+#endif
 
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
