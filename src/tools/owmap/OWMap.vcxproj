@@ -150,7 +150,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\common;..\..\libs\picomodel;..\..\libs\libpng;..\..\libs\zlib;..\..\libs\glib\include\glib-2.0;..\..\libs\glib\lib\x32\glib-2.0\include;..\..\libs\libsdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\common;..\..\libs\picomodel;..\..\libs\libpng;..\..\libs\zlib;..\..\libs\glib\include\glib-2.0;..\..\libs\jpeg;..\..\libs\glib\lib\x32\glib-2.0\include;..\..\libs\libsdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_CRT_SECURE_NO_WARNINGS;USE_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

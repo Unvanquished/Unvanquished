@@ -1708,7 +1708,7 @@ extern "C" {
 		r_showDeferredLight = ri.Cvar_Get( "r_showDeferredLight", "0", CVAR_CHEAT );
 
 #ifdef USE_GLSL_OPTIMIZER
-		r_glslOptimizer = ri.Cvar_Get( "r_glslOptimizer", "1", CVAR_ARCHIVE | CVAR_SHADER );
+		r_glslOptimizer = ri.Cvar_Get( "r_glslOptimizer", "0", CVAR_ARCHIVE | CVAR_SHADER );
 #endif
 		// make sure all the commands added here are also removed in R_Shutdown
 		ri.Cmd_AddCommand( "imagelist", R_ImageList_f );

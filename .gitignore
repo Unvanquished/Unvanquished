@@ -9,8 +9,12 @@ Makefile
 cmake_install.cmake
 daemon.*
 daemonded.*
+daemonmap.*
 librendererGL*
 main/cgame.mp.*
 main/qagame.mp.*
 main/ui.mp.*
 snd_openal.*
+libglcpp-library.a
+libglsl_optimizer.a
+libmesa.a

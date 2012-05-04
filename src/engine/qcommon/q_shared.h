@@ -2062,19 +2062,14 @@ char *Q_UTF8Unstore( int e );
 #define BUTTON_SPRINT       5
 #define BUTTON_ACTIVATE     6
 #define BUTTON_ANY          7  // if any key is pressed
-/*
-#define BUTTON_USE_EVOLVE   ?? // base only
-#define BUTTON_GETFLAG      ?? // base only
-*/
 #define BUTTON_ATTACK2      8
-#define BUTTON_ZOOM         9  // etmain only
+//                          9
 //                          10
-#define BUTTON_RELOAD       11 // etmain only
-#define BUTTON_LEANLEFT     12 // etmain only
-#define BUTTON_LEANRIGHT    13 // etmain only
-#define BUTTON_DROP         14 // etmain only
+//                          11
+//                          12
+//                          13
+//                          14
 #define BUTTON_DODGE        15
-#define BUTTON_PRONE        BUTTON_DODGE // etmain only
 
 #define MOVE_RUN          120 // if forwardmove or rightmove are >= MOVE_RUN,
 // then BUTTON_WALKING should be set
