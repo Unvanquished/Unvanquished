@@ -4193,6 +4193,13 @@ static void FS_Startup( const char *gameName )
 
 	// fs_homepath is somewhat particular to *nix systems, only add if relevant
 
+	if ( fs_basepath->string[ 0 ] && fs_libpath->string[ 0 ] && Q_stricmp( fs_homepath->string, fs_basepath->string ) )
+	{
+		FS_AddGameDirectory( fs_libpath->string, gameName );
+	}
+
+	// fs_libpath is somewhat particular to *nix systems, only add if relevant
+
 #ifdef MACOS_X
 
 	// Make MacOSX also include the base path included with the .app bundle

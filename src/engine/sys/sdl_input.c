@@ -1633,10 +1633,6 @@ static void IN_ProcessEvents( void )
 					Cvar_Set( "r_customheight", height );
 					Cvar_Set( "r_mode", "-1" );
 
-					/* wait until user stops dragging for 1 second, so
-					   we aren't constantly recreating the GL context while
-					   he tries to drag...*/
-					vidRestartTime = Sys_Milliseconds() + 1000;
 				}
 				break;
 

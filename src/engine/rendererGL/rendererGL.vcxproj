@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -90,8 +90,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;..\..\libs\glew\include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;..\..\libs\libwebp\Include;%(AdditionalIncludeDirectories);..\libs\glsl-optimizer\include\c99;..\libs\glsl-optimizer\include;..\libs\glsl-optimizer\src\mesa;..\libs\glsl-optimizer\src\glsl;..\libs\glsl-optimizer\src\getopt;..\libs\glsl-optimizer\src\mapi</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;..\..\libs\glew\include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;..\..\libs\libwebp\Include;..\..\libs\glsl-optimizer\include\c99;..\..\libs\glsl-optimizer\include;..\..\libs\glsl-optimizer\src\mesa;..\..\libs\glsl-optimizer\src\glsl;..\..\libs\glsl-optimizer\src\getopt;..\..\libs\glsl-optimizer\src\mapi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_GLSL_OPTIMIZER;_DEBUG;WIN32;_WINDOWS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\Debug\x32\RendererGL3\rendererGL3.pch</PrecompiledHeaderOutputFile>
@@ -128,7 +128,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;..\..\libs\glew\include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;..\..\libs\libwebp\Include;..\libs\glsl-optimizer\include\c99;..\libs\glsl-optimizer\include;..\libs\glsl-optimizer\src\mesa;..\libs\glsl-optimizer\src\glsl;..\libs\glsl-optimizer\src\getopt;..\libs\glsl-optimizer\src\mapi</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_WIN32;_WIN64;__WIN64__;_WINDOWS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_GLSL_OPTIMIZER;_DEBUG;_WIN32;_WIN64;__WIN64__;_WINDOWS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>
       </PrecompiledHeaderOutputFile>
@@ -168,7 +168,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;..\..\libs\glew\include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;..\..\libs\libwebp\Include;..\..\libs\glsl-optimizer\include\;..\..\libs\glsl-optimizer\src\mesa;..\..\libs\glsl-optimizer\src\glsl;..\..\libs\glsl-optimizer\src\mapi;..\..\libs\glsl-optimizer\include\C99;..\..\libs\glsl-optimizer\src\getopt</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_GLSL_OPTIMIZER;NDEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -206,7 +206,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;..\..\libs\glew\include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;..\..\libs\libwebp\Include;..\..\libs\glsl-optimizer\include\c99;..\..\libs\glsl-optimizer\include;..\..\libs\glsl-optimizer\src\mesa;..\..\libs\glsl-optimizer\src\glsl;..\..\libs\glsl-optimizer\src\getopt;..\..\libs\glsl-optimizer\src\mapi</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WIN32;__WIN64__;WIN64;_WINDOWS;_CRT_SECURE_NO_WARNINGS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_GLSL_OPTIMIZER;NDEBUG;WIN32;__WIN64__;WIN64;_WINDOWS;_CRT_SECURE_NO_WARNINGS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>false</FunctionLevelLinking>

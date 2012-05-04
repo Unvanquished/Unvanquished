@@ -62,19 +62,19 @@ void	main()
 
 	VertexSkinning_P_N(	attr_Position, attr_Normal,
 						position, normal);
-						
+
 #elif defined(USE_VERTEX_ANIMATION)
-	
+
 	VertexAnimation_P_N(attr_Position, attr_Position2,
 						attr_Normal, attr_Normal2,
 						u_VertexInterpolation,
 						position, normal);
-	
+
 #else
 	position = attr_Position;
 	normal = attr_Normal;
 #endif
-	
+
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
 								normal,
@@ -84,36 +84,36 @@ void	main()
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
-	
+
 	// transform position into world space
 	var_Position = (u_ModelMatrix * position).xyz;
-	
+
 	// calculate the length in fog
 	float s = dot(position.xyz, u_FogDistanceVector.xyz) + u_FogDistanceVector.w;
 	float t = dot(position.xyz, u_FogDepthVector.xyz) + u_FogDepthVector.w;
-		
+
 	// partially clipped fogs use the T axis
 #if defined(EYE_OUTSIDE)
 	if(t < 1.0)
 	{
-		t = 1.0 / 32;	// point is outside, so no fogging
+		t = 1.0 / 32.0;	// point is outside, so no fogging
 	}
 	else
 	{
-		t = 1.0 / 32 + 30.0 / 32 * t / (t - u_FogEyeT);	// cut the distance at the fog plane
+		t = 1.0 / 32.0 + 30.0 / 32.0 * t / (t - u_FogEyeT);	// cut the distance at the fog plane
 	}
 #else
-	if(t < 0)
+	if(t < 0.0)
 	{
-		t = 1.0 / 32;	// point is outside, so no fogging
+		t = 1.0 / 32.0;	// point is outside, so no fogging
 	}
 	else
 	{
-		t = 31.0 / 32;
+		t = 31.0 / 32.0;
 	}
 #endif
 
 	var_Tex = vec2(s, t);
-	
+
 	var_Color = /* attr_Color * u_ColorModulate + */ u_Color;
 }
