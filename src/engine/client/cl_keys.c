@@ -514,69 +514,50 @@ void Field_KeyDownEvent( field_t *edit, int key )
 	}
 
 	key = tolower( key );
-	len = strlen( edit->buffer );
-	s = &edit->buffer[ edit->cursor ];
-	width = Q_UTF8Width( edit->buffer + edit->cursor );
+	len = Q_UTF8Strlen( edit->buffer );
+	s = &edit->buffer[ Field_CursorToOffset( edit ) ];
+	width = Q_UTF8Width( s );
 
 	switch ( key )
 	{
 		case K_DEL:
-			if ( edit->cursor + width < len )
+			if ( *s )
 			{
-				memmove( edit->buffer + edit->cursor,
-				         edit->buffer + edit->cursor + width, len - edit->cursor );
+				memmove( s, s + width, strlen( s + width ) + 1 );
 			}
 
 			break;
 
 		case K_RIGHTARROW:
-			if ( edit->cursor + width < len )
+			if ( edit->cursor < len )
 			{
-				edit->cursor += width;
+				edit->cursor++;
 			}
 
 			break;
 
 		case K_LEFTARROW:
-			while ( edit->cursor > 0 )
+			if ( edit->cursor > 0 )
 			{
 				edit->cursor--;
-				if( !Q_UTF8ContByte( edit->buffer[ edit->cursor ] ) )
-				{
-					break;
-				}
 			}
 
 			break;
 
-		case K_HOME:
-			edit->cursor = 0;
-
 		case 'a':
 			if ( keys[ K_CTRL ].down )
 			{
+		case K_HOME:
 				edit->cursor = 0;
 			}
 
 			break;
 
-		case K_END:
-			while( s > edit->buffer && edit->cursor > 0 && Q_UTF8ContByte( *s ) )
-			{
-				edit->cursor--;
-				s--;
-			}
-			break;
-
 		case 'e':
 			if ( keys[ K_CTRL ].down )
 			{
-				while( s > edit->buffer && edit->cursor > 0 && Q_UTF8ContByte( *s ) )
-				{
-					edit->cursor--;
-					s--;
-				}
-				break;
+		case K_END:
+				edit->cursor = len;
 			}
 
 			break;
@@ -591,13 +572,9 @@ void Field_KeyDownEvent( field_t *edit, int key )
 	{
 		edit->scroll = edit->cursor;
 	}
-	else if ( edit->cursor >= edit->scroll + edit->widthInChars + Q_UTF8Width( edit->buffer + edit->scroll ) && edit->cursor <= len )
+	else if ( edit->cursor >= edit->scroll + edit->widthInChars )
 	{
 		edit->scroll = edit->cursor - edit->widthInChars + 1;
-		while( Q_UTF8ContByte( edit->buffer[ edit->scroll ] && edit->scroll > 0 ) )
-		{
-			edit->scroll--;
-		}
 	}
 }
 
@@ -608,7 +585,7 @@ Field_CharEvent
 */
 void Field_CharEvent( field_t *edit, const char *s )
 {
-	int len, width;
+	int len, width, oldWidth, offset;
 
 	if ( *s == 'v' - 'a' + 1 ) // ctrl-v is paste
 	{
@@ -627,20 +604,19 @@ void Field_CharEvent( field_t *edit, const char *s )
 
 	if ( *s == 'h' - 'a' + 1 ) // ctrl-h is backspace
 	{
-		while ( edit->cursor > 0 )
+		if ( edit->cursor )
 		{
-			qboolean isContinue = Q_UTF8ContByte( edit->buffer[ edit->cursor - 1 ] );
-			memmove( edit->buffer + edit->cursor - 1,
-			         edit->buffer + edit->cursor, len + 1 - edit->cursor );
-			edit->cursor--;
+			int posFrom, posTo;
+
+			posFrom = Field_CursorToOffset( edit );
+			--edit->cursor;
+			posTo = Field_CursorToOffset( edit );
+
+			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
 
 			if ( edit->cursor < edit->scroll )
 			{
 				edit->scroll--;
-			}
-			if( !isContinue )
-			{
-				break;
 			}
 		}
 
@@ -656,7 +632,7 @@ void Field_CharEvent( field_t *edit, const char *s )
 
 	if ( *s == 'e' - 'a' + 1 ) // ctrl-e is end
 	{
-		edit->cursor = len;
+		edit->cursor = Field_OffsetToCursor( edit, len );
 		edit->scroll = edit->cursor - edit->widthInChars;
 		return;
 	}
@@ -669,47 +645,27 @@ void Field_CharEvent( field_t *edit, const char *s )
 		return;
 	}
 
-	if ( key_overstrikeMode )
-	{
-		if ( edit->cursor == MAX_EDIT_LINE - 1 )
-		{
-			return;
-		}
+	width = Q_UTF8Width( s );
+	offset = Field_CursorToOffset( edit );
 
-		edit->buffer[ edit->cursor ] = *s;
-		edit->cursor++;
+	// if overstrike, adjust the width according to what's being replaced
+	// (at end-of-string, just insert)
+	oldWidth = ( key_overstrikeMode && edit->buffer[ offset ] ) ? Q_UTF8Width( edit->buffer + offset ) : 0;
+
+	if ( len + width - oldWidth >= MAX_EDIT_LINE )
+	{
+		return;
 	}
-	else // insert mode
-	{
-		width = Q_UTF8Width( s );
-		if ( len == MAX_EDIT_LINE - 1 )
-		{
-			return; // all full
-		}
 
-		if( edit->cursor + width >= MAX_EDIT_LINE )
-		{
-			return;
-		}
-		memmove( edit->buffer + edit->cursor + width,
-		edit->buffer + edit->cursor, len + 1 - edit->cursor );
+	memmove( edit->buffer + offset + width,
+	         edit->buffer + offset + oldWidth, len + 1 - offset - oldWidth );
+	Com_Memcpy( edit->buffer + offset, s, width );
+	++edit->cursor;
 
-		Com_Memcpy( edit->buffer + edit->cursor, s, width );
-		edit->cursor += width;
-	}
-	if ( edit->cursor >= edit->widthInChars )
-	{
 	do
 	{
 		edit->scroll++;
-	} while( Q_UTF8ContByte( edit->buffer[ edit->scroll ] ) && edit->scroll < edit->cursor );
-
-	}
-
-	if ( edit->cursor == len + 1 )
-	{
-		edit->buffer[ edit->cursor ] = 0;
-	}
+	} while ( edit->cursor >= edit->scroll +edit->widthInChars );
 }
 
 /*
@@ -969,18 +925,7 @@ void Console_Key( int key )
 	if ( ( key == K_MWHEELUP && keys[ K_SHIFT ].down ) || ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
 	     ( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
 	{
-		Q_strncpyz( g_consoleField.buffer, Hist_Prev(), sizeof( g_consoleField.buffer ) );
-		g_consoleField.cursor = strlen( g_consoleField.buffer );
-
-		if ( g_consoleField.cursor >= g_consoleField.widthInChars )
-		{
-			g_consoleField.scroll = g_consoleField.cursor - g_consoleField.widthInChars + 1;
-		}
-		else
-		{
-			g_consoleField.scroll = 0;
-		}
-
+		Field_Set( &g_consoleField, Hist_Prev() );
 		con.acLength = 0;
 		return;
 	}
@@ -993,17 +938,7 @@ void Console_Key( int key )
 
 		if ( history )
 		{
-			Q_strncpyz( g_consoleField.buffer, history, sizeof( g_consoleField.buffer ) );
-			g_consoleField.cursor = strlen( g_consoleField.buffer );
-
-			if ( g_consoleField.cursor >= g_consoleField.widthInChars )
-			{
-				g_consoleField.scroll = g_consoleField.cursor - g_consoleField.widthInChars + 1;
-			}
-			else
-			{
-				g_consoleField.scroll = 0;
-			}
+			Field_Set( &g_consoleField, history );
 		}
 		else if ( g_consoleField.buffer[ 0 ] )
 		{

@@ -73,7 +73,16 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return CG_LastAttacker();
 
 		case CG_KEY_EVENT:
-			CG_KeyEvent( arg0, arg1 );
+			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			{
+				arg0 &= ~K_CHAR_FLAG;
+				arg0 |= ( !!( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ) << ( K_CHAR_BIT - 1 );
+				CG_KeyEvent( 0, arg0, arg1 );
+			}
+			else
+			{
+				CG_KeyEvent( arg0, 0, arg1 );
+			}
 			return 0;
 
 		case CG_MOUSE_EVENT:

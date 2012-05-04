@@ -154,7 +154,7 @@ This must be the very first function compiled into the .qvm file
 */
 void     UI_Init( qboolean );
 void     UI_Shutdown( void );
-void     UI_KeyEvent( int key, qboolean down );
+void     UI_KeyEvent( int key, int chr, int flags );
 void     UI_MouseEvent( int dx, int dy );
 int      UI_MousePosition( void );
 void     UI_SetMousePosition( int x, int y );
@@ -180,7 +180,16 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		case UI_KEY_EVENT:
-			UI_KeyEvent( arg0, arg1 );
+			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			{
+				arg0 &= ~K_CHAR_FLAG;
+				arg0 |= ( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ? K_CHAR_FLAG : 0;
+				UI_KeyEvent( 0, arg0, arg1 );
+			}
+			else
+			{
+				UI_KeyEvent( arg0, 0, arg1 );
+			}
 			return 0;
 
 		case UI_MOUSE_EVENT:
@@ -4934,7 +4943,7 @@ void UI_Init( qboolean inGameLoad )
 UI_KeyEvent
 =================
 */
-void UI_KeyEvent( int key, qboolean down )
+void UI_KeyEvent( int key, int chr, int flags )
 {
 	if ( Menu_Count() > 0 )
 	{
@@ -4942,13 +4951,13 @@ void UI_KeyEvent( int key, qboolean down )
 
 		if ( menu )
 		{
-			if ( key == K_ESCAPE && down && !Menus_AnyFullScreenVisible() )
+			if ( key == K_ESCAPE && ( flags & ( 1 << KEYEVSTATE_DOWN ) ) && !Menus_AnyFullScreenVisible() )
 			{
 				Menus_CloseAll();
 			}
 			else
 			{
-				Menu_HandleKey( menu, key, down );
+				Menu_HandleKey( menu, key, chr, !!( flags & ( 1 << KEYEVSTATE_DOWN ) ) );
 			}
 		}
 		else

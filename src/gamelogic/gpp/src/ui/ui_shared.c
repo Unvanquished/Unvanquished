@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "ui_shared.h"
+#include "ui_utf8.h"
 
 #define SCROLL_TIME_START        500
 #define SCROLL_TIME_ADJUST       150
@@ -2433,6 +2434,12 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		len = limit;
 	}
 
+	// if drawing a cursor, convert the cursor index to an offset into the string
+	if ( cursorPos > 0 )
+	{
+		cursorPos = ui_CursorToOffset( text, cursorPos );
+	}
+
 	DC->setColor( color );
 	memcpy( &newColor[ 0 ], &color[ 0 ], sizeof( vec4_t ) );
 
@@ -3625,15 +3632,15 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 	else
 	{
 		// If there is a maximum field width
-
 		if ( editPtr->maxFieldWidth > 0 )
 		{
+			int offset;
 			// If the cursor is at the end of the string, maximise the amount of the
 			// string that's visible
 
-			if ( buff[ item->cursorPos + 1 ] == '\0' )
+			if ( item->cursorPos == ui_UTF8Strlen( buff ) )
 			{
-				while ( UI_Text_Width( &buff[ editPtr->paintOffset ], item->textscale ) <=
+				while ( UI_Text_Width( buff + ui_CursorToOffset( buff, editPtr->paintOffset ), item->textscale ) <=
 				        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) && editPtr->paintOffset > 0 )
 				{
 					editPtr->paintOffset--;
@@ -3643,20 +3650,22 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 			buff[ item->cursorPos + 1 ] = '\0';
 
 			// Shift paintOffset so that the cursor is visible
+			offset = ui_CursorToOffset( buff, editPtr->paintOffset );
 
-			while ( UI_Text_Width( &buff[ editPtr->paintOffset ], item->textscale ) >
+			while ( UI_Text_Width( buff + offset, item->textscale ) >
 			        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) )
 			{
 				editPtr->paintOffset++;
+				offset += ui_UTF8Width( buff );
 			}
 		}
 	}
 }
 
-qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
+qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 {
 	char           buff[ 1024 ];
-	int            len;
+	int            len, lenChars;
 	itemDef_t      *newItem = NULL;
 	editFieldDef_t *editPtr = item->typeData.edit;
 	qboolean       releaseFocus = qtrue;
@@ -3665,41 +3674,45 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 	{
 		Com_Memset( buff, 0, sizeof( buff ) );
 		DC->getCVarString( item->cvar, buff, sizeof( buff ) );
-		len = strlen( buff );
 
-		if ( len < item->cursorPos )
-		{
-			item->cursorPos = len;
-		}
+		len = strlen( buff );
 
 		if ( editPtr->maxChars && len > editPtr->maxChars )
 		{
 			len = editPtr->maxChars;
+			while ( len && ui_UTF8ContByte( buff[len] ) ) { --len; } // don't leave a partial multibyte character!
+			buff[ len ] = 0;
 		}
 
-		if ( key & K_CHAR_FLAG )
-		{
-			key &= ~K_CHAR_FLAG;
+		lenChars = ui_UTF8Strlen( buff );
 
-			if ( key == 'h' - 'a' + 1 )
+		if ( lenChars < item->cursorPos )
+		{
+			item->cursorPos = ui_OffsetToCursor( buff, len );
+		}
+
+		if ( chr )
+		{
+			if ( chr == 'h' - 'a' + 1 )
 			{
 				// ctrl-h is backspace
 
 				if ( item->cursorPos > 0 )
 				{
-					memmove( &buff[ item->cursorPos - 1 ], &buff[ item->cursorPos ], len + 1 - item->cursorPos );
-					item->cursorPos--;
+					int index = ui_CursorToOffset( buff, --item->cursorPos );
+					int width = ui_UTF8Width( buff + index );
+					memmove( buff + index, buff + index + width, len + 1 - index - width );
 				}
 
 				DC->setCVar( item->cvar, buff );
 			}
-			else if ( key < 32 || key == 127 || !item->cvar )
+			else if ( chr < 32 || chr == 127 || !item->cvar )
 			{
 				// Ignore any non printable chars
 				releaseFocus = qfalse;
 				goto exit;
 			}
-			else if ( item->type == ITEM_TYPE_NUMERICFIELD && ( key < '0' || key > '9' ) )
+			else if ( item->type == ITEM_TYPE_NUMERICFIELD && ( chr < '0' || chr > '9' ) )
 			{
 				// Ignore non-numeric characters
 				releaseFocus = qfalse;
@@ -3707,35 +3720,25 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 			}
 			else
 			{
-				if ( !DC->getOverstrikeMode() )
-				{
-					if ( ( len == MAX_EDITFIELD - 1 ) || ( editPtr->maxChars && len >= editPtr->maxChars ) )
-					{
-						// Reached maximum field length
-						releaseFocus = qfalse;
-						goto exit;
-					}
+				int index = ui_CursorToOffset( buff, item->cursorPos );
+				int width = ui_UTF8WidthCP( chr );
+				int oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? ui_UTF8Width( buff + index ) : 0;
+				int max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+				max = max ? max : MAX_EDITFIELD - 1;
 
-					memmove( &buff[ item->cursorPos + 1 ], &buff[ item->cursorPos ], len + 1 - item->cursorPos );
-				}
-				else
+				if ( len + width - oldWidth > max )
 				{
 					// Reached maximum field length
-					if ( editPtr->maxChars && item->cursorPos >= editPtr->maxChars )
-					{
-						releaseFocus = qfalse;
-						goto exit;
-					}
+					releaseFocus = qfalse;
+					goto exit;
 				}
 
-				buff[ item->cursorPos ] = key;
+				memmove( buff + index + width, buff + index + oldWidth, len + 1 - index - oldWidth );
+				memcpy( buff + index, ui_UTF8Encode( chr ), width );
 
 				DC->setCVar( item->cvar, buff );
 
-				if ( item->cursorPos < len + 1 )
-				{
-					item->cursorPos++;
-				}
+				item->cursorPos++;
 			}
 		}
 		else
@@ -3744,9 +3747,11 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 			{
 				case K_DEL:
 				case K_KP_DEL:
-					if ( item->cursorPos < len )
+					if ( item->cursorPos < lenChars )
 					{
-						memmove( buff + item->cursorPos, buff + item->cursorPos + 1, len - item->cursorPos );
+						int index = ui_CursorToOffset( buff, item->cursorPos );
+						int width = ui_UTF8Width( buff + index );
+						memmove( buff + index, buff + index + width, len + 1 - index - width );
 						DC->setCVar( item->cvar, buff );
 					}
 
@@ -3754,7 +3759,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 
 				case K_RIGHTARROW:
 				case K_KP_RIGHTARROW:
-					if ( item->cursorPos < len )
+					if ( item->cursorPos < lenChars )
 					{
 						item->cursorPos++;
 					}
@@ -3778,7 +3783,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 
 				case K_END:
 				case K_KP_END:
-					item->cursorPos = len;
+					item->cursorPos = lenChars;
 
 					break;
 
@@ -4405,7 +4410,7 @@ int Display_VisibleMenuCount( void )
 	return count;
 }
 
-void Menus_HandleOOBClick( menuDef_t *menu, int key, qboolean down )
+void Menus_HandleOOBClick( menuDef_t *menu, int key, int chr, qboolean down )
 {
 	if ( menu )
 	{
@@ -4426,7 +4431,7 @@ void Menus_HandleOOBClick( menuDef_t *menu, int key, qboolean down )
 				Menus_Close( menu );
 				Menus_Activate( &Menus[ i ] );
 				Menu_HandleMouseMove( &Menus[ i ], DC->cursorx, DC->cursory );
-				Menu_HandleKey( &Menus[ i ], key, down );
+				Menu_HandleKey( &Menus[ i ], key, chr, down );
 			}
 		}
 
@@ -4460,7 +4465,7 @@ static rectDef_t *Item_CorrectedTextRect( itemDef_t *item )
 	return &rect;
 }
 
-void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
+void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 {
 	static qboolean shift = qfalse;
 
@@ -4495,7 +4500,7 @@ void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 
 	if ( g_editingField && down )
 	{
-		if ( !Item_TextField_HandleKey( g_editItem, key ) )
+		if ( !Item_TextField_HandleKey( g_editItem, key, chr ) )
 		{
 			g_editingField = qfalse;
 			Item_RunScript( g_editItem, g_editItem->onTextEntry );
@@ -4524,7 +4529,7 @@ void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 		if ( !inHandleKey && ( key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 ) )
 		{
 			inHandleKey = qtrue;
-			Menus_HandleOOBClick( menu, key, down );
+			Menus_HandleOOBClick( menu, key, chr, down );
 			inHandleKey = qfalse;
 			inHandler = qfalse;
 			return;
@@ -8973,7 +8978,7 @@ int Display_CursorType( int x, int y )
 	return CURSOR_ARROW;
 }
 
-void Display_HandleKey( int key, qboolean down, int x, int y )
+void Display_HandleKey( int key, int chr, qboolean down, int x, int y )
 {
 	menuDef_t *menu = Display_CaptureItem( x, y );
 
@@ -8984,7 +8989,7 @@ void Display_HandleKey( int key, qboolean down, int x, int y )
 
 	if ( menu )
 	{
-		Menu_HandleKey( menu, key, down );
+		Menu_HandleKey( menu, key, chr, down );
 	}
 }
 

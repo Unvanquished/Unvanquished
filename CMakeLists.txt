@@ -724,6 +724,7 @@ set( CGAMEGPP
   ${GPP_DIR}/src/cgame/cg_particles.c
   ${GPP_DIR}/src/cgame/cg_tutorial.c
   ${GPP_DIR}/src/ui/ui_shared.c
+  ${GPP_DIR}/src/ui/ui_utf8.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
   ${GPP_DIR}/src/cgame/cg_api.c
@@ -771,6 +772,7 @@ set( UIGPP
   ${GPP_DIR}/src/game/bg_lib.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${GPP_DIR}/src/ui/ui_utf8.c
   ${GPP_DIR}/src/ui/ui_api.c
 )
 
