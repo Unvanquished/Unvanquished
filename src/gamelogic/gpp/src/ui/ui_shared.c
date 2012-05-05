@@ -2193,6 +2193,7 @@ float UI_Char_Width( const char **text, float scale )
 	int         emoticonLen;
 	qboolean    emoticonEscaped;
 	int         emoticonWidth;
+	int         ch;
 
 	if ( text && *text )
 	{
@@ -2224,9 +2225,10 @@ float UI_Char_Width( const char **text, float scale )
 			}
 		}
 
-		( *text ) ++;
+		ch = ui_UTF8CodePoint( *text );
+		glyph = &font->glyphs[ ( ch > GLYPH_END ) ? '?' : ch ];
+		*text += ui_UTF8WidthCP( ch );
 
-		glyph = &font->glyphs[( int ) **text ];
 		return glyph->xSkip * DC->aspectScale * scale * font->glyphScale;
 	}
 
@@ -2449,7 +2451,8 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	{
 		const char *t = s;
 		float      charWidth = UI_Char_Width( &t, scale );
-		glyph = &font->glyphs[( int ) * s ];
+		int        ch = ui_UTF8CodePoint( s );
+		glyph = &font->glyphs[ ( ch > GLYPH_END ) ? '?' : ch ];
 
 		if ( maxX && charWidth + x > *maxX )
 		{
@@ -2544,7 +2547,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
-		s++;
+		s += ui_UTF8WidthCP( ch );
 		count++;
 	}
 
