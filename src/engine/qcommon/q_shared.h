@@ -542,7 +542,12 @@ extern "C" {
 #define FRAMETIME        100 // msec
 
 #define Q_COLOR_ESCAPE   '^'
-#define Q_IsColorString( p ) ( p && *( p ) == Q_COLOR_ESCAPE && *( ( p ) + 1 ) && *( ( p ) + 1 ) != Q_COLOR_ESCAPE && *( ( p ) + 1 ) != '\n' )
+static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( const char *p )
+{
+	return p && p[0] == Q_COLOR_ESCAPE &&
+	       p[1] >= '0' && p[1] != ';' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p'
+	       ? qtrue : qfalse;
+}
 
 #define COLOR_BLACK      '0'
 #define COLOR_RED        '1'
