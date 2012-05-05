@@ -119,8 +119,6 @@ ENDIF()
 # Proper name is *_INCLUDE_DIR
 SET(CURSESW_INCLUDE_DIR ${CURSESW_INCLUDE_PATH})
 
-message("${CURSESW_LIBRARY} ${CURSESW_INCLUDE_PATH}")
-
 # handle the QUIETLY and REQUIRED arguments and set CURSESW_FOUND to TRUE if 
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
