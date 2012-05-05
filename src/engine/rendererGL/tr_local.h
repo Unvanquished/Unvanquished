@@ -5325,6 +5325,14 @@ extern "C" {
 	void       R_DoneFreeType();
 	void       RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
 
+	void       RE_LoadFace(const char *fileName, int pointSize, const char *name, face_t *face);
+	void       RE_FreeFace(face_t *face);
+	void       RE_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo);
+	void       RE_FreeGlyph(face_t *face, int img, glyphInfo_t *glyphInfo);
+	void       RE_Glyph(fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph);
+	void       RE_GlyphChar(fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph);
+	void       RE_FreeCachedGlyphs(face_t *face);
+
 // bani
 	void       RE_RenderToTexture( int textureid, int x, int y, int w, int h );
 	void       RE_Finish( void );
