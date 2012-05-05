@@ -886,6 +886,7 @@ void Con_DrawSolidConsole( float frac )
 	{
 		lines = cls.glconfig.vidHeight * frac;
 	}
+	lines += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 
 	// on wide screens, we will center the text
 	if (!scr_conUseOld->integer)

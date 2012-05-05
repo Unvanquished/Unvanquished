@@ -719,6 +719,8 @@ qboolean CL_UpdateVisiblePings_f( int source );
 #define     CON_TEXTSIZE 65536 // (SA) DM want's more console...
 #define     CON_LINECOUNT  512
 
+#define     CONSOLE_FONT_VPADDING 0.3
+
 typedef struct
 {
 	int ch :24;

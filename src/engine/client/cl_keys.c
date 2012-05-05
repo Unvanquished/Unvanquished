@@ -420,8 +420,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	if ( showCursor )
 	{
 		static const float yellow[] = { 1, 1, 0, 0.5 };
-		float xpos;
-		int width, height;
+		float xpos, width, height;
 
 		if ( ( int )( cls.realtime >> 8 ) & 1 )
 		{
@@ -433,14 +432,14 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 		if ( size == SMALLCHAR_WIDTH )
 		{
 			xpos = x + SCR_ConsoleFontStringWidth( str, edit->cursor );
-			height = key_overstrikeMode ? SMALLCHAR_HEIGHT - 3 : 2;
+			height = key_overstrikeMode ? SMALLCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
 			width = SMALLCHAR_WIDTH;
 		}
 		else
 		{
 			i = drawLen - Q_UTF8Strlen( str );
 			xpos = x + ( edit->cursor - prestep - i ) * size;
-			height = key_overstrikeMode ? BIGCHAR_HEIGHT - 3 : 2;
+			height = key_overstrikeMode ? BIGCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
 			width = BIGCHAR_WIDTH;
 		}
 

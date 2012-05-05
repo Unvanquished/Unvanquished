@@ -260,7 +260,9 @@ void SCR_DrawSmallUnichar( int x, int y, int ch )
 		fcol = col*0.0625;
 		size = 0.0625;
 
-		re.DrawStretchPic( x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT,
+		// adjust for baseline
+		re.DrawStretchPic( x, y - (int)( SMALLCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) ),
+		                SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT,
 				fcol, frow,
 				fcol + size, frow + size,
 				cls.charSetShader );
@@ -879,7 +881,7 @@ float SCR_ConsoleFontCharHeight()
 	fontInfo_t  *font = &cls.consoleFont;
 	int         ch = 'I' & 0xff;
 	glyphInfo_t *glyph = &font->glyphs[ ch ];
-	float       vpadding = 0.3 * cl_consoleFontSize->value;
+	float       vpadding = CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
 
 	if ( cls.useLegacyConsoleFont )
 	{
