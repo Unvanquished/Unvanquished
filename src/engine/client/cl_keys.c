@@ -419,35 +419,32 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	// draw the cursor
 	if ( showCursor )
 	{
+		static const float yellow[] = { 1, 1, 0, 0.5 };
+		float xpos;
+		int width, height;
+
 		if ( ( int )( cls.realtime >> 8 ) & 1 )
 		{
 			return; // off blink
 		}
 
-		if ( key_overstrikeMode )
-		{
-			cursorChar = 11;
-		}
-		else
-		{
-			cursorChar = 10;
-		}
-
-		i = drawLen - Q_UTF8Strlen( str );
+		re.SetColor( yellow );
 
 		if ( size == SMALLCHAR_WIDTH )
 		{
-			static char c;
-			float xlocation = x + SCR_ConsoleFontStringWidth( str, edit->cursor );
-			c = (char) cursorChar & 0x7F;
-			SCR_DrawConsoleFontChar( xlocation, y, &c );
+			xpos = x + SCR_ConsoleFontStringWidth( str, edit->cursor );
+			height = key_overstrikeMode ? SMALLCHAR_HEIGHT - 3 : 2;
+			width = SMALLCHAR_WIDTH;
 		}
 		else
 		{
-			str[ 0 ] = cursorChar;
-			str[ 1 ] = 0;
-			SCR_DrawBigString( x + ( edit->cursor - prestep - i ) * size, y, str, 1.0, qfalse );
+			i = drawLen - Q_UTF8Strlen( str );
+			xpos = x + ( edit->cursor - prestep - i ) * size;
+			height = key_overstrikeMode ? BIGCHAR_HEIGHT - 3 : 2;
+			width = BIGCHAR_WIDTH;
 		}
+
+		re.DrawStretchPic( xpos, y + 2 - height, width, height, 0, 0, 0, 0, cls.whiteShader );
 	}
 }
 
