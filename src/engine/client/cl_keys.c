@@ -629,7 +629,7 @@ void Field_CharEvent( field_t *edit, const char *s )
 		return;
 	}
 
-	if ( *s == 'd' - 'a' + 1 || *s == 0x7F ) // ctrl-d is delete forward
+	if ( *s == 'd' - 'a' + 1 ) // ctrl-d is delete forward
 	{
 		int posTo = Field_CursorToOffset( edit );
 
