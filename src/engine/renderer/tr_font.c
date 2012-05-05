@@ -398,81 +398,81 @@ void RE_LoadFace(const char *fileName, int pointSize, const char *name, face_t *
 {
 	fileHandle_t h;
 	static struct FT_MemoryRec_ memory =
-	{ NULL
-	, memory_alloc
-	, memory_free
-	, memory_realloc
+	{
+		NULL, memory_alloc, memory_free, memory_realloc
 	};
 	FT_Stream stream;
 	FT_Open_Args oa =
-	{ FT_OPEN_STREAM
-	, NULL
-	, 0L
-	, NULL
-	, NULL  // stream
-	, NULL  // driver
-	, 0
-	, NULL
+	{
+		FT_OPEN_STREAM, NULL, 0L, NULL, NULL /* stream */, NULL /* driver */, 0, NULL
 	};
 	FT_Face ftFace;
 	float dpi = 72.0f;
-	float glyphScale =  72.0f / dpi; 		// change the scale to be relative to 1 based on 72 dpi ( so dpi of 144 means a scale of .5 )
-		int ec;
+	float glyphScale =  72.0f / dpi; // change the scale to be relative to 1 based on 72 dpi ( so dpi of 144 means a scale of .5 )
+	int ec;
 
-		if( !face || !fileName || !name )
-			return;
+	if( !face || !fileName || !name )
+	{
+		return;
+	}
 
-		if( ri.FS_ReadFile( fileName, NULL ) <= 0 )
-			return;
+	if( ri.FS_ReadFile( fileName, NULL ) <= 0 )
+	{
+		return;
+	}
 
-		oa.stream = face->mem = stream = malloc(sizeof(*stream));
+	oa.stream = face->mem = stream = malloc(sizeof(*stream));
 
-		ri.FS_FOpenFileRead(fileName, &h, qtrue);
-		stream->base = NULL;
-		stream->size = ri.FS_ReadFile(fileName, NULL);
-		stream->pos = 0;
-		stream->descriptor.value = h;
-		stream->pathname.pointer = (void *) fileName;
-		stream->read = (FT_Stream_IoFunc) stream_read;
-		stream->close = (FT_Stream_CloseFunc) stream_close;
-		stream->memory = &memory;
-		stream->cursor = NULL;
-		stream->limit = NULL;
+	ri.FS_FOpenFileRead(fileName, &h, qtrue);
+	stream->base = NULL;
+	stream->size = ri.FS_ReadFile(fileName, NULL);
+	stream->pos = 0;
+	stream->descriptor.value = h;
+	stream->pathname.pointer = (void *) fileName;
+	stream->read = (FT_Stream_IoFunc) stream_read;
+	stream->close = (FT_Stream_CloseFunc) stream_close;
+	stream->memory = &memory;
+	stream->cursor = NULL;
+	stream->limit = NULL;
 
-		if (ftLibrary == NULL) {
-			ri.Printf(PRINT_ALL, "RE_LoadFace: FreeType not initialized.\n");
-			return;
-		}
+	if (ftLibrary == NULL)
+	{
+		ri.Printf(PRINT_ALL, "RE_LoadFace: FreeType not initialized.\n");
+		return;
+	}
 
-		if( ( ec = FT_Open_Face( ftLibrary, &oa, 0, (FT_Face *) &( face->opaque ) ) ) != 0 )
-		{
-			ri.Printf(PRINT_ALL, "RE_LoadFace: FreeType2, Unable to open face; error code: %d\n", ec);
-			return;
-		}
+	if( ( ec = FT_Open_Face( ftLibrary, &oa, 0, (FT_Face *) &( face->opaque ) ) ) != 0 )
+	{
+		ri.Printf(PRINT_ALL, "RE_LoadFace: FreeType2, Unable to open face; error code: %d\n", ec);
+		return;
+	}
 
-		ftFace = (FT_Face) face->opaque;
+	ftFace = (FT_Face) face->opaque;
 
-		if( !ftFace )
-		{
-			ri.Printf(PRINT_ALL, "RE_LoadFace: face handle is NULL");
-			return;
-		}
+	if( !ftFace )
+	{
+		ri.Printf(PRINT_ALL, "RE_LoadFace: face handle is NULL");
+		return;
+	}
 
-		if (pointSize <= 0) {
-			pointSize = 12;
-		}
-		// we also need to adjust the scale based on point size relative to 48 points as the ui scaling is based on a 48 point font
-		glyphScale *= 48.0f / pointSize;
+	if (pointSize <= 0)
+	{
+		pointSize = 12;
+	}
 
-		face->glyphScale = glyphScale;
-		strncpy(face->name, name, MAX_QPATH);
+	// we also need to adjust the scale based on point size relative to 48 points as the ui scaling is based on a 48 point font
+	glyphScale *= 48.0f / pointSize;
 
-		if((ec = FT_Set_Char_Size( ftFace, pointSize << 6, pointSize << 6, dpi, dpi)) != 0)
-		{
-			ri.Printf(PRINT_ALL, "RE_LoadFace: FreeType2, Unable to set face char size; error code: %d\n", ec);
-			return;
-		}
+	face->glyphScale = glyphScale;
+	strncpy(face->name, name, MAX_QPATH);
+
+	if((ec = FT_Set_Char_Size( ftFace, pointSize << 6, pointSize << 6, dpi, dpi)) != 0)
+	{
+		ri.Printf(PRINT_ALL, "RE_LoadFace: FreeType2, Unable to set face char size; error code: %d\n", ec);
+		return;
+	}
 }
+
 void RE_FreeFace(face_t *face)
 {
 	FT_Face ftFace;
