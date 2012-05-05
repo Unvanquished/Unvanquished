@@ -3737,8 +3737,9 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 			}
 			else
 			{
+				const char *str = ui_UTF8Unstore( chr );
 				int index = ui_CursorToOffset( buff, item->cursorPos );
-				int width = ui_UTF8WidthCP( chr );
+				int width = ui_UTF8Width( str );
 				int oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? ui_UTF8Width( buff + index ) : 0;
 				int max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
 				max = max ? max : MAX_EDITFIELD - 1;
@@ -3751,7 +3752,8 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				}
 
 				memmove( buff + index + width, buff + index + oldWidth, len + 1 - index - oldWidth );
-				memcpy( buff + index, ui_UTF8Encode( chr ), width );
+				memcpy( buff + index, str, width );
+				buff[ len + width - oldWidth ] = '\0';
 
 				DC->setCVar( item->cvar, buff );
 
