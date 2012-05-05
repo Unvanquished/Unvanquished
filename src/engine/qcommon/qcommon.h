@@ -927,8 +927,10 @@ void Field_CompleteDelay( void );
 void Field_CompleteCommand( char *cmd,
                             qboolean doCommands, qboolean doCvars );
 
+// code point count <-> UTF-8 byte count
 int Field_OffsetToCursor( field_t *edit, int offset );
 int Field_CursorToOffset( field_t *edit );
+int Field_ScrollToOffset( field_t *edit );
 
 /*
 ==============================================================

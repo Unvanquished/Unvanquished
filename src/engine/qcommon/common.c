@@ -4033,6 +4033,23 @@ int Field_CursorToOffset( field_t *edit )
 
 /*
 ==================
+Field_ScrollToOffset
+==================
+*/
+int Field_ScrollToOffset( field_t *edit )
+{
+	int i = -1, j = 0;
+
+	while ( ++i < edit->scroll )
+	{
+		j += Q_UTF8Width( edit->buffer + j );
+	}
+
+	return j;
+}
+
+/*
+==================
 Field_OffsetToCursor
 ==================
 */
