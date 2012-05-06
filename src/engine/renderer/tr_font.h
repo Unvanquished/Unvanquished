@@ -624,6 +624,11 @@ void RE_GlyphChar( fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph )
 
 	if( ch < 0x100 || !face )
 	{
+		if ( ch >= 0x100 || !font->glyphs[ ch ].glyph )
+		{
+			ch = '?';
+		}
+
 		memcpy( glyph, &font->glyphs[ ch ], sizeof( *glyph ) );
 		return;
 	}
@@ -653,6 +658,13 @@ void RE_GlyphChar( fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph )
 	}
 
 	RE_LoadGlyphChar( face, ch, nextCache - glyphCache, &nextCache->glyph );
+
+	if ( !nextCache->glyph.glyph )
+	{
+		RE_GlyphChar( font, NULL, ch, glyph );
+		return;
+	}
+
 	nextCache->face = face;
 
 	nextCache->ch = ch;
