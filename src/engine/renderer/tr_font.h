@@ -658,10 +658,10 @@ void RE_GlyphChar( fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph )
 	nextCache->ch = ch;
 	nextCache->used = qtrue;
 
+	memcpy( glyph, &nextCache->glyph, sizeof( *glyph ) );
+
 	if( ++nextCache - glyphCache >= MAX_FACE_GLYPHS )
 		nextCache = glyphCache;
-
-	memcpy( glyph, &nextCache->glyph, sizeof( *glyph ) );
 }
 
 void RE_Glyph( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph )
