@@ -180,7 +180,7 @@ static void SCR_DrawUnichar( int x, int y, float size, int ch )
 		int row, col;
 		float frow, fcol;
 
-		if ( ch >= 0x100 ) { ch = '\0'; }
+		if ( ch >= 0x100 ) { ch = '?'; }
 
 		row = ch >> 4;
 		col = ch & 15;

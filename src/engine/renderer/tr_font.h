@@ -622,9 +622,9 @@ void RE_GlyphChar( fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph )
 	int    i;
 	int    width;
 
-	if( ch < 0x100 || !face )
+	if( ch <= GLYPH_END || !face )
 	{
-		if ( ch >= 0x100 || !font->glyphs[ ch ].glyph )
+		if ( ch > GLYPH_END || !font->glyphs[ ch ].glyph )
 		{
 			ch = '?';
 		}
