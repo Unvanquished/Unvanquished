@@ -2679,7 +2679,12 @@ int Q_UTF8Store( const char *s )
   }
   return r;
 #else
-  return *(int *)s;
+  int r = *(int *)s;
+  // don't assume that s is NUL-padded to four bytes
+  if ( ( r & 0x000000FF ) == 0 ) { return 0; }
+  if ( ( r & 0x0000FF00 ) == 0 ) { return r & 0x000000FF; }
+  if ( ( r & 0x00FF0000 ) == 0 ) { return r & 0x0000FFFF; }
+  if ( ( r & 0xFF000000 ) == 0 ) { return r & 0x00FFFFFF; }
 #endif
 }
 
