@@ -2436,12 +2436,6 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		len = limit;
 	}
 
-	// if drawing a cursor, convert the cursor index to an offset into the string
-	if ( cursorPos > 0 )
-	{
-		cursorPos = ui_CursorToOffset( text, cursorPos );
-	}
-
 	DC->setColor( color );
 	memcpy( &newColor[ 0 ], &color[ 0 ], sizeof( vec4_t ) );
 
@@ -2559,7 +2553,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	// paint cursor
 	if ( cursorPos >= 0 )
 	{
-		if ( cursorPos == len )
+		if ( cursorPos == count )
 		{
 			cursorX = x;
 		}
