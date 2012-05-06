@@ -354,14 +354,15 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	int  cursorChar;
 	char str[ MAX_STRING_CHARS ];
 	int  i;
+	int  offset, offsetEnd;
 
 	drawLen = edit->widthInChars - 1; // - 1 so there is always a space for the cursor
-	len = strlen( edit->buffer );
+	len = Q_UTF8Strlen( edit->buffer );
 
 	// guarantee that cursor will be visible
 	if ( len <= drawLen )
 	{
-		prestep = 0;
+		edit->scroll = prestep = 0;
 	}
 	else
 	{
@@ -373,10 +374,6 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 			{
 				edit->scroll = 0;
 			}
-			while( Q_UTF8ContByte( edit->buffer[ edit->scroll ] ) && edit->scroll > 0 )
-			{
-				edit->scroll--;
-			}
 		}
 
 		prestep = edit->scroll;
@@ -387,19 +384,20 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 		drawLen = len - prestep;
 	}
 
-	while ( Q_UTF8ContByte( edit->buffer[ prestep + drawLen ] ) && prestep + drawLen < len )
+	// extract <drawLen> characters from the field at <prestep>
+	offset = offsetEnd = Field_ScrollToOffset( edit );
+	for ( i = 0; i < drawLen && edit->buffer[ offsetEnd ]; ++i )
 	{
-		++drawLen;
+		offsetEnd += Q_UTF8Width( edit->buffer + offsetEnd );
 	}
 
-	// extract <drawLen> characters from the field at <prestep>
-	if ( drawLen >= MAX_STRING_CHARS )
+	if ( offsetEnd - offset >= MAX_STRING_CHARS )
 	{
 		Com_Error( ERR_DROP, "drawLen >= MAX_STRING_CHARS" );
 	}
 
-	Com_Memcpy( str, edit->buffer + prestep, drawLen );
-	str[ drawLen ] = 0;
+	str[ offsetEnd - offset ] = 0;
+	Com_Memcpy( str, edit->buffer + offset, offsetEnd - offset );
 
 	// draw it
 	if ( size == SMALLCHAR_WIDTH )

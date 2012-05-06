@@ -906,11 +906,11 @@ float SCR_ConsoleFontStringWidth( const char* s, int len )
 			int l = 0;
 			const char *str = s;
 
-			while( *str && str - s < len )
+			while( *str && len > 0 )
 			{
 				l++;
-
 				str += Q_UTF8Width( str );
+				len--;
 			}
 
 			return l * SMALLCHAR_WIDTH;
