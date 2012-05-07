@@ -488,30 +488,16 @@ void CG_InitConsoleCommands( void )
 	trap_AddCommand( "ui_messagemode4" );
 	trap_AddCommand( "say" );
 	trap_AddCommand( "say_team" );
-	trap_AddCommand( "vsay" );
-	trap_AddCommand( "vsay_team" );
-	trap_AddCommand( "vsay_local" );
-	trap_AddCommand( "m" );
-	trap_AddCommand( "mt" );
-	trap_AddCommand( "give" );
 	trap_AddCommand( "god" );
 	trap_AddCommand( "notarget" );
 	trap_AddCommand( "noclip" );
 	trap_AddCommand( "team" );
-	trap_AddCommand( "follow" );
 	trap_AddCommand( "setviewpos" );
-	trap_AddCommand( "callvote" );
 	trap_AddCommand( "vote" );
-	trap_AddCommand( "callteamvote" );
 	trap_AddCommand( "teamvote" );
 	trap_AddCommand( "reload" );
-	trap_AddCommand( "itemact" );
-	trap_AddCommand( "itemdeact" );
-	trap_AddCommand( "itemtoggle" );
 	trap_AddCommand( "destroy" );
 	trap_AddCommand( "deconstruct" );
-	trap_AddCommand( "ignore" );
-	trap_AddCommand( "unignore" );
 
 	trap_RegisterButtonCommands(
 	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.
