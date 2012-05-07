@@ -177,7 +177,6 @@ extern qboolean        sv_cheats; //bani
 
 cvar_t                 *cl_consoleKeys;
 cvar_t                 *cl_consoleFont;
-cvar_t                 *cl_consoleDynFont;
 cvar_t                 *cl_consoleFontSize;
 cvar_t                 *cl_consoleFontKerning;
 cvar_t                 *cl_consolePrompt;
@@ -4346,16 +4345,6 @@ qboolean CL_InitRenderer( void )
 
 		FS_FCloseFile( f );
 	}
-	if( cl_consoleDynFont->string[0] )
-	{
-		if( FS_FOpenFileByMode( cl_consoleDynFont->string, &f, FS_READ ) >= 0 )
-		{
-			re.LoadFace( cl_consoleDynFont->string, cl_consoleFontSize->integer, cl_consoleDynFont->string, &cls.consoleFace );
-			cls.useLegacyConsoleFace = qfalse;
-		}
-
-		FS_FCloseFile( f );
-	}
 
 	cls.whiteShader = re.RegisterShader( "white" );
 	cls.consoleShader = re.RegisterShader( "console" );
@@ -5124,7 +5113,6 @@ void CL_Init( void )
 	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", "~ ` 0x7e 0x60", CVAR_ARCHIVE );
 
 	cl_consoleFont = Cvar_Get( "cl_consoleFont", "", CVAR_ARCHIVE | CVAR_LATCH );
-	cl_consoleDynFont = Cvar_Get ("cl_consoleDynFont", "", CVAR_ARCHIVE | CVAR_LATCH);
 	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
 	cl_consolePrompt = Cvar_Get( "cl_consolePrompt", "^3->", CVAR_ARCHIVE );
