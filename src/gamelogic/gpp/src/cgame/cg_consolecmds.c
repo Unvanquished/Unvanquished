@@ -209,93 +209,76 @@ static void CG_NullFunc( void )
 {
 }
 
-// TODO: Use functions from bg_misc.c so this stuff isn't hardcoded. The problem with that is that they also include invalid values.
-
 static void CG_CompleteClass( void )
 {
 	int i = 0;
 
 	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
 	{
-		static const char classes[][ 12 ] =
+		for ( i = PCL_ALIEN_BUILDER0; i < PCL_HUMAN; i++ )
 		{
-			"builder",   "builderupg", "level0",    "level1", "level1upg", "level2",
-			"level2upg", "level3",     "level3upg", "level4"
-		};
-
-		for ( i = 0; i < ARRAY_LEN( classes ); i++ )
-		{
-			trap_CompleteCallback( classes[ i ] );
+			trap_CompleteCallback( BG_Class( i )->name );
 		}
 	}
 	else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
 	{
-		static const char classes[][ 12 ] = { "rifle", "ckit" };
-
-		for ( i = 0; i < ARRAY_LEN( classes ); i++ )
-		{
-			trap_CompleteCallback( classes[ i ] );
-		}
-	}
-}
-
-static void CG_CompleteBuySell( qboolean buying )
-{
-	int               i = buying ? 1 : 0;
-	static const char items[][ 12 ] =
-	{
-		"weapons", "upgrades", // <- only valid when selling
-		"ckit",    "rifle",  "psaw",    "shotgun", "lgun",   "mdriver", "chaingun",
-		"prifle",  "flamer", "lcannon", "larmour", "helmet", "bsuit",   "grenade", "battpack",
-		"jetpack", "ammo"
-	};
-
-	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
-	{
-		for ( /**/; i < ARRAY_LEN( items ); i++ )
-		{
-			trap_CompleteCallback( items[ i ] );
-		}
+		trap_CompleteCallback( BG_Weapon( WP_HBUILD )->name );
+		trap_CompleteCallback( BG_Weapon( WP_MACHINEGUN )->name );
 	}
 }
 
 static void CG_CompleteBuy( void )
 {
-	CG_CompleteBuySell( qtrue );
+	int i;
+
+	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	for( i = 0; i < UP_NUM_UPGRADES; i++ )
+	{
+		const upgradeAttributes_t *item = BG_Upgrade( i );
+		if ( item->purchasable && item->team == TEAM_HUMANS )
+		{
+			trap_CompleteCallback( item->name );
+		}
+	}
+
+	trap_CompleteCallback( "grenade" ); // called "gren" elsewhere, so special-case it
+
+	for( i = 0; i < WP_NUM_WEAPONS; i++ )
+	{
+		const weaponAttributes_t *item = BG_Weapon( i );
+		if ( item->purchasable && item->team == TEAM_HUMANS )
+		{
+			trap_CompleteCallback( item->name );
+		}
+	}
 }
 
 static void CG_CompleteSell( void )
 {
-	CG_CompleteBuySell( qfalse );
+	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	trap_CompleteCallback( "weapons" );
+	trap_CompleteCallback( "upgrades" );
+	CG_CompleteBuy( );
 }
 
 static void CG_CompleteBuild( void )
 {
-	int i = 0;
+	int i;
 
-	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
+	for ( i = 0; i < BA_NUM_BUILDABLES; i++ )
 	{
-		static const char structs[][ 12 ] =
+		const buildableAttributes_t *item = BG_Buildable( i );
+		if ( item->team == cgs.clientinfo[ cg.clientNum ].team )
 		{
-			"eggpod",  "overmind", "barricade", "acid_tube", "trapper",
-			"booster", "hive"
-		};
-
-		for ( i = 0; i < ARRAY_LEN( structs ); i++ )
-		{
-			trap_CompleteCallback( structs[ i ] );
-		}
-	}
-	else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
-	{
-		static const char structs[][ 12 ] =
-		{
-			"telenode", "mgturret", "tesla", "arm", "dcc", "medistat", "reactor", "repeater"
-		};
-
-		for ( i = 0; i < ARRAY_LEN( structs ); i++ )
-		{
-			trap_CompleteCallback( structs[ i ] );
+			trap_CompleteCallback( item->name );
 		}
 	}
 }
@@ -320,6 +303,90 @@ static void CG_CompleteName( void )
 	}
 }
 
+static void CG_CompleteVsay( void )
+{
+	voice_t     *voice = cgs.voices;
+	voiceCmd_t  *voiceCmd = voice->cmds;
+
+	while ( voiceCmd != NULL )
+	{
+		trap_CompleteCallback( voiceCmd->cmd );
+		voiceCmd = voiceCmd->next;
+	}
+}
+
+static void CG_CompleteGive( void )
+{
+	int               i = 0;
+	static const char give[][ 12 ] =
+	{
+		"all", "health", "funds", "stamina", "poison", "gas", "ammo"
+	};
+
+	for( i = 0; i < ARRAY_LEN( give ); i++ )
+	{
+		trap_CompleteCallback( give[i] );
+	}
+}
+
+static void CG_CompleteTeamVote( void )
+{
+	int           i = 0;
+	static const char vote[][ 16 ] =
+	{
+		"kick", "spectate", "denybuild", "allowbuild", "admitdefeat", "poll"
+	};
+
+	for( i = 0; i < ARRAY_LEN( vote ); i++ )
+	{
+		trap_CompleteCallback( vote[i] );
+	}
+}
+static void CG_CompleteVote( void )
+{
+	int           i = 0;
+	static const char vote[][ 16 ] =
+	{
+		"kick", "spectate", "mute", "unmute", "sudden_death", "extend",
+		"draw", "map_restart", "map", "layout", "nextmap", "poll"
+	};
+
+	for( i = 0; i < ARRAY_LEN( vote ); i++ )
+	{
+		trap_CompleteCallback( vote[i] );
+	}
+}
+
+static void CG_CompleteItem( void )
+{
+	int i = 0;
+
+	if( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
+	{
+		return;
+	}
+
+	trap_CompleteCallback( "weapon" );
+
+	for( i = 0; i < UP_NUM_UPGRADES; i++ )
+	{
+		const upgradeAttributes_t *item = BG_Upgrade( i );
+		if ( item->usable )
+		{
+			trap_CompleteCallback( item->name );
+		}
+	}
+
+	for( i = 0; i < WP_NUM_WEAPONS; i++ )
+	{
+		const weaponAttributes_t *item = BG_Weapon( i );
+		if( item->team == TEAM_HUMANS )
+		{
+			trap_CompleteCallback( item->name );
+		}
+	}
+}
+
 static const struct
 {
 	const char *cmd;
@@ -334,9 +401,16 @@ static const struct
 	{ "class",         NULL,                    CG_CompleteClass },
 	{ "cgame_memory",  BG_MemoryInfo,           NULL             },
 	{ "clientlist",    CG_ClientList_f,         NULL             },
+	{ "callvote",      NULL,                    CG_CompleteVote  },
+	{ "callteamvote",  NULL,                    CG_CompleteTeamVote },
 	{ "destroyTestPS", CG_DestroyTestPS_f,      NULL             },
 	{ "destroyTestTS", CG_DestroyTestTS_f,      NULL             },
 	{ "follow",        NULL,                    CG_CompleteName  },
+	{ "give",          NULL,                    CG_CompleteGive  },
+	{ "ignore",        NULL,                    CG_CompleteName  },
+	{ "itemact",       NULL,                    CG_CompleteItem  },
+	{ "itemdeact",     NULL,                    CG_CompleteItem  },
+	{ "itemtoggle",    NULL,                    CG_CompleteItem  },
 	{ "m",             NULL,                    CG_CompleteName  },
 	{ "mt",            NULL,                    CG_CompleteName  },
 	{ "nextframe",     CG_TestModelNextFrame_f, NULL             },
@@ -354,7 +428,11 @@ static const struct
 	{ "testPS",        CG_TestPS_f,             NULL             },
 	{ "testTS",        CG_TestTS_f,             NULL             },
 	{ "ui_menu",       CG_UIMenu_f,             NULL             },
+	{ "unignore",      NULL,                    CG_CompleteName  },
 	{ "viewpos",       CG_Viewpos_f,            NULL             },
+	{ "vsay",          NULL,                    CG_CompleteVsay  },
+	{ "vsay_local",    NULL,                    CG_CompleteVsay  },
+	{ "vsay_team",     NULL,                    CG_CompleteVsay  },
 	{ "weapnext",      CG_NextWeapon_f,         NULL             },
 	{ "weapon",        CG_Weapon_f,             NULL             },
 	{ "weapprev",      CG_PrevWeapon_f,         NULL             }
@@ -413,30 +491,16 @@ void CG_InitConsoleCommands( void )
 	trap_AddCommand( "ui_messagemode4" );
 	trap_AddCommand( "say" );
 	trap_AddCommand( "say_team" );
-	trap_AddCommand( "vsay" );
-	trap_AddCommand( "vsay_team" );
-	trap_AddCommand( "vsay_local" );
-	trap_AddCommand( "m" );
-	trap_AddCommand( "mt" );
-	trap_AddCommand( "give" );
 	trap_AddCommand( "god" );
 	trap_AddCommand( "notarget" );
 	trap_AddCommand( "noclip" );
 	trap_AddCommand( "team" );
-	trap_AddCommand( "follow" );
 	trap_AddCommand( "setviewpos" );
-	trap_AddCommand( "callvote" );
 	trap_AddCommand( "vote" );
-	trap_AddCommand( "callteamvote" );
 	trap_AddCommand( "teamvote" );
 	trap_AddCommand( "reload" );
-	trap_AddCommand( "itemact" );
-	trap_AddCommand( "itemdeact" );
-	trap_AddCommand( "itemtoggle" );
 	trap_AddCommand( "destroy" );
 	trap_AddCommand( "deconstruct" );
-	trap_AddCommand( "ignore" );
-	trap_AddCommand( "unignore" );
 
 	trap_RegisterButtonCommands(
 	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.

@@ -21,7 +21,7 @@
     visible MENU_FALSE
     fullscreen MENU_FALSE
     rect (320-(W/2)) (240-(H/2)) W H
-    focusColor 1 .75 0 1
+    focusColor 1 .2 1 1
     style WINDOW_STYLE_FILLED
     border WINDOW_BORDER_FULL
     popup
@@ -34,15 +34,16 @@
     itemDef
     {
       name window
-      rect 0 0 W H
-      style WINDOW_STYLE_FILLED
-      backcolor 0 0 0 1
+      rect -50 0 (W+100) H
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/vertgrad.tga"
+      forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
 
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       borderSize 1.0
-      borderColor 0.5 0.5 0.5 1
+      borderColor 1 1 1 1
     }
 
 
@@ -108,9 +109,9 @@
       elementtype LISTBOX_TEXT
       feeder FEEDER_RESOLUTIONS
       border WINDOW_BORDER_FULL
-      borderColor 0.5 0.5 0.5 1
+      borderColor 1 1 1 1
       forecolor 1 1 1 1
-      backcolor 0 0 0 1
+      backcolor MENU_TEAL_TRANS
       outlinecolor 0.1 0.1 0.1 0.5
       visible MENU_TRUE
       doubleclick

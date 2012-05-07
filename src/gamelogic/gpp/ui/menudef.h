@@ -228,4 +228,9 @@ enum
   UI_HELPINFOPANE
 };
 
+// Define some colors
+#define MENU_TEAL       0 .1 .2
+#define MENU_TEAL_TRANS MENU_TEAL .9
+
+
 #endif

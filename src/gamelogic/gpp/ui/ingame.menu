@@ -38,7 +38,7 @@
     rect 0 0 1280 56
     focusColor 1 .75 0 1
     disableColor .5 .5 .5 1
-    backColor 0 0 0 0.875
+    backColor 0 0 0 0
     aspectBias ALIGN_LEFT
 
     onEsc
@@ -48,17 +48,16 @@
 
     itemDef
     {
-      name splashmodel
-      rect 0 -10 640 66
-      type ITEM_TYPE_MODEL
-      style WINDOW_STYLE_FILLED
-      asset_model "models/splash/splash_screen.md3"
-      model_fovx 32.0
-      model_fovy 3.8
-      model_angle 180
+      name "background"
+      rect -40 -3 1000 58
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/vertgrad.tga"
       visible MENU_TRUE
       decoration
-      backcolor 0 0 0 1
+      forecolor MENU_TEAL_TRANS
+      border WINDOW_BORDER_KCGRADIENT
+      borderSize 1.0
+      borderColor 1 1 1 1
     }
 
     itemdef
