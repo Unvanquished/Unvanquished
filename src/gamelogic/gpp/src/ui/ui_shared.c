@@ -98,7 +98,7 @@ static ID_INLINE qboolean Item_IsListBox( itemDef_t *item );
 static void               Item_ListBox_SetStartPos( itemDef_t *item, int startPos );
 void                      Menu_SetupKeywordHash( void );
 int                       BindingIDFromName( const char *name );
-qboolean                  Item_Bind_HandleKey( itemDef_t *item, int key, qboolean down );
+qboolean                  Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down );
 itemDef_t                 *Menu_SetPrevCursorItem( menuDef_t *menu );
 itemDef_t                 *Menu_SetNextCursorItem( menuDef_t *menu );
 static qboolean           Menu_OverActiveItem( menuDef_t *menu, float x, float y );
@@ -4159,7 +4159,7 @@ qboolean Item_Slider_HandleKey( itemDef_t *item, int key, qboolean down )
 	return qfalse;
 }
 
-qboolean Item_HandleKey( itemDef_t *item, int key, qboolean down )
+qboolean Item_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 {
 	if ( itemCapture )
 	{
@@ -4216,7 +4216,7 @@ qboolean Item_HandleKey( itemDef_t *item, int key, qboolean down )
 			return Item_OwnerDraw_HandleKey( item, key );
 
 		case ITEM_TYPE_BIND:
-			return Item_Bind_HandleKey( item, key, down );
+			return Item_Bind_HandleKey( item, key, chr, down );
 
 		case ITEM_TYPE_SLIDER:
 			return Item_Slider_HandleKey( item, key, down );
@@ -4571,7 +4571,7 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 
 	if ( g_waitingForKey && down )
 	{
-		Item_Bind_HandleKey( g_bindItem, key, down );
+		Item_Bind_HandleKey( g_bindItem, key, chr, down );
 		inHandler = qfalse;
 		return;
 	}
@@ -4632,7 +4632,7 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 
 	if ( item != NULL )
 	{
-		if ( Item_HandleKey( item, key, down ) )
+		if ( Item_HandleKey( item, key, chr, down ) )
 		{
 			Item_Action( item );
 			inHandler = qfalse;
@@ -5958,10 +5958,16 @@ qboolean Display_KeyBindPending( void )
 	return g_waitingForKey;
 }
 
-qboolean Item_Bind_HandleKey( itemDef_t *item, int key, qboolean down )
+qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 {
 	int id;
 	int i;
+
+	// FIXME: should probably set K_* outside Unicode range
+	if ( chr && !( chr & K_CHAR_FLAG ) )
+	{
+		key = chr;
+	}
 
 	if ( Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) && !g_waitingForKey )
 	{
@@ -5980,17 +5986,13 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, qboolean down )
 			return qtrue;
 		}
 
-		if ( key & K_CHAR_FLAG )
-		{
-			return qtrue;
-		}
-
 		switch ( key )
 		{
 			case K_ESCAPE:
 				g_waitingForKey = qfalse;
 				return qtrue;
 
+			case 0:
 			case K_BACKSPACE:
 				id = BindingIDFromName( item->cvar );
 
