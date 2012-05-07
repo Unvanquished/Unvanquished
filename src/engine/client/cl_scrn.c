@@ -838,7 +838,7 @@ float SCR_ConsoleFontCharWidth( const char *s )
 	return ( width );
 }
 
-float SCR_ConsoleFontCharHeight()
+float SCR_ConsoleFontCharHeight( void )
 {
 	fontInfo_t  *font = &cls.consoleFont;
 	int         ch = 'I' & 0xff;
