@@ -7130,6 +7130,12 @@ void CL_TranslateString( const char *string, char *dest_buffer )
 	qboolean newline = qfalse;
 	char     *buf;
 
+	if ( !cl_language )
+	{
+		strcpy( dest_buffer, string );
+		return;
+	}
+
 	buf = dest_buffer;
 	currentLanguage = cl_language->integer - 1;
 

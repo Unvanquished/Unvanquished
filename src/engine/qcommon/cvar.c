@@ -289,12 +289,31 @@ char           *Cvar_ClearForeignCharacters( const char *value )
 	for ( i = 0; value[ i ] != '\0'; i++ )
 	{
 		int c = value[i] & 0xFF;
-		if ( c < ' ' || c >= 0x80 )
-		//if ( ( ( byte * ) value ) [ i ] != 0xFF && ( ( ( by[Dte * ) value ) [ i ] <= 127 || ( ( byte * ) value ) [ i ] >= 161 ) )
+		if ( c < 0x80 )
 		{
-			clean[ j ] = value[ i ];
-			j++;
+			clean[ j++ ] = (char) c;
 		}
+		else if ( c >= 0xC2 && c <= 0xF4 )
+		{
+			int u, width = Q_UTF8Width( value + i );
+
+			if ( width == 1 )                continue; // should be multibyte
+
+			u = Q_UTF8CodePoint( value + i );
+
+			// Filtering out...
+			if ( Q_UTF8WidthCP( u ) != width ) continue; // over-long form
+			if ( u == 0xFEFF || u == 0xFFFE )  continue; // BOM
+			if ( u >= 0x80 && u < 0xA0 )       continue; // undefined (from ISO8859-1)
+			if ( u >= 0xD800 && u < 0xE000 )   continue; // UTF-16 surrogate halves
+			if ( u >= 0x110000 )               continue; // out of range
+
+			memcpy( clean + j, value + i, width );
+			i += width - 1;
+
+			j += width;
+		}
+		// else invalid
 	}
 
 	clean[ j ] = '\0';
