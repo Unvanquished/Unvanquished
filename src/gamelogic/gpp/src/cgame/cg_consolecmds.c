@@ -318,7 +318,7 @@ static void CG_CompleteVsay( void )
 static void CG_CompleteGive( void )
 {
 	int               i = 0;
-	static char give[][ 12 ] =
+	static const char give[][ 12 ] =
 	{
 		"all", "health", "funds", "stamina", "poison", "gas", "ammo"
 	};
@@ -332,7 +332,7 @@ static void CG_CompleteGive( void )
 static void CG_CompleteVote( void )
 {
 	int           i = 0;
-	static char vote[][ 12 ] =
+	static const char vote[][ 12 ] =
 	{
 		"kick", "spectate", "mute", "denybuild", "allowbuild", "sudden_death", "extend", "admitdefeat",
 		"draw", "map_restart", "map", "layout", "nextmap", "poll"
@@ -355,16 +355,21 @@ static void CG_CompleteItem( void )
 
 	trap_CompleteCallback( "weapon" );
 
-	for( i = 1; i < UP_NUM_UPGRADES; i++ )
+	for( i = 0; i < UP_NUM_UPGRADES; i++ )
 	{
-		trap_CompleteCallback( BG_Upgrade( i )->name );
+		const upgradeAttributes_t *item = BG_Upgrade( i );
+		if ( item->usable )
+		{
+			trap_CompleteCallback( item->name );
+		}
 	}
 
 	for( i = 0; i < WP_NUM_WEAPONS; i++ )
 	{
-		if( BG_Weapon( i )->team && BG_Weapon( i )->team == TEAM_HUMANS )
+		const weaponAttributes_t *item = BG_Weapon( i );
+		if( item->team == TEAM_HUMANS )
 		{
-			trap_CompleteCallback( BG_Weapon( i )->name );
+			trap_CompleteCallback( item->name );
 		}
 	}
 }
