@@ -329,12 +329,25 @@ static void CG_CompleteGive( void )
 	}
 }
 
+static void CG_CompleteTeamVote( void )
+{
+	int           i = 0;
+	static const char vote[][ 16 ] =
+	{
+		"kick", "spectate", "denybuild", "allowbuild", "admitdefeat", "poll"
+	};
+
+	for( i = 0; i < ARRAY_LEN( vote ); i++ )
+	{
+		trap_CompleteCallback( vote[i] );
+	}
+}
 static void CG_CompleteVote( void )
 {
 	int           i = 0;
-	static const char vote[][ 12 ] =
+	static const char vote[][ 16 ] =
 	{
-		"kick", "spectate", "mute", "denybuild", "allowbuild", "sudden_death", "extend", "admitdefeat",
+		"kick", "spectate", "mute", "unmute", "sudden_death", "extend",
 		"draw", "map_restart", "map", "layout", "nextmap", "poll"
 	};
 
@@ -389,7 +402,7 @@ static const struct
 	{ "cgame_memory",  BG_MemoryInfo,           NULL             },
 	{ "clientlist",    CG_ClientList_f,         NULL             },
 	{ "callvote",      NULL,                    CG_CompleteVote  },
-	{ "callteamvote",  NULL,                    CG_CompleteVote  },
+	{ "callteamvote",  NULL,                    CG_CompleteTeamVote },
 	{ "destroyTestPS", CG_DestroyTestPS_f,      NULL             },
 	{ "destroyTestTS", CG_DestroyTestTS_f,      NULL             },
 	{ "follow",        NULL,                    CG_CompleteName  },
