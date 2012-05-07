@@ -209,93 +209,76 @@ static void CG_NullFunc( void )
 {
 }
 
-// TODO: Use functions from bg_misc.c so this stuff isn't hardcoded. The problem with that is that they also include invalid values.
-
 static void CG_CompleteClass( void )
 {
 	int i = 0;
 
 	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
 	{
-		static const char classes[][ 12 ] =
+		for ( i = PCL_ALIEN_BUILDER0; i < PCL_HUMAN; i++ )
 		{
-			"builder",   "builderupg", "level0",    "level1", "level1upg", "level2",
-			"level2upg", "level3",     "level3upg", "level4"
-		};
-
-		for ( i = 0; i < ARRAY_LEN( classes ); i++ )
-		{
-			trap_CompleteCallback( classes[ i ] );
+			trap_CompleteCallback( BG_Class( i )->name );
 		}
 	}
 	else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
 	{
-		static const char classes[][ 12 ] = { "rifle", "ckit" };
-
-		for ( i = 0; i < ARRAY_LEN( classes ); i++ )
-		{
-			trap_CompleteCallback( classes[ i ] );
-		}
-	}
-}
-
-static void CG_CompleteBuySell( qboolean buying )
-{
-	int               i = buying ? 1 : 0;
-	static const char items[][ 12 ] =
-	{
-		"weapons", "upgrades", // <- only valid when selling
-		"ckit",    "rifle",  "psaw",    "shotgun", "lgun",   "mdriver", "chaingun",
-		"prifle",  "flamer", "lcannon", "larmour", "helmet", "bsuit",   "grenade", "battpack",
-		"jetpack", "ammo"
-	};
-
-	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
-	{
-		for ( /**/; i < ARRAY_LEN( items ); i++ )
-		{
-			trap_CompleteCallback( items[ i ] );
-		}
+		trap_CompleteCallback( BG_Weapon( WP_HBUILD )->name );
+		trap_CompleteCallback( BG_Weapon( WP_MACHINEGUN )->name );
 	}
 }
 
 static void CG_CompleteBuy( void )
 {
-	CG_CompleteBuySell( qtrue );
+	int i;
+
+	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	for( i = 0; i < UP_NUM_UPGRADES; i++ )
+	{
+		const upgradeAttributes_t *item = BG_Upgrade( i );
+		if ( item->purchasable && item->team == TEAM_HUMANS )
+		{
+			trap_CompleteCallback( item->name );
+		}
+	}
+
+	trap_CompleteCallback( "grenade" ); // called "gren" elsewhere, so special-case it
+
+	for( i = 0; i < WP_NUM_WEAPONS; i++ )
+	{
+		const weaponAttributes_t *item = BG_Weapon( i );
+		if ( item->purchasable && item->team == TEAM_HUMANS )
+		{
+			trap_CompleteCallback( item->name );
+		}
+	}
 }
 
 static void CG_CompleteSell( void )
 {
-	CG_CompleteBuySell( qfalse );
+	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	trap_CompleteCallback( "weapons" );
+	trap_CompleteCallback( "upgrades" );
+	CG_CompleteBuy( );
 }
 
 static void CG_CompleteBuild( void )
 {
-	int i = 0;
+	int i;
 
-	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
+	for ( i = 0; i < BA_NUM_BUILDABLES; i++ )
 	{
-		static const char structs[][ 12 ] =
+		const buildableAttributes_t *item = BG_Buildable( i );
+		if ( item->team == cgs.clientinfo[ cg.clientNum ].team )
 		{
-			"eggpod",  "overmind", "barricade", "acid_tube", "trapper",
-			"booster", "hive"
-		};
-
-		for ( i = 0; i < ARRAY_LEN( structs ); i++ )
-		{
-			trap_CompleteCallback( structs[ i ] );
-		}
-	}
-	else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
-	{
-		static const char structs[][ 12 ] =
-		{
-			"telenode", "mgturret", "tesla", "arm", "dcc", "medistat", "reactor", "repeater"
-		};
-
-		for ( i = 0; i < ARRAY_LEN( structs ); i++ )
-		{
-			trap_CompleteCallback( structs[ i ] );
+			trap_CompleteCallback( item->name );
 		}
 	}
 }
