@@ -288,8 +288,9 @@ char           *Cvar_ClearForeignCharacters( const char *value )
 
 	for ( i = 0; value[ i ] != '\0'; i++ )
 	{
-		//if( !(value[i] & 128) )
-		if ( ( ( byte * ) value ) [ i ] != 0xFF && ( ( ( byte * ) value ) [ i ] <= 127 || ( ( byte * ) value ) [ i ] >= 161 ) )
+		int c = value[i] & 0xFF;
+		if ( c < ' ' || c >= 0x80 )
+		//if ( ( ( byte * ) value ) [ i ] != 0xFF && ( ( ( by[Dte * ) value ) [ i ] <= 127 || ( ( byte * ) value ) [ i ] >= 161 ) )
 		{
 			clean[ j ] = value[ i ];
 			j++;
@@ -439,7 +440,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 Cvar_Set2
 ============
 */
-#define FOREIGN_MSG "Foreign characters are not allowed in userinfo variables.\n"
+#define FOREIGN_MSG "Only printable ASCII characters are allowed in userinfo variables.\n"
 #ifndef DEDICATED
 const char *CL_TranslateStringBuf( const char *string );
 
