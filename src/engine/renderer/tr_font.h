@@ -507,6 +507,8 @@ void RE_FreeFace(face_t *face)
 	}
 }
 
+#define GLYPH_SIZE 64
+
 void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 {
 	FT_Face ftFace = face ? (FT_Face) face->opaque : NULL;
@@ -519,7 +521,7 @@ void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 	image_t *image;
 	qhandle_t h;
 	static unsigned char buf[FONT_SIZE * FONT_SIZE];
-	static unsigned char imageBuf[4*32*32];
+	static unsigned char imageBuf[4 * GLYPH_SIZE * GLYPH_SIZE];
 
 	if( !face || !ftFace )
 		return;
@@ -541,9 +543,13 @@ void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 
 	left = 0;
 	max = 0;
-	for(i = 0; i < 32; i++)
+
+	x = ( glyphInfo->imageWidth  <= GLYPH_SIZE ) ? glyphInfo->imageWidth  : GLYPH_SIZE;
+	y = ( glyphInfo->imageHeight <= GLYPH_SIZE ) ? glyphInfo->imageHeight : GLYPH_SIZE;
+
+	for(i = 0; i < y; i++)
 	{
-		for(j = 0; j < 32; j++)
+		for(j = 0; j < x; j++)
 		{
 			if(max < buf[i * FONT_SIZE + j])
 			{
@@ -552,15 +558,18 @@ void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 		}
 	}
 
-	if(max > 0)
+	if ( max > 0 )
 	{
-		max = 255/max;
+		max = 255.0 / max;
 	}
 
-	//for(i = 0; i < (scaledSize); i++)
-	for(i = 0; i < 32; i++)
+	// round up to power of 2
+        for ( i = 8; i < y; i <<= 1 ) { } y = i;
+        for ( j = 8; j < x; j <<= 1 ) { } x = j;
+
+	for(i = 0; i < y; i++)
 	{
-		for(j = 0; j < 32; j++)
+		for(j = 0; j < x; j++)
 		{
 			imageBuf[left++] = 255;
 			imageBuf[left++] = 255;
@@ -573,11 +582,11 @@ void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 	Com_sprintf( name, sizeof(name), "./../._FONT_%d", img );
 
 #ifdef RENDERER_GL3
-	image = R_CreateImage(name, imageBuf, 32, 32, IF_NOPICMIP, FT_LINEAR, WT_CLAMP );
+	image = R_CreateImage(name, imageBuf, x, y, IF_NOPICMIP, FT_LINEAR, WT_CLAMP );
 	face->images[ img ] = (void *) image;
 	h = RE_RegisterShaderFromImage(name, image, qfalse);
 #else
-	image = R_CreateImage(name, imageBuf, 32, 32, qfalse, qfalse, GL_CLAMP_TO_EDGE );
+	image = R_CreateImage(name, imageBuf, x, y, qfalse, qfalse, GL_CLAMP_TO_EDGE );
 	face->images[ img ] = (void *) image;
 	h = RE_RegisterShaderFromImage(name, LIGHTMAP_2D, image, qfalse);
 #endif
@@ -585,10 +594,10 @@ void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 	glyphInfo->glyph = h;
 
 	// rescale - image size isn't FONT_SIZE by FONT_SIZE
-	glyphInfo->s *= FONT_SIZE / 32;
-	glyphInfo->t *= FONT_SIZE / 32;
-	glyphInfo->s2 *= FONT_SIZE / 32;
-	glyphInfo->t2 *= FONT_SIZE / 32;
+	glyphInfo->s *= FONT_SIZE / x;
+	glyphInfo->t *= FONT_SIZE / y;
+	glyphInfo->s2 *= FONT_SIZE / x;
+	glyphInfo->t2 *= FONT_SIZE / y;
 
 	strncpy( glyphInfo->shaderName, name, sizeof( glyphInfo->shaderName ) );
 }
