@@ -320,6 +320,18 @@ static void CG_CompleteName( void )
 	}
 }
 
+static void CG_CompleteVsay( void )
+{
+	voice_t     *voice = cgs.voices;
+	voiceCmd_t  *voiceCmd = voice->cmds;
+
+	while ( voiceCmd != NULL )
+	{
+		trap_CompleteCallback( voiceCmd->cmd );
+		voiceCmd = voiceCmd->next;
+	}
+}
+
 static const struct
 {
 	const char *cmd;
@@ -355,6 +367,9 @@ static const struct
 	{ "testTS",        CG_TestTS_f,             NULL             },
 	{ "ui_menu",       CG_UIMenu_f,             NULL             },
 	{ "viewpos",       CG_Viewpos_f,            NULL             },
+	{ "vsay",          NULL,                    CG_CompleteVsay  },
+	{ "vsay_local",    NULL,                    CG_CompleteVsay  },
+	{ "vsay_team",     NULL,                    CG_CompleteVsay  },
 	{ "weapnext",      CG_NextWeapon_f,         NULL             },
 	{ "weapon",        CG_Weapon_f,             NULL             },
 	{ "weapprev",      CG_PrevWeapon_f,         NULL             }
