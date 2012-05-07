@@ -2285,7 +2285,7 @@ float UI_Char_Width( const char **text, float scale )
 		}
 
 		ch = ui_UTF8CodePoint( *text );
-		glyph = &font->glyphs[ ( ch > GLYPH_END ) ? '?' : ch ];
+		glyph = &font->glyphs[ ( ch > GLYPH_END ) ? 0 : ch ];
 		*text += ui_UTF8WidthCP( ch );
 
 		return glyph->xSkip * DC->aspectScale * scale * font->glyphScale;

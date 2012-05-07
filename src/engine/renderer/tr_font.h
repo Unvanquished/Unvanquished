@@ -648,7 +648,7 @@ void RE_GlyphChar( fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph )
 	{
 		if ( ch > GLYPH_END || !font->glyphs[ ch ].glyph )
 		{
-			ch = '?';
+			ch = 0;
 		}
 
 		memcpy( glyph, &font->glyphs[ ch ], sizeof( *glyph ) );
@@ -916,7 +916,7 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 
 	for ( i = GLYPH_START; i < GLYPH_END; i++ )
 	{
-		glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, face, i, qtrue );
+		glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, face, i ? i : 0xFFFD, qtrue );
 	}
 
 	//ri.Printf(PRINT_WARNING, "RE_RegisterFont: max glyph height for font %s is %i\n", strippedName, maxHeight);
@@ -929,7 +929,7 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 
 	while ( i <= GLYPH_END )
 	{
-		glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, face, i, qfalse );
+		glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, face, i ? i : 0xFFFD, qfalse );
 
 		if ( xOut == -1 || yOut == -1 || i == GLYPH_END )
 		{
