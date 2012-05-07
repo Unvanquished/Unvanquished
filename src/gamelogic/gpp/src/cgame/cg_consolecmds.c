@@ -332,6 +332,20 @@ static void CG_CompleteVsay( void )
 	}
 }
 
+static void CG_CompleteGive( void )
+{
+	int               i = 0;
+	static char give[][ 12 ] =
+	{
+		"all", "health", "funds", "stamina", "poison", "gas", "ammo"
+	};
+
+	for( i = 0; i < ARRAY_LEN( give ); i++ )
+	{
+		trap_CompleteCallback( give[i] );
+	}
+}
+
 static const struct
 {
 	const char *cmd;
@@ -349,6 +363,7 @@ static const struct
 	{ "destroyTestPS", CG_DestroyTestPS_f,      NULL             },
 	{ "destroyTestTS", CG_DestroyTestTS_f,      NULL             },
 	{ "follow",        NULL,                    CG_CompleteName  },
+	{ "give",          NULL,                    CG_CompleteGive  },
 	{ "m",             NULL,                    CG_CompleteName  },
 	{ "mt",            NULL,                    CG_CompleteName  },
 	{ "nextframe",     CG_TestModelNextFrame_f, NULL             },
