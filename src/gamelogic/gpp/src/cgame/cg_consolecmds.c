@@ -361,6 +361,31 @@ static void CG_CompleteVote( void )
 	}
 }
 
+static void CG_CompleteItem( void )
+{
+	int i = 0;
+
+	if( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
+	{
+		return;
+	}
+
+	trap_CompleteCallback( "weapon" );
+
+	for( i = 1; i < UP_NUM_UPGRADES; i++ )
+	{
+		trap_CompleteCallback( BG_Upgrade( i )->name );
+	}
+
+	for( i = 0; i < WP_NUM_WEAPONS; i++ )
+	{
+		if( BG_Weapon( i )->team && BG_Weapon( i )->team == TEAM_HUMANS )
+		{
+			trap_CompleteCallback( BG_Weapon( i )->name );
+		}
+	}
+}
+
 static const struct
 {
 	const char *cmd;
@@ -381,6 +406,9 @@ static const struct
 	{ "destroyTestTS", CG_DestroyTestTS_f,      NULL             },
 	{ "follow",        NULL,                    CG_CompleteName  },
 	{ "give",          NULL,                    CG_CompleteGive  },
+	{ "itemact",       NULL,                    CG_CompleteItem  },
+	{ "itemdeact",     NULL,                    CG_CompleteItem  },
+	{ "itemtoggle",    NULL,                    CG_CompleteItem  },
 	{ "m",             NULL,                    CG_CompleteName  },
 	{ "mt",            NULL,                    CG_CompleteName  },
 	{ "nextframe",     CG_TestModelNextFrame_f, NULL             },
