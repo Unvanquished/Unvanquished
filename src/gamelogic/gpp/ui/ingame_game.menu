@@ -32,6 +32,8 @@
 #define PBUTT_Y     (H-((2*PBUTT_H)+BORDER))
 #define PBUTT_W     (W-((2*BORDER)+SIDEBUTT_W))
 #define PBUTT_H     45
+#define VBUTT_W     (PBUTT_W/2)
+#define VBUTT_H     (PBUTT_H/2)
 #define PLIST_X     PBUTT_X
 #define PLIST_Y     ((2*BORDER)+TOPBUTT_H)
 #define PLIST_W     PBUTT_W
@@ -83,15 +85,16 @@
     itemDef
     {
       name window
-      rect 0 0 W H
-      style WINDOW_STYLE_FILLED
-      backcolor 0 0 0 0.875
+      rect -50 0 (W+100) H
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/vertgrad.tga"
+      forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
 
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       borderSize 1.0
-      borderColor 0.5 0.5 0.5 1
+      borderColor 1 1 1 1
     }
 
     //Section menus
@@ -323,6 +326,25 @@
 
     itemDef
     {
+      name voteSpectate
+      group gameGrp
+      text "Move Player To Spectators"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        uiScript voteSpectate;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
       name voteTeamKick
       group gameGrp
       text "Kick Teammate"
@@ -336,6 +358,25 @@
       action
       {
         uiScript voteTeamKick;
+        uiScript closeingame
+      }
+    }
+
+    itemDef
+    {
+      name voteTeamSpectate
+      group gameGrp
+      text "Move Teammate To Spectators"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        uiScript voteTeamSpectate;
         uiScript closeingame
       }
     }
@@ -367,7 +408,7 @@
       style WINDOW_STYLE_EMPTY
       ownerdraw UI_SELECTEDMAPPREVIEW
       rect MAP_X MAP_Y MAP_W MAP_H
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       bordercolor .5 .5 .5 .5
       visible MENU_FALSE
     }
@@ -384,7 +425,7 @@
       textscale .225
       elementtype LISTBOX_TEXT
       feeder FEEDER_MAPS
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       bordercolor   0.5 0.5 0.5 0.5
       forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
@@ -538,7 +579,7 @@
       textscale .225
       elementtype LISTBOX_TEXT
       feeder FEEDER_PLAYER_LIST
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       bordercolor   0.5 0.5 0.5 0.5
       forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
@@ -553,7 +594,7 @@
       text "Mute Player"
       type ITEM_TYPE_BUTTON
       textscale .25
-      rect PBUTT_X PBUTT_Y (PBUTT_W/2) PBUTT_H
+      rect PBUTT_X PBUTT_Y VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       forecolor 1 1 1 1
@@ -574,7 +615,7 @@
       text "Un-Mute Player"
       type ITEM_TYPE_BUTTON
       textscale .25
-      rect (PBUTT_X+(PBUTT_W/2)) PBUTT_Y (PBUTT_W/2) PBUTT_H
+      rect PBUTT_X (PBUTT_Y+VBUTT_H) VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       forecolor 1 1 1 1
@@ -594,7 +635,7 @@
       text "Kick Player"
       type ITEM_TYPE_BUTTON
       textscale .25
-      rect PBUTT_X (PBUTT_Y+(PBUTT_H/2)) PBUTT_W PBUTT_H
+      rect (PBUTT_X+VBUTT_W) PBUTT_Y VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       forecolor 1 1 1 1
@@ -605,6 +646,27 @@
         hide gamegrp;
         show reasonfield;
         show voteKick
+      }
+    }
+
+    itemDef
+    {
+      name playervote
+      group gameGrp
+      text "Move Player To Spectators"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect (PBUTT_X+VBUTT_W) (PBUTT_Y+VBUTT_H) VBUTT_W VBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gamegrp;
+        show reasonfield;
+        show voteSpectate
       }
     }
 
@@ -622,7 +684,7 @@
       textscale .225
       elementtype LISTBOX_TEXT
       feeder FEEDER_TEAM_LIST
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       bordercolor   0.5 0.5 0.5 0.5
       forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
@@ -634,31 +696,10 @@
     {
       name teamvote
       group gameGrp
-      text "Kick Teammate"
-      type ITEM_TYPE_BUTTON
-      textscale .25
-      rect PBUTT_X PBUTT_Y (PBUTT_W/2) PBUTT_H
-      textalign ALIGN_CENTER
-      textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
-      visible MENU_FALSE
-      action
-      {
-        play "sound/misc/menu1.wav";
-        hide gamegrp;
-        show reasonfield;
-        show voteTeamKick
-      }
-    }
-
-    itemDef
-    {
-      name teamvote
-      group gameGrp
       text "Deny Building For Teammate"
       type ITEM_TYPE_BUTTON
       textscale .25
-      rect (PBUTT_X+(PBUTT_W/2)) PBUTT_Y (PBUTT_W/2) PBUTT_H
+      rect PBUTT_X PBUTT_Y VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       forecolor 1 1 1 1
@@ -680,7 +721,7 @@
       type ITEM_TYPE_BUTTON
       textscale .25
       rect 110 215 150 20
-      rect PBUTT_X (PBUTT_Y+(PBUTT_H/2)) (PBUTT_W/2) PBUTT_H
+      rect PBUTT_X (PBUTT_Y+VBUTT_H) VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       forecolor 1 1 1 1
@@ -697,10 +738,52 @@
     {
       name teamvote
       group gameGrp
+      text "Kick Teammate"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect (PBUTT_X+VBUTT_W) PBUTT_Y VBUTT_W VBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gamegrp;
+        show reasonfield;
+        show voteTeamKick
+      }
+    }
+
+    itemDef
+    {
+      name teamvote
+      group gameGrp
+      text "Move Teammate To Spectators"
+      type ITEM_TYPE_BUTTON
+      textscale .25
+      rect (PBUTT_X+VBUTT_W) (PBUTT_Y+VBUTT_H) VBUTT_W VBUTT_H
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide gamegrp;
+        show reasonfield;
+        show voteTeamSpectate
+      }
+    }
+
+    itemDef
+    {
+      name teamvote
+      group gameGrp
       text "Admit Defeat"
       type ITEM_TYPE_BUTTON
       textscale .25
-      rect (PBUTT_X+(PBUTT_W/2)) (PBUTT_Y+(PBUTT_H/2)) (PBUTT_W/2) PBUTT_H
+      rect (PBUTT_X+VBUTT_W/2) (PBUTT_Y+PBUTT_H) VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       forecolor 1 1 1 1
@@ -761,7 +844,7 @@
       elementwidth 120
       elementheight 16
       textscale .225
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       bordersize 1
       bordercolor .5 .5 .5 1
       forecolor 1 1 1 1
