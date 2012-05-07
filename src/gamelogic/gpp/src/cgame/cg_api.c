@@ -1255,3 +1255,39 @@ void trap_RegisterButtonCommands( const char *cmds )
 {
 	syscall( CG_REGISTER_BUTTON_COMMANDS, cmds );
 }
+
+//173.
+void trap_R_LoadFace( const char *fileName, int pointSize, const char *name, face_t *face )
+{
+  syscall( CG_R_LOADFACE, fileName, pointSize, name, face );
+}
+
+//174.
+void trap_R_FreeFace( face_t *face )
+{
+  syscall( CG_R_FREEFACE, face );
+}
+
+//175.
+void trap_R_LoadGlyph( face_t *face, const char *str, int img, glyphInfo_t *glyphInfo )
+{
+  syscall( CG_R_LOADGLYPH, face, str, img, glyphInfo );
+}
+
+//176.
+void trap_R_FreeGlyph( face_t *face, int img, glyphInfo_t *glyphInfo )
+{
+  syscall( CG_R_FREEGLYPH, face, img, glyphInfo );
+}
+
+//177.
+void trap_R_Glyph( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph )
+{
+  syscall( CG_R_GLYPH, font, face, str, glyph );
+}
+
+//178.
+void trap_R_FreeCachedGlyphs( face_t *face )
+{
+  syscall( CG_R_FREECACHEDGLYPHS, face );
+}

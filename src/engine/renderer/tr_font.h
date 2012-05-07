@@ -81,6 +81,8 @@ Maryland 20850 USA.
 #include <png.h>
 
 #ifdef BUILD_FREETYPE
+#include <ft2build.h>
+#include <freetype/fterrors.h>
 #include <freetype/ftsystem.h>
 #include <freetype/ftimage.h>
 #include <freetype/freetype.h>
@@ -511,7 +513,8 @@ void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 	glyphInfo_t *tmp;
 	int i, j;
 	int x = 0, y = 0, maxHeight = 0;
-	int left, max;
+	int left;
+	float max;
 	static char name[MAX_QPATH];
 	image_t *image;
 	qhandle_t h;
@@ -568,7 +571,6 @@ void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 	}
 
 	Com_sprintf( name, sizeof(name), "./../._FONT_%d", img );
-	//{static int n = 0; Com_sprintf( name, sizeof(name), "./../._FONT_%d", n++ );}
 
 #ifdef RENDERER_GL3
 	image = R_CreateImage(name, imageBuf, 32, 32, IF_NOPICMIP, FT_LINEAR, WT_CLAMP );
@@ -581,6 +583,13 @@ void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 #endif
 
 	glyphInfo->glyph = h;
+
+	// rescale - image size isn't FONT_SIZE by FONT_SIZE
+	glyphInfo->s *= FONT_SIZE / 32;
+	glyphInfo->t *= FONT_SIZE / 32;
+	glyphInfo->s2 *= FONT_SIZE / 32;
+	glyphInfo->t2 *= FONT_SIZE / 32;
+
 	strncpy( glyphInfo->shaderName, name, sizeof( glyphInfo->shaderName ) );
 }
 

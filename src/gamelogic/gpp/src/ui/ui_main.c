@@ -1301,6 +1301,15 @@ UI_Shutdown
 void UI_Shutdown( void )
 {
 	trap_LAN_SaveCachedServers();
+
+	UI_R_FreeCachedGlyphs( &uiInfo.uiDC.Assets.dynFont );
+	UI_R_FreeFace( &uiInfo.uiDC.Assets.dynFont );
+	UI_R_FreeCachedGlyphs( &uiInfo.uiDC.Assets.smallDynFont );
+	UI_R_FreeFace( &uiInfo.uiDC.Assets.smallDynFont );
+	UI_R_FreeCachedGlyphs( &uiInfo.uiDC.Assets.bigDynFont );
+	UI_R_FreeFace( &uiInfo.uiDC.Assets.bigDynFont );
+
+	UIS_Shutdown( );
 }
 
 qboolean Asset_Parse( int handle )
@@ -1343,6 +1352,7 @@ qboolean Asset_Parse( int handle )
 			}
 
 			trap_R_RegisterFont( tempStr, pointSize, &uiInfo.uiDC.Assets.textFont );
+			UI_R_LoadFace( tempStr, pointSize, tempStr, &uiInfo.uiDC.Assets.dynFont );
 			uiInfo.uiDC.Assets.fontRegistered = qtrue;
 			continue;
 		}
@@ -1357,6 +1367,7 @@ qboolean Asset_Parse( int handle )
 			}
 
 			trap_R_RegisterFont( tempStr, pointSize, &uiInfo.uiDC.Assets.smallFont );
+			UI_R_LoadFace( tempStr, pointSize, tempStr, &uiInfo.uiDC.Assets.smallDynFont );
 			continue;
 		}
 
@@ -1370,6 +1381,7 @@ qboolean Asset_Parse( int handle )
 			}
 
 			trap_R_RegisterFont( tempStr, pointSize, &uiInfo.uiDC.Assets.bigFont );
+			UI_R_LoadFace( tempStr, pointSize, tempStr, &uiInfo.uiDC.Assets.bigDynFont );
 			continue;
 		}
 
@@ -4872,6 +4884,12 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	uiInfo.uiDC.renderScene = &trap_R_RenderScene;
 	uiInfo.uiDC.registerFont = &trap_R_RegisterFont;
+	uiInfo.uiDC.loadFace = &UI_R_LoadFace;
+	uiInfo.uiDC.freeFace = &UI_R_FreeFace;
+	uiInfo.uiDC.loadGlyph = &UI_R_LoadGlyph;
+	uiInfo.uiDC.freeGlyph = &UI_R_FreeGlyph;
+	uiInfo.uiDC.glyph = &UI_R_Glyph;
+	uiInfo.uiDC.freeCachedGlyphs = &UI_R_FreeCachedGlyphs;
 	uiInfo.uiDC.ownerDrawItem = &UI_OwnerDraw;
 	uiInfo.uiDC.getValue = &UI_GetValue;
 	uiInfo.uiDC.ownerDrawVisible = &UI_OwnerDrawVisible;

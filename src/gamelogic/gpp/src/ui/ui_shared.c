@@ -24,10 +24,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "ui_shared.h"
 #include "ui_utf8.h"
 
+#ifdef CGAME
+#include "../cgame/cg_local.h"
+#elif defined UI
+#include "ui_local.h"
+#else
+#error Unexpectedly built!
+#endif
+
 #define SCROLL_TIME_START        500
 #define SCROLL_TIME_ADJUST       150
 #define SCROLL_TIME_ADJUSTOFFSET 40
 #define SCROLL_TIME_FLOOR        20
+
+void FreeFace(face_t *face);
+void FreeCachedGlyphs(face_t *face);
 
 typedef struct scrollInfo_s
 {
@@ -91,6 +102,22 @@ qboolean                  Item_Bind_HandleKey( itemDef_t *item, int key, qboolea
 itemDef_t                 *Menu_SetPrevCursorItem( menuDef_t *menu );
 itemDef_t                 *Menu_SetNextCursorItem( menuDef_t *menu );
 static qboolean           Menu_OverActiveItem( menuDef_t *menu, float x, float y );
+
+
+/*
+===============
+UIS_Shutdown
+===============
+*/
+void UIS_Shutdown( void )
+{
+	UI_R_FreeCachedGlyphs( &DC->Assets.dynFont );
+	UI_R_FreeFace( &DC->Assets.dynFont );
+	UI_R_FreeCachedGlyphs( &DC->Assets.smallDynFont );
+	UI_R_FreeFace( &DC->Assets.smallDynFont );
+	UI_R_FreeCachedGlyphs( &DC->Assets.bigDynFont );
+	UI_R_FreeFace( &DC->Assets.bigDynFont );
+}
 
 /*
 ===============
@@ -2032,6 +2059,19 @@ void Script_playLooped( itemDef_t *item, char **args )
 	}
 }
 
+glyphInfo_t *UI_Glyph( fontInfo_t *font, face_t *face, const char *str )
+{
+	static glyphInfo_t glyphs[8];
+	static int index = 0;
+	glyphInfo_t *glyph = &glyphs[index++ & 7];
+
+	if( !str || !*str || !face || ui_UTF8Width( str ) <= 1 )
+		return &font->glyphs[ (int)*str ];
+
+	DC->glyph( font, face, str, glyph );
+	return glyph;
+}
+
 static ID_INLINE float UI_EmoticonHeight( fontInfo_t *font, float scale )
 {
 	return font->glyphs[( int ) '[' ].height * scale * font->glyphScale;
@@ -2186,10 +2226,28 @@ static ID_INLINE fontInfo_t *UI_FontForScale( float scale )
 	}
 }
 
+static ID_INLINE face_t *UI_FaceForScale( float scale )
+{
+	if ( scale <= DC->smallFontScale )
+	{
+		return &DC->Assets.smallDynFont;
+	}
+	else if ( scale >= DC->bigFontScale )
+	{
+		return &DC->Assets.bigDynFont;
+	}
+	else
+	{
+		return &DC->Assets.dynFont;
+	}
+}
+
+
 float UI_Char_Width( const char **text, float scale )
 {
 	glyphInfo_t *glyph;
 	fontInfo_t  *font;
+	face_t      *face;
 	int         emoticonLen;
 	qboolean    emoticonEscaped;
 	int         emoticonWidth;
@@ -2210,6 +2268,7 @@ float UI_Char_Width( const char **text, float scale )
 		}
 
 		font = UI_FontForScale( scale );
+		face = UI_FaceForScale( scale );
 
 		if ( UI_Text_IsEmoticon( *text, &emoticonEscaped, &emoticonLen,
 		                         NULL, &emoticonWidth ) )
@@ -2263,6 +2322,7 @@ float UI_Text_Height( const char *text, float scale )
 	float       useScale;
 	const char  *s = text;
 	fontInfo_t  *font = UI_FontForScale( scale );
+	face_t      *face = UI_FaceForScale( scale );
 
 	useScale = scale * font->glyphScale;
 	max = 0;
@@ -2278,14 +2338,14 @@ float UI_Text_Height( const char *text, float scale )
 			}
 			else
 			{
-				glyph = &font->glyphs[( int ) * s ];
+				glyph = UI_Glyph( font, face, s );
 
 				if ( max < glyph->height )
 				{
 					max = glyph->height;
 				}
 
-				s++;
+				s += ui_UTF8Width( s );
 			}
 		}
 	}
@@ -2410,6 +2470,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	int         count = 0;
 	vec4_t      newColor;
 	fontInfo_t  *font = UI_FontForScale( scale );
+	face_t      *face = UI_FaceForScale( scale );
 	glyphInfo_t *glyph;
 	float       useScale;
 	qhandle_t   emoticonHandle = 0;
@@ -2429,7 +2490,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	emoticonH = UI_EmoticonHeight( font, scale );
 	emoticonW = UI_EmoticonWidth( font, scale );
 
-	len = strlen( text );
+	len = ui_UTF8Strlen( text );
 
 	if ( limit > 0 && len > limit )
 	{
@@ -2446,7 +2507,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		const char *t = s;
 		float      charWidth = UI_Char_Width( &t, scale );
 		int        ch = ui_UTF8CodePoint( s );
-		glyph = &font->glyphs[ ( ch > GLYPH_END ) ? '?' : ch ];
+		glyph = UI_Glyph( font, face, s );
 
 		if ( maxX && charWidth + x > *maxX )
 		{
@@ -9104,4 +9165,124 @@ static qboolean Menu_OverActiveItem( menuDef_t *menu, float x, float y )
 	}
 
 	return qfalse;
+}
+
+void UI_R_LoadFace( const char *fileName, int pointSize, const char *name, face_t *face )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_LoadFace( fileName, pointSize, name, face );
+}
+
+void UI_R_FreeFace( face_t *face )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_FreeFace( face );
+}
+
+void UI_R_LoadGlyph( face_t *face, const char *str, int img, glyphInfo_t *glyphInfo )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_LoadGlyph( face, str, img, glyphInfo );
+}
+
+void UI_R_FreeGlyph( face_t *face, int img, glyphInfo_t *glyphInfo )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_FreeGlyph( face, img, glyphInfo );
+}
+
+void UI_R_Glyph( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_Glyph( font, face, str, glyph );
+}
+
+void UI_R_FreeCachedGlyphs( face_t *face )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_FreeCachedGlyphs( face );
 }

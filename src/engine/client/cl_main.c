@@ -1535,6 +1535,9 @@ void CL_ShutdownAll( void )
 	S_DisableSounds();
 	// download subsystem
 	DL_Shutdown();
+	// Clear Faces
+	re.FreeCachedGlyphs( &cls.consoleFace );
+	re.FreeFace( &cls.consoleFace );
 	// shutdown CGame
 	CL_ShutdownCGame();
 	// shutdown UI
@@ -4340,6 +4343,7 @@ qboolean CL_InitRenderer( void )
 		if ( FS_FOpenFileByMode( cl_consoleFont->string, &f, FS_READ ) >= 0 )
 		{
 			re.RegisterFont( cl_consoleFont->string, cl_consoleFontSize->integer, &cls.consoleFont );
+			re.LoadFace( cl_consoleFont->string, cl_consoleFontSize->integer, cl_consoleFont->string, &cls.consoleFace );
 			cls.useLegacyConsoleFont = qfalse;
 		}
 
