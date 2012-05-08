@@ -436,7 +436,6 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int from, int to, const 
 	Com_sprintf( fileName, sizeof( fileName ), "%s_%i_%i.png", font->name, chunk, font->pointSize );
 
 	image = R_CreateGlyph( fileName, buffer, FONT_SIZE, y );
-SavePNG( fileName, buffer, FONT_SIZE, y, 2, qtrue );
 #ifdef RENDERER_GL3
 	h = RE_RegisterShaderFromImage( fileName, image, qfalse );
 #else
