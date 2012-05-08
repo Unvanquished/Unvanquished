@@ -572,22 +572,17 @@ void RE_LoadGlyphChar(face_t *face, int ch, int img, glyphInfo_t *glyphInfo)
 		for(j = 0; j < x; j++)
 		{
 			imageBuf[left++] = 255;
-			imageBuf[left++] = 255;
-			imageBuf[left++] = 255;
-
 			imageBuf[left++] = ((float)buf[i * FONT_SIZE + j] * max);
 		}
 	}
 
 	Com_sprintf( name, sizeof(name), "./../._FONT_%d", img );
 
-#ifdef RENDERER_GL3
-	image = R_CreateImage(name, imageBuf, x, y, IF_NOPICMIP, FT_LINEAR, WT_CLAMP );
+	image = R_CreateGlyph(name, imageBuf, x, y );
 	face->images[ img ] = (void *) image;
+#ifdef RENDERER_GL3
 	h = RE_RegisterShaderFromImage(name, image, qfalse);
 #else
-	image = R_CreateImage(name, imageBuf, x, y, qfalse, qfalse, GL_CLAMP_TO_EDGE );
-	face->images[ img ] = (void *) image;
 	h = RE_RegisterShaderFromImage(name, LIGHTMAP_2D, image, qfalse);
 #endif
 
@@ -962,9 +957,6 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 			for ( k = 0; k < ( scaledSize ); k++ )
 			{
 				imageBuff[ left++ ] = 255;
-				imageBuff[ left++ ] = 255;
-				imageBuff[ left++ ] = 255;
-
 				imageBuff[ left++ ] = ( ( float ) out[ k ] * max );
 			}
 
@@ -972,14 +964,13 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 
 			if ( !ri.FS_FileExists( fileName ) )
 			{
-				SavePNG( fileName, imageBuff, FONT_SIZE, FONT_SIZE, 4, qtrue );
+				SavePNG( fileName, imageBuff, FONT_SIZE, FONT_SIZE, 2, qtrue );
 			}
 
+			image = R_CreateGlyph( fileName, imageBuff, FONT_SIZE, FONT_SIZE );
 #ifdef RENDERER_GL3
-			image = R_CreateImage( fileName, imageBuff, FONT_SIZE, FONT_SIZE, IF_NOPICMIP, FT_LINEAR, WT_CLAMP );
 			h = RE_RegisterShaderFromImage( fileName, image, qfalse );
 #else
-			image = R_CreateImage( fileName, imageBuff, FONT_SIZE, FONT_SIZE, qfalse, qfalse, GL_CLAMP_TO_EDGE );
 			h = RE_RegisterShaderFromImage( fileName, LIGHTMAP_2D, image, qfalse );
 #endif
 

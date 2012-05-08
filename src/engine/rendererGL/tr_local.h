@@ -4596,6 +4596,8 @@ extern "C" {
 	                            const byte *pic[ 6 ],
 	                            int width, int height, int bits, filterType_t filterType, wrapType_t wrapType );
 
+	image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
+
 	image_t *R_AllocImage( const char *name, qboolean linkIntoHashTable );
 	void    R_UploadImage( const byte **dataArray, int numData, image_t *image );
 

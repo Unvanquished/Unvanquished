@@ -1878,6 +1878,7 @@ image_t  *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicm
 
 image_t  *R_CreateImage( const char *name, const byte *pic, int width, int height, qboolean mipmap, qboolean allowPicmip,
                          int wrapClampMode );
+image_t  *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
 void     R_FreeImage( image_t *image );
 void     R_FreeImages( void );
 qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode );
