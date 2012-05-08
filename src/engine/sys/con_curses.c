@@ -715,7 +715,7 @@ char *CON_Input( void )
 
 			case KEY_END:
 				key_end:
-				input_field.cursor = strlen( input_field.buffer );
+				input_field.cursor = Q_UTF8Strlen( input_field.buffer );
 				continue;
 
 			case KEY_NPAGE:
