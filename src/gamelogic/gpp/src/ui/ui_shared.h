@@ -423,7 +423,7 @@ typedef struct
 	void ( *registerFont )( const char *pFontname, int pointSize, fontInfo_t *font );
 	void ( *glyph )( fontInfo_t *font, const char *str, glyphInfo_t *glyph );
 	void ( *glyphChar )( fontInfo_t *font, int ch, glyphInfo_t *glyph );
-	void ( *freeCachedGlyphs )( void );
+	void ( *freeCachedGlyphs )( fontInfo_t *font );
 
 	void ( *ownerDrawItem )( float x, float y, float w, float h, float text_x,
 	                         float text_y, int ownerDraw, int ownerDrawFlags,
