@@ -4309,7 +4309,7 @@ void G_UnEscapeString( const char *in, char *out, int len )
 
 	while ( *in && len > 0 )
 	{
-		if ( *in >= ' ' || *in == '\n' )
+		if ( (unsigned char)*in >= ' ' || *in == '\n' )
 		{
 			*out++ = *in;
 			len--;
