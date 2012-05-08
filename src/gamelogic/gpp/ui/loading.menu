@@ -1,223 +1,152 @@
 #include "ui/menudef.h"
 
+// Mexel's MUD HUD
+// Based on Comp's, Warrior's, Hellrider's and stock HUD Tweaked by Mexel
+// Mexel - mexel@the-deft.com
+
 {
-
-#define W         640
-#define H         480
-#define BORDER    10
-
-#define SHOT_W    320
-#define SHOT_H    240
-#define SHOT_X    (W-(BORDER+SHOT_W))
-#define SHOT_Y    BORDER
-
-#define INFO_X    BORDER
-#define INFO_W    (W-((3*BORDER)+SHOT_W))
-#define LEVEL_Y   BORDER
-#define LEVEL_H   30
-#define HOST_Y    (LEVEL_H+(2*BORDER))
-#define HOST_H    30
-#define MOTD_Y    (LEVEL_H+HOST_H+(3*BORDER))
-#define MOTD_H    ((BORDER+SHOT_H)-MOTD_Y)
-
-#define MAIN_W    (W-(2*BORDER))
-#define LABEL_W   180
-#define LABEL_X   (W-(LABEL_W+BORDER))
-#define BAR_H     ((H-((6*BORDER)+SHOT_H))/4)
-#define BAR_W     (MAIN_W-(LABEL_W+BORDER))
-#define BAR_X     BORDER
-#define MEDIA_Y   (H-((4*BORDER)+(4*BAR_H)))
-#define BUILD_Y   (H-((3*BORDER)+(3*BAR_H)))
-#define CHAR_Y    (H-((2*BORDER)+(2*BAR_H)))
-#define OVER_Y    (H-(BORDER+BAR_H))
-
   assetGlobalDef
   {
-    cursor "ui/assets/3_cursor3"      // cursor
-    gradientBar "ui/assets/gradientbar2.tga"  // gradient bar
-    fadeClamp 1.0         // sets the fadeup alpha
-    fadeCycle 1         // how often fade happens in milliseconds
-    fadeAmount 0.1          // amount to adjust alpha per cycle
-
-    shadowX  5          // x amount for shadow offset
-    shadowY  5          // y amount for shadow offset
-    shadowColor 0.1 0.1 0.1 0.25      // shadow color
-
-    font "fonts/font" 26        // font
-    smallFont "fonts/smallfont" 20      // font
-    bigFont "fonts/bigfont" 34      // font
+    cursor "ui/assets/3_cursor3"
+    gradient_100_50Bar "ui/assets/gradientbar2.tga"
+    fadeClamp 1.0
+    fadeCycle 1
+    fadeAmount 0.1
+    shadowX  5
+    shadowY  5
+    shadowColor 0.1 0.1 0.1 0.25
+    font "fonts/font" 26
+    smallFont "fonts/smallfont" 20
+    bigFont "fonts/bigfont" 34
   }
 
   menuDef
   {
     name "Loading"
-    rect 0 0 W H
+    rect 0 0 640 480
     fullScreen MENU_TRUE
+    focusColor 1 1 1 1
     aspectBias ASPECT_NONE
+    background "ui/assets/mainmenu.jpg"
 
     itemDef
     {
-      name background
-      rect 0 0 W H
-      style WINDOW_STYLE_FILLED
-      backcolor 0 0 0 1
+      name backcolor
+      rect 0 0 640 480
       visible MENU_TRUE
+      background "ui/assets/mainmenu.jpg"
       decoration
     }
 
-    itemDef
-    {
-      name "levelname"
-      rect INFO_X LEVEL_Y INFO_W LEVEL_H
-      visible MENU_TRUE
-      decoration
-      forecolor 1 1 1 1
-      textalign ALIGN_LEFT
-      textvalign VALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_NORMAL
-      textscale 0.4
-      ownerdraw CG_LOAD_LEVELNAME
-    }
 
-    itemDef
-    {
-      name "hostname"
-      rect INFO_X HOST_Y INFO_W HOST_H
-      visible MENU_TRUE
-      decoration
-      forecolor 1 1 1 1
-      textalign ALIGN_LEFT
-      textvalign VALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_NORMAL
-      textscale 0.4
-      ownerdraw CG_LOAD_HOSTNAME
-    }
-
-    itemDef
-    {
-      name "motd"
-      rect INFO_X MOTD_Y INFO_W MOTD_H
-      visible MENU_TRUE
-      decoration
-      forecolor 1 1 1 1
-      textalign ALIGN_LEFT
-      textvalign VALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_NORMAL
-      textscale 0.4
-      ownerdraw CG_LOAD_MOTD
-    }
-
+    //LEVEL SHOT IMAGE
     itemDef
     {
       name "levelshot"
-      rect SHOT_X SHOT_Y SHOT_W SHOT_H
+      rect 5 5 630 470
+      visible MENU_TRUE
+      decoration
+      forecolor 1 1 1 .7
+      ownerdraw CG_LOAD_LEVELSHOT
+    }
+    //LOADING PROGRESS BAR-BORDER
+    itemDef
+    {
+      name background
+      rect 25 430 0.8 25
+      style WINDOW_STYLE_SHADER
+      backcolor 1 1 1 1
+      visible MENU_TRUE
+      decoration
+      background "ui/assets/gradient_100_50bar2.tga"
+    }
+    itemDef
+    {
+      name background
+      rect 25 430 300 0.8
+      style WINDOW_STYLE_SHADER
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+      background "ui/assets/halfgradright.tga"
+    }
+    itemDef
+    {
+      name background
+      rect 25 455 300 0.8
+      style WINDOW_STYLE_SHADER
+      backcolor 0 0 0 1
+      visible MENU_TRUE
+      decoration
+      background "ui/assets/halfgradright.tga"
+    }
+	//OVERALL LOADING PROGRESS BAR
+    itemDef
+    {
+      name "overall_load_bar"
+      rect 26 431 299 24
+      visible MENU_TRUE
+      decoration
+      forecolor .33 .33 .33 .33
+      ownerdraw CG_LOAD_OVERALL
+      textscale 0
+    }
+    //MAP BACKGROUND
+    itemDef
+    {
+      name "mapbg"
+      rect 3 3 632 472
+      style WINDOW_STYLE_FILLED
+      border 1
+      bordercolor .5 .5 .5 1
+      backcolor 0 0 0 .2
+      visible MENU_TRUE
+      decoration
+    }
+	//MOTD
+    itemDef
+    {
+      name "motd"
+      rect 25 200 400 100
       visible MENU_TRUE
       decoration
       forecolor 1 1 1 1
-      ownerdraw CG_LOAD_LEVELSHOT
-
-      border WINDOW_BORDER_FULL
-      borderSize 1.0
-      borderColor 0.5 0.5 0.5 1
+      aspectBias ALIGN_LEFT
+      textstyle ITEM_TEXTSTYLE_SHADOWED
+      textscale 0.4
+      textvalign 28
+      textalign 0
+      ownerdraw CG_LOAD_MOTD
     }
-
+	//--MAP NAME--//
     itemDef
     {
-      name "media"
-      rect BAR_X MEDIA_Y BAR_W BAR_H
+      name "mapname"
+      rect 70 420 400 25
       visible MENU_TRUE
       decoration
-      forecolor 0.0 0.8 1 1
-      ownerdraw CG_LOAD_MEDIA
-      textalign ALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_NEON
-      textscale 0.5
-      borderSize 1.0
+      forecolor 1 1 1 1
+      aspectBias ALIGN_LEFT
+      textstyle ITEM_TEXTSTYLE_SHADOWED
+      textscale .25
+      textvalign 28
+      textalign 0
+      ownerdraw CG_LOAD_LEVELNAME
     }
-
+	//--SERVER NAME--//
     itemDef
     {
-      name "medialabel"
-      style WINDOW_STYLE_EMPTY
-      textscale 0.6
-      rect LABEL_X MEDIA_Y LABEL_W BAR_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      forecolor 0.0 0.8 1 1
+      name "server_name"
+      rect 80 400 400 25
       visible MENU_TRUE
       decoration
-      ownerdraw CG_LOAD_MEDIA_LABEL
+      forecolor 1 1 1 1
+      aspectBias ALIGN_LEFT
+      textstyle ITEM_TEXTSTYLE_SHADOWED
+      textscale .25
+      textvalign 28
+      textalign 0
+      ownerdraw CG_LOAD_HOSTNAME
     }
-
-    itemDef
-    {
-      name "buildables"
-      rect 20 340 380 30
-      rect BAR_X BUILD_Y BAR_W BAR_H
-      visible MENU_TRUE
-      decoration
-      forecolor 0.0 0.8 1 1
-      ownerdraw CG_LOAD_BUILDABLES
-      textalign ALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_NEON
-      textscale 0.5
-      borderSize 1.0
-    }
-
-    itemDef
-    {
-      name "buildableslabel"
-      style WINDOW_STYLE_EMPTY
-      textscale 0.6
-      rect LABEL_X BUILD_Y LABEL_W BAR_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      forecolor 0.0 0.8 1 1
-      visible MENU_TRUE
-      decoration
-      ownerdraw CG_LOAD_BUILDABLES_LABEL
-    }
-
-    itemDef
-    {
-      name "charmodel"
-      rect BAR_X CHAR_Y BAR_W BAR_H
-      visible MENU_TRUE
-      decoration
-      forecolor 0.0 0.8 1 1
-      ownerdraw CG_LOAD_CHARMODEL
-      textalign ALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_NEON
-      textscale 0.5
-      borderSize 1.0
-    }
-
-    itemDef
-    {
-      name "charmodellabel"
-      style WINDOW_STYLE_EMPTY
-      textscale 0.6
-      rect LABEL_X CHAR_Y LABEL_W BAR_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      forecolor 0.0 0.8 1 1
-      visible MENU_TRUE
-      decoration
-      ownerdraw CG_LOAD_CHARMODEL_LABEL
-    }
-
-    itemDef
-    {
-      name "overall"
-      rect BAR_X OVER_Y MAIN_W BAR_H
-      visible MENU_TRUE
-      decoration
-      forecolor 0.0 0.8 1 1
-      ownerdraw CG_LOAD_OVERALL
-      textalign ALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_NEON
-      textscale 0.5
-      borderSize 1.0
-    }
-  }
+   }
 }

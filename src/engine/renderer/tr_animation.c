@@ -590,13 +590,13 @@ R_CullMD5
 static int R_CullMD5( trRefEntity_t *ent )
 {
 	int        i;
-	md5Model_t *model;
 	vec3_t     localBounds[ 2 ];
+	float      boundsRadius;
 
 	if ( ent->e.skeleton.type == SK_INVALID )
 	{
 		// no properly set skeleton so use the bounding box by the model instead by the animations
-		model = tr.currentModel->model.md5;
+		md5Model_t *model = tr.currentModel->model.md5;
 
 		VectorCopy( model->bounds[ 0 ], localBounds[ 0 ] );
 		VectorCopy( model->bounds[ 1 ], localBounds[ 1 ] );
@@ -606,12 +606,12 @@ static int R_CullMD5( trRefEntity_t *ent )
 		// copy a bounding box in the current coordinate system provided by skeleton
 		for ( i = 0; i < 3; i++ )
 		{
-			localBounds[ 0 ][ i ] = ent->e.skeleton.bounds[ 0 ][ i ] * ent->e.skeleton.scale[ i ];
-			localBounds[ 1 ][ i ] = ent->e.skeleton.bounds[ 1 ][ i ] * ent->e.skeleton.scale[ i ];
+			localBounds[ 0 ][ i ] = ent->e.skeleton.bounds[ 0 ][ i ];
+			localBounds[ 1 ][ i ] = ent->e.skeleton.bounds[ 1 ][ i ];
 		}
 	}
-
-	return R_CullLocalBox( localBounds );
+	boundsRadius = RadiusFromBounds( localBounds[ 0 ], localBounds[ 1 ] );
+	return R_CullPointAndRadius( ent->e.origin, boundsRadius );
 }
 
 /*

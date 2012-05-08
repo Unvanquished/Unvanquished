@@ -1841,6 +1841,150 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	}
 }
 
+static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale )
+{
+	int         f, numFrames;
+	animation_t *anim;
+	qboolean    animChanged;
+
+	// debugging tool to get no animations
+	if ( cg_animSpeed.integer == 0 )
+	{
+		lf->oldFrame = lf->frame = lf->backlerp = 0;
+		return;
+	}
+
+	// see if the animation sequence is switching
+	if ( newAnimation != lf->animationNumber || !lf->animation )
+	{
+		CG_SetPlayerLerpFrameAnimation( ci, lf, newAnimation );
+
+		if ( !lf->animation )
+		{
+			memcpy( &lf->oldSkeleton, &lf->skeleton, sizeof( refSkeleton_t ) );
+		}
+
+		animChanged = qtrue;
+	}
+	else
+	{
+		animChanged = qfalse;
+	}
+
+	// if we have passed the current frame, move it to
+	// oldFrame and calculate a new frame
+	if ( cg.time >= lf->frameTime || animChanged )
+	{
+		if ( animChanged )
+		{
+			lf->oldFrame = 0;
+			lf->oldFrameTime = cg.time;
+		}
+		else
+
+		{
+			lf->oldFrame = lf->frame;
+			lf->oldFrameTime = lf->frameTime;
+		}
+
+		// get the next frame based on the animation
+		anim = lf->animation;
+
+		if ( !anim->frameLerp )
+		{
+			return; // shouldn't happen
+		}
+
+		if ( cg.time < lf->animationStartTime )
+		{
+			lf->frameTime = lf->animationStartTime; // initial lerp
+		}
+		else
+		{
+			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
+		}
+
+		f = ( lf->frameTime - lf->animationStartTime ) / anim->frameLerp;
+		f *= speedScale; // adjust for haste, etc
+
+		numFrames = anim->numFrames;
+
+		if ( anim->flipflop )
+		{
+			numFrames *= 2;
+		}
+
+		if ( f >= numFrames )
+		{
+			f -= numFrames;
+
+			if ( anim->loopFrames )
+			{
+				f %= anim->loopFrames;
+				f += anim->numFrames - anim->loopFrames;
+			}
+			else
+			{
+				f = numFrames - 1;
+				// the animation is stuck at the end, so it
+				// can immediately transition to another sequence
+				lf->frameTime = cg.time;
+			}
+		}
+
+		if ( anim->reversed )
+		{
+			lf->frame = anim->firstFrame + anim->numFrames - 1 - f;
+		}
+		else if ( anim->flipflop && f >= anim->numFrames )
+		{
+			lf->frame = anim->firstFrame + anim->numFrames - 1 - ( f % anim->numFrames );
+		}
+		else
+		{
+			lf->frame = anim->firstFrame + f;
+		}
+
+		if ( cg.time > lf->frameTime )
+		{
+			lf->frameTime = cg.time;
+		}
+	}
+
+	if ( lf->frameTime > cg.time + 200 )
+	{
+		lf->frameTime = cg.time;
+	}
+
+	if ( lf->oldFrameTime > cg.time )
+	{
+		lf->oldFrameTime = cg.time;
+	}
+
+	// calculate current lerp value
+	if ( lf->frameTime == lf->oldFrameTime )
+	{
+		lf->backlerp = 0;
+	}
+	else
+	{
+		lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+	}
+
+	// blend old and current animation
+	CG_BlendPlayerLerpFrame( lf );
+
+	if ( lf->animation )
+	{
+		if ( !trap_R_BuildSkeleton( &lf->skeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
+		{
+			CG_Printf( "Can't build lf->skeleton\n" );
+		}
+	}
+}
+
+
+
 /*
 ===============
 CG_ClearLerpFrame
@@ -3802,7 +3946,12 @@ void CG_Corpse( centity_t *cent )
 	VectorCopy( cent->lerpOrigin, origin );
 	BG_ClassBoundingBox( es->clientNum, liveZ, NULL, NULL, deadZ, NULL );
 	origin[ 2 ] -= ( liveZ[ 2 ] - deadZ[ 2 ] );
-
+	if( ci->bodyModel )
+	{
+		origin[ 0 ] -= ci->headOffset[ 0 ];
+		origin[ 1 ] -= ci->headOffset[ 1 ];
+		origin[ 2 ] -= 19 + ci->headOffset[ 2 ];
+	}
 	VectorCopy( es->angles, cent->lerpAngles );
 
 	// get the rotation information
@@ -3825,7 +3974,7 @@ void CG_Corpse( centity_t *cent )
 		if ( ci->gender == GENDER_NEUTER )
 		{
 			memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
-			CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_DEATH1, 1 );
+			CG_RunCorpseLerpFrame( ci, &cent->pe.nonseg, NSPA_DEATH1, 1 );
 			legs.oldframe = cent->pe.nonseg.oldFrame;
 			legs.frame = cent->pe.nonseg.frame;
 			legs.backlerp = cent->pe.nonseg.backlerp;
@@ -3833,7 +3982,7 @@ void CG_Corpse( centity_t *cent )
 		else
 		{
 			memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
-			CG_RunPlayerLerpFrame( ci, &cent->pe.legs, BOTH_DEATH1, 1 );
+			CG_RunCorpseLerpFrame( ci, &cent->pe.legs, BOTH_DEATH1, 1 );
 			legs.oldframe = cent->pe.legs.oldFrame;
 			legs.frame = cent->pe.legs.frame;
 			legs.backlerp = cent->pe.legs.backlerp;
@@ -3879,7 +4028,7 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
-		memcpy( &legs.skeleton, &cent->pe.legs.skeleton, sizeof( refSkeleton_t ) );
+		memcpy( &legs.skeleton, ci->gender == GENDER_NEUTER ? &cent->pe.nonseg.skeleton : &cent->pe.legs.skeleton, sizeof( refSkeleton_t ) );
 		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
 	}
 
