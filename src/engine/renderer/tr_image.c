@@ -1079,7 +1079,7 @@ This is the only way any image_t are created
 image_t        *R_CreateImage( const char *name, const byte *pic, int width, int height,
                                qboolean mipmap, qboolean allowPicmip, int glWrapClampMode )
 {
-	image_t  *image;
+	image_t  *image = NULL;
 	qboolean isLightmap = qfalse;
 	long     hash;
 	qboolean noCompress = qfalse;
@@ -1214,6 +1214,32 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 
 	return image;
 }
+
+void R_FreeImage( image_t *image )
+{
+	int i;
+
+	for ( i=0; i < tr.numImages ; i++ ) {
+		if ( tr.images[ i ] == image ) {
+			free( image );
+			tr.images[ i ] = NULL;
+			return;
+		}
+	}
+
+	ri.Printf( PRINT_ALL, "R_FreeImage: image not found\n" );
+}
+
+void R_FreeImages( void )
+{
+	int i;
+
+	for ( i=0; i < tr.numImages ; i++ ) {
+		free( tr.images[ i ] );
+		tr.images[ i ] = NULL;
+	}
+}
+
 
 /*
 =========================================================

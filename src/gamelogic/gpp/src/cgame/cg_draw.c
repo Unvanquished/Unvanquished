@@ -4074,9 +4074,9 @@ void CG_EventHandling( int type )
 	}
 }
 
-void CG_KeyEvent( int key, qboolean down )
+void CG_KeyEvent( int key, int chr, int flags )
 {
-	if ( !down )
+	if ( !( flags & ( 1 << KEYEVSTATE_DOWN ) ) )
 	{
 		return;
 	}
@@ -4090,7 +4090,7 @@ void CG_KeyEvent( int key, qboolean down )
 		return;
 	}
 
-	Display_HandleKey( key, down, cgs.cursorX, cgs.cursorY );
+	Display_HandleKey( key, chr, qtrue, cgs.cursorX, cgs.cursorY );
 
 	if ( cgs.capturedItem )
 	{
@@ -4098,7 +4098,7 @@ void CG_KeyEvent( int key, qboolean down )
 	}
 	else
 	{
-		if ( key == K_MOUSE2 && down )
+		if ( key == K_MOUSE2 /*&& down*/ )
 		{
 			cgs.capturedItem = Display_CaptureItem( cgs.cursorX, cgs.cursorY );
 		}

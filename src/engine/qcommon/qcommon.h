@@ -591,6 +591,11 @@ void Cvar_Set( const char *var_name, const char *value );
 
 // will create the variable with no flags if it doesn't exist
 
+void Cvar_SetIFlag( const char *var_name );
+
+// sets the cvar by the name that begins with a backslash to "1"
+
+
 void Cvar_SetLatched( const char *var_name, const char *value );
 
 // don't set the cvar immediately
@@ -922,6 +927,11 @@ void Field_CompleteDelay( void );
 void Field_CompleteCommand( char *cmd,
                             qboolean doCommands, qboolean doCvars );
 
+// code point count <-> UTF-8 byte count
+int Field_OffsetToCursor( field_t *edit, int offset );
+int Field_CursorToOffset( field_t *edit );
+int Field_ScrollToOffset( field_t *edit );
+
 /*
 ==============================================================
 
@@ -1160,7 +1170,7 @@ void     CL_Frame( int msec );
 qboolean CL_GameCommand( void );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
 
-void     CL_CharEvent( int key );
+void     CL_CharEvent( const char *key );
 
 // char events are for field typing, not game control
 

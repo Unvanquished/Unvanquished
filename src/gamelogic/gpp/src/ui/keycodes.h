@@ -301,5 +301,6 @@ typedef enum
 // to avoid duplicating the paths, the char events are just
 // distinguished by or'ing in K_CHAR_FLAG (ugly)
 #define K_CHAR_FLAG 1024
+#define K_CHAR_BIT 11
 
 #endif

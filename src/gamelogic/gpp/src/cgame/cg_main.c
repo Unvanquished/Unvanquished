@@ -73,7 +73,16 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return CG_LastAttacker();
 
 		case CG_KEY_EVENT:
-			CG_KeyEvent( arg0, arg1 );
+			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			{
+				arg0 &= ~K_CHAR_FLAG;
+				arg0 |= ( !!( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ) << ( K_CHAR_BIT - 1 );
+				CG_KeyEvent( 0, arg0, arg1 );
+			}
+			else
+			{
+				CG_KeyEvent( arg0, 0, arg1 );
+			}
 			return 0;
 
 		case CG_MOUSE_EVENT:
@@ -1438,6 +1447,7 @@ qboolean CG_Asset_Parse( int handle )
 			}
 
 			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.textFont );
+			cgDC.loadFace( tempStr, pointSize, tempStr, &cgDC.Assets.dynFont );
 			continue;
 		}
 
@@ -1452,6 +1462,7 @@ qboolean CG_Asset_Parse( int handle )
 			}
 
 			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.smallFont );
+			cgDC.loadFace( tempStr, pointSize, tempStr, &cgDC.Assets.smallDynFont );
 			continue;
 		}
 
@@ -1466,6 +1477,7 @@ qboolean CG_Asset_Parse( int handle )
 			}
 
 			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.bigFont );
+			cgDC.loadFace( tempStr, pointSize, tempStr, &cgDC.Assets.bigDynFont );
 			continue;
 		}
 
@@ -2098,6 +2110,13 @@ void CG_LoadHudMenu( void )
 	cgDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	cgDC.renderScene = &trap_R_RenderScene;
 	cgDC.registerFont = &trap_R_RegisterFont;
+	cgDC.loadFace = &UI_R_LoadFace;
+	cgDC.freeFace = &UI_R_FreeFace;
+	cgDC.loadGlyph = &UI_R_LoadGlyph;
+	cgDC.freeGlyph = &UI_R_FreeGlyph;
+	cgDC.glyph = &UI_R_Glyph;
+	cgDC.freeCachedGlyphs = &UI_R_FreeCachedGlyphs;
+
 	cgDC.ownerDrawItem = &CG_OwnerDraw;
 	cgDC.getValue = &CG_GetValue;
 	cgDC.ownerDrawVisible = &CG_OwnerDrawVisible;
@@ -2316,6 +2335,9 @@ void CG_Shutdown( void )
 {
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
+	UI_R_FreeFace( &cgDC.Assets.dynFont );
+
+	UIS_Shutdown();
 }
 
 /*

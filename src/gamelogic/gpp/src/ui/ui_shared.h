@@ -337,6 +337,7 @@ typedef struct
 {
 	Window     window;
 	const char *font; // font
+	const char *dynFont; //dynFont
 	qboolean   fullScreen; // covers entire screen
 	int        itemCount; // number of items;
 	int        fontIndex; //
@@ -364,6 +365,9 @@ typedef struct
 	fontInfo_t  textFont;
 	fontInfo_t  smallFont;
 	fontInfo_t  bigFont;
+	face_t      dynFont;
+	face_t      smallDynFont;
+	face_t      bigDynFont;
 	qhandle_t   cursor;
 	qhandle_t   gradientBar;
 	qhandle_t   scrollBarArrowUp;
@@ -389,6 +393,7 @@ typedef struct
 	vec4_t      shadowColor;
 	float       shadowFadeClamp;
 	qboolean    fontRegistered;
+	qboolean    dynFontRegistered;
 	emoticon_t  emoticons[ MAX_EMOTICONS ];
 	int         emoticonCount;
 }
@@ -420,6 +425,13 @@ typedef struct
 	void ( *addRefEntityToScene )( const refEntity_t *re );
 	void ( *renderScene )( const refdef_t *fd );
 	void ( *registerFont )( const char *pFontname, int pointSize, fontInfo_t *font );
+	void ( *loadFace )( const char *fileName, int pointSize, const char *name, face_t *face );
+	void ( *freeFace )( face_t *face );
+	void ( *loadGlyph )( face_t *face, const char *str, int img, glyphInfo_t *glyphInfo );
+	void ( *freeGlyph )( face_t *face, int img, glyphInfo_t *glyphInfo );
+	void ( *glyph )( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph );
+	void ( *freeCachedGlyphs )( face_t *face );
+
 	void ( *ownerDrawItem )( float x, float y, float w, float h, float text_x,
 	                         float text_y, int ownerDraw, int ownerDrawFlags,
 	                         int align, int textalign, int textvalign,
@@ -492,7 +504,7 @@ void                Menu_Init( menuDef_t *menu );
 void                Item_Init( itemDef_t *item );
 void                Menu_PostParse( menuDef_t *menu );
 menuDef_t           *Menu_GetFocused( void );
-void                Menu_HandleKey( menuDef_t *menu, int key, qboolean down );
+void                Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down );
 void                Menu_HandleMouseMove( menuDef_t *menu, float x, float y );
 void                Menu_ScrollFeeder( menuDef_t *menu, int feeder, qboolean down );
 qboolean            Float_Parse( char **p, float *f );
@@ -525,7 +537,7 @@ int                 Display_CursorType( int x, int y );
 qboolean            Display_KeyBindPending( void );
 menuDef_t           *Menus_FindByName( const char *p );
 void                Menus_CloseByName( const char *p );
-void                Display_HandleKey( int key, qboolean down, int x, int y );
+void                Display_HandleKey( int key, int chr, qboolean down, int x, int y );
 void                LerpColor( vec4_t a, vec4_t b, vec4_t c, float t );
 void                Menus_CloseAll( void );
 void                Menu_Update( menuDef_t *menu );
@@ -542,6 +554,7 @@ void        UI_RemoveCaptureFunc( void );
 void        *UI_Alloc( int size );
 void        UI_InitMemory( void );
 qboolean    UI_OutOfMemory( void );
+void        UIS_Shutdown( void );
 
 void        Controls_GetConfig( void );
 void        Controls_SetConfig( qboolean restart );
@@ -564,7 +577,7 @@ float       UI_Text_EmWidth( float scale );
 float       UI_Text_EmHeight( float scale );
 qboolean    UI_Text_IsEmoticon( const char *s, qboolean *escaped, int *length, qhandle_t *h, int *width );
 void        UI_EscapeEmoticons( char *dest, const char *src, int destsize );
-
+glyphInfo_t *UI_Glyph( fontInfo_t *font, face_t *face, const char *str );
 int         trap_Parse_AddGlobalDefine( char *define );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );
@@ -575,4 +588,13 @@ void        BindingFromName( const char *cvar );
 
 extern char g_nameBind1[ 32 ];
 extern char g_nameBind2[ 32 ];
+
+
+void       UI_R_LoadFace(const char *fileName, int pointSize, const char *name, face_t *face);
+void       UI_R_FreeFace(face_t *face);
+void       UI_R_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo);
+void       UI_R_FreeGlyph(face_t *face, int img, glyphInfo_t *glyphInfo);
+void       UI_R_Glyph(fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph);
+void       UI_R_FreeCachedGlyphs(face_t *face);
+
 #endif

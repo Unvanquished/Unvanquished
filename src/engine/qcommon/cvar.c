@@ -288,12 +288,32 @@ char           *Cvar_ClearForeignCharacters( const char *value )
 
 	for ( i = 0; value[ i ] != '\0'; i++ )
 	{
-		//if( !(value[i] & 128) )
-		if ( ( ( byte * ) value ) [ i ] != 0xFF && ( ( ( byte * ) value ) [ i ] <= 127 || ( ( byte * ) value ) [ i ] >= 161 ) )
+		int c = value[i] & 0xFF;
+		if ( c < 0x80 )
 		{
-			clean[ j ] = value[ i ];
-			j++;
+			clean[ j++ ] = (char) c;
 		}
+		else if ( c >= 0xC2 && c <= 0xF4 )
+		{
+			int u, width = Q_UTF8Width( value + i );
+
+			if ( width == 1 )                continue; // should be multibyte
+
+			u = Q_UTF8CodePoint( value + i );
+
+			// Filtering out...
+			if ( Q_UTF8WidthCP( u ) != width ) continue; // over-long form
+			if ( u == 0xFEFF || u == 0xFFFE )  continue; // BOM
+			if ( u >= 0x80 && u < 0xA0 )       continue; // undefined (from ISO8859-1)
+			if ( u >= 0xD800 && u < 0xE000 )   continue; // UTF-16 surrogate halves
+			if ( u >= 0x110000 )               continue; // out of range
+
+			memcpy( clean + j, value + i, width );
+			i += width - 1;
+
+			j += width;
+		}
+		// else invalid
 	}
 
 	clean[ j ] = '\0';
@@ -439,7 +459,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 Cvar_Set2
 ============
 */
-#define FOREIGN_MSG "Foreign characters are not allowed in userinfo variables.\n"
+#define FOREIGN_MSG "Only printable ASCII characters are allowed in userinfo variables.\n"
 #ifndef DEDICATED
 const char *CL_TranslateStringBuf( const char *string );
 
@@ -626,6 +646,86 @@ void Cvar_SetLatched( const char *var_name, const char *value )
 {
 	Cvar_Set2( var_name, value, qfalse );
 }
+
+ /*
+ ============
+Cvar_SetIFlag
+
+Sets the cvar by the name that begins with a backslash to "1".  This creates a
+cvar that can be set by the engine but not by the sure, and can be read by
+interpreted modules.
+============
+*/
+void Cvar_SetIFlag( const char *var_name )
+{
+	cvar_t *var;
+	long hash;
+	int index;
+
+	if ( !var_name ) {
+		Com_Error( ERR_FATAL, "Cvar_SetIFlag: NULL parameter" );
+	}
+
+  if ( *var_name != '\\' ) {
+		Com_Error( ERR_FATAL, "Cvar_SetIFlag: var_name must begin with a '\\'" );
+  }
+
+  /*
+  if ( Cvar_FindVar( var_name ) ) {
+		Com_Error( ERR_FATAL, "Cvar_SetIFlag: %s already exists.", var_name );
+  }
+  */
+
+	if ( !Cvar_ValidateString( var_name + 1 ) ) {
+		Com_Printf("invalid cvar name string: %s\n", var_name );
+		var_name = "BADNAME";
+	}
+
+	// find a free cvar
+	for(index = 0; index < MAX_CVARS; index++)
+	{
+		if(!cvar_indexes[index].name)
+			break;
+	}
+
+	if(index >= MAX_CVARS)
+	{
+		if(!com_errorEntered)
+			Com_Error(ERR_FATAL, "Error: Too many cvars, cannot create a new one!");
+
+		return;
+	}
+
+	var = &cvar_indexes[index];
+
+	if(index >= cvar_numIndexes)
+		cvar_numIndexes = index + 1;
+
+	var->name = CopyString (var_name);
+	var->string = CopyString ("1");
+	var->modified = qtrue;
+	var->modificationCount = 1;
+	var->value = atof (var->string);
+	var->integer = atoi(var->string);
+	var->resetString = CopyString( "1" );
+	var->validate = qfalse;
+
+	// link the variable in
+	var->next = cvar_vars;
+
+	cvar_vars = var;
+
+	var->flags = CVAR_INIT;
+	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
+	cvar_modifiedFlags |= var->flags;
+
+	hash = generateHashValue(var_name);
+
+	var->hashNext = hashTable[hash];
+
+	hashTable[hash] = var;
+}
+
 
 /*
 ============

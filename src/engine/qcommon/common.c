@@ -2854,7 +2854,7 @@ int Com_EventLoop( void )
 				}
 
 #endif
-				CL_CharEvent( ev.evValue );
+				CL_CharEvent( (const char *)ev.evPtr );
 				break;
 
 			case SE_MOUSE:
@@ -3993,6 +3993,17 @@ void Field_Clear( field_t *edit )
 
 /*
 ==================
+Field_SetCursor
+==================
+*/
+void Field_SetCursor( field_t *edit, int cursor )
+{
+	edit->cursor = cursor;
+	edit->scroll = ( cursor > edit->widthInChars ) ? ( cursor - edit->widthInChars ) : 0;
+}
+
+/*
+==================
 Field_Set
 ==================
 */
@@ -4000,16 +4011,59 @@ void Field_Set( field_t *edit, const char *content )
 {
 	memset( edit->buffer, 0, MAX_EDIT_LINE );
 	strncpy( edit->buffer, content, MAX_EDIT_LINE );
-	edit->cursor = strlen( edit->buffer );
+	Field_SetCursor( edit, Q_UTF8Strlen( edit->buffer ) );
+}
 
-	if ( edit->cursor > edit->widthInChars )
+/*
+==================
+Field_CursorToOffset
+==================
+*/
+int Field_CursorToOffset( field_t *edit )
+{
+	int i = -1, j = 0;
+
+	while ( ++i < edit->cursor )
 	{
-		edit->scroll = edit->cursor - edit->widthInChars;
+		j += Q_UTF8Width( edit->buffer + j );
 	}
-	else
+
+	return j;
+}
+
+/*
+==================
+Field_ScrollToOffset
+==================
+*/
+int Field_ScrollToOffset( field_t *edit )
+{
+	int i = -1, j = 0;
+
+	while ( ++i < edit->scroll )
 	{
-		edit->scroll = 0;
+		j += Q_UTF8Width( edit->buffer + j );
 	}
+
+	return j;
+}
+
+/*
+==================
+Field_OffsetToCursor
+==================
+*/
+int Field_OffsetToCursor( field_t *edit, int offset )
+{
+	int i = 0, j = 0;
+
+	while ( i < offset )
+	{
+		i += Q_UTF8Width( edit->buffer + i );
+		++j;
+	}
+
+	return j;
 }
 
 /*
@@ -4019,23 +4073,19 @@ Field_WordDelete
 */
 void Field_WordDelete( field_t *edit )
 {
-	while ( edit->cursor )
-	{
-		if ( edit->buffer[ edit->cursor - 1 ] != ' ' )
-		{
-			edit->buffer[ edit->cursor - 1 ] = 0;
-			edit->cursor--;
-		}
-		else
-		{
-			edit->cursor--;
+	int index = Field_CursorToOffset( edit );
+	int start = index;
 
-			if ( edit->buffer[ edit->cursor - 1 ] != ' ' )
-			{
-				return;
-			}
-		}
-	}
+	// search back past spaces
+	while ( --index >= 0 && edit->buffer[ index ] == ' ' ) {}
+
+	// search back past non-spaces
+	if ( index ) while ( --index >= 0 && edit->buffer[ index ] != ' ' ) {}
+
+	// strcpy would probably do, but possible overlap
+	memmove( edit->buffer + index, edit->buffer + start, strlen( edit->buffer + start ) + 1 );
+
+	Field_SetCursor( edit, Field_OffsetToCursor( edit, index ) );
 }
 
 static const char *completionString;
@@ -4215,7 +4265,7 @@ static qboolean Field_Complete( void )
 	Q_strncpyz( &completionField->buffer[ completionOffset ], shortestMatch,
 	            sizeof( completionField->buffer ) - completionOffset );
 
-	completionField->cursor = strlen( completionField->buffer );
+	completionField->cursor = Q_UTF8Strlen( completionField->buffer );
 
 	if ( matchCount == 1 )
 	{

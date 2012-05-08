@@ -917,4 +917,40 @@ int trap_R_AnimFrameRate( qhandle_t hAnim )
 	return syscall( UI_R_ANIMFRAMERATE, hAnim );
 }
 
+//125.
+void trap_R_LoadFace( const char *fileName, int pointSize, const char *name, face_t *face )
+{
+  syscall( UI_R_LOADFACE, fileName, pointSize, name, face );
+}
+
+//126.
+void trap_R_FreeFace( face_t *face )
+{
+  syscall( UI_R_FREEFACE, face );
+}
+
+//127.
+void trap_R_LoadGlyph( face_t *face, const char *str, int img, glyphInfo_t *glyphInfo )
+{
+  syscall( UI_R_LOADGLYPH, face, str, img, glyphInfo );
+}
+
+//128.
+void trap_R_FreeGlyph( face_t *face, int img, glyphInfo_t *glyphInfo )
+{
+  syscall( UI_R_FREEGLYPH, face, img, glyphInfo );
+}
+
+//129.
+void trap_R_Glyph( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph )
+{
+  syscall( UI_R_GLYPH, font, face, str, glyph );
+}
+
+//130.
+void trap_R_FreeCachedGlyphs( face_t *face )
+{
+  syscall( UI_R_FREECACHEDGLYPHS, face );
+}
+
 #endif

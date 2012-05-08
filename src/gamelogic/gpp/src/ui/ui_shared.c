@@ -22,11 +22,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "ui_shared.h"
+#include "ui_utf8.h"
+
+#ifdef CGAME
+#include "../cgame/cg_local.h"
+#elif defined UI
+#include "ui_local.h"
+#else
+#error Unexpectedly built!
+#endif
 
 #define SCROLL_TIME_START        500
 #define SCROLL_TIME_ADJUST       150
 #define SCROLL_TIME_ADJUSTOFFSET 40
 #define SCROLL_TIME_FLOOR        20
+
+void FreeFace(face_t *face);
+void FreeCachedGlyphs(face_t *face);
 
 typedef struct scrollInfo_s
 {
@@ -86,10 +98,26 @@ static ID_INLINE qboolean Item_IsListBox( itemDef_t *item );
 static void               Item_ListBox_SetStartPos( itemDef_t *item, int startPos );
 void                      Menu_SetupKeywordHash( void );
 int                       BindingIDFromName( const char *name );
-qboolean                  Item_Bind_HandleKey( itemDef_t *item, int key, qboolean down );
+qboolean                  Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down );
 itemDef_t                 *Menu_SetPrevCursorItem( menuDef_t *menu );
 itemDef_t                 *Menu_SetNextCursorItem( menuDef_t *menu );
 static qboolean           Menu_OverActiveItem( menuDef_t *menu, float x, float y );
+
+
+/*
+===============
+UIS_Shutdown
+===============
+*/
+void UIS_Shutdown( void )
+{
+	UI_R_FreeCachedGlyphs( &DC->Assets.dynFont );
+	UI_R_FreeFace( &DC->Assets.dynFont );
+	UI_R_FreeCachedGlyphs( &DC->Assets.smallDynFont );
+	UI_R_FreeFace( &DC->Assets.smallDynFont );
+	UI_R_FreeCachedGlyphs( &DC->Assets.bigDynFont );
+	UI_R_FreeFace( &DC->Assets.bigDynFont );
+}
 
 /*
 ===============
@@ -2031,6 +2059,19 @@ void Script_playLooped( itemDef_t *item, char **args )
 	}
 }
 
+glyphInfo_t *UI_Glyph( fontInfo_t *font, face_t *face, const char *str )
+{
+	static glyphInfo_t glyphs[8];
+	static int index = 0;
+	glyphInfo_t *glyph = &glyphs[index++ & 7];
+
+	if( !str || !*str || !face || ui_UTF8Width( str ) <= 1 )
+		return &font->glyphs[ (int)*str ];
+
+	DC->glyph( font, face, str, glyph );
+	return glyph;
+}
+
 static ID_INLINE float UI_EmoticonHeight( fontInfo_t *font, float scale )
 {
 	return font->glyphs[( int ) '[' ].height * scale * font->glyphScale;
@@ -2185,13 +2226,32 @@ static ID_INLINE fontInfo_t *UI_FontForScale( float scale )
 	}
 }
 
+static ID_INLINE face_t *UI_FaceForScale( float scale )
+{
+	if ( scale <= DC->smallFontScale )
+	{
+		return &DC->Assets.smallDynFont;
+	}
+	else if ( scale >= DC->bigFontScale )
+	{
+		return &DC->Assets.bigDynFont;
+	}
+	else
+	{
+		return &DC->Assets.dynFont;
+	}
+}
+
+
 float UI_Char_Width( const char **text, float scale )
 {
 	glyphInfo_t *glyph;
 	fontInfo_t  *font;
+	face_t      *face;
 	int         emoticonLen;
 	qboolean    emoticonEscaped;
 	int         emoticonWidth;
+	int         ch;
 
 	if ( text && *text )
 	{
@@ -2208,6 +2268,7 @@ float UI_Char_Width( const char **text, float scale )
 		}
 
 		font = UI_FontForScale( scale );
+		face = UI_FaceForScale( scale );
 
 		if ( UI_Text_IsEmoticon( *text, &emoticonEscaped, &emoticonLen,
 		                         NULL, &emoticonWidth ) )
@@ -2223,9 +2284,10 @@ float UI_Char_Width( const char **text, float scale )
 			}
 		}
 
-		( *text ) ++;
+		ch = ui_UTF8CodePoint( *text );
+		glyph = &font->glyphs[ ( ch > GLYPH_END ) ? 0 : ch ];
+		*text += ui_UTF8WidthCP( ch );
 
-		glyph = &font->glyphs[( int ) **text ];
 		return glyph->xSkip * DC->aspectScale * scale * font->glyphScale;
 	}
 
@@ -2260,6 +2322,7 @@ float UI_Text_Height( const char *text, float scale )
 	float       useScale;
 	const char  *s = text;
 	fontInfo_t  *font = UI_FontForScale( scale );
+	face_t      *face = UI_FaceForScale( scale );
 
 	useScale = scale * font->glyphScale;
 	max = 0;
@@ -2275,14 +2338,14 @@ float UI_Text_Height( const char *text, float scale )
 			}
 			else
 			{
-				glyph = &font->glyphs[( int ) * s ];
+				glyph = UI_Glyph( font, face, s );
 
 				if ( max < glyph->height )
 				{
 					max = glyph->height;
 				}
 
-				s++;
+				s += ui_UTF8Width( s );
 			}
 		}
 	}
@@ -2407,6 +2470,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	int         count = 0;
 	vec4_t      newColor;
 	fontInfo_t  *font = UI_FontForScale( scale );
+	face_t      *face = UI_FaceForScale( scale );
 	glyphInfo_t *glyph;
 	float       useScale;
 	qhandle_t   emoticonHandle = 0;
@@ -2426,7 +2490,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	emoticonH = UI_EmoticonHeight( font, scale );
 	emoticonW = UI_EmoticonWidth( font, scale );
 
-	len = strlen( text );
+	len = ui_UTF8Strlen( text );
 
 	if ( limit > 0 && len > limit )
 	{
@@ -2442,7 +2506,8 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	{
 		const char *t = s;
 		float      charWidth = UI_Char_Width( &t, scale );
-		glyph = &font->glyphs[( int ) * s ];
+		int        ch = ui_UTF8CodePoint( s );
+		glyph = UI_Glyph( font, face, s );
 
 		if ( maxX && charWidth + x > *maxX )
 		{
@@ -2537,7 +2602,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
-		s++;
+		s += ui_UTF8WidthCP( ch );
 		count++;
 	}
 
@@ -2549,7 +2614,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	// paint cursor
 	if ( cursorPos >= 0 )
 	{
-		if ( cursorPos == len )
+		if ( cursorPos == count )
 		{
 			cursorX = x;
 		}
@@ -3625,15 +3690,15 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 	else
 	{
 		// If there is a maximum field width
-
 		if ( editPtr->maxFieldWidth > 0 )
 		{
+			int offset;
 			// If the cursor is at the end of the string, maximise the amount of the
 			// string that's visible
 
-			if ( buff[ item->cursorPos + 1 ] == '\0' )
+			if ( item->cursorPos == ui_UTF8Strlen( buff ) )
 			{
-				while ( UI_Text_Width( &buff[ editPtr->paintOffset ], item->textscale ) <=
+				while ( UI_Text_Width( buff + ui_CursorToOffset( buff, editPtr->paintOffset ), item->textscale ) <=
 				        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) && editPtr->paintOffset > 0 )
 				{
 					editPtr->paintOffset--;
@@ -3643,20 +3708,22 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 			buff[ item->cursorPos + 1 ] = '\0';
 
 			// Shift paintOffset so that the cursor is visible
+			offset = ui_CursorToOffset( buff, editPtr->paintOffset );
 
-			while ( UI_Text_Width( &buff[ editPtr->paintOffset ], item->textscale ) >
+			while ( UI_Text_Width( buff + offset, item->textscale ) >
 			        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) )
 			{
 				editPtr->paintOffset++;
+				offset += ui_UTF8Width( buff );
 			}
 		}
 	}
 }
 
-qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
+qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 {
 	char           buff[ 1024 ];
-	int            len;
+	int            len, lenChars;
 	itemDef_t      *newItem = NULL;
 	editFieldDef_t *editPtr = item->typeData.edit;
 	qboolean       releaseFocus = qtrue;
@@ -3665,41 +3732,62 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 	{
 		Com_Memset( buff, 0, sizeof( buff ) );
 		DC->getCVarString( item->cvar, buff, sizeof( buff ) );
-		len = strlen( buff );
 
-		if ( len < item->cursorPos )
-		{
-			item->cursorPos = len;
-		}
+		len = strlen( buff );
 
 		if ( editPtr->maxChars && len > editPtr->maxChars )
 		{
 			len = editPtr->maxChars;
+			while ( len && ui_UTF8ContByte( buff[len] ) ) { --len; } // don't leave a partial multibyte character!
+			buff[ len ] = 0;
 		}
 
-		if ( key & K_CHAR_FLAG )
-		{
-			key &= ~K_CHAR_FLAG;
+		lenChars = ui_UTF8Strlen( buff );
 
-			if ( key == 'h' - 'a' + 1 )
+		if ( lenChars < item->cursorPos )
+		{
+			item->cursorPos = ui_OffsetToCursor( buff, len );
+		}
+
+		if ( chr )
+		{
+			if ( chr == 'h' - 'a' + 1 )
 			{
 				// ctrl-h is backspace
 
 				if ( item->cursorPos > 0 )
 				{
-					memmove( &buff[ item->cursorPos - 1 ], &buff[ item->cursorPos ], len + 1 - item->cursorPos );
-					item->cursorPos--;
+					int index = ui_CursorToOffset( buff, --item->cursorPos );
+					int width = ui_UTF8Width( buff + index );
+					memmove( buff + index, buff + index + width, len + 1 - index - width );
 				}
 
 				DC->setCVar( item->cvar, buff );
 			}
-			else if ( key < 32 || key == 127 || !item->cvar )
+			else if ( chr == 'd' - 'a' + 1 )
+			{
+				// ctrl-d is delete
+				goto deleteRight;
+			}
+			else if ( chr == 'c' - 'a' + 1 || chr == 'u' - 'a' + 1 )
+			{
+				// ctrl-c, ctrl-u: clear buffer
+				item->cursorPos = 0;
+				DC->setCVar( item->cvar, "" );
+			}
+			else if ( chr == 'k' - 'a' + 1 )
+			{
+				// ctrl-k: delete to end
+				buff[ ui_CursorToOffset( buff, item->cursorPos ) ] = '\0';
+				DC->setCVar( item->cvar, buff );
+			}
+			else if ( chr < 32 || chr == 127 || !item->cvar )
 			{
 				// Ignore any non printable chars
 				releaseFocus = qfalse;
 				goto exit;
 			}
-			else if ( item->type == ITEM_TYPE_NUMERICFIELD && ( key < '0' || key > '9' ) )
+			else if ( item->type == ITEM_TYPE_NUMERICFIELD && ( chr < '0' || chr > '9' ) )
 			{
 				// Ignore non-numeric characters
 				releaseFocus = qfalse;
@@ -3707,35 +3795,27 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 			}
 			else
 			{
-				if ( !DC->getOverstrikeMode() )
-				{
-					if ( ( len == MAX_EDITFIELD - 1 ) || ( editPtr->maxChars && len >= editPtr->maxChars ) )
-					{
-						// Reached maximum field length
-						releaseFocus = qfalse;
-						goto exit;
-					}
+				const char *str = ui_UTF8Unstore( chr );
+				int index = ui_CursorToOffset( buff, item->cursorPos );
+				int width = ui_UTF8Width( str );
+				int oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? ui_UTF8Width( buff + index ) : 0;
+				int max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+				max = max ? max : MAX_EDITFIELD - 1;
 
-					memmove( &buff[ item->cursorPos + 1 ], &buff[ item->cursorPos ], len + 1 - item->cursorPos );
-				}
-				else
+				if ( len + width - oldWidth > max )
 				{
 					// Reached maximum field length
-					if ( editPtr->maxChars && item->cursorPos >= editPtr->maxChars )
-					{
-						releaseFocus = qfalse;
-						goto exit;
-					}
+					releaseFocus = qfalse;
+					goto exit;
 				}
 
-				buff[ item->cursorPos ] = key;
+				memmove( buff + index + width, buff + index + oldWidth, len + 1 - index - oldWidth );
+				memcpy( buff + index, str, width );
+				buff[ len + width - oldWidth ] = '\0';
 
 				DC->setCVar( item->cvar, buff );
 
-				if ( item->cursorPos < len + 1 )
-				{
-					item->cursorPos++;
-				}
+				item->cursorPos++;
 			}
 		}
 		else
@@ -3744,9 +3824,12 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 			{
 				case K_DEL:
 				case K_KP_DEL:
-					if ( item->cursorPos < len )
+					deleteRight:
+					if ( item->cursorPos < lenChars )
 					{
-						memmove( buff + item->cursorPos, buff + item->cursorPos + 1, len - item->cursorPos );
+						int index = ui_CursorToOffset( buff, item->cursorPos );
+						int width = ui_UTF8Width( buff + index );
+						memmove( buff + index, buff + index + width, len + 1 - index - width );
 						DC->setCVar( item->cvar, buff );
 					}
 
@@ -3754,7 +3837,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 
 				case K_RIGHTARROW:
 				case K_KP_RIGHTARROW:
-					if ( item->cursorPos < len )
+					if ( item->cursorPos < lenChars )
 					{
 						item->cursorPos++;
 					}
@@ -3778,7 +3861,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key )
 
 				case K_END:
 				case K_KP_END:
-					item->cursorPos = len;
+					item->cursorPos = lenChars;
 
 					break;
 
@@ -4076,7 +4159,7 @@ qboolean Item_Slider_HandleKey( itemDef_t *item, int key, qboolean down )
 	return qfalse;
 }
 
-qboolean Item_HandleKey( itemDef_t *item, int key, qboolean down )
+qboolean Item_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 {
 	if ( itemCapture )
 	{
@@ -4133,7 +4216,7 @@ qboolean Item_HandleKey( itemDef_t *item, int key, qboolean down )
 			return Item_OwnerDraw_HandleKey( item, key );
 
 		case ITEM_TYPE_BIND:
-			return Item_Bind_HandleKey( item, key, down );
+			return Item_Bind_HandleKey( item, key, chr, down );
 
 		case ITEM_TYPE_SLIDER:
 			return Item_Slider_HandleKey( item, key, down );
@@ -4405,7 +4488,7 @@ int Display_VisibleMenuCount( void )
 	return count;
 }
 
-void Menus_HandleOOBClick( menuDef_t *menu, int key, qboolean down )
+void Menus_HandleOOBClick( menuDef_t *menu, int key, int chr, qboolean down )
 {
 	if ( menu )
 	{
@@ -4426,7 +4509,7 @@ void Menus_HandleOOBClick( menuDef_t *menu, int key, qboolean down )
 				Menus_Close( menu );
 				Menus_Activate( &Menus[ i ] );
 				Menu_HandleMouseMove( &Menus[ i ], DC->cursorx, DC->cursory );
-				Menu_HandleKey( &Menus[ i ], key, down );
+				Menu_HandleKey( &Menus[ i ], key, chr, down );
 			}
 		}
 
@@ -4460,7 +4543,7 @@ static rectDef_t *Item_CorrectedTextRect( itemDef_t *item )
 	return &rect;
 }
 
-void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
+void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 {
 	static qboolean shift = qfalse;
 
@@ -4488,14 +4571,14 @@ void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 
 	if ( g_waitingForKey && down )
 	{
-		Item_Bind_HandleKey( g_bindItem, key, down );
+		Item_Bind_HandleKey( g_bindItem, key, chr, down );
 		inHandler = qfalse;
 		return;
 	}
 
 	if ( g_editingField && down )
 	{
-		if ( !Item_TextField_HandleKey( g_editItem, key ) )
+		if ( !Item_TextField_HandleKey( g_editItem, key, chr ) )
 		{
 			g_editingField = qfalse;
 			Item_RunScript( g_editItem, g_editItem->onTextEntry );
@@ -4524,7 +4607,7 @@ void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 		if ( !inHandleKey && ( key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 ) )
 		{
 			inHandleKey = qtrue;
-			Menus_HandleOOBClick( menu, key, down );
+			Menus_HandleOOBClick( menu, key, chr, down );
 			inHandleKey = qfalse;
 			inHandler = qfalse;
 			return;
@@ -4549,7 +4632,7 @@ void Menu_HandleKey( menuDef_t *menu, int key, qboolean down )
 
 	if ( item != NULL )
 	{
-		if ( Item_HandleKey( item, key, down ) )
+		if ( Item_HandleKey( item, key, chr, down ) )
 		{
 			Item_Action( item );
 			inHandler = qfalse;
@@ -5875,10 +5958,16 @@ qboolean Display_KeyBindPending( void )
 	return g_waitingForKey;
 }
 
-qboolean Item_Bind_HandleKey( itemDef_t *item, int key, qboolean down )
+qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 {
 	int id;
 	int i;
+
+	// FIXME: should probably set K_* outside Unicode range
+	if ( chr && !( chr & K_CHAR_FLAG ) )
+	{
+		key = chr;
+	}
 
 	if ( Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) && !g_waitingForKey )
 	{
@@ -5897,17 +5986,13 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, qboolean down )
 			return qtrue;
 		}
 
-		if ( key & K_CHAR_FLAG )
-		{
-			return qtrue;
-		}
-
 		switch ( key )
 		{
 			case K_ESCAPE:
 				g_waitingForKey = qfalse;
 				return qtrue;
 
+			case 0:
 			case K_BACKSPACE:
 				id = BindingIDFromName( item->cvar );
 
@@ -8973,7 +9058,7 @@ int Display_CursorType( int x, int y )
 	return CURSOR_ARROW;
 }
 
-void Display_HandleKey( int key, qboolean down, int x, int y )
+void Display_HandleKey( int key, int chr, qboolean down, int x, int y )
 {
 	menuDef_t *menu = Display_CaptureItem( x, y );
 
@@ -8984,7 +9069,7 @@ void Display_HandleKey( int key, qboolean down, int x, int y )
 
 	if ( menu )
 	{
-		Menu_HandleKey( menu, key, down );
+		Menu_HandleKey( menu, key, chr, down );
 	}
 }
 
@@ -9082,4 +9167,124 @@ static qboolean Menu_OverActiveItem( menuDef_t *menu, float x, float y )
 	}
 
 	return qfalse;
+}
+
+void UI_R_LoadFace( const char *fileName, int pointSize, const char *name, face_t *face )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_LoadFace( fileName, pointSize, name, face );
+}
+
+void UI_R_FreeFace( face_t *face )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_FreeFace( face );
+}
+
+void UI_R_LoadGlyph( face_t *face, const char *str, int img, glyphInfo_t *glyphInfo )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_LoadGlyph( face, str, img, glyphInfo );
+}
+
+void UI_R_FreeGlyph( face_t *face, int img, glyphInfo_t *glyphInfo )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_FreeGlyph( face, img, glyphInfo );
+}
+
+void UI_R_Glyph( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_Glyph( font, face, str, glyph );
+}
+
+void UI_R_FreeCachedGlyphs( face_t *face )
+{
+  static int engineState = 0;
+
+  if( !( engineState & 0x01 ) )
+  {
+    char t[2];
+
+    engineState |= 0x01;
+
+    trap_Cvar_VariableStringBuffer( "\\IS_GETTEXT_SUPPORTED", t, 2 );
+
+    if( t[0] == '1' )
+      engineState |= 0x02;
+  }
+
+  if( engineState & 0x02 )
+    trap_R_FreeCachedGlyphs( face );
 }

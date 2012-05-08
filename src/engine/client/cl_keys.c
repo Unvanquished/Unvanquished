@@ -354,14 +354,15 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	int  cursorChar;
 	char str[ MAX_STRING_CHARS ];
 	int  i;
+	int  offset, offsetEnd;
 
 	drawLen = edit->widthInChars - 1; // - 1 so there is always a space for the cursor
-	len = strlen( edit->buffer );
+	len = Q_UTF8Strlen( edit->buffer );
 
 	// guarantee that cursor will be visible
 	if ( len <= drawLen )
 	{
-		prestep = 0;
+		edit->scroll = prestep = 0;
 	}
 	else
 	{
@@ -383,19 +384,20 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 		drawLen = len - prestep;
 	}
 
-	while ( Q_UTF8ContByte( edit->buffer[ prestep + drawLen ] ) && prestep + drawLen < len )
+	// extract <drawLen> characters from the field at <prestep>
+	offset = offsetEnd = Field_ScrollToOffset( edit );
+	for ( i = 0; i < drawLen && edit->buffer[ offsetEnd ]; ++i )
 	{
-		++drawLen;
+		offsetEnd += Q_UTF8Width( edit->buffer + offsetEnd );
 	}
 
-	// extract <drawLen> characters from the field at <prestep>
-	if ( drawLen >= MAX_STRING_CHARS )
+	if ( offsetEnd - offset >= MAX_STRING_CHARS )
 	{
 		Com_Error( ERR_DROP, "drawLen >= MAX_STRING_CHARS" );
 	}
 
-	Com_Memcpy( str, edit->buffer + prestep, drawLen );
-	str[ drawLen ] = 0;
+	str[ offsetEnd - offset ] = 0;
+	Com_Memcpy( str, edit->buffer + offset, offsetEnd - offset );
 
 	// draw it
 	if ( size == SMALLCHAR_WIDTH )
@@ -415,35 +417,31 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	// draw the cursor
 	if ( showCursor )
 	{
+		static const float yellow[] = { 1, 1, 0, 0.5 };
+		float xpos, width, height;
+
 		if ( ( int )( cls.realtime >> 8 ) & 1 )
 		{
 			return; // off blink
 		}
 
-		if ( key_overstrikeMode )
-		{
-			cursorChar = 11;
-		}
-		else
-		{
-			cursorChar = 10;
-		}
-
-		i = drawLen - strlen( str );
+		re.SetColor( yellow );
 
 		if ( size == SMALLCHAR_WIDTH )
 		{
-			static char c;
-			float xlocation = x + SCR_ConsoleFontStringWidth( str + prestep, edit->cursor - prestep );
-			c = (char) cursorChar & 0x7F;
-			SCR_DrawConsoleFontChar( xlocation, y, &c );
+			xpos = x + SCR_ConsoleFontStringWidth( str, edit->cursor );
+			height = key_overstrikeMode ? SMALLCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
+			width = SMALLCHAR_WIDTH;
 		}
 		else
 		{
-			str[ 0 ] = cursorChar;
-			str[ 1 ] = 0;
-			SCR_DrawBigString( x + ( edit->cursor - prestep - i ) * size, y, str, 1.0, qfalse );
+			i = drawLen - Q_UTF8Strlen( str );
+			xpos = x + ( edit->cursor - prestep - i ) * size;
+			height = key_overstrikeMode ? BIGCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
+			width = BIGCHAR_WIDTH;
 		}
+
+		re.DrawStretchPic( xpos, y + 2 - height, width, height, 0, 0, 0, 0, cls.whiteShader );
 	}
 }
 
@@ -465,7 +463,7 @@ Field_Paste
 void Field_Paste( field_t *edit )
 {
 	char *cbd;
-	int  pasteLen, i;
+	int  pasteLen, width;
 
 	cbd = Sys_GetClipboardData();
 
@@ -477,11 +475,13 @@ void Field_Paste( field_t *edit )
 	// send as if typed, so insert / overstrike works properly
 	pasteLen = strlen( cbd );
 
-	for ( i = 0; i < pasteLen; i++ )
+	while( pasteLen >= ( width = ( Q_UTF8Width( cbd ) > 0 ? Q_UTF8Width( cbd ) : 1 ) ) )
 	{
-		Field_CharEvent( edit, cbd[ i ] );
-	}
+		Field_CharEvent( edit, cbd );
 
+		cbd += width;
+		pasteLen -= width;
+	}
 	Z_Free( cbd );
 }
 
@@ -497,7 +497,8 @@ Key events are used for non-printable characters, others are gotten from char ev
 */
 void Field_KeyDownEvent( field_t *edit, int key )
 {
-	int len;
+	int len, width;
+	char *s;
 
 	// shift-insert is paste
 	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keys[ K_SHIFT ].down )
@@ -506,22 +507,22 @@ void Field_KeyDownEvent( field_t *edit, int key )
 		return;
 	}
 
-	len = strlen( edit->buffer );
+	key = tolower( key );
+	len = Q_UTF8Strlen( edit->buffer );
+	s = &edit->buffer[ Field_CursorToOffset( edit ) ];
+	width = Q_UTF8Width( s );
 
 	switch ( key )
 	{
 		case K_DEL:
-		case K_KP_DEL:
-			if ( edit->cursor < len )
+			if ( *s )
 			{
-				memmove( edit->buffer + edit->cursor,
-				         edit->buffer + edit->cursor + 1, len - edit->cursor );
+				memmove( s, s + width, strlen( s + width ) + 1 );
 			}
 
 			break;
 
 		case K_RIGHTARROW:
-		case K_KP_RIGHTARROW:
 			if ( edit->cursor < len )
 			{
 				edit->cursor++;
@@ -530,7 +531,6 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			break;
 
 		case K_LEFTARROW:
-		case K_KP_LEFTARROW:
 			if ( edit->cursor > 0 )
 			{
 				edit->cursor--;
@@ -538,32 +538,25 @@ void Field_KeyDownEvent( field_t *edit, int key )
 
 			break;
 
-		case K_HOME:
-		case K_KP_HOME:
-			edit->cursor = 0;
-
 		case 'a':
 			if ( keys[ K_CTRL ].down )
 			{
+		case K_HOME:
 				edit->cursor = 0;
 			}
 
 			break;
 
-		case K_END:
-		case K_KP_END:
-			edit->cursor = len;
-
 		case 'e':
 			if ( keys[ K_CTRL ].down )
 			{
+		case K_END:
 				edit->cursor = len;
 			}
 
 			break;
 
 		case K_INS:
-		case K_KP_INS:
 			key_overstrikeMode = !key_overstrikeMode;
 			break;
 	}
@@ -573,7 +566,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 	{
 		edit->scroll = edit->cursor;
 	}
-	else if ( edit->cursor >= edit->scroll + edit->widthInChars && edit->cursor <= len )
+	else if ( edit->cursor >= edit->scroll + edit->widthInChars )
 	{
 		edit->scroll = edit->cursor - edit->widthInChars + 1;
 	}
@@ -584,32 +577,42 @@ void Field_KeyDownEvent( field_t *edit, int key )
 Field_CharEvent
 ==================
 */
-void Field_CharEvent( field_t *edit, int ch )
+void Field_CharEvent( field_t *edit, const char *s )
 {
-	int len;
+	int len, width, oldWidth, offset;
 
-	if ( ch == 'v' - 'a' + 1 ) // ctrl-v is paste
+	if ( *s == 'v' - 'a' + 1 ) // ctrl-v is paste
 	{
 		Field_Paste( edit );
 		return;
 	}
 
-	if ( ch == 'c' - 'a' + 1 ||
-	     ch == 'u' - 'a' + 1 ) // ctrl-c or ctrl-u clear the field
+	if ( *s == 'c' - 'a' + 1 ||
+	     *s == 'u' - 'a' + 1 ) // ctrl-c or ctrl-u clear the field
 	{
 		Field_Clear( edit );
 		return;
 	}
 
+	if ( *s == 'k' - 'a' + 1 ) // ctrl-k clears to the end of the field
+	{
+		edit->buffer[ Field_CursorToOffset( edit ) ] = '\0';
+		return;
+	}
+
 	len = strlen( edit->buffer );
 
-	if ( ch == 'h' - 'a' + 1 ) // ctrl-h is backspace
+	if ( *s == 'h' - 'a' + 1 ) // ctrl-h is backspace
 	{
-		if ( edit->cursor > 0 )
+		if ( edit->cursor )
 		{
-			memmove( edit->buffer + edit->cursor - 1,
-			         edit->buffer + edit->cursor, len + 1 - edit->cursor );
-			edit->cursor--;
+			int posFrom, posTo;
+
+			posFrom = Field_CursorToOffset( edit );
+			--edit->cursor;
+			posTo = Field_CursorToOffset( edit );
+
+			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
 
 			if ( edit->cursor < edit->scroll )
 			{
@@ -620,16 +623,29 @@ void Field_CharEvent( field_t *edit, int ch )
 		return;
 	}
 
-	if ( ch == 'a' - 'a' + 1 ) // ctrl-a is home
+	if ( *s == 'd' - 'a' + 1 ) // ctrl-d is delete forward
+	{
+		int posTo = Field_CursorToOffset( edit );
+
+		if ( edit->buffer[ posTo ] )
+		{
+			int posFrom = posTo + Q_UTF8Width( edit->buffer + posFrom );
+			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
+		}
+
+		return;
+	}
+
+	if ( *s == 'a' - 'a' + 1 ) // ctrl-a is home
 	{
 		edit->cursor = 0;
 		edit->scroll = 0;
 		return;
 	}
 
-	if ( ch == 'e' - 'a' + 1 ) // ctrl-e is end
+	if ( *s == 'e' - 'a' + 1 ) // ctrl-e is end
 	{
-		edit->cursor = len;
+		edit->cursor = Field_OffsetToCursor( edit, len );
 		edit->scroll = edit->cursor - edit->widthInChars;
 		return;
 	}
@@ -637,43 +653,32 @@ void Field_CharEvent( field_t *edit, int ch )
 	//
 	// ignore any other non printable chars
 	//
-	if ( ch < 32 || ch == 0x7f )
+	if ( (unsigned char)*s < 32 || (unsigned char)*s == 0x7f )
 	{
 		return;
 	}
 
-	if ( key_overstrikeMode )
-	{
-		if ( edit->cursor == MAX_EDIT_LINE - 1 )
-		{
-			return;
-		}
+	width = Q_UTF8Width( s );
+	offset = Field_CursorToOffset( edit );
 
-		edit->buffer[ edit->cursor ] = ch;
-		edit->cursor++;
-	}
-	else // insert mode
-	{
-		if ( len == MAX_EDIT_LINE - 1 )
-		{
-			return; // all full
-		}
+	// if overstrike, adjust the width according to what's being replaced
+	// (at end-of-string, just insert)
+	oldWidth = ( key_overstrikeMode && edit->buffer[ offset ] ) ? Q_UTF8Width( edit->buffer + offset ) : 0;
 
-		memmove( edit->buffer + edit->cursor + 1,
-		         edit->buffer + edit->cursor, len + 1 - edit->cursor );
-		edit->buffer[ edit->cursor ] = ch;
-		edit->cursor++;
+	if ( len + width - oldWidth >= MAX_EDIT_LINE )
+	{
+		return;
 	}
 
-	if ( edit->cursor >= edit->widthInChars )
+	memmove( edit->buffer + offset + width,
+	         edit->buffer + offset + oldWidth, len + 1 - offset - oldWidth );
+	Com_Memcpy( edit->buffer + offset, s, width );
+	++edit->cursor;
+
+	do
 	{
 		edit->scroll++;
-	}
-
-	if ( edit->cursor == len + 1 )
-	{
-		edit->buffer[ edit->cursor ] = 0;
-	}
+	} while ( edit->cursor >= edit->scroll +edit->widthInChars );
 }
 
 /*
@@ -933,18 +938,7 @@ void Console_Key( int key )
 	if ( ( key == K_MWHEELUP && keys[ K_SHIFT ].down ) || ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
 	     ( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
 	{
-		Q_strncpyz( g_consoleField.buffer, Hist_Prev(), sizeof( g_consoleField.buffer ) );
-		g_consoleField.cursor = strlen( g_consoleField.buffer );
-
-		if ( g_consoleField.cursor >= g_consoleField.widthInChars )
-		{
-			g_consoleField.scroll = g_consoleField.cursor - g_consoleField.widthInChars + 1;
-		}
-		else
-		{
-			g_consoleField.scroll = 0;
-		}
-
+		Field_Set( &g_consoleField, Hist_Prev() );
 		con.acLength = 0;
 		return;
 	}
@@ -957,17 +951,7 @@ void Console_Key( int key )
 
 		if ( history )
 		{
-			Q_strncpyz( g_consoleField.buffer, history, sizeof( g_consoleField.buffer ) );
-			g_consoleField.cursor = strlen( g_consoleField.buffer );
-
-			if ( g_consoleField.cursor >= g_consoleField.widthInChars )
-			{
-				g_consoleField.scroll = g_consoleField.cursor - g_consoleField.widthInChars + 1;
-			}
-			else
-			{
-				g_consoleField.scroll = 0;
-			}
+			Field_Set( &g_consoleField, history );
 		}
 		else if ( g_consoleField.buffer[ 0 ] )
 		{
@@ -1883,7 +1867,7 @@ CL_CharEvent
 Normal keyboard characters, already shifted / capslocked / etc
 ===================
 */
-void CL_CharEvent( int key )
+void CL_CharEvent( const char *key )
 {
 	// the console key should never be used as a char
 	// ydnar: added uk equivalent of shift+`
@@ -1899,15 +1883,14 @@ void CL_CharEvent( int key )
 	}
 	else if ( cls.keyCatchers & KEYCATCH_UI )
 	{
-		VM_Call( uivm, UI_KEY_EVENT, key | K_CHAR_FLAG, qtrue );
-	}
-	else if ( cls.keyCatchers & KEYCATCH_CGAME )
-	{
-		VM_Call( cgvm, CG_KEY_EVENT, key | K_CHAR_FLAG, qtrue );
-	}
-	else if ( cls.keyCatchers & KEYCATCH_MESSAGE )
-	{
-		Field_CharEvent( &chatField, key );
+		// VMs that don't support i18n distinguish between char and key events by looking at the 11th least significant bit.
+		// Patched vms look at the second least significant bit to determine whether the event is a char event, and at the third bit
+		// to determine the original 11th least significant bit of the key.
+		VM_Call( uivm, UI_KEY_EVENT, Q_UTF8Store( key ) | (1 << (K_CHAR_BIT - 1)),
+				(qtrue << KEYEVSTATE_DOWN) |
+				(qtrue << KEYEVSTATE_CHAR) |
+				((Q_UTF8Store( key ) & (1 << (K_CHAR_BIT - 1))) >> ((K_CHAR_BIT - 1) - KEYEVSTATE_BIT)) |
+				(qtrue << KEYEVSTATE_SUP) );
 	}
 	else if ( cls.state == CA_DISCONNECTED )
 	{

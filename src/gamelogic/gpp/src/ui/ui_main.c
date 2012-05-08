@@ -154,7 +154,7 @@ This must be the very first function compiled into the .qvm file
 */
 void     UI_Init( qboolean );
 void     UI_Shutdown( void );
-void     UI_KeyEvent( int key, qboolean down );
+void     UI_KeyEvent( int key, int chr, int flags );
 void     UI_MouseEvent( int dx, int dy );
 int      UI_MousePosition( void );
 void     UI_SetMousePosition( int x, int y );
@@ -180,7 +180,16 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		case UI_KEY_EVENT:
-			UI_KeyEvent( arg0, arg1 );
+			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			{
+				arg0 &= ~K_CHAR_FLAG;
+				arg0 |= ( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ? K_CHAR_FLAG : 0;
+				UI_KeyEvent( 0, arg0, arg1 );
+			}
+			else
+			{
+				UI_KeyEvent( arg0, 0, arg1 );
+			}
 			return 0;
 
 		case UI_MOUSE_EVENT:
@@ -1292,6 +1301,15 @@ UI_Shutdown
 void UI_Shutdown( void )
 {
 	trap_LAN_SaveCachedServers();
+
+	UI_R_FreeCachedGlyphs( &uiInfo.uiDC.Assets.dynFont );
+	UI_R_FreeFace( &uiInfo.uiDC.Assets.dynFont );
+	UI_R_FreeCachedGlyphs( &uiInfo.uiDC.Assets.smallDynFont );
+	UI_R_FreeFace( &uiInfo.uiDC.Assets.smallDynFont );
+	UI_R_FreeCachedGlyphs( &uiInfo.uiDC.Assets.bigDynFont );
+	UI_R_FreeFace( &uiInfo.uiDC.Assets.bigDynFont );
+
+	UIS_Shutdown( );
 }
 
 qboolean Asset_Parse( int handle )
@@ -1334,6 +1352,7 @@ qboolean Asset_Parse( int handle )
 			}
 
 			trap_R_RegisterFont( tempStr, pointSize, &uiInfo.uiDC.Assets.textFont );
+			UI_R_LoadFace( tempStr, pointSize, tempStr, &uiInfo.uiDC.Assets.dynFont );
 			uiInfo.uiDC.Assets.fontRegistered = qtrue;
 			continue;
 		}
@@ -1348,6 +1367,7 @@ qboolean Asset_Parse( int handle )
 			}
 
 			trap_R_RegisterFont( tempStr, pointSize, &uiInfo.uiDC.Assets.smallFont );
+			UI_R_LoadFace( tempStr, pointSize, tempStr, &uiInfo.uiDC.Assets.smallDynFont );
 			continue;
 		}
 
@@ -1361,6 +1381,7 @@ qboolean Asset_Parse( int handle )
 			}
 
 			trap_R_RegisterFont( tempStr, pointSize, &uiInfo.uiDC.Assets.bigFont );
+			UI_R_LoadFace( tempStr, pointSize, tempStr, &uiInfo.uiDC.Assets.bigDynFont );
 			continue;
 		}
 
@@ -4863,6 +4884,12 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	uiInfo.uiDC.renderScene = &trap_R_RenderScene;
 	uiInfo.uiDC.registerFont = &trap_R_RegisterFont;
+	uiInfo.uiDC.loadFace = &UI_R_LoadFace;
+	uiInfo.uiDC.freeFace = &UI_R_FreeFace;
+	uiInfo.uiDC.loadGlyph = &UI_R_LoadGlyph;
+	uiInfo.uiDC.freeGlyph = &UI_R_FreeGlyph;
+	uiInfo.uiDC.glyph = &UI_R_Glyph;
+	uiInfo.uiDC.freeCachedGlyphs = &UI_R_FreeCachedGlyphs;
 	uiInfo.uiDC.ownerDrawItem = &UI_OwnerDraw;
 	uiInfo.uiDC.getValue = &UI_GetValue;
 	uiInfo.uiDC.ownerDrawVisible = &UI_OwnerDrawVisible;
@@ -4934,7 +4961,7 @@ void UI_Init( qboolean inGameLoad )
 UI_KeyEvent
 =================
 */
-void UI_KeyEvent( int key, qboolean down )
+void UI_KeyEvent( int key, int chr, int flags )
 {
 	if ( Menu_Count() > 0 )
 	{
@@ -4942,13 +4969,13 @@ void UI_KeyEvent( int key, qboolean down )
 
 		if ( menu )
 		{
-			if ( key == K_ESCAPE && down && !Menus_AnyFullScreenVisible() )
+			if ( key == K_ESCAPE && ( flags & ( 1 << KEYEVSTATE_DOWN ) ) && !Menus_AnyFullScreenVisible() )
 			{
 				Menus_CloseAll();
 			}
 			else
 			{
-				Menu_HandleKey( menu, key, down );
+				Menu_HandleKey( menu, key, chr, !!( flags & ( 1 << KEYEVSTATE_DOWN ) ) );
 			}
 		}
 		else

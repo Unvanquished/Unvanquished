@@ -155,6 +155,13 @@ typedef enum
   UI_R_ANIMNUMFRAMES,
   UI_R_ANIMFRAMERATE,
 #endif
+  UI_GETTEXT = 300,
+  UI_R_LOADFACE,
+  UI_R_FREEFACE,
+  UI_R_LOADGLYPH,
+  UI_R_FREEGLYPH,
+  UI_R_GLYPH,
+  UI_R_FREECACHEDGLYPHS
 } uiImport_t;
 
 typedef struct
@@ -345,6 +352,12 @@ int         trap_MemoryRemaining( void );
 void        trap_GetCDKey( char *buf, int buflen );
 void        trap_SetCDKey( char *buf );
 void        trap_R_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
+void        trap_R_LoadFace(const char *fileName, int pointSize, const char *name, face_t *face);
+void        trap_R_FreeFace(face_t *face);
+void        trap_R_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo);
+void        trap_R_FreeGlyph(face_t *face, int img, glyphInfo_t *glyphInfo);
+void        trap_R_Glyph(fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph);
+void        trap_R_FreeCachedGlyphs(face_t *face);
 int         trap_Parse_AddGlobalDefine( char *define );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );

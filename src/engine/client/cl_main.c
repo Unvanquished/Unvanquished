@@ -1535,6 +1535,9 @@ void CL_ShutdownAll( void )
 	S_DisableSounds();
 	// download subsystem
 	DL_Shutdown();
+	// Clear Faces
+	re.FreeCachedGlyphs( &cls.consoleFace );
+	re.FreeFace( &cls.consoleFace );
 	// shutdown CGame
 	CL_ShutdownCGame();
 	// shutdown UI
@@ -2477,6 +2480,9 @@ void CL_Vid_Restart_f( void )
 	CL_ShutdownUI();
 	// shutdown the CGame
 	CL_ShutdownCGame();
+	// free face
+	re.FreeCachedGlyphs( &cls.consoleFace );
+	re.FreeFace( &cls.consoleFace );
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
 	// client is no longer pure untill new checksums are sent
@@ -4328,7 +4334,7 @@ qboolean CL_InitRenderer( void )
 
 	// load character sets
 	cls.charSetShader = re.RegisterShader( "gfx/2d/bigchars" );
-	cls.useLegacyConsoleFont = qtrue;
+	cls.useLegacyConsoleFont = cls.useLegacyConsoleFace = qtrue;
 
 	// Register console font specified by cl_consoleFont, if any
 	// filehandle is unused but forces FS_FOpenFileRead() to heed purecheck because it does not when filehandle is NULL
@@ -4337,6 +4343,7 @@ qboolean CL_InitRenderer( void )
 		if ( FS_FOpenFileByMode( cl_consoleFont->string, &f, FS_READ ) >= 0 )
 		{
 			re.RegisterFont( cl_consoleFont->string, cl_consoleFontSize->integer, &cls.consoleFont );
+			re.LoadFace( cl_consoleFont->string, cl_consoleFontSize->integer, cl_consoleFont->string, &cls.consoleFace );
 			cls.useLegacyConsoleFont = qfalse;
 		}
 
@@ -4733,6 +4740,11 @@ void CL_InitRef( const char *renderer )
 	ri.FS_ListFiles = FS_ListFiles;
 	ri.FS_FileIsInPAK = FS_FileIsInPAK;
 	ri.FS_FileExists = FS_FileExists;
+	ri.FS_Seek = FS_Seek;
+	ri.FS_FTell = FS_FTell;
+	ri.FS_Read = FS_Read;
+	ri.FS_FCloseFile = FS_FCloseFile;
+	ri.FS_FOpenFileRead = FS_FOpenFileRead;
 
 	ri.Cvar_Get = Cvar_Get;
 	ri.Cvar_Set = Cvar_Set;
@@ -5008,6 +5020,8 @@ void CL_Init( void )
 	//
 	// register our variables
 	//
+	Cvar_SetIFlag( "\\IS_GETTEXT_SUPPORTED" );
+
 	cl_renderer = Cvar_Get( "cl_renderer", "GL3,GL", CVAR_ARCHIVE | CVAR_LATCH );
 
 	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );
@@ -5327,13 +5341,17 @@ void CL_Shutdown( void )
 
 	CL_Disconnect( qtrue );
 
+	re.FreeCachedGlyphs( &cls.consoleFace );
+	re.FreeFace( &cls.consoleFace );
+
+	CL_ShutdownCGame();
+	CL_ShutdownUI();
+
 	S_Shutdown();
 	DL_Shutdown();
 	CL_ShutdownRef();
 
 	CL_IRCInitiateShutdown();
-
-	CL_ShutdownUI();
 
 	Cmd_RemoveCommand( "cmd" );
 	Cmd_RemoveCommand( "configstrings" );
@@ -7111,6 +7129,12 @@ void CL_TranslateString( const char *string, char *dest_buffer )
 	trans_t  *t;
 	qboolean newline = qfalse;
 	char     *buf;
+
+	if ( !cl_language )
+	{
+		strcpy( dest_buffer, string );
+		return;
+	}
 
 	buf = dest_buffer;
 	currentLanguage = cl_language->integer - 1;

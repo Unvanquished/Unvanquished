@@ -1380,6 +1380,34 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			CL_RegisterButtonCommands( VMA( 1 ) );
 			return 0;
 
+		case CG_GETTEXT:
+			strncpy( VMA(1), VMA(2), args[3] );
+			return 0;
+
+		case CG_R_LOADFACE:
+			re.LoadFace( VMA(1), args[2], VMA(3), VMA(4) );
+			return 0;
+
+		case CG_R_FREEFACE:
+			re.FreeFace( VMA(1) );
+			return 0;
+
+		case CG_R_LOADGLYPH:
+			re.LoadGlyph( VMA(1), VMA(2), args[3], VMA(4) );
+			break;
+
+		case CG_R_FREEGLYPH:
+			re.FreeGlyph( VMA(1), args[2], VMA(3) );
+			break;
+
+		case CG_R_GLYPH:
+			re.Glyph( VMA(1), VMA(2), VMA(3), VMA(4) );
+			break;
+
+		case CG_R_FREECACHEDGLYPHS:
+			re.FreeCachedGlyphs( VMA(1) );
+			break;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}
