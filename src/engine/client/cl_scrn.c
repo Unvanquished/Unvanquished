@@ -146,7 +146,7 @@ static glyphInfo_t *Glyph( int ch )
 	static int index = 0;
 	glyphInfo_t *glyph = &glyphs[ index++ & 7 ];
 
-	re.GlyphChar( &cls.consoleFont, &cls.consoleFace, ch, glyph );
+	re.GlyphChar( &cls.consoleFont, ch, glyph );
 
 	return glyph;
 }
@@ -879,8 +879,7 @@ float SCR_ConsoleFontCharWidth( const char *s )
 float SCR_ConsoleFontCharHeight( void )
 {
 	fontInfo_t  *font = &cls.consoleFont;
-	int         ch = 'I' & 0xff;
-	glyphInfo_t *glyph = &font->glyphs[ ch ];
+	glyphInfo_t *glyph = &font->glyphBlock[0]['I'];
 	float       vpadding = CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
 
 	if ( cls.useLegacyConsoleFont )

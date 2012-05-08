@@ -250,11 +250,8 @@ typedef enum
   CG_COMPLETE_CALLBACK,
   CG_REGISTER_BUTTON_COMMANDS,
   CG_GETTEXT = 300,
-  CG_R_LOADFACE,
-  CG_R_FREEFACE,
-  CG_R_LOADGLYPH,
-  CG_R_FREEGLYPH,
   CG_R_GLYPH,
+  CG_R_GLYPHCHAR,
   CG_R_FREECACHEDGLYPHS
 } cgameImport_t;
 
@@ -399,12 +396,9 @@ qboolean        trap_R_GetSkinModel( qhandle_t skinid, const char *type, char *n
 qhandle_t       trap_R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );
 qhandle_t       trap_R_RegisterShader( const char *name );
 void            trap_R_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
-void            trap_R_LoadFace(const char *fileName, int pointSize, const char *name, face_t *face);
-void            trap_R_FreeFace(face_t *face);
-void            trap_R_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo);
-void            trap_R_FreeGlyph(face_t *face, int img, glyphInfo_t *glyphInfo);
-void            trap_R_Glyph(fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph);
-void            trap_R_FreeCachedGlyphs(face_t *face);
+void            trap_R_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
+void            trap_R_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
+void            trap_R_FreeCachedGlyphs(fontInfo_t *font);
 
 qhandle_t       trap_R_RegisterShaderNoMip( const char *name );
 qhandle_t       trap_R_RegisterShaderLightAttenuation( const char *name );

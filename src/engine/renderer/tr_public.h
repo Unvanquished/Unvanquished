@@ -72,13 +72,9 @@ typedef struct
 	qhandle_t ( *RegisterShaderLightAttenuation )( const char *name );
 #endif
 	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
-	void	(*LoadFace)(const char *fileName, int pointSize, const char *name, face_t *face);
-	void	(*FreeFace)(face_t *face);
-	void	(*LoadGlyph)(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo);
-	void	(*FreeGlyph)(face_t *face, int img, glyphInfo_t *glyphInfo);
-	void	(*Glyph)( fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph );
-	void	(*GlyphChar)( fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph );
-	void	(*FreeCachedGlyphs)(face_t *face);
+	void ( *FreeCachedGlyphs )( fontInfo_t *font );
+	void	(*Glyph)( fontInfo_t *font, const char *str, glyphInfo_t *glyph );
+	void	(*GlyphChar)( fontInfo_t *font, int ch, glyphInfo_t *glyph );
 
 	void ( *LoadWorld )( const char *name );
 	qboolean( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );                  //----(SA) added

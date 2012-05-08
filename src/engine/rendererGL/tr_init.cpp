@@ -2355,15 +2355,11 @@ extern "C" {
 		re.Add2dPolys = RE_2DPolyies;
 		re.DrawStretchPicGradient = RE_StretchPicGradient;
 
-		re.LoadFace = RE_LoadFace;
-		re.FreeFace = RE_FreeFace;
-		re.LoadGlyph = RE_LoadGlyph;
-		re.FreeGlyph = RE_FreeGlyph;
 		re.Glyph = RE_Glyph;
 		re.GlyphChar = RE_GlyphChar;
+		re.RegisterFont = RE_RegisterFont;
 		re.FreeCachedGlyphs = RE_FreeCachedGlyphs;
 
-		re.RegisterFont = RE_RegisterFont;
 		re.RemapShader = R_RemapShader;
 		re.GetEntityToken = R_GetEntityToken;
 		re.inPVS = R_inPVS;
