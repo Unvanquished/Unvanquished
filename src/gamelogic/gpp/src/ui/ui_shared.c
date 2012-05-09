@@ -4812,6 +4812,7 @@ void Item_SetTextExtents( itemDef_t *item, const char *text )
 	     item->textalignment != ALIGN_LEFT ) )
 	{
 		float originalWidth = 0.0f;
+		float emheight;
 
 		if ( item->textalignment == ALIGN_CENTER || item->textalignment == ALIGN_RIGHT )
 		{
@@ -4830,6 +4831,7 @@ void Item_SetTextExtents( itemDef_t *item, const char *text )
 
 		item->textRect.w = UI_Text_Width( textPtr, item->textscale );
 		item->textRect.h = UI_Text_LineHeight( item->textscale ); // not UI_Text_Height, which breaks multi-line spacing
+		emheight = UI_Text_EmHeight( item->textscale );
 
 		if ( item->textvalignment == VALIGN_BOTTOM )
 		{
@@ -4837,11 +4839,11 @@ void Item_SetTextExtents( itemDef_t *item, const char *text )
 		}
 		else if ( item->textvalignment == VALIGN_CENTER )
 		{
-			item->textRect.y = item->textaligny + ( ( item->textRect.h + item->window.rect.h ) / 2.0f );
+			item->textRect.y = item->textaligny + ( ( emheight + item->window.rect.h ) / 2.0f );
 		}
 		else if ( item->textvalignment == VALIGN_TOP )
 		{
-			item->textRect.y = item->textaligny + item->textRect.h;
+			item->textRect.y = item->textaligny + emheight;
 		}
 
 		if ( item->textalignment == ALIGN_LEFT )
