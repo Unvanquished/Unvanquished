@@ -5250,18 +5250,24 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 		textPtr = Item_Text_Wrap( textPtr, item->textscale, w );
 		textLength = strlen( textPtr );
 
-		// Count lines
+		// Count lines (single LF counts as 2, double LF counts as 3 for spacing reasons)
 		totalLines = 0;
 
 		for ( i = 0; i < textLength; i++ )
 		{
 			if ( textPtr[ i ] == '\n' )
 			{
-				totalLines++;
+				totalLines += 2;
+
+				if ( textPtr[ i + 1 ] == '\n' )
+				{
+					++totalLines;
+					++i;
+				}
 			}
 		}
 
-		paintLines = ( int ) floor( ( h + lineSpacing ) / lineHeight );
+		paintLines = ( int ) floor( ( h + lineSpacing ) * 2 / lineHeight );
 
 		if ( paintLines > totalLines )
 		{
@@ -5301,11 +5307,12 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 			if ( textPtr[ i ] == '\n' || textPtr[ i ] == '\0' )
 			{
 				itemDef_t lineItem;
+				qboolean lflf = textPtr[ i ] == '\n' && textPtr[ i + 1 ] == '\n';
 
 				memset( &lineItem, 0, sizeof( itemDef_t ) );
 				strncpy( buff, p, lineLength );
 				buff[ lineLength ] = '\0';
-				p = &textPtr[ i + 1 ];
+				p = &textPtr[ i + 1 + lflf ];
 
 				lineItem.type = ITEM_TYPE_TEXT;
 				lineItem.textscale = item->textscale;
@@ -5319,7 +5326,7 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 				lineItem.textRect.w = 0.0f;
 				lineItem.textRect.h = 0.0f;
 				lineItem.window.rect.x = x;
-				lineItem.window.rect.y = paintY + ( lineNum * lineHeight );
+				lineItem.window.rect.y = paintY + ( lineNum * lineHeight / 2 );
 				lineItem.window.rect.w = w;
 				lineItem.window.rect.h = lineHeight;
 				lineItem.window.border = item->window.border;
@@ -5344,7 +5351,8 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 					UI_AddCacheEntryLine( buff, lineItem.textRect.x, lineItem.textRect.y );
 				}
 
-				lineNum++;
+				lineNum += 2 + lflf;
+				i += lflf;
 			}
 		}
 
