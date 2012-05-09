@@ -692,16 +692,22 @@ void R_InitFreeType( void )
 	registeredFontCount = 0;
 }
 
-void RE_FreeCachedGlyphs( fontInfo_t *font )
+void RE_UnregisterFont( fontInfo_t *font )
 {
-	int i, j;
+	int i, j, index = -1;
 
-	for ( i = 0; i < MAX_FONTS; ++i )
+	for ( i = 0; i < registeredFontCount; ++i )
 	{
-		if ( font && font != registeredFont + i )
+		if ( font && ( font->pointSize != registeredFont[ i ].pointSize || Q_stricmp( font->name, registeredFont[ i ].name ) ) )
 		{
-			continue;
+			continue; // name & size don't match
 		}
+		else if ( font )
+		{
+			index = i;
+		}
+
+		// free resources
 
 		FT_Done_Face( registeredFont[ i].face );
 
@@ -712,17 +718,35 @@ void RE_FreeCachedGlyphs( fontInfo_t *font )
 				ri.Free( registeredFont[ i ].glyphBlock[ j ] );
 			}
 		}
+
 	}
 
-	memset( registeredFont, 0, sizeof( registeredFont ) );
-	registeredFontCount = 0;
+	if ( index >= 0 )
+	{
+		--registeredFontCount; // now points at the last valid entry (or the one just freed)
+
+		// copy the last entry to the freed one (unless they're the same entry)
+		if ( index != registeredFontCount )
+		{
+			memcpy( registeredFont + index, registeredFont + registeredFontCount, sizeof( fontInfo_t ) );
+		}
+
+		// registeredFontCount now points at the first free entry, so wipe it
+		memset( registeredFont + registeredFontCount, 0, sizeof( fontInfo_t ) );
+	}
+	else if ( !font )
+	{
+		// freed up the whole lot...
+		memset( registeredFont, 0, sizeof( registeredFont ) );
+		registeredFontCount = 0;
+	}
 }
 
 void R_DoneFreeType( void )
 {
 	if ( ftLibrary )
 	{
-		RE_FreeCachedGlyphs( NULL );
+		RE_UnregisterFont( NULL );
 		FT_Done_FreeType( ftLibrary );
 		ftLibrary = NULL;
 	}

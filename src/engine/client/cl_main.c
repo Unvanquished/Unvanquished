@@ -1568,7 +1568,7 @@ void CL_ShutdownAll( void )
 	}
 
 	// Clear Faces
-	re.FreeCachedGlyphs( &cls.consoleFont );
+	re.UnregisterFont( &cls.consoleFont );
 }
 
 /*
@@ -2481,7 +2481,7 @@ void CL_Vid_Restart_f( void )
 	// shutdown the CGame
 	CL_ShutdownCGame();
 	// clear the font cache
-	re.FreeCachedGlyphs( NULL );
+	re.UnregisterFont( NULL );
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
 	// client is no longer pure untill new checksums are sent
@@ -5391,7 +5391,7 @@ void CL_Shutdown( void )
 
 	Com_Printf( "-----------------------\n" );
 
-	re.FreeCachedGlyphs( NULL );
+	re.UnregisterFont( NULL );
 }
 
 static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )

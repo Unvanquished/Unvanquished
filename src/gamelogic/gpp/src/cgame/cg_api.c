@@ -1269,7 +1269,7 @@ void trap_R_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
 }
 
 //176.
-void trap_R_FreeCachedGlyphs( fontInfo_t *font )
+void trap_R_UnregisterFont( fontInfo_t *font )
 {
-  syscall( CG_R_FREECACHEDGLYPHS, font );
+  syscall( CG_R_UREGISTERFONT, font );
 }

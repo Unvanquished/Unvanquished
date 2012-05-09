@@ -1302,9 +1302,9 @@ void UI_Shutdown( void )
 {
 	trap_LAN_SaveCachedServers();
 
-	UI_R_FreeCachedGlyphs( &uiInfo.uiDC.Assets.textFont );
-	UI_R_FreeCachedGlyphs( &uiInfo.uiDC.Assets.smallFont );
-	UI_R_FreeCachedGlyphs( &uiInfo.uiDC.Assets.bigFont );
+	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.textFont );
+	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.smallFont );
+	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.bigFont );
 
 	UIS_Shutdown( );
 }
@@ -4880,7 +4880,7 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.registerFont = &trap_R_RegisterFont;
 	uiInfo.uiDC.glyph = &UI_R_Glyph;
 	uiInfo.uiDC.glyphChar = &UI_R_GlyphChar;
-	uiInfo.uiDC.freeCachedGlyphs = &UI_R_FreeCachedGlyphs;
+	uiInfo.uiDC.freeCachedGlyphs = &UI_R_UnregisterFont;
 	uiInfo.uiDC.ownerDrawItem = &UI_OwnerDraw;
 	uiInfo.uiDC.getValue = &UI_GetValue;
 	uiInfo.uiDC.ownerDrawVisible = &UI_OwnerDrawVisible;

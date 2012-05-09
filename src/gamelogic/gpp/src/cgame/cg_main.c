@@ -2109,7 +2109,7 @@ void CG_LoadHudMenu( void )
 	cgDC.registerFont = &trap_R_RegisterFont;
 	cgDC.glyph = &UI_R_Glyph;
 	cgDC.glyphChar = &UI_R_GlyphChar;
-	cgDC.freeCachedGlyphs = &UI_R_FreeCachedGlyphs;
+	cgDC.freeCachedGlyphs = &UI_R_UnregisterFont;
 
 	cgDC.ownerDrawItem = &CG_OwnerDraw;
 	cgDC.getValue = &CG_GetValue;

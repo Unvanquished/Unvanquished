@@ -1392,10 +1392,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.GlyphChar( VMA(1), args[2], VMA(3) );
 			break;
 
-		case CG_R_FREECACHEDGLYPHS:
+		case CG_R_UREGISTERFONT:
 			if ( VMA(1) )
 			{
-				re.FreeCachedGlyphs( VMA(1) );
+				re.UnregisterFont( VMA(1) );
 			}
 			break;
 

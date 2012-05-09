@@ -252,7 +252,7 @@ typedef enum
   CG_GETTEXT = 300,
   CG_R_GLYPH,
   CG_R_GLYPHCHAR,
-  CG_R_FREECACHEDGLYPHS
+  CG_R_UREGISTERFONT
 } cgameImport_t;
 
 typedef enum
@@ -398,7 +398,7 @@ qhandle_t       trap_R_RegisterShader( const char *name );
 void            trap_R_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
 void            trap_R_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
 void            trap_R_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
-void            trap_R_FreeCachedGlyphs(fontInfo_t *font);
+void            trap_R_UnregisterFont(fontInfo_t *font);
 
 qhandle_t       trap_R_RegisterShaderNoMip( const char *name );
 qhandle_t       trap_R_RegisterShaderLightAttenuation( const char *name );

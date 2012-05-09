@@ -2358,7 +2358,7 @@ extern "C" {
 		re.Glyph = RE_Glyph;
 		re.GlyphChar = RE_GlyphChar;
 		re.RegisterFont = RE_RegisterFont;
-		re.FreeCachedGlyphs = RE_FreeCachedGlyphs;
+		re.UnregisterFont = RE_UnregisterFont;
 
 		re.RemapShader = R_RemapShader;
 		re.GetEntityToken = R_GetEntityToken;

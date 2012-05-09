@@ -108,9 +108,9 @@ UIS_Shutdown
 */
 void UIS_Shutdown( void )
 {
-	UI_R_FreeCachedGlyphs( &DC->Assets.textFont );
-	UI_R_FreeCachedGlyphs( &DC->Assets.smallFont );
-	UI_R_FreeCachedGlyphs( &DC->Assets.bigFont );
+	UI_R_UnregisterFont( &DC->Assets.textFont );
+	UI_R_UnregisterFont( &DC->Assets.smallFont );
+	UI_R_UnregisterFont( &DC->Assets.bigFont );
 }
 
 /*
@@ -9198,7 +9198,7 @@ void UI_R_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
     trap_R_Glyph( font, str, glyph );
 }
 
-void UI_R_FreeCachedGlyphs( fontInfo_t *font )
+void UI_R_UnregisterFont( fontInfo_t *font )
 {
   static int engineState = 0;
 
@@ -9215,5 +9215,5 @@ void UI_R_FreeCachedGlyphs( fontInfo_t *font )
   }
 
   if( engineState & 0x02 )
-    trap_R_FreeCachedGlyphs( font );
+    trap_R_UnregisterFont( font );
 }

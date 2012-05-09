@@ -1570,7 +1570,7 @@ extern "C" {
 		re.RegisterFont = RE_RegisterFont;
 		re.Glyph = RE_Glyph;
 		re.GlyphChar = RE_GlyphChar;
-		re.FreeCachedGlyphs = RE_FreeCachedGlyphs;
+		re.UnregisterFont = RE_UnregisterFont;
 		re.LoadWorld = RE_LoadWorldMap;
 //----(SA) added
 		re.GetSkinModel = RE_GetSkinModel;

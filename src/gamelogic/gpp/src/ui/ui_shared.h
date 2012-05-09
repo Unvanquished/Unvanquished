@@ -585,6 +585,6 @@ extern char g_nameBind2[ 32 ];
 
 void       UI_R_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
 void       UI_R_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
-void       UI_R_FreeCachedGlyphs(fontInfo_t *font);
+void       UI_R_UnregisterFont(fontInfo_t *font);
 
 #endif
