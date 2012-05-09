@@ -5344,6 +5344,9 @@ void CL_Shutdown( void )
 
 	S_Shutdown();
 	DL_Shutdown();
+
+	re.UnregisterFont( NULL );
+
 	CL_ShutdownRef();
 
 	CL_IRCInitiateShutdown();
@@ -5391,7 +5394,6 @@ void CL_Shutdown( void )
 
 	Com_Printf( "-----------------------\n" );
 
-	re.UnregisterFont( NULL );
 }
 
 static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
