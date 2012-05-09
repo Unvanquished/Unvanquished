@@ -4602,19 +4602,14 @@ static void Hist_Save( void )
 
 	do
 	{
-		char *buf;
-
-		if ( !history[ i ][ 0 ] )
+		if ( history[ i ][ 0 ] )
 		{
-			i = ( i + 1 ) % CON_HISTORY;
-			continue;
+			FS_Write( history[ i ], strlen( history[ i ] ), f );
+			FS_Write( "\n", 1, f );
 		}
-
-		buf = va( "%s\n", history[ i ] );
-		FS_Write( buf, strlen( buf ), f );
 		i = ( i + 1 ) % CON_HISTORY;
 	}
-	while ( i != ( hist_next - 1 ) % CON_HISTORY );
+	while ( i != hist_next % CON_HISTORY );
 
 	FS_FCloseFile( f );
 }
@@ -4626,7 +4621,15 @@ Hist_Add
 */
 void Hist_Add( const char *field )
 {
-	if ( !strcmp( field, history[( hist_current - 1 ) % CON_HISTORY ] ) )
+	if ( !strcmp( field, history[( hist_next - 1 ) % CON_HISTORY ] ) )
+	{
+		hist_current = hist_next;
+		return;
+	}
+
+	// don't add "", "\" or "/"
+	if ( !field[ 0 ] ||
+	     ( ( field[ 0 ] == '/' || field[ 0 ] == '\\' ) && !field[ 1 ] ) )
 	{
 		hist_current = hist_next;
 		return;
