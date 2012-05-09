@@ -20,9 +20,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#ifdef USE_CURSES_W
+#define _XOPEN_SOURCE 500
+//#include <stdio.h>
+#endif
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
+
 
 // curses.h defines COLOR_*, which are already defined in q_shared.h
 #undef COLOR_BLACK
@@ -43,6 +49,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #define _XOPEN_SOURCE_EXTENDED
+#ifdef USE_CURSES_W
+#include <wchar.h>
+#endif
 #include <curses.h>
 
 #define TITLE         "^4---[ ^3" CLIENT_WINDOW_TITLE " Console ^4]---"
@@ -150,15 +159,64 @@ CON_UpdateCursor
 Update the cursor position
 ==================
 */
+#ifdef USE_CURSES_W
+static ID_INLINE int CON_wcwidth( const char *s )
+{
+	int w = wcwidth( Q_UTF8CodePoint( s ) );
+	return w < 0 ? 0 : w;
+}
+
+static int CON_CursorPosFromScroll( void )
+{
+	// if we have wide char support, we have ncurses, and probably wcwidth too.
+	int i, p = Field_ScrollToOffset( &input_field ), c = 0;
+
+	for ( i = input_field.scroll; i < input_field.cursor; ++i )
+	{
+		c += CON_wcwidth( input_field.buffer + p );
+		p += Q_UTF8Width( input_field.buffer + p );
+	}
+
+	return c;
+}
+#endif
+
 static ID_INLINE void CON_UpdateCursor( void )
 {
 // pdcurses uses a different mechanism to move the cursor than ncurses
 #ifdef _WIN32
 	move( LINES - 1, Q_PrintStrlen( PROMPT ) + 8 + input_field.cursor - input_field.scroll );
 	wnoutrefresh( stdscr );
+#elif defined USE_CURSES_W
+	wmove( inputwin, 0, CON_CursorPosFromScroll() );
+	wnoutrefresh( inputwin );
 #else
 	wmove( inputwin, 0, input_field.cursor - input_field.scroll );
 	wnoutrefresh( inputwin );
+#endif
+}
+
+static ID_INLINE void CON_CheckScroll( void )
+{
+	if ( input_field.cursor < input_field.scroll )
+	{
+		input_field.scroll = input_field.cursor;
+	}
+#ifdef USE_CURSES_W
+	else
+	{
+		int c = CON_CursorPosFromScroll();
+
+		while ( c >= input_field.widthInChars )
+		{
+			c -= CON_wcwidth( input_field.buffer + input_field.scroll++ );
+		}
+	}
+#else
+	else if ( input_field.cursor >= input_field.scroll + input_field.widthInChars )
+	{
+		input_field.scroll = input_field.cursor - input_field.widthInChars + 1;
+	}
 #endif
 }
 
@@ -515,15 +573,7 @@ void CON_Init( void )
 
 	if ( curses_on )
 	{
-		if ( input_field.cursor < input_field.scroll )
-		{
-			input_field.scroll = input_field.cursor;
-		}
-		else if ( input_field.cursor >= input_field.scroll + input_field.widthInChars )
-		{
-			input_field.scroll = input_field.cursor - input_field.widthInChars + 1;
-		}
-
+		CON_CheckScroll();
 		CON_ColorPrint( inputwin, input_field.buffer + Field_ScrollToOffset( &input_field ), qfalse );
 	}
 
@@ -597,19 +647,7 @@ char *CON_Input( void )
 				{
 					werase( inputwin );
 
-					if ( input_field.cursor < input_field.scroll )
-					{
-						input_field.scroll = input_field.cursor - INPUT_SCROLL;
-
-						if ( input_field.scroll < 0 )
-						{
-							input_field.scroll = 0;
-						}
-					}
-					else if ( input_field.cursor >= input_field.scroll + input_field.widthInChars )
-					{
-						input_field.scroll = input_field.cursor - input_field.widthInChars + INPUT_SCROLL;
-					}
+					CON_CheckScroll(); // ( INPUT_SCROLL );
 
 					CON_ColorPrint( inputwin, input_field.buffer + Field_ScrollToOffset( &input_field ), qfalse );
 #ifdef _WIN32
