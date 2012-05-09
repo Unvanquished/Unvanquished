@@ -2413,6 +2413,7 @@ typedef struct
 	void         *face;
 	glyphInfo_t  *glyphBlock[0x110000 / 256]; // glyphBlock_t
 	int           pointSize;
+	int           height;
 	float         glyphScale;
 	char          name[ MAX_QPATH ];
 } fontInfo_t;

@@ -568,6 +568,7 @@ float       UI_Text_Width( const char *text, float scale );
 float       UI_Text_Height( const char *text, float scale );
 float       UI_Text_EmWidth( float scale );
 float       UI_Text_EmHeight( float scale );
+float       UI_Text_LineHeight( float scale );
 qboolean    UI_Text_IsEmoticon( const char *s, qboolean *escaped, int *length, qhandle_t *h, int *width );
 void        UI_EscapeEmoticons( char *dest, const char *src, int destsize );
 glyphInfo_t *UI_Glyph( fontInfo_t *font, const char *str );

@@ -674,6 +674,7 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 	font->face = face;
 	font->pointSize = pointSize;
 	font->glyphScale = 48.0 / pointSize;
+	font->height = ceil( ( face->height / 64.0 ) * ( face->size->metrics.y_scale / 65536.0 ) * font->glyphScale );
 
 	RE_RenderChunk( font, 0 );
 

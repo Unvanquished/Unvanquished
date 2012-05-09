@@ -2346,6 +2346,13 @@ float UI_Text_EmHeight( float scale )
 	return UI_Text_Height( "M", scale );
 }
 
+float UI_Text_LineHeight( float scale )
+{
+	fontInfo_t *font = UI_FontForScale( scale );
+
+	return font->height ? font->height * scale : UI_Text_Height( "M", scale );
+}
+
 /*
 ================
 UI_AdjustFrom640
@@ -4822,7 +4829,7 @@ void Item_SetTextExtents( itemDef_t *item, const char *text )
 		}
 
 		item->textRect.w = UI_Text_Width( textPtr, item->textscale );
-		item->textRect.h = UI_Text_Height( textPtr, item->textscale );
+		item->textRect.h = UI_Text_LineHeight( item->textscale ); // not UI_Text_Height, which breaks multi-line spacing
 
 		if ( item->textvalignment == VALIGN_BOTTOM )
 		{
@@ -5221,8 +5228,8 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 	else
 	{
 		char        buff[ 1024 ];
-		float       fontHeight = UI_Text_EmHeight( item->textscale );
-		const float lineSpacing = fontHeight * 0.4f;
+		float       fontHeight = UI_Text_LineHeight( item->textscale );
+		const float lineSpacing = UI_FontForScale( item->textscale )->face ? 0 : fontHeight * 0.4f;
 		float       lineHeight = fontHeight + lineSpacing;
 		float       textHeight;
 		int         textLength;
