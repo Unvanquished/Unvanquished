@@ -98,8 +98,16 @@ FT_Library ftLibrary = NULL;
 #define FONT_SIZE 512
 
 #define MAX_FONTS 16
+#define MAX_FILES ( MAX_FONTS )
 static int        registeredFontCount = 0;
 static fontInfo_t registeredFont[ MAX_FONTS ];
+
+static struct {
+	void *data;
+	int   length;
+	int   count;
+	char  name[ MAX_QPATH ];
+} fontData[ MAX_FILES ];
 
 void RE_RenderChunk( fontInfo_t *font, const int chunk );
 
@@ -541,6 +549,82 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	}
 }
 
+static int RE_LoadFontFile( const char *name, void **buffer )
+{
+	int i;
+
+	// if we already have this file, return it
+	for ( i = 0; i < MAX_FILES; ++i )
+	{
+		if ( !fontData[ i ].count || Q_stricmp( name, fontData[ i ].name ) )
+		{
+			continue;
+		}
+
+		++fontData[ i ].count;
+
+		*buffer = fontData[ i ].data;
+		return fontData[ i ].length;
+	}
+
+	// otherwise, find a free entry and load the file
+	for ( i = 0; i < MAX_FILES; ++i )
+	{
+		if ( !fontData [ i ].count )
+		{
+			void *tmp;
+			int  length = ri.FS_ReadFile( name, &tmp );
+
+			if ( length <= 0 )
+			{
+				return 0;
+			}
+
+			fontData[ i ].data = malloc( length );
+
+			if ( !fontData[ i ].data )
+			{
+				return 0;
+			}
+
+			fontData[ i ].length = length;
+			fontData[ i ].count = 1;
+			*buffer = fontData[ i ].data;
+
+			memcpy( fontData[ i ].data, tmp, length );
+			ri.FS_FreeFile( tmp );
+
+			Q_strncpyz( fontData[ i ].name, name, sizeof( fontData[ i ].name ) );
+
+			return length;
+		}
+	}
+
+	return 0;
+}
+
+static void RE_FreeFontFile( void *data )
+{
+	int i;
+
+	if ( !data )
+	{
+		return;
+	}
+
+	for ( i = 0; i < MAX_FILES; ++i )
+	{
+		if ( fontData[ i ].data == data )
+		{
+			if ( !--fontData[ i ].count )
+			{
+				free( fontData[ i ].data );
+			}
+			break;
+		}
+	}
+}
+
 void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 {
 	FT_Face       face;
@@ -647,14 +731,17 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 		return;
 	}
 
+	// FIXME: fallback name OR index no.
 	Q_strncpyz( font->name, strippedName, sizeof( font->name ) );
+
 	Q_strncpyz( fileName, fontName, sizeof( fileName ) );
 
-	len = ri.FS_ReadFile( fileName, &faceData );
+	len = RE_LoadFontFile( fileName, &faceData );
 
 	if ( len <= 0 )
 	{
 		ri.Printf( PRINT_ALL, "RE_RegisterFont: Unable to read font file %s\n", fileName );
+		RE_FreeFontFile( faceData );
 		return;
 	}
 
@@ -662,16 +749,20 @@ void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
 	if ( FT_New_Memory_Face( ftLibrary, faceData, len, 0, &face ) )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, unable to allocate new face.\n" );
+		RE_FreeFontFile( faceData );
 		return;
 	}
 
 	if ( FT_Set_Char_Size( face, pointSize << 6, pointSize << 6, 72, 72 ) )
 	{
 		ri.Printf( PRINT_WARNING, "RE_RegisterFont: FreeType2, Unable to set face char size.\n" );
+		FT_Done_Face( face );
+		RE_FreeFontFile( faceData );
 		return;
 	}
 
 	font->face = face;
+	font->faceData = faceData;
 	font->pointSize = pointSize;
 	font->glyphScale = 48.0 / pointSize;
 	font->height = ceil( ( face->height / 64.0 ) * ( face->size->metrics.y_scale / 65536.0 ) * font->glyphScale );
@@ -709,7 +800,8 @@ void RE_UnregisterFont( fontInfo_t *font )
 
 		// free resources
 
-		FT_Done_Face( registeredFont[ i].face );
+		FT_Done_Face( registeredFont[ i ].face );
+		RE_FreeFontFile( registeredFont[ i ].faceData );
 
 		for ( j = 0; j < 0x1100; ++j )
 		{
@@ -719,6 +811,10 @@ void RE_UnregisterFont( fontInfo_t *font )
 			}
 		}
 
+		if ( font )
+		{
+			break;
+		}
 	}
 
 	if ( index >= 0 )

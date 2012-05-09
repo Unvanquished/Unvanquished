@@ -2410,7 +2410,7 @@ typedef glyphInfo_t glyphBlock_t[256];
 
 typedef struct
 {
-	void         *face;
+	void         *face, *faceData;
 	glyphInfo_t  *glyphBlock[0x110000 / 256]; // glyphBlock_t
 	int           pointSize;
 	int           height;
