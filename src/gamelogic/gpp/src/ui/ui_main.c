@@ -154,7 +154,7 @@ This must be the very first function compiled into the .qvm file
 */
 void     UI_Init( qboolean );
 void     UI_Shutdown( void );
-void     UI_KeyEvent( int key, qboolean down );
+void     UI_KeyEvent( int key, int chr, int flags );
 void     UI_MouseEvent( int dx, int dy );
 int      UI_MousePosition( void );
 void     UI_SetMousePosition( int x, int y );
@@ -180,7 +180,16 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		case UI_KEY_EVENT:
-			UI_KeyEvent( arg0, arg1 );
+			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			{
+				arg0 &= ~K_CHAR_FLAG;
+				arg0 |= ( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ? K_CHAR_FLAG : 0;
+				UI_KeyEvent( 0, arg0, arg1 );
+			}
+			else
+			{
+				UI_KeyEvent( arg0, 0, arg1 );
+			}
 			return 0;
 
 		case UI_MOUSE_EVENT:
@@ -1292,12 +1301,19 @@ UI_Shutdown
 void UI_Shutdown( void )
 {
 	trap_LAN_SaveCachedServers();
+
+	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.textFont );
+	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.smallFont );
+	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.bigFont );
+
+	UIS_Shutdown( );
 }
 
 qboolean Asset_Parse( int handle )
 {
 	pc_token_t token;
 	const char *tempStr;
+	const char *fallbackFont = "fonts/unifont.ttf";
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
@@ -1324,6 +1340,16 @@ qboolean Asset_Parse( int handle )
 		}
 
 		// font
+		if ( Q_stricmp( token.string, "fallbackfont" ) == 0 )
+		{
+			if ( !PC_String_Parse( handle, &fallbackFont ) )
+			{
+				return qfalse;
+			}
+			continue;
+		}
+
+		// font
 		if ( Q_stricmp( token.string, "font" ) == 0 )
 		{
 			int pointSize;
@@ -1333,7 +1359,7 @@ qboolean Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			trap_R_RegisterFont( tempStr, pointSize, &uiInfo.uiDC.Assets.textFont );
+			trap_R_RegisterFont( tempStr, fallbackFont, pointSize, &uiInfo.uiDC.Assets.textFont );
 			uiInfo.uiDC.Assets.fontRegistered = qtrue;
 			continue;
 		}
@@ -1347,7 +1373,7 @@ qboolean Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			trap_R_RegisterFont( tempStr, pointSize, &uiInfo.uiDC.Assets.smallFont );
+			trap_R_RegisterFont( tempStr, fallbackFont, pointSize, &uiInfo.uiDC.Assets.smallFont );
 			continue;
 		}
 
@@ -1360,7 +1386,7 @@ qboolean Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			trap_R_RegisterFont( tempStr, pointSize, &uiInfo.uiDC.Assets.bigFont );
+			trap_R_RegisterFont( tempStr, fallbackFont, pointSize, &uiInfo.uiDC.Assets.bigFont );
 			continue;
 		}
 
@@ -4863,6 +4889,9 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	uiInfo.uiDC.renderScene = &trap_R_RenderScene;
 	uiInfo.uiDC.registerFont = &trap_R_RegisterFont;
+	uiInfo.uiDC.glyph = &UI_R_Glyph;
+	uiInfo.uiDC.glyphChar = &UI_R_GlyphChar;
+	uiInfo.uiDC.freeCachedGlyphs = &UI_R_UnregisterFont;
 	uiInfo.uiDC.ownerDrawItem = &UI_OwnerDraw;
 	uiInfo.uiDC.getValue = &UI_GetValue;
 	uiInfo.uiDC.ownerDrawVisible = &UI_OwnerDrawVisible;
@@ -4934,7 +4963,7 @@ void UI_Init( qboolean inGameLoad )
 UI_KeyEvent
 =================
 */
-void UI_KeyEvent( int key, qboolean down )
+void UI_KeyEvent( int key, int chr, int flags )
 {
 	if ( Menu_Count() > 0 )
 	{
@@ -4942,13 +4971,13 @@ void UI_KeyEvent( int key, qboolean down )
 
 		if ( menu )
 		{
-			if ( key == K_ESCAPE && down && !Menus_AnyFullScreenVisible() )
+			if ( key == K_ESCAPE && ( flags & ( 1 << KEYEVSTATE_DOWN ) ) && !Menus_AnyFullScreenVisible() )
 			{
 				Menus_CloseAll();
 			}
 			else
 			{
-				Menu_HandleKey( menu, key, down );
+				Menu_HandleKey( menu, key, chr, !!( flags & ( 1 << KEYEVSTATE_DOWN ) ) );
 			}
 		}
 		else

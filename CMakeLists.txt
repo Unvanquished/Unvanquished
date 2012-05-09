@@ -724,6 +724,7 @@ set( CGAMEGPP
   ${GPP_DIR}/src/cgame/cg_particles.c
   ${GPP_DIR}/src/cgame/cg_tutorial.c
   ${GPP_DIR}/src/ui/ui_shared.c
+  ${GPP_DIR}/src/ui/ui_utf8.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
   ${GPP_DIR}/src/cgame/cg_api.c
@@ -776,6 +777,7 @@ set( UIGPP
   ${GPP_DIR}/src/game/bg_lib.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${GPP_DIR}/src/ui/ui_utf8.c
   ${GPP_DIR}/src/ui/ui_api.c
 )
 
@@ -1246,6 +1248,23 @@ if( USE_GLSL_OPTIMIZER )
   target_link_libraries( glsl_optimizer glcpp-library mesa )
 endif()
 
+###############
+# Find Curses #
+###############
+
+if( BUILD_CLIENT OR BUILD_SERVER )
+  set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
+  find_package( CursesW )
+  if( CURSESW_FOUND )
+    set( CURSES_DEFINES USE_CURSES USE_CURSES_W )
+    set( CURSES_INCLUDE_DIR ${CURSESW_INCLUDE_DIR} )
+    set( CURSES_LIBRARIES   ${CURSESW_LIBRARIES} )
+  else()
+    find_package( Curses REQUIRED )
+    set( CURSES_DEFINES USE_CURSES )
+  endif()
+endif()
+
 ################
 # Build Client #
 ################
@@ -1308,9 +1327,7 @@ if( BUILD_CLIENT )
   endif()
 
   if( USE_CURSES )
-    set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
-    find_package( Curses REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_CURSES )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ${CURSES_DEFINES} )
     include_directories( ${CURSES_INCLUDE_DIR} )
     target_link_libraries( client ${CURSES_LIBRARIES} )
   endif()
@@ -1451,9 +1468,7 @@ if( BUILD_SERVER )
   endif()
 
   if( USE_CURSES )
-    set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
-    find_package( Curses REQUIRED )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS USE_CURSES )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ${CURSES_DEFINES} )
     include_directories( ${CURSES_INCLUDE_DIR} )
     target_link_libraries( server ${CURSES_LIBRARIES} )
   endif()

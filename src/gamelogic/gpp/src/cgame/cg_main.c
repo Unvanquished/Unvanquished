@@ -73,7 +73,16 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return CG_LastAttacker();
 
 		case CG_KEY_EVENT:
-			CG_KeyEvent( arg0, arg1 );
+			if ( arg1 & ( 1 << KEYEVSTATE_CHAR ) )
+			{
+				arg0 &= ~K_CHAR_FLAG;
+				arg0 |= ( !!( arg1 & ( 1 << KEYEVSTATE_BIT ) ) ) << ( K_CHAR_BIT - 1 );
+				CG_KeyEvent( 0, arg0, arg1 );
+			}
+			else
+			{
+				CG_KeyEvent( arg0, 0, arg1 );
+			}
 			return 0;
 
 		case CG_MOUSE_EVENT:
@@ -1404,6 +1413,7 @@ qboolean CG_Asset_Parse( int handle )
 {
 	pc_token_t token;
 	const char *tempStr;
+	const char *fallbackFont = "fonts/unifont.ttf";
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
@@ -1427,6 +1437,16 @@ qboolean CG_Asset_Parse( int handle )
 			return qtrue;
 		}
 
+		// fallback font
+		if ( Q_stricmp( token.string, "fallbackfont" ) == 0 )
+		{
+			if ( !PC_String_Parse( handle, &fallbackFont ) )
+			{
+				return qfalse;
+			}
+			continue;
+		}
+
 		// font
 		if ( Q_stricmp( token.string, "font" ) == 0 )
 		{
@@ -1437,7 +1457,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.textFont );
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.textFont);
 			continue;
 		}
 
@@ -1451,7 +1471,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.smallFont );
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.smallFont );
 			continue;
 		}
 
@@ -1465,7 +1485,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.bigFont );
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.bigFont );
 			continue;
 		}
 
@@ -2098,6 +2118,10 @@ void CG_LoadHudMenu( void )
 	cgDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	cgDC.renderScene = &trap_R_RenderScene;
 	cgDC.registerFont = &trap_R_RegisterFont;
+	cgDC.glyph = &UI_R_Glyph;
+	cgDC.glyphChar = &UI_R_GlyphChar;
+	cgDC.freeCachedGlyphs = &UI_R_UnregisterFont;
+
 	cgDC.ownerDrawItem = &CG_OwnerDraw;
 	cgDC.getValue = &CG_GetValue;
 	cgDC.ownerDrawVisible = &CG_OwnerDrawVisible;
@@ -2316,6 +2340,7 @@ void CG_Shutdown( void )
 {
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
+	UIS_Shutdown();
 }
 
 /*

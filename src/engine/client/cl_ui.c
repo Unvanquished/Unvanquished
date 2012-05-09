@@ -1392,7 +1392,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_R_REGISTERFONT:
-			re.RegisterFont( VMA( 1 ), args[ 2 ], VMA( 3 ) );
+			re.RegisterFont( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
 		case UI_MEMSET:
@@ -1514,6 +1514,24 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 		case UI_R_ANIMFRAMERATE:
 			return re.AnimFrameRate( args[ 1 ] );
 #endif
+		case UI_GETTEXT:
+			strncpy( VMA(1), VMA(2), args[3] );
+			return 0;
+
+		case UI_R_GLYPH:
+			re.Glyph( VMA(1), VMA(2), VMA(3) );
+			break;
+
+		case UI_R_GLYPHCHAR:
+			re.GlyphChar( VMA(1), args[2], VMA(3) );
+			break;
+
+		case UI_R_UREGISTERFONT:
+			if ( VMA(1) )
+			{
+				re.UnregisterFont( VMA(1) );
+			}
+			break;
 
 		default:
 			Com_Error( ERR_DROP, "Bad UI system trap: %ld", ( long int ) args[ 0 ] );

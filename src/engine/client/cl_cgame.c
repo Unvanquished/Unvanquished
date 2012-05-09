@@ -984,7 +984,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 #endif // IPHONE
 
 		case CG_R_REGISTERFONT:
-			re.RegisterFont( VMA( 1 ), args[ 2 ], VMA( 3 ) );
+			re.RegisterFont( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
 		case CG_R_REGISTERSHADERNOMIP:
@@ -1379,6 +1379,25 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_REGISTER_BUTTON_COMMANDS:
 			CL_RegisterButtonCommands( VMA( 1 ) );
 			return 0;
+
+		case CG_GETTEXT:
+			strncpy( VMA(1), VMA(2), args[3] );
+			return 0;
+
+		case CG_R_GLYPH:
+			re.Glyph( VMA(1), VMA(2), VMA(3) );
+			break;
+
+		case CG_R_GLYPHCHAR:
+			re.GlyphChar( VMA(1), args[2], VMA(3) );
+			break;
+
+		case CG_R_UREGISTERFONT:
+			if ( VMA(1) )
+			{
+				re.UnregisterFont( VMA(1) );
+			}
+			break;
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );

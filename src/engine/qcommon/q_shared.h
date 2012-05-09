@@ -546,7 +546,12 @@ extern "C" {
 #define FRAMETIME        100 // msec
 
 #define Q_COLOR_ESCAPE   '^'
-#define Q_IsColorString( p ) ( p && *( p ) == Q_COLOR_ESCAPE && *( ( p ) + 1 ) && *( ( p ) + 1 ) != Q_COLOR_ESCAPE && *( ( p ) + 1 ) != '\n' )
+static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( const char *p )
+{
+	return p && p[0] == Q_COLOR_ESCAPE &&
+	       p[1] >= '0' && p[1] != ';' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p'
+	       ? qtrue : qfalse;
+}
 
 #define COLOR_BLACK      '0'
 #define COLOR_RED        '1'
@@ -1484,6 +1489,7 @@ extern "C" {
 //=============================================
 
 int Q_UTF8Width( const char *str );
+int Q_UTF8WidthCP( int ch );
 int Q_UTF8Strlen( const char *str );
 int Q_UTF8PrintStrlen( const char *str );
 qboolean Q_UTF8ContByte( char c );
@@ -1750,6 +1756,11 @@ char *Q_UTF8Unstore( int e );
 #define KEYCATCH_UI      0x0002
 #define KEYCATCH_MESSAGE 0x0004
 #define KEYCATCH_CGAME   0x0008
+
+#define KEYEVSTATE_DOWN 0
+#define KEYEVSTATE_CHAR 1
+#define KEYEVSTATE_BIT  2
+#define KEYEVSTATE_SUP  3
 
 // sound channels
 // channel 0 never willingly overrides
@@ -2382,29 +2393,35 @@ char *Q_UTF8Unstore( int e );
 #define GLYPH_CHARSTART 32
 #define GLYPH_CHAREND   127
 #define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
-	typedef struct
-	{
-		int       height; // number of scan lines
-		int       top; // top of glyph in buffer
-		int       bottom; // bottom of glyph in buffer
-		int       pitch; // width for copying
-		int       xSkip; // x adjustment
-		int       imageWidth; // width of actual image
-		int       imageHeight; // height of actual image
-		float     s; // x offset in image where glyph starts
-		float     t; // y offset in image where glyph starts
-		float     s2;
-		float     t2;
-		qhandle_t glyph; // handle to the shader with the glyph
-		char      shaderName[ 32 ];
-	} glyphInfo_t;
+typedef struct
+{
+	int       height; // number of scan lines
+	int       top; // top of glyph in buffer
+	int       bottom; // bottom of glyph in buffer
+	int       pitch; // width for copying
+	int       xSkip; // x adjustment
+	int       imageWidth; // width of actual image
+	int       imageHeight; // height of actual image
+	float     s; // x offset in image where glyph starts
+	float     t; // y offset in image where glyph starts
+	float     s2;
+	float     t2;
+	qhandle_t glyph; // handle to the shader with the glyph
+	char      shaderName[ 32 ];
+} glyphInfo_t;
 
-	typedef struct
-	{
-		glyphInfo_t glyphs [ GLYPHS_PER_FONT ];
-		float       glyphScale;
-		char        name[ MAX_QPATH ];
-	} fontInfo_t;
+typedef glyphInfo_t glyphBlock_t[256];
+
+typedef struct
+{
+	void         *face, *faceData, *fallback, *fallbackData;
+	glyphInfo_t  *glyphBlock[0x110000 / 256]; // glyphBlock_t
+	int           pointSize;
+	int           height;
+	float         glyphScale;
+	char          name[ MAX_QPATH ];
+} fontInfo_t;
+
 
 #define Square( x ) ( ( x ) * ( x ) )
 

@@ -2355,7 +2355,11 @@ extern "C" {
 		re.Add2dPolys = RE_2DPolyies;
 		re.DrawStretchPicGradient = RE_StretchPicGradient;
 
+		re.Glyph = RE_Glyph;
+		re.GlyphChar = RE_GlyphChar;
 		re.RegisterFont = RE_RegisterFont;
+		re.UnregisterFont = RE_UnregisterFont;
+
 		re.RemapShader = R_RemapShader;
 		re.GetEntityToken = R_GetEntityToken;
 		re.inPVS = R_inPVS;

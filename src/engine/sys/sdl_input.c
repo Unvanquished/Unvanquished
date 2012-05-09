@@ -260,7 +260,7 @@ IN_TranslateSDLToQ3Key
 static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
     keyNum_t *key, qboolean down )
 {
-	static unsigned char buf[ 2 ] = { '\0', '\0' };
+	static unsigned char buf[ 5 ] = {0};
 
 	*buf = '\0';
 	*key = 0;
@@ -592,11 +592,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 		*buf = '\0';
 	}
 
-	// Don't allow extended ASCII to generate characters
-	if ( *buf & 0x80 )
-	{
-		*buf = '\0';
-	}
+	memcpy( buf, Q_UTF8Encode( keysym->unicode ), sizeof( buf ) );
 
 	return ( char * ) buf;
 }
@@ -1547,14 +1543,16 @@ static void IN_ProcessEvents( void )
 			case SDL_KEYDOWN:
 				character = IN_TranslateSDLToQ3Key( &e.key.keysym, &key, qtrue );
 
+				if( character && *character )
+				{
+					void *buf = Z_Malloc( 5 );
+					memcpy( buf, character, 5 );
+					Com_QueueEvent( 0, SE_CHAR, 5, 0, 0, buf );
+				}
+
 				if ( key )
 				{
 					Com_QueueEvent( 0, SE_KEY, key, qtrue, 0, NULL );
-				}
-
-				if ( character )
-				{
-					Com_QueueEvent( 0, SE_CHAR, *character, 0, 0, NULL );
 				}
 
 				break;

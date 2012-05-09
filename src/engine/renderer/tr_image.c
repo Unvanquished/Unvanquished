@@ -1079,7 +1079,7 @@ This is the only way any image_t are created
 image_t        *R_CreateImage( const char *name, const byte *pic, int width, int height,
                                qboolean mipmap, qboolean allowPicmip, int glWrapClampMode )
 {
-	image_t  *image;
+	image_t  *image = NULL;
 	qboolean isLightmap = qfalse;
 	long     hash;
 	qboolean noCompress = qfalse;
@@ -1214,6 +1214,111 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 
 	return image;
 }
+
+/*
+================
+R_CreateGlyph
+================
+*/
+image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height )
+{
+	image_t  *image = NULL;
+	long     hash;
+	qboolean noCompress = qfalse;
+
+	if ( strlen( name ) >= MAX_QPATH )
+	{
+		ri.Error( ERR_DROP, "R_CreateImage: \"%s\" is too long\n", name );
+	}
+
+	if ( r_ext_compressed_textures->integer == 2 && ( tr.allowCompress != qtrue ) )
+	{
+		noCompress = qtrue;
+	}
+	else if ( r_ext_compressed_textures->integer == 1 && ( tr.allowCompress < 0 ) )
+	{
+		noCompress = qtrue;
+	}
+
+	if ( tr.numImages == MAX_DRAWIMAGES )
+	{
+		ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
+	}
+
+	image = tr.images[ tr.numImages ] = R_CacheImageAlloc( sizeof( image_t ) );
+
+	glGenTextures( 1, &image->texnum );
+
+	tr.numImages++;
+
+	image->mipmap = qfalse;
+	image->allowPicmip = qfalse;
+
+	strcpy( image->imgName, name );
+
+	image->width = width;
+	image->height = height;
+	image->wrapClampMode = GL_CLAMP_TO_EDGE;
+
+	image->TMU = 0;
+
+	if ( glActiveTextureARB )
+	{
+		GL_SelectTexture( image->TMU );
+	}
+
+	GL_Bind( image );
+
+	glTexImage2D( GL_TEXTURE_2D, 0, noCompress ? GL_LUMINANCE_ALPHA : GL_COMPRESSED_LUMINANCE_ALPHA,
+	              width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pic );
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
+
+	GL_CheckErrors();
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+	glBindTexture( GL_TEXTURE_2D, 0 );
+
+	hash = GenerateImageHashValue( name );
+	image->next = r_imageHashTable[ hash ];
+	r_imageHashTable[ hash ] = image;
+
+	image->hash = hash;
+
+	return image;
+}
+
+
+
+
+void R_FreeImage( image_t *image )
+{
+	int i;
+
+	for ( i=0; i < tr.numImages ; i++ ) {
+		if ( tr.images[ i ] == image ) {
+			free( image );
+			tr.images[ i ] = NULL;
+			return;
+		}
+	}
+
+	ri.Printf( PRINT_ALL, "R_FreeImage: image not found\n" );
+}
+
+void R_FreeImages( void )
+{
+	int i;
+
+	for ( i=0; i < tr.numImages ; i++ ) {
+		free( tr.images[ i ] );
+		tr.images[ i ] = NULL;
+	}
+}
+
 
 /*
 =========================================================
@@ -3349,16 +3454,24 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 
 	png_set_write_fn( png, buffer, png_write_data, png_flush_data );
 
-	if ( numBytes == 4 )
+	switch ( numBytes )
 	{
+	default:
 		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
 		              PNG_FILTER_TYPE_DEFAULT );
-	}
-	else
-	{
-		// should be 3
+		break;
+	case 3:
 		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
 		              PNG_FILTER_TYPE_DEFAULT );
+		break;
+	case 2:
+		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_GA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+		              PNG_FILTER_TYPE_DEFAULT );
+		break;
+	case 1:
+		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+		              PNG_FILTER_TYPE_DEFAULT );
+		break;
 	}
 
 	// write the file header information

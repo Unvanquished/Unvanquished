@@ -1363,7 +1363,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 		{
 			if ( glConfig.driverType == GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
 			{
-				glGenerateMipmap( image->type );
+				glGenerateMipmapEXT( image->type );
 				glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
 			}
 			else if ( glConfig2.generateMipmapAvailable )
@@ -1599,6 +1599,50 @@ image_t        *R_CreateImage( const char *name,
 	//GL_Unbind();
 	glBindTexture( image->type, 0 );
 #endif
+
+	return image;
+}
+
+/*
+================
+R_CreateGlyph
+================
+*/
+image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height )
+{
+	image_t *image = R_AllocImage( name, qtrue );
+
+	if ( !image )
+	{
+		return NULL;
+	}
+
+	image->type = GL_TEXTURE_2D;
+	image->width = width;
+	image->height = height;
+	image->bits = IF_NOPICMIP;
+	image->filterType = FT_LINEAR;
+	image->wrapType = WT_CLAMP;
+
+	GL_Bind( image );
+
+	image->uploadWidth = width;
+	image->uploadHeight = height;
+	image->internalFormat = GL_LUMINANCE_ALPHA;
+
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pic );
+
+	GL_CheckErrors();
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+	GL_CheckErrors();
+
+	glBindTexture( GL_TEXTURE_2D, 0 );
 
 	return image;
 }

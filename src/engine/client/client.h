@@ -421,6 +421,7 @@ typedef struct
 	qhandle_t   consoleShader;
 	qhandle_t   consoleShader2; // NERVE - SMF - merged from WolfSP
 	qboolean    useLegacyConsoleFont;
+	qboolean    useLegacyConsoleFace;
 	fontInfo_t  consoleFont;
 
 	// www downloading
@@ -714,13 +715,22 @@ qboolean CL_UpdateVisiblePings_f( int source );
 
 //#define       CON_TEXTSIZE    32768
 #define     CON_TEXTSIZE 65536 // (SA) DM want's more console...
+#define     CON_LINECOUNT  512
+
+#define     CONSOLE_FONT_VPADDING 0.3
+
+typedef struct
+{
+	int ch :24;
+	int ink :8;
+} conChar_t;
 
 typedef struct
 {
 	qboolean initialized;
 
-	char     text[ CON_TEXTSIZE ];
-	char     tcolor[ CON_TEXTSIZE ];
+	conChar_t text[ CON_TEXTSIZE ];
+
 	int      current; // line where next message will be printed
 	int      x; // offset in current line for next print
 	int      display; // bottom of console displays this line
@@ -783,9 +793,11 @@ void  SCR_DrawNamedPic( float x, float y, float width, float height, const char 
 void  SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noColorEscape );  // draws a string with embedded color control characters with fade
 void  SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean noColorEscape );  // ignores embedded color control characters
 void  SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape );
-void  SCR_DrawSmallChar( int x, int y, const char *s );
+void  SCR_DrawSmallUnichar( int x, int y, int ch );
 void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
+void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );
 float SCR_ConsoleFontCharWidth( const char *s );
+float SCR_ConsoleFontUnicharWidth( int ch );
 float SCR_ConsoleFontCharHeight( void );
 float SCR_ConsoleFontStringWidth( const char *s, int len );
 

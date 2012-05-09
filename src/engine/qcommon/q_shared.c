@@ -2489,6 +2489,15 @@ int Q_UTF8Width( const char *str )
   return s - (const unsigned char *)str + 1;
 }
 
+int Q_UTF8WidthCP( int ch )
+{
+	if ( ch <=   0x007F ) { return 1; }
+	if ( ch <=   0x07FF ) { return 2; }
+	if ( ch <=   0xFFFF ) { return 3; }
+	if ( ch <= 0x10FFFF ) { return 4; }
+	return 0;
+}
+
 int Q_UTF8Strlen( const char *str )
 {
   int l = 0;
@@ -2670,7 +2679,12 @@ int Q_UTF8Store( const char *s )
   }
   return r;
 #else
-  return *(int *)s;
+  int r = *(int *)s;
+  // don't assume that s is NUL-padded to four bytes
+  if ( ( r & 0x000000FF ) == 0 ) { return 0; }
+  if ( ( r & 0x0000FF00 ) == 0 ) { return r & 0x000000FF; }
+  if ( ( r & 0x00FF0000 ) == 0 ) { return r & 0x0000FFFF; }
+  if ( ( r & 0xFF000000 ) == 0 ) { return r & 0x00FFFFFF; }
 #endif
 }
 

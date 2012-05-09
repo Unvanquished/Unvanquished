@@ -452,18 +452,18 @@ qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode )
 		return qfalse;
 	}
 
-	if ( mode == -2 ) 
+	if ( mode == -2 )
 	{
 		// Must set width and height to display size before calling this function!
 		*windowAspect = ( float ) *width / *height;
-	} 
+	}
 	else if ( mode == -1 )
 	{
 		*width = r_customwidth->integer;
 		*height = r_customheight->integer;
 		*windowAspect = r_customaspect->value;
-	} 
-	else 
+	}
+	else
 	{
 		vm = &r_vidModes[ mode ];
 
@@ -1568,6 +1568,9 @@ extern "C" {
 		re.RegisterShaderLightAttenuation = NULL;
 #endif
 		re.RegisterFont = RE_RegisterFont;
+		re.Glyph = RE_Glyph;
+		re.GlyphChar = RE_GlyphChar;
+		re.UnregisterFont = RE_UnregisterFont;
 		re.LoadWorld = RE_LoadWorldMap;
 //----(SA) added
 		re.GetSkinModel = RE_GetSkinModel;

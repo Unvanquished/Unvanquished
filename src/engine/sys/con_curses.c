@@ -20,9 +20,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#ifdef USE_CURSES_W
+#define _XOPEN_SOURCE 500
+//#include <stdio.h>
+#endif
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
+
 
 // curses.h defines COLOR_*, which are already defined in q_shared.h
 #undef COLOR_BLACK
@@ -34,13 +40,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #undef COLOR_CYAN
 #undef COLOR_WHITE
 
-#include <curses.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
+#include <locale.h>
 #ifndef _WIN32
 #include <sys/ioctl.h>
 #endif
+
+#define _XOPEN_SOURCE_EXTENDED
+#ifdef USE_CURSES_W
+#include <wchar.h>
+#endif
+#include <curses.h>
 
 #define TITLE         "^4---[ ^3" CLIENT_WINDOW_TITLE " Console ^4]---"
 #define PROMPT        "^3-> "
@@ -147,15 +159,64 @@ CON_UpdateCursor
 Update the cursor position
 ==================
 */
+#ifdef USE_CURSES_W
+static ID_INLINE int CON_wcwidth( const char *s )
+{
+	int w = wcwidth( Q_UTF8CodePoint( s ) );
+	return w < 0 ? 0 : w;
+}
+
+static int CON_CursorPosFromScroll( void )
+{
+	// if we have wide char support, we have ncurses, and probably wcwidth too.
+	int i, p = Field_ScrollToOffset( &input_field ), c = 0;
+
+	for ( i = input_field.scroll; i < input_field.cursor; ++i )
+	{
+		c += CON_wcwidth( input_field.buffer + p );
+		p += Q_UTF8Width( input_field.buffer + p );
+	}
+
+	return c;
+}
+#endif
+
 static ID_INLINE void CON_UpdateCursor( void )
 {
 // pdcurses uses a different mechanism to move the cursor than ncurses
 #ifdef _WIN32
 	move( LINES - 1, Q_PrintStrlen( PROMPT ) + 8 + input_field.cursor - input_field.scroll );
 	wnoutrefresh( stdscr );
+#elif defined USE_CURSES_W
+	wmove( inputwin, 0, CON_CursorPosFromScroll() );
+	wnoutrefresh( inputwin );
 #else
 	wmove( inputwin, 0, input_field.cursor - input_field.scroll );
 	wnoutrefresh( inputwin );
+#endif
+}
+
+static ID_INLINE void CON_CheckScroll( void )
+{
+	if ( input_field.cursor < input_field.scroll )
+	{
+		input_field.scroll = input_field.cursor;
+	}
+#ifdef USE_CURSES_W
+	else
+	{
+		int c = CON_CursorPosFromScroll();
+
+		while ( c >= input_field.widthInChars )
+		{
+			c -= CON_wcwidth( input_field.buffer + input_field.scroll++ );
+		}
+	}
+#else
+	else if ( input_field.cursor >= input_field.scroll + input_field.widthInChars )
+	{
+		input_field.scroll = input_field.cursor - input_field.widthInChars + 1;
+	}
 #endif
 }
 
@@ -200,7 +261,11 @@ CON_ColorPrint
 */
 static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 {
+#ifdef USE_CURSES_W
+	static wchar_t buffer[ MAXPRINTMSG ];
+#else
 	static char buffer[ MAXPRINTMSG ];
+#endif
 	int         length = 0;
 
 	CON_SetColor( win, 7 );
@@ -212,8 +277,13 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 			// First empty the buffer
 			if ( length > 0 )
 			{
+#ifdef USE_CURSES_W
+				buffer[ length ] = L'\0';
+				waddwstr( win, buffer );
+#else
 				buffer[ length ] = '\0';
 				wprintw( win, "%s", buffer );
+#endif
 				length = 0;
 			}
 
@@ -262,17 +332,30 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 				break;
 			}
 
-			buffer[ length ] = *msg;
+#ifdef USE_CURSES_W
+			buffer[ length ] = (wchar_t) Q_UTF8CodePoint( msg );
+			msg += Q_UTF8WidthCP( buffer[ length ]);
 			length++;
-			msg++;
+#else
+			{
+				int chr = Q_UTF8CodePoint( msg );
+				msg += Q_UTF8WidthCP( chr );
+				buffer[ length++ ] = ( chr >= 0x100 ) ? '?' : chr;
+			}
+#endif
 		}
 	}
 
 	// Empty anything still left in the buffer
 	if ( length > 0 )
 	{
+#ifdef USE_CURSES_W
+		buffer[ length ] = L'\0';
+		waddwstr( win, buffer );
+#else
 		buffer[ length ] = '\0';
 		wprintw( win, "%s", buffer );
+#endif
 	}
 }
 
@@ -404,6 +487,7 @@ void CON_Init( void )
 
 		endwin();
 		delscreen( test );
+		setlocale(LC_CTYPE, "");
 		initscr();
 		cbreak();
 		noecho();
@@ -489,16 +573,8 @@ void CON_Init( void )
 
 	if ( curses_on )
 	{
-		if ( input_field.cursor < input_field.scroll )
-		{
-			input_field.scroll = input_field.cursor;
-		}
-		else if ( input_field.cursor >= input_field.scroll + input_field.widthInChars )
-		{
-			input_field.scroll = input_field.cursor - input_field.widthInChars + 1;
-		}
-
-		CON_ColorPrint( inputwin, input_field.buffer + input_field.scroll, qfalse );
+		CON_CheckScroll();
+		CON_ColorPrint( inputwin, input_field.buffer + Field_ScrollToOffset( &input_field ), qfalse );
 	}
 
 	CON_UpdateCursor();
@@ -534,6 +610,11 @@ char *CON_Input( void )
 	int         chr, num_chars = 0;
 	static char text[ MAX_EDIT_LINE ];
 	static int  lasttime = -1;
+	static enum {
+		MODE_UNKNOWN,
+		MODE_PLAIN,
+		MODE_UTF8
+	}           mode;
 
 	if ( !curses_on )
 	{
@@ -566,21 +647,9 @@ char *CON_Input( void )
 				{
 					werase( inputwin );
 
-					if ( input_field.cursor < input_field.scroll )
-					{
-						input_field.scroll = input_field.cursor - INPUT_SCROLL;
+					CON_CheckScroll(); // ( INPUT_SCROLL );
 
-						if ( input_field.scroll < 0 )
-						{
-							input_field.scroll = 0;
-						}
-					}
-					else if ( input_field.cursor >= input_field.scroll + input_field.widthInChars )
-					{
-						input_field.scroll = input_field.cursor - input_field.widthInChars + INPUT_SCROLL;
-					}
-
-					CON_ColorPrint( inputwin, input_field.buffer + input_field.scroll, qfalse );
+					CON_ColorPrint( inputwin, input_field.buffer + Field_ScrollToOffset( &input_field ), qfalse );
 #ifdef _WIN32
 					wrefresh( inputwin );  // If this is not done the cursor moves strangely
 #else
@@ -618,10 +687,14 @@ char *CON_Input( void )
 				CON_UpdateCursor();
 				continue;
 
+			case 11: // Ctrl-K
+				input_field.buffer[ Field_CursorToOffset( &input_field ) ] = '\0';
+				continue;
+
 			case '\t':
 			case KEY_STAB:
 				Field_AutoComplete( &input_field, PROMPT );
-				input_field.cursor = strlen( input_field.buffer );
+				input_field.cursor = Q_UTF8Strlen( input_field.buffer );
 				continue;
 
 			case '\f':
@@ -637,7 +710,7 @@ char *CON_Input( void )
 				continue;
 
 			case KEY_RIGHT:
-				if ( input_field.cursor < strlen( input_field.buffer ) )
+				if ( input_field.cursor < Q_UTF8Strlen( input_field.buffer ) )
 				{
 					input_field.cursor++;
 				}
@@ -651,6 +724,7 @@ char *CON_Input( void )
 					if ( field )
 					{
 						strcpy( input_field.buffer, field );
+						goto key_end;
 					}
 
 					continue;
@@ -663,6 +737,7 @@ char *CON_Input( void )
 					if ( field )
 					{
 						strcpy( input_field.buffer, field );
+						goto key_end;
 					}
 					else
 					{
@@ -677,7 +752,8 @@ char *CON_Input( void )
 				continue;
 
 			case KEY_END:
-				input_field.cursor = strlen( input_field.buffer );
+				key_end:
+				input_field.cursor = Q_UTF8Strlen( input_field.buffer );
 				continue;
 
 			case KEY_NPAGE:
@@ -723,25 +799,138 @@ char *CON_Input( void )
 				input_field.cursor--;
 
 				// Fall through
+			case 4: // Ctrl-D
 			case KEY_DC:
-				if ( input_field.cursor < strlen( input_field.buffer ) )
+				if ( input_field.cursor < Q_UTF8Strlen( input_field.buffer ) )
 				{
-					memmove( input_field.buffer + input_field.cursor,
-					         input_field.buffer + input_field.cursor + 1,
-					         strlen( input_field.buffer ) - input_field.cursor );
+					int offset = Field_CursorToOffset( &input_field );
+					int width = Q_UTF8Width( input_field.buffer + offset );
+					memmove( input_field.buffer + offset,
+					         input_field.buffer + offset + width,
+					         strlen( input_field.buffer + offset + width ) + 1 );
 				}
 
 				continue;
+
 		}
 
 		// Normal characters
-		if ( chr >= ' ' && chr < 256 && strlen( input_field.buffer ) + 1 < sizeof( input_field.buffer ) )
+		if ( chr >= ' ' )
 		{
-			memmove( input_field.buffer + input_field.cursor + 1,
-			         input_field.buffer + input_field.cursor,
-			         strlen( input_field.buffer ) - input_field.cursor );
-			input_field.buffer[ input_field.cursor ] = chr;
-			input_field.cursor++;
+			int width = 1;//Q_UTF8WidthCP( chr );
+			int seq = chr;
+			int count, offset;
+			char buf[20];
+
+			if ( chr >= 0x100 )
+				continue; // !!!
+
+			if ( chr >= 0xC2 && chr <= 0xF4 )
+			{
+				switch ( mode )
+				{
+				case MODE_UNKNOWN:
+				case MODE_UTF8:
+					timeout( 2 );
+					count = ( chr < 0xE0 ) ? 1 : ( chr < 0xF0 ) ? 2 : 3;
+					width = count + 1;
+					while ( --count >= 0)
+					{
+						int ch = getch();
+
+						if ( ch == ERR )
+						{
+							if ( mode == MODE_UNKNOWN )
+							{
+								mode = MODE_PLAIN;
+								width -= count;
+							}
+							else
+							{
+								width = 0;
+							}
+							break;
+						}
+
+						chr = chr << 8 | ch;
+
+						if ( ch < 0x80 || ch >= 0xC0 )
+						{
+							width -= count;
+							mode = MODE_PLAIN;
+							break;
+						}
+						mode = MODE_UTF8;
+					}
+					timeout( 0 );
+					break;
+
+				case MODE_PLAIN:
+					break;
+				}
+			}
+			else
+			{
+				switch ( mode )
+				{
+				case MODE_UNKNOWN:
+					if ( chr >= 0x80 )
+						mode = MODE_PLAIN;
+				case MODE_PLAIN:
+					break;
+				case MODE_UTF8:
+					if ( chr >= 0x80 )
+					{
+						width = 0;
+					}
+					break;
+				}
+			}
+
+			switch ( mode )
+			{
+			case MODE_UNKNOWN:
+			case MODE_PLAIN:
+				// convert non-ASCII to UTF-8, then insert
+				// FIXME: assumes Latin-1
+				buf[0] = '\0';
+
+				for ( count = 0; count <= width; ++count )
+				{
+					strcat( buf, Q_UTF8Encode( ( chr >> ( ( width - count ) * 8 ) ) & 0xFF ) );
+				}
+
+				count = strlen( buf );
+				offset = Field_CursorToOffset( &input_field );
+				
+				memmove( input_field.buffer + offset + count,
+				         input_field.buffer + offset,
+				         strlen( input_field.buffer + offset ) + 1 );
+				memcpy( input_field.buffer + offset, buf, count );
+
+				input_field.cursor += width;
+				break;
+
+			case MODE_UTF8:
+				// UTF8, but packed
+				if ( width > 0 && strlen( input_field.buffer ) + width < sizeof( input_field.buffer ) )
+				{
+					offset = Field_CursorToOffset( &input_field );
+
+					memmove( input_field.buffer + offset + width,
+							 input_field.buffer + offset,
+							 strlen( input_field.buffer + offset ) + 1 );
+
+					input_field.cursor += ( mode == MODE_UTF8 ) ? 1 : width;
+					--width;
+
+					for ( count = 0; count <= width; ++count )
+					{
+						input_field.buffer[ offset + count ] = ( chr >> ( ( width - count ) * 8 ) ) & 0xFF;
+					}
+				}
+				break;
+			}
 		}
 	}
 }

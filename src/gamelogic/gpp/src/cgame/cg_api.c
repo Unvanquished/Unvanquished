@@ -519,12 +519,12 @@ qhandle_t trap_R_RegisterShader( const char *name )
 
 //65.
 //re.RegisterFont(VMA(1), args[2], VMA(3));
-void trap_R_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
+void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font )
 {
 	//CG_DrawInformation(qtrue);
 
 	trap_PumpEventLoop();
-	syscall( CG_R_REGISTERFONT, fontName, pointSize, font );
+	syscall( CG_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
 
 //66.
@@ -1254,4 +1254,22 @@ void trap_CompleteCallback( const char *complete )
 void trap_RegisterButtonCommands( const char *cmds )
 {
 	syscall( CG_REGISTER_BUTTON_COMMANDS, cmds );
+}
+
+//174.
+void trap_R_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
+{
+  syscall( CG_R_GLYPH, font, str, glyph );
+}
+
+//175.
+void trap_R_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
+{
+  syscall( CG_R_GLYPHCHAR, font, ch, glyph );
+}
+
+//176.
+void trap_R_UnregisterFont( fontInfo_t *font )
+{
+  syscall( CG_R_UREGISTERFONT, font );
 }

@@ -71,7 +71,10 @@ typedef struct
 #if defined( USE_REFLIGHT )
 	qhandle_t ( *RegisterShaderLightAttenuation )( const char *name );
 #endif
-	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
+	void ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
+	void ( *UnregisterFont )( fontInfo_t *font );
+	void	(*Glyph)( fontInfo_t *font, const char *str, glyphInfo_t *glyph );
+	void	(*GlyphChar)( fontInfo_t *font, int ch, glyphInfo_t *glyph );
 
 	void ( *LoadWorld )( const char *name );
 	qboolean( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );                  //----(SA) added
@@ -245,6 +248,11 @@ typedef struct
 	void ( *FS_FreeFileList )( char **filelist );
 	void ( *FS_WriteFile )( const char *qpath, const void *buffer, int size );
 	qboolean( *FS_FileExists )( const char *file );
+	int ( *FS_Seek )( fileHandle_t f, long offset, int origin );
+	int ( *FS_FTell )( fileHandle_t f );
+	int ( *FS_Read )( void *buffer, int len, fileHandle_t f );
+	void ( *FS_FCloseFile )( fileHandle_t f );
+	int ( *FS_FOpenFileRead )( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
 
 	// cinematic stuff
 	void ( *CIN_UploadCinematic )( int handle );
