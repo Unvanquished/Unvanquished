@@ -11,9 +11,9 @@
 
   assetGlobalDef
   {
-    font "fonts/font" 26        // font
-    smallFont "fonts/smallfont" 20        // font
-    bigFont "fonts/bigfont" 34        // font
+    font "fonts/roboto.ttf" 26        // font
+    smallFont "fonts/roboto.ttf" 20        // font
+    bigFont "fonts/roboto.ttf" 34        // font
     cursor "ui/assets/3_cursor3"      // cursor
     gradientBar "ui/assets/gradientbar2.tga"  // gradient bar
     itemFocusSound "sound/misc/menu2.wav"   // sound for item getting focus (via keyboard or mouse )
