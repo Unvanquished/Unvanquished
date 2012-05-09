@@ -1413,6 +1413,7 @@ qboolean CG_Asset_Parse( int handle )
 {
 	pc_token_t token;
 	const char *tempStr;
+	const char *fallbackFont = "fonts/unifont.ttf";
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
@@ -1436,6 +1437,16 @@ qboolean CG_Asset_Parse( int handle )
 			return qtrue;
 		}
 
+		// fallback font
+		if ( Q_stricmp( token.string, "fallbackfont" ) == 0 )
+		{
+			if ( !PC_String_Parse( handle, &fallbackFont ) )
+			{
+				return qfalse;
+			}
+			continue;
+		}
+
 		// font
 		if ( Q_stricmp( token.string, "font" ) == 0 )
 		{
@@ -1446,7 +1457,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.textFont );
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.textFont);
 			continue;
 		}
 
@@ -1460,7 +1471,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.smallFont );
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.smallFont );
 			continue;
 		}
 
@@ -1474,7 +1485,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.bigFont );
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.bigFont );
 			continue;
 		}
 

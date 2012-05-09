@@ -5325,7 +5325,7 @@ extern "C" {
 // font stuff
 	void       R_InitFreeType( void );
 	void       R_DoneFreeType( void );
-	void       RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
+	void       RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
 	void       RE_UnregisterFont( fontInfo_t *font );
 
 	void       RE_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);

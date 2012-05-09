@@ -420,7 +420,7 @@ typedef struct
 	void ( *clearScene )( void );
 	void ( *addRefEntityToScene )( const refEntity_t *re );
 	void ( *renderScene )( const refdef_t *fd );
-	void ( *registerFont )( const char *pFontname, int pointSize, fontInfo_t *font );
+	void ( *registerFont )( const char *pFontname, const char *pFallback, int pointSize, fontInfo_t *font );
 	void ( *glyph )( fontInfo_t *font, const char *str, glyphInfo_t *glyph );
 	void ( *glyphChar )( fontInfo_t *font, int ch, glyphInfo_t *glyph );
 	void ( *freeCachedGlyphs )( fontInfo_t *font );

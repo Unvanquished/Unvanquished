@@ -4341,7 +4341,7 @@ qboolean CL_InitRenderer( void )
 	{
 		if ( FS_FOpenFileByMode( cl_consoleFont->string, &f, FS_READ ) >= 0 )
 		{
-			re.RegisterFont( cl_consoleFont->string, cl_consoleFontSize->integer, &cls.consoleFont );
+			re.RegisterFont( cl_consoleFont->string, NULL, cl_consoleFontSize->integer, &cls.consoleFont );
 			cls.useLegacyConsoleFont = qfalse;
 		}
 

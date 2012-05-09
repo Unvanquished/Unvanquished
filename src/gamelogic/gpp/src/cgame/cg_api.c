@@ -519,12 +519,12 @@ qhandle_t trap_R_RegisterShader( const char *name )
 
 //65.
 //re.RegisterFont(VMA(1), args[2], VMA(3));
-void trap_R_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
+void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font )
 {
 	//CG_DrawInformation(qtrue);
 
 	trap_PumpEventLoop();
-	syscall( CG_R_REGISTERFONT, fontName, pointSize, font );
+	syscall( CG_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
 
 //66.

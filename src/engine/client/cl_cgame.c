@@ -984,7 +984,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 #endif // IPHONE
 
 		case CG_R_REGISTERFONT:
-			re.RegisterFont( VMA( 1 ), args[ 2 ], VMA( 3 ) );
+			re.RegisterFont( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
 		case CG_R_REGISTERSHADERNOMIP:

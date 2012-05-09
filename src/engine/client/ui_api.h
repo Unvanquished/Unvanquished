@@ -348,7 +348,7 @@ int         trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s
 int         trap_MemoryRemaining( void );
 void        trap_GetCDKey( char *buf, int buflen );
 void        trap_SetCDKey( char *buf );
-void        trap_R_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
+void        trap_R_RegisterFont( const char *fontName, const char *fallbackFont, int pointSize, fontInfo_t *font );
 void        trap_R_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
 void        trap_R_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
 void        trap_R_UnregisterFont(fontInfo_t *font);
