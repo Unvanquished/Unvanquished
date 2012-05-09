@@ -146,7 +146,7 @@ static glyphInfo_t *Glyph( int ch )
 	static int index = 0;
 	glyphInfo_t *glyph = &glyphs[ index++ & 7 ];
 
-	re.GlyphChar( &cls.consoleFont, &cls.consoleFace, ch, glyph );
+	re.GlyphChar( &cls.consoleFont, ch, glyph );
 
 	return glyph;
 }
@@ -207,25 +207,23 @@ static void SCR_DrawUnichar( int x, int y, float size, int ch )
 
 void SCR_DrawConsoleFontUnichar( float x, float y, int ch )
 {
-	glyphInfo_t *glyph = Glyph( ch );
-	float       yadj = glyph->top;
-	float       xadj = ( SCR_ConsoleFontUnicharWidth( ch ) - glyph->xSkip ) / 2.0;
-
 	if ( cls.useLegacyConsoleFont )
 	{
 		SCR_DrawSmallUnichar( ( int ) x, ( int ) y, ch );
 		return;
 	}
 
-	if ( ch == ' ' )
+	if ( ch != ' ' )
 	{
-		return;
-	}
+		glyphInfo_t *glyph = Glyph( ch );
+		float       yadj = glyph->top;
+		float       xadj = ( SCR_ConsoleFontUnicharWidth( ch ) - glyph->xSkip ) / 2.0;
 
-	re.DrawStretchPic( x + xadj, y - yadj, glyph->imageWidth, glyph->imageHeight,
-	                   glyph->s, glyph->t,
-	                   glyph->s2, glyph->t2,
-	                   glyph->glyph );
+		re.DrawStretchPic( x + xadj, y - yadj, glyph->imageWidth, glyph->imageHeight,
+		                   glyph->s, glyph->t,
+		                   glyph->s2, glyph->t2,
+		                   glyph->glyph );
+	}
 }
 
 void SCR_DrawConsoleFontChar( float x, float y, const char *s )
@@ -276,15 +274,6 @@ void SCR_DrawSmallUnichar( int x, int y, int ch )
 				glyph->t2,
 				glyph->glyph );
 	}
-
-// 	row = ch >> 4;
-// 	col = ch & 15;
-//
-// 	frow = row * 0.0625;
-// 	fcol = col * 0.0625;
-// 	size = 0.0625;
-//
-// 	re.DrawStretchPic( x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls.charSetShader );
 }
 
 /*
@@ -347,7 +336,6 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 				else
 				{
 					memcpy( color, g_color_table[ ColorIndex( * ( s + 1 ) ) ], sizeof( color ) );
-					color[ 3 ] = setColor[ 3 ];
 				}
 
 				color[ 3 ] = setColor[ 3 ];
@@ -420,9 +408,9 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 				else
 				{
 					memcpy( color, g_color_table[ ColorIndex( * ( s + 1 ) ) ], sizeof( color ) );
-					color[ 3 ] = setColor[ 3 ];
 				}
 
+				color[ 3 ] = setColor[ 3 ];
 				re.SetColor( color );
 			}
 
@@ -860,15 +848,9 @@ void SCR_UpdateScreen( void )
 
 float SCR_ConsoleFontUnicharWidth( int ch )
 {
-	glyphInfo_t *glyph = Glyph( ch );
-	float       width = glyph->xSkip + cl_consoleFontKerning->value;
-
-	if ( cls.useLegacyConsoleFont )
-	{
-		return SMALLCHAR_WIDTH;
-	}
-
-	return ( width );
+	return cls.useLegacyConsoleFont
+	       ? SMALLCHAR_WIDTH
+	       : Glyph( ch )->xSkip + cl_consoleFontKerning->value;
 }
 
 float SCR_ConsoleFontCharWidth( const char *s )
@@ -878,17 +860,9 @@ float SCR_ConsoleFontCharWidth( const char *s )
 
 float SCR_ConsoleFontCharHeight( void )
 {
-	fontInfo_t  *font = &cls.consoleFont;
-	int         ch = 'I' & 0xff;
-	glyphInfo_t *glyph = &font->glyphs[ ch ];
-	float       vpadding = CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
-
-	if ( cls.useLegacyConsoleFont )
-	{
-		return SMALLCHAR_HEIGHT;
-	}
-
-	return ( glyph->imageHeight + vpadding );
+	return cls.useLegacyConsoleFont
+	       ? SMALLCHAR_HEIGHT
+	       : cls.consoleFont.glyphBlock[0]['I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
 }
 
 float SCR_ConsoleFontStringWidth( const char* s, int len )

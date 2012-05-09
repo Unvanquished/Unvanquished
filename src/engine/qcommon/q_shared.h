@@ -2406,23 +2406,17 @@ typedef struct
 	char      shaderName[ 32 ];
 } glyphInfo_t;
 
+typedef glyphInfo_t glyphBlock_t[256];
+
 typedef struct
 {
-	glyphInfo_t glyphs [ GLYPHS_PER_FONT ];
-	float       glyphScale;
-	char        name[ MAX_QPATH ];
+	void         *face, *faceData, *fallback, *fallbackData;
+	glyphInfo_t  *glyphBlock[0x110000 / 256]; // glyphBlock_t
+	int           pointSize;
+	int           height;
+	float         glyphScale;
+	char          name[ MAX_QPATH ];
 } fontInfo_t;
-
-
-#define MAX_FACE_GLYPHS 384
-
-typedef struct {
-	void *opaque;
-	void *mem;
-	void *images[MAX_FACE_GLYPHS];
-	char name[MAX_QPATH];
-	float glyphScale;
-} face_t;
 
 
 #define Square( x ) ( ( x ) * ( x ) )

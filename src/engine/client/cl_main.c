@@ -1535,9 +1535,6 @@ void CL_ShutdownAll( void )
 	S_DisableSounds();
 	// download subsystem
 	DL_Shutdown();
-	// Clear Faces
-	re.FreeCachedGlyphs( &cls.consoleFace );
-	re.FreeFace( &cls.consoleFace );
 	// shutdown CGame
 	CL_ShutdownCGame();
 	// shutdown UI
@@ -1569,6 +1566,9 @@ void CL_ShutdownAll( void )
 	{
 		CL_WavStopRecord_f();
 	}
+
+	// Clear Faces
+	re.UnregisterFont( &cls.consoleFont );
 }
 
 /*
@@ -2480,9 +2480,8 @@ void CL_Vid_Restart_f( void )
 	CL_ShutdownUI();
 	// shutdown the CGame
 	CL_ShutdownCGame();
-	// free face
-	re.FreeCachedGlyphs( &cls.consoleFace );
-	re.FreeFace( &cls.consoleFace );
+	// clear the font cache
+	re.UnregisterFont( NULL );
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
 	// client is no longer pure untill new checksums are sent
@@ -4342,8 +4341,7 @@ qboolean CL_InitRenderer( void )
 	{
 		if ( FS_FOpenFileByMode( cl_consoleFont->string, &f, FS_READ ) >= 0 )
 		{
-			re.RegisterFont( cl_consoleFont->string, cl_consoleFontSize->integer, &cls.consoleFont );
-			re.LoadFace( cl_consoleFont->string, cl_consoleFontSize->integer, cl_consoleFont->string, &cls.consoleFace );
+			re.RegisterFont( cl_consoleFont->string, NULL, cl_consoleFontSize->integer, &cls.consoleFont );
 			cls.useLegacyConsoleFont = qfalse;
 		}
 
@@ -5341,9 +5339,6 @@ void CL_Shutdown( void )
 
 	CL_Disconnect( qtrue );
 
-	re.FreeCachedGlyphs( &cls.consoleFace );
-	re.FreeFace( &cls.consoleFace );
-
 	CL_ShutdownCGame();
 	CL_ShutdownUI();
 
@@ -5395,6 +5390,8 @@ void CL_Shutdown( void )
 	memset( &cls, 0, sizeof( cls ) );
 
 	Com_Printf( "-----------------------\n" );
+
+	re.UnregisterFont( NULL );
 }
 
 static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )

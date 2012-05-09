@@ -1878,6 +1878,7 @@ image_t  *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicm
 
 image_t  *R_CreateImage( const char *name, const byte *pic, int width, int height, qboolean mipmap, qboolean allowPicmip,
                          int wrapClampMode );
+image_t  *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
 void     R_FreeImage( image_t *image );
 void     R_FreeImages( void );
 qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode );
@@ -2474,14 +2475,10 @@ int        RE_BoneIndex( qhandle_t hModel, const char *boneName );
 // font stuff
 void       R_InitFreeType();
 void       R_DoneFreeType();
-void       RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
-void       RE_LoadFace(const char *fileName, int pointSize, const char *name, face_t *face);
-void       RE_FreeFace(face_t *face);
-void       RE_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo);
-void       RE_FreeGlyph(face_t *face, int img, glyphInfo_t *glyphInfo);
-void       RE_Glyph(fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph);
-void       RE_GlyphChar(fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph);
-void       RE_FreeCachedGlyphs(face_t *face);
+void       RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
+void       RE_UnregisterFont( fontInfo_t *font );
+void       RE_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
+void       RE_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
 
 // Ridah, caching system
 // NOTE: to disable this for development, set "r_cache 0" in autoexec.cfg

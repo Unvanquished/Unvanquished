@@ -4596,6 +4596,8 @@ extern "C" {
 	                            const byte *pic[ 6 ],
 	                            int width, int height, int bits, filterType_t filterType, wrapType_t wrapType );
 
+	image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
+
 	image_t *R_AllocImage( const char *name, qboolean linkIntoHashTable );
 	void    R_UploadImage( const byte **dataArray, int numData, image_t *image );
 
@@ -5321,17 +5323,13 @@ extern "C" {
 	void       FreeVertexHashTable( vertexHash_t **hashTable );
 
 // font stuff
-	void       R_InitFreeType();
-	void       R_DoneFreeType();
-	void       RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
+	void       R_InitFreeType( void );
+	void       R_DoneFreeType( void );
+	void       RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
+	void       RE_UnregisterFont( fontInfo_t *font );
 
-	void       RE_LoadFace(const char *fileName, int pointSize, const char *name, face_t *face);
-	void       RE_FreeFace(face_t *face);
-	void       RE_LoadGlyph(face_t *face, const char *str, int img, glyphInfo_t *glyphInfo);
-	void       RE_FreeGlyph(face_t *face, int img, glyphInfo_t *glyphInfo);
-	void       RE_Glyph(fontInfo_t *font, face_t *face, const char *str, glyphInfo_t *glyph);
-	void       RE_GlyphChar(fontInfo_t *font, face_t *face, int ch, glyphInfo_t *glyph);
-	void       RE_FreeCachedGlyphs(face_t *face);
+	void       RE_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
+	void       RE_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
 
 // bani
 	void       RE_RenderToTexture( int textureid, int x, int y, int w, int h );

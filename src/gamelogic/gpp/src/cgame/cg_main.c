@@ -1413,6 +1413,7 @@ qboolean CG_Asset_Parse( int handle )
 {
 	pc_token_t token;
 	const char *tempStr;
+	const char *fallbackFont = "fonts/unifont.ttf";
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
@@ -1436,6 +1437,16 @@ qboolean CG_Asset_Parse( int handle )
 			return qtrue;
 		}
 
+		// fallback font
+		if ( Q_stricmp( token.string, "fallbackfont" ) == 0 )
+		{
+			if ( !PC_String_Parse( handle, &fallbackFont ) )
+			{
+				return qfalse;
+			}
+			continue;
+		}
+
 		// font
 		if ( Q_stricmp( token.string, "font" ) == 0 )
 		{
@@ -1446,8 +1457,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.textFont );
-			cgDC.loadFace( tempStr, pointSize, tempStr, &cgDC.Assets.dynFont );
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.textFont);
 			continue;
 		}
 
@@ -1461,8 +1471,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.smallFont );
-			cgDC.loadFace( tempStr, pointSize, tempStr, &cgDC.Assets.smallDynFont );
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.smallFont );
 			continue;
 		}
 
@@ -1476,8 +1485,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, pointSize, &cgDC.Assets.bigFont );
-			cgDC.loadFace( tempStr, pointSize, tempStr, &cgDC.Assets.bigDynFont );
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.bigFont );
 			continue;
 		}
 
@@ -2110,12 +2118,9 @@ void CG_LoadHudMenu( void )
 	cgDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	cgDC.renderScene = &trap_R_RenderScene;
 	cgDC.registerFont = &trap_R_RegisterFont;
-	cgDC.loadFace = &UI_R_LoadFace;
-	cgDC.freeFace = &UI_R_FreeFace;
-	cgDC.loadGlyph = &UI_R_LoadGlyph;
-	cgDC.freeGlyph = &UI_R_FreeGlyph;
 	cgDC.glyph = &UI_R_Glyph;
-	cgDC.freeCachedGlyphs = &UI_R_FreeCachedGlyphs;
+	cgDC.glyphChar = &UI_R_GlyphChar;
+	cgDC.freeCachedGlyphs = &UI_R_UnregisterFont;
 
 	cgDC.ownerDrawItem = &CG_OwnerDraw;
 	cgDC.getValue = &CG_GetValue;
@@ -2335,8 +2340,6 @@ void CG_Shutdown( void )
 {
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
-	UI_R_FreeFace( &cgDC.Assets.dynFont );
-
 	UIS_Shutdown();
 }
 

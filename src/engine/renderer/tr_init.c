@@ -1568,13 +1568,9 @@ extern "C" {
 		re.RegisterShaderLightAttenuation = NULL;
 #endif
 		re.RegisterFont = RE_RegisterFont;
-		re.LoadFace = RE_LoadFace;
-		re.FreeFace = RE_FreeFace;
-		re.LoadGlyph = RE_LoadGlyph;
-		re.FreeGlyph = RE_FreeGlyph;
 		re.Glyph = RE_Glyph;
 		re.GlyphChar = RE_GlyphChar;
-		re.FreeCachedGlyphs = RE_FreeCachedGlyphs;
+		re.UnregisterFont = RE_UnregisterFont;
 		re.LoadWorld = RE_LoadWorldMap;
 //----(SA) added
 		re.GetSkinModel = RE_GetSkinModel;

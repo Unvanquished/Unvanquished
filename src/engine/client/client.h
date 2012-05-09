@@ -423,7 +423,6 @@ typedef struct
 	qboolean    useLegacyConsoleFont;
 	qboolean    useLegacyConsoleFace;
 	fontInfo_t  consoleFont;
-	face_t      consoleFace;
 
 	// www downloading
 	// in the static stuff since this may have to survive server disconnects
