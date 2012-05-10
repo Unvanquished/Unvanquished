@@ -681,15 +681,14 @@ void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointS
 #if defined( COMPAT_ET ) // DON'T DO THIS WITH VANILLA XREAL
 	len = ri.FS_ReadFile( fileName, NULL );
 
-	if ( len == sizeof( fontInfo_t ) )
+	if ( len > 0x5004 && len <= 0x5004 + MAX_QPATH ) // 256 glyphs, scale info, and the bitmap name
 	{
 		glyphInfo_t *glyphs;
+		int height = 0;
 
 		ri.FS_ReadFile( fileName, &faceData );
 		fdOffset = 0;
 		fdFile = faceData;
-
-		// ASSUMPTION: GLYPH_END <= 255
 
 		glyphs = font->glyphBlock[0] = ri.Z_Malloc( sizeof( glyphBlock_t ) );
 		memset( glyphs, 0, sizeof( glyphBlock_t ) );
@@ -697,6 +696,12 @@ void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointS
 		for ( i = 0; i < GLYPHS_PER_FONT; i++ )
 		{
 			glyphs[ i ].height = readInt();
+
+			if ( glyphs[ i ].height > height )
+			{
+				height = glyphs[ i ].height;
+			}
+
 			glyphs[ i ].top = readInt();
 			glyphs[ i ].bottom = readInt();
 			glyphs[ i ].pitch = readInt();
@@ -712,10 +717,12 @@ void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointS
 			fdOffset += 32;
 		}
 
+		font->pointSize = pointSize;
+		font->height = height;
 		font->glyphScale = readFloat();
-//		Com_Memcpy( font->name, &fdFile[ fdOffset ], 64 );
-//		Com_Memcpy(font, faceData, sizeof(fontInfo_t));
 		Q_strncpyz( font->name, registeredName, sizeof( font->name ) );
+
+		ri.FS_FreeFile( faceData );
 
 		for ( i = GLYPH_START; i <= GLYPH_END; i++ )
 		{
@@ -842,8 +849,11 @@ void RE_UnregisterFont( fontInfo_t *font )
 
 		// free resources
 
-		FT_Done_Face( registeredFont[ i ].face );
-		RE_FreeFontFile( registeredFont[ i ].faceData );
+		if ( registeredFont[ i ].face )
+		{
+			FT_Done_Face( registeredFont[ i ].face );
+			RE_FreeFontFile( registeredFont[ i ].faceData );
+		}
 
 		if ( registeredFont[ i].fallback )
 		{
