@@ -51,7 +51,7 @@ void           *safe_malloc(size_t size)
 
 	p = malloc(size);
 	if(!p)
-		Error("safe_malloc failed on allocation of %i bytes", size);
+		Error("safe_malloc failed on allocation of %i bytes", (int)size);
 
 	return p;
 }
@@ -62,7 +62,7 @@ void           *safe_malloc_info(size_t size, char *info)
 
 	p = malloc(size);
 	if(!p)
-		Error("%s: safe_malloc failed on allocation of %i bytes", info, size);
+		Error("%s: safe_malloc failed on allocation of %i bytes", info, (int)size);
 
 	return p;
 }
@@ -584,7 +584,7 @@ returns -1 on failure or if the buffer would be overflowed.
 copied over from common.c implementation
 ============
 */
-int Q_vsnprintf(char *dest, int size, const char *fmt, va_list argptr)
+__attribute__((format(printf, 3, 0))) int Q_vsnprintf(char *dest, int size, const char *fmt, va_list argptr)
 {
 	int             ret;
 
