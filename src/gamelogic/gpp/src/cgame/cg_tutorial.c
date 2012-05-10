@@ -97,10 +97,13 @@ CG_KeyNameForCommand
 static const char *CG_KeyNameForCommand( const char *command )
 {
 	int         i, j;
-	static char buffer[ MAX_STRING_CHARS ];
+	static char buffer[ 2 ][ MAX_STRING_CHARS ];
+	static int  which = 1;
 	int         firstKeyLength;
 
-	buffer[ 0 ] = '\0';
+	which ^= 1;
+
+	buffer[ which ][ 0 ] = '\0';
 
 	for ( i = 0; i < numBindings; i++ )
 	{
@@ -109,33 +112,33 @@ static const char *CG_KeyNameForCommand( const char *command )
 			if ( bindings[ i ].keys[ 0 ] != K_NONE )
 			{
 				trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 0 ],
-				                            buffer, MAX_STRING_CHARS );
-				firstKeyLength = strlen( buffer );
+				                            buffer[ which ], MAX_STRING_CHARS );
+				firstKeyLength = strlen( buffer[ which ] );
 
 				for ( j = 0; j < firstKeyLength; j++ )
 				{
-					buffer[ j ] = toupper( buffer[ j ] );
+					buffer[ which ][ j ] = toupper( buffer[ which ][ j ] );
 				}
 
 				if ( bindings[ i ].keys[ 1 ] != K_NONE )
 				{
-					Q_strcat( buffer, MAX_STRING_CHARS, " or " );
+					Q_strcat( buffer[ which ], MAX_STRING_CHARS, " or " );
 					trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 1 ],
-					                            buffer + strlen( buffer ), MAX_STRING_CHARS - strlen( buffer ) );
+					                            buffer[ which ] + strlen( buffer[ which ] ), MAX_STRING_CHARS - strlen( buffer[ which ] ) );
 
-					for ( j = firstKeyLength + 4; j < strlen( buffer ); j++ )
+					for ( j = firstKeyLength + 4; j < strlen( buffer[ which ] ); j++ )
 					{
-						buffer[ j ] = toupper( buffer[ j ] );
+						buffer[ which ][ j ] = toupper( buffer[ which ][ j ] );
 					}
 				}
 			}
 			else
 			{
-				Com_sprintf( buffer, MAX_STRING_CHARS, "\"%s\" (unbound)",
+				Com_sprintf( buffer[ which ], MAX_STRING_CHARS, "\"%s\" (unbound)",
 				             bindings[ i ].humanName );
 			}
 
-			return buffer;
+			return buffer[ which ];
 		}
 	}
 
@@ -182,25 +185,22 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 
 /*
 ===============
-CG_AlienBuilderText
+CG_BuilderText
 ===============
 */
-static void CG_AlienBuilderText( char *text, playerState_t *ps )
+static void CG_BuilderText( char *text, playerState_t *ps )
 {
 	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
 	entityState_t *es;
 
 	if ( buildable > BA_NONE )
 	{
+		const char *item = BG_Buildable( buildable )->humanName;
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( "Press %s to place the %s\n",
-		              CG_KeyNameForCommand( "+attack" ),
-		              BG_Buildable( buildable )->humanName ) );
-
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( "Press %s to cancel placing the %s\n",
-		              CG_KeyNameForCommand( "+attack2" ),
-		              BG_Buildable( buildable )->humanName ) );
+		          va( "Press %s to place the %s\n"
+		              "Press %s to cancel placing the %s\n",
+		              CG_KeyNameForCommand( "+attack" ), item,
+		              CG_KeyNameForCommand( "+attack2" ), item ) );
 	}
 	else
 	{
@@ -233,6 +233,16 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 			              CG_KeyNameForCommand( "deconstruct" ) ) );
 		}
 	}
+}
+
+/*
+===============
+CG_AlienBuilderText
+===============
+*/
+static void CG_AlienBuilderText( char *text, playerState_t *ps )
+{
+	CG_BuilderText( text, ps );
 
 	if ( ( ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) == BA_NONE )
 	{
@@ -363,52 +373,7 @@ CG_HumanCkitText
 */
 static void CG_HumanCkitText( char *text, playerState_t *ps )
 {
-	buildable_t   buildable = ps->stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
-	entityState_t *es;
-
-	if ( buildable > BA_NONE )
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( "Press %s to place the %s\n",
-		              CG_KeyNameForCommand( "+attack" ),
-		              BG_Buildable( buildable )->humanName ) );
-
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( "Press %s to cancel placing the %s\n",
-		              CG_KeyNameForCommand( "+attack2" ),
-		              BG_Buildable( buildable )->humanName ) );
-	}
-	else
-	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( "Press %s to build a structure\n",
-		              CG_KeyNameForCommand( "+attack" ) ) );
-	}
-
-	if ( ( es = CG_BuildableInRange( ps, NULL ) ) )
-	{
-		if ( cgs.markDeconstruct )
-		{
-			if ( es->eFlags & EF_B_MARKED )
-			{
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( "Press %s to unmark this structure\n",
-				              CG_KeyNameForCommand( "deconstruct" ) ) );
-			}
-			else
-			{
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( "Press %s to mark this structure\n",
-				              CG_KeyNameForCommand( "deconstruct" ) ) );
-			}
-		}
-		else
-		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( "Press %s to destroy this structure\n",
-			              CG_KeyNameForCommand( "deconstruct" ) ) );
-		}
-	}
+	CG_BuilderText( text, ps );
 }
 
 /*
