@@ -167,7 +167,7 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 }
 
 static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, int *yOut,
-    int *maxHeight, FT_Face face, const int c, qboolean calcHeight )
+    int *maxHeight, FT_Face face, FT_Face fallback, const int c, qboolean calcHeight )
 {
 	int                i;
 	static glyphInfo_t glyph;
@@ -181,6 +181,11 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 	if ( face != NULL )
 	{
 		FT_UInt index = FT_Get_Char_Index( face, c );
+
+		if ( index == 0 && fallback )
+		{
+			index = FT_Get_Char_Index( face = fallback, c );
+		}
 
 		if ( index == 0 )
 		{
@@ -226,30 +231,13 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 		// we need to make sure we fit
 		if ( *xOut + scaledWidth + 1 >= ( FONT_SIZE - 1 ) )
 		{
-			if ( *yOut + ( *maxHeight + 1 ) * 2 >= ( FONT_SIZE - 1 ) )
-				//if(*yOut + scaledHeight + 1 >= 255)
-			{
-				//ri.Printf(PRINT_WARNING, "RE_ConstructGlyphInfo: character %c does not fit width and height\n", c);
-
-				*yOut = -1;
-				*xOut = -1;
-				ri.Free( bitmap->buffer );
-				ri.Free( bitmap );
-				return NULL;
-			}
-			else
-			{
-				//ri.Printf(PRINT_WARNING, "RE_ConstructGlyphInfo: character %c does not fit width\n", c);
-
-				*xOut = 0;
-				*yOut += *maxHeight + 1;
-			}
+			*xOut = 0;
+			*yOut += *maxHeight + 1;
 		}
-		else if ( *yOut + *maxHeight + 1 >= ( FONT_SIZE - 1 ) )
+
+		if ( *yOut + *maxHeight + 1 >= ( FONT_SIZE - 1 ) )
 		{
 			//ri.Printf(PRINT_WARNING, "RE_ConstructGlyphInfo: character %c does not fit height\n", c);
-
-			*yOut = -1;
 			*xOut = -1;
 			ri.Free( bitmap->buffer );
 			ri.Free( bitmap );
@@ -393,7 +381,7 @@ void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
 	RE_GlyphChar( font, Q_UTF8CodePoint( str ), glyph );
 }
 
-static void RE_StoreImage( fontInfo_t *font, int chunk, int from, int to, const unsigned char *bitmap, int yEnd )
+static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int to, const unsigned char *bitmap, int yEnd )
 {
 	int           scaledSize = FONT_SIZE * FONT_SIZE;
 	int           i, j, y;
@@ -441,7 +429,9 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int from, int to, const 
 		buffer[ j++ ] = ( ( float ) bitmap[ i ] * max );
 	}
 
-	Com_sprintf( fileName, sizeof( fileName ), "%s_%i_%i.png", font->name, chunk, font->pointSize );
+
+	Com_sprintf( fileName, sizeof( fileName ), "%s_%i_%i_%i.png", font->name, chunk, page, font->pointSize );
+	//SavePNG( fileName, buffer, FONT_SIZE, y, 2, qtrue );
 
 	image = R_CreateGlyph( fileName, buffer, FONT_SIZE, y );
 #ifdef RENDERER_GL3
@@ -473,7 +463,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	glyphInfo_t   *glyphs;
 	float         max;
 
-	int           i, len;
+	int           i, len, page;
 	qboolean      rendered;
 
 	const int     startGlyph = chunk * 256;
@@ -500,8 +490,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	for ( i = 0; i < 256; i++ )
 	{
-		rendered |= RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, font->face, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qtrue ) ||
-		            ( font->fallback && RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qtrue ) );
+		rendered |= !!RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, font->face, font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qtrue );
 	}
 
 	// no glyphs? just return
@@ -518,16 +507,11 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	xOut = yOut = 0;
 	rendered = qfalse;
-	i = lastStart = 0;
+	i = lastStart = page = 0;
 
 	while ( i < 256 )
 	{
-		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, font->face, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qfalse );
-
-		if ( !glyph && font->fallback )
-		{
-			glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qfalse );
-		}
+		glyphInfo_t *glyph = RE_ConstructGlyphInfo( out, &xOut, &yOut, &maxHeight, font->face, font->fallback, ( i + startGlyph ) ? ( i + startGlyph ) : 0xFFFD, qfalse );
 
 		if ( glyph )
 		{
@@ -535,9 +519,9 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 			Com_Memcpy( glyphs + i, glyph, sizeof( glyphInfo_t ) );
 		}
 
-		if ( xOut == -1 || yOut == -1 )
+		if ( xOut == -1 )
 		{
-			RE_StoreImage( font, chunk, lastStart, i, out, yOut + maxHeight + 1 );
+			RE_StoreImage( font, chunk, page++, lastStart, i, out, yOut + maxHeight + 1 );
 			Com_Memset( out, 0, FONT_SIZE * FONT_SIZE );
 			xOut = yOut = 0;
 			rendered = qfalse;
@@ -551,7 +535,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	if ( rendered )
 	{
-		RE_StoreImage( font, chunk, lastStart, 256, out, yOut + maxHeight + 1 );
+		RE_StoreImage( font, chunk, page, lastStart, 256, out, yOut + maxHeight + 1 );
 	}
 }
 
