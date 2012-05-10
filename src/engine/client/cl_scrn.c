@@ -146,7 +146,14 @@ static glyphInfo_t *Glyph( int ch )
 	static int index = 0;
 	glyphInfo_t *glyph = &glyphs[ index++ & 7 ];
 
-	re.GlyphChar( &cls.consoleFont, ch, glyph );
+	if ( cls.consoleFont.glyphBlock[ 0 ] )
+	{
+		re.GlyphChar( &cls.consoleFont, ch, glyph );
+	}
+	else
+	{
+		memset( glyph, 0, sizeof( *glyph ) );
+	}
 
 	return glyph;
 }
