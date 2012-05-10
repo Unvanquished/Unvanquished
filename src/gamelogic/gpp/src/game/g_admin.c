@@ -4221,6 +4221,8 @@ qboolean G_admin_builder( gentity_t *ent )
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == ET_BUILDABLE ) )
 	{
+		const char *builder;
+
 		if ( !G_admin_permission( ent, "buildlog" ) &&
 		     ent->client->pers.teamSelection != TEAM_NONE &&
 		     ent->client->pers.teamSelection != traceEnt->buildableTeam )
@@ -4233,37 +4235,29 @@ qboolean G_admin_builder( gentity_t *ent )
 		{
 			log = &level.buildLog[( level.buildId - i - 1 ) % MAX_BUILDLOG ];
 
-			if ( log->fate != BF_CONSTRUCT || traceEnt->s.modelindex != log->modelindex )
+			if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex )
 			{
-				continue;
-			}
-
-			VectorSubtract( traceEnt->s.pos.trBase, log->origin, dist );
-
-			if ( VectorLengthSquared( dist ) < 2.0f )
-			{
-				char logid[ 20 ] = { "" };
-
-				if ( G_admin_permission( ent, "buildlog" ) )
-				{
-					Com_sprintf( logid, sizeof( logid ), ", buildlog #%d",
-					             MAX_CLIENTS + level.buildId - i - 1 );
-				}
-
-				ADMP( va( "^3builder: ^7%s built by %s^7%s\n",
-				          BG_Buildable( log->modelindex )->humanName,
-				          log->actor ?
-				          log->actor->name[ log->actor->nameOffset ] :
-				          "<world>",
-				          logid ) );
 				break;
 			}
+
 		}
 
-		if ( i == level.numBuildLogs )
+		builder = traceEnt->builtBy >= 0 ? level.clients[ traceEnt->builtBy ].pers.namelog->name[ log->actor->nameOffset ] : "<world>";
+
+		if ( i < level.numBuildLogs && G_admin_permission( ent, "buildlog" ) )
 		{
-			ADMP( va( "^3builder: ^7%s not in build log, possibly a layout item\n",
-			          BG_Buildable( traceEnt->s.modelindex )->humanName ) );
+			ADMP( va( "^3builder: ^7%s built by %s^7, buildlog #%d\n",
+				  BG_Buildable( log->modelindex )->humanName, builder, MAX_CLIENTS + level.buildId - i - 1 ) );
+		}
+		else if ( traceEnt->builtBy >= 0 )
+		{
+			ADMP( va( "^3builder: ^7%s built by %s^7\n",
+				  BG_Buildable( log->modelindex )->humanName, builder ) );
+		}
+		else
+		{
+			ADMP( va( "^3builder: ^7%s appears to be a layout item\n",
+				  BG_Buildable( traceEnt->s.modelindex )->humanName ) );
 		}
 	}
 	else
