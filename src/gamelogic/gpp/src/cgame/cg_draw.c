@@ -4413,7 +4413,7 @@ static qboolean CG_DrawQueue( void )
 	float  w;
 	vec4_t color;
 	int    position;
-	char   *ordinal, buffer[ MAX_STRING_CHARS ];
+	char   buffer[ MAX_STRING_CHARS ];
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
 	{
@@ -4432,39 +4432,14 @@ static qboolean CG_DrawQueue( void )
 		return qfalse;
 	}
 
-	switch ( position % 100 )
+	if ( position == 1 )
 	{
-		case 11:
-		case 12:
-		case 13:
-			ordinal = "th";
-			break;
-
-		default:
-			switch ( position % 10 )
-			{
-				case 1:
-					ordinal = "st";
-					break;
-
-				case 2:
-					ordinal = "nd";
-					break;
-
-				case 3:
-					ordinal = "rd";
-					break;
-
-				default:
-					ordinal = "th";
-					break;
-			}
-
-			break;
+		Com_sprintf( buffer, MAX_STRING_CHARS, "You are at the front of the spawn queue" );
 	}
-
-	Com_sprintf( buffer, MAX_STRING_CHARS, "You are %d%s in the spawn queue",
-	             position, ordinal );
+	else
+	{
+		Com_sprintf( buffer, MAX_STRING_CHARS, "You are at position %d in the spawn queue", position );
+	}
 
 	w = UI_Text_Width( buffer, 0.7f );
 	UI_Text_Paint( 320 - w / 2, 360, 0.7f, color, buffer, 0, 0, ITEM_TEXTSTYLE_SHADOWED );
