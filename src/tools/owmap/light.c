@@ -1800,8 +1800,8 @@ void SetupGrid(void)
 	numBSPGridPoints = numRawGridPoints;
 	rawGridSize = numRawGridPoints * sizeof(*rawGridPoints);
 	bspGridSize = numBSPGridPoints * sizeof(*bspGridPoints);
-	Sys_Printf("%9u x %u B = rawGridSize = (%.2fMB)\n", numRawGridPoints, sizeof(*rawGridPoints), (float)rawGridSize / (1024.0f * 1024.0f));
-	Sys_Printf("%9u x %u B = bspGridSize = (%.2fMB)\n", numBSPGridPoints, sizeof(*bspGridPoints), (float)bspGridSize / (1024.0f * 1024.0f));
+	Sys_Printf("%9u x %u B = rawGridSize = (%.2fMB)\n", (unsigned int)numRawGridPoints, (unsigned int)sizeof(*rawGridPoints), (float)rawGridSize / (1024.0f * 1024.0f));
+	Sys_Printf("%9u x %u B = bspGridSize = (%.2fMB)\n", (unsigned int)numBSPGridPoints, (unsigned int)sizeof(*bspGridPoints), (float)bspGridSize / (1024.0f * 1024.0f));
 
 	/* allocate lightgrid */
 	rawGridPoints = safe_malloc(rawGridSize);
@@ -1826,7 +1826,7 @@ void SetupGrid(void)
 	}
 
 	/* note it */
-	Sys_Printf("%9u grid points\n", numRawGridPoints);
+	Sys_Printf("%9u grid points\n", (unsigned int)numRawGridPoints);
 }
 
 
@@ -1918,7 +1918,7 @@ void LightWorld(void)
 		inGrid = qtrue;
 		RunThreadsOnIndividual(numRawGridPoints, qtrue, TraceGrid);
 		inGrid = qfalse;
-		Sys_Printf("%d x %d x %d = %d grid\n", gridBounds[0], gridBounds[1], gridBounds[2], numBSPGridPoints);
+		Sys_Printf("%d x %d x %d = %d grid\n", gridBounds[0], gridBounds[1], gridBounds[2], (int)numBSPGridPoints);
 
 		/* ydnar: emit statistics on light culling */
 		Sys_FPrintf(SYS_VRB, "%9d grid points envelope culled\n", gridEnvelopeCulled);
