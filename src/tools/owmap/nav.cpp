@@ -256,8 +256,8 @@ static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, 
 	//write detail verts
 	for ( int i = 0, j = 0; i < detailedPolyMesh->nverts; i++, j += 3 )
 	{
-		fprintf(file, "%d %d %d\n", detailedPolyMesh->verts[j], detailedPolyMesh->verts[j+1],
-			detailedPolyMesh->verts[j+2]);
+		fprintf(file, "%d %d %d\n", (int)detailedPolyMesh->verts[j], (int)detailedPolyMesh->verts[j+1],
+			(int)detailedPolyMesh->verts[j+2]);
 	}
 
 	//write detail tris
@@ -266,7 +266,7 @@ static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, 
 		fprintf(file, "%d %d %d %d\n", detailedPolyMesh->tris[j], detailedPolyMesh->tris[j+1],
 			detailedPolyMesh->tris[j+2], detailedPolyMesh->tris[j+3]);
 	}
-	Sys_Printf("Navigation Mesh file written: %d bytes\n", ftell(file));
+	Sys_Printf("Navigation Mesh file written: %ld bytes\n", ftell(file));
 	fclose(file);
 }
 
