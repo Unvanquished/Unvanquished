@@ -146,14 +146,7 @@ static glyphInfo_t *Glyph( int ch )
 	static int index = 0;
 	glyphInfo_t *glyph = &glyphs[ index++ & 7 ];
 
-	if ( cls.consoleFont.glyphBlock[ 0 ] )
-	{
-		re.GlyphChar( &cls.consoleFont, ch, glyph );
-	}
-	else
-	{
-		memset( glyph, 0, sizeof( *glyph ) );
-	}
+	re.GlyphChar( &cls.consoleFont, ch, glyph );
 
 	return glyph;
 }
@@ -248,7 +241,7 @@ void SCR_DrawSmallUnichar( int x, int y, int ch )
 	float frow, fcol;
 	float size;
 
-	if ( ch < 0x100 )
+	if ( ch < 0x100 || cls.useLegacyConsoleFont )
 	{
 		if ( ch == ' ' ) {
 			return;
