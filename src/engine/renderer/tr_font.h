@@ -77,6 +77,7 @@ Maryland 20850 USA.
 //    touch the font bitmaps.
 
 #include "../qcommon/qcommon.h"
+#include "tr_local.h"
 
 #include <ft2build.h>
 #include <freetype/fterrors.h>
@@ -797,7 +798,7 @@ void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointS
 	font->fallback = fallback;
 	font->fallbackData = fallbackData;
 	font->pointSize = pointSize;
-	font->glyphScale = 48.0 / pointSize;
+	font->glyphScale = MAX( 24.0, MIN( 64.0, r_fontScale->value ) ) / pointSize;
 	font->height = ceil( ( face->height / 64.0 ) * ( face->size->metrics.y_scale / 65536.0 ) * font->glyphScale );
 
 	RE_RenderChunk( font, 0 );

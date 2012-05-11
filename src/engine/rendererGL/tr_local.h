@@ -4394,6 +4394,9 @@ extern "C" {
 #ifdef USE_GLSL_OPTIMIZER
 	extern cvar_t *r_glslOptimizer;
 #endif
+
+	extern cvar_t *r_fontScale;
+
 //====================================================================
 
 #define IMAGE_FILE_HASH_SIZE 4096
