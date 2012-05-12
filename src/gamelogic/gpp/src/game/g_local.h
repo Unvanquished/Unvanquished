@@ -1227,6 +1227,7 @@ extern  vmCvar_t g_emoticonsAllowedInNames;
 extern  vmCvar_t g_admin;
 extern  vmCvar_t g_adminTempBan;
 extern  vmCvar_t g_adminMaxBan;
+extern  vmCvar_t g_adminRetainExpiredBans;
 extern  vmCvar_t g_adminPubkeyID;
 
 extern  vmCvar_t g_privateMessages;
