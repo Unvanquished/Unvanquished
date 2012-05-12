@@ -964,7 +964,7 @@ static int admin_search( gentity_t *ent,
                          const char *cmd,
                          const char *noun,
                          qboolean( *match )( void *, const void * ),
-                         void ( *out )( void *, char * ),
+                         int ( *out )( void *, char * ),
                          const void *list,
                          const void *arg, /* this will be used as char* later */
                          int start,
@@ -979,7 +979,12 @@ static int admin_search( gentity_t *ent,
 	char         str[ MAX_STRING_CHARS ];
 	struct llist *l = ( struct llist * ) list;
 
-	for ( total = 0; l; total++, l = l->next ) {; }
+	for ( total = 0; l; l = l->next )
+	{
+		int id = out( l, NULL );
+		// assume that returned ids are in ascending order
+		total = id ? id : ( total + 1 );
+	}
 
 	if ( start < 0 )
 	{
@@ -1001,10 +1006,19 @@ static int admin_search( gentity_t *ent,
 	{
 		if ( match( l, arg ) )
 		{
+			int id = out( l, NULL );
+
+			if ( id )
+			{
+				i = id - offset;
+			}
+
 			if ( i >= start && ( limit < 1 || count < limit ) )
 			{
 				out( l, str );
-				ADMBP( va( "%-3d %s\n", i + offset, str ) );
+
+				ADMBP( va( "^7%-3d %s\n", i + offset, str ) );
+
 				count++;
 				end = i;
 			}
@@ -1054,11 +1068,18 @@ static qboolean admin_match( void *admin, const void *match )
 	return strstr( n1, n2 ) ? qtrue : qfalse;
 }
 
-static void admin_out( void *admin, char *str )
+static int admin_out( void *admin, char *str )
 {
 	g_admin_admin_t *a = ( g_admin_admin_t * ) admin;
-	g_admin_level_t *l = G_admin_level( a->level );
+	g_admin_level_t *l;
 	int             lncol = 0, i;
+
+	if ( !str )
+	{
+		return 0;
+	}
+
+	l = G_admin_level( a->level );
 
 	for ( i = 0; l && l->name[ i ]; i++ )
 	{
@@ -1071,6 +1092,8 @@ static void admin_out( void *admin, char *str )
 	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s^7 %s",
 	             a->level, admin_level_maxname + lncol - 1, l ? l->name : "(null)",
 	             a->name );
+
+	return 0;
 }
 
 static int admin_listadmins( gentity_t *ent, int start, char *search )
@@ -1309,21 +1332,12 @@ static void G_admin_ban_message(
 
 	if ( areason && ent )
 	{
-		// we just want the ban number
-		int           n = 1;
-		g_admin_ban_t *b = g_admin_bans;
-
-		for ( ; b && b != ban; b = b->next, n++ )
-		{
-			;
-		}
-
 		Com_sprintf( areason, alen,
 		             S_COLOR_YELLOW "Banned player %s" S_COLOR_YELLOW
 		             " tried to connect from %s (ban #%d)",
 		             ent->client->pers.netname[ 0 ] ? ent->client->pers.netname : ban->name,
 		             ent->client->pers.ip.str,
-		             n );
+		             ban->id );
 	}
 }
 
@@ -1734,11 +1748,14 @@ qboolean G_admin_readconfig( gentity_t *ent )
 		{
 			if ( b )
 			{
+				int id = b->id + 1;
 				b = b->next = BG_Alloc( sizeof( g_admin_ban_t ) );
+				b->id = id;
 			}
 			else
 			{
 				b = g_admin_bans = BG_Alloc( sizeof( g_admin_ban_t ) );
+				b->id = 1;
 			}
 
 			ban_open = qtrue;
@@ -2147,11 +2164,14 @@ static void admin_create_ban( gentity_t *ent,
 	int           i;
 	char          *name;
 	char          disconnect[ MAX_STRING_CHARS ];
+	int           id = 1;
 
 	t = trap_RealTime( &qt );
 
 	for ( b = g_admin_bans; b; b = b->next )
 	{
+		id = b->id + 1; // eventually, next free id
+
 		if ( !b->next )
 		{
 			break;
@@ -2170,6 +2190,7 @@ static void admin_create_ban( gentity_t *ent,
 		b = g_admin_bans = BG_Alloc( sizeof( g_admin_ban_t ) );
 	}
 
+	b->id = id;
 	Q_strncpyz( b->name, netname, sizeof( b->name ) );
 	Q_strncpyz( b->guid, guid, sizeof( b->guid ) );
 	memcpy( &b->ip, ip, sizeof( b->ip ) );
@@ -2519,7 +2540,6 @@ qboolean G_admin_unban( gentity_t *ent )
 	int           bnum;
 	int           time = trap_RealTime( NULL );
 	char          bs[ 5 ];
-	int           i;
 	g_admin_ban_t *ban, *p;
 
 	if ( trap_Argc() < 2 )
@@ -2531,10 +2551,9 @@ qboolean G_admin_unban( gentity_t *ent )
 	trap_Argv( 1, bs, sizeof( bs ) );
 	bnum = atoi( bs );
 
-	for ( ban = p = g_admin_bans, i = 1; ban && i < bnum;
-	      p = ban, ban = ban->next, i++ ) {; }
+	for ( ban = p = g_admin_bans; ban && ban->id != bnum; p = ban, ban = ban->next ) {}
 
-	if ( i != bnum || !ban )
+	if ( !ban )
 	{
 		ADMP( "^3unban: ^7invalid ban#\n" );
 		return qfalse;
@@ -2596,9 +2615,9 @@ qboolean G_admin_adjustban( gentity_t *ent )
 	trap_Argv( 1, bs, sizeof( bs ) );
 	bnum = atoi( bs );
 
-	for ( ban = g_admin_bans, i = 1; ban && i < bnum; ban = ban->next, i++ ) {; }
+	for ( ban = g_admin_bans; ban && ban->id != bnum; ban = ban->next ) {}
 
-	if ( i != bnum || !ban )
+	if ( !ban )
 	{
 		ADMP( "^3adjustban: ^7invalid ban#\n" );
 		return qfalse;
@@ -3402,16 +3421,22 @@ static qboolean ban_matchname( void *ban, const void *name )
 	return strstr( match, ( const char * ) name ) != NULL;
 }
 
-static void ban_out( void *ban, char *str )
+static int ban_out( void *ban, char *str )
 {
-	int           i;
+	int           i, t;
 	int           colorlen1 = 0;
 	char          duration[ MAX_DURATION_LENGTH ];
 	char          *d_color = S_COLOR_WHITE;
 	char          date[ 11 ];
 	g_admin_ban_t *b = ( g_admin_ban_t * ) ban;
-	int           t = trap_RealTime( NULL );
 	char          *made = b->made;
+
+	if ( !str )
+	{
+		return b->id;
+	}
+
+	t = trap_RealTime( NULL );
 
 	for ( i = 0; b->name[ i ]; i++ )
 	{
@@ -3443,7 +3468,7 @@ static void ban_out( void *ban, char *str )
 	}
 
 	Com_sprintf( str, MAX_STRING_CHARS, "%-*s %s%-15s " S_COLOR_WHITE "%-8s %s"
-	             "\n     \\__ %s%-*s " S_COLOR_WHITE "%s",
+	             "\n          \\__ %s%-*s " S_COLOR_WHITE "%s",
 	             MAX_NAME_LENGTH + colorlen1 - 1, b->name,
 	             ( strchr( b->ip.str, '/' ) ) ? S_COLOR_RED : S_COLOR_WHITE,
 	             b->ip.str,
@@ -3453,6 +3478,8 @@ static void ban_out( void *ban, char *str )
 	             MAX_DURATION_LENGTH - 1,
 	             duration,
 	             b->reason );
+
+	return b->id;
 }
 
 qboolean G_admin_showbans( gentity_t *ent )
@@ -3959,12 +3986,17 @@ static qboolean namelog_matchname( void *namelog, const void *name )
 	return qfalse;
 }
 
-static void namelog_out( void *namelog, char *str )
+static int namelog_out( void *namelog, char *str )
 {
 	namelog_t  *n = ( namelog_t * ) namelog;
 	char       *p = str;
 	int        l, l2 = MAX_STRING_CHARS, i;
 	const char *scolor;
+
+	if ( !str )
+	{
+		return 0;
+	}
 
 	if ( n->slot > -1 )
 	{
@@ -3996,6 +4028,8 @@ static void namelog_out( void *namelog, char *str )
 		p += l;
 		l2 -= l;
 	}
+
+	return 0;
 }
 
 qboolean G_admin_namelog( gentity_t *ent )
@@ -4238,6 +4272,8 @@ qboolean G_admin_builder( gentity_t *ent )
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == ET_BUILDABLE ) )
 	{
+		const char *builder;
+
 		if ( !G_admin_permission( ent, "buildlog" ) &&
 		     ent->client->pers.teamSelection != TEAM_NONE &&
 		     ent->client->pers.teamSelection != traceEnt->buildableTeam )
@@ -4250,37 +4286,29 @@ qboolean G_admin_builder( gentity_t *ent )
 		{
 			log = &level.buildLog[( level.buildId - i - 1 ) % MAX_BUILDLOG ];
 
-			if ( log->fate != BF_CONSTRUCT || traceEnt->s.modelindex != log->modelindex )
+			if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex )
 			{
-				continue;
-			}
-
-			VectorSubtract( traceEnt->s.pos.trBase, log->origin, dist );
-
-			if ( VectorLengthSquared( dist ) < 2.0f )
-			{
-				char logid[ 20 ] = { "" };
-
-				if ( G_admin_permission( ent, "buildlog" ) )
-				{
-					Com_sprintf( logid, sizeof( logid ), ", buildlog #%d",
-					             MAX_CLIENTS + level.buildId - i - 1 );
-				}
-
-				ADMP( va( "^3builder: ^7%s built by %s^7%s\n",
-				          BG_Buildable( log->modelindex )->humanName,
-				          log->actor ?
-				          log->actor->name[ log->actor->nameOffset ] :
-				          "<world>",
-				          logid ) );
 				break;
 			}
+
 		}
 
-		if ( i == level.numBuildLogs )
+		builder = traceEnt->builtBy >= 0 ? level.clients[ traceEnt->builtBy ].pers.namelog->name[ log->actor->nameOffset ] : "<world>";
+
+		if ( i < level.numBuildLogs && G_admin_permission( ent, "buildlog" ) )
 		{
-			ADMP( va( "^3builder: ^7%s not in build log, possibly a layout item\n",
-			          BG_Buildable( traceEnt->s.modelindex )->humanName ) );
+			ADMP( va( "^3builder: ^7%s built by %s^7, buildlog #%d\n",
+				  BG_Buildable( log->modelindex )->humanName, builder, MAX_CLIENTS + level.buildId - i - 1 ) );
+		}
+		else if ( traceEnt->builtBy >= 0 )
+		{
+			ADMP( va( "^3builder: ^7%s built by %s^7\n",
+				  BG_Buildable( log->modelindex )->humanName, builder ) );
+		}
+		else
+		{
+			ADMP( va( "^3builder: ^7%s appears to be a layout item\n",
+				  BG_Buildable( traceEnt->s.modelindex )->humanName ) );
 		}
 	}
 	else

@@ -325,6 +325,8 @@ extern "C" {
 	cvar_t      *r_glslOptimizer;
 #endif
 
+	cvar_t      *r_fontScale;
+
 	static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 	{
 		if ( shouldBeIntegral )
@@ -1710,6 +1712,9 @@ extern "C" {
 #ifdef USE_GLSL_OPTIMIZER
 		r_glslOptimizer = ri.Cvar_Get( "r_glslOptimizer", "0", CVAR_ARCHIVE | CVAR_SHADER );
 #endif
+
+		r_fontScale = ri.Cvar_Get( "r_fontScale", "36", CVAR_ARCHIVE | CVAR_LATCH );
+
 		// make sure all the commands added here are also removed in R_Shutdown
 		ri.Cmd_AddCommand( "imagelist", R_ImageList_f );
 		ri.Cmd_AddCommand( "shaderlist", R_ShaderList_f );

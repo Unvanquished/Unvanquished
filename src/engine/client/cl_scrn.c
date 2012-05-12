@@ -180,7 +180,7 @@ static void SCR_DrawUnichar( int x, int y, float size, int ch )
 		int row, col;
 		float frow, fcol;
 
-		if ( ch >= 0x100 ) { ch = '?'; }
+		if ( ch >= 0x100 ) { ch = 0; }
 
 		row = ch >> 4;
 		col = ch & 15;
@@ -241,7 +241,7 @@ void SCR_DrawSmallUnichar( int x, int y, int ch )
 	float frow, fcol;
 	float size;
 
-	if ( ch < 0x100 )
+	if ( ch < 0x100 || cls.useLegacyConsoleFont )
 	{
 		if ( ch == ' ' ) {
 			return;
@@ -250,6 +250,8 @@ void SCR_DrawSmallUnichar( int x, int y, int ch )
 		if ( y < -SMALLCHAR_HEIGHT ) {
 			return;
 		}
+
+		if ( ch >= 0x100 ) { ch = 0; }
 
 		row = ch>>4;
 		col = ch&15;

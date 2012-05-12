@@ -132,10 +132,10 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
 	ci->fixedtorso = qfalse;
-	ci->firstTorsoBoneName[ 0 ] = '\0';
-	ci->lastTorsoBoneName[ 0 ] = '\0';
-	ci->torsoControlBoneName[ 0 ] = '\0';
-	ci->neckControlBoneName[ 0 ] = '\0';
+	ci->firstTorsoBone = -1; // Set these to -1 since 0 is a valid value
+	ci->lastTorsoBone = -1;
+	ci->torsoControlBone = -1;
+	ci->neckControlBone = -1;
 	ci->modelScale[ 0 ] = 1;
 	ci->modelScale[ 1 ] = 1;
 	ci->modelScale[ 2 ] = 1;
@@ -237,25 +237,25 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		else if ( !Q_stricmp( token, "firstTorsoBoneName" ) )
 		{
 			token = COM_Parse2( &text_p );
-			Q_strncpyz( ci->firstTorsoBoneName, token, sizeof( ci->firstTorsoBoneName ) );
+			ci->firstTorsoBone = trap_R_BoneIndex( ci->bodyModel, token );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "lastTorsoBoneName" ) )
 		{
 			token = COM_Parse2( &text_p );
-			Q_strncpyz( ci->lastTorsoBoneName, token, sizeof( ci->lastTorsoBoneName ) );
+			ci->lastTorsoBone = trap_R_BoneIndex( ci->bodyModel, token );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "torsoControlBoneName" ) )
 		{
 			token = COM_Parse2( &text_p );
-			Q_strncpyz( ci->torsoControlBoneName, token, sizeof( ci->torsoControlBoneName ) );
+			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "neckControlBoneName" ) )
 		{
 			token = COM_Parse2( &text_p );
-			Q_strncpyz( ci->neckControlBoneName, token, sizeof( ci->neckControlBoneName ) );
+			ci->neckControlBone = trap_R_BoneIndex( ci->bodyModel, token );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "modelScale" ) )
@@ -1215,11 +1215,11 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
 
-	Q_strncpyz( to->firstTorsoBoneName, from->firstTorsoBoneName, sizeof( to->firstTorsoBoneName ) );
-	Q_strncpyz( to->lastTorsoBoneName, from->lastTorsoBoneName, sizeof( to->lastTorsoBoneName ) );
+	to->firstTorsoBone = from->firstTorsoBone;
+	to->lastTorsoBone = from->lastTorsoBone;
 
-	Q_strncpyz( to->torsoControlBoneName, from->torsoControlBoneName, sizeof( to->torsoControlBoneName ) );
-	Q_strncpyz( to->neckControlBoneName, from->neckControlBoneName, sizeof( to->neckControlBoneName ) );
+	to->torsoControlBone = from->torsoControlBone;
+	to->neckControlBone = from->neckControlBone;
 
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
@@ -2115,7 +2115,7 @@ static void CG_PlayerMD5Animation( centity_t *cent )
 
 /*
 ===============
-CG_PlayerMD5Animation
+CG_PlayerMD5AlienAnimation
 ===============
 */
 
@@ -2135,8 +2135,23 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	speedScale = 1;
 
 	ci = &cgs.clientinfo[ clientNum ];
-	// do the shuffle turn frames locally
 
+	// If we are attacking/taunting, and in motion, allow blending the two skeletons
+	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) >= NSPA_ATTACK1 &&
+		( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_GESTURE )
+	{
+		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN )
+		{
+			memcpy( &cent->pe.legs, &cent->pe.nonseg, sizeof( lerpFrame_t ) );
+			cent->pe.legs.skeleton.type = SK_RELATIVE; // Tell game to blend
+		}
+	}
+	else
+	{
+		cent->pe.legs.skeleton.type = SK_INVALID;
+	}
+
+	// do the shuffle turn frames locally
 	if ( cent->pe.nonseg.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_STAND )
 	{
 		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, speedScale );
@@ -2144,6 +2159,12 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	else
 	{
 		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, speedScale );
+	}
+
+	if ( cent->pe.legs.skeleton.type == SK_RELATIVE )
+	{
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, speedScale );
+		trap_R_BlendSkeleton( &cent->pe.nonseg.skeleton, &cent->pe.legs.skeleton, 0.5 );
 	}
 }
 
@@ -3544,11 +3565,11 @@ void CG_Player( centity_t *cent )
 
 			// combine legs and torso skeletons
 #if 1
-			firstTorsoBone = trap_R_BoneIndex( body.hModel, ci->firstTorsoBoneName );
+			firstTorsoBone = ci->firstTorsoBone;
 
 			if ( firstTorsoBone >= 0 && firstTorsoBone < cent->pe.torso.skeleton.numBones )
 			{
-				lastTorsoBone = trap_R_BoneIndex( body.hModel, ci->lastTorsoBoneName );
+				lastTorsoBone = ci->lastTorsoBone;
 
 				if ( lastTorsoBone >= 0 && lastTorsoBone < cent->pe.torso.skeleton.numBones )
 				{
@@ -3595,7 +3616,7 @@ void CG_Player( centity_t *cent )
 
 			// rotate torso
 #if 1
-			boneIndex = trap_R_BoneIndex( body.hModel, ci->torsoControlBoneName );
+			boneIndex = ci->torsoControlBone;
 
 			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
 			{
@@ -3608,7 +3629,7 @@ void CG_Player( centity_t *cent )
 
 			// rotate head
 #if 0
-			boneIndex = trap_R_BoneIndex( body.hModel, ci->neckControlBoneName );
+			boneIndex = ci->neckControlBone;
 
 			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
 			{

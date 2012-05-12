@@ -629,7 +629,7 @@ void Field_CharEvent( field_t *edit, const char *s )
 
 		if ( edit->buffer[ posTo ] )
 		{
-			int posFrom = posTo + Q_UTF8Width( edit->buffer + posFrom );
+			int posFrom = posTo + Q_UTF8Width( edit->buffer + posTo );
 			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
 		}
 

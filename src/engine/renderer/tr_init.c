@@ -204,6 +204,8 @@ cvar_t *r_wolffog;
 
 // done
 
+cvar_t *r_fontScale;
+
 cvar_t         *r_highQualityVideo;
 cvar_t         *r_rmse;
 
@@ -1228,6 +1230,8 @@ void R_Register( void )
 	r_debugSort = ri.Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
 	r_printShaders = ri.Cvar_Get( "r_printShaders", "0", 0 );
 	r_saveFontData = ri.Cvar_Get( "r_saveFontData", "0", 0 );
+
+	r_fontScale = ri.Cvar_Get( "r_fontScale", "36", CVAR_ARCHIVE | CVAR_LATCH);
 
 	// Ridah
 	// TTimo show_bug.cgi?id=440

@@ -77,10 +77,8 @@ Maryland 20850 USA.
 //    touch the font bitmaps.
 
 #include "../qcommon/qcommon.h"
+#include "tr_local.h"
 
-#include <png.h>
-
-#ifdef BUILD_FREETYPE
 #include <ft2build.h>
 #include <freetype/fterrors.h>
 #include <freetype/ftsystem.h>
@@ -93,7 +91,6 @@ Maryland 20850 USA.
 #define _TRUNC( x ) ( ( x ) >> 6 )
 
 FT_Library ftLibrary = NULL;
-#endif
 
 #define FONT_SIZE 512
 
@@ -455,15 +452,10 @@ static glyphBlock_t nullGlyphs;
 
 void RE_RenderChunk( fontInfo_t *font, const int chunk )
 {
-
-	int           j, k, xOut, yOut, lastStart;
-	qboolean      renderered;
-	int           scaledSize, maxHeight, left;
+	int           xOut, yOut, maxHeight;
+	int           i, lastStart, page;
 	unsigned char *out;
 	glyphInfo_t   *glyphs;
-	float         max;
-
-	int           i, len, page;
 	qboolean      rendered;
 
 	const int     startGlyph = chunk * 256;
@@ -618,13 +610,6 @@ static void RE_FreeFontFile( void *data )
 void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font )
 {
 	FT_Face       face, fallback;
-	int           j, k, xOut, yOut, lastStart, imageNumber;
-	int           scaledSize, newSize, maxHeight, left;
-	glyphInfo_t   *glyph;
-	image_t       *image;
-	qhandle_t     h;
-	float         max;
-
 	void          *faceData, *fallbackData;
 	int           i, len;
 	char          fileName[ MAX_QPATH ];
@@ -813,7 +798,7 @@ void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointS
 	font->fallback = fallback;
 	font->fallbackData = fallbackData;
 	font->pointSize = pointSize;
-	font->glyphScale = 48.0 / pointSize;
+	font->glyphScale = MAX( 24.0, MIN( 64.0, r_fontScale->value ) ) / pointSize;
 	font->height = ceil( ( face->height / 64.0 ) * ( face->size->metrics.y_scale / 65536.0 ) * font->glyphScale );
 
 	RE_RenderChunk( font, 0 );

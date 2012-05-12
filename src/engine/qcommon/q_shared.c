@@ -2677,7 +2677,6 @@ int Q_UTF8Store( const char *s )
     p[sizeof(r) - 1 - i] ^= p[i];
     p[i] ^= p[sizeof(r) - 1 - i];
   }
-  return r;
 #else
   int r = *(int *)s;
   // don't assume that s is NUL-padded to four bytes
@@ -2686,6 +2685,7 @@ int Q_UTF8Store( const char *s )
   if ( ( r & 0x00FF0000 ) == 0 ) { return r & 0x0000FFFF; }
   if ( ( r & 0xFF000000 ) == 0 ) { return r & 0x00FFFFFF; }
 #endif
+  return r;
 }
 
 char *Q_UTF8Unstore( int e )

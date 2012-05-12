@@ -15,9 +15,9 @@
     shadowX  5
     shadowY  5
     shadowColor 0.1 0.1 0.1 0.25
-    font "fonts/roboto.ttf" 26
-    smallFont "fonts/roboto.ttf" 20
-    bigFont "fonts/roboto.ttf" 34
+    font "fonts/font" 26
+    smallFont "fonts/smallfont" 20
+    bigFont "fonts/bigfont" 34
   }
 
   menuDef

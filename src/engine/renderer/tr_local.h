@@ -1747,6 +1747,8 @@ extern cvar_t *r_wolffog;
 
 // done
 
+extern cvar_t *r_fontScale;
+
 extern cvar_t *r_highQualityVideo;
 
 //====================================================================
