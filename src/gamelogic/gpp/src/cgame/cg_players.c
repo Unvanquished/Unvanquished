@@ -2138,9 +2138,11 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 
 	// If we are attacking/taunting, and in motion, allow blending the two skeletons
 	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) >= NSPA_ATTACK1 &&
-		( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_GESTURE )
+		( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_ATTACK3 ||
+		( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_GESTURE )
 	{
-		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN )
+		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN &&
+			( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) != NSPA_GESTURE )
 		{
 			memcpy( &cent->pe.legs, &cent->pe.nonseg, sizeof( lerpFrame_t ) );
 			cent->pe.legs.skeleton.type = SK_RELATIVE; // Tell game to blend
