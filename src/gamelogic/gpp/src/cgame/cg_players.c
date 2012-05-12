@@ -2115,7 +2115,7 @@ static void CG_PlayerMD5Animation( centity_t *cent )
 
 /*
 ===============
-CG_PlayerMD5Animation
+CG_PlayerMD5AlienAnimation
 ===============
 */
 
@@ -2135,8 +2135,23 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	speedScale = 1;
 
 	ci = &cgs.clientinfo[ clientNum ];
-	// do the shuffle turn frames locally
 
+	// If we are attacking/taunting, and in motion, allow blending the two skeletons
+	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) >= NSPA_ATTACK1 &&
+		( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_GESTURE )
+	{
+		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN )
+		{
+			memcpy( &cent->pe.legs, &cent->pe.nonseg, sizeof( lerpFrame_t ) );
+			cent->pe.legs.skeleton.type = SK_RELATIVE; // Tell game to blend
+		}
+	}
+	else
+	{
+		cent->pe.legs.skeleton.type = SK_INVALID;
+	}
+
+	// do the shuffle turn frames locally
 	if ( cent->pe.nonseg.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_STAND )
 	{
 		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, speedScale );
@@ -2144,6 +2159,12 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	else
 	{
 		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, speedScale );
+	}
+
+	if ( cent->pe.legs.skeleton.type == SK_RELATIVE )
+	{
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, speedScale );
+		trap_R_BlendSkeleton( &cent->pe.nonseg.skeleton, &cent->pe.legs.skeleton, 0.5 );
 	}
 }
 
