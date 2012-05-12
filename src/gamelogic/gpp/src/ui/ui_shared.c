@@ -3772,6 +3772,16 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				buff[ ui_CursorToOffset( buff, item->cursorPos ) ] = '\0';
 				DC->setCVar( item->cvar, buff );
 			}
+			else if ( chr == 'a' - 'a' + 1 )
+			{
+				// ctrl-a: home
+				item->cursorPos = 0;
+			}
+			else if ( chr == 'e' - 'a' + 1 )
+			{
+				// ctrl-e: end
+				item->cursorPos = lenChars;
+			}
 			else if ( chr < 32 || chr == 127 || !item->cvar )
 			{
 				// Ignore any non printable chars
