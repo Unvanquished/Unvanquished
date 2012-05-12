@@ -1224,7 +1224,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// check for admin ban
 	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) )
 	{
-		return va( "%s", reason );
+		return reason;
 	}
 
 	// check for a password
