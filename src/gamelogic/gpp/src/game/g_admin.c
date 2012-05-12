@@ -493,15 +493,6 @@ qboolean G_admin_permission( gentity_t *ent, const char *flag )
 	return qfalse;
 }
 
-static qboolean G_IsUnnamed( const char *name )
-{
-	char testName[ MAX_NAME_LENGTH ];
-
-	G_SanitiseString( name, testName, sizeof( testName ) );
-
-	return Q_stricmp( testName, UNNAMED_PLAYER ) ? qfalse : qtrue;
-}
-
 qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 {
 	int             i;

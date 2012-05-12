@@ -155,6 +155,8 @@ vmCvar_t           g_layouts;
 vmCvar_t           g_layoutAuto;
 
 vmCvar_t           g_emoticonsAllowedInNames;
+vmCvar_t           g_unnamedNumbering;
+vmCvar_t           g_unnamedNamePrefix;
 
 vmCvar_t           g_admin;
 vmCvar_t           g_adminTempBan;
@@ -310,6 +312,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                CVAR_LATCH | CVAR_ARCHIVE,                       0, qfalse           },
+	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_admin,                       "g_admin",                       "admin.dat",                        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               CVAR_ARCHIVE,                                    0, qfalse           },
