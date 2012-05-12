@@ -131,6 +131,7 @@ typedef struct
 typedef struct g_admin_ban
 {
 	struct g_admin_ban *next;
+	int                id;
 
 	char               name[ MAX_NAME_LENGTH ];
 	char               guid[ 33 ];
