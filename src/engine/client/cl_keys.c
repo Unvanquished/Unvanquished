@@ -523,7 +523,22 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			break;
 
 		case K_RIGHTARROW:
-			if ( edit->cursor < len )
+			if ( keys[ K_CTRL ].down )
+			{
+				width = Field_CursorToOffset( edit );
+
+				while ( edit->buffer[ width ] == ' ' )
+				{
+					++width;
+				}
+				while ( edit->buffer[ width ] && edit->buffer[ width ] != ' ' )
+				{
+					++width;
+				}
+
+				edit->cursor = Field_OffsetToCursor( edit, width );
+			}
+			else if ( edit->cursor < len )
 			{
 				edit->cursor++;
 			}
@@ -531,7 +546,22 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			break;
 
 		case K_LEFTARROW:
-			if ( edit->cursor > 0 )
+			if ( keys[ K_CTRL ].down )
+			{
+				width = Field_CursorToOffset( edit );
+
+				while ( width && edit->buffer[ width ] == ' ' )
+				{
+					--width;
+				}
+				while ( width && edit->buffer[ width ] != ' ' )
+				{
+					--width;
+				}
+
+				edit->cursor = Field_OffsetToCursor( edit, width );
+			}
+			else if ( edit->cursor > 0 )
 			{
 				edit->cursor--;
 			}

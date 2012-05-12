@@ -53,6 +53,8 @@ scrollInfo_t;
 
 static scrollInfo_t scrollInfo;
 
+static qboolean shift = qfalse, ctrl = qfalse;
+
 // prevent compiler warnings
 void voidFunction( void *var )
 {
@@ -3738,7 +3740,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 			item->cursorPos = ui_OffsetToCursor( buff, len );
 		}
 
-		if ( chr )
+		if ( chr > 0 )
 		{
 			if ( chr == 'h' - 'a' + 1 )
 			{
@@ -3826,7 +3828,23 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_RIGHTARROW:
 				case K_KP_RIGHTARROW:
-					if ( item->cursorPos < lenChars )
+					if ( ctrl )
+					{
+						int index = ui_CursorToOffset( buff, item->cursorPos );
+
+						while ( buff[ index ] == ' ' )
+						{
+							++index;
+						}
+						while ( buff[ index ] && buff[ index ] != ' ' )
+						{
+							++index;
+						}
+
+						item->cursorPos = ui_OffsetToCursor( buff, index );
+						break;
+					}
+					else if ( item->cursorPos < lenChars )
 					{
 						item->cursorPos++;
 					}
@@ -3835,7 +3853,23 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_LEFTARROW:
 				case K_KP_LEFTARROW:
-					if ( item->cursorPos > 0 )
+					if ( ctrl )
+					{
+						int index = ui_CursorToOffset( buff, item->cursorPos );
+
+						while ( index && buff[ index ] == ' ' )
+						{
+							--index;
+						}
+						while ( index && buff[ index ] != ' ' )
+						{
+							--index;
+						}
+
+						item->cursorPos = ui_OffsetToCursor( buff, index );
+						break;
+					}
+					else if ( item->cursorPos > 0 )
 					{
 						item->cursorPos--;
 					}
@@ -3914,6 +3948,11 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 exit:
 	Item_TextField_CalcPaintOffset( item, buff );
+
+	if ( releaseFocus )
+	{
+		ctrl = qfalse;
+	}
 
 	return !releaseFocus;
 }
@@ -4534,8 +4573,6 @@ static rectDef_t *Item_CorrectedTextRect( itemDef_t *item )
 
 void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 {
-	static qboolean shift = qfalse;
-
 	int       i;
 	itemDef_t *item = NULL;
 	qboolean  inHandler = qfalse;
@@ -4544,7 +4581,12 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 
 	if ( key == K_SHIFT )
 	{
-		shift = down;
+		// inc if down, dec if up, but don't let it go negative
+		shift += down ? 1 : shift ? -1 : 0;
+	}
+	else if ( key == K_CTRL )
+	{
+		ctrl += down ? 1 : ctrl ? -1 : 0;
 	}
 
 // KTW: Draggable Windows
