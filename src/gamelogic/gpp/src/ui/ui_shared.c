@@ -2483,10 +2483,12 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 	len = ui_UTF8Strlen( text );
 
+/* seems useless without monospaced
 	if ( limit > 0 && len > limit )
 	{
 		len = limit;
 	}
+*/
 
 	DC->setColor( color );
 	memcpy( &newColor[ 0 ], &color[ 0 ], sizeof( vec4_t ) );
@@ -3674,9 +3676,14 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 {
 	editFieldDef_t *editPtr = item->typeData.edit;
 
-	if ( item->cursorPos < editPtr->paintOffset )
+	// try to keep the cursor away from the left end
+	if ( item->cursorPos < editPtr->paintOffset + 2 )
 	{
-		editPtr->paintOffset = item->cursorPos;
+		editPtr->paintOffset = item->cursorPos - 2;
+		if ( editPtr->paintOffset < 0 )
+		{
+			editPtr->paintOffset = 0;
+		}
 	}
 	else
 	{
@@ -3696,7 +3703,7 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 				}
 			}
 
-			buff[ item->cursorPos + 1 ] = '\0';
+			buff[ ui_CursorToOffset( buff, item->cursorPos + 1 ) ] = '\0';
 
 			// Shift paintOffset so that the cursor is visible
 			offset = ui_CursorToOffset( buff, editPtr->paintOffset );
@@ -3705,7 +3712,7 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 			        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) )
 			{
 				editPtr->paintOffset++;
-				offset += ui_UTF8Width( buff );
+				offset += ui_UTF8Width( buff + offset );
 			}
 		}
 	}
@@ -5508,6 +5515,7 @@ void Item_TextField_Paint( itemDef_t *item )
 	char           cursor = DC->getOverstrikeMode() ? '|' : '_';
 	qboolean       editing = ( item->window.flags & WINDOW_HASFOCUS && g_editingField );
 	const int      cursorWidth = editing ? EDIT_CURSOR_WIDTH : 0;
+	int            paintIndex;
 
 	//FIXME: causes duplicate printing if item->text is not set (NULL)
 	Item_Text_Paint( item );
@@ -5536,9 +5544,11 @@ void Item_TextField_Paint( itemDef_t *item )
 		editPtr->paintOffset = 0;
 	}
 
+	paintIndex = ui_CursorToOffset( buff, editPtr->paintOffset );
+
 	// Shorten string to max viewable
-	while ( UI_Text_Width( buff + editPtr->paintOffset, item->textscale ) >
-	        ( editPtr->maxFieldWidth - cursorWidth ) && strlen( buff ) > 0 )
+	while ( UI_Text_Width( buff + paintIndex, item->textscale ) >
+	        ( editPtr->maxFieldWidth - cursorWidth ) && strlen( buff ) >= paintIndex )
 	{
 		buff[ strlen( buff ) - 1 ] = '\0';
 	}
@@ -5558,7 +5568,7 @@ void Item_TextField_Paint( itemDef_t *item )
 	{
 		UI_Text_PaintWithCursor( item->textRect.x + item->textRect.w + offset,
 		                         item->textRect.y, item->textscale, newColor,
-		                         buff + editPtr->paintOffset,
+		                         buff + paintIndex,
 		                         item->cursorPos - editPtr->paintOffset,
 		                         cursor, editPtr->maxPaintChars, item->textStyle );
 	}
@@ -5566,7 +5576,7 @@ void Item_TextField_Paint( itemDef_t *item )
 	{
 		UI_Text_Paint( item->textRect.x + item->textRect.w + offset,
 		               item->textRect.y, item->textscale, newColor,
-		               buff + editPtr->paintOffset, 0,
+		               buff + paintIndex, 0,
 		               editPtr->maxPaintChars, item->textStyle );
 	}
 }
