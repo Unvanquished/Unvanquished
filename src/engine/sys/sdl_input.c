@@ -591,8 +591,10 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 		*key = K_CONSOLE;
 		*buf = '\0';
 	}
-
-	memcpy( buf, Q_UTF8Encode( keysym->unicode ), sizeof( buf ) );
+	else
+	{
+		memcpy( buf, Q_UTF8Encode( keysym->unicode ), sizeof( buf ) );
+	}
 
 	return ( char * ) buf;
 }
