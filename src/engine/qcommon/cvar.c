@@ -1114,20 +1114,21 @@ Cvar_List_f
 */
 void Cvar_List_f( void )
 {
-	cvar_t *var;
-	int    i;
-	char   *match;
+	cvar_t   *var;
+	int      i = 0;
+	char     *match = NULL;
+	qboolean raw = qfalse;
 
 	if ( Cmd_Argc() > 1 )
 	{
 		match = Cmd_Argv( 1 );
-	}
-	else
-	{
-		match = NULL;
-	}
 
-	i = 0;
+		if ( !Q_stricmp( match, "-raw" ) )
+		{
+			raw = qtrue;
+			match = ( Cmd_Argc() > 2 ) ? Cmd_Argv( 2 ) : NULL;
+		}
+	}
 
 	for ( var = cvar_vars; var; var = var->next, i++ )
 	{
@@ -1199,7 +1200,28 @@ void Cvar_List_f( void )
 			Com_Printf( " " );
 		}
 
-		Com_Printf( " %s \"%s\"\n", var->name, var->string );
+		if ( raw )
+		{
+			char *index;;
+
+			Com_Printf( " %s \"", var->name );
+
+			for ( index = var->string; ; )
+			{
+				char *hat = strchr( index, '^' );
+
+				if ( !hat ) break;
+
+				Com_Printf( "%.*s", (int)( hat + 1 - index ), index );
+				index = hat + 1;
+			}
+
+			Com_Printf( "%s\"\n", index );
+		}
+		else
+		{
+			Com_Printf( " %s \"%s\"\n", var->name, var->string );
+		}
 	}
 
 	Com_Printf( "\n%i total cvars\n", i );
