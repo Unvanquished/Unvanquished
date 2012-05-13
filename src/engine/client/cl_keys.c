@@ -429,7 +429,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 
 		if ( size == SMALLCHAR_WIDTH )
 		{
-			xpos = x + SCR_ConsoleFontStringWidth( str, edit->cursor );
+			xpos = x + SCR_ConsoleFontStringWidth( str, edit->cursor - prestep );
 			height = key_overstrikeMode ? SMALLCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
 			width = SMALLCHAR_WIDTH;
 		}
