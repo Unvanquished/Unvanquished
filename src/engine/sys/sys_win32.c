@@ -234,7 +234,7 @@ char *Sys_GetCurrentUser( void )
 Sys_GetClipboardData
 ================
 */
-char *Sys_GetClipboardData( void )
+char *Sys_GetClipboardData( clipboard_t clip )
 {
 	char *data = NULL;
 	char *cliptext;

@@ -450,10 +450,10 @@ void trap_Key_SetCatcher( int catcher )
 }
 
 //56.
-//GetClipboardData(VMA(1), args[2]);
-void trap_GetClipboardData( char *buf, int bufsize )
+//GetClipboardData(VMA(1), args[2], args[3]);
+void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
 {
-	syscall( UI_GETCLIPBOARDDATA, buf, bufsize );
+	syscall( UI_GETCLIPBOARDDATA, buf, bufsize, clip );
 }
 
 //57.

@@ -1380,6 +1380,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			CL_RegisterButtonCommands( VMA( 1 ) );
 			return 0;
 
+		case CG_GETCLIPBOARDDATA:
+			CL_GetClipboardData( VMA(1), args[2], args[3] );
+			return 0;
+
 		case CG_GETTEXT:
 			strncpy( VMA(1), VMA(2), args[3] );
 			return 0;

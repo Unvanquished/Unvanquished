@@ -321,7 +321,7 @@ void        trap_Key_SetOverstrikeMode( qboolean state );
 void        trap_Key_ClearStates( void );
 int         trap_Key_GetCatcher( void );
 void        trap_Key_SetCatcher( int catcher );
-void        trap_GetClipboardData( char *buf, int bufsize );
+void        trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip );
 void        trap_GetClientState( uiClientState_t *state );
 void        trap_GetGlconfig( glconfig_t *glconfig );
 int         trap_GetConfigString( int index, char *buff, int buffsize );

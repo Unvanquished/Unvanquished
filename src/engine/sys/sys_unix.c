@@ -50,6 +50,9 @@ Maryland 20850 USA.
 #include <fcntl.h>
 #include <fenv.h>
 
+#include <SDL.h>
+#include <SDL_syswm.h>
+
 qboolean    stdinIsATTY;
 
 // Used to determine where to store user-specific files
@@ -203,19 +206,141 @@ char *Sys_GetCurrentUser( void )
 	return p->pw_name;
 }
 
-#ifndef MACOS_X
 
 /*
 ==================
 Sys_GetClipboardData
 ==================
 */
-char *Sys_GetClipboardData( void )
+static struct {
+	Display *display;
+	Window  window;
+	void  ( *lockDisplay )( void );
+	void  ( *unlockDisplay )( void );
+	Atom    utf8;
+} x11 = { NULL };
+
+char *Sys_GetClipboardData( clipboard_t clip )
 {
+#ifndef DEDICATED
+#ifndef MACOS_X
+	// derived from SDL clipboard code (http://hg.assembla.com/SDL_Clipboard)
+	Window        owner;
+	Atom          selection;
+	Atom          converted;
+	Atom          selectionType;
+	int           selectionFormat;
+	unsigned long nbytes;
+	unsigned long overflow;
+	char          *src;
+
+	if ( x11.display == NULL )
+	{
+		SDL_SysWMinfo info;
+
+		SDL_VERSION( &info.version );
+		if ( SDL_GetWMInfo( &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
+		{
+			Com_Printf("Not on X11? (%d)\n",info.subsystem);
+			return NULL;
+		}
+
+		x11.display = info.info.x11.display;
+		x11.window = info.info.x11.window;
+		x11.lockDisplay = info.info.x11.lock_func;
+		x11.unlockDisplay = info.info.x11.unlock_func;
+		x11.utf8 = XInternAtom( x11.display, "UTF8_STRING", False );
+
+		SDL_EventState( SDL_SYSWMEVENT, SDL_ENABLE );
+		//SDL_SetEventFilter( Sys_ClipboardFilter );
+	}
+
+	x11.lockDisplay();
+
+	switch ( clip )
+	{
+	// preference order; we use fall-through
+	default: // SELECTION_CLIPBOARD
+		selection = XInternAtom( x11.display, "CLIPBOARD", False );
+		owner = XGetSelectionOwner( x11.display, selection );
+		if ( owner != None && owner != x11.window )
+		{
+			break;
+		}
+
+	case SELECTION_PRIMARY:
+		selection = XA_PRIMARY;
+		owner = XGetSelectionOwner( x11.display, selection );
+		if ( owner != None && owner != x11.window )
+		{
+			break;
+		}
+
+	case SELECTION_SECONDARY:
+		selection = XA_SECONDARY;
+		owner = XGetSelectionOwner( x11.display, selection );
+	}
+
+	x11.unlockDisplay();
+
+	if ( owner == None || owner == x11.window )
+	{
+		selection = XA_CUT_BUFFER0;
+		owner = RootWindow( x11.display, DefaultScreen( x11.display ) );
+	}
+	else
+	{
+		SDL_Event event;
+
+		x11.lockDisplay();
+		owner = x11.window;
+		//FIXME: when we can respond to clipboard requests, don't alter selection
+		converted = XInternAtom( x11.display, "UNVANQUISHED_SELECTION", False );
+		XConvertSelection( x11.display, selection, x11.utf8, converted, owner, CurrentTime );
+		x11.unlockDisplay();
+
+		for (;;)
+		{
+			SDL_WaitEvent( &event );
+
+			if ( event.type == SDL_SYSWMEVENT )
+			{
+				XEvent xevent = event.syswm.msg->event.xevent;
+
+				if ( xevent.type == SelectionNotify &&
+				     xevent.xselection.requestor == owner )
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	x11.lockDisplay ();
+
+	if ( XGetWindowProperty( x11.display, owner, converted, 0, INT_MAX / 4,
+	                         False, x11.utf8, &selectionType, &selectionFormat,
+	                         &nbytes, &overflow, (unsigned char **) &src ) == Success )
+	{
+		char *dest = NULL;
+
+		if ( selectionType == x11.utf8 )
+		{
+			dest = Z_Malloc( nbytes + 1 );
+			memcpy( dest, src, nbytes );
+			dest[ nbytes ] = 0;
+		}
+		XFree( src );
+
+		x11.unlockDisplay();
+		return dest;
+	}
+
+	x11.unlockDisplay();
+#endif // !MACOSX
+#endif // !DEDICATED
 	return NULL;
 }
-
-#endif
 
 #define MEM_THRESHOLD 96 * 1024 * 1024
 

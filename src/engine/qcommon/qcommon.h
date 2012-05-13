@@ -1334,7 +1334,7 @@ char                  *Sys_GetCurrentUser( void );
 
 void QDECL            Sys_Error( const char *error, ... ) __attribute__(( format( printf, 1, 2 ), noreturn ));
 void                  Sys_Quit( void ) __attribute__((noreturn));
-char                  *Sys_GetClipboardData( void );  // note that this isn't journaled...
+char                  *Sys_GetClipboardData( clipboard_t clip );  // note that this isn't journaled...
 
 void                  Sys_Print( const char *msg );
 

@@ -883,3 +883,4 @@ qboolean CL_VideoRecording( void );
 //
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd( void );
+void CL_GetClipboardData( char *, int, clipboard_t );

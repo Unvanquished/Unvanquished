@@ -3718,6 +3718,86 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 	}
 }
 
+qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr );
+
+static void UI_Paste( itemDef_t *item, char *buf, clipboard_t clip )
+{
+	char           clipText[ 1024 ];
+	int            bufIndex, bufLength;
+	int            clipIndex, clipLength;
+	int            max;
+	qboolean       overstrike;
+	editFieldDef_t *editPtr = item->typeData.edit;
+
+	trap_GetClipboardData( clipText, sizeof( clipText ), clip );
+
+	if ( clipText[0] == '\0' )
+	{
+		return;
+	}
+
+	bufIndex = ui_CursorToOffset( buf, item->cursorPos );
+	bufLength = strlen( buf );
+	clipIndex = 0;
+	clipLength = strlen( clipText );
+
+	max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+	max = max ? max : MAX_EDITFIELD - 1;
+
+	// overstrike
+	if ( DC->getOverstrikeMode() )
+	{
+		// copy/erase one char at a time
+		while ( clipText[clipIndex] && buf[bufIndex] )
+		{
+			int oldWidth = ui_UTF8Width( buf + bufIndex );
+			int newWidth = ui_UTF8Width( clipText + clipIndex );
+
+			if ( bufLength + newWidth - oldWidth > max )
+			{
+				break; // reached maximum field length
+			}
+
+			memmove( buf + bufIndex + newWidth, buf + bufIndex + oldWidth, bufLength + 1 - bufIndex - oldWidth );
+			memcpy( buf + bufIndex, clipText + clipIndex, newWidth );
+
+			bufIndex += newWidth;
+			clipIndex += newWidth;
+			bufLength += newWidth - oldWidth;
+			++item->cursorPos;
+		}
+		// now we just append
+		clipLength -= clipIndex;
+	}
+
+	// insert
+	if ( bufLength + clipLength > max )
+	{
+		int newLength = clipLength = 0;
+
+		while ( bufLength + newLength <= max )
+		{
+			clipLength = newLength;
+			newLength += ui_UTF8Width( clipText + clipIndex + clipLength );
+		}
+
+		if ( bufLength + newLength <= max )
+		{
+			clipLength = newLength;
+		}
+		clipText[ clipIndex + clipLength ] = '\0';
+	}
+
+	if ( clipLength )
+	{
+		// move section to right of insertion point (and keep NUL termination)
+		memmove( buf + bufIndex + clipLength, buf + bufIndex, bufLength + 1 - bufIndex );
+		// copy in the new text
+		memcpy( buf + bufIndex, clipText + clipIndex, clipLength );
+		item->cursorPos += ui_UTF8Strlen( clipText + clipIndex );
+	}
+}
+
 qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 {
 	char           buff[ 1024 ];
@@ -3788,6 +3868,12 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 			{
 				// ctrl-e: end
 				item->cursorPos = lenChars;
+			}
+			else if ( chr == 'v' - 'a' + 1 )
+			{
+				// ctrl-v: paste
+				UI_Paste( item, buff, SELECTION_CLIPBOARD );
+				DC->setCVar( item->cvar, buff );
 			}
 			else if ( chr < 32 || chr == 127 || !item->cvar )
 			{
@@ -3907,7 +3993,15 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_INS:
 				case K_KP_INS:
-					DC->setOverstrikeMode( !DC->getOverstrikeMode() );
+					if ( shift )
+					{
+						UI_Paste( item, buff, SELECTION_PRIMARY );
+						DC->setCVar( item->cvar, buff );
+					}
+					else
+					{
+						DC->setOverstrikeMode( !DC->getOverstrikeMode() );
+					}
 
 					break;
 

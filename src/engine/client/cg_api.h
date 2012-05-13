@@ -249,6 +249,7 @@ typedef enum
 //#endif
   CG_COMPLETE_CALLBACK,
   CG_REGISTER_BUTTON_COMMANDS,
+  CG_GETCLIPBOARDDATA,
   CG_GETTEXT = 300,
   CG_R_GLYPH,
   CG_R_GLYPHCHAR,
@@ -502,3 +503,5 @@ int             trap_R_AnimFrameRate( qhandle_t hAnim );
 void            trap_CompleteCallback( const char *complete );
 
 void            trap_RegisterButtonCommands( const char *cmds );
+
+void            trap_GetClipboardData( char *, int, clipboard_t );

@@ -7297,3 +7297,58 @@ void BotImport_DrawPolygon( int color, int numpoints, float *points )
 {
 	re.DrawDebugPolygon( color, numpoints, points );
 }
+
+/*
+====================
+CL_GetClipboardData
+====================
+*/
+void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
+{
+	int         i, j;
+	char       *cbd = Sys_GetClipboardData( clip );
+	const char *clean;
+
+	if ( !cbd )
+	{
+		*buf = 0;
+		return;
+	}
+
+	clean = Com_ClearForeignCharacters( cbd ); // yes, I know
+	Z_Free( cbd );
+
+	i = j = 0;
+	while ( clean[ i ] )
+	{
+		if ( (unsigned char)clean[ i ] < ' ' || clean[ i ] == 0x7F )
+		{
+			if ( j + 1 >= buflen )
+			{
+				break;
+			}
+
+			i++;
+			buf[ j++ ] = ' ';
+		}
+		else
+		{
+			int w = Q_UTF8Width( clean + i );
+
+			if ( j + w >= buflen )
+			{
+				break;
+			}
+
+			switch ( w )
+			{
+			case 4: buf[ j++ ] = clean[ i++ ];
+			case 3: buf[ j++ ] = clean[ i++ ];
+			case 2: buf[ j++ ] = clean[ i++ ];
+			case 1: buf[ j++ ] = clean[ i++ ];
+			}
+		}
+	}
+
+	buf[ j ] = '\0';
+}

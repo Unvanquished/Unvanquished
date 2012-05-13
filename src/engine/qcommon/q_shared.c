@@ -1811,6 +1811,66 @@ const char *Com_UnquoteStr( const char *str )
 	return buf;
 }
 
+
+/*
+============
+Com_ClearForeignCharacters
+some cvar values need to be safe from foreign characters
+============
+*/
+const char *Com_ClearForeignCharacters( const char *str )
+{
+	static char *clean = NULL; // much longer than needed
+	int          i, j, size;
+
+	free( clean );
+	size = strlen( str );
+	clean = malloc ( size + 1 ); // guaranteed sufficient
+
+	i = j = 0;
+
+	while ( str[ i ] != '\0' )
+	{
+		int c = str[i] & 0xFF;
+		if ( c < 0x80 )
+		{
+			if ( j == size )                 break; // out of buffer space
+			clean[ j++ ] = str[ i++ ];
+		}
+		else if ( c >= 0xC2 && c <= 0xF4 )
+		{
+			int u, width = Q_UTF8Width( str + i );
+
+			if ( j + width > size )          break; // out of buffer space
+
+			if ( width == 1 )                continue; // should be multibyte
+
+			u = Q_UTF8CodePoint( str + i );
+
+			// Filtering out...
+			if ( Q_UTF8WidthCP( u ) != width ) continue; // over-long form
+			if ( u == 0xFEFF || u == 0xFFFE )  continue; // BOM
+			if ( u >= 0x80 && u < 0xA0 )       continue; // undefined (from ISO8859-1)
+			if ( u >= 0xD800 && u < 0xE000 )   continue; // UTF-16 surrogate halves
+			if ( u >= 0x110000 )               continue; // out of range
+
+			// width is in the range 1..4
+			switch ( width )
+			{
+			case 4: clean[ j++ ] = str[ i++ ];
+			case 3: clean[ j++ ] = str[ i++ ];
+			case 2: clean[ j++ ] = str[ i++ ];
+			case 1: clean[ j++ ] = str[ i++ ];
+			}
+		}
+		// else invalid
+	}
+
+	clean[ j ] = '\0';
+
+	return clean;
+}
+
 /*
 ============================================================================
 

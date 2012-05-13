@@ -1273,3 +1273,10 @@ void trap_R_UnregisterFont( fontInfo_t *font )
 {
   syscall( CG_R_UREGISTERFONT, font );
 }
+
+//177.
+//GetClipboardData(VMA(1), args[2], args[3]);
+void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
+{
+	syscall( CG_GETCLIPBOARDDATA, buf, bufsize, clip );
+}

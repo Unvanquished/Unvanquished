@@ -1421,6 +1421,7 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 	const char *Com_QuoteStr( const char *str );
 	const char *Com_UnquoteStr( const char *str );
+	const char *Com_ClearForeignCharacters( const char *str );
 
 //=============================================
 
@@ -2381,6 +2382,14 @@ char *Q_UTF8Unstore( int e );
 	  CA_ACTIVE, // game views should be displayed
 	  CA_CINEMATIC // playing a cinematic or a static pic, not connected to a server
 	} connstate_t;
+
+// clipboard
+	typedef enum
+	{
+		SELECTION_PRIMARY,
+		SELECTION_SECONDARY,
+		SELECTION_CLIPBOARD
+	} clipboard_t;
 
 // font support
 

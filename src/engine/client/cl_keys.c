@@ -460,29 +460,30 @@ void Field_BigDraw( field_t *edit, int x, int y, qboolean showCursor, qboolean n
 Field_Paste
 ================
 */
-void Field_Paste( field_t *edit )
+static void Field_Paste( field_t *edit, clipboard_t clip )
 {
-	char *cbd;
-	int  pasteLen, width;
+	const char *cbd;
+	int        pasteLen, width;
+	char       *ptr = Sys_GetClipboardData( clip );
 
-	cbd = Sys_GetClipboardData();
-
-	if ( !cbd )
+	if ( !ptr )
 	{
 		return;
 	}
 
+	cbd = Com_ClearForeignCharacters( ptr );
+	Z_Free( ptr );
+
 	// send as if typed, so insert / overstrike works properly
 	pasteLen = strlen( cbd );
 
-	while( pasteLen >= ( width = ( Q_UTF8Width( cbd ) > 0 ? Q_UTF8Width( cbd ) : 1 ) ) )
+	while ( pasteLen >= ( width = Q_UTF8Width( cbd ) ) )
 	{
 		Field_CharEvent( edit, cbd );
 
 		cbd += width;
 		pasteLen -= width;
 	}
-	Z_Free( cbd );
 }
 
 /*
@@ -499,13 +500,6 @@ void Field_KeyDownEvent( field_t *edit, int key )
 {
 	int len, width;
 	char *s;
-
-	// shift-insert is paste
-	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keys[ K_SHIFT ].down )
-	{
-		Field_Paste( edit );
-		return;
-	}
 
 	key = tolower( key );
 	len = Q_UTF8Strlen( edit->buffer );
@@ -587,7 +581,14 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			break;
 
 		case K_INS:
-			key_overstrikeMode = !key_overstrikeMode;
+			if ( keys[ K_SHIFT ].down )
+			{
+				Field_Paste( edit, SELECTION_PRIMARY );
+			}
+			else
+			{
+				key_overstrikeMode = !key_overstrikeMode;
+			}
 			break;
 	}
 
@@ -613,7 +614,7 @@ void Field_CharEvent( field_t *edit, const char *s )
 
 	if ( *s == 'v' - 'a' + 1 ) // ctrl-v is paste
 	{
-		Field_Paste( edit );
+		Field_Paste( edit, SELECTION_CLIPBOARD );
 		return;
 	}
 
