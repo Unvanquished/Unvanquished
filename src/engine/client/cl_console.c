@@ -445,15 +445,17 @@ void Con_CheckResize( void )
 
 	if ( width == con.linewidth )
 	{
-		return;
+		// nothing
 	}
-
-	if ( width < 1 ) // video hasn't been initialized yet
+	else if ( width < 1 ) // video hasn't been initialized yet
 	{
 		width = DEFAULT_CONSOLE_WIDTH;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
 		Con_Clear();
+
+		con.current = con.totallines - 1;
+		con.display = con.current;
 	}
 	else
 	{
@@ -486,10 +488,12 @@ void Con_CheckResize( void )
 			        buf + ( ( con.current - i + oldtotallines ) % oldtotallines ) * oldwidth,
 			        numchars * sizeof( conChar_t ) );
 		}
+
+		con.current = con.totallines - 1;
+		con.display = con.current;
 	}
 
-	con.current = con.totallines - 1;
-	con.display = con.current;
+	g_console_field_width = g_consoleField.widthInChars = con.linewidth - 7 - ( cl_consolePrompt ? Q_UTF8Strlen( cl_consolePrompt->string ) : 0 );
 }
 
 /*
