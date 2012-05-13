@@ -2454,8 +2454,8 @@ static void UI_Text_PaintChar( float x, float y, float scale,
 
 static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjust,
                                    const char *text, vec4_t color, int style,
-                                   int limit, float *maxX,
-                                   int cursorPos, char cursor )
+                                   int scrollIndex, int scrollLength, int fieldWidth,
+                                   float *maxX, int cursorPos, char cursor )
 {
 	const char  *s = text;
 	int         len;
@@ -2470,6 +2470,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	int         emoticonLen = 0;
 	int         emoticonWidth;
 	int         cursorX = -1;
+	float       startX = x;
 
 	if ( !text )
 	{
@@ -2483,17 +2484,10 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 	len = ui_UTF8Strlen( text );
 
-/* seems useless without monospaced
-	if ( limit > 0 && len > limit )
-	{
-		len = limit;
-	}
-*/
+	x += UI_Parse_Indent( &s );
 
 	DC->setColor( color );
 	memcpy( &newColor[ 0 ], &color[ 0 ], sizeof( vec4_t ) );
-
-	x += UI_Parse_Indent( &s );
 
 	while ( s && *s && count < len )
 	{
@@ -2505,6 +2499,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		if ( maxX && charWidth + x > *maxX )
 		{
 			*maxX = 0;
+			break;
+		}
+
+		if ( fieldWidth && x + charWidth - startX > fieldWidth )
+		{
 			break;
 		}
 
@@ -2619,31 +2618,53 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		}
 	}
 
+	if ( scrollLength && count != scrollLength )
+	{
+		static const vec4_t black = { 0, 0, 0, 0.25 };
+		static const vec4_t yellow = { 1.0, 1.0, 0, 1.0 / 3.0 };
+		float bx = DC->xscale * ( startX + fieldWidth * scrollIndex / scrollLength );
+		float by = DC->yscale * ( y + 3 );
+		float bw = DC->xscale * ( fieldWidth * count / scrollLength );
+		float bh = DC->yscale * 2;
+
+		if ( style == ITEM_TEXTSTYLE_SHADOWED ||
+		     style == ITEM_TEXTSTYLE_SHADOWEDMORE )
+		{
+			DC->setColor( black );
+			DC->drawStretchPic( bx - 1, by - 1, bw + 2, bh + 2, 0, 0, 0, 0, DC->whiteShader );
+		}
+
+		DC->setColor( yellow );
+		DC->drawStretchPic( bx, by, bw, bh, 0, 0, 0, 0, DC->whiteShader );
+	}
+
 	DC->setColor( NULL );
 }
 
 void UI_Text_Paint_Limit( float *maxX, float x, float y, float scale,
-                          vec4_t color, const char *text, float adjust, int limit )
+                          vec4_t color, const char *text, float adjust )
 {
 	UI_Text_Paint_Generic( x, y, scale, adjust,
 	                       text, color, ITEM_TEXTSTYLE_NORMAL,
-	                       limit, maxX, -1, 0 );
+	                       0, 0, 0, maxX, -1, 0 );
 }
 
 void UI_Text_Paint( float x, float y, float scale, vec4_t color, const char *text,
-                    float adjust, int limit, int style )
+                    float adjust, int style )
 {
 	UI_Text_Paint_Generic( x, y, scale, adjust,
 	                       text, color, style,
-	                       limit, NULL, -1, 0 );
+	                       0, 0, 0, NULL, -1, 0 );
 }
 
 void UI_Text_PaintWithCursor( float x, float y, float scale, vec4_t color, const char *text,
-                              int cursorPos, char cursor, int limit, int style )
+                              int cursorPos, char cursor, int style,
+                              int scrollIndex, int scrollLength, int fieldWidth )
 {
 	UI_Text_Paint_Generic( x, y, scale, 0.0,
 	                       text, color, style,
-	                       limit, NULL, cursorPos, cursor );
+	                       scrollIndex, scrollLength, fieldWidth,
+	                       NULL, cursorPos, cursor );
 }
 
 static const commandDef_t commandList[] =
@@ -5377,7 +5398,7 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 		while ( UI_NextWrapLine( &p, &x, &y ) )
 		{
 			UI_Text_Paint( x, y, item->textscale, color,
-			               p, 0, 0, item->textStyle );
+			               p, 0, item->textStyle );
 		}
 	}
 	else
@@ -5498,7 +5519,7 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 
 				Item_SetTextExtents( &lineItem, buff );
 				UI_Text_Paint( lineItem.textRect.x, lineItem.textRect.y,
-				               lineItem.textscale, color, buff, 0, 0,
+				               lineItem.textscale, color, buff, 0,
 				               lineItem.textStyle );
 
 				if ( useWrapCache )
@@ -5596,7 +5617,7 @@ void Item_Text_Paint( itemDef_t *item )
 
 	Item_TextColor( item, &color );
 
-	UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, color, textPtr, 0, 0, item->textStyle );
+	UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, color, textPtr, 0, item->textStyle );
 }
 
 void Item_TextField_Paint( itemDef_t *item )
@@ -5609,7 +5630,7 @@ void Item_TextField_Paint( itemDef_t *item )
 	char           cursor = DC->getOverstrikeMode() ? '|' : '_';
 	qboolean       editing = ( item->window.flags & WINDOW_HASFOCUS && g_editingField );
 	const int      cursorWidth = editing ? EDIT_CURSOR_WIDTH : 0;
-	int            paintIndex;
+	int            paintIndex, bufLength;
 
 	//FIXME: causes duplicate printing if item->text is not set (NULL)
 	Item_Text_Paint( item );
@@ -5638,6 +5659,7 @@ void Item_TextField_Paint( itemDef_t *item )
 		editPtr->paintOffset = 0;
 	}
 
+    bufLength =  ui_UTF8Strlen( buff );
 	paintIndex = ui_CursorToOffset( buff, editPtr->paintOffset );
 
 	// Shorten string to max viewable
@@ -5663,15 +5685,16 @@ void Item_TextField_Paint( itemDef_t *item )
 		UI_Text_PaintWithCursor( item->textRect.x + item->textRect.w + offset,
 		                         item->textRect.y, item->textscale, newColor,
 		                         buff + paintIndex,
-		                         item->cursorPos - editPtr->paintOffset,
-		                         cursor, editPtr->maxPaintChars, item->textStyle );
+		                         item->cursorPos - editPtr->paintOffset, cursor,
+		                         item->textStyle,
+		                         editPtr->paintOffset, bufLength,
+		                         editPtr->maxFieldWidth - cursorWidth );
 	}
 	else
 	{
 		UI_Text_Paint( item->textRect.x + item->textRect.w + offset,
 		               item->textRect.y, item->textscale, newColor,
-		               buff + paintIndex, 0,
-		               editPtr->maxPaintChars, item->textStyle );
+		               buff + paintIndex, 0, item->textStyle );
 	}
 }
 
@@ -5699,11 +5722,11 @@ void Item_YesNo_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + 8, item->textRect.y, item->textscale, newColor,
-		               ( value != 0 ) ? DC->translateString( "Yes" ) : DC->translateString( "No" ), 0, 0, item->textStyle );
+		               ( value != 0 ) ? DC->translateString( "Yes" ) : DC->translateString( "No" ), 0, item->textStyle );
 	}
 	else
 	{
-		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, ( value != 0 ) ? "Yes" : "No", 0, 0,
+		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, ( value != 0 ) ? "Yes" : "No", 0,
 		               item->textStyle );
 	}
 }
@@ -5729,11 +5752,11 @@ void Item_Multi_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-		               item->textscale, newColor, text, 0, 0, item->textStyle );
+		               item->textscale, newColor, text, 0, item->textStyle );
 	}
 	else
 	{
-		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, 0, item->textStyle );
+		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, item->textStyle );
 	}
 }
 
@@ -5762,11 +5785,11 @@ void Item_Cycle_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-		               item->textscale, newColor, text, 0, 0, item->textStyle );
+		               item->textscale, newColor, text, 0, item->textStyle );
 	}
 	else
 	{
-		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, 0, item->textStyle );
+		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, item->textStyle );
 	}
 }
 
@@ -6092,19 +6115,19 @@ void Item_Bind_Paint( itemDef_t *item )
 		if ( g_bindItem == item && g_waitingForKey )
 		{
 			UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-			               item->textscale, newColor, "Press key", 0, maxChars, item->textStyle );
+			               item->textscale, newColor, "Press key", 0, item->textStyle );
 		}
 		else
 		{
 			BindingFromName( item->cvar );
 			UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-			               item->textscale, newColor, g_nameBind1, 0, maxChars, item->textStyle );
+			               item->textscale, newColor, g_nameBind1, 0, item->textStyle );
 		}
 	}
 	else
 	{
 		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor,
-		               ( value != 0 ) ? "FIXME" : "FIXME", 0, maxChars, item->textStyle );
+		               ( value != 0 ) ? "FIXME" : "FIXME", 0, item->textStyle );
 	}
 }
 
@@ -6418,7 +6441,7 @@ void Item_ListBoxRow_Paint( itemDef_t *item, int row, int renderPos, qboolean hi
 					UI_Text_Paint( x + columnPos + alignOffset,
 					               y + m + ( ( listPtr->elementHeight - m ) / 2.0f ),
 					               item->textscale, item->window.foreColor, text, 0,
-					               0, item->textStyle );
+					               item->textStyle );
 				}
 
 				UI_ClearClipRegion();
@@ -6449,7 +6472,7 @@ void Item_ListBoxRow_Paint( itemDef_t *item, int row, int renderPos, qboolean hi
 			{
 				UI_Text_Paint( x + offset, y + m + ( ( listPtr->elementHeight - m ) / 2.0f ),
 				               item->textscale, item->window.foreColor, text, 0,
-				               0, item->textStyle );
+				               item->textStyle );
 			}
 
 			UI_ClearClipRegion();
@@ -6614,7 +6637,7 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 
 				UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET,
 				               item->textRect.y, item->textscale,
-				               color, text, 0, 0, item->textStyle );
+				               color, text, 0, item->textStyle );
 			}
 			else
 			{
@@ -9130,7 +9153,7 @@ void Menu_PaintAll( void )
 	if ( DC->getCVarValue( "ui_developer" ) )
 	{
 		vec4_t v = { 1, 1, 1, 1 };
-		UI_Text_Paint( 5, 25, .5, v, va( "fps: %f", DC->FPS ), 0, 0, 0 );
+		UI_Text_Paint( 5, 25, .5, v, va( "fps: %f", DC->FPS ), 0, 0 );
 	}
 }
 

@@ -414,6 +414,17 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 		SCR_DrawBigString( x, y, str, 1.0, noColorEscape );
 	}
 
+	if ( len > drawLen )
+	{
+		static const float yellow[] = { 1, 1, 0, 0.25 };
+		float width = SCR_ConsoleFontStringWidth( str, drawLen );
+
+		re.SetColor( yellow );
+		re.DrawStretchPic( x + ( width * prestep ) / len, y + 3,
+		                   ( width * drawLen ) / len, 2,
+		                   0, 0, 0, 0, cls.whiteShader );
+	}
+
 	// draw the cursor
 	if ( showCursor )
 	{

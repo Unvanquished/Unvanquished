@@ -436,7 +436,7 @@ typedef struct
 	void ( *getCVarString )( const char *cvar, char *buffer, int bufsize );
 	float( *getCVarValue )( const char *cvar );
 	void ( *setCVar )( const char *cvar, const char *value );
-	void ( *drawTextWithCursor )( float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style );
+	void ( *drawTextWithCursor )( float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int clipped, int style );
 	void ( *setOverstrikeMode )( qboolean b );
 	qboolean( *getOverstrikeMode )( void );
 	void ( *startLocalSound )( sfxHandle_t sfx, int channelNum );
@@ -561,9 +561,9 @@ const char  *Item_Text_Wrap( const char *text, float scale, float width );
 void        UI_DrawTextBlock( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                               float scale, int textalign, int textvalign,
                               int textStyle, const char *text );
-void        UI_Text_Paint( float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style );
+void        UI_Text_Paint( float x, float y, float scale, vec4_t color, const char *text, float adjust, int style );
 void        UI_Text_Paint_Limit( float *maxX, float x, float y, float scale,
-                                 vec4_t color, const char *text, float adjust, int limit );
+                                 vec4_t color, const char *text, float adjust );
 float       UI_Text_Width( const char *text, float scale );
 float       UI_Text_Height( const char *text, float scale );
 float       UI_Text_EmWidth( float scale );

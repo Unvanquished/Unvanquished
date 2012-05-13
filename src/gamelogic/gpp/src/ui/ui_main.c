@@ -2047,7 +2047,7 @@ static void UI_DrawSelectedMapName( rectDef_t *rect, float scale, vec4_t color, 
 
 	if ( map >= 0 && map < uiInfo.mapCount )
 	{
-		UI_Text_Paint( rect->x, rect->y, scale, color, uiInfo.mapList[ map ].mapName, 0, 0, textStyle );
+		UI_Text_Paint( rect->x, rect->y, scale, color, uiInfo.mapList[ map ].mapName, 0, textStyle );
 	}
 }
 
@@ -5175,7 +5175,7 @@ static void UI_PrintTime( char *buf, int bufsize, int time )
 void Text_PaintCenter( float x, float y, float scale, vec4_t color, const char *text, float adjust )
 {
 	int len = UI_Text_Width( text, scale );
-	UI_Text_Paint( x - len / 2, y, scale, color, text, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE );
+	UI_Text_Paint( x - len / 2, y, scale, color, text, 0, ITEM_TEXTSTYLE_SHADOWEDMORE );
 }
 
 void Text_PaintCenter_AutoWrapped( float x, float y, float xmax, float ystep, float scale, vec4_t color, const char *str, float adjust )
