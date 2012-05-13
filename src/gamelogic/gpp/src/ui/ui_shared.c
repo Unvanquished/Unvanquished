@@ -2621,7 +2621,8 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	if ( scrollLength && count != scrollLength )
 	{
 		static const vec4_t black = { 0, 0, 0, 0.25 };
-		static const vec4_t yellow = { 1.0, 1.0, 0, 1.0 / 3.0 };
+
+		vec4_t recolour = { color[0], color[1], color[2], color[3] / 3.0 };
 		float bx = DC->xscale * ( startX + fieldWidth * scrollIndex / scrollLength );
 		float by = DC->yscale * ( y + 3 );
 		float bw = DC->xscale * ( fieldWidth * count / scrollLength );
@@ -2634,7 +2635,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 			DC->drawStretchPic( bx - 1, by - 1, bw + 2, bh + 2, 0, 0, 0, 0, DC->whiteShader );
 		}
 
-		DC->setColor( yellow );
+		DC->setColor( recolour );
 		DC->drawStretchPic( bx, by, bw, bh, 0, 0, 0, 0, DC->whiteShader );
 	}
 
