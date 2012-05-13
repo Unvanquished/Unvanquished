@@ -867,6 +867,7 @@ void Con_DrawSolidConsole( float frac )
 	int    currentColor;
 	vec4_t color;
 	char   *s, *end;
+	float  yVer;
 	float  totalwidth;
 	float  currentWidthLocation = 0;
 
@@ -903,6 +904,7 @@ void Con_DrawSolidConsole( float frac )
 	// draw the background
 	if ( scr_conUseOld->integer )
 	{
+		yVer = 5 + charHeight;
 		y = frac * SCREEN_HEIGHT;
 
 		if ( y < 1 )
@@ -936,6 +938,10 @@ void Con_DrawSolidConsole( float frac )
 	}
 	else
 	{
+		yVer = 10;
+		SCR_AdjustFrom640( NULL, &yVer, NULL, NULL );
+		yVer = floor( yVer + 5 + charHeight );
+
 		color[ 0 ] = scr_conColorRed->value;
 		color[ 1 ] = scr_conColorGreen->value;
 		color[ 2 ] = scr_conColorBlue->value;
@@ -957,7 +963,7 @@ void Con_DrawSolidConsole( float frac )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : frac * 2.0f );
+	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f : frac * 0.75f );
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
@@ -969,12 +975,11 @@ void Con_DrawSolidConsole( float frac )
 	}
 
 	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
-	y = lines - charHeight * 2;
 
 	for ( x = 0; x < i; x++ )
 	{
 		int ch = Q_UTF8CodePoint( Q3_VERSION + x );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, y, ch );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, yVer, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 
@@ -988,12 +993,11 @@ void Con_DrawSolidConsole( float frac )
 	}
 
 	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
-	y = lines - charHeight;
 
 	for ( x = 0; x < i; x++ )
 	{
 		int ch = Q_UTF8CodePoint( Q3_ENGINE + x );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, y, ch );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, yVer + charHeight, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 
