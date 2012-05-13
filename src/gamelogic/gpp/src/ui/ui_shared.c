@@ -2615,7 +2615,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		if ( cursorX >= 0 && !( ( DC->realTime / BLINK_DIVISOR ) & 1 ) )
 		{
 			glyph = &font->glyphBlock[0][( int ) cursor ];
-			UI_Text_PaintChar( cursorX, y, useScale, glyph, 0.0f );
+			UI_Text_PaintChar( cursorX, y, useScale, glyph, 2.0f );
 		}
 	}
 
