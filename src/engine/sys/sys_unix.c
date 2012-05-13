@@ -212,6 +212,7 @@ char *Sys_GetCurrentUser( void )
 Sys_GetClipboardData
 ==================
 */
+#ifndef MACOS_X
 static struct {
 	Display *display;
 	Window  window;
@@ -223,7 +224,6 @@ static struct {
 char *Sys_GetClipboardData( clipboard_t clip )
 {
 #ifndef DEDICATED
-#ifndef MACOS_X
 	// derived from SDL clipboard code (http://hg.assembla.com/SDL_Clipboard)
 	Window        owner;
 	Atom          selection;
@@ -337,10 +337,10 @@ char *Sys_GetClipboardData( clipboard_t clip )
 	}
 
 	x11.unlockDisplay();
-#endif // !MACOSX
 #endif // !DEDICATED
 	return NULL;
 }
+#endif // !MACOSX
 
 #define MEM_THRESHOLD 96 * 1024 * 1024
 
