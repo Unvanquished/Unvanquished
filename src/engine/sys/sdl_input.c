@@ -168,8 +168,19 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 		} u;
 	} consoleKey_t;
 
+	static const struct {
+		char name[8];
+		int  key;
+	} modMap[] = {
+		{ "shift", K_SHIFT },
+		{ "ctrl",  K_CTRL  },
+		{ "alt",   K_ALT   },
+		{ "super", K_SUPER },
+	};
+
 	static consoleKey_t consoleKeys[ MAX_CONSOLE_KEYS ];
 	static int          numConsoleKeys = 0;
+	static int          ifMod, unlessMod = 0;
 	int                 i;
 
 	// Only parse the variable when it changes
@@ -180,6 +191,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 		cl_consoleKeys->modified = qfalse;
 		text_p = cl_consoleKeys->string;
 		numConsoleKeys = 0;
+		ifMod = unlessMod = 0;
 
 		while ( numConsoleKeys < MAX_CONSOLE_KEYS )
 		{
@@ -193,7 +205,27 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 				break;
 			}
 
-			if ( strlen( token ) == 4 )
+			if ( token[ 0 ] == '+' && token[ 1 ] )
+			{
+				for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+				{
+					if ( !Q_stricmp( token + 1, modMap[i].name ) )
+					{
+						ifMod |= 1 << i;
+					}
+				}
+			}
+			else if ( token[ 0 ] == '-' && token[ 1 ] )
+			{
+				for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+				{
+					if ( !Q_stricmp( token + 1, modMap[i].name ) )
+					{
+						unlessMod |= 1 << i;
+					}
+				}
+			}
+			else if ( strlen( token ) == 4 )
 			{
 				charCode = Com_HexStrToInt( token );
 			}
@@ -216,6 +248,41 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 			}
 
 			numConsoleKeys++;
+		}
+
+		// if MOD is requested pressed and released, clear released
+		unlessMod &= ~ifMod;
+	}
+
+	// require a +MOD, if there are any, to be pressed
+	if ( ifMod )
+	{
+		qboolean flag = qfalse;
+
+		for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+		{
+			if ( ( ifMod & 1 << i ) && keys[ modMap[i].key ].down )
+			{
+				flag = qtrue;
+				break;
+			}
+		}
+
+		if ( !flag )
+		{
+			return qfalse;
+		}
+	}
+
+	// require all -MOD not to be pressed
+	if ( unlessMod )
+	{
+		for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+		{
+			if ( ( unlessMod & 1 << i ) && keys[ modMap[i].key ].down )
+			{
+				return qfalse;
+			}
 		}
 	}
 
