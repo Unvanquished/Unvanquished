@@ -1421,7 +1421,7 @@ void Key_EditBind_f( void )
 	char           *buf;
 	/*const*/
 	char *key, *binding;
-	const char      *keyq;
+	const char     *bindq;
 	int            b;
 
 	b = Cmd_Argc();
@@ -1443,9 +1443,9 @@ void Key_EditBind_f( void )
 
 	binding = Key_GetBinding( b );
 
-	keyq = Com_QuoteStr( key );  // <- static buffer
-	buf = malloc( 8 + strlen( keyq ) + strlen( binding ) );
-	sprintf( buf, "/bind %s %s", keyq, binding );
+	bindq = Com_QuoteStr( binding );  // <- static buffer
+	buf = malloc( 8 + strlen( key ) + strlen( bindq ) );
+	sprintf( buf, "/bind %s %s", key, bindq );
 
 	Con_OpenConsole_f();
 	Field_Set( &g_consoleField, buf );
