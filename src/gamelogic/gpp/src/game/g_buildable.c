@@ -157,8 +157,20 @@ static void G_PuntBlocker( gentity_t *self, gentity_t *blocker )
 	nudge[ 1 ] = crandom() * 100.0f;
 	nudge[ 2 ] = 75.0f;
 
-	VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
-	trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
+	if ( blocker->r.svFlags & SVF_BOT )
+	{
+	        // nudge the bot (okay, we lose the fractional part)
+		blocker->client->pers.cmd.forwardmove = nudge[0];
+		blocker->client->pers.cmd.rightmove = nudge[1];
+		blocker->client->pers.cmd.upmove = nudge[2];
+		// bots don't double-tap, so use as a nudge flag
+		blocker->client->pers.cmd.doubleTap = 1;
+	}
+	else
+	{
+		VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
+		trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
+        }
 }
 
 #define POWER_REFRESH_TIME 2000

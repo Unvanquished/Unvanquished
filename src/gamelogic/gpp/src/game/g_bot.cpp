@@ -1779,12 +1779,20 @@ Bot Thinks
 extern "C" void G_BotThink( gentity_t *self) {
 	char buf[MAX_STRING_CHARS];
 	usercmd_t  botCmdBuffer = self->client->pers.cmd;
+	vec3_t     nudge;
 
 	//reset command buffer
 	usercmdClearButtons(botCmdBuffer.buttons);
+
+	// for nudges, e.g. spawn blocking
+	nudge[0] = botCmdBuffer.doubleTap ? botCmdBuffer.forwardmove : 0;
+	nudge[1] = botCmdBuffer.doubleTap ? botCmdBuffer.rightmove : 0;
+	nudge[2] = botCmdBuffer.doubleTap ? botCmdBuffer.upmove : 0;
+
 	botCmdBuffer.forwardmove = 0;
 	botCmdBuffer.rightmove = 0;
 	botCmdBuffer.upmove = 0;
+	botCmdBuffer.doubleTap = 0;
 
 	//acknowledge recieved server commands
 	//MUST be done
@@ -1824,6 +1832,8 @@ extern "C" void G_BotThink( gentity_t *self) {
 	//Execute the bot's tasks (The actual AI of the bot)
 	EvaluateTasks(self, &botCmdBuffer);
 
+	// if we were nudged...
+	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );
 
 	self->client->pers.cmd = botCmdBuffer;
 }
