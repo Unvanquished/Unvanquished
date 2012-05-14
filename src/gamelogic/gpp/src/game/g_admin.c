@@ -3299,8 +3299,6 @@ qboolean G_admin_listplayers( gentity_t *ent )
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
-		int j;
-
 		p = &level.clients[ i ];
 
 		if ( p->pers.connected == CON_DISCONNECTED )
@@ -3331,16 +3329,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
-		bot = ' ';
-		for ( j = 0; j < level.num_entities; ++j)
-		{
-			if ( level.gentities[ i ].client == p )
-			{
-				bot = (level.gentities[ i ].r.svFlags & SVF_BOT) ? 'R' : ' ';
-				break;
-			}
-		}
-
+		bot = ( level.gentities[ i ].r.svFlags & SVF_BOT ) ? 'R' : ' ';
 		muted = p->pers.namelog->muted ? 'M' : ' ';
 		denied = p->pers.namelog->denyBuild ? 'B' : ' ';
 
