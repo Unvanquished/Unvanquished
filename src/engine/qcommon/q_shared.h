@@ -146,7 +146,7 @@ extern "C" {
 
 #ifdef Q3_VM
 
-#include "bg_lib.h"
+#include "../../gamelogic/gpp/src/game/bg_lib.h"
 
 	typedef int intptr_t;
 
@@ -193,7 +193,7 @@ extern "C" {
 
 #include "q_platform.h"
 
-#if defined __GNUC__ || defined __clang__
+#if defined __GNUC__ || defined __clang__ && !defined(Q3_VM)
 #define _attribute( x ) __attribute__( x )
 #else
 #define _attribute( x )
@@ -991,7 +991,7 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 	void vectoangles( const vec3_t value1, vec3_t angles );
 
-	static ID_INLINE void VectorToAngles( const vec3_t value1, vec3_t angles )
+	ID_INLINE void VectorToAngles( const vec3_t value1, vec3_t angles )
 	{
 		vectoangles( value1, angles );
 	}
@@ -1033,7 +1033,6 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 		AngleVectors( angles, out, NULL, NULL );
 	}
 
-	void  VectorToAngles( const vec3_t value1, vec3_t angles );
 
 	vec_t PlaneNormalize( vec4_t plane );  // returns normal length
 

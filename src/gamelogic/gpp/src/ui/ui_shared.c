@@ -2622,11 +2622,16 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	{
 		static const vec4_t black = { 0, 0, 0, 0.25 };
 
-		vec4_t recolour = { color[0], color[1], color[2], color[3] / 3.0 };
+		vec4_t recolor;
 		float bx = DC->xscale * ( startX + fieldWidth * scrollIndex / scrollLength );
 		float by = DC->yscale * ( y + 3 );
 		float bw = DC->xscale * ( fieldWidth * count / scrollLength );
 		float bh = DC->yscale * 2;
+
+		recolor[0] = color[0];
+		recolor[1] = color[1];
+		recolor[2] = color[2];
+		recolor[3] = color[3];
 
 		if ( style == ITEM_TEXTSTYLE_SHADOWED ||
 		     style == ITEM_TEXTSTYLE_SHADOWEDMORE )
@@ -2635,7 +2640,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 			DC->drawStretchPic( bx - 1, by - 1, bw + 2, bh + 2, 0, 0, 0, 0, DC->whiteShader );
 		}
 
-		DC->setColor( recolour );
+		DC->setColor( recolor );
 		DC->drawStretchPic( bx, by, bw, bh, 0, 0, 0, 0, DC->whiteShader );
 	}
 
@@ -5104,12 +5109,6 @@ static void SkipWhiteSpace( const char **text, char *lastColor )
 
 static void Check_Alloc( char **buffer, size_t *size, size_t needed )
 {
-	if ( needed >= *size )
-	{
-		*size = needed + WRAP_BUFFER_MARGIN;
-		*buffer = realloc( *buffer, *size );
-		assert( *buffer != 0 );
-	}
 }
 
 const char *Item_Text_Wrap( const char *text, float scale, float width )
