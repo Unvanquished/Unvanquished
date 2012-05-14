@@ -2647,7 +2647,6 @@ qboolean G_admin_adjustban( gentity_t *ent )
 	char          mode = '\0';
 	g_admin_ban_t *ban;
 	int           mask = 0;
-	int           i;
 	int           skiparg = 0;
 
 	if ( trap_Argc() < 3 )
@@ -2950,7 +2949,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 
 qboolean G_admin_specunlock( gentity_t *ent )
 {
-	int            pid, lockTime = 0;
+	int            pid;
 	char           name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
 	gentity_t      *vic;
 	g_admin_spec_t *spec;
@@ -4273,7 +4272,7 @@ qboolean G_admin_lock( gentity_t *ent )
 qboolean G_admin_builder( gentity_t *ent )
 {
 	vec3_t     forward, right, up;
-	vec3_t     start, end, dist;
+	vec3_t     start, end;
 	trace_t    tr;
 	gentity_t  *traceEnt;
 	buildLog_t *log;

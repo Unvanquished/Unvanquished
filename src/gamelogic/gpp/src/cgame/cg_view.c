@@ -1185,7 +1185,6 @@ CG_smoothWWTransitions
 static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t out )
 {
 	vec3_t   surfNormal, rotAxis, temp;
-	vec3_t   refNormal = { 0.0f, 0.0f,  1.0f };
 	int      i;
 	float    stLocal, sFraction, rotAngle;
 	float    smoothTime, timeMod;

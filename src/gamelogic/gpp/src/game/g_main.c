@@ -804,7 +804,7 @@ G_VotesRunning
 Check if there are any votes currently running
 ==================
 */
-static qboolean G_VotesRunning( voidl )
+static qboolean G_VotesRunning( void )
 {
 	int i;
 

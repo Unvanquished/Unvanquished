@@ -351,7 +351,6 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	int  len;
 	int  drawLen;
 	int  prestep;
-	int  cursorChar;
 	char str[ MAX_STRING_CHARS ];
 	int  i;
 	int  offset, offsetEnd;

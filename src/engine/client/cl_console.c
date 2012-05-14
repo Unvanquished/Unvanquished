@@ -247,7 +247,7 @@ Save the console contents out to a file
 */
 void Con_Dump_f( void )
 {
-	int          l, x, i;
+	int          l;
 	fileHandle_t f;
 
 	if ( Cmd_Argc() != 2 )
@@ -294,7 +294,7 @@ Scroll up to the first console line containing a string
 */
 void Con_Search_f( void )
 {
-	int   l, i, x;
+	int   l, i;
 	int   direction;
 	int   c = Cmd_Argc();
 
@@ -338,7 +338,7 @@ Find all console lines containing a string
 */
 void Con_Grep_f( void )
 {
-	int    l, x;
+	int    l;
 	int    lastcolor;
 	char  *search;
 	char  *printbuf = NULL;
@@ -420,7 +420,7 @@ If the line width has changed, reformat the buffer.
 */
 void Con_CheckResize( void )
 {
-	int   i, j, width, oldwidth, oldtotallines, numlines, numchars;
+	int   i, width, oldwidth, oldtotallines, numlines, numchars;
 	conChar_t buf[ CON_TEXTSIZE ];
 
 	if ( cls.glconfig.vidWidth )
@@ -866,7 +866,6 @@ void Con_DrawSolidConsole( float frac )
 //	qhandle_t    conShader;
 	int    currentColor;
 	vec4_t color;
-	char   *s, *end;
 	float  yVer;
 	float  totalwidth;
 	float  currentWidthLocation = 0;
@@ -978,7 +977,7 @@ void Con_DrawSolidConsole( float frac )
 
 	for ( x = 0; x < i; x++ )
 	{
-		int ch = Q_UTF8CodePoint( Q3_VERSION + x );
+		int ch = Q_UTF8CodePoint( &Q3_VERSION[ x ] );
 		SCR_DrawConsoleFontUnichar( currentWidthLocation, yVer, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
@@ -996,7 +995,7 @@ void Con_DrawSolidConsole( float frac )
 
 	for ( x = 0; x < i; x++ )
 	{
-		int ch = Q_UTF8CodePoint( Q3_ENGINE + x );
+		int ch = Q_UTF8CodePoint( &Q3_ENGINE[ x ] );
 		SCR_DrawConsoleFontUnichar( currentWidthLocation, yVer + charHeight, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
