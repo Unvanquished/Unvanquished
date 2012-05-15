@@ -1866,7 +1866,7 @@ void ExitLevel( void )
 
 	if ( G_MapExists( g_nextMap.string ) )
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, va( "map \"%s\"\n", g_nextMap.string ) );
+		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s\n", Quote( g_nextMap.string ) ) );
 
 		if ( G_MapRotationActive() )
 		{
@@ -1927,10 +1927,10 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	char string[ 1024 ];
 	int  i;
 
-	Com_sprintf( string, sizeof( string ), "chat %ld %d \"%s\"",
+	Com_sprintf( string, sizeof( string ), "chat %ld %d %s",
 	             ent ? ( long )( ent - g_entities ) : -1,
 	             G_admin_permission( ent, ADMF_ADMINCHAT ) ? SAY_ADMINS : SAY_ADMINS_PUBLIC,
-	             msg );
+	             Quote( msg ) );
 
 	// Send to all appropriate clients
 	for ( i = 0; i < level.maxclients; i++ )

@@ -400,6 +400,7 @@ static void Svcmd_TeamMessage_f( void )
 {
 	char   teamNum[ 2 ];
 	team_t team;
+	char   *arg;
 
 	if ( trap_Argc() < 3 )
 	{
@@ -416,8 +417,9 @@ static void Svcmd_TeamMessage_f( void )
 		return;
 	}
 
-	G_TeamCommand( team, va( "chat -1 %d \"%s\"", SAY_TEAM, ConcatArgs( 2 ) ) );
-	G_LogPrintf( "SayTeam: -1 \"console\": %s\n", ConcatArgs( 2 ) );
+	arg = ConcatArgs( 2 );
+	G_TeamCommand( team, va( "chat -1 %d %s", SAY_TEAM, Quote( arg ) ) );
+	G_LogPrintf( "SayTeam: -1 \"console\": %s\n", arg );
 }
 
 static void Svcmd_CenterPrint_f( void )
@@ -428,7 +430,7 @@ static void Svcmd_CenterPrint_f( void )
 		return;
 	}
 
-	trap_SendServerCommand( -1, va( "cp \"%s\"", ConcatArgs( 1 ) ) );
+	trap_SendServerCommand( -1, va( "cp %s", Quote( ConcatArgs( 1 ) ) ) );
 }
 
 static void Svcmd_EjectClient_f( void )
@@ -541,7 +543,7 @@ static void Svcmd_Pr_f( void )
 		return;
 	}
 
-	trap_SendServerCommand( cl, va( "print \"%s\n\"", ConcatArgs( 2 ) ) );
+	trap_SendServerCommand( cl, va( "print %s\\\n", Quote( ConcatArgs( 2 ) ) ) );
 }
 
 static void Svcmd_PrintQueue_f( void )

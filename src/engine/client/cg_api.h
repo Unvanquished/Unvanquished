@@ -250,6 +250,7 @@ typedef enum
   CG_COMPLETE_CALLBACK,
   CG_REGISTER_BUTTON_COMMANDS,
   CG_GETCLIPBOARDDATA,
+  CG_QUOTESTRING,
   CG_GETTEXT = 300,
   CG_R_GLYPH,
   CG_R_GLYPHCHAR,
@@ -505,3 +506,4 @@ void            trap_CompleteCallback( const char *complete );
 void            trap_RegisterButtonCommands( const char *cmds );
 
 void            trap_GetClipboardData( char *, int, clipboard_t );
+void            trap_QuoteString( const char *, char*, int );

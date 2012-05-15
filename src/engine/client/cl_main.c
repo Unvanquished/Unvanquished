@@ -3867,7 +3867,7 @@ void CL_CheckUserinfo( void )
 	if ( cvar_modifiedFlags & CVAR_USERINFO )
 	{
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		CL_AddReliableCommand( va( "userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO ) ) );
+		CL_AddReliableCommand( va( "userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO ) ) ); // FIXME QUOTING INFO
 	}
 }
 
@@ -4475,7 +4475,7 @@ void CL_CheckAutoUpdate( void )
 	             cls.autoupdateServer.ip[ 2 ], cls.autoupdateServer.ip[ 3 ],
 	             BigShort( cls.autoupdateServer.port ) );
 
-	NET_OutOfBandPrint( NS_CLIENT, cls.autoupdateServer, "getUpdateInfo \"%s\" \"%s\"\n", Q3_VERSION, ARCH_STRING );
+	NET_OutOfBandPrint( NS_CLIENT, cls.autoupdateServer, "getUpdateInfo \"%s\" \"%s\"\n", Q3_VERSION, ARCH_STRING ); // FIXME QUOTING INFO
 
 #endif // !PRE_RELEASE_DEMO
 

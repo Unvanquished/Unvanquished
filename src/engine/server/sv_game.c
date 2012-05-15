@@ -823,6 +823,10 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		case G_RSA_GENMSG:
 			return SV_RSAGenMsg( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 
+                case G_QUOTESTRING:
+			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}

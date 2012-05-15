@@ -1420,8 +1420,6 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 	int        Com_HexStrToInt( const char *str );
 
-	const char *Com_QuoteStr( const char *str );
-	const char *Com_UnquoteStr( const char *str );
 	const char *Com_ClearForeignCharacters( const char *str );
 
 //=============================================

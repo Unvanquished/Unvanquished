@@ -1213,7 +1213,7 @@ static void SV_ConSay_f( void )
 
 	strcat( text, p );
 
-	SV_SendServerCommand( NULL, "chat \"%s\"", text );
+	SV_SendServerCommand( NULL, "chat %s", Cmd_QuoteString( text ) );
 }
 
 /*

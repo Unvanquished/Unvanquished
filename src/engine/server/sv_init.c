@@ -212,7 +212,7 @@ void SV_UpdateConfigStrings( void )
 
 						Q_strncpyz( buf, &sv.configstrings[ index ][ sent ], maxChunkSize );
 
-						SV_SendServerCommand( client, "%s %i \"%s\"\n", cmd, index, buf );
+						SV_SendServerCommand( client, "%s %i \"%s\"\n", cmd, index, buf ); // FIXME QUOTING INFO
 
 						sent += ( maxChunkSize - 1 );
 						remaining -= ( maxChunkSize - 1 );
@@ -221,7 +221,7 @@ void SV_UpdateConfigStrings( void )
 				else
 				{
 					// standard cs, just send it
-					SV_SendServerCommand( client, "cs %i \"%s\"\n", index, sv.configstrings[ index ] );
+					SV_SendServerCommand( client, "cs %i \"%s\"\n", index, sv.configstrings[ index ] ); // FIXME QUOTING INFO
 				}
 			}
 		}
@@ -1136,7 +1136,7 @@ void SV_Shutdown( char *finalmsg )
 
 	if ( svs.clients && !com_errorEntered )
 	{
-		SV_FinalCommand( va( "print \"%s\"", finalmsg ), qtrue );
+		SV_FinalCommand( va( "print %s", Cmd_QuoteString( finalmsg ) ), qtrue );
 	}
 
 	SV_RemoveOperatorCommands();

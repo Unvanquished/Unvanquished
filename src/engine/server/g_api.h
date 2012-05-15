@@ -178,7 +178,8 @@ typedef enum
   G_SQL_FIELDCOUNT,
   G_SQL_CLEANSTRING,
 #endif
-  G_RSA_GENMSG // ( const char *public_key, char *cleartext, char *encrypted )
+  G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
+  G_QUOTESTRING
 } gameImport_t;
 
 // engine-to-game-module calls

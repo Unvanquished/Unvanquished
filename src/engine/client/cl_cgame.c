@@ -298,9 +298,9 @@ CL_ConfigstringModified
 */
 void CL_ConfigstringModified( void )
 {
-	char        *old, *s;
+	const char  *old, *s;
 	int         i, index;
-	char        *dup;
+	const char  *dup;
 	gameState_t oldGs;
 	int         len;
 
@@ -313,7 +313,8 @@ void CL_ConfigstringModified( void )
 
 //  s = Cmd_Argv(2);
 	// get everything after "cs <num>"
-	s = Cmd_ArgsFrom( 2 );
+	//s = Cmd_ArgsFrom( 2 );
+	s = Cmd_DequoteString( Cmd_Cmd_FromNth( 2 ) ); // FIXME QUOTING INFO
 
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
 
@@ -1382,6 +1383,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_GETCLIPBOARDDATA:
 			CL_GetClipboardData( VMA(1), args[2], args[3] );
+			return 0;
+
+		case CG_QUOTESTRING:
+			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_GETTEXT:

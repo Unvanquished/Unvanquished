@@ -2268,7 +2268,7 @@ static void admin_create_ban( gentity_t *ent,
 
 		if ( G_admin_ban_matches( b, &g_entities[ i ] ) )
 		{
-			trap_SendServerCommand( i, va( "disconnect \"%s\"", disconnect ) );
+			trap_SendServerCommand( i, va( "disconnect %s", Quote( disconnect ) ) );
 
 			trap_DropClient( i, va( "has been kicked by %s^7. reason: %s",
 			                        b->banner, b->reason ), 0 );
@@ -4716,7 +4716,7 @@ void G_admin_print( gentity_t *ent, const char *m )
 {
 	if ( ent )
 	{
-		trap_SendServerCommand( ent - level.gentities, va( "print \"%s\"", m ) );
+		trap_SendServerCommand( ent - level.gentities, va( "print %s", Quote( m ) ) );
 	}
 	else
 	{

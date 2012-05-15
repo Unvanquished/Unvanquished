@@ -4250,9 +4250,14 @@ static char *Field_FindFirstSeparator( char *s )
 {
 	int i;
 
+	// quotes are ignored, but escapes are processed
 	for ( i = 0; i < strlen( s ); i++ )
 	{
-		if ( s[ i ] == ';' )
+		if ( s[ i ] == '\\' && s[ i + 1] )
+		{
+			++i;
+		}
+		else if ( s[ i ] == ';' )
 		{
 			return &s[ i ];
 		}

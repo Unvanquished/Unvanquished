@@ -935,4 +935,10 @@ void trap_R_UnregisterFont( fontInfo_t *font )
   syscall( UI_R_UREGISTERFONT, font );
 }
 
+//127.
+void trap_QuoteString( const char *str, char *buffer, int size )
+{
+	syscall( UI_QUOTESTRING, str, buffer, size );
+}
+
 #endif

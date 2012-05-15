@@ -1333,3 +1333,5 @@ void             trap_SQL_CleanString( const char *in, char *out, int len );
 
 #endif
 int              trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted );
+
+void             trap_QuoteString( const char *str, char *buf, int size );

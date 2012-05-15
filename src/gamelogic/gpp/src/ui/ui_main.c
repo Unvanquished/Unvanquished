@@ -3492,19 +3492,19 @@ static void UI_RunMenuScript( char **args )
 			}
 			else if ( uiInfo.chatTeam )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team \"%s\"\n", buffer ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team %s\n", Quote( buffer ) ) );
 			}
 			else if ( uiInfo.chatAdmin )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "a \"%s\"\n", buffer ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "a %s\n", Quote( buffer ) ) );
 			}
 			else if ( uiInfo.chatIRC )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "irc_say \"%s\"\n", buffer ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "irc_say %s\n", Quote( buffer ) ) );
 			}
 			else
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say \"%s\"\n", buffer ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s\n", Quote( buffer ) ) );
 			}
 		}
 		else if ( Q_stricmp( name, "SayKeydown" ) == 0 )
@@ -3699,13 +3699,17 @@ static void UI_RunMenuScript( char **args )
 			{
 				if ( Q_stricmp( name + 4, voteInfo[i].vote ) == 0 )
 				{
-					char buffer[ MAX_CVAR_VALUE_STRING ];
-
-					buffer[0] = 0;
+					char rawbuffer[ MAX_CVAR_VALUE_STRING ];
+					char *buffer = "";
 
 					if ( voteInfo[i].reason )
 					{
 						trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+						buffer = Quote( buffer );
+					}
+					else
+					{
+						buffer = "";
 					}
 
 					switch ( voteInfo[i].type )
@@ -3720,10 +3724,10 @@ static void UI_RunMenuScript( char **args )
 						if ( ui_selectedMap.integer >= 0 && ui_selectedMap.integer < uiInfo.mapCount )
 						{
 							trap_Cmd_ExecuteText( EXEC_APPEND,
-												  va( "callvote %s %s %s\n",
-													  voteInfo[i].call,
-													  uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName,
-													  buffer ) );
+							                      va( "callvote %s %s %s\n",
+							                          voteInfo[i].call,
+							                          uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName,
+							                          buffer ) );
 						}
 						break;
 
@@ -3732,7 +3736,7 @@ static void UI_RunMenuScript( char **args )
 						{
 							trap_Cmd_ExecuteText( EXEC_APPEND,
 							                      va( "callvote %s %d %s\n",
-													  voteInfo[i].call,
+							                          voteInfo[i].call,
 							                          uiInfo.clientNums[ uiInfo.playerIndex ],
 							                          buffer ) );
 						}
@@ -3743,7 +3747,7 @@ static void UI_RunMenuScript( char **args )
 						{
 							trap_Cmd_ExecuteText( EXEC_APPEND,
 							                      va( "callteamvote %s %d %s\n",
-													  voteInfo[i].call,
+							                          voteInfo[i].call,
 							                          uiInfo.clientNums[ uiInfo.playerIndex ],
 							                          buffer ) );
 						}

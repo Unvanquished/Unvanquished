@@ -1443,7 +1443,7 @@ void CG_NewClientInfo( int clientNum )
 
 		if ( config[ 0 ] )
 		{
-			trap_SendConsoleCommand( va( "exec \"%s\"\n", config ) );
+			trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
 		}
 	}
 

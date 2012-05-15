@@ -461,13 +461,8 @@ char *ConcatArgsPrintable( int start )
 
 	for ( i = start; i < c; i++ )
 	{
-		printArg = arg;
 		trap_Argv( i, arg, sizeof( arg ) );
-
-		if ( strchr( arg, ' ' ) )
-		{
-			printArg = va( "\"%s\"", arg );
-		}
+		printArg = Quote( arg );
 
 		tlen = strlen( printArg );
 
@@ -630,7 +625,7 @@ void Cmd_God_f( gentity_t *ent )
 		msg = "godmode ON\n";
 	}
 
-	trap_SendServerCommand( ent - g_entities, va( "print \"%s\"", msg ) );
+	trap_SendServerCommand( ent - g_entities, va( "print %s", Quote( msg ) ) );
 }
 
 /*
@@ -657,7 +652,7 @@ void Cmd_Notarget_f( gentity_t *ent )
 		msg = "notarget ON\n";
 	}
 
-	trap_SendServerCommand( ent - g_entities, va( "print \"%s\"", msg ) );
+	trap_SendServerCommand( ent - g_entities, va( "print %s", Quote( msg ) ) );
 }
 
 /*
@@ -682,7 +677,7 @@ void Cmd_Noclip_f( gentity_t *ent )
 
 	ent->client->noclip = !ent->client->noclip;
 
-	trap_SendServerCommand( ent - g_entities, va( "print \"%s\"", msg ) );
+	trap_SendServerCommand( ent - g_entities, va( "print %s", Quote( msg ) ) );
 }
 
 /*
@@ -1131,10 +1126,10 @@ static qboolean G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const
 		}
 	}
 
-	trap_SendServerCommand( other - g_entities, va( "chat %ld %d \"%s\"",
+	trap_SendServerCommand( other - g_entities, va( "chat %ld %d %s",
 	                        ent ? ( long )( ent - g_entities ) : -1,
 	                        mode,
-	                        message ) );
+	                        Quote( message ) ) );
 
 	return qtrue;
 }
@@ -1458,20 +1453,20 @@ void Cmd_VSay_f( gentity_t *ent )
 	{
 		case VOICE_CHAN_ALL:
 			trap_SendServerCommand( -1, va(
-			                          "voice %ld %d %d %d \"%s\"\n",
-			                          ( long )( ent - g_entities ), vchan, cmdNum, trackNum, text ) );
+			                          "voice %ld %d %d %d %s\n",
+			                          ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
 
 		case VOICE_CHAN_TEAM:
 			G_TeamCommand( ent->client->pers.teamSelection, va(
-			                 "voice %ld %d %d %d \"%s\"\n",
-			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, text ) );
+			                 "voice %ld %d %d %d %s\n",
+			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
 
 		case VOICE_CHAN_LOCAL:
 			G_AreaTeamCommand( ent, va(
-			                 "voice %ld %d %d %d \"%s\"\n",
-			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, text ) );
+			                 "voice %ld %d %d %d %s\n",
+			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
 
 		default:
@@ -1937,7 +1932,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		level.voteDelay[ team ] = 3000;
 
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
-		             "map \"%s\"", arg );
+		             "map %s", Quote( arg ) );
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             "Change to map '%s'", arg );
@@ -1981,7 +1976,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		}
 
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "set g_nextMap \"%s\"", arg );
+		             "set g_nextMap %s", Quote( arg ) );
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             "Set the next map to '%s'", arg );

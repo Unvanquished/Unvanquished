@@ -1291,3 +1291,5 @@ typedef struct
 	const char *name;
 } dummyCmd_t;
 int cmdcmp( const void *a, const void *b );
+
+char *Quote( const char *str );
