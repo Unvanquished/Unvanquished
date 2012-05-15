@@ -1264,7 +1264,7 @@ static void JPGErrorExit(j_common_ptr cinfo)
 	/* Let the memory manager delete any temp files before we die */
 	jpeg_destroy(cinfo);
 
-	Sys_FPrintf(SYS_ERR, "libjpeg error: %s\n", buffer);
+	Error("libjpeg error: %s", buffer);
 }
 
 static void JPGOutputMessage(j_common_ptr cinfo)
