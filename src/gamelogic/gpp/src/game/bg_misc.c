@@ -4302,10 +4302,12 @@ Quote
 
 char *Quote( const char *str )
 {
-	static char buffer[ MAX_STRING_CHARS ];
+	static char buffer[ 4 ][ MAX_STRING_CHARS ];
+	static int index = -1;
 
-	trap_QuoteString( str, buffer, sizeof( buffer ) );
+	index = ( index + 1 ) & 3;
+	trap_QuoteString( str, buffer[ index ], sizeof( buffer[ index ] ) );
 
-	return buffer;
+	return buffer[ index ];
 }
 

@@ -1964,12 +1964,21 @@ Escape all '\' '"' '$', '/' if marking a comment, and ';' if not in quotation ma
 Optionally wrap in ""
 ============
 */
-static char escapeBuffer[ BIG_INFO_STRING ];
+#define ESCAPEBUFFER_SIZE BIG_INFO_STRING
+static char *GetEscapeBuffer( void )
+{
+	static char escapeBuffer[ 4 ][ ESCAPEBUFFER_SIZE ];
+	static int escapeIndex = -1;
+
+	escapeIndex = ( escapeIndex + 1 ) & 3;
+	return escapeBuffer[ escapeIndex ];
+}
 
 static const char *EscapeString( const char *in, qboolean quote )
 {
+	char        *escapeBuffer = GetEscapeBuffer();
 	char        *out = escapeBuffer;
-	const char  *end = escapeBuffer + sizeof( escapeBuffer ) - 1 - !!quote;
+	const char  *end = escapeBuffer + ESCAPEBUFFER_SIZE - 1 - !!quote;
 	qboolean    quoted = qfalse;
 
 	if ( quote )
@@ -2074,9 +2083,10 @@ Unescape a string
 */
 const char *Cmd_UnescapeString( const char *in )
 {
+	char        *escapeBuffer = GetEscapeBuffer();
 	char        *out = escapeBuffer;
 
-	while ( *in && out < escapeBuffer + sizeof( escapeBuffer ) - 1)
+	while ( *in && out < escapeBuffer + ESCAPEBUFFER_SIZE - 1)
 	{
 		if ( in[0] == '\\' )
 		{
@@ -2100,6 +2110,7 @@ String length is UNCHECKED
 */
 const char *Cmd_UnquoteString( const char *str )
 {
+	char *escapeBuffer = GetEscapeBuffer();
 	Tokenise( str, escapeBuffer, qfalse, qfalse );
 	return escapeBuffer;
 }
@@ -2116,6 +2127,7 @@ String length is UNCHECKED
 */
 const char *Cmd_DequoteString( const char *str )
 {
+	char *escapeBuffer = GetEscapeBuffer();
 	char *q;
 
 	// shouldn't be any leading space, but just in case...
@@ -2134,7 +2146,7 @@ const char *Cmd_DequoteString( const char *str )
 		q = q ? q : strchr( str, '\n' );
 	}
 
-	Q_snprintf( escapeBuffer, sizeof( escapeBuffer ), "%.*s", (int)( q ? q - str : sizeof( escapeBuffer ) ), str );
+	Q_snprintf( escapeBuffer, ESCAPEBUFFER_SIZE, "%.*s", (int)( q ? q - str : ESCAPEBUFFER_SIZE ), str );
 
 	return escapeBuffer;
 }
