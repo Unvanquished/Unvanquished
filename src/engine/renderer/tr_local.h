@@ -763,6 +763,8 @@ SURFACES
 // NOTE: also mirror changes to max2skl.c - Arnout: not anymore
 typedef enum
 {
+  SF_MIN = -1, // partially ensures that sizeof(surfaceType_t) == sizeof(int)
+
   SF_BAD,
   SF_SKIP, // ignore
   SF_FACE,
@@ -782,7 +784,7 @@ typedef enum
   SF_DECAL, // ydnar: decal surfaces
 
   SF_NUM_SURFACE_TYPES,
-  SF_MAX = 0xffffffff // ensures that sizeof( surfaceType_t ) == sizeof( int )
+  SF_MAX = 0x7fffffff // partially (together, fully) ensures that sizeof(surfaceType_t) == sizeof(int)
 } surfaceType_t;
 
 typedef struct drawSurf_s
