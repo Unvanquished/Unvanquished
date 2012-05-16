@@ -3880,10 +3880,11 @@ qboolean G_admin_restart( gentity_t *ent )
 		trap_Argv( 1, layout, sizeof( layout ) );
 
 		// Figure out which argument is which
-		if ( Q_stricmp( layout, "keepteams" ) &&
-		     Q_stricmp( layout, "keepteamslock" ) &&
-		     Q_stricmp( layout, "switchteams" ) &&
-		     Q_stricmp( layout, "switchteamslock" ) )
+		if ( trap_Argc() > 2 ||
+		     ( Q_stricmp( layout, "keepteams" ) &&
+		       Q_stricmp( layout, "keepteamslock" ) &&
+		       Q_stricmp( layout, "switchteams" ) &&
+		       Q_stricmp( layout, "switchteamslock" ) ) )
 		{
 			if ( !Q_stricmp( layout, "*BUILTIN*" ) ||
 			     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
@@ -3912,7 +3913,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	admin_log( layout );
 	admin_log( teampref );
 
-	if ( !Q_stricmpn( teampref, "keepteams", 9 ) )
+	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) )
 	{
 		for ( i = 0; i < g_maxclients.integer; i++ )
 		{
@@ -3931,7 +3932,7 @@ qboolean G_admin_restart( gentity_t *ent )
 			cl->sess.restartTeam = cl->pers.teamSelection;
 		}
 	}
-	else if ( !Q_stricmpn( teampref, "switchteams", 11 ) )
+	else if ( !Q_stricmp( teampref, "switchteams" ) || !Q_stricmp( teampref, "switchteamslock" ) )
 	{
 		for ( i = 0; i < g_maxclients.integer; i++ )
 		{
@@ -3951,6 +3952,11 @@ qboolean G_admin_restart( gentity_t *ent )
 				cl->sess.restartTeam = TEAM_HUMANS;
 			}
 		}
+	}
+	else
+	{
+		ADMP( va( "^3restart: ^7unrecognised option '%s'\n", teampref ) );
+		return qfalse;
 	}
 
 	if ( !Q_stricmp( teampref, "switchteamslock" ) ||
