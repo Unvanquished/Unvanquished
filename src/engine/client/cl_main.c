@@ -5574,14 +5574,12 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 
 	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );
 
-	if ( strlen( info ) )
+	if ( info[ 0 ] )
 	{
-		if ( info[ strlen( info ) - 1 ] != '\n' )
-		{
-			strncat( info, "\n", sizeof( info ) );
-		}
-
-		Com_Printf( "%s: %s", NET_AdrToStringwPort( from ), info );
+		if ( info[ strlen( info ) - 1 ] == '\n' )
+			Com_Printf( "%s: %s", NET_AdrToStringwPort( from ), info );
+		else
+			Com_Printf( "%s: %s\n", NET_AdrToStringwPort( from ), info );
 	}
 }
 
