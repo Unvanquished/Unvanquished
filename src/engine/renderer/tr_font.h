@@ -786,6 +786,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 	}
 
 	fallback = NULL;
+	fallbackData = NULL;
 
 	if ( fallbackName )
 	{

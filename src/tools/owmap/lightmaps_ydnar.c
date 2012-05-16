@@ -3485,6 +3485,8 @@ void StoreSurfaceLightmaps(void)
 			   else
 			   csi = CustomShader(info->si, "q3map_styleMarker", styleStages);
 			 */
+			/* WRONG! csi is left uninitialized. wtf? setting to NULL... */
+			csi = NULL;
 
 			/* emit remap command */
 			//% EmitVertexRemapShader( csi->shader, info->si->shader );
