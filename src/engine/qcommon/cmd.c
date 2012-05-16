@@ -1764,8 +1764,8 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 		{
 			if ( ignoreQuotes || text[ 0 ] != '"' )
 			{
-				// copy until next space or EOT, handling backslashes
-				while ( *text < 0 || *text > ' ' )
+				// copy until next space, quote or EOT, handling backslashes
+				while ( *text < 0 || ( *text > ' ' && *text != '"' ) )
 				{
 					if ( *text == '\\' && !*++text )
 					{
