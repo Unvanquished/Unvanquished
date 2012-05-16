@@ -552,8 +552,8 @@ void G_UpdateCvars( void )
 
 				if ( cv->trackChange )
 				{
-					trap_SendServerCommand( -1, va( "print \"Server: %s changed to %s\n\"",
-					                                cv->cvarName, cv->vmCvar->string ) );
+					trap_SendServerCommand( -1, va( "print \"Server: \"%s\" changed to \"%s\"\n\"",
+					                                Quote( cv->cvarName ), Quote( cv->vmCvar->string ) ) );
 				}
 
 				if ( !level.spawning && cv->explicit )
@@ -602,10 +602,10 @@ void G_MapConfigs( const char *mapname )
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "exec \"%s/default.cfg\"\n", g_mapConfigs.string ) );
+	                         va( "exec %s/default.cfg\n", Quote( g_mapConfigs.string ) ) );
 
 	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "exec \"%s/%s.cfg\"\n", g_mapConfigs.string, mapname ) );
+	                         va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
 }
@@ -2526,7 +2526,7 @@ void G_CheckVote( team_t team )
 		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
 	}
 
-	cmd = va( "print \"%s\n\"", msg );
+	cmd = va( "print %s\"\n\"", Quote( msg ) );
 
 	if ( team == TEAM_NONE )
 	{

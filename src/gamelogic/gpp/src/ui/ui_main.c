@@ -3295,7 +3295,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, ui_dedicated.integer ) );
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n",
-			                                       uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ) );
+			                                       Quote( uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ) ) );
 		}
 		else if ( Q_stricmp( name, "resetDefaults" ) == 0 )
 		{
@@ -3543,7 +3543,7 @@ static void UI_RunMenuScript( char **args )
 				trap_CIN_StopCinematic( uiInfo.previewMovie );
 			}
 
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "cinematic %s.roq 2\n", uiInfo.movieList[ uiInfo.movieIndex ] ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "cinematic %s.roq 2\n", Quote( uiInfo.movieList[ uiInfo.movieIndex ] ) ) );
 		}
 		else if ( Q_stricmp( name, "RunMod" ) == 0 )
 		{
@@ -3552,7 +3552,7 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "RunDemo" ) == 0 )
 		{
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n", uiInfo.demoList[ uiInfo.demoIndex ] ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n", Quote( uiInfo.demoList[ uiInfo.demoIndex ] ) ) );
 		}
 		else if ( Q_stricmp( name, "Tremulous" ) == 0 )
 		{
@@ -3622,7 +3622,7 @@ static void UI_RunMenuScript( char **args )
 				trap_LAN_GetServerAddressString( ui_netSource.integer,
 				                                 uiInfo.serverStatus.displayServers[ uiInfo.serverStatus.currentServer ],
 				                                 buff, 1024 );
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", buff ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", Quote( buff ) ) );
 			}
 		}
 		else if ( Q_stricmp( name, "FoundPlayerJoinServer" ) == 0 )
@@ -3631,7 +3631,7 @@ static void UI_RunMenuScript( char **args )
 			     uiInfo.currentFoundPlayerServer < uiInfo.numFoundPlayerServers )
 			{
 				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n",
-				                                       uiInfo.foundPlayerServerAddresses[ uiInfo.currentFoundPlayerServer ] ) );
+				                                       Quote( uiInfo.foundPlayerServerAddresses[ uiInfo.currentFoundPlayerServer ] ) ) );
 			}
 		}
 		else if ( Q_stricmp( name, "Quit" ) == 0 )
@@ -3726,7 +3726,7 @@ static void UI_RunMenuScript( char **args )
 							trap_Cmd_ExecuteText( EXEC_APPEND,
 							                      va( "callvote %s %s %s\n",
 							                          voteInfo[i].call,
-							                          uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName,
+							                          Quote( uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ),
 							                          buffer ) );
 						}
 						break;

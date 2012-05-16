@@ -2890,7 +2890,7 @@ void CL_BeginDownload( const char *localName, const char *remoteName )
 	clc.downloadBlock = 0; // Starting new file
 	clc.downloadCount = 0;
 
-	CL_AddReliableCommand( va( "download %s", remoteName ) );
+	CL_AddReliableCommand( va( "download %s", Cmd_QuoteString( remoteName ) ) );
 }
 
 /*
@@ -4705,6 +4705,7 @@ void CL_InitRef( const char *renderer )
 	ri.Cmd_Argc = Cmd_Argc;
 	ri.Cmd_Argv = Cmd_Argv;
 	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
+	ri.Cmd_QuoteString = Cmd_QuoteString;
 
 	ri.Printf = CL_RefPrintf;
 	ri.Error = Com_Error;

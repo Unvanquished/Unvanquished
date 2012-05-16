@@ -794,7 +794,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 		// tell everyone why they got dropped
 
 		// Gordon: we want this displayed elsewhere now
-		SV_SendServerCommand( NULL, "print \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason );
+		SV_SendServerCommand( NULL, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
 	}
 
 	Com_DPrintf( "Going to CS_ZOMBIE for %s\n", drop->name );

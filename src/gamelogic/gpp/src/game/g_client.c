@@ -1077,7 +1077,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		}
 		else if ( !G_admin_name_check( ent, newname, err, sizeof( err ) ) )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "print \"%s\n\"", err ) );
+			trap_SendServerCommand( ent - g_entities, va( "print %s\"\n\"", Quote( err ) ) );
 			revertName = qtrue;
 		}
 
@@ -1394,8 +1394,8 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		trap_SendServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " connected\n\"",
-		                                client->pers.netname ) );
+		trap_SendServerCommand( -1, va( "print %s\"" S_COLOR_WHITE " connected\n\"",
+		                                Quote( client->pers.netname ) ) );
 	}
 
 	// count current clients and rank for scoreboard
@@ -1474,7 +1474,7 @@ void ClientBegin( int clientNum )
 	// locate ent at a spawn point
 	ClientSpawn( ent, NULL, NULL, NULL );
 
-	trap_SendServerCommand( -1, va( "print \"%s" S_COLOR_WHITE " entered the game\n\"", client->pers.netname ) );
+	trap_SendServerCommand( -1, va( "print %s\"" S_COLOR_WHITE " entered the game\n\"", Quote( client->pers.netname ) ) );
 
 	G_namelog_restore( client );
 
