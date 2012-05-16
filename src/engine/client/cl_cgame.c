@@ -1310,6 +1310,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_GETDEMONAME:
 			VM_CheckBlock( args[1], args[2], "GETDM" );
 			CL_DemoName( VMA( 1 ), args[ 2 ] );
+			return 0;
 
 		case CG_R_LIGHTFORPOINT:
 			return re.LightForPoint( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
