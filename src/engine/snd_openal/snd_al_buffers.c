@@ -126,8 +126,6 @@ sfxHandle_t al_buf_find( const char *filename )
 // Called at init, shutdown
 qboolean al_buf_init( void )
 {
-	sfxHandle_t default_sfx;
-
 	if ( al_buffer_inited )
 	{
 		return qtrue;
