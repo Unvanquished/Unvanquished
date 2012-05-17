@@ -489,9 +489,7 @@ static void SpawnCorpse( gentity_t *ent )
 {
 	gentity_t *body;
 	int       contents;
-	vec3_t    origin, dest;
-	trace_t   tr;
-	float     vDiff;
+	vec3_t    origin, mins;
 
 	VectorCopy( ent->r.currentOrigin, origin );
 
@@ -582,21 +580,16 @@ static void SpawnCorpse( gentity_t *ent )
 	ent->health = 0;
 
 	//change body dimensions
-	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], NULL, NULL, NULL, body->r.mins, body->r.maxs );
-	vDiff = body->r.mins[ 2 ] - ent->r.mins[ 2 ];
+	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, NULL, NULL, body->r.mins, body->r.maxs );
 
 	//drop down to match the *model* origins of ent and body
-	VectorSet( dest, origin[ 0 ], origin[ 1 ], origin[ 2 ] - vDiff );
-	trap_Trace( &tr, origin, body->r.mins, body->r.maxs, dest, body->s.number, body->clipmask );
-	VectorCopy( tr.endpos, origin );
+	origin[2] += mins[ 2 ] - body->r.mins[ 2 ];
 
 	G_SetOrigin( body, origin );
-	VectorCopy( origin, body->s.origin );
 	body->s.pos.trType = TR_GRAVITY;
 	body->s.pos.trTime = level.time;
 	VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
 
-	VectorCopy( body->s.pos.trBase, body->r.currentOrigin );
 	trap_LinkEntity( body );
 }
 
