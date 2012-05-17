@@ -3953,7 +3953,7 @@ qboolean G_admin_restart( gentity_t *ent )
 			}
 		}
 	}
-	else
+	else if ( trap_Argc() > 1 )
 	{
 		ADMP( va( "^3restart: ^7unrecognised option '%s'\n", teampref ) );
 		return qfalse;
