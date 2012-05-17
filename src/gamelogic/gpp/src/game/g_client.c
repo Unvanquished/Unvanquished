@@ -283,7 +283,7 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 			continue;
 		}
 
-		if ( !search->s.groundEntityNum )
+		if ( search->s.groundEntityNum == ENTITYNUM_NONE )
 		{
 			continue;
 		}

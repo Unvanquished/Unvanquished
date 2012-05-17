@@ -94,8 +94,8 @@ void G_Physics( gentity_t *ent, int msec )
 	trace_t tr;
 	int     contents;
 
-	// if groundentity has been set to -1, it may have been pushed off an edge
-	if ( ent->s.groundEntityNum == -1 )
+	// if groundentity has been set to ENTITYNUM_NONE, it may have been pushed off an edge
+	if ( ent->s.groundEntityNum == ENTITYNUM_NONE )
 	{
 		if ( ent->s.eType == ET_BUILDABLE )
 		{
@@ -128,7 +128,7 @@ void G_Physics( gentity_t *ent, int msec )
 
 			if ( tr.fraction == 1.0f )
 			{
-				ent->s.groundEntityNum = -1;
+				ent->s.groundEntityNum = ENTITYNUM_NONE;
 			}
 
 			ent->nextPhysicsTime = level.time + PHYSICS_TIME;
