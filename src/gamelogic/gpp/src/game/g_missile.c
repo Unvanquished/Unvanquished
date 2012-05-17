@@ -76,7 +76,7 @@ typedef enum {
 
 static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
 {
-	int lifetime = level.time - self->r.startTime;
+	int lifetime = level.time - self->startTime;
 	float travelled;
 	float divider = 1;
 
@@ -489,7 +489,7 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->r.startTime = level.time; // for power fall-off
+	bolt->startTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -580,7 +580,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->r.startTime = level.time; // for power fall-off
+	bolt->startTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -650,7 +650,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->r.startTime = level.time; // for power fall-off
+	bolt->startTime = level.time; // for power fall-off
 
 //	Com_Printf("Luciball power = %d, speed = %d/s.\n", damage, speed);
 	return bolt;

@@ -124,6 +124,7 @@ struct gentity_s
 	char         *message;
 
 	int          timestamp; // body queue sinking, etc
+	int          startTime; // currently for the diminishing missile damage
 
 	char         *target;
 	char         *targetname;
