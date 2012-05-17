@@ -110,7 +110,7 @@ elseif( WIN32 )
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     set( BUILD_ARCH "x86_64" )
   elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-    set( BUILD_ARCH "i386" )
+    set( BUILD_ARCH "x86" )
   endif()
 else()
   # CMAKE_SYSTEM_PROCESSOR is reliable for *nix
@@ -825,7 +825,7 @@ endif()
 if( WIN32 )
   add_definitions( -DWINVER=0x501 )
   #set( OS_LIBRARIES m winmm wsock32 gdi32 ole32 ws2_32 psapi Iphlpapi advapi32 shell32 user32 )
-  set( OS_LIBRARIES m winmm ws2_32 psapi libz )
+  set( OS_LIBRARIES m winmm ws2_32 psapi z )
   set( EXTRALIBS dinput dsound )
 elseif( UNIX )
   if( CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" )
@@ -1008,7 +1008,7 @@ endif()
 # Find Curses #
 ###############
 
-if( BUILD_CLIENT OR BUILD_SERVER )
+if( BUILD_CLIENT OR BUILD_SERVER AND USE_CURSES )
   set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
   find_package( CursesW )
   if( CURSESW_FOUND )
@@ -1150,6 +1150,10 @@ if( BUILD_CLIENT )
   if( USE_LLVM )
     include_directories( ${LLVM_INCLUDE_DIR} )
     target_link_libraries( client ${LLVM_LIBS} )
+  endif()
+
+  if( WIN32 )
+    target_link_libraries( client ${SDLMAIN_LIBRARY} )
   endif()
 endif()
 
