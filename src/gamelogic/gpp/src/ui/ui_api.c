@@ -22,8 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../../../../engine/client/ui_api.h"
 
-#define MAX_VA_STRING 32000
-
 static intptr_t ( QDECL *syscall )( intptr_t arg, ... ) = ( intptr_t ( QDECL * )( intptr_t, ... ) ) - 1;
 
 void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
@@ -837,20 +835,9 @@ qboolean trap_GetLimboString( int index, char *buf )
 
 //115.
 //CL_TranslateString(VMA(1), VMA(2));
-char *trap_TranslateString( const char *string )
+void trap_TranslateString( const char *string, char *buf )
 {
-	static char staticbuf[ 2 ][ MAX_VA_STRING ];
-	static int  bufcount = 0;
-	char        *buf;
-
-	buf = staticbuf[ bufcount++ % 2 ];
-
-#ifdef LOCALIZATION_SUPPORT
 	syscall( UI_CL_TRANSLATE_STRING, string, buf );
-#else
-	Q_strncpyz( buf, string, MAX_VA_STRING );
-#endif // LOCALIZATION_SUPPORT
-	return buf;
 }
 
 //116.
