@@ -1008,7 +1008,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &randFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &randFrac, qtrue );
 
 			bp->velMoveValues.mag = number;
 			bp->velMoveValues.magRandFrac = randFrac;
@@ -1147,7 +1147,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &randFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &randFrac, qtrue );
 
 			bp->accMoveValues.mag = number;
 			bp->accMoveValues.magRandFrac = randFrac;
