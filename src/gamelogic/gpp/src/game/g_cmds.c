@@ -4139,7 +4139,7 @@ static const commands_t cmds[] =
 	{ "vsay_team",       CMD_MESSAGE | CMD_INTERMISSION,      Cmd_VSay_f             },
 	{ "where",           0,                                   Cmd_Where_f            }
 };
-static const size_t numCmds = sizeof( cmds ) / sizeof( cmds[ 0 ] );
+static const size_t numCmds = ARRAY_LEN( cmds );
 
 /*
 =================

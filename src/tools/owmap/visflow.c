@@ -452,12 +452,12 @@ void RecursiveLeafFlow(int leafnum, threaddata_t * thread, pstack_t * prevstack)
 		   pstack_t *s;
 
 		   s = &thread->pstack_head;
-		   for (j = 0; s->next && j < sizeof(portaltrace)/sizeof(int) - 1; j++, s = s->next)
+		   for (j = 0; s->next && j < ARRAY_LEN(portaltrace) - 1; j++, s = s->next)
 		   {
 		   if (s->portal->num != portaltrace[j])
 		   break;
 		   }
-		   if (j >= sizeof(portaltrace)/sizeof(int) - 1)
+		   if (j >= ARRAY_LEN(portaltrace) - 1)
 		   {
 		   if (p->num == portaltrace[j])
 		   n = 0; //traced through all the portals

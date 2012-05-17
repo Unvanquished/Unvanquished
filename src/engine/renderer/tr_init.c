@@ -439,7 +439,7 @@ static const vidmode_t r_vidModes[] =
 	{ "2048x1536",         2048, 1536, 1 },
 	{ "2560x1600 (16:10)", 2560, 1600, 1 },
 };
-static const int s_numVidModes = ( sizeof( r_vidModes ) / sizeof( r_vidModes[ 0 ] ) );
+static const int s_numVidModes = ARRAY_LEN( r_vidModes );
 
 qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode )
 {

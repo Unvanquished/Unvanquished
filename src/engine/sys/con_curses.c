@@ -143,7 +143,7 @@ static void CON_SetColor( WINDOW *win, int color )
 	{
 		int index = abs( com_ansiColor->integer ) - 1;
 
-		if ( index >= sizeof( colour16map ) / sizeof( colour16map[0] ) )
+		if ( index >= ARRAY_LEN( colour16map ) )
 		{
 			index = 0;
 		}

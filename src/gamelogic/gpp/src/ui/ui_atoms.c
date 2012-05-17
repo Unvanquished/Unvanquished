@@ -269,7 +269,7 @@ UI_ConsoleCommand
 qboolean UI_ConsoleCommand( int realTime )
 {
 	struct uicmd *cmd = bsearch( UI_Argv( 0 ), commands,
-	                             sizeof( commands ) / sizeof( commands[ 0 ] ), sizeof( commands[ 0 ] ),
+	                             ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
 	                             cmdcmp );
 
 	uiInfo.uiDC.frameTime = realTime - uiInfo.uiDC.realTime;

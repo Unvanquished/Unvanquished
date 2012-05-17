@@ -411,7 +411,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 };
 
-static int         cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
+static int         cvarTableSize = ARRAY_LEN( cvarTable );
 
 /*
 =================

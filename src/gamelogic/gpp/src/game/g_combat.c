@@ -404,7 +404,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		killerName = "<world>";
 	}
 
-	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[ 0 ] ) )
+	if ( meansOfDeath < 0 || meansOfDeath >= ARRAY_LEN( modNames ) )
 	{
 		// fall back on the number
 		obit = va( "%d", meansOfDeath );

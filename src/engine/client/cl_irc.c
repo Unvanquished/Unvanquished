@@ -1264,7 +1264,7 @@ static ID_INLINE void IRC_UpdateRateLimiter()
 {
 	int i;
 
-	for ( i = 0; i < sizeof( IRC_RateLimiter ) / sizeof( unsigned int ); i++ )
+	for ( i = 0; i < ARRAY_LEN( IRC_RateLimiter ); i++ )
 	{
 		if ( IRC_RateLimiter[ i ] )
 		{
@@ -1284,7 +1284,7 @@ static ID_INLINE void IRC_InitRateLimiter()
 {
 	int i;
 
-	for ( i = 0; i < sizeof( IRC_RateLimiter ) / sizeof( unsigned int ); i++ )
+	for ( i = 0; i < ARRAY_LEN( IRC_RateLimiter ); i++ )
 	{
 		IRC_RateLimiter[ i ] = 0;
 	}

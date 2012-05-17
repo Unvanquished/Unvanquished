@@ -3013,7 +3013,7 @@ surfaceparm <name>
 static void ParseSurfaceParm( char **text )
 {
 	char *token;
-	int  numInfoParms = sizeof( infoParms ) / sizeof( infoParms[ 0 ] );
+	int  numInfoParms = ARRAY_LEN( infoParms );
 	int  i;
 
 	token = COM_ParseExt( text, qfalse );
@@ -5881,7 +5881,7 @@ void R_PurgeLightmapShaders( void )
 	int      j, b, i = 0;
 	shader_t *sh, *shPrev, *next;
 
-	for ( i = 0; i < sizeof( backupHashTable ) / sizeof( backupHashTable[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( backupHashTable ); i++ )
 	{
 		sh = backupHashTable[ i ];
 

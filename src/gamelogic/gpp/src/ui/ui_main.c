@@ -40,7 +40,7 @@ static const char *const netSources[] =
 	"Favorites"
 };
 
-static const int  numNetSources = sizeof( netSources ) / sizeof( const char * );
+static const int  numNetSources = ARRAY_LEN( netSources );
 
 static const char *const netnames[] =
 {
@@ -140,7 +140,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &ui_helpFiles,           "ui_helpFiles",                "ui/menu/help/help.txt",     CVAR_ARCHIVE              }
 };
 
-static const int           cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
+static const int           cvarTableSize = ARRAY_LEN( cvarTable );
 
 static char                translated_yes[ 4 ], translated_no[ 4 ];
 
@@ -3722,7 +3722,7 @@ static void UI_RunMenuScript( char **args )
 			};
 			int i;
 
-			for ( i = 0; i < sizeof( voteInfo ) / sizeof( voteInfo[0] ); ++i )
+			for ( i = 0; i < ARRAY_LEN( voteInfo ); ++i )
 			{
 				if ( Q_stricmp( name + 4, voteInfo[i].vote ) == 0 )
 				{

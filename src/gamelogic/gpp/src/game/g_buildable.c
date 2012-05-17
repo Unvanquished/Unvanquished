@@ -3396,7 +3396,7 @@ static int G_CompareBuildablesForRemoval( const void *a, const void *b )
 	}
 
 	// Resort to preference list
-	for ( i = 0; i < sizeof( precedence ) / sizeof( precedence[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( precedence ); i++ )
 	{
 		if ( buildableA->s.modelindex == precedence[ i ] )
 		{

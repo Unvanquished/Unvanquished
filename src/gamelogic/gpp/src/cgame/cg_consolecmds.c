@@ -451,7 +451,7 @@ qboolean CG_ConsoleCommand( void )
 	consoleCommand_t *cmd;
 
 	cmd = bsearch( CG_Argv( 0 ), commands,
-	               sizeof( commands ) / sizeof( commands[ 0 ] ), sizeof( commands[ 0 ] ),
+	               ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
 	               cmdcmp );
 
 	if ( !cmd || !cmd->function )
@@ -475,7 +475,7 @@ void CG_InitConsoleCommands( void )
 {
 	int i;
 
-	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
 	{
 		trap_AddCommand( commands[ i ].cmd );
 	}
@@ -529,7 +529,7 @@ void CG_CompleteCommand( int argNum )
 		cmd++;
 	}
 
-	for ( i = 0; i < sizeof( commands ) / sizeof( commands[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
 	{
 		if ( !Q_stricmp( cmd, commands[ i ].cmd ) && commands[ i ].completer )
 		{

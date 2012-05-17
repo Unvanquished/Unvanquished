@@ -336,7 +336,7 @@ qboolean G_CallSpawn( gentity_t *ent )
 	}
 
 	// check normal spawn functions
-	s = bsearch( ent->classname, spawns, sizeof( spawns ) / sizeof( spawn_t ),
+	s = bsearch( ent->classname, spawns, ARRAY_LEN( spawns ),
 	             sizeof( spawn_t ), cmdcmp );
 
 	if ( s )
@@ -410,7 +410,7 @@ void G_ParseField( const char *key, const char *value, gentity_t *ent )
 	vec3_t  vec;
 	vec4_t  vec4;
 
-	f = bsearch( key, fields, sizeof( fields ) / sizeof( field_t ),
+	f = bsearch( key, fields, ARRAY_LEN( fields ),
 	             sizeof( field_t ), cmdcmp );
 
 	if ( !f )

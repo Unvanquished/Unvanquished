@@ -2040,7 +2040,7 @@ static const imageExtToLoaderMap_t imageLoaders[] =
 //	{"hdr", LoadRGBE}  // RGBE just sucks
 };
 
-static int                   numImageLoaders = sizeof( imageLoaders ) / sizeof( imageLoaders[ 0 ] );
+static int                   numImageLoaders = ARRAY_LEN( imageLoaders );
 
 /*
 =================
