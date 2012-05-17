@@ -247,7 +247,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 		return;
 	}
 
-	TeleportPlayer( activator, dest->s.origin, dest->s.angles, 400.0f );
+	TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->speed );
 }
 
 /*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8)
@@ -259,6 +259,8 @@ void SP_target_teleporter( gentity_t *self )
 	{
 		G_Printf( "untargeted %s at %s\n", self->classname, vtos( self->s.origin ) );
 	}
+
+	G_SpawnFloat( "speed", "400", &self->speed );
 
 	self->use = target_teleporter_use;
 }
