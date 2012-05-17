@@ -912,6 +912,12 @@ void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 	to->forwardmove = MSG_ReadDelta( msg, from->forwardmove, 8 );
 	to->rightmove = MSG_ReadDelta( msg, from->rightmove, 8 );
 	to->upmove = MSG_ReadDelta( msg, from->upmove, 8 );
+	if ( to->forwardmove == -128 )
+		to->forwardmove = -127;
+	if ( to->rightmove == -128 )
+		to->rightmove = -127;
+	if ( to->upmove == -128 )
+		to->upmove = -127;
 	for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
 	{
 		MSG_WriteDelta( msg, from->buttons[i], to->buttons[i], 8 );
@@ -1003,6 +1009,12 @@ void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 		to->forwardmove = MSG_ReadDeltaKey( msg, key, from->forwardmove, 8 );
 		to->rightmove = MSG_ReadDeltaKey( msg, key, from->rightmove, 8 );
 		to->upmove = MSG_ReadDeltaKey( msg, key, from->upmove, 8 );
+		if ( to->forwardmove == -128 )
+			to->forwardmove = -127;
+		if ( to->rightmove == -128 )
+			to->rightmove = -127;
+		if ( to->upmove == -128 )
+			to->upmove = -127;
 		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
 		{
 			to->buttons[i] = MSG_ReadDeltaKey( msg, key, from->buttons[i], 8 );
