@@ -941,7 +941,7 @@ void G_Checktrigger_stages( team_t team, stage_t stage );
 //
 // g_misc.c
 //
-void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles );
+void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
 
 //
 // g_weapon.c

@@ -64,19 +64,22 @@ TELEPORTERS
 =================================================================================
 */
 
-void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles )
+void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed )
 {
 	// unlink to make sure it can't possibly interfere with G_KillBox
 	trap_UnlinkEntity( player );
 
 	VectorCopy( origin, player->client->ps.origin );
-	player->client->ps.origin[ 2 ] += 1;
+	player->client->ps.groundEntityNum = ENTITYNUM_NONE;
+	player->client->ps.stats[ STAT_STATE ] &= ~SS_GRABBED;
 
-	// spit the player out
 	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
-	VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
-	player->client->ps.pm_time = 160; // hold time
-	player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	VectorScale( player->client->ps.velocity, speed, player->client->ps.velocity );
+	player->client->ps.pm_time = 0.4f * abs( speed ); // duration of loss of control
+	if ( player->client->ps.pm_time > 160 )
+		player->client->ps.pm_time = 160;
+	if ( player->client->ps.pm_time != 0 )
+		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;

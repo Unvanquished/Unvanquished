@@ -247,7 +247,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 		return;
 	}
 
-	TeleportPlayer( activator, dest->s.origin, dest->s.angles );
+	TeleportPlayer( activator, dest->s.origin, dest->s.angles, 400.0f );
 }
 
 /*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8)

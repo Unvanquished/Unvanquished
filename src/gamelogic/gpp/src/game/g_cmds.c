@@ -2111,24 +2111,34 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 	char   buffer[ MAX_TOKEN_CHARS ];
 	int    i;
 
-	if ( trap_Argc() != 5 )
+	if ( trap_Argc() < 4 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print \"usage: setviewpos x y z yaw\n\"" );
+		trap_SendServerCommand( ent - g_entities, "print \"usage: setviewpos <x> <y> <z> [<yaw> [<pitch>]]\n\"" );
 		return;
 	}
-
-	VectorClear( angles );
 
 	for ( i = 0; i < 3; i++ )
 	{
 		trap_Argv( i + 1, buffer, sizeof( buffer ) );
 		origin[ i ] = atof( buffer );
 	}
+	origin[ 2 ] -= ent->client->ps.viewheight;
 
-	trap_Argv( 4, buffer, sizeof( buffer ) );
-	angles[ YAW ] = atof( buffer );
+	VectorCopy( ent->client->ps.viewangles, angles );
+	angles[ ROLL ] = 0;
 
-	TeleportPlayer( ent, origin, angles );
+	if ( trap_Argc() >= 5 )
+	{
+		trap_Argv( 4, buffer, sizeof( buffer ) );
+		angles[ YAW ] = atof( buffer );
+		if ( trap_Argc() >= 6 )
+		{
+			trap_Argv( 5, buffer, sizeof( buffer ) );
+			angles[ PITCH ] = atof( buffer );
+		}
+	}
+
+	TeleportPlayer( ent, origin, angles, 0.0f );
 }
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
