@@ -150,6 +150,8 @@ extern "C" {
 
 	typedef int intptr_t;
 
+#include "../../engine/qcommon/q_platform.h"
+
 #else
 
 #include <assert.h>
@@ -189,9 +191,9 @@ extern "C" {
 #include <stdint.h>
 #endif
 
-#endif
-
 #include "q_platform.h"
+
+#endif
 
 #if defined __GNUC__ || defined __clang__ && !defined(Q3_VM)
 #define _attribute( x ) __attribute__( x )
@@ -992,7 +994,7 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 	void vectoangles( const vec3_t value1, vec3_t angles );
 
-	ID_INLINE void VectorToAngles( const vec3_t value1, vec3_t angles )
+	static ID_INLINE void VectorToAngles( const vec3_t value1, vec3_t angles )
 	{
 		vectoangles( value1, angles );
 	}
@@ -1656,7 +1658,11 @@ char *Q_UTF8Unstore( int e );
 	==============================================================
 	*/
 
+#ifdef Q3_VM
+#include "../../engine/qcommon/surfaceflags.h"
+#else
 #include "surfaceflags.h" // shared with the q3map utility
+#endif
 
 // plane types are used to speed some tests
 // 0-2 are axial planes
