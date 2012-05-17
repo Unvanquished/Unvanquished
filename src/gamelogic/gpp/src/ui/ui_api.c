@@ -339,14 +339,14 @@ void trap_UpdateScreen( void )
 //return re.LerpTag(VMA(1), VMA(2), VMA(3), args[4]);
 int trap_CM_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
 {
-	return syscall( UI_CM_LERPTAG, tag, refent, tagName, 0 );  // NEFVE - SMF - fixed
+	return syscall( UI_CM_LERPTAG, tag, refent, tagName, startIndex );  // NEFVE - SMF - fixed
 }
 
 //42.
 //return S_RegisterSound(VMA(1), args[2]);
 sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 {
-	int i = syscall( UI_S_REGISTERSOUND, sample, qfalse /* compressed */ );
+	int i = syscall( UI_S_REGISTERSOUND, sample, compressed );
 #ifdef DEBUG
 
 	if ( i == 0 )

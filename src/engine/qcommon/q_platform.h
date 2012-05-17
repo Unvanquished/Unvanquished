@@ -370,10 +370,11 @@ Maryland 20850 USA.
 
 #ifdef Q3_VM
 
+#define ID_INLINE
+
 #define MAC_STATIC
 
 #define OS_STRING     "q3vm"
-#define ID_INLINE     __inline
 #define PATH_SEP      '/'
 
 #define ARCH_STRING   "bytecode"

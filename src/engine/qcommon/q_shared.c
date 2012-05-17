@@ -50,6 +50,7 @@ int qmin( int x, int y )
 
 #endif
 
+#ifndef Q3_VM
 /*
 ============================================================================
 
@@ -58,7 +59,7 @@ GROWLISTS
 ============================================================================
 */
 
-// malloc / free all in one place for debugging
+// Com_Allocate / free all in one place for debugging
 //extern          "C" void *Com_Allocate(int bytes);
 //extern          "C" void Com_Dealloc(void *ptr);
 
@@ -154,7 +155,7 @@ memStream_t *AllocMemStream( byte *buffer, int bufSize )
 		return NULL;
 	}
 
-	s = Com_Allocate( sizeof( memStream_t ) );
+	s = (memStream_t*)Com_Allocate( sizeof( memStream_t ) );
 
 	if ( s == NULL )
 	{
@@ -267,7 +268,7 @@ float MemStreamGetFloat( memStream_t *s )
 
 	return LittleFloat( c.f );
 }
-
+#endif
 //=============================================================================
 
 float Com_Clamp( float min, float max, float value )
@@ -1701,6 +1702,7 @@ int Com_HexStrToInt( const char *str )
 	return -1;
 }
 
+#ifndef Q3_VM
 /*
 ===================
 Com_QuoteStr
@@ -1724,7 +1726,7 @@ const char *Com_QuoteStr( const char *str )
 	{
 		free( buf );
 		buflen = 2 * length + 3;
-		buf = malloc( buflen );
+		buf = (char*)Com_Allocate( buflen );
 	}
 
 	ptr = buf;
@@ -1778,7 +1780,7 @@ const char *Com_UnquoteStr( const char *str )
 	{
 		length = end + 1 - str;
 		free( buf );
-		buf = malloc( length + 1 );
+		buf = (char*)Com_Allocate( length + 1 );
 		strncpy( buf, str, length );
 		buf[ length ] = 0;
 		return buf;
@@ -1791,7 +1793,7 @@ const char *Com_UnquoteStr( const char *str )
 	}
 
 	free( buf );
-	buf = malloc( end + 1 - str );
+	buf = (char*)Com_Allocate( end + 1 - str );
 	ptr = buf;
 
 	// Copy, unquoting as we go
@@ -1825,7 +1827,7 @@ const char *Com_ClearForeignCharacters( const char *str )
 
 	free( clean );
 	size = strlen( str );
-	clean = malloc ( size + 1 ); // guaranteed sufficient
+	clean = (char*)Com_Allocate ( size + 1 ); // guaranteed sufficient
 
 	i = j = 0;
 
@@ -1870,7 +1872,7 @@ const char *Com_ClearForeignCharacters( const char *str )
 
 	return clean;
 }
-
+#endif
 /*
 ============================================================================
 
@@ -2794,7 +2796,7 @@ char     *QDECL va( const char *format, ... )
 	int         len;
 
 	va_start( argptr, format );
-	vsprintf( temp_buffer, format, argptr );
+	Q_vsnprintf( temp_buffer, sizeof( temp_buffer ), format, argptr );
 	va_end( argptr );
 
 	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING )
