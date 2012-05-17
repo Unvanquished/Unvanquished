@@ -39,6 +39,9 @@ Maryland 20850 USA.
 #ifdef Q3_VM
 #define __Q3_VM_MATH
 #define FLT_EPSILON 1.19209290E-07F
+#define atanf(x) ( (float) atan( (x) ) )
+#define tanf(x) ( (float) tan( (x) ) )
+#define sqrtf(x) ( (float) sqrt( (x) ) )
 #endif
 
 #include "q_shared.h"

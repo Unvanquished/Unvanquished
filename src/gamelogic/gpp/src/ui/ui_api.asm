@@ -126,6 +126,8 @@ equ trap_R_BlendSkeleton                  -123
 equ trap_R_BoneIndex                      -124
 equ trap_R_AnimNumFrames                  -125
 equ trap_R_AnimFrameRate                  -126
+equ memcmp                                -127
+equ asin                                  -128
 equ trap_R_Glyph                          -301
 equ trap_R_GlyphChar                      -302
 equ trap_R_UnregisterFont                 -303

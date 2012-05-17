@@ -980,9 +980,11 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 	int   NearestPowerOfTwo( int val );
 	int   Q_log2( int val );
-
+#ifdef Q3_VM
+#define Q_acos(c) acos(c)
+#else
 	float Q_acos( float c );
-
+#endif
 	int   Q_isnan( float x );
 
 	int   Q_rand( int *seed );
