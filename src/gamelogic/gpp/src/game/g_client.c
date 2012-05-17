@@ -709,10 +709,108 @@ static qboolean G_IsEmoticon( const char *s, qboolean *escaped )
 
 /*
 ===========
+G_IsUnnamed
+============
+*/
+qboolean G_IsUnnamed( const char *name )
+{
+	char testName[ MAX_NAME_LENGTH ];
+	int  length;
+
+	G_DecolorString( (char *)name, testName, sizeof( testName ) );
+
+	if ( !Q_stricmp( testName, UNNAMED_PLAYER ) )
+	{
+		return qtrue;
+	}
+
+	length = strlen( g_unnamedNamePrefix.string );
+
+	if ( g_unnamedNumbering.integer && length &&
+	     !Q_stricmpn( testName, g_unnamedNamePrefix.string, length ) )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+/*
+===========
+G_FindFreeUnnamed
+============
+*/
+static unnamed_t G_FindFreeUnnamed( unnamed_t number )
+{
+	int i;
+
+	do
+	{
+		for ( i = 0; i < level.maxclients; ++i )
+		{
+			if ( level.clients[i].pers.namelog && level.clients[i].pers.namelog->unnamedNumber == number )
+			{
+				number = ++number < 0 ? 1 : number;
+				break;
+			}
+		}
+	} while ( i != level.maxclients );
+
+	return number;
+}
+
+
+/*
+===========
+G_UnnamedClientName
+============
+*/
+static const char *G_UnnamedClientName( gclient_t *client )
+{
+	static unnamed_t nextNumber = 1;
+	static char      name[ MAX_NAME_LENGTH ];
+	unnamed_t        number;
+
+	if ( !g_unnamedNumbering.integer || !client )
+	{
+		return UNNAMED_PLAYER;
+	}
+
+	if( client->pers.namelog->unnamedNumber )
+	{
+		number = client->pers.namelog->unnamedNumber;
+	}
+	else
+	{
+		if( g_unnamedNumbering.integer > 0 )
+		{
+			// server op may have reset this, so check for numbers in use
+			number = G_FindFreeUnnamed( g_unnamedNumbering.integer );
+			trap_Cvar_Set( "g_unnamedNumbering", va( "%d", ( number + 1 < 0 ? 1 : number + 1 ) ) );
+		}
+		else
+		{
+			// checking for numbers in use here is probably overkill...
+			// however, belt and braces - could be a Long Game
+			number = G_FindFreeUnnamed( nextNumber );
+			nextNumber = number + 1 < 0 ? 1 : number + 1;
+		}
+	}
+
+	client->pers.namelog->unnamedNumber = number;
+	Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
+	             g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER,
+	             number );
+
+	return name;
+}
+
+/*
+===========
 G_ClientCleanName
 ============
 */
-static void G_ClientCleanName( const char *in, char *out, int outSize )
+static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t *client )
 {
 	int      len, colorlessLen;
 	char     *p;
@@ -829,7 +927,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize )
 	// if something made the name bad, put them back to UnnamedPlayer
 	if ( invalid )
 	{
-		Q_strncpyz( p, UNNAMED_PLAYER, outSize );
+		Q_strncpyz( p, G_UnnamedClientName( client ), outSize );
 	}
 }
 
@@ -950,7 +1048,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 	// set name
 	Q_strncpyz( oldname, client->pers.netname, sizeof( oldname ) );
 	s = Info_ValueForKey( userinfo, "name" );
-	G_ClientCleanName( s, newname, sizeof( newname ) );
+	G_ClientCleanName( s, newname, sizeof( newname ), client );
 
 	if ( strcmp( oldname, newname ) )
 	{
@@ -985,13 +1083,18 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 		if ( revertName )
 		{
-			Q_strncpyz( client->pers.netname, *oldname ? oldname : UNNAMED_PLAYER,
+			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ),
 			            sizeof( client->pers.netname ) );
 			Info_SetValueForKey( userinfo, "name", oldname );
 			trap_SetUserinfo( clientNum, userinfo );
 		}
 		else
 		{
+			if( G_IsUnnamed( newname ) )
+			{
+				Q_strncpyz( newname, G_UnnamedClientName( client ), sizeof( newname ) );
+			}
+
 			G_CensorString( client->pers.netname, newname,
 			                sizeof( client->pers.netname ), ent );
 
@@ -1224,7 +1327,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// check for admin ban
 	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) )
 	{
-		return reason;
+		return va( "%s", reason ); // reason is local
 	}
 
 	// check for a password

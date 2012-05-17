@@ -351,7 +351,6 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	int  len;
 	int  drawLen;
 	int  prestep;
-	int  cursorChar;
 	char str[ MAX_STRING_CHARS ];
 	int  i;
 	int  offset, offsetEnd;
@@ -1422,7 +1421,7 @@ void Key_EditBind_f( void )
 	char           *buf;
 	/*const*/
 	char *key, *binding;
-	const char      *keyq;
+	const char     *bindq;
 	int            b;
 
 	b = Cmd_Argc();
@@ -1444,9 +1443,9 @@ void Key_EditBind_f( void )
 
 	binding = Key_GetBinding( b );
 
-	keyq = Com_QuoteStr( key );  // <- static buffer
-	buf = malloc( 8 + strlen( keyq ) + strlen( binding ) );
-	sprintf( buf, "/bind %s %s", keyq, binding );
+	bindq = Com_QuoteStr( binding );  // <- static buffer
+	buf = malloc( 8 + strlen( key ) + strlen( bindq ) );
+	sprintf( buf, "/bind %s %s", key, bindq );
 
 	Con_OpenConsole_f();
 	Field_Set( &g_consoleField, buf );

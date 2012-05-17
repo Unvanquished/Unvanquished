@@ -213,6 +213,7 @@ Sys_GetClipboardData
 ==================
 */
 #ifndef MACOS_X
+#ifndef DEDICATED
 static struct {
 	Display *display;
 	Window  window;
@@ -220,6 +221,7 @@ static struct {
 	void  ( *unlockDisplay )( void );
 	Atom    utf8;
 } x11 = { NULL };
+#endif
 
 char *Sys_GetClipboardData( clipboard_t clip )
 {

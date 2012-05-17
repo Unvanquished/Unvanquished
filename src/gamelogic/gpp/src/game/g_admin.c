@@ -493,15 +493,6 @@ qboolean G_admin_permission( gentity_t *ent, const char *flag )
 	return qfalse;
 }
 
-static qboolean G_IsUnnamed( const char *name )
-{
-	char testName[ MAX_NAME_LENGTH ];
-
-	G_SanitiseString( name, testName, sizeof( testName ) );
-
-	return Q_stricmp( testName, UNNAMED_PLAYER ) ? qfalse : qtrue;
-}
-
 qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 {
 	int             i;
@@ -730,9 +721,8 @@ void G_admin_writeconfig( void )
 
 	for ( b = g_admin_bans; b; b = b->next )
 	{
-		// don't write expired bans
-		// if expires is 0, then it's a perm ban
-		if ( b->expires != 0 && b->expires <= t )
+		// don't write stale bans
+		if ( G_ADMIN_BAN_STALE( b, t ) )
 		{
 			continue;
 		}
@@ -2155,12 +2145,14 @@ static void admin_create_ban( gentity_t *ent,
                               char *reason )
 {
 	g_admin_ban_t *b = NULL;
+	g_admin_ban_t *prev = NULL;
 	qtime_t       qt;
 	int           t;
 	int           i;
 	char          *name;
 	char          disconnect[ MAX_STRING_CHARS ];
 	int           id = 1;
+	int           expired = 0;
 
 	t = trap_RealTime( &qt );
 
@@ -2168,18 +2160,55 @@ static void admin_create_ban( gentity_t *ent,
 	{
 		id = b->id + 1; // eventually, next free id
 
-		if ( !b->next )
+		if ( G_ADMIN_BAN_EXPIRED( b, t ) && !G_ADMIN_BAN_STALE( b, t ) )
 		{
-			break;
+			++expired;
 		}
 	}
 
+	// free stale bans
+	b = g_admin_bans;
+	while ( b )
+	{
+		if ( G_ADMIN_BAN_EXPIRED( b, t ) &&
+		     ( expired >= MAX_ADMIN_EXPIRED_BANS || G_ADMIN_BAN_STALE( b, t ) ) )
+		{
+			g_admin_ban_t *u = b;
+
+			if ( prev )
+			{
+				prev->next = b->next;
+				b = prev;
+			}
+			else
+			{
+				g_admin_bans = b->next;
+				b = g_admin_bans;
+			}
+
+			if ( !G_ADMIN_BAN_STALE( u, t ) )
+			{
+				expired--;
+			}
+
+			BG_Free( u );
+		}
+		else
+		{
+			prev = b;
+		}
+
+		if ( b )
+		{
+			b = b->next;
+		}
+	}
+
+	for ( b = g_admin_bans; b && b->next; b = b->next ) {}
+
 	if ( b )
 	{
-		if ( !b->next )
-		{
-			b = b->next = BG_Alloc( sizeof( g_admin_ban_t ) );
-		}
+		b = b->next = BG_Alloc( sizeof( g_admin_ban_t ) );
 	}
 	else
 	{
@@ -2537,6 +2566,7 @@ qboolean G_admin_unban( gentity_t *ent )
 	int           time = trap_RealTime( NULL );
 	char          bs[ 5 ];
 	g_admin_ban_t *ban, *p;
+	qboolean      expireOnly;
 
 	if ( trap_Argc() < 2 )
 	{
@@ -2546,6 +2576,9 @@ qboolean G_admin_unban( gentity_t *ent )
 
 	trap_Argv( 1, bs, sizeof( bs ) );
 	bnum = atoi( bs );
+
+	expireOnly = ( bnum > 0 ) && g_adminRetainExpiredBans.integer;
+	bnum = abs( bnum );
 
 	for ( ban = p = g_admin_bans; ban && ban->id != bnum; p = ban, ban = ban->next ) {}
 
@@ -2563,24 +2596,40 @@ qboolean G_admin_unban( gentity_t *ent )
 		return qfalse;
 	}
 
+	if ( expireOnly && G_ADMIN_BAN_EXPIRED( ban, time ) )
+	{
+		ADMP( va( "^3unban: ^7ban #%d has already expired\n", bnum ) );
+		return qfalse;
+	}
+
 	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\": \"%s" S_COLOR_WHITE "\": [%s]",
 	               ban->expires ? ban->expires - time : 0, ban->guid, ban->name, ban->reason,
 	               ban->ip.str ) );
-	AP( va( "print \"^3unban: ^7ban #%d for %s^7 has been removed by %s\n\"",
-	        bnum,
-	        ban->name,
-	        ( ent ) ? ent->client->pers.netname : "console" ) );
 
-	if ( p == ban )
+	if ( expireOnly )
 	{
-		g_admin_bans = ban->next;
+		AP( va( "print \"^3unban: ^7ban #%d for %s^7 has been expired by %s\n\"",
+		        bnum, ban->name, ( ent ) ? ent->client->pers.netname : "console" ) );
+
+		ban->expires = time;
 	}
 	else
 	{
-		p->next = ban->next;
+		AP( va( "print \"^3unban: ^7ban #%d for %s^7 has been removed by %s\n\"",
+		        bnum, ban->name, ( ent ) ? ent->client->pers.netname : "console" ) );
+
+		if ( p == ban )
+		{
+			g_admin_bans = ban->next;
+		}
+		else
+		{
+			p->next = ban->next;
+		}
+
+		BG_Free( ban );
 	}
 
-	BG_Free( ban );
 	G_admin_writeconfig();
 	return qtrue;
 }
@@ -2598,7 +2647,6 @@ qboolean G_admin_adjustban( gentity_t *ent )
 	char          mode = '\0';
 	g_admin_ban_t *ban;
 	int           mask = 0;
-	int           i;
 	int           skiparg = 0;
 
 	if ( trap_Argc() < 3 )
@@ -2901,7 +2949,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 
 qboolean G_admin_specunlock( gentity_t *ent )
 {
-	int            pid, lockTime = 0;
+	int            pid;
 	char           name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
 	gentity_t      *vic;
 	g_admin_spec_t *spec;
@@ -3832,10 +3880,11 @@ qboolean G_admin_restart( gentity_t *ent )
 		trap_Argv( 1, layout, sizeof( layout ) );
 
 		// Figure out which argument is which
-		if ( Q_stricmp( layout, "keepteams" ) &&
-		     Q_stricmp( layout, "keepteamslock" ) &&
-		     Q_stricmp( layout, "switchteams" ) &&
-		     Q_stricmp( layout, "switchteamslock" ) )
+		if ( trap_Argc() > 2 ||
+		     ( Q_stricmp( layout, "keepteams" ) &&
+		       Q_stricmp( layout, "keepteamslock" ) &&
+		       Q_stricmp( layout, "switchteams" ) &&
+		       Q_stricmp( layout, "switchteamslock" ) ) )
 		{
 			if ( !Q_stricmp( layout, "*BUILTIN*" ) ||
 			     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
@@ -3864,7 +3913,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	admin_log( layout );
 	admin_log( teampref );
 
-	if ( !Q_stricmpn( teampref, "keepteams", 9 ) )
+	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) )
 	{
 		for ( i = 0; i < g_maxclients.integer; i++ )
 		{
@@ -3883,7 +3932,7 @@ qboolean G_admin_restart( gentity_t *ent )
 			cl->sess.restartTeam = cl->pers.teamSelection;
 		}
 	}
-	else if ( !Q_stricmpn( teampref, "switchteams", 11 ) )
+	else if ( !Q_stricmp( teampref, "switchteams" ) || !Q_stricmp( teampref, "switchteamslock" ) )
 	{
 		for ( i = 0; i < g_maxclients.integer; i++ )
 		{
@@ -3903,6 +3952,11 @@ qboolean G_admin_restart( gentity_t *ent )
 				cl->sess.restartTeam = TEAM_HUMANS;
 			}
 		}
+	}
+	else
+	{
+		ADMP( va( "^3restart: ^7unrecognised option '%s'\n", teampref ) );
+		return qfalse;
 	}
 
 	if ( !Q_stricmp( teampref, "switchteamslock" ) ||
@@ -4224,7 +4278,7 @@ qboolean G_admin_lock( gentity_t *ent )
 qboolean G_admin_builder( gentity_t *ent )
 {
 	vec3_t     forward, right, up;
-	vec3_t     start, end, dist;
+	vec3_t     start, end;
 	trace_t    tr;
 	gentity_t  *traceEnt;
 	buildLog_t *log;

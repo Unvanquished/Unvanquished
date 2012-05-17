@@ -450,8 +450,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	int       clientNum;
 	qboolean  attack1, attack3, following, queued;
 
-	usercmd_t old;
-
 	client = ent->client;
 
 	usercmdCopyButtons( client->oldbuttons, client->buttons );

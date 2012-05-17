@@ -3753,7 +3753,6 @@ static void UI_Paste( itemDef_t *item, char *buf, clipboard_t clip )
 	int            bufIndex, bufLength;
 	int            clipIndex, clipLength;
 	int            max;
-	qboolean       overstrike;
 	editFieldDef_t *editPtr = item->typeData.edit;
 
 	trap_GetClipboardData( clipText, sizeof( clipText ), clip );
