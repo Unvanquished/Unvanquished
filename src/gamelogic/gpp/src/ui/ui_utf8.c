@@ -102,7 +102,7 @@ qboolean ui_UTF8ContByte( char c )
   return (unsigned char )0x80 <= (unsigned char)c && (unsigned char)c <= (unsigned char )0xBF;
 }
 
-static qboolean getbit(const unsigned char *p, int pos)
+static qboolean ui_getbit(const unsigned char *p, int pos)
 {
   p   += pos / 8;
   pos %= 8;
@@ -110,7 +110,7 @@ static qboolean getbit(const unsigned char *p, int pos)
   return (*p & (1 << (7 - pos))) != 0;
 }
 
-static void setbit(unsigned char *p, int pos, qboolean on)
+static void ui_setbit(unsigned char *p, int pos, qboolean on)
 {
   p   += pos / 8;
   pos %= 8;
@@ -121,7 +121,7 @@ static void setbit(unsigned char *p, int pos, qboolean on)
     *p &= ~(1 << (7 - pos));
 }
 
-static void shiftbitsright(unsigned char *p, unsigned long num, unsigned long by)
+static void ui_shiftbitsright(unsigned char *p, unsigned long num, unsigned long by)
 {
   int step, off;
   unsigned char *e;
@@ -162,10 +162,10 @@ unsigned long ui_UTF8CodePoint( const char *str )
     size = 1;
 
   for( i = (size > 1 ? size + 1 : 1); i < 8; i++ )
-    setbit(p, n++, getbit((const unsigned char *)str, i));
+    ui_setbit(p, n++, ui_getbit((const unsigned char *)str, i));
   for( i = 1; i < size; i++ )
     for( j = 2; j < 8; j++ )
-      setbit(p, n++, getbit(((const unsigned char *)str) + i, j));
+      ui_setbit(p, n++, ui_getbit(((const unsigned char *)str) + i, j));
 
   /*
   if( n > 8 * sizeof(codepoint) )
@@ -176,7 +176,7 @@ unsigned long ui_UTF8CodePoint( const char *str )
   }
   */
 
-  shiftbitsright(p, 8 * sizeof(codepoint), 8 * sizeof(codepoint) - n);
+  ui_shiftbitsright(p, 8 * sizeof(codepoint), 8 * sizeof(codepoint) - n);
 
 #ifndef Q3_BIG_ENDIAN
   for( i = 0; i < sizeof(codepoint) / 2; i++ )

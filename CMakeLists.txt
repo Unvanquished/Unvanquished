@@ -965,6 +965,7 @@ function( GAMELIB )
     endforeach()
 
     set( QVM_OBJECTS )
+    set( GAMELIB_QVM_FILES ${GAMELIB_QVM_FILES} ${MOUNT_DIR}/engine/qcommon/q_static.c )
     foreach( QVM_FILE ${GAMELIB_QVM_FILES} )
       get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
       get_filename_component( QVM_FILEDIR  ${QVM_FILE} PATH )

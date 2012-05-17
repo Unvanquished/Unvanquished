@@ -152,6 +152,14 @@ extern "C" {
 
 #include "../../engine/qcommon/q_platform.h"
 
+#define STATIC_INLINE
+
+#ifdef Q3_VM_INSTANTIATE
+#define IFDECLARE
+#else
+#define IFDECLARE ;
+#endif
+
 #else
 
 #include <assert.h>
@@ -193,6 +201,10 @@ extern "C" {
 
 #include "q_platform.h"
 
+// not VM - we can have static inline
+#define STATIC_INLINE static ID_INLINE __attribute__(( always_inline ))
+#define IFDECLARE
+#define Q3_VM_INSTANTIATE
 #endif
 
 #if defined __GNUC__ || defined __clang__ && !defined(Q3_VM)
@@ -590,12 +602,14 @@ extern "C" {
 #define S_COLOR_MDPURPLE "^C"
 #define S_COLOR_NULL     "^*"
 
-static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( const char *p )
+STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 {
 	return ( p && p[0] == Q_COLOR_ESCAPE &&
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
 	       ) ? qtrue : qfalse;
 }
+#endif
 
 #define INDENT_MARKER    '\v'
 
@@ -682,7 +696,8 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 	#endif
 	*/
 
-	static ID_INLINE long XreaL_Q_ftol( float f )
+	STATIC_INLINE long XreaL_Q_ftol( float f ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 #if id386_sse && defined( _MSC_VER )
 		static int tmp;
@@ -693,8 +708,10 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 		return ( long ) f;
 #endif
 	}
+#endif
 
-	static ID_INLINE float Q_rsqrt( float number )
+	STATIC_INLINE float Q_rsqrt( float number ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		float y;
 
@@ -751,8 +768,10 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 #endif
 		return y;
 	}
+#endif
 
-	static ID_INLINE float Q_fabs( float x )
+	STATIC_INLINE float Q_fabs( float x ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 #if idppc && defined __GNUC__
 		float abs_x;
@@ -767,6 +786,7 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 		return tmp.f;
 #endif
 	}
+#endif
 
 #define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
 
@@ -783,7 +803,7 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 #endif
 
 #ifdef _MSC_VER
-	ID_INLINE long lrintf( float f )
+	STATIC_INLINE long lrintf( float f )
 	{
 #ifdef _M_X64
 		return ( long )( ( f > 0.0f ) ? ( f + 0.5f ) : ( f - 0.5f ) );
@@ -802,9 +822,9 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 #endif
 
-	static ID_INLINE float Q_recip( float in )
-	{
 #if id386_3dnow && defined __GNUC__ && 0
+	STATIC_INLINE float Q_recip( float in )
+	{
 		vec_t out;
 
 		femms();
@@ -816,10 +836,10 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 		femms();
 		return out;
-#else
-		return ( float )( 1.0f / in );
-#endif
 	}
+#else
+	#define Q_recip(x) ( 1.0f / (x) )
+#endif
 
 	byte         ClampByte( int i );
 	signed char  ClampChar( int i );
@@ -912,7 +932,8 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
 	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
 
-	static ID_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] )
+	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		VectorSet( corners[ 0 ], mins[ 0 ], maxs[ 1 ], maxs[ 2 ] );
 		VectorSet( corners[ 1 ], maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] );
@@ -923,10 +944,12 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 		VectorSet( corners[ 6 ], maxs[ 0 ], mins[ 1 ], mins[ 2 ] );
 		VectorSet( corners[ 7 ], mins[ 0 ], mins[ 1 ], mins[ 2 ] );
 	}
+#endif
 
 	int VectorCompare( const vec3_t v1, const vec3_t v2 );
 
-	static ID_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 )
+	STATIC_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		if ( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] || v1[ 3 ] != v2[ 3 ] )
 		{
@@ -935,20 +958,23 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 		return 1;
 	}
+#endif
 
-	static ID_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out )
+	STATIC_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		out[ 0 ] = from[ 0 ] + ( ( to[ 0 ] - from[ 0 ] ) * frac );
 		out[ 1 ] = from[ 1 ] + ( ( to[ 1 ] - from[ 1 ] ) * frac );
 		out[ 2 ] = from[ 2 ] + ( ( to[ 2 ] - from[ 2 ] ) * frac );
 	}
+#endif
 
 #define VectorLerp4( f, s, e, r ) (( r )[ 0 ] = ( s )[ 0 ] + ( f ) * (( e )[ 0 ] - ( s )[ 0 ] ), \
                                    ( r )[ 1 ] = ( s )[ 1 ] + ( f ) * (( e )[ 1 ] - ( s )[ 1 ] ), \
                                    ( r )[ 2 ] = ( s )[ 2 ] + ( f ) * (( e )[ 2 ] - ( s )[ 2 ] ))
 
-	static ID_INLINE int VectorCompareEpsilon(
-	  const vec3_t v1, const vec3_t v2, float epsilon )
+	STATIC_INLINE int VectorCompareEpsilon( const vec3_t v1, const vec3_t v2, float epsilon ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		vec3_t d;
 
@@ -964,6 +990,7 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 		return 1;
 	}
+#endif
 
 	vec_t VectorLength( const vec3_t v );
 	vec_t VectorLengthSquared( const vec3_t v );
@@ -996,10 +1023,7 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 	void vectoangles( const vec3_t value1, vec3_t angles );
 
-	static ID_INLINE void VectorToAngles( const vec3_t value1, vec3_t angles )
-	{
-		vectoangles( value1, angles );
-	}
+#define VectorToAngles(value1, angles) vectoangles( (value1), (angles) )
 
 	float vectoyaw( const vec3_t vec );
 
@@ -1033,11 +1057,7 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 	float AngleBetweenVectors( const vec3_t a, const vec3_t b );
 	void  AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
 
-	static ID_INLINE void AnglesToVector( const vec3_t angles, vec3_t out )
-	{
-		AngleVectors( angles, out, NULL, NULL );
-	}
-
+#define AnglesToVector(angles, out) AngleVectors( (angles), (out), NULL, NULL )
 
 	vec_t PlaneNormalize( vec4_t plane );  // returns normal length
 
@@ -1149,10 +1169,12 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 	void     MatrixScaleTranslateToUnitCube( matrix_t m, const vec3_t mins, const vec3_t maxs );
 	void     MatrixCrop( matrix_t m, const vec3_t mins, const vec3_t maxs );
 
-	static ID_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m )
+	STATIC_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		MatrixFromAngles( m, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
+#endif
 
 //=============================================
 
@@ -1163,16 +1185,18 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 #define QuatCompare(a,b)   (( a )[ 0 ] == ( b )[ 0 ] && ( a )[ 1 ] == ( b )[ 1 ] && ( a )[ 2 ] == ( b )[ 2 ] && ( a )[ 3 ] == ( b )[ 3 ] )
 
-	static ID_INLINE void QuatClear( quat_t q )
+	STATIC_INLINE void QuatClear( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		q[ 0 ] = 0;
 		q[ 1 ] = 0;
 		q[ 2 ] = 0;
 		q[ 3 ] = 1;
 	}
+#endif
 
 	/*
-	static ID_INLINE int QuatCompare(const quat_t a, const quat_t b)
+	STATIC_INLINE int QuatCompare(const quat_t a, const quat_t b)
 	{
 	        if(a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3])
 	        {
@@ -1182,7 +1206,8 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 	}
 	*/
 
-	static ID_INLINE void QuatCalcW( quat_t q )
+	STATIC_INLINE void QuatCalcW( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 #if 1
 		vec_t term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
@@ -1200,35 +1225,44 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 		q[ 3 ] = sqrt( fabs( 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] ) ) );
 #endif
 	}
+#endif
 
-	static ID_INLINE void QuatInverse( quat_t q )
+	STATIC_INLINE void QuatInverse( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 	}
+#endif
 
-	static ID_INLINE void QuatAntipodal( quat_t q )
+	STATIC_INLINE void QuatAntipodal( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 		q[ 3 ] = -q[ 3 ];
 	}
+#endif
 
-	static ID_INLINE vec_t QuatLength( const quat_t q )
+	STATIC_INLINE vec_t QuatLength( const quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		return ( vec_t ) sqrt( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ] );
 	}
+#endif
 
 	vec_t QuatNormalize( quat_t q );
 
 	void  QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll );
 
-	static ID_INLINE void AnglesToQuat( const vec3_t angles, quat_t q )
+	STATIC_INLINE void AnglesToQuat( const vec3_t angles, quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		QuatFromAngles( q, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
+#endif
 
 	void QuatFromMatrix( quat_t q, const matrix_t m );
 	void QuatToVectorsFLU( const quat_t quat, vec3_t forward, vec3_t left, vec3_t up );
@@ -1684,7 +1718,7 @@ char *Q_UTF8Unstore( int e );
 #define PlaneTypeForNormal( x ) ( x[ 0 ] == 1.0 ? PLANE_X : ( x[ 1 ] == 1.0 ? PLANE_Y : ( x[ 2 ] == 1.0 ? PLANE_Z : ( x[ 0 ] == 0.f && x[ 1 ] == 0.f && x[ 2 ] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL ) ) ) )
 
 	/*
-	static ID_INLINE int PlaneTypeForNormal(vec3_t normal)
+	STATIC_INLINE int PlaneTypeForNormal(vec3_t normal)
 	{
 	        if(normal[0] == 1.0)
 	                return PLANE_X;
@@ -2125,27 +2159,36 @@ char *Q_UTF8Unstore( int e );
 	} usercmd_t;
 
 // Some functions for buttons manipulation & testing
-	static ID_INLINE __attribute__(( always_inline )) void usercmdPressButton( byte *buttons, int bit )
+	STATIC_INLINE void usercmdPressButton( byte *buttons, int bit ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		buttons[bit / 8] |= 1 << ( bit & 7 );
 	}
+#endif
 
-	static ID_INLINE __attribute__(( always_inline )) void usercmdReleaseButton( byte *buttons, int bit )
+	STATIC_INLINE void usercmdReleaseButton( byte *buttons, int bit ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		buttons[bit / 8] &= ~( 1 << ( bit & 7 ) );
 	}
+#endif
 
-	static ID_INLINE __attribute__(( always_inline )) void usercmdClearButtons( byte *buttons )
+	STATIC_INLINE void usercmdClearButtons( byte *buttons ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		memset( buttons, 0, USERCMD_BUTTONS / 8 );
 	}
+#endif
 
-	static ID_INLINE __attribute__(( always_inline )) void usercmdCopyButtons( byte *dest, const byte *source )
+	STATIC_INLINE void usercmdCopyButtons( byte *dest, const byte *source ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		memcpy( dest, source, USERCMD_BUTTONS / 8 );
 	}
+#endif
 
-	static ID_INLINE __attribute__(( always_inline )) void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld )
+	STATIC_INLINE void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		int i;
 		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
@@ -2153,16 +2196,21 @@ char *Q_UTF8Unstore( int e );
 			 dest[i] |= srcNew[i] & ~srcOld[i];
 		}
 	}
+#endif
 
-	static ID_INLINE __attribute__(( always_inline )) qboolean usercmdButtonPressed( const byte *buttons, int bit )
+	STATIC_INLINE qboolean usercmdButtonPressed( const byte *buttons, int bit ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		return ( buttons[bit / 8] & ( 1 << ( bit & 7 ) ) ) ? qtrue : qfalse;
 	}
+#endif
 
-	static ID_INLINE __attribute__(( always_inline )) qboolean usercmdButtonsDiffer( const byte *a, const byte *b )
+	STATIC_INLINE qboolean usercmdButtonsDiffer( const byte *a, const byte *b ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		return memcmp( a, b, USERCMD_BUTTONS / 8 ) ? qtrue : qfalse;
 	}
+#endif
 
 //===================================================================
 

@@ -157,6 +157,8 @@ typedef enum
 #endif
   UI_MEMCMP,
   UI_ASIN,
+  UI_ATANF,
+  UI_TANF,
   UI_GETTEXT = 300,
   UI_R_GLYPH,
   UI_R_GLYPHCHAR,

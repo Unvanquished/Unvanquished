@@ -1498,6 +1498,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 		case UI_ASIN:
 			return FloatAsInt( asin( VMF( 1 ) ) );
 
+		case UI_ATANF:
+			return FloatAsInt( atan( VMF( 1 ) ) );
+
+		case UI_TANF:
+			return FloatAsInt( tan( VMF( 1 ) ) );
+
 		case UI_GETTEXT:
 			strncpy( VMA(1), VMA(2), args[3] );
 			return 0;
