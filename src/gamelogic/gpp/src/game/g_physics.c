@@ -93,7 +93,6 @@ void G_Physics( gentity_t *ent, int msec )
 	vec3_t  origin;
 	trace_t tr;
 	int     contents;
-	int     mask;
 
 	// if groundentity has been set to -1, it may have been pushed off an edge
 	if ( ent->s.groundEntityNum == -1 )
@@ -113,16 +112,6 @@ void G_Physics( gentity_t *ent, int msec )
 		}
 	}
 
-	// trace a line from the previous position to the current position
-	if ( ent->clipmask )
-	{
-		mask = ent->clipmask;
-	}
-	else
-	{
-		mask = MASK_DEADSOLID;
-	}
-
 	if ( ent->s.pos.trType == TR_STATIONARY )
 	{
 		// check think function
@@ -135,7 +124,7 @@ void G_Physics( gentity_t *ent, int msec )
 
 			VectorMA( origin, -2.0f, ent->s.origin2, origin );
 
-			trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, mask );
+			trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, ent->clipmask );
 
 			if ( tr.fraction == 1.0f )
 			{
@@ -148,10 +137,12 @@ void G_Physics( gentity_t *ent, int msec )
 		return;
 	}
 
+	// trace a line from the previous position to the current position
+
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, mask );
+	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number, ent->clipmask );
 
 	VectorCopy( tr.endpos, ent->r.currentOrigin );
 
