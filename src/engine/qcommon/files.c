@@ -3566,7 +3566,6 @@ void FS_Which_f( void )
 	}
 
 	Com_Printf( "File not found: \"%s\"\n", filename );
-	return;
 }
 
 //===========================================================================

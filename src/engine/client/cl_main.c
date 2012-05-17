@@ -4621,7 +4621,6 @@ CL_RefTagFree
 void CL_RefTagFree( void )
 {
 	Z_FreeTags( TAG_RENDERER );
-	return;
 }
 
 int CL_ScaledMilliseconds( void )

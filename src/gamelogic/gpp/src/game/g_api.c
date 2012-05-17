@@ -348,7 +348,6 @@ qboolean trap_AreasConnected( int area1, int area2 )
 void trap_UpdateSharedConfig( unsigned int port, const char *rconpass )
 {
 	syscall( G_UPDATE_SHARED_CONFIG, port, rconpass );
-	return;
 }
 
 //41.
@@ -390,7 +389,6 @@ int trap_RealTime( qtime_t *qtime )
 void trap_SnapVector( float *v )
 {
 	syscall( G_SNAPVECTOR, v );
-	return;
 }
 
 //47.
@@ -398,7 +396,6 @@ void trap_SnapVector( float *v )
 void trap_SendGameStat( const char *data )
 {
 	syscall( G_SEND_GAMESTAT, data );
-	return;
 }
 
 //48.

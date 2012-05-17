@@ -1838,8 +1838,6 @@ void Com_InitSmallZoneMemory( void )
 	}
 
 	Z_ClearZone( smallzone, s_smallZoneTotal );
-
-	return;
 }
 
 void Com_InitZoneMemory( void )

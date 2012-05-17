@@ -1526,7 +1526,6 @@ void ClipSideIntoTree_r(winding_t * w, side_t * side, node_t * node)
 	}
 
 	FreeWinding(w);
-	return;
 }
 
 

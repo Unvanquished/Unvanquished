@@ -1820,8 +1820,6 @@ void RB_SurfaceEntity( surfaceType_t *surfType )
 			RB_SurfaceAxis();
 			break;
 	}
-
-	return;
 }
 
 void RB_SurfaceBad( surfaceType_t *surfType )
@@ -1983,7 +1981,6 @@ void RB_SurfaceDecal( srfDecal_t *srf )
 
 void RB_SurfaceSkip( void *surf )
 {
-	return;
 }
 
 void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * ) =

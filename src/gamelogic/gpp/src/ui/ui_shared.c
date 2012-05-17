@@ -61,7 +61,6 @@ static const int     modkeys[6] = { K_SHIFT, K_CTRL, K_ALT, K_COMMAND, K_MODE, K
 // prevent compiler warnings
 void voidFunction( void *var )
 {
-	return;
 }
 
 qboolean voidFunction2( itemDef_t *var1, int var2 )
