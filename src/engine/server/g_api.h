@@ -83,9 +83,6 @@ typedef struct
 	//   ( ent->s.number == passEntityNum || ent->r.ownerNum == passEntityNum ||
 	//     ( ent->r.ownerNum != ENTITYNUM_NONE && ent->r.ownerNum == entities[passEntityNum].r.ownerNum ) ) )
 	int      ownerNum;
-	int      eventTime;
-
-	int      worldflags;
 
 	qboolean snapshotCallback;
 } entityShared_t;
