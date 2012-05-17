@@ -3298,9 +3298,18 @@ void G_StopFollowing( gentity_t *ent )
 	ent->client->ps.stats[ STAT_STATE ] = 0;
 	ent->client->ps.stats[ STAT_VIEWLOCK ] = 0;
 	ent->client->ps.eFlags &= ~( EF_WALLCLIMB | EF_WALLCLIMBCEILING );
-	ent->client->ps.viewangles[ PITCH ] = 0.0f;
 	ent->client->ps.clientNum = ent - g_entities;
 	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit;
+
+	if ( ent->client->pers.teamSelection == TEAM_NONE )
+	{
+		vec3_t viewOrigin, angles;
+
+		BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
+		VectorCopy( ent->client->ps.viewangles, angles );
+		angles[ ROLL ] = 0;
+		TeleportPlayer( ent, viewOrigin, angles, qfalse );
+	}
 
 	CalculateRanks();
 }
