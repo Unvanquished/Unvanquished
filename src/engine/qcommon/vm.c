@@ -94,10 +94,9 @@ VM_Init
 */
 void VM_Init( void )
 {
-	// NOTE to myself
-	// vm_* 0 means .dll files are used (windows)
-	// vm_* 1 means .so files are used (mac, linux)
-	// vm_* 2 (default) means qvm files are used.
+	// vm_* 0 means native libraries (.so, .dll, etc.) are used
+	// vm_* 1 means virtual machines (.qvm, etc.) are used through an interpreter
+	// vm_* 2 means virtual machines are used with JIT compiling
 	Cvar_Get( "vm_cgame", "0", CVAR_ARCHIVE );
 	Cvar_Get( "vm_game", "0", CVAR_ARCHIVE );
 	Cvar_Get( "vm_ui", "0", CVAR_ARCHIVE );

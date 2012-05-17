@@ -560,10 +560,6 @@ typedef struct trailBeam_s
 // player entities need to track more information
 // than any other type of entity.
 
-// note that not every player entity is a client entity,
-// because corpses after respawn are outside the normal
-// client numbering range
-
 // smoothing of view and model for WW transitions
 #define   MAXSMOOTHS 32
 

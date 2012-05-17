@@ -1257,7 +1257,8 @@ static void SV_Systeminfo_f( void )
 ===========
 SV_DumpUser_f
 
-Examine all a users info strings FIXME: move to game
+Examine a user's userinfo string
+FIXME: move to game
 ===========
 */
 static void SV_DumpUser_f( void )

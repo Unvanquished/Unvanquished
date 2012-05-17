@@ -621,6 +621,7 @@ char *Cvar_VariableString( const char *var_name );
 void Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
 // returns an empty string if not defined
+
 void Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
 // Gordon: returns the latched value if there is one, else the normal one, empty string if not defined as usual

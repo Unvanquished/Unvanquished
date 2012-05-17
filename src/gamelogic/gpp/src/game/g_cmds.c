@@ -2352,7 +2352,6 @@ void Cmd_Class_f( gentity_t *ent )
 				return;
 			}
 
-			//guard against selling the HBUILD weapons exploit
 			if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
 			     ( currentClass == PCL_ALIEN_BUILDER0 ||
 			       currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
@@ -4030,7 +4029,6 @@ int G_FloodLimited( gentity_t *ent )
 		return 0;
 	}
 
-	// handles !ent
 	if ( G_admin_permission( ent, ADMF_NOCENSORFLOOD ) )
 	{
 		return 0;

@@ -49,7 +49,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "libxml/parser.h"
 #include "libxml/tree.h"
 
-// utf8 conversion
+// UTF-8 conversion
 #include <glib/gconvert.h>
 #include <glib/gmem.h>
 

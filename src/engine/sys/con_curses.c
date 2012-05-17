@@ -953,7 +953,7 @@ char *CON_Input( void )
 				break;
 
 			case MODE_UTF8:
-				// UTF8, but packed
+				// UTF-8, but packed
 				if ( width > 0 && strlen( input_field.buffer ) + width < sizeof( input_field.buffer ) )
 				{
 					offset = Field_CursorToOffset( &input_field );

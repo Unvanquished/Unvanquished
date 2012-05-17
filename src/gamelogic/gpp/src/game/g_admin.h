@@ -51,9 +51,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * CANPERMBAN - does not need to specify a duration for a ban
  * ACTIVITY - inactivity rules do not apply to them
  * IMMUTABLE - admin commands cannot be used on them
- * INCOGNITO - does not show up as an admin in !listplayers
+ * INCOGNITO - does not show up as an admin in /listplayers
  * ALLFLAGS - all flags (including command flags) apply to this player
- * ADMINCHAT - receieves and can send /a admin messages
+ * ADMINCHAT - receives and can send /a admin messages
  */
 #define ADMF_IMMUNITY        "IMMUNITY"
 #define ADMF_NOCENSORFLOOD   "NOCENSORFLOOD"
@@ -72,16 +72,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_ADMIN_LISTITEMS  20
 #define MAX_ADMIN_SHOWBANS   10
 
-// important note: QVM does not seem to allow a single char to be a
-// member of a struct at init time.  flag has been converted to char*
 typedef struct
 {
 	const char *keyword;
 	qboolean  ( *handler )( gentity_t *ent );
 	qboolean   silent;
 	const char *flag;
-	const char *function; // used for !help
-	const char *syntax; // used for !help
+	const char *function; // used for /help
+	const char *syntax; // used for /help
 }
 
 g_admin_cmd_t;

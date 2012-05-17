@@ -3647,7 +3647,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 	}
 	else
 	{
-		//!adminhelp param
+		// /adminhelp param
 		char          param[ MAX_ADMIN_CMD_LEN ];
 		g_admin_cmd_t *admincmd;
 		qboolean      denied = qfalse;
