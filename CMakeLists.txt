@@ -61,6 +61,7 @@ option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
 option( ENABLE_HARDENING     "Enable various hardening options"            1 )
 
+cmake_dependent_option( QVM_DEBUG            "Enable (some) QVM debugging"                 1 BUILD_GAME_QVM_GPP 0 )
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
 cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"             1 USE_CODEC_VORBIS 0 )
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
@@ -960,6 +961,9 @@ function( GAMELIB )
       -D__inline=
       -DQ3_VM
     )
+    if( QVM_DEBUG )
+      set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D_DEBUG )
+    endif()
     foreach( DEF ${GAMELIB_COMPILE_DEF} )
       set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D${DEF} )
     endforeach()
