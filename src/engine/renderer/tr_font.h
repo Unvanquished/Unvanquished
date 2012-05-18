@@ -678,7 +678,6 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 		{
 			Com_Memcpy( font, &registeredFont[ i ], sizeof( fontInfo_t ) );
 			++fontUsage[ i ];
-printf("[32mFont %s %d already registered[m\n", fontName, pointSize);
 			return i;
 		}
 	}
@@ -744,7 +743,6 @@ printf("[32mFont %s %d already registered[m\n", fontName, pointSize);
 
 		Com_Memcpy( &registeredFont[ fontNo ], font, sizeof( fontInfo_t ) );
 		++fontUsage[ fontNo ];
-printf("[32mBitmap font %s registered[m\n", fontName);
 		return fontNo;
 	}
 #endif
@@ -835,7 +833,6 @@ printf("[32mBitmap font %s registered[m\n", fontName);
 
 	Com_Memcpy( &registeredFont[ fontNo ], font, sizeof( fontInfo_t ) );
 	++fontUsage[ fontNo ];
-printf("[32mOutline font %s %d registered[m\n", fontName, pointSize);
 	return fontNo;
 }
 
