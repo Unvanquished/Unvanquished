@@ -592,7 +592,7 @@ void Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultVa
 
 void Cvar_Update( vmCvar_t *vmCvar );
 
-// updates an interpreted modules' version of a cvar
+// updates a module's version of a cvar
 
 void Cvar_Set( const char *var_name, const char *value );
 

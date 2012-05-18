@@ -358,7 +358,7 @@ Maryland 20850 USA.
 
 #define ARCH_STRING   "mips"
 
-#define Q3_BIG_ENDIAN // SGI's MIPS are always big endian
+#define Q3_BIG_ENDIAN // SGI's MIPSes are always big endian
 
 #define DLL_DIRECTORY "libs"
 #define DLL_PREFIX    "lib"

@@ -456,7 +456,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 
 AREA QUERY
 
-Fills in a list of all entities who's absmin / absmax intersects the given
+Fills in a list of all entities whose absmin / absmax intersects the given
 bounds.  This does NOT mean that they actually touch in the case of bmodels.
 ============================================================================
 */

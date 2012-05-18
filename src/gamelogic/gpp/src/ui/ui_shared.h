@@ -184,7 +184,7 @@ colorRangeDef_t;
 // FIXME: consolidate all of the common stuff in one structure for menus and items
 // THINKABOUTME: is there any compelling reason not to have items contain items
 // and do away with a menu per say.. major issue is not being able to dynamically allocate
-// and destroy stuff.. Another point to consider is adding an alloc free call for vm's and have
+// and destroy stuff.. Another point to consider is adding an alloc free call for VMs and have
 // the engine just allocate the pool for it based on a cvar
 // many of the vars are re-used for different item types, as such they are not always named appropriately
 // the benefits of c++ in DOOM will greatly help crap like this

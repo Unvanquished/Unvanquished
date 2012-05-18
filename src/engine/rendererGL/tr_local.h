@@ -3543,7 +3543,7 @@ extern "C" {
 
 	typedef struct
 	{
-		vec3_t bounds[ 2 ]; // bounds of all surfaces of all LOD's for this frame
+		vec3_t bounds[ 2 ]; // bounds of all surfaces of all LODs for this frame
 		float  *components; // numAnimatedComponents many
 	} md5Frame_t;
 

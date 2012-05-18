@@ -388,7 +388,7 @@ typedef struct
 #define SURF_HINT       0x100   // make a primary bsp splitter
 #define SURF_SKIP       0x200   // completely ignore, allowing non-closed brushes
 
-#define SURF_MONSTERSLICK       0x4000000   // slick surf that only affects ai's
+#define SURF_MONSTERSLICK       0x4000000   // slick surf that only affects AI-controlled entities
 
 
 typedef struct

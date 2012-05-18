@@ -63,7 +63,7 @@ vm_t       *currentVM = NULL;
 vm_t       *lastVM = NULL;
 int        vm_debugLevel;
 
-// used by Com_Error to get rid of running vm's before longjmp
+// used by Com_Error to get rid of running VMs before longjmp
 static int forced_unload;
 
 #define MAX_VM 3
@@ -676,7 +676,7 @@ vm_t *VM_Restart( vm_t *vm )
 {
 	vmHeader_t *header;
 
-	// DLL's can't be restarted in place
+	// DLLs can't be restarted in place
 	if ( vm->dllHandle
 #if USE_LLVM
 	     || vm->llvmModuleProvider

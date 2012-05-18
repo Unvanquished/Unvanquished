@@ -971,10 +971,10 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 
 					if ( oldNumPoints != returnedPoints )
 					{
-						// flag this surface as already having computed ST's
+						// flag this surface as already having computed STs
 						fragmentBuffer[ returnedFragments - 1 ].numPoints *= -1;
 
-						// Ridah, calculate ST's
+						// Ridah, calculate STs
 						for ( j = 0; j < ( returnedPoints - oldNumPoints ); j++ )
 						{
 							VectorSubtract( ( float * ) pointBuffer + 5 * ( oldNumPoints + j ), newCenter, delta );

@@ -303,7 +303,7 @@ Notes:
 
 	*	Execution waits here until the marker is reached.
 
-	*	Best used with ai_marker's, since they are automatically dropped to the ground
+	*	Best used with ai_marker entities, since they are automatically dropped to the ground
 		at level load.
 
 	*	The default movement type is running.
@@ -522,7 +522,7 @@ Notes:
 	*	The bot will follow the leader until they are dead, the leader
 		orders the bot to do something else, or the duration expires.
 
-	*	If multiple bot's have a matching name, the closest will be
+	*	If multiple players have a matching name, the closest will be
 		used as the leader.
 
 Syntax:

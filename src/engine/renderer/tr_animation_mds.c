@@ -1388,7 +1388,7 @@ void R_CalcBones( mdsHeader_t *header, const refEntity_t *refent, int *boneList,
 			}
 			else
 			{
-				// tag's require special handling
+				// tags require special handling
 				// rotate each of the axis by the torsoAngles
 				LocalScaledMatrixTransformVector( bonePtr->matrix[ 0 ], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[ 0 ] );
 				LocalScaledMatrixTransformVector( bonePtr->matrix[ 1 ], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[ 1 ] );

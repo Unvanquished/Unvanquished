@@ -948,7 +948,7 @@ FS_FCloseFile
 
 If the FILE pointer is an open pak file, leave it open.
 
-For some reason, other dll's can't just cal fclose()
+For some reason, other DLLs can't just call fclose()
 on files returned by FS_FOpenFile...
 ==============
 */
@@ -4443,8 +4443,8 @@ const char *FS_ReferencedPakNames( void )
 
 	info[ 0 ] = 0;
 
-	// we want to return ALL pk3's from the fs_game path
-	// and referenced one's from baseq3
+	// we want to return all pk3s from the fs_game path
+	// and referenced ones from baseq3
 	for ( search = fs_searchpaths; search; search = search->next )
 	{
 		// is the element a pak file?
@@ -4867,8 +4867,8 @@ const char *FS_ReferencedPakNames( void )
 
 	info[ 0 ] = 0;
 
-	// we want to return ALL pk3's from the fs_game path
-	// and referenced one's from baseq3
+	// we want to return all pk3s from the fs_game path
+	// and referenced ones from baseq3
 	for ( search = fs_searchpaths; search; search = search->next )
 	{
 		// is the element a pak file?

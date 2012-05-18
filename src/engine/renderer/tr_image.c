@@ -875,7 +875,7 @@ static void Upload32( unsigned *data,
 	scaledBuffer = R_GetImageBuffer( sizeof( unsigned ) * scaled_width * scaled_height, BUFFER_SCALED );
 
 	//
-	// scan the texture for each channel's max values
+	// scan the texture for each channel's max value
 	// and verify if the alpha channel is being used or not
 	//
 	c = width * height;

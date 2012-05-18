@@ -2469,7 +2469,7 @@ char *Q_CleanDirName( char *dirname )
 	s = dirname;
 	d = dirname;
 
-	// clear trailing .'s
+	// clear trailing '.'s
 	while ( *s == '.' )
 	{
 		s++;

@@ -1582,7 +1582,7 @@ static void R_CalcBones( const refEntity_t *refent, int *boneList, int numBones 
 			// multiply matrices to create one matrix to do all calculations
 			Matrix4MultiplyInto3x3AndTranslation( m2, m1, bonePtr->matrix, bonePtr->translation );
 
-			/*} else {  // tag's require special handling
+			/*} else {  // tags require special handling
 
 			   // rotate each of the axis by the torsoAngles
 			   LocalScaledMatrixTransformVector( bonePtr->matrix[0], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[0] );

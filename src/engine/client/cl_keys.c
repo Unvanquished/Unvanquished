@@ -1984,7 +1984,7 @@ void CL_CharEvent( const char *key )
 	else if ( cls.keyCatchers & KEYCATCH_UI )
 	{
 		// VMs that don't support i18n distinguish between char and key events by looking at the 11th least significant bit.
-		// Patched vms look at the second least significant bit to determine whether the event is a char event, and at the third bit
+		// Patched VMs look at the second least significant bit to determine whether the event is a char event, and at the third bit
 		// to determine the original 11th least significant bit of the key.
 		VM_Call( uivm, UI_KEY_EVENT, Q_UTF8Store( key ) | (1 << (K_CHAR_BIT - 1)),
 				(qtrue << KEYEVSTATE_DOWN) |

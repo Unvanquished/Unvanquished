@@ -2563,8 +2563,8 @@ void R_Hunk_Reset( void )
 //=============================================================================
 // Ridah, model caching
 
-// TODO: convert the Hunk_Alloc's in the model loading to malloc's, so we don't have
-// to move so much memory around during transitions
+// TODO: convert the Hunk_Alloc() calls in the model loading code to malloc() calls,
+// so that we don't have to move so much memory around during transitions
 
 static model_t backupModels[ MAX_MOD_KNOWN ];
 static int     numBackupModels = 0;

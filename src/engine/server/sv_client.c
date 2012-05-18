@@ -2038,8 +2038,8 @@ Also called by bot code
 */
 
 // The value below is how many extra characters we reserve for every instance of '$' in a
-// ut_radio, say, or similar client command.  Some jump maps have very long $location's.
-// On these maps, it may be possible to crash the server if a carefully-crafted
+// ut_radio, say, or similar client command.  Some jump maps have very long $location
+// strings.  On these maps, it may be possible to crash the server if a carefully-crafted
 // client command is sent.  The constant below may require further tweaking.  For example,
 // a text of "$location" would have a total computed length of 25, because "$location" has
 // 9 characters, and we increment that by 16 for the '$'.
@@ -2406,7 +2406,7 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 		//}
 		if ( !SV_GameIsSinglePlayer() )
 		{
-			// We need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
+			// We need to allow this in single player, where loadgames can cause the player to freeze after reloading if we do this check
 			// don't execute if this is an old cmd which is already executed
 			// these old cmds are included when cl_packetdup > 0
 			if ( cmds[ i ].serverTime <= cl->lastUsercmd.serverTime )

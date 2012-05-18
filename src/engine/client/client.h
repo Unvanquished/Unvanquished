@@ -716,7 +716,7 @@ qboolean CL_UpdateVisiblePings_f( int source );
 #define NUM_CON_TIMES    4
 
 //#define       CON_TEXTSIZE    32768
-#define     CON_TEXTSIZE 65536 // (SA) DM want's more console...
+#define     CON_TEXTSIZE 65536 // (SA) DM wants more console...
 #define     CON_LINECOUNT  512
 
 #define     CONSOLE_FONT_VPADDING 0.3

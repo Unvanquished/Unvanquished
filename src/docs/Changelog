@@ -103,7 +103,7 @@
 2011-12-12 Dusan Jocic <dusanjocic@msn.com>
 	* Fixed font's reading for Tremulous GPP and Tremulous 1.1.0
 		+ NOTE: ETMAIN is really broken now
-	* Fixed assembler code so x64 Windows build's don't segfault
+	* Fixed assembler code so x64 Windows builds don't segfault
 	* Changed BASEGAME from "etmain" to "main"
 	* Defaulted "sv_pure" to 1
 	* Separated GPU extensions for Xreal into GLimp_XrealInitExtensions and for ET vanilla renderer into GLimp_InitExtensions
@@ -407,7 +407,7 @@
 	* Fixed LLVM VM
 	* Removed unneeded files
 	* Defined Sys_InitStreamThread in sys_local.h
-	* Fixed Dedicated build's (both debug and release for x32 and x64 solutions)
+	* Fixed Dedicated builds (both debug and release for x32 and x64 solutions)
 
 2011-08-24 Zsombor Gegesy <gzsombor@gmail.com>
 	* add pyhsics and systemlibs to the default compilation options in scons
@@ -1341,7 +1341,7 @@
 2011-03-02 Dusan Jocic <dusanjocic@msn.com>
 
 	* fixed problem while creating host server in local network 
-	* Partial implementation of FS_Seek for files in PK3's files 
+	* Partial implementation of FS_Seek() for files in PK3 files
 	* returned old version until I debug problem with ClientConnect?() 
 	* ported OpenAL to Xreal:ET 
 	NOTE: from this revision Linux and MacOS build are broken
@@ -2983,7 +2983,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Stopped some messages popping up for joining/creating fireteam upon quick team changes
 	+ Changed CanDamage function to use some decent hit detection for a change...
 	+ Changed combatstates to only be set during real gameplay
-	+ Changed toi's to use midpoint of entity if no origin found for configstring origin
+	+ Changed TOIs to use midpoint of entity if no origin found for configstring origin
 	+ Adjusted dynamite damage blast radius/damage	
 	+ Fixed/changed messages for arty/airstrike
 	+ Fixed engine setting default complaint limit to wrong value
@@ -3059,7 +3059,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Gordon <djbob@splashdamage.com>
 	+ Fixed airstrikes that didn't go off staying around forever
 	+ Massively cleaned up mapentityinfo, sends about 25% as much info as it used to
-		- caching a bunch of things in some configstrings set when the toi's spawn (custom images, etc)
+		- caching a bunch of things in some configstrings set when the TOIs spawn (custom images, etc.)
 		- filtering out now unneeded info on a per type basis
 	+ Fixed being able to exploit mg42 destroy/repair to gain eng XP
 	+ Fixed objective failed/completed messages being one index out of place
@@ -3347,7 +3347,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Made callvote map work for campaigns.
 	+ Fixed smoke grenade dropping just under solids resulting in no smoke being spawned.
 	+ Tweaked the light orange colour.
-	+ Fixed trigger_objective_info's with a IS_OBJECTIVE flag not working when they were targetting func_explosives.
+	+ Fixed trigger_objective_info entities with IS_OBJECTIVE flags not working when they were targeting func_explosives.
 	+ Made scoped K43 and scoped Garand helmet-armour piercing.
 
 			TTimo <ttimo@idsoftware.com>
@@ -3725,7 +3725,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout <rr2do2@splashdamage.com>
 	+ ATVI Wolfenstein XP #3225 : if a user doesn't set his rate (ui_rate) it now defaults to 5000.
 	+ Fixed bad server adress not kicking you back to main menu (left ui_connecting set to 1).
-	+ Fixed pickup hint not showing for Thompsons and MP40's.
+	+ Fixed pickup hint not showing for Thompsons and MP40s.
 	+ Upped version numbers to ET 2.31a and ET 2.41a.
 
 			Gordon	<djbob@splashdamage.com>
@@ -4344,7 +4344,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 22-03-2003
 			Arnout	<fui@splashdamage.com>
 	+ Fui here, fui there, fui fui everywhere!
-	+ New way of rendering campaign shots in FUI (section of the map loading panel background, tc's from campaignscript).
+	+ New way of rendering campaign shots in FUI (section of the map loading panel background, TCs from campaignscript).
 	+ Upped version number to ET 2.20f.
 	+ Added 'align' member to panel_button_text_t. Style hijacking caused conflicts.
 
@@ -4669,10 +4669,10 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Tracker #1359: Thompson and MP40 now both have the same spread.
 	+ Fixed tank mounted gun not showing in thirdperson rendering.
 	+ Fixed tank mounted gun not using the 'use MP40 effects' hack.
-	+ Mounted MG42's now show the bipod MG42 icon on the hud.
+	+ Mounted MG42s now show the bipodded MG42 icon on the HUD.
 	+ When unmounting a tank, the code now test all 4 sides before letting the player out.
 	+ Fixed cg_thirdperson viewing of tank mounted players.
-	+ Tank mounted MG42's now use the proper Fire_Lead.
+	+ Tank-mounted MG42s now use the proper Fire_Lead.
 	+ Fixed mouse4 and mouse5 input.
 
 04-03-2003
@@ -4710,7 +4710,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added debug only printout of images that aren't ^2
 	+ Fixed bots after avoiding being squashed inside a construction never moving again as it kept trying to avoid the construction
 	+ Updated weapon selection for attacking grenading(panzerfaust etc..) constructibles
-	+ fixed script priority for func_explosives not working properly (was using the toi, not the explosive)
+	+ fixed script priority for func_explosive entities not working properly (was using the TOI, not the explosive)
 	
 
 ---------------- BUILD 040 - 2.20b (etmain)
@@ -4719,7 +4719,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout	<rr2do2@splashdamage.com>
 	+ Moved .weap files to /weapons.
 	+ Made alliedSkin/axisSkin work for disguises.
-	+ BG_LoadTracemap now only uses a quarter of the fs_read's it was using originally.
+	+ BG_LoadTracemap() now only uses a quarter of the FS_Read() calls it was using originally.
 	+ Removed locations, replaced by grid coordinate system (use BG_GetLocationString to get a location string).
 	+ Removed swap out model.
 	+ Removed skeletal third person model.
@@ -4863,8 +4863,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 22-02-2003
 			Ryan <ryan@gmistudios.com>
 	+ If no weapon with capable range is found for an enemy, the weapon with furthest range is selected
-	+ Cleaned up mp_forest script, removed unnecessary setbotgoalstate's
-	+ Made front/rear dump a goal even after built for Axis, otherwise they wont try to defuse dynamite placed on them
+	+ Cleaned up mp_forest script, removed unnecessary setbotgoalstate actions
+	+ Made front/rear dump a goal even after built for Axis, otherwise they won't try to defuse dynamite placed on them
 	+ Fast out of BotBestTargetWeapon() if the player has none of the valid weapons
 	+ Added bot_profile. Gives timing information for botThink process. Values include: EmergencyGoals, FindGoals & BotFindEnemy.
 	+ Fixed Bridge destruction not blocking paths. Hard coded first level of destruction of a constructible to disable paths. Needs scripted interface for complete solution.
@@ -4905,8 +4905,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed bots having trouble mounting mg42 on tower
 	+ Improved dynamite targetting system
 	+ Special handling for mobile mg42 prone mode
-	+ Updated targetting to include all scoped weapons
-	+ Scripting now uses TOI's to decide whether a constructible/explosive target is dynamite-able
+	+ Updated targeting to include all scoped weapons
+	+ Scripting now uses TOIs to decide whether a constructible/explosive target is dynamite-able
 	+ Fixed bug where lots of bots will suicide when an engineer is needed
 	+ Improved DirectMove movement when approaching target
 	+ BotFindEnemyMP() returns the closest enemy
@@ -4927,7 +4927,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Some house cleaning and tweaks to BotFindEnemyMP()
 	+ Bots aim slightly downwards when using mobile MG42
 	+ Added more non-moving weapons to the BotMoveWhileFiring() list
-	+ Bots will use binoculars to call artillery strikes on script_mover's (eg, tanks)
+	+ Bots will use binoculars to call artillery strikes on script_mover entities (eg., tanks)
 	+ Added botgoalstate support for BotGetTargetExplosives()
 	+ Removed MORTAR support from Bots, they simply wont select it
 	+ Tweaked AAS jump movement code
@@ -4936,9 +4936,9 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Gordon	<djbob@splashdamage.com>
 	+ Changed script_mover attack to higher priority
-	+ Reverted change to require toi's to be ai enabled to be the entity itself
+	+ Reverted change to require TOIs to be AI enabled to be the entity itself
 	+ Split dynamite targeting for explosives/constructibles
-	+ Removed toi bot clustering
+	+ Removed TOI bot clustering
 	+ Sped up various functions by removing the need for lots of square root calculations
 	+ Fixed sniper spot handling by updating for new scoped weapons
 	+ Made bots less likely to use mobile mg42 whilst moving
@@ -5369,8 +5369,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout	<rr2do2@splashdamage.com>
 	+ Fixed crash in corpse characterIndex network transmission.
 	+ Added backwards compatibility for map scripts using old spawnbot commands.
-	+ Reworked overheating for mountable MG42's.
-	+ Added overheating to tank-based MG42's.
+	+ Reworked overheating for mountable MG42s.
+	+ Added overheating to tank-based MG42s.
 			
 21-01-2003
 			Arnout	<rr2do2@splashdamage.com>
@@ -7060,7 +7060,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed GAME_VERSION to "Enemy Territory".
 	+ Added script_mover description drawing to the tank healthbar (description key on script_mover entities with health).
 	+ Fixed empty healthbar showing up over enemies.
-	+ Changed CG_CalcMuzzlePoint to actually return the proper muzzlepoint for MG42's.
+	+ Changed CG_CalcMuzzlePoint() to actually return the proper muzzlepoint for MG42s.
 	+ Removed PMF_PRONE, as EF_PRONE was providing the same information.
 	+ Fixed prone clients moving over tiny polygon ledges playing a jump animation and getting thrown out of prone.
 
@@ -7500,7 +7500,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Finalized multi-layer commandmap. Uses "cclayers" worldspawn key to indicate the number of layers (max 4), and "cclayerceil#" (where # is 0 <= # < cclayers) to indicate the ceiling heights of each layer.
 	+ Fixed a bug where a revived player could get stuck in another player that is using a mounted MG42.
 	+ Fixed MG42 muzzle flash not always drawing.
-	+ Fixed ability to use MG42's from above.
+	+ Fixed ability to use MG42s from above.
 	+ Fixed MG42 hint icon not being consistent with the actual usage.
 	+ (TTimo) Fixed the screen shaking situation on the client when someone manages to crouch and use an MG42 at the same time.
 	+ Removed gunfx, replaced with botMenuIcons (also 8 bits).
@@ -7516,7 +7516,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 16-10-2002
 			Ryan <ryan@gmistudios.com>
 	+ fixed ladders not working
-	+ always attempt to touch trigger_multi's that are assigned to a team (it must be an objective??)
+	+ always attempt to touch trigger_multiple entities that are assigned to a team (must be an objective??)
 		NOTE: use "setbotgoalstate [active/inactive]" to enable/disable bots treating trigger_multiple as a goal
 	+ engineers with critical tasks (building/destroying) should be used as priority leaders
 
@@ -7854,7 +7854,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	
 23-09-2002
 			Arnout	<rr2do2@splashdamage.com>
-	+ Fixed merge errors in g_active.c (Ryans checkin overwrote changes).
+	+ Fixed merge errors in g_active.c (Ryan's checking overwrote changes).
 
 			Tim	<tim@maddocsoftware.com>
 	+ All single player maps MUST now have a team_CTF_bluespawn with the player-only (== 8) spawnflag set. Allied bots in a single player game
@@ -8004,7 +8004,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Made Tim's change from 06-09 SP only.
 	+ Changed FG42's firing rate when scoped to be the same as other sniper rifles (400msec).
 	+ Added player rank to crosshairname.
-	+ Made mounted MG42's use historical traces.
+	+ Made mounted MG42s use historical traces.
 	+ Upped version number to Wolf 2.00u.
 	+ Added team specific respawn point icons.
 
@@ -8028,8 +8028,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	
 			Ryan <ryan@gmistudios.com>
 	+ Checked in bspc fixes. Note: mp_forest requires clipping work and possible further bspc fixes.
-	+ In "standstill" mode, dont look for other goals if already in stand() node.
-	+ script_mover's now block areas when stationary.
+	+ In "standstill" mode, don't look for other goals if already in stand() node.
+	+ script_mover entities now block areas when stationary.
 
 			tim <tim@maddocsoftware.com>
 	+ Allow a bot to have no weapon selected in single player. NOTE: BotValidWeaponNumber() to allow 0 as a valid weapon number, but wasn't able
@@ -8370,8 +8370,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Ryan <ryan@gmistudios.com>
 	+ Fixed ENTITY scripting issue with calling a trigger which in turn
-	  called a trigger on the original entity which didnt finish.
-	+ Added support for func_constructible's that block paths when built
+	  called a trigger on the original entity which didn't finish.
+	+ Added support for func_constructible entities that block paths when built
 	+ Created bot game entity structure to store bot entities, allowing
 	  for large numbers of bot helper entities without impacting on global
 	  entity limit
@@ -8480,7 +8480,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed armed landmines to show up as mine markers for your own team to increase their visibility.
 	+ Added teamchecks for damage done to explosives, movers and constructibles
 	+ Added support for supportfire only explosives and constructibles. (Dynamite is also classed as supportfire, special request from Paul that)
-	+ Fixed default config being written to profile config at times, overwriting a users profile.
+	+ Fixed default config being written to profile config at times, overwriting a user's profile.
 	+ Added 'allowteams' key to entities, checked in every instance that an entity is used. (For example, opening doors). Syntax: "allowteams" "axis,cvops", possible paramters: axis, allies and cvops. Cvops means that a disguised cvops that looks like he could activate the entity can indeed do so.
 	+ Removed gameskill from the engine as well.
 	+ Changed M7 and Garand third person models.
@@ -9311,7 +9311,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout	<rr2do2@splashdamage.com>
 	+ Added client sided entity parsing.
 	+ Added 'mapcoordsmins' and 'mapcoordsmaxs' to worldspawn as valid keys to determine map dimensions for the command center map.
-	+ Merged Ryans botcode in the tree.
+	+ Merged Ryan's bot code in the tree.
 	
 			Gordon	<djbob@splashdamage.com>
 	+ Added more features to commandcentre map

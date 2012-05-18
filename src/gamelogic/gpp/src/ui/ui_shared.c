@@ -8678,7 +8678,7 @@ qboolean Item_Parse( int handle, itemDef_t *item )
 }
 
 // Item_InitControls
-// init's special control types
+// initializes special control types
 void Item_InitControls( itemDef_t *item )
 {
 	if ( item == NULL )

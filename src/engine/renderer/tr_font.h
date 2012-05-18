@@ -69,7 +69,7 @@ Maryland 20850 USA.
 //    point size. the original TrueType fonts must exist in fonts at this point.
 // 3. run the game, you should see things normally.
 // 4. Exit the game and there will be three dat files and at least three PNG files. The
-//    PNG's are in 256x256 pages so if it takes three images to render a 24 point font you
+//    PNGs are in 256x256 pages so if it takes three images to render a 24 point font you
 //    will end up with fontImage_0_24.tga through fontImage_2_24.tga
 // 5. In future runs of the game, the system looks for these images and data files when a
 //    specific point sized font is rendered and loads them for use.

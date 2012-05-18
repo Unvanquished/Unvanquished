@@ -225,7 +225,7 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 
 			surf = bmodel->firstSurface + surfnum;
 
-			// RF, check for null shader (can happen on func_explosive's with botclips attached)
+			// RF, check for null shader (can happen on func_explosive entities with botclips attached)
 			if ( !surf->shader )
 			{
 				return 0;

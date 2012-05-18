@@ -427,7 +427,7 @@ typedef struct
 
 typedef struct
 {
-	vec3_t          bounds[2];	// bounds of all surfaces of all LOD's for this frame
+	vec3_t          bounds[2];	// bounds of all surfaces of all LODs for this frame
 	vec3_t          localOrigin;	// midpoint of bounds, used for sphere cull
 	float           radius;		// dist from localOrigin to corner
 	char            name[16];
@@ -549,7 +549,7 @@ typedef struct
 
 typedef struct
 {
-	vec3_t          bounds[2];	// bounds of all surfaces of all LOD's for this frame
+	vec3_t          bounds[2];	// bounds of all surfaces of all LODs for this frame
 	vec3_t          localOrigin;	// midpoint of bounds, used for sphere cull
 	float           radius;		// dist from localOrigin to corner
 	vec3_t          parentOffset;	// one bone is an ascendant of all other bones, it starts the hierachy at this position
@@ -681,7 +681,7 @@ typedef struct
 } mdmSurface_t;
 
 /*typedef struct {
-	vec3_t		bounds[2];			// bounds of all surfaces of all LOD's for this frame
+	vec3_t		bounds[2];			// bounds of all surfaces of all LODs for this frame
 	vec3_t		localOrigin;		// midpoint of bounds, used for sphere cull
 	float		radius;				// dist from localOrigin to corner
 	vec3_t		parentOffset;		// one bone is an ascendant of all other bones, it starts the hierachy at this position

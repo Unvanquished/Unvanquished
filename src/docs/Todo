@@ -17,7 +17,7 @@ bani	xxx - engine eats // on commandline
 etmain	003 - (djbob)players waiting for revive dropped for inactivity
 etmain	006 - (djbob)silent plants next to constructibles exploit
 etmain	013 - (djbob)bug with long names not allowing a client to vote kick from menu
-etmain	056 - (djbob)can't kick players who's names are only a number
+etmain	056 - (djbob)can't kick players whose names are only a number
 etmain	077 - friendly fire is inverted (?) - fixed in etmain according to rain?
 bani	105 - (rain)end of round ready should not wait on spectators
 bani	173 - print vote string to console when vote is called
