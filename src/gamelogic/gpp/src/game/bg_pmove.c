@@ -2564,7 +2564,7 @@ static void PM_GroundClimbTrace( void )
 		{
 			vec3_t  forward, rotated, angles;
 			vec3_t  surfNormal = {0,0,-1};
-
+		
 			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
 				VectorCopy(pm->ps->grapplePoint,surfNormal);
 
@@ -2577,9 +2577,7 @@ static void PM_GroundClimbTrace( void )
 				vec3_t xNormal;
 				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
 				if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
-				{
 					VectorCopy(pm->ps->grapplePoint, xNormal);
-				}
 				else {
 					CrossProduct( surfNormal, refNormal, xNormal );
 					VectorNormalize( xNormal );
@@ -2678,7 +2676,7 @@ static void PM_GroundTrace( void )
 		{
 			vec3_t  forward, rotated, angles;
 			vec3_t  surfNormal = {0,0,-1};
-
+		
 			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
 				VectorCopy(pm->ps->grapplePoint,surfNormal);
 
@@ -2691,9 +2689,7 @@ static void PM_GroundTrace( void )
 				vec3_t xNormal;
 				AngleVectors( pm->ps->viewangles, forward, NULL, NULL );
 				if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
-				{
 					VectorCopy(pm->ps->grapplePoint, xNormal);
-				}
 				else {
 					CrossProduct( surfNormal, refNormal, xNormal );
 					VectorNormalize( xNormal );
@@ -4309,6 +4305,8 @@ PmoveSingle
 
 ================
 */
+void trap_SnapVector( float *v );
+
 void PmoveSingle( pmove_t *pmove )
 {
 	pm = pmove;
@@ -4567,9 +4565,7 @@ void PmoveSingle( pmove_t *pmove )
 	PM_WaterEvents();
 
 	// snap some parts of playerstate to save network bandwidth
-	pm->ps->velocity[0] = round( pm->ps->velocity[0] );
-	pm->ps->velocity[1] = round( pm->ps->velocity[1] );
-	pm->ps->velocity[2] = round( pm->ps->velocity[2] );
+	trap_SnapVector( pm->ps->velocity );
 }
 
 /*

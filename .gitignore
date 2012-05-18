@@ -1,6 +1,5 @@
 *~
 build/*
-lcc/*
 *.DS_STORE
 CMakeCache.txt
 CMakeFiles

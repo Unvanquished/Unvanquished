@@ -146,11 +146,9 @@ extern "C" {
 
 #ifdef Q3_VM
 
-#include "../../gamelogic/gpp/src/game/bg_lib.h"
+#include "bg_lib.h"
 
 	typedef int intptr_t;
-
-#include "../../engine/qcommon/q_platform.h"
 
 #else
 
@@ -191,11 +189,11 @@ extern "C" {
 #include <stdint.h>
 #endif
 
-#include "q_platform.h"
-
 #endif
 
-#if defined __GNUC__ || defined __clang__ && !defined(Q3_VM)
+#include "q_platform.h"
+
+#if defined __GNUC__ || defined __clang__
 #define _attribute( x ) __attribute__( x )
 #else
 #define _attribute( x )
@@ -980,11 +978,9 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 
 	int   NearestPowerOfTwo( int val );
 	int   Q_log2( int val );
-#ifdef Q3_VM
-#define Q_acos(c) acos(c)
-#else
+
 	float Q_acos( float c );
-#endif
+
 	int   Q_isnan( float x );
 
 	int   Q_rand( int *seed );
@@ -1038,6 +1034,7 @@ static ID_INLINE __attribute__(( always_inline )) qboolean Q_IsColorString( cons
 		AngleVectors( angles, out, NULL, NULL );
 	}
 
+	void  VectorToAngles( const vec3_t value1, vec3_t angles );
 
 	vec_t PlaneNormalize( vec4_t plane );  // returns normal length
 
@@ -1660,11 +1657,7 @@ char *Q_UTF8Unstore( int e );
 	==============================================================
 	*/
 
-#ifdef Q3_VM
-#include "../../engine/qcommon/surfaceflags.h"
-#else
 #include "surfaceflags.h" // shared with the q3map utility
-#endif
 
 // plane types are used to speed some tests
 // 0-2 are axial planes

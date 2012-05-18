@@ -2622,16 +2622,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	{
 		static const vec4_t black = { 0, 0, 0, 0.25 };
 
-		vec4_t recolor;
+		vec4_t recolour = { color[0], color[1], color[2], color[3] / 3.0 };
 		float bx = DC->xscale * ( startX + fieldWidth * scrollIndex / scrollLength );
 		float by = DC->yscale * ( y + 3 );
 		float bw = DC->xscale * ( fieldWidth * count / scrollLength );
 		float bh = DC->yscale * 2;
-
-		recolor[0] = color[0];
-		recolor[1] = color[1];
-		recolor[2] = color[2];
-		recolor[3] = color[3] / 3.0;
 
 		if ( style == ITEM_TEXTSTYLE_SHADOWED ||
 		     style == ITEM_TEXTSTYLE_SHADOWEDMORE )
@@ -2640,7 +2635,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 			DC->drawStretchPic( bx - 1, by - 1, bw + 2, bh + 2, 0, 0, 0, 0, DC->whiteShader );
 		}
 
-		DC->setColor( recolor );
+		DC->setColor( recolour );
 		DC->drawStretchPic( bx, by, bw, bh, 0, 0, 0, 0, DC->whiteShader );
 	}
 
@@ -5104,11 +5099,29 @@ static void SkipWhiteSpace( const char **text, char *lastColor )
 	}
 }
 
+#define WRAP_BUFFER_MARGIN 1024
+
+static void Check_Alloc( char **buffer, size_t *size, size_t needed )
+{
+	if ( needed >= *size )
+	{
+		*size = needed + WRAP_BUFFER_MARGIN;
+		*buffer = realloc( *buffer, *size );
+		assert( *buffer != 0 );
+	}
+}
+
 const char *Item_Text_Wrap( const char *text, float scale, float width )
 {
-	// Strings a little short of 32KB have been witnessed coming in from
-	// Item_Text_Wrapped_Paint() near map start-up. Just clip them to the buffer.
-	static char   out[ 4096 ];
+	// FIXME: QVM. Can't allocate memory there? Will need a larger buffer -
+	// something like 40KB should be enough; strings a little short of 32KB
+	// have been witnessed coming in from Item_Text_Wrapped_Paint() near map
+	// start-up.
+	// Regardless, we need to check remaining space before each write else we
+	// run a small risk of buffer overflow.
+
+	static char   *out = NULL;
+	static size_t outSize = 0;
 	int           paint = 0;
 	char          c[ 3 ] = "";
 	const char    *p;
@@ -5123,6 +5136,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 	p = text;
 	eos = p + strlen( p );
 
+	Check_Alloc( &out, &outSize, eos - p );
 	out[ paint ] = '\0';
 
 	while ( *p )
@@ -5179,14 +5193,11 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 		// avoided here as it becomes surprisingly expensive on larger
 		// blocks of text
 
-		// Copy text into the buffer, but don't overflow it
-		strncpy( out + paint, p, MIN( eol - p, sizeof( out ) - paint ) );
+		// Copy text
+		Check_Alloc( &out, &outSize, paint + eol - p );
+		strncpy( out + paint, p, eol - p );
 		paint += ( eol - p );
-
-		if ( paint >= sizeof( out ) )
-		{
-			break;
-		}
+		out[ paint ] = '\0';
 
 		p = eol;
 
@@ -5200,12 +5211,9 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 		else
 		{
 			// Add a \n if it's not there already
+			Check_Alloc( &out, &outSize, paint + 1 );
 			out[ paint++ ] = '\n';
-
-			if ( paint >= sizeof ( out ) )
-			{
-				break;
-			}
+			out[ paint ] = '\0';
 
 			// Insert a pixel indent on the next line
 			if ( indentWidth > 0.0f )
@@ -5213,14 +5221,10 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 				char *indentMarkerText = va( "%f%c", indentWidth, INDENT_MARKER );
 				int  indentMarkerTextLength = strlen( indentMarkerText );
 
-				// copy the marker into the buffer, but don't overflow it
-				strncpy( out + paint, indentMarkerText, MIN( indentMarkerTextLength, sizeof( out ) - paint ) );
+				Check_Alloc( &out, &outSize, paint + indentMarkerTextLength );
+				strncpy( out + paint, indentMarkerText, indentMarkerTextLength );
 				paint += indentMarkerTextLength;
-
-				if ( paint >= sizeof ( out ) )
-				{
-					break;
-				}
+				out[ paint ] = '\0';
 			}
 
 			// Skip leading whitespace on next line and save the
@@ -5230,18 +5234,13 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 
 		if ( c[ 0 ] )
 		{
-			if ( paint + 2 >= sizeof ( out ) )
-			{
-				break;
-			}
-
+			Check_Alloc( &out, &outSize, paint + 2 );
 			out[ paint++ ] = c[ 0 ];
 			out[ paint++ ] = c[ 1 ];
+			out[ paint  ] = '\0';
 		}
 	}
 
-	// terminate the string, making sure that we don't overflow the buffer
-	out[ paint > sizeof( out ) ? sizeof( out ) - 1 : paint ] = '\0';
 	return out;
 }
 
