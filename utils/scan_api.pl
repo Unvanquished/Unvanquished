@@ -72,7 +72,10 @@ for ($f = 1; $f <= $#ARGV; ++$f)
           push @{$syscallfuncs{$enum}}, $1;
         }
       }
-      last if $line =~ /}/;
+      elsif ($line =~ /}/)
+      {
+        $state = 0;
+      }
     }
   }
   close ENUM;

@@ -962,14 +962,14 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 //Com_Printf("%s%i\n", (char *)VMA(1), args[2]);
 void testPrintInt( char *string, int i )
 {
-	syscall( CG_TESTPRINTINT, string, i );
+	syscall( TRAP_TESTPRINTINT, string, i );
 }
 
 //133.
 //Com_Printf("%s%f\n", (char *)VMA(1), VMF(2));
 void testPrintFloat( char *string, float f )
 {
-	syscall( CG_TESTPRINTFLOAT, string, PASSFLOAT( f ) );
+	syscall( TRAP_TESTPRINTFLOAT, string, PASSFLOAT( f ) );
 }
 
 //134.
@@ -1280,16 +1280,3 @@ void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
 {
 	syscall( CG_GETCLIPBOARDDATA, buf, bufsize, clip );
 }
-
-// Needed for API scan tool
-//CG_MEMCMP = memcmp
-//CG_MEMSET = memset
-//CG_MEMCPY = memcpy
-//CG_STRNCPY = strncpy
-//CG_SIN = sin
-//CG_COS = cos
-//CG_ATAN2 = atan2
-//CG_SQRT = sqrt
-//CG_FLOOR = floor
-//CG_CEIL = ceil
-//CG_ASIN = asin

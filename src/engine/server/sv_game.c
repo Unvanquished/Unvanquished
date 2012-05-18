@@ -465,14 +465,6 @@ void SV_UpdateSharedConfig( unsigned int port, const char *rconpass )
 
 //==============================================
 
-static int FloatAsInt( float f )
-{
-	floatint_t fi;
-
-	fi.f = f;
-	return fi.i;
-}
-
 extern int S_RegisterSound( const char *name, qboolean compressed );
 extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
@@ -734,53 +726,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			CMod_PhysicsAddStatic( VMA( 1 ) );
 #endif
 			return 0;
-
-		case TRAP_MEMSET:
-			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
-			return 0;
-
-		case TRAP_MEMCPY:
-			memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case TRAP_MEMCMP:
-			return memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-
-		case TRAP_STRNCPY:
-			return ( intptr_t ) strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-
-		case TRAP_SIN:
-			return FloatAsInt( sin( VMF( 1 ) ) );
-
-		case TRAP_COS:
-			return FloatAsInt( cos( VMF( 1 ) ) );
-
-		case TRAP_ASIN:
-			return FloatAsInt( asin( VMF( 1 ) ) );
-
-		case TRAP_ATAN2:
-			return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
-
-		case TRAP_SQRT:
-			return FloatAsInt( sqrt( VMF( 1 ) ) );
-
-		case TRAP_MATRIXMULTIPLY:
-			AxisMultiply( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
-			return 0;
-
-		case TRAP_ANGLEVECTORS:
-			AngleVectors( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
-			return 0;
-
-		case TRAP_PERPENDICULARVECTOR:
-			PerpendicularVector( VMA( 1 ), VMA( 2 ) );
-			return 0;
-
-		case TRAP_FLOOR:
-			return FloatAsInt( floor( VMF( 1 ) ) );
-
-		case TRAP_CEIL:
-			return FloatAsInt( ceil( VMF( 1 ) ) );
 
 		case G_SENDMESSAGE:
 			SV_SendBinaryMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );

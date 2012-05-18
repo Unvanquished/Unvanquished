@@ -37,6 +37,7 @@ Maryland 20850 USA.
 // *INDENT-OFF*
 
 #include "vm_local.h"
+#include "vm_traps.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -510,10 +511,24 @@ static void DoSyscall( void )
 			args[ index ] = data[ index ];
 		}
 
-		opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( args );
+		if ( arg < FIRST_VM_SYSCALL )
+		{
+			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( &arg ); // Common
+		}
+		else
+		{
+			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( args ); // VM-specific
+		}
 #else
 		data[ 0 ] = ~syscallNum;
-		opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data );
+		if ( arg < FIRST_VM_SYSCALL )
+		{
+			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( data ); // Common
+		}
+		else
+		{
+			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data ); // VM-specific
+		}
 #endif
 	}
 	else

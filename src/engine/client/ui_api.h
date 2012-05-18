@@ -21,13 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/vm_traps.h"
 #include "../renderer/tr_types.h"
 
 #define UI_API_VERSION 4
 
 typedef enum uiImport_s
 {
-  UI_ERROR,
+  UI_ERROR = FIRST_VM_SYSCALL,
   UI_PRINT,
   UI_MILLISECONDS,
   UI_CVAR_REGISTER,
@@ -111,15 +112,6 @@ typedef enum uiImport_s
   UI_GET_CDKEY,
   UI_SET_CDKEY,
   UI_R_REGISTERFONT,
-  UI_MEMSET,
-  UI_MEMCPY,
-  UI_STRNCPY,
-  UI_SIN,
-  UI_COS,
-  UI_ATAN2,
-  UI_SQRT,
-  UI_FLOOR,
-  UI_CEIL,
   UI_PARSE_ADD_GLOBAL_DEFINE,
   UI_PARSE_LOAD_SOURCE,
   UI_PARSE_FREE_SOURCE,
@@ -147,19 +139,15 @@ typedef enum uiImport_s
   UI_GET_AUTOUPDATE,
   UI_OPENURL,
   UI_GETHUNKDATA,
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
+//#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
   UI_R_REGISTERANIMATION,
   UI_R_BUILDSKELETON,
   UI_R_BLENDSKELETON,
   UI_R_BONEINDEX,
   UI_R_ANIMNUMFRAMES,
   UI_R_ANIMFRAMERATE,
-#endif
-  UI_MEMCMP,
-  UI_ASIN,
-  UI_ATANF,
-  UI_TANF,
-  UI_GETTEXT = 300,
+//#endif
+  UI_GETTEXT,
   UI_R_GLYPH,
   UI_R_GLYPHCHAR,
   UI_R_UREGISTERFONT

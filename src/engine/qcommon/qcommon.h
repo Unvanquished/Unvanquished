@@ -378,6 +378,8 @@ VIRTUAL MACHINE
 ==============================================================
 */
 
+// See also vm_traps.h for syscalls common to all VMs
+
 typedef struct vm_s vm_t;
 
 typedef enum
@@ -388,28 +390,6 @@ typedef enum
 #endif
   VMI_COMPILED
 } vmInterpret_t;
-
-// Comments in this enum are used by the QVM API scanner
-typedef enum sharedImport_s
-{
-  TRAP_MEMSET = 300,         // = memset
-  TRAP_MEMCPY,               // = memcpy
-  TRAP_MEMCMP,               // = memcmp
-  TRAP_STRNCPY,              // = strncpy
-  TRAP_SIN,                  // = sin
-  TRAP_COS,                  // = cos
-  TRAP_ASIN,                 // = asin
-  TRAP_ATAN2,                // = atan2
-  TRAP_SQRT,                 // = sqrt
-  TRAP_MATRIXMULTIPLY,       // unused
-  TRAP_ANGLEVECTORS,         // unused
-  TRAP_PERPENDICULARVECTOR,  // unused
-  TRAP_FLOOR,                // = floor
-  TRAP_CEIL,                 // = ceil
-
-  TRAP_TESTPRINTINT,         // = testPrintInt
-  TRAP_TESTPRINTFLOAT        // = testPrintFloat
-} sharedTraps_t;
 
 void VM_Init( void );
 
@@ -430,6 +410,8 @@ void           VM_Debug( int level );
 
 void           *VM_ArgPtr( intptr_t intValue );
 void           *VM_ExplicitArgPtr( vm_t *vm, intptr_t intValue );
+
+intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
 
 #define VMA(x) VM_ArgPtr(args[ x ])
 static ID_INLINE float _vmf( intptr_t x )

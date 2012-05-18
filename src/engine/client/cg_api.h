@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/vm_traps.h"
 #include "../renderer/tr_types.h"
 
 #define CGAME_IMPORT_API_VERSION 3
@@ -70,7 +71,7 @@ typedef enum cgameEvent_e
 
 typedef enum cgameImport_s
 {
-  CG_PRINT,
+  CG_PRINT = FIRST_VM_SYSCALL,
   CG_ERROR,
   CG_MILLISECONDS,
   CG_CVAR_REGISTER,
@@ -181,16 +182,6 @@ typedef enum cgameImport_s
   CG_KEY_GETKEY,
   CG_KEY_GETOVERSTRIKEMODE,
   CG_KEY_SETOVERSTRIKEMODE,
-  CG_MEMSET,
-  CG_MEMCPY,
-  CG_STRNCPY,
-  CG_SIN,
-  CG_COS,
-  CG_ATAN2,
-  CG_SQRT,
-  CG_FLOOR,
-  CG_CEIL,
-  CG_ACOS,
   CG_PC_ADD_GLOBAL_DEFINE,
   CG_PC_LOAD_SOURCE,
   CG_PC_FREE_SOURCE,
@@ -206,8 +197,6 @@ typedef enum cgameImport_s
   CG_CIN_DRAWCINEMATIC,
   CG_CIN_SETEXTENTS,
   CG_R_REMAP_SHADER,
-  CG_TESTPRINTINT,
-  CG_TESTPRINTFLOAT,
   CG_LOADCAMERA,
   CG_STARTCAMERA,
   CG_STOPCAMERA,
@@ -250,9 +239,7 @@ typedef enum cgameImport_s
   CG_COMPLETE_CALLBACK,
   CG_REGISTER_BUTTON_COMMANDS,
   CG_GETCLIPBOARDDATA,
-  CG_MEMCMP,
-  CG_ASIN,
-  CG_GETTEXT = 300,
+  CG_GETTEXT,
   CG_R_GLYPH,
   CG_R_GLYPHCHAR,
   CG_R_UREGISTERFONT

@@ -34,12 +34,6 @@ Maryland 20850 USA.
 
 // cl_cgame.c  -- client system interaction with client game
 
-#ifdef _MSC_VER
-#include "../../libs/msinttypes/inttypes.h"
-#else
-#include <inttypes.h>
-#endif
-
 #include "client.h"
 #include "libmumblelink.h"
 
@@ -1149,48 +1143,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_SetOverstrikeMode( args[ 1 ] );
 			return 0;
 
-		case CG_MEMCMP:
-			return memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-
-		case CG_MEMSET:
-			// we cannot return server-address to QVM !
-			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
-			return args[ 1 ];
-
-		case CG_MEMCPY:
-			// we cannot return server-address to QVM !
-			memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return args[ 1 ];
-
-		case CG_STRNCPY:
-			// we cannot return server-address to QVM !
-			strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return args[ 1 ];
-
-		case CG_SIN:
-			return FloatAsInt( sin( VMF( 1 ) ) );
-
-		case CG_COS:
-			return FloatAsInt( cos( VMF( 1 ) ) );
-
-		case CG_ATAN2:
-			return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
-
-		case CG_SQRT:
-			return FloatAsInt( sqrt( VMF( 1 ) ) );
-
-		case CG_FLOOR:
-			return FloatAsInt( floor( VMF( 1 ) ) );
-
-		case CG_CEIL:
-			return FloatAsInt( ceil( VMF( 1 ) ) );
-
-		case CG_ASIN:
-			return FloatAsInt( asin( VMF( 1 ) ) );
-
-		case CG_ACOS:
-			return FloatAsInt( Q_acos( VMF( 1 ) ) );
-
 		case CG_S_STOPBACKGROUNDTRACK:
 			S_StopBackgroundTrack();
 			return 0;
@@ -1221,14 +1173,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_REMAP_SHADER:
 			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
-			return 0;
-
-		case CG_TESTPRINTINT:
-			Com_Printf( "%s%" PRIiPTR "\n", ( char * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case CG_TESTPRINTFLOAT:
-			Com_Printf( "%s%f\n", ( char * ) VMA( 1 ), VMF( 2 ) );
 			return 0;
 
 		case CG_LOADCAMERA:

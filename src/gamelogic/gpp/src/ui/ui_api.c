@@ -886,19 +886,4 @@ void trap_R_UnregisterFont( fontHandle_t font )
   syscall( UI_R_UREGISTERFONT, font );
 }
 
-// Required for .asm generation
-//UI_MEMSET = memset
-//UI_MEMCPY = memcpy
-//UI_STRNCPY = strncpy
-//UI_SIN = sin
-//UI_COS = cos
-//UI_ATAN2 = atan2
-//UI_SQRT = sqrt
-//UI_SQRT = sqrtf
-//UI_FLOOR = floor
-//UI_CEIL = ceil
-//UI_MEMCMP = memcmp
-//UI_ASIN = asin
-//UI_ATANF = atanf
-//UI_TANF = tanf
 #endif

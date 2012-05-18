@@ -1373,33 +1373,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
-		case UI_MEMSET:
-			return ( intptr_t ) memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
-
-		case UI_MEMCPY:
-			return ( intptr_t ) memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-
-		case UI_STRNCPY:
-			return ( intptr_t ) strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-
-		case UI_SIN:
-			return FloatAsInt( sin( VMF( 1 ) ) );
-
-		case UI_COS:
-			return FloatAsInt( cos( VMF( 1 ) ) );
-
-		case UI_ATAN2:
-			return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
-
-		case UI_SQRT:
-			return FloatAsInt( sqrt( VMF( 1 ) ) );
-
-		case UI_FLOOR:
-			return FloatAsInt( floor( VMF( 1 ) ) );
-
-		case UI_CEIL:
-			return FloatAsInt( ceil( VMF( 1 ) ) );
-
 		case UI_PARSE_ADD_GLOBAL_DEFINE:
 			return Parse_AddGlobalDefine( VMA( 1 ) );
 
@@ -1492,18 +1465,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 		case UI_R_ANIMFRAMERATE:
 			return re.AnimFrameRate( args[ 1 ] );
 #endif
-		case UI_MEMCMP:
-			return ( intptr_t ) memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-
-		case UI_ASIN:
-			return FloatAsInt( asin( VMF( 1 ) ) );
-
-		case UI_ATANF:
-			return FloatAsInt( atan( VMF( 1 ) ) );
-
-		case UI_TANF:
-			return FloatAsInt( tan( VMF( 1 ) ) );
-
 		case UI_GETTEXT:
 			strncpy( VMA(1), VMA(2), args[3] );
 			return 0;

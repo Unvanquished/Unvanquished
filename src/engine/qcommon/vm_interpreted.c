@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "vm_local.h"
+#include "vm_traps.h"
 
 //#define DEBUG_VM
 #ifdef DEBUG_VM
@@ -578,12 +579,26 @@ nextInstruction2:
 								argarr[ i ] = * ( ++imagePtr );
 							}
 
-							r = vm->systemCall( argarr );
+							if ( programCounter < -FIRST_VM_SYSCALL )
+							{
+								r = vm->systemCall( argarr );
+							}
+							else
+							{
+								r = VM_SystemCall( argarr ); // all VMs
+							}
 						}
 						else
 						{
 							intptr_t *argptr = ( intptr_t * ) &image[ programStack + 4 ];
-							r = vm->systemCall( argptr );
+							if ( programCounter < -FIRST_VM_SYSCALL )
+							{
+								r = vm->systemCall( argptr );
+							}
+							else
+							{
+								r = VM_SystemCall( argptr ); // all VMs
+							}
 						}
 					}
 

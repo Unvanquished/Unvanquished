@@ -46,7 +46,14 @@ and one exported function: Perform
 
 */
 
+#ifdef _MSC_VER
+#include "../../libs/msinttypes/inttypes.h"
+#else
+#include <inttypes.h>
+#endif
+
 #include "vm_local.h"
+#include "vm_traps.h"
 
 #ifdef USE_LLVM
 #include "vm_llvm.h"
@@ -418,8 +425,18 @@ intptr_t QDECL VM_DllSyscall( intptr_t arg, ... )
 
 	va_end( ap );
 
+	if ( arg < FIRST_VM_SYSCALL )
+	{
+		return VM_SystemCall( args ); // all VMs
+	}
+
 	return currentVM->systemCall( args );
-#else // original id code
+#else // original id code (almost)
+	if ( arg < FIRST_VM_SYSCALL )
+	{
+		return VM_SystemCall( &arg ); // all VMs
+	}
+
 	return currentVM->systemCall( &arg );
 #endif
 }
@@ -1136,22 +1153,124 @@ void VM_LogSyscalls( int *args )
 
 /*
 =================
+VM_CheckBlock
+Address+offset validation
+=================
+*/
+static void VM_CheckBlock( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail )
+{
+	intptr_t dataMask = currentVM->dataMask;
+
+	if ( ( dest & dataMask ) != dest
+	     || ( src & dataMask ) != src
+	     || ( ( dest + dn ) & dataMask ) != dest + dn
+	     || ( ( src + sn ) & dataMask ) != src + sn )
+	{
+		Com_Error( ERR_DROP, "%s out of range!", fail );
+	}
+}
+
+/*
+=================
 VM_BlockCopy
 Executes a block copy operation within currentVM data space
 =================
 */
-
 void VM_BlockCopy( unsigned int dest, unsigned int src, size_t n )
 {
-	unsigned int dataMask = currentVM->dataMask;
+	VM_CheckBlock( dest, src, n, n, "OP_BLOCK_COPY" );
+	Com_Memcpy( currentVM->dataBase + dest, currentVM->dataBase + src, n );
+}
 
-	if ( ( dest & dataMask ) != dest
-	     || ( src & dataMask ) != src
-	     || ( ( dest + n ) & dataMask ) != dest + n
-	     || ( ( src + n ) & dataMask ) != src + n )
+/*
+=================
+VM_SystemCall
+System calls common to all VMs
+=================
+*/
+static int FloatAsInt( float f )
+{
+	floatint_t fi;
+
+	fi.f = f;
+	return fi.i;
+}
+
+intptr_t VM_SystemCall( intptr_t *args )
+{
+	switch( args[ 0 ] )
 	{
-		Com_Error( ERR_DROP, "OP_BLOCK_COPY out of range!" );
+		case TRAP_MEMSET:
+			VM_CheckBlock( args[ 1 ], 0, args[ 3 ], args[ 3 ], "MEMSET" );
+			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			return 0;
+
+		case TRAP_MEMCPY:
+			VM_CheckBlock( args[ 1 ], args[ 2 ], args[ 3 ], args[ 3 ], "MEMCPY" );
+			memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return 0;
+
+		case TRAP_MEMCMP:
+			VM_CheckBlock( args[ 1 ], args[ 2 ], args[ 3 ], args[ 3 ], "MEMCMP" );
+			return memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+
+		case TRAP_STRNCPY:
+			VM_CheckBlock( args[ 1 ], args[ 2 ], args[ 3 ], strlen( VMA( 2 ) ) + 1, "STRNCPY" );
+			return ( intptr_t ) strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+
+		case TRAP_SIN:
+			return FloatAsInt( sin( VMF( 1 ) ) );
+
+		case TRAP_COS:
+			return FloatAsInt( cos( VMF( 1 ) ) );
+
+		case TRAP_TAN:
+			return FloatAsInt( tan( VMF( 1 ) ) );
+
+		case TRAP_ASIN:
+			return FloatAsInt( asin( VMF( 1 ) ) );
+
+//		case TRAP_ACOS:
+//			return FloatAsInt( Q_acos( VMF( 1 ) ) );
+
+		case TRAP_ATAN:
+			return FloatAsInt( atan( VMF( 1 ) ) );
+
+		case TRAP_ATAN2:
+			return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
+
+		case TRAP_SQRT:
+			return FloatAsInt( sqrt( VMF( 1 ) ) );
+
+		case TRAP_FLOOR:
+			return FloatAsInt( floor( VMF( 1 ) ) );
+
+		case TRAP_CEIL:
+			return FloatAsInt( ceil( VMF( 1 ) ) );
+
+		case TRAP_MATRIXMULTIPLY:
+			AxisMultiply( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			return 0;
+
+		case TRAP_ANGLEVECTORS:
+			AngleVectors( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
+			return 0;
+
+		case TRAP_PERPENDICULARVECTOR:
+			PerpendicularVector( VMA( 1 ), VMA( 2 ) );
+			return 0;
+
+		case TRAP_TESTPRINTINT:
+			Com_Printf( "%s%" PRIiPTR "\n", ( char * ) VMA( 1 ), args[ 2 ] );
+			return 0;
+
+		case TRAP_TESTPRINTFLOAT:
+			Com_Printf( "%s%f\n", ( char * ) VMA( 1 ), VMF( 2 ) );
+			return 0;
+
+		default:
+			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}
 
-	Com_Memcpy( currentVM->dataBase + dest, currentVM->dataBase + src, n );
+	return -1;
 }
