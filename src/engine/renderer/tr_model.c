@@ -773,7 +773,7 @@ static qboolean R_MDC_ConvertMD3( model_t *mod, int lod, const char *mod_name )
 	mdc = ri.Hunk_Alloc( mdcHeader.ofsEnd, h_low );
 	mod->model.mdc[ lod ] = mdc;
 
-	// we have the memory allocated, so lets fill it in
+	// we have the memory allocated, so let's fill it in
 
 	// header info
 	*mdc = mdcHeader;

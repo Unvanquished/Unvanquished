@@ -33,11 +33,11 @@ zinx	562 - distancefalloff bug
 zinx	727 - setu ch crashes server
 bani	xxx - (rain)cg_errordecay exploit
 bani	xxx - covops landmine spotting was broken
-bani	xxx - knife isnt antilagged
+bani	xxx - knife isn't antilagged
 bani	xxx - prevent shooting ourselves in the head when prone, firing through a breakable
 bani	xxx - clients can /userinfo and nuke their userinfo from console (among other things)
 bani	xxx - (rain)client disconnect reasons are corrupted
-bani	xxx - (rain)fixed mg42s arent antilagged
+bani	xxx - (rain)fixed MG42s aren't antilagged
 bani	xxx - riflegrenade-through-teamdoor exploit
 bani	113 - g_{axies,allies}mapxp overflows and crashes the server
 bani	470 - (zinx)static mg42s don't hurt props
@@ -45,10 +45,10 @@ bani	402 - (zinx)'complaint dismissed' when player disconnects
 bani	102 - (rain)maxlives adjuster misbehaves on timelimit 0
 bani	xxx - (rain)"Killed by <name>" in endround scoreboard (from quake3)
 bani	xxx - (rain)remove cg_specswing (does nothing)
-bani	xxx - (rain)crosshair names randomly dont work (tunnels in oasis, crypt in resurrection)
+bani	xxx - (rain)crosshair names randomly don't work (tunnels in oasis, crypt in resurrection)
 bani	424 - (zinx)client loses prone state after packet loss
 bani	xxx - winning team is cheated of a win when they eliminate opposition <3 sec before round end, and then die themselves
-bani	444 - lms doesnt always end when a team is eliminated
+bani	444 - LMS doesn't always end when a team is eliminated
 bani	447 - (fretn)switching weapon during pause shouldn't be possible
 bani	081 - (rain)akimbo weapons and deployed mobile MG42 ignore cg_autoreload
 bani	079 - In Fuel Dump you can plant dynamite and it says "base fortification", but destroys Fuel Dump.
@@ -56,10 +56,10 @@ bani	202 - (rain)pmove and game disagree about weapon charge usage
 bani	309 - (rain)weird radar dynamite bug (both sides can plant dynamite near the truck for no apparent reason, and get XP for defusing it)
 bani	384 - (rain)When all of your team's mines are in use, you can't disarm enemy landmines
 bani	471 - (rain)team landmine count is wrong (you can plant 11 by triggering 10th and planting 11th) and borks defusing team landmines)
-bani	560 - dynamite mis-announcements (announcement planting dynamite near barrier 2, but it doesnt get destroyed)
+bani	560 - dynamite mis-announcements (announcement planting dynamite near barrier 2, but it doesn't get destroyed)
 bani	512 - players can block dynamite from destroying constructible objectives
-bani	xxx - (rain)LMS sometimes wont show who drew first blood
-bani	xxx - (rain)LMS sometimes wont show how many wins each team has
+bani	xxx - (rain)LMS sometimes won't show who drew first blood
+bani	xxx - (rain)LMS sometimes won't show how many wins each team has
 bani	xxx - (rain)players who connect after a vote is called get stuck with a vote on their screen through the whole round
 bani	179 - (rain)spectator/limbo cameras slowly 'drift'
 bani	xxx - download redirection notices print repeatedly in engine
@@ -102,7 +102,7 @@ fretn	xxx - wavefile recording, wav_record / wav_stoprecord, or set cl_wavefiler
 		is loaded.
 bani	xxx - (rain)tracemap generation is broken
 		(tracemap generation code which breaks when there's a flat plane at lowest point in a map)
-ttimo	571 - MAX_GLOBAL_SERVERS is 2048 (the master has > 2048 but the client cant get them all because of hardcoded limit, causing client crashes)
+ttimo	571 - MAX_GLOBAL_SERVERS is 2048 (the master has > 2048 but the client can't get them all because of hardcoded limit, causing client crashes)
 		needs testing!
 zinx	xxx - in_dgamouse 2 to kill built-in acceleration (linux)
 bani	166 - (rain)jump prediction is wrong quite often due to broken anti-bunnyhop
@@ -119,10 +119,10 @@ bani	xxx - (rain)Fix the annoying prediction error that occurrs when a construct
 zinx	225 - configstring > max_configstrings
 zinx	xxx - raw binary channel for client<->server
 fretn	xxx - s_khz should be latched
-fretn	xxx - wav recording doesnt increment file number
+fretn	xxx - wav recording doesn't increment file number
 bani	xxx - pb "haxed cvar" bug caused by engine changing cvar_t value directly
-bani	238 - dynamite on movers shouldnt trigger objectives
-bani	xxx - wav recording doesnt show status
+bani	238 - dynamite on movers shouldn't trigger objectives
+bani	xxx - wav recording doesn't show status
 bani	xxx - wav recording should use proper linux cvars (sndspeed etc)
 bani	xxx - renamed cg_demorecord_statusline to cg_recording_statusline
 bani	xxx - (rain)players "stick" to each other in collisions
@@ -155,11 +155,11 @@ bani    xxx - optimized myftol via lrintf (40% faster, helps RB_CalcDiffuseColor
 bani    374 - (rain)silent landmines
 fretn   xxx - moved kick code into qagame, mods can choose to use the engine banning system or the qagame one
 bani	xxx - enable build with gcc33 / gcc4 (custom CC/CXX settings)
-bani	xxx - static link libXxf86dga.a, libXxf86vm.a as XFree86 4.2.1 doesnt have it shared     
+bani	xxx - static link libXxf86dga.a, libXxf86vm.a as XFree86 4.2.1 doesn't have it shared
 bani	274 - (rain)powerups are laggy
 bani	xxx - dynamic shader building - trap_R_LoadDynamicShader( shadername, shadertext )
 		trap_R_LoadDynamicShader( NULL, NULL ) unloads all dynamic shaders
-bani	xxx - allow opening of dm_83 explicitly, and try dm_83 and dm_84 if extension isnt specified
+bani	xxx - allow opening of dm_83 explicitly, and try dm_83 and dm_84 if extension isn't specified
 fretn	xxx - ugh. linux uses sndbits/sndspeed/sndchannels.
 		win32 uses s_khz and is fixed to 16bit stereo.
 		unify?
@@ -167,12 +167,12 @@ fretn	xxx - switch to GT_WOLF if map can't start a campaign?
 fretn	xxx - remove CL_buyNow_f / CL_singlePlayLink_f ?
 fretn	xxx - (rain)Make sure Com_BitSet() with ridiculous bit number is fixed
 		in anim condition code.
-zinx	xxx - curl downloading doesnt appear to handle 404 properly
+zinx	xxx - curl downloading doesn't appear to handle 404 properly
 fretn	xxx - ref menu expands colors twice
 bani	xxx - (rain)fixed incorrect class determination in CG_PlayerClassForClientinfo()
 fretn,	xxx - rendering to textures trap_R_GetTextureId(), trap_R_RenderToTexture()
 bani
-bani	xxx - (rain)wounded covops could steal uniforms if theyre close enough
+bani	xxx - (rain)wounded covops could steal uniforms if they're close enough
 bani	xxx - (rain)level 4 covops knife damage was wrong on wounded players
 bani	328 - skulls would sometimes show in scoreboard for live players
 bani	480 - (rain)disguised covops has laggy health to enemy team

@@ -810,7 +810,7 @@ tmp_node_t *AAS_CreateArea( node_t *node ) {
 		tmparea->contents |= AREACONTENTS_SLIME;
 	}
 /*
-	// RF, if we are using only ground areas, then ignore areas that arent grounded or attached to ladders, or underwater
+	// RF, if we are using only ground areas, then ignore areas that aren't grounded or attached to ladders, or underwater
 	if (groundonly && !(areafaceflags & (FACE_GROUND|FACE_LADDER)) && !(tmparea->contents & (AREACONTENTS_WATER|AREACONTENTS_SLIME|AREACONTENTS_LAVA))) {
 		numGroundOnlyFreed++;
 		tmparea->invalid = true;
@@ -1203,7 +1203,7 @@ void AAS_RemoveTinyAreas( void ) {
 				break;
 			}
 			//
-			//if this face touches a grounded face, and there is no area on the other side, then dont remove it
+			//if this face touches a grounded face, and there is no area on the other side, then don't remove it
 			if ( !( face->faceflags & FACE_GROUND ) ) {
 				// does this face share an edge with a ground face?
 				for ( gface = tmparea->tmpfaces; gface; gface = gface->next[gside] ) {

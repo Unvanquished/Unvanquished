@@ -689,7 +689,7 @@ void AAS_PositionBrush( entity_t *mapent, mapbrush_t *brush ) {
 		}
 	}
 
-	// RF, disabled for Wolf, we dont use trigger_hurt for lava
+	// RF, disabled for Wolf, we don't use trigger_hurt for lava
 	//if it's a trigger hurt
 	//if (!strcmp("trigger_hurt", ValueForKey(mapent, "classname")))
 	//{
@@ -728,7 +728,7 @@ void AAS_PositionBrush( entity_t *mapent, mapbrush_t *brush ) {
 	} //end if
 	  // RF
 	else if ( !strcmp( "func_explosive", ValueForKey( mapent, "classname" ) ) ) {
-		// Gordon: only if the noaasblock flag isnt set
+		// Gordon: only if the noaasblock flag isn't set
 		if ( !( atoi( ValueForKey( mapent, "spawnflags" ) ) & 16 ) ) {
 			//set mover contents
 			brush->contents = CONTENTS_MOVER;

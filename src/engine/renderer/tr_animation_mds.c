@@ -1693,7 +1693,7 @@ void RB_SurfaceAnim( mdsSurface_t *surface )
 
 	if ( r_bonesDebug->integer > 1 )
 	{
-		// dont draw the actual surface
+		// don't draw the actual surface
 		tess.numIndexes = oldIndexes;
 		tess.numVertexes = baseVertex;
 		return;

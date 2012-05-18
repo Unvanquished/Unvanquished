@@ -5650,7 +5650,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 		dptr = dptr->next;
 	}
 
-	//cant add a new one with empty shadertext
+	//can't add a new one with empty shadertext
 	if ( !shadertext || !strlen( shadertext ) )
 	{
 		ri.Printf( PRINT_WARNING, "%s new shader %s has NULL shadertext!\n", func_err, shadername );

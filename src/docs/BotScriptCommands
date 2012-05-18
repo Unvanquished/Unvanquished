@@ -458,7 +458,7 @@ Notes:
 
 	*	Use weapon values as per internal 
 	
-	*	Specify "ANY" to stop forcing the weapon type (revert to AI choice) // Gordon: doesnt work
+	*	Specify "ANY" to stop forcing the weapon type (revert to AI choice) // Gordon: doesn't work
 
 Syntax:
 

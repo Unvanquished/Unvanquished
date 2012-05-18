@@ -336,10 +336,10 @@
 	* Updated solution to VS11 and .NET frameworks 4.5
 		+ VS11 have ARM solution
 	* Removed Android solutions for some time
-		+ Android VS solution isnt VS11 compatible at this moment
+		+ Android VS solution isn't VS11 compatible at this moment
 	* Fixed VS11 Safe Exception Handlers
 	* Added ARM solution (still untested)
-	* Reverted latest VS11 changes. VS11 isnt mature enough for using it at this moment.
+	* Reverted latest VS11 changes. VS11 isn't mature enough for using it at this moment.
 	* Reverted Ruby VS version
 
 2011-09-17 Dusan Jocic <dusanjocic@msn.com>
@@ -1991,7 +1991,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 == merge
 	13-02-2005
 			Dan <goemon at anime.net>
-	+ Fixed xxx - proper fix for bugtraq 12534 which doesnt break protocol :x
+	+ Fixed xxx - proper fix for bugtraq 12534 which doesn't break protocol :x
 
 			Ben <rain at bluecherry.net>
 	+ Fixed xxx - Several errors that bounds checking turned up
@@ -2157,7 +2157,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Dan <goemon at anime.net>
 	+ Fixed xxx - (rain)fixed incorrect class determination in CG_PlayerClassForClientinfo()
 	+ Added xxx - rendering to textures trap_R_GetTextureId(), trap_R_RenderToTexture()
-	+ Fixed xxx - (rain)wounded covops could steal uniforms if theyre close enough
+	+ Fixed xxx - (rain)wounded covops could steal uniforms if they're close enough
 	+ Fixed xxx - (rain)level 4 covops knife damage was wrong on wounded players
 
 	07-01-2005
@@ -2168,7 +2168,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Chris <zinx at bluecherry.net>
 	+ Fixed xxx - CG_TranslateString fails utterly if cl_language = 0,
 		which was introduced when messing with CG_TranslateString
-	+ Fixed xxx - curl downloading doesnt appear to handle 404 properly
+	+ Fixed xxx - curl downloading doesn't appear to handle 404 properly
 
 	05-01-2005	
 			Frederik <fretn@anime.net>
@@ -2189,7 +2189,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Dan <goemon at anime.net>
 	+ Changed xxx - trap_R_LoadDynamicShader( NULL, NULL ) unloads all dynamic shaders
-	+ Fixed xxx - allow opening of dm_83 explicitly, and try dm_83 and dm_84 if extension isnt specified
+	+ Fixed xxx - allow opening of dm_83 explicitly, and try dm_83 and dm_84 if extension isn't specified
 
 	02-01-2005
 			Dan <goemon at anime.net>
@@ -2206,7 +2206,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Dan <goemon at anime.net>
 	+ Fixed xxx - enable build with gcc33 / gcc4 (custom CC/CXX settings)
-	+ Changed xxx - static link libXxf86dga.a, libXxf86vm.a as XFree86 4.2.1 doesnt have it shared
+	+ Changed xxx - static link libXxf86dga.a, libXxf86vm.a as XFree86 4.2.1 doesn't have it shared
 
 	30-12-2004
 			Dan <goemon at anime.net>
@@ -2233,9 +2233,9 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Dan <goemon at anime.net>
 	+ Fixed xxx - omg CL_DemoFilename etc sux
 	+ Fixed xxx - omg R_ScreenshotFilename, R_ScreenshotFilenameJPEG sux
-	+ Added xxx - beginning of bspc scons (doesnt work yet, I have no idea why)
+	+ Added xxx - beginning of bspc scons (doesn't work yet, I have no idea why)
 	+ Fixed 245 - revive usually snaps your view
-	+ Fixed xxx - dont send snapshots when clients arent fully connected
+	+ Fixed xxx - don't send snapshots when clients aren't fully connected
 
 	23-12-2004
 			Dan <goemon at anime.net>
@@ -2261,13 +2261,13 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	20-12-2004
 			Frederik <fretn@anime.net>
 	+ Changed xxx - s_khz is now CVAR_LATCH
-	+ Fixed xxx - wav recording doesnt increment file number
+	+ Fixed xxx - wav recording doesn't increment file number
 	+ Fixed xxx - some directinput issues
 
 			Dan <goemon at anime.net>
 	+ Fixed xxx - pb "haxed cvar" bug caused by engine changing cvar_t value directly
-	+ Fixed 238 - dynamite on movers shouldnt trigger objectives
-	+ Fixed xxx - wav recording doesnt show status
+	+ Fixed 238 - dynamite on movers shouldn't trigger objectives
+	+ Fixed xxx - wav recording doesn't show status
 	+ Fixed xxx - wav recording should use proper linux cvars (sndspeed etc)
 	+ Fixed xxx - renamed cg_demorecord_statusline to cg_recording_statusline
 == end merge
@@ -2341,7 +2341,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 				Frederik <fretn@anime.net>
 	+ Added: m_mouse -1 uses now DirectInput
 	+ Fixed: s_khz was hardcoded in win32 on 22050
-	+ Fixed: Initial stab at fixing the wavefile recording, works, but the header isnt correct yet,
+	+ Fixed: Initial stab at fixing the wavefile recording, works, but the header isn't correct yet,
 	  so not all sound software can open it
 				
 				Chris <zinx at bluecherry.net>
@@ -2446,19 +2446,19 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	
 	01-12-2004
 				Dan <goemon at anime.net>
-	+ Fixed xxx - (rain)LMS sometimes wont show who drew first blood
-	+ Fixed xxx - (rain)LMS sometimes wont show how many wins each team has
+	+ Fixed xxx - (rain)LMS sometimes won't show who drew first blood
+	+ Fixed xxx - (rain)LMS sometimes won't show how many wins each team has
 	+ Fixed xxx - (rain)players who connect after a vote is called get stuck with a vote on their screen through the whole round
 	
 	30-11-2004
 				Dan <goemon at anime.net>
 	+ Fixed 079 - In Fuel Dump you can plant dynamite and it says "base fortification", but destroys Fuel Dump.
 	+ Fixed 202 - (rain)pmove and game disagree about weapon charge usage
-	+ Fixed 238 - dynamite on movers shouldnt trigger objectives
+	+ Fixed 238 - dynamite on movers shouldn't trigger objectives
 	+ Fixed 309 - (rain)weird radar dynamite bug (both sides can plant dynamite near the truck for no apparent reason, and get XP for defusing it)
 	+ Fixed 384 - (rain)When all of your team's mines are in use, you can't disarm enemy landmines
 	+ Fixed 471 - (rain)team landmine count is wrong (you can plant 11 by triggering 10th and planting 11th) and borks defusing team landmines)
-	+ Fixed 560 - dynamite mis-announcements (announcement planting dynamite near barrier 2, but it doesnt get destroyed)
+	+ Fixed 560 - dynamite mis-announcements (announcement planting dynamite near barrier 2, but it doesn't get destroyed)
 	+ Fixed 512 - players can block dynamite from destroying constructible objectives
 	
 == end merge
@@ -2488,7 +2488,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 		+ Fixed 102 - (rain)maxlives adjuster misbehaves on timelimit 0
 		+ Fixed xxx - (rain)"Killed by <name>" in endround scoreboard (from quake3)
 		+ Fixed xxx - (rain)remove cg_specswing (does nothing)
-		+ Fixed xxx - (rain)crosshair names randomly dont work (tunnels in oasis, crypt in resurrection)
+		+ Fixed xxx - (rain)crosshair names randomly don't work (tunnels in oasis, crypt in resurrection)
 	
 	21-11-2004
 				Dan <goemon at anime.net>
@@ -2500,7 +2500,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 				Dan <goemon at anime.net>
 		+ Fixed xxx - clients can /userinfo and nuke their userinfo from console (among other things)
 		+ Fixed xxx - (rain)client disconnect reasons are corrupted
-		+ Fixed xxx - (rain)fixed mg42s arent antilagged
+		+ Fixed xxx - (rain)fixed MG42s aren't antilagged
 		+ Fixed xxx - riflegrenade-through-teamdoor exploit
 	
 	18-11-2004
@@ -2508,7 +2508,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 		+ Fixed 247 - (rain)intermission ready is broken
 		+ Fixed xxx - (rain)cg_errordecay exploit
 		+ Fixed xxx - covops landmine spotting was broken
-		+ Fixed xxx - knife isnt antilagged
+		+ Fixed xxx - knife isn't antilagged
 		+ Fixed xxx - prevent shooting ourselves in the head when prone, firing through a breakable	
 	== end merge
 	
@@ -2855,7 +2855,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed netchan queueing linked list end marker code to point at end rather than ptr to end
 
 			Gordon <djbob@splashdamage.com>
-	+ Recompiled goldrush with changed shader for stairs that doesnt allow placing of landmines
+	+ Recompiled goldrush with changed shader for stairs that doesn't allow placing of landmines
 	+ Fixed axis engineer coat not being twosided
 	+ Fixed multiple copies of tank gun showing up
 	+ Added trap call to client to pump messages during loading, should cut down on server command overflows
@@ -4425,7 +4425,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Gordon	<djbob@splashdamage.com>
 	+ Changed flags to scale from different position on commandmap
-	+ Added "realistic" compass tracking, (doesnt snap instantly to angles, overshoots, etc...)
+	+ Added "realistic" compass tracking, (doesn't snap instantly to angles, overshoots, etc...)
 	+ Fixed tracking cams to follow script_movers properly
 	+ Changed client to poll server for objective cam until it receives the currently selected one (solves issues with flood protect kicking in)
 	+ Added old health/stamina/power bars back
@@ -4698,7 +4698,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed bug in BotBestFightWeapon() which would cause bots to not factor the weapon ranges into consideration
 	+ Fixed Retreat from battle so it looks for a new goal, rather than doing nothing
 	+ Removed unnecessary autonomy checks from MP code
-	+ Fixed BotGetTargetDynamite() so it doesnt return unarmed dynamite
+	+ Fixed BotGetTargetDynamite() so it doesn't return unarmed dynamite
 	+ Engineers only look to blow things up if dynamite is charged
 
 03-03-2003
@@ -4827,8 +4827,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added utility funcs for checking construction status/landmine states easily
 	+ Added a few new bot profiling functions (bot_profile 3, 4, 5)
 	+ Fixed number of players assigned to a botgoal not being inited in bot goal finding
-	+ Added check for panzerfaust target being too near a bunch of friendlys => dont fire (need to check this)
-	+ Fixed BotIsConstructible, wasnt checking dual construction/other things properly
+	+ Added check for panzerfaust target being too near a bunch of friendlies => don't fire (need to check this)
+	+ Fixed BotIsConstructible, wasn't checking dual construction/other things properly
 
 24-02-2003
 			Randy	<ydnar@splashdamage.com>
@@ -4869,7 +4869,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added bot_profile. Gives timing information for botThink process. Values include: EmergencyGoals, FindGoals & BotFindEnemy.
 	+ Fixed Bridge destruction not blocking paths. Hard coded first level of destruction of a constructible to disable paths. Needs scripted interface for complete solution.
 	+ Bots will only use cached previous successful BotCheckAttack() if it was using the same weapon, and enemy
-	+ Bots wont enter BattleFight mode until the enemy is within range of the current weapon
+	+ Bots won't enter BattleFight mode until the enemy is within range of the current weapon
 	+ Bots will abort BattleFight mode if the enemy goes outside range
 	+ No Attack Movement if bot is in the air
 	+ Lowered BotMP_FindGoal() frequency to 1600ms
@@ -4899,7 +4899,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Made ignoreBuilt in BotGetConstructibles actually do something.
 			
 			Ryan <ryan@gmistudios.com>
-	+ Fixed bots thinking they can get ammo from trigger_ammo when they cant
+	+ Fixed bots thinking they can get ammo from trigger_ammo when they can't
 	+ Fixed bots running into tank in order to move it, now will move just close enough to trigger it
 	+ Bots will dismount mg42 immediately when it is disabled in scripting
 	+ Fixed bots having trouble mounting mg42 on tower
@@ -4920,7 +4920,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Increased maxareas in BotReachableBBoxAreaNum() from 32 -> 64
 	+ Added Smoke Bomb to BotWeaponCharged()
 	+ Bots will ignore _certain_ weapons if the enemy is outside their usable range
-	+ Bots wont use certain weapons if the enemy is too close
+	+ Bots won't use certain weapons if the enemy is too close
 	+ Bots only use scope if they aren't moving
 	+ Added safety prediction to BotAttAttackMove() (barbed wire, falling off ledges, etc)
 	+ Removed CONTENTS_CORPSE from enemy visible test
@@ -4929,7 +4929,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added more non-moving weapons to the BotMoveWhileFiring() list
 	+ Bots will use binoculars to call artillery strikes on script_mover entities (eg., tanks)
 	+ Added botgoalstate support for BotGetTargetExplosives()
-	+ Removed MORTAR support from Bots, they simply wont select it
+	+ Removed MORTAR support from Bots, they simply won't select it
 	+ Tweaked AAS jump movement code
 	+ Added more details for listbotgoals command
 	+ Fixed bot_enable not defaulting to 1
@@ -4975,7 +4975,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Cleaned up dynamitable target lookups for bots to be consistent with current spawnflags, etc.
 	+ Cleaned up bot weapon selection (per class), to be consistent with new weapon loadouts
 	+ Filled in missing entries in bot weapon selection priority lookup/fixed some fall throughs that shouldn't have existed
-	+ Added filter to setbotgoalstate to stop things we dont want showing up on listbotgoals
+	+ Added filter to setbotgoalstate to stop things we don't want showing up on listbotgoals
 	+ Fixed setwolfspawnweapons allowing the field ops to select weapons they shouldn't have
 	+ Fixed bots not being able to choose objects to dynamite
 		- tweaked code for area to travel to to destroy object, now goes to closest area rather than centre of object
@@ -5113,7 +5113,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Gordon <djbob@splashdamage.com>
 	+ Fixed func_explosive NOAASBLOCKING spawnflag not actually doing anything in bspc
-	+ Added q3map2 pointonplane check in FindFloatPlane, though doesnt appear to have much effect
+	+ Added q3map2 pointonplane check in FindFloatPlane(), though doesn't appear to have much effect
 	+ Tweaked some other bpsc constants to get area counts down on bruckhaven
 		- not checking in this code till i'm sure it's all stable, etc
 	
@@ -6011,7 +6011,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Small fixes for multiview (scoreboard and CovertOps updates)
 	+ Small tweaks for pub/comp mode settings
 	+ temp fix for NULL returns in BotGetEntity() for the MP bots.  Looks like goal.entitynum is going out of
-	  range for some reason, so I just put in NULL checks to ensure the game module wont crash when bots are
+	  range for some reason, so I just put in NULL checks to ensure the game module won't crash when bots are
 	  running around.  Look for the FIXME markers in botai/ai_dmnet_mp.c to see what's been checked.
 
 27-12-2002
@@ -6762,7 +6762,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed automap in MP to use its own X and Y coordinates.
 
 			Gordon <djbob@splashdamage.com>
-	+ Added cg_backupPredict which should speed up prediction when enabled, as it caches old predicted playerstates so it doesnt need to rebuild them all the time
+	+ Added cg_backupPredict which should speed up prediction when enabled, as it caches old predicted playerstates so it doesn't need to rebuild them all the time
 	+ Added cg_fastsolids which should speedup prediction when enabled, by only treating entities as solid if close enough to the player
 		- Note: this has some side-effects with the flamethrower going through walls, etc., so it's likely that we don't want to enable this, or have flamethrower code ignore this
 	
@@ -7573,7 +7573,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	
 			Gordon <djbob@splashdamage.com>
 	+ Changed lots of audio paths about for tim, to remove the complete mess that it was before, sound paths are now (mainly) consistent across weapons
-	+ Removed various loading of sounds that dont exist or do exist but are never referenced in code
+	+ Removed various loading of sounds that don't exist or do exist but are never referenced in code
 
 11-10-2002
 			Arnout <rr2do2@splashdamage.com>
@@ -7716,7 +7716,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed do-not-shoot icon staying on screen after player isn't visible anymore.
 
 			Ryan <ryan@gmistudios.com>
-	+ added -reachableonly switch to bspc. Removes areas that dont have reachability paths leading away from them.
+	+ added -reachableonly switch to bspc. Removes areas that don't have reachability paths leading away from them.
 
 			Tara <tara@maddocsoftware.com>
 	+ Made one unified list of all reloadable weapons in the missionpack which is used by

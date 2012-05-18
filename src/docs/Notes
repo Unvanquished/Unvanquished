@@ -93,20 +93,20 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 	+ Model loading system..... what else can i say....
 	
 16-04-2002	Gordon	<djbob@splashdamage.com>
-	+ Medic has permenant regen, and uses a powerup field to do it, isnt really needed client side tho, seems rather silly.
+	+ Medic has permenant regen, and uses a powerup field to do it, isn't really needed client side tho, seems rather silly.
 
 11-04-2002	Arnout	<rr2do2@splahdamage.com>
 	+ Models attached to player models are defined in the .skin files.
 
 			Gordon	<dj_bob@ntlworld.com>
 	+ Grenade throwing is partially broken, fortunately, the flaw never pops up in game. 
-	+ A grenade held for the max hold time doesnt remove itself from your ammo, but as grenades are the only ones that have ammo AND can be held for teh max limit, it never really shows, as you instantly frag yourself.
+	+ A grenade held for the max hold time doesn't remove itself from your ammo, but as grenades are the only ones that have ammo AND can be held for teh max limit, it never really shows, as you instantly frag yourself.
 	
 10-04-2002	Arnout	<rr2do2@splahdamage.com>
 	+ Provide unregister functions to get rid of useless media?
 	
 			Gordon	<dj_bob@ntlworld.com>
-	+ Skeletal anims for weapons, some have them, some dont. Flametrower does, seems odd, but mauser doesnt, odd again, even tho the mauser was set up to use one, guess it just never got made.
+	+ Skeletal anims for weapons, some have them, some don't. Flamethrower does, seems odd, but mauser doesn't, odd again, even tho the mauser was set up to use one, guess it just never got made.
 
 09-04-2002	Gordon	<dj_bob@ntlworld.com>
 	+ Remember player weapon anims handled by scripts in models/players folders!

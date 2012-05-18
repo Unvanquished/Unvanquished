@@ -2569,7 +2569,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 
 	if ( pic == NULL )
 	{
-		// if we dont get a successful load
+		// if we don't get a successful load
 // TTimo: Duane changed to _DEBUG in all cases
 // I'd still want that code in the release builds on linux
 // (possibly for mod authors)

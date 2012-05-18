@@ -2349,7 +2349,7 @@ void Tess_MDM_SurfaceAnim( mdmSurfaceIntern_t *surface )
 
 	if ( r_showSkeleton->integer > 1 )
 	{
-		// dont draw the actual surface
+		// don't draw the actual surface
 		tess.numIndexes = baseIndex;
 		tess.numVertexes = baseVertex;
 		return;

@@ -789,7 +789,7 @@ void R_InitFBOs( void )
 				R_AttachFBOTextureDepth( tr.sunShadowMapFBOImage[ i ]->texnum );
 
 				/*
-				Since we dont have a color attachment the framebuffer will be considered incomplete.
+				Since we don't have a color attachment, the framebuffer will be considered incomplete.
 				Consequently, we must inform the driver that we do not wish to render to the color buffer.
 				We do this with a call to set the draw-buffer and read-buffer to GL_NONE:
 				*/

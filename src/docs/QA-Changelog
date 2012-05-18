@@ -24,7 +24,7 @@ Server can redirect clients to other servers when full, eg sv_fullmsg "ET://host
 
 Server will switch to GT_WOLF if "map" can't start a campaign.
 
-/demo can now specify .dm_83 extension explicitly, and will try dm_83 and dm_84 if extension isnt specified.
+/demo can now specify .dm_83 extension explicitly, and will try dm_83 and dm_84 if extension isn't specified.
 
 Abbreviated snapshots are now sent when clients aren't fully connected. Saves bandwidth on map rotations.
 
@@ -111,15 +111,15 @@ Zoom exploit fixed (http://bani.anime.net/banimod/forums/viewtopic.php?t=1661&st
 Security hole allowing clients to override ip.
 Spectator/limbo cameras would slowly 'drift' and never reach 0 velocity.
 Download redirection notices would print repeatedly in server console.
-LMS sometimes didnt show who drew first blood.
-LMS sometimes didnt show how many wins each team has.
+LMS sometimes didn't show who drew first blood.
+LMS sometimes didn't show how many wins each team has.
 Players who connect after a vote is called got stuck with a vote on their screen through the whole round
 In Fuel Dump you could plant dynamite and it says "base fortification", but destroys Fuel Dump.
 pmove and game disagreed about weapon charge usage.
 Weird radar dynamite bug (both sides could plant dynamite near the truck for no apparent reason, and get XP for defusing it).
-When all of your team's mines are in use, you couldnt disarm enemy landmines.
+When all of your team's mines are in use, you couldn't disarm enemy landmines.
 Team landmine count was wrong (you could plant 11 by triggering 10th and planting 11th) and borked defusing team landmines)
-Dynamite mis-announcements (announcement planting dynamite near goldrush tank barrier 2, but it doesnt get destroyed).
+Dynamite mis-announcements (announcement planting dynamite near goldrush tank barrier 2, but it doesn't get destroyed).
 Players could block dynamite from destroying constructible objectives.
 Client would lose prone state after packet loss.
 Winning team was cheated of a win when they eliminated opposition <3 sec before round end, and then died themselves.
@@ -129,12 +129,12 @@ Akimbo weapons and deployed mobile MG42 ignored cg_autoreload.
 Maxlives adjuster misbehaved on timelimit 0.
 "Killed by <name>" in endround scoreboard (from quake3) removed.
 Unused cg_specswing cvar removed.
-Crosshair names randomly didnt work (tunnels in oasis, crypt in resurrection).
+Crosshair names randomly didn't work (tunnels in oasis, crypt in resurrection).
 g_{axies,allies}mapxp overflowed on long campaigns and crashed the server.
-Static mg42s didn't hurt props (eg the mg42 outside allied spawn couldnt damage the wooden fence).
+Static MG42s didn't hurt props (eg., the MG42 outside the allied spawn couldn't damage the wooden fence).
 Bogus 'complaint dismissed' message when player disconnects.
 Clients could /userinfo and nuke their userinfo from console (among other things).
-Fixed mg42s werent antilagged.
+Fixed MG42s weren't antilagged.
 Riflegrenade-through-teamdoor exploit fixed.
 Intermission ready was broken (match_readypercent now applies to intermissions).
 Intermission ready should not wait on spectators.

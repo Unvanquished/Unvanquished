@@ -2334,7 +2334,7 @@ void CL_Connect_f( void )
 	Cvar_Set( "cl_currentServerAddress", server );
 	Cvar_Set( "cl_currentServerIP", serverString );
 
-	// Gordon: um, couldnt this be handled
+	// Gordon: um, couldn't this be handled?
 	// NERVE - SMF - reset some cvars
 	Cvar_Set( "mp_playerType", "0" );
 	Cvar_Set( "mp_currentPlayerType", "0" );
@@ -3714,7 +3714,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 
 	// DHM - Nerve
 
-	// NERVE - SMF - bugfix, make this compare first n chars so it doesnt bail if token is parsed incorrectly
+	// NERVE - SMF - bugfix, make this compare first n chars so it doesn't bail if token is parsed incorrectly
 	// echo request from server
 	if ( !Q_strncmp( c, "getserversResponse", 18 ) )
 	{

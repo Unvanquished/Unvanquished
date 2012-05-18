@@ -796,7 +796,7 @@ void DefaultExtension (char *path, const char *extension)
 {
 	char    *src;
 //
-// if path doesnt have a .EXT, append extension
+// if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
 	src = path + strlen(path) - 1;

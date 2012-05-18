@@ -418,7 +418,7 @@ void AAS_MergeAreas( void ) {
 						}
 					} //end if
 
-					// if the critical types are different, dont merge
+					// if the critical types are different, don't merge
 					if (    ( AAS_GroundArea( tmparea ) != AAS_GroundArea( othertmparea ) )
 							||  ( AAS_LadderArea( tmparea ) != AAS_LadderArea( othertmparea ) )
 							||  ( ( tmparea->contents & AREACONTENTS_MOVER ) != ( othertmparea->contents & AREACONTENTS_MOVER ) )

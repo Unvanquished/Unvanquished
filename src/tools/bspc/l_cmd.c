@@ -723,7 +723,7 @@ void    SaveFile( char *filename, void *buffer, int count ) {
 void DefaultExtension( char *path, char *extension ) {
 	char    *src;
 //
-// if path doesnt have a .EXT, append extension
+// if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
 	src = path + strlen( path ) - 1;

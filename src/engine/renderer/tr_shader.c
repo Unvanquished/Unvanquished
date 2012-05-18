@@ -4721,7 +4721,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 		dptr = dptr->next;
 	}
 
-	//cant add a new one with empty shadertext
+	//can't add a new one with empty shadertext
 	if ( !shadertext || !strlen( shadertext ) )
 	{
 		ri.Printf( PRINT_WARNING, "%s new shader %s has NULL shadertext!\n", func_err, shadername );
@@ -5526,10 +5526,10 @@ static void BuildShaderChecksumLookup( void )
 			break;
 		}
 
-		// Gordon: NOTE this is WRONG, need to either unget the {, or as i'm gonna do, assume the shader section follows, if it doesnt, it's b0rked anyway
+		// Gordon: NOTE: this is WRONG, need to either unget the {, or as i'm gonna do, assume the shader section follows, if it doesn't, it's b0rked anyway
 
 		/*    if (!Q_stricmp( token, "{" )) {
-		                        // Gordon: ok, lets try the unget method
+		                        // Gordon: ok, let's try the unget method
 		                        COM_RestoreParseSession( &p );
 		                        // skip braced section
 		                        SkipBracedSection( &p );

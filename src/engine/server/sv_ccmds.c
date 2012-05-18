@@ -595,7 +595,7 @@ static void SV_MapRestart_f( void )
 	}
 
 	// create a baseline for more efficient communications
-	// Gordon: meh, this wont work here as the client doesn't know it has happened
+	// Gordon: meh, this won't work here as the client doesn't know it has happened
 //  SV_CreateBaseline ();
 
 	sv.state = SS_GAME;
@@ -616,7 +616,7 @@ static void SV_MapRestart_f( void )
 		{
 			if ( SV_GameIsSinglePlayer() || SV_GameIsCoop() )
 			{
-				continue; // dont carry across bots in single player
+				continue; // don't carry across bots in single player
 			}
 
 			isBot = qtrue;
@@ -670,7 +670,7 @@ void SV_LoadGame_f( void )
 	int  size;
 	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
-	// dont allow command if another loadgame is pending
+	// don't allow command if another loadgame is pending
 	if ( Cvar_VariableIntegerValue( "savegame_loading" ) )
 	{
 		return;

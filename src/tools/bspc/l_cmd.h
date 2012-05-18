@@ -58,7 +58,7 @@ typedef enum {false, true} qboolean;
 typedef unsigned char byte;
 #endif
 
-// the dec offsetof macro doesnt work very well...
+// the dec offsetof macro doesn't work very well...
 #define myoffsetof( type,identifier ) ( (size_t)&( (type *)0 )->identifier )
 
 

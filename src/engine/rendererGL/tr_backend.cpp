@@ -11180,7 +11180,7 @@ static void RB_RenderView( void )
 		glReadPixels( 0, 0, tr.refdef.pixelTargetWidth, tr.refdef.pixelTargetHeight, GL_RGBA, GL_UNSIGNED_BYTE, tr.refdef.pixelTarget );
 #else
 		// Bugfix: drivers absolutely hate running in high res and using glReadPixels near the top or bottom edge.
-		// Soo.. lets do it in the middle.
+		// Sooo... let's do it in the middle.
 		glReadPixels( glConfig.vidWidth / 2, glConfig.vidHeight / 2, tr.refdef.pixelTargetWidth, tr.refdef.pixelTargetHeight, GL_RGBA,
 		              GL_UNSIGNED_BYTE, tr.refdef.pixelTarget );
 #endif

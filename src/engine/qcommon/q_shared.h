@@ -1616,7 +1616,7 @@ char *Q_UTF8Unstore( int e );
 #define CVAR_SHADER              2048 // tell renderer to recompile shaders.
 
 #define CVAR_UNSAFE              4096 // ydnar: unsafe system cvars (renderer, sound settings, anything that might cause a crash)
-#define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: WONT automatically send this to clients, but server browsers will see it
+#define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: won't automatically send this to clients, but server browsers will see it
 #define CVAR_NONEXISTENT         0xFFFFFFFF // Cvar doesn't exist.
 
 // nothing outside the Cvar_*() functions should modify these fields!
@@ -1838,7 +1838,7 @@ char *Q_UTF8Unstore( int e );
 #define ENTITYNUM_WORLD          ( MAX_GENTITIES - 2 )
 #define ENTITYNUM_MAX_NORMAL     ( MAX_GENTITIES - 2 )
 
-#define MAX_MODELS               256 // these are sent over the net as 8 bits (Gordon: upped to 9 bits, erm actually it was already at 9 bits, wtf? NEVAR TRUST GAMECODE COMMENTS, comments are evil :E, lets hope it doesnt horribly break anything....)
+#define MAX_MODELS               256 // these are sent over the net as 8 bits (Gordon: upped to 9 bits, erm actually it was already at 9 bits, wtf? NEVAR TRUST GAMECODE COMMENTS, comments are evil :E, let's hope it doesn't horribly break anything....)
 #define MAX_SOUNDS               256 // so they cannot be blindly increased
 #define MAX_CS_SKINS             64
 #define MAX_CSSTRINGS            32
