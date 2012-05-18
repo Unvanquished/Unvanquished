@@ -643,42 +643,6 @@ void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int po
 	syscall( UI_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
 
-//84.
-//UI_MEMSET
-//return (intptr_t)memset( VMA( 1 ), args[2], args[3] );
-
-//85.
-//UI_MEMCPY
-//return (intptr_t)memcpy( VMA( 1 ), VMA( 2 ), args[3] );
-
-//86.
-//UI_STRNCPY
-//return (intptr_t)strncpy( VMA( 1 ), VMA( 2 ), args[3] );
-
-//87.
-//UI_SIN
-//return FloatAsInt(sin(VMF(1)));
-
-//88.
-//UI_COS
-//return FloatAsInt(cos(VMF(1)));
-
-//89.
-//UI_ATAN2
-//return FloatAsInt(atan2(VMF(1), VMF(2)));
-
-//90.
-//UI_SQRT
-//return FloatAsInt(sqrt(VMF(1)));
-
-//91.
-//UI_FLOOR
-//return FloatAsInt(floor(VMF(1)));
-
-//92.
-//UI_CEIL
-//return FloatAsInt(ceil(VMF(1)));
-
 //93.
 //return Parse_AddGlobalDefine(VMA(1));
 int trap_Parse_AddGlobalDefine( char *define )
@@ -922,4 +886,19 @@ void trap_R_UnregisterFont( fontHandle_t font )
   syscall( UI_R_UREGISTERFONT, font );
 }
 
+// Required for .asm generation
+//UI_MEMSET = memset
+//UI_MEMCPY = memcpy
+//UI_STRNCPY = strncpy
+//UI_SIN = sin
+//UI_COS = cos
+//UI_ATAN2 = atan2
+//UI_SQRT = sqrt
+//UI_SQRT = sqrtf
+//UI_FLOOR = floor
+//UI_CEIL = ceil
+//UI_MEMCMP = memcmp
+//UI_ASIN = asin
+//UI_ATANF = atanf
+//UI_TANF = tanf
 #endif

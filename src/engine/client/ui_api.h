@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define UI_API_VERSION 4
 
-typedef enum
+typedef enum uiImport_s
 {
   UI_ERROR,
   UI_PRINT,

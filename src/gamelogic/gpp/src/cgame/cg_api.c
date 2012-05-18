@@ -1280,3 +1280,15 @@ void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
 {
 	syscall( CG_GETCLIPBOARDDATA, buf, bufsize, clip );
 }
+
+// Needed for API scan tool
+//CG_MEMSET = memset
+//CG_MEMCPY = memcpy
+//CG_STRNCPY = strncpy
+//CG_SIN = sin
+//CG_COS = cos
+//CG_ATAN2 = atan2
+//CG_SQRT = sqrt
+//CG_FLOOR = floor
+//CG_CEIL = ceil
+//CG_ACOS = acos

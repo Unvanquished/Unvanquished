@@ -68,7 +68,7 @@ typedef enum cgameEvent_e
   CGAME_EVENT_MULTIVIEW
 } cgameEvent_t;
 
-typedef enum
+typedef enum cgameImport_s
 {
   CG_PRINT,
   CG_ERROR,

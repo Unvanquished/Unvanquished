@@ -91,7 +91,7 @@ equ sin                                   -88
 equ cos                                   -89
 equ atan2                                 -90
 equ sqrt                                  -91
-equ sqrtf                                 -91 // duplicate
+equ sqrtf                                 -91
 equ floor                                 -92
 equ ceil                                  -93
 equ trap_Parse_AddGlobalDefine            -94
@@ -131,6 +131,6 @@ equ memcmp                                -127
 equ asin                                  -128
 equ atanf                                 -129
 equ tanf                                  -130
-equ trap_R_Glyph                          -301
-equ trap_R_GlyphChar                      -302
-equ trap_R_UnregisterFont                 -303
+equ trap_R_Glyph                          -302
+equ trap_R_GlyphChar                      -303
+equ trap_R_UnregisterFont                 -304
