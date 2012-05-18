@@ -48,6 +48,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
 #endif
 
+// QVM-specific
+#ifdef Q3_VM
+#define QVM_STATIC static
+#else
+#define QVM_STATIC
+#endif
+
 // player teams
 typedef enum
 {

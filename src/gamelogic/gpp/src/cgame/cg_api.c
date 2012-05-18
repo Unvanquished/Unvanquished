@@ -1282,6 +1282,7 @@ void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
 }
 
 // Needed for API scan tool
+//CG_MEMCMP = memcmp
 //CG_MEMSET = memset
 //CG_MEMCPY = memcpy
 //CG_STRNCPY = strncpy
@@ -1291,4 +1292,4 @@ void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
 //CG_SQRT = sqrt
 //CG_FLOOR = floor
 //CG_CEIL = ceil
-//CG_ACOS = acos
+//CG_ASIN = asin

@@ -1149,6 +1149,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_SetOverstrikeMode( args[ 1 ] );
 			return 0;
 
+		case CG_MEMCMP:
+			return memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+
 		case CG_MEMSET:
 			// we cannot return server-address to QVM !
 			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
@@ -1181,6 +1184,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_CEIL:
 			return FloatAsInt( ceil( VMF( 1 ) ) );
+
+		case CG_ASIN:
+			return FloatAsInt( asin( VMF( 1 ) ) );
 
 		case CG_ACOS:
 			return FloatAsInt( Q_acos( VMF( 1 ) ) );

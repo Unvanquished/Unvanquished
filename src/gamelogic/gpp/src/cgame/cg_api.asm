@@ -172,6 +172,8 @@ equ trap_R_AnimFrameRate                  -171
 equ trap_CompleteCallback                 -172
 equ trap_RegisterButtonCommands           -173
 equ trap_GetClipboardData                 -174
+equ memcmp                                -175
+equ asin                                  -176
 equ trap_R_Glyph                          -302
 equ trap_R_GlyphChar                      -303
 equ trap_R_UnregisterFont                 -304
