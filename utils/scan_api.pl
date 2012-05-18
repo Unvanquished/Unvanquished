@@ -1,5 +1,7 @@
 #! /usr/bin/perl
 
+no locale;
+
 my %syscallfuncs, %syscalls;
 my $func;
 my $line;
@@ -33,43 +35,64 @@ while (defined ($line = <API>))
 }
 close API;
 
-open ENUM, '-|', 'cpp -DUSE_REFENTITY_ANIMATIONSYSTEM '.$ARGV[1] or die $!;
-my $state = 0;
-my $value = 0;
-while (defined ($line = <ENUM>))
+my $f;
+
+for ($f = 1; $f <= $#ARGV; ++$f)
 {
-  if ($state == 0)
+  open ENUM, '-|', 'cpp -C -DUSE_REFENTITY_ANIMATIONSYSTEM '.$ARGV[$f] or die $!;
+  my $state = 0;
+  my $value = 0;
+  while (defined ($line = <ENUM>))
   {
-    $state = 1 if $line =~ /Import_s[[:space:]]*$/;
-    next;
-  }
-  elsif ($state = 1)
-  {
-    if ($line =~ /^[[:space:]]+([[:upper:]][[:upper:][:digit:]_]+)[[:space:]]*,?[[:space:]]*$/)
+    if ($state == 0)
     {
-      $syscalls{$1} = $value;
-      ++$value;
+      $state = 1 if $line =~ /Import_s[[:space:]]*$/;
+      next;
     }
-    elsif ($line =~ /^[[:space:]]+([[:upper:]][[:upper:][:digit:]_]+)[[:space:]]*=[[:space:]]([[:digit:]]+)[[:space:]]*,?[[:space:]]*$/)
+    elsif ($state = 1)
     {
-      $value = $2 + 0;
-      $syscalls{$1} = $value;
-      ++$value;
+      if ($line =~ /^[[:space:]]+([[:upper:]][[:upper:][:digit:]_]+)[[:space:]]*=[[:space:]]*([[:digit:]]+)[[:space:]]*,?[[:space:]]*(?:\/\/|$)/)
+      {
+        my $enum = $1;
+        $value = $2 + 0;
+        $syscalls{$enum} = $value;
+        ++$value;
+        if ($line =~ /\/\/[[:space:]]*=[[:space:]]*([[:alpha:]][[:alnum:]_]+)$/)
+        {
+          push @{$syscallfuncs{$enum}}, $1;
+        }
+      }
+      elsif ($line =~ /^[[:space:]]+([[:upper:]][[:upper:][:digit:]_]+)[[:space:]]*,?[[:space:]]*(?:\/\/|$)/)
+      {
+        my $enum = $1;
+        $syscalls{$enum} = $value;
+        ++$value;
+        if ($line =~ /\/\/[[:space:]]*=[[:space:]]*([[:alpha:]][[:alnum:]_]+)$/)
+        {
+          push @{$syscallfuncs{$enum}}, $1;
+        }
+      }
+      last if $line =~ /}/;
     }
-    last if $line =~ /}/;
   }
+  close ENUM;
 }
-close ENUM;
 
 my %output;
+my %check;
+my @errs;
 
 for $line (keys %syscallfuncs)
 {
   for $func (@{$syscallfuncs{$line}})
   {
+    push @errs, $func if defined $check{$func} && $check{$func} == 1;
     push @{$output{$syscalls{$line}}}, $func;
+    ++$check{$func};
   }
 }
+
+die 'Multiple definitions of '.join (', ', sort @errs)."\n" if $#errs >= 0;
 
 print "code\n\n";
 

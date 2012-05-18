@@ -77,3 +77,16 @@ equ trap_SQL_GetFieldbyName_int           -72
 equ trap_SQL_FieldCount                   -73
 equ trap_SQL_CleanString                  -74
 equ trap_RSA_GenerateMessage              -75
+equ memset                                -301
+equ memcpy                                -302
+equ memcmp                                -303
+equ strncpy                               -304
+equ sin                                   -305
+equ cos                                   -306
+equ asin                                  -307
+equ atan2                                 -308
+equ sqrt                                  -309
+equ floor                                 -313
+equ ceil                                  -314
+equ testPrintInt                          -315
+equ testPrintFloat                        -316

@@ -142,7 +142,7 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"listmaps",     NULL,                qtrue,  NULL,
+		"listmaps",     0,                   qtrue,  NULL,
 		"display a list of available maps on the server",
 		"(^5mapname^7)"
 	},
@@ -154,7 +154,7 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"listrotation", NULL,                qtrue,  NULL,
+		"listrotation", 0,                   qtrue,  NULL,
 		"display the active map rotation",
 		""
 	},

@@ -389,23 +389,26 @@ typedef enum
   VMI_COMPILED
 } vmInterpret_t;
 
-typedef enum
+// Comments in this enum are used by the QVM API scanner
+typedef enum sharedImport_s
 {
-  TRAP_MEMSET = 300,
-  TRAP_MEMCPY,
-  TRAP_STRNCPY,
-  TRAP_SIN,
-  TRAP_COS,
-  TRAP_ATAN2,
-  TRAP_SQRT,
-  TRAP_MATRIXMULTIPLY,
-  TRAP_ANGLEVECTORS,
-  TRAP_PERPENDICULARVECTOR,
-  TRAP_FLOOR,
-  TRAP_CEIL,
+  TRAP_MEMSET = 300,         // = memset
+  TRAP_MEMCPY,               // = memcpy
+  TRAP_MEMCMP,               // = memcmp
+  TRAP_STRNCPY,              // = strncpy
+  TRAP_SIN,                  // = sin
+  TRAP_COS,                  // = cos
+  TRAP_ASIN,                 // = asin
+  TRAP_ATAN2,                // = atan2
+  TRAP_SQRT,                 // = sqrt
+  TRAP_MATRIXMULTIPLY,       // unused
+  TRAP_ANGLEVECTORS,         // unused
+  TRAP_PERPENDICULARVECTOR,  // unused
+  TRAP_FLOOR,                // = floor
+  TRAP_CEIL,                 // = ceil
 
-  TRAP_TESTPRINTINT,
-  TRAP_TESTPRINTFLOAT
+  TRAP_TESTPRINTINT,         // = testPrintInt
+  TRAP_TESTPRINTFLOAT        // = testPrintFloat
 } sharedTraps_t;
 
 void VM_Init( void );
