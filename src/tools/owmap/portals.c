@@ -119,7 +119,7 @@ AddPortalToNodes
 void AddPortalToNodes(portal_t * p, node_t * front, node_t * back)
 {
 	if(p->nodes[0] || p->nodes[1])
-		Error("AddPortalToNode: allready included");
+		Error("AddPortalToNode: already included");
 
 	p->nodes[0] = front;
 	p->next[0] = front->portals;

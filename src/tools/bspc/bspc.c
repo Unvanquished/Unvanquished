@@ -1051,7 +1051,7 @@ int main( int argc, char **argv ) {
 				//
 				Log_Print( "optimizing: %s to %s\n", qf->origname, filename );
 				if ( qf->type != QFILETYPE_AAS ) {
-					Warning( "%s is probably not a AAS file\n", qf->origname );
+					Warning( "%s is probably not an AAS file\n", qf->origname );
 				}
 				//
 				AAS_InitBotImport();
@@ -1086,7 +1086,7 @@ int main( int argc, char **argv ) {
 				//
 				Log_Print( "removing non-reachability areas: %s to %s\n", qf->origname, filename );
 				if ( qf->type != QFILETYPE_AAS ) {
-					Warning( "%s is probably not a AAS file\n", qf->origname );
+					Warning( "%s is probably not an AAS file\n", qf->origname );
 				}
 				//
 				AAS_InitBotImport();
@@ -1118,7 +1118,7 @@ int main( int argc, char **argv ) {
 				//
 				Log_Print( "aas info for: %s\n", filename );
 				if ( qf->type != QFILETYPE_AAS ) {
-					Warning( "%s is probably not a AAS file\n", qf->origname );
+					Warning( "%s is probably not an AAS file\n", qf->origname );
 				}
 				//
 				AAS_InitBotImport();

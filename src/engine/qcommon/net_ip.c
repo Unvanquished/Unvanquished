@@ -905,7 +905,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 			return;
 		}
 
-		Com_Printf( "NET_SendPacket: %s\n", NET_ErrorString() );
+		Com_Printf( "Sys_SendPacket: %s\n", NET_ErrorString() );
 	}
 }
 

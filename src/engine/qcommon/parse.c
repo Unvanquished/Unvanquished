@@ -2344,7 +2344,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 						     t->subtype == P_BIN_AND || t->subtype == P_BIN_OR ||
 						     t->subtype == P_BIN_XOR )
 						{
-							Parse_SourceError( source, "illigal operator %s on floating point operands\n", t->string );
+							Parse_SourceError( source, "illegal operator %s on floating point operands", t->string );
 							error = 1;
 							break;
 						}

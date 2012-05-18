@@ -496,7 +496,7 @@ char *G_AddSpawnVarToken( const char *string )
 
 	if ( level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
 	{
-		G_Error( "G_AddSpawnVarToken: MAX_SPAWN_CHARS" );
+		G_Error( "G_AddSpawnVarToken: MAX_SPAWN_VARS_CHARS" );
 	}
 
 	dest = level.spawnVarChars + level.numSpawnVarChars;

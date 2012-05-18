@@ -1879,7 +1879,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 					 t->subtype == P_RSHIFT || t->subtype == P_LSHIFT ||
 					 t->subtype == P_BIN_AND || t->subtype == P_BIN_OR ||
 					 t->subtype == P_BIN_XOR ) {
-					SourceError( source, "illigal operator %s on floating point operands\n", t->string );
+					SourceError( source, "illegal operator %s on floating point operands", t->string );
 					error = 1;
 					break;
 				}     //end if

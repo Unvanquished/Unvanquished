@@ -2587,7 +2587,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		"battpack", //char  *name;
 		"Battery Pack", //char  *humanName;
 		"Back-mounted battery pack that permits storage of one and a half "
-		"times the normal energy capacity for energy weapons.",
+		"times as much energy capacity for energy weapons.",
 		"icons/iconu_battpack",
 		qtrue, //qboolean purchasable;
 		qfalse, //qboolean usable;

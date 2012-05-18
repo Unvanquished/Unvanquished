@@ -122,7 +122,7 @@ void FreeStackWinding(fixedWinding_t * w, pstack_t * stack)
 		return;					// not from local
 
 	if(stack->freewindings[i])
-		Error("FreeStackWinding: allready free");
+		Error("FreeStackWinding: already free");
 	stack->freewindings[i] = 1;
 }
 
@@ -375,7 +375,7 @@ fixedWinding_t *ClipToSeperators(fixedWinding_t * source, fixedWinding_t * pass,
 #ifdef SEPERATORCACHE
 			stack->seperators[flipclip][stack->numseperators[flipclip]] = plane;
 			if(++stack->numseperators[flipclip] >= MAX_SEPERATORS)
-				Error("MAX_SEPERATORS");
+				Error("MAX_SEPARATORS");
 #endif
 			//MrE: fast check first
 			d = DotProduct(stack->portal->origin, plane.normal) - plane.dist;
@@ -1298,7 +1298,7 @@ int AddSeperators(fixedWinding_t * source, fixedWinding_t * pass, qboolean flipc
 			}
 
 			if(numseperators >= maxseperators)
-				Error("max seperators");
+				Error("max separators");
 			seperators[numseperators] = plane;
 			numseperators++;
 			break;

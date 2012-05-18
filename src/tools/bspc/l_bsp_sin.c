@@ -836,7 +836,7 @@ void    Sin_LoadBSPFile( char *filename, int offset, int length ) {
 		( (int *)header )[i] = LittleLong( ( (int *)header )[i] );
 
 	if ( header->ident != SIN_BSPHEADER && header->ident != SINGAME_BSPHEADER ) {
-		Error( "%s is not a IBSP file", filename );
+		Error( "%s is not an IBSP file", filename );
 	}
 	if ( header->version != SIN_BSPVERSION && header->version != SINGAME_BSPVERSION ) {
 		Error( "%s is version %i, not %i", filename, header->version, SIN_BSPVERSION );
@@ -919,7 +919,7 @@ void    Sin_LoadBSPFileTexinfo( char *filename ) {
 		( (int *)header )[i] = LittleLong( ( (int *)header )[i] );
 
 	if ( header->ident != SIN_BSPHEADER && header->ident != SINGAME_BSPHEADER ) {
-		Error( "%s is not a IBSP file", filename );
+		Error( "%s is not an IBSP file", filename );
 	}
 	if ( header->version != SIN_BSPVERSION && header->version != SINGAME_BSPVERSION ) {
 		Error( "%s is version %i, not %i", filename, header->version, SIN_BSPVERSION );

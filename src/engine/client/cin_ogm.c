@@ -753,7 +753,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( g_ogm.ogmFile )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: it seams there was already a ogm running, it will be killed to start %s\n", filename );
+		Com_Printf( S_COLOR_YELLOW "WARNING: there is already an OGM running, which will be stopped before starting %s\n", filename );
 		Cin_OGM_Shutdown();
 	}
 
@@ -863,7 +863,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( !g_ogm.os_audio.serialno )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: Haven't found a audio(vorbis) stream in ogm-file (%s)\n", filename );
+		Com_Printf( S_COLOR_YELLOW "WARNING: Didn't find a Vorbis audio stream in %s\n", filename );
 		return -2;
 	}
 

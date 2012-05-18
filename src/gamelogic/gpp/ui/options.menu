@@ -69,7 +69,7 @@
       type ITEM_TYPE_MULTI
       text "Video Quality:"
       cvar "ui_glCustom"
-      cvarFloatList { "High Quality" 0 "Normal" 1 "Fast" 2 "Fastest" 3 "Custom" 4 }
+      cvarFloatList { "High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4 }
       rect X (Y+(ELEM_H+ELEM_GAP)) W ELEM_H
       textalign ALIGN_RIGHT
       textalignx TOFF_X
