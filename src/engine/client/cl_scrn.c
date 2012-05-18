@@ -593,7 +593,7 @@ void SCR_DrawVoipSender( void )
 {
 	char string[ 256 ];
 
-	// Little bit of a hack here, but its the only thing i could come up with :
+	// Little bit of a hack here, but it's the only thing i could come up with
 	if ( cls.voipTime > cls.realtime )
 	{
 		if ( !cl_voipShowSender->integer )
@@ -631,7 +631,7 @@ void SCR_DrawVoipSender( void )
 		{
 			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
-		else if ( cl_voipSenderPos->integer == 3 ) // Top center, below VOIP bar when its displayed
+		else if ( cl_voipSenderPos->integer == 3 ) // Top center, below VOIP bar when it's displayed
 		{
 			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}

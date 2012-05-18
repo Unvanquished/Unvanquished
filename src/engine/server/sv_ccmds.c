@@ -423,7 +423,7 @@ static qboolean SV_TransitionGameState( gamestate_t new_gs, gamestate_t old_gs, 
 		}
 	}
 
-	// check if its a valid state transition
+	// check if it's a valid state transition
 	if ( !SV_CheckTransitionGameState( new_gs, old_gs ) )
 	{
 		return qfalse;

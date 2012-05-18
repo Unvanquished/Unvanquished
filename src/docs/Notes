@@ -29,7 +29,7 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 29-06-2011 Dusan Jocic <dusanjocic@msn.com> 
 	+ TODO: Separate Ruby for Client and Server
 		- Pretty ugly added at this revision
-		- Tested with "Hello World!" and apparently its working
+		- Tested with "Hello World!" and apparently it's working
 		- Game need autoexec.rb and msvcrt-ruby18.dll/.so/.dylib to start :)
 
 23-06-2011 Dusan Jocic <dusanjocic@msn.com> 
@@ -43,7 +43,7 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 
 12-06-2011 Dusan Jocic <dusanjocic@msn.com> 
 	+ Not all maps like Newton physics 
-	+ Maybe its not properly added
+	+ Maybe it's not properly added
 
 23-03-2003	Arnout	<rr2do2@splashdamage.com>
 	+ We can lower the UI memory pool size again - don't forget!

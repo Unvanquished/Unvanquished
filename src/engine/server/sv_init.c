@@ -727,7 +727,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	sv.checksumFeed = ( ( ( int ) rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
 
 	// DO_LIGHT_DEDICATED
-	// only comment out when you need a new pure checksum string and it's associated random feed
+	// only comment out when you need a new pure checksum string and its associated random feed
 	//Com_DPrintf("SV_SpawnServer checksum feed: %p\n", sv.checksumFeed);
 
 #else // DO_LIGHT_DEDICATED implementation below

@@ -1374,7 +1374,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 ====================
 CL_UpdateLevelHunkUsage
 
-  This updates the "hunkusage.dat" file with the current map and it's hunk usage count
+  This updates the "hunkusage.dat" file with the current map and its hunk usage count
 
   This is used for level loading, so we can show a percentage bar dependant on the amount
   of hunk memory allocated so far

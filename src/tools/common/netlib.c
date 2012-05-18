@@ -1305,7 +1305,7 @@ int WINS_Init(void)
 //      Cvar_Set ("hostname", buff);
 	}
 
-	//++timo WTF is that net_controlsocket? it's sole purpose is to retrieve the local IP?
+	//++timo WTF is that net_controlsocket? its sole purpose is to retrieve the local IPA?
 	if((net_controlsocket = WINS_OpenSocket(0)) == SOCKET_ERROR)
 		WinError("WINS_Init: Unable to open control socket\n");
 

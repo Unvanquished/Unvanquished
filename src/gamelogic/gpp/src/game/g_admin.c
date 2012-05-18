@@ -12,7 +12,7 @@ and Travis Maurer.
 The functionality of this code mimics the behaviour of the currently
 inactive project shrubet (http://www.etstats.com/shrubet/index.php?ver=2)
 by Ryan Mannion.   However, shrubet was a closed-source project and
-none of it's code has been copied, only it's functionality.
+none of its code has been copied, only its functionality.
 
 Daemon is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as

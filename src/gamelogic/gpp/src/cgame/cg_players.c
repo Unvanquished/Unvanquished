@@ -1275,7 +1275,7 @@ static int CG_GetCorpseNum( class_t class )
 		if ( !Q_stricmp( modelName, match->modelName ) &&
 		     !Q_stricmp( skinName, match->skinName ) )
 		{
-			// this clientinfo is identical, so use it's handles
+			// this clientinfo is identical, so use its handles
 			return i;
 		}
 	}
@@ -1306,7 +1306,7 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci )
 		if ( !Q_stricmp( ci->modelName, match->modelName ) &&
 		     !Q_stricmp( ci->skinName, match->skinName ) )
 		{
-			// this clientinfo is identical, so use it's handles
+			// this clientinfo is identical, so use its handles
 			CG_CopyClientInfoModel( match, ci );
 
 			return qtrue;

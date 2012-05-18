@@ -768,7 +768,7 @@ tmp_node_t *AAS_CreateArea( node_t *node ) {
 			WindingBounds( p->winding, mins, maxs );
 		}
 
-		// RF, if this face has a solid at the other side, and it is not a GROUND, then we cannot free if its too small
+		// RF, if this face has a solid at the other side, and it is not a GROUND, then we cannot free if it's too small
 		if (allowFreeIfSmall && (p->tmpface->faceflags & FACE_SOLID) && !(p->tmpface->faceflags & FACE_GROUND)) {
 			// make sure it's not a ceiling
 			if (!(DotProduct(cfg.phys_gravitydirection, mapplanes[p->tmpface->planenum].normal) > cfg.phys_maxsteepness)) {

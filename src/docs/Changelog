@@ -3831,7 +3831,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			TTimo <ttimo@idsoftware.com>
 	+ test uses ~/.etwolf-test on Linux
-	+	creating a ~/.etwolf-test/etmain in the test version for PB to store it's etkey
+	+	creating a ~/.etwolf-test/etmain in the test version for PB to store its etkey
 
 			Arnout <rr2do2@splashdamage.com>
 	+ Fixed pickup hints for weapons.
@@ -4162,7 +4162,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Several small MV fixes
 	+ added "mvactivate" command to enable/disable MV mode for your team while in
 	  limbo, or for all players if you are a spec (will be a bind)
-	+ New Player Stats overlay, accessible through +stats.  Its the first cut, so
+	+ New Player Stats overlay, accessible through +stats.  It's the first cut, so
 	  still a couple loose ends to wrap up (i.e. not allowed for free-floaters,
 	  fading effects, etc.)
 
@@ -4640,7 +4640,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout	<rr2do2@splashdamage.com>
 	+ Fixed colour of smoke marker trails for everything now.
 	+ Decay is back, but now it's insta-decay after 30 seconds not being touched.
-	+ Fixed adrenaline syringe not having it's media registered.
+	+ Fixed adrenaline syringe not having its media registered.
 	+ Fixed Allied team not winning LMS in certain situations.
 
 			Randy	<ydnar@splashdamage.com>
@@ -5518,7 +5518,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Bots will now drop mobile mg42 when they die, as well as carbine, bar, and other
 		new weapons.
 	+ Angles on seek cover spots work again.  If a bot has no enemy, when it reaches
-		it's seek cover spot, if an angle was set for that spot, that's the
+		its seek cover spot, if an angle was set for that spot, that's the
 		direction the bot will face.
 	+ If you hit "Listen Up", then give no commands, BJ says "Never Mind" instead of "Go go go"
 	+ Fixed bot HUD code that was indicating you could plant mines on
@@ -6037,7 +6037,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 		as trDelta is never being set, changed to a check for trType == TR_STATIONARY for now, 
 		will probably want to expand that later (Make railgun ALOT less jittery, were getting spikes of 90ms+
 		inside the game dll, i imagine the atvi test server would feel it even worse)
-	+ Hacked around timothee's fix for edit box text going outside of it's bbox for 0 width edit boxes (name edit on limbo menu)
+	+ Hacked around timothee's fix for edit box text going outside of its bbox for 0 width edit boxes (name edit on limbo menu)
 	+ Wondered wtf that cg_drawCats cvar does
 	+ Upped version number to 2.10f (yay i get to do it for a change ;))
 
@@ -6237,7 +6237,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Centralized the auth (referee and rcon) system for players, cleaning up some var names
 	+ Centralized the enable/disable of voting items.  g_allowVote has been deprecated, and
 	  g_voteFlags is now a ROM that is also a ServerInfo cvar that clients use to dynamically
-	  update their UI.  Its also a SI cvar for server browsers like GameSpy/ASE to pretty
+	  update their UI.  It's also a cvar for server browsers like GameSpy/ASE to pretty
 	  print if they so desire
 	+ Completely revamped the voting UI in regards to enable/disable, current server settings,
 	  and the player's auth status.  Still have to centralize callvote/referee/rcon into a
@@ -6455,7 +6455,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			TTimo <ttimo@idsoftware.com>
 	+ propagate configurable voting system. Merging with Rhea's OSP voting.
-		each vote is using it's own vote_allow_ item on game side, mapped those to a bit mask
+		each vote is using its own vote_allow_ item on game side, mapped those to a bit mask
 		due to higher number of vote flags and issues with initialisation:
 			using 32 bits and setting bits to 1 for forbidden votes
 			set g_voteFlags to -1 for no votes
@@ -6505,7 +6505,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout <rr2do2@splashdamage.com>
 	+ Forced autoreload on for bots.
 	+ Made lastlerporigin and lastlerpangles work.
-	+ Made mortar grenade align to it's trajectory properly.
+	+ Made mortar grenade align to its trajectory properly.
 	+ Changed mortar soundcode.
 	+ Added snd_reload, this reloads all soundsfiles that are in memory from disk.
 			
@@ -6759,7 +6759,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed hud drawing if client was spectator.
 	+ Changed give ammo to only give ammo for weapons the client has.
 	+ Base implementation of satchel charge.
-	+ Changed automap in MP to use it's own X and Y coordinates.
+	+ Changed automap in MP to use its own X and Y coordinates.
 
 			Gordon <djbob@splashdamage.com>
 	+ Added cg_backupPredict which should speed up prediction when enabled, as it caches old predicted playerstates so it doesnt need to rebuild them all the time
@@ -8170,7 +8170,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout <rr2do2@splashdamage.com>
 	+ Added Last Man Standing mode (g_gametype 5).
 	+ Fixed error on map_restart when bot_enable was set to 1 but no aas file was present.
-	+ Removed sv_gametype from the engine. It's initialization was causing problems.
+	+ Removed sv_gametype from the engine. Its initialization was causing problems.
 	+ Redid serversided campaign loading.
 	+ Added Campaign gamemode (g_gametype 4), this is basically Wolf MP with campaign map roulation.
 	+ Added 'campaign' (starts a campaign) and 'listcampains' (lists available campaigns) commands serversideded.
@@ -9263,7 +9263,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed WP_SMOKE_GRENADE defination to WP_SMOKE_MARKER for clarity.
 	+ Added covert ops teamname centerprint class indication.
 	+ Changed way construction system works. Objects under construction are now non-solid. They turn solid at the end of the construction cycle, gibbing any players inside them, returning flags and removing any other entities.
-	+ Changed func_constructible to now use s.angles2[0] to store it's construction progress instead of density. (Needed floating point precision.)
+	+ Changed func_constructible to now use s.angles2[0] to store its construction progress instead of density. (Needed floating point precision.)
 	+ Upped version number to 1.32d.
 	+ Upped network protocol version to 59.
 

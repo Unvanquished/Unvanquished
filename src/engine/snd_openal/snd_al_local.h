@@ -94,7 +94,7 @@ void     al_buf_shutdown( void );
 sfxHandle_t al_buf_register( const char *filename );
 
 // Set up a sound effect for usage
-// This reloads the sound effect if necessary, and keeps track of it's usage
+// This reloads the sound effect if necessary, and keeps track of its usage
 void     al_buf_use( sfxHandle_t sfx );
 
 // Internal use - actually allocates and deallocates the buffers

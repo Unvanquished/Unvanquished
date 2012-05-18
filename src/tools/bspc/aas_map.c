@@ -609,7 +609,7 @@ int AAS_TransformPlane( int planenum, vec3_t origin, vec3_t angles ) {
 	return FindFloatPlane( normal, newdist, 0, NULL );
 } //end of the function AAS_TransformPlane
 //===========================================================================
-// this function sets the func_rotating_door in it's final position
+// this function sets the func_rotating_door to its final position
 //
 // Parameter:				-
 // Returns:					-
@@ -875,7 +875,7 @@ void AAS_CreateMapBrushes( mapbrush_t *brush, entity_t *mapent, int addbevels ) 
 		{
 			bboxbrushes[i] = AAS_CopyMapBrush( brush, mapent );
 		} //end for
-		  //expand every brush for it's bounding box and create windings
+		  //expand every brush for its bounding box and create windings
 		for ( i = 0; i < cfg.numbboxes; i++ )
 		{
 			AAS_ExpandMapBrush( bboxbrushes[i], cfg.bboxes[i].mins, cfg.bboxes[i].maxs );

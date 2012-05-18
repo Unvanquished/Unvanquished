@@ -1369,7 +1369,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 			else if ( glConfig2.generateMipmapAvailable )
 			{
 				// raynorpat: if hardware mipmap generation is available, use it
-				//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);  // make sure its nice
+				//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);  // make sure it's nice
 				glTexParameteri( image->type, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
 				glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
 			}

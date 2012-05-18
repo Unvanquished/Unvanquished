@@ -715,7 +715,7 @@ qboolean G_FindCreep( gentity_t *self )
 		return qtrue;
 	}
 
-	//if self does not have a parentNode or it's parentNode is invalid find a new one
+	//if self does not have a parentNode or its parentNode is invalid find a new one
 	if ( self->client || self->parentNode == NULL || !self->parentNode->inuse ||
 	     self->parentNode->health <= 0 )
 	{
@@ -4519,7 +4519,7 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 ============
 G_SpawnBuildableThink
 
-Complete spawning a buildable using it's placeholder
+Complete spawning a buildable using its placeholder
 ============
 */
 static void G_SpawnBuildableThink( gentity_t *ent )

@@ -935,7 +935,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					if ( glConfig2.generateMipmapAvailable )
 					{
-						//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);    // make sure its nice
+						//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);    // make sure it's nice
 						glTexParameteri( image->type, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
 						glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
 					}

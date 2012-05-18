@@ -4837,7 +4837,7 @@ static char    *FindShaderInShaderText( const char *shadername )
 
 			checksum = generateHashValue( shadername );
 
-			// if it's known, skip straight to it's position
+			// if it's known, skip straight to its position
 			pShaderString = &shaderChecksumLookup[ checksum ];
 
 			while ( pShaderString && pShaderString->pStr )
@@ -5536,7 +5536,7 @@ static void BuildShaderChecksumLookup( void )
 		                        continue;
 		                }*/
 
-		// get it's checksum
+		// get its checksum
 		checksum = generateHashValue( token );
 
 //      Com_Printf( "Shader Found: %s\n", token );

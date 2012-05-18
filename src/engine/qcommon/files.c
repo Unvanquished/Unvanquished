@@ -363,7 +363,7 @@ qboolean FS_PakIsPure( pack_t *pack )
 		{
 			// FIXME: also use hashed file names
 			// NOTE TTimo: a pk3 with same checksum but different name would be validated too
-			//   I don't see this as allowing for any exploit, it would only happen if the client does manips of it's file names 'not a bug'
+			//   I don't see this as allowing for any exploit, it would only happen if the client does manips of its file names (not a bug)
 			if ( pack->checksum == fs_serverPaks[ i ] )
 			{
 				return qtrue; // on the approved list
@@ -1686,7 +1686,7 @@ qboolean FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, const 
 	// read in compressed file
 	srcLength = FS_ReadFile( filename, ( void ** ) &srcData );
 
-	// if its not in the pak, we bail
+	// if it's not in the pak, we bail
 	if ( srcLength == -1 )
 	{
 		return qfalse;
@@ -4577,7 +4577,7 @@ this is the pure checksum string for a constant value of fs_checksumFeed we have
 to obtain the new string for a different fs_checksumFeed value, run a regular server and enable the relevant
 verbosity code in SV_SpawnServer and FS_LoadedPakPureChecksums (the full server version of course)
 
-NOTE: if you have an mp_bin in the middle, you need to take out it's checksum
+NOTE: if you have an mp_bin in the middle, you need to take out its checksum
   (we keep mp_bin out of the faked stuff because we don't want to have to update those feeds too often heh)
 
 once you have the clear versions, you can shift them by commenting out the code chunk in FS_RandChecksumFeed

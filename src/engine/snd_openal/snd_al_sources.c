@@ -59,7 +59,7 @@ struct src_s
 	int         isActive; // Is this source currently in use?
 	int         isLocked; // This is locked (un-allocatable)
 	int         isLooping; // Is this a looping effect (attached to an entity)
-	int         isTracking; // Is this object tracking it's owner
+	int         isTracking; // Is this object tracking its owner?
 
 	qboolean    local; // Is this local (relative to the cam)
 };
