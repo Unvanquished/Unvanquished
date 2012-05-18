@@ -943,6 +943,9 @@ function( GAMELIB )
   set( multiValueArgs COMPILE_DEF LIB_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments(GAMELIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
+  # purpose is to trigger QVM build if the native shared object is rebuilt (if we're building shared objects)
+  set( QVM_GAMELIB_SO )
+
   if( BUILD_GAME_SO_GPP )
     # Xcode places the game libraries in the incorrect location. This should fix it
     if( XCODE_VERSION )
@@ -967,6 +970,9 @@ function( GAMELIB )
     else()
       set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}.mp.${BUILD_ARCH}" )
     endif()
+
+    get_target_property( QVM_GAMELIB_SO ${GAMELIB_LIB_NAME} OUTPUT_NAME )
+    set( QVM_GAMELIB_SO ${GAMELIB_OUTPUT_DIR}/${QVM_GAMELIB_SO}${CMAKE_SHARED_LIBRARY_SUFFIX} )
   endif()
 
   if( BUILD_GAME_QVM_GPP AND GAMELIB_QVM_FILES )
@@ -995,7 +1001,7 @@ function( GAMELIB )
 
     add_custom_command( OUTPUT ${QVM_OBJECTS}
       COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${GAMELIB_QVM_FILES}
-      DEPENDS lcc rcc cpp ${GAMELIB_QVM_FILES}
+      DEPENDS lcc rcc cpp ${GAMELIB_QVM_FILES} ${QVM_GAMELIB_SO}
       WORKING_DIRECTORY ${QVM_DIR}
     )
 
@@ -1005,7 +1011,7 @@ function( GAMELIB )
       DEPENDS asm ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
     )
 
-    add_custom_target( ${GAMELIB_LIB_NAME}-qvm
+    add_custom_target( ${GAMELIB_LIB_NAME}-qvm ALL
       DEPENDS ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm
     )
 
