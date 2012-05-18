@@ -1493,7 +1493,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return re.AnimFrameRate( args[ 1 ] );
 #endif
 		case UI_MEMCMP:
-			return ( intptr_t ) memset( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return ( intptr_t ) memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case UI_ASIN:
 			return FloatAsInt( asin( VMF( 1 ) ) );
