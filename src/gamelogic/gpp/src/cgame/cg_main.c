@@ -1457,7 +1457,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.textFont);
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.textFont );
 			continue;
 		}
 

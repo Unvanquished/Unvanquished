@@ -110,9 +110,9 @@ UIS_Shutdown
 */
 void UIS_Shutdown( void )
 {
-	UI_R_UnregisterFont( &DC->Assets.textFont );
-	UI_R_UnregisterFont( &DC->Assets.smallFont );
-	UI_R_UnregisterFont( &DC->Assets.bigFont );
+	UI_R_UnregisterFont( DC->Assets.textFont.handle );
+	UI_R_UnregisterFont( DC->Assets.smallFont.handle );
+	UI_R_UnregisterFont( DC->Assets.bigFont.handle );
 }
 
 /*
@@ -2055,34 +2055,28 @@ void Script_playLooped( itemDef_t *item, char **args )
 	}
 }
 
-glyphInfo_t *UI_GlyphCP( fontInfo_t *font, int ch )
+glyphInfo_t *UI_GlyphCP( const fontMetrics_t *font, int ch )
 {
 	static glyphInfo_t glyphs[8];
 	static int index = 0;
 	glyphInfo_t *glyph;
 
-	// invalid or 0xFFFD -> 0
-	if ( ch < 0 || ( ch >= 0xD800 && ch < 0xE000 ) || ch == 0xFFFD || ch >= 0x110000 ) { ch = 0; }
-
-	if ( font->glyphBlock[ ch / 256 ] && font->glyphBlock[ ch / 256 ][ ch % 256 ].glyph )
-		return &font->glyphBlock[ ch / 256 ][ ch % 256 ];
-
 	glyph = &glyphs[index++ & 7];
-	DC->glyphChar( font, ch, glyph );
+	DC->glyphChar( font->handle, ch, glyph );
 	return glyph;
 }
 
-glyphInfo_t *UI_Glyph( fontInfo_t *font, const char *str )
+glyphInfo_t *UI_Glyph( const fontMetrics_t *font, const char *str )
 {
 	return UI_GlyphCP( font, ui_UTF8CodePoint( str ) );
 }
 
-static ID_INLINE float UI_EmoticonHeight( fontInfo_t *font, float scale )
+static ID_INLINE float UI_EmoticonHeight( const fontMetrics_t *font, float scale )
 {
-	return font->glyphBlock[0]['['].height * scale * font->glyphScale;
+	return UI_GlyphCP( font, '[' )->height * scale * font->glyphScale;
 }
 
-static ID_INLINE float UI_EmoticonWidth( fontInfo_t *font, float scale )
+static ID_INLINE float UI_EmoticonWidth( const fontMetrics_t *font, float scale )
 {
 	return UI_EmoticonHeight( font, scale ) * DC->aspectScale;
 }
@@ -2215,7 +2209,7 @@ static float UI_Parse_Indent( const char **text )
 	return pixels;
 }
 
-static ID_INLINE fontInfo_t *UI_FontForScale( float scale )
+static ID_INLINE const fontMetrics_t *UI_FontForScale( float scale )
 {
 	if ( scale <= DC->smallFontScale )
 	{
@@ -2234,11 +2228,12 @@ static ID_INLINE fontInfo_t *UI_FontForScale( float scale )
 float UI_Char_Width( const char **text, float scale )
 {
 	glyphInfo_t *glyph;
-	fontInfo_t  *font;
 	int         emoticonLen;
 	qboolean    emoticonEscaped;
 	int         emoticonWidth;
 	int         ch;
+
+	const fontMetrics_t *font;
 
 	if ( text && *text )
 	{
@@ -2307,7 +2302,8 @@ float UI_Text_Height( const char *text, float scale )
 	glyphInfo_t *glyph;
 	float       useScale;
 	const char  *s = text;
-	fontInfo_t  *font = UI_FontForScale( scale );
+
+	const fontMetrics_t *font = UI_FontForScale( scale );
 
 	useScale = scale * font->glyphScale;
 	max = 0;
@@ -2350,7 +2346,7 @@ float UI_Text_EmHeight( float scale )
 
 float UI_Text_LineHeight( float scale )
 {
-	fontInfo_t *font = UI_FontForScale( scale );
+	const fontMetrics_t *font = UI_FontForScale( scale );
 
 	return font->height ? font->height * scale : UI_Text_Height( "M", scale );
 }
@@ -2461,7 +2457,6 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	int         len;
 	int         count = 0;
 	vec4_t      newColor;
-	fontInfo_t  *font = UI_FontForScale( scale );
 	glyphInfo_t *glyph;
 	float       useScale;
 	qhandle_t   emoticonHandle = 0;
@@ -2472,11 +2467,14 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	int         cursorX = -1;
 	float       startX = x;
 
+	const fontMetrics_t *font;
+
 	if ( !text )
 	{
 		return;
 	}
 
+	font = UI_FontForScale( scale );
 	useScale = scale * font->glyphScale;
 
 	emoticonH = UI_EmoticonHeight( font, scale );
@@ -2613,7 +2611,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 		if ( cursorX >= 0 && !( ( DC->realTime / BLINK_DIVISOR ) & 1 ) )
 		{
-			glyph = &font->glyphBlock[0][( int ) cursor ];
+			glyph = UI_GlyphCP( font, cursor );
 			UI_Text_PaintChar( cursorX, y, useScale, glyph, 2.0f );
 		}
 	}
@@ -5406,7 +5404,7 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 	{
 		char        buff[ 1024 ];
 		float       fontHeight = UI_Text_LineHeight( item->textscale );
-		const float lineSpacing = UI_FontForScale( item->textscale )->face ? 0 : fontHeight * 0.4f;
+		const float lineSpacing = UI_FontForScale( item->textscale )->isBitmap ? 0 : fontHeight * 0.4f;
 		float       lineHeight = fontHeight + lineSpacing;
 		float       textHeight;
 		int         textLength;
@@ -9348,7 +9346,7 @@ static qboolean Menu_OverActiveItem( menuDef_t *menu, float x, float y )
 	return qfalse;
 }
 
-void UI_R_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
+void UI_R_GlyphChar( const fontHandle_t font, int ch, glyphInfo_t *glyph )
 {
   static int engineState = 0;
 
@@ -9368,7 +9366,7 @@ void UI_R_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
     trap_R_GlyphChar( font, ch, glyph );
 }
 
-void UI_R_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
+void UI_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
 {
   static int engineState = 0;
 
@@ -9388,7 +9386,7 @@ void UI_R_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
     trap_R_Glyph( font, str, glyph );
 }
 
-void UI_R_UnregisterFont( fontInfo_t *font )
+void UI_R_UnregisterFont( fontHandle_t font )
 {
   static int engineState = 0;
 

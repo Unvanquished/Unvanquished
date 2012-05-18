@@ -1370,7 +1370,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_R_REGISTERFONT:
-			re.RegisterFont( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
+			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
 		case UI_MEMSET:
@@ -1509,18 +1509,15 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_R_GLYPH:
-			re.Glyph( VMA(1), VMA(2), VMA(3) );
+			re.GlyphVM( args[1], VMA(2), VMA(3) );
 			break;
 
 		case UI_R_GLYPHCHAR:
-			re.GlyphChar( VMA(1), args[2], VMA(3) );
+			re.GlyphCharVM( args[1], args[2], VMA(3) );
 			break;
 
 		case UI_R_UREGISTERFONT:
-			if ( VMA(1) )
-			{
-				re.UnregisterFont( VMA(1) );
-			}
+			re.UnregisterFontVM( args[1] );
 			break;
 
 		default:

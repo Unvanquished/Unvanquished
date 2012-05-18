@@ -2471,6 +2471,10 @@ typedef struct
 	char      shaderName[ 32 ];
 } glyphInfo_t;
 
+typedef int fontHandle_t;
+
+#ifndef Q3_VM
+
 typedef glyphInfo_t glyphBlock_t[256];
 
 typedef struct
@@ -2483,6 +2487,16 @@ typedef struct
 	char          name[ MAX_QPATH ];
 } fontInfo_t;
 
+#endif
+
+typedef struct
+{
+	fontHandle_t  handle;
+	qboolean      isBitmap;
+	int           pointSize;
+	int           height;
+	float         glyphScale;
+} fontMetrics_t;
 
 #define Square( x ) ( ( x ) * ( x ) )
 

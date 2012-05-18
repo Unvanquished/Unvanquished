@@ -396,10 +396,10 @@ qhandle_t       trap_R_RegisterSkin( const char *name );
 qboolean        trap_R_GetSkinModel( qhandle_t skinid, const char *type, char *name );
 qhandle_t       trap_R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );
 qhandle_t       trap_R_RegisterShader( const char *name );
-void            trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
-void            trap_R_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
-void            trap_R_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
-void            trap_R_UnregisterFont(fontInfo_t *font);
+void            trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
+void            trap_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
+void            trap_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
+void            trap_R_UnregisterFont( fontHandle_t );
 
 qhandle_t       trap_R_RegisterShaderNoMip( const char *name );
 qhandle_t       trap_R_RegisterShaderLightAttenuation( const char *name );

@@ -361,9 +361,7 @@ typedef struct
 	const char  *fontStr;
 	const char  *cursorStr;
 	const char  *gradientStr;
-	fontInfo_t  textFont;
-	fontInfo_t  smallFont;
-	fontInfo_t  bigFont;
+	fontMetrics_t textFont, smallFont, bigFont;
 	qhandle_t   cursor;
 	qhandle_t   gradientBar;
 	qhandle_t   scrollBarArrowUp;
@@ -420,10 +418,10 @@ typedef struct
 	void ( *clearScene )( void );
 	void ( *addRefEntityToScene )( const refEntity_t *re );
 	void ( *renderScene )( const refdef_t *fd );
-	void ( *registerFont )( const char *pFontname, const char *pFallback, int pointSize, fontInfo_t *font );
-	void ( *glyph )( fontInfo_t *font, const char *str, glyphInfo_t *glyph );
-	void ( *glyphChar )( fontInfo_t *font, int ch, glyphInfo_t *glyph );
-	void ( *freeCachedGlyphs )( fontInfo_t *font );
+	void ( *registerFont )( const char *pFontname, const char *pFallback, int pointSize, fontMetrics_t *out );
+	void ( *glyph )( fontHandle_t, const char *str, glyphInfo_t *glyph );
+	void ( *glyphChar )( fontHandle_t, int ch, glyphInfo_t *glyph );
+	void ( *freeCachedGlyphs )( fontHandle_t );
 
 	void ( *ownerDrawItem )( float x, float y, float w, float h, float text_x,
 	                         float text_y, int ownerDraw, int ownerDrawFlags,
@@ -571,7 +569,7 @@ float       UI_Text_EmHeight( float scale );
 float       UI_Text_LineHeight( float scale );
 qboolean    UI_Text_IsEmoticon( const char *s, qboolean *escaped, int *length, qhandle_t *h, int *width );
 void        UI_EscapeEmoticons( char *dest, const char *src, int destsize );
-glyphInfo_t *UI_Glyph( fontInfo_t *font, const char *str );
+glyphInfo_t *UI_Glyph( const fontMetrics_t *, const char *str );
 int         trap_Parse_AddGlobalDefine( char *define );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );
@@ -583,8 +581,8 @@ void        BindingFromName( const char *cvar );
 extern char g_nameBind1[ 32 ];
 extern char g_nameBind2[ 32 ];
 
-void       UI_R_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
-void       UI_R_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
-void       UI_R_UnregisterFont(fontInfo_t *font);
+void       UI_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
+void       UI_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
+void       UI_R_UnregisterFont( fontHandle_t );
 
 #endif

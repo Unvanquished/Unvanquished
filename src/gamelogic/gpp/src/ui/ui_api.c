@@ -638,7 +638,7 @@ void trap_SetCDKey( char *buf )
 
 //83.
 //re.RegisterFont(VMA(1), args[2], VMA(3));
-void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font )
+void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
 {
 	syscall( UI_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
@@ -905,19 +905,19 @@ int trap_R_AnimFrameRate( qhandle_t hAnim )
 }
 
 //125.
-void trap_R_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
+void trap_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
 {
   syscall( UI_R_GLYPH, font, str, glyph );
 }
 
 //126.
-void trap_R_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
+void trap_R_GlyphChar( fontHandle_t font, int ch, glyphInfo_t *glyph )
 {
   syscall( UI_R_GLYPHCHAR, font, ch, glyph );
 }
 
 //127.
-void trap_R_UnregisterFont( fontInfo_t *font )
+void trap_R_UnregisterFont( fontHandle_t font )
 {
   syscall( UI_R_UREGISTERFONT, font );
 }

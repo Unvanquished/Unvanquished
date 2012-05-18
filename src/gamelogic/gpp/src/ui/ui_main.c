@@ -1323,9 +1323,9 @@ void UI_Shutdown( void )
 {
 	trap_LAN_SaveCachedServers();
 
-	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.textFont );
-	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.smallFont );
-	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.bigFont );
+	UI_R_UnregisterFont( uiInfo.uiDC.Assets.textFont.handle );
+	UI_R_UnregisterFont( uiInfo.uiDC.Assets.smallFont.handle );
+	UI_R_UnregisterFont( uiInfo.uiDC.Assets.bigFont.handle );
 
 	UIS_Shutdown( );
 }
