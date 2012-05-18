@@ -486,7 +486,7 @@ set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
 )
 
-set( CGAMEGPP
+set( CGAMEGPP_BASE
   ${GPP_DIR}/src/cgame/cg_main.c
   ${GPP_DIR}/src/game/bg_misc.c
   ${GPP_DIR}/src/game/bg_pmove.c
@@ -519,10 +519,18 @@ set( CGAMEGPP
   ${GPP_DIR}/src/ui/ui_utf8.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
+)
+
+set( CGAMEGPP_SO
+  ${CGAMEGPP_BASE}
   ${GPP_DIR}/src/cgame/cg_api.c
 )
 
-set( GAMEGPP
+set( CGAMEGPP_QVM
+  ${GPP_DIR}/src/cgame/cg_api.asm
+)
+
+set( GAMEGPP_BASE
   ${GPP_DIR}/src/game/g_main.c
   ${GPP_DIR}/src/game/bg_misc.c
   ${GPP_DIR}/src/game/bg_pmove.c
@@ -552,7 +560,15 @@ set( GAMEGPP
   ${GPP_DIR}/src/game/g_namelog.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
+)
+
+set( GAMEGPP_SO
+  ${GAMEGPP_BASE}
   ${GPP_DIR}/src/game/g_api.c
+)
+
+set( GAMEGPP_QVM
+  ${GPP_DIR}/src/game/g_api.asm
 )
 
 set( UIGPP_BASE
@@ -1005,14 +1021,18 @@ GAMELIB( LIB_NAME gppgame
   OUTPUT_NAME qagame
   OUTPUT_DIR main
   COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-  LIB_FILES ${GAMEGPP}
+  LIB_FILES ${GAMEGPP_SO}
+  QVM_FILES ${GAMEGPP_BASE}
+  QVM_ASM ${GAMEGPP_QVM}
 )
 
 GAMELIB( LIB_NAME gpptrem
   OUTPUT_NAME cgame
   OUTPUT_DIR main
   COMPILE_DEF CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-  LIB_FILES ${CGAMEGPP}
+  LIB_FILES ${CGAMEGPP_SO}
+  QVM_FILES ${CGAMEGPP_BASE}
+  QVM_ASM ${CGAMEGPP_QVM}
 )
 
 GAMELIB( LIB_NAME gppui
