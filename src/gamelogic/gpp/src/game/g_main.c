@@ -620,6 +620,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 {
 	int i;
 
+	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
+
 	srand( randomSeed );
 
 	G_RegisterCvars();

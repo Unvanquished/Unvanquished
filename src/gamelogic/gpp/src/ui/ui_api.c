@@ -37,6 +37,11 @@ int PASSFLOAT( float x )
 	return * ( int * ) &floatTemp;
 }
 
+void trap_SyscallABIVersion( int major, int minor )
+{
+        syscall( TRAP_VERSION, major, minor );
+}
+
 void trap_Cvar_CopyValue_i( const char *in_var, const char *out_var )
 {
 	int v1 = trap_Cvar_VariableValue( in_var );

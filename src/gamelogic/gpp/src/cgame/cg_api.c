@@ -39,6 +39,11 @@ static int FloatAsInt( float f )
 
 #define PASSFLOAT( x ) FloatAsInt( x )
 
+void trap_SyscallABIVersion( int major, int minor )
+{
+        syscall( TRAP_VERSION, major, minor );
+}
+
 //00.
 //Com_Printf("%s", (char *)VMA(1));
 void trap_Print( const char *fmt )

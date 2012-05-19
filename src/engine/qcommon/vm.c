@@ -1268,6 +1268,13 @@ intptr_t VM_SystemCall( intptr_t *args )
 			Com_Printf( "%s%f\n", ( char * ) VMA( 1 ), VMF( 2 ) );
 			return 0;
 
+		case TRAP_VERSION:
+			if ( args[ 1 ] != SYSCALL_ABI_VERSION_MAJOR || args[ 2 ] > SYSCALL_ABI_VERSION_MINOR )
+			{
+				Com_Error( ERR_DROP, "Syscall ABI mismatch" );
+			}
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}

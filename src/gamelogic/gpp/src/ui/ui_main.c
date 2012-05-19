@@ -4872,6 +4872,8 @@ void UI_Init( qboolean inGameLoad )
 {
 	int start;
 
+	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
+
 	BG_InitClassConfigs();
 	BG_InitAllowedGameElements();
 

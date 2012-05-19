@@ -110,9 +110,12 @@ UIS_Shutdown
 */
 void UIS_Shutdown( void )
 {
-	UI_R_UnregisterFont( DC->Assets.textFont.handle );
-	UI_R_UnregisterFont( DC->Assets.smallFont.handle );
-	UI_R_UnregisterFont( DC->Assets.bigFont.handle );
+	if ( DC )
+	{
+		UI_R_UnregisterFont( DC->Assets.textFont.handle );
+		UI_R_UnregisterFont( DC->Assets.smallFont.handle );
+		UI_R_UnregisterFont( DC->Assets.bigFont.handle );
+	}
 }
 
 /*

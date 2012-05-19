@@ -2213,6 +2213,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	const char *s;
 
+	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
+
 	// clear everything
 	memset( &cgs, 0, sizeof( cgs ) );
 	memset( &cg, 0, sizeof( cg ) );

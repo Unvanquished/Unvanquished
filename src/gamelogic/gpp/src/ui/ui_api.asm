@@ -15,6 +15,7 @@ equ floor                                 -12
 equ ceil                                  -13
 equ testPrintInt                          -225
 equ testPrintFloat                        -226
+equ trap_SyscallABIVersion                -256
 equ trap_Error                            -257
 equ trap_Print                            -258
 equ trap_Milliseconds                     -259
