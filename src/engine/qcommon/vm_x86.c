@@ -500,7 +500,7 @@ static void DoSyscall( void )
 		int      index;
 		intptr_t args[ 11 ];
 #endif
-
+		VM_SetSanity( savedVM, ~syscallNum );
 		data = ( int * )( savedVM->dataBase + programStack + 4 );
 
 #if idx64
@@ -531,6 +531,7 @@ static void DoSyscall( void )
 			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data ); // VM-specific
 		}
 #endif
+		VM_CheckSanity( savedVM, ~syscallNum );
 	}
 	else
 	{

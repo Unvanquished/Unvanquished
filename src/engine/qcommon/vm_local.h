@@ -198,6 +198,9 @@ struct vm_s
 	char              fqpath[ MAX_QPATH + 1 ];
 	// for qmv modules
 	void              *qvmModuleProvider;
+
+	byte              sanity[ 16 ];
+	qboolean          versionChecked;
 };
 
 extern  vm_t *currentVM;
@@ -215,3 +218,8 @@ const char   *VM_ValueToSymbol( vm_t *vm, int value );
 void         VM_LogSyscalls( int *args );
 
 void         VM_BlockCopy( unsigned int dest, unsigned int src, size_t n );
+
+#define VM_DATA_PADDING 32768
+
+void         VM_SetSanity( vm_t *, intptr_t call );
+void         VM_CheckSanity( vm_t *, intptr_t call );

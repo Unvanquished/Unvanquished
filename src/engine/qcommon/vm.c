@@ -370,6 +370,67 @@ void VM_LoadSymbols( vm_t *vm )
 
 /*
 ============
+VM_InitSanity
+VM_SetSanity
+VM_CheckSanity
+
+Overflow? We should be safe where there are bounds checks, but not all are
+checked. What isn't should be caught here (if there's a write).
+============
+*/
+static void VM_InitSanity( vm_t *vm )
+{
+	if ( vm->dataMask )
+	{
+		int i;
+
+		for ( i = 1; i < sizeof( vm->sanity ); ++i )
+		{
+			vm->dataBase[ vm->dataMask + 1 + i ] =
+			  vm->sanity[ i ] = 1 + ( rand () % 255 );
+		}
+	}
+
+	vm->versionChecked = qfalse;
+}
+
+void VM_SetSanity( vm_t* vm, intptr_t call )
+{
+	if ( !vm->versionChecked && call != TRAP_VERSION )
+	{
+		Com_Error( ERR_DROP, "VM code must invoke a version check" );
+	}
+	else if ( call == TRAP_VERSION )
+	{
+		vm->versionChecked = qtrue;
+	}
+
+	if ( vm->dataMask )
+	{
+		int i = rand();
+
+		if ( i % sizeof( vm->sanity ) )
+		{
+			vm->dataBase[ vm->dataMask + 1 + ( i % sizeof( vm->sanity ) ) ] =
+			  vm->sanity[ i % sizeof( vm->sanity ) ] ^=
+			    (byte) ( i / sizeof( vm->sanity ) ) ^
+			    (byte) ( i / sizeof( vm->sanity ) / 257 );
+		}
+	}
+}
+
+void VM_CheckSanity( vm_t *vm, intptr_t call )
+{
+	int which = vm - vmTable;
+
+	if ( vm->dataMask && memcmp( vm->dataBase + vm->dataMask + 1, vm->sanity, sizeof( vm->sanity ) ) )
+	{
+		Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]\n", call, vm->name );
+	}
+}
+
+/*
+============
 VM_DllSyscall
 
 Dlls will call this directly
@@ -408,6 +469,7 @@ Dlls will call this directly
 */
 intptr_t QDECL VM_DllSyscall( intptr_t arg, ... )
 {
+	intptr_t ret;
 #if !id386 || defined( IPHONE ) || defined __clang__
 	// rcg010206 - see commentary above
 	intptr_t args[ 16 ];
@@ -425,20 +487,30 @@ intptr_t QDECL VM_DllSyscall( intptr_t arg, ... )
 
 	va_end( ap );
 
+	VM_SetSanity( currentVM, arg );
+
 	if ( arg < FIRST_VM_SYSCALL )
 	{
-		return VM_SystemCall( args ); // all VMs
+		ret = VM_SystemCall( args ); // all VMs
 	}
-
-	return currentVM->systemCall( args );
+	else
+	{
+		ret = currentVM->systemCall( args );
+	}
 #else // original id code (almost)
+	VM_SetSanity( currentVM, arg );
+
 	if ( arg < FIRST_VM_SYSCALL )
 	{
-		return VM_SystemCall( &arg ); // all VMs
+		ret = VM_SystemCall( &arg ); // all VMs
 	}
-
-	return currentVM->systemCall( &arg );
+	else
+	{
+		ret = currentVM->systemCall( &arg );
+	}
 #endif
+	VM_CheckSanity( currentVM, arg );
+	return ret;
 }
 
 /*
@@ -535,13 +607,13 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	if ( alloc )
 	{
 		// allocate zero filled space for initialized and uninitialized data
-		vm->dataBase = Hunk_Alloc( dataLength, h_high );
+		vm->dataBase = Hunk_Alloc( dataLength + VM_DATA_PADDING, h_high );
 		vm->dataMask = dataLength - 1;
 	}
 	else
 	{
 		// clear the data
-		Com_Memset( vm->dataBase, 0, dataLength );
+		Com_Memset( vm->dataBase, 0, dataLength + VM_DATA_PADDING );
 	}
 
 	// copy the intialized data
@@ -762,6 +834,8 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	vm->stackBottom = vm->programStack - PROGRAM_STACK_SIZE;
 
 	Com_Printf( "%s loaded in %d bytes on the hunk\n", module, remaining - Hunk_MemoryRemaining() );
+
+	VM_InitSanity( vm );
 
 	return vm;
 }
