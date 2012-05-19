@@ -1061,10 +1061,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return FloatAsInt( Cvar_VariableValue( VMA( 1 ) ) );
 
 		case UI_CVAR_VARIABLESTRINGBUFFER:
+			VM_CheckBlock( args[2], args[3], "CVARVSB" );
 			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case UI_CVAR_LATCHEDVARIABLESTRINGBUFFER:
+			VM_CheckBlock( args[2], args[3], "CVARLVSB" );
 			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1081,6 +1083,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_CVAR_INFOSTRINGBUFFER:
+			VM_CheckBlock( args[2], args[3], "CVARISB" );
 			Cvar_InfoStringBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1088,6 +1091,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return Cmd_Argc();
 
 		case UI_ARGV:
+			VM_CheckBlock( args[2], args[3], "ARGV" );
 			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1103,10 +1107,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case UI_FS_READ:
+			VM_CheckBlock( args[1], args[2], "FSREAD" );
 			FS_Read2( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case UI_FS_WRITE:
+			VM_CheckBlock( args[1], args[2], "FSWRITE" );
 			FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
@@ -1118,6 +1124,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return FS_Delete( VMA( 1 ) );
 
 		case UI_FS_GETFILELIST:
+			VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case UI_FS_SEEK:
@@ -1237,10 +1244,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_KEY_KEYNUMTOSTRINGBUF:
+			VM_CheckBlock( args[2], args[3], "KEYNTSB" );
 			Key_KeynumToStringBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case UI_KEY_GETBINDINGBUF:
+			VM_CheckBlock( args[2], args[3], "KEYGBB" );
 			Key_GetBindingBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1274,6 +1283,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_GETCLIPBOARDDATA:
+			VM_CheckBlock( args[1], args[2], "UIGCD" );
 			CL_GetClipboardData( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
@@ -1286,6 +1296,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_GETCONFIGSTRING:
+			VM_CheckBlock( args[2], args[3], "UIGCS" );
 			return GetConfigString( args[ 1 ], VMA( 2 ), args[ 3 ] );
 
 		case UI_LAN_LOADCACHEDSERVERS:
@@ -1311,10 +1322,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_LAN_GETPING:
+			VM_CheckBlock( args[2], args[3], "UILANGP" );
 			LAN_GetPing( args[ 1 ], VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
 		case UI_LAN_GETPINGINFO:
+			VM_CheckBlock( args[2], args[3], "UILANGPI" );
 			LAN_GetPingInfo( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1322,10 +1335,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return LAN_GetServerCount( args[ 1 ] );
 
 		case UI_LAN_GETSERVERADDRESSSTRING:
+			VM_CheckBlock( args[3], args[4], "UILANGSAS" );
 			LAN_GetServerAddressString( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case UI_LAN_GETSERVERINFO:
+			VM_CheckBlock( args[3], args[4], "UILANGSI" );
 			LAN_GetServerInfo( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
 			return 0;
 
@@ -1347,6 +1362,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_LAN_SERVERSTATUS:
+			VM_CheckBlock( args[2], args[3], "UILANGSS" );
 			return LAN_GetServerStatus( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case UI_LAN_SERVERISINFAVORITELIST:
@@ -1362,6 +1378,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return Hunk_MemoryRemaining();
 
 		case UI_GET_CDKEY:
+			VM_CheckBlock( args[2], args[3], "UIGCDK" ); // hmm...
 			CLUI_GetCDKey( VMA( 1 ), args[ 2 ] );
 			return 0;
 
@@ -1466,7 +1483,8 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return re.AnimFrameRate( args[ 1 ] );
 #endif
 		case UI_GETTEXT:
-			strncpy( VMA(1), VMA(2), args[3] );
+			VM_CheckBlock( args[1], args[3], "UIGETTEXT" );
+			Q_strncpyz( VMA(1), VMA(2), args[3] );
 			return 0;
 
 		case UI_R_GLYPH:

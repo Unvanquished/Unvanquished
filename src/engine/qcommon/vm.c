@@ -1157,14 +1157,26 @@ VM_CheckBlock
 Address+offset validation
 =================
 */
-static void VM_CheckBlock( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail )
+void VM_CheckBlock( intptr_t buf, size_t n, const char *fail )
 {
 	intptr_t dataMask = currentVM->dataMask;
 
-	if ( ( dest & dataMask ) != dest
-	     || ( src & dataMask ) != src
-	     || ( ( dest + dn ) & dataMask ) != dest + dn
-	     || ( ( src + sn ) & dataMask ) != src + sn )
+	if ( dataMask &&
+	     ( ( buf & dataMask ) != buf || ( ( buf + n ) & dataMask ) != buf + n ) )
+	{
+		Com_Error( ERR_DROP, "%s out of range! [%lx, %lx, %lx]", fail, buf, n, dataMask );
+	}
+}
+
+void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail )
+{
+	intptr_t dataMask = currentVM->dataMask;
+
+	if ( dataMask &&
+	     ( ( dest & dataMask ) != dest
+	       || ( src & dataMask ) != src
+	       || ( ( dest + dn ) & dataMask ) != dest + dn
+	       || ( ( src + sn ) & dataMask ) != src + sn ) )
 	{
 		Com_Error( ERR_DROP, "%s out of range!", fail );
 	}
@@ -1178,7 +1190,7 @@ Executes a block copy operation within currentVM data space
 */
 void VM_BlockCopy( unsigned int dest, unsigned int src, size_t n )
 {
-	VM_CheckBlock( dest, src, n, n, "OP_BLOCK_COPY" );
+	VM_CheckBlockPair( dest, src, n, n, "OP_BLOCK_COPY" );
 	Com_Memcpy( currentVM->dataBase + dest, currentVM->dataBase + src, n );
 }
 
@@ -1201,21 +1213,21 @@ intptr_t VM_SystemCall( intptr_t *args )
 	switch( args[ 0 ] )
 	{
 		case TRAP_MEMSET:
-			VM_CheckBlock( args[ 1 ], 0, args[ 3 ], args[ 3 ], "MEMSET" );
+			VM_CheckBlock( args[ 1 ], args[ 3 ], "MEMSET" );
 			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case TRAP_MEMCPY:
-			VM_CheckBlock( args[ 1 ], args[ 2 ], args[ 3 ], args[ 3 ], "MEMCPY" );
+			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], args[ 3 ], "MEMCPY" );
 			memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case TRAP_MEMCMP:
-			VM_CheckBlock( args[ 1 ], args[ 2 ], args[ 3 ], args[ 3 ], "MEMCMP" );
+			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], args[ 3 ], "MEMCMP" );
 			return memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case TRAP_STRNCPY:
-			VM_CheckBlock( args[ 1 ], args[ 2 ], args[ 3 ], strlen( VMA( 2 ) ) + 1, "STRNCPY" );
+			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], strlen( VMA( 2 ) ) + 1, "STRNCPY" );
 			return ( intptr_t ) strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case TRAP_SIN:

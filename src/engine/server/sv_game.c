@@ -506,10 +506,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return Cvar_VariableIntegerValue( ( const char * ) VMA( 1 ) );
 
 		case G_CVAR_VARIABLE_STRING_BUFFER:
+		        VM_CheckBlock( args[2], args[3], "CVARVSB" );
 			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_CVAR_LATCHEDVARIABLESTRINGBUFFER:
+		        VM_CheckBlock( args[2], args[3], "CVARLVSB" );
 			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -517,6 +519,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return Cmd_Argc();
 
 		case G_ARGV:
+		        VM_CheckBlock( args[2], args[3], "ARGV" );
 			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -528,10 +531,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case G_FS_READ:
+		        VM_CheckBlock( args[1], args[2], "FSREAD" );
 			FS_Read2( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case G_FS_WRITE:
+		        VM_CheckBlock( args[1], args[2], "FSWRITE" );
 			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case G_FS_RENAME:
@@ -543,6 +548,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_FS_GETFILELIST:
+		        VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case G_LOCATE_GAME_DATA:
@@ -566,6 +572,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_ENTITIES_IN_BOX:
+		        VM_CheckBlock( args[3], args[4] * sizeof( int ), "ENTIB" );
 			return SV_AreaEntities( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case G_ENTITY_CONTACT:
@@ -600,6 +607,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_GET_CONFIGSTRING:
+		        VM_CheckBlock( args[2], args[3], "GETCS" );
 			SV_GetConfigstring( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -613,10 +621,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_GET_USERINFO:
+		        VM_CheckBlock( args[2], args[3], "GETUI" );
 			SV_GetUserinfo( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_GET_SERVERINFO:
+		        VM_CheckBlock( args[2], args[3], "GETSI" );
 			SV_GetServerinfo( VMA( 1 ), args[ 2 ] );
 			return 0;
 
@@ -639,6 +649,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case BOT_GET_CONSOLE_MESSAGE:
+		        VM_CheckBlock( args[2], args[3], "BOTGCM" );
 			return SV_BotGetConsoleMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );
 
 		case G_GET_USERCMD:
@@ -646,6 +657,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_GET_ENTITY_TOKEN:
+		        VM_CheckBlock( args[1], args[2], "GETET" );
 			{
 				const char *s;
 
@@ -728,6 +740,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_SENDMESSAGE:
+		        VM_CheckBlock( args[2], args[3], "SENDM" );
 			SV_SendBinaryMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 

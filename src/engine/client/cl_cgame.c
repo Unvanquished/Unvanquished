@@ -724,10 +724,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_CVAR_VARIABLESTRINGBUFFER:
+			VM_CheckBlock( args[2], args[3], "CVARVSB" );
 			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_CVAR_LATCHEDVARIABLESTRINGBUFFER:
+			VM_CheckBlock( args[2], args[3], "CVARLVSB" );
 			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -735,15 +737,18 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return Cmd_Argc();
 
 		case CG_ARGV:
+			VM_CheckBlock( args[2], args[3], "ARGV" );
 			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_ARGS:
+			VM_CheckBlock( args[1], args[2], "ARGS" );
 			Cmd_ArgsBuffer( VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_LITERAL_ARGS:
 			// FIXME
+			VM_CheckBlock( args[1], args[2], "LARGS" );
 			Cmd_LiteralArgsBuffer( VMA( 1 ), args[ 2 ] );
 //                      Cmd_ArgsBuffer(VMA(1), args[2]);
 			return 0;
@@ -758,10 +763,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case CG_FS_READ:
+			VM_CheckBlock( args[1], args[2], "FSREAD" );
 			FS_Read2( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case CG_FS_WRITE:
+			VM_CheckBlock( args[1], args[2], "FSWRITE" );
 			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case CG_FS_FCLOSEFILE:
@@ -769,6 +776,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_FS_GETFILELIST:
+			VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case CG_FS_DELETEFILE:
@@ -1199,6 +1207,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GET_ENTITY_TOKEN:
+			VM_CheckBlock( args[1], args[2], "GETET" );
 			return re.GetEntityToken( VMA( 1 ), args[ 2 ] );
 
 		case CG_INGAME_POPUP:
@@ -1217,6 +1226,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_GETBINDINGBUF:
+			VM_CheckBlock( args[2], args[3], "KEYGBB" );
 			Key_GetBindingBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1240,6 +1250,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return Parse_SourceFileAndLine( args[ 1 ], VMA( 2 ), VMA( 3 ) );
 
 		case CG_KEY_KEYNUMTOSTRINGBUF:
+			VM_CheckBlock( args[2], args[3], "KEYNTSB" );
 			Key_KeynumToStringBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1270,7 +1281,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 			//zinx - binary channel
 		case CG_SENDMESSAGE:
-			CL_SendBinaryMessage( VMA( 1 ), args[ 2 ] );
+			VM_CheckBlock( args[1], args[2], "SENDM" );
+ 			CL_SendBinaryMessage( VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_MESSAGESTATUS:
@@ -1295,6 +1307,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETDEMONAME:
+			VM_CheckBlock( args[1], args[2], "GETDM" );
 			CL_DemoName( VMA( 1 ), args[ 2 ] );
 
 		case CG_R_LIGHTFORPOINT:
@@ -1331,6 +1344,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETCLIPBOARDDATA:
+			VM_CheckBlock( args[1], args[2], "GETCLIP" );
 			CL_GetClipboardData( VMA(1), args[2], args[3] );
 			return 0;
 

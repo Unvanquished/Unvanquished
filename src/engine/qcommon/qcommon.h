@@ -411,6 +411,9 @@ void           VM_Debug( int level );
 void           *VM_ArgPtr( intptr_t intValue );
 void           *VM_ExplicitArgPtr( vm_t *vm, intptr_t intValue );
 
+void VM_CheckBlock( intptr_t buf, size_t n, const char *fail );
+void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail );
+
 intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
 
 #define VMA(x) VM_ArgPtr(args[ x ])
