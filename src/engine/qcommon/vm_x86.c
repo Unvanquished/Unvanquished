@@ -511,9 +511,9 @@ static void DoSyscall( void )
 			args[ index ] = data[ index ];
 		}
 
-		if ( arg < FIRST_VM_SYSCALL )
+		if ( args[ 0 ] < FIRST_VM_SYSCALL )
 		{
-			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( &arg ); // Common
+			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( args ); // Common
 		}
 		else
 		{
@@ -521,7 +521,8 @@ static void DoSyscall( void )
 		}
 #else
 		data[ 0 ] = ~syscallNum;
-		if ( arg < FIRST_VM_SYSCALL )
+
+		if ( data[ 0 ] < FIRST_VM_SYSCALL )
 		{
 			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( data ); // Common
 		}
