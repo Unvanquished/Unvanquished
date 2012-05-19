@@ -50,7 +50,6 @@ option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                 1 )
 option( USE_MUMBLE           "Compile with support for Mumble"             1 )
 option( USE_PHYSICS          "Compile with Newton Physics"                 0 )
 option( USE_WEBP             "Compile with WebP loader"                    1 )
-option( USE_MYSQL            "Compile with MYSQL support"                  0 )
 option( USE_VOIP             "Compile with VOIP support"                   1 )
 option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
 option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
@@ -404,13 +403,6 @@ endif()
 
 if( USE_PHYSICS )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/cm_physics.cpp )
-endif()
-
-if( USE_MYSQL )
-  set( DATABASELIST
-    ${MOUNT_DIR}/engine/database/db_main.c
-    ${MOUNT_DIR}/engine/database/db_mysql.c
-  )
 endif()
 
 set( CLIENTLIST
@@ -1126,13 +1118,6 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${TINYXML_LIBRARY} ${NEWTON_LIBRARY} )
   endif()
 
-  if( USE_MYSQL )
-    find_package( MySQL REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ET_MYSQL )
-    include_directories( ${MYSQL_INCLUDE_DIR} )
-    target_link_libraries( client ${MYSQL_LIBRARIES} )
-  endif()
-
   if( USE_CIN_XVID )
     find_package( xvid REQUIRED )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_CIN_XVID )
@@ -1220,12 +1205,8 @@ if( BUILD_SERVER )
 
   include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
   target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+
   # The following section finds the OPTIONAL dependencies and makes them available to the target
-  if( USE_MYSQL )
-    find_package( MySQL REQUIRED )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ET_MYSQL )
-    target_link_libraries( server ${MYSQL_LIBRARIES} )
-  endif()
 
   if( USE_CURSES )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ${CURSES_DEFINES} )

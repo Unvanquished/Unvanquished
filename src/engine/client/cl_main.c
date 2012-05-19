@@ -41,10 +41,6 @@ Maryland 20850 USA.
 #include "client.h"
 #include <limits.h>
 
-#ifdef ET_MYSQL
-#include "../database/database.h"
-#endif
-
 #include "snd_local.h" // fretn
 
 #include "../sys/sys_loadlib.h"

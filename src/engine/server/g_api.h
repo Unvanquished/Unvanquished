@@ -166,18 +166,6 @@ typedef enum
   G_ADD_PHYSICS_STATIC,
   G_SENDMESSAGE,
   G_MESSAGESTATUS,
-#ifdef ET_MYSQL
-  G_SQL_RUNQUERY,
-  G_SQL_FINISHQUERY,
-  G_SQL_NEXTROW,
-  G_SQL_ROWCOUNT,
-  G_SQL_GETFIELDBYID,
-  G_SQL_GETFIELDBYNAME,
-  G_SQL_GETFIELDBYID_INT,
-  G_SQL_GETFIELDBYNAME_INT,
-  G_SQL_FIELDCOUNT,
-  G_SQL_CLEANSTRING,
-#endif
   G_RSA_GENMSG // ( const char *public_key, char *cleartext, char *encrypted )
 } gameImport_t;
 
