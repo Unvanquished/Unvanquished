@@ -41,10 +41,6 @@ Maryland 20850 USA.
 #include "client.h"
 #include <limits.h>
 
-#ifdef ET_MYSQL
-#include "../database/database.h"
-#endif
-
 #include "snd_local.h" // fretn
 
 #include "../sys/sys_loadlib.h"
@@ -5091,9 +5087,11 @@ void CL_Init( void )
 	cl_recoilPitch = Cvar_Get( "cg_recoilPitch", "0", CVAR_ROM );
 
 	cl_bypassMouseInput = Cvar_Get( "cl_bypassMouseInput", "0", 0 );  //CVAR_ROM );          // NERVE - SMF
-
+#ifndef MACOS_X
+	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", CVAR_ARCHIVE );  // Arnout: double tap
+#else
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "100", CVAR_ARCHIVE );  // Arnout: double tap
-
+#endif
 	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
 	m_yaw = Cvar_Get( "m_yaw", "0.022", CVAR_ARCHIVE );
 	m_forward = Cvar_Get( "m_forward", "0.25", CVAR_ARCHIVE );

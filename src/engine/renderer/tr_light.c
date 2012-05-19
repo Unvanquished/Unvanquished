@@ -407,6 +407,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent )
 	vec3_t   lightOrigin;
 	vec3_t   lightValue;
 	byte     *entityLight;
+	qboolean md5 = strstr( tr.models[ ent->e.hModel ]->name, ".md5" ) ? qtrue : qfalse;
 
 	// lighting calculations
 	if ( ent->lightingCalculated )
@@ -537,6 +538,12 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent )
 		{
 			ent->ambientLight[ i ] = tr.identityLightByte;
 		}
+	}
+	
+	// HACK: Make md5s appear without shadows.
+	if ( md5 )
+	{
+		VectorSet( ent->ambientLight, 255, 255, 255 );
 	}
 
 	if ( r_debugLight->integer )

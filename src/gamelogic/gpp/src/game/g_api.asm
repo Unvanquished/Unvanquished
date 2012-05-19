@@ -82,14 +82,4 @@ equ trap_AddPhysicsEntity                 -317
 equ trap_AddPhysicsStatic                 -318
 equ trap_SendMessage                      -319
 equ trap_MessageStatus                    -320
-equ trap_SQL_RunQuery                     -321
-equ trap_SQL_FinishQuery                  -322
-equ trap_SQL_NextRow                      -323
-equ trap_SQL_RowCount                     -324
-equ trap_SQL_GetFieldbyID                 -325
-equ trap_SQL_GetFieldbyName               -326
-equ trap_SQL_GetFieldbyID_int             -327
-equ trap_SQL_GetFieldbyName_int           -328
-equ trap_SQL_FieldCount                   -329
-equ trap_SQL_CleanString                  -330
-equ trap_RSA_GenerateMessage              -331
+equ trap_RSA_GenerateMessage              -321

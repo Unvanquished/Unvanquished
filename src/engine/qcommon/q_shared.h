@@ -2625,10 +2625,6 @@ typedef struct
 	  AUTHORIZE_UNAVAILABLE,
 	};
 
-#if defined ( ET_SQL )
-# define ET_MYSQL 1
-#endif
-
 	/* This should not be changed because this value is
 	* expected to be the same on the client and on the server */
 #define RSA_PUBLIC_EXPONENT 65537

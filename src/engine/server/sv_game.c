@@ -747,43 +747,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		case G_MESSAGESTATUS:
 			return SV_BinaryMessageStatus( args[ 1 ] );
 
-#if defined( ET_MYSQL )
-
-		case G_SQL_RUNQUERY:
-			return D_RunQuery( VMA( 1 ) );
-
-		case G_SQL_FINISHQUERY:
-			D_FinishQuery( args[ 1 ] );
-			return 0;
-
-		case G_SQL_NEXTROW:
-			return D_NextRow( args[ 1 ] );
-
-		case G_SQL_ROWCOUNT:
-			return D_RowCount( args[ 1 ] );
-
-		case G_SQL_GETFIELDBYID:
-			D_GetFieldByID( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case G_SQL_GETFIELDBYNAME:
-			D_GetFieldByName( args[ 1 ], VMA( 2 ), VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case G_SQL_GETFIELDBYID_INT:
-			return D_GetFieldByID_int( args[ 1 ], args[ 2 ] );
-
-		case G_SQL_GETFIELDBYNAME_INT:
-			return D_GetFieldByName_int( args[ 1 ], VMA( 2 ) );
-
-		case G_SQL_FIELDCOUNT:
-			return D_FieldCount( args[ 1 ] );
-
-		case G_SQL_CLEANSTRING:
-			D_CleanString( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return 0;
-#endif
-
 		case G_RSA_GENMSG:
 			return SV_RSAGenMsg( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 

@@ -3881,10 +3881,10 @@ qboolean G_admin_restart( gentity_t *ent )
 
 		// Figure out which argument is which
 		if ( trap_Argc() > 2 ||
-		     ( Q_stricmp( layout, "keepteams" ) &&
-		       Q_stricmp( layout, "keepteamslock" ) &&
-		       Q_stricmp( layout, "switchteams" ) &&
-		       Q_stricmp( layout, "switchteamslock" ) ) )
+		     ( Q_stricmp( layout, "keepteams" ) && Q_stricmp( layout, "kt" ) &&
+		       Q_stricmp( layout, "keepteamslock" ) && Q_stricmp( layout, "ktl" ) &&
+		       Q_stricmp( layout, "switchteams" ) && Q_stricmp( layout, "st" ) &&
+		       Q_stricmp( layout, "switchteamslock" ) && Q_stricmp( layout, "stl" ) ) )
 		{
 			if ( !Q_stricmp( layout, "*BUILTIN*" ) ||
 			     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
@@ -3913,7 +3913,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	admin_log( layout );
 	admin_log( teampref );
 
-	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) )
+	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) || !Q_stricmp( teampref,"kt" ) || !Q_stricmp( teampref,"ktl" ) )
 	{
 		for ( i = 0; i < g_maxclients.integer; i++ )
 		{
@@ -3932,7 +3932,7 @@ qboolean G_admin_restart( gentity_t *ent )
 			cl->sess.restartTeam = cl->pers.teamSelection;
 		}
 	}
-	else if ( !Q_stricmp( teampref, "switchteams" ) || !Q_stricmp( teampref, "switchteamslock" ) )
+	else if ( !Q_stricmp( teampref, "switchteams" ) || !Q_stricmp( teampref, "switchteamslock" ) || !Q_stricmp( teampref,"st" ) || !Q_stricmp( teampref,"stl" ))
 	{
 		for ( i = 0; i < g_maxclients.integer; i++ )
 		{
@@ -3953,14 +3953,15 @@ qboolean G_admin_restart( gentity_t *ent )
 			}
 		}
 	}
-	else
+	else if ( trap_Argc() > 1 )
 	{
 		ADMP( va( "^3restart: ^7unrecognised option '%s'\n", teampref ) );
 		return qfalse;
 	}
 
 	if ( !Q_stricmp( teampref, "switchteamslock" ) ||
-	     !Q_stricmp( teampref, "keepteamslock" ) )
+	     !Q_stricmp( teampref, "keepteamslock" ) ||
+		 !Q_stricmp( teampref,"ktl" ) || !Q_stricmp( teampref,"stl" ) )
 	{
 		trap_Cvar_Set( "g_lockTeamsAtStart", "1" );
 	}
