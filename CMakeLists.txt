@@ -50,7 +50,6 @@ option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                 1 )
 option( USE_MUMBLE           "Compile with support for Mumble"             1 )
 option( USE_PHYSICS          "Compile with Newton Physics"                 0 )
 option( USE_WEBP             "Compile with WebP loader"                    1 )
-option( USE_MYSQL            "Compile with MYSQL support"                  0 )
 option( USE_VOIP             "Compile with VOIP support"                   1 )
 option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
 option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
@@ -110,7 +109,7 @@ elseif( WIN32 )
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     set( BUILD_ARCH "x86_64" )
   elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-    set( BUILD_ARCH "i386" )
+    set( BUILD_ARCH "x86" )
   endif()
 else()
   # CMAKE_SYSTEM_PROCESSOR is reliable for *nix
@@ -404,13 +403,6 @@ endif()
 
 if( USE_PHYSICS )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/cm_physics.cpp )
-endif()
-
-if( USE_MYSQL )
-  set( DATABASELIST
-    ${MOUNT_DIR}/engine/database/db_main.c
-    ${MOUNT_DIR}/engine/database/db_mysql.c
-  )
 endif()
 
 set( CLIENTLIST
@@ -825,7 +817,7 @@ endif()
 if( WIN32 )
   add_definitions( -DWINVER=0x501 )
   #set( OS_LIBRARIES m winmm wsock32 gdi32 ole32 ws2_32 psapi Iphlpapi advapi32 shell32 user32 )
-  set( OS_LIBRARIES m winmm ws2_32 psapi libz )
+  set( OS_LIBRARIES m winmm ws2_32 psapi z )
   set( EXTRALIBS dinput dsound )
 elseif( UNIX )
   if( CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" )
@@ -1008,7 +1000,7 @@ endif()
 # Find Curses #
 ###############
 
-if( BUILD_CLIENT OR BUILD_SERVER )
+if( BUILD_CLIENT OR BUILD_SERVER AND USE_CURSES )
   set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
   find_package( CursesW )
   if( CURSESW_FOUND )
@@ -1126,13 +1118,6 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${TINYXML_LIBRARY} ${NEWTON_LIBRARY} )
   endif()
 
-  if( USE_MYSQL )
-    find_package( MySQL REQUIRED )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ET_MYSQL )
-    include_directories( ${MYSQL_INCLUDE_DIR} )
-    target_link_libraries( client ${MYSQL_LIBRARIES} )
-  endif()
-
   if( USE_CIN_XVID )
     find_package( xvid REQUIRED )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_CIN_XVID )
@@ -1150,6 +1135,10 @@ if( BUILD_CLIENT )
   if( USE_LLVM )
     include_directories( ${LLVM_INCLUDE_DIR} )
     target_link_libraries( client ${LLVM_LIBS} )
+  endif()
+
+  if( WIN32 )
+    target_link_libraries( client ${SDLMAIN_LIBRARY} )
   endif()
 endif()
 
@@ -1216,12 +1205,8 @@ if( BUILD_SERVER )
 
   include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
   target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+
   # The following section finds the OPTIONAL dependencies and makes them available to the target
-  if( USE_MYSQL )
-    find_package( MySQL REQUIRED )
-    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ET_MYSQL )
-    target_link_libraries( server ${MYSQL_LIBRARIES} )
-  endif()
 
   if( USE_CURSES )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ${CURSES_DEFINES} )
