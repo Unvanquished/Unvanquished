@@ -605,9 +605,9 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 	{
 		GLSL_PrintShaderSource( shader );
 		GLSL_PrintInfoLog( shader, qfalse );
-		ri.Error( ERR_DROP, "Couldn't compile %s", filename );
 		ri.FS_FreeFile( mainBuffer );
 		free( libsBuffer );
+		ri.Error( ERR_DROP, "Couldn't compile %s", filename );
 		return;
 	}
 
