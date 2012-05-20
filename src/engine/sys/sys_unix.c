@@ -36,9 +36,11 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
 
+#include <stdarg.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <stdio.h>
 #include <dirent.h>
@@ -771,43 +773,95 @@ void Sys_ErrorDialog( const char *error )
 #ifndef MACOS_X
 
 /*
+=============
+Sys_System
+
+Avoid all that ugliness with shell quoting
+=============
+*/
+static int Sys_System( char *cmd, ... )
+{
+	va_list ap;
+	char    *argv[ 16 ] = { NULL };
+	pid_t   pid;
+	int     r;
+
+	va_start( ap, cmd );
+	argv[ 0 ] = cmd;
+
+	for ( r = 1; r < ARRAY_LEN( argv ) - 1; ++r )
+	{
+		argv[ r ] = va_arg( ap, char * );
+		if ( !argv[ r ] )
+		{
+			break;
+		}
+	}
+
+	va_end( ap );
+
+	switch ( pid = fork() )
+	{
+	case 0: // child
+		// give me an exec() which takes a va_list...
+		execvp( cmd, argv );
+		exit( 2 );
+
+	case -1: // error
+		return -1;
+
+	default: // parent
+		do
+		{
+			waitpid( pid, &r, 0 );
+		} while ( !WIFEXITED( r ) );
+
+		return WEXITSTATUS( r );
+	}
+}
+
+/*
 ==============
 Sys_ZenityCommand
 ==============
 */
 static int Sys_ZenityCommand( dialogType_t type, const char *message, const char *title )
 {
-	const char *options = "";
-	char       command[ 1024 ];
+	char       opt_text[ 512 ], opt_title[ 512 ];
+	const char *options[ 3 ] = { NULL };
 
 	switch ( type )
 	{
 		default:
 		case DT_INFO:
-			options = "--info";
+			options[ 0 ] = "--info";
 			break;
 
 		case DT_WARNING:
-			options = "--warning";
+			options[ 0 ] = "--warning";
 			break;
 
 		case DT_ERROR:
-			options = "--error";
+			options[ 0 ] = "--error";
 			break;
 
 		case DT_YES_NO:
-			options = "--question --ok-label=\"Yes\" --cancel-label=\"No\"";
+			options[ 0 ] = "--question";
+			options[ 1 ] = "--ok-label=Yes";
+			options[ 2 ] = "--cancel-label=No";
 			break;
 
 		case DT_OK_CANCEL:
-			options = "--question --ok-label=\"OK\" --cancel-label=\"Cancel\"";
+			options[ 0 ] = "--question";
+			options[ 1 ] = "--ok-label=OK";
+			options[ 2 ] = "--cancel-label=Cancel";
 			break;
 	}
 
-	Com_sprintf( command, sizeof( command ), "zenity %s --text=\"%s\" --title=\"%s\"",
-	             options, message, title );
+	Com_sprintf( opt_text, sizeof( opt_text ), "--text=%s", message );
+	Com_sprintf( opt_title, sizeof( opt_title ), "--title=%s", title );
 
-	return system( command );
+	return Sys_System( "zenity", options[ 0 ], opt_text, opt_title, options[ 1 ], options[ 2 ], NULL );
 }
 
 /*
@@ -817,8 +871,7 @@ Sys_KdialogCommand
 */
 static int Sys_KdialogCommand( dialogType_t type, const char *message, const char *title )
 {
-	const char *options = "";
-	char       command[ 1024 ];
+	const char *options;
 
 	switch ( type )
 	{
@@ -844,10 +897,7 @@ static int Sys_KdialogCommand( dialogType_t type, const char *message, const cha
 			break;
 	}
 
-	Com_sprintf( command, sizeof( command ), "kdialog %s \"%s\" --title \"%s\"",
-	             options, message, title );
-
-	return system( command );
+	return Sys_System( "kdialog", options, "--title", title, message, NULL );
 }
 
 /*
@@ -857,28 +907,24 @@ Sys_XmessageCommand
 */
 static int Sys_XmessageCommand( dialogType_t type, const char *message, const char *title )
 {
-	const char *options = "";
-	char       command[ 1024 ];
+	const char *options;
 
 	switch ( type )
 	{
 		default:
-			options = "-buttons OK";
+			options = "OK";
 			break;
 
 		case DT_YES_NO:
-			options = "-buttons Yes:0,No:1";
+			options = "Yes:0,No:1";
 			break;
 
 		case DT_OK_CANCEL:
-			options = "-buttons OK:0,Cancel:1";
+			options = "OK:0,Cancel:1";
 			break;
 	}
 
-	Com_sprintf( command, sizeof( command ), "xmessage -center %s \"%s\"",
-	             options, message );
-
-	return system( command );
+	return Sys_System( "xmessage", "-center", "-buttons", options, message, NULL );
 }
 
 /*
