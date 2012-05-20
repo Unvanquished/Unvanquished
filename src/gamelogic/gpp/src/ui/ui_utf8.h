@@ -28,14 +28,4 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 int ui_CursorToOffset( const char *buf, int cursor );
 int ui_OffsetToCursor( const char *buf, int offset );
 
-// Copied from src/engine/common/q_shared.c
-int ui_UTF8Width( const char *str );
-int ui_UTF8WidthCP( int ch );
-int ui_UTF8Strlen( const char *str );
-qboolean ui_UTF8ContByte( char c );
-unsigned long ui_UTF8CodePoint( const char *str );
-char *ui_UTF8Encode( unsigned long codepoint );
-int ui_UTF8Store( const char *s );
-char *ui_UTF8Unstore( int e );
-
 #endif

@@ -2730,7 +2730,15 @@ char *Q_UTF8Encode( unsigned long codepoint )
 // s needs to have at least sizeof(int) allocated
 int Q_UTF8Store( const char *s )
 {
-#ifdef Q3_BIG_ENDIAN
+#ifdef Q3_VM
+	int i = 0;
+	int r = 0;
+	while ( s[ i ] )
+	{
+		r |= ( s[ i ] & 0xFF ) << ( i * 3 );
+		++i;
+	}
+#elif defined Q3_BIG_ENDIAN
   int r = *(int *)s, i;
   unsigned char *p = (unsigned char *) &r;
   for( i = 0; i < sizeof(r) / 2; i++ )
@@ -2756,7 +2764,15 @@ char *Q_UTF8Unstore( int e )
   static int index = 0;
   char *buf = sbuf[index++ & 1];
 
-#ifdef Q3_BIG_ENDIAN
+#ifdef Q3_VM
+	int i = 0;
+	while ( e )
+	{
+		buf[ i++ ] = (char) e;
+		e >>= 8;
+	}
+	buf[ i ] = 0;
+#elif defined Q3_BIG_ENDIAN
   int i;
   unsigned char *p = (unsigned char *) buf;
   *(int *)buf = e;
