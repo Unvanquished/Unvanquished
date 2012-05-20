@@ -1065,7 +1065,6 @@ void Con_DrawSolidConsole( float frac )
 
 	for ( i = 0; i < rows; i++, y -= charHeight, row-- )
 	{
-		float currentWidthLocation = cl_conXOffset->integer;
 		conChar_t *text;
 
 		if ( row < 0 )
@@ -1080,6 +1079,8 @@ void Con_DrawSolidConsole( float frac )
 		}
 
 		text = con.text + CON_LINE( row );
+
+		currentWidthLocation = cl_conXOffset->integer;
 
 		for ( x = 0; x < con.linewidth && text[x].ch; ++x )
 		{

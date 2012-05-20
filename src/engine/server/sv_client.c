@@ -2024,7 +2024,7 @@ static ucmd_t ucmds[] =
 	{ "stopdl",     SV_StopDownload_f,    qfalse },
 	{ "donedl",     SV_DoneDownload_f,    qfalse },
 #ifdef USE_VOIP
-	{ "voip",       SV_Voip_f },
+	{ "voip",       SV_Voip_f,            qfalse },
 #endif
 	{ "wwwdl",      SV_WWWDownload_f,     qfalse },
 	{ NULL,         NULL }

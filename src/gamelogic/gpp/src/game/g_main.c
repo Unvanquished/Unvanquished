@@ -1285,7 +1285,6 @@ void G_CalculateBuildPoints( void )
 {
 	int              i;
 	buildable_t      buildable;
-	buildPointZone_t *zone;
 
 	// BP queue updates
 	while ( level.alienBuildPointQueue > 0 &&
@@ -1420,7 +1419,7 @@ void G_CalculateBuildPoints( void )
 
 		if ( ent->usesBuildPointZone && level.buildPointZones[ ent->buildPointZone ].active )
 		{
-			zone = &level.buildPointZones[ ent->buildPointZone ];
+			buildPointZone_t *zone = &level.buildPointZones[ ent->buildPointZone ];
 
 			if ( G_TimeTilSuddenDeath() > 0 )
 			{

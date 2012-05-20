@@ -2584,10 +2584,11 @@ static void PM_GroundClimbTrace( void )
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
 			vec3_t  forward, rotated, angles;
-			vec3_t  surfNormal = {0,0,-1};
 
 			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
 				VectorCopy(pm->ps->grapplePoint,surfNormal);
+			else
+				VectorSet( surfNormal, 0, 0, -1 );
 
 			//only correct if we were on a ceiling
 			if(surfNormal[2] < 0)

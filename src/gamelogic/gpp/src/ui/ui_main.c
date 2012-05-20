@@ -3313,7 +3313,6 @@ static void UI_Update( const char *name )
 static void UI_RunMenuScript( char **args )
 {
 	const char *name, *name2;
-	char buff[ 1024 ];
 	const char *cmd;
 
 	if ( String_Parse( args, &name ) )
@@ -3646,6 +3645,7 @@ static void UI_RunMenuScript( char **args )
 			if ( uiInfo.serverStatus.currentServer >= 0 &&
 			     uiInfo.serverStatus.currentServer < uiInfo.serverStatus.numDisplayServers )
 			{
+				char buff[ 1024 ];
 				trap_LAN_GetServerAddressString( ui_netSource.integer,
 				                                 uiInfo.serverStatus.displayServers[ uiInfo.serverStatus.currentServer ],
 				                                 buff, 1024 );
@@ -3786,6 +3786,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			if ( ui_netSource.integer != AS_FAVORITES )
 			{
+				char buff[ MAX_STRING_CHARS ];
 				char name[ MAX_NAME_LENGTH ];
 				char addr[ MAX_NAME_LENGTH ];
 				int res;
@@ -4021,6 +4022,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			if ( ui_netSource.integer == AS_FAVORITES )
 			{
+				char buff[ MAX_STRING_CHARS ];
 				char addr[ MAX_NAME_LENGTH ];
 				trap_LAN_GetServerInfo( ui_netSource.integer,
 				                        uiInfo.serverStatus.displayServers[ uiInfo.serverStatus.currentServer ],

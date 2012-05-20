@@ -616,7 +616,7 @@ void ProcessWorldModel(void)
 	for(i = 0; i < numEntities && emitFlares; i++)
 	{
 		entity_t       *light, *target;
-		const char     *value, *flareShader;
+		const char     *flareShader;
 		vec3_t          origin, targetOrigin, normal, color;
 		int             lightStyle;
 
