@@ -102,6 +102,9 @@ itemDef_t                 *Menu_SetPrevCursorItem( menuDef_t *menu );
 itemDef_t                 *Menu_SetNextCursorItem( menuDef_t *menu );
 static qboolean           Menu_OverActiveItem( menuDef_t *menu, float x, float y );
 
+// for text editing
+#define MIN_FIELD_WIDTH   10
+#define EDIT_CURSOR_WIDTH 10
 
 /*
 ===============
@@ -2490,7 +2493,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	qboolean    emoticonEscaped;
 	int         emoticonLen = 0;
 	int         emoticonWidth;
-	int         cursorX = -1;
+	int         cursorX = -1, cursorW = EDIT_CURSOR_WIDTH;
 	float       startX = x;
 
 	if ( !text )
@@ -2612,6 +2615,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		if ( count == cursorPos )
 		{
 			cursorX = x;
+			cursorW = MAX( EDIT_CURSOR_WIDTH / 2, glyph->imageWidth * DC->xscale * useScale );
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
@@ -2624,21 +2628,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		*maxX = x;
 	}
 
-	// paint cursor
-	if ( cursorPos >= 0 )
-	{
-		if ( cursorPos == count )
-		{
-			cursorX = x;
-		}
-
-		if ( cursorX >= 0 && !( ( DC->realTime / BLINK_DIVISOR ) & 1 ) )
-		{
-			glyph = &font->glyphBlock[0][( int ) cursor ];
-			UI_Text_PaintChar( cursorX, y, useScale, glyph, 2.0f );
-		}
-	}
-
+	// paint scrollbar
 	if ( scrollLength && count != scrollLength )
 	{
 		static const vec4_t black = { 0, 0, 0, 0.25 };
@@ -2658,6 +2648,30 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 		DC->setColor( recolour );
 		DC->drawStretchPic( bx, by, bw, bh, 0, 0, 0, 0, DC->whiteShader );
+	}
+
+	// paint cursor
+	if ( cursorPos >= 0 )
+	{
+		if ( cursorPos == count )
+		{
+			cursorX = x;
+		}
+
+		if ( cursorX >= 0 && !( ( DC->realTime / BLINK_DIVISOR ) & 1 ) )
+		{
+			color[3] /= 2.0;
+			DC->setColor( color );
+
+			if ( DC->getOverstrikeMode() )
+			{
+				DC->drawStretchPic( cursorX * DC->xscale, ( y - emoticonH ) * DC->yscale + 2, cursorW, emoticonH * DC->yscale, 0, 0, 0, 0, DC->whiteShader );
+			}
+			else
+			{
+				DC->drawStretchPic( cursorX * DC->xscale, y * DC->yscale + 2, cursorW, 2, 0, 0, 0, 0, DC->whiteShader );
+			}
+		}
 	}
 
 	DC->setColor( NULL );
@@ -3711,9 +3725,6 @@ qboolean Item_Multi_HandleKey( itemDef_t *item, int key )
 
 	return qfalse;
 }
-
-#define MIN_FIELD_WIDTH   10
-#define EDIT_CURSOR_WIDTH 10
 
 static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 {
