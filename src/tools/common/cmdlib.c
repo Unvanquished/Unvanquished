@@ -246,8 +246,6 @@ char           *ExpandPath(const char *path)
 {
 	static char     full[1024];
 
-	if(!qdir[0])
-		Error("ExpandPath called without qdir set");
 	if(path[0] == '/' || path[0] == '\\' || path[1] == ':')
 	{
 		strcpy(full, path);
