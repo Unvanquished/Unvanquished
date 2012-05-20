@@ -1843,7 +1843,6 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale )
 {
-	int         f, numFrames;
 	animation_t *anim;
 	qboolean    animChanged;
 
