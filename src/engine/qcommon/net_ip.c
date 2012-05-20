@@ -1994,7 +1994,7 @@ void NET_Sleep( int msec )
 	struct timeval timeout;
 
 	fd_set         fdset;
-	int            highestfd = -1;
+	SOCKET         highestfd = INVALID_SOCKET;
 
 	if ( !com_dedicated->integer )
 	{
@@ -2024,7 +2024,7 @@ void NET_Sleep( int msec )
 	{
 		FD_SET( ip6_socket, &fdset );
 
-		if ( ip6_socket > highestfd )
+		if ( highestfd == INVALID_SOCKET || ip6_socket > highestfd )
 		{
 			highestfd = ip6_socket;
 		}
