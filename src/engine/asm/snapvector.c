@@ -56,7 +56,17 @@ void qsnapvectorsse(vec3_t vec)
 
 		"ldmxcsr %3\n"
 		:
+// there's a Clang/LLVM warning for an uninitialized use of the oldcw variable.
+// i wasn't able to come up with anything better than the use of compiler
+// pragmas to silence the warning. TODO: come up with a better solution.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wuninitialized"
+#endif
 		: "r" (ssemask), "m" (ssecw), "D" (vec), "m" (oldcw)
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 		: "memory", "%xmm0", "%xmm1"
 	);
 
