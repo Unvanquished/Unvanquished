@@ -1043,7 +1043,7 @@ intptr_t        QDECL VM_Call( vm_t *vm, int callnum, ... )
 	}
 	else
 	{
-#if id386 || idsparc // i386/sparc calling convention doesn't need conversion
+#if ( id386 || idsparc ) && !defined __clang__ // calling convention doesn't need conversion in some cases
 #ifndef NO_VM_COMPILED
 
 		if ( vm->compiled )
