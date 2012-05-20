@@ -1899,7 +1899,7 @@ void CL_OpenUrl_f( void )
 
 		u = url;
 
-		for ( i = 0; i < lengthof( allowPrefixes ); i++ )
+		for ( i = 0; i < ARRAY_LEN( allowPrefixes ); i++ )
 		{
 			const char *p = allowPrefixes[ i ];
 			size_t     len = strlen( p );
@@ -1911,7 +1911,7 @@ void CL_OpenUrl_f( void )
 			}
 		}
 
-		if ( i == lengthof( allowPrefixes ) )
+		if ( i == ARRAY_LEN( allowPrefixes ) )
 		{
 			/*
 			        This really won't ever hit because of the "" at the end
@@ -1922,7 +1922,7 @@ void CL_OpenUrl_f( void )
 			return;
 		}
 
-		for ( i = 0; i < lengthof( allowDomains ); i++ )
+		for ( i = 0; i < ARRAY_LEN( allowDomains ); i++ )
 		{
 			size_t     len;
 			const char *d = allowDomains[ i ];
@@ -1941,7 +1941,7 @@ void CL_OpenUrl_f( void )
 			}
 		}
 
-		if ( i == lengthof( allowDomains ) )
+		if ( i == ARRAY_LEN( allowDomains ) )
 		{
 			Com_Printf( "Invalid domain.\n" );
 			return;

@@ -37,9 +37,6 @@ Maryland 20850 USA.
 #endif
 
 #include <CPUInfo.h>
-// the CPUInfo.h implemntation of lengthof is unsafe, so use the one
-// from q_shared.h
-#undef lengthof
 
 #include <signal.h>
 #include <stdlib.h>

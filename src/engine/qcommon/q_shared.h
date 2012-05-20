@@ -265,8 +265,6 @@ extern int memcmp( void *, void *, size_t );
 #define ALIGN(x)
 #endif
 
-#define lengthof( a )           ( sizeof( ( a ) ) / sizeof( ( a )[ 0 ] ))
-
 #define PAD(x,y)                ((( x ) + ( y ) - 1 ) & ~(( y ) - 1 ))
 #define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
 #define PADP(base, alignment)   ((void *) PAD((intptr_t) ( base ), ( alignment )))
