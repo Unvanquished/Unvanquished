@@ -2242,11 +2242,13 @@ float UI_Char_Width( const char **text, float scale )
 
 	if ( text && *text )
 	{
-		if ( Q_IsColorString( *text ) )
+		if ( scale >= 0.0 && Q_IsColorString( *text ) )
 		{
 			*text += 2;
 			return 0.0f;
 		}
+
+		scale = fabs( scale );
 
 		if ( **text == INDENT_MARKER )
 		{
@@ -2295,6 +2297,25 @@ float UI_Text_Width( const char *text, float scale )
 		while ( *s )
 		{
 			out += UI_Char_Width( &s, scale );
+		}
+	}
+
+	return out + indentWidth;
+}
+
+float UI_Plain_Text_Width( const char *text, float scale )
+{
+	float      out;
+	const char *s = text;
+	float      indentWidth = 0.0f;
+
+	out = 0.0f;
+
+	if ( text )
+	{
+		while ( *s )
+		{
+			out += UI_Char_Width( &s, -scale );
 		}
 	}
 
@@ -3709,29 +3730,38 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 	}
 	else
 	{
+		char atCursor;
+		int  offset, cursorOffset;
+
 		// If there is a maximum field width
 		if ( editPtr->maxFieldWidth > 0 )
 		{
-			int offset;
+			int widthAdjust;
+
 			// If the cursor is at the end of the string, maximise the amount of the
 			// string that's visible
-
 			if ( item->cursorPos == ui_UTF8Strlen( buff ) )
 			{
-				while ( UI_Text_Width( buff + ui_CursorToOffset( buff, editPtr->paintOffset ), item->textscale ) <=
+				while ( UI_Plain_Text_Width( buff + ui_CursorToOffset( buff, editPtr->paintOffset ), item->textscale ) <=
 				        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) && editPtr->paintOffset > 0 )
 				{
 					editPtr->paintOffset--;
 				}
-			}
 
-			buff[ ui_CursorToOffset( buff, item->cursorPos + 1 ) ] = '\0';
+				widthAdjust = EDIT_CURSOR_WIDTH;
+			}
+			else
+			{
+				buff[ ui_CursorToOffset( buff, item->cursorPos + 2 ) ] = '\0';
+				widthAdjust = UI_Plain_Text_Width( buff + ui_CursorToOffset( buff, item->cursorPos ), item->textscale ) + 2;
+				widthAdjust = MAX( widthAdjust, EDIT_CURSOR_WIDTH );
+			}
 
 			// Shift paintOffset so that the cursor is visible
 			offset = ui_CursorToOffset( buff, editPtr->paintOffset );
 
-			while ( UI_Text_Width( buff + offset, item->textscale ) >
-			        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) )
+			while ( UI_Plain_Text_Width( buff + offset, item->textscale ) >
+			        ( editPtr->maxFieldWidth - widthAdjust ) )
 			{
 				editPtr->paintOffset++;
 				offset += ui_UTF8Width( buff + offset );
@@ -5663,10 +5693,21 @@ void Item_TextField_Paint( itemDef_t *item )
 	paintIndex = ui_CursorToOffset( buff, editPtr->paintOffset );
 
 	// Shorten string to max viewable
-	while ( UI_Text_Width( buff + paintIndex, item->textscale ) >
-	        ( editPtr->maxFieldWidth - cursorWidth ) && strlen( buff ) >= paintIndex )
+	if ( editing )
 	{
-		buff[ strlen( buff ) - 1 ] = '\0';
+		while ( UI_Plain_Text_Width( buff + paintIndex, item->textscale ) >
+				( editPtr->maxFieldWidth - cursorWidth ) && strlen( buff ) >= paintIndex )
+		{
+			buff[ strlen( buff ) - 1 ] = '\0';
+		}
+	}
+	else
+	{
+		while ( UI_Text_Width( buff + paintIndex, item->textscale ) >
+				( editPtr->maxFieldWidth - cursorWidth ) && strlen( buff ) >= paintIndex )
+		{
+			buff[ strlen( buff ) - 1 ] = '\0';
+		}
 	}
 
 	parent = ( menuDef_t * ) item->parent;
