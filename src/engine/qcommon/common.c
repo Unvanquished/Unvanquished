@@ -2882,8 +2882,6 @@ int Com_EventLoop( void )
 			Z_Free( ev.evPtr );
 		}
 	}
-
-	return 0; // never reached
 }
 
 /*

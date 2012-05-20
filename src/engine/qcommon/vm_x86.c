@@ -194,8 +194,6 @@ static int Hex( int c )
 
 	VMFREE_BUFFERS();
 	Com_Error( ERR_DROP, "Hex: bad char '%c'", c );
-
-	return 0;
 }
 
 static void EmitString( const char *string )

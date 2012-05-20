@@ -83,7 +83,6 @@ sfxHandle_t al_buf_find_free()
 
 	// Shit...
 	si.Error( ERR_FATAL, "al_buf_find_free: No free sound handles" );
-	return -1;
 }
 
 // Find a sound effect if loaded, set up a handle otherwise

@@ -447,7 +447,6 @@ static fileHandle_t FS_HandleForFile( void )
 	}
 
 	Com_Error( ERR_DROP, "FS_HandleForFile: none free" );
-	return 0;
 }
 
 static FILE *FS_FileForHandle( fileHandle_t f )
@@ -2184,8 +2183,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 
 			default:
 				Com_Error( ERR_FATAL, "Bad origin in FS_Seek\n" );
-				return -1;
-				break;
 		}
 	}
 	else

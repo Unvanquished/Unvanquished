@@ -963,7 +963,5 @@ int main( int argc, char **argv )
 		IN_Frame();
 		Com_Frame();
 	}
-
-	return 0;
 #endif
 }
