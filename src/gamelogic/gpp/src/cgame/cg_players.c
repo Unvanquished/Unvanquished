@@ -1871,105 +1871,15 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		animChanged = qfalse;
 	}
 
-	// if we have passed the current frame, move it to
-	// oldFrame and calculate a new frame
-	if ( cg.time >= lf->frameTime || animChanged )
+
+	anim = lf->animation;
+
+	if ( !anim->frameLerp )
 	{
-		if ( animChanged )
-		{
-			lf->oldFrame = 0;
-			lf->oldFrameTime = cg.time;
-		}
-		else
-
-		{
-			lf->oldFrame = lf->frame;
-			lf->oldFrameTime = lf->frameTime;
-		}
-
-		// get the next frame based on the animation
-		anim = lf->animation;
-
-		if ( !anim->frameLerp )
-		{
-			return; // shouldn't happen
-		}
-
-		if ( cg.time < lf->animationStartTime )
-		{
-			lf->frameTime = lf->animationStartTime; // initial lerp
-		}
-		else
-		{
-			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
-		}
-
-		f = ( lf->frameTime - lf->animationStartTime ) / anim->frameLerp;
-		f *= speedScale; // adjust for haste, etc
-
-		numFrames = anim->numFrames;
-
-		if ( anim->flipflop )
-		{
-			numFrames *= 2;
-		}
-
-		if ( f >= numFrames )
-		{
-			f -= numFrames;
-
-			if ( anim->loopFrames )
-			{
-				f %= anim->loopFrames;
-				f += anim->numFrames - anim->loopFrames;
-			}
-			else
-			{
-				f = numFrames - 1;
-				// the animation is stuck at the end, so it
-				// can immediately transition to another sequence
-				lf->frameTime = cg.time;
-			}
-		}
-
-		if ( anim->reversed )
-		{
-			lf->frame = anim->firstFrame + anim->numFrames - 1 - f;
-		}
-		else if ( anim->flipflop && f >= anim->numFrames )
-		{
-			lf->frame = anim->firstFrame + anim->numFrames - 1 - ( f % anim->numFrames );
-		}
-		else
-		{
-			lf->frame = anim->firstFrame + f;
-		}
-
-		if ( cg.time > lf->frameTime )
-		{
-			lf->frameTime = cg.time;
-		}
+		return; // shouldn't happen
 	}
 
-	if ( lf->frameTime > cg.time + 200 )
-	{
-		lf->frameTime = cg.time;
-	}
 
-	if ( lf->oldFrameTime > cg.time )
-	{
-		lf->oldFrameTime = cg.time;
-	}
-
-	// calculate current lerp value
-	if ( lf->frameTime == lf->oldFrameTime )
-	{
-		lf->backlerp = 0;
-	}
-	else
-	{
-		lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
-	}
 
 	// blend old and current animation
 	CG_BlendPlayerLerpFrame( lf );
