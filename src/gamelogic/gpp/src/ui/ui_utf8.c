@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ui_local.h"
-#include "ui_utf8.h"
 
 int ui_CursorToOffset( const char *buf, int cursor )
 {

@@ -585,4 +585,7 @@ void       UI_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
 void       UI_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
 void       UI_R_UnregisterFont( fontHandle_t );
 
+int ui_CursorToOffset( const char *buf, int cursor );
+int ui_OffsetToCursor( const char *buf, int offset );
+
 #endif
