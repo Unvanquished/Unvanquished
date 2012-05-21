@@ -285,6 +285,7 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		owner = XGetSelectionOwner( x11.display, selection );
 	}
 
+	converted = XInternAtom( x11.display, "UNVANQUISHED_SELECTION", False );
 	x11.unlockDisplay();
 
 	if ( owner == None || owner == x11.window )
@@ -299,7 +300,6 @@ char *Sys_GetClipboardData( clipboard_t clip )
 		x11.lockDisplay();
 		owner = x11.window;
 		//FIXME: when we can respond to clipboard requests, don't alter selection
-		converted = XInternAtom( x11.display, "UNVANQUISHED_SELECTION", False );
 		XConvertSelection( x11.display, selection, x11.utf8, converted, owner, CurrentTime );
 		x11.unlockDisplay();
 
