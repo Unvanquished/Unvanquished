@@ -1989,5 +1989,8 @@ qboolean CL_GetTag( int clientNum, char *tagname, orientation_t * or )
 		return qfalse;
 	}
 
-	return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
+	// the current design of CG_GET_TAG is inappropriate for modules in sandboxed formats
+	//  (the direct pointer method to pass the tag name would work only with modules in native format)
+	//return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
+	return qfalse;
 }
