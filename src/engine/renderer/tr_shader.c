@@ -4004,10 +4004,10 @@ static void FixRenderCommandList( int newShader )
 								                     QSORT_FRONTFACE_SHIFT )
 								                 | dlightMap;
 							}
-
-							curCmd = ( const void * )( ds_cmd + 1 );
-							break;
 						}
+
+						curCmd = ( const void * )( ds_cmd + 1 );
+						break;
 					}
 
 				case RC_DRAW_BUFFER:
