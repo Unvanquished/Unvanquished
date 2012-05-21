@@ -1127,7 +1127,6 @@ void InitMover( gentity_t *ent )
 	ent->reached = Reached_BinaryMover;
 
 	ent->moverState = MOVER_POS1;
-	ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	ent->s.eType = ET_MOVER;
 	VectorCopy( ent->pos1, ent->r.currentOrigin );
 	trap_LinkEntity( ent );
@@ -1226,7 +1225,6 @@ void InitRotator( gentity_t *ent )
 	ent->reached = Reached_BinaryMover;
 
 	ent->moverState = ROTATOR_POS1;
-	ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	ent->s.eType = ET_MOVER;
 	VectorCopy( ent->pos1, ent->r.currentAngles );
 	trap_LinkEntity( ent );
