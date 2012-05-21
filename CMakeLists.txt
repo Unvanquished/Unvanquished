@@ -800,6 +800,10 @@ set( GLSLLIST
   ${LIB_DIR}/glsl-optimizer/src/glsl/strtod.c
 )
 
+if( WIN32 )
+  set( WIN_RC ${MOUNT_DIR}/engine/sys/daemon.rc )
+endif()
+
 ####################
 # End of file list #
 ####################
@@ -1021,7 +1025,7 @@ if( BUILD_CLIENT )
   # Setup target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST}
-    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} )
+    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
@@ -1172,7 +1176,7 @@ if( BUILD_SERVER )
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${MOUNT_DIR}/engine/null/null_client.c
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
-    ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c )
+    ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC} )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET USE_CRYPTO )
@@ -1244,7 +1248,7 @@ endif()
 ###################
 if( BUILD_DAEMONMAP )
   # Setup DaemonMap target
-  add_executable( daemonMap ${DAEMONMAPLIST} )
+  add_executable( daemonMap ${DAEMONMAPLIST} ${WIN_RC} )
   include_directories( ${LIB_DIR}/picomodel ${MOUNT_DIR}/tools/common )
   target_link_libraries( daemonMap ${OS_LIBRARIES} )
   set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
