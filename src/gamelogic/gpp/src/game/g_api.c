@@ -417,7 +417,7 @@ void trap_RemoveCommand( const char *cmdName )
 
 //50.
 //return SV_GetTag(args[1], args[2], VMA(3), VMA(4));
-qboolean trap_GetTag( int clientNum, int tagFileNumber, char *tagName, orientation_t *ori )
+qboolean trap_GetTag( int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori )
 {
 	return syscall( G_GETTAG, clientNum, tagFileNumber, tagName, ori );
 }

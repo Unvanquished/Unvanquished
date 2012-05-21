@@ -531,7 +531,7 @@ void           SV_InitGameProgs( void );
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs( void );
 qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
-qboolean       SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation_t *ort );
+qboolean       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
 int            SV_LoadTag( const char *mod_name );
 qboolean       SV_GameIsSinglePlayer( void );
 qboolean       SV_GameIsCoop( void );

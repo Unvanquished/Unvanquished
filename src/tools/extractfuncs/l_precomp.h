@@ -134,7 +134,7 @@ int PC_WhiteSpaceBeforeToken( token_t *token );
 //add a define to the source
 int PC_AddDefine( source_t *source, char *string );
 //add a globals define that will be added to all opened sources
-int PC_AddGlobalDefine( char *string );
+int PC_AddGlobalDefine( const char *string );
 //remove the given global define
 int PC_RemoveGlobalDefine( char *name );
 //remove all globals defines

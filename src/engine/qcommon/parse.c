@@ -1200,7 +1200,7 @@ static script_t *Parse_LoadScriptFile( const char *filename )
 Parse_LoadScriptMemory
 ===============
 */
-static script_t *Parse_LoadScriptMemory( char *ptr, int length, char *name )
+static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char *name )
 {
 	void     *buffer;
 	script_t *script;
@@ -3961,7 +3961,7 @@ static int Parse_ReadToken( source_t *source, token_t *token )
 Parse_DefineFromString
 ===============
 */
-static define_t *Parse_DefineFromString( char *string )
+static define_t *Parse_DefineFromString( const char *string )
 {
 	script_t *script;
 	source_t src;
@@ -4032,7 +4032,7 @@ Parse_AddGlobalDefine
 adds or overrides a global define that will be added to all opened sources
 ===============
 */
-int Parse_AddGlobalDefine( char *string )
+int Parse_AddGlobalDefine( const char *string )
 {
 	define_t *define, *prev, *curr;
 

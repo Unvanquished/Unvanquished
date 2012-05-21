@@ -1492,7 +1492,7 @@ extern huffman_t clientHuffTables;
 #define CL_ENCODE_START 12
 #define CL_DECODE_START 4
 
-int  Parse_AddGlobalDefine( char *string );
+int  Parse_AddGlobalDefine( const char *string );
 int  Parse_LoadSourceHandle( const char *filename );
 int  Parse_FreeSourceHandle( int handle );
 int  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );

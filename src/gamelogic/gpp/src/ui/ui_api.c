@@ -650,7 +650,7 @@ void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int po
 
 //93.
 //return Parse_AddGlobalDefine(VMA(1));
-int trap_Parse_AddGlobalDefine( char *define )
+int trap_Parse_AddGlobalDefine( const char *define )
 {
 	return syscall( UI_PARSE_ADD_GLOBAL_DEFINE, define );
 }
@@ -685,7 +685,7 @@ int trap_Parse_SourceFileAndLine( int handle, char *filename, int *line )
 
 //98.
 //return botlib_export->PC_AddGlobalDefine(VMA(1));
-int trap_PC_AddGlobalDefine( char *define )
+int trap_PC_AddGlobalDefine( const char *define )
 {
 	return syscall( UI_PARSE_ADD_GLOBAL_DEFINE, define );
 }

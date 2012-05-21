@@ -871,7 +871,7 @@ void       G_SetMovedir( vec3_t angles, vec3_t movedir );
 
 void       G_InitGentity( gentity_t *e );
 gentity_t  *G_Spawn( void );
-gentity_t  *G_TempEntity( vec3_t origin, int event );
+gentity_t  *G_TempEntity( const vec3_t origin, int event );
 void       G_Sound( gentity_t *ent, int channel, int soundIndex );
 void       G_FreeEntity( gentity_t *e );
 qboolean   G_EntitiesFree( void );
@@ -887,7 +887,7 @@ float      vectoyaw( const vec3_t vec );
 void       G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void       G_AddEvent( gentity_t *ent, int event, int eventParm );
 void       G_BroadcastEvent( int event, int eventParm );
-void       G_SetOrigin( gentity_t *ent, vec3_t origin );
+void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
 void       AddRemap( const char *oldShader, const char *newShader, float timeOffset );
 const char *BuildShaderStateConfig( void );
 
@@ -997,14 +997,14 @@ void     G_ClearPlayerZapEffects( gentity_t *player );
 //
 void      G_AddCreditToClient( gclient_t *client, short credit, qboolean cap );
 team_t    TeamCount( int ignoreClientNum, int team );
-void      G_SetClientViewAngle( gentity_t *ent, vec3_t angle );
+void      G_SetClientViewAngle( gentity_t *ent, const vec3_t angle );
 gentity_t *G_SelectTremulousSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles );
 gentity_t *G_SelectSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
 gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles );
 gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles );
 void      respawn( gentity_t *ent );
 void      BeginIntermission( void );
-void      ClientSpawn( gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles );
+void      ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles );
 void      player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
 qboolean  SpotWouldTelefrag( gentity_t *spot );
 qboolean  G_IsUnnamed( const char *name );
@@ -1082,7 +1082,7 @@ void      G_UpdateTeamConfigStrings( void );
 // g_session.c
 //
 void G_ReadSessionData( gclient_t *client );
-void G_InitSessionData( gclient_t *client, char *userinfo );
+void G_InitSessionData( gclient_t *client, const char *userinfo );
 void G_WriteSessionData( void );
 
 //
@@ -1307,7 +1307,7 @@ void             trap_SnapVector( float *v );
 void             trap_SendGameStat( const char *data );
 void             trap_AddCommand( const char *cmdName );
 void             trap_RemoveCommand( const char *cmdName );
-qboolean         trap_GetTag( int clientNum, int tagFileNumber, char *tagName, orientation_t *ori );
+qboolean         trap_GetTag( int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori );
 qboolean         trap_LoadTag( const char *filename );
 sfxHandle_t      trap_RegisterSound( const char *sample, qboolean compressed );
 int              trap_GetSoundLength( sfxHandle_t sfxHandle );

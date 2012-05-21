@@ -570,7 +570,7 @@ float       UI_Text_LineHeight( float scale );
 qboolean    UI_Text_IsEmoticon( const char *s, qboolean *escaped, int *length, qhandle_t *h, int *width );
 void        UI_EscapeEmoticons( char *dest, const char *src, int destsize );
 glyphInfo_t *UI_Glyph( const fontMetrics_t *, const char *str );
-int         trap_Parse_AddGlobalDefine( char *define );
+int         trap_Parse_AddGlobalDefine( const char *define );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );
 int         trap_Parse_ReadToken( int handle, pc_token_t *pc_token );

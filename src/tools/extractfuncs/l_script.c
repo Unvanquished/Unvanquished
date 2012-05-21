@@ -1377,7 +1377,7 @@ script_t *LoadScriptFile( char *filename ) {
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-script_t *LoadScriptMemory( char *ptr, int length, char *name ) {
+script_t *LoadScriptMemory( const char *ptr, int length, const char *name ) {
 	void *buffer;
 	script_t *script;
 

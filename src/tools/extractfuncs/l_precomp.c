@@ -1376,7 +1376,7 @@ int PC_Directive_define( source_t *source ) {
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-define_t *PC_DefineFromString( char *string ) {
+define_t *PC_DefineFromString( const char *string ) {
 	script_t *script;
 	source_t src;
 	token_t *t;
@@ -1458,7 +1458,7 @@ int PC_AddDefine( source_t *source, char *string ) {
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_AddGlobalDefine( char *string ) {
+int PC_AddGlobalDefine( const char *string ) {
 	define_t *define;
 
 	define = PC_DefineFromString( string );

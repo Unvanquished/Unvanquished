@@ -608,7 +608,7 @@ G_SetClientViewAngle
 
 ==================
 */
-void G_SetClientViewAngle( gentity_t *ent, vec3_t angle )
+void G_SetClientViewAngle( gentity_t *ent, const vec3_t angle )
 {
 	int i;
 
@@ -1499,7 +1499,7 @@ after the first ClientBegin, and after each respawn
 Initializes all non-persistant parts of playerState
 ============
 */
-void ClientSpawn( gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles )
+void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles )
 {
 	int                index;
 	vec3_t             spawn_origin, spawn_angles;

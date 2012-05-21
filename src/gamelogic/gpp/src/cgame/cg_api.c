@@ -860,7 +860,7 @@ void trap_Key_SetOverstrikeMode( qboolean state )
 
 //117
 //return botlib_export->PC_AddGlobalDefine(VMA(1));
-int trap_PC_AddGlobalDefine( char *define )
+int trap_PC_AddGlobalDefine( const char *define )
 {
 	return syscall( CG_PC_ADD_GLOBAL_DEFINE, define );
 }
@@ -1052,7 +1052,7 @@ void trap_Key_SetBinding( int keynum, const char *binding )
 
 //143.
 //return Parse_AddGlobalDefine(VMA(1));
-int trap_Parse_AddGlobalDefine( char *define )
+int trap_Parse_AddGlobalDefine( const char *define )
 {
 	return syscall( CG_PARSE_ADD_GLOBAL_DEFINE, define );
 }
