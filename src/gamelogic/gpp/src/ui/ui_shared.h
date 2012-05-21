@@ -347,8 +347,8 @@ typedef struct
 	const char *onOpen; // run when the menu is first opened
 	const char *onClose; // run when the menu is closed
 	const char *onESC; // run when the menu is closed
+	const char *onKEY[ MAX_KEYS ]; // run when key is pressed
 	const char *soundName; // background loop sound for menu
-
 	vec4_t     focusColor; // focus color for items
 	vec4_t     disableColor; // focus color for items
 	itemDef_t  *items[ MAX_MENUITEMS ]; // items this menu contains

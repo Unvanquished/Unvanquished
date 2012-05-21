@@ -995,6 +995,25 @@ qboolean PC_String_Parse( int handle, const char **out )
 }
 
 /*
+================
+PC_Char_Parse
+================
+*/
+qboolean PC_Char_Parse( int handle, char *out )
+{
+	pc_token_t token;
+
+	if ( !trap_Parse_ReadToken( handle, &token ) )
+	{
+		return qfalse;
+	}
+
+	*out = token.string[ 0 ];
+
+	return qtrue;
+}
+
+/*
 =================
 PC_Script_Parse
 =================
@@ -4749,8 +4768,14 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 	int       i;
 	itemDef_t *item = NULL;
 	qboolean  inHandler = qfalse;
-
 	inHandler = qtrue;
+
+	if ( menu->onKEY[ key ] && *menu->onKEY[ key ] && !down )
+	{
+		itemDef_t it;
+		it.parent = menu;
+		Item_RunScript( &it, menu->onKEY[ key ] );
+	}
 
 	if ( key == K_SHIFT )
 	{
@@ -8755,6 +8780,24 @@ qboolean MenuParse_onESC( itemDef_t *item, int handle )
 	return qtrue;
 }
 
+qboolean MenuParse_onKEY( itemDef_t *item, int handle )
+{
+	menuDef_t *menu = ( menuDef_t * ) item;
+	char      key = 0;
+
+	if ( !PC_Char_Parse( handle, &key ) )
+	{
+		return qfalse;
+	}
+
+	if ( !PC_Script_Parse( handle, &menu->onKEY[ (int)key ] ) )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
 qboolean MenuParse_border( itemDef_t *item, int handle )
 {
 	menuDef_t *menu = ( menuDef_t * ) item;
@@ -9042,6 +9085,7 @@ static keywordHash_t menuParseKeywords[] =
 	{ "onOpen",           MenuParse_onOpen        },
 	{ "onClose",          MenuParse_onClose       },
 	{ "onESC",            MenuParse_onESC         },
+	{ "onKEY",            MenuParse_onKEY         },
 	{ "border",           MenuParse_border        },
 	{ "borderSize",       MenuParse_borderSize    },
 	{ "backcolor",        MenuParse_backcolor     },
