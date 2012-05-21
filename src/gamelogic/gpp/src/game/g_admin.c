@@ -112,6 +112,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"gametimelimit", G_admin_timelimit,  qfalse, NULL, // but setting requires "gametimelimit"
+		"change the time limit for the current game",
+		"[^3minutes^7]"
+	},
+
+	{
 		"kick",         G_admin_kick,        qfalse, "kick",
 		"kick a player with an optional reason",
 		"[^3name|slot#^7] (^5reason^7)"
@@ -4726,6 +4732,52 @@ qboolean G_admin_unregister( gentity_t *ent )
 	        Quote( ent->client->pers.admin->name ) ) );
 
 	return qtrue;
+}
+
+qboolean G_admin_timelimit( gentity_t *ent )
+{
+	char tstr[ 12 ];
+	int  timelimit;
+
+	switch ( trap_Argc() )
+	{
+	case 1:
+		ADMP( va( "^3gametimelimit: ^7time limit for this game is %dm\n", level.timelimit ) );
+		return qtrue;
+
+	case 2:
+		if ( !G_admin_permission( ent, "gametimelimit" ) )
+		{
+			ADMP( va( "^3%s: ^7permission denied\n", "gametimelimit" ) );
+			return qfalse;
+		}
+
+		trap_Argv( 1, tstr, sizeof( tstr ) );
+
+		if ( isdigit( tstr[0] ) )
+		{
+			timelimit = atoi( tstr );
+
+			// clip to 0 .. 6 hours
+			timelimit = MIN( 6 * 60, MAX( 0, timelimit ) );
+			if ( timelimit != level.timelimit )
+			{
+				AP( va( "print \"^3gametimelimit: ^7time limit set to %dm from %dm by \"%s\"\n\"",
+				        timelimit, level.timelimit, G_quoted_admin_name( ent ) ) );
+				level.timelimit = timelimit;
+			}
+			else
+			{
+				ADMP( "^3gametimelimit: ^7time limit is unchanged\n" );
+			}
+			return qtrue;
+		}
+		// fall through
+
+	default:
+		ADMP( "^3gametimelimit: ^7usage: gametimelimit [minutes]\n" );
+		return qfalse;
+	}
 }
 
 /*

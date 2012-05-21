@@ -574,6 +574,7 @@ typedef struct
 	int              num_entities; // current number, <= MAX_GENTITIES
 
 	int              warmupTime; // restart match at this time
+	int              timelimit;
 
 	fileHandle_t     logFile;
 

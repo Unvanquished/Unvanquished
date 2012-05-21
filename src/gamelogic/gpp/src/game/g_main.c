@@ -2327,9 +2327,9 @@ void CheckExitRules( void )
 		return;
 	}
 
-	if ( g_timelimit.integer )
+	if ( level.timelimit )
 	{
-		if ( level.time - level.startTime >= g_timelimit.integer * 60000 )
+		if ( level.time - level.startTime >= level.timelimit * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print \"Timelimit hit\n\"" );
@@ -2338,13 +2338,13 @@ void CheckExitRules( void )
 			G_MapLog_Result( 't' );
 			return;
 		}
-		else if ( level.time - level.startTime >= ( g_timelimit.integer - 5 ) * 60000 &&
+		else if ( level.time - level.startTime >= ( level.timelimit - 5 ) * 60000 &&
 		          level.timelimitWarning < TW_IMMINENT )
 		{
 			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
 			level.timelimitWarning = TW_IMMINENT;
 		}
-		else if ( level.time - level.startTime >= ( g_timelimit.integer - 1 ) * 60000 &&
+		else if ( level.time - level.startTime >= ( level.timelimit - 1 ) * 60000 &&
 		          level.timelimitWarning < TW_PASSED )
 		{
 			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
