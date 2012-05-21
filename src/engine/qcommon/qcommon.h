@@ -748,12 +748,13 @@ int FS_Read( void *buffer, int len, fileHandle_t f );
 
 // properly handles partial reads and reads from other dlls
 
-void FS_FCloseFile( fileHandle_t f );
+int FS_FCloseFile( fileHandle_t f ); // !0 on error (but errno isn't valid)
 
 // note: you can't just fclose from another DLL, due to MS libc issues
 
 long FS_ReadFileDir( const char *qpath, void *searchPath, void **buffer );
 int  FS_ReadFile( const char *qpath, void **buffer );
+int  FS_ReadFileCheck( const char *qpath, void **buffer );
 
 // returns the length of the file
 // a null buffer will just return the file length without loading

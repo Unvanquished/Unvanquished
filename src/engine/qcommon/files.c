@@ -953,8 +953,10 @@ For some reason, other dll's can't just cal fclose()
 on files returned by FS_FOpenFile...
 ==============
 */
-void FS_FCloseFile( fileHandle_t f )
+int FS_FCloseFile( fileHandle_t f )
 {
+	int ret = 0;
+
 	if ( !fs_searchpaths )
 	{
 		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
@@ -962,7 +964,7 @@ void FS_FCloseFile( fileHandle_t f )
 
 	if ( fsh[ f ].zipFile == qtrue )
 	{
-		unzCloseCurrentFile( fsh[ f ].handleFiles.file.z );
+		ret = ( unzCloseCurrentFile( fsh[ f ].handleFiles.file.z ) == UNZ_CRCERROR );
 
 		if ( fsh[ f ].handleFiles.unique )
 		{
@@ -970,16 +972,19 @@ void FS_FCloseFile( fileHandle_t f )
 		}
 
 		Com_Memset( &fsh[ f ], 0, sizeof( fsh[ f ] ) );
-		return;
+
+		return ret;
 	}
 
 	// we didn't find it as a pak, so close it as a unique file
 	if ( fsh[ f ].handleFiles.file.o )
 	{
-		fclose( fsh[ f ].handleFiles.file.o );
+		ret = fclose( fsh[ f ].handleFiles.file.o );
 	}
 
 	Com_Memset( &fsh[ f ], 0, sizeof( fsh[ f ] ) );
+
+	return ret;
 }
 
 /*
@@ -2332,17 +2337,18 @@ int FS_FileIsInPAK( const char *filename, int *pChecksum )
 /*
 ============
 FS_ReadFile
+FS_ReadFileCheck
 
 Filename are relative to the quake search path
 a null buffer will just return the file length without loading
 ============
 */
-int FS_ReadFile( const char *qpath, void **buffer )
+static int FS_ReadFile_Internal( const char *qpath, void **buffer, qboolean check )
 {
 	fileHandle_t h;
 	byte          *buf;
 	qboolean     isConfig;
-	int          len;
+	int          len, ret;
 
 	if ( !fs_searchpaths )
 	{
@@ -2465,7 +2471,7 @@ int FS_ReadFile( const char *qpath, void **buffer )
 
 	// guarantee that it will have a trailing 0 for string operations
 	buf[ len ] = 0;
-	FS_FCloseFile( h );
+	ret = FS_FCloseFile( h );
 
 	// if we are journalling and it is a config file, write it to the journal file
 	if ( isConfig && com_journal && com_journal->integer == 1 )
@@ -2476,7 +2482,17 @@ int FS_ReadFile( const char *qpath, void **buffer )
 		FS_Flush( com_journalDataFile );
 	}
 
-	return len;
+	return ( check && ret ) ? -2 - len : len;
+}
+
+int FS_ReadFile( const char *qpath, void **buffer )
+{
+        return FS_ReadFile_Internal( qpath, buffer, qfalse );
+}
+
+int FS_ReadFileCheck( const char *qpath, void **buffer )
+{
+        return FS_ReadFile_Internal( qpath, buffer, qtrue );
 }
 
 /*

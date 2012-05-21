@@ -201,6 +201,7 @@ struct vm_s
 
 	byte              sanity[ 16 ];
 	qboolean          versionChecked;
+	qboolean          clean;
 };
 
 extern  vm_t *currentVM;

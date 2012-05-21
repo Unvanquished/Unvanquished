@@ -394,6 +394,12 @@ static void VM_InitSanity( vm_t *vm )
 	vm->versionChecked = qfalse;
 }
 
+#ifdef _DEBUG
+#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]\n", (c), (n) );
+#else
+#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm.\n" );
+#endif
+
 void VM_SetSanity( vm_t* vm, intptr_t call )
 {
 	if ( !vm->versionChecked && call != TRAP_VERSION )
@@ -415,6 +421,11 @@ void VM_SetSanity( vm_t* vm, intptr_t call )
 			  vm->sanity[ i % sizeof( vm->sanity ) ] ^=
 			    (byte) ( i / sizeof( vm->sanity ) ) ^
 			    (byte) ( i / sizeof( vm->sanity ) / 257 );
+
+			if ( !vm->clean )
+			{
+				VM_Insanity( call, vm->name );
+			}
 		}
 	}
 }
@@ -425,7 +436,7 @@ void VM_CheckSanity( vm_t *vm, intptr_t call )
 
 	if ( vm->dataMask && memcmp( vm->dataBase + vm->dataMask + 1, vm->sanity, sizeof( vm->sanity ) ) )
 	{
-		Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]\n", call, vm->name );
+		VM_Insanity( call, vm->name );
 	}
 }
 
@@ -534,7 +545,8 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	// load the image
 	Com_sprintf( filename, sizeof( filename ), "vm/%s.qvm", vm->name );
 	Com_Printf( "Loading vm file %s...\n", filename );
-	FS_ReadFile( filename, &header.v );
+
+	i = FS_ReadFileCheck( filename, &header.v );
 
 	if ( !header.h )
 	{
@@ -542,6 +554,8 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 		VM_Free( vm );
 		return NULL;
 	}
+
+	vm->clean = i >= 0;
 
 	// show where the qvm was loaded from
 	Cmd_ExecuteString( va( "which %s\n", filename ) );
