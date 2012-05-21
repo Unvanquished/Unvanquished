@@ -205,10 +205,6 @@ static void CG_UIMenu_f( void )
 	trap_SendConsoleCommand( va( "menu %s\n", Quote( CG_Argv( 1 ) ) ) );
 }
 
-static void CG_NullFunc( void )
-{
-}
-
 static void CG_CompleteClass( void )
 {
 	int i = 0;

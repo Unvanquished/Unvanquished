@@ -40,7 +40,6 @@ glconfig_t  glConfig;
 glconfig2_t glConfig2;
 glstate_t   glState;
 
-int         maxAnisotropy = 0;
 float       displayAspect = 0.0f;
 
 static void GfxInfo_f( void );

@@ -83,8 +83,6 @@ extern "C" {
 #define MAX_TEAMNAME 32
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
-#define DEMOEXT      "dm_" // standard demo extension
-
 #if defined _WIN32 && !defined __GNUC__
 
 #pragma warning(disable : 4018) // signed/unsigned mismatch
@@ -249,14 +247,6 @@ extern int memcmp( void *, void *, size_t );
 	typedef int fileHandle_t;
 	typedef int clipHandle_t;
 
-//#define SND_NORMAL      0x000 // (default) Allow sound to be cut off only by the same sound on this channel
-#define     SND_OKTOCUT        0x001 // Allow sound to be cut off by any following sounds on this channel
-#define     SND_REQUESTCUT     0x002 // Allow sound to be cut off by following sounds on this channel only for sounds who request cutoff
-#define     SND_CUTOFF         0x004 // Cut off sounds on this channel that are marked 'SND_REQUESTCUT'
-#define     SND_CUTOFF_ALL     0x008 // Cut off all sounds on this channel
-#define     SND_NOCUT          0x010 // Don't cut off.  Always let finish (overridden by SND_CUTOFF_ALL)
-#define     SND_NO_ATTENUATION 0x020 // don't attenuate (even though the sound is in voice channel, for example)
-
 #if defined( _MSC_VER )
 #define ALIGN(x) __declspec(align(x));
 #elif defined( __GNUC__ )
@@ -282,16 +272,6 @@ extern int memcmp( void *, void *, size_t );
 
 #ifndef BIT
 #define BIT(x) ( 1 << ( x ) )
-#endif
-
-// TTimo gcc: was missing, added from Q3 source
-#ifndef max
-#define max( x, y ) ( ( ( x ) > ( y ) ) ? ( x ) : ( y ) )
-#define min( x, y ) ( ( ( x ) < ( y ) ) ? ( x ) : ( y ) )
-#endif
-
-#ifndef sign
-#define sign( f ) ( ( f > 0 ) ? 1 : ( ( f < 0 ) ? -1 : 0 ) )
 #endif
 
 // RF, this is just here so different elements of the engine can be aware of this setting as it changes

@@ -263,16 +263,6 @@ void CL_AddCgameCommand( const char *cmdName )
 	Cmd_SetCommandCompletionFunc( cmdName, CL_CompleteCgameCommand );
 }
 
-/*
-==============
-CL_CgameError
-==============
-*/
-void CL_CgameError( const char *string )
-{
-	Com_Error( ERR_DROP, "%s", string );
-}
-
 qboolean CL_CGameCheckKeyExec( int key )
 {
 	if ( cgvm )

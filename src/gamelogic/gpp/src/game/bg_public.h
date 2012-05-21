@@ -442,11 +442,6 @@ typedef enum
   BA_NUM_BUILDABLES
 } buildable_t;
 
-// reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
-#define PLAYEREVENT_DENIEDREWARD   0x0001
-#define PLAYEREVENT_GAUNTLETREWARD 0x0002
-#define PLAYEREVENT_HOLYSHIT       0x0004
-
 // entityState_t->event values
 // entity events are for effects that take place reletive
 // to an existing entities origin.  Very network efficient.

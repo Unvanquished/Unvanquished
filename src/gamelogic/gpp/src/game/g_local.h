@@ -37,11 +37,8 @@ typedef struct gclient_s gclient_t;
 #define INFINITE                   1000000
 
 #define FRAMETIME                  100 // msec
-#define CARNAGE_REWARD_TIME        3000
-#define REWARD_SPRITE_TIME         2000
 
 #define INTERMISSION_DELAY_TIME    1000
-#define SP_INTERMISSION_DELAY_TIME 5000
 
 // gentity->flags
 #define FL_GODMODE                 0x00000010
@@ -71,8 +68,6 @@ typedef enum
   MODEL_1TO2,
   MODEL_2TO1
 } moverState_t;
-
-#define SP_PODIUM_MODEL "models/mapobjects/podium/podium4.md3"
 
 //============================================================================
 
@@ -130,7 +125,6 @@ struct gentity_s
 
 	int          timestamp; // body queue sinking, etc
 
-	float        angle; // set in editor, -1 = up, -2 = down
 	char         *target;
 	char         *targetname;
 	char         *team;
@@ -159,7 +153,6 @@ struct gentity_s
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
 
 	int       pain_debounce_time;
-	int       fly_sound_debounce_time; // wind tunnel
 	int       last_move_time;
 
 	int       health;
@@ -197,7 +190,6 @@ struct gentity_s
 	gentity_t   *parentNode; // for creep and defence/spawn dependencies
 	gentity_t   *rangeMarker;
 	qboolean    active; // for power repeater, but could be useful elsewhere
-	qboolean    locked; // used for turret tracking
 	qboolean    powered; // for human buildables
 	int         builtBy; // clientNum of person that built this
 	int         dcc; // number of controlling dccs
@@ -240,8 +232,6 @@ struct gentity_s
 	int         lastDamageTime;
 	int         nextRegenTime;
 
-	qboolean    ownerClear; // used for missle tracking
-
 	qboolean    pointAgainstWorld; // don't use the bbox for map collisions
 
 	int         buildPointZone; // index for zone
@@ -254,11 +244,6 @@ typedef enum
   CON_CONNECTING,
   CON_CONNECTED
 } clientConnected_t;
-
-// the auto following clients don't follow a specific client
-// number, but instead follow the first two active players
-#define FOLLOW_ACTIVE1 -1
-#define FOLLOW_ACTIVE2 -2
 
 // client data that stays across multiple levels or tournament restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
@@ -877,7 +862,6 @@ void       G_FreeEntity( gentity_t *e );
 qboolean   G_EntitiesFree( void );
 
 void       G_TouchTriggers( gentity_t *ent );
-void       G_TouchSolids( gentity_t *ent );
 
 float      *tv( float x, float y, float z );
 char       *vtos( const vec3_t v );
@@ -913,7 +897,6 @@ qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float
 qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius,
                                   gentity_t *ignore, int mod, int team );
 float    G_RewardAttackers( gentity_t *self );
-void     body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath );
 void     AddScore( gentity_t *ent, int score );
 void     G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );
 
@@ -959,7 +942,6 @@ void G_Checktrigger_stages( team_t team, stage_t stage );
 // g_misc.c
 //
 void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles );
-void ShineTorch( gentity_t *self );
 
 //
 // g_weapon.c
@@ -996,7 +978,6 @@ void     G_ClearPlayerZapEffects( gentity_t *player );
 // g_client.c
 //
 void      G_AddCreditToClient( gclient_t *client, short credit, qboolean cap );
-team_t    TeamCount( int ignoreClientNum, int team );
 void      G_SetClientViewAngle( gentity_t *ent, const vec3_t angle );
 gentity_t *G_SelectTremulousSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles );
 gentity_t *G_SelectSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles );

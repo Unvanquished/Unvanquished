@@ -58,24 +58,6 @@ extern qboolean capsule_collision;
 botlib_import_t botimport;
 clipHandle_t worldmodel;
 
-void Error( char *error, ... );
-
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_Error( char *fmt, ... ) {
-	va_list argptr;
-	char text[1024];
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-	va_end( argptr );
-
-	Error( text );
-} //end of the function AAS_Error
 //===========================================================================
 //
 // Parameter:				-
