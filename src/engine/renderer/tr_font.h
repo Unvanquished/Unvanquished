@@ -111,12 +111,14 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk );
 
 void R_GetGlyphInfo( FT_GlyphSlot glyph, int *left, int *right, int *width, int *top, int *bottom, int *height, int *pitch )
 {
-	*left = _FLOOR( glyph->metrics.horiBearingX );
-	*right = _CEIL( glyph->metrics.horiBearingX + glyph->metrics.width );
+	// ±1 adjustments for border-related reasons - really want clamp to transparent border (FIXME)
+
+	*left = _FLOOR( glyph->metrics.horiBearingX - 1);
+	*right = _CEIL( glyph->metrics.horiBearingX + glyph->metrics.width + 1);
 	*width = _TRUNC( *right - *left );
 
-	*top = _CEIL( glyph->metrics.horiBearingY );
-	*bottom = _FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height );
+	*top = _CEIL( glyph->metrics.horiBearingY + 1);
+	*bottom = _FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height - 1);
 	*height = _TRUNC( *top - *bottom );
 	*pitch = ( qtrue ? ( *width + 3 ) & - 4 : ( *width + 7 ) >> 3 );
 }
