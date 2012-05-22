@@ -44,7 +44,7 @@
 		
 {
   VSAY_MENU( "vsay_top", 0, 0, 480, 250 )
-	VSAY_ITEM( "1. Offense", 1, close vsay_top ; open vsay_offense, 0, 0, 0 )
+	VSAY_ITEM( "1. Attack", 1, close vsay_top ; open vsay_offense, 0, 0, 0 )
 	VSAY_ITEM( "2. Defense", 2, close vsay_top ; open vsay_defense, 0, 0, 1 )
 	VSAY_ITEM( "3. Building", 3, close vsay_top ; open vsay_building, 0, 0, 2 )
 	VSAY_ITEM( "4. Status/Commands", 4, close vsay_top ; open vsay_status, 0, 0, 3 )
