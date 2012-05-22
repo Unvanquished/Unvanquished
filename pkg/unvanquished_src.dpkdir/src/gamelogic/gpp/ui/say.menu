@@ -30,7 +30,7 @@
       name say_field \
       type ITEM_TYPE_SAYFIELD \
       style WINDOW_STYLE_EMPTY \
-      text PROMPT##":" \
+      text "^;"##PROMPT##":" \
       cvar "ui_sayBuffer" \
       maxchars 128 \
       rect 0 0 W H \
