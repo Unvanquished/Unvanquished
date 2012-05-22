@@ -92,6 +92,7 @@ vmCvar_t                   ui_developer;
 vmCvar_t                   ui_emoticons;
 vmCvar_t                   ui_winner;
 vmCvar_t                   ui_chatCommands;
+vmCvar_t                   ui_chatPromptColours;
 vmCvar_t                   cl_profile;
 vmCvar_t                   cl_defaultProfile;
 vmCvar_t                   ui_profile;
@@ -131,6 +132,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &cl_defaultProfile,      "cl_defaultProfile",           "",                          CVAR_ROM                  },
 	{ &ui_profile,             "ui_profile",                  "",                          CVAR_ROM                  },
 	{ &ui_chatCommands,        "ui_chatCommands",             "1",                         CVAR_ARCHIVE              },
+	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE              },
 
 	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menu/menus.txt",         CVAR_ARCHIVE              },
 	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/menu/ingame/ingame.txt", CVAR_ARCHIVE              },

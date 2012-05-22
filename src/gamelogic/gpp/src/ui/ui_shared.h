@@ -580,6 +580,8 @@ int         trap_Parse_SourceFileAndLine( int handle, char *filename, int *line 
 
 void        BindingFromName( const char *cvar );
 
+int         UI_GetChatColour( int mode, int team );
+
 extern char g_nameBind1[ 32 ];
 extern char g_nameBind2[ 32 ];
 

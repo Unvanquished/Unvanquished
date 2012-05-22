@@ -9444,6 +9444,44 @@ static qboolean Menu_OverActiveItem( menuDef_t *menu, float x, float y )
 	return qfalse;
 }
 
+int UI_GetChatColour( int which, int team )
+{
+
+	switch ( which )
+	{
+	default: // SAY_ALL:
+		return ColorIndex( COLOR_WHITE );
+
+	case SAY_TEAM:
+		switch ( team )
+		{
+		case TEAM_NONE:
+			return ColorIndex( COLOR_YELLOW );
+		default:
+			return ColorIndex( COLOR_CYAN );
+		}
+
+	case SAY_PRIVMSG:
+		return ColorIndex( COLOR_GREEN );
+
+	case SAY_TPRIVMSG:
+		return ColorIndex( COLOR_CYAN );
+
+	case SAY_AREA:
+	case SAY_AREA_TEAM:
+		return ColorIndex( COLOR_BLUE );
+
+	case SAY_ADMINS:
+	case SAY_ADMINS_PUBLIC:
+		return ColorIndex( COLOR_MAGENTA );
+#ifdef UIGPP
+	case SAY_RAW:
+		return ColorIndex( COLOR_LTGREY );
+#endif
+	}
+}
+
+
 void UI_R_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
 {
   static int engineState = 0;
