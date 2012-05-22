@@ -413,6 +413,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 		case GAME_MESSAGERECEIVED:
 			// ignored
 			return 0;
+
+		default:
+			G_Error( "vmMain(): unknown game command %i", command );
 	}
 
 	return -1;

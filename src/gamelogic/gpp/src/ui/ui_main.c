@@ -222,6 +222,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 		case UI_DRAW_CONNECT_SCREEN:
 			UI_DrawConnectScreen( arg0 );
 			return 0;
+
+		default:
+			trap_Error( va( "vmMain(): unknown ui command %i", command ) );
 	}
 
 	return -1;
