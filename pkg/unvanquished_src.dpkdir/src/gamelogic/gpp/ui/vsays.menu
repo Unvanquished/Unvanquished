@@ -100,8 +100,8 @@
 	VSAY_ITEM( "2. No.", 2, close vsay_general ; exec "vsay no", 0, 0, 1 )
 	VSAY_ITEM( "3. Thanks!", 3, close vsay_general ; exec "vsay thanks", 0, 0, 2 )
 	VSAY_ITEM( "4. Sorry!", 4, close vsay_general ; exec "vsay sorry", 0, 0, 3 )
-	VSAY_ITEM( "5. Previous Menu.", 5, close vsay_genereal ; open vsay_top,0, 0, 4 )
-	
+	VSAY_ITEM( "5. Previous Menu.", 5, close vsay_general ; open vsay_top,0, 0, 4 )
+  VSAY_MENU_END	
 	
 	
 } 
