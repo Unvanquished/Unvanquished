@@ -31,7 +31,20 @@
 	{ \
 		name "pos"##TEXT \
 		style WINDOW_STYLE_EMPTY \
-		rect (X+10) (Y+(25*POS)) 13 100 \
+		rect (X+10) (Y+40+(25*POS)) 20 25 \
+		type ITEM_TYPE_TEXT \
+		text #KEY##"." \
+		textstyle ITEM_TEXTSTYLE_SHADOWED \
+		textscale .375 \
+		forecolor 1 1 1 1 \
+		visible MENU_TRUE \
+		decoration \
+	} \
+	itemDef \
+	{ \
+		name "pos"##TEXT \
+		style WINDOW_STYLE_EMPTY \
+		rect (X+30) (Y+40+(25*POS)) 230 25 \
 		type ITEM_TYPE_TEXT \
 		text TEXT \
 		textstyle ITEM_TEXTSTYLE_SHADOWED \
@@ -44,42 +57,42 @@
 		
 {
   VSAY_MENU( "vsay_top", 0, 0, 480, 250 )
-	VSAY_ITEM( "1. Attack", 1, close vsay_top ; open vsay_offense, 0, 0, 0 )
-	VSAY_ITEM( "2. Defense", 2, close vsay_top ; open vsay_defense, 0, 0, 1 )
-	VSAY_ITEM( "3. Building", 3, close vsay_top ; open vsay_building, 0, 0, 2 )
-	VSAY_ITEM( "4. Status/Commands", 4, close vsay_top ; open vsay_status, 0, 0, 3 )
-	VSAY_ITEM( "5. General", 5, close vsay_top ; open vsay_general, 0, 0, 4 )
-	VSAY_ITEM( "0. Close", 0, close vsay_top, 0, 0, 10 )
+	VSAY_ITEM( "Attack", 1, close vsay_top ; open vsay_offense, 0, 0, 0 )
+	VSAY_ITEM( "Defense", 2, close vsay_top ; open vsay_defense, 0, 0, 1 )
+	VSAY_ITEM( "Building", 3, close vsay_top ; open vsay_building, 0, 0, 2 )
+	VSAY_ITEM( "Status/Commands", 4, close vsay_top ; open vsay_status, 0, 0, 3 )
+	VSAY_ITEM( "General", 5, close vsay_top ; open vsay_general, 0, 0, 4 )
+	VSAY_ITEM( "Close", 0, close vsay_top, 0, 0, 10 )
   VSAY_MENU_END
   
   VSAY_MENU( "vsay_offense", 0, 0, 480, 250 )
-	VSAY_ITEM( "1. I'm Attacking", 1, close vsay_offense ; exec "vsay attacking", 0, 0, 0 )
-	VSAY_ITEM( "2. Attack!", 2, close vsay_offense ; exec "vsay attack", 0, 0, 1 )
-	VSAY_ITEM( "3. I need backup!", 3, close vsay_offense ; exec "vsay backup", 0, 0, 2 )
-	VSAY_ITEM( "4. Enemy Nearby", 4, close vsay_offense ; exec "vsay enemyisnear", 0, 0, 3 )
-	VSAY_ITEM( "5. Go! Go! GO!", 5, close vsay_offense ; exec "vsay gogogo", 0, 0, 4 )
-	VSAY_ITEM( "6. Grenade!", 6, close vsay_offense ; exec "vsay grenade", 0, 0, 5 )
-	VSAY_ITEM( "7. Enemy Spawns Down!", 7, close vsay_offense ; exec "vsay enemyspawnsdown", 0, 0, 6 )
-	VSAY_ITEM( "0. Previous Menu", 0, close vsay_offense ; open vsay_top, 0, 0, 10 )
+	VSAY_ITEM( "I'm Attacking", 1, close vsay_offense ; exec "vsay attacking", 0, 0, 0 )
+	VSAY_ITEM( "Attack!", 2, close vsay_offense ; exec "vsay attack", 0, 0, 1 )
+	VSAY_ITEM( "I need backup!", 3, close vsay_offense ; exec "vsay backup", 0, 0, 2 )
+	VSAY_ITEM( "Enemy Nearby", 4, close vsay_offense ; exec "vsay enemyisnear", 0, 0, 3 )
+	VSAY_ITEM( "Go! Go! GO!", 5, close vsay_offense ; exec "vsay gogogo", 0, 0, 4 )
+	VSAY_ITEM( "Grenade!", 6, close vsay_offense ; exec "vsay grenade", 0, 0, 5 )
+	VSAY_ITEM( "Enemy Spawns Down!", 7, close vsay_offense ; exec "vsay enemyspawnsdown", 0, 0, 6 )
+	VSAY_ITEM( "Previous Menu", 0, close vsay_offense ; open vsay_top, 0, 0, 10 )
   VSAY_MENU_END
   
   VSAY_MENU( "vsay_defense", 0, 0, 480, 250 )
-	VSAY_ITEM( "1. I'm Defending", 1, close vsay_defense ; exec "vsay defending", 0, 0, 0 )
-	VSAY_ITEM( "2. Defend!", 2, close vsay_defense ; exec "vsay defend", 0, 0, 1 )
-	VSAY_ITEM( "3. Clear the path!", 3, close vsay_defense ; exec "vsay clearthepath", 0, 0, 2 )
-	VSAY_ITEM( "4. Fallback!", 4, close vsay_defense ; exec "vsay fallback", 0, 0, 3 )
-	VSAY_ITEM( "5. Incoming!", 5, close vsay_defense ; exec "vsay incoming", 0, 0, 4 )
-	VSAY_ITEM( "6. Flank!", 6, close vsay_defense ; exec "vsay flank", 0, 0, 5 )
-	VSAY_ITEM( "0. Previous Menu", 0, close vsay_defense ; open vsay_top, 0, 0, 10 )
+	VSAY_ITEM( "I'm Defending", 1, close vsay_defense ; exec "vsay defending", 0, 0, 0 )
+	VSAY_ITEM( "Defend!", 2, close vsay_defense ; exec "vsay defend", 0, 0, 1 )
+	VSAY_ITEM( "Clear the path!", 3, close vsay_defense ; exec "vsay clearthepath", 0, 0, 2 )
+	VSAY_ITEM( "Fallback!", 4, close vsay_defense ; exec "vsay fallback", 0, 0, 3 )
+	VSAY_ITEM( "Incoming!", 5, close vsay_defense ; exec "vsay incoming", 0, 0, 4 )
+	VSAY_ITEM( "Flank!", 6, close vsay_defense ; exec "vsay flank", 0, 0, 5 )
+	VSAY_ITEM( "Previous Menu", 0, close vsay_defense ; open vsay_top, 0, 0, 10 )
   VSAY_MENU_END
   
   VSAY_MENU( "vsay_building", 0, 0, 480, 250 )
-	VSAY_ITEM( "1. Base needs repairs!", 1, close vsay_building ; exec "vsay baserepairs", 0, 0, 0 )
-	VSAY_ITEM( "2. What's the base status?", 2, close vsay_building ; exec "vsay basestatus", 0, 0, 1 )
-	VSAY_ITEM( "3. We need builders!", 3, close vsay_building ; exec "vsay builders", 0, 0, 2 )
-	VSAY_ITEM( "4. I'm building!", 4, close vsay_building ; exec "vsay building", 0, 0, 3 )
-	VSAY_ITEM( "5. We need spawns!", 5, close vsay_building ; exec "vsay spawns", 0, 0, 4 )
-	VSAY_ITEM( "0. Previous Menu", 0, close vsay_building ; open vsay_top, 0, 0, 10 )
+	VSAY_ITEM( "Base needs repairs!", 1, close vsay_building ; exec "vsay baserepairs", 0, 0, 0 )
+	VSAY_ITEM( "What's the base status?", 2, close vsay_building ; exec "vsay basestatus", 0, 0, 1 )
+	VSAY_ITEM( "We need builders!", 3, close vsay_building ; exec "vsay builders", 0, 0, 2 )
+	VSAY_ITEM( "I'm building!", 4, close vsay_building ; exec "vsay building", 0, 0, 3 )
+	VSAY_ITEM( "We need spawns!", 5, close vsay_building ; exec "vsay spawns", 0, 0, 4 )
+	VSAY_ITEM( "Previous Menu", 0, close vsay_building ; open vsay_top, 0, 0, 10 )
   VSAY_MENU_END
   
   VSAY_MENU( "vsay_status", 0, 0, 480, 250 )
