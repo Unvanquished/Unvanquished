@@ -409,6 +409,10 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 
 		case GAME_CONSOLE_COMMAND:
 			return ConsoleCommand();
+
+		case GAME_MESSAGERECEIVED:
+			// ignored
+			return 0;
 	}
 
 	return -1;
