@@ -10,213 +10,56 @@
 #define W         (640-(2*BORDER))
 #define H         (TEXTHEIGHT+BORDER)
 
+#define SAY_ITEM( NAME, PROMPT ) \
+  menuDef \
+  { \
+    name NAME \
+    fullScreen MENU_FALSE \
+    visible MENU_FALSE \
+    rect X Y W H \
+    aspectBias ALIGN_LEFT \
+    focusColor 1 1 1 1 \
+    style WINDOW_STYLE_EMPTY \
+    onOpen \
+    { \
+      setfocus say_field; \
+    } \
+ \
+    itemDef \
+    { \
+      name say_field \
+      type ITEM_TYPE_SAYFIELD \
+      style WINDOW_STYLE_EMPTY \
+      text PROMPT##":" \
+      cvar "ui_sayBuffer" \
+      maxchars 128 \
+      rect 0 0 W H \
+      textalign ALIGN_LEFT \
+      textvalign VALIGN_CENTER \
+      textstyle ITEM_TEXTSTYLE_SHADOWED \
+      textscale .4 \
+      forecolor 0.93 0.93 0.92 1 \
+      visible MENU_TRUE \
+      onCharEntry \
+      { \
+        uiScript SayKeyDown; \
+      } \
+      onTextEntry \
+      { \
+        uiScript Say; \
+        close NAME; \
+      } \
+    } \
+  }
+
   // Say to All
-  menuDef
-  {
-    name say
-    fullScreen MENU_FALSE
-    visible MENU_FALSE
-    rect X Y W H
-    aspectBias ALIGN_LEFT
-    focusColor 1 1 1 1
-    style WINDOW_STYLE_EMPTY
-    onOpen
-    {
-      setfocus say_field;
-    }
-
-    itemDef
-    {
-      name say_field
-      type ITEM_TYPE_SAYFIELD
-      style WINDOW_STYLE_EMPTY
-      text "Say:"
-      cvar "ui_sayBuffer"
-      maxchars 128
-      rect 0 0 W H
-      textalign ALIGN_LEFT
-      textvalign VALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_SHADOWED
-      textscale .4
-      forecolor 0.93 0.93 0.92 1
-      visible MENU_TRUE
-      onCharEntry
-      {
-        uiScript SayKeyDown;
-      }
-      onTextEntry
-      {
-        uiScript Say;
-        close say;
-      }
-    }
-  }
-
+  SAY_ITEM( say, "Say" )
   // Say to Team
-  menuDef
-  {
-    name say_team
-    fullScreen MENU_FALSE
-    visible MENU_FALSE
-    rect X Y W H
-    aspectBias ALIGN_LEFT
-    focusColor 1 1 1 1
-    style WINDOW_STYLE_EMPTY
-    onOpen
-    {
-      setfocus say_field
-    }
-
-    itemDef
-    {
-      name say_field
-      type ITEM_TYPE_SAYFIELD
-      style WINDOW_STYLE_EMPTY
-      text "Say to team:"
-      cvar "ui_sayBuffer"
-      maxchars 128
-      rect 0 0 W H
-      textalign ALIGN_LEFT
-      textvalign VALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_SHADOWED
-      textscale .4
-      forecolor 0.93 0.93 0.92 1
-      visible MENU_TRUE
-      onCharEntry
-      {
-        uiScript SayKeyDown;
-      }
-      onTextEntry
-      {
-        uiScript Say;
-        close say_team;
-      }
-    }
-  }
-
+  SAY_ITEM( say_team, "Say to team" )
   // Say to Admins
-  menuDef
-  {
-    name a
-    fullScreen MENU_FALSE
-    visible MENU_FALSE
-    rect X Y W H
-    aspectBias ALIGN_LEFT
-    focusColor 1 1 1 1
-    style WINDOW_STYLE_EMPTY
-    onOpen
-    {
-      setfocus say_field
-    }
-
-    itemDef
-    {
-      name say_field
-      type ITEM_TYPE_SAYFIELD
-      style WINDOW_STYLE_EMPTY
-      text "Say to admins:"
-      cvar "ui_sayBuffer"
-      maxchars 128
-      rect 0 0 W H
-      textalign ALIGN_LEFT
-      textvalign VALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_SHADOWED
-      textscale .4
-      forecolor 0.93 0.93 0.92 1
-      visible MENU_TRUE
-      onCharEntry
-      {
-        uiScript SayKeyDown;
-      }
-      onTextEntry
-      {
-        uiScript Say;
-        close a;
-      }
-    }
-  }
-
+  SAY_ITEM( a, "Say to admins" )
   // Say to IRC
-  menuDef
-  {
-    name irc_say
-    fullScreen MENU_FALSE
-    visible MENU_FALSE
-    rect X Y W H
-    aspectBias ALIGN_LEFT
-    focusColor 1 1 1 1
-    style WINDOW_STYLE_EMPTY
-    onOpen
-    {
-      setfocus say_field
-    }
-
-    itemDef
-    {
-      name say_field
-      type ITEM_TYPE_SAYFIELD
-      style WINDOW_STYLE_EMPTY
-      text "Say to IRC:"
-      cvar "ui_sayBuffer"
-      maxchars 128
-      rect 0 0 W H
-      textalign ALIGN_LEFT
-      textvalign VALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_SHADOWED
-      textscale .4
-      forecolor 0.93 0.93 0.92 1
-      visible MENU_TRUE
-      onCharEntry
-      {
-        uiScript SayKeyDown;
-      }
-      onTextEntry
-      {
-        uiScript Say;
-        close irc_say;
-      }
-    }
-  }
-  
+  SAY_ITEM( irc_say, "Say to IRC" )
   // Command
-  menuDef
-  {
-    name say_command
-    fullScreen MENU_FALSE
-    visible MENU_FALSE
-    rect X Y W H
-    aspectBias ALIGN_LEFT
-    focusColor 1 1 1 1
-    style WINDOW_STYLE_EMPTY
-    onOpen
-    {
-      setfocus say_field
-    }
-
-    itemDef
-    {
-      name say_field
-      type ITEM_TYPE_SAYFIELD
-      style WINDOW_STYLE_EMPTY
-      text "Command:"
-      cvar "ui_sayBuffer"
-      maxchars 128
-      rect 0 0 W H
-      textalign ALIGN_LEFT
-      textvalign VALIGN_CENTER
-      textstyle ITEM_TEXTSTYLE_SHADOWED
-      textscale .4
-      forecolor 0.93 0.93 0.92 1
-      visible MENU_TRUE
-      onCharEntry
-      {
-        uiScript SayKeyDown;
-      }
-      onTextEntry
-      {
-        uiScript Say;
-        close say_command;
-      }
-    }
-  }
+  SAY_ITEM( say_command, "Command" )
 }
