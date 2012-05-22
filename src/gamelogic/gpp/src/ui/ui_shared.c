@@ -5939,6 +5939,7 @@ static bind_t g_bindings[] =
 	{ "vote no",        K_F2,               -1,            -1, -1 },
 	{ "teamvote yes",   K_F3,               -1,            -1, -1 },
 	{ "teamvote no",    K_F4,               -1,            -1, -1 },
+	{ "menu vsay_top",  'o',                -1             -1, -1 },
 	{ "scoresUp",       K_KP_PGUP,          -1,            -1, -1 },
 	{ "scoresDown",     K_KP_PGDN,          -1,            -1, -1 },
 	{ "screenshotJPEG", -1,                 -1,            -1, -1 },
