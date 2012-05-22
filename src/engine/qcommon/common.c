@@ -4680,15 +4680,21 @@ Hist_Add
 */
 void Hist_Add( const char *field )
 {
-	if ( !strcmp( field, history[( hist_next - 1 ) % CON_HISTORY ] ) )
+	const char *prev = history[( hist_next - 1 ) % CON_HISTORY ];
+
+	// don't add "", "\" or "/"
+	if ( !field[ 0 ] ||
+	     ( ( field[ 0 ] == '/' || field[ 0 ] == '\\' ) && !field[ 1 ] ) )
 	{
 		hist_current = hist_next;
 		return;
 	}
 
-	// don't add "", "\" or "/"
-	if ( !field[ 0 ] ||
-	     ( ( field[ 0 ] == '/' || field[ 0 ] == '\\' ) && !field[ 1 ] ) )
+	// don't add if same as previous (treat leading \ and / as equivalent)
+	if ( ( *field == *prev ||
+	       ( *field == '/' && *prev == '\\' ) ||
+	       ( *field == '\\' && *prev  == '/' ) ) &&
+	     !strcmp( &field[ 1 ], &prev[ 1 ] ) )
 	{
 		hist_current = hist_next;
 		return;
