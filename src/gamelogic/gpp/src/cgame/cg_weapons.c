@@ -781,18 +781,15 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 				CG_Printf( S_COLOR_RED "ERROR: weapon model not found %s\n", token );
 			}
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_flash.md3" );
 			wi->flashModel = trap_R_RegisterModel( path );
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_barrel.md3" );
 			wi->barrelModel = trap_R_RegisterModel( path );
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_hand.md3" );
 			wi->handsModel = trap_R_RegisterModel( path );
 
@@ -817,13 +814,11 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 				           "model not found %s\n", token );
 			}
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_flash.md3" );
 			wi->flashModel3rdPerson = trap_R_RegisterModel( path );
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_barrel.md3" );
 			wi->barrelModel3rdPerson = trap_R_RegisterModel( path );
 
