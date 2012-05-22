@@ -374,14 +374,11 @@ static void SV_SendBinaryMessage( int cno, char *buf, int buflen )
 	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
 		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno );
-		return;
 	}
 
 	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
 	{
 		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen );
-		svs.clients[ cno ].binaryMessageLength = 0;
-		return;
 	}
 
 	svs.clients[ cno ].binaryMessageLength = buflen;
@@ -475,7 +472,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0;
 
 		case G_MILLISECONDS:
 			return Sys_Milliseconds();

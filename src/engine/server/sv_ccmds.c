@@ -261,7 +261,6 @@ static void SV_Map_f( void )
 #else
 					Com_Error( ERR_DROP, "Insufficient free disk space.\n\nPlease free at least 5mb of free space on game drive." );
 #endif
-					return;
 				}
 			}
 

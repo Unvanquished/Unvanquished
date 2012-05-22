@@ -757,8 +757,6 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid, int gridPlanes[ 
 
 		default:
 			Com_Error( ERR_FATAL, "CM_SetBorderInward: bad parameter" );
-			numPoints = 0;
-			break;
 	}
 
 	for ( k = 0; k < facet->numBorders; k++ )

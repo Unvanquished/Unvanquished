@@ -376,13 +376,11 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 		}
 
 		Com_Error( ERR_DROP, "CL_GetServerCommand: a reliable command was cycled out" );
-		return qfalse;
 	}
 
 	if ( serverCommandNumber > clc.serverCommandSequence )
 	{
 		Com_Error( ERR_DROP, "CL_GetServerCommand: requested a command not received" );
-		return qfalse;
 	}
 
 	s = clc.serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS - 1 ) ];
@@ -585,8 +583,6 @@ static void CL_SendBinaryMessage( const char *buf, int buflen )
 	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
 	{
 		Com_Error( ERR_DROP, "CL_SendBinaryMessage: bad length %i", buflen );
-		clc.binaryMessageLength = 0;
-		return;
 	}
 
 	clc.binaryMessageLength = buflen;
@@ -697,7 +693,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0;
 
 		case CG_MILLISECONDS:
 			return Sys_Milliseconds();

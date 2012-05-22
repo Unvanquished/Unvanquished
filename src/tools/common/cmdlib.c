@@ -222,7 +222,6 @@ void SetQdirFromPath(const char *path)
 				c++;
 			}
 			Error("No gamedir in %s", path);
-			return;
 		}
 	}
 	Error("SetQdirFromPath: no '%s' in %s", BASEDIRNAME, path);

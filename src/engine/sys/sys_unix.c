@@ -1062,7 +1062,6 @@ void Sys_DoStartProcess( char *cmdline )
 			}
 
 			_exit( 0 );
-			break;
 	}
 }
 

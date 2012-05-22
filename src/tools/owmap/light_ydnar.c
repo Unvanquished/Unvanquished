@@ -2490,27 +2490,27 @@ void IlluminateRawLightmap(int rawLightmapNum)
 			}
 
 			/* tertiary pass, apply dirt map (ambient occlusion) */
-			if(0 && dirty)
+			/*if(dirty)
 			{
-				/* walk luxels */
+				/ * walk luxels * /
 				for(y = 0; y < lm->sh; y++)
 				{
 					for(x = 0; x < lm->sw; x++)
 					{
-						/* get cluster  */
+						/ * get cluster  * /
 						cluster = SUPER_CLUSTER(x, y);
 						if(*cluster < 0)
 							continue;
 
-						/* get particulars */
+						/ * get particulars * /
 						lightLuxel = LIGHT_LUXEL(x, y);
 						dirt = SUPER_DIRT(x, y);
 
-						/* scale light value */
+						/ * scale light value * /
 						VectorScale(lightLuxel, *dirt, lightLuxel);
 					}
 				}
-			}
+			}*/
 
 			/* allocate sampling lightmap storage */
 			if(lm->superLuxels[lightmapNum] == NULL)

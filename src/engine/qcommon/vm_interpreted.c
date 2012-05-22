@@ -628,7 +628,6 @@ nextInstruction2:
 				else if ( ( unsigned ) programCounter >= vm->instructionCount )
 				{
 					Com_Error( ERR_DROP, "VM program counter out of range in OP_CALL" );
-					return 0;
 				}
 				else
 				{
@@ -704,7 +703,6 @@ nextInstruction2:
 				else if ( ( unsigned ) programCounter >= vm->codeLength )
 				{
 					Com_Error( ERR_DROP, "VM program counter out of range in OP_LEAVE" );
-					return 0;
 				}
 
 				goto nextInstruction;
@@ -719,7 +717,6 @@ nextInstruction2:
 				if ( ( unsigned ) r0 >= vm->instructionCount )
 				{
 					Com_Error( ERR_DROP, "VM program counter out of range in OP_JUMP" );
-					return 0;
 				}
 
 				programCounter = vm->instructionPointers[ r0 ];

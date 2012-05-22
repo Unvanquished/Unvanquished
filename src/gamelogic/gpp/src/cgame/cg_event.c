@@ -1142,7 +1142,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		default:
 			CG_Error( "Unknown event: %i", event );
-			break;
 	}
 }
 

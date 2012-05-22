@@ -1345,7 +1345,6 @@ static void ParseTexMod( char *_text, shaderStage_t *stage )
 	if ( stage->bundle[ 0 ].numTexMods == TR_MAX_TEXMODS )
 	{
 		ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'\n", shader.name );
-		return;
 	}
 
 	tmi = &stage->bundle[ 0 ].texMods[ stage->bundle[ 0 ].numTexMods ];
@@ -3979,7 +3978,6 @@ static void FixRenderCommandList( int newShader )
 						curCmd = ( const void * )( sp_cmd + 1 );
 						break;
 					}
-					break;
 
 				case RC_DRAW_SURFS:
 					{
@@ -4584,12 +4582,12 @@ static shader_t *FinishShader( void )
 	// if we are using permedia hw, never use a lightmap texture
 	//
 	// NERVE - SMF - temp fix, terrain is having problems with lighting collapse
-	if ( 0 && ( stage > 1 && ( glConfig.hardwareType == GLHW_PERMEDIA2 ) ) )
-	{
-		VertexLightingCollapse();
-		stage = 1;
-		hasLightmapStage = qfalse;
-	}
+	//if ( stage > 1 && ( glConfig.hardwareType == GLHW_PERMEDIA2 ) )
+	//{
+	//	VertexLightingCollapse();
+	//	stage = 1;
+	//	hasLightmapStage = qfalse;
+	//}
 
 	//
 	// look for multitexture potential

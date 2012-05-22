@@ -2143,7 +2143,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 	if ( !fs_searchpaths )
 	{
 		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
-		return -1;
 	}
 
 	if ( fsh[ f ].streamed )
@@ -2164,7 +2163,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 		{
 			Com_Error( ERR_FATAL, "Negative offsets and FS_SEEK_END not implemented "
 			           "for FS_Seek on pk3 file contents\n" );
-			return -1;
 		}
 
 		switch ( origin )
@@ -2183,7 +2181,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 
 				FS_Read( buffer, remainder, f );
 				return offset;
-				break;
 
 			default:
 				Com_Error( ERR_FATAL, "Bad origin in FS_Seek\n" );
@@ -2211,9 +2208,7 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 				break;
 
 			default:
-				_origin = SEEK_CUR;
 				Com_Error( ERR_FATAL, "Bad origin in FS_Seek\n" );
-				break;
 		}
 
 		return fseek( file, offset, _origin );
@@ -5140,7 +5135,6 @@ void FS_Restart( int checksumFeed )
 			Cvar_Set( "fs_restrict", "0" );
 			FS_Restart( checksumFeed );
 			Com_Error( ERR_DROP, "Invalid game folder\n" );
-			return;
 		}
 
 		// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
@@ -5271,7 +5265,6 @@ int     FS_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode )
 
 		default:
 			Com_Error( ERR_FATAL, "FSH_FOpenFile: bad mode" );
-			return -1;
 	}
 
 	if ( !f )

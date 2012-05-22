@@ -1386,7 +1386,6 @@ void CL_PlayDemo_f( void )
 	if ( !clc.demofile )
 	{
 		Com_Error( ERR_DROP, "couldn't open %s", name );
-		return;
 	}
 
 	Q_strncpyz( clc.demoName, Cmd_Argv( 1 ), sizeof( clc.demoName ) );
@@ -4147,7 +4146,6 @@ static void CL_Cache_UsedFile_f( void )
 	if ( Cmd_Argc() < 2 )
 	{
 		Com_Error( ERR_DROP, "usedfile without enough parameters\n" );
-		return;
 	}
 
 	strcpy( groupStr, Cmd_Argv( 1 ) );
@@ -4174,7 +4172,6 @@ static void CL_Cache_UsedFile_f( void )
 	if ( i == CACHE_NUMGROUPS )
 	{
 		Com_Error( ERR_DROP, "usedfile without a valid cache group\n" );
-		return;
 	}
 
 	// see if it's already there
@@ -4219,7 +4216,6 @@ static void CL_Cache_SetIndex_f( void )
 	if ( Cmd_Argc() < 2 )
 	{
 		Com_Error( ERR_DROP, "setindex needs an index\n" );
-		return;
 	}
 
 	cacheIndex = atoi( Cmd_Argv( 1 ) );

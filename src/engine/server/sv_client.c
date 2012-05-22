@@ -625,7 +625,6 @@ void SV_DirectConnect( netadr_t from )
 			else
 			{
 				Com_Error( ERR_FATAL, "server is full on local connect\n" );
-				return;
 			}
 		}
 		else

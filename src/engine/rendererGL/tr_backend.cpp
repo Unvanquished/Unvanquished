@@ -552,7 +552,6 @@ void GL_State( uint32_t stateBits )
 				default:
 					srcFactor = GL_ONE; // to get warning to shut up
 					ri.Error( ERR_DROP, "GL_State: invalid src blend state bits\n" );
-					break;
 			}
 
 			switch ( stateBits & GLS_DSTBLEND_BITS )
@@ -592,7 +591,6 @@ void GL_State( uint32_t stateBits )
 				default:
 					dstFactor = GL_ONE; // to get warning to shut up
 					ri.Error( ERR_DROP, "GL_State: invalid dst blend state bits\n" );
-					break;
 			}
 
 			glEnable( GL_BLEND );
@@ -1083,7 +1081,6 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 	if ( !glState.currentVBO )
 	{
 		ri.Error( ERR_FATAL, "GL_VertexAttribPointers: no VBO bound" );
-		return;
 	}
 
 	if ( r_logFile->integer )

@@ -102,7 +102,6 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 
 		default:
 			CG_Error( "vmMain(): unknown cgame command %i", command );
-			break;
 	}
 
 	return -1;
@@ -1746,7 +1745,6 @@ void CG_LoadMenus( const char *menuFile )
 		trap_FS_FCloseFile( f );
 		trap_Error( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i",
 		                menuFile, len, MAX_MENUDEFFILE ) );
-		return;
 	}
 
 	trap_FS_Read( buf, len, f );
@@ -1988,15 +1986,12 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 
 			case 3:
 				return va( S_COLOR_WHITE "%s", info->name );
-				break;
 
 			case 4:
 				return va( "%d", sp->score );
-				break;
 
 			case 5:
 				return va( "%4d", sp->time );
-				break;
 
 			case 6:
 				if ( sp->ping == -1 )
@@ -2005,7 +2000,6 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 				}
 
 				return va( "%4d", sp->ping );
-				break;
 		}
 	}
 
@@ -2052,7 +2046,6 @@ static int CG_OwnerDrawWidth( int ownerDraw, float scale )
 	{
 		case CG_KILLER:
 			return UI_Text_Width( CG_GetKillerText(), scale );
-			break;
 	}
 
 	return 0;

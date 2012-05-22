@@ -3578,7 +3578,6 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 	else
 	{
 		Com_Error( ERR_FATAL, "team is %d\n", team );
-		return IBE_NONE;
 	}
 
 	// Simple non-marking case
@@ -4034,7 +4033,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 
 				default:
 					Com_Error( ERR_FATAL, "No reason for denying build of %d\n", buildable );
-					break;
 			}
 		}
 	}

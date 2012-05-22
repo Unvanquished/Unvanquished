@@ -848,7 +848,6 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 	if ( to.type != NA_BROADCAST && to.type != NA_IP && to.type != NA_IP6 && to.type != NA_MULTICAST6 )
 	{
 		Com_Error( ERR_FATAL, "Sys_SendPacket: bad address type" );
-		return;
 	}
 
 	if ( ( ip_socket == INVALID_SOCKET && to.type == NA_IP ) ||

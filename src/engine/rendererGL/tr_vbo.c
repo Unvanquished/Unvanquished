@@ -404,7 +404,6 @@ void R_BindVBO( VBO_t *vbo )
 	{
 		//R_BindNullVBO();
 		ri.Error( ERR_DROP, "R_BindNullVBO: NULL vbo" );
-		return;
 	}
 
 	if ( r_logFile->integer )
@@ -459,7 +458,6 @@ void R_BindIBO( IBO_t *ibo )
 	{
 		//R_BindNullIBO();
 		ri.Error( ERR_DROP, "R_BindIBO: NULL ibo" );
-		return;
 	}
 
 	if ( r_logFile->integer )

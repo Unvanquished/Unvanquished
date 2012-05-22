@@ -121,7 +121,7 @@ void R_GetGlyphInfo( FT_GlyphSlot glyph, int *left, int *right, int *width, int 
 	*top = _CEIL( glyph->metrics.horiBearingY + 1);
 	*bottom = _FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height - 1);
 	*height = _TRUNC( *top - *bottom );
-	*pitch = ( qtrue ? ( *width + 3 ) & - 4 : ( *width + 7 ) >> 3 );
+	*pitch = ( *width + 3 ) & - 4; // ( qtrue ? ( *width + 3 ) & - 4 : ( *width + 7 ) >> 3 );
 }
 
 FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )

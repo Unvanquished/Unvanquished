@@ -740,7 +740,7 @@ static void FillCloudBox( const shader_t *shader, int stage )
 		int   s, t;
 		float MIN_T;
 
-		if ( 1 )
+		//if ( 1 )
 		{
 			// FIXME? shader->sky.fullClouds )
 			MIN_T = -HALF_SKY_SUBDIVISIONS;
@@ -751,7 +751,7 @@ static void FillCloudBox( const shader_t *shader, int stage )
 				continue;
 			}
 		}
-		else
+		/*else
 		{
 			switch ( i )
 			{
@@ -771,7 +771,7 @@ static void FillCloudBox( const shader_t *shader, int stage )
 					MIN_T = -HALF_SKY_SUBDIVISIONS;
 					break;
 			}
-		}
+		}*/
 
 		sky_mins[ 0 ][ i ] = floor( sky_mins[ 0 ][ i ] * HALF_SKY_SUBDIVISIONS ) / HALF_SKY_SUBDIVISIONS;
 		sky_mins[ 1 ][ i ] = floor( sky_mins[ 1 ][ i ] * HALF_SKY_SUBDIVISIONS ) / HALF_SKY_SUBDIVISIONS;

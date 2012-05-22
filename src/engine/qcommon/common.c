@@ -2789,7 +2789,6 @@ int Com_EventLoop( void )
 			default:
 				// bk001129 - was ev.evTime
 				Com_Error( ERR_FATAL, "Com_EventLoop: bad event type %i", ev.evType );
-				break;
 
 			case SE_NONE:
 				break;

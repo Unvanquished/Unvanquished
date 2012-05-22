@@ -317,15 +317,12 @@ static int LAN_GetServerCount( int source )
 	{
 		case AS_LOCAL:
 			return cls.numlocalservers;
-			break;
 
 		case AS_GLOBAL:
 			return cls.numglobalservers;
-			break;
 
 		case AS_FAVORITES:
 			return cls.numfavoriteservers;
-			break;
 	}
 
 	return 0;
@@ -1036,7 +1033,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 	{
 		case UI_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0;
 
 		case UI_PRINT:
 			Com_Printf( "%s", ( char * ) VMA( 1 ) );
@@ -1560,7 +1556,6 @@ void CL_InitUI( void )
 	if ( v != UI_API_VERSION )
 	{
 		Com_Error( ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION );
-		cls.uiStarted = qfalse;
 	}
 
 	// init for this gamestate

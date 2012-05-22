@@ -3500,7 +3500,6 @@ void CG_Player( centity_t *cent )
 			if ( skeleton.numBones != skeleton.numBones )
 			{
 				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
-				return;
 			}
 
 			// combine legs and torso skeletons

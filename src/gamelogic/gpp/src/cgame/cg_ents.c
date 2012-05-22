@@ -1226,7 +1226,6 @@ static void CG_AddCEntity( centity_t *cent )
 	{
 		default:
 			CG_Error( "Bad entity type: %i\n", cent->currentState.eType );
-			break;
 
 		case ET_INVISIBLE:
 		case ET_PUSH_TRIGGER:

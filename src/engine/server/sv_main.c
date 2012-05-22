@@ -1641,7 +1641,6 @@ int SV_LoadTag( const char *mod_name )
 	{
 		FS_FreeFile( buffer );
 		Com_Error( ERR_DROP, "MAX_TAG_FILES reached" );
-		return 0;
 	}
 
 	LL( pinmodel->ident );
@@ -1657,7 +1656,6 @@ int SV_LoadTag( const char *mod_name )
 	{
 		FS_FreeFile( buffer );
 		Com_Error( ERR_DROP, "MAX_SERVER_TAGS reached" );
-		return qfalse;
 	}
 
 	// swap all the tags

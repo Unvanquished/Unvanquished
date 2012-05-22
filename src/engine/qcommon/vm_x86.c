@@ -439,7 +439,6 @@ Error handler for jump/call to invalid instruction number
 static void NORETURN ErrJump( void )
 {
 	Com_Error( ERR_DROP, "program tried to execute code outside VM" );
-	exit( 1 );
 }
 
 /*
@@ -539,7 +538,6 @@ static void DoSyscall( void )
 		{
 			case VM_JMP_VIOLATION:
 					ErrJump();
-				break;
 
 			case VM_BLOCK_COPY:
 					if ( opStackOfs < 1 )
@@ -552,7 +550,6 @@ static void DoSyscall( void )
 
 			default:
 					Com_Error( ERR_DROP, "Unknown VM operation %d", syscallNum );
-				break;
 		}
 	}
 

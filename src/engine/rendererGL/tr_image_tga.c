@@ -161,7 +161,6 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaB
 
 					default:
 						ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
-						break;
 				}
 			}
 		}
@@ -206,7 +205,6 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaB
 
 						default:
 							ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
-							break;
 					}
 
 					for ( j = 0; j < packetSize; j++ )
@@ -266,7 +264,6 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaB
 							default:
 								ri.Error( ERR_DROP,
 								          "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
-								break;
 						}
 
 						column++;

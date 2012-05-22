@@ -1506,7 +1506,6 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 
 				default:
 					ri.Error( ERR_DROP, "LoadBMP: illegal pixel_size '%d' in file '%s'\n", bmpHeader.bitsPerPixel, name );
-					break;
 			}
 		}
 	}
@@ -1831,7 +1830,6 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 
 					default:
 						ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
-						break;
 				}
 			}
 		}
@@ -1876,7 +1874,6 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 
 						default:
 							ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
-							break;
 					}
 
 					for ( j = 0; j < packetSize; j++ )
@@ -1936,7 +1933,6 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 							default:
 								ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size,
 								          name );
-								break;
 						}
 
 						column++;
@@ -4426,7 +4422,6 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	if ( DDSGetInfo( ( ddsBuffer_t * ) buffer, &w, &h, &pf ) )
 	{
 		ri.Error( ERR_DROP, "LoadDDS: Invalid DDS texture '%s'\n", name );
-		return;
 	}
 
 	// only certain types of dds textures are supported
@@ -4434,7 +4429,6 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	{
 		ri.Error( ERR_DROP, "LoadDDS: Only DDS texture formats ARGB8888, DXT1, DXT3, and DXT5 are supported (%d) '%s'\n", pf,
 		          name );
-		return;
 	}
 
 	// create image pixel buffer

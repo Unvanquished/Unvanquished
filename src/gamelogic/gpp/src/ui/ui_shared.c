@@ -718,7 +718,6 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 
 				default:
 					Com_Error( ERR_FATAL, "Unknown operator '%c' in postfix string", op );
-					return qfalse;
 			}
 
 			PUSH_VAL( stack, result );
@@ -2879,8 +2878,6 @@ qboolean Item_EnableShowViaCvar( itemDef_t *item, int flag )
 				}
 			}
 		}
-
-		return ( item->cvarFlags & flag ) ? qfalse : qtrue;
 	}
 
 	return qtrue;
@@ -6421,16 +6418,16 @@ void Item_Model_Paint( itemDef_t *item )
 	origin[ 1 ] = 0.5 * ( mins[ 1 ] + maxs[ 1 ] );
 
 	// calculate distance so the model nearly fills the box
-	if ( qtrue )
+	//if ( qtrue )
 	{
 		float len = 0.5 * ( maxs[ 2 ] - mins[ 2 ] );
 		origin[ 0 ] = len / 0.268; // len / tan( fov/2 )
 		//origin[0] = len / tan(w/2);
 	}
-	else
-	{
-		origin[ 0 ] = item->textscale;
-	}
+	//else
+	//{
+	//	origin[ 0 ] = item->textscale;
+	//}
 
 	refdef.fov_x = ( modelPtr->fov_x ) ? modelPtr->fov_x : w;
 	refdef.fov_y = ( modelPtr->fov_y ) ? modelPtr->fov_y : h;

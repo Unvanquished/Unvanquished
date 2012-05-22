@@ -1747,7 +1747,6 @@ float CG_GetValue( int ownerDraw )
 
 		case CG_PLAYER_HEALTH:
 			return ps->stats[ STAT_HEALTH ];
-			break;
 
 		default:
 			break;
@@ -3038,7 +3037,6 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
 		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d\n", weapon );
-		return;
 	}
 
 	if ( !cg_weapons[ weapon ].registered )
@@ -3369,7 +3367,6 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 
 			default:
 				CG_Error( "CG_DrawStack: valign value %d not recognised", valign );
-				return;
 		}
 	}
 	else
@@ -3393,7 +3390,6 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 
 			default:
 				CG_Error( "CG_DrawStack: align value %d not recognised", align );
-				return;
 		}
 	}
 

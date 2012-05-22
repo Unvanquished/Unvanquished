@@ -495,7 +495,6 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 	if ( !buffer )
 	{
 		ri.Error( ERR_DROP, "LoadRGBE: '%s' not found\n", name );
-		return;
 	}
 
 	buf_p = buffer;

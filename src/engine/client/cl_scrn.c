@@ -764,7 +764,6 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 		{
 			default:
 				Com_Error( ERR_FATAL, "SCR_DrawScreenField: bad cls.state" );
-				break;
 
 			case CA_CINEMATIC:
 				SCR_DrawCinematic();
@@ -784,14 +783,6 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				VM_Call( uivm, UI_REFRESH, cls.realtime );
 				VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, qfalse );
 				break;
-
-				// Ridah, if the cgame is valid, fall through to there
-				if ( !cls.cgameStarted || !com_sv_running->integer )
-				{
-					// connecting clients will only show the connection dialog
-					VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, qfalse );
-					break;
-				}
 
 			case CA_LOADING:
 			case CA_PRIMED:

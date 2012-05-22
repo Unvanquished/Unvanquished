@@ -507,8 +507,6 @@ static void CM_SetBorderInward( cFacet_t *facet, cTriangleSoup_t *triSoup, int i
 
 		default:
 			Com_Error( ERR_FATAL, "CM_SetBorderInward: bad parameter %i", which );
-			numPoints = 0;
-			break;
 	}
 
 	for ( k = 0; k < facet->numBorders; k++ )

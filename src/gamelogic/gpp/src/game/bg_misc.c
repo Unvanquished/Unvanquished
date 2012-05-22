@@ -2761,7 +2761,6 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 
 		default:
 			Com_Error( ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
-			break;
 	}
 }
 
@@ -2819,7 +2818,6 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 
 		default:
 			Com_Error( ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
-			break;
 	}
 }
 
@@ -3752,7 +3750,6 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count )
 
 			default:
 				Com_Error( ERR_FATAL, "Entity index %d not handled", i );
-				break;
 		}
 	}
 }
@@ -3821,7 +3818,6 @@ int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count )
 
 			default:
 				Com_Error( ERR_FATAL, "Entity index %d not handled", i );
-				break;
 		}
 
 		*entityNum &= GENTITYNUM_MASK;

@@ -2882,7 +2882,6 @@ qboolean R_FindCachedModel( const char *name, model_t *newmod )
 
 				default:
 					return qfalse;
-					break; // MOD_BAD MOD_BRUSH
 			}
 
 			mod->type = MOD_BAD; // don't try and purge it later
