@@ -1160,8 +1160,8 @@ static void Window_Paint( Window *w, float fadeAmount, float fadeClamp, float fa
 	{
 		fillRect.x += w->borderSize;
 		fillRect.y += w->borderSize;
-		fillRect.w -= w->borderSize + 1;
-		fillRect.h -= w->borderSize + 1;
+		fillRect.w -= w->borderSize * 2.0;
+		fillRect.h -= w->borderSize * 2.0;
 	}
 
 	if ( w->style == WINDOW_STYLE_FILLED )
@@ -1253,7 +1253,7 @@ static void Border_Paint( Window *w )
 		rectDef_t r = w->rect;
 		r.h = w->borderSize;
 		GradientBar_Paint( &r, w->borderColor );
-		r.y = w->rect.y + w->rect.h - 1;
+		r.y = w->rect.y + w->rect.h - r.h;
 		GradientBar_Paint( &r, w->borderColor );
 	}
 }
