@@ -900,7 +900,6 @@ void RE_UnregisterFont_Internal( fontHandle_t handle )
 		}
 	}
 
-	free( registeredFont[ handle ].glyphBlock );
 	memset( &registeredFont[ handle ], 0, sizeof( fontInfo_t ) );
 }
 

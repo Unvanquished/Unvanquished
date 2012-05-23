@@ -3765,13 +3765,10 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 	}
 	else
 	{
-		char atCursor;
-		int  offset, cursorOffset;
-
 		// If there is a maximum field width
 		if ( editPtr->maxFieldWidth > 0 )
 		{
-			int widthAdjust;
+			int widthAdjust, offset;
 
 			// If the cursor is at the end of the string, maximise the amount of the
 			// string that's visible

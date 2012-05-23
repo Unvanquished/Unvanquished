@@ -256,7 +256,7 @@ typedef struct
 	int ( *FS_Seek )( fileHandle_t f, long offset, int origin );
 	int ( *FS_FTell )( fileHandle_t f );
 	int ( *FS_Read )( void *buffer, int len, fileHandle_t f );
-	void ( *FS_FCloseFile )( fileHandle_t f );
+	int ( *FS_FCloseFile )( fileHandle_t f );
 	int ( *FS_FOpenFileRead )( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
 
 	// cinematic stuff
