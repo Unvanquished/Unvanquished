@@ -2364,6 +2364,10 @@ extern "C" {
 		re.GlyphChar = RE_GlyphChar;
 		re.RegisterFont = RE_RegisterFont;
 		re.UnregisterFont = RE_UnregisterFont;
+		re.RegisterFontVM = RE_RegisterFontVM;
+		re.GlyphVM = RE_GlyphVM;
+		re.GlyphCharVM = RE_GlyphCharVM;
+		re.UnregisterFontVM = RE_UnregisterFontVM;
 
 		re.RemapShader = R_RemapShader;
 		re.GetEntityToken = R_GetEntityToken;

@@ -34,12 +34,6 @@ Maryland 20850 USA.
 
 // cl_cgame.c  -- client system interaction with client game
 
-#ifdef _MSC_VER
-#include "../../libs/msinttypes/inttypes.h"
-#else
-#include <inttypes.h>
-#endif
-
 #include "client.h"
 #include "libmumblelink.h"
 
@@ -730,10 +724,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_CVAR_VARIABLESTRINGBUFFER:
+			VM_CheckBlock( args[2], args[3], "CVARVSB" );
 			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_CVAR_LATCHEDVARIABLESTRINGBUFFER:
+			VM_CheckBlock( args[2], args[3], "CVARLVSB" );
 			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -741,15 +737,18 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return Cmd_Argc();
 
 		case CG_ARGV:
+			VM_CheckBlock( args[2], args[3], "ARGV" );
 			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_ARGS:
+			VM_CheckBlock( args[1], args[2], "ARGS" );
 			Cmd_ArgsBuffer( VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_LITERAL_ARGS:
 			// FIXME
+			VM_CheckBlock( args[1], args[2], "LARGS" );
 			Cmd_LiteralArgsBuffer( VMA( 1 ), args[ 2 ] );
 //                      Cmd_ArgsBuffer(VMA(1), args[2]);
 			return 0;
@@ -764,10 +763,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case CG_FS_READ:
+			VM_CheckBlock( args[1], args[2], "FSREAD" );
 			FS_Read2( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case CG_FS_WRITE:
+			VM_CheckBlock( args[1], args[2], "FSWRITE" );
 			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case CG_FS_FCLOSEFILE:
@@ -775,6 +776,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_FS_GETFILELIST:
+			VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case CG_FS_DELETEFILE:
@@ -984,7 +986,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 #endif // IPHONE
 
 		case CG_R_REGISTERFONT:
-			re.RegisterFont( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
+			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
 		case CG_R_REGISTERSHADERNOMIP:
@@ -1149,42 +1151,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_SetOverstrikeMode( args[ 1 ] );
 			return 0;
 
-		case CG_MEMSET:
-			// we cannot return server-address to QVM !
-			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
-			return args[ 1 ];
-
-		case CG_MEMCPY:
-			// we cannot return server-address to QVM !
-			memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return args[ 1 ];
-
-		case CG_STRNCPY:
-			// we cannot return server-address to QVM !
-			strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return args[ 1 ];
-
-		case CG_SIN:
-			return FloatAsInt( sin( VMF( 1 ) ) );
-
-		case CG_COS:
-			return FloatAsInt( cos( VMF( 1 ) ) );
-
-		case CG_ATAN2:
-			return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
-
-		case CG_SQRT:
-			return FloatAsInt( sqrt( VMF( 1 ) ) );
-
-		case CG_FLOOR:
-			return FloatAsInt( floor( VMF( 1 ) ) );
-
-		case CG_CEIL:
-			return FloatAsInt( ceil( VMF( 1 ) ) );
-
-		case CG_ACOS:
-			return FloatAsInt( Q_acos( VMF( 1 ) ) );
-
 		case CG_S_STOPBACKGROUNDTRACK:
 			S_StopBackgroundTrack();
 			return 0;
@@ -1217,14 +1183,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
 
-		case CG_TESTPRINTINT:
-			Com_Printf( "%s%" PRIiPTR "\n", ( char * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case CG_TESTPRINTFLOAT:
-			Com_Printf( "%s%f\n", ( char * ) VMA( 1 ), VMF( 2 ) );
-			return 0;
-
 		case CG_LOADCAMERA:
 			//return loadCamera(args[1], VMA(2));
 			return 0;
@@ -1249,6 +1207,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GET_ENTITY_TOKEN:
+			VM_CheckBlock( args[1], args[2], "GETET" );
 			return re.GetEntityToken( VMA( 1 ), args[ 2 ] );
 
 		case CG_INGAME_POPUP:
@@ -1267,6 +1226,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_GETBINDINGBUF:
+			VM_CheckBlock( args[2], args[3], "KEYGBB" );
 			Key_GetBindingBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1290,6 +1250,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return Parse_SourceFileAndLine( args[ 1 ], VMA( 2 ), VMA( 3 ) );
 
 		case CG_KEY_KEYNUMTOSTRINGBUF:
+			VM_CheckBlock( args[2], args[3], "KEYNTSB" );
 			Key_KeynumToStringBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1320,7 +1281,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 			//zinx - binary channel
 		case CG_SENDMESSAGE:
-			CL_SendBinaryMessage( VMA( 1 ), args[ 2 ] );
+			VM_CheckBlock( args[1], args[2], "SENDM" );
+ 			CL_SendBinaryMessage( VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_MESSAGESTATUS:
@@ -1345,6 +1307,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETDEMONAME:
+			VM_CheckBlock( args[1], args[2], "GETDM" );
 			CL_DemoName( VMA( 1 ), args[ 2 ] );
 
 		case CG_R_LIGHTFORPOINT:
@@ -1381,6 +1344,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETCLIPBOARDDATA:
+			VM_CheckBlock( args[1], args[2], "GETCLIP" );
 			CL_GetClipboardData( VMA(1), args[2], args[3] );
 			return 0;
 
@@ -1389,18 +1353,15 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_R_GLYPH:
-			re.Glyph( VMA(1), VMA(2), VMA(3) );
+			re.GlyphVM( args[1], VMA(2), VMA(3) );
 			break;
 
 		case CG_R_GLYPHCHAR:
-			re.GlyphChar( VMA(1), args[2], VMA(3) );
+			re.GlyphCharVM( args[1], args[2], VMA(3) );
 			break;
 
 		case CG_R_UREGISTERFONT:
-			if ( VMA(1) )
-			{
-				re.UnregisterFont( VMA(1) );
-			}
+			re.UnregisterFontVM( args[1] );
 			break;
 
 		default:

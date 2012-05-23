@@ -465,14 +465,6 @@ void SV_UpdateSharedConfig( unsigned int port, const char *rconpass )
 
 //==============================================
 
-static int FloatAsInt( float f )
-{
-	floatint_t fi;
-
-	fi.f = f;
-	return fi.i;
-}
-
 extern int S_RegisterSound( const char *name, qboolean compressed );
 extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
@@ -514,10 +506,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return Cvar_VariableIntegerValue( ( const char * ) VMA( 1 ) );
 
 		case G_CVAR_VARIABLE_STRING_BUFFER:
+		        VM_CheckBlock( args[2], args[3], "CVARVSB" );
 			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_CVAR_LATCHEDVARIABLESTRINGBUFFER:
+		        VM_CheckBlock( args[2], args[3], "CVARLVSB" );
 			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -525,6 +519,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return Cmd_Argc();
 
 		case G_ARGV:
+		        VM_CheckBlock( args[2], args[3], "ARGV" );
 			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -536,10 +531,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case G_FS_READ:
+		        VM_CheckBlock( args[1], args[2], "FSREAD" );
 			FS_Read2( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case G_FS_WRITE:
+		        VM_CheckBlock( args[1], args[2], "FSWRITE" );
 			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case G_FS_RENAME:
@@ -551,6 +548,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_FS_GETFILELIST:
+		        VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case G_LOCATE_GAME_DATA:
@@ -574,6 +572,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_ENTITIES_IN_BOX:
+		        VM_CheckBlock( args[3], args[4] * sizeof( int ), "ENTIB" );
 			return SV_AreaEntities( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case G_ENTITY_CONTACT:
@@ -608,6 +607,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_GET_CONFIGSTRING:
+		        VM_CheckBlock( args[2], args[3], "GETCS" );
 			SV_GetConfigstring( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -621,10 +621,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_GET_USERINFO:
+		        VM_CheckBlock( args[2], args[3], "GETUI" );
 			SV_GetUserinfo( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_GET_SERVERINFO:
+		        VM_CheckBlock( args[2], args[3], "GETSI" );
 			SV_GetServerinfo( VMA( 1 ), args[ 2 ] );
 			return 0;
 
@@ -647,6 +649,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case BOT_GET_CONSOLE_MESSAGE:
+		        VM_CheckBlock( args[2], args[3], "BOTGCM" );
 			return SV_BotGetConsoleMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );
 
 		case G_GET_USERCMD:
@@ -654,6 +657,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_GET_ENTITY_TOKEN:
+		        VM_CheckBlock( args[1], args[2], "GETET" );
 			{
 				const char *s;
 
@@ -735,48 +739,8 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 #endif
 			return 0;
 
-		case TRAP_MEMSET:
-			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
-			return 0;
-
-		case TRAP_MEMCPY:
-			memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case TRAP_STRNCPY:
-			return ( intptr_t ) strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-
-		case TRAP_SIN:
-			return FloatAsInt( sin( VMF( 1 ) ) );
-
-		case TRAP_COS:
-			return FloatAsInt( cos( VMF( 1 ) ) );
-
-		case TRAP_ATAN2:
-			return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
-
-		case TRAP_SQRT:
-			return FloatAsInt( sqrt( VMF( 1 ) ) );
-
-		case TRAP_MATRIXMULTIPLY:
-			AxisMultiply( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
-			return 0;
-
-		case TRAP_ANGLEVECTORS:
-			AngleVectors( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
-			return 0;
-
-		case TRAP_PERPENDICULARVECTOR:
-			PerpendicularVector( VMA( 1 ), VMA( 2 ) );
-			return 0;
-
-		case TRAP_FLOOR:
-			return FloatAsInt( floor( VMF( 1 ) ) );
-
-		case TRAP_CEIL:
-			return FloatAsInt( ceil( VMF( 1 ) ) );
-
 		case G_SENDMESSAGE:
+		        VM_CheckBlock( args[2], args[3], "SENDM" );
 			SV_SendBinaryMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 

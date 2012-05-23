@@ -37,6 +37,7 @@ Maryland 20850 USA.
 // *INDENT-OFF*
 
 #include "vm_local.h"
+#include "vm_traps.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -499,7 +500,7 @@ static void DoSyscall( void )
 		int      index;
 		intptr_t args[ 11 ];
 #endif
-
+		VM_SetSanity( savedVM, ~syscallNum );
 		data = ( int * )( savedVM->dataBase + programStack + 4 );
 
 #if idx64
@@ -510,11 +511,27 @@ static void DoSyscall( void )
 			args[ index ] = data[ index ];
 		}
 
-		opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( args );
+		if ( args[ 0 ] < FIRST_VM_SYSCALL )
+		{
+			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( args ); // Common
+		}
+		else
+		{
+			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( args ); // VM-specific
+		}
 #else
 		data[ 0 ] = ~syscallNum;
-		opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data );
+
+		if ( data[ 0 ] < FIRST_VM_SYSCALL )
+		{
+			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( data ); // Common
+		}
+		else
+		{
+			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data ); // VM-specific
+		}
 #endif
+		VM_CheckSanity( savedVM, ~syscallNum );
 	}
 	else
 	{

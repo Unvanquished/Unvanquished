@@ -38,6 +38,7 @@ option( BUILD_OLD_RENDERER   "Build old renderer library"                  1 )
 option( BUILD_NEW_RENDERER   "Build new renderer library"                  1 )
 option( BUILD_SERVER         "Build Daemonded server"                      1 )
 option( BUILD_GAME_SO_GPP    "Build GPP Tremulous game logic libs"         1 )
+option( BUILD_GAME_QVM_GPP   "Build GPP Tremulous game logic QVM files"    0 )
 option( BUILD_MASTER         "Build master server"                         1 )
 option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
 option( USE_OPENAL           "Use OpenAL"                                  1 )
@@ -59,6 +60,7 @@ option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
 option( ENABLE_HARDENING     "Enable various hardening options"            1 )
 
+cmake_dependent_option( QVM_DEBUG            "Enable (some) QVM debugging"                 1 BUILD_GAME_QVM_GPP 0 )
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
 cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"             1 USE_CODEC_VORBIS 0 )
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
@@ -477,7 +479,7 @@ set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
 )
 
-set( CGAMEGPP
+set( CGAMEGPP_BASE
   ${GPP_DIR}/src/cgame/cg_main.c
   ${GPP_DIR}/src/game/bg_misc.c
   ${GPP_DIR}/src/game/bg_pmove.c
@@ -510,10 +512,18 @@ set( CGAMEGPP
   ${GPP_DIR}/src/ui/ui_utf8.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
+)
+
+set( CGAMEGPP_SO
+  ${CGAMEGPP_BASE}
   ${GPP_DIR}/src/cgame/cg_api.c
 )
 
-set( GAMEGPP
+set( CGAMEGPP_QVM
+  ${GPP_DIR}/src/cgame/cg_api.asm
+)
+
+set( GAMEGPP_BASE
   ${GPP_DIR}/src/game/g_main.c
   ${GPP_DIR}/src/game/bg_misc.c
   ${GPP_DIR}/src/game/bg_pmove.c
@@ -543,10 +553,18 @@ set( GAMEGPP
   ${GPP_DIR}/src/game/g_namelog.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
+)
+
+set( GAMEGPP_SO
+  ${GAMEGPP_BASE}
   ${GPP_DIR}/src/game/g_api.c
 )
 
-set( UIGPP
+set( GAMEGPP_QVM
+  ${GPP_DIR}/src/game/g_api.asm
+)
+
+set( UIGPP_BASE
   ${GPP_DIR}/src/ui/ui_main.c
   ${GPP_DIR}/src/ui/ui_atoms.c
   ${GPP_DIR}/src/ui/ui_shared.c
@@ -556,7 +574,15 @@ set( UIGPP
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
   ${GPP_DIR}/src/ui/ui_utf8.c
+)
+
+set( UIGPP_SO
+  ${UIGPP_BASE}
   ${GPP_DIR}/src/ui/ui_api.c
+)
+
+set( UIGPP_QVM
+  ${GPP_DIR}/src/ui/ui_api.asm
 )
 
 set( DAEMONMAPLIST
@@ -805,6 +831,68 @@ if( WIN32 )
   set( WIN_RC ${MOUNT_DIR}/engine/sys/daemon.rc )
 endif()
 
+set( Q3LCCETCDIR ${MOUNT_DIR}/tools/lcc/etc )
+
+set( Q3LBURG_LIST
+  ${MOUNT_DIR}/tools/lcc/lburg/gram.c
+  ${MOUNT_DIR}/tools/lcc/lburg/lburg.c
+)
+
+set( Q3RCC_LIST
+  ${MOUNT_DIR}/tools/lcc/src/alloc.c
+  ${MOUNT_DIR}/tools/lcc/src/bind.c
+  ${MOUNT_DIR}/tools/lcc/src/bytecode.c
+  ${MOUNT_DIR}/tools/lcc/src/dag.c
+  ${MOUNT_DIR}/tools/lcc/src/decl.c
+  ${MOUNT_DIR}/tools/lcc/src/enode.c
+  ${MOUNT_DIR}/tools/lcc/src/error.c
+  ${MOUNT_DIR}/tools/lcc/src/event.c
+  ${MOUNT_DIR}/tools/lcc/src/expr.c
+  ${MOUNT_DIR}/tools/lcc/src/gen.c
+  ${MOUNT_DIR}/tools/lcc/src/init.c
+  ${MOUNT_DIR}/tools/lcc/src/inits.c
+  ${MOUNT_DIR}/tools/lcc/src/input.c
+  ${MOUNT_DIR}/tools/lcc/src/lex.c
+  ${MOUNT_DIR}/tools/lcc/src/list.c
+  ${MOUNT_DIR}/tools/lcc/src/main.c
+  ${MOUNT_DIR}/tools/lcc/src/null.c
+  ${MOUNT_DIR}/tools/lcc/src/output.c
+  ${MOUNT_DIR}/tools/lcc/src/prof.c
+  ${MOUNT_DIR}/tools/lcc/src/profio.c
+  ${MOUNT_DIR}/tools/lcc/src/simp.c
+  ${MOUNT_DIR}/tools/lcc/src/stmt.c
+  ${MOUNT_DIR}/tools/lcc/src/string.c
+  ${MOUNT_DIR}/tools/lcc/src/sym.c
+  ${MOUNT_DIR}/tools/lcc/src/symbolic.c
+  ${MOUNT_DIR}/tools/lcc/src/trace.c
+  ${MOUNT_DIR}/tools/lcc/src/tree.c
+  ${MOUNT_DIR}/tools/lcc/src/types.c
+  ${CMAKE_BINARY_DIR}/CMakeFiles/dagcheck.c
+)
+
+set( Q3CPP_LIST
+  ${MOUNT_DIR}/tools/lcc/cpp/cpp.c
+  ${MOUNT_DIR}/tools/lcc/cpp/lex.c
+  ${MOUNT_DIR}/tools/lcc/cpp/nlist.c
+  ${MOUNT_DIR}/tools/lcc/cpp/tokens.c
+  ${MOUNT_DIR}/tools/lcc/cpp/macro.c
+  ${MOUNT_DIR}/tools/lcc/cpp/eval.c
+  ${MOUNT_DIR}/tools/lcc/cpp/include.c
+  ${MOUNT_DIR}/tools/lcc/cpp/hideset.c
+  ${MOUNT_DIR}/tools/lcc/cpp/getopt.c
+  ${MOUNT_DIR}/tools/lcc/cpp/unix.c
+)
+
+set( Q3LCC_LIST
+  ${MOUNT_DIR}/tools/lcc/etc/lcc.c
+  ${MOUNT_DIR}/tools/lcc/etc/bytecode.c
+)
+
+set( Q3ASM_LIST
+  ${MOUNT_DIR}/tools/lcc/asm/q3asm.c
+  ${MOUNT_DIR}/tools/lcc/asm/cmdlib.c
+)
+
 ####################
 # End of file list #
 ####################
@@ -848,57 +936,111 @@ endif()
 include( CMakeParseArguments )
 function( GAMELIB )
   # ParseArguments setup
-  set( oneValueArgs LIB_NAME OUTPUT_NAME OUTPUT_DIR  )
-  set( multiValueArgs COMPILE_DEF LIB_FILES )
+  set( oneValueArgs LIB_NAME OUTPUT_NAME OUTPUT_DIR )
+  set( multiValueArgs COMPILE_DEF LIB_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments(GAMELIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-  # Xcode places the game libraries in the incorrect location. This should fix it
-  if( XCODE_VERSION )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
-    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
+  if( BUILD_GAME_SO_GPP )
+    # Xcode places the game libraries in the incorrect location. This should fix it
+    if( XCODE_VERSION )
+      set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
+      set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}" )
+      set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
+      set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
+    endif()
+
+    add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} )
+    target_link_libraries( ${GAMELIB_LIB_NAME} m )
+    set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
+      PREFIX ""
+      LIBRARY_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+      RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+      ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+      COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
+    )
+
+    if( WIN32 )
+      set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_mp_${BUILD_ARCH}" )
+    else()
+      set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}.mp.${BUILD_ARCH}" )
+    endif()
   endif()
 
-  add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} )
-  target_link_libraries( ${GAMELIB_LIB_NAME} m )
-  set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-    RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-    ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-    COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
-  )
+  if( BUILD_GAME_QVM_GPP AND GAMELIB_QVM_FILES )
+    set( QVM_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/${GAMELIB_LIB_NAME}-qvm.dir )
+    set( QVM_CPP_OPTIONS
+      -I${MOUNT_DIR}/gamelogic/gpp/src/game
+      -I${MOUNT_DIR}/engine/qcommon
+      -D__inline=
+      -DQ3_VM
+    )
+    if( QVM_DEBUG )
+      set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D_DEBUG )
+    endif()
+    foreach( DEF ${GAMELIB_COMPILE_DEF} )
+      set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D${DEF} )
+    endforeach()
 
-  if( WIN32 )
-    set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_mp_${BUILD_ARCH}" )
-  else()
-    set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}.mp.${BUILD_ARCH}" )
+    set( QVM_OBJECTS )
+    set( GAMELIB_QVM_FILES ${GAMELIB_QVM_FILES} ${MOUNT_DIR}/engine/qcommon/q_static.c )
+    foreach( QVM_FILE ${GAMELIB_QVM_FILES} )
+      get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
+      get_filename_component( QVM_FILEDIR  ${QVM_FILE} PATH )
+      set( QVM_COMPONENT ${QVM_DIR}/${QVM_FILENAME} )
+      set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.asm )
+
+      add_custom_command( OUTPUT ${QVM_COMPONENT}.asm
+        COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${QVM_FILE}
+        DEPENDS lcc rcc cpp ${QVM_FILE}
+        IMPLICIT_DEPENDS C ${QVM_FILE}
+        WORKING_DIRECTORY ${QVM_DIR}
+      )
+    endforeach()
+
+    add_custom_command(
+      OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm
+      COMMAND asm -o ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
+      DEPENDS asm ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
+    )
+
+    add_custom_target( ${GAMELIB_LIB_NAME}-qvm ALL
+      DEPENDS ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm
+    )
+
   endif()
+
 endfunction()
 
-if( BUILD_GAME_SO_GPP )
-  GAMELIB( LIB_NAME gppgame
-    OUTPUT_NAME qagame
-    OUTPUT_DIR main
-    COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${GAMEGPP}
-  )
-
-  GAMELIB( LIB_NAME gpptrem
-    OUTPUT_NAME cgame
-    OUTPUT_DIR main
-    COMPILE_DEF CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${CGAMEGPP}
-  )
-
-  GAMELIB( LIB_NAME gppui
-    OUTPUT_NAME ui
-    OUTPUT_DIR main
-    COMPILE_DEF UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-    LIB_FILES ${UIGPP}
-  )
+if( BUILD_GAME_QVM_GPP )
+  add_subdirectory( ${MOUNT_DIR}/tools/lcc ${CMAKE_BINARY_DIR}/lcc )
 endif()
+
+GAMELIB( LIB_NAME gppgame
+  OUTPUT_NAME qagame
+  OUTPUT_DIR main
+  COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
+  LIB_FILES ${GAMEGPP_SO}
+  QVM_FILES ${GAMEGPP_BASE}
+  QVM_ASM ${GAMEGPP_QVM}
+)
+
+GAMELIB( LIB_NAME gpptrem
+  OUTPUT_NAME cgame
+  OUTPUT_DIR main
+  COMPILE_DEF CGAME CGAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
+  LIB_FILES ${CGAMEGPP_SO}
+  QVM_FILES ${CGAMEGPP_BASE}
+  QVM_ASM ${CGAMEGPP_QVM}
+)
+
+GAMELIB( LIB_NAME gppui
+  OUTPUT_NAME ui
+  OUTPUT_DIR main
+  COMPILE_DEF UI UIDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
+  LIB_FILES ${UIGPP_SO}
+  QVM_FILES ${UIGPP_BASE}
+  QVM_ASM ${UIGPP_QVM}
+)
 
 if( USE_PHYSICS )
   if( LINUX )

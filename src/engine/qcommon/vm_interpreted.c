@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "vm_local.h"
+#include "vm_traps.h"
 
 //#define DEBUG_VM
 #ifdef DEBUG_VM
@@ -565,6 +566,7 @@ nextInstruction2:
 
 //VM_LogSyscalls( (int *)&image[ programStack + 4 ] );
 					{
+						VM_SetSanity( vm, ~programCounter );
 						// the vm has ints on the stack, we expect
 						// pointers so we might have to convert it
 						if ( sizeof( intptr_t ) != sizeof( int ) )
@@ -578,13 +580,29 @@ nextInstruction2:
 								argarr[ i ] = * ( ++imagePtr );
 							}
 
-							r = vm->systemCall( argarr );
+							if ( programCounter < -FIRST_VM_SYSCALL )
+							{
+								r = vm->systemCall( argarr );
+							}
+							else
+							{
+								r = VM_SystemCall( argarr ); // all VMs
+							}
 						}
 						else
 						{
 							intptr_t *argptr = ( intptr_t * ) &image[ programStack + 4 ];
-							r = vm->systemCall( argptr );
+							if ( programCounter < -FIRST_VM_SYSCALL )
+							{
+								r = vm->systemCall( argptr );
+							}
+							else
+							{
+								r = VM_SystemCall( argptr ); // all VMs
+							}
 						}
+
+						VM_CheckSanity( vm, ~programCounter );
 					}
 
 #ifdef DEBUG_VM

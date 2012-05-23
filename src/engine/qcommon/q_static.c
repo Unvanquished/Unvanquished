@@ -19,23 +19,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
+below.
+
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+Maryland 20850 USA.
+
 ===========================================================================
 */
 
-#ifndef __UI_UTF8_H
-#define __UI_UTF8_H
-
-int ui_CursorToOffset( const char *buf, int cursor );
-int ui_OffsetToCursor( const char *buf, int offset );
-
-// Copied from src/engine/common/q_shared.c
-int ui_UTF8Width( const char *str );
-int ui_UTF8WidthCP( int ch );
-int ui_UTF8Strlen( const char *str );
-qboolean ui_UTF8ContByte( char c );
-unsigned long ui_UTF8CodePoint( const char *str );
-char *ui_UTF8Encode( unsigned long codepoint );
-int ui_UTF8Store( const char *s );
-char *ui_UTF8Unstore( int e );
-
+#ifndef Q3_VM
+#error What? I am part of the QVM code! Go away!
 #endif
+
+#define Q3_VM_INSTANTIATE
+#include "q_shared.h"

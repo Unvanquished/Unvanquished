@@ -143,9 +143,9 @@ typedef struct
 
 // debugging values:
 
-int   debug_anim_current;
-int   debug_anim_old;
-float debug_anim_blend;
+extern int   debug_anim_current;
+extern int   debug_anim_old;
+extern float debug_anim_blend;
 
 //======================================================================
 

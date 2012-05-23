@@ -17,7 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-===========================================================================
+=============================================================
+==============
 */
 
 #include "g_local.h"
@@ -36,6 +37,11 @@ int PASSFLOAT( float x )
 
 	floatTemp = x;
 	return * ( int * ) &floatTemp;
+}
+
+void trap_SyscallABIVersion( int major, int minor )
+{
+        syscall( TRAP_VERSION, major, minor );
 }
 
 //00.

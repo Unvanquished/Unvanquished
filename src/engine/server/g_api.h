@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/vm_traps.h"
+#include "../qcommon/vm_traps.h"
 
 #define GAME_API_VERSION          9
 
@@ -100,9 +102,9 @@ typedef struct
 } sharedEntity_t;
 
 // game-module-to-engine calls
-typedef enum
+typedef enum gameImport_s
 {
-  G_PRINT,
+  G_PRINT = FIRST_VM_SYSCALL,
   G_ERROR,
   G_MILLISECONDS,
   G_CVAR_REGISTER,

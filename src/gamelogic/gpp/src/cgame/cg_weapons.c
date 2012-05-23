@@ -1298,11 +1298,16 @@ The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
 */
+#ifdef Q3_VM
+static refEntity_t gun, barrel, flash; // here to keep locals below 32K
+#endif
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent )
 {
+#ifndef Q3_VM
 	refEntity_t  gun;
 	refEntity_t  barrel;
 	refEntity_t  flash;
+#endif
 	vec3_t       angles;
 	weapon_t     weaponNum;
 	weaponMode_t weaponMode;

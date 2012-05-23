@@ -2481,6 +2481,10 @@ void       RE_RegisterFont( const char *fontName, const char *fallbackName, int 
 void       RE_UnregisterFont( fontInfo_t *font );
 void       RE_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
 void       RE_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
+void       RE_RegisterFontVM( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
+void       RE_UnregisterFontVM( fontHandle_t );
+void       RE_GlyphVM( fontHandle_t, const char *str, glyphInfo_t *glyph);
+void       RE_GlyphCharVM( fontHandle_t, int ch, glyphInfo_t *glyph);
 
 // Ridah, caching system
 // NOTE: to disable this for development, set "r_cache 0" in autoexec.cfg

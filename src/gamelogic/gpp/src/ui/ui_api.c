@@ -22,8 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../../../../engine/client/ui_api.h"
 
-#define MAX_VA_STRING 32000
-
 static intptr_t ( QDECL *syscall )( intptr_t arg, ... ) = ( intptr_t ( QDECL * )( intptr_t, ... ) ) - 1;
 
 void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
@@ -37,6 +35,11 @@ int PASSFLOAT( float x )
 
 	floatTemp = x;
 	return * ( int * ) &floatTemp;
+}
+
+void trap_SyscallABIVersion( int major, int minor )
+{
+        syscall( TRAP_VERSION, major, minor );
 }
 
 void trap_Cvar_CopyValue_i( const char *in_var, const char *out_var )
@@ -339,14 +342,14 @@ void trap_UpdateScreen( void )
 //return re.LerpTag(VMA(1), VMA(2), VMA(3), args[4]);
 int trap_CM_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
 {
-	return syscall( UI_CM_LERPTAG, tag, refent, tagName, 0 );  // NEFVE - SMF - fixed
+	return syscall( UI_CM_LERPTAG, tag, refent, tagName, startIndex );  // NEFVE - SMF - fixed
 }
 
 //42.
 //return S_RegisterSound(VMA(1), args[2]);
 sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 {
-	int i = syscall( UI_S_REGISTERSOUND, sample, qfalse /* compressed */ );
+	int i = syscall( UI_S_REGISTERSOUND, sample, compressed );
 #ifdef DEBUG
 
 	if ( i == 0 )
@@ -640,46 +643,10 @@ void trap_SetCDKey( char *buf )
 
 //83.
 //re.RegisterFont(VMA(1), args[2], VMA(3));
-void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font )
+void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
 {
 	syscall( UI_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
-
-//84.
-//UI_MEMSET
-//return (intptr_t)memset( VMA( 1 ), args[2], args[3] );
-
-//85.
-//UI_MEMCPY
-//return (intptr_t)memcpy( VMA( 1 ), VMA( 2 ), args[3] );
-
-//86.
-//UI_STRNCPY
-//return (intptr_t)strncpy( VMA( 1 ), VMA( 2 ), args[3] );
-
-//87.
-//UI_SIN
-//return FloatAsInt(sin(VMF(1)));
-
-//88.
-//UI_COS
-//return FloatAsInt(cos(VMF(1)));
-
-//89.
-//UI_ATAN2
-//return FloatAsInt(atan2(VMF(1), VMF(2)));
-
-//90.
-//UI_SQRT
-//return FloatAsInt(sqrt(VMF(1)));
-
-//91.
-//UI_FLOOR
-//return FloatAsInt(floor(VMF(1)));
-
-//92.
-//UI_CEIL
-//return FloatAsInt(ceil(VMF(1)));
 
 //93.
 //return Parse_AddGlobalDefine(VMA(1));
@@ -837,20 +804,9 @@ qboolean trap_GetLimboString( int index, char *buf )
 
 //115.
 //CL_TranslateString(VMA(1), VMA(2));
-char *trap_TranslateString( const char *string )
+void trap_TranslateString( const char *string, char *buf )
 {
-	static char staticbuf[ 2 ][ MAX_VA_STRING ];
-	static int  bufcount = 0;
-	char        *buf;
-
-	buf = staticbuf[ bufcount++ % 2 ];
-
-#ifdef LOCALIZATION_SUPPORT
 	syscall( UI_CL_TRANSLATE_STRING, string, buf );
-#else
-	Q_strncpyz( buf, string, MAX_VA_STRING );
-#endif // LOCALIZATION_SUPPORT
-	return buf;
 }
 
 //116.
@@ -918,19 +874,19 @@ int trap_R_AnimFrameRate( qhandle_t hAnim )
 }
 
 //125.
-void trap_R_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
+void trap_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
 {
   syscall( UI_R_GLYPH, font, str, glyph );
 }
 
 //126.
-void trap_R_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
+void trap_R_GlyphChar( fontHandle_t font, int ch, glyphInfo_t *glyph )
 {
   syscall( UI_R_GLYPHCHAR, font, ch, glyph );
 }
 
 //127.
-void trap_R_UnregisterFont( fontInfo_t *font )
+void trap_R_UnregisterFont( fontHandle_t font )
 {
   syscall( UI_R_UREGISTERFONT, font );
 }
