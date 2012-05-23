@@ -96,24 +96,24 @@
   VSAY_MENU_END
   
   VSAY_MENU( "vsay_status", 0, 0, 480, 250 )
-	VSAY_ITEM( "1. I'm following you", 1, close vsay_status ; exec "vsay following", 0, 0, 0 )
-	VSAY_ITEM( "2. I need health!", 2, close vsay_status ; exec "vsay needhealth", 0, 0, 1 )
-	VSAY_ITEM( "3. Move up!", 3, close vsay_status ; exec "vsay moveup", 0, 0, 2 )
-	VSAY_ITEM( "4. Regroup", 4, close vsay_status ; exec "vsay regroup", 0, 0, 3 )
-	VSAY_ITEM( "5. Reporting in!", 5, close vsay_status ; exec "vsay reporting", 0, 0, 4 )
-	VSAY_ITEM( "6. Stay Alert!", 6, close vsay_status ; exec "vsay stayalert", 0, 0, 5 )
-	VSAY_ITEM( "7. Stay Alive!", 7, close vsay_status ; exec "vsay stayalive", 0, 0, 6 )
-	VSAY_ITEM( "8. Stay Focused!", 8, close vsay_status ; exec "vsay stayfocused", 0, 0, 7 )
-	VSAY_ITEM( "9. Stick together!", 9, close vsay_status ; exec "vsay sticktogether", 0, 0, 8 )
-	VSAY_ITEM( "0. Previous Menu", 0, close vsay_status ; open vsay_top, 0, 0, 10 )
+	VSAY_ITEM( "I'm following you", 1, close vsay_status ; exec "vsay following", 0, 0, 0 )
+	VSAY_ITEM( "I need health!", 2, close vsay_status ; exec "vsay needhealth", 0, 0, 1 )
+	VSAY_ITEM( "Move up!", 3, close vsay_status ; exec "vsay moveup", 0, 0, 2 )
+	VSAY_ITEM( "Regroup", 4, close vsay_status ; exec "vsay regroup", 0, 0, 3 )
+	VSAY_ITEM( "Reporting in!", 5, close vsay_status ; exec "vsay reporting", 0, 0, 4 )
+	VSAY_ITEM( "Stay Alert!", 6, close vsay_status ; exec "vsay stayalert", 0, 0, 5 )
+	VSAY_ITEM( "Stay Alive!", 7, close vsay_status ; exec "vsay stayalive", 0, 0, 6 )
+	VSAY_ITEM( "Stay Focused!", 8, close vsay_status ; exec "vsay stayfocused", 0, 0, 7 )
+	VSAY_ITEM( "Stick together!", 9, close vsay_status ; exec "vsay sticktogether", 0, 0, 8 )
+	VSAY_ITEM( "Previous Menu", 0, close vsay_status ; open vsay_top, 0, 0, 10 )
   VSAY_MENU_END
   
   VSAY_MENU( "vsay_general", 0, 0, 480, 250 )
-	VSAY_ITEM( "1. Yes", 1, close vsay_general ; exec "vsay yes", 0, 0, 0 )
-	VSAY_ITEM( "2. No", 2, close vsay_general ; exec "vsay no", 0, 0, 1 )
-	VSAY_ITEM( "3. Thanks!", 3, close vsay_general ; exec "vsay thanks", 0, 0, 2 )
-	VSAY_ITEM( "4. Sorry!", 4, close vsay_general ; exec "vsay sorry", 0, 0, 3 )
-	VSAY_ITEM( "0. Previous Menu", 0, close vsay_general ; open vsay_top,0, 0, 10 )
+	VSAY_ITEM( "Yes", 1, close vsay_general ; exec "vsay yes", 0, 0, 0 )
+	VSAY_ITEM( "No", 2, close vsay_general ; exec "vsay no", 0, 0, 1 )
+	VSAY_ITEM( "Thanks!", 3, close vsay_general ; exec "vsay thanks", 0, 0, 2 )
+	VSAY_ITEM( "Sorry!", 4, close vsay_general ; exec "vsay sorry", 0, 0, 3 )
+	VSAY_ITEM( "Previous Menu", 0, close vsay_general ; open vsay_top,0, 0, 10 )
   VSAY_MENU_END	
 	
 	
