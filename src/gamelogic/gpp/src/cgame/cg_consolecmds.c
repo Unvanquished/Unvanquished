@@ -202,7 +202,7 @@ static void CG_ReloadHUD_f( void )
 
 static void CG_UIMenu_f( void )
 {
-	trap_SendConsoleCommand( va( "menu %s\n", CG_Argv( 1 ) ) );
+	trap_SendConsoleCommand( va( "menu %s\n", Quote( CG_Argv( 1 ) ) ) );
 }
 
 static void CG_NullFunc( void )

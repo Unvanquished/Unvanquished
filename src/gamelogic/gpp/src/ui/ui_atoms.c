@@ -87,7 +87,7 @@ char *UI_Argv( int arg )
 	return buffer;
 }
 
-char *UI_ConcatArgs( int arg, char *buf, int len )
+static char *UI_ConcatArgs( int arg, char *buf, int len )
 {
 	char *p;
 	int  c;
@@ -234,11 +234,12 @@ static void UI_MessageMode_f( void )
 
 static void UI_Me_f( void )
 {
-	char buf[ MAX_SAY_TEXT - 4 ];
+	char buf[ MAX_SAY_TEXT ];
 
-	UI_ConcatArgs( 1, buf, sizeof( buf ) );
+	strcpy( buf, "/me " );
+	UI_ConcatArgs( 1, buf + 4, sizeof( buf ) - 4 );
 
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say \"/me %s\"", buf ) );
+	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s", Quote( buf ) ) );
 }
 
 static const struct uicmd

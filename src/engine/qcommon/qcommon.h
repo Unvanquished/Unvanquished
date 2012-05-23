@@ -511,9 +511,16 @@ void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args( void );
 char *Cmd_ArgsFrom( int arg );
 void Cmd_ArgsBuffer( char *buffer, int bufferLength );
-char *Cmd_Cmd( void );
-char *Cmd_Cmd_FromNth( int );
-char *Cmd_EscapeString( const char *in );
+const char *Cmd_Cmd( void );
+const char *Cmd_Cmd_FromNth( int );
+
+// these all share an output buffer
+const char *Cmd_EscapeString( const char *in );
+const char *Cmd_QuoteString( const char *in );
+const char *Cmd_UnquoteString( const char *in );
+const char *Cmd_DequoteString( const char *in ); // FIXME QUOTING INFO
+
+void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL

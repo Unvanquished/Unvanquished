@@ -2520,7 +2520,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	// Ridah, caching
 	if ( r_cacheGathering->integer )
 	{
-		ri.Cmd_ExecuteText( EXEC_NOW, va( "cache_usedfile image %s %i %i %i\n", name, mipmap, allowPicmip, glWrapClampMode ) );
+		ri.Cmd_ExecuteText( EXEC_NOW, va( "cache_usedfile image %s %i %i %i\n", ri.Cmd_QuoteString( name ), mipmap, allowPicmip, glWrapClampMode ) );
 	}
 
 	//

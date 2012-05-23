@@ -461,13 +461,8 @@ char *ConcatArgsPrintable( int start )
 
 	for ( i = start; i < c; i++ )
 	{
-		printArg = arg;
 		trap_Argv( i, arg, sizeof( arg ) );
-
-		if ( strchr( arg, ' ' ) )
-		{
-			printArg = va( "\"%s\"", arg );
-		}
+		printArg = Quote( arg );
 
 		tlen = strlen( printArg );
 
@@ -630,7 +625,7 @@ void Cmd_God_f( gentity_t *ent )
 		msg = "godmode ON\n";
 	}
 
-	trap_SendServerCommand( ent - g_entities, va( "print \"%s\"", msg ) );
+	trap_SendServerCommand( ent - g_entities, va( "print %s", Quote( msg ) ) );
 }
 
 /*
@@ -657,7 +652,7 @@ void Cmd_Notarget_f( gentity_t *ent )
 		msg = "notarget ON\n";
 	}
 
-	trap_SendServerCommand( ent - g_entities, va( "print \"%s\"", msg ) );
+	trap_SendServerCommand( ent - g_entities, va( "print %s", Quote( msg ) ) );
 }
 
 /*
@@ -682,7 +677,7 @@ void Cmd_Noclip_f( gentity_t *ent )
 
 	ent->client->noclip = !ent->client->noclip;
 
-	trap_SendServerCommand( ent - g_entities, va( "print \"%s\"", msg ) );
+	trap_SendServerCommand( ent - g_entities, va( "print %s", Quote( msg ) ) );
 }
 
 /*
@@ -849,7 +844,7 @@ void Cmd_Team_f( gentity_t *ent )
 
 			default:
 				trap_SendServerCommand( ent - g_entities,
-				                        va( "print \"Unknown team: %s\n\"", s ) );
+				                        va( "print \"Unknown team: \"%s\"\n\"", Quote( s ) ) );
 				return;
 		}
 	}
@@ -1131,10 +1126,10 @@ static qboolean G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const
 		}
 	}
 
-	trap_SendServerCommand( other - g_entities, va( "chat %ld %d \"%s\"",
+	trap_SendServerCommand( other - g_entities, va( "chat %ld %d %s",
 	                        ent ? ( long )( ent - g_entities ) : -1,
 	                        mode,
-	                        message ) );
+	                        Quote( message ) ) );
 
 	return qtrue;
 }
@@ -1404,7 +1399,7 @@ void Cmd_VSay_f( gentity_t *ent )
 	if ( !voice )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print \"%s: voice '%s' not found\n\"", vsay, voiceName ) );
+		                          "print \"%s: voice '\"%s\"' not found\n\"", vsay, Quote( voiceName ) ) );
 		return;
 	}
 
@@ -1414,8 +1409,8 @@ void Cmd_VSay_f( gentity_t *ent )
 	if ( !cmd )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print \"%s: command '%s' not found in voice '%s'\n\"",
-		                          vsay, voiceCmd, voiceName ) );
+		                          "print \"%s: command '\"%s\"' not found in voice '\"%s\"'\n\"",
+		                          vsay, Quote( voiceCmd ), Quote( voiceName ) ) );
 		return;
 	}
 
@@ -1434,11 +1429,11 @@ void Cmd_VSay_f( gentity_t *ent )
 	if ( !track )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print \"%s: no available track for command '%s', team %d, "
-		                          "class %d, weapon %d, and enthusiasm %d in voice '%s'\n\"",
-		                          vsay, voiceCmd, ent->client->pers.teamSelection,
+		                          "print \"%s: no available track for command '\"%s\"', team %d, "
+		                          "class %d, weapon %d, and enthusiasm %d in voice '\"%s\"'\n\"",
+		                          vsay, Quote( voiceCmd ), ent->client->pers.teamSelection,
 		                          ent->client->pers.classSelection, weapon,
-		                          ( int ) ent->client->voiceEnthusiasm, voiceName ) );
+		                          ( int ) ent->client->voiceEnthusiasm, Quote( voiceName ) ) );
 		return;
 	}
 
@@ -1458,20 +1453,20 @@ void Cmd_VSay_f( gentity_t *ent )
 	{
 		case VOICE_CHAN_ALL:
 			trap_SendServerCommand( -1, va(
-			                          "voice %ld %d %d %d \"%s\"\n",
-			                          ( long )( ent - g_entities ), vchan, cmdNum, trackNum, text ) );
+			                          "voice %ld %d %d %d %s\n",
+			                          ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
 
 		case VOICE_CHAN_TEAM:
 			G_TeamCommand( ent->client->pers.teamSelection, va(
-			                 "voice %ld %d %d %d \"%s\"\n",
-			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, text ) );
+			                 "voice %ld %d %d %d %s\n",
+			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
 
 		case VOICE_CHAN_LOCAL:
 			G_AreaTeamCommand( ent, va(
-			                 "voice %ld %d %d %d \"%s\"\n",
-			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, text ) );
+			                 "voice %ld %d %d %d %s\n",
+			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( text ) ) );
 			break;
 
 		default:
@@ -1685,7 +1680,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_REMAIN:
-		if ( level.time - level.startTime < ( g_timelimit.integer - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
+		if ( level.time - level.startTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print \"'%s' votes are only allowed with less than %d minutes remaining\n\"",
@@ -1699,7 +1694,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		if ( G_TimeTilSuddenDeath() <= 0 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"Sudden Death has already begun\n\"" ) );
+			                        "print \"Sudden Death has already begun\n\"" );
 			return;
 		}
 
@@ -1707,7 +1702,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		     G_TimeTilSuddenDeath() <= g_suddenDeathVoteDelay.integer * 1000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"Sudden Death is imminent - this vote may have no effect\n\"" ) );
+			                        "print \"Sudden Death is imminent - this vote may have no effect\n\"" );
 			// DON'T stop the vote. It might pass or fail before SD starts.
 		}
 
@@ -1779,7 +1774,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			 ent->client->pers.teamSelection != level.clients[ clientNum ].pers.teamSelection )
 		{
 			trap_SendServerCommand( ent - g_entities,
-									va( "print \"%s: player is not on your team\n\"", cmd ) );
+			                        va( "print \"%s: player is not on your team\n\"", cmd ) );
 			return;
 		}
 
@@ -1798,15 +1793,15 @@ void Cmd_CallVote_f( gentity_t *ent )
 	{
 	case VOTE_KICK:
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "ban %s \"1s%s\" %s ^7called vote kick (%s^7)", level.clients[ clientNum ].pers.ip.str,
-		             g_adminTempBan.string, ent->client->pers.netname, reason );
+		             "ban %s 1s%s %s ^7called vote kick (%s^7)", level.clients[ clientNum ].pers.ip.str,
+		             Quote( g_adminTempBan.string ), Quote( ent->client->pers.netname ), Quote( reason ) );
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ), "Kick player '%s'", name );
 		break;
 
 	case VOTE_SPECTATE:
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "speclock %d \"1s%s\"", clientNum, g_adminTempBan.string );
+		             "speclock %d 1s%s", clientNum, Quote( g_adminTempBan.string ) );
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             "Move player '%s' to spectators", name );
@@ -1900,7 +1895,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		level.extend_vote_count++;
 
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "timelimit %i", g_timelimit.integer + g_extendVotesTime.integer );
+		             "gametimelimit %i", level.timelimit + g_extendVotesTime.integer );
 		Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ),
 		             "Extend the timelimit by %d minutes", g_extendVotesTime.integer );
 		break;
@@ -1929,15 +1924,15 @@ void Cmd_CallVote_f( gentity_t *ent )
 		if ( !G_MapExists( arg ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"%s: 'maps/%s.bsp' could not be found on the server\n\"",
-			                            cmd, arg ) );
+			                        va( "print \"%s: 'maps/\"%s\".bsp' could not be found on the server\n\"",
+			                            cmd, Quote( arg ) ) );
 			return;
 		}
 
 		level.voteDelay[ team ] = 3000;
 
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
-		             "map \"%s\"", arg );
+		             "map %s", Quote( arg ) );
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             "Change to map '%s'", arg );
@@ -1953,11 +1948,11 @@ void Cmd_CallVote_f( gentity_t *ent )
 			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), NULL, FS_READ ) )
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print \"callvote: "
-				                        "layout '%s' could not be found on the server\n\"", arg ) );
+				                        "layout '\"%s\"' could not be found on the server\n\"", Quote( arg ) ) );
 				return;
 			}
 
-			Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "restart %s", arg );
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "restart %s", Quote( arg ) );
 			Com_sprintf( level.voteDisplayString[ team ],
 			             sizeof( level.voteDisplayString[ team ] ), "Change to map layout '%s'", arg );
 		}
@@ -1967,21 +1962,21 @@ void Cmd_CallVote_f( gentity_t *ent )
 		if ( G_MapExists( g_nextMap.string ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"%s: the next map is already set to '%s'\n\"",
-			                            cmd, g_nextMap.string ) );
+			                        va( "print \"%s: the next map is already set to '\"%s\"'\n\"",
+			                            cmd, Quote( g_nextMap.string ) ) );
 			return;
 		}
 
 		if ( !G_MapExists( arg ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"%s: 'maps/%s.bsp' could not be found on the server\n\"",
-			                            cmd, arg ) );
+			                        va( "print \"%s: 'maps/\"%s\".bsp' could not be found on the server\n\"",
+			                            cmd, Quote( arg ) ) );
 			return;
 		}
 
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "set g_nextMap \"%s\"", arg );
+		             "set g_nextMap %s", Quote( arg ) );
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             "Set the next map to '%s'", arg );
@@ -2011,9 +2006,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	if ( team == TEAM_NONE )
 	{
-		trap_SendServerCommand( -1, va( "print \"%s" S_COLOR_WHITE
-		                                " called a vote: %s\n\"", ent->client->pers.netname,
-		                                level.voteDisplayString[ team ] ) );
+		trap_SendServerCommand( -1, va( "print %s\"" S_COLOR_WHITE " called a vote: \"%s\"\n\"",
+		                                Quote( ent->client->pers.netname ), Quote( level.voteDisplayString[ team ] ) ) );
 	}
 	else
 	{
@@ -2027,16 +2021,14 @@ void Cmd_CallVote_f( gentity_t *ent )
 				     ( level.clients[ i ].pers.teamSelection == TEAM_NONE &&
 				       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 				{
-					trap_SendServerCommand( i, va( "print \"%s" S_COLOR_WHITE
-					                               " called a team vote: %s\n\"", ent->client->pers.netname,
-					                               level.voteDisplayString[ team ] ) );
+					trap_SendServerCommand( i, va( "print %s\"" S_COLOR_WHITE " called a team vote: \"%s\"\n\"",
+					                               Quote( ent->client->pers.netname ), Quote( level.voteDisplayString[ team ] ) ) );
 				}
 				else if ( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
 				{
-					trap_SendServerCommand( i, va( "chat -1 %d \"" S_COLOR_YELLOW "%s"
-					                               S_COLOR_YELLOW " called a team vote (%ss): %s\"", SAY_ADMINS,
-					                               ent->client->pers.netname, BG_TeamName( team ),
-					                               level.voteDisplayString[ team ] ) );
+					trap_SendServerCommand( i, va( "chat -1 %d " S_COLOR_YELLOW "%s\"" S_COLOR_YELLOW " called a team vote (%ss): \"%s",
+					                               SAY_ADMINS, Quote( ent->client->pers.netname ), BG_TeamName( team ),
+					                               Quote( level.voteDisplayString[ team ] ) ) );
 				}
 			}
 		}
@@ -2593,7 +2585,7 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 	}
 	else
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print \"You don't have the %s\n\"", s ) );
+		trap_SendServerCommand( ent - g_entities, va( "print \"You don't have the \"%s\"\n\"", Quote( s ) ) );
 	}
 }
 
@@ -2618,7 +2610,7 @@ void Cmd_DeActivateItem_f( gentity_t *ent )
 	}
 	else
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print \"You don't have the %s\n\"", s ) );
+		trap_SendServerCommand( ent - g_entities, va( "print \"You don't have the \"%s\"\n\"", Quote( s ) ) );
 	}
 }
 
@@ -2670,7 +2662,7 @@ void Cmd_ToggleItem_f( gentity_t *ent )
 	}
 	else
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print \"You don't have the %s\n\"", s ) );
+		trap_SendServerCommand( ent - g_entities, va( "print \"You don't have the \"%s\"\n\"", Quote( s ) ) );
 	}
 }
 
@@ -3508,7 +3500,7 @@ void Cmd_Follow_f( gentity_t *ent )
 		if ( i == -1 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print \"follow: %s\"", err ) );
+			                        va( "print \"follow: \"%s", Quote( err ) ) );
 			return;
 		}
 
@@ -3593,7 +3585,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 	if ( matches < 1 )
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print \"[skipnotify]"
-		                        "%s: no clients match the name '%s'\n\"", cmd, name ) );
+		                        "%s: no clients match the name '\"%s\"'\n\"", cmd, Quote( name ) ) );
 		return;
 	}
 
@@ -3606,14 +3598,14 @@ static void Cmd_Ignore_f( gentity_t *ent )
 				Com_ClientListAdd( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
 				trap_SendServerCommand( ent - g_entities, va( "print \"[skipnotify]"
-				                        "ignore: added %s^7 to your ignore list\n\"",
-				                        level.clients[ pids[ i ] ].pers.netname ) );
+				                        "ignore: added \"%s\"^7 to your ignore list\n\"",
+				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print \"[skipnotify]"
-				                        "ignore: %s^7 is already on your ignore list\n\"",
-				                        level.clients[ pids[ i ] ].pers.netname ) );
+				                        "ignore: \"%s\"^7 is already on your ignore list\n\"",
+				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 		}
 		else
@@ -3623,14 +3615,14 @@ static void Cmd_Ignore_f( gentity_t *ent )
 				Com_ClientListRemove( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
 				trap_SendServerCommand( ent - g_entities, va( "print \"[skipnotify]"
-				                        "unignore: removed %s^7 from your ignore list\n\"",
-				                        level.clients[ pids[ i ] ].pers.netname ) );
+				                        "unignore: removed \"%s\"^7 from your ignore list\n\"",
+				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print \"[skipnotify]"
-				                        "unignore: %s^7 is not on your ignore list\n\"",
-				                        level.clients[ pids[ i ] ].pers.netname ) );
+				                        "unignore: \"%s\"^7 is not on your ignore list\n\"",
+				                        Quote( level.clients[ pids[ i ] ].pers.netname ) )  );
 			}
 		}
 	}
@@ -4176,7 +4168,7 @@ void ClientCommand( int clientNum )
 		if ( !G_admin_cmd_check( ent ) )
 		{
 			trap_SendServerCommand( clientNum,
-			                        va( "print \"Unknown command %s\n\"", cmd ) );
+			                        va( "print \"Unknown command \"%s\"\n\"", Quote( cmd ) ) );
 		}
 
 		return;

@@ -559,3 +559,9 @@ int trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, cha
 {
 	return syscall( G_RSA_GENMSG, public_key, cleartext, encrypted );
 }
+
+//87.
+void trap_QuoteString( const char *str, char *buffer, int size )
+{
+	syscall( G_QUOTESTRING, str, buffer, size );
+}

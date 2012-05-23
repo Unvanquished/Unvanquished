@@ -1457,8 +1457,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	int        Com_HexStrToInt( const char *str );
 
-	const char *Com_QuoteStr( const char *str );
-	const char *Com_UnquoteStr( const char *str );
 	const char *Com_ClearForeignCharacters( const char *str );
 
 //=============================================

@@ -71,6 +71,8 @@ keyname_t keynames[] =
 	{ "LEFTARROW",              K_LEFTARROW              },
 	{ "RIGHTARROW",             K_RIGHTARROW             },
 
+	{ "BACKSLASH",              '\\'                     },
+
 	{ "ALT",                    K_ALT                    },
 	{ "CTRL",                   K_CTRL                   },
 	{ "SHIFT",                  K_SHIFT                  },
@@ -1108,13 +1110,19 @@ the K_* names are matched up.
 to be configured even if they don't have defined names.
 ===================
 */
-int Key_StringToKeynum( char *str )
+int Key_StringToKeynum( const char *str )
 {
 	keyname_t *kn;
 
-	if ( !str || !str[ 0 ] )
+	if ( !str )
 	{
 		return -1;
+	}
+
+	// backward-compatibility hack
+	if ( !str[ 0 ] )
+	{
+		return '\\';
 	}
 
 	if ( !str[ 1 ] )
@@ -1153,7 +1161,7 @@ Returns a string (either a single ascii char, a K_* name, or a 0x11 hex string) 
 given keynum.
 ===================
 */
-char *Key_KeynumToString( int keynum )
+const char *Key_KeynumToString( int keynum )
 {
 	keyname_t   *kn;
 	static char tinystr[ 5 ];
@@ -1170,7 +1178,7 @@ char *Key_KeynumToString( int keynum )
 	}
 
 	// check for printable ascii (don't use quote)
-	if ( keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';' )
+	if ( keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';' && keynum != '\\' )
 	{
 		tinystr[ 0 ] = keynum;
 		tinystr[ 1 ] = 0;
@@ -1374,8 +1382,9 @@ Key_Bind_f
 */
 void Key_Bind_f( void )
 {
-	int c, b;
-//	char *cmd;
+	int        c, b;
+	const char *key = NULL;
+	const char *cmd = NULL; // backward-compat hack
 
 	c = Cmd_Argc();
 
@@ -1384,31 +1393,64 @@ void Key_Bind_f( void )
 		Com_Printf( "bind <key> [command] : attach a command to a key\n" );
 		return;
 	}
-
-	b = Key_StringToKeynum( Cmd_Argv( 1 ) );
-
-	if ( b == -1 )
+	else if ( c == 2 )
 	{
-		Com_Printf( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
-		return;
-	}
+		cmd = Cmd_Argv( 1 );
 
-	if ( c == 2 )
-	{
-		if ( keys[ b ].binding )
+		// backward compat hack
+		if ( cmd[ 0 ] == ' ' && cmd[ 1 ] )
 		{
-			Com_Printf( "\"%s\" = \"%s\"\n", Cmd_Argv( 1 ), keys[ b ].binding );
+			cmd = Cmd_DequoteString( cmd + 1 );
+			key = "BACKSLASH";
+		}
+		else if ( cmd[ 0 ] == ' ' || !cmd[ 0 ] )
+		{
+			cmd = NULL;
+			key = "BACKSLASH";
 		}
 		else
 		{
-			Com_Printf( "\"%s\" is not bound\n", Cmd_Argv( 1 ) );
+			key = cmd;
+			cmd = NULL;
+		}
+	}
+	else
+	{
+		key = Cmd_Argv( 1 );
+		cmd = Cmd_Argv( 2 );
+	}
+
+	b = Key_StringToKeynum( key );
+
+	if ( b == -1 )
+	{
+		Com_Printf( "\"%s\" isn't a valid key\n", key );
+		return;
+	}
+
+	if ( !cmd )
+	{
+		if ( keys[ b ].binding )
+		{
+			Com_Printf( "\"%s\" = %s\n", key, Cmd_QuoteString( keys[ b ].binding ) );
+		}
+		else
+		{
+			Com_Printf( "\"%s\" is not bound\n", key );
 		}
 
 		return;
 	}
 
-	// set to 3rd arg onwards, unquoted from raw
-	Key_SetBinding( b, Com_UnquoteStr( Cmd_Cmd_FromNth( 2 ) ) );
+	if ( c <= 3 )
+	{
+		Key_SetBinding( b, cmd );
+	}
+	else
+	{
+		// set to 3rd arg onwards
+		Key_SetBinding( b, Cmd_ArgsFrom( 2 ) );
+	}
 }
 
 /*
@@ -1443,9 +1485,9 @@ void Key_EditBind_f( void )
 
 	binding = Key_GetBinding( b );
 
-	bindq = Com_QuoteStr( binding );  // <- static buffer
+	bindq = binding ? Cmd_QuoteString( binding ) : "";  // <- static buffer
 	buf = malloc( 8 + strlen( key ) + strlen( bindq ) );
-	sprintf( buf, "/bind %s %s", key, bindq );
+	sprintf( buf, "/bind %s %s", Key_KeynumToString( b ), bindq );
 
 	Con_OpenConsole_f();
 	Field_Set( &g_consoleField, buf );
@@ -1469,7 +1511,7 @@ void Key_WriteBindings( fileHandle_t f )
 	{
 		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
 		{
-			FS_Printf( f, "bind %s %s\n", Key_KeynumToString( i ), Com_QuoteStr( keys[ i ].binding ) );
+			FS_Printf( f, "bind %s %s\n", Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding ) );
 		}
 	}
 }

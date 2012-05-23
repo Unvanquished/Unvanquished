@@ -83,3 +83,4 @@ equ trap_AddPhysicsStatic                 -318
 equ trap_SendMessage                      -319
 equ trap_MessageStatus                    -320
 equ trap_RSA_GenerateMessage              -321
+equ trap_QuoteString                      -322

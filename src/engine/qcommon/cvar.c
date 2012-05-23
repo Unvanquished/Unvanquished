@@ -970,7 +970,7 @@ void Cvar_Set_f( void )
 		end[ 1 ] = 0; // end of string :-)
 	}
 
-	Cvar_Set2( Cmd_Argv( 1 ), Com_UnquoteStr( value ), qfalse );
+	Cvar_Set2( Cmd_Argv( 1 ), Cmd_UnquoteString( value ), qfalse );
 	free( value );
 }
 
@@ -1099,7 +1099,7 @@ void Cvar_WriteVariables( fileHandle_t f )
 			// write the latched value, even if it hasn't taken effect yet
 			Com_sprintf( buffer, sizeof( buffer ), "seta %s %s%s\n",
 			             var->name,
-			             Com_QuoteStr( var->latchedString ? var->latchedString : var->string ),
+			             Cmd_QuoteString( var->latchedString ? var->latchedString : var->string ),
 			             ( var->flags & CVAR_UNSAFE ) ? " unsafe" : "" );
 
 			FS_Printf( f, "%s", buffer );

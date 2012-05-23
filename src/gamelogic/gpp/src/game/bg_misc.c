@@ -32,6 +32,7 @@ void                               trap_FS_Write( const void *buffer, int len, f
 void                               trap_FS_FCloseFile( fileHandle_t f );
 void                               trap_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin );  // fsOrigin_t
 int                                trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
+void                               trap_QuoteString( const char *, char *, int );
 
 static const buildableAttributes_t bg_buildableList[] =
 {
@@ -4292,3 +4293,21 @@ int cmdcmp( const void *a, const void *b )
 {
 	return Q_stricmp( ( const char * ) a, ( ( dummyCmd_t * ) b )->name );
 }
+
+/*
+==================
+Quote
+==================
+*/
+
+char *Quote( const char *str )
+{
+	static char buffer[ 4 ][ MAX_STRING_CHARS ];
+	static int index = -1;
+
+	index = ( index + 1 ) & 3;
+	trap_QuoteString( str, buffer[ index ], sizeof( buffer[ index ] ) );
+
+	return buffer[ index ];
+}
+

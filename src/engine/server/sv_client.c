@@ -386,7 +386,8 @@ void SV_DirectConnect( netadr_t from )
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
-	Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
+	//Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
+	Q_strncpyz( userinfo, Cmd_DequoteString( Cmd_Cmd_FromNth( 1 ) ), sizeof( userinfo ) ); // FIXME QUOTING INFO
 
 	// DHM - Nerve :: Update Server allows any protocol to connect
 	// NOTE TTimo: but we might need to store the protocol around for potential non http/ftp clients
@@ -793,7 +794,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 		// tell everyone why they got dropped
 
 		// Gordon: we want this displayed elsewhere now
-		SV_SendServerCommand( NULL, "print \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason );
+		SV_SendServerCommand( NULL, "print %s\"" S_COLOR_WHITE " \"%s\"\n\"", Cmd_QuoteString( drop->name ), Cmd_QuoteString( reason ) );
 	}
 
 	Com_DPrintf( "Going to CS_ZOMBIE for %s\n", drop->name );
@@ -810,7 +811,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	VM_Call( gvm, GAME_CLIENT_DISCONNECT, drop - svs.clients );
 
 	// add the disconnect command
-	SV_SendServerCommand( drop, "disconnect \"%s\"\n", reason );
+	SV_SendServerCommand( drop, "disconnect %s\n", Cmd_QuoteString( reason ) );
 
 	if ( drop->netchan.remoteAddress.type == NA_BOT )
 	{
@@ -1953,7 +1954,8 @@ SV_UpdateUserinfo_f
 */
 static void SV_UpdateUserinfo_f( client_t *cl )
 {
-	Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
+	//Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
+	Q_strncpyz( cl->userinfo, Cmd_DequoteString( Cmd_Cmd_FromNth( 1 ) ), sizeof( cl->userinfo ) ); // FIXME QUOTING INFO
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
@@ -2097,6 +2099,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 		// pass unknown strings to the game
 		if ( !u->name && sv.state == SS_GAME )
 		{
+#if 0 // There are checks in the game code. This exploit test seems superfluous.
 			argsFromOneMaxlen = -1;
 
 			if ( Q_stricmp( "say", Cmd_Argv( 0 ) ) == 0 ||
@@ -2177,8 +2180,9 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 					return;
 				}
 			}
-
-			else if ( Q_stricmp( "callvote", Cmd_Argv( 0 ) ) == 0 )
+			else
+#endif
+			if ( Q_stricmp( "callvote", Cmd_Argv( 0 ) ) == 0 )
 			{
 				Com_Printf( "Callvote from %s (client #%i, %s): %s\n",
 				            cl->name, ( int )( cl - svs.clients ),

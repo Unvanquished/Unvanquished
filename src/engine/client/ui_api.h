@@ -139,6 +139,7 @@ typedef enum uiImport_s
   UI_GET_AUTOUPDATE,
   UI_OPENURL,
   UI_GETHUNKDATA,
+  UI_QUOTESTRING,
 //#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
   UI_R_REGISTERANIMATION,
   UI_R_BUILDSKELETON,
@@ -371,3 +372,4 @@ void        trap_CheckAutoUpdate( void );
 void        trap_GetAutoUpdate( void );
 void        trap_openURL( const char *s );
 void        trap_GetHunkData( int *hunkused, int *hunkexpected );
+void        trap_QuoteString( const char *str, char *buffer, int size );

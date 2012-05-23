@@ -1462,6 +1462,10 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			Com_GetHunkInfo( VMA( 1 ), VMA( 2 ) );
 			return 0;
 
+		case UI_QUOTESTRING:
+			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return 0;
+
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
 		case UI_R_REGISTERANIMATION:

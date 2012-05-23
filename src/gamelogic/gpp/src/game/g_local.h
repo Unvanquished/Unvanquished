@@ -574,6 +574,7 @@ typedef struct
 	int              num_entities; // current number, <= MAX_GENTITIES
 
 	int              warmupTime; // restart match at this time
+	int              timelimit;
 
 	fileHandle_t     logFile;
 
@@ -1320,3 +1321,5 @@ void             trap_SendMessage( int clientNum, char *buf, int buflen );
 messageStatus_t  trap_MessageStatus( int clientNum );
 
 int              trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted );
+
+void             trap_QuoteString( const char *str, char *buf, int size );

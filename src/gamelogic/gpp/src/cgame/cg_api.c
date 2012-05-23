@@ -1285,3 +1285,9 @@ void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
 {
 	syscall( CG_GETCLIPBOARDDATA, buf, bufsize, clip );
 }
+
+//178.
+void trap_QuoteString( const char *str, char *buffer, int size )
+{
+	syscall( CG_QUOTESTRING, str, buffer, size );
+}
