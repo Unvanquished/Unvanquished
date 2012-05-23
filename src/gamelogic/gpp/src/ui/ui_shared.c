@@ -9448,8 +9448,11 @@ int UI_GetChatColour( int which, int team )
 
 	switch ( which )
 	{
-	default: // SAY_ALL:
+	default:
 		return ColorIndex( COLOR_WHITE );
+
+	case SAY_ALL:
+		return ColorIndex( COLOR_GREEN );
 
 	case SAY_TEAM:
 		switch ( team )
