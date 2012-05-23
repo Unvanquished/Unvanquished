@@ -4477,13 +4477,13 @@ const char *FS_ReferencedPakNames( void )
 		// is the element a pak file?
 		if ( search->pack )
 		{
-			if ( *info )
-			{
-				Q_strcat( info, sizeof( info ), " " );
-			}
-
 			if ( search->pack->referenced || Q_stricmpn( search->pack->pakGamename, BASEGAME, strlen( BASEGAME ) ) )
 			{
+                                if ( *info )
+                                {
+                                        Q_strcat( info, sizeof( info ), " " );
+                                }
+
 				Q_strcat( info, sizeof( info ), search->pack->pakGamename );
 				Q_strcat( info, sizeof( info ), "/" );
 				Q_strcat( info, sizeof( info ), search->pack->pakBasename );
