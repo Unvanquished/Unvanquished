@@ -3382,7 +3382,7 @@ void Com_ClientListParse( clientList_t *list, const char *s )
 		return;
 	}
 
-	sscanf( s, "%x%x", &list->hi, &list->lo );
+	sscanf( s, "%8x%8x", &list->hi, &list->lo );
 }
 
 /*
