@@ -846,10 +846,9 @@ void       FS_Rename( const char *from, const char *to );
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 void       FS_BuildOSHomePath( char *ospath, int size, const char *qpath );
 
-#if !defined( DEDICATED )
 extern int cl_connectedToPureServer;
+#if !defined( NO_UNTRUSTED_PLUGINS )
 qboolean   FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, const char *filename );
-
 #endif
 
 #if defined( DO_LIGHT_DEDICATED )

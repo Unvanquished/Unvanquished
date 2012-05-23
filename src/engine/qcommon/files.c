@@ -1456,19 +1456,19 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 #endif
 
 					// qagame dll
-					if ( !( pak->referenced & FS_QAGAME_REF ) && !Q_stricmp( filename, Sys_GetDLLName( "qagame" ) ) )
+					if ( !( pak->referenced & FS_QAGAME_REF ) && !Q_stricmp( filename, "vm/qagame.qvm" ) )
 					{
 						pak->referenced |= FS_QAGAME_REF;
 					}
 
 					// cgame dll
-					if ( !( pak->referenced & FS_CGAME_REF ) && !Q_stricmp( filename, Sys_GetDLLName( "cgame" ) ) )
+					if ( !( pak->referenced & FS_CGAME_REF ) && !Q_stricmp( filename, "vm/cgame.qvm" ) )
 					{
 						pak->referenced |= FS_CGAME_REF;
 					}
 
 					// ui dll
-					if ( !( pak->referenced & FS_UI_REF ) && !Q_stricmp( filename, Sys_GetDLLName( "ui" ) ) )
+					if ( !( pak->referenced & FS_UI_REF ) && !Q_stricmp( filename, "vm/ui.qvm" ) )
 					{
 						pak->referenced |= FS_UI_REF;
 					}
@@ -1664,8 +1664,7 @@ int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean u
 
 // TTimo
 // relevant to client only
-#if !defined( DEDICATED )
-
+#if !defined( NO_UNTRUSTED_PLUGINS )
 /*
 ==================
 FS_CL_ExtractFromPakFile

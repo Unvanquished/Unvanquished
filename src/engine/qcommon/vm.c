@@ -729,6 +729,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	vm_t       *vm;
 	vmHeader_t *header;
 	int        i, remaining;
+	qboolean   onlyQVM = !!Cvar_VariableValue( "sv_pure" );
 
 	if ( !module || !module[ 0 ] || !systemCalls )
 	{
@@ -766,7 +767,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	Q_strncpyz( vm->name, module, sizeof( vm->name ) );
 	vm->systemCall = systemCalls;
 
-	if ( interpret == VMI_NATIVE )
+	if ( interpret == VMI_NATIVE && !onlyQVM )
 	{
 		// try to load as a system dll
 		vm->dllHandle = Sys_LoadDll( module, vm->fqpath, &vm->entryPoint, VM_DllSyscall );
@@ -784,16 +785,19 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	}
 
 #if USE_LLVM
-	// try to load the LLVM
-	Com_Printf( "Loading llvm file %s.\n", vm->name );
-	vm->llvmModuleProvider = VM_LoadLLVM( vm, VM_DllSyscall );
-
-	if ( vm->llvmModuleProvider )
+	if ( !onlyQVM )
 	{
-		return vm;
-	}
+		// try to load the LLVM
+		Com_Printf( "Loading llvm file %s.\n", vm->name );
+		vm->llvmModuleProvider = VM_LoadLLVM( vm, VM_DllSyscall );
 
-	Com_Printf( "Failed to load llvm, looking for qvm.\n" );
+		if ( vm->llvmModuleProvider )
+		{
+			return vm;
+		}
+
+		Com_Printf( "Failed to load llvm, looking for qvm.\n" );
+	}
 #endif // USE_LLVM
 
 	// load the image

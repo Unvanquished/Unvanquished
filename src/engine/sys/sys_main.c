@@ -638,8 +638,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	gamedir = Cvar_VariableString( "fs_game" );
 	libpath = Cvar_VariableString( "fs_libpath" );
 
-#ifndef DEDICATED
-
+#if !defined( NO_UNTRUSTED_PLUGINS )
 	// if the server is pure, extract the dlls from the mp_bin.pk3 so
 	// that they can be referenced
 	if ( Cvar_VariableValue( "sv_pure" ) && Q_stricmp( name, "qagame" ) )
@@ -647,12 +646,9 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 		FS_CL_ExtractFromPakFile( homepath, gamedir, fname );
 	}
 
-#endif
-
-#ifdef NO_UNTRUSTED_PLUGINS
-	libHandle = NULL;
-#else
 	libHandle = Sys_TryLibraryLoad( homepath, gamedir, fname, fqpath );
+#else
+	libHandle = NULL;
 #endif
 
 	if ( !libHandle && libpath && libpath[0] )

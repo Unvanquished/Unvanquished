@@ -1545,11 +1545,11 @@ static void SV_VerifyPaks_f( client_t *cl )
 		bGood = qtrue;
 		nChkSum1 = nChkSum2 = 0;
 
-		bGood = ( FS_FileIsInPAK( Sys_GetDLLName( "cgame" ), &nChkSum1 ) == 1 );
+		bGood = ( FS_FileIsInPAK( "vm/cgame.qvm", &nChkSum1 ) == 1 );
 
 		if ( bGood )
 		{
-			bGood = ( FS_FileIsInPAK( Sys_GetDLLName( "ui" ), &nChkSum2 ) == 1 );
+			bGood = ( FS_FileIsInPAK( "vm/ui.qvm", &nChkSum2 ) == 1 );
 		}
 
 		nClientPaks = Cmd_Argc();
