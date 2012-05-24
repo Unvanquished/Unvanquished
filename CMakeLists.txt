@@ -67,6 +67,24 @@ cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"               
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
 
+if( USE_LLVM )
+  find_program(LLVM_CONFIG llvm-config)
+  execute_process(COMMAND ${LLVM_CONFIG} --libfiles
+                  OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  separate_arguments(LLVM_LIBS)
+
+  include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake )
+  include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMXXInformation.cmake )
+  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMCompiler.cmake )
+  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMXXCompiler.cmake )
+  enable_language( LLVM )
+  enable_language( LLVMXX )
+  message( STATUS "Using LLVM" )
+endif()
+
 # Package info
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
 set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
@@ -183,32 +201,51 @@ macro( try_cxx_flag PROP FLAG )
   try_compiler_flag_internal( ${PROP} ${FLAG} CXX cxx C++)
 endmacro()
 
+macro( try_llvm_flag PROP FLAG )
+  try_compiler_flag_internal( ${PROP} ${FLAG} LLVM cc C/LLVM)
+endmacro()
+
+macro( try_c_llvm_flag PROP FLAG )
+  try_c_flag( ${PROP} ${FLAG} )
+  if( USE_LLVM )
+    try_llvm_flag( ${PROP} ${FLAG} )
+  endif()
+endmacro()
+
 macro( try_c_cxx_flag PROP FLAG )
   try_c_flag( ${PROP} ${FLAG} )
   try_cxx_flag( ${PROP} ${FLAG} )
 endmacro()
 
+macro( try_c_cxx_llvm_flag PROP FLAG )
+  try_c_flag( ${PROP} ${FLAG} )
+  try_cxx_flag( ${PROP} ${FLAG} )
+  if( USE_LLVM )
+    try_llvm_flag( ${PROP} ${FLAG} )
+  endif()
+endmacro()
+
 # Various warnings
 if( ENABLE_W_ALL )
-  try_c_cxx_flag( HAVE_W_ALL              -Wall )
+  try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
 endif()
 if( ENABLE_WARNINGS )
-  try_c_cxx_flag( HAVE_W_FORMAT2          -Wformat=2 )
+  try_c_cxx_llvm_flag( HAVE_W_FORMAT2          -Wformat=2 )
   if( NOT HAVE_W_FORMAT2_C )
-    try_c_cxx_flag( HAVE_W_FORMAT         -Wformat )
+    try_c_cxx_llvm_flag( HAVE_W_FORMAT         -Wformat )
   endif()
-  try_c_flag    ( HAVE_W_0LEN_FMT         -Wno-format-zero-length )
-  try_c_cxx_flag( HAVE_W_FORMAT_SECURITY  -Wformat-security )
-  try_c_cxx_flag( HAVE_W_STRICT_ALIAS_2   -Wstrict-aliasing=2 )
-  try_c_cxx_flag( HAVE_W_MISSING_FMT_ATTR -Wmissing-format-attribute )
-  try_c_cxx_flag( HAVE_W_MISSING_NORETURN -Wmissing-noreturn )
-  try_c_flag    ( HAVE_W_IMPLICIT_FN      -Wimplicit-function-declaration )
+  try_c_llvm_flag    ( HAVE_W_0LEN_FMT         -Wno-format-zero-length )
+  try_c_cxx_llvm_flag( HAVE_W_FORMAT_SECURITY  -Wformat-security )
+  try_c_cxx_llvm_flag( HAVE_W_STRICT_ALIAS_2   -Wstrict-aliasing=2 )
+  try_c_cxx_llvm_flag( HAVE_W_MISSING_FMT_ATTR -Wmissing-format-attribute )
+  try_c_cxx_llvm_flag( HAVE_W_MISSING_NORETURN -Wmissing-noreturn )
+  try_c_llvm_flag    ( HAVE_W_IMPLICIT_FN      -Wimplicit-function-declaration )
   if( HAVE_W_IMPLICIT_FN_C )
-    try_c_cxx_flag( HAVE_W_ERR_IMPLICIT_FN  -Werror=implicit-function-declaration )
+    try_c_cxx_llvm_flag( HAVE_W_ERR_IMPLICIT_FN  -Werror=implicit-function-declaration )
   endif()
-  try_c_cxx_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
+  try_c_cxx_llvm_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
   if( HAVE_W_FMT_SECURITY_C )
-    try_c_cxx_flag( HAVE_W_ERR_FMT_SECURITY -Werror=format-security )
+    try_c_cxx_llvm_flag( HAVE_W_ERR_FMT_SECURITY -Werror=format-security )
   endif()
 endif()
 
@@ -394,14 +431,6 @@ set( QCOMMONLIST
 
 if( USE_LLVM )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
-  add_definitions( -DUSE_LLVM -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS )
-  find_program(LLVM_CONFIG llvm-config)
-  execute_process(COMMAND ${LLVM_CONFIG} --libfiles
-  			    OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-  separate_arguments(LLVM_LIBS)
 endif()
 
 if( USE_PHYSICS )
@@ -479,6 +508,11 @@ set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
 )
 
+# needed for LLVM & QVM
+set( GAME_VM_COMMON
+  ${MOUNT_DIR}/engine/qcommon/q_static.c
+)
+
 set( CGAMEGPP_BASE
   ${GPP_DIR}/src/cgame/cg_main.c
   ${GPP_DIR}/src/game/bg_misc.c
@@ -510,8 +544,8 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/src/cgame/cg_tutorial.c
   ${GPP_DIR}/src/ui/ui_shared.c
   ${GPP_DIR}/src/ui/ui_utf8.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/./q_math.c
+  ${MOUNT_DIR}/engine/qcommon/./q_shared.c
 )
 
 set( CGAMEGPP_SO
@@ -551,8 +585,8 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/src/game/g_weapon.c
   ${GPP_DIR}/src/game/g_admin.c
   ${GPP_DIR}/src/game/g_namelog.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/./q_math.c
+  ${MOUNT_DIR}/engine/qcommon/./q_shared.c
 )
 
 set( GAMEGPP_SO
@@ -571,8 +605,8 @@ set( UIGPP_BASE
   ${GPP_DIR}/src/ui/ui_gameinfo.c
   ${GPP_DIR}/src/game/bg_misc.c
   ${GPP_DIR}/src/game/bg_lib.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/./q_math.c
+  ${MOUNT_DIR}/engine/qcommon/./q_shared.c
   ${GPP_DIR}/src/ui/ui_utf8.c
 )
 
@@ -897,6 +931,10 @@ set( Q3ASM_LIST
 # End of file list #
 ####################
 
+if( USE_LLVM )
+  add_definitions( -DUSE_LLVM -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS )
+endif()
+
 if( USE_PHYSICS )
   set( NEWTON_INCLUDES
     ${MOUNT_DIR}/libs/libnewton/include
@@ -932,6 +970,7 @@ endif()
 # Build Game/Cgame/Ui DLL/.so #
 ###############################
 
+
 # Function to setup all the Game/Cgame/UI libraries
 include( CMakeParseArguments )
 function( GAMELIB )
@@ -949,7 +988,11 @@ function( GAMELIB )
       set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
     endif()
 
-    add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} )
+    if( USE_LLVM )
+      add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} )
+    else()
+      add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} )
+    endif()
     target_link_libraries( ${GAMELIB_LIB_NAME} m )
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
       PREFIX ""
@@ -959,7 +1002,53 @@ function( GAMELIB )
       COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
     )
 
-    if( WIN32 )
+    if( USE_LLVM )
+      file( MAKE_DIRECTORY "${Daemon_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm" )
+
+      set( GAMELIB_SOURCE_NAME "src/gamelogic/${GAMELIB_OUTPUT_DIR}" )
+      if( GAMELIB_OUTPUT_DIR STREQUAL "main" )
+        set( GAMELIB_SOURCE_NAME "src/gamelogic/gpp" )
+      endif()
+
+      set( GAMELIB_LLVM_FLAGS "-w -emit-llvm -DQ3_VM -nostdinc -I${GAMELIB_SOURCE_NAME} -Isrc/engine/qcommon -I${GAMELIB_SOURCE_NAME}/src/game -I${GAMELIB_SOURCE_NAME}/src/cgame -I${GAMELIB_SOURCE_NAME}/src/ui" )
+
+      set( GAMELIB_LIB_CXX )
+      foreach( FILE ${GAMELIB_LIB_FILES} )
+        if( FILE MATCHES "\\.cpp$" )
+          set( GAMELIB_LIB_CXX ${GAMELIB_LIB_CXX} ${FILE} )
+        endif()
+      endforeach()
+
+      set_source_files_properties( ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} PROPERTIES LANGUAGE LLVM )
+      set_source_files_properties( ${GAMELIB_LIB_CXX} PROPERTIES LANGUAGE LLVMXX )
+
+      # First target is for at least i386
+      set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
+        PREFIX "vm/"
+        SUFFIX ".bc"
+        COMPILE_FLAGS "-m32 ${GAMELIB_LLVM_FLAGS}"
+        OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_32"
+        LINKER_LANGUAGE LLVM
+        LINK_FLAGS -emit-llvm
+      )
+      # And a second target for at least amd64
+      add_library( ${GAMELIB_LIB_NAME}_64 SHARED ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} )
+      target_link_libraries( ${GAMELIB_LIB_NAME}_64 m )
+      set_target_properties( ${GAMELIB_LIB_NAME}_64 PROPERTIES
+        PREFIX "vm/"
+        SUFFIX ".bc"
+        COMPILE_FLAGS "-m64 ${GAMELIB_LLVM_FLAGS}"
+        OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_64"
+        LINKER_LANGUAGE LLVM
+        LINK_FLAGS -emit-llvm
+        LIBRARY_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+        ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+        COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
+      )
+      # May need more here for different architectures
+
+    elseif( WIN32 )
       set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_mp_${BUILD_ARCH}" )
     else()
       set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}.mp.${BUILD_ARCH}" )

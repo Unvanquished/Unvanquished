@@ -102,7 +102,7 @@ Maryland 20850 USA.
 #define QCALL
 
 //================================================================= WIN64/32 ===
-
+#ifndef Q3_VM
 #if defined( _WIN64 ) || defined( __WIN64__ )
 #undef idx64
 #define idx64 1
@@ -365,7 +365,7 @@ Maryland 20850 USA.
 #define DLL_EXT       ".so"
 
 #endif
-
+#endif
 //================================================================== Q3VM ===
 
 #ifdef Q3_VM

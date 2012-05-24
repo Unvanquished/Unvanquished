@@ -42,6 +42,7 @@ Maryland 20850 USA.
 #define atanf(x) ( (float) atan( (x) ) )
 #define tanf(x) ( (float) tan( (x) ) )
 #define sqrtf(x) ( (float) sqrt( (x) ) )
+extern double asin( double );
 #endif
 
 #include "q_shared.h"

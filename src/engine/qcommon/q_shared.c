@@ -3408,7 +3408,7 @@ void Q_ParseNewlines( char *dest, const char *src, int destsize )
 }
 
 #ifdef _MSC_VER
-float rint( float v )
+float rintf( float v )
 {
 	if ( v >= 0.5f ) { return ceilf( v ); }
 	else { return floorf( v ); }

@@ -31,6 +31,7 @@ extern "C" {
 #ifdef USE_LLVM
 
 #include "vm_llvm.h"
+#include "../sys/sys_loadlib.h"
 #include <stdint.h>
 #include <ctype.h>
 #include <llvm/Module.h>
@@ -54,6 +55,49 @@ extern "C" {
 
 static ExecutionEngine *engine = NULL;
 
+static void *VM_LookupSym( const std::string& symbol )
+{
+#define EXPORTFUNC(fn) { #fn, (void *) fn }
+	static const struct {
+		const char *name;
+		void       *func;
+	} lookup[] = {
+		EXPORTFUNC( Q_snprintf ),
+		EXPORTFUNC( Q_strncpyz ),
+		EXPORTFUNC( Q_vsnprintf ),
+		EXPORTFUNC( atan2 ),
+		EXPORTFUNC( ceil ),
+		EXPORTFUNC( cos ),
+		EXPORTFUNC( floor ),
+		EXPORTFUNC( floorf ),
+		EXPORTFUNC( memcpy ),
+		EXPORTFUNC( memmove ),
+		EXPORTFUNC( memset ),
+		EXPORTFUNC( powf ),
+		EXPORTFUNC( realloc ), // FIXME - don't really want this one exported
+		EXPORTFUNC( sin ),
+		EXPORTFUNC( strncpy ),
+		{}
+	};
+
+	if ( com_developer->integer ) {
+		Com_Printf( "LLVM: Look up symbol %s\n", symbol.c_str() );
+	}
+
+	// our symbols
+	for (int i = 0; lookup[ i ].name; ++i) {
+		if ( symbol == lookup[ i ].name ) {
+			return lookup[ i ].func;
+		}
+	}
+
+	// return Sys_LoadFunction( NULL, symbol.c_str() );
+
+	// this is about to crash and burn, so report the symbol
+	Com_Printf( "LLVM: ^3Unparsed symbol %s^7\n", symbol.c_str() );
+	return NULL;
+}
+
 void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	char name[MAX_QPATH];
 	char filename[MAX_QPATH];
@@ -66,6 +110,8 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	Com_sprintf( filename, sizeof(filename), "vm/%s_64.bc", name );
 #elif defined(__i386__) || defined(_WIN32)
 	Com_sprintf( filename, sizeof(filename), "vm/%s_32.bc", name );
+#else
+	Com_sprintf( filename, sizeof(filename), "vm/%s.bc", name );
 #endif
 
 	int len = FS_ReadFile( filename, (void **)&bytes );
@@ -115,6 +161,8 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 			Com_Printf("Couldn't create ExecutionEngine: %s\n", str.c_str());
 			return NULL;
 		}
+		engine->DisableSymbolSearching();
+		engine->InstallLazyFunctionCreator( VM_LookupSym );
 	} else {
 		engine->addModule( module );
 	}

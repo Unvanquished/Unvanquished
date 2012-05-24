@@ -4303,6 +4303,13 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 }
 
+#ifdef Q3_VM
+static float roundf( float v )
+{
+	return (int)( v + ( v < 0 ? -0.5 : 0.5 ) );
+}
+#endif
+
 /*
 ================
 PmoveSingle
@@ -4567,9 +4574,9 @@ void PmoveSingle( pmove_t *pmove )
 	PM_WaterEvents();
 
 	// snap some parts of playerstate to save network bandwidth
-	pm->ps->velocity[0] = round( pm->ps->velocity[0] );
-	pm->ps->velocity[1] = round( pm->ps->velocity[1] );
-	pm->ps->velocity[2] = round( pm->ps->velocity[2] );
+	pm->ps->velocity[0] = roundf( pm->ps->velocity[0] );
+	pm->ps->velocity[1] = roundf( pm->ps->velocity[1] );
+	pm->ps->velocity[2] = roundf( pm->ps->velocity[2] );
 }
 
 /*
