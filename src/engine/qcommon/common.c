@@ -4662,7 +4662,7 @@ static void Hist_Save( void )
 		return;
 	}
 
-	i = hist_next % CON_HISTORY;
+	i = ( hist_next + 1 ) % CON_HISTORY;
 
 	do
 	{
