@@ -79,72 +79,72 @@ const char *skipEntities[18] = {"func_door"				, "team_alien_trapper"	,
 
 
 typedef struct {
-	const char* name;   //appended to filename
-	const short radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
-	const short height; //height of agents (BBox maxs[2] - BBox mins[2])
+	char* name;   //appended to filename
+	short radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
+	short height; //height of agents (BBox maxs[2] - BBox mins[2])
 } tremClass_t;
 
-const tremClass_t tremClasses[12] = {
+const tremClass_t tremClasses[] = {
 	{
 		"builder",
-			20,
-			40,
+		20,
+		40,
 	},
 	{ 
 		"builderupg",
-			20,
-			40,
-		},
-		{
-			"human_base",
-				15,
-				56,
-		},
-		{
-			"human_bsuit",
-				15,
-				76,
-			},
-			{
-				"level0",
-					15,
-					30,
-			},
-			{
-				"level1",
-					18,
-					36
-				},
-				{ 
-					"level1upg",
-						21,
-						42
-				},
-				{
-					"level2",
-						23,
-						36
-					},
-					{
-						"level2upg",
-							25,
-							40
-					},
-					{
-						"level3",
-							26,
-							55
-						},
-						{
-							"level3upg",
-								26,
-								66
-						},
-						{
-							"level4",
-								32,
-								92
-							}
+		20,
+		40,
+	},
+	{
+		"human_base",
+		15,
+		56,
+	},
+	{
+		"human_bsuit",
+		15,
+		76,
+	},
+	{
+		"level0",
+		15,
+		30,
+	},
+	{
+		"level1",
+		18,
+		36
+	},
+	{ 
+		"level1upg",
+		21,
+		42
+	},
+	{
+		"level2",
+		23,
+		36
+	},
+	{
+		"level2upg",
+		25,
+		40
+	},
+	{
+		"level3",
+		26,
+		55
+	},
+	{
+		"level3upg",
+		26,
+		66
+	},
+	{
+		"level4",
+		32,
+		92
+	}
 };
 
 
@@ -397,7 +397,7 @@ static void CreateRegions ( void )
 		}
 	}
 	Sys_Printf(" eroding the walkable surface...\n");
-	if ( !rcErodeWalkableArea (&context, cfg.walkableRadius, *compHeightField) )
+	if ( !rcErodeWalkableArea (&context, cfg.walkableRadius + cfg.maxSimplificationError, *compHeightField) )
 	{
 		Error ("Unable to erode walkable surfaces.\n");
 	}
@@ -462,7 +462,6 @@ static void ConfigureRecast ( int agentRadius, int agentHeight, float cellSize, 
 	cfg.walkableHeight = (int) ceilf(agentHeight / cfg.ch);
 	cfg.walkableClimb = (int) floorf(stepSize/cfg.ch);
 	cfg.walkableRadius = (int) ceilf(agentRadius / cfg.cs);
-	cfg.borderSize = cfg.walkableRadius + 3;
 
 	rcCalcGridSize (cfg.bmin, cfg.bmax, cfg.cs, &cfg.width, &cfg.height);
 	Sys_Printf(" using %d x %d cells\n",cfg.width,cfg.height);
@@ -815,101 +814,51 @@ static winding_t** CreateBrushWindings(int *numwindings, int *numverts, int *num
 	bspPlane_t        *plane;
 	winding_t **windings = new winding_t*[numBSPBrushSides];
 	int currentWinding = 0;
-	entity_t *e;
 	bspModel_t *model;
-	int modelNum;
-	const char *value;
-	//go through the list of entities
-	for(int n=0;n<numEntities;n++) {
-		e = &entities[n];
 
-		//skip entities we need to skip
-		if(skipEntity(e))
-			continue;
-		/* get model num */
-		if(n == 0)
-			modelNum = 0;
-		else
+	/* get model, index 0 is worldspawn entity */
+	model = &bspModels[0];
+
+	//go through the brushes
+	for(int i=model->firstBSPBrush,m=0;m<model->numBSPBrushes;i++,m++) {
+		int numSides = bspBrushes[i].numSides;
+		int firstSide = bspBrushes[i].firstSide;
+
+		/* walk the list of brush sides */
+		for(int p = 0; p < numSides; p++)
 		{
-			value = ValueForKey(e, "model");
-			if(value[0] == '*')
-				modelNum = atoi(value + 1);
-			else
-				modelNum = -1;
-		}
-		if(modelNum >= 0) {
+			/* get side and plane */
+			side = &bspBrushSides[p+firstSide];
+			plane = &bspPlanes[side->planeNum];
+			bspShader_t *sideShader = &bspShaders[side->shaderNum];
+			//we dont use these surfaces for generating the navmesh because they arnt used in collision in game
+			if(sideShader->surfaceFlags & (SURF_SKIP | SURF_SKY | SURF_HINT)) {
+				continue;
+			}
 
-			/* get model, index 0 is worldspawn entity */
-			model = &bspModels[modelNum];
+			if(!(sideShader->contentFlags & (CONTENTS_SOLID | CONTENTS_PLAYERCLIP)))
+				continue;
+			/* make huge winding */
+			w = BaseWindingForPlane(plane->normal, plane->dist);
 
-			//go through the brushes
-			for(int i=model->firstBSPBrush,m=0;m<model->numBSPBrushes;i++,m++) {
-				int numSides = bspBrushes[i].numSides;
-				int firstSide = bspBrushes[i].firstSide;
-				qboolean isClip = qfalse;
-				bspShader_t brushShader = bspShaders[bspBrushes[i].shaderNum];
-				if(brushShader.contentFlags & (CONTENTS_PLAYERCLIP | CONTENTS_BOTCLIP | CONTENTS_MONSTERCLIP))
-					isClip = qtrue;
-				//if not one of these brushes, not used for nav
-				if(!(brushShader.contentFlags & ( CONTENTS_SOLID
-					| CONTENTS_BOTCLIP
-					| CONTENTS_PLAYERCLIP
-					| CONTENTS_MONSTERCLIP
-					| CONTENTS_CLUSTERPORTAL
-					| CONTENTS_DONOTENTER
-					| CONTENTS_DONOTENTER_LARGE
-					| CONTENTS_TELEPORTER
-					| CONTENTS_JUMPPAD
-					| CONTENTS_WATER
-					| CONTENTS_LAVA
-					| CONTENTS_SLIME
-					| CONTENTS_MOVER
-					) )) {
-						continue;
-				}
-				//dont care about detail brushes
-				//if(bspShaders[bspBrushes[i].shaderNum].contentFlags & CONTENTS_DETAIL)
-				//continue;
-				/* walk the list of brush sides */
-				for(int p = 0; p < numSides; p++)
-				{
-					/* get side and plane */
-					side = &bspBrushSides[p+firstSide];
-					plane = &bspPlanes[side->planeNum];
+			/* walk the list of brush sides */
+			for(j = 0; j < numSides && w != NULL; j++)
+			{
 
-					//we dont use these surfaces for generating the navmesh because they arnt used in collision in game
-					if(bspShaders[side->shaderNum].surfaceFlags & (SURF_SKIP | SURF_SKY | SURF_HINT | SURF_NONSOLID)) {
-						continue;
-					}
-					if(bspShaders[side->shaderNum].contentFlags & (CONTENTS_PLAYERCLIP | CONTENTS_BOTCLIP | CONTENTS_MONSTERCLIP))
-						isClip = qtrue;
-					else
-						isClip = qfalse;
-					if(bspShaders[side->shaderNum].surfaceFlags & SURF_SLICK)
-						isClip = qtrue;
-					if((bspShaders[side->shaderNum].surfaceFlags & SURF_NODRAW) && !isClip)
-						continue;
-					/* make huge winding */
-					w = BaseWindingForPlane(plane->normal, plane->dist);
+				if(p == j)
+					continue;
+				if(bspBrushSides[j+firstSide].planeNum == (side->planeNum ^ 1))
+					continue;		/* back side clipaway */
+				plane = &bspPlanes[bspBrushSides[j+firstSide].planeNum ^ 1];
+				ChopWindingInPlace(&w, plane->normal, plane->dist, 0);	// CLIP_EPSILON );
 
-					/* walk the list of brush sides */
-					for(j = 0; j < numSides && w != NULL; j++)
-					{
+				/* ydnar: fix broken windings that would generate trifans */
+				FixWinding(w);
+			}
 
-						if(p == j)
-							continue;
-						if(bspBrushSides[j+firstSide].planeNum == (side->planeNum ^ 1))
-							continue;		/* back side clipaway */
-						plane = &bspPlanes[bspBrushSides[j+firstSide].planeNum ^ 1];
-						ChopWindingInPlace(&w, plane->normal, plane->dist, 0);	// CLIP_EPSILON );
-
-						/* ydnar: fix broken windings that would generate trifans */
-						FixWinding(w);
-					}
-
-					/* set side winding */
-					windings[currentWinding++] = w;
-				}
+			/* set side winding */
+			if(w) {
+				windings[currentWinding++] = w;
 			}
 		}
 	}
@@ -917,10 +866,8 @@ static winding_t** CreateBrushWindings(int *numwindings, int *numverts, int *num
 	int numVerts = 0;
 	for(int i=0;i<currentWinding;i++) {
 		w = windings[i];
-		if(w) {
-			for(int j=2;j<w->numpoints;j++) {
-				numVerts += 3;
-			}
+		for(int j=2;j<w->numpoints;j++) {
+			numVerts += 3;
 		}
 	}
 	*numwindings = currentWinding;
@@ -932,23 +879,22 @@ static void LoadBrushTris(winding_t **windings,int numWindings, int startIndex) 
 	int current = startIndex * 3;
 	for(int i=0;i<numWindings;i++) {
 		winding_t *w = windings[i];
-		if(w) {
-			for(int j=2;j<w->numpoints;j++) {
-				//Sys_Printf("adding vert %d\n",currentTriIndex);
-				AddVertToStrip(&verts,w->p[0],current*3);
-				tris[current] = current;
-				current++;
-				//currentVertIndex++;
-				AddVertToStrip(&verts,w->p[j-1],current*3);
-				tris[current] = current;
-				current++;
-				//currentVertIndex++;
-				AddVertToStrip(&verts,w->p[j],current*3);
-				tris[current] = current;
-				current++;
-				//currentVertIndex++;
-			}
+		for(int j=2;j<w->numpoints;j++) {
+			//Sys_Printf("adding vert %d\n",currentTriIndex);
+			AddVertToStrip(&verts,w->p[0],current*3);
+			tris[current] = current;
+			current++;
+			//currentVertIndex++;
+			AddVertToStrip(&verts,w->p[j-1],current*3);
+			tris[current] = current;
+			current++;
+			//currentVertIndex++;
+			AddVertToStrip(&verts,w->p[j],current*3);
+			tris[current] = current;
+			current++;
+			//currentVertIndex++;
 		}
+		FreeWinding(w);
 	}
 }
 static void LoadGeometry()
@@ -981,7 +927,7 @@ static void LoadGeometry()
 		AddPointToBounds(vert, mapmins,mapmaxs);
 	}
 
-	Sys_Printf(" set world bounds to\n");
+	Sys_Printf(" set recast world bounds to\n");
 	Sys_Printf(" min: %f %f %f\n", mapmins[0], mapmins[1], mapmins[2]);
 	Sys_Printf(" max: %f %f %f\n", mapmaxs[0], mapmaxs[1], mapmaxs[2]);
 	delete surfaces;
@@ -1014,14 +960,14 @@ extern "C" int NavMain(int argc, char **argv)
 {
 	float temp;
 	float cellSize = 6;
-	float cellHeight = 6;
+	float cellHeight = 0.5;
 	float stepSize = STEPSIZE;
-	qboolean obj = qfalse;
+
 	/* note it */
 	Sys_Printf("--- Nav ---\n");
 	int i;
 	/* process arguments */
-	for(i = 0; i < (argc - 1); i++)
+	for(i = 1; i < (argc - 1); i++)
 	{
 		if(!Q_stricmp(argv[i],"-cellsize")) {
 			i++;
@@ -1043,11 +989,8 @@ extern "C" int NavMain(int argc, char **argv)
 
 		} else if (!Q_stricmp(argv[i], "-optimistic")){
 			stepSize = 20;
-			cellHeight = stepSize/6;
 		} else if(!Q_stricmp(argv[i], "-median")) {
 			median = qtrue;
-		} else if(!Q_stricmp(argv[i], "-obj")) {
-			obj = qtrue;
 		} else {
 			Sys_Printf("WARNING: Unknown option \"%s\"\n", argv[i]);
 		}
@@ -1070,6 +1013,15 @@ extern "C" int NavMain(int argc, char **argv)
 
 	/* get the data into recast */
 	LoadGeometry();
+
+	float height = rcAbs(mapmaxs[1]) + rcAbs(mapmins[1]);
+	if(height / cellHeight > RC_SPAN_MAX_HEIGHT) {
+		Sys_Printf("WARNING: Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.\n");
+		float prevCellHeight = cellHeight;
+		cellHeight = height / RC_SPAN_MAX_HEIGHT + 0.1;
+		Sys_Printf("Previous cellheight: %f\n", prevCellHeight);
+		Sys_Printf("New cellheight: %f\n", cellHeight);
+	}
 
 	for(int i=0;i<12;i++) {
 		Sys_Printf("Making NavMesh for %s\n",tremClasses[i].name);
