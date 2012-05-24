@@ -67,6 +67,8 @@ cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"               
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
 
+mark_as_advanced( USE_LLVM LLVM_CONFIG )
+
 if( USE_LLVM )
   find_program(LLVM_CONFIG llvm-config)
   execute_process(COMMAND ${LLVM_CONFIG} --libfiles
