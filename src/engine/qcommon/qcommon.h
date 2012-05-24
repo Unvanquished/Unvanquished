@@ -378,6 +378,8 @@ VIRTUAL MACHINE
 ==============================================================
 */
 
+// See also vm_traps.h for syscalls common to all VMs
+
 typedef struct vm_s vm_t;
 
 typedef enum
@@ -388,25 +390,6 @@ typedef enum
 #endif
   VMI_COMPILED
 } vmInterpret_t;
-
-typedef enum
-{
-  TRAP_MEMSET = 300,
-  TRAP_MEMCPY,
-  TRAP_STRNCPY,
-  TRAP_SIN,
-  TRAP_COS,
-  TRAP_ATAN2,
-  TRAP_SQRT,
-  TRAP_MATRIXMULTIPLY,
-  TRAP_ANGLEVECTORS,
-  TRAP_PERPENDICULARVECTOR,
-  TRAP_FLOOR,
-  TRAP_CEIL,
-
-  TRAP_TESTPRINTINT,
-  TRAP_TESTPRINTFLOAT
-} sharedTraps_t;
 
 void VM_Init( void );
 
@@ -427,6 +410,11 @@ void           VM_Debug( int level );
 
 void           *VM_ArgPtr( intptr_t intValue );
 void           *VM_ExplicitArgPtr( vm_t *vm, intptr_t intValue );
+
+void VM_CheckBlock( intptr_t buf, size_t n, const char *fail );
+void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail );
+
+intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
 
 #define VMA(x) VM_ArgPtr(args[ x ])
 static ID_INLINE float _vmf( intptr_t x )
@@ -523,9 +511,16 @@ void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args( void );
 char *Cmd_ArgsFrom( int arg );
 void Cmd_ArgsBuffer( char *buffer, int bufferLength );
-char *Cmd_Cmd( void );
-char *Cmd_Cmd_FromNth( int );
-char *Cmd_EscapeString( const char *in );
+const char *Cmd_Cmd( void );
+const char *Cmd_Cmd_FromNth( int );
+
+// these all share an output buffer
+const char *Cmd_EscapeString( const char *in );
+const char *Cmd_QuoteString( const char *in );
+const char *Cmd_UnquoteString( const char *in );
+const char *Cmd_DequoteString( const char *in ); // FIXME QUOTING INFO
+
+void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL
@@ -760,12 +755,13 @@ int FS_Read( void *buffer, int len, fileHandle_t f );
 
 // properly handles partial reads and reads from other dlls
 
-void FS_FCloseFile( fileHandle_t f );
+int FS_FCloseFile( fileHandle_t f ); // !0 on error (but errno isn't valid)
 
 // note: you can't just fclose from another DLL, due to MS libc issues
 
 long FS_ReadFileDir( const char *qpath, void *searchPath, void **buffer );
 int  FS_ReadFile( const char *qpath, void **buffer );
+int  FS_ReadFileCheck( const char *qpath, void **buffer );
 
 // returns the length of the file
 // a null buffer will just return the file length without loading
@@ -850,10 +846,9 @@ void       FS_Rename( const char *from, const char *to );
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 void       FS_BuildOSHomePath( char *ospath, int size, const char *qpath );
 
-#if !defined( DEDICATED )
 extern int cl_connectedToPureServer;
+#if !defined( NO_UNTRUSTED_PLUGINS )
 qboolean   FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, const char *filename );
-
 #endif
 
 #if defined( DO_LIGHT_DEDICATED )
@@ -1334,7 +1329,7 @@ char                  *Sys_GetCurrentUser( void );
 
 void QDECL            Sys_Error( const char *error, ... ) __attribute__(( format( printf, 1, 2 ), noreturn ));
 void                  Sys_Quit( void ) __attribute__((noreturn));
-char                  *Sys_GetClipboardData( void );  // note that this isn't journaled...
+char                  *Sys_GetClipboardData( clipboard_t clip );  // note that this isn't journaled...
 
 void                  Sys_Print( const char *msg );
 

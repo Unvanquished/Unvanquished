@@ -247,7 +247,7 @@ Save the console contents out to a file
 */
 void Con_Dump_f( void )
 {
-	int          l, x, i;
+	int          l;
 	fileHandle_t f;
 
 	if ( Cmd_Argc() != 2 )
@@ -294,7 +294,7 @@ Scroll up to the first console line containing a string
 */
 void Con_Search_f( void )
 {
-	int   l, i, x;
+	int   l, i;
 	int   direction;
 	int   c = Cmd_Argc();
 
@@ -338,7 +338,7 @@ Find all console lines containing a string
 */
 void Con_Grep_f( void )
 {
-	int    l, x;
+	int    l;
 	int    lastcolor;
 	char  *search;
 	char  *printbuf = NULL;
@@ -420,7 +420,7 @@ If the line width has changed, reformat the buffer.
 */
 void Con_CheckResize( void )
 {
-	int   i, j, width, oldwidth, oldtotallines, numlines, numchars;
+	int   i, width, oldwidth, oldtotallines, numlines, numchars;
 	conChar_t buf[ CON_TEXTSIZE ];
 
 	if ( cls.glconfig.vidWidth )
@@ -445,15 +445,17 @@ void Con_CheckResize( void )
 
 	if ( width == con.linewidth )
 	{
-		return;
+		// nothing
 	}
-
-	if ( width < 1 ) // video hasn't been initialized yet
+	else if ( width < 1 ) // video hasn't been initialized yet
 	{
 		width = DEFAULT_CONSOLE_WIDTH;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
 		Con_Clear();
+
+		con.current = con.totallines - 1;
+		con.display = con.current;
 	}
 	else
 	{
@@ -486,10 +488,12 @@ void Con_CheckResize( void )
 			        buf + ( ( con.current - i + oldtotallines ) % oldtotallines ) * oldwidth,
 			        numchars * sizeof( conChar_t ) );
 		}
+
+		con.current = con.totallines - 1;
+		con.display = con.current;
 	}
 
-	con.current = con.totallines - 1;
-	con.display = con.current;
+	g_console_field_width = g_consoleField.widthInChars = con.linewidth - 7 - ( cl_consolePrompt ? Q_UTF8Strlen( cl_consolePrompt->string ) : 0 );
 }
 
 /*
@@ -862,7 +866,7 @@ void Con_DrawSolidConsole( float frac )
 //	qhandle_t    conShader;
 	int    currentColor;
 	vec4_t color;
-	char   *s, *end;
+	float  yVer;
 	float  totalwidth;
 	float  currentWidthLocation = 0;
 
@@ -899,6 +903,7 @@ void Con_DrawSolidConsole( float frac )
 	// draw the background
 	if ( scr_conUseOld->integer )
 	{
+		yVer = 5 + charHeight;
 		y = frac * SCREEN_HEIGHT;
 
 		if ( y < 1 )
@@ -932,6 +937,10 @@ void Con_DrawSolidConsole( float frac )
 	}
 	else
 	{
+		yVer = 10;
+		SCR_AdjustFrom640( NULL, &yVer, NULL, NULL );
+		yVer = floor( yVer + 5 + charHeight );
+
 		color[ 0 ] = scr_conColorRed->value;
 		color[ 1 ] = scr_conColorGreen->value;
 		color[ 2 ] = scr_conColorBlue->value;
@@ -953,7 +962,7 @@ void Con_DrawSolidConsole( float frac )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : frac * 2.0f );
+	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f : frac * 0.75f );
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
@@ -965,12 +974,11 @@ void Con_DrawSolidConsole( float frac )
 	}
 
 	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
-	y = lines - charHeight * 2;
 
 	for ( x = 0; x < i; x++ )
 	{
-		int ch = Q_UTF8CodePoint( Q3_VERSION + x );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, y, ch );
+		int ch = Q_UTF8CodePoint( &Q3_VERSION[ x ] );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, yVer, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 
@@ -984,12 +992,11 @@ void Con_DrawSolidConsole( float frac )
 	}
 
 	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
-	y = lines - charHeight;
 
 	for ( x = 0; x < i; x++ )
 	{
-		int ch = Q_UTF8CodePoint( Q3_ENGINE + x );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, y, ch );
+		int ch = Q_UTF8CodePoint( &Q3_ENGINE[ x ] );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, yVer + charHeight, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 

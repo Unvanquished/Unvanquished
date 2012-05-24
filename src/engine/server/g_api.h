@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/vm_traps.h"
+#include "../qcommon/vm_traps.h"
 
 #define GAME_API_VERSION          9
 
@@ -100,9 +102,9 @@ typedef struct
 } sharedEntity_t;
 
 // game-module-to-engine calls
-typedef enum
+typedef enum gameImport_s
 {
-  G_PRINT,
+  G_PRINT = FIRST_VM_SYSCALL,
   G_ERROR,
   G_MILLISECONDS,
   G_CVAR_REGISTER,
@@ -166,19 +168,8 @@ typedef enum
   G_ADD_PHYSICS_STATIC,
   G_SENDMESSAGE,
   G_MESSAGESTATUS,
-#ifdef ET_MYSQL
-  G_SQL_RUNQUERY,
-  G_SQL_FINISHQUERY,
-  G_SQL_NEXTROW,
-  G_SQL_ROWCOUNT,
-  G_SQL_GETFIELDBYID,
-  G_SQL_GETFIELDBYNAME,
-  G_SQL_GETFIELDBYID_INT,
-  G_SQL_GETFIELDBYNAME_INT,
-  G_SQL_FIELDCOUNT,
-  G_SQL_CLEANSTRING,
-#endif
-  G_RSA_GENMSG // ( const char *public_key, char *cleartext, char *encrypted )
+  G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
+  G_QUOTESTRING
 } gameImport_t;
 
 // engine-to-game-module calls

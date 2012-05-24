@@ -25,6 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+// debugging
+int   debug_anim_current;
+int   debug_anim_old;
+float debug_anim_blend;
+
 static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
 {
 	"*death1.wav",
@@ -1443,7 +1448,7 @@ void CG_NewClientInfo( int clientNum )
 
 		if ( config[ 0 ] )
 		{
-			trap_SendConsoleCommand( va( "exec \"%s\"\n", config ) );
+			trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
 		}
 	}
 
@@ -1843,7 +1848,6 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale )
 {
-	int         f, numFrames;
 	animation_t *anim;
 	qboolean    animChanged;
 
@@ -1871,105 +1875,15 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		animChanged = qfalse;
 	}
 
-	// if we have passed the current frame, move it to
-	// oldFrame and calculate a new frame
-	if ( cg.time >= lf->frameTime || animChanged )
+
+	anim = lf->animation;
+
+	if ( !anim->frameLerp )
 	{
-		if ( animChanged )
-		{
-			lf->oldFrame = 0;
-			lf->oldFrameTime = cg.time;
-		}
-		else
-
-		{
-			lf->oldFrame = lf->frame;
-			lf->oldFrameTime = lf->frameTime;
-		}
-
-		// get the next frame based on the animation
-		anim = lf->animation;
-
-		if ( !anim->frameLerp )
-		{
-			return; // shouldn't happen
-		}
-
-		if ( cg.time < lf->animationStartTime )
-		{
-			lf->frameTime = lf->animationStartTime; // initial lerp
-		}
-		else
-		{
-			lf->frameTime = lf->oldFrameTime + anim->frameLerp;
-		}
-
-		f = ( lf->frameTime - lf->animationStartTime ) / anim->frameLerp;
-		f *= speedScale; // adjust for haste, etc
-
-		numFrames = anim->numFrames;
-
-		if ( anim->flipflop )
-		{
-			numFrames *= 2;
-		}
-
-		if ( f >= numFrames )
-		{
-			f -= numFrames;
-
-			if ( anim->loopFrames )
-			{
-				f %= anim->loopFrames;
-				f += anim->numFrames - anim->loopFrames;
-			}
-			else
-			{
-				f = numFrames - 1;
-				// the animation is stuck at the end, so it
-				// can immediately transition to another sequence
-				lf->frameTime = cg.time;
-			}
-		}
-
-		if ( anim->reversed )
-		{
-			lf->frame = anim->firstFrame + anim->numFrames - 1 - f;
-		}
-		else if ( anim->flipflop && f >= anim->numFrames )
-		{
-			lf->frame = anim->firstFrame + anim->numFrames - 1 - ( f % anim->numFrames );
-		}
-		else
-		{
-			lf->frame = anim->firstFrame + f;
-		}
-
-		if ( cg.time > lf->frameTime )
-		{
-			lf->frameTime = cg.time;
-		}
+		return; // shouldn't happen
 	}
 
-	if ( lf->frameTime > cg.time + 200 )
-	{
-		lf->frameTime = cg.time;
-	}
 
-	if ( lf->oldFrameTime > cg.time )
-	{
-		lf->oldFrameTime = cg.time;
-	}
-
-	// calculate current lerp value
-	if ( lf->frameTime == lf->oldFrameTime )
-	{
-		lf->backlerp = 0;
-	}
-	else
-	{
-		lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
-	}
 
 	// blend old and current animation
 	CG_BlendPlayerLerpFrame( lf );
@@ -2137,10 +2051,12 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	ci = &cgs.clientinfo[ clientNum ];
 
 	// If we are attacking/taunting, and in motion, allow blending the two skeletons
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) >= NSPA_ATTACK1 &&
-		( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_GESTURE )
+	if ( ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) >= NSPA_ATTACK1 &&
+	       ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_ATTACK3 ) ||
+	     ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_GESTURE )
 	{
-		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN )
+		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN &&
+			( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) != NSPA_GESTURE )
 		{
 			memcpy( &cent->pe.legs, &cent->pe.nonseg, sizeof( lerpFrame_t ) );
 			cent->pe.legs.skeleton.type = SK_RELATIVE; // Tell game to blend
@@ -2796,10 +2712,13 @@ CG_PlayerUpgrade
 */
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
+	// These are static because otherwise we have >32K of locals, and lcc doesn't like that.
+	// Also, jetpack and battpack are never both in use together, so just #define.
+	QVM_STATIC refEntity_t jetpack;
+	QVM_STATIC refEntity_t flash;
+#	define battpack jetpack
+
 	int           held, active;
-	refEntity_t   jetpack;
-	refEntity_t   battpack;
-	refEntity_t   flash;
 	entityState_t *es = &cent->currentState;
 
 	held = es->modelindex;
@@ -2807,6 +2726,8 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 
 	if ( held & ( 1 << UP_JETPACK ) )
 	{
+
+
 		memset( &jetpack, 0, sizeof( jetpack ) );
 		VectorCopy( torso->lightingOrigin, jetpack.lightingOrigin );
 		jetpack.shadowPlane = torso->shadowPlane;
@@ -2948,6 +2869,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 			               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, qfalse, size, qtrue );
 		}
 	}
+#	undef battpack
 }
 
 /*
@@ -3284,6 +3206,16 @@ int CG_AmbientLight( vec3_t point )
 
 /*
 ===============
+Statics for CG_Player & CG_Corpse
+These are QVM-only to keep locals down below 32K
+===============
+*/
+#ifdef Q3_VM
+static refEntity_t legs, torso, body, head;
+#endif
+
+/*
+===============
 CG_Player
 ===============
 */
@@ -3293,10 +3225,10 @@ void CG_Player( centity_t *cent )
 
 	// NOTE: legs is used for nonsegmented models
 	//       this helps reduce code to be changed
-	refEntity_t   legs;
-	refEntity_t   torso;
-	refEntity_t   head;
-	refEntity_t   body;
+#ifndef Q3_VM
+	refEntity_t legs, torso, body, head;
+#endif
+
 	int           clientNum;
 	int           renderfx;
 	qboolean      shadow = qfalse;
@@ -3932,10 +3864,10 @@ CG_Corpse
 */
 void CG_Corpse( centity_t *cent )
 {
+#ifndef Q3_VM
+	refEntity_t   legs, torso, head;
+#endif
 	clientInfo_t  *ci;
-	refEntity_t   legs;
-	refEntity_t   torso;
-	refEntity_t   head;
 	entityState_t *es = &cent->currentState;
 	int           corpseNum;
 	int           renderfx;

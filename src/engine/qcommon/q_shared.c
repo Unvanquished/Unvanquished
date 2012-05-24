@@ -50,6 +50,7 @@ int qmin( int x, int y )
 
 #endif
 
+#ifndef Q3_VM
 /*
 ============================================================================
 
@@ -58,7 +59,7 @@ GROWLISTS
 ============================================================================
 */
 
-// malloc / free all in one place for debugging
+// Com_Allocate / free all in one place for debugging
 //extern          "C" void *Com_Allocate(int bytes);
 //extern          "C" void Com_Dealloc(void *ptr);
 
@@ -154,7 +155,7 @@ memStream_t *AllocMemStream( byte *buffer, int bufSize )
 		return NULL;
 	}
 
-	s = Com_Allocate( sizeof( memStream_t ) );
+	s = (memStream_t*)Com_Allocate( sizeof( memStream_t ) );
 
 	if ( s == NULL )
 	{
@@ -267,7 +268,7 @@ float MemStreamGetFloat( memStream_t *s )
 
 	return LittleFloat( c.f );
 }
-
+#endif
 //=============================================================================
 
 float Com_Clamp( float min, float max, float value )
@@ -1701,6 +1702,7 @@ int Com_HexStrToInt( const char *str )
 	return -1;
 }
 
+#ifndef Q3_VM
 /*
 ===================
 Com_QuoteStr
@@ -1724,7 +1726,7 @@ const char *Com_QuoteStr( const char *str )
 	{
 		free( buf );
 		buflen = 2 * length + 3;
-		buf = malloc( buflen );
+		buf = (char*)Com_Allocate( buflen );
 	}
 
 	ptr = buf;
@@ -1778,7 +1780,7 @@ const char *Com_UnquoteStr( const char *str )
 	{
 		length = end + 1 - str;
 		free( buf );
-		buf = malloc( length + 1 );
+		buf = (char*)Com_Allocate( length + 1 );
 		strncpy( buf, str, length );
 		buf[ length ] = 0;
 		return buf;
@@ -1791,7 +1793,7 @@ const char *Com_UnquoteStr( const char *str )
 	}
 
 	free( buf );
-	buf = malloc( end + 1 - str );
+	buf = (char*)Com_Allocate( end + 1 - str );
 	ptr = buf;
 
 	// Copy, unquoting as we go
@@ -1811,6 +1813,66 @@ const char *Com_UnquoteStr( const char *str )
 	return buf;
 }
 
+
+/*
+============
+Com_ClearForeignCharacters
+some cvar values need to be safe from foreign characters
+============
+*/
+const char *Com_ClearForeignCharacters( const char *str )
+{
+	static char *clean = NULL; // much longer than needed
+	int          i, j, size;
+
+	free( clean );
+	size = strlen( str );
+	clean = (char*)Com_Allocate ( size + 1 ); // guaranteed sufficient
+
+	i = j = 0;
+
+	while ( str[ i ] != '\0' )
+	{
+		int c = str[i] & 0xFF;
+		if ( c < 0x80 )
+		{
+			if ( j == size )                 break; // out of buffer space
+			clean[ j++ ] = str[ i++ ];
+		}
+		else if ( c >= 0xC2 && c <= 0xF4 )
+		{
+			int u, width = Q_UTF8Width( str + i );
+
+			if ( j + width > size )          break; // out of buffer space
+
+			if ( width == 1 )                continue; // should be multibyte
+
+			u = Q_UTF8CodePoint( str + i );
+
+			// Filtering out...
+			if ( Q_UTF8WidthCP( u ) != width ) continue; // over-long form
+			if ( u == 0xFEFF || u == 0xFFFE )  continue; // BOM
+			if ( u >= 0x80 && u < 0xA0 )       continue; // undefined (from ISO8859-1)
+			if ( u >= 0xD800 && u < 0xE000 )   continue; // UTF-16 surrogate halves
+			if ( u >= 0x110000 )               continue; // out of range
+
+			// width is in the range 1..4
+			switch ( width )
+			{
+			case 4: clean[ j++ ] = str[ i++ ];
+			case 3: clean[ j++ ] = str[ i++ ];
+			case 2: clean[ j++ ] = str[ i++ ];
+			case 1: clean[ j++ ] = str[ i++ ];
+			}
+		}
+		// else invalid
+	}
+
+	clean[ j ] = '\0';
+
+	return clean;
+}
+#endif
 /*
 ============================================================================
 
@@ -2668,7 +2730,15 @@ char *Q_UTF8Encode( unsigned long codepoint )
 // s needs to have at least sizeof(int) allocated
 int Q_UTF8Store( const char *s )
 {
-#ifdef Q3_BIG_ENDIAN
+#ifdef Q3_VM
+	int i = 0;
+	int r = 0;
+	while ( s[ i ] )
+	{
+		r |= ( s[ i ] & 0xFF ) << ( i * 3 );
+		++i;
+	}
+#elif defined Q3_BIG_ENDIAN
   int r = *(int *)s, i;
   unsigned char *p = (unsigned char *) &r;
   for( i = 0; i < sizeof(r) / 2; i++ )
@@ -2694,7 +2764,15 @@ char *Q_UTF8Unstore( int e )
   static int index = 0;
   char *buf = sbuf[index++ & 1];
 
-#ifdef Q3_BIG_ENDIAN
+#ifdef Q3_VM
+	int i = 0;
+	while ( e )
+	{
+		buf[ i++ ] = (char) e;
+		e >>= 8;
+	}
+	buf[ i ] = 0;
+#elif defined Q3_BIG_ENDIAN
   int i;
   unsigned char *p = (unsigned char *) buf;
   *(int *)buf = e;
@@ -2734,7 +2812,7 @@ char     *QDECL va( const char *format, ... )
 	int         len;
 
 	va_start( argptr, format );
-	vsprintf( temp_buffer, format, argptr );
+	Q_vsnprintf( temp_buffer, sizeof( temp_buffer ), format, argptr );
 	va_end( argptr );
 
 	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING )
@@ -3304,7 +3382,7 @@ void Com_ClientListParse( clientList_t *list, const char *s )
 		return;
 	}
 
-	sscanf( s, "%x%x", &list->hi, &list->lo );
+	sscanf( s, "%8x%8x", &list->hi, &list->lo );
 }
 
 /*

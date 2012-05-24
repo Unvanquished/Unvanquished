@@ -115,10 +115,10 @@ int    atoi( const char *string );
 int    _atoi( const char **stringPtr );
 long   strtol( const char *nptr, char **endptr, int base );
 
-int    Q_vsnprintf( char *buffer, size_t length, const char *fmt, va_list argptr ) __attribute__( ( format( printf, 3, 0 ) ) );
-int    Q_snprintf( char *buffer, size_t length, const char *fmt, ... ) __attribute__( ( format( printf, 3, 4 ) ) );
+int    Q_vsnprintf( char *buffer, size_t length, const char *fmt, va_list argptr ) ;
+int    Q_snprintf( char *buffer, size_t length, const char *fmt, ... ) ;
 
-int    sscanf( const char *buffer, const char *fmt, ... ) __attribute__( ( format( scanf, 2, 3 ) ) );
+int    sscanf( const char *buffer, const char *fmt, ... ) ;
 
 // Memory functions
 void   *memmove( void *dest, const void *src, size_t count );

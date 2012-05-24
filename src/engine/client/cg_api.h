@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/vm_traps.h"
 #include "../renderer/tr_types.h"
 
 #define CGAME_IMPORT_API_VERSION 3
@@ -68,9 +69,9 @@ typedef enum cgameEvent_e
   CGAME_EVENT_MULTIVIEW
 } cgameEvent_t;
 
-typedef enum
+typedef enum cgameImport_s
 {
-  CG_PRINT,
+  CG_PRINT = FIRST_VM_SYSCALL,
   CG_ERROR,
   CG_MILLISECONDS,
   CG_CVAR_REGISTER,
@@ -181,16 +182,6 @@ typedef enum
   CG_KEY_GETKEY,
   CG_KEY_GETOVERSTRIKEMODE,
   CG_KEY_SETOVERSTRIKEMODE,
-  CG_MEMSET,
-  CG_MEMCPY,
-  CG_STRNCPY,
-  CG_SIN,
-  CG_COS,
-  CG_ATAN2,
-  CG_SQRT,
-  CG_FLOOR,
-  CG_CEIL,
-  CG_ACOS,
   CG_PC_ADD_GLOBAL_DEFINE,
   CG_PC_LOAD_SOURCE,
   CG_PC_FREE_SOURCE,
@@ -206,8 +197,6 @@ typedef enum
   CG_CIN_DRAWCINEMATIC,
   CG_CIN_SETEXTENTS,
   CG_R_REMAP_SHADER,
-  CG_TESTPRINTINT,
-  CG_TESTPRINTFLOAT,
   CG_LOADCAMERA,
   CG_STARTCAMERA,
   CG_STOPCAMERA,
@@ -249,7 +238,9 @@ typedef enum
 //#endif
   CG_COMPLETE_CALLBACK,
   CG_REGISTER_BUTTON_COMMANDS,
-  CG_GETTEXT = 300,
+  CG_GETCLIPBOARDDATA,
+  CG_QUOTESTRING,
+  CG_GETTEXT,
   CG_R_GLYPH,
   CG_R_GLYPHCHAR,
   CG_R_UREGISTERFONT
@@ -395,10 +386,10 @@ qhandle_t       trap_R_RegisterSkin( const char *name );
 qboolean        trap_R_GetSkinModel( qhandle_t skinid, const char *type, char *name );
 qhandle_t       trap_R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );
 qhandle_t       trap_R_RegisterShader( const char *name );
-void            trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
-void            trap_R_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
-void            trap_R_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
-void            trap_R_UnregisterFont(fontInfo_t *font);
+void            trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
+void            trap_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
+void            trap_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
+void            trap_R_UnregisterFont( fontHandle_t );
 
 qhandle_t       trap_R_RegisterShaderNoMip( const char *name );
 qhandle_t       trap_R_RegisterShaderLightAttenuation( const char *name );
@@ -502,3 +493,6 @@ int             trap_R_AnimFrameRate( qhandle_t hAnim );
 void            trap_CompleteCallback( const char *complete );
 
 void            trap_RegisterButtonCommands( const char *cmds );
+
+void            trap_GetClipboardData( char *, int, clipboard_t );
+void            trap_QuoteString( const char *, char*, int );

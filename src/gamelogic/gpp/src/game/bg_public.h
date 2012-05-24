@@ -48,6 +48,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
 #endif
 
+// QVM-specific
+#ifdef Q3_VM
+#define QVM_STATIC static
+#else
+#define QVM_STATIC
+#endif
+
 // player teams
 typedef enum
 {
@@ -695,10 +702,12 @@ typedef enum
 {
   NSPA_STAND,
 
+  NSPA_GESTURE,
 
   NSPA_WALK,
   NSPA_RUN,
   NSPA_RUNBACK,
+  NSPA_CHARGE,
 
   NSPA_RUNLEFT,
   NSPA_WALKLEFT,
@@ -717,9 +726,7 @@ typedef enum
   NSPA_ATTACK1,
   NSPA_ATTACK2,
   NSPA_ATTACK3,
-  NSPA_GESTURE,
 
-  NSPA_CHARGE,
 
   NSPA_PAIN1,
   NSPA_PAIN2,
@@ -1291,3 +1298,5 @@ typedef struct
 	const char *name;
 } dummyCmd_t;
 int cmdcmp( const void *a, const void *b );
+
+char *Quote( const char *str );

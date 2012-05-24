@@ -1076,7 +1076,8 @@ void CG_GhostBuildable( buildable_t buildable )
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		vec3_t Scale = { scale, scale, scale };
+		vec3_t Scale;
+		Scale[0] = Scale[1] = Scale[2] = scale;
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 	}
@@ -1934,7 +1935,8 @@ void CG_Buildable( centity_t *cent )
 
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
-		vec3_t Scale = { scale, scale, scale };
+		vec3_t Scale;
+		Scale[0] = Scale[1] = Scale[2] = scale;
 		memcpy( &ent.skeleton, &cent->lerpFrame.skeleton, sizeof( refSkeleton_t ) );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 	}

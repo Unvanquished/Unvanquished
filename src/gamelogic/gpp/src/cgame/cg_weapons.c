@@ -781,18 +781,15 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 				CG_Printf( S_COLOR_RED "ERROR: weapon model not found %s\n", token );
 			}
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_flash.md3" );
 			wi->flashModel = trap_R_RegisterModel( path );
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_barrel.md3" );
 			wi->barrelModel = trap_R_RegisterModel( path );
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_hand.md3" );
 			wi->handsModel = trap_R_RegisterModel( path );
 
@@ -817,13 +814,11 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 				           "model not found %s\n", token );
 			}
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_flash.md3" );
 			wi->flashModel3rdPerson = trap_R_RegisterModel( path );
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_barrel.md3" );
 			wi->barrelModel3rdPerson = trap_R_RegisterModel( path );
 
@@ -1303,11 +1298,16 @@ The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
 */
+#ifdef Q3_VM
+static refEntity_t gun, barrel, flash; // here to keep locals below 32K
+#endif
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent )
 {
+#ifndef Q3_VM
 	refEntity_t  gun;
 	refEntity_t  barrel;
 	refEntity_t  flash;
+#endif
 	vec3_t       angles;
 	weapon_t     weaponNum;
 	weaponMode_t weaponMode;
@@ -2010,7 +2010,7 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 			{
 				w = UI_Text_Width( name, scale );
 				x = rect->x + rect->w / 2;
-				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, 0, textStyle );
+				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, textStyle );
 			}
 		}
 	}
@@ -2023,7 +2023,7 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 			{
 				w = UI_Text_Width( name, scale );
 				x = rect->x + rect->w / 2;
-				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, 0, textStyle );
+				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, textStyle );
 			}
 		}
 	}

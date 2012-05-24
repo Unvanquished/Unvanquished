@@ -275,54 +275,6 @@ void Cvar_CommandCompletion( void ( *callback )( const char *s ) )
 
 /*
 ============
-Cvar_ClearForeignCharacters
-some cvar values need to be safe from foreign characters
-============
-*/
-char           *Cvar_ClearForeignCharacters( const char *value )
-{
-	static char clean[ MAX_CVAR_VALUE_STRING ];
-	int         i, j;
-
-	j = 0;
-
-	for ( i = 0; value[ i ] != '\0'; i++ )
-	{
-		int c = value[i] & 0xFF;
-		if ( c < 0x80 )
-		{
-			clean[ j++ ] = (char) c;
-		}
-		else if ( c >= 0xC2 && c <= 0xF4 )
-		{
-			int u, width = Q_UTF8Width( value + i );
-
-			if ( width == 1 )                continue; // should be multibyte
-
-			u = Q_UTF8CodePoint( value + i );
-
-			// Filtering out...
-			if ( Q_UTF8WidthCP( u ) != width ) continue; // over-long form
-			if ( u == 0xFEFF || u == 0xFFFE )  continue; // BOM
-			if ( u >= 0x80 && u < 0xA0 )       continue; // undefined (from ISO8859-1)
-			if ( u >= 0xD800 && u < 0xE000 )   continue; // UTF-16 surrogate halves
-			if ( u >= 0x110000 )               continue; // out of range
-
-			memcpy( clean + j, value + i, width );
-			i += width - 1;
-
-			j += width;
-		}
-		// else invalid
-	}
-
-	clean[ j ] = '\0';
-
-	return clean;
-}
-
-/*
-============
 Cvar_Get
 
 If the variable already exists, the value will not be set unless CVAR_ROM
@@ -402,7 +354,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 		// (for instance, seta name "name-with-foreign-chars" in the config file, and toggle to CVAR_USERINFO happens later in CL_Init)
 		if ( flags & CVAR_USERINFO )
 		{
-			char *cleaned = Cvar_ClearForeignCharacters( var->string );  // NOTE: it is probably harmless to call Cvar_Set2 in all cases, but I don't want to risk it
+			const char *cleaned = Com_ClearForeignCharacters( var->string );  // NOTE: it is probably harmless to call Cvar_Set2 in all cases, but I don't want to risk it
 
 			if ( strcmp( var->string, cleaned ) )
 			{
@@ -510,7 +462,7 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 
 	if ( var->flags & CVAR_USERINFO )
 	{
-		char *cleaned = Cvar_ClearForeignCharacters( value );
+		const char *cleaned = Com_ClearForeignCharacters( value );
 
 		if ( strcmp( value, cleaned ) )
 		{
@@ -1018,7 +970,7 @@ void Cvar_Set_f( void )
 		end[ 1 ] = 0; // end of string :-)
 	}
 
-	Cvar_Set2( Cmd_Argv( 1 ), Com_UnquoteStr( value ), qfalse );
+	Cvar_Set2( Cmd_Argv( 1 ), Cmd_UnquoteString( value ), qfalse );
 	free( value );
 }
 
@@ -1147,7 +1099,7 @@ void Cvar_WriteVariables( fileHandle_t f )
 			// write the latched value, even if it hasn't taken effect yet
 			Com_sprintf( buffer, sizeof( buffer ), "seta %s %s%s\n",
 			             var->name,
-			             Com_QuoteStr( var->latchedString ? var->latchedString : var->string ),
+			             Cmd_QuoteString( var->latchedString ? var->latchedString : var->string ),
 			             ( var->flags & CVAR_UNSAFE ) ? " unsafe" : "" );
 
 			FS_Printf( f, "%s", buffer );
@@ -1162,20 +1114,21 @@ Cvar_List_f
 */
 void Cvar_List_f( void )
 {
-	cvar_t *var;
-	int    i;
-	char   *match;
+	cvar_t   *var;
+	int      i = 0;
+	char     *match = NULL;
+	qboolean raw = qfalse;
 
 	if ( Cmd_Argc() > 1 )
 	{
 		match = Cmd_Argv( 1 );
-	}
-	else
-	{
-		match = NULL;
-	}
 
-	i = 0;
+		if ( !Q_stricmp( match, "-raw" ) )
+		{
+			raw = qtrue;
+			match = ( Cmd_Argc() > 2 ) ? Cmd_Argv( 2 ) : NULL;
+		}
+	}
 
 	for ( var = cvar_vars; var; var = var->next, i++ )
 	{
@@ -1247,7 +1200,28 @@ void Cvar_List_f( void )
 			Com_Printf( " " );
 		}
 
-		Com_Printf( " %s \"%s\"\n", var->name, var->string );
+		if ( raw )
+		{
+			char *index;;
+
+			Com_Printf( " %s \"", var->name );
+
+			for ( index = var->string; ; )
+			{
+				char *hat = strchr( index, '^' );
+
+				if ( !hat ) break;
+
+				Com_Printf( "%.*s", (int)( hat + 1 - index ), index );
+				index = hat + 1;
+			}
+
+			Com_Printf( "%s\"\n", index );
+		}
+		else
+		{
+			Com_Printf( " %s \"%s\"\n", var->name, var->string );
+		}
 	}
 
 	Com_Printf( "\n%i total cvars\n", i );

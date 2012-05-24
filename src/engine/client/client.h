@@ -672,8 +672,8 @@ void IN_Help( void );
 //----(SA)
 
 float    CL_KeyState( kbutton_t *key );
-int      Key_StringToKeynum( char *str );
-char     *Key_KeynumToString( int keynum );
+int      Key_StringToKeynum( const char *str );
+const char *Key_KeynumToString( int keynum );
 
 //cl_irc.c
 void     CL_IRCSetup( void );
@@ -883,3 +883,4 @@ qboolean CL_VideoRecording( void );
 //
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd( void );
+void CL_GetClipboardData( char *, int, clipboard_t );

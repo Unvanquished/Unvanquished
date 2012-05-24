@@ -1496,6 +1496,26 @@
         play "sound/misc/menu1.wav";
       }
     }
+	
+	itemDef
+	{
+	  name communication
+	  group optionsGrp
+	  type ITEM_TYPE_BIND
+	  text "Voice Say Menu:"
+	  cvar "menu vsay_top"
+	  rect SCONTENT_X (SCONTENT_Y+(9*ELEM_H)) SCONTENT_W ELEM_H
+	  textalign ALIGN_RIGHT
+	  textvalign VALIGN_CENTER
+	  textalignx SCONTENT_OFF
+	  textscale .25
+	  forecolor 1 1 1 1
+	  visible MENU_FALSE
+	  action
+	  {
+	    play "sound/misc/menu1.wav";
+	  }
+	}
 
 //////// MISC
 

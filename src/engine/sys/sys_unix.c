@@ -36,9 +36,11 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
 
+#include <stdarg.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <stdio.h>
 #include <dirent.h>
@@ -49,6 +51,9 @@ Maryland 20850 USA.
 #include <libgen.h>
 #include <fcntl.h>
 #include <fenv.h>
+
+#include <SDL.h>
+#include <SDL_syswm.h>
 
 qboolean    stdinIsATTY;
 
@@ -203,19 +208,143 @@ char *Sys_GetCurrentUser( void )
 	return p->pw_name;
 }
 
-#ifndef MACOS_X
 
 /*
 ==================
 Sys_GetClipboardData
 ==================
 */
-char *Sys_GetClipboardData( void )
+#ifndef MACOS_X
+#ifndef DEDICATED
+static struct {
+	Display *display;
+	Window  window;
+	void  ( *lockDisplay )( void );
+	void  ( *unlockDisplay )( void );
+	Atom    utf8;
+} x11 = { NULL };
+#endif
+
+char *Sys_GetClipboardData( clipboard_t clip )
 {
+#ifndef DEDICATED
+	// derived from SDL clipboard code (http://hg.assembla.com/SDL_Clipboard)
+	Window        owner;
+	Atom          selection;
+	Atom          converted;
+	Atom          selectionType;
+	int           selectionFormat;
+	unsigned long nbytes;
+	unsigned long overflow;
+	char          *src;
+
+	if ( x11.display == NULL )
+	{
+		SDL_SysWMinfo info;
+
+		SDL_VERSION( &info.version );
+		if ( SDL_GetWMInfo( &info ) != 1 || info.subsystem != SDL_SYSWM_X11 )
+		{
+			Com_Printf("Not on X11? (%d)\n",info.subsystem);
+			return NULL;
+		}
+
+		x11.display = info.info.x11.display;
+		x11.window = info.info.x11.window;
+		x11.lockDisplay = info.info.x11.lock_func;
+		x11.unlockDisplay = info.info.x11.unlock_func;
+		x11.utf8 = XInternAtom( x11.display, "UTF8_STRING", False );
+
+		SDL_EventState( SDL_SYSWMEVENT, SDL_ENABLE );
+		//SDL_SetEventFilter( Sys_ClipboardFilter );
+	}
+
+	x11.lockDisplay();
+
+	switch ( clip )
+	{
+	// preference order; we use fall-through
+	default: // SELECTION_CLIPBOARD
+		selection = XInternAtom( x11.display, "CLIPBOARD", False );
+		owner = XGetSelectionOwner( x11.display, selection );
+		if ( owner != None && owner != x11.window )
+		{
+			break;
+		}
+
+	case SELECTION_PRIMARY:
+		selection = XA_PRIMARY;
+		owner = XGetSelectionOwner( x11.display, selection );
+		if ( owner != None && owner != x11.window )
+		{
+			break;
+		}
+
+	case SELECTION_SECONDARY:
+		selection = XA_SECONDARY;
+		owner = XGetSelectionOwner( x11.display, selection );
+	}
+
+	converted = XInternAtom( x11.display, "UNVANQUISHED_SELECTION", False );
+	x11.unlockDisplay();
+
+	if ( owner == None || owner == x11.window )
+	{
+		selection = XA_CUT_BUFFER0;
+		owner = RootWindow( x11.display, DefaultScreen( x11.display ) );
+	}
+	else
+	{
+		SDL_Event event;
+
+		x11.lockDisplay();
+		owner = x11.window;
+		//FIXME: when we can respond to clipboard requests, don't alter selection
+		XConvertSelection( x11.display, selection, x11.utf8, converted, owner, CurrentTime );
+		x11.unlockDisplay();
+
+		for (;;)
+		{
+			SDL_WaitEvent( &event );
+
+			if ( event.type == SDL_SYSWMEVENT )
+			{
+				XEvent xevent = event.syswm.msg->event.xevent;
+
+				if ( xevent.type == SelectionNotify &&
+				     xevent.xselection.requestor == owner )
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	x11.lockDisplay ();
+
+	if ( XGetWindowProperty( x11.display, owner, converted, 0, INT_MAX / 4,
+	                         False, x11.utf8, &selectionType, &selectionFormat,
+	                         &nbytes, &overflow, (unsigned char **) &src ) == Success )
+	{
+		char *dest = NULL;
+
+		if ( selectionType == x11.utf8 )
+		{
+			dest = Z_Malloc( nbytes + 1 );
+			memcpy( dest, src, nbytes );
+			dest[ nbytes ] = 0;
+		}
+		XFree( src );
+
+		x11.unlockDisplay();
+		return dest;
+	}
+
+	x11.unlockDisplay();
+#endif // !DEDICATED
 	return NULL;
 }
-
-#endif
+#endif // !MACOSX
 
 #define MEM_THRESHOLD 96 * 1024 * 1024
 
@@ -601,6 +730,12 @@ void Sys_ErrorDialog( const char *error )
 	Sys_Print( va( "%s\n", error ) );
 
 #ifndef DEDICATED
+	// We may have grabbed input devices. Need to release.
+	if ( SDL_WasInit( SDL_INIT_VIDEO ) )
+	{
+		SDL_WM_GrabInput( SDL_GRAB_OFF );
+	}
+
 	Sys_Dialog( DT_ERROR, va( "%s. See \"%s\" for details.", error, ospath ), "Error" );
 #endif
 
@@ -638,43 +773,95 @@ void Sys_ErrorDialog( const char *error )
 #ifndef MACOS_X
 
 /*
+=============
+Sys_System
+
+Avoid all that ugliness with shell quoting
+=============
+*/
+static int Sys_System( char *cmd, ... )
+{
+	va_list ap;
+	char    *argv[ 16 ] = { NULL };
+	pid_t   pid;
+	int     r;
+
+	va_start( ap, cmd );
+	argv[ 0 ] = cmd;
+
+	for ( r = 1; r < ARRAY_LEN( argv ) - 1; ++r )
+	{
+		argv[ r ] = va_arg( ap, char * );
+		if ( !argv[ r ] )
+		{
+			break;
+		}
+	}
+
+	va_end( ap );
+
+	switch ( pid = fork() )
+	{
+	case 0: // child
+		// give me an exec() which takes a va_list...
+		execvp( cmd, argv );
+		exit( 2 );
+
+	case -1: // error
+		return -1;
+
+	default: // parent
+		do
+		{
+			waitpid( pid, &r, 0 );
+		} while ( !WIFEXITED( r ) );
+
+		return WEXITSTATUS( r );
+	}
+}
+
+/*
 ==============
 Sys_ZenityCommand
 ==============
 */
 static int Sys_ZenityCommand( dialogType_t type, const char *message, const char *title )
 {
-	const char *options = "";
-	char       command[ 1024 ];
+	char       opt_text[ 512 ], opt_title[ 512 ];
+	const char *options[ 3 ] = { NULL };
 
 	switch ( type )
 	{
 		default:
 		case DT_INFO:
-			options = "--info";
+			options[ 0 ] = "--info";
 			break;
 
 		case DT_WARNING:
-			options = "--warning";
+			options[ 0 ] = "--warning";
 			break;
 
 		case DT_ERROR:
-			options = "--error";
+			options[ 0 ] = "--error";
 			break;
 
 		case DT_YES_NO:
-			options = "--question --ok-label=\"Yes\" --cancel-label=\"No\"";
+			options[ 0 ] = "--question";
+			options[ 1 ] = "--ok-label=Yes";
+			options[ 2 ] = "--cancel-label=No";
 			break;
 
 		case DT_OK_CANCEL:
-			options = "--question --ok-label=\"OK\" --cancel-label=\"Cancel\"";
+			options[ 0 ] = "--question";
+			options[ 1 ] = "--ok-label=OK";
+			options[ 2 ] = "--cancel-label=Cancel";
 			break;
 	}
 
-	Com_sprintf( command, sizeof( command ), "zenity %s --text=\"%s\" --title=\"%s\"",
-	             options, message, title );
+	Com_sprintf( opt_text, sizeof( opt_text ), "--text=%s", message );
+	Com_sprintf( opt_title, sizeof( opt_title ), "--title=%s", title );
 
-	return system( command );
+	return Sys_System( "zenity", options[ 0 ], opt_text, opt_title, options[ 1 ], options[ 2 ], NULL );
 }
 
 /*
@@ -684,8 +871,7 @@ Sys_KdialogCommand
 */
 static int Sys_KdialogCommand( dialogType_t type, const char *message, const char *title )
 {
-	const char *options = "";
-	char       command[ 1024 ];
+	const char *options;
 
 	switch ( type )
 	{
@@ -711,10 +897,7 @@ static int Sys_KdialogCommand( dialogType_t type, const char *message, const cha
 			break;
 	}
 
-	Com_sprintf( command, sizeof( command ), "kdialog %s \"%s\" --title \"%s\"",
-	             options, message, title );
-
-	return system( command );
+	return Sys_System( "kdialog", options, "--title", title, message, NULL );
 }
 
 /*
@@ -724,28 +907,24 @@ Sys_XmessageCommand
 */
 static int Sys_XmessageCommand( dialogType_t type, const char *message, const char *title )
 {
-	const char *options = "";
-	char       command[ 1024 ];
+	const char *options;
 
 	switch ( type )
 	{
 		default:
-			options = "-buttons OK";
+			options = "OK";
 			break;
 
 		case DT_YES_NO:
-			options = "-buttons Yes:0,No:1";
+			options = "Yes:0,No:1";
 			break;
 
 		case DT_OK_CANCEL:
-			options = "-buttons OK:0,Cancel:1";
+			options = "OK:0,Cancel:1";
 			break;
 	}
 
-	Com_sprintf( command, sizeof( command ), "xmessage -center %s \"%s\"",
-	             options, message );
-
-	return system( command );
+	return Sys_System( "xmessage", "-center", "-buttons", options, message, NULL );
 }
 
 /*

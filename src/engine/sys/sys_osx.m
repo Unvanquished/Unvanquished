@@ -74,7 +74,7 @@ const char *Sys_TempPath( void )
 Sys_GetClipboardData
 ==================
 */
-char *Sys_GetClipboardData( void )
+char *Sys_GetClipboardData( clipboard_t clip )
 {
 	FILE *pipe = popen( "pbpaste", "r" );
 	char  buffer[MAX_EDIT_LINE];

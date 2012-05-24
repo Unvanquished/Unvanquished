@@ -489,8 +489,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	int       clientNum;
 	qboolean  attack1, attack3, following, queued;
 
-	usercmd_t old;
-
 	client = ent->client;
 
 	usercmdCopyButtons( client->oldbuttons, client->buttons );
@@ -680,8 +678,8 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 			if( strchr( g_inactivity.string, 's' ) )
 			{
 				trap_SendServerCommand( -1,
-				                        va( "print \"%s^7 moved from %s to spectators due to inactivity\n\"",
-				                            client->pers.netname, BG_TeamName( client->pers.teamSelection ) ) );
+				                        va( "print %s\"^7 moved from %s to spectators due to inactivity\n\"",
+				                            Quote( client->pers.netname ), BG_TeamName( client->pers.teamSelection ) ) );
 				G_LogPrintf( "Inactivity: %d", (int)( client - level.clients ) );
 				G_ChangeTeam( ent, TEAM_NONE );
 			}

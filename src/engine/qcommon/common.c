@@ -40,7 +40,6 @@ Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
-#include "../database/database.h"
 #include <setjmp.h>
 
 // htons
@@ -364,6 +363,11 @@ void QDECL Com_Error( int code, const char *fmt, ... )
 	Q_vsnprintf( com_errorMessage, sizeof( com_errorMessage ), fmt, argptr );
 	va_end( argptr );
 
+	if ( code != ERR_DISCONNECT )
+	{
+		Cvar_Set("com_errorMessage", com_errorMessage);
+	}
+
 	if ( code == ERR_SERVERDISCONNECT )
 	{
 		VM_Forced_Unload_Start();
@@ -373,7 +377,17 @@ void QDECL Com_Error( int code, const char *fmt, ... )
 		com_errorEntered = qfalse;
 		longjmp( abortframe, -1 );
 	}
-	else if ( code == ERR_DROP || code == ERR_DISCONNECT )
+	else if ( code == ERR_DROP )
+	{
+		VM_Forced_Unload_Start();
+		Com_Printf( "^8%s\n", com_errorMessage );
+		CL_Disconnect( qtrue );
+		CL_FlushMemory();
+		VM_Forced_Unload_Done();
+		com_errorEntered = qfalse;
+		longjmp( abortframe, -1 );
+	}
+	else if ( code == ERR_DISCONNECT )
 	{
 		VM_Forced_Unload_Start();
 		Com_Printf( "********************\nERROR: %s\n********************\n", com_errorMessage );
@@ -3508,10 +3522,6 @@ void Com_Init( char *commandLine )
 #endif
 	}
 
-#ifdef ET_MYSQL
-	D_Init();
-#endif
-
 	com_dedicated->modified = qfalse;
 
 	if ( !com_dedicated->integer )
@@ -3964,11 +3974,6 @@ void Com_Shutdown( qboolean badProfile )
 		FS_FCloseFile( com_journalFile );
 		com_journalFile = 0;
 	}
-
-#ifdef ET_MYSQL
-	// shut down SQL
-	D_Shutdown();
-#endif
 }
 
 //------------------------------------------------------------------------
@@ -4235,9 +4240,14 @@ static char *Field_FindFirstSeparator( char *s )
 {
 	int i;
 
+	// quotes are ignored, but escapes are processed
 	for ( i = 0; i < strlen( s ); i++ )
 	{
-		if ( s[ i ] == ';' )
+		if ( s[ i ] == '\\' && s[ i + 1] )
+		{
+			++i;
+		}
+		else if ( s[ i ] == ';' )
 		{
 			return &s[ i ];
 		}
@@ -4652,7 +4662,7 @@ static void Hist_Save( void )
 		return;
 	}
 
-	i = hist_next % CON_HISTORY;
+	i = ( hist_next + 1 ) % CON_HISTORY;
 
 	do
 	{
@@ -4675,15 +4685,21 @@ Hist_Add
 */
 void Hist_Add( const char *field )
 {
-	if ( !strcmp( field, history[( hist_next - 1 ) % CON_HISTORY ] ) )
+	const char *prev = history[( hist_next - 1 ) % CON_HISTORY ];
+
+	// don't add "", "\" or "/"
+	if ( !field[ 0 ] ||
+	     ( ( field[ 0 ] == '/' || field[ 0 ] == '\\' ) && !field[ 1 ] ) )
 	{
 		hist_current = hist_next;
 		return;
 	}
 
-	// don't add "", "\" or "/"
-	if ( !field[ 0 ] ||
-	     ( ( field[ 0 ] == '/' || field[ 0 ] == '\\' ) && !field[ 1 ] ) )
+	// don't add if same as previous (treat leading \ and / as equivalent)
+	if ( ( *field == *prev ||
+	       ( *field == '/' && *prev == '\\' ) ||
+	       ( *field == '\\' && *prev  == '/' ) ) &&
+	     !strcmp( &field[ 1 ], &prev[ 1 ] ) )
 	{
 		hist_current = hist_next;
 		return;

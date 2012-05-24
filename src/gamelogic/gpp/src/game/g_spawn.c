@@ -669,6 +669,8 @@ void SP_worldspawn( void )
 		trap_SetConfigstring( CS_WARMUP, va( "%i", level.warmupTime ) );
 		G_LogPrintf( "Warmup: %i\n", g_warmup.integer );
 	}
+
+	level.timelimit = g_timelimit.integer;
 }
 
 /*

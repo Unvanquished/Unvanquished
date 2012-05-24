@@ -45,7 +45,7 @@ void QDECL __attribute__( ( format( printf, 2, 3 ) ) ) PrintMsg( gentity_t *ent,
 		*p = '\'';
 	}
 
-	trap_SendServerCommand( ( ( ent == NULL ) ? -1 : ent - g_entities ), va( "print \"%s\"", msg ) );
+	trap_SendServerCommand( ( ( ent == NULL ) ? -1 : ent - g_entities ), va( "print %s", Quote( msg ) ) );
 }
 
 /*

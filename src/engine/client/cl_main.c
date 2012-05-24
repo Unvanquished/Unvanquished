@@ -41,10 +41,6 @@ Maryland 20850 USA.
 #include "client.h"
 #include <limits.h>
 
-#ifdef ET_MYSQL
-#include "../database/database.h"
-#endif
-
 #include "snd_local.h" // fretn
 
 #include "../sys/sys_loadlib.h"
@@ -2440,7 +2436,7 @@ CL_ResetPureClientAtServer
 */
 void CL_ResetPureClientAtServer( void )
 {
-	CL_AddReliableCommand( va( "vdr" ) );
+	CL_AddReliableCommand( "vdr" );
 }
 
 /*
@@ -2890,7 +2886,7 @@ void CL_BeginDownload( const char *localName, const char *remoteName )
 	clc.downloadBlock = 0; // Starting new file
 	clc.downloadCount = 0;
 
-	CL_AddReliableCommand( va( "download %s", remoteName ) );
+	CL_AddReliableCommand( va( "download %s", Cmd_QuoteString( remoteName ) ) );
 }
 
 /*
@@ -3867,7 +3863,7 @@ void CL_CheckUserinfo( void )
 	if ( cvar_modifiedFlags & CVAR_USERINFO )
 	{
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		CL_AddReliableCommand( va( "userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO ) ) );
+		CL_AddReliableCommand( va( "userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO ) ) ); // FIXME QUOTING INFO
 	}
 }
 
@@ -4475,7 +4471,7 @@ void CL_CheckAutoUpdate( void )
 	             cls.autoupdateServer.ip[ 2 ], cls.autoupdateServer.ip[ 3 ],
 	             BigShort( cls.autoupdateServer.port ) );
 
-	NET_OutOfBandPrint( NS_CLIENT, cls.autoupdateServer, "getUpdateInfo \"%s\" \"%s\"\n", Q3_VERSION, ARCH_STRING );
+	NET_OutOfBandPrint( NS_CLIENT, cls.autoupdateServer, "getUpdateInfo \"%s\" \"%s\"\n", Q3_VERSION, ARCH_STRING ); // FIXME QUOTING INFO
 
 #endif // !PRE_RELEASE_DEMO
 
@@ -4705,6 +4701,7 @@ void CL_InitRef( const char *renderer )
 	ri.Cmd_Argc = Cmd_Argc;
 	ri.Cmd_Argv = Cmd_Argv;
 	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
+	ri.Cmd_QuoteString = Cmd_QuoteString;
 
 	ri.Printf = CL_RefPrintf;
 	ri.Error = Com_Error;
@@ -5091,9 +5088,11 @@ void CL_Init( void )
 	cl_recoilPitch = Cvar_Get( "cg_recoilPitch", "0", CVAR_ROM );
 
 	cl_bypassMouseInput = Cvar_Get( "cl_bypassMouseInput", "0", 0 );  //CVAR_ROM );          // NERVE - SMF
-
+#ifndef MACOS_X
+	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", CVAR_ARCHIVE );  // Arnout: double tap
+#else
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "100", CVAR_ARCHIVE );  // Arnout: double tap
-
+#endif
 	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
 	m_yaw = Cvar_Get( "m_yaw", "0.022", CVAR_ARCHIVE );
 	m_forward = Cvar_Get( "m_forward", "0.25", CVAR_ARCHIVE );
@@ -7296,4 +7295,59 @@ BotImport_DrawPolygon
 void BotImport_DrawPolygon( int color, int numpoints, float *points )
 {
 	re.DrawDebugPolygon( color, numpoints, points );
+}
+
+/*
+====================
+CL_GetClipboardData
+====================
+*/
+void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
+{
+	int         i, j;
+	char       *cbd = Sys_GetClipboardData( clip );
+	const char *clean;
+
+	if ( !cbd )
+	{
+		*buf = 0;
+		return;
+	}
+
+	clean = Com_ClearForeignCharacters( cbd ); // yes, I know
+	Z_Free( cbd );
+
+	i = j = 0;
+	while ( clean[ i ] )
+	{
+		if ( (unsigned char)clean[ i ] < ' ' || clean[ i ] == 0x7F )
+		{
+			if ( j + 1 >= buflen )
+			{
+				break;
+			}
+
+			i++;
+			buf[ j++ ] = ' ';
+		}
+		else
+		{
+			int w = Q_UTF8Width( clean + i );
+
+			if ( j + w >= buflen )
+			{
+				break;
+			}
+
+			switch ( w )
+			{
+			case 4: buf[ j++ ] = clean[ i++ ];
+			case 3: buf[ j++ ] = clean[ i++ ];
+			case 2: buf[ j++ ] = clean[ i++ ];
+			case 1: buf[ j++ ] = clean[ i++ ];
+			}
+		}
+	}
+
+	buf[ j ] = '\0';
 }

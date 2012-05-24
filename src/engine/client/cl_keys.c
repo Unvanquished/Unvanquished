@@ -71,6 +71,8 @@ keyname_t keynames[] =
 	{ "LEFTARROW",              K_LEFTARROW              },
 	{ "RIGHTARROW",             K_RIGHTARROW             },
 
+	{ "BACKSLASH",              '\\'                     },
+
 	{ "ALT",                    K_ALT                    },
 	{ "CTRL",                   K_CTRL                   },
 	{ "SHIFT",                  K_SHIFT                  },
@@ -351,7 +353,6 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	int  len;
 	int  drawLen;
 	int  prestep;
-	int  cursorChar;
 	char str[ MAX_STRING_CHARS ];
 	int  i;
 	int  offset, offsetEnd;
@@ -414,6 +415,17 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 		SCR_DrawBigString( x, y, str, 1.0, noColorEscape );
 	}
 
+	if ( len > drawLen )
+	{
+		static const float yellow[] = { 1, 1, 0, 0.25 };
+		float width = SCR_ConsoleFontStringWidth( str, drawLen );
+
+		re.SetColor( yellow );
+		re.DrawStretchPic( x + ( width * prestep ) / len, y + 3,
+		                   ( width * drawLen ) / len, 2,
+		                   0, 0, 0, 0, cls.whiteShader );
+	}
+
 	// draw the cursor
 	if ( showCursor )
 	{
@@ -429,7 +441,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 
 		if ( size == SMALLCHAR_WIDTH )
 		{
-			xpos = x + SCR_ConsoleFontStringWidth( str, edit->cursor );
+			xpos = x + SCR_ConsoleFontStringWidth( str, edit->cursor - prestep );
 			height = key_overstrikeMode ? SMALLCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
 			width = SMALLCHAR_WIDTH;
 		}
@@ -460,29 +472,30 @@ void Field_BigDraw( field_t *edit, int x, int y, qboolean showCursor, qboolean n
 Field_Paste
 ================
 */
-void Field_Paste( field_t *edit )
+static void Field_Paste( field_t *edit, clipboard_t clip )
 {
-	char *cbd;
-	int  pasteLen, width;
+	const char *cbd;
+	int        pasteLen, width;
+	char       *ptr = Sys_GetClipboardData( clip );
 
-	cbd = Sys_GetClipboardData();
-
-	if ( !cbd )
+	if ( !ptr )
 	{
 		return;
 	}
 
+	cbd = Com_ClearForeignCharacters( ptr );
+	Z_Free( ptr );
+
 	// send as if typed, so insert / overstrike works properly
 	pasteLen = strlen( cbd );
 
-	while( pasteLen >= ( width = ( Q_UTF8Width( cbd ) > 0 ? Q_UTF8Width( cbd ) : 1 ) ) )
+	while ( pasteLen >= ( width = Q_UTF8Width( cbd ) ) )
 	{
 		Field_CharEvent( edit, cbd );
 
 		cbd += width;
 		pasteLen -= width;
 	}
-	Z_Free( cbd );
 }
 
 /*
@@ -500,13 +513,6 @@ void Field_KeyDownEvent( field_t *edit, int key )
 	int len, width;
 	char *s;
 
-	// shift-insert is paste
-	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keys[ K_SHIFT ].down )
-	{
-		Field_Paste( edit );
-		return;
-	}
-
 	key = tolower( key );
 	len = Q_UTF8Strlen( edit->buffer );
 	s = &edit->buffer[ Field_CursorToOffset( edit ) ];
@@ -523,7 +529,22 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			break;
 
 		case K_RIGHTARROW:
-			if ( edit->cursor < len )
+			if ( keys[ K_CTRL ].down )
+			{
+				width = Field_CursorToOffset( edit );
+
+				while ( edit->buffer[ width ] == ' ' )
+				{
+					++width;
+				}
+				while ( edit->buffer[ width ] && edit->buffer[ width ] != ' ' )
+				{
+					++width;
+				}
+
+				edit->cursor = Field_OffsetToCursor( edit, width );
+			}
+			else if ( edit->cursor < len )
 			{
 				edit->cursor++;
 			}
@@ -531,7 +552,22 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			break;
 
 		case K_LEFTARROW:
-			if ( edit->cursor > 0 )
+			if ( keys[ K_CTRL ].down )
+			{
+				width = Field_CursorToOffset( edit );
+
+				while ( width && edit->buffer[ width ] == ' ' )
+				{
+					--width;
+				}
+				while ( width && edit->buffer[ width ] != ' ' )
+				{
+					--width;
+				}
+
+				edit->cursor = Field_OffsetToCursor( edit, width );
+			}
+			else if ( edit->cursor > 0 )
 			{
 				edit->cursor--;
 			}
@@ -557,18 +593,32 @@ void Field_KeyDownEvent( field_t *edit, int key )
 			break;
 
 		case K_INS:
-			key_overstrikeMode = !key_overstrikeMode;
+			if ( keys[ K_SHIFT ].down )
+			{
+				Field_Paste( edit, SELECTION_PRIMARY );
+			}
+			else
+			{
+				key_overstrikeMode = !key_overstrikeMode;
+			}
 			break;
 	}
 
 	// Change scroll if cursor is no longer visible
-	if ( edit->cursor < edit->scroll )
+	len = MIN( 5, edit->widthInChars / 4 );
+
+	if ( edit->cursor < edit->scroll + len )
 	{
-		edit->scroll = edit->cursor;
+		edit->scroll = edit->cursor - len;
+
+		if ( edit->scroll < 0 )
+		{
+			edit->scroll = 0;
+		}
 	}
-	else if ( edit->cursor >= edit->scroll + edit->widthInChars )
+	else if ( edit->cursor >= edit->scroll + edit->widthInChars - len )
 	{
-		edit->scroll = edit->cursor - edit->widthInChars + 1;
+		edit->scroll = edit->cursor - edit->widthInChars + 1 + len;
 	}
 }
 
@@ -583,7 +633,7 @@ void Field_CharEvent( field_t *edit, const char *s )
 
 	if ( *s == 'v' - 'a' + 1 ) // ctrl-v is paste
 	{
-		Field_Paste( edit );
+		Field_Paste( edit, SELECTION_CLIPBOARD );
 		return;
 	}
 
@@ -1060,13 +1110,19 @@ the K_* names are matched up.
 to be configured even if they don't have defined names.
 ===================
 */
-int Key_StringToKeynum( char *str )
+int Key_StringToKeynum( const char *str )
 {
 	keyname_t *kn;
 
-	if ( !str || !str[ 0 ] )
+	if ( !str )
 	{
 		return -1;
+	}
+
+	// backward-compatibility hack
+	if ( !str[ 0 ] )
+	{
+		return '\\';
 	}
 
 	if ( !str[ 1 ] )
@@ -1105,7 +1161,7 @@ Returns a string (either a single ascii char, a K_* name, or a 0x11 hex string) 
 given keynum.
 ===================
 */
-char *Key_KeynumToString( int keynum )
+const char *Key_KeynumToString( int keynum )
 {
 	keyname_t   *kn;
 	static char tinystr[ 5 ];
@@ -1122,7 +1178,7 @@ char *Key_KeynumToString( int keynum )
 	}
 
 	// check for printable ascii (don't use quote)
-	if ( keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';' )
+	if ( keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';' && keynum != '\\' )
 	{
 		tinystr[ 0 ] = keynum;
 		tinystr[ 1 ] = 0;
@@ -1326,8 +1382,9 @@ Key_Bind_f
 */
 void Key_Bind_f( void )
 {
-	int c, b;
-//	char *cmd;
+	int        c, b;
+	const char *key = NULL;
+	const char *cmd = NULL; // backward-compat hack
 
 	c = Cmd_Argc();
 
@@ -1336,31 +1393,64 @@ void Key_Bind_f( void )
 		Com_Printf( "bind <key> [command] : attach a command to a key\n" );
 		return;
 	}
-
-	b = Key_StringToKeynum( Cmd_Argv( 1 ) );
-
-	if ( b == -1 )
+	else if ( c == 2 )
 	{
-		Com_Printf( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
-		return;
-	}
+		cmd = Cmd_Argv( 1 );
 
-	if ( c == 2 )
-	{
-		if ( keys[ b ].binding )
+		// backward compat hack
+		if ( cmd[ 0 ] == ' ' && cmd[ 1 ] )
 		{
-			Com_Printf( "\"%s\" = \"%s\"\n", Cmd_Argv( 1 ), keys[ b ].binding );
+			cmd = Cmd_DequoteString( cmd + 1 );
+			key = "BACKSLASH";
+		}
+		else if ( cmd[ 0 ] == ' ' || !cmd[ 0 ] )
+		{
+			cmd = NULL;
+			key = "BACKSLASH";
 		}
 		else
 		{
-			Com_Printf( "\"%s\" is not bound\n", Cmd_Argv( 1 ) );
+			key = cmd;
+			cmd = NULL;
+		}
+	}
+	else
+	{
+		key = Cmd_Argv( 1 );
+		cmd = Cmd_Argv( 2 );
+	}
+
+	b = Key_StringToKeynum( key );
+
+	if ( b == -1 )
+	{
+		Com_Printf( "\"%s\" isn't a valid key\n", key );
+		return;
+	}
+
+	if ( !cmd )
+	{
+		if ( keys[ b ].binding )
+		{
+			Com_Printf( "\"%s\" = %s\n", key, Cmd_QuoteString( keys[ b ].binding ) );
+		}
+		else
+		{
+			Com_Printf( "\"%s\" is not bound\n", key );
 		}
 
 		return;
 	}
 
-	// set to 3rd arg onwards, unquoted from raw
-	Key_SetBinding( b, Com_UnquoteStr( Cmd_Cmd_FromNth( 2 ) ) );
+	if ( c <= 3 )
+	{
+		Key_SetBinding( b, cmd );
+	}
+	else
+	{
+		// set to 3rd arg onwards
+		Key_SetBinding( b, Cmd_ArgsFrom( 2 ) );
+	}
 }
 
 /*
@@ -1373,7 +1463,7 @@ void Key_EditBind_f( void )
 	char           *buf;
 	/*const*/
 	char *key, *binding;
-	const char      *keyq;
+	const char     *bindq;
 	int            b;
 
 	b = Cmd_Argc();
@@ -1395,9 +1485,9 @@ void Key_EditBind_f( void )
 
 	binding = Key_GetBinding( b );
 
-	keyq = Com_QuoteStr( key );  // <- static buffer
-	buf = malloc( 8 + strlen( keyq ) + strlen( binding ) );
-	sprintf( buf, "/bind %s %s", keyq, binding );
+	bindq = binding ? Cmd_QuoteString( binding ) : "";  // <- static buffer
+	buf = malloc( 8 + strlen( key ) + strlen( bindq ) );
+	sprintf( buf, "/bind %s %s", Key_KeynumToString( b ), bindq );
 
 	Con_OpenConsole_f();
 	Field_Set( &g_consoleField, buf );
@@ -1421,7 +1511,7 @@ void Key_WriteBindings( fileHandle_t f )
 	{
 		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
 		{
-			FS_Printf( f, "bind %s %s\n", Key_KeynumToString( i ), Com_QuoteStr( keys[ i ].binding ) );
+			FS_Printf( f, "bind %s %s\n", Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding ) );
 		}
 	}
 }

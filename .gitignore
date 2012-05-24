@@ -1,5 +1,6 @@
 *~
 build/*
+lcc/*
 *.DS_STORE
 CMakeCache.txt
 CMakeFiles
@@ -14,6 +15,7 @@ librendererGL*
 main/cgame.mp.*
 main/qagame.mp.*
 main/ui.mp.*
+main/vm
 snd_openal.*
 libglcpp-library.a
 libglsl_optimizer.a

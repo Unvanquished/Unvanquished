@@ -1457,7 +1457,7 @@ qboolean CG_Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.textFont);
+			cgDC.registerFont( tempStr, fallbackFont, pointSize, &cgDC.Assets.textFont );
 			continue;
 		}
 
@@ -2212,6 +2212,8 @@ Will perform callbacks to make the loading info screen update.
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	const char *s;
+
+	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 
 	// clear everything
 	memset( &cgs, 0, sizeof( cgs ) );

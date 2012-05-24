@@ -808,7 +808,6 @@ void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) con
 #ifdef GLEW_ARB_get_program_binary
 	GLint   binaryLength;
 	GLvoid  *binary;
-	GLenum  binaryFormat;
 
 	// Don't even try if the necessary functions aren't available
 	if( !GLEW_ARB_get_program_binary )

@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "ui_shared.h"
-#include "ui_utf8.h"
 
 #ifdef CGAME
 #include "../cgame/cg_local.h"
@@ -52,6 +51,8 @@ typedef struct scrollInfo_s
 scrollInfo_t;
 
 static scrollInfo_t scrollInfo;
+
+static qboolean shift = qfalse, ctrl = qfalse;
 
 // prevent compiler warnings
 void voidFunction( void *var )
@@ -100,6 +101,9 @@ itemDef_t                 *Menu_SetPrevCursorItem( menuDef_t *menu );
 itemDef_t                 *Menu_SetNextCursorItem( menuDef_t *menu );
 static qboolean           Menu_OverActiveItem( menuDef_t *menu, float x, float y );
 
+// for text editing
+#define MIN_FIELD_WIDTH   10
+#define EDIT_CURSOR_WIDTH 10
 
 /*
 ===============
@@ -108,9 +112,12 @@ UIS_Shutdown
 */
 void UIS_Shutdown( void )
 {
-	UI_R_UnregisterFont( &DC->Assets.textFont );
-	UI_R_UnregisterFont( &DC->Assets.smallFont );
-	UI_R_UnregisterFont( &DC->Assets.bigFont );
+	if ( DC )
+	{
+		UI_R_UnregisterFont( DC->Assets.textFont.handle );
+		UI_R_UnregisterFont( DC->Assets.smallFont.handle );
+		UI_R_UnregisterFont( DC->Assets.bigFont.handle );
+	}
 }
 
 /*
@@ -990,6 +997,25 @@ qboolean PC_String_Parse( int handle, const char **out )
 }
 
 /*
+================
+PC_Char_Parse
+================
+*/
+qboolean PC_Char_Parse( int handle, char *out )
+{
+	pc_token_t token;
+
+	if ( !trap_Parse_ReadToken( handle, &token ) )
+	{
+		return qfalse;
+	}
+
+	*out = token.string[ 0 ];
+
+	return qtrue;
+}
+
+/*
 =================
 PC_Script_Parse
 =================
@@ -1136,8 +1162,8 @@ static void Window_Paint( Window *w, float fadeAmount, float fadeClamp, float fa
 	{
 		fillRect.x += w->borderSize;
 		fillRect.y += w->borderSize;
-		fillRect.w -= w->borderSize + 1;
-		fillRect.h -= w->borderSize + 1;
+		fillRect.w -= w->borderSize * 2.0;
+		fillRect.h -= w->borderSize * 2.0;
 	}
 
 	if ( w->style == WINDOW_STYLE_FILLED )
@@ -1229,7 +1255,7 @@ static void Border_Paint( Window *w )
 		rectDef_t r = w->rect;
 		r.h = w->borderSize;
 		GradientBar_Paint( &r, w->borderColor );
-		r.y = w->rect.y + w->rect.h - 1;
+		r.y = w->rect.y + w->rect.h - r.h;
 		GradientBar_Paint( &r, w->borderColor );
 	}
 }
@@ -2053,34 +2079,28 @@ void Script_playLooped( itemDef_t *item, char **args )
 	}
 }
 
-glyphInfo_t *UI_GlyphCP( fontInfo_t *font, int ch )
+glyphInfo_t *UI_GlyphCP( const fontMetrics_t *font, int ch )
 {
 	static glyphInfo_t glyphs[8];
 	static int index = 0;
 	glyphInfo_t *glyph;
 
-	// invalid or 0xFFFD -> 0
-	if ( ch < 0 || ( ch >= 0xD800 && ch < 0xE000 ) || ch == 0xFFFD || ch >= 0x110000 ) { ch = 0; }
-
-	if ( font->glyphBlock[ ch / 256 ] && font->glyphBlock[ ch / 256 ][ ch % 256 ].glyph )
-		return &font->glyphBlock[ ch / 256 ][ ch % 256 ];
-
 	glyph = &glyphs[index++ & 7];
-	DC->glyphChar( font, ch, glyph );
+	DC->glyphChar( font->handle, ch, glyph );
 	return glyph;
 }
 
-glyphInfo_t *UI_Glyph( fontInfo_t *font, const char *str )
+glyphInfo_t *UI_Glyph( const fontMetrics_t *font, const char *str )
 {
-	return UI_GlyphCP( font, ui_UTF8CodePoint( str ) );
+	return UI_GlyphCP( font, Q_UTF8CodePoint( str ) );
 }
 
-static ID_INLINE float UI_EmoticonHeight( fontInfo_t *font, float scale )
+static ID_INLINE float UI_EmoticonHeight( const fontMetrics_t *font, float scale )
 {
-	return font->glyphBlock[0]['['].height * scale * font->glyphScale;
+	return UI_GlyphCP( font, '[' )->height * scale * font->glyphScale;
 }
 
-static ID_INLINE float UI_EmoticonWidth( fontInfo_t *font, float scale )
+static ID_INLINE float UI_EmoticonWidth( const fontMetrics_t *font, float scale )
 {
 	return UI_EmoticonHeight( font, scale ) * DC->aspectScale;
 }
@@ -2213,7 +2233,7 @@ static float UI_Parse_Indent( const char **text )
 	return pixels;
 }
 
-static ID_INLINE fontInfo_t *UI_FontForScale( float scale )
+static ID_INLINE const fontMetrics_t *UI_FontForScale( float scale )
 {
 	if ( scale <= DC->smallFontScale )
 	{
@@ -2232,19 +2252,22 @@ static ID_INLINE fontInfo_t *UI_FontForScale( float scale )
 float UI_Char_Width( const char **text, float scale )
 {
 	glyphInfo_t *glyph;
-	fontInfo_t  *font;
 	int         emoticonLen;
 	qboolean    emoticonEscaped;
 	int         emoticonWidth;
 	int         ch;
 
+	const fontMetrics_t *font;
+
 	if ( text && *text )
 	{
-		if ( Q_IsColorString( *text ) )
+		if ( scale >= 0.0 && Q_IsColorString( *text ) )
 		{
 			*text += 2;
 			return 0.0f;
 		}
+
+		scale = fabs( scale );
 
 		if ( **text == INDENT_MARKER )
 		{
@@ -2268,9 +2291,9 @@ float UI_Char_Width( const char **text, float scale )
 			}
 		}
 
-		ch = ui_UTF8CodePoint( *text );
+		ch = Q_UTF8CodePoint( *text );
 		glyph = UI_GlyphCP( font, ch );
-		*text += ui_UTF8WidthCP( ch );
+		*text += Q_UTF8WidthCP( ch );
 
 		return glyph->xSkip * DC->aspectScale * scale * font->glyphScale;
 	}
@@ -2299,13 +2322,33 @@ float UI_Text_Width( const char *text, float scale )
 	return out + indentWidth;
 }
 
+float UI_Plain_Text_Width( const char *text, float scale )
+{
+	float      out;
+	const char *s = text;
+	float      indentWidth = 0.0f;
+
+	out = 0.0f;
+
+	if ( text )
+	{
+		while ( *s )
+		{
+			out += UI_Char_Width( &s, -scale );
+		}
+	}
+
+	return out + indentWidth;
+}
+
 float UI_Text_Height( const char *text, float scale )
 {
 	float       max;
 	glyphInfo_t *glyph;
 	float       useScale;
 	const char  *s = text;
-	fontInfo_t  *font = UI_FontForScale( scale );
+
+	const fontMetrics_t *font = UI_FontForScale( scale );
 
 	useScale = scale * font->glyphScale;
 	max = 0;
@@ -2328,7 +2371,7 @@ float UI_Text_Height( const char *text, float scale )
 					max = glyph->height;
 				}
 
-				s += ui_UTF8Width( s );
+				s += Q_UTF8Width( s );
 			}
 		}
 	}
@@ -2348,7 +2391,7 @@ float UI_Text_EmHeight( float scale )
 
 float UI_Text_LineHeight( float scale )
 {
-	fontInfo_t *font = UI_FontForScale( scale );
+	const fontMetrics_t *font = UI_FontForScale( scale );
 
 	return font->height ? font->height * scale : UI_Text_Height( "M", scale );
 }
@@ -2452,14 +2495,13 @@ static void UI_Text_PaintChar( float x, float y, float scale,
 
 static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjust,
                                    const char *text, vec4_t color, int style,
-                                   int limit, float *maxX,
-                                   int cursorPos, char cursor )
+                                   int scrollIndex, int scrollLength, int fieldWidth,
+                                   float *maxX, int cursorPos, char cursor )
 {
 	const char  *s = text;
 	int         len;
 	int         count = 0;
 	vec4_t      newColor;
-	fontInfo_t  *font = UI_FontForScale( scale );
 	glyphInfo_t *glyph;
 	float       useScale;
 	qhandle_t   emoticonHandle = 0;
@@ -2467,40 +2509,44 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	qboolean    emoticonEscaped;
 	int         emoticonLen = 0;
 	int         emoticonWidth;
-	int         cursorX = -1;
+	int         cursorX = -1, cursorW = EDIT_CURSOR_WIDTH;
+	float       startX = x;
+
+	const fontMetrics_t *font;
 
 	if ( !text )
 	{
 		return;
 	}
 
+	font = UI_FontForScale( scale );
 	useScale = scale * font->glyphScale;
 
 	emoticonH = UI_EmoticonHeight( font, scale );
 	emoticonW = UI_EmoticonWidth( font, scale );
 
-	len = ui_UTF8Strlen( text );
+	len = Q_UTF8Strlen( text );
 
-	if ( limit > 0 && len > limit )
-	{
-		len = limit;
-	}
+	x += UI_Parse_Indent( &s );
 
 	DC->setColor( color );
 	memcpy( &newColor[ 0 ], &color[ 0 ], sizeof( vec4_t ) );
-
-	x += UI_Parse_Indent( &s );
 
 	while ( s && *s && count < len )
 	{
 		const char *t = s;
 		float      charWidth = UI_Char_Width( &t, scale );
-		int        ch = ui_UTF8CodePoint( s );
+		int        ch = Q_UTF8CodePoint( s );
 		glyph = UI_GlyphCP( font, ch );
 
 		if ( maxX && charWidth + x > *maxX )
 		{
 			*maxX = 0;
+			break;
+		}
+
+		if ( fieldWidth && x + charWidth - startX > fieldWidth )
+		{
 			break;
 		}
 
@@ -2588,16 +2634,44 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		if ( count == cursorPos )
 		{
 			cursorX = x;
+			cursorW = MAX( EDIT_CURSOR_WIDTH / 2, glyph->imageWidth * DC->xscale * useScale );
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
-		s += ui_UTF8WidthCP( ch );
+		s += Q_UTF8WidthCP( ch );
 		count++;
 	}
 
 	if ( maxX )
 	{
 		*maxX = x;
+	}
+
+	// paint scrollbar
+	if ( scrollLength && count != scrollLength )
+	{
+		static const vec4_t black = { 0, 0, 0, 0.25 };
+
+		vec4_t recolor;
+		float bx = DC->xscale * ( startX + fieldWidth * scrollIndex / scrollLength );
+		float by = DC->yscale * ( y + 3 );
+		float bw = DC->xscale * ( fieldWidth * count / scrollLength );
+		float bh = DC->yscale * 2;
+
+		recolor[0] = color[0];
+		recolor[1] = color[1];
+		recolor[2] = color[2];
+		recolor[3] = color[3] / 3.0;
+
+		if ( style == ITEM_TEXTSTYLE_SHADOWED ||
+		     style == ITEM_TEXTSTYLE_SHADOWEDMORE )
+		{
+			DC->setColor( black );
+			DC->drawStretchPic( bx - 1, by - 1, bw + 2, bh + 2, 0, 0, 0, 0, DC->whiteShader );
+		}
+
+		DC->setColor( recolor );
+		DC->drawStretchPic( bx, by, bw, bh, 0, 0, 0, 0, DC->whiteShader );
 	}
 
 	// paint cursor
@@ -2610,8 +2684,17 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 		if ( cursorX >= 0 && !( ( DC->realTime / BLINK_DIVISOR ) & 1 ) )
 		{
-			glyph = &font->glyphBlock[0][( int ) cursor ];
-			UI_Text_PaintChar( cursorX, y, useScale, glyph, 0.0f );
+			color[3] /= 2.0;
+			DC->setColor( color );
+
+			if ( DC->getOverstrikeMode() )
+			{
+				DC->drawStretchPic( cursorX * DC->xscale, ( y - emoticonH ) * DC->yscale + 2, cursorW, emoticonH * DC->yscale, 0, 0, 0, 0, DC->whiteShader );
+			}
+			else
+			{
+				DC->drawStretchPic( cursorX * DC->xscale, y * DC->yscale + 2, cursorW, 2, 0, 0, 0, 0, DC->whiteShader );
+			}
 		}
 	}
 
@@ -2619,27 +2702,29 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 }
 
 void UI_Text_Paint_Limit( float *maxX, float x, float y, float scale,
-                          vec4_t color, const char *text, float adjust, int limit )
+                          vec4_t color, const char *text, float adjust )
 {
 	UI_Text_Paint_Generic( x, y, scale, adjust,
 	                       text, color, ITEM_TEXTSTYLE_NORMAL,
-	                       limit, maxX, -1, 0 );
+	                       0, 0, 0, maxX, -1, 0 );
 }
 
 void UI_Text_Paint( float x, float y, float scale, vec4_t color, const char *text,
-                    float adjust, int limit, int style )
+                    float adjust, int style )
 {
 	UI_Text_Paint_Generic( x, y, scale, adjust,
 	                       text, color, style,
-	                       limit, NULL, -1, 0 );
+	                       0, 0, 0, NULL, -1, 0 );
 }
 
 void UI_Text_PaintWithCursor( float x, float y, float scale, vec4_t color, const char *text,
-                              int cursorPos, char cursor, int limit, int style )
+                              int cursorPos, char cursor, int style,
+                              int scrollIndex, int scrollLength, int fieldWidth )
 {
 	UI_Text_Paint_Generic( x, y, scale, 0.0,
 	                       text, color, style,
-	                       limit, NULL, cursorPos, cursor );
+	                       scrollIndex, scrollLength, fieldWidth,
+	                       NULL, cursorPos, cursor );
 }
 
 static const commandDef_t commandList[] =
@@ -3665,47 +3750,135 @@ qboolean Item_Multi_HandleKey( itemDef_t *item, int key )
 	return qfalse;
 }
 
-#define MIN_FIELD_WIDTH   10
-#define EDIT_CURSOR_WIDTH 10
-
 static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 {
 	editFieldDef_t *editPtr = item->typeData.edit;
 
-	if ( item->cursorPos < editPtr->paintOffset )
+	// try to keep the cursor away from the left end
+	if ( item->cursorPos < editPtr->paintOffset + 2 )
 	{
-		editPtr->paintOffset = item->cursorPos;
+		editPtr->paintOffset = item->cursorPos - 2;
+		if ( editPtr->paintOffset < 0 )
+		{
+			editPtr->paintOffset = 0;
+		}
 	}
 	else
 	{
 		// If there is a maximum field width
 		if ( editPtr->maxFieldWidth > 0 )
 		{
-			int offset;
+			int widthAdjust, offset;
+
 			// If the cursor is at the end of the string, maximise the amount of the
 			// string that's visible
 
-			if ( item->cursorPos == ui_UTF8Strlen( buff ) )
+			if ( item->cursorPos == Q_UTF8Strlen( buff ) )
 			{
-				while ( UI_Text_Width( buff + ui_CursorToOffset( buff, editPtr->paintOffset ), item->textscale ) <=
+				while ( UI_Plain_Text_Width( buff + ui_CursorToOffset( buff, editPtr->paintOffset ), item->textscale ) <=
 				        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) && editPtr->paintOffset > 0 )
 				{
 					editPtr->paintOffset--;
 				}
-			}
 
-			buff[ item->cursorPos + 1 ] = '\0';
+				widthAdjust = EDIT_CURSOR_WIDTH;
+			}
+			else
+			{
+				buff[ ui_CursorToOffset( buff, item->cursorPos + 2 ) ] = '\0';
+				widthAdjust = UI_Plain_Text_Width( buff + ui_CursorToOffset( buff, item->cursorPos ), item->textscale ) + 2;
+				widthAdjust = MAX( widthAdjust, EDIT_CURSOR_WIDTH );
+			}
 
 			// Shift paintOffset so that the cursor is visible
 			offset = ui_CursorToOffset( buff, editPtr->paintOffset );
 
-			while ( UI_Text_Width( buff + offset, item->textscale ) >
-			        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) )
+			while ( UI_Plain_Text_Width( buff + offset, item->textscale ) >
+			        ( editPtr->maxFieldWidth - widthAdjust ) )
 			{
 				editPtr->paintOffset++;
-				offset += ui_UTF8Width( buff );
+				offset += Q_UTF8Width( buff + offset );
 			}
 		}
+	}
+}
+
+qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr );
+
+static void UI_Paste( itemDef_t *item, char *buf, clipboard_t clip )
+{
+	char           clipText[ 1024 ];
+	int            bufIndex, bufLength;
+	int            clipIndex, clipLength;
+	int            max;
+	editFieldDef_t *editPtr = item->typeData.edit;
+
+	trap_GetClipboardData( clipText, sizeof( clipText ), clip );
+
+	if ( clipText[0] == '\0' )
+	{
+		return;
+	}
+
+	bufIndex = ui_CursorToOffset( buf, item->cursorPos );
+	bufLength = strlen( buf );
+	clipIndex = 0;
+	clipLength = strlen( clipText );
+
+	max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+	max = max ? max : MAX_EDITFIELD - 1;
+
+	// overstrike
+	if ( DC->getOverstrikeMode() )
+	{
+		// copy/erase one char at a time
+		while ( clipText[clipIndex] && buf[bufIndex] )
+		{
+			int oldWidth = Q_UTF8Width( buf + bufIndex );
+			int newWidth = Q_UTF8Width( clipText + clipIndex );
+
+			if ( bufLength + newWidth - oldWidth > max )
+			{
+				break; // reached maximum field length
+			}
+
+			memmove( buf + bufIndex + newWidth, buf + bufIndex + oldWidth, bufLength + 1 - bufIndex - oldWidth );
+			memcpy( buf + bufIndex, clipText + clipIndex, newWidth );
+
+			bufIndex += newWidth;
+			clipIndex += newWidth;
+			bufLength += newWidth - oldWidth;
+			++item->cursorPos;
+		}
+		// now we just append
+		clipLength -= clipIndex;
+	}
+
+	// insert
+	if ( bufLength + clipLength > max )
+	{
+		int newLength = clipLength = 0;
+
+		while ( bufLength + newLength <= max )
+		{
+			clipLength = newLength;
+			newLength += Q_UTF8Width( clipText + clipIndex + clipLength );
+		}
+
+		if ( bufLength + newLength <= max )
+		{
+			clipLength = newLength;
+		}
+		clipText[ clipIndex + clipLength ] = '\0';
+	}
+
+	if ( clipLength )
+	{
+		// move section to right of insertion point (and keep NUL termination)
+		memmove( buf + bufIndex + clipLength, buf + bufIndex, bufLength + 1 - bufIndex );
+		// copy in the new text
+		memcpy( buf + bufIndex, clipText + clipIndex, clipLength );
+		item->cursorPos += Q_UTF8Strlen( clipText + clipIndex );
 	}
 }
 
@@ -3727,18 +3900,18 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 		if ( editPtr->maxChars && len > editPtr->maxChars )
 		{
 			len = editPtr->maxChars;
-			while ( len && ui_UTF8ContByte( buff[len] ) ) { --len; } // don't leave a partial multibyte character!
+			while ( len && Q_UTF8ContByte( buff[len] ) ) { --len; } // don't leave a partial multibyte character!
 			buff[ len ] = 0;
 		}
 
-		lenChars = ui_UTF8Strlen( buff );
+		lenChars = Q_UTF8Strlen( buff );
 
 		if ( lenChars < item->cursorPos )
 		{
 			item->cursorPos = ui_OffsetToCursor( buff, len );
 		}
 
-		if ( chr )
+		if ( chr > 0 )
 		{
 			if ( chr == 'h' - 'a' + 1 )
 			{
@@ -3747,7 +3920,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				if ( item->cursorPos > 0 )
 				{
 					int index = ui_CursorToOffset( buff, --item->cursorPos );
-					int width = ui_UTF8Width( buff + index );
+					int width = Q_UTF8Width( buff + index );
 					memmove( buff + index, buff + index + width, len + 1 - index - width );
 				}
 
@@ -3770,6 +3943,22 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				buff[ ui_CursorToOffset( buff, item->cursorPos ) ] = '\0';
 				DC->setCVar( item->cvar, buff );
 			}
+			else if ( chr == 'a' - 'a' + 1 )
+			{
+				// ctrl-a: home
+				item->cursorPos = 0;
+			}
+			else if ( chr == 'e' - 'a' + 1 )
+			{
+				// ctrl-e: end
+				item->cursorPos = lenChars;
+			}
+			else if ( chr == 'v' - 'a' + 1 )
+			{
+				// ctrl-v: paste
+				UI_Paste( item, buff, SELECTION_CLIPBOARD );
+				DC->setCVar( item->cvar, buff );
+			}
 			else if ( chr < 32 || chr == 127 || !item->cvar )
 			{
 				// Ignore any non printable chars
@@ -3784,10 +3973,10 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 			}
 			else
 			{
-				const char *str = ui_UTF8Unstore( chr );
+				const char *str = Q_UTF8Unstore( chr );
 				int index = ui_CursorToOffset( buff, item->cursorPos );
-				int width = ui_UTF8Width( str );
-				int oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? ui_UTF8Width( buff + index ) : 0;
+				int width = Q_UTF8Width( str );
+				int oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? Q_UTF8Width( buff + index ) : 0;
 				int max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
 				max = max ? max : MAX_EDITFIELD - 1;
 
@@ -3817,7 +4006,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 					if ( item->cursorPos < lenChars )
 					{
 						int index = ui_CursorToOffset( buff, item->cursorPos );
-						int width = ui_UTF8Width( buff + index );
+						int width = Q_UTF8Width( buff + index );
 						memmove( buff + index, buff + index + width, len + 1 - index - width );
 						DC->setCVar( item->cvar, buff );
 					}
@@ -3826,7 +4015,23 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_RIGHTARROW:
 				case K_KP_RIGHTARROW:
-					if ( item->cursorPos < lenChars )
+					if ( ctrl )
+					{
+						int index = ui_CursorToOffset( buff, item->cursorPos );
+
+						while ( buff[ index ] == ' ' )
+						{
+							++index;
+						}
+						while ( buff[ index ] && buff[ index ] != ' ' )
+						{
+							++index;
+						}
+
+						item->cursorPos = ui_OffsetToCursor( buff, index );
+						break;
+					}
+					else if ( item->cursorPos < lenChars )
 					{
 						item->cursorPos++;
 					}
@@ -3835,7 +4040,23 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_LEFTARROW:
 				case K_KP_LEFTARROW:
-					if ( item->cursorPos > 0 )
+					if ( ctrl )
+					{
+						int index = ui_CursorToOffset( buff, item->cursorPos );
+
+						while ( index && buff[ index ] == ' ' )
+						{
+							--index;
+						}
+						while ( index && buff[ index ] != ' ' )
+						{
+							--index;
+						}
+
+						item->cursorPos = ui_OffsetToCursor( buff, index );
+						break;
+					}
+					else if ( item->cursorPos > 0 )
 					{
 						item->cursorPos--;
 					}
@@ -3856,7 +4077,15 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_INS:
 				case K_KP_INS:
-					DC->setOverstrikeMode( !DC->getOverstrikeMode() );
+					if ( shift )
+					{
+						UI_Paste( item, buff, SELECTION_PRIMARY );
+						DC->setCVar( item->cvar, buff );
+					}
+					else
+					{
+						DC->setOverstrikeMode( !DC->getOverstrikeMode() );
+					}
 
 					break;
 
@@ -3914,6 +4143,11 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 exit:
 	Item_TextField_CalcPaintOffset( item, buff );
+
+	if ( releaseFocus )
+	{
+		ctrl = qfalse;
+	}
 
 	return !releaseFocus;
 }
@@ -4534,17 +4768,26 @@ static rectDef_t *Item_CorrectedTextRect( itemDef_t *item )
 
 void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 {
-	static qboolean shift = qfalse;
-
 	int       i;
 	itemDef_t *item = NULL;
 	qboolean  inHandler = qfalse;
-
 	inHandler = qtrue;
+
+	if ( menu->onKEY[ key ] && *menu->onKEY[ key ] && !down )
+	{
+		itemDef_t it;
+		it.parent = menu;
+		Item_RunScript( &it, menu->onKEY[ key ] );
+	}
 
 	if ( key == K_SHIFT )
 	{
-		shift = down;
+		// inc if down, dec if up, but don't let it go negative
+		shift += down ? 1 : shift ? -1 : 0;
+	}
+	else if ( key == K_CTRL )
+	{
+		ctrl += down ? 1 : ctrl ? -1 : 0;
 	}
 
 // KTW: Draggable Windows
@@ -4925,29 +5168,11 @@ static void SkipWhiteSpace( const char **text, char *lastColor )
 	}
 }
 
-#define WRAP_BUFFER_MARGIN 1024
-
-static void Check_Alloc( char **buffer, size_t *size, size_t needed )
-{
-	if ( needed >= *size )
-	{
-		*size = needed + WRAP_BUFFER_MARGIN;
-		*buffer = realloc( *buffer, *size );
-		assert( *buffer != 0 );
-	}
-}
-
 const char *Item_Text_Wrap( const char *text, float scale, float width )
 {
-	// FIXME: QVM. Can't allocate memory there? Will need a larger buffer -
-	// something like 40KB should be enough; strings a little short of 32KB
-	// have been witnessed coming in from Item_Text_Wrapped_Paint() near map
-	// start-up.
-	// Regardless, we need to check remaining space before each write else we
-	// run a small risk of buffer overflow.
-
-	static char   *out = NULL;
-	static size_t outSize = 0;
+	// Strings a little short of 32KB have been witnessed coming in from
+	// Item_Text_Wrapped_Paint() near map start-up. Just clip them to the buffer.
+	static char   out[ 4096 ];
 	int           paint = 0;
 	char          c[ 3 ] = "";
 	const char    *p;
@@ -4962,7 +5187,6 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 	p = text;
 	eos = p + strlen( p );
 
-	Check_Alloc( &out, &outSize, eos - p );
 	out[ paint ] = '\0';
 
 	while ( *p )
@@ -5019,11 +5243,14 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 		// avoided here as it becomes surprisingly expensive on larger
 		// blocks of text
 
-		// Copy text
-		Check_Alloc( &out, &outSize, paint + eol - p );
-		strncpy( out + paint, p, eol - p );
+		// Copy text into the buffer, but don't overflow it
+		strncpy( out + paint, p, MIN( eol - p, sizeof( out ) - paint ) );
 		paint += ( eol - p );
-		out[ paint ] = '\0';
+
+		if ( paint >= sizeof( out ) )
+		{
+			break;
+		}
 
 		p = eol;
 
@@ -5037,9 +5264,12 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 		else
 		{
 			// Add a \n if it's not there already
-			Check_Alloc( &out, &outSize, paint + 1 );
 			out[ paint++ ] = '\n';
-			out[ paint ] = '\0';
+
+			if ( paint >= sizeof ( out ) )
+			{
+				break;
+			}
 
 			// Insert a pixel indent on the next line
 			if ( indentWidth > 0.0f )
@@ -5047,10 +5277,14 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 				char *indentMarkerText = va( "%f%c", indentWidth, INDENT_MARKER );
 				int  indentMarkerTextLength = strlen( indentMarkerText );
 
-				Check_Alloc( &out, &outSize, paint + indentMarkerTextLength );
-				strncpy( out + paint, indentMarkerText, indentMarkerTextLength );
+				// copy the marker into the buffer, but don't overflow it
+				strncpy( out + paint, indentMarkerText, MIN( indentMarkerTextLength, sizeof( out ) - paint ) );
 				paint += indentMarkerTextLength;
-				out[ paint ] = '\0';
+
+				if ( paint >= sizeof ( out ) )
+				{
+					break;
+				}
 			}
 
 			// Skip leading whitespace on next line and save the
@@ -5060,13 +5294,18 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 
 		if ( c[ 0 ] )
 		{
-			Check_Alloc( &out, &outSize, paint + 2 );
+			if ( paint + 2 >= sizeof ( out ) )
+			{
+				break;
+			}
+
 			out[ paint++ ] = c[ 0 ];
 			out[ paint++ ] = c[ 1 ];
-			out[ paint  ] = '\0';
 		}
 	}
 
+	// terminate the string, making sure that we don't overflow the buffer
+	out[ paint > sizeof( out ) ? sizeof( out ) - 1 : paint ] = '\0';
 	return out;
 }
 
@@ -5224,14 +5463,14 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 		while ( UI_NextWrapLine( &p, &x, &y ) )
 		{
 			UI_Text_Paint( x, y, item->textscale, color,
-			               p, 0, 0, item->textStyle );
+			               p, 0, item->textStyle );
 		}
 	}
 	else
 	{
 		char        buff[ 1024 ];
 		float       fontHeight = UI_Text_LineHeight( item->textscale );
-		const float lineSpacing = UI_FontForScale( item->textscale )->face ? 0 : fontHeight * 0.4f;
+		const float lineSpacing = UI_FontForScale( item->textscale )->isBitmap ? 0 : fontHeight * 0.4f;
 		float       lineHeight = fontHeight + lineSpacing;
 		float       textHeight;
 		int         textLength;
@@ -5345,7 +5584,7 @@ void Item_Text_Wrapped_Paint( itemDef_t *item )
 
 				Item_SetTextExtents( &lineItem, buff );
 				UI_Text_Paint( lineItem.textRect.x, lineItem.textRect.y,
-				               lineItem.textscale, color, buff, 0, 0,
+				               lineItem.textscale, color, buff, 0,
 				               lineItem.textStyle );
 
 				if ( useWrapCache )
@@ -5443,7 +5682,7 @@ void Item_Text_Paint( itemDef_t *item )
 
 	Item_TextColor( item, &color );
 
-	UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, color, textPtr, 0, 0, item->textStyle );
+	UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, color, textPtr, 0, item->textStyle );
 }
 
 void Item_TextField_Paint( itemDef_t *item )
@@ -5456,6 +5695,7 @@ void Item_TextField_Paint( itemDef_t *item )
 	char           cursor = DC->getOverstrikeMode() ? '|' : '_';
 	qboolean       editing = ( item->window.flags & WINDOW_HASFOCUS && g_editingField );
 	const int      cursorWidth = editing ? EDIT_CURSOR_WIDTH : 0;
+	int            paintIndex, bufLength;
 
 	//FIXME: causes duplicate printing if item->text is not set (NULL)
 	Item_Text_Paint( item );
@@ -5484,11 +5724,25 @@ void Item_TextField_Paint( itemDef_t *item )
 		editPtr->paintOffset = 0;
 	}
 
+    bufLength =  Q_UTF8Strlen( buff );
+	paintIndex = ui_CursorToOffset( buff, editPtr->paintOffset );
+
 	// Shorten string to max viewable
-	while ( UI_Text_Width( buff + editPtr->paintOffset, item->textscale ) >
-	        ( editPtr->maxFieldWidth - cursorWidth ) && strlen( buff ) > 0 )
+	if ( editing )
 	{
-		buff[ strlen( buff ) - 1 ] = '\0';
+		while ( UI_Plain_Text_Width( buff + paintIndex, item->textscale ) >
+				( editPtr->maxFieldWidth - cursorWidth ) && strlen( buff ) >= paintIndex )
+		{
+			buff[ strlen( buff ) - 1 ] = '\0';
+		}
+	}
+	else
+	{
+		while ( UI_Text_Width( buff + paintIndex, item->textscale ) >
+				( editPtr->maxFieldWidth - cursorWidth ) && strlen( buff ) >= paintIndex )
+		{
+			buff[ strlen( buff ) - 1 ] = '\0';
+		}
 	}
 
 	parent = ( menuDef_t * ) item->parent;
@@ -5506,16 +5760,17 @@ void Item_TextField_Paint( itemDef_t *item )
 	{
 		UI_Text_PaintWithCursor( item->textRect.x + item->textRect.w + offset,
 		                         item->textRect.y, item->textscale, newColor,
-		                         buff + editPtr->paintOffset,
-		                         item->cursorPos - editPtr->paintOffset,
-		                         cursor, editPtr->maxPaintChars, item->textStyle );
+		                         buff + paintIndex,
+		                         item->cursorPos - editPtr->paintOffset, cursor,
+		                         item->textStyle,
+		                         editPtr->paintOffset, bufLength,
+		                         editPtr->maxFieldWidth - cursorWidth );
 	}
 	else
 	{
 		UI_Text_Paint( item->textRect.x + item->textRect.w + offset,
 		               item->textRect.y, item->textscale, newColor,
-		               buff + editPtr->paintOffset, 0,
-		               editPtr->maxPaintChars, item->textStyle );
+		               buff + paintIndex, 0, item->textStyle );
 	}
 }
 
@@ -5543,11 +5798,11 @@ void Item_YesNo_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + 8, item->textRect.y, item->textscale, newColor,
-		               ( value != 0 ) ? DC->translateString( "Yes" ) : DC->translateString( "No" ), 0, 0, item->textStyle );
+		               ( value != 0 ) ? DC->translateString( "Yes" ) : DC->translateString( "No" ), 0, item->textStyle );
 	}
 	else
 	{
-		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, ( value != 0 ) ? "Yes" : "No", 0, 0,
+		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, ( value != 0 ) ? "Yes" : "No", 0,
 		               item->textStyle );
 	}
 }
@@ -5573,11 +5828,11 @@ void Item_Multi_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-		               item->textscale, newColor, text, 0, 0, item->textStyle );
+		               item->textscale, newColor, text, 0, item->textStyle );
 	}
 	else
 	{
-		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, 0, item->textStyle );
+		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, item->textStyle );
 	}
 }
 
@@ -5606,11 +5861,11 @@ void Item_Cycle_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-		               item->textscale, newColor, text, 0, 0, item->textStyle );
+		               item->textscale, newColor, text, 0, item->textStyle );
 	}
 	else
 	{
-		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, 0, item->textStyle );
+		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, item->textStyle );
 	}
 }
 
@@ -5683,6 +5938,7 @@ static bind_t g_bindings[] =
 	{ "vote no",        K_F2,               -1,            -1, -1 },
 	{ "teamvote yes",   K_F3,               -1,            -1, -1 },
 	{ "teamvote no",    K_F4,               -1,            -1, -1 },
+	{ "menu vsay_top",  'o',                -1             -1, -1 },
 	{ "scoresUp",       K_KP_PGUP,          -1,            -1, -1 },
 	{ "scoresDown",     K_KP_PGDN,          -1,            -1, -1 },
 	{ "screenshotJPEG", -1,                 -1,            -1, -1 },
@@ -5936,19 +6192,19 @@ void Item_Bind_Paint( itemDef_t *item )
 		if ( g_bindItem == item && g_waitingForKey )
 		{
 			UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-			               item->textscale, newColor, "Press key", 0, maxChars, item->textStyle );
+			               item->textscale, newColor, "Press key", 0, item->textStyle );
 		}
 		else
 		{
 			BindingFromName( item->cvar );
 			UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-			               item->textscale, newColor, g_nameBind1, 0, maxChars, item->textStyle );
+			               item->textscale, newColor, g_nameBind1, 0, item->textStyle );
 		}
 	}
 	else
 	{
 		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor,
-		               ( value != 0 ) ? "FIXME" : "FIXME", 0, maxChars, item->textStyle );
+		               ( value != 0 ) ? "FIXME" : "FIXME", 0, item->textStyle );
 	}
 }
 
@@ -6262,7 +6518,7 @@ void Item_ListBoxRow_Paint( itemDef_t *item, int row, int renderPos, qboolean hi
 					UI_Text_Paint( x + columnPos + alignOffset,
 					               y + m + ( ( listPtr->elementHeight - m ) / 2.0f ),
 					               item->textscale, item->window.foreColor, text, 0,
-					               0, item->textStyle );
+					               item->textStyle );
 				}
 
 				UI_ClearClipRegion();
@@ -6293,7 +6549,7 @@ void Item_ListBoxRow_Paint( itemDef_t *item, int row, int renderPos, qboolean hi
 			{
 				UI_Text_Paint( x + offset, y + m + ( ( listPtr->elementHeight - m ) / 2.0f ),
 				               item->textscale, item->window.foreColor, text, 0,
-				               0, item->textStyle );
+				               item->textStyle );
 			}
 
 			UI_ClearClipRegion();
@@ -6458,7 +6714,7 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 
 				UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET,
 				               item->textRect.y, item->textscale,
-				               color, text, 0, 0, item->textStyle );
+				               color, text, 0, item->textStyle );
 			}
 			else
 			{
@@ -8524,6 +8780,24 @@ qboolean MenuParse_onESC( itemDef_t *item, int handle )
 	return qtrue;
 }
 
+qboolean MenuParse_onKEY( itemDef_t *item, int handle )
+{
+	menuDef_t *menu = ( menuDef_t * ) item;
+	char      key = 0;
+
+	if ( !PC_Char_Parse( handle, &key ) )
+	{
+		return qfalse;
+	}
+
+	if ( !PC_Script_Parse( handle, &menu->onKEY[ (int)key ] ) )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
 qboolean MenuParse_border( itemDef_t *item, int handle )
 {
 	menuDef_t *menu = ( menuDef_t * ) item;
@@ -8811,6 +9085,7 @@ static keywordHash_t menuParseKeywords[] =
 	{ "onOpen",           MenuParse_onOpen        },
 	{ "onClose",          MenuParse_onClose       },
 	{ "onESC",            MenuParse_onESC         },
+	{ "onKEY",            MenuParse_onKEY         },
 	{ "border",           MenuParse_border        },
 	{ "borderSize",       MenuParse_borderSize    },
 	{ "backcolor",        MenuParse_backcolor     },
@@ -8974,7 +9249,7 @@ void Menu_PaintAll( void )
 	if ( DC->getCVarValue( "ui_developer" ) )
 	{
 		vec4_t v = { 1, 1, 1, 1 };
-		UI_Text_Paint( 5, 25, .5, v, va( "fps: %f", DC->FPS ), 0, 0, 0 );
+		UI_Text_Paint( 5, 25, .5, v, va( "fps: %f", DC->FPS ), 0, 0 );
 	}
 }
 
@@ -9168,7 +9443,47 @@ static qboolean Menu_OverActiveItem( menuDef_t *menu, float x, float y )
 	return qfalse;
 }
 
-void UI_R_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
+int UI_GetChatColour( int which, int team )
+{
+
+	switch ( which )
+	{
+	default:
+		return ColorIndex( COLOR_WHITE );
+
+	case SAY_ALL:
+		return ColorIndex( COLOR_GREEN );
+
+	case SAY_TEAM:
+		switch ( team )
+		{
+		case TEAM_NONE:
+			return ColorIndex( COLOR_YELLOW );
+		default:
+			return ColorIndex( COLOR_CYAN );
+		}
+
+	case SAY_PRIVMSG:
+		return ColorIndex( COLOR_GREEN );
+
+	case SAY_TPRIVMSG:
+		return ColorIndex( COLOR_CYAN );
+
+	case SAY_AREA:
+	case SAY_AREA_TEAM:
+		return ColorIndex( COLOR_BLUE );
+
+	case SAY_ADMINS:
+	case SAY_ADMINS_PUBLIC:
+		return ColorIndex( COLOR_MAGENTA );
+#ifdef UIGPP
+	case SAY_RAW:
+		return ColorIndex( COLOR_LTGREY );
+#endif
+	}
+}
+
+void UI_R_GlyphChar( const fontHandle_t font, int ch, glyphInfo_t *glyph )
 {
   static int engineState = 0;
 
@@ -9188,7 +9503,7 @@ void UI_R_GlyphChar( fontInfo_t *font, int ch, glyphInfo_t *glyph )
     trap_R_GlyphChar( font, ch, glyph );
 }
 
-void UI_R_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
+void UI_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
 {
   static int engineState = 0;
 
@@ -9208,7 +9523,7 @@ void UI_R_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
     trap_R_Glyph( font, str, glyph );
 }
 
-void UI_R_UnregisterFont( fontInfo_t *font )
+void UI_R_UnregisterFont( fontHandle_t font )
 {
   static int engineState = 0;
 

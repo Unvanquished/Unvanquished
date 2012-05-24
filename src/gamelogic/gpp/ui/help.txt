@@ -1,7 +1,7 @@
 {
   "^3Welcome^7"
   {
-    "In this section you will find a summary of major changes since 1.1. It is "
+    "In this section you will find a summary of major changes since Tremulous 1.1. It is "
     "not a complete list. In general, all things have been tweaked for balance in "
     "some way.\n\n"
     "We hope you enjoy playing. Your support gives us valuable data and "
@@ -16,7 +16,7 @@
     "Watch the health cross icon on your "
     "HUD to see what your healing rate is. If the icon glows, you are on "
     "creep. If you are near a booster or basilisk, you will see two "
-    "(2X healing) or four (3X healing) barbs around the health cross."
+    "(2× healing) or four (3× healing) barbs around the health cross."
   }
   "Build-point Changes"
   {
@@ -53,7 +53,7 @@
     "the base, build Tesla Generators at Stage 3. Tesla Generators no longer "
     "require the Defense Computer to function. Instead, the Defense Computer "
     "will automatically repair Human buildables. Tesla Generators can fire "
-    "over turrets. "
+    "over turrets."
   }
   "Human Weapons"
   {
@@ -80,7 +80,7 @@
     "in the options menu or in the console (\\bind shift +sprint). Now, instead "
     "of tapping the button while moving to start sprinting, just hold it down "
     "and let go to stop. Alternately, you can change this to a toggle behavior "
-    "with cg_sprintToggle. \n\n"
+    "with cg_sprintToggle."
   }
   "Dodge"
   {
@@ -89,7 +89,7 @@
     "options menu or the console (\\bind shift +sprint). When strafing or "
     "walking backwards, press the dodge key to make a quick, low jump. You "
     "can bind this to the same key as sprint in the console with \\bind shift "
-    "\"+sprint; +dodge\""
+    "\"+sprint; +dodge\"."
   }
   "Headshots"
   {
@@ -104,7 +104,7 @@
   }
   "Basilisk"
   {
-    "Basilisks provide regeneration boosting auras to nearby teammates: 2x "
+    "Basilisks provide regeneration boosting auras to nearby teammates: 2× "
     "from regular and 3x from advanced basilisks. Their footsteps are also "
     "silent for greater stealth."
   }

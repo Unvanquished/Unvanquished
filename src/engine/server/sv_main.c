@@ -314,7 +314,7 @@ void SV_MasterHeartbeat( const char *hbname )
 	// send to group masters
 	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
 	{
-		if ( !sv_master[ i ]->string[ 0 ] )
+		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
 		{
 			continue;
 		}
@@ -417,7 +417,7 @@ void SV_MasterGameCompleteStatus()
 	// send to group masters
 	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
 	{
-		if ( !sv_master[ i ]->string[ 0 ] )
+		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
 		{
 			continue;
 		}
@@ -968,7 +968,7 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 #define SV_OUTPUTBUF_LENGTH ( 256 - 16 )
 	char                sv_outputbuf[ SV_OUTPUTBUF_LENGTH ];
 	static unsigned int lasttime = 0;
-	char                *cmd_aux;
+	const char          *cmd_aux;
 
 	// TTimo - show_bug.cgi?id=534
 	time = Com_Milliseconds();

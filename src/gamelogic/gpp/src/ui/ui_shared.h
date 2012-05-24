@@ -347,8 +347,8 @@ typedef struct
 	const char *onOpen; // run when the menu is first opened
 	const char *onClose; // run when the menu is closed
 	const char *onESC; // run when the menu is closed
+	const char *onKEY[ MAX_KEYS ]; // run when key is pressed
 	const char *soundName; // background loop sound for menu
-
 	vec4_t     focusColor; // focus color for items
 	vec4_t     disableColor; // focus color for items
 	itemDef_t  *items[ MAX_MENUITEMS ]; // items this menu contains
@@ -361,9 +361,7 @@ typedef struct
 	const char  *fontStr;
 	const char  *cursorStr;
 	const char  *gradientStr;
-	fontInfo_t  textFont;
-	fontInfo_t  smallFont;
-	fontInfo_t  bigFont;
+	fontMetrics_t textFont, smallFont, bigFont;
 	qhandle_t   cursor;
 	qhandle_t   gradientBar;
 	qhandle_t   scrollBarArrowUp;
@@ -420,10 +418,10 @@ typedef struct
 	void ( *clearScene )( void );
 	void ( *addRefEntityToScene )( const refEntity_t *re );
 	void ( *renderScene )( const refdef_t *fd );
-	void ( *registerFont )( const char *pFontname, const char *pFallback, int pointSize, fontInfo_t *font );
-	void ( *glyph )( fontInfo_t *font, const char *str, glyphInfo_t *glyph );
-	void ( *glyphChar )( fontInfo_t *font, int ch, glyphInfo_t *glyph );
-	void ( *freeCachedGlyphs )( fontInfo_t *font );
+	void ( *registerFont )( const char *pFontname, const char *pFallback, int pointSize, fontMetrics_t *out );
+	void ( *glyph )( fontHandle_t, const char *str, glyphInfo_t *glyph );
+	void ( *glyphChar )( fontHandle_t, int ch, glyphInfo_t *glyph );
+	void ( *freeCachedGlyphs )( fontHandle_t );
 
 	void ( *ownerDrawItem )( float x, float y, float w, float h, float text_x,
 	                         float text_y, int ownerDraw, int ownerDrawFlags,
@@ -436,7 +434,7 @@ typedef struct
 	void ( *getCVarString )( const char *cvar, char *buffer, int bufsize );
 	float( *getCVarValue )( const char *cvar );
 	void ( *setCVar )( const char *cvar, const char *value );
-	void ( *drawTextWithCursor )( float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style );
+	void ( *drawTextWithCursor )( float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int clipped, int style );
 	void ( *setOverstrikeMode )( qboolean b );
 	qboolean( *getOverstrikeMode )( void );
 	void ( *startLocalSound )( sfxHandle_t sfx, int channelNum );
@@ -446,7 +444,7 @@ typedef struct
 	qhandle_t ( *feederItemImage )( int feederID, int index );
 	void ( *feederSelection )( int feederID, int index );
 	int ( *feederInitialise )( int feederID );
-	char *( *translateString )( const char *string );
+	const char *( *translateString )( const char *string );
 	void ( *keynumToStringBuf )( int keynum, char *buf, int buflen );
 	void ( *getBindingBuf )( int keynum, char *buf, int buflen );
 	void ( *setBinding )( int keynum, const char *binding );
@@ -561,9 +559,9 @@ const char  *Item_Text_Wrap( const char *text, float scale, float width );
 void        UI_DrawTextBlock( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                               float scale, int textalign, int textvalign,
                               int textStyle, const char *text );
-void        UI_Text_Paint( float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style );
+void        UI_Text_Paint( float x, float y, float scale, vec4_t color, const char *text, float adjust, int style );
 void        UI_Text_Paint_Limit( float *maxX, float x, float y, float scale,
-                                 vec4_t color, const char *text, float adjust, int limit );
+                                 vec4_t color, const char *text, float adjust );
 float       UI_Text_Width( const char *text, float scale );
 float       UI_Text_Height( const char *text, float scale );
 float       UI_Text_EmWidth( float scale );
@@ -571,7 +569,7 @@ float       UI_Text_EmHeight( float scale );
 float       UI_Text_LineHeight( float scale );
 qboolean    UI_Text_IsEmoticon( const char *s, qboolean *escaped, int *length, qhandle_t *h, int *width );
 void        UI_EscapeEmoticons( char *dest, const char *src, int destsize );
-glyphInfo_t *UI_Glyph( fontInfo_t *font, const char *str );
+glyphInfo_t *UI_Glyph( const fontMetrics_t *, const char *str );
 int         trap_Parse_AddGlobalDefine( char *define );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );
@@ -580,11 +578,16 @@ int         trap_Parse_SourceFileAndLine( int handle, char *filename, int *line 
 
 void        BindingFromName( const char *cvar );
 
+int         UI_GetChatColour( int mode, int team );
+
 extern char g_nameBind1[ 32 ];
 extern char g_nameBind2[ 32 ];
 
-void       UI_R_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
-void       UI_R_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
-void       UI_R_UnregisterFont(fontInfo_t *font);
+void       UI_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
+void       UI_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
+void       UI_R_UnregisterFont( fontHandle_t );
+
+int ui_CursorToOffset( const char *buf, int cursor );
+int ui_OffsetToCursor( const char *buf, int offset );
 
 #endif

@@ -763,12 +763,12 @@ void SV_LoadGame_f( void )
 	// otherwise, do a slow load
 	if ( Cvar_VariableIntegerValue( "sv_cheats" ) )
 	{
-		Cbuf_ExecuteText( EXEC_APPEND, va( "spdevmap %s", filename ) );
+		Cbuf_ExecuteText( EXEC_APPEND, va( "spdevmap %s", Cmd_QuoteString( filename ) ) );
 	}
 	else
 	{
 		// no cheats
-		Cbuf_ExecuteText( EXEC_APPEND, va( "spmap %s", filename ) );
+		Cbuf_ExecuteText( EXEC_APPEND, va( "spmap %s", Cmd_QuoteString( filename ) ) );
 	}
 }
 
@@ -1213,7 +1213,7 @@ static void SV_ConSay_f( void )
 
 	strcat( text, p );
 
-	SV_SendServerCommand( NULL, "chat \"%s\"", text );
+	SV_SendServerCommand( NULL, "chat %s", Cmd_QuoteString( text ) );
 }
 
 /*

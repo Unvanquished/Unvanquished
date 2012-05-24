@@ -818,7 +818,6 @@ char *CON_Input( void )
 		if ( chr >= ' ' )
 		{
 			int width = 1;//Q_UTF8WidthCP( chr );
-			int seq = chr;
 			int count, offset;
 			char buf[20];
 

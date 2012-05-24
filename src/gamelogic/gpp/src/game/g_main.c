@@ -155,10 +155,13 @@ vmCvar_t           g_layouts;
 vmCvar_t           g_layoutAuto;
 
 vmCvar_t           g_emoticonsAllowedInNames;
+vmCvar_t           g_unnamedNumbering;
+vmCvar_t           g_unnamedNamePrefix;
 
 vmCvar_t           g_admin;
 vmCvar_t           g_adminTempBan;
 vmCvar_t           g_adminMaxBan;
+vmCvar_t           g_adminRetainExpiredBans;
 vmCvar_t           g_adminPubkeyID;
 
 vmCvar_t           g_privateMessages;
@@ -348,10 +351,13 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                CVAR_LATCH | CVAR_ARCHIVE,                       0, qfalse           },
+	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_admin,                       "g_admin",                       "admin.dat",                        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminMaxBan,                 "g_adminMaxBan",                 "2w",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminPubkeyID,               "g_adminPubkeyID",               "2",                                CVAR_ARCHIVE | CVAR_SERVERINFO,                  0, qfalse           },
 
 	{ &g_privateMessages,             "g_privateMessages",             "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
@@ -620,8 +626,8 @@ void G_UpdateCvars( void )
 
 				if ( cv->trackChange )
 				{
-					trap_SendServerCommand( -1, va( "print \"Server: %s changed to %s\n\"",
-					                                cv->cvarName, cv->vmCvar->string ) );
+					trap_SendServerCommand( -1, va( "print \"Server: \"%s\" changed to \"%s\"\n\"",
+					                                Quote( cv->cvarName ), Quote( cv->vmCvar->string ) ) );
 				}
 
 				if ( !level.spawning && cv->explicit )
@@ -670,10 +676,10 @@ void G_MapConfigs( const char *mapname )
 	}
 
 	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "exec \"%s/default.cfg\"\n", g_mapConfigs.string ) );
+	                         va( "exec %s/default.cfg\n", Quote( g_mapConfigs.string ) ) );
 
 	trap_SendConsoleCommand( EXEC_APPEND,
-	                         va( "exec \"%s/%s.cfg\"\n", g_mapConfigs.string, mapname ) );
+	                         va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
 }
@@ -687,6 +693,8 @@ G_InitGame
 void G_InitGame( int levelTime, int randomSeed, int restart )
 {
 	int i;
+
+	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 
 	srand( randomSeed );
 
@@ -878,7 +886,7 @@ G_VotesRunning
 Check if there are any votes currently running
 ==================
 */
-static qboolean G_VotesRunning( voidl )
+static qboolean G_VotesRunning( void )
 {
 	int i;
 
@@ -1960,7 +1968,7 @@ void ExitLevel( void )
 
 	if ( G_MapExists( g_nextMap.string ) )
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, va( "map \"%s\"\n", g_nextMap.string ) );
+		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s\n", Quote( g_nextMap.string ) ) );
 
 		if ( G_MapRotationActive() )
 		{
@@ -2021,10 +2029,10 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	char string[ 1024 ];
 	int  i;
 
-	Com_sprintf( string, sizeof( string ), "chat %ld %d \"%s\"",
+	Com_sprintf( string, sizeof( string ), "chat %ld %d %s",
 	             ent ? ( long )( ent - g_entities ) : -1,
 	             G_admin_permission( ent, ADMF_ADMINCHAT ) ? SAY_ADMINS : SAY_ADMINS_PUBLIC,
-	             msg );
+	             Quote( msg ) );
 
 	// Send to all appropriate clients
 	for ( i = 0; i < level.maxclients; i++ )
@@ -2421,9 +2429,9 @@ void CheckExitRules( void )
 		return;
 	}
 
-	if ( g_timelimit.integer )
+	if ( level.timelimit )
 	{
-		if ( level.time - level.startTime >= g_timelimit.integer * 60000 )
+		if ( level.time - level.startTime >= level.timelimit * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print \"Timelimit hit\n\"" );
@@ -2432,13 +2440,13 @@ void CheckExitRules( void )
 			G_MapLog_Result( 't' );
 			return;
 		}
-		else if ( level.time - level.startTime >= ( g_timelimit.integer - 5 ) * 60000 &&
+		else if ( level.time - level.startTime >= ( level.timelimit - 5 ) * 60000 &&
 		          level.timelimitWarning < TW_IMMINENT )
 		{
 			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
 			level.timelimitWarning = TW_IMMINENT;
 		}
-		else if ( level.time - level.startTime >= ( g_timelimit.integer - 1 ) * 60000 &&
+		else if ( level.time - level.startTime >= ( level.timelimit - 1 ) * 60000 &&
 		          level.timelimitWarning < TW_PASSED )
 		{
 			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
@@ -2620,7 +2628,7 @@ void G_CheckVote( team_t team )
 		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
 	}
 
-	cmd = va( "print \"%s\n\"", msg );
+	cmd = va( "print %s\"\n\"", Quote( msg ) );
 
 	if ( team == TEAM_NONE )
 	{

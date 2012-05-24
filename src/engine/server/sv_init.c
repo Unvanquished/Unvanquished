@@ -212,7 +212,7 @@ void SV_UpdateConfigStrings( void )
 
 						Q_strncpyz( buf, &sv.configstrings[ index ][ sent ], maxChunkSize );
 
-						SV_SendServerCommand( client, "%s %i \"%s\"\n", cmd, index, buf );
+						SV_SendServerCommand( client, "%s %i \"%s\"\n", cmd, index, buf ); // FIXME QUOTING INFO
 
 						sent += ( maxChunkSize - 1 );
 						remaining -= ( maxChunkSize - 1 );
@@ -221,7 +221,7 @@ void SV_UpdateConfigStrings( void )
 				else
 				{
 					// standard cs, just send it
-					SV_SendServerCommand( client, "cs %i \"%s\"\n", index, sv.configstrings[ index ] );
+					SV_SendServerCommand( client, "cs %i \"%s\"\n", index, sv.configstrings[ index ] ); // FIXME QUOTING INFO
 				}
 			}
 		}
@@ -620,31 +620,6 @@ void SV_TouchCGame( void )
 
 /*
 ================
-SV_TouchCGameDLL
-  touch the cgame DLL so that a pure client (with DLL sv_pure support) can load do the correct checks
-================
-*/
-void SV_TouchCGameDLL( void )
-{
-	fileHandle_t f;
-	char         *filename;
-
-	filename = Sys_GetDLLName( "cgame" );
-	FS_FOpenFileRead_Filtered( filename, &f, qfalse, FS_EXCLUDE_DIR );
-
-	if ( f )
-	{
-		FS_FCloseFile( f );
-	}
-	else if ( sv_pure->integer )
-	{
-		// ydnar: so we can work the damn game
-		Com_Error( ERR_DROP, "Failed to locate cgame DLL for pure server mode" );
-	}
-}
-
-/*
-================
 SV_SpawnServer
 
 Change the server to a new map, taking all connected
@@ -903,9 +878,6 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	// out which pk3s should be auto-downloaded
 	// NOTE: we consider the referencedPaks as 'required for operation'
 
-	// we want the server to reference the mp_bin pk3 that the client is expected to load from
-	SV_TouchCGameDLL();
-
 	p = FS_ReferencedPakChecksums();
 	Cvar_Set( "sv_referencedPaks", p );
 	p = FS_ReferencedPakNames();
@@ -1136,7 +1108,7 @@ void SV_Shutdown( char *finalmsg )
 
 	if ( svs.clients && !com_errorEntered )
 	{
-		SV_FinalCommand( va( "print \"%s\"", finalmsg ), qtrue );
+		SV_FinalCommand( va( "print %s", Cmd_QuoteString( finalmsg ) ), qtrue );
 	}
 
 	SV_RemoveOperatorCommands();

@@ -435,6 +435,7 @@ typedef struct
 // namelog
 #define MAX_NAMELOG_NAMES 5
 #define MAX_NAMELOG_ADDRS 5
+typedef signed int unnamed_t; // must be signed
 typedef struct namelog_s
 {
 	struct namelog_s *next;
@@ -449,6 +450,8 @@ typedef struct namelog_s
 	int              nameChangeTime;
 	int              nameChanges;
 	int              voteCount;
+
+	unnamed_t        unnamedNumber;
 
 	qboolean         muted;
 	qboolean         denyBuild;
@@ -730,6 +733,7 @@ typedef struct
 	int              num_entities; // current number, <= MAX_GENTITIES
 
 	int              warmupTime; // restart match at this time
+	int              timelimit;
 
 	fileHandle_t     logFile;
 
@@ -1178,6 +1182,7 @@ void      BeginIntermission( void );
 void      ClientSpawn( gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles );
 void      player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
 qboolean  SpotWouldTelefrag( gentity_t *spot );
+qboolean  G_IsUnnamed( const char *name );
 
 //
 // g_svcmds.c
@@ -1398,10 +1403,13 @@ extern  vmCvar_t g_layouts;
 extern  vmCvar_t g_layoutAuto;
 
 extern  vmCvar_t g_emoticonsAllowedInNames;
+extern  vmCvar_t g_unnamedNumbering;
+extern  vmCvar_t g_unnamedNamePrefix;
 
 extern  vmCvar_t g_admin;
 extern  vmCvar_t g_adminTempBan;
 extern  vmCvar_t g_adminMaxBan;
+extern  vmCvar_t g_adminRetainExpiredBans;
 extern  vmCvar_t g_adminPubkeyID;
 
 extern  vmCvar_t g_privateMessages;
@@ -1523,20 +1531,9 @@ void             trap_AddPhysicsStatic( gentity_t *ent );
 void             trap_SendMessage( int clientNum, char *buf, int buflen );
 messageStatus_t  trap_MessageStatus( int clientNum );
 
-#if defined( ET_MYSQL )
-int              trap_SQL_RunQuery( const char *query );
-void             trap_SQL_FinishQuery( int queryid );
-qboolean         trap_SQL_NextRow( int queryid );
-int              trap_SQL_RowCount( int queryid );
-void             trap_SQL_GetFieldbyID( int queryid, int fieldid, char *buffer, int len );
-void             trap_SQL_GetFieldbyName( int queryid, const char *name, char *buffer, int len );
-int              trap_SQL_GetFieldbyID_int( int queryid, int fieldid );
-int              trap_SQL_GetFieldbyName_int( int queryid, const char *name );
-int              trap_SQL_FieldCount( int queryid );
-void             trap_SQL_CleanString( const char *in, char *out, int len );
-
-#endif
 int              trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted );
+
+void             trap_QuoteString( const char *str, char *buf, int size );
 #ifdef __cplusplus
 }
 #endif

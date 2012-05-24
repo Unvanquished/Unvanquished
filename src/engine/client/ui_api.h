@@ -21,13 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/vm_traps.h"
 #include "../renderer/tr_types.h"
 
 #define UI_API_VERSION 4
 
-typedef enum
+typedef enum uiImport_s
 {
-  UI_ERROR,
+  UI_ERROR = FIRST_VM_SYSCALL,
   UI_PRINT,
   UI_MILLISECONDS,
   UI_CVAR_REGISTER,
@@ -111,15 +112,6 @@ typedef enum
   UI_GET_CDKEY,
   UI_SET_CDKEY,
   UI_R_REGISTERFONT,
-  UI_MEMSET,
-  UI_MEMCPY,
-  UI_STRNCPY,
-  UI_SIN,
-  UI_COS,
-  UI_ATAN2,
-  UI_SQRT,
-  UI_FLOOR,
-  UI_CEIL,
   UI_PARSE_ADD_GLOBAL_DEFINE,
   UI_PARSE_LOAD_SOURCE,
   UI_PARSE_FREE_SOURCE,
@@ -147,15 +139,16 @@ typedef enum
   UI_GET_AUTOUPDATE,
   UI_OPENURL,
   UI_GETHUNKDATA,
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
+  UI_QUOTESTRING,
+//#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
   UI_R_REGISTERANIMATION,
   UI_R_BUILDSKELETON,
   UI_R_BLENDSKELETON,
   UI_R_BONEINDEX,
   UI_R_ANIMNUMFRAMES,
   UI_R_ANIMFRAMERATE,
-#endif
-  UI_GETTEXT = 300,
+//#endif
+  UI_GETTEXT,
   UI_R_GLYPH,
   UI_R_GLYPHCHAR,
   UI_R_UREGISTERFONT
@@ -321,7 +314,7 @@ void        trap_Key_SetOverstrikeMode( qboolean state );
 void        trap_Key_ClearStates( void );
 int         trap_Key_GetCatcher( void );
 void        trap_Key_SetCatcher( int catcher );
-void        trap_GetClipboardData( char *buf, int bufsize );
+void        trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip );
 void        trap_GetClientState( uiClientState_t *state );
 void        trap_GetGlconfig( glconfig_t *glconfig );
 int         trap_GetConfigString( int index, char *buff, int buffsize );
@@ -348,10 +341,10 @@ int         trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s
 int         trap_MemoryRemaining( void );
 void        trap_GetCDKey( char *buf, int buflen );
 void        trap_SetCDKey( char *buf );
-void        trap_R_RegisterFont( const char *fontName, const char *fallbackFont, int pointSize, fontInfo_t *font );
-void        trap_R_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
-void        trap_R_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
-void        trap_R_UnregisterFont(fontInfo_t *font);
+void        trap_R_RegisterFont( const char *fontName, const char *fallbackFont, int pointSize, fontMetrics_t * );
+void        trap_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
+void        trap_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
+void        trap_R_UnregisterFont( fontHandle_t );
 int         trap_Parse_AddGlobalDefine( char *define );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );
@@ -374,8 +367,9 @@ void        trap_CIN_DrawCinematic( int handle );
 void        trap_CIN_SetExtents( int handle, int x, int y, int w, int h );
 void        trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 qboolean    trap_GetLimboString( int index, char *buf );
-char        *trap_TranslateString( const char *string ) __attribute__( ( format_arg( 1 ) ) );
+void        trap_TranslateString( const char *string, char *buf );
 void        trap_CheckAutoUpdate( void );
 void        trap_GetAutoUpdate( void );
 void        trap_openURL( const char *s );
 void        trap_GetHunkData( int *hunkused, int *hunkexpected );
+void        trap_QuoteString( const char *str, char *buffer, int size );

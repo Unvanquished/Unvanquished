@@ -92,6 +92,7 @@ vmCvar_t                   ui_developer;
 vmCvar_t                   ui_emoticons;
 vmCvar_t                   ui_winner;
 vmCvar_t                   ui_chatCommands;
+vmCvar_t                   ui_chatPromptColours;
 vmCvar_t                   cl_profile;
 vmCvar_t                   cl_defaultProfile;
 vmCvar_t                   ui_profile;
@@ -131,6 +132,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &cl_defaultProfile,      "cl_defaultProfile",           "",                          CVAR_ROM                  },
 	{ &ui_profile,             "ui_profile",                  "",                          CVAR_ROM                  },
 	{ &ui_chatCommands,        "ui_chatCommands",             "1",                         CVAR_ARCHIVE              },
+	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE              },
 
 	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menu/menus.txt",         CVAR_ARCHIVE              },
 	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/menu/ingame/ingame.txt", CVAR_ARCHIVE              },
@@ -224,6 +226,27 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 
 	return -1;
 }
+
+#define MAX_VA_STRING 32000 // FIXME?
+
+static const char *UI_TranslateString( const char *string )
+{
+#ifdef LOCALIZATION_SUPPORT
+	static char staticbuf[ 2 ][ MAX_VA_STRING ];
+	static int  bufcount = 0;
+	char        *buf;
+
+	buf = staticbuf[ bufcount++ % 2 ];
+
+	trap_TranslateString( string, buf );
+	return buf;
+#else
+	return string;
+#endif
+}
+#ifndef LOCALIZATION_SUPPORT
+#define UI_TranslateString(x) (x)
+#endif
 
 void AssetCache( void )
 {
@@ -1302,9 +1325,9 @@ void UI_Shutdown( void )
 {
 	trap_LAN_SaveCachedServers();
 
-	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.textFont );
-	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.smallFont );
-	UI_R_UnregisterFont( &uiInfo.uiDC.Assets.bigFont );
+	UI_R_UnregisterFont( uiInfo.uiDC.Assets.textFont.handle );
+	UI_R_UnregisterFont( uiInfo.uiDC.Assets.smallFont.handle );
+	UI_R_UnregisterFont( uiInfo.uiDC.Assets.bigFont.handle );
 
 	UIS_Shutdown( );
 }
@@ -2047,7 +2070,7 @@ static void UI_DrawSelectedMapName( rectDef_t *rect, float scale, vec4_t color, 
 
 	if ( map >= 0 && map < uiInfo.mapCount )
 	{
-		UI_Text_Paint( rect->x, rect->y, scale, color, uiInfo.mapList[ map ].mapName, 0, 0, textStyle );
+		UI_Text_Paint( rect->x, rect->y, scale, color, uiInfo.mapList[ map ].mapName, 0, textStyle );
 	}
 }
 
@@ -2069,11 +2092,11 @@ static const char *UI_OwnerDrawText( int ownerDraw )
 		case UI_KEYBINDSTATUS:
 			if ( Display_KeyBindPending() )
 			{
-				s = trap_TranslateString( "Waiting for new key... Press ESCAPE to cancel" );
+				s = UI_TranslateString( "Waiting for new key... Press ESCAPE to cancel" );
 			}
 			else
 			{
-				s = trap_TranslateString( "Press ENTER or CLICK to change, Press BACKSPACE to clear" );
+				s = UI_TranslateString( "Press ENTER or CLICK to change, Press BACKSPACE to clear" );
 			}
 
 			break;
@@ -2099,7 +2122,7 @@ static const char *UI_OwnerDrawText( int ownerDraw )
 			}
 			else
 			{
-				s = va( trap_TranslateString( "Refresh Time: %s" ), UI_Cvar_VariableString( va( "ui_lastServerRefresh_%i", ui_netSource.integer ) ) );
+				s = va( UI_TranslateString( "Refresh Time: %s" ), UI_Cvar_VariableString( va( "ui_lastServerRefresh_%i", ui_netSource.integer ) ) );
 			}
 
 			break;
@@ -3295,7 +3318,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, ui_dedicated.integer ) );
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n",
-			                                       uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ) );
+			                                       Quote( uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ) ) );
 		}
 		else if ( Q_stricmp( name, "resetDefaults" ) == 0 )
 		{
@@ -3492,19 +3515,19 @@ static void UI_RunMenuScript( char **args )
 			}
 			else if ( uiInfo.chatTeam )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team \"%s\"\n", buffer ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team %s\n", Quote( buffer ) ) );
 			}
 			else if ( uiInfo.chatAdmin )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "a \"%s\"\n", buffer ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "a %s\n", Quote( buffer ) ) );
 			}
 			else if ( uiInfo.chatIRC )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "irc_say \"%s\"\n", buffer ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "irc_say %s\n", Quote( buffer ) ) );
 			}
 			else
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say \"%s\"\n", buffer ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s\n", Quote( buffer ) ) );
 			}
 		}
 		else if ( Q_stricmp( name, "SayKeydown" ) == 0 )
@@ -3543,7 +3566,7 @@ static void UI_RunMenuScript( char **args )
 				trap_CIN_StopCinematic( uiInfo.previewMovie );
 			}
 
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "cinematic %s.roq 2\n", uiInfo.movieList[ uiInfo.movieIndex ] ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "cinematic %s.roq 2\n", Quote( uiInfo.movieList[ uiInfo.movieIndex ] ) ) );
 		}
 		else if ( Q_stricmp( name, "RunMod" ) == 0 )
 		{
@@ -3552,7 +3575,7 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "RunDemo" ) == 0 )
 		{
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n", uiInfo.demoList[ uiInfo.demoIndex ] ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n", Quote( uiInfo.demoList[ uiInfo.demoIndex ] ) ) );
 		}
 		else if ( Q_stricmp( name, "Tremulous" ) == 0 )
 		{
@@ -3622,7 +3645,7 @@ static void UI_RunMenuScript( char **args )
 				trap_LAN_GetServerAddressString( ui_netSource.integer,
 				                                 uiInfo.serverStatus.displayServers[ uiInfo.serverStatus.currentServer ],
 				                                 buff, 1024 );
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", buff ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", Quote( buff ) ) );
 			}
 		}
 		else if ( Q_stricmp( name, "FoundPlayerJoinServer" ) == 0 )
@@ -3631,7 +3654,7 @@ static void UI_RunMenuScript( char **args )
 			     uiInfo.currentFoundPlayerServer < uiInfo.numFoundPlayerServers )
 			{
 				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n",
-				                                       uiInfo.foundPlayerServerAddresses[ uiInfo.currentFoundPlayerServer ] ) );
+				                                       Quote( uiInfo.foundPlayerServerAddresses[ uiInfo.currentFoundPlayerServer ] ) ) );
 			}
 		}
 		else if ( Q_stricmp( name, "Quit" ) == 0 )
@@ -3699,13 +3722,17 @@ static void UI_RunMenuScript( char **args )
 			{
 				if ( Q_stricmp( name + 4, voteInfo[i].vote ) == 0 )
 				{
-					char buffer[ MAX_CVAR_VALUE_STRING ];
-
-					buffer[0] = 0;
+					char rawbuffer[ MAX_CVAR_VALUE_STRING ];
+					char *buffer = "";
 
 					if ( voteInfo[i].reason )
 					{
 						trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
+						buffer = Quote( buffer );
+					}
+					else
+					{
+						buffer = "";
 					}
 
 					switch ( voteInfo[i].type )
@@ -3720,10 +3747,10 @@ static void UI_RunMenuScript( char **args )
 						if ( ui_selectedMap.integer >= 0 && ui_selectedMap.integer < uiInfo.mapCount )
 						{
 							trap_Cmd_ExecuteText( EXEC_APPEND,
-												  va( "callvote %s %s %s\n",
-													  voteInfo[i].call,
-													  uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName,
-													  buffer ) );
+							                      va( "callvote %s %s %s\n",
+							                          voteInfo[i].call,
+							                          Quote( uiInfo.mapList[ ui_selectedMap.integer ].mapLoadName ),
+							                          buffer ) );
 						}
 						break;
 
@@ -3732,7 +3759,7 @@ static void UI_RunMenuScript( char **args )
 						{
 							trap_Cmd_ExecuteText( EXEC_APPEND,
 							                      va( "callvote %s %d %s\n",
-													  voteInfo[i].call,
+							                          voteInfo[i].call,
 							                          uiInfo.clientNums[ uiInfo.playerIndex ],
 							                          buffer ) );
 						}
@@ -3743,7 +3770,7 @@ static void UI_RunMenuScript( char **args )
 						{
 							trap_Cmd_ExecuteText( EXEC_APPEND,
 							                      va( "callteamvote %s %d %s\n",
-													  voteInfo[i].call,
+							                          voteInfo[i].call,
 							                          uiInfo.clientNums[ uiInfo.playerIndex ],
 							                          buffer ) );
 						}
@@ -3777,17 +3804,17 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s", trap_TranslateString( "Favorite already in list\n" ) );
+						Com_Printf( "%s", UI_TranslateString( "Favorite already in list\n" ) );
 					}
 					else if ( res == -1 )
 					{
 						// list full
-						Com_Printf( "%s", trap_TranslateString( "Favorite list full\n" ) );
+						Com_Printf( "%s", UI_TranslateString( "Favorite list full\n" ) );
 					}
 					else
 					{
 						// successfully added
-						Com_Printf( trap_TranslateString( "Added favorite server %s\n" ), addr );
+						Com_Printf( UI_TranslateString( "Added favorite server %s\n" ), addr );
 					}
 				}
 			}
@@ -4015,7 +4042,7 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s", trap_TranslateString( "Favorite already in list\n" ) );
+						Com_Printf( "%s", UI_TranslateString( "Favorite already in list\n" ) );
 					}
 					else if ( res == -1 )
 					{
@@ -4851,6 +4878,8 @@ void UI_Init( qboolean inGameLoad )
 {
 	int start;
 
+	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
+
 	BG_InitClassConfigs();
 	BG_InitAllowedGameElements();
 
@@ -4924,7 +4953,7 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.stopCinematic = &UI_StopCinematic;
 	uiInfo.uiDC.drawCinematic = &UI_DrawCinematic;
 	uiInfo.uiDC.runCinematicFrame = &UI_RunCinematicFrame;
-	uiInfo.uiDC.translateString = &trap_TranslateString;
+	uiInfo.uiDC.translateString = &UI_TranslateString;
 
 	Init_Display( &uiInfo.uiDC );
 
@@ -5082,6 +5111,12 @@ void UI_SetActiveMenu( uiMenuCommand_t menu )
 				trap_Key_SetCatcher( KEYCATCH_UI );
 				Menus_CloseAll();
 				Menus_ActivateByName( "main" );
+				trap_Cvar_VariableStringBuffer( "name", buf, sizeof( buf ) );
+				if( !buf[ 0 ] || !Q_stricmp( buf, "UnnamedPlayer" ) )
+				{
+					Menus_ActivateByName( "simple_options" );
+				}
+				buf[ 0 ] = '\0';
 				trap_Cvar_VariableStringBuffer( "com_errorMessage", buf, sizeof( buf ) );
 
 				if ( strlen( buf ) )
@@ -5175,7 +5210,7 @@ static void UI_PrintTime( char *buf, int bufsize, int time )
 void Text_PaintCenter( float x, float y, float scale, vec4_t color, const char *text, float adjust )
 {
 	int len = UI_Text_Width( text, scale );
-	UI_Text_Paint( x - len / 2, y, scale, color, text, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE );
+	UI_Text_Paint( x - len / 2, y, scale, color, text, 0, ITEM_TEXTSTYLE_SHADOWEDMORE );
 }
 
 void Text_PaintCenter_AutoWrapped( float x, float y, float xmax, float ystep, float scale, vec4_t color, const char *str, float adjust )

@@ -476,7 +476,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 	{
 		if ( debugLevel > 0 )
 		{
-			Com_Printf( "voice \"%s\"\n", voice->name );
+			Com_Printf( "voice %s\n", Quote( voice->name ) );
 		}
 
 		voiceCmd = voice->cmds;

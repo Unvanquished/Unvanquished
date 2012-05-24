@@ -302,10 +302,10 @@ void Cbuf_Execute( void )
 
 		for ( i = 0; i < cmd_text.cursize; i++ )
 		{
-			if ( text[ i ] == '\\' && text[ i + 1 ] == '"' )
+			if ( text[ i ] == '\\' && text[ i + 1 ] )
 			{
 				i++;
-				continue; // ignore \"
+				continue; // ignore escapes
 			}
 
 			if ( text[ i ] == '"' )
@@ -1261,7 +1261,7 @@ void Cmd_WriteAliases( fileHandle_t f )
 
 	while ( alias )
 	{
-		Com_sprintf( buffer, sizeof( buffer ), "alias %s \"%s\"\n", alias->name, Cmd_EscapeString( alias->exec ) );
+		Com_sprintf( buffer, sizeof( buffer ), "alias %s %s\n", alias->name, Cmd_QuoteString( alias->exec ) );
 		FS_Write( buffer, strlen( buffer ), f );
 		alias = alias->next;
 	}
@@ -1562,33 +1562,6 @@ void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength )
 ============
 Cmd_Args
 
-Returns a single string containing argv(1) to argv(argc()-1)
-============
-*/
-char           *Cmd_Args( void )
-{
-	static char cmd_args[ MAX_STRING_CHARS ];
-	int         i;
-
-	cmd_args[ 0 ] = 0;
-
-	for ( i = 1; i < cmd.argc; i++ )
-	{
-		strcat( cmd_args, cmd.argv[ i ] );
-
-		if ( i != cmd.argc - 1 )
-		{
-			strcat( cmd_args, " " );
-		}
-	}
-
-	return cmd_args;
-}
-
-/*
-============
-Cmd_Args
-
 Returns a single string containing argv(arg) to argv(argc()-1)
 ============
 */
@@ -1606,7 +1579,7 @@ char           *Cmd_ArgsFrom( int arg )
 
 	for ( i = arg; i < cmd.argc; i++ )
 	{
-		strcat( cmd_args, cmd.argv[ i ] );
+		strcat( cmd_args, Cmd_QuoteString( cmd.argv[ i ] ) );
 
 		if ( i != cmd.argc - 1 )
 		{
@@ -1615,6 +1588,18 @@ char           *Cmd_ArgsFrom( int arg )
 	}
 
 	return cmd_args;
+}
+
+/*
+============
+Cmd_Args
+
+Returns a single string containing argv(1) to argv(argc()-1)
+============
+*/
+char           *Cmd_Args( void )
+{
+	return Cmd_ArgsFrom( 1 );
 }
 
 /*
@@ -1652,7 +1637,7 @@ For rcon use when you want to transmit without altering quoting
 ATVI Wolfenstein Misc #284
 ============
 */
-char           *Cmd_Cmd()
+const char *Cmd_Cmd()
 {
 	return cmd.cmd;
 }
@@ -1666,7 +1651,7 @@ For rcon use when you want to transmit without altering quoting
 ATVI Wolfenstein Misc #284
 ============
 */
-char *Cmd_Cmd_FromNth( int count )
+const char *Cmd_Cmd_FromNth( int count )
 {
 	char *ret = cmd.cmd - 1;
 	int  i = 0, q = 0;
@@ -1688,50 +1673,16 @@ char *Cmd_Cmd_FromNth( int count )
 		{
 			q = !q; // found a quotation mark
 		}
-		else if ( *ret == '\\' && ret[ 1 ] == '"' )
+		else if ( *ret == '\\' )
 		{
-			++ret;
+			if ( !*++ret)
+			{
+				break;
+			}
 		}
 	}
 
 	return ret;
-}
-
-/*
-============
-Cmd_EscapeString
-
-Escape all \$ in a string into \$$
-============
-*/
-char *Cmd_EscapeString( const char *in )
-{
-	static char buffer[ MAX_STRING_CHARS ];
-	char        *out = buffer;
-
-	while ( *in )
-	{
-		if ( out + 3 - buffer >= sizeof( buffer ) )
-		{
-			break;
-		}
-
-		if ( in[ 0 ] == '\\' && in[ 1 ] == '$' )
-		{
-			out[ 0 ] = '\\';
-			out[ 1 ] = '$';
-			out[ 2 ] = '$';
-			in += 2;
-			out += 3;
-		}
-		else
-		{
-			*out++ = *in++;
-		}
-	}
-
-	*out = '\0';
-	return buffer;
 }
 
 /*
@@ -1746,11 +1697,128 @@ will point into this temporary buffer.
 */
 // NOTE TTimo define that to track tokenization issues
 //#define TKN_DBG
+static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean ignoreQuotes )
+{
+	// Assumption:
+	// if ( tokens ) cmd.argc == 0 && textOut == cmd.tokenized
+	// textOut points to a large buffer
+	// text which is processed here is already of limited length...
+	char *textOutStart = textOut;
+
+	*textOut = '\0'; // initial NUL-termination in case of early exit
+
+	while ( 1 )
+	{
+		if ( tokens && cmd.argc == MAX_STRING_TOKENS )
+		{
+			goto done; // this is usually something malicious
+		}
+
+		while ( 1 )
+		{
+			// skip whitespace
+			while ( *text > '\0' && *text <= ' ' )
+			{
+				text++;
+			}
+
+			if ( !*text )
+			{
+				goto done; // all tokens parsed
+			}
+
+			// skip // comments
+			if ( text[ 0 ] == '/' && text[ 1 ] == '/' )
+			{
+				goto done; // all tokens parsed
+			}
+
+			// skip /* */ comments
+			if ( text[ 0 ] == '/' && text[ 1 ] == '*' )
+			{
+				// two increments, avoiding matching /*/
+				++text;
+				while ( *++text && !( text[ 0 ] == '*' && text[ 1 ] == '/' ) ) {}
+
+				if ( !*text )
+				{
+					goto done; // all tokens parsed
+				}
+
+				text += 2;
+			}
+			else
+			{
+				break; // we are ready to parse a token
+			}
+		}
+
+		// regular token
+		if ( tokens )
+		{
+			cmd.argv[ cmd.argc ] = textOut;
+			cmd.argc++;
+		}
+
+		while ( *text < 0 || *text > ' ' )
+		{
+			if ( ignoreQuotes || text[ 0 ] != '"' )
+			{
+				// copy until next space, quote or EOT, handling backslashes
+				while ( *text < 0 || ( *text > ' ' && *text != '"' ) )
+				{
+					if ( *text == '\\' && !*++text )
+					{
+						break;
+					}
+
+					*textOut++ = *text++;
+				}
+			}
+			else
+			{
+				// quoted string :-)
+				// copy until next " or EOT, handling backslashes
+				// missing trailing " is fine
+				++text;
+
+				while ( *text && *text != '"' )
+				{
+					if ( *text == '\\' && !*++text )
+					{
+						break;
+					}
+
+					*textOut++ = *text++;
+				}
+
+				if ( *text ) ++text; // terminating ", if any
+			}
+		}
+
+		*textOut++ = tokens ? '\0' : ' ';
+
+		if ( !*text )
+		{
+			goto done; // all tokens parsed
+		}
+	}
+
+	done:
+
+	if ( textOut > textOutStart )
+	{
+		// will be NUL-terminated if in token mode
+		// otherwise there'll be a space there...
+		*--textOut = '\0';
+	}
+}
+
 static void Cmd_TokenizeString2( const char *text_in, qboolean ignoreQuotes, qboolean parseCvar )
 {
 	char       *text;
 	char       *textOut;
-	const char *cvarName;
+	char       *cvarName;
 	char       buffer[ BIG_INFO_STRING ];
 
 #ifdef TKN_DBG
@@ -1776,257 +1844,85 @@ static void Cmd_TokenizeString2( const char *text_in, qboolean ignoreQuotes, qbo
 
 		while ( *text )
 		{
-			if ( text[ 0 ] != '\\' || text[ 1 ] != '$' )
+			if ( text[ 0 ] == '\\' )
 			{
+				// Escape found. Copy it & following character (if present).
 				if ( textOut == sizeof( cmd.cmd ) + cmd.cmd - 1 )
 				{
 					break;
 				}
 
-				*textOut++ = *text++;
-				continue;
+				*textOut++ = '\\';
+				if ( *++text ) goto copy;
+				break;
 			}
-
-			text += 2;
-			cvarName = text;
-
-			while ( *text && *text != '\\' )
+			else if ( text[ 0 ] == '$' )
 			{
-				text++;
-			}
+				// $ found. Could be a variable name.
+				cvarName = ++text;
+				text = strchr( text, '$' );
 
-			if ( *text == '\\' )
-			{
-				*text = 0;
+				if ( !text )
+				{
+					// No terminating $ - treat as literal
+					text = cvarName - 1;
+					goto copy;
+				}
+
+				// Got $...$ - look it up
+				// If found, quote the value and copy it in
+				// If not found, just skip it :-)
+				*text++ = 0;
 
 				if ( Cvar_Flags( cvarName ) != CVAR_NONEXISTENT )
 				{
 					char cvarValue[ MAX_CVAR_VALUE_STRING ];
-					char *badchar;
+
 					Cvar_VariableStringBuffer( cvarName, cvarValue, sizeof( cvarValue ) );
-
-					do
-					{
-						badchar = strchr( cvarValue, ';' );
-
-						if ( badchar )
-						{
-							*badchar = '.';
-						}
-						else
-						{
-							badchar = strchr( cvarValue, '\n' );
-
-							if ( badchar )
-							{
-								*badchar = '.';
-							}
-						}
-					}
-					while ( badchar );
-
-					Q_strncpyz( textOut, cvarValue, sizeof( cmd.cmd ) - ( textOut - cmd.cmd ) );
-
-					while ( *textOut )
-					{
-						textOut++;
-					}
+					Q_strncpyz( textOut, Cmd_EscapeString( cvarValue ), sizeof( cmd.cmd ) - ( textOut - cmd.cmd ) );
+					textOut += strlen( textOut );
 
 					if ( textOut == sizeof( cmd.cmd ) + cmd.cmd - 1 )
 					{
 						break;
 					}
 				}
-				else
-				{
-					cvarName -= 2;
-
-					while ( *cvarName && textOut < sizeof( cmd.cmd ) + cmd.cmd - 1 )
-					{
-						*textOut++ = *cvarName++;
-					}
-
-					if ( textOut == sizeof( cmd.cmd ) + cmd.cmd - 1 )
-					{
-						break;
-					}
-
-					*textOut++ = '\\';
-				}
-
-				text++;
 			}
 			else
 			{
-				cvarName -= 2;
-
-				while ( *cvarName && textOut < sizeof( cmd.cmd ) + cmd.cmd - 1 )
-				{
-					*textOut++ = *cvarName++;
-				}
+				// Character literal; just copy
+				copy:
 
 				if ( textOut == sizeof( cmd.cmd ) + cmd.cmd - 1 )
 				{
 					break;
 				}
-			}
-		}
 
-		*textOut = 0;
-
-		// "\$$" --> "\$"
-		text = textOut = cmd.cmd;
-
-		while ( text[ 0 ] )
-		{
-			if ( text[ 0 ] == '\\'  && text[ 1 ]  && text[ 1 ] == '$' && text[ 2 ] && text[ 2 ] == '$' )
-			{
-				textOut[ 0 ] = '\\';
-				textOut[ 1 ] = '$';
-				textOut += 2;
-				text += 3;
-			}
-			else
-			{
 				*textOut++ = *text++;
 			}
 		}
 
-		*textOut = '\0';
+		*textOut = 0;
 	}
 	else
 	{
 		Q_strncpyz( cmd.cmd, text_in, sizeof( cmd.cmd ) );
 	}
 
-	text = cmd.cmd;
-	textOut = cmd.tokenized;
+	text = cmd.cmd - 1;
 
-	while ( 1 )
+/*
+	// simplify whitespace handling
+	while ( *++text )
 	{
-		if ( cmd.argc == MAX_STRING_TOKENS )
+		if ( *text > '\0' && *text != '\n' && *text < ' ' )
 		{
-			return; // this is usually something malicious
-		}
-
-		while ( 1 )
-		{
-			// skip whitespace
-			while ( *text > '\0' && *text <= ' ' )
-			{
-				text++;
-			}
-
-			if ( !*text )
-			{
-				return; // all tokens parsed
-			}
-
-			// skip // comments
-			if ( text[ 0 ] == '/' && text[ 1 ] == '/' )
-			{
-				return; // all tokens parsed
-			}
-
-			// skip /* */ comments
-			if ( text[ 0 ] == '/' && text[ 1 ] == '*' )
-			{
-				while ( *text && ( text[ 0 ] != '*' || text[ 1 ] != '/' ) )
-				{
-					text++;
-				}
-
-				if ( !*text )
-				{
-					return; // all tokens parsed
-				}
-
-				text += 2;
-			}
-			else
-			{
-				break; // we are ready to parse a token
-			}
-		}
-
-		// handle quote escaping
-		if ( !ignoreQuotes && text[ 0 ] == '\\' && text[ 1 ] == '"' )
-		{
-			*textOut++ = '"';
-			text += 2;
-			continue;
-		}
-
-		// handle quoted strings
-		if ( !ignoreQuotes && *text == '"' )
-		{
-			cmd.argv[ cmd.argc ] = textOut;
-			cmd.argc++;
-			text++;
-
-			while ( *text && *text != '"' )
-			{
-				if ( text[ 0 ] == '\\' && text[ 1 ] == '"' )
-				{
-					*textOut++ = '"';
-					text += 2;
-					continue;
-				}
-
-				*textOut++ = *text++;
-			}
-
-			*textOut++ = 0;
-
-			if ( !*text )
-			{
-				return; // all tokens parsed
-			}
-
-			text++;
-			continue;
-		}
-
-		// regular token
-		cmd.argv[ cmd.argc ] = textOut;
-		cmd.argc++;
-
-		// skip until whitespace, quote, or command
-		while ( *text > ' ' || *text < '\0' )
-		{
-			if ( !ignoreQuotes && text[ 0 ] == '\\' && text[ 1 ] == '"' )
-			{
-				*textOut++ = '"';
-				text += 2;
-				continue;
-			}
-
-			if ( !ignoreQuotes && text[ 0 ] == '"' )
-			{
-				break;
-			}
-
-			if ( text[ 0 ] == '/' && text[ 1 ] == '/' )
-			{
-				break;
-			}
-
-			// skip /* */ comments
-			if ( text[ 0 ] == '/' && text[ 1 ] == '*' )
-			{
-				break;
-			}
-
-			*textOut++ = *text++;
-		}
-
-		*textOut++ = 0;
-
-		if ( !*text )
-		{
-			return; // all tokens parsed
+			*text = ' ';
 		}
 	}
+*/
+
+	Tokenise( cmd.cmd, cmd.tokenized, qtrue, ignoreQuotes );
 }
 
 /*
@@ -2057,6 +1953,202 @@ Cmd_TokenizeStringParseCvar
 void Cmd_TokenizeStringParseCvar( const char *text_in )
 {
 	Cmd_TokenizeString2( text_in, qfalse, qtrue );
+}
+
+/*
+============
+EscapeString
+
+Internal.
+Escape all '\' '"' '$', '/' if marking a comment, and ';' if not in quotation marks.
+Optionally wrap in ""
+============
+*/
+#define ESCAPEBUFFER_SIZE BIG_INFO_STRING
+static char *GetEscapeBuffer( void )
+{
+	static char escapeBuffer[ 4 ][ ESCAPEBUFFER_SIZE ];
+	static int escapeIndex = -1;
+
+	escapeIndex = ( escapeIndex + 1 ) & 3;
+	return escapeBuffer[ escapeIndex ];
+}
+
+static const char *EscapeString( const char *in, qboolean quote )
+{
+	char        *escapeBuffer = GetEscapeBuffer();
+	char        *out = escapeBuffer;
+	const char  *end = escapeBuffer + ESCAPEBUFFER_SIZE - 1 - !!quote;
+	qboolean    quoted = qfalse;
+
+	if ( quote )
+	{
+		*out++ = '"';
+	}
+
+	while ( *in && out < end )
+	{
+		char c = *in++;
+
+		switch ( c )
+		{
+		case '/':
+			// only quote "//" and "/*"
+			if ( *in != '/' && *in != '*' ) break;
+			goto doquote;
+		case ';':
+			// no need to quote semicolons if in ""
+			quoted = qtrue;
+			if ( quote ) break;
+		case '"':
+		case '$':
+		case '\\':
+			doquote:
+			quoted = qtrue;
+			*out++ = '\\'; // could set out == end - is fine
+			break;
+		}
+
+		// keep quotes if we have white space
+		if ( c >= '\0' && c <= ' ' ) quoted = qtrue;
+
+		// if out == end, overrun (but within escapeBuffer)
+		*out++ = c;
+	}
+
+	if ( out > end )
+	{
+		out -= 2; // an escape overran; allow overwrite
+	}
+
+	if ( quote )
+	{
+		// we have an empty string or something was escaped
+		if ( quoted || out == escapeBuffer + 1 )
+		{
+			*out++ = '"';
+		}
+		else
+		{
+			memmove( escapeBuffer, escapeBuffer + 1, --out - escapeBuffer );
+		}
+	}
+
+	*out = '\0';
+	return escapeBuffer;
+}
+
+/*
+============
+Cmd_EscapeString
+
+Adds escapes (see above).
+============
+*/
+const char *Cmd_EscapeString( const char *in )
+{
+	return EscapeString( in, qfalse );
+}
+
+/*
+============
+Cmd_QuoteString
+
+Adds escapes (see above), wraps in quotation marks.
+============
+*/
+const char *Cmd_QuoteString( const char *in )
+{
+	return EscapeString( in, qtrue );
+}
+
+/*
+============
+Cmd_QuoteStringBuffer
+
+Cmd_QuoteString for VM usage
+============
+*/
+void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size )
+{
+	Q_strncpyz( buffer, Cmd_QuoteString( in ), size );
+}
+
+/*
+============
+Cmd_UnescapeString
+
+Unescape a string
+============
+*/
+const char *Cmd_UnescapeString( const char *in )
+{
+	char        *escapeBuffer = GetEscapeBuffer();
+	char        *out = escapeBuffer;
+
+	while ( *in && out < escapeBuffer + ESCAPEBUFFER_SIZE - 1)
+	{
+		if ( in[0] == '\\' )
+		{
+			++in;
+		}
+
+		*out++ = *in++;
+	}
+
+	*out = '\0';
+	return escapeBuffer;
+}
+
+/*
+===================
+Cmd_UnquoteString
+
+Usually passed a raw partial command string
+String length is UNCHECKED
+===================
+*/
+const char *Cmd_UnquoteString( const char *str )
+{
+	char *escapeBuffer = GetEscapeBuffer();
+	Tokenise( str, escapeBuffer, qfalse, qfalse );
+	return escapeBuffer;
+}
+
+/*
+===================
+Cmd_DequoteString -- FIXME QUOTING INFO
+
+Usually passed a raw partial command string
+Returns the first token
+Escapes are NOT processed
+String length is UNCHECKED
+===================
+*/
+const char *Cmd_DequoteString( const char *str )
+{
+	char *escapeBuffer = GetEscapeBuffer();
+	char *q;
+
+	// shouldn't be any leading space, but just in case...
+	while ( *str == ' ' || *str == '\n' )
+	{
+		++str;
+	}
+
+	if ( *str == '"' )
+	{
+		q = strchr( ++str, '"' );
+	}
+	else
+	{
+		q = strchr( str, ' ' );
+		q = q ? q : strchr( str, '\n' );
+	}
+
+	Q_snprintf( escapeBuffer, ESCAPEBUFFER_SIZE, "%.*s", (int)( q ? q - str : ESCAPEBUFFER_SIZE ), str );
+
+	return escapeBuffer;
 }
 
 /*
