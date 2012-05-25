@@ -1158,12 +1158,24 @@ static void Window_Paint( Window *w, float fadeAmount, float fadeClamp, float fa
 		return;
 	}
 
-	if ( w->border != 0 )
+	switch ( w->border )
 	{
+	case WINDOW_BORDER_FULL:
 		fillRect.x += w->borderSize;
-		fillRect.y += w->borderSize;
 		fillRect.w -= w->borderSize * 2.0;
+		// no break
+	case WINDOW_BORDER_HORZ:
+	case WINDOW_BORDER_KCGRADIENT:
+		fillRect.y += w->borderSize;
 		fillRect.h -= w->borderSize * 2.0;
+		break;
+
+	case WINDOW_BORDER_VERT:
+		fillRect.x += w->borderSize;
+		fillRect.w -= w->borderSize * 2.0;
+		// no break
+	case WINDOW_BORDER_NONE:
+		break;
 	}
 
 	if ( w->style == WINDOW_STYLE_FILLED )
@@ -1266,13 +1278,13 @@ void Item_SetScreenCoords( itemDef_t *item, float x, float y )
 	{
 		return;
 	}
-
+/*
 	if ( item->window.border != 0 )
 	{
 		x += item->window.borderSize;
 		y += item->window.borderSize;
 	}
-
+*/
 	item->window.rect.x = x + item->window.rectClient.x;
 	item->window.rect.y = y + item->window.rectClient.y;
 	item->window.rect.w = item->window.rectClient.w;
@@ -1298,13 +1310,13 @@ void Item_UpdatePosition( itemDef_t *item )
 
 	x = menu->window.rect.x;
 	y = menu->window.rect.y;
-
+/*
 	if ( menu->window.border != 0 )
 	{
 		x += menu->window.borderSize;
 		y += menu->window.borderSize;
 	}
-
+*/
 	Item_SetScreenCoords( item, x, y );
 }
 
@@ -1321,13 +1333,13 @@ void Menu_UpdatePosition( menuDef_t *menu )
 
 	x = menu->window.rect.x;
 	y = menu->window.rect.y;
-
+/*
 	if ( menu->window.border != 0 )
 	{
 		x += menu->window.borderSize;
 		y += menu->window.borderSize;
 	}
-
+*/
 	for ( i = 0; i < menu->itemCount; i++ )
 	{
 		Item_SetScreenCoords( menu->items[ i ], x, y );
