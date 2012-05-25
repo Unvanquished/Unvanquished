@@ -4607,6 +4607,9 @@ void Hist_Load( void )
 		return;
 	}
 
+	memset( buffer, '\0', sizeof( buffer ) );
+	memset( history, '\0', sizeof( history ) );
+
 	FS_Read( buffer, sizeof( buffer ), f );
 	FS_FCloseFile( f );
 
@@ -4618,15 +4621,11 @@ void Hist_Load( void )
 
 		if ( !end )
 		{
-			end = buf + strlen( buf );
 			Q_strncpyz( history[ i ], buf, sizeof( history[ 0 ] ) );
 			break;
 		}
-		else
-		{
-			*end = '\0';
-		}
 
+		*end = '\0';
 		Q_strncpyz( history[ i ], buf, sizeof( history[ 0 ] ) );
 		buf = end + 1;
 
@@ -4634,11 +4633,6 @@ void Hist_Load( void )
 		{
 			break;
 		}
-	}
-
-	if ( i > CON_HISTORY )
-	{
-		i = CON_HISTORY;
 	}
 
 	hist_current = hist_next = i + 1;
