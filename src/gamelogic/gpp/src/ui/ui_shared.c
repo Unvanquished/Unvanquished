@@ -2509,7 +2509,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	qboolean    emoticonEscaped;
 	int         emoticonLen = 0;
 	int         emoticonWidth;
-	int         cursorX = -1, cursorW = EDIT_CURSOR_WIDTH;
+	float       cursorX = -1, cursorW = EDIT_CURSOR_WIDTH;
 	float       startX = x;
 
 	const fontMetrics_t *font;
@@ -2633,8 +2633,8 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 		if ( count == cursorPos )
 		{
-			cursorX = x;
-			cursorW = MAX( EDIT_CURSOR_WIDTH / 2, glyph->imageWidth * DC->xscale * useScale );
+			cursorX = x - gapAdjust * DC->aspectScale * useScale / 2;
+			cursorW = MAX( EDIT_CURSOR_WIDTH / 2, glyph->xSkip + gapAdjust ) * DC->xscale * DC->aspectScale * useScale;
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
@@ -2689,7 +2689,8 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 			if ( DC->getOverstrikeMode() )
 			{
-				DC->drawStretchPic( cursorX * DC->xscale, ( y - emoticonH ) * DC->yscale + 2, cursorW, emoticonH * DC->yscale, 0, 0, 0, 0, DC->whiteShader );
+				glyph = UI_GlyphCP( font, '[' );
+				DC->drawStretchPic( cursorX * DC->xscale, ( y - glyph->top * useScale ) * DC->yscale - 2, cursorW, emoticonH * DC->yscale + 4, 0, 0, 0, 0, DC->whiteShader );
 			}
 			else
 			{
