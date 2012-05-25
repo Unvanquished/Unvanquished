@@ -4004,7 +4004,7 @@ Field_SetCursor
 void Field_SetCursor( field_t *edit, int cursor )
 {
 	edit->cursor = cursor;
-	edit->scroll = ( cursor > edit->widthInChars ) ? ( cursor - edit->widthInChars ) : 0;
+	edit->scroll = ( cursor >= edit->widthInChars ) ? ( cursor - edit->widthInChars + 1 ) : 0;
 }
 
 /*
