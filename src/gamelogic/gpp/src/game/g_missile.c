@@ -68,7 +68,8 @@ Reduce the power of e.g. a luciball relative to time spent travelling.
 ================
 */
 typedef enum {
-	PR_INVERSE_SQUARE, // params: full power time, half-life time
+	PR_INVERSE_SQUARE, // params: 'full power' time, 'half-life' time
+	                   // (reality: starts falling off before so that we approximate a smooth curve)
 	PR_COSINE,         // params: lifetime, unused (but >0)
 	PR_END             // unused; here so that we can have the comma above for C89
 } powerReduce_t;
@@ -85,14 +86,18 @@ static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLi
 		return;
 	}
 
-
 	switch ( type )
 	{
 	case PR_INVERSE_SQUARE:
 		travelled = lifetime + fullPower - halfLife;
-		if ( travelled > halfLife )
+		if ( travelled > halfLife * 1.25 ) // approx. point at which the two graphs meet
 		{
 			divider = Q_rsqrt( travelled / halfLife );
+		}
+		else
+		{
+			divider = travelled / halfLife;
+			divider = cos( divider * divider / 3.375 );
 		}
 		break;
 
