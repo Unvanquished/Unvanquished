@@ -94,7 +94,7 @@ static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLi
 		{
 			divider = Q_rsqrt( travelled / halfLife );
 		}
-		else
+		else if ( travelled >= 0 )
 		{
 			divider = travelled / halfLife;
 			divider = cos( divider * divider / 3.375 );
