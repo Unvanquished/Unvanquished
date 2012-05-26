@@ -2287,6 +2287,11 @@ float UI_Char_Width( const char **text, float scale )
 			return 0.0f;
 		}
 
+		if ( **text == Q_COLOR_ESCAPE && (*text)[1] == Q_COLOR_ESCAPE )
+		{
+			++(*text);
+		}
+
 		font = UI_FontForScale( scale );
 
 		if ( UI_Text_IsEmoticon( *text, &emoticonEscaped, &emoticonLen,
@@ -2376,6 +2381,11 @@ float UI_Text_Height( const char *text, float scale )
 			}
 			else
 			{
+				if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+				{
+					++s;
+				}
+
 				glyph = UI_Glyph( font, s );
 
 				if ( max < glyph->height )
@@ -2572,6 +2582,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 				DC->setColor( newColor );
 				s += 2;
 				continue;
+			}
+
+			if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+			{
+				++s;
 			}
 
 			if ( *s == INDENT_MARKER )

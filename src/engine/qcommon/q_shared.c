@@ -2399,6 +2399,10 @@ int Q_PrintStrlen( const char *string )
 			p += 2;
 			continue;
 		}
+		if ( *p == Q_COLOR_ESCAPE && p[1] == Q_COLOR_ESCAPE )
+		{
+			++p;
+		}
 
 		p++;
 		len++;
@@ -2584,6 +2588,10 @@ int Q_UTF8PrintStrlen( const char *str )
     {
       str += 2;
       continue;
+    }
+    if( *str == Q_COLOR_ESCAPE && str[1] == Q_COLOR_ESCAPE )
+    {
+      ++str;
     }
 
     l++;

@@ -267,13 +267,16 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 	static char buffer[ MAXPRINTMSG ];
 #endif
 	int         length = 0;
+	qboolean    noColour = qfalse;
 
 	CON_SetColor( win, 7 );
 
 	while ( *msg )
 	{
-		if ( Q_IsColorString( msg ) || *msg == '\n' )
+		if ( ( !noColour && Q_IsColorString( msg ) ) || *msg == '\n' )
 		{
+			noColour = qfalse;
+
 			// First empty the buffer
 			if ( length > 0 )
 			{
@@ -332,6 +335,21 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 				break;
 			}
 
+			if ( !noColour && *msg == Q_COLOR_ESCAPE && msg[1] == Q_COLOR_ESCAPE )
+			{
+				if ( stripcodes )
+				{
+					++msg;
+				}
+				else
+				{
+					noColour = qtrue; // guaranteed a colour control next
+				}
+			}
+			else
+			{
+				noColour = qfalse;
+			}
 #ifdef USE_CURSES_W
 			buffer[ length ] = (wchar_t) Q_UTF8CodePoint( msg );
 			msg += Q_UTF8WidthCP( buffer[ length ]);

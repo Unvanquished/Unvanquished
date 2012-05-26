@@ -294,6 +294,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 	vec4_t     color;
 	const char *s;
 	int        xx;
+	qboolean   noColour = qfalse;
 
 	// draw the drop shadow
 	color[ 0 ] = color[ 1 ] = color[ 2 ] = 0;
@@ -312,6 +313,11 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			continue;
 		}
 
+		if ( !noColorEscape && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		{
+			++s;
+		}
+
 		ch = Q_UTF8CodePoint( s );
 		SCR_DrawUnichar( xx + 2, y + 2, size, ch );
 		xx += size;
@@ -327,7 +333,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 	{
 		int ch;
 
-		if ( Q_IsColorString( s ) )
+		if ( !noColour && Q_IsColorString( s ) )
 		{
 			if ( !forceColor )
 			{
@@ -349,6 +355,21 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 				s += 2;
 				continue;
 			}
+		}
+		else if ( !noColour && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		{
+			if ( !noColorEscape )
+			{
+				++s;
+			}
+			else
+			{
+				noColour = qtrue;
+			}
+		}
+		else
+		{
+			noColour = qfalse;
 		}
 
 		ch = Q_UTF8CodePoint( s );
@@ -389,6 +410,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 	vec4_t     color;
 	const char *s;
 	float      xx;
+	qboolean   noColour = qfalse;
 
 	// draw the colored text
 	s = string;
@@ -399,7 +421,7 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 	{
 		int ch;
 
-		if ( Q_IsColorString( s ) )
+		if ( !noColour && Q_IsColorString( s ) )
 		{
 			if ( !forceColor )
 			{
@@ -421,6 +443,21 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 				s += 2;
 				continue;
 			}
+		}
+		else if ( !noColour && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		{
+			if ( !noColorEscape )
+			{
+				++s;
+			}
+			else
+			{
+				noColour = qtrue;
+			}
+		}
+		else
+		{
+			noColour = qfalse;
 		}
 
 		ch = Q_UTF8CodePoint( s );
@@ -446,7 +483,11 @@ static int SCR_Strlen( const char *str )
 		{
 			s += 2;
 		}
-		else
+		else if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		{
+			++s;
+		}
+
 		{
 			count++;
 			s += Q_UTF8Width( s );

@@ -416,6 +416,11 @@ void Sys_AnsiColorPrint( const char *msg )
 				break;
 			}
 
+			if ( *msg == Q_COLOR_ESCAPE && msg[1] == Q_COLOR_ESCAPE )
+			{
+				++msg;
+			}
+
 			buffer[ length ] = *msg;
 			length++;
 			msg++;

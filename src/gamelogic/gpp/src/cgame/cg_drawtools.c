@@ -268,6 +268,11 @@ int CG_DrawStrlen( const char *str )
 		}
 		else
 		{
+			if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+			{
+				++s;
+			}
+
 			count++;
 			s++;
 		}

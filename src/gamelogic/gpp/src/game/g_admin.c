@@ -1099,6 +1099,10 @@ static int admin_out( void *admin, char *str )
 		{
 			lncol += 2;
 		}
+		else if ( l->name[ i ] == Q_COLOR_ESCAPE && l->name[ i + 1 ] == Q_COLOR_ESCAPE )
+		{
+			lncol += 1;
+		}
 	}
 
 	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s^7 %s",
@@ -3438,6 +3442,10 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			{
 				colorlen += 2;
 			}
+			else if ( lname[ j ] == Q_COLOR_ESCAPE && lname[ j + 1 ] == Q_COLOR_ESCAPE )
+			{
+				colorlen += 1;
+			}
 		}
 
 		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^1%c%c^7 %s^7 %s%s%s %s\n",
@@ -3497,6 +3505,10 @@ static int ban_out( void *ban, char *str )
 		if ( Q_IsColorString( &b->name[ i ] ) )
 		{
 			colorlen1 += 2;
+		}
+		else if ( b->name[ i ] == Q_COLOR_ESCAPE && b->name[ i + 1 ] == Q_COLOR_ESCAPE )
+		{
+			colorlen1 += 1;
 		}
 	}
 

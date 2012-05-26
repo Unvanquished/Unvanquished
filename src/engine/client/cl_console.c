@@ -646,6 +646,12 @@ void CL_ConsolePrint( char *txt )
 			{
 				break;
 			}
+
+			if ( txt[ i ] == Q_COLOR_ESCAPE && txt[ i + 1 ] == Q_COLOR_ESCAPE )
+			{
+				++i;
+			}
+
 			i += Q_UTF8Width( txt + i );
 		}
 
@@ -664,6 +670,12 @@ void CL_ConsolePrint( char *txt )
 			case '\r':
 				con.x = 0;
 				break;
+
+			case Q_COLOR_ESCAPE:
+				if ( txt[ 1 ] == Q_COLOR_ESCAPE )
+				{
+					++txt;
+				}
 
 			default: // display character and advance
 				y = con.current % con.totallines;
