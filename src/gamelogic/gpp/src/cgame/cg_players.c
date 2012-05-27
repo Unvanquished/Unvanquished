@@ -3458,7 +3458,7 @@ void CG_Player( centity_t *cent )
 				VectorCopy( tr.endpos, playerOrigin );
 
 				// MD5 player models have their model origin at (0 0 0)
-				VectorMA( playerOrigin, mins[ 2 ], surfNormal, body.origin );
+				VectorMA( playerOrigin, ci->headOffset[ 2 ], surfNormal, body.origin );
 			}
 			else
 			{
@@ -3478,7 +3478,7 @@ void CG_Player( centity_t *cent )
 			VectorCopy( playerOrigin, body.origin );
 			body.origin[ 0 ] -= ci->headOffset[ 0 ];
 			body.origin[ 1 ] -= ci->headOffset[ 1 ];
-			body.origin[ 2 ] -= 24 + ci->headOffset[ 2 ];
+			body.origin[ 2 ] -= 22 + ci->headOffset[ 2 ];
 		}
 
 		VectorCopy( body.origin, body.lightingOrigin );
