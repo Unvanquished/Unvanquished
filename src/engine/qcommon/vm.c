@@ -731,6 +731,10 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	int        i, remaining;
 	qboolean   onlyQVM = !!Cvar_VariableValue( "sv_pure" );
 
+#ifdef DEDICATED
+	onlyQVM &= strcmp( module, "qagame" );
+#endif
+
 	if ( !module || !module[ 0 ] || !systemCalls )
 	{
 		Com_Error( ERR_FATAL, "VM_Create: bad parms" );
