@@ -111,11 +111,9 @@ typedef enum
 // The current lerp will finish out, then it will lerp to the new animation
 typedef struct
 {
-	refSkeleton_t oldSkeleton;
 	int           oldFrame;
 	int           oldFrameTime; // time when ->oldFrame was exactly on
 
-	refSkeleton_t skeleton;
 	int           frame;
 	int           frameTime; // time when ->frame will be exactly on
 

@@ -30,6 +30,9 @@ int   debug_anim_current;
 int   debug_anim_old;
 float debug_anim_blend;
 
+static refSkeleton_t skeleton;
+static refSkeleton_t oldSkeleton;
+
 static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
 {
 	"*death1.wav",
@@ -1545,12 +1548,12 @@ static void CG_SetPlayerLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, i
 		lf->blendlerp = 1.0f - lf->blendlerp; // use old blending for smooth blending between two blended animations
 	}
 
-	memcpy( &lf->oldSkeleton, &lf->skeleton, sizeof( refSkeleton_t ) );
+	memcpy( &oldSkeleton, &skeleton, sizeof( refSkeleton_t ) );
 
 	//Com_Printf("new: %i old %i\n", newAnimation,lf->old_animationNumber);
-	if ( lf->old_animation != NULL )
+	if ( lf->old_animation != NULL && skeleton.numBones == oldSkeleton.numBones )
 	{
-		if ( !trap_R_BuildSkeleton( &lf->oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 		{
 			CG_Printf( "Can't build old player skeleton\n" );
 			return;
@@ -1655,13 +1658,13 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 			lf->blendlerp = 1.0f - lf->blendlerp; // use old blending for smooth blending between two blended animations
 		}
 
-		memcpy( &lf->oldSkeleton, &lf->skeleton, sizeof( refSkeleton_t ) );
+		memcpy( &oldSkeleton, &skeleton, sizeof( refSkeleton_t ) );
 
 		//Com_Printf("new: %i old %i\n", newAnimation,lf->old_animationNumber);
 
-		if ( lf->old_animation != NULL )
+		if ( lf->old_animation != NULL && oldSkeleton.numBones == skeleton.numBones )
 		{
-			if ( !trap_R_BuildSkeleton( &lf->oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
 				CG_Printf( "Can't blend skeleton\n" );
 				return;
@@ -1678,7 +1681,7 @@ Sets cg.snap, cg.oldFrame, and cg.backlerp
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
-static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale )
+static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel, float speedScale )
 {
 	if ( !ci->bodyModel )
 	{
@@ -1710,7 +1713,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 			if ( !lf->animation )
 			{
-				memcpy( &lf->oldSkeleton, &lf->skeleton, sizeof( refSkeleton_t ) );
+				memcpy( &oldSkeleton, &skeleton, sizeof( refSkeleton_t ) );
 			}
 
 			animChanged = qtrue;
@@ -1825,7 +1828,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 		if ( lf->animation && ci->team != TEAM_NONE )
 		{
-			if ( !trap_R_BuildSkeleton( &lf->skeleton, lf->animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->animation->clearOrigin ) )
+			if ( !trap_R_BuildSkeleton( skel, lf->animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->animation->clearOrigin ) )
 			{
 				CG_Printf( "Can't build lf->skeleton\n" );
 			}
@@ -1833,9 +1836,9 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 			// lerp between old and new animation if possible
 			if ( lf->blendlerp >= 0.0f )
 			{
-				if ( lf->skeleton.type != SK_INVALID && lf->oldSkeleton.type != SK_INVALID )
+				if ( skeleton.type != SK_INVALID && oldSkeleton.type != SK_INVALID && skeleton.numBones == oldSkeleton.numBones )
 				{
-					if ( !trap_R_BlendSkeleton( &lf->skeleton, &lf->oldSkeleton, lf->blendlerp ) )
+					if ( !trap_R_BlendSkeleton( skel, &oldSkeleton, lf->blendlerp ) )
 					{
 						CG_Printf( "Can't blend\n" );
 						return;
@@ -1865,7 +1868,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 		if ( !lf->animation )
 		{
-			memcpy( &lf->oldSkeleton, &lf->skeleton, sizeof( refSkeleton_t ) );
+			memcpy( &oldSkeleton, &skeleton, sizeof( refSkeleton_t ) );
 		}
 
 		animChanged = qtrue;
@@ -1890,7 +1893,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 	if ( lf->animation )
 	{
-		if ( !trap_R_BuildSkeleton( &lf->skeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &skeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
 		{
 			CG_Printf( "Can't build lf->skeleton\n" );
 		}
@@ -1936,18 +1939,18 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 	// do the shuffle turn frames locally
 	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, NULL, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, NULL, speedScale );
 	}
 
 	*legsOld = cent->pe.legs.oldFrame;
 	*legs = cent->pe.legs.frame;
 	*legsBackLerp = cent->pe.legs.backlerp;
 
-	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, speedScale );
+	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, NULL, speedScale );
 
 	*torsoOld = cent->pe.torso.oldFrame;
 	*torso = cent->pe.torso.frame;
@@ -1979,11 +1982,11 @@ static void CG_PlayerNonSegAnimation( centity_t *cent, int *nonSegOld,
 	// do the shuffle turn frames locally
 	if ( cent->pe.nonseg.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_STAND )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, NULL, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, NULL, speedScale );
 	}
 
 	*nonSegOld = cent->pe.nonseg.oldFrame;
@@ -2017,14 +2020,14 @@ static void CG_PlayerMD5Animation( centity_t *cent )
 	// do the shuffle turn frames locally
 	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, &skeleton, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, &skeleton, speedScale );
 	}
 
-	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, speedScale );
+	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, &skeleton, speedScale );
 }
 
 /*
@@ -2035,10 +2038,11 @@ CG_PlayerMD5AlienAnimation
 
 static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 {
-	clientInfo_t *ci;
-	int          clientNum;
-	float        speedScale;
-
+	clientInfo_t  *ci;
+	int           clientNum;
+	float         speedScale;
+	refSkeleton_t blend;
+	
 	clientNum = cent->currentState.clientNum;
 
 	if ( cg_noPlayerAnims.integer )
@@ -2055,32 +2059,33 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	       ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) <= NSPA_ATTACK3 ) ||
 	     ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_GESTURE )
 	{
+		blend.type = SK_RELATIVE; // Tell game to blend
+
 		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN &&
 			( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) != NSPA_GESTURE )
 		{
 			memcpy( &cent->pe.legs, &cent->pe.nonseg, sizeof( lerpFrame_t ) );
-			cent->pe.legs.skeleton.type = SK_RELATIVE; // Tell game to blend
 		}
 	}
 	else
 	{
-		cent->pe.legs.skeleton.type = SK_INVALID;
+		blend.type = SK_INVALID;
 	}
 
 	// do the shuffle turn frames locally
 	if ( cent->pe.nonseg.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_STAND )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, &skeleton, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, &skeleton, speedScale );
 	}
 
-	if ( cent->pe.legs.skeleton.type == SK_RELATIVE )
+	if ( blend.type == SK_RELATIVE )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, speedScale );
-		trap_R_BlendSkeleton( &cent->pe.nonseg.skeleton, &cent->pe.legs.skeleton, 0.5 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, &blend, speedScale );
+		trap_R_BlendSkeleton( &skeleton, &blend, 0.5 );
 	}
 }
 
@@ -3487,16 +3492,16 @@ void CG_Player( centity_t *cent )
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			// copy legs skeleton to have a base
-			memcpy( &body.skeleton, &cent->pe.legs.skeleton, sizeof( refSkeleton_t ) );
+			memcpy( &body.skeleton, &skeleton, sizeof( refSkeleton_t ) );
 
-			if ( cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones )
+			if ( skeleton.numBones != skeleton.numBones )
 			{
 				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
 				return;
 			}
 
 			// combine legs and torso skeletons
-#if 1
+#if 0
 			firstTorsoBone = ci->firstTorsoBone;
 
 			if ( firstTorsoBone >= 0 && firstTorsoBone < cent->pe.torso.skeleton.numBones )
@@ -3534,7 +3539,7 @@ void CG_Player( centity_t *cent )
 #endif
 
 			// rotate legs
-#if 1
+#if 0
 			boneIndex = trap_R_BoneIndex( body.hModel, "origin" );
 
 			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
@@ -3547,7 +3552,7 @@ void CG_Player( centity_t *cent )
 #endif
 
 			// rotate torso
-#if 1
+#if 0
 			boneIndex = ci->torsoControlBone;
 
 			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
@@ -3574,7 +3579,7 @@ void CG_Player( centity_t *cent )
 		}
 		else
 		{
-			memcpy( &body.skeleton, &cent->pe.nonseg.skeleton, sizeof( refSkeleton_t ) );
+			memcpy( &body.skeleton, &skeleton, sizeof( refSkeleton_t ) );
 		}
 
 		// transform relative bones to absolute ones required for vertex skinning and tag attachments
@@ -3944,13 +3949,13 @@ void CG_Corpse( centity_t *cent )
 	else if ( !ci->nonsegmented )
 	{
 		memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, es->legsAnim, 1 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, es->legsAnim, NULL, 1 );
 		legs.oldframe = cent->pe.legs.oldFrame;
 		legs.frame = cent->pe.legs.frame;
 		legs.backlerp = cent->pe.legs.backlerp;
 
 		memset( &cent->pe.torso, 0, sizeof( lerpFrame_t ) );
-		CG_RunPlayerLerpFrame( ci, &cent->pe.torso, es->torsoAnim, 1 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.torso, es->torsoAnim, NULL, 1 );
 		torso.oldframe = cent->pe.torso.oldFrame;
 		torso.frame = cent->pe.torso.frame;
 		torso.backlerp = cent->pe.torso.backlerp;
@@ -3958,7 +3963,7 @@ void CG_Corpse( centity_t *cent )
 	else
 	{
 		memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, es->legsAnim, 1 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, es->legsAnim, NULL, 1 );
 		legs.oldframe = cent->pe.nonseg.oldFrame;
 		legs.frame = cent->pe.nonseg.frame;
 		legs.backlerp = cent->pe.nonseg.backlerp;
@@ -3981,7 +3986,7 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
-		memcpy( &legs.skeleton, ci->gender == GENDER_NEUTER ? &cent->pe.nonseg.skeleton : &cent->pe.legs.skeleton, sizeof( refSkeleton_t ) );
+		memcpy( &legs.skeleton, &skeleton, sizeof( refSkeleton_t ) );
 		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
 	}
 

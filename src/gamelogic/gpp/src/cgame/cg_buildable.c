@@ -44,6 +44,9 @@ static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 static sfxHandle_t defaultAlienSounds[ MAX_BUILDABLE_ANIMATIONS ];
 static sfxHandle_t defaultHumanSounds[ MAX_BUILDABLE_ANIMATIONS ];
 
+static refSkeleton_t bSkeleton;
+static refSkeleton_t oldbSkeleton;
+
 /*
 ===================
 CG_AlienBuildableExplosion
@@ -731,15 +734,15 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		if ( lf->skeleton.type != SK_INVALID )
+		if ( bSkeleton.type != SK_INVALID )
 		{
-			memcpy( &lf->oldSkeleton, &lf->skeleton, sizeof( refSkeleton_t ) );
+			memcpy( &oldbSkeleton, &bSkeleton, sizeof( refSkeleton_t ) );
 
 			if ( lf->old_animation != NULL )
 			{
-				if ( !trap_R_BuildSkeleton( &lf->oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 				{
-					CG_Printf( "Can't build old buildable skeleton\n" );
+					CG_Printf( "Can't build old buildable bSkeleton\n" );
 					return;
 				}
 			}
@@ -907,19 +910,19 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 
 		if ( lf->animation && lf->animation->handle )
 		{
-			if ( !trap_R_BuildSkeleton( &lf->skeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
+			if ( !trap_R_BuildSkeleton( &bSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
 			{
-				CG_Printf( "CG_RunBuildableLerpFrame: Can't build lf->skeleton\n" );
+				CG_Printf( "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n" );
 			}
 
-			if ( lf->oldSkeleton.type != SK_INVALID )
+			if ( oldbSkeleton.type != SK_INVALID && oldbSkeleton.numBones == bSkeleton.numBones )
 			{
 				// lerp between old and new animation if possible
-				if ( lf->blendlerp > 0.0f )
+				if ( lf->blendlerp > 0.0f && oldbSkeleton.numBones == bSkeleton.numBones )
 				{
-					if ( !trap_R_BlendSkeleton( &lf->skeleton, &lf->oldSkeleton, lf->blendlerp ) )
+					if ( !trap_R_BlendSkeleton( &bSkeleton, &oldbSkeleton, lf->blendlerp ) )
 					{
-						CG_Printf( "CG_RunBuildableLerpFrame: Can't blend lf->skeleton\n" );
+						CG_Printf( "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n" );
 						return;
 					}
 				}
@@ -1937,7 +1940,7 @@ void CG_Buildable( centity_t *cent )
 	{
 		vec3_t Scale;
 		Scale[0] = Scale[1] = Scale[2] = scale;
-		memcpy( &ent.skeleton, &cent->lerpFrame.skeleton, sizeof( refSkeleton_t ) );
+		memcpy( &ent.skeleton, &bSkeleton, sizeof( refSkeleton_t ) );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 	}
 

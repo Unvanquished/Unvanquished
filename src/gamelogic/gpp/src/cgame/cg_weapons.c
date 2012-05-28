@@ -25,6 +25,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+static refSkeleton_t gunSkeleton;
+static refSkeleton_t oldGunSkeleton;
+
 /*
 =================
 CG_RegisterUpgrade
@@ -1068,11 +1071,11 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 		CG_Printf( "Anim: %i\n", newAnimation );
 	}
 
-	if ( &cg_weapons[ weapon ].md5 && lf->oldSkeleton.type != SK_INVALID )
+	if ( &cg_weapons[ weapon ].md5 && oldGunSkeleton.type != SK_INVALID )
 	{
-		if ( !trap_R_BuildSkeleton( &lf->oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
 		{
-			CG_Printf( "CG_SetWeaponLerpFrameAnimation: can't build old skeleton\n" );
+			CG_Printf( "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton\n" );
 			return;
 		}
 	}
@@ -1131,17 +1134,17 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 			lf->blendtime = cg.time + 10;
 		}
 
-		if ( !trap_R_BuildSkeleton( &lf->skeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &gunSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
 		{
-			CG_Printf( "CG_RunWeaponLerpFrame: Can't build lf->skeleton\n" );
+			CG_Printf( "CG_RunWeaponLerpFrame: Can't build lf->gunSkeleton\n" );
 		}
 
 		// lerp between old and new animation if possible
-		if ( lf->blendlerp > 0.0f )
+		if ( lf->blendlerp > 0.0f && gunSkeleton.numBones == oldGunSkeleton.numBones )
 		{
-			if ( !trap_R_BlendSkeleton( &lf->skeleton, &lf->oldSkeleton, lf->blendlerp ) )
+			if ( !trap_R_BlendSkeleton( &gunSkeleton, &oldGunSkeleton, lf->blendlerp ) )
 			{
-				CG_Printf( "CG_RunWeaponLerpFrame: Can't blend lf->skeleton\n" );
+				CG_Printf( "CG_RunWeaponLerpFrame: Can't blend lf->gunSkeleton\n" );
 				return;
 			}
 		}
@@ -1424,7 +1427,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
 		CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
 
-		memcpy( &gun.skeleton, &cent->pe.weapon.skeleton, sizeof( refSkeleton_t ) );
+		memcpy( &gun.skeleton, &gunSkeleton, sizeof( refSkeleton_t ) );
 
 		if ( weapon->rotationBone[ 0 ] && ps )
 		{
