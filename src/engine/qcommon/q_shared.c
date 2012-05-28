@@ -421,6 +421,11 @@ const char     *COM_GetExtension( const char *name )
 	length = strlen( name ) - 1;
 	i = length;
 
+	if ( !i )
+	{
+		return "";
+	}
+
 	while ( name[ i ] != '.' )
 	{
 		i--;
