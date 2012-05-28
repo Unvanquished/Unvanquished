@@ -765,10 +765,12 @@ char *CON_Input( void )
 					continue;
 				}
 
+			case 1: // Ctrl-A
 			case KEY_HOME:
 				input_field.cursor = 0;
 				continue;
 
+			case 5: // Ctrl-E
 			case KEY_END:
 				key_end:
 				input_field.cursor = Q_UTF8Strlen( input_field.buffer );
