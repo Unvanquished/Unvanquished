@@ -1038,7 +1038,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 			if ( !Q_stricmp( modelName, "level4" ) )
 			{
-				if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_CHARGE, "charge", qfalse, qfalse, qfalse ) )
+				if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_CHARGE, "charge", qtrue, qfalse, qfalse ) )
 				{
 					ci->animations[ NSPA_CHARGE ] = ci->animations[ NSPA_STAND ];
 				}
