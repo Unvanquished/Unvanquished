@@ -194,6 +194,8 @@ static void        *rendererLib = NULL;
 cvar_t             *cl_aviMotionJpeg;
 // XreaL END
 
+cvar_t             *cl_allowPaste;
+
 clientActive_t     cl;
 clientConnection_t clc;
 clientStatic_t     cls;
@@ -5213,6 +5215,8 @@ void CL_Init( void )
 	Q_strncpyz( cls.autoupdateServerNames[ 3 ], AUTOUPDATE_SERVER4_NAME, MAX_QPATH );
 	Q_strncpyz( cls.autoupdateServerNames[ 4 ], AUTOUPDATE_SERVER5_NAME, MAX_QPATH );
 	// DHM - Nerve
+
+	cl_allowPaste = Cvar_Get( "cl_allowPaste", "1", 0 );
 
 	//
 	// register our commands
