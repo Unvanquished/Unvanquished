@@ -832,6 +832,28 @@ char *CON_Input( void )
 
 				continue;
 
+			case 20: // Ctrl-T
+				if ( input_field.cursor )
+				{
+					char *p, *s, tmp[4];
+					int width;
+
+					if ( input_field.cursor == Q_UTF8Strlen( input_field.buffer ) )
+					{
+						--input_field.cursor;
+					}
+
+					s = &input_field.buffer[ Field_CursorToOffset( &input_field ) ];
+					width = Q_UTF8Width( s );
+					--input_field.cursor;
+					p = &input_field.buffer[ Field_CursorToOffset( &input_field ) ];
+					memcpy( tmp, p, s - p );
+					memmove( p, s, width );
+					memcpy( p + width, tmp, s - p );
+					input_field.cursor += 2;
+				}
+
+				continue;
 		}
 
 		// Normal characters

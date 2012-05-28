@@ -3987,6 +3987,27 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				UI_Paste( item, buff, SELECTION_CLIPBOARD );
 				DC->setCVar( item->cvar, buff );
 			}
+			else if ( chr == 't' - 'a' + 1 && item->cursorPos )
+			{
+				int i, j, w, tmp[4];
+
+				if ( item->cursorPos == lenChars )
+				{
+					--item->cursorPos;
+				}
+
+				i = ui_CursorToOffset( buff, item->cursorPos - 1 );
+				j = ui_CursorToOffset( buff, item->cursorPos );
+				w = Q_UTF8Width( buff + j );
+
+				memcpy( tmp, buff + i, j - i );
+				memmove( buff + i, buff + j, w );
+				memcpy( buff + i + w, tmp, j - i );
+
+				++item->cursorPos;
+
+				DC->setCVar( item->cvar, buff );
+			}
 			else if ( chr < 32 || chr == 127 || !item->cvar )
 			{
 				// Ignore any non printable chars
