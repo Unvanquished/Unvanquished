@@ -3440,7 +3440,7 @@ void CG_Player( centity_t *cent )
 
 		if ( cent->currentState.eFlags & EF_WALLCLIMB && !( cent->currentState.eFlags & EF_DEAD ) && !( cg.intermissionStarted ) )
 		{
-			vec3_t  start, end, mins, maxs;
+			vec3_t  start, end;
 			trace_t tr;
 
 			if ( cent->currentState.eFlags & EF_WALLCLIMBCEILING )
@@ -3586,8 +3586,8 @@ void CG_Player( centity_t *cent )
 		// transform relative bones to absolute ones required for vertex skinning and tag attachments
 		CG_TransformSkeleton( &body.skeleton, ci->modelScale );
 		
-		memcpy( &body.skeleton.bounds[ 1 ], &mins, sizeof( vec3_t ) );
-		memcpy( &body.skeleton.bounds[ 0 ], &maxs, sizeof( vec3_t ) );
+		memcpy( &body.skeleton.bounds[ 0 ], &mins, sizeof( vec3_t ) );
+		memcpy( &body.skeleton.bounds[ 1 ], &maxs, sizeof( vec3_t ) );
 		
 		// add body to renderer
 

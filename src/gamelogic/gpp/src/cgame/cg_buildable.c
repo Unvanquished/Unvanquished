@@ -1942,8 +1942,8 @@ void CG_Buildable( centity_t *cent )
 		Scale[0] = Scale[1] = Scale[2] = scale;
 		memcpy( &ent.skeleton, &bSkeleton, sizeof( refSkeleton_t ) );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
-		memcpy( &ent.skeleton.bounds[ 1 ], &mins, sizeof( vec3_t ) );
-		memcpy( &ent.skeleton.bounds[ 0 ], &maxs, sizeof( vec3_t ) );
+		memcpy( &ent.skeleton.bounds[ 0 ], &mins, sizeof( vec3_t ) );
+		memcpy( &ent.skeleton.bounds[ 1 ], &maxs, sizeof( vec3_t ) );
 	}
 
 	//add to refresh list
