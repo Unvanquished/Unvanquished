@@ -3882,7 +3882,7 @@ void CG_Corpse( centity_t *cent )
 	int           renderfx;
 	qboolean      shadow = qfalse;
 	float         shadowPlane;
-	vec3_t        origin, liveZ, deadZ;
+	vec3_t        origin, liveZ, deadZ, deadMax;
 	float         scale;
 
 	corpseNum = CG_GetCorpseNum( es->clientNum );
@@ -3906,7 +3906,7 @@ void CG_Corpse( centity_t *cent )
 	memset( &head, 0, sizeof( head ) );
 
 	VectorCopy( cent->lerpOrigin, origin );
-	BG_ClassBoundingBox( es->clientNum, liveZ, NULL, NULL, deadZ, NULL );
+	BG_ClassBoundingBox( es->clientNum, liveZ, NULL, NULL, deadZ, deadMax );
 	origin[ 2 ] -= ( liveZ[ 2 ] - deadZ[ 2 ] );
 	if( ci->bodyModel )
 	{
@@ -3992,6 +3992,8 @@ void CG_Corpse( centity_t *cent )
 		legs.customSkin = ci->bodySkin;
 		memcpy( &legs.skeleton, &skeleton, sizeof( refSkeleton_t ) );
 		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
+		memcpy( &legs.skeleton.bounds[ 0 ], &deadZ, sizeof( vec3_t ) );
+		memcpy( &legs.skeleton.bounds[ 1 ], &deadMax, sizeof( vec3_t ) );
 	}
 
 	//
