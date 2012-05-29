@@ -186,7 +186,6 @@ transform relative bones to absolute ones required for vertex skinning
 void CG_TransformSkeleton( refSkeleton_t *skel, const vec3_t scale )
 {
 	int       i;
-	int       j;
 	refBone_t *bone;
 
 	switch ( skel->type )
@@ -198,9 +197,6 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec3_t scale )
 		default:
 			break;
 	}
-
-	skel->bounds[0][0] = skel->bounds[0][1] = skel->bounds[0][2] =
-	skel->bounds[1][0] = skel->bounds[1][1] = skel->bounds[1][2] = 0;
 
 	// calculate absolute transforms
 	for ( i = 0, bone = &skel->bones[ 0 ]; i < skel->numBones; i++, bone++ )
@@ -224,13 +220,6 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec3_t scale )
 			}
 
 			VectorAdd( parent->origin, rotated, bone->origin );
-
-			// use the origin to adjust the bbox, but do we also need to use the other end of the bone?
-			for ( j = 0; j < 3; ++j )
-			{
-				if ( bone->origin[j] < skel->bounds[0][j] ) { skel->bounds[0][j] = bone->origin[j]; }
-				if ( bone->origin[j] > skel->bounds[1][j] ) { skel->bounds[1][j] = bone->origin[j]; }
-			}
 
 			QuatMultiply1( parent->rotation, bone->rotation, quat );
 			QuatCopy( quat, bone->rotation );
