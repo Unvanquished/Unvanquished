@@ -124,7 +124,7 @@ static char *med3( char *a, char *b, char *c, cmp_t *cmp )
 		       : ( cmp( b, c ) > 0 ? b : ( cmp( a, c ) < 0 ? a : c ) );
 }
 
-void qsort( void *a, size_t n, size_t es, cmp_t* cmp )
+void qsort( void *a, size_t n, size_t es, cmp_t *cmp )
 {
 	char *pa, *pb, *pc, *pd, *pl, *pm, *pn;
 	int  d, r, swaptype, swap_cnt;
@@ -928,6 +928,21 @@ double rint( double v )
 	}
 }
 
+float rintf( float v )
+{
+        return (float) rint( v );
+}
+
+float floorf( float v )
+{
+        return (float) floor( v );
+}
+
+float ceilf( float v )
+{
+        return (float) ceil( v );
+}
+
 double tan( double x )
 {
 	return sin( x ) / cos( x );
@@ -1182,7 +1197,7 @@ static float __scalbnf( float x, int n )
 pow
 ==================
 */
-float pow( float x, float y )
+float powf( float x, float y )
 {
 	float z, ax, z_h, z_l, p_h, p_l;
 	float y1, subt1, t1, t2, subr, r, s, t, u, v, w;

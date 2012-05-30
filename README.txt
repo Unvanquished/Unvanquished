@@ -11,7 +11,6 @@ Dependencies
     - libsdl
     - OpenAL
     - libwebp (optional)
-    - MySQL (optional)
     - libxvid (optional)
     - Newton (provided)
     - libgmp

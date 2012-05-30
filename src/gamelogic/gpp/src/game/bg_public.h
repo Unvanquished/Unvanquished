@@ -864,7 +864,8 @@ typedef enum
   SAY_AREA_TEAM,
   SAY_ADMINS,
   SAY_ADMINS_PUBLIC,
-  SAY_RAW
+  SAY_RAW,
+  SAY_DEFAULT
 } saymode_t;
 
 // means of death

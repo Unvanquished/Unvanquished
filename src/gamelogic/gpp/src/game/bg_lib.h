@@ -36,13 +36,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 #endif
 
-typedef unsigned int size_t;
 
+#if defined( __clang__ ) || defined( __GNUC__ )
+typedef __builtin_va_list va_list;
+#define va_start(ap,v) __builtin_va_start(ap,v)
+#define va_arg(ap,t)   __builtin_va_arg(ap,t)
+#define va_end(ap)     __builtin_va_end(ap)
+#else
 typedef char          *va_list;
+// possible alignment issues here? This is fine for 32-bit at least...
 #define _INTSIZEOF(n)  ( ( sizeof( n ) + sizeof( int ) - 1 ) & ~( sizeof( int ) - 1 ) )
 #define va_start(ap,v) ( ap = ( va_list ) & v + _INTSIZEOF(v) )
 #define va_arg(ap,t)   ( *(t *)(( ap += _INTSIZEOF(t)) - _INTSIZEOF(t)) )
 #define va_end(ap)     ( ap = (va_list)0 )
+#endif
 
 #define CHAR_BIT  8 /* number of bits in a char */
 #define SCHAR_MAX 0x7f /* maximum signed char value */
@@ -63,8 +70,28 @@ typedef   signed  char int8_t;
 typedef unsigned  char uint8_t;
 typedef   signed short int16_t;
 typedef unsigned short uint16_t;
-typedef   signed  long int32_t;
-typedef unsigned  long uint32_t;
+typedef   signed   int int32_t;
+typedef unsigned   int uint32_t;
+
+#if defined( __GNUC__ ) || defined( __clang__ )
+typedef        __INT64_TYPE__ int64_t;
+typedef signed __INT64_TYPE__ uint64_t;
+#elif defined( _WIN32 )
+typedef                _int64 int64_t;
+typedef               _uint64 uint64_t;
+#elif !defined( __LCC__ )
+#error HELP! I need some 64-bit integer types!
+#endif
+
+#if defined( __GNUC__ ) || defined( __clang__ )
+typedef        __SIZE_TYPE__ size_t;
+#elif defined( _WIN64 )
+typedef             uint64_t size_t;
+#elif defined( _WIN32 ) || defined( __LCC__ )
+typedef         unsigned int size_t;
+#else
+#error HELP! I need size_t!
+#endif
 
 #define isalnum(c)  ( isalpha(c) || isdigit(c))
 #define isalpha(c)  ( isupper(c) || islower(c))
@@ -127,7 +154,9 @@ void   *memcpy( void *dest, const void *src, size_t count );
 
 // Math functions
 double ceil( double x );
+float  ceilf( float x );
 double floor( double x );
+float  floorf( float x );
 double sqrt( double x );
 double sin( double x );
 double cos( double x );
@@ -136,7 +165,8 @@ double tan( double x );
 int    abs( int n );
 double fabs( double x );
 double acos( double x );
-float  pow( float x, float y );
+float  powf( float x, float y );
 double rint( double v );
+float  rintf( float v );
 
 #endif // BG_LIB_H

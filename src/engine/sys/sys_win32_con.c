@@ -955,6 +955,11 @@ void Conbuf_AppendText( const char *pMsg )
 		}
 		else
 		{
+			if ( msg[ i ] == Q_COLOR_ESCAPE && msg[ i + 1 ] == Q_COLOR_ESCAPE )
+			{
+				++i;
+			}
+
 			*b = msg[ i ];
 			b++;
 		}

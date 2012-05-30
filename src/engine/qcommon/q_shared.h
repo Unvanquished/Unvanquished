@@ -160,6 +160,10 @@ extern "C" {
 #define IFDECLARE ;
 #endif
 
+#ifdef USE_LLVM
+extern int memcmp( void *, void *, size_t );
+#endif
+
 #else
 
 #include <assert.h>
@@ -884,7 +888,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	{
 		float v[ 3 ];
 	} vec3struct_t;
-#define VectorCopy( a,b ) *(vec3struct_t *)b = *(vec3struct_t *)a;
+#define VectorCopy( a,b ) *(vec3struct_t *)b = *(vec3struct_t *)a
 #endif
 #endif
 
@@ -907,7 +911,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define DotProduct4(x, y)            (( x )[ 0 ] * ( y )[ 0 ] + ( x )[ 1 ] * ( y )[ 1 ] + ( x )[ 2 ] * ( y )[ 2 ] + ( x )[ 3 ] * ( y )[ 3 ] )
 
-#define SnapVector( v )              { v[ 0 ] = ( (int)( v[ 0 ] ) ); v[ 1 ] = ( (int)( v[ 1 ] ) ); v[ 2 ] = ( (int)( v[ 2 ] ) ); }
+#define SnapVector( v )              do { v[ 0 ] = ( (int)( v[ 0 ] ) ); v[ 1 ] = ( (int)( v[ 1 ] ) ); v[ 2 ] = ( (int)( v[ 2 ] ) ); } while ( 0 )
 
 // just in case you do't want to use the macros
 	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );
@@ -1357,9 +1361,8 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define MIN(x,y) (( x ) < ( y ) ? ( x ) : ( y ))
 #endif
 
-#ifdef _MSC_VER
-	float rint( float v );
-
+#if defined( _MSC_VER ) || defined( Q3_VM )
+	float rintf( float v );
 #endif
 
 //=============================================

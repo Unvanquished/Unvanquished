@@ -421,6 +421,11 @@ const char     *COM_GetExtension( const char *name )
 	length = strlen( name ) - 1;
 	i = length;
 
+	if ( !i )
+	{
+		return "";
+	}
+
 	while ( name[ i ] != '.' )
 	{
 		i--;
@@ -2399,6 +2404,10 @@ int Q_PrintStrlen( const char *string )
 			p += 2;
 			continue;
 		}
+		if ( *p == Q_COLOR_ESCAPE && p[1] == Q_COLOR_ESCAPE )
+		{
+			++p;
+		}
 
 		p++;
 		len++;
@@ -2584,6 +2593,10 @@ int Q_UTF8PrintStrlen( const char *str )
     {
       str += 2;
       continue;
+    }
+    if( *str == Q_COLOR_ESCAPE && str[1] == Q_COLOR_ESCAPE )
+    {
+      ++str;
     }
 
     l++;
@@ -3408,7 +3421,7 @@ void Q_ParseNewlines( char *dest, const char *src, int destsize )
 }
 
 #ifdef _MSC_VER
-float rint( float v )
+float rintf( float v )
 {
 	if ( v >= 0.5f ) { return ceilf( v ); }
 	else { return floorf( v ); }

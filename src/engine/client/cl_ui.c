@@ -1284,7 +1284,15 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_GETCLIPBOARDDATA:
 			VM_CheckBlock( args[1], args[2], "UIGCD" );
-			CL_GetClipboardData( VMA( 1 ), args[ 2 ], args[ 3 ] );
+
+			if ( cl_allowPaste->integer )
+			{
+				CL_GetClipboardData( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			}
+			else
+			{
+				( (char *) VMA( 1 ) )[0] = '\0';
+			}
 			return 0;
 
 		case UI_GETCLIENTSTATE:

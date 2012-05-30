@@ -161,7 +161,7 @@ static void UI_CloseMenus_f( void )
 static void UI_MessageMode_f( void )
 {
 	char *arg = UI_Argv( 0 );
-	int   chatColour = SAY_ALL;
+	int             chatColour;
 	int             team;
 	uiClientState_t cs;
 	char            info[ MAX_INFO_STRING ];
@@ -180,6 +180,7 @@ static void UI_MessageMode_f( void )
 			uiInfo.chatTeam = qfalse;
 			uiInfo.chatAdmin = qfalse;
 			uiInfo.chatIRC = qfalse;
+			chatColour = ui_chatPromptColours.integer ? SAY_ALL : SAY_DEFAULT;
 			break;
 
 		case '2':
@@ -187,7 +188,7 @@ static void UI_MessageMode_f( void )
 			uiInfo.chatTeam = qtrue;
 			uiInfo.chatAdmin = qfalse;
 			uiInfo.chatIRC = qfalse;
-			chatColour = ui_chatPromptColours.integer ? SAY_TEAM : SAY_ALL;
+			chatColour = ui_chatPromptColours.integer ? SAY_TEAM : SAY_DEFAULT;
 			break;
 
 		case '3':
@@ -195,7 +196,7 @@ static void UI_MessageMode_f( void )
 			uiInfo.chatTeam = qfalse;
 			uiInfo.chatAdmin = qtrue;
 			uiInfo.chatIRC = qfalse;
-			chatColour = ui_chatPromptColours.integer ? SAY_ADMINS : SAY_ALL;
+			chatColour = ui_chatPromptColours.integer ? SAY_ADMINS : SAY_DEFAULT;
 			break;
 
 		case '4':
@@ -203,7 +204,7 @@ static void UI_MessageMode_f( void )
 			uiInfo.chatTeam = qfalse;
 			uiInfo.chatAdmin = qfalse;
 			uiInfo.chatIRC = qtrue;
-			chatColour = ui_chatPromptColours.integer ? SAY_RAW : SAY_ALL;
+			chatColour = ui_chatPromptColours.integer ? SAY_RAW : SAY_DEFAULT;
 			break;
 	}
 

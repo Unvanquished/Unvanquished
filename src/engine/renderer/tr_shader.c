@@ -2135,8 +2135,9 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			// check for other semantic meanings
 			else if ( !Q_stricmp( token, "diffuseMap" ) )
 			{
-				blendSrcBits = GLS_SRCBLEND_ZERO;
-				blendDstBits = GLS_DSTBLEND_ONE;
+				// no, let's have depth-mask
+				blendSrcBits = GLS_SRCBLEND_ONE;
+				blendDstBits = GLS_DSTBLEND_ZERO;
 			}
 			else if ( !Q_stricmp( token, "bumpMap" ) )
 			{

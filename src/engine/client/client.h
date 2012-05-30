@@ -541,6 +541,8 @@ extern cvar_t  *cl_aviFrameRate;
 extern cvar_t  *cl_aviMotionJpeg;
 // XreaL END
 
+extern cvar_t  *cl_allowPaste;
+
 extern cvar_t  *cl_pubkeyID;
 
 #ifdef USE_MUMBLE

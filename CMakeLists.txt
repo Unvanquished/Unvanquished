@@ -37,12 +37,12 @@ option( BUILD_CLIENT         "Build Daemon client"                         1 )
 option( BUILD_OLD_RENDERER   "Build old renderer library"                  1 )
 option( BUILD_NEW_RENDERER   "Build new renderer library"                  1 )
 option( BUILD_SERVER         "Build Daemonded server"                      1 )
-option( BUILD_GAME_SO_GPP    "Build GPP Tremulous game logic libs"         1 )
-option( BUILD_GAME_QVM_GPP   "Build GPP Tremulous game logic QVM files"    0 )
+option( BUILD_GAME_GPP       "Build GPP Tremulous game logic"              1 )
+option( GAME_LIB             "Build game logic libraries"                  1 )
+option( GAME_QVM             "Build game logic QVM files"                  1 )
 option( BUILD_MASTER         "Build master server"                         1 )
 option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
 option( USE_OPENAL           "Use OpenAL"                                  1 )
-option( USE_LLVM             "Use LLVM"                                    0 )
 option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 )
 option( HAVE_BZIP2           "Compile with BZip2 support"                  0 )
 option( USE_CURSES           "Use the curses console"                      1 )
@@ -60,12 +60,34 @@ option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
 option( ENABLE_HARDENING     "Enable various hardening options"            1 )
 
-cmake_dependent_option( QVM_DEBUG            "Enable (some) QVM debugging"                 1 BUILD_GAME_QVM_GPP 0 )
+cmake_dependent_option( BUILD_GAME_GPP       "Build Tremulous GPP game logic"              1 "GAME_LIB OR GAME_QVM" 0 )
+cmake_dependent_option( QVM_DEBUG            "Enable (some) QVM debugging"                 1 GAME_QVM         0 )
+cmake_dependent_option( GAME_LIB_LLVM        "Use LLVM, not shared libs, for game logic"   0 GAME_LIB         0 )
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
 cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"             1 USE_CODEC_VORBIS 0 )
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
+
+mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG )
+
+if( GAME_LIB_LLVM )
+  find_program(LLVM_CONFIG llvm-config)
+  execute_process(COMMAND ${LLVM_CONFIG} --libfiles
+                  OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  separate_arguments(LLVM_LIBS)
+
+  include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake )
+  include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMXXInformation.cmake )
+  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMCompiler.cmake )
+  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMXXCompiler.cmake )
+  enable_language( LLVM )
+  enable_language( LLVMXX )
+  message( STATUS "Using LLVM" )
+endif()
 
 # Package info
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
@@ -183,32 +205,51 @@ macro( try_cxx_flag PROP FLAG )
   try_compiler_flag_internal( ${PROP} ${FLAG} CXX cxx C++)
 endmacro()
 
+macro( try_llvm_flag PROP FLAG )
+  try_compiler_flag_internal( ${PROP} ${FLAG} LLVM cc C/LLVM)
+endmacro()
+
+macro( try_c_llvm_flag PROP FLAG )
+  try_c_flag( ${PROP} ${FLAG} )
+  if( GAME_LIB_LLVM )
+    try_llvm_flag( ${PROP} ${FLAG} )
+  endif()
+endmacro()
+
 macro( try_c_cxx_flag PROP FLAG )
   try_c_flag( ${PROP} ${FLAG} )
   try_cxx_flag( ${PROP} ${FLAG} )
 endmacro()
 
+macro( try_c_cxx_llvm_flag PROP FLAG )
+  try_c_flag( ${PROP} ${FLAG} )
+  try_cxx_flag( ${PROP} ${FLAG} )
+  if( GAME_LIB_LLVM )
+    try_llvm_flag( ${PROP} ${FLAG} )
+  endif()
+endmacro()
+
 # Various warnings
 if( ENABLE_W_ALL )
-  try_c_cxx_flag( HAVE_W_ALL              -Wall )
+  try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
 endif()
 if( ENABLE_WARNINGS )
-  try_c_cxx_flag( HAVE_W_FORMAT2          -Wformat=2 )
+  try_c_cxx_llvm_flag( HAVE_W_FORMAT2          -Wformat=2 )
   if( NOT HAVE_W_FORMAT2_C )
-    try_c_cxx_flag( HAVE_W_FORMAT         -Wformat )
+    try_c_cxx_llvm_flag( HAVE_W_FORMAT         -Wformat )
   endif()
-  try_c_flag    ( HAVE_W_0LEN_FMT         -Wno-format-zero-length )
-  try_c_cxx_flag( HAVE_W_FORMAT_SECURITY  -Wformat-security )
-  try_c_cxx_flag( HAVE_W_STRICT_ALIAS_2   -Wstrict-aliasing=2 )
-  try_c_cxx_flag( HAVE_W_MISSING_FMT_ATTR -Wmissing-format-attribute )
-  try_c_cxx_flag( HAVE_W_MISSING_NORETURN -Wmissing-noreturn )
-  try_c_flag    ( HAVE_W_IMPLICIT_FN      -Wimplicit-function-declaration )
+  try_c_llvm_flag    ( HAVE_W_0LEN_FMT         -Wno-format-zero-length )
+  try_c_cxx_llvm_flag( HAVE_W_FORMAT_SECURITY  -Wformat-security )
+  try_c_cxx_llvm_flag( HAVE_W_STRICT_ALIAS_2   -Wstrict-aliasing=2 )
+  try_c_cxx_llvm_flag( HAVE_W_MISSING_FMT_ATTR -Wmissing-format-attribute )
+  try_c_cxx_llvm_flag( HAVE_W_MISSING_NORETURN -Wmissing-noreturn )
+  try_c_llvm_flag    ( HAVE_W_IMPLICIT_FN      -Wimplicit-function-declaration )
   if( HAVE_W_IMPLICIT_FN_C )
-    try_c_cxx_flag( HAVE_W_ERR_IMPLICIT_FN  -Werror=implicit-function-declaration )
+    try_c_cxx_llvm_flag( HAVE_W_ERR_IMPLICIT_FN  -Werror=implicit-function-declaration )
   endif()
-  try_c_cxx_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
+  try_c_cxx_llvm_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
   if( HAVE_W_FMT_SECURITY_C )
-    try_c_cxx_flag( HAVE_W_ERR_FMT_SECURITY -Werror=format-security )
+    try_c_cxx_llvm_flag( HAVE_W_ERR_FMT_SECURITY -Werror=format-security )
   endif()
 endif()
 
@@ -392,16 +433,8 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/vm_interpreted.c
 )
 
-if( USE_LLVM )
+if( GAME_LIB_LLVM )
   set( QCOMMONLIST ${QCOMMONLIST} ${MOUNT_DIR}/engine/qcommon/vm_llvm.cpp )
-  add_definitions( -DUSE_LLVM -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS )
-  find_program(LLVM_CONFIG llvm-config)
-  execute_process(COMMAND ${LLVM_CONFIG} --libfiles
-  			    OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-  separate_arguments(LLVM_LIBS)
 endif()
 
 if( USE_PHYSICS )
@@ -479,6 +512,11 @@ set( SDLLIST
   ${MOUNT_DIR}/engine/sys/sdl_snd.c
 )
 
+# needed for LLVM & QVM
+set( GAME_VM_COMMON
+  ${MOUNT_DIR}/engine/qcommon/q_static.c
+)
+
 set( CGAMEGPP_BASE
   ${GPP_DIR}/src/cgame/cg_main.c
   ${GPP_DIR}/src/game/bg_misc.c
@@ -510,8 +548,8 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/src/cgame/cg_tutorial.c
   ${GPP_DIR}/src/ui/ui_shared.c
   ${GPP_DIR}/src/ui/ui_utf8.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/./q_math.c
+  ${MOUNT_DIR}/engine/qcommon/./q_shared.c
 )
 
 set( CGAMEGPP_SO
@@ -552,8 +590,8 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/src/game/g_weapon.c
   ${GPP_DIR}/src/game/g_admin.c
   ${GPP_DIR}/src/game/g_namelog.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/./q_math.c
+  ${MOUNT_DIR}/engine/qcommon/./q_shared.c
 )
 
 set( GAMEGPP_SO
@@ -576,8 +614,8 @@ set( UIGPP_BASE
   ${GPP_DIR}/src/ui/ui_gameinfo.c
   ${GPP_DIR}/src/game/bg_misc.c
   ${GPP_DIR}/src/game/bg_lib.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/./q_math.c
+  ${MOUNT_DIR}/engine/qcommon/./q_shared.c
   ${GPP_DIR}/src/ui/ui_utf8.c
 )
 
@@ -931,6 +969,10 @@ set( Q3ASM_LIST
 # End of file list #
 ####################
 
+if( GAME_LIB_LLVM )
+  add_definitions( -DUSE_LLVM -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS )
+endif()
+
 if( USE_PHYSICS )
   set( NEWTON_INCLUDES
     ${MOUNT_DIR}/libs/libnewton/include
@@ -966,6 +1008,7 @@ endif()
 # Build Game/Cgame/Ui DLL/.so #
 ###############################
 
+
 # Function to setup all the Game/Cgame/UI libraries
 include( CMakeParseArguments )
 function( GAMELIB )
@@ -974,7 +1017,7 @@ function( GAMELIB )
   set( multiValueArgs COMPILE_DEF LIB_FILES QVM_FILES QVM_ASM )
   cmake_parse_arguments(GAMELIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-  if( BUILD_GAME_SO_GPP )
+  if( GAME_LIB )
     # Xcode places the game libraries in the incorrect location. This should fix it
     if( XCODE_VERSION )
       set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
@@ -983,7 +1026,11 @@ function( GAMELIB )
       set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
     endif()
 
-    add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} )
+    if( GAME_LIB_LLVM )
+      add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} )
+    else()
+      add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} )
+    endif()
     target_link_libraries( ${GAMELIB_LIB_NAME} m )
     set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
       PREFIX ""
@@ -993,14 +1040,60 @@ function( GAMELIB )
       COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
     )
 
-    if( WIN32 )
+    if( GAME_LIB_LLVM )
+      file( MAKE_DIRECTORY "${Daemon_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm" )
+
+      set( GAMELIB_SOURCE_NAME "src/gamelogic/${GAMELIB_OUTPUT_DIR}" )
+      if( GAMELIB_OUTPUT_DIR STREQUAL "main" )
+        set( GAMELIB_SOURCE_NAME "src/gamelogic/gpp" )
+      endif()
+
+      set( GAMELIB_LLVM_FLAGS "-w -emit-llvm -DQ3_VM -nostdinc -I${GAMELIB_SOURCE_NAME} -Isrc/engine/qcommon -I${GAMELIB_SOURCE_NAME}/src/game -I${GAMELIB_SOURCE_NAME}/src/cgame -I${GAMELIB_SOURCE_NAME}/src/ui" )
+
+      set( GAMELIB_LIB_CXX )
+      foreach( FILE ${GAMELIB_LIB_FILES} )
+        if( FILE MATCHES "\\.cpp$" )
+          set( GAMELIB_LIB_CXX ${GAMELIB_LIB_CXX} ${FILE} )
+        endif()
+      endforeach()
+
+      set_source_files_properties( ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} PROPERTIES LANGUAGE LLVM )
+      set_source_files_properties( ${GAMELIB_LIB_CXX} PROPERTIES LANGUAGE LLVMXX )
+
+      # First target is for at least i386
+      set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES
+        PREFIX "vm/"
+        SUFFIX ".bc"
+        COMPILE_FLAGS "-m32 ${GAMELIB_LLVM_FLAGS}"
+        OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_32"
+        LINKER_LANGUAGE LLVM
+        LINK_FLAGS -emit-llvm
+      )
+      # And a second target for at least amd64
+      add_library( ${GAMELIB_LIB_NAME}_64 SHARED ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} )
+      target_link_libraries( ${GAMELIB_LIB_NAME}_64 m )
+      set_target_properties( ${GAMELIB_LIB_NAME}_64 PROPERTIES
+        PREFIX "vm/"
+        SUFFIX ".bc"
+        COMPILE_FLAGS "-m64 ${GAMELIB_LLVM_FLAGS}"
+        OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_64"
+        LINKER_LANGUAGE LLVM
+        LINK_FLAGS -emit-llvm
+        LIBRARY_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+        ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
+        COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
+      )
+      # May need more here for different architectures
+
+    elseif( WIN32 )
       set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_mp_${BUILD_ARCH}" )
     else()
       set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}.mp.${BUILD_ARCH}" )
     endif()
   endif()
 
-  if( BUILD_GAME_QVM_GPP AND GAMELIB_QVM_FILES )
+  if( GAME_QVM AND GAMELIB_QVM_FILES )
     set( QVM_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/${GAMELIB_LIB_NAME}-qvm.dir )
     set( QVM_CPP_OPTIONS
       -I${MOUNT_DIR}/gamelogic/gpp/src/game
@@ -1045,7 +1138,7 @@ function( GAMELIB )
 
 endfunction()
 
-if( BUILD_GAME_QVM_GPP )
+if( GAME_QVM )
   add_subdirectory( ${MOUNT_DIR}/tools/lcc ${CMAKE_BINARY_DIR}/lcc )
 endif()
 
@@ -1313,7 +1406,7 @@ if( BUILD_CLIENT )
     target_link_libraries( client ${BZIP2_LIBRARY} )
   endif()
 
-  if( USE_LLVM )
+  if( GAME_LIB_LLVM )
     include_directories( ${LLVM_INCLUDE_DIR} )
     target_link_libraries( client ${LLVM_LIBS} )
   endif()
@@ -1413,8 +1506,7 @@ if( BUILD_SERVER )
     target_link_libraries( server ${BZIP2_LIBRARY} )
   endif()
 
-
-  if( USE_LLVM )
+  if( GAME_LIB_LLVM )
     include_directories( ${LLVM_INCLUDE_DIR} )
     target_link_libraries( server ${LLVM_LIBS} )
   endif()

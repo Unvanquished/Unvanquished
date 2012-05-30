@@ -267,13 +267,16 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 	static char buffer[ MAXPRINTMSG ];
 #endif
 	int         length = 0;
+	qboolean    noColour = qfalse;
 
 	CON_SetColor( win, 7 );
 
 	while ( *msg )
 	{
-		if ( Q_IsColorString( msg ) || *msg == '\n' )
+		if ( ( !noColour && Q_IsColorString( msg ) ) || *msg == '\n' )
 		{
+			noColour = qfalse;
+
 			// First empty the buffer
 			if ( length > 0 )
 			{
@@ -332,6 +335,21 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 				break;
 			}
 
+			if ( !noColour && *msg == Q_COLOR_ESCAPE && msg[1] == Q_COLOR_ESCAPE )
+			{
+				if ( stripcodes )
+				{
+					++msg;
+				}
+				else
+				{
+					noColour = qtrue; // guaranteed a colour control next
+				}
+			}
+			else
+			{
+				noColour = qfalse;
+			}
 #ifdef USE_CURSES_W
 			buffer[ length ] = (wchar_t) Q_UTF8CodePoint( msg );
 			msg += Q_UTF8WidthCP( buffer[ length ]);
@@ -747,10 +765,12 @@ char *CON_Input( void )
 					continue;
 				}
 
+			case 1: // Ctrl-A
 			case KEY_HOME:
 				input_field.cursor = 0;
 				continue;
 
+			case 5: // Ctrl-E
 			case KEY_END:
 				key_end:
 				input_field.cursor = Q_UTF8Strlen( input_field.buffer );
@@ -812,6 +832,28 @@ char *CON_Input( void )
 
 				continue;
 
+			case 20: // Ctrl-T
+				if ( input_field.cursor )
+				{
+					char *p, *s, tmp[4];
+					int width;
+
+					if ( input_field.cursor == Q_UTF8Strlen( input_field.buffer ) )
+					{
+						--input_field.cursor;
+					}
+
+					s = &input_field.buffer[ Field_CursorToOffset( &input_field ) ];
+					width = Q_UTF8Width( s );
+					--input_field.cursor;
+					p = &input_field.buffer[ Field_CursorToOffset( &input_field ) ];
+					memcpy( tmp, p, s - p );
+					memmove( p, s, width );
+					memcpy( p + width, tmp, s - p );
+					input_field.cursor += 2;
+				}
+
+				continue;
 		}
 
 		// Normal characters

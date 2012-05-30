@@ -1473,23 +1473,6 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						pak->referenced |= FS_UI_REF;
 					}
 
-					// LLVM - if we were asked to open an llvm, reference that.
-					// this assumes that we don't reference both, qvm AND llvm!
-					if ( !( pak->referenced & FS_QAGAME_REF ) && strstr( filename, "qagamellvm.bc" ) )
-					{
-						pak->referenced |= FS_QAGAME_REF;
-					}
-
-					if ( !( pak->referenced & FS_CGAME_REF ) && strstr( filename, "cgamellvm.bc" ) )
-					{
-						pak->referenced |= FS_CGAME_REF;
-					}
-
-					if ( !( pak->referenced & FS_UI_REF ) && strstr( filename, "uillvm.bc" ) )
-					{
-						pak->referenced |= FS_UI_REF;
-					}
-
 //#if !defined(PRE_RELEASE_DEMO) && !defined(DO_LIGHT_DEDICATED)
 //					// DHM -- Nerve :: Don't allow maps to be loaded from pak0 (singleplayer)
 //					if ( Q_stricmp(filename + l - 4, ".bsp") == 0 &&

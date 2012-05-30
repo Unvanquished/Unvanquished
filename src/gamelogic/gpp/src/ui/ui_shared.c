@@ -1158,12 +1158,24 @@ static void Window_Paint( Window *w, float fadeAmount, float fadeClamp, float fa
 		return;
 	}
 
-	if ( w->border != 0 )
+	switch ( w->border )
 	{
+	case WINDOW_BORDER_FULL:
 		fillRect.x += w->borderSize;
-		fillRect.y += w->borderSize;
 		fillRect.w -= w->borderSize * 2.0;
+		// no break
+	case WINDOW_BORDER_HORZ:
+	case WINDOW_BORDER_KCGRADIENT:
+		fillRect.y += w->borderSize;
 		fillRect.h -= w->borderSize * 2.0;
+		break;
+
+	case WINDOW_BORDER_VERT:
+		fillRect.x += w->borderSize;
+		fillRect.w -= w->borderSize * 2.0;
+		// no break
+	case WINDOW_BORDER_NONE:
+		break;
 	}
 
 	if ( w->style == WINDOW_STYLE_FILLED )
@@ -1266,13 +1278,13 @@ void Item_SetScreenCoords( itemDef_t *item, float x, float y )
 	{
 		return;
 	}
-
+/*
 	if ( item->window.border != 0 )
 	{
 		x += item->window.borderSize;
 		y += item->window.borderSize;
 	}
-
+*/
 	item->window.rect.x = x + item->window.rectClient.x;
 	item->window.rect.y = y + item->window.rectClient.y;
 	item->window.rect.w = item->window.rectClient.w;
@@ -1298,13 +1310,13 @@ void Item_UpdatePosition( itemDef_t *item )
 
 	x = menu->window.rect.x;
 	y = menu->window.rect.y;
-
+/*
 	if ( menu->window.border != 0 )
 	{
 		x += menu->window.borderSize;
 		y += menu->window.borderSize;
 	}
-
+*/
 	Item_SetScreenCoords( item, x, y );
 }
 
@@ -1321,13 +1333,13 @@ void Menu_UpdatePosition( menuDef_t *menu )
 
 	x = menu->window.rect.x;
 	y = menu->window.rect.y;
-
+/*
 	if ( menu->window.border != 0 )
 	{
 		x += menu->window.borderSize;
 		y += menu->window.borderSize;
 	}
-
+*/
 	for ( i = 0; i < menu->itemCount; i++ )
 	{
 		Item_SetScreenCoords( menu->items[ i ], x, y );
@@ -2275,6 +2287,11 @@ float UI_Char_Width( const char **text, float scale )
 			return 0.0f;
 		}
 
+		if ( **text == Q_COLOR_ESCAPE && (*text)[1] == Q_COLOR_ESCAPE )
+		{
+			++(*text);
+		}
+
 		font = UI_FontForScale( scale );
 
 		if ( UI_Text_IsEmoticon( *text, &emoticonEscaped, &emoticonLen,
@@ -2364,6 +2381,11 @@ float UI_Text_Height( const char *text, float scale )
 			}
 			else
 			{
+				if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+				{
+					++s;
+				}
+
 				glyph = UI_Glyph( font, s );
 
 				if ( max < glyph->height )
@@ -2509,7 +2531,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	qboolean    emoticonEscaped;
 	int         emoticonLen = 0;
 	int         emoticonWidth;
-	int         cursorX = -1, cursorW = EDIT_CURSOR_WIDTH;
+	float       cursorX = -1, cursorW = EDIT_CURSOR_WIDTH;
 	float       startX = x;
 
 	const fontMetrics_t *font;
@@ -2560,6 +2582,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 				DC->setColor( newColor );
 				s += 2;
 				continue;
+			}
+
+			if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+			{
+				++s;
 			}
 
 			if ( *s == INDENT_MARKER )
@@ -2633,8 +2660,8 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 		if ( count == cursorPos )
 		{
-			cursorX = x;
-			cursorW = MAX( EDIT_CURSOR_WIDTH / 2, glyph->imageWidth * DC->xscale * useScale );
+			cursorX = x - gapAdjust * DC->aspectScale * useScale / 2;
+			cursorW = MAX( EDIT_CURSOR_WIDTH / 2, glyph->xSkip + gapAdjust ) * DC->xscale * DC->aspectScale * useScale;
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
@@ -2689,7 +2716,8 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 			if ( DC->getOverstrikeMode() )
 			{
-				DC->drawStretchPic( cursorX * DC->xscale, ( y - emoticonH ) * DC->yscale + 2, cursorW, emoticonH * DC->yscale, 0, 0, 0, 0, DC->whiteShader );
+				glyph = UI_GlyphCP( font, '[' );
+				DC->drawStretchPic( cursorX * DC->xscale, ( y - glyph->top * useScale ) * DC->yscale - 2, cursorW, emoticonH * DC->yscale + 4, 0, 0, 0, 0, DC->whiteShader );
 			}
 			else
 			{
@@ -3957,6 +3985,27 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 			{
 				// ctrl-v: paste
 				UI_Paste( item, buff, SELECTION_CLIPBOARD );
+				DC->setCVar( item->cvar, buff );
+			}
+			else if ( chr == 't' - 'a' + 1 && item->cursorPos )
+			{
+				int i, j, w, tmp[4];
+
+				if ( item->cursorPos == lenChars )
+				{
+					--item->cursorPos;
+				}
+
+				i = ui_CursorToOffset( buff, item->cursorPos - 1 );
+				j = ui_CursorToOffset( buff, item->cursorPos );
+				w = Q_UTF8Width( buff + j );
+
+				memcpy( tmp, buff + i, j - i );
+				memmove( buff + i, buff + j, w );
+				memcpy( buff + i + w, tmp, j - i );
+
+				++item->cursorPos;
+
 				DC->setCVar( item->cvar, buff );
 			}
 			else if ( chr < 32 || chr == 127 || !item->cvar )

@@ -602,6 +602,28 @@ void Field_KeyDownEvent( field_t *edit, int key )
 				key_overstrikeMode = !key_overstrikeMode;
 			}
 			break;
+
+		case 't':
+			if ( keys[ K_CTRL ].down && edit->cursor )
+			{
+				char *p, tmp[4];
+
+				if ( edit->cursor == len )
+				{
+					--edit->cursor;
+					s = &edit->buffer[ Field_CursorToOffset( edit ) ];
+					width = Q_UTF8Width( s );
+				}
+
+				--edit->cursor;
+				p = &edit->buffer[ Field_CursorToOffset( edit ) ];
+				memcpy( tmp, p, s - p );
+				memmove( p, s, width );
+				memcpy( p + width, tmp, s - p );
+				edit->cursor += 2;
+			}
+
+			break;
 	}
 
 	// Change scroll if cursor is no longer visible
