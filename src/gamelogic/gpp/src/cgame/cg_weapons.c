@@ -901,6 +901,15 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 		}
 		else if ( !Q_stricmp( token, "rotation" ) )
 		{
+			if ( !cg_highPolyWeaponModels.integer ) 
+			{
+				for ( i = 0; i < 3; i++ )
+				{
+					token = COM_ParseExt2( &text_p, qfalse );
+				}
+				continue; 
+			}
+			
 			for ( i = 0; i < 3; i++ )
 			{
 				token = COM_ParseExt2( &text_p, qfalse );
@@ -917,6 +926,14 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 		}
 		else if ( !Q_stricmp( token, "posOffs" ) )
 		{
+			if ( !cg_highPolyWeaponModels.integer ) 
+			{
+				for ( i = 0; i < 3; i++ )
+				{
+					token = COM_ParseExt2( &text_p, qfalse );
+				}
+				continue; 
+			}
 			for ( i = 0; i < 3; i++ )
 			{
 				token = COM_ParseExt2( &text_p, qfalse );
@@ -933,12 +950,24 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 		}
 		else if ( !Q_stricmp( token, "rotationBone" ) )
 		{
+			if ( !cg_highPolyWeaponModels.integer )
+			{
+				token = COM_Parse2( &text_p );
+				continue; 
+			}
+			
 			token = COM_Parse2( &text_p );
 			Q_strncpyz( wi->rotationBone, token, sizeof( wi->rotationBone ) );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "modelScale" ) )
 		{
+			if ( !cg_highPolyWeaponModels.integer ) 
+			{ 
+				token = COM_ParseExt2( &text_p, qfalse );
+				continue; 
+			}
+			
 			for ( i = 0; i < 3; i++ )
 			{
 				token = COM_ParseExt2( &text_p, qfalse );
