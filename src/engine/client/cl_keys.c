@@ -1141,15 +1141,9 @@ int Key_StringToKeynum( const char *str )
 		return -1;
 	}
 
-	// backward-compatibility hack
-	if ( !str[ 0 ] )
-	{
-		return '\\';
-	}
-
 	if ( !str[ 1 ] )
 	{
-		return str[ 0 ];
+		return str[ 0 ] == '\n' ? -1 : str[ 0 ];
 	}
 
 	// check for hex code
@@ -1405,8 +1399,8 @@ Key_Bind_f
 void Key_Bind_f( void )
 {
 	int        c, b;
-	const char *key = NULL;
-	const char *cmd = NULL; // backward-compat hack
+	const char *key;
+	const char *cmd = NULL;
 
 	c = Cmd_Argc();
 
@@ -1415,33 +1409,12 @@ void Key_Bind_f( void )
 		Com_Printf( "bind <key> [command] : attach a command to a key\n" );
 		return;
 	}
-	else if ( c == 2 )
+	else if ( c > 2 )
 	{
-		cmd = Cmd_Argv( 1 );
-
-		// backward compat hack
-		if ( cmd[ 0 ] == ' ' && cmd[ 1 ] )
-		{
-			cmd = Cmd_DequoteString( cmd + 1 );
-			key = "BACKSLASH";
-		}
-		else if ( cmd[ 0 ] == ' ' || !cmd[ 0 ] )
-		{
-			cmd = NULL;
-			key = "BACKSLASH";
-		}
-		else
-		{
-			key = cmd;
-			cmd = NULL;
-		}
-	}
-	else
-	{
-		key = Cmd_Argv( 1 );
 		cmd = Cmd_Argv( 2 );
 	}
 
+	key = Cmd_Argv( 1 );
 	b = Key_StringToKeynum( key );
 
 	if ( b == -1 )
