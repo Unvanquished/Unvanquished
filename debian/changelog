@@ -4,6 +4,15 @@ unvanquished (0.3.5+git-0) unstable; urgency=low
 
  -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Tue, 01 May 2012 23:07:32 +0100
 
+unvanquished (0.3.5-3) unstable; urgency=low
+
+  * Pulled in from master:
+    - Fix console history addition & saving.
+    - Get error reporting working.
+      This fixes things such as reporting that you're banned.
+
+ -- Darren Salt <linux@youmustbejoking.demon.co.uk>  Mon, 14 May 2012 00:18:07 +0100
+
 unvanquished (0.3.5-2) unstable; urgency=low
 
   * Separate package for the dedicated server.
