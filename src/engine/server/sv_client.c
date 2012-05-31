@@ -387,7 +387,7 @@ void SV_DirectConnect( netadr_t from )
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
 	//Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
-	Q_strncpyz( userinfo, Cmd_DequoteString( Cmd_Cmd_FromNth( 1 ) ), sizeof( userinfo ) ); // FIXME QUOTING INFO
+	Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
 
 	// DHM - Nerve :: Update Server allows any protocol to connect
 	// NOTE TTimo: but we might need to store the protocol around for potential non http/ftp clients
@@ -1955,7 +1955,7 @@ SV_UpdateUserinfo_f
 static void SV_UpdateUserinfo_f( client_t *cl )
 {
 	//Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) );
-	Q_strncpyz( cl->userinfo, Cmd_DequoteString( Cmd_Cmd_FromNth( 1 ) ), sizeof( cl->userinfo ) ); // FIXME QUOTING INFO
+	Q_strncpyz( cl->userinfo, Cmd_Argv( 1 ), sizeof( cl->userinfo ) ); // FIXME QUOTING INFO
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
