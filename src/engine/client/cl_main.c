@@ -1850,7 +1850,7 @@ void CL_ForwardCommandToServer( const char *string )
 		return;
 	}
 
-	if ( clc.demoplaying || cls.state < CA_CONNECTED || cmd[ 0 ] == '+' )
+	if ( clc.demoplaying || cls.state < CA_CONNECTED || cmd[ 0 ] == '+' || cmd[ 0 ] == '\0' )
 	{
 		Com_Printf( "Unknown command \"%s\"\n", cmd );
 		return;
