@@ -990,7 +990,9 @@ void Console_Key( int key )
 
 	// command completion
 
-	if ( key == K_TAB )
+	if ( key == K_TAB &&
+	     !keys[ K_ALT ].down && !keys[ K_COMMAND ].down &&
+	     !keys[ K_MODE ].down && !keys[ K_SUPER ].down )
 	{
 		CompleteCommand();
 		return;
