@@ -72,7 +72,7 @@ void SV_GetChallenge( netadr_t from )
 
 	if ( SV_TempBanIsBanned( from ) )
 	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", sv_tempbanmessage->string );
+		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", sv_tempbanmessage->string );
 		return;
 	}
 
@@ -261,7 +261,7 @@ void SV_AuthorizeIpPacket( netadr_t from )
 		}
 
 		// they are a demo client trying to connect to a real server
-		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nServer is not a demo server\n" );
+		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nServer is not a demo server" );
 		// clear the challenge record so it won't timeout and let them through
 		memset( &svs.challenges[ i ], 0, sizeof( svs.challenges[ i ] ) );
 		return;
@@ -287,11 +287,11 @@ void SV_AuthorizeIpPacket( netadr_t from )
 	{
 		if ( !r )
 		{
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nAwaiting CD key authorization\n" );
+			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nAwaiting CD key authorization" );
 		}
 		else
 		{
-			sprintf( ret, "print\n%s\n", r );
+			sprintf( ret, "print\n%s", r );
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, ret );
 		}
 
@@ -303,11 +303,11 @@ void SV_AuthorizeIpPacket( netadr_t from )
 	// authorization failed
 	if ( !r )
 	{
-		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nSomeone is using this CD Key\n" );
+		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nSomeone is using this CD Key" );
 	}
 	else
 	{
-		sprintf( ret, "print\n%s\n", r );
+		sprintf( ret, "print\n%s", r );
 		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, ret );
 	}
 
@@ -393,9 +393,9 @@ void SV_DirectConnect( netadr_t from )
 	// NOTE TTimo: but we might need to store the protocol around for potential non http/ftp clients
 	version = atoi( Info_ValueForKey( userinfo, "protocol" ) );
 
-	if ( version != com_protocol->integer )
+	if ( 1 || version != com_protocol->integer )
 	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).\n", com_protocol->integer, version );
+		NET_OutOfBandPrint( NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).", com_protocol->integer, version );
 		Com_DPrintf( "    rejected connect from version %i\n", version );
 		return;
 	}
@@ -405,7 +405,7 @@ void SV_DirectConnect( netadr_t from )
 
 	if ( SV_TempBanIsBanned( from ) )
 	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", sv_tempbanmessage->string );
+		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", sv_tempbanmessage->string );
 		return;
 	}
 
@@ -434,7 +434,7 @@ void SV_DirectConnect( netadr_t from )
 	// block connections for invalid GUIDs
 	if ( !SV_ApproveGuid( Info_ValueForKey( userinfo, "cl_guid" ) ) )
 	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\nGet legit, bro.\n" );
+		NET_OutOfBandPrint( NS_SERVER, from, "print\nGet legit, bro." );
 		Com_DPrintf( "Invalid cl_guid, rejected connect from %s\n", NET_AdrToString( from ) );
 		return;
 	}
@@ -468,7 +468,7 @@ void SV_DirectConnect( netadr_t from )
 	{
 		NET_OutOfBandPrint( NS_SERVER, from,
 		                    "print\nUserinfo string length exceeded.  "
-		                    "Try removing setu cvars from your config.\n" );
+		                    "Try removing setu cvars from your config." );
 		return;
 	}
 
@@ -492,7 +492,7 @@ void SV_DirectConnect( netadr_t from )
 
 		if ( i == MAX_CHALLENGES )
 		{
-			NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address.\n" );
+			NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address." );
 			return;
 		}
 
@@ -517,14 +517,14 @@ void SV_DirectConnect( netadr_t from )
 		{
 			if ( sv_minPing->value && ping < sv_minPing->value )
 			{
-				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for high pings only\n" );
+				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for high pings only" );
 				Com_DPrintf( "Client %i rejected on a too low ping\n", i );
 				return;
 			}
 
 			if ( sv_maxPing->value && ping > sv_maxPing->value )
 			{
-				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for low pings only\n" );
+				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for low pings only" );
 				Com_DPrintf( "Client %i rejected on a too high ping: %i\n", i, ping );
 				return;
 			}
@@ -630,7 +630,7 @@ void SV_DirectConnect( netadr_t from )
 		}
 		else
 		{
-			NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", sv_fullmsg->string );
+			NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", sv_fullmsg->string );
 			Com_DPrintf( "Rejected a connection.\n" );
 			return;
 		}
@@ -667,7 +667,7 @@ gotnewcl:
 		// we can't just use VM_ArgPtr, because that is only valid inside a VM_Call
 		denied = VM_ExplicitArgPtr( gvm, ( intptr_t ) denied );
 
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]%s\n", denied );
+		NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]%s", denied );
 		Com_DPrintf( "Game rejected a connection: %s.\n", denied );
 		return;
 	}

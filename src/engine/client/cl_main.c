@@ -3273,7 +3273,7 @@ void CL_PrintPacket( netadr_t from, msg_t *msg )
 		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 	}
 
-	Com_Printf( "%s", clc.serverMessage );
+	Com_Printf( "%s\n", clc.serverMessage );
 }
 
 /*
