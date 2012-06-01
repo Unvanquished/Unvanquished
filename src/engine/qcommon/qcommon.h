@@ -282,7 +282,7 @@ You or the server may be running older versions of the game. Press the auto-upda
  button if it appears on the Main Menu screen."
 
 #define GAMENAME_STRING "unv"
-#define PROTOCOL_VERSION 84
+#define PROTOCOL_VERSION 85
 
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
