@@ -37,7 +37,7 @@ Description: Team-based FPS game, aliens v. humans
 
 Package: unvanquished-server
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
+Depends: ${shlibs:Depends}, ${misc:Depends}, adduser,
 	unvanquished-common (= ${binary:Version})
 Suggests: unvanquished
 Conflicts: unvanquished (<< 0.3.5-2~)
