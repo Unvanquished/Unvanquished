@@ -60,6 +60,7 @@ Description: Team-based FPS game, aliens v. humans - shared resources
  This package contains resources used by both client and server.
 
 Package: unvanquished-dbg
+Section: contrib/debug
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	unvanquished (= ${binary:Version}) | unvanquished-server (= ${binary:Version})
