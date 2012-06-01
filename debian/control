@@ -61,7 +61,8 @@ Description: Team-based FPS game, aliens v. humans - shared resources
 
 Package: unvanquished-dbg
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends},
+	unvanquished (= ${binary:Version}) | unvanquished-server (= ${binary:Version})
 Description: Team-based FPS game, aliens v. humans - debug info
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
