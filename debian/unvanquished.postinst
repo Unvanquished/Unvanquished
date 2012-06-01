@@ -3,7 +3,14 @@
 #DEBHELPER#
 
 if test "$1" = "configure"; then
-  if dpkg --compare-versions "$2" '<' 0.3.0-1; then
+  if dpkg --compare-versions "$2" '<' 0.4.0-0; then
+    # move data files from the old (< 0.4.0) location
+    if test -f /var/lib/games/unvanquished/md5sums; then
+      mv /var/lib/games/unvanquished/main/* /var/games/unvanquished/main/
+      mv /var/lib/games/unvanquished/md5sums /var/games/unvanquished/
+      rmdir /var/lib/games/unvanquished/main /var/lib/games/unvanquished
+    fi
+  elif dpkg --compare-versions "$2" '<' 0.3.0-1; then
     cd /var/lib/games/unvanquished
     # move data files from the old (<= 0.3.0-1) location
     ls | grep -ve md5sums -e main | while read FN; do mv -f "$FN" main; done
