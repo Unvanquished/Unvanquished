@@ -11,8 +11,6 @@ obj-*-*-*/main/ui*.so			usr/lib/games/unvanquished/main/
 #src/gamelogic/gpp/ui			usr/lib/games/unvanquished/gpp/
 
 debian/scripts/unvanquished		usr/games/
-debian/scripts/unvanquished-download-paks usr/sbin/
-download-pk3.sh				usr/lib/games/unvanquished/
 
 debian/unvanquished.desktop		usr/share/applications/
 debian/unvanquished.png			usr/share/icons/hicolor/128x128/apps/
