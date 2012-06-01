@@ -1,7 +1,7 @@
 Source: unvanquished
 Section: contrib/games
 Priority: extra
-Maintainer: Darren Salt <linux@youmustbejoking.demon.co.uk>
+Maintainer: Darren Salt <devspam@moreofthesa.me.uk>
 Build-Depends: debhelper (>= 8.0.0), cmake,
 	libcurl4-gnutls-dev,
 	libfreetype6-dev,

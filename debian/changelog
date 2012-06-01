@@ -1,8 +1,17 @@
-unvanquished (0.4.0-0) unstable; urgency=low
+unvanquished (0.4.0-1) unstable; urgency=low
 
-  * Git snapshot.
+  * Release of alpha 4.
+  * Change of address...
+  * Various packaging issues are fixed:
+    - downloaded data is now in /var/games/unvanquished;
+    - postinst & prerm scripts are set -e and don't contain absolute paths;
+    - launcher scripts no longer have .sh in their names;
+    - unvanquished-dbg depends on either unvanquished or unvanquished-server
+      and belongs in section contrib/debug;
+    - unvanquished-server depends on adduser.
+  * .pk3 downloading is now done in unvanquished-common.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 01 Jun 2012 00:25:16 +0100
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 01 Jun 2012 20:49:29 +0100
 
 unvanquished (0.3.5-3) unstable; urgency=low
 
