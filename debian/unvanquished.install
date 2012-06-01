@@ -10,8 +10,8 @@ obj-*-*-*/main/ui*.so			usr/lib/games/unvanquished/main/
 #main					usr/lib/games/unvanquished/
 #src/gamelogic/gpp/ui			usr/lib/games/unvanquished/gpp/
 
-debian/unvanquished.sh			usr/games/
-debian/unvanquished-download-paks.sh	usr/sbin/
+debian/scripts/unvanquished		usr/games/
+debian/scripts/unvanquished-download-paks usr/sbin/
 download-pk3.sh				usr/lib/games/unvanquished/
 
 debian/unvanquished.desktop		usr/share/applications/

@@ -5,5 +5,5 @@ Comment=First-person shooter game - aliens vs humans
 Icon=unvanquished
 Terminal=false
 Type=Application
-Exec=/usr/games/unvanquished.sh
+Exec=/usr/games/unvanquished
 Categories=Game;ActionGame;StrategyGame;
