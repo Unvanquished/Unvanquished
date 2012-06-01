@@ -393,7 +393,7 @@ void SV_DirectConnect( netadr_t from )
 	// NOTE TTimo: but we might need to store the protocol around for potential non http/ftp clients
 	version = atoi( Info_ValueForKey( userinfo, "protocol" ) );
 
-	if ( 1 || version != com_protocol->integer )
+	if ( version != com_protocol->integer )
 	{
 		NET_OutOfBandPrint( NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).", com_protocol->integer, version );
 		Com_DPrintf( "    rejected connect from version %i\n", version );
