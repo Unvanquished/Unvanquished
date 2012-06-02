@@ -2,6 +2,7 @@ unvanquished (0.4.0-2) unstable; urgency=low
 
   * Use xz to compress the .debs.
   * Add a NEWS file, which should have been in -1.
+  * Do a little more cleanup.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 02 Jun 2012 18:05:02 +0100
 

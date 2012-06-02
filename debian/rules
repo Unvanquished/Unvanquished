@@ -38,7 +38,7 @@ override_dh_strip:
 
 override_dh_auto_clean:
 	dh_auto_clean
-	rm -rf CMakeFiles
+	rm -rf CMakeFiles lcc/CMakeFiles src/tests/CMakeFiles
 
 override_dh_builddeb:
 	dh_builddeb -- -Zxz
