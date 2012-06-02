@@ -1,0 +1,27 @@
+unvanquished (0.4.0-1~~) unstable; urgency=low
+
+  If you're upgrading from 0.3.5 or older or you have Unvanquished
+  configuration files in your home directory, you're likely to need at least
+  one of the following.
+
+  * Parser changes mean that 'bind \ foo' won't work.
+
+    You'll have to change such bindings to 'bind BACKSLASH foo'. These are
+    normally found in ~/.Unvanquished/main/autogen.cfg, but may be found
+    elsewhere.
+
+    The following command will fix them up.
+
+      $ sed -i -e 's/^bind \\/bind BACKSLASH/' ~/.Unvanquished/*/*.cfg
+
+  * Connection to servers will fail.
+
+    Easy to solve, and there are (at least) two easy ways to fix it:
+
+      $ unvanquished +reset protocol
+
+      Press ` (backquote) then type “/reset protocol”
+
+  With these done, all should be well...
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 02 Jun 2012 17:58:40 +0100
