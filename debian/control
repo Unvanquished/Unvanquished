@@ -28,7 +28,7 @@ Vcs-Browser: http://github.com/Unvanquished/Unvanquished
 
 Package: unvanquished
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, curl,
+Depends: ${shlibs:Depends}, ${misc:Depends},
 	unvanquished-common (= ${binary:Version})
 Suggests: unvanquished-server
 Description: Team-based FPS game, aliens v. humans
@@ -50,7 +50,7 @@ Description: Team-based FPS game, aliens v. humans - dedicated server
 
 Package: unvanquished-common
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, curl
 Conflicts: unvanquished (<< 0.4.0)
 Replaces: unvanquished (<< 0.4.0)
 Description: Team-based FPS game, aliens v. humans - shared resources
