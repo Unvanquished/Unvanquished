@@ -152,7 +152,7 @@ endif()
 if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
   find_package( Git )
   if( GIT_FOUND )
-    execute_process( COMMAND git describe --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+    execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
     message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
     # this may fail with annotated non-release tags
     if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
