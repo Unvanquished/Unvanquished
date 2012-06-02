@@ -626,8 +626,8 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	}
 	else
 	{
-		// clear the data
-		Com_Memset( vm->dataBase, 0, dataLength + VM_DATA_PADDING );
+		// clear the data (and only the data - need to keep the sanity check)
+		Com_Memset( vm->dataBase, 0, dataLength );
 	}
 
 	// copy the intialized data
