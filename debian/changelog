@@ -1,3 +1,9 @@
+unvanquished (0.4.0-2) unstable; urgency=low
+
+  * Use xz to compress the .debs.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 02 Jun 2012 03:58:20 +0100
+
 unvanquished (0.4.0-1) unstable; urgency=low
 
   * Release of alpha 4.

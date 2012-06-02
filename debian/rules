@@ -40,6 +40,9 @@ override_dh_auto_clean:
 	dh_auto_clean
 	rm -rf CMakeFiles
 
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
+
 override_dh_installexamples:
 override_dh_installman:
 override_dh_installcatalogs:
