@@ -1,11 +1,12 @@
 unvanquished (0.4.0-2) unstable; urgency=low
 
+  * QVM restart was broken, affecting at least /restart.
   * Use xz to compress the .debs.
   * Add a NEWS file, which should have been in -1.
   * Do a little more cleanup.
   * Move the dependency on curl to unvanquished-common.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 02 Jun 2012 22:00:23 +0100
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 03 Jun 2012 01:03:37 +0100
 
 unvanquished (0.4.0-1) unstable; urgency=low
 
