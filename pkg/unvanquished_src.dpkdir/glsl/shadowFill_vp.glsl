@@ -55,19 +55,19 @@ void	main()
 
 	VertexSkinning_P_N(	attr_Position, attr_Normal,
 						position, normal);
-						
+
 #elif defined(USE_VERTEX_ANIMATION)
-	
+
 	VertexAnimation_P_N(attr_Position, attr_Position2,
 						attr_Normal, attr_Normal2,
 						u_VertexInterpolation,
 						position, normal);
-	
+
 #else
 	position = attr_Position;
 	normal = attr_Normal;
 #endif
-	
+
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
 								normal,
@@ -84,10 +84,10 @@ void	main()
 		// transform position into world space
 		var_Position = (u_ModelMatrix * position).xyz;
 #endif
-	
+
 	// transform texcoords
 	var_Tex = (u_ColorTextureMatrix * attr_TexCoord0).st;
-	
+
 	// assign color
 	var_Color = u_Color;
 }

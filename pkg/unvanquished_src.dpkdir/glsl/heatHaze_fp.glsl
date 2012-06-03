@@ -60,14 +60,14 @@ void	main()
 		return;
 	}
 #endif
-	
+
 	// offset by the scaled normal and clamp it to 0.0 - 1.0
 	st += N.xy * var_Deform;
 	st = clamp(st, 0.0, 1.0);
-	
+
 	// scale by the screen non-power-of-two-adjust
 	st *= r_NPOTScale;
-	
+
 #if defined(r_heatHazeFix)
 	// check if the distortion got too far
 	float vis = texture2D(u_ContrastMap, st).r;
@@ -80,19 +80,19 @@ void	main()
 	{
 		// reset st and don't offset
 		st = gl_FragCoord.st * r_FBufScale * r_NPOTScale;
-		
+
 		color0 = texture2D(u_CurrentMap, st);
 		color1 = vec4(1.0, 0.0, 0.0, color0.a);
 	}
-	
+
 #if 0
 	gl_FragColor = texture2D(u_ContrastMap, gl_FragCoord.st * r_FBufScale * r_NPOTScale);
 	return;
 #endif
-	
+
 #else
 	color0 = texture2D(u_CurrentMap, st);
 #endif
-	
+
 	gl_FragColor = color0;
 }

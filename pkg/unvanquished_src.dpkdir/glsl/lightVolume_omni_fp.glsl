@@ -42,15 +42,15 @@ void	main()
 {
 	// calculate the screen texcoord in the 0.0 to 1.0 range
 	vec2 st = gl_FragCoord.st * r_FBufScale;
-	
+
 	// scale by the screen non-power-of-two-adjust
 	st *= r_NPOTScale;
-		
+
 	// reconstruct vertex position in world space
 	float depth = texture2D(u_DepthMap, st).r;
 	vec4 P = u_UnprojectMatrix * vec4(gl_FragCoord.xy, depth, 1.0);
 	P.xyz /= P.w;
-	
+
 #if 0
 	if(bool(u_PortalClipping))
 	{
@@ -62,38 +62,38 @@ void	main()
 		}
 	}
 #endif
-	
+
 	// compute incident ray in world space
 	vec3 R = normalize(P.xyz - u_ViewOrigin);
 	//vec3 R = normalize(u_ViewOrigin - P.xyz);
-	
+
 	//float traceDistance = dot(P.xyz - (u_ViewOrigin.xyz + R * u_ZNear ), forward);
 	//traceDistance = clamp(traceDistance, 0.0, 2500.0 ); // Far trace distance
-	
+
 	float traceDistance = distance(P.xyz, u_ViewOrigin);
 	traceDistance = clamp(traceDistance, 0.0, 2500.0);
-	
+
 	// TODO move to front clipping plane
-	
+
 	vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
-	
+
 	//int steps = 40;
 	//float stepSize = traceDistance / float(steps);
-	
+
 	int steps = int(min(traceDistance, 2000.0));	// TODO r_MaxSteps
 	float stepSize = 64.0;
-	
+
 	for(float tracedDistance = 0.0; tracedDistance < traceDistance; tracedDistance += stepSize)
 	{
 		//vec3 T = P.xyz + (R * stepSize * float(i));
 		//vec3 T = u_ViewOrigin + (R * stepSize * float(i));
 		vec3 T = u_ViewOrigin + (R * tracedDistance);
-	
+
 		// compute attenuation
 		vec3 texAttenXYZ		= (u_LightAttenuationMatrix * vec4(T, 1.0)).xyz;
 		vec3 attenuationXY		= texture2D(u_AttenuationMapXY, texAttenXYZ.xy).rgb;
 		vec3 attenuationZ		= texture2D(u_AttenuationMapZ, vec2(texAttenXYZ.z, 0)).rgb;
-		
+
 		float shadow = 1.0;
 
 		#if defined(VSM)
@@ -101,37 +101,37 @@ void	main()
 		{
 			// compute incident ray
 			vec3 I2 = T - u_LightOrigin;
-			
+
 			vec4 shadowMoments = textureCube(u_ShadowMap, I2);
-			
+
 			#if defined(VSM_CLAMP)
 			// convert to [-1, 1] vector space
 			shadowMoments = 0.5 * (shadowMoments + 1.0);
 			#endif
-	
+
 			float shadowDistance = shadowMoments.r;
 			float shadowDistanceSquared = shadowMoments.g;
-		
+
 			const float	SHADOW_BIAS = 0.001;
 			float vertexDistance = length(I2) / u_LightRadius - SHADOW_BIAS;
-	
+
 			// standard shadow map comparison
 			shadow = vertexDistance <= shadowDistance ? 1.0 : 0.0;
-	
+
 			// variance shadow mapping
 			float E_x2 = shadowDistanceSquared;
 			float Ex_2 = shadowDistance * shadowDistance;
-	
+
 			// AndyTX: VSM_EPSILON is there to avoid some ugly numeric instability with fp16
 			float variance = min(max(E_x2 - Ex_2, 0.0) + VSM_EPSILON, 1.0);
-	
+
 			float mD = shadowDistance - vertexDistance;
 			float mD_2 = mD * mD;
 			float p = variance / (variance + mD_2);
-	
+
 			color.rgb += attenuationXY * attenuationZ * max(shadow, p);
 		}
-		
+
 		if(shadow <= 0.0)
 		{
 			continue;
@@ -142,7 +142,7 @@ void	main()
 			color.rgb += attenuationXY * attenuationZ;
 		}
 	}
-	
+
 	color.rgb /= float(steps);
 	color.rgb *= u_LightColor;
 	//color.rgb *= u_LightScale;

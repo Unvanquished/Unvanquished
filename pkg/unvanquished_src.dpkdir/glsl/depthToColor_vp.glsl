@@ -38,13 +38,13 @@ void	main()
 	if(bool(u_VertexSkinning))
 	{
 		vec4 vertex = vec4(0.0);
-		
+
 		for(int i = 0; i < 4; i++)
 		{
 			int boneIndex = int(attr_BoneIndexes[i]);
 			float boneWeight = attr_BoneWeights[i];
 			mat4  boneMatrix = u_BoneMatrix[boneIndex];
-			
+
 			vertex += (boneMatrix * attr_Position) * boneWeight;
 		}
 

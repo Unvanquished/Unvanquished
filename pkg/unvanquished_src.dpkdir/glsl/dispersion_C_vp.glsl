@@ -50,17 +50,17 @@ void	main()
 			int boneIndex = int(attr_BoneIndexes[i]);
 			float boneWeight = attr_BoneWeights[i];
 			mat4  boneMatrix = u_BoneMatrix[boneIndex];
-			
+
 			vertex += (boneMatrix * attr_Position) * boneWeight;
 			normal += (boneMatrix * vec4(attr_Normal, 0.0)).xyz * boneWeight;
 		}
 
 		// transform vertex position into homogenous clip-space
 		gl_Position = u_ModelViewProjectionMatrix * vertex;
-		
+
 		// transform position into world space
 		var_Position = (u_ModelMatrix * vertex).xyz;
-	
+
 		// transform normal into world space
 		var_Normal = (u_ModelMatrix * vec4(normal, 0.0)).xyz;
 	}
@@ -69,10 +69,10 @@ void	main()
 	{
 		// transform vertex position into homogenous clip-space
 		gl_Position = u_ModelViewProjectionMatrix * attr_Position;
-	
+
 		// transform position into world space
 		var_Position = (u_ModelMatrix * attr_Position).xyz;
-	
+
 		// transform normal into world space
 		var_Normal = (u_ModelMatrix * vec4(attr_Normal, 0.0)).xyz;
 	}

@@ -121,13 +121,13 @@ vec3 RandomVec3(vec2 uv)
 #if 1
 	float r = Rand(uv);
 	float angle = 2.0 * M_PI * r;// / 360.0;
-	
+
 	dir = normalize(vec3(cos(angle), sin(angle), r));
 #else
 	// dir = texture2D(u_NoiseMap, gl_FragCoord.st * r_FBufScale).rgb;
 	dir = normalize(2.0 * (texture2D(u_RandomMap, uv).xyz - 0.5));
 #endif
-	
+
 	return dir;
 }
 
@@ -160,13 +160,13 @@ float ChebyshevUpperBound(vec2 shadowMoments, float vertexDistance, float minVar
 	// compute probabilistic upper bound
 	float d = vertexDistance - shadowDistance;
 	float pMax = variance / (variance + (d * d));
-	
+
 	/*
 	#if defined(r_LightBleedReduction)
 	pMax = smoothstep(r_LightBleedReduction, 1.0, pMax);
 	#endif
 	*/
-	
+
 	// one-tailed Chebyshev with k > 0
 	return (vertexDistance <= shadowDistance ? 1.0 : pMax);
 }
@@ -180,7 +180,7 @@ vec2 WarpDepth(float depth)
     depth = 2.0 * depth - 1.0;
     float pos =  exp( r_EVSMExponents.x * depth);
     float neg = -exp(-r_EVSMExponents.y * depth);
-	
+
     return vec2(pos, neg);
 }
 
@@ -202,11 +202,11 @@ void FetchShadowMoments(vec3 Pworld, inout vec4 shadowVert, inout vec4 shadowMom
 {
 	// vec4 shadowVert;
 	// vec4 shadowMoments;
-	
+
 	// transform to camera space
 	vec4 Pcam = u_ViewMatrix * vec4(Pworld.xyz, 1.0);
 	float vertexDistanceToCamera = -Pcam.z;
-	
+
 #if defined(r_ParallelShadowSplits_1)
 	if(vertexDistanceToCamera < u_ShadowParallelSplitDistances.x)
 	{
@@ -228,7 +228,7 @@ void FetchShadowMoments(vec3 Pworld, inout vec4 shadowVert, inout vec4 shadowMom
 	{
 		shadowVert = u_ShadowMatrix[1] * vec4(Pworld.xyz, 1.0);
 		shadowMoments = texture2DProj(u_ShadowMap1, shadowVert.xyw);
-		
+
 	}
 	else
 	{
@@ -300,14 +300,14 @@ void FetchShadowMoments(vec3 Pworld, inout vec4 shadowVert, inout vec4 shadowMom
 vec4 PCF(vec3 Pworld, float filterWidth, float samples)
 {
 	vec3 forward, right, up;
-	
+
 	// filterWidth *= u_LightRadius;
-	
+
 	forward = normalize(-u_LightDir);
 	MakeNormalVectors(forward, right, up);
-	
+
 	vec4 moments = vec4(0.0, 0.0, 0.0, 0.0);
-	
+
 #if 0
 	// compute step size for iterating through the kernel
 	float stepSize = 2.0 * filterWidth / samples;
@@ -330,7 +330,7 @@ vec4 PCF(vec3 Pworld, float filterWidth, float samples)
 			vec3 rand = RandomVec3(gl_FragCoord.st * r_FBufScale + vec2(i, j)) * filterWidth;
 			// rand.z = 0;
 			// rand = normalize(rand) * filterWidth;
-			
+
 			vec4 shadowVert;
 			vec4 shadowMoments;
 			FetchShadowMoments(Pworld + right * rand.x + up * rand.y, shadowVert, shadowMoments);
@@ -338,7 +338,7 @@ vec4 PCF(vec3 Pworld, float filterWidth, float samples)
 		}
 	}
 #endif
-	
+
 	// return average of the samples
 	moments *= (1.0 / (samples * samples));
 	return moments;
@@ -362,7 +362,7 @@ vec4 FetchShadowMoments(vec2 st)
 vec4 PCF(vec4 shadowVert, float filterWidth, float samples)
 {
 	vec4 moments = vec4(0.0, 0.0, 0.0, 0.0);
-	
+
 #if 0
 	// compute step size for iterating through the kernel
 	float stepSize = 2.0 * filterWidth / samples;
@@ -383,12 +383,12 @@ vec4 PCF(vec4 shadowVert, float filterWidth, float samples)
 			// rand = vec3(0.0, 0.0, 1.0);
 			// rand.z = 0;
 			// rand = normalize(rand);// * filterWidth;
-			
+
 			moments += FetchShadowMoments(shadowVert.xy / shadowVert.w + rand.xy);
 		}
 	}
 #endif
-	
+
 	// return average of the samples
 	moments *= (1.0 / (samples * samples));
 	return moments;
@@ -410,12 +410,12 @@ vec4 FetchShadowMoments(vec3 I)
 vec4 PCF(vec3 I, float filterWidth, float samples)
 {
 	vec3 forward, right, up;
-	
+
 	forward = normalize(I);
 	MakeNormalVectors(forward, right, up);
-	
+
 	vec4 moments = vec4(0.0, 0.0, 0.0, 0.0);
-	
+
 #if 0
 	// compute step size for iterating through the kernel
 	float stepSize = 2.0 * filterWidth / samples;
@@ -435,12 +435,12 @@ vec4 PCF(vec3 I, float filterWidth, float samples)
 			vec3 rand = RandomVec3(gl_FragCoord.st * r_FBufScale + vec2(i, j)) * filterWidth;
 			// rand.z = 0;
 			// rand = normalize(rand) * filterWidth;
-			
+
 			moments += FetchShadowMoments(I + right * rand.x + up * rand.y);
 		}
 	}
 #endif
-	
+
 	// return average of the samples
 	moments *= (1.0 / (samples * samples));
 	return moments;
@@ -460,19 +460,19 @@ vec4 PCF(vec3 I, float filterWidth, float samples)
 float SumBlocker(vec4 shadowVert, float vertexDistance, float filterWidth, float samples)
 {
 	float stepSize = 2.0 * filterWidth / samples;
-	
+
 	float blockerCount = 0.0;
     float blockerSum = 0.0;
-    
+
 	for(float i = -filterWidth; i < filterWidth; i += stepSize)
 	{
 		for(float j = -filterWidth; j < filterWidth; j += stepSize)
 		{
 			float shadowDistance = texture2DProj(u_ShadowMap0, vec3(shadowVert.xy + vec2(i, j), shadowVert.w)).x;
 			// float shadowDistance = texture2D(u_ShadowMap, shadowVert.xy / shadowVert.w + vec2(i, j)).x;
-			
+
 			// FIXME VSM_CLAMP
-			
+
 			if(vertexDistance > shadowDistance)
 			{
 				blockerCount += 1.0;
@@ -480,13 +480,13 @@ float SumBlocker(vec4 shadowVert, float vertexDistance, float filterWidth, float
 			}
 		}
 	}
-	
+
 	float result;
 	if(blockerCount > 0.0)
 		result = blockerSum / blockerCount;
 	else
 		result = 0.0;
-	
+
 	return result;
 }
 #else
@@ -494,21 +494,21 @@ float SumBlocker(vec4 shadowVert, float vertexDistance, float filterWidth, float
 float SumBlocker(vec3 I, float vertexDistance, float filterWidth, float samples)
 {
 	vec3 forward, right, up;
-	
+
 	forward = normalize(I);
 	MakeNormalVectors(forward, right, up);
 
 	float stepSize = 2.0 * filterWidth / samples;
-	
+
 	float blockerCount = 0.0;
     float blockerSum = 0.0;
-    
+
 	for(float i = -filterWidth; i < filterWidth; i += stepSize)
 	{
 		for(float j = -filterWidth; j < filterWidth; j += stepSize)
 		{
 			float shadowDistance = textureCube(u_ShadowMap, I + right * i + up * j).x;
-			
+
 			if(vertexDistance > shadowDistance)
 			{
 				blockerCount += 1.0;
@@ -516,13 +516,13 @@ float SumBlocker(vec3 I, float vertexDistance, float filterWidth, float samples)
 			}
 		}
 	}
-	
+
 	float result;
 	if(blockerCount > 0.0)
 		result = blockerSum / blockerCount;
 	else
 		result = -1.0;
-	
+
 	return result;
 }
 #endif
@@ -530,12 +530,12 @@ float SumBlocker(vec3 I, float vertexDistance, float filterWidth, float samples)
 float EstimatePenumbra(float vertexDistance, float blocker)
 {
 	float penumbra;
-	
+
 	if(blocker == 0.0)
 		penumbra = 0.0;
 	else
 		penumbra = ((vertexDistance - blocker) * u_LightRadius) / blocker;
-	
+
 	return penumbra;
 }
 
@@ -606,7 +606,7 @@ void	main()
 	}
 #endif
 
-	
+
 #if 0
 	// create random noise vector
 	vec3 rand = RandomVec3(gl_FragCoord.st * r_FBufScale);
@@ -625,17 +625,17 @@ void	main()
 	vec4 shadowVert;
 	vec4 shadowMoments;
 	FetchShadowMoments(var_Position.xyz, shadowVert, shadowMoments);
-	
+
 	// FIXME
 	#if 0 // defined(r_PCFSamples)
 	shadowMoments = PCF(var_Position.xyz, u_ShadowTexelSize * u_ShadowBlur, r_PCFSamples);
 	#endif
-	
-#if 0 
+
+#if 0
 	gl_FragColor = vec4(u_ShadowTexelSize * u_ShadowBlur * u_LightRadius, 0.0, 0.0, 1.0);
 	return;
 #endif
-	
+
 #if defined(r_ShowParallelShadowSplits)
 	// transform to camera space
 	vec4 Pcam = u_ViewMatrix * vec4(var_Position.xyz, 1.0);
@@ -726,52 +726,52 @@ void	main()
 #elif defined(LIGHT_PROJ)
 
 	vec4 shadowVert = u_ShadowMatrix[0] * vec4(var_Position.xyz, 1.0);
-	
+
 	// compute incident ray
 	vec3 I = var_Position.xyz - u_LightOrigin;
-	
+
 	const float	SHADOW_BIAS = 0.001;
 	float vertexDistance = length(I) / u_LightRadius - SHADOW_BIAS;
-	
+
 	#if defined(r_PCFSamples)
 	vec4 shadowMoments = PCF(shadowVert, u_ShadowTexelSize * u_ShadowBlur, r_PCFSamples);
-	
+
 	/*
 	#elif defined(PCSS)
-	
+
 	// step 1: find blocker estimate
-	
+
 	float blockerSearchWidth = u_ShadowTexelSize * u_LightRadius / vertexDistance;
 	float blockerSamples = 6.0; // how many samples to use for blocker search
 	float blocker = SumBlocker(shadowVert, vertexDistance, blockerSearchWidth, blockerSamples);
-	
+
 	#if 0
 	// uncomment to visualize blockers
 	gl_FragColor = vec4(blocker * 0.3, 0.0, 0.0, 1.0);
 	return;
 	#endif
-	
+
 	// step 2: estimate penumbra using parallel planes approximation
 	float penumbra = EstimatePenumbra(vertexDistance, blocker);
-	
+
 	#if 0
 	// uncomment to visualize penumbrae
 	gl_FragColor = vec4(0.0, 0.0, penumbra, 1.0);
 	return;
 	#endif
-	
+
 	// step 3: compute percentage-closer filter
 	vec4 shadowMoments;
 	if(penumbra > 0.0)
 	{
 		const float PCFsamples = 4.0;
-		
-		
+
+
 		//float maxpen = PCFsamples * (1.0 / u_ShadowTexelSize);
 		//if(penumbra > maxpen)
 		//	penumbra = maxpen;
 		//
-	
+
 		shadowMoments = PCF(shadowVert, penumbra, PCFsamples);
 	}
 	else
@@ -787,11 +787,11 @@ void	main()
 #else
 	// compute incident ray
 	vec3 I = var_Position.xyz - u_LightOrigin;
-	
+
 	// const float	SHADOW_BIAS = 0.01;
 	// float vertexDistance = length(I) / u_LightRadius - 0.01;
-	
-#if 0 
+
+#if 0
 	gl_FragColor = vec4(u_ShadowTexelSize * u_ShadowBlur * length(I), 0.0, 0.0, 1.0);
 	return;
 #endif
@@ -801,42 +801,42 @@ void	main()
 
 	/*
 	#elif defined(PCSS)
-	
+
 	// step 1: find blocker estimate
-	
+
 	float blockerSearchWidth = u_ShadowTexelSize * u_LightRadius / vertexDistance;
 	float blockerSamples = 6.0; // how many samples to use for blocker search
 	float blocker = SumBlocker(I, vertexDistance, blockerSearchWidth, blockerSamples);
-	
+
 	#if 0
 	// visualize blockers
 	gl_FragColor = vec4(blocker * 0.3, 0.0, 0.0, 1.0);
 	return;
 	#endif
-	
+
 	// step 2: estimate penumbra using parallel planes approximation
 	float penumbra = EstimatePenumbra(vertexDistance, blocker);
-	
+
 	#if 0
 	// visualize penumbrae
 	// if(penumbra > 1.0)
 		gl_FragColor = vec4(0.0, 0.0, penumbra, 1.0);
 	return;
 	#endif
-	
+
 	// step 3: compute percentage-closer filter
 	// vec4 shadowMoments;
 	vec4 shadowMoments; // = textureCube(u_ShadowMap, I);
-	
+
 	if(penumbra > 0.0 && blocker > -1.0)
 	{
 		const float PCFsamples = 2.0;
-		
+
 		// float maxpen = PCFsamples * (1.0 / u_ShadowTexelSize);
 		// if(penumbra > maxpen)
 		//	penumbra = maxpen;
 		//
-	
+
 		// shadowMoments = PCF(I, penumbra, PCFsamples);
 		shadowMoments = PCF(I, u_ShadowTexelSize * u_ShadowBlur * penumbra, PCFsamples);
 	}
@@ -845,7 +845,7 @@ void	main()
 		shadowMoments = textureCube(u_ShadowMap, I);
 	}
 	*/
-	
+
 	#else
 	// no extra filtering, single tap
 	vec4 shadowMoments = FetchShadowMoments(I);
@@ -856,25 +856,25 @@ void	main()
 
 
 #if defined(ESM)
-	{		
+	{
 		const float	SHADOW_BIAS = 0.001;
-		
+
 #if defined(LIGHT_DIRECTIONAL)
 		float vertexDistance = shadowVert.z - SHADOW_BIAS; // * r_ShadowMapDepthScale;
 #else
 		float vertexDistance = (length(I) / u_LightRadius) - SHADOW_BIAS; // * r_ShadowMapDepthScale;
 #endif
-		
+
 		float shadowDistance = shadowMoments.a;
-		
+
 		// standard shadow mapping
 		shadow = vertexDistance <= shadowDistance ? 1.0 : 0.0;
-		
+
 		// exponential shadow mapping
 		// shadow = clamp(exp(r_OverDarkeningFactor * (shadowDistance - log(vertexDistance))), 0.0, 1.0);
 		// shadow = clamp(exp(r_OverDarkeningFactor * shadowDistance) * exp(-r_OverDarkeningFactor * vertexDistance), 0.0, 1.0);
 		// shadow = smoothstep(0.0, 1.0, shadow);
-		
+
 		#if defined(r_DebugShadowMaps)
 		#extension GL_EXT_gpu_shader4 : enable
 		gl_FragColor.r = (r_DebugShadowMaps & 1) != 0 ? shadowDistance : 0.0;
@@ -890,7 +890,7 @@ void	main()
 		// convert to [-1, 1] vector space
 		shadowMoments = 2.0 * (shadowMoments - 0.5);
 		#endif
-		
+
 		const float	SHADOW_BIAS = 0.001;
 
 #if defined(LIGHT_DIRECTIONAL)
@@ -902,26 +902,26 @@ void	main()
 		shadow = ChebyshevUpperBound(shadowMoments.ra, vertexDistance, VSM_EPSILON);
 	}
 #elif defined(EVSM)
-	{		
+	{
 		const float	SHADOW_BIAS = 0.001;
-		
+
 #if defined(LIGHT_DIRECTIONAL)
 		float vertexDistance = shadowVert.z - 0.0001;
 #else
 		float vertexDistance = (length(I) / u_LightRadius) - SHADOW_BIAS; // * r_ShadowMapDepthScale;// - SHADOW_BIAS;
 #endif
-		
+
 		vec2 warpedVertexDistances = WarpDepth(vertexDistance);
 
 		// derivative of warping at depth
 		vec2 depthScale = VSM_EPSILON * r_EVSMExponents * warpedVertexDistances;
 		vec2 minVariance = depthScale * depthScale;
-	
+
 		float posContrib = ChebyshevUpperBound(shadowMoments.xz, warpedVertexDistances.x, minVariance.x);
 		float negContrib = ChebyshevUpperBound(shadowMoments.yw, warpedVertexDistances.y, minVariance.y);
-		
+
 		shadow = min(posContrib, negContrib);
-		
+
 		#if defined(r_DebugShadowMaps)
 		#extension GL_EXT_gpu_shader4 : enable
 		gl_FragColor.r = (r_DebugShadowMaps & 1) != 0 ? posContrib : 0.0;
@@ -930,7 +930,7 @@ void	main()
 		gl_FragColor.a = 1.0;
 		return;
 		#endif
-		
+
 	}
 #endif
 
@@ -941,7 +941,7 @@ void	main()
 	}
 
 #endif // USE_SHADOWING
-	
+
 	// compute light direction in world space
 #if defined(LIGHT_DIRECTIONAL)
 	vec3 L = u_LightDir;
@@ -950,7 +950,7 @@ void	main()
 #endif
 
 	vec2 texDiffuse = var_TexDiffuse.st;
-	
+
 #if defined(USE_NORMAL_MAPPING)
 
 	// invert tangent space for twosided surfaces
@@ -969,18 +969,18 @@ void	main()
 
 	vec2 texNormal = var_TexNormal.st;
 	vec2 texSpecular = var_TexSpecular.st;
-	
+
 	// compute view direction in world space
 	vec3 V = normalize(u_ViewOrigin - var_Position.xyz);
-	
+
 #if defined(USE_PARALLAX_MAPPING)
-	
+
 	// ray intersect in view direction
-	
+
 	mat3 worldToTangentMatrix;
 	#if defined(GLHW_ATI) || defined(GLHW_ATI_DX10) || defined(GLDRV_MESA)
 	worldToTangentMatrix = mat3(tangentToWorldMatrix[0][0], tangentToWorldMatrix[1][0], tangentToWorldMatrix[2][0],
-								tangentToWorldMatrix[0][1], tangentToWorldMatrix[1][1], tangentToWorldMatrix[2][1], 
+								tangentToWorldMatrix[0][1], tangentToWorldMatrix[1][1], tangentToWorldMatrix[2][1],
 								tangentToWorldMatrix[0][2], tangentToWorldMatrix[1][2], tangentToWorldMatrix[2][2]);
 	#else
 	worldToTangentMatrix = transpose(tangentToWorldMatrix);
@@ -989,15 +989,15 @@ void	main()
 	// compute view direction in tangent space
 	vec3 Vts = worldToTangentMatrix * V;
 	Vts = normalize(Vts);
-	
+
 	// size and start position of search in texture space
 	vec2 S = Vts.xy * -u_DepthScale / Vts.z;
-		
+
 	float depth = RayIntersectDisplaceMap(texNormal, S, u_NormalMap);
-	
+
 	// compute texcoords offset
 	vec2 texOffset = S * depth;
-	
+
 	texDiffuse.st += texOffset;
 	texNormal.st += texOffset;
 	texSpecular.st += texOffset;
@@ -1016,7 +1016,7 @@ void	main()
 	// transform normal into world space
 	N = normalize(tangentToWorldMatrix * N);
 
-	
+
 #else // USE_NORMAL_MAPPING
 
 	vec3 N;
@@ -1030,7 +1030,7 @@ void	main()
 	{
 		N = normalize(var_Normal.xyz);
 	}
-		
+
 #endif // USE_NORMAL_MAPPING
 
 	// compute the light term
@@ -1055,19 +1055,19 @@ void	main()
 #if defined(LIGHT_PROJ)
 	vec3 attenuationXY = texture2DProj(u_AttenuationMapXY, var_TexAttenuation.xyw).rgb;
 	vec3 attenuationZ  = texture2D(u_AttenuationMapZ, vec2(var_TexAttenuation.z + 0.5, 0.0)).rgb; // FIXME
-	
+
 #elif defined(LIGHT_DIRECTIONAL)
 	vec3 attenuationXY = vec3(1.0);
 	vec3 attenuationZ  = vec3(1.0);
-	
+
 #else
 	vec3 attenuationXY = texture2D(u_AttenuationMapXY, var_TexAttenuation.xy).rgb;
 	vec3 attenuationZ  = texture2D(u_AttenuationMapZ, vec2(var_TexAttenuation.z, 0)).rgb;
 #endif
-				
+
 	// compute final color
 	vec4 color = diffuse;
-	
+
 #if defined(USE_NORMAL_MAPPING)
 	color.rgb += specular;
 #endif
@@ -1076,7 +1076,7 @@ void	main()
 	color.rgb *= attenuationXY;
 	color.rgb *= attenuationZ;
 #endif
-	
+
 	color.rgb *= u_LightScale;
 	color.rgb *= shadow;
 
@@ -1084,7 +1084,7 @@ void	main()
 	color.gb *= var_TexNormal.pq;
 
 	gl_FragColor = color;
-	
+
 #if 0
 #if defined(USE_PARALLAX_MAPPING)
 	gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), diffuse.a);
