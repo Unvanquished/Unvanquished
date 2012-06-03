@@ -943,7 +943,7 @@ char *CON_Input( void )
 
 				count = strlen( buf );
 				offset = Field_CursorToOffset( &input_field );
-				
+
 				memmove( input_field.buffer + offset + count,
 				         input_field.buffer + offset,
 				         strlen( input_field.buffer + offset ) + 1 );

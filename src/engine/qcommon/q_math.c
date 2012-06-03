@@ -4192,12 +4192,12 @@ int rint( double x )
 
 	buf = _fcvt( x, 0, &dec, &sig );
 	i = atoi( buf );
-	
-	if( sig == 1 ) 
+
+	if( sig == 1 )
 	{
 		i = i * -1;
 	}
-	
+
 	return i;
 }
 

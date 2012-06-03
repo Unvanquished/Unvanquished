@@ -77,7 +77,7 @@ void	main()
 #if defined(USE_NORMAL_MAPPING)
 	// invert tangent space for two sided surfaces
 	mat3 tangentToWorldMatrix;
-	
+
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
@@ -88,20 +88,20 @@ void	main()
 	{
 		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 	}
-	
+
 	vec2 texNormal = var_TexNormal.st;
 #if !defined(r_DeferredLighting)
 	vec2 texSpecular = var_TexSpecular.st;
 #endif
 
 #if defined(USE_PARALLAX_MAPPING)
-	
+
 	// ray intersect in view direction
-	
+
 	mat3 worldToTangentMatrix;
 	#if defined(GLHW_ATI) || defined(GLHW_ATI_DX10) || defined(GLDRV_MESA)
 	worldToTangentMatrix = mat3(tangentToWorldMatrix[0][0], tangentToWorldMatrix[1][0], tangentToWorldMatrix[2][0],
-								tangentToWorldMatrix[0][1], tangentToWorldMatrix[1][1], tangentToWorldMatrix[2][1], 
+								tangentToWorldMatrix[0][1], tangentToWorldMatrix[1][1], tangentToWorldMatrix[2][1],
 								tangentToWorldMatrix[0][2], tangentToWorldMatrix[1][2], tangentToWorldMatrix[2][2]);
 	#else
 	worldToTangentMatrix = transpose(tangentToWorldMatrix);
@@ -110,10 +110,10 @@ void	main()
 	// compute view direction in tangent space
 	vec3 Vts = worldToTangentMatrix * (u_ViewOrigin - var_Position.xyz);
 	Vts = normalize(Vts);
-	
+
 	// size and start position of search in texture space
 	vec2 S = Vts.xy * -u_DepthScale / Vts.z;
-		
+
 #if 0
 	vec2 texOffset = vec2(0.0);
 	for(int i = 0; i < 4; i++) {
@@ -123,25 +123,25 @@ void	main()
 	}
 #else
 	float depth = RayIntersectDisplaceMap(texNormal, S, u_NormalMap);
-	
+
 	// compute texcoords offset
 	vec2 texOffset = S * depth;
 #endif
-	
+
 	texNormal.st += texOffset;
-	
+
 #if !defined(r_DeferredLighting)
 	texDiffuse.st += texOffset;
 	texSpecular.st += texOffset;
 #endif
-	
+
 #endif // USE_PARALLAX_MAPPING
 
 	// compute normal in world space from normalmap
 	vec3 N = normalize(tangentToWorldMatrix * (2.0 * (texture2D(u_NormalMap, texNormal).xyz - 0.5)));
-	
+
 #if !defined(r_DeferredLighting)
-	
+
 	// compute the specular term
 #if defined(USE_REFLECTIVE_SPECULAR)
 
@@ -149,9 +149,9 @@ void	main()
 
 	vec4 envColor0 = textureCube(u_EnvironmentMap0, reflect(-V, N)).rgba;
 	vec4 envColor1 = textureCube(u_EnvironmentMap1, reflect(-V, N)).rgba;
-	
+
 	specular *= mix(envColor0, envColor1, u_EnvironmentInterpolation).rgb;
-	
+
 #if 0
 	// specular = vec4(u_EnvironmentInterpolation, u_EnvironmentInterpolation, u_EnvironmentInterpolation, 1.0);
 	specular = envColor0;
@@ -166,7 +166,7 @@ void	main()
 
 
 #else // USE_NORMAL_MAPPING
-	
+
 	vec3 N;
 
 #if defined(TWOSIDED)
@@ -181,15 +181,15 @@ void	main()
 	{
 		N = normalize(var_Normal);
 	}
-		
+
 	vec3 specular = vec3(0.0);
-	
+
 #endif // USE_NORMAL_MAPPING
 
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
-	
+
 #if defined(USE_ALPHA_TESTING)
 	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
 	{
@@ -207,10 +207,10 @@ void	main()
 		return;
 	}
 #endif
-	
+
 //	vec4 depthColor = diffuse;
 //	depthColor.rgb *= u_AmbientColor;
-	
+
 	// convert normal back to [0,1] color space
 	N = N * 0.5 + 0.5;
 

@@ -1025,7 +1025,7 @@ static void ParseShaderFile(const char *filename)
 				//% if( VectorLength( si->vecs[ 0 ] ) )
 				//%     Sys_Printf( "%s\n", shaderText );
 			}
-	
+
 			/* ydnar: clear shader text buffer */
 			shaderText[0] = '\0';
 		}

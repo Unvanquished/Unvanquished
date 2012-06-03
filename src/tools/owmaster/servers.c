@@ -576,7 +576,7 @@ mapping must be of the form "addr1:port1=addr2:port2", ":portX" are optional
 */
 qboolean Sv_AddAddressMapping (const char* mapping)
 {
-	char *map_string, *to_ip; 
+	char *map_string, *to_ip;
 	addrmap_t* addrmap;
 
 	// Get a working copy of the mapping string

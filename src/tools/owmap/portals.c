@@ -684,7 +684,7 @@ void MakeTreePortals(tree_t * tree)
 
 	MakeHeadnodePortals(tree);
 	MakeTreePortals_r(tree->headnode);
-	
+
 	Sys_FPrintf(SYS_VRB, "%9d tiny portals\n", c_tinyportals);
 	Sys_FPrintf(SYS_VRB, "%9d bad portals\n", c_badportals);	/* ydnar */
 

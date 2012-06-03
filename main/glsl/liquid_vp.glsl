@@ -46,19 +46,19 @@ void	main()
 {
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * attr_Position;
-	
+
 	// transform position into world space
 	var_Position = (u_ModelMatrix * attr_Position).xyz;
-	
+
 	// transform normalmap texcoords
 	var_TexNormal = (u_NormalTextureMatrix * attr_TexCoord0).st;
-	
+
 	var_Tangent.xyz = (u_ModelMatrix * vec4(attr_Tangent, 0.0)).xyz;
 	var_Binormal.xyz = (u_ModelMatrix * vec4(attr_Binormal, 0.0)).xyz;
-	
+
 	// transform normal into world space
 	var_Normal = (u_ModelMatrix * vec4(attr_Normal, 0.0)).xyz;
-	
+
 	var_LightColor = attr_Color;
 	var_LightDirection = attr_LightDirection;
 }

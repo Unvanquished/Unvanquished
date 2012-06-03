@@ -35,10 +35,10 @@ void	main()
 
 	// multiply with 4 because the FBO is only 1/4th of the screen resolution
 	st *= vec2(4.0, 4.0);
-	
+
 	// scale by the screen non-power-of-two-adjust
 	st *= r_NPOTScale;
-	
+
 	// calculate contrast color
 #if 0
 	// perform a box filter for the downsample
@@ -52,13 +52,13 @@ void	main()
 #endif
 
 	float L = dot(LUMINANCE_VECTOR, color);
-	
+
 	// adjust contrast
 	L = pow(L, 1.32);
 
 	float T = clamp(L - 0.71, 0.0, 1.0);
-	
+
 	color.rgb *= T;
-	
+
 	gl_FragColor = color;
 }

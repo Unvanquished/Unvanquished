@@ -56,7 +56,7 @@ vec4 DeformPosition(const int deformGen,
 
 		deformed.xyz += offset;
 	}
-	
+
 	if(deformGen == DGEN_WAVE_SQUARE)
 	{
 		float off = (pos.x + pos.y + pos.z) * spread;
@@ -65,7 +65,7 @@ vec4 DeformPosition(const int deformGen,
 
 		deformed.xyz += offset;
 	}
-	
+
 	if(deformGen == DGEN_WAVE_TRIANGLE)
 	{
 		float off = (pos.x + pos.y + pos.z) * spread;
@@ -74,7 +74,7 @@ vec4 DeformPosition(const int deformGen,
 
 		deformed.xyz += offset;
 	}
-	
+
 	if(deformGen == DGEN_WAVE_SAWTOOTH)
 	{
 		float off = (pos.x + pos.y + pos.z) * spread;
@@ -83,7 +83,7 @@ vec4 DeformPosition(const int deformGen,
 
 		deformed.xyz += offset;
 	}
-	
+
 	if(deformGen == DGEN_WAVE_INVERSE_SAWTOOTH)
 	{
 		float off = (pos.x + pos.y + pos.z) * spread;
@@ -92,16 +92,16 @@ vec4 DeformPosition(const int deformGen,
 
 		deformed.xyz += offset;
 	}
-	
+
 	if(deformGen == DGEN_BULGE)
 	{
 		float bulgeWidth = bulge.x;
 		float bulgeHeight = bulge.y;
 		float bulgeSpeed = bulge.z;
-	
+
 		float now = time * bulgeSpeed;
 
-		float off = (M_PI * 0.25) * st.x * bulgeWidth + now; 
+		float off = (M_PI * 0.25) * st.x * bulgeWidth + now;
 		float scale = sin(off) * bulgeHeight;
 		vec3 offset = normal * scale;
 
@@ -121,22 +121,22 @@ float WaveValue(float func, float base, float amplitude, float phase, float freq
 {
 	if(func == GF_SIN)
 		return base  + sin(phase + (time * freq)) * amplitude;
-	
+
 	if(func == GF_SQUARE)
 		return base  + sign(sin(phase + (time * freq))) * amplitude;
-	
+
 	if(func == GF_TRIANGLE)
 		return base  + triangle(phase + (time * freq)) * amplitude;
-	
+
 	if(func == GF_SAWTOOTH)
 		return base  + sawtooth(phase + (time * freq)) * amplitude;
-	
+
 	if(func == GF_INVERSE_SAWTOOTH)
 		return base + (1.0 - sawtooth(phase + (time * freq))) * amplitude;
-	
+
 	// if(func == GF_NOISE)
 		// TODO
-		
+
 	return 0.0; // GF_NONE
 }
 
@@ -145,17 +145,17 @@ vec4 DeformPosition2(	const vec4 pos,
 						const vec2 st,
 						float time)
 {
-	
+
 	int i, deformOfs = 0;
 	int numDeforms = int(u_DeformParms[deformOfs++]);
-	
+
 	vec4 deformed = pos;
-	
+
 	for(i = 0; i < numDeforms; i++)
 	{
 		int deformGen = int(u_DeformParms[deformOfs++]);
 
-			
+
 		if(deformGen == DEFORM_WAVE)
 		{
 			float func = u_DeformParms[deformOfs++];
@@ -163,31 +163,31 @@ vec4 DeformPosition2(	const vec4 pos,
 			float amplitude = u_DeformParms[deformOfs++];
 			float phase = u_DeformParms[deformOfs++];
 			float freq = u_DeformParms[deformOfs++];
-			
+
 			float spread = u_DeformParms[deformOfs++];
-		
+
 			float off = (pos.x + pos.y + pos.z) * spread;
 			float scale = WaveValue(func, base, amplitude, phase + off, freq, time);
 			vec3 offset = normal * scale;
 
 			deformed.xyz += offset;
 		}
-		
+
 		if(deformGen == DEFORM_BULGE)
 		{
 			float bulgeWidth = u_DeformParms[deformOfs++];
 			float bulgeHeight = u_DeformParms[deformOfs++];
 			float bulgeSpeed = u_DeformParms[deformOfs++];
-		
+
 			float now = time * bulgeSpeed;
 
-			float off = (M_PI * 0.25) * st.x * bulgeWidth + now; 
+			float off = (M_PI * 0.25) * st.x * bulgeWidth + now;
 			float scale = sin(off) * bulgeHeight;
 			vec3 offset = normal * scale;
 
 			deformed.xyz += offset;
 		}
-		
+
 		if(deformGen == DEFORM_MOVE)
 		{
 			float func = u_DeformParms[deformOfs++];
@@ -195,7 +195,7 @@ vec4 DeformPosition2(	const vec4 pos,
 			float amplitude = u_DeformParms[deformOfs++];
 			float phase = u_DeformParms[deformOfs++];
 			float freq = u_DeformParms[deformOfs++];
-			
+
 			vec3 move = vec3(u_DeformParms[deformOfs++], u_DeformParms[deformOfs++], u_DeformParms[deformOfs++]);
 			float scale = WaveValue(func, base, amplitude, phase, freq, time);
 			vec3 offset = move * scale;
@@ -203,7 +203,7 @@ vec4 DeformPosition2(	const vec4 pos,
 			deformed.xyz += offset;
 		}
 	}
-	
+
 	return deformed;
 }
 

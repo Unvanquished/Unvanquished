@@ -55,7 +55,7 @@ several games based on the Quake III Arena engine, in the form of "Q3Map2."
 	save as passagemightsee
 
 
-  void CalcMightSee (leaf_t *leaf, 
+  void CalcMightSee (leaf_t *leaf,
 */
 
 int CountBits(byte * bits, int numbits)
@@ -261,7 +261,7 @@ fixedWinding_t *ClipToSeperators(fixedWinding_t * source, fixedWinding_t * pass,
 	int             counts[3];
 	qboolean        fliptest;
 
-	// check all combinations   
+	// check all combinations
 	for(i = 0; i < source->numpoints; i++)
 	{
 		l = (i + 1) % source->numpoints;
@@ -438,7 +438,7 @@ void RecursiveLeafFlow(int leafnum, threaddata_t * thread, pstack_t * prevstack)
 	might = (long *)stack.mightsee;
 	vis = (long *)thread->base->portalvis;
 
-	// check all portals for flowing into other leafs   
+	// check all portals for flowing into other leafs
 	for(i = 0; i < leaf->numportals; i++)
 	{
 		p = leaf->portals[i];
@@ -703,7 +703,7 @@ void RecursivePassageFlow(vportal_t * portal, threaddata_t * thread, pstack_t * 
 
 	passage = portal->passages;
 	nextpassage = passage;
-	// check all portals for flowing into other leafs   
+	// check all portals for flowing into other leafs
 	for(i = 0; i < leaf->numportals; i++, passage = nextpassage)
 	{
 		p = leaf->portals[i];
@@ -805,7 +805,7 @@ void PassageFlow(int portalnum)
 	/*
 	   c_can = CountBits (p->portalvis, numportals*2);
 
-	   Sys_FPrintf (SYS_VRB,"portal:%4i  mightsee:%4i  cansee:%4i (%i chains)\n", 
+	   Sys_FPrintf (SYS_VRB,"portal:%4i  mightsee:%4i  cansee:%4i (%i chains)\n",
 	   (int)(p - portals),  c_might, c_can, data.c_chains);
 	 */
 }
@@ -847,7 +847,7 @@ void RecursivePassagePortalFlow(vportal_t * portal, threaddata_t * thread, pstac
 
 	passage = portal->passages;
 	nextpassage = passage;
-	// check all portals for flowing into other leafs   
+	// check all portals for flowing into other leafs
 	for(i = 0; i < leaf->numportals; i++, passage = nextpassage)
 	{
 		p = leaf->portals[i];
@@ -1069,7 +1069,7 @@ void PassagePortalFlow(int portalnum)
 	/*
 	   c_can = CountBits (p->portalvis, numportals*2);
 
-	   Sys_FPrintf (SYS_VRB,"portal:%4i  mightsee:%4i  cansee:%4i (%i chains)\n", 
+	   Sys_FPrintf (SYS_VRB,"portal:%4i  mightsee:%4i  cansee:%4i (%i chains)\n",
 	   (int)(p - portals),  c_might, c_can, data.c_chains);
 	 */
 }
@@ -1186,7 +1186,7 @@ int AddSeperators(fixedWinding_t * source, fixedWinding_t * pass, qboolean flipc
 	qboolean        fliptest;
 
 	numseperators = 0;
-	// check all combinations   
+	// check all combinations
 	for(i = 0; i < source->numpoints; i++)
 	{
 		l = (i + 1) % source->numpoints;
@@ -1484,7 +1484,7 @@ typedef struct portal_s
 } portal_s;
 
 leaf = portal->leaf
-clear 
+clear
 for all portals
 
 
@@ -1628,7 +1628,7 @@ void BasePortalVis(int portalnum)
 /*
 ===============================================================================
 
-This is a second order aproximation 
+This is a second order aproximation
 
 Calculates portalvis bit vector
 

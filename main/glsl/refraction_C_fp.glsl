@@ -36,16 +36,16 @@ void	main()
 {
 	// compute incident ray
 	vec3 I = normalize(var_Position - u_ViewOrigin);
-	
+
 	// compute normal
 	vec3 N = normalize(var_Normal);
-	
+
 	// compute reflection ray
 	vec3 R = reflect(I, N);
-	
+
 	// compute refraction ray
 	vec3 T = refract(I, N, u_RefractionIndex);
-			
+
 	// compute fresnel term
 	float fresnel = u_FresnelBias + pow(1.0 - dot(I, N), u_FresnelPower) * u_FresnelScale;
 
@@ -58,6 +58,6 @@ void	main()
 	color.g = (1.0 - fresnel) * refractColor.g + reflectColor.g * fresnel;
 	color.b = (1.0 - fresnel) * refractColor.b + reflectColor.b * fresnel;
 	color.a = 1.0;
-	
+
 	gl_FragColor = color;
 }

@@ -3160,14 +3160,14 @@ void IlluminateVertexes(int num)
 					vertDeluxel = VERTEX_DELUXEL(lightmapNum, ds->firstVert + i);
 					VectorNormalize(vertDeluxel);
 				}
-				
+
 
 				if(!info->si->noVertexLight)
 				{
 					ColorToFloats(vertLuxel, verts[i].lightColor[lightmapNum], info->si->vertexScale);
 
 					if(deluxemap)
-					{	
+					{
 						VectorCopy(vertDeluxel, verts[i].lightDirection[lightmapNum]);
 					}
 					else
@@ -3310,7 +3310,7 @@ void IlluminateVertexes(int num)
 				ColorToFloats(vertLuxel, verts[i].lightColor[lightmapNum], 1.0f);
 
 				if(deluxemap)
-				{	
+				{
 					VectorCopy(vertDeluxel, verts[i].lightDirection[lightmapNum]);
 				}
 				else
@@ -4383,7 +4383,7 @@ float FloodLightForSample(trace_t * trace, float floodLightDistance, qboolean fl
 				VectorSubtract(trace->hit, trace->origin, displacement);
 				d = VectorLength(displacement);
 
-				// d=trace->distance;            
+				// d=trace->distance;
 				//if (d>256) gatherDirt+=1;
 				contribution = d / dd;
 				if(contribution > 1)

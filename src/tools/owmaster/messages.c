@@ -254,7 +254,7 @@ static void HandleGetServers (const char* msg, const struct sockaddr_in* addr)
 			// If we're done
 			if (sv == NULL)
 				return;
-			
+
 			// Reset the packet index (no need to change the header)
 			packetind = headersize;
 		}
@@ -473,7 +473,7 @@ static void HandleGetMotd( const char* msg, const struct sockaddr_in* addr )
 
 	if (packetind > MAX_PACKET_SIZE - 2)
 		packetind = MAX_PACKET_SIZE - 2;
-	
+
 	packet[ packetind++ ] = '\"';
 	packet[ packetind++ ] = '\0';
 

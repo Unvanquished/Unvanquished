@@ -94,9 +94,9 @@ static void Draw_BeginScene(void)
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-		/* Note the SDL_DOUBLEBUF flag is not required to enable double 
-		 * buffering when setting an OpenGL video mode. 
-		 * Double buffering is enabled or disabled using the 
+		/* Note the SDL_DOUBLEBUF flag is not required to enable double
+		 * buffering when setting an OpenGL video mode.
+		 * Double buffering is enabled or disabled using the
 		 * SDL_GL_DOUBLEBUFFER attribute.
 		 */
 

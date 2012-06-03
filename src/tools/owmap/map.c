@@ -2125,7 +2125,7 @@ static qboolean ParseMapEntity(qboolean onlyLights)
 					b->nextColorModBrush = convertDetailBrushesEntity.colorModBrushes;
 					convertDetailBrushesEntity.colorModBrushes = b;
 				}
-				
+
 				detailBrushes = g_slist_remove(detailBrushes, detailBrushes->data);
 			}
 
@@ -2158,7 +2158,7 @@ static qboolean ParseMapEntity(qboolean onlyLights)
 					b->nextColorModBrush = mapEnt->colorModBrushes;
 					mapEnt->colorModBrushes = b;
 				}
-				
+
 				structuralBrushes = g_slist_remove(structuralBrushes, structuralBrushes->data);
 			}
 		}

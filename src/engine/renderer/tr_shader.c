@@ -1140,7 +1140,7 @@ ParseStencil
 static void ParseStencil( char **text, stencil_t *stencil )
 {
 	char *token;
-	
+
 	stencil->flags = 0;
 	stencil->mask  = stencil->writeMask = 0xff;
 	stencil->ref   = 1;

@@ -251,7 +251,7 @@ void SplitMeshByPlane(mesh_t * in, vec3_t normal, float dist, mesh_t ** front, m
 		/* interpolate */
 		//% for( i = 0; i < 10; i++ )
 		//%     dv->xyz[ i ] = v1->xyz[ i ] + frac * (v2->xyz[ i ] - v1->xyz[ i ]);
-		//% dv->xyz[10] = 0;    // set all 4 colors to 0 
+		//% dv->xyz[10] = 0;    // set all 4 colors to 0
 		LerpDrawVertAmount(v1, v2, frac, dv);
 
 		if(frontAprox)

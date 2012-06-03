@@ -961,7 +961,7 @@ static void ASE_KeyGEOMOBJECT(const char *token)
 	else if(!strcmp(token, "*MESH") && !ase.grabAnims)
 	{
 /*
-		if ( strstr( ase.objects[ase.currentObject].name, "tag_" ) == ase.objects[ase.currentObject].name ) 
+		if ( strstr( ase.objects[ase.currentObject].name, "tag_" ) == ase.objects[ase.currentObject].name )
 		{
 			s_forceStaticMesh = true;
 			ASE_ParseBracedBlock( ASE_KeyMESH );
@@ -976,7 +976,7 @@ static void ASE_KeyGEOMOBJECT(const char *token)
 		ase.objects[ase.currentObject].anim.numFrames = ase.objects[ase.currentObject].anim.currentFrame;
 		ase.objects[ase.currentObject].numAnimations++;
 /*
-		// ignore meshes that aren't part of animations if this object isn't a 
+		// ignore meshes that aren't part of animations if this object isn't a
 		// a tag
 		else
 		{

@@ -1253,9 +1253,9 @@ int WINS_Init(void)
 	struct sockaddr_s addr;
 	char           *p;
 
-/* 
+/*
  linux doesn't have anything to initialize for the net
- "Windows .. built for the internet .. the internet .. built with unix" 
+ "Windows .. built for the internet .. the internet .. built with unix"
  */
 #if 0
 	WORD            wVersionRequested;

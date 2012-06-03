@@ -194,12 +194,12 @@ skipspace:
 	{
 		if(script->script_p >= script->end_p)
 			return EndOfScript(crossline);
-		
+
 		if(*script->script_p++ == '\n')
 		{
 			if(!crossline)
 				Error("Line %i is incomplete\n", script->line);
-			
+
 			script->line++;
 		}
 	}
@@ -212,7 +212,7 @@ skipspace:
 	{
 		if(!crossline)
 			Error("Line %i is incomplete\n", script->line);
-		
+
 		while(*script->script_p && *script->script_p++ != '\n')
 		{
 			if(script->script_p >= script->end_p)
@@ -228,7 +228,7 @@ skipspace:
 	{
 		if(!crossline)
 			Error("Line %i is incomplete\n", script->line);
-		
+
 		script->script_p += 2;
 		while(*script->script_p && (*script->script_p != '*' || script->script_p[1] != '/'))
 		{
@@ -237,7 +237,7 @@ skipspace:
 				script->line++;
 			}
 			script->script_p++;
-			
+
 			if(script->script_p >= script->end_p)
 				return EndOfScript(crossline);
 		}
@@ -260,10 +260,10 @@ skipspace:
 		while(*script->script_p != '"')
 		{
 			*token_p++ = *script->script_p++;
-			
+
 			if(script->script_p == script->end_p)
 				break;
-			
+
 			if(token_p == &token[MAXTOKEN])
 				Error("Token too large on line %i\n", script->line);
 		}
@@ -280,20 +280,20 @@ skipspace:
 		do
 		{
 			*token_p++ = *script->script_p++;
-			
+
 			if(script->script_p == script->end_p)
 				break;
-			
+
 			if(token_p == &token[MAXTOKEN])
 				Error("Token too large on line %i\n", script->line);
-		
+
 		} while((*script->script_p >= '0' && *script->script_p <= '9') || *script->script_p == '.' );
 
 		// parse the exponent
 		if(*script->script_p == 'e' || *script->script_p == 'E')
 		{
 			*token_p++ = *script->script_p;
-			
+
 			script->script_p++;
 			if(*script->script_p == '-' || *script->script_p == '+')
 			{
@@ -303,13 +303,13 @@ skipspace:
 			do
 			{
 				*token_p++ = *script->script_p++;
-			
+
 				if(script->script_p == script->end_p)
 					break;
-			
+
 				if(token_p == &token[MAXTOKEN])
 					Error("Token too large on line %i\n", script->line);
-				
+
 			} while(*script->script_p >= '0' && *script->script_p <= '9');
 		}
 	}
@@ -326,10 +326,10 @@ skipspace:
 		do
 		{
 			*token_p++ = *script->script_p++;
-			
+
 			if(script->script_p == script->end_p)
 				break;
-			
+
 			if(token_p == &token[MAXTOKEN])
 				Error("Token too large on line %i\n", script->line);
 		}
@@ -352,7 +352,7 @@ skipspace:
 	{
 		// single character punctuation
 		*token_p++ = *script->script_p++;
-		
+
 		if(token_p == &token[MAXTOKEN])
 			Error("Token too large on line %i\n", script->line);
 	}

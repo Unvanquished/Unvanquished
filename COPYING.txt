@@ -1,5 +1,5 @@
 ---------------------------------------------------------- Tremulous License ---
-Tremulous is licensed in two broadly separate sections: the code and the media. 
+Tremulous is licensed in two broadly separate sections: the code and the media.
 
 The code is licensed under the GNU GENERAL PUBLIC LICENSE. This license is
 contained in full in the file named GPL. Please be aware of the exceptions to
@@ -30,7 +30,7 @@ are subject to the following license:
   case-by-case basis via e-mail. All other usage requires written permission.
   Bulk redistribution or archival of the textures in any medium, digital or
   otherwise (except mapping packages for mods) is prohibited.
-     
+
 -----------------------
 ET-XreaL License
 _______________
