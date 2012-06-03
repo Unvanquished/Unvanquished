@@ -38,6 +38,9 @@
     <ClCompile Include="..\..\..\..\engine\qcommon\q_shared.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ui_utf8.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="keycodes.h">

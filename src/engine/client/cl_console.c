@@ -376,9 +376,10 @@ void Con_Grep_f( void )
 
 			if ( pbLength + i >= pbAlloc )
 			{
+				char *nb;
 				// allocate in 16K chunks - more than adequate
 				pbAlloc = ( pbLength + i + 1 + 16383) & ~16383;
-				char *nb = Z_Malloc( pbAlloc );
+				*nb = Z_Malloc( pbAlloc );
 				strcpy( nb, printbuf );
 				Z_Free( printbuf );
 				printbuf = nb;
