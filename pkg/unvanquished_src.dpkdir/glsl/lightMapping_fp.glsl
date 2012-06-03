@@ -76,17 +76,17 @@ void	main()
 	{
 		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 	}
-	
+
 	// compute view direction in world space
 	vec3 I = normalize(u_ViewOrigin - var_Position);
 
 #if defined(USE_PARALLAX_MAPPING)
 	// ray intersect in view direction
-	
+
 	mat3 worldToTangentMatrix;
 	#if defined(GLHW_ATI) || defined(GLHW_ATI_DX10) || defined(GLDRV_MESA)
 	worldToTangentMatrix = mat3(tangentToWorldMatrix[0][0], tangentToWorldMatrix[1][0], tangentToWorldMatrix[2][0],
-								tangentToWorldMatrix[0][1], tangentToWorldMatrix[1][1], tangentToWorldMatrix[2][1], 
+								tangentToWorldMatrix[0][1], tangentToWorldMatrix[1][1], tangentToWorldMatrix[2][1],
 								tangentToWorldMatrix[0][2], tangentToWorldMatrix[1][2], tangentToWorldMatrix[2][2]);
 	#else
 	worldToTangentMatrix = transpose(tangentToWorldMatrix);
@@ -95,10 +95,10 @@ void	main()
 	// compute view direction in tangent space
 	vec3 V = worldToTangentMatrix * (u_ViewOrigin - var_Position.xyz);
 	V = normalize(V);
-	
+
 	// size and start position of search in texture space
 	vec2 S = V.xy * -u_DepthScale / V.z;
-		
+
 #if 0
 	vec2 texOffset = vec2(0.0);
 	for(int i = 0; i < 4; i++) {
@@ -108,11 +108,11 @@ void	main()
 	}
 #else
 	float depth = RayIntersectDisplaceMap(texNormal, S, u_NormalMap);
-	
+
 	// compute texcoords offset
 	vec2 texOffset = S * depth;
 #endif
-	
+
 	texDiffuse.st += texOffset;
 	texNormal.st += texOffset;
 	texSpecular.st += texOffset;
@@ -120,7 +120,7 @@ void	main()
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
-	
+
 #if defined(USE_ALPHA_TESTING)
 	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
 	{
@@ -146,28 +146,28 @@ void	main()
 	//N = normalize(N);
 	//N = normalize(var_Normal.xyz);
 	N = normalize(tangentToWorldMatrix * N);
-	
+
 	// compute light direction in world space
 	vec3 L = 2.0 * (texture2D(u_DeluxeMap, var_TexLight).xyz - 0.5);
 	//L = normalize(L);
-	
+
 	// compute half angle in world space
 	vec3 H = normalize(L + I);
-	
+
 	// compute light color from world space lightmap
 	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
-	
+
 	// compute the specular term
 	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb;
-	
+
 	float NdotL = clamp(dot(N, L), 0.0, 1.0);
-	
+
 	float NdotLnobump = clamp(dot(normalize(var_Normal.xyz), L), 0.004, 1.0);
 	//vec3 lightColorNoNdotL = clamp(lightColor.rgb / NdotLnobump, 0.0, 1.0);
-	
+
 	//float NdotLnobump = dot(normalize(var_Normal.xyz), L);
 	vec3 lightColorNoNdotL = lightColor.rgb / NdotLnobump;
-	
+
 	// compute final color
 	vec4 color = diffuse;
 	// color = vec4(vec3(1.0, 1.0, 1.0), diffuse.a);
@@ -185,7 +185,7 @@ void	main()
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
-	
+
 #if defined(USE_ALPHA_TESTING)
 	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
 	{
@@ -216,12 +216,12 @@ void	main()
 	{
 		N = normalize(var_Normal);
 	}
-	
+
 	vec3 specular = vec3(0.0, 0.0, 0.0);
 
 	// compute light color from object space lightmap
 	vec3 lightColor = texture2D(u_LightMap, var_TexLight).rgb;
-	
+
 	vec4 color = diffuse;
 	color.rgb *= lightColor;
 	color.a = var_Color.a;	// for terrain blending

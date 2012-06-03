@@ -37,7 +37,7 @@ void	main()
 {
 	// compute incident ray in world space
 	vec3 I = normalize(var_Position - u_ViewOrigin);
-	
+
 
 #if defined(USE_NORMAL_MAPPING)
 	// compute normal in tangent space from normalmap
@@ -46,7 +46,7 @@ void	main()
 	N.z *= r_NormalScale;
 	normalize(N);
 	#endif
-		
+
 	// invert tangent space for twosided surfaces
 	mat3 tangentToWorldMatrix;
 #if defined(TWOSIDED)
@@ -55,7 +55,7 @@ void	main()
 	else
 #endif
 		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
-	
+
 	// transform normal into world space
 	N = normalize(tangentToWorldMatrix * N);
 
@@ -63,10 +63,10 @@ void	main()
 
 	vec3 N = normalize(var_Normal.xyz);
 #endif
-	
+
 	// compute reflection ray
 	vec3 R = reflect(I, N);
-	
+
 	gl_FragColor = textureCube(u_ColorMap, R).rgba;
 	// gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

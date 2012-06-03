@@ -42,7 +42,7 @@ float RayIntersectDisplaceMap(vec2 dp, vec2 ds, sampler2D normalMap)
 	for(int i = 0; i < linearSearchSteps - 1; ++i)
 	{
 		depth += size;
-		
+
 		vec4 t = texture2D(normalMap, dp + ds * depth);
 
 		if(bestDepth > 0.996)		// if no depth found yet
@@ -51,14 +51,14 @@ float RayIntersectDisplaceMap(vec2 dp, vec2 ds, sampler2D normalMap)
 	}
 
 	depth = bestDepth;
-	
+
 	// recurse around first point (depth) for closest match
 	for(int i = 0; i < binarySearchSteps; ++i)
 	{
 		size *= 0.5;
 
 		vec4 t = texture2D(normalMap, dp + ds * depth);
-		
+
 		if(depth >= t.w)
 		#ifdef RM_DOUBLEDEPTH
 			if(depth <= t.z)
