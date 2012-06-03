@@ -1850,7 +1850,7 @@ void CL_ForwardCommandToServer( const char *string )
 		return;
 	}
 
-	if ( clc.demoplaying || cls.state < CA_CONNECTED || cmd[ 0 ] == '+' )
+	if ( clc.demoplaying || cls.state < CA_CONNECTED || cmd[ 0 ] == '+' || cmd[ 0 ] == '\0' )
 	{
 		Com_Printf( "Unknown command \"%s\"\n", cmd );
 		return;
@@ -3079,20 +3079,10 @@ void CL_CheckForResend( void )
 			Info_SetValueForKey( info, "qport", va( "%i", port ) );
 			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ) );
 
-			strcpy( data, "connect " );
-
-			data[ 8 ] = '\"'; // NERVE - SMF - spaces in name bugfix
-
-			for ( i = 0; i < strlen( info ); i++ )
-			{
-				data[ 9 + i ] = info[ i ]; // + (clc.challenge)&0x3;
-			}
-
-			data[ 9 + i ] = '\"'; // NERVE - SMF - spaces in name bugfix
-			data[ 10 + i ] = 0;
+			sprintf( data, "connect %s", Cmd_QuoteString( info ) );
 
 			// EVEN BALANCE - T.RAY
-			pktlen = i + 10;
+			pktlen = strlen( data );
 			memcpy( pkt, &data[ 0 ], pktlen );
 
 			NET_OutOfBandData( NS_CLIENT, clc.serverAddress, ( byte * ) pkt, pktlen );
@@ -3283,7 +3273,7 @@ void CL_PrintPacket( netadr_t from, msg_t *msg )
 		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 	}
 
-	Com_Printf( "%s", clc.serverMessage );
+	Com_Printf( "%s\n", clc.serverMessage );
 }
 
 /*
@@ -3865,7 +3855,7 @@ void CL_CheckUserinfo( void )
 	if ( cvar_modifiedFlags & CVAR_USERINFO )
 	{
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		CL_AddReliableCommand( va( "userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO ) ) ); // FIXME QUOTING INFO
+		CL_AddReliableCommand( va( "userinfo %s", Cmd_QuoteString( Cvar_InfoString( CVAR_USERINFO ) ) ) );
 	}
 }
 
@@ -4473,7 +4463,7 @@ void CL_CheckAutoUpdate( void )
 	             cls.autoupdateServer.ip[ 2 ], cls.autoupdateServer.ip[ 3 ],
 	             BigShort( cls.autoupdateServer.port ) );
 
-	NET_OutOfBandPrint( NS_CLIENT, cls.autoupdateServer, "getUpdateInfo \"%s\" \"%s\"\n", Q3_VERSION, ARCH_STRING ); // FIXME QUOTING INFO
+	NET_OutOfBandPrint( NS_CLIENT, cls.autoupdateServer, "getUpdateInfo %s %s\n", Cmd_QuoteString( Q3_VERSION ), Cmd_QuoteString( ARCH_STRING ) );
 
 #endif // !PRE_RELEASE_DEMO
 

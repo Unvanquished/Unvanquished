@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+#DEBHELPER#
+
+if test "$1" = "purge"; then
+  rm /var/games/unvanquished/md5sums /var/games/unvanquished/main/* -f
+fi

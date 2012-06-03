@@ -37,11 +37,11 @@ Description: Team-based FPS game, aliens v. humans
 
 Package: unvanquished-server
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
+Depends: ${shlibs:Depends}, ${misc:Depends}, adduser,
 	unvanquished-common (= ${binary:Version})
 Suggests: unvanquished
-Conflicts: unvanquished (<< 0.3.5-2)
-Replaces: unvanquished (<< 0.3.5-2)
+Conflicts: unvanquished (<< 0.3.5-2~)
+Replaces: unvanquished (<< 0.3.5-2~)
 Description: Team-based FPS game, aliens v. humans - dedicated server
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
@@ -51,8 +51,8 @@ Description: Team-based FPS game, aliens v. humans - dedicated server
 Package: unvanquished-common
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: unvanquished (<< 0.3.5-2)
-Replaces: unvanquished (<< 0.3.5-2)
+Conflicts: unvanquished (<< 0.4.0)
+Replaces: unvanquished (<< 0.4.0)
 Description: Team-based FPS game, aliens v. humans - shared resources
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
@@ -60,8 +60,10 @@ Description: Team-based FPS game, aliens v. humans - shared resources
  This package contains resources used by both client and server.
 
 Package: unvanquished-dbg
+Section: contrib/debug
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends},
+	unvanquished (= ${binary:Version}) | unvanquished-server (= ${binary:Version})
 Description: Team-based FPS game, aliens v. humans - debug info
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.

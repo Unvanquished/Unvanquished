@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.3.5"
+#define PRODUCT_VERSION         "0.4.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.3.0"
+#define ENGINE_VERSION          "0.4.0"
 
 #ifdef GIT_VERSION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION" " GIT_VERSION

@@ -308,7 +308,7 @@ void CL_ConfigstringModified( void )
 //  s = Cmd_Argv(2);
 	// get everything after "cs <num>"
 	//s = Cmd_ArgsFrom( 2 );
-	s = Cmd_DequoteString( Cmd_Cmd_FromNth( 2 ) ); // FIXME QUOTING INFO
+	s = Cmd_Argv( 2 );
 
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
 

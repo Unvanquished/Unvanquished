@@ -10,7 +10,7 @@
 ### END INIT INFO
 
 PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
-DAEMON="/usr/games/unvanquished-server.sh"
+DAEMON="/usr/games/unvanquished-server"
 NAME="unvanquished-server"
 DESC="Unvanquished dedicated server"
 PIDFILE="/var/run/$NAME.pid"
