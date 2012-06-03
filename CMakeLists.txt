@@ -34,33 +34,38 @@ set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynami
 
 # Options
 option( BUILD_CLIENT         "Build Daemon client"                         1 )
-option( BUILD_OLD_RENDERER   "Build old renderer library"                  1 )
-option( BUILD_NEW_RENDERER   "Build new renderer library"                  1 )
 option( BUILD_SERVER         "Build Daemonded server"                      1 )
-option( BUILD_GAME_GPP       "Build GPP Tremulous game logic"              1 )
 option( GAME_LIB             "Build game logic libraries"                  1 )
 option( GAME_QVM             "Build game logic QVM files"                  1 )
 option( BUILD_MASTER         "Build master server"                         1 )
 option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
-option( USE_OPENAL           "Use OpenAL"                                  1 )
-option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 )
-option( HAVE_BZIP2           "Compile with BZip2 support"                  0 )
-option( USE_CURSES           "Use the curses console"                      1 )
-option( USE_CODEC_VORBIS     "Compile with support for Vorbis"             1 )
-option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                 1 )
-option( USE_MUMBLE           "Compile with support for Mumble"             1 )
-option( USE_PHYSICS          "Compile with Newton Physics"                 0 )
-option( USE_WEBP             "Compile with WebP loader"                    1 )
-option( USE_VOIP             "Compile with VOIP support"                   1 )
-option( USE_CIN_XVID         "Encode videos with XViD"                     1 )
-option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                0 )
-option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"    0 )
-option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvanquished"   0 )
-option( NO_UNTRUSTED_PLUGINS "Don't load native plugins from the user dir" 1 )
 
 option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
 option( ENABLE_HARDENING     "Enable various hardening options"            1 )
+
+cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
+cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"                       1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_WEBP             "Compile with WebP loader"                              1 BUILD_CLIENT                   0 ) # technically, any renderer, not client
+cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
+
+cmake_dependent_option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
+cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
+cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
+cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                          0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
+cmake_dependent_option( NO_UNTRUSTED_PLUGINS "Don't load native plugins from the user dir"           1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
+
+cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvanquished"             0
+                                                                        "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
+
+cmake_dependent_option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                           1 BUILD_NEW_RENDERER             0 )
+
+cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
 cmake_dependent_option( BUILD_GAME_GPP       "Build Tremulous GPP game logic"              1 "GAME_LIB OR GAME_QVM" 0 )
 cmake_dependent_option( QVM_DEBUG            "Enable (some) QVM debugging"                 1 GAME_QVM         0 )
@@ -1298,7 +1303,7 @@ endif()
 # Find Curses #
 ###############
 
-if( BUILD_CLIENT OR BUILD_SERVER AND USE_CURSES )
+if( USE_CURSES )
   set( CURSES_NEED_NCURSES 1 ) # Tells FindCurses that ncurses is required
   find_package( CursesW )
   if( CURSESW_FOUND )
