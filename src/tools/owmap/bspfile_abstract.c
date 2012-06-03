@@ -843,7 +843,7 @@ void RemoveKey(entity_t * ent, const char *key)
 			{
 				// in between
 				ep_prev->next = ep->next;
-				//ent->epairs = 
+				//ent->epairs =
 			}
 
 			free(ep);

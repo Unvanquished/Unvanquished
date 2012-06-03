@@ -903,18 +903,18 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			ri.Printf( PRINT_ALL, "Cannot estimate display aspect, assuming 1.333\n" );
 		}
 	}
-	if ( videoInfo->current_h > 0 ) 
+	if ( videoInfo->current_h > 0 )
 	{
 		glConfig.vidWidth = videoInfo->current_w;
 		glConfig.vidHeight = videoInfo->current_h;
-	} 
-	else 
+	}
+	else
 	{
 		glConfig.vidWidth = 480;
 		glConfig.vidHeight = 640;
 		ri.Printf( PRINT_ALL, "Cannot determine display resolution, assuming 640x480\n" );
 	}
-	
+
 	ri.Printf( PRINT_ALL, "...setting mode %d:", mode );
 
 	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) )

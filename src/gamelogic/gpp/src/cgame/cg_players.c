@@ -2042,7 +2042,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	int           clientNum;
 	float         speedScale;
 	refSkeleton_t blend;
-	
+
 	clientNum = cent->currentState.clientNum;
 
 	if ( cg_noPlayerAnims.integer )
@@ -3585,10 +3585,10 @@ void CG_Player( centity_t *cent )
 
 		// transform relative bones to absolute ones required for vertex skinning and tag attachments
 		CG_TransformSkeleton( &body.skeleton, ci->modelScale );
-		
+
 		memcpy( &body.skeleton.bounds[ 0 ], &mins, sizeof( vec3_t ) );
 		memcpy( &body.skeleton.bounds[ 1 ], &maxs, sizeof( vec3_t ) );
-		
+
 		// add body to renderer
 
 #if 0

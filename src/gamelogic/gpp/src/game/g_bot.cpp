@@ -56,10 +56,10 @@ float BotGetBaseRushScore(gentity_t *ent) {
 		case WP_PULSE_RIFLE: return 0.7f; break;
 		case WP_LAS_GUN: return 0.7f; break;
 		case WP_SHOTGUN: return 0.2f; break;
-		case WP_CHAINGUN: if(BG_InventoryContainsUpgrade(UP_BATTLESUIT,ent->client->ps.stats)) 
+		case WP_CHAINGUN: if(BG_InventoryContainsUpgrade(UP_BATTLESUIT,ent->client->ps.stats))
 							  return 0.5f;
-						  else 
-							  return 0.2f; 
+						  else
+							  return 0.2f;
 			break;
 		case WP_ALEVEL0: return 0.0f; break;
 		case WP_ALEVEL1: return 0.2f; break;
@@ -392,7 +392,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self ) {
 	}
 	if(bestVisibleEnemy || BotGetTeam(self) == TEAM_HUMANS)
 		return bestVisibleEnemy;
-	else 
+	else
 		return bestInvisibleEnemy;
 }
 
@@ -430,7 +430,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self ) {
 		if(newDistance <= minDistance) {
 			minDistance = newDistance;
 			closestEnemy = target;
-		} 
+		}
 	}
 	return closestEnemy;
 }
@@ -462,7 +462,7 @@ botTarget_t BotGetRetreatTarget(gentity_t *self) {
 	if(self->client->ps.stats[STAT_TEAM] == TEAM_HUMANS) {
 		if(self->botMind->closestBuildings.reactor.ent) {
 			retreatTarget = self->botMind->closestBuildings.reactor.ent;
-		} 
+		}
 	} else {
 		if(self->botMind->closestBuildings.overmind.ent) {
 			retreatTarget = self->botMind->closestBuildings.overmind.ent;
@@ -606,7 +606,7 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 	if(trace.entityNum < ENTITYNUM_MAX_NORMAL && Distance(muzzle,trace.endpos) <= max(range,secondaryRange)) {
 		trap_Trace(&trace,muzzle,mins,maxs,end,self->s.number,MASK_SHOT);
 
-		if(BotGetTeam(self) != BotGetTeam(&g_entities[trace.entityNum]) 
+		if(BotGetTeam(self) != BotGetTeam(&g_entities[trace.entityNum])
 			&& BotAimNegligence(self,target) <= BOT_AIM_NEGLIGENCE)
 			return qtrue;
 		else
@@ -653,7 +653,7 @@ void BotGetIdealAimLocation(gentity_t *self, botTarget_t target, vec3_t aimLocat
 		if(self->client->ps.weapon == WP_LUCIFER_CANNON && self->botMind->botSkill.level >= 5) {
 			VectorMA(aimLocation, Distance(self->s.origin, aimLocation) / LCANNON_SPEED, target.ent->s.pos.trDelta, aimLocation);
 		}
-	} else { 
+	} else {
 		//get rid of 'bobing' motion when aiming at waypoints by making the aimlocation the same height above ground as our viewheight
 		VectorCopy(self->botMind->route[0],aimLocation);
 		VectorCopy(BG_ClassConfig((class_t) self->client->ps.stats[STAT_CLASS])->mins,mins);
@@ -815,7 +815,7 @@ int FindBots(int *botEntityNumbers, int maxBots, team_t team) {
 	return numBots;
 }
 
-qboolean PlayersBehindBotInSpawnQueue( gentity_t *self ) 
+qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 {
 	//this function only checks if there are Humans in the SpawnQueue
 	//which are behind the bot
@@ -873,7 +873,7 @@ qboolean BotWillBuildSomething(gentity_t *self) {
 qboolean BotShouldBuild(gentity_t *self) {
 	if(BotGetTeam(self) != TEAM_HUMANS)
 		return qfalse;
-	if((!g_bot_repair.integer || !self->botMind->closestDamagedBuilding.ent) 
+	if((!g_bot_repair.integer || !self->botMind->closestDamagedBuilding.ent)
 		&& (!g_bot_build.integer || !BotWillBuildSomething(self)))
 		return qfalse;
 	if(self->botMind->modus == BOT_MODUS_BUILD)
@@ -959,8 +959,8 @@ for(int i=0;i<numBotsOnTeam;i++) {
 
 gentity_t *bot = &g_entities[botNumbers[i]];
 //wait for the group if a bot in the bot's group is close enough, not attacking, not on spectators, and not in followleadermode
-if(bot->botMind->trait == TRAIT_FOLLOWER && bot->botMind->leader == self && bot->botMind->currentModus != ATTACK 
-&& BotGetTeam(bot) != TEAM_NONE && DistanceSquared(self->s.origin, bot->s.origin) < Square(BOT_LEADER_WAIT_RANGE * self->botMind->numGroup) && 
+if(bot->botMind->trait == TRAIT_FOLLOWER && bot->botMind->leader == self && bot->botMind->currentModus != ATTACK
+&& BotGetTeam(bot) != TEAM_NONE && DistanceSquared(self->s.origin, bot->s.origin) < Square(BOT_LEADER_WAIT_RANGE * self->botMind->numGroup) &&
 DistanceSquared(self->s.origin, bot->s.origin) > Square((BOT_FOLLOW_RANGE + BOT_FOLLOW_RANGE_NEGLIGENCE) * self->botMind->numGroup))
 return qfalse;
 }
@@ -1050,7 +1050,7 @@ void BotClassMovement(gentity_t *self, qboolean inAttackRange, usercmd_t *botCmd
 	case PCL_ALIEN_LEVEL3:
 		break;
 	case PCL_ALIEN_LEVEL3_UPG:
-		if(BotGetTargetType(self->botMind->goal) == ET_BUILDABLE && self->client->ps.Ammo > 0 
+		if(BotGetTargetType(self->botMind->goal) == ET_BUILDABLE && self->client->ps.Ammo > 0
 			&& inAttackRange) {
 				//dont move when sniping buildings
 				botCmdBuffer->forwardmove = 0;
@@ -1474,8 +1474,8 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 	}
 
 	//enemy has died so signal that the goal is unusable
-	if(self->botMind->goal.ent->health <= 0 || 
-		(BotTargetIsPlayer(self->botMind->goal) && self->botMind->goal.ent->client->ps.pm_type == PM_DEAD)) 
+	if(self->botMind->goal.ent->health <= 0 ||
+		(BotTargetIsPlayer(self->botMind->goal) && self->botMind->goal.ent->client->ps.pm_type == PM_DEAD))
 	{
 		return TASK_STOPPED;
 	}
@@ -1527,13 +1527,13 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 			//fire our weapon if we are in range or have pain saw
 			//TODO: Make this better with BotAimNegligence?
-			if(inAttackRange || self->client->ps.weapon == WP_PAIN_SAW) 
+			if(inAttackRange || self->client->ps.weapon == WP_PAIN_SAW)
 				BotFireWeaponAI(self, botCmdBuffer);
 
 			//human specific attacking AI
 			if(BotGetTeam(self) == TEAM_HUMANS) {
 				//dont back away unless skill > 3 + distance logic
-				if(self->botMind->botSkill.level >= 3 && DistanceToGoalSquared(self) < Square(MAX_HUMAN_DANCE_DIST) 
+				if(self->botMind->botSkill.level >= 3 && DistanceToGoalSquared(self) < Square(MAX_HUMAN_DANCE_DIST)
 					&& (DistanceToGoalSquared(self) > Square(MIN_HUMAN_DANCE_DIST) || self->botMind->botSkill.level < 5)
 					&& self->client->ps.weapon != WP_PAIN_SAW)
 				{
@@ -1545,11 +1545,11 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 					//also try to dodge if high enough level
 					//all the conditions are there so we dont stop moving forward when we cant dodge anyway
-					if(self->client->ps.weapon != WP_PAIN_SAW && self->botMind->botSkill.level >= 7 
+					if(self->client->ps.weapon != WP_PAIN_SAW && self->botMind->botSkill.level >= 7
 						&& self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE
 						&& !(self->client->ps.pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ))
-						&& self->client->ps.groundEntityNum != ENTITYNUM_NONE) 
-					{  
+						&& self->client->ps.groundEntityNum != ENTITYNUM_NONE)
+					{
 						usercmdPressButton(botCmdBuffer->buttons, BUTTON_DODGE);
 						botCmdBuffer->forwardmove = 0;
 					}
@@ -1603,7 +1603,7 @@ botTaskStatus_t BotTaskGroup(gentity_t *self, usercmd_t *botCmdBuffer) {
 botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(BotGetTeam(self) == TEAM_HUMANS)
 		return BotTaskHealH(self, botCmdBuffer);
-	else 
+	else
 		return BotTaskHealA(self, botCmdBuffer);
 }
 botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer) {
@@ -1807,7 +1807,7 @@ extern "C" void G_BotThink( gentity_t *self) {
 	//if we do not already have an enemy, and we found an enemy, update the time that we found an enemy
 	if(!self->botMind->bestEnemy.ent && bestEnemy && level.time - self->botMind->enemyLastSeen > BOT_ENEMY_CHASETIME && BotAimNegligence(self,target) > 45) {
 		self->botMind->timeFoundEnemy = level.time;
-	} 
+	}
 
 	self->botMind->bestEnemy.ent = bestEnemy;
 	self->botMind->bestEnemy.distance = (!bestEnemy) ? 0 : Distance(self->s.origin,bestEnemy->s.origin);

@@ -34,15 +34,15 @@ void	main()
 
 	// multiply with 4 because the FBO is only 1/4th of the screen resolution
 	st *= vec2(4.0, 4.0);
-	
+
 	// scale by the screen non-power-of-two-adjust
 	st *= r_NPOTScale;
-	
+
 #if 1
 	// set so a magnitude of 1 is approximately 1 pixel with 640x480
 	//vec2 deform = vec2(u_DeformMagnitude * 0.0016, u_DeformMagnitude * 0.00213333);
 	vec2 deform = u_DeformMagnitude * r_FBufScale;
-	
+
 	// these are the multipliers for the gaussian blur
 	float mu01 = 0.00261097;
 	float mu02 = 0.00522193;
@@ -53,7 +53,7 @@ void	main()
 	float mu07 = 0.16710183;
 	float mu08 = 0.33420366;
 	float mu09 = 0.66840732;
-	
+
 	// fragment offsets for blur samples
 	vec2 offset01 = vec2(-8.0, 0.0);
 	vec2 offset02 = vec2(-7.0, 0.0);
@@ -71,7 +71,7 @@ void	main()
 	vec2 offset14 = vec2( 6.0, 0.0);
 	vec2 offset15 = vec2( 7.0, 0.0);
 	vec2 offset16 = vec2( 8.0, 0.0);
-	
+
 	// calculate our offset texture coordinates
 	vec2 st01 = st + offset01 * deform;
 	vec2 st02 = st + offset02 * deform;
@@ -89,7 +89,7 @@ void	main()
 	vec2 st14 = st + offset14 * deform;
 	vec2 st15 = st + offset15 * deform;
 	vec2 st16 = st + offset16 * deform;
-	
+
 	// base color
 	vec4 c00 = texture2D(u_ColorMap, st);
 
@@ -110,7 +110,7 @@ void	main()
 	vec4 c14 = texture2D(u_ColorMap, st14);
 	vec4 c15 = texture2D(u_ColorMap, st15);
 	vec4 c16 = texture2D(u_ColorMap, st16);
-	
+
 	vec4 color = c01 * mu01;
 	color += c02 * mu02;
 	color += c03 * mu03;
@@ -128,7 +128,7 @@ void	main()
 	color += c14 * mu03;
 	color += c15 * mu02;
 	color += c16 * mu01;
-	
+
 	gl_FragColor = color;
 #else
 
@@ -150,10 +150,10 @@ void	main()
     {
 	    float weight = gaussFact[i + 2];
 		vec4 color = texture2D(u_ColorMap, st + vec2(i, 0) * u_DeformMagnitude * r_FBufScale) * weight;
-			
+
 		sumColors += color;
 	}
-	
+
 	gl_FragColor = sumColors / gaussSum;
 #endif
 }

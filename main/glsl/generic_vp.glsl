@@ -60,19 +60,19 @@ void	main()
 
 	VertexSkinning_P_N(	attr_Position, attr_Normal,
 						position, normal);
-						
+
 #elif defined(USE_VERTEX_ANIMATION)
-	
+
 	VertexAnimation_P_N(attr_Position, attr_Position2,
 						attr_Normal, attr_Normal2,
 						u_VertexInterpolation,
 						position, normal);
-	
+
 #else
 	position = attr_Position;
 	normal = attr_Normal;
 #endif
-	
+
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
 								normal,
@@ -82,10 +82,10 @@ void	main()
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
-	
+
 	// transform position into world space
 	var_Position = mat3(u_ModelMatrix) * position.xyz;
-	
+
 	// transform texcoords
 	vec4 texCoord;
 #if defined(USE_TCGEN_ENVIRONMENT)
@@ -95,7 +95,7 @@ void	main()
 		float d = dot(attr_Normal, viewer);
 
 		vec3 reflected = attr_Normal * 2.0 * d - viewer;
-		
+
 		texCoord.s = 0.5 + reflected.y * 0.5;
 		texCoord.t = 0.5 - reflected.z * 0.5;
 		texCoord.q = 0;
@@ -106,8 +106,8 @@ void	main()
 #else
 	texCoord = attr_TexCoord0;
 #endif
-	
+
 	var_Tex = (u_ColorTextureMatrix * texCoord).st;
-	
+
 	var_Color = attr_Color * u_ColorModulate + u_Color;
 }

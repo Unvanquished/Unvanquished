@@ -10421,7 +10421,7 @@ static void RB_RenderDebugUtils()
 		GL_Bind( tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-		GL_CheckErrors();              
+		GL_CheckErrors();
 
 		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
 

@@ -29,11 +29,11 @@ Build Instructions
     -----
     ccmake .
     Press 'c'
-    Fill in the blanks for any libraries that you cannot find. 
+    Fill in the blanks for any libraries that you cannot find.
     Press 'c' and then 'g'
     make
     (use `make -jN` where N is your number of CPU cores to speed up compilation)
-    
+
     MINGW + MSYS
     ------------
     mkdir build && cd build (from Unvanquished root directory)

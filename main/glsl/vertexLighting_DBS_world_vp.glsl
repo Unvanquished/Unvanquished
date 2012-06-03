@@ -68,29 +68,29 @@ void	main()
 
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
-	
+
 	// assign position in object space
 	var_Position = position.xyz;
-	
+
 	// transform diffusemap texcoords
 	var_TexDiffuseNormal.st = (u_DiffuseTextureMatrix * attr_TexCoord0).st;
-	
+
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
 	var_TexDiffuseNormal.pq = (u_NormalTextureMatrix * attr_TexCoord0).st;
-	
+
 	// transform specularmap texture coords
 	var_TexSpecular = (u_SpecularTextureMatrix * attr_TexCoord0).st;
 #endif
-	
+
 #if !defined(COMPAT_Q3A)
 	// assign vertex to light vector in object space
 	var_LightDirection = attr_LightDirection;
 #endif
-	
+
 	// assign color
 	var_LightColor = attr_Color * u_ColorModulate + u_Color;
-	
+
 #if defined(USE_NORMAL_MAPPING)
 	var_Tangent = attr_Tangent;
 	var_Binormal = attr_Binormal;

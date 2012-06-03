@@ -225,7 +225,7 @@ void TRI_LoadPolysets(const char *filename, polyset_t ** ppPSET, int *numpsets)
 
 //
 // read the triangles
-//      
+//
 		if(count > 0)
 		{
 			pPSET[pset].triangles = ptri;

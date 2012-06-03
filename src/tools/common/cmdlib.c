@@ -495,7 +495,7 @@ int Q_stricmp(const char *s1, const char *s2)
 /*
 =============
 Q_strncpyz
- 
+
 Safe strncpy that ensures a trailing zero
 =============
 */

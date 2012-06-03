@@ -284,7 +284,7 @@ botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if(BotGetTeam(self) != TEAM_ALIENS)
 		return TASK_STOPPED;
 
-		//we are fully healed 
+		//we are fully healed
 	if(maxHealth == self->health)
 		return TASK_STOPPED;
 

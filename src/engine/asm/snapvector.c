@@ -39,7 +39,7 @@ static const unsigned short fpucw = 0x037F;
 void qsnapvectorsse(vec3_t vec)
 {
 	uint32_t oldcw __attribute__((aligned(16)));
-	
+
 	__asm__ volatile
 	(
 		"stmxcsr %3\n"
@@ -53,20 +53,20 @@ void qsnapvectorsse(vec3_t vec)
 		// it as an implicit operand. The "D" constraint makes
 		// sure of that.
 		"maskmovdqu %%xmm1, %%xmm0\n"
-		
+
 		"ldmxcsr %3\n"
 		:
 		: "r" (ssemask), "m" (ssecw), "D" (vec), "m" (oldcw)
 		: "memory", "%xmm0", "%xmm1"
 	);
-	
+
 }
 
 #define QROUNDX87(src) \
 	"flds " src "\n" \
 	"fistps " src "\n" \
 	"filds " src "\n" \
-	"fstps " src "\n"	
+	"fstps " src "\n"
 
 void qsnapvectorx87(vec3_t vec)
 {

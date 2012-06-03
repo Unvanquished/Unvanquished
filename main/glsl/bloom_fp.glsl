@@ -38,7 +38,7 @@ uniform float		u_BlurMagnitude;
  ERROR: Fragment shader(s) failed to link,  vertex shader(s) linked.
  Fragment Shader not supported by HW
  shaders failed to link
- 
+
  Asus EAH4850:
  ERROR: Fragment shader(s) failed to link,  vertex shader(s) linked.
  Fragment Shader not supported by HWERROR: 0:101: Not supported when use temporary
@@ -57,10 +57,10 @@ void	main()
 
 	// calculate the screen texcoord in the 0.0 to 1.0 range
 	st *= r_FBufScale;
-	
+
 	// scale by the screen non-power-of-two-adjust
 	st *= r_NPOTScale;
-	
+
 	// we use the Normal-gauss distribution formula
 	// f(x) being the formula, we used f(0.5)-f(-0.5); f(1.5)-f(0.5)...
 
@@ -91,12 +91,12 @@ void	main()
 	    {
 			float weight = gaussFact[i + 2] * gaussFact[j + 2];
 			vec4 color = texture2D(u_ContrastMap, st + vec2(i, j) * u_BlurMagnitude * r_FBufScale) * weight;
-			
+
 			sumColors += color;
 			sumWeights += weight;
 		}
 	}
-	
+
 	//gl_FragColor = texture2D(u_ColorMap, st) + sumColors / gaussSum;
 	//gl_FragColor = sumColors / gaussSum;
 	gl_FragColor = sumColors / sumWeights;

@@ -55,7 +55,7 @@ varying vec4		var_Color;
 void	main()
 {
 	vec4 position = attr_Position;
-	
+
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
 								attr_Normal,
@@ -80,7 +80,7 @@ void	main()
 #if defined(USE_NORMAL_MAPPING)
 	// transform normalmap texcoords
 	var_TexDiffuseNormal.pq = (u_NormalTextureMatrix * attr_TexCoord0).st;
-	
+
 	// transform specularmap texcoords
 	var_TexSpecular = (u_SpecularTextureMatrix * attr_TexCoord0).st;
 #endif
@@ -89,8 +89,8 @@ void	main()
 #if 0
 
 	// transform position into world space
-	var_Position = (u_ModelMatrix * position).xyz;	
-	
+	var_Position = (u_ModelMatrix * position).xyz;
+
 	var_Normal.xyz = (u_ModelMatrix * vec4(attr_Normal, 0.0)).xyz;
 
 #if defined(USE_NORMAL_MAPPING)
@@ -107,7 +107,7 @@ void	main()
 	var_Tangent = attr_Tangent.xyz;
 	var_Binormal = attr_Binormal.xyz;
 #endif
-	
+
 #endif
 
 	var_Color = attr_Color * u_ColorModulate + u_Color;

@@ -236,7 +236,7 @@ extern "C" void G_NavMeshInit() {
 			return;
 		}
 		if (dtStatusFailed(navQuerys[i]->init(navMeshes[i], 65536)))
-		{	
+		{
 			dtFreeNavMeshQuery(navQuerys[i]);
 			navQuerys[i] = NULL;
 			dtFree(navData);
@@ -662,7 +662,7 @@ void BotSteer(gentity_t *self, vec3_t target) {
 
 	if( !(self && self->client) )
 		return;
-	BG_GetClientViewOrigin(&self->client->ps,viewBase); 
+	BG_GetClientViewOrigin(&self->client->ps,viewBase);
 	//get the Vector from the bot to the enemy (aim Vector)
 	VectorSubtract( target, viewBase, aimVec );
 	float length = VectorNormalize(aimVec);
@@ -760,7 +760,7 @@ void UpdatePathCorridor(gentity_t *self) {
 			PlantEntityOnGround(self->botMind->goal.ent,targetPos);
 		else
 			BotGetTargetPos(self->botMind->goal, targetPos);
-	} else 
+	} else
 		BotGetTargetPos(self->botMind->goal, targetPos);
 
 	if(self->s.groundEntityNum == -1 || self->s.groundEntityNum == ENTITYNUM_NONE)

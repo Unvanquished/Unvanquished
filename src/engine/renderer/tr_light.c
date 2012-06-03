@@ -539,7 +539,7 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent )
 			ent->ambientLight[ i ] = tr.identityLightByte;
 		}
 	}
-	
+
 	// HACK: Make md5s appear without shadows.
 	if ( md5 )
 	{

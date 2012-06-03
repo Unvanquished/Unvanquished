@@ -67,13 +67,13 @@ const bspModel_t *models;
 rcConfig cfg;
 
 const int numSkipEntities = 18;
-const char *skipEntities[18] = {"func_door"				, "team_alien_trapper"	, 
-	"team_alien_booster"	, "team_alien_barricade", 
-	"team_alien_spawn"		, "team_alien_acid_tube", 
-	"team_alien_overmind"	, "team_human_spawn"	, 
-	"team_human_mgturret"	, "team_human_medistat"	, 
-	"team_human_armoury"	, "team_human_reactor"	, 
-	"team_human_repeater"	, "team_human_tesla"	, 
+const char *skipEntities[18] = {"func_door"				, "team_alien_trapper"	,
+	"team_alien_booster"	, "team_alien_barricade",
+	"team_alien_spawn"		, "team_alien_acid_tube",
+	"team_alien_overmind"	, "team_human_spawn"	,
+	"team_human_mgturret"	, "team_human_medistat"	,
+	"team_human_armoury"	, "team_human_reactor"	,
+	"team_human_repeater"	, "team_human_tesla"	,
 	"team_human_dcc"		, "func_door_model"		,
 	"func_train"			, "func_door_rotating" };
 
@@ -90,7 +90,7 @@ const tremClass_t tremClasses[] = {
 		20,
 		40,
 	},
-	{ 
+	{
 		"builderupg",
 		20,
 		40,
@@ -115,7 +115,7 @@ const tremClass_t tremClasses[] = {
 		18,
 		36
 	},
-	{ 
+	{
 		"level1upg",
 		21,
 		42
@@ -339,7 +339,7 @@ verts[m+2] = -bspDrawVerts[j].xyz[1];
 }
 if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_WATER)
 rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_WATER, *compHeightField);
-if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_JUMPPAD) 
+if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_JUMPPAD)
 rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_JUMPPAD, *compHeightField);
 if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_TELEPORTER)
 rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_TELEPORTER, *compHeightField);
@@ -512,7 +512,7 @@ static void CountPatchVertsTris(bspDrawSurface_t **surfaces, int numSurfaces, in
 			{
 
 				/* triangle 1 */
-				v+=3;					
+				v+=3;
 
 				/* triangle 2 */
 				v+=3;
@@ -595,7 +595,7 @@ static void LoadPatchTris(bspDrawSurface_t **surfaces, int numSurfaces, int star
 				v++;
 				AddVertToStrip(&verts,mesh->verts[pw[r+2]].xyz,v*3);
 				tris[v] = v;
-				v++;						
+				v++;
 
 				/* triangle 2 */
 				AddVertToStrip(&verts,mesh->verts[pw[r]].xyz,v*3);

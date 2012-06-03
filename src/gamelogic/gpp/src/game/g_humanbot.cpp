@@ -46,7 +46,7 @@ float PercentAmmoRemaining( weapon_t weapon, int stats[], playerState_t ps ) {
 		totalAmmo = (float) ps.Ammo + ps.clips * maxAmmo;
 
 		return (float) totalAmmo / totalMaxAmmo;
-	} else 
+	} else
 		return 1.0f;
 }
 //Cmd_Buy_f ripoff, weapon version
@@ -356,7 +356,7 @@ void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3
 		usableCapital -= RIFLE_PRICE;
 	}
 
-	//finally, see if we can buy a battpack 
+	//finally, see if we can buy a battpack
 	if(BG_Weapon(*weapon)->usesEnergy && usableCapital >= BATTPACK_PRICE && g_humanStage.integer >= 1 && (*upgrades)[0] != UP_BATTLESUIT) {
 		(*upgrades)[(*numUpgrades)++] = UP_BATTPACK;
 		usableCapital -= BATTPACK_PRICE;
@@ -450,7 +450,7 @@ int BotFindBestHDecon(gentity_t *self, buildable_t building, vec3_t origin) {
 	gentity_t *powerEntity = G_PowerEntityForPoint(origin);
 	int numBuildings = BotFindBuildingsPoweredBy(powerEntity,buildings,100);
 	//there is nothing providing power here, nothing to decon
-	if(powerEntity == NULL) 
+	if(powerEntity == NULL)
 		return ENTITYNUM_NONE;
 
 	int bestBuild = BotFindBuildingInList(buildings,numBuildings, BA_H_MGTURRET);
@@ -584,14 +584,14 @@ botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
 		//head to the building if not close enough to decon
 		if(!BotTargetIsVisible(self,self->botMind->goal,MASK_SHOT) || DistanceToGoalSquared(self) > Square(100))
 			BotMoveToGoal(self, botCmdBuffer);
-		else { 
+		else {
 			BotAimAtLocation(self,targetPos,botCmdBuffer);
 			//only decon if our build timer lets us
 			if(self->client->ps.stats[STAT_MISC] == 0) {
 				gentity_t *block = &g_entities[deconNum];
 
 				//aim at the building and decon it
-			
+
 				if( !g_cheats.integer ) // add a bit to the build timer if cheats arnt enabled
 				{
 					self->client->ps.stats[ STAT_MISC ] +=
@@ -688,7 +688,7 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 	}
 
 	if(BotRoutePermission(self, BOT_TASK_BUY)) {
-		if(!BotChangeTarget(self, self->botMind->closestBuildings.armoury.ent, NULL)) 
+		if(!BotChangeTarget(self, self->botMind->closestBuildings.armoury.ent, NULL))
 			return TASK_STOPPED;
 	}
 
@@ -709,7 +709,7 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 		else if(weapon != WP_NONE)
 			BotSellWeapons(self);
 		BotBuy(self, weapon);
-		for(int i=0;i<numUpgrades;i++) 
+		for(int i=0;i<numUpgrades;i++)
 			BotBuy(self, upgrades[i]);
 		//we have bought the stuff, return
 		return TASK_STOPPED;

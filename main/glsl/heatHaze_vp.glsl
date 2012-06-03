@@ -46,8 +46,8 @@ varying float		var_Deform;
 void	main()
 {
 	vec4            deformVec;
-    float           d1, d2;	
-	
+    float           d1, d2;
+
 	vec4 position;
 	vec3 normal;
 
@@ -55,19 +55,19 @@ void	main()
 
 	VertexSkinning_P_N(	attr_Position, attr_Normal,
 						position, normal);
-						
+
 #elif defined(USE_VERTEX_ANIMATION)
-	
+
 	VertexAnimation_P_N(attr_Position, attr_Position2,
 						attr_Normal, attr_Normal2,
 						u_VertexInterpolation,
 						position, normal);
-	
+
 #else
 	position = attr_Position;
 	normal = attr_Normal;
 #endif
-	
+
 #if defined(USE_DEFORM_VERTEXES)
 	position = DeformPosition2(	position,
 								normal,
@@ -81,13 +81,13 @@ void	main()
 	// take the deform magnitude and scale it by the projection distance
 	deformVec = vec4(1, 0, 0, 1);
 	deformVec.z = dot(u_ModelViewMatrixTranspose[2], position);
-	
+
 	// transform normalmap texcoords
 	var_TexNormal = (u_NormalTextureMatrix * attr_TexCoord0).st;
 
 	d1 = dot(u_ProjectionMatrixTranspose[0],  deformVec);
     d2 = dot(u_ProjectionMatrixTranspose[3],  deformVec);
-	
+
 	// clamp the distance so the the deformations don't get too wacky near the view
 	var_Deform = min(d1 * (1.0 / max(d2, 1.0)), 0.02) * u_DeformMagnitude;
 }
