@@ -99,7 +99,7 @@ include( CPack )
 
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
 set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
-set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs )
+set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
 set( SDL_DIR ${LIB_DIR}/libsdl )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 
@@ -107,6 +107,10 @@ add_definitions( -DUSING_CMAKE ) # Let compiler know we are using CMake so files
 if( WIN32 )
   add_definitions( -D_CRT_SECURE_NO_WARNINGS )
   set( CMAKE_SHARED_LIBRARY_PREFIX "" )
+endif()
+
+if( MSVC )
+  add_definitions( -D_WINDOWS -DWIN32 )
 endif()
 
 set( CONSOLE "tty" )
@@ -181,7 +185,7 @@ include_directories( "${CMAKE_BINARY_DIR}/CMakeFiles" )
 if( USE_INTERNAL_SDL )
   add_subdirectory( ${LIB_DIR}/libsdl )
   set( SDL_LIBRARY INTERNAL_SDL INTERNAL_SDLMain CACHE STRING "SDL library" FORCE )
-  set( SDL_INCLUDE_DIR ${LIB_DIR}/libsdl CACHE STRING "SDL include directory" FORCE )
+  set( SDL_INCLUDE_DIR ${LIB_DIR}/libsdl/include CACHE STRING "SDL include directory" FORCE )
 endif()
 
 if( USE_INTERNAL_JPEG )
@@ -458,6 +462,7 @@ if( MSVC )
   if( BUILD_ARCH STREQUAL "x86_64" )
     set( QCOMMONLIST ${QCOMMONLIST} vm_x86.obj )
     add_custom_command( OUTPUT vm_x86.obj COMMAND ml /c ARGS "${MOUNT_DIR}/engine/asm/vm_x86_64.asm" )
+  endif()
 else()
     set( QCOMMONLIST ${QCOMMONLIST}
     ${MOUNT_DIR}/engine/asm/ftola.c
@@ -1024,11 +1029,15 @@ function( GAMELIB )
 
   if( GAME_LIB )
     # Xcode places the game libraries in the incorrect location. This should fix it
-    if( XCODE_VERSION )
+    if( XCODE_VERSION OR MSVC )
       set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
+      set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
+      set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}" )
+      set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
+      set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
     endif()
 
     if( GAME_LIB_LLVM )
@@ -1336,7 +1345,7 @@ if( BUILD_CLIENT )
   # Visual Studio specific settings
   if( MSVC )
     include_directories( ${MOUNT_DIR}/libs/msinttypes )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI HAVE_CONFIG_H )
   endif()
 
   # This section finds and provides REQUIRED dependencies to target client
@@ -1376,7 +1385,10 @@ if( BUILD_CLIENT )
   endif()
 
   if( USE_VOIP )
-    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP FLOATING_POINT )
+    set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP )
+    if( NOT MSVC )
+      set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS FLOATING_POINT )
+    endif()
     if( USE_INTERNAL_SPEEX )
       # BEFORE is required to prevent system headers being used
       include_directories( BEFORE ${MOUNT_DIR}/libs/libspeex/include )
@@ -1482,6 +1494,11 @@ if( BUILD_SERVER )
   if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND BUILD_ARCH STREQUAL "i386" )
     set_target_properties( server PROPERTIES COMPILE_FLAGS -mdynamic-no-pic LINK_FLAGS "-read_only_relocs suppress" )
   endif()
+  
+  # Visual Studio specific settings
+  if( MSVC )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
+  endif()
 
   # The following section finds the REQUIRED dependencies and makes them available to the target
   find_package( SDL REQUIRED )
@@ -1548,6 +1565,12 @@ if( BUILD_DAEMONMAP )
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
   )
+  
+  # Visual Studio specific settings
+  if( MSVC )
+    set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
+  endif()
+  
   # This section finds and provides REQUIRED dependencies to DaemonMap target
   find_package( OpenGL REQUIRED )
   find_package( SDL REQUIRED )
