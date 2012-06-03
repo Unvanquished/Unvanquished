@@ -182,7 +182,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;UI_EXPORTS;_CRT_SECURE_NO_DEPRECATE;GPP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;UI_EXPORTS;_CRT_SECURE_NO_DEPRECATE;GPP;UI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -286,6 +286,7 @@
     <ClCompile Include="ui_gameinfo.c" />
     <ClCompile Include="ui_main.c" />
     <ClCompile Include="ui_shared.c" />
+    <ClCompile Include="ui_utf8.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui_shared.h" />

@@ -107,6 +107,9 @@
     <ClCompile Include="..\..\..\..\engine\qcommon\q_math.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ui\ui_utf8.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\bg_public.h">

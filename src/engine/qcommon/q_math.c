@@ -4183,3 +4183,22 @@ void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out )
 	MatrixFromQuat( m, q );
 	MatrixTransformNormal( m, in, out );
 }
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+int rint( double x )
+{
+	char *buf;
+	int  i, dec, sig;
+
+	buf = _fcvt( x, 0, &dec, &sig );
+	i = atoi( buf );
+
+	if( sig == 1 )
+	{
+		i = i * -1;
+	}
+
+	return i;
+}
+
+#endif

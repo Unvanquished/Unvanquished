@@ -440,6 +440,7 @@
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\standalone_scaffolding.h" />
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\strtod.h" />
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\s_expression.h" />
+    <ClInclude Include="..\renderer\tr_font.h" />
     <ClInclude Include="gl_shader.h" />
     <ClInclude Include="..\..\..\etmain\src\game\q_shared.h" />
     <ClInclude Include="tr_image.h" />

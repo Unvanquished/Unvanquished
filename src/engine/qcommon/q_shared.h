@@ -1494,6 +1494,10 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define Q_putenv putenv
 #endif
 
+#if defined(_WIN32) && !defined(__MINGW32__)
+int rint( double x );
+#endif
+
 // buffer size safe library replacements
 // NOTE : had problem with loading QVM modules
 #ifndef _DEBUG

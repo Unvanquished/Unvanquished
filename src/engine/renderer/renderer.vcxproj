@@ -264,6 +264,7 @@
     <ClInclude Include="..\qcommon\qfiles.h" />
     <ClInclude Include="..\win32\resource.h" />
     <ClInclude Include="..\..\shared\surfaceflags.h" />
+    <ClInclude Include="tr_font.h" />
     <ClInclude Include="tr_local.h" />
     <ClInclude Include="tr_public.h" />
     <ClInclude Include="tr_types.h" />
