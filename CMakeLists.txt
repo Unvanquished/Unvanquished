@@ -42,7 +42,7 @@ option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
 
 option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
-option( ENABLE_HARDENING     "Enable various hardening options"            1 )
+option( ENABLE_HARDENING     "Enable security hardening options"            1 )
 
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
@@ -70,13 +70,15 @@ cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"       
 cmake_dependent_option( BUILD_GAME_GPP       "Build Tremulous GPP game logic"              1 "GAME_LIB OR GAME_QVM" 0 )
 cmake_dependent_option( QVM_DEBUG            "Enable (some) QVM debugging"                 1 GAME_QVM         0 )
 cmake_dependent_option( GAME_LIB_LLVM        "Use LLVM, not shared libs, for game logic"   0 GAME_LIB         0 )
+
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
 cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"             1 USE_CODEC_VORBIS 0 )
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
+
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
 
-mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG )
+mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO )
 
 if( GAME_LIB_LLVM )
   find_program(LLVM_CONFIG llvm-config)
@@ -319,13 +321,11 @@ try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
 # If we can, fail if there are unresolved symbols
 try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
 
-if( ENABLE_HARDENING )
-  if( ENABLE_FSTACKPROT )
-    try_linker_flag( HAVE_FSTACKPROT "-fstack-protector --param=ssp-buffer-size=4" )
-  endif()
-  if( ENABLE_RELRO )
-    try_linker_flag( HAVE_Z_RELRO_Z_NOW -Wl,-z,relro,-z,now )
-  endif()
+if( ENABLE_FSTACKPROT )
+  try_linker_flag( HAVE_FSTACKPROT "-fstack-protector --param=ssp-buffer-size=4" )
+endif()
+if( ENABLE_RELRO )
+  try_linker_flag( HAVE_Z_RELRO_Z_NOW -Wl,-z,relro,-z,now )
 endif()
 
 ######################
