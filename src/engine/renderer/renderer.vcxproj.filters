@@ -322,6 +322,9 @@
     <ClInclude Include="tr_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tr_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="rendererGL.def">

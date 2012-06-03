@@ -707,6 +707,9 @@
     <ClInclude Include="..\..\libs\glsl-optimizer\src\getopt\getopt.h">
       <Filter>Libs\glsl_optimizer\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\renderer\tr_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="rendererGL3.def">

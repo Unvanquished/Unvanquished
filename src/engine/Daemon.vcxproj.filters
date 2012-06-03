@@ -212,12 +212,6 @@
     <ClCompile Include="client\cin_ogm.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="database\db_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="database\db_mysql.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="client\libmumblelink.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -540,9 +534,6 @@
     </ClInclude>
     <ClInclude Include="qcommon\dl_public.h">
       <Filter>download</Filter>
-    </ClInclude>
-    <ClInclude Include="database\database.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="client\libmumblelink.h">
       <Filter>Header Files</Filter>

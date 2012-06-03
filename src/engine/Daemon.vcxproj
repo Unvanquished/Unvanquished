@@ -209,7 +209,7 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>dinput8.lib;winmm.lib;wsock32.lib;Iphlpapi.lib;libcurld_imp.lib;ws2_32.lib;glu32.lib;libmysql.lib;xvidcore.lib;psapi.lib;opengl32.lib;SDLd.lib;SDLMaind.lib;glew32d.lib;CPUInfod.lib;advapi32.lib;GlU32.Lib;libeay32.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;libtheora.lib;zlibwapi.lib;OpenAL32.lib;libbz2.lib;bass.lib;newton.lib;mpir.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dinput8.lib;winmm.lib;wsock32.lib;Iphlpapi.lib;libcurld_imp.lib;ws2_32.lib;glu32.lib;xvidcore.lib;psapi.lib;opengl32.lib;SDLd.lib;SDLMaind.lib;glew32d.lib;CPUInfod.lib;advapi32.lib;GlU32.Lib;libeay32.lib;libogg.lib;libvorbis.lib;libvorbisfile.lib;libtheora.lib;zlibwapi.lib;OpenAL32.lib;libbz2.lib;bass.lib;newton.lib;mpir.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>../../bin/win32/debug/Daemon.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ManifestFile>../../bin/win32/debug/Daemon.intermediate.manifest</ManifestFile>
@@ -226,7 +226,7 @@
       </DataExecutionPrevention>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>..\libs\libvorbis\libs\win32\Debug;..\libs\curl-7.21.6\lib\win32\debug;..\libs\mysql\lib\win32;..\libs\xvidcore\lib;..\libs\libsdl\libs\x32;..\libs\zlibwapi\lib\x32;..\libs\glew\lib\x32;..\libs\cpuinfo\lib\x32\debug;..\libs\ruby\libs\win32;..\libs\openssl\libs\win32;..\libs\libogg\libs\win32\debug;..\libs\libspeex\libs\win32\debug;..\libs\libtheora\libs\win32\debug;..\libs\Ruby\lib;..\libs\openal\libs\win32;.\botlib\Debug\x32;..\libs\libbz2\libs\x32;..\libs\bass\libs\win32;..\libs\llvm\libs\win32\debug\;..\libs\libnewton\libs\win32;..\libs\gmp\libs\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\libs\libvorbis\libs\win32\Debug;..\libs\curl-7.21.6\lib\win32\debug;..\libs\xvidcore\lib;..\libs\libsdl\libs\x32;..\libs\zlibwapi\lib\x32;..\libs\glew\lib\x32;..\libs\cpuinfo\lib\x32\debug;..\libs\ruby\libs\win32;..\libs\openssl\libs\win32;..\libs\libogg\libs\win32\debug;..\libs\libspeex\libs\win32\debug;..\libs\libtheora\libs\win32\debug;..\libs\Ruby\lib;..\libs\openal\libs\win32;.\botlib\Debug\x32;..\libs\libbz2\libs\x32;..\libs\bass\libs\win32;..\libs\llvm\libs\win32\debug\;..\libs\libnewton\libs\win32;..\libs\gmp\libs\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -830,8 +830,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Dedicated|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Dedicated|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="database\db_main.c" />
-    <ClCompile Include="database\db_mysql.c" />
     <ClCompile Include="qcommon\cm_load.c" />
     <ClCompile Include="qcommon\cm_patch.c" />
     <ClCompile Include="qcommon\cm_physics.cpp" />
@@ -992,7 +990,6 @@
     <ClInclude Include="client\cg_api.h" />
     <ClInclude Include="client\libmumblelink.h" />
     <ClInclude Include="client\ui_api.h" />
-    <ClInclude Include="database\database.h" />
     <ClInclude Include="qcommon\htable.h" />
     <ClInclude Include="qcommon\ioapi.h" />
     <ClInclude Include="qcommon\md4.h" />
