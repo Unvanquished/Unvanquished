@@ -264,6 +264,7 @@ typedef struct
 	int              spectatorClient; // for chasecam and follow mode
 	team_t           restartTeam; //for !restart keepteams and !restart switchteams
 	clientList_t     ignoreList;
+	int              seenWelcome; // determines if the client has seen server's welcome message
 } clientSession_t;
 
 // namelog
