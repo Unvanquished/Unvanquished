@@ -999,6 +999,7 @@ set( TINYGETTEXT_LIST
   ${MOUNT_DIR}/libs/tinygettext/po_parser.cpp
   ${MOUNT_DIR}/libs/tinygettext/po_parser.hpp
   ${MOUNT_DIR}/libs/tinygettext/unix_file_system.cpp
+  ${MOUNT_DIR}/libs/findlocale/findlocale.c
 )
 
 ####################

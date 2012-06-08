@@ -36,6 +36,7 @@ extern "C"
 {
 #include "q_shared.h"
 #include "qcommon.h"
+#include "../../libs/findlocale/findlocale.h"
 }
 
 #include "../../libs/tinygettext/tinygettext.hpp"
@@ -55,10 +56,20 @@ bool              enabled = false;
 
 extern "C" void Trans_Init( void )
 {
-	char **poFiles;
-	int  numPoFiles, i;
+	char      **poFiles;
+	int       numPoFiles, i;
+	FL_Locale *locale;
 	
-	language = Cvar_Get( "language", "en_US", CVAR_ARCHIVE ); // FIXME:Should probably detect based on users locale
+	language = Cvar_Get( "language", "", CVAR_ARCHIVE );
+	
+	FL_FindLocale( &locale, FL_MESSAGES );
+	
+	// Invalid or not found. Just use builtin language.
+	if( !locale->lang || !locale->lang[0] || !locale->country || !locale->country[0] ) 
+	{
+		Cvar_Set( "language", "en_US" );
+	}
+		
 	poFiles = FS_ListFiles( "translation/client", ".po", &numPoFiles );
 	
 	// This assumes that the names in both folders are the same
@@ -99,7 +110,7 @@ extern "C" void Trans_Init( void )
 	trans_dict = trans_manager.get_dictionary( Language::from_env( std::string( language->string ) ) );
 	trans_dictgame = trans_managergame.get_dictionary( Language::from_env( std::string( language->string ) ) );
 	enabled = true;
-	Com_Printf( "Loaded %d language(s)\n", numPoFiles );
+	Com_Printf( "Loaded %lu language(s)\n", trans_manager.get_languages().size() );
 }
 
 extern "C" const char* Trans_Gettext( const char *msgid )
@@ -112,4 +123,16 @@ extern "C" const char* Trans_GettextGame( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
 	return trans_dictgame.translate( std::string( msgid ) ).c_str();
+}
+
+extern "C" const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
+{
+	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
+	return trans_dict.translate_plural( std::string( msgid ), std::string( msgid_plural ), num ).c_str();
+}
+
+extern "C" const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num )
+{
+	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
+	return trans_dictgame.translate_plural( std::string( msgid ), std::string( msgid_plural ), num ).c_str();
 }
