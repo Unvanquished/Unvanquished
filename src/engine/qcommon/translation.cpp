@@ -56,7 +56,7 @@ extern "C" void Trans_Init( void )
 	char **poFiles;
 	int  numPoFiles, i;
 	
-	language = Cvar_Get( "language", "en_us", CVAR_ARCHIVE ); // FIXME:Should probably detect based on users locale
+	language = Cvar_Get( "language", "en_US", CVAR_ARCHIVE ); // FIXME:Should probably detect based on users locale
 	poFiles = FS_ListFiles( "translation/client", ".po", &numPoFiles );
 	
 	for( i = 0; i < numPoFiles; i++ )
@@ -81,12 +81,4 @@ extern "C" const char* Trans_Gettext( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
 	return trans_dict.translate( std::string( msgid ) ).c_str();
-}
-
-extern "C" void Test_Translation( void )
-{
-	Com_Printf( "%s", _("Hello\n") );
-// 	Com_Printf( _("Hello") );
-// 	Com_Printf( _("Bye") );
-// 	Com_Printf( _("Okay" ) );
 }
