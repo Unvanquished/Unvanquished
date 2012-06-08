@@ -34,6 +34,9 @@ Maryland 20850 USA.
 
 #include "client.h"
 
+#define __(x) Trans_GettextGame(x)
+
+
 vm_t                   *uivm;
 
 // ydnar: can we put this in a header, pls?
@@ -1496,7 +1499,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 #endif
 		case UI_GETTEXT:
 			VM_CheckBlock( args[1], args[3], "UIGETTEXT" );
-			Q_strncpyz( VMA(1), VMA(2), args[3] );
+			Q_strncpyz( VMA(1), __(VMA(2)), args[3] );
 			return 0;
 
 		case UI_R_GLYPH:

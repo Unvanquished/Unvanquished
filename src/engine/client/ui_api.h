@@ -373,3 +373,4 @@ void        trap_GetAutoUpdate( void );
 void        trap_openURL( const char *s );
 void        trap_GetHunkData( int *hunkused, int *hunkexpected );
 void        trap_QuoteString( const char *str, char *buffer, int size );
+void        trap_Gettext( char *buffer, const char *msgid, int bufferLength );

@@ -1291,3 +1291,9 @@ void trap_QuoteString( const char *str, char *buffer, int size )
 {
 	syscall( CG_QUOTESTRING, str, buffer, size );
 }
+
+//179.
+void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
+{
+	syscall( CG_GETTEXT, buffer, msgid, bufferLength );
+}

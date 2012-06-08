@@ -898,3 +898,9 @@ void trap_QuoteString( const char *str, char *buffer, int size )
 }
 
 #endif
+
+//128.
+void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
+{
+	syscall( UI_GETTEXT, buffer, msgid, bufferLength );
+}

@@ -180,6 +180,7 @@ equ trap_CompleteCallback                 -416
 equ trap_RegisterButtonCommands           -417
 equ trap_GetClipboardData                 -418
 equ trap_QuoteString                      -419
+equ trap_Gettext                          -420
 equ trap_R_Glyph                          -421
 equ trap_R_GlyphChar                      -422
 equ trap_R_UnregisterFont                 -423

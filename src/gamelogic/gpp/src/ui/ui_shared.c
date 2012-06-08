@@ -996,6 +996,21 @@ qboolean PC_String_Parse( int handle, const char **out )
 	return qtrue;
 }
 
+qboolean PC_String_ParseTranslate( int handle, const char **out )
+{
+	pc_token_t token;
+
+	if ( !trap_Parse_ReadToken( handle, &token ) )
+	{
+		return qfalse;
+	}
+
+	* ( out ) = String_Alloc( _(token.string) );
+
+	return qtrue;
+}
+
+
 /*
 ================
 PC_Char_Parse
@@ -7632,7 +7647,7 @@ qboolean ItemParse_focusSound( itemDef_t *item, int handle )
 // text <string>
 qboolean ItemParse_text( itemDef_t *item, int handle )
 {
-	if ( !PC_String_Parse( handle, &item->text ) )
+	if ( !PC_String_ParseTranslate( handle, &item->text ) )
 	{
 		return qfalse;
 	}
@@ -9590,4 +9605,12 @@ void UI_R_UnregisterFont( fontHandle_t font )
 
   if( engineState & 0x02 )
     trap_R_UnregisterFont( font );
+}
+
+const char *Gettext( const char *msgid )
+{
+	static char buffer[ 32000 ];
+	char *buf = buffer;
+	trap_Gettext( buf, msgid, sizeof( buffer ) );
+	return buf;
 }

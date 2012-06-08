@@ -41,6 +41,8 @@ Maryland 20850 USA.
 #include "../qcommon/crypto.h"
 #endif
 
+#define __(x) Trans_GettextGame(x)
+
 extern qboolean        loadCamera( int camNum, const char *name );
 extern void            startCamera( int camNum, int time );
 extern qboolean        getCameraInfo( int camNum, int time, vec3_t *origin, vec3_t *angles, float *fov );
@@ -1362,7 +1364,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETTEXT:
-			strncpy( VMA(1), VMA(2), args[3] );
+			strncpy( VMA(1), __(VMA(2)), args[3] );
 			return 0;
 
 		case CG_R_GLYPH:

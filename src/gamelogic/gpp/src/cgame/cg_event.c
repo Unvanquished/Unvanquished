@@ -85,67 +85,67 @@ static void CG_Obituary( entityState_t *ent )
 	switch ( mod )
 	{
 		case MOD_FALLING:
-			message = "%s ^7fell foul to gravity\n";
+			message = _("%s ^7fell foul to gravity\n");
 			break;
 
 		case MOD_CRUSH:
-			message = "%s ^7was squished\n";
+			message = _("%s ^7was squished\n");
 			break;
 
 		case MOD_WATER:
-			message = "%s ^7forgot to pack a snorkel\n";
+			message = _("%s ^7forgot to pack a snorkel\n");
 			break;
 
 		case MOD_SLIME:
-			message = "%s ^7melted\n";
+			message = _("%s ^7melted\n");
 			break;
 
 		case MOD_LAVA:
-			message = "%s ^7did a back flip into the lava\n";
+			message = _("%s ^7did a back flip into the lava\n");
 			break;
 
 		case MOD_TARGET_LASER:
-			message = "%s ^7saw the light\n";
+			message = _("%s ^7saw the light\n");
 			break;
 
 		case MOD_TRIGGER_HURT:
-			message = "%s ^7was in the wrong place\n";
+			message = _("%s ^7was in the wrong place\n");
 			break;
 
 		case MOD_HSPAWN:
-			message = "%s ^7should have run further\n";
+			message = _("%s ^7should have run further\n");
 			break;
 
 		case MOD_ASPAWN:
-			message = "%s ^7shouldn't have trod in the acid\n";
+			message = _("%s ^7shouldn't have trod in the acid\n");
 			break;
 
 		case MOD_MGTURRET:
-			message = "%s ^7was gunned down by a turret\n";
+			message = _("%s ^7was gunned down by a turret\n");
 			break;
 
 		case MOD_TESLAGEN:
-			message = "%s ^7was zapped by a tesla generator\n";
+			message = _("%s ^7was zapped by a tesla generator\n");
 			break;
 
 		case MOD_ATUBE:
-			message = "%s ^7was melted by an acid tube\n";
+			message = _("%s ^7was melted by an acid tube\n");
 			break;
 
 		case MOD_OVERMIND:
-			message = "%s ^7got too close to the overmind\n";
+			message = _("%s ^7got too close to the overmind\n");
 			break;
 
 		case MOD_REACTOR:
-			message = "%s ^7got too close to the reactor\n";
+			message = _("%s ^7got too close to the reactor\n");
 			break;
 
 		case MOD_SLOWBLOB:
-			message = "%s ^7should have visited a medical station\n";
+			message = _("%s ^7should have visited a medical station\n");
 			break;
 
 		case MOD_SWARM:
-			message = "%s ^7was hunted down by the swarm\n";
+			message = _("%s ^7was hunted down by the swarm\n");
 			break;
 
 		default:

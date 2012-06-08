@@ -44,7 +44,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #	define _(text)              gettext( text )
 #	define N_(one, many, count) ngettext( (one), (many), (count) )
 #else
-#	define _(text)              (text)
+#	define _(text)              Gettext(text)
 #	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
 #endif
 

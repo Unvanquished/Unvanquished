@@ -48,6 +48,8 @@ void UI_RegisterCvars( void );
 void UI_UpdateCvars( void );
 void UI_DrawConnectScreen( qboolean overlay );
 
+const char *gettext( const char *msgid );
+
 extern vmCvar_t ui_chatPromptColours;
 
 // new ui stuff

@@ -1503,5 +1503,6 @@ void Com_RandomBytes( byte *string, int len );
 
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid );
+const char* Trans_GettextGame( const char *msgid );
 
 #endif // _QCOMMON_H_
