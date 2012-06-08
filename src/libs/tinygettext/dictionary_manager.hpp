@@ -81,6 +81,9 @@ public:
   /** Add a directory to the search path for dictionaries, earlier
       added directories have higher priority then later added ones */
   void add_directory(const std::string& pathname);
+  
+  /** Add a po file based on istream */
+  void add_po(const std::string& name, std::istream& in, const Language& lang);
 
   /** Return a set of the available languages in their country code */
   std::set<Language> get_languages();

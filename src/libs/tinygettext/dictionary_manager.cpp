@@ -231,6 +231,15 @@ DictionaryManager::add_directory(const std::string& pathname)
   search_path.push_back(pathname);
 }
 
+void 
+DictionaryManager::add_po(const std::string& name, std::istream& in, const Language& lang)
+{
+  Dictionary *dict = new Dictionary(charset);
+  POParser::parse( name, in, *dict ); 
+  dictionaries[lang] = dict;
+}
+  
+
 void
 DictionaryManager::set_filesystem(std::auto_ptr<FileSystem> filesystem_)
 {

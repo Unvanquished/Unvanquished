@@ -3565,7 +3565,8 @@ void Com_Init( char *commandLine )
 		   //Cvar_Set( "nextmap", "cinematic avlogo.roq" );
 		   } */
 	}
-
+	Trans_Init();
+	Test_Translation();
 	com_fullyInitialized = qtrue;
 	Com_Printf( "--- Common Initialization Complete ---\n" );
 }
