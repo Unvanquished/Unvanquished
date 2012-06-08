@@ -1502,6 +1502,6 @@ void Com_GetHunkInfo( int *hunkused, int *hunkexpected );
 void Com_RandomBytes( byte *string, int len );
 
 void Trans_Init( void );
-void Test_Translation( void );
+const char* Trans_Gettext( const char *msgid );
 
 #endif // _QCOMMON_H_

@@ -52,7 +52,6 @@ cvar_t		      *language;
 
 extern "C" void Trans_Init( void )
 {
-	std::set<Language> langs;
 	char **poFiles;
 	int  numPoFiles, i;
 	
@@ -62,23 +61,23 @@ extern "C" void Trans_Init( void )
 	for( i = 0; i < numPoFiles; i++ )
 	{
 		Dictionary *dict = new Dictionary();
-		char **buffer, language[ 6 ];
+		char *buffer, language[ 6 ];
 		
-		FS_ReadFile( va( "translation/client/%s", poFiles[ i ] ), ( void ** ) buffer );
+		FS_ReadFile( va( "translation/client/%s", poFiles[ i ] ), ( void ** ) &buffer );
 		//TODO: Error checking
 		COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
-		std::stringstream ss( *buffer );
+		std::stringstream ss( buffer );
 		trans_manager.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
 // 		POParser::parse( poFiles[ i ], ss, trans_dict );
 	}
-	
-	Com_Printf( "Loaded %d language(s)\n", numPoFiles );
+	FS_FreeFileList( poFiles );
 	trans_dict = trans_manager.get_dictionary( Language::from_env( std::string( language->string ) ) );
+	Com_Printf( "Loaded %d language(s)\n", numPoFiles );
 }
 
-extern "C" const char* Trans_Gettext( std::string msgid )
+extern "C" const char* Trans_Gettext( const char *msgid )
 {
-	return trans_dict.translate( msgid ).c_str();
+	return trans_dict.translate( std::string( msgid ) ).c_str();
 }
 
 extern "C" void Test_Translation( void )

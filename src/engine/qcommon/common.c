@@ -64,6 +64,8 @@ int demo_protocols[] = { 66, 67, 68, 0 };
 #define DEF_COMHUNKMEGS_S         XSTRING(DEF_COMHUNKMEGS)
 #define DEF_COMZONEMEGS_S         XSTRING(DEF_COMZONEMEGS)
 
+#define _(x) Trans_Gettext(x)
+
 int                 com_argc;
 char                *com_argv[ MAX_NUM_ARGVS + 1 ];
 
@@ -3341,7 +3343,6 @@ void Com_Init( char *commandLine )
 	CL_InitKeyCommands();
 
 	FS_InitFilesystem();
-
 	Com_InitJournaling();
 
 	Com_GetGameInfo();
@@ -3431,7 +3432,7 @@ void Com_Init( char *commandLine )
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
-
+	Trans_Init();
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file
 	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
@@ -3565,10 +3566,9 @@ void Com_Init( char *commandLine )
 		   //Cvar_Set( "nextmap", "cinematic avlogo.roq" );
 		   } */
 	}
-	Trans_Init();
-	Test_Translation();
+	
 	com_fullyInitialized = qtrue;
-	Com_Printf( "--- Common Initialization Complete ---\n" );
+	Com_Printf( "%s", _("--- Common Initialization Complete ---\n") );
 }
 
 //==================================================================
