@@ -44,8 +44,10 @@ extern "C"
 using namespace tinygettext;
 
 DictionaryManager trans_manager;
+DictionaryManager trans_managergame;
 Dictionary        trans_dict;
-Language          trans_lang;
+Dictionary        trans_dictgame;
+
 cvar_t            *language;
 bool              enabled = false;
 
@@ -59,20 +61,43 @@ extern "C" void Trans_Init( void )
 	language = Cvar_Get( "language", "en_US", CVAR_ARCHIVE ); // FIXME:Should probably detect based on users locale
 	poFiles = FS_ListFiles( "translation/client", ".po", &numPoFiles );
 	
+	// This assumes that the names in both folders are the same
 	for( i = 0; i < numPoFiles; i++ )
 	{
-		Dictionary *dict = new Dictionary();
+		int ret;
+		Dictionary *dict1;
+		Dictionary *dict2;
 		char *buffer, language[ 6 ];
 		
-		FS_ReadFile( va( "translation/client/%s", poFiles[ i ] ), ( void ** ) &buffer );
-		//TODO: Error checking
-		COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
-		std::stringstream ss( buffer );
-		trans_manager.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
-		Hunk_FreeTempMemory( buffer );
+		if( FS_ReadFile( va( "translation/client/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
+		{
+			dict1 = new Dictionary();
+			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
+			std::stringstream ss( buffer );
+			trans_manager.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
+			FS_FreeFile( buffer );
+		}
+		else
+		{
+			Com_Printf( "^1ERROR: Could not open client translation: %s\n", poFiles[ i ] );
+		}
+		
+		if( FS_ReadFile( va( "translation/game/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
+		{
+			dict2 = new Dictionary();
+			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
+			std::stringstream ss( buffer );
+			trans_managergame.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
+			FS_FreeFile( buffer );
+		}
+		else
+		{
+			Com_Printf( "^1ERROR: Could not open game translation: %s\n", poFiles[ i ] );
+		}
 	}
 	FS_FreeFileList( poFiles );
 	trans_dict = trans_manager.get_dictionary( Language::from_env( std::string( language->string ) ) );
+	trans_dictgame = trans_managergame.get_dictionary( Language::from_env( std::string( language->string ) ) );
 	enabled = true;
 	Com_Printf( "Loaded %d language(s)\n", numPoFiles );
 }
@@ -81,4 +106,10 @@ extern "C" const char* Trans_Gettext( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
 	return trans_dict.translate( std::string( msgid ) ).c_str();
+}
+
+extern "C" const char* Trans_GettextGame( const char *msgid )
+{
+	if( !enabled ) { return msgid; }
+	return trans_dictgame.translate( std::string( msgid ) ).c_str();
 }
