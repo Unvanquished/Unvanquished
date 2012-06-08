@@ -41,6 +41,8 @@ cvar_t        *cvar_vars;
 cvar_t        *cvar_cheats;
 int           cvar_modifiedFlags;
 
+#define _(x) Trans_Gettext(x)
+
 #define MAX_CVARS 2048
 cvar_t        cvar_indexes[ MAX_CVARS ];
 int           cvar_numIndexes;
@@ -499,31 +501,31 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 		// ydnar: don't set unsafe variables when com_crashed is set
 		if ( ( var->flags & CVAR_UNSAFE ) && com_crashed != NULL && com_crashed->integer )
 		{
-			Com_Printf( "%s is unsafe. Check com_crashed.\n", var_name );
+			Com_Printf( _("%s is unsafe. Check com_crashed.\n"), var_name );
 			return var;
 		}
 
 		if ( var->flags & CVAR_ROM )
 		{
-			Com_Printf( "%s is read only.\n", var_name );
+			Com_Printf( _("%s is read only.\n"), var_name );
 			return var;
 		}
 
 		if ( var->flags & CVAR_INIT )
 		{
-			Com_Printf( "%s is write protected.\n", var_name );
+			Com_Printf( _("%s is write protected.\n"), var_name );
 			return var;
 		}
 
 		if ( ( var->flags & CVAR_CHEAT ) && !cvar_cheats->integer )
 		{
-			Com_Printf( "%s is cheat protected.\n", var_name );
+			Com_Printf( _("%s is cheat protected.\n"), var_name );
 			return var;
 		}
 
 		if ( var->flags & CVAR_SHADER )
 		{
-			Com_Printf( "%s will be changed upon recompiling shaders.\n", var_name );
+			Com_Printf( _("%s will be changed upon recompiling shaders.\n"), var_name );
 			Cvar_Set( "r_recompileShaders", "1" );
 		}
 
@@ -546,7 +548,7 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 				}
 			}
 
-			Com_Printf( "%s will be changed upon restarting.\n", var_name );
+			Com_Printf( _("%s will be changed upon restarting.\n"), var_name );
 			var->latchedString = CopyString( value );
 			var->modified = qtrue;
 			var->modificationCount++;
@@ -777,11 +779,11 @@ qboolean Cvar_Command( void )
 	// perform a variable print or set
 	if ( Cmd_Argc() == 1 )
 	{
-		Com_Printf( "\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n", v->name, v->string, v->resetString );
+		Com_Printf( _("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n"), v->name, v->string, v->resetString );
 
 		if ( v->latchedString )
 		{
-			Com_Printf( "latched: \"%s\"\n", v->latchedString );
+			Com_Printf( _("latched: \"%s\"\n"), v->latchedString );
 		}
 
 		return qtrue;
@@ -809,7 +811,7 @@ void Cvar_Toggle_f( void )
 
 	if ( c < 2 )
 	{
-		Com_Printf( "usage: toggle <variable> [<value> ...]\n" );
+		Com_Printf( "%s", _("usage: toggle <variable> [<value> ...]\n") );
 		return;
 	}
 

@@ -46,7 +46,8 @@ using namespace tinygettext;
 DictionaryManager trans_manager;
 Dictionary        trans_dict;
 Language          trans_lang;
-cvar_t		      *language;
+cvar_t            *language;
+bool              enabled = false;
 
 #define _(x) Trans_Gettext(x)
 
@@ -68,15 +69,17 @@ extern "C" void Trans_Init( void )
 		COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
 		std::stringstream ss( buffer );
 		trans_manager.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
-// 		POParser::parse( poFiles[ i ], ss, trans_dict );
+		Hunk_FreeTempMemory( buffer );
 	}
 	FS_FreeFileList( poFiles );
 	trans_dict = trans_manager.get_dictionary( Language::from_env( std::string( language->string ) ) );
+	enabled = true;
 	Com_Printf( "Loaded %d language(s)\n", numPoFiles );
 }
 
 extern "C" const char* Trans_Gettext( const char *msgid )
 {
+	if( !enabled ) { return msgid; }
 	return trans_dict.translate( std::string( msgid ) ).c_str();
 }
 
