@@ -173,17 +173,9 @@ DictionaryManager::get_languages()
 {
   std::set<Language> languages;
 
-  for (SearchPath::iterator p = search_path.begin(); p != search_path.end(); ++p)
+  for (std::map<Language,Dictionary*>::iterator p = dictionaries.begin(); p != dictionaries.end(); ++p)
   {
-    std::vector<std::string> files = filesystem->open_directory(*p);
-
-    for(std::vector<std::string>::iterator file = files.begin(); file != files.end(); ++file)
-    {
-      if (has_suffix(*file, ".po")) 
-      {
-        languages.insert(Language::from_env(file->substr(0, file->size()-3)));
-      }
-    }
+    languages.insert(p->first);
   }
   return languages;
 }
