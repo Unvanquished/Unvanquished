@@ -1,0 +1,2915 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#: ingame_options.menu:2476
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-06-08 11:45-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: connect.menu:7
+msgid "Connect"
+msgstr "Connect"
+
+#: createfavorite.menu:15
+msgid "createfavorite_popmenu"
+msgstr "createfavorite_popmenu"
+
+#: createfavorite.menu:34 createserver.menu:80 createserver.menu:115
+#: error.menu:41 findplayer.menu:44 ingame.menu:54 ingame_game.menu:90
+#: ingame_help.menu:40 ingame_leave.menu:40 ingame_options.menu:56 mod.menu:36
+#: options.menu:39 password.menu:40 quit.menu:31 serverinfo.menu:38
+#: tremulous_alienbuild.menu:40 tremulous_alienclass.menu:40
+#: tremulous_aliendialogs.menu:33 tremulous_alienupgrade.menu:40
+#: tremulous_dialogs.menu:34 tremulous_humanarmoury.menu:49
+#: tremulous_humanbuild.menu:40 tremulous_humanitem.menu:40
+#: tremulous_teamselect.menu:40 vsays.menu:19
+msgid "ui/assets/vertgrad.tga"
+msgstr "ui/assets/vertgrad.tga"
+
+#: createfavorite.menu:52 findplayer.menu:59 ingame_options.menu:180
+#: options.menu:55
+msgid "Name:"
+msgstr "Name:"
+
+#: createfavorite.menu:54
+msgid "ui_favoriteName"
+msgstr "ui_favoriteName"
+
+#: createfavorite.menu:68
+msgid "Address:"
+msgstr "Address:"
+
+#: createfavorite.menu:70
+msgid "ui_favoriteAddress"
+msgstr "ui_favoriteAddress"
+
+#: createfavorite.menu:81 drop.menu:83 error.menu:85 options.menu:296
+#: password.menu:71 tremulous_alienbuild.menu:99 tremulous_alienclass.menu:120
+#: tremulous_aliendialogs.menu:81 tremulous_alienupgrade.menu:99
+#: tremulous_dialogs.menu:82 tremulous_humanbuild.menu:98
+#: tremulous_humandialogs.menu:81 tremulous_humanitem.menu:120
+#: tremulous_teamselect.menu:99
+msgid "OK"
+msgstr "OK"
+
+#: createfavorite.menu:92 createfavorite.menu:112 createserver.menu:188
+#: createserver.menu:225 createserver.menu:247 createserver.menu:266
+#: createserver.menu:285 createserver.menu:338 createserver.menu:467
+#: createserver.menu:498 demo.menu:66 demo.menu:84 download.menu:23
+#: download.menu:94 download.menu:117 download.menu:140 download.menu:161
+#: drop.menu:30 drop.menu:95 error.menu:30 error.menu:97 findplayer.menu:89
+#: findplayer.menu:167 ingame.menu:77 ingame.menu:96 ingame.menu:115
+#: ingame.menu:134 ingame_game.menu:116 ingame_game.menu:142
+#: ingame_game.menu:167 ingame_game.menu:196 ingame_game.menu:218
+#: ingame_game.menu:240 ingame_game.menu:436 ingame_game.menu:456
+#: ingame_game.menu:476 ingame_game.menu:496 ingame_game.menu:516
+#: ingame_game.menu:539 ingame_game.menu:563 ingame_game.menu:604
+#: ingame_game.menu:625 ingame_game.menu:645 ingame_game.menu:666
+#: ingame_game.menu:709 ingame_game.menu:731 ingame_game.menu:751
+#: ingame_game.menu:772 ingame_game.menu:793 ingame_game.menu:862
+#: ingame_game.menu:882 ingame_game.menu:902 ingame_leave.menu:65
+#: ingame_leave.menu:86 ingame_leave.menu:127 ingame_leave.menu:184
+#: ingame_options.menu:82 ingame_options.menu:107 ingame_options.menu:133
+#: ingame_options.menu:160 ingame_options.menu:208 ingame_options.menu:228
+#: ingame_options.menu:248 ingame_options.menu:268 ingame_options.menu:289
+#: ingame_options.menu:309 ingame_options.menu:332 ingame_options.menu:353
+#: ingame_options.menu:374 ingame_options.menu:394 ingame_options.menu:414
+#: ingame_options.menu:435 ingame_options.menu:456 ingame_options.menu:476
+#: ingame_options.menu:497 ingame_options.menu:517 ingame_options.menu:537
+#: ingame_options.menu:557 ingame_options.menu:579 ingame_options.menu:604
+#: ingame_options.menu:624 ingame_options.menu:644 ingame_options.menu:664
+#: ingame_options.menu:684 ingame_options.menu:720 ingame_options.menu:741
+#: ingame_options.menu:761 ingame_options.menu:782 ingame_options.menu:805
+#: ingame_options.menu:825 ingame_options.menu:846 ingame_options.menu:866
+#: ingame_options.menu:886 ingame_options.menu:906 ingame_options.menu:926
+#: ingame_options.menu:946 ingame_options.menu:966 ingame_options.menu:986
+#: ingame_options.menu:1006 ingame_options.menu:1026 ingame_options.menu:1046
+#: ingame_options.menu:1066 ingame_options.menu:1086 ingame_options.menu:1109
+#: ingame_options.menu:1132 ingame_options.menu:1152 ingame_options.menu:1172
+#: ingame_options.menu:1192 ingame_options.menu:1212 ingame_options.menu:1232
+#: ingame_options.menu:1252 ingame_options.menu:1272 ingame_options.menu:1292
+#: ingame_options.menu:1313 ingame_options.menu:1336 ingame_options.menu:1356
+#: ingame_options.menu:1376 ingame_options.menu:1396 ingame_options.menu:1416
+#: ingame_options.menu:1436 ingame_options.menu:1456 ingame_options.menu:1476
+#: ingame_options.menu:1496 ingame_options.menu:1516 ingame_options.menu:1537
+#: ingame_options.menu:1560 ingame_options.menu:1580 ingame_options.menu:1600
+#: ingame_options.menu:1620 ingame_options.menu:1640 ingame_options.menu:1662
+#: ingame_options.menu:1688 ingame_options.menu:1709 ingame_options.menu:1749
+#: ingame_options.menu:1770 ingame_options.menu:1792 ingame_options.menu:1814
+#: ingame_options.menu:1836 ingame_options.menu:1859 ingame_options.menu:1881
+#: ingame_options.menu:1902 ingame_options.menu:1923 ingame_options.menu:1944
+#: ingame_options.menu:1964 ingame_options.menu:1986 ingame_options.menu:2041
+#: ingame_options.menu:2061 ingame_options.menu:2081 ingame_options.menu:2101
+#: ingame_options.menu:2121 ingame_options.menu:2141 ingame_options.menu:2161
+#: ingame_options.menu:2182 ingame_options.menu:2203 ingame_options.menu:2224
+#: ingame_options.menu:2264 ingame_options.menu:2287 ingame_options.menu:2339
+#: ingame_options.menu:2360 ingame_options.menu:2380 ingame_options.menu:2400
+#: ingame_options.menu:2421 ingame_options.menu:2440 ingame_options.menu:2462
+#: ingame_options.menu:2495 ingame_options.menu:2515 ingame_options.menu:2535
+#: ingame_options.menu:2555 ingame_options.menu:2575 joinserver.menu:91
+#: joinserver.menu:114 joinserver.menu:136 joinserver.menu:159
+#: joinserver.menu:182 joinserver.menu:243 joinserver.menu:287
+#: joinserver.menu:331 joinserver.menu:375 joinserver.menu:419
+#: joinserver.menu:524 joinserver.menu:543 joinserver.menu:563
+#: joinserver.menu:583 joinserver.menu:603 joinserver.menu:622
+#: joinserver.menu:645 joinserver.menu:724 joinserver.menu:755 main.menu:85
+#: main.menu:143 main.menu:172 main.menu:200 mod.menu:67 mod.menu:85
+#: news.menu:95 options.menu:30 options.menu:82 options.menu:119
+#: options.menu:181 options.menu:215 options.menu:237 options.menu:255
+#: options.menu:289 options.menu:307 password.menu:82 quit.menu:21
+#: quit.menu:93 serverinfo.menu:87 serverinfo.menu:106
+#: tremulous_alienbuild.menu:69 tremulous_alienbuild.menu:111
+#: tremulous_alienclass.menu:69 tremulous_alienclass.menu:132
+#: tremulous_aliendialogs.menu:93 tremulous_alienupgrade.menu:69
+#: tremulous_alienupgrade.menu:111 tremulous_dialogs.menu:94
+#: tremulous_humanarmoury.menu:79 tremulous_humanarmoury.menu:104
+#: tremulous_humanarmoury.menu:145 tremulous_humanarmoury.menu:185
+#: tremulous_humanbuild.menu:69 tremulous_humanbuild.menu:110
+#: tremulous_humandialogs.menu:93 tremulous_humanitem.menu:69
+#: tremulous_humanitem.menu:132 tremulous_teamselect.menu:69
+#: tremulous_teamselect.menu:111
+msgid "sound/misc/menu1.wav"
+msgstr "sound/misc/menu1.wav"
+
+#: createfavorite.menu:101 demo.menu:93 mod.menu:94
+#: tremulous_alienbuild.menu:120 tremulous_alienclass.menu:141
+#: tremulous_alienupgrade.menu:120 tremulous_humanbuild.menu:119
+#: tremulous_humanitem.menu:141 tremulous_teamselect.menu:120
+msgid "Cancel"
+msgstr "Cancel"
+
+#: createserver.menu:38
+msgid "createserver"
+msgstr "createserver"
+
+#: createserver.menu:129
+msgid "Host Name:"
+msgstr "Host Name:"
+
+#: createserver.menu:130
+msgid "sv_hostname"
+msgstr "sv_hostname"
+
+#: createserver.menu:145 ingame_game.menu:934
+msgid "Time Limit:"
+msgstr "Time Limit:"
+
+#: createserver.menu:146
+msgid "timelimit"
+msgstr "timelimit"
+
+#: createserver.menu:161
+msgid "Maximum Players:"
+msgstr "Maximum Players:"
+
+#: createserver.menu:162
+msgid "sv_maxclients"
+msgstr "sv_maxclients"
+
+#: createserver.menu:177
+msgid "Require Password:"
+msgstr "Require Password:"
+
+#: createserver.menu:178
+msgid "g_needpassword"
+msgstr "g_needpassword"
+
+#: createserver.menu:196 password.menu:57
+msgid "Password:"
+msgstr "Password:"
+
+#: createserver.menu:197
+msgid "g_password"
+msgstr "g_password"
+
+#: createserver.menu:214
+msgid "Pure Server:"
+msgstr "Pure Server:"
+
+#: createserver.menu:215 download.menu:136
+msgid "sv_pure"
+msgstr "sv_pure"
+
+#: createserver.menu:233
+msgid "Dedicated:"
+msgstr "Dedicated:"
+
+#: createserver.menu:236
+msgid "ui_dedicated"
+msgstr "ui_dedicated"
+
+#: createserver.menu:237 ingame_leave.menu:135 ingame_leave.menu:192
+#: ingame_options.menu:279 ingame_options.menu:322 ingame_options.menu:487
+#: vsays.menu:113
+msgid "No"
+msgstr "No"
+
+#: createserver.menu:237
+msgid "LAN"
+msgstr "LAN"
+
+#: createserver.menu:237
+msgid "Internet"
+msgstr "Internet"
+
+#: createserver.menu:255
+msgid "Auto Download:"
+msgstr "Auto Download:"
+
+#: createserver.menu:256
+msgid "sv_allowdownload"
+msgstr "sv_allowdownload"
+
+#: createserver.menu:274
+msgid "Enable Voting:"
+msgstr "Enable Voting:"
+
+#: createserver.menu:275
+msgid "g_allowvote"
+msgstr "g_allowvote"
+
+#: createserver.menu:295
+msgid "Minimum Ping:"
+msgstr "Minimum Ping:"
+
+#: createserver.menu:296
+msgid "sv_minping"
+msgstr "sv_minping"
+
+#: createserver.menu:311
+msgid "Maximum Ping:"
+msgstr "Maximum Ping:"
+
+#: createserver.menu:312
+msgid "sv_maxping"
+msgstr "sv_maxping"
+
+#: createserver.menu:327
+msgid "Synchronous Client:"
+msgstr "Synchronous Client:"
+
+#: createserver.menu:328
+msgid "g_synchronousclients"
+msgstr "g_synchronousclients"
+
+#: createserver.menu:346
+msgid "Max Rate:"
+msgstr "Max Rate:"
+
+#: createserver.menu:347
+msgid "sv_maxrate"
+msgstr "sv_maxrate"
+
+#: createserver.menu:362
+msgid "Zombie Time:"
+msgstr "Zombie Time:"
+
+#: createserver.menu:363
+msgid "sv_zombietime"
+msgstr "sv_zombietime"
+
+#: createserver.menu:378
+msgid "Reconnect Limit:"
+msgstr "Reconnect Limit:"
+
+#: createserver.menu:379
+msgid "sv_reconnectlimit"
+msgstr "sv_reconnectlimit"
+
+#: createserver.menu:398 joinserver.menu:655
+msgid "ui/assets/backarrow.tga"
+msgstr "ui/assets/backarrow.tga"
+
+#: createserver.menu:404 createserver.menu:441 joinserver.menu:661
+#: joinserver.menu:698 quit.menu:74 tremulous_alienclass.menu:111
+#: tremulous_humanarmoury.menu:165 tremulous_humanitem.menu:111
+msgid "sound/misc/menu4.wav"
+msgstr "sound/misc/menu4.wav"
+
+#: createserver.menu:419 joinserver.menu:676
+msgid "ui/assets/backarrow_alt.tga"
+msgstr "ui/assets/backarrow_alt.tga"
+
+#: createserver.menu:427 joinserver.menu:684 tremulous_alienclass.menu:98
+#: tremulous_humanitem.menu:98
+msgid "Back"
+msgstr "Back"
+
+#: createserver.menu:455 joinserver.menu:712
+msgid "ui/assets/forwardarrow.tga"
+msgstr "ui/assets/forwardarrow.tga"
+
+#: createserver.menu:478 joinserver.menu:735
+msgid "ui/assets/forwardarrow_alt.tga"
+msgstr "ui/assets/forwardarrow_alt.tga"
+
+#: createserver.menu:484
+msgid "Create"
+msgstr "Create"
+
+#: demo.menu:14
+msgid "demo"
+msgstr "demo"
+
+#: demo.menu:74 main.menu:72
+msgid "Play"
+msgstr "Play"
+
+#: demo.menu:103 ingame_leave.menu:147 ingame_leave.menu:204 mod.menu:104
+#: tremulous_alienbuild.menu:132 tremulous_alienclass.menu:153
+#: tremulous_alienupgrade.menu:132 tremulous_humanbuild.menu:131
+#: tremulous_humanitem.menu:153 tremulous_teamselect.menu:132
+msgid "sound/misc/menu3.wav"
+msgstr "sound/misc/menu3.wav"
+
+#: download.menu:8
+msgid "download_popmenu"
+msgstr "download_popmenu"
+
+#: download.menu:47
+msgid "Download"
+msgstr "Download"
+
+#: download.menu:64
+msgid "com_downloadPromptText"
+msgstr "com_downloadPromptText"
+
+#: download.menu:80
+msgid "Download from website"
+msgstr "Download from website"
+
+#: download.menu:90 download.menu:113
+msgid "ui_serverinfo_allowdl"
+msgstr "ui_serverinfo_allowdl"
+
+#: download.menu:103
+msgid "Download from server"
+msgstr "Download from server"
+
+#: download.menu:126 ingame_game.menu:130
+msgid "Ignore"
+msgstr "Ignore"
+
+#: download.menu:149
+msgid "Disconnect"
+msgstr "Disconnect"
+
+#: download.menu:163
+msgid "disconnect"
+msgstr "disconnect"
+
+#: drop.menu:19
+msgid "drop_popmenu"
+msgstr "drop_popmenu"
+
+#: drop.menu:55
+msgid "Disconnected"
+msgstr "Disconnected"
+
+#: drop.menu:71 error.menu:73
+msgid "com_errorMessage"
+msgstr "com_errorMessage"
+
+#: drop.menu:103
+msgid "Reconnect"
+msgstr "Reconnect"
+
+#: drop.menu:116
+msgid "reconnect"
+msgstr "reconnect"
+
+#: error.menu:19
+msgid "error_popmenu"
+msgstr "error_popmenu"
+
+#: error.menu:57 tremulous_aliendialogs.menu:46 tremulous_dialogs.menu:47
+#: tremulous_humandialogs.menu:46
+msgid "Error"
+msgstr "Error"
+
+#: findplayer.menu:20
+msgid "findplayer_popmenu"
+msgstr "findplayer_popmenu"
+
+#: findplayer.menu:60
+msgid "ui_findplayer"
+msgstr "ui_findplayer"
+
+#: findplayer.menu:78
+msgid "Search"
+msgstr "Search"
+
+#: findplayer.menu:141 joinserver.menu:741
+msgid "Join"
+msgstr "Join"
+
+#: findplayer.menu:156 news.menu:84 serverinfo.menu:95
+#: tremulous_humanarmoury.menu:152 tremulous_humanarmoury.menu:153
+#: vsays.menu:65
+msgid "Close"
+msgstr "Close"
+
+#: ingame.menu:14 loading.menu:18
+msgid "fonts/font"
+msgstr "fonts/font"
+
+#: ingame.menu:15 loading.menu:19
+msgid "fonts/smallfont"
+msgstr "fonts/smallfont"
+
+#: ingame.menu:16 loading.menu:20
+msgid "fonts/bigfont"
+msgstr "fonts/bigfont"
+
+#: ingame.menu:17 loading.menu:10 main.menu:10
+msgid "ui/assets/3_cursor3"
+msgstr "ui/assets/3_cursor3"
+
+#: ingame.menu:18 loading.menu:11 main.menu:11
+msgid "ui/assets/gradientbar2.tga"
+msgstr "ui/assets/gradientbar2.tga"
+
+#: ingame.menu:19 main.menu:12
+msgid "sound/misc/menu2.wav"
+msgstr "sound/misc/menu2.wav"
+
+#: ingame.menu:33
+msgid "ingame"
+msgstr "ingame"
+
+#: ingame.menu:51
+msgid "background"
+msgstr "background"
+
+#: ingame.menu:66
+msgid "Game"
+msgstr "Game"
+
+#: ingame.menu:85 main.menu:129
+msgid "Options"
+msgstr "Options"
+
+#: ingame.menu:104
+msgid "Help"
+msgstr "Help"
+
+#: ingame.menu:123
+msgid "Exit"
+msgstr "Exit"
+
+#: ingame_game.menu:64
+msgid "ingame_game"
+msgstr "ingame_game"
+
+#: ingame_game.menu:104
+msgid "Vote"
+msgstr "Vote"
+
+#: ingame_game.menu:155
+msgid "Info"
+msgstr "Info"
+
+#: ingame_game.menu:184
+msgid "Map"
+msgstr "Map"
+
+#: ingame_game.menu:206 joinserver.menu:359
+msgid "Players"
+msgstr "Players"
+
+#: ingame_game.menu:228
+msgid "Team"
+msgstr "Team"
+
+#: ingame_game.menu:255
+msgid "Reason:"
+msgstr "Reason:"
+
+#: ingame_game.menu:256
+msgid "ui_reason"
+msgstr "ui_reason"
+
+#: ingame_game.menu:274 ingame_game.menu:529 ingame_game.menu:553
+msgid "End Match In Draw"
+msgstr "End Match In Draw"
+
+#: ingame_game.menu:293 ingame_game.menu:594
+msgid "Mute Player"
+msgstr "Mute Player"
+
+#: ingame_game.menu:312 ingame_game.menu:635
+msgid "Kick Player"
+msgstr "Kick Player"
+
+#: ingame_game.menu:331 ingame_game.menu:656
+msgid "Move Player To Spectators"
+msgstr "Move Player To Spectators"
+
+#: ingame_game.menu:350 ingame_game.menu:741
+msgid "Kick Teammate"
+msgstr "Kick Teammate"
+
+#: ingame_game.menu:369 ingame_game.menu:762
+msgid "Move Teammate To Spectators"
+msgstr "Move Teammate To Spectators"
+
+#: ingame_game.menu:388 ingame_game.menu:699
+msgid "Deny Building For Teammate"
+msgstr "Deny Building For Teammate"
+
+#: ingame_game.menu:446
+msgid "Load Selected Map"
+msgstr "Load Selected Map"
+
+#: ingame_game.menu:466
+msgid "Load Selected Map Next"
+msgstr "Load Selected Map Next"
+
+#: ingame_game.menu:486
+msgid "Restart Current Map"
+msgstr "Restart Current Map"
+
+#: ingame_game.menu:497
+msgid "cmd callvote map_restart"
+msgstr "cmd callvote map_restart"
+
+#: ingame_game.menu:506
+msgid "Begin Sudden Death"
+msgstr "Begin Sudden Death"
+
+#: ingame_game.menu:517
+msgid "cmd callvote sudden_death"
+msgstr "cmd callvote sudden_death"
+
+#: ingame_game.menu:527 ingame_game.menu:551
+msgid "g_drawVoteReasonRequired"
+msgstr "g_drawVoteReasonRequired"
+
+#: ingame_game.menu:564
+msgid "cmd callvote draw"
+msgstr "cmd callvote draw"
+
+#: ingame_game.menu:615
+msgid "Un-Mute Player"
+msgstr "Un-Mute Player"
+
+#: ingame_game.menu:720
+msgid "Allow Building For Teammate"
+msgstr "Allow Building For Teammate"
+
+#: ingame_game.menu:783
+msgid "Admit Defeat"
+msgstr "Admit Defeat"
+
+#: ingame_game.menu:794
+msgid "cmd callteamvote admitdefeat"
+msgstr "cmd callteamvote admitdefeat"
+
+#: ingame_game.menu:805
+msgid "Player Name"
+msgstr "Player Name"
+
+#: ingame_game.menu:818
+msgid "Ignored"
+msgstr "Ignored"
+
+#: ingame_game.menu:830
+msgid "Ignoring You"
+msgstr "Ignoring You"
+
+#: ingame_game.menu:870
+msgid "Ignore Player"
+msgstr "Ignore Player"
+
+#: ingame_game.menu:890
+msgid "Stop Ignoring Player"
+msgstr "Stop Ignoring Player"
+
+#: ingame_game.menu:916
+msgid "Server Name:"
+msgstr "Server Name:"
+
+#: ingame_game.menu:952
+msgid "Sudden Death Time:"
+msgstr "Sudden Death Time:"
+
+#: ingame_game.menu:970
+msgid "Max Clients:"
+msgstr "Max Clients:"
+
+#: ingame_game.menu:988
+msgid "Map Name:"
+msgstr "Map Name:"
+
+#: ingame_game.menu:1006
+msgid "Lag Correction:"
+msgstr "Lag Correction:"
+
+#: ingame_game.menu:1024
+msgid "Friendly Fire:"
+msgstr "Friendly Fire:"
+
+#: ingame_game.menu:1042
+msgid "Buildable Friendly Fire:"
+msgstr "Buildable Friendly Fire:"
+
+#: ingame_game.menu:1060
+msgid "Version:"
+msgstr "Version:"
+
+#: ingame_help.menu:24
+msgid "ingame_help"
+msgstr "ingame_help"
+
+#: ingame_help.menu:52 tremulous_alienbuild.menu:52
+#: tremulous_alienclass.menu:52 tremulous_alienupgrade.menu:52
+#: tremulous_humanbuild.menu:52 tremulous_humanitem.menu:52
+#: tremulous_teamselect.menu:52
+msgid "list"
+msgstr "list"
+
+#: ingame_leave.menu:22
+msgid "ingame_leave"
+msgstr "ingame_leave"
+
+#: ingame_leave.menu:54
+msgid "Main Menu"
+msgstr "Main Menu"
+
+#: ingame_leave.menu:76 main.menu:187
+msgid "Quit"
+msgstr "Quit"
+
+#: ingame_leave.menu:100
+msgid "Return To Main Menu?"
+msgstr "Return To Main Menu?"
+
+#: ingame_leave.menu:115 ingame_leave.menu:172 ingame_options.menu:279
+#: vsays.menu:112
+msgid "Yes"
+msgstr "Yes"
+
+#: ingame_leave.menu:157
+msgid "Want To Quit Game?"
+msgstr "Want To Quit Game?"
+
+#: ingame_options.menu:33
+msgid "ingame_options"
+msgstr "ingame_options"
+
+#: ingame_options.menu:70
+msgid "Player"
+msgstr "Player"
+
+#: ingame_options.menu:95
+msgid "HUD"
+msgstr "HUD"
+
+#: ingame_options.menu:121
+msgid "Controls"
+msgstr "Controls"
+
+#: ingame_options.menu:148
+msgid "System"
+msgstr "System"
+
+#: ingame_options.menu:181 options.menu:56
+msgid "name"
+msgstr "name"
+
+#: ingame_options.menu:197
+msgid "Taunts Sounds Off:"
+msgstr "Taunts Sounds Off:"
+
+#: ingame_options.menu:198
+msgid "cg_noTaunt"
+msgstr "cg_noTaunt"
+
+#: ingame_options.menu:217
+msgid "Team Chats Only:"
+msgstr "Team Chats Only:"
+
+#: ingame_options.menu:218
+msgid "cg_teamChatsOnly"
+msgstr "cg_teamChatsOnly"
+
+#: ingame_options.menu:237
+msgid "Sticky Spectate:"
+msgstr "Sticky Spectate:"
+
+#: ingame_options.menu:238
+msgid "cg_stickySpec"
+msgstr "cg_stickySpec"
+
+#: ingame_options.menu:257
+msgid "Tutorial Mode:"
+msgstr "Tutorial Mode:"
+
+#: ingame_options.menu:258
+msgid "cg_tutorial"
+msgstr "cg_tutorial"
+
+#: ingame_options.menu:277
+msgid "Disable Warning Dialogs:"
+msgstr "Disable Warning Dialogs:"
+
+#: ingame_options.menu:278
+msgid "cg_disableWarningDialogs"
+msgstr "cg_disableWarningDialogs"
+
+#: ingame_options.menu:279
+msgid "Print to Console"
+msgstr "Print to Console"
+
+#: ingame_options.menu:298
+msgid "Static Death Cam:"
+msgstr "Static Death Cam:"
+
+#: ingame_options.menu:299
+msgid "cg_staticDeathCam"
+msgstr "cg_staticDeathCam"
+
+#: ingame_options.menu:320
+msgid "Show Clock:"
+msgstr "Show Clock:"
+
+#: ingame_options.menu:321
+msgid "cg_drawClock"
+msgstr "cg_drawClock"
+
+#: ingame_options.menu:322
+msgid "12 Hour"
+msgstr "12 Hour"
+
+#: ingame_options.menu:322
+msgid "24 Hour"
+msgstr "24 Hour"
+
+#: ingame_options.menu:341
+msgid "Show Crosshair:"
+msgstr "Show Crosshair:"
+
+#: ingame_options.menu:342
+msgid "cg_drawCrosshair"
+msgstr "cg_drawCrosshair"
+
+#: ingame_options.menu:343
+msgid "Never"
+msgstr "Never"
+
+#: ingame_options.menu:343
+msgid "Ranged Weapons Only"
+msgstr "Ranged Weapons Only"
+
+#: ingame_options.menu:343
+msgid "Always"
+msgstr "Always"
+
+#: ingame_options.menu:362
+msgid "Crosshair Size:"
+msgstr "Crosshair Size:"
+
+#: ingame_options.menu:363
+msgid "cg_crosshairSize"
+msgstr "cg_crosshairSize"
+
+#: ingame_options.menu:364 ingame_options.menu:1678 ingame_options.menu:1849
+#: options.menu:72
+msgid "Normal"
+msgstr "Normal"
+
+#: ingame_options.menu:364
+msgid "Small"
+msgstr "Small"
+
+#: ingame_options.menu:364
+msgid "Tiny"
+msgstr "Tiny"
+
+#: ingame_options.menu:364
+msgid "Huge"
+msgstr "Huge"
+
+#: ingame_options.menu:383
+msgid "Show Charge Bar:"
+msgstr "Show Charge Bar:"
+
+#: ingame_options.menu:384
+msgid "cg_drawChargeBar"
+msgstr "cg_drawChargeBar"
+
+#: ingame_options.menu:403
+msgid "Show Lag-o-meter:"
+msgstr "Show Lag-o-meter:"
+
+#: ingame_options.menu:404
+msgid "cg_lagometer"
+msgstr "cg_lagometer"
+
+#: ingame_options.menu:423
+msgid "Show Team Overlay:"
+msgstr "Show Team Overlay:"
+
+#: ingame_options.menu:424
+msgid "cg_drawTeamOverlay"
+msgstr "cg_drawTeamOverlay"
+
+#: ingame_options.menu:425 ingame_options.menu:2193
+msgid "Off"
+msgstr "Off"
+
+#: ingame_options.menu:425
+msgid "All Teammates"
+msgstr "All Teammates"
+
+#: ingame_options.menu:425
+msgid "Support Teammates"
+msgstr "Support Teammates"
+
+#: ingame_options.menu:425
+msgid "Nearby Teammates"
+msgstr "Nearby Teammates"
+
+#: ingame_options.menu:444
+msgid "Sort Team Overlay:"
+msgstr "Sort Team Overlay:"
+
+#: ingame_options.menu:445
+msgid "cg_teamOverlaySortMode"
+msgstr "cg_teamOverlaySortMode"
+
+#: ingame_options.menu:446
+msgid "None"
+msgstr "None"
+
+#: ingame_options.menu:446 teamscore.menu:151 teamscore.menu:226
+msgid "Score"
+msgstr "Score"
+
+#: ingame_options.menu:446
+msgid "Weapon/Class"
+msgstr "Weapon/Class"
+
+#: ingame_options.menu:465
+msgid "Show Gun:"
+msgstr "Show Gun:"
+
+#: ingame_options.menu:466 ingame_options.menu:2071
+msgid "cg_drawGun"
+msgstr "cg_drawGun"
+
+#: ingame_options.menu:485
+msgid "Show Speed:"
+msgstr "Show Speed:"
+
+#: ingame_options.menu:486
+msgid "cg_drawspeed"
+msgstr "cg_drawspeed"
+
+#: ingame_options.menu:487
+msgid "Text"
+msgstr "Text"
+
+#: ingame_options.menu:487
+msgid "Graph"
+msgstr "Graph"
+
+#: ingame_options.menu:487
+msgid "Text + Graph"
+msgstr "Text + Graph"
+
+#: ingame_options.menu:487
+msgid "Text No-Z"
+msgstr "Text No-Z"
+
+#: ingame_options.menu:487
+msgid "Graph No-Z"
+msgstr "Graph No-Z"
+
+#: ingame_options.menu:487
+msgid "Text + Graph No-Z"
+msgstr "Text + Graph No-Z"
+
+#: ingame_options.menu:506
+msgid "Show FPS:"
+msgstr "Show FPS:"
+
+#: ingame_options.menu:507
+msgid "cg_drawFPS"
+msgstr "cg_drawFPS"
+
+#: ingame_options.menu:526
+msgid "Show Timer:"
+msgstr "Show Timer:"
+
+#: ingame_options.menu:527
+msgid "cg_drawTimer"
+msgstr "cg_drawTimer"
+
+#: ingame_options.menu:546
+msgid "Show Demo State:"
+msgstr "Show Demo State:"
+
+#: ingame_options.menu:547
+msgid "cg_drawDemoState"
+msgstr "cg_drawDemoState"
+
+#: ingame_options.menu:567
+msgid "Look"
+msgstr "Look"
+
+#: ingame_options.menu:593
+msgid "Lookup:"
+msgstr "Lookup:"
+
+#: ingame_options.menu:594
+msgid "+lookup"
+msgstr "+lookup"
+
+#: ingame_options.menu:613
+msgid "Look Down:"
+msgstr "Look Down:"
+
+#: ingame_options.menu:614
+msgid "+lookdown"
+msgstr "+lookdown"
+
+#: ingame_options.menu:633
+msgid "Mouse Look:"
+msgstr "Mouse Look:"
+
+#: ingame_options.menu:634
+msgid "+mlook"
+msgstr "+mlook"
+
+#: ingame_options.menu:653
+msgid "Centerview:"
+msgstr "Centerview:"
+
+#: ingame_options.menu:654
+msgid "centerview"
+msgstr "centerview"
+
+#: ingame_options.menu:673
+msgid "Free Look:"
+msgstr "Free Look:"
+
+#: ingame_options.menu:674
+msgid "cl_freelook"
+msgstr "cl_freelook"
+
+#: ingame_options.menu:693 options.menu:190
+msgid "Mouse Sensitivity:"
+msgstr "Mouse Sensitivity:"
+
+#: ingame_options.menu:694 options.menu:191
+msgid "sensitivity"
+msgstr "sensitivity"
+
+#: ingame_options.menu:709 options.menu:204
+msgid "Invert Mouse:"
+msgstr "Invert Mouse:"
+
+#: ingame_options.menu:710 options.menu:205
+msgid "ui_mousePitch"
+msgstr "ui_mousePitch"
+
+#: ingame_options.menu:730
+msgid "Smooth Mouse:"
+msgstr "Smooth Mouse:"
+
+#: ingame_options.menu:731
+msgid "m_filter"
+msgstr "m_filter"
+
+#: ingame_options.menu:750
+msgid "Auto Wallwalk Pitching:"
+msgstr "Auto Wallwalk Pitching:"
+
+#: ingame_options.menu:751
+msgid "cg_wwFollow"
+msgstr "cg_wwFollow"
+
+#: ingame_options.menu:770
+msgid "Move"
+msgstr "Move"
+
+#: ingame_options.menu:794
+msgid "Sprint Toggles:"
+msgstr "Sprint Toggles:"
+
+#: ingame_options.menu:795
+msgid "cg_sprintToggle"
+msgstr "cg_sprintToggle"
+
+#: ingame_options.menu:814
+msgid "Wallwalk Control Toggles:"
+msgstr "Wallwalk Control Toggles:"
+
+#: ingame_options.menu:815
+msgid "cg_wwToggle"
+msgstr "cg_wwToggle"
+
+#: ingame_options.menu:834
+msgid "Wallwalking Speed:"
+msgstr "Wallwalking Speed:"
+
+#: ingame_options.menu:835
+msgid "cg_wwSmoothTime"
+msgstr "cg_wwSmoothTime"
+
+#: ingame_options.menu:836 ingame_options.menu:1826
+msgid "Medium"
+msgstr "Medium"
+
+#: ingame_options.menu:836 ingame_options.menu:1678 options.menu:72
+msgid "Fast"
+msgstr "Fast"
+
+#: ingame_options.menu:836
+msgid "Instant"
+msgstr "Instant"
+
+#: ingame_options.menu:836
+msgid "Slow"
+msgstr "Slow"
+
+#: ingame_options.menu:855
+msgid "Run / Walk:"
+msgstr "Run / Walk:"
+
+#: ingame_options.menu:856
+msgid "+speed"
+msgstr "+speed"
+
+#: ingame_options.menu:875
+msgid "Dodge:"
+msgstr "Dodge:"
+
+#: ingame_options.menu:876
+msgid "+dodge"
+msgstr "+dodge"
+
+#: ingame_options.menu:895
+msgid "Sprint:"
+msgstr "Sprint:"
+
+#: ingame_options.menu:896
+msgid "+sprint"
+msgstr "+sprint"
+
+#: ingame_options.menu:915
+msgid "Forward:"
+msgstr "Forward:"
+
+#: ingame_options.menu:916
+msgid "+forward"
+msgstr "+forward"
+
+#: ingame_options.menu:935
+msgid "Backpedal:"
+msgstr "Backpedal:"
+
+#: ingame_options.menu:936
+msgid "+back"
+msgstr "+back"
+
+#: ingame_options.menu:955
+msgid "Move Left:"
+msgstr "Move Left:"
+
+#: ingame_options.menu:956
+msgid "+moveleft"
+msgstr "+moveleft"
+
+#: ingame_options.menu:975
+msgid "Move Right:"
+msgstr "Move Right:"
+
+#: ingame_options.menu:976
+msgid "+moveright"
+msgstr "+moveright"
+
+#: ingame_options.menu:995
+msgid "Jump:"
+msgstr "Jump:"
+
+#: ingame_options.menu:996
+msgid "+moveup"
+msgstr "+moveup"
+
+#: ingame_options.menu:1015
+msgid "Crouch:"
+msgstr "Crouch:"
+
+#: ingame_options.menu:1016
+msgid "+movedown"
+msgstr "+movedown"
+
+#: ingame_options.menu:1035
+msgid "Turn Left:"
+msgstr "Turn Left:"
+
+#: ingame_options.menu:1036
+msgid "+left"
+msgstr "+left"
+
+#: ingame_options.menu:1055
+msgid "Turn Right:"
+msgstr "Turn Right:"
+
+#: ingame_options.menu:1056
+msgid "+right"
+msgstr "+right"
+
+#: ingame_options.menu:1075
+msgid "Strafe:"
+msgstr "Strafe:"
+
+#: ingame_options.menu:1076
+msgid "+strafe"
+msgstr "+strafe"
+
+#: ingame_options.menu:1097
+msgid "Upgrades"
+msgstr "Upgrades"
+
+#: ingame_options.menu:1121
+msgid "Primary Attack:"
+msgstr "Primary Attack:"
+
+#: ingame_options.menu:1122
+msgid "+attack"
+msgstr "+attack"
+
+#: ingame_options.menu:1141
+msgid "Secondary Attack:"
+msgstr "Secondary Attack:"
+
+#: ingame_options.menu:1142
+msgid "+attack2"
+msgstr "+attack2"
+
+#: ingame_options.menu:1161
+msgid "Previous Upgrade:"
+msgstr "Previous Upgrade:"
+
+#: ingame_options.menu:1162
+msgid "weapprev"
+msgstr "weapprev"
+
+#: ingame_options.menu:1181
+msgid "Next Upgrade:"
+msgstr "Next Upgrade:"
+
+#: ingame_options.menu:1182
+msgid "weapnext"
+msgstr "weapnext"
+
+#: ingame_options.menu:1201
+msgid "Activate Upgrade:"
+msgstr "Activate Upgrade:"
+
+#: ingame_options.menu:1202
+msgid "+useitem"
+msgstr "+useitem"
+
+#: ingame_options.menu:1221
+msgid "Reload:"
+msgstr "Reload:"
+
+#: ingame_options.menu:1222
+msgid "reload"
+msgstr "reload"
+
+#: ingame_options.menu:1241
+msgid "Buy Ammo:"
+msgstr "Buy Ammo:"
+
+#: ingame_options.menu:1242
+msgid "buy ammo"
+msgstr "buy ammo"
+
+#: ingame_options.menu:1261
+msgid "Use Medkit:"
+msgstr "Use Medkit:"
+
+#: ingame_options.menu:1262
+msgid "itemact medkit"
+msgstr "itemact medkit"
+
+#: ingame_options.menu:1281
+msgid "Use Structure/Evolve:"
+msgstr "Use Structure/Evolve:"
+
+#: ingame_options.menu:1282
+msgid "+activate"
+msgstr "+activate"
+
+#: ingame_options.menu:1301
+msgid "Chat & Vote"
+msgstr "Chat & Vote"
+
+#: ingame_options.menu:1325
+msgid "Gesture:"
+msgstr "Gesture:"
+
+#: ingame_options.menu:1326
+msgid "+taunt"
+msgstr "+taunt"
+
+#: ingame_options.menu:1345
+msgid "Chat:"
+msgstr "Chat:"
+
+#: ingame_options.menu:1346
+msgid "messagemode"
+msgstr "messagemode"
+
+#: ingame_options.menu:1365
+msgid "Team Chat:"
+msgstr "Team Chat:"
+
+#: ingame_options.menu:1366
+msgid "messagemode2"
+msgstr "messagemode2"
+
+#: ingame_options.menu:1385
+msgid "Admin Chat:"
+msgstr "Admin Chat:"
+
+#: ingame_options.menu:1386
+msgid "messagemode3"
+msgstr "messagemode3"
+
+#: ingame_options.menu:1405
+msgid "IRC Chat:"
+msgstr "IRC Chat:"
+
+#: ingame_options.menu:1406
+msgid "messagemode4"
+msgstr "messagemode4"
+
+#: ingame_options.menu:1425
+msgid "Vote Yes:"
+msgstr "Vote Yes:"
+
+#: ingame_options.menu:1426
+msgid "vote yes"
+msgstr "vote yes"
+
+#: ingame_options.menu:1445
+msgid "Vote No:"
+msgstr "Vote No:"
+
+#: ingame_options.menu:1446
+msgid "vote no"
+msgstr "vote no"
+
+#: ingame_options.menu:1465
+msgid "Team Vote Yes:"
+msgstr "Team Vote Yes:"
+
+#: ingame_options.menu:1466
+msgid "teamvote yes"
+msgstr "teamvote yes"
+
+#: ingame_options.menu:1485
+msgid "Team Vote No:"
+msgstr "Team Vote No:"
+
+#: ingame_options.menu:1486
+msgid "teamvote no"
+msgstr "teamvote no"
+
+#: ingame_options.menu:1505
+msgid "Voice Say Menu:"
+msgstr "Voice Say Menu:"
+
+#: ingame_options.menu:1506
+msgid "menu vsay_top"
+msgstr "menu vsay_top"
+
+#: ingame_options.menu:1525
+msgid "Misc"
+msgstr "Misc"
+
+#: ingame_options.menu:1549
+msgid "Show Scores:"
+msgstr "Show Scores:"
+
+#: ingame_options.menu:1550
+msgid "+scores"
+msgstr "+scores"
+
+#: ingame_options.menu:1569
+msgid "Scroll Scores Up:"
+msgstr "Scroll Scores Up:"
+
+#: ingame_options.menu:1570
+msgid "scoresUp"
+msgstr "scoresUp"
+
+#: ingame_options.menu:1589
+msgid "Scroll Scores Down:"
+msgstr "Scroll Scores Down:"
+
+#: ingame_options.menu:1590
+msgid "scoresDown"
+msgstr "scoresDown"
+
+#: ingame_options.menu:1609
+msgid "Deconstruct Structure:"
+msgstr "Deconstruct Structure:"
+
+#: ingame_options.menu:1610
+msgid "deconstruct"
+msgstr "deconstruct"
+
+#: ingame_options.menu:1629
+msgid "Screenshot:"
+msgstr "Screenshot:"
+
+#: ingame_options.menu:1630
+msgid "screenshotJPEG"
+msgstr "screenshotJPEG"
+
+#: ingame_options.menu:1650
+msgid "GFX Hardware"
+msgstr "GFX Hardware"
+
+#: ingame_options.menu:1676
+msgid "Quality:"
+msgstr "Quality:"
+
+#: ingame_options.menu:1677 ingame_options.menu:1689 options.menu:71
+#: options.menu:83
+msgid "ui_glCustom"
+msgstr "ui_glCustom"
+
+#: ingame_options.menu:1678 ingame_options.menu:2172 options.menu:72
+msgid "High Quality"
+msgstr "High Quality"
+
+#: ingame_options.menu:1678 options.menu:72
+msgid "Fastest"
+msgstr "Fastest"
+
+#: ingame_options.menu:1678 options.menu:72
+msgid "Custom"
+msgstr "Custom"
+
+#: ingame_options.menu:1698
+msgid "GL Extensions:"
+msgstr "GL Extensions:"
+
+#: ingame_options.menu:1699
+msgid "r_allowExtensions"
+msgstr "r_allowExtensions"
+
+#: ingame_options.menu:1719 options.menu:90
+msgid "Video Mode:"
+msgstr "Video Mode:"
+
+#: ingame_options.menu:1758
+msgid "Color Depth:"
+msgstr "Color Depth:"
+
+#: ingame_options.menu:1759 ingame_options.menu:1772
+msgid "r_colorbits"
+msgstr "r_colorbits"
+
+#: ingame_options.menu:1760 ingame_options.menu:1871
+msgid "Default"
+msgstr "Default"
+
+#: ingame_options.menu:1760 ingame_options.menu:1871
+msgid "16 bit"
+msgstr "16 bit"
+
+#: ingame_options.menu:1760 ingame_options.menu:1871
+msgid "32 bit"
+msgstr "32 bit"
+
+#: ingame_options.menu:1781
+msgid "Fullscreen:"
+msgstr "Fullscreen:"
+
+#: ingame_options.menu:1782
+msgid "r_fullscreen"
+msgstr "r_fullscreen"
+
+#: ingame_options.menu:1802
+msgid "Lighting:"
+msgstr "Lighting:"
+
+#: ingame_options.menu:1803
+msgid "r_vertexlight"
+msgstr "r_vertexlight"
+
+#: ingame_options.menu:1804
+msgid "Light Map (high)"
+msgstr "Light Map (high)"
+
+#: ingame_options.menu:1804
+msgid "Vertex (low)"
+msgstr "Vertex (low)"
+
+#: ingame_options.menu:1824
+msgid "Geometric Detail:"
+msgstr "Geometric Detail:"
+
+#: ingame_options.menu:1825 ingame_options.menu:1838
+msgid "r_lodbias"
+msgstr "r_lodbias"
+
+#: ingame_options.menu:1826 ingame_options.menu:1849
+msgid "High"
+msgstr "High"
+
+#: ingame_options.menu:1826 ingame_options.menu:1849
+msgid "Low"
+msgstr "Low"
+
+#: ingame_options.menu:1847
+msgid "Texture Detail:"
+msgstr "Texture Detail:"
+
+#: ingame_options.menu:1848
+msgid "r_picmip"
+msgstr "r_picmip"
+
+#: ingame_options.menu:1869
+msgid "Texture Quality:"
+msgstr "Texture Quality:"
+
+#: ingame_options.menu:1870
+msgid "r_texturebits"
+msgstr "r_texturebits"
+
+#: ingame_options.menu:1890
+msgid "Texture Filter:"
+msgstr "Texture Filter:"
+
+#: ingame_options.menu:1891
+msgid "r_texturemode"
+msgstr "r_texturemode"
+
+#: ingame_options.menu:1892
+msgid "Bilinear"
+msgstr "Bilinear"
+
+#: ingame_options.menu:1892
+msgid "GL_LINEAR_MIPMAP_NEAREST"
+msgstr "GL_LINEAR_MIPMAP_NEAREST"
+
+#: ingame_options.menu:1892
+msgid "Trilinear"
+msgstr "Trilinear"
+
+#: ingame_options.menu:1892
+msgid "GL_LINEAR_MIPMAP_LINEAR"
+msgstr "GL_LINEAR_MIPMAP_LINEAR"
+
+#: ingame_options.menu:1912
+msgid "Anisotropic Filtering:"
+msgstr "Anisotropic Filtering:"
+
+#: ingame_options.menu:1913
+msgid "r_ext_texture_filter_anisotropic"
+msgstr "r_ext_texture_filter_anisotropic"
+
+#: ingame_options.menu:1933
+msgid "Compress Textures:"
+msgstr "Compress Textures:"
+
+#: ingame_options.menu:1934
+msgid "r_ext_compressed_textures "
+msgstr "r_ext_compressed_textures "
+
+#: ingame_options.menu:1954 ingame_options.menu:2430 options.menu:278
+msgid "APPLY"
+msgstr "APPLY"
+
+#: ingame_options.menu:1965
+msgid "vid_restart"
+msgstr "vid_restart"
+
+#: ingame_options.menu:1974
+msgid "GFX Software"
+msgstr "GFX Software"
+
+#: ingame_options.menu:1998
+msgid "Brightness:"
+msgstr "Brightness:"
+
+#: ingame_options.menu:1999 options.menu:127
+msgid "r_gamma"
+msgstr "r_gamma"
+
+#: ingame_options.menu:2014
+msgid "Screen Size:"
+msgstr "Screen Size:"
+
+#: ingame_options.menu:2015
+msgid "cg_viewsize"
+msgstr "cg_viewsize"
+
+#: ingame_options.menu:2030
+msgid "Marks On Walls:"
+msgstr "Marks On Walls:"
+
+#: ingame_options.menu:2031
+msgid "cg_marks"
+msgstr "cg_marks"
+
+#: ingame_options.menu:2050
+msgid "Dynamic Lights:"
+msgstr "Dynamic Lights:"
+
+#: ingame_options.menu:2051
+msgid "r_dynamiclight"
+msgstr "r_dynamiclight"
+
+#: ingame_options.menu:2070
+msgid "Draw Gun:"
+msgstr "Draw Gun:"
+
+#: ingame_options.menu:2090
+msgid "Low Quality Sky:"
+msgstr "Low Quality Sky:"
+
+#: ingame_options.menu:2091
+msgid "r_fastsky"
+msgstr "r_fastsky"
+
+#: ingame_options.menu:2110
+msgid "Sync Every Frame:"
+msgstr "Sync Every Frame:"
+
+#: ingame_options.menu:2111
+msgid "r_finish"
+msgstr "r_finish"
+
+#: ingame_options.menu:2130
+msgid "In Game Videos:"
+msgstr "In Game Videos:"
+
+#: ingame_options.menu:2131
+msgid "r_inGameVideo"
+msgstr "r_inGameVideo"
+
+#: ingame_options.menu:2150
+msgid "Depth Sort Particles:"
+msgstr "Depth Sort Particles:"
+
+#: ingame_options.menu:2151
+msgid "cg_depthSortParticles"
+msgstr "cg_depthSortParticles"
+
+#: ingame_options.menu:2170
+msgid "Particle Physics:"
+msgstr "Particle Physics:"
+
+#: ingame_options.menu:2171
+msgid "cg_bounceParticles"
+msgstr "cg_bounceParticles"
+
+#: ingame_options.menu:2172
+msgid "Low Quality"
+msgstr "Low Quality"
+
+#: ingame_options.menu:2191
+msgid "Light Flares:"
+msgstr "Light Flares:"
+
+#: ingame_options.menu:2192
+msgid "cg_lightFlare"
+msgstr "cg_lightFlare"
+
+#: ingame_options.menu:2193
+msgid "No Fade"
+msgstr "No Fade"
+
+#: ingame_options.menu:2193
+msgid "Timed Fade"
+msgstr "Timed Fade"
+
+#: ingame_options.menu:2193
+msgid "Real Fade"
+msgstr "Real Fade"
+
+#: ingame_options.menu:2212
+msgid "OpenGL Info"
+msgstr "OpenGL Info"
+
+#: ingame_options.menu:2252
+msgid "Net & Sound"
+msgstr "Net & Sound"
+
+#: ingame_options.menu:2277 quitcredit.menu:403
+msgid "Sound"
+msgstr "Sound"
+
+#: ingame_options.menu:2296 options.menu:142
+msgid "Effects Volume:"
+msgstr "Effects Volume:"
+
+#: ingame_options.menu:2297 options.menu:143
+msgid "s_volume"
+msgstr "s_volume"
+
+#: ingame_options.menu:2312 options.menu:156
+msgid "Music Volume:"
+msgstr "Music Volume:"
+
+#: ingame_options.menu:2313 options.menu:157
+msgid "s_musicvolume"
+msgstr "s_musicvolume"
+
+#: ingame_options.menu:2328
+msgid "OpenAL:"
+msgstr "OpenAL:"
+
+#: ingame_options.menu:2329 options.menu:171
+msgid "s_usemodule"
+msgstr "s_usemodule"
+
+#: ingame_options.menu:2348
+msgid "Sound Quality:"
+msgstr "Sound Quality:"
+
+#: ingame_options.menu:2349
+msgid "s_khz"
+msgstr "s_khz"
+
+#: ingame_options.menu:2350
+msgid "44 khz (very high)"
+msgstr "44 khz (very high)"
+
+#: ingame_options.menu:2350
+msgid "22 khz (high)"
+msgstr "22 khz (high)"
+
+#: ingame_options.menu:2350
+msgid "11 khz (low)"
+msgstr "11 khz (low)"
+
+#: ingame_options.menu:2369
+msgid "Doppler Sound:"
+msgstr "Doppler Sound:"
+
+#: ingame_options.menu:2370
+msgid "s_doppler"
+msgstr "s_doppler"
+
+#: ingame_options.menu:2390
+msgid "Network"
+msgstr "Network"
+
+#: ingame_options.menu:2409
+msgid "Net Data Rate:"
+msgstr "Net Data Rate:"
+
+#: ingame_options.menu:2410 options.menu:226
+msgid "rate"
+msgstr "rate"
+
+#: ingame_options.menu:2411 options.menu:227
+msgid "<=28.8k"
+msgstr "<=28.8k"
+
+#: ingame_options.menu:2411 options.menu:227
+msgid "33.6k"
+msgstr "33.6k"
+
+#: ingame_options.menu:2411 options.menu:227
+msgid "56k"
+msgstr "56k"
+
+#: ingame_options.menu:2411 options.menu:227
+msgid "ISDN"
+msgstr "ISDN"
+
+#: ingame_options.menu:2411
+msgid "LAN/CABLE/xDSl"
+msgstr "LAN/CABLE/xDSl"
+
+#: ingame_options.menu:2441 options.menu:290
+msgid "snd_restart"
+msgstr "snd_restart"
+
+#: ingame_options.menu:2450
+msgid "Range Markers"
+msgstr "Range Markers"
+
+#: ingame_options.menu:2474
+msgid "Range Markers for:"
+msgstr "Range Markers for:"
+
+#: ingame_options.menu:2475
+msgid "cg_rangeMarkerBuildableTypes"
+msgstr "cg_rangeMarkerBuildableTypes"
+
+#: ingame_options.menu:2476
+msgid "No Buildables"
+msgstr "No Buildables"
+
+#: ingame_options.menu:2477
+msgid "All Buildables"
+msgstr "All Buildables"
+
+#: ingame_options.menu:2477
+msgid "all"
+msgstr "all"
+
+#: ingame_options.menu:2478
+msgid "Support Buildables"
+msgstr "Support Buildables"
+
+#: ingame_options.menu:2478
+msgid "support"
+msgstr "support"
+
+#: ingame_options.menu:2479
+msgid "Offensive Buildables"
+msgstr "Offensive Buildables"
+
+#: ingame_options.menu:2479
+msgid "offensive"
+msgstr "offensive"
+
+#: ingame_options.menu:2480
+msgid "Alien Buildables"
+msgstr "Alien Buildables"
+
+#: ingame_options.menu:2480
+msgid "alien"
+msgstr "alien"
+
+#: ingame_options.menu:2481
+msgid "Human Buildables"
+msgstr "Human Buildables"
+
+#: ingame_options.menu:2481
+msgid "human"
+msgstr "human"
+
+#: ingame_options.menu:2482
+msgid "Alien Support Buildables"
+msgstr "Alien Support Buildables"
+
+#: ingame_options.menu:2482
+msgid "aliensupport"
+msgstr "aliensupport"
+
+#: ingame_options.menu:2483
+msgid "Human Support Buildables"
+msgstr "Human Support Buildables"
+
+#: ingame_options.menu:2483
+msgid "humansupport"
+msgstr "humansupport"
+
+#: ingame_options.menu:2484
+msgid "Offensive Alien Buildables"
+msgstr "Offensive Alien Buildables"
+
+#: ingame_options.menu:2484
+msgid "alienoffensive"
+msgstr "alienoffensive"
+
+#: ingame_options.menu:2485
+msgid "Offensive Human Buildables"
+msgstr "Offensive Human Buildables"
+
+#: ingame_options.menu:2485
+msgid "humanoffensive"
+msgstr "humanoffensive"
+
+#: ingame_options.menu:2504
+msgid "Range Marker for Blueprint:"
+msgstr "Range Marker for Blueprint:"
+
+#: ingame_options.menu:2505
+msgid "cg_rangeMarkerForBlueprint"
+msgstr "cg_rangeMarkerForBlueprint"
+
+#: ingame_options.menu:2524
+msgid "Draw Surface:"
+msgstr "Draw Surface:"
+
+#: ingame_options.menu:2525
+msgid "cg_rangeMarkerDrawSurface"
+msgstr "cg_rangeMarkerDrawSurface"
+
+#: ingame_options.menu:2544
+msgid "Draw Intersection:"
+msgstr "Draw Intersection:"
+
+#: ingame_options.menu:2545
+msgid "cg_rangeMarkerDrawIntersection"
+msgstr "cg_rangeMarkerDrawIntersection"
+
+#: ingame_options.menu:2564
+msgid "Draw Frontline:"
+msgstr "Draw Frontline:"
+
+#: ingame_options.menu:2565
+msgid "cg_rangeMarkerDrawFrontline"
+msgstr "cg_rangeMarkerDrawFrontline"
+
+#: ingame_options.menu:2584
+msgid "Surface Opacity:"
+msgstr "Surface Opacity:"
+
+#: ingame_options.menu:2585
+msgid "cg_rangeMarkerSurfaceOpacity"
+msgstr "cg_rangeMarkerSurfaceOpacity"
+
+#: ingame_options.menu:2600
+msgid "Line Opacity:"
+msgstr "Line Opacity:"
+
+#: ingame_options.menu:2601
+msgid "cg_rangeMarkerLineOpacity"
+msgstr "cg_rangeMarkerLineOpacity"
+
+#: ingame_options.menu:2616
+msgid "Line Thickness:"
+msgstr "Line Thickness:"
+
+#: ingame_options.menu:2617
+msgid "cg_rangeMarkerLineThickness"
+msgstr "cg_rangeMarkerLineThickness"
+
+#: ingame_options.menu:2632
+msgid "Binary Shader Screen Scale:"
+msgstr "Binary Shader Screen Scale:"
+
+#: ingame_options.menu:2633
+msgid "cg_binaryShaderScreenScale"
+msgstr "cg_binaryShaderScreenScale"
+
+#: joinserver.menu:51
+msgid "joinserver"
+msgstr "joinserver"
+
+#: joinserver.menu:77
+msgid "Source:"
+msgstr "Source:"
+
+#: joinserver.menu:100
+msgid "Get New List"
+msgstr "Get New List"
+
+#: joinserver.menu:122
+msgid "Refresh List"
+msgstr "Refresh List"
+
+#: joinserver.menu:146
+msgid "View Empty:"
+msgstr "View Empty:"
+
+#: joinserver.menu:147
+msgid "ui_browserShowEmpty"
+msgstr "ui_browserShowEmpty"
+
+#: joinserver.menu:169
+msgid "View Full:"
+msgstr "View Full:"
+
+#: joinserver.menu:170
+msgid "ui_browserShowFull"
+msgstr "ui_browserShowFull"
+
+#: joinserver.menu:193
+msgid ""
+"[official] = Official Server\n"
+"[featured] = Featured Server"
+msgstr ""
+"[official] = Official Server\n"
+"[featured] = Featured Server"
+
+#: joinserver.menu:227
+msgid "Server Name"
+msgstr "Server Name"
+
+#: joinserver.menu:272
+msgid "Game Type"
+msgstr "Game Type"
+
+#: joinserver.menu:316
+msgid "Map Name"
+msgstr "Map Name"
+
+#: joinserver.menu:403 teamscore.menu:181 teamscore.menu:256
+msgid "Ping"
+msgstr "Ping"
+
+#: joinserver.menu:513
+msgid "Set Password"
+msgstr "Set Password"
+
+#: joinserver.menu:532
+msgid "Create Favorite"
+msgstr "Create Favorite"
+
+#: joinserver.menu:551
+msgid "Add Favorite"
+msgstr "Add Favorite"
+
+#: joinserver.menu:571
+msgid "Delete Favorite"
+msgstr "Delete Favorite"
+
+#: joinserver.menu:592
+msgid "Server Info"
+msgstr "Server Info"
+
+#: joinserver.menu:611
+msgid "Find a Friend"
+msgstr "Find a Friend"
+
+#: joinserver.menu:634
+msgid "Create Server"
+msgstr "Create Server"
+
+#: loading.menu:25
+msgid "Loading"
+msgstr "Loading"
+
+#: loading.menu:30 loading.menu:37
+msgid "ui/assets/mainmenu.jpg"
+msgstr "ui/assets/mainmenu.jpg"
+
+#: loading.menu:45
+msgid "levelshot"
+msgstr "levelshot"
+
+#: loading.menu:61
+msgid "ui/assets/gradient_100_50bar2.tga"
+msgstr "ui/assets/gradient_100_50bar2.tga"
+
+#: loading.menu:71 loading.menu:81
+msgid "ui/assets/halfgradright.tga"
+msgstr "ui/assets/halfgradright.tga"
+
+#: loading.menu:86
+msgid "overall_load_bar"
+msgstr "overall_load_bar"
+
+#: loading.menu:97
+msgid "mapbg"
+msgstr "mapbg"
+
+#: loading.menu:109
+msgid "motd"
+msgstr "motd"
+
+#: loading.menu:124
+msgid "mapname"
+msgstr "mapname"
+
+#: loading.menu:139
+msgid "server_name"
+msgstr "server_name"
+
+#: main.menu:7 main.menu:8 main.menu:9
+msgid "fonts/roboto.ttf"
+msgstr "fonts/roboto.ttf"
+
+#: main.menu:34
+msgid "sound/ui/heartbeat.ogg"
+msgstr "sound/ui/heartbeat.ogg"
+
+#: main.menu:43
+msgid "ui/assets/button_bg.png"
+msgstr "ui/assets/button_bg.png"
+
+#: main.menu:54
+msgid "ui/assets/logo.png"
+msgstr "ui/assets/logo.png"
+
+#: main.menu:82 main.menu:92 main.menu:140 main.menu:150 main.menu:169
+#: main.menu:179 main.menu:197 main.menu:207
+msgid "ui/assets/button.png"
+msgstr "ui/assets/button.png"
+
+#: main.menu:89 main.menu:147 main.menu:176 main.menu:204
+msgid "ui/assets/button_highlight.png"
+msgstr "ui/assets/button_highlight.png"
+
+#: main.menu:158
+msgid "Mods"
+msgstr "Mods"
+
+#: main.menu:219
+msgid "Unvanquished (C) 2011-2012 Unvanquished Development"
+msgstr "Unvanquished (C) 2011-2012 Unvanquished Development"
+
+#: mod.menu:14
+msgid "mod"
+msgstr "mod"
+
+#: mod.menu:75
+msgid "Load"
+msgstr "Load"
+
+#: news.menu:16
+msgid "news_menu"
+msgstr "news_menu"
+
+#: news.menu:49
+msgid "Unvanquished News"
+msgstr "Unvanquished News"
+
+#: options.menu:20
+msgid "simple_options"
+msgstr "simple_options"
+
+#: options.menu:70
+msgid "Video Quality:"
+msgstr "Video Quality:"
+
+#: options.menu:126
+msgid "Video Brightness:"
+msgstr "Video Brightness:"
+
+#: options.menu:170
+msgid "OpenAL Sound:"
+msgstr "OpenAL Sound:"
+
+#: options.menu:225
+msgid "Network Connection:"
+msgstr "Network Connection:"
+
+#: options.menu:227
+msgid "LAN/CABLE/xDSL"
+msgstr "LAN/CABLE/xDSL"
+
+#: options.menu:244
+msgid "Allow Auto Download:"
+msgstr "Allow Auto Download:"
+
+#: options.menu:245
+msgid "cl_allowDownload"
+msgstr "cl_allowDownload"
+
+#: options.menu:262
+msgid "For further options please use the in-game options menu"
+msgstr "For further options please use the in-game options menu"
+
+#: password.menu:15
+msgid "password_popmenu"
+msgstr "password_popmenu"
+
+#: password.menu:60
+msgid "password"
+msgstr "password"
+
+#: quit.menu:11
+msgid "quit_popmenu"
+msgstr "quit_popmenu"
+
+#: quit.menu:48
+msgid "Quit Unvanquished?"
+msgstr "Quit Unvanquished?"
+
+#: quit.menu:64
+msgid "YES"
+msgstr "YES"
+
+#: quit.menu:75 quitcredit.menu:18 quitcredit.menu:33
+msgid "quit"
+msgstr "quit"
+
+#: quit.menu:83
+msgid "NO"
+msgstr "NO"
+
+#: quitcredit.menu:8
+msgid "quitCredit"
+msgstr "quitCredit"
+
+#: quitcredit.menu:29
+msgid "ui/assets/credits_splash.jpg"
+msgstr "ui/assets/credits_splash.jpg"
+
+#: quitcredit.menu:65
+msgid "creditstitle"
+msgstr "creditstitle"
+
+#: quitcredit.menu:73
+msgid "CREDITS"
+msgstr "CREDITS"
+
+#: quitcredit.menu:82
+msgid "credit1left"
+msgstr "credit1left"
+
+#: quitcredit.menu:90
+msgid "Tim 'Timbo' Angus"
+msgstr "Tim 'Timbo' Angus"
+
+#: quitcredit.menu:98
+msgid "credit1right"
+msgstr "credit1right"
+
+#: quitcredit.menu:106
+msgid "Programming and Direction"
+msgstr "Programming and Direction"
+
+#: quitcredit.menu:115
+msgid "credit2left"
+msgstr "credit2left"
+
+#: quitcredit.menu:123
+msgid "Nick 'jex' Jansens"
+msgstr "Nick 'jex' Jansens"
+
+#: quitcredit.menu:131
+msgid "credit2right"
+msgstr "credit2right"
+
+#: quitcredit.menu:139
+msgid "Mapping, texturing and 2D artwork"
+msgstr "Mapping, texturing and 2D artwork"
+
+#: quitcredit.menu:148
+msgid "credit3left"
+msgstr "credit3left"
+
+#: quitcredit.menu:156
+msgid "Robin 'OverFlow' Marshall"
+msgstr "Robin 'OverFlow' Marshall"
+
+#: quitcredit.menu:164
+msgid "credit3right"
+msgstr "credit3right"
+
+#: quitcredit.menu:172
+msgid "Modelling, animation and mapping"
+msgstr "Modelling, animation and mapping"
+
+#: quitcredit.menu:181
+msgid "credit4left"
+msgstr "credit4left"
+
+#: quitcredit.menu:189
+msgid "Jan 'Stannum' van der Weg"
+msgstr "Jan 'Stannum' van der Weg"
+
+#: quitcredit.menu:197
+msgid "credit4right"
+msgstr "credit4right"
+
+#: quitcredit.menu:205
+msgid "Texturing and mapping"
+msgstr "Texturing and mapping"
+
+#: quitcredit.menu:214
+msgid "credit5left"
+msgstr "credit5left"
+
+#: quitcredit.menu:222
+msgid "Mike 'Veda' McInerney"
+msgstr "Mike 'Veda' McInerney"
+
+#: quitcredit.menu:230
+msgid "credit5right"
+msgstr "credit5right"
+
+#: quitcredit.menu:238
+msgid "Modelling, animation and texturing"
+msgstr "Modelling, animation and texturing"
+
+#: quitcredit.menu:247
+msgid "credit6left"
+msgstr "credit6left"
+
+#: quitcredit.menu:255
+msgid "Gordon 'Godmil' Miller"
+msgstr "Gordon 'Godmil' Miller"
+
+#: quitcredit.menu:263
+msgid "credit6right"
+msgstr "credit6right"
+
+#: quitcredit.menu:271 quitcredit.menu:304 quitcredit.menu:337
+msgid "Mapping"
+msgstr "Mapping"
+
+#: quitcredit.menu:280
+msgid "credit7left"
+msgstr "credit7left"
+
+#: quitcredit.menu:288
+msgid "'Who-[Soup]'"
+msgstr "'Who-[Soup]'"
+
+#: quitcredit.menu:296
+msgid "credit7right"
+msgstr "credit7right"
+
+#: quitcredit.menu:313
+msgid "credit8left"
+msgstr "credit8left"
+
+#: quitcredit.menu:321
+msgid "Tristan 'jhrx' Blease"
+msgstr "Tristan 'jhrx' Blease"
+
+#: quitcredit.menu:329
+msgid "credit8right"
+msgstr "credit8right"
+
+#: quitcredit.menu:346
+msgid "credit9left"
+msgstr "credit9left"
+
+#: quitcredit.menu:354
+msgid "Paul 'MoP' Greveson"
+msgstr "Paul 'MoP' Greveson"
+
+#: quitcredit.menu:362
+msgid "credit9right"
+msgstr "credit9right"
+
+#: quitcredit.menu:370
+msgid "Modelling and texturing"
+msgstr "Modelling and texturing"
+
+#: quitcredit.menu:379
+msgid "credit10left"
+msgstr "credit10left"
+
+#: quitcredit.menu:387
+msgid "Chris 'Dolby' McCarthy"
+msgstr "Chris 'Dolby' McCarthy"
+
+#: quitcredit.menu:395
+msgid "credit10right"
+msgstr "credit10right"
+
+#: say.menu:33
+msgid "^;"
+msgstr "^;"
+
+#: say.menu:33
+msgid ":"
+msgstr ":"
+
+#: say.menu:34
+msgid "ui_sayBuffer"
+msgstr "ui_sayBuffer"
+
+#: say.menu:56
+msgid "Say"
+msgstr "Say"
+
+#: say.menu:58
+msgid "Say to team"
+msgstr "Say to team"
+
+#: say.menu:60
+msgid "Say to admins"
+msgstr "Say to admins"
+
+#: say.menu:62
+msgid "Say to IRC"
+msgstr "Say to IRC"
+
+#: say.menu:64
+msgid "Command"
+msgstr "Command"
+
+#: serverinfo.menu:18
+msgid "serverinfo_popmenu"
+msgstr "serverinfo_popmenu"
+
+#: serverinfo.menu:76
+msgid "Refresh"
+msgstr "Refresh"
+
+#: teamscore.menu:21
+msgid "teamscore_menu"
+msgstr "teamscore_menu"
+
+#: teamscore.menu:121 teamscore.menu:196
+msgid "Status"
+msgstr "Status"
+
+#: teamscore.menu:136 teamscore.menu:211
+msgid "Name"
+msgstr "Name"
+
+#: teamscore.menu:166 teamscore.menu:241
+msgid "Time"
+msgstr "Time"
+
+#: teamscore.menu:346
+msgid "Spectating:"
+msgstr "Spectating:"
+
+#: teamscore.menu:382
+msgid "ui_winner"
+msgstr "ui_winner"
+
+#: tremulous_alien_builder_hud.menu:10
+msgid "alien_builder_hud"
+msgstr "alien_builder_hud"
+
+#: tremulous_alien_builder_hud.menu:21 tremulous_human_hud.menu:280
+msgid "buildtimer"
+msgstr "buildtimer"
+
+#: tremulous_alien_builder_hud.menu:33
+msgid "build-points"
+msgstr "build-points"
+
+#: tremulous_alien_general_hud.menu:10
+msgid "alien_general_hud"
+msgstr "alien_general_hud"
+
+#: tremulous_alien_general_hud.menu:21
+msgid "blob"
+msgstr "blob"
+
+#: tremulous_alien_general_hud.menu:26
+msgid "ui/assets/alien/tremublob.tga"
+msgstr "ui/assets/alien/tremublob.tga"
+
+#: tremulous_alienbuild.menu:25
+msgid "tremulous_alienbuild"
+msgstr "tremulous_alienbuild"
+
+#: tremulous_alienbuild.menu:98 tremulous_alienbuild.menu:119
+#: tremulous_alienclass.menu:119 tremulous_alienclass.menu:140
+#: tremulous_alienupgrade.menu:98 tremulous_alienupgrade.menu:119
+#: tremulous_humanbuild.menu:97 tremulous_humanbuild.menu:118
+#: tremulous_humanitem.menu:119 tremulous_humanitem.menu:140
+#: tremulous_teamselect.menu:98 tremulous_teamselect.menu:119
+msgid "OKCancel"
+msgstr "OKCancel"
+
+#: tremulous_alienclass.menu:25
+msgid "tremulous_alienclass"
+msgstr "tremulous_alienclass"
+
+#: tremulous_alienclass.menu:99 tremulous_humanitem.menu:99
+msgid "< Back"
+msgstr "< Back"
+
+#: tremulous_aliendialogs.menu:19
+msgid "tremulous_alien_dialog"
+msgstr "tremulous_alien_dialog"
+
+#: tremulous_aliendialogs.menu:67 tremulous_dialogs.menu:68
+#: tremulous_humandialogs.menu:67
+msgid "ui_dialog"
+msgstr "ui_dialog"
+
+#: tremulous_alienupgrade.menu:25
+msgid "tremulous_alienupgrade"
+msgstr "tremulous_alienupgrade"
+
+#: tremulous_default_hud.menu:10
+msgid "default_hud"
+msgstr "default_hud"
+
+#: tremulous_default_hud.menu:24
+msgid "spectatortext"
+msgstr "spectatortext"
+
+#: tremulous_default_hud.menu:25
+msgid "SPECTATOR"
+msgstr "SPECTATOR"
+
+#: tremulous_dialogs.menu:20
+msgid "tremulous_default_dialog"
+msgstr "tremulous_default_dialog"
+
+#: tremulous_human_hud.menu:10
+msgid "human_hud"
+msgstr "human_hud"
+
+#: tremulous_human_hud.menu:28
+msgid "left-circle"
+msgstr "left-circle"
+
+#: tremulous_human_hud.menu:35 tremulous_human_hud.menu:74
+msgid "ui/assets/neutral/circle.tga"
+msgstr "ui/assets/neutral/circle.tga"
+
+#: tremulous_human_hud.menu:41
+msgid "left-arm"
+msgstr "left-arm"
+
+#: tremulous_human_hud.menu:48
+msgid "ui/assets/human/left-arm.tga"
+msgstr "ui/assets/human/left-arm.tga"
+
+#: tremulous_human_hud.menu:54
+msgid "credits-label"
+msgstr "credits-label"
+
+#: tremulous_human_hud.menu:61
+msgid "ui/assets/human/credits.tga"
+msgstr "ui/assets/human/credits.tga"
+
+#: tremulous_human_hud.menu:67
+msgid "right-circle"
+msgstr "right-circle"
+
+#: tremulous_human_hud.menu:80
+msgid "right-arm"
+msgstr "right-arm"
+
+#: tremulous_human_hud.menu:87
+msgid "ui/assets/human/right-arm.tga"
+msgstr "ui/assets/human/right-arm.tga"
+
+#: tremulous_human_hud.menu:93
+msgid "right-cap"
+msgstr "right-cap"
+
+#: tremulous_human_hud.menu:100
+msgid "ui/assets/human/right-cap.tga"
+msgstr "ui/assets/human/right-cap.tga"
+
+#: tremulous_human_hud.menu:110
+msgid "bolt"
+msgstr "bolt"
+
+#: tremulous_human_hud.menu:117
+msgid "ui/assets/human/bolt.tga"
+msgstr "ui/assets/human/bolt.tga"
+
+#: tremulous_human_hud.menu:124
+msgid "cross"
+msgstr "cross"
+
+#: tremulous_human_hud.menu:136
+msgid "stamina1"
+msgstr "stamina1"
+
+#: tremulous_human_hud.menu:143
+msgid "ui/assets/human/stamina1.tga"
+msgstr "ui/assets/human/stamina1.tga"
+
+#: tremulous_human_hud.menu:150
+msgid "stamina2"
+msgstr "stamina2"
+
+#: tremulous_human_hud.menu:157
+msgid "ui/assets/human/stamina2.tga"
+msgstr "ui/assets/human/stamina2.tga"
+
+#: tremulous_human_hud.menu:164
+msgid "stamina3"
+msgstr "stamina3"
+
+#: tremulous_human_hud.menu:171
+msgid "ui/assets/human/stamina3.tga"
+msgstr "ui/assets/human/stamina3.tga"
+
+#: tremulous_human_hud.menu:178
+msgid "stamina4"
+msgstr "stamina4"
+
+#: tremulous_human_hud.menu:185
+msgid "ui/assets/human/stamina4.tga"
+msgstr "ui/assets/human/stamina4.tga"
+
+#: tremulous_human_hud.menu:192
+msgid "ring"
+msgstr "ring"
+
+#: tremulous_human_hud.menu:200
+msgid "ui/assets/human/ring.tga"
+msgstr "ui/assets/human/ring.tga"
+
+#: tremulous_human_hud.menu:207
+msgid "credits"
+msgstr "credits"
+
+#: tremulous_human_hud.menu:219
+msgid "health"
+msgstr "health"
+
+#: tremulous_human_hud.menu:231
+msgid "weapon"
+msgstr "weapon"
+
+#: tremulous_human_hud.menu:243
+msgid "selecttext"
+msgstr "selecttext"
+
+#: tremulous_human_hud.menu:256
+msgid "ammo"
+msgstr "ammo"
+
+#: tremulous_human_hud.menu:268
+msgid "clips"
+msgstr "clips"
+
+#: tremulous_human_hud.menu:292
+msgid "usable"
+msgstr "usable"
+
+#: tremulous_human_hud.menu:298
+msgid "ui/assets/neutral/use.tga"
+msgstr "ui/assets/neutral/use.tga"
+
+#: tremulous_human_hud.menu:305
+msgid "scanner"
+msgstr "scanner"
+
+#: tremulous_human_hud.menu:311
+msgid "ui/assets/human/scanner.tga"
+msgstr "ui/assets/human/scanner.tga"
+
+#: tremulous_human_hud.menu:318
+msgid "inventory"
+msgstr "inventory"
+
+#: tremulous_human_hud.menu:330
+msgid "charge"
+msgstr "charge"
+
+#: tremulous_human_hud.menu:337
+msgid "ui/assets/neutral/charge_cap_h.tga"
+msgstr "ui/assets/neutral/charge_cap_h.tga"
+
+#: tremulous_human_hud.menu:343
+msgid "chargebg"
+msgstr "chargebg"
+
+#: tremulous_human_hud.menu:350
+msgid "ui/assets/neutral/charge_bg_h.tga"
+msgstr "ui/assets/neutral/charge_bg_h.tga"
+
+#: tremulous_human_hud.menu:356
+msgid "selected"
+msgstr "selected"
+
+#: tremulous_human_hud.menu:363
+msgid "ui/assets/neutral/selected.tga"
+msgstr "ui/assets/neutral/selected.tga"
+
+#: tremulous_human_hud.menu:369
+msgid "teamoverlay"
+msgstr "teamoverlay"
+
+#: tremulous_humanarmoury.menu:29
+msgid "tremulous_humanarmoury"
+msgstr "tremulous_humanarmoury"
+
+#: tremulous_humanarmoury.menu:61
+msgid "buylist"
+msgstr "buylist"
+
+#: tremulous_humanarmoury.menu:86
+msgid "selllist"
+msgstr "selllist"
+
+#: tremulous_humanarmoury.menu:132
+msgid "Buy"
+msgstr "Buy"
+
+#: tremulous_humanarmoury.menu:133
+msgid "Buy >"
+msgstr "Buy >"
+
+#: tremulous_humanarmoury.menu:172
+msgid "Sell"
+msgstr "Sell"
+
+#: tremulous_humanarmoury.menu:173
+msgid "< Sell"
+msgstr "< Sell"
+
+#: tremulous_humanbuild.menu:25
+msgid "tremulous_humanbuild"
+msgstr "tremulous_humanbuild"
+
+#: tremulous_humandialogs.menu:20
+msgid "tremulous_human_dialog"
+msgstr "tremulous_human_dialog"
+
+#: tremulous_humanitem.menu:25
+msgid "tremulous_humanitem"
+msgstr "tremulous_humanitem"
+
+#: tremulous_teamselect.menu:25
+msgid "tremulous_teamselect"
+msgstr "tremulous_teamselect"
+
+#: vsays.menu:32 vsays.menu:45
+msgid "pos"
+msgstr "pos"
+
+#: vsays.menu:36
+msgid "."
+msgstr "."
+
+#: vsays.menu:59
+msgid "vsay_top"
+msgstr "vsay_top"
+
+#: vsays.menu:60
+msgid "Attack"
+msgstr "Attack"
+
+#: vsays.menu:61
+msgid "Defense"
+msgstr "Defense"
+
+#: vsays.menu:62
+msgid "Building"
+msgstr "Building"
+
+#: vsays.menu:63
+msgid "Status/Commands"
+msgstr "Status/Commands"
+
+#: vsays.menu:64
+msgid "General"
+msgstr "General"
+
+#: vsays.menu:68
+msgid "vsay_offense"
+msgstr "vsay_offense"
+
+#: vsays.menu:69
+msgid "I'm Attacking"
+msgstr "I'm Attacking"
+
+#: vsays.menu:69
+msgid "vsay attacking"
+msgstr "vsay attacking"
+
+#: vsays.menu:70
+msgid "Attack!"
+msgstr "Attack!"
+
+#: vsays.menu:70
+msgid "vsay attack"
+msgstr "vsay attack"
+
+#: vsays.menu:71
+msgid "I need backup!"
+msgstr "I need backup!"
+
+#: vsays.menu:71
+msgid "vsay backup"
+msgstr "vsay backup"
+
+#: vsays.menu:72
+msgid "Enemy Nearby"
+msgstr "Enemy Nearby"
+
+#: vsays.menu:72
+msgid "vsay enemyisnear"
+msgstr "vsay enemyisnear"
+
+#: vsays.menu:73
+msgid "Go! Go! GO!"
+msgstr "Go! Go! GO!"
+
+#: vsays.menu:73
+msgid "vsay gogogo"
+msgstr "vsay gogogo"
+
+#: vsays.menu:74
+msgid "Grenade!"
+msgstr "Grenade!"
+
+#: vsays.menu:74
+msgid "vsay grenade"
+msgstr "vsay grenade"
+
+#: vsays.menu:75
+msgid "Enemy Spawns Down!"
+msgstr "Enemy Spawns Down!"
+
+#: vsays.menu:75
+msgid "vsay enemyspawnsdown"
+msgstr "vsay enemyspawnsdown"
+
+#: vsays.menu:76 vsays.menu:86 vsays.menu:95 vsays.menu:108 vsays.menu:116
+msgid "Previous Menu"
+msgstr "Previous Menu"
+
+#: vsays.menu:79
+msgid "vsay_defense"
+msgstr "vsay_defense"
+
+#: vsays.menu:80
+msgid "I'm Defending"
+msgstr "I'm Defending"
+
+#: vsays.menu:80
+msgid "vsay defending"
+msgstr "vsay defending"
+
+#: vsays.menu:81
+msgid "Defend!"
+msgstr "Defend!"
+
+#: vsays.menu:81
+msgid "vsay defend"
+msgstr "vsay defend"
+
+#: vsays.menu:82
+msgid "Clear the path!"
+msgstr "Clear the path!"
+
+#: vsays.menu:82
+msgid "vsay clearthepath"
+msgstr "vsay clearthepath"
+
+#: vsays.menu:83
+msgid "Fallback!"
+msgstr "Fallback!"
+
+#: vsays.menu:83
+msgid "vsay fallback"
+msgstr "vsay fallback"
+
+#: vsays.menu:84
+msgid "Incoming!"
+msgstr "Incoming!"
+
+#: vsays.menu:84
+msgid "vsay incoming"
+msgstr "vsay incoming"
+
+#: vsays.menu:85
+msgid "Flank!"
+msgstr "Flank!"
+
+#: vsays.menu:85
+msgid "vsay flank"
+msgstr "vsay flank"
+
+#: vsays.menu:89
+msgid "vsay_building"
+msgstr "vsay_building"
+
+#: vsays.menu:90
+msgid "Base needs repairs!"
+msgstr "Base needs repairs!"
+
+#: vsays.menu:90
+msgid "vsay baserepairs"
+msgstr "vsay baserepairs"
+
+#: vsays.menu:91
+msgid "What's the base status?"
+msgstr "What's the base status?"
+
+#: vsays.menu:91
+msgid "vsay basestatus"
+msgstr "vsay basestatus"
+
+#: vsays.menu:92
+msgid "We need builders!"
+msgstr "We need builders!"
+
+#: vsays.menu:92
+msgid "vsay builders"
+msgstr "vsay builders"
+
+#: vsays.menu:93
+msgid "I'm building!"
+msgstr "I'm building!"
+
+#: vsays.menu:93
+msgid "vsay building"
+msgstr "vsay building"
+
+#: vsays.menu:94
+msgid "We need spawns!"
+msgstr "We need spawns!"
+
+#: vsays.menu:94
+msgid "vsay spawns"
+msgstr "vsay spawns"
+
+#: vsays.menu:98
+msgid "vsay_status"
+msgstr "vsay_status"
+
+#: vsays.menu:99
+msgid "I'm following you"
+msgstr "I'm following you"
+
+#: vsays.menu:99
+msgid "vsay following"
+msgstr "vsay following"
+
+#: vsays.menu:100
+msgid "I need health!"
+msgstr "I need health!"
+
+#: vsays.menu:100
+msgid "vsay needhealth"
+msgstr "vsay needhealth"
+
+#: vsays.menu:101
+msgid "Move up!"
+msgstr "Move up!"
+
+#: vsays.menu:101
+msgid "vsay moveup"
+msgstr "vsay moveup"
+
+#: vsays.menu:102
+msgid "Regroup"
+msgstr "Regroup"
+
+#: vsays.menu:102
+msgid "vsay regroup"
+msgstr "vsay regroup"
+
+#: vsays.menu:103
+msgid "Reporting in!"
+msgstr "Reporting in!"
+
+#: vsays.menu:103
+msgid "vsay reporting"
+msgstr "vsay reporting"
+
+#: vsays.menu:104
+msgid "Stay Alert!"
+msgstr "Stay Alert!"
+
+#: vsays.menu:104
+msgid "vsay stayalert"
+msgstr "vsay stayalert"
+
+#: vsays.menu:105
+msgid "Stay Alive!"
+msgstr "Stay Alive!"
+
+#: vsays.menu:105
+msgid "vsay stayalive"
+msgstr "vsay stayalive"
+
+#: vsays.menu:106
+msgid "Stay Focused!"
+msgstr "Stay Focused!"
+
+#: vsays.menu:106
+msgid "vsay stayfocused"
+msgstr "vsay stayfocused"
+
+#: vsays.menu:107
+msgid "Stick together!"
+msgstr "Stick together!"
+
+#: vsays.menu:107
+msgid "vsay sticktogether"
+msgstr "vsay sticktogether"
+
+#: vsays.menu:111
+msgid "vsay_general"
+msgstr "vsay_general"
+
+#: vsays.menu:112
+msgid "vsay yes"
+msgstr "vsay yes"
+
+#: vsays.menu:113
+msgid "vsay no"
+msgstr "vsay no"
+
+#: vsays.menu:114
+msgid "Thanks!"
+msgstr "Thanks!"
+
+#: vsays.menu:114
+msgid "vsay thanks"
+msgstr "vsay thanks"
+
+#: vsays.menu:115
+msgid "Sorry!"
+msgstr "Sorry!"
+
+#: vsays.menu:115
+msgid "vsay sorry"
+msgstr "vsay sorry"
