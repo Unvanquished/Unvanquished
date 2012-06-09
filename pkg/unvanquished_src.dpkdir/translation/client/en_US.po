@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-07 14:42-0700\n"
+"POT-Creation-Date: 2012-06-08 01:28-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,54 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: translation.cpp:68
+#: translation.cpp:88
 msgid "Hello\n"
-msgstr "Excellent\n"
+msgstr ""
+
+#: common.c:3571
+msgid "--- Common Initialization Complete ---\n"
+msgstr ""
+
+#: cvar.c:504
+#, c-format
+msgid "%s is unsafe. Check com_crashed.\n"
+msgstr ""
+
+#: cvar.c:510
+#, c-format
+msgid "%s is read only.\n"
+msgstr ""
+
+#: cvar.c:516
+#, c-format
+msgid "%s is write protected.\n"
+msgstr ""
+
+#: cvar.c:522
+#, c-format
+msgid "%s is cheat protected.\n"
+msgstr ""
+
+#: cvar.c:528
+#, c-format
+msgid "%s will be changed upon recompiling shaders.\n"
+msgstr ""
+
+#: cvar.c:551
+#, c-format
+msgid "%s will be changed upon restarting.\n"
+msgstr ""
+
+#: cvar.c:782
+#, c-format
+msgid "\"%s\" is:\"%s"
+msgstr ""
+
+#: cvar.c:786
+#, c-format
+msgid "latched: \"%s\"\n"
+msgstr ""
+
+#: cvar.c:814
+msgid "usage: toggle <variable> [<value> ...]\n"
+msgstr ""
