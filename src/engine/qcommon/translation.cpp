@@ -51,16 +51,26 @@ Dictionary        trans_dictgame;
 
 cvar_t            *language;
 bool              enabled = false;
+int               modificationCount=0;
 
 #define _(x) Trans_Gettext(x)
 
+extern "C" void Trans_UpdateLanguage_f( void )
+{
+	trans_dict = trans_manager.get_dictionary( Language::from_env( std::string( language->string ) ) );
+	trans_dictgame = trans_managergame.get_dictionary( Language::from_env( std::string( language->string ) ) );
+	Com_Printf( "Switched language to %s\n", Language::from_env( std::string( language->string ) ).get_name().c_str() );
+}
+	
+
 extern "C" void Trans_Init( void )
 {
-	char      **poFiles;
-	int       numPoFiles, i;
-	FL_Locale *locale;
+	char                **poFiles, langList[ MAX_TOKEN_CHARS ], encList[ MAX_TOKEN_CHARS ];
+	int                 numPoFiles, i;
+	FL_Locale           *locale;
+	std::set<Language>  lang;
 	
-	language = Cvar_Get( "language", "", CVAR_ARCHIVE );
+	language = Cvar_Get( "language", "", CVAR_ROM );
 	
 	FL_FindLocale( &locale, FL_MESSAGES );
 	
@@ -68,6 +78,10 @@ extern "C" void Trans_Init( void )
 	if( !locale->lang || !locale->lang[0] || !locale->country || !locale->country[0] ) 
 	{
 		Cvar_Set( "language", "en_US" );
+	}
+	else
+	{
+		Cvar_Set( "language", va( "%s_%s", locale->lang, locale->country ) );
 	}
 		
 	poFiles = FS_ListFiles( "translation/client", ".po", &numPoFiles );
@@ -109,8 +123,17 @@ extern "C" void Trans_Init( void )
 	FS_FreeFileList( poFiles );
 	trans_dict = trans_manager.get_dictionary( Language::from_env( std::string( language->string ) ) );
 	trans_dictgame = trans_managergame.get_dictionary( Language::from_env( std::string( language->string ) ) );
+	lang = trans_manager.get_languages();
+	for( std::set<Language>::iterator p = lang.begin(); p != lang.end(); p++ )
+	{
+		Q_strcat( langList, sizeof( langList ), va( "\"%s\" ", p->get_name().c_str() ) );
+		Q_strcat( encList, sizeof( encList ), va( "\"%s_%s\" ", p->get_language().c_str(), p->get_country().c_str() ) );
+	}
+	Cvar_Set( "trans_languages", langList );
+	Cvar_Set( "trans_encodings", encList );
+	Com_Printf( "Loaded %lu language(s)\n", lang.size() );
+	Cmd_AddCommand( "updatelanguage", Trans_UpdateLanguage_f );
 	enabled = true;
-	Com_Printf( "Loaded %lu language(s)\n", trans_manager.get_languages().size() );
 }
 
 extern "C" const char* Trans_Gettext( const char *msgid )

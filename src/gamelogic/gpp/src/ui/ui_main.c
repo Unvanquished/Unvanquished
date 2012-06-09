@@ -4230,6 +4230,10 @@ static int UI_FeederCount( int feederID )
 	{
 		return uiInfo.humanBuildCount;
 	}
+	else if ( feederID == FEEDER_LANGUAGES )
+	{
+		return uiInfo.numLanguages;
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		if ( UI_FeederInitialise( feederID ) == uiInfo.numResolutions )
@@ -4556,6 +4560,13 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			return uiInfo.humanBuildList[ index ].text;
 		}
 	}
+	else if ( feederID == FEEDER_LANGUAGES )
+	{
+		if ( index >= 0 && index < uiInfo.numLanguages )
+		{
+			return uiInfo.languages[ index ].name;
+		}
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		static char resolution[ MAX_STRING_CHARS ];
@@ -4736,6 +4747,12 @@ static void UI_FeederSelection( int feederID, int index )
 	{
 		uiInfo.humanBuildIndex = index;
 	}
+	else if ( feederID == FEEDER_LANGUAGES )
+	{
+		trap_Cvar_Set( "language", uiInfo.languages[ index ].lang );
+		uiInfo.languageIndex = index;
+		trap_Cmd_ExecuteText( EXEC_APPEND, "updatelanguage\n" );
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		if ( index >= 0 && index < uiInfo.numResolutions )
@@ -4872,6 +4889,62 @@ void UI_ParseResolutions( void )
 
 /*
 =================
+UI_ParseLanguages
+=================
+*/
+void UI_ParseLanguages( void )
+{
+	char        buf[ MAX_STRING_CHARS ], temp[ MAX_TOKEN_CHARS ];
+	int         index = 0, lang = 0;
+	qboolean    quoted = qfalse;
+	char        *p;
+	
+	trap_Cvar_VariableStringBuffer( "trans_languages", buf, sizeof( buf ) );
+	p = buf;
+	memset( &temp, 0, sizeof( temp ) );
+	while( p && *p )
+	{
+		if( *p == '"' && quoted )
+		{
+			uiInfo.languages[ lang++ ].name = String_Alloc( temp );
+			quoted = qfalse;
+			index = 0;
+		}
+			
+		else if( *p == '"' || quoted )
+		{
+			if( !quoted ) { p++; }
+			quoted = qtrue;
+			temp[ index++ ] = *p;
+		}
+		p++;
+	}
+	trap_Cvar_VariableStringBuffer( "trans_encodings", buf, sizeof( buf ) );
+	p = buf;
+	memset( &temp, 0, sizeof( temp ) );
+	lang = 0;
+	while( p && *p )
+	{
+		if( *p == '"' && quoted )
+		{
+			uiInfo.languages[ lang++ ].lang = String_Alloc( temp );
+			quoted = qfalse;
+			index = 0;
+		}
+			
+		else if( *p == '"' || quoted )
+		{
+			if( !quoted ) { p++; }
+			quoted = qtrue;
+			temp[ index++ ] = *p;
+		}
+		p++;
+	}
+	
+	uiInfo.numLanguages = lang;
+}
+/*
+=================
 UI_Init
 =================
 */
@@ -4986,6 +5059,7 @@ void UI_Init( qboolean inGameLoad )
 	Q_strncpyz( translated_no, DC->translateString( "NO" ), sizeof( translated_no ) );
 
 	UI_ParseResolutions();
+	UI_ParseLanguages();
 }
 
 /*
