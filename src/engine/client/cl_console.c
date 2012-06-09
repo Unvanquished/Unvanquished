@@ -852,8 +852,7 @@ void Con_DrawNotify( void )
 		{
 			char buf[ 128 ];
 
-			CL_TranslateString( "say_irc:", buf );
-			SCR_DrawBigString( 8, v, buf, 1.0f, qfalse );
+			SCR_DrawBigString( 8, v, "say_irc:", 1.0f, qfalse );
 			skip = strlen( buf ) + 2;
 		}
 

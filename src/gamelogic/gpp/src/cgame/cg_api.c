@@ -1099,13 +1099,6 @@ void trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 )
 	syscall( CG_KEY_BINDINGTOKEYS, binding, key1, key2 );
 }
 
-//150.
-//CL_TranslateString(VMA(1), VMA(2));
-void trap_CG_TranslateString( const char *string, char *buf )
-{
-	syscall( CG_TRANSLATE_STRING, string, buf );
-}
-
 //151.
 //S_FadeAllSounds(VMF(1), args[2], args[3]);
 void trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds )

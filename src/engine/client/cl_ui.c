@@ -1450,11 +1450,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
 
-		case UI_CL_TRANSLATE_STRING:
-			CL_TranslateString( VMA( 1 ), VMA( 2 ) );
-			return 0;
-			// -NERVE - SMF
-
 			// DHM - Nerve
 		case UI_CHECKAUTOUPDATE:
 			CL_CheckAutoUpdate();

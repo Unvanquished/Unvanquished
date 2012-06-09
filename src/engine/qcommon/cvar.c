@@ -414,10 +414,7 @@ Cvar_Set2
 ============
 */
 #define FOREIGN_MSG "Only printable ASCII characters are allowed in userinfo variables.\n"
-#ifndef DEDICATED
-const char *CL_TranslateStringBuf( const char *string );
 
-#endif
 cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean force )
 {
 	cvar_t *var;
@@ -468,11 +465,7 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 
 		if ( strcmp( value, cleaned ) )
 		{
-#ifdef DEDICATED
 			Com_Printf( FOREIGN_MSG );
-#else
-			Com_Printf( "%s", CL_TranslateStringBuf( FOREIGN_MSG ) );
-#endif
 			Com_Printf( "Using %s instead of %s\n", cleaned, value );
 			return Cvar_Set2( var_name, cleaned, force );
 		}

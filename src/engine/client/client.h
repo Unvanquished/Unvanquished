@@ -178,10 +178,6 @@ typedef struct
 
 	entityState_t parseEntities[ MAX_PARSE_ENTITIES ];
 
-	qboolean      corruptedTranslationFile;
-	char          translationVersion[ MAX_STRING_TOKENS ];
-	// -NERVE - SMF
-
 	qboolean cameraMode;
 } clientActive_t;
 
@@ -611,13 +607,6 @@ void        CL_ShutdownRef( void );
 void        CL_InitRef( const char *renderer );
 
 int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
-
-// NERVE - SMF - localization
-void        CL_InitTranslation();
-void        CL_SaveTransTable( const char *fileName, qboolean newOnly );
-void        CL_ReloadTranslation();
-void        CL_TranslateString( const char *string, char *dest_buffer );
-const char  *CL_TranslateStringBuf( const char *string ) __attribute__( ( format_arg( 1 ) ) );    // TTimo
 
 // -NERVE - SMF
 

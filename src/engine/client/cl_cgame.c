@@ -1261,10 +1261,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_GetBindingByString( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
 
-		case CG_TRANSLATE_STRING:
-			CL_TranslateString( VMA( 1 ), VMA( 2 ) );
-			return 0;
-
 		case CG_S_FADEALLSOUNDS:
 			// FIXME
 			//S_FadeAllSounds(VMF(1), args[2], args[3]);

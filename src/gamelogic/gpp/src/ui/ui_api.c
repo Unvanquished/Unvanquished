@@ -802,13 +802,6 @@ qboolean trap_GetLimboString( int index, char *buf )
 	return syscall( UI_CL_GETLIMBOSTRING, index, buf );
 }
 
-//115.
-//CL_TranslateString(VMA(1), VMA(2));
-void trap_TranslateString( const char *string, char *buf )
-{
-	syscall( UI_CL_TRANSLATE_STRING, string, buf );
-}
-
 //116.
 //CL_CheckAutoUpdate();
 void trap_CheckAutoUpdate( void )
