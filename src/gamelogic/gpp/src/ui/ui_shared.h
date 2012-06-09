@@ -444,7 +444,6 @@ typedef struct
 	qhandle_t ( *feederItemImage )( int feederID, int index );
 	void ( *feederSelection )( int feederID, int index );
 	int ( *feederInitialise )( int feederID );
-	const char *( *translateString )( const char *string );
 	void ( *keynumToStringBuf )( int keynum, char *buf, int buflen );
 	void ( *getBindingBuf )( int keynum, char *buf, int buflen );
 	void ( *setBinding )( int keynum, const char *binding );

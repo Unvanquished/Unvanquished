@@ -5862,7 +5862,7 @@ void Item_YesNo_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + 8, item->textRect.y, item->textscale, newColor,
-		               ( value != 0 ) ? DC->translateString( "Yes" ) : DC->translateString( "No" ), 0, item->textStyle );
+		               ( value != 0 ) ? "Yes" : "No", 0, item->textStyle );
 	}
 	else
 	{
@@ -6160,7 +6160,7 @@ void BindingFromName( const char *cvar )
 			{
 				DC->keynumToStringBuf( b2, g_nameBind2, 32 );
 				Q_strupr( g_nameBind2 );
-				Q_strcat( g_nameBind1, 32, DC->translateString( " or " ) );
+				Q_strcat( g_nameBind1, 32, " or " );
 				strcat( g_nameBind1, g_nameBind2 );
 			}
 

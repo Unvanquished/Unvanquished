@@ -227,27 +227,6 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 	return -1;
 }
 
-#define MAX_VA_STRING 32000 // FIXME?
-
-static const char *UI_TranslateString( const char *string )
-{
-#ifdef LOCALIZATION_SUPPORT
-	static char staticbuf[ 2 ][ MAX_VA_STRING ];
-	static int  bufcount = 0;
-	char        *buf;
-
-	buf = staticbuf[ bufcount++ % 2 ];
-
-	trap_TranslateString( string, buf );
-	return buf;
-#else
-	return string;
-#endif
-}
-#ifndef LOCALIZATION_SUPPORT
-#define UI_TranslateString(x) (x)
-#endif
-
 void AssetCache( void )
 {
 	int i;
@@ -2093,11 +2072,11 @@ static const char *UI_OwnerDrawText( int ownerDraw )
 		case UI_KEYBINDSTATUS:
 			if ( Display_KeyBindPending() )
 			{
-				s = UI_TranslateString( "Waiting for new key... Press ESCAPE to cancel" );
+				s = "Waiting for new key... Press ESCAPE to cancel";
 			}
 			else
 			{
-				s = UI_TranslateString( "Press ENTER or CLICK to change, Press BACKSPACE to clear" );
+				s = "Press ENTER or CLICK to change, Press BACKSPACE to clear";
 			}
 
 			break;
@@ -2123,7 +2102,7 @@ static const char *UI_OwnerDrawText( int ownerDraw )
 			}
 			else
 			{
-				s = va( UI_TranslateString( "Refresh Time: %s" ), UI_Cvar_VariableString( va( "ui_lastServerRefresh_%i", ui_netSource.integer ) ) );
+				s = va( "Refresh Time: %s", UI_Cvar_VariableString( va( "ui_lastServerRefresh_%i", ui_netSource.integer ) ) );
 			}
 
 			break;
@@ -3805,17 +3784,17 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s", UI_TranslateString( "Favorite already in list\n" ) );
+						Com_Printf( "%s", "Favorite already in list\n" );
 					}
 					else if ( res == -1 )
 					{
 						// list full
-						Com_Printf( "%s", UI_TranslateString( "Favorite list full\n" ) );
+						Com_Printf( "%s", "Favorite list full\n" );
 					}
 					else
 					{
 						// successfully added
-						Com_Printf( UI_TranslateString( "Added favorite server %s\n" ), addr );
+						Com_Printf( "Added favorite server %s\n", addr );
 					}
 				}
 			}
@@ -4043,7 +4022,7 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s", UI_TranslateString( "Favorite already in list\n" ) );
+						Com_Printf( "%s", "Favorite already in list\n" );
 					}
 					else if ( res == -1 )
 					{
@@ -5027,7 +5006,6 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.stopCinematic = &UI_StopCinematic;
 	uiInfo.uiDC.drawCinematic = &UI_DrawCinematic;
 	uiInfo.uiDC.runCinematicFrame = &UI_RunCinematicFrame;
-	uiInfo.uiDC.translateString = &UI_TranslateString;
 
 	Init_Display( &uiInfo.uiDC );
 
@@ -5053,10 +5031,6 @@ void UI_Init( qboolean inGameLoad )
 
 	uiInfo.serverStatus.currentServerCinematic = -1;
 	uiInfo.previewMovie = -1;
-
-	// init Yes/No once for cl_language -> server browser (punkbuster)
-	Q_strncpyz( translated_yes, DC->translateString( "Yes" ), sizeof( translated_yes ) );
-	Q_strncpyz( translated_no, DC->translateString( "NO" ), sizeof( translated_no ) );
 
 	UI_ParseResolutions();
 	UI_ParseLanguages();
