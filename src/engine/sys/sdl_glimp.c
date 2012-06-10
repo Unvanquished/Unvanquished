@@ -863,6 +863,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	int         sdlcolorbits;
 	int         colorbits, depthbits, stencilbits;
 	int         tcolorbits, tdepthbits, tstencilbits;
+	int         samples;
 	int         i = 0;
 	SDL_Surface *vidscreen = NULL;
 	Uint32      flags = SDL_OPENGL;
@@ -940,23 +941,24 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		glConfig.isFullscreen = qfalse;
 	}
 
-	colorbits = r_colorbits->value;
+	colorbits = r_colorbits->integer;
 
 	if ( ( !colorbits ) || ( colorbits >= 32 ) )
 	{
 		colorbits = 24;
 	}
 
-	if ( !r_depthbits->value )
+	if ( !r_depthbits->integer )
 	{
 		depthbits = 24;
 	}
 	else
 	{
-		depthbits = r_depthbits->value;
+		depthbits = r_depthbits->integer;
 	}
 
-	stencilbits = r_stencilbits->value;
+	stencilbits = r_stencilbits->integer;
+	samples = r_ext_multisample->integer;
 
 	for ( i = 0; i < 16; i++ )
 	{
@@ -1054,6 +1056,8 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, sdlcolorbits );
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, tdepthbits );
 		SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, tstencilbits );
+		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, samples ? 1 : 0 );
+		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, samples );
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 		if ( SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, r_swapInterval->integer ) < 0 )

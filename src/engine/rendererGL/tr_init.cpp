@@ -127,6 +127,7 @@ extern "C" {
 	cvar_t      *r_stencilbits;
 	cvar_t      *r_depthbits;
 	cvar_t      *r_colorbits;
+	cvar_t      *r_ext_multisample;
 	cvar_t      *r_stereo;
 
 	cvar_t      *r_drawBuffer;
@@ -1395,6 +1396,7 @@ extern "C" {
 		r_stereo = ri.Cvar_Get( "r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_stencilbits = ri.Cvar_Get( "r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH );
 		r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
+		r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_mode = ri.Cvar_Get( "r_mode", "6", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER );
 		r_fullscreen = ri.Cvar_Get( "r_fullscreen", "0", CVAR_ARCHIVE | CVAR_LATCH );
