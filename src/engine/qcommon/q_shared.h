@@ -1491,7 +1491,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #endif
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-int rint( double x );
+double rint( double x );
 #endif
 
 // buffer size safe library replacements
