@@ -17,7 +17,9 @@
 
 #ifndef HEADER_TINYGETTEXT_PO_PARSER_HPP
 #define HEADER_TINYGETTEXT_PO_PARSER_HPP
-
+#if !defined(__GNUC__) && !defined(__clang__)
+#define __attribute__( x )
+#endif
 #include <iosfwd>
 
 #include "iconv.hpp"
