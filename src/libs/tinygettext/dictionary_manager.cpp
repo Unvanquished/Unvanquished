@@ -26,7 +26,6 @@
 
 #include "log_stream.hpp"
 #include "po_parser.hpp"
-#include "unix_file_system.hpp"
 
 namespace tinygettext {
 
@@ -45,8 +44,7 @@ DictionaryManager::DictionaryManager(const std::string& charset_) :
   use_fuzzy(true),
   current_language(),
   current_dict(0),
-  empty_dict(),
-  filesystem(new UnixFileSystem)
+  empty_dict()
 {
 }
 
@@ -109,63 +107,8 @@ DictionaryManager::get_dictionary(const Language& language)
     Dictionary* dict = new Dictionary(charset);
 
     dictionaries[language] = dict;
-
-    for (SearchPath::reverse_iterator p = search_path.rbegin(); p != search_path.rend(); ++p)
-    {
-      std::vector<std::string> files = filesystem->open_directory(*p);
-
-      std::string best_filename;
-      int best_score = 0;
-
-      for(std::vector<std::string>::iterator filename = files.begin(); filename != files.end(); filename++)
-      {
-        // check if filename matches requested language
-        if (has_suffix(*filename, ".po"))
-        { // ignore anything that isn't a .po file
-          Language po_language = Language::from_env(filename->substr(0, filename->size()-3));
-
-          if (!po_language)
-          {
-            log_warning << *filename << ": warning: ignoring, unknown language" << std::endl;
-          }
-          else
-          {
-            int score = Language::match(language, po_language);
-                          
-            if (score > best_score)
-            {
-              best_score = score;
-              best_filename = *filename;
-            }
-          }
-        }
-      }
-              
-      if (!best_filename.empty())
-      {
-        std::string pofile = *p + "/" + best_filename;
-        try 
-        {
-          std::auto_ptr<std::istream> in = filesystem->open_file(pofile);
-          if (!in.get())
-          {
-            log_error << "error: failure opening: " << pofile << std::endl;
-          }
-          else
-          {
-            POParser::parse(pofile, *in, *dict);
-          }
-        }
-        catch(std::exception& e) 
-        {
-          log_error << "error: failure parsing: " << pofile << std::endl;
-          log_error << e.what() << "" << std::endl;
-        }
-      }
-    }
-
-    return *dict;
   }
+
 }
 
 std::set<Language>
@@ -231,13 +174,6 @@ DictionaryManager::add_po(const std::string& name, std::istream& in, const Langu
   dictionaries[lang] = dict;
 }
   
-
-void
-DictionaryManager::set_filesystem(std::auto_ptr<FileSystem> filesystem_)
-{
-  filesystem = filesystem_;
-}
-
 } // namespace tinygettext
 
 /* EOF */

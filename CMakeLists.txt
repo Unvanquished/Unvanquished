@@ -985,7 +985,6 @@ set( TINYGETTEXT_LIST
   ${MOUNT_DIR}/libs/tinygettext/plural_forms.hpp
   ${MOUNT_DIR}/libs/tinygettext/tinygettext.cpp
   ${MOUNT_DIR}/libs/tinygettext/tinygettext.hpp
-  ${MOUNT_DIR}/libs/tinygettext/unix_file_system.hpp
   ${MOUNT_DIR}/libs/tinygettext/dictionary.cpp
   ${MOUNT_DIR}/libs/tinygettext/dictionary.hpp
   ${MOUNT_DIR}/libs/tinygettext/dictionary_manager.cpp
@@ -998,7 +997,6 @@ set( TINYGETTEXT_LIST
   ${MOUNT_DIR}/libs/tinygettext/plural_forms.cpp
   ${MOUNT_DIR}/libs/tinygettext/po_parser.cpp
   ${MOUNT_DIR}/libs/tinygettext/po_parser.hpp
-  ${MOUNT_DIR}/libs/tinygettext/unix_file_system.cpp
   ${MOUNT_DIR}/libs/findlocale/findlocale.c
 )
 

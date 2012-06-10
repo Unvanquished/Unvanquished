@@ -29,7 +29,7 @@
 
 namespace tinygettext {
 
-class FileSystem;
+
 
 /** Manager class for dictionaries, you give it a bunch of directories
     with .po files and it will then automatically load the right file
@@ -50,8 +50,6 @@ private:
   Dictionary* current_dict;
 
   Dictionary  empty_dict;
-
-  std::auto_ptr<FileSystem> filesystem;
 
   void clear_cache();
 
@@ -87,8 +85,6 @@ public:
 
   /** Return a set of the available languages in their country code */
   std::set<Language> get_languages();
-
-  void set_filesystem(std::auto_ptr<FileSystem> filesystem);
 
 private:
   DictionaryManager (const DictionaryManager&);
