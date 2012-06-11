@@ -56,7 +56,7 @@ void SHOWNET( msg_t *msg, char *s )
 {
 	if ( cl_shownet->integer >= 2 )
 	{
-		Com_Printf( "%3i:%s\n", msg->readcount - 1, s );
+		Com_Printf(_( "%3i:%s\n"), msg->readcount - 1, s );
 	}
 }
 
@@ -321,7 +321,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 			// one or more entities from the old packet are unchanged
 			if ( cl_shownet->integer == 3 )
 			{
-				Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
+				Com_Printf(_( "%3i:  unchanged: %i\n"), msg->readcount, oldnum );
 			}
 
 			CL_DeltaEntity( msg, newframe, oldnum, oldstate, qtrue );
@@ -345,7 +345,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 			// delta from previous state
 			if ( cl_shownet->integer == 3 )
 			{
-				Com_Printf( "%3i:  delta: %i\n", msg->readcount, newnum );
+				Com_Printf(_( "%3i:  delta: %i\n"), msg->readcount, newnum );
 			}
 
 			CL_DeltaEntity( msg, newframe, newnum, oldstate, qfalse );
@@ -371,7 +371,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 			// delta from baseline
 			if ( cl_shownet->integer == 3 )
 			{
-				Com_Printf( "%3i:  baseline: %i\n", msg->readcount, newnum );
+				Com_Printf(_( "%3i:  baseline: %i\n"), msg->readcount, newnum );
 			}
 
 			CL_DeltaEntity( msg, newframe, newnum, &cl.entityBaselines[ newnum ], qfalse );
@@ -385,7 +385,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 		// one or more entities from the old packet are unchanged
 		if ( cl_shownet->integer == 3 )
 		{
-			Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
+			Com_Printf(_( "%3i:  unchanged: %i\n"), msg->readcount, oldnum );
 		}
 
 		CL_DeltaEntity( msg, newframe, oldnum, oldstate, qtrue );
@@ -406,7 +406,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 	if ( cl_shownuments->integer )
 	{
-		Com_Printf( "Entities in packet: %i\n", newframe->numEntities );
+		Com_Printf(_( "Entities in packet: %i\n"), newframe->numEntities );
 	}
 }
 
@@ -528,17 +528,17 @@ void CL_ParseSnapshot( msg_t *msg )
 		if ( !old->valid )
 		{
 			// should never happen
-			Com_Printf( "Delta from invalid frame (not supposed to happen!).\n" );
+			Com_Printf( "%s", _( "Delta from invalid frame (not supposed to happen!).\n" ));
 		}
 		else if ( old->messageNum != newSnap.deltaNum )
 		{
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
-			Com_DPrintf( "Delta frame too old.\n" );
+			Com_DPrintf("%s", _( "Delta frame too old.\n" ));
 		}
 		else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES - 128 )
 		{
-			Com_DPrintf( "Delta parseEntitiesNum too old.\n" );
+			Com_DPrintf("%s", _( "Delta parseEntitiesNum too old.\n" ));
 		}
 		else
 		{
@@ -617,7 +617,7 @@ void CL_ParseSnapshot( msg_t *msg )
 
 	if ( cl_shownet->integer == 3 )
 	{
-		Com_Printf( "   snapshot:%i  delta:%i  ping:%i\n", cl.snap.messageNum, cl.snap.deltaNum, cl.snap.ping );
+		Com_Printf(_( "   snapshot:%i  delta:%i  ping:%i\n"), cl.snap.messageNum, cl.snap.deltaNum, cl.snap.ping );
 	}
 
 	cl.newSnapshots = qtrue;
@@ -841,7 +841,7 @@ void CL_ParseDownload( msg_t *msg )
 
 	if ( !*cls.downloadTempName )
 	{
-		Com_Printf( "Server sending download, but no download was requested\n" );
+		Com_Printf("%s", _( "Server sending download, but no download was requested\n" ));
 		CL_AddReliableCommand( "stopdl" );
 		return;
 	}
@@ -871,14 +871,14 @@ void CL_ParseDownload( msg_t *msg )
 			}
 
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
-			Com_DPrintf( "Server redirected download: %s\n", cls.downloadName );
+			Com_DPrintf(_( "Server redirected download: %s\n"), cls.downloadName );
 			clc.bWWWDl = qtrue; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
 
 			// make sure the server is not trying to redirect us again on a bad checksum
 			if ( strstr( clc.badChecksumList, va( "@%s", cls.originalDownloadName ) ) )
 			{
-				Com_Printf( "refusing redirect to %s by server (bad checksum)\n", cls.downloadName );
+				Com_Printf(_( "refusing redirect to %s by server (bad checksum)\n"), cls.downloadName );
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = qtrue;
 				return;
@@ -897,7 +897,7 @@ void CL_ParseDownload( msg_t *msg )
 				// we count on server sending us a gamestate to start up clean again
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = qtrue;
-				Com_Printf( "Failed to initialize download for '%s'\n", cls.downloadName );
+				Com_Printf(_( "Failed to initialize download for '%s'\n"), cls.downloadName );
 			}
 
 			// Check for a disconnected download
@@ -947,7 +947,7 @@ void CL_ParseDownload( msg_t *msg )
 
 	if ( clc.downloadBlock != block )
 	{
-		Com_DPrintf( "CL_ParseDownload: Expected block %d, got %d\n", clc.downloadBlock, block );
+		Com_DPrintf(_( "CL_ParseDownload: Expected block %d, got %d\n"), clc.downloadBlock, block );
 		return;
 	}
 
@@ -958,7 +958,7 @@ void CL_ParseDownload( msg_t *msg )
 
 		if ( !clc.download )
 		{
-			Com_Printf( "Could not create %s\n", cls.downloadTempName );
+			Com_Printf(_( "Could not create %s\n"), cls.downloadTempName );
 			CL_AddReliableCommand( "stopdl" );
 			CL_NextDownload();
 			return;
@@ -1080,7 +1080,7 @@ void CL_ParseVoip( msg_t *msg )
 	int          written = 0;
 	int          i;
 
-	Com_DPrintf( "VoIP: %d-byte packet from client %d\n", packetsize, sender );
+	Com_DPrintf(_( "VoIP: %d-byte packet from client %d\n"), packetsize, sender );
 
 	if ( sender < 0 )
 	{
@@ -1141,12 +1141,12 @@ void CL_ParseVoip( msg_t *msg )
 
 	// !!! FIXME: make sure data is narrowband? Does decoder handle this?
 
-	Com_DPrintf( "VoIP: packet accepted!\n" );
+	Com_DPrintf("%s", _( "VoIP: packet accepted!\n" ));
 
 	// This is a new "generation" ... a new recording started, reset the bits.
 	if ( generation != clc.voipIncomingGeneration[ sender ] )
 	{
-		Com_DPrintf( "VoIP: new generation %d!\n", generation );
+		Com_DPrintf(_( "VoIP: new generation %d!\n"), generation );
 		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
 		clc.voipIncomingGeneration[ sender ] = generation;
 		seqdiff = 0;
@@ -1154,7 +1154,7 @@ void CL_ParseVoip( msg_t *msg )
 	else if ( seqdiff < 0 ) // we're ahead of the sequence?!
 	{
 		// This shouldn't happen unless the packet is corrupted or something.
-		Com_DPrintf( "VoIP: misordered sequence! %d < %d!\n",
+		Com_DPrintf(_( "VoIP: misordered sequence! %d < %d!\n"),
 		             sequence, clc.voipIncomingSequence[ sender ] );
 		// reset the bits just in case.
 		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
@@ -1163,7 +1163,7 @@ void CL_ParseVoip( msg_t *msg )
 	else if ( seqdiff > 100 ) // more than 2 seconds of audio dropped?
 	{
 		// just start over.
-		Com_DPrintf( "VoIP: Dropped way too many (%d) frames from client #%d\n",
+		Com_DPrintf(_( "VoIP: Dropped way too many (%d) frames from client #%d\n"),
 		             seqdiff, sender );
 		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
 		seqdiff = 0;
@@ -1171,7 +1171,7 @@ void CL_ParseVoip( msg_t *msg )
 
 	if ( seqdiff != 0 )
 	{
-		Com_DPrintf( "VoIP: Dropped %d frames from client #%d\n",
+		Com_DPrintf(_( "VoIP: Dropped %d frames from client #%d\n"),
 		             seqdiff, sender );
 
 		// tell speex that we're missing frames...
@@ -1190,7 +1190,7 @@ void CL_ParseVoip( msg_t *msg )
 
 		if ( len < 0 )
 		{
-			Com_DPrintf( "VoIP: Short packet!\n" );
+			Com_DPrintf("%s", _( "VoIP: Short packet!\n" ));
 			break;
 		}
 
@@ -1199,7 +1199,7 @@ void CL_ParseVoip( msg_t *msg )
 		// shouldn't happen, but just in case...
 		if ( ( written + clc.speexFrameSize ) * 2 > sizeof( decoded ) )
 		{
-			Com_DPrintf( "VoIP: playback %d bytes, %d samples, %d frames\n",
+			Com_DPrintf(_( "VoIP: playback %d bytes, %d samples, %d frames\n"),
 			             written * 2, written, i );
 
 			CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
@@ -1228,7 +1228,7 @@ void CL_ParseVoip( msg_t *msg )
 		written += clc.speexFrameSize;
 	}
 
-	Com_DPrintf( "VoIP: playback %d bytes, %d samples, %d frames\n",
+	Com_DPrintf(_( "VoIP: playback %d bytes, %d samples, %d frames\n"),
 	             written * 2, written, i );
 
 	if ( written > 0 )
@@ -1305,11 +1305,11 @@ void CL_ParseServerMessage( msg_t *msg )
 
 	if ( cl_shownet->integer == 1 )
 	{
-		Com_Printf( "%i ", msg->cursize );
+		Com_Printf(_( "%i "), msg->cursize );
 	}
 	else if ( cl_shownet->integer >= 2 )
 	{
-		Com_Printf( "------------------\n" );
+		Com_Printf("%s", _( "------------------\n" ));
 	}
 
 	MSG_Bitstream( msg );
@@ -1362,7 +1362,7 @@ void CL_ParseServerMessage( msg_t *msg )
 		{
 			if ( !svc_strings[ cmd ] )
 			{
-				Com_Printf( "%3i:BAD CMD %i\n", msg->readcount - 1, cmd );
+				Com_Printf(_( "%3i:BAD CMD %i\n"), msg->readcount - 1, cmd );
 			}
 			else
 			{

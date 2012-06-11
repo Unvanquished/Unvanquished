@@ -191,7 +191,7 @@ qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
 
 	if ( count > MAX_ENTITIES_IN_SNAPSHOT )
 	{
-		Com_DPrintf( "CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT );
+		Com_DPrintf(_( "CL_GetSnapshot: truncated %i entities to %i\n"), count, MAX_ENTITIES_IN_SNAPSHOT );
 		count = MAX_ENTITIES_IN_SNAPSHOT;
 	}
 
@@ -403,7 +403,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 	if ( cl_showServerCommands->integer )
 	{
 		// NERVE - SMF
-		Com_DPrintf( "serverCommand: %i : %s\n", serverCommandNumber, s );
+		Com_DPrintf(_( "serverCommand: %i : %s\n"), serverCommandNumber, s );
 	}
 
 rescan:
@@ -504,7 +504,7 @@ rescan:
 
 		if ( argc == 1 )
 		{
-			Com_Printf( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" );
+			Com_Printf("%s", _( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" ));
 			return qfalse;
 		}
 
@@ -1548,7 +1548,7 @@ void CL_InitCGame( void )
 
 	t2 = Sys_Milliseconds();
 
-	Com_Printf( "CL_InitCGame: %5.2f seconds\n", ( t2 - t1 ) / 1000.0 );
+	Com_Printf(_( "CL_InitCGame: %5.2f seconds\n"), ( t2 - t1 ) / 1000.0 );
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading
@@ -1614,7 +1614,7 @@ void CL_CGameRendering( stereoFrame_t stereo )
 {
 	/*  static int x = 0;
 	        if(!((++x) % 20)) {
-	                Com_Printf( "numtraces: %i\n", numtraces / 20 );
+	                Com_Printf(_( "numtraces: %i\n"), numtraces / 20 );
 	                numtraces = 0;
 	        } else {
 	        }*/
@@ -1683,7 +1683,7 @@ void CL_AdjustTimeDelta( void )
 
 		if ( cl_showTimeDelta->integer )
 		{
-			Com_Printf( "<RESET> " );
+			Com_Printf("%s", _( "<RESET> " ));
 		}
 	}
 	else if ( deltaDelta > 100 )
@@ -1691,7 +1691,7 @@ void CL_AdjustTimeDelta( void )
 		// fast adjust, cut the difference in half
 		if ( cl_showTimeDelta->integer )
 		{
-			Com_Printf( "<FAST> " );
+			Com_Printf("%s", _( "<FAST> " ));
 		}
 
 		cl.serverTimeDelta = ( cl.serverTimeDelta + newDelta ) >> 1;
@@ -1720,7 +1720,7 @@ void CL_AdjustTimeDelta( void )
 
 	if ( cl_showTimeDelta->integer )
 	{
-		Com_Printf( "%i ", cl.serverTimeDelta );
+		Com_Printf(_( "%i "), cl.serverTimeDelta );
 	}
 }
 
@@ -1766,7 +1766,7 @@ void CL_FirstSnapshot( void )
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
-		Com_Printf( "Mumble: Linking to Mumble application %s\n", ret == 0 ? "ok" : "failed" );
+		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application ok\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
 	}
 
 #endif

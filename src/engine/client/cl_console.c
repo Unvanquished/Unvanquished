@@ -252,17 +252,17 @@ void Con_Dump_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "usage: condump <filename>\n" );
+		Com_Printf("%s", _( "usage: condump <filename>\n" ));
 		return;
 	}
 
-	Com_Printf( "Dumped console text to %s.\n", Cmd_Argv( 1 ) );
+	Com_Printf(_( "Dumped console text to %s.\n"), Cmd_Argv( 1 ) );
 
 	f = FS_FOpenFileWrite( Cmd_Argv( 1 ) );
 
 	if ( !f )
 	{
-		Com_Printf( "ERROR: couldn't open.\n" );
+		Com_Printf("%s", _( "ERROR: couldn't open.\n" ));
 		return;
 	}
 
@@ -300,7 +300,7 @@ void Con_Search_f( void )
 
 	if ( c < 2 )
 	{
-		Com_Printf( "usage: %s <string1> <string2> <...>\n", Cmd_Argv( 0 ) );
+		Com_Printf(_( "usage: %s <string1> <string2> <...>\n"), Cmd_Argv( 0 ) );
 		return;
 	}
 
@@ -346,7 +346,7 @@ void Con_Grep_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "usage: grep <string>\n" );
+		Com_Printf("%s", _( "usage: grep <string>\n" ));
 		return;
 	}
 

@@ -177,7 +177,7 @@ static qboolean read_wav_header( fileHandle_t file, snd_info_t *info )
 	// Scan for the format chunk
 	if ( ( fmtlen = S_FindWavChunk( file, "fmt " ) ) == 0 )
 	{
-		Com_Printf( "No fmt chunk\n" );
+		Com_Printf("%s", _( "No fmt chunk\n" ));
 		return qfalse;
 	}
 
@@ -200,7 +200,7 @@ static qboolean read_wav_header( fileHandle_t file, snd_info_t *info )
 	// Scan for the data chunk
 	if ( ( info->size = S_FindWavChunk( file, "data" ) ) == 0 )
 	{
-		Com_Printf( "No data chunk\n" );
+		Com_Printf("%s", _( "No data chunk\n" ));
 		return qfalse;
 	}
 
@@ -232,7 +232,7 @@ void *codec_wav_load( const char *filename, snd_info_t *info )
 
 	if ( !file )
 	{
-		Com_Printf( "Can't read sound file %s\n", filename );
+		Com_Printf(_( "Can't read sound file %s\n"), filename );
 		return NULL;
 	}
 
@@ -240,7 +240,7 @@ void *codec_wav_load( const char *filename, snd_info_t *info )
 	if ( !read_wav_header( file, info ) )
 	{
 		FS_FCloseFile( file );
-		Com_Printf( "Can't understand wav file %s\n", filename );
+		Com_Printf(_( "Can't understand wav file %s\n"), filename );
 		return NULL;
 	}
 
@@ -250,7 +250,7 @@ void *codec_wav_load( const char *filename, snd_info_t *info )
 	if ( !buffer )
 	{
 		FS_FCloseFile( file );
-		Com_Printf( S_COLOR_RED "ERROR: Out of memory reading \"%s\"\n", filename );
+		Com_Printf( _( S_COLOR_RED  "ERROR: Out of memory reading \"%s\"\n"), filename );
 		return NULL;
 	}
 

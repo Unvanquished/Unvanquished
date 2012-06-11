@@ -1429,7 +1429,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return Com_RealTime( VMA( 1 ) );
 
 		case UI_CIN_PLAYCINEMATIC:
-			Com_DPrintf( "UI_CIN_PlayCinematic\n" );
+			Com_DPrintf("%s", _( "UI_CIN_PlayCinematic\n" ));
 			return CIN_PlayCinematic( VMA( 1 ), args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] );
 
 		case UI_CIN_STOPCINEMATIC:

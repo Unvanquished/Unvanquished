@@ -117,13 +117,13 @@ static qboolean S_InitModule()
 	sndexport_t * ( *getapi )( int, sndimport_t * );
 
 	s_module = Cvar_Get( "s_module", "openal", CVAR_ARCHIVE );
-	Com_Printf( "using sound module %s\n", s_module->string );
+	Com_Printf(_( "using sound module %s\n"), s_module->string );
 	sprintf( fn, "%s/snd_%s" DLL_EXT, Sys_Cwd(), s_module->string );
 
 	if ( ( libhandle = OBJLOAD( fn ) ) == 0 )
 	{
-		Com_Printf( "can't load sound module - bailing\n" );
-		Com_Printf( "------------------------------------\n" );
+		Com_Printf("%s", _( "can't load sound module - bailing\n" ));
+		Com_Printf("%s", _( "------------------------------------\n" ));
 		return qfalse;
 	}
 
@@ -133,8 +133,8 @@ static qboolean S_InitModule()
 	{
 		OBJFREE( libhandle );
 		libhandle = NULL;
-		Com_Printf( "can't find GetSndAPI - bailing\n" );
-		Com_Printf( "------------------------------------\n" );
+		Com_Printf("%s", _( "can't find GetSndAPI - bailing\n" ));
+		Com_Printf("%s", _( "------------------------------------\n" ));
 		return qfalse;
 	}
 
@@ -183,8 +183,8 @@ static qboolean S_InitModule()
 	{
 		OBJFREE( libhandle );
 		libhandle = NULL;
-		Com_Printf( "call to GetSndAPI failed - bailing\n" );
-		Com_Printf( "------------------------------------\n" );
+		Com_Printf("%s", _( "call to GetSndAPI failed - bailing\n" ));
+		Com_Printf("%s", _( "------------------------------------\n" ));
 		return qfalse;
 	}
 
@@ -193,8 +193,8 @@ static qboolean S_InitModule()
 		OBJFREE( libhandle );
 		libhandle = NULL;
 		se = NULL;
-		Com_Printf( "call to Init failed - bailing\n" );
-		Com_Printf( "------------------------------------\n" );
+		Com_Printf("%s", _( "call to Init failed - bailing\n" ));
+		Com_Printf("%s", _( "------------------------------------\n" ));
 		return qfalse;
 	}
 
@@ -207,14 +207,14 @@ void S_Init( void )
 {
 	cvar_t *cv;
 
-	Com_Printf( "------ Initializing Sound -----\n" );
+	Com_Printf("%s", _( "------ Initializing Sound -----\n" ));
 
 	cv = Cvar_Get( "s_initsound", "1", 0 );
 
 	if ( !cv->integer )
 	{
-		Com_Printf( "not initializing.\n" );
-		Com_Printf( "------------------------------------\n" );
+		Com_Printf("%s", _( "not initializing.\n" ));
+		Com_Printf("%s", _( "------------------------------------\n" ));
 		return;
 	}
 
@@ -239,7 +239,7 @@ void S_Init( void )
 
 	if ( useBuiltin )
 	{
-		Com_Printf( "using builtin sound system\n" );
+		Com_Printf("%s", _( "using builtin sound system\n" ));
 		SOrig_Init();
 	}
 
@@ -248,7 +248,7 @@ void S_Init( void )
 	SOrig_Init();
 #endif // !USE_DYNAMIC
 
-	Com_Printf( "------------------------------------\n" );
+	Com_Printf("%s", _( "------------------------------------\n" ));
 }
 
 void S_Shutdown( void )

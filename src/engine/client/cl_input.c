@@ -121,7 +121,7 @@ void IN_KeyDown( kbutton_t *b )
 	}
 	else
 	{
-		Com_DPrintf( "Three keys down for a button!\n" );
+		Com_DPrintf("%s", _( "Three keys down for a button!\n" ));
 		return;
 	}
 
@@ -228,7 +228,7 @@ float CL_KeyState( kbutton_t *key )
 
 	if ( msec )
 	{
-		Com_Printf( "%i ", msec );
+		Com_Printf(_( "%i "), msec );
 	}
 
 #endif
@@ -643,7 +643,7 @@ void CL_MouseMove( usercmd_t *cmd )
 
 			if ( cl_showMouseRate->integer )
 			{
-				Com_Printf( "rate: %f, accelSensitivity: %f\n", rate, accelSensitivity );
+				Com_Printf(_( "rate: %f, accelSensitivity: %f\n"), rate, accelSensitivity );
 			}
 		}
 		else
@@ -676,7 +676,7 @@ void CL_MouseMove( usercmd_t *cmd )
 			*/
 			if ( cl_showMouseRate->integer )
 			{
-				Com_Printf( "ratex: %f, ratey: %f, powx: %f, powy: %f\n", rate[ 0 ], rate[ 1 ], power[ 0 ], power[ 1 ] );
+				Com_Printf(_( "ratex: %f, ratey: %f, powx: %f, powy: %f\n"), rate[ 0 ], rate[ 1 ], power[ 0 ], power[ 1 ] );
 			}
 		}
 	}
@@ -1047,7 +1047,7 @@ void CL_WritePacket( void )
 	if ( count > MAX_PACKET_USERCMDS )
 	{
 		count = MAX_PACKET_USERCMDS;
-		Com_Printf( "MAX_PACKET_USERCMDS\n" );
+		Com_Printf("%s", _( "MAX_PACKET_USERCMDS\n" ));
 	}
 
 #ifdef USE_VOIP
@@ -1106,7 +1106,7 @@ void CL_WritePacket( void )
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf( "(%i)", count );
+			Com_Printf(_( "(%i)"), count );
 		}
 
 		// begin a client move command
@@ -1150,7 +1150,7 @@ void CL_WritePacket( void )
 
 	if ( cl_showSend->integer )
 	{
-		Com_Printf( "%i ", buf.cursize );
+		Com_Printf(_( "%i "), buf.cursize );
 	}
 
 	CL_Netchan_Transmit( &clc.netchan, &buf );
@@ -1164,7 +1164,7 @@ void CL_WritePacket( void )
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf( "WARNING: unsent fragments (not supposed to happen!)\n" );
+			Com_Printf( "%s", _( "WARNING: unsent fragments (not supposed to happen!)\n" ));
 		}
 
 		CL_Netchan_TransmitNextFragment( &clc.netchan );
@@ -1200,7 +1200,7 @@ void CL_SendCmd( void )
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf( ". " );
+			Com_Printf("%s", _( ". " ));
 		}
 
 		return;
@@ -1260,7 +1260,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 
 	if ( cmd_names )
 	{
-		Com_Printf( "^1BUG: cgame: some button commands left unregistered (\"%s\")\n", cmd_names );
+		Com_Printf(_( "^1BUG: cgame: some button commands left unregistered (\"%s\")\n"), cmd_names );
 	}
 }
 
