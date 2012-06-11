@@ -52,7 +52,11 @@ scrollInfo_t;
 
 static scrollInfo_t scrollInfo;
 
-static qboolean shift = qfalse, ctrl = qfalse;
+typedef enum {
+	MOD_SHIFT, MOD_CTRL, MOD_ALT, MOD_COMMAND, MOD_MODE, MOD_SUPER
+} modkeys_t;
+static unsigned char mods[6] = { 0 };
+static const int     modkeys[6] = { K_SHIFT, K_CTRL, K_ALT, K_COMMAND, K_MODE, K_SUPER };
 
 // prevent compiler warnings
 void voidFunction( void *var )
@@ -4060,7 +4064,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				item->cursorPos++;
 			}
 		}
-		else
+		else if ( !mods[ MOD_ALT ] && !mods[ MOD_COMMAND ] && !mods[ MOD_MODE ] && !mods[ MOD_SUPER ] )
 		{
 			switch ( key )
 			{
@@ -4079,7 +4083,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_RIGHTARROW:
 				case K_KP_RIGHTARROW:
-					if ( ctrl )
+					if ( mods[ MOD_CTRL ] )
 					{
 						int index = ui_CursorToOffset( buff, item->cursorPos );
 
@@ -4104,7 +4108,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_LEFTARROW:
 				case K_KP_LEFTARROW:
-					if ( ctrl )
+					if ( mods[ MOD_CTRL ] )
 					{
 						int index = ui_CursorToOffset( buff, item->cursorPos );
 
@@ -4141,7 +4145,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_INS:
 				case K_KP_INS:
-					if ( shift )
+					if ( mods[ MOD_SHIFT ] )
 					{
 						UI_Paste( item, buff, SELECTION_PRIMARY );
 						DC->setCVar( item->cvar, buff );
@@ -4210,7 +4214,7 @@ exit:
 
 	if ( releaseFocus )
 	{
-		ctrl = qfalse;
+		mods[1] = qfalse;
 	}
 
 	return !releaseFocus;
@@ -4844,14 +4848,13 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 		Item_RunScript( &it, menu->onKEY[ key ] );
 	}
 
-	if ( key == K_SHIFT )
+	for ( i = 0; i < 6; ++i )
 	{
-		// inc if down, dec if up, but don't let it go negative
-		shift += down ? 1 : shift ? -1 : 0;
-	}
-	else if ( key == K_CTRL )
-	{
-		ctrl += down ? 1 : ctrl ? -1 : 0;
+		if ( key == modkeys[ i ] )
+		{
+			mods[ i ] += down ? 1 : mods[ i ] ? -1 : 0;
+			break;
+		}
 	}
 
 // KTW: Draggable Windows
@@ -4969,7 +4972,7 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 			break;
 
 		case K_TAB:
-			if ( shift )
+			if ( mods[ MOD_SHIFT ] )
 			{
 				Menu_SetPrevCursorItem( menu );
 				break;

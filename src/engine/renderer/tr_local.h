@@ -1617,6 +1617,8 @@ extern cvar_t *r_texturebits; // number of desired texture bits
 // 32 = use 32-bit textures
 // all else = error
 
+extern cvar_t *r_ext_multisample;  // desired number of MSAA samples
+
 extern cvar_t *r_measureOverdraw; // enables stencil buffer overdraw measurement
 
 extern cvar_t *r_lodbias; // push/pull LOD transitions

@@ -40,6 +40,7 @@ key up events are sent even if in console mode
 
 */
 
+
 field_t  g_consoleField;
 field_t  chatField;
 qboolean chat_irc;
@@ -930,6 +931,14 @@ Handles history and console scrollback
 */
 void Console_Key( int key )
 {
+	// just return if any of the listed modifiers are pressed
+	// - no point in passing on, since they Just Get In The Way
+	if ( keys[ K_ALT     ].down || keys[ K_COMMAND ].down ||
+	     keys[ K_MODE    ].down || keys[ K_SUPER   ].down )
+	{
+		return;
+	}
+
 	// ctrl-L clears screen
 	if ( key == 'l' && keys[ K_CTRL ].down )
 	{
@@ -990,9 +999,7 @@ void Console_Key( int key )
 
 	// command completion
 
-	if ( key == K_TAB &&
-	     !keys[ K_ALT ].down && !keys[ K_COMMAND ].down &&
-	     !keys[ K_MODE ].down && !keys[ K_SUPER ].down )
+	if ( key == K_TAB )
 	{
 		CompleteCommand();
 		return;

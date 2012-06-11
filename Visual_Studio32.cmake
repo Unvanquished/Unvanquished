@@ -5,7 +5,7 @@ set( PNG_LIBRARY ${LIB_DIR}/libpng/libs/win32/libpng.lib CACHE STRING "PNG libra
 set( FREETYPE_INCLUDE_DIRS ${LIB_DIR}/freetype/include/freetype2 ${LIB_DIR}/freetype/include CACHE STRING "Freetupe include directory" FORCE )
 set( FREETYPE_LIBRARY ${LIB_DIR}/freetype/lib/freetype.lib CACHE STRING "Freetype library" FORCE )
 set( GLEW_INCLUDE_DIR ${LIB_DIR}/glew/include CACHE STRING "GLEW include directory" FORCE )
-set( GLEW_LIBRARY ${LIB_DIR}/glew/lib/x32/glew32.lib CACHE STRING "GLEW library" FORCE )
+set( GLEW_LIBRARY optimized ${LIB_DIR}/glew/lib/glew32.lib debug ${LIB_DIR}/glew/lib/glew32d.lib CACHE STRING "GLEW library" FORCE )
 set( ZLIB_INCLUDE_DIR ${LIB_DIR}/zlibwapi/include CACHE STRING "ZLIB include directory" FORCE )
 set( ZLIB_LIBRARY ${LIB_DIR}/zlibwapi/lib/x32/zlibwapi.lib CACHE STRING "ZLIB library" FORCE )
 set( GMP_INCLUDE_DIR ${LIB_DIR}/gmp/include CACHE STRING "GMP include directory" FORCE )
