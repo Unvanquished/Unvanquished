@@ -51,7 +51,7 @@ static void CG_ParseScores( void )
 
 	if ( cg_debugRandom.integer )
 	{
-		CG_Printf( "cg.numScores: %d\n", cg.numScores );
+		CG_Printf(_( "cg.numScores: %d\n"), cg.numScores );
 	}
 
 	for ( i = 0; i < cg.numScores; i++ )
@@ -97,7 +97,7 @@ static void CG_ParseTeamInfo( void )
 
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
-			CG_Printf( "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n", client );
+			CG_Printf(_( "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n"), client );
 			return;
 		}
 
@@ -436,7 +436,7 @@ static void CG_MapRestart( void )
 {
 	if ( cg_showmiss.integer )
 	{
-		CG_Printf( "CG_MapRestart\n" );
+		CG_Printf(_( "CG_MapRestart\n" ));
 	}
 
 	CG_InitMarkPolys();
@@ -894,7 +894,7 @@ void CG_Menu( int menu, int arg )
 			break;
 
 		default:
-			Com_Printf( "cgame: debug: no such menu %d\n", menu );
+			Com_Printf(_( "cgame: debug: no such menu %d\n"), menu );
 	}
 
 	if ( type == DT_ARMOURYEVOLVE && cg_disableUpgradeDialogs.integer )
@@ -1033,18 +1033,18 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 				ignore = "[skipnotify]";
 			}
 
-			CG_Printf( "%s%s%s" S_COLOR_WHITE "%s ^%c%s\n",
+			CG_Printf(  "%s%s%s^7%s ^%c%s\n",
 			           ignore, prefix, name, maybeColon, color, text );
 			break;
 
 		case SAY_TEAM:
-			CG_Printf( "%s%s(%s" S_COLOR_WHITE ")%s%s ^%c%s\n",
+			CG_Printf( "%s%s(%s^7%s%s ^%c%s\n",
 			           ignore, prefix, name, location, maybeColon, color, text );
 			break;
 
 		case SAY_ADMINS:
 		case SAY_ADMINS_PUBLIC:
-			CG_Printf( "%s%s%s%s" S_COLOR_WHITE "%s ^%c%s\n",
+			CG_Printf( "%s%s%s%s^7%s ^%c%s\n",
 			           ignore, prefix,
 			           ( mode == SAY_ADMINS ) ? "[ADMIN]" : "[PLAYER]",
 			           name, maybeColon, color, text );
@@ -1052,13 +1052,13 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 
 		case SAY_AREA:
 		case SAY_AREA_TEAM:
-			CG_Printf( "%s%s<%s" S_COLOR_WHITE ">%s%s ^%c%s\n",
+			CG_Printf( "%s%s<%s^7>%s%s ^%c%s\n",
 			           ignore, prefix, name, location, maybeColon, color, text );
 			break;
 
 		case SAY_PRIVMSG:
 		case SAY_TPRIVMSG:
-			CG_Printf( "%s%s[%s" S_COLOR_WHITE " -> %s" S_COLOR_WHITE "]%s ^%c%s\n",
+			CG_Printf( "%s%s[%s^7 -> %s^7]%s ^%c%s\n",
 			           ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
 			           maybeColon, color, text );
 
@@ -1072,7 +1072,7 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 					clientNum = cg.clientNum;
 				}
 
-				CG_Printf( ">> to reply, say: /m %d [your message] <<\n", clientNum );
+				CG_Printf(_( ">> to reply, say: /m %d [your message] <<\n"), clientNum );
 			}
 
 			break;
@@ -1122,7 +1122,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	if ( !v )
 	{
-		CG_Printf( "[skipnotify]WARNING: could not find voice \"%s\"\n", voice );
+		CG_Printf(_( "[skipnotify]WARNING: could not find voice \"%s\"\n"), voice );
 		return NULL;
 	}
 
@@ -1130,8 +1130,8 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	if ( !c )
 	{
-		CG_Printf( "[skipnotify]WARNING: could not find command %d "
-		           "in voice \"%s\"\n", cmd, voice );
+		CG_Printf(_( "[skipnotify]WARNING: could not find command %d "
+		           "in voice \"%s\"\n"), cmd, voice );
 		return NULL;
 	}
 
@@ -1139,8 +1139,8 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	if ( !t )
 	{
-		CG_Printf( "[skipnotify]WARNING: could not find track %d for command %d in "
-		           "voice \"%s\"\n", track, cmd, voice );
+		CG_Printf(_( "[skipnotify]WARNING: could not find track %d for command %d in "
+		           "voice \"%s\"\n"), track, cmd, voice );
 		return NULL;
 	}
 
@@ -1428,7 +1428,7 @@ static void CG_ServerCommand( void )
 		return;
 	}
 
-	CG_Printf( "Unknown client game command: %s\n", cmd );
+	CG_Printf(_( "Unknown client game command: %s\n"), cmd );
 }
 
 /*

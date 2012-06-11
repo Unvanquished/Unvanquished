@@ -3043,8 +3043,8 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 
 	if ( !cg_weapons[ weapon ].registered )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: CG_DrawWeaponIcon: weapon %d (%s) "
-		            "is not registered\n", weapon, BG_Weapon( weapon )->name );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_DrawWeaponIcon: weapon %d (%s) "
+		            "is not registered\n"), weapon, BG_Weapon( weapon )->name );
 		return;
 	}
 

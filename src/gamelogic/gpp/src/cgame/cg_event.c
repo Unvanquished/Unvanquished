@@ -424,7 +424,7 @@ static void CG_Obituary( entityState_t *ent )
 	}
 
 	// we don't know what it was
-	CG_Printf( "%s" S_COLOR_WHITE " died\n", targetName );
+	CG_Printf(_( "%s^7 died\n"), targetName );
 }
 
 //==========================================================================

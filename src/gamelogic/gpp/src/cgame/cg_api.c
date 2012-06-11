@@ -45,7 +45,7 @@ void trap_SyscallABIVersion( int major, int minor )
 }
 
 //00.
-//Com_Printf("%s", (char *)VMA(1));
+//Com_Printf_(("%s"), (char *)VMA(1));
 void trap_Print( const char *fmt )
 {
 	syscall( CG_PRINT, fmt );
@@ -964,14 +964,14 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 }
 
 //132.
-//Com_Printf("%s%i\n", (char *)VMA(1), args[2]);
+//Com_Printf_(("%s%i\n"), (char *)VMA(1), args[2]);
 void testPrintInt( char *string, int i )
 {
 	syscall( TRAP_TESTPRINTINT, string, i );
 }
 
 //133.
-//Com_Printf("%s%f\n", (char *)VMA(1), VMF(2));
+//Com_Printf_(("%s%f\n"), (char *)VMA(1), VMF(2));
 void testPrintFloat( char *string, float f )
 {
 	syscall( TRAP_TESTPRINTFLOAT, string, PASSFLOAT( f ) );
