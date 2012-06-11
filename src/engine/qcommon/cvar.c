@@ -295,7 +295,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 
 	if ( !Cvar_ValidateString( var_name ) )
 	{
-		Com_Printf( "invalid cvar name string: %s\n", var_name );
+		Com_Printf(_( "invalid cvar name string: %s\n"), var_name );
 		var_name = "BADNAME";
 	}
 
@@ -303,7 +303,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 
 	if ( !Cvar_ValidateString( var_value ) )
 	{
-		Com_Printf( "invalid cvar value string: %s\n", var_value );
+		Com_Printf(_( "invalid cvar value string: %s\n"), var_value );
 		var_value = "BADVALUE";
 	}
 
@@ -430,7 +430,7 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 
 	if ( !Cvar_ValidateString( var_name ) )
 	{
-		Com_Printf( "invalid cvar name string: %s\n", var_name );
+		Com_Printf(_( "invalid cvar name string: %s\n"), var_name );
 		var_name = "BADNAME";
 	}
 
@@ -466,7 +466,7 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 		if ( strcmp( value, cleaned ) )
 		{
 			Com_Printf( FOREIGN_MSG );
-			Com_Printf( "Using %s instead of %s\n", cleaned, value );
+			Com_Printf(_( "Using %s instead of %s\n"), cleaned, value );
 			return Cvar_Set2( var_name, cleaned, force );
 		}
 	}
@@ -624,7 +624,7 @@ void Cvar_SetIFlag( const char *var_name )
   */
 
 	if ( !Cvar_ValidateString( var_name + 1 ) ) {
-		Com_Printf("invalid cvar name string: %s\n", var_name );
+		Com_Printf(_("invalid cvar name string: %s\n"), var_name );
 		var_name = "BADNAME";
 	}
 
@@ -804,7 +804,7 @@ void Cvar_Toggle_f( void )
 
 	if ( c < 2 )
 	{
-		Com_Printf( "%s", _("usage: toggle <variable> [<value> ...]\n") );
+		Com_Printf("%s", _("usage: toggle <variable> [<value> ...]\n") );
 		return;
 	}
 
@@ -847,7 +847,7 @@ void Cvar_Cycle_f( void )
 
 	if ( Cmd_Argc() < 4 || Cmd_Argc() > 5 )
 	{
-		Com_Printf( "usage: cycle <variable> <start> <end> [step]\n" );
+		Com_Printf(_( "usage: cycle <variable> <start> <end> [step]\n" ));
 		return;
 	}
 
@@ -908,7 +908,7 @@ void Cvar_Set_f( void )
 
 	if ( c < 3 )
 	{
-		Com_Printf( "usage: set <variable> <value> [unsafe]\n" );
+		Com_Printf(_( "usage: set <variable> <value> [unsafe]\n" ));
 		return;
 	}
 
@@ -920,7 +920,7 @@ void Cvar_Set_f( void )
 
 		if ( com_crashed != NULL && com_crashed->integer )
 		{
-			Com_Printf( "%s is unsafe. Check com_crashed.\n", Cmd_Argv( 1 ) );
+			Com_Printf(_( "%s is unsafe. Check com_crashed.\n"), Cmd_Argv( 1 ) );
 			return;
 		}
 	}
@@ -982,7 +982,7 @@ void Cvar_SetU_f( void )
 
 	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
 	{
-		Com_Printf( "usage: setu <variable> <value> [unsafe]\n" );
+		Com_Printf(_( "usage: setu <variable> <value> [unsafe]\n" ));
 		return;
 	}
 
@@ -1010,7 +1010,7 @@ void Cvar_SetS_f( void )
 
 	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
 	{
-		Com_Printf( "usage: sets <variable> <value> [unsafe]\n" );
+		Com_Printf(_( "usage: sets <variable> <value> [unsafe]\n" ));
 		return;
 	}
 
@@ -1038,7 +1038,7 @@ void Cvar_SetA_f( void )
 
 	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
 	{
-		Com_Printf( "usage: seta <variable> <value> [unsafe]\n" );
+		Com_Printf(_( "usage: seta <variable> <value> [unsafe]\n" ));
 		return;
 	}
 
@@ -1062,7 +1062,7 @@ void Cvar_Reset_f( void )
 {
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "usage: reset <variable>\n" );
+		Com_Printf(_( "usage: reset <variable>\n" ));
 		return;
 	}
 
@@ -1219,8 +1219,8 @@ void Cvar_List_f( void )
 		}
 	}
 
-	Com_Printf( "\n%i total cvars\n", i );
-	Com_Printf( "%i cvar indexes\n", cvar_numIndexes );
+	Com_Printf(_( "\n%i total cvars\n"), i );
+	Com_Printf(_( "%i cvar indexes\n"), cvar_numIndexes );
 }
 
 /*

@@ -655,7 +655,7 @@ static int CM_GridPlane( int gridPlanes[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ][ 2 ], 
 	}
 
 	// should never happen
-	Com_Printf( "WARNING: CM_GridPlane unresolvable\n" );
+	Com_Printf(_( "WARNING: CM_GridPlane unresolvable\n" ));
 	return -1;
 }
 
@@ -967,7 +967,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 			{
 				if ( facet->numBorders > MAX_FACET_BEVELS )
 				{
-					Com_Printf( "ERROR: too many bevels\n" );
+					Com_Printf(_( "ERROR: too many bevels\n" ));
 				}
 
 				facet->borderPlanes[ facet->numBorders ] = CM_FindPlane2( plane, &flipped );
@@ -1061,7 +1061,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 				{
 					if ( facet->numBorders > MAX_FACET_BEVELS )
 					{
-						Com_Printf( "ERROR: too many bevels\n" );
+						Com_Printf(_( "ERROR: too many bevels\n" ));
 					}
 
 					facet->borderPlanes[ facet->numBorders ] = CM_FindPlane2( plane, &flipped );
@@ -1070,7 +1070,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 					{
 						if ( facet->borderPlanes[ facet->numBorders ] == facet->borderPlanes[ k ] )
 						{
-							Com_Printf( "WARNING: bevel plane already used\n" );
+							Com_Printf(_( "WARNING: bevel plane already used\n" ));
 						}
 					}
 

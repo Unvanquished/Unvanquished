@@ -1501,6 +1501,8 @@ int  Parse_SourceFileAndLine( int handle, char *filename, int *line );
 void Com_GetHunkInfo( int *hunkused, int *hunkexpected );
 void Com_RandomBytes( byte *string, int len );
 
+#define _(x) Trans_Gettext(x)
+
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));
 const char* Trans_GettextGame( const char *msgid ) __attribute__((format_arg(1)));

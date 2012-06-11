@@ -87,7 +87,7 @@ void DL_InitDownload()
 
 	dl_multi = curl_multi_init();
 
-	Com_Printf( "Client download subsystem initialized\n" );
+	Com_Printf(_( "Client download subsystem initialized\n" ));
 	dl_initialized = 1;
 }
 
@@ -124,7 +124,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	if ( dl_request )
 	{
-		Com_Printf( "ERROR: DL_BeginDownload called with a download request already active\n" );
+		Com_Printf(_( "ERROR: DL_BeginDownload called with a download request already active\n" ));
 		return 0;
 	}
 
@@ -139,7 +139,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	if ( !dl_file )
 	{
-		Com_Printf( "ERROR: DL_BeginDownload unable to open '%s' for writing\n", localName );
+		Com_Printf(_( "ERROR: DL_BeginDownload unable to open '%s' for writing\n"), localName );
 		return 0;
 	}
 

@@ -298,7 +298,7 @@ void VM_LoadSymbols( vm_t *vm )
 
 	if ( !mapfile.c )
 	{
-		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
+		Com_Printf(_( "Couldn't load symbol file: %s\n"), symbols );
 		return;
 	}
 
@@ -331,7 +331,7 @@ void VM_LoadSymbols( vm_t *vm )
 
 		if ( !token[ 0 ] )
 		{
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
+			Com_Printf(_( "WARNING: incomplete line at end of file\n" ));
 			break;
 		}
 
@@ -341,7 +341,7 @@ void VM_LoadSymbols( vm_t *vm )
 
 		if ( !token[ 0 ] )
 		{
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
+			Com_Printf(_( "WARNING: incomplete line at end of file\n" ));
 			break;
 		}
 
@@ -364,7 +364,7 @@ void VM_LoadSymbols( vm_t *vm )
 	}
 
 	vm->numSymbols = count;
-	Com_Printf( "%i symbols parsed from %s\n", count, symbols );
+	Com_Printf(_( "%i symbols parsed from %s\n"), count, symbols );
 	FS_FreeFile( mapfile.v );
 }
 
@@ -544,13 +544,13 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	// load the image
 	Com_sprintf( filename, sizeof( filename ), "vm/%s.qvm", vm->name );
-	Com_Printf( "Loading vm file %s...\n", filename );
+	Com_Printf(_( "Loading vm file %s...\n"), filename );
 
 	i = FS_ReadFileCheck( filename, &header.v );
 
 	if ( !header.h )
 	{
-		Com_Printf( "Failed.\n" );
+		Com_Printf(_( "Failed.\n" ));
 		VM_Free( vm );
 		return NULL;
 	}
@@ -562,7 +562,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	if ( LittleLong( header.h->vmMagic ) == VM_MAGIC_VER2 )
 	{
-		Com_Printf( "...which has vmMagic VM_MAGIC_VER2\n" );
+		Com_Printf(_( "...which has vmMagic VM_MAGIC_VER2\n" ));
 
 		// byte swap the header
 		for ( i = 0; i < sizeof( vmHeader_t ) / 4; i++ )
@@ -643,7 +643,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	if ( header.h->vmMagic == VM_MAGIC_VER2 )
 	{
 		vm->numJumpTableTargets = header.h->jtrgLength >> 2;
-		Com_Printf( "Loading %d jump table targets\n", vm->numJumpTableTargets );
+		Com_Printf(_( "Loading %d jump table targets\n"), vm->numJumpTableTargets );
 
 		if ( alloc )
 		{
@@ -782,7 +782,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 			return vm;
 		}
 
-		Com_Printf( "Failed loading dll, trying next\n" );
+		Com_Printf(_( "Failed loading dll, trying next\n" ));
 #if USE_LLVM
 		interpret = VMI_BYTECODE;
 #endif
@@ -792,7 +792,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	if ( !onlyQVM )
 	{
 		// try to load the LLVM
-		Com_Printf( "Loading llvm file %s.\n", vm->name );
+		Com_Printf(_( "Loading llvm file %s.\n"), vm->name );
 		vm->llvmModuleProvider = VM_LoadLLVM( vm, VM_DllSyscall );
 
 		if ( vm->llvmModuleProvider )
@@ -800,7 +800,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 			return vm;
 		}
 
-		Com_Printf( "Failed to load llvm, looking for qvm.\n" );
+		Com_Printf(_( "Failed to load llvm, looking for qvm.\n" ));
 	}
 #endif // USE_LLVM
 
@@ -825,7 +825,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 
 	if ( interpret >= VMI_COMPILED )
 	{
-		Com_Printf( "Architecture doesn't have a bytecode compiler, using interpreter\n" );
+		Com_Printf(_( "Architecture doesn't have a bytecode compiler, using interpreter\n" ));
 		interpret = VMI_BYTECODE;
 	}
 
@@ -855,7 +855,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	vm->programStack = vm->dataMask + 1;
 	vm->stackBottom = vm->programStack - PROGRAM_STACK_SIZE;
 
-	Com_Printf( "%s loaded in %d bytes on the hunk\n", module, remaining - Hunk_MemoryRemaining() );
+	Com_Printf(_( "%s loaded in %d bytes on the hunk\n"), module, remaining - Hunk_MemoryRemaining() );
 
 	VM_InitSanity( vm );
 
@@ -1181,7 +1181,7 @@ void VM_VmInfo_f( void )
 	vm_t *vm;
 	int  i;
 
-	Com_Printf( "Registered virtual machines:\n" );
+	Com_Printf(_( "Registered virtual machines:\n" ));
 
 	for ( i = 0; i < MAX_VM; i++ )
 	{

@@ -402,12 +402,12 @@ CM_TrianglePlane
         p = trianglePlanes[tri];
         if(p != -1)
         {
-                //Com_Printf("CM_TrianglePlane %i %i\n", tri, p);
+                //Com_Printf_(("CM_TrianglePlane %i %i\n"), tri, p);
                 return p;
         }
 
         // should never happen
-        Com_Printf("WARNING: CM_TrianglePlane unresolvable\n");
+        Com_Printf"%s", _(("WARNING: CM_TrianglePlane unresolvable\n"));
         return -1;
 }*/
 
@@ -424,7 +424,7 @@ static int CM_EdgePlaneNum(cTriangleSoup_t * triSoup, int tri, int edgeType)
         vec3_t          up;
         int             p;
 
-//  Com_Printf("CM_EdgePlaneNum: %i %i\n", tri, edgeType);
+//  Com_Printf_(("CM_EdgePlaneNum: %i %i\n"), tri, edgeType);
 
         switch (edgeType)
         {
@@ -711,7 +711,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 			{
 				if ( facet->numBorders > MAX_FACET_BEVELS )
 				{
-					Com_Printf( "ERROR: too many bevels\n" );
+					Com_Printf(_( "ERROR: too many bevels\n" ));
 				}
 
 				facet->borderPlanes[ facet->numBorders ] = CM_FindPlane2( plane, &flipped );
@@ -806,7 +806,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 				{
 					if ( facet->numBorders > MAX_FACET_BEVELS )
 					{
-						Com_Printf( "ERROR: too many bevels\n" );
+						Com_Printf(_( "ERROR: too many bevels\n" ));
 					}
 
 					facet->borderPlanes[ facet->numBorders ] = CM_FindPlane2( plane, &flipped );
@@ -815,7 +815,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 					{
 						if ( facet->borderPlanes[ facet->numBorders ] == facet->borderPlanes[ k ] )
 						{
-							Com_Printf( "WARNING: bevel plane already used\n" );
+							Com_Printf(_( "WARNING: bevel plane already used\n" ));
 						}
 					}
 
@@ -975,7 +975,7 @@ static void CM_SurfaceCollideFromTriangleSoup( cTriangleSoup_t *triSoup, cSurfac
 
 		triSoup->trianglePlanes[ i ] = CM_FindPlane( p1, p2, p3 );
 
-		//Com_Printf("trianglePlane[%i] = %i\n", i, trianglePlanes[i]);
+		//Com_Printf_(("trianglePlane[%i] = %i\n"), i, trianglePlanes[i]);
 	}
 
 	// create the borders for each triangle

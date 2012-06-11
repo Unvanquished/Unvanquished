@@ -128,12 +128,12 @@ BOOL HTAlertCallback_confirm( HTRequest *request, HTAlertOpcode op,
 	// some predefined messages we know the answer to
 	if ( msgnum == HT_MSG_FILE_REPLACE )
 	{
-		Com_Printf( "Replace existing download target file\n" );
+		Com_Printf(_( "Replace existing download target file\n" ));
 		return YES;
 	}
 
 	// anything else, means we abort
-	Com_Printf( "Aborting, unknown libwww confirm message id: %d\n", msgnum );
+	Com_Printf(_( "Aborting, unknown libwww confirm message id: %d\n"), msgnum );
 	HTEventList_stopLoop();
 	return NO;
 }
@@ -147,7 +147,7 @@ BOOL HTAlertCallback_confirm( HTRequest *request, HTAlertOpcode op,
 BOOL HTAlertCallback_prompt( HTRequest *request, HTAlertOpcode op,
                              int msgnum, const char *dfault, void *input, HTAlertPar *reply )
 {
-	Com_Printf( "Aborting, libwww prompt message id: %d (prompted for a login/password?)\n", msgnum );
+	Com_Printf(_( "Aborting, libwww prompt message id: %d (prompted for a login/password?)\n"), msgnum );
 	HTEventList_stopLoop();
 	return NO;
 }
@@ -186,7 +186,7 @@ void DL_InitDownload()
 	HTAlert_add( HTAlertCallback_confirm, HT_A_CONFIRM );
 	HTAlert_add( HTAlertCallback_prompt, HT_A_PROMPT | HT_A_SECRET | HT_A_USER_PW );
 
-	Com_Printf( "Client download subsystem initialized\n" );
+	Com_Printf(_( "Client download subsystem initialized\n" ));
 	dl_initialized = 1;
 }
 
@@ -230,7 +230,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	if ( dl_running )
 	{
-		Com_Printf( "ERROR: DL_BeginDownload called with a download request already active\n" );
+		Com_Printf(_( "ERROR: DL_BeginDownload called with a download request already active\n" ));
 		return 0;
 	}
 

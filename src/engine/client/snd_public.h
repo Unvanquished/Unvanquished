@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#undef _
 #define _(x) Trans_Gettext(x)
 
 void S_Init( void );

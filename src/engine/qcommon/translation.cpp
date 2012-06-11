@@ -59,7 +59,7 @@ extern "C" void Trans_UpdateLanguage_f( void )
 {
 	trans_dict = trans_manager.get_dictionary( Language::from_env( std::string( language->string ) ) );
 	trans_dictgame = trans_managergame.get_dictionary( Language::from_env( std::string( language->string ) ) );
-	Com_Printf( "Switched language to %s\n", Language::from_env( std::string( language->string ) ).get_name().c_str() );
+	Com_Printf(_( "Switched language to %s\n"), Language::from_env( std::string( language->string ) ).get_name().c_str() );
 }
 	
 
@@ -104,7 +104,7 @@ extern "C" void Trans_Init( void )
 		}
 		else
 		{
-			Com_Printf( "^1ERROR: Could not open client translation: %s\n", poFiles[ i ] );
+			Com_Printf(_( "^1ERROR: Could not open client translation: %s\n"), poFiles[ i ] );
 		}
 		
 		if( FS_ReadFile( va( "translation/game/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
@@ -117,7 +117,7 @@ extern "C" void Trans_Init( void )
 		}
 		else
 		{
-			Com_Printf( "^1ERROR: Could not open game translation: %s\n", poFiles[ i ] );
+			Com_Printf(_( "^1ERROR: Could not open game translation: %s\n"), poFiles[ i ] );
 		}
 	}
 	FS_FreeFileList( poFiles );
@@ -131,7 +131,7 @@ extern "C" void Trans_Init( void )
 	}
 	Cvar_Set( "trans_languages", langList );
 	Cvar_Set( "trans_encodings", encList );
-	Com_Printf( "Loaded %lu language(s)\n", lang.size() );
+	Com_Printf(_( "Loaded %lu language(s)\n"), lang.size() );
 	Cmd_AddCommand( "updatelanguage", Trans_UpdateLanguage_f );
 	enabled = true;
 }

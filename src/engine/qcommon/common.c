@@ -251,7 +251,7 @@ int QDECL Com_VPrintf( const char *fmt, va_list argptr )
 			newtime = localtime( &aclock );
 
 			logfile = FS_FOpenFileWrite( "etconsole.log" );
-			Com_Printf( "logfile opened on %s\n", asctime( newtime ) );
+			Com_Printf(_( "logfile opened on %s\n"), asctime( newtime ) );
 
 			if ( com_logfile->integer > 1 )
 			{
@@ -285,7 +285,7 @@ void QDECL Com_Printf( const char *fmt, ... )
 ================
 Com_DPrintf
 
-A Com_Printf that only shows up if the "developer" cvar is set
+A Com_Printf that only shows up if the_( "developer" )cvar is set
 ================
 */
 void QDECL Com_DPrintf( const char *fmt, ... )
@@ -392,7 +392,7 @@ void QDECL Com_Error( int code, const char *fmt, ... )
 	else if ( code == ERR_DISCONNECT )
 	{
 		VM_Forced_Unload_Start();
-		Com_Printf( "********************\nERROR: %s\n********************\n", com_errorMessage );
+		Com_Printf(_( "********************\nERROR: %s\n********************\n"), com_errorMessage );
 		SV_Shutdown( va( "Server crashed: %s\n", com_errorMessage ) );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
@@ -674,7 +674,7 @@ void Info_Print( const char *s )
 
 		if ( !*s )
 		{
-			Com_Printf( "MISSING VALUE\n" );
+			Com_Printf(_( "MISSING VALUE\n" ));
 			return;
 		}
 
@@ -1631,17 +1631,17 @@ void Com_Meminfo_f( void )
 
 		if ( ( byte * ) block + block->size != ( byte * ) block->next )
 		{
-			Com_Printf( "ERROR: block size does not touch the next block\n" );
+			Com_Printf(_( "ERROR: block size does not touch the next block\n" ));
 		}
 
 		if ( block->next->prev != block )
 		{
-			Com_Printf( "ERROR: next block doesn't have proper back link\n" );
+			Com_Printf(_( "ERROR: next block doesn't have proper back link\n" ));
 		}
 
 		if ( !block->tag && !block->next->tag )
 		{
-			Com_Printf( "ERROR: two consecutive free blocks\n" );
+			Com_Printf(_( "ERROR: two consecutive free blocks\n" ));
 		}
 	}
 
@@ -1767,7 +1767,7 @@ void Com_TouchMemory( void )
 
 	end = Sys_Milliseconds();
 
-	Com_Printf( "Com_TouchMemory: %i msec\n", end - start );
+	Com_Printf(_( "Com_TouchMemory: %i msec\n"), end - start );
 }
 
 /*
@@ -1801,7 +1801,7 @@ static void Com_DetectSSE( void )
 #endif
 		Q_VMftol = qvmftolsse;
 
-		Com_Printf( "Have SSE support\n" );
+		Com_Printf(_( "Have SSE support\n" ));
 #if !idx64
 	}
 
@@ -1811,7 +1811,7 @@ static void Com_DetectSSE( void )
 		Q_VMftol = qvmftolx87;
 		Q_SnapVector = qsnapvectorx87;
 
-		Com_Printf( "No SSE support on this machine\n" );
+		Com_Printf(_( "No SSE support on this machine\n" ));
 	}
 
 #endif
@@ -2134,7 +2134,7 @@ void Hunk_Clear( void )
 	Cvar_Set( "com_hunkused", va( "%i", hunk_low.permanent + hunk_high.permanent ) );
 	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
-	Com_Printf( "Hunk_Clear: reset the hunk ok\n" );
+	Com_Printf(_( "Hunk_Clear: reset the hunk ok\n" ));
 	VM_Clear(); // (SA) FIXME:TODO: was commented out in wolf
 #ifdef HUNK_DEBUG
 	hunkblocks = NULL;
@@ -2341,7 +2341,7 @@ void Hunk_FreeTempMemory( void *buf )
 		}
 		else
 		{
-			Com_Printf( "Hunk_FreeTempMemory: not the final block\n" );
+			Com_Printf(_( "Hunk_FreeTempMemory: not the final block\n" ));
 		}
 	}
 	else
@@ -2352,7 +2352,7 @@ void Hunk_FreeTempMemory( void *buf )
 		}
 		else
 		{
-			Com_Printf( "Hunk_FreeTempMemory: not the final block\n" );
+			Com_Printf(_( "Hunk_FreeTempMemory: not the final block\n" ));
 		}
 	}
 }
@@ -2462,7 +2462,7 @@ void Com_InitJournaling( void )
 	{
 		if ( com_journal->string && com_journal->string[ 0 ] == '_' )
 		{
-			Com_Printf( "Replaying journaled events\n" );
+			Com_Printf(_( "Replaying journaled events\n" ));
 			FS_FOpenFileRead( va( "journal%s.dat", com_journal->string ), &com_journalFile, qtrue );
 			FS_FOpenFileRead( va( "journal_data%s.dat", com_journal->string ), &com_journalDataFile, qtrue );
 			com_journal->integer = 2;
@@ -2487,14 +2487,14 @@ void Com_InitJournaling( void )
 
 		if ( com_journal->integer == 1 )
 		{
-			Com_Printf( "Journaling events\n" );
+			Com_Printf(_( "Journaling events\n" ));
 			com_journalFile = FS_FOpenFileWrite( va( "journal_%04d.dat", i ) );
 			com_journalDataFile = FS_FOpenFileWrite( va( "journal_data_%04d.dat", i ) );
 		}
 		else if ( com_journal->integer == 2 )
 		{
 			i--;
-			Com_Printf( "Replaying journaled events\n" );
+			Com_Printf(_( "Replaying journaled events\n" ));
 			FS_FOpenFileRead( va( "journal_%04d.dat", i ), &com_journalFile, qtrue );
 			FS_FOpenFileRead( va( "journal_data_%04d.dat", i ), &com_journalDataFile, qtrue );
 		}
@@ -2505,7 +2505,7 @@ void Com_InitJournaling( void )
 		Cvar_Set( "journal", "0" );
 		com_journalFile = 0;
 		com_journalDataFile = 0;
-		Com_Printf( "Couldn't open journal files\n" );
+		Com_Printf(_( "Couldn't open journal files\n" ));
 	}
 }
 
@@ -2540,7 +2540,7 @@ void Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int p
 
 	if ( eventHead - eventTail >= MAX_QUEUED_EVENTS )
 	{
-		Com_Printf( "Com_QueueEvent: overflow\n" );
+		Com_Printf(_( "Com_QueueEvent: overflow\n" ));
 
 		// we are discarding an event, but don't leak memory
 		if ( ev->evPtr )
@@ -2730,7 +2730,7 @@ void Com_PushEvent( sysEvent_t *event )
 		if ( !printedWarning )
 		{
 			printedWarning = qtrue;
-			Com_Printf( "WARNING: Com_PushEvent overflow\n" );
+			Com_Printf(_( "WARNING: Com_PushEvent overflow\n" ));
 		}
 
 		if ( ev->evPtr )
@@ -2790,7 +2790,7 @@ void Com_RunAndTimeServerPacket( netadr_t *evFrom, msg_t *buf )
 
 		if ( com_speeds->integer == 3 )
 		{
-			Com_Printf( "SV_PacketEvent time: %i\n", msec );
+			Com_Printf(_( "SV_PacketEvent time: %i\n"), msec );
 		}
 	}
 }
@@ -2916,7 +2916,7 @@ int Com_EventLoop( void )
 				// enough to hold fragment reassembly
 				if ( ( unsigned ) buf.cursize > buf.maxsize )
 				{
-					Com_Printf( "Com_EventLoop: oversize packet\n" );
+					Com_Printf(_( "Com_EventLoop: oversize packet\n" ));
 					continue;
 				}
 
@@ -3007,7 +3007,7 @@ static void Com_Freeze_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "freeze <seconds>\n" );
+		Com_Printf(_( "freeze <seconds>\n" ));
 		return;
 	}
 
@@ -3058,13 +3058,13 @@ void Com_SetRecommended()
 
 	if ( goodVideo )
 	{
-		Com_Printf( "Found high quality video and slow CPU\n" );
+		Com_Printf(_( "Found high quality video and slow CPU\n" ));
 		Cbuf_AddText( "exec preset_fast.cfg\n" );
 		Cvar_Set( "com_recommended", "2" );
 	}
 	else
 	{
-		Com_Printf( "Found low quality video and slow CPU\n" );
+		Com_Printf(_( "Found low quality video and slow CPU\n" ));
 		Cbuf_AddText( "exec preset_fastest.cfg\n" );
 		Cvar_Set( "com_recommended", "3" );
 	}
@@ -3221,7 +3221,7 @@ void Com_TrackProfile( char *profile_path )
 {
 	char temp_fs_gamedir[ MAX_OSPATH ];
 
-//  Com_Printf( "Com_TrackProfile: Tracking profile [%s] [%s]\n", fs_gamedir, profile_path );
+//  Com_Printf(_( "Com_TrackProfile: Tracking profile [%s] [%s]\n"), fs_gamedir, profile_path );
 	//have we changed fs_game(dir)?
 	if ( strcmp( last_fs_gamedir, fs_gamedir ) )
 	{
@@ -3234,7 +3234,7 @@ void Com_TrackProfile( char *profile_path )
 
 			if ( FS_FileExists( last_profile_path ) )
 			{
-				Com_Printf( "Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path );
+				Com_Printf(_( "Com_TrackProfile: Deleting old pid file [%s] [%s]\n"), fs_gamedir, last_profile_path );
 				FS_Delete( last_profile_path );
 			}
 
@@ -3264,7 +3264,7 @@ qboolean Com_WriteProfile( char *profile_path )
 
 	if ( f < 0 )
 	{
-		Com_Printf( "Com_WriteProfile: Can't write %s.\n", profile_path );
+		Com_Printf(_( "Com_WriteProfile: Can't write %s.\n"), profile_path );
 		return qfalse;
 	}
 
@@ -3388,7 +3388,7 @@ void Com_Init( char *commandLine )
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
 #ifndef _DEBUG
-					Com_Printf( "^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n",
+					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n"),
 					            cl_profileStr );
 					// ydnar: set crashed state
 					Cbuf_AddText( "set com_crashed 1\n" );
@@ -3398,7 +3398,7 @@ void Com_Init( char *commandLine )
 				// bani - write a new one
 				if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
-					Com_Printf( "^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr );
+					Com_Printf(_( "^3WARNING: couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
 				}
 
 				// exec the config
@@ -3568,7 +3568,7 @@ void Com_Init( char *commandLine )
 	}
 	
 	com_fullyInitialized = qtrue;
-	Com_Printf( "%s", _("--- Common Initialization Complete ---\n") );
+	Com_Printf( "%s", _("--- Common Initialization Complete ---\n"));
 }
 
 //==================================================================
@@ -3581,7 +3581,7 @@ void Com_WriteConfigToFile( const char *filename )
 
 	if ( !f )
 	{
-		Com_Printf( "Couldn't write %s.\n", filename );
+		Com_Printf(_( "Couldn't write %s.\n"), filename );
 		return;
 	}
 
@@ -3639,13 +3639,13 @@ void Com_WriteConfig_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "Usage: writeconfig <filename>\n" );
+		Com_Printf(_( "Usage: writeconfig <filename>\n" ));
 		return;
 	}
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
-	Com_Printf( "Writing %s.\n", filename );
+	Com_Printf(_( "Writing %s.\n"), filename );
 	Com_WriteConfigToFile( filename );
 }
 
@@ -3685,7 +3685,7 @@ int Com_ModifyMsec( int msec )
 		// of time.
 		if ( msec > 500 && msec < 500000 )
 		{
-			Com_Printf( "Hitch warning: %i msec frame time\n", msec );
+			Com_Printf(_( "Hitch warning: %i msec frame time\n"), msec );
 		}
 
 		clampTime = 5000;
@@ -3883,12 +3883,12 @@ void Com_Frame( void )
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( com_watchdog->integer - 4 ) * 1000 )
 			{
-				Com_Printf( "WARNING: watchdog will trigger in 4 seconds\n" );
+				Com_Printf(_( "WARNING: watchdog will trigger in 4 seconds\n" ));
 				watchWarn = qtrue;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )
 			{
-				Com_Printf( "Idle Server with no map - triggering watchdog\n" );
+				Com_Printf(_( "Idle Server with no map - triggering watchdog\n" ));
 				watchdogTime = 0;
 				watchWarn = qfalse;
 
@@ -3931,7 +3931,7 @@ void Com_Frame( void )
 		extern int c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces;
 		extern int c_pointcontents;
 
-		Com_Printf( "%4i traces  (%ib %ip %it) %4i points\n", c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces,
+		Com_Printf(_( "%4i traces  (%ib %ip %it) %4i points\n"), c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces,
 		            c_pointcontents );
 		c_traces = 0;
 		c_brush_traces = 0;
@@ -4540,7 +4540,7 @@ void Com_RandomBytes( byte *string, int len )
 		return;
 	}
 
-	Com_Printf( "Com_RandomBytes: using weak randomization\n" );
+	Com_Printf(_( "Com_RandomBytes: using weak randomization\n" ));
 
 	for ( i = 0; i < len; i++ )
 	{
@@ -4604,7 +4604,7 @@ void Hist_Load( void )
 
 	if ( !f )
 	{
-		Com_Printf( "Couldn't read %s.\n", CON_HISTORY_FILE );
+		Com_Printf(_( "Couldn't read %s.\n"), CON_HISTORY_FILE );
 		return;
 	}
 
@@ -4653,7 +4653,7 @@ static void Hist_Save( void )
 
 	if ( !f )
 	{
-		Com_Printf( "Couldn't write %s.\n", CON_HISTORY_FILE );
+		Com_Printf(_( "Couldn't write %s.\n"), CON_HISTORY_FILE );
 		return;
 	}
 
