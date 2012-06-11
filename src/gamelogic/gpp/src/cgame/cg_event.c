@@ -160,15 +160,15 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_FLAMER_SPLASH:
 				if ( gender == GENDER_FEMALE )
 				{
-					message = "%s ^7toasted herself\n";
+					message = _("%s ^7toasted herself\n");
 				}
 				else if ( gender == GENDER_NEUTER )
 				{
-					message = "%s ^7toasted itself\n";
+					message = _("%s ^7toasted itself\n");
 				}
 				else
 				{
-					message = "%s ^7toasted himself\n";
+					message = _("%s ^7toasted himself\n");
 				}
 
 				break;
@@ -176,15 +176,15 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_LCANNON_SPLASH:
 				if ( gender == GENDER_FEMALE )
 				{
-					message = "%s ^7irradiated herself\n";
+					message = _("%s ^7irradiated herself\n");
 				}
 				else if ( gender == GENDER_NEUTER )
 				{
-					message = "%s ^7irradiated itself\n";
+					message = _("%s ^7irradiated itself\n");
 				}
 				else
 				{
-					message = "%s ^7irradiated himself\n";
+					message = _("%s ^7irradiated himself\n");
 				}
 
 				break;
@@ -192,15 +192,15 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_GRENADE:
 				if ( gender == GENDER_FEMALE )
 				{
-					message = "%s ^7blew herself up\n";
+					message = _("%s ^7blew herself up\n");
 				}
 				else if ( gender == GENDER_NEUTER )
 				{
-					message = "%s ^7blew itself up\n";
+					message = _("%s ^7blew itself up\n");
 				}
 				else
 				{
-					message = "%s ^7blew himself up\n";
+					message = _("%s ^7blew himself up\n");
 				}
 
 				break;
@@ -208,15 +208,15 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_LEVEL3_BOUNCEBALL:
 				if ( gender == GENDER_FEMALE )
 				{
-					message = "%s ^7sniped herself\n";
+					message = _("%s ^7sniped herself\n");
 				}
 				else if ( gender == GENDER_NEUTER )
 				{
-					message = "%s ^7sniped itself\n";
+					message = _("%s ^7sniped itself\n");
 				}
 				else
 				{
-					message = "%s ^7sniped himself\n";
+					message = _("%s ^7sniped himself\n");
 				}
 
 				break;
@@ -224,15 +224,15 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_PRIFLE:
 				if ( gender == GENDER_FEMALE )
 				{
-					message = "%s ^7pulse rifled herself\n";
+					message = _("%s ^7pulse rifled herself\n");
 				}
 				else if ( gender == GENDER_NEUTER )
 				{
-					message = "%s ^7pulse rifled itself\n";
+					message = _("%s ^7pulse rifled itself\n");
 				}
 				else
 				{
-					message = "%s ^7pulse rifled himself\n";
+					message = _("%s ^7pulse rifled himself\n");
 				}
 
 				break;
@@ -240,15 +240,15 @@ static void CG_Obituary( entityState_t *ent )
 			default:
 				if ( gender == GENDER_FEMALE )
 				{
-					message = "%s ^7killed herself\n";
+					message = _("%s ^7killed herself\n");
 				}
 				else if ( gender == GENDER_NEUTER )
 				{
-					message = "%s ^7killed itself\n";
+					message = _("%s ^7killed itself\n");
 				}
 				else
 				{
-					message = "%s ^7killed himself\n";
+					message = _("%s ^7killed himself\n");
 				}
 
 				break;
@@ -283,124 +283,124 @@ static void CG_Obituary( entityState_t *ent )
 		switch ( mod )
 		{
 			case MOD_PAINSAW:
-				message = "%s ^7was sawn by %s%s\n";
+				message = _("%s ^7was sawn by %s%s\n");
 				break;
 
 			case MOD_BLASTER:
-				message = "%s ^7was blasted by %s%s\n";
+				message = _("%s ^7was blasted by %s%s\n");
 				break;
 
 			case MOD_MACHINEGUN:
-				message = "%s ^7was machinegunned by %s%s\n";
+				message = _("%s ^7was machinegunned by %s%s\n");
 				break;
 
 			case MOD_CHAINGUN:
-				message = "%s ^7was chaingunned by %s%s\n";
+				message = _("%s ^7was chaingunned by %s%s\n");
 				break;
 
 			case MOD_SHOTGUN:
-				message = "%s ^7was gunned down by %s%s\n";
+				message = _("%s ^7was gunned down by %s%s\n");
 				break;
 
 			case MOD_PRIFLE:
-				message = "%s ^7was pulse rifled by %s%s\n";
+				message = _("%s ^7was pulse rifled by %s%s\n");
 				break;
 
 			case MOD_MDRIVER:
-				message = "%s ^7was mass driven by %s%s\n";
+				message = _("%s ^7was mass driven by %s%s\n");
 				break;
 
 			case MOD_LASGUN:
-				message = "%s ^7was lasgunned by %s%s\n";
+				message = _("%s ^7was lasgunned by %s%s\n");
 				break;
 
 			case MOD_FLAMER:
-				message = "%s ^7was grilled by %s%s^7's flamer\n";
+				message = _("%s ^7was grilled by %s%s^7's flamer\n");
 				break;
 
 			case MOD_FLAMER_SPLASH:
-				message = "%s ^7was toasted by %s%s^7's flamer\n";
+				message = _("%s ^7was toasted by %s%s^7's flamer\n");
 				break;
 
 			case MOD_LCANNON:
-				message = "%s ^7felt the full force of %s%s^7's lucifer cannon\n";
+				message = _("%s ^7felt the full force of %s%s^7's lucifer cannon\n");
 				break;
 
 			case MOD_LCANNON_SPLASH:
-				message = "%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n";
+				message = _("%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n");
 				break;
 
 			case MOD_GRENADE:
-				message = "%s ^7couldn't escape %s%s^7's grenade\n";
+				message = _("%s ^7couldn't escape %s%s^7's grenade\n");
 				break;
 
 			case MOD_ABUILDER_CLAW:
-				message = "%s ^7should leave %s%s^7's buildings alone\n";
+				message = _("%s ^7should leave %s%s^7's buildings alone\n");
 				break;
 
 			case MOD_LEVEL0_BITE:
-				message = "%s ^7was bitten by %s%s\n";
+				message = _("%s ^7was bitten by %s%s\n");
 				break;
 
 			case MOD_LEVEL1_CLAW:
-				message = "%s ^7was swiped by %s%s^7's %s\n";
+				message = _("%s ^7was swiped by %s%s^7's %s\n");
 				attackerClass = PCL_ALIEN_LEVEL1;
 				break;
 
 			case MOD_LEVEL2_CLAW:
-				message = "%s ^7was clawed by %s%s^7's %s\n";
+				message = _("%s ^7was clawed by %s%s^7's %s\n");
 				attackerClass = PCL_ALIEN_LEVEL2;
 				break;
 
 			case MOD_LEVEL2_ZAP:
-				message = "%s ^7was zapped by %s%s^7's %s\n";
+				message = _("%s ^7was zapped by %s%s^7's %s\n");
 				attackerClass = PCL_ALIEN_LEVEL2;
 				break;
 
 			case MOD_LEVEL3_CLAW:
-				message = "%s ^7was chomped by %s%s^7's %s\n";
+				message = _("%s ^7was chomped by %s%s^7's %s\n");
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL3_POUNCE:
-				message = "%s ^7was pounced upon by %s%s^7's %s\n";
+				message = _("%s ^7was pounced upon by %s%s^7's %s\n");
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL3_BOUNCEBALL:
-				message = "%s ^7was sniped by %s%s^7's %s\n";
+				message = _("%s ^7was sniped by %s%s^7's %s\n");
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL4_CLAW:
-				message = "%s ^7was mauled by %s%s^7's %s\n";
+				message = _("%s ^7was mauled by %s%s^7's %s\n");
 				attackerClass = PCL_ALIEN_LEVEL4;
 				break;
 
 			case MOD_LEVEL4_TRAMPLE:
-				message = "%s ^7should have gotten out of the way of %s%s^7's %s\n";
+				message = _("%s ^7should have gotten out of the way of %s%s^7's %s\n");
 				attackerClass = PCL_ALIEN_LEVEL4;
 				break;
 
 			case MOD_LEVEL4_CRUSH:
-				message = "%s ^7was crushed under %s%s^7's weight\n";
+				message = _("%s ^7was crushed under %s%s^7's weight\n");
 				break;
 
 			case MOD_POISON:
-				message = "%s ^7should have used a medkit against %s%s^7's poison\n";
+				message = _("%s ^7should have used a medkit against %s%s^7's poison\n");
 				break;
 
 			case MOD_LEVEL1_PCLOUD:
-				message = "%s ^7was gassed by %s%s^7's %s\n";
+				message = _("%s ^7was gassed by %s%s^7's %s\n");
 				attackerClass = PCL_ALIEN_LEVEL1;
 				break;
 
 			case MOD_TELEFRAG:
-				message = "%s ^7tried to invade %s%s^7's personal space\n";
+				message = _("%s ^7tried to invade %s%s^7's personal space\n");
 				break;
 
 			default:
-				message = "%s ^7was killed by %s%s\n";
+				message = _("%s ^7was killed by %s%s\n");
 				break;
 		}
 
@@ -409,13 +409,13 @@ static void CG_Obituary( entityState_t *ent )
 			// Argument order: victim, "TEAMMATE" (if appropriate), attacker, alien class
 			CG_Printf( message,
 			           targetName,
-			           ( teamKill ) ? "^1TEAMMATE^7 " : "",
+			           ( teamKill ) ? _("^1TEAMMATE^7 ") : "",
 			           attackerName,
 			           ( attackerClass != -1 ) ? BG_ClassConfig( attackerClass )->humanName : NULL );
 
 			if ( teamKill && attacker == cg.clientNum )
 			{
-				CG_CenterPrint( va( "You killed ^1TEAMMATE^7 %s", targetName ),
+				CG_CenterPrint( va( _("You killed ^1TEAMMATE^7 %s"), targetName ),
 				                SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 			}
 
