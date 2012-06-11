@@ -53,6 +53,15 @@ typedef struct gclient_s gclient_t;
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
 #define FL_FORCE_GESTURE           0x00008000 // spawn point just for bots
 
+// localisation
+#if 0
+#	define _(text)              gettext( text )
+#	define N_(one, many, count) ngettext( (one), (many), (count) )
+#else
+#	define _(text)              Gettext(text)
+#	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
+#endif
+
 // movers are things like doors, plats, buttons, etc
 typedef enum
 {
