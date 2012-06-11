@@ -715,7 +715,7 @@ void CL_CaptureVoip( void )
 				clc.voipOutgoingDataSize = wpos;
 				clc.voipOutgoingDataFrames = speexFrames;
 
-				Com_DPrintf(_( "VoIP: Send %d frames, %d bytes, %f power\n"),
+				Com_DPrintf( "VoIP: Send %d frames, %d bytes, %f power\n",
 				             speexFrames, wpos, clc.voipPower );
 
 #if 0
@@ -1488,7 +1488,7 @@ void CL_NextDemo( void )
 
 	Q_strncpyz( v, Cvar_VariableString( "nextdemo" ), sizeof( v ) );
 	v[ MAX_STRING_CHARS - 1 ] = 0;
-	Com_DPrintf(_( "CL_NextDemo: %s\n"), v );
+	Com_DPrintf( "CL_NextDemo: %s\n", v );
 
 	if ( !v[ 0 ] )
 	{
@@ -2873,8 +2873,8 @@ game directory.
 */
 void CL_BeginDownload( const char *localName, const char *remoteName )
 {
-	Com_DPrintf(_( "***** CL_BeginDownload *****\n"
-	             "Localname: %s\n" "Remotename: %s\n" "****************************\n"), localName, remoteName );
+	Com_DPrintf( "***** CL_BeginDownload *****\n"
+	             "Localname: %s\n" "Remotename: %s\n" "****************************\n", localName, remoteName );
 
 	Q_strncpyz( cls.downloadName, localName, sizeof( cls.downloadName ) );
 	Com_sprintf( cls.downloadTempName, sizeof( cls.downloadTempName ), "%s.tmp", localName );
@@ -3196,11 +3196,11 @@ void CL_MotdPacket( netadr_t from, const char *info )
 	// if not from our server, ignore it
 	if ( !NET_CompareAdr( from, cls.updateServer ) )
 	{
-		Com_DPrintf("%s", _( "MOTD packet from unexpected source\n" ));
+		Com_DPrintf( "MOTD packet from unexpected source\n" );
 		return;
 	}
 
-	Com_DPrintf(_( "MOTD packet: %s\n"), info );
+	Com_DPrintf( "MOTD packet: %s\n", info );
 
 	while ( *info != '\\' )
 	{
@@ -3212,8 +3212,8 @@ void CL_MotdPacket( netadr_t from, const char *info )
 
 	if ( strcmp( v, cls.updateChallenge ) )
 	{
-		Com_DPrintf(_( "MOTD packet mismatched challenge: "
-		             "'%s' != '%s'\n"), v, cls.updateChallenge );
+		Com_DPrintf( "MOTD packet mismatched challenge: "
+		             "'%s' != '%s'\n", v, cls.updateChallenge );
 		return;
 	}
 
@@ -3343,7 +3343,7 @@ int CL_GSRSequenceInformation( byte **data )
 	{
 		// Assume we sent two getservers and somehow they changed in
 		// between - only use the results that arrive later
-		Com_DPrintf("%s", _( "Master changed its mind about packet count!\n" ));
+		Com_DPrintf("%s", "Master changed its mind about packet count!\n" );
 		cls.receivedMasterPackets = 0;
 		cls.numglobalservers = 0;
 		cls.numGlobalServerAddresses = 0;
@@ -3380,8 +3380,8 @@ void CL_GSRFeaturedLabel( byte **data, char *buf, int size )
 		}
 		else if ( l == &buf[ size - 1 ] )
 		{
-			Com_DPrintf( "%s", _( S_COLOR_YELLOW  "Warning: "
-			             "CL_GSRFeaturedLabel: overflow\n" ));
+			Com_DPrintf( "%s", S_COLOR_YELLOW  "Warning: "
+			             "CL_GSRFeaturedLabel: overflow\n" );
 		}
 
 		l++, ( *data ) ++;
@@ -3404,7 +3404,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 	byte      *buffend;
 	char     label[ MAX_FEATLABEL_CHARS ] = "";
 
-	Com_Printf("%s", _( "CL_ServersResponsePacket\n" ));
+	Com_Printf( "CL_ServersResponsePacket\n" );
 
 	if ( cls.numglobalservers == -1 )
 	{
@@ -3447,16 +3447,16 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 			// have we already received this packet?
 			if ( cls.receivedMasterPackets & ( 1 << ( ind - 1 ) ) )
 			{
-				Com_DPrintf(_( "CL_ServersResponsePacket: "
-				             "received packet %d again, ignoring\n"),
+				Com_DPrintf( "CL_ServersResponsePacket: "
+				             "received packet %d again, ignoring\n",
 				             ind );
 				return;
 			}
 
 			// TODO: detect dropped packets and make another
 			// request
-			Com_DPrintf(_( "CL_ServersResponsePacket: packet "
-			             "%d of %d\n"), ind, cls.numMasterPackets );
+			Com_DPrintf( "CL_ServersResponsePacket: packet "
+			             "%d of %d\n", ind, cls.numMasterPackets );
 			cls.receivedMasterPackets |= ( 1 << ( ind - 1 ) );
 
 			CL_GSRFeaturedLabel( &buffptr, label, sizeof( label ) );
@@ -3580,7 +3580,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 
 	c = Cmd_Argv( 0 );
 
-	Com_DPrintf(_( "CL packet %s: %s\n"), NET_AdrToStringwPort( from ), c );
+	Com_DPrintf( "CL packet %s: %s\n", NET_AdrToStringwPort( from ), c );
 
 	// challenge from the server we are connecting to
 	if ( !Q_stricmp( c, "challengeResponse" ) )
@@ -3610,7 +3610,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 			// take this address as the new server address.  This allows
 			// a server proxy to hand off connections to multiple servers
 			clc.serverAddress = from;
-			Com_DPrintf(_( "challenge: %d\n"), clc.challenge );
+			Com_DPrintf( "challenge: %d\n", clc.challenge );
 		}
 
 		return;
@@ -3729,7 +3729,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	Com_DPrintf("%s", _( "Unknown connectionless packet command.\n" ));
+	Com_DPrintf( "Unknown connectionless packet command.\n" );
 }
 
 /*
@@ -3767,8 +3767,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 	//
 	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) )
 	{
-		Com_DPrintf(_( "%s:sequenced packet without connection\n")
-		             , NET_AdrToStringwPort( from ) );
+		Com_DPrintf( "%s:sequenced packet without connection\n", NET_AdrToStringwPort( from ) );
 		// FIXME: send a client disconnect?
 		return;
 	}
@@ -3873,7 +3872,7 @@ void CL_WWWDownload( void )
 	{
 		if ( !bAbort )
 		{
-			Com_DPrintf("%s", _( "CL_WWWDownload: WWWDlAborting\n" ));
+			Com_DPrintf( "CL_WWWDownload: WWWDlAborting\n" );
 			bAbort = qtrue;
 		}
 
@@ -3882,7 +3881,7 @@ void CL_WWWDownload( void )
 
 	if ( bAbort )
 	{
-		Com_DPrintf("%s", _( "CL_WWWDownload: WWWDlAborting done\n" ));
+		Com_DPrintf( "CL_WWWDownload: WWWDlAborting done\n" );
 		bAbort = qfalse;
 	}
 
@@ -4458,7 +4457,7 @@ void CL_CheckAutoUpdate( void )
 	cls.autoUpdateServerChecked[ cls.autoupdatServerIndex ] = qtrue;
 
 	cls.autoupdateServer.port = BigShort( PORT_SERVER );
-	Com_DPrintf(_( "autoupdate server at: %i.%i.%i.%i:%i\n"), cls.autoupdateServer.ip[ 0 ], cls.autoupdateServer.ip[ 1 ],
+	Com_DPrintf( "autoupdate server at: %i.%i.%i.%i:%i\n", cls.autoupdateServer.ip[ 0 ], cls.autoupdateServer.ip[ 1 ],
 	             cls.autoupdateServer.ip[ 2 ], cls.autoupdateServer.ip[ 3 ],
 	             BigShort( cls.autoupdateServer.port ) );
 
@@ -4577,7 +4576,7 @@ void CL_GetAutoUpdate( void )
 	// Copy auto-update server address to Server connect address
 	memcpy( &clc.serverAddress, &cls.autoupdateServer, sizeof( netadr_t ) );
 
-	Com_DPrintf(_( "%s resolved to %i.%i.%i.%i:%i\n"), cls.servername,
+	Com_DPrintf( "%s resolved to %i.%i.%i.%i:%i\n", cls.servername,
 	             clc.serverAddress.ip[ 0 ], clc.serverAddress.ip[ 1 ],
 	             clc.serverAddress.ip[ 2 ], clc.serverAddress.ip[ 3 ], BigShort( clc.serverAddress.port ) );
 
@@ -5140,9 +5139,10 @@ void CL_Init( void )
 	//  you don't, you don't need VoIP.  :)
 	if ( ( cl_voip->integer ) && ( Cvar_VariableIntegerValue( "rate" ) < 25000 ) )
 	{
-		Com_Printf( S_COLOR_YELLOW"%s", _( "Your network rate is too slow for VoIP.\n" ));
-		Com_Printf("%s", _( "Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n" ));
-		Com_Printf("%s", _( "Until then, VoIP is disabled.\n" ));
+		Com_Printf( S_COLOR_YELLOW"%s",
+		            _( "Your network rate is too slow for VoIP.\n"
+		               "Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
+		               "Until then, VoIP is disabled.\n" ));
 		Cvar_Set( "cl_voip", "0" );
 	}
 
@@ -5429,7 +5429,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 
 	if ( prot != com_protocol->integer )
 	{
-		Com_DPrintf(_( "Different protocol info packet: %s\n"), infoString );
+		Com_DPrintf( "Different protocol info packet: %s\n", infoString );
 		return;
 	}
 
@@ -5438,7 +5438,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 
 	if ( !gameName[ 0 ] || Q_stricmp( gameName, GAMENAME_STRING ) )
 	{
-		Com_DPrintf(_( "Different game info packet: %s\n"), infoString );
+		Com_DPrintf( "Different game info packet: %s\n", infoString );
 		return;
 	}
 
@@ -5449,7 +5449,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 		{
 			// calc ping time
 			cl_pinglist[ i ].time = cls.realtime - cl_pinglist[ i ].start + 1;
-			Com_DPrintf(_( "ping time %dms from %s\n"), cl_pinglist[ i ].time, NET_AdrToString( from ) );
+			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[ i ].time, NET_AdrToString( from ) );
 
 			// save of info
 			Q_strncpyz( cl_pinglist[ i ].info, infoString, sizeof( cl_pinglist[ i ].info ) );
@@ -5504,7 +5504,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 
 	if ( i == MAX_OTHER_SERVERS )
 	{
-		Com_DPrintf("%s", _( "MAX_OTHER_SERVERS hit, dropping infoResponse\n" ));
+		Com_DPrintf("MAX_OTHER_SERVERS hit, dropping infoResponse\n" );
 		return;
 	}
 
@@ -5541,7 +5541,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 			strncat( info, "\n", sizeof( info ) );
 		}
 
-		Com_Printf(_( "%s: %s"), NET_AdrToStringwPort( from ), info );
+		Com_Printf( "%s: %s", NET_AdrToStringwPort( from ), info );
 	}
 }
 
@@ -5554,18 +5554,18 @@ void CL_UpdateInfoPacket( netadr_t from )
 {
 	if ( cls.autoupdateServer.type == NA_BAD )
 	{
-		Com_DPrintf("%s", _( "CL_UpdateInfoPacket:  Auto-Updater has bad address\n" ));
+		Com_DPrintf( "CL_UpdateInfoPacket:  Auto-Updater has bad address\n" );
 		return;
 	}
 
-	Com_DPrintf(_( "Auto-Updater resolved to %i.%i.%i.%i:%i\n"),
+	Com_DPrintf( "Auto-Updater resolved to %i.%i.%i.%i:%i\n",
 	             cls.autoupdateServer.ip[ 0 ], cls.autoupdateServer.ip[ 1 ],
 	             cls.autoupdateServer.ip[ 2 ], cls.autoupdateServer.ip[ 3 ],
 	             BigShort( cls.autoupdateServer.port ) );
 
 	if ( !NET_CompareAdr( from, cls.autoupdateServer ) )
 	{
-		Com_DPrintf(_( "CL_UpdateInfoPacket:  Received packet from %i.%i.%i.%i:%i\n"),
+		Com_DPrintf( "CL_UpdateInfoPacket:  Received packet from %i.%i.%i.%i:%i\n",
 		             from.ip[ 0 ], from.ip[ 1 ], from.ip[ 2 ], from.ip[ 3 ],
 		             BigShort( from.port ) );
 		return;

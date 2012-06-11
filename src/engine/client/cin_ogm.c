@@ -404,7 +404,7 @@ static int loadVideoFrameXvid()
 			{
 				g_ogm.outputWidht = g_ogm.xvid_dec_stats.data.vol.width;
 				g_ogm.outputHeight = g_ogm.xvid_dec_stats.data.vol.height;
-				Com_DPrintf(_( "[XVID]new resolution %dx%d\n"), g_ogm.outputWidht, g_ogm.outputHeight );
+				Com_DPrintf( "[XVID]new resolution %dx%d\n", g_ogm.outputWidht, g_ogm.outputHeight );
 			}
 
 			if ( g_ogm.outputBufferSize < g_ogm.xvid_dec_stats.data.vol.width * g_ogm.xvid_dec_stats.data.vol.height )
@@ -438,12 +438,12 @@ static int loadVideoFrameXvid()
 			r = 1;
 
 			++g_ogm.VFrameCount;
-//          Com_Printf_(("frame infos: %d %d %d\n"), xvid_dec_stats.data.vop.general, xvid_dec_stats.data.vop.time_base, xvid_dec_stats.data.vop.time_increment);
-//          Com_Printf_(("frame info time: %d (Frame# %d, %d)\n"), xvid_dec_stats.data.vop.time_base, VFrameCount, (int)(VFrameCount*Vtime_unit/10000000));
+//          Com_Printf( "frame infos: %d %d %d\n", xvid_dec_stats.data.vop.general, xvid_dec_stats.data.vop.time_base, xvid_dec_stats.data.vop.time_increment);
+//          Com_Printf( "frame info time: %d (Frame# %d, %d)\n", xvid_dec_stats.data.vop.time_base, VFrameCount, (int)(VFrameCount*Vtime_unit/10000000));
 		}
 
 //      if((op.bytes-used_bytes)>0)
-//          Com_Printf_(("unused: %d(firstChar: %X)\n"),(op.bytes-used_bytes),(int)(op.packet[used_bytes]));
+//          Com_Printf( "unused: %d(firstChar: %X)\n",(op.bytes-used_bytes),(int)(op.packet[used_bytes]));
 	}
 
 	return r;
@@ -509,7 +509,7 @@ static int loadVideoFrameTheora( void )
 			{
 				g_ogm.outputWidht = g_ogm.th_info.width;
 				g_ogm.outputHeight = g_ogm.th_info.height;
-				Com_DPrintf(_( "[Theora(ogg)]new resolution %dx%d\n"), g_ogm.outputWidht, g_ogm.outputHeight );
+				Com_DPrintf( "[Theora(ogg)]new resolution %dx%d\n", g_ogm.outputWidht, g_ogm.outputHeight );
 			}
 
 			if ( g_ogm.outputBufferSize < g_ogm.th_info.width * g_ogm.th_info.height )
@@ -988,7 +988,7 @@ int Cin_OGM_Init( const char *filename )
 
 #endif
 
-	Com_DPrintf(_( "OGM-Init done (%s)\n"), filename );
+	Com_DPrintf( "OGM-Init done (%s)\n", filename );
 
 	return 0;
 }

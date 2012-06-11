@@ -321,7 +321,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 			// one or more entities from the old packet are unchanged
 			if ( cl_shownet->integer == 3 )
 			{
-				Com_Printf(_( "%3i:  unchanged: %i\n"), msg->readcount, oldnum );
+				Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
 			}
 
 			CL_DeltaEntity( msg, newframe, oldnum, oldstate, qtrue );
@@ -345,7 +345,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 			// delta from previous state
 			if ( cl_shownet->integer == 3 )
 			{
-				Com_Printf(_( "%3i:  delta: %i\n"), msg->readcount, newnum );
+				Com_Printf( "%3i:  delta: %i\n", msg->readcount, newnum );
 			}
 
 			CL_DeltaEntity( msg, newframe, newnum, oldstate, qfalse );
@@ -371,7 +371,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 			// delta from baseline
 			if ( cl_shownet->integer == 3 )
 			{
-				Com_Printf(_( "%3i:  baseline: %i\n"), msg->readcount, newnum );
+				Com_Printf( "%3i:  baseline: %i\n", msg->readcount, newnum );
 			}
 
 			CL_DeltaEntity( msg, newframe, newnum, &cl.entityBaselines[ newnum ], qfalse );
@@ -385,7 +385,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 		// one or more entities from the old packet are unchanged
 		if ( cl_shownet->integer == 3 )
 		{
-			Com_Printf(_( "%3i:  unchanged: %i\n"), msg->readcount, oldnum );
+			Com_Printf( "%3i:  unchanged: %i\n", msg->readcount, oldnum );
 		}
 
 		CL_DeltaEntity( msg, newframe, oldnum, oldstate, qtrue );
@@ -406,7 +406,7 @@ void CL_ParsePacketEntities( msg_t *msg, clSnapshot_t *oldframe, clSnapshot_t *n
 
 	if ( cl_shownuments->integer )
 	{
-		Com_Printf(_( "Entities in packet: %i\n"), newframe->numEntities );
+		Com_Printf( "Entities in packet: %i\n", newframe->numEntities );
 	}
 }
 
@@ -617,7 +617,7 @@ void CL_ParseSnapshot( msg_t *msg )
 
 	if ( cl_shownet->integer == 3 )
 	{
-		Com_Printf(_( "   snapshot:%i  delta:%i  ping:%i\n"), cl.snap.messageNum, cl.snap.deltaNum, cl.snap.ping );
+		Com_Printf( "   snapshot:%i  delta:%i  ping:%i\n", cl.snap.messageNum, cl.snap.deltaNum, cl.snap.ping );
 	}
 
 	cl.newSnapshots = qtrue;
@@ -1080,7 +1080,7 @@ void CL_ParseVoip( msg_t *msg )
 	int          written = 0;
 	int          i;
 
-	Com_DPrintf(_( "VoIP: %d-byte packet from client %d\n"), packetsize, sender );
+	Com_DPrintf( "VoIP: %d-byte packet from client %d\n", packetsize, sender );
 
 	if ( sender < 0 )
 	{
@@ -1141,12 +1141,12 @@ void CL_ParseVoip( msg_t *msg )
 
 	// !!! FIXME: make sure data is narrowband? Does decoder handle this?
 
-	Com_DPrintf("%s", _( "VoIP: packet accepted!\n" ));
+	Com_DPrintf( "VoIP: packet accepted!\n" );
 
 	// This is a new "generation" ... a new recording started, reset the bits.
 	if ( generation != clc.voipIncomingGeneration[ sender ] )
 	{
-		Com_DPrintf(_( "VoIP: new generation %d!\n"), generation );
+		Com_DPrintf( "VoIP: new generation %d!\n", generation );
 		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
 		clc.voipIncomingGeneration[ sender ] = generation;
 		seqdiff = 0;
@@ -1154,7 +1154,7 @@ void CL_ParseVoip( msg_t *msg )
 	else if ( seqdiff < 0 ) // we're ahead of the sequence?!
 	{
 		// This shouldn't happen unless the packet is corrupted or something.
-		Com_DPrintf(_( "VoIP: misordered sequence! %d < %d!\n"),
+		Com_DPrintf( "VoIP: misordered sequence! %d < %d!\n",
 		             sequence, clc.voipIncomingSequence[ sender ] );
 		// reset the bits just in case.
 		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
@@ -1163,7 +1163,7 @@ void CL_ParseVoip( msg_t *msg )
 	else if ( seqdiff > 100 ) // more than 2 seconds of audio dropped?
 	{
 		// just start over.
-		Com_DPrintf(_( "VoIP: Dropped way too many (%d) frames from client #%d\n"),
+		Com_DPrintf( "VoIP: Dropped way too many (%d) frames from client #%d\n",
 		             seqdiff, sender );
 		speex_bits_reset( &clc.speexDecoderBits[ sender ] );
 		seqdiff = 0;
@@ -1171,7 +1171,7 @@ void CL_ParseVoip( msg_t *msg )
 
 	if ( seqdiff != 0 )
 	{
-		Com_DPrintf(_( "VoIP: Dropped %d frames from client #%d\n"),
+		Com_DPrintf( "VoIP: Dropped %d frames from client #%d\n",
 		             seqdiff, sender );
 
 		// tell speex that we're missing frames...
@@ -1190,7 +1190,7 @@ void CL_ParseVoip( msg_t *msg )
 
 		if ( len < 0 )
 		{
-			Com_DPrintf("%s", _( "VoIP: Short packet!\n" ));
+			Com_DPrintf( "VoIP: Short packet!\n" );
 			break;
 		}
 
@@ -1199,7 +1199,7 @@ void CL_ParseVoip( msg_t *msg )
 		// shouldn't happen, but just in case...
 		if ( ( written + clc.speexFrameSize ) * 2 > sizeof( decoded ) )
 		{
-			Com_DPrintf(_( "VoIP: playback %d bytes, %d samples, %d frames\n"),
+			Com_DPrintf( "VoIP: playback %d bytes, %d samples, %d frames\n",
 			             written * 2, written, i );
 
 			CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
@@ -1228,7 +1228,7 @@ void CL_ParseVoip( msg_t *msg )
 		written += clc.speexFrameSize;
 	}
 
-	Com_DPrintf(_( "VoIP: playback %d bytes, %d samples, %d frames\n"),
+	Com_DPrintf( "VoIP: playback %d bytes, %d samples, %d frames\n",
 	             written * 2, written, i );
 
 	if ( written > 0 )
@@ -1309,7 +1309,7 @@ void CL_ParseServerMessage( msg_t *msg )
 	}
 	else if ( cl_shownet->integer >= 2 )
 	{
-		Com_Printf("%s", _( "------------------\n" ));
+		Com_Printf( "------------------\n" );
 	}
 
 	MSG_Bitstream( msg );
@@ -1362,7 +1362,7 @@ void CL_ParseServerMessage( msg_t *msg )
 		{
 			if ( !svc_strings[ cmd ] )
 			{
-				Com_Printf(_( "%3i:BAD CMD %i\n"), msg->readcount - 1, cmd );
+				Com_Printf( "%3i:BAD CMD %i\n", msg->readcount - 1, cmd );
 			}
 			else
 			{

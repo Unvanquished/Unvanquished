@@ -643,7 +643,7 @@ void CL_MouseMove( usercmd_t *cmd )
 
 			if ( cl_showMouseRate->integer )
 			{
-				Com_Printf(_( "rate: %f, accelSensitivity: %f\n"), rate, accelSensitivity );
+				Com_Printf( "rate: %f, accelSensitivity: %f\n", rate, accelSensitivity );
 			}
 		}
 		else
@@ -676,7 +676,7 @@ void CL_MouseMove( usercmd_t *cmd )
 			*/
 			if ( cl_showMouseRate->integer )
 			{
-				Com_Printf(_( "ratex: %f, ratey: %f, powx: %f, powy: %f\n"), rate[ 0 ], rate[ 1 ], power[ 0 ], power[ 1 ] );
+				Com_Printf( "ratex: %f, ratey: %f, powx: %f, powy: %f\n", rate[ 0 ], rate[ 1 ], power[ 0 ], power[ 1 ] );
 			}
 		}
 	}

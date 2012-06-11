@@ -1156,13 +1156,13 @@ void SOrig_RawSamples( int stream, int samples, int rate, int width, int s_chann
 
 	if ( s_rawend < s_soundtime )
 	{
-		Com_DPrintf(_( "S_RawSamples: resetting minimum: %i < %i\n"), s_rawend, s_soundtime );
+		Com_DPrintf( "S_RawSamples: resetting minimum: %i < %i\n", s_rawend, s_soundtime );
 		s_rawend = s_soundtime;
 	}
 
 	scale = ( float ) rate / dma.speed;
 
-//Com_Printf _(("%i < %i < %i\n"), s_soundtime, s_paintedtime, s_rawend);
+//	Com_Printf( "%i < %i < %i\n", s_soundtime, s_paintedtime, s_rawend);
 	if ( s_channels == 2 && width == 2 )
 	{
 		if ( scale == 1.0 )
@@ -1252,7 +1252,7 @@ void SOrig_RawSamples( int stream, int samples, int rate, int width, int s_chann
 
 	if ( s_rawend > s_soundtime + MAX_RAW_SAMPLES )
 	{
-		Com_DPrintf(_( "S_RawSamples: overflowed %i > %i\n"), s_rawend, s_soundtime );
+		Com_DPrintf( "S_RawSamples: overflowed %i > %i\n", s_rawend, s_soundtime );
 	}
 }
 
@@ -1392,7 +1392,7 @@ void SOrig_Update( void )
 
 	if ( !s_soundStarted || s_soundMuted )
 	{
-		Com_DPrintf("%s", _( "not started or muted\n" ));
+		Com_DPrintf( "not started or muted\n" );
 		return;
 	}
 
@@ -1413,7 +1413,7 @@ void SOrig_Update( void )
 			}
 		}
 
-		Com_Printf(_( "----(%i)---- painted: %i\n"), total, s_paintedtime );
+		Com_Printf( "----(%i)---- painted: %i\n", total, s_paintedtime );
 	}
 
 	// add raw data from streamed samples
@@ -1464,7 +1464,7 @@ void S_GetSoundtime( void )
 // check to make sure that we haven't overshot
 	if ( s_paintedtime < s_soundtime )
 	{
-		Com_DPrintf("%s", _( "S_Update_ : overflow\n" ));
+		Com_DPrintf( "S_Update_ : overflow\n" );
 		s_paintedtime = s_soundtime;
 	}
 
@@ -1672,7 +1672,7 @@ void SOrig_StartBackgroundTrack( const char *intro, const char *loop )
 		loop = intro;
 	}
 
-	Com_DPrintf(_( "S_StartBackgroundTrack( %s, %s )\n"), intro, loop );
+	Com_DPrintf( "S_StartBackgroundTrack( %s, %s )\n", intro, loop );
 
 	if ( !intro[ 0 ] )
 	{
@@ -1694,13 +1694,13 @@ void SOrig_StartBackgroundTrack( const char *intro, const char *loop )
 
 	if ( !s_backgroundStream )
 	{
-		Com_DPrintf( _( S_COLOR_YELLOW  "WARNING: couldn't open music file %s\n"), intro );
+		Com_DPrintf( S_COLOR_YELLOW  "WARNING: couldn't open music file %s\n", intro );
 		return;
 	}
 
 	if ( s_backgroundStream->info.channels != 2 || s_backgroundStream->info.rate != 22050 )
 	{
-		Com_DPrintf( _( S_COLOR_YELLOW  "WARNING: music file %s is not 22k stereo\n"), intro );
+		Com_DPrintf( S_COLOR_YELLOW  "WARNING: music file %s is not 22k stereo\n", intro );
 	}
 }
 
@@ -1820,7 +1820,7 @@ void S_FreeOldestSound()
 
 	sfx = &s_knownSfx[ used ];
 
-	Com_DPrintf(_( "S_FreeOldestSound: freeing sound %s\n"), sfx->soundName );
+	Com_DPrintf( "S_FreeOldestSound: freeing sound %s\n", sfx->soundName );
 
 	buffer = sfx->soundData;
 
@@ -1850,7 +1850,7 @@ int SOrig_GetSoundLength( sfxHandle_t sfxHandle )
 {
 	if ( sfxHandle < 0 || sfxHandle >= s_numSfx )
 	{
-		Com_DPrintf( _( S_COLOR_YELLOW  "S_StartSound: handle %i out of range\n"), sfxHandle );
+		Com_DPrintf( S_COLOR_YELLOW  "S_StartSound: handle %i out of range\n", sfxHandle );
 		return -1;
 	}
 

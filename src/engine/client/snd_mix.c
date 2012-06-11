@@ -618,7 +618,7 @@ void S_PaintChannels( int endtime )
 
 	snd_vol = s_volume->value * 255;
 
-//Com_Printf _(("%i to %i\n"), s_paintedtime, endtime);
+//Com_Printf ( "%i to %i\n", s_paintedtime, endtime);
 	while ( s_paintedtime < endtime )
 	{
 		// if paintbuffer is smaller than DMA buffer
@@ -635,7 +635,7 @@ void S_PaintChannels( int endtime )
 		{
 			if ( s_rawend )
 			{
-				//Com_DPrintf "%s", _(("background sound underrun\n"));
+				//Com_DPrintf ("background sound underrun\n");
 			}
 
 			Com_Memset( paintbuffer, 0, ( end - s_paintedtime ) * sizeof( portable_samplepair_t ) );
@@ -655,9 +655,9 @@ void S_PaintChannels( int endtime )
 			}
 
 //		if (i != end)
-//			Com_Printf "%s", _(("partial stream\n"));
+//			Com_Printf ("partial stream\n");
 //		else
-//			Com_Printf "%s", _(("full stream\n"));
+//			Com_Printf ("full stream\n");
 			for ( ; i < end; i++ )
 			{
 				paintbuffer[ i - s_paintedtime ].left =

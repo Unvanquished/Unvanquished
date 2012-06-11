@@ -968,12 +968,12 @@ static void IRC_DumpMessage()
 {
 	int i;
 
-	Com_Printf("%s", _( "----------- IRC MESSAGE RECEIVED -----------\n" ));
-	Com_Printf(_( " (pfx) nick/server .... [%.3d]%s\n"), IRC_Length( pfx_nickOrServer ), IRC_String( pfx_nickOrServer ) );
-	Com_Printf(_( " (pfx) user ........... [%.3d]%s\n"), IRC_Length( pfx_user ), IRC_String( pfx_user ) );
-	Com_Printf(_( " (pfx) host ........... [%.3d]%s\n"), IRC_Length( pfx_host ), IRC_String( pfx_host ) );
-	Com_Printf(_( " command string ....... [%.3d]%s\n"), IRC_Length( cmd_string ), IRC_String( cmd_string ) );
-	Com_Printf(_( " arguments ............  %.3d\n"), IRC_ReceivedMessage.arg_count );
+	Com_Printf( "----------- IRC MESSAGE RECEIVED -----------\n" );
+	Com_Printf( " (pfx) nick/server .... [%.3d]%s\n", IRC_Length( pfx_nickOrServer ), IRC_String( pfx_nickOrServer ) );
+	Com_Printf( " (pfx) user ........... [%.3d]%s\n", IRC_Length( pfx_user ), IRC_String( pfx_user ) );
+	Com_Printf( " (pfx) host ........... [%.3d]%s\n", IRC_Length( pfx_host ), IRC_String( pfx_host ) );
+	Com_Printf( " command string ....... [%.3d]%s\n", IRC_Length( cmd_string ), IRC_String( cmd_string ) );
+	Com_Printf( " arguments ............  %.3d\n", IRC_ReceivedMessage.arg_count );
 
 	for ( i = 0; i < IRC_ReceivedMessage.arg_count; i++ )
 	{
@@ -1136,13 +1136,13 @@ static __attribute__( ( format( printf, 1, 2 ) ) ) int IRC_Send( const char *for
 	if ( len >= IRC_SEND_BUF_SIZE - 1 )
 	{
 		// This is a bug, return w/ a fatal error
-		Com_Printf(_( "...IRC: send buffer overflow (%d characters)\n"), len );
+		Com_Printf( "...IRC: send buffer overflow (%d characters)\n", len );
 		return IRC_CMD_FATAL;
 	}
 
 	// Add CRLF terminator
 #if defined DEBUG_DUMP_IRC
-	Com_Printf(_( "SENDING IRC MESSAGE: %s\n"), buffer );
+	Com_Printf( "SENDING IRC MESSAGE: %s\n", buffer );
 #endif
 	buffer[ len++ ] = '\r';
 	buffer[ len++ ] = '\n';
@@ -1838,8 +1838,7 @@ static int IRC_HandleCTCP( qboolean is_channel, char *string, int string_len )
 	}
 
 #if defined DEBUG_DUMP_IRC
-	Com_Printf( "--- IRC/CTCP ---\n" );
-	Com_Printf(_( " Command:     %s\n Argument(s): %s\n"), string, end_of_action );
+	Com_Printf( "--- IRC/CTCP ---\n Command:     %s\n Argument(s): %s\n", string, end_of_action );
 #endif
 
 	return IRC_ExecuteCTCPHandler( string, is_channel, end_of_action );
