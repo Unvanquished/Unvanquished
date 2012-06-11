@@ -136,7 +136,7 @@ void S_SoundInfo_f( void )
 		}
 	}
 
-	Com_Printf("%s", _( "----------------------\n" ));
+	Com_Printf( "----------------------\n" );
 }
 
 /*
@@ -629,7 +629,7 @@ void SOrig_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t
 
 	if ( s_show->integer == 1 )
 	{
-		Com_Printf(_( "%i : %s\n"), s_paintedtime, sfx->soundName );
+		Com_Printf( "%i : %s\n", s_paintedtime, sfx->soundName );
 	}
 
 	time = Com_Milliseconds();
@@ -1408,7 +1408,7 @@ void SOrig_Update( void )
 		{
 			if ( ch->thesfx && ( ch->leftvol || ch->rightvol ) )
 			{
-				Com_Printf(_( "%i %i %s\n"), ch->leftvol, ch->rightvol, ch->thesfx->soundName );
+				Com_Printf( "%i %i %s\n", ch->leftvol, ch->rightvol, ch->thesfx->soundName );
 				total++;
 			}
 		}
@@ -1623,7 +1623,7 @@ void S_SoundList_f( void )
 	{
 		size = sfx->soundLength;
 		total += size;
-		Com_Printf(_( "%6i[%s] : %s[%s]\n"), size, type[ sfx->soundCompressionMethod ], sfx->soundName, mem[ sfx->inMemory ] );
+		Com_Printf( "%6i[%s] : %s[%s]\n", size, type[ sfx->soundCompressionMethod ], sfx->soundName, mem[ sfx->inMemory ] );
 	}
 
 	Com_Printf(_( "Total resident: %i\n"), total );

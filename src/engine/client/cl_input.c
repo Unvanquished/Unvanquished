@@ -228,7 +228,7 @@ float CL_KeyState( kbutton_t *key )
 
 	if ( msec )
 	{
-		Com_Printf(_( "%i "), msec );
+		Com_Printf("%i ", msec );
 	}
 
 #endif
@@ -1047,7 +1047,7 @@ void CL_WritePacket( void )
 	if ( count > MAX_PACKET_USERCMDS )
 	{
 		count = MAX_PACKET_USERCMDS;
-		Com_Printf("%s", _( "MAX_PACKET_USERCMDS\n" ));
+		Com_Printf( "MAX_PACKET_USERCMDS\n" );
 	}
 
 #ifdef USE_VOIP
@@ -1106,7 +1106,7 @@ void CL_WritePacket( void )
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf(_( "(%i)"), count );
+			Com_Printf( "(%i)", count );
 		}
 
 		// begin a client move command
@@ -1150,7 +1150,7 @@ void CL_WritePacket( void )
 
 	if ( cl_showSend->integer )
 	{
-		Com_Printf(_( "%i "), buf.cursize );
+		Com_Printf("%i ", buf.cursize );
 	}
 
 	CL_Netchan_Transmit( &clc.netchan, &buf );
@@ -1200,7 +1200,7 @@ void CL_SendCmd( void )
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf("%s", _( ". " ));
+			Com_Printf( ". " );
 		}
 
 		return;

@@ -977,7 +977,7 @@ static void IRC_DumpMessage()
 
 	for ( i = 0; i < IRC_ReceivedMessage.arg_count; i++ )
 	{
-		Com_Printf(_( " ARG %d = [%.3d]%s\n"), i + 1, IRC_Length( arg_values[ i ] ), IRC_String( arg_values[ i ] ) );
+		Com_Printf( " ARG %d = [%.3d]%s\n", i + 1, IRC_Length( arg_values[ i ] ), IRC_String( arg_values[ i ] ) );
 	}
 }
 
@@ -1509,7 +1509,7 @@ static void IRC_Display( int event, const char *nick, const char *message )
 
 	buffer[ IRC_RECV_BUF_SIZE * 2 - 1 ] = 0;
 
-	Com_Printf(_( "^1IRC: %s"), buffer );
+	Com_Printf( "^1IRC: %s", buffer );
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1776,7 +1776,7 @@ static int IRCH_Nick()
 	if ( !strcmp( IRC_String( pfx_nickOrServer ), IRC_User.nick ) )
 	{
 		strncpy( IRC_User.nick, IRC_String( arg_values[ 0 ] ), 15 );
-		Com_Printf(_( "%s\n"), IRC_User.nick );
+		Com_Printf("%s\n", IRC_User.nick );
 		event = IRC_MakeEvent( NICK_CHANGE, 1 );
 	}
 	else
@@ -1838,7 +1838,7 @@ static int IRC_HandleCTCP( qboolean is_channel, char *string, int string_len )
 	}
 
 #if defined DEBUG_DUMP_IRC
-	Com_Printf("%s", _( "--- IRC/CTCP ---\n" ));
+	Com_Printf( "--- IRC/CTCP ---\n" );
 	Com_Printf(_( " Command:     %s\n Argument(s): %s\n"), string, end_of_action );
 #endif
 

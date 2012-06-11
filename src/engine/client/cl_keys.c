@@ -836,7 +836,7 @@ static void PrintMatches( const char *s )
 {
 	if ( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
 	{
-		Com_Printf(_( "  ^9%s^0\n"), s );
+		Com_Printf("  ^9%s^0\n", s );
 	}
 }
 
@@ -845,7 +845,7 @@ static void PrintCvarMatches( const char *s )
 {
 	if ( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
 	{
-		Com_Printf(_( "  ^9%s = ^5%s^0\n"), s, Cvar_VariableString( s ) );
+		Com_Printf("  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) );
 	}
 }
 
@@ -953,7 +953,7 @@ void Console_Key( int key )
 			g_consoleField.cursor++;
 		}
 
-		Com_Printf(_( "]%s\n"), g_consoleField.buffer );
+		Com_Printf( "]%s\n", g_consoleField.buffer );
 
 		// leading slash is an explicit command
 		if ( g_consoleField.buffer[ 0 ] == '\\' || g_consoleField.buffer[ 0 ] == '/' )
@@ -1429,7 +1429,7 @@ void Key_Bind_f( void )
 	{
 		if ( keys[ b ].binding )
 		{
-			Com_Printf(_( "\"%s\" = %s\n"), key, Cmd_QuoteString( keys[ b ].binding ) );
+			Com_Printf( "\"%s\" = %s\n", key, Cmd_QuoteString( keys[ b ].binding ) );
 		}
 		else
 		{
@@ -1502,13 +1502,13 @@ void Key_WriteBindings( fileHandle_t f )
 {
 	int i;
 
-	FS_Printf( f,"%s", _( "unbindall\n" ));
+	FS_Printf( f,"%s", "unbindall\n" );
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
 		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
 		{
-			FS_Printf( f,_( "bind %s %s\n"), Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding ) );
+			FS_Printf( f, "bind %s %s\n", Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding ) );
 		}
 	}
 }
@@ -1527,7 +1527,7 @@ void Key_Bindlist_f( void )
 	{
 		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
 		{
-			Com_Printf(_( "%s = %s\n"), Key_KeynumToString( i ), keys[ i ].binding );
+			Com_Printf( "%s = %s\n", Key_KeynumToString( i ), keys[ i ].binding );
 		}
 	}
 }

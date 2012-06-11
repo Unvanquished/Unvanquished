@@ -123,7 +123,7 @@ static qboolean S_InitModule()
 	if ( ( libhandle = OBJLOAD( fn ) ) == 0 )
 	{
 		Com_Printf("%s", _( "can't load sound module - bailing\n" ));
-		Com_Printf("%s", _( "------------------------------------\n" ));
+		Com_Printf( "------------------------------------\n" );
 		return qfalse;
 	}
 
@@ -134,7 +134,7 @@ static qboolean S_InitModule()
 		OBJFREE( libhandle );
 		libhandle = NULL;
 		Com_Printf("%s", _( "can't find GetSndAPI - bailing\n" ));
-		Com_Printf("%s", _( "------------------------------------\n" ));
+		Com_Printf( "------------------------------------\n" );
 		return qfalse;
 	}
 
@@ -184,7 +184,7 @@ static qboolean S_InitModule()
 		OBJFREE( libhandle );
 		libhandle = NULL;
 		Com_Printf("%s", _( "call to GetSndAPI failed - bailing\n" ));
-		Com_Printf("%s", _( "------------------------------------\n" ));
+		Com_Printf( "------------------------------------\n" );
 		return qfalse;
 	}
 
@@ -194,7 +194,7 @@ static qboolean S_InitModule()
 		libhandle = NULL;
 		se = NULL;
 		Com_Printf("%s", _( "call to Init failed - bailing\n" ));
-		Com_Printf("%s", _( "------------------------------------\n" ));
+		Com_Printf( "------------------------------------\n" );
 		return qfalse;
 	}
 
@@ -214,7 +214,7 @@ void S_Init( void )
 	if ( !cv->integer )
 	{
 		Com_Printf("%s", _( "not initializing.\n" ));
-		Com_Printf("%s", _( "------------------------------------\n" ));
+		Com_Printf( "------------------------------------\n" );
 		return;
 	}
 
@@ -248,7 +248,7 @@ void S_Init( void )
 	SOrig_Init();
 #endif // !USE_DYNAMIC
 
-	Com_Printf("%s", _( "------------------------------------\n" ));
+	Com_Printf( "------------------------------------\n" );
 }
 
 void S_Shutdown( void )

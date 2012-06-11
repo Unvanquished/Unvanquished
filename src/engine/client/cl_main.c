@@ -2179,7 +2179,7 @@ void CL_Setenv_f( void )
 
 		if ( env )
 		{
-			Com_Printf(_( "%s=%s\n"), Cmd_Argv( 1 ), env );
+			Com_Printf( "%s=%s\n", Cmd_Argv( 1 ), env );
 		}
 		else
 		{
@@ -2623,7 +2623,7 @@ void CL_Configstrings_f( void )
 			continue;
 		}
 
-		Com_Printf(_( "%4i: %s\n"), i, cl.gameState.stringData + ofs );
+		Com_Printf( "%4i: %s\n", i, cl.gameState.stringData + ofs );
 	}
 }
 
@@ -3272,7 +3272,7 @@ void CL_PrintPacket( netadr_t from, msg_t *msg )
 		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 	}
 
-	Com_Printf(_( "%s\n"), clc.serverMessage );
+	Com_Printf("%s\n", clc.serverMessage );
 }
 
 /*
@@ -4516,7 +4516,7 @@ qboolean CL_NextUpdateServer( void )
 	cls.autoUpdateServerChecked[ cls.autoupdatServerIndex ] = qtrue;
 
 	cls.autoupdateServer.port = BigShort( PORT_SERVER );
-	Com_DPrintf(_( "%i.%i.%i.%i:%i\n"), cls.autoupdateServer.ip[ 0 ], cls.autoupdateServer.ip[ 1 ],
+	Com_DPrintf( "%i.%i.%i.%i:%i\n", cls.autoupdateServer.ip[ 0 ], cls.autoupdateServer.ip[ 1 ],
 	             cls.autoupdateServer.ip[ 2 ], cls.autoupdateServer.ip[ 3 ],
 	             BigShort( cls.autoupdateServer.port ) );
 
@@ -4766,7 +4766,7 @@ void CL_InitRef( const char *renderer )
 	Com_Printf("%s", _( "Calling GetRefAPI...\n" ));
 	ret = GetRefAPI( REF_API_VERSION, &ri );
 
-	Com_Printf("%s", _( "-------------------------------\n" ));
+	Com_Printf( "-------------------------------\n" );
 
 	if ( !ret )
 	{
@@ -5779,11 +5779,11 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 
 				if ( i )
 				{
-					Com_Printf(_( "%s\n"), info );
+					Com_Printf("%s\n", info );
 				}
 				else
 				{
-					Com_Printf(_( "%-24s"), info );
+					Com_Printf("%-24s", info );
 				}
 			}
 		}
@@ -5823,7 +5823,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 				s = "unknown";
 			}
 
-			Com_Printf(_( "%-2d   %-3d    %-3d   %s\n"), i, score, ping, s );
+			Com_Printf( "%-2d   %-3d    %-3d   %s\n", i, score, ping, s );
 		}
 	}
 

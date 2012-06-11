@@ -1720,7 +1720,7 @@ void CL_AdjustTimeDelta( void )
 
 	if ( cl_showTimeDelta->integer )
 	{
-		Com_Printf(_( "%i "), cl.serverTimeDelta );
+		Com_Printf("%i ", cl.serverTimeDelta );
 	}
 }
 

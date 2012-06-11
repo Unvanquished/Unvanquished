@@ -56,7 +56,7 @@ void SHOWNET( msg_t *msg, char *s )
 {
 	if ( cl_shownet->integer >= 2 )
 	{
-		Com_Printf(_( "%3i:%s\n"), msg->readcount - 1, s );
+		Com_Printf( "%3i:%s\n", msg->readcount - 1, s );
 	}
 }
 
@@ -1305,7 +1305,7 @@ void CL_ParseServerMessage( msg_t *msg )
 
 	if ( cl_shownet->integer == 1 )
 	{
-		Com_Printf(_( "%i "), msg->cursize );
+		Com_Printf("%i ", msg->cursize );
 	}
 	else if ( cl_shownet->integer >= 2 )
 	{
