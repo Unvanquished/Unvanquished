@@ -1117,8 +1117,8 @@ function( GAMELIB )
   if( GAME_QVM AND GAMELIB_QVM_FILES )
     set( QVM_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/${GAMELIB_LIB_NAME}-qvm.dir )
     set( QVM_CPP_OPTIONS
-      -I${MOUNT_DIR}/gamelogic/gpp/src/game
-      -I${MOUNT_DIR}/engine/qcommon
+      -I"${MOUNT_DIR}/gamelogic/gpp/src/game"
+      -I"${MOUNT_DIR}/engine/qcommon"
       -D__inline=
       -DQ3_VM
     )
@@ -1140,6 +1140,7 @@ function( GAMELIB )
       add_custom_command( OUTPUT ${QVM_COMPONENT}.asm
         COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${QVM_FILE}
         DEPENDS lcc rcc cpp ${QVM_FILE}
+        MAIN_DEPENDENCY ${QVM_COMPONENT}.asm
         IMPLICIT_DEPENDS C ${QVM_FILE}
         WORKING_DIRECTORY ${QVM_DIR}
       )

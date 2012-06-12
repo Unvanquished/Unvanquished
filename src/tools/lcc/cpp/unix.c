@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include "cpp.h"
 
 extern	int lcc_getopt(int, char *const *, const char *);
@@ -66,7 +67,7 @@ setup(int argc, char **argv)
 			error(FATAL, "Can't open input file %s", fp);
 	}
 	if (optind+1<argc) {
-		int fdo = creat(argv[optind+1], 0666);
+		int fdo = creat(argv[optind+1], S_IREAD|S_IWRITE);
 		if (fdo<0)
 			error(FATAL, "Can't open output file %s", argv[optind+1]);
 		dup2(fdo, 1);
@@ -99,7 +100,7 @@ char *basepath( char *fname )
 /* memmove is defined here because some vendors don't provide it at
    all and others do a terrible job (like calling malloc) */
 // -- ouch, that hurts -- ln
-#ifndef MACOS_X   /* always use the system memmove() on Mac OS X. --ryan. */
+#if !defined(MACOS_X) && !defined(_WIN32)  /* always use the system memmove() on Mac OS X. --ryan. */
 #ifdef memmove
 #undef memmove
 #endif

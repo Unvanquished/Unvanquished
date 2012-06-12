@@ -471,10 +471,10 @@ builtin(Tokenrow *trp, int biname)
 	/* most are strings */
 	tp->type = STRING;
 	if (tp->wslen) {
-		*outp++ = ' ';
+		*out_p++ = ' ';
 		tp->wslen = 1;
 	}
-	op = outp;
+	op = out_p;
 	*op++ = '"';
 	switch (biname) {
 
@@ -509,7 +509,7 @@ builtin(Tokenrow *trp, int biname)
 	}
 	if (tp->type==STRING)
 		*op++ = '"';
-	tp->t = (uchar*)outp;
-	tp->len = op - outp;
-	outp = op;
+	tp->t = (uchar*)out_p;
+	tp->len = op - out_p;
+	out_p = op;
 }
