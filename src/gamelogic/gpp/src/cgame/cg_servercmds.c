@@ -528,44 +528,44 @@ void CG_Menu( int menu, int arg )
 			break;
 
 		case MN_A_TEAMFULL:
-			longMsg = "The alien team has too many players. Please wait until slots "
-			          "become available or join the human team.";
-			shortMsg = "The alien team has too many players";
+			longMsg = _("The alien team has too many players. Please wait until slots "
+			          "become available or join the human team.");
+			shortMsg = _("The alien team has too many players");
 			type = DT_COMMAND;
 			break;
 
 		case MN_H_TEAMFULL:
-			longMsg = "The human team has too many players. Please wait until slots "
-			          "become available or join the alien team.";
-			shortMsg = "The human team has too many players";
+			longMsg = _("The human team has too many players. Please wait until slots "
+			          "become available or join the alien team.");
+			shortMsg = _("The human team has too many players");
 			type = DT_COMMAND;
 			break;
 
 		case MN_A_TEAMLOCKED:
-			longMsg = "The alien team is locked. You cannot join the aliens "
-			          "at this time.";
-			shortMsg = "The alien team is locked";
+			longMsg = _("The alien team is locked. You cannot join the aliens "
+			          "at this time.");
+			shortMsg = _("The alien team is locked");
 			type = DT_COMMAND;
 			break;
 
 		case MN_H_TEAMLOCKED:
-			longMsg = "The human team is locked. You cannot join the humans "
-			          "at this time.";
-			shortMsg = "The human team is locked";
+			longMsg = _("The human team is locked. You cannot join the humans "
+			          "at this time.");
+			shortMsg = _("The human team is locked");
 			type = DT_COMMAND;
 			break;
 
 		case MN_PLAYERLIMIT:
-			longMsg = "The maximum number of playing clients has been reached. "
-			          "Please wait until slots become available.";
-			shortMsg = "No free player slots";
+			longMsg = _("The maximum number of playing clients has been reached. "
+			          "Please wait until slots become available.");
+			shortMsg = _("No free player slots");
 			type = DT_COMMAND;
 			break;
 
 		case MN_WARMUP:
-			longMsg = "You must wait until the warmup time is finished "
-			          "before joining a team. ";
-			shortMsg = "You cannot join a team during warmup.";
+			longMsg = _("You must wait until the warmup time is finished "
+			          "before joining a team. ");
+			shortMsg = _("You cannot join a team during warmup.");
 			type = DT_COMMAND;
 			break;
 
@@ -577,100 +577,100 @@ void CG_Menu( int menu, int arg )
 		case MN_CMD_CHEAT:
 			//longMsg   = "This action is considered cheating. It can only be used "
 			//            "in cheat mode, which is not enabled on this server.";
-			shortMsg = "Cheats are not enabled on this server";
+			shortMsg = _("Cheats are not enabled on this server");
 			type = DT_COMMAND;
 			break;
 
 		case MN_CMD_CHEAT_TEAM:
-			shortMsg = "Cheats are not enabled on this server, so "
-			           "you may not use this command while on a team";
+			shortMsg = _("Cheats are not enabled on this server, so "
+			           "you may not use this command while on a team");
 			type = DT_COMMAND;
 			break;
 
 		case MN_CMD_TEAM:
 			//longMsg   = "You must be on a team to perform this action. Join the alien"
 			//            "or human team and try again.";
-			shortMsg = "Join a team first";
+			shortMsg = _("Join a team first");
 			type = DT_COMMAND;
 			break;
 
 		case MN_CMD_SPEC:
 			//longMsg   = "You may not perform this action while on a team. Become a "
 			//            "spectator before trying again.";
-			shortMsg = "You can only use this command when spectating";
+			shortMsg = _("You can only use this command when spectating");
 			type = DT_COMMAND;
 			break;
 
 		case MN_CMD_ALIEN:
 			//longMsg   = "You must be on the alien team to perform this action.";
-			shortMsg = "Must be alien to use this command";
+			shortMsg = _("Must be alien to use this command");
 			type = DT_COMMAND;
 			break;
 
 		case MN_CMD_HUMAN:
 			//longMsg   = "You must be on the human team to perform this action.";
-			shortMsg = "Must be human to use this command";
+			shortMsg = _("Must be human to use this command");
 			type = DT_COMMAND;
 			break;
 
 		case MN_CMD_LIVING:
 			//longMsg   = "You must be living to perform this action.";
-			shortMsg = "Must be living to use this command";
+			shortMsg = _("Must be living to use this command");
 			type = DT_COMMAND;
 			break;
 
 			//===============================
 
 		case MN_B_NOROOM:
-			longMsg = "There is no room to build here. Move until the structure turns "
-			          "translucent green, indicating a valid build location.";
-			shortMsg = "There is no room to build here";
+			longMsg = _("There is no room to build here. Move until the structure turns "
+			          "translucent green, indicating a valid build location.");
+			shortMsg = _("There is no room to build here");
 			type = DT_BUILD;
 			break;
 
 		case MN_B_NORMAL:
-			longMsg = "Cannot build on this surface. The surface is too steep or "
+			longMsg = _("Cannot build on this surface. The surface is too steep or "
 			          "unsuitable for building. Please choose another site for this "
-			          "structure.";
-			shortMsg = "Cannot build on this surface";
+			          "structure.");
+			shortMsg = _("Cannot build on this surface");
 			type = DT_BUILD;
 			break;
 
 		case MN_B_CANNOT:
 			longMsg = NULL;
-			shortMsg = "You cannot build that structure";
+			shortMsg = _("You cannot build that structure");
 			type = DT_BUILD;
 			break;
 
 			// FIXME: MN_H_ and MN_A_?
 		case MN_B_LASTSPAWN:
-			longMsg = "This action would remove your team's last spawn point, "
+			longMsg = _("This action would remove your team's last spawn point, "
 			          "which often quickly results in a loss. Try building more "
-			          "spawns.";
-			shortMsg = "You may not deconstruct the last spawn";
+			          "spawns.");
+			shortMsg = _("You may not deconstruct the last spawn");
 			break;
 
 		case MN_B_SUDDENDEATH:
-			longMsg = "Neither team has prevailed after a certain time and the "
+			longMsg = _("Neither team has prevailed after a certain time and the "
 			          "game has entered Sudden Death. During Sudden Death "
-			          "building is not allowed.";
-			shortMsg = "Cannot build during Sudden Death";
+			          "building is not allowed.");
+			shortMsg = _("Cannot build during Sudden Death");
 			type = DT_BUILD;
 			break;
 
 		case MN_B_REVOKED:
-			longMsg = "Your teammates have lost faith in your ability to build "
+			longMsg = _("Your teammates have lost faith in your ability to build "
 			          "for the team. You will not be allowed to build until your "
-			          "team votes to reinstate your building rights.";
-			shortMsg = "Your building rights have been revoked";
+			          "team votes to reinstate your building rights.");
+			shortMsg = _("Your building rights have been revoked");
 			type = DT_BUILD;
 			break;
 
 		case MN_B_SURRENDER:
-			longMsg = "Your team has decided to admit defeat and concede the game:"
-			          "traitors and cowards are not allowed to build.";
+			longMsg = _("Your team has decided to admit defeat and concede the game:"
+			          "traitors and cowards are not allowed to build.");
 			// too harsh?
-			shortMsg = "Building is denied to traitorous cowards";
+			shortMsg = _("Building is denied to traitorous cowards");
 			break;
 
 			//===============================
@@ -678,174 +678,174 @@ void CG_Menu( int menu, int arg )
 		case MN_H_NOBP:
 			if ( cgs.markDeconstruct )
 			{
-				longMsg = "There is no power remaining. Free up power by marking "
-				          "existing buildable objects.";
+				longMsg = _("There is no power remaining. Free up power by marking "
+				          "existing buildable objects.");
 			}
 			else
 			{
-				longMsg = "There is no power remaining. Free up power by deconstructing "
-				          "existing buildable objects.";
+				longMsg = _("There is no power remaining. Free up power by deconstructing "
+				          "existing buildable objects.");
 			}
 
-			shortMsg = "There is no power remaining";
+			shortMsg = _("There is no power remaining");
 			type = DT_BUILD;
 			break;
 
 		case MN_H_NOTPOWERED:
-			longMsg = "This buildable is not powered. Build a Reactor and/or Repeater "
-			          "in order to power it.";
-			shortMsg = "This buildable is not powered";
+			longMsg = _("This buildable is not powered. Build a Reactor and/or Repeater "
+			          "in order to power it.");
+			shortMsg = _("This buildable is not powered");
 			type = DT_BUILD;
 			break;
 
 		case MN_H_ONEREACTOR:
-			longMsg = "There can only be one Reactor. Deconstruct the existing one if you "
-			          "wish to move it.";
-			shortMsg = "There can only be one Reactor";
+			longMsg = _("There can only be one Reactor. Deconstruct the existing one if you "
+			          "wish to move it.");
+			shortMsg = _("There can only be one Reactor");
 			type = DT_BUILD;
 			break;
 
 		case MN_H_NOPOWERHERE:
-			longMsg = "There is no power here. If available, a Repeater may be used to "
-			          "transmit power to this location.";
-			shortMsg = "There is no power here";
+			longMsg = _("There is no power here. If available, a Repeater may be used to "
+			          "transmit power to this location.");
+			shortMsg = _("There is no power here");
 			type = DT_BUILD;
 			break;
 
 		case MN_H_NODCC:
-			longMsg = "There is no Defense Computer. A Defense Computer is needed to "
-			          "build this.";
-			shortMsg = "There is no Defense Computer";
+			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "
+			          "build this.");
+			shortMsg = _("There is no Defense Computer");
 			type = DT_BUILD;
 			break;
 
 		case MN_H_RPTPOWERHERE:
-			longMsg = "This area already has power. A Repeater is not required here.";
-			shortMsg = "This area already has power";
+			longMsg = _("This area already has power. A Repeater is not required here.");
+			shortMsg = _("This area already has power");
 			type = DT_BUILD;
 			break;
 
 		case MN_H_NOSLOTS:
-			longMsg = "You have no room to carry this. Please sell any conflicting "
-			          "upgrades before purchasing this item.";
-			shortMsg = "You have no room to carry this";
+			longMsg = _("You have no room to carry this. Please sell any conflicting "
+			          "upgrades before purchasing this item.");
+			shortMsg = _("You have no room to carry this");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_H_NOFUNDS:
-			longMsg = "Insufficient funds. You do not have enough credits to perform "
-			          "this action.";
-			shortMsg = "Insufficient funds";
+			longMsg = _("Insufficient funds. You do not have enough credits to perform "
+			          "this action.");
+			shortMsg = _("Insufficient funds");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_H_ITEMHELD:
-			longMsg = "You already hold this item. It is not possible to carry multiple "
-			          "items of the same type.";
-			shortMsg = "You already hold this item";
+			longMsg = _("You already hold this item. It is not possible to carry multiple "
+			          "items of the same type.");
+			shortMsg = _("You already hold this item");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_H_NOARMOURYHERE:
-			longMsg = "You must be near a powered Armoury in order to purchase "
-			          "weapons, upgrades or ammunition.";
-			shortMsg = "You must be near a powered Armoury";
+			longMsg = _("You must be near a powered Armoury in order to purchase "
+			          "weapons, upgrades or ammunition.");
+			shortMsg = _("You must be near a powered Armoury");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_H_NOENERGYAMMOHERE:
-			longMsg = "You must be near a Reactor or a powered Armoury or Repeater "
-			          "in order to purchase energy ammunition.";
-			shortMsg = "You must be near a Reactor or a powered Armoury or Repeater";
+			longMsg = _("You must be near a Reactor or a powered Armoury or Repeater "
+			          "in order to purchase energy ammunition.");
+			shortMsg = _("You must be near a Reactor or a powered Armoury or Repeater");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_H_NOROOMBSUITON:
-			longMsg = "There is not enough room here to put on a Battle Suit. "
-			          "Make sure you have enough head room to climb in.";
-			shortMsg = "Not enough room here to put on a Battle Suit";
+			longMsg = _("There is not enough room here to put on a Battle Suit. "
+			          "Make sure you have enough head room to climb in.");
+			shortMsg = _("Not enough room here to put on a Battle Suit");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_H_NOROOMBSUITOFF:
-			longMsg = "There is not enough room here to take off your Battle Suit. "
-			          "Make sure you have enough head room to climb out.";
-			shortMsg = "Not enough room here to take off your Battle Suit";
+			longMsg = _("There is not enough room here to take off your Battle Suit. "
+			          "Make sure you have enough head room to climb out.");
+			shortMsg = _("Not enough room here to take off your Battle Suit");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_H_ARMOURYBUILDTIMER:
-			longMsg = "You are not allowed to buy or sell weapons until your "
-			          "build timer has expired.";
-			shortMsg = "You can not buy or sell weapons until your build timer "
-			           "expires";
+			longMsg = _("You are not allowed to buy or sell weapons until your "
+			          "build timer has expired.");
+			shortMsg = _("You can not buy or sell weapons until your build timer "
+			           "expires");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_H_DEADTOCLASS:
-			shortMsg = "You must be dead to use the class command";
+			shortMsg = _("You must be dead to use the class command");
 			type = DT_COMMAND;
 			break;
 
 		case MN_H_UNKNOWNSPAWNITEM:
-			shortMsg = "Unknown starting item";
+			shortMsg = _("Unknown starting item");
 			type = DT_COMMAND;
 			break;
 
 			//===============================
 
 		case MN_A_NOCREEP:
-			longMsg = "There is no creep here. You must build near existing Eggs or "
-			          "the Overmind. Alien structures will not support themselves.";
-			shortMsg = "There is no creep here";
+			longMsg = _("There is no creep here. You must build near existing Eggs or "
+			          "the Overmind. Alien structures will not support themselves.");
+			shortMsg = _("There is no creep here");
 			type = DT_BUILD;
 			break;
 
 		case MN_A_NOOVMND:
-			longMsg = "There is no Overmind. An Overmind must be built to control "
-			          "the structure you tried to place.";
-			shortMsg = "There is no Overmind";
+			longMsg = _("There is no Overmind. An Overmind must be built to control "
+			          "the structure you tried to place.");
+			shortMsg = _("There is no Overmind");
 			type = DT_BUILD;
 			break;
 
 		case MN_A_ONEOVERMIND:
-			longMsg = "There can only be one Overmind. Deconstruct the existing one if you "
-			          "wish to move it.";
-			shortMsg = "There can only be one Overmind";
+			longMsg = _("There can only be one Overmind. Deconstruct the existing one if you "
+			          "wish to move it.");
+			shortMsg = _("There can only be one Overmind");
 			type = DT_BUILD;
 			break;
 
 		case MN_A_NOBP:
-			longMsg = "The Overmind cannot control any more structures. Deconstruct existing "
-			          "structures to build more.";
-			shortMsg = "The Overmind cannot control any more structures";
+			longMsg = _("The Overmind cannot control any more structures. Deconstruct existing "
+			          "structures to build more.");
+			shortMsg = _("The Overmind cannot control any more structures");
 			type = DT_BUILD;
 			break;
 
 		case MN_A_NOEROOM:
-			longMsg = "There is no room to evolve here. Move away from walls or other "
-			          "nearby objects and try again.";
-			shortMsg = "There is no room to evolve here";
+			longMsg = _("There is no room to evolve here. Move away from walls or other "
+			          "nearby objects and try again.");
+			shortMsg = _("There is no room to evolve here");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_TOOCLOSE:
-			longMsg = "This location is too close to the enemy to evolve. Move away "
-			          "from the enemy's presence and try again.";
-			shortMsg = "This location is too close to the enemy to evolve";
+			longMsg = _("This location is too close to the enemy to evolve. Move away "
+			          "from the enemy's presence and try again.");
+			shortMsg = _("This location is too close to the enemy to evolve");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_NOOVMND_EVOLVE:
-			longMsg = "There is no Overmind. An Overmind must be built to allow "
-			          "you to upgrade.";
-			shortMsg = "There is no Overmind";
+			longMsg = _("There is no Overmind. An Overmind must be built to allow "
+			          "you to upgrade.");
+			shortMsg = _("There is no Overmind");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_EVOLVEBUILDTIMER:
-			longMsg = "You cannot evolve until your build timer has expired.";
-			shortMsg = "You cannot evolve until your build timer expires";
+			longMsg = _("You cannot evolve until your build timer has expired.");
+			shortMsg = _("You cannot evolve until your build timer expires");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
@@ -859,35 +859,35 @@ void CG_Menu( int menu, int arg )
 			break;
 
 		case MN_A_CANTEVOLVE:
-			shortMsg = va( "You cannot evolve into a %s",
+			shortMsg = va( _("You cannot evolve into a %s"),
 			               BG_ClassConfig( arg )->humanName );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_EVOLVEWALLWALK:
-			shortMsg = "You cannot evolve while wallwalking";
+			shortMsg = _("You cannot evolve while wallwalking");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_UNKNOWNCLASS:
-			shortMsg = "Unknown class";
+			shortMsg = _("Unknown class");
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTSPAWN:
-			shortMsg = va( "You cannot spawn as a %s",
+			shortMsg = va( _("You cannot spawn as a %s"),
 			               BG_ClassConfig( arg )->humanName );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTALLOWED:
-			shortMsg = va( "The %s is not allowed",
+			shortMsg = va( _("The %s is not allowed"),
 			               BG_ClassConfig( arg )->humanName );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTATSTAGE:
-			shortMsg = va( "The %s is not allowed at Stage %d",
+			shortMsg = va( _("The %s is not allowed at Stage %d"),
 			               BG_ClassConfig( arg )->humanName,
 			               cgs.alienStage + 1 );
 			type = DT_ARMOURYEVOLVE;
