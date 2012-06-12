@@ -4024,7 +4024,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				releaseFocus = qfalse;
 				goto exit;
 			}
-			else
+			else if ( (unsigned int)( chr - 0xF700 ) >= 0x200u ) // filter out Mac cursor keys etc.
 			{
 				const char *str = Q_UTF8Unstore( chr );
 				int index = ui_CursorToOffset( buff, item->cursorPos );

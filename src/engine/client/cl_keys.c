@@ -731,6 +731,12 @@ void Field_CharEvent( field_t *edit, const char *s )
 		return;
 	}
 
+	// 'unprintable' on Mac - used for cursor keys, function keys etc.
+	if ( (unsigned int)( Q_UTF8CodePoint( s ) - 0xF700 ) < 0x200u )
+	{
+		return;
+	}
+
 	width = Q_UTF8Width( s );
 	offset = Field_CursorToOffset( edit );
 
