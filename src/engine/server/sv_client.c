@@ -140,16 +140,16 @@ void SV_GetChallenge( netadr_t from )
 	// look up the authorize server's IP
 	if ( !svs.authorizeAddress.ip[ 0 ] && svs.authorizeAddress.type != NA_BAD )
 	{
-		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
+		Com_Printf(_( "Resolving %s\n"), AUTHORIZE_SERVER_NAME );
 
 		if ( !NET_StringToAdr( AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, NA_UNSPEC ) )
 		{
-			Com_Printf( "Couldn't resolve address\n" );
+			Com_Printf(_( "Couldn't resolve address\n" ));
 			return;
 		}
 
 		svs.authorizeAddress.port = BigShort( PORT_AUTHORIZE );
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+		Com_Printf(_( "%s resolved to %i.%i.%i.%i:%i\n"), AUTHORIZE_SERVER_NAME,
 		            svs.authorizeAddress.ip[ 0 ], svs.authorizeAddress.ip[ 1 ],
 		            svs.authorizeAddress.ip[ 2 ], svs.authorizeAddress.ip[ 3 ],
 		            BigShort( svs.authorizeAddress.port ) );
@@ -225,7 +225,7 @@ void SV_AuthorizeIpPacket( netadr_t from )
 
 	if ( !NET_CompareBaseAdr( from, svs.authorizeAddress ) )
 	{
-		Com_Printf( "SV_AuthorizeIpPacket: not from authorize server\n" );
+		Com_Printf(_( "SV_AuthorizeIpPacket: not from authorize server\n" ));
 		return;
 	}
 
@@ -241,7 +241,7 @@ void SV_AuthorizeIpPacket( netadr_t from )
 
 	if ( i == MAX_CHALLENGES )
 	{
-		Com_Printf( "SV_AuthorizeIpPacket: challenge not found\n" );
+		Com_Printf(_( "SV_AuthorizeIpPacket: challenge not found\n" ));
 		return;
 	}
 
@@ -509,7 +509,7 @@ void SV_DirectConnect( netadr_t from )
 			ping = svs.challenges[ i ].firstPing;
 		}
 
-		Com_Printf( "Client %i connecting with %i challenge ping\n", i, ping );
+		Com_Printf(_( "Client %i connecting with %i challenge ping\n"), i, ping );
 		svs.challenges[ i ].connected = qtrue;
 
 		// never reject a LAN client based on ping
@@ -551,7 +551,7 @@ void SV_DirectConnect( netadr_t from )
 		     && ( cl->netchan.qport == qport
 		          || from.port == cl->netchan.remoteAddress.port ) )
 		{
-			Com_Printf( "%s:reconnect\n", NET_AdrToString( from ) );
+			Com_Printf(_( "%s:reconnect\n"), NET_AdrToString( from ) );
 			newcl = cl;
 
 			// this doesn't work because it nukes the players userinfo
@@ -1041,7 +1041,7 @@ void SV_NextDownload_f( client_t *cl )
 		// Find out if we are done.  A zero-length block indicates EOF
 		if ( cl->downloadBlockSize[ cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW ] == 0 )
 		{
-			Com_Printf( "clientDownload: %d : file \"%s\" completed\n", ( int )( cl - svs.clients ), cl->downloadName );
+			Com_Printf(_( "clientDownload: %d : file \"%s\" completed\n"), ( int )( cl - svs.clients ), cl->downloadName );
 			SV_CloseDownload( cl );
 			return;
 		}
@@ -1090,7 +1090,7 @@ void SV_WWWDownload_f( client_t *cl )
 	// only accept wwwdl commands for clients which we first flagged as wwwdl ourselves
 	if ( !cl->bWWWDl )
 	{
-		Com_Printf( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
+		Com_Printf(_( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"), subcmd, cl->name );
 		SV_DropClient( cl, va( "SV_WWWDownload: unexpected wwwdl %s", subcmd ) );
 		return;
 	}
@@ -1099,7 +1099,7 @@ void SV_WWWDownload_f( client_t *cl )
 	{
 		if ( cl->bWWWing )
 		{
-			Com_Printf( "WARNING: dupe wwwdl ack from client '%s'\n", cl->name );
+			Com_Printf(_( "WARNING: dupe wwwdl ack from client '%s'\n"), cl->name );
 		}
 
 		cl->bWWWing = qtrue;
@@ -1114,7 +1114,7 @@ void SV_WWWDownload_f( client_t *cl )
 	// below for messages that only happen during/after download
 	if ( !cl->bWWWing )
 	{
-		Com_Printf( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n", subcmd, cl->name );
+		Com_Printf(_( "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"), subcmd, cl->name );
 		SV_DropClient( cl, va( "SV_WWWDownload: unexpected wwwdl %s", subcmd ) );
 		return;
 	}
@@ -1138,9 +1138,9 @@ void SV_WWWDownload_f( client_t *cl )
 	}
 	else if ( !Q_stricmp( subcmd, "chkfail" ) )
 	{
-		Com_Printf( "WARNING: client '%s' reports that the redirect download for '%s' had wrong checksum.\n", cl->name,
+		Com_Printf(_( "WARNING: client '%s' reports that the redirect download for '%s' had wrong checksum.\n"), cl->name,
 		            cl->downloadName );
-		Com_Printf( "         you should check your download redirect configuration.\n" );
+		Com_Printf(_( "         you should check your download redirect configuration.\n" ));
 		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
@@ -1150,7 +1150,7 @@ void SV_WWWDownload_f( client_t *cl )
 		return;
 	}
 
-	Com_Printf( "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n", subcmd, cl->name );
+	Com_Printf(_( "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n"), subcmd, cl->name );
 	SV_DropClient( cl, va( "SV_WWWDownload: unknown wwwdl subcommand '%s'", subcmd ) );
 }
 
@@ -1180,7 +1180,7 @@ static qboolean SV_CheckFallbackURL( client_t *cl, msg_t *msg )
 		return qfalse;
 	}
 
-	Com_Printf( "clientDownload: sending client '%s' to fallback URL '%s'\n", cl->name, sv_wwwFallbackURL->string );
+	Com_Printf(_( "clientDownload: sending client '%s' to fallback URL '%s'\n"), cl->name, sv_wwwFallbackURL->string );
 
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
@@ -1237,7 +1237,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		if ( cl->downloadnotify & DLNOTIFY_BEGIN )
 		{
 			cl->downloadnotify &= ~DLNOTIFY_BEGIN;
-			Com_Printf( "clientDownload: %d : beginning \"%s\"\n", ( int )( cl - svs.clients ), cl->downloadName );
+			Com_Printf(_( "clientDownload: %d : beginning \"%s\"\n"), ( int )( cl - svs.clients ), cl->downloadName );
 		}
 
 		idPack = FS_idPak( cl->downloadName, BASEGAME );
@@ -1248,12 +1248,12 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			// cannot auto-download file
 			if ( idPack )
 			{
-				Com_Printf( "clientDownload: %d : \"%s\" cannot download id pk3 files\n", ( int )( cl - svs.clients ), cl->downloadName );
+				Com_Printf(_( "clientDownload: %d : \"%s\" cannot download id pk3 files\n"), ( int )( cl - svs.clients ), cl->downloadName );
 				Com_sprintf( errorMessage, sizeof( errorMessage ), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName );
 			}
 			else
 			{
-				Com_Printf( "clientDownload: %d : \"%s\" download disabled", ( int )( cl - svs.clients ), cl->downloadName );
+				Com_Printf(_( "clientDownload: %d : \"%s\" download disabled"), ( int )( cl - svs.clients ), cl->downloadName );
 
 				if ( sv_pure->integer )
 				{
@@ -1301,7 +1301,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 						if ( cl->downloadnotify & DLNOTIFY_REDIRECT )
 						{
 							cl->downloadnotify &= ~DLNOTIFY_REDIRECT;
-							Com_Printf( "Redirecting client '%s' to %s\n", cl->name, cl->downloadURL );
+							Com_Printf(_( "Redirecting client '%s' to %s\n"), cl->name, cl->downloadURL );
 						}
 
 						// once cl->downloadName is set (and possibly we have our listening socket), let the client know
@@ -1325,7 +1325,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					else
 					{
 						// that should NOT happen - even regular download would fail then anyway
-						Com_Printf( "ERROR: Client '%s': couldn't extract file size for %s\n", cl->name, cl->downloadName );
+						Com_Printf(_( "ERROR: Client '%s': couldn't extract file size for %s\n"), cl->name, cl->downloadName );
 					}
 				}
 				else
@@ -1337,7 +1337,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 						return;
 					}
 
-					Com_Printf( "Client '%s': falling back to regular downloading for failed file %s\n", cl->name,
+					Com_Printf(_( "Client '%s': falling back to regular downloading for failed file %s\n"), cl->name,
 					            cl->downloadName );
 				}
 			}
@@ -1348,7 +1348,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					return;
 				}
 
-				Com_Printf( "Client '%s' is not configured for www download\n", cl->name );
+				Com_Printf(_( "Client '%s' is not configured for www download\n"), cl->name );
 			}
 		}
 
@@ -1358,7 +1358,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 		if ( cl->downloadSize <= 0 )
 		{
-			Com_Printf( "clientDownload: %d : \"%s\" file not found on server\n", ( int )( cl - svs.clients ), cl->downloadName );
+			Com_Printf(_( "clientDownload: %d : \"%s\" file not found on server\n"), ( int )( cl - svs.clients ), cl->downloadName );
 			Com_sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n",
 			             cl->downloadName );
 			SV_BadDownload( cl, msg );
@@ -1425,12 +1425,12 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 
 		if ( bTellRate )
 		{
-			Com_Printf( "'%s' downloading at sv_dl_maxrate (%d)\n", cl->name, sv_dl_maxRate->integer );
+			Com_Printf(_( "'%s' downloading at sv_dl_maxrate (%d)\n"), cl->name, sv_dl_maxRate->integer );
 		}
 	}
 	else if ( bTellRate )
 	{
-		Com_Printf( "'%s' downloading at rate %d\n", cl->name, rate );
+		Com_Printf(_( "'%s' downloading at rate %d\n"), cl->name, rate );
 	}
 
 	if ( !rate )
@@ -1591,7 +1591,7 @@ static void SV_VerifyPaks_f( client_t *cl )
 
 			if ( !pArg || *pArg == '@' || atoi( pArg ) != nChkSum1 )
 			{
-				Com_Printf( "nChkSum1 %d == %d\n", atoi( pArg ), nChkSum1 );
+				Com_Printf(_( "nChkSum1 %d == %d\n"), atoi( pArg ), nChkSum1 );
 				bGood = qfalse;
 				break;
 			}
@@ -1601,7 +1601,7 @@ static void SV_VerifyPaks_f( client_t *cl )
 
 			if ( !pArg || *pArg == '@' || atoi( pArg ) != nChkSum2 )
 			{
-				Com_Printf( "nChkSum2 %d == %d\n", atoi( pArg ), nChkSum2 );
+				Com_Printf(_( "nChkSum2 %d == %d\n"), atoi( pArg ), nChkSum2 );
 				bGood = qfalse;
 				break;
 			}
@@ -2174,7 +2174,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 
 				if ( exploitDetected )
 				{
-					Com_Printf( "Buffer overflow exploit radio/say, possible attempt from %s\n",
+					Com_Printf(_( "Buffer overflow exploit radio/say, possible attempt from %s\n"),
 					            NET_AdrToString( cl->netchan.remoteAddress ) );
 					SV_SendServerCommand( cl, "print \"Chat dropped due to message length constraints.\n\"" );
 					return;
@@ -2184,7 +2184,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 #endif
 			if ( Q_stricmp( "callvote", Cmd_Argv( 0 ) ) == 0 )
 			{
-				Com_Printf( "Callvote from %s (client #%i, %s): %s\n",
+				Com_Printf(_( "Callvote from %s (client #%i, %s): %s\n"),
 				            cl->name, ( int )( cl - svs.clients ),
 				            NET_AdrToString( cl->netchan.remoteAddress ), Cmd_Args() );
 			}
@@ -2224,7 +2224,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	// drop the connection if we have somehow lost commands
 	if ( seq > cl->lastClientCommand + 1 )
 	{
-		Com_Printf( "Client %s lost %i clientCommands\n", cl->name, seq - cl->lastClientCommand + 1 );
+		Com_Printf(_( "Client %s lost %i clientCommands\n"), cl->name, seq - cl->lastClientCommand + 1 );
 		SV_DropClient( cl, "Lost reliable commands" );
 		return qfalse;
 	}
@@ -2320,13 +2320,13 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 
 	if ( cmdCount < 1 )
 	{
-		Com_Printf( "cmdCount < 1\n" );
+		Com_Printf(_( "cmdCount < 1\n" ));
 		return;
 	}
 
 	if ( cmdCount > MAX_PACKET_USERCMDS )
 	{
-		Com_Printf( "cmdCount > MAX_PACKET_USERCMDS\n" );
+		Com_Printf(_( "cmdCount > MAX_PACKET_USERCMDS\n" ));
 		return;
 	}
 
@@ -2568,7 +2568,7 @@ void SV_UserVoip( client_t *cl, msg_t *msg )
 		// Transmit this packet to the client.
 		if ( client->queuedVoipPackets >= ARRAY_LEN( client->voipPacket ) )
 		{
-			Com_Printf( "Too many VoIP packets queued for client #%d\n", i );
+			Com_Printf(_( "Too many VoIP packets queued for client #%d\n"), i );
 			continue; // no room for another packet right now.
 		}
 
@@ -2743,12 +2743,12 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	}
 	else if ( c != clc_EOF )
 	{
-		Com_Printf( "WARNING: bad command byte for client %i\n", ( int )( cl - svs.clients ) );
+		Com_Printf(_( "WARNING: bad command byte for client %i\n"), ( int )( cl - svs.clients ) );
 	}
 
 	SV_ParseBinaryMessage( cl, msg );
 
 //  if ( msg->readcount != msg->cursize ) {
-//      Com_Printf( "WARNING: Junk at end of packet for client %i\n", cl - svs.clients );
+//      Com_Printf(_( "WARNING: Junk at end of packet for client %i\n"), cl - svs.clients );
 //  }
 }

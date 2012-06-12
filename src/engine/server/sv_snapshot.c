@@ -227,7 +227,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 			MSG_WriteDeltaPlayerstate( msg, NULL, &frame->ps );
 		}
 
-//      Com_Printf( "Playerstate delta size: %f\n", ((msg->cursize - sz) * sv_fps->integer) / 8.f );
+//      Com_Printf(_( "Playerstate delta size: %f\n"), ((msg->cursize - sz) * sv_fps->integer) / 8.f );
 	}
 
 	// delta encode the entities
@@ -969,7 +969,7 @@ void SV_SendClientIdle( client_t *client )
 	// check for overflow
 	if ( msg.overflowed )
 	{
-		Com_Printf( "WARNING: msg overflowed for %s\n", client->name );
+		Com_Printf(_( "WARNING: msg overflowed for %s\n"), client->name );
 		MSG_Clear( &msg );
 
 		SV_DropClient( client, "Msg overflowed" );
@@ -1040,7 +1040,7 @@ void SV_SendClientSnapshot( client_t *client )
 	// check for overflow
 	if ( msg.overflowed )
 	{
-		Com_Printf( "WARNING: msg overflowed for %s\n", client->name );
+		Com_Printf(_( "WARNING: msg overflowed for %s\n"), client->name );
 		MSG_Clear( &msg );
 
 		SV_DropClient( client, "Msg overflowed" );
