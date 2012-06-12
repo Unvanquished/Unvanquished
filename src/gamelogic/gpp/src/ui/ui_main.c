@@ -1099,15 +1099,15 @@ static void UI_StopServerRefresh( void )
 	}
 
 	uiInfo.serverStatus.refreshActive = qfalse;
-	Com_Printf( "%d servers listed in browser with %d players.\n",
+	Com_Printf(_( "%d servers listed in browser with %d players.\n"),
 	            uiInfo.serverStatus.numDisplayServers,
 	            uiInfo.serverStatus.numPlayersOnServers );
 	count = trap_LAN_GetServerCount( ui_netSource.integer );
 
 	if ( count - uiInfo.serverStatus.numDisplayServers > 0 )
 	{
-		Com_Printf( "%d servers not listed due to packet loss, invalid info,"
-		            " or pings higher than %d\n",
+		Com_Printf(_( "%d servers not listed due to packet loss, invalid info,"
+		            " or pings higher than %d\n"),
 		            count - uiInfo.serverStatus.numDisplayServers,
 		            ( int ) trap_Cvar_VariableValue( "cl_maxPing" ) );
 	}
@@ -1543,7 +1543,7 @@ qboolean UI_ParseMenu( const char *menuFile )
 
 	if ( !handle )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: Menu file %s not found\n",
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Menu file %s not found\n"),
 		            menuFile );
 		return qfalse;
 	}
@@ -1558,12 +1558,12 @@ qboolean UI_ParseMenu( const char *menuFile )
 		}
 
 		//if( Q_stricmp( token, "{" ) ) {
-		//  Com_Printf( "Missing { in menu file\n" );
+		//  Com_Printf(_( "Missing { in menu file\n" ));
 		//  break;
 		//}
 
 		//if( menuCount == MAX_MENUS ) {
-		//  Com_Printf( "Too many menus!\n" );
+		//  Com_Printf(_( "Too many menus!\n" ));
 		//  break;
 		//}
 
@@ -1733,7 +1733,7 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 		}
 	}
 
-	Com_Printf( "UI menu file '%s' loaded in %d msec\n", menuFile, trap_Milliseconds() - start );
+	Com_Printf(_( "UI menu file '%s' loaded in %d msec\n"), menuFile, trap_Milliseconds() - start );
 
 	trap_Parse_FreeSource( handle );
 }
@@ -1750,7 +1750,7 @@ void UI_LoadHelp( const char *helpFile )
 
 	if ( !handle )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: help file '%s' not found!\n",
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: help file '%s' not found!\n"),
 		            helpFile );
 		return;
 	}
@@ -1758,8 +1758,8 @@ void UI_LoadHelp( const char *helpFile )
 	if ( !trap_Parse_ReadToken( handle, &token ) ||
 	     token.string[ 0 ] == 0 || token.string[ 0 ] != '{' )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: help file '%s' does not start with "
-		            "'{'\n", helpFile );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: help file '%s' does not start with "
+		            "'{'\n"), helpFile );
 		return;
 	}
 
@@ -1800,7 +1800,7 @@ void UI_LoadHelp( const char *helpFile )
 
 	trap_Parse_FreeSource( handle );
 
-	Com_Printf( "UI help file '%s' loaded in %d msec (%d infopanes)\n",
+	Com_Printf(_( "UI help file '%s' loaded in %d msec (%d infopanes)\n"),
 	            helpFile, trap_Milliseconds() - start, uiInfo.helpCount );
 }
 
@@ -3784,17 +3784,17 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s", "Favorite already in list\n" );
+						Com_Printf( "%s",_( "Favorite already in list\n" ));
 					}
 					else if ( res == -1 )
 					{
 						// list full
-						Com_Printf( "%s", "Favorite list full\n" );
+						Com_Printf( "%s", _( "Favorite list full\n" ));
 					}
 					else
 					{
 						// successfully added
-						Com_Printf( "Added favorite server %s\n", addr );
+						Com_Printf(_( "Added favorite server %s\n"), addr );
 					}
 				}
 			}
@@ -4022,17 +4022,17 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s", "Favorite already in list\n" );
+						Com_Printf( "%s", _("Favorite already in list\n" ));
 					}
 					else if ( res == -1 )
 					{
 						// list full
-						Com_Printf( "Favorite list full\n" );
+						Com_Printf(_( "Favorite list full\n" ));
 					}
 					else
 					{
 						// successfully added
-						Com_Printf( "Added favorite server %s\n", addr );
+						Com_Printf(_( "Added favorite server %s\n"), addr );
 					}
 				}
 			}
@@ -4103,7 +4103,7 @@ static void UI_RunMenuScript( char **args )
 		}
 		else
 		{
-			Com_Printf( "unknown UI script %s\n", name );
+			Com_Printf(_( "unknown UI script %s\n"), name );
 		}
 	}
 }

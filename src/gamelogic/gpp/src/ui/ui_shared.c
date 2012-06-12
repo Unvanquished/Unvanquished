@@ -327,16 +327,16 @@ const char *String_Alloc( const char *p )
 void String_Report( void )
 {
 	float f;
-	Com_Printf( "Memory/String Pool Info\n" );
+	Com_Printf(_( "Memory/String Pool Info\n" ));
 	Com_Printf( "----------------\n" );
 	f = strPoolIndex;
 	f /= STRING_POOL_SIZE;
 	f *= 100;
-	Com_Printf( "String Pool is %.1f%% full, %i bytes out of %i used.\n", f, strPoolIndex, STRING_POOL_SIZE );
+	Com_Printf(_( "String Pool is %.1f%% full, %i bytes out of %i used.\n"), f, strPoolIndex, STRING_POOL_SIZE );
 	f = allocPoint;
 	f /= MEM_POOL_SIZE;
 	f *= 100;
-	Com_Printf( "Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, allocPoint, MEM_POOL_SIZE );
+	Com_Printf(_( "Memory Pool is %.1f%% full, %i bytes out of %i used.\n"), f, allocPoint, MEM_POOL_SIZE );
 }
 
 /*
@@ -393,7 +393,7 @@ void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceWarning( int handle, c
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( S_COLOR_YELLOW "WARNING: %s, line %d: %s\n", filename, line, string );
+	Com_Printf( _( S_COLOR_YELLOW  "WARNING: %s, line %d: %s\n"), filename, line, string );
 }
 
 /*
@@ -416,7 +416,7 @@ void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceError( int handle, cha
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( S_COLOR_RED "ERROR: %s, line %d: %s\n", filename, line, string );
+	Com_Printf( _( S_COLOR_RED  "ERROR: %s, line %d: %s\n"), filename, line, string );
 }
 
 /*

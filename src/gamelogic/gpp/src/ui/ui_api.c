@@ -56,7 +56,7 @@ void trap_Error( const char *string )
 }
 
 //01.
-//Com_Printf("%s", (char *)VMA(1));
+//Com_Printf_(("%s"), (char *)VMA(1));
 void trap_Print( const char *string )
 {
 	syscall( UI_PRINT, string );
@@ -354,7 +354,7 @@ sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 
 	if ( i == 0 )
 	{
-		Com_Printf( "^1Warning: Failed to load sound: %s\n", sample );
+		Com_Printf(_( "^1Warning: Failed to load sound: %s\n"), sample );
 	}
 
 #endif
