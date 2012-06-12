@@ -4024,13 +4024,22 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				releaseFocus = qfalse;
 				goto exit;
 			}
-			else if ( (unsigned int)( chr - 0xF700 ) >= 0x200u ) // filter out Mac cursor keys etc.
+			else
 			{
 				const char *str = Q_UTF8Unstore( chr );
-				int index = ui_CursorToOffset( buff, item->cursorPos );
-				int width = Q_UTF8Width( str );
-				int oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? Q_UTF8Width( buff + index ) : 0;
-				int max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+				int        index, width, oldWidth, max;
+
+				if ( (unsigned int)( Q_UTF8CodePoint( str ) - 0xF700 ) < 0x200u ) 
+				{
+					// Filter out Mac cursor keys etc.
+					releaseFocus = qfalse;
+					goto exit;
+				}
+
+				index = ui_CursorToOffset( buff, item->cursorPos );
+				width = Q_UTF8Width( str );
+				oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? Q_UTF8Width( buff + index ) : 0;
+				max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
 				max = max ? max : MAX_EDITFIELD - 1;
 
 				if ( len + width - oldWidth > max )
