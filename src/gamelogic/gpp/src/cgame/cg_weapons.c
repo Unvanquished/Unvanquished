@@ -702,12 +702,12 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 		{
 			if ( weaponMode == WPM_NONE )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: weapon mode section started without a declaration\n" ));
+				CG_Printf( "%s", _( "^1ERROR: weapon mode section started without a declaration\n" ));
 				return qfalse;
 			}
 			else if ( !CG_ParseWeaponModeSection( &wi->wim[ weaponMode ], &text_p ) )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: failed to parse weapon mode section\n" ));
+				CG_Printf( "%s", _( "^1ERROR: failed to parse weapon mode section\n" ));
 				return qfalse;
 			}
 
@@ -1104,7 +1104,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 	{
 		if ( !trap_R_BuildSkeleton( &oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
 		{
-			CG_Printf(_( "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton\n" ));
+			CG_Printf( "%s", _( "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton\n" ));
 			return;
 		}
 	}
@@ -1165,7 +1165,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 
 		if ( !trap_R_BuildSkeleton( &gunSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
 		{
-			CG_Printf(_( "CG_RunWeaponLerpFrame: Can't build lf->gunSkeleton\n" ));
+			CG_Printf( "%s", _( "CG_RunWeaponLerpFrame: Can't build lf->gunSkeleton\n" ));
 		}
 
 		// lerp between old and new animation if possible
@@ -1173,7 +1173,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 		{
 			if ( !trap_R_BlendSkeleton( &gunSkeleton, &oldGunSkeleton, lf->blendlerp ) )
 			{
-				CG_Printf(_( "CG_RunWeaponLerpFrame: Can't blend lf->gunSkeleton\n" ));
+				CG_Printf( "%s", _( "CG_RunWeaponLerpFrame: Can't blend lf->gunSkeleton\n" ));
 				return;
 			}
 		}

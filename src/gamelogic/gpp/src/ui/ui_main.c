@@ -1558,12 +1558,12 @@ qboolean UI_ParseMenu( const char *menuFile )
 		}
 
 		//if( Q_stricmp( token, "{" ) ) {
-		//  Com_Printf(_( "Missing { in menu file\n" ));
+		//  Com_Printf("%s", _( "Missing { in menu file\n" ));
 		//  break;
 		//}
 
 		//if( menuCount == MAX_MENUS ) {
-		//  Com_Printf(_( "Too many menus!\n" ));
+		//  Com_Printf("%s", _( "Too many menus!\n" ));
 		//  break;
 		//}
 
@@ -3784,12 +3784,12 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s",_( "Favorite already in list\n" ));
+						Com_Printf( "%s","%s", _( "Favorite already in list\n" ));
 					}
 					else if ( res == -1 )
 					{
 						// list full
-						Com_Printf( "%s", _( "Favorite list full\n" ));
+						Com_Printf( "%s", "%s", _( "Favorite list full\n" ));
 					}
 					else
 					{
@@ -4022,12 +4022,12 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s", _("Favorite already in list\n" ));
+						Com_Printf( "%s", "%s", _("Favorite already in list\n" ));
 					}
 					else if ( res == -1 )
 					{
 						// list full
-						Com_Printf(_( "Favorite list full\n" ));
+						Com_Printf("%s", _( "Favorite list full\n" ));
 					}
 					else
 					{

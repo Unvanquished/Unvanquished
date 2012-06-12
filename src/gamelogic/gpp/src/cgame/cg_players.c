@@ -1555,7 +1555,7 @@ static void CG_SetPlayerLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, i
 	{
 		if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 		{
-			CG_Printf(_( "Can't build old player skeleton\n" ));
+			CG_Printf( "%s", _( "Can't build old player skeleton\n" ));
 			return;
 		}
 	}
@@ -1666,7 +1666,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
-				CG_Printf(_( "Can't blend skeleton\n" ));
+				CG_Printf( "%s", _( "Can't blend skeleton\n" ));
 				return;
 			}
 		}
@@ -1830,7 +1830,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		{
 			if ( !trap_R_BuildSkeleton( skel, lf->animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->animation->clearOrigin ) )
 			{
-				CG_Printf(_( "Can't build lf->skeleton\n" ));
+				CG_Printf( "%s", _( "Can't build lf->skeleton\n" ));
 			}
 
 			// lerp between old and new animation if possible
@@ -1840,7 +1840,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 				{
 					if ( !trap_R_BlendSkeleton( skel, &oldSkeleton, lf->blendlerp ) )
 					{
-						CG_Printf(_( "Can't blend\n" ));
+						CG_Printf( "%s", _( "Can't blend\n" ));
 						return;
 					}
 				}
@@ -1895,7 +1895,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	{
 		if ( !trap_R_BuildSkeleton( &skeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
 		{
-			CG_Printf(_( "Can't build lf->skeleton\n" ));
+			CG_Printf( "%s", _( "Can't build lf->skeleton\n" ));
 		}
 	}
 }

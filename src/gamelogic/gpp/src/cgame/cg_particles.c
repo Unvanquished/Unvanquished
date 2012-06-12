@@ -488,7 +488,7 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 
 	if ( !bps->registered )
 	{
-		CG_Printf( _( S_COLOR_RED  "ERROR: a particle system has not been registered yet\n" ));
+		CG_Printf( "%s", _( S_COLOR_RED  "ERROR: a particle system has not been registered yet\n" ));
 		return NULL;
 	}
 
@@ -1339,7 +1339,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 				if ( Q_stricmp( token, "}" ) )
 				{
-					CG_Printf( _( S_COLOR_RED  "ERROR: missing '}'\n" ));
+					CG_Printf( "%s", _( S_COLOR_RED  "ERROR: missing '}'\n" ));
 					break;
 				}
 			}
@@ -1491,7 +1491,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 				if ( Q_stricmp( token, "}" ) )
 				{
-					CG_Printf( _( S_COLOR_RED  "ERROR: missing '}'\n" ));
+					CG_Printf( "%s", _( S_COLOR_RED  "ERROR: missing '}'\n" ));
 					break;
 				}
 
@@ -1519,19 +1519,19 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 					if ( Q_stricmp( token, "}" ) )
 					{
-						CG_Printf( _( S_COLOR_RED  "ERROR: missing '}'\n" ));
+						CG_Printf( "%s", _( S_COLOR_RED  "ERROR: missing '}'\n" ));
 						break;
 					}
 				}
 				else
 				{
-					CG_Printf( _( S_COLOR_RED  "ERROR: missing '{'\n" ));
+					CG_Printf( "%s", _( S_COLOR_RED  "ERROR: missing '{'\n" ));
 					break;
 				}
 			}
 			else
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: missing '{'\n" ));
+				CG_Printf( "%s", _( S_COLOR_RED  "ERROR: missing '{'\n" ));
 				break;
 			}
 
@@ -1713,7 +1713,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 
 			if ( !CG_ParseParticle( &baseParticles[ numBaseParticles ], text_p ) )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: failed to parse particle\n" ));
+				CG_Printf( "%s", _( S_COLOR_RED  "ERROR: failed to parse particle\n" ));
 				return qfalse;
 			}
 
@@ -1864,7 +1864,7 @@ static qboolean CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p
 		{
 			if ( !CG_ParseParticleEjector( &baseParticleEjectors[ numBaseParticleEjectors ], text_p ) )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: failed to parse particle ejector\n" ));
+				CG_Printf( "%s", _( S_COLOR_RED  "ERROR: failed to parse particle ejector\n" ));
 				return qfalse;
 			}
 
@@ -1874,7 +1874,7 @@ static qboolean CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p
 			if ( bpe->totalParticles == PARTICLES_INFINITE &&
 			     ( bpe->eject.initial == 0.0f || bpe->eject.final == 0.0f ) )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: ejector with 'count infinite' potentially has zero period\n" ));
+				CG_Printf( "%s", _( S_COLOR_RED  "ERROR: ejector with 'count infinite' potentially has zero period\n" ));
 				return qfalse;
 			}
 
@@ -2017,7 +2017,7 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 			}
 			else
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: unamed particle system\n" ));
+				CG_Printf( "%s", _( S_COLOR_RED  "ERROR: unamed particle system\n" ));
 				return qfalse;
 			}
 		}
@@ -2029,7 +2029,7 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 		}
 		else
 		{
-			CG_Printf( _( S_COLOR_RED  "ERROR: particle system already named\n" ));
+			CG_Printf( "%s", _( S_COLOR_RED  "ERROR: particle system already named\n" ));
 			return qfalse;
 		}
 	}
@@ -2154,7 +2154,7 @@ void CG_SetParticleSystemNormal( particleSystem_t *ps, vec3_t normal )
 {
 	if ( ps == NULL || !ps->valid )
 	{
-		CG_Printf( _( S_COLOR_YELLOW  "WARNING: tried to modify a NULL particle system\n" ));
+		CG_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: tried to modify a NULL particle system\n" ));
 		return;
 	}
 
@@ -2183,13 +2183,13 @@ void CG_DestroyParticleSystem( particleSystem_t **ps )
 
 	if ( *ps == NULL || !( *ps )->valid )
 	{
-		CG_Printf( _( S_COLOR_YELLOW  "WARNING: tried to destroy a NULL particle system\n" ));
+		CG_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: tried to destroy a NULL particle system\n" ));
 		return;
 	}
 
 	if ( cg_debugParticles.integer >= 1 )
 	{
-		CG_Printf(_( "PS destroyed\n" ));
+		CG_Printf("%s", _( "PS destroyed\n" ));
 	}
 
 	for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
@@ -2219,13 +2219,13 @@ qboolean CG_IsParticleSystemInfinite( particleSystem_t *ps )
 
 	if ( ps == NULL )
 	{
-		CG_Printf( _( S_COLOR_YELLOW  "WARNING: tried to test a NULL particle system\n" ));
+		CG_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: tried to test a NULL particle system\n" ));
 		return qfalse;
 	}
 
 	if ( !ps->valid )
 	{
-		CG_Printf( _( S_COLOR_YELLOW  "WARNING: tried to test an invalid particle system\n" ));
+		CG_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: tried to test an invalid particle system\n" ));
 		return qfalse;
 	}
 

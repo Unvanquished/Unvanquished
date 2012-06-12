@@ -113,7 +113,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 
 			if ( cg_debugAnim.integer )
 			{
-				CG_Printf(_( "Clamp lf->frameTime\n" ));
+				CG_Printf( "Clamp lf->frameTime\n" );
 			}
 		}
 	}

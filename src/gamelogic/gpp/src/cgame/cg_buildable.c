@@ -742,7 +742,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 			{
 				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 				{
-					CG_Printf(_( "Can't build old buildable bSkeleton\n" ));
+					CG_Printf( "%s", _( "Can't build old buildable bSkeleton\n" ));
 					return;
 				}
 			}
@@ -912,7 +912,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 		{
 			if ( !trap_R_BuildSkeleton( &bSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
 			{
-				CG_Printf(_( "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n" ));
+				CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n" ));
 			}
 
 			if ( oldbSkeleton.type != SK_INVALID && oldbSkeleton.numBones == bSkeleton.numBones )
@@ -922,7 +922,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 				{
 					if ( !trap_R_BlendSkeleton( &bSkeleton, &oldbSkeleton, lf->blendlerp ) )
 					{
-						CG_Printf(_( "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n" ));
+						CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n" ));
 						return;
 					}
 				}

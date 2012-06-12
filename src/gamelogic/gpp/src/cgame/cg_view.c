@@ -98,7 +98,7 @@ void CG_TestModel_f( void )
 
 	if ( !cg.testModelEntity.hModel )
 	{
-		CG_Printf(_( "Can't register model\n" ));
+		CG_Printf( "%s", _( "Can't register model\n" ));
 		return;
 	}
 
@@ -180,7 +180,7 @@ static void CG_AddTestModel( void )
 
 	if ( !cg.testModelEntity.hModel )
 	{
-		CG_Printf(_( "Can't register model\n" ));
+		CG_Printf( "%s", _( "Can't register model\n" ));
 		return;
 	}
 

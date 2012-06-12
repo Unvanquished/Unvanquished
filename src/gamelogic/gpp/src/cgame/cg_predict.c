@@ -677,7 +677,7 @@ void CG_PredictPlayerState( void )
 		// special check for map_restart
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf(_( "exceeded PACKET_BACKUP on commands\n" ));
+			CG_Printf( "%s", _( "exceeded PACKET_BACKUP on commands\n" ));
 		}
 
 		return;
@@ -851,7 +851,7 @@ void CG_PredictPlayerState( void )
 
 				if ( cg_showmiss.integer )
 				{
-					CG_Printf(_( "PredictionTeleport\n" ));
+					CG_Printf( "%s", _( "PredictionTeleport\n" ));
 				}
 
 				cg.thisFrameTeleport = qfalse;
@@ -866,7 +866,7 @@ void CG_PredictPlayerState( void )
 				{
 					if ( !VectorCompare( oldPlayerState.origin, adjusted ) )
 					{
-						CG_Printf(_( "prediction error\n" ));
+						CG_Printf( "%s", _( "prediction error\n" ));
 					}
 				}
 

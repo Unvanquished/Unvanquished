@@ -2380,7 +2380,7 @@ static char *CG_VoIPString( void )
 
 			if ( slen + nlen + 1 >= sizeof( voipString ) )
 			{
-				CG_Printf( _( S_COLOR_YELLOW  "WARNING: voipString overflowed\n" ));
+				CG_Printf( "%s", _( "^3WARNING: voipString overflowed\n" ));
 				break;
 			}
 

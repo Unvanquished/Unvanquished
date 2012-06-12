@@ -436,7 +436,7 @@ static void CG_MapRestart( void )
 {
 	if ( cg_showmiss.integer )
 	{
-		CG_Printf(_( "CG_MapRestart\n" ));
+		CG_Printf( "CG_MapRestart\n" );
 	}
 
 	CG_InitMarkPolys();

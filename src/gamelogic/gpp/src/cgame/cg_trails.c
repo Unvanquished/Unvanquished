@@ -781,7 +781,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			if ( btb->numSegments >= MAX_TRAIL_BEAM_NODES )
 			{
 				btb->numSegments = MAX_TRAIL_BEAM_NODES - 1;
-				CG_Printf( _( S_COLOR_YELLOW  "WARNING: too many segments in trail beam\n" ));
+				CG_Printf( "%s", _( "^3WARNING: too many segments in trail beam\n" ));
 			}
 
 			continue;
@@ -864,7 +864,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				if ( Q_stricmp( token, "}" ) )
 				{
-					CG_Printf( _( S_COLOR_RED  "ERROR: missing '}'\n" ));
+					CG_Printf( "%s", _( "^1ERROR: missing '}'\n" ));
 					break;
 				}
 
@@ -892,19 +892,19 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 					if ( Q_stricmp( token, "}" ) )
 					{
-						CG_Printf( _( S_COLOR_RED  "ERROR: missing '}'\n" ));
+						CG_Printf( "%s", _( "^1ERROR: missing '}'\n" ));
 						break;
 					}
 				}
 				else
 				{
-					CG_Printf( _( S_COLOR_RED  "ERROR: missing '{'\n" ));
+					CG_Printf( "%s", _( "^1ERROR: missing '{'\n" ));
 					break;
 				}
 			}
 			else
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: missing '{'\n" ));
+				CG_Printf( "%s", _( "^1ERROR: missing '{'\n" ));
 				break;
 			}
 
@@ -1014,7 +1014,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			}
 			else
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: unknown textureType \"%s\"\n"), token );
+				CG_Printf( "%s", _( "^1ERROR: unknown textureType \"%s\"\n"), token );
 				break;
 			}
 
@@ -1030,7 +1030,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			if ( btb->numJitters == MAX_TRAIL_BEAM_JITTERS )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: too many jitters\n" ));
+				CG_Printf( "%s", _( "^1ERROR: too many jitters\n" ));
 				break;
 			}
 
@@ -1125,18 +1125,18 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 
 			if ( !CG_ParseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ], text_p ) )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: failed to parse trail beam\n" ));
+				CG_Printf( "%s", _( "^1ERROR: failed to parse trail beam\n" ));
 				return qfalse;
 			}
 
 			if ( bts->numBeams == MAX_BEAMS_PER_SYSTEM )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: trail system has > %d beams\n"), MAX_BEAMS_PER_SYSTEM );
+				CG_Printf( "%s", _( "^1ERROR: trail system has > %d beams\n"), MAX_BEAMS_PER_SYSTEM );
 				return qfalse;
 			}
 			else if ( numBaseTrailBeams == MAX_BASETRAIL_BEAMS )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: maximum number of trail beams (%d) reached\n"),
+				CG_Printf( "%s", _( "^1ERROR: maximum number of trail beams (%d) reached\n"),
 				           MAX_BASETRAIL_BEAMS );
 				return qfalse;
 			}
@@ -1280,7 +1280,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 			}
 			else
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: unamed trail system\n" ));
+				CG_Printf( "%s", _( "^1ERROR: unamed trail system\n" ));
 				return qfalse;
 			}
 		}
@@ -1292,7 +1292,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 		}
 		else
 		{
-			CG_Printf( _( S_COLOR_RED  "ERROR: trail system already named\n" ));
+			CG_Printf( "%s", _( "^1ERROR: trail system already named\n" ));
 			return qfalse;
 		}
 	}
@@ -1453,7 +1453,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 
 	if ( !bts->registered )
 	{
-		CG_Printf( _( S_COLOR_RED  "ERROR: a trail system has not been registered yet\n" ));
+		CG_Printf( "%s", _( "^1ERROR: a trail system has not been registered yet\n" ));
 		return NULL;
 	}
 
@@ -1488,7 +1488,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 
 	if ( cg_debugTrails.integer >= 1 )
 	{
-		CG_Printf(_( "MAX_TRAIL_SYSTEMS\n" ));
+		CG_Printf( "MAX_TRAIL_SYSTEMS\n" );
 	}
 
 	return NULL;
