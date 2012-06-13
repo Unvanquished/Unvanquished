@@ -110,7 +110,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &ui_browserShowEmpty,    "ui_browserShowEmpty",         "1",                         CVAR_ARCHIVE              },
 
 	{ &ui_dedicated,           "ui_dedicated",                "0",                         CVAR_ARCHIVE              },
-	{ &ui_netSource,           "ui_netSource",                "0",                         CVAR_ARCHIVE              },
+	{ &ui_netSource,           "ui_netSource",                "1",                         CVAR_ARCHIVE              },
 	{ &ui_selectedMap,         "ui_selectedMap",              "0",                         CVAR_ARCHIVE              },
 	{ &ui_lastServerRefresh_0, "ui_lastServerRefresh_0",      "",                          CVAR_ARCHIVE              },
 	{ &ui_lastServerRefresh_1, "ui_lastServerRefresh_1",      "",                          CVAR_ARCHIVE              },
