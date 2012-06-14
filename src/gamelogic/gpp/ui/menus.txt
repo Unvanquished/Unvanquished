@@ -18,4 +18,5 @@
   loadMenu { "ui/findplayer.menu" }
   loadMenu { "ui/quitcredit.menu" }
   loadMenu { "ui/createfavorite.menu" }
+  loadMenu { "ui/firstrun.menu" }
 }

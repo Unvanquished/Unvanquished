@@ -5112,10 +5112,9 @@ void UI_SetActiveMenu( uiMenuCommand_t menu )
 				trap_Key_SetCatcher( KEYCATCH_UI );
 				Menus_CloseAll();
 				Menus_ActivateByName( "main" );
-				trap_Cvar_VariableStringBuffer( "name", buf, sizeof( buf ) );
-				if( !buf[ 0 ] || !Q_stricmp( buf, "UnnamedPlayer" ) )
+				if( !cl_profile.string[0] )
 				{
-					Menus_ActivateByName( "simple_options" );
+					Menus_ActivateByName( "profile_firstrun" );
 				}
 				buf[ 0 ] = '\0';
 				trap_Cvar_VariableStringBuffer( "com_errorMessage", buf, sizeof( buf ) );
