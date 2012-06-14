@@ -60,7 +60,7 @@
 
 
 #define X      234
-#define Y      190
+#define Y      210
 #define W      150
 #define ELEM_H 24
 #define ELEM_O 5
@@ -68,9 +68,10 @@
 
 	MMBUTTON( "Play", open joinserver, 0 )
 // 	MMBUTTON( "News", open news_menu, 1 )
-	MMBUTTON( "Options", open simple_options, 1 )
-	MMBUTTON( "Mods", open mod, 2 )
-	MMBUTTON( "Quit", open quit_popmenu, 3 )
+	MMBUTTON( "Profiles", open profiles, 1 )
+	MMBUTTON( "Options", open simple_options, 2 )
+	MMBUTTON( "Mods", open mod, 3 )
+	MMBUTTON( "Quit", open quit_popmenu, 4 )
 	
 	TITLE_LAYOUT
 

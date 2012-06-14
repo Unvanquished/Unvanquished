@@ -3864,16 +3864,17 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "applyProfile" ) == 0 )
 		{
-			Q_strncpyz( cl_profile.string, ui_profile.string, sizeof( cl_profile.string ) );
+			Q_strncpyz( cl_profile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_profile.string );
 			Q_CleanDirName( cl_profile.string );
 			trap_Cvar_Set( "cl_profile", cl_profile.string );
+			trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 		}
 		else if ( Q_stricmp( name, "setDefaultProfile" ) == 0 )
 		{
 			fileHandle_t    f;
 
-			Q_strncpyz( cl_defaultProfile.string, ui_profile.string, sizeof( cl_profile.string ) );
+			Q_strncpyz( cl_defaultProfile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_defaultProfile.string );
 			Q_CleanDirName( cl_defaultProfile.string );
 			trap_Cvar_Set( "cl_defaultProfile", cl_defaultProfile.string );
@@ -3888,7 +3889,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			char            buff[ MAX_CVAR_VALUE_STRING ];
 
-			Q_strncpyz( buff, ui_profile.string, sizeof( buff ) );
+			Q_strncpyz( buff, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( buff ) );
 			Q_CleanStr( buff );
 			Q_CleanDirName( buff );
 
