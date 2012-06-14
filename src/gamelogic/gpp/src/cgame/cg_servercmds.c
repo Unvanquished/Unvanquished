@@ -1304,6 +1304,23 @@ static void CG_Print_f( void )
 
 /*
 =================
+CG_PrintTR_f
+=================
+*/
+static void CG_PrintTR_f( void )
+{	
+	char str[10][ MAX_TOKEN_CHARS ];
+	int         i;
+	memset( &str, 0, sizeof( str ) );
+	for( i = 0; i<10; i++ )
+	{
+		Q_strncpyz( str[i], CG_Argv( i+1 ), sizeof( str[i] ) );
+	}
+	Com_Printf( _(str[0]), str[1], str[2], str[3], str[4], str[5], str[6], str[7], str[8], str[9] );
+}
+
+/*
+=================
 CG_Chat_f
 =================
 */
@@ -1391,6 +1408,7 @@ static const consoleCommand_t svcommands[] =
 	{ "map_restart",      CG_MapRestart           },
 	{ "poisoncloud",      CG_PoisonCloud_f        },
 	{ "print",            CG_Print_f              },
+	{ "print_tr",         CG_PrintTR_f            },
 	{ "scores",           CG_ParseScores          },
 	{ "serverclosemenus", CG_ServerCloseMenus_f   },
 	{ "servermenu",       CG_ServerMenu_f         },
