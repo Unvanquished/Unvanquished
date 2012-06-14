@@ -4230,6 +4230,10 @@ static int UI_FeederCount( int feederID )
 	{
 		return uiInfo.humanBuildCount;
 	}
+	else if ( feederID == FEEDER_PROFILES )
+	{
+		return uiInfo.profileCount;
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		if ( UI_FeederInitialise( feederID ) == uiInfo.numResolutions )
@@ -4556,6 +4560,13 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			return uiInfo.humanBuildList[ index ].text;
 		}
 	}
+	else if ( feederID == FEEDER_PROFILES )
+	{
+		if( index >= 0 && index < uiInfo.profileCount )
+		{
+			return uiInfo.profileList[ index ].name;
+		}
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		static char resolution[ MAX_STRING_CHARS ];
@@ -4735,6 +4746,10 @@ static void UI_FeederSelection( int feederID, int index )
 	else if ( feederID == FEEDER_TREMHUMANBUILD )
 	{
 		uiInfo.humanBuildIndex = index;
+	}
+	else if ( feederID == FEEDER_PROFILES )
+	{
+		uiInfo.profileIndex = index;
 	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{

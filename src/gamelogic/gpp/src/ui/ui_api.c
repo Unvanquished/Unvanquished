@@ -687,7 +687,7 @@ int trap_Parse_SourceFileAndLine( int handle, char *filename, int *line )
 //return botlib_export->PC_AddGlobalDefine(VMA(1));
 int trap_PC_AddGlobalDefine( char *define )
 {
-	return syscall( UI_PC_ADD_GLOBAL_DEFINE, define );
+	return syscall( UI_PARSE_ADD_GLOBAL_DEFINE, define );
 }
 
 //99.
@@ -701,28 +701,28 @@ int trap_PC_RemoveAllGlobalDefines( void )
 //return botlib_export->PC_LoadSourceHandle(VMA(1));
 int trap_PC_LoadSource( const char *filename )
 {
-	return syscall( UI_PC_LOAD_SOURCE, filename );
+	return syscall( UI_PARSE_LOAD_SOURCE, filename );
 }
 
 //101.
 //return botlib_export->PC_FreeSourceHandle(args[1]);
 int trap_PC_FreeSource( int handle )
 {
-	return syscall( UI_PC_FREE_SOURCE, handle );
+	return syscall( UI_PARSE_FREE_SOURCE, handle );
 }
 
 //102.
 //return botlib_export->PC_ReadTokenHandle(args[1], VMA(2));
 int trap_PC_ReadToken( int handle, pc_token_t *pc_token )
 {
-	return syscall( UI_PC_READ_TOKEN, handle, pc_token );
+	return syscall( UI_PARSE_READ_TOKEN, handle, pc_token );
 }
 
 //103.
 //return botlib_export->PC_SourceFileAndLine(args[1], VMA(2), VMA(3));
 int trap_PC_SourceFileAndLine( int handle, char *filename, int *line )
 {
-	return syscall( UI_PC_SOURCE_FILE_AND_LINE, handle, filename, line );
+	return syscall( UI_PARSE_SOURCE_FILE_AND_LINE, handle, filename, line );
 }
 
 //104.
