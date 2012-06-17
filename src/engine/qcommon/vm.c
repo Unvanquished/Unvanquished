@@ -1258,7 +1258,7 @@ void VM_CheckBlock( intptr_t buf, size_t n, const char *fail )
 	if ( dataMask &&
 	     ( ( buf & dataMask ) != buf || ( ( buf + n ) & dataMask ) != buf + n ) )
 	{
-		Com_Error( ERR_DROP, "%s out of range! [%lx, %lx, %lx]", fail, buf, n, dataMask );
+		Com_Error( ERR_DROP, "%s out of range! [%lx, %lx, %lx]", fail, (unsigned long)buf, (unsigned long)n, (unsigned long)dataMask );
 	}
 }
 
