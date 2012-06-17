@@ -4357,10 +4357,11 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	{
 	        // readable and the model name shouldn't need quoting
 		G_TeamCommand( builder->client->ps.stats[ STAT_TEAM ],
-		               va( "print \"%s ^2built^7 by \"%s\"%s%s\n\"",
+		               va( "print_tr \"%s\" \"%s\" \"%s\" \"%s\"", ( readable[ 0 ] ) ? 
+						N_("%s ^2built^7 by \"%s\"^7, ^3replacing^7 %s\n") :
+						N_("%s ^2built^7 by \"%s\"%s\n"),
 		                   BG_Buildable( built->s.modelindex )->humanName,
 		                   Quote( builder->client->pers.netname ),
-		                   ( readable[ 0 ] ) ? "^7, ^3replacing^7 " : "",
 		                   readable ) );
 		G_LogPrintf( "Construct: %d %d %s%s: %s" S_COLOR_WHITE " is building "
 		             "%s%s%s\n",

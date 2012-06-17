@@ -58,8 +58,8 @@ typedef struct gclient_s gclient_t;
 #	define _(text)              gettext( text )
 #	define N_(one, many, count) ngettext( (one), (many), (count) )
 #else
-#	define _(text)              Gettext(text)
-#	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
+#	define N_(text)              text
+#	define P_(one, many, count) ( (count) == 1 ? (one) : (many) )
 #endif
 
 // movers are things like doors, plats, buttons, etc
