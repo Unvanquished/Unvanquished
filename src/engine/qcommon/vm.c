@@ -432,8 +432,6 @@ void VM_SetSanity( vm_t* vm, intptr_t call )
 
 void VM_CheckSanity( vm_t *vm, intptr_t call )
 {
-	int which = vm - vmTable;
-
 	if ( vm->dataMask && memcmp( vm->dataBase + vm->dataMask + 1, vm->sanity, sizeof( vm->sanity ) ) )
 	{
 		VM_Insanity( call, vm->name );

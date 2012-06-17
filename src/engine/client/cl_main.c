@@ -3026,7 +3026,7 @@ Resend a connect message if the last one has timed out
 */
 void CL_CheckForResend( void )
 {
-	int  port, i;
+	int  port;
 	char info[ MAX_INFO_STRING ];
 	char data[ MAX_INFO_STRING ];
 	char pkt[ 1024 + 1 ]; // EVEN BALANCE - T.RAY

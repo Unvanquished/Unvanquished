@@ -2068,12 +2068,14 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 {
 	ucmd_t   *u;
 	qboolean bProcessed = qfalse;
+#if 0
 	int      argsFromOneMaxlen;
 	int      charCount;
 	int      dollarCount;
 	int      i;
 	char     *arg;
 	qboolean exploitDetected;
+#endif
 
 	Com_DPrintf( "EXCL: %s\n", s );
 	Cmd_TokenizeString( s );
