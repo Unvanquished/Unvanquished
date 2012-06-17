@@ -80,12 +80,12 @@
 		} \
 	}
 
-#define SLIDER( TEXT, CVR, FIRST, STEP, LAST, POS ) \
+#define SLIDER( TEXT, CVR, FIRST, DEFAULT, LAST, POS ) \
 itemDef \
 { \
 	type ITEM_TYPE_SLIDER \
 	text TEXT \
-	cvarfloat CVR FIRST STEP  LAST \
+	cvarfloat CVR FIRST DEFAULT  LAST \
 	rect X (Y+(POS*(ELEM_H+ELEM_GAP))) W ELEM_H \
 	textalign ALIGN_RIGHT \
 	textalignx TOFF_X \
