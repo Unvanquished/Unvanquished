@@ -11,6 +11,10 @@
     style WINDOW_STYLE_FILLED
     border WINDOW_BORDER_FULL
     popup
+    onOPen
+    {
+		uiScript loadProfiles
+	}
     onEsc
     {
       play "sound/misc/menu1.wav";
