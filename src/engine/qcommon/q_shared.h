@@ -865,7 +865,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	{
 		float v[ 3 ];
 	} vec3struct_t;
-#define VectorCopy( a,b ) *(vec3struct_t *)b = *(vec3struct_t *)a
+#define VectorCopy( a,b ) ( *(vec3struct_t *)( b ) = *(vec3struct_t *)( a ) )
 #endif
 #endif
 
