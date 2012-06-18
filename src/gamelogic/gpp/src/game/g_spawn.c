@@ -621,6 +621,15 @@ void SP_worldspawn( void )
 		trap_Cvar_Set( "g_alienMaxStage", s );
 	}
 
+	if ( G_SpawnString( "humanRepeaterBuildPoints", "", &s ) )
+		trap_Cvar_Set( "g_humanRepeaterBuildPoints", s );
+
+	if ( G_SpawnString( "humanBuildPoints", "", &s ) )
+		trap_Cvar_Set( "g_humanBuildPoints", s );
+
+	if ( G_SpawnString( "alienBuildPoints", "", &s ) )
+		trap_Cvar_Set( "g_alienBuildPoints", s );
+
 	G_SpawnString( "disabledEquipment", "", &s );
 	trap_Cvar_Set( "g_disabledEquipment", s );
 
