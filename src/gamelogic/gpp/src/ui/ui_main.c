@@ -110,7 +110,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &ui_browserShowEmpty,    "ui_browserShowEmpty",         "1",                         CVAR_ARCHIVE              },
 
 	{ &ui_dedicated,           "ui_dedicated",                "0",                         CVAR_ARCHIVE              },
-	{ &ui_netSource,           "ui_netSource",                "0",                         CVAR_ARCHIVE              },
+	{ &ui_netSource,           "ui_netSource",                "1",                         CVAR_ARCHIVE              },
 	{ &ui_selectedMap,         "ui_selectedMap",              "0",                         CVAR_ARCHIVE              },
 	{ &ui_lastServerRefresh_0, "ui_lastServerRefresh_0",      "",                          CVAR_ARCHIVE              },
 	{ &ui_lastServerRefresh_1, "ui_lastServerRefresh_1",      "",                          CVAR_ARCHIVE              },
@@ -3001,8 +3001,6 @@ static void UI_LoadProfiles()
 					int             j;
 
 					uiInfo.profileIndex = i;
-					trap_Cvar_Set( "ui_profile", uiInfo.profileList[ 0 ].name );
-					trap_Cvar_Update( &ui_profile );
 
 					for ( j = 0; j < Menu_Count(); j++ )
 					{
@@ -3025,8 +3023,6 @@ static void UI_LoadProfiles()
 		int             j;
 
 		uiInfo.profileIndex = 0;
-		trap_Cvar_Set( "ui_profile", uiInfo.profileList[ 0 ].name );
-		trap_Cvar_Update( &ui_profile );
 
 		for ( j = 0; j < Menu_Count(); j++ )
 		{
@@ -3702,17 +3698,13 @@ static void UI_RunMenuScript( char **args )
 			{
 				if ( Q_stricmp( name + 4, voteInfo[i].vote ) == 0 )
 				{
-					char rawbuffer[ MAX_CVAR_VALUE_STRING ];
 					char *buffer = "";
 
 					if ( voteInfo[i].reason )
 					{
-						trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
-						buffer = Quote( buffer );
-					}
-					else
-					{
-						buffer = "";
+						char rawbuffer[ MAX_CVAR_VALUE_STRING ];
+						trap_Cvar_VariableStringBuffer( "ui_reason", rawbuffer, sizeof( rawbuffer ) );
+						buffer = Quote( rawbuffer );
 					}
 
 					switch ( voteInfo[i].type )
@@ -3843,16 +3835,19 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "applyProfile" ) == 0 )
 		{
-			Q_strncpyz( cl_profile.string, ui_profile.string, sizeof( cl_profile.string ) );
+			Q_strncpyz( cl_profile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_profile.string );
 			Q_CleanDirName( cl_profile.string );
 			trap_Cvar_Set( "cl_profile", cl_profile.string );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec profiles/%s/autogen.cfg\n", cl_profile.string ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec profiles/%s/autoexec.cfg\n", cl_profile.string ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 		}
 		else if ( Q_stricmp( name, "setDefaultProfile" ) == 0 )
 		{
 			fileHandle_t    f;
 
-			Q_strncpyz( cl_defaultProfile.string, ui_profile.string, sizeof( cl_profile.string ) );
+			Q_strncpyz( cl_defaultProfile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_defaultProfile.string );
 			Q_CleanDirName( cl_defaultProfile.string );
 			trap_Cvar_Set( "cl_defaultProfile", cl_defaultProfile.string );
@@ -3867,7 +3862,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			char            buff[ MAX_CVAR_VALUE_STRING ];
 
-			Q_strncpyz( buff, ui_profile.string, sizeof( buff ) );
+			Q_strncpyz( buff, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( buff ) );
 			Q_CleanStr( buff );
 			Q_CleanDirName( buff );
 
@@ -4213,6 +4208,10 @@ static int UI_FeederCount( int feederID )
 	{
 		return uiInfo.numLanguages;
 	}
+	else if ( feederID == FEEDER_PROFILES )
+	{
+		return uiInfo.profileCount;
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		if ( UI_FeederInitialise( feederID ) == uiInfo.numResolutions )
@@ -4546,6 +4545,13 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			return uiInfo.languages[ index ].name;
 		}
 	}
+	else if ( feederID == FEEDER_PROFILES )
+	{
+		if( index >= 0 && index < uiInfo.profileCount )
+		{
+			return uiInfo.profileList[ index ].name;
+		}
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		static char resolution[ MAX_STRING_CHARS ];
@@ -4731,6 +4737,10 @@ static void UI_FeederSelection( int feederID, int index )
 		trap_Cvar_Set( "language", uiInfo.languages[ index ].lang );
 		uiInfo.languageIndex = index;
 		trap_Cmd_ExecuteText( EXEC_APPEND, "updatelanguage\n" );
+	}
+	else if ( feederID == FEEDER_PROFILES )
+	{
+		uiInfo.profileIndex = index;
 	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
@@ -5160,10 +5170,9 @@ void UI_SetActiveMenu( uiMenuCommand_t menu )
 				trap_Key_SetCatcher( KEYCATCH_UI );
 				Menus_CloseAll();
 				Menus_ActivateByName( "main" );
-				trap_Cvar_VariableStringBuffer( "name", buf, sizeof( buf ) );
-				if( !buf[ 0 ] || !Q_stricmp( buf, "UnnamedPlayer" ) )
+				if( !cl_profile.string[0] )
 				{
-					Menus_ActivateByName( "simple_options" );
+					Menus_ActivateByName( "profile_firstrun" );
 				}
 				buf[ 0 ] = '\0';
 				trap_Cvar_VariableStringBuffer( "com_errorMessage", buf, sizeof( buf ) );

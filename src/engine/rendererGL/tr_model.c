@@ -794,13 +794,6 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 
 	start = end = NULL;
 
-	if ( model->type == MOD_MESH )
-	{
-		// old MD3 style
-		retval = R_GetTag( model->mdv[ 0 ], startFrame, tagName, startIndex, &start );
-		retval = R_GetTag( model->mdv[ 0 ], endFrame, tagName, startIndex, &end );
-	}
-
 	/*
 	        else if(model->type == MOD_MDS)
 	        {
@@ -817,7 +810,7 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 
 	        }
 	        */
-	else if ( model->type == MOD_MDM )
+	if ( model->type == MOD_MDM )
 	{
 		// use bone lerping
 		retval = R_MDM_GetBoneTag( tag, model->mdm, startIndex, refent, tagNameIn );
@@ -883,27 +876,36 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 	        }
 	}
 	*/
-
-	if ( !start || !end )
+	else if ( model->type == MOD_MESH )
 	{
-		AxisClear( tag->axis );
-		VectorClear( tag->origin );
-		return -1;
+		// old MD3 style
+		retval = R_GetTag( model->mdv[ 0 ], startFrame, tagName, startIndex, &start );
+		retval = R_GetTag( model->mdv[ 0 ], endFrame, tagName, startIndex, &end );
+	
+
+		if ( !start || !end )
+		{
+			AxisClear( tag->axis );
+			VectorClear( tag->origin );
+			return -1;
+		}
+
+		for ( i = 0; i < 3; i++ )
+		{
+			tag->origin[ i ] = start->origin[ i ] * backLerp + end->origin[ i ] * frontLerp;
+			tag->axis[ 0 ][ i ] = start->axis[ 0 ][ i ] * backLerp + end->axis[ 0 ][ i ] * frontLerp;
+			tag->axis[ 1 ][ i ] = start->axis[ 1 ][ i ] * backLerp + end->axis[ 1 ][ i ] * frontLerp;
+			tag->axis[ 2 ][ i ] = start->axis[ 2 ][ i ] * backLerp + end->axis[ 2 ][ i ] * frontLerp;
+		}
+
+		VectorNormalize( tag->axis[ 0 ] );
+		VectorNormalize( tag->axis[ 1 ] );
+		VectorNormalize( tag->axis[ 2 ] );
+
+		return retval;
 	}
-
-	for ( i = 0; i < 3; i++ )
-	{
-		tag->origin[ i ] = start->origin[ i ] * backLerp + end->origin[ i ] * frontLerp;
-		tag->axis[ 0 ][ i ] = start->axis[ 0 ][ i ] * backLerp + end->axis[ 0 ][ i ] * frontLerp;
-		tag->axis[ 1 ][ i ] = start->axis[ 1 ][ i ] * backLerp + end->axis[ 1 ][ i ] * frontLerp;
-		tag->axis[ 2 ][ i ] = start->axis[ 2 ][ i ] * backLerp + end->axis[ 2 ][ i ] * frontLerp;
-	}
-
-	VectorNormalize( tag->axis[ 0 ] );
-	VectorNormalize( tag->axis[ 1 ] );
-	VectorNormalize( tag->axis[ 2 ] );
-
-	return retval;
+	
+	return -1;
 }
 
 #endif
