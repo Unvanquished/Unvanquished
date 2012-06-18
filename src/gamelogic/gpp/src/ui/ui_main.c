@@ -3022,8 +3022,6 @@ static void UI_LoadProfiles()
 					int             j;
 
 					uiInfo.profileIndex = i;
-					trap_Cvar_Set( "ui_profile", uiInfo.profileList[ 0 ].name );
-					trap_Cvar_Update( &ui_profile );
 
 					for ( j = 0; j < Menu_Count(); j++ )
 					{
@@ -3046,8 +3044,6 @@ static void UI_LoadProfiles()
 		int             j;
 
 		uiInfo.profileIndex = 0;
-		trap_Cvar_Set( "ui_profile", uiInfo.profileList[ 0 ].name );
-		trap_Cvar_Update( &ui_profile );
 
 		for ( j = 0; j < Menu_Count(); j++ )
 		{
@@ -3868,6 +3864,8 @@ static void UI_RunMenuScript( char **args )
 			Q_CleanStr( cl_profile.string );
 			Q_CleanDirName( cl_profile.string );
 			trap_Cvar_Set( "cl_profile", cl_profile.string );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec profiles/%s/autogen.cfg\n", cl_profile.string ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec profiles/%s/autoexec.cfg\n", cl_profile.string ) );
 			trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 		}
 		else if ( Q_stricmp( name, "setDefaultProfile" ) == 0 )
