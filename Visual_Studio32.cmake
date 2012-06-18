@@ -28,3 +28,5 @@ set( BZIP2_LIBRARY ${LIB_DIR}/libbz2/libbz2.lib CACHE STRING "Bunzip2 library" F
 set( GLIB_LIBRARY ${LIB_DIR}/glib/lib/x32/glib-2.0.lib CACHE STRING "GLIB library" FORCE )
 set( GLIB_INCLUDE_DIR ${LIB_DIR}/glib/include/glib-2.0 CACHE STRING "GLIB include directory" FORCE )
 set( GLIBCONFIG_INCLUDE_DIR ${LIB_DIR}/glib/lib/x32/glib-2.0/include CACHE STRING "GLIB config include directory" FORCE )
+set( OPENAL_LIBRARY ${LIB_DIR}/openal/libs/win32/OpenAL32.lib CACHE STRING "OpenAL library" FORCE )
+set( OPENAL_INCLUDE_DIR ${LIB_DIR}/openal/include CACHE STRING "OpenAL include directory" FORCE )

@@ -20,3 +20,6 @@ snd_openal.*
 libglcpp-library.a
 libglsl_optimizer.a
 libmesa.a
+build-32/*
+build-64/*
+*.vcxproj.user

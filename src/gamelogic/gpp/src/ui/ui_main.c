@@ -2959,24 +2959,28 @@ static void UI_LoadProfiles()
 
 		if ( dirptr[ 0 ] && Q_stricmp( dirptr, "." ) && Q_stricmp( dirptr, ".." ) )
 		{
-			int             handle;
-			pc_token_t      token;
+			int  handle;
+			char token[ 40 ];
 
-			if ( !( handle = trap_PC_LoadSource( va( "profiles/%s/profile.dat", dirptr ) ) ) )
+			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", dirptr ), &handle, FS_READ ) == -1 )
 			{
 				dirptr += dirlen;
 				continue;
 			}
 
-			if ( !trap_PC_ReadToken( handle, &token ) )
+			memset( token, 0, sizeof( token ) );
+
+			trap_FS_Read( token, sizeof( token ) - 1, handle );
+			Q_CleanStr( token );
+			Q_CleanDirName( token );
+
+			if ( !token[ 0 ] )
 			{
-				trap_PC_FreeSource( handle );
-				dirptr += dirlen;
-				continue;
+				strcpy( token, "UnnamedPlayer" );
 			}
 
-			uiInfo.profileList[ uiInfo.profileCount ].name = String_Alloc( token.string );
-			trap_PC_FreeSource( handle );
+			uiInfo.profileList[ uiInfo.profileCount ].name = String_Alloc( token );
+			trap_FS_FCloseFile( handle );
 
 			uiInfo.profileList[ uiInfo.profileCount ].dir = String_Alloc( dirptr );
 			uiInfo.profileCount++;
@@ -2985,7 +2989,7 @@ static void UI_LoadProfiles()
 			   int j;
 
 			   uiInfo.profileIndex = 0;
-			   trap_Cvar_Set( "ui_profile", token.string );
+			   trap_Cvar_Set( "ui_profile", token );
 
 			   for( j = 0; j < Menu_Count(); j++ ) {
 			   Menu_SetFeederSelection( Menu_Get(j), FEEDER_PROFILES, 0, NULL );
@@ -2993,10 +2997,10 @@ static void UI_LoadProfiles()
 			   } */
 			if ( uiInfo.profileIndex == -1 )
 			{
-				Q_CleanStr( token.string );
-				Q_CleanDirName( token.string );
+				Q_CleanStr( token );
+				Q_CleanDirName( token );
 
-				if ( !Q_stricmp( token.string, cl_profile.string ) )
+				if ( !Q_stricmp( token, cl_profile.string ) )
 				{
 					int             j;
 
@@ -3807,7 +3811,7 @@ static void UI_RunMenuScript( char **args )
 
 			  trap_Cvar_Set( "cl_profile", cl_profile.string );
 			  if( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", cl_profile.string ), &f, FS_WRITE ) >= 0 ) {
-			  trap_FS_Write( va( "\"%s\"", ui_profile.string ), strlen(ui_profile.string) + 2, f );
+			  trap_FS_Write( ui_profile.string, strlen(ui_profile.string), f );
 			  trap_FS_FCloseFile( f );
 			  } */
 			Q_strncpyz( buff, ui_profile.string, sizeof( buff ) );
@@ -3816,7 +3820,7 @@ static void UI_RunMenuScript( char **args )
 
 			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", buff ), &f, FS_WRITE ) >= 0 )
 			{
-				trap_FS_Write( va( "\"%s\"", ui_profile.string ), strlen( ui_profile.string ) + 2, f );
+				trap_FS_Write( ui_profile.string, strlen( ui_profile.string ), f );
 				trap_FS_FCloseFile( f );
 			}
 
@@ -3854,7 +3858,7 @@ static void UI_RunMenuScript( char **args )
 
 			if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
 			{
-				trap_FS_Write( va( "\"%s\"", cl_defaultProfile.string ), strlen( cl_defaultProfile.string ) + 2, f );
+				trap_FS_Write( cl_defaultProfile.string, strlen( cl_defaultProfile.string ), f );
 				trap_FS_FCloseFile( f );
 			}
 		}
@@ -3878,7 +3882,7 @@ static void UI_RunMenuScript( char **args )
 
 					if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
 					{
-						trap_FS_Write( va( "\"%s\"", cl_profile.string ), strlen( cl_profile.string ) + 2, f );
+						trap_FS_Write( cl_profile.string, strlen( cl_profile.string ), f );
 						trap_FS_FCloseFile( f );
 					}
 				}
@@ -3909,7 +3913,7 @@ static void UI_RunMenuScript( char **args )
 
 			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", buff ), &f, FS_WRITE ) >= 0 )
 			{
-				trap_FS_Write( va( "\"%s\"", ui_renameprofileto ), strlen( ui_renameprofileto ) + 2, f );
+				trap_FS_Write( ui_renameprofileto, strlen( ui_renameprofileto ), f );
 				trap_FS_FCloseFile( f );
 			}
 
@@ -3963,7 +3967,7 @@ static void UI_RunMenuScript( char **args )
 
 					if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
 					{
-						trap_FS_Write( va( "\"%s\"", buff ), strlen( buff ) + 2, f );
+						trap_FS_Write( buff, strlen( buff ), f );
 						trap_FS_FCloseFile( f );
 					}
 				}

@@ -98,12 +98,6 @@ if( GAME_LIB_LLVM )
   message( STATUS "Using LLVM" )
 endif()
 
-# Package info
-set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
-set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
-set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
-include( CPack )
-
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
 set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
 set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
@@ -150,7 +144,7 @@ elseif( WIN32 )
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     set( BUILD_ARCH "x86_64" )
   elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-    set( BUILD_ARCH "x86" )
+    set( BUILD_ARCH "i386" )
   endif()
 else()
   # CMAKE_SYSTEM_PROCESSOR is reliable for *nix
@@ -199,6 +193,21 @@ if( USE_INTERNAL_JPEG )
   add_subdirectory( ${LIB_DIR}/jpeg )
   set( JPEG_LIBRARY INTERNAL_JPEG CACHE STRING "JPEG library" FORCE )
   set( JPEG_INCLUDE_DIR ${LIB_DIR}/jpeg CACHE STRING "JPEG include directory" FORCE )
+endif()
+
+# Setup CPack
+set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
+set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/Unvanquished.icns" )
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
+set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
+# Mac OS X Bundle specific settings
+set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
+set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
+if( ${BUILD_ARCH} STREQUAL "i386" )
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/x86/info.plist")
+else()
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/x86_64/info.plist")
 endif()
 
 #################
@@ -1179,7 +1188,6 @@ function( GAMELIB )
     )
 
   endif()
-
 endfunction()
 
 if( GAME_QVM )
@@ -1213,6 +1221,10 @@ GAMELIB( LIB_NAME gppui
   QVM_ASM ${UIGPP_QVM}
 )
 
+# Don't worry about installing targets individually just copy entire folder over
+# This allows maps/.pk3s to be easily added to the installer
+install( DIRECTORY ${CMAKE_BINARY_DIR}/main DESTINATION "Unvanquished" )
+
 if( USE_PHYSICS )
   if( LINUX )
     if( BUILD_ARCH STREQUAL "x86_64" )
@@ -1224,7 +1236,7 @@ if( USE_PHYSICS )
     if( BUILD_ARCH STREQUAL "x86_64" )
       set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/win64/newton.lib" )
     elseif( BUILD_ARCH STREQUAL "i386" )
-      set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/win64/newton.lib" )
+      set( NEWTON_LIBRARY CACHE FILEPATH "${MOUNT_DIR}/libs/libnewton/libs/win32/newton.lib" )
     endif()
   else()
     set( NEWTON_LIBRARY CACHE FILEPATH "Location of the Newton library" )
@@ -1243,6 +1255,12 @@ if( BUILD_OLD_RENDERER )
   if( NOT MSVC )
     target_link_libraries( renderer m )
   endif()
+
+  # Setup CPack for target renderer
+  install( TARGETS renderer DESTINATION "Unvanquished")
+  get_target_property( LOCATION renderer LOCATION )
+  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
+  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
 
   # This section finds and provides REQUIRED dependencies to target renderer
   find_package( OpenGL REQUIRED )
@@ -1274,6 +1292,12 @@ if( BUILD_NEW_RENDERER )
   set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
   target_link_libraries( rendererGL ${OS_LIBRARIES} )
+
+  # Setup CPack for target rendererGL
+  install( TARGETS rendererGL DESTINATION "Unvanquished")
+  get_target_property( LOCATION rendererGL LOCATION )
+  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
+  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
 
   # This section finds and provides REQUIRED dependencies to target rendererGL
   find_package( OpenGL REQUIRED )
@@ -1353,11 +1377,12 @@ if( BUILD_CLIENT )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO  )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
-  install( TARGETS client
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
+
+  # Setup CPack for target client
+  install( TARGETS client DESTINATION "Unvanquished")
+  get_target_property( LOCATION client LOCATION )
+  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
+  set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
 
   # Mac OS X specific settings
   if( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" )
@@ -1488,10 +1513,18 @@ if( USE_OPENAL )
   target_link_libraries( al ${OPENAL_LIBRARY} )
   set_property( TARGET al PROPERTY COMPILE_DEFINITIONS )
   set_target_properties( al PROPERTIES OUTPUT_NAME "snd_openal" PREFIX "" )
+
+  # Setup CPack for target al
+  install( TARGETS al DESTINATION "Unvanquished")
+  get_target_property( LOCATION al LOCATION )
+  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
+  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
+
   if( USE_OPENAL_DLOPEN )
     set_property( TARGET al APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL_DLOPEN )
     target_link_libraries( al ${CMAKE_DL_LIBS} )
   endif()
+
   if( USE_VOIP )
     set_property( TARGET al APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP FLOATING_POINT )
   endif()
@@ -1512,11 +1545,12 @@ if( BUILD_SERVER )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET USE_CRYPTO )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
-  install( TARGETS server
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
+
+  # Setup CPack for target server
+  install( TARGETS server DESTINATION "Unvanquished")
+  get_target_property( LOCATION server LOCATION )
+  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
+  set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
 
   # Mac OS X has some trouble with PIC code under X86/32.
   if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND BUILD_ARCH STREQUAL "i386" )
@@ -1588,12 +1622,12 @@ if( BUILD_DAEMONMAP )
   target_link_libraries( daemonMap ${OS_LIBRARIES} )
   set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
   set_target_properties( daemonMap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
-  install( TARGETS daemonMap
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
-  
+
+  # Setup CPack for target daemonmap
+  install( TARGETS daemonMap DESTINATION "Unvanquished")
+  get_target_property( OUTPUT_NAME daemonMap OUTPUT_NAME )
+  set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
+
   # Visual Studio specific settings
   if( MSVC )
     set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
@@ -1609,3 +1643,29 @@ if( BUILD_DAEMONMAP )
   target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${GLIB_LIBRARIES} )
   include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS} )
 endif()
+
+#####################
+#Configure Installer#
+#####################
+# This section requires a lot of escaping as these values are parsed then passed
+# to CPack. Be very very careful when modifying values
+
+# SDL framework doesn't work with bundleutilities so detect if it's being used
+# and copy it over manually
+foreach( LIB ${SDL_LIBRARY} )
+  if( ${LIB} MATCHES "SDL.framework")
+    install( DIRECTORY ${LIB} DESTINATION Frameworks )
+  endif()
+endforeach()
+
+# Automatically copy over any dependencies
+foreach( APP ${APPS} )
+  install(CODE "
+     include(BundleUtilities)
+     message( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" )
+     fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${APP}\"   \"${PLUGINS}\"   \"${CMAKE_LIBRARY_PATH}\")
+     " )
+endforeach()
+
+# include( CPack ) must be at the end of CMakeLists.txt
+include( CPack )
