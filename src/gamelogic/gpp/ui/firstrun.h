@@ -10,14 +10,14 @@
 #define BORDER        10
 #define RESCOMBO_OFF  8
 
-#define CVAR( NAME, CVR, POS ) \
+#define CVAR( NAME, CVR, POS, LENGTH ) \
 	itemDef \
 	{ \
 	type ITEM_TYPE_EDITFIELD \
 	style WINDOW_STYLE_EMPTY \
 	text NAME \
 	cvar CVR \
-	maxchars 26 \
+	maxchars LENGTH \
 	rect X (Y+(POS*(ELEM_H+ELEM_GAP))) W ELEM_H \
 	textalign ALIGN_RIGHT \
 	textalignx TOFF_X \
