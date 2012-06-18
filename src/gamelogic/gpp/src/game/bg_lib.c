@@ -310,7 +310,7 @@ char *strrchr( const char *string, int c )
 	int  i, length = strlen( string );
 	char *p;
 
-	for ( i = length - 1; i >= 0; i-- )
+	for ( i = length /*sic*/; i >= 0; i-- )
 	{
 		p = ( char * ) &string[ i ];
 
@@ -335,7 +335,7 @@ char *strchr( const char *string, int c )
 		string++;
 	}
 
-	return ( char * ) 0;
+	return c == '\0' ? ( char * ) string : ( char * ) 0;
 }
 
 char *strstr( const char *string, const char *strCharSet )
