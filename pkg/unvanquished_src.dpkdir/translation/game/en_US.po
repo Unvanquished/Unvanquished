@@ -1,15 +1,13 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# UNVANQUISHED
+# Copyright (C) 2012 Unvanquished Development
+# This file is distributed under the same license as Unvanquished.
 #
-#: ingame_options.menu:2476
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: UNVANQUISHED VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-08 11:45-0700\n"
+"POT-Creation-Date: 2012-06-18 02:08-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,197 +16,3237 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ui/ui_shared.c:330
+msgid "Memory/String Pool Info\n"
+msgstr "Memory/String Pool Info\n"
+
+#: ui/ui_shared.c:335
+#, c-format
+msgid "String Pool is %.1f%% full, %i bytes out of %i used.\n"
+msgstr "String Pool is %.1f%% full, %i bytes out of %i used.\n"
+
+#: ui/ui_shared.c:339
+#, c-format
+msgid "Memory Pool is %.1f%% full, %i bytes out of %i used.\n"
+msgstr "Memory Pool is %.1f%% full, %i bytes out of %i used.\n"
+
+#: ui/ui_shared.c:396
+#, c-format
+msgid "WARNING: %s, line %d: %s\n"
+msgstr "WARNING: %s, line %d: %s\n"
+
+#: ui/ui_shared.c:419
+#, c-format
+msgid "ERROR: %s, line %d: %s\n"
+msgstr "ERROR: %s, line %d: %s\n"
+
+#: ui/ui_main.c:902
+#, c-format
+msgid "%d server found with player %s"
+msgstr "%d server found with player %s"
+
+#: ui/ui_main.c:1102
+#, c-format
+msgid "%d servers listed in browser with %d players.\n"
+msgstr "%d servers listed in browser with %d players.\n"
+
+#: ui/ui_main.c:1109
+#, c-format
+msgid ""
+"%d servers not listed due to packet loss, invalid info, or pings higher than "
+"%d\n"
+msgstr ""
+"%d servers not listed due to packet loss, invalid info, or pings higher than "
+"%d\n"
+
+#: ui/ui_main.c:1546
+#, c-format
+msgid "WARNING: Menu file %s not found\n"
+msgstr "WARNING: Menu file %s not found\n"
+
+#: ui/ui_main.c:1736
+#, c-format
+msgid "UI menu file '%s' loaded in %d msec\n"
+msgstr "UI menu file '%s' loaded in %d msec\n"
+
+#: ui/ui_main.c:1753
+#, c-format
+msgid "WARNING: help file '%s' not found!\n"
+msgstr "WARNING: help file '%s' not found!\n"
+
+#: ui/ui_main.c:1761
+#, c-format
+msgid "WARNING: help file '%s' does not start with '{'\n"
+msgstr "WARNING: help file '%s' does not start with '{'\n"
+
+#: ui/ui_main.c:1803
+#, c-format
+msgid "UI help file '%s' loaded in %d msec (%d infopanes)\n"
+msgstr "UI help file '%s' loaded in %d msec (%d infopanes)\n"
+
+#: ui/ui_main.c:3779 ui/ui_main.c:4020
+msgid "Favorite already in list\n"
+msgstr "Favorite already in list\n"
+
+#: ui/ui_main.c:3784 ui/ui_main.c:4025
+msgid "Favorite list full\n"
+msgstr "Favorite list full\n"
+
+#: ui/ui_main.c:3789 ui/ui_main.c:4030
+#, c-format
+msgid "Added favorite server %s\n"
+msgstr "Added favorite server %s\n"
+
+#: ui/ui_main.c:4101
+#, c-format
+msgid "unknown UI script %s\n"
+msgstr "unknown UI script %s\n"
+
+#: ui/ui_gameinfo.c:65
+msgid "Missing { in info file\n"
+msgstr "Missing { in info file\n"
+
+#: ui/ui_gameinfo.c:71
+msgid "Max infos exceeded\n"
+msgstr "Max infos exceeded\n"
+
+#: ui/ui_gameinfo.c:83
+msgid "Unexpected end of info file\n"
+msgstr "Unexpected end of info file\n"
+
+#: ui/ui_api.c:357
+#, c-format
+msgid "^1Warning: Failed to load sound: %s\n"
+msgstr "^1Warning: Failed to load sound: %s\n"
+
+#: cgame/cg_view.c:101 cgame/cg_view.c:183
+msgid "Can't register model\n"
+msgstr "Can't register model\n"
+
+#: cgame/cg_ents.c:1140
+#, c-format
+msgid "Entity %d entered PVS\n"
+msgstr "Entity %d entered PVS\n"
+
+#: cgame/cg_ents.c:1185
+#, c-format
+msgid "Entity %d left PVS\n"
+msgstr "Entity %d left PVS\n"
+
+#: cgame/cg_draw.c:3046
+#, c-format
+msgid "WARNING: CG_DrawWeaponIcon: weapon %d (%s) is not registered\n"
+msgstr "WARNING: CG_DrawWeaponIcon: weapon %d (%s) is not registered\n"
+
+#: cgame/cg_main.c:719
+#, c-format
+msgid "WARNING: unknown buildable or group: %s\n"
+msgstr "WARNING: unknown buildable or group: %s\n"
+
+#: cgame/cg_main.c:1735
+#, c-format
+msgid "menu file not found: %s, using default\n"
+msgstr "menu file not found: %s, using default\n"
+
+#: cgame/cg_main.c:1792
+#, c-format
+msgid "UI menu load time = %d milli seconds\n"
+msgstr "UI menu load time = %d milli seconds\n"
+
+#: cgame/cg_main.c:2383
+msgid "^3WARNING: voipString overflowed\n"
+msgstr "^3WARNING: voipString overflowed\n"
+
+#: cgame/cg_playerstate.c:255
+msgid "^4WARNING: changed predicted event\n"
+msgstr "^4WARNING: changed predicted event\n"
+
+#: cgame/cg_players.c:125
+#, c-format
+msgid "File %s too long\n"
+msgstr "File %s too long\n"
+
+#: cgame/cg_players.c:191 cgame/cg_players.c:424
+#, c-format
+msgid "Bad footsteps parm in %s: %s\n"
+msgstr "Bad footsteps parm in %s: %s\n"
+
+#: cgame/cg_players.c:286 cgame/cg_players.c:492
+#, c-format
+msgid "unknown token '%s' is %s\n"
+msgstr "unknown token '%s' is %s\n"
+
+#: cgame/cg_players.c:303 cgame/cg_players.c:1064 cgame/cg_weapons.c:610
+#: cgame/cg_buildable.c:355
+#, c-format
+msgid "Failed to load animation file %s\n"
+msgstr "Failed to load animation file %s\n"
+
+#: cgame/cg_players.c:366 cgame/cg_weapons.c:670 cgame/cg_buildable.c:194
+#: cgame/cg_buildable.c:302
+#, c-format
+msgid "File %s is empty\n"
+msgstr "File %s is empty\n"
+
+#: cgame/cg_players.c:366 cgame/cg_weapons.c:670 cgame/cg_buildable.c:194
+#: cgame/cg_buildable.c:302
+#, c-format
+msgid "File %s is too long\n"
+msgstr "File %s is too long\n"
+
+#: cgame/cg_players.c:579 cgame/cg_players.c:672
+#, c-format
+msgid "Error parsing animation file: %s"
+msgstr "Error parsing animation file: %s"
+
+#: cgame/cg_players.c:700
+#, c-format
+msgid "MD5 skin load failure: %s\n"
+msgstr "MD5 skin load failure: %s\n"
+
+#: cgame/cg_players.c:720
+#, c-format
+msgid "Leg skin load failure: %s\n"
+msgstr "Leg skin load failure: %s\n"
+
+#: cgame/cg_players.c:728
+#, c-format
+msgid "Torso skin load failure: %s\n"
+msgstr "Torso skin load failure: %s\n"
+
+#: cgame/cg_players.c:736
+#, c-format
+msgid "Head skin load failure: %s\n"
+msgstr "Head skin load failure: %s\n"
+
+#: cgame/cg_players.c:751
+#, c-format
+msgid "Non-segmented skin load failure: %s\n"
+msgstr "Non-segmented skin load failure: %s\n"
+
+#: cgame/cg_players.c:786
+#, c-format
+msgid "Failed to load character file %s\n"
+msgstr "Failed to load character file %s\n"
+
+#: cgame/cg_players.c:795
+#, c-format
+msgid "Failed to load idle animation file %s\n"
+msgstr "Failed to load idle animation file %s\n"
+
+#: cgame/cg_players.c:908
+#, c-format
+msgid "Failed to load standing animation file %s\n"
+msgstr "Failed to load standing animation file %s\n"
+
+#: cgame/cg_players.c:1051 cgame/cg_players.c:1113
+#, c-format
+msgid "Failed to load skin file: %s : %s\n"
+msgstr "Failed to load skin file: %s : %s\n"
+
+#: cgame/cg_players.c:1076 cgame/cg_players.c:1085 cgame/cg_players.c:1094
+#: cgame/cg_players.c:1105
+#, c-format
+msgid "Failed to load model file %s\n"
+msgstr "Failed to load model file %s\n"
+
+#: cgame/cg_players.c:1371
+#, c-format
+msgid "%s^7 renamed to %s\n"
+msgstr "%s^7 renamed to %s\n"
+
+#: cgame/cg_players.c:1378
+#, c-format
+msgid "%s^7 left the %ss\n"
+msgstr "%s^7 left the %ss\n"
+
+#: cgame/cg_players.c:1383
+#, c-format
+msgid "%s^7 joined the %ss\n"
+msgstr "%s^7 joined the %ss\n"
+
+#: cgame/cg_players.c:1388
+#, c-format
+msgid "%s^7 left the %ss and joined the %ss\n"
+msgstr "%s^7 left the %ss and joined the %ss\n"
+
+#: cgame/cg_players.c:1558
+msgid "Can't build old player skeleton\n"
+msgstr "Can't build old player skeleton\n"
+
+#: cgame/cg_players.c:1669
+msgid "Can't blend skeleton\n"
+msgstr "Can't blend skeleton\n"
+
+#: cgame/cg_players.c:1833 cgame/cg_players.c:1898
+msgid "Can't build lf->skeleton\n"
+msgstr "Can't build lf->skeleton\n"
+
+#: cgame/cg_players.c:1843
+msgid "Can't blend\n"
+msgstr "Can't blend\n"
+
+#: cgame/cg_players.c:3429
+#, c-format
+msgid "No body model for player %i\n"
+msgstr "No body model for player %i\n"
+
+#: cgame/cg_players.c:4134
+#, c-format
+msgid "%i ResetPlayerEntity yaw=%.2f\n"
+msgstr "%i ResetPlayerEntity yaw=%.2f\n"
+
+#: cgame/cg_consolecmds.c:120
+msgid "CG_ScoresDown_f: scores out of date\n"
+msgstr "CG_ScoresDown_f: scores out of date\n"
+
+#: cgame/cg_consolecmds.c:181
+#, c-format
+msgid "Listed %2d clients\n"
+msgstr "Listed %2d clients\n"
+
+#: cgame/cg_snapshot.c:284
+#, c-format
+msgid "WARNING: CG_ReadNextSnapshot: way out of range, %i > %i\n"
+msgstr "WARNING: CG_ReadNextSnapshot: way out of range, %i > %i\n"
+
+#: cgame/cg_servercmds.c:54
+#, c-format
+msgid "cg.numScores: %d\n"
+msgstr "cg.numScores: %d\n"
+
+#: cgame/cg_servercmds.c:100
+#, c-format
+msgid "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n"
+msgstr "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n"
+
+#: cgame/cg_servercmds.c:531
+msgid ""
+"The alien team has too many players. Please wait until slots become "
+"available or join the human team."
+msgstr ""
+"The alien team has too many players. Please wait until slots become "
+"available or join the human team."
+
+#: cgame/cg_servercmds.c:533
+msgid "The alien team has too many players"
+msgstr "The alien team has too many players"
+
+#: cgame/cg_servercmds.c:538
+msgid ""
+"The human team has too many players. Please wait until slots become "
+"available or join the alien team."
+msgstr ""
+"The human team has too many players. Please wait until slots become "
+"available or join the alien team."
+
+#: cgame/cg_servercmds.c:540
+msgid "The human team has too many players"
+msgstr "The human team has too many players"
+
+#: cgame/cg_servercmds.c:545
+msgid "The alien team is locked. You cannot join the aliens at this time."
+msgstr "The alien team is locked. You cannot join the aliens at this time."
+
+#: cgame/cg_servercmds.c:547
+msgid "The alien team is locked"
+msgstr "The alien team is locked"
+
+#: cgame/cg_servercmds.c:552
+msgid "The human team is locked. You cannot join the humans at this time."
+msgstr "The human team is locked. You cannot join the humans at this time."
+
+#: cgame/cg_servercmds.c:554
+msgid "The human team is locked"
+msgstr "The human team is locked"
+
+#: cgame/cg_servercmds.c:559
+msgid ""
+"The maximum number of playing clients has been reached. Please wait until "
+"slots become available."
+msgstr ""
+"The maximum number of playing clients has been reached. Please wait until "
+"slots become available."
+
+#: cgame/cg_servercmds.c:561
+msgid "No free player slots"
+msgstr "No free player slots"
+
+#: cgame/cg_servercmds.c:566
+msgid "You must wait until the warmup time is finished before joining a team. "
+msgstr ""
+"You must wait until the warmup time is finished before joining a team. "
+
+#: cgame/cg_servercmds.c:568
+msgid "You cannot join a team during warmup."
+msgstr "You cannot join a team during warmup."
+
+#: cgame/cg_servercmds.c:580
+msgid "Cheats are not enabled on this server"
+msgstr "Cheats are not enabled on this server"
+
+#: cgame/cg_servercmds.c:585
+msgid ""
+"Cheats are not enabled on this server, so you may not use this command while "
+"on a team"
+msgstr ""
+"Cheats are not enabled on this server, so you may not use this command while "
+"on a team"
+
+#: cgame/cg_servercmds.c:593
+msgid "Join a team first"
+msgstr "Join a team first"
+
+#: cgame/cg_servercmds.c:600
+msgid "You can only use this command when spectating"
+msgstr "You can only use this command when spectating"
+
+#: cgame/cg_servercmds.c:606
+msgid "Must be alien to use this command"
+msgstr "Must be alien to use this command"
+
+#: cgame/cg_servercmds.c:612
+msgid "Must be human to use this command"
+msgstr "Must be human to use this command"
+
+#: cgame/cg_servercmds.c:618
+msgid "Must be living to use this command"
+msgstr "Must be living to use this command"
+
+#: cgame/cg_servercmds.c:625
+msgid ""
+"There is no room to build here. Move until the structure turns translucent "
+"green, indicating a valid build location."
+msgstr ""
+"There is no room to build here. Move until the structure turns translucent "
+"green, indicating a valid build location."
+
+#: cgame/cg_servercmds.c:627
+msgid "There is no room to build here"
+msgstr "There is no room to build here"
+
+#: cgame/cg_servercmds.c:632
+msgid ""
+"Cannot build on this surface. The surface is too steep or unsuitable for "
+"building. Please choose another site for this structure."
+msgstr ""
+"Cannot build on this surface. The surface is too steep or unsuitable for "
+"building. Please choose another site for this structure."
+
+#: cgame/cg_servercmds.c:635
+msgid "Cannot build on this surface"
+msgstr "Cannot build on this surface"
+
+#: cgame/cg_servercmds.c:641
+msgid "You cannot build that structure"
+msgstr "You cannot build that structure"
+
+#: cgame/cg_servercmds.c:647
+msgid ""
+"This action would remove your team's last spawn point, which often quickly "
+"results in a loss. Try building more spawns."
+msgstr ""
+"This action would remove your team's last spawn point, which often quickly "
+"results in a loss. Try building more spawns."
+
+#: cgame/cg_servercmds.c:650
+msgid "You may not deconstruct the last spawn"
+msgstr "You may not deconstruct the last spawn"
+
+#: cgame/cg_servercmds.c:654
+msgid ""
+"Neither team has prevailed after a certain time and the game has entered "
+"Sudden Death. During Sudden Death building is not allowed."
+msgstr ""
+"Neither team has prevailed after a certain time and the game has entered "
+"Sudden Death. During Sudden Death building is not allowed."
+
+#: cgame/cg_servercmds.c:657
+msgid "Cannot build during Sudden Death"
+msgstr "Cannot build during Sudden Death"
+
+#: cgame/cg_servercmds.c:662
+msgid ""
+"Your teammates have lost faith in your ability to build for the team. You "
+"will not be allowed to build until your team votes to reinstate your "
+"building rights."
+msgstr ""
+"Your teammates have lost faith in your ability to build for the team. You "
+"will not be allowed to build until your team votes to reinstate your "
+"building rights."
+
+#: cgame/cg_servercmds.c:665
+msgid "Your building rights have been revoked"
+msgstr "Your building rights have been revoked"
+
+#: cgame/cg_servercmds.c:670
+msgid ""
+"Your team has decided to admit defeat and concede the game:traitors and "
+"cowards are not allowed to build."
+msgstr ""
+"Your team has decided to admit defeat and concede the game:traitors and "
+"cowards are not allowed to build."
+
+#: cgame/cg_servercmds.c:673
+msgid "Building is denied to traitorous cowards"
+msgstr "Building is denied to traitorous cowards"
+
+#: cgame/cg_servercmds.c:681
+msgid ""
+"There is no power remaining. Free up power by marking existing buildable "
+"objects."
+msgstr ""
+"There is no power remaining. Free up power by marking existing buildable "
+"objects."
+
+#: cgame/cg_servercmds.c:686
+msgid ""
+"There is no power remaining. Free up power by deconstructing existing "
+"buildable objects."
+msgstr ""
+"There is no power remaining. Free up power by deconstructing existing "
+"buildable objects."
+
+#: cgame/cg_servercmds.c:690
+msgid "There is no power remaining"
+msgstr "There is no power remaining"
+
+#: cgame/cg_servercmds.c:695
+msgid ""
+"This buildable is not powered. Build a Reactor and/or Repeater in order to "
+"power it."
+msgstr ""
+"This buildable is not powered. Build a Reactor and/or Repeater in order to "
+"power it."
+
+#: cgame/cg_servercmds.c:697
+msgid "This buildable is not powered"
+msgstr "This buildable is not powered"
+
+#: cgame/cg_servercmds.c:702
+msgid ""
+"There can only be one Reactor. Deconstruct the existing one if you wish to "
+"move it."
+msgstr ""
+"There can only be one Reactor. Deconstruct the existing one if you wish to "
+"move it."
+
+#: cgame/cg_servercmds.c:704
+msgid "There can only be one Reactor"
+msgstr "There can only be one Reactor"
+
+#: cgame/cg_servercmds.c:709
+msgid ""
+"There is no power here. If available, a Repeater may be used to transmit "
+"power to this location."
+msgstr ""
+"There is no power here. If available, a Repeater may be used to transmit "
+"power to this location."
+
+#: cgame/cg_servercmds.c:711
+msgid "There is no power here"
+msgstr "There is no power here"
+
+#: cgame/cg_servercmds.c:716
+msgid ""
+"There is no Defense Computer. A Defense Computer is needed to build this."
+msgstr ""
+"There is no Defense Computer. A Defense Computer is needed to build this."
+
+#: cgame/cg_servercmds.c:718
+msgid "There is no Defense Computer"
+msgstr "There is no Defense Computer"
+
+#: cgame/cg_servercmds.c:723
+msgid "This area already has power. A Repeater is not required here."
+msgstr "This area already has power. A Repeater is not required here."
+
+#: cgame/cg_servercmds.c:724
+msgid "This area already has power"
+msgstr "This area already has power"
+
+#: cgame/cg_servercmds.c:729
+msgid ""
+"You have no room to carry this. Please sell any conflicting upgrades before "
+"purchasing this item."
+msgstr ""
+"You have no room to carry this. Please sell any conflicting upgrades before "
+"purchasing this item."
+
+#: cgame/cg_servercmds.c:731
+msgid "You have no room to carry this"
+msgstr "You have no room to carry this"
+
+#: cgame/cg_servercmds.c:736
+msgid ""
+"Insufficient funds. You do not have enough credits to perform this action."
+msgstr ""
+"Insufficient funds. You do not have enough credits to perform this action."
+
+#: cgame/cg_servercmds.c:738
+msgid "Insufficient funds"
+msgstr "Insufficient funds"
+
+#: cgame/cg_servercmds.c:743
+msgid ""
+"You already hold this item. It is not possible to carry multiple items of "
+"the same type."
+msgstr ""
+"You already hold this item. It is not possible to carry multiple items of "
+"the same type."
+
+#: cgame/cg_servercmds.c:745
+msgid "You already hold this item"
+msgstr "You already hold this item"
+
+#: cgame/cg_servercmds.c:750
+msgid ""
+"You must be near a powered Armoury in order to purchase weapons, upgrades or "
+"ammunition."
+msgstr ""
+"You must be near a powered Armoury in order to purchase weapons, upgrades or "
+"ammunition."
+
+#: cgame/cg_servercmds.c:752
+msgid "You must be near a powered Armoury"
+msgstr "You must be near a powered Armoury"
+
+#: cgame/cg_servercmds.c:757
+msgid ""
+"You must be near a Reactor or a powered Armoury or Repeater in order to "
+"purchase energy ammunition."
+msgstr ""
+"You must be near a Reactor or a powered Armoury or Repeater in order to "
+"purchase energy ammunition."
+
+#: cgame/cg_servercmds.c:759
+msgid "You must be near a Reactor or a powered Armoury or Repeater"
+msgstr "You must be near a Reactor or a powered Armoury or Repeater"
+
+#: cgame/cg_servercmds.c:764
+msgid ""
+"There is not enough room here to put on a Battle Suit. Make sure you have "
+"enough head room to climb in."
+msgstr ""
+"There is not enough room here to put on a Battle Suit. Make sure you have "
+"enough head room to climb in."
+
+#: cgame/cg_servercmds.c:766
+msgid "Not enough room here to put on a Battle Suit"
+msgstr "Not enough room here to put on a Battle Suit"
+
+#: cgame/cg_servercmds.c:771
+msgid ""
+"There is not enough room here to take off your Battle Suit. Make sure you "
+"have enough head room to climb out."
+msgstr ""
+"There is not enough room here to take off your Battle Suit. Make sure you "
+"have enough head room to climb out."
+
+#: cgame/cg_servercmds.c:773
+msgid "Not enough room here to take off your Battle Suit"
+msgstr "Not enough room here to take off your Battle Suit"
+
+#: cgame/cg_servercmds.c:778
+msgid ""
+"You are not allowed to buy or sell weapons until your build timer has "
+"expired."
+msgstr ""
+"You are not allowed to buy or sell weapons until your build timer has "
+"expired."
+
+#: cgame/cg_servercmds.c:780
+msgid "You can not buy or sell weapons until your build timer expires"
+msgstr "You can not buy or sell weapons until your build timer expires"
+
+#: cgame/cg_servercmds.c:786
+msgid "You must be dead to use the class command"
+msgstr "You must be dead to use the class command"
+
+#: cgame/cg_servercmds.c:791
+msgid "Unknown starting item"
+msgstr "Unknown starting item"
+
+#: cgame/cg_servercmds.c:798
+msgid ""
+"There is no creep here. You must build near existing Eggs or the Overmind. "
+"Alien structures will not support themselves."
+msgstr ""
+"There is no creep here. You must build near existing Eggs or the Overmind. "
+"Alien structures will not support themselves."
+
+#: cgame/cg_servercmds.c:800
+msgid "There is no creep here"
+msgstr "There is no creep here"
+
+#: cgame/cg_servercmds.c:805
+msgid ""
+"There is no Overmind. An Overmind must be built to control the structure you "
+"tried to place."
+msgstr ""
+"There is no Overmind. An Overmind must be built to control the structure you "
+"tried to place."
+
+#: cgame/cg_servercmds.c:807 cgame/cg_servercmds.c:842
+msgid "There is no Overmind"
+msgstr "There is no Overmind"
+
+#: cgame/cg_servercmds.c:812
+msgid ""
+"There can only be one Overmind. Deconstruct the existing one if you wish to "
+"move it."
+msgstr ""
+"There can only be one Overmind. Deconstruct the existing one if you wish to "
+"move it."
+
+#: cgame/cg_servercmds.c:814
+msgid "There can only be one Overmind"
+msgstr "There can only be one Overmind"
+
+#: cgame/cg_servercmds.c:819
+msgid ""
+"The Overmind cannot control any more structures. Deconstruct existing "
+"structures to build more."
+msgstr ""
+"The Overmind cannot control any more structures. Deconstruct existing "
+"structures to build more."
+
+#: cgame/cg_servercmds.c:821
+msgid "The Overmind cannot control any more structures"
+msgstr "The Overmind cannot control any more structures"
+
+#: cgame/cg_servercmds.c:826
+msgid ""
+"There is no room to evolve here. Move away from walls or other nearby "
+"objects and try again."
+msgstr ""
+"There is no room to evolve here. Move away from walls or other nearby "
+"objects and try again."
+
+#: cgame/cg_servercmds.c:828
+msgid "There is no room to evolve here"
+msgstr "There is no room to evolve here"
+
+#: cgame/cg_servercmds.c:833
+msgid ""
+"This location is too close to the enemy to evolve. Move away from the "
+"enemy's presence and try again."
+msgstr ""
+"This location is too close to the enemy to evolve. Move away from the "
+"enemy's presence and try again."
+
+#: cgame/cg_servercmds.c:835
+msgid "This location is too close to the enemy to evolve"
+msgstr "This location is too close to the enemy to evolve"
+
+#: cgame/cg_servercmds.c:840
+msgid ""
+"There is no Overmind. An Overmind must be built to allow you to upgrade."
+msgstr ""
+"There is no Overmind. An Overmind must be built to allow you to upgrade."
+
+#: cgame/cg_servercmds.c:847
+msgid "You cannot evolve until your build timer has expired."
+msgstr "You cannot evolve until your build timer has expired."
+
+#: cgame/cg_servercmds.c:848
+msgid "You cannot evolve until your build timer expires"
+msgstr "You cannot evolve until your build timer expires"
+
+#: cgame/cg_servercmds.c:862
+#, c-format
+msgid "You cannot evolve into a %s"
+msgstr "You cannot evolve into a %s"
+
+#: cgame/cg_servercmds.c:868
+msgid "You cannot evolve while wallwalking"
+msgstr "You cannot evolve while wallwalking"
+
+#: cgame/cg_servercmds.c:873
+msgid "Unknown class"
+msgstr "Unknown class"
+
+#: cgame/cg_servercmds.c:878
+#, c-format
+msgid "You cannot spawn as a %s"
+msgstr "You cannot spawn as a %s"
+
+#: cgame/cg_servercmds.c:884
+#, c-format
+msgid "The %s is not allowed"
+msgstr "The %s is not allowed"
+
+#: cgame/cg_servercmds.c:890
+#, c-format
+msgid "The %s is not allowed at Stage %d"
+msgstr "The %s is not allowed at Stage %d"
+
+#: cgame/cg_servercmds.c:897
+#, c-format
+msgid "cgame: debug: no such menu %d\n"
+msgstr "cgame: debug: no such menu %d\n"
+
+#: cgame/cg_servercmds.c:1075
+#, c-format
+msgid ">> to reply, say: /m %d [your message] <<\n"
+msgstr ">> to reply, say: /m %d [your message] <<\n"
+
+#: cgame/cg_servercmds.c:1125
+#, c-format
+msgid "[skipnotify]WARNING: could not find voice \"%s\"\n"
+msgstr "[skipnotify]WARNING: could not find voice \"%s\"\n"
+
+#: cgame/cg_servercmds.c:1133
+#, c-format
+msgid "[skipnotify]WARNING: could not find command %d in voice \"%s\"\n"
+msgstr "[skipnotify]WARNING: could not find command %d in voice \"%s\"\n"
+
+#: cgame/cg_servercmds.c:1142
+#, c-format
+msgid ""
+"[skipnotify]WARNING: could not find track %d for command %d in voice \"%s\"\n"
+msgstr ""
+"[skipnotify]WARNING: could not find track %d for command %d in voice \"%s\"\n"
+
+#: cgame/cg_servercmds.c:1449
+#, c-format
+msgid "Unknown client game command: %s\n"
+msgstr "Unknown client game command: %s\n"
+
+#: cgame/cg_event.c:88
+#, c-format
+msgid "%s ^7fell foul to gravity\n"
+msgstr "%s ^7fell foul to gravity\n"
+
+#: cgame/cg_event.c:92
+#, c-format
+msgid "%s ^7was squished\n"
+msgstr "%s ^7was squished\n"
+
+#: cgame/cg_event.c:96
+#, c-format
+msgid "%s ^7forgot to pack a snorkel\n"
+msgstr "%s ^7forgot to pack a snorkel\n"
+
+#: cgame/cg_event.c:100
+#, c-format
+msgid "%s ^7melted\n"
+msgstr "%s ^7melted\n"
+
+#: cgame/cg_event.c:104
+#, c-format
+msgid "%s ^7did a back flip into the lava\n"
+msgstr "%s ^7did a back flip into the lava\n"
+
+#: cgame/cg_event.c:108
+#, c-format
+msgid "%s ^7saw the light\n"
+msgstr "%s ^7saw the light\n"
+
+#: cgame/cg_event.c:112
+#, c-format
+msgid "%s ^7was in the wrong place\n"
+msgstr "%s ^7was in the wrong place\n"
+
+#: cgame/cg_event.c:116
+#, c-format
+msgid "%s ^7should have run further\n"
+msgstr "%s ^7should have run further\n"
+
+#: cgame/cg_event.c:120
+#, c-format
+msgid "%s ^7shouldn't have trod in the acid\n"
+msgstr "%s ^7shouldn't have trod in the acid\n"
+
+#: cgame/cg_event.c:124
+#, c-format
+msgid "%s ^7was gunned down by a turret\n"
+msgstr "%s ^7was gunned down by a turret\n"
+
+#: cgame/cg_event.c:128
+#, c-format
+msgid "%s ^7was zapped by a tesla generator\n"
+msgstr "%s ^7was zapped by a tesla generator\n"
+
+#: cgame/cg_event.c:132
+#, c-format
+msgid "%s ^7was melted by an acid tube\n"
+msgstr "%s ^7was melted by an acid tube\n"
+
+#: cgame/cg_event.c:136
+#, c-format
+msgid "%s ^7got too close to the overmind\n"
+msgstr "%s ^7got too close to the overmind\n"
+
+#: cgame/cg_event.c:140
+#, c-format
+msgid "%s ^7got too close to the reactor\n"
+msgstr "%s ^7got too close to the reactor\n"
+
+#: cgame/cg_event.c:144
+#, c-format
+msgid "%s ^7should have visited a medical station\n"
+msgstr "%s ^7should have visited a medical station\n"
+
+#: cgame/cg_event.c:148
+#, c-format
+msgid "%s ^7was hunted down by the swarm\n"
+msgstr "%s ^7was hunted down by the swarm\n"
+
+#: cgame/cg_event.c:163
+#, c-format
+msgid "%s ^7toasted herself\n"
+msgstr "%s ^7toasted herself\n"
+
+#: cgame/cg_event.c:167
+#, c-format
+msgid "%s ^7toasted itself\n"
+msgstr "%s ^7toasted itself\n"
+
+#: cgame/cg_event.c:171
+#, c-format
+msgid "%s ^7toasted himself\n"
+msgstr "%s ^7toasted himself\n"
+
+#: cgame/cg_event.c:179
+#, c-format
+msgid "%s ^7irradiated herself\n"
+msgstr "%s ^7irradiated herself\n"
+
+#: cgame/cg_event.c:183
+#, c-format
+msgid "%s ^7irradiated itself\n"
+msgstr "%s ^7irradiated itself\n"
+
+#: cgame/cg_event.c:187
+#, c-format
+msgid "%s ^7irradiated himself\n"
+msgstr "%s ^7irradiated himself\n"
+
+#: cgame/cg_event.c:195
+#, c-format
+msgid "%s ^7blew herself up\n"
+msgstr "%s ^7blew herself up\n"
+
+#: cgame/cg_event.c:199
+#, c-format
+msgid "%s ^7blew itself up\n"
+msgstr "%s ^7blew itself up\n"
+
+#: cgame/cg_event.c:203
+#, c-format
+msgid "%s ^7blew himself up\n"
+msgstr "%s ^7blew himself up\n"
+
+#: cgame/cg_event.c:211
+#, c-format
+msgid "%s ^7sniped herself\n"
+msgstr "%s ^7sniped herself\n"
+
+#: cgame/cg_event.c:215
+#, c-format
+msgid "%s ^7sniped itself\n"
+msgstr "%s ^7sniped itself\n"
+
+#: cgame/cg_event.c:219
+#, c-format
+msgid "%s ^7sniped himself\n"
+msgstr "%s ^7sniped himself\n"
+
+#: cgame/cg_event.c:227
+#, c-format
+msgid "%s ^7pulse rifled herself\n"
+msgstr "%s ^7pulse rifled herself\n"
+
+#: cgame/cg_event.c:231
+#, c-format
+msgid "%s ^7pulse rifled itself\n"
+msgstr "%s ^7pulse rifled itself\n"
+
+#: cgame/cg_event.c:235
+#, c-format
+msgid "%s ^7pulse rifled himself\n"
+msgstr "%s ^7pulse rifled himself\n"
+
+#: cgame/cg_event.c:243
+#, c-format
+msgid "%s ^7killed herself\n"
+msgstr "%s ^7killed herself\n"
+
+#: cgame/cg_event.c:247
+#, c-format
+msgid "%s ^7killed itself\n"
+msgstr "%s ^7killed itself\n"
+
+#: cgame/cg_event.c:251
+#, c-format
+msgid "%s ^7killed himself\n"
+msgstr "%s ^7killed himself\n"
+
+#: cgame/cg_event.c:286
+#, c-format
+msgid "%s ^7was sawn by %s%s\n"
+msgstr "%s ^7was sawn by %s%s\n"
+
+#: cgame/cg_event.c:290
+#, c-format
+msgid "%s ^7was blasted by %s%s\n"
+msgstr "%s ^7was blasted by %s%s\n"
+
+#: cgame/cg_event.c:294
+#, c-format
+msgid "%s ^7was machinegunned by %s%s\n"
+msgstr "%s ^7was machinegunned by %s%s\n"
+
+#: cgame/cg_event.c:298
+#, c-format
+msgid "%s ^7was chaingunned by %s%s\n"
+msgstr "%s ^7was chaingunned by %s%s\n"
+
+#: cgame/cg_event.c:302
+#, c-format
+msgid "%s ^7was gunned down by %s%s\n"
+msgstr "%s ^7was gunned down by %s%s\n"
+
+#: cgame/cg_event.c:306
+#, c-format
+msgid "%s ^7was pulse rifled by %s%s\n"
+msgstr "%s ^7was pulse rifled by %s%s\n"
+
+#: cgame/cg_event.c:310
+#, c-format
+msgid "%s ^7was mass driven by %s%s\n"
+msgstr "%s ^7was mass driven by %s%s\n"
+
+#: cgame/cg_event.c:314
+#, c-format
+msgid "%s ^7was lasgunned by %s%s\n"
+msgstr "%s ^7was lasgunned by %s%s\n"
+
+#: cgame/cg_event.c:318
+#, c-format
+msgid "%s ^7was grilled by %s%s^7's flamer\n"
+msgstr "%s ^7was grilled by %s%s^7's flamer\n"
+
+#: cgame/cg_event.c:322
+#, c-format
+msgid "%s ^7was toasted by %s%s^7's flamer\n"
+msgstr "%s ^7was toasted by %s%s^7's flamer\n"
+
+#: cgame/cg_event.c:326
+#, c-format
+msgid "%s ^7felt the full force of %s%s^7's lucifer cannon\n"
+msgstr "%s ^7felt the full force of %s%s^7's lucifer cannon\n"
+
+#: cgame/cg_event.c:330
+#, c-format
+msgid "%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n"
+msgstr "%s ^7was caught in the fallout of %s%s^7's lucifer cannon\n"
+
+#: cgame/cg_event.c:334
+#, c-format
+msgid "%s ^7couldn't escape %s%s^7's grenade\n"
+msgstr "%s ^7couldn't escape %s%s^7's grenade\n"
+
+#: cgame/cg_event.c:338
+#, c-format
+msgid "%s ^7should leave %s%s^7's buildings alone\n"
+msgstr "%s ^7should leave %s%s^7's buildings alone\n"
+
+#: cgame/cg_event.c:342
+#, c-format
+msgid "%s ^7was bitten by %s%s\n"
+msgstr "%s ^7was bitten by %s%s\n"
+
+#: cgame/cg_event.c:346
+#, c-format
+msgid "%s ^7was swiped by %s%s^7's %s\n"
+msgstr "%s ^7was swiped by %s%s^7's %s\n"
+
+#: cgame/cg_event.c:351
+#, c-format
+msgid "%s ^7was clawed by %s%s^7's %s\n"
+msgstr "%s ^7was clawed by %s%s^7's %s\n"
+
+#: cgame/cg_event.c:356
+#, c-format
+msgid "%s ^7was zapped by %s%s^7's %s\n"
+msgstr "%s ^7was zapped by %s%s^7's %s\n"
+
+#: cgame/cg_event.c:361
+#, c-format
+msgid "%s ^7was chomped by %s%s^7's %s\n"
+msgstr "%s ^7was chomped by %s%s^7's %s\n"
+
+#: cgame/cg_event.c:366
+#, c-format
+msgid "%s ^7was pounced upon by %s%s^7's %s\n"
+msgstr "%s ^7was pounced upon by %s%s^7's %s\n"
+
+#: cgame/cg_event.c:371
+#, c-format
+msgid "%s ^7was sniped by %s%s^7's %s\n"
+msgstr "%s ^7was sniped by %s%s^7's %s\n"
+
+#: cgame/cg_event.c:376
+#, c-format
+msgid "%s ^7was mauled by %s%s^7's %s\n"
+msgstr "%s ^7was mauled by %s%s^7's %s\n"
+
+#: cgame/cg_event.c:381
+#, c-format
+msgid "%s ^7should have gotten out of the way of %s%s^7's %s\n"
+msgstr "%s ^7should have gotten out of the way of %s%s^7's %s\n"
+
+#: cgame/cg_event.c:386
+#, c-format
+msgid "%s ^7was crushed under %s%s^7's weight\n"
+msgstr "%s ^7was crushed under %s%s^7's weight\n"
+
+#: cgame/cg_event.c:390
+#, c-format
+msgid "%s ^7should have used a medkit against %s%s^7's poison\n"
+msgstr "%s ^7should have used a medkit against %s%s^7's poison\n"
+
+#: cgame/cg_event.c:394
+#, c-format
+msgid "%s ^7was gassed by %s%s^7's %s\n"
+msgstr "%s ^7was gassed by %s%s^7's %s\n"
+
+#: cgame/cg_event.c:399
+#, c-format
+msgid "%s ^7tried to invade %s%s^7's personal space\n"
+msgstr "%s ^7tried to invade %s%s^7's personal space\n"
+
+#: cgame/cg_event.c:403
+#, c-format
+msgid "%s ^7was killed by %s%s\n"
+msgstr "%s ^7was killed by %s%s\n"
+
+#: cgame/cg_event.c:412
+msgid "^1TEAMMATE^7 "
+msgstr "^1TEAMMATE^7 "
+
+#: cgame/cg_event.c:418
+#, c-format
+msgid "You killed ^1TEAMMATE^7 %s"
+msgstr "You killed ^1TEAMMATE^7 %s"
+
+#: cgame/cg_event.c:427
+#, c-format
+msgid "%s^7 died\n"
+msgstr "%s^7 died\n"
+
+#: cgame/cg_predict.c:457
+#, c-format
+msgid "origin delta: %.2f  "
+msgstr "origin delta: %.2f  "
+
+#: cgame/cg_predict.c:469
+#, c-format
+msgid "velocity delta: %.2f  "
+msgstr "velocity delta: %.2f  "
+
+#: cgame/cg_predict.c:680
+msgid "exceeded PACKET_BACKUP on commands\n"
+msgstr "exceeded PACKET_BACKUP on commands\n"
+
+#: cgame/cg_predict.c:777
+#, c-format
+msgid "errorcode %d at %d\n"
+msgstr "errorcode %d at %d\n"
+
+#: cgame/cg_predict.c:854
+msgid "PredictionTeleport\n"
+msgstr "PredictionTeleport\n"
+
+#: cgame/cg_predict.c:869
+msgid "prediction error\n"
+msgstr "prediction error\n"
+
+#: cgame/cg_predict.c:880
+#, c-format
+msgid "Prediction miss: %f\n"
+msgstr "Prediction miss: %f\n"
+
+#: cgame/cg_predict.c:898
+#, c-format
+msgid "Double prediction decay: %f\n"
+msgstr "Double prediction decay: %f\n"
+
+#: cgame/cg_weapons.c:53
+#, c-format
+msgid "CG_RegisterUpgrade: already registered: (%d) %s\n"
+msgstr "CG_RegisterUpgrade: already registered: (%d) %s\n"
+
+#: cgame/cg_weapons.c:140
+#, c-format
+msgid "ERROR: missile model not found %s\n"
+msgstr "ERROR: missile model not found %s\n"
+
+#: cgame/cg_weapons.c:176
+#, c-format
+msgid "ERROR: missile sprite not found %s\n"
+msgstr "ERROR: missile sprite not found %s\n"
+
+#: cgame/cg_weapons.c:255
+#, c-format
+msgid "ERROR: missile particle system not found %s\n"
+msgstr "ERROR: missile particle system not found %s\n"
+
+#: cgame/cg_weapons.c:273
+#, c-format
+msgid "ERROR: missile trail system not found %s\n"
+msgstr "ERROR: missile trail system not found %s\n"
+
+#: cgame/cg_weapons.c:291
+#, c-format
+msgid "ERROR: muzzle particle system not found %s\n"
+msgstr "ERROR: muzzle particle system not found %s\n"
+
+#: cgame/cg_weapons.c:309
+#, c-format
+msgid "ERROR: impact particle system not found %s\n"
+msgstr "ERROR: impact particle system not found %s\n"
+
+#: cgame/cg_weapons.c:344
+#, c-format
+msgid "ERROR: impact mark shader not found %s\n"
+msgstr "ERROR: impact mark shader not found %s\n"
+
+#: cgame/cg_weapons.c:593
+#, c-format
+msgid "ERROR: unknown token '%s' in weapon section\n"
+msgstr "ERROR: unknown token '%s' in weapon section\n"
+
+#: cgame/cg_weapons.c:705
+msgid "^1ERROR: weapon mode section started without a declaration\n"
+msgstr "^1ERROR: weapon mode section started without a declaration\n"
+
+#: cgame/cg_weapons.c:710
+msgid "^1ERROR: failed to parse weapon mode section\n"
+msgstr "^1ERROR: failed to parse weapon mode section\n"
+
+#: cgame/cg_weapons.c:784
+#, c-format
+msgid "ERROR: weapon model not found %s\n"
+msgstr "ERROR: weapon model not found %s\n"
+
+#: cgame/cg_weapons.c:816
+#, c-format
+msgid "ERROR: 3rd person weapon model not found %s\n"
+msgstr "ERROR: 3rd person weapon model not found %s\n"
+
+#: cgame/cg_weapons.c:856
+#, c-format
+msgid "ERROR: weapon icon not found %s\n"
+msgstr "ERROR: weapon icon not found %s\n"
+
+#: cgame/cg_weapons.c:891
+#, c-format
+msgid "ERROR: weapon crosshair not found %s\n"
+msgstr "ERROR: weapon crosshair not found %s\n"
+
+#: cgame/cg_weapons.c:986
+#, c-format
+msgid "ERROR: unknown token '%s'\n"
+msgstr "ERROR: unknown token '%s'\n"
+
+#: cgame/cg_weapons.c:1015
+#, c-format
+msgid "CG_RegisterWeapon: already registered: (%d) %s\n"
+msgstr "CG_RegisterWeapon: already registered: (%d) %s\n"
+
+#: cgame/cg_weapons.c:1033
+#, c-format
+msgid "ERROR: failed to parse %s\n"
+msgstr "ERROR: failed to parse %s\n"
+
+#: cgame/cg_weapons.c:1107
+msgid "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton\n"
+msgstr "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton\n"
+
+#: cgame/cg_weapons.c:1168
+msgid "CG_RunWeaponLerpFrame: Can't build lf->gunSkeleton\n"
+msgstr "CG_RunWeaponLerpFrame: Can't build lf->gunSkeleton\n"
+
+#: cgame/cg_weapons.c:1176
+msgid "CG_RunWeaponLerpFrame: Can't blend lf->gunSkeleton\n"
+msgstr "CG_RunWeaponLerpFrame: Can't blend lf->gunSkeleton\n"
+
+#: cgame/cg_weapons.c:1373
+#, c-format
+msgid "WARNING: CG_AddPlayerWeapon: weapon %d (%s) is not registered\n"
+msgstr "WARNING: CG_AddPlayerWeapon: weapon %d (%s) is not registered\n"
+
+#: cgame/cg_weapons.c:1468
+#, c-format
+msgid "WARNING: Cannot find bone index %s, using root bone\n"
+msgstr "WARNING: Cannot find bone index %s, using root bone\n"
+
+#: cgame/cg_weapons.c:1658
+#, c-format
+msgid "WARNING: CG_AddViewWeapon: weapon %d (%s) is not registered\n"
+msgstr "WARNING: CG_AddViewWeapon: weapon %d (%s) is not registered\n"
+
+#: cgame/cg_weapons.c:1900
+#, c-format
+msgid "WARNING: CG_DrawItemSelect: weapon %d (%s) is not registered\n"
+msgstr "WARNING: CG_DrawItemSelect: weapon %d (%s) is not registered\n"
+
+#: cgame/cg_weapons.c:1931
+#, c-format
+msgid "WARNING: CG_DrawItemSelect: upgrade %d (%s) is not registered\n"
+msgstr "WARNING: CG_DrawItemSelect: upgrade %d (%s) is not registered\n"
+
+#: cgame/cg_buildable.c:264
+#, c-format
+msgid "Error parsing animation file: %s\n"
+msgstr "Error parsing animation file: %s\n"
+
+#: cgame/cg_buildable.c:337
+#, c-format
+msgid "Error parsing sound file: %s\n"
+msgstr "Error parsing sound file: %s\n"
+
+#: cgame/cg_buildable.c:551
+#, c-format
+msgid "WARNING: failed to load animation file %s\n"
+msgstr "WARNING: failed to load animation file %s\n"
+
+#: cgame/cg_buildable.c:560
+#, c-format
+msgid "WARNING: failed to load sound file %s\n"
+msgstr "WARNING: failed to load sound file %s\n"
+
+#: cgame/cg_buildable.c:745
+msgid "Can't build old buildable bSkeleton\n"
+msgstr "Can't build old buildable bSkeleton\n"
+
+#: cgame/cg_buildable.c:783
+#, c-format
+msgid "Sound for animation %d for a %s\n"
+msgstr "Sound for animation %d for a %s\n"
+
+#: cgame/cg_buildable.c:915
+msgid "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n"
+msgstr "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n"
+
+#: cgame/cg_buildable.c:925
+msgid "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n"
+msgstr "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n"
+
+#: cgame/cg_buildable.c:1351
+#, c-format
+msgid "CG_BuildableStatusParse: unknown token %s in %s\n"
+msgstr "CG_BuildableStatusParse: unknown token %s in %s\n"
+
+#: cgame/cg_attachment.c:107 cgame/cg_attachment.c:183
+#: cgame/cg_attachment.c:237
+msgid "^1ERROR: Invalid attachmentType_t in attachment\n"
+msgstr "^1ERROR: Invalid attachmentType_t in attachment\n"
+
+#: cgame/cg_particles.c:283
+msgid "ERROR: a particle with velocityType normal has no normal\n"
+msgstr "ERROR: a particle with velocityType normal has no normal\n"
+
+#: cgame/cg_particles.c:466
+#, c-format
+msgid "PE %s created\n"
+msgstr "PE %s created\n"
+
+#: cgame/cg_particles.c:491
+msgid "ERROR: a particle system has not been registered yet\n"
+msgstr "ERROR: a particle system has not been registered yet\n"
+
+#: cgame/cg_particles.c:516
+#, c-format
+msgid "PS %s created\n"
+msgstr "PS %s created\n"
+
+#: cgame/cg_particles.c:604
+#, c-format
+msgid "Registered particle system %s\n"
+msgstr "Registered particle system %s\n"
+
+#: cgame/cg_particles.c:614
+#, c-format
+msgid "ERROR: failed to register particle system %s\n"
+msgstr "ERROR: failed to register particle system %s\n"
+
+#: cgame/cg_particles.c:824
+msgid "ERROR: 'shader' not allowed in conjunction with 'model'\n"
+msgstr "ERROR: 'shader' not allowed in conjunction with 'model'\n"
+
+#: cgame/cg_particles.c:864
+msgid "ERROR: 'model' not allowed in conjunction with 'shader'\n"
+msgstr "ERROR: 'model' not allowed in conjunction with 'shader'\n"
+
+#: cgame/cg_particles.c:1342 cgame/cg_particles.c:1494
+#: cgame/cg_particles.c:1522
+msgid "ERROR: missing '}'\n"
+msgstr "ERROR: missing '}'\n"
+
+#: cgame/cg_particles.c:1528 cgame/cg_particles.c:1534
+msgid "ERROR: missing '{'\n"
+msgstr "ERROR: missing '{'\n"
+
+#: cgame/cg_particles.c:1662
+#, c-format
+msgid "ERROR: unknown token '%s' in particle\n"
+msgstr "ERROR: unknown token '%s' in particle\n"
+
+#: cgame/cg_particles.c:1716
+msgid "ERROR: failed to parse particle\n"
+msgstr "ERROR: failed to parse particle\n"
+
+#: cgame/cg_particles.c:1722
+#, c-format
+msgid "ERROR: ejector has > %d particles\n"
+msgstr "ERROR: ejector has > %d particles\n"
+
+#: cgame/cg_particles.c:1727
+#, c-format
+msgid "ERROR: maximum number of particles (%d) reached\n"
+msgstr "ERROR: maximum number of particles (%d) reached\n"
+
+#: cgame/cg_particles.c:1828
+#, c-format
+msgid "ERROR: unknown token '%s' in particle ejector\n"
+msgstr "ERROR: unknown token '%s' in particle ejector\n"
+
+#: cgame/cg_particles.c:1867
+msgid "ERROR: failed to parse particle ejector\n"
+msgstr "ERROR: failed to parse particle ejector\n"
+
+#: cgame/cg_particles.c:1877
+msgid "ERROR: ejector with 'count infinite' potentially has zero period\n"
+msgstr "ERROR: ejector with 'count infinite' potentially has zero period\n"
+
+#: cgame/cg_particles.c:1883
+#, c-format
+msgid "ERROR: particle system has > %d ejectors\n"
+msgstr "ERROR: particle system has > %d ejectors\n"
+
+#: cgame/cg_particles.c:1888
+#, c-format
+msgid "ERROR: maximum number of particle ejectors (%d) reached\n"
+msgstr "ERROR: maximum number of particle ejectors (%d) reached\n"
+
+#: cgame/cg_particles.c:1914
+#, c-format
+msgid "Parsed particle system %s\n"
+msgstr "Parsed particle system %s\n"
+
+#: cgame/cg_particles.c:1921
+#, c-format
+msgid "ERROR: unknown token '%s' in particle system %s\n"
+msgstr "ERROR: unknown token '%s' in particle system %s\n"
+
+#: cgame/cg_particles.c:1958
+#, c-format
+msgid "ERROR: particle file %s is %s\n"
+msgstr "ERROR: particle file %s is %s\n"
+
+#: cgame/cg_particles.c:1989
+#, c-format
+msgid "ERROR: a particle system is already named %s\n"
+msgstr "ERROR: a particle system is already named %s\n"
+
+#: cgame/cg_particles.c:1998
+#, c-format
+msgid "ERROR: %s: failed to parse particle system %s\n"
+msgstr "ERROR: %s: failed to parse particle system %s\n"
+
+#: cgame/cg_particles.c:2007
+#, c-format
+msgid "ERROR: maximum number of particle systems (%d) reached\n"
+msgstr "ERROR: maximum number of particle systems (%d) reached\n"
+
+#: cgame/cg_particles.c:2020
+msgid "ERROR: unamed particle system\n"
+msgstr "ERROR: unamed particle system\n"
+
+#: cgame/cg_particles.c:2032
+msgid "ERROR: particle system already named\n"
+msgstr "ERROR: particle system already named\n"
+
+#: cgame/cg_particles.c:2087 cgame/cg_trails.c:1343
+#, c-format
+msgid "...loading '%s'\n"
+msgstr "...loading '%s'\n"
+
+#: cgame/cg_particles.c:2116
+#, c-format
+msgid "WARNING: failed to find child %s\n"
+msgstr "WARNING: failed to find child %s\n"
+
+#: cgame/cg_particles.c:2141
+#, c-format
+msgid "WARNING: failed to find onDeath system %s\n"
+msgstr "WARNING: failed to find onDeath system %s\n"
+
+#: cgame/cg_particles.c:2157
+msgid "WARNING: tried to modify a NULL particle system\n"
+msgstr "WARNING: tried to modify a NULL particle system\n"
+
+#: cgame/cg_particles.c:2186
+msgid "WARNING: tried to destroy a NULL particle system\n"
+msgstr "WARNING: tried to destroy a NULL particle system\n"
+
+#: cgame/cg_particles.c:2192
+msgid "PS destroyed\n"
+msgstr "PS destroyed\n"
+
+#: cgame/cg_particles.c:2222
+msgid "WARNING: tried to test a NULL particle system\n"
+msgstr "WARNING: tried to test a NULL particle system\n"
+
+#: cgame/cg_particles.c:2228
+msgid "WARNING: tried to test an invalid particle system\n"
+msgstr "WARNING: tried to test an invalid particle system\n"
+
+#: cgame/cg_particles.c:2329
+#, c-format
+msgid "PS %s garbage collected\n"
+msgstr "PS %s garbage collected\n"
+
+#: cgame/cg_trails.c:784
+msgid "^3WARNING: too many segments in trail beam\n"
+msgstr "^3WARNING: too many segments in trail beam\n"
+
+#: cgame/cg_trails.c:867 cgame/cg_trails.c:895
+msgid "^1ERROR: missing '}'\n"
+msgstr "^1ERROR: missing '}'\n"
+
+#: cgame/cg_trails.c:901 cgame/cg_trails.c:907
+msgid "^1ERROR: missing '{'\n"
+msgstr "^1ERROR: missing '{'\n"
+
+#: cgame/cg_trails.c:1002
+#, c-format
+msgid "ERROR: unknown textureType clamp \"%s\"\n"
+msgstr "ERROR: unknown textureType clamp \"%s\"\n"
+
+#: cgame/cg_trails.c:1017
+#, c-format
+msgid "^1ERROR: unknown textureType \"%s\"\n"
+msgstr "^1ERROR: unknown textureType \"%s\"\n"
+
+#: cgame/cg_trails.c:1033
+msgid "^1ERROR: too many jitters\n"
+msgstr "^1ERROR: too many jitters\n"
+
+#: cgame/cg_trails.c:1071
+#, c-format
+msgid "ERROR: unknown token '%s' in trail beam\n"
+msgstr "ERROR: unknown token '%s' in trail beam\n"
+
+#: cgame/cg_trails.c:1128
+msgid "^1ERROR: failed to parse trail beam\n"
+msgstr "^1ERROR: failed to parse trail beam\n"
+
+#: cgame/cg_trails.c:1134
+#, c-format
+msgid "^1ERROR: trail system has > %d beams\n"
+msgstr "^1ERROR: trail system has > %d beams\n"
+
+#: cgame/cg_trails.c:1139
+#, c-format
+msgid "^1ERROR: maximum number of trail beams (%d) reached\n"
+msgstr "^1ERROR: maximum number of trail beams (%d) reached\n"
+
+#: cgame/cg_trails.c:1177
+#, c-format
+msgid "Parsed trail system %s\n"
+msgstr "Parsed trail system %s\n"
+
+#: cgame/cg_trails.c:1184
+#, c-format
+msgid "ERROR: unknown token '%s' in trail system %s\n"
+msgstr "ERROR: unknown token '%s' in trail system %s\n"
+
+#: cgame/cg_trails.c:1221
+#, c-format
+msgid "ERROR: trail file %s is %s\n"
+msgstr "ERROR: trail file %s is %s\n"
+
+#: cgame/cg_trails.c:1252
+#, c-format
+msgid "ERROR: a trail system is already named %s\n"
+msgstr "ERROR: a trail system is already named %s\n"
+
+#: cgame/cg_trails.c:1261
+#, c-format
+msgid "ERROR: %s: failed to parse trail system %s\n"
+msgstr "ERROR: %s: failed to parse trail system %s\n"
+
+#: cgame/cg_trails.c:1270
+#, c-format
+msgid "ERROR: maximum number of trail systems (%d) reached\n"
+msgstr "ERROR: maximum number of trail systems (%d) reached\n"
+
+#: cgame/cg_trails.c:1283
+msgid "^1ERROR: unamed trail system\n"
+msgstr "^1ERROR: unamed trail system\n"
+
+#: cgame/cg_trails.c:1295
+msgid "^1ERROR: trail system already named\n"
+msgstr "^1ERROR: trail system already named\n"
+
+#: cgame/cg_trails.c:1382
+#, c-format
+msgid "Registered trail system %s\n"
+msgstr "Registered trail system %s\n"
+
+#: cgame/cg_trails.c:1392
+#, c-format
+msgid "ERROR: failed to register trail system %s\n"
+msgstr "ERROR: failed to register trail system %s\n"
+
+#: cgame/cg_trails.c:1426
+#, c-format
+msgid "TB %s created\n"
+msgstr "TB %s created\n"
+
+#: cgame/cg_trails.c:1456
+msgid "^1ERROR: a trail system has not been registered yet\n"
+msgstr "^1ERROR: a trail system has not been registered yet\n"
+
+#: cgame/cg_trails.c:1482
+#, c-format
+msgid "TS %s created\n"
+msgstr "TS %s created\n"
+
+#: cgame/cg_trails.c:1620
+#, c-format
+msgid "TS %s expired (born %d, lives %d, now %d)\n"
+msgstr "TS %s expired (born %d, lives %d, now %d)\n"
+
+#: cgame/cg_trails.c:1628
+#, c-format
+msgid "TS %s garbage collected\n"
+msgstr "TS %s garbage collected\n"
+
+#: game/g_maprotation.c:775
+msgid "^3listrotation: ^7there is no active map rotation on this server\n"
+msgstr "^3listrotation: ^7there is no active map rotation on this server\n"
+
+#: game/g_maprotation.c:781
+msgid "^3listrotation: ^7there are no maps in the active map rotation\n"
+msgstr "^3listrotation: ^7there are no maps in the active map rotation\n"
+
+#: game/g_client.c:1060
+#, c-format
+msgid "Name change spam protection (g_minNameChangePeriod = %s)\n"
+msgstr "Name change spam protection (g_minNameChangePeriod = %s)\n"
+
+#: game/g_client.c:1068
+#, c-format
+msgid "Maximum name changes reached (g_maxNameChanges = %s)\n"
+msgstr "Maximum name changes reached (g_maxNameChanges = %s)\n"
+
+#: game/g_client.c:1075
+msgid "You cannot change your name while you are muted\n"
+msgstr "You cannot change your name while you are muted\n"
+
+#: game/g_client.c:1397
+#, c-format
+msgid "%s^7 connected\n"
+msgstr "%s^7 connected\n"
+
+#: game/g_client.c:1477
+#, c-format
+msgid "%s^7 entered the game\n"
+msgstr "%s^7 entered the game\n"
+
+#: game/g_svcmds.c:332
+msgid "Alien team has admitted defeat\n"
+msgstr "Alien team has admitted defeat\n"
+
+#: game/g_svcmds.c:337
+msgid "Human team has admitted defeat\n"
+msgstr "Human team has admitted defeat\n"
+
+#: game/g_svcmds.c:372
+msgid "Evacuation ordered\n"
+msgstr "Evacuation ordered\n"
+
+#: game/g_main.c:555
+#, c-format
+msgid "Server: \"%s\" changed to \"%s\"\n"
+msgstr "Server: \"%s\" changed to \"%s\"\n"
+
+#: game/g_main.c:1303
+msgid "Beginning Sudden Death.\n"
+msgstr "Beginning Sudden Death.\n"
+
+#: game/g_main.c:1321
+#, c-format
+msgid "Sudden Death will begin in %s seconds.\n"
+msgstr "Sudden Death will begin in %s seconds.\n"
+
+#: game/g_main.c:2337
+msgid "Timelimit hit\n"
+msgstr "Timelimit hit\n"
+
+#: game/g_main.c:2365
+msgid "Humans win\n"
+msgstr "Humans win\n"
+
+#: game/g_main.c:2377
+msgid "Aliens win\n"
+msgstr "Aliens win\n"
+
+#: game/g_main.c:2520
+#, c-format
+msgid "Vote passed (%s - %s)"
+msgstr "Vote passed (%s - %s)"
+
+#: game/g_main.c:2520
+#, c-format
+msgid "Team vote passed (%s - %s)"
+msgstr "Team vote passed (%s - %s)"
+
+#: game/g_main.c:2525
+#, c-format
+msgid "Vote failed (%d - %d; %.0f%% needed)"
+msgstr "Vote failed (%d - %d; %.0f%% needed)"
+
+#: game/g_main.c:2525
+#, c-format
+msgid "Team vote failed (%d - %d; %.0f%% needed)"
+msgstr "Team vote failed (%d - %d; %.0f%% needed)"
+
+#: game/g_main.c:2706
+#, c-format
+msgid "Server: Game will auto-unpause in %s seconds\n"
+msgstr "Server: Game will auto-unpause in %s seconds\n"
+
+#: game/g_main.c:2722
+msgid "Server: The game has been unpaused automatically (2 minute max)\n"
+msgstr "Server: The game has been unpaused automatically (2 minute max)\n"
+
+#: game/g_admin.c:43
+msgid ""
+"change the duration or reason of a ban.  duration is specified as numbers "
+"followed by units 'w' (weeks), 'd' (days), 'h' (hours) or 'm' (minutes), or "
+"seconds if no units are specified.  if the duration is preceded by a + or -, "
+"the ban duration will be extended or shortened by the specified amount"
+msgstr ""
+"change the duration or reason of a ban.  duration is specified as numbers "
+"followed by units 'w' (weeks), 'd' (days), 'h' (hours) or 'm' (minutes), or "
+"seconds if no units are specified.  if the duration is preceded by a + or -, "
+"the ban duration will be extended or shortened by the specified amount"
+
+#: game/g_admin.c:48
+msgid "[^3ban#^7] (^5/mask^7) (^5duration^7) (^5reason^7)"
+msgstr "[^3ban#^7] (^5/mask^7) (^5duration^7) (^5reason^7)"
+
+#: game/g_admin.c:53
+msgid "display admin commands available to you or help on a specific command"
+msgstr "display admin commands available to you or help on a specific command"
+
+#: game/g_admin.c:54
+msgid "(^5command^7)"
+msgstr "(^5command^7)"
+
+#: game/g_admin.c:59
+msgid "display your current admin level"
+msgstr "display your current admin level"
+
+#: game/g_admin.c:65
+msgid "restore a player's ability to build"
+msgstr "restore a player's ability to build"
+
+#: game/g_admin.c:66 game/g_admin.c:111 game/g_admin.c:135 game/g_admin.c:269
+#: game/g_admin.c:293
+msgid "[^3name|slot#^7]"
+msgstr "[^3name|slot#^7]"
+
+#: game/g_admin.c:71
+msgid "makes everyone ready in intermission"
+msgstr "makes everyone ready in intermission"
+
+#: game/g_admin.c:77
+msgid ""
+"ban a player by IP and GUID with an optional expiration time and reason. "
+"duration is specified as numbers followed by units 'w' (weeks), 'd' (days), "
+"'h' (hours) or 'm' (minutes), or seconds if no units are specified"
+msgstr ""
+"ban a player by IP and GUID with an optional expiration time and reason. "
+"duration is specified as numbers followed by units 'w' (weeks), 'd' (days), "
+"'h' (hours) or 'm' (minutes), or seconds if no units are specified"
+
+#: game/g_admin.c:81
+msgid "[^3name|slot#|IP(/mask)^7] (^5duration^7) (^5reason^7)"
+msgstr "[^3name|slot#|IP(/mask)^7] (^5duration^7) (^5reason^7)"
+
+#: game/g_admin.c:86
+msgid "show who built a structure"
+msgstr "show who built a structure"
+
+#: game/g_admin.c:92
+msgid "show buildable log"
+msgstr "show buildable log"
+
+#: game/g_admin.c:93
+msgid "(^5name|slot#^7) (^5id^7)"
+msgstr "(^5name|slot#^7) (^5id^7)"
+
+#: game/g_admin.c:98
+msgid "cancel a vote taking place"
+msgstr "cancel a vote taking place"
+
+#: game/g_admin.c:104
+msgid "load a map (and optionally force layout)"
+msgstr "load a map (and optionally force layout)"
+
+#: game/g_admin.c:105
+msgid "[^3mapname^7] (^5layout^7)"
+msgstr "[^3mapname^7] (^5layout^7)"
+
+#: game/g_admin.c:110
+msgid "take away a player's ability to build"
+msgstr "take away a player's ability to build"
+
+#: game/g_admin.c:116
+msgid "change the time limit for the current game"
+msgstr "change the time limit for the current game"
+
+#: game/g_admin.c:117
+msgid "[^3minutes^7]"
+msgstr "[^3minutes^7]"
+
+#: game/g_admin.c:122
+msgid "kick a player with an optional reason"
+msgstr "kick a player with an optional reason"
+
+#: game/g_admin.c:123
+msgid "[^3name|slot#^7] (^5reason^7)"
+msgstr "[^3name|slot#^7] (^5reason^7)"
+
+#: game/g_admin.c:128
+msgid "remove name protection from a player by setting them to admin level 0"
+msgstr "remove name protection from a player by setting them to admin level 0"
+
+#: game/g_admin.c:129
+msgid "[^3name|slot#|admin#^7]"
+msgstr "[^3name|slot#|admin#^7]"
+
+#: game/g_admin.c:134
+msgid "give a player name protection by setting them to admin level 1"
+msgstr "give a player name protection by setting them to admin level 1"
+
+#: game/g_admin.c:140
+msgid "display a list of all server admins and their levels"
+msgstr "display a list of all server admins and their levels"
+
+#: game/g_admin.c:141
+msgid "(^5name^7) (^5start admin#^7)"
+msgstr "(^5name^7) (^5start admin#^7)"
+
+#: game/g_admin.c:146
+msgid "display a list of all available layouts for a map"
+msgstr "display a list of all available layouts for a map"
+
+#: game/g_admin.c:147 game/g_admin.c:153
+msgid "(^5mapname^7)"
+msgstr "(^5mapname^7)"
+
+#: game/g_admin.c:152
+msgid "display a list of available maps on the server"
+msgstr "display a list of available maps on the server"
+
+#: game/g_admin.c:158
+msgid "display a list of players, their client numbers and their levels"
+msgstr "display a list of players, their client numbers and their levels"
+
+#: game/g_admin.c:164
+msgid "display the active map rotation"
+msgstr "display the active map rotation"
+
+#: game/g_admin.c:170
+msgid "lock a team to prevent anyone from joining it"
+msgstr "lock a team to prevent anyone from joining it"
+
+#: game/g_admin.c:176
+msgid "mute a player"
+msgstr "mute a player"
+
+#: game/g_admin.c:182
+msgid "display a list of names used by recently connected players"
+msgstr "display a list of names used by recently connected players"
+
+#: game/g_admin.c:183
+msgid "(^5name|IP(/mask)^7) (start namelog#)"
+msgstr "(^5name|IP(/mask)^7) (start namelog#)"
+
+#: game/g_admin.c:188
+msgid "go to the next map in the cycle"
+msgstr "go to the next map in the cycle"
+
+#: game/g_admin.c:194
+msgid "pass a vote currently taking place"
+msgstr "pass a vote currently taking place"
+
+#: game/g_admin.c:200
+msgid "Pause (or unpause) the game."
+msgstr "Pause (or unpause) the game."
+
+#: game/g_admin.c:206
+msgid "move a player to a specified team"
+msgstr "move a player to a specified team"
+
+#: game/g_admin.c:207
+msgid "[^3name|slot#^7] [^3h|a|s^7]"
+msgstr "[^3name|slot#^7] [^3h|a|s^7]"
+
+#: game/g_admin.c:212
+msgid "reloads the admin config file and refreshes permission flags"
+msgstr "reloads the admin config file and refreshes permission flags"
+
+#: game/g_admin.c:218
+msgid "register your name to protect it from being used by other players."
+msgstr "register your name to protect it from being used by other players."
+
+#: game/g_admin.c:224
+msgid "rename a player"
+msgstr "rename a player"
+
+#: game/g_admin.c:225
+msgid "[^3name|slot#^7] [^3new name^7]"
+msgstr "[^3name|slot#^7] [^3new name^7]"
+
+#: game/g_admin.c:230
+msgid ""
+"restart the current map (optionally using named layout or keeping/switching "
+"teams)"
+msgstr ""
+"restart the current map (optionally using named layout or keeping/switching "
+"teams)"
+
+#: game/g_admin.c:231
+msgid "(^5layout^7) (^5keepteams|switchteams|keepteamslock|switchteamslock^7)"
+msgstr "(^5layout^7) (^5keepteams|switchteams|keepteamslock|switchteamslock^7)"
+
+#: game/g_admin.c:236
+msgid "revert buildables to a given time"
+msgstr "revert buildables to a given time"
+
+#: game/g_admin.c:237
+msgid "[^3id^7]"
+msgstr "[^3id^7]"
+
+#: game/g_admin.c:242
+msgid "sets the admin level of a player"
+msgstr "sets the admin level of a player"
+
+#: game/g_admin.c:243
+msgid "[^3name|slot#|admin#^7] [^3level^7]"
+msgstr "[^3name|slot#|admin#^7] [^3level^7]"
+
+#: game/g_admin.c:248
+msgid "display a (partial) list of active bans"
+msgstr "display a (partial) list of active bans"
+
+#: game/g_admin.c:249
+msgid "(^5name|IP(/mask)^7) (^5start at ban#^7)"
+msgstr "(^5name|IP(/mask)^7) (^5start at ban#^7)"
+
+#: game/g_admin.c:254
+msgid "move 999 pingers to the spectator team"
+msgstr "move 999 pingers to the spectator team"
+
+#: game/g_admin.c:260
+msgid ""
+"move a player to spectators and prevent from joining a team duration is "
+"specified as numbers followed by units 'h' (hours) or 'm' (minutes), or "
+"seconds if no units are specified. End-of-game automatically revokes this"
+msgstr ""
+"move a player to spectators and prevent from joining a team duration is "
+"specified as numbers followed by units 'h' (hours) or 'm' (minutes), or "
+"seconds if no units are specified. End-of-game automatically revokes this"
+
+#: game/g_admin.c:263
+msgid "[^3name|slot#^7] [^3duration^7]"
+msgstr "[^3name|slot#^7] [^3duration^7]"
+
+#: game/g_admin.c:268
+msgid "allow a player to join any team again"
+msgstr "allow a player to join any team again"
+
+#: game/g_admin.c:274
+msgid "show the current local server time"
+msgstr "show the current local server time"
+
+#: game/g_admin.c:280
+msgid "unbans a player specified by the slot as seen in showbans"
+msgstr "unbans a player specified by the slot as seen in showbans"
+
+#: game/g_admin.c:281
+msgid "[^3ban#^7]"
+msgstr "[^3ban#^7]"
+
+#: game/g_admin.c:286
+msgid "unlock a locked team"
+msgstr "unlock a locked team"
+
+#: game/g_admin.c:287
+msgid "[^3a|h^7]"
+msgstr "[^3a|h^7]"
+
+#: game/g_admin.c:292
+msgid "unmute a muted player"
+msgstr "unmute a muted player"
+
+#: game/g_admin.c:298
+msgid "unregister your name so that it can be used by other players."
+msgstr "unregister your name so that it can be used by other players."
+
+#: game/g_admin.c:304
+msgid "warn a player about his behaviour"
+msgstr "warn a player about his behaviour"
+
+#: game/g_admin.c:305
+msgid "[^3name|slot#^7] [^3reason^7]"
+msgstr "[^3name|slot#^7] [^3reason^7]"
+
+#: game/g_admin.c:1173
+#, c-format
+msgid "^3%s: ^7no player connected in slot %%s\n"
+msgstr "^3%s: ^7no player connected in slot %%s\n"
+
+#: game/g_admin.c:1208
+#, c-format
+msgid "^3%s: ^7%s not in range 0-%s or %s-%s\n"
+msgstr "^3%s: ^7%s not in range 0-%s or %s-%s\n"
+
+#: game/g_admin.c:1260
+#, c-format
+msgid ""
+"^3%s:^7 no match, use listplayers or listadmins to find an appropriate "
+"number to use instead of name.\n"
+msgstr ""
+"^3%s:^7 no match, use listplayers or listadmins to find an appropriate "
+"number to use instead of name.\n"
+
+#: game/g_admin.c:1268
+#, c-format
+msgid "^3%s:^7 more than one match, use the admin number instead:\n"
+msgstr "^3%s:^7 more than one match, use the admin number instead:\n"
+
+#: game/g_admin.c:1503 game/g_admin.c:1536 game/g_admin.c:4777
+#, c-format
+msgid "^3%s: ^7permission denied\n"
+msgstr "^3%s: ^7permission denied\n"
+
+#: game/g_admin.c:1698
+msgid ""
+"^3readconfig: g_admin is not set, not loading configuration from a file\n"
+msgstr ""
+"^3readconfig: g_admin is not set, not loading configuration from a file\n"
+
+#: game/g_admin.c:1927
+#, c-format
+msgid "^3readconfig: ^7loaded %d levels, %s admins, %s bans, %s commands\n"
+msgstr "^3readconfig: ^7loaded %d levels, %s admins, %s bans, %s commands\n"
+
+#: game/g_admin.c:1971
+#, c-format
+msgid "^3time: ^7local time is %s:%s:%s\n"
+msgstr "^3time: ^7local time is %s:%s:%s\n"
+
+#: game/g_admin.c:1998
+msgid "^3setlevel: ^7usage: setlevel [name|slot#] [level]\n"
+msgstr "^3setlevel: ^7usage: setlevel [name|slot#] [level]\n"
+
+#: game/g_admin.c:2007
+msgid "^3setlevel: ^7level is not defined\n"
+msgstr "^3setlevel: ^7level is not defined\n"
+
+#: game/g_admin.c:2014
+msgid ""
+"^3setlevel: ^7you may not use setlevel to set a level higher than your "
+"current level\n"
+msgstr ""
+"^3setlevel: ^7you may not use setlevel to set a level higher than your "
+"current level\n"
+
+#: game/g_admin.c:2033
+#, c-format
+msgid "^3setlevel: ^7no player connected in slot %s\n"
+msgstr "^3setlevel: ^7no player connected in slot %s\n"
+
+#: game/g_admin.c:2043
+#, c-format
+msgid "^3setlevel: ^7%s not in range 1-%s\n"
+msgstr "^3setlevel: ^7%s not in range 1-%s\n"
+
+#: game/g_admin.c:2100
+msgid ""
+"^3setlevel:^7 no match.  use listplayers or listadmins to find an "
+"appropriate number to use instead of name.\n"
+msgstr ""
+"^3setlevel:^7 no match.  use listplayers or listadmins to find an "
+"appropriate number to use instead of name.\n"
+
+
+#: game/g_admin.c:2107
+msgid ""
+"^3setlevel:^7 more than one match.  Use the admin number instead:\n"
+msgstr ""
+"^3setlevel:^7 more than one match.  Use the admin number instead:\n"
+
+
+#: game/g_admin.c:2116
+msgid ""
+"^3setlevel: ^7your intended victim has the default name\n"
+msgstr ""
+"^3setlevel: ^7your intended victim has the default name\n"
+
+
+#: game/g_admin.c:2122 game/g_admin.c:2407 game/g_admin.c:2534
+#: game/g_admin.c:2869 game/g_admin.c:2925 game/g_admin.c:3009
+#: game/g_admin.c:3102 game/g_admin.c:3145 game/g_admin.c:3219
+#: game/g_admin.c:3881
+#, c-format
+msgid ""
+"^3%s: ^7sorry, but your intended victim has a higher admin level than you\n"
+msgstr ""
+"^3%s: ^7sorry, but your intended victim has a higher admin level than you\n"
+
+#: game/g_admin.c:2162
+#, c-format
+msgid "^3setlevel: ^7\"%s\"^7 was given level %s admin rights by \"%s\"\n"
+msgstr "^3setlevel: ^7\"%s\"^7 was given level %s admin rights by \"%s\"\n"
+
+#: game/g_admin.c:2390
+msgid ""
+"^3kick: ^7usage: kick [name] [reason]\n"
+msgstr ""
+"^3kick: ^7usage: kick [name] [reason]\n"
+
+
+#: game/g_admin.c:2448
+msgid ""
+"^3ban: ^7usage: ban [name|slot|IP(/mask)] [duration] [reason]\n"
+msgstr ""
+"^3ban: ^7usage: ban [name|slot|IP(/mask)] [duration] [reason]\n"
+
+
+#: game/g_admin.c:2469
+msgid ""
+"^3ban: ^7you must specify a reason\n"
+msgstr ""
+"^3ban: ^7you must specify a reason\n"
+
+
+#: game/g_admin.c:2479
+msgid ""
+"^3ban: ^7you may not issue permanent bans\n"
+msgstr ""
+"^3ban: ^7you may not issue permanent bans\n"
+
+
+#: game/g_admin.c:2491
+#, c-format
+msgid "^3ban: ^7invalid netmask (%s is not one of %s-%s)\n"
+msgstr "^3ban: ^7invalid netmask (%s is not one of %s-%s)\n"
+
+#: game/g_admin.c:2522
+msgid ""
+"^3ban: ^7no player found by that IP address\n"
+msgstr ""
+"^3ban: ^7no player found by that IP address\n"
+
+
+#: game/g_admin.c:2528
+msgid ""
+"^3ban: ^7no match\n"
+msgstr ""
+"^3ban: ^7no match\n"
+
+
+#: game/g_admin.c:2541
+msgid ""
+"^3ban: ^7disconnecting the host would end the game\n"
+msgstr ""
+"^3ban: ^7disconnecting the host would end the game\n"
+
+
+#: game/g_admin.c:2548
+#, c-format
+msgid ""
+"^3ban:^7 \"%s\"^7 has been banned by \"%s\"^7; duration: %s, reason: \"%s\"\n"
+msgstr ""
+"^3ban:^7 \"%s\"^7 has been banned by \"%s\"^7; duration: %s, reason: \"%s\"\n"
+
+
+#: game/g_admin.c:2589
+msgid ""
+"^3ban: ^7WARNING g_admin not set, not saving ban to a file\n"
+msgstr ""
+"^3ban: ^7WARNING g_admin not set, not saving ban to a file\n"
+
+
+#: game/g_admin.c:2609
+msgid ""
+"^3unban: ^7usage: unban [ban#]\n"
+msgstr ""
+"^3unban: ^7usage: unban [ban#]\n"
+
+
+#: game/g_admin.c:2623
+msgid ""
+"^3unban: ^7invalid ban#\n"
+msgstr ""
+"^3unban: ^7invalid ban#\n"
+
+
+#: game/g_admin.c:2631
+msgid ""
+"^3unban: ^7you cannot remove permanent bans\n"
+msgstr ""
+"^3unban: ^7you cannot remove permanent bans\n"
+
+
+#: game/g_admin.c:2637
+#, c-format
+msgid "^3unban: ^7ban #%s has already expired\n"
+msgstr "^3unban: ^7ban #%s has already expired\n"
+
+#: game/g_admin.c:2647
+#, c-format
+msgid "^3unban: ^7ban #%d for \"%s\"^7 has been expired by \"%s\"\n"
+msgstr "^3unban: ^7ban #%d for \"%s\"^7 has been expired by \"%s\"\n"
+
+#: game/g_admin.c:2654
+#, c-format
+msgid "^3unban: ^7ban #%d for \"%s\"^7 has been removed by \"%s\"\n"
+msgstr "^3unban: ^7ban #%d for \"%s\"^7 has been removed by \"%s\"\n"
+
+#: game/g_admin.c:2690
+msgid ""
+"^3adjustban: ^7usage: adjustban [ban#] [/mask] [duration] [reason]\n"
+msgstr ""
+"^3adjustban: ^7usage: adjustban [ban#] [/mask] [duration] [reason]\n"
+
+
+#: game/g_admin.c:2702
+msgid ""
+"^3adjustban: ^7invalid ban#\n"
+msgstr ""
+"^3adjustban: ^7invalid ban#\n"
+
+
+#: game/g_admin.c:2711
+msgid ""
+"^3adjustban: ^7you cannot modify permanent bans\n"
+msgstr ""
+"^3adjustban: ^7you cannot modify permanent bans\n"
+
+
+#: game/g_admin.c:2725
+#, c-format
+msgid "^3adjustban: ^7invalid netmask (%d is not one of %d-%d)\n"
+msgstr "^3adjustban: ^7invalid netmask (%d is not one of %d-%d)\n"
+
+#: game/g_admin.c:2750
+msgid ""
+"^3adjustban: ^7new duration must be explicit\n"
+msgstr ""
+"^3adjustban: ^7new duration must be explicit\n"
+
+
+#: game/g_admin.c:2769
+msgid ""
+"^3adjustban: ^7ban duration must be positive\n"
+msgstr ""
+"^3adjustban: ^7ban duration must be positive\n"
+
+
+#: game/g_admin.c:2781
+msgid ""
+"^3adjustban: ^7you may not issue permanent bans\n"
+msgstr ""
+"^3adjustban: ^7you may not issue permanent bans\n"
+
+
+#: game/g_admin.c:2821
+#, c-format
+msgid ""
+"^3adjustban: ^7ban #%d for \"%s\"^7 has been updated by \"%s\"^7 %s%s%s%s%s"
+"%s\n"
+msgstr ""
+"^3adjustban: ^7ban #%d for \"%s\"^7 has been updated by \"%s\"^7 %s%s%s%s%s"
+"%s\n"
+
+#: game/g_admin.c:2855
+msgid ""
+"^3putteam: ^7usage: putteam [name] [h|a|s]\n"
+msgstr ""
+"^3putteam: ^7usage: putteam [name] [h|a|s]\n"
+
+
+#: game/g_admin.c:2878
+#, c-format
+msgid "^3putteam: ^7unknown team %s\n"
+msgstr "^3putteam: ^7unknown team %s\n"
+
+#: game/g_admin.c:2891
+#, c-format
+msgid "^3putteam: ^7\"%s\"^7 put \"%s\"^7 on to the %s team\n"
+msgstr "^3putteam: ^7\"%s\"^7 put \"%s\"^7 on to the %s team\n"
+
+#: game/g_admin.c:2908
+msgid ""
+"^3speclock: ^7usage: speclock [name] [duration]\n"
+msgstr ""
+"^3speclock: ^7usage: speclock [name] [duration]\n"
+
+
+#: game/g_admin.c:2970
+#, c-format
+msgid ""
+"^3speclock: ^7\"%s\"^7 put \"%s\"^7 on to the spectators team and blocked "
+"team-change for %s\n"
+msgstr ""
+"^3speclock: ^7\"%s\"^7 put \"%s\"^7 on to the spectators team and blocked "
+"team-change for %s\n"
+
+#: game/g_admin.c:2976
+#, c-format
+msgid "3speclock: ^7\"%s\"^7 blocked team-change for \"%s\"^7 for %s\n"
+msgstr "3speclock: ^7\"%s\"^7 blocked team-change for \"%s\"^7 for %s\n"
+
+#: game/g_admin.c:2993
+msgid ""
+"^3specunlock: ^7usage: specunlock [name]\n"
+msgstr ""
+"^3specunlock: ^7usage: specunlock [name]\n"
+
+
+#: game/g_admin.c:3021
+#, c-format
+msgid "^3specunlock: ^7\"%s\"^7 unblocked team-change for \"%s\"\n"
+msgstr "^3specunlock: ^7\"%s\"^7 unblocked team-change for \"%s\"\n"
+
+#: game/g_admin.c:3036
+msgid ""
+"^3changemap: ^7usage: changemap [map] (layout)\n"
+msgstr ""
+"^3changemap: ^7usage: changemap [map] (layout)\n"
+
+
+#: game/g_admin.c:3044
+#, c-format
+msgid "^3changemap: ^7invalid map name '%s'\n"
+msgstr "^3changemap: ^7invalid map name '%s'\n"
+
+#: game/g_admin.c:3060
+#, c-format
+msgid "^3changemap: ^7invalid layout name '%s'\n"
+msgstr "^3changemap: ^7invalid layout name '%s'\n"
+
+#: game/g_admin.c:3071
+#, c-format
+msgid "^3changemap: ^7map '\"%s\"' started by \"%s\"^7 %s\n"
+msgstr "^3changemap: ^7map '\"%s\"' started by \"%s\"^7 %s\n"
+
+#: game/g_admin.c:3087
+msgid ""
+"^3warn: ^7usage: warn [name|slot#] [reason]\n"
+msgstr ""
+"^3warn: ^7usage: warn [name|slot#] [reason]\n"
+
+
+#: game/g_admin.c:3112
+#, c-format
+msgid "^3warn: ^7\"%s\"^7 has been warned: '\"%s\"' by \"%s\"\n"
+msgstr "^3warn: ^7\"%s\"^7 has been warned: '\"%s\"' by \"%s\"\n"
+
+#: game/g_admin.c:3130 game/g_admin.c:3204
+#, c-format
+msgid "^3%s: ^7usage: %s [name|slot#]\n"
+msgstr "^3%s: ^7usage: %s [name|slot#]\n"
+
+#: game/g_admin.c:3138 game/g_admin.c:3212
+#, c-format
+msgid "^3%s: ^7no match\n"
+msgstr "^3%s: ^7no match\n"
+
+#: game/g_admin.c:3154
+msgid ""
+"^3mute: ^7player is already muted\n"
+msgstr ""
+"^3mute: ^7player is already muted\n"
+
+
+#: game/g_admin.c:3165
+#, c-format
+msgid "^3unmute: ^7\"%s\"^7 has been unmuted by \"%s\"\n"
+msgstr "^3unmute: ^7\"%s\"^7 has been unmuted by \"%s\"\n"
+
+#: game/g_admin.c:3173
+msgid ""
+"^3unmute: ^7player is not currently muted\n"
+msgstr ""
+"^3unmute: ^7player is not currently muted\n"
+
+
+#: game/g_admin.c:3184
+#, c-format
+msgid "^3mute: ^7\"%s\"^7 has been muted by \"%s\"\n"
+msgstr "^3mute: ^7\"%s\"^7 has been muted by \"%s\"\n"
+
+#: game/g_admin.c:3228
+msgid ""
+"^3denybuild: ^7player already has no building rights\n"
+msgstr ""
+"^3denybuild: ^7player already has no building rights\n"
+
+
+#: game/g_admin.c:3239
+#, c-format
+msgid "^3allowbuild: ^7building rights for ^7\"%s\"^7 restored by \"%s\"\n"
+msgstr "^3allowbuild: ^7building rights for ^7\"%s\"^7 restored by \"%s\"\n"
+
+#: game/g_admin.c:3247
+msgid ""
+"^3allowbuild: ^7player already has building rights\n"
+msgstr ""
+"^3allowbuild: ^7player already has building rights\n"
+
+
+#: game/g_admin.c:3259
+#, c-format
+msgid "^3denybuild: ^7building rights for ^7\"%s\"^7 revoked by \"%s\"\n"
+msgstr "^3denybuild: ^7building rights for ^7\"%s\"^7 revoked by \"%s\"\n"
+
+#: game/g_admin.c:3327
+#, c-format
+msgid "^3listlayouts:^7 %s layouts found for '%s':\n"
+msgstr "^3listlayouts:^7 %s layouts found for '%s':\n"
+
+#: game/g_admin.c:3374
+#, c-format
+msgid "^3listplayers: ^7%s players connected:\n"
+msgstr "^3listplayers: ^7%s players connected:\n"
+
+#: game/g_admin.c:3650
+#, c-format
+msgid ""
+"^3adminhelp: ^7%s available commands\n"
+"run adminhelp [^3command^7] for adminhelp with a specific command.\n"
+msgstr ""
+"^3adminhelp: ^7%s available commands\n"
+"run adminhelp [^3command^7] for adminhelp with a specific command.\n"
+
+#: game/g_admin.c:3699
+#, c-format
+msgid "^3adminhelp: ^7you do not hace permission to use '%s'"
+msgstr "^3adminhelp: ^7you do not hace permission to use '%s'"
+
+#: game/g_admin.c:3700
+#, c-format
+msgid "^3adminhelp: ^7no help found for '%s'"
+msgstr "^3adminhelp: ^7no help found for '%s'"
+
+#: game/g_admin.c:3712
+msgid ""
+"^3admintest: ^7you are on the console.\n"
+msgstr ""
+"^3admintest: ^7you are on the console.\n"
+
+
+#: game/g_admin.c:3718
+#, c-format
+msgid "^3admintest: ^7\"%s\"^7 is a level %s admin %s%s^7%s\n"
+msgstr "^3admintest: ^7\"%s\"^7 is a level %s admin %s%s^7%s\n"
+
+#: game/g_admin.c:3734
+msgid ""
+"^3allready: ^7this command is only valid during intermission\n"
+msgstr ""
+"^3allready: ^7this command is only valid during intermission\n"
+
+
+#: game/g_admin.c:3755
+#, c-format
+msgid "^3allready:^7 \"%s\"^7 says everyone is READY now\n"
+msgstr "^3allready:^7 \"%s\"^7 says everyone is READY now\n"
+
+#: game/g_admin.c:3784
+#, c-format
+msgid "^3%s: ^7\"%s\"^7 decided that everyone voted No\n"
+msgstr "^3%s: ^7\"%s\"^7 decided that everyone voted No\n"
+
+#: game/g_admin.c:3785
+#, c-format
+msgid "^3%s: ^7\"%s\"^7 decided that everyone voted Yes\n"
+msgstr "^3%s: ^7\"%s\"^7 decided that everyone voted Yes\n"
+
+#: game/g_admin.c:3790
+#, c-format
+msgid "^3%s: ^7no vote in progress\n"
+msgstr "^3%s: ^7no vote in progress\n"
+
+#: game/g_admin.c:3844
+#, c-format
+msgid "^3spec999: ^7\"%s\"^7 moved \"%s\"^7 to spectators\n"
+msgstr "^3spec999: ^7\"%s\"^7 moved \"%s\"^7 to spectators\n"
+
+#: game/g_admin.c:3864
+msgid ""
+"^3rename: ^7usage: rename [name] [newname]\n"
+msgstr ""
+"^3rename: ^7usage: rename [name] [newname]\n"
+
+
+#: game/g_admin.c:3894
+msgid ""
+"^3rename: ^7sorry, but your intended victim is still connecting\n"
+msgstr ""
+"^3rename: ^7sorry, but your intended victim is still connecting\n"
+
+
+#: game/g_admin.c:3902
+#, c-format
+msgid "^3rename: ^7\"%s\"^7 has been renamed to \"%s\"^7 by \"%s\"\n"
+msgstr "^3rename: ^7\"%s\"^7 has been renamed to \"%s\"^7 by \"%s\"\n"
+
+#: game/g_admin.c:3941
+#, c-format
+msgid "^3restart: ^7layout '%s' does not exist\n"
+msgstr "^3restart: ^7layout '%s' does not exist\n"
+
+#: game/g_admin.c:4016
+#, c-format
+msgid "^3restart: ^7map restarted by \"%s\" %s %s\n"
+msgstr "^3restart: ^7map restarted by \"%s\" %s %s\n"
+
+#: game/g_admin.c:4025
+#, c-format
+msgid "^3nextmap: ^7\"%s\"^7 decided to load the next map\n"
+msgstr "^3nextmap: ^7\"%s\"^7 decided to load the next map\n"
+
+#: game/g_admin.c:4262
+#, c-format
+msgid "^3%s: ^7usage: %s [a|h]\n"
+msgstr "^3%s: ^7usage: %s [a|h]\n"
+
+#: game/g_admin.c:4294
+#, c-format
+msgid "^3%s: ^7invalid team: '%s'\n"
+msgstr "^3%s: ^7invalid team: '%s'\n"
+
+#: game/g_admin.c:4300
+#, c-format
+msgid "3%s: ^7the %s team is already locked\n"
+msgstr "3%s: ^7the %s team is already locked\n"
+
+#: game/g_admin.c:4301
+#, c-format
+msgid "3%s: ^7the %s team is not currently locked\n"
+msgstr "3%s: ^7the %s team is not currently locked\n"
+
+#: game/g_admin.c:4308
+#, c-format
+msgid "^3%s: ^7the %s team has been locked by \"%s\"\n"
+msgstr "^3%s: ^7the %s team has been locked by \"%s\"\n"
+
+#: game/g_admin.c:4314
+#, c-format
+msgid "^3%s: ^7the %s team has been unlocked by \"%s\"\n"
+msgstr "^3%s: ^7the %s team has been unlocked by \"%s\"\n"
+
+#: game/g_admin.c:4333
+msgid ""
+"^3builder: ^7console can't aim.\n"
+msgstr ""
+"^3builder: ^7console can't aim.\n"
+
+
+#: game/g_admin.c:4362
+msgid "^3builder: ^7structure not owned by your team\n"
+msgstr "^3builder: ^7structure not owned by your team\n"
+
+#: game/g_admin.c:4381
+#, c-format
+msgid "^3builder: ^7%s built by %s^7, buildlog #%d\n"
+msgstr "^3builder: ^7%s built by %s^7, buildlog #%d\n"
+
+#: game/g_admin.c:4386
+#, c-format
+msgid "^3builder: ^7%s built by %s^7\n"
+msgstr "^3builder: ^7%s built by %s^7\n"
+
+#: game/g_admin.c:4391
+#, c-format
+msgid "^3builder: ^7%s appears to be a layout item\n"
+msgstr "^3builder: ^7%s appears to be a layout item\n"
+
+#: game/g_admin.c:4397
+msgid "^3builder: ^7no structure found under crosshair\n"
+msgstr "^3builder: ^7no structure found under crosshair\n"
+
+#: game/g_admin.c:4407
+#, c-format
+msgid "^3pause: ^7\"%s\"^7 paused the game.\n"
+msgstr "^3pause: ^7\"%s\"^7 paused the game.\n"
+
+#: game/g_admin.c:4417
+msgid "^3pause: ^7Unpausing so soon assumed accidental and ignored.\n"
+msgstr "^3pause: ^7Unpausing so soon assumed accidental and ignored.\n"
+
+#: game/g_admin.c:4421
+#, c-format
+msgid "^3pause: ^7\"%s\"^7 unpaused the game (Paused for %s sec) \n"
+msgstr "^3pause: ^7\"%s\"^7 unpaused the game (Paused for %s sec) \n"
+
+#: game/g_admin.c:4457
+msgid "^3buildlog: ^7log is empty\n"
+msgstr "^3buildlog: ^7log is empty\n"
+
+#: game/g_admin.c:4485
+msgid "^3buildlog: ^7invalid client id\n"
+msgstr "^3buildlog: ^7invalid client id\n"
+
+#: game/g_admin.c:4510
+msgid "^3buildlog: ^7invalid build ID\n"
+msgstr "^3buildlog: ^7invalid build ID\n"
+
+#: game/g_admin.c:4517
+#, c-format
+msgid "^3buildlog: ^7\"%s\"^7 requested a log of recent building activity\n"
+msgstr "^3buildlog: ^7\"%s\"^7 requested a log of recent building activity\n"
+
+#: game/g_admin.c:4574
+#, c-format
+msgid "^3buildlog: ^7showing %d build logs %d - %d of %d - %d.  %s\n"
+msgstr "^3buildlog: ^7showing %d build logs %d - %d of %d - %d.  %s\n"
+
+#: game/g_admin.c:4593
+msgid "^3revert: ^7usage: revert [id]\n"
+msgstr "^3revert: ^7usage: revert [id]\n"
+
+#: game/g_admin.c:4602
+msgid "^3revert: ^7invalid id\n"
+msgstr "^3revert: ^7invalid id\n"
+
+#: game/g_admin.c:4611
+msgid ""
+"^3revert: ^7you can only revert direct player actions, indicated by ^2* ^7in "
+"buildlog\n"
+msgstr ""
+"^3revert: ^7you can only revert direct player actions, indicated by ^2* ^7in "
+"buildlog\n"
+
+#: game/g_admin.c:4625
+#, c-format
+msgid "^3revert: ^7\"%s\"^7 reverted %d changes over the past %s\n"
+msgstr "^3revert: ^7\"%s\"^7 reverted %d changes over the past %s\n"
+
+#: game/g_admin.c:4626
+#, c-format
+msgid "^3revert: ^7\"%s\"^7 reverted %d change over the past %s\n"
+msgstr "^3revert: ^7\"%s\"^7 reverted %d change over the past %s\n"
+
+#: game/g_admin.c:4643
+msgid ""
+"^3l0: ^7usage: l0 [name|slot#|admin#]\n"
+msgstr ""
+"^3l0: ^7usage: l0 [name|slot#|admin#]\n"
+
+
+#: game/g_admin.c:4657
+msgid ""
+"^3l0: ^7your intended victim is not level 1\n"
+msgstr ""
+"^3l0: ^7your intended victim is not level 1\n"
+
+
+#: game/g_admin.c:4663
+#, c-format
+msgid "^3l0: ^7name protection for \"%s\"^7 removed by \"%s\"\n"
+msgstr "^3l0: ^7name protection for \"%s\"^7 removed by \"%s\"\n"
+
+#: game/g_admin.c:4678
+msgid ""
+"^3l1: ^7usage: l1 [name|slot#|admin#]\n"
+msgstr ""
+"^3l1: ^7usage: l1 [name|slot#|admin#]\n"
+
+
+#: game/g_admin.c:4693
+msgid ""
+"^3l1: ^7your intended victim is not level 0\n"
+msgstr ""
+"^3l1: ^7your intended victim is not level 0\n"
+
+
+#: game/g_admin.c:4699
+msgid ""
+"^3l1: ^7your intended victim has the default name\n"
+msgstr ""
+"^3l1: ^7your intended victim has the default name\n"
+
+
+#: game/g_admin.c:4705
+#, c-format
+msgid "^3l1: ^7name protection for \"%s\"^7 enabled by \"%s\"\n"
+msgstr "^3l1: ^7name protection for \"%s\"^7 enabled by \"%s\"\n"
+
+#: game/g_admin.c:4727
+msgid ""
+"^3register: ^7you must first change your name\n"
+msgstr ""
+"^3register: ^7you must first change your name\n"
+
+
+#: game/g_admin.c:4735
+#, c-format
+msgid "^3register: ^7\"%s\"^7 is now a protected name\n"
+msgstr "^3register: ^7\"%s\"^7 is now a protected name\n"
+
+#: game/g_admin.c:4750
+msgid ""
+"^3unregister: ^7you do not have a protected name\n"
+msgstr ""
+"^3unregister: ^7you do not have a protected name\n"
+
+
+#: game/g_admin.c:4757
+#, c-format
+msgid "^3unregister: ^7\"%s\"^7 is now an unprotected name\n"
+msgstr "^3unregister: ^7\"%s\"^7 is now an unprotected name\n"
+
+#: game/g_admin.c:4771
+#, c-format
+msgid "^3gametimelimit: ^7time limit for this game is %sm\n"
+msgstr "^3gametimelimit: ^7time limit for this game is %sm\n"
+
+#: game/g_admin.c:4791
+#, c-format
+msgid "^3gametimelimit: ^7time limit set to %dm from %dm by \"%s\"\n"
+msgstr "^3gametimelimit: ^7time limit set to %dm from %dm by \"%s\"\n"
+
+#: game/g_admin.c:4797
+msgid ""
+"^3gametimelimit: ^7time limit is unchanged\n"
+msgstr ""
+"^3gametimelimit: ^7time limit is unchanged\n"
+
+
+#: game/g_admin.c:4804
+msgid ""
+"^3gametimelimit: ^7usage: gametimelimit [minutes]\n"
+msgstr ""
+"^3gametimelimit: ^7usage: gametimelimit [minutes]\n"
+
+
+#: game/g_combat.c:350
+#, c-format
+msgid "Your killer, \"%s\"^7, had %s HP.\n"
+msgstr "Your killer, \"%s\"^7, had %s HP.\n"
+
+#: game/g_combat.c:1716
+#, c-format
+msgid "%s ^3DECONSTRUCTED^7 by \"%s\"\n"
+msgstr "%s ^3DECONSTRUCTED^7 by \"%s\"\n"
+
+#: game/g_combat.c:1717
+#, c-format
+msgid "%s ^3DESTROYED^7 by \"%s\"\n"
+msgstr "%s ^3DESTROYED^7 by \"%s\"\n"
+
+#: game/g_team.c:573
+msgid "Teams are imbalanced. Humans have more players.\n"
+msgstr "Teams are imbalanced. Humans have more players.\n"
+
+#: game/g_team.c:580
+msgid "Teams are imbalanced. Aliens have more players.\n"
+msgstr "Teams are imbalanced. Aliens have more players.\n"
+
+#: game/g_cmds.c:621
+msgid "godmode OFF\n"
+msgstr "godmode OFF\n"
+
+#: game/g_cmds.c:625
+msgid "godmode ON\n"
+msgstr "godmode ON\n"
+
+#: game/g_cmds.c:648
+msgid "notarget OFF\n"
+msgstr "notarget OFF\n"
+
+#: game/g_cmds.c:652
+msgid "notarget ON\n"
+msgstr "notarget ON\n"
+
+#: game/g_cmds.c:671
+msgid "noclip OFF\n"
+msgstr "noclip OFF\n"
+
+#: game/g_cmds.c:675
+msgid "noclip ON\n"
+msgstr "noclip ON\n"
+
+#: game/g_cmds.c:700
+msgid "You will suicide in 20 seconds\n"
+msgstr "You will suicide in 20 seconds\n"
+
+#: game/g_cmds.c:705
+msgid "Suicide cancelled\n"
+msgstr "Suicide cancelled\n"
+
+#: game/g_cmds.c:756
+#, c-format
+msgid "You cannot leave your team until %is after combat. Try again in %ss.\n"
+msgstr "You cannot leave your team until %is after combat. Try again in %ss.\n"
+
+#: game/g_cmds.c:773
+#, c-format
+msgid "team: %s\n"
+msgstr "team: %s\n"
+
+#: game/g_cmds.c:848
+#, c-format
+msgid "Unknown team: \"%s\"\n"
+msgstr "Unknown team: \"%s\"\n"
+
+#: game/g_cmds.c:861
+msgid "You cannot join a team until the next game.\n"
+msgstr "You cannot join a team until the next game.\n"
+
+#: game/g_cmds.c:870
+#, c-format
+msgid "You cannot join a team for another %ss.\n"
+msgstr "You cannot join a team for another %ss.\n"
+
+#: game/g_cmds.c:1150
+msgid ""
+"say: Global chatting for spectators has been disabled. You may only use team "
+"chat.\n"
+msgstr ""
+"say: Global chatting for spectators has been disabled. You may only use team "
+"chat.\n"
+
+#: game/g_cmds.c:1212
+msgid "usage: say_area [message]\n"
+msgstr "usage: say_area [message]\n"
+
+#: game/g_cmds.c:1257
+msgid "usage: say_area_team [message]\n"
+msgstr "usage: say_area_team [message]\n"
+
+#: game/g_cmds.c:1355
+#, c-format
+msgid "usage: %s command [text] \n"
+msgstr "usage: %s command [text] \n"
+
+#: game/g_cmds.c:1362
+#, c-format
+msgid "%s: voice system is not installed on this server\n"
+msgstr "%s: voice system is not installed on this server\n"
+
+#: game/g_cmds.c:1369
+#, c-format
+msgid "%s: voice system administratively disabled on this server\n"
+msgstr "%s: voice system administratively disabled on this server\n"
+
+#: game/g_cmds.c:1403
+#, c-format
+msgid "%s: voice '\"%s\"' not found\n"
+msgstr "%s: voice '\"%s\"' not found\n"
+
+#: game/g_cmds.c:1413
+#, c-format
+msgid "%s: command '\"%s\"' not found in voice '\"%s\"'\n"
+msgstr "%s: command '\"%s\"' not found in voice '\"%s\"'\n"
+
+#: game/g_cmds.c:1433
+#, c-format
+msgid ""
+"%s: no available track for command '\"%s\"', team %s, class %s, weapon %s, "
+"and enthusiasm %s in voice '\"%s\"'\n"
+msgstr ""
+"%s: no available track for command '\"%s\"', team %s, class %s, weapon %s, "
+"and enthusiasm %s in voice '\"%s\"'\n"
+
+#: game/g_cmds.c:1491
+#, c-format
+msgid "origin: %f %f %f\n"
+msgstr "origin: %f %f %f\n"
+
+#: game/g_cmds.c:1575
+#, c-format
+msgid "%s: voting not allowed here\n"
+msgstr "%s: voting not allowed here\n"
+
+#: game/g_cmds.c:1582
+#, c-format
+msgid "%s: a vote is already in progress\n"
+msgstr "%s: a vote is already in progress\n"
+
+#: game/g_cmds.c:1612
+msgid "Invalid vote string\n"
+msgstr "Invalid vote string\n"
+
+#: game/g_cmds.c:1613
+msgid "Valid vote commands are: "
+msgstr "Valid vote commands are: "
+
+#: game/g_cmds.c:1614
+msgid "Valid team-vote commands are: "
+msgstr "Valid team-vote commands are: "
+
+#: game/g_cmds.c:1641
+#, c-format
+msgid "%s: you have already called the maximum number of votes (%s)\n"
+msgstr "%s: you have already called the maximum number of votes (%s)\n"
+
+#: game/g_cmds.c:1654
+#, c-format
+msgid "'%s' votes have been disabled\n"
+msgstr "'%s' votes have been disabled\n"
+
+#: game/g_cmds.c:1669
+#, c-format
+msgid "'%s' votes are not allowed once %s minutes have passed\n"
+msgstr "'%s' votes are not allowed once %s minutes have passed\n"
+
+#: game/g_cmds.c:1679
+#, c-format
+msgid "'%s' votes are not allowed until %d minutes have passed\n"
+msgstr "'%s' votes are not allowed until %d minutes have passed\n"
+
+#: game/g_cmds.c:1689
+#, c-format
+msgid "'%s' votes are only allowed with less than %d minutes remaining\n"
+msgstr "'%s' votes are only allowed with less than %d minutes remaining\n"
+
+#: game/g_cmds.c:1700
+msgid "Sudden Death has already begun\n"
+msgstr "Sudden Death has already begun\n"
+
+#: game/g_cmds.c:1708
+msgid "Sudden Death is imminent - this vote may have no effect\n"
+msgstr "Sudden Death is imminent - this vote may have no effect\n"
+
+#: game/g_cmds.c:1739
+#, c-format
+msgid "%s: no target\n"
+msgstr "%s: no target\n"
+
+#: game/g_cmds.c:1758 game/g_cmds.c:1772
+#, c-format
+msgid "%s: admin is immune\n"
+msgstr "%s: admin is immune\n"
+
+#: game/g_cmds.c:1780
+#, c-format
+msgid "%s: player is not on your team\n"
+msgstr "%s: player is not on your team\n"
+
+#: game/g_cmds.c:1791
+#, c-format
+msgid "%s: You must provide a reason\n"
+msgstr "%s: You must provide a reason\n"
+
+#: game/g_cmds.c:1802
+#, c-format
+msgid "Kick player '%s'"
+msgstr "Kick player '%s'"
+
+#: game/g_cmds.c:1810
+#, c-format
+msgid "Move player '%s' to spectators"
+msgstr "Move player '%s' to spectators"
+
+#: game/g_cmds.c:1817
+#, c-format
+msgid "%s: player is already muted\n"
+msgstr "%s: player is already muted\n"
+
+#: game/g_cmds.c:1825
+#, c-format
+msgid "Mute player '%s'"
+msgstr "Mute player '%s'"
+
+#: game/g_cmds.c:1832
+#, c-format
+msgid "%s: player is not currently muted\n"
+msgstr "%s: player is not currently muted\n"
+
+#: game/g_cmds.c:1840
+#, c-format
+msgid "Unmute player '%s'"
+msgstr "Unmute player '%s'"
+
+#: game/g_cmds.c:1847
+#, c-format
+msgid "%s: player already lost building rights\n"
+msgstr "%s: player already lost building rights\n"
+
+#: game/g_cmds.c:1862
+#, c-format
+msgid "%s: player already has building rights\n"
+msgstr "%s: player already has building rights\n"
+
+#: game/g_cmds.c:1893
+#, c-format
+msgid "callvote: Maximum number of %s extend votes has been reached\n"
+msgstr "callvote: Maximum number of %s extend votes has been reached\n"
+
+#: game/g_cmds.c:1930 game/g_cmds.c:1976
+#, c-format
+msgid "%s: 'maps/\"%s\".bsp' could not be found on the server\n"
+msgstr "%s: 'maps/\"%s\".bsp' could not be found on the server\n"
+
+#: game/g_cmds.c:1953
+#, c-format
+msgid "callvote: layout '\"%s\"' could not be found on the server\n"
+msgstr "callvote: layout '\"%s\"' could not be found on the server\n"
+
+#: game/g_cmds.c:1968
+#, c-format
+msgid "%s: the next map is already set to '\"%s\"'\n"
+msgstr "%s: the next map is already set to '\"%s\"'\n"
+
+#: game/g_cmds.c:2012
+#, c-format
+msgid "%s^7 called a vote: \"%s\"\n"
+msgstr "%s^7 called a vote: \"%s\"\n"
+
+#: game/g_cmds.c:2027
+#, c-format
+msgid "\"%s\"^7 called a team vote: "
+msgstr "\"%s\"^7 called a team vote: "
+
+#: game/g_cmds.c:2079
+#, c-format
+msgid "%s: no vote in progress\n"
+msgstr "%s: no vote in progress\n"
+
+#: game/g_cmds.c:2086
+#, c-format
+msgid "%s: vote already cast\n"
+msgstr "%s: vote already cast\n"
+
+#: game/g_cmds.c:2091
+#, c-format
+msgid "%s: vote cast\n"
+msgstr "%s: vote cast\n"
+
+#: game/g_cmds.c:2120
+msgid "usage: setviewpos x y z yaw\n"
+msgstr "usage: setviewpos x y z yaw\n"
+
+#: game/g_cmds.c:2592 game/g_cmds.c:2617 game/g_cmds.c:2669
+#, c-format
+msgid "You don't have the \"%s\"\n"
+msgstr "You don't have the \"%s\"\n"
+
+#: game/g_cmds.c:2729 game/g_cmds.c:2811
+msgid "You can't buy alien items\n"
+msgstr "You can't buy alien items\n"
+
+#: game/g_cmds.c:2736 game/g_cmds.c:2743 game/g_cmds.c:2818 game/g_cmds.c:2825
+msgid "You can't buy this item\n"
+msgstr "You can't buy this item\n"
+
+#: game/g_cmds.c:2916
+msgid "You can't sell this weapon\n"
+msgstr "You can't sell this weapon\n"
+
+#: game/g_cmds.c:2949
+msgid "You can't sell this item\n"
+msgstr "You can't sell this item\n"
+
+#: game/g_cmds.c:3582
+#, c-format
+msgid "usage: %s [clientNum | partial name match]\n"
+msgstr "usage: %s [clientNum | partial name match]\n"
+
+#: game/g_cmds.c:3592
+#, c-format
+msgid "%s: no clients match the name '\"%s\"'\n"
+msgstr "%s: no clients match the name '\"%s\"'\n"
+
+#: game/g_cmds.c:3605
+#, c-format
+msgid "ignore: added \"%s\"^7 to your ignore list\n"
+msgstr "ignore: added \"%s\"^7 to your ignore list\n"
+
+#: game/g_cmds.c:3611
+#, c-format
+msgid "ignore: \"%s\"^7 is already on your ignore list\n"
+msgstr "ignore: \"%s\"^7 is already on your ignore list\n"
+
+#: game/g_cmds.c:3622
+#, c-format
+msgid "unignore: removed \"%s\"^7 from your ignore list\n"
+msgstr "unignore: removed \"%s\"^7 from your ignore list\n"
+
+#: game/g_cmds.c:3628
+#, c-format
+msgid "unignore: \"%s\"^7 is not on your ignore list\n"
+msgstr "unignore: \"%s\"^7 is not on your ignore list\n"
+
+#: game/g_cmds.c:3767
+#, c-format
+msgid "^3listmaps: ^7found %s map(s) matching '%s^7'"
+msgstr "^3listmaps: ^7found %s map(s) matching '%s^7'"
+
+#: game/g_cmds.c:3771
+#, c-format
+msgid "^3listmaps: ^7listing %s of %s map(s)"
+msgstr "^3listmaps: ^7listing %s of %s map(s)"
+
+#: game/g_cmds.c:3776
+#, c-format
+msgid ", page %s of %s"
+msgstr ", page %s of %s"
+
+#: game/g_cmds.c:3781
+#, c-format
+msgid ", use 'listmaps %s%s%s' to see more"
+msgstr ", use 'listmaps %s%s%s' to see more"
+
+#: game/g_cmds.c:3898
+msgid "^3maplog: ^7recent map results, newest first\n"
+msgstr "^3maplog: ^7recent map results, newest first\n"
+
+#: game/g_cmds.c:4046
+#, c-format
+msgid "You are flooding: please wait %ss before trying again\n"
+msgstr "You are flooding: please wait %ss before trying again\n"
+
+#: game/g_cmds.c:4179
+#, c-format
+msgid "Unknown command \"%s\"\n"
+msgstr "Unknown command \"%s\"\n"
+
+#: game/g_cmds.c:4339
+msgid "Sorry, but private messages have been disabled\n"
+msgstr "Sorry, but private messages have been disabled\n"
+
+#: game/g_cmds.c:4347
+#, c-format
+msgid "usage: %s [name|slot#] [message]\n"
+msgstr "usage: %s [name|slot#] [message]\n"
+
+#: game/g_cmds.c:4379
+#, c-format
+msgid "^3No player matching ^7'%s^7' ^3to send message to.\n"
+msgstr "^3No player matching ^7'%s^7' ^3to send message to.\n"
+
+#: game/g_cmds.c:4384
+#, c-format
+msgid "^%cPrivate message: ^7%s\n"
+msgstr "^%cPrivate message: ^7%s\n"
+
+#: game/g_cmds.c:4414
+msgid "Sorry, but use of /a by non-admins has been disabled.\n"
+msgstr "Sorry, but use of /a by non-admins has been disabled.\n"
+
+#: game/g_cmds.c:4419
+msgid ""
+"Your message has been sent to any available admins and to the server logs.\n"
+msgstr ""
+"Your message has been sent to any available admins and to the server logs.\n"
+
+#: game/g_cmds.c:4426
+msgid "usage: a [message]\n"
+msgstr "usage: a [message]\n"
+
+#: game/g_active.c:636
+#, c-format
+msgid ""
+"\"%s^7 moved from %s to spectators due to inactivity\n"
+msgstr ""
+"\"%s^7 moved from %s to spectators due to inactivity\n"
+
+
+#: game/g_buildable.c:4361
+#, c-format
+msgid "%s ^2built^7 by \"%s\"^7, ^3replacing^7 %s\n"
+msgstr "%s ^2built^7 by \"%s\"^7, ^3replacing^7 %s\n"
+
+#: game/g_buildable.c:4362
+#, c-format
+msgid "%s ^2built^7 by \"%s\"%s\n"
+msgstr "%s ^2built^7 by \"%s\"%s\n"
+
+msgid "Delete Profile?"
+msgstr "Delete Profile?"
+
+#: confirmdelprofile.menu:64 quit.menu:64
+msgid "YES"
+msgstr "YES"
+
+#: confirmdelprofile.menu:85 quit.menu:83
+msgid "NO"
+msgstr "NO"
+
 #: connect.menu:7
 msgid "Connect"
 msgstr "Connect"
 
-#: createfavorite.menu:15
-msgid "createfavorite_popmenu"
-msgstr "createfavorite_popmenu"
-
-#: createfavorite.menu:34 createserver.menu:80 createserver.menu:115
-#: error.menu:41 findplayer.menu:44 ingame.menu:54 ingame_game.menu:90
-#: ingame_help.menu:40 ingame_leave.menu:40 ingame_options.menu:56 mod.menu:36
-#: options.menu:39 password.menu:40 quit.menu:31 serverinfo.menu:38
-#: tremulous_alienbuild.menu:40 tremulous_alienclass.menu:40
-#: tremulous_aliendialogs.menu:33 tremulous_alienupgrade.menu:40
-#: tremulous_dialogs.menu:34 tremulous_humanarmoury.menu:49
-#: tremulous_humanbuild.menu:40 tremulous_humanitem.menu:40
-#: tremulous_teamselect.menu:40 vsays.menu:19
-msgid "ui/assets/vertgrad.tga"
-msgstr "ui/assets/vertgrad.tga"
-
-#: createfavorite.menu:52 findplayer.menu:59 ingame_options.menu:180
-#: options.menu:55
+#: createfavorite.menu:52 findplayer.menu:59 firstrun.menu:40
+#: ingame_options.menu:180 options.menu:55
 msgid "Name:"
 msgstr "Name:"
-
-#: createfavorite.menu:54
-msgid "ui_favoriteName"
-msgstr "ui_favoriteName"
 
 #: createfavorite.menu:68
 msgid "Address:"
 msgstr "Address:"
 
-#: createfavorite.menu:70
-msgid "ui_favoriteAddress"
-msgstr "ui_favoriteAddress"
-
-#: createfavorite.menu:81 drop.menu:83 error.menu:85 options.menu:296
-#: password.menu:71 tremulous_alienbuild.menu:99 tremulous_alienclass.menu:120
-#: tremulous_aliendialogs.menu:81 tremulous_alienupgrade.menu:99
-#: tremulous_dialogs.menu:82 tremulous_humanbuild.menu:98
-#: tremulous_humandialogs.menu:81 tremulous_humanitem.menu:120
-#: tremulous_teamselect.menu:99
+#: createfavorite.menu:81 drop.menu:83 error.menu:85 newprofile.menu:71
+#: options.menu:332 password.menu:71 tremulous_alienbuild.menu:99
+#: tremulous_alienclass.menu:120 tremulous_aliendialogs.menu:81
+#: tremulous_alienupgrade.menu:99 tremulous_dialogs.menu:82
+#: tremulous_humanbuild.menu:98 tremulous_humandialogs.menu:81
+#: tremulous_humanitem.menu:120 tremulous_teamselect.menu:99
 msgid "OK"
 msgstr "OK"
 
-#: createfavorite.menu:92 createfavorite.menu:112 createserver.menu:188
-#: createserver.menu:225 createserver.menu:247 createserver.menu:266
-#: createserver.menu:285 createserver.menu:338 createserver.menu:467
-#: createserver.menu:498 demo.menu:66 demo.menu:84 download.menu:23
-#: download.menu:94 download.menu:117 download.menu:140 download.menu:161
-#: drop.menu:30 drop.menu:95 error.menu:30 error.menu:97 findplayer.menu:89
-#: findplayer.menu:167 ingame.menu:77 ingame.menu:96 ingame.menu:115
-#: ingame.menu:134 ingame_game.menu:116 ingame_game.menu:142
-#: ingame_game.menu:167 ingame_game.menu:196 ingame_game.menu:218
-#: ingame_game.menu:240 ingame_game.menu:436 ingame_game.menu:456
-#: ingame_game.menu:476 ingame_game.menu:496 ingame_game.menu:516
-#: ingame_game.menu:539 ingame_game.menu:563 ingame_game.menu:604
-#: ingame_game.menu:625 ingame_game.menu:645 ingame_game.menu:666
-#: ingame_game.menu:709 ingame_game.menu:731 ingame_game.menu:751
-#: ingame_game.menu:772 ingame_game.menu:793 ingame_game.menu:862
-#: ingame_game.menu:882 ingame_game.menu:902 ingame_leave.menu:65
-#: ingame_leave.menu:86 ingame_leave.menu:127 ingame_leave.menu:184
-#: ingame_options.menu:82 ingame_options.menu:107 ingame_options.menu:133
-#: ingame_options.menu:160 ingame_options.menu:208 ingame_options.menu:228
-#: ingame_options.menu:248 ingame_options.menu:268 ingame_options.menu:289
-#: ingame_options.menu:309 ingame_options.menu:332 ingame_options.menu:353
-#: ingame_options.menu:374 ingame_options.menu:394 ingame_options.menu:414
-#: ingame_options.menu:435 ingame_options.menu:456 ingame_options.menu:476
-#: ingame_options.menu:497 ingame_options.menu:517 ingame_options.menu:537
-#: ingame_options.menu:557 ingame_options.menu:579 ingame_options.menu:604
-#: ingame_options.menu:624 ingame_options.menu:644 ingame_options.menu:664
-#: ingame_options.menu:684 ingame_options.menu:720 ingame_options.menu:741
-#: ingame_options.menu:761 ingame_options.menu:782 ingame_options.menu:805
-#: ingame_options.menu:825 ingame_options.menu:846 ingame_options.menu:866
-#: ingame_options.menu:886 ingame_options.menu:906 ingame_options.menu:926
-#: ingame_options.menu:946 ingame_options.menu:966 ingame_options.menu:986
-#: ingame_options.menu:1006 ingame_options.menu:1026 ingame_options.menu:1046
-#: ingame_options.menu:1066 ingame_options.menu:1086 ingame_options.menu:1109
-#: ingame_options.menu:1132 ingame_options.menu:1152 ingame_options.menu:1172
-#: ingame_options.menu:1192 ingame_options.menu:1212 ingame_options.menu:1232
-#: ingame_options.menu:1252 ingame_options.menu:1272 ingame_options.menu:1292
-#: ingame_options.menu:1313 ingame_options.menu:1336 ingame_options.menu:1356
-#: ingame_options.menu:1376 ingame_options.menu:1396 ingame_options.menu:1416
-#: ingame_options.menu:1436 ingame_options.menu:1456 ingame_options.menu:1476
-#: ingame_options.menu:1496 ingame_options.menu:1516 ingame_options.menu:1537
-#: ingame_options.menu:1560 ingame_options.menu:1580 ingame_options.menu:1600
-#: ingame_options.menu:1620 ingame_options.menu:1640 ingame_options.menu:1662
-#: ingame_options.menu:1688 ingame_options.menu:1709 ingame_options.menu:1749
-#: ingame_options.menu:1770 ingame_options.menu:1792 ingame_options.menu:1814
-#: ingame_options.menu:1836 ingame_options.menu:1859 ingame_options.menu:1881
-#: ingame_options.menu:1902 ingame_options.menu:1923 ingame_options.menu:1944
-#: ingame_options.menu:1964 ingame_options.menu:1986 ingame_options.menu:2041
-#: ingame_options.menu:2061 ingame_options.menu:2081 ingame_options.menu:2101
-#: ingame_options.menu:2121 ingame_options.menu:2141 ingame_options.menu:2161
-#: ingame_options.menu:2182 ingame_options.menu:2203 ingame_options.menu:2224
-#: ingame_options.menu:2264 ingame_options.menu:2287 ingame_options.menu:2339
-#: ingame_options.menu:2360 ingame_options.menu:2380 ingame_options.menu:2400
-#: ingame_options.menu:2421 ingame_options.menu:2440 ingame_options.menu:2462
-#: ingame_options.menu:2495 ingame_options.menu:2515 ingame_options.menu:2535
-#: ingame_options.menu:2555 ingame_options.menu:2575 joinserver.menu:91
-#: joinserver.menu:114 joinserver.menu:136 joinserver.menu:159
-#: joinserver.menu:182 joinserver.menu:243 joinserver.menu:287
-#: joinserver.menu:331 joinserver.menu:375 joinserver.menu:419
-#: joinserver.menu:524 joinserver.menu:543 joinserver.menu:563
-#: joinserver.menu:583 joinserver.menu:603 joinserver.menu:622
-#: joinserver.menu:645 joinserver.menu:724 joinserver.menu:755 main.menu:85
-#: main.menu:143 main.menu:172 main.menu:200 mod.menu:67 mod.menu:85
-#: news.menu:95 options.menu:30 options.menu:82 options.menu:119
-#: options.menu:181 options.menu:215 options.menu:237 options.menu:255
-#: options.menu:289 options.menu:307 password.menu:82 quit.menu:21
-#: quit.menu:93 serverinfo.menu:87 serverinfo.menu:106
-#: tremulous_alienbuild.menu:69 tremulous_alienbuild.menu:111
-#: tremulous_alienclass.menu:69 tremulous_alienclass.menu:132
-#: tremulous_aliendialogs.menu:93 tremulous_alienupgrade.menu:69
-#: tremulous_alienupgrade.menu:111 tremulous_dialogs.menu:94
-#: tremulous_humanarmoury.menu:79 tremulous_humanarmoury.menu:104
-#: tremulous_humanarmoury.menu:145 tremulous_humanarmoury.menu:185
-#: tremulous_humanbuild.menu:69 tremulous_humanbuild.menu:110
-#: tremulous_humandialogs.menu:93 tremulous_humanitem.menu:69
-#: tremulous_humanitem.menu:132 tremulous_teamselect.menu:69
-#: tremulous_teamselect.menu:111
-msgid "sound/misc/menu1.wav"
-msgstr "sound/misc/menu1.wav"
-
-#: createfavorite.menu:101 demo.menu:93 mod.menu:94
+#: createfavorite.menu:101 demo.menu:93 mod.menu:94 profiles.menu:149
 #: tremulous_alienbuild.menu:120 tremulous_alienclass.menu:141
 #: tremulous_alienupgrade.menu:120 tremulous_humanbuild.menu:119
 #: tremulous_humanitem.menu:141 tremulous_teamselect.menu:120
 msgid "Cancel"
 msgstr "Cancel"
 
-#: createserver.menu:38
-msgid "createserver"
-msgstr "createserver"
-
 #: createserver.menu:129
 msgid "Host Name:"
 msgstr "Host Name:"
-
-#: createserver.menu:130
-msgid "sv_hostname"
-msgstr "sv_hostname"
 
 #: createserver.menu:145 ingame_game.menu:934
 msgid "Time Limit:"
 msgstr "Time Limit:"
 
-#: createserver.menu:146
-msgid "timelimit"
-msgstr "timelimit"
-
 #: createserver.menu:161
 msgid "Maximum Players:"
 msgstr "Maximum Players:"
-
-#: createserver.menu:162
-msgid "sv_maxclients"
-msgstr "sv_maxclients"
 
 #: createserver.menu:177
 msgid "Require Password:"
 msgstr "Require Password:"
 
-#: createserver.menu:178
-msgid "g_needpassword"
-msgstr "g_needpassword"
-
 #: createserver.menu:196 password.menu:57
 msgid "Password:"
 msgstr "Password:"
-
-#: createserver.menu:197
-msgid "g_password"
-msgstr "g_password"
 
 #: createserver.menu:214
 msgid "Pure Server:"
 msgstr "Pure Server:"
 
-#: createserver.menu:215 download.menu:136
-msgid "sv_pure"
-msgstr "sv_pure"
-
 #: createserver.menu:233
 msgid "Dedicated:"
 msgstr "Dedicated:"
-
-#: createserver.menu:236
-msgid "ui_dedicated"
-msgstr "ui_dedicated"
 
 #: createserver.menu:237 ingame_leave.menu:135 ingame_leave.menu:192
 #: ingame_options.menu:279 ingame_options.menu:322 ingame_options.menu:487
@@ -228,131 +3266,54 @@ msgstr "Internet"
 msgid "Auto Download:"
 msgstr "Auto Download:"
 
-#: createserver.menu:256
-msgid "sv_allowdownload"
-msgstr "sv_allowdownload"
-
 #: createserver.menu:274
 msgid "Enable Voting:"
 msgstr "Enable Voting:"
-
-#: createserver.menu:275
-msgid "g_allowvote"
-msgstr "g_allowvote"
 
 #: createserver.menu:295
 msgid "Minimum Ping:"
 msgstr "Minimum Ping:"
 
-#: createserver.menu:296
-msgid "sv_minping"
-msgstr "sv_minping"
-
 #: createserver.menu:311
 msgid "Maximum Ping:"
 msgstr "Maximum Ping:"
-
-#: createserver.menu:312
-msgid "sv_maxping"
-msgstr "sv_maxping"
 
 #: createserver.menu:327
 msgid "Synchronous Client:"
 msgstr "Synchronous Client:"
 
-#: createserver.menu:328
-msgid "g_synchronousclients"
-msgstr "g_synchronousclients"
-
 #: createserver.menu:346
 msgid "Max Rate:"
 msgstr "Max Rate:"
-
-#: createserver.menu:347
-msgid "sv_maxrate"
-msgstr "sv_maxrate"
 
 #: createserver.menu:362
 msgid "Zombie Time:"
 msgstr "Zombie Time:"
 
-#: createserver.menu:363
-msgid "sv_zombietime"
-msgstr "sv_zombietime"
-
 #: createserver.menu:378
 msgid "Reconnect Limit:"
 msgstr "Reconnect Limit:"
-
-#: createserver.menu:379
-msgid "sv_reconnectlimit"
-msgstr "sv_reconnectlimit"
-
-#: createserver.menu:398 joinserver.menu:655
-msgid "ui/assets/backarrow.tga"
-msgstr "ui/assets/backarrow.tga"
-
-#: createserver.menu:404 createserver.menu:441 joinserver.menu:661
-#: joinserver.menu:698 quit.menu:74 tremulous_alienclass.menu:111
-#: tremulous_humanarmoury.menu:165 tremulous_humanitem.menu:111
-msgid "sound/misc/menu4.wav"
-msgstr "sound/misc/menu4.wav"
-
-#: createserver.menu:419 joinserver.menu:676
-msgid "ui/assets/backarrow_alt.tga"
-msgstr "ui/assets/backarrow_alt.tga"
 
 #: createserver.menu:427 joinserver.menu:684 tremulous_alienclass.menu:98
 #: tremulous_humanitem.menu:98
 msgid "Back"
 msgstr "Back"
 
-#: createserver.menu:455 joinserver.menu:712
-msgid "ui/assets/forwardarrow.tga"
-msgstr "ui/assets/forwardarrow.tga"
-
-#: createserver.menu:478 joinserver.menu:735
-msgid "ui/assets/forwardarrow_alt.tga"
-msgstr "ui/assets/forwardarrow_alt.tga"
-
 #: createserver.menu:484
 msgid "Create"
 msgstr "Create"
 
-#: demo.menu:14
-msgid "demo"
-msgstr "demo"
-
-#: demo.menu:74 main.menu:72
+#: demo.menu:74 main.menu:69
 msgid "Play"
-msgstr "WOOT"
-
-#: demo.menu:103 ingame_leave.menu:147 ingame_leave.menu:204 mod.menu:104
-#: tremulous_alienbuild.menu:132 tremulous_alienclass.menu:153
-#: tremulous_alienupgrade.menu:132 tremulous_humanbuild.menu:131
-#: tremulous_humanitem.menu:153 tremulous_teamselect.menu:132
-msgid "sound/misc/menu3.wav"
-msgstr "sound/misc/menu3.wav"
-
-#: download.menu:8
-msgid "download_popmenu"
-msgstr "download_popmenu"
+msgstr "Play"
 
 #: download.menu:47
 msgid "Download"
 msgstr "Download"
 
-#: download.menu:64
-msgid "com_downloadPromptText"
-msgstr "com_downloadPromptText"
-
 #: download.menu:80
 msgid "Download from website"
 msgstr "Download from website"
-
-#: download.menu:90 download.menu:113
-msgid "ui_serverinfo_allowdl"
-msgstr "ui_serverinfo_allowdl"
 
 #: download.menu:103
 msgid "Download from server"
@@ -366,46 +3327,18 @@ msgstr "Ignore"
 msgid "Disconnect"
 msgstr "Disconnect"
 
-#: download.menu:163
-msgid "disconnect"
-msgstr "disconnect"
-
-#: drop.menu:19
-msgid "drop_popmenu"
-msgstr "drop_popmenu"
-
 #: drop.menu:55
 msgid "Disconnected"
 msgstr "Disconnected"
-
-#: drop.menu:71 error.menu:73
-msgid "com_errorMessage"
-msgstr "com_errorMessage"
 
 #: drop.menu:103
 msgid "Reconnect"
 msgstr "Reconnect"
 
-#: drop.menu:116
-msgid "reconnect"
-msgstr "reconnect"
-
-#: error.menu:19
-msgid "error_popmenu"
-msgstr "error_popmenu"
-
 #: error.menu:57 tremulous_aliendialogs.menu:46 tremulous_dialogs.menu:47
 #: tremulous_humandialogs.menu:46
 msgid "Error"
 msgstr "Error"
-
-#: findplayer.menu:20
-msgid "findplayer_popmenu"
-msgstr "findplayer_popmenu"
-
-#: findplayer.menu:60
-msgid "ui_findplayer"
-msgstr "ui_findplayer"
 
 #: findplayer.menu:78
 msgid "Search"
@@ -421,57 +3354,101 @@ msgstr "Join"
 msgid "Close"
 msgstr "Close"
 
-#: ingame.menu:14 loading.menu:18
-msgid "fonts/font"
-msgstr "fonts/font"
+#: firstrun.menu:6
+msgid "profile_firstrun"
+msgstr "profile_firstrun"
 
-#: ingame.menu:15 loading.menu:19
-msgid "fonts/smallfont"
-msgstr "fonts/smallfont"
+#: firstrun.menu:39 newprofile.menu:57
+msgid "Profile Name:"
+msgstr "Profile Name:"
 
-#: ingame.menu:16 loading.menu:20
-msgid "fonts/bigfont"
-msgstr "fonts/bigfont"
+#: firstrun.menu:41 options.menu:70
+msgid "Video Quality:"
+msgstr "Video Quality:"
 
-#: ingame.menu:17 loading.menu:10 main.menu:10
-msgid "ui/assets/3_cursor3"
-msgstr "ui/assets/3_cursor3"
+#: firstrun.menu:42 ingame_options.menu:1678 ingame_options.menu:2172
+#: options.menu:72
+msgid "High Quality"
+msgstr "High Quality"
 
-#: ingame.menu:18 loading.menu:11 main.menu:11
-msgid "ui/assets/gradientbar2.tga"
-msgstr "ui/assets/gradientbar2.tga"
+#: firstrun.menu:42 ingame_options.menu:364 ingame_options.menu:1678
+#: ingame_options.menu:1849 options.menu:72
+msgid "Normal"
+msgstr "Normal"
 
-#: ingame.menu:19 main.menu:12
-msgid "sound/misc/menu2.wav"
-msgstr "sound/misc/menu2.wav"
+#: firstrun.menu:42 ingame_options.menu:836 ingame_options.menu:1678
+#: options.menu:72
+msgid "Fast"
+msgstr "Fast"
 
-#: ingame.menu:33
-msgid "ingame"
-msgstr "ingame"
+#: firstrun.menu:42 ingame_options.menu:1678 options.menu:72
+msgid "Fastest"
+msgstr "Fastest"
 
-#: ingame.menu:51
-msgid "background"
-msgstr "background"
+#: firstrun.menu:42 ingame_options.menu:1678 options.menu:72
+msgid "Custom"
+msgstr "Custom"
 
-#: ingame.menu:66
-msgid "Game"
-msgstr "Game"
+#: firstrun.menu:45 ingame_options.menu:1719 options.menu:90
+msgid "Video Mode:"
+msgstr "Video Mode:"
 
-#: ingame.menu:85 main.menu:129
-msgid "Options"
-msgstr "Options"
+#: firstrun.menu:46 options.menu:126
+msgid "Video Brightness:"
+msgstr "Video Brightness:"
 
-#: ingame.menu:104
-msgid "Help"
-msgstr "Help"
+#: firstrun.menu:47 ingame_options.menu:2296 options.menu:142
+msgid "Effects Volume:"
+msgstr "Effects Volume:"
 
-#: ingame.menu:123
-msgid "Exit"
-msgstr "Exit"
+#: firstrun.menu:48 ingame_options.menu:2312 options.menu:156
+msgid "Music Volume:"
+msgstr "Music Volume:"
 
-#: ingame_game.menu:64
-msgid "ingame_game"
-msgstr "ingame_game"
+#: firstrun.menu:49 ingame_options.menu:693 options.menu:190
+msgid "Mouse Sensitivity:"
+msgstr "Mouse Sensitivity:"
+
+#: firstrun.menu:50 ingame_options.menu:709 options.menu:204
+msgid "Invert Mouse:"
+msgstr "Invert Mouse:"
+
+#: firstrun.menu:53 options.menu:225
+msgid "Network Connection:"
+msgstr "Network Connection:"
+
+#: firstrun.menu:54 ingame_options.menu:2411 options.menu:227
+msgid "<=28.8k"
+msgstr "<=28.8k"
+
+#: firstrun.menu:54 ingame_options.menu:2411 options.menu:227
+msgid "33.6k"
+msgstr "33.6k"
+
+#: firstrun.menu:54 ingame_options.menu:2411 options.menu:227
+msgid "56k"
+msgstr "56k"
+
+#: firstrun.menu:54 ingame_options.menu:2411 options.menu:227
+msgid "ISDN"
+msgstr "ISDN"
+
+#: firstrun.menu:54 options.menu:227
+msgid "LAN/CABLE/xDSL"
+msgstr "LAN/CABLE/xDSL"
+
+#: firstrun.menu:57 options.menu:244
+msgid "Allow Auto Download:"
+msgstr "Allow Auto Download:"
+
+#: firstrun.menu:64 options.menu:298
+msgid "For further options please use the in-game options menu"
+msgstr "For further options please use the in-game options menu"
+
+#: firstrun.menu:80 ingame_options.menu:1954 ingame_options.menu:2430
+#: options.menu:314
+msgid "APPLY"
+msgstr "APPLY"
 
 #: ingame_game.menu:104
 msgid "Vote"
@@ -496,10 +3473,6 @@ msgstr "Team"
 #: ingame_game.menu:255
 msgid "Reason:"
 msgstr "Reason:"
-
-#: ingame_game.menu:256
-msgid "ui_reason"
-msgstr "ui_reason"
 
 #: ingame_game.menu:274 ingame_game.menu:529 ingame_game.menu:553
 msgid "End Match In Draw"
@@ -549,18 +3522,6 @@ msgstr "cmd callvote map_restart"
 msgid "Begin Sudden Death"
 msgstr "Begin Sudden Death"
 
-#: ingame_game.menu:517
-msgid "cmd callvote sudden_death"
-msgstr "cmd callvote sudden_death"
-
-#: ingame_game.menu:527 ingame_game.menu:551
-msgid "g_drawVoteReasonRequired"
-msgstr "g_drawVoteReasonRequired"
-
-#: ingame_game.menu:564
-msgid "cmd callvote draw"
-msgstr "cmd callvote draw"
-
 #: ingame_game.menu:615
 msgid "Un-Mute Player"
 msgstr "Un-Mute Player"
@@ -572,10 +3533,6 @@ msgstr "Allow Building For Teammate"
 #: ingame_game.menu:783
 msgid "Admit Defeat"
 msgstr "Admit Defeat"
-
-#: ingame_game.menu:794
-msgid "cmd callteamvote admitdefeat"
-msgstr "cmd callteamvote admitdefeat"
 
 #: ingame_game.menu:805
 msgid "Player Name"
@@ -629,26 +3586,11 @@ msgstr "Buildable Friendly Fire:"
 msgid "Version:"
 msgstr "Version:"
 
-#: ingame_help.menu:24
-msgid "ingame_help"
-msgstr "ingame_help"
-
-#: ingame_help.menu:52 tremulous_alienbuild.menu:52
-#: tremulous_alienclass.menu:52 tremulous_alienupgrade.menu:52
-#: tremulous_humanbuild.menu:52 tremulous_humanitem.menu:52
-#: tremulous_teamselect.menu:52
-msgid "list"
-msgstr "list"
-
-#: ingame_leave.menu:22
-msgid "ingame_leave"
-msgstr "ingame_leave"
-
 #: ingame_leave.menu:54
 msgid "Main Menu"
 msgstr "Main Menu"
 
-#: ingame_leave.menu:76 main.menu:187
+#: ingame_leave.menu:76 main.menu:74
 msgid "Quit"
 msgstr "Quit"
 
@@ -664,6 +3606,22 @@ msgstr "Yes"
 #: ingame_leave.menu:157
 msgid "Want To Quit Game?"
 msgstr "Want To Quit Game?"
+
+#: ingame.menu:66
+msgid "Game"
+msgstr "Game"
+
+#: ingame.menu:85 main.menu:72
+msgid "Options"
+msgstr "Options"
+
+#: ingame.menu:104
+msgid "Help"
+msgstr "Help"
+
+#: ingame.menu:123
+msgid "Exit"
+msgstr "Exit"
 
 #: ingame_options.menu:33
 msgid "ingame_options"
@@ -685,49 +3643,25 @@ msgstr "Controls"
 msgid "System"
 msgstr "System"
 
-#: ingame_options.menu:181 options.menu:56
-msgid "name"
-msgstr "name"
-
 #: ingame_options.menu:197
 msgid "Taunts Sounds Off:"
 msgstr "Taunts Sounds Off:"
-
-#: ingame_options.menu:198
-msgid "cg_noTaunt"
-msgstr "cg_noTaunt"
 
 #: ingame_options.menu:217
 msgid "Team Chats Only:"
 msgstr "Team Chats Only:"
 
-#: ingame_options.menu:218
-msgid "cg_teamChatsOnly"
-msgstr "cg_teamChatsOnly"
-
 #: ingame_options.menu:237
 msgid "Sticky Spectate:"
 msgstr "Sticky Spectate:"
-
-#: ingame_options.menu:238
-msgid "cg_stickySpec"
-msgstr "cg_stickySpec"
 
 #: ingame_options.menu:257
 msgid "Tutorial Mode:"
 msgstr "Tutorial Mode:"
 
-#: ingame_options.menu:258
-msgid "cg_tutorial"
-msgstr "cg_tutorial"
-
 #: ingame_options.menu:277
 msgid "Disable Warning Dialogs:"
 msgstr "Disable Warning Dialogs:"
-
-#: ingame_options.menu:278
-msgid "cg_disableWarningDialogs"
-msgstr "cg_disableWarningDialogs"
 
 #: ingame_options.menu:279
 msgid "Print to Console"
@@ -736,10 +3670,6 @@ msgstr "Print to Console"
 #: ingame_options.menu:298
 msgid "Static Death Cam:"
 msgstr "Static Death Cam:"
-
-#: ingame_options.menu:299
-msgid "cg_staticDeathCam"
-msgstr "cg_staticDeathCam"
 
 #: ingame_options.menu:320
 msgid "Show Clock:"
@@ -761,10 +3691,6 @@ msgstr "24 Hour"
 msgid "Show Crosshair:"
 msgstr "Show Crosshair:"
 
-#: ingame_options.menu:342
-msgid "cg_drawCrosshair"
-msgstr "cg_drawCrosshair"
-
 #: ingame_options.menu:343
 msgid "Never"
 msgstr "Never"
@@ -780,15 +3706,6 @@ msgstr "Always"
 #: ingame_options.menu:362
 msgid "Crosshair Size:"
 msgstr "Crosshair Size:"
-
-#: ingame_options.menu:363
-msgid "cg_crosshairSize"
-msgstr "cg_crosshairSize"
-
-#: ingame_options.menu:364 ingame_options.menu:1678 ingame_options.menu:1849
-#: options.menu:72
-msgid "Normal"
-msgstr "Normal"
 
 #: ingame_options.menu:364
 msgid "Small"
@@ -806,25 +3723,13 @@ msgstr "Huge"
 msgid "Show Charge Bar:"
 msgstr "Show Charge Bar:"
 
-#: ingame_options.menu:384
-msgid "cg_drawChargeBar"
-msgstr "cg_drawChargeBar"
-
 #: ingame_options.menu:403
 msgid "Show Lag-o-meter:"
 msgstr "Show Lag-o-meter:"
 
-#: ingame_options.menu:404
-msgid "cg_lagometer"
-msgstr "cg_lagometer"
-
 #: ingame_options.menu:423
 msgid "Show Team Overlay:"
 msgstr "Show Team Overlay:"
-
-#: ingame_options.menu:424
-msgid "cg_drawTeamOverlay"
-msgstr "cg_drawTeamOverlay"
 
 #: ingame_options.menu:425 ingame_options.menu:2193
 msgid "Off"
@@ -846,10 +3751,6 @@ msgstr "Nearby Teammates"
 msgid "Sort Team Overlay:"
 msgstr "Sort Team Overlay:"
 
-#: ingame_options.menu:445
-msgid "cg_teamOverlaySortMode"
-msgstr "cg_teamOverlaySortMode"
-
 #: ingame_options.menu:446
 msgid "None"
 msgstr "None"
@@ -866,17 +3767,9 @@ msgstr "Weapon/Class"
 msgid "Show Gun:"
 msgstr "Show Gun:"
 
-#: ingame_options.menu:466 ingame_options.menu:2071
-msgid "cg_drawGun"
-msgstr "cg_drawGun"
-
 #: ingame_options.menu:485
 msgid "Show Speed:"
 msgstr "Show Speed:"
-
-#: ingame_options.menu:486
-msgid "cg_drawspeed"
-msgstr "cg_drawspeed"
 
 #: ingame_options.menu:487
 msgid "Text"
@@ -906,25 +3799,13 @@ msgstr "Text + Graph No-Z"
 msgid "Show FPS:"
 msgstr "Show FPS:"
 
-#: ingame_options.menu:507
-msgid "cg_drawFPS"
-msgstr "cg_drawFPS"
-
 #: ingame_options.menu:526
 msgid "Show Timer:"
 msgstr "Show Timer:"
 
-#: ingame_options.menu:527
-msgid "cg_drawTimer"
-msgstr "cg_drawTimer"
-
 #: ingame_options.menu:546
 msgid "Show Demo State:"
 msgstr "Show Demo State:"
-
-#: ingame_options.menu:547
-msgid "cg_drawDemoState"
-msgstr "cg_drawDemoState"
 
 #: ingame_options.menu:567
 msgid "Look"
@@ -934,73 +3815,29 @@ msgstr "Look"
 msgid "Lookup:"
 msgstr "Lookup:"
 
-#: ingame_options.menu:594
-msgid "+lookup"
-msgstr "+lookup"
-
 #: ingame_options.menu:613
 msgid "Look Down:"
 msgstr "Look Down:"
-
-#: ingame_options.menu:614
-msgid "+lookdown"
-msgstr "+lookdown"
 
 #: ingame_options.menu:633
 msgid "Mouse Look:"
 msgstr "Mouse Look:"
 
-#: ingame_options.menu:634
-msgid "+mlook"
-msgstr "+mlook"
-
 #: ingame_options.menu:653
 msgid "Centerview:"
 msgstr "Centerview:"
-
-#: ingame_options.menu:654
-msgid "centerview"
-msgstr "centerview"
 
 #: ingame_options.menu:673
 msgid "Free Look:"
 msgstr "Free Look:"
 
-#: ingame_options.menu:674
-msgid "cl_freelook"
-msgstr "cl_freelook"
-
-#: ingame_options.menu:693 options.menu:190
-msgid "Mouse Sensitivity:"
-msgstr "Mouse Sensitivity:"
-
-#: ingame_options.menu:694 options.menu:191
-msgid "sensitivity"
-msgstr "sensitivity"
-
-#: ingame_options.menu:709 options.menu:204
-msgid "Invert Mouse:"
-msgstr "Invert Mouse:"
-
-#: ingame_options.menu:710 options.menu:205
-msgid "ui_mousePitch"
-msgstr "ui_mousePitch"
-
 #: ingame_options.menu:730
 msgid "Smooth Mouse:"
 msgstr "Smooth Mouse:"
 
-#: ingame_options.menu:731
-msgid "m_filter"
-msgstr "m_filter"
-
 #: ingame_options.menu:750
 msgid "Auto Wallwalk Pitching:"
 msgstr "Auto Wallwalk Pitching:"
-
-#: ingame_options.menu:751
-msgid "cg_wwFollow"
-msgstr "cg_wwFollow"
 
 #: ingame_options.menu:770
 msgid "Move"
@@ -1010,33 +3847,17 @@ msgstr "Move"
 msgid "Sprint Toggles:"
 msgstr "Sprint Toggles:"
 
-#: ingame_options.menu:795
-msgid "cg_sprintToggle"
-msgstr "cg_sprintToggle"
-
 #: ingame_options.menu:814
 msgid "Wallwalk Control Toggles:"
 msgstr "Wallwalk Control Toggles:"
-
-#: ingame_options.menu:815
-msgid "cg_wwToggle"
-msgstr "cg_wwToggle"
 
 #: ingame_options.menu:834
 msgid "Wallwalking Speed:"
 msgstr "Wallwalking Speed:"
 
-#: ingame_options.menu:835
-msgid "cg_wwSmoothTime"
-msgstr "cg_wwSmoothTime"
-
 #: ingame_options.menu:836 ingame_options.menu:1826
 msgid "Medium"
 msgstr "Medium"
-
-#: ingame_options.menu:836 ingame_options.menu:1678 options.menu:72
-msgid "Fast"
-msgstr "Fast"
 
 #: ingame_options.menu:836
 msgid "Instant"
@@ -1050,97 +3871,49 @@ msgstr "Slow"
 msgid "Run / Walk:"
 msgstr "Run / Walk:"
 
-#: ingame_options.menu:856
-msgid "+speed"
-msgstr "+speed"
-
 #: ingame_options.menu:875
 msgid "Dodge:"
 msgstr "Dodge:"
-
-#: ingame_options.menu:876
-msgid "+dodge"
-msgstr "+dodge"
 
 #: ingame_options.menu:895
 msgid "Sprint:"
 msgstr "Sprint:"
 
-#: ingame_options.menu:896
-msgid "+sprint"
-msgstr "+sprint"
-
 #: ingame_options.menu:915
 msgid "Forward:"
 msgstr "Forward:"
-
-#: ingame_options.menu:916
-msgid "+forward"
-msgstr "+forward"
 
 #: ingame_options.menu:935
 msgid "Backpedal:"
 msgstr "Backpedal:"
 
-#: ingame_options.menu:936
-msgid "+back"
-msgstr "+back"
-
 #: ingame_options.menu:955
 msgid "Move Left:"
 msgstr "Move Left:"
-
-#: ingame_options.menu:956
-msgid "+moveleft"
-msgstr "+moveleft"
 
 #: ingame_options.menu:975
 msgid "Move Right:"
 msgstr "Move Right:"
 
-#: ingame_options.menu:976
-msgid "+moveright"
-msgstr "+moveright"
-
 #: ingame_options.menu:995
 msgid "Jump:"
 msgstr "Jump:"
-
-#: ingame_options.menu:996
-msgid "+moveup"
-msgstr "+moveup"
 
 #: ingame_options.menu:1015
 msgid "Crouch:"
 msgstr "Crouch:"
 
-#: ingame_options.menu:1016
-msgid "+movedown"
-msgstr "+movedown"
-
 #: ingame_options.menu:1035
 msgid "Turn Left:"
 msgstr "Turn Left:"
-
-#: ingame_options.menu:1036
-msgid "+left"
-msgstr "+left"
 
 #: ingame_options.menu:1055
 msgid "Turn Right:"
 msgstr "Turn Right:"
 
-#: ingame_options.menu:1056
-msgid "+right"
-msgstr "+right"
-
 #: ingame_options.menu:1075
 msgid "Strafe:"
 msgstr "Strafe:"
-
-#: ingame_options.menu:1076
-msgid "+strafe"
-msgstr "+strafe"
 
 #: ingame_options.menu:1097
 msgid "Upgrades"
@@ -1150,73 +3923,37 @@ msgstr "Upgrades"
 msgid "Primary Attack:"
 msgstr "Primary Attack:"
 
-#: ingame_options.menu:1122
-msgid "+attack"
-msgstr "+attack"
-
 #: ingame_options.menu:1141
 msgid "Secondary Attack:"
 msgstr "Secondary Attack:"
-
-#: ingame_options.menu:1142
-msgid "+attack2"
-msgstr "+attack2"
 
 #: ingame_options.menu:1161
 msgid "Previous Upgrade:"
 msgstr "Previous Upgrade:"
 
-#: ingame_options.menu:1162
-msgid "weapprev"
-msgstr "weapprev"
-
 #: ingame_options.menu:1181
 msgid "Next Upgrade:"
 msgstr "Next Upgrade:"
-
-#: ingame_options.menu:1182
-msgid "weapnext"
-msgstr "weapnext"
 
 #: ingame_options.menu:1201
 msgid "Activate Upgrade:"
 msgstr "Activate Upgrade:"
 
-#: ingame_options.menu:1202
-msgid "+useitem"
-msgstr "+useitem"
-
 #: ingame_options.menu:1221
 msgid "Reload:"
 msgstr "Reload:"
-
-#: ingame_options.menu:1222
-msgid "reload"
-msgstr "reload"
 
 #: ingame_options.menu:1241
 msgid "Buy Ammo:"
 msgstr "Buy Ammo:"
 
-#: ingame_options.menu:1242
-msgid "buy ammo"
-msgstr "buy ammo"
-
 #: ingame_options.menu:1261
 msgid "Use Medkit:"
 msgstr "Use Medkit:"
 
-#: ingame_options.menu:1262
-msgid "itemact medkit"
-msgstr "itemact medkit"
-
 #: ingame_options.menu:1281
 msgid "Use Structure/Evolve:"
 msgstr "Use Structure/Evolve:"
-
-#: ingame_options.menu:1282
-msgid "+activate"
-msgstr "+activate"
 
 #: ingame_options.menu:1301
 msgid "Chat & Vote"
@@ -1226,81 +3963,41 @@ msgstr "Chat & Vote"
 msgid "Gesture:"
 msgstr "Gesture:"
 
-#: ingame_options.menu:1326
-msgid "+taunt"
-msgstr "+taunt"
-
 #: ingame_options.menu:1345
 msgid "Chat:"
 msgstr "Chat:"
-
-#: ingame_options.menu:1346
-msgid "messagemode"
-msgstr "messagemode"
 
 #: ingame_options.menu:1365
 msgid "Team Chat:"
 msgstr "Team Chat:"
 
-#: ingame_options.menu:1366
-msgid "messagemode2"
-msgstr "messagemode2"
-
 #: ingame_options.menu:1385
 msgid "Admin Chat:"
 msgstr "Admin Chat:"
-
-#: ingame_options.menu:1386
-msgid "messagemode3"
-msgstr "messagemode3"
 
 #: ingame_options.menu:1405
 msgid "IRC Chat:"
 msgstr "IRC Chat:"
 
-#: ingame_options.menu:1406
-msgid "messagemode4"
-msgstr "messagemode4"
-
 #: ingame_options.menu:1425
 msgid "Vote Yes:"
 msgstr "Vote Yes:"
-
-#: ingame_options.menu:1426
-msgid "vote yes"
-msgstr "vote yes"
 
 #: ingame_options.menu:1445
 msgid "Vote No:"
 msgstr "Vote No:"
 
-#: ingame_options.menu:1446
-msgid "vote no"
-msgstr "vote no"
-
 #: ingame_options.menu:1465
 msgid "Team Vote Yes:"
 msgstr "Team Vote Yes:"
-
-#: ingame_options.menu:1466
-msgid "teamvote yes"
-msgstr "teamvote yes"
 
 #: ingame_options.menu:1485
 msgid "Team Vote No:"
 msgstr "Team Vote No:"
 
-#: ingame_options.menu:1486
-msgid "teamvote no"
-msgstr "teamvote no"
-
 #: ingame_options.menu:1505
 msgid "Voice Say Menu:"
 msgstr "Voice Say Menu:"
-
-#: ingame_options.menu:1506
-msgid "menu vsay_top"
-msgstr "menu vsay_top"
 
 #: ingame_options.menu:1525
 msgid "Misc"
@@ -1310,41 +4007,21 @@ msgstr "Misc"
 msgid "Show Scores:"
 msgstr "Show Scores:"
 
-#: ingame_options.menu:1550
-msgid "+scores"
-msgstr "+scores"
-
 #: ingame_options.menu:1569
 msgid "Scroll Scores Up:"
 msgstr "Scroll Scores Up:"
-
-#: ingame_options.menu:1570
-msgid "scoresUp"
-msgstr "scoresUp"
 
 #: ingame_options.menu:1589
 msgid "Scroll Scores Down:"
 msgstr "Scroll Scores Down:"
 
-#: ingame_options.menu:1590
-msgid "scoresDown"
-msgstr "scoresDown"
-
 #: ingame_options.menu:1609
 msgid "Deconstruct Structure:"
 msgstr "Deconstruct Structure:"
 
-#: ingame_options.menu:1610
-msgid "deconstruct"
-msgstr "deconstruct"
-
 #: ingame_options.menu:1629
 msgid "Screenshot:"
 msgstr "Screenshot:"
-
-#: ingame_options.menu:1630
-msgid "screenshotJPEG"
-msgstr "screenshotJPEG"
 
 #: ingame_options.menu:1650
 msgid "GFX Hardware"
@@ -1354,42 +4031,13 @@ msgstr "GFX Hardware"
 msgid "Quality:"
 msgstr "Quality:"
 
-#: ingame_options.menu:1677 ingame_options.menu:1689 options.menu:71
-#: options.menu:83
-msgid "ui_glCustom"
-msgstr "ui_glCustom"
-
-#: ingame_options.menu:1678 ingame_options.menu:2172 options.menu:72
-msgid "High Quality"
-msgstr "High Quality"
-
-#: ingame_options.menu:1678 options.menu:72
-msgid "Fastest"
-msgstr "Fastest"
-
-#: ingame_options.menu:1678 options.menu:72
-msgid "Custom"
-msgstr "Custom"
-
 #: ingame_options.menu:1698
 msgid "GL Extensions:"
 msgstr "GL Extensions:"
 
-#: ingame_options.menu:1699
-msgid "r_allowExtensions"
-msgstr "r_allowExtensions"
-
-#: ingame_options.menu:1719 options.menu:90
-msgid "Video Mode:"
-msgstr "Video Mode:"
-
 #: ingame_options.menu:1758
 msgid "Color Depth:"
 msgstr "Color Depth:"
-
-#: ingame_options.menu:1759 ingame_options.menu:1772
-msgid "r_colorbits"
-msgstr "r_colorbits"
 
 #: ingame_options.menu:1760 ingame_options.menu:1871
 msgid "Default"
@@ -1407,17 +4055,9 @@ msgstr "32 bit"
 msgid "Fullscreen:"
 msgstr "Fullscreen:"
 
-#: ingame_options.menu:1782
-msgid "r_fullscreen"
-msgstr "r_fullscreen"
-
 #: ingame_options.menu:1802
 msgid "Lighting:"
 msgstr "Lighting:"
-
-#: ingame_options.menu:1803
-msgid "r_vertexlight"
-msgstr "r_vertexlight"
 
 #: ingame_options.menu:1804
 msgid "Light Map (high)"
@@ -1447,10 +4087,6 @@ msgstr "Low"
 msgid "Texture Detail:"
 msgstr "Texture Detail:"
 
-#: ingame_options.menu:1848
-msgid "r_picmip"
-msgstr "r_picmip"
-
 #: ingame_options.menu:1869
 msgid "Texture Quality:"
 msgstr "Texture Quality:"
@@ -1463,25 +4099,13 @@ msgstr "r_texturebits"
 msgid "Texture Filter:"
 msgstr "Texture Filter:"
 
-#: ingame_options.menu:1891
-msgid "r_texturemode"
-msgstr "r_texturemode"
-
 #: ingame_options.menu:1892
 msgid "Bilinear"
 msgstr "Bilinear"
 
 #: ingame_options.menu:1892
-msgid "GL_LINEAR_MIPMAP_NEAREST"
-msgstr "GL_LINEAR_MIPMAP_NEAREST"
-
-#: ingame_options.menu:1892
 msgid "Trilinear"
 msgstr "Trilinear"
-
-#: ingame_options.menu:1892
-msgid "GL_LINEAR_MIPMAP_LINEAR"
-msgstr "GL_LINEAR_MIPMAP_LINEAR"
 
 #: ingame_options.menu:1912
 msgid "Anisotropic Filtering:"
@@ -1495,18 +4119,6 @@ msgstr "r_ext_texture_filter_anisotropic"
 msgid "Compress Textures:"
 msgstr "Compress Textures:"
 
-#: ingame_options.menu:1934
-msgid "r_ext_compressed_textures "
-msgstr "r_ext_compressed_textures "
-
-#: ingame_options.menu:1954 ingame_options.menu:2430 options.menu:278
-msgid "APPLY"
-msgstr "APPLY"
-
-#: ingame_options.menu:1965
-msgid "vid_restart"
-msgstr "vid_restart"
-
 #: ingame_options.menu:1974
 msgid "GFX Software"
 msgstr "GFX Software"
@@ -1515,25 +4127,13 @@ msgstr "GFX Software"
 msgid "Brightness:"
 msgstr "Brightness:"
 
-#: ingame_options.menu:1999 options.menu:127
-msgid "r_gamma"
-msgstr "r_gamma"
-
 #: ingame_options.menu:2014
 msgid "Screen Size:"
 msgstr "Screen Size:"
 
-#: ingame_options.menu:2015
-msgid "cg_viewsize"
-msgstr "cg_viewsize"
-
 #: ingame_options.menu:2030
 msgid "Marks On Walls:"
 msgstr "Marks On Walls:"
-
-#: ingame_options.menu:2031
-msgid "cg_marks"
-msgstr "cg_marks"
 
 #: ingame_options.menu:2050
 msgid "Dynamic Lights:"
@@ -1559,33 +4159,17 @@ msgstr "r_fastsky"
 msgid "Sync Every Frame:"
 msgstr "Sync Every Frame:"
 
-#: ingame_options.menu:2111
-msgid "r_finish"
-msgstr "r_finish"
-
 #: ingame_options.menu:2130
 msgid "In Game Videos:"
 msgstr "In Game Videos:"
-
-#: ingame_options.menu:2131
-msgid "r_inGameVideo"
-msgstr "r_inGameVideo"
 
 #: ingame_options.menu:2150
 msgid "Depth Sort Particles:"
 msgstr "Depth Sort Particles:"
 
-#: ingame_options.menu:2151
-msgid "cg_depthSortParticles"
-msgstr "cg_depthSortParticles"
-
 #: ingame_options.menu:2170
 msgid "Particle Physics:"
 msgstr "Particle Physics:"
-
-#: ingame_options.menu:2171
-msgid "cg_bounceParticles"
-msgstr "cg_bounceParticles"
 
 #: ingame_options.menu:2172
 msgid "Low Quality"
@@ -1594,10 +4178,6 @@ msgstr "Low Quality"
 #: ingame_options.menu:2191
 msgid "Light Flares:"
 msgstr "Light Flares:"
-
-#: ingame_options.menu:2192
-msgid "cg_lightFlare"
-msgstr "cg_lightFlare"
 
 #: ingame_options.menu:2193
 msgid "No Fade"
@@ -1623,37 +4203,13 @@ msgstr "Net & Sound"
 msgid "Sound"
 msgstr "Sound"
 
-#: ingame_options.menu:2296 options.menu:142
-msgid "Effects Volume:"
-msgstr "Effects Volume:"
-
-#: ingame_options.menu:2297 options.menu:143
-msgid "s_volume"
-msgstr "s_volume"
-
-#: ingame_options.menu:2312 options.menu:156
-msgid "Music Volume:"
-msgstr "Music Volume:"
-
-#: ingame_options.menu:2313 options.menu:157
-msgid "s_musicvolume"
-msgstr "s_musicvolume"
-
 #: ingame_options.menu:2328
 msgid "OpenAL:"
 msgstr "OpenAL:"
 
-#: ingame_options.menu:2329 options.menu:171
-msgid "s_usemodule"
-msgstr "s_usemodule"
-
 #: ingame_options.menu:2348
 msgid "Sound Quality:"
 msgstr "Sound Quality:"
-
-#: ingame_options.menu:2349
-msgid "s_khz"
-msgstr "s_khz"
 
 #: ingame_options.menu:2350
 msgid "44 khz (very high)"
@@ -1671,10 +4227,6 @@ msgstr "11 khz (low)"
 msgid "Doppler Sound:"
 msgstr "Doppler Sound:"
 
-#: ingame_options.menu:2370
-msgid "s_doppler"
-msgstr "s_doppler"
-
 #: ingame_options.menu:2390
 msgid "Network"
 msgstr "Network"
@@ -1683,33 +4235,9 @@ msgstr "Network"
 msgid "Net Data Rate:"
 msgstr "Net Data Rate:"
 
-#: ingame_options.menu:2410 options.menu:226
-msgid "rate"
-msgstr "rate"
-
-#: ingame_options.menu:2411 options.menu:227
-msgid "<=28.8k"
-msgstr "<=28.8k"
-
-#: ingame_options.menu:2411 options.menu:227
-msgid "33.6k"
-msgstr "33.6k"
-
-#: ingame_options.menu:2411 options.menu:227
-msgid "56k"
-msgstr "56k"
-
-#: ingame_options.menu:2411 options.menu:227
-msgid "ISDN"
-msgstr "ISDN"
-
 #: ingame_options.menu:2411
 msgid "LAN/CABLE/xDSl"
 msgstr "LAN/CABLE/xDSl"
-
-#: ingame_options.menu:2441 options.menu:290
-msgid "snd_restart"
-msgstr "snd_restart"
 
 #: ingame_options.menu:2450
 msgid "Range Markers"
@@ -1719,10 +4247,6 @@ msgstr "Range Markers"
 msgid "Range Markers for:"
 msgstr "Range Markers for:"
 
-#: ingame_options.menu:2475
-msgid "cg_rangeMarkerBuildableTypes"
-msgstr "cg_rangeMarkerBuildableTypes"
-
 #: ingame_options.menu:2476
 msgid "No Buildables"
 msgstr "No Buildables"
@@ -1731,141 +4255,69 @@ msgstr "No Buildables"
 msgid "All Buildables"
 msgstr "All Buildables"
 
-#: ingame_options.menu:2477
-msgid "all"
-msgstr "all"
-
 #: ingame_options.menu:2478
 msgid "Support Buildables"
 msgstr "Support Buildables"
-
-#: ingame_options.menu:2478
-msgid "support"
-msgstr "support"
 
 #: ingame_options.menu:2479
 msgid "Offensive Buildables"
 msgstr "Offensive Buildables"
 
-#: ingame_options.menu:2479
-msgid "offensive"
-msgstr "offensive"
-
 #: ingame_options.menu:2480
 msgid "Alien Buildables"
 msgstr "Alien Buildables"
-
-#: ingame_options.menu:2480
-msgid "alien"
-msgstr "alien"
 
 #: ingame_options.menu:2481
 msgid "Human Buildables"
 msgstr "Human Buildables"
 
-#: ingame_options.menu:2481
-msgid "human"
-msgstr "human"
-
 #: ingame_options.menu:2482
 msgid "Alien Support Buildables"
 msgstr "Alien Support Buildables"
-
-#: ingame_options.menu:2482
-msgid "aliensupport"
-msgstr "aliensupport"
 
 #: ingame_options.menu:2483
 msgid "Human Support Buildables"
 msgstr "Human Support Buildables"
 
-#: ingame_options.menu:2483
-msgid "humansupport"
-msgstr "humansupport"
-
 #: ingame_options.menu:2484
 msgid "Offensive Alien Buildables"
 msgstr "Offensive Alien Buildables"
-
-#: ingame_options.menu:2484
-msgid "alienoffensive"
-msgstr "alienoffensive"
 
 #: ingame_options.menu:2485
 msgid "Offensive Human Buildables"
 msgstr "Offensive Human Buildables"
 
-#: ingame_options.menu:2485
-msgid "humanoffensive"
-msgstr "humanoffensive"
-
 #: ingame_options.menu:2504
 msgid "Range Marker for Blueprint:"
 msgstr "Range Marker for Blueprint:"
-
-#: ingame_options.menu:2505
-msgid "cg_rangeMarkerForBlueprint"
-msgstr "cg_rangeMarkerForBlueprint"
 
 #: ingame_options.menu:2524
 msgid "Draw Surface:"
 msgstr "Draw Surface:"
 
-#: ingame_options.menu:2525
-msgid "cg_rangeMarkerDrawSurface"
-msgstr "cg_rangeMarkerDrawSurface"
-
 #: ingame_options.menu:2544
 msgid "Draw Intersection:"
 msgstr "Draw Intersection:"
-
-#: ingame_options.menu:2545
-msgid "cg_rangeMarkerDrawIntersection"
-msgstr "cg_rangeMarkerDrawIntersection"
 
 #: ingame_options.menu:2564
 msgid "Draw Frontline:"
 msgstr "Draw Frontline:"
 
-#: ingame_options.menu:2565
-msgid "cg_rangeMarkerDrawFrontline"
-msgstr "cg_rangeMarkerDrawFrontline"
-
 #: ingame_options.menu:2584
 msgid "Surface Opacity:"
 msgstr "Surface Opacity:"
-
-#: ingame_options.menu:2585
-msgid "cg_rangeMarkerSurfaceOpacity"
-msgstr "cg_rangeMarkerSurfaceOpacity"
 
 #: ingame_options.menu:2600
 msgid "Line Opacity:"
 msgstr "Line Opacity:"
 
-#: ingame_options.menu:2601
-msgid "cg_rangeMarkerLineOpacity"
-msgstr "cg_rangeMarkerLineOpacity"
-
 #: ingame_options.menu:2616
 msgid "Line Thickness:"
 msgstr "Line Thickness:"
 
-#: ingame_options.menu:2617
-msgid "cg_rangeMarkerLineThickness"
-msgstr "cg_rangeMarkerLineThickness"
-
 #: ingame_options.menu:2632
 msgid "Binary Shader Screen Scale:"
 msgstr "Binary Shader Screen Scale:"
-
-#: ingame_options.menu:2633
-msgid "cg_binaryShaderScreenScale"
-msgstr "cg_binaryShaderScreenScale"
-
-#: joinserver.menu:51
-msgid "joinserver"
-msgstr "joinserver"
 
 #: joinserver.menu:77
 msgid "Source:"
@@ -1883,17 +4335,9 @@ msgstr "Refresh List"
 msgid "View Empty:"
 msgstr "View Empty:"
 
-#: joinserver.menu:147
-msgid "ui_browserShowEmpty"
-msgstr "ui_browserShowEmpty"
-
 #: joinserver.menu:169
 msgid "View Full:"
 msgstr "View Full:"
-
-#: joinserver.menu:170
-msgid "ui_browserShowFull"
-msgstr "ui_browserShowFull"
 
 #: joinserver.menu:193
 msgid ""
@@ -1901,7 +4345,7 @@ msgid ""
 "[featured] = Featured Server"
 msgstr ""
 "[official] = Official Server\n"
-"[tyrant] = Promotional Server"
+"[featured] = Featured Server"
 
 #: joinserver.menu:227
 msgid "Server Name"
@@ -1951,318 +4395,53 @@ msgstr "Create Server"
 msgid "Loading"
 msgstr "Loading"
 
-#: loading.menu:30 loading.menu:37
-msgid "ui/assets/mainmenu.jpg"
-msgstr "ui/assets/mainmenu.jpg"
+#: main.menu:71
+msgid "Profiles"
+msgstr "Profiles"
 
-#: loading.menu:45
-msgid "levelshot"
-msgstr "levelshot"
-
-#: loading.menu:61
-msgid "ui/assets/gradient_100_50bar2.tga"
-msgstr "ui/assets/gradient_100_50bar2.tga"
-
-#: loading.menu:71 loading.menu:81
-msgid "ui/assets/halfgradright.tga"
-msgstr "ui/assets/halfgradright.tga"
-
-#: loading.menu:86
-msgid "overall_load_bar"
-msgstr "overall_load_bar"
-
-#: loading.menu:97
-msgid "mapbg"
-msgstr "mapbg"
-
-#: loading.menu:109
-msgid "motd"
-msgstr "motd"
-
-#: loading.menu:124
-msgid "mapname"
-msgstr "mapname"
-
-#: loading.menu:139
-msgid "server_name"
-msgstr "server_name"
-
-#: main.menu:7 main.menu:8 main.menu:9
-msgid "fonts/roboto.ttf"
-msgstr "fonts/roboto.ttf"
-
-#: main.menu:34
-msgid "sound/ui/heartbeat.ogg"
-msgstr "sound/ui/heartbeat.ogg"
-
-#: main.menu:43
-msgid "ui/assets/button_bg.png"
-msgstr "ui/assets/button_bg.png"
-
-#: main.menu:54
-msgid "ui/assets/logo.png"
-msgstr "ui/assets/logo.png"
-
-#: main.menu:82 main.menu:92 main.menu:140 main.menu:150 main.menu:169
-#: main.menu:179 main.menu:197 main.menu:207
-msgid "ui/assets/button.png"
-msgstr "ui/assets/button.png"
-
-#: main.menu:89 main.menu:147 main.menu:176 main.menu:204
-msgid "ui/assets/button_highlight.png"
-msgstr "ui/assets/button_highlight.png"
-
-#: main.menu:158
+#: main.menu:73
 msgid "Mods"
 msgstr "Mods"
 
-#: main.menu:219
+#: main.menu:82
 msgid "Unvanquished (C) 2011-2012 Unvanquished Development"
 msgstr "Unvanquished (C) 2011-2012 Unvanquished Development"
 
-#: mod.menu:14
-msgid "mod"
-msgstr "mod"
-
-#: mod.menu:75
+#: mod.menu:75 profiles.menu:130
 msgid "Load"
 msgstr "Load"
-
-#: news.menu:16
-msgid "news_menu"
-msgstr "news_menu"
 
 #: news.menu:49
 msgid "Unvanquished News"
 msgstr "Unvanquished News"
 
-#: options.menu:20
-msgid "simple_options"
-msgstr "simple_options"
-
-#: options.menu:70
-msgid "Video Quality:"
-msgstr "Video Quality:"
-
-#: options.menu:126
-msgid "Video Brightness:"
-msgstr "Video Brightness:"
-
 #: options.menu:170
 msgid "OpenAL Sound:"
 msgstr "OpenAL Sound:"
 
-#: options.menu:225
-msgid "Network Connection:"
-msgstr "Network Connection:"
-
-#: options.menu:227
-msgid "LAN/CABLE/xDSL"
-msgstr "LAN/CABLE/xDSL"
-
-#: options.menu:244
-msgid "Allow Auto Download:"
-msgstr "Allow Auto Download:"
-
-#: options.menu:245
-msgid "cl_allowDownload"
-msgstr "cl_allowDownload"
-
 #: options.menu:262
-msgid "For further options please use the in-game options menu"
-msgstr "For further options please use the in-game options menu"
+msgid "Language"
+msgstr "Language"
 
-#: password.menu:15
-msgid "password_popmenu"
-msgstr "password_popmenu"
+#: profiles.menu:74
+msgid "Set Default"
+msgstr "Set Default"
 
-#: password.menu:60
-msgid "password"
-msgstr "password"
+#: profiles.menu:93
+msgid "Delete"
+msgstr "Delete"
 
-#: quit.menu:11
-msgid "quit_popmenu"
-msgstr "quit_popmenu"
-
-#: quit.menu:48
-msgid "Quit Unvanquished?"
-msgstr "Quit Unvanquished?"
-
-#: quit.menu:64
-msgid "YES"
-msgstr "YES"
-
-#: quit.menu:75 quitcredit.menu:18 quitcredit.menu:33
-msgid "quit"
-msgstr "quit"
-
-#: quit.menu:83
-msgid "NO"
-msgstr "NO"
-
-#: quitcredit.menu:8
-msgid "quitCredit"
-msgstr "quitCredit"
-
-#: quitcredit.menu:29
-msgid "ui/assets/credits_splash.jpg"
-msgstr "ui/assets/credits_splash.jpg"
-
-#: quitcredit.menu:65
-msgid "creditstitle"
-msgstr "creditstitle"
+#: profiles.menu:111
+msgid "New"
+msgstr "New"
 
 #: quitcredit.menu:73
 msgid "CREDITS"
 msgstr "CREDITS"
 
-#: quitcredit.menu:82
-msgid "credit1left"
-msgstr "credit1left"
-
-#: quitcredit.menu:90
-msgid "Tim 'Timbo' Angus"
-msgstr "Tim 'Timbo' Angus"
-
-#: quitcredit.menu:98
-msgid "credit1right"
-msgstr "credit1right"
-
-#: quitcredit.menu:106
-msgid "Programming and Direction"
-msgstr "Programming and Direction"
-
-#: quitcredit.menu:115
-msgid "credit2left"
-msgstr "credit2left"
-
-#: quitcredit.menu:123
-msgid "Nick 'jex' Jansens"
-msgstr "Nick 'jex' Jansens"
-
-#: quitcredit.menu:131
-msgid "credit2right"
-msgstr "credit2right"
-
-#: quitcredit.menu:139
-msgid "Mapping, texturing and 2D artwork"
-msgstr "Mapping, texturing and 2D artwork"
-
-#: quitcredit.menu:148
-msgid "credit3left"
-msgstr "credit3left"
-
-#: quitcredit.menu:156
-msgid "Robin 'OverFlow' Marshall"
-msgstr "Robin 'OverFlow' Marshall"
-
-#: quitcredit.menu:164
-msgid "credit3right"
-msgstr "credit3right"
-
-#: quitcredit.menu:172
-msgid "Modelling, animation and mapping"
-msgstr "Modelling, animation and mapping"
-
-#: quitcredit.menu:181
-msgid "credit4left"
-msgstr "credit4left"
-
-#: quitcredit.menu:189
-msgid "Jan 'Stannum' van der Weg"
-msgstr "Jan 'Stannum' van der Weg"
-
-#: quitcredit.menu:197
-msgid "credit4right"
-msgstr "credit4right"
-
-#: quitcredit.menu:205
-msgid "Texturing and mapping"
-msgstr "Texturing and mapping"
-
-#: quitcredit.menu:214
-msgid "credit5left"
-msgstr "credit5left"
-
-#: quitcredit.menu:222
-msgid "Mike 'Veda' McInerney"
-msgstr "Mike 'Veda' McInerney"
-
-#: quitcredit.menu:230
-msgid "credit5right"
-msgstr "credit5right"
-
-#: quitcredit.menu:238
-msgid "Modelling, animation and texturing"
-msgstr "Modelling, animation and texturing"
-
-#: quitcredit.menu:247
-msgid "credit6left"
-msgstr "credit6left"
-
-#: quitcredit.menu:255
-msgid "Gordon 'Godmil' Miller"
-msgstr "Gordon 'Godmil' Miller"
-
-#: quitcredit.menu:263
-msgid "credit6right"
-msgstr "credit6right"
-
-#: quitcredit.menu:271 quitcredit.menu:304 quitcredit.menu:337
-msgid "Mapping"
-msgstr "Mapping"
-
-#: quitcredit.menu:280
-msgid "credit7left"
-msgstr "credit7left"
-
-#: quitcredit.menu:288
-msgid "'Who-[Soup]'"
-msgstr "'Who-[Soup]'"
-
-#: quitcredit.menu:296
-msgid "credit7right"
-msgstr "credit7right"
-
-#: quitcredit.menu:313
-msgid "credit8left"
-msgstr "credit8left"
-
-#: quitcredit.menu:321
-msgid "Tristan 'jhrx' Blease"
-msgstr "Tristan 'jhrx' Blease"
-
-#: quitcredit.menu:329
-msgid "credit8right"
-msgstr "credit8right"
-
-#: quitcredit.menu:346
-msgid "credit9left"
-msgstr "credit9left"
-
-#: quitcredit.menu:354
-msgid "Paul 'MoP' Greveson"
-msgstr "Paul 'MoP' Greveson"
-
-#: quitcredit.menu:362
-msgid "credit9right"
-msgstr "credit9right"
-
-#: quitcredit.menu:370
-msgid "Modelling and texturing"
-msgstr "Modelling and texturing"
-
-#: quitcredit.menu:379
-msgid "credit10left"
-msgstr "credit10left"
-
-#: quitcredit.menu:387
-msgid "Chris 'Dolby' McCarthy"
-msgstr "Chris 'Dolby' McCarthy"
-
-#: quitcredit.menu:395
-msgid "credit10right"
-msgstr "credit10right"
+#: quit.menu:48
+msgid "Quit Unvanquished?"
+msgstr "Quit Unvanquished?"
 
 #: say.menu:33
 msgid "^;"
@@ -2271,10 +4450,6 @@ msgstr "^;"
 #: say.menu:33
 msgid ":"
 msgstr ":"
-
-#: say.menu:34
-msgid "ui_sayBuffer"
-msgstr "ui_sayBuffer"
 
 #: say.menu:56
 msgid "Say"
@@ -2296,17 +4471,9 @@ msgstr "Say to IRC"
 msgid "Command"
 msgstr "Command"
 
-#: serverinfo.menu:18
-msgid "serverinfo_popmenu"
-msgstr "serverinfo_popmenu"
-
 #: serverinfo.menu:76
 msgid "Refresh"
 msgstr "Refresh"
-
-#: teamscore.menu:21
-msgid "teamscore_menu"
-msgstr "teamscore_menu"
 
 #: teamscore.menu:121 teamscore.menu:196
 msgid "Status"
@@ -2324,267 +4491,9 @@ msgstr "Time"
 msgid "Spectating:"
 msgstr "Spectating:"
 
-#: teamscore.menu:382
-msgid "ui_winner"
-msgstr "ui_winner"
-
-#: tremulous_alien_builder_hud.menu:10
-msgid "alien_builder_hud"
-msgstr "alien_builder_hud"
-
-#: tremulous_alien_builder_hud.menu:21 tremulous_human_hud.menu:280
-msgid "buildtimer"
-msgstr "buildtimer"
-
-#: tremulous_alien_builder_hud.menu:33
-msgid "build-points"
-msgstr "build-points"
-
-#: tremulous_alien_general_hud.menu:10
-msgid "alien_general_hud"
-msgstr "alien_general_hud"
-
-#: tremulous_alien_general_hud.menu:21
-msgid "blob"
-msgstr "blob"
-
-#: tremulous_alien_general_hud.menu:26
-msgid "ui/assets/alien/tremublob.tga"
-msgstr "ui/assets/alien/tremublob.tga"
-
-#: tremulous_alienbuild.menu:25
-msgid "tremulous_alienbuild"
-msgstr "tremulous_alienbuild"
-
-#: tremulous_alienbuild.menu:98 tremulous_alienbuild.menu:119
-#: tremulous_alienclass.menu:119 tremulous_alienclass.menu:140
-#: tremulous_alienupgrade.menu:98 tremulous_alienupgrade.menu:119
-#: tremulous_humanbuild.menu:97 tremulous_humanbuild.menu:118
-#: tremulous_humanitem.menu:119 tremulous_humanitem.menu:140
-#: tremulous_teamselect.menu:98 tremulous_teamselect.menu:119
-msgid "OKCancel"
-msgstr "OKCancel"
-
-#: tremulous_alienclass.menu:25
-msgid "tremulous_alienclass"
-msgstr "tremulous_alienclass"
-
 #: tremulous_alienclass.menu:99 tremulous_humanitem.menu:99
 msgid "< Back"
 msgstr "< Back"
-
-#: tremulous_aliendialogs.menu:19
-msgid "tremulous_alien_dialog"
-msgstr "tremulous_alien_dialog"
-
-#: tremulous_aliendialogs.menu:67 tremulous_dialogs.menu:68
-#: tremulous_humandialogs.menu:67
-msgid "ui_dialog"
-msgstr "ui_dialog"
-
-#: tremulous_alienupgrade.menu:25
-msgid "tremulous_alienupgrade"
-msgstr "tremulous_alienupgrade"
-
-#: tremulous_default_hud.menu:10
-msgid "default_hud"
-msgstr "default_hud"
-
-#: tremulous_default_hud.menu:24
-msgid "spectatortext"
-msgstr "spectatortext"
-
-#: tremulous_default_hud.menu:25
-msgid "SPECTATOR"
-msgstr "SPECTATOR"
-
-#: tremulous_dialogs.menu:20
-msgid "tremulous_default_dialog"
-msgstr "tremulous_default_dialog"
-
-#: tremulous_human_hud.menu:10
-msgid "human_hud"
-msgstr "human_hud"
-
-#: tremulous_human_hud.menu:28
-msgid "left-circle"
-msgstr "left-circle"
-
-#: tremulous_human_hud.menu:35 tremulous_human_hud.menu:74
-msgid "ui/assets/neutral/circle.tga"
-msgstr "ui/assets/neutral/circle.tga"
-
-#: tremulous_human_hud.menu:41
-msgid "left-arm"
-msgstr "left-arm"
-
-#: tremulous_human_hud.menu:48
-msgid "ui/assets/human/left-arm.tga"
-msgstr "ui/assets/human/left-arm.tga"
-
-#: tremulous_human_hud.menu:54
-msgid "credits-label"
-msgstr "credits-label"
-
-#: tremulous_human_hud.menu:61
-msgid "ui/assets/human/credits.tga"
-msgstr "ui/assets/human/credits.tga"
-
-#: tremulous_human_hud.menu:67
-msgid "right-circle"
-msgstr "right-circle"
-
-#: tremulous_human_hud.menu:80
-msgid "right-arm"
-msgstr "right-arm"
-
-#: tremulous_human_hud.menu:87
-msgid "ui/assets/human/right-arm.tga"
-msgstr "ui/assets/human/right-arm.tga"
-
-#: tremulous_human_hud.menu:93
-msgid "right-cap"
-msgstr "right-cap"
-
-#: tremulous_human_hud.menu:100
-msgid "ui/assets/human/right-cap.tga"
-msgstr "ui/assets/human/right-cap.tga"
-
-#: tremulous_human_hud.menu:110
-msgid "bolt"
-msgstr "bolt"
-
-#: tremulous_human_hud.menu:117
-msgid "ui/assets/human/bolt.tga"
-msgstr "ui/assets/human/bolt.tga"
-
-#: tremulous_human_hud.menu:124
-msgid "cross"
-msgstr "cross"
-
-#: tremulous_human_hud.menu:136
-msgid "stamina1"
-msgstr "stamina1"
-
-#: tremulous_human_hud.menu:143
-msgid "ui/assets/human/stamina1.tga"
-msgstr "ui/assets/human/stamina1.tga"
-
-#: tremulous_human_hud.menu:150
-msgid "stamina2"
-msgstr "stamina2"
-
-#: tremulous_human_hud.menu:157
-msgid "ui/assets/human/stamina2.tga"
-msgstr "ui/assets/human/stamina2.tga"
-
-#: tremulous_human_hud.menu:164
-msgid "stamina3"
-msgstr "stamina3"
-
-#: tremulous_human_hud.menu:171
-msgid "ui/assets/human/stamina3.tga"
-msgstr "ui/assets/human/stamina3.tga"
-
-#: tremulous_human_hud.menu:178
-msgid "stamina4"
-msgstr "stamina4"
-
-#: tremulous_human_hud.menu:185
-msgid "ui/assets/human/stamina4.tga"
-msgstr "ui/assets/human/stamina4.tga"
-
-#: tremulous_human_hud.menu:192
-msgid "ring"
-msgstr "ring"
-
-#: tremulous_human_hud.menu:200
-msgid "ui/assets/human/ring.tga"
-msgstr "ui/assets/human/ring.tga"
-
-#: tremulous_human_hud.menu:207
-msgid "credits"
-msgstr "credits"
-
-#: tremulous_human_hud.menu:219
-msgid "health"
-msgstr "health"
-
-#: tremulous_human_hud.menu:231
-msgid "weapon"
-msgstr "weapon"
-
-#: tremulous_human_hud.menu:243
-msgid "selecttext"
-msgstr "selecttext"
-
-#: tremulous_human_hud.menu:256
-msgid "ammo"
-msgstr "ammo"
-
-#: tremulous_human_hud.menu:268
-msgid "clips"
-msgstr "clips"
-
-#: tremulous_human_hud.menu:292
-msgid "usable"
-msgstr "usable"
-
-#: tremulous_human_hud.menu:298
-msgid "ui/assets/neutral/use.tga"
-msgstr "ui/assets/neutral/use.tga"
-
-#: tremulous_human_hud.menu:305
-msgid "scanner"
-msgstr "scanner"
-
-#: tremulous_human_hud.menu:311
-msgid "ui/assets/human/scanner.tga"
-msgstr "ui/assets/human/scanner.tga"
-
-#: tremulous_human_hud.menu:318
-msgid "inventory"
-msgstr "inventory"
-
-#: tremulous_human_hud.menu:330
-msgid "charge"
-msgstr "charge"
-
-#: tremulous_human_hud.menu:337
-msgid "ui/assets/neutral/charge_cap_h.tga"
-msgstr "ui/assets/neutral/charge_cap_h.tga"
-
-#: tremulous_human_hud.menu:343
-msgid "chargebg"
-msgstr "chargebg"
-
-#: tremulous_human_hud.menu:350
-msgid "ui/assets/neutral/charge_bg_h.tga"
-msgstr "ui/assets/neutral/charge_bg_h.tga"
-
-#: tremulous_human_hud.menu:356
-msgid "selected"
-msgstr "selected"
-
-#: tremulous_human_hud.menu:363
-msgid "ui/assets/neutral/selected.tga"
-msgstr "ui/assets/neutral/selected.tga"
-
-#: tremulous_human_hud.menu:369
-msgid "teamoverlay"
-msgstr "teamoverlay"
-
-#: tremulous_humanarmoury.menu:29
-msgid "tremulous_humanarmoury"
-msgstr "tremulous_humanarmoury"
-
-#: tremulous_humanarmoury.menu:61
-msgid "buylist"
-msgstr "buylist"
-
-#: tremulous_humanarmoury.menu:86
-msgid "selllist"
-msgstr "selllist"
 
 #: tremulous_humanarmoury.menu:132
 msgid "Buy"
@@ -2601,34 +4510,6 @@ msgstr "Sell"
 #: tremulous_humanarmoury.menu:173
 msgid "< Sell"
 msgstr "< Sell"
-
-#: tremulous_humanbuild.menu:25
-msgid "tremulous_humanbuild"
-msgstr "tremulous_humanbuild"
-
-#: tremulous_humandialogs.menu:20
-msgid "tremulous_human_dialog"
-msgstr "tremulous_human_dialog"
-
-#: tremulous_humanitem.menu:25
-msgid "tremulous_humanitem"
-msgstr "tremulous_humanitem"
-
-#: tremulous_teamselect.menu:25
-msgid "tremulous_teamselect"
-msgstr "tremulous_teamselect"
-
-#: vsays.menu:32 vsays.menu:45
-msgid "pos"
-msgstr "pos"
-
-#: vsays.menu:36
-msgid "."
-msgstr "."
-
-#: vsays.menu:59
-msgid "vsay_top"
-msgstr "vsay_top"
 
 #: vsays.menu:60
 msgid "Attack"
@@ -2650,266 +4531,122 @@ msgstr "Status/Commands"
 msgid "General"
 msgstr "General"
 
-#: vsays.menu:68
-msgid "vsay_offense"
-msgstr "vsay_offense"
-
 #: vsays.menu:69
 msgid "I'm Attacking"
 msgstr "I'm Attacking"
-
-#: vsays.menu:69
-msgid "vsay attacking"
-msgstr "vsay attacking"
 
 #: vsays.menu:70
 msgid "Attack!"
 msgstr "Attack!"
 
-#: vsays.menu:70
-msgid "vsay attack"
-msgstr "vsay attack"
-
 #: vsays.menu:71
 msgid "I need backup!"
 msgstr "I need backup!"
-
-#: vsays.menu:71
-msgid "vsay backup"
-msgstr "vsay backup"
 
 #: vsays.menu:72
 msgid "Enemy Nearby"
 msgstr "Enemy Nearby"
 
-#: vsays.menu:72
-msgid "vsay enemyisnear"
-msgstr "vsay enemyisnear"
-
 #: vsays.menu:73
 msgid "Go! Go! GO!"
 msgstr "Go! Go! GO!"
-
-#: vsays.menu:73
-msgid "vsay gogogo"
-msgstr "vsay gogogo"
 
 #: vsays.menu:74
 msgid "Grenade!"
 msgstr "Grenade!"
 
-#: vsays.menu:74
-msgid "vsay grenade"
-msgstr "vsay grenade"
-
 #: vsays.menu:75
 msgid "Enemy Spawns Down!"
 msgstr "Enemy Spawns Down!"
-
-#: vsays.menu:75
-msgid "vsay enemyspawnsdown"
-msgstr "vsay enemyspawnsdown"
 
 #: vsays.menu:76 vsays.menu:86 vsays.menu:95 vsays.menu:108 vsays.menu:116
 msgid "Previous Menu"
 msgstr "Previous Menu"
 
-#: vsays.menu:79
-msgid "vsay_defense"
-msgstr "vsay_defense"
-
 #: vsays.menu:80
 msgid "I'm Defending"
 msgstr "I'm Defending"
-
-#: vsays.menu:80
-msgid "vsay defending"
-msgstr "vsay defending"
 
 #: vsays.menu:81
 msgid "Defend!"
 msgstr "Defend!"
 
-#: vsays.menu:81
-msgid "vsay defend"
-msgstr "vsay defend"
-
 #: vsays.menu:82
 msgid "Clear the path!"
 msgstr "Clear the path!"
-
-#: vsays.menu:82
-msgid "vsay clearthepath"
-msgstr "vsay clearthepath"
 
 #: vsays.menu:83
 msgid "Fallback!"
 msgstr "Fallback!"
 
-#: vsays.menu:83
-msgid "vsay fallback"
-msgstr "vsay fallback"
-
 #: vsays.menu:84
 msgid "Incoming!"
 msgstr "Incoming!"
-
-#: vsays.menu:84
-msgid "vsay incoming"
-msgstr "vsay incoming"
 
 #: vsays.menu:85
 msgid "Flank!"
 msgstr "Flank!"
 
-#: vsays.menu:85
-msgid "vsay flank"
-msgstr "vsay flank"
-
-#: vsays.menu:89
-msgid "vsay_building"
-msgstr "vsay_building"
-
 #: vsays.menu:90
 msgid "Base needs repairs!"
 msgstr "Base needs repairs!"
-
-#: vsays.menu:90
-msgid "vsay baserepairs"
-msgstr "vsay baserepairs"
 
 #: vsays.menu:91
 msgid "What's the base status?"
 msgstr "What's the base status?"
 
-#: vsays.menu:91
-msgid "vsay basestatus"
-msgstr "vsay basestatus"
-
 #: vsays.menu:92
 msgid "We need builders!"
 msgstr "We need builders!"
-
-#: vsays.menu:92
-msgid "vsay builders"
-msgstr "vsay builders"
 
 #: vsays.menu:93
 msgid "I'm building!"
 msgstr "I'm building!"
 
-#: vsays.menu:93
-msgid "vsay building"
-msgstr "vsay building"
-
 #: vsays.menu:94
 msgid "We need spawns!"
 msgstr "We need spawns!"
-
-#: vsays.menu:94
-msgid "vsay spawns"
-msgstr "vsay spawns"
-
-#: vsays.menu:98
-msgid "vsay_status"
-msgstr "vsay_status"
 
 #: vsays.menu:99
 msgid "I'm following you"
 msgstr "I'm following you"
 
-#: vsays.menu:99
-msgid "vsay following"
-msgstr "vsay following"
-
 #: vsays.menu:100
 msgid "I need health!"
 msgstr "I need health!"
-
-#: vsays.menu:100
-msgid "vsay needhealth"
-msgstr "vsay needhealth"
 
 #: vsays.menu:101
 msgid "Move up!"
 msgstr "Move up!"
 
-#: vsays.menu:101
-msgid "vsay moveup"
-msgstr "vsay moveup"
-
 #: vsays.menu:102
 msgid "Regroup"
 msgstr "Regroup"
-
-#: vsays.menu:102
-msgid "vsay regroup"
-msgstr "vsay regroup"
 
 #: vsays.menu:103
 msgid "Reporting in!"
 msgstr "Reporting in!"
 
-#: vsays.menu:103
-msgid "vsay reporting"
-msgstr "vsay reporting"
-
 #: vsays.menu:104
 msgid "Stay Alert!"
 msgstr "Stay Alert!"
-
-#: vsays.menu:104
-msgid "vsay stayalert"
-msgstr "vsay stayalert"
 
 #: vsays.menu:105
 msgid "Stay Alive!"
 msgstr "Stay Alive!"
 
-#: vsays.menu:105
-msgid "vsay stayalive"
-msgstr "vsay stayalive"
-
 #: vsays.menu:106
 msgid "Stay Focused!"
 msgstr "Stay Focused!"
-
-#: vsays.menu:106
-msgid "vsay stayfocused"
-msgstr "vsay stayfocused"
 
 #: vsays.menu:107
 msgid "Stick together!"
 msgstr "Stick together!"
 
-#: vsays.menu:107
-msgid "vsay sticktogether"
-msgstr "vsay sticktogether"
-
-#: vsays.menu:111
-msgid "vsay_general"
-msgstr "vsay_general"
-
-#: vsays.menu:112
-msgid "vsay yes"
-msgstr "vsay yes"
-
-#: vsays.menu:113
-msgid "vsay no"
-msgstr "vsay no"
-
 #: vsays.menu:114
 msgid "Thanks!"
 msgstr "Thanks!"
 
-#: vsays.menu:114
-msgid "vsay thanks"
-msgstr "vsay thanks"
-
 #: vsays.menu:115
 msgid "Sorry!"
 msgstr "Sorry!"
-
-#: vsays.menu:115
-msgid "vsay sorry"
-msgstr "vsay sorry"
