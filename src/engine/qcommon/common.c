@@ -3402,6 +3402,7 @@ void Com_Init( char *commandLine )
 
 				// exec the config
 				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+				Cbuf_AddText( va( "exec profiles/%s/autoexec.cfg\n", cl_profileStr ) );
 			}
 		}
 		else
@@ -3410,7 +3411,7 @@ void Com_Init( char *commandLine )
 		}
 	}
 
-	Cbuf_AddText( "exec autoexec.cfg\n" );
+	
 
 	// ydnar: reset crashed state
 	Cbuf_AddText( "set com_crashed 0\n" );
