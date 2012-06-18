@@ -508,7 +508,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->takedamage = qfalse; // can still be gibbed
 
 	self->s.weapon = WP_NONE;
-	self->r.contents = CONTENTS_CORPSE;
+	if ( self->client->noclip )
+	{
+		self->client->cliprcontents = CONTENTS_CORPSE;
+	}
+	else
+	{
+		self->r.contents = CONTENTS_CORPSE;
+	}
 
 	self->s.angles[ PITCH ] = 0;
 	self->s.angles[ ROLL ] = 0;

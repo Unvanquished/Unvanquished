@@ -369,6 +369,7 @@ struct gclient_s
 	qboolean           readyToExit; // wishes to leave the intermission
 
 	qboolean           noclip;
+	int                cliprcontents; // the backup layer of ent->r.contents for when noclipping
 
 	int                lastCmdTime; // level.time of last usercmd_t, for EF_CONNECTION
 	// we can't just use pers.lastCommand.time, because

@@ -1500,7 +1500,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	int                i;
 	clientPersistant_t saved;
 	clientSession_t    savedSess;
-	qboolean           savedNoclip;
+	qboolean           savedNoclip, savedCliprcontents;
 	int                persistant[ MAX_PERSISTANT ];
 	gentity_t          *spawnPoint = NULL;
 	int                flags;
@@ -1603,6 +1603,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	savedSess = client->sess;
 	savedPing = client->ps.ping;
 	savedNoclip = client->noclip;
+	savedCliprcontents = client->cliprcontents;
 
 	for ( i = 0; i < MAX_PERSISTANT; i++ )
 	{
@@ -1616,6 +1617,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->sess = savedSess;
 	client->ps.ping = savedPing;
 	client->noclip = savedNoclip;
+	client->cliprcontents = savedCliprcontents;
 	client->lastkilled_client = -1;
 
 	for ( i = 0; i < MAX_PERSISTANT; i++ )
@@ -1640,7 +1642,14 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->client = &level.clients[ index ];
 	ent->takedamage = qtrue;
 	ent->classname = "player";
-	ent->r.contents = CONTENTS_BODY;
+	if ( client->noclip )
+	{
+		client->cliprcontents = CONTENTS_BODY;
+	}
+	else
+	{
+		ent->r.contents = CONTENTS_BODY;
+	}
 	ent->clipmask = MASK_PLAYERSOLID;
 	ent->die = player_die;
 	ent->waterlevel = 0;

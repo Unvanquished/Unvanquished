@@ -321,7 +321,11 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	if ( !g_cheats.integer )
 	{
-		ent->client->noclip = qfalse;
+		if ( ent->client->noclip )
+		{
+			ent->client->noclip = qfalse;
+			ent->r.contents = ent->client->cliprcontents;
+		}
 		ent->flags &= ~( FL_GODMODE | FL_NOTARGET );
 	}
 

@@ -679,13 +679,21 @@ void Cmd_Noclip_f( gentity_t *ent )
 	if ( ent->client->noclip )
 	{
 		msg = "noclip OFF\n";
+		ent->r.contents = ent->client->cliprcontents;
 	}
 	else
 	{
 		msg = "noclip ON\n";
+		ent->client->cliprcontents = ent->r.contents;
+		ent->r.contents = 0;
 	}
 
 	ent->client->noclip = !ent->client->noclip;
+
+	if ( ent->r.linked )
+	{
+		trap_LinkEntity( ent );
+	}
 
 	trap_SendServerCommand( ent - g_entities, va( "print %s", Quote( msg ) ) );
 }
