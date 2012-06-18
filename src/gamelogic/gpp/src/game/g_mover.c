@@ -403,6 +403,12 @@ void G_MoverTeam( gentity_t *ent )
 
 	for ( part = ent; part; part = part->teamchain )
 	{
+		if ( part->s.pos.trType == TR_STATIONARY &&
+		     part->s.apos.trType == TR_STATIONARY )
+		{
+			continue;
+		}
+
 		// get current position
 		BG_EvaluateTrajectory( &part->s.pos, level.time, origin );
 		BG_EvaluateTrajectory( &part->s.apos, level.time, angles );
@@ -420,6 +426,12 @@ void G_MoverTeam( gentity_t *ent )
 		// go back to the previous position
 		for ( part = ent; part; part = part->teamchain )
 		{
+			if ( part->s.pos.trType == TR_STATIONARY &&
+			     part->s.apos.trType == TR_STATIONARY )
+			{
+				continue;
+			}
+
 			part->s.pos.trTime += level.time - level.previousTime;
 			part->s.apos.trTime += level.time - level.previousTime;
 			BG_EvaluateTrajectory( &part->s.pos, level.time, part->r.currentOrigin );
@@ -479,12 +491,7 @@ void G_RunMover( gentity_t *ent )
 		return;
 	}
 
-	// if stationary at one of the positions, don't move anything
-	if ( ( ent->s.pos.trType != TR_STATIONARY || ent->s.apos.trType != TR_STATIONARY ) &&
-	     ent->moverState < MODEL_POS1 ) //yuck yuck hack
-	{
-		G_MoverTeam( ent );
-	}
+	G_MoverTeam( ent );
 
 	// check think function
 	G_RunThink( ent );
@@ -597,7 +604,6 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 MatchTeam
 
 All entities in a mover team will move from pos1 to pos2
-in the same amount of time
 ================
 */
 void MatchTeam( gentity_t *teamLeader, int moverState, int time )
@@ -612,40 +618,77 @@ void MatchTeam( gentity_t *teamLeader, int moverState, int time )
 
 /*
 ================
-ReturnToPos1
+MasterOf
 ================
 */
-void ReturnToPos1( gentity_t *ent )
+gentity_t *MasterOf( gentity_t *ent )
 {
-	MatchTeam( ent, MOVER_2TO1, level.time );
-
-	// looping sound
-	ent->s.loopSound = ent->soundLoop;
-
-	// starting sound
-	if ( ent->sound2to1 )
+	if ( ent->teammaster )
 	{
-		G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
+		return ent->teammaster;
+	}
+	else
+	{
+		return ent;
 	}
 }
 
 /*
 ================
-ReturnToApos1
+GetMoverTeamState
+
+Returns a MOVER_* value representing the phase (either one
+ of pos1, 1to2, pos2, or 2to1) of a mover team as a whole.
 ================
 */
-void ReturnToApos1( gentity_t *ent )
+moverState_t GetMoverTeamState( gentity_t *ent )
 {
-	MatchTeam( ent, ROTATOR_2TO1, level.time );
+	qboolean pos1 = qfalse;
 
-	// looping sound
-	ent->s.loopSound = ent->soundLoop;
-
-	// starting sound
-	if ( ent->sound2to1 )
+	for ( ent = MasterOf( ent ); ent; ent = ent->teamchain )
 	{
-		G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
+		if ( ent->moverState == MOVER_POS1 || ent->moverState == ROTATOR_POS1 )
+		{
+			pos1 = qtrue;
+		}
+		else if ( ent->moverState == MOVER_1TO2 || ent->moverState == ROTATOR_1TO2 )
+		{
+			return MOVER_1TO2;
+		}
+		else if ( ent->moverState == MOVER_2TO1 || ent->moverState == ROTATOR_2TO1 )
+		{
+			return MOVER_2TO1;
+		}
 	}
+
+	if ( pos1 )
+	{
+		return MOVER_POS1;
+	}
+	else
+	{
+		return MOVER_POS2;
+	}
+}
+
+/*
+================
+ReturnToPos1orApos1
+
+Used only by a master movers.
+================
+*/
+
+void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator );
+
+void ReturnToPos1orApos1( gentity_t *ent )
+{
+	if ( GetMoverTeamState( ent ) != MOVER_POS2 )
+	{
+		return; // not every mover in the team has reached its endpoint yet
+	}
+
+	Use_BinaryMover( ent, ent, ent->activator );
 }
 
 /*
@@ -743,10 +786,10 @@ void Think_OpenModelDoor( gentity_t *ent )
 	//set brush non-solid
 	trap_UnlinkEntity( ent->clipBrush );
 
-	// looping sound
-	ent->s.loopSound = ent->soundLoop;
+	// stop the looping sound
+	ent->s.loopSound = 0;
 
-	// starting sound
+	// play sound
 	if ( ent->soundPos2 )
 	{
 		G_AddEvent( ent, EV_GENERAL_SOUND, ent->soundPos2 );
@@ -774,8 +817,10 @@ Reached_BinaryMover
 */
 void Reached_BinaryMover( gentity_t *ent )
 {
+	gentity_t *master = MasterOf( ent );
+
 	// stop the looping sound
-	ent->s.loopSound = ent->soundLoop;
+	ent->s.loopSound = 0;
 
 	if ( ent->moverState == MOVER_1TO2 )
 	{
@@ -789,8 +834,8 @@ void Reached_BinaryMover( gentity_t *ent )
 		}
 
 		// return to pos1 after a delay
-		ent->think = ReturnToPos1;
-		ent->nextthink = level.time + ent->wait;
+		master->think = ReturnToPos1orApos1;
+		master->nextthink = MAX( master->nextthink, level.time + ent->wait );
 
 		// fire targets
 		if ( !ent->activator )
@@ -829,8 +874,8 @@ void Reached_BinaryMover( gentity_t *ent )
 		}
 
 		// return to apos1 after a delay
-		ent->think = ReturnToApos1;
-		ent->nextthink = level.time + ent->wait;
+		master->think = ReturnToPos1orApos1;
+		master->nextthink = MAX( master->nextthink, level.time + ent->wait );
 
 		// fire targets
 		if ( !ent->activator )
@@ -872,6 +917,8 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	int total;
 	int partial;
+	gentity_t *master;
+	moverState_t teamState;
 
 	// if this is a non-client-usable door return
 	if ( ent->targetname && other && other->client )
@@ -888,11 +935,17 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 	ent->activator = activator;
 
+	master = MasterOf( ent );
+	teamState = GetMoverTeamState( ent );
+
+	for ( ent = master; ent; ent = ent->teamchain )
+	{
+	//ind
 	if ( ent->moverState == MOVER_POS1 )
 	{
 		// start moving 50 msec later, becase if this was player
 		// triggered, level.time hasn't been advanced yet
-		MatchTeam( ent, MOVER_1TO2, level.time + 50 );
+		SetMoverState( ent, MOVER_1TO2, level.time + 50 );
 
 		// starting sound
 		if ( ent->sound1to2 )
@@ -909,10 +962,30 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			trap_AdjustAreaPortalState( ent, qtrue );
 		}
 	}
-	else if ( ent->moverState == MOVER_POS2 )
+	else if ( ent->moverState == MOVER_POS2 &&
+	          !( teamState == MOVER_1TO2 || other == master ) )
 	{
 		// if all the way up, just delay before coming down
-		ent->nextthink = level.time + ent->wait;
+		master->think = ReturnToPos1orApos1;
+		master->nextthink = MAX( master->nextthink, level.time + ent->wait );
+	}
+	else if ( ent->moverState == MOVER_POS2 &&
+	          ( teamState == MOVER_1TO2 || other == master ) )
+	{
+		// start moving 50 msec later, becase if this was player
+		// triggered, level.time hasn't been advanced yet
+		SetMoverState( ent, MOVER_2TO1, level.time + 50 );
+
+		// starting sound
+		if ( ent->sound2to1 )
+			G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
+
+		// looping sound
+		ent->s.loopSound = ent->soundLoop;
+
+		// open areaportal
+		if ( ent->teammaster == ent || !ent->teammaster )
+			trap_AdjustAreaPortalState( ent, qtrue );
 	}
 	else if ( ent->moverState == MOVER_2TO1 )
 	{
@@ -925,7 +998,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			partial = total;
 		}
 
-		MatchTeam( ent, MOVER_1TO2, level.time - ( total - partial ) );
+		SetMoverState( ent, MOVER_1TO2, level.time - ( total - partial ) );
 
 		if ( ent->sound1to2 )
 		{
@@ -943,7 +1016,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			partial = total;
 		}
 
-		MatchTeam( ent, MOVER_2TO1, level.time - ( total - partial ) );
+		SetMoverState( ent, MOVER_2TO1, level.time - ( total - partial ) );
 
 		if ( ent->sound2to1 )
 		{
@@ -954,7 +1027,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// start moving 50 msec later, becase if this was player
 		// triggered, level.time hasn't been advanced yet
-		MatchTeam( ent, ROTATOR_1TO2, level.time + 50 );
+		SetMoverState( ent, ROTATOR_1TO2, level.time + 50 );
 
 		// starting sound
 		if ( ent->sound1to2 )
@@ -971,10 +1044,30 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			trap_AdjustAreaPortalState( ent, qtrue );
 		}
 	}
-	else if ( ent->moverState == ROTATOR_POS2 )
+	else if ( ent->moverState == ROTATOR_POS2 &&
+	          !( teamState == MOVER_1TO2 || other == master ) )
 	{
 		// if all the way up, just delay before coming down
-		ent->nextthink = level.time + ent->wait;
+		master->think = ReturnToPos1orApos1;
+		master->nextthink = MAX( master->nextthink, level.time + ent->wait );
+	}
+	else if ( ent->moverState == ROTATOR_POS2 &&
+	          ( teamState == MOVER_1TO2 || other == master ) )
+	{
+		// start moving 50 msec later, becase if this was player
+		// triggered, level.time hasn't been advanced yet
+		SetMoverState( ent, ROTATOR_2TO1, level.time + 50 );
+
+		// starting sound
+		if ( ent->sound2to1 )
+			G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
+
+		// looping sound
+		ent->s.loopSound = ent->soundLoop;
+
+		// open areaportal
+		if ( ent->teammaster == ent || !ent->teammaster )
+			trap_AdjustAreaPortalState( ent, qtrue );
 	}
 	else if ( ent->moverState == ROTATOR_2TO1 )
 	{
@@ -987,7 +1080,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			partial = total;
 		}
 
-		MatchTeam( ent, ROTATOR_1TO2, level.time - ( total - partial ) );
+		SetMoverState( ent, ROTATOR_1TO2, level.time - ( total - partial ) );
 
 		if ( ent->sound1to2 )
 		{
@@ -1005,7 +1098,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			partial = total;
 		}
 
-		MatchTeam( ent, ROTATOR_2TO1, level.time - ( total - partial ) );
+		SetMoverState( ent, ROTATOR_2TO1, level.time - ( total - partial ) );
 
 		if ( ent->sound2to1 )
 		{
@@ -1042,6 +1135,8 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		// if all the way up, just delay before coming down
 		ent->nextthink = level.time + ent->wait;
 	}
+	//outd
+	}
 }
 
 /*
@@ -1060,6 +1155,7 @@ void InitMover( gentity_t *ent )
 	vec3_t   color;
 	qboolean lightSet, colorSet;
 	char     *sound;
+	char     *team;
 
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
@@ -1068,10 +1164,10 @@ void InitMover( gentity_t *ent )
 		ent->s.modelindex2 = G_ModelIndex( ent->model2 );
 	}
 
-	// if the "loopsound" key is set, use a constant looping sound when moving
-	if ( G_SpawnString( "noise", "100", &sound ) )
+	// if the "noise" key is set, use a constant looping sound when moving
+	if ( G_SpawnString( "noise", "", &sound ) )
 	{
-		ent->s.loopSound = G_SoundIndex( sound );
+		ent->soundLoop = G_SoundIndex( sound );
 	}
 
 	// if the "color" or "light" keys are set, setup constantLight
@@ -1115,6 +1211,11 @@ void InitMover( gentity_t *ent )
 
 	ent->use = Use_BinaryMover;
 	ent->reached = Reached_BinaryMover;
+
+	if ( G_SpawnString( "team", "", &team ) )
+	{
+		ent->team = G_CopyString( team );
+	}
 
 	ent->moverState = MOVER_POS1;
 	ent->s.eType = ET_MOVER;
@@ -1158,6 +1259,7 @@ void InitRotator( gentity_t *ent )
 	vec3_t   color;
 	qboolean lightSet, colorSet;
 	char     *sound;
+	char     *team;
 
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
@@ -1166,10 +1268,10 @@ void InitRotator( gentity_t *ent )
 		ent->s.modelindex2 = G_ModelIndex( ent->model2 );
 	}
 
-	// if the "loopsound" key is set, use a constant looping sound when moving
-	if ( G_SpawnString( "noise", "100", &sound ) )
+	// if the "noise" key is set, use a constant looping sound when moving
+	if ( G_SpawnString( "noise", "", &sound ) )
 	{
-		ent->s.loopSound = G_SoundIndex( sound );
+		ent->soundLoop = G_SoundIndex( sound );
 	}
 
 	// if the "color" or "light" keys are set, setup constantLight
@@ -1213,6 +1315,11 @@ void InitRotator( gentity_t *ent )
 
 	ent->use = Use_BinaryMover;
 	ent->reached = Reached_BinaryMover;
+
+	if ( G_SpawnString( "team", "", &team ) )
+	{
+		ent->team = G_CopyString( team );
+	}
 
 	ent->moverState = ROTATOR_POS1;
 	ent->s.eType = ET_MOVER;
@@ -1438,29 +1545,37 @@ Touch_DoorTrigger
 */
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
+	moverState_t teamState;
+
 	//buildables don't trigger movers
 	if ( other->s.eType == ET_BUILDABLE )
 	{
 		return;
 	}
 
+	teamState = GetMoverTeamState( ent->parent );
+
 	if ( other->client && other->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		// if the door is not open and not opening
-		if ( ent->parent->moverState != MOVER_1TO2 &&
-		     ent->parent->moverState != MOVER_POS2 &&
-		     ent->parent->moverState != ROTATOR_1TO2 &&
-		     ent->parent->moverState != ROTATOR_POS2 )
+		if ( teamState != MOVER_POS2 && teamState != MOVER_1TO2 )
 		{
 			Touch_DoorTriggerSpectator( ent, other, trace );
 		}
 	}
-	else if ( ent->parent->moverState != MOVER_1TO2 &&
-	          ent->parent->moverState != ROTATOR_1TO2 &&
-	          ent->parent->moverState != ROTATOR_2TO1 )
+	else if ( teamState != MOVER_1TO2 )
 	{
 		Use_BinaryMover( ent->parent, ent, other );
 	}
+}
+
+void Think_MatchTeam( gentity_t *ent )
+{
+	if ( ent->flags & FL_TEAMSLAVE )
+	{
+		return;
+	}
+	MatchTeam( ent, ent->moverState, level.time );
 }
 
 /*
@@ -1515,13 +1630,8 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 
 	if ( ent->moverState < MODEL_POS1 )
 	{
-		MatchTeam( ent, ent->moverState, level.time );
+		Think_MatchTeam( ent );
 	}
-}
-
-void Think_MatchTeam( gentity_t *ent )
-{
-	MatchTeam( ent, ent->moverState, level.time );
 }
 
 /*QUAKED func_door (0 .5 .8) ? START_OPEN x CRUSHER
@@ -1547,6 +1657,7 @@ void SP_func_door( gentity_t *ent )
 	vec3_t size;
 	float  lip;
 	char   *s;
+	int    health;
 
 	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
 	ent->sound2to1 = G_SoundIndex( s );
@@ -1607,26 +1718,20 @@ void SP_func_door( gentity_t *ent )
 
 	ent->nextthink = level.time + FRAMETIME;
 
-	if ( !( ent->flags & FL_TEAMSLAVE ) )
+	G_SpawnInt( "health", "0", &health );
+	if ( health )
 	{
-		int health;
+		ent->takedamage = qtrue;
+	}
 
-		G_SpawnInt( "health", "0", &health );
-
-		if ( health )
-		{
-			ent->takedamage = qtrue;
-		}
-
-		if ( ent->targetname || health )
-		{
-			// non touch/shoot doors
-			ent->think = Think_MatchTeam;
-		}
-		else
-		{
-			ent->think = Think_SpawnNewDoorTrigger;
-		}
+	if ( ent->targetname || health )
+	{
+		// non touch/shoot doors
+		ent->think = Think_MatchTeam;
+	}
+	else
+	{
+		ent->think = Think_SpawnNewDoorTrigger;
 	}
 }
 
@@ -1652,6 +1757,7 @@ void SP_func_door( gentity_t *ent )
 void SP_func_door_rotating( gentity_t *ent )
 {
 	char *s;
+	int  health;
 
 	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
 	ent->sound2to1 = G_SoundIndex( s );
@@ -1742,26 +1848,20 @@ void SP_func_door_rotating( gentity_t *ent )
 
 	ent->nextthink = level.time + FRAMETIME;
 
-	if ( !( ent->flags & FL_TEAMSLAVE ) )
+	G_SpawnInt( "health", "0", &health );
+	if ( health )
 	{
-		int health;
+		ent->takedamage = qtrue;
+	}
 
-		G_SpawnInt( "health", "0", &health );
-
-		if ( health )
-		{
-			ent->takedamage = qtrue;
-		}
-
-		if ( ent->targetname || health )
-		{
-			// non touch/shoot doors
-			ent->think = Think_MatchTeam;
-		}
-		else
-		{
-			ent->think = Think_SpawnNewDoorTrigger;
-		}
+	if ( ent->targetname || health )
+	{
+		// non touch/shoot doors
+		ent->think = Think_MatchTeam;
+	}
+	else
+	{
+		ent->think = Think_SpawnNewDoorTrigger;
 	}
 }
 
@@ -1786,6 +1886,7 @@ void SP_func_door_model( gentity_t *ent )
 	qboolean  lightSet, colorSet;
 	char      *sound;
 	gentity_t *clipBrush;
+	int       health;
 
 	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
 	ent->sound2to1 = G_SoundIndex( s );
@@ -1840,10 +1941,10 @@ void SP_func_door_model( gentity_t *ent )
 		ent->s.modelindex = G_ModelIndex( ent->model2 );
 	}
 
-	// if the "loopsound" key is set, use a constant looping sound when moving
-	if ( G_SpawnString( "noise", "100", &sound ) )
+	// if the "noise" key is set, use a constant looping sound when moving
+	if ( G_SpawnString( "noise", "", &sound ) )
 	{
-		ent->s.loopSound = G_SoundIndex( sound );
+		ent->soundLoop = G_SoundIndex( sound );
 	}
 
 	// if the "color" or "light" keys are set, setup constantLight
@@ -1913,22 +2014,16 @@ void SP_func_door_model( gentity_t *ent )
 
 	trap_LinkEntity( ent );
 
-	if ( !( ent->flags & FL_TEAMSLAVE ) )
+	G_SpawnInt( "health", "0", &health );
+	if ( health )
 	{
-		int health;
+		ent->takedamage = qtrue;
+	}
 
-		G_SpawnInt( "health", "0", &health );
-
-		if ( health )
-		{
-			ent->takedamage = qtrue;
-		}
-
-		if ( !( ent->targetname || health ) )
-		{
-			ent->nextthink = level.time + FRAMETIME;
-			ent->think = Think_SpawnNewDoorTrigger;
-		}
+	if ( !( ent->targetname || health ) )
+	{
+		ent->nextthink = level.time + FRAMETIME;
+		ent->think = Think_SpawnNewDoorTrigger;
 	}
 }
 

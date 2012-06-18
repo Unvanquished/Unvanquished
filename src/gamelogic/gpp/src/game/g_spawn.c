@@ -132,7 +132,6 @@ static const field_t fields[] =
 	{ "targetname",          FOFS( targetname ),          F_STRING    },
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
-	{ "team",                FOFS( team ),                F_STRING    },
 	{ "wait",                FOFS( wait ),                F_FLOAT     }
 };
 
