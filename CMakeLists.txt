@@ -1597,7 +1597,7 @@ if( BUILD_DAEMONMAP )
   set_target_properties( daemonMap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
 
   # Setup CPack for target daemonmap
-  install( TARGETS daemonmap DESTINATION "Unvanquished")
+  install( TARGETS daemonMap DESTINATION "Unvanquished")
   get_target_property( OUTPUT_NAME al OUTPUT_NAME )
   set( APPS ${APPS} ${OUTPUT_NAME} )
 
