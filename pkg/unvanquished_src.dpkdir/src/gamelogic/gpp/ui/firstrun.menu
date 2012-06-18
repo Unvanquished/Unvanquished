@@ -90,9 +90,9 @@
       {
         play "sound/misc/menu1.wav";
         uiScript createprofile ;
+        uiScript loadProfiles ;
         uiScript setDefaultProfile ;
         uiScript applyProfile ;
-        exec "snd_restart" // includes vid_restart
       }
     }
   }
