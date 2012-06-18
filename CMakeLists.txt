@@ -98,17 +98,6 @@ if( GAME_LIB_LLVM )
   message( STATUS "Using LLVM" )
 endif()
 
-# Setup CPack
-set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
-set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/Unvanquished.icns" )
-set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
-set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
-set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
-# Mac OS X Bundle specific settings
-set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
-set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
-set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/info.plist")
-
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
 set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
 set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
@@ -155,7 +144,7 @@ elseif( WIN32 )
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     set( BUILD_ARCH "x86_64" )
   elseif( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-    set( BUILD_ARCH "x86" )
+    set( BUILD_ARCH "i386" )
   endif()
 else()
   # CMAKE_SYSTEM_PROCESSOR is reliable for *nix
@@ -204,6 +193,21 @@ if( USE_INTERNAL_JPEG )
   add_subdirectory( ${LIB_DIR}/jpeg )
   set( JPEG_LIBRARY INTERNAL_JPEG CACHE STRING "JPEG library" FORCE )
   set( JPEG_INCLUDE_DIR ${LIB_DIR}/jpeg CACHE STRING "JPEG include directory" FORCE )
+endif()
+
+# Setup CPack
+set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
+set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/Unvanquished.icns" )
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
+set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
+# Mac OS X Bundle specific settings
+set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
+set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
+if( ${BUILD_ARCH} STREQUAL "i386" )
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/x86/info.plist")
+else()
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/x86_64/info.plist")
 endif()
 
 #################
