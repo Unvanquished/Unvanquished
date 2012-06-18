@@ -1796,7 +1796,7 @@ void Menus_CloseAll( void )
 	{
 		for ( i = openMenuCount; i > 0; i-- )
 		{
-			Menus_Close( menuStack[ i ] );
+			Menus_Close( menuStack[ i - 1 ] );
 		}
 
 		openMenuCount = 0;
