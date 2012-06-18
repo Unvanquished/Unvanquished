@@ -631,7 +631,12 @@ void SP_worldspawn( void )
 	trap_Cvar_Set( "g_disabledBuildables", s );
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
+	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
 	g_entities[ ENTITYNUM_WORLD ].classname = "worldspawn";
+
+	g_entities[ ENTITYNUM_NONE ].s.number = ENTITYNUM_NONE;
+	g_entities[ ENTITYNUM_NONE ].r.ownerNum = ENTITYNUM_NONE;
+	g_entities[ ENTITYNUM_NONE ].classname = "nothing";
 
 	if ( g_restarted.integer )
 	{
