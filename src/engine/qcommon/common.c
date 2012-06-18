@@ -3363,17 +3363,13 @@ void Com_Init( char *commandLine )
 				char *defaultProfile = NULL;
 
 				FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile );
+				Q_CleanStr( defaultProfile );
+				Q_CleanDirName( defaultProfile );
 
 				if ( defaultProfile )
 				{
-					char *text_p = defaultProfile;
-					char *token = COM_Parse( &text_p );
-
-					if ( token && *token )
-					{
-						Cvar_Set( "cl_defaultProfile", token );
-						Cvar_Set( "cl_profile", token );
-					}
+					Cvar_Set( "cl_defaultProfile", defaultProfile );
+					Cvar_Set( "cl_profile", defaultProfile );
 
 					FS_FreeFile( defaultProfile );
 
