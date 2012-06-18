@@ -32,7 +32,7 @@ void QDECL PRINTF_LIKE(2) PrintMsg( gentity_t *ent, const char *fmt, ... )
 
 	va_start( argptr, fmt );
 
-	if ( Q_vsnprintf( msg, sizeof( msg ), fmt, argptr ) > sizeof( msg ) )
+	if ( Q_vsnprintf( msg, sizeof( msg ), fmt, argptr ) >= sizeof( msg ) )
 	{
 		G_Error( "PrintMsg overrun" );
 	}
@@ -501,7 +501,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 
 		j = strlen( entry );
 
-		if ( stringlength + j > sizeof( string ) )
+		if ( stringlength + j >= sizeof( string ) )
 		{
 			break;
 		}

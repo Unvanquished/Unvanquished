@@ -754,9 +754,9 @@ static qboolean BG_ParseBuildableFile( const char *filename, buildableConfig_t *
 			{
 				index = 0;
 			}
-			else if ( index > MAX_BUILDABLE_MODELS )
+			else if ( index >= MAX_BUILDABLE_MODELS )
 			{
-				index = MAX_BUILDABLE_MODELS;
+				index = MAX_BUILDABLE_MODELS - 1;
 			}
 
 			token = COM_Parse( &text_p );

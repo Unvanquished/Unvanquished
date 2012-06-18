@@ -4485,7 +4485,7 @@ qboolean CL_NextUpdateServer( void )
 	{
 		cls.autoupdatServerIndex++;
 
-		if ( cls.autoupdatServerIndex > MAX_AUTOUPDATE_SERVERS )
+		if ( cls.autoupdatServerIndex >= MAX_AUTOUPDATE_SERVERS )
 		{
 			cls.autoupdatServerIndex = 0;
 		}

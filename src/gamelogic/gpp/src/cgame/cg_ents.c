@@ -425,7 +425,7 @@ static void CG_LaunchMissile( centity_t *cent )
 
 	weapon = es->weapon;
 
-	if ( weapon > WP_NUM_WEAPONS )
+	if ( weapon >= WP_NUM_WEAPONS )
 	{
 		weapon = WP_NONE;
 	}
@@ -475,7 +475,7 @@ static void CG_Missile( centity_t *cent )
 
 	weapon = es->weapon;
 
-	if ( weapon > WP_NUM_WEAPONS )
+	if ( weapon >= WP_NUM_WEAPONS )
 	{
 		weapon = WP_NONE;
 	}

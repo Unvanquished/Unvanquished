@@ -5362,7 +5362,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 	}
 
 	// terminate the string, making sure that we don't overflow the buffer
-	out[ paint > sizeof( out ) ? sizeof( out ) - 1 : paint ] = '\0';
+	out[ paint > sizeof( out ) - 1 ? sizeof( out ) - 1 : paint ] = '\0';
 	return out;
 }
 
