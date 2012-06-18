@@ -810,7 +810,8 @@ qboolean         G_FindCreep( gentity_t *self );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
 void             G_ClearDeconMarks( void );
-itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal );
+itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance,
+                             vec3_t origin, vec3_t normal, int *groundEntNum );
 qboolean         G_BuildIfValid( gentity_t *ent, buildable_t buildable );
 void             G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim, qboolean force );
 void             G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim );

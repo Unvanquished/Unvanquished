@@ -767,6 +767,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				{
 					vec3_t forward, aimDir, normal;
 					vec3_t dummy, dummy2;
+					int dummy3;
 					int dist;
 
 					BG_GetClientNormal( &client->ps,normal );
@@ -777,7 +778,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 					dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
 					if ( G_CanBuild( ent, client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT,
-					                 dist, dummy, dummy2 ) == IBE_NONE )
+					                 dist, dummy, dummy2, &dummy3 ) == IBE_NONE )
 					{
 						client->ps.stats[ STAT_BUILDABLE ] |= SB_VALID_TOGGLEBIT;
 					}

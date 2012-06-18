@@ -3078,6 +3078,7 @@ void Cmd_Build_f( gentity_t *ent )
 	buildable_t buildable;
 	float       dist;
 	vec3_t      origin, normal;
+	int         groundEntNum;
 	team_t      team;
 
 	if ( ent->client->pers.namelog->denyBuild )
@@ -3123,7 +3124,7 @@ void Cmd_Build_f( gentity_t *ent )
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 
 		//these are the errors displayed when the builder first selects something to use
-		switch ( G_CanBuild( ent, buildable, dist, origin, normal ) )
+		switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 		{
 				// can place right away, set the blueprint and the valid togglebit
 			case IBE_NONE:
