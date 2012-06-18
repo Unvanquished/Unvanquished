@@ -548,7 +548,7 @@ typedef enum {
 //
 #define MAX_SPAWN_VARS       64
 #define MAX_SPAWN_VARS_CHARS 4096
-#define MAX_BUILDLOG         128
+#define MAX_BUILDLOG         1024
 
 typedef struct
 {
