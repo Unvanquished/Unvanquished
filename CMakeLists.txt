@@ -1599,7 +1599,7 @@ if( BUILD_DAEMONMAP )
   # Setup CPack for target daemonmap
   install( TARGETS daemonMap DESTINATION "Unvanquished")
   get_target_property( OUTPUT_NAME daemonMap OUTPUT_NAME )
-  set( APPS ${APPS} ${OUTPUT_NAME} )
+  set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
 
   # Visual Studio specific settings
   if( MSVC )
