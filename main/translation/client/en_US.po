@@ -1,14 +1,13 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# UNVANQUISHED
+# Copyright (C) 2012 Unvanquished Development
+# This file is distributed under the same license as Unvanquished.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: UNVANQUISHED VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-08 01:28-0700\n"
+"POT-Creation-Date: 2012-06-18 02:08-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,54 +16,2665 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: translation.cpp:88
-msgid "Hello\n"
-msgstr ""
+#: client/cl_input.c:124
+msgid "Three keys down for a button!\n"
+msgstr "Three keys down for a button!\n"
 
-#: common.c:3571
-msgid "--- Common Initialization Complete ---\n"
-msgstr ""
+#: client/cl_input.c:1167
+msgid "WARNING: unsent fragments (not supposed to happen!)\n"
+msgstr "WARNING: unsent fragments (not supposed to happen!)\n"
 
-#: cvar.c:504
+#: client/cl_input.c:1263
+#, c-format
+msgid "^1BUG: cgame: some button commands left unregistered (\"%s\")\n"
+msgstr "^1BUG: cgame: some button commands left unregistered (\"%s\")\n"
+
+#: client/cl_keys.c:1376
+msgid "unbind <key> : remove commands from a key\n"
+msgstr "unbind <key> : remove commands from a key\n"
+
+#: client/cl_keys.c:1384 client/cl_keys.c:1437 client/cl_keys.c:1492
+#, c-format
+msgid "\"%s\" isn't a valid key\n"
+msgstr "\"%s\" isn't a valid key\n"
+
+#: client/cl_keys.c:1424
+msgid "bind <key> [command] : attach a command to a key\n"
+msgstr "bind <key> [command] : attach a command to a key\n"
+
+#: client/cl_keys.c:1449
+#, c-format
+msgid "\"%s\" is not bound\n"
+msgstr "\"%s\" is not bound\n"
+
+#: client/cl_keys.c:1483
+msgid "editbind <key> : edit a key binding (in the in-game console)"
+msgstr "editbind <key> : edit a key binding (in the in-game console)"
+
+#: client/cl_keys.c:1943
+#, c-format
+msgid "%s is unbound, use controls menu to set.\n"
+msgstr "%s is unbound, use controls menu to set.\n"
+
+#: client/cl_parse.c:531
+msgid "Delta from invalid frame (not supposed to happen!).\n"
+msgstr "Delta from invalid frame (not supposed to happen!).\n"
+
+#: client/cl_parse.c:537
+msgid "Delta frame too old.\n"
+msgstr "Delta frame too old.\n"
+
+#: client/cl_parse.c:541
+msgid "Delta parseEntitiesNum too old.\n"
+msgstr "Delta parseEntitiesNum too old.\n"
+
+#: client/cl_parse.c:844
+msgid "Server sending download, but no download was requested\n"
+msgstr "Server sending download, but no download was requested\n"
+
+#: client/cl_parse.c:874
+#, c-format
+msgid "Server redirected download: %s\n"
+msgstr "Server redirected download: %s\n"
+
+#: client/cl_parse.c:881
+#, c-format
+msgid "refusing redirect to %s by server (bad checksum)\n"
+msgstr "refusing redirect to %s by server (bad checksum)\n"
+
+#: client/cl_parse.c:900
+#, c-format
+msgid "Failed to initialize download for '%s'\n"
+msgstr "Failed to initialize download for '%s'\n"
+
+#: client/cl_parse.c:950
+#, c-format
+msgid "CL_ParseDownload: Expected block %d, got %d\n"
+msgstr "CL_ParseDownload: Expected block %d, got %d\n"
+
+#: client/cl_parse.c:961
+#, c-format
+msgid "Could not create %s\n"
+msgstr "Could not create %s\n"
+
+#: client/snd_load.c:120
+#, c-format
+msgid "using sound module %s\n"
+msgstr "using sound module %s\n"
+
+#: client/snd_load.c:125
+msgid "can't load sound module - bailing\n"
+msgstr "can't load sound module - bailing\n"
+
+#: client/snd_load.c:136
+msgid "can't find GetSndAPI - bailing\n"
+msgstr "can't find GetSndAPI - bailing\n"
+
+#: client/snd_load.c:186
+msgid "call to GetSndAPI failed - bailing\n"
+msgstr "call to GetSndAPI failed - bailing\n"
+
+#: client/snd_load.c:196
+msgid "call to Init failed - bailing\n"
+msgstr "call to Init failed - bailing\n"
+
+#: client/snd_load.c:210
+msgid "------ Initializing Sound -----\n"
+msgstr "------ Initializing Sound -----\n"
+
+#: client/snd_load.c:216
+msgid "not initializing.\n"
+msgstr "not initializing.\n"
+
+#: client/snd_load.c:242
+msgid "using builtin sound system\n"
+msgstr "using builtin sound system\n"
+
+#: client/cl_avi.c:352
+msgid "cl_aviFrameRate must be >= 1\n"
+msgstr "cl_aviFrameRate must be >= 1\n"
+
+#: client/cl_avi.c:406
+#, c-format
+msgid ""
+"WARNING: cl_aviFrameRate is not a divisor of the audio rate, suggest %d\n"
+msgstr ""
+"WARNING: cl_aviFrameRate is not a divisor of the audio rate, suggest %d\n"
+
+#: client/cl_avi.c:427
+msgid ""
+"WARNING: Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 "
+"for audio capture\n"
+msgstr ""
+"WARNING: Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 "
+"for audio capture\n"
+
+#: client/cl_avi.c:558
+msgid "WARNING: Audio capture buffer overflow -- truncating\n"
+msgstr "WARNING: Audio capture buffer overflow -- truncating\n"
+
+#: client/cl_avi.c:687
+#, c-format
+msgid "Wrote %d:%d frames to %s\n"
+msgstr "Wrote %d:%d frames to %s\n"
+
+#: client/cin_ogm.c:543
+msgid "[Theora] unexpected resolution in a yuv-Frame\n"
+msgstr "[Theora] unexpected resolution in a yuv-Frame\n"
+
+#: client/cin_ogm.c:756
+#, c-format
+msgid ""
+"WARNING: it seams there was already a ogm running, it will be killed to "
+"start %s\n"
+msgstr ""
+"WARNING: it seams there was already a ogm running, it will be killed to "
+"start %s\n"
+
+#: client/cin_ogm.c:766
+#, c-format
+msgid "WARNING: Can't open ogm-file for reading (%s)\n"
+msgstr "WARNING: Can't open ogm-file for reading (%s)\n"
+
+#: client/cin_ogm.c:783
+#, c-format
+msgid ""
+"WARNING: more than one audio stream, in ogm-file(%s) ... we will stay at the "
+"first one\n"
+msgstr ""
+"WARNING: more than one audio stream, in ogm-file(%s) ... we will stay at the "
+"first one\n"
+
+#: client/cin_ogm.c:798
+#, c-format
+msgid ""
+"WARNING: more than one video stream, in ogm-file(%s) ... we will stay at the "
+"first one\n"
+msgstr ""
+"WARNING: more than one video stream, in ogm-file(%s) ... we will stay at the "
+"first one\n"
+
+#: client/cin_ogm.c:816
+#, c-format
+msgid ""
+"more than one video stream, in ogm-file(%s) ... we will stay at the first "
+"one\n"
+msgstr ""
+"more than one video stream, in ogm-file(%s) ... we will stay at the first "
+"one\n"
+
+#: client/cin_ogm.c:829
+#, c-format
+msgid "VideoWidth of the ogm-file isn't a power of 2 value (%s)\n"
+msgstr "VideoWidth of the ogm-file isn't a power of 2 value (%s)\n"
+
+#: client/cin_ogm.c:836
+#, c-format
+msgid "VideoHeight of the ogm-file isn't a power of 2 value (%s)\n"
+msgstr "VideoHeight of the ogm-file isn't a power of 2 value (%s)\n"
+
+#: client/cin_ogm.c:858
+#, c-format
+msgid "WARNING: Found \"video\"- and \"theora\"-stream ,ogm-file (%s)\n"
+msgstr "WARNING: Found \"video\"- and \"theora\"-stream ,ogm-file (%s)\n"
+
+#: client/cin_ogm.c:866
+#, c-format
+msgid "WARNING: Haven't found a audio(vorbis) stream in ogm-file (%s)\n"
+msgstr "WARNING: Haven't found a audio(vorbis) stream in ogm-file (%s)\n"
+
+#: client/cin_ogm.c:874
+#, c-format
+msgid "WARNING: Haven't found a video stream in ogm-file (%s)\n"
+msgstr "WARNING: Haven't found a video stream in ogm-file (%s)\n"
+
+#: client/cin_ogm.c:889
+#, c-format
+msgid ""
+"WARNING: Corrupt ogg packet while loading vorbis-headers, ogm-file(%s)\n"
+msgstr ""
+"WARNING: Corrupt ogg packet while loading vorbis-headers, ogm-file(%s)\n"
+
+#: client/cin_ogm.c:899
+#, c-format
+msgid ""
+"WARNING: This Ogg bitstream does not contain Vorbis audio data, ogm-file"
+"(%s)\n"
+msgstr ""
+"WARNING: This Ogg bitstream does not contain Vorbis audio data, ogm-file"
+"(%s)\n"
+
+#: client/cin_ogm.c:909
+#, c-format
+msgid "WARNING: Couldn't find all vorbis headers before end of ogm-file (%s)\n"
+msgstr ""
+"WARNING: Couldn't find all vorbis headers before end of ogm-file (%s)\n"
+
+#: client/cin_ogm.c:922
+#, c-format
+msgid "[Xvid]Decore INIT problem, return value %d(ogm-file: %s)\n"
+msgstr "[Xvid]Decore INIT problem, return value %d(ogm-file: %s)\n"
+
+#: client/cin_ogm.c:946
+#, c-format
+msgid ""
+"WARNING: Corrupt ogg packet while loading theora-headers, ogm-file(%s)\n"
+msgstr ""
+"WARNING: Corrupt ogg packet while loading theora-headers, ogm-file(%s)\n"
+
+#: client/cin_ogm.c:956
+#, c-format
+msgid ""
+"WARNING: This Ogg bitstream does not contain theora data, ogm-file(%s)\n"
+msgstr ""
+"WARNING: This Ogg bitstream does not contain theora data, ogm-file(%s)\n"
+
+#: client/cin_ogm.c:966
+#, c-format
+msgid "WARNING: Couldn't find all theora headers before end of ogm-file (%s)\n"
+msgstr ""
+"WARNING: Couldn't find all theora headers before end of ogm-file (%s)\n"
+
+#: client/cin_ogm.c:976
+#, c-format
+msgid "WARNING: VideoWidth of the ogm-file isn't a power of 2 value (%s)\n"
+msgstr "WARNING: VideoWidth of the ogm-file isn't a power of 2 value (%s)\n"
+
+#: client/cin_ogm.c:982
+#, c-format
+msgid "WARNING: VideoHeight of the ogm-file isn't a power of 2 value (%s)\n"
+msgstr "WARNING: VideoHeight of the ogm-file isn't a power of 2 value (%s)\n"
+
+#: client/cin_ogm.c:1050
+#, c-format
+msgid "[Xvid]Decore RELEASE problem, return value %d\n"
+msgstr "[Xvid]Decore RELEASE problem, return value %d\n"
+
+#: client/cl_console.c:255
+msgid "usage: condump <filename>\n"
+msgstr "usage: condump <filename>\n"
+
+#: client/cl_console.c:259
+#, c-format
+msgid "Dumped console text to %s.\n"
+msgstr "Dumped console text to %s.\n"
+
+#: client/cl_console.c:265 client/cl_main.c:971
+msgid "ERROR: couldn't open.\n"
+msgstr "ERROR: couldn't open.\n"
+
+#: client/cl_console.c:303
+#, c-format
+msgid "usage: %s <string1> <string2> <...>\n"
+msgstr "usage: %s <string1> <string2> <...>\n"
+
+#: client/cl_console.c:349
+msgid "usage: grep <string>\n"
+msgstr "usage: grep <string>\n"
+
+#: client/snd_mem.c:113
+msgid "Sound memory manager started\n"
+msgstr "Sound memory manager started\n"
+
+#: client/snd_mem.c:311
+#, c-format
+msgid "%d bytes free sound buffer memory, %d total used\n"
+msgstr "%d bytes free sound buffer memory, %d total used\n"
+
+#: client/cl_cgame.c:507
+msgid "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"
+msgstr "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"
+
+#: client/cl_cgame.c:1551
+#, c-format
+msgid "CL_InitCGame: %5.2fs\n"
+msgstr "CL_InitCGame: %5.2fs\n"
+
+#: client/cl_cgame.c:1769
+msgid "Mumble: Linking to Mumble application ok\n"
+msgstr "Mumble: Linking to Mumble application ok\n"
+
+#: client/cl_cgame.c:1769
+msgid "Mumble: Linking to Mumble application failed\n"
+msgstr "Mumble: Linking to Mumble application failed\n"
+
+#: client/snd_dma.c:109
+msgid "----- Sound Info -----\n"
+msgstr "----- Sound Info -----\n"
+
+#: client/snd_dma.c:113
+msgid "sound system not started\n"
+msgstr "sound system not started\n"
+
+#: client/snd_dma.c:119
+msgid "sound system is muted\n"
+msgstr "sound system is muted\n"
+
+#: client/snd_dma.c:122
+#, c-format
+msgid "%5d stereo\n"
+msgstr "%5d stereo\n"
+
+#: client/snd_dma.c:123
+#, c-format
+msgid "%5d samples\n"
+msgstr "%5d samples\n"
+
+#: client/snd_dma.c:124
+#, c-format
+msgid "%5d samplebits\n"
+msgstr "%5d samplebits\n"
+
+#: client/snd_dma.c:125
+#, c-format
+msgid "%5d submission_chunk\n"
+msgstr "%5d submission_chunk\n"
+
+#: client/snd_dma.c:126
+#, c-format
+msgid "%5d speed\n"
+msgstr "%5d speed\n"
+
+#: client/snd_dma.c:127
+#, c-format
+msgid "%p dma buffer\n"
+msgstr "%p dma buffer\n"
+
+#: client/snd_dma.c:131
+#, c-format
+msgid "Background stream: %s\n"
+msgstr "Background stream: %s\n"
+
+#: client/snd_dma.c:135
+msgid "No background file.\n"
+msgstr "No background file.\n"
+
+#: client/snd_dma.c:236
+msgid "Channel memory manager started\n"
+msgstr "Channel memory manager started\n"
+
+#: client/snd_dma.c:417
+#, c-format
+msgid "S_Base_SoundDuration: handle %i out of range\n"
+msgstr "S_Base_SoundDuration: handle %i out of range\n"
+
+#: client/snd_dma.c:466
+msgid "Sound name exceeds MAX_QPATH\n"
+msgstr "Sound name exceeds MAX_QPATH\n"
+
+#: client/snd_dma.c:476 client/snd_dma.c:490
+#, c-format
+msgid "WARNING: could not find %s - using default\n"
+msgstr "WARNING: could not find %s - using default\n"
+
+#: client/snd_dma.c:619
+#, c-format
+msgid "S_StartSound: handle %i out of range\n"
+msgstr "S_StartSound: handle %i out of range\n"
+
+#: client/snd_dma.c:722
+msgid "dropping sound\n"
+msgstr "dropping sound\n"
+
+#: client/snd_dma.c:766
+#, c-format
+msgid "S_StartLocalSound: handle %i out of range\n"
+msgstr "S_StartLocalSound: handle %i out of range\n"
+
+#: client/snd_dma.c:896
+#, c-format
+msgid "S_AddLoopingSound: handle %i out of range\n"
+msgstr "S_AddLoopingSound: handle %i out of range\n"
+
+#: client/snd_dma.c:970
+#, c-format
+msgid "S_AddRealLoopingSound: handle %i out of range\n"
+msgstr "S_AddRealLoopingSound: handle %i out of range\n"
+
+#: client/snd_dma.c:1607
+msgid "music <musicfile> [loopfile]\n"
+msgstr "music <musicfile> [loopfile]\n"
+
+#: client/snd_dma.c:1629
+#, c-format
+msgid "Total resident: %i\n"
+msgstr "Total resident: %i\n"
+
+#: client/cl_cin.c:1824
+#, c-format
+msgid "starting ogm-playback failed(%s)\n"
+msgstr "starting ogm-playback failed(%s)\n"
+
+#: client/cl_irc.c:548
+#, c-format
+msgid "IRC PARSER ERROR (state: %d , received: %d)\n"
+msgstr "IRC PARSER ERROR (state: %d , received: %d)\n"
+
+#: client/cl_irc.c:1004
+msgid "Unable to initialise socket.\n"
+msgstr "Unable to initialise socket.\n"
+
+#: client/cl_irc.c:1008
+msgid "The specified address family is not supported.\n"
+msgstr "The specified address family is not supported.\n"
+
+#: client/cl_irc.c:1012
+msgid "Specified address is not available from the local machine.\n"
+msgstr "Specified address is not available from the local machine.\n"
+
+#: client/cl_irc.c:1016
+msgid "The attempt to connect was forcefully rejected.\n"
+msgstr "The attempt to connect was forcefully rejected.\n"
+
+#: client/cl_irc.c:1020
+msgid "address destination address is required.\n"
+msgstr "address destination address is required.\n"
+
+#: client/cl_irc.c:1024
+msgid "The namelen argument is incorrect.\n"
+msgstr "The namelen argument is incorrect.\n"
+
+#: client/cl_irc.c:1028
+msgid "The socket is not already bound to an address.\n"
+msgstr "The socket is not already bound to an address.\n"
+
+#: client/cl_irc.c:1032
+msgid "The socket is already connected.\n"
+msgstr "The socket is already connected.\n"
+
+#: client/cl_irc.c:1036
+msgid "The specified address is already in use.\n"
+msgstr "The specified address is already in use.\n"
+
+#: client/cl_irc.c:1040
+msgid "No more file descriptors are available.\n"
+msgstr "No more file descriptors are available.\n"
+
+#: client/cl_irc.c:1044
+msgid "No buffer space available. The socket cannot be created.\n"
+msgstr "No buffer space available. The socket cannot be created.\n"
+
+#: client/cl_irc.c:1048
+msgid "The specified protocol is not supported.\n"
+msgstr "The specified protocol is not supported.\n"
+
+#: client/cl_irc.c:1052
+msgid "The specified protocol is the wrong type for this socket.\n"
+msgstr "The specified protocol is the wrong type for this socket.\n"
+
+#: client/cl_irc.c:1056
+msgid "The network can't be reached from this host at this time.\n"
+msgstr "The network can't be reached from this host at this time.\n"
+
+#: client/cl_irc.c:1060
+msgid "The descriptor is not a socket.\n"
+msgstr "The descriptor is not a socket.\n"
+
+#: client/cl_irc.c:1064
+msgid "Attempt timed out without establishing a connection.\n"
+msgstr "Attempt timed out without establishing a connection.\n"
+
+#: client/cl_irc.c:1068
+msgid "Socket type is not supported in this address family.\n"
+msgstr "Socket type is not supported in this address family.\n"
+
+#: client/cl_irc.c:1072
+msgid "Network subsystem failure.\n"
+msgstr "Network subsystem failure.\n"
+
+#: client/cl_irc.c:1076
+msgid "Authoritative Answer Host not found.\n"
+msgstr "Authoritative Answer Host not found.\n"
+
+#: client/cl_irc.c:1080
+msgid "Non-Authoritative Host not found or SERVERFAIL.\n"
+msgstr "Non-Authoritative Host not found or SERVERFAIL.\n"
+
+#: client/cl_irc.c:1084
+msgid "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n"
+msgstr "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n"
+
+#: client/cl_irc.c:1088
+msgid "Valid name, no data record of requested type.\n"
+msgstr "Valid name, no data record of requested type.\n"
+
+#: client/cl_irc.c:1092
+msgid "address blocking Windows Sockets operation is in progress.\n"
+msgstr "address blocking Windows Sockets operation is in progress.\n"
+
+#: client/cl_irc.c:1096
+msgid "Unknown connection error.\n"
+msgstr "Unknown connection error.\n"
+
+#: client/cl_irc.c:1106
+#, c-format
+msgid "IRC socket connection error: %s\n"
+msgstr "IRC socket connection error: %s\n"
+
+#: client/cl_irc.c:1397
+#, c-format
+msgid "^5-> ^7%s^5 has entered the channel.\n"
+msgstr "^5-> ^7%s^5 has entered the channel.\n"
+
+#: client/cl_irc.c:1401
+msgid "^2Joined IRC chat.\n"
+msgstr "^2Joined IRC chat.\n"
+
+#: client/cl_irc.c:1414
+#, c-format
+msgid "^5<- ^7%s^5 has left the channel: %s.\n"
+msgstr "^5<- ^7%s^5 has left the channel: %s.\n"
+
+#: client/cl_irc.c:1418
+#, c-format
+msgid "^5<- ^7%s^5 has left the channel.\n"
+msgstr "^5<- ^7%s^5 has left the channel.\n"
+
+#: client/cl_irc.c:1432
+#, c-format
+msgid "^5<- ^7%s^5 has quit: %s.\n"
+msgstr "^5<- ^7%s^5 has quit: %s.\n"
+
+#: client/cl_irc.c:1436
+#, c-format
+msgid "^5<- ^7%s^5 has quit.\n"
+msgstr "^5<- ^7%s^5 has quit.\n"
+
+#: client/cl_irc.c:1442
+#, c-format
+msgid "^2Quit IRC chat: %s.\n"
+msgstr "^2Quit IRC chat: %s.\n"
+
+#: client/cl_irc.c:1452
+#, c-format
+msgid "^2Kicked by ^7%s^2: %s.\n"
+msgstr "^2Kicked by ^7%s^2: %s.\n"
+
+#: client/cl_irc.c:1456
+#, c-format
+msgid "^5<- ^7%s^5 has been kicked: %s.\n"
+msgstr "^5<- ^7%s^5 has been kicked: %s.\n"
+
+#: client/cl_irc.c:1466
+#, c-format
+msgid "^2** ^7%s^2 is now known as ^7%s^2.\n"
+msgstr "^2** ^7%s^2 is now known as ^7%s^2.\n"
+
+#: client/cl_irc.c:1470
+#, c-format
+msgid "^5** ^7%s^5 is now known as ^7%s^5.\n"
+msgstr "^5** ^7%s^5 is now known as ^7%s^5.\n"
+
+#: client/cl_irc.c:1477
+msgid "unknown message received\n"
+msgstr "unknown message received\n"
+
+#: client/cl_irc.c:1576
+#, c-format
+msgid "IRC: server error - %s\n"
+msgstr "IRC: server error - %s\n"
+
+#: client/cl_irc.c:1580
+msgid "IRC: server error\n"
+msgstr "IRC: server error\n"
+
+#: client/cl_irc.c:1638
+msgid "...IRC: got spurious nickname error\n"
+msgstr "...IRC: got spurious nickname error\n"
+
+#: client/cl_irc.c:2047
+msgid "usage: irc_say <text>\n"
+msgstr "usage: irc_say <text>\n"
+
+#: client/cl_irc.c:2053
+msgid "IRC: Not connected\n"
+msgstr "IRC: Not connected\n"
+
+#: client/cl_irc.c:2076
+msgid "IRC: flood detected, message not sent\n"
+msgstr "IRC: flood detected, message not sent\n"
+
+#: client/cl_irc.c:2274
+msgid "...IRC: connecting to server\n"
+msgstr "...IRC: connecting to server\n"
+
+#: client/cl_irc.c:2281
+msgid "...IRC: rejected due to unset player name\n"
+msgstr "...IRC: rejected due to unset player name\n"
+
+#: client/cl_irc.c:2288
+msgid "...IRC: rejected due to mostly unusable player name\n"
+msgstr "...IRC: rejected due to mostly unusable player name\n"
+
+#: client/cl_irc.c:2297
+msgid "...IRC: unknown server\n"
+msgstr "...IRC: unknown server\n"
+
+#: client/cl_irc.c:2315
+msgid "IRC: invalid port number, defaulting to 6667\n"
+msgstr "IRC: invalid port number, defaulting to 6667\n"
+
+#: client/cl_irc.c:2327
+msgid "...IRC connection refused.\n"
+msgstr "...IRC connection refused.\n"
+
+#: client/cl_irc.c:2351
+msgid "...Connected to IRC server\n"
+msgstr "...Connected to IRC server\n"
+
+#: client/cl_irc.c:2552
+msgid "...IRC: disconnected from server\n"
+msgstr "...IRC: disconnected from server\n"
+
+#: client/cl_irc.c:2717
+msgid "...IRC thread is already running\n"
+msgstr "...IRC thread is already running\n"
+
+#: client/snd_codec_wav.c:180
+msgid "No fmt chunk\n"
+msgstr "No fmt chunk\n"
+
+#: client/snd_codec_wav.c:203
+msgid "No data chunk\n"
+msgstr "No data chunk\n"
+
+#: client/snd_codec_wav.c:235 client/snd_codec.c:196
+#, c-format
+msgid "Can't read sound file %s\n"
+msgstr "Can't read sound file %s\n"
+
+#: client/snd_codec_wav.c:243
+#, c-format
+msgid "Can't understand wav file %s\n"
+msgstr "Can't understand wav file %s\n"
+
+#: client/snd_codec_wav.c:253
+#, c-format
+msgid "ERROR: Out of memory reading \"%s\"\n"
+msgstr "ERROR: Out of memory reading \"%s\"\n"
+
+#: client/snd_codec.c:143 client/snd_codec.c:162
+#, c-format
+msgid "Unknown extension for %s\n"
+msgstr "Unknown extension for %s\n"
+
+#: client/cl_main.c:330
+#, c-format
+msgid "VoIP: %s ignoring player #%d\n"
+msgstr "VoIP: %s ignoring player #%d\n"
+
+#: client/cl_main.c:336 client/cl_main.c:408
+msgid "VoIP: invalid player ID#\n"
+msgstr "VoIP: invalid player ID#\n"
+
+#: client/cl_main.c:354
+#, c-format
+msgid "VoIP: player #%d gain now set to %f\n"
+msgstr "VoIP: player #%d gain now set to %f\n"
+
+#: client/cl_main.c:379
+#, c-format
+msgid "VoIP: command ignored: %s\n"
+msgstr "VoIP: command ignored: %s\n"
+
+#: client/cl_main.c:403
+#, c-format
+msgid "VoIP: current gain for player #%d is %f\n"
+msgstr "VoIP: current gain for player #%d is %f\n"
+
+#: client/cl_main.c:413
+msgid "usage: voip gain <playerID#> [value]\n"
+msgstr "usage: voip gain <playerID#> [value]\n"
+
+#: client/cl_main.c:418
+msgid "VoIP: muting incoming voice\n"
+msgstr "VoIP: muting incoming voice\n"
+
+#: client/cl_main.c:424
+msgid "VoIP: unmuting incoming voice\n"
+msgstr "VoIP: unmuting incoming voice\n"
+
+#: client/cl_main.c:430
+msgid ""
+"usage: voip [un]ignore <playerID#>\n"
+"       voip [un]muteall\n"
+"       voip gain <playerID#> [value]\n"
+msgstr ""
+"usage: voip [un]ignore <playerID#>\n"
+"       voip [un]muteall\n"
+"       voip gain <playerID#> [value]\n"
+
+#: client/cl_main.c:532
+#, c-format
+msgid "WARNING: VoIP target %d is not a valid client number\n"
+msgstr "WARNING: VoIP target %d is not a valid client number\n"
+
+#: client/cl_main.c:850
+msgid "Not recording a demo.\n"
+msgstr "Not recording a demo.\n"
+
+#: client/cl_main.c:865
+msgid "Stopped demo.\n"
+msgstr "Stopped demo.\n"
+
+#: client/cl_main.c:903
+msgid "record <demoname>\n"
+msgstr "record <demoname>\n"
+
+#: client/cl_main.c:909
+msgid "Already recording.\n"
+msgstr "Already recording.\n"
+
+#: client/cl_main.c:915
+msgid "You must be in a level to record.\n"
+msgstr "You must be in a level to record.\n"
+
+#: client/cl_main.c:923
+msgid ""
+"WARNING: You should set 'g_synchronousClients 1' for smoother demo "
+"recording\n"
+msgstr ""
+"WARNING: You should set 'g_synchronousClients 1' for smoother demo "
+"recording\n"
+
+#: client/cl_main.c:966 client/cl_main.c:1286
+#, c-format
+msgid "recording to %s.\n"
+msgstr "recording to %s.\n"
+
+#: client/cl_main.c:1071
+#, c-format
+msgid "%i frames, %3.1f seconds: %3.1f fps\n"
+msgstr "%i frames, %3.1f seconds: %3.1f fps\n"
+
+#: client/cl_main.c:1146
+msgid "Demo file was truncated.\n"
+msgstr "Demo file was truncated.\n"
+
+#: client/cl_main.c:1247
+msgid "wav_record <wavname>\n"
+msgstr "wav_record <wavname>\n"
+
+#: client/cl_main.c:1253 client/cl_main.c:2655
+msgid "Already recording a wav file\n"
+msgstr "Already recording a wav file\n"
+
+#: client/cl_main.c:1291
+#, c-format
+msgid "ERROR: couldn't open %s for writing.\n"
+msgstr "ERROR: couldn't open %s for writing.\n"
+
+#: client/cl_main.c:1307
+msgid "Stopped recording\n"
+msgstr "Stopped recording\n"
+
+#: client/cl_main.c:1354
+msgid "playdemo <demoname>\n"
+msgstr "playdemo <demoname>\n"
+
+#: client/cl_main.c:1720
+msgid "Mumble: Unlinking from Mumble application\n"
+msgstr "Mumble: Unlinking from Mumble application\n"
+
+#: client/cl_main.c:1855
+#, c-format
+msgid "Unknown command \"%s\"\n"
+msgstr "Unknown command \"%s\"\n"
+
+#: client/cl_main.c:1880
+msgid "Usage: openurl <url>\n"
+msgstr "Usage: openurl <url>\n"
+
+#: client/cl_main.c:1921
+msgid "Invalid URL prefix.\n"
+msgstr "Invalid URL prefix.\n"
+
+#: client/cl_main.c:1946
+msgid "Invalid domain.\n"
+msgstr "Invalid domain.\n"
+
+#: client/cl_main.c:1962
+msgid "Invalid URL\n"
+msgstr "Invalid URL\n"
+
+#: client/cl_main.c:1970
+msgid "System error opening URL\n"
+msgstr "System error opening URL\n"
+
+#: client/cl_main.c:1989 client/cl_main.c:2068 server/sv_main.c:432
+#: server/sv_main.c:496 server/sv_client.c:143 server/sv_ccmds.c:898
+#: server/sv_ccmds.c:964
+#, c-format
+msgid "Resolving %s\n"
+msgstr "Resolving %s\n"
+
+#: client/cl_main.c:1995
+msgid "Couldn't resolve master address\n"
+msgstr "Couldn't resolve master address\n"
+
+#: client/cl_main.c:2005 client/cl_main.c:2308 server/sv_main.c:342
+#: server/sv_main.c:363 server/sv_main.c:511
+#, c-format
+msgid "%s resolved to %s\n"
+msgstr "%s resolved to %s\n"
+
+#: client/cl_main.c:2072 server/sv_client.c:147 server/sv_ccmds.c:902
+#: server/sv_ccmds.c:968
+msgid "Couldn't resolve address\n"
+msgstr "Couldn't resolve address\n"
+
+#: client/cl_main.c:2077 server/sv_main.c:449 server/sv_client.c:152
+#: server/sv_ccmds.c:907 server/sv_ccmds.c:973
+#, c-format
+msgid "%s resolved to %i.%i.%i.%i:%i\n"
+msgstr "%s resolved to %i.%i.%i.%i:%i\n"
+
+#: client/cl_main.c:2138 client/cl_main.c:2613 client/cl_main.c:6438
+msgid "Not connected to a server.\n"
+msgstr "Not connected to a server.\n"
+
+#: client/cl_main.c:2186
+#, c-format
+msgid "%s undefined\n"
+msgstr "%s undefined\n"
+
+#: client/cl_main.c:2218
+msgid "Can't reconnect to localhost.\n"
+msgstr "Can't reconnect to localhost.\n"
+
+#: client/cl_main.c:2240
+msgid "usage: connect [-4|-6] server\n"
+msgstr "usage: connect [-4|-6] server\n"
+
+#: client/cl_main.c:2260 client/cl_main.c:6258 client/cl_main.c:6466
+msgid "warning: only -4 or -6 as address type understood.\n"
+msgstr "warning: only -4 or -6 as address type understood.\n"
+
+#: client/cl_main.c:2295 client/cl_main.c:4570
+msgid "Bad server address\n"
+msgstr "Bad server address\n"
+
+#: client/cl_main.c:2362
+msgid ""
+"You must set 'rconPassword' before\n"
+"issuing an rcon command.\n"
+msgstr ""
+"You must set 'rconPassword' before\n"
+"issuing an rcon command.\n"
+
+#: client/cl_main.c:2389
+msgid ""
+"You must either be connected,\n"
+"or set the 'rconAddress' cvar\n"
+"to issue rcon commands\n"
+msgstr ""
+"You must either be connected,\n"
+"or set the 'rconAddress' cvar\n"
+"to issue rcon commands\n"
+
+#: client/cl_main.c:2588
+#, c-format
+msgid "Opened PK3 Names: %s\n"
+msgstr "Opened PK3 Names: %s\n"
+
+#: client/cl_main.c:2598
+#, c-format
+msgid "Referenced PK3 Names: %s\n"
+msgstr "Referenced PK3 Names: %s\n"
+
+#: client/cl_main.c:2637
+msgid "--------- Client Information ---------\n"
+msgstr "--------- Client Information ---------\n"
+
+#: client/cl_main.c:2638
+#, c-format
+msgid "state: %i\n"
+msgstr "state: %i\n"
+
+#: client/cl_main.c:2639 server/sv_init.c:641
+#, c-format
+msgid "Server: %s\n"
+msgstr "Server: %s\n"
+
+#: client/cl_main.c:2640
+msgid "User info settings:\n"
+msgstr "User info settings:\n"
+
+#: client/cl_main.c:2642
+msgid "--------------------------------------\n"
+msgstr "--------------------------------------\n"
+
+#: client/cl_main.c:2672
+msgid "Not recording a wav file\n"
+msgstr "Not recording a wav file\n"
+
+#: client/cl_main.c:2700
+msgid "The video command can only be used when playing back demos\n"
+msgstr "The video command can only be used when playing back demos\n"
+
+#: client/cl_main.c:2736
+msgid "ERROR: no free file names to create video\n"
+msgstr "ERROR: no free file names to create video\n"
+
+#: client/cl_main.c:3003 qcommon/files.c:4041
+#, c-format
+msgid "Need paks: %s\n"
+msgstr "Need paks: %s\n"
+
+#: client/cl_main.c:3559
+#, c-format
+msgid "%d servers parsed (total %d)\n"
+msgstr "%d servers parsed (total %d)\n"
+
+#: client/cl_main.c:3590
+msgid "Unwanted challenge response received.  Ignored.\n"
+msgstr "Unwanted challenge response received.  Ignored.\n"
+
+#: client/cl_main.c:3624
+msgid "Dup connect received.  Ignored.\n"
+msgstr "Dup connect received.  Ignored.\n"
+
+#: client/cl_main.c:3630
+msgid "connectResponse packet while not connecting.  Ignored.\n"
+msgstr "connectResponse packet while not connecting.  Ignored.\n"
+
+#: client/cl_main.c:3636
+msgid "connectResponse from a different address.  Ignored.\n"
+msgstr "connectResponse from a different address.  Ignored.\n"
+
+#: client/cl_main.c:3637
+#, c-format
+msgid "%s should have been %s\n"
+msgstr "%s should have been %s\n"
+
+#: client/cl_main.c:3761
+#, c-format
+msgid "%s: Runt packet\n"
+msgstr "%s: Runt packet\n"
+
+#: client/cl_main.c:3929
+#, c-format
+msgid "ERROR: redirectedList overflow (%s)\n"
+msgstr "ERROR: redirectedList overflow (%s)\n"
+
+#: client/cl_main.c:3955
+#, c-format
+msgid "Download failure while getting '%s'\n"
+msgstr "Download failure while getting '%s'\n"
+
+#: client/cl_main.c:3980
+#, c-format
+msgid ""
+"WARNING: file %s obtained through download redirect has wrong checksum\n"
+msgstr ""
+"WARNING: file %s obtained through download redirect has wrong checksum\n"
+
+#: client/cl_main.c:3981
+msgid "         this likely means the server configuration is broken\n"
+msgstr "         this likely means the server configuration is broken\n"
+
+#: client/cl_main.c:3985
+#, c-format
+msgid "ERROR: badChecksumList overflowed (%s)\n"
+msgstr "ERROR: badChecksumList overflowed (%s)\n"
+
+#: client/cl_main.c:3991
+#, c-format
+msgid "bad checksums: %s\n"
+msgstr "bad checksums: %s\n"
+
+#: client/cl_main.c:4445
+msgid "Failed to resolve any Auto-update servers.\n"
+msgstr "Failed to resolve any Auto-update servers.\n"
+
+#: client/cl_main.c:4504
+msgid "Resolving AutoUpdate Server... "
+msgstr "Resolving AutoUpdate Server... "
+
+#: client/cl_main.c:4508
+msgid "Couldn't resolve address, trying next one..."
+msgstr "Couldn't resolve address, trying next one..."
+
+#: client/cl_main.c:4539
+msgid "Connecting to auto-update server...\n"
+msgstr "Connecting to auto-update server...\n"
+
+#: client/cl_main.c:4655
+msgid "----- Initializing Renderer ----\n"
+msgstr "----- Initializing Renderer ----\n"
+
+#: client/cl_main.c:4661 client/cl_main.c:4670
+#, c-format
+msgid "Loading \"%s\"..."
+msgstr "Loading \"%s\"..."
+
+#: client/cl_main.c:4665
+#, c-format
+msgid ""
+"failed:\n"
+"\"%s\"\n"
+msgstr ""
+"failed:\n"
+"\"%s\"\n"
+
+#: client/cl_main.c:4678
+msgid "done\n"
+msgstr "done\n"
+
+#: client/cl_main.c:4765
+msgid "Calling GetRefAPI...\n"
+msgstr "Calling GetRefAPI...\n"
+
+#: client/cl_main.c:4851
+msgid "Daemon GUID public-key found.\n"
+msgstr "Daemon GUID public-key found.\n"
+
+#: client/cl_main.c:4865
+msgid "Daemon GUID public-key generated\n"
+msgstr "Daemon GUID public-key generated\n"
+
+#: client/cl_main.c:4895
+msgid "Daemon RSA public-key file not found, regenerating\n"
+msgstr "Daemon RSA public-key file not found, regenerating\n"
+
+#: client/cl_main.c:4905
+msgid "Invalid RSA keypair in RSAKey, regenerating\n"
+msgstr "Invalid RSA keypair in RSAKey, regenerating\n"
+
+#: client/cl_main.c:4911
+msgid "Daemon RSA public-key found.\n"
+msgstr "Daemon RSA public-key found.\n"
+
+#: client/cl_main.c:4933
+#, c-format
+msgid ""
+"Daemon RSA public-key could not open %s for write, RSA support will be "
+"disabled\n"
+msgstr ""
+"Daemon RSA public-key could not open %s for write, RSA support will be "
+"disabled\n"
+
+#: client/cl_main.c:4942
+msgid "Daemon RSA public-key generated\n"
+msgstr "Daemon RSA public-key generated\n"
+
+#: client/cl_main.c:4946
+msgid "Error generating RSA keypair, RSA support will be disabled\n"
+msgstr "Error generating RSA keypair, RSA support will be disabled\n"
+
+#: client/cl_main.c:4950
+msgid "RSA support is disabled\n"
+msgstr "RSA support is disabled\n"
+
+#: client/cl_main.c:4962
+msgid "----- Client Initialization -----\n"
+msgstr "----- Client Initialization -----\n"
+
+#: client/cl_main.c:5143
+msgid ""
+"Your network rate is too slow for VoIP.\n"
+"Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
+"Until then, VoIP is disabled.\n"
+msgstr ""
+"Your network rate is too slow for VoIP.\n"
+"Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
+"Until then, VoIP is disabled.\n"
+
+#: client/cl_main.c:5258
+msgid "----- Client Initialization Complete -----\n"
+msgstr "----- Client Initialization Complete -----\n"
+
+#: client/cl_main.c:5277
+msgid "----- CL_Shutdown -----\n"
+msgstr "----- CL_Shutdown -----\n"
+
+#: client/cl_main.c:5347
+msgid "-----------------------\n"
+msgstr "-----------------------\n"
+
+#: client/cl_main.c:5747
+msgid "Server settings:\n"
+msgstr "Server settings:\n"
+
+#: client/cl_main.c:5797
+msgid ""
+"\n"
+"Players:\n"
+msgstr ""
+"\n"
+"Players:\n"
+
+#: client/cl_main.c:5798
+msgid "num: score: ping: name:\n"
+msgstr "num: score: ping: name:\n"
+
+#: client/cl_main.c:5854
+msgid "Scanning for servers on the local network...\n"
+msgstr "Scanning for servers on the local network...\n"
+
+#: client/cl_main.c:5907
+#, c-format
+msgid "usage: globalservers <master# 0-%d> [protocol] [keywords]\n"
+msgstr "usage: globalservers <master# 0-%d> [protocol] [keywords]\n"
+
+#: client/cl_main.c:5916 client/cl_main.c:5982
+msgid "CL_GlobalServers_f: Error: No master server address given.\n"
+msgstr "CL_GlobalServers_f: Error: No master server address given.\n"
+
+#: client/cl_main.c:5927 client/cl_main.c:5993
+#, c-format
+msgid "CL_GlobalServers_f: Error: could not resolve address of master %s\n"
+msgstr "CL_GlobalServers_f: Error: could not resolve address of master %s\n"
+
+#: client/cl_main.c:5935 client/cl_main.c:6001
+#, c-format
+msgid "Requesting servers from master %s...\n"
+msgstr "Requesting servers from master %s...\n"
+
+#: client/cl_main.c:5973
+#, c-format
+msgid "usage: globalservers <master# 0-%d> <protocol> [keywords]\n"
+msgstr "usage: globalservers <master# 0-%d> <protocol> [keywords]\n"
+
+#: client/cl_main.c:6238
+msgid "usage: ping [-4|-6] server\n"
+msgstr "usage: ping [-4|-6] server\n"
+
+#: client/cl_main.c:6439
+msgid "usage: serverstatus [-4|-6] server\n"
+msgstr "usage: serverstatus [-4|-6] server\n"
+
+#: client/cl_main.c:6507
+msgid "invalid/empty URL\n"
+msgstr "invalid/empty URL\n"
+
+#: server/sv_main.c:187
+msgid "===== pending server commands =====\n"
+msgstr "===== pending server commands =====\n"
+
+#: server/sv_main.c:191 server/sv_main.c:194
+#, c-format
+msgid "cmd %5d: %s\n"
+msgstr "cmd %5d: %s\n"
+
+#: server/sv_main.c:239
+#, c-format
+msgid "broadcast: %s\n"
+msgstr "broadcast: %s\n"
+
+#: server/sv_main.c:331
+#, c-format
+msgid "Resolving %s (IPv4)\n"
+msgstr "Resolving %s (IPv4)\n"
+
+#: server/sv_main.c:346
+#, c-format
+msgid "%s has no IPv4 address.\n"
+msgstr "%s has no IPv4 address.\n"
+
+#: server/sv_main.c:352
+#, c-format
+msgid "Resolving %s (IPv6)\n"
+msgstr "Resolving %s (IPv6)\n"
+
+#: server/sv_main.c:367
+#, c-format
+msgid "%s has no IPv6 address.\n"
+msgstr "%s has no IPv6 address.\n"
+
+#: server/sv_main.c:375 server/sv_main.c:438
+#, c-format
+msgid "Couldn't resolve address: %s\n"
+msgstr "Couldn't resolve address: %s\n"
+
+#: server/sv_main.c:382
+#, c-format
+msgid "Sending heartbeat to %s\n"
+msgstr "Sending heartbeat to %s\n"
+
+#: server/sv_main.c:454
+#, c-format
+msgid "Sending gameCompleteStatus to %s\n"
+msgstr "Sending gameCompleteStatus to %s\n"
+
+#: server/sv_main.c:501
+#, c-format
+msgid "Couldn't resolve master address: %s\n"
+msgstr "Couldn't resolve master address: %s\n"
+
+#: server/sv_main.c:514
+#, c-format
+msgid "Sending gamestat to %s\n"
+msgstr "Sending gamestat to %s\n"
+
+#: server/sv_main.c:923
+msgid "Detected flood of getinfo/getstatus connectionless packets\n"
+msgstr "Detected flood of getinfo/getstatus connectionless packets\n"
+
+#: server/sv_main.c:934
+#, c-format
+msgid ""
+"Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus "
+"connectionless packet\n"
+msgstr ""
+"Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus "
+"connectionless packet\n"
+
+#: server/sv_main.c:986
+#, c-format
+msgid ""
+"Bad rcon from %s:\n"
+"%s\n"
+msgstr ""
+"Bad rcon from %s:\n"
+"%s\n"
+
+#: server/sv_main.c:991
+#, c-format
+msgid ""
+"Rcon from %s:\n"
+"%s\n"
+msgstr ""
+"Rcon from %s:\n"
+"%s\n"
+
+#: server/sv_main.c:1006
+msgid "No rconpassword set on the server.\n"
+msgstr "No rconpassword set on the server.\n"
+
+#: server/sv_main.c:1010
+msgid "Bad rconpassword.\n"
+msgstr "Bad rconpassword.\n"
+
+#: server/sv_main.c:1169
+msgid "SV_PacketEvent: fixing up a translated port\n"
+msgstr "SV_PacketEvent: fixing up a translated port\n"
+
+#: server/sv_main.c:1635
+#, c-format
+msgid "WARNING: SV_LoadTag: %s has wrong version (%i should be %i)\n"
+msgstr "WARNING: SV_LoadTag: %s has wrong version (%i should be %i)\n"
+
+#: server/sv_init.c:64
+#, c-format
+msgid "Resolving |ET:XReaL| Hub %s.\n"
+msgstr "Resolving |ET:XReaL| Hub %s.\n"
+
+#: server/sv_init.c:70
+#, c-format
+msgid "Completely failed to resolve %s.\n"
+msgstr "Completely failed to resolve %s.\n"
+
+#: server/sv_init.c:74
+#, c-format
+msgid "Resolved %s to %s.\n"
+msgstr "Resolved %s to %s.\n"
+
+#: server/sv_init.c:78
+#, c-format
+msgid "Failed to resolve a port for %s.\n"
+msgstr "Failed to resolve a port for %s.\n"
+
+#: server/sv_init.c:83
+#, c-format
+msgid "Unknown error %d from NET_StringToAdr()!\n"
+msgstr "Unknown error %d from NET_StringToAdr()!\n"
+
+#: server/sv_init.c:640
+msgid "------ Server Initialization ------\n"
+msgstr "------ Server Initialization ------\n"
+
+#: server/sv_init.c:858
+msgid "WARNING: sv_pure set but no PK3 files loaded\n"
+msgstr "WARNING: sv_pure set but no PK3 files loaded\n"
+
+#: server/sv_init.c:907
+msgid "-----------------------------------\n"
+msgstr "-----------------------------------\n"
+
+#: server/sv_init.c:1105
+msgid "----- Server Shutdown -----\n"
+msgstr "----- Server Shutdown -----\n"
+
+#: server/sv_init.c:1140
+msgid "---------------------------\n"
+msgstr "---------------------------\n"
+
+#: server/sv_client.c:228
+msgid "SV_AuthorizeIpPacket: not from authorize server\n"
+msgstr "SV_AuthorizeIpPacket: not from authorize server\n"
+
+#: server/sv_client.c:244
+msgid "SV_AuthorizeIpPacket: challenge not found\n"
+msgstr "SV_AuthorizeIpPacket: challenge not found\n"
+
+#: server/sv_client.c:512
+#, c-format
+msgid "Client %i connecting with %i challenge ping\n"
+msgstr "Client %i connecting with %i challenge ping\n"
+
+#: server/sv_client.c:554
+#, c-format
+msgid "%s:reconnect\n"
+msgstr "%s:reconnect\n"
+
+#: server/sv_client.c:1044
+#, c-format
+msgid "clientDownload: %d : file \"%s\" completed\n"
+msgstr "clientDownload: %d : file \"%s\" completed\n"
+
+#: server/sv_client.c:1093 server/sv_client.c:1117
+#, c-format
+msgid "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"
+msgstr "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"
+
+#: server/sv_client.c:1102
+#, c-format
+msgid "WARNING: dupe wwwdl ack from client '%s'\n"
+msgstr "WARNING: dupe wwwdl ack from client '%s'\n"
+
+#: server/sv_client.c:1141
+#, c-format
+msgid ""
+"WARNING: client '%s' reports that the redirect download for '%s' had wrong "
+"checksum.\n"
+msgstr ""
+"WARNING: client '%s' reports that the redirect download for '%s' had wrong "
+"checksum.\n"
+
+#: server/sv_client.c:1143
+msgid "         you should check your download redirect configuration.\n"
+msgstr "         you should check your download redirect configuration.\n"
+
+#: server/sv_client.c:1153
+#, c-format
+msgid "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n"
+msgstr "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n"
+
+#: server/sv_client.c:1183
+#, c-format
+msgid "clientDownload: sending client '%s' to fallback URL '%s'\n"
+msgstr "clientDownload: sending client '%s' to fallback URL '%s'\n"
+
+#: server/sv_client.c:1240
+#, c-format
+msgid "clientDownload: %d : beginning \"%s\"\n"
+msgstr "clientDownload: %d : beginning \"%s\"\n"
+
+#: server/sv_client.c:1251
+#, c-format
+msgid "clientDownload: %d : \"%s\" cannot download id pk3 files\n"
+msgstr "clientDownload: %d : \"%s\" cannot download id pk3 files\n"
+
+#: server/sv_client.c:1256
+#, c-format
+msgid "clientDownload: %d : \"%s\" download disabled"
+msgstr "clientDownload: %d : \"%s\" download disabled"
+
+#: server/sv_client.c:1304
+#, c-format
+msgid "Redirecting client '%s' to %s\n"
+msgstr "Redirecting client '%s' to %s\n"
+
+#: server/sv_client.c:1328
+#, c-format
+msgid "ERROR: Client '%s': couldn't extract file size for %s\n"
+msgstr "ERROR: Client '%s': couldn't extract file size for %s\n"
+
+#: server/sv_client.c:1340
+#, c-format
+msgid "Client '%s': falling back to regular downloading for failed file %s\n"
+msgstr "Client '%s': falling back to regular downloading for failed file %s\n"
+
+#: server/sv_client.c:1351
+#, c-format
+msgid "Client '%s' is not configured for www download\n"
+msgstr "Client '%s' is not configured for www download\n"
+
+#: server/sv_client.c:1361
+#, c-format
+msgid "clientDownload: %d : \"%s\" file not found on server\n"
+msgstr "clientDownload: %d : \"%s\" file not found on server\n"
+
+#: server/sv_client.c:1428
+#, c-format
+msgid "'%s' downloading at sv_dl_maxrate (%d)\n"
+msgstr "'%s' downloading at sv_dl_maxrate (%d)\n"
+
+#: server/sv_client.c:1433
+#, c-format
+msgid "'%s' downloading at rate %d\n"
+msgstr "'%s' downloading at rate %d\n"
+
+#: server/sv_client.c:1594
+#, c-format
+msgid "nChkSum1 %d == %d\n"
+msgstr "nChkSum1 %d == %d\n"
+
+#: server/sv_client.c:1604
+#, c-format
+msgid "nChkSum2 %d == %d\n"
+msgstr "nChkSum2 %d == %d\n"
+
+#: server/sv_client.c:2177
+#, c-format
+msgid "Buffer overflow exploit radio/say, possible attempt from %s\n"
+msgstr "Buffer overflow exploit radio/say, possible attempt from %s\n"
+
+#: server/sv_client.c:2187
+#, c-format
+msgid "Callvote from %s (client #%i, %s): %s\n"
+msgstr "Callvote from %s (client #%i, %s): %s\n"
+
+#: server/sv_client.c:2227
+#, c-format
+msgid "Client %s lost %i clientCommands\n"
+msgstr "Client %s lost %i clientCommands\n"
+
+#: server/sv_client.c:2323
+msgid "cmdCount < 1\n"
+msgstr "cmdCount < 1\n"
+
+#: server/sv_client.c:2329
+msgid "cmdCount > MAX_PACKET_USERCMDS\n"
+msgstr "cmdCount > MAX_PACKET_USERCMDS\n"
+
+#: server/sv_client.c:2571
+#, c-format
+msgid "Too many VoIP packets queued for client #%d\n"
+msgstr "Too many VoIP packets queued for client #%d\n"
+
+#: server/sv_client.c:2746
+#, c-format
+msgid "WARNING: bad command byte for client %i\n"
+msgstr "WARNING: bad command byte for client %i\n"
+
+#: server/sv_snapshot.c:972 server/sv_snapshot.c:1043
+#, c-format
+msgid "WARNING: msg overflowed for %s\n"
+msgstr "WARNING: msg overflowed for %s\n"
+
+#: server/sv_ccmds.c:68 server/sv_ccmds.c:125
+msgid "No player specified.\n"
+msgstr "No player specified.\n"
+
+#: server/sv_ccmds.c:96
+#, c-format
+msgid "Player %s is not on the server\n"
+msgstr "Player %s is not on the server\n"
+
+#: server/sv_ccmds.c:135
+#, c-format
+msgid "Bad slot number: %s\n"
+msgstr "Bad slot number: %s\n"
+
+#: server/sv_ccmds.c:144
+#, c-format
+msgid "Bad client slot: %i\n"
+msgstr "Bad client slot: %i\n"
+
+#: server/sv_ccmds.c:152
+#, c-format
+msgid "Client %i is not active\n"
+msgstr "Client %i is not active\n"
+
+#: server/sv_ccmds.c:193
+msgid "Single Player is not enabled.\n"
+msgstr "Single Player is not enabled.\n"
+
+#: server/sv_ccmds.c:239 server/sv_ccmds.c:552 server/sv_ccmds.c:727
+#, c-format
+msgid "Can't find savegame %s\n"
+msgstr "Can't find savegame %s\n"
+
+#: server/sv_ccmds.c:307
+#, c-format
+msgid "Can't find map %s\n"
+msgstr "Can't find map %s\n"
+
+#: server/sv_ccmds.c:478 server/sv_ccmds.c:872 server/sv_ccmds.c:938
+#: server/sv_ccmds.c:1108 server/sv_ccmds.c:1196 server/sv_ccmds.c:1271
+msgid "Server is not running.\n"
+msgstr "Server is not running.\n"
+
+#: server/sv_ccmds.c:522
+msgid "sv_maxclients variable change -- restarting.\n"
+msgstr "sv_maxclients variable change -- restarting.\n"
+
+#: server/sv_ccmds.c:644
+#, c-format
+msgid "SV_MapRestart_f(%d): dropped client %i - denied!\n"
+msgstr "SV_MapRestart_f(%d): dropped client %i - denied!\n"
+
+#: server/sv_ccmds.c:691
+msgid "You must specify a savegame to load\n"
+msgstr "You must specify a savegame to load\n"
+
+#: server/sv_ccmds.c:878
+msgid "Usage: banUser <player name>\n"
+msgstr "Usage: banUser <player name>\n"
+
+#: server/sv_ccmds.c:919 server/sv_ccmds.c:985
+#, c-format
+msgid "%s was banned from coming back\n"
+msgstr "%s was banned from coming back\n"
+
+#: server/sv_ccmds.c:944
+msgid "Usage: banClient <client number>\n"
+msgstr "Usage: banClient <client number>\n"
+
+#: server/sv_ccmds.c:1121
+#, c-format
+msgid "cpu utilization  : %3i%%\n"
+msgstr "cpu utilization  : %3i%%\n"
+
+#: server/sv_ccmds.c:1122
+#, c-format
+msgid "avg response time: %i ms\n"
+msgstr "avg response time: %i ms\n"
+
+#: server/sv_ccmds.c:1124
+#, c-format
+msgid "map: %s\n"
+msgstr "map: %s\n"
+
+#: server/sv_ccmds.c:1126
+msgid ""
+"num score ping name            lastmsg address               qport rate\n"
+msgstr ""
+"num score ping name            lastmsg address               qport rate\n"
+
+#: server/sv_ccmds.c:1127
+msgid ""
+"--- ----- ---- --------------- ------- --------------------- ----- -----\n"
+msgstr ""
+"--- ----- ---- --------------- ------- --------------------- ----- -----\n"
+
+#: server/sv_ccmds.c:1240
+msgid "Server info settings:\n"
+msgstr "Server info settings:\n"
+
+#: server/sv_ccmds.c:1253
+msgid "System info settings:\n"
+msgstr "System info settings:\n"
+
+#: server/sv_ccmds.c:1277
+msgid "Usage: info <userid>\n"
+msgstr "Usage: info <userid>\n"
+
+#: server/sv_ccmds.c:1288
+msgid "userinfo\n"
+msgstr "userinfo\n"
+
+#: server/sv_ccmds.c:1289
+msgid "--------\n"
+msgstr "--------\n"
+
+#: server/sv_world.c:116
+#, c-format
+msgid "sector %i: %i entities\n"
+msgstr "sector %i: %i entities\n"
+
+#: server/sv_world.c:228
+msgid "WARNING: SV_UnlinkEntity: not found in worldSector\n"
+msgstr "WARNING: SV_UnlinkEntity: not found in worldSector\n"
+
+#: server/sv_world.c:507
+msgid "SV_AreaEntities: MAXCOUNT\n"
+msgstr "SV_AreaEntities: MAXCOUNT\n"
+
+#: qcommon/cm_trisoup.c:714 qcommon/cm_trisoup.c:809 qcommon/cm_patch.c:970
+#: qcommon/cm_patch.c:1064
+msgid "ERROR: too many bevels\n"
+msgstr "ERROR: too many bevels\n"
+
+#: qcommon/cm_trisoup.c:818 qcommon/cm_patch.c:1073
+msgid "WARNING: bevel plane already used\n"
+msgstr "WARNING: bevel plane already used\n"
+
+#: qcommon/vm.c:301
+#, c-format
+msgid "Couldn't load symbol file: %s\n"
+msgstr "Couldn't load symbol file: %s\n"
+
+#: qcommon/vm.c:334 qcommon/vm.c:344
+msgid "WARNING: incomplete line at end of file\n"
+msgstr "WARNING: incomplete line at end of file\n"
+
+#: qcommon/vm.c:367
+#, c-format
+msgid "%i symbols parsed from %s\n"
+msgstr "%i symbols parsed from %s\n"
+
+#: qcommon/vm.c:547
+#, c-format
+msgid "Loading vm file %s...\n"
+msgstr "Loading vm file %s...\n"
+
+#: qcommon/vm.c:553
+msgid "Failed.\n"
+msgstr "Failed.\n"
+
+#: qcommon/vm.c:565
+msgid "...which has vmMagic VM_MAGIC_VER2\n"
+msgstr "...which has vmMagic VM_MAGIC_VER2\n"
+
+#: qcommon/vm.c:646
+#, c-format
+msgid "Loading %d jump table targets\n"
+msgstr "Loading %d jump table targets\n"
+
+#: qcommon/vm.c:785
+msgid "Failed loading dll, trying next\n"
+msgstr "Failed loading dll, trying next\n"
+
+#: qcommon/vm.c:795
+#, c-format
+msgid "Loading llvm file %s.\n"
+msgstr "Loading llvm file %s.\n"
+
+#: qcommon/vm.c:803
+msgid "Failed to load llvm, looking for qvm.\n"
+msgstr "Failed to load llvm, looking for qvm.\n"
+
+#: qcommon/vm.c:828
+msgid "Architecture doesn't have a bytecode compiler, using interpreter\n"
+msgstr "Architecture doesn't have a bytecode compiler, using interpreter\n"
+
+#: qcommon/vm.c:858
+#, c-format
+msgid "%s loaded in %d bytes on the hunk\n"
+msgstr "%s loaded in %d bytes on the hunk\n"
+
+#: qcommon/vm.c:1184
+msgid "Registered virtual machines:\n"
+msgstr "Registered virtual machines:\n"
+
+#: qcommon/dl_main.c:131
+msgid "Replace existing download target file\n"
+msgstr "Replace existing download target file\n"
+
+#: qcommon/dl_main.c:136
+#, c-format
+msgid "Aborting, unknown libwww confirm message id: %d\n"
+msgstr "Aborting, unknown libwww confirm message id: %d\n"
+
+#: qcommon/dl_main.c:150
+#, c-format
+msgid ""
+"Aborting, libwww prompt message id: %d (prompted for a login/password?)\n"
+msgstr ""
+"Aborting, libwww prompt message id: %d (prompted for a login/password?)\n"
+
+#: qcommon/dl_main.c:189 qcommon/dl_main_curl.c:90
+msgid "Client download subsystem initialized\n"
+msgstr "Client download subsystem initialized\n"
+
+#: qcommon/dl_main.c:233 qcommon/dl_main_curl.c:127
+msgid "ERROR: DL_BeginDownload called with a download request already active\n"
+msgstr ""
+"ERROR: DL_BeginDownload called with a download request already active\n"
+
+#: qcommon/cmd.c:196
+msgid "Cbuf_AddText: overflow\n"
+msgstr "Cbuf_AddText: overflow\n"
+
+#: qcommon/cmd.c:221
+msgid "Cbuf_InsertText overflowed\n"
+msgstr "Cbuf_InsertText overflowed\n"
+
+#: qcommon/cmd.c:410
+msgid "exec <filename> (args) : execute a script file\n"
+msgstr "exec <filename> (args) : execute a script file\n"
+
+#: qcommon/cmd.c:414
+#, c-format
+msgid "execing %s\n"
+msgstr "execing %s\n"
+
+#: qcommon/cmd.c:443
+#, c-format
+msgid "couldn't exec %s\n"
+msgstr "couldn't exec %s\n"
+
+#: qcommon/cmd.c:460
+msgid "vstr <variablename> : execute a variable command\n"
+msgstr "vstr <variablename> : execute a variable command\n"
+
+#: qcommon/cmd.c:547
+#, c-format
+msgid "can't have %s both pressed and not pressed\n"
+msgstr "can't have %s both pressed and not pressed\n"
+
+#: qcommon/cmd.c:568
+#, c-format
+msgid "unknown modifier key name in \"%s\"\n"
+msgstr "unknown modifier key name in \"%s\"\n"
+
+#: qcommon/cmd.c:632
+msgid "modcase <modifiers> <command> [<modifiers> <command>] ... [<command>]\n"
+msgstr ""
+"modcase <modifiers> <command> [<modifiers> <command>] ... [<command>]\n"
+
+#: qcommon/cmd.c:720
+msgid "if <modifiers>... is not supported on the server -- assuming true.\n"
+msgstr "if <modifiers>... is not supported on the server -- assuming true.\n"
+
+#: qcommon/cmd.c:764
+msgid "invalid operator in if command. valid operators are = != < > >= <=\n"
+msgstr "invalid operator in if command. valid operators are = != < > >= <=\n"
+
+#: qcommon/cmd.c:771
+#, c-format
+msgid ""
+"if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first "
+"two values and executes <cmdthen> if true, <cmdelse> if false\n"
+"if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
+"-- modifiers are %s\n"
+"-- commands are cvar names unless prefixed with / or \\\n"
+msgstr ""
+"if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first "
+"two values and executes <cmdthen> if true, <cmdelse> if false\n"
+"if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
+"-- modifiers are %s\n"
+"-- commands are cvar names unless prefixed with / or \\\n"
+
+#: qcommon/cmd.c:821 qcommon/cmd.c:855 qcommon/cmd.c:890 qcommon/cmd.c:896
+msgid ""
+"math <variableToSet> = <value1> <operator> <value2>\n"
+"math <variableToSet> <operator> <value1>\n"
+"math <variableToSet> ++\n"
+"math <variableToSet> --\n"
+"valid operators are + - * / \n"
+msgstr ""
+"math <variableToSet> = <value1> <operator> <value2>\n"
+"math <variableToSet> <operator> <value1>\n"
+"math <variableToSet> ++\n"
+"math <variableToSet> --\n"
+"valid operators are + - * / \n"
+
+#: qcommon/cmd.c:847 qcommon/cmd.c:882
+msgid "Cannot divide by 0!\n"
+msgstr "Cannot divide by 0!\n"
+
+#: qcommon/cmd.c:944
+msgid "invalid operator in strcmp command. valid operators are = != \n"
+msgstr "invalid operator in strcmp command. valid operators are = != \n"
+
+#: qcommon/cmd.c:950
+msgid ""
+"strcmp <string1> <operator> <string2> <cmdthen> (<cmdelse>) : compares the "
+"first two strings and executes <cmdthen> if true, <cmdelse> if false\n"
+msgstr ""
+"strcmp <string1> <operator> <string2> <cmdthen> (<cmdelse>) : compares the "
+"first two strings and executes <cmdthen> if true, <cmdelse> if false\n"
+
+#: qcommon/cmd.c:971
+msgid ""
+"concat <variableToSet> <variable1> ... <variableN> : concatenates variable1 "
+"to variableN and sets the result to variableToSet\n"
+msgstr ""
+"concat <variableToSet> <variable1> ... <variableN> : concatenates variable1 "
+"to variableN and sets the result to variableToSet\n"
+
+#: qcommon/cmd.c:998 qcommon/cmd.c:1041
+msgid "calc <number> <function> <number>, accepted functions: +, -, /, */x\n"
+msgstr "calc <number> <function> <number>, accepted functions: +, -, /, */x\n"
+
+#: qcommon/cmd.c:1025
+msgid "Cannot divide by zero!\n"
+msgstr "Cannot divide by zero!\n"
+
+#: qcommon/cmd.c:1071
+msgid ""
+"undelay <name> (command)\n"
+"removes all commands with <name> in them.\n"
+"if (command) is specified, the removal will be limited only to delays whose "
+"commands contain (command).\n"
+msgstr ""
+"undelay <name> (command)\n"
+"removes all commands with <name> in them.\n"
+"if (command) is specified, the removal will be limited only to delays whose "
+"commands contain (command).\n"
+
+#: qcommon/cmd.c:1120
+msgid ""
+"delay (name) <delay in milliseconds> <command>\n"
+"delay <delay in frames>f <command>\n"
+"executes <command> after the delay\n"
+msgstr ""
+"delay (name) <delay in milliseconds> <command>\n"
+"delay <delay in frames>f <command>\n"
+"executes <command> after the delay\n"
+
+#: qcommon/cmd.c:1142
+msgid "delay: the delay must be a positive integer"
+msgstr "delay: the delay must be a positive integer"
+
+#: qcommon/cmd.c:1158
+msgid "WARNING: Maximum amount of delayed commands reached."
+msgstr "WARNING: Maximum amount of delayed commands reached."
+
+#: qcommon/cmd.c:1201
+msgid "random <variableToSet> <value1> <value2>\n"
+msgstr "random <variableToSet> <value1> <value2>\n"
+
+#: qcommon/cmd.c:1345
+msgid "unalias <name> : delete an alias\n"
+msgstr "unalias <name> : delete an alias\n"
+
+#: qcommon/cmd.c:1392
+msgid "alias <name> : show an alias\n"
+msgstr "alias <name> : show an alias\n"
+
+#: qcommon/cmd.c:1393
+msgid "alias <name> <exec> : create an alias\n"
+msgstr "alias <name> <exec> : create an alias\n"
+
+#: qcommon/cmd.c:1416
+msgid "Can't make an alias to itself\n"
+msgstr "Can't make an alias to itself\n"
+
+#: qcommon/cmd.c:1425
+msgid "Can't override a builtin function with an alias\n"
+msgstr "Can't override a builtin function with an alias\n"
+
+#: qcommon/cmd.c:1451
+#, c-format
+msgid "Alias %s does not exist\n"
+msgstr "Alias %s does not exist\n"
+
+#: qcommon/cmd.c:2189
+#, c-format
+msgid "Cmd_AddCommand: %s already defined\n"
+msgstr "Cmd_AddCommand: %s already defined\n"
+
+#: qcommon/cmd.c:2261
+#, c-format
+msgid "Cmd_AddButtonCommand: +/-%s already defined\n"
+msgstr "Cmd_AddButtonCommand: +/-%s already defined\n"
+
+#: qcommon/cmd.c:2469
+#, c-format
+msgid "%i commands\n"
+msgstr "%i commands\n"
+
+#: qcommon/vm_llvm.cpp:84
+#, c-format
+msgid "LLVM: Look up symbol %s\n"
+msgstr "LLVM: Look up symbol %s\n"
+
+#: qcommon/vm_llvm.cpp:97
+#, c-format
+msgid "LLVM: ^3Unparsed symbol %s^7\n"
+msgstr "LLVM: ^3Unparsed symbol %s^7\n"
+
+#: qcommon/vm_llvm.cpp:120
+#, c-format
+msgid "Couldn't load llvm file: %s\n"
+msgstr "Couldn't load llvm file: %s\n"
+
+#: qcommon/vm_llvm.cpp:130
+#, c-format
+msgid "Couldn't parse llvm file: %s: %s\n"
+msgstr "Couldn't parse llvm file: %s: %s\n"
+
+#: qcommon/vm_llvm.cpp:191
+msgid "VM_UnloadLLVM called with NULL pointer\n"
+msgstr "VM_UnloadLLVM called with NULL pointer\n"
+
+#: qcommon/vm_llvm.cpp:196
+#, c-format
+msgid "Unloading LLVM with module==%p\n"
+msgstr "Unloading LLVM with module==%p\n"
+
+#: qcommon/vm_llvm.cpp:200
+msgid "Couldn't remove llvm\n"
+msgstr "Couldn't remove llvm\n"
+
+#: qcommon/parse.c:387 qcommon/parse.c:405 qcommon/parse.c:1261
+#: qcommon/parse.c:1277
+#, c-format
+msgid "file %s, line %d: %s\n"
+msgstr "file %s, line %d: %s\n"
+
+#: qcommon/cm_load.c:717
+msgid "WARNING: unexpected end of entities string while parsing worldspawn\n"
+msgstr "WARNING: unexpected end of entities string while parsing worldspawn\n"
+
+#: qcommon/cm_load.c:746
+msgid "map features per poly collision detection\n"
+msgstr "map features per poly collision detection\n"
+
+#: qcommon/cm_load.c:753
+#, c-format
+msgid "WARNING: expected worldspawn found '%s'\n"
+msgstr "WARNING: expected worldspawn found '%s'\n"
+
+#: qcommon/cvar.c:298 qcommon/cvar.c:433 qcommon/cvar.c:627
+#, c-format
+msgid "invalid cvar name string: %s\n"
+msgstr "invalid cvar name string: %s\n"
+
+#: qcommon/cvar.c:306
+#, c-format
+msgid "invalid cvar value string: %s\n"
+msgstr "invalid cvar value string: %s\n"
+
+#: qcommon/cvar.c:469
+#, c-format
+msgid "Using %s instead of %s\n"
+msgstr "Using %s instead of %s\n"
+
+#: qcommon/cvar.c:497 qcommon/cvar.c:923
 #, c-format
 msgid "%s is unsafe. Check com_crashed.\n"
-msgstr ""
+msgstr "%s is unsafe. Check com_crashed.\n"
 
-#: cvar.c:510
+#: qcommon/cvar.c:503
 #, c-format
 msgid "%s is read only.\n"
-msgstr ""
+msgstr "%s is read only.\n"
 
-#: cvar.c:516
+#: qcommon/cvar.c:509
 #, c-format
 msgid "%s is write protected.\n"
-msgstr ""
+msgstr "%s is write protected.\n"
 
-#: cvar.c:522
+#: qcommon/cvar.c:515
 #, c-format
 msgid "%s is cheat protected.\n"
-msgstr ""
+msgstr "%s is cheat protected.\n"
 
-#: cvar.c:528
+#: qcommon/cvar.c:521
 #, c-format
 msgid "%s will be changed upon recompiling shaders.\n"
-msgstr ""
+msgstr "%s will be changed upon recompiling shaders.\n"
 
-#: cvar.c:551
+#: qcommon/cvar.c:544
 #, c-format
 msgid "%s will be changed upon restarting.\n"
-msgstr ""
+msgstr "%s will be changed upon restarting.\n"
 
-#: cvar.c:782
+#: qcommon/cvar.c:775
 #, c-format
 msgid "\"%s\" is:\"%s"
-msgstr ""
+msgstr "\"%s\" is:\"%s"
 
-#: cvar.c:786
+#: qcommon/cvar.c:779
 #, c-format
 msgid "latched: \"%s\"\n"
-msgstr ""
+msgstr "latched: \"%s\"\n"
 
-#: cvar.c:814
+#: qcommon/cvar.c:807
 msgid "usage: toggle <variable> [<value> ...]\n"
+msgstr "usage: toggle <variable> [<value> ...]\n"
+
+#: qcommon/cvar.c:850
+msgid "usage: cycle <variable> <start> <end> [step]\n"
+msgstr "usage: cycle <variable> <start> <end> [step]\n"
+
+#: qcommon/cvar.c:911
+msgid "usage: set <variable> <value> [unsafe]\n"
+msgstr "usage: set <variable> <value> [unsafe]\n"
+
+#: qcommon/cvar.c:985
+msgid "usage: setu <variable> <value> [unsafe]\n"
+msgstr "usage: setu <variable> <value> [unsafe]\n"
+
+#: qcommon/cvar.c:1013
+msgid "usage: sets <variable> <value> [unsafe]\n"
+msgstr "usage: sets <variable> <value> [unsafe]\n"
+
+#: qcommon/cvar.c:1041
+msgid "usage: seta <variable> <value> [unsafe]\n"
+msgstr "usage: seta <variable> <value> [unsafe]\n"
+
+#: qcommon/cvar.c:1065
+msgid "usage: reset <variable>\n"
+msgstr "usage: reset <variable>\n"
+
+#: qcommon/cvar.c:1222
+#, c-format
+msgid ""
+"\n"
+"%i total cvars\n"
 msgstr ""
+"\n"
+"%i total cvars\n"
+
+#: qcommon/cvar.c:1223
+#, c-format
+msgid "%i cvar indexes\n"
+msgstr "%i cvar indexes\n"
+
+#: qcommon/files.c:582
+#, c-format
+msgid "WARNING: refusing to create relative path \"%s\"\n"
+msgstr "WARNING: refusing to create relative path \"%s\"\n"
+
+#: qcommon/files.c:613
+#, c-format
+msgid "copy %s to %s\n"
+msgstr "copy %s to %s\n"
+
+#: qcommon/files.c:617
+msgid "Ignoring journal files\n"
+msgstr "Ignoring journal files\n"
+
+#: qcommon/files.c:781
+#, c-format
+msgid "FS_SV_FOpenFileWrite: %s\n"
+msgstr "FS_SV_FOpenFileWrite: %s\n"
+
+#: qcommon/files.c:836
+#, c-format
+msgid "FS_SV_FOpenFileRead (fs_homepath): %s\n"
+msgstr "FS_SV_FOpenFileRead (fs_homepath): %s\n"
+
+#: qcommon/files.c:853
+#, c-format
+msgid "FS_SV_FOpenFileRead (fs_basepath): %s\n"
+msgstr "FS_SV_FOpenFileRead (fs_basepath): %s\n"
+
+#: qcommon/files.c:901
+#, c-format
+msgid "FS_SV_Rename: %s --> %s\n"
+msgstr "FS_SV_Rename: %s --> %s\n"
+
+#: qcommon/files.c:935
+#, c-format
+msgid "FS_Rename: %s --> %s\n"
+msgstr "FS_Rename: %s --> %s\n"
+
+#: qcommon/files.c:1013 qcommon/files.c:1151
+#, c-format
+msgid "FS_FOpenFileWrite: %s\n"
+msgstr "FS_FOpenFileWrite: %s\n"
+
+#: qcommon/files.c:1066
+#, c-format
+msgid "FS_FOpenFileAppend: %s\n"
+msgstr "FS_FOpenFileAppend: %s\n"
+
+#: qcommon/files.c:1108
+#, c-format
+msgid "FS_FOpenFileDirect: %s\n"
+msgstr "FS_FOpenFileDirect: %s\n"
+
+#: qcommon/files.c:1513
+#, c-format
+msgid "FS_FOpenFileRead: %s (found in '%s')\n"
+msgstr "FS_FOpenFileRead: %s (found in '%s')\n"
+
+#: qcommon/files.c:1616
+#, c-format
+msgid "FS_FOpenFileRead: %s (found in '%s/%s')\n"
+msgstr "FS_FOpenFileRead: %s (found in '%s/%s')\n"
+
+#: qcommon/files.c:1746 qcommon/files.c:2533
+#, c-format
+msgid "Failed to open %s\n"
+msgstr "Failed to open %s\n"
+
+#: qcommon/files.c:2096
+#, c-format
+msgid "FS_Write: 0 bytes written (%d attempted)\n"
+msgstr "FS_Write: 0 bytes written (%d attempted)\n"
+
+#: qcommon/files.c:2103
+#, c-format
+msgid "FS_Write: %d bytes written (%d attempted)\n"
+msgstr "FS_Write: %d bytes written (%d attempted)\n"
+
+#: qcommon/files.c:3241
+msgid "usage: dir <directory> [extension]\n"
+msgstr "usage: dir <directory> [extension]\n"
+
+#: qcommon/files.c:3256
+#, c-format
+msgid "Directory of %s %s\n"
+msgstr "Directory of %s %s\n"
+
+#: qcommon/files.c:3389
+msgid "usage: fdir <filter>\n"
+msgstr "usage: fdir <filter>\n"
+
+#: qcommon/files.c:3390
+msgid "example: fdir *q3dm*.bsp\n"
+msgstr "example: fdir *q3dm*.bsp\n"
+
+#: qcommon/files.c:3408
+#, c-format
+msgid "%d files listed\n"
+msgstr "%d files listed\n"
+
+#: qcommon/files.c:3423
+msgid "Current search path:\n"
+msgstr "Current search path:\n"
+
+#: qcommon/files.c:3430
+#, c-format
+msgid "%s (%i files)\n"
+msgstr "%s (%i files)\n"
+
+#: qcommon/files.c:3436
+msgid "    not on the pure list\n"
+msgstr "    not on the pure list\n"
+
+#: qcommon/files.c:3440
+msgid "    on the pure list\n"
+msgstr "    on the pure list\n"
+
+#: qcommon/files.c:3475
+msgid "Usage: touchFile <file>\n"
+msgstr "Usage: touchFile <file>\n"
+
+#: qcommon/files.c:3509
+msgid "Usage: which <file>\n"
+msgstr "Usage: which <file>\n"
+
+#: qcommon/files.c:3540
+#, c-format
+msgid "File \"%s\" found in \"%s\"\n"
+msgstr "File \"%s\" found in \"%s\"\n"
+
+#: qcommon/files.c:3563
+#, c-format
+msgid "File \"%s\" found at \"%s\"\n"
+msgstr "File \"%s\" found at \"%s\"\n"
+
+#: qcommon/files.c:3568
+#, c-format
+msgid "File not found: \"%s\"\n"
+msgstr "File not found: \"%s\"\n"
+
+#: qcommon/files.c:3908
+#, c-format
+msgid "ERROR: Missing/corrupt official pak file %s\n"
+msgstr "ERROR: Missing/corrupt official pak file %s\n"
+
+#: qcommon/files.c:4275
+#, c-format
+msgid "%d files in pk3 files\n"
+msgstr "%d files in pk3 files\n"
+
+#: qcommon/files.c:5165 qcommon/common.c:3391
+#, c-format
+msgid ""
+"^3WARNING: profile.pid found for profile '%s' - system settings will revert "
+"to defaults\n"
+msgstr ""
+"^3WARNING: profile.pid found for profile '%s' - system settings will revert "
+"to defaults\n"
+
+#: qcommon/files.c:5174 qcommon/common.c:3401
+#, c-format
+msgid "^3WARNING: couldn't write profiles/%s/profile.pid\n"
+msgstr "^3WARNING: couldn't write profiles/%s/profile.pid\n"
+
+#: qcommon/cm_patch.c:658
+msgid "WARNING: CM_GridPlane unresolvable\n"
+msgstr "WARNING: CM_GridPlane unresolvable\n"
+
+#: qcommon/net_chan.c:422
+#, c-format
+msgid "%s:Out of order packet %i at %i\n"
+msgstr "%s:Out of order packet %i at %i\n"
+
+#: qcommon/net_chan.c:440
+#, c-format
+msgid "%s:Dropped %i packets at %i\n"
+msgstr "%s:Dropped %i packets at %i\n"
+
+#: qcommon/net_chan.c:469
+#, c-format
+msgid "%s:Dropped a message fragment\n"
+msgstr "%s:Dropped a message fragment\n"
+
+#: qcommon/net_chan.c:484
+#, c-format
+msgid "%s:illegal fragment length\n"
+msgstr "%s:illegal fragment length\n"
+
+#: qcommon/net_chan.c:504
+#, c-format
+msgid "%s:fragmentLength %i > msg->maxsize\n"
+msgstr "%s:fragmentLength %i > msg->maxsize\n"
+
+#: qcommon/net_chan.c:683
+#, c-format
+msgid "send packet %4i\n"
+msgstr "send packet %4i\n"
+
+#: qcommon/dl_main_curl.c:142
+#, c-format
+msgid "ERROR: DL_BeginDownload unable to open '%s' for writing\n"
+msgstr "ERROR: DL_BeginDownload unable to open '%s' for writing\n"
+
+#: qcommon/vm_interpreted.c:453
+#, c-format
+msgid "%s %s\n"
+msgstr "%s %s\n"
+
+#: qcommon/vm_interpreted.c:555
+#, c-format
+msgid "%s---> systemcall(%i)\n"
+msgstr "%s---> systemcall(%i)\n"
+
+#: qcommon/vm_interpreted.c:623 qcommon/vm_interpreted.c:694
+#, c-format
+msgid "%s<--- %s\n"
+msgstr "%s<--- %s\n"
+
+#: qcommon/vm_interpreted.c:664
+#, c-format
+msgid "%s---> %s\n"
+msgstr "%s---> %s\n"
+
+#: qcommon/common.c:254
+#, c-format
+msgid "logfile opened on %s\n"
+msgstr "logfile opened on %s\n"
+
+#: qcommon/common.c:395
+#, c-format
+msgid ""
+"********************\n"
+"ERROR: %s\n"
+"********************\n"
+msgstr ""
+"********************\n"
+"ERROR: %s\n"
+"********************\n"
+
+#: qcommon/common.c:677
+msgid "MISSING VALUE\n"
+msgstr "MISSING VALUE\n"
+
+#: qcommon/common.c:1634
+msgid "ERROR: block size does not touch the next block\n"
+msgstr "ERROR: block size does not touch the next block\n"
+
+#: qcommon/common.c:1639
+msgid "ERROR: next block doesn't have proper back link\n"
+msgstr "ERROR: next block doesn't have proper back link\n"
+
+#: qcommon/common.c:1644
+msgid "ERROR: two consecutive free blocks\n"
+msgstr "ERROR: two consecutive free blocks\n"
+
+#: qcommon/common.c:1770
+#, c-format
+msgid "Com_TouchMemory: %i msec\n"
+msgstr "Com_TouchMemory: %i msec\n"
+
+#: qcommon/common.c:1804
+msgid "Have SSE support\n"
+msgstr "Have SSE support\n"
+
+#: qcommon/common.c:1814
+msgid "No SSE support on this machine\n"
+msgstr "No SSE support on this machine\n"
+
+#: qcommon/common.c:2137
+msgid "Hunk_Clear: reset the hunk ok\n"
+msgstr "Hunk_Clear: reset the hunk ok\n"
+
+#: qcommon/common.c:2344 qcommon/common.c:2355
+msgid "Hunk_FreeTempMemory: not the final block\n"
+msgstr "Hunk_FreeTempMemory: not the final block\n"
+
+#: qcommon/common.c:2465 qcommon/common.c:2497
+msgid "Replaying journaled events\n"
+msgstr "Replaying journaled events\n"
+
+#: qcommon/common.c:2490
+msgid "Journaling events\n"
+msgstr "Journaling events\n"
+
+#: qcommon/common.c:2508
+msgid "Couldn't open journal files\n"
+msgstr "Couldn't open journal files\n"
+
+#: qcommon/common.c:2543
+msgid "Com_QueueEvent: overflow\n"
+msgstr "Com_QueueEvent: overflow\n"
+
+#: qcommon/common.c:2733
+msgid "WARNING: Com_PushEvent overflow\n"
+msgstr "WARNING: Com_PushEvent overflow\n"
+
+#: qcommon/common.c:2793
+#, c-format
+msgid "SV_PacketEvent time: %i\n"
+msgstr "SV_PacketEvent time: %i\n"
+
+#: qcommon/common.c:2919
+msgid "Com_EventLoop: oversize packet\n"
+msgstr "Com_EventLoop: oversize packet\n"
+
+#: qcommon/common.c:3010
+msgid "freeze <seconds>\n"
+msgstr "freeze <seconds>\n"
+
+#: qcommon/common.c:3061
+msgid "Found high quality video and slow CPU\n"
+msgstr "Found high quality video and slow CPU\n"
+
+#: qcommon/common.c:3067
+msgid "Found low quality video and slow CPU\n"
+msgstr "Found low quality video and slow CPU\n"
+
+#: qcommon/common.c:3237
+#, c-format
+msgid "Com_TrackProfile: Deleting old pid file [%s] [%s]\n"
+msgstr "Com_TrackProfile: Deleting old pid file [%s] [%s]\n"
+
+#: qcommon/common.c:3267
+#, c-format
+msgid "Com_WriteProfile: Can't write %s.\n"
+msgstr "Com_WriteProfile: Can't write %s.\n"
+
+#: qcommon/common.c:3572
+msgid "--- Common Initialization Complete ---\n"
+msgstr "--- Common Initialization Complete ---\n"
+
+#: qcommon/common.c:3585 qcommon/common.c:4657
+#, c-format
+msgid "Couldn't write %s.\n"
+msgstr "Couldn't write %s.\n"
+
+#: qcommon/common.c:3643
+msgid "Usage: writeconfig <filename>\n"
+msgstr "Usage: writeconfig <filename>\n"
+
+#: qcommon/common.c:3649
+#, c-format
+msgid "Writing %s.\n"
+msgstr "Writing %s.\n"
+
+#: qcommon/common.c:3689
+#, c-format
+msgid "Hitch warning: %i msec frame time\n"
+msgstr "Hitch warning: %i msec frame time\n"
+
+#: qcommon/common.c:3887
+msgid "WARNING: watchdog will trigger in 4 seconds\n"
+msgstr "WARNING: watchdog will trigger in 4 seconds\n"
+
+#: qcommon/common.c:3892
+msgid "Idle Server with no map - triggering watchdog\n"
+msgstr "Idle Server with no map - triggering watchdog\n"
+
+#: qcommon/common.c:3935
+#, c-format
+msgid "%4i traces  (%ib %ip %it) %4i points\n"
+msgstr "%4i traces  (%ib %ip %it) %4i points\n"
+
+#: qcommon/common.c:4544
+msgid "Com_RandomBytes: using weak randomization\n"
+msgstr "Com_RandomBytes: using weak randomization\n"
+
+#: qcommon/common.c:4608
+#, c-format
+msgid "Couldn't read %s.\n"
+msgstr "Couldn't read %s.\n"
+
+#: qcommon/vm_x86.c:1898
+#, c-format
+msgid "VM file %s compiled to %i bytes of code\n"
+msgstr "VM file %s compiled to %i bytes of code\n"
+
+#: qcommon/translation.cpp:62
+#, c-format
+msgid "Switched language to %s\n"
+msgstr "Switched language to %s\n"
+
+#: qcommon/translation.cpp:107
+#, c-format
+msgid "^1ERROR: Could not open client translation: %s\n"
+msgstr "^1ERROR: Could not open client translation: %s\n"
+
+#: qcommon/translation.cpp:120
+#, c-format
+msgid "^1ERROR: Could not open game translation: %s\n"
+msgstr "^1ERROR: Could not open game translation: %s\n"
+
+#: qcommon/translation.cpp:134
+#, c-format
+msgid "Loaded %lu language(s)\n"
+msgstr "Loaded %lu language(s)\n"
+
+#: qcommon/net_ip.c:447
+#, c-format
+msgid ""
+"Sys_StringToSockaddr: Error resolving %s: No address of required type "
+"found.\n"
+msgstr ""
+"Sys_StringToSockaddr: Error resolving %s: No address of required type "
+"found.\n"
+
+#: qcommon/net_ip.c:452
+#, c-format
+msgid "Sys_StringToSockaddr: Error resolving %s: %s\n"
+msgstr "Sys_StringToSockaddr: Error resolving %s: %s\n"
+
+#: qcommon/net_ip.c:567
+msgid "NET_CompareBaseAdr: bad address type\n"
+msgstr "NET_CompareBaseAdr: bad address type\n"
+
+#: qcommon/net_ip.c:732 qcommon/net_ip.c:782 qcommon/net_ip.c:812
+#, c-format
+msgid "NET_GetPacket: %s\n"
+msgstr "NET_GetPacket: %s\n"
+
+#: qcommon/net_ip.c:762 qcommon/net_ip.c:792 qcommon/net_ip.c:822
+#, c-format
+msgid "Oversize packet from %s\n"
+msgstr "Oversize packet from %s\n"
+
+#: qcommon/net_ip.c:908
+#, c-format
+msgid "NET_SendPacket: %s\n"
+msgstr "NET_SendPacket: %s\n"
+
+#: qcommon/net_ip.c:1032
+#, c-format
+msgid "IP: %s\n"
+msgstr "IP: %s\n"
+
+#: qcommon/net_ip.c:1036
+#, c-format
+msgid "IP6: %s\n"
+msgstr "IP6: %s\n"
+
+#: qcommon/net_ip.c:1060
+#, c-format
+msgid "Opening IP socket: %s:%i\n"
+msgstr "Opening IP socket: %s:%i\n"
+
+#: qcommon/net_ip.c:1064
+#, c-format
+msgid "Opening IP socket: 0.0.0.0:%i\n"
+msgstr "Opening IP socket: 0.0.0.0:%i\n"
+
+#: qcommon/net_ip.c:1070
+#, c-format
+msgid "WARNING: NET_IPSocket: socket: %s\n"
+msgstr "WARNING: NET_IPSocket: socket: %s\n"
+
+#: qcommon/net_ip.c:1077
+#, c-format
+msgid "WARNING: NET_IPSocket: ioctl FIONBIO: %s\n"
+msgstr "WARNING: NET_IPSocket: ioctl FIONBIO: %s\n"
+
+#: qcommon/net_ip.c:1086
+#, c-format
+msgid "WARNING: NET_IPSocket: setsockopt SO_BROADCAST: %s\n"
+msgstr "WARNING: NET_IPSocket: setsockopt SO_BROADCAST: %s\n"
+
+#: qcommon/net_ip.c:1114
+#, c-format
+msgid "WARNING: NET_IPSocket: bind: %s\n"
+msgstr "WARNING: NET_IPSocket: bind: %s\n"
+
+#: qcommon/net_ip.c:1142
+#, c-format
+msgid "Opening IP6 socket: [%s]:%i\n"
+msgstr "Opening IP6 socket: [%s]:%i\n"
+
+#: qcommon/net_ip.c:1146
+#, c-format
+msgid "Opening IP6 socket: %s:%i\n"
+msgstr "Opening IP6 socket: %s:%i\n"
+
+#: qcommon/net_ip.c:1151
+#, c-format
+msgid "Opening IP6 socket: [::]:%i\n"
+msgstr "Opening IP6 socket: [::]:%i\n"
+
+#: qcommon/net_ip.c:1157
+#, c-format
+msgid "WARNING: NET_IP6Socket: socket: %s\n"
+msgstr "WARNING: NET_IP6Socket: socket: %s\n"
+
+#: qcommon/net_ip.c:1164
+#, c-format
+msgid "WARNING: NET_IP6Socket: ioctl FIONBIO: %s\n"
+msgstr "WARNING: NET_IP6Socket: ioctl FIONBIO: %s\n"
+
+#: qcommon/net_ip.c:1208
+#, c-format
+msgid "WARNING: NET_IP6Socket: bind: %s\n"
+msgstr "WARNING: NET_IP6Socket: bind: %s\n"
+
+#: qcommon/net_ip.c:1234
+#, c-format
+msgid ""
+"WARNING: NET_JoinMulticast6: Incorrect multicast address given, please set "
+"cvar %s to a sane value.\n"
+msgstr ""
+"WARNING: NET_JoinMulticast6: Incorrect multicast address given, please set "
+"cvar %s to a sane value.\n"
+
+#: qcommon/net_ip.c:1292
+#, c-format
+msgid "NET_JoinMulticast6: Couldn't set scope on multicast socket: %s\n"
+msgstr "NET_JoinMulticast6: Couldn't set scope on multicast socket: %s\n"
+
+#: qcommon/net_ip.c:1305
+#, c-format
+msgid "NET_JoinMulticast6: Couldn't join multicast group: %s\n"
+msgstr "NET_JoinMulticast6: Couldn't join multicast group: %s\n"
+
+#: qcommon/net_ip.c:1350
+msgid "Opening connection to SOCKS server.\n"
+msgstr "Opening connection to SOCKS server.\n"
+
+#: qcommon/net_ip.c:1354
+#, c-format
+msgid "WARNING: NET_OpenSocks: socket: %s\n"
+msgstr "WARNING: NET_OpenSocks: socket: %s\n"
+
+#: qcommon/net_ip.c:1362
+#, c-format
+msgid "WARNING: NET_OpenSocks: gethostbyname: %s\n"
+msgstr "WARNING: NET_OpenSocks: gethostbyname: %s\n"
+
+#: qcommon/net_ip.c:1368
+msgid "WARNING: NET_OpenSocks: gethostbyname: address type was not AF_INET\n"
+msgstr "WARNING: NET_OpenSocks: gethostbyname: address type was not AF_INET\n"
+
+#: qcommon/net_ip.c:1378
+#, c-format
+msgid "NET_OpenSocks: connect: %s\n"
+msgstr "NET_OpenSocks: connect: %s\n"
+
+#: qcommon/net_ip.c:1415 qcommon/net_ip.c:1475 qcommon/net_ip.c:1511
+#, c-format
+msgid "NET_OpenSocks: send: %s\n"
+msgstr "NET_OpenSocks: send: %s\n"
+
+#: qcommon/net_ip.c:1424 qcommon/net_ip.c:1484 qcommon/net_ip.c:1520
+#, c-format
+msgid "NET_OpenSocks: recv: %s\n"
+msgstr "NET_OpenSocks: recv: %s\n"
+
+#: qcommon/net_ip.c:1430 qcommon/net_ip.c:1490 qcommon/net_ip.c:1526
+msgid "NET_OpenSocks: bad response\n"
+msgstr "NET_OpenSocks: bad response\n"
+
+#: qcommon/net_ip.c:1443
+msgid "NET_OpenSocks: request denied\n"
+msgstr "NET_OpenSocks: request denied\n"
+
+#: qcommon/net_ip.c:1496
+msgid "NET_OpenSocks: authentication failed\n"
+msgstr "NET_OpenSocks: authentication failed\n"
+
+#: qcommon/net_ip.c:1533
+#, c-format
+msgid "NET_OpenSocks: request denied: %i\n"
+msgstr "NET_OpenSocks: request denied: %i\n"
+
+#: qcommon/net_ip.c:1539
+#, c-format
+msgid "NET_OpenSocks: relay address is not IPV4: %i\n"
+msgstr "NET_OpenSocks: relay address is not IPV4: %i\n"
+
+#: qcommon/net_ip.c:1606
+#, c-format
+msgid "NET_GetLocalAddress: Unable to get list of network interfaces: %s\n"
+msgstr "NET_GetLocalAddress: Unable to get list of network interfaces: %s\n"
+
+#: qcommon/net_ip.c:1640
+#, c-format
+msgid "Hostname: %s\n"
+msgstr "Hostname: %s\n"
+
+#: qcommon/net_ip.c:1732
+msgid "WARNING: Couldn't bind to a v6 ip address.\n"
+msgstr "WARNING: Couldn't bind to a v6 ip address.\n"
+
+#: qcommon/net_ip.c:1764
+msgid "WARNING: Couldn't bind to a v4 ip address.\n"
+msgstr "WARNING: Couldn't bind to a v4 ip address.\n"
+
+#: qcommon/net_ip.c:1953
+#, c-format
+msgid "WARNING: Winsock initialization failed, returned %d\n"
+msgstr "WARNING: Winsock initialization failed, returned %d\n"
+
+#: qcommon/net_ip.c:1958
+msgid "Winsock Initialized\n"
+msgstr "Winsock Initialized\n"
+
+#: qcommon/msg.c:453
+msgid "MSG_WriteString: MAX_STRING_CHARS"
+msgstr "MSG_WriteString: MAX_STRING_CHARS"
+
+#: qcommon/msg.c:479
+msgid "MSG_WriteString: BIG_INFO_STRING"
+msgstr "MSG_WriteString: BIG_INFO_STRING"
+
+#: qcommon/msg.c:1072
+#, c-format
+msgid "%d used %d\n"
+msgstr "%d used %d\n"
+
+#: qcommon/msg.c:1199
+msgid "Entitystate fields in order of priority\n"
+msgstr "Entitystate fields in order of priority\n"
+
+#: qcommon/msg.c:1200
+msgid "netField_t entityStateFields[] = {\n"
+msgstr "netField_t entityStateFields[] = {\n"
+
+#: qcommon/msg.c:1790
+msgid "Playerstate fields in order of priority\n"
+msgstr "Playerstate fields in order of priority\n"
+
+#: qcommon/msg.c:1791
+msgid "netField_t playerStateFields[] = {\n"
+msgstr "netField_t playerStateFields[] = {\n"
