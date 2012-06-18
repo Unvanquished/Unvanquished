@@ -467,6 +467,19 @@ qboolean G_EntitiesFree( void )
 }
 
 /*
+==============
+G_CopyString
+==============
+*/
+char *G_CopyString( const char *str )
+{
+	size_t size = strlen( str ) + 1;
+	char *cp = BG_Alloc( size );
+	memcpy( cp, str, size );
+	return cp;
+}
+
+/*
 =================
 G_FreeEntity
 
