@@ -4777,6 +4777,22 @@ static int UI_FeederInitialise( int feederID )
 
 		return uiInfo.numResolutions;
 	}
+	
+	if ( feederID == FEEDER_LANGUAGES )
+	{
+		int i;
+		char lang[25];
+		
+		trap_Cvar_VariableStringBuffer( "language", lang, sizeof( lang ) );
+		
+		for ( i = 0; i < uiInfo.numLanguages; i++ )
+		{
+			if( !Q_stricmp( lang, uiInfo.languages[ i ].lang ) )
+			{
+				return i;
+			}
+		}
+	}
 
 	return 0;
 }
