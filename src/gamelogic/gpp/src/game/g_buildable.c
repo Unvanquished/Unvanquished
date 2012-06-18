@@ -84,7 +84,7 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 		VectorSet( cmins, -MAX_ALIEN_BBOX, -MAX_ALIEN_BBOX, -MAX_ALIEN_BBOX );
 		VectorSet( cmaxs,  MAX_ALIEN_BBOX,  MAX_ALIEN_BBOX,  MAX_ALIEN_BBOX );
 
-		displacement = ( maxs[ 2 ] + MAX_ALIEN_BBOX ) * M_ROOT3;
+		displacement = ( maxs[ 2 ] + MAX_ALIEN_BBOX ) * M_ROOT3 + 1.0f;
 		VectorMA( origin, displacement, normal, localOrigin );
 	}
 	else if ( spawn == BA_H_SPAWN )
