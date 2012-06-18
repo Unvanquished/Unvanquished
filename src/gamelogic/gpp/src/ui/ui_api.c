@@ -31,10 +31,9 @@ void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
 
 int PASSFLOAT( float x )
 {
-	float floatTemp;
-
-	floatTemp = x;
-	return * ( int * ) &floatTemp;
+	floatint_t fi;
+	fi.f = x;
+	return fi.i;
 }
 
 void trap_SyscallABIVersion( int major, int minor )
@@ -95,9 +94,9 @@ void trap_Cvar_Set( const char *var_name, const char *value )
 //return FloatAsInt(Cvar_VariableValue(VMA(1)));
 float trap_Cvar_VariableValue( const char *var_name )
 {
-	int temp;
-	temp = syscall( UI_CVAR_VARIABLEVALUE, var_name );
-	return ( * ( float * ) &temp );
+	floatint_t fi;
+	fi.i = syscall( UI_CVAR_VARIABLEVALUE, var_name );
+	return fi.f;
 }
 
 //07.
