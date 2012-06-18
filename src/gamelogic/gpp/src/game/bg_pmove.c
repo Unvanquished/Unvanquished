@@ -234,33 +234,10 @@ PM_ClipVelocity
 Slide off of the impacting surface
 ==================
 */
-void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out, float overbounce )
+void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out )
 {
-	float backoff;
-	float change;
-	int   i;
-
-	backoff = DotProduct( in, normal );
-
-	//Com_Printf( "%1.0f ", backoff );
-
-	if ( backoff < 0 )
-	{
-		backoff *= overbounce;
-	}
-	else
-	{
-		backoff /= overbounce;
-	}
-
-	for ( i = 0; i < 3; i++ )
-	{
-		change = normal[ i ] * backoff;
-		//Com_Printf( "%1.0f ", change );
-		out[ i ] = in[ i ] - change;
-	}
-
-	//Com_Printf( "   " );
+	float t = -DotProduct( in, normal );
+	VectorMA( in, t, normal, out );
 }
 
 /*
@@ -1364,8 +1341,7 @@ static void PM_WaterMove( void )
 	{
 		vel = VectorLength( pm->ps->velocity );
 		// slide along the ground plane
-		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-		                 pm->ps->velocity, OVERCLIP );
+		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 
 		VectorNormalize( pm->ps->velocity );
 		VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
@@ -1529,8 +1505,7 @@ static void PM_AirMove( void )
 	// slide along the steep plane
 	if ( pml.groundPlane )
 	{
-		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-		                 pm->ps->velocity, OVERCLIP );
+		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 	}
 
 	PM_StepSlideMove( qtrue, qfalse );
@@ -1588,8 +1563,8 @@ static void PM_ClimbMove( void )
 	PM_SetMovementDir();
 
 	// project the forward and right directions onto the ground plane
-	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward, OVERCLIP );
-	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right, OVERCLIP );
+	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward );
+	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right );
 	//
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
@@ -1650,8 +1625,7 @@ static void PM_ClimbMove( void )
 	vel = VectorLength( pm->ps->velocity );
 
 	// slide along the ground plane
-	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-	                 pm->ps->velocity, OVERCLIP );
+	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 
 	// don't decrease velocity when going up or down a slope
 	VectorNormalize( pm->ps->velocity );
@@ -1724,8 +1698,8 @@ static void PM_WalkMove( void )
 	pml.right[ 2 ] = 0;
 
 	// project the forward and right directions onto the ground plane
-	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward, OVERCLIP );
-	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right, OVERCLIP );
+	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward );
+	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right );
 	//
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
@@ -1792,8 +1766,7 @@ static void PM_WalkMove( void )
 	}
 
 	// slide along the ground plane
-	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-	                 pm->ps->velocity, OVERCLIP );
+	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 
 	// don't do anything if standing still
 	if ( !pm->ps->velocity[ 0 ] && !pm->ps->velocity[ 1 ] )
@@ -1849,8 +1822,7 @@ static void PM_LadderMove( void )
 		vel = VectorLength( pm->ps->velocity );
 
 		// slide along the ground plane
-		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-		                 pm->ps->velocity, OVERCLIP );
+		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 
 		VectorNormalize( pm->ps->velocity );
 		VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
