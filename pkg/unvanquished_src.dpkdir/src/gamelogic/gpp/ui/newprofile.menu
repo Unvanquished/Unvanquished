@@ -55,7 +55,7 @@
       type ITEM_TYPE_EDITFIELD
       style WINDOW_STYLE_EMPTY
       text "Profile Name:"
-      maxChars 40
+      maxChars 39
       textscale .4
       cvar "ui_profile"
       rect BORDER BORDER (W-(2*BORDER)) INPUT_H

@@ -36,8 +36,8 @@
       borderColor 1 1 1 1
     }
 
-	CVAR( "Profile Name:", "ui_profile", 0 )
-	CVAR( "Name:", "name", 1 )
+	CVAR( "Profile Name:", "ui_profile", 0, 39 )
+	CVAR( "Name:", "name", 1, 31 )
 	MULTI( "Video Quality:", "ui_glCustom", 
 		{ "High Quality" 0 "Normal" 1 "Fast" 2 "Fastest" 3 "Custom" 4 },
 		play "sound/misc/menu1.wav" ; uiScript update "ui_glCustom" ,
