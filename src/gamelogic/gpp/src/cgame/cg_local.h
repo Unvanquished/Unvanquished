@@ -1550,6 +1550,7 @@ extern  vmCvar_t            cg_thirdPersonRange;
 extern  vmCvar_t            cg_stereoSeparation;
 extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
+extern  vmCvar_t            cg_maxSpeedTimeWindow;
 extern  vmCvar_t            cg_synchronousClients;
 extern  vmCvar_t            cg_stats;
 extern  vmCvar_t            cg_paused;

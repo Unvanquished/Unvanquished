@@ -162,6 +162,7 @@ vmCvar_t        cg_thirdPersonRange;
 vmCvar_t        cg_stereoSeparation;
 vmCvar_t        cg_lagometer;
 vmCvar_t        cg_drawSpeed;
+vmCvar_t        cg_maxSpeedTimeWindow;
 vmCvar_t        cg_synchronousClients;
 vmCvar_t        cg_stats;
 vmCvar_t        cg_paused;
@@ -280,6 +281,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_addMarks,                    "cg_marks",                       "1",            CVAR_ARCHIVE                 },
 	{ &cg_lagometer,                   "cg_lagometer",                   "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawSpeed,                   "cg_drawSpeed",                   "0",            CVAR_ARCHIVE                 },
+	{ &cg_maxSpeedTimeWindow,          "cg_maxSpeedTimeWindow",          "2000",         CVAR_ARCHIVE                 },
 	{ &cg_teslaTrailTime,              "cg_teslaTrailTime",              "250",          CVAR_ARCHIVE                 },
 	{ &cg_gun_x,                       "cg_gunX",                        "0",            CVAR_CHEAT                   },
 	{ &cg_gun_y,                       "cg_gunY",                        "0",            CVAR_CHEAT                   },
