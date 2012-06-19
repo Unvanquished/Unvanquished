@@ -319,6 +319,12 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 		           HUMAN_MAX_CREDITS / ALIEN_MAX_CREDITS + 0.5f );
 	}
 
+	if ( !g_cheats.integer )
+	{
+		ent->client->noclip = qfalse;
+		ent->flags &= ~( FL_GODMODE | FL_NOTARGET );
+	}
+
 	// Copy credits to ps for the client
 	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit;
 

@@ -518,12 +518,6 @@ void Cmd_Give_f( gentity_t *ent )
 		give_all = qtrue;
 	}
 
-	if ( give_all || Q_stricmp( name, "health" ) == 0 )
-	{
-		ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
-		BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
-	}
-
 	if ( give_all || Q_stricmpn( name, "funds", 5 ) == 0 )
 	{
 		float credits;
@@ -550,6 +544,22 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 
 		G_AddCreditToClient( ent->client, ( short ) credits, qtrue );
+	}
+
+	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
+			ent->client->sess.spectatorState != SPECTATOR_NOT )
+	{
+		if ( !( give_all || Q_stricmpn( name, "funds", 5 ) == 0 ) )
+		{
+			G_TriggerMenu( ent-g_entities, MN_CMD_ALIVE );
+		}
+		return;
+	}
+
+	if ( give_all || Q_stricmp( name, "health" ) == 0 )
+	{
+		ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
+		BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
 	}
 
 	if ( give_all || Q_stricmp( name, "stamina" ) == 0 )
@@ -689,7 +699,6 @@ void Cmd_Kill_f( gentity_t *ent )
 {
 	if ( g_cheats.integer )
 	{
-		ent->flags &= ~FL_GODMODE;
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
 		player_die( ent, ent, ent, 100000, MOD_SUICIDE );
 	}
@@ -2190,6 +2199,11 @@ static qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
 
 	// find what the new origin would be on a level surface
 	newOrigin[ 2 ] -= toMins[ 2 ] - fromMins[ 2 ];
+
+	if ( ent->client->noclip )
+	{
+		return qtrue;
+	}
 
 	//compute a place up in the air to start the real trace
 	VectorCopy( newOrigin, temp );
@@ -4123,8 +4137,8 @@ static const commands_t cmds[] =
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },
-	{ "give",            CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Give_f             },
-	{ "god",             CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_God_f              },
+	{ "give",            CMD_CHEAT | CMD_TEAM,                Cmd_Give_f             },
+	{ "god",             CMD_CHEAT,                           Cmd_God_f              },
 	{ "ignore",          0,                                   Cmd_Ignore_f           },
 	{ "itemact",         CMD_HUMAN | CMD_ALIVE,               Cmd_ActivateItem_f     },
 	{ "itemdeact",       CMD_HUMAN | CMD_ALIVE,               Cmd_DeActivateItem_f   },
