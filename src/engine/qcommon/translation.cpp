@@ -50,43 +50,94 @@ Dictionary        trans_dict;
 Dictionary        trans_dictgame;
 
 cvar_t            *language;
+cvar_t            *trans_encodings;
+cvar_t            *trans_languages;
 bool              enabled = false;
 int               modificationCount=0;
 
 #define _(x) Trans_Gettext(x)
 
+/*
+====================
+Trans_ReturnLanguage
+
+Return a loaded language. If desired language, return closest match. 
+If no languages are close, force English.
+====================
+*/
+Language Trans_ReturnLanguage( const char *lang )
+{
+	int bestScore = 0;
+	Language bestLang, language = Language::from_env( std::string( lang ) );
+	
+	std::set<Language> langs = trans_manager.get_languages();
+	for( std::set<Language>::iterator i = langs.begin(); i != langs.end(); i++ )
+	{
+		int score = Language::match( language, *i );
+		
+		if( score > bestScore )
+		{
+			bestScore = score;
+			bestLang = *i;
+		}
+	}
+	
+	// Return "en" if language not found
+	if( !bestLang )
+	{
+		Com_Printf( _("^3WARNING:^7 Language \"%s\" (%s) not found. Default to \"English\" (en)\n"),
+					language.get_name().empty() ? _("Unknown Language") : language.get_name().c_str(),
+					lang );
+		bestLang = Language::from_env( "en" );
+	}
+	
+	return bestLang;
+}
+
 extern "C" void Trans_UpdateLanguage_f( void )
 {
-	trans_dict = trans_manager.get_dictionary( Language::from_env( std::string( language->string ) ) );
-	trans_dictgame = trans_managergame.get_dictionary( Language::from_env( std::string( language->string ) ) );
-	Com_Printf(_( "Switched language to %s\n"), Language::from_env( std::string( language->string ) ).get_name().c_str() );
+	Language lang = Trans_ReturnLanguage( language->string );
+	trans_dict = trans_manager.get_dictionary( lang );
+	trans_dictgame = trans_managergame.get_dictionary( lang );
+	Com_Printf(_( "Switched language to %s\n"), lang.get_name().c_str() );
 }
-	
 
+/*
+============
+Trans_Init
+============
+*/
 extern "C" void Trans_Init( void )
 {
 	char                **poFiles, langList[ MAX_TOKEN_CHARS ], encList[ MAX_TOKEN_CHARS ];
 	int                 numPoFiles, i;
 	FL_Locale           *locale;
-	std::set<Language>  lang;
+	std::set<Language>  langs;
+	Language            lang;
 	
-	language = Cvar_Get( "language", "", CVAR_ROM );
+	language = Cvar_Get( "language", "", CVAR_ARCHIVE );
+	trans_languages = Cvar_Get( "trans_languages", "", CVAR_ROM );
+	trans_encodings = Cvar_Get( "trans_languages", "", CVAR_ROM );
 	
-	FL_FindLocale( &locale, FL_MESSAGES );
-	
-	// Invalid or not found. Just use builtin language.
-	if( !locale->lang || !locale->lang[0] || !locale->country || !locale->country[0] ) 
+	// Only detect locale if no previous language set.
+	if( !language->string[0] )
 	{
-		Cvar_Set( "language", "en_US" );
-	}
-	else
-	{
-		Cvar_Set( "language", va( "%s_%s", locale->lang, locale->country ) );
-	}
+		FL_FindLocale( &locale, FL_MESSAGES );
 		
+		// Invalid or not found. Just use builtin language.
+		if( !locale->lang || !locale->lang[0] || !locale->country || !locale->country[0] ) 
+		{
+			Cvar_Set( "language", "en" );
+		}
+		else
+		{
+			Cvar_Set( "language", va( "%s_%s", locale->lang, locale->country ) );
+		}
+	}
+	
 	poFiles = FS_ListFiles( "translation/client", ".po", &numPoFiles );
 	
-	// This assumes that the names in both folders are the same
+	// This assumes that the filenames in both folders are the same
 	for( i = 0; i < numPoFiles; i++ )
 	{
 		int ret;
@@ -121,18 +172,22 @@ extern "C" void Trans_Init( void )
 		}
 	}
 	FS_FreeFileList( poFiles );
-	trans_dict = trans_manager.get_dictionary( Language::from_env( std::string( language->string ) ) );
-	trans_dictgame = trans_managergame.get_dictionary( Language::from_env( std::string( language->string ) ) );
-	lang = trans_manager.get_languages();
-	for( std::set<Language>::iterator p = lang.begin(); p != lang.end(); p++ )
+	langs = trans_manager.get_languages();
+	for( std::set<Language>::iterator p = langs.begin(); p != langs.end(); p++ )
 	{
 		Q_strcat( langList, sizeof( langList ), va( "\"%s\" ", p->get_name().c_str() ) );
-		Q_strcat( encList, sizeof( encList ), va( "\"%s_%s\" ", p->get_language().c_str(), p->get_country().c_str() ) );
+		Q_strcat( encList, sizeof( encList ), va( "\"%s%s%s\" ", p->get_language().c_str(), 
+												  p->get_country().c_str()[0] ? "_" : "",
+												  p->get_country().c_str() ) );
 	}
 	Cvar_Set( "trans_languages", langList );
 	Cvar_Set( "trans_encodings", encList );
-	Com_Printf(_( "Loaded %lu language(s)\n"), lang.size() );
+	Com_Printf(_( "Loaded %lu language(s)\n"), langs.size() );
 	Cmd_AddCommand( "updatelanguage", Trans_UpdateLanguage_f );
+	
+	lang = Trans_ReturnLanguage( language->string );
+	trans_dict = trans_manager.get_dictionary( lang );
+	trans_dictgame = trans_managergame.get_dictionary( lang );
 	enabled = true;
 }
 
