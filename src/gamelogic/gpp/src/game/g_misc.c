@@ -284,6 +284,7 @@ void SP_misc_particle_system( gentity_t *self )
 	char *s;
 
 	G_SetOrigin( self, self->s.origin );
+	VectorCopy( self->s.angles, self->s.apos.trBase );
 
 	G_SpawnString( "psName", "", &s );
 	G_SpawnFloat( "wait", "0", &self->wait );
