@@ -131,7 +131,9 @@ extern "C" void Trans_Init( void )
 		}
 		else
 		{
-			Cvar_Set( "language", va( "%s_%s", locale->lang, locale->country ) );
+			Cvar_Set( "language", va( "%s%s%s", locale->lang, 
+									  locale->country[0] ? "_" : "",
+									  locale->country ) );
 		}
 	}
 	
