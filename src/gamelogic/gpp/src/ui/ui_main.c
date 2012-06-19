@@ -4740,7 +4740,6 @@ static void UI_FeederSelection( int feederID, int index )
 	{
 		trap_Cvar_Set( "language", uiInfo.languages[ index ].lang );
 		uiInfo.languageIndex = index;
-		trap_Cmd_ExecuteText( EXEC_APPEND, "updatelanguage\n" );
 	}
 	else if ( feederID == FEEDER_PROFILES )
 	{
