@@ -3078,7 +3078,7 @@ qboolean G_admin_warn( gentity_t *ent )
 
 	if( trap_Argc() < 3 )
 	{
-		ADMP( va( "^3warn: ^7usage: warn [name|slot#] [reason]\n" ) );
+		ADMP( "^3warn: ^7usage: warn [name|slot#] [reason]\n" );
 		return qfalse;
 	}
 

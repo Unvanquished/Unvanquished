@@ -3507,7 +3507,7 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 				}
 			}
 
-			Q_strcat( readable, rsize, va( "%s", BG_Buildable( i )->humanName ) );
+			Q_strcat( readable, rsize, BG_Buildable( i )->humanName );
 
 			if ( removalCounts[ i ] > 1 )
 			{
