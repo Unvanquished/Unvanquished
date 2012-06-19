@@ -519,9 +519,6 @@ extern cvar_t *cl_missionStats;
 extern cvar_t *cl_waitForFire;
 extern cvar_t *cl_altTab;
 
-// NERVE - SMF - localization
-extern cvar_t *cl_language;
-
 // -NERVE - SMF
 
 extern cvar_t  *cl_profile;
