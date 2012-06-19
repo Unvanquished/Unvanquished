@@ -61,7 +61,7 @@ int               modificationCount=0;
 ====================
 Trans_ReturnLanguage
 
-Return a loaded language. If desired language, return closest match. 
+Return a loaded language. If desired language is not found, return closest match. 
 If no languages are close, force English.
 ====================
 */
