@@ -563,7 +563,7 @@ tmp_node_t *AAS_LadderSubdivideArea_r( tmp_node_t *tmpnode ) {
 		return tmpnode;
 	}
 	//must be possible to stand in the area
-	if ( !( tmparea->presencetype & PRESENCE_NORMAL ) ) {
+	if ( !( tmparea->presencetype & PRESENCE_STAND ) ) {
 		return tmpnode;
 	}
 	//

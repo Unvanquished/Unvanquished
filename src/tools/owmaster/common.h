@@ -72,7 +72,7 @@ typedef enum
 	MSG_NOPRINT,	// used by "max_msg_level" (= no printings)
 	MSG_ERROR,		// errors
 	MSG_WARNING,	// warnings
-	MSG_NORMAL,		// standard messages
+	MSG_INFO,		// informational messages
 	MSG_DEBUG		// for debugging purpose
 } msg_level_t;
 

@@ -94,7 +94,7 @@ int             outSock = -1;
 time_t          crt_time;
 
 // Maximum level for a message to be printed
-msg_level_t     max_msg_level = MSG_NORMAL;
+msg_level_t     max_msg_level = MSG_INFO;
 
 // Peer address. We rebuild it every time we receive a new packet
 char            peer_address[128];
@@ -231,24 +231,24 @@ static qboolean SecInit(void)
 		}
 
 		// Chroot ourself
-		MsgPrint(MSG_NORMAL, "  - chrooting myself to %s... ", jail_path);
+		MsgPrint(MSG_INFO, "  - chrooting myself to %s... ", jail_path);
 		if(chroot(jail_path) || chdir("/"))
 		{
 			MsgPrint(MSG_ERROR, "FAILED (%s)\n", strerror(errno));
 			return qfalse;
 		}
-		MsgPrint(MSG_NORMAL, "succeeded\n");
+		MsgPrint(MSG_INFO, "succeeded\n");
 
 		// Switch to lower privileges
-		MsgPrint(MSG_NORMAL, "  - switching to user \"%s\" privileges... ", low_priv_user);
+		MsgPrint(MSG_INFO, "  - switching to user \"%s\" privileges... ", low_priv_user);
 		if(setgid(pw->pw_gid) || setuid(pw->pw_uid))
 		{
 			MsgPrint(MSG_ERROR, "FAILED (%s)\n", strerror(errno));
 			return qfalse;
 		}
-		MsgPrint(MSG_NORMAL, "succeeded (UID: %u, GID: %u)\n", pw->pw_uid, pw->pw_gid);
+		MsgPrint(MSG_INFO, "succeeded (UID: %u, GID: %u)\n", pw->pw_uid, pw->pw_gid);
 
-		MsgPrint(MSG_NORMAL, "\n");
+		MsgPrint(MSG_INFO, "\n");
 	}
 #endif
 
@@ -436,7 +436,7 @@ static void PrintHelp(void)
 #ifndef WIN32
 			 DEFAULT_LOW_PRIV_USER,
 #endif
-			 MSG_DEBUG, MSG_NORMAL);
+			 MSG_DEBUG, MSG_INFO);
 }
 
 
@@ -479,7 +479,7 @@ static qboolean SecureInit(void)
 	address.sin_family = AF_INET;
 	if(listen_name != NULL)
 	{
-		MsgPrint(MSG_NORMAL, "Listening on address %s (%s)\n", listen_name, inet_ntoa(listen_addr));
+		MsgPrint(MSG_INFO, "Listening on address %s (%s)\n", listen_name, inet_ntoa(listen_addr));
 		address.sin_addr.s_addr = listen_addr.s_addr;
 	}
 	else
@@ -496,7 +496,7 @@ static qboolean SecureInit(void)
 #endif
 		return qfalse;
 	}
-	MsgPrint(MSG_NORMAL, "Listening on UDP port %hu\n", ntohs(address.sin_port));
+	MsgPrint(MSG_INFO, "Listening on UDP port %hu\n", ntohs(address.sin_port));
 
 	// Deliberately use a different port for outgoing traffic in order
 	// to confuse NAT UDP "connection" tracking and thus delist servers
@@ -527,7 +527,7 @@ Clean up
 */
 static void cleanUp(int signal)
 {
-	MsgPrint(MSG_NORMAL, "Caught signal %d, exiting...\n", signal);
+	MsgPrint(MSG_INFO, "Caught signal %d, exiting...\n", signal);
 
 	exitNow = qtrue;
 }
@@ -707,7 +707,7 @@ int main(int argc, const char *argv[])
 	// Get the options from the command line
 	valid_options = ParseCommandLine(argc, argv);
 
-	MsgPrint(MSG_NORMAL, "openwolf (version " VERSION " " __DATE__ " " __TIME__ ")\n");
+	MsgPrint(MSG_INFO, "openwolf (version " VERSION " " __DATE__ " " __TIME__ ")\n");
 
 	// If there was a mistake in the command line, print the help and exit
 	if(!valid_options)
@@ -719,7 +719,7 @@ int main(int argc, const char *argv[])
 	// Initializations
 	if(!SysInit() || !UnsecureInit() || !SecInit() || !SecureInit())
 		return EXIT_FAILURE;
-	MsgPrint(MSG_NORMAL, "\n");
+	MsgPrint(MSG_INFO, "\n");
 
 	// Until the end of times...
 	while(!exitNow)

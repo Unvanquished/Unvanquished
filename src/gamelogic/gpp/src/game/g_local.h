@@ -706,7 +706,7 @@ typedef struct
 #define CMD_SPEC         0x0010 // must be a spectator
 #define CMD_ALIEN        0x0020
 #define CMD_HUMAN        0x0040
-#define CMD_LIVING       0x0080
+#define CMD_ALIVE        0x0080
 #define CMD_INTERMISSION 0x0100 // valid during intermission
 
 typedef struct

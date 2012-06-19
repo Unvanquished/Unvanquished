@@ -579,7 +579,7 @@ typedef enum
   MN_CMD_SPEC,
   MN_CMD_ALIEN,
   MN_CMD_HUMAN,
-  MN_CMD_LIVING,
+  MN_CMD_ALIVE,
 
   //alien stuff
   MN_A_CLASS,
