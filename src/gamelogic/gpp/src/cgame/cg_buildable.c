@@ -1867,7 +1867,9 @@ void CG_Buildable( centity_t *cent )
 		// seeing as buildables rarely move, we cache the results and recalculate
 		// only if the buildable moves or changes orientation
 		if ( VectorCompare( cent->buildableCache.cachedOrigin, cent->lerpOrigin ) &&
-		     VectorCompare( cent->buildableCache.cachedNormal, surfNormal ) )
+		     VectorCompare( cent->buildableCache.cachedAngles, cent->lerpAngles ) &&
+		     VectorCompare( cent->buildableCache.cachedNormal, surfNormal ) &&
+		     cent->buildableCache.cachedType == es->modelindex )
 		{
 			VectorCopy( cent->buildableCache.axis[ 0 ], ent.axis[ 0 ] );
 			VectorCopy( cent->buildableCache.axis[ 1 ], ent.axis[ 1 ] );
@@ -1884,7 +1886,9 @@ void CG_Buildable( centity_t *cent )
 			VectorCopy( ent.axis[ 2 ], cent->buildableCache.axis[ 2 ] );
 			VectorCopy( ent.origin, cent->buildableCache.origin );
 			VectorCopy( cent->lerpOrigin, cent->buildableCache.cachedOrigin );
+			VectorCopy( cent->lerpAngles, cent->buildableCache.cachedAngles );
 			VectorCopy( surfNormal, cent->buildableCache.cachedNormal );
+			cent->buildableCache.cachedType = es->modelindex;
 		}
 	}
 

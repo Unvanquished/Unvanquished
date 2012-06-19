@@ -611,8 +611,10 @@ typedef struct buildableStatus_s
 
 typedef struct buildableCache_s
 {
-	vec3_t cachedOrigin; // If either the cached entity origin or the
-	vec3_t cachedNormal; // cached surfNormal change the cache is invalid
+	vec3_t cachedOrigin; // If any of the values differ from their
+	vec3_t cachedAngles; //  cached versions, then the cache is invalid
+	vec3_t cachedNormal;
+	buildable_t cachedType;
 	vec3_t axis[ 3 ];
 	vec3_t origin;
 } buildableCache_t;
