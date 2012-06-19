@@ -11,7 +11,11 @@ static char rcsid[] = "Id: dummy rcsid";
 #include <assert.h>
 #include <ctype.h>
 #include <signal.h>
+#if !defined(__WIN32__) && !defined(_WIN32)
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 
 #ifndef TEMPDIR
 #define TEMPDIR "/tmp"
@@ -48,7 +52,7 @@ extern char *stringf(const char *, ...);
 extern int suffix(char *, char *[], int);
 extern char *tempname(char *);
 
-#ifndef __sun
+#if !defined(__sun) && !defined(__WIN32__) && !defined(_WIN32)
 extern int getpid(void);
 #endif
 
