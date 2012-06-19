@@ -323,7 +323,7 @@
       action
       {
         play "sound/misc/menu1.wav";
-        exec "snd_restart" // includes vid_restart
+        exec "updatelanguage;snd_restart" // includes vid_restart
       }
     }
 
