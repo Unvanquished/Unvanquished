@@ -374,7 +374,7 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 Parse_ScriptError
 ===============
 */
-static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_ScriptError( script_t *script, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_ScriptError( script_t *script, char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -392,7 +392,7 @@ static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_ScriptError(
 Parse_ScriptWarning
 ===============
 */
-static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_ScriptWarning( script_t *script, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_ScriptWarning( script_t *script, char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1250,7 +1250,7 @@ static void Parse_FreeScript( script_t *script )
 Parse_SourceError
 ===============
 */
-static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_SourceError( source_t *source, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_SourceError( source_t *source, char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1266,7 +1266,7 @@ static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_SourceError(
 Parse_SourceWarning
 ===============
 */
-static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_SourceWarning( source_t *source, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_SourceWarning( source_t *source, char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;

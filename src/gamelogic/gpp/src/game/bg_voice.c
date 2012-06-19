@@ -45,7 +45,7 @@ int         trap_S_SoundDuration( sfxHandle_t handle );
 BG_VoiceParseError
 ============
 */
-static void BG_VoiceParseError( fileHandle_t handle, char *err )
+static void NORETURN BG_VoiceParseError( fileHandle_t handle, char *err )
 {
 	int  line;
 	char filename[ MAX_QPATH ];

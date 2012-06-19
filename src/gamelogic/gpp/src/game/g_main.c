@@ -421,7 +421,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 	return -1;
 }
 
-void QDECL G_Printf( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) G_Printf( const char *fmt, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -433,7 +433,7 @@ void QDECL G_Printf( const char *fmt, ... )
 	trap_Print( text );
 }
 
-void QDECL G_Error( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) NORETURN G_Error( const char *fmt, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -870,7 +870,7 @@ void G_ShutdownGame( int restart )
 
 //===================================================================
 
-void QDECL Com_Error( int level, const char *error, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -882,7 +882,7 @@ void QDECL Com_Error( int level, const char *error, ... )
 	G_Error( "%s", text );
 }
 
-void QDECL Com_Printf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -1967,7 +1967,7 @@ G_LogPrintf
 Print to the logfile with a time stamp if it is open, and to the server console
 =================
 */
-void QDECL G_LogPrintf( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 {
 	va_list argptr;
 	char    string[ 1024 ], decolored[ 1024 ];

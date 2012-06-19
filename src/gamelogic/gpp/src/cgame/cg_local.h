@@ -1639,8 +1639,8 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 
-void QDECL CG_Printf( const char *msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
-void QDECL CG_Error( const char *msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
+void QDECL CG_Error( const char *msg, ... ) PRINTF_LIKE(1) NORETURN;
 
 void       CG_StartMusic( void );
 int        CG_PlayerCount( void );

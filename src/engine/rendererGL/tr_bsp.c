@@ -424,7 +424,7 @@ static int QDECL LightmapNameCompare( const void *a, const void *b )
 /* standard conversion from rgbe to float pixels */
 /* note: Ward uses ldexp(col+0.5,exp-(128+8)).  However we wanted pixels */
 /*       in the range [0,1] to map back into the range [0,1].            */
-static ID_INLINE void rgbe2float( float *red, float *green, float *blue, unsigned char rgbe[ 4 ] )
+static INLINE void rgbe2float( float *red, float *green, float *blue, unsigned char rgbe[ 4 ] )
 {
 	float e;
 	float f;

@@ -85,7 +85,7 @@ typedef enum {qfalse, qtrue}    qboolean;
 #define qfalse  false
 #endif //BSPC
 
-int Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr );
+int Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr ) VPRINTF_LIKE(3);
 
 #define PUNCTABLE
 
@@ -231,7 +231,7 @@ char *PunctuationFromNum( script_t *script, int num ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL ScriptError( script_t *script, char *str, ... ) {
+void QDECL PRINTF_LIKE(2) ScriptError( script_t *script, char *str, ... ) {
 	char text[1024];
 	va_list ap;
 
@@ -258,7 +258,7 @@ void QDECL ScriptError( script_t *script, char *str, ... ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL ScriptWarning( script_t *script, char *str, ... ) {
+void QDECL PRINTF_LIKE(2) ScriptWarning( script_t *script, char *str, ... ) {
 	char text[1024];
 	va_list ap;
 
@@ -1439,7 +1439,7 @@ Q_vsnPrintf: always append a trailing '\0', returns number of characters written
 returns -1 on failure or if the buffer would be overflowed.
 ============
 */
-int Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr ) {
+int VPRINTF_LIKE(3) Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr ) {
 	int ret;
 
 #ifdef _WIN32

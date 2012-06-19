@@ -157,19 +157,19 @@ extern "C" {
 		struct link_s *prev, *next;
 	} link_t;
 
-	static ID_INLINE void InitLink( link_t *l, void *data )
+	static INLINE void InitLink( link_t *l, void *data )
 	{
 		l->data = data;
 		l->prev = l->next = l;
 	}
 
-	static ID_INLINE void ClearLink( link_t *l )
+	static INLINE void ClearLink( link_t *l )
 	{
 		l->data = NULL;
 		l->prev = l->next = l;
 	}
 
-	static ID_INLINE void RemoveLink( link_t *l )
+	static INLINE void RemoveLink( link_t *l )
 	{
 		l->next->prev = l->prev;
 		l->prev->next = l->next;
@@ -178,7 +178,7 @@ extern "C" {
 	}
 
 	/*
-	static ID_INLINE void InsertLinkBefore(link_t *l, link_t *sentinel)
+	static INLINE void InsertLinkBefore(link_t *l, link_t *sentinel)
 	{
 	        l->next = sentinel;
 	        l->prev = sentinel->prev;
@@ -188,7 +188,7 @@ extern "C" {
 	}
 	*/
 
-	static ID_INLINE void InsertLink( link_t *l, link_t *sentinel )
+	static INLINE void InsertLink( link_t *l, link_t *sentinel )
 	{
 		l->next = sentinel->next;
 		l->prev = sentinel;
@@ -197,18 +197,18 @@ extern "C" {
 		l->prev->next = l;
 	}
 
-	static ID_INLINE qboolean StackEmpty( link_t *l )
+	static INLINE qboolean StackEmpty( link_t *l )
 	{
 		// GCC shit: cannot convert 'bool' to 'qboolean' in return
 		return l->next == l ? qtrue : qfalse;
 	}
 
-	static ID_INLINE link_t *StackTop( link_t *l )
+	static INLINE link_t *StackTop( link_t *l )
 	{
 		return l->next;
 	}
 
-	static ID_INLINE void StackPush( link_t *sentinel, void *data )
+	static INLINE void StackPush( link_t *sentinel, void *data )
 	{
 		link_t *l;
 
@@ -218,7 +218,7 @@ extern "C" {
 		InsertLink( l, sentinel );
 	}
 
-	static ID_INLINE void *StackPop( link_t *l )
+	static INLINE void *StackPop( link_t *l )
 	{
 		link_t *top;
 		void  *data;
@@ -245,24 +245,24 @@ extern "C" {
 		return data;
 	}
 
-	static ID_INLINE void QueueInit( link_t *l )
+	static INLINE void QueueInit( link_t *l )
 	{
 		l->data = NULL;
 		l->numElements = 0;
 		l->prev = l->next = l;
 	}
 
-	static ID_INLINE int QueueSize( link_t *l )
+	static INLINE int QueueSize( link_t *l )
 	{
 		return l->numElements;
 	}
 
-	static ID_INLINE qboolean QueueEmpty( link_t *l )
+	static INLINE qboolean QueueEmpty( link_t *l )
 	{
 		return l->prev == l ? qtrue : qfalse;
 	}
 
-	static ID_INLINE void EnQueue( link_t *sentinel, void *data )
+	static INLINE void EnQueue( link_t *sentinel, void *data )
 	{
 		link_t *l;
 
@@ -275,7 +275,7 @@ extern "C" {
 	}
 
 	/*
-	static ID_INLINE void EnQueue2(link_t *sentinel, void *data, void *(*mallocFunc)(size_t __size))
+	static INLINE void EnQueue2(link_t *sentinel, void *data, void *(*mallocFunc)(size_t __size))
 	{
 	        link_t *l;
 
@@ -288,7 +288,7 @@ extern "C" {
 	}
 	*/
 
-	static ID_INLINE void *DeQueue( link_t *l )
+	static INLINE void *DeQueue( link_t *l )
 	{
 		link_t *tail;
 		void  *data;
@@ -312,7 +312,7 @@ extern "C" {
 		return data;
 	}
 
-	static ID_INLINE link_t *QueueFront( link_t *l )
+	static INLINE link_t *QueueFront( link_t *l )
 	{
 		return l->prev;
 	}
@@ -1572,7 +1572,7 @@ extern "C" {
 
 // *INDENT-OFF*
 
-	static ID_INLINE void GLSL_SetUniform_ColorTextureMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_ColorTextureMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1587,7 +1587,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_ColorTextureMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_DiffuseTextureMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_DiffuseTextureMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1602,7 +1602,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_DiffuseTextureMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_NormalTextureMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_NormalTextureMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1617,7 +1617,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_NormalTextureMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_SpecularTextureMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_SpecularTextureMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1634,7 +1634,7 @@ extern "C" {
 
 	void GLimp_LogComment( const char *comment );
 
-	static ID_INLINE void GLSL_SetUniform_AlphaTest( shaderProgram_t *program, uint32_t stateBits )
+	static INLINE void GLSL_SetUniform_AlphaTest( shaderProgram_t *program, uint32_t stateBits )
 	{
 		alphaTest_t value;
 
@@ -1681,7 +1681,7 @@ extern "C" {
 		glUniform1iARB( program->u_AlphaTest, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ViewOrigin( shaderProgram_t *program, const vec3_t v )
+	static INLINE void GLSL_SetUniform_ViewOrigin( shaderProgram_t *program, const vec3_t v )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1705,7 +1705,7 @@ extern "C" {
 		glUniform3fARB( program->u_ViewOrigin, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_Color( shaderProgram_t *program, const vec4_t v )
+	static INLINE void GLSL_SetUniform_Color( shaderProgram_t *program, const vec4_t v )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1729,7 +1729,7 @@ extern "C" {
 		glUniform4fARB( program->u_Color, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ColorModulate( shaderProgram_t *program, const vec4_t v )
+	static INLINE void GLSL_SetUniform_ColorModulate( shaderProgram_t *program, const vec4_t v )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1753,7 +1753,7 @@ extern "C" {
 		glUniform4fARB( program->u_ColorModulate, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_AmbientColor( shaderProgram_t *program, const vec3_t v )
+	static INLINE void GLSL_SetUniform_AmbientColor( shaderProgram_t *program, const vec3_t v )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1777,7 +1777,7 @@ extern "C" {
 		glUniform3fARB( program->u_AmbientColor, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_LightDir( shaderProgram_t *program, const vec3_t v )
+	static INLINE void GLSL_SetUniform_LightDir( shaderProgram_t *program, const vec3_t v )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1801,7 +1801,7 @@ extern "C" {
 		glUniform3fARB( program->u_LightDir, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_LightOrigin( shaderProgram_t *program, const vec3_t v )
+	static INLINE void GLSL_SetUniform_LightOrigin( shaderProgram_t *program, const vec3_t v )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1825,7 +1825,7 @@ extern "C" {
 		glUniform3fARB( program->u_LightOrigin, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_LightColor( shaderProgram_t *program, const vec3_t v )
+	static INLINE void GLSL_SetUniform_LightColor( shaderProgram_t *program, const vec3_t v )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1849,7 +1849,7 @@ extern "C" {
 		glUniform3fARB( program->u_LightColor, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_LightRadius( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_LightRadius( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1873,7 +1873,7 @@ extern "C" {
 		glUniform1fARB( program->u_LightRadius, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_LightParallel( shaderProgram_t *program, qboolean value )
+	static INLINE void GLSL_SetUniform_LightParallel( shaderProgram_t *program, qboolean value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1897,7 +1897,7 @@ extern "C" {
 		glUniform1iARB( program->u_LightParallel, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_LightScale( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_LightScale( shaderProgram_t *program, float value )
 	{
 #if 0
 
@@ -1931,7 +1931,7 @@ extern "C" {
 		glUniform1fARB( program->u_LightScale, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_LightWrapAround( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_LightWrapAround( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1955,7 +1955,7 @@ extern "C" {
 		glUniform1fARB( program->u_LightWrapAround, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_LightAttenuationMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_LightAttenuationMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -1970,7 +1970,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_LightAttenuationMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ShadowMatrix( shaderProgram_t *program, matrix_t m[ MAX_SHADOWMAPS ] )
+	static INLINE void GLSL_SetUniform_ShadowMatrix( shaderProgram_t *program, matrix_t m[ MAX_SHADOWMAPS ] )
 	{
 		/*
 		#if defined(USE_UNIFORM_FIREWALL)
@@ -2008,7 +2008,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_ShadowMatrix, MAX_SHADOWMAPS, GL_FALSE, &m[ 0 ][ 0 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ShadowCompare( shaderProgram_t *program, qboolean value )
+	static INLINE void GLSL_SetUniform_ShadowCompare( shaderProgram_t *program, qboolean value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2032,7 +2032,7 @@ extern "C" {
 		glUniform1iARB( program->u_ShadowCompare, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ShadowTexelSize( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_ShadowTexelSize( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2056,7 +2056,7 @@ extern "C" {
 		glUniform1fARB( program->u_ShadowTexelSize, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ShadowBlur( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_ShadowBlur( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2080,7 +2080,7 @@ extern "C" {
 		glUniform1fARB( program->u_ShadowBlur, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ShadowParallelSplitDistances( shaderProgram_t *program, const vec4_t v )
+	static INLINE void GLSL_SetUniform_ShadowParallelSplitDistances( shaderProgram_t *program, const vec4_t v )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2104,7 +2104,7 @@ extern "C" {
 		glUniform4fARB( program->u_ShadowParallelSplitDistances, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_RefractionIndex( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_RefractionIndex( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2128,7 +2128,7 @@ extern "C" {
 		glUniform1fARB( program->u_RefractionIndex, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ParallaxMapping( shaderProgram_t *program, qboolean value )
+	static INLINE void GLSL_SetUniform_ParallaxMapping( shaderProgram_t *program, qboolean value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2152,7 +2152,7 @@ extern "C" {
 		glUniform1iARB( program->u_ParallaxMapping, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_DepthScale( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_DepthScale( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2176,7 +2176,7 @@ extern "C" {
 		glUniform1fARB( program->u_DepthScale, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_EnvironmentInterpolation( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_EnvironmentInterpolation( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2200,7 +2200,7 @@ extern "C" {
 		glUniform1fARB( program->u_EnvironmentInterpolation, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_PortalClipping( shaderProgram_t *program, qboolean value )
+	static INLINE void GLSL_SetUniform_PortalClipping( shaderProgram_t *program, qboolean value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2224,7 +2224,7 @@ extern "C" {
 		glUniform1iARB( program->u_PortalClipping, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_PortalPlane( shaderProgram_t *program, const vec4_t v )
+	static INLINE void GLSL_SetUniform_PortalPlane( shaderProgram_t *program, const vec4_t v )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2248,7 +2248,7 @@ extern "C" {
 		glUniform4fARB( program->u_PortalPlane, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_PortalRange( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_PortalRange( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2272,7 +2272,7 @@ extern "C" {
 		glUniform1fARB( program->u_PortalRange, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ModelMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_ModelMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2306,7 +2306,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_ModelMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ViewMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_ViewMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2321,7 +2321,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_ViewMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ModelViewMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_ModelViewMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2336,7 +2336,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_ModelViewMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ModelViewMatrixTranspose( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_ModelViewMatrixTranspose( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2351,7 +2351,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_ModelViewMatrixTranspose, 1, GL_TRUE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ProjectionMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_ProjectionMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2366,7 +2366,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_ProjectionMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ProjectionMatrixTranspose( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_ProjectionMatrixTranspose( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2381,7 +2381,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_ProjectionMatrixTranspose, 1, GL_TRUE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_ModelViewProjectionMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_ModelViewProjectionMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2415,7 +2415,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_ModelViewProjectionMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_UnprojectMatrix( shaderProgram_t *program, const matrix_t m )
+	static INLINE void GLSL_SetUniform_UnprojectMatrix( shaderProgram_t *program, const matrix_t m )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2430,7 +2430,7 @@ extern "C" {
 		glUniformMatrix4fvARB( program->u_UnprojectMatrix, 1, GL_FALSE, m );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_VertexSkinning( shaderProgram_t *program, qboolean value )
+	static INLINE void GLSL_SetUniform_VertexSkinning( shaderProgram_t *program, qboolean value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2454,7 +2454,7 @@ extern "C" {
 		glUniform1iARB( program->u_VertexSkinning, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_VertexInterpolation( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_VertexInterpolation( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 
@@ -2478,7 +2478,7 @@ extern "C" {
 		glUniform1fARB( program->u_VertexInterpolation, value );
 	}
 
-	static ID_INLINE void GLSL_SetUniform_Time( shaderProgram_t *program, float value )
+	static INLINE void GLSL_SetUniform_Time( shaderProgram_t *program, float value )
 	{
 #if defined( USE_UNIFORM_FIREWALL )
 

@@ -2370,7 +2370,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	return image;
 }
 
-static ID_INLINE void SwapPixel( byte *inout, int x, int y, int x2, int y2, int width, int height )
+static INLINE void SwapPixel( byte *inout, int x, int y, int x2, int y2, int width, int height )
 {
 	byte color[ 4 ];
 	byte color2[ 4 ];

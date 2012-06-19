@@ -218,7 +218,7 @@ void DefaultCfg( void ) {
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-char    * QDECL va( char *format, ... ) {
+char    * QDECL PRINTF_LIKE(1) va( char *format, ... ) {
 	va_list argptr;
 	static char string[2][32000];       // in case va is called by nested functions
 	static int index = 0;

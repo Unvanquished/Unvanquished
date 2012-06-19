@@ -94,8 +94,8 @@ static int                lastListBoxClickTime = 0;
 itemDataType_t            Item_DataType( itemDef_t *item );
 void                      Item_RunScript( itemDef_t *item, const char *s );
 void                      Item_SetupKeywordHash( void );
-static ID_INLINE qboolean Item_IsEditField( itemDef_t *item );
-static ID_INLINE qboolean Item_IsListBox( itemDef_t *item );
+static INLINE qboolean Item_IsEditField( itemDef_t *item );
+static INLINE qboolean Item_IsListBox( itemDef_t *item );
 static void               Item_ListBox_SetStartPos( itemDef_t *item, int startPos );
 void                      Menu_SetupKeywordHash( void );
 int                       BindingIDFromName( const char *name );
@@ -377,7 +377,7 @@ void String_Init( void )
 PC_SourceWarning
 =================
 */
-void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceWarning( int handle, char *format, ... )
+void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 {
 	int         line;
 	char        filename[ 128 ];
@@ -400,7 +400,7 @@ void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceWarning( int handle, c
 PC_SourceError
 =================
 */
-void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceError( int handle, char *format, ... )
+void PRINTF_LIKE(2) PC_SourceError( int handle, char *format, ... )
 {
 	int         line;
 	char        filename[ 128 ];
@@ -502,7 +502,7 @@ OpPrec
 Return a value reflecting operator precedence
 =================
 */
-static ID_INLINE int OpPrec( char op )
+static INLINE int OpPrec( char op )
 {
 	switch ( op )
 	{
@@ -2110,12 +2110,12 @@ glyphInfo_t *UI_Glyph( const fontMetrics_t *font, const char *str )
 	return UI_GlyphCP( font, Q_UTF8CodePoint( str ) );
 }
 
-static ID_INLINE float UI_EmoticonHeight( const fontMetrics_t *font, float scale )
+static INLINE float UI_EmoticonHeight( const fontMetrics_t *font, float scale )
 {
 	return UI_GlyphCP( font, '[' )->height * scale * font->glyphScale;
 }
 
-static ID_INLINE float UI_EmoticonWidth( const fontMetrics_t *font, float scale )
+static INLINE float UI_EmoticonWidth( const fontMetrics_t *font, float scale )
 {
 	return UI_EmoticonHeight( font, scale ) * DC->aspectScale;
 }
@@ -2248,7 +2248,7 @@ static float UI_Parse_Indent( const char **text )
 	return pixels;
 }
 
-static ID_INLINE const fontMetrics_t *UI_FontForScale( float scale )
+static INLINE const fontMetrics_t *UI_FontForScale( float scale )
 {
 	if ( scale <= DC->smallFontScale )
 	{
@@ -7577,7 +7577,7 @@ itemDataType_t Item_DataType( itemDef_t *item )
 Item_IsEditField
 ===============
 */
-static ID_INLINE qboolean Item_IsEditField( itemDef_t *item )
+static INLINE qboolean Item_IsEditField( itemDef_t *item )
 {
 	switch ( item->type )
 	{
@@ -7596,7 +7596,7 @@ static ID_INLINE qboolean Item_IsEditField( itemDef_t *item )
 Item_IsListBox
 ===============
 */
-static ID_INLINE qboolean Item_IsListBox( itemDef_t *item )
+static INLINE qboolean Item_IsListBox( itemDef_t *item )
 {
 	switch ( item->type )
 	{

@@ -50,9 +50,10 @@ void trap_Cvar_CopyValue_i( const char *in_var, const char *out_var )
 
 //00.
 //Com_Error(ERR_DROP, "%s", (char *)VMA(1));
-void trap_Error( const char *string )
+void NORETURN trap_Error( const char *string )
 {
 	syscall( UI_ERROR, string );
+	exit(1); // silence warning
 }
 
 //01.

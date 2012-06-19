@@ -216,7 +216,7 @@ const char *Con_GetText( int console )
 Con_Clear
 ================
 */
-static ID_INLINE void Con_Clear( void )
+static INLINE void Con_Clear( void )
 {
 	int i;
 	conChar_t fill = { '\0', ColorIndex( CONSOLE_COLOR ) };

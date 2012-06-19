@@ -1255,7 +1255,7 @@ JPG LOADING
 =========================================================
 */
 
-static void JPGErrorExit(j_common_ptr cinfo)
+static void NORETURN JPGErrorExit(j_common_ptr cinfo)
 {
 	char            buffer[JMSG_LENGTH_MAX];
 
@@ -1502,7 +1502,7 @@ static void png_user_warning_fn(png_structp png_ptr, png_const_charp warning_mes
 	Sys_FPrintf(SYS_WRN, "libpng warning: %s\n", warning_message);
 }
 
-static void png_user_error_fn(png_structp png_ptr, png_const_charp error_message)
+static void NORETURN png_user_error_fn(png_structp png_ptr, png_const_charp error_message)
 {
 	Sys_FPrintf(SYS_ERR, "libpng error: %s\n", error_message);
 	longjmp(png_jmpbuf(png_ptr), 0);

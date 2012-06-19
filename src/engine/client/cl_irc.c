@@ -292,7 +292,7 @@ IRC_InitHandlers
 Initialises the handler tables
 ==================
 */
-static ID_INLINE void IRC_InitHandlers()
+static INLINE void IRC_InitHandlers()
 {
 	IRC_Handlers = HT_Create( 100, HT_FLAG_INTABLE | HT_FLAG_CASE,
 	                          sizeof( struct irc_handler_t ),
@@ -324,7 +324,7 @@ IRC_AddHandler
 Registers a new IRC command handler.
 ==================
 */
-static ID_INLINE void IRC_AddHandler( const char *command, irc_handler_func_t handler )
+static INLINE void IRC_AddHandler( const char *command, irc_handler_func_t handler )
 {
 	qboolean            created;
 	struct irc_handler_t *rv;
@@ -1122,7 +1122,7 @@ Attempt to format then send a message to the IRC server. Will return
 true on success, and false if an overflow occurred or if send() failed.
 ==================
 */
-static __attribute__( ( format( printf, 1, 2 ) ) ) int IRC_Send( const char *format, ... )
+static int PRINTF_LIKE(1) IRC_Send( const char *format, ... )
 {
 	char    buffer[ IRC_SEND_BUF_SIZE + 1 ];
 	va_list args;
@@ -1242,7 +1242,7 @@ Checks if some action can be effected using the rate limiter. If it can,
 the rate limiter's status will be updated.
 ==================
 */
-static ID_INLINE qboolean IRC_CheckEventRate( int event_type )
+static INLINE qboolean IRC_CheckEventRate( int event_type )
 {
 	if ( IRC_RateLimiter[ event_type ] >= IRC_LIMIT_THRESHOLD * IRC_TIMEOUTS_PER_SEC )
 	{
@@ -1260,7 +1260,7 @@ IRC_UpdateRateLimiter
 Decrease all non-zero rate limiter entries.
 ==================
 */
-static ID_INLINE void IRC_UpdateRateLimiter()
+static INLINE void IRC_UpdateRateLimiter()
 {
 	int i;
 
@@ -1280,7 +1280,7 @@ IRC_InitRateLimiter
 Initialise the rate limiter.
 ==================
 */
-static ID_INLINE void IRC_InitRateLimiter()
+static INLINE void IRC_InitRateLimiter()
 {
 	int i;
 
@@ -2005,7 +2005,7 @@ IRC_InitSendQueue
 Initialise the send queue.
 ==================
 */
-static ID_INLINE void IRC_InitSendQueue()
+static INLINE void IRC_InitSendQueue()
 {
 	memset( &IRC_SendQueue, 0, sizeof( IRC_SendQueue ) );
 }

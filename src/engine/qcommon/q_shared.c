@@ -812,7 +812,7 @@ char *COM_Parse( char **data_p )
 	return COM_ParseExt( data_p, qtrue );
 }
 
-void COM_ParseError( char *format, ... )
+void PRINTF_LIKE(1) COM_ParseError( char *format, ... )
 {
 	va_list     argptr;
 	static char string[ 4096 ];
@@ -824,7 +824,7 @@ void COM_ParseError( char *format, ... )
 	Com_Printf( S_COLOR_RED "ERROR: %s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
-void COM_ParseWarning( char *format, ... )
+void PRINTF_LIKE(1) COM_ParseWarning( char *format, ... )
 {
 	va_list     argptr;
 	static char string[ 4096 ];
@@ -2505,7 +2505,7 @@ int Q_CountChar( const char *string, char tocount )
 	return count;
 }
 
-int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... )
+int QDECL PRINTF_LIKE(3) Com_sprintf( char *dest, int size, const char *fmt, ... )
 {
 	int     len;
 	va_list argptr;
@@ -2814,7 +2814,7 @@ Ridah, modified this into a circular list, to further prevent stepping on
 previous strings
 ============
 */
-char     *QDECL va( const char *format, ... )
+char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 {
 	va_list     argptr;
 #define MAX_VA_STRING 32000

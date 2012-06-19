@@ -38,11 +38,23 @@ Maryland 20850 USA.
 
 #include "../qcommon/cm_public.h"
 
-//bani
 #if defined __GNUC__ || defined __clang__
-#define _attribute( x ) __attribute__( x )
+#define NORETURN __attribute__((__noreturn__))
+#define UNUSED __attribute__((__unused__))
+#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
+#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
+#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
+#define ALIGNED(a) __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define _attribute( x )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED(a)
+#define ALWAYS_INLINE
+#define __attribute__(x)
 #endif
 
 //#define PRE_RELEASE_DEMO
@@ -201,7 +213,7 @@ void       NET_Restart_f( void );
 void       NET_Config( qboolean enableNetworking );
 
 void       NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to );
-void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) __attribute__( ( format( printf, 3, 4 ) ) );
+void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) PRINTF_LIKE(3);
 void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
 qboolean   NET_CompareAdr( netadr_t a, netadr_t b );
@@ -417,7 +429,7 @@ void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const
 intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
 
 #define VMA(x) VM_ArgPtr(args[ x ])
-static ID_INLINE float _vmf( intptr_t x )
+static INLINE float _vmf( intptr_t x )
 {
 	floatint_t fi;
 	fi.i = ( int ) x;
@@ -792,7 +804,7 @@ int FS_FTell( fileHandle_t f );
 
 void       FS_Flush( fileHandle_t f );
 
-void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
+void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) PRINTF_LIKE(2);
 
 // like fprintf
 
@@ -984,13 +996,13 @@ void       Com_BeginRedirect( char *buffer, int buffersize, void ( *flush )( cha
 void       Com_EndRedirect( void );
 
 // *INDENT-OFF*
-int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) _attribute( ( format( printf, 1, 0 ) ) );    // conforms to vprintf prototype for print callback passing
-void QDECL Com_Printf( const char *fmt, ... ) _attribute( ( format( printf, 1, 2 ) ) );    // this one calls to Com_VPrintf now
-void QDECL Com_DPrintf( const char *fmt, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-void QDECL Com_Error( int code, const char *fmt, ... ) _attribute( ( format( printf, 2, 3 ) ) );
+int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) VPRINTF_LIKE(1);    // conforms to vprintf prototype for print callback passing
+void QDECL Com_Printf( const char *fmt, ... ) PRINTF_LIKE(1);    // this one calls to Com_VPrintf now
+void QDECL Com_DPrintf( const char *fmt, ... ) PRINTF_LIKE(1);
+void QDECL Com_Error( int code, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN;
 
 // *INDENT-ON*
-void       Com_Quit_f( void );
+void       Com_Quit_f( void ) NORETURN;
 int        Com_EventLoop( void );
 int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
@@ -1327,8 +1339,8 @@ void                  *Sys_GetSystemHandles( void );
 
 char                  *Sys_GetCurrentUser( void );
 
-void QDECL            Sys_Error( const char *error, ... ) __attribute__(( format( printf, 1, 2 ), noreturn ));
-void                  Sys_Quit( void ) __attribute__((noreturn));
+void QDECL            Sys_Error( const char *error, ... ) PRINTF_LIKE(1) NORETURN;
+void                  Sys_Quit( void ) NORETURN;
 char                  *Sys_GetClipboardData( clipboard_t clip );  // note that this isn't journaled...
 
 void                  Sys_Print( const char *msg );

@@ -224,7 +224,7 @@ int	HashString( char *s ) {
 CodeError
 ============
 */
-void CodeError( char *fmt, ... ) {
+void PRINTF_LIKE(1) CodeError( char *fmt, ... ) {
 	va_list		argptr;
 
 	errorCount++;

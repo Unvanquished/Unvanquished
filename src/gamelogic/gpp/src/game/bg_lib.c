@@ -2448,7 +2448,7 @@ unsigned int _hextoi( const char **stringPtr )
 #endif
 
 static int dopr( char *buffer, size_t maxlen, const char *format,
-                 va_list args );
+                 va_list args ) VPRINTF_LIKE(3);
 static int fmtstr( char *buffer, size_t *currlen, size_t maxlen,
                    char *value, int flags, int min, int max );
 static int fmtint( char *buffer, size_t *currlen, size_t maxlen,
@@ -2489,7 +2489,7 @@ static int dopr_outch( char *buffer, size_t *currlen, size_t maxlen, char c );
 
 #define char_to_int(p) ( p - '0' )
 
-static int dopr( char *buffer, size_t maxlen, const char *format, va_list args )
+static int VPRINTF_LIKE(3) dopr( char *buffer, size_t maxlen, const char *format, va_list args )
 {
 	char    ch;
 	LLONG   value;
@@ -3302,12 +3302,12 @@ static int dopr_outch( char *buffer, size_t *currlen, size_t maxlen, char c )
 	return 1;
 }
 
-int Q_vsnprintf( char *str, size_t length, const char *fmt, va_list args )
+int VPRINTF_LIKE(3) Q_vsnprintf( char *str, size_t length, const char *fmt, va_list args )
 {
 	return dopr( str, length, fmt, args );
 }
 
-int Q_snprintf( char *str, size_t length, const char *fmt, ... )
+int PRINTF_LIKE(3) Q_snprintf( char *str, size_t length, const char *fmt, ... )
 {
 	va_list ap;
 	int     retval;
@@ -3320,7 +3320,7 @@ int Q_snprintf( char *str, size_t length, const char *fmt, ... )
 }
 
 /* this is really crappy */
-int sscanf( const char *buffer, const char *fmt, ... )
+int __attribute__((__format__(__scanf__, 2, 3))) sscanf( const char *buffer, const char *fmt, ... )
 {
 	int     cmd;
 	va_list ap;

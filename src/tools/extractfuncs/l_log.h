@@ -42,11 +42,11 @@ void Log_Close( void );
 //close log file if present
 void Log_Shutdown( void );
 //print on stdout and write to the current opened log file
-void Log_Print( char *fmt, ... ) __attribute__((format(printf, 1, 2)));
+void Log_Print( char *fmt, ... ) PRINTF_LIKE(1);
 //write to the current opened log file
-void Log_Write( char *fmt, ... ) __attribute__((format(printf, 1, 2)));
+void Log_Write( char *fmt, ... ) PRINTF_LIKE(1);
 //write to the current opened log file with a time stamp
-void Log_WriteTimeStamped( char *fmt, ... ) __attribute__((format(printf, 1, 2)));
+void Log_WriteTimeStamped( char *fmt, ... ) PRINTF_LIKE(1);
 //returns the log file structure
 FILE *Log_FileStruct( void );
 //flush log file

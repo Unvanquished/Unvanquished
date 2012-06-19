@@ -259,7 +259,7 @@ typedef enum
 } uiExport_t;
 
 void        trap_Cvar_CopyValue_i( const char *in_var, const char *out_var );
-void        trap_Error( const char *string );
+void        trap_Error( const char *string ) NORETURN;
 void        trap_Print( const char *string );
 int         trap_Milliseconds( void );
 void        trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );

@@ -160,7 +160,7 @@ Update the cursor position
 ==================
 */
 #ifdef USE_CURSES_W
-static ID_INLINE int CON_wcwidth( const char *s )
+static INLINE int CON_wcwidth( const char *s )
 {
 	int w = wcwidth( Q_UTF8CodePoint( s ) );
 	return w < 0 ? 0 : w;
@@ -181,7 +181,7 @@ static int CON_CursorPosFromScroll( void )
 }
 #endif
 
-static ID_INLINE void CON_UpdateCursor( void )
+static INLINE void CON_UpdateCursor( void )
 {
 // pdcurses uses a different mechanism to move the cursor than ncurses
 #ifdef _WIN32
@@ -196,7 +196,7 @@ static ID_INLINE void CON_UpdateCursor( void )
 #endif
 }
 
-static ID_INLINE void CON_CheckScroll( void )
+static INLINE void CON_CheckScroll( void )
 {
 	if ( input_field.cursor < input_field.scroll )
 	{

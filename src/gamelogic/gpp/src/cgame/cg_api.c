@@ -53,9 +53,10 @@ void trap_Print( const char *fmt )
 
 //01.
 //Com_Error(ERR_DROP, "%s", (char *)VMA(1));
-void trap_Error( const char *fmt )
+void NORETURN trap_Error( const char *fmt )
 {
 	syscall( CG_ERROR, fmt );
+	exit(1); // silence warning
 }
 
 //02.

@@ -204,17 +204,28 @@ extern int memcmp( void *, void *, size_t );
 #include "q_platform.h"
 
 // not VM - we can have static inline
-#define STATIC_INLINE static ID_INLINE __attribute__(( always_inline ))
+#define STATIC_INLINE static INLINE ALWAYS_INLINE
 #define IFDECLARE
 #define Q3_VM_INSTANTIATE
 #endif
 
-#if defined __GNUC__ || defined __clang__ && !defined(Q3_VM)
-#define _attribute( x ) __attribute__( x )
+#if defined __GNUC__ || defined __clang__
+#define NORETURN __attribute__((__noreturn__))
+#define UNUSED __attribute__((__unused__))
+#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
+#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
+#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
+#define ALIGNED(a) __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define _attribute( x )
-#define __attribute( x )
-#define __attribute__( x )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED(a)
+#define ALWAYS_INLINE
+#define __attribute__(x)
 #endif
 
 //bani
@@ -224,7 +235,7 @@ extern int memcmp( void *, void *, size_t );
 #elif ( defined __SUNPRO_C )
 #define Q_EXPORT __global
 #elif (( __GNUC__ >= 3 ) && ( !__EMX__ ) && ( !sun ))
-#define Q_EXPORT __attribute__(( visibility("default")))
+#define Q_EXPORT __attribute__((__visibility__("default")))
 #else
 #define Q_EXPORT
 #endif
@@ -246,14 +257,6 @@ extern int memcmp( void *, void *, size_t );
 	typedef int sfxHandle_t;
 	typedef int fileHandle_t;
 	typedef int clipHandle_t;
-
-#if defined( _MSC_VER )
-#define ALIGN(x) __declspec(align(x));
-#elif defined( __GNUC__ )
-#define ALIGN(x) __attribute__(( aligned(x)))
-#else
-#define ALIGN(x)
-#endif
 
 #define PAD(x,y)                ((( x ) + ( y ) - 1 ) & ~(( y ) - 1 ))
 #define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
@@ -1366,8 +1369,8 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	char       *COM_ParseExt( char **data_p, qboolean allowLineBreak );
 	int        COM_Compress( char *data_p );
-	void       COM_ParseError( char *format, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-	void       COM_ParseWarning( char *format, ... ) _attribute( ( format( printf, 1, 2 ) ) );
+	void       COM_ParseError( char *format, ... ) PRINTF_LIKE(1);
+	void       COM_ParseWarning( char *format, ... ) PRINTF_LIKE(1);
 
 	int        Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] );
 
@@ -1416,7 +1419,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	void      Parse2DMatrix( char **buf_p, int y, int x, float *m );
 	void      Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
 
-	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) __attribute__( ( format( printf, 3, 4 ) ) );
+	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) PRINTF_LIKE(3);
 
 // mode parm for FS_FOpenFile
 	typedef enum
@@ -1479,7 +1482,7 @@ double rint( double x );
 
 #else
 #define         Q_strncpyz(string1,string2,length) Q_strncpyzDebug( string1, string2, length, __FILE__, __LINE__ )
-	void     Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line ) __attribute__( ( nonnull ) );
+	void     Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line ) __attribute__((__nonnull__));
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
@@ -1547,7 +1550,7 @@ char *Q_UTF8Unstore( int e );
 	*/
 	float           *tv( float x, float y, float z );
 
-	char     *QDECL va( const char *format, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+	char     *QDECL va( const char *format, ... ) PRINTF_LIKE(1);
 
 //=============================================
 
@@ -1563,9 +1566,9 @@ char *Q_UTF8Unstore( int e );
 	void       Info_NextPair( const char **s, char *key, char *value );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-	void QDECL Com_Error( int level, const char *error, ... ) _attribute( ( format( printf, 2, 3 ) ) );
-	void QDECL Com_Printf( const char *msg, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-	void QDECL Com_DPrintf( const char *msg, ... ) _attribute( ( format( printf, 1, 2 ) ) );
+	void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
+	void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
+	void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 
 	/*
 	==========================================================

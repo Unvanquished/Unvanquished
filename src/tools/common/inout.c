@@ -327,7 +327,7 @@ void DumpXML()
 }
 #endif
 
-void Sys_FPrintf(int flag, const char *format, ...)
+void PRINTF_LIKE(2) Sys_FPrintf(int flag, const char *format, ...)
 {
 	char            out_buffer[4096];
 	va_list         argptr;
@@ -342,7 +342,7 @@ void Sys_FPrintf(int flag, const char *format, ...)
 	FPrintf(flag, out_buffer);
 }
 
-void Sys_Printf(const char *format, ...)
+void PRINTF_LIKE(1) Sys_Printf(const char *format, ...)
 {
 	char            out_buffer[4096];
 	va_list         argptr;
@@ -361,7 +361,7 @@ Error
 For abnormal program terminations
 =================
 */
-void Error(const char *error, ...)
+void PRINTF_LIKE(1) NORETURN Error(const char *error, ...)
 {
 	char            out_buffer[4096];
 	char            tmp[4096];

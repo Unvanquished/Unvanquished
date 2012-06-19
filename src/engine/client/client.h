@@ -617,7 +617,7 @@ void        CL_InitTranslation();
 void        CL_SaveTransTable( const char *fileName, qboolean newOnly );
 void        CL_ReloadTranslation();
 void        CL_TranslateString( const char *string, char *dest_buffer );
-const char  *CL_TranslateStringBuf( const char *string ) __attribute__( ( format_arg( 1 ) ) );    // TTimo
+const char  *CL_TranslateStringBuf( const char *string ) __attribute__((__format_arg__(1)));    // TTimo
 
 // -NERVE - SMF
 

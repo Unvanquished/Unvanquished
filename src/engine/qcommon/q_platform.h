@@ -124,7 +124,7 @@ Maryland 20850 USA.
 #define OS_STRING   "win_mingw64"
 #endif
 
-#define ID_INLINE   __inline
+#define INLINE   __inline
 #define PATH_SEP    '\\'
 
 #if defined( __WIN64__ )
@@ -158,7 +158,7 @@ Maryland 20850 USA.
 #define OS_STRING   "win_mingw"
 #endif
 
-#define ID_INLINE   __inline
+#define INLINE   __inline
 #define PATH_SEP    '\\'
 
 #if defined( _M_IX86 ) || defined( __i386__ )
@@ -187,7 +187,7 @@ Maryland 20850 USA.
 #endif
 
 #define OS_STRING   "macosx"
-#define ID_INLINE   __inline
+#define INLINE   __inline
 #define PATH_SEP    '/'
 
 #ifdef __ppc__
@@ -218,7 +218,7 @@ Maryland 20850 USA.
 #include <endian.h>
 
 #define OS_STRING   "linux"
-#define ID_INLINE   __inline
+#define INLINE   __inline
 #define PATH_SEP    '/'
 
 #if defined __i386__
@@ -288,7 +288,7 @@ Maryland 20850 USA.
 #define OS_STRING   "dragonfly"
 #endif
 
-#define ID_INLINE   __inline
+#define INLINE   __inline
 #define PATH_SEP    '/'
 
 #ifdef __i386__
@@ -325,7 +325,7 @@ Maryland 20850 USA.
 #define MAC_STATIC
 
 #define OS_STRING   "solaris"
-#define ID_INLINE   __inline
+#define INLINE   __inline
 #define PATH_SEP    '/'
 
 #ifdef __i386__
@@ -353,7 +353,7 @@ Maryland 20850 USA.
 #define MAC_STATIC
 
 #define OS_STRING     "irix"
-#define ID_INLINE     __inline
+#define INLINE     __inline
 #define PATH_SEP      '/'
 
 #define ARCH_STRING   "mips"
@@ -370,7 +370,7 @@ Maryland 20850 USA.
 
 #ifdef Q3_VM
 
-#define ID_INLINE
+#define INLINE
 
 #define MAC_STATIC
 
@@ -396,8 +396,8 @@ Maryland 20850 USA.
 #error "Architecture not supported"
 #endif
 
-#ifndef ID_INLINE
-#error "ID_INLINE not defined"
+#ifndef INLINE
+#error "INLINE not defined"
 #endif
 
 #ifndef PATH_SEP

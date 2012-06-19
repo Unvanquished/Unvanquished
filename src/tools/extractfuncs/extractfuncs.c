@@ -45,7 +45,7 @@ typedef enum {false, true}  qboolean;
 
 //#define PATHSEPERATOR_STR		"\\"
 
-void Error( char *error, ... ) {
+void PRINTF_LIKE(1) NORETURN Error( char *error, ... ) {
 	va_list argptr;
 
 	va_start( argptr, error );

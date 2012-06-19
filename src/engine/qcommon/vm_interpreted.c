@@ -131,7 +131,7 @@ static char *opnames[ 256 ] =
 
 //FIXME: these, um... look the same to me
 #if defined( __GNUC__ )
-static ID_INLINE unsigned int loadWord( void *addr )
+static INLINE unsigned int loadWord( void *addr )
 {
 	unsigned int word;
 
@@ -140,7 +140,7 @@ static ID_INLINE unsigned int loadWord( void *addr )
 }
 
 #else
-static ID_INLINE unsigned int __lwbrx( register void *addr,
+static INLINE unsigned int __lwbrx( register void *addr,
                                        register int offset )
 {
 	register unsigned int word;
@@ -153,7 +153,7 @@ static ID_INLINE unsigned int __lwbrx( register void *addr,
 #endif
 
 #else
-static ID_INLINE int loadWord( void *addr )
+static INLINE int loadWord( void *addr )
 {
 	int word;
 	memcpy( &word, addr, 4 );

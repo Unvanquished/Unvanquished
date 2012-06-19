@@ -2439,7 +2439,7 @@ extern "C" {
 #if defined( __cplusplus )
 	extern "C" {
 #endif
-		void QDECL Com_Printf( const char *msg, ... )
+		void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 		{
 			va_list argptr;
 			char    text[ 1024 ];
@@ -2451,7 +2451,7 @@ extern "C" {
 			ri.Printf( PRINT_ALL, "%s", text );
 		}
 
-		void QDECL Com_DPrintf( const char *msg, ... )
+		void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *msg, ... )
 		{
 			va_list argptr;
 			char    text[ 1024 ];
@@ -2463,7 +2463,7 @@ extern "C" {
 			ri.Printf( PRINT_DEVELOPER, "%s", text );
 		}
 
-		void QDECL Com_Error( int level, const char *error, ... )
+		void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
 		{
 			va_list argptr;
 			char    text[ 1024 ];

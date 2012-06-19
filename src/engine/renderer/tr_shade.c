@@ -1484,7 +1484,7 @@ void SetIteratorFog( void )
 /*
 ** RB_SetStencil
 */
-static ID_INLINE GLenum RB_StencilOp( int op )
+static INLINE GLenum RB_StencilOp( int op )
 {
 	switch( op & STO_MASK ) {
 	case STO_KEEP:

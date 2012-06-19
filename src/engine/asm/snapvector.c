@@ -28,17 +28,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * See MASM snapvector.asm for commentary
  */
 
-static unsigned char ssemask[16] __attribute__((aligned(16))) =
+static unsigned char ssemask[16] ALIGNED(16) =
 {
 	"\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x00\x00\x00\x00"
 };
 
-static const unsigned int ssecw __attribute__((aligned(16))) = 0x00001F80;
+static const unsigned int ssecw ALIGNED(16) = 0x00001F80;
 static const unsigned short fpucw = 0x037F;
 
 void qsnapvectorsse(vec3_t vec)
 {
-	uint32_t oldcw __attribute__((aligned(16)));
+	uint32_t oldcw ALIGNED(16);
 
 	__asm__ volatile
 	(

@@ -35,23 +35,35 @@ Maryland 20850 USA.
 #ifndef _DL_LOCAL_H_
 #define _DL_LOCAL_H_
 
-//bani
 #if defined __GNUC__ || defined __clang__
-#define _attribute( x ) __attribute__( x )
+#define NORETURN __attribute__((__noreturn__))
+#define UNUSED __attribute__((__unused__))
+#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
+#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
+#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
+#define ALIGNED(a) __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define _attribute( x )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED(a)
+#define ALWAYS_INLINE
+#define __attribute__(x)
 #endif
 
 // system API
 // only the restricted subset we need
 
-int  Com_VPrintf( const char *fmt, va_list pArgs ) _attribute( ( format( printf, 1, 0 ) ) );
-int  Com_DPrintf( const char *fmt, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-int  Com_Printf( const char *fmt, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-void Com_Error( int code, const char *fmt, ... ) _attribute( ( format( printf, 2, 3 ) ) );    // watch out, we don't define ERR_FATAL and stuff
+int  Com_VPrintf( const char *fmt, va_list pArgs ) VPRINTF_LIKE(1);
+int  Com_DPrintf( const char *fmt, ... ) PRINTF_LIKE(1);
+int  Com_Printf( const char *fmt, ... ) PRINTF_LIKE(1);
+void Com_Error( int code, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN;    // watch out, we don't define ERR_FATAL and stuff
 void Cvar_SetValue( const char *var_name, float value );
 void Cvar_Set( const char *var_name, const char *value );
-char *va( char *format, ... ) _attribute( ( format( printf, 1, 2 ) ) );
+char *va( char *format, ... ) PRINTF_LIKE(1);
 
 #ifdef WIN32
 #define Q_stricmp stricmp

@@ -1672,7 +1672,7 @@ extern "C" {
 #ifndef REF_HARD_LINKED
 // this is only here so the functions in q_shared.c and bg_*.c can link
 
-void QDECL Com_Printf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -1684,7 +1684,7 @@ void QDECL Com_Printf( const char *msg, ... )
 	ri.Printf( PRINT_ALL, "%s", text );
 }
 
-void QDECL Com_DPrintf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -1696,7 +1696,7 @@ void QDECL Com_DPrintf( const char *msg, ... )
 	ri.Printf( PRINT_DEVELOPER, "%s", text );
 }
 
-void QDECL Com_Error( int level, const char *error, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];

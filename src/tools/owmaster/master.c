@@ -810,7 +810,7 @@ MsgPrint
 Print a message to screen, depending on its verbose level
 ====================
 */
-int MsgPrint(msg_level_t msg_level, const char *format, ...)
+int PRINTF_LIKE(2) MsgPrint(msg_level_t msg_level, const char *format, ...)
 {
 	va_list         args;
 	int             result;

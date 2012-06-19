@@ -134,7 +134,7 @@ Error
 For abnormal program terminations in windowed apps
 =================
 */
-void Error( char *error, ... ) {
+void PRINTF_LIKE(1) NORETURN Error( char *error, ... ) {
 	va_list argptr;
 	char text[1024];
 	char text2[1024];
@@ -155,7 +155,7 @@ void Error( char *error, ... ) {
 	exit( 1 );
 } //end of the function Error
 
-void Warning( char *szFormat, ... ) {
+void PRINTF_LIKE(1) Warning( char *szFormat, ... ) {
 	char szBuffer[256];
 	va_list argptr;
 
@@ -177,7 +177,7 @@ Error
 For abnormal program terminations in console apps
 =================
 */
-void Error( char *error, ... ) {
+void PRINTF_LIKE(1) NORETURN Error( char *error, ... ) {
 	va_list argptr;
 	char text[1024];
 
@@ -192,7 +192,7 @@ void Error( char *error, ... ) {
 	exit( 1 );
 } //end of the function Error
 
-void Warning( char *warning, ... ) {
+void PRINTF_LIKE(1) Warning( char *warning, ... ) {
 	va_list argptr;
 	char text[1024];
 
@@ -209,7 +209,7 @@ void Warning( char *warning, ... ) {
 //only printf if in verbose mode
 qboolean verbose = true;
 
-void qprintf( char *format, ... ) {
+void PRINTF_LIKE(1) qprintf( char *format, ... ) {
 	va_list argptr;
 #ifdef WINBSPC
 	char buf[2048];
@@ -229,7 +229,7 @@ void qprintf( char *format, ... ) {
 	va_end( argptr );
 } //end of the function qprintf
 
-void Com_Error( int level, char *error, ... ) {
+void PRINTF_LIKE(2) NORETURN Com_Error( int level, char *error, ... ) {
 	va_list argptr;
 	char text[1024];
 
@@ -239,7 +239,7 @@ void Com_Error( int level, char *error, ... ) {
 	Error( text );
 } //end of the funcion Com_Error
 
-void Com_Printf( const char *fmt, ... ) {
+void PRINTF_LIKE(1) Com_Printf( const char *fmt, ... ) {
 	va_list argptr;
 	char text[1024];
 

@@ -196,7 +196,7 @@ to the apropriate place.
 A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 =============
 */
-int QDECL Com_VPrintf( const char *fmt, va_list argptr )
+int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 {
 	char            msg[ MAXPRINTMSG ];
 	static qboolean opening_qconsole = qfalse;
@@ -270,7 +270,7 @@ int QDECL Com_VPrintf( const char *fmt, va_list argptr )
 	return strlen( msg );
 }
 
-void QDECL Com_Printf( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 {
 	va_list argptr;
 
@@ -286,7 +286,7 @@ Com_DPrintf
 A Com_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void QDECL Com_DPrintf( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *fmt, ... )
 {
 	va_list argptr;
 	char    msg[ MAXPRINTMSG ];
@@ -312,7 +312,7 @@ do the apropriate things.
 =============
 */
 // *INDENT-OFF*
-void QDECL Com_Error( int code, const char *fmt, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 {
 	va_list    argptr;
 	static int lastErrorTime;
@@ -446,7 +446,7 @@ Both client and server can use this, and it will
 do the apropriate things.
 =============
 */
-void Com_Quit_f( void )
+void NORETURN Com_Quit_f( void )
 {
 	// don't try to shutdown if we are in a recursive error
 	if ( !com_errorEntered )
@@ -2923,7 +2923,7 @@ Just throw a fatal error to
 test error shutdown procedures
 =============
 */
-static void Com_Error_f( void )
+static void NORETURN Com_Error_f( void )
 {
 	if ( Cmd_Argc() > 1 )
 	{
@@ -2976,9 +2976,10 @@ Com_Crash_f
 A way to force a bus error for development reasons
 =================
 */
-static void Com_Crash_f( void )
+static void NORETURN Com_Crash_f( void )
 {
 	* ( volatile int * ) 0 = 0x12345678;
+	exit( 1 ); // silence warning
 }
 
 // TTimo: centralizing the cl_cdkey stuff after I discovered a buffer overflow problem with the dedicated server version

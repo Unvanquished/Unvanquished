@@ -60,7 +60,7 @@ Q_strncpyz
 Safe strncpy that ensures a trailing zero
 =============
 */
-extern void Error( char *error, ... );
+extern void Error( char *error, ... ) PRINTF_LIKE(1) NORETURN;
 void Q_strncpyz( char *dest, const char *src, int destsize ) {
 	if ( !src ) {
 		Error( "Q_strncpyz: NULL src" );
@@ -220,7 +220,7 @@ define_t *globaldefines;
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void QDECL SourceError( source_t *source, char *str, ... ) {
+void QDECL PRINTF_LIKE(2) SourceError( source_t *source, char *str, ... ) {
 	char text[1024];
 	va_list ap;
 
@@ -243,7 +243,7 @@ void QDECL SourceError( source_t *source, char *str, ... ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL SourceWarning( source_t *source, char *str, ... ) {
+void QDECL PRINTF_LIKE(2) SourceWarning( source_t *source, char *str, ... ) {
 	char text[1024];
 	va_list ap;
 

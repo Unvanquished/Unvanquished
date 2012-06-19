@@ -1969,7 +1969,7 @@ breakOut:
 	ri.FS_FreeFile( buffer );
 }
 
-static void R_JPGErrorExit( j_common_ptr cinfo )
+static void NORETURN R_JPGErrorExit( j_common_ptr cinfo )
 {
 	char buffer[ JMSG_LENGTH_MAX ];
 
@@ -3240,7 +3240,7 @@ static void png_user_warning_fn( png_structp png_ptr, png_const_charp warning_me
 	ri.Printf( PRINT_WARNING, "libpng warning: %s\n", warning_message );
 }
 
-static void png_user_error_fn( png_structp png_ptr, png_const_charp error_message )
+static void NORETURN png_user_error_fn( png_structp png_ptr, png_const_charp error_message )
 {
 	ri.Printf( PRINT_ERROR, "libpng error: %s\n", error_message );
 	longjmp( png_jmpbuf( png_ptr ), 0 );

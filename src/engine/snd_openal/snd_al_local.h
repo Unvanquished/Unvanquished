@@ -44,8 +44,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DLLEXPORT __declspec(dllexport)
 #define DLLLOCAL
 #elif ( __GNUC__ >= 4 ) && defined __ELF__
-#define DLLEXPORT __attribute__ (( visibility("default")))
-#define DLLLOCAL  __attribute__ (( visibility("hidden")))
+#define DLLEXPORT __attribute__((__visibility__("default")))
+#define DLLLOCAL  __attribute__((__visibility__("hidden")))
 #else
 #define DLLEXPORT
 #define DLLLOCAL

@@ -141,7 +141,7 @@ void *BotImport_GetMemory( int size ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void BotImport_Print( int type, char *fmt, ... ) {
+void PRINTF_LIKE(2) BotImport_Print( int type, char *fmt, ... ) {
 	va_list argptr;
 	char buf[1024];
 
@@ -193,7 +193,7 @@ void BotImport_BSPModelMinsMaxsOrigin( int modelnum, vec3_t angles, vec3_t outmi
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void Com_DPrintf( char *fmt, ... ) {
+void PRINTF_LIKE(1) Com_DPrintf( char *fmt, ... ) {
 	va_list argptr;
 	char buf[1024];
 

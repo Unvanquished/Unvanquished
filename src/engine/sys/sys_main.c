@@ -270,7 +270,7 @@ Sys_Exit
 Single exit point (regular exit or in case of error)
 =================
 */
-static void __attribute__((noreturn)) Sys_Exit( int exitCode )
+static void NORETURN Sys_Exit( int exitCode )
 {
 	CON_Shutdown();
 
@@ -292,7 +292,7 @@ static void __attribute__((noreturn)) Sys_Exit( int exitCode )
 Sys_Quit
 =================
 */
-void Sys_Quit( void )
+void NORETURN Sys_Quit( void )
 {
 	Sys_Exit( 0 );
 }
@@ -448,7 +448,7 @@ void Sys_Print( const char *msg )
 Sys_Error
 =================
 */
-void Sys_Error( const char *error, ... )
+void PRINTF_LIKE(1) NORETURN Sys_Error( const char *error, ... )
 {
 #if defined ( IPHONE )
 	NSString *errorString;
@@ -489,7 +489,7 @@ errorString = [[[ NSString alloc ] initWithFormat: [ NSString stringWithCString:
 Sys_Warn
 =================
 */
-void __attribute__( ( format( printf, 1, 2 ) ) ) Sys_Warn( char *warning, ... )
+void PRINTF_LIKE(1) Sys_Warn( char *warning, ... )
 {
 #if defined ( IPHONE )
 	NSString *warningString;
@@ -756,7 +756,7 @@ void Sys_ParseArgs( int argc, char **argv )
 Sys_SigHandler
 =================
 */
-void Sys_SigHandler( int signal )
+void NORETURN Sys_SigHandler( int signal )
 {
 	static qboolean signalcaught = qfalse;
 
