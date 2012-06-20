@@ -1013,6 +1013,7 @@ static int admin_search( gentity_t *ent,
 	}
 
 	ADMBP_begin();
+	ADMBP( "\"" );
 
 	for ( i = 0, l = ( struct llist * ) list; l; i++, l = l->next )
 	{
@@ -1060,8 +1061,8 @@ static int admin_search( gentity_t *ent,
 			           next + offset ) );
 		}
 	}
-
-	ADMBP( "\n" );
+	
+	ADMBP( "\n\"" );
 	ADMBP_end();
 	return next + offset;
 }
@@ -1924,7 +1925,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 	}
 
 	BG_Free( cnf2 );
-	ADMP( va( "\"%s\" \"%d\" \"%d\" \"%d\" \"%d\"", N_("^3readconfig: ^7loaded %d levels, %s admins, %s bans, %s commands\n"),
+	ADMP( va( "\"%s\" \"%d\" \"%d\" \"%d\" \"%d\"", N_("^3readconfig: ^7loaded %s levels, %s admins, %s bans, %s commands\n"),
 	          lc, ac, bc, cc ) );
 
 	if ( lc == 0 )
@@ -4822,17 +4823,7 @@ void G_admin_print( gentity_t *ent, const char *m )
 	}
 	else
 	{
-		char m2[ MAX_STRING_CHARS ];
-
-		if ( !trap_Cvar_VariableIntegerValue( "com_ansiColor" ) )
-		{
-			G_DecolorString( m, m2, sizeof( m2 ) );
-			trap_Print( m2 );
-		}
-		else
-		{
-			trap_Print( m );
-		}
+		trap_SendServerCommand( -2, va( "print_tr %s", m ) );
 	}
 }
 

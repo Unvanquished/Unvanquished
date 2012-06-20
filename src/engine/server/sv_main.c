@@ -232,13 +232,19 @@ void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... )
 		SV_AddServerCommand( cl, ( char * ) message );
 		return;
 	}
+	
+	if ( !strncmp( ( char * ) message, "print_tr", 8 ) )
+	{
+		SV_PrintTranslatedText( ( const char * ) message );
+	}
 
 	// hack to echo broadcast prints to console
-	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print", 5 ) )
+	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print", 5 ) )
 	{
 		Com_Printf(_( "broadcast: %s\n"), SV_ExpandNewlines( ( char * ) message ) );
 	}
 
+	
 	// send the data to all relevent clients
 	for ( j = 0, client = svs.clients; j < sv_maxclients->integer; j++, client++ )
 	{
@@ -1682,6 +1688,22 @@ int SV_LoadTag( const char *mod_name )
 
 	FS_FreeFile( buffer );
 	return ++sv.num_tagheaders;
+}
+
+void SV_PrintTranslatedText( const char *text )
+{
+	char str[10][ MAX_TOKEN_CHARS ];
+	int         i;
+	
+	memset( &str, 0, sizeof( str ) );
+	Cmd_TokenizeString( text );
+	
+	for( i = 0; i<10; i++ )
+	{
+		Q_strncpyz( str[i], Cmd_Argv( i+1 ), sizeof( str[i] ) );
+	}
+	
+	Com_Printf( Trans_GettextGame(str[0]), str[1], str[2], str[3], str[4], str[5], str[6], str[7], str[8], str[9] );
 }
 
 //============================================================================
