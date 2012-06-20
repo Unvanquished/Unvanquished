@@ -3362,18 +3362,20 @@ void Com_Init( char *commandLine )
 			{
 				char *defaultProfile = NULL;
 
-				FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile );
-				Q_CleanStr( defaultProfile );
-				Q_CleanDirName( defaultProfile );
-
-				if ( defaultProfile )
+				if( FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile ) > 0 )
 				{
-					Cvar_Set( "cl_defaultProfile", defaultProfile );
-					Cvar_Set( "cl_profile", defaultProfile );
+					Q_CleanStr( defaultProfile );
+					Q_CleanDirName( defaultProfile );
 
-					FS_FreeFile( defaultProfile );
+					if ( defaultProfile )
+					{
+						Cvar_Set( "cl_defaultProfile", defaultProfile );
+						Cvar_Set( "cl_profile", defaultProfile );
 
-					cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
+						FS_FreeFile( defaultProfile );
+
+						cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
+					}
 				}
 			}
 

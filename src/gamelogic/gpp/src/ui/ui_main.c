@@ -3815,16 +3815,24 @@ static void UI_RunMenuScript( char **args )
 			  trap_FS_FCloseFile( f );
 			  } */
 			Q_strncpyz( buff, ui_profile.string, sizeof( buff ) );
-			Q_CleanStr( buff );
-			Q_CleanDirName( buff );
-
-			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", buff ), &f, FS_WRITE ) >= 0 )
+			if( buff[0] )
 			{
-				trap_FS_Write( ui_profile.string, strlen( ui_profile.string ), f );
-				trap_FS_FCloseFile( f );
-			}
+				Q_CleanStr( buff );
+				Q_CleanDirName( buff );
 
-			trap_Cvar_Set( "name", ui_profile.string );
+				if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", buff ), &f, FS_WRITE ) >= 0 )
+				{
+					trap_FS_Write( ui_profile.string, strlen( ui_profile.string ), f );
+					trap_FS_FCloseFile( f );
+				}
+
+				trap_Cvar_Set( "name", ui_profile.string );
+			}
+			else
+			{
+				trap_Cvar_Set( "com_errorMessage", "You did not enter a profile!" );
+				Menus_ActivateByName( "error_popmenu" );
+			}
 		}
 		else if ( Q_stricmp( name, "clearPID" ) == 0 )
 		{

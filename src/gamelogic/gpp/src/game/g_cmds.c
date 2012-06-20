@@ -4187,7 +4187,6 @@ void ClientCommand( int clientNum )
 	if ( !( command->cmdFlags & CMD_INTERMISSION ) &&
 	     ( level.intermissiontime || level.pausedTime ) )
 	{
-		G_Printf( "Fail\n" );
 		return;
 	}
 
