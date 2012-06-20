@@ -233,15 +233,15 @@ void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... )
 		return;
 	}
 	
-	if ( !strncmp( ( char * ) message, "print_tr", 8 ) )
+	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr ", 9 ) )
 	{
 		SV_PrintTranslatedText( ( const char * ) message );
 	}
 
 	// hack to echo broadcast prints to console
-	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print", 5 ) )
+	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print ", 6 ) )
 	{
-		Com_Printf(_( "broadcast: %s\n"), SV_ExpandNewlines( ( char * ) message ) );
+		Com_Printf( "broadcast: %s\n", SV_ExpandNewlines( ( char * ) message ) );
 	}
 
 	
@@ -1702,7 +1702,6 @@ void SV_PrintTranslatedText( const char *text )
 	{
 		Q_strncpyz( str[i], Cmd_Argv( i+1 ), sizeof( str[i] ) );
 	}
-	
 	Com_Printf( Trans_GettextGame(str[0]), str[1], str[2], str[3], str[4], str[5], str[6], str[7], str[8], str[9] );
 }
 
