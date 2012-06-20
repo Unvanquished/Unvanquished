@@ -17,8 +17,7 @@
 
 extern "C"
 {
-#include "../../engine/qcommon/q_shared.h"
-#include "../../engine/qcommon/qcommon.h"
+extern int Cvar_VariableIntegerValue( const char* str );
 }
 
 #include <iostream>
