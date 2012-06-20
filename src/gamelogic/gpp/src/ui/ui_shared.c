@@ -2735,7 +2735,7 @@ void UI_Text_Paint_Limit( float *maxX, float x, float y, float scale,
                           vec4_t color, const char *text, float adjust )
 {
 	UI_Text_Paint_Generic( x, y, scale, adjust,
-	                       text, color, ITEM_TEXTSTYLE_NORMAL,
+	                       text, color, ITEM_TEXTSTYLE_PLAIN,
 	                       0, 0, 0, maxX, -1, 0 );
 }
 

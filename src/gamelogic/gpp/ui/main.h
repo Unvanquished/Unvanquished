@@ -67,7 +67,7 @@
       text TXT \
       type ITEM_TYPE_BUTTON \
       style WINDOW_STYLE_SHADER \
-      textstyle ITEM_TEXTSTYLE_NORMAL \
+      textstyle ITEM_TEXTSTYLE_PLAIN \
       rect X (Y+(POS*ELEM_H)+(POS*ELEM_O)) W ELEM_H \
       textscale .416 \
       textalign ALIGN_CENTER \

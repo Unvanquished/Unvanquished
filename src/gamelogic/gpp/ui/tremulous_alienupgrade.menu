@@ -76,7 +76,7 @@
     {
       name infopane
       ownerdraw UI_AUPGRADEINFOPANE
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       style WINDOW_STYLE_EMPTY
       rect INFO_X INFO_Y INFO_W INFO_H
       textscale .33
