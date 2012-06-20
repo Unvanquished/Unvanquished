@@ -15,6 +15,12 @@
 //  along with this program; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+extern "C"
+{
+#include "../../engine/qcommon/q_shared.h"
+#include "../../engine/qcommon/qcommon.h"
+}
+
 #include <iostream>
 #include "log.hpp"
 
@@ -27,7 +33,10 @@ Log::log_callback_t Log::log_error_callback   = &Log::default_log_callback;
 void
 Log::default_log_callback(const std::string& str)
 {
-  std::cerr << "tinygettext: " << str;
+  if( Cvar_VariableIntegerValue( "language_debug" ) )
+  {
+	std::cerr << "tinygettext: " << str;
+  }
 }
 
 void

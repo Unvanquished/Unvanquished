@@ -50,6 +50,7 @@ Dictionary        trans_dict;
 Dictionary        trans_dictgame;
 
 cvar_t            *language;
+cvar_t            *language_debug;
 cvar_t            *trans_encodings;
 cvar_t            *trans_languages;
 bool              enabled = false;
@@ -116,6 +117,7 @@ extern "C" void Trans_Init( void )
 	Language            lang;
 	
 	language = Cvar_Get( "language", "", CVAR_ARCHIVE );
+	language_debug = Cvar_Get( "language_debug", "0", CVAR_ARCHIVE );
 	trans_languages = Cvar_Get( "trans_languages", "", CVAR_ROM );
 	trans_encodings = Cvar_Get( "trans_languages", "", CVAR_ROM );
 	
