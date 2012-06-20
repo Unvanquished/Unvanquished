@@ -11,26 +11,33 @@ endif()
 
 include( CMakeDependentOption )
 
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
-set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "" )
-set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "" )
-set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "" )
-set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "" )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "" )
+# This line has to appear before 'PROJECT' in order to be able to disable incremental linking
+set( MSVC_INCREMENTAL_DEFAULT ON )
+
+project( Daemon C CXX ASM )
+
+if( MSVC )
+  set( CMAKE_C_FLAGS "" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_DEBUG "" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_RELEASE "" CACHE STRING "" )
+  set( CMAKE_CONFIGURATION_TYPES Release;Debug CACHE STRING "Available build configurations" FORCE )
+else()
+  set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "" )
+endif()
 set( CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_MINSIZEREL ${CMAKE_C_FLAGS_MINSIZEREL} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO} CACHE STRING "" )
 set( CMAKE_BUILD_TYPE Release CACHE STRING "Build configuration (Debug, Release, RelWithDebInfo, MinSizeRel)" )
-
-# This line has to appear before 'PROJECT' in order to be able to disable incremental linking
-set( MSVC_INCREMENTAL_DEFAULT ON )
-
-project( Daemon C CXX ASM )
 set( CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER} )
 set( CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT} )
 set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
+set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 # Options
 option( BUILD_CLIENT         "Build Daemon client"                         1 )
@@ -331,11 +338,13 @@ macro( try_linker_flag PROP FLAG )
   set( ${PROP}_CACHED TRUE CACHE INTERNAL "Set if linker option ${FLAG} has been checked for." )
 endmacro()
 
-# Can we get rid of unneeded external libraries?
-try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
+if( NOT MSVC )
+  # Can we get rid of unneeded external libraries?
+  try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
 
-# If we can, fail if there are unresolved symbols
-try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
+  # If we can, fail if there are unresolved symbols
+  try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
+endif()
 
 if( ENABLE_FSTACKPROT )
   try_linker_flag( HAVE_FSTACKPROT "-fstack-protector --param=ssp-buffer-size=4" )
@@ -564,6 +573,11 @@ else()
     ${MOUNT_DIR}/engine/sys/con_log.c
     ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
   )
+endif()
+
+# Append Visual Studio specific files to SDLBASELIST
+if( MSVC )
+  set( SDLBASELIST ${SDLBASELIST} ${MOUNT_DIR}/engine/sys/sys_sysinfo.c )
 endif()
 
 if( USE_CURSES )
