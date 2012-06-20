@@ -3375,6 +3375,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 	ADMP( va( "\"%s\" \"%d\"", N_("^3listplayers: ^7%s players connected:\n"),
 	           level.numConnectedClients ) );
 	ADMBP_begin();
+	ADMBP( "\"" );
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
@@ -3472,7 +3473,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 		           ( registeredname ) ? S_COLOR_WHITE ")" : "",
 		           ( !authed ) ? S_COLOR_RED "NOT AUTHED" : "" ) );
 	}
-
+	ADMBP( "\"" );
 	ADMBP_end();
 	return qtrue;
 }
@@ -4299,7 +4300,7 @@ qboolean G_admin_lock( gentity_t *ent )
 	if ( fail )
 	{
 		ADMP( va( "\"%s\" \"%s\" \"%s\"", lock ? N_("3%s: ^7the %s team is already locked\n") :
-			N_("3%s: ^7the %s team is not currently locked\n"), command, BG_TeamName( team ) ) );
+			N_("^3%s: ^7the %s team is not currently locked\n"), command, BG_TeamName( team ) ) );
 		return qfalse;
 	}
 
@@ -4455,7 +4456,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 
 	if ( !level.buildId )
 	{
-		ADMP( N_("^3buildlog: ^7log is empty\n") );
+		ADMP( "\"" N_("^3buildlog: ^7log is empty\n") "\"" );
 		return qtrue;
 	}
 
@@ -4483,7 +4484,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 			else if ( id < 0 || id >= MAX_CLIENTS ||
 			          level.clients[ id ].pers.connected != CON_CONNECTED )
 			{
-				ADMP( N_("^3buildlog: ^7invalid client id\n") );
+				ADMP( "\"" N_("^3buildlog: ^7invalid client id\n") "\"" );
 				return qfalse;
 			}
 		}
@@ -4508,7 +4509,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 
 	if ( start < level.buildId - level.numBuildLogs || start >= level.buildId )
 	{
-		ADMP( N_("^3buildlog: ^7invalid build ID\n") );
+		ADMP( "\"" N_("^3buildlog: ^7invalid build ID\n") "\"" );
 		return qfalse;
 	}
 
@@ -4520,7 +4521,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	}
 
 	ADMBP_begin();
-
+	ADMBP( "\"");
 	for ( i = start; i < level.buildId && printed < MAX_ADMIN_LISTITEMS; i++ )
 	{
 		log = &level.buildLog[ i % MAX_BUILDLOG ];
@@ -4578,6 +4579,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	           level.buildId + MAX_CLIENTS - 1,
 	           i < level.buildId ? va( "run 'buildlog %s%s%d' to see more",
 	                                   search, search[ 0 ] ? " " : "", i + MAX_CLIENTS ) : "" ) );
+	ADMBP( "\"" );
 	ADMBP_end();
 	return qtrue;
 }
