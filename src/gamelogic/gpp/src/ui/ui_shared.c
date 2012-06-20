@@ -6676,7 +6676,7 @@ void Item_ComboBox_Paint( itemDef_t *item )
 
 	Item_ListBoxRow_Paint( item, item->cursorPos, 0, qfalse, qtrue );
 
-	if ( g_comboBoxItem != NULL )
+	if ( g_comboBoxItem != NULL && g_comboBoxItem == item )
 	{
 		qboolean cast = Item_ComboBox_MaybeCastToListBox( item );
 		Item_Paint( item );
