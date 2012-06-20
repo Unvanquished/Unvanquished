@@ -9,7 +9,7 @@ get_target_property( LBURG_EXE lburg LOCATION )
 
 add_custom_command(
   OUTPUT ${CMAKE_BINARY_DIR}/CMakeFiles/dagcheck.c
-  COMMAND ${LBURG_EXE} ${MOUNT_DIR}/tools/lcc/src/dagcheck.md >${CMAKE_BINARY_DIR}/CMakeFiles/dagcheck.c
+  COMMAND ${LBURG_EXE} "${MOUNT_DIR}/tools/lcc/src/dagcheck.md" >"${CMAKE_BINARY_DIR}/CMakeFiles/dagcheck.c"
   DEPENDS lburg
   MAIN_DEPENDENCY ${MOUNT_DIR}/tools/lcc/src/dagcheck.md
 )

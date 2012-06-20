@@ -121,7 +121,7 @@ genline(void)
 	static Tokenrow tr = { &ta, &ta, &ta+1, 1 };
 	uchar *p;
 
-	ta.t = p = (uchar*)outp;
+	ta.t = p = (uchar*)out_p;
 	strcpy((char*)p, "#line ");
 	p += sizeof("#line ")-1;
 	p = (uchar*)outnum((char*)p, cursource->line);
@@ -134,8 +134,8 @@ genline(void)
 	strcpy((char*)p, cursource->filename);
 	p += strlen((char*)p);
 	*p++ = '"'; *p++ = '\n';
-	ta.len = (char*)p-outp;
-	outp = (char*)p;
+	ta.len = (char*)p-out_p;
+	out_p = (char*)p;
 	tr.tp = tr.bp;
 	puttokens(&tr);
 }

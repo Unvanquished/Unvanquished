@@ -15,6 +15,9 @@ lcc_getopt (int argc, char *const argv[], const char *opts)
 	char *cp;
 
 	if (sp == 1) {
+    while (optind < argc &&
+          !strcmp(argv[optind], "-undef"))
+      optind++;
 		if (optind >= argc ||
 		   argv[optind][0] != '-' || argv[optind][1] == '\0')
 			return -1;
