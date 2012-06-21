@@ -2098,15 +2098,15 @@ qboolean G_admin_setlevel( gentity_t *ent )
 
 		if ( matches == 0 )
 		{
-			ADMP( N_("\"^3setlevel:^7 no match.  use listplayers or listadmins to "
-			      "find an appropriate number to use instead of name.\n\"") );
+			ADMP( "\"" N_("^3setlevel:^7 no match.  use listplayers or listadmins to "
+			      "find an appropriate number to use instead of name.\n") "\"" );
 			return qfalse;
 		}
 
 		if ( matches > 1 )
 		{
-			ADMP( N_("\"^3setlevel:^7 more than one match.  Use the admin number "
-			      "instead:\n\"") );
+			ADMP( "\"" N_("^3setlevel:^7 more than one match.  Use the admin number "
+			      "instead:\n") "\"" );
 			admin_listadmins( ent, 0, name );
 			return qfalse;
 		}
@@ -2114,7 +2114,7 @@ qboolean G_admin_setlevel( gentity_t *ent )
 
 	if ( l->level && G_IsUnnamed( vic->client->pers.netname ) )
 	{
-		ADMP( N_("\"^3setlevel: ^7your intended victim has the default name\n\"") );
+		ADMP( "\"" N_("^3setlevel: ^7your intended victim has the default name\n") "\"" );
 		return qfalse;
 	}
 
@@ -2388,7 +2388,7 @@ qboolean G_admin_kick( gentity_t *ent )
 
 	if ( trap_Argc() < minargc )
 	{
-		ADMP( N_("\"^3kick: ^7usage: kick [name] [reason]\n\"") );
+		ADMP( "\"" N_("^3kick: ^7usage: kick [name] [reason]\n") "\"" );
 		return qfalse;
 	}
 
@@ -2412,7 +2412,7 @@ qboolean G_admin_kick( gentity_t *ent )
 
 	if ( vic->client->pers.localClient )
 	{
-		ADMP( "\"^3kick: ^7disconnecting the host would end the game\n\"" );
+		ADMP( "\"" N_("^3kick: ^7disconnecting the host would end the game\n" "\"" ) );
 		return qfalse;
 	}
 
@@ -2446,7 +2446,7 @@ qboolean G_admin_ban( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( N_("\"^3ban: ^7usage: ban [name|slot|IP(/mask)] [duration] [reason]\n\"") );
+		ADMP( "\"" N_("^3ban: ^7usage: ban [name|slot|IP(/mask)] [duration] [reason]\n") "\"" );
 		return qfalse;
 	}
 
@@ -2467,7 +2467,7 @@ qboolean G_admin_ban( gentity_t *ent )
 
 	if ( !*reason && !G_admin_permission( ent, ADMF_UNACCOUNTABLE ) )
 	{
-		ADMP( N_("\"^3ban: ^7you must specify a reason\n\"" ) );
+		ADMP( "\"" N_("^3ban: ^7you must specify a reason\n" ) "\"" );
 		return qfalse;
 	}
 
@@ -2477,7 +2477,7 @@ qboolean G_admin_ban( gentity_t *ent )
 
 		if ( seconds == 0 || seconds > maximum )
 		{
-			ADMP( N_("\"^3ban: ^7you may not issue permanent bans\n\"") );
+			ADMP( "\"" N_("^3ban: ^7you may not issue permanent bans\n") "\"" );
 			seconds = maximum;
 		}
 	}
@@ -2520,13 +2520,13 @@ qboolean G_admin_ban( gentity_t *ent )
 
 		if ( !match )
 		{
-			ADMP( N_("\"^3ban: ^7no player found by that IP address\n\"" ) );
+			ADMP( "\'" N_("^3ban: ^7no player found by that IP address\n" ) "\"" );
 			return qfalse;
 		}
 	}
 	else if ( !( match = G_NamelogFromString( ent, search ) ) || match->banned )
 	{
-		ADMP( N_("\"^3ban: ^7no match\n\"") );
+		ADMP( "\"" N_("^3ban: ^7no match\n") "\"" );
 		return qfalse;
 	}
 
@@ -2539,7 +2539,7 @@ qboolean G_admin_ban( gentity_t *ent )
 
 	if ( match->slot > -1 && level.clients[ match->slot ].pers.localClient )
 	{
-		ADMP( N_("\"^3ban: ^7disconnecting the host would end the game\n\"") );
+		ADMP( "\"" N_("^3ban: ^7disconnecting the host would end the game\n") "\"" );
 		return qfalse;
 	}
 
@@ -2587,7 +2587,7 @@ qboolean G_admin_ban( gentity_t *ent )
 
 	if ( !g_admin.string[ 0 ] )
 	{
-		ADMP( N_("\"^3ban: ^7WARNING g_admin not set, not saving ban to a file\n\"" ) );
+		ADMP( "\'" N_("^3ban: ^7WARNING g_admin not set, not saving ban to a file\n" ) "\"" );
 	}
 	else
 	{
@@ -2607,7 +2607,7 @@ qboolean G_admin_unban( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( N_("\"^3unban: ^7usage: unban [ban#]\n\"") );
+		ADMP( "\"" N_("^3unban: ^7usage: unban [ban#]\n") "\"" );
 		return qfalse;
 	}
 
@@ -2621,7 +2621,7 @@ qboolean G_admin_unban( gentity_t *ent )
 
 	if ( !ban )
 	{
-		ADMP( N_("\"^3unban: ^7invalid ban#\n\"" ) );
+		ADMP( "\"" N_("^3unban: ^7invalid ban#\n" ) "\"" );
 		return qfalse;
 	}
 
@@ -2629,7 +2629,7 @@ qboolean G_admin_unban( gentity_t *ent )
 	     ( ban->expires == 0 || ( ban->expires - time > MAX( 1,
 	                              G_admin_parse_time( g_adminMaxBan.string ) ) ) ) )
 	{
-		ADMP( N_("\"^3unban: ^7you cannot remove permanent bans\n\"") );
+		ADMP( "\"" N_("^3unban: ^7you cannot remove permanent bans\n") "\"" );
 		return qfalse;
 	}
 
@@ -2688,8 +2688,8 @@ qboolean G_admin_adjustban( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( N_("^\"3adjustban: ^7usage: adjustban [ban#] [/mask] [duration] [reason]"
-		      "\n\"") );
+		ADMP( "\"" N_("^3adjustban: ^7usage: adjustban [ban#] [/mask] [duration] [reason]"
+		      "\n") "\"" );
 		return qfalse;
 	}
 
@@ -2700,7 +2700,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 
 	if ( !ban )
 	{
-		ADMP( N_("\"^3adjustban: ^7invalid ban#\n\"") );
+		ADMP( "\"" N_("^3adjustban: ^7invalid ban#\n") "\"" );
 		return qfalse;
 	}
 
@@ -2709,7 +2709,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
 	     ( ban->expires == 0 || ban->expires - time > maximum ) )
 	{
-		ADMP( N_("\"^3adjustban: ^7you cannot modify permanent bans\n\"") );
+		ADMP( "\"" N_("^3adjustban: ^7you cannot modify permanent bans\n") "\"" );
 		return qfalse;
 	}
 
@@ -2748,7 +2748,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 		{
 			if ( ban->expires == 0 && mode )
 			{
-				ADMP( N_("\"^3adjustban: ^7new duration must be explicit\n\"" ) );
+				ADMP( "\"" N_("^3adjustban: ^7new duration must be explicit\n" ) "\"" );
 				return qfalse;
 			}
 
@@ -2767,7 +2767,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 
 			if ( expires <= time )
 			{
-				ADMP( N_("\"^3adjustban: ^7ban duration must be positive\n\"" ) );
+				ADMP( "\"" N_("^3adjustban: ^7ban duration must be positive\n" ) "\"" );
 				return qfalse;
 			}
 		}
@@ -2779,7 +2779,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 		if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
 		     ( length == 0 || length > maximum ) )
 		{
-			ADMP( N_("\"^3adjustban: ^7you may not issue permanent bans\n\"") );
+			ADMP( "\"" N_("^3adjustban: ^7you may not issue permanent bans\n") "\"" );
 			expires = time + maximum;
 		}
 
@@ -2853,7 +2853,7 @@ qboolean G_admin_putteam( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( N_("\"^3putteam: ^7usage: putteam [name] [h|a|s]\n\"") );
+		ADMP( "\"" N_("^3putteam: ^7usage: putteam [name] [h|a|s]\n") "\"" );
 		return qfalse;
 	}
 
@@ -2906,7 +2906,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( N_("\"^3speclock: ^7usage: speclock [name] [duration]\n\"") );
+		ADMP( "\"" N_("^3speclock: ^7usage: speclock [name] [duration]\n") "\"" );
 		return qfalse;
 	}
 
@@ -2991,7 +2991,7 @@ qboolean G_admin_specunlock( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( N_("\"^3specunlock: ^7usage: specunlock [name]\n\"") );
+		ADMP( "\"" N_("^3specunlock: ^7usage: specunlock [name]\n") "\"" );
 		return qfalse;
 	}
 
@@ -3034,7 +3034,7 @@ qboolean G_admin_changemap( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( N_("\"^3changemap: ^7usage: changemap [map] (layout)\n\"") );
+		ADMP( "\"" N_("^3changemap: ^7usage: changemap [map] (layout)\n") "\"" );
 		return qfalse;
 	}
 
@@ -3085,7 +3085,7 @@ qboolean G_admin_warn( gentity_t *ent )
 
 	if( trap_Argc() < 3 )
 	{
-		ADMP( N_("\"^3warn: ^7usage: warn [name|slot#] [reason]\n\"") );
+		ADMP( "\"" N_("^3warn: ^7usage: warn [name|slot#] [reason]\n") "\"" );
 		return qfalse;
 	}
 
@@ -3152,7 +3152,7 @@ qboolean G_admin_mute( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "mute" ) )
 		{
-			ADMP( N_("\"^3mute: ^7player is already muted\n\"") );
+			ADMP( "\"" N_("^3mute: ^7player is already muted\n") "\"" );
 			return qfalse;
 		}
 
@@ -3171,7 +3171,7 @@ qboolean G_admin_mute( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "unmute" ) )
 		{
-			ADMP( N_("\"^3unmute: ^7player is not currently muted\n\"") );
+			ADMP( "\"" N_("^3unmute: ^7player is not currently muted\n") "\"" );
 			return qfalse;
 		}
 
@@ -3226,7 +3226,7 @@ qboolean G_admin_denybuild( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "denybuild" ) )
 		{
-			ADMP( N_("\"^3denybuild: ^7player already has no building rights\n\"" ) );
+			ADMP( "\"" N_("^3denybuild: ^7player already has no building rights\n" ) "\"" );
 			return qfalse;
 		}
 
@@ -3245,7 +3245,7 @@ qboolean G_admin_denybuild( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "allowbuild" ) )
 		{
-			ADMP( N_("\"^3allowbuild: ^7player already has building rights\n\"" ) );
+			ADMP( "\"" N_("^3allowbuild: ^7player already has building rights\n" ) "\"" );
 			return qfalse;
 		}
 
@@ -3711,7 +3711,7 @@ qboolean G_admin_admintest( gentity_t *ent )
 
 	if ( !ent )
 	{
-		ADMP( N_("\"^3admintest: ^7you are on the console.\n\"") );
+		ADMP( "\"" N_("^3admintest: ^7you are on the console.\n") "\"" );
 		return qtrue;
 	}
 
@@ -3733,7 +3733,7 @@ qboolean G_admin_allready( gentity_t *ent )
 
 	if ( !level.intermissiontime )
 	{
-		ADMP( N_("\"^3allready: ^7this command is only valid during intermission\n\"") );
+		ADMP( "\"" N_("^3allready: ^7this command is only valid during intermission\n") "\"" );
 		return qfalse;
 	}
 
@@ -3863,7 +3863,7 @@ qboolean G_admin_rename( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( N_("\"^3rename: ^7usage: rename [name] [newname]\n\"") );
+		ADMP( N_("^3rename: ^7usage: rename [name] [newname]\n") );
 		return qfalse;
 	}
 
@@ -3893,7 +3893,7 @@ qboolean G_admin_rename( gentity_t *ent )
 
 	if ( victim->client->pers.connected != CON_CONNECTED )
 	{
-		ADMP( N_("\"^3rename: ^7sorry, but your intended victim is still connecting\n\"") );
+		ADMP( "\"" N_("^3rename: ^7sorry, but your intended victim is still connecting\n") "\"" );
 		return qfalse;
 	}
 
@@ -4332,7 +4332,7 @@ qboolean G_admin_builder( gentity_t *ent )
 
 	if ( !ent )
 	{
-		ADMP( N_("\"^3builder: ^7console can't aim.\n\"") );
+		ADMP( "\"" N_("^3builder: ^7console can't aim.\n") "\"" );
 		return qfalse;
 	}
 
@@ -4643,7 +4643,7 @@ qboolean G_admin_l0( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( N_("\"^3l0: ^7usage: l0 [name|slot#|admin#]\n\"") );
+		ADMP( "\"" N_("^3l0: ^7usage: l0 [name|slot#|admin#]\n") "\"" );
 		return qfalse;
 	}
 
@@ -4657,7 +4657,7 @@ qboolean G_admin_l0( gentity_t *ent )
 
 	if ( !a || a->level != 1 )
 	{
-		ADMP( N_("\"^3l0: ^7your intended victim is not level 1\n\"") );
+		ADMP( "\"" N_("^3l0: ^7your intended victim is not level 1\n") "\"" );
 		return qfalse;
 	}
 
@@ -4678,7 +4678,7 @@ qboolean G_admin_l1( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( N_("\"^3l1: ^7usage: l1 [name|slot#|admin#]\n\"") );
+		ADMP( "\"" N_("^3l1: ^7usage: l1 [name|slot#|admin#]\n") "\"" );
 		return qfalse;
 	}
 
@@ -4693,13 +4693,13 @@ qboolean G_admin_l1( gentity_t *ent )
 
 	if ( !a || a->level != 0 )
 	{
-		ADMP( N_("\"^3l1: ^7your intended victim is not level 0\n\"") );
+		ADMP( "\"" N_("^3l1: ^7your intended victim is not level 0\n") "\"" );
 		return qfalse;
 	}
 
 	if ( G_IsUnnamed( vic->client->pers.netname ) )
 	{
-		ADMP( N_("\"^3l1: ^7your intended victim has the default name\n\"") );
+		ADMP( "\"" N_("^3l1: ^7your intended victim has the default name\n") "\"" );
 		return qfalse;
 	}
 
@@ -4727,7 +4727,7 @@ qboolean G_admin_register( gentity_t *ent )
 
 	if ( G_IsUnnamed( ent->client->pers.netname ) )
 	{
-		ADMP( N_("\"^3register: ^7you must first change your name\n\"" ) );
+		ADMP( "\"" N_("^3register: ^7you must first change your name\n" ) "\"" );
 		return qfalse;
 	}
 
@@ -4750,7 +4750,7 @@ qboolean G_admin_unregister( gentity_t *ent )
 
 	if ( !ent->client->pers.admin || ent->client->pers.admin->level == 0 )
 	{
-		ADMP( N_("\"^3unregister: ^7you do not have a protected name\n\"" ) );
+		ADMP( "\"" N_("^3unregister: ^7you do not have a protected name\n" ) "\"" );
 		return qfalse;
 	}
 
@@ -4797,14 +4797,14 @@ qboolean G_admin_timelimit( gentity_t *ent )
 			}
 			else
 			{
-				ADMP( N_("\"^3gametimelimit: ^7time limit is unchanged\n\"") );
+				ADMP( "\"" N_("^3gametimelimit: ^7time limit is unchanged\n") "\"" );
 			}
 			return qtrue;
 		}
 		// fall through
 
 	default:
-		ADMP( N_("\"^3gametimelimit: ^7usage: gametimelimit [minutes]\n\"") );
+		ADMP( "\"" N_("^3gametimelimit: ^7usage: gametimelimit [minutes]\n") "\"" );
 		return qfalse;
 	}
 }
