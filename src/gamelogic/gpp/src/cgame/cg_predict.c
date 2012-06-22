@@ -774,7 +774,7 @@ void CG_PredictPlayerState( void )
 				{
 					if ( cg_showmiss.integer )
 					{
-						CG_Printf(_( "errorcode %d at %d\n"), errorcode, cg.time );
+						CG_Printf(_( "error code %d at %d\n"), errorcode, cg.time );
 					}
 
 					break;

@@ -1502,6 +1502,7 @@ void Com_GetHunkInfo( int *hunkused, int *hunkexpected );
 void Com_RandomBytes( byte *string, int len );
 
 #define _(x) Trans_Gettext(x)
+#define N_(x) (x)
 
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));

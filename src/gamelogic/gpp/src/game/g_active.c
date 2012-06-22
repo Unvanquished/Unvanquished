@@ -651,8 +651,7 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 		{
 			client->inactivityWarning = qtrue;
 			trap_SendServerCommand( client - level.clients,
-			                        va( "cp \"Ten seconds until inactivity %s!\n\"",
-			                            strchr( g_inactivity.string, 's' ) ? "spectate" : "drop" ) );
+			                        va( "cp %s", strchr( g_inactivity.string, 's' ) ? N_("\"Ten seconds until inactivity spectate!\n\"") : N_("\"Ten seconds until inactivity drop!\n\"") ) );
 		}
 	}
 

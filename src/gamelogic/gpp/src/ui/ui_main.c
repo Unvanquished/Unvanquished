@@ -754,7 +754,7 @@ static void UI_BuildFindPlayerList( qboolean force )
 		uiInfo.numFoundPlayerServers = 1;
 		Com_sprintf( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ],
 		             sizeof( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ] ),
-		             "searching %d...", uiInfo.pendingServerStatus.num );
+		             "searching %d…", uiInfo.pendingServerStatus.num );
 		numFound = 0;
 		numTimeOuts++;
 	}
@@ -825,7 +825,7 @@ static void UI_BuildFindPlayerList( qboolean force )
 
 				Com_sprintf( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ],
 				             sizeof( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ] ),
-				             "searching %d/%d...", numFound, uiInfo.pendingServerStatus.num );
+				             "searching %d/%d…", numFound, uiInfo.pendingServerStatus.num );
 				// retrieved the server status so reuse this spot
 				uiInfo.pendingServerStatus.server[ i ].valid = qfalse;
 			}
@@ -867,7 +867,7 @@ static void UI_BuildFindPlayerList( qboolean force )
 				uiInfo.pendingServerStatus.num++;
 				Com_sprintf( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ],
 				             sizeof( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ] ),
-				             "searching %d/%d...", numFound, uiInfo.pendingServerStatus.num );
+				             "searching %d/%d…", numFound, uiInfo.pendingServerStatus.num );
 			}
 		}
 	}
@@ -2072,7 +2072,7 @@ static const char *UI_OwnerDrawText( int ownerDraw )
 		case UI_KEYBINDSTATUS:
 			if ( Display_KeyBindPending() )
 			{
-				s = "Waiting for new key... Press ESCAPE to cancel";
+				s = "Waiting for new key… Press ESCAPE to cancel";
 			}
 			else
 			{
@@ -4391,7 +4391,7 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 				case SORT_PING:
 					if ( ping <= 0 )
 					{
-						return "...";
+						return "…";
 					}
 					else
 					{
@@ -5511,7 +5511,7 @@ void UI_DrawConnectScreen( qboolean overlay )
 	if ( !Q_stricmp( cstate.servername, "localhost" ) )
 	{
 		Text_PaintCenter( centerPoint, yStart + 48, scale, colorWhite,
-		                  "Starting up...", ITEM_TEXTSTYLE_SHADOWEDMORE );
+		                  "Starting up…", ITEM_TEXTSTYLE_SHADOWEDMORE );
 	}
 	else
 	{
@@ -5538,11 +5538,11 @@ void UI_DrawConnectScreen( qboolean overlay )
 	switch ( cstate.connState )
 	{
 		case CA_CONNECTING:
-			s = va( "Awaiting connection...%i", cstate.connectPacketCount );
+			s = va( "Awaiting connection…%i", cstate.connectPacketCount );
 			break;
 
 		case CA_CHALLENGING:
-			s = va( "Awaiting challenge...%i", cstate.connectPacketCount );
+			s = va( "Awaiting challenge…%i", cstate.connectPacketCount );
 			break;
 
 		case CA_CONNECTED:
@@ -5558,7 +5558,7 @@ void UI_DrawConnectScreen( qboolean overlay )
 				}
 			}
 
-			s = "Awaiting gamestate...";
+			s = "Awaiting gamestate…";
 			break;
 
 		case CA_LOADING:

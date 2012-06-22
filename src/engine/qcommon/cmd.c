@@ -471,9 +471,9 @@ Helper functions for Cmd_If_f & Cmd_ModCase_f
 ===============
 */
 #ifdef DEDICATED
-static const char modifierList[] = "not supported in the dedicated server";
+static const char modifierList[] = N_("not supported in the dedicated server");
 #else
-static const char modifierList[] = "shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt";
+static const char modifierList[] = N_("shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt");
 
 static const struct
 {
@@ -629,7 +629,7 @@ void Cmd_ModCase_f( void )
 
 	if ( argc < 3 )
 	{
-		Com_Printf(_( "modcase <modifiers> <command> [<modifiers> <command>] ... [<command>]\n" ));
+		Com_Printf(_( "modcase <modifiers> <command> [<modifiers> <command>] … [<command>]\n" ));
 		return;
 	}
 
@@ -717,7 +717,7 @@ void Cmd_If_f( void )
 		case 3:
 			vt = Cmd_Argv( 2 );
 #ifdef DEDICATED
-			Com_Printf(_( "if <modifiers>... is not supported on the server -- assuming true.\n" ));
+			Com_Printf(_( "if <modifiers>… is not supported on the server – assuming true.\n" ));
 			v = vt;
 #else
 			v = Cmd_Argv( 1 );
@@ -772,7 +772,7 @@ void Cmd_If_f( void )
 			            "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
 			            "-- modifiers are %s\n"
 			            "-- commands are cvar names unless prefixed with / or \\\n"),
-			            modifierList );
+			            _(modifierList) );
 			return;
 	}
 
@@ -968,7 +968,7 @@ void Cmd_Concat_f( void )
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "concat <variableToSet> <variable1> ... <variableN> : concatenates variable1 to variableN and sets the result to variableToSet\n" ));
+		Com_Printf(_( "concat <variableToSet> <variable1> … <variableN> : concatenates variable1 to variableN and sets the result to variableToSet\n" ));
 		return;
 	}
 
@@ -1022,7 +1022,7 @@ void Cmd_Calc_f( void )
 	{
 		if ( atof( arg2 ) == 0.f )
 		{
-			Com_Printf(_( "Cannot divide by zero!\n" ));
+			Com_Printf(_( "Cannot divide by 0!\n" ));
 			return;
 		}
 
@@ -1296,7 +1296,7 @@ void Cmd_AliasList_f( void )
 			continue;
 		}
 
-		Com_Printf( "%s ==> %s\n", alias->name, alias->exec );
+		Com_Printf( "%s ⇒ %s\n", alias->name, alias->exec );
 		i++;
 	}
 
@@ -1452,7 +1452,7 @@ void Cmd_Alias_f( void )
 	}
 	else if ( Cmd_Argc() == 2 )
 	{
-		Com_Printf( "%s ==> %s\n", alias->name, alias->exec );
+		Com_Printf( "%s ⇒ %s\n", alias->name, alias->exec );
 	}
 
 	// update autogen.cfg

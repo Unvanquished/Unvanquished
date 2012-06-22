@@ -4573,7 +4573,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 		           "" ) );
 	}
 
-	ADMBP( va( "\"%s\" \"%d\" \"%d\" \"%d\" \"%d\" \"%d\" \"%s\"", N_("^3buildlog: ^7showing %d build logs %d - %d of %d - %d.  %s\n"),
+	ADMBP( va( "\"%s\" \"%d\" \"%d\" \"%d\" \"%d\" \"%d\" \"%s\"", N_("^3buildlog: ^7showing %d build logs %d - %d of %d – %d.  %s\n"),
 	           printed, start + MAX_CLIENTS, i + MAX_CLIENTS - 1,
 	           level.buildId + MAX_CLIENTS - level.numBuildLogs,
 	           level.buildId + MAX_CLIENTS - 1,

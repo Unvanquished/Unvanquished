@@ -540,7 +540,7 @@ static int loadVideoFrameTheora( void )
 
 			if ( yWShift < 0 || uvWShift < 0 || yHShift < 0 || uvHShift < 0 )
 			{
-				Com_Printf("%s", _( "[Theora] unexpected resolution in a yuv-Frame\n" ));
+				Com_Printf("%s", _( "[Theora] unexpected resolution in a YUV frame\n" ));
 				r = -1;
 			}
 			else
@@ -753,7 +753,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( g_ogm.ogmFile )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: it seams there was already a ogm running, it will be killed to start %s\n"), filename );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: it seems there was already a ogm running. It will be killed to start %s\n"), filename );
 		Cin_OGM_Shutdown();
 	}
 
@@ -763,7 +763,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( !g_ogm.ogmFile )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Can't open ogm-file for reading (%s)\n"), filename );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Can't open OGM file for reading (%s)\n"), filename );
 		return -1;
 	}
 
@@ -780,7 +780,7 @@ int Cin_OGM_Init( const char *filename )
 				//FIXME? better way to find audio stream
 				if ( g_ogm.os_audio.serialno )
 				{
-					Com_Printf( _( S_COLOR_YELLOW  "WARNING: more than one audio stream, in ogm-file(%s) ... we will stay at the first one\n"), filename );
+					Com_Printf( _( S_COLOR_YELLOW  "WARNING: more than one audio stream in OGM file(%s). We will stay at the first one\n"), filename );
 				}
 				else
 				{
@@ -795,7 +795,7 @@ int Cin_OGM_Init( const char *filename )
 			{
 				if ( g_ogm.os_video.serialno )
 				{
-					Com_Printf( _( S_COLOR_YELLOW  "WARNING: more than one video stream, in ogm-file(%s) ... we will stay at the first one\n"), filename );
+					Com_Printf( _( S_COLOR_YELLOW  "WARNING: more than one video stream in OGM file(%s). We will stay at the first one\n"), filename );
 				}
 				else
 				{
@@ -813,7 +813,7 @@ int Cin_OGM_Init( const char *filename )
 				//FIXME? better way to find video stream
 				if ( g_ogm.os_video.serialno )
 				{
-					Com_Printf(_( "more than one video stream, in ogm-file(%s) ... we will stay at the first one\n"), filename );
+					Com_Printf(_( "more than one video stream in OGM file(%s). We will stay at the first one\n"), filename );
 				}
 				else
 				{
@@ -826,14 +826,14 @@ int Cin_OGM_Init( const char *filename )
 					//TODO: one solution for checking xvid and theora
 					if ( !isPowerOf2( sh->sh.stream_header_video.width ) )
 					{
-						Com_Printf(_( "VideoWidth of the ogm-file isn't a power of 2 value (%s)\n"), filename );
+						Com_Printf(_( "Video width of the OGM file isn't a power of 2 (%s)\n"), filename );
 
 						return -5;
 					}
 
 					if ( !isPowerOf2( sh->sh.stream_header_video.height ) )
 					{
-						Com_Printf(_( "VideoHeight of the ogm-file isn't a power of 2 value (%s)\n"), filename );
+						Com_Printf(_( "Video height of the OGM file isn't a power of 2 (%s)\n"), filename );
 
 						return -6;
 					}
@@ -855,7 +855,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( g_ogm.videoStreamIsXvid && g_ogm.videoStreamIsTheora )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Found \"video\"- and \"theora\"-stream ,ogm-file (%s)\n"), filename );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Found \"video\" and \"theora\" stream; OGM file (%s)\n"), filename );
 		return -2;
 	}
 
@@ -863,7 +863,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( !g_ogm.os_audio.serialno )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Haven't found a audio(vorbis) stream in ogm-file (%s)\n"), filename );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Haven't found a audio (Vorbis) stream in OGM file (%s)\n"), filename );
 		return -2;
 	}
 
@@ -871,7 +871,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( !g_ogm.os_video.serialno )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Haven't found a video stream in ogm-file (%s)\n"), filename );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Haven't found a video stream in OGM file (%s)\n"), filename );
 		return -3;
 	}
 
@@ -886,7 +886,7 @@ int Cin_OGM_Init( const char *filename )
 
 		if ( status < 0 )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: Corrupt ogg packet while loading vorbis-headers, ogm-file(%s)\n"), filename );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: Corrupt Ogg packet while loading Vorbis headers (%s)\n"), filename );
 			return -8;
 		}
 
@@ -896,7 +896,7 @@ int Cin_OGM_Init( const char *filename )
 
 			if ( i == 0 && status < 0 )
 			{
-				Com_Printf( _( S_COLOR_YELLOW  "WARNING: This Ogg bitstream does not contain Vorbis audio data, ogm-file(%s)\n"), filename );
+				Com_Printf( _( S_COLOR_YELLOW  "WARNING: This Ogg bitstream does not contain Vorbis audio data (%s)\n"), filename );
 				return -9;
 			}
 
@@ -906,7 +906,7 @@ int Cin_OGM_Init( const char *filename )
 		{
 			if ( loadBlockToSync() )
 			{
-				Com_Printf( _( S_COLOR_YELLOW  "WARNING: Couldn't find all vorbis headers before end of ogm-file (%s)\n"), filename );
+				Com_Printf( _( S_COLOR_YELLOW  "WARNING: Couldn't find all Vorbis headers before end of OGM file (%s)\n"), filename );
 				return -10;
 			}
 		}
@@ -919,7 +919,7 @@ int Cin_OGM_Init( const char *filename )
 
 	if ( status )
 	{
-		Com_Printf(_( "[Xvid]Decore INIT problem, return value %d(ogm-file: %s)\n"), status, filename );
+		Com_Printf(_( "[Xvid]Decore INIT problem, return value %d(OGM file: %s)\n"), status, filename );
 
 		return -4;
 	}
@@ -943,7 +943,7 @@ int Cin_OGM_Init( const char *filename )
 
 			if ( status < 0 )
 			{
-				Com_Printf( _( S_COLOR_YELLOW  "WARNING: Corrupt ogg packet while loading theora-headers, ogm-file(%s)\n"), filename );
+				Com_Printf( _( S_COLOR_YELLOW  "WARNING: Corrupt Ogg packet while loading Theora headers (%s)\n"), filename );
 				return -8;
 			}
 
@@ -953,7 +953,7 @@ int Cin_OGM_Init( const char *filename )
 
 				if ( i == 0 && status != 0 )
 				{
-					Com_Printf( _( S_COLOR_YELLOW  "WARNING: This Ogg bitstream does not contain theora data, ogm-file(%s)\n"), filename );
+					Com_Printf( _( S_COLOR_YELLOW  "WARNING: This Ogg bitstream does not contain Theora data (%s)\n"), filename );
 					return -9;
 				}
 
@@ -963,7 +963,7 @@ int Cin_OGM_Init( const char *filename )
 			{
 				if ( loadBlockToSync() )
 				{
-					Com_Printf( _( S_COLOR_YELLOW  "WARNING: Couldn't find all theora headers before end of ogm-file (%s)\n"), filename );
+					Com_Printf( _( S_COLOR_YELLOW  "WARNING: Couldn't find all Theora headers before end of OGM file (%s)\n"), filename );
 					return -10;
 				}
 			}
@@ -973,13 +973,13 @@ int Cin_OGM_Init( const char *filename )
 
 		if ( !isPowerOf2( g_ogm.th_info.width ) )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: VideoWidth of the ogm-file isn't a power of 2 value (%s)\n"), filename );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: Video width of the OGM file isn't a power of 2 (%s)\n"), filename );
 			return -5;
 		}
 
 		if ( !isPowerOf2( g_ogm.th_info.height ) )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: VideoHeight of the ogm-file isn't a power of 2 value (%s)\n"), filename );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: Video height of the OGM file isn't a power of 2 (%s)\n"), filename );
 			return -6;
 		}
 
@@ -1047,7 +1047,7 @@ void Cin_OGM_Shutdown()
 
 	if ( status )
 	{
-		Com_Printf(_( "[Xvid]Decore RELEASE problem, return value %d\n"), status );
+		Com_Printf(_( "[Xvid]Decore RELEASE problem; return value %d\n"), status );
 	}
 
 #endif

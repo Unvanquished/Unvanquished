@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
+#define N_(x) (x)
+
 int                                trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void                               trap_FS_Read( void *buffer, int len, fileHandle_t f );
 void                               trap_FS_Write( const void *buffer, int len, fileHandle_t f );
@@ -4259,7 +4261,7 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 		count++;
 	}
 
-	Com_Printf( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n",
+	Com_Printf( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n", // FIXME PLURAL
 	            count, numFiles, MAX_EMOTICONS );
 	return count;
 }
@@ -4269,21 +4271,41 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 BG_TeamName
 ============
 */
-char *BG_TeamName( team_t team )
+const char *BG_TeamName( team_t team )
 {
 	if ( team == TEAM_NONE )
 	{
-		return "spectator";
+		return N_("spectator");
 	}
 
 	if ( team == TEAM_ALIENS )
 	{
-		return "alien";
+		return N_("alien");
 	}
 
 	if ( team == TEAM_HUMANS )
 	{
-		return "human";
+		return N_("human");
+	}
+
+	return "<team>";
+}
+
+const char *BG_TeamNamePlural( team_t team )
+{
+	if ( team == TEAM_NONE )
+	{
+		return N_("spectators");
+	}
+
+	if ( team == TEAM_ALIENS )
+	{
+		return N_("aliens");
+	}
+
+	if ( team == TEAM_HUMANS )
+	{
+		return N_("humans");
 	}
 
 	return "<team>";

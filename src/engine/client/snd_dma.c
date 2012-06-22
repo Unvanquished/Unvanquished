@@ -124,7 +124,7 @@ void S_SoundInfo_f( void )
 		Com_Printf(_( "%5d samplebits\n"), dma.samplebits );
 		Com_Printf(_( "%5d submission_chunk\n"), dma.submission_chunk );
 		Com_Printf(_( "%5d speed\n"), dma.speed );
-		Com_Printf(_( "%p dma buffer\n"), ( void * ) dma.buffer );
+		Com_Printf(_( "%p DMA buffer\n"), ( void * ) dma.buffer );
 
 		if ( s_backgroundStream )
 		{
@@ -473,7 +473,7 @@ sfxHandle_t     SOrig_RegisterSound( const char *name, qboolean compressed )
 	{
 		if ( sfx->defaultSound )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s - using default\n"), sfx->soundName );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s – using default\n"), sfx->soundName );
 			return 0;
 		}
 
@@ -487,7 +487,7 @@ sfxHandle_t     SOrig_RegisterSound( const char *name, qboolean compressed )
 
 	if ( sfx->defaultSound )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s - using default\n"), sfx->soundName );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s – using default\n"), sfx->soundName );
 		return 0;
 	}
 
@@ -1615,7 +1615,7 @@ void S_SoundList_f( void )
 	sfx_t *sfx;
 
 	static const char type[][ 8 ] = { "16bit", "adpcm", "daub4", "mulaw" };
-	static const char mem[][ 16 ] = { "paged out", "resident" };
+	static const char mem[][ 16 ] = { N_("paged out"), N_("resident") };
 
 	total = 0;
 
@@ -1623,7 +1623,7 @@ void S_SoundList_f( void )
 	{
 		size = sfx->soundLength;
 		total += size;
-		Com_Printf( "%6i[%s] : %s[%s]\n", size, type[ sfx->soundCompressionMethod ], sfx->soundName, mem[ sfx->inMemory ] );
+		Com_Printf( "%6i[%s] : %s[%s]\n", size, type[ sfx->soundCompressionMethod ], sfx->soundName, _(mem[ sfx->inMemory ]) );
 	}
 
 	Com_Printf(_( "Total resident: %i\n"), total );

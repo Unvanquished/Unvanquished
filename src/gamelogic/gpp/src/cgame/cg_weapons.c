@@ -59,7 +59,7 @@ void CG_RegisterUpgrade( int upgradeNum )
 
 	if ( !BG_Upgrade( upgradeNum )->name[ 0 ] )
 	{
-		CG_Error( "Couldn't find upgrade %i", upgradeNum );
+		CG_Error( _("Couldn't find upgrade %i"), upgradeNum );
 	}
 
 	upgradeInfo->humanName = BG_Upgrade( upgradeNum )->humanName;

@@ -1375,18 +1375,18 @@ static void CG_StatusMessages( clientInfo_t *new, clientInfo_t *old )
 	{
 		if ( new->team == TEAM_NONE )
 		{
-			CG_Printf(_( "%s^7 left the %ss\n"), new->name,
-			           BG_TeamName( old->team ) );
+			CG_Printf(_( "%s^7 left the %s\n"), new->name,
+			           BG_TeamNamePlural( old->team ) );
 		}
 		else if ( old->team == TEAM_NONE )
 		{
-			CG_Printf(_( "%s^7 joined the %ss\n"), new->name,
-			           BG_TeamName( new->team ) );
+			CG_Printf(_( "%s^7 joined the %s\n"), new->name,
+			           BG_TeamNamePlural( new->team ) );
 		}
 		else
 		{
-			CG_Printf(_( "%s^7 left the %ss and joined the %ss\n"),
-			           new->name, BG_TeamName( old->team ), BG_TeamName( new->team ) );
+			CG_Printf(_( "%s^7 left the %s and joined the %s\n"),
+			           new->name, BG_TeamNamePlural( old->team ), BG_TeamNamePlural( new->team ) );
 		}
 	}
 }

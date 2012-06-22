@@ -285,7 +285,7 @@ void QDECL Com_Printf( const char *fmt, ... )
 ================
 Com_DPrintf
 
-A Com_Printf that only shows up if the_( "developer" )cvar is set
+A Com_Printf that only shows up if the "developer" cvar is set
 ================
 */
 void QDECL Com_DPrintf( const char *fmt, ... )
@@ -3385,7 +3385,7 @@ void Com_Init( char *commandLine )
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
 #ifndef _DEBUG
-					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n"),
+					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"),
 					            cl_profileStr );
 					// ydnar: set crashed state
 					Cbuf_AddText( "set com_crashed 1\n" );
@@ -3886,7 +3886,7 @@ void Com_Frame( void )
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )
 			{
-				Com_Printf(_( "Idle Server with no map - triggering watchdog\n" ));
+				Com_Printf(_( "Idle Server with no map – triggering watchdog\n" ));
 				watchdogTime = 0;
 				watchWarn = qfalse;
 

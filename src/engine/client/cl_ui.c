@@ -145,7 +145,7 @@ qboolean GetNews( qboolean begin )
 	if ( begin ) // if not already using curl, start the download
 	{
 		CL_RequestMotd();
-		Cvar_Set( "cl_newsString", "Retrieving..." );
+		Cvar_Set( "cl_newsString", "Retrieving…" );
 	}
 
 	if ( Cvar_VariableString( "cl_newsString" ) [ 0 ] == 'R' )

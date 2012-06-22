@@ -178,7 +178,7 @@ void CG_ClientList_f( void )
 		count++;
 	}
 
-	Com_Printf(_( "Listed %2d clients\n"), count );
+	Com_Printf(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
 }
 
 static void CG_ReloadHUD_f( void )

@@ -349,7 +349,7 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 	// Don't start if a framerate has not been chosen
 	if ( cl_aviFrameRate->integer <= 0 )
 	{
-		Com_Printf( "%s", _( S_COLOR_RED  "cl_aviFrameRate must be >= 1\n" ));
+		Com_Printf( "%s", _( S_COLOR_RED  "cl_aviFrameRate must be ≥ 1\n" ));
 		return qfalse;
 	}
 
@@ -555,7 +555,7 @@ void CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size )
 
 	if ( bytesInBuffer + size > PCM_BUFFER_SIZE )
 	{
-		Com_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: Audio capture buffer overflow -- truncating\n" ));
+		Com_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: Audio capture buffer overflow – truncating\n" ));
 		size = PCM_BUFFER_SIZE - bytesInBuffer;
 	}
 

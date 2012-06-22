@@ -300,7 +300,7 @@ void Con_Search_f( void )
 
 	if ( c < 2 )
 	{
-		Com_Printf(_( "usage: %s <string1> <string2> <...>\n"), Cmd_Argv( 0 ) );
+		Com_Printf(_( "usage: %s <string1> <string2> <…>\n"), Cmd_Argv( 0 ) );
 		return;
 	}
 

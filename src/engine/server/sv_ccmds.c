@@ -519,7 +519,7 @@ static void SV_MapRestart_f( void )
 	{
 		char mapname[ MAX_QPATH ];
 
-		Com_Printf(_( "sv_maxclients variable change -- restarting.\n" ));
+		Com_Printf(_( "sv_maxclients variable change – restarting.\n" ));
 		// restart the map the slow way
 		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
@@ -641,7 +641,7 @@ static void SV_MapRestart_f( void )
 
 			if ( ( !SV_GameIsSinglePlayer() ) || ( !isBot ) )
 			{
-				Com_Printf(_( "SV_MapRestart_f(%d): dropped client %i - denied!\n"), delay, i );  // bk010125
+				Com_Printf(_( "SV_MapRestart_f(%d): dropped client %i – denied!\n"), delay, i );  // bk010125
 			}
 
 			continue;

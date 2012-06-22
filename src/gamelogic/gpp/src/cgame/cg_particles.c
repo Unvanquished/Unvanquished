@@ -1955,8 +1955,7 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( _( S_COLOR_RED  "ERROR: particle file %s is %s\n"), fileName,
-		           len == 0 ? "empty" : "too long" );
+		CG_Printf( len ? _( S_COLOR_RED  "ERROR: particle file %s is too long\n") : _( S_COLOR_RED  "ERROR: particle file %s is empty\n"), fileName );
 		return qfalse;
 	}
 
@@ -2017,7 +2016,7 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 			}
 			else
 			{
-				CG_Printf( "%s", _( S_COLOR_RED  "ERROR: unamed particle system\n" ));
+				CG_Printf( "%s", _( S_COLOR_RED  "ERROR: unnamed particle system\n" ));
 				return qfalse;
 			}
 		}
@@ -2084,7 +2083,7 @@ void CG_LoadParticleSystems( void )
 		fileLen = strlen( filePtr );
 		strcpy( fileName, "scripts/" );
 		strcat( fileName, filePtr );
-		CG_Printf(_( "...loading '%s'\n"), fileName );
+		CG_Printf(_( "…loading '%s'\n"), fileName );
 		CG_ParseParticleFile( fileName );
 	}
 

@@ -301,7 +301,7 @@ static void Svcmd_LayoutLoad_f( void )
 
 	if ( trap_Argc() < 2 )
 	{
-		G_Printf( "usage: layoutload <name> ...\n" );
+		G_Printf( "usage: layoutload <name> …\n" );
 		return;
 	}
 

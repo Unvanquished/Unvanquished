@@ -1821,7 +1821,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 	{
 		if ( Cin_OGM_Init( name ) )
 		{
-			Com_Printf(_( "starting ogm-playback failed(%s)\n"), arg );
+			Com_Printf(_( "failed to start OGM playback (%s)\n"), arg );
 			cinTable[ currentHandle ].fileName[ 0 ] = 0;
 			Cin_OGM_Shutdown();
 			return -1;

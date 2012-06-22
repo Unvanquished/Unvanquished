@@ -450,7 +450,7 @@ void MSG_WriteString( msg_t *sb, const char *s )
 
 		if ( l >= MAX_STRING_CHARS )
 		{
-			Com_Printf(_( "MSG_WriteString: MAX_STRING_CHARS" ));
+			Com_Printf( "MSG_WriteString: MAX_STRING_CHARS" );
 			MSG_WriteData( sb, "", 1 );
 			return;
 		}
@@ -476,7 +476,7 @@ void MSG_WriteBigString( msg_t *sb, const char *s )
 
 		if ( l >= BIG_INFO_STRING )
 		{
-			Com_Printf(_( "MSG_WriteString: BIG_INFO_STRING" ));
+			Com_Printf( "MSG_WriteString: BIG_INFO_STRING" );
 			MSG_WriteData( sb, "", 1 );
 			return;
 		}
@@ -1197,7 +1197,7 @@ void MSG_PrioritiseEntitystateFields( void )
 	qsort( fieldorders, numfields, sizeof( int ), qsort_entitystatefields );
 
 	Com_Printf(_( "Entitystate fields in order of priority\n" ));
-	Com_Printf(_( "netField_t entityStateFields[] = {\n" ));
+	Com_Printf( "netField_t entityStateFields[] = {\n" );
 
 	for ( i = 0; i < numfields; i++ )
 	{
@@ -1788,7 +1788,7 @@ void MSG_PrioritisePlayerStateFields( void )
 	qsort( fieldorders, numfields, sizeof( int ), qsort_playerstatefields );
 
 	Com_Printf(_( "Playerstate fields in order of priority\n" ));
-	Com_Printf(_( "netField_t playerStateFields[] = {\n" ));
+	Com_Printf( "netField_t playerStateFields[] = {\n" );
 
 	for ( i = 0; i < numfields; i++ )
 	{

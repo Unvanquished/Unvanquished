@@ -1064,7 +1064,7 @@ void CL_DemoCompleted( void )
 
 		if ( time > 0 )
 		{
-			Com_Printf(_( "%i frames, %3.1f seconds: %3.1f fps\n"), clc.timeDemoFrames,
+			Com_Printf(_( "%i frames, %3.1fs: %3.1f fps\n"), clc.timeDemoFrames,
 			            time / 1000.0, clc.timeDemoFrames * 1000.0 / time );
 		}
 	}
@@ -3617,19 +3617,19 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		if ( cls.state >= CA_CONNECTED )
 		{
-			Com_Printf("%s", _( "Dup connect received.  Ignored.\n" ));
+			Com_Printf("%s", _( "Dup connect received. Ignored.\n" ));
 			return;
 		}
 
 		if ( cls.state != CA_CHALLENGING )
 		{
-			Com_Printf("%s", _( "connectResponse packet while not connecting.  Ignored.\n" ));
+			Com_Printf("%s", _( "connectResponse packet while not connecting. Ignored.\n" ));
 			return;
 		}
 
 		if ( !NET_CompareAdr( from, clc.serverAddress ) )
 		{
-			Com_Printf("%s", _( "connectResponse from a different address.  Ignored.\n" ));
+			Com_Printf("%s", _( "connectResponse from a different address. Ignored.\n" ));
 			Com_Printf(_( "%s should have been %s\n"), NET_AdrToString( from ),
 			            NET_AdrToStringwPort( clc.serverAddress ) );
 			return;
@@ -3763,7 +3763,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 	//
 	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) )
 	{
-		Com_DPrintf( "%s:sequenced packet without connection\n", NET_AdrToStringwPort( from ) );
+		Com_DPrintf( _("%s: sequenced packet without connection\n"), NET_AdrToStringwPort( from ) );
 		// FIXME: send a client disconnect?
 		return;
 	}
@@ -3939,7 +3939,7 @@ void CL_WWWDownload( void )
 			// but in this case we can't get anything from server
 			// if we just reconnect it's likely we'll get the same disconnected download message, and error out again
 			// this may happen for a regular dl or an auto update
-			const char *error = va( "Download failure while getting '%s'\n", cls.downloadName );  // get the msg before clearing structs
+			const char *error = va( _("Download failure while getting '%s'\n"), cls.downloadName );  // get the msg before clearing structs
 
 			cls.bWWWDlDisconnected = qfalse; // need clearing structs before ERR_DROP, or it goes into endless reload
 			CL_ClearStaticDownload();
@@ -3973,8 +3973,8 @@ qboolean CL_WWWBadChecksum( const char *pakname )
 {
 	if ( strstr( clc.redirectedList, va( "@%s", pakname ) ) )
 	{
-		Com_Printf(_( "WARNING: file %s obtained through download redirect has wrong checksum\n"), pakname );
-		Com_Printf("%s", _( "         this likely means the server configuration is broken\n" ));
+		Com_Printf(_( "WARNING: file %s obtained through download redirect has wrong checksum\n"
+		              "         this likely means the server configuration is broken\n" ), pakname );
 
 		if ( strlen( clc.badChecksumList ) + strlen( pakname ) + 1 >= sizeof( clc.badChecksumList ) )
 		{
@@ -4438,7 +4438,7 @@ void CL_CheckAutoUpdate( void )
 	// Resolve update server
 	if ( !NET_StringToAdr( cls.autoupdateServerNames[ 0 ], &cls.autoupdateServer, NA_IP ) )
 	{
-		Com_DPrintf("%s", _( "Failed to resolve any Auto-update servers.\n" ));
+		Com_DPrintf("%s", _( "Failed to resolve any auto-update servers.\n" ));
 
 		cls.autoUpdateServerChecked[ 0 ] = qtrue;
 
@@ -4497,11 +4497,11 @@ qboolean CL_NextUpdateServer( void )
 
 	servername = cls.autoupdateServerNames[ cls.autoupdatServerIndex ];
 
-	Com_DPrintf("%s", _( "Resolving AutoUpdate Server... " ));
+	Com_DPrintf("%s", _( "Resolving auto-update server… " ));
 
 	if ( !NET_StringToAdr( servername, &cls.autoupdateServer, NA_IP ) )
 	{
-		Com_DPrintf("%s", _( "Couldn't resolve address, trying next one..." ));
+		Com_DPrintf("%s", _( "Couldn't resolve address, trying next one…" ));
 
 		cls.autoUpdateServerChecked[ cls.autoupdatServerIndex ] = qtrue;
 
@@ -4532,7 +4532,7 @@ void CL_GetAutoUpdate( void )
 		return;
 	}
 
-	Com_DPrintf("%s", _( "Connecting to auto-update server...\n" ));
+	Com_DPrintf("%s", _( "Connecting to auto-update server…\n" ));
 
 	S_StopAllSounds(); // NERVE - SMF
 
@@ -4654,7 +4654,7 @@ void CL_InitRef( const char *renderer )
 
 	Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, fn, renderer );
 
-	Com_Printf(_( "Loading \"%s\"..."), dllName );
+	Com_Printf(_( "Loading \"%s\"…"), dllName );
 
 	if ( ( rendererLib = Sys_LoadLibrary( dllName ) ) == 0 )
 	{
@@ -4663,7 +4663,7 @@ void CL_InitRef( const char *renderer )
 		//fall back to default
 		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "rendererGL" ARCH_STRING DLL_EXT, fn );
 
-		Com_Printf(_( "Loading \"%s\"..."), dllName );
+		Com_Printf(_( "Loading \"%s\"…"), dllName );
 
 		if ( ( rendererLib = Sys_LoadLibrary( dllName ) ) == 0 )
 		{
@@ -4758,7 +4758,7 @@ void CL_InitRef( const char *renderer )
 	ri.Sys_GLimpSafeInit = Sys_GLimpSafeInit;
 	ri.Sys_GLimpInit = Sys_GLimpInit;
 
-	Com_Printf("%s", _( "Calling GetRefAPI...\n" ));
+	Com_Printf("%s", _( "Calling GetRefAPI…\n" ));
 	ret = GetRefAPI( REF_API_VERSION, &ri );
 
 	Com_Printf( "-------------------------------\n" );
@@ -4844,7 +4844,7 @@ static void CL_GenerateGUIDKey( void )
 
 	if ( len >= ( int ) sizeof( buff ) )
 	{
-		Com_Printf("%s", _( "Daemon GUID public-key found.\n" ));
+		Com_Printf("%s", _( "Daemon GUID public key found.\n" ));
 		return;
 	}
 	else
@@ -4858,7 +4858,7 @@ static void CL_GenerateGUIDKey( void )
 		}
 
 		buff[ i ] = 0;
-		Com_Printf("%s", _( "Daemon GUID public-key generated\n" ));
+		Com_Printf("%s", _( "Daemon GUID public key generated\n" ));
 		FS_WriteFile( GUIDKEY_FILE, buff, sizeof( buff ) );
 	}
 }
@@ -4888,7 +4888,7 @@ static void CL_GenerateRSAKey( void )
 
 	if ( !f || len < 1 )
 	{
-		Com_Printf("%s", _( "Daemon RSA public-key file not found, regenerating\n" ));
+		Com_Printf("%s", _( "Daemon RSA public key file not found. Regenerating\n" ));
 		goto new_key;
 	}
 
@@ -4898,13 +4898,13 @@ static void CL_GenerateRSAKey( void )
 
 	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
 	{
-		Com_Printf("%s", _( "Invalid RSA keypair in RSAKey, regenerating\n" ));
+		Com_Printf("%s", _( "Invalid RSA key pair in RSAKey. Regenerating\n" ));
 		Z_Free( buf );
 		goto new_key;
 	}
 
 	Z_Free( buf );
-	Com_Printf("%s", _( "Daemon RSA public-key found.\n" ));
+	Com_Printf("%s", _( "Daemon RSA public key found.\n" ));
 	return;
 
 new_key:
@@ -4926,7 +4926,7 @@ new_key:
 
 	if ( !f )
 	{
-		Com_Printf(_( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n"), RSAKEY_FILE );
+		Com_Printf(_( "Daemon RSA public key: could not open %s for write, RSA support will be disabled\n"), RSAKEY_FILE );
 		Cvar_Set( "cl_pubkeyID", "0" );
 		Crypto_Shutdown();
 		return;
@@ -4935,11 +4935,11 @@ new_key:
 	FS_Write( key_buffer.contents, key_buffer.size, f );
 	nettle_buffer_clear( &key_buffer );
 	FS_FCloseFile( f );
-	Com_Printf("%s", _( "Daemon RSA public-key generated\n" ));
+	Com_Printf("%s", _( "Daemon RSA public key generated\n" ));
 	return;
 
 keygen_error:
-	Com_Printf("%s", _( "Error generating RSA keypair, RSA support will be disabled\n" ));
+	Com_Printf("%s", _( "Error generating RSA key pair, RSA support will be disabled\n" ));
 	Cvar_Set( "cl_pubkeyID", "0" );
 	Crypto_Shutdown();
 #else
@@ -5847,7 +5847,7 @@ void CL_LocalServers_f( void )
 	int      i, j;
 	netadr_t to;
 
-	Com_Printf("%s", _( "Scanning for servers on the local network...\n" ));
+	Com_Printf("%s", _( "Scanning for servers on the local network…\n" ));
 
 	// reset the list, waiting for response
 	cls.numlocalservers = 0;
@@ -5928,7 +5928,7 @@ void CL_GlobalServers_f( void )
 		to.port = BigShort( PORT_MASTER );
 	}
 
-	Com_Printf(_( "Requesting servers from master %s...\n"), masteraddress );
+	Com_Printf(_( "Requesting servers from master %s…\n"), masteraddress );
 
 	cls.numglobalservers = -1;
 	cls.pingUpdateSource = AS_GLOBAL;
@@ -5994,7 +5994,7 @@ void CL_GlobalServers_f( void )
 		to.port = BigShort( PORT_MASTER );
 	}
 
-	Com_Printf(_( "Requesting servers from master %s...\n"), masteraddress );
+	Com_Printf(_( "Requesting servers from master %s…\n"), masteraddress );
 
 	cls.numglobalservers = -1;
 	cls.pingUpdateSource = AS_GLOBAL;

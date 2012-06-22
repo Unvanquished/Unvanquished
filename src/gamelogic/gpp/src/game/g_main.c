@@ -2517,12 +2517,12 @@ void G_CheckVote( team_t team )
 
 	if ( pass )
 	{
-		cmd = va( "print_tr \"%s\" \"%d\" \"%d\"", ( team == TEAM_NONE ) ? N_("Vote passed (%s - %s)") : N_("Team vote passed (%s - %s)"),
+		cmd = va( "print_tr \"%s\" \"%d\" \"%d\"", ( team == TEAM_NONE ) ? N_("Vote passed (%s - %s)") : N_("Team vote passed (%s – %s)"),
 		            level.voteYes[ team ], level.voteNo[ team ] );
 	}
 	else
 	{
-		cmd = va( "print_tr \"%s\" \"%d\" \"%d\" \"%.0f\"", ( team == TEAM_NONE ) ? N_("Vote failed (%d - %d; %.0f%% needed)") : N_("Team vote failed (%d - %d; %.0f%% needed)"),
+		cmd = va( "print_tr \"%s\" \"%d\" \"%d\" \"%.0f\"", ( team == TEAM_NONE ) ? N_("Vote failed (%d - %d; %.0f%% needed)") : N_("Team vote failed (%d – %d; %.0f%% needed)"),
 		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
 	}
 

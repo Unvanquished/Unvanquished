@@ -382,7 +382,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 	//
 	if ( cvar_numIndexes >= MAX_CVARS )
 	{
-		Com_Error( ERR_FATAL, "MAX_CVARS (%d) hit -- too many cvars!", MAX_CVARS );
+		Com_Error( ERR_FATAL, "MAX_CVARS (%d) hit – too many cvars!", MAX_CVARS );
 	}
 
 	var = &cvar_indexes[ cvar_numIndexes ];
@@ -804,7 +804,7 @@ void Cvar_Toggle_f( void )
 
 	if ( c < 2 )
 	{
-		Com_Printf("%s", _("usage: toggle <variable> [<value> ...]\n") );
+		Com_Printf("%s", _("usage: toggle <variable> [<value> …]\n") );
 		return;
 	}
 

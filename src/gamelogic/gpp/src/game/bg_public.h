@@ -1283,7 +1283,8 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
 
 int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 
-char *BG_TeamName( team_t team );
+const char *BG_TeamName( team_t team );
+const char *BG_TeamNamePlural( team_t team );
 
 typedef struct
 {

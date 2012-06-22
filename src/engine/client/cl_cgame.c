@@ -416,7 +416,7 @@ rescan:
 		// NERVE - SMF - allow server to indicate why they were disconnected
 		if ( argc >= 2 )
 		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server Disconnected - %s", Cmd_Argv( 1 ) );
+			Com_Error( ERR_SERVERDISCONNECT, "Server Disconnected – %s", Cmd_Argv( 1 ) );
 		}
 		else
 		{
@@ -1548,7 +1548,7 @@ void CL_InitCGame( void )
 
 	t2 = Sys_Milliseconds();
 
-	Com_Printf(_( "CL_InitCGame: %5.2fs\n"), ( t2 - t1 ) / 1000.0 );
+	Com_Printf( "CL_InitCGame: %5.2fs\n", ( t2 - t1 ) / 1000.0 );
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading
@@ -1766,7 +1766,7 @@ void CL_FirstSnapshot( void )
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
-		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application ok\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
+		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application okay\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
 	}
 
 #endif

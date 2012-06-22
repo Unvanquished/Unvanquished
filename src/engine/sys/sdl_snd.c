@@ -217,7 +217,7 @@ qboolean SNDDMA_Init( void )
 		s_sdlMixSamps = Cvar_Get( "s_sdlMixSamps", "0", CVAR_ARCHIVE );
 	}
 
-	Com_Printf( "SDL_Init( SDL_INIT_AUDIO )... " );
+	Com_Printf( "SDL_Init( SDL_INIT_AUDIO )… " );
 
 	if ( !SDL_WasInit( SDL_INIT_AUDIO ) )
 	{
@@ -330,7 +330,7 @@ qboolean SNDDMA_Init( void )
 	dmasize = ( dma.samples * ( dma.samplebits / 8 ) );
 	dma.buffer = calloc( 1, dmasize );
 
-	Com_Printf( "Starting SDL audio callback...\n" );
+	Com_Printf( "Starting SDL audio callback…\n" );
 	SDL_PauseAudio( 0 );  // start callback.
 
 	Com_Printf( "SDL audio initialized.\n" );
@@ -355,7 +355,7 @@ SNDDMA_Shutdown
 */
 void SNDDMA_Shutdown( void )
 {
-	Com_Printf( "Closing SDL audio device...\n" );
+	Com_Printf( "Closing SDL audio device…\n" );
 	SDL_PauseAudio( 1 );
 	SDL_CloseAudio();
 	SDL_QuitSubSystem( SDL_INIT_AUDIO );

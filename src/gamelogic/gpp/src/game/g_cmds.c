@@ -89,7 +89,7 @@ qboolean G_MatchOnePlayer( const int *plist, int found, char *err, int len )
 
 			if ( cl->pers.connected == CON_CONNECTED )
 			{
-				Com_sprintf( line, sizeof( line ), "%2i - %s^7\n",
+				Com_sprintf( line, sizeof( line ), "%2i – %s^7\n",
 				             plist[p], cl->pers.netname );
 
 				if ( strlen( err ) + strlen( line ) > len )
@@ -202,7 +202,7 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 		{
 			if ( p )
 			{
-				l = Q_snprintf( p, l2, "%-2d - %s^7\n", i, cl->pers.netname );
+				l = Q_snprintf( p, l2, "%-2d – %s^7\n", i, cl->pers.netname );
 				p += l;
 				l2 -= l;
 			}
@@ -1705,7 +1705,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		     G_TimeTilSuddenDeath() <= g_suddenDeathVoteDelay.integer * 1000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        "print_tr \"" N_("Sudden Death is imminent - this vote may have no effect\n") "\"" );
+			                        "print_tr \"" N_("Sudden Death is imminent – this vote may have no effect\n") "\"" );
 			// DON'T stop the vote. It might pass or fail before SD starts.
 		}
 

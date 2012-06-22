@@ -544,7 +544,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	// load the image
 	Com_sprintf( filename, sizeof( filename ), "vm/%s.qvm", vm->name );
-	Com_Printf(_( "Loading vm file %s...\n"), filename );
+	Com_Printf(_( "Loading vm file %s…\n"), filename );
 
 	i = FS_ReadFileCheck( filename, &header.v );
 
@@ -562,7 +562,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	if ( LittleLong( header.h->vmMagic ) == VM_MAGIC_VER2 )
 	{
-		Com_Printf(_( "...which has vmMagic VM_MAGIC_VER2\n" ));
+		Com_Printf(_( "…which has vmMagic VM_MAGIC_VER2\n" ));
 
 		// byte swap the header
 		for ( i = 0; i < sizeof( vmHeader_t ) / 4; i++ )

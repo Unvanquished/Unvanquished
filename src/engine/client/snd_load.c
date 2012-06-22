@@ -122,7 +122,7 @@ static qboolean S_InitModule()
 
 	if ( ( libhandle = OBJLOAD( fn ) ) == 0 )
 	{
-		Com_Printf("%s", _( "can't load sound module - bailing\n" ));
+		Com_Printf("%s", _( "can't load sound module – bailing\n" ));
 		Com_Printf( "------------------------------------\n" );
 		return qfalse;
 	}
@@ -133,7 +133,7 @@ static qboolean S_InitModule()
 	{
 		OBJFREE( libhandle );
 		libhandle = NULL;
-		Com_Printf("%s", _( "can't find GetSndAPI - bailing\n" ));
+		Com_Printf("%s", _( "can't find GetSndAPI – bailing\n" ));
 		Com_Printf( "------------------------------------\n" );
 		return qfalse;
 	}
@@ -183,7 +183,7 @@ static qboolean S_InitModule()
 	{
 		OBJFREE( libhandle );
 		libhandle = NULL;
-		Com_Printf("%s", _( "call to GetSndAPI failed - bailing\n" ));
+		Com_Printf("%s", _( "call to GetSndAPI failed – bailing\n" ));
 		Com_Printf( "------------------------------------\n" );
 		return qfalse;
 	}
@@ -193,7 +193,7 @@ static qboolean S_InitModule()
 		OBJFREE( libhandle );
 		libhandle = NULL;
 		se = NULL;
-		Com_Printf("%s", _( "call to Init failed - bailing\n" ));
+		Com_Printf("%s", _( "call to Init failed – bailing\n" ));
 		Com_Printf( "------------------------------------\n" );
 		return qfalse;
 	}
@@ -239,7 +239,7 @@ void S_Init( void )
 
 	if ( useBuiltin )
 	{
-		Com_Printf("%s", _( "using builtin sound system\n" ));
+		Com_Printf("%s", _( "using built-in sound system\n" ));
 		SOrig_Init();
 	}
 
