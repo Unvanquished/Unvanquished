@@ -80,7 +80,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef enum
 {
-  FOOTSTEP_NORMAL,
+  FOOTSTEP_GENERAL,
   FOOTSTEP_FLESH,
   FOOTSTEP_METAL,
   FOOTSTEP_SPLASH,

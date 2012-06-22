@@ -972,7 +972,7 @@ static void CG_RegisterSounds( void )
 	for ( i = 0; i < 4; i++ )
 	{
 		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/step%i.wav", i + 1 );
-		cgs.media.footsteps[ FOOTSTEP_NORMAL ][ i ] = trap_S_RegisterSound( name, qfalse );
+		cgs.media.footsteps[ FOOTSTEP_GENERAL ][ i ] = trap_S_RegisterSound( name, qfalse );
 
 		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/flesh%i.wav", i + 1 );
 		cgs.media.footsteps[ FOOTSTEP_FLESH ][ i ] = trap_S_RegisterSound( name, qfalse );

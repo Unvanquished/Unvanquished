@@ -135,7 +135,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	text_p = text;
 	skip = 0; // quite the compiler warning
 
-        ci->footsteps = FOOTSTEP_NORMAL;
+	ci->footsteps = FOOTSTEP_GENERAL;
 	VectorClear( ci->headOffset );
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
@@ -166,9 +166,9 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			{
 				break;
 			}
-			if( !Q_stricmp( token, "default" ) || !Q_stricmp( token, "normal" ) )
+			if( !Q_stricmp( token, "default" ) )
 			{
-				ci->footsteps = FOOTSTEP_NORMAL;
+				ci->footsteps = FOOTSTEP_GENERAL;
 			}
 			else if( !Q_stricmp( token, "flesh") )
 			{
@@ -376,7 +376,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 	text_p = text;
 	skip = 0; // quite the compiler warning
 
-	ci->footsteps = FOOTSTEP_NORMAL;
+	ci->footsteps = FOOTSTEP_GENERAL;
 	VectorClear( ci->headOffset );
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
@@ -403,9 +403,9 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 				break;
 			}
 
-			if ( !Q_stricmp( token, "default" ) || !Q_stricmp( token, "normal" ) )
+			if ( !Q_stricmp( token, "default" ) )
 			{
-				ci->footsteps = FOOTSTEP_NORMAL;
+				ci->footsteps = FOOTSTEP_GENERAL;
 			}
 			else if ( !Q_stricmp( token, "flesh" ) )
 			{
