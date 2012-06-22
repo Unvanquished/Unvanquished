@@ -1146,7 +1146,7 @@ int PointOnWinding( winding_t *w, vec3_t normal, float dist, vec3_t point, int *
 #define NORMAL_EPSILON  0.0001
 #define DIST_EPSILON    0.02
 
-int FindPlaneSeperatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_t normal, float *dist, vec3_t* points ) {
+int FindPlaneSeparatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_t normal, float *dist, vec3_t* points ) {
 	int i, i2, j, j2, n;
 	int sides1[3], sides2[3];
 	float dist1, dist2, dot, diff;
@@ -1339,7 +1339,7 @@ winding_t *AAS_MergeWindings(winding_t *w1, winding_t *w2, vec3_t windingnormal)
 	int newnumpoints;
 	int keep[2];
 
-	if (!FindPlaneSeperatingWindings(w1, w2, windingnormal, normal, &dist)) return NULL;
+	if (!FindPlaneSeparatingWindings(w1, w2, windingnormal, normal, &dist)) return NULL;
 
 	//for both windings
 	for (n = 0; n < 2; n++)

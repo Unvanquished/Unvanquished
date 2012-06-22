@@ -2217,7 +2217,7 @@ char *Q_UTF8Unstore( int e );
 	  TR_GRAVITY_FLOAT, // super low grav with no gravity acceleration (floating feathers/fabric/leaves/...)
 	  TR_GRAVITY_PAUSED, //----(SA)  has stopped, but will still do a short trace to see if it should be switched back to TR_GRAVITY
 	  TR_ACCELERATE,
-	  TR_DECCELERATE,
+	  TR_DECELERATE,
 	  TR_BUOYANCY,
 	  // Gordon
 	  TR_SPLINE,

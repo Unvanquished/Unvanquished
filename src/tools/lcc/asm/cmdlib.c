@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #define	BASEDIRNAME	"quake"		// assumed to have a 2 or 3 following
-#define PATHSEPERATOR   '/'
+#define PATHSEPARATOR   '/'
 
 // set these before calling CheckParm
 int myargc;
@@ -831,7 +831,7 @@ void DefaultPath (char *path, const char *basepath)
 {
 	char    temp[128];
 
-	if (path[0] == PATHSEPERATOR)
+	if (path[0] == PATHSEPARATOR)
 		return;                   // absolute path location
 	strcpy (temp,path);
 	strcpy (path,basepath);
@@ -844,7 +844,7 @@ void    StripFilename (char *path)
 	int             length;
 
 	length = strlen(path)-1;
-	while (length > 0 && path[length] != PATHSEPERATOR)
+	while (length > 0 && path[length] != PATHSEPARATOR)
 		length--;
 	path[length] = 0;
 }
@@ -897,7 +897,7 @@ void ExtractFileBase (const char *path, char *dest)
 //
 // back up until a \ or the start
 //
-	while (src != path && *(src-1) != PATHSEPERATOR)
+	while (src != path && *(src-1) != PATHSEPARATOR)
 		src--;
 
 	while (*src && *src != '.')

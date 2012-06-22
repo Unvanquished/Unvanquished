@@ -39,18 +39,18 @@ If you have questions concerning this license or the applicable additional terms
 	#define MAX_PATH            64
 #endif
 
-#ifndef PATH_SEPERATORSTR
+#ifndef PATH_SEPARATORSTR
 	#if defined( WIN32 ) | defined( _WIN32 ) | defined( __NT__ ) | defined( __WINDOWS__ ) | defined( __WINDOWS_386__ )
-		#define PATHSEPERATOR_STR       "\\"
+		#define PATHSEPARATOR_STR       "\\"
 	#else
-		#define PATHSEPERATOR_STR       "/"
+		#define PATHSEPARATOR_STR       "/"
 	#endif
 #endif
-#ifndef PATH_SEPERATORCHAR
+#ifndef PATH_SEPARATORCHAR
 	#if defined( WIN32 ) | defined( _WIN32 ) | defined( __NT__ ) | defined( __WINDOWS__ ) | defined( __WINDOWS_386__ )
-		#define PATHSEPERATOR_CHAR      '\\'
+		#define PATHSEPARATOR_CHAR      '\\'
 	#else
-		#define PATHSEPERATOR_CHAR      '/'
+		#define PATHSEPARATOR_CHAR      '/'
 	#endif
 #endif
 
@@ -80,7 +80,7 @@ void Vector2Angles( vec3_t value1, vec3_t angles );
 //set the correct path separators
 void ConvertPath( char *path );
 //append a path separator to the given path not exceeding the length
-void AppendPathSeperator( char *path, int length );
+void AppendPathSeparator( char *path, int length );
 //find a file in a pak file
 qboolean FindFileInPak( char *pakfile, char *filename, foundfile_t *file );
 //find a quake file

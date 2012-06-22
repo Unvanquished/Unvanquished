@@ -1029,7 +1029,7 @@ void PC_ConvertPath( char *path ) {
 	for ( ptr = path; *ptr; )
 	{
 		if ( *ptr == '/' || *ptr == '\\' ) {
-			*ptr = PATHSEPERATOR_CHAR;
+			*ptr = PATHSEPARATOR_CHAR;
 		}
 		ptr++;
 	} //end while
@@ -3031,7 +3031,7 @@ void PC_SetIncludePath( source_t *source, char *path ) {
 	//add trailing path separator
 	if ( source->includepath[strlen( source->includepath ) - 1] != '\\' &&
 		 source->includepath[strlen( source->includepath ) - 1] != '/' ) {
-		strcat( source->includepath, PATHSEPERATOR_STR );
+		strcat( source->includepath, PATHSEPARATOR_STR );
 	} //end if
 } //end of the function PC_SetIncludePath
 //============================================================================

@@ -110,13 +110,13 @@ int NonConvex( tmp_face_t *face1, tmp_face_t *face2, int side1, int side2 ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int AAS_TryMergeFaceAreas( tmp_face_t *seperatingface ) {
+int AAS_TryMergeFaceAreas( tmp_face_t *separatingface ) {
 	int side1, side2, area1faceflags, area2faceflags;
 	tmp_area_t *tmparea1, *tmparea2, *newarea;
 	tmp_face_t *face1, *face2, *nextface1, *nextface2;
 
-	tmparea1 = seperatingface->frontarea;
-	tmparea2 = seperatingface->backarea;
+	tmparea1 = separatingface->frontarea;
+	tmparea2 = separatingface->backarea;
 
 	//areas must have the same presence type
 	if ( tmparea1->presencetype != tmparea2->presencetype ) {

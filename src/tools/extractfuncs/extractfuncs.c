@@ -43,7 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 
 typedef enum {false, true}  qboolean;
 
-//#define PATHSEPERATOR_STR		"\\"
+//#define PATHSEPARATOR_STR		"\\"
 
 void PRINTF_LIKE(1) NORETURN Error( char *error, ... ) {
 	va_list argptr;
@@ -162,7 +162,7 @@ void DumpReplaceFunctions( void ) {
 
 	// dump the function header
 	strcpy( path, "." );
-	strcat( path, PATHSEPERATOR_STR );
+	strcat( path, PATHSEPARATOR_STR );
 	strcat( path, "g_funcs.tmp" );
 	Log_Open( path );
 	for ( rf = replacefuncs; rf; rf = rf->next )

@@ -398,7 +398,7 @@ int AAS_FindBestAreaSplitPlane( tmp_area_t *tmparea, vec3_t normal, float *dist 
 			}
 
 			//find a plane separating the windings of the faces
-			if ( !FindPlaneSeperatingWindings( face1->winding, face2->winding, invgravity, tmpnormal, &tmpdist, points ) ) {
+			if ( !FindPlaneSeparatingWindings( face1->winding, face2->winding, invgravity, tmpnormal, &tmpdist, points ) ) {
 				continue;
 			}
 

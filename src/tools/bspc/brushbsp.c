@@ -1495,7 +1495,7 @@ side_t *SelectSplitSide( bspbrush_t *brushes, node_t *node ) {
 				}
 			}
 			if ( pass > 0 ) {
-				node->detail_seperator = true;              // not needed for vis
+				node->detail_separator = true;              // not needed for vis
 			}
 			break;
 		}
