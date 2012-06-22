@@ -3856,7 +3856,7 @@ static void UI_Paste( itemDef_t *item, char *buf, clipboard_t clip )
 	clipIndex = 0;
 	clipLength = strlen( clipText );
 
-	max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+	max = MIN( editPtr->maxChars, MAX_EDITFIELD - 1 );
 	max = max ? max : MAX_EDITFIELD - 1;
 
 	// overstrike
@@ -4038,7 +4038,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				index = ui_CursorToOffset( buff, item->cursorPos );
 				width = Q_UTF8Width( str );
 				oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? Q_UTF8Width( buff + index ) : 0;
-				max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+				max = MIN( editPtr->maxChars, MAX_EDITFIELD - 1 );
 				max = max ? max : MAX_EDITFIELD - 1;
 
 				if ( len + width - oldWidth > max )

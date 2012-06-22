@@ -74,8 +74,8 @@ static const char rcsid[] =
 static char *med3( char *, char *, char *, cmp_t * );
 static void swapfunc( char *, char *, int, int );
 
-#ifndef min
-#define min(a, b) (( a ) < ( b ) ? ( a ) : ( b ))
+#ifndef MIN
+#define MIN(a, b) (( a ) < ( b ) ? ( a ) : ( b ))
 #endif
 
 /*
@@ -222,9 +222,9 @@ loop:
 	}
 
 	pn = ( char * ) a + n * es;
-	r = min( pa - ( char * ) a, pb - pa );
+	r = MIN( pa - ( char * ) a, pb - pa );
 	vecswap( a, pb - r, r );
-	r = min( pd - pc, pn - pd - es );
+	r = MIN( pd - pc, pn - pd - es );
 	vecswap( pb, pn - r, r );
 
 	if ( ( r = pb - pa ) > es )
