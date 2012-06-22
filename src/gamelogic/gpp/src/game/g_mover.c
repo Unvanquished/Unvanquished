@@ -31,8 +31,6 @@ PUSHMOVE
 ===============================================================================
 */
 
-void MatchTeam( gentity_t *teamLeader, int moverState, int time );
-
 typedef struct
 {
 	gentity_t *ent;
@@ -1420,16 +1418,6 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 		if ( !strcmp( t->classname, "func_door" ) )
 		{
 			targets[ i++ ] = t;
-		}
-		else if ( t == trigger )
-		{
-			G_Printf( "WARNING: Entity used itself.\n" );
-		}
-
-		if ( !trigger->inuse )
-		{
-			G_Printf( "triggerity was removed while using targets\n" );
-			return;
 		}
 	}
 

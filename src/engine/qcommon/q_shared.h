@@ -281,7 +281,7 @@ extern int memcmp( void *, void *, size_t );
 #define MIN_QINT ( -MAX_QINT - 1 )
 
 #ifndef BIT
-#define BIT(x) ( 1 << x )
+#define BIT(x) ( 1 << ( x ) )
 #endif
 
 // TTimo gcc: was missing, added from Q3 source

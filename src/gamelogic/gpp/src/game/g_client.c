@@ -510,7 +510,6 @@ static void SpawnCorpse( gentity_t *ent )
 	VectorCopy( ent->s.apos.trBase, body->s.angles );
 	body->s.eFlags = EF_DEAD;
 	body->s.eType = ET_CORPSE;
-	body->s.number = body - g_entities;
 	body->timestamp = level.time;
 	body->s.event = 0;
 	body->r.contents = CONTENTS_CORPSE;
@@ -1644,7 +1643,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
 	ent->takedamage = qtrue;
-	ent->inuse = qtrue;
 	ent->classname = "player";
 	ent->r.contents = CONTENTS_BODY;
 	ent->clipmask = MASK_PLAYERSOLID;
@@ -1804,7 +1802,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	else
 	{
 		// fire the targets of the spawn point
-		if ( !spawn )
+		if ( !spawn && spawnPoint )
 		{
 			G_UseTargets( spawnPoint, ent );
 		}
@@ -1895,7 +1893,6 @@ void ClientDisconnect( int clientNum )
 	             ent->client->pers.ip.str, ent->client->pers.guid, ent->client->pers.netname );
 
 	trap_UnlinkEntity( ent );
-	ent->s.modelindex = 0;
 	ent->inuse = qfalse;
 	ent->classname = "disconnected";
 	ent->client->pers.connected = CON_DISCONNECTED;

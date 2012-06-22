@@ -265,11 +265,6 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator )
 {
 	gentity_t *t;
 
-	if ( !ent )
-	{
-		return;
-	}
-
 	if ( ent->targetShaderName && ent->targetShaderNewName )
 	{
 		float f = level.time * 0.001;

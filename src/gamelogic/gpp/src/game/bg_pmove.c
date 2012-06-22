@@ -831,10 +831,7 @@ static qboolean PM_CheckWallJump( void )
 	     !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
 	     trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
 	{
-		if ( !VectorCompare( trace.plane.normal, pm->ps->grapplePoint ) )
-		{
-			VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
-		}
+		VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
 	}
 	else
 	{

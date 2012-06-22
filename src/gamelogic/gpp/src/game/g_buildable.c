@@ -226,8 +226,6 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 					// Scan the buildables in the reactor zone
 					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
 					{
-						gentity_t *powerEntity;
-
 						if ( ent2->s.eType != ET_BUILDABLE )
 						{
 							continue;
@@ -238,9 +236,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							continue;
 						}
 
-						powerEntity = ent2->parentNode;
-
-						if ( powerEntity && powerEntity->s.modelindex == BA_H_REACTOR && ( powerEntity == ent ) )
+						if ( ent2->parentNode == ent )
 						{
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
@@ -282,8 +278,6 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 					// Scan the buildables in the repeater zone
 					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
 					{
-						gentity_t *powerEntity;
-
 						if ( ent2->s.eType != ET_BUILDABLE )
 						{
 							continue;
@@ -294,9 +288,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							continue;
 						}
 
-						powerEntity = ent2->parentNode;
-
-						if ( powerEntity && powerEntity->s.modelindex == BA_H_REPEATER && ( powerEntity == ent ) )
+						if ( ent2->parentNode == ent )
 						{
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
@@ -1868,7 +1860,6 @@ think function
 */
 void HSpawn_Disappear( gentity_t *self )
 {
-	self->s.eFlags |= EF_NODRAW; //don't draw the model once its destroyed
 	self->timestamp = level.time;
 	G_QueueBuildPoints( self );
 	G_RewardAttackers( self );
@@ -4294,7 +4285,6 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			break;
 	}
 
-	built->s.number = built - g_entities;
 	built->r.contents = CONTENTS_BODY;
 	built->clipmask = MASK_PLAYERSOLID;
 	built->enemy = NULL;
@@ -4795,7 +4785,6 @@ static void G_LayoutBuildItem( buildable_t buildable, vec3_t origin,
 	gentity_t *builder;
 
 	builder = G_Spawn();
-	builder->client = 0;
 	VectorCopy( origin, builder->s.pos.trBase );
 	VectorCopy( angles, builder->s.angles );
 	VectorCopy( origin2, builder->s.origin2 );
@@ -5065,7 +5054,6 @@ void G_BuildLogRevert( int id )
 		{
 			gentity_t *builder = G_Spawn();
 
-			builder->client = NULL;
 			VectorCopy( log->origin, builder->s.pos.trBase );
 			VectorCopy( log->angles, builder->s.angles );
 			VectorCopy( log->origin2, builder->s.origin2 );

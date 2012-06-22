@@ -465,13 +465,8 @@ void G_FindTeams( void )
 	c = 0;
 	c2 = 0;
 
-	for ( i = 1, e = g_entities + i; i < level.num_entities; i++, e++ )
+	for ( i = MAX_CLIENTS, e = g_entities + i; i < level.num_entities; i++, e++ )
 	{
-		if ( !e->inuse )
-		{
-			continue;
-		}
-
 		if ( !e->team )
 		{
 			continue;
@@ -488,11 +483,6 @@ void G_FindTeams( void )
 
 		for ( j = i + 1, e2 = e + 1; j < level.num_entities; j++, e2++ )
 		{
-			if ( !e2->inuse )
-			{
-				continue;
-			}
-
 			if ( !e2->team )
 			{
 				continue;
@@ -1783,7 +1773,6 @@ void MoveClientToIntermission( gentity_t *ent )
 	ent->client->ps.eFlags = 0;
 	ent->s.eFlags = 0;
 	ent->s.eType = ET_GENERAL;
-	ent->s.modelindex = 0;
 	ent->s.loopSound = 0;
 	ent->s.event = 0;
 	ent->r.contents = 0;

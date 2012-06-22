@@ -6122,7 +6122,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 
 		if ( j == 0 )
 		{
-			out->volumeIBO = volumeIBO = R_CreateIBO2( va( "staticBspNode_IBO %i", j ), tess.numIndexes / 3, triangles, VBO_USAGE_STATIC );
+			out->volumeIBO = volumeIBO = R_CreateIBO2( "staticBspNode_IBO", tess.numIndexes / 3, triangles, VBO_USAGE_STATIC );
 		}
 		else
 		{
