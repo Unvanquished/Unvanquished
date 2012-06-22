@@ -2875,7 +2875,7 @@ extern "C" {
 		qboolean degenerated;
 	} srfTriangle_t;
 
-// ydnar: normal map drawsurfaces must match this header
+// ydnar: plain map drawsurfaces must match this header
 	typedef struct srfGeneric_s
 	{
 		surfaceType_t surfaceType;

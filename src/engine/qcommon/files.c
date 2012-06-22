@@ -103,7 +103,7 @@ filesystem functions.
 
 To save disk space and speed loading, directory trees can be collapsed into zip files.
 The files use a ".pk3" extension to prevent users from unzipping them accidentally, but
-otherwise the are simply normal uncompressed zip files.  A game directory can have multiple
+otherwise the are simply zip files.  A game directory can have multiple
 zip files of the form "pak0.pk3", "pak1.pk3", etc.  Zip files are searched in decending order
 from the highest number to the lowest, and will always take precedence over the filesystem.
 This allows a pk3 distributed as a patch to override all existing data.
@@ -5062,10 +5062,7 @@ is resetting due to a game change
 */
 void FS_InitFilesystem( void )
 {
-	// allow command line parms to override our defaults
-	// we have to specially handle this, because normal command
-	// line variable sets don't happen until after the filesystem
-	// has already been initialized
+	// allow command line arguments to override the following fs_* variables
 	Com_StartupVariable( "fs_basepath" );
 	Com_StartupVariable( "fs_buildpath" );
 	Com_StartupVariable( "fs_buildgame" );
@@ -5073,8 +5070,9 @@ void FS_InitFilesystem( void )
 	Com_StartupVariable( "fs_game" );
 	Com_StartupVariable( "fs_copyfiles" );
 	Com_StartupVariable( "fs_restrict" );
+	// other command line variable settings don't happen
+	// until after the filesystem has been initialized
 
-	// try to start up normally
 	FS_Startup( BASEGAME );
 
 	// if we can't find default.cfg, assume that the paths are
@@ -5112,7 +5110,6 @@ void FS_Restart( int checksumFeed )
 	// clear pak references
 	FS_ClearPakReferences( 0 );
 
-	// try to start up normally
 	FS_Startup( BASEGAME );
 
 	// if we can't find default.cfg, assume that the paths are

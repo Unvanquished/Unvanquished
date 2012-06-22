@@ -335,7 +335,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 
 	ent->freeAfterEvent = qtrue;
 
-	// change over to a normal entity right at the point of impact
+	// change over to a general entity right at the point of impact
 	ent->s.eType = ET_GENERAL;
 
 	SnapVectorTowards( trace->endpos, ent->s.pos.trBase );  // save net bandwidth

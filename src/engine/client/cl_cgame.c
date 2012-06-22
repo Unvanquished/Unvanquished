@@ -1934,9 +1934,7 @@ void CL_SetCGameTime( void )
 	// has valid snapshots to interpolate between
 
 	// a timedemo will always use a deterministic set of time samples
-	// no matter what speed machine it is run on,
-	// while a normal demo may have different time samples
-	// each time it is played back
+	// no matter what speed machine it is run on
 	if ( cl_timedemo->integer )
 	{
 		if ( !clc.timeDemoStart )

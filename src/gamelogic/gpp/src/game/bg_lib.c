@@ -1710,7 +1710,7 @@ double strtod( const char *nptr, char **endptr )
 		return inf.f;
 	}
 
-	// normal numeric parsing
+	// real numeric parsing
 	// sign
 	if ( *nptr == '-' )
 	{
@@ -2389,8 +2389,8 @@ unsigned int _hextoi( const char **stringPtr )
  *  Brandon Long <blong@fiction.net> 9/15/96 for mutt 0.43
  *  This was ugly.  It is still ugly.  I opted out of floating point
  *  numbers, but the formatter understands just about everything
- *  from the normal C string format, at least as far as I can tell from
- *  the Solaris 2.5 printf(3S) man page.
+ *  from the standard C string formatting, at least as far as I can
+ *  tell from the Solaris 2.5 printf(3S) man page.
  *
  *  Brandon Long <blong@fiction.net> 10/22/97 for mutt 0.87.1
  *    Ok, added some minimal floating point support, which means this

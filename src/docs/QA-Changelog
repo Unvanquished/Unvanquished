@@ -156,14 +156,14 @@ Some minor fixes to Linux keyhandling:
 	Capslock, kp_numlock, and kp_equals are all usable in Linux now
 	F13-F15 will work if the user's keyboard/X mapping sends them
 	Ctrl-` for the mini-console works.
-The disguised name and normal name are no longer both shown when moving the crosshair over a disguised covert ops while spectating.
+The disguised name and real name are no longer both shown when moving the crosshair over a disguised covert ops player while spectating.
 It should be possible to kick/mute/referee/etc. players with >32-character names.
 Weapon heat no longer sometimes flashes back down to 0 when maxed out.
 Missing obituaries added for the following means of death:
 	telefrag*, laser*, lava*, pineapple grenade (suicide), flamethrower
 	(suicide), rifle grenade (suicide), landmine (suicide), satchel
 	charge (suicide), construction (suicide), mortar (suicide),
-	airstrike tag (suicide), airstrike tag (normal death.)
+	airstrike tag.
 	Items with a * aren't reproducable in stock maps.
 Team kills with akimbo weapons should now cause an appropriate loss of skill points.
 mounted machineguns fired too low
@@ -222,8 +222,8 @@ Example code can be found in cg_limbopanel.c at the bottom of CG_DrawPlayerHead(
 Dynamic shaders:
 cgame may build shader scripts on the fly, via code.
 Use trap_R_LoadDynamicShader( shadername, shadertext ) to load a new shader into memory.
-The loaded shader can then be referenced with trap_R_RegisterShader() and used as if it
-were a normal shader. Combined with trap_R_RemapShader(), cgame can replace any shader.
+The loaded shader can then be referenced with trap_R_RegisterShader().
+Combined with trap_R_RemapShader(), the cgame can replace any shader.
 trap_R_LoadDynamicShader( "shadername", NULL ) unloads the dynamic shader "shadername".
 trap_R_LoadDynamicShader( NULL, NULL ) unloads all dynamic shaders.
 Example code can be found in cg_main.c, look for #ifdef TEST_API_DYNAMICSHADER

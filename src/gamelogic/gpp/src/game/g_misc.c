@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 
 /*QUAKED func_group (0 0 0) ?
-Used to group brushes together just for editor convenience.  They are turned into normal brushes by the utilities.
+Used to group brushes together just for editor convenience.  Groups are turned into whole brushes by the utilities.
 */
 
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)

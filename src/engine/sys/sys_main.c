@@ -280,7 +280,7 @@ static void NORETURN Sys_Exit( int exitCode )
 
 	if ( exitCode < 2 )
 	{
-		// Normal exit
+		// regular exit
 		remove( Sys_PIDFileName() );
 	}
 

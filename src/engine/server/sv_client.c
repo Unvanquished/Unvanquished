@@ -1412,7 +1412,6 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 	// client snapMsec and rate
 
 	// based on the rate, how many bytes can we fit in the snapMsec time of the client
-	// normal rate / snapshotMsec calculation
 	rate = cl->rate;
 
 	// show_bug.cgi?id=509
@@ -2244,7 +2243,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	// including the usercmd.  This causes flooders to lag themselves
 	// but not other people
 	// We don't do this when the client hasn't been active yet, since it is
-	// normal to spam a lot of commands when downloading
+	// by protocol to spam a lot of commands when downloading
 	if ( !com_cl_running->integer && cl->state >= CS_ACTIVE && // (SA) this was commented out in Wolf.  Did we do that?
 	     sv_floodProtect->integer && svs.time < cl->nextReliableTime && floodprotect )
 	{

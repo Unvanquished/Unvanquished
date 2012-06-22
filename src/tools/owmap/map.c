@@ -575,7 +575,7 @@ void SetBrushContents(brush_t * b)
 		compileFlags &= ~C_DETAIL;
 	}
 
-	/* the fulldetail flag will cause detail brushes to be treated like normal brushes */
+	/* the fulldetail compile flag will cause detail brush flags to be ignored */
 	if(fulldetail)
 		compileFlags &= ~C_DETAIL;
 

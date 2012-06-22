@@ -1279,7 +1279,7 @@ void NET_JoinMulticast6( void )
 	{
 		if ( ( multicast6_socket = NET_IP6Socket( net_mcast6addr->string, ntohs( boundto.sin6_port ), NULL, &err ) ) == INVALID_SOCKET )
 		{
-			// If the OS does not support binding to multicast addresses, like WinXP, at least try with the normal file descriptor.
+			// If the OS does not support binding to multicast addresses, like Windows XP, at least try with a non-multicast socket.
 			multicast6_socket = ip6_socket;
 		}
 	}

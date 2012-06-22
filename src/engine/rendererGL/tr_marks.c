@@ -395,7 +395,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 					// LOD is not taken into account, not such a big deal though.
 					//
 					// It's probably much nicer to chop the grid itself and deal
-					// with this grid as a normal SF_GRID surface so LOD will
+					// with this chopped grid as an SF_GRID surface, so LOD will
 					// be applied. However the LOD of that chopped grid must
 					// be synced with the LOD of the original curve.
 					// One way to do this; the chopped grid shares vertices with

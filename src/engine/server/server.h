@@ -603,7 +603,7 @@ void SV_Trace( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, c
 // if the starting point is in a solid, it will be allowed to move out
 // to an open area
 
-// passEntityNum is explicitly excluded from clipping checks (normally ENTITYNUM_NONE)
+// passEntityNum, if isn't ENTITYNUM_NONE, will be explicitly excluded from clipping checks
 
 void SV_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, traceType_t type );
 

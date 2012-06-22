@@ -1271,7 +1271,7 @@ If a packet has not been received from a client for timeout->integer
 seconds, drop the conneciton.  Server time is used instead of
 realtime to avoid dropping the local client while debugging.
 
-When a client is normally dropped, the client_t goes into a zombie state
+When a client is dropped, the client_t goes into a zombie state
 for a few seconds to make sure any final reliable message gets resent
 if necessary
 ==================

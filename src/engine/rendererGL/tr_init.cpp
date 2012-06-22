@@ -1872,7 +1872,7 @@ extern "C" {
 					{
 						const bool isPerfHUD = wcscmp( adaptDesc.Description, L"NVIDIA PerfHUD" ) == 0;
 
-						// Select the first adapter in normal circumstances or the PerfHUD one if it exists.
+						// Select the PerfHUD adapter if it exists, and the first adapter otherwise.
 						if ( nAdapter == 0 || isPerfHUD )
 						{
 							selectedAdapter = adapter;

@@ -2805,8 +2805,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Arnout <rr2do2@splashdamage.com>
 	+ Reworked initial profile creation popup to ensure none of the values get reset on re-opening of the window.
-	+ When a negative CPU speed is detected, recommended settings now use normal quality.
-	+ Normal quality now implies texturebits 32.
+	+ When a negative CPU speed is detected, recommended settings now use intermediate quality.
+	+ Intermediate quality now implies texturebits 32.
 	+ Upped version number to ET 2.52.
 	+ Added a fallback path for Sys_GetCPUSpeed, in case the first detection method fails.
 	+ Reworked first detection method, syncs with *nix now.
@@ -3077,7 +3077,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Re-enabled yellow warning prints for missing images, makes it easier to track these down.
 	+ Fixed fallthrough in CG_R_REGISTERFONT.
 	+ Removed "blood" particles (weren't used).
-	+ Removed mvcursor, using normal cursor.
+	+ Removed mvcursor, using ordinary cursor.
 	+ Fixed connection shader.
 	+ Fixed default rope shader.
 	+ Reoved ammoIcon from .weap files, wasn't used anyway.
@@ -3602,7 +3602,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Made medic request icons on the commandmap a bit bigger.
 	+ Changed limbo menu that when you don't modify anything, cancel or escape don't actually do anything.
 	+ Bumped protocol to 71 for ETTest.
-	+ ATVI Wolfenstein XP #3069 : Fixed cg_trace uses capsule boxes for entities instead of normal.
+	+ ATVI Wolfenstein XP #3069 : Fixed cg_trace uses capsules for entities instead of AABBs.
 	+ Reworked fireteam overlay to follow the style of other menus.
 	+ Upped version numbers to ET 2.32 and ET 2.42a.
 
@@ -3655,7 +3655,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ ATVI Wolfenstein XP #3438 : Fixed unreferee button referencing the wrong command.
 	+ Added antilag and force team balance voting.
 	+ ATVI Wolfenstein XP #3434 : Fixed Warmup Damage button for referee calling the wrong command.
-	+ ATVI Wolfenstein XP #3436 : Fixed gametype voting for both referee and normal players.
+	+ ATVI Wolfenstein XP #3436 : Fixed gametype voting for both referee and non-referee players.
 	+ ATVI Wolfenstein XP #3433 : Fixed typo in usage of ref matchreset.
 	+ Players now sort on top in the command map.
 	+ Removed waypoint filter from the limbo menu.
@@ -4254,7 +4254,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed weapons being changeable when manning a weapon.
 	+ Changed r_lodCurveError check in LodErrorForVolume to make sure it never goes below 1.
 	+ Fixed set mortar not auto-unsetting when out of ammo.
-	+ Fixed cursorhints for normal func_explosives not showing anymore.
+	+ Fixed cursorhints for func_explosives not showing anymore in some cases.
 	+ Changed bot_enable default to 0.
 	+ Heavy weapons level 3 award now has scale .75 instead of 1.
 	+ Fixed knife decals not staying around for a while.
@@ -4517,7 +4517,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	
 			Gordon	<djbob@splashdamage.com>
 	+ Added new server flags for entities to enable client views outside of PVS, whilst keeping the entity there 
-		- flags allow the normal pvs to be added/not added as required
+		- flags allow the local PVS to be added/not added as required
 	+ Seperated class/team/weapon selection out to seperate client commands and updated server to handle this
 	+ Fixed static misc_gamemodel count not being reset on the client, leading to eventual overflow error
 	+ Fixed spawn flag positions not being parsed under certain circumstances
@@ -5070,7 +5070,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 10-02-2003
 			Gordon <djbob@splashdamage.com>
 	+ Fixed bug in CanDamage which was assuming all bmodels had b0rked origins, rather than checking if they were linked at {0, 0, 0}
-		- Now checks for link at origin, if found, uses midpoint of absmins/absmaxs, otherwise, uses normal origin
+		- Now checks for link at {0, 0, 0}: if detected, uses midpoint of absmins/absmaxs, otherwise, uses specified origin
 		- Also adjusted the trace masks to MASK_SHOT instead of MASK_SOLID		
 
 			Arnout	<rr2do2@splashdamage.com>
@@ -5359,7 +5359,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added teamdeath AAS avoidance. Bots will avoid areas with high death rates.
 	+ Improved BotDirectMoveToGoal() accuracy
 	+ Increased blocking distance check from 3 to 16 units, to help avoidance of stationery objects
-	+ Fixed AAS navigational bug which cuased bots to get stuck between normal walking areas
+	+ Fixed AAS navigational bug which caused bots to get stuck between (clear) walking areas
 
 			Tara <tara@maddocsoftware.com>
 	+ Fixed "Q_strncpyz: destsize < 1" crash we'd get if you loaded 2 maps in a row on a release build.
@@ -5819,7 +5819,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 		- Optimized dlight surface culling code based on transformed bbox - surface spheroid
 	+ Console
 		- Commandline completion now indented 2 chars instead of 4 to line up
-		- CC now dark gray to differentiate between normal console text
+		- CC now dark gray to differentiate between other console text
 		- CC cvars now display their values in cyan (quick shortcut to see cvar values)
 		- New console font image to replace the crappy Copperplate Gothic illegible nonsense
 	+ LibWWW
@@ -6735,7 +6735,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added new satchel charge sounds.
 	+ Satchel charge now gets removed on teamchanges and disconnects.
 	+ Fixed getting a second satchel charge if you died when one was already placed in the world.
-	+ Changed way spawnflags work on func_explosive and func_constructible. If explosive is set, normal explosives damage it. Dynamite and Satchel set means it can be damaged by both of these types of explosives.
+	+ Changed the way spawnflags work on func_explosive and func_constructible entities. With the Dynamite / Satchel spawnflags set, such an entity can be damaged by dynamite and satchel damages, respectively. Similarly, the Explosive spawnflag controls vulnerability to other explosive damages.
 
 			Jason <rhea@OrangeSmoothie.org>
 	+ Added tooltip info, a new crosshair configuration section, and other new "view" settings
@@ -8491,7 +8491,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout	<rr2do2@splashdamage.com>
 	+ Added press KEY to show stats to limbo display text.
 	+ Prevented a team from blowing up their own landmines when they have been spotted.
-	+ Lowered landmine damage and damage radius. Is now the same as a normal handgrenade.
+	+ Lowered landmine damage and damage radius. They are now the same as those of a handgrenade.
 	+ Reduced pitch offset during Mobile MG42 shooting.
 	+ Removed sideways recoil from pistols.
 	+ Prevented grenades, dynamite, landmines, etc from ending up rotated exactly the same way whenever they landed.
@@ -9032,7 +9032,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Gordon	<djbob@splashdamage.com>
 	+ Tidied up animation loading for player models
 	+ Fixed re-occuring weapon switch on respawn, particularily noticible on gpg40/kar98
-	+ Added locking of next weapon when switching weapons, doesnt affect normal weapon changes at all really, but forces a switch to secondary weapon to complete properly
+	+ Added locking of next weapon when switching weapons, doesn't affect uninterrupted weapon changes, but forces a switch to secondary weapon to complete properly
 	+ Added latching of gpg40 state
 
 20-05-2002

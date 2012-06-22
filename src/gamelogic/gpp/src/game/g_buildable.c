@@ -3177,7 +3177,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	// Check if this buildable is touching any triggers
 	G_BuildableTouchTriggers( ent );
 
-	// Fall back on normal physics routines
+	// Fall back on generic physics routines
 	G_Physics( ent, msec );
 }
 

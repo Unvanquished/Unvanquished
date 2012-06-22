@@ -2070,7 +2070,7 @@ static void FindOutLightmaps(rawLightmap_t * lm)
 			}
 		}
 
-		/* try normal placement algorithm */
+		/* try the general placement algorithm */
 		if(ok == qfalse)
 		{
 			/* reset origin */
@@ -3518,7 +3518,7 @@ void StoreSurfaceLightmaps(void)
 			//% Sys_Printf( ")\n" );
 		}
 
-		/* use the normal plain-jane shader */
+		/* use the plain-jane shader */
 		else
 			ds->shaderNum =
 				EmitShader(info->si->shader, &bspShaders[ds->shaderNum].contentFlags, &bspShaders[ds->shaderNum].surfaceFlags);

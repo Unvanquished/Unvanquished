@@ -2331,7 +2331,7 @@ void CG_MissileHitWall( weapon_t weaponNum, weaponMode_t weaponMode, int clientN
 	}
 	else
 	{
-		//normal sound
+		//generic sound
 		for ( c = 0; c < 4; c++ )
 		{
 			if ( !weapon->wim[ weaponMode ].impactSound[ c ] )

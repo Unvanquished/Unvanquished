@@ -1011,7 +1011,7 @@ void Console_Key( int key )
 		return;
 	}
 
-	// clear autocompletion buffer on normal key input
+	// clear the autocompletion buffer on a line-editing key input
 	if ( ( key >= K_SPACE && key <= K_BACKSPACE ) || ( key == K_LEFTARROW ) || ( key == K_RIGHTARROW ) ||
 	     ( key >= K_KP_LEFTARROW && key <= K_KP_RIGHTARROW ) ||
 	     ( key >= K_KP_SLASH && key <= K_KP_PLUS ) || ( key >= K_KP_STAR && key <= K_KP_EQUALS ) )
@@ -1103,7 +1103,7 @@ void Console_Key( int key )
 		return;
 	}
 
-	// pass to the normal editline routine
+	// pass to the next editline routine
 	Field_KeyDownEvent( &g_consoleField, key );
 }
 
@@ -1964,7 +1964,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 ===================
 CL_CharEvent
 
-Normal keyboard characters, already shifted / capslocked / etc
+Characters, already shifted/capslocked/etc.
 ===================
 */
 void CL_CharEvent( const char *key )

@@ -979,7 +979,7 @@ static void Upload32( unsigned *data,
 	}
 	else
 	{
-		// use the normal mip-mapping function to go down from here
+		// use the mip-mapping function to go down from here
 		while ( width > scaled_width || height > scaled_height )
 		{
 			R_MipMap( ( byte * ) data, width, height );
@@ -3288,7 +3288,7 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 
 	/*
 	 * Set error handling if you are using the setjmp/longjmp method (this is
-	 * the normal method of doing things with libpng).  REQUIRED unless you
+	 * the common method of doing things with libpng).  REQUIRED unless you
 	 * set up your own error handlers in the png_create_read_struct() earlier.
 	 */
 	if ( setjmp( png_jmpbuf( png ) ) )

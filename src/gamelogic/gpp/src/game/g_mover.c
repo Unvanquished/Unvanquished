@@ -2654,7 +2654,7 @@ BOBBING
 */
 
 /*QUAKED func_bobbing (0 .5 .8) ? X_AXIS Y_AXIS
-Normally bobs on the Z axis
+Bobs on the Z axis by default
 "model2"  .md3 model to also draw
 "height"  amplitude of bob (32 default)
 "speed"   seconds to complete a bob cycle (4 default)

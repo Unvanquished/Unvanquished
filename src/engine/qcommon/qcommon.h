@@ -472,7 +472,7 @@ void Cbuf_Execute( void );
 
 // Pulls off \n terminated lines of text from the command buffer and sends
 // them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Normally called once per frame, but may be explicitly invoked.
+// Called on a per-frame basis, but may also be explicitly invoked.
 // Do not call inside a command function, or current args will be destroyed.
 
 //===========================================================================
@@ -624,7 +624,8 @@ void Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize 
 
 void Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
-// Gordon: returns the latched value if there is one, else the normal one, empty string if not defined as usual
+// returns the latched value if there is one, and the current value otherwise
+// (an empty string in case the cvar does not exist)
 
 int  Cvar_Flags( const char *var_name );
 void Cvar_CommandCompletion( void ( *callback )( const char *s ) );

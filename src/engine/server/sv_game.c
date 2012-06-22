@@ -800,7 +800,7 @@ static void SV_InitGameVM( qboolean restart )
 ===================
 SV_RestartGameProgs
 
-Called on a map_restart, but not on a normal map change
+Called on a map_restart, but not on a map change
 ===================
 */
 void SV_RestartGameProgs( void )
@@ -832,7 +832,7 @@ void SV_RestartGameProgs( void )
 ===============
 SV_InitGameProgs
 
-Called on a normal map change, not on a map_restart
+Called on a map change, not on a map_restart
 ===============
 */
 void SV_InitGameProgs( void )

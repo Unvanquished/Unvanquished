@@ -1551,7 +1551,7 @@ void LoadPNGBuffer(byte * data, byte ** pic, int *width, int *height)
 
 	//
 	// Set error handling if you are using the setjmp/longjmp method (this is
-	// the normal method of doing things with libpng).  REQUIRED unless you
+	// the common method of doing things with libpng).  REQUIRED unless you
 	// set up your own error handlers in the png_create_read_struct() earlier.
 	//
 	if(setjmp(png_jmpbuf(png)))

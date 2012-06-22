@@ -529,7 +529,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	memset( self->client->ps.misc, 0, sizeof( self->client->ps.misc ) );
 
 	{
-		// normal death
 		static int i;
 
 		if ( !( self->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )

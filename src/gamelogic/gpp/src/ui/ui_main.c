@@ -3250,7 +3250,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
-			case 1: // normal
+			case 1: // intermediate
 				trap_Cvar_SetValue( "r_subdivisions", 12 );
 				trap_Cvar_SetValue( "r_vertexlight", 0 );
 				trap_Cvar_SetValue( "r_lodbias", 0 );

@@ -4237,7 +4237,7 @@ static void VertexLightingCollapse( void )
 			stages[ 0 ] = stages[ 1 ];
 		}
 
-		// if we were in a cross-fade cgen, hack it to normal
+		// if we were in a cross-fade cgen, apply a hack
 		if ( stages[ 0 ].rgbGen == CGEN_ONE_MINUS_ENTITY || stages[ 1 ].rgbGen == CGEN_ONE_MINUS_ENTITY )
 		{
 			stages[ 0 ].rgbGen = CGEN_IDENTITY_LIGHTING;
@@ -4608,7 +4608,7 @@ static shader_t *FinishShader( void )
 	//
 	shader.numUnfoggedPasses = stage;
 
-	// fogonly shaders don't have any normal passes
+	// fogonly shaders don't have any stage passes
 	if ( stage == 0 )
 	{
 		shader.sort = SS_FOG;

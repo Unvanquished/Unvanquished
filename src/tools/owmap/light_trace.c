@@ -395,7 +395,7 @@ static int SetupTraceNodes_r(int bspNodeNum)
 				traceNodes[traceNodes[nodeNum].children[i]].type = TRACE_LEAF_SOLID;
 		}
 
-		/* normal node */
+		/* branch node */
 		else
 		{
 			newNode = SetupTraceNodes_r(bspNode->children[i]);
@@ -935,7 +935,7 @@ static void PopulateWithBSPModel(bspModel_t * model, matrix_t transform)
 		ti.surfaceNum = model->firstBSPBrush + i;
 		ti.skipGrid = (ds->surfaceType == MST_PATCH);
 
-		/* choose which node (normal or skybox) */
+		/* choose which node (geo or skybox) */
 		if(info->parentSurfaceNum >= 0)
 		{
 			nodeNum = skyboxNodeNum;

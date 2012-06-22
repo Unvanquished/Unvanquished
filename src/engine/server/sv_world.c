@@ -337,7 +337,6 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 	}
 	else
 	{
-		// normal
 		VectorAdd( origin, gEnt->r.mins, gEnt->r.absmin );
 		VectorAdd( origin, gEnt->r.maxs, gEnt->r.absmax );
 	}

@@ -933,7 +933,7 @@ Syntax:
 	SetCrouch [ON/OFF]
 
 SetCrouch ON makes the bot crouch, whether it's standing or moving. SetCrouch OFF
-makes the bot uncrouch (go back to normal). 
+makes the bot uncrouch (stand upright).
 
 
 ========================================
@@ -950,7 +950,7 @@ Syntax:
 
 	SetProne [ON/OFF]
 
-SetProne ON makes the bot prone. SetProne OFF makes the bot unprone (go back to normal).
+SetProne ON makes the bot prone. SetProne OFF makes the bot unprone (stand upright).
 When the bot is proning, it may have trouble moving over obstacles. So be careful where 
 you make the bot prone.
 
@@ -1208,9 +1208,9 @@ added by Xinbo Kan, 10/24/2002
 Notes:
 
 	*	Sets the firing rate of the bot. For example, a fire rate of 0.5 will make
-		the bot fire 50% as frequently as normal. Note that the decrease in fire rate 
+		the bot fire 50% as frequently as otherwise. Note that the decrease in fire rate
 		is only obvious over the span of more than a few seconds. The bot still fires
-		at normal (maximum) speed in short bursts. 
+		at maximum speed in short bursts.
 
 Syntax:
 
@@ -1250,7 +1250,7 @@ added by Mad Doctor I, 11/26/2002
 
 Notes:
 
-	*	Set an individual bot's speed relative to the default.  1 == normal, 0.5 = half, etc.
+	*	Set an individual bot's speed relative to the default.
 
 Syntax:
 
@@ -1618,7 +1618,7 @@ Notes:
 	* MaintainScript means they will continue on a MoveToMarker, but will
 		shoot at the enemy while in sight (note: If you have an EnemySight
 		bracket with a ResetScript, that will still stop the MoveToMarker)
-	* NoChase means they will do normal battle code, break out of their current
+	* NoChase means they will do battle code, break out of their current
 		action, weave around, seek cover, but they will not give chase if you
 		move away, and will just stand still when you do.
 	* QuitScript is the current behavior and the default - bots will battle and give

@@ -5543,7 +5543,7 @@ static shader_t *FinishShader( void )
 	// look for multitexture potential
 	CollapseStages();
 
-	// fogonly shaders don't have any normal passes
+	// fogonly shaders don't have any stage passes
 	if ( shader.numStages == 0 && !shader.isSky )
 	{
 		shader.sort = SS_FOG;

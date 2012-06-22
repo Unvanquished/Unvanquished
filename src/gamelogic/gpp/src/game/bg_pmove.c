@@ -1410,7 +1410,6 @@ static void PM_JetPackMove( void )
 	vec3_t wishdir;
 	float  scale;
 
-	//normal slowdown
 	PM_Friction();
 
 	scale = PM_CmdScale( &pm->cmd );
@@ -1466,7 +1465,6 @@ static void PM_FlyMove( void )
 	vec3_t wishdir;
 	float  scale;
 
-	// normal slowdown
 	PM_Friction();
 
 	scale = PM_CmdScale( &pm->cmd );

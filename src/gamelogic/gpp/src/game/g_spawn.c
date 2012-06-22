@@ -317,7 +317,7 @@ qboolean G_CallSpawn( gentity_t *ent )
 		return qtrue;
 	}
 
-	// check normal spawn functions
+	// check the spawn functions for other classes
 	s = bsearch( ent->classname, spawns, ARRAY_LEN( spawns ),
 	             sizeof( spawn_t ), cmdcmp );
 

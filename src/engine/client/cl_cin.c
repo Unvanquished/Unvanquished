@@ -92,8 +92,8 @@ static unsigned short vq8[ 256 * 256 * 4 ];
 
 typedef enum
 {
-  FT_ROQ = 0, // normal roq (vq3 stuff)
-  FT_OGM // ogm(ogg wrapper, vorbis audio, xvid/theora video) for WoP
+  FT_ROQ = 0, // roq (vq3 stuff)
+  FT_OGM // ogm (ogg wrapper, vorbis audio, xvid/theora video) for WoP
 } filetype_t;
 
 typedef struct
@@ -787,7 +787,7 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags )
 		if ( !cinTable[ currentHandle ].smootheddouble )
 		{
 //
-// normal height
+// base height
 //
 			if ( cinTable[ currentHandle ].samplesPerPixel == 2 )
 			{

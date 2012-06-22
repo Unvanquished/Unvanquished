@@ -39,7 +39,7 @@ Maryland 20850 USA.
 
 Delta encode a client frame onto the network channel
 
-A normal server packet will look like:
+A server packet will look something like:
 
 4 sequence number (high bit set if an oversize fragment)
 <optional reliable commands>
@@ -901,7 +901,6 @@ void SV_SendMessageToClient( msg_t *msg, client_t *client )
 		return;
 	}
 
-	// normal rate / snapshotMsec calculation
 	rateMsec = SV_RateMsec( client, msg->cursize );
 
 	// TTimo - during a download, ignore the snapshotMsec

@@ -393,7 +393,7 @@ static gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
 G_SelectAlienLockSpawnPoint
 
 Try to find a spawn point for alien intermission otherwise
-use normal intermission spawn.
+use spectator intermission spawn.
 ============
 */
 gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
@@ -419,7 +419,7 @@ gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 G_SelectHumanLockSpawnPoint
 
 Try to find a spawn point for human intermission otherwise
-use normal intermission spawn.
+use spectator intermission spawn.
 ============
 */
 gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )

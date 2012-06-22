@@ -298,7 +298,7 @@ typedef struct itemDef_s
 	float           textalignx; // ( optional ) text alignment x coord
 	float           textaligny; // ( optional ) text alignment x coord
 	float           textscale; // scale percentage from 72pts
-	int             textStyle; // ( optional ) style, normal and shadowed are it for now
+	int             textStyle; // ( optional ) style, plain and shadowed are it for now
 	const char      *text; // display text
 	void            *parent; // menu owner
 	qhandle_t       asset; // handle to asset

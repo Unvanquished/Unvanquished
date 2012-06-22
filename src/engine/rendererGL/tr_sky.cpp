@@ -956,7 +956,7 @@ void RB_DrawSun( void )
 
 	Tess_End();
 
-	// back to normal depth range
+	// back to standard depth range
 	glDepthRange( 0.0, 1.0 );
 
 	GL_PopMatrix();
@@ -1096,7 +1096,7 @@ void Tess_StageIteratorSky( void )
 
 		if ( tess.stageIteratorFunc2 != Tess_StageIteratorDepthFill )
 		{
-			// back to normal depth range
+			// back to standard depth range
 			glDepthRange( 0.0, 1.0 );
 
 			// note that sky was drawn so we will draw a sun later

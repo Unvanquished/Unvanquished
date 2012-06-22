@@ -49,7 +49,7 @@ SKINS
 CommaParse
 
 This is unfortunate, but the skin files aren't
-compatable with our normal parsing rules.
+compatible with our engine's main script/source parsing rules.
 ==================
 */
 static char    *CommaParse( char **data_p )

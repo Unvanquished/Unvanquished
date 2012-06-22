@@ -675,7 +675,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_FALL_MEDIUM:
-			// use normal pain sound
+			// use a general pain sound
 			trap_S_StartSound( NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*pain100_1.wav" ) );
 
 			if ( clientNum == cg.predictedPlayerState.clientNum )

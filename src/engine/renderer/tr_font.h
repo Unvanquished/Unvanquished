@@ -67,7 +67,7 @@ Maryland 20850 USA.
 // 1. delete the fontImage_x_xx.png files and fontImage_xx.dat files from the fonts path.
 // 2. in a ui script, specificy a font, smallFont, and bigFont keyword with font name and
 //    point size. the original TrueType fonts must exist in fonts at this point.
-// 3. run the game, you should see things normally.
+// 3. run the game. you should see things.
 // 4. Exit the game and there will be three dat files and at least three PNG files. The
 //    PNGs are in 256x256 pages so if it takes three images to render a 24 point font you
 //    will end up with fontImage_0_24.tga through fontImage_2_24.tga

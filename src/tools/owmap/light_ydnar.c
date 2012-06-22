@@ -2597,7 +2597,7 @@ void IlluminateRawLightmap(int rawLightmapNum)
 							luxel[2] -= averageColor[2] / samples;
 						}
 
-						/* handle normal light */
+						/* handle positive light */
 						else
 						{
 							luxel[0] += averageColor[0] / samples;
@@ -2635,7 +2635,7 @@ void IlluminateRawLightmap(int rawLightmapNum)
 						if(trace.light->flags & LIGHT_NEGATIVE)
 							VectorSubtract(luxel, lightLuxel, luxel);
 
-						/* handle normal light */
+						/* handle positive light */
 						else
 							VectorAdd(luxel, lightLuxel, luxel);
 

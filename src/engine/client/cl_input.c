@@ -970,7 +970,7 @@ CL_WritePacket
 Create and send the command packet to the server
 Including both the reliable commands and the usercmds
 
-During normal gameplay, a client packet will contain something like:
+A client packet will contain something like:
 
 4 sequence number
 2 qport

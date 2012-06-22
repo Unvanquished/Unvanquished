@@ -135,7 +135,7 @@ void P_WorldEffects( gentity_t *ent )
 					ent->damage = 15;
 				}
 
-				// play a gurp sound instead of a normal pain sound
+				// play a gurp sound instead of a general pain sound
 				if ( ent->health <= ent->damage )
 				{
 					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "*drown.wav" ) );
@@ -149,7 +149,7 @@ void P_WorldEffects( gentity_t *ent )
 					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "sound/player/gurp2.wav" ) );
 				}
 
-				// don't play a normal pain sound
+				// don't play a general pain sound
 				ent->pain_debounce_time = level.time + 200;
 
 				G_Damage( ent, NULL, NULL, NULL, NULL,
@@ -1061,7 +1061,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				mins[ 0 ] = mins[ 1 ] = 0.0f;
 				VectorAdd( client->ps.origin, mins, point );
 
-				ent->pain_debounce_time = level.time + 200; // no normal pain sound
+				ent->pain_debounce_time = level.time + 200; // no general pain sound
 				G_Damage( ent, NULL, NULL, dir, point, damage, DAMAGE_NO_LOCDAMAGE, MOD_FALLING );
 				break;
 

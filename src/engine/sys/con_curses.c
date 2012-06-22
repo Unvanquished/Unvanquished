@@ -856,7 +856,7 @@ char *CON_Input( void )
 				continue;
 		}
 
-		// Normal characters
+		// Other characters
 		if ( chr >= ' ' )
 		{
 			int width = 1;//Q_UTF8WidthCP( chr );

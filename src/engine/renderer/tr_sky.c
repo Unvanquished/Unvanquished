@@ -1084,7 +1084,7 @@ void RB_DrawSun( void )
 		RB_EndSurface();
 	}
 
-	// back to normal depth range
+	// back to standard depth range
 	glDepthRange( 0.0, 1.0 );
 	glPopMatrix();
 }
@@ -1187,7 +1187,7 @@ void RB_StageIteratorSky( void )
 
 	// Rafael - end
 
-	// back to normal depth range
+	// back to standard depth range
 	glDepthRange( 0.0, 1.0 );
 
 	backEnd.refdef.rdflags &= ~RDF_DRAWINGSKY;

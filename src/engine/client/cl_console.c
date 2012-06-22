@@ -190,7 +190,7 @@ void Con_ToggleConsole_f( void )
 		{
 			con.desiredFrac = 1.0;
 		}
-		// normal half-screen console
+		// half-screen console
 		else
 		{
 			con.desiredFrac = 0.5;

@@ -390,8 +390,8 @@ gentity_t *G_Spawn( void )
 
 	for ( force = 0; force < 2; force++ )
 	{
-		// if we go through all entities and can't find one to free,
-		// override the normal minimum times before use
+		// if we go through all entities first and can't find a free one,
+		// then try again a second time, this time ignoring times
 		e = &g_entities[ MAX_CLIENTS ];
 
 		for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
