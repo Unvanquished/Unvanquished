@@ -52,6 +52,7 @@ enum
   ITEM_TEXTSTYLE_SHADOWEDMORE, // drop shadow (need a color for this)
   ITEM_TEXTSTYLE_NEON // glow (need a color for this)
 };
+#define ITEM_TEXTSTYLE_NORMAL ITEM_TEXTSTYLE_PLAIN // deprecated, provided for compatibility
 
 enum
 {
