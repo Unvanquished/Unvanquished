@@ -1028,7 +1028,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_ADDPOLYBUFFERTOSCENE:
 			re.AddPolyBufferToScene( VMA( 1 ) );
-			break;
+			return 0;
 
 		case CG_R_ADDLIGHTTOSCENE:
 			re.AddLightToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[ 7 ], args[ 8 ] );
@@ -1368,15 +1368,15 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_GLYPH:
 			re.GlyphVM( args[1], VMA(2), VMA(3) );
-			break;
+			return 0;
 
 		case CG_R_GLYPHCHAR:
 			re.GlyphCharVM( args[1], args[2], VMA(3) );
-			break;
+			return 0;
 
 		case CG_R_UREGISTERFONT:
 			re.UnregisterFontVM( args[1] );
-			break;
+			return 0;
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );

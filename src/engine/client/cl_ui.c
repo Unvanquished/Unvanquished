@@ -1501,15 +1501,15 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_R_GLYPH:
 			re.GlyphVM( args[1], VMA(2), VMA(3) );
-			break;
+			return 0;
 
 		case UI_R_GLYPHCHAR:
 			re.GlyphCharVM( args[1], args[2], VMA(3) );
-			break;
+			return 0;
 
 		case UI_R_UREGISTERFONT:
 			re.UnregisterFontVM( args[1] );
-			break;
+			return 0;
 
 		default:
 			Com_Error( ERR_DROP, "Bad UI system trap: %ld", ( long int ) args[ 0 ] );

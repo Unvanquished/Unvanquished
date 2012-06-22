@@ -2892,7 +2892,7 @@ static const char *const eventnames[] =
 	"EV_DEATH3",
 	"EV_OBITUARY",
 
-	"EV_GIB_PLAYER", // gib a previously living player
+	"EV_GIB_PLAYER",
 
 	"EV_BUILD_CONSTRUCT",
 	"EV_BUILD_DESTROY",

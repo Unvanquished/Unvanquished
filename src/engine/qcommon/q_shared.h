@@ -483,7 +483,7 @@ extern int memcmp( void *, void *, size_t );
 #define M_ROOT3 1.732050808f
 #endif
 
-#define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x )))
+#define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x ) ) )
 
 #if defined ( IPHONE )
 #define UNIMPL()     Com_Printf("%s(): Unimplemented\n", __FUNCTION__)
