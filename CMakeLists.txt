@@ -1177,7 +1177,6 @@ function( GAMELIB )
       add_custom_command( OUTPUT ${QVM_COMPONENT}.asm
         COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${QVM_FILE}
         DEPENDS lcc rcc cpp ${QVM_FILE}
-        MAIN_DEPENDENCY ${QVM_COMPONENT}.asm
         IMPLICIT_DEPENDS C ${QVM_FILE}
         WORKING_DIRECTORY ${QVM_DIR}
       )
