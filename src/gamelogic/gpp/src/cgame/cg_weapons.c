@@ -1242,7 +1242,7 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	}
 
 	// gun angles from bobbing
-	// bob amount is class dependant
+	// bob amount is class-dependent
 	bob = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob;
 
 	if ( bob != 0 )

@@ -85,7 +85,7 @@ Parameter descriptions:
 	models\players\xpagent2\head_default.skin
 
 	If you want, you can explicitly specify a head skin and/or body skin when
-	using the /model parmameter (i.e. use /head and/or /skin). The
+	using the /model parameter (i.e. use /head and/or /skin). The
 	explicitly-specified skins will be used in place of the defaults.
 
 	/head lets you spawn a bot with a different head skin. Its use is similar to
@@ -252,7 +252,7 @@ Notes:
 	*	Use pickup names for weapons. Weapons with spaces MUST be wrapped in
 		double-quotes ("), eg. "Grenade Launcher".
 
-	*	Specify multiple weapons using 'OR' to seperate weapon names.
+	*	Specify multiple weapons using 'OR' to separate weapon names.
 
 	*	Usually used along with "Accum <n> Abort_If_Less_Than <x>" to conditionally
 		abort a script.
@@ -1575,7 +1575,7 @@ added by Xinbo Kan 12/02/2002
 
 Notes:
 
-	*   Start the losing count down for the specified team, which will lose in the time specified
+	*   Start the losing countdown for the specified team, which will lose in the time specified
   		unless ResetLosingCountDown is called before the timer expires. It can also displays an 
   		optional message.
 	*	Multiple lose conditions may be active at the same time. Use <identifier>
@@ -1598,7 +1598,7 @@ added by Xinbo Kan 12/02/2002
 
 Notes:
 
-	*   Reset the losing count down, basicly nullify the effect of StartLosingCountDown.
+	*   Reset the losing countdown, basically nullify the effect of StartLosingCountDown.
 
 Syntax:
 
@@ -1757,7 +1757,7 @@ bot event list
 
 updated by Xinbo Kan, 11/07/2002
 
-Here is a list of bot events (basicly predefined triggers)
+Here is a list of bot events (basically predefined triggers)
 
 	spawn - 
 		called as each character is spawned into the game
@@ -1774,7 +1774,7 @@ Here is a list of bot events (basicly predefined triggers)
 		activated. not sure if this ever applies to bot.
 
 	objective <objective name> -
-		something has occured involving the objective
+		something has occurred involving the objective
 
 	respawn -
 		NOT WORKING, respawned at "param" spawnpoint

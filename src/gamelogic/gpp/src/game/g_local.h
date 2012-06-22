@@ -294,7 +294,7 @@ typedef struct namelog_s
 typedef struct
 {
 	clientConnected_t connected;
-	usercmd_t         cmd; // we would lose angles if not persistant
+	usercmd_t         cmd; // we would lose angles if not persistent
 	qboolean          localClient; // true if "ip" info key is "localhost"
 	qboolean          stickySpec; // don't stop spectating a player after they get killed
 	qboolean          pmoveFixed; //
@@ -318,7 +318,7 @@ typedef struct
 	int               aliveSeconds; // time player has been alive in seconds
 	qboolean          hasHealed; // has healed a player (basi regen aura) in the last 10sec (for score use)
 
-	// used to save persistant[] values while in SPECTATOR_FOLLOW mode
+	// used to save persistent[] values while in SPECTATOR_FOLLOW mode
 	int credit;
 
 	int voted;

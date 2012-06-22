@@ -77,9 +77,9 @@ typedef struct foundfile_s
 } foundfile_t;
 
 void Vector2Angles( vec3_t value1, vec3_t angles );
-//set the correct path seperators
+//set the correct path separators
 void ConvertPath( char *path );
-//append a path seperator to the given path not exceeding the length
+//append a path separator to the given path not exceeding the length
 void AppendPathSeperator( char *path, int length );
 //find a file in a pak file
 qboolean FindFileInPak( char *pakfile, char *filename, foundfile_t *file );

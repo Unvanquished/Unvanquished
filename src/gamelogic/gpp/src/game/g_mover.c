@@ -1071,7 +1071,7 @@ void InitMover( gentity_t *ent )
 	qboolean lightSet, colorSet;
 	char     *sound;
 
-	// if the "model2" key is set, use a seperate model
+	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
 	if ( ent->model2 )
 	{
@@ -1169,7 +1169,7 @@ void InitRotator( gentity_t *ent )
 	qboolean lightSet, colorSet;
 	char     *sound;
 
-	// if the "model2" key is set, use a seperate model
+	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
 	if ( ent->model2 )
 	{
@@ -1389,7 +1389,7 @@ static void manualDoorTriggerSpectator( gentity_t *door, gentity_t *player )
 ================
 manualTriggerSpectator
 
-Trip to skip the closest door targetted by trigger
+Trip to skip the closest door targeted by trigger
 ================
 */
 void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
@@ -1839,7 +1839,7 @@ void SP_func_door_model( gentity_t *ent )
 
 	G_SpawnVector( "scale", "1 1 1", ent->s.origin2 );
 
-	// if the "model2" key is set, use a seperate model
+	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
 	if ( !ent->model2 )
 	{
@@ -2239,7 +2239,7 @@ void Reached_Train( gentity_t *ent )
 	vec3_t    move;
 	float     length;
 
-	// copy the apropriate values
+	// copy the appropriate values
 	next = ent->nextTrain;
 
 	if ( !next || !next->nextTrain )

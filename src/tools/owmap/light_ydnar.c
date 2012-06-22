@@ -508,7 +508,7 @@ static qboolean CalcTangentVectors(int numVerts, bspDrawVert_t ** dv, vec3_t * s
 
 /*
 PerturbNormal()
-perterbs the normal by the shader's normalmap in tangent space
+perturbs the normal by the shader's normalmap in tangent space
 */
 
 static void PerturbNormal(bspDrawVert_t * dv, shaderInfo_t * si, vec3_t pNormal, vec3_t stv[3], vec3_t ttv[3])

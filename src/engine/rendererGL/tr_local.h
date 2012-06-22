@@ -3805,7 +3805,7 @@ extern "C" {
 		int   msec; // total msec for backend run
 	} backEndCounters_t;
 
-// all state modified by the back end is seperated
+// all state modified by the back end is separated
 // from the front end state
 	typedef struct
 	{

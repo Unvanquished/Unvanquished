@@ -1445,7 +1445,7 @@ typedef struct
 	int   msec; // total msec for backend run
 } backEndCounters_t;
 
-// all state modified by the back end is seperated
+// all state modified by the back end is separated
 // from the front end state
 typedef struct
 {
@@ -2180,7 +2180,7 @@ void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *vert
 // done.
 void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer );
 
-// ydnar: modified dlight system to support seperate radius & intensity
+// ydnar: modified dlight system to support separate radius & intensity
 // void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b, int overdraw );
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader,
                          int flags );

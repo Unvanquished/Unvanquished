@@ -48,7 +48,7 @@ qboolean R_CheckFBO( const FBO_t *fbo )
 		return qtrue;
 	}
 
-	// an error occured
+	// an error occurred
 	switch ( code )
 	{
 		case GL_FRAMEBUFFER_COMPLETE_EXT:

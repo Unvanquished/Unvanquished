@@ -476,7 +476,7 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 
 /*
 RE_AddLightToScene()
-ydnar: modified dlight system to support seperate radius and intensity
+ydnar: modified dlight system to support separate radius and intensity
 */
 
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags )

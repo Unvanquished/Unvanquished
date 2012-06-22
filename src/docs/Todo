@@ -115,7 +115,7 @@ rain	202 - fix field ops using medic charge time for ammo packs
 rain	xxx - fix prediction error when cratering
 bani	215 - (rain)don't allow binocs with mounted mobile MG42/mortar
 bani	218 - (rain)satchel detonator not working right when spectating
-bani	xxx - (rain)Fix the annoying prediction error that occurs when a constructible is finished building.
+bani	xxx - (rain)Fix the annoying prediction error that occurrs when a constructible is finished building.
 zinx	225 - configstring > max_configstrings
 zinx	xxx - raw binary channel for client<->server
 fretn	xxx - s_khz should be latched

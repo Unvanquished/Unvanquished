@@ -180,9 +180,9 @@ typedef struct client_s
 	char           userinfo[ MAX_INFO_STRING ]; // name, etc
 
 	char           reliableCommands[ MAX_RELIABLE_COMMANDS ][ MAX_STRING_CHARS ];
-	int            reliableSequence; // last added reliable message, not necesarily sent or acknowledged yet
+	int            reliableSequence; // last added reliable message, not necessarily sent or acknowledged yet
 	int            reliableAcknowledge; // last acknowledged reliable message
-	int            reliableSent; // last sent reliable message, not necesarily acknowledged yet
+	int            reliableSent; // last sent reliable message, not necessarily acknowledged yet
 	int            messageAcknowledge;
 
 	int            binaryMessageLength;
@@ -213,7 +213,7 @@ typedef struct client_s
 	int           downloadSendTime; // time we last got an ack from the client
 
 	// www downloading
-	qboolean bDlOK; // passed from cl_wwwDownload CVAR_USERINFO, wether this client supports www dl
+	qboolean bDlOK; // passed from cl_wwwDownload CVAR_USERINFO, whether this client supports www dl
 	char     downloadURL[ MAX_OSPATH ]; // the URL we redirected the client to
 	qboolean bWWWDl; // we have a www download going
 	qboolean bWWWing; // the client is doing an ftp/http download
@@ -346,7 +346,7 @@ typedef struct
 
 //=============================================================================
 
-extern serverStatic_t svs; // persistant server info across maps
+extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
 extern vm_t           *gvm; // game virtual machine
 
@@ -413,7 +413,7 @@ extern cvar_t *sv_wwwDownload; // general flag to enable/disable www download re
 extern cvar_t *sv_wwwBaseURL; // the base URL of all the files
 
 // tell clients to perform their downloads while disconnected from the server
-// this gets you a better throughput, but you loose the ability to control the download usage
+// this gets you a better throughput, but you lose the ability to control the download usage
 extern cvar_t *sv_wwwDlDisconnected;
 extern cvar_t *sv_wwwFallbackURL;
 

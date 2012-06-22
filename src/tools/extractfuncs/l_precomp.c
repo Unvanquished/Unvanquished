@@ -1013,7 +1013,7 @@ int PC_ExpandDefineIntoSource( source_t *source, define_t *define ) {
 void PC_ConvertPath( char *path ) {
 	char *ptr;
 
-	//remove double path seperators
+	//remove double path separators
 	for ( ptr = path; *ptr; )
 	{
 		if ( ( *ptr == '\\' || *ptr == '/' ) &&
@@ -1025,7 +1025,7 @@ void PC_ConvertPath( char *path ) {
 			ptr++;
 		} //end else
 	} //end while
-	  //set OS dependent path seperators
+	//set OS-dependent path separators
 	for ( ptr = path; *ptr; )
 	{
 		if ( *ptr == '/' || *ptr == '\\' ) {
@@ -3028,7 +3028,7 @@ void PC_UnreadToken( source_t *source, token_t *token ) {
 //============================================================================
 void PC_SetIncludePath( source_t *source, char *path ) {
 	strncpy( source->includepath, path, _MAX_PATH );
-	//add trailing path seperator
+	//add trailing path separator
 	if ( source->includepath[strlen( source->includepath ) - 1] != '\\' &&
 		 source->includepath[strlen( source->includepath ) - 1] != '/' ) {
 		strcat( source->includepath, PATHSEPERATOR_STR );

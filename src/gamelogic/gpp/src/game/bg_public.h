@@ -270,7 +270,7 @@ typedef enum
 
 #define SB_VALID_TOGGLEBIT  0x00002000
 
-// player_state->persistant[] indexes
+// player_state->persistent[] indexes
 // these fields are the only part of player_state that isn't
 // cleared on respawn
 typedef enum
@@ -443,8 +443,8 @@ typedef enum
 } buildable_t;
 
 // entityState_t->event values
-// entity events are for effects that take place reletive
-// to an existing entities origin.  Very network efficient.
+// entity events are for effects that take place relative
+// to an existing entity's origin.  Very network efficient.
 
 // two bits at the top of the entityState->event field
 // will be incremented with each change in the event so

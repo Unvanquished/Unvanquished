@@ -646,7 +646,7 @@ static qboolean loadFrame( void )
 //      if needPacket
 		{
 //          videoStream -> xvid ? videoStreamDone : needPage
-//          audioSteam -> vorbis ? audioStreamDone : needPage
+//          audioStream -> vorbis ? audioStreamDone : needPage
 //          anyDataTransferred = audioStreamDone && audioStreamDone;
 
 			if ( needVOutputData && ( status = loadVideoFrame() ) )

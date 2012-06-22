@@ -1536,7 +1536,7 @@ static void RoQShutdown( void )
 
 	if ( !cinTable[ currentHandle ].buf )
 	{
-		//FIXME: there could be something that should be "shutdowned" even if we don't have a output frame (at least in the ogm code)
+		//FIXME: there could be something that should be "shutdowned" even if we don't have an output frame (at least in the ogm code)
 		return;
 	}
 

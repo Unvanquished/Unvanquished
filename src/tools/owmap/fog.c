@@ -328,7 +328,7 @@ qboolean ChopPatchSurfaceByBrush(entity_t * e, mapDrawSurface_t * ds, brush_t * 
 		}
 	}
 
-	/* all of outside fragments become seperate drawsurfs */
+	/* all of outside fragments become separate drawsurfs */
 	numFogPatchFragments += numOutside;
 	for(i = 0; i < numOutside; i++)
 	{
@@ -479,7 +479,7 @@ qboolean ChopFaceSurfaceByBrush(entity_t * e, mapDrawSurface_t * ds, brush_t * b
 
 	/* fixme: celshaded surface fragment errata */
 
-	/* all of outside fragments become seperate drawsurfs */
+	/* all of outside fragments become separate drawsurfs */
 	numFogFragments += numOutside;
 	s = ds->sideRef->side;
 	for(i = 0; i < numOutside; i++)

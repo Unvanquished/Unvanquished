@@ -2017,7 +2017,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		}
 		else
 		{
-			MSG_WriteBits( msg, 0, 1 );  // no change to persistant
+			MSG_WriteBits( msg, 0, 1 );  // no change to persistent
 		}
 
 		if ( miscbits )
@@ -2421,7 +2421,7 @@ void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *t
 			}
 		}
 
-		// parse persistant stats
+		// parse persistent stats
 		if ( MSG_ReadBits( msg, 1 ) )
 		{
 			LOG( "PS_PERSISTANT" );

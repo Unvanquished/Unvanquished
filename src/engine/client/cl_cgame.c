@@ -1376,7 +1376,7 @@ CL_UpdateLevelHunkUsage
 
   This updates the "hunkusage.dat" file with the current map and its hunk usage count
 
-  This is used for level loading, so we can show a percentage bar dependant on the amount
+  This is used for level loading, so we can show a percentage bar dependent on the amount
   of hunk memory allocated so far
 
   This will be slightly inaccurate if some settings like sound quality are changed, but these
@@ -1930,7 +1930,7 @@ void CL_SetCGameTime( void )
 	}
 
 	// if we are playing a demo back, we can just keep reading
-	// messages from the demo file until the cgame definately
+	// messages from the demo file until the cgame definitely
 	// has valid snapshots to interpolate between
 
 	// a timedemo will always use a deterministic set of time samples
@@ -1948,7 +1948,7 @@ void CL_SetCGameTime( void )
 
 	while ( cl.serverTime >= cl.snap.serverTime )
 	{
-		// feed another messag, which should change
+		// feed another message, which should change
 		// the contents of cl.snap
 		CL_ReadDemoMessage();
 

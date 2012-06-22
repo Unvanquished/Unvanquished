@@ -357,7 +357,7 @@ void MakeMeshNormals(mesh_t in)
 
 /*
 PutMeshOnCurve()
-drops the aproximating points onto the curve
+drops the approximating points onto the curve
 ydnar: fixme: make this use LerpDrawVert() rather than this complicated mess
 */
 
@@ -367,7 +367,7 @@ void PutMeshOnCurve(mesh_t in)
 	float           prev, next;
 
 
-	// put all the aproximating points on the curve
+	// put all the approximating points on the curve
 	for(i = 0; i < in.width; i++)
 	{
 		for(j = 1; j < in.height; j += 2)
@@ -724,7 +724,7 @@ void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vEnd, vec3_t vPr
 
 /*
 ================
-RemoveLinearMeshColumsRows
+RemoveLinearMeshColumnsRows
 ================
 */
 mesh_t         *RemoveLinearMeshColumnsRows(mesh_t * in)

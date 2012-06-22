@@ -663,7 +663,7 @@ void       Cvar_Restart_f( void );
 
 extern int cvar_modifiedFlags;
 
-// whenever a cvar is modifed, its flags will be OR'd into this, so
+// whenever a cvar is modified, its flags will be OR'd into this, so
 // a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
 // etc, variables have been modified since the last check.  The bit
 // can then be cleared to allow another change detection.
@@ -674,7 +674,7 @@ extern int cvar_modifiedFlags;
 FILESYSTEM
 
 No stdio calls should be used by any part of the game, because
-we need to deal with all sorts of directory and seperator char
+we need to deal with all sorts of directory and separator char
 issues.
 ==============================================================
 */
@@ -730,7 +730,7 @@ int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 
-// will properly create any needed paths and deal with seperater character issues
+// will properly create any needed paths and deal with separator character issues
 
 int          FS_filelength( fileHandle_t f );
 fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
@@ -1288,7 +1288,7 @@ typedef enum
   SE_NONE = 0, // evTime is still valid
   SE_KEY, // evValue is a key code, evValue2 is the down flag
   SE_CHAR, // evValue is an ascii char
-  SE_MOUSE, // evValue and evValue2 are reletive signed x / y moves
+  SE_MOUSE, // evValue and evValue2 are relative, signed x / y moves
   SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
 #if IPHONE
   SE_ACCEL, // iPhone accelerometer

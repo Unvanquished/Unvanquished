@@ -121,9 +121,9 @@ winding_t *AddWindingPoint( winding_t *w, vec3_t point, int spot );
 //when the point is on one of the edged the number of the first
 //point of the edge is stored in 'spot'
 int PointOnWinding( winding_t *w, vec3_t normal, float dist, vec3_t point, int *spot );
-//find a plane seperating the two windings
+//find a plane separating the two windings
 //true is returned when the windings area adjacent
-//the seperating plane normal and distance area stored in 'normal' and 'dist'
+//the separating plane normal and distance area stored in 'normal' and 'dist'
 //this plane will contain both the piece of common edge of the two windings
 //and the vector 'dir'
 // Gordon: points returns the 4 points from the two matching edges

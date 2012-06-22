@@ -1426,7 +1426,7 @@ static void RB_RenderDrawSurfaces( bool opaque, bool depthFill, renderDrawSurfac
 		}
 
 		// change the tess parameters if needed
-		// a "entityMergable" shader is a shader that can have surfaces from seperate
+		// an "entityMergable" shader is a shader that can have surfaces from separate
 		// entities merged into a single batch, like smoke and blood puff sprites
 		if ( shader != oldShader || lightmapNum != oldLightmapNum || fogNum != oldFogNum || ( entity != oldEntity && !shader->entityMergable ) )
 		{
@@ -1567,7 +1567,7 @@ static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 		}
 
 		// change the tess parameters if needed
-		// a "entityMergable" shader is a shader that can have surfaces from seperate
+		// an "entityMergable" shader is a shader that can have surfaces from separate
 		// entities merged into a single batch, like smoke and blood puff sprites
 		//if(shader != oldShader || lightmapNum != oldLightmapNum || (entity != oldEntity && !shader->entityMergable))
 
@@ -3602,7 +3602,7 @@ static void RB_RenderDrawSurfacesIntoGeometricBuffer()
 		        }
 
 		        // change the tess parameters if needed
-		        // a "entityMergable" shader is a shader that can have surfaces from seperate
+		        // an "entityMergable" shader is a shader that can have surfaces from separate
 		        // entities merged into a single batch, like smoke and blood puff sprites
 		        if(shader != oldShader || (entity != oldEntity && !shader->entityMergable))
 		        {
@@ -3627,7 +3627,7 @@ static void RB_RenderDrawSurfacesIntoGeometricBuffer()
 			}
 
 			// change the tess parameters if needed
-			// a "entityMergable" shader is a shader that can have surfaces from seperate
+			// an "entityMergable" shader is a shader that can have surfaces from separate
 			// entities merged into a single batch, like smoke and blood puff sprites
 			if ( shader != oldShader || ( entity != oldEntity && !shader->entityMergable ) )
 			{
@@ -11225,7 +11225,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 
 	R_SyncRenderThread();
 
-	// we definately want to sync every frame for the cinematics
+	// we definitely want to sync every frame for the cinematics
 	glFinish();
 
 	start = end = 0;

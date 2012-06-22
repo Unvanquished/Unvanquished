@@ -86,7 +86,7 @@ void            Net_SetAddressPort(address_t * address, int port);
 //send a message to the given socket
 int             Net_Send(socket_t * sock, netmessage_t * msg);
 
-//recieve a message from the given socket
+//receive a message from the given socket
 int             Net_Receive(socket_t * sock, netmessage_t * msg);
 
 //connect to a host

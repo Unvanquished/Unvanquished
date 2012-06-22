@@ -296,7 +296,7 @@ punctuation_t   Default_Punctuations[] =
 	{ "<",  P_LOGIC_LESS,       NULL },
 	//reference operator
 	{ ".",  P_REF,              NULL },
-	//seperators
+	//separators
 	{ ",",  P_COMMA,            NULL },
 	{ ";",  P_SEMICOLON,        NULL },
 	//label indication
@@ -1083,7 +1083,7 @@ static int Parse_ReadScriptToken( script_t *script, token_t *token )
 	{
 		if ( !Parse_ReadString( script, token, '\"' ) ) { return 0; }
 	}
-	//if an literal
+	//if there is a literal
 	else if ( *script->script_p == '\'' )
 	{
 		//if (!Parse_ReadLiteral(script, token)) return 0;
@@ -1991,7 +1991,7 @@ static void Parse_ConvertPath( char *path )
 {
 	char *ptr;
 
-	//remove double path seperators
+	//remove double path separators
 	for ( ptr = path; *ptr; )
 	{
 		if ( ( *ptr == '\\' || *ptr == '/' ) &&
@@ -2005,7 +2005,7 @@ static void Parse_ConvertPath( char *path )
 		}
 	}
 
-	//set OS dependent path seperators
+	//set OS-dependent path separators
 	for ( ptr = path; *ptr; )
 	{
 		if ( *ptr == '/' || *ptr == '\\' ) { *ptr = PATH_SEP; }

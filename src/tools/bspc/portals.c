@@ -1004,7 +1004,7 @@ void FloodAreas_r( node_t *node ) {
 		b = node->brushlist;
 		e = &entities[b->original->entitynum];
 
-		// if the current area has allready touched this
+		// if the current area has already touched this
 		// portal, we are done
 		if ( e->portalareas[0] == c_areas || e->portalareas[1] == c_areas ) {
 			return;
@@ -1025,7 +1025,7 @@ void FloodAreas_r( node_t *node ) {
 	} //end if
 
 	if ( node->area ) {
-		return;     // allready got it
+		return;     // already got it
 	}
 	node->area = c_areas;
 
@@ -1060,7 +1060,7 @@ void FindAreas_r( node_t *node ) {
 	}
 
 	if ( node->area ) {
-		return;     // allready got it
+		return;     // already got it
 
 	}
 	if ( node->contents & CONTENTS_SOLID ) {
@@ -1100,7 +1100,7 @@ void SetAreaPortalAreas_r( node_t *node ) {
 
 	if ( node->contents == CONTENTS_AREAPORTAL ) {
 		if ( node->area ) {
-			return;     // allready set
+			return;     // already set
 
 		}
 		b = node->brushlist;

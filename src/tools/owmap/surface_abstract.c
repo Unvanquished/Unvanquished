@@ -1054,7 +1054,7 @@ mapDrawSurface_t *DrawSurfaceForMesh(entity_t * e, parseMesh_t * p, mesh_t * mes
 	numVerts = mesh->width * mesh->height;
 
 	/* to make valid normals for patches with degenerate edges,
-	   we need to make a copy of the mesh and put the aproximating
+	   we need to make a copy of the mesh and put the approximating
 	   points onto the curve */
 
 	/* create a copy of the mesh */
@@ -1623,7 +1623,7 @@ void CullSides(entity_t * e)
 	g_numHiddenFaces = 0;
 	g_numCoinFaces = 0;
 
-	/* brush interator 1 */
+	/* brush iterator 1 */
 	for(b1 = e->brushes; b1; b1 = b1->next)
 	{
 		/* sides check */

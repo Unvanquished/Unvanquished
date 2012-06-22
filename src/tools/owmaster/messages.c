@@ -510,7 +510,7 @@ void HandleMessage (const char* msg, size_t length,
 {
 	server_t* server;
 
-	// If it's an heartbeat
+	// If it's a heartbeat
 	if (!strncmp (S2M_HEARTBEAT, msg, strlen (S2M_HEARTBEAT)))
 	{
 		char gameId [64];

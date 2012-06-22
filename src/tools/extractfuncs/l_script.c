@@ -143,7 +143,7 @@ punctuation_t default_punctuations[] =
 	{"<",P_LOGIC_LESS, NULL},
 	//reference operator
 	{".",P_REF, NULL},
-	//seperators
+	//separators
 	{",",P_COMMA, NULL},
 	{";",P_SEMICOLON, NULL},
 	//label indication
@@ -887,7 +887,7 @@ int PS_ReadToken( script_t *script, token_t *token ) {
 			return 0;
 		}
 	} //end if
-	  //if an literal
+	//if there is a literal
 	else if ( *script->script_p == '\'' ) {
 		//if (!PS_ReadLiteral(script, token)) return 0;
 		if ( !PS_ReadString( script, token, '\'' ) ) {

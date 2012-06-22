@@ -595,7 +595,7 @@ void SV_ClearServer( void )
 ================
 SV_TouchCGame
 
-  touch cgame so that a pure client can load it if it's in a seperate pk3
+  touch cgame so that a pure client can load it if it's in a separate pk3
 ================
 */
 void SV_TouchCGame( void )
@@ -862,7 +862,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 		Cvar_Set( "sv_pakNames", p );
 
 		// if a dedicated pure server we need to touch the cgame because it could be in a
-		// seperate pk3 file and the client will need to load the latest cgame.qvm
+		// separate pk3 file and the client will need to load the latest cgame.qvm
 		if ( com_dedicated->integer )
 		{
 			SV_TouchCGame();

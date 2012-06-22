@@ -180,7 +180,7 @@ CreateVisPortals_r
 ================
 */
 void CreateVisPortals_r( node_t *node ) {
-	// stop as soon as we get to a detail_seperator, which
+	// stop as soon as we get to a detail_separator, which
 	// means that everything below is in a single cluster
 	if ( node->planenum == PLANENUM_LEAF || node->detail_seperator ) {
 		return;

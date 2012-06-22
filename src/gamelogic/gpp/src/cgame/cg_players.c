@@ -1561,7 +1561,7 @@ static void CG_SetPlayerLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, i
 	}
 }
 
-// TODO: choose propper values and use blending speed from character.cfg
+// TODO: choose proper values and use blending speed from character.cfg
 // blending is slow for testing issues
 static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
 {
@@ -2215,7 +2215,7 @@ static void CG_AddPainTwitch( centity_t *cent, vec3_t torsoAngles )
 ===============
 CG_PlayerAngles
 
-Handles seperate torso motion
+Handles separate torso motion
 
   legs pivot based on direction of movement
 

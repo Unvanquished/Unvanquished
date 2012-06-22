@@ -735,7 +735,7 @@ static void CG_LightFlare( centity_t *cent )
 	          entityNum, MASK_SHOT );
 
 	//if there is no LOS between the view and the flare source
-	//it definately cannot be seen
+	//it definitely cannot be seen
 	if ( tr.fraction < 1.0f || tr.allsolid )
 	{
 		return;

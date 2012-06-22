@@ -211,7 +211,7 @@ constants
 /* vis */
 #define	VIS_HEADER_SIZE			8
 
-#define SEPERATORCACHE			/* seperator caching helps a bit */
+#define SEPERATORCACHE			/* separator caching helps a bit */
 
 #define	PORTALFILE				"PRT1"
 
@@ -872,7 +872,7 @@ typedef struct side_s
 	int             compileFlags;	/* from shaderInfo */
 	int             value;		/* from shaderInfo */
 
-	qboolean        visible;	/* choose visble planes first */
+	qboolean        visible;	/* choose visible planes first */
 	qboolean        bevel;		/* don't ever use for bsp splitting, and don't bother making windings for it */
 	qboolean        culled;		/* ydnar: face culling */
 }

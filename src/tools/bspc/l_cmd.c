@@ -237,7 +237,7 @@ void PRINTF_LIKE(2) NORETURN Com_Error( int level, char *error, ... ) {
 	Q_vsnprintf( text, sizeof( text ), error, argptr );
 	va_end( argptr );
 	Error( text );
-} //end of the funcion Com_Error
+} //end of the function Com_Error
 
 void PRINTF_LIKE(1) Com_Printf( const char *fmt, ... ) {
 	va_list argptr;
@@ -247,7 +247,7 @@ void PRINTF_LIKE(1) Com_Printf( const char *fmt, ... ) {
 	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
 	va_end( argptr );
 	Log_Print( text );
-} //end of the funcion Com_Printf
+} //end of the function Com_Printf
 
 /*
 

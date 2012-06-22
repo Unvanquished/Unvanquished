@@ -103,7 +103,7 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 	+ A grenade held for the max hold time doesnt remove itself from your ammo, but as grenades are the only ones that have ammo AND can be held for teh max limit, it never really shows, as you instantly frag yourself.
 	
 10-04-2002	Arnout	<rr2do2@splahdamage.com>
-	+ Provide unregister functions to get rid of useles media?
+	+ Provide unregister functions to get rid of useless media?
 	
 			Gordon	<dj_bob@ntlworld.com>
 	+ Skeletal anims for weapons, some have them, some dont. Flametrower does, seems odd, but mauser doesnt, odd again, even tho the mauser was set up to use one, guess it just never got made.
@@ -117,7 +117,7 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 04-04-2002	Arnout	<rr2do2@splashdamage.com>
 	
 			Gordon	<dj_bob@ntlworld.com>
-	+ Skeletal anims for weapons, some have them, some dont. Flametrower does, seems odd, but mauser doesnt, odd again, even tho the mauser was set up to use one, guess it just never got made.
+	+ Skeletal anims for weapons, some have them, some don't. Flamethrower does, seems odd, but mauser doesn't, odd again, even tho the mauser was set up to use one, guess it just never got made.
 	+ Coronas are all serversided, no real reason for this. Move them clientsided if they're not toggled.
 	+ Path_corners are game entities, why? Save on gentity count and put them in their own array. This would shave about 80 entities of mp_tram.
 	+ As for network optimizations, maybe move non toggled speakers clientsided as well?

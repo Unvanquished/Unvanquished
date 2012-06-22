@@ -462,7 +462,7 @@ bspbrush_t *IntersectBrush( bspbrush_t *a, bspbrush_t *b ) {
 } //end of the function IntersectBrush
 
 //===========================================================================
-// Returns true if the two brushes definately do not intersect.
+// Returns true if the two brushes definitely do not intersect.
 // There will be false negatives for some non-axial combinations.
 //
 // Parameter:				-

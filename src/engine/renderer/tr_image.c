@@ -2827,7 +2827,7 @@ static void R_CreateFogImage( void )
 	tr.fogImage = R_CreateImage( "*fog", ( byte * ) data, FOG_S, FOG_T, qfalse, qfalse, GL_CLAMP );
 	ri.Hunk_FreeTempMemory( data );
 
-	// ydnar: the following lines are unecessary for new GL_CLAMP_TO_EDGE fog
+	// ydnar: the following lines are unnecessary for new GL_CLAMP_TO_EDGE fog
 #ifndef IPHONE
 	borderColor[ 0 ] = 1.0;
 	borderColor[ 1 ] = 1.0;

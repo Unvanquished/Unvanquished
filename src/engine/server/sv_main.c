@@ -38,7 +38,7 @@ Maryland 20850 USA.
 cvar_t         *sv_voip;
 #endif
 
-serverStatic_t svs; // persistant server info
+serverStatic_t svs; // persistent server info
 server_t       sv; // local server
 vm_t           *gvm = NULL; // game virtual machine // bk001212 init
 
@@ -99,7 +99,7 @@ cvar_t *sv_wwwDownload; // server does a www dl redirect
 cvar_t *sv_wwwBaseURL; // base URL for redirect
 
 // tell clients to perform their downloads while disconnected from the server
-// this gets you a better throughput, but you loose the ability to control the download usage
+// this gets you a better throughput, but you lose the ability to control the download usage
 cvar_t *sv_wwwDlDisconnected;
 cvar_t *sv_wwwFallbackURL; // URL to send to if an http/ftp fails or is refused client side
 
@@ -382,7 +382,7 @@ void SV_MasterHeartbeat( const char *hbname )
 		Com_Printf( "Sending heartbeat to %s\n", sv_master[ i ]->string );
 
 		// this command should be changed if the server info / status format
-		// ever incompatably changes
+		// ever incompatibly changes
 
 		if ( adr[ i ][ 0 ].type != NA_BAD )
 		{
@@ -453,7 +453,7 @@ void SV_MasterGameCompleteStatus()
 
 		Com_Printf( "Sending gameCompleteStatus to %s\n", sv_master[ i ]->string );
 		// this command should be changed if the server info / status format
-		// ever incompatably changes
+		// ever incompatibly changes
 		SVC_GameCompleteStatus( adr[ i ] );
 	}
 }
@@ -467,7 +467,7 @@ Informs all masters that this server is going down
 */
 void SV_MasterShutdown( void )
 {
-	// send a hearbeat right now
+	// send a heartbeat right now
 	svs.nextHeartbeatTime = -9999;
 	SV_MasterHeartbeat( HEARTBEAT_DEAD );  // NERVE - SMF - changed to flatline
 

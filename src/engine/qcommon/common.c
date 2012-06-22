@@ -67,7 +67,7 @@ int demo_protocols[] = { 66, 67, 68, 0 };
 int                 com_argc;
 char                *com_argv[ MAX_NUM_ARGVS + 1 ];
 
-jmp_buf             abortframe; // an ERR_DROP occured, exit the entire frame
+jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
 
 FILE                *debuglogfile;
 static fileHandle_t logfile;
@@ -189,7 +189,7 @@ void Com_EndRedirect( void )
 Com_Printf
 
 Both client and server can use this, and it will output
-to the apropriate place.
+to the appropriate place.
 
 A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 =============
@@ -306,7 +306,7 @@ void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *fmt, ... )
 Com_Error
 
 Both client and server can use this, and it will
-do the apropriate things.
+do the appropriate things.
 =============
 */
 // *INDENT-OFF*
@@ -441,7 +441,7 @@ void CL_ShutdownCGame( void );
 Com_Quit_f
 
 Both client and server can use this, and it will
-do the apropriate things.
+do the appropriate things.
 =============
 */
 void NORETURN Com_Quit_f( void )
@@ -473,7 +473,7 @@ void NORETURN Com_Quit_f( void )
 
 COMMAND LINE FUNCTIONS
 
-+ characters seperate the commandLine string into multiple console
++ characters separate the commandLine string into multiple console
 command lines.
 
 All of these are valid:
@@ -510,8 +510,8 @@ void Com_ParseCommandLine( char *commandLine )
 			inq = !inq;
 		}
 
-		// look for a + seperating character
-		// if commandLine came from a file, we might have real line seperators
+		// look for a + separating character
+		// if commandLine came from a file, we might have real line separators
 		if ( *commandLine == '+' || *commandLine == '\n' || *commandLine == '\r' )
 		{
 			if ( com_numConsoleLines == MAX_CONSOLE_LINES )
@@ -597,7 +597,7 @@ void Com_StartupVariable( const char *match )
 Com_AddStartupCommands
 
 Adds command line parameters as script statements
-Commands are seperated by + signs
+Commands are separated by + signs
 
 Returns qtrue if any late commands were added, which
 will keep the demoloop from immediately starting
@@ -1983,7 +1983,7 @@ void Com_InitHunkMemory( void )
 
 	// make sure the file system has allocated and "not" freed any temp blocks
 	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redunant routines in the file system utilizing different
+	// by the file system without redundant routines in the file system utilizing different
 	// memory systems
 	if ( FS_LoadStack() != 0 )
 	{
@@ -2251,7 +2251,7 @@ void           *Hunk_AllocateTempMemory( int size )
 
 	// return a Z_Malloc'd block if the hunk has not been initialized
 	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redunant routines in the file system utilizing different
+	// by the file system without redundant routines in the file system utilizing different
 	// memory systems
 	if ( s_hunkData == NULL )
 	{
@@ -2308,7 +2308,7 @@ void Hunk_FreeTempMemory( void *buf )
 
 	// free with Z_Free if the hunk has not been initialized
 	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redunant routines in the file system utilizing different
+	// by the file system without redundant routines in the file system utilizing different
 	// memory systems
 	if ( s_hunkData == NULL )
 	{
@@ -2550,7 +2550,7 @@ sysEvent_t Com_GetSystemEvent( void )
 		netadr_t *buf;
 		int      len;
 
-		// copy out to a seperate buffer for qeueing
+		// copy out to a separate buffer for queuing
 		len = sizeof( netadr_t ) + netmsg.cursize;
 		buf = Z_Malloc( len );
 		*buf = adr;
@@ -3379,7 +3379,7 @@ void Com_Init( char *commandLine )
 	//
 	// init commands and vars
 	//
-	// Gordon: no need to latch this in ET, our recoil is framerate independant
+	// Gordon: no need to latch this in ET, our recoil is framerate-independent
 	com_maxfps = Cvar_Get( "com_maxfps", "125", CVAR_ARCHIVE /*|CVAR_LATCH */ );
 //  com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE); // Gordon: no longer used?
 

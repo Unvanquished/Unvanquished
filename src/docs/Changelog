@@ -168,7 +168,7 @@
 		+ NOTE : Sound for ETMAIN is broken.
 	* Fixed sound trap_ functions for GPP and 1.1.0
 	* There was problem between Sys_GLimpInit and Windows x64 
-	* Added module defenition file for GPP and Tremulous 1.1.0 so engine could load files
+	* Added module definition file for GPP and Tremulous 1.1.0 so engine could load files
 	* Added S_GetSoundLength
 	* Added latest .asm files from ioQuake3
 	* Changed PRODUCT NAME, Added ENGINE NAME
@@ -380,7 +380,7 @@
 
 2011-09-06 Dusan Jocic <dusanjocic@msn.com>
 	* Fixed compiling on Windows platform
-		+ Dont know if this brake Linux compiling
+		+ Don't know if this breaks Linux compiling
 	* Added BZIP2 data compression support
 
 2011-09-01 Dusan Jocic <dusanjocic@msn.com>
@@ -550,7 +550,7 @@
 
 2011-07-13 Dusan Jocic <dusanjocic@msn.com>
 	* Defined in VS2010 OpenMPSupport as true for future compiling software
-	* Added and defined parralel section in sys_main considering OpenMP (Hello Threads test)
+	* Added and defined parallel section in sys_main considering OpenMP (Hello Threads test)
 		+ Setting the number of threads to be used in parallel sections within the program
 	* Display CPU environment information
 
@@ -896,7 +896,7 @@
 	* renderergl (vanilla renderer) broken and removed from VS2010
 	* deleted mac, unix and win32 folder
 	* merged all that in sys folder
-	* updated predefenitions for VS2010 for wolf and rendererGL3 with SDL
+	* updated predefinitions for VS2010 for wolf and rendererGL3 with SDL
 	* release build and dedicated server broken (debug working)
 	* game need SDL.dll to work now
 	* fixed video playback and RE_RegisterModel: NULL name should be only avaiable if g_developer is 1
@@ -998,11 +998,11 @@
 
 2011-04-24 Dusan Jocic <dusanjocic@msn.com>
 
-	* Added LUA feature from ETPUB, updated game predefenitions for support LUA (game need lua5.1.dll to load)
+	* Added LUA feature from ETPUB, updated game predefinitions for support LUA (game need lua5.1.dll to load)
 
 2011-04-23 Dusan Jocic <dusanjocic@msn.com>
 
-	* Updated predefenitions for VS2010 
+	* Updated predefinitions for VS2010
 	* Increased slots support from 64 to 128 
 
 2011-04-23 donmichelangelo <michael@michaelseevogel.de>
@@ -1056,7 +1056,7 @@
 
 2011-04-17 Dusan Jocic <dusanjocic@msn.com>
 
-	* new defenitions for xvid video playback (default 32bit), set OpenAL to 0 (default)
+	* new definitions for xvid video playback (default 32bit), set OpenAL to 0 (default)
 
 2011-04-17 Robert Beckebans <trebor_7@users.sourceforge.net>
 
@@ -1076,7 +1076,7 @@
 
 2011-04-12 Dusan Jocic <dusanjocic@msn.com>
 
-	* Added support for XVID and updated predefenitions for XVID in Visual Studio 2010
+	* Added support for XVID and updated predefinitions for XVID in Visual Studio 2010
 
 2011-04-06 Zsombor Gegesy <gzsombor@gmail.com>
 
@@ -1939,7 +1939,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
   dedicated mac server binary
 	
 19-05-2005		Zinx <zinx at bluecherry.net>
-	+ Fixed xxx - random lockups occured when drawing trails
+	+ Fixed xxx - random lockups occurred when drawing trails
 
 17-05-2005		TTimo <ttimo@idsoftware.com>
 - zinx. fix -DNDEBUG in Linux bins
@@ -2679,8 +2679,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added scripts to fix various sound / gameplay bugs
 	+ Added cvar (g_disableComplaints) to disable complaint system for certain type of kills, 1 = mines, 2 = airstrike/ffe, 4 = mortar, add together for multiple types
 	+ Raised (lowered) the health required to force someone into limbo
-	+ Moved addrenaline needles to seperate weapon bank
-	+ Moved landmines to seperate weapon bank
+	+ Moved adrenaline needles to separate weapon bank
+	+ Moved landmines to separate weapon bank
 	+ Fixed switching to weapon after dropping dynamite/stachel/landmine
 	+ Fixed panzerfaust no-shoot icon display incorrectly when spectating someone
 	+ Fixed match_latejoin not working when g_noteamswitching was enabled
@@ -2691,9 +2691,9 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added ability for covert ops/engineer to pick up weapons from the opposing team of the same class
 	+ Added filtering out of mouse commands whilst being revived to stop view snapping around later
 	+ Added ability to show smaller popup messages (such as death messages) with cvar (cg_drawSmallPopupIcons)
-	+ Made disguised Covert Ops indicator independant of cg_drawCrosshairNames
+	+ Made disguised Covert Ops indicator independent of cg_drawCrosshairNames
 	+ Added temp banning system for when players are kicked (by vote, or from complaints), defaults to 5 mins
-	+ Fixed exploits that allowed silent plants next to constructables
+	+ Fixed exploits that allowed silent plants next to constructibles
 	+ Fixed defusing dynamite next to health/ammo cabinets giving XP
 	+ Fixed covert ops/solider upgrades carrying over to other classes
 	
@@ -2876,7 +2876,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Gordon <djbob@splashdamage.com>
 	+ "Fixed" grenades flying through the screen when switching from gpg40/m7 to other weapon
-	+ Fixed players not recieving proper map change info resulting in graphical glitches etc
+	+ Fixed players not receiving proper map change info resulting in graphical glitches, etc.
 
 11-05-2003
 			TTimo <ttimo@idsoftware.com>
@@ -3120,7 +3120,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed getting health bar on disguised covertops incorrectly at close range
 	+ Bumping network protocol version number
 	+ Added new rank strings + other related stuff
-	+ Fixed tank/configstring issue, code was using inconsistant MAX limits for dlight comfingstrings...
+	+ Fixed tank/configstring issue, code was using inconsistent MAX limits for dlight configstrings...
 	+ Fixed picking up a k43 (engineer version), printing you picked up a Kar98
 	+ Added defusing satchel charge gives 6xp to exp+con skills
 	+ Fixed death anims being screwed up with corpses
@@ -3369,7 +3369,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Re-added the "you will spawn as..." text
 	+ Fixed mortar icon still showing when out of mortar ammo
 	+ Added heading to player debriefing screen, and reshufled page orders
-	+ Changed crosshairclient to allow display, even before confirmation from server is recieved, assumes clientinfo->health is valid
+	+ Changed crosshairclient to allow display, even before confirmation from server is received, assumes clientinfo->health is valid
 	+ Fixed disconnect icon drawing in incorrect location
 	+ Added tack to load screen for levelshot
 	+ Chaned fireteam hover icons to only display when appropriate client is selected
@@ -3406,7 +3406,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 26-04-2003
 			Arnout <rr2do2@splashdamage.com>
 	+ Upped max script size in PC_Script_Parse to 4096.
-	+ Added serversort_* dependant conditionalScript.
+	+ Added serversort_* dependent conditionalScript.
 	+ ATVI Wolfenstein XP #3524 : Cleaned up server browsing sorting when switching between dialogs.
 	+ Increased server info buffer size (caused only around 10 clients to show).
 	+ Fixed favourites checkbox mouseinput handling.
@@ -3531,7 +3531,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed various OSP messages not printing to screen
 	+ Fixed dying from flames incorrectly assigning the kill to the world, not the player
 	+ Changed cursor on edit field on debriefing to be white
-	+ Adjusted "Following bleh" text to not overlap compass, and have consistant shadowing
+	+ Adjusted "Following <player>" text to not overlap compass, and have consistent shadowing
 	+ Added meansofdeath for browning/mg42 on tank
 	+ Added forcing of bypassmouseinput to 0 when opening all cgame based guis
 	+ Fixed blood spurts not showing from players that are shot
@@ -3555,7 +3555,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed being able to get into a tank with a ticking grenade/armed panzer
 	+ Fixed being able to stop a grenade throw my moving while prone (just autofires now)
 	+ Added some better feedback to g_spawnstring errors
-	+ Fixed PM_CorectAllSolid being called constantly for players in tanks
+	+ Fixed PM_CorrectAllSolid() being called constantly for players in tanks
 	+ Fixed tinfo parsing offset being 1 off
 	
 			Arnout <rr2do2@splashdamage.com>
@@ -3688,7 +3688,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added new fireteam chat sections
 	+ Added new button surrounds for limbo menu
 	+ Fixed some misc tracker bugs
-	+ Added heavy weapon restrictions for artillary/airstrike
+	+ Added heavy weapon restrictions for artillery/airstrike
 	
 ---------------- BUILD 2.31.2 - 2.31b (ettest)
 
@@ -3840,7 +3840,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed campaign finding logic so it now only allows campaigns to be loaded through the /campaign command, or typing map mapname where mapname is the first map of a campaign.
 	+ Sync with Q3's commandline parsing.
 	+ Demo BASEGAME define fix.
-	+ Made clientsided campaign determination dependant on servers wolfinfo.
+	+ Made clientsided campaign determination dependent on servers wolfinfo.
 	+ Fixed corpses always facing the direction the player spawned at. (Don't use s.angles on a player, use viewangles!)
 	+ Removed scope bar rendering, zooming, sway meter rendering if thirdperson.
 	+ Added r_trisColor, can use the formats "1.0 1.0 1.0 1.0" and "0xFFFFFFFF" ( "R G B A", 0-1 range or "0xRRGGBBAA", 00-FF range )
@@ -3997,9 +3997,9 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Arnout <rr2do2@splashdamage.com>
 	+ Some filesystem fixes/cleanups.
-	+ Added surface dependant grenade bounce sounds.
-	+ Added surface dependant jump sounds.
-	+ Added surface dependant crater sounds.
+	+ Added surface-dependent grenade bounce sounds.
+	+ Added surface-dependent jump sounds.
+	+ Added surface-dependent crater sounds.
 	+ Fixed text printing functions in CGame. (don't use (int)*s, use (unsigned char)*s).
 
 04-04-2003
@@ -4167,7 +4167,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	  fading effects, etc.)
 
 			Gordon	<djbob@splashdamage.com>
-	+ Fixed infinite loop with large popup messages if recieving large numbers at once
+	+ Fixed infinite loop with large popup messages if receiving large numbers at once
 	+ Reworked tank to be less jittery
 	+ Changed server stats on load menu as per paul's request
 	+ Finished recolouring the debriefing screens
@@ -4287,7 +4287,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ FG42 now gets a bigger sway from shots.
 	+ Made colt as acurate as the luger.
 	+ Made rifles do more damage and be more accurate.
-	+ Added mortar targetting aids.
+	+ Added mortar targeting aids.
 	+ Script mover die fix for certain weapons.
 
 			Gordon	<djbob@splashdamage.com>
@@ -4400,7 +4400,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added XP display to hud
 	+ Removed construction/destruction fading icons from outer edge of compass
 	+ Changed ammo/health racks to recharge at half rate, and only dispense max of 2 packs to a client per minute
-	+ Changed display of stats on hud to use stars from limbo menu to be more consistant
+	+ Changed display of stats on HUD to use stars from limbo menu to be more consistent
 	+ Changed text on hud to use new arial font
 	+ Fixed limbo open key overriding edit box on limbo menu
 	+ Made misc_beams solid
@@ -4427,7 +4427,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed flags to scale from different position on commandmap
 	+ Added "realistic" compass tracking, (doesnt snap instantly to angles, overshoots, etc...)
 	+ Fixed tracking cams to follow script_movers properly
-	+ Changed client to poll server for objective cam until it recieves the currently selected one (solves issues with flood protect kicking in)
+	+ Changed client to poll server for objective cam until it receives the currently selected one (solves issues with flood protect kicking in)
 	+ Added old health/stamina/power bars back
 	+ Re-wrote forest tank script, and added script command that allows better dynamite tracking from scripts
 	+ Changed movers on command map to move smoothly if entity is in client's PVS
@@ -4518,7 +4518,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Gordon	<djbob@splashdamage.com>
 	+ Added new server flags for entities to enable client views outside of PVS, whilst keeping the entity there 
 		- flags allow the local PVS to be added/not added as required
-	+ Seperated class/team/weapon selection out to seperate client commands and updated server to handle this
+	+ Separated class/team/weapon selection out to separate client commands and updated server to handle this
 	+ Fixed static misc_gamemodel count not being reset on the client, leading to eventual overflow error
 	+ Fixed spawn flag positions not being parsed under certain circumstances
 	+ Fixed text highlights on commandmap being rendered under other items
@@ -4800,7 +4800,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ If firing is unsafe, exit Battle_Fight mode
 	+ Bots keep looking for better goals while travelling towards an mg42
 	+ Changed new goal selection so that it does it all in one pass
-	+ Changed new goal selection so an already existing goal can be overridden by a another goal found after the existing goal
+	+ Changed new goal selection so an already existing goal can be overridden by another goal found after the existing goal
 
 			Arnout	<rr2do2@splashdamage.com>
 	+ Fixed GPG40 and M7 being able to shoot even when the powerbar doesn't allow it.
@@ -4903,7 +4903,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed bots running into tank in order to move it, now will move just close enough to trigger it
 	+ Bots will dismount mg42 immediately when it is disabled in scripting
 	+ Fixed bots having trouble mounting mg42 on tower
-	+ Improved dynamite targetting system
+	+ Improved dynamite targeting system
 	+ Special handling for mobile mg42 prone mode
 	+ Updated targeting to include all scoped weapons
 	+ Scripting now uses TOIs to decide whether a constructible/explosive target is dynamite-able
@@ -4972,14 +4972,14 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Removed damageRatio and damageDealtRatio.
 	
 			Gordon	<djbob@splashdamage.com>
-	+ Cleaned up dynamitable target lookups for bots to be consistant with current spawnflags etc
-	+ Cleaned up bot weapon selection (per class), to be consistant with new weapon loadouts
+	+ Cleaned up dynamitable target lookups for bots to be consistent with current spawnflags, etc.
+	+ Cleaned up bot weapon selection (per class), to be consistent with new weapon loadouts
 	+ Filled in missing entries in bot weapon selection priority lookup/fixed some fall throughs that shouldn't have existed
 	+ Added filter to setbotgoalstate to stop things we dont want showing up on listbotgoals
 	+ Fixed setwolfspawnweapons allowing the field ops to select weapons they shouldn't have
 	+ Fixed bots not being able to choose objects to dynamite
 		- tweaked code for area to travel to to destroy object, now goes to closest area rather than centre of object
-	+ Tweaked bot class/weapon selction when team is being attacked by mg42 towers (more likely to go soldier/panzer)
+	+ Tweaked bot class/weapon selection when team is being attacked by MG42 towers (more likely to go soldier/panzer)
 	+ Tweaked bot's enemy finding for bot with panzerfaust v. mg42 mounted client
 			
 19-02-2003
@@ -5906,7 +5906,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 		+ setting lib behaviour to non-interactive (avoids failed prompts)
 		+ adding support for wwwdl fail message, server fallbacks to regular download if client sends a wwwdl fail
 		+ successfully downloaded a file via login/pass ftp
-		+ client has cl_wwwDownload CVAR_USERINFO, server uses to decide wether to start a www download
+		+ client has cl_wwwDownload CVAR_USERINFO, server uses to decide whether to start a www download
 
 	28-12-2002
 				TTimo <ttimo@idsoftware.com>
@@ -5956,7 +5956,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			had a client connect to server, perform a download, and enter the game
 		+ several new files and file naming reorganisation for the download stuff in qcommon/	
 		+ note about libwww event loop:	
-			There is a default event handling loop in libwww. Heavily platform dependant, and preemptive.
+			There is a default event handling loop in libwww. Heavily platform-dependent, and preemptive.
 			We need to get rid of preemption. We could work on a custom pseudo-threaded loop, or do true threading.
 			True threading doesn't sound good. Cross-platformness bustage is likely, and it's harder to put together.
 			(so I went for pseudo-threaded / iterative)
@@ -5965,7 +5965,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 				TTimo <ttimo@idsoftware.com>
 		+ negociation of ftp/http download
 		+ very basic wwwdl prototype:
-			- basic server use case: extended the svc_download stuff so that server redirects to an URL (hardcoded for now)
+			- basic server use case: extended the svc_download stuff so that server redirects to a URL (hardcoded for now)
 			- basic client use case: acknowledge wwwdl, proceed, send a done download
 			- builds on Linux only. very basic hook up to libwww
 		+ tag trunk as wwwdl-tag	
@@ -6115,7 +6115,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Players do not respawn in single player games.
 	+ Headshot does regular (no extra) damage on allied players in single player games.
 	+ Turned off friendly fire in single player games.
-	+ SP now use large med pack (previously unused), with a updated heal value of 50 points
+	+ SP now use large med pack (previously unused), with an updated heal value of 50 points
 
 			Tara <tara@maddocsoftware.com>
 	+ Removed airstrike command for allied SP bots
@@ -6195,7 +6195,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 		won't break out into full battle fight/seek cover behavior
 	+ Changed ammo table so engineers start with several dynamites, so can
 		complete maps that need it (like 88mm)
-	+ Don't cause all enemy bots to disappear in SP when a engineer destructible appears for the enemy.
+	+ Don't cause all enemy bots to disappear in SP when an engineer destructible appears for the enemy.
 	+ Don't play idle animations in cinematics.
 
 			Tim <tim@maddocsoftware.com>
@@ -6705,7 +6705,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed crash in BSPC after CM_LoadMap, relating to uninitialized memory
 	+ Fixed BSPC treating all surfaces with patchheight/width as patches, not checking the surfacetype
 	+ Added frustrum culling of temporary marksurfaces (player shadows for example) for a little speedup
-	+ Moved parsing of skybox parms out to a seperate function
+	+ Moved parsing of skybox parms out to a separate function
 
 01-12-2002
 			Arnout <rr2do2@splashdamage.com>
@@ -6824,7 +6824,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	
 25-11-2002
 			Arnout <rr2do2@splashdamage.com>
-	+ Made MDS and MDM set their surfacetype on load, instead of being dependant on what the model compiler provides us.
+	+ Made MDS and MDM set their surfacetype on load, instead of being dependent on what the model compiler provides us.
 	+ Rewrote a lot of the atmospheric effects code for snow (still have to move it over to rain). Runs much faster now, no traces being used anymore and early-out culling.
 
 			Xinbo <xkan@maddocsoftware.com>
@@ -7572,12 +7572,12 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Bots now can spawn with a rank and skills
 	
 			Gordon <djbob@splashdamage.com>
-	+ Changed LOTS of audio paths about for tim, to remove the complete mess that it was before, sound paths are now (mainly) consistant across weapons
+	+ Changed lots of audio paths about for tim, to remove the complete mess that it was before, sound paths are now (mainly) consistent across weapons
 	+ Removed various loading of sounds that dont exist or do exist but are never referenced in code
 
 11-10-2002
 			Arnout <rr2do2@splashdamage.com>
-	+ Started save game system impementation. Ported over WolfSP code and hooked 'extractfuncs' back into the project.
+	+ Started save game system implementation. Ported over WolfSP code and hooked 'extractfuncs' back into the project.
 	+ Removed the need of 'profiles.dat' for profile detection.
 	+ Added 'gameinfo.dat'. This file, parsed by the engine, specifies which gametypes are SP, what is the default SP gametype and if profiles are enabled.
 	+ Fixed SP AI crash when no profile exists.
@@ -7603,8 +7603,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Bots will not target diguised enemies.
 
 			Gordon <djbob@splashdamage.com>
-	+ Rewrote some of the limbomenu etc backend, the left and right hand panels are now sperated totally, and can be shown independantly 
-		(need to check squad setup still works ok, as it's panels are still non-indepdant, and will/should likely stay that way)
+	+ Rewrote some of the limbomenu, etc. backend, the left and right hand panels are now separated totally, and can be shown independently
+		(need to check squad setup still works ok, as its panels are still non-independent, and will/should likely stay that way)
 	+ Fixed limbomenuy not displaying when going into limbo
 	+ Added display of medals and rank in team overlay
 
@@ -7712,7 +7712,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added double knife damage for Covert Ops.
 	+ Increased landmine arming time by 15%.
 	+ Reduced landmine damageradius by 25% (this affects damage as well).
-	+ Throwing a smoke grenade doesn't take make you loose your disguise anymore.
+	+ Throwing a smoke grenade doesn't take make you lose your disguise anymore.
 	+ Fixed do-not-shoot icon staying on screen after player isn't visible anymore.
 
 			Ryan <ryan@gmistudios.com>
@@ -7877,8 +7877,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Tara <tara@maddocsoftware.com>
 	+ Bots given a MoveToLoc command while the player is looking at a door
 		will open that door.
-	+ MoveToLoc command targetting a friendly body will order Medic to revive,
-		targetting an enemy body will order Covert Op to get disguise.
+	+ MoveToLoc command targeting a friendly body will order Medic to revive,
+		targeting an enemy body will order Covert Op to get disguise.
 	+ If give Revive command with no target, Medic bot will search for dead 
 		teammate within autonomy range
 	+ If give Disguise command with not target, Covert Ops bot will search for dead
@@ -8038,7 +8038,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	
 05-09-2002
 			Arnout <rr2do2@splashdamage.com>
-	+ Fixed flickering during mapload. Reason was that just before loadmap was called the screen was cleared and between the loading of lumps the engine forces an updatescreen. Interesting issue, if you turn on r_clear 1, the actual levelshot doesn't seem to be rendered at all (altough it passes through the backend to the OpenGL drivers).
+	+ Fixed flickering during mapload. Reason was that just before loadmap was called, the screen was cleared, and between the loading of lumps, the engine forces an updatescreen. Interesting issue, if you turn on r_clear 1, the actual levelshot doesn't seem to be rendered at all (although it passes through the backend to the OpenGL drivers).
 	+ Fixed allied 2 minute and 30 seconds warning (backport from 1.4).
 
 			Gordon <djbob@splashdamage.com>
@@ -8124,7 +8124,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 31-08-2002
 			Ian	<ian@maddocsoftware.com>
-	+ Fixed manual targetting of destructibles and constructibles by bots to look at the
+	+ Fixed manual targeting of destructibles and constructibles by bots to look at the
 	  trigger_objective_info and suss out whether to build or blow from the target.
 	+ For SP changed the distance an engineer has to be from a target to plant dynamite to
 	  be bigger, as the AAS info is frquently trashed by the mere presence of the trigger and
@@ -8335,7 +8335,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added 'lightmap' command to shaders to load the texture source for a stage. This will load an image as if it was a lightmap.
 	+ Added r_lightmap 3, which works the same as r_lightmap 2 but with the blue and red components inverted.
 	+ Fixed bulletmarks not appearing in a reliable way.
-	+ Changed ui_popup call to not be dependant on the engine doing string->integer translations anymore.
+	+ Changed ui_popup call to not be dependent on the engine doing string->integer translations anymore.
 	
 			xkan <xkan@maddocsoftware.com>
 	+ Added SetDamageRatio to the script for general entity and bot
@@ -8451,7 +8451,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added prone and weaponbank 7 to menus.
 	+ Added locked door hint.
 	+ Added rank icons.
-	+ Team_wolf_objective entity now has spawnflags 1 and 2 (DEFAULT_AXIS and DEFAULT_ALLIES) to set the team that can spawn there. Targetting them from a script using alertentity toggles their team.
+	+ Team_wolf_objective entity now has spawnflags 1 and 2 (DEFAULT_AXIS and DEFAULT_ALLIES) to set the team that can spawn there. Targeting them from a script using alertentity toggles their team.
 	+ Upped version number to Wolf 2.00q-MP.
 	+ Fixed tickertape drawing behind scope.
 	+ Fixed colour terminator on tickertape.
@@ -8551,7 +8551,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout	<rr2do2@splashdamage.com>
 	+ Removed Squad Setup tab from multiplayer.
 	+ Added mininum explosion delay to GPG40 and M7, they can't explode before they have been in the world for at least a second now.
-	+ Changed initial spawns to be no longer random but dependant on selection only (ET only).
+	+ Changed initial spawns to be no longer random, but dependent on selection only (ET-only).
 
 			Gordon	<djbob@splashdamage.com>
 	+ Fixed destruct/construct icon on commandmap not displaying for moving objects
@@ -8571,7 +8571,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Removed echo sound for silenced sniperrifles.
 	+ Changed weapon recoil to be predicted.
 	+ Added recoil to the Mobile MG42 for standing up and crouched firing. (Reduced in crouched)
-	+ Fixed weapon recoil code to be framerate independant.
+	+ Fixed weapon recoil code to be framerate-independent.
 	+ Changed prone hands to only appear when moving through user input.
 	+ Changed GPG40 to show correct third person model.
 	+ Fixed GPG40 and M7 not being classed as explosive damage to constructibles.
@@ -8614,7 +8614,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Gordon	<djbob@splashdamage.com>
 	+ Removed various tabs/options from singleplayer ingame ui
 	+ Removed various onscreen messages from singleplayer (obituaries, team joins, etc)
-	+ Removed BAR, Masuer, and Venom from soldier's weapon selection choices
+	+ Removed BAR, Mauser, and Venom from soldier's weapon selection choices
 	+ Fixed bug with using binoculars then switching to another weapon
 	+ Fixed bug causing game to crash when a player dropped a weapon
 	+ Fixed health packs giving 50 health instead of 20
@@ -8640,7 +8640,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed "death" not being called for the majority of killed entities.
 	+ Fixed crash with prone hand weapon related to altweapon usage.
 	+ Added "wolfsp" as type to .arena files for SP maps.
-	+ Added a type field to .campaign fields, only campaigns marked as "wolfsp" will show in the campagin menu.
+	+ Added a type field to .campaign fields, only campaigns marked as "wolfsp" will show in the campaign menu.
 
 ---------------- BUILD 021 - 2.00n-MP (missionpack)
 
@@ -8909,7 +8909,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added screen bobbing for prone mode.
 	+ Changed prone mode to require a player to be crouched before double tap forward makes them go into prone.
 	+ Smoothened screen bobbing when a player stops moving. Previously it would snap to the center, now it lerps back to it.
-	+ Lowered rotation speed for prone mode, this is sensitivity independant.
+	+ Lowered rotation speed for prone mode, this is sensitivity-independent.
 
 			Gordon	<djbob@splashdamage.com>
 	+ Added support for mg42s to be placed on moving objects, still a little buggy in places
@@ -8966,7 +8966,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 07-06-2002
 			Arnout	<rr2do2@splashdamage.com>
-	+ Fixed dual func_constructible targetting trigger_objective_info entities generating two constructible markers at times.
+	+ Fixed dual func_constructible targeting trigger_objective_info entities generating two constructible markers at times.
 	+ Bumped version number to 2.00f-MP
 	+ Added support for animated misc_gamemodels (client sided animation). Spawnflags 2 and the 'frames' key enable this.
 	+ Added .skin support for misc_gamemodels, usuable through the 'skin' key in the entity.
@@ -9031,7 +9031,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 21-05-2002
 			Gordon	<djbob@splashdamage.com>
 	+ Tidied up animation loading for player models
-	+ Fixed re-occuring weapon switch on respawn, particularily noticible on gpg40/kar98
+	+ Fixed re-occurring weapon switch on respawn, particularly noticeable on gpg40/kar98
 	+ Added locking of next weapon when switching weapons, doesn't affect uninterrupted weapon changes, but forces a switch to secondary weapon to complete properly
 	+ Added latching of gpg40 state
 
@@ -9260,7 +9260,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 26-04-2002
 			Arnout	<rr2do2@splashdamage.com>
 	+ Removed wrench, moved abilities into pliers.
-	+ Changed WP_SMOKE_GRENADE defination to WP_SMOKE_MARKER for clarity.
+	+ Changed WP_SMOKE_GRENADE definition to WP_SMOKE_MARKER for clarity.
 	+ Added covert ops teamname centerprint class indication.
 	+ Changed way construction system works. Objects under construction are now non-solid. They turn solid at the end of the construction cycle, gibbing any players inside them, returning flags and removing any other entities.
 	+ Changed func_constructible to now use s.angles2[0] to store its construction progress instead of density. (Needed floating point precision.)
@@ -9333,7 +9333,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 19-04-2002
 			Arnout	<rr2do2@splashdamage.com>
-	+ Made trigger_objective_info location text show up around constructables, even when they are already constructed.
+	+ Made trigger_objective_info location text show up around constructibles, even when they are already constructed.
 	+ Fixed a bug with trigger_objective_info entities not handling START_BUILD set func_constructible ents properly.
 	+ Fixed a bug with checkpoints not setting initial spawns properly.
 	+ Setting a spawn to state default with a script now makes it active for spawning.
@@ -9369,7 +9369,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 17-04-2002
 			Arnout	<rr2do2@splashdamage.com>
-	+ Hint icon for constructible icons now shows for all team members again, to be consistant with the desctructable icon for dynamite.
+	+ Hint icon for constructible icons now shows for all team members again, to be consistent with the desctructible icon for dynamite.
 	+ Added hint icon for dynamite placement that shows when near a fully constructed object.
 	+ Added compass target markers for not invulnerable enemy constructed objects.
 	+ Added 'inclictor' to radius damage.
@@ -9421,7 +9421,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout	<rr2do2@splashdamage.com>
 	+ Removed 'team' from func_constructible as it conflicts with G_FindTeams.
 	+ Fixed powerup bar dropping even if construction of building was failing.
-	+ Fixed not being able to build if you were standing in an trigger_objective_info but close to a solid object.
+	+ Fixed not being able to build if you were standing in a trigger_objective_info but close to a solid object.
 
 			Gordon	<djbob@splashdamage.com>
 	+ Moved max ammo limits to the actual weapon table, instead of 3*clip limit.
@@ -9497,7 +9497,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 02-03-2002
 			Arnout	<rr2do2@splashdamage.com>
-	+ Changed trigger_objective_info to allow for targetting entities other than func_explosive.
+	+ Changed trigger_objective_info to allow for targeting entities other than func_explosive.
 	+ Added constructible objective compass icon.
 	
 

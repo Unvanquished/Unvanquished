@@ -8,7 +8,7 @@ Why?
 Security.
 Portability.
 
-It may be more aproachable.
+It may be more approachable.
 
 can still use regular dlls for development purposes
 

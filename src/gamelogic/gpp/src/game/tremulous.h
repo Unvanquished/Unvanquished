@@ -514,7 +514,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * _SPLASHDAMGE   - the amount of damage caused by this buildable when it blows up
  * _SPLASHRADIUS  - the radius around which it does this damage
  *
- * REACTOR_BASESIZE - the maximum distance a buildable can be from an reactor
+ * REACTOR_BASESIZE - the maximum distance a buildable can be from a reactor
  * REPEATER_BASESIZE - the maximum distance a buildable can be from a repeater
  * HUMAN_BHLTH_MODIFIER - overall health modifier for coarse tuning
  *

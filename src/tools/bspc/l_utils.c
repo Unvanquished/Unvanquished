@@ -117,7 +117,7 @@ void AppendPathSeperator( char *path, int length ) {
 		path[pathlen] = PATHSEPERATOR_CHAR;
 		path[pathlen + 1] = '\0';
 	} //end if
-} //end of the function AppenPathSeperator
+} //end of the function AppendPathSeparator
 //===========================================================================
 // returns pointer to file handle
 // sets offset to and length of 'filename' in the pak file

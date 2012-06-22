@@ -107,7 +107,7 @@ extern "C" {
 #pragma warning(disable : 4711) // selected for automatic inline expansion
 #pragma warning(disable : 4220) // varargs matches remaining parameters
 #pragma warning(disable : 4706) // assignment within conditional expression // cs: probably should correct all of these at some point
-#pragma warning(disable : 4005) // macro redefination
+#pragma warning(disable : 4005) // macro redefinition
 #pragma warning(disable : 4996) // This function or variable may be unsafe. Consider using 'function_s' instead
 #pragma warning(disable : 4075) // initializers put in unrecognized initialization area
 #pragma warning(disable : 4355) // 'this': used in member initializer list
@@ -890,7 +890,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define SnapVector( v )              do { v[ 0 ] = ( (int)( v[ 0 ] ) ); v[ 1 ] = ( (int)( v[ 1 ] ) ); v[ 2 ] = ( (int)( v[ 2 ] ) ); } while ( 0 )
 
-// just in case you do't want to use the macros
+// just in case you don't want to use the macros
 	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );
 	void     _VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out );
 	void     _VectorAdd( const vec3_t veca, const vec3_t vecb, vec3_t out );
@@ -1950,7 +1950,7 @@ char *Q_UTF8Unstore( int e );
 		int torsoTimer; // don't change low priority animations until this runs out
 		int torsoAnim; // mask off ANIM_TOGGLEBIT
 
-		int movementDir; // a number 0 to 7 that represents the reletive angle
+		int movementDir; // a number 0 to 7 that represents the relative angle
 		// of movement to the view angle (axial and diagonals)
 		// when at rest, the value will remain unchanged
 		// used to twist the legs during strafing
@@ -2025,7 +2025,7 @@ char *Q_UTF8Unstore( int e );
 		// So to use persistent variables here, which don't need to come from the server,
 		// we could use a marker variable, and use that to store everything after it
 		// before we read in the new values for the predictedPlayerState, then restore them
-		// after copying the structure recieved from the server.
+		// after copying the structure received from the server.
 
 		// Arnout: use the pmoveExt_t structure in bg_public.h to store this kind of data now (presistant on client, not network transmitted)
 

@@ -69,7 +69,7 @@ The "base path" is the path to the directory holding all the game directories an
 the executable.  It defaults to ".", but can be overridden with a "+set fs_basepath c:\quake3"
 command line to allow code debugging in a different directory.  Basepath cannot
 be modified at all after startup.  Any files that are created (demos, screenshots,
-etc) will be created reletive to the base path, so base path should usually be writable.
+etc) will be created relative to the base path, so base path should usually be writable.
 
 The "cd path" is the path to an alternate hierarchy that will be searched if a file
 is not located in the base path.  A user can do a partial install that copies some
@@ -132,7 +132,7 @@ File search order: when FS_FOpenFileRead gets called it will go through the fs_s
 structure and stop on the first successful hit. fs_searchpaths is built with successive
 calls to FS_AddGameDirectory
 
-Additionaly, we search in several subdirectories:
+Additionally, we search in several subdirectories:
 current game is the current mode
 base game is a variable to allow mods based on other mods
 (such as baseq3 + missionpack content combination in a mod for instance)
@@ -312,7 +312,7 @@ typedef struct
 static fileHandleData_t fsh[ MAX_FILE_HANDLES ];
 
 // TTimo - show_bug.cgi?id=540
-// wether we did a reorder on the current search path when joining the server
+// whether we did a reorder on the current search path when joining the server
 static qboolean fs_reordered;
 
 // never load anything from pk3 files that are not present at the server when pure
@@ -1172,7 +1172,7 @@ fileHandle_t FS_FOpenFileUpdate( const char *filename, int *length )
 ===========
 FS_FilenameCompare
 
-Ignore case and seprator char distinctions
+Ignore case and separator char distinctions
 ===========
 */
 qboolean FS_FilenameCompare( const char *s1, const char *s2 )
@@ -1662,7 +1662,7 @@ NOTE TTimo:
         on linux it can be in fs_homepath/<fs_game>/ or fs_basepath/<fs_game>/
   the dll is extracted to fs_homepath (== fs_basepath on win32) if needed
 
-  the return value doesn't tell wether file was extracted or not, it just says wether it's ok to continue
+  the return value doesn't tell whether file was extracted or not, it just says whether it's ok to continue
   (i.e. either the right file was extracted successfully, or it was already present)
 
   cvar_lastVersion is the optional name of a CVAR_ARCHIVE used to store the wolf version for the last extracted .so
@@ -1858,7 +1858,7 @@ int FS_DeleteDir( char *dirname, qboolean nonEmpty, qboolean recursive )
 /*
 ==============
 FS_OSStatFile
-Test an file given OS path:
+Test a file given OS path:
 returns -1 if not found
 returns 1 if directory
 returns 0 otherwise
@@ -2501,7 +2501,7 @@ void FS_FreeFile( void *buffer )
 ============
 FS_WriteFile
 
-Filename are reletive to the quake search path
+Filename are relative to the quake search path
 ============
 */
 void FS_WriteFile( const char *qpath, const void *buffer, int size )
@@ -2721,7 +2721,7 @@ static int FS_AddFileToList( char *name, char *list[ MAX_FOUND_FILES ], int nfil
 	{
 		if ( !Q_stricmp( name, list[ i ] ) )
 		{
-			return nfiles; // allready in list
+			return nfiles; // already in the list
 		}
 	}
 
@@ -3149,7 +3149,7 @@ int FS_GetModList( char *listbuf, int bufsize )
 			path = FS_BuildOSPath( fs_basepath->string, name, "" );
 			nPaks = 0;
 			pPaks = Sys_ListFiles( path, ".pk3", NULL, &nPaks, qfalse );
-			Sys_FreeFileList( pPaks );  // we only use Sys_ListFiles to check wether .pk3 files are present
+			Sys_FreeFileList( pPaks );  // we only use Sys_ListFiles to check whether .pk3 files are present
 
 			/* try on home path */
 			if ( nPaks <= 0 )
@@ -3280,7 +3280,7 @@ void FS_ConvertPath( char *s )
 ===========
 FS_PathCmp
 
-Ignore case and seprator char distinctions
+Ignore case and separator char distinctions
 ===========
 */
 int FS_PathCmp( const char *s1, const char *s2 )
@@ -4573,7 +4573,7 @@ static const char *pak_checksums = "-137448799 131270674 125907563 -1023558518 7
 static const char *pak_names = "mp_pak4 mp_pak3 mp_pak2 mp_pak1 mp_pak0 pak0";
 
 /*
-this is the pure checksum string for a constant value of fs_checksumFeed we have choosen (see SV_SpawnServer)
+this is the pure checksum string for a constant value of fs_checksumFeed we have chosen (see SV_SpawnServer)
 to obtain the new string for a different fs_checksumFeed value, run a regular server and enable the relevant
 verbosity code in SV_SpawnServer and FS_LoadedPakPureChecksums (the full server version of course)
 
@@ -4581,7 +4581,7 @@ NOTE: if you have an mp_bin in the middle, you need to take out its checksum
   (we keep mp_bin out of the faked stuff because we don't want to have to update those feeds too often heh)
 
 once you have the clear versions, you can shift them by commenting out the code chunk in FS_RandChecksumFeed
-you need to use the right line in FS_LoadedPakPureChecksums wether you are running on clear strings, or shifted ones
+you need to use the right line in FS_LoadedPakPureChecksums whether you are running on clear strings, or shifted ones
 */
 
 /*
@@ -5376,7 +5376,7 @@ unsigned int FS_ChecksumOSPath( char *OSPath )
 
 	fclose( f );
 
-	// Com_BlockChecksum returns an indian-dependent value
+	// Com_BlockChecksum returns an endian-dependent value
 	// (better fix would have to be doing the LittleLong inside that function..)
 	checksum = LittleLong( Com_BlockChecksum( buf, len ) );
 

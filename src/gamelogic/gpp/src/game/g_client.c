@@ -1495,7 +1495,7 @@ ClientSpawn
 
 Called every time a client is placed fresh in the world:
 after the first ClientBegin, and after each respawn
-Initializes all non-persistant parts of playerState
+Initializes all non-persistent parts of playerState
 ============
 */
 void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles )
@@ -1602,7 +1602,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	flags = ( ent->client->ps.eFlags & EF_TELEPORT_BIT ) ^ EF_TELEPORT_BIT;
 	G_UnlaggedClear( ent );
 
-	// clear everything but the persistant data
+	// clear everything but the persistent data
 
 	saved = client->pers;
 	savedSess = client->sess;

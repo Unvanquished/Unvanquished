@@ -1108,7 +1108,7 @@ void Q1_CreateMapBrushes( entity_t *mapent, int modelnum ) {
 
 	//create brushes from the model BSP tree
 	brushlist = Q1_CreateBrushesFromBSP( modelnum );
-	//texture the brushes and split them when necesary
+	//texture the brushes and split them when necessary
 	brushlist = Q1_TextureBrushes( brushlist, modelnum );
 	//fix the contents textures of all brushes
 	Q1_FixContentsTextures( brushlist );

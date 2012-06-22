@@ -111,7 +111,7 @@ typedef struct cPlane_s
 // 3 or four + 6 axial bevels + 4 or 3 * 4 edge bevels
 #define MAX_FACET_BEVELS ( 4 + 6 + 16 )
 
-// a facet is a subdivided element of a patch aproximation or model
+// a facet is a subdivided element of a patch approximation or model
 typedef struct
 {
 	int      surfacePlane;

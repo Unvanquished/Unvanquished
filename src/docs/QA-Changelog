@@ -86,7 +86,7 @@ Dynamite on movers should no longer trigger objectives.
 "configstring > max_configstrings" connect bug fixed.
 Binocs are no longer allowed while using mounted mobile MG42 or mortar.
 Satchel detonator didn't work right when spectating.
-The annoying prediction error that occurs when a constructible is finished building is fixed.
+The annoying prediction error that occurrs when a constructible is finished building is fixed.
 Level 3 engineering used wrong charge for landmines.
 Field ops incorrectly used medic charge time for ammo packs.
 Prediction error when cratering is fixed.
@@ -235,7 +235,7 @@ qagame and cgame are responsible for managing retransmissions.
 Sending a message overwrites the outgoing message buffer.
 Once the message has been sent (unreliably), the message buffer is cleared.
 The message is sent with trap_SendMessage, and its status can be read
-with trap_MessageStatus.  When the cgame and/or qagame recieve a
+with trap_MessageStatus().  When the cgame and/or qagame receive a
 message, they get a *_MESSAGERECEIVED event to vmMain, which has a
 timestamp and the message that was sent during that snapshot.
 
@@ -254,16 +254,16 @@ messageStatus_t trap_MessageStatus( /* server: int clientNum */ );
 /* qagame */
 int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 );
 	command == GAME_MESSAGERECEIVED
-	(int)clientNum = arg0: clientNum message was recieved from
-	(char*)buffer = arg1: pointer to the message recieved (temporary)
-	(int)buflen = arg2: length of message recieved
+	(int)clientNum = arg0: clientNum message was received from
+	(char*)buffer = arg1: pointer to the message received (temporary)
+	(int)buflen = arg2: length of message received
 	(int)commandTime = arg3: timestamp of message (from client)
 
 /* cgame */
 int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 );
 	command == CG_MESSAGERECEIVED
-	(char*)buffer = arg0: pointer to the message recieved (temporary)
-	(int)buflen = arg1: length of message recieved
+	(char*)buffer = arg0: pointer to the message received (temporary)
+	(int)buflen = arg1: length of message received
 	(int)commandTime = arg2: timestamp of message (from server)
 
 Fixed the Com_BitSet() with ridiculous bit number in the anim condition code.

@@ -223,7 +223,7 @@ void LoadLBM(const char *filename, byte ** picture, byte ** palette)
 	int             formtype, formlength;
 	int             chunktype, chunklength;
 
-// qiet compiler warnings
+	// quiet compiler warnings
 	picbuffer = NULL;
 	cmapbuffer = NULL;
 

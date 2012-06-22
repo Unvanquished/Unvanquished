@@ -123,7 +123,7 @@ void xml_SendNode(xmlNodePtr node)
 #if 0
 		// NOTE: the NMSG_WriteString is limited to MAX_NETMESSAGE
 		// we will need to split into chunks
-		// (we could also go lower level, in the end it's using send and receiv which are not size limited)
+		// (we could also go lower level, in the end it's using send and receive which are not size limited)
 		//++timo FIXME: MAX_NETMESSAGE is not exactly the max size we can stick in the message
 		//  there's some tweaking to do in l_net for that .. so let's give us a margin for now
 
@@ -290,7 +290,7 @@ void FPrintf(int flag, char *buf)
 	if(flag == SYS_NOXML)
 		return;
 
-	// ouput an XML file of the run
+	// output an XML file of the run
 	// use the DOM interface to build a tree
 	/*
 	   <message level='flag'>

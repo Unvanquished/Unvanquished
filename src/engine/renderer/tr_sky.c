@@ -866,7 +866,7 @@ void R_BuildCloudData( shaderCommands_t *input )
 	if ( input->shader->sky.cloudHeight )
 	{
 		// ok, this is really wierd. it's iterating through shader stages here,
-		// which is unecessary for a multi-stage sky shader, as far as i can tell
+		// which is unnecessary for a multi-stage sky shader, as far as i can tell
 		// nuking this
 #if 0
 		for ( i = 0; i < MAX_SHADER_STAGES; i++ )
@@ -1057,7 +1057,7 @@ void RB_DrawSun( void )
 	{
 		// draw flare effect
 		// (SA) FYI:    This is cheezy and was only a test so far.
-		//              If we decide to use the flare business I will /definatly/ improve all this
+		//              If we decide to use the flare business, I will /definitely/ improve all this
 
 		// get a point a little closer
 		dist = dist * 0.7;

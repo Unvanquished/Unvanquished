@@ -1185,7 +1185,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 
 	G_CensorString( text, chatText, sizeof( text ), ent );
 
-	// send it to all the apropriate clients
+	// send it to all the appropriate clients
 	for ( j = 0; j < level.maxclients; j++ )
 	{
 		other = &g_entities[ j ];

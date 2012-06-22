@@ -63,7 +63,7 @@ static char         s_backgroundLoop[ MAX_QPATH ];
 static byte         decode_buffer[ BUFFER_SIZE ];
 
 /**
- * Source aquire / release
+ * Source acquire / release
  */
 static void al_mus_source_get( void )
 {

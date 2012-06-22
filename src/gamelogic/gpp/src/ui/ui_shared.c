@@ -2883,7 +2883,7 @@ qboolean Item_EnableShowViaCvar( itemDef_t *item, int flag )
 	return qtrue;
 }
 
-// will optionaly set focus to this item
+// will optionally set focus to this item
 qboolean Item_SetFocus( itemDef_t *item, float x, float y )
 {
 	int         i;

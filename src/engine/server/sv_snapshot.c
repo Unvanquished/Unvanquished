@@ -505,7 +505,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 		}
 
 		// if we haven't found it to be visible,
-		// check overflow clusters that coudln't be stored
+		// check the overflow clusters that couldn't be stored
 		if ( i == svEnt->numClusters )
 		{
 			if ( svEnt->lastCluster )

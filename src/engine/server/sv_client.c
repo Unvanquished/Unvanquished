@@ -443,7 +443,7 @@ void SV_DirectConnect( netadr_t from )
 
 	while ( qtrue )
 	{
-		// Unfortunately the string fuctions such as strlen() and Info_RemoveKey()
+		// Unfortunately the string functions such as strlen() and Info_RemoveKey()
 		// are quite expensive for large userinfo strings.  Imagine if someone
 		// bombarded the server with connect packets.  That would result in very bad
 		// server hitches.  We need to fix that.
@@ -1271,14 +1271,14 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			}
 
 			SV_BadDownload( cl, msg );
-			MSG_WriteString( msg, errorMessage );  // (could SV_DropClient isntead?)
+			MSG_WriteString( msg, errorMessage );  // (could SV_DropClient instead?)
 
 			return;
 		}
 
 		// www download redirect protocol
 		// NOTE: this is called repeatedly while a client connects. Maybe we should sort of cache the message or something
-		// FIXME: we need to abstract this to an independant module for maximum configuration/usability by server admins
+		// FIXME: we need to abstract this to an independent module for maximum configuration/usability by server admins
 		// FIXME: I could rework that, it's crappy
 		if ( sv_wwwDownload->integer )
 		{
@@ -1361,7 +1361,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			Com_sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n",
 			             cl->downloadName );
 			SV_BadDownload( cl, msg );
-			MSG_WriteString( msg, errorMessage );  // (could SV_DropClient isntead?)
+			MSG_WriteString( msg, errorMessage );  // (could SV_DropClient instead?)
 			return;
 		}
 
@@ -1415,7 +1415,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 	rate = cl->rate;
 
 	// show_bug.cgi?id=509
-	// for autodownload, we use a seperate max rate value
+	// for autodownload, we use a separate max rate value
 	// we do this everytime because the client might change its rate during the download
 	if ( sv_dl_maxRate->integer < rate )
 	{
@@ -2263,7 +2263,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	cl->lastClientCommand = seq;
 	Com_sprintf( cl->lastClientCommandString, sizeof( cl->lastClientCommandString ), "%s", s );
 
-	return qtrue; // continue procesing
+	return qtrue; // continue processing
 }
 
 //==================================================================================

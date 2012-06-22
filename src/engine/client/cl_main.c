@@ -1195,7 +1195,7 @@ typedef struct wav_hdr_s
 	unsigned short BitsPerSample; // little endian
 
 	unsigned int   Subchunk2ID; // big endian
-	unsigned int   Subchunk2Size; // little indian ;)
+	unsigned int   Subchunk2Size; // little endian
 
 	unsigned int   NumSamples;
 } wav_hdr_t;
@@ -2496,7 +2496,7 @@ void CL_Vid_Restart_f( void )
 	cls.soundRegistered = qfalse;
 	autoupdateChecked = qfalse;
 
-	// unpause so the cgame definately gets a snapshot and renders a frame
+	// unpause so the cgame definitely gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
 
 	// if not running a server clear the whole hunk
@@ -4771,7 +4771,7 @@ void CL_InitRef( const char *renderer )
 
 	re = *ret;
 
-	// unpause so the cgame definately gets a snapshot and renders a frame
+	// unpause so the cgame definitely gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
 }
 
@@ -5125,7 +5125,7 @@ void CL_Init( void )
 	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "snaps", "120", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );  // temp until we have an skeletal american model
+//  Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );  // temp until we have a skeletal american model
 //  Arnout - no need // Cvar_Get ("model", "multi", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Arnout - no need // Cvar_Get ("head", "default", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Arnout - no need // Cvar_Get ("color", "4", CVAR_USERINFO | CVAR_ARCHIVE );
@@ -5705,7 +5705,7 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 	// if this server status request has the same address
 	if ( NET_CompareAdr( to, serverStatus->address ) )
 	{
-		// if we recieved an response for this server status request
+		// if we received a response for this server status request
 		if ( !serverStatus->pending )
 		{
 			Q_strncpyz( serverStatusString, serverStatus->string, maxLen );

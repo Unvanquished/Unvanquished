@@ -5144,7 +5144,7 @@ static void FixRenderCommandList( int newShader )
 SortNewShader
 
 Positions the most recently created shader in the tr.sortedShaders[]
-array so that the shader->sort key is sorted reletive to the other
+array so that the shader->sort key is sorted relative to the other
 shaders.
 
 Sets shader->sortedIndex
@@ -5472,7 +5472,7 @@ static shader_t *FinishShader( void )
 			int blendDstBits = pStage->stateBits & GLS_DSTBLEND_BITS;
 
 			// fog color adjustment only works for blend modes that have a contribution
-			// that aproaches 0 as the modulate values aproach 0 --
+			// that approaches 0 as the modulate values approach 0 --
 			// GL_ONE, GL_ONE
 			// GL_ZERO, GL_ONE_MINUS_SRC_COLOR
 			// GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
@@ -5866,11 +5866,11 @@ If type == SHADER_2D, then the image will be used
 for 2D rendering unless an explicit shader is found
 
 If type == SHADER_3D_DYNAMIC, then the image will have
-dynamic diffuse lighting applied to it, as apropriate for most
+dynamic diffuse lighting applied to it, as appropriate for most
 entity skin surfaces.
 
 If type == SHADER_3D_STATIC, then the image will use
-the vertex rgba modulate values, as apropriate for misc_model
+the vertex rgba modulate values, as appropriate for misc_model
 pre-lit surfaces.
 ===============
 */

@@ -577,7 +577,7 @@ static void ConvertEPairs(FILE * f, entity_t * e, qboolean skip_origin)
 
 /*
 ConvertBSPToMap()
-exports an quake map file from the bsp
+exports a quake map file from the bsp
 */
 
 int ConvertBSPToMap(char *bspName)

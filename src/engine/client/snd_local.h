@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// snd_local.h -- private sound definations
+// snd_local.h -- private sound definitions
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"

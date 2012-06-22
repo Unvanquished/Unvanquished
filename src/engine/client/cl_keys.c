@@ -195,7 +195,7 @@ keyname_t keynames[] =
 
 	{ "PAUSE",                  K_PAUSE                  },
 
-	{ "SEMICOLON",              ';'                      }, // because a raw semicolon seperates commands
+	{ "SEMICOLON",              ';'                      }, // because a raw semicolon separates commands
 
 	{ "WORLD_0",                K_WORLD_0                },
 	{ "WORLD_1",                K_WORLD_1                },
@@ -1899,7 +1899,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		}
 	}
 
-	// distribute the key down event to the apropriate handler
+	// distribute the key down event to the appropriate handler
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		if ( !onlybinds )
@@ -1976,7 +1976,7 @@ void CL_CharEvent( const char *key )
 	// fretn - this should be fixed in Com_EventLoop
 	// but I can't be arsed to leave this as is
 
-	// distribute the key down event to the apropriate handler
+	// distribute the key down event to the appropriate handler
 	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		Field_CharEvent( &g_consoleField, key );

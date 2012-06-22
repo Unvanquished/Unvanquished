@@ -154,7 +154,7 @@ time_t initial_tv_sec = 0;
 /* current time in ms, using sys_timeBase as origin
    NOTE: sys_timeBase*1000 + curtime -> ms since the Epoch
      0x7fffffff ms - ~24 days
-   although timeval:tv_usec is an int, I'm not sure wether it is actually used as an unsigned int
+   although timeval:tv_usec is an int, I'm not sure whether it is actually used as an unsigned int
      (which would affect the wrap period) */
 int Sys_Milliseconds( void )
 {
@@ -668,7 +668,7 @@ void Sys_FreeFileList( char **list )
 ==================
 Sys_Sleep
 
-Block execution for msec or until input is recieved.
+Block execution for msec or until input is received.
 ==================
 */
 void Sys_Sleep( int msec )
@@ -1109,7 +1109,7 @@ void Sys_OpenURL( const char *url, qboolean doexit )
 	}
 
 	Com_Printf( "Open URL: %s\n", url );
-	// opening an URL on *nix can mean a lot of things ..
+	// opening a URL on *nix can mean a lot of things
 	// just spawn a script instead of deciding for the user :-)
 
 	// do the setup before we fork

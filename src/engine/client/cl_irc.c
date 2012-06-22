@@ -592,7 +592,7 @@ static int IRC_ProcessDEQueue()
 IRC_DumpMessage
 
 Main parsing function that uses a FSM to parse one character at a time.
-Returns true when a full message is read and no error has occured.
+Returns true when a full message is read and no error has occurred.
 ==================
 */
 static qboolean IRC_Parser( char next )

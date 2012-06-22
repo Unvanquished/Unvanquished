@@ -639,7 +639,7 @@ void AddBrushBevels(void)
 	{
 		for(dir = -1; dir <= 1; dir += 2, order++)
 		{
-			// see if the plane is allready present
+			// see if the plane is already present
 			for(i = 0, s = buildBrush->sides; i < buildBrush->numsides; i++, s++)
 			{
 				/* ydnar: testing disabling of mre code */
@@ -775,7 +775,7 @@ void AddBrushBevels(void)
 					for(k = 0; k < buildBrush->numsides; k++)
 					{
 
-						// if this plane has allready been used, skip it
+						// if this plane has already been used, skip it
 						if(PlaneEqual(&mapplanes[buildBrush->sides[k].planenum], normal, dist))
 						{
 							break;
@@ -1103,7 +1103,7 @@ Timo - 08/04/99
 added exclusive brush primitive parsing
 Timo - 08/08/99
 support for old brush format back in
-NOTE: it would be "cleaner" to have seperate functions to parse between old and new brushes
+NOTE: it would be "cleaner" to have separate functions to parse between old and new brushes
 */
 
 static void ParseRawBrush(qboolean onlyLights)
@@ -1704,7 +1704,7 @@ void LoadEntityIndexMap(entity_t * e)
 		value = ValueForKey(e, "offsets");
 	if(value[0] != '\0')
 	{
-		/* value is a space-seperated set of numbers */
+		/* value is a space-separated set of numbers */
 		strcpy(offset, value);
 		search = offset;
 
