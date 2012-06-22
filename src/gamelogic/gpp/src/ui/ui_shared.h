@@ -597,5 +597,5 @@ void       UI_R_UnregisterFont( fontHandle_t );
 
 int ui_CursorToOffset( const char *buf, int cursor );
 int ui_OffsetToCursor( const char *buf, int offset );
-const char *Gettext( const char *msgid );
+const char *Gettext( const char *msgid ) __attribute__((format_arg(1)));
 #endif

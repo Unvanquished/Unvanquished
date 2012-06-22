@@ -1014,7 +1014,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			}
 			else
 			{
-				CG_Printf( "%s", _( "^1ERROR: unknown textureType \"%s\"\n"), token );
+				CG_Printf(_( "^1ERROR: unknown textureType \"%s\"\n"), token );
 				break;
 			}
 
@@ -1131,12 +1131,12 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 
 			if ( bts->numBeams == MAX_BEAMS_PER_SYSTEM )
 			{
-				CG_Printf( "%s", _( "^1ERROR: trail system has > %d beams\n"), MAX_BEAMS_PER_SYSTEM );
+				CG_Printf( _( "^1ERROR: trail system has > %d beams\n"), MAX_BEAMS_PER_SYSTEM );
 				return qfalse;
 			}
 			else if ( numBaseTrailBeams == MAX_BASETRAIL_BEAMS )
 			{
-				CG_Printf( "%s", _( "^1ERROR: maximum number of trail beams (%d) reached\n"),
+				CG_Printf( _( "^1ERROR: maximum number of trail beams (%d) reached\n"),
 				           MAX_BASETRAIL_BEAMS );
 				return qfalse;
 			}
