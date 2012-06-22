@@ -211,7 +211,7 @@ static void al_buf_use_default( sfxHandle_t sfx )
 {
 	if ( sfx == default_sfx )
 	{
-		si.Error( ERR_FATAL, "Can't load default sound effect %s\n", knownSfx[ sfx ].filename );
+		si.Error( ERR_FATAL, "Can't load default sound effect %s", knownSfx[ sfx ].filename );
 	}
 
 	si.Printf( PRINT_ALL, "Warning: Using default sound for %s\n", knownSfx[ sfx ].filename );

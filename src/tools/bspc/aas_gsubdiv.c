@@ -240,7 +240,7 @@ void AAS_SplitArea( tmp_area_t *tmparea, int planenum, tmp_area_t **frontarea, t
 		Log_Print("\nface splits = %d\nground splits = %d\n", facesplits, groundsplits);
 		if (epsilonface) Log_Print("aaahh epsilon face\n");
 #endif //DEBUG*/
-		Error( "AAS_SplitArea: no split winding when splitting area %d\n", tmparea->areanum );
+		Error( "AAS_SplitArea: no split winding when splitting area %d", tmparea->areanum );
 	} //end if
 	  //create a split face
 	splitface = AAS_AllocTmpFace();

@@ -191,7 +191,7 @@ void SV_Netchan_TransmitNextFragment( client_t *client )
 	{
 		// make sure the netchan queue has been properly initialized (you never know)
 		//% if (!client->netchan_end_queue) {
-		//%     Com_Error(ERR_DROP, "netchan queue is not properly initialized in SV_Netchan_TransmitNextFragment\n");
+		//%     Com_Error(ERR_DROP, "netchan queue is not properly initialized in SV_Netchan_TransmitNextFragment");
 		//% }
 		// the last fragment was transmitted, check whether we have queued messages
 		netchan_buffer_t *netbuf = client->netchan_start_queue;

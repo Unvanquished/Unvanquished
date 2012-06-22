@@ -794,7 +794,7 @@ int Sin_CopyLump( int lump, void *dest, int size, int maxsize ) {
 	}
 
 	if ( ( length / size ) > maxsize ) {
-		Error( "Sin_LoadBSPFile: exceeded max size for lump %d size %d > maxsize %d\n", lump, ( length / size ), maxsize );
+		Error( "Sin_LoadBSPFile: exceeded max size for lump %d size %d > maxsize %d", lump, ( length / size ), maxsize );
 	}
 
 	memcpy( dest, (byte *)header + ofs, length );
@@ -954,7 +954,7 @@ void Sin_AddLump( int lumpnum, void *data, int len, int size, int maxsize ) {
 	totallength = len * size;
 
 	if ( len > maxsize ) {
-		Error( "Sin_WriteBSPFile: exceeded max size for lump %d size %d > maxsize %d\n", lumpnum, len, maxsize );
+		Error( "Sin_WriteBSPFile: exceeded max size for lump %d size %d > maxsize %d", lumpnum, len, maxsize );
 	}
 
 	lump = &header->lumps[lumpnum];

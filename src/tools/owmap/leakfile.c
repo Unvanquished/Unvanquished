@@ -90,7 +90,7 @@ void LeakFile(tree_t * tree)
 	sprintf(filename, "%s.lin", source);
 	linefile = fopen(filename, "w");
 	if(!linefile)
-		Error("Couldn't open %s\n", filename);
+		Error("Couldn't open %s", filename);
 
 #if defined(USE_XML)
 	xml_node = xmlNewNode(NULL, "polyline");

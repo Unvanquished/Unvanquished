@@ -772,7 +772,7 @@ qboolean PC_Float_Parse( int handle, float *f )
 
 	if ( token.type != TT_NUMBER )
 	{
-		PC_SourceError( handle, "expected float but found %s\n", token.string );
+		PC_SourceError( handle, "expected float but found %s", token.string );
 		return qfalse;
 	}
 
@@ -897,7 +897,7 @@ qboolean PC_Int_Parse( int handle, int *i )
 
 	if ( token.type != TT_NUMBER )
 	{
-		PC_SourceError( handle, "expected integer but found %s\n", token.string );
+		PC_SourceError( handle, "expected integer but found %s", token.string );
 		return qfalse;
 	}
 
@@ -8327,7 +8327,7 @@ qboolean ItemParse_cvarStrList( itemDef_t *item, int handle )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu item\n" );
+			PC_SourceError( handle, "end of file inside menu item" );
 			return qfalse;
 		}
 
@@ -8387,7 +8387,7 @@ qboolean ItemParse_cvarFloatList( itemDef_t *item, int handle )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu item\n" );
+			PC_SourceError( handle, "end of file inside menu item" );
 			return qfalse;
 		}
 
@@ -8628,7 +8628,7 @@ qboolean Item_Parse( int handle, itemDef_t *item )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu item\n" );
+			PC_SourceError( handle, "end of file inside menu item" );
 			return qfalse;
 		}
 
@@ -9210,7 +9210,7 @@ qboolean Menu_Parse( int handle, menuDef_t *menu )
 
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu\n" );
+			PC_SourceError( handle, "end of file inside menu" );
 			return qfalse;
 		}
 

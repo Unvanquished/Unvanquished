@@ -359,12 +359,12 @@ token_t *PC_CopyToken( token_t *token ) {
 //	t = freetokens;
 	if ( !t ) {
 #ifdef BSPC
-		Error( "out of token space\n" );
+		Error( "out of token space" );
 #else
 #ifdef SCREWUP
-		Error( "out of token space\n" );
+		Error( "out of token space" );
 #else
-		Com_Error( ERR_FATAL, "out of token space\n" );
+		Com_Error( ERR_FATAL, "out of token space" );
 #endif
 #endif
 		return NULL;
@@ -1715,7 +1715,7 @@ int PC_OperatorPriority( int op ) {
 #define MAX_OPERATORS   64
 #define AllocValue( val )								  \
 	if ( numvalues >= MAX_VALUES ) {					  \
-		SourceError( source, "out value space\n" );		\
+		SourceError( source, "out value space" );		\
 		error = 1;										\
 		break;											\
 	}													\
@@ -1725,7 +1725,7 @@ int PC_OperatorPriority( int op ) {
 //
 #define AllocOperator( op )								  \
 	if ( numoperators >= MAX_OPERATORS ) {				  \
-		SourceError( source, "out operator space\n" );	\
+		SourceError( source, "out operator space" );	\
 		error = 1;										\
 		break;											\
 	}													\

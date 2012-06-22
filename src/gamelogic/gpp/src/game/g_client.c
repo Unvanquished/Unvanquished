@@ -1577,7 +1577,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		if ( spawn == NULL )
 		{
-			G_Error( "ClientSpawn: spawn is NULL\n" );
+			G_Error( "ClientSpawn: spawn is NULL" );
 		}
 
 		spawnPoint = spawn;

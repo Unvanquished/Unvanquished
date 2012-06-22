@@ -100,7 +100,7 @@ void SV_SetConfigstringNoUpdate( int index, const char *val )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i", index );
 	}
 
 	if ( !val )
@@ -123,7 +123,7 @@ void SV_SetConfigstring( int index, const char *val )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i", index );
 	}
 
 	if ( !val )
@@ -243,7 +243,7 @@ void SV_GetConfigstring( int index, char *buffer, int bufferSize )
 
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "SV_GetConfigstring: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_GetConfigstring: bad index %i", index );
 	}
 
 	if ( !sv.configstrings[ index ] )
@@ -265,7 +265,7 @@ void SV_SetUserinfo( int index, const char *val )
 {
 	if ( index < 0 || index >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_SetUserinfo: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_SetUserinfo: bad index %i", index );
 	}
 
 	if ( !val )
@@ -292,7 +292,7 @@ void SV_GetUserinfo( int index, char *buffer, int bufferSize )
 
 	if ( index < 0 || index >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_GetUserinfo: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_GetUserinfo: bad index %i", index );
 	}
 
 	Q_strncpyz( buffer, svs.clients[ index ].userinfo, bufferSize );

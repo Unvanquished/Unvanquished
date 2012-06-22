@@ -771,7 +771,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 			}
 
 			//ri.Error(ERR_FATAL, "caught OpenGL error: %s in file %s line %i", s, filename, line);
-			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (%s)!\n", s );
+			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (%s)!", s );
 		}
 	}
 

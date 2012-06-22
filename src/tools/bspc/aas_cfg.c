@@ -288,7 +288,7 @@ int LoadCfgFile( char *filename ) {
 		} //end if
 		else if ( !stricmp( token.string, "settings" ) ) {
 			if ( settingsdefined ) {
-				SourceWarning( source, "settings already defined\n" );
+				SourceWarning( source, "settings already defined" );
 			} //end if
 			settingsdefined = true;
 			if ( !ReadStructure( source, &cfg_struct, (char *) &cfg ) ) {

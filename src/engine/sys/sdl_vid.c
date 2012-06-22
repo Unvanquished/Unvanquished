@@ -582,7 +582,7 @@ void GLimp_Init( void )
 
 	if ( !success )
 	{
-		ri.Error( ERR_FATAL, "GLimp_Init() - could not load Direct3D subsystem\n" );
+		ri.Error( ERR_FATAL, "GLimp_Init() - could not load Direct3D subsystem" );
 	}
 
 	// This values force the UI to disable driver selection

@@ -314,12 +314,12 @@ static sfx_t *S_FindName( const char *name )
 
 	if ( !name )
 	{
-		Com_Error( ERR_FATAL, "S_FindName: NULL\n" );
+		Com_Error( ERR_FATAL, "S_FindName: NULL" );
 	}
 
 	if ( !name[ 0 ] )
 	{
-		Com_Error( ERR_FATAL, "S_FindName: empty name\n" );
+		Com_Error( ERR_FATAL, "S_FindName: empty name" );
 	}
 
 	if ( strlen( name ) >= MAX_QPATH )

@@ -4145,7 +4145,7 @@ static void CL_Cache_UsedFile_f( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Error( ERR_DROP, "usedfile without enough parameters\n" );
+		Com_Error( ERR_DROP, "usedfile without enough parameters" );
 	}
 
 	strcpy( groupStr, Cmd_Argv( 1 ) );
@@ -4171,7 +4171,7 @@ static void CL_Cache_UsedFile_f( void )
 
 	if ( i == CACHE_NUMGROUPS )
 	{
-		Com_Error( ERR_DROP, "usedfile without a valid cache group\n" );
+		Com_Error( ERR_DROP, "usedfile without a valid cache group" );
 	}
 
 	// see if it's already there
@@ -4215,7 +4215,7 @@ static void CL_Cache_SetIndex_f( void )
 {
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Error( ERR_DROP, "setindex needs an index\n" );
+		Com_Error( ERR_DROP, "setindex needs an index" );
 	}
 
 	cacheIndex = atoi( Cmd_Argv( 1 ) );

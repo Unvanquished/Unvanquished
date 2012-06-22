@@ -101,7 +101,7 @@ static void ReadPolysetGeometry(triangle_t * tripool, FILE * input, int count, t
 
 		ptri++;
 		if((ptri - tripool) >= POLYSET_MAXTRIANGLES)
-			Error("Error: too many triangles; increase POLYSET_MAXTRIANGLES\n");
+			Error("Error: too many triangles; increase POLYSET_MAXTRIANGLES");
 	}
 }
 
@@ -234,7 +234,7 @@ void TRI_LoadPolysets(const char *filename, polyset_t ** ppPSET, int *numpsets)
 			pPSET[pset].numtriangles = count;
 			if(++pset >= POLYSET_MAXPOLYSETS)
 			{
-				Error("Error: too many polysets; increase POLYSET_MAXPOLYSETS\n");
+				Error("Error: too many polysets; increase POLYSET_MAXPOLYSETS");
 			}
 		}
 	}

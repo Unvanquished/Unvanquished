@@ -116,7 +116,7 @@ FBO_t          *R_CreateFBO( const char *name, int width, int height )
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateFBO: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateFBO: \"%s\" is too long", name );
 	}
 
 	if ( width <= 0 || width > glConfig2.maxRenderbufferSize )

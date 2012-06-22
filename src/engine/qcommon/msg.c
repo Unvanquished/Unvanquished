@@ -229,7 +229,7 @@ void MSG_WriteBits( msg_t *msg, int value, int bits )
 		}
 		else
 		{
-			Com_Error( ERR_DROP, "can't read %d bits\n", bits );
+			Com_Error( ERR_DROP, "can't read %d bits", bits );
 		}
 	}
 	else
@@ -314,7 +314,7 @@ int MSG_ReadBits( msg_t *msg, int bits )
 		}
 		else
 		{
-			Com_Error( ERR_DROP, "can't read %d bits\n", bits );
+			Com_Error( ERR_DROP, "can't read %d bits", bits );
 		}
 	}
 	else

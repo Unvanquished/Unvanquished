@@ -1359,7 +1359,7 @@ static token_t *Parse_CopyToken( token_t *token )
 //  t = freetokens;
 	if ( !t )
 	{
-		Com_Error( ERR_FATAL, "out of token space\n" );
+		Com_Error( ERR_FATAL, "out of token space" );
 		return NULL;
 	}
 
@@ -2144,7 +2144,7 @@ static int Parse_OperatorPriority( int op )
 #define MAX_OPERATORS 64
 #define AllocValue(val)                 \
         if (numvalues >= MAX_VALUES) {            \
-    Parse_SourceError(source, "out of value space\n");    \
+    Parse_SourceError(source, "out of value space");    \
     error = 1;                    \
     break;                      \
   }                         \
@@ -2154,7 +2154,7 @@ static int Parse_OperatorPriority( int op )
 //
 #define AllocOperator(op)               \
         if (numoperators >= MAX_OPERATORS) {        \
-    Parse_SourceError(source, "out of operator space\n"); \
+    Parse_SourceError(source, "out of operator space"); \
     error = 1;                    \
     break;                      \
   }                         \
@@ -2530,7 +2530,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 			case P_DIV:
 				if ( !v2->intvalue || !v2->floatvalue )
 				{
-					Parse_SourceError( source, "divide by zero in #if/#elif\n" );
+					Parse_SourceError( source, "divide by zero in #if/#elif" );
 					error = 1;
 					break;
 				}
@@ -2542,7 +2542,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 			case P_MOD:
 				if ( !v2->intvalue )
 				{
-					Parse_SourceError( source, "divide by zero in #if/#elif\n" );
+					Parse_SourceError( source, "divide by zero in #if/#elif" );
 					error = 1;
 					break;
 				}
@@ -3726,7 +3726,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 
 	if ( newtoken.type != TT_PUNCTUATION || newtoken.subtype != P_BRACEOPEN )
 	{
-		Parse_SourceError( source, "Found %s when expecting {\n",
+		Parse_SourceError( source, "Found %s when expecting {",
 		                   newtoken.string );
 		return qfalse;
 	}
@@ -3761,7 +3761,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 		// ... but not for it to do anything else
 		if ( name.type != TT_NAME )
 		{
-			Parse_SourceError( source, "Found %s when expecting identifier\n",
+			Parse_SourceError( source, "Found %s when expecting identifier",
 			                   name.string );
 			return qfalse;
 		}
@@ -3773,7 +3773,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 
 		if ( newtoken.type != TT_PUNCTUATION )
 		{
-			Parse_SourceError( source, "Found %s when expecting , or = or }\n",
+			Parse_SourceError( source, "Found %s when expecting , or = or }",
 			                   newtoken.string );
 			return qfalse;
 		}
@@ -3802,7 +3802,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 
 			if ( newtoken.type != TT_NUMBER || !( newtoken.subtype & TT_INTEGER ) )
 			{
-				Parse_SourceError( source, "Found %s when expecting integer\n",
+				Parse_SourceError( source, "Found %s when expecting integer",
 				                   newtoken.string );
 				return qfalse;
 			}
@@ -3811,7 +3811,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 			if ( neg == -1 && ( newtoken.subtype & TT_UNSIGNED ) )
 			{
 				Parse_SourceWarning( source, "Value in enumeration is negative and "
-				                     "unsigned\n" );
+				                     "unsigned" );
 			}
 
 			// set the new define value
@@ -3826,7 +3826,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 		if ( newtoken.type != TT_PUNCTUATION || ( newtoken.subtype != P_COMMA &&
 		     newtoken.subtype != P_BRACECLOSE ) )
 		{
-			Parse_SourceError( source, "Found %s when expecting , or }\n",
+			Parse_SourceError( source, "Found %s when expecting , or }",
 			                   newtoken.string );
 			return qfalse;
 		}
@@ -3834,7 +3834,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 		if ( !Parse_AddDefineToSourceFromString( source, va( "%s %d\n", name.string,
 		     value ) ) )
 		{
-			Parse_SourceWarning( source, "Couldn't add define to source: %s = %d\n",
+			Parse_SourceWarning( source, "Couldn't add define to source: %s = %d",
 			                     name.string, value );
 			return qfalse;
 		}
@@ -3917,7 +3917,7 @@ static int Parse_ReadToken( source_t *source, token_t *token )
 
 					if ( strlen( token->string ) + strlen( newtoken.string + 1 ) + 1 >= MAX_TOKEN_CHARS )
 					{
-						Parse_SourceError( source, "string longer than MAX_TOKEN_CHARS %d\n", MAX_TOKEN_CHARS );
+						Parse_SourceError( source, "string longer than MAX_TOKEN_CHARS %d", MAX_TOKEN_CHARS );
 						return qfalse;
 					}
 

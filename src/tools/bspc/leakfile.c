@@ -68,7 +68,7 @@ void LeakFile( tree_t *tree ) {
 	qprintf( "%s\n", filename );
 	linefile = fopen( filename, "w" );
 	if ( !linefile ) {
-		Error( "Couldn't open %s\n", filename );
+		Error( "Couldn't open %s", filename );
 	}
 
 	count = 0;

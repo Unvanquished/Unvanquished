@@ -406,7 +406,7 @@ rescan:
 		}
 		else
 		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected\n" );
+			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected" );
 		}
 	}
 
@@ -1445,7 +1445,7 @@ void CL_UpdateLevelHunkUsage( void )
 				}
 				else
 				{
-					Com_Error( ERR_DROP, "hunkusage.dat file is corrupt\n" );
+					Com_Error( ERR_DROP, "hunkusage.dat file is corrupt" );
 				}
 			}
 		}
@@ -1454,7 +1454,7 @@ void CL_UpdateLevelHunkUsage( void )
 
 		if ( handle < 0 )
 		{
-			Com_Error( ERR_DROP, "cannot create %s\n", memlistfile );
+			Com_Error( ERR_DROP, "cannot create %s", memlistfile );
 		}
 
 		// input file is parsed, now output to the new file
@@ -1462,7 +1462,7 @@ void CL_UpdateLevelHunkUsage( void )
 
 		if ( FS_Write( ( void * ) outbuf, len, handle ) != len )
 		{
-			Com_Error( ERR_DROP, "cannot write to %s\n", memlistfile );
+			Com_Error( ERR_DROP, "cannot write to %s", memlistfile );
 		}
 
 		FS_FCloseFile( handle );
@@ -1476,7 +1476,7 @@ void CL_UpdateLevelHunkUsage( void )
 
 	if ( handle < 0 )
 	{
-		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full\n" );
+		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full" );
 	}
 
 	Com_sprintf( outstr, sizeof( outstr ), "%s %i\n", cl.mapname, memusage );

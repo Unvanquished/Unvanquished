@@ -494,7 +494,7 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 
 	if ( !buffer )
 	{
-		ri.Error( ERR_DROP, "LoadRGBE: '%s' not found\n", name );
+		ri.Error( ERR_DROP, "LoadRGBE: '%s' not found", name );
 	}
 
 	buf_p = buffer;
@@ -614,12 +614,12 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 
 	if ( !formatFound )
 	{
-		ri.Error( ERR_DROP, "LoadRGBE: %s has no format\n", name );
+		ri.Error( ERR_DROP, "LoadRGBE: %s has no format", name );
 	}
 
 	if ( !w || !h )
 	{
-		ri.Error( ERR_DROP, "LoadRGBE: %s has an invalid image size\n", name );
+		ri.Error( ERR_DROP, "LoadRGBE: %s has an invalid image size", name );
 	}
 
 	*pic = Com_Allocate( w * h * 3 * sizeof( float ) );
@@ -10223,7 +10223,7 @@ void RE_LoadWorldMap( const char *name )
 
 	if ( tr.worldMapLoaded )
 	{
-		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map\n" );
+		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map" );
 	}
 
 	ri.Printf( PRINT_ALL, "----- RE_LoadWorldMap( %s ) -----\n", name );

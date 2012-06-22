@@ -1417,7 +1417,7 @@ static void ComputeTexCoords( shaderStage_t *pStage )
 					break;
 
 				default:
-					ri.Error( ERR_DROP, "ERROR: unknown texmod '%d' in shader '%s'\n", pStage->bundle[ b ].texMods[ tm ].type,
+					ri.Error( ERR_DROP, "ERROR: unknown texmod '%d' in shader '%s'", pStage->bundle[ b ].texMods[ tm ].type,
 					          tess.shader->name );
 			}
 		}

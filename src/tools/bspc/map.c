@@ -1493,7 +1493,7 @@ int LoadMapFromBSP( struct quakefile_s *qf ) {
 	} //end if
 	else
 	{
-		Error( "unknown BSP format %c%c%c%c, version %d\n",
+		Error( "unknown BSP format %c%c%c%c, version %d",
 			   ( idheader.ident & 0xFF ),
 			   ( ( idheader.ident >> 8 ) & 0xFF ),
 			   ( ( idheader.ident >> 16 ) & 0xFF ),

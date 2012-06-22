@@ -700,7 +700,7 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolea
 
 			if ( tess.numVertexes >= tess.maxShaderVerts )
 			{
-				ri.Error( ERR_DROP, "tess.maxShaderVerts(%i) hit in FillCloudySkySide()\n", tess.maxShaderVerts );
+				ri.Error( ERR_DROP, "tess.maxShaderVerts(%i) hit in FillCloudySkySide()", tess.maxShaderVerts );
 			}
 		}
 	}

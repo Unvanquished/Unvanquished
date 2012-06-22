@@ -2830,7 +2830,7 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 
 	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING )
 	{
-		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()\n" );
+		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()" );
 	}
 
 	if ( len + index >= MAX_VA_STRING - 1 )

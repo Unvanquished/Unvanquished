@@ -1431,7 +1431,7 @@ winding_t *AAS_MergeWindings(winding_t *w1, winding_t *w2, vec3_t windingnormal)
 			{
 				Log_Print("numpoints[0] = %d\n", numpoints[0]);
 				Log_Print("numpoints[1] = %d\n", numpoints[1]);
-				Error("AAS_MergeWindings: k = %d >= newnumpoints = %d\n", k, newnumpoints);
+				Error("AAS_MergeWindings: k = %d >= newnumpoints = %d", k, newnumpoints);
 			} //end if
 			VectorCopy(winding->p[i], neww->p[k]);
 			k++;

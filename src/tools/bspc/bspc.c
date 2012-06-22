@@ -925,7 +925,7 @@ int main( int argc, char **argv ) {
 				//
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -948,7 +948,7 @@ int main( int argc, char **argv ) {
 				//if the AAS file exists in the output directory
 				if ( !access( filename, 0x04 ) ) {
 					if ( !AAS_LoadAASFile( filename, 0, 0 ) ) {
-						Error( "error loading aas file %s\n", filename );
+						Error( "error loading aas file %s", filename );
 					}     //end if
 						  //assume it's a Quake3 BSP file
 					loadedmaptype = MAPTYPE_QUAKE3;
@@ -979,7 +979,7 @@ int main( int argc, char **argv ) {
 				}
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -1002,7 +1002,7 @@ int main( int argc, char **argv ) {
 				//if the AAS file exists in the output directory
 				if ( !access( filename, 0x04 ) ) {
 					if ( !AAS_LoadAASFile( filename, 0, 0 ) ) {
-						Error( "error loading aas file %s\n", filename );
+						Error( "error loading aas file %s", filename );
 					}     //end if
 						  //assume it's a Quake3 BSP file
 					loadedmaptype = MAPTYPE_QUAKE3;
@@ -1033,7 +1033,7 @@ int main( int argc, char **argv ) {
 				}
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -1057,7 +1057,7 @@ int main( int argc, char **argv ) {
 				AAS_InitBotImport();
 				//
 				if ( !AAS_LoadAASFile( qf->filename, qf->offset, qf->length ) ) {
-					Error( "error loading aas file %s\n", qf->filename );
+					Error( "error loading aas file %s", qf->filename );
 				}     //end if
 				if ( groundonly ) {
 					AAS_RemoveNonGrounded();
@@ -1068,7 +1068,7 @@ int main( int argc, char **argv ) {
 				AAS_Optimize();
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -1092,7 +1092,7 @@ int main( int argc, char **argv ) {
 				AAS_InitBotImport();
 				//
 				if ( !AAS_LoadAASFile( qf->filename, qf->offset, qf->length ) ) {
-					Error( "error loading aas file %s\n", qf->filename );
+					Error( "error loading aas file %s", qf->filename );
 				}     //end if
 				AAS_RemoveNonReachability();
 				if ( optimize ) {
@@ -1100,7 +1100,7 @@ int main( int argc, char **argv ) {
 				}
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -1124,7 +1124,7 @@ int main( int argc, char **argv ) {
 				AAS_InitBotImport();
 				//
 				if ( !AAS_LoadAASFile( qf->filename, qf->offset, qf->length ) ) {
-					Error( "error loading aas file %s\n", qf->filename );
+					Error( "error loading aas file %s", qf->filename );
 				}     //end if
 				AAS_ShowTotals();
 			}     //end for

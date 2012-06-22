@@ -3036,7 +3036,7 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 
 	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
-		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d\n", weapon );
+		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
 	}
 
 	if ( !cg_weapons[ weapon ].registered )

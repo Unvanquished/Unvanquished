@@ -1344,7 +1344,7 @@ static void ParseTexMod( char *_text, shaderStage_t *stage )
 
 	if ( stage->bundle[ 0 ].numTexMods == TR_MAX_TEXMODS )
 	{
-		ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'\n", shader.name );
+		ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'", shader.name );
 	}
 
 	tmi = &stage->bundle[ 0 ].texMods[ stage->bundle[ 0 ].numTexMods ];
@@ -4733,7 +4733,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 
 	if ( !dptr )
 	{
-		Com_Error( ERR_FATAL, "Couldn't allocate struct for dynamic shader %s\n", shadername );
+		Com_Error( ERR_FATAL, "Couldn't allocate struct for dynamic shader %s", shadername );
 	}
 
 	if ( lastdptr )
@@ -4745,7 +4745,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 
 	if ( !dptr->shadertext )
 	{
-		Com_Error( ERR_FATAL, "Couldn't allocate buffer for dynamic shader %s\n", shadername );
+		Com_Error( ERR_FATAL, "Couldn't allocate buffer for dynamic shader %s", shadername );
 	}
 
 	Q_strncpyz( dptr->shadertext, shadertext, strlen( shadertext ) + 1 );

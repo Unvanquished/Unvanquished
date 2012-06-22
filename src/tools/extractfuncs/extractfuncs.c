@@ -109,7 +109,7 @@ void main(int argc, char *argv[])
 
 	if (argc < 2) Error("USAGE: screwup <infile> <outfile> <from> <to>");
 	fp = fopen(argv[1], "rb");
-	if (!fp) Error("error opening %s\n", argv[1]);
+	if (!fp) Error("error opening %s", argv[1]);
 
 	filelength = FileLength(fp);
 	ptr = malloc(filelength);
@@ -123,7 +123,7 @@ void main(int argc, char *argv[])
 	Remove(ptr, filelength, from, to, skip);
 
 	fp = fopen(argv[2], "wb");
-	if (!fp) Error("error opening %s\n", argv[2]);
+	if (!fp) Error("error opening %s", argv[2]);
 	fwrite(ptr, filelength, 1, fp);
 	fclose(fp);
 
@@ -566,11 +566,11 @@ void ScrewUpFile( char *oldfile, char *newfile ) {
 	printf( "screwing up file %s\n", oldfile );
 	script = LoadScriptFile( oldfile );
 	if ( !script ) {
-		Error( "error opening %s\n", oldfile );
+		Error( "error opening %s", oldfile );
 	}
 	fp = fopen( newfile, "wb" );
 	if ( !fp ) {
-		Error( "error opening %s\n", newfile );
+		Error( "error opening %s", newfile );
 	}
 	//
 	while ( PS_ReadToken( script, &token ) )

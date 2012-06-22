@@ -632,7 +632,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 
 	if ( fread( buf, 1, len, f ) != len )
 	{
-		Com_Error( ERR_FATAL, "Short read in FS_Copyfiles()\n" );
+		Com_Error( ERR_FATAL, "Short read in FS_Copyfiles()" );
 	}
 
 	fclose( f );
@@ -653,7 +653,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 
 	if ( fwrite( buf, 1, len, f ) != len )
 	{
-		Com_Error( ERR_FATAL, "Short write in FS_Copyfiles()\n" );
+		Com_Error( ERR_FATAL, "Short write in FS_Copyfiles()" );
 	}
 
 	fclose( f );
@@ -766,7 +766,7 @@ fileHandle_t FS_SV_FOpenFileWrite( const char *filename )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	ospath = FS_BuildOSPath( fs_homepath->string, filename, "" );
@@ -814,7 +814,7 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	f = FS_HandleForFile();
@@ -884,7 +884,7 @@ void FS_SV_Rename( const char *from, const char *to )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	// don't let sound stutter
@@ -920,7 +920,7 @@ void FS_Rename( const char *from, const char *to )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	// don't let sound stutter
@@ -958,7 +958,7 @@ int FS_FCloseFile( fileHandle_t f )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( fsh[ f ].zipFile == qtrue )
@@ -999,7 +999,7 @@ fileHandle_t FS_FOpenFileWrite( const char *filename )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	f = FS_HandleForFile();
@@ -1047,7 +1047,7 @@ fileHandle_t FS_FOpenFileAppend( const char *filename )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	f = FS_HandleForFile();
@@ -1094,7 +1094,7 @@ int FS_FOpenFileDirect( const char *filename, fileHandle_t *f )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	*f = FS_HandleForFile();
@@ -1137,7 +1137,7 @@ fileHandle_t FS_FOpenFileUpdate( const char *filename, int *length )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	f = FS_HandleForFile();
@@ -1286,7 +1286,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	// TTimo - NOTE
@@ -1355,7 +1355,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 	if ( !filename )
 	{
-		Com_Error( ERR_FATAL, "FS_FOpenFileRead: NULL 'filename' parameter passed\n" );
+		Com_Error( ERR_FATAL, "FS_FOpenFileRead: NULL 'filename' parameter passed" );
 	}
 
 	//Com_sprintf( demoExt, sizeof( demoExt ), ".dm_%d",PROTOCOL_VERSION );
@@ -1789,7 +1789,7 @@ int FS_DeleteDir( char *dirname, qboolean nonEmpty, qboolean recursive )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !dirname || dirname[ 0 ] == 0 )
@@ -1916,7 +1916,7 @@ int FS_Delete( char *filename )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !filename || filename[ 0 ] == 0 )
@@ -1964,7 +1964,7 @@ int FS_Read2( void *buffer, int len, fileHandle_t f )
 {
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !f )
@@ -1995,7 +1995,7 @@ int FS_Read( void *buffer, int len, fileHandle_t f )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !f )
@@ -2065,7 +2065,7 @@ int FS_Write( const void *buffer, int len, fileHandle_t h )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !h )
@@ -2141,7 +2141,7 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( fsh[ f ].streamed )
@@ -2161,7 +2161,7 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 		if ( offset < 0 || origin == FS_SEEK_END )
 		{
 			Com_Error( ERR_FATAL, "Negative offsets and FS_SEEK_END not implemented "
-			           "for FS_Seek on pk3 file contents\n" );
+			           "for FS_Seek on pk3 file contents" );
 		}
 
 		switch ( origin )
@@ -2182,7 +2182,7 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 				return offset;
 
 			default:
-				Com_Error( ERR_FATAL, "Bad origin in FS_Seek\n" );
+				Com_Error( ERR_FATAL, "Bad origin in FS_Seek" );
 		}
 	}
 	else
@@ -2205,7 +2205,7 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 				break;
 
 			default:
-				Com_Error( ERR_FATAL, "Bad origin in FS_Seek\n" );
+				Com_Error( ERR_FATAL, "Bad origin in FS_Seek" );
 		}
 
 		return fseek( file, offset, _origin );
@@ -2229,12 +2229,12 @@ int FS_FileIsInPAK( const char *filename, int *pChecksum )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !filename )
 	{
-		Com_Error( ERR_FATAL, "FS_FOpenFileRead: NULL 'filename' parameter passed\n" );
+		Com_Error( ERR_FATAL, "FS_FOpenFileRead: NULL 'filename' parameter passed" );
 	}
 
 	// qpaths are not supposed to have a leading slash
@@ -2326,12 +2326,12 @@ static int FS_ReadFile_Internal( const char *qpath, void **buffer, qboolean chec
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !qpath || !qpath[ 0 ] )
 	{
-		Com_Error( ERR_FATAL, "FS_ReadFile with empty name\n" );
+		Com_Error( ERR_FATAL, "FS_ReadFile with empty name" );
 	}
 
 	buf = NULL; // quiet compiler warning
@@ -2478,7 +2478,7 @@ void FS_FreeFile( void *buffer )
 {
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !buffer )
@@ -2510,7 +2510,7 @@ void FS_WriteFile( const char *qpath, const void *buffer, int size )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !qpath || !buffer )
@@ -2755,7 +2755,7 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !path )
@@ -2930,7 +2930,7 @@ void FS_FreeFileList( char **list )
 
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 
 	if ( !list )
@@ -5128,7 +5128,7 @@ void FS_Restart( int checksumFeed )
 			lastValidGame[ 0 ] = '\0';
 			Cvar_Set( "fs_restrict", "0" );
 			FS_Restart( checksumFeed );
-			Com_Error( ERR_DROP, "Invalid game folder\n" );
+			Com_Error( ERR_DROP, "Invalid game folder" );
 		}
 
 		// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
@@ -5371,7 +5371,7 @@ unsigned int FS_ChecksumOSPath( char *OSPath )
 
 	if ( fread( buf, 1, len, f ) != len )
 	{
-		Com_Error( ERR_FATAL, "short read in FS_ChecksumOSPath\n" );
+		Com_Error( ERR_FATAL, "short read in FS_ChecksumOSPath" );
 	}
 
 	fclose( f );
