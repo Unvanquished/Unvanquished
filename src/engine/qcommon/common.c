@@ -76,9 +76,7 @@ fileHandle_t        com_journalDataFile; // config files are written here
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
-//bani - explicit NULL to make win32 teh happy
-
-cvar_t *com_ignorecrash = NULL; // bani - let experienced users ignore crashes, explicit NULL to make win32 teh happy
+cvar_t *com_ignorecrash = NULL; // bani - let experienced users ignore crashes, explicit NULL to make win32 happy
 cvar_t *com_pid; // bani - process id
 
 cvar_t *com_viewlog;
@@ -3012,7 +3010,7 @@ void Com_SetRecommended()
 }
 
 // Arnout: gameinfo, to let the engine know which gametypes are SP and if we should use profiles.
-// This can't be dependant on gamecode as we sometimes need to know about it when no game-modules
+// This can't be dependent on the game code as we sometimes need to know about it when no game modules
 // are loaded
 gameInfo_t com_gameInfo;
 

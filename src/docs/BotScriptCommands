@@ -99,7 +99,7 @@ Parameter descriptions:
 
 	Note that when specifying the filename of a skin or model, the models and
 	skins MUST be under models\players. You do not need to specify the
-	'models\players\ in the pathname, but it will work if you do so.
+	"models\players\" in the pathname, but it will work if you do so.
 
 	/rank rankName - spawn the bot with this rank. You may use either the name or a number, starting with 1 (e.g. Private = 1, PFC = 2). Note:
 			 currently, only allied rank names are implemented. You can still spawn a german bot with rank, but you must either use
@@ -517,7 +517,7 @@ Command: FollowLeader
 
 Notes:
 
-	*	Sets the given character as the Bot's leader
+	*	Sets the given player as the bot's leader
 
 	*	The bot will follow the leader until they are dead, the leader
 		orders the bot to do something else, or the duration expires.
@@ -1739,7 +1739,7 @@ Remove a particular enemy/friend  from list of people to look out for
 
 Notes:
 	* This can be called from anywhere, but definitely ought to be called from the "lookee's"
-	  death script of anywhere that she's removed from the scripts.
+	  death script or anywhere where he's removed by the scripts.
 
 Syntax:
 

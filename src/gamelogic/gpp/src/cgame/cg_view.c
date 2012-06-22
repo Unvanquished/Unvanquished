@@ -1353,7 +1353,7 @@ static int CG_CalcViewValues( void )
 	cg.xyspeed = sqrt( ps->velocity[ 0 ] * ps->velocity[ 0 ] +
 	                   ps->velocity[ 1 ] * ps->velocity[ 1 ] );
 
-	// the bob velocity should't get too fast to avoid jerking
+	// to avoid jerking, the bob velocity shouldn't be too high
 	if ( cg.xyspeed > 300.0f )
 	{
 		cg.xyspeed = 300.0f;

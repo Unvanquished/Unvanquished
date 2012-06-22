@@ -606,7 +606,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 // Hex Color string support
 #define gethex( ch )                  ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
 #define ishex( ch )                   ( ( ch ) && ( ( ( ch ) >= '0' && ( ch ) <= '9' ) || ( ( ch ) >= 'A' && ( ch ) <= 'F' ) || ( ( ch ) >= 'a' && ( ch ) <= 'f' ) ) )
-// check if it's format rrggbb r,g,b e {0..9} U {A...F}
+// check whether in the rrggbb format, r,g,b e {0,...,9} U {A,...,F}
 #define Q_IsHexColorString( p )       ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
 #define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
 
@@ -1522,7 +1522,7 @@ char *Q_UTF8Unstore( int e );
 //=============================================
 
 // 64-bit integers for global rankings interface
-// implemented as a struct for qvm compatibility
+// implemented as a struct for QVM compatibility
 	typedef struct
 	{
 		byte b0;
@@ -1911,7 +1911,7 @@ char *Q_UTF8Unstore( int e );
 // will occur
 
 // you can't add anything to this without modifying the code in msg.c
-// (Gordon: unless it doesnt need transmitted over the network, in which case it should prolly go in the new pmext struct anyway)
+// (Gordon: unless it doesn't need transmission over the network, in which case it should probably go into the new pmext struct anyway)
 
 // playerState_t is a full superset of entityState_t as it is used by players,
 // so if a playerState_t is transmitted, the entityState_t can be fully derived
@@ -2040,7 +2040,7 @@ char *Q_UTF8Unstore( int e );
 		int jumpTime; // used in MP to prevent jump accel
 		// jpw
 
-		int      weapAnim; // mask off ANIM_TOGGLEBIT                    //----(SA)  added   // Arnout : DOES get send over the network
+		int      weapAnim; // mask off ANIM_TOGGLEBIT                    //----(SA)  added   // Arnout: does get sent over the network
 
 		qboolean releasedFire;
 

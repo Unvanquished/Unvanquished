@@ -22,8 +22,8 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 	+ Added possibility to connect to IRC server
 		- cl_authircserver - irc.quakenet.org is IRC Authenticate server 
 		- cl_ircport - 6665 
-		- NOTE: I never successfully connected in chatroom, I dont know is that because I test game in localserver or whatever else,
-				But anyway it say that its connected to IRC server
+		- NOTE: I never managed to join a chatroom,
+				But anyway it says that it's connected to IRC server
 	+ Possible that I broke something else with adding this in engine
 
 29-06-2011 Dusan Jocic <dusanjocic@msn.com> 

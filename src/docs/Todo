@@ -213,7 +213,7 @@ bani	xxx - movers would silently trigger enemy landmines
 		<ikkyo> cause I noticed the thrown away panzerfaust still faded out, but it has a two stage shader
 		<ikkyo> it doesn't fade out correctly though, it kinda changes brightness before it starts to fade. the way I did the gib shader avoids that
 	338 - server-side changes of team, class, and weapon update limbo menu
-		fixes losing weapon on mapchanges, random weapon lossage on skill upgrades, etc.
+		fixes losing weapon on mapchanges, random weapon losses on skill upgrades, etc.
 	xxx - UI is uselessly reloaded on /quit, which is slow in etmain
 	xxx - Way to remove flags from a cvar and/or remove cvars
 	xxx - pmove_fixed fixes (actual code changes pretty trivial)

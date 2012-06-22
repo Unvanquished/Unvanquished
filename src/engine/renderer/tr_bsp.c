@@ -720,7 +720,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, msurface_t *surf, i
 	}
 	else
 	{
-		// Gordon: OPT: removed the littlefloats from when they aint needed
+		// Gordon: OPT: removed the littlefloats from when they aren't needed
 		for ( i = 0; i < numVerts; i++ )
 		{
 			for ( j = 0; j < 3; j++ )

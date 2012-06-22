@@ -405,7 +405,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 		surf = skin->surfaces[ skin->numSurfaces ] = ri.Hunk_Alloc( sizeof( *skin->surfaces[ 0 ] ), h_low );
 		Q_strncpyz( surf->name, surfName, sizeof( surf->name ) );
 
-		// RB: bspSurface not not have ::hash yet
+		// RB: bspSurface_t does not have ::hash yet
 //		surf->hash = Com_HashKey(surf->name, sizeof(surf->name));
 		surf->shader = R_FindShader( token, SHADER_3D_DYNAMIC, qtrue );
 		skin->numSurfaces++;

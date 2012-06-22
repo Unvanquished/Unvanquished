@@ -41,7 +41,7 @@ Maryland 20850 USA.
 
 #define MARKER_OFFSET     0 // 1
 
-// Ridah, just make these global to prevent having to add more paramaters, which add overhead
+// Ridah, just make these globals to prevent having to add more parameters, which would add overhead
 static vec3_t bestnormal;
 static float  bestdist;
 

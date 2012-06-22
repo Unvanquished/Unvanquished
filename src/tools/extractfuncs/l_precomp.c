@@ -2586,7 +2586,7 @@ int PC_ReadDirective( source_t *source ) {
 		SourceError( source, "found # at end of line" );
 		return qfalse;
 	} //end if
-	  //if if is a name
+	//if it's a name
 	if ( token.type == TT_NAME ) {
 		//find the precompiler directive
 		for ( i = 0; directives[i].name; i++ )
@@ -2688,7 +2688,7 @@ int PC_ReadDollarDirective( source_t *source ) {
 		SourceError( source, "found $ at end of line" );
 		return qfalse;
 	} //end if
-	  //if if is a name
+	//if it's a name
 	if ( token.type == TT_NAME ) {
 		//find the precompiler directive
 		for ( i = 0; dollardirectives[i].name; i++ )

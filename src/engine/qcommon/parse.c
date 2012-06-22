@@ -3341,7 +3341,7 @@ static int Parse_ReadDollarDirective( source_t *source )
 		return qfalse;
 	}
 
-	//if if is a name
+	//if it's a name
 	if ( token.type == TT_NAME )
 	{
 		//find the precompiler directive
@@ -3678,7 +3678,7 @@ static int Parse_ReadDirective( source_t *source )
 		return qfalse;
 	}
 
-	//if if is a name
+	//if it's a name
 	if ( token.type == TT_NAME )
 	{
 		//find the precompiler directive

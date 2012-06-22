@@ -2782,7 +2782,7 @@ void IlluminateRawLightmap(int rawLightmapNum)
 						if(sx < 0 || sx >= lm->sw || (sx == x && sy == y))
 							continue;
 
-						/* get neighbor's particulars */
+						/* get the neighbor's particulars */
 						cluster2 = SUPER_CLUSTER(sx, sy);
 						luxel2 = SUPER_LUXEL(lightmapNum, sx, sy);
 						deluxel2 = SUPER_DELUXEL(sx, sy);

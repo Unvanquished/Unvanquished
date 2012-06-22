@@ -79,7 +79,7 @@ static unsigned int Sv_AddressHash (const struct sockaddr_in* address)
 ====================
 Sv_RemoveAndGetNextPtr
 
-Remove a server from the list and returns its "next" pointer
+Remove a server from the list and return its "next" pointer
 ====================
 */
 static server_t* Sv_RemoveAndGetNextPtr (server_t* sv, server_t** prev)

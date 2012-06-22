@@ -1010,8 +1010,8 @@ void SV_SendClientSnapshot( client_t *client )
 	// build the snapshot
 	SV_BuildClientSnapshot( client );
 
-	// bots need to have their snapshots build, but
-	// the query them directly without needing to be sent
+	// bots need to have their snapshots built, but
+	// those are queried directly without needing to be sent
 	if ( client->gentity && client->gentity->r.svFlags & SVF_BOT )
 	{
 		return;

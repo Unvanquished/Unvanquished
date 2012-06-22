@@ -296,7 +296,7 @@ void RB_ShadowTessEnd( void )
 =================
 RB_ShadowFinish
 
-Darken everything that is is a shadow volume.
+Darken everything that is a shadow volume.
 We have to delay this until everything has been shadowed,
 because otherwise shadows from different body parts would
 overlap and double darken.

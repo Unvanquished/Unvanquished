@@ -10123,7 +10123,7 @@ void R_BuildCubeMaps( void )
 
 #if 0
 
-	// write buffer if theres any still unwritten
+	// flush the buffer if there's any still unwritten content
 	if ( fileBufX != 0 || fileBufY != 0 )
 	{
 		fileName = va( "maps/%s/cm_%04d.png", s_worldData.baseName, fileCount );

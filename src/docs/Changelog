@@ -4,7 +4,7 @@
 	* Changed product version to 0.2.0
 	* Changed engine version to 0.1.5
 	* SURF_SPLASH was declared twice
-	* Fixed surface flags so it dont make integer overflow on 32-bit systems
+	* Fixed surface flags so that they don't make integer overflows on 32-bit systems
 	* Moved bot files from folders ETMAIN and BOTAI to BOTLIB folder
 	* Uploaded rest of moved bot files
 
@@ -185,7 +185,7 @@
 2011-11-26 Dusan Jocic <dusanjocic@msn.com>
 	* Removed old MD5 models and animations
 	* Ported XreaL MD5 code to ET vanilla renderer
-		+ NOTE: cannot test and see is it working (vanilla renderer isnt working for windows for some time)
+		+ NOTE: cannot test to see whether it is working (vanilla renderer isn't working on Windows for some time)
 		+       also game hang after cgame is loaded?
 		+       Don't know what is problem with vanilla renderer
 
@@ -490,7 +490,7 @@
 	* Added XreaL experimantal Direct3D engine
 		+ Fixed SDL driver and display modes for Direct3D
 		+ Defined in renderer engine USE_D3D10 so engine can be compiled
-			+ Direct3D dont need OpenGL stuff
+			+ Direct3D doesn't need OpenGL stuff
 	* Added GLSL Optimizer (compiled both x86 and x64 projects for VS2010)
 		+ Defined vc100.pdb in GLSL Optimizer to make VS compiler happy and without warnings
 	* Started experimenting with LLC and QVM (Quake Virtual Machine)
@@ -525,10 +525,10 @@
 
 2011-07-19 Dusan Jocic <dusanjocic@msn.com>
 	* Fixed MySQL on g_client
-		+ now MySQL is writting client's GUID, IP address and username in table (user_players)
+		+ now MySQL is writing the client's GUID, IP address and username in table user_players
 	* Removed G_ValidGUID checking
-		+ it had clash with MySQL  query so all invalid GUID's was XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 
-		  and because of that that are not registered in table
+		+ it clashed with MySQL querying, so all invalid GUIDs were XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX,
+		  and because of that, they were not registered
 	* Rewrited user_players MySQL table
 
 2011-07-17 Dusan Jocic <dusanjocic@msn.com>
@@ -596,7 +596,7 @@
 2011-07-02 Dusan Jocic <dusanjocic@msn.com>
 	* Replaced static library cURL library from engine to dynamic library
 		+ Game required now libcurl(d).dll/.so/.dylib in root folder to work
-	* Added on Q3 Version DATE and TIME when its compiled
+	* Added the date and time of compilation to the version string
 	* Added possibility to connect on IRC Chatroom
 	* Added SWITCHSTRING to allow strings to be used in switch cases
 	* Rewrited NET_IPSocket
@@ -2479,7 +2479,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	26-11-2004
 				Dan <goemon at anime.net>
 		+ Fixed 424 - (zinx)client loses prone state after packet loss
-		+ Fixed 444 - lms doesnt always end when a team is eliminated
+		+ Fixed 444 - LMS doesn't always end when a team is eliminated
 		+ Fixed 447 - (fretn)switching weapon during pause shouldn't be possible
 		+ Fixed 081 - (rain)akimbo weapons and deployed mobile MG42 ignore cg_autoreload
 	
@@ -2924,7 +2924,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ ATVI Wolfenstein XP #3997 : updated video card identification table.
 	+ ATVI Wolfenstein XP #3963 : Made a FS_Restart on an active client force a schedule of a cache purge on the first re.shutdown called from cl_shutdown.
 	+ ATVI Wolfenstein XP #4022 : Clients as TEAM_FREE no longer try to use SelectCTFSpawnPoint.
-	+ ATVI Wolfenstein XP #3928 : Chanted '/READY' into 'Ready'.
+	+ ATVI Wolfenstein XP #3928 : Changed '/READY' to 'Ready'.
 	+ ATVI Wolfenstein XP #3916 : Tool-tip-typo.
 	+ ATVI Wolfenstein XP #3932 : Allies -> Allied.
 	+ ATVI Wolfenstein XP #3924 : prefered -> preferred.
@@ -3110,7 +3110,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Multiple delayed map_restart commands now override previous [bug 3813]
 	+ Added missing newline to "Match Starting..." console print
 	+ Colored server names are now properly sorted [bug 3812]
-	+ Disabled SMP on Win32 for now'
+	+ Disabled SMP on Win32 for now
 	+ Static misc_gamemodel entites do not project decal shadows
 	
 			Gordon <djbob@splashdamage.com>
@@ -4217,8 +4217,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed M7/GPG40 to follow the alt-weapon == mount 1 grenade system.
 
 			Gordon	<djbob@splashdamage.com>
-	+ Added abilty for entity to choose which type of gun to be mounted on it
-	+ Fixed commandmap indicators not getting correct icon setup if scipt was not setup with precise waits
+	+ Added the ability for entities to choose which type of gun is to be mounted on them
+	+ Fixed command map indicators not getting the correct icons set up if the script was not set up with precise waits
 	+ Reworked weapon restriction to actually work well for the ui
 	
 28-03-2003
@@ -4749,11 +4749,11 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Gordon	<djbob@splashdamage.com>
 	+ Made bots only go for constructions if their charge bar is at least half full
-	+ Added abilty to grab a keynum from binding string (MUST be lower case) quickly
+	+ Added the ability to grab a keynum for a binding string (which must be in lower case) quickly
 		- Current system was a mess, and horribly slow, now, hash stored per key when binding changed for fast lookup
 	+ Cleaned up danger area finding code to stop doing 70squillion string compares, and added checking for being in a construction zone
 		- Landmine avoidance is there, need to check it tommorow
-	+ Changed the panzertarget AI Node to check the player can actaully fire the panzerfaust (i.e. has ammo etc), not just that he has one
+	+ Changed the panzertarget AI Node to check whether the player can actually fire the panzerfaust (i.e. has ammo, etc.), not just whether he has one
 	+ Added forced delay to sniper rifle firing on bots, and changed their reloading to only reload if they haven't fired for a longer time than before
 	+ Stopped AI Defend Node doing lots of string compares
 	+ Added accuracy modifier for prone mg42 bots
@@ -4956,7 +4956,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Made CG_FindArenaInfo, CG_FindCurrentCampaignInFile, G_LoadCampaignsFromFile and UI_LoadCampaignsFromFile always close filehandles.
 	+ If an entity gets stuck in another entity that is switching to default state, it now gets dealt with (gib/void/return/whatever).
 	+ Corrected WP_BEGINSECONDARY and WP_LASTSECONDARY.
-	+ Removed WP_MAUSER and WP_SNIPERRIFLE (botcode will need updating).
+	+ Removed WP_MAUSER and WP_SNIPERRIFLE (bot code will need updating).
 	+ Removed WP_BAR.
 	+ Removed WP_SINGLE_PLAYER_MEDKIT and WP_SINGLE_PLAYER_AMMO.
 	+ Some cleaning in ammo cabinet code.
@@ -5239,7 +5239,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Removed MP40 from allied soldier (he should never have had this in the first place).
 	+ Players with a Heavy Weapons skill level of 4 or higher now get submachineguns instead of pistols.
 	+ Fixed a bug in G_TouchTriggers with invisible/underconstruction state entities (return instead of continue).
-	+ Fixed muzzle calculation clientsided for mounted MG42's.
+	+ Fixed client-side muzzle calculation for mounted MG42s.
 	
 			Tara <tara@maddocsoftware.com>
 	+ All covertops bots get lockpicks by default
@@ -6224,7 +6224,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 16-12-2002
 			Arnout <rr2do2@splashdamage.com>
-	+ Satchel charge and detonator no longer make the covert ops loose his disguise.
+	+ Satchel charge and detonator no longer make the covert ops player lose his disguise.
 	+ Added grid rendering to the commandmap and automap.
 	+ Fixed weapon idle animation not set properly in CG_Respawn (no togglebits).
 	+ Some tiny more skill system bits.
@@ -6764,7 +6764,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Gordon <djbob@splashdamage.com>
 	+ Added cg_backupPredict which should speed up prediction when enabled, as it caches old predicted playerstates so it doesnt need to rebuild them all the time
 	+ Added cg_fastsolids which should speedup prediction when enabled, by only treating entities as solid if close enough to the player
-		- Note: this has some side-effects with the flamethrower going through walls etc, so likely dont want to enable this, or have flamethrower code ignore this
+		- Note: this has some side-effects with the flamethrower going through walls, etc., so it's likely that we don't want to enable this, or have flamethrower code ignore this
 	
 27-11-2002
 			Jason <rhea@OrangeSmoothie.org>
@@ -7030,7 +7030,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 			Gordon <djbob@splashdamage.com>
 	+ Added AA Gun code, needs a new model for the gun + waiting on player animation for player sitting in gun too, before i finish it all
-	+ Changed MG42_BULLET_HIT_WILL etc to be broadcast in SinglePlayer, or player wont get full tracer effects in distance fogged maps
+	+ Changed MG42_BULLET_HIT_WALL, etc. to be broadcasted in single-player, so that the player would get full tracer effects in distance fogged maps
 	+ Backported some of Rhea's additional fixes to Antilag 
 		- ignoring backupmarker cache time, as not all players will have moved when another player fires, d'oh
 		- limiting client search to level.numConnectedClients
@@ -7157,7 +7157,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 04-11-2002
 			Arnout	<rr2do2@splashdamage.com>
-	+ Made HIGH spawnflag on MG42's actually work. MG42's without this will have it's muzzleflash 16 units lower then, fixes MG42's hitting ceiling for no obvious reason bug.
+	+ Made the HIGH spawnflag on MG42s actually work. MG42s without this flag will have their muzzle point 16 units lower then. This fixes the "MG42s are hitting the ceiling for no obvious reason" bug.
 	+ Rewrote flag code to work properly with multiple flags.
 	+ Upped version number to ET 2.10a.
 	+ Removed skill requirement for disguise.
@@ -7434,7 +7434,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout <rr2do2@splashdamage.com>
 	+ When you can't arm a landmine due to limit reached or bad surface you get also your powerbar usage back.
 	+ Fixed limbo menu primary weapon selection.
-	+ Rewrote botcode weapontext to weaponnum code.
+	+ Rewrote bot code weapontext to weaponnum code.
 	+ Fixed landmines always showing when any battle sense skill was reached, not only level 4 and higher.
 	+ Fixed skills not saving over map loads.
 	+ Fixed smoke of artillery and airstrike markers always being red.
@@ -7689,7 +7689,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Disabled MG42 in tank code
 	+ Fixed spawn settings reseting if brought up after set but before respawn (again...)
 	+ Alter placement and size of complete/failed image
-	+ Changed playsound with no volume setting to just send a EV_GENERAL_SOUND instead of EV_GENERAL_SOUND_VOLUME, as player cant store volume in ent->s.onFireStart
+	+ Changed playsound with no volume setting to just send an EV_GENERAL_SOUND instead of an EV_GENERAL_SOUND_VOLUME, as players can't store the volume in ent->s.onFireStart
 				
 05-10-2002
 			Arnout <rr2do2@splashdamage.com>
@@ -7780,7 +7780,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Stopped items from spawning in LMS
 
 				tim 	<tim@maddocsoftware.com>
-	+ After fading out all sounds, stop all sounds (so reaaaly long voiceover will stop if cinematic canceled out of)
+	+ After fading out all sounds, stop all sounds (so really long voiceover will stop if cinematic is canceled out of)
 
 	
 26-09-2002
@@ -8541,7 +8541,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Increased Mobile MG42 fire rate to 50ms/shot
 	+ Added ammo packs give grenades for gpg40/m7
 	+ Changed gpg40/m7 to start with 6 grenades
-	+ Added 'do not shoot' icon when aiming at frieindly disguised covert ops
+	+ Added a "do not shoot" icon when aiming at friendly, disguised covert ops players
 	+ Fixed not being able to scroll backwards to landmines
 	+ Added context sensitive help to commandmap filters
 	+ Fixed bug with arming landmines when at final landmine available to your team
@@ -8919,7 +8919,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout	<rr2do2@splashdamage.com>
 	+ Moved pcx loading fix from Radiant code into renderer.
 	+ Stopped player from being able to use a fixed MG42 when in prone mode.
-	+ When bot_enable wasn't set, the botcode wouldn't be initialized. The main worker loop for bots would still be initiated though, causing problems.
+	+ When bot_enable wasn't set, the bot code wouldn't be initialized. The main worker loop for bots would still be initiated though, causing problems.
 
 ---------------- BUILD 015 - 2.00g-MP (missionpack)
 
@@ -9024,7 +9024,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added loading of medals images from proper location
 	+ Removed Q_strcasecmp and changed all usage of it to Q_stricmp, was a direct copy of this function, which seems odd...
 	+ Increased snooper damage to that of the sniper rifle (as per request), altho if anything, it should probably be decreased
-	+ Removed some entities which plain wouldnt work in multiplayer, truck cam etc.
+	+ Removed some entities which simply wouldn't work in multiplayer, truck cam etc.
 	+ Fixed sounds being played from some entities only being played in the "player" (search for an ent with ainame "player", i.e. the first client it happens to find) PVS
 	+ Removed some script actions that would only apply to singleplayer (e.g. mission end, start)
 
@@ -9285,7 +9285,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Players waiting to be revived and corpses now get pushed and crushed by movers.
 	+ Added recursive pushing for players that are blocking movers. This prevents situations where a player could get crushed when he was standing between a mover and another player. (Pushes up to 3 players)
 	+ Updated WolfReviveBbox to handle complex movers better. There are still situations in which players that are being revived get crushed, but it's gonna take quite some more time resolving this properly.
-	+ Removed Ryans botcode from the tree (need to keep it seperate as we don't want it in the patch).
+	+ Removed Ryan's bot code from the tree (need to keep it separate as we don't want it in the patch).
 
 			Gordon	<djbob@splashdamage.com>
 	+ Merged the sapper and construction class
@@ -9322,7 +9322,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 22-04-2002
 			Arnout	<rr2do2@splashdamage.com>
 	+ Client-sided console commands are now only processed after a snapshot has arrived at the client.
-	+ Removed Quake 3 Tournament wins/losses values that were sent with clientinfo updates.
+	+ Removed Quake 3 Tournament win/loss count values that were sent with clientinfo updates.
 	* Fixed bug where you were spectating someone in follow mode, went to the limbo menu to join a team and this didn't work.
 	+ Started double tap implementation.
 	

@@ -117,7 +117,7 @@ typedef struct
 	float    dopplerScale;
 	float    oldDopplerScale;
 	vec3_t   origin; // only use if fixed_origin is set
-	qboolean fixed_origin; // use origin instead of fetching entnum's origin
+	qboolean fixed_origin; // use origin instead of fetching the entity's origin
 	sfx_t    *thesfx; // sfx structure
 	qboolean doppler;
 } channel_t;

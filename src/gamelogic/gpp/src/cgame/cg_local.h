@@ -1966,5 +1966,5 @@ typedef enum
   DT_INTERACTIVE, // team, class, armoury
   DT_ARMOURYEVOLVE, // Insufficient funds et al
   DT_BUILD, // build errors
-  DT_COMMAND, // You must be living/human/spec etc.
+  DT_COMMAND, // You must be alive/human/spec/etc.
 } dialogType_t;

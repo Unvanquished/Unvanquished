@@ -734,7 +734,7 @@ static void CG_LightFlare( centity_t *cent )
 	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, es->angles2,
 	          entityNum, MASK_SHOT );
 
-	//if there is no los between the view and the flare source
+	//if there is no LOS between the view and the flare source
 	//it definately cannot be seen
 	if ( tr.fraction < 1.0f || tr.allsolid )
 	{

@@ -1641,7 +1641,7 @@ void SP_func_door( gentity_t *ent )
 }
 
 /*QUAKED func_door_rotating (0 .5 .8) START_OPEN CRUSHER REVERSE TOGGLE X_AXIS Y_AXIS
- * This is the rotating door... just as the name suggests it's a door that rotates
+ * This is the rotating door... just as the name suggests, it's a door that rotates
  * START_OPEN the door to moves to its destination when spawned, and operate in reverse.
  * REVERSE    if you want the door to open in the other direction, use this switch.
  * TOGGLE   wait in both the start and end states for a trigger event.
@@ -1954,7 +1954,7 @@ PLAT
 ==============
 Touch_Plat
 
-Don't allow decent if a living player is on it
+Don't allow to descend if a live player is on it
 ===============
 */
 void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t *trace )

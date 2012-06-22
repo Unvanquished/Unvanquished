@@ -1529,7 +1529,7 @@ static void RoQ_init( void )
 *
 ******************************************************************************/
 
-//FIXME: this isn't realy a "roq-shutdown" (it's more a CIN-shutdown, beside the file-closing)
+//FIXME: this isn't really a "ROQ shutdown" function (it's more like a "CIN shutdown" function, beside the file closing)
 static void RoQShutdown( void )
 {
 	const char *s;

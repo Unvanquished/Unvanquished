@@ -1582,7 +1582,7 @@ qboolean SideInBrush(side_t * side, brush_t * b)
 		if(b->sides[i].compileFlags & C_NODRAW)
 			return qfalse;
 
-		/* check if side's winding is on or behind the plane */
+		/* check if the side's winding is on or behind the plane */
 		plane = &mapplanes[b->sides[i].planenum];
 		s = WindingOnPlaneSide(side->winding, plane->normal, plane->dist);
 		if(s == SIDE_FRONT || s == SIDE_CROSS)
@@ -2311,7 +2311,7 @@ void EmitDrawVerts(mapDrawSurface_t * ds, bspDrawSurface_t * out)
 
 		/* expand model bounds
 		   necessary because of misc_model surfaces on entities
-		   note: does not happen on worldspawn as its bounds is only used for determining lightgrid bounds */
+		   note: does not happen on worldspawn as its bounds are only used for determining lightgrid bounds */
 		if(numBSPModels > 0)
 			AddPointToBounds(dv->xyz, bspModels[numBSPModels].mins, bspModels[numBSPModels].maxs);
 

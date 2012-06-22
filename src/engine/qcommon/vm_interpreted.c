@@ -567,7 +567,7 @@ nextInstruction2:
 //VM_LogSyscalls( (int *)&image[ programStack + 4 ] );
 					{
 						VM_SetSanity( vm, ~programCounter );
-						// the vm has ints on the stack, we expect
+						// the VM has ints on the stack, we expect
 						// pointers so we might have to convert it
 						if ( sizeof( intptr_t ) != sizeof( int ) )
 						{

@@ -931,7 +931,7 @@ void Con_DrawSolidConsole( float frac )
 			}
 			else
 			{
-				// This will be overwrote, so ill just abuse it here, no need to define another array
+				// This will be overwritten, so i'll just abuse it here, no need to define another array
 				color[ 0 ] = scr_conColorRed->value;
 				color[ 1 ] = scr_conColorGreen->value;
 				color[ 2 ] = scr_conColorBlue->value;

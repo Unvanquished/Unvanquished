@@ -585,7 +585,7 @@ void CheckWinding(winding_t * w)
 		if(d < -ON_EPSILON || d > ON_EPSILON)
 			Error("CheckWinding: point off plane");
 
-		// check the edge isnt degenerate
+		// check that the edge isn't degenerate
 		p2 = w->p[j];
 		VectorSubtract(p2, p1, dir);
 

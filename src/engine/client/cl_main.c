@@ -4030,7 +4030,7 @@ void CL_Frame( int msec )
 		{
 			CL_TakeVideoFrame();
 
-			// fixed time for next frame'
+			// fixed time for next frame
 			msec = ( int ) ceil( ( 1000.0f / cl_aviFrameRate->value ) * com_timescale->value );
 
 			if ( msec == 0 )

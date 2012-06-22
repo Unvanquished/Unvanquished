@@ -2698,7 +2698,7 @@ void StoreSurfaceLightmaps(void)
 								if(sx < 0 || sx >= lm->w || (sx == x && sy == y))
 									continue;
 
-								/* get neighbor's particulars */
+								/* get the neighbor's particulars */
 								luxel = SUPER_LUXEL(lightmapNum, sx, sy);
 								if(luxel[3] < 0.0f)
 									continue;
