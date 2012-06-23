@@ -283,7 +283,7 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 			continue;
 		}
 
-		if ( !search->s.groundEntityNum )
+		if ( search->s.groundEntityNum == ENTITYNUM_NONE )
 		{
 			continue;
 		}
@@ -489,9 +489,7 @@ static void SpawnCorpse( gentity_t *ent )
 {
 	gentity_t *body;
 	int       contents;
-	vec3_t    origin, dest;
-	trace_t   tr;
-	float     vDiff;
+	vec3_t    origin, mins;
 
 	VectorCopy( ent->r.currentOrigin, origin );
 
@@ -513,6 +511,7 @@ static void SpawnCorpse( gentity_t *ent )
 	body->timestamp = level.time;
 	body->s.event = 0;
 	body->r.contents = CONTENTS_CORPSE;
+	body->clipmask = MASK_DEADSOLID;
 	body->s.clientNum = ent->client->ps.stats[ STAT_CLASS ];
 	body->nonSegModel = ent->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL;
 
@@ -581,21 +580,16 @@ static void SpawnCorpse( gentity_t *ent )
 	ent->health = 0;
 
 	//change body dimensions
-	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], NULL, NULL, NULL, body->r.mins, body->r.maxs );
-	vDiff = body->r.mins[ 2 ] - ent->r.mins[ 2 ];
+	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, NULL, NULL, body->r.mins, body->r.maxs );
 
 	//drop down to match the *model* origins of ent and body
-	VectorSet( dest, origin[ 0 ], origin[ 1 ], origin[ 2 ] - vDiff );
-	trap_Trace( &tr, origin, body->r.mins, body->r.maxs, dest, body->s.number, body->clipmask );
-	VectorCopy( tr.endpos, origin );
+	origin[2] += mins[ 2 ] - body->r.mins[ 2 ];
 
 	G_SetOrigin( body, origin );
-	VectorCopy( origin, body->s.origin );
 	body->s.pos.trType = TR_GRAVITY;
 	body->s.pos.trTime = level.time;
 	VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
 
-	VectorCopy( body->s.pos.trBase, body->r.currentOrigin );
 	trap_LinkEntity( body );
 }
 
@@ -1506,6 +1500,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	int                i;
 	clientPersistant_t saved;
 	clientSession_t    savedSess;
+	qboolean           savedNoclip, savedCliprcontents;
 	int                persistant[ MAX_PERSISTANT ];
 	gentity_t          *spawnPoint = NULL;
 	int                flags;
@@ -1577,7 +1572,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		if ( spawn == NULL )
 		{
-			G_Error( "ClientSpawn: spawn is NULL\n" );
+			G_Error( "ClientSpawn: spawn is NULL" );
 		}
 
 		spawnPoint = spawn;
@@ -1607,6 +1602,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	saved = client->pers;
 	savedSess = client->sess;
 	savedPing = client->ps.ping;
+	savedNoclip = client->noclip;
+	savedCliprcontents = client->cliprcontents;
 
 	for ( i = 0; i < MAX_PERSISTANT; i++ )
 	{
@@ -1619,6 +1616,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->pers = saved;
 	client->sess = savedSess;
 	client->ps.ping = savedPing;
+	client->noclip = savedNoclip;
+	client->cliprcontents = savedCliprcontents;
 	client->lastkilled_client = -1;
 
 	for ( i = 0; i < MAX_PERSISTANT; i++ )
@@ -1643,12 +1642,19 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->client = &level.clients[ index ];
 	ent->takedamage = qtrue;
 	ent->classname = "player";
-	ent->r.contents = CONTENTS_BODY;
+	if ( client->noclip )
+	{
+		client->cliprcontents = CONTENTS_BODY;
+	}
+	else
+	{
+		ent->r.contents = CONTENTS_BODY;
+	}
 	ent->clipmask = MASK_PLAYERSOLID;
 	ent->die = player_die;
 	ent->waterlevel = 0;
 	ent->watertype = 0;
-	ent->flags = 0;
+	ent->flags &= FL_GODMODE | FL_NOTARGET;
 
 	// calculate each client's acceleration
 	ent->evaluateAcceleration = qtrue;

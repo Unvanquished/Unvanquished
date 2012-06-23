@@ -496,7 +496,7 @@ qboolean	Sin_ParseMapEntity (void)
 			  printf ("Surface script: %s\n", surfacefile);
 			  if (!ParseSurfaceFile(surfacefile))
 			   {
-				 Error ("Script file not found: %s\n", surfacefile);
+				 Error ("Script file not found: %s", surfacefile);
 			   }
 			}
 #endif
@@ -805,7 +805,7 @@ void Sin_PushNodeStack( int num ) {
 	nodestacksize++;
 	//
 	if ( nodestackptr >= &nodestack[NODESTACKSIZE] ) {
-		Error( "Sin_PushNodeStack: stack overflow\n" );
+		Error( "Sin_PushNodeStack: stack overflow" );
 	} //end if
 } //end of the function Sin_PushNodeStack
 //===========================================================================

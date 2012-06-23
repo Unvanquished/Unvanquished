@@ -143,7 +143,7 @@ void ThreadLock(void)
 		return;
 	EnterCriticalSection(&crit);
 	if(enter)
-		Error("Recursive ThreadLock\n");
+		Error("Recursive ThreadLock");
 	enter = 1;
 }
 
@@ -152,7 +152,7 @@ void ThreadUnlock(void)
 	if(!threaded)
 		return;
 	if(!enter)
-		Error("ThreadUnlock without lock\n");
+		Error("ThreadUnlock without lock");
 	enter = 0;
 	LeaveCriticalSection(&crit);
 }
@@ -497,9 +497,9 @@ void recursive_mutex_init(pthread_mutexattr_t attribs)
 
 	pt_mutex->owner = NULL;
 	if(pthread_mutex_init(&pt_mutex->a_mutex, &attribs) != 0)
-		Error("pthread_mutex_init failed\n");
+		Error("pthread_mutex_init failed");
 	if(pthread_cond_init(&pt_mutex->cond, NULL) != 0)
-		Error("pthread_cond_init failed\n");
+		Error("pthread_cond_init failed");
 
 	pt_mutex->lock = 0;
 }

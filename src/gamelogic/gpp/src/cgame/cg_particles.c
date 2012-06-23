@@ -291,6 +291,21 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 					VectorNormalize( p->velocity );
 					VectorMA( p->origin, bp->normalDisplacement, p->velocity, p->origin );
 					break;
+
+				case PMT_LAST_NORMAL:
+					VectorCopy( ps->lastNormal, p->velocity );
+					VectorNormalize( p->velocity );
+					VectorMA( p->origin, bp->normalDisplacement, p->velocity, p->origin );
+					break;
+
+				case PMT_OPPORTUNISTIC_NORMAL:
+					if ( ps->lastNormalIsCurrent )
+					{
+						VectorCopy( ps->lastNormal, p->velocity );
+						VectorNormalize( p->velocity );
+						VectorMA( p->origin, bp->normalDisplacement, p->velocity, p->origin );
+					}
+					break;
 			}
 
 			VectorNormalize( p->velocity );
@@ -313,12 +328,18 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 			//this particle has a child particle system attached
 			if ( bp->childSystemName[ 0 ] != '\0' )
 			{
-				particleSystem_t *ps = CG_SpawnNewParticleSystem( bp->childSystemHandle );
+				particleSystem_t *chps = CG_SpawnNewParticleSystem( bp->childSystemHandle );
 
-				if ( CG_IsParticleSystemValid( &ps ) )
+				if ( CG_IsParticleSystemValid( &chps ) )
 				{
-					CG_SetAttachmentParticle( &ps->attachment, p );
-					CG_AttachToParticle( &ps->attachment );
+					CG_SetAttachmentParticle( &chps->attachment, p );
+					CG_AttachToParticle( &chps->attachment );
+					p->childParticleSystem = chps;
+
+					if ( ps->lastNormalIsCurrent )
+						CG_SetParticleSystemLastNormal( chps, ps->lastNormal );
+					else
+						VectorCopy( ps->lastNormal, chps->lastNormal );
 				}
 			}
 
@@ -505,6 +526,9 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 
 			ps->valid = qtrue;
 			ps->lazyRemove = qfalse;
+
+			// use "up" as an arbitrary (non-null) "last" normal
+			VectorSet( ps->lastNormal, 0, 0, 1 );
 
 			for ( j = 0; j < bps->numEjectors; j++ )
 			{
@@ -976,6 +1000,14 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			{
 				bp->velMoveType = PMT_NORMAL;
 			}
+			else if ( !Q_stricmp( token, "last_normal" ) )
+			{
+				bp->velMoveType = PMT_LAST_NORMAL;
+			}
+			else if ( !Q_stricmp( token, "opportunistic_normal" ) )
+			{
+				bp->velMoveType = PMT_OPPORTUNISTIC_NORMAL;
+			}
 
 			continue;
 		}
@@ -1008,7 +1040,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &randFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &randFrac, qtrue );
 
 			bp->velMoveValues.mag = number;
 			bp->velMoveValues.magRandFrac = randFrac;
@@ -1115,6 +1147,14 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			{
 				bp->accMoveType = PMT_NORMAL;
 			}
+			else if ( !Q_stricmp( token, "last_normal" ) )
+			{
+				bp->accMoveType = PMT_LAST_NORMAL;
+			}
+			else if ( !Q_stricmp( token, "opportunistic_normal" ) )
+			{
+				bp->accMoveType = PMT_OPPORTUNISTIC_NORMAL;
+			}
 
 			continue;
 		}
@@ -1147,7 +1187,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 				break;
 			}
 
-			CG_ParseValueAndVariance( token, &number, &randFrac, qfalse );
+			CG_ParseValueAndVariance( token, &number, &randFrac, qtrue );
 
 			bp->accMoveValues.mag = number;
 			bp->accMoveValues.magRandFrac = randFrac;
@@ -2160,6 +2200,31 @@ void CG_SetParticleSystemNormal( particleSystem_t *ps, vec3_t normal )
 	ps->normalValid = qtrue;
 	VectorCopy( normal, ps->normal );
 	VectorNormalize( ps->normal );
+
+	CG_SetParticleSystemLastNormal( ps, normal );
+}
+
+/*
+===============
+CG_SetParticleSystemLastNormal
+===============
+*/
+void CG_SetParticleSystemLastNormal( particleSystem_t *ps, const vec3_t normal )
+{
+	if ( ps == NULL || !ps->valid )
+	{
+		CG_Printf( S_COLOR_YELLOW "WARNING: tried to modify a NULL particle system\n" );
+		return;
+	}
+
+	if ( normal )
+	{
+		ps->lastNormalIsCurrent = qtrue;
+		VectorCopy( normal, ps->lastNormal );
+		VectorNormalize( ps->lastNormal );
+	}
+	else
+		ps->lastNormalIsCurrent = qfalse;
 }
 
 /*
@@ -2444,6 +2509,17 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 			VectorCopy( ps->normal, acceleration );
 
 			break;
+
+		case PMT_LAST_NORMAL:
+			VectorCopy( ps->lastNormal, acceleration );
+			break;
+
+		case PMT_OPPORTUNISTIC_NORMAL:
+			if ( ps->lastNormalIsCurrent )
+				VectorCopy( ps->lastNormal, acceleration );
+			else
+				VectorClear( acceleration );
+			break;
 	}
 
 #define MAX_ACC_RADIUS 1000.0f
@@ -2524,6 +2600,8 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	if ( trace.fraction == 1.0f || bounce == 0.0f )
 	{
 		VectorCopy( newOrigin, p->origin );
+		if ( CG_IsParticleSystemValid( &p->childParticleSystem ) )
+			CG_SetParticleSystemLastNormal( p->childParticleSystem, NULL );
 		return;
 	}
 
@@ -2567,6 +2645,12 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	}
 
 	VectorCopy( trace.endpos, p->origin );
+
+	if ( !trace.allsolid )
+	{
+		if ( CG_IsParticleSystemValid( &p->childParticleSystem ) )
+			CG_SetParticleSystemLastNormal( p->childParticleSystem, trace.plane.normal );
+	}
 }
 
 #define GETKEY(x,y) ((( x ) >> y ) & 0xFF )
@@ -2958,9 +3042,8 @@ void CG_ParticleSystemEntity( centity_t *cent )
 
 		if ( CG_IsParticleSystemValid( &cent->entityPS ) )
 		{
-			CG_SetAttachmentPoint( &cent->entityPS->attachment, cent->lerpOrigin );
 			CG_SetAttachmentCent( &cent->entityPS->attachment, cent );
-			CG_AttachToPoint( &cent->entityPS->attachment );
+			CG_AttachToCent( &cent->entityPS->attachment );
 		}
 		else
 		{

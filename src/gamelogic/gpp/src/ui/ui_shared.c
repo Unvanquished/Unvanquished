@@ -772,7 +772,7 @@ qboolean PC_Float_Parse( int handle, float *f )
 
 	if ( token.type != TT_NUMBER )
 	{
-		PC_SourceError( handle, "expected float but found %s\n", token.string );
+		PC_SourceError( handle, "expected float but found %s", token.string );
 		return qfalse;
 	}
 
@@ -897,7 +897,7 @@ qboolean PC_Int_Parse( int handle, int *i )
 
 	if ( token.type != TT_NUMBER )
 	{
-		PC_SourceError( handle, "expected integer but found %s\n", token.string );
+		PC_SourceError( handle, "expected integer but found %s", token.string );
 		return qfalse;
 	}
 
@@ -1811,7 +1811,7 @@ void Menus_CloseAll( void )
 	{
 		for ( i = openMenuCount; i > 0; i-- )
 		{
-			Menus_Close( menuStack[ i ] );
+			Menus_Close( menuStack[ i - 1 ] );
 		}
 
 		openMenuCount = 0;
@@ -5377,7 +5377,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 	}
 
 	// terminate the string, making sure that we don't overflow the buffer
-	out[ paint > sizeof( out ) ? sizeof( out ) - 1 : paint ] = '\0';
+	out[ paint > sizeof( out ) - 1 ? sizeof( out ) - 1 : paint ] = '\0';
 	return out;
 }
 
@@ -5387,31 +5387,33 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 
 typedef struct
 {
-	char      text[ MAX_WRAP_TEXT *MAX_WRAP_LINES ]; //FIXME: augment with hash?
+	char      text[ MAX_WRAP_TEXT * MAX_WRAP_LINES ];
 	rectDef_t rect;
 	float     scale;
 	char      lines[ MAX_WRAP_LINES ][ MAX_WRAP_TEXT ];
 	float     lineCoords[ MAX_WRAP_LINES ][ 2 ];
 	int       numLines;
-}
-
-wrapCache_t;
+} wrapCache_t;
 
 static wrapCache_t wrapCache[ MAX_WRAP_CACHE ];
+static qboolean    cacheCreationFailed = qfalse;
 static int         cacheWriteIndex = 0;
 static int         cacheReadIndex = 0;
 static int         cacheReadLineNum = 0;
 
-static void UI_CreateCacheEntry( const char *text, rectDef_t *rect, float scale )
+static void UI_CreateCacheEntry( const char *text, const rectDef_t *rect, float scale )
 {
 	wrapCache_t *cacheEntry = &wrapCache[ cacheWriteIndex ];
 
-	Q_strncpyz( cacheEntry->text, text, sizeof( cacheEntry->text ) );
-	cacheEntry->rect.x = rect->x;
-	cacheEntry->rect.y = rect->y;
-	cacheEntry->rect.w = rect->w;
-	cacheEntry->rect.h = rect->h;
-	cacheEntry->scale = scale;
+	if ( strlen( text ) >= sizeof( cacheEntry->text ) )
+	{
+		cacheCreationFailed = qtrue;
+		return;
+	}
+
+	strcpy( cacheEntry->text, text );
+	cacheEntry->rect     = *rect;
+	cacheEntry->scale    = scale;
 	cacheEntry->numLines = 0;
 }
 
@@ -5419,38 +5421,45 @@ static void UI_AddCacheEntryLine( const char *text, float x, float y )
 {
 	wrapCache_t *cacheEntry = &wrapCache[ cacheWriteIndex ];
 
-	if ( cacheEntry->numLines >= MAX_WRAP_LINES )
+	if ( cacheCreationFailed )
 	{
 		return;
 	}
 
-	Q_strncpyz( cacheEntry->lines[ cacheEntry->numLines ], text,
-	            sizeof( cacheEntry->lines[ 0 ] ) );
+	if ( cacheEntry->numLines >= MAX_WRAP_LINES ||
+	     strlen( text ) >= sizeof( cacheEntry->lines[ 0 ] ) )
+	{
+		cacheCreationFailed = qtrue;
+		return;
+	}
 
+	strcpy( cacheEntry->lines[ cacheEntry->numLines ], text );
 	cacheEntry->lineCoords[ cacheEntry->numLines ][ 0 ] = x;
-
 	cacheEntry->lineCoords[ cacheEntry->numLines ][ 1 ] = y;
-
 	cacheEntry->numLines++;
 }
 
 static void UI_FinishCacheEntry( void )
 {
-	cacheWriteIndex = ( cacheWriteIndex + 1 ) % MAX_WRAP_CACHE;
+	if ( cacheCreationFailed )
+	{
+		wrapCache[ cacheWriteIndex ].text[ 0 ] = '\0';
+		wrapCache[ cacheWriteIndex ].numLines = 0;
+		cacheCreationFailed = qfalse;
+	}
+	else
+	{
+		cacheWriteIndex = ( cacheWriteIndex + 1 ) % MAX_WRAP_CACHE;
+	}
 }
 
-static qboolean UI_CheckWrapCache( const char *text, rectDef_t *rect, float scale )
+static qboolean UI_CheckWrapCache( const char *text, const rectDef_t *rect, float scale )
 {
 	int i;
 
 	for ( i = 0; i < MAX_WRAP_CACHE; i++ )
 	{
 		wrapCache_t *cacheEntry = &wrapCache[ i ];
-
-		if ( strcmp( text, cacheEntry->text ) )
-		{
-			continue;
-		}
 
 		if ( rect->x != cacheEntry->rect.x ||
 		     rect->y != cacheEntry->rect.y ||
@@ -5460,20 +5469,22 @@ static qboolean UI_CheckWrapCache( const char *text, rectDef_t *rect, float scal
 			continue;
 		}
 
+		if ( strcmp( text, cacheEntry->text ) )
+		{
+			continue;
+		}
+
 		if ( cacheEntry->scale != scale )
 		{
 			continue;
 		}
 
-		// This is a match
 		cacheReadIndex = i;
-
 		cacheReadLineNum = 0;
 
 		return qtrue;
 	}
 
-	// No match - wrap isn't cached
 	return qfalse;
 }
 
@@ -5487,9 +5498,7 @@ static qboolean UI_NextWrapLine( const char **text, float *x, float *y )
 	}
 
 	*text = cacheEntry->lines[ cacheReadLineNum ];
-
 	*x = cacheEntry->lineCoords[ cacheReadLineNum ][ 0 ];
-
 	*y = cacheEntry->lineCoords[ cacheReadLineNum ][ 1 ];
 
 	cacheReadLineNum++;
@@ -8342,7 +8351,7 @@ qboolean ItemParse_cvarStrList( itemDef_t *item, int handle )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu item\n" );
+			PC_SourceError( handle, "end of file inside menu item" );
 			return qfalse;
 		}
 
@@ -8402,7 +8411,7 @@ qboolean ItemParse_cvarFloatList( itemDef_t *item, int handle )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu item\n" );
+			PC_SourceError( handle, "end of file inside menu item" );
 			return qfalse;
 		}
 
@@ -8643,7 +8652,7 @@ qboolean Item_Parse( int handle, itemDef_t *item )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu item\n" );
+			PC_SourceError( handle, "end of file inside menu item" );
 			return qfalse;
 		}
 
@@ -9225,7 +9234,7 @@ qboolean Menu_Parse( int handle, menuDef_t *menu )
 
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu\n" );
+			PC_SourceError( handle, "end of file inside menu" );
 			return qfalse;
 		}
 

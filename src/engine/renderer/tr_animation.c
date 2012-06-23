@@ -183,7 +183,7 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 
 		if ( channel->parentIndex >= anim->numChannels )
 		{
-			ri.Error( ERR_DROP, "RE_RegisterAnimation: '%s' has channel '%s' with bad parent index %i while numBones is %i\n",
+			ri.Error( ERR_DROP, "RE_RegisterAnimation: '%s' has channel '%s' with bad parent index %i while numBones is %i",
 			          name, channel->name, channel->parentIndex, anim->numChannels );
 		}
 

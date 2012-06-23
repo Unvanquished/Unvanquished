@@ -1012,7 +1012,7 @@ void Q1_FixContentsTextures( bspbrush_t *brushlist ) {
 		  {
 			  if (Q1_TextureContents(map_texinfo[texinfonum].texture) != brush->side)
 			  {
-				  Error("brush contents %d with wrong contents textures %s\n", brush->side,
+				  Error("brush contents %d with wrong contents textures %s", brush->side,
 							  Q1_TextureContents(map_texinfo[texinfonum].texture));
 			  } //end if
 		  } //end for

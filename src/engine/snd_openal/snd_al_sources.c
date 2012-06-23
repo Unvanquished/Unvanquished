@@ -334,7 +334,7 @@ void al_src_unlock( srcHandle_t src )
 // Entity position management
 void SndAl_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES )
+	if ( entityNum < 0 || entityNum >= MAX_GENTITIES )
 	{
 		si.Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	}

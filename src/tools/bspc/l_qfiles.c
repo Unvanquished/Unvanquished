@@ -462,7 +462,7 @@ quakefile_t *FindQuakeFilesWithPakFilter( char *pakfilter, char *filter ) {
 		{
 			_splitpath( pakfilter, pakfile, NULL, NULL, NULL );
 			_splitpath( pakfilter, NULL, &pakfile[strlen( pakfile )], NULL, NULL );
-			AppendPathSeperator( pakfile, _MAX_PATH );
+			AppendPathSeparator( pakfile, _MAX_PATH );
 			strcat( pakfile, filedata.cFileName );
 			_stat( pakfile, &statbuf );
 #else
@@ -475,7 +475,7 @@ quakefile_t *FindQuakeFilesWithPakFilter( char *pakfilter, char *filter ) {
 			//if the file with .pak or .pk3 is a folder
 			if ( statbuf.st_mode & S_IFDIR ) {
 				strcpy( filename, pakfilter );
-				AppendPathSeperator( filename, _MAX_PATH );
+				AppendPathSeparator( filename, _MAX_PATH );
 				strcat( filename, filter );
 				qf = FindQuakeFilesWithPakFilter( NULL, filename );
 				if ( lastqf ) {
@@ -526,7 +526,7 @@ quakefile_t *FindQuakeFilesWithPakFilter( char *pakfilter, char *filter ) {
 		{
 			_splitpath( filter, filename, NULL, NULL, NULL );
 			_splitpath( filter, NULL, &filename[strlen( filename )], NULL, NULL );
-			AppendPathSeperator( filename, _MAX_PATH );
+			AppendPathSeparator( filename, _MAX_PATH );
 			strcat( filename, filedata.cFileName );
 #else
 		glob( filter, 0, NULL, &globbuf );

@@ -2830,7 +2830,7 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 
 	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING )
 	{
-		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()\n" );
+		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()" );
 	}
 
 	if ( len + index >= MAX_VA_STRING - 1 )
@@ -3223,7 +3223,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value )
 
 	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
-	if ( strlen( newi ) + strlen( s ) > MAX_INFO_STRING )
+	if ( strlen( newi ) + strlen( s ) >= MAX_INFO_STRING )
 	{
 		Com_Printf( "Info string length exceeded\n" );
 		return;
@@ -3275,7 +3275,7 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value )
 
 	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
-	if ( strlen( newi ) + strlen( s ) > BIG_INFO_STRING )
+	if ( strlen( newi ) + strlen( s ) >= BIG_INFO_STRING )
 	{
 		Com_Printf( "BIG Info string length exceeded\n" );
 		return;

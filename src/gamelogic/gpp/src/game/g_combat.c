@@ -508,7 +508,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->takedamage = qfalse; // can still be gibbed
 
 	self->s.weapon = WP_NONE;
-	self->r.contents = CONTENTS_CORPSE;
+	if ( self->client->noclip )
+	{
+		self->client->cliprcontents = CONTENTS_CORPSE;
+	}
+	else
+	{
+		self->r.contents = CONTENTS_CORPSE;
+	}
 
 	self->s.angles[ PITCH ] = 0;
 	self->s.angles[ ROLL ] = 0;
@@ -1163,7 +1170,7 @@ dflags    these flags are used to control how T_Damage works
   DAMAGE_RADIUS     damage was indirect (from a nearby explosion)
   DAMAGE_NO_ARMOR     armor does not protect from this damage
   DAMAGE_NO_KNOCKBACK   do not affect velocity, just view angles
-  DAMAGE_NO_PROTECTION  kills godmode, armor, everything
+  DAMAGE_NO_PROTECTION  kills everything except godmode
 ============
 */
 
@@ -1299,6 +1306,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
+	// check for godmode
+	if ( targ->flags & FL_GODMODE )
+	{
+		return;
+	}
+
 	// don't do friendly fire on movement attacks
 	if ( ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ||
 	       mod == MOD_LEVEL4_CRUSH ) &&
@@ -1359,12 +1372,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				level.humanBaseAttackTimer = level.time + DC_ATTACK_PERIOD;
 				G_BroadcastEvent( EV_DCC_ATTACK, 0 );
 			}
-		}
-
-		// check for godmode
-		if ( targ->flags & FL_GODMODE )
-		{
-			return;
 		}
 	}
 

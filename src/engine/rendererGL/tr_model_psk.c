@@ -511,7 +511,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		if ( md5Bone->parentIndex >= md5->numBones )
 		{
-			ri.Error( ERR_DROP, "R_LoadPSK: '%s' has bone '%s' with bad parent index %i while numBones is %i\n", modName,
+			ri.Error( ERR_DROP, "R_LoadPSK: '%s' has bone '%s' with bad parent index %i while numBones is %i", modName,
 			          md5Bone->name, md5Bone->parentIndex, md5->numBones );
 		}
 

@@ -161,7 +161,7 @@ typedef struct node_s
 	bspbrush_t      *volume;        // one for each leaf/node
 
 	// nodes only
-	qboolean detail_seperator;              // a detail brush caused the split
+	qboolean detail_separator;              // a detail brush caused the split
 	side_t          *side;      // the side that created the node
 	struct node_s   *children[2];
 	face_t          *faces;

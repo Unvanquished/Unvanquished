@@ -133,7 +133,7 @@ void xml_SendNode(xmlNodePtr node)
 		{
 			// if we send that we are probably gonna break the stream at the other end..
 			// and Error will call right there
-			//Error( "MAX_NETMESSAGE exceeded for XML feedback stream in FPrintf (%d)\n", xml_buf->use);
+			//Error( "MAX_NETMESSAGE exceeded for XML feedback stream in FPrintf (%d)", xml_buf->use);
 			Sys_FPrintf(SYS_NOXML, "MAX_NETMESSAGE exceeded for XML feedback stream in FPrintf (%d)\n", xml_buf->use);
 			xml_buf->content[xml_buf->use] = '\0';	//++timo this corrupts the buffer but we don't care it's for printing
 			Sys_FPrintf(SYS_NOXML, xml_buf->content);

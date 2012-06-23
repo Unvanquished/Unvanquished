@@ -756,9 +756,9 @@ static qboolean BG_ParseBuildableFile( const char *filename, buildableConfig_t *
 			{
 				index = 0;
 			}
-			else if ( index > MAX_BUILDABLE_MODELS )
+			else if ( index >= MAX_BUILDABLE_MODELS )
 			{
-				index = MAX_BUILDABLE_MODELS;
+				index = MAX_BUILDABLE_MODELS - 1;
 			}
 
 			token = COM_Parse( &text_p );
@@ -2589,7 +2589,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		"battpack", //char  *name;
 		"Battery Pack", //char  *humanName;
 		"Back-mounted battery pack that permits storage of one and a half "
-		"times the normal energy capacity for energy weapons.",
+		"times as much energy capacity for energy weapons.",
 		"icons/iconu_battpack",
 		qtrue, //qboolean purchasable;
 		qfalse, //qboolean usable;
@@ -3520,8 +3520,7 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 
 	// The mask is MASK_DEADSOLID on purpose to avoid collisions with other entities
 	( *trace )( tr, entityOrigin, mins, maxs, targetOrigin, ps->clientNum, MASK_DEADSOLID );
-	VectorCopy( tr->endpos, entityOrigin );
-	VectorMA( entityOrigin, 0.1f, playerNormal, outOrigin );
+	VectorCopy( tr->endpos, outOrigin );
 	vectoangles( forward, outAngles );
 }
 

@@ -187,6 +187,9 @@ vmCvar_t           g_combatCooldown;
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
 static char        cv_humanMaxStage[ MAX_CVAR_VALUE_STRING ];
 static char        cv_alienMaxStage[ MAX_CVAR_VALUE_STRING ];
+static char        cv_humanRepeaterBuildPoints[ MAX_CVAR_VALUE_STRING ];
+static char        cv_humanBuildPoints[ MAX_CVAR_VALUE_STRING ];
+static char        cv_alienBuildPoints[ MAX_CVAR_VALUE_STRING ];
 
 static cvarTable_t gameCvarTable[] =
 {
@@ -262,11 +265,11 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_alienBuildPoints,            "g_alienBuildPoints",            DEFAULT_ALIEN_BUILDPOINTS,          0,                                               0, qfalse           },
+	{ &g_alienBuildPoints,            "g_alienBuildPoints",            DEFAULT_ALIEN_BUILDPOINTS,          0,                                               0, qfalse, cv_alienBuildPoints},
 	{ &g_alienBuildQueueTime,         "g_alienBuildQueueTime",         DEFAULT_ALIEN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanBuildPoints,            "g_humanBuildPoints",            DEFAULT_HUMAN_BUILDPOINTS,          0,                                               0, qfalse           },
+	{ &g_humanBuildPoints,            "g_humanBuildPoints",            DEFAULT_HUMAN_BUILDPOINTS,          0,                                               0, qfalse, cv_humanBuildPoints},
 	{ &g_humanBuildQueueTime,         "g_humanBuildQueueTime",         DEFAULT_HUMAN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanRepeaterBuildPoints,    "g_humanRepeaterBuildPoints",    DEFAULT_HUMAN_REPEATER_BUILDPOINTS, CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_humanRepeaterBuildPoints,    "g_humanRepeaterBuildPoints",    DEFAULT_HUMAN_REPEATER_BUILDPOINTS, CVAR_ARCHIVE,                                    0, qfalse, cv_humanRepeaterBuildPoints},
 	{ &g_humanRepeaterMaxZones,       "g_humanRepeaterMaxZones",       DEFAULT_HUMAN_REPEATER_MAX_ZONES,   CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanRepeaterBuildQueueTime, "g_humanRepeaterBuildQueueTime", DEFAULT_HUMAN_REPEATER_QUEUE_TIME,  CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
@@ -724,6 +727,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// range are NEVER anything but clients
 	level.num_entities = MAX_CLIENTS;
 
+	for( i = 0; i < MAX_CLIENTS; i++ )
+		g_entities[ i ].classname = "clientslot";
+
 	// let the server system know where the entites are
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
 	                     &level.clients[ 0 ].ps, sizeof( level.clients[ 0 ] ) );
@@ -879,7 +885,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... 
 	Q_vsnprintf( text, sizeof( text ), error, argptr );
 	va_end( argptr );
 
-	G_Error( "%s", text );
+	trap_Error( text );
 }
 
 void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
@@ -891,7 +897,7 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 	Q_vsnprintf( text, sizeof( text ), msg, argptr );
 	va_end( argptr );
 
-	G_Printf( "%s", text );
+	trap_Print( text );
 }
 
 /*
@@ -1463,6 +1469,8 @@ void G_CalculateStages( void )
 	int        alienNextStageThreshold, humanNextStageThreshold;
 	static int lastAlienStageModCount = 1;
 	static int lastHumanStageModCount = 1;
+	static int alienTriggerStage = 0;
+	static int humanTriggerStage = 0;
 
 	if ( alienPlayerCountMod < 0.1f )
 	{
@@ -1516,7 +1524,10 @@ void G_CalculateStages( void )
 
 	if ( g_alienStage.modificationCount > lastAlienStageModCount )
 	{
-		G_Checktrigger_stages( TEAM_ALIENS, g_alienStage.integer );
+		while ( alienTriggerStage < MIN( g_alienStage.integer, S3 ) )
+		{
+			G_Checktrigger_stages( TEAM_ALIENS, ++alienTriggerStage );
+		}
 
 		if ( g_alienStage.integer == S2 )
 		{
@@ -1532,7 +1543,10 @@ void G_CalculateStages( void )
 
 	if ( g_humanStage.modificationCount > lastHumanStageModCount )
 	{
-		G_Checktrigger_stages( TEAM_HUMANS, g_humanStage.integer );
+		while ( humanTriggerStage < MIN( g_humanStage.integer, S3 ) )
+		{
+			G_Checktrigger_stages( TEAM_HUMANS, ++humanTriggerStage );
+		}
 
 		if ( g_humanStage.integer == S2 )
 		{

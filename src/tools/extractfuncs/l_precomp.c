@@ -359,12 +359,12 @@ token_t *PC_CopyToken( token_t *token ) {
 //	t = freetokens;
 	if ( !t ) {
 #ifdef BSPC
-		Error( "out of token space\n" );
+		Error( "out of token space" );
 #else
 #ifdef SCREWUP
-		Error( "out of token space\n" );
+		Error( "out of token space" );
 #else
-		Com_Error( ERR_FATAL, "out of token space\n" );
+		Com_Error( ERR_FATAL, "out of token space" );
 #endif
 #endif
 		return NULL;
@@ -1029,7 +1029,7 @@ void PC_ConvertPath( char *path ) {
 	for ( ptr = path; *ptr; )
 	{
 		if ( *ptr == '/' || *ptr == '\\' ) {
-			*ptr = PATHSEPERATOR_CHAR;
+			*ptr = PATHSEPARATOR_CHAR;
 		}
 		ptr++;
 	} //end while
@@ -1715,7 +1715,7 @@ int PC_OperatorPriority( int op ) {
 #define MAX_OPERATORS   64
 #define AllocValue( val )								  \
 	if ( numvalues >= MAX_VALUES ) {					  \
-		SourceError( source, "out value space\n" );		\
+		SourceError( source, "out value space" );		\
 		error = 1;										\
 		break;											\
 	}													\
@@ -1725,7 +1725,7 @@ int PC_OperatorPriority( int op ) {
 //
 #define AllocOperator( op )								  \
 	if ( numoperators >= MAX_OPERATORS ) {				  \
-		SourceError( source, "out operator space\n" );	\
+		SourceError( source, "out operator space" );	\
 		error = 1;										\
 		break;											\
 	}													\
@@ -1879,7 +1879,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 					 t->subtype == P_RSHIFT || t->subtype == P_LSHIFT ||
 					 t->subtype == P_BIN_AND || t->subtype == P_BIN_OR ||
 					 t->subtype == P_BIN_XOR ) {
-					SourceError( source, "illigal operator %s on floating point operands\n", t->string );
+					SourceError( source, "illegal operator %s on floating point operands", t->string );
 					error = 1;
 					break;
 				}     //end if
@@ -3031,7 +3031,7 @@ void PC_SetIncludePath( source_t *source, char *path ) {
 	//add trailing path separator
 	if ( source->includepath[strlen( source->includepath ) - 1] != '\\' &&
 		 source->includepath[strlen( source->includepath ) - 1] != '/' ) {
-		strcat( source->includepath, PATHSEPERATOR_STR );
+		strcat( source->includepath, PATHSEPARATOR_STR );
 	} //end if
 } //end of the function PC_SetIncludePath
 //============================================================================

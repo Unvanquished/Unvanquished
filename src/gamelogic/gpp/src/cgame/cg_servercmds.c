@@ -614,8 +614,8 @@ void CG_Menu( int menu, int arg )
 			break;
 
 		case MN_CMD_ALIVE:
-			//longMsg   = "You must be living to perform this action.";
-			shortMsg = _("Must be living to use this command");
+			//longMsg   = "You must be alive to perform this action.";
+			shortMsg = _("Must be alive to use this command");
 			type = DT_COMMAND;
 			break;
 

@@ -314,12 +314,12 @@ static sfx_t *S_FindName( const char *name )
 
 	if ( !name )
 	{
-		Com_Error( ERR_FATAL, "S_FindName: NULL\n" );
+		Com_Error( ERR_FATAL, "S_FindName: NULL" );
 	}
 
 	if ( !name[ 0 ] )
 	{
-		Com_Error( ERR_FATAL, "S_FindName: empty name\n" );
+		Com_Error( ERR_FATAL, "S_FindName: empty name" );
 	}
 
 	if ( strlen( name ) >= MAX_QPATH )
@@ -609,7 +609,7 @@ void SOrig_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t
 		return;
 	}
 
-	if ( !origin && ( entityNum < 0 || entityNum > MAX_GENTITIES ) )
+	if ( !origin && ( entityNum < 0 || entityNum >= MAX_GENTITIES ) )
 	{
 		Com_Error( ERR_DROP, "S_StartSound: bad entitynum %i", entityNum );
 	}
@@ -1267,7 +1267,7 @@ let the sound system know where an entity currently is
 */
 void SOrig_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES )
+	if ( entityNum < 0 || entityNum >= MAX_GENTITIES )
 	{
 		Com_Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	}

@@ -49,7 +49,7 @@ VBO_t          *R_CreateVBO( const char *name, byte *vertexes, int vertexesSize,
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateVBO: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateVBO: \"%s\" is too long", name );
 	}
 
 	// make sure the render thread is stopped
@@ -129,7 +129,7 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateVBO2: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateVBO2: \"%s\" is too long", name );
 	}
 
 	// make sure the render thread is stopped
@@ -284,7 +284,7 @@ IBO_t          *R_CreateIBO( const char *name, byte *indexes, int indexesSize, v
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateIBO: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateIBO: \"%s\" is too long", name );
 	}
 
 	// make sure the render thread is stopped
@@ -349,7 +349,7 @@ IBO_t          *R_CreateIBO2( const char *name, int numTriangles, srfTriangle_t 
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateIBO2: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateIBO2: \"%s\" is too long", name );
 	}
 
 	// make sure the render thread is stopped

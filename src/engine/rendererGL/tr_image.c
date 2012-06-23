@@ -1527,7 +1527,7 @@ image_t        *R_AllocImage( const char *name, qboolean linkIntoHashTable )
 //  if(strlen(name) >= MAX_QPATH)
 	if ( strlen( name ) >= 1024 )
 	{
-		ri.Error( ERR_DROP, "R_AllocImage: \"%s\" image name is too long\n", name );
+		ri.Error( ERR_DROP, "R_AllocImage: \"%s\" image name is too long", name );
 		return NULL;
 	}
 

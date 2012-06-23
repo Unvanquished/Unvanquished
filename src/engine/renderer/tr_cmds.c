@@ -761,7 +761,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 
 		if ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
-			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (0x%x)!\n", err );
+			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (0x%x)!", err );
 		}
 	}
 

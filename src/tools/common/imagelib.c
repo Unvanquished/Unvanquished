@@ -200,7 +200,7 @@ byte           *LBMRLEDecompress(byte * source, byte * unpacked, int bpwidth)
 	} while(count < bpwidth);
 
 	if(count > bpwidth)
-		Error("Decompression exceeded width!\n");
+		Error("Decompression exceeded width!");
 
 
 	return source;
@@ -237,7 +237,7 @@ void LoadLBM(const char *filename, byte ** picture, byte ** palette)
 //
 	LBM_P = LBMbuffer;
 	if(*(int *)LBMbuffer != LittleLong(FORMID))
-		Error("No FORM ID at start of file!\n");
+		Error("No FORM ID at start of file!");
 
 	LBM_P += 4;
 	formlength = BigLong(*(int *)LBM_P);
@@ -247,7 +247,7 @@ void LoadLBM(const char *filename, byte ** picture, byte ** palette)
 	formtype = LittleLong(*(int *)LBM_P);
 
 	if(formtype != ILBMID && formtype != PBMID)
-		Error("Unrecognized form type: %c%c%c%c\n", formtype & 0xff, (formtype >> 8) & 0xff, (formtype >> 16) & 0xff,
+		Error("Unrecognized form type: %c%c%c%c", formtype & 0xff, (formtype >> 8) & 0xff, (formtype >> 16) & 0xff,
 			  (formtype >> 24) & 0xff);
 
 	LBM_P += 4;
@@ -951,17 +951,17 @@ void LoadTGABuffer(byte * buffer, byte ** pic, int *width, int *height)
 
 	if(targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3)
 	{
-		Error("LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported\n");
+		Error("LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported");
 	}
 
 	if(targa_header.colormap_type != 0)
 	{
-		Error("LoadTGA: colormaps not supported\n");
+		Error("LoadTGA: colormaps not supported");
 	}
 
 	if((targa_header.pixel_size != 32 && targa_header.pixel_size != 24) && targa_header.image_type != 3)
 	{
-		Error("LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
+		Error("LoadTGA: Only 32 or 24 bit images supported (no colormaps)");
 	}
 
 	columns = targa_header.width;
@@ -1022,7 +1022,7 @@ void LoadTGABuffer(byte * buffer, byte ** pic, int *width, int *height)
 						*pixbuf++ = alphabyte;
 						break;
 					default:
-						//Error("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
+						//Error("LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 						break;
 				}
 			}
@@ -1061,7 +1061,7 @@ void LoadTGABuffer(byte * buffer, byte ** pic, int *width, int *height)
 							alphabyte = *buf_p++;
 							break;
 						default:
-							//Error("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
+							//Error("LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 							break;
 					}
 
@@ -1385,7 +1385,7 @@ void LoadJPGBuffer(const char *filename, byte * fbuffer, int fbufferSize, byte *
 
 	if(!cinfo.output_width || !cinfo.output_height || ((pixelcount * 4) / cinfo.output_width) / 4 != cinfo.output_height || pixelcount > 0x1FFFFFFF || cinfo.output_components > 4)	// 4*1FFFFFFF == 0x7FFFFFFC < 0x7FFFFFFF
 	{
-		Error("LoadJPG( '%s' ) invalid image size: %dx%d*4=%d, components: %d\n", filename,
+		Error("LoadJPG( '%s' ) invalid image size: %dx%d*4=%d, components: %d", filename,
 				 cinfo.output_width, cinfo.output_height, pixelcount * 4, cinfo.output_components);
 	}
 

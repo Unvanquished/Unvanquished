@@ -366,14 +366,14 @@ void Map2Bsp(char *mapfilename, char *outputfilename)
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void AASOuputFile( quakefile_t *qf, char *outputpath, char *filename ) {
+void AASOutputFile( quakefile_t *qf, char *outputpath, char *filename ) {
 	char ext[MAX_PATH];
 
 	//
 	if ( strlen( outputpath ) ) {
 		strcpy( filename, outputpath );
 		//append the bsp file base
-		AppendPathSeperator( filename, MAX_PATH );
+		AppendPathSeparator( filename, MAX_PATH );
 		ExtractFileBase( qf->origname, &filename[strlen( filename )] );
 
 		// Ridah, add extension
@@ -399,7 +399,7 @@ void AASOuputFile( quakefile_t *qf, char *outputpath, char *filename ) {
 			CreatePath( filename );
 		}
 		//append the bsp file base
-		AppendPathSeperator( filename, MAX_PATH );
+		AppendPathSeparator( filename, MAX_PATH );
 		ExtractFileBase( qf->origname, &filename[strlen( filename )] );
 
 		// Ridah, add extension
@@ -447,7 +447,7 @@ void CreateAASFilesForAllBSPFiles( char *quakepath ) {
 	quakefile_t *qf, *qf2, *files, *bspfiles, *aasfiles;
 
 	strcpy( filter, quakepath );
-	AppendPathSeperator( filter, sizeof( filter ) );
+	AppendPathSeparator( filter, sizeof( filter ) );
 	strcat( filter, "*" );
 
 #if defined( WIN32 ) | defined( _WIN32 )
@@ -457,7 +457,7 @@ void CreateAASFilesForAllBSPFiles( char *quakepath ) {
 	{
 		_splitpath( filter, foldername, NULL, NULL, NULL );
 		_splitpath( filter, NULL, &foldername[strlen( foldername )], NULL, NULL );
-		AppendPathSeperator( foldername, _MAX_PATH );
+		AppendPathSeparator( foldername, _MAX_PATH );
 		strcat( foldername, filedata.cFileName );
 		_stat( foldername, &statbuf );
 #else
@@ -470,7 +470,7 @@ void CreateAASFilesForAllBSPFiles( char *quakepath ) {
 		//if it is a folder
 		if ( statbuf.st_mode & S_IFDIR ) {
 			//
-			AppendPathSeperator( foldername, sizeof( foldername ) );
+			AppendPathSeparator( foldername, sizeof( foldername ) );
 			//get all the bsp files
 			strcpy( bspfilter, foldername );
 			strcat( bspfilter, "maps/*.bsp" );
@@ -874,7 +874,7 @@ int main( int argc, char **argv ) {
 				//copy the output path
 				strcpy( filename, outputpath );
 				//append the bsp file base
-				AppendPathSeperator( filename, MAX_PATH );
+				AppendPathSeparator( filename, MAX_PATH );
 				ExtractFileBase( qf->origname, &filename[strlen( filename )] );
 				//append .map
 				strcat( filename, ".map" );
@@ -897,7 +897,7 @@ int main( int argc, char **argv ) {
 			}
 			for ( qf = qfiles; qf; qf = qf->next )
 			{
-				AASOuputFile( qf, outputpath, filename );
+				AASOutputFile( qf, outputpath, filename );
 				//
 				Log_Print( "bsp2aas: %s to %s\n", qf->origname, filename );
 				if ( qf->type != QFILETYPE_BSP ) {
@@ -925,7 +925,7 @@ int main( int argc, char **argv ) {
 				//
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -939,7 +939,7 @@ int main( int argc, char **argv ) {
 			}
 			for ( qf = qfiles; qf; qf = qf->next )
 			{
-				AASOuputFile( qf, outputpath, filename );
+				AASOutputFile( qf, outputpath, filename );
 				//
 				Log_Print( "reach: %s to %s\n", qf->origname, filename );
 				if ( qf->type != QFILETYPE_BSP ) {
@@ -948,7 +948,7 @@ int main( int argc, char **argv ) {
 				//if the AAS file exists in the output directory
 				if ( !access( filename, 0x04 ) ) {
 					if ( !AAS_LoadAASFile( filename, 0, 0 ) ) {
-						Error( "error loading aas file %s\n", filename );
+						Error( "error loading aas file %s", filename );
 					}     //end if
 						  //assume it's a Quake3 BSP file
 					loadedmaptype = MAPTYPE_QUAKE3;
@@ -979,7 +979,7 @@ int main( int argc, char **argv ) {
 				}
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -993,7 +993,7 @@ int main( int argc, char **argv ) {
 			}
 			for ( qf = qfiles; qf; qf = qf->next )
 			{
-				AASOuputFile( qf, outputpath, filename );
+				AASOutputFile( qf, outputpath, filename );
 				//
 				Log_Print( "cluster: %s to %s\n", qf->origname, filename );
 				if ( qf->type != QFILETYPE_BSP ) {
@@ -1002,7 +1002,7 @@ int main( int argc, char **argv ) {
 				//if the AAS file exists in the output directory
 				if ( !access( filename, 0x04 ) ) {
 					if ( !AAS_LoadAASFile( filename, 0, 0 ) ) {
-						Error( "error loading aas file %s\n", filename );
+						Error( "error loading aas file %s", filename );
 					}     //end if
 						  //assume it's a Quake3 BSP file
 					loadedmaptype = MAPTYPE_QUAKE3;
@@ -1033,7 +1033,7 @@ int main( int argc, char **argv ) {
 				}
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -1047,17 +1047,17 @@ int main( int argc, char **argv ) {
 			}
 			for ( qf = qfiles; qf; qf = qf->next )
 			{
-				AASOuputFile( qf, outputpath, filename );
+				AASOutputFile( qf, outputpath, filename );
 				//
 				Log_Print( "optimizing: %s to %s\n", qf->origname, filename );
 				if ( qf->type != QFILETYPE_AAS ) {
-					Warning( "%s is probably not a AAS file\n", qf->origname );
+					Warning( "%s is probably not an AAS file\n", qf->origname );
 				}
 				//
 				AAS_InitBotImport();
 				//
 				if ( !AAS_LoadAASFile( qf->filename, qf->offset, qf->length ) ) {
-					Error( "error loading aas file %s\n", qf->filename );
+					Error( "error loading aas file %s", qf->filename );
 				}     //end if
 				if ( groundonly ) {
 					AAS_RemoveNonGrounded();
@@ -1068,7 +1068,7 @@ int main( int argc, char **argv ) {
 				AAS_Optimize();
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -1082,17 +1082,17 @@ int main( int argc, char **argv ) {
 			}
 			for ( qf = qfiles; qf; qf = qf->next )
 			{
-				AASOuputFile( qf, outputpath, filename );
+				AASOutputFile( qf, outputpath, filename );
 				//
 				Log_Print( "removing non-reachability areas: %s to %s\n", qf->origname, filename );
 				if ( qf->type != QFILETYPE_AAS ) {
-					Warning( "%s is probably not a AAS file\n", qf->origname );
+					Warning( "%s is probably not an AAS file\n", qf->origname );
 				}
 				//
 				AAS_InitBotImport();
 				//
 				if ( !AAS_LoadAASFile( qf->filename, qf->offset, qf->length ) ) {
-					Error( "error loading aas file %s\n", qf->filename );
+					Error( "error loading aas file %s", qf->filename );
 				}     //end if
 				AAS_RemoveNonReachability();
 				if ( optimize ) {
@@ -1100,7 +1100,7 @@ int main( int argc, char **argv ) {
 				}
 				//write out the stored AAS file
 				if ( !AAS_WriteAASFile( filename ) ) {
-					Error( "error writing %s\n", filename );
+					Error( "error writing %s", filename );
 				}     //end if
 					  //deallocate memory
 				AAS_FreeMaxAAS();
@@ -1114,17 +1114,17 @@ int main( int argc, char **argv ) {
 			}
 			for ( qf = qfiles; qf; qf = qf->next )
 			{
-				AASOuputFile( qf, outputpath, filename );
+				AASOutputFile( qf, outputpath, filename );
 				//
 				Log_Print( "aas info for: %s\n", filename );
 				if ( qf->type != QFILETYPE_AAS ) {
-					Warning( "%s is probably not a AAS file\n", qf->origname );
+					Warning( "%s is probably not an AAS file\n", qf->origname );
 				}
 				//
 				AAS_InitBotImport();
 				//
 				if ( !AAS_LoadAASFile( qf->filename, qf->offset, qf->length ) ) {
-					Error( "error loading aas file %s\n", qf->filename );
+					Error( "error loading aas file %s", qf->filename );
 				}     //end if
 				AAS_ShowTotals();
 			}     //end for

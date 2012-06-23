@@ -31,8 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define TIMER_GESTURE     ( 34 * 66 + 50 )
 #define TIMER_ATTACK      500 //nonsegmented models
 
-#define OVERCLIP          1.001f
-
 #define FALLING_THRESHOLD -900.0f //what vertical speed to start falling sound at
 
 // all of the locals will be zeroed before each
@@ -76,7 +74,7 @@ extern  pml_t   pml;
 
 extern  int     c_pmove;
 
-void            PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out, float overbounce );
+void            PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out );
 void            PM_AddTouchEnt( int entityNum );
 void            PM_AddEvent( int newEvent );
 

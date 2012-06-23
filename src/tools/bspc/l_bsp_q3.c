@@ -652,7 +652,7 @@ void    Q3_LoadBSPFile( struct quakefile_s *qf ) {
 	Q3_SwapBlock( (int *)header, sizeof( *header ) );
 
 	if ( header->ident != Q3_BSP_IDENT ) {
-		Error( "%s is not a IBSP file", qf->filename );
+		Error( "%s is not an IBSP file", qf->filename );
 	}
 	if ( header->version != Q3_BSP_VERSION ) {
 		Error( "%s is version %i, not %i", qf->filename, header->version, Q3_BSP_VERSION );

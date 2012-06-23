@@ -375,6 +375,12 @@ void  G_TouchTriggers( gentity_t *ent )
 		return;
 	}
 
+	// noclipping clients don't activate triggers!
+	if ( ent->client->noclip )
+	{
+		return;
+	}
+
 	// dead clients don't activate triggers!
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 )
 	{
@@ -766,6 +772,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				{
 					vec3_t forward, aimDir, normal;
 					vec3_t dummy, dummy2;
+					int dummy3;
 					int dist;
 
 					BG_GetClientNormal( &client->ps,normal );
@@ -776,7 +783,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 					dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
 					if ( G_CanBuild( ent, client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT,
-					                 dist, dummy, dummy2 ) == IBE_NONE )
+					                 dist, dummy, dummy2, &dummy3 ) == IBE_NONE )
 					{
 						client->ps.stats[ STAT_BUILDABLE ] |= SB_VALID_TOGGLEBIT;
 					}
@@ -1901,10 +1908,7 @@ void ClientThink_real( gentity_t *ent )
 
 	// moved from after Pmove -- potentially the cause of
 	// future triggering bugs
-	if ( !ent->client->noclip )
-	{
-		G_TouchTriggers( ent );
-	}
+	G_TouchTriggers( ent );
 
 	Pmove( &pm );
 
@@ -2107,7 +2111,6 @@ void ClientThink_real( gentity_t *ent )
 
 	if ( ent->suicideTime > 0 && ent->suicideTime < level.time )
 	{
-		ent->flags &= ~FL_GODMODE;
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
 		player_die( ent, ent, ent, 100000, MOD_SUICIDE );
 

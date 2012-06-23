@@ -518,12 +518,6 @@ void Cmd_Give_f( gentity_t *ent )
 		give_all = qtrue;
 	}
 
-	if ( give_all || Q_stricmp( name, "health" ) == 0 )
-	{
-		ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
-		BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
-	}
-
 	if ( give_all || Q_stricmpn( name, "funds", 5 ) == 0 )
 	{
 		float credits;
@@ -550,6 +544,22 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 
 		G_AddCreditToClient( ent->client, ( short ) credits, qtrue );
+	}
+
+	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
+			ent->client->sess.spectatorState != SPECTATOR_NOT )
+	{
+		if ( !( give_all || Q_stricmpn( name, "funds", 5 ) == 0 ) )
+		{
+			G_TriggerMenu( ent-g_entities, MN_CMD_ALIVE );
+		}
+		return;
+	}
+
+	if ( give_all || Q_stricmp( name, "health" ) == 0 )
+	{
+		ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
+		BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
 	}
 
 	if ( give_all || Q_stricmp( name, "stamina" ) == 0 )
@@ -669,13 +679,21 @@ void Cmd_Noclip_f( gentity_t *ent )
 	if ( ent->client->noclip )
 	{
 		msg = N_("noclip OFF\n");
+		ent->r.contents = ent->client->cliprcontents;
 	}
 	else
 	{
 		msg = N_("noclip ON\n");
+		ent->client->cliprcontents = ent->r.contents;
+		ent->r.contents = 0;
 	}
 
 	ent->client->noclip = !ent->client->noclip;
+
+	if ( ent->r.linked )
+	{
+		trap_LinkEntity( ent );
+	}
 
 	trap_SendServerCommand( ent - g_entities, va( "print_tr %s", Quote( msg ) ) );
 }
@@ -689,7 +707,6 @@ void Cmd_Kill_f( gentity_t *ent )
 {
 	if ( g_cheats.integer )
 	{
-		ent->flags &= ~FL_GODMODE;
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
 		player_die( ent, ent, ent, 100000, MOD_SUICIDE );
 	}
@@ -1165,7 +1182,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 			// console say_team is handled in g_svscmds, not here
 			if ( !ent || !ent->client )
 			{
-				Com_Error( ERR_FATAL, "SAY_TEAM by non-client entity\n" );
+				Com_Error( ERR_FATAL, "SAY_TEAM by non-client entity" );
 			}
 
 			G_LogPrintf( "SayTeam: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_CYAN "%s\n",
@@ -1175,7 +1192,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 		case SAY_RAW:
 			if ( ent )
 			{
-				Com_Error( ERR_FATAL, "SAY_RAW by client entity\n" );
+				Com_Error( ERR_FATAL, "SAY_RAW by client entity" );
 			}
 
 			G_LogPrintf( "Chat: -1 \"console\": %s\n", chatText );
@@ -1344,7 +1361,7 @@ void Cmd_VSay_f( gentity_t *ent )
 
 	if ( !ent || !ent->client )
 	{
-		Com_Error( ERR_FATAL, "Cmd_VSay_f() called by non-client entity\n" );
+		Com_Error( ERR_FATAL, "Cmd_VSay_f() called by non-client entity" );
 	}
 
 	trap_Argv( 0, arg, sizeof( arg ) );
@@ -2194,6 +2211,11 @@ static qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
 
 	// find what the new origin would be on a level surface
 	newOrigin[ 2 ] -= toMins[ 2 ] - fromMins[ 2 ];
+
+	if ( ent->client->noclip )
+	{
+		return qtrue;
+	}
 
 	//compute a place up in the air to start the real trace
 	VectorCopy( newOrigin, temp );
@@ -3082,6 +3104,7 @@ void Cmd_Build_f( gentity_t *ent )
 	buildable_t buildable;
 	float       dist;
 	vec3_t      origin, normal;
+	int         groundEntNum;
 	team_t      team;
 
 	if ( ent->client->pers.namelog->denyBuild )
@@ -3127,7 +3150,7 @@ void Cmd_Build_f( gentity_t *ent )
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 
 		//these are the errors displayed when the builder first selects something to use
-		switch ( G_CanBuild( ent, buildable, dist, origin, normal ) )
+		switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 		{
 				// can place right away, set the blueprint and the valid togglebit
 			case IBE_NONE:
@@ -4130,8 +4153,8 @@ static const commands_t cmds[] =
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },
-	{ "give",            CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Give_f             },
-	{ "god",             CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_God_f              },
+	{ "give",            CMD_CHEAT | CMD_TEAM,                Cmd_Give_f             },
+	{ "god",             CMD_CHEAT,                           Cmd_God_f              },
 	{ "ignore",          0,                                   Cmd_Ignore_f           },
 	{ "itemact",         CMD_HUMAN | CMD_ALIVE,               Cmd_ActivateItem_f     },
 	{ "itemdeact",       CMD_HUMAN | CMD_ALIVE,               Cmd_DeActivateItem_f   },

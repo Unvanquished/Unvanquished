@@ -1847,7 +1847,7 @@ static qboolean SubmapRawLuxel(rawLightmap_t * lm, int x, int y, float bx, float
 	}
 	else
 	{
-		Error("Spurious lightmap S vector\n");
+		Error("Spurious lightmap S vector");
 	}
 
 	VectorSubtract(origin2, origin, originVecs[0]);

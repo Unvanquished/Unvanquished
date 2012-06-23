@@ -132,7 +132,6 @@ static const field_t fields[] =
 	{ "targetname",          FOFS( targetname ),          F_STRING    },
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
-	{ "team",                FOFS( team ),                F_STRING    },
 	{ "wait",                FOFS( wait ),                F_FLOAT     }
 };
 
@@ -496,7 +495,7 @@ char *G_AddSpawnVarToken( const char *string )
 
 	if ( level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
 	{
-		G_Error( "G_AddSpawnVarToken: MAX_SPAWN_CHARS" );
+		G_Error( "G_AddSpawnVarToken: MAX_SPAWN_VARS_CHARS" );
 	}
 
 	dest = level.spawnVarChars + level.numSpawnVarChars;
@@ -621,6 +620,15 @@ void SP_worldspawn( void )
 		trap_Cvar_Set( "g_alienMaxStage", s );
 	}
 
+	if ( G_SpawnString( "humanRepeaterBuildPoints", "", &s ) )
+		trap_Cvar_Set( "g_humanRepeaterBuildPoints", s );
+
+	if ( G_SpawnString( "humanBuildPoints", "", &s ) )
+		trap_Cvar_Set( "g_humanBuildPoints", s );
+
+	if ( G_SpawnString( "alienBuildPoints", "", &s ) )
+		trap_Cvar_Set( "g_alienBuildPoints", s );
+
 	G_SpawnString( "disabledEquipment", "", &s );
 	trap_Cvar_Set( "g_disabledEquipment", s );
 
@@ -631,7 +639,12 @@ void SP_worldspawn( void )
 	trap_Cvar_Set( "g_disabledBuildables", s );
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
+	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
 	g_entities[ ENTITYNUM_WORLD ].classname = "worldspawn";
+
+	g_entities[ ENTITYNUM_NONE ].s.number = ENTITYNUM_NONE;
+	g_entities[ ENTITYNUM_NONE ].r.ownerNum = ENTITYNUM_NONE;
+	g_entities[ ENTITYNUM_NONE ].classname = "nothing";
 
 	if ( g_restarted.integer )
 	{

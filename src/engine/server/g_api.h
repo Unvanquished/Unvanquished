@@ -72,9 +72,6 @@ typedef struct
 	vec3_t currentOrigin;
 	vec3_t currentAngles;
 
-	// Creation time, for entities which need it
-	int    startTime;
-
 	// when a trace call is made and the specified pass entity isn't none,
 	//  then a given entity will be excluded from testing if:
 	// - the given entity is the pass entity (use case: don't interact with self),
@@ -86,9 +83,6 @@ typedef struct
 	//   ( ent->s.number == passEntityNum || ent->r.ownerNum == passEntityNum ||
 	//     ( ent->r.ownerNum != ENTITYNUM_NONE && ent->r.ownerNum == entities[passEntityNum].r.ownerNum ) ) )
 	int      ownerNum;
-	int      eventTime;
-
-	int      worldflags;
 
 	qboolean snapshotCallback;
 } entityShared_t;

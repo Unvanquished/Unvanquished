@@ -1176,7 +1176,7 @@ long double ReadSignedFloat( script_t *script ) {
 		PS_ExpectTokenType( script, TT_NUMBER, 0, &token );
 	} //end if
 	else if ( token.type != TT_NUMBER ) {
-		ScriptError( script, "expected float value, found %s\n", token.string );
+		ScriptError( script, "expected float value, found %s", token.string );
 	} //end else if
 	return sign * token.floatvalue;
 } //end of the function ReadSignedFloat
@@ -1196,7 +1196,7 @@ signed long int ReadSignedInt( script_t *script ) {
 		PS_ExpectTokenType( script, TT_NUMBER, TT_INTEGER, &token );
 	} //end if
 	else if ( token.type != TT_NUMBER || token.subtype == TT_FLOAT ) {
-		ScriptError( script, "expected integer value, found %s\n", token.string );
+		ScriptError( script, "expected integer value, found %s", token.string );
 	} //end else if
 	return sign * token.intvalue;
 } //end of the function ReadSignedInt

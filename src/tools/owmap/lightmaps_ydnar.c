@@ -801,7 +801,7 @@ qboolean AddSurfaceToRawLightmap(int num, rawLightmap_t * lm)
 	/* check for bogus axis */
 	if(faxis[axisNum] == 0.0f)
 	{
-		Sys_Printf("WARNING: ProjectSurfaceLightmap: Chose a 0 valued axis\n");
+		Sys_Printf("WARNING: ProjectSurfaceLightmap: A 0-valued axis was encountered\n");
 		lm->w = lm->h = 0;
 		return qfalse;
 	}

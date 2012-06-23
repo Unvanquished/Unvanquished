@@ -133,6 +133,7 @@ struct gentity_s
 	char         *message;
 
 	int          timestamp; // body queue sinking, etc
+	int          startTime; // currently for the diminishing missile damage
 
 	char         *target;
 	char         *targetname;
@@ -378,6 +379,7 @@ struct gclient_s
 	qboolean           readyToExit; // wishes to leave the intermission
 
 	qboolean           noclip;
+	int                cliprcontents; // the backup layer of ent->r.contents for when noclipping
 
 	int                lastCmdTime; // level.time of last usercmd_t, for EF_CONNECTION
 	// we can't just use pers.lastCommand.time, because
@@ -556,7 +558,7 @@ typedef enum {
 //
 #define MAX_SPAWN_VARS       64
 #define MAX_SPAWN_VARS_CHARS 4096
-#define MAX_BUILDLOG         128
+#define MAX_BUILDLOG         1024
 
 typedef struct
 {
@@ -819,7 +821,8 @@ qboolean         G_FindCreep( gentity_t *self );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
 void             G_ClearDeconMarks( void );
-itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal );
+itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance,
+                             vec3_t origin, vec3_t normal, int *groundEntNum );
 qboolean         G_BuildIfValid( gentity_t *ent, buildable_t buildable );
 void             G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim, qboolean force );
 void             G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim );
@@ -869,6 +872,7 @@ gentity_t  *G_TempEntity( const vec3_t origin, int event );
 void       G_Sound( gentity_t *ent, int channel, int soundIndex );
 void       G_FreeEntity( gentity_t *e );
 qboolean   G_EntitiesFree( void );
+char       *G_CopyString( const char *str );
 
 void       G_TouchTriggers( gentity_t *ent );
 
@@ -915,7 +919,7 @@ void     G_InitDamageLocations( void );
 #define DAMAGE_RADIUS        0x00000001 // damage was indirect
 #define DAMAGE_NO_ARMOR      0x00000002 // armour does not protect from this damage
 #define DAMAGE_NO_KNOCKBACK  0x00000004 // do not affect velocity, just view angles
-#define DAMAGE_NO_PROTECTION 0x00000008 // armor, shields, invulnerability, and godmode have no effect
+#define DAMAGE_NO_PROTECTION 0x00000008 // kills everything except godmode
 #define DAMAGE_NO_LOCDAMAGE  0x00000010 // do not apply locational damage
 
 //

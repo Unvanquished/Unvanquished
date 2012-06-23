@@ -771,7 +771,7 @@ static void GLSL_InitGPUShader( shaderProgram_t *program, const char *name, int 
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "GLSL_InitGPUShader: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "GLSL_InitGPUShader: \"%s\" is too long", name );
 	}
 
 	Q_strncpyz( program->name, name, sizeof( program->name ) );
@@ -801,12 +801,12 @@ static void GLSL_InitGPUShader2(shaderProgram_t * program,
 
         if(strlen(vertexMainShader) >= MAX_QPATH)
         {
-                ri.Error(ERR_DROP, "GLSL_InitGPUShader2: \"%s\" is too long\n", vertexMainShader);
+                ri.Error(ERR_DROP, "GLSL_InitGPUShader2: \"%s\" is too long", vertexMainShader);
         }
 
         if(strlen(fragmentMainShader) >= MAX_QPATH)
         {
-                ri.Error(ERR_DROP, "GLSL_InitGPUShader2: \"%s\" is too long\n", fragmentMainShader);
+                ri.Error(ERR_DROP, "GLSL_InitGPUShader2: \"%s\" is too long", fragmentMainShader);
         }
 
         Q_strncpyz(program->name, fragmentMainShader, sizeof(program->name));
@@ -838,12 +838,12 @@ void GLSL_InitGPUShader3(shaderProgram_t * program,
 
         if(strlen(vertexMainShader) >= MAX_QPATH)
         {
-                ri.Error(ERR_DROP, "GLSL_InitGPUShader3: \"%s\" is too long\n", vertexMainShader);
+                ri.Error(ERR_DROP, "GLSL_InitGPUShader3: \"%s\" is too long", vertexMainShader);
         }
 
         if(strlen(fragmentMainShader) >= MAX_QPATH)
         {
-                ri.Error(ERR_DROP, "GLSL_InitGPUShader3: \"%s\" is too long\n", fragmentMainShader);
+                ri.Error(ERR_DROP, "GLSL_InitGPUShader3: \"%s\" is too long", fragmentMainShader);
         }
 
         Q_strncpyz(program->name, fragmentMainShader, sizeof(program->name));

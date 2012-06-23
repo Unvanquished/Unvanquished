@@ -686,11 +686,11 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 		if ( !dllEntry )
 		{
-			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%s\" !\n", name, Sys_LibraryError() );
+			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%s\" !", name, Sys_LibraryError() );
 		}
 		else
 		{
-			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%s\" !\n", name, Sys_LibraryError() );
+			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%s\" !", name, Sys_LibraryError() );
 		}
 
 #else

@@ -32,7 +32,7 @@ void QDECL PRINTF_LIKE(2) PrintMsg( gentity_t *ent, const char *fmt, ... )
 
 	va_start( argptr, fmt );
 
-	if ( Q_vsnprintf( msg, sizeof( msg ), fmt, argptr ) > sizeof( msg ) )
+	if ( Q_vsnprintf( msg, sizeof( msg ), fmt, argptr ) >= sizeof( msg ) )
 	{
 		G_Error( "PrintMsg overrun" );
 	}
@@ -319,6 +319,16 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 		           HUMAN_MAX_CREDITS / ALIEN_MAX_CREDITS + 0.5f );
 	}
 
+	if ( !g_cheats.integer )
+	{
+		if ( ent->client->noclip )
+		{
+			ent->client->noclip = qfalse;
+			ent->r.contents = ent->client->cliprcontents;
+		}
+		ent->flags &= ~( FL_GODMODE | FL_NOTARGET );
+	}
+
 	// Copy credits to ps for the client
 	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit;
 
@@ -491,7 +501,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 
 		j = strlen( entry );
 
-		if ( stringlength + j > sizeof( string ) )
+		if ( stringlength + j >= sizeof( string ) )
 		{
 			break;
 		}

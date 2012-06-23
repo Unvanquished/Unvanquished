@@ -1938,11 +1938,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 
 		if ( !kb )
 		{
-			if ( key >= 200 )
-			{
-				Com_Printf(_( "%s is unbound. Use controls menu to set.\n")
-				            , Key_KeynumToString( key ) );
-			}
 		}
 		else if ( kb[ 0 ] == '+' )
 		{

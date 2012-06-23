@@ -1220,12 +1220,12 @@ static void GLimp_XreaLInitExtensions( void )
 			}
 			else
 			{
-				ri.Error( ERR_FATAL, "...not using GL_ARB_multitexture, < 2 texture units\n" );
+				ri.Error( ERR_FATAL, "...not using GL_ARB_multitexture, < 2 texture units" );
 			}
 		}
 		else
 		{
-			ri.Error( ERR_FATAL, "...GL_ARB_multitexture not found\n" );
+			ri.Error( ERR_FATAL, "...GL_ARB_multitexture not found" );
 		}
 	}
 
@@ -1236,7 +1236,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_depth_texture not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_depth_texture not found" );
 	}
 
 	// GL_ARB_texture_cube_map
@@ -1247,7 +1247,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_texture_cube_map not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_texture_cube_map not found" );
 	}
 
 	GL_CheckErrors();
@@ -1259,7 +1259,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_vertex_program not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_vertex_program not found" );
 	}
 
 	// GL_ARB_vertex_buffer_object
@@ -1269,7 +1269,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_vertex_buffer_object not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_vertex_buffer_object not found" );
 	}
 
 	// GL_ARB_occlusion_query
@@ -1303,7 +1303,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_shader_objects not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_shader_objects not found" );
 	}
 
 	// GL_ARB_vertex_shader
@@ -1338,7 +1338,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_vertex_shader not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_vertex_shader not found" );
 	}
 
 	GL_CheckErrors();
@@ -1350,7 +1350,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_fragment_shader not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_fragment_shader not found" );
 	}
 
 	// GL_ARB_shading_language_100

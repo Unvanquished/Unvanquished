@@ -2068,21 +2068,21 @@ int LightMain(int argc, char **argv)
 	/* set standard game flags */
 	wolfLight = game->wolfLight;
 	if(wolfLight == qtrue)
-		Sys_Printf(" lightning model: wolf\n");
+		Sys_Printf(" lighting model: wolf\n");
 	else
-		Sys_Printf(" lightning model: quake3\n");
+		Sys_Printf(" lighting model: quake3\n");
 
 	lmCustomSize = game->lightmapSize;
 	Sys_Printf(" lightmap size: %d x %d pixels\n", lmCustomSize, lmCustomSize);
 
 	lightmapGamma = game->lightmapGamma;
-	Sys_Printf(" lightning gamma: %f\n", lightmapGamma);
+	Sys_Printf(" lighting gamma: %f\n", lightmapGamma);
 
 	lightmapCompensate = game->lightmapCompensate;
-	Sys_Printf(" lightning compensation: %f\n", lightmapCompensate);
+	Sys_Printf(" lighting compensation: %f\n", lightmapCompensate);
 
 	lightmapExposure = game->lightmapExposure;
-	Sys_Printf(" lightning exposure: %f\n", lightmapExposure);
+	Sys_Printf(" lighting exposure: %f\n", lightmapExposure);
 
 	gridScale = game->gridScale;
 	Sys_Printf(" lightgrid scale: %f\n", gridScale);
@@ -2170,7 +2170,7 @@ int LightMain(int argc, char **argv)
 		else if(!strcmp(argv[i], "-gridscale"))
 		{
 			f = atof(argv[i + 1]);
-			Sys_Printf("Grid lightning scaled by %f\n", f);
+			Sys_Printf("Grid lighting scaled by %f\n", f);
 			gridScale *= f;
 			i++;
 		}
@@ -2178,7 +2178,7 @@ int LightMain(int argc, char **argv)
 		else if(!strcmp(argv[i], "-gridambientscale"))
 		{
 			f = atof(argv[i + 1]);
-			Sys_Printf("Grid ambient lightning scaled by %f\n", f);
+			Sys_Printf("Grid ambient lighting scaled by %f\n", f);
 			gridAmbientScale *= f;
 			i++;
 		}
@@ -2283,7 +2283,7 @@ int LightMain(int argc, char **argv)
 			if(lightSamplesSearchBoxSize > 4)
 				lightSamplesSearchBoxSize = 4;	/* more makes no sense */
 			else if(lightSamplesSearchBoxSize != 1)
-				Sys_Printf("Adaptive supersampling uses %i times the normal search box size\n", lightSamplesSearchBoxSize);
+				Sys_Printf("Adaptive supersampling uses a search box size multiplier of %i\n", lightSamplesSearchBoxSize);
 			i++;
 		}
 

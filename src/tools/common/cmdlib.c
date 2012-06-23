@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #define	BASEDIRNAME	"xreal"		// assumed to have a 2 or 3 following
-#define PATHSEPERATOR   '/'
+#define PATHSEPARATOR   '/'
 
 #ifdef SAFE_MALLOC
 void           *safe_malloc(size_t size)

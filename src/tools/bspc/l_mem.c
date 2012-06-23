@@ -283,17 +283,17 @@ memoryblock_t *BlockFromPointer( void *ptr, char *str ) {
 #ifdef MEMDEBUG
 		//char *crash = (char *) NULL;
 		//crash[0] = 1;
-		Error( "%s: NULL pointer\n", str );
+		Error( "%s: NULL pointer", str );
 #endif MEMDEBUG
 		return NULL;
 	} //end if
 	block = ( memoryblock_t * )( (char *) ptr - sizeof( memoryblock_t ) );
 	if ( block->id != MEM_ID ) {
-		Error( "%s: invalid memory block\n", str );
+		Error( "%s: invalid memory block", str );
 	} //end if
 	if ( block->ptr != ptr ) {
 
-		Error( "%s: memory block pointer invalid\n", str );
+		Error( "%s: memory block pointer invalid", str );
 	} //end if
 	return block;
 } //end of the function BlockFromPointer

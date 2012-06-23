@@ -302,7 +302,7 @@ extern int memcmp( void *, void *, size_t );
 // with very long names
 #define MAX_NAME_LENGTH    36 // max length of a client name
 
-#define MAX_SAY_TEXT       150
+#define MAX_SAY_TEXT       400
 
 #define MAX_BINARY_MESSAGE 32768 // max length of binary message
 
@@ -2217,7 +2217,7 @@ char *Q_UTF8Unstore( int e );
 	  TR_GRAVITY_FLOAT, // super low grav with no gravity acceleration (floating feathers/fabric/leaves/...)
 	  TR_GRAVITY_PAUSED, //----(SA)  has stopped, but will still do a short trace to see if it should be switched back to TR_GRAVITY
 	  TR_ACCELERATE,
-	  TR_DECCELERATE,
+	  TR_DECELERATE,
 	  TR_BUOYANCY,
 	  // Gordon
 	  TR_SPLINE,
@@ -2364,7 +2364,7 @@ char *Q_UTF8Unstore( int e );
 		int          otherEntityNum; // shotgun sources, etc
 		int          otherEntityNum2;
 
-		int          groundEntityNum; // -1 = in air
+		int          groundEntityNum; // ENTITYNUM_NONE = in air
 
 		int          constantLight; // r + (g<<8) + (b<<16) + (intensity<<24)
 		int          dl_intensity; // used for coronas

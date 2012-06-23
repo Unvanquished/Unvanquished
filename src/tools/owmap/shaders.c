@@ -525,7 +525,7 @@ shaderInfo_t   *CustomShader(shaderInfo_t * si, char *find, char *replace)
 
 	/* error check */
 	if((strlen(mapName) + 1 + 32) > MAX_QPATH)
-		Error("Custom shader name length (%d) exceeded. Shorten your map name.\n", MAX_QPATH);
+		Error("Custom shader name length (%d) exceeded. Shorten your map name.", MAX_QPATH);
 
 	/* do some bad find-replace */
 	s = strstr(srcShaderText, find);

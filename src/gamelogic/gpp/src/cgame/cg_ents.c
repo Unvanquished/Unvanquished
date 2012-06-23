@@ -425,7 +425,7 @@ static void CG_LaunchMissile( centity_t *cent )
 
 	weapon = es->weapon;
 
-	if ( weapon > WP_NUM_WEAPONS )
+	if ( weapon >= WP_NUM_WEAPONS )
 	{
 		weapon = WP_NONE;
 	}
@@ -475,7 +475,7 @@ static void CG_Missile( centity_t *cent )
 
 	weapon = es->weapon;
 
-	if ( weapon > WP_NUM_WEAPONS )
+	if ( weapon >= WP_NUM_WEAPONS )
 	{
 		weapon = WP_NONE;
 	}
@@ -1225,7 +1225,7 @@ static void CG_AddCEntity( centity_t *cent )
 	switch ( cent->currentState.eType )
 	{
 		default:
-			CG_Error( "Bad entity type: %i\n", cent->currentState.eType );
+			CG_Error( "Bad entity type: %i", cent->currentState.eType );
 
 		case ET_INVISIBLE:
 		case ET_PUSH_TRIGGER:

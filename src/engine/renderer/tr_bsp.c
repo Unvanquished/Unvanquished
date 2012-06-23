@@ -3202,7 +3202,7 @@ void RE_LoadWorldMap( const char *name )
 
 	if ( tr.worldMapLoaded )
 	{
-		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map\n" );
+		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map" );
 	}
 
 	// set default sun direction to be used if it isn't

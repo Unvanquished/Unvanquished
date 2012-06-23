@@ -1926,7 +1926,7 @@ static qboolean ParseMapEntity(qboolean onlyLights)
 #if defined(USE_XML)
 				xml_Select("UniqueEntityName failed", mapEnt->mapEntityNum, 0, qtrue);
 #else
-				Error("Entity %i, Brush %i: UniqueEntityName failed\n", mapEnt->mapEntityNum, 0);
+				Error("Entity %i, Brush %i: UniqueEntityName failed", mapEnt->mapEntityNum, 0);
 #endif
 			}
 
@@ -1964,7 +1964,7 @@ static qboolean ParseMapEntity(qboolean onlyLights)
 #if defined(USE_XML)
 					xml_Select("UniqueEntityName failed", mapEnt->mapEntityNum, 0, qtrue);
 #else
-					Error("Entity %i, UniqueEntityName failed\n", mapEnt->mapEntityNum);
+					Error("Entity %i, UniqueEntityName failed", mapEnt->mapEntityNum);
 #endif
 				}
 

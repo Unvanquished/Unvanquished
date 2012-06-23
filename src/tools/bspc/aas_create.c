@@ -276,13 +276,13 @@ void AAS_AddFaceSideToArea( tmp_face_t *tmpface, int side, tmp_area_t *tmparea )
 
 	if ( side ) {
 		if ( tmpface->backarea ) {
-			Error( "AAS_AddFaceSideToArea: already a back area\n" );
+			Error( "AAS_AddFaceSideToArea: already a back area" );
 		}
 	} //end if
 	else
 	{
 		if ( tmpface->frontarea ) {
-			Error( "AAS_AddFaceSideToArea: already a front area\n" );
+			Error( "AAS_AddFaceSideToArea: already a front area" );
 		}
 	} //end else
 
@@ -483,7 +483,7 @@ void AAS_FlipAreaFaces( tmp_area_t *tmparea ) {
 	for ( n = 0, face = tmparea->tmpfaces; face; face = face->next[side] )
 	{
 		if ( !face->frontarea ) {
-			Error( "face %d has no front area\n", face->num );
+			Error( "face %d has no front area", face->num );
 		}
 		//side of the face the area is on
 		side = face->frontarea != tmparea;
@@ -1309,7 +1309,7 @@ void AAS_Create( char *aasfile ) {
 	else
 	{
 		LeakFile( tree );
-		Error( "**** leaked ****\n" );
+		Error( "**** leaked ****" );
 		return;
 	} //end else
 	  //create AAS from the BSP tree

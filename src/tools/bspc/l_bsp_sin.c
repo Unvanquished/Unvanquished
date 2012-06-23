@@ -794,7 +794,7 @@ int Sin_CopyLump( int lump, void *dest, int size, int maxsize ) {
 	}
 
 	if ( ( length / size ) > maxsize ) {
-		Error( "Sin_LoadBSPFile: exceeded max size for lump %d size %d > maxsize %d\n", lump, ( length / size ), maxsize );
+		Error( "Sin_LoadBSPFile: exceeded max size for lump %d size %d > maxsize %d", lump, ( length / size ), maxsize );
 	}
 
 	memcpy( dest, (byte *)header + ofs, length );
@@ -836,7 +836,7 @@ void    Sin_LoadBSPFile( char *filename, int offset, int length ) {
 		( (int *)header )[i] = LittleLong( ( (int *)header )[i] );
 
 	if ( header->ident != SIN_BSPHEADER && header->ident != SINGAME_BSPHEADER ) {
-		Error( "%s is not a IBSP file", filename );
+		Error( "%s is not an IBSP file", filename );
 	}
 	if ( header->version != SIN_BSPVERSION && header->version != SINGAME_BSPVERSION ) {
 		Error( "%s is version %i, not %i", filename, header->version, SIN_BSPVERSION );
@@ -919,7 +919,7 @@ void    Sin_LoadBSPFileTexinfo( char *filename ) {
 		( (int *)header )[i] = LittleLong( ( (int *)header )[i] );
 
 	if ( header->ident != SIN_BSPHEADER && header->ident != SINGAME_BSPHEADER ) {
-		Error( "%s is not a IBSP file", filename );
+		Error( "%s is not an IBSP file", filename );
 	}
 	if ( header->version != SIN_BSPVERSION && header->version != SINGAME_BSPVERSION ) {
 		Error( "%s is version %i, not %i", filename, header->version, SIN_BSPVERSION );
@@ -954,7 +954,7 @@ void Sin_AddLump( int lumpnum, void *data, int len, int size, int maxsize ) {
 	totallength = len * size;
 
 	if ( len > maxsize ) {
-		Error( "Sin_WriteBSPFile: exceeded max size for lump %d size %d > maxsize %d\n", lumpnum, len, maxsize );
+		Error( "Sin_WriteBSPFile: exceeded max size for lump %d size %d > maxsize %d", lumpnum, len, maxsize );
 	}
 
 	lump = &header->lumps[lumpnum];

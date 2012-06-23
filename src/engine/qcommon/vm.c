@@ -394,9 +394,9 @@ static void VM_InitSanity( vm_t *vm )
 }
 
 #ifdef _DEBUG
-#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]\n", (c), (n) );
+#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]", (c), (n) );
 #else
-#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm.\n" );
+#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm." );
 #endif
 
 void VM_SetSanity( vm_t* vm, intptr_t call )

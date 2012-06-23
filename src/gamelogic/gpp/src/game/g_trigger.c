@@ -41,6 +41,24 @@ void multi_wait( gentity_t *ent )
 	ent->nextthink = 0;
 }
 
+void trigger_check_wait( gentity_t *self )
+{
+	if ( self->wait > 0 )
+	{
+		self->think = multi_wait;
+		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
+	}
+	else
+	{
+		// we can't just remove (self) here, because this is a touch function
+		// called while looping through area links...
+		self->touch = 0;
+		self->nextthink = level.time + FRAMETIME;
+		self->think = G_FreeEntity;
+	}
+}
+
+
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
@@ -69,20 +87,7 @@ void multi_trigger( gentity_t *ent, gentity_t *activator )
 	}
 
 	G_UseTargets( ent, ent->activator );
-
-	if ( ent->wait > 0 )
-	{
-		ent->think = multi_wait;
-		ent->nextthink = level.time + ( ent->wait + ent->random * crandom() ) * 1000;
-	}
-	else
-	{
-		// we can't just remove (self) here, because this is a touch function
-		// called while looping through area links...
-		ent->touch = 0;
-		ent->nextthink = level.time + FRAMETIME;
-		ent->think = G_FreeEntity;
-	}
+	trigger_check_wait( ent );
 }
 
 void Use_Multi( gentity_t *ent, gentity_t *other, gentity_t *activator )
@@ -311,7 +316,7 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 
-	TeleportPlayer( other, dest->s.origin, dest->s.angles, 400.0f );
+	TeleportPlayer( other, dest->s.origin, dest->s.angles, self->speed );
 }
 
 /*
@@ -335,6 +340,8 @@ automatically near doors to allow spectators to move through them
 void SP_trigger_teleport( gentity_t *self )
 {
 	InitTrigger( self );
+
+	G_SpawnFloat( "speed", "400", &self->speed );
 
 	// unlike other triggers, we need to send this one to the client
 	// unless is a spectator trigger
@@ -447,13 +454,14 @@ void SP_trigger_hurt( gentity_t *self )
 
 	self->r.contents = CONTENTS_TRIGGER;
 
-	if ( self->spawnflags & 2 )
-	{
-		self->use = hurt_use;
-	}
+	self->use = hurt_use;
 
 	// link in to the world if starting active
-	if ( !( self->spawnflags & 1 ) )
+	if ( self->spawnflags & 1 )
+	{
+		trap_UnlinkEntity( self );
+	}
+	else
 	{
 		trap_LinkEntity( self );
 	}
@@ -649,6 +657,7 @@ void trigger_buildable_trigger( gentity_t *self, gentity_t *activator )
 		if ( !trigger_buildable_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
+			trigger_check_wait( self );
 		}
 	}
 	else
@@ -656,21 +665,8 @@ void trigger_buildable_trigger( gentity_t *self, gentity_t *activator )
 		if ( trigger_buildable_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
+			trigger_check_wait( self );
 		}
-	}
-
-	if ( self->wait > 0 )
-	{
-		self->think = multi_wait;
-		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
-	}
-	else
-	{
-		// we can't just remove (self) here, because this is a touch function
-		// called while looping through area links...
-		self->touch = 0;
-		self->nextthink = level.time + FRAMETIME;
-		self->think = G_FreeEntity;
 	}
 }
 
@@ -810,6 +806,7 @@ void trigger_class_trigger( gentity_t *self, gentity_t *activator )
 		if ( !trigger_class_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
+			trigger_check_wait( self );
 		}
 	}
 	else
@@ -817,21 +814,8 @@ void trigger_class_trigger( gentity_t *self, gentity_t *activator )
 		if ( trigger_class_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
+			trigger_check_wait( self );
 		}
-	}
-
-	if ( self->wait > 0 )
-	{
-		self->think = multi_wait;
-		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
-	}
-	else
-	{
-		// we can't just remove (self) here, because this is a touch function
-		// called while looping through area links...
-		self->touch = 0;
-		self->nextthink = level.time + FRAMETIME;
-		self->think = G_FreeEntity;
 	}
 }
 
@@ -979,6 +963,7 @@ void trigger_equipment_trigger( gentity_t *self, gentity_t *activator )
 		if ( !trigger_equipment_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
+			trigger_check_wait( self );
 		}
 	}
 	else
@@ -986,21 +971,8 @@ void trigger_equipment_trigger( gentity_t *self, gentity_t *activator )
 		if ( trigger_equipment_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
+			trigger_check_wait( self );
 		}
-	}
-
-	if ( self->wait > 0 )
-	{
-		self->think = multi_wait;
-		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
-	}
-	else
-	{
-		// we can't just remove (self) here, because this is a touch function
-		// called while looping through area links...
-		self->touch = 0;
-		self->nextthink = level.time + FRAMETIME;
-		self->think = G_FreeEntity;
 	}
 }
 
@@ -1199,7 +1171,11 @@ void SP_trigger_heal( gentity_t *self )
 	InitTrigger( self );
 
 	// link in to the world if starting active
-	if ( !( self->spawnflags & 1 ) )
+	if ( self->spawnflags & 1 )
+	{
+		trap_UnlinkEntity( self );
+	}
+	else
 	{
 		trap_LinkEntity( self );
 	}

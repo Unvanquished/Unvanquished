@@ -60,7 +60,7 @@ void *BG_Alloc( int size )
 	{
 		if ( fmn->cookie != FREEMEMCOOKIE )
 		{
-			Com_Error( ERR_DROP, "BG_Alloc: Memory corruption detected!\n" );
+			Com_Error( ERR_DROP, "BG_Alloc: Memory corruption detected!" );
 		}
 
 		if ( fmn->size >= allocsize )
@@ -119,7 +119,7 @@ void *BG_Alloc( int size )
 		return ( ( void * ) ptr );
 	}
 
-	Com_Error( ERR_DROP, "BG_Alloc: failed on allocation of %i bytes\n", size );
+	Com_Error( ERR_DROP, "BG_Alloc: failed on allocation of %i bytes", size );
 	return ( NULL );
 }
 
@@ -188,7 +188,7 @@ void BG_DefragmentMemory( void )
 		{
 			if ( fmn->cookie != FREEMEMCOOKIE )
 			{
-				Com_Error( ERR_DROP, "BG_DefragmentMemory: Memory corruption detected!\n" );
+				Com_Error( ERR_DROP, "BG_DefragmentMemory: Memory corruption detected!" );
 			}
 
 			if ( fmn == endfmn )

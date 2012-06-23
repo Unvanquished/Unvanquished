@@ -50,7 +50,7 @@ static float   *TableForFunc( genFunc_t func )
 	}
 
 #if 0
-	ri.Error( ERR_DROP, "TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.surfaceShader->name );
+	ri.Error( ERR_DROP, "TableForFunc called with invalid function '%d' in shader '%s'", func, tess.surfaceShader->name );
 	return NULL;
 #else
 	// FIXME ri.Printf(PRINT_WARNING, "TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.surfaceShader->name);

@@ -218,7 +218,9 @@ typedef enum
   PMT_STATIC_TRANSFORM,
   PMT_TAG,
   PMT_CENT_ANGLES,
-  PMT_NORMAL
+  PMT_NORMAL,
+  PMT_LAST_NORMAL,
+  PMT_OPPORTUNISTIC_NORMAL
 } pMoveType_t;
 
 typedef enum
@@ -369,6 +371,9 @@ typedef struct particleSystem_s
 	//for PMT_NORMAL
 	qboolean normalValid;
 	vec3_t   normal;
+	//for PMT_LAST_NORMAL and PMT_OPPORTUNISTIC_NORMAL
+	qboolean lastNormalIsCurrent;
+	vec3_t   lastNormal;
 
 	int      charge;
 } particleSystem_t;
@@ -393,6 +398,8 @@ typedef struct particle_s
 {
 	baseParticle_t    *class;
 	particleEjector_t *parent;
+
+	particleSystem_t  *childParticleSystem;
 
 	int               birthTime;
 	int               lifeTime;
@@ -604,8 +611,10 @@ typedef struct buildableStatus_s
 
 typedef struct buildableCache_s
 {
-	vec3_t cachedOrigin; // If either the cached entity origin or the
-	vec3_t cachedNormal; // cached surfNormal change the cache is invalid
+	vec3_t cachedOrigin; // If any of the values differ from their
+	vec3_t cachedAngles; //  cached versions, then the cache is invalid
+	vec3_t cachedNormal;
+	buildable_t cachedType;
 	vec3_t axis[ 3 ];
 	vec3_t origin;
 } buildableCache_t;
@@ -1543,6 +1552,7 @@ extern  vmCvar_t            cg_thirdPersonRange;
 extern  vmCvar_t            cg_stereoSeparation;
 extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
+extern  vmCvar_t            cg_maxSpeedTimeWindow;
 extern  vmCvar_t            cg_synchronousClients;
 extern  vmCvar_t            cg_stats;
 extern  vmCvar_t            cg_paused;
@@ -1917,6 +1927,7 @@ qboolean         CG_IsParticleSystemInfinite( particleSystem_t *ps );
 qboolean         CG_IsParticleSystemValid( particleSystem_t **ps );
 
 void             CG_SetParticleSystemNormal( particleSystem_t *ps, vec3_t normal );
+void             CG_SetParticleSystemLastNormal( particleSystem_t *ps, const vec3_t normal );
 
 void             CG_AddParticles( void );
 

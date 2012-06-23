@@ -162,6 +162,7 @@ vmCvar_t        cg_thirdPersonRange;
 vmCvar_t        cg_stereoSeparation;
 vmCvar_t        cg_lagometer;
 vmCvar_t        cg_drawSpeed;
+vmCvar_t        cg_maxSpeedTimeWindow;
 vmCvar_t        cg_synchronousClients;
 vmCvar_t        cg_stats;
 vmCvar_t        cg_paused;
@@ -280,6 +281,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_addMarks,                    "cg_marks",                       "1",            CVAR_ARCHIVE                 },
 	{ &cg_lagometer,                   "cg_lagometer",                   "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawSpeed,                   "cg_drawSpeed",                   "0",            CVAR_ARCHIVE                 },
+	{ &cg_maxSpeedTimeWindow,          "cg_maxSpeedTimeWindow",          "2000",         CVAR_ARCHIVE                 },
 	{ &cg_teslaTrailTime,              "cg_teslaTrailTime",              "250",          CVAR_ARCHIVE                 },
 	{ &cg_gun_x,                       "cg_gunX",                        "0",            CVAR_CHEAT                   },
 	{ &cg_gun_y,                       "cg_gunY",                        "0",            CVAR_CHEAT                   },
@@ -805,12 +807,11 @@ void CG_RemoveNotifyLine( void )
 	}
 
 	//pop up the first consoleLine
+	cg.numConsoleLines--;
 	for ( i = 0; i < cg.numConsoleLines; i++ )
 	{
 		cg.consoleLines[ i ] = cg.consoleLines[ i + 1 ];
 	}
-
-	cg.numConsoleLines--;
 }
 
 /*
@@ -845,11 +846,13 @@ void CG_AddNotifyText( void )
 	if ( cg.numConsoleLines == MAX_CONSOLE_LINES )
 	{
 		CG_RemoveNotifyLine();
+		textLen = strlen( cg.consoleText );
 	}
 
-	Q_strcat( cg.consoleText, MAX_CONSOLE_TEXT, buffer );
+	Q_strncpyz( cg.consoleText + textLen, buffer, MAX_CONSOLE_TEXT - textLen );
 	cg.consoleLines[ cg.numConsoleLines ].time = cg.time;
-	cg.consoleLines[ cg.numConsoleLines ].length = bufferLen;
+	cg.consoleLines[ cg.numConsoleLines ].length =
+		MIN( bufferLen, MAX_CONSOLE_TEXT - textLen - 1 );
 	cg.numConsoleLines++;
 }
 
@@ -1736,7 +1739,7 @@ void CG_LoadMenus( const char *menuFile )
 
 		if ( !f )
 		{
-			trap_Error( va( S_COLOR_RED "default menu file not found: ui/hud.txt, unable to continue!\n" ) );
+			trap_Error( S_COLOR_RED "default menu file not found: ui/hud.txt, unable to continue!" );
 		}
 	}
 
