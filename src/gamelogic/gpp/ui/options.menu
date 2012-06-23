@@ -38,7 +38,7 @@
 	CVAR( "Name:", "name", 1, 1 )
 	COMBO( "Language:", FEEDER_LANGUAGES, 2 )
 	MULTI( "Video Quality:", "ui_glCustom", 
-		{ "High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4 }
+		{ "High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4 },
 		play "sound/misc/menu1.wav" ; uiScript update "ui_glCustom" ,
 		3 )
 	COMBO( "Video Mode:", FEEDER_RESOLUTIONS, 4 )
