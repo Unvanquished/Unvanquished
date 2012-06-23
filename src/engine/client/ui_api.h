@@ -259,7 +259,7 @@ typedef enum
 } uiExport_t;
 
 void        trap_Cvar_CopyValue_i( const char *in_var, const char *out_var );
-void        trap_Error( const char *string );
+void        trap_Error( const char *string ) NORETURN;
 void        trap_Print( const char *string );
 int         trap_Milliseconds( void );
 void        trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
@@ -345,12 +345,12 @@ void        trap_R_RegisterFont( const char *fontName, const char *fallbackFont,
 void        trap_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
 void        trap_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
 void        trap_R_UnregisterFont( fontHandle_t );
-int         trap_Parse_AddGlobalDefine( char *define );
+int         trap_Parse_AddGlobalDefine( const char *define );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );
 int         trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int         trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
-int         trap_PC_AddGlobalDefine( char *define );
+int         trap_PC_AddGlobalDefine( const char *define );
 int         trap_PC_RemoveAllGlobalDefines( void );
 int         trap_PC_LoadSource( const char *filename );
 int         trap_PC_FreeSource( int handle );

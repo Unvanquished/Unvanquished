@@ -42,11 +42,22 @@
 #endif
 
 #if defined __GNUC__ || defined __clang__
-#define _attribute( x ) __attribute__( x )
+#define NORETURN __attribute__((__noreturn__))
+#define UNUSED __attribute__((__unused__))
+#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
+#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
+#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
+#define ALIGNED(a) __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define _attribute( x )
-#define __attribute( x )
-#define __attribute__( x )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED(a)
+#define ALWAYS_INLINE
+#define __attribute__(x)
 #endif
 
 // ---------- Types ---------- //
@@ -61,7 +72,7 @@ typedef enum
 	MSG_NOPRINT,	// used by "max_msg_level" (= no printings)
 	MSG_ERROR,		// errors
 	MSG_WARNING,	// warnings
-	MSG_NORMAL,		// standard messages
+	MSG_INFO,		// informational messages
 	MSG_DEBUG		// for debugging purpose
 } msg_level_t;
 
@@ -90,7 +101,7 @@ extern char peer_address [128];
 #endif
 
 // Print a message to screen, depending on its verbose level
-int MsgPrint (msg_level_t msg_level, const char* format, ...) __attribute__((format(printf, 2, 3)));
+int MsgPrint (msg_level_t msg_level, const char* format, ...) PRINTF_LIKE(2);
 
 void RecordClientStat( const char *address, const char *version, const char *renderer );
 void RecordGameStat( const char *address, const char *dataText );

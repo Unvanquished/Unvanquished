@@ -223,7 +223,7 @@ void LoadLBM(const char *filename, byte ** picture, byte ** palette)
 	int             formtype, formlength;
 	int             chunktype, chunklength;
 
-// qiet compiler warnings
+	// quiet compiler warnings
 	picbuffer = NULL;
 	cmapbuffer = NULL;
 
@@ -1255,7 +1255,7 @@ JPG LOADING
 =========================================================
 */
 
-static void JPGErrorExit(j_common_ptr cinfo)
+static void NORETURN JPGErrorExit(j_common_ptr cinfo)
 {
 	char            buffer[JMSG_LENGTH_MAX];
 
@@ -1264,7 +1264,7 @@ static void JPGErrorExit(j_common_ptr cinfo)
 	/* Let the memory manager delete any temp files before we die */
 	jpeg_destroy(cinfo);
 
-	Sys_FPrintf(SYS_ERR, "libjpeg error: %s\n", buffer);
+	Error("libjpeg error: %s", buffer);
 }
 
 static void JPGOutputMessage(j_common_ptr cinfo)
@@ -1502,7 +1502,7 @@ static void png_user_warning_fn(png_structp png_ptr, png_const_charp warning_mes
 	Sys_FPrintf(SYS_WRN, "libpng warning: %s\n", warning_message);
 }
 
-static void png_user_error_fn(png_structp png_ptr, png_const_charp error_message)
+static void NORETURN png_user_error_fn(png_structp png_ptr, png_const_charp error_message)
 {
 	Sys_FPrintf(SYS_ERR, "libpng error: %s\n", error_message);
 	longjmp(png_jmpbuf(png_ptr), 0);
@@ -1551,7 +1551,7 @@ void LoadPNGBuffer(byte * data, byte ** pic, int *width, int *height)
 
 	//
 	// Set error handling if you are using the setjmp/longjmp method (this is
-	// the normal method of doing things with libpng).  REQUIRED unless you
+	// the common method of doing things with libpng).  REQUIRED unless you
 	// set up your own error handlers in the png_create_read_struct() earlier.
 	//
 	if(setjmp(png_jmpbuf(png)))

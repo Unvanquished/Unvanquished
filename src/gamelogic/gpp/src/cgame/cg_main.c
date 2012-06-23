@@ -101,8 +101,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		default:
-			CG_Error( "vmMain: unknown command %i", command );
-			break;
+			CG_Error( "vmMain(): unknown cgame command %i", command );
 	}
 
 	return -1;
@@ -411,7 +410,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 };
 
-static int         cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
+static int         cvarTableSize = ARRAY_LEN( cvarTable );
 
 /*
 =================
@@ -854,7 +853,7 @@ void CG_AddNotifyText( void )
 	cg.numConsoleLines++;
 }
 
-void QDECL CG_Printf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) CG_Printf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -866,7 +865,7 @@ void QDECL CG_Printf( const char *msg, ... )
 	trap_Print( text );
 }
 
-void QDECL CG_Error( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) NORETURN CG_Error( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -878,7 +877,7 @@ void QDECL CG_Error( const char *msg, ... )
 	trap_Error( text );
 }
 
-void QDECL Com_Error( int level, const char *error, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -890,7 +889,7 @@ void QDECL Com_Error( int level, const char *error, ... )
 	trap_Error( text );
 }
 
-void QDECL Com_Printf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -973,7 +972,7 @@ static void CG_RegisterSounds( void )
 	for ( i = 0; i < 4; i++ )
 	{
 		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/step%i.wav", i + 1 );
-		cgs.media.footsteps[ FOOTSTEP_NORMAL ][ i ] = trap_S_RegisterSound( name, qfalse );
+		cgs.media.footsteps[ FOOTSTEP_GENERAL ][ i ] = trap_S_RegisterSound( name, qfalse );
 
 		Com_sprintf( name, sizeof( name ), "sound/player/footsteps/flesh%i.wav", i + 1 );
 		cgs.media.footsteps[ FOOTSTEP_FLESH ][ i ] = trap_S_RegisterSound( name, qfalse );
@@ -1743,10 +1742,9 @@ void CG_LoadMenus( const char *menuFile )
 
 	if ( len >= MAX_MENUDEFFILE )
 	{
+		trap_FS_FCloseFile( f );
 		trap_Error( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i",
 		                menuFile, len, MAX_MENUDEFFILE ) );
-		trap_FS_FCloseFile( f );
-		return;
 	}
 
 	trap_FS_Read( buf, len, f );
@@ -1988,15 +1986,12 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 
 			case 3:
 				return va( S_COLOR_WHITE "%s", info->name );
-				break;
 
 			case 4:
 				return va( "%d", sp->score );
-				break;
 
 			case 5:
 				return va( "%4d", sp->time );
-				break;
 
 			case 6:
 				if ( sp->ping == -1 )
@@ -2005,7 +2000,6 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 				}
 
 				return va( "%4d", sp->ping );
-				break;
 		}
 	}
 
@@ -2052,7 +2046,6 @@ static int CG_OwnerDrawWidth( int ownerDraw, float scale )
 	{
 		case CG_KILLER:
 			return UI_Text_Width( CG_GetKillerText(), scale );
-			break;
 	}
 
 	return 0;
@@ -2218,7 +2211,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	// clear everything
 	memset( &cgs, 0, sizeof( cgs ) );
 	memset( &cg, 0, sizeof( cg ) );
-	memset( &cg.pmext, 0, sizeof( cg.pmext ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
 
 	cg.clientNum = clientNum;

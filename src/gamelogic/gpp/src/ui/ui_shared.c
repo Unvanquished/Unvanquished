@@ -61,7 +61,6 @@ static const int     modkeys[6] = { K_SHIFT, K_CTRL, K_ALT, K_COMMAND, K_MODE, K
 // prevent compiler warnings
 void voidFunction( void *var )
 {
-	return;
 }
 
 qboolean voidFunction2( itemDef_t *var1, int var2 )
@@ -95,8 +94,8 @@ static int                lastListBoxClickTime = 0;
 itemDataType_t            Item_DataType( itemDef_t *item );
 void                      Item_RunScript( itemDef_t *item, const char *s );
 void                      Item_SetupKeywordHash( void );
-static ID_INLINE qboolean Item_IsEditField( itemDef_t *item );
-static ID_INLINE qboolean Item_IsListBox( itemDef_t *item );
+static INLINE qboolean Item_IsEditField( itemDef_t *item );
+static INLINE qboolean Item_IsListBox( itemDef_t *item );
 static void               Item_ListBox_SetStartPos( itemDef_t *item, int startPos );
 void                      Menu_SetupKeywordHash( void );
 int                       BindingIDFromName( const char *name );
@@ -378,7 +377,7 @@ void String_Init( void )
 PC_SourceWarning
 =================
 */
-void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceWarning( int handle, char *format, ... )
+void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 {
 	int         line;
 	char        filename[ 128 ];
@@ -401,7 +400,7 @@ void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceWarning( int handle, c
 PC_SourceError
 =================
 */
-void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceError( int handle, char *format, ... )
+void PRINTF_LIKE(2) PC_SourceError( int handle, char *format, ... )
 {
 	int         line;
 	char        filename[ 128 ];
@@ -503,7 +502,7 @@ OpPrec
 Return a value reflecting operator precedence
 =================
 */
-static ID_INLINE int OpPrec( char op )
+static INLINE int OpPrec( char op )
 {
 	switch ( op )
 	{
@@ -719,7 +718,6 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 
 				default:
 					Com_Error( ERR_FATAL, "Unknown operator '%c' in postfix string", op );
-					return qfalse;
 			}
 
 			PUSH_VAL( stack, result );
@@ -2126,12 +2124,12 @@ glyphInfo_t *UI_Glyph( const fontMetrics_t *font, const char *str )
 	return UI_GlyphCP( font, Q_UTF8CodePoint( str ) );
 }
 
-static ID_INLINE float UI_EmoticonHeight( const fontMetrics_t *font, float scale )
+static INLINE float UI_EmoticonHeight( const fontMetrics_t *font, float scale )
 {
 	return UI_GlyphCP( font, '[' )->height * scale * font->glyphScale;
 }
 
-static ID_INLINE float UI_EmoticonWidth( const fontMetrics_t *font, float scale )
+static INLINE float UI_EmoticonWidth( const fontMetrics_t *font, float scale )
 {
 	return UI_EmoticonHeight( font, scale ) * DC->aspectScale;
 }
@@ -2264,7 +2262,7 @@ static float UI_Parse_Indent( const char **text )
 	return pixels;
 }
 
-static ID_INLINE const fontMetrics_t *UI_FontForScale( float scale )
+static INLINE const fontMetrics_t *UI_FontForScale( float scale )
 {
 	if ( scale <= DC->smallFontScale )
 	{
@@ -2752,7 +2750,7 @@ void UI_Text_Paint_Limit( float *maxX, float x, float y, float scale,
                           vec4_t color, const char *text, float adjust )
 {
 	UI_Text_Paint_Generic( x, y, scale, adjust,
-	                       text, color, ITEM_TEXTSTYLE_NORMAL,
+	                       text, color, ITEM_TEXTSTYLE_PLAIN,
 	                       0, 0, 0, maxX, -1, 0 );
 }
 
@@ -2799,7 +2797,7 @@ static const commandDef_t commandList[] =
 	{ "transition",      &Script_Transition      }, // group/name
 };
 
-static const size_t scriptCommandCount = sizeof( commandList ) / sizeof( commandDef_t );
+static const size_t scriptCommandCount = ARRAY_LEN( commandList );
 
 // despite what lcc thinks, we do not get cmdcmp here
 static int commandComp( const void *a, const void *b )
@@ -2895,14 +2893,12 @@ qboolean Item_EnableShowViaCvar( itemDef_t *item, int flag )
 				}
 			}
 		}
-
-		return ( item->cvarFlags & flag ) ? qfalse : qtrue;
 	}
 
 	return qtrue;
 }
 
-// will optionaly set focus to this item
+// will optionally set focus to this item
 qboolean Item_SetFocus( itemDef_t *item, float x, float y )
 {
 	int         i;
@@ -3872,7 +3868,7 @@ static void UI_Paste( itemDef_t *item, char *buf, clipboard_t clip )
 	clipIndex = 0;
 	clipLength = strlen( clipText );
 
-	max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+	max = MIN( editPtr->maxChars, MAX_EDITFIELD - 1 );
 	max = max ? max : MAX_EDITFIELD - 1;
 
 	// overstrike
@@ -4054,7 +4050,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				index = ui_CursorToOffset( buff, item->cursorPos );
 				width = Q_UTF8Width( str );
 				oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? Q_UTF8Width( buff + index ) : 0;
-				max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+				max = MIN( editPtr->maxChars, MAX_EDITFIELD - 1 );
 				max = max ? max : MAX_EDITFIELD - 1;
 
 				if ( len + width - oldWidth > max )
@@ -6024,7 +6020,7 @@ static bind_t g_bindings[] =
 	{ "messagemode4",   -1,                 -1,            -1, -1 }
 };
 
-static const int g_bindCount = sizeof( g_bindings ) / sizeof( bind_t );
+static const int g_bindCount = ARRAY_LEN( g_bindings );
 
 /*
 =================
@@ -6437,16 +6433,16 @@ void Item_Model_Paint( itemDef_t *item )
 	origin[ 1 ] = 0.5 * ( mins[ 1 ] + maxs[ 1 ] );
 
 	// calculate distance so the model nearly fills the box
-	if ( qtrue )
+	//if ( qtrue )
 	{
 		float len = 0.5 * ( maxs[ 2 ] - mins[ 2 ] );
 		origin[ 0 ] = len / 0.268; // len / tan( fov/2 )
 		//origin[0] = len / tan(w/2);
 	}
-	else
-	{
-		origin[ 0 ] = item->textscale;
-	}
+	//else
+	//{
+	//	origin[ 0 ] = item->textscale;
+	//}
 
 	refdef.fov_x = ( modelPtr->fov_x ) ? modelPtr->fov_x : w;
 	refdef.fov_y = ( modelPtr->fov_y ) ? modelPtr->fov_y : h;
@@ -7593,7 +7589,7 @@ itemDataType_t Item_DataType( itemDef_t *item )
 Item_IsEditField
 ===============
 */
-static ID_INLINE qboolean Item_IsEditField( itemDef_t *item )
+static INLINE qboolean Item_IsEditField( itemDef_t *item )
 {
 	switch ( item->type )
 	{
@@ -7612,7 +7608,7 @@ static ID_INLINE qboolean Item_IsEditField( itemDef_t *item )
 Item_IsListBox
 ===============
 */
-static ID_INLINE qboolean Item_IsListBox( itemDef_t *item )
+static INLINE qboolean Item_IsListBox( itemDef_t *item )
 {
 	switch ( item->type )
 	{
@@ -8697,7 +8693,7 @@ qboolean Item_Parse( int handle, itemDef_t *item )
 }
 
 // Item_InitControls
-// init's special control types
+// initializes special control types
 void Item_InitControls( itemDef_t *item )
 {
 	if ( item == NULL )

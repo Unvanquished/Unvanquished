@@ -265,16 +265,6 @@ void CL_AddCgameCommand( const char *cmdName )
 	Cmd_SetCommandCompletionFunc( cmdName, CL_CompleteCgameCommand );
 }
 
-/*
-==============
-CL_CgameError
-==============
-*/
-void CL_CgameError( const char *string )
-{
-	Com_Error( ERR_DROP, "%s", string );
-}
-
 qboolean CL_CGameCheckKeyExec( int key )
 {
 	if ( cgvm )
@@ -388,13 +378,11 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 		}
 
 		Com_Error( ERR_DROP, "CL_GetServerCommand: a reliable command was cycled out" );
-		return qfalse;
 	}
 
 	if ( serverCommandNumber > clc.serverCommandSequence )
 	{
 		Com_Error( ERR_DROP, "CL_GetServerCommand: requested a command not received" );
-		return qfalse;
 	}
 
 	s = clc.serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS - 1 ) ];
@@ -597,8 +585,6 @@ static void CL_SendBinaryMessage( const char *buf, int buflen )
 	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
 	{
 		Com_Error( ERR_DROP, "CL_SendBinaryMessage: bad length %i", buflen );
-		clc.binaryMessageLength = 0;
-		return;
 	}
 
 	clc.binaryMessageLength = buflen;
@@ -709,7 +695,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0;
 
 		case CG_MILLISECONDS:
 			return Sys_Milliseconds();
@@ -1030,7 +1015,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_ADDPOLYBUFFERTOSCENE:
 			re.AddPolyBufferToScene( VMA( 1 ) );
-			break;
+			return 0;
 
 		case CG_R_ADDLIGHTTOSCENE:
 			re.AddLightToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[ 7 ], args[ 8 ] );
@@ -1308,6 +1293,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_GETDEMONAME:
 			VM_CheckBlock( args[1], args[2], "GETDM" );
 			CL_DemoName( VMA( 1 ), args[ 2 ] );
+			return 0;
 
 		case CG_R_LIGHTFORPOINT:
 			return re.LightForPoint( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
@@ -1365,15 +1351,15 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_GLYPH:
 			re.GlyphVM( args[1], VMA(2), VMA(3) );
-			break;
+			return 0;
 
 		case CG_R_GLYPHCHAR:
 			re.GlyphCharVM( args[1], args[2], VMA(3) );
-			break;
+			return 0;
 
 		case CG_R_UREGISTERFONT:
 			re.UnregisterFontVM( args[1] );
-			break;
+			return 0;
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
@@ -1386,9 +1372,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 ====================
 CL_UpdateLevelHunkUsage
 
-  This updates the "hunkusage.dat" file with the current map and it's hunk usage count
+  This updates the "hunkusage.dat" file with the current map and its hunk usage count
 
-  This is used for level loading, so we can show a percentage bar dependant on the amount
+  This is used for level loading, so we can show a percentage bar dependent on the amount
   of hunk memory allocated so far
 
   This will be slightly inaccurate if some settings like sound quality are changed, but these
@@ -1942,13 +1928,11 @@ void CL_SetCGameTime( void )
 	}
 
 	// if we are playing a demo back, we can just keep reading
-	// messages from the demo file until the cgame definately
+	// messages from the demo file until the cgame definitely
 	// has valid snapshots to interpolate between
 
 	// a timedemo will always use a deterministic set of time samples
-	// no matter what speed machine it is run on,
-	// while a normal demo may have different time samples
-	// each time it is played back
+	// no matter what speed machine it is run on
 	if ( cl_timedemo->integer )
 	{
 		if ( !clc.timeDemoStart )
@@ -1962,7 +1946,7 @@ void CL_SetCGameTime( void )
 
 	while ( cl.serverTime >= cl.snap.serverTime )
 	{
-		// feed another messag, which should change
+		// feed another message, which should change
 		// the contents of cl.snap
 		CL_ReadDemoMessage();
 
@@ -1979,12 +1963,15 @@ void CL_SetCGameTime( void )
 CL_GetTag
 ====================
 */
-qboolean CL_GetTag( int clientNum, char *tagname, orientation_t * or )
+qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or )
 {
 	if ( !cgvm )
 	{
 		return qfalse;
 	}
 
-	return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
+	// the current design of CG_GET_TAG is inappropriate for modules in sandboxed formats
+	//  (the direct pointer method to pass the tag name would work only with modules in native format)
+	//return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
+	return qfalse;
 }

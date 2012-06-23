@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 
 /*QUAKED func_group (0 0 0) ?
-Used to group brushes together just for editor convenience.  They are turned into normal brushes by the utilities.
+Used to group brushes together just for editor convenience.  Groups are turned into whole brushes by the utilities.
 */
 
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
@@ -47,7 +47,7 @@ void SP_info_notnull( gentity_t *self )
 /*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear
 Non-displayed light.
 "light" overrides the default 300 intensity.
-Linear checbox gives linear falloff instead of inverse square
+Linear checkbox gives linear falloff instead of inverse square
 Lights pointed at a target will be spotlights.
 "radius" overrides the default 64 unit radius of a spotlight at the target point.
 */
@@ -64,19 +64,22 @@ TELEPORTERS
 =================================================================================
 */
 
-void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles )
+void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed )
 {
 	// unlink to make sure it can't possibly interfere with G_KillBox
 	trap_UnlinkEntity( player );
 
 	VectorCopy( origin, player->client->ps.origin );
-	player->client->ps.origin[ 2 ] += 1;
+	player->client->ps.groundEntityNum = ENTITYNUM_NONE;
+	player->client->ps.stats[ STAT_STATE ] &= ~SS_GRABBED;
 
-	// spit the player out
 	AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
-	VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
-	player->client->ps.pm_time = 160; // hold time
-	player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	VectorScale( player->client->ps.velocity, speed, player->client->ps.velocity );
+	player->client->ps.pm_time = 0.4f * abs( speed ); // duration of loss of control
+	if ( player->client->ps.pm_time > 160 )
+		player->client->ps.pm_time = 160;
+	if ( player->client->ps.pm_time != 0 )
+		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;

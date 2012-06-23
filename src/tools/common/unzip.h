@@ -214,7 +214,7 @@ extern          "C"
 	extern unzFile ZEXPORT unzOpen OF((const char *path));
 /*
   Open a Zip file. path contain the full pathname (by example,
-     on a Windows XP computer "c:\\zlib\\zlib113.zip" or on an Unix computer
+     on a Windows XP computer "c:\\zlib\\zlib113.zip" or on a Unix computer
      "zlib/zlib113.zip".
      If the zipfile cannot be opened (file don't exist or in not valid), the
        return value is NULL.

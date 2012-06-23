@@ -44,7 +44,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 2005-08-28
  *  Made things shut up properly
  *  Added stream system
- *  Added support for changing doppler paramaters without restarting
+ *  Added support for changing doppler parameters without restarting
  *  Added checks for official Linux OpenAL
  *  Added workaround for Linux hang on shutdown bug
  *  Wiped out s_khz cvar
@@ -393,7 +393,7 @@ void SndAl_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], i
 	                       };
 	vec3_t sorigin;
 
-	// Set OpenAL listener paramaters
+	// Set OpenAL listener parameters
 	VectorScale( origin, POSITION_SCALE, sorigin );
 	qalListenerfv( AL_POSITION, sorigin );
 	qalListenerfv( AL_VELOCITY, velocity );

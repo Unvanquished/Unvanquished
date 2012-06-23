@@ -265,11 +265,6 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator )
 {
 	gentity_t *t;
 
-	if ( !ent )
-	{
-		return;
-	}
-
 	if ( ent->targetShaderName && ent->targetShaderNewName )
 	{
 		float f = level.time * 0.001;
@@ -395,8 +390,8 @@ gentity_t *G_Spawn( void )
 
 	for ( force = 0; force < 2; force++ )
 	{
-		// if we go through all entities and can't find one to free,
-		// override the normal minimum times before use
+		// if we go through all entities first and can't find a free one,
+		// then try again a second time, this time ignoring times
 		e = &g_entities[ MAX_CLIENTS ];
 
 		for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
@@ -502,7 +497,7 @@ The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
-gentity_t *G_TempEntity( vec3_t origin, int event )
+gentity_t *G_TempEntity( const vec3_t origin, int event )
 {
 	gentity_t *e;
 	vec3_t    snapped;
@@ -695,7 +690,7 @@ G_SetOrigin
 Sets the pos trajectory for a fixed position
 ================
 */
-void G_SetOrigin( gentity_t *ent, vec3_t origin )
+void G_SetOrigin( gentity_t *ent, const vec3_t origin )
 {
 	VectorCopy( origin, ent->s.pos.trBase );
 	ent->s.pos.trType = TR_STATIONARY;

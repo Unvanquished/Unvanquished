@@ -1054,7 +1054,7 @@ mapDrawSurface_t *DrawSurfaceForMesh(entity_t * e, parseMesh_t * p, mesh_t * mes
 	numVerts = mesh->width * mesh->height;
 
 	/* to make valid normals for patches with degenerate edges,
-	   we need to make a copy of the mesh and put the aproximating
+	   we need to make a copy of the mesh and put the approximating
 	   points onto the curve */
 
 	/* create a copy of the mesh */
@@ -1526,7 +1526,6 @@ void ClipSideIntoTree_r(winding_t * w, side_t * side, node_t * node)
 	}
 
 	FreeWinding(w);
-	return;
 }
 
 
@@ -1583,7 +1582,7 @@ qboolean SideInBrush(side_t * side, brush_t * b)
 		if(b->sides[i].compileFlags & C_NODRAW)
 			return qfalse;
 
-		/* check if side's winding is on or behind the plane */
+		/* check if the side's winding is on or behind the plane */
 		plane = &mapplanes[b->sides[i].planenum];
 		s = WindingOnPlaneSide(side->winding, plane->normal, plane->dist);
 		if(s == SIDE_FRONT || s == SIDE_CROSS)
@@ -1624,7 +1623,7 @@ void CullSides(entity_t * e)
 	g_numHiddenFaces = 0;
 	g_numCoinFaces = 0;
 
-	/* brush interator 1 */
+	/* brush iterator 1 */
 	for(b1 = e->brushes; b1; b1 = b1->next)
 	{
 		/* sides check */
@@ -2312,7 +2311,7 @@ void EmitDrawVerts(mapDrawSurface_t * ds, bspDrawSurface_t * out)
 
 		/* expand model bounds
 		   necessary because of misc_model surfaces on entities
-		   note: does not happen on worldspawn as its bounds is only used for determining lightgrid bounds */
+		   note: does not happen on worldspawn as its bounds are only used for determining lightgrid bounds */
 		if(numBSPModels > 0)
 			AddPointToBounds(dv->xyz, bspModels[numBSPModels].mins, bspModels[numBSPModels].maxs);
 

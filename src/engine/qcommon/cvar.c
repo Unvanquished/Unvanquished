@@ -352,7 +352,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 		}
 
 		// TTimo
-		// if CVAR_USERINFO was toggled on for an existing cvar, check wether the value needs to be cleaned from foreigh characters
+		// if CVAR_USERINFO was toggled on for an existing cvar, check whether the value needs to be cleaned from foreign characters
 		// (for instance, seta name "name-with-foreign-chars" in the config file, and toggle to CVAR_USERINFO happens later in CL_Init)
 		if ( flags & CVAR_USERINFO )
 		{

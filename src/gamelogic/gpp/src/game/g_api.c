@@ -53,9 +53,10 @@ void trap_Print( const char *fmt )
 
 //01.
 //Com_Error(ERR_DROP, "%s", (char *)VMA(1));
-void trap_Error( const char *fmt )
+void NORETURN trap_Error( const char *fmt )
 {
 	syscall( G_ERROR, fmt );
+	exit(1); // silence warning
 }
 
 //02.
@@ -348,7 +349,6 @@ qboolean trap_AreasConnected( int area1, int area2 )
 void trap_UpdateSharedConfig( unsigned int port, const char *rconpass )
 {
 	syscall( G_UPDATE_SHARED_CONFIG, port, rconpass );
-	return;
 }
 
 //41.
@@ -390,7 +390,6 @@ int trap_RealTime( qtime_t *qtime )
 void trap_SnapVector( float *v )
 {
 	syscall( G_SNAPVECTOR, v );
-	return;
 }
 
 //47.
@@ -398,7 +397,6 @@ void trap_SnapVector( float *v )
 void trap_SendGameStat( const char *data )
 {
 	syscall( G_SEND_GAMESTAT, data );
-	return;
 }
 
 //48.
@@ -417,7 +415,7 @@ void trap_RemoveCommand( const char *cmdName )
 
 //50.
 //return SV_GetTag(args[1], args[2], VMA(3), VMA(4));
-qboolean trap_GetTag( int clientNum, int tagFileNumber, char *tagName, orientation_t *ori )
+qboolean trap_GetTag( int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori )
 {
 	return syscall( G_GETTAG, clientNum, tagFileNumber, tagName, ori );
 }

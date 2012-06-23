@@ -40,7 +40,7 @@ static const char *const netSources[] =
 	"Favorites"
 };
 
-static const int  numNetSources = sizeof( netSources ) / sizeof( const char * );
+static const int  numNetSources = ARRAY_LEN( netSources );
 
 static const char *const netnames[] =
 {
@@ -140,7 +140,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &ui_helpFiles,           "ui_helpFiles",                "ui/menu/help/help.txt",     CVAR_ARCHIVE              }
 };
 
-static const int           cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
+static const int           cvarTableSize = ARRAY_LEN( cvarTable );
 
 static char                translated_yes[ 4 ], translated_no[ 4 ];
 
@@ -222,6 +222,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 		case UI_DRAW_CONNECT_SCREEN:
 			UI_DrawConnectScreen( arg0 );
 			return 0;
+
+		default:
+			trap_Error( va( "vmMain(): unknown ui command %i", command ) );
 	}
 
 	return -1;
@@ -3226,7 +3229,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
-			case 1: // normal
+			case 1: // intermediate
 				trap_Cvar_SetValue( "r_subdivisions", 12 );
 				trap_Cvar_SetValue( "r_vertexlight", 0 );
 				trap_Cvar_SetValue( "r_lodbias", 0 );
@@ -3289,7 +3292,6 @@ static void UI_Update( const char *name )
 static void UI_RunMenuScript( char **args )
 {
 	const char *name, *name2;
-	char buff[ 1024 ];
 	const char *cmd;
 
 	if ( String_Parse( args, &name ) )
@@ -3622,6 +3624,7 @@ static void UI_RunMenuScript( char **args )
 			if ( uiInfo.serverStatus.currentServer >= 0 &&
 			     uiInfo.serverStatus.currentServer < uiInfo.serverStatus.numDisplayServers )
 			{
+				char buff[ 1024 ];
 				trap_LAN_GetServerAddressString( ui_netSource.integer,
 				                                 uiInfo.serverStatus.displayServers[ uiInfo.serverStatus.currentServer ],
 				                                 buff, 1024 );
@@ -3698,7 +3701,7 @@ static void UI_RunMenuScript( char **args )
 			};
 			int i;
 
-			for ( i = 0; i < sizeof( voteInfo ) / sizeof( voteInfo[0] ); ++i )
+			for ( i = 0; i < ARRAY_LEN( voteInfo ); ++i )
 			{
 				if ( Q_stricmp( name + 4, voteInfo[i].vote ) == 0 )
 				{
@@ -3762,6 +3765,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			if ( ui_netSource.integer != AS_FAVORITES )
 			{
+				char buff[ MAX_STRING_CHARS ];
 				char name[ MAX_NAME_LENGTH ];
 				char addr[ MAX_NAME_LENGTH ];
 				int res;
@@ -3997,6 +4001,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			if ( ui_netSource.integer == AS_FAVORITES )
 			{
+				char buff[ MAX_STRING_CHARS ];
 				char addr[ MAX_NAME_LENGTH ];
 				trap_LAN_GetServerInfo( ui_netSource.integer,
 				                        uiInfo.serverStatus.displayServers[ uiInfo.serverStatus.currentServer ],
@@ -5004,7 +5009,6 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.drawSides = &UI_DrawSides;
 	uiInfo.uiDC.drawTopBottom = &UI_DrawTopBottom;
 	uiInfo.uiDC.clearScene = &trap_R_ClearScene;
-	uiInfo.uiDC.drawSides = &UI_DrawSides;
 	uiInfo.uiDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	uiInfo.uiDC.renderScene = &trap_R_RenderScene;
 	uiInfo.uiDC.registerFont = &trap_R_RegisterFont;

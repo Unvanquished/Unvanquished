@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../ui/ui_shared.h"
 
 // The entire cgame module is unloaded and reloaded on each level change,
-// so there is NO persistant data between levels on the client side.
+// so there is no persistent data between levels on the client side.
 // If you absolutely need something stored, it can either be kept
 // by the server in the server stored userinfos, or stashed in a cvar.
 
@@ -80,7 +80,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef enum
 {
-  FOOTSTEP_NORMAL,
+  FOOTSTEP_GENERAL,
   FOOTSTEP_FLESH,
   FOOTSTEP_METAL,
   FOOTSTEP_SPLASH,
@@ -560,10 +560,6 @@ typedef struct trailBeam_s
 // player entities need to track more information
 // than any other type of entity.
 
-// note that not every player entity is a client entity,
-// because corpses after respawn are outside the normal
-// client numbering range
-
 // smoothing of view and model for WW transitions
 #define   MAXSMOOTHS 32
 
@@ -597,13 +593,13 @@ typedef struct lightFlareStatus_s
 	float    lastRadius; //caching of likely flare radius
 	float    lastRatio; //caching of likely flare ratio
 	int      lastTime; //last time flare was visible/occluded
-	qboolean status; //flare is visble?
+	qboolean status; //flare is visible?
 } lightFlareStatus_t;
 
 typedef struct buildableStatus_s
 {
 	int      lastTime; // Last time status was visible
-	qboolean visible; // Status is visble?
+	qboolean visible; // Status is visible?
 } buildableStatus_t;
 
 typedef struct buildableCache_s
@@ -654,7 +650,7 @@ typedef struct centity_s
 
 	lerpFrame_t           lerpFrame;
 
-	buildableAnimNumber_t buildableAnim; //persistant anim number
+	buildableAnimNumber_t buildableAnim; //persistent anim number
 	buildableAnimNumber_t oldBuildableAnim; //to detect when new anims are set
 	qboolean              buildableIdleAnim; //to check if new idle anim
 	particleSystem_t      *buildablePS;
@@ -730,7 +726,7 @@ typedef struct
 {
 	qboolean infoValid;
 
-	char     name[ MAX_QPATH ];
+	char     name[ MAX_NAME_LENGTH ];
 	team_t   team;
 
 	int      score; // updated by score servercmds
@@ -1093,7 +1089,7 @@ typedef struct
 
 	int itemPickup;
 	int itemPickupTime;
-	int itemPickupBlendTime; // the pulse around the crosshair is timed seperately
+	int itemPickupBlendTime; // the pulse around the crosshair is timed separately
 
 	int weaponSelectTime;
 	int weaponAnimation;
@@ -1639,8 +1635,8 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 
-void QDECL CG_Printf( const char *msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
-void QDECL CG_Error( const char *msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
+void QDECL CG_Error( const char *msg, ... ) PRINTF_LIKE(1) NORETURN;
 
 void       CG_StartMusic( void );
 int        CG_PlayerCount( void );
@@ -1970,5 +1966,5 @@ typedef enum
   DT_INTERACTIVE, // team, class, armoury
   DT_ARMOURYEVOLVE, // Insufficient funds et al
   DT_BUILD, // build errors
-  DT_COMMAND, // You must be living/human/spec etc.
+  DT_COMMAND, // You must be alive/human/spec/etc.
 } dialogType_t;

@@ -2846,13 +2846,13 @@ int LightMain(int argc, char **argv)
 	if(value[0] != '1')
 		LoadMapFile(mapSource, qtrue);
 
-	/* Tr3B: tell the .bsp wether we have deluxe mapping support or not */
+	/* Tr3B: tell the .bsp whether we have deluxe mapping support or not */
 	if(deluxemap)
 		SetKeyValue(&entities[0], "deluxeMapping", "1");
 	else
 		SetKeyValue(&entities[0], "deluxeMapping", "0");
 
-	/* Tr3B: tell the .bsp wether we have HDR light mapping support or not */
+	/* Tr3B: tell the .bsp whether we have HDR light mapping support or not */
 	/*
 	if(hdr)
 		SetKeyValue(&entities[0], "hdrRGBE", "1");

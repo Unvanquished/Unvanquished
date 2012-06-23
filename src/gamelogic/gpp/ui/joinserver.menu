@@ -192,7 +192,7 @@
       type ITEM_TYPE_TEXT
       text "[official] = Official Server\n[featured] = Featured Server"
       style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       textscale .25
       wrapped
       rect (TOP_X+(2*TOPBUTT_W)) (TOP_Y+TOPBUTT_H) (TOPBUTT_W) (TOPBUTT_H)

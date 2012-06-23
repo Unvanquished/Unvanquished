@@ -135,7 +135,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	text_p = text;
 	skip = 0; // quite the compiler warning
 
-        ci->footsteps = FOOTSTEP_NORMAL;
+	ci->footsteps = FOOTSTEP_GENERAL;
 	VectorClear( ci->headOffset );
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
@@ -166,9 +166,9 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			{
 				break;
 			}
-			if( !Q_stricmp( token, "default" ) || !Q_stricmp( token, "normal" ) )
+			if( !Q_stricmp( token, "default" ) )
 			{
-				ci->footsteps = FOOTSTEP_NORMAL;
+				ci->footsteps = FOOTSTEP_GENERAL;
 			}
 			else if( !Q_stricmp( token, "flesh") )
 			{
@@ -376,7 +376,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 	text_p = text;
 	skip = 0; // quite the compiler warning
 
-	ci->footsteps = FOOTSTEP_NORMAL;
+	ci->footsteps = FOOTSTEP_GENERAL;
 	VectorClear( ci->headOffset );
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
@@ -403,9 +403,9 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 				break;
 			}
 
-			if ( !Q_stricmp( token, "default" ) || !Q_stricmp( token, "normal" ) )
+			if ( !Q_stricmp( token, "default" ) )
 			{
-				ci->footsteps = FOOTSTEP_NORMAL;
+				ci->footsteps = FOOTSTEP_GENERAL;
 			}
 			else if ( !Q_stricmp( token, "flesh" ) )
 			{
@@ -1275,7 +1275,7 @@ static int CG_GetCorpseNum( class_t class )
 		if ( !Q_stricmp( modelName, match->modelName ) &&
 		     !Q_stricmp( skinName, match->skinName ) )
 		{
-			// this clientinfo is identical, so use it's handles
+			// this clientinfo is identical, so use its handles
 			return i;
 		}
 	}
@@ -1306,7 +1306,7 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci )
 		if ( !Q_stricmp( ci->modelName, match->modelName ) &&
 		     !Q_stricmp( ci->skinName, match->skinName ) )
 		{
-			// this clientinfo is identical, so use it's handles
+			// this clientinfo is identical, so use its handles
 			CG_CopyClientInfoModel( match, ci );
 
 			return qtrue;
@@ -1561,7 +1561,7 @@ static void CG_SetPlayerLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, i
 	}
 }
 
-// TODO: choose propper values and use blending speed from character.cfg
+// TODO: choose proper values and use blending speed from character.cfg
 // blending is slow for testing issues
 static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
 {
@@ -2215,7 +2215,7 @@ static void CG_AddPainTwitch( centity_t *cent, vec3_t torsoAngles )
 ===============
 CG_PlayerAngles
 
-Handles seperate torso motion
+Handles separate torso motion
 
   legs pivot based on direction of movement
 
@@ -3329,13 +3329,15 @@ void CG_Player( centity_t *cent )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
 
+#if 0
 		quat_t torsoQuat;
-		//quat_t headQuat;
+		quat_t headQuat;
 		quat_t legsQuat;
 		int    i;
 		int    boneIndex;
 		int    firstTorsoBone;
 		int    lastTorsoBone;
+#endif
 		vec3_t playerOrigin, mins, maxs;
 
 		if ( ci->gender != GENDER_NEUTER )
@@ -3498,7 +3500,6 @@ void CG_Player( centity_t *cent )
 			if ( skeleton.numBones != skeleton.numBones )
 			{
 				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
-				return;
 			}
 
 			// combine legs and torso skeletons

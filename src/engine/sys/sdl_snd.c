@@ -155,7 +155,7 @@ static struct
 	}
 };
 
-static int formatToStringTableSize = sizeof( formatToStringTable ) / sizeof( formatToStringTable[ 0 ] );
+static int formatToStringTableSize = ARRAY_LEN( formatToStringTable );
 
 /*
 ===============

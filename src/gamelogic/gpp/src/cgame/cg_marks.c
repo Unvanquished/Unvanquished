@@ -196,7 +196,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 		markPoly_t *mark;
 
 		// we have an upper limit on the complexity of polygons
-		// that we store persistantly
+		// that we store persistently
 		if ( mf->numPoints > MAX_VERTS_ON_POLY )
 		{
 			mf->numPoints = MAX_VERTS_ON_POLY;
@@ -221,7 +221,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 			continue;
 		}
 
-		// otherwise save it persistantly
+		// otherwise save it persistently
 		mark = CG_AllocMark();
 		mark->time = cg.time;
 		mark->alphaFade = alphaFade;

@@ -77,7 +77,7 @@ void P_DamageFeedback( gentity_t *player )
 		client->ps.damageYaw = angles[ YAW ] / 360.0 * 256;
 	}
 
-	// play an apropriate pain sound
+	// play an appropriate pain sound
 	if ( ( level.time > player->pain_debounce_time ) && !( player->flags & FL_GODMODE ) )
 	{
 		player->pain_debounce_time = level.time + 700;
@@ -135,7 +135,7 @@ void P_WorldEffects( gentity_t *ent )
 					ent->damage = 15;
 				}
 
-				// play a gurp sound instead of a normal pain sound
+				// play a gurp sound instead of a general pain sound
 				if ( ent->health <= ent->damage )
 				{
 					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "*drown.wav" ) );
@@ -149,7 +149,7 @@ void P_WorldEffects( gentity_t *ent )
 					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "sound/player/gurp2.wav" ) );
 				}
 
-				// don't play a normal pain sound
+				// don't play a general pain sound
 				ent->pain_debounce_time = level.time + 200;
 
 				G_Damage( ent, NULL, NULL, NULL, NULL,
@@ -507,6 +507,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		}
 
 		client->pers.classSelection = PCL_NONE;
+		client->pers.humanItemSelection = WP_NONE;
 		client->ps.stats[ STAT_CLASS ] = PCL_NONE;
 		client->ps.pm_flags &= ~PMF_QUEUED;
 		queued = qfalse;
@@ -1059,7 +1060,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				mins[ 0 ] = mins[ 1 ] = 0.0f;
 				VectorAdd( client->ps.origin, mins, point );
 
-				ent->pain_debounce_time = level.time + 200; // no normal pain sound
+				ent->pain_debounce_time = level.time + 200; // no general pain sound
 				G_Damage( ent, NULL, NULL, dir, point, damage, DAMAGE_NO_LOCDAMAGE, MOD_FALLING );
 				break;
 

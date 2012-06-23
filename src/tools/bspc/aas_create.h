@@ -79,7 +79,7 @@ typedef struct tmp_area_s
 	tmp_areasettings_t *settings;       //area settings
 	struct tmp_area_s *mergedarea;      //points to the new area after merging
 										//when mergedarea != 0 the area has only the
-										//seperating face of the merged areas
+										//separating face of the merged areas
 	int aasareanum;                     //number of the aas area created for this tmp area
 	//links in the list with areas
 	struct tmp_area_s *l_prev, *l_next;

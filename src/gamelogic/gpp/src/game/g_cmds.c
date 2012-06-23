@@ -383,7 +383,7 @@ void ScoreboardMessage( gentity_t *ent )
 
 		j = strlen( entry );
 
-		if ( stringlength + j >= 1024 )
+		if ( stringlength + j >= sizeof( string ) )
 		{
 			break;
 		}
@@ -539,11 +539,11 @@ void Cmd_Give_f( gentity_t *ent )
 			            TEAM_ALIENS ? ALIEN_CREDITS_PER_KILL : 1.0f );
 
 			// clamp credits manually, as G_AddCreditToClient() expects a short int
-			if ( credits > SHRT_MAX )
+			if ( credits > 30000.0f )
 			{
 				credits = 30000.0f;
 			}
-			else if ( credits < SHRT_MIN )
+			else if ( credits < 30000.0f )
 			{
 				credits = -30000.0f;
 			}
@@ -1186,7 +1186,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 
 	G_CensorString( text, chatText, sizeof( text ), ent );
 
-	// send it to all the apropriate clients
+	// send it to all the appropriate clients
 	for ( j = 0; j < level.maxclients; j++ )
 	{
 		other = &g_entities[ j ];
@@ -2115,24 +2115,34 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 	char   buffer[ MAX_TOKEN_CHARS ];
 	int    i;
 
-	if ( trap_Argc() != 5 )
+	if ( trap_Argc() < 4 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("usage: setviewpos x y z yaw\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("usage: setviewpos <x> <y> <z> [<yaw> [<pitch>]]\n") "\"" );
 		return;
 	}
-
-	VectorClear( angles );
 
 	for ( i = 0; i < 3; i++ )
 	{
 		trap_Argv( i + 1, buffer, sizeof( buffer ) );
 		origin[ i ] = atof( buffer );
 	}
+	origin[ 2 ] -= ent->client->ps.viewheight;
 
-	trap_Argv( 4, buffer, sizeof( buffer ) );
-	angles[ YAW ] = atof( buffer );
+	VectorCopy( ent->client->ps.viewangles, angles );
+	angles[ ROLL ] = 0;
 
-	TeleportPlayer( ent, origin, angles );
+	if ( trap_Argc() >= 5 )
+	{
+		trap_Argv( 4, buffer, sizeof( buffer ) );
+		angles[ YAW ] = atof( buffer );
+		if ( trap_Argc() >= 6 )
+		{
+			trap_Argv( 5, buffer, sizeof( buffer ) );
+			angles[ PITCH ] = atof( buffer );
+		}
+	}
+
+	TeleportPlayer( ent, origin, angles, 0.0f );
 }
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
@@ -2346,7 +2356,6 @@ void Cmd_Class_f( gentity_t *ent )
 				return;
 			}
 
-			//guard against selling the HBUILD weapons exploit
 			if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
 			     ( currentClass == PCL_ALIEN_BUILDER0 ||
 			       currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
@@ -3302,9 +3311,18 @@ void G_StopFollowing( gentity_t *ent )
 	ent->client->ps.stats[ STAT_STATE ] = 0;
 	ent->client->ps.stats[ STAT_VIEWLOCK ] = 0;
 	ent->client->ps.eFlags &= ~( EF_WALLCLIMB | EF_WALLCLIMBCEILING );
-	ent->client->ps.viewangles[ PITCH ] = 0.0f;
 	ent->client->ps.clientNum = ent - g_entities;
 	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit;
+
+	if ( ent->client->pers.teamSelection == TEAM_NONE )
+	{
+		vec3_t viewOrigin, angles;
+
+		BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
+		VectorCopy( ent->client->ps.viewangles, angles );
+		angles[ ROLL ] = 0;
+		TeleportPlayer( ent, viewOrigin, angles, qfalse );
+	}
 
 	CalculateRanks();
 }
@@ -4019,7 +4037,6 @@ int G_FloodLimited( gentity_t *ent )
 		return 0;
 	}
 
-	// handles !ent
 	if ( G_admin_permission( ent, ADMF_NOCENSORFLOOD ) )
 	{
 		return 0;
@@ -4102,40 +4119,40 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
-	{ "build",           CMD_TEAM | CMD_LIVING,               Cmd_Build_f            },
-	{ "buy",             CMD_HUMAN | CMD_LIVING,              Cmd_Buy_f              },
+	{ "build",           CMD_TEAM | CMD_ALIVE,                Cmd_Build_f            },
+	{ "buy",             CMD_HUMAN | CMD_ALIVE,               Cmd_Buy_f              },
 	{ "callteamvote",    CMD_MESSAGE | CMD_TEAM,              Cmd_CallVote_f         },
 	{ "callvote",        CMD_MESSAGE,                         Cmd_CallVote_f         },
 	{ "class",           CMD_TEAM,                            Cmd_Class_f            },
-	{ "damage",          CMD_CHEAT | CMD_LIVING,              Cmd_Damage_f           },
-	{ "deconstruct",     CMD_TEAM | CMD_LIVING,               Cmd_Destroy_f          },
-	{ "destroy",         CMD_CHEAT | CMD_TEAM | CMD_LIVING,   Cmd_Destroy_f          },
+	{ "damage",          CMD_CHEAT | CMD_ALIVE,               Cmd_Damage_f           },
+	{ "deconstruct",     CMD_TEAM | CMD_ALIVE,                Cmd_Destroy_f          },
+	{ "destroy",         CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Destroy_f          },
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },
-	{ "give",            CMD_CHEAT | CMD_TEAM | CMD_LIVING,   Cmd_Give_f             },
-	{ "god",             CMD_CHEAT | CMD_TEAM | CMD_LIVING,   Cmd_God_f              },
+	{ "give",            CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Give_f             },
+	{ "god",             CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_God_f              },
 	{ "ignore",          0,                                   Cmd_Ignore_f           },
-	{ "itemact",         CMD_HUMAN | CMD_LIVING,              Cmd_ActivateItem_f     },
-	{ "itemdeact",       CMD_HUMAN | CMD_LIVING,              Cmd_DeActivateItem_f   },
-	{ "itemtoggle",      CMD_HUMAN | CMD_LIVING,              Cmd_ToggleItem_f       },
-	{ "kill",            CMD_TEAM | CMD_LIVING,               Cmd_Kill_f             },
+	{ "itemact",         CMD_HUMAN | CMD_ALIVE,               Cmd_ActivateItem_f     },
+	{ "itemdeact",       CMD_HUMAN | CMD_ALIVE,               Cmd_DeActivateItem_f   },
+	{ "itemtoggle",      CMD_HUMAN | CMD_ALIVE,               Cmd_ToggleItem_f       },
+	{ "kill",            CMD_TEAM | CMD_ALIVE,                Cmd_Kill_f             },
 	{ "listmaps",        CMD_MESSAGE | CMD_INTERMISSION,      Cmd_ListMaps_f         },
 	{ "listrotation",    CMD_MESSAGE | CMD_INTERMISSION,      G_PrintCurrentRotation },
 	{ "m",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
 	{ "maplog",          CMD_MESSAGE | CMD_INTERMISSION,      Cmd_MapLog_f           },
 	{ "mt",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
 	{ "noclip",          CMD_CHEAT_TEAM,                      Cmd_Noclip_f           },
-	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_LIVING,   Cmd_Notarget_f         },
+	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Notarget_f         },
 	{ "pubkey",          CMD_INTERMISSION,                    Cmd_Pubkey_f           },
 	{ "pubkey_identify", CMD_INTERMISSION,                    Cmd_Pubkey_Identify_f  },
-	{ "reload",          CMD_HUMAN | CMD_LIVING,              Cmd_Reload_f           },
+	{ "reload",          CMD_HUMAN | CMD_ALIVE,               Cmd_Reload_f           },
 	{ "say",             CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
-	{ "say_area",        CMD_MESSAGE | CMD_TEAM | CMD_LIVING, Cmd_SayArea_f          },
-	{ "say_area_team",   CMD_MESSAGE | CMD_TEAM | CMD_LIVING, Cmd_SayAreaTeam_f      },
+	{ "say_area",        CMD_MESSAGE | CMD_TEAM | CMD_ALIVE,  Cmd_SayArea_f          },
+	{ "say_area_team",   CMD_MESSAGE | CMD_TEAM | CMD_ALIVE,  Cmd_SayAreaTeam_f      },
 	{ "say_team",        CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
 	{ "score",           CMD_INTERMISSION,                    ScoreboardMessage      },
-	{ "sell",            CMD_HUMAN | CMD_LIVING,              Cmd_Sell_f             },
+	{ "sell",            CMD_HUMAN | CMD_ALIVE,               Cmd_Sell_f             },
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
 	{ "team",            0,                                   Cmd_Team_f             },
 	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
@@ -4147,7 +4164,7 @@ static const commands_t cmds[] =
 	{ "vsay_team",       CMD_MESSAGE | CMD_INTERMISSION,      Cmd_VSay_f             },
 	{ "where",           0,                                   Cmd_Where_f            }
 };
-static const size_t numCmds = sizeof( cmds ) / sizeof( cmds[ 0 ] );
+static const size_t numCmds = ARRAY_LEN( cmds );
 
 /*
 =================
@@ -4237,11 +4254,11 @@ void ClientCommand( int clientNum )
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_LIVING &&
+	if ( command->cmdFlags & CMD_ALIVE &&
 	     ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
 	       ent->client->sess.spectatorState != SPECTATOR_NOT ) )
 	{
-		G_TriggerMenu( clientNum, MN_CMD_LIVING );
+		G_TriggerMenu( clientNum, MN_CMD_ALIVE );
 		return;
 	}
 

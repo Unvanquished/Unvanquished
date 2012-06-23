@@ -35,7 +35,7 @@ Maryland 20850 USA.
 
 /*
 
-  This is a "ogm"-decoder to use a "better"(smaller files,higher resolutions) Cinematic-Format than roq
+  This is a decoder for OGM, a "better" (smaller files, higher resolutions) cinematic format than ROQ
 
   In this code "ogm" is only: ogg wrapper, vorbis audio, xvid video (or theora video)
   (ogm(Ogg Media) in general is ogg wrapper with all kind of audio/video/subtitle/...)
@@ -84,7 +84,7 @@ typedef struct
 	vorbis_info      vi; /* struct that stores all the static vorbis bitstream settings */
 	vorbis_comment   vc; /* struct that stores all the bitstream user comments */
 
-	qboolean         videoStreamIsXvid; //FIXME: atm there isn't realy a check for this (all "video" streams are handelt as xvid, because xvid support more than one "subtype")
+	qboolean         videoStreamIsXvid; //FIXME: atm there isn't really a check for this (all "video" streams are handled as xvid, because xvid supports more than one "subtype")
 #ifdef USE_CIN_XVID
 	xvid_dec_stats_t xvid_dec_stats;
 	void             *xvid_dec_handle;
@@ -646,7 +646,7 @@ static qboolean loadFrame( void )
 //      if needPacket
 		{
 //          videoStream -> xvid ? videoStreamDone : needPage
-//          audioSteam -> vorbis ? audioStreamDone : needPage
+//          audioStream -> vorbis ? audioStreamDone : needPage
 //          anyDataTransferred = audioStreamDone && audioStreamDone;
 
 			if ( needVOutputData && ( status = loadVideoFrame() ) )
@@ -679,7 +679,7 @@ static qboolean loadFrame( void )
 			}
 
 			// load all Audio after loading new pages ...
-			if ( g_ogm.VFrameCount > 1 ) // wait some videoframes (it's better to have some delay, than a lagy sound)
+			if ( g_ogm.VFrameCount > 1 ) // wait some videoframes (it's better to have some delay, than laggy sound)
 			{
 				audioWantsMoreData = loadAudio();
 			}

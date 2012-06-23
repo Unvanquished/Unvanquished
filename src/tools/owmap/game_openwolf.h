@@ -80,7 +80,7 @@ content and surface flags
 #define W_SURF_LADDER                           0x00000008  
 #define W_SURF_NOIMPACT                         0x00000010 /* don't make missile explosions */
 #define W_SURF_NOMARKS                          0x00000020 /* don't leave missile marks */
-#define W_SURF_SPLASH                           0x00000040 /* out of surf's, so replacing unused 'SURF_FLESH' - and as SURF_CERAMIC wasn't used, it's now SURF_SPLASH */
+#define W_SURF_SPLASH                           0x00000040 /* out of surfaces, so replacing unused 'SURF_FLESH' - and as SURF_CERAMIC wasn't used, it's now SURF_SPLASH */
 #define W_SURF_NODRAW                           0x00000080 /* don't generate a drawsurface at all */
 #define W_SURF_HINT                             0x00000100 /* make a primary bsp splitter */
 #define W_SURF_SKIP                             0x00000200 /* completely ignore, allowing non-closed brushes */

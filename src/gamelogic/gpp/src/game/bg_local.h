@@ -64,10 +64,8 @@ extern  pml_t   pml;
 #define pm_stopspeed         (100.0f)
 #define pm_duckScale         (0.25f)
 #define pm_swimScale         (0.50f)
-#define pm_wadeScale         (0.70f)
 
 #define pm_accelerate        (10.0f)
-#define pm_airaccelerate     (1.0f)
 #define pm_wateraccelerate   (4.0f)
 #define pm_flyaccelerate     (4.0f)
 

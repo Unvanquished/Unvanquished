@@ -443,7 +443,7 @@ void SV_DirectConnect( netadr_t from )
 
 	while ( qtrue )
 	{
-		// Unfortunately the string fuctions such as strlen() and Info_RemoveKey()
+		// Unfortunately the string functions such as strlen() and Info_RemoveKey()
 		// are quite expensive for large userinfo strings.  Imagine if someone
 		// bombarded the server with connect packets.  That would result in very bad
 		// server hitches.  We need to fix that.
@@ -625,7 +625,6 @@ void SV_DirectConnect( netadr_t from )
 			else
 			{
 				Com_Error( ERR_FATAL, "server is full on local connect\n" );
-				return;
 			}
 		}
 		else
@@ -1272,14 +1271,14 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			}
 
 			SV_BadDownload( cl, msg );
-			MSG_WriteString( msg, errorMessage );  // (could SV_DropClient isntead?)
+			MSG_WriteString( msg, errorMessage );  // (could SV_DropClient instead?)
 
 			return;
 		}
 
 		// www download redirect protocol
 		// NOTE: this is called repeatedly while a client connects. Maybe we should sort of cache the message or something
-		// FIXME: we need to abstract this to an independant module for maximum configuration/usability by server admins
+		// FIXME: we need to abstract this to an independent module for maximum configuration/usability by server admins
 		// FIXME: I could rework that, it's crappy
 		if ( sv_wwwDownload->integer )
 		{
@@ -1362,7 +1361,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			Com_sprintf( errorMessage, sizeof( errorMessage ), "File \"%s\" not found on server for autodownloading.\n",
 			             cl->downloadName );
 			SV_BadDownload( cl, msg );
-			MSG_WriteString( msg, errorMessage );  // (could SV_DropClient isntead?)
+			MSG_WriteString( msg, errorMessage );  // (could SV_DropClient instead?)
 			return;
 		}
 
@@ -1413,12 +1412,11 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 	// client snapMsec and rate
 
 	// based on the rate, how many bytes can we fit in the snapMsec time of the client
-	// normal rate / snapshotMsec calculation
 	rate = cl->rate;
 
 	// show_bug.cgi?id=509
-	// for autodownload, we use a seperate max rate value
-	// we do this everytime because the client might change it's rate during the download
+	// for autodownload, we use a separate max rate value
+	// we do this everytime because the client might change its rate during the download
 	if ( sv_dl_maxRate->integer < rate )
 	{
 		rate = sv_dl_maxRate->integer;
@@ -1916,7 +1914,7 @@ void SV_UserinfoChanged( client_t *cl )
 
 	// TTimo
 	// maintain the IP information
-	// this is set in SV_DirectConnect (directly on the server, not transmitted), may be lost when client updates it's userinfo
+	// this is set in SV_DirectConnect (directly on the server, not transmitted), may be lost when client updates its userinfo
 	// the banning code relies on this being consistently present
 	// zinx - modified to always keep this consistent, instead of only
 	// when "ip" is 0-length, so users can't supply their own IP
@@ -2024,7 +2022,7 @@ static ucmd_t ucmds[] =
 	{ "stopdl",     SV_StopDownload_f,    qfalse },
 	{ "donedl",     SV_DoneDownload_f,    qfalse },
 #ifdef USE_VOIP
-	{ "voip",       SV_Voip_f },
+	{ "voip",       SV_Voip_f,            qfalse },
 #endif
 	{ "wwwdl",      SV_WWWDownload_f,     qfalse },
 	{ NULL,         NULL }
@@ -2039,8 +2037,8 @@ Also called by bot code
 */
 
 // The value below is how many extra characters we reserve for every instance of '$' in a
-// ut_radio, say, or similar client command.  Some jump maps have very long $location's.
-// On these maps, it may be possible to crash the server if a carefully-crafted
+// ut_radio, say, or similar client command.  Some jump maps have very long $location
+// strings.  On these maps, it may be possible to crash the server if a carefully-crafted
 // client command is sent.  The constant below may require further tweaking.  For example,
 // a text of "$location" would have a total computed length of 25, because "$location" has
 // 9 characters, and we increment that by 16 for the '$'.
@@ -2068,12 +2066,14 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 {
 	ucmd_t   *u;
 	qboolean bProcessed = qfalse;
+#if 0
 	int      argsFromOneMaxlen;
 	int      charCount;
 	int      dollarCount;
 	int      i;
 	char     *arg;
 	qboolean exploitDetected;
+#endif
 
 	Com_DPrintf( "EXCL: %s\n", s );
 	Cmd_TokenizeString( s );
@@ -2242,8 +2242,8 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	// the command, we will stop processing the rest of the packet,
 	// including the usercmd.  This causes flooders to lag themselves
 	// but not other people
-	// We don't do this when the client hasn't been active yet since its
-	// normal to spam a lot of commands when downloading
+	// We don't do this when the client hasn't been active yet, since it is
+	// by protocol to spam a lot of commands when downloading
 	if ( !com_cl_running->integer && cl->state >= CS_ACTIVE && // (SA) this was commented out in Wolf.  Did we do that?
 	     sv_floodProtect->integer && svs.time < cl->nextReliableTime && floodprotect )
 	{
@@ -2263,7 +2263,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 	cl->lastClientCommand = seq;
 	Com_sprintf( cl->lastClientCommandString, sizeof( cl->lastClientCommandString ), "%s", s );
 
-	return qtrue; // continue procesing
+	return qtrue; // continue processing
 }
 
 //==================================================================================
@@ -2405,7 +2405,7 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 		//}
 		if ( !SV_GameIsSinglePlayer() )
 		{
-			// We need to allow this in single player, where loadgame's can cause the player to freeze after reloading if we do this check
+			// We need to allow this in single player, where loadgames can cause the player to freeze after reloading if we do this check
 			// don't execute if this is an old cmd which is already executed
 			// these old cmds are included when cl_packetdup > 0
 			if ( cmds[ i ].serverTime <= cl->lastUsercmd.serverTime )

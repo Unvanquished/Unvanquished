@@ -880,7 +880,7 @@ static void CG_DrawPlayerAmmoValue( rectDef_t *rect, vec4_t color )
 		}
 
 		CG_AlignText( rect, text, scale, 0.0f, 0.0f, ALIGN_RIGHT, VALIGN_CENTER, &tx, &ty );
-		UI_Text_Paint( tx + 1, ty, scale, color, text, 0, ITEM_TEXTSTYLE_NORMAL );
+		UI_Text_Paint( tx + 1, ty, scale, color, text, 0, ITEM_TEXTSTYLE_PLAIN );
 		trap_R_SetColor( NULL );
 	}
 }
@@ -970,7 +970,7 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 		}
 
 		CG_AlignText( rect, text, scale, 0.0f, 0.0f, ALIGN_RIGHT, VALIGN_CENTER, &tx, &ty );
-		UI_Text_Paint( tx + 1, ty, scale, color, text, 0, ITEM_TEXTSTYLE_NORMAL );
+		UI_Text_Paint( tx + 1, ty, scale, color, text, 0, ITEM_TEXTSTYLE_PLAIN );
 		trap_R_SetColor( NULL );
 	}
 }
@@ -1514,7 +1514,7 @@ static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, v
 	if ( fraction < 1.0f )
 	{
 		UI_Text_Paint( text_x + tx, text_y + ty, scale, white,
-		               s, 0, ITEM_TEXTSTYLE_NORMAL );
+		               s, 0, ITEM_TEXTSTYLE_PLAIN );
 	}
 	else
 	{
@@ -1747,7 +1747,6 @@ float CG_GetValue( int ownerDraw )
 
 		case CG_PLAYER_HEALTH:
 			return ps->stats[ STAT_HEALTH ];
-			break;
 
 		default:
 			break;
@@ -2799,7 +2798,7 @@ static void CG_DrawLagometer( rectDef_t *rect, float text_x, float text_y,
 
 	Vector4Copy( textColor, adjustedColor );
 	adjustedColor[ 3 ] = 0.5f;
-	UI_Text_Paint( ax, ay, scale, adjustedColor, ping, 0, ITEM_TEXTSTYLE_NORMAL );
+	UI_Text_Paint( ax, ay, scale, adjustedColor, ping, 0, ITEM_TEXTSTYLE_PLAIN );
 
 	CG_DrawDisconnect();
 }
@@ -2962,7 +2961,7 @@ static void CG_DrawSpeedText( rectDef_t *rect, float text_x, float text_y,
 	UI_Text_Paint(
 	  rect->x + ( rect->w - UI_Text_Width( speedstr, scale ) ) / 2.0f,
 	  rect->y + ( rect->h + UI_Text_Height( speedstr, scale ) ) / 2.0f,
-	  scale, color, speedstr, 0, ITEM_TEXTSTYLE_NORMAL );
+	  scale, color, speedstr, 0, ITEM_TEXTSTYLE_PLAIN );
 }
 
 /*
@@ -3038,7 +3037,6 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
 		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d\n", weapon );
-		return;
 	}
 
 	if ( !cg_weapons[ weapon ].registered )
@@ -3251,7 +3249,7 @@ static void CG_DrawLocation( rectDef_t *rect, float scale, int textalign, vec4_t
 	if ( UI_Text_Width( location, scale ) < rect->w )
 	{
 		CG_AlignText( rect, location, scale, 0.0f, 0.0f, textalign, VALIGN_CENTER, &tx, &ty );
-		UI_Text_Paint( tx, ty, scale, color, location, 0, ITEM_TEXTSTYLE_NORMAL );
+		UI_Text_Paint( tx, ty, scale, color, location, 0, ITEM_TEXTSTYLE_PLAIN );
 	}
 	else
 	{
@@ -3369,7 +3367,6 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 
 			default:
 				CG_Error( "CG_DrawStack: valign value %d not recognised", valign );
-				return;
 		}
 	}
 	else
@@ -3393,7 +3390,6 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 
 			default:
 				CG_Error( "CG_DrawStack: align value %d not recognised", align );
-				return;
 		}
 	}
 
@@ -4318,16 +4314,16 @@ static void CG_DrawVote( team_t team )
 	s = va( "%sVOTE(%i): %s",
 	        team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ] );
 
-	UI_Text_Paint( 8, 300 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_NORMAL );
+	UI_Text_Paint( 8, 300 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_PLAIN );
 
 	s = va( "  Called by: \"%s\"", cgs.voteCaller[ team ] );
 
-	UI_Text_Paint( 8, 320 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_NORMAL );
+	UI_Text_Paint( 8, 320 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_PLAIN );
 
 	s = va( "  %s[check]:%i %s[cross]:%i",
 	        yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
-	UI_Text_Paint( 8, 340 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_NORMAL );
+	UI_Text_Paint( 8, 340 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_PLAIN );
 }
 
 static qboolean CG_DrawScoreboard( void )

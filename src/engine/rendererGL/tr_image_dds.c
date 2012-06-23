@@ -214,7 +214,7 @@ typedef struct
 
 #define R_LoadDDSImage_MAX_MIPS 16
 
-static ID_INLINE void UnpackRGB565( byte rgb[ 3 ], uint16_t cl )
+static INLINE void UnpackRGB565( byte rgb[ 3 ], uint16_t cl )
 {
 	byte r = ( byte )( ( cl >> 11 ) & 0x1F );
 	byte g = ( byte )( ( cl >> 5 ) & 0x3F );

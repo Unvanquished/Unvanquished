@@ -1994,7 +1994,15 @@ apply_type_qualifier_to_variable(const struct ast_type_qualifier *qual,
 	  * The linker needs to be able to differentiate these cases.  This
 	  * ensures that negative values stay negative.
 	  */
+	 /* WRONG! qual->location is unsigned. wtf? silencing the warning... */
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
 	 if (qual->location >= 0) {
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 	    var->location = (state->target == vertex_shader)
 	       ? (qual->location + VERT_ATTRIB_GENERIC0)
 	       : (qual->location + FRAG_RESULT_DATA0);
@@ -2345,7 +2353,7 @@ process_initializer(ir_variable *var, ast_declaration *decl,
 }
 
 static void
-apply_precision_to_variable(const struct ast_type_specifier *spec,
+apply_precision_to_variable(const class ast_type_specifier *spec,
 				 ir_variable *var,
 				 struct _mesa_glsl_parse_state *state)
 {

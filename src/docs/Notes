@@ -22,14 +22,14 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 	+ Added possibility to connect to IRC server
 		- cl_authircserver - irc.quakenet.org is IRC Authenticate server 
 		- cl_ircport - 6665 
-		- NOTE: I never successfully connected in chatroom, I dont know is that because I test game in localserver or whatever else,
-				But anyway it say that its connected to IRC server
+		- NOTE: I never managed to join a chatroom,
+				But anyway it says that it's connected to IRC server
 	+ Possible that I broke something else with adding this in engine
 
 29-06-2011 Dusan Jocic <dusanjocic@msn.com> 
 	+ TODO: Separate Ruby for Client and Server
 		- Pretty ugly added at this revision
-		- Tested with "Hello World!" and apparently its working
+		- Tested with "Hello World!" and apparently it's working
 		- Game need autoexec.rb and msvcrt-ruby18.dll/.so/.dylib to start :)
 
 23-06-2011 Dusan Jocic <dusanjocic@msn.com> 
@@ -43,7 +43,7 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 
 12-06-2011 Dusan Jocic <dusanjocic@msn.com> 
 	+ Not all maps like Newton physics 
-	+ Maybe its not properly added
+	+ Maybe it's not properly added
 
 23-03-2003	Arnout	<rr2do2@splashdamage.com>
 	+ We can lower the UI memory pool size again - don't forget!
@@ -93,20 +93,20 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 	+ Model loading system..... what else can i say....
 	
 16-04-2002	Gordon	<djbob@splashdamage.com>
-	+ Medic has permenant regen, and uses a powerup field to do it, isnt really needed client side tho, seems rather silly.
+	+ Medic has permenant regen, and uses a powerup field to do it, isn't really needed client side tho, seems rather silly.
 
 11-04-2002	Arnout	<rr2do2@splahdamage.com>
 	+ Models attached to player models are defined in the .skin files.
 
 			Gordon	<dj_bob@ntlworld.com>
 	+ Grenade throwing is partially broken, fortunately, the flaw never pops up in game. 
-	+ A grenade held for the max hold time doesnt remove itself from your ammo, but as grenades are the only ones that have ammo AND can be held for teh max limit, it never really shows, as you instantly frag yourself.
+	+ A grenade held for the max hold time doesn't remove itself from your ammo, but as grenades are the only ones that have ammo AND can be held for teh max limit, it never really shows, as you instantly frag yourself.
 	
 10-04-2002	Arnout	<rr2do2@splahdamage.com>
-	+ Provide unregister functions to get rid of useles media?
+	+ Provide unregister functions to get rid of useless media?
 	
 			Gordon	<dj_bob@ntlworld.com>
-	+ Skeletal anims for weapons, some have them, some dont. Flametrower does, seems odd, but mauser doesnt, odd again, even tho the mauser was set up to use one, guess it just never got made.
+	+ Skeletal anims for weapons, some have them, some don't. Flamethrower does, seems odd, but mauser doesn't, odd again, even tho the mauser was set up to use one, guess it just never got made.
 
 09-04-2002	Gordon	<dj_bob@ntlworld.com>
 	+ Remember player weapon anims handled by scripts in models/players folders!
@@ -117,7 +117,7 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 04-04-2002	Arnout	<rr2do2@splashdamage.com>
 	
 			Gordon	<dj_bob@ntlworld.com>
-	+ Skeletal anims for weapons, some have them, some dont. Flametrower does, seems odd, but mauser doesnt, odd again, even tho the mauser was set up to use one, guess it just never got made.
+	+ Skeletal anims for weapons, some have them, some don't. Flamethrower does, seems odd, but mauser doesn't, odd again, even tho the mauser was set up to use one, guess it just never got made.
 	+ Coronas are all serversided, no real reason for this. Move them clientsided if they're not toggled.
 	+ Path_corners are game entities, why? Save on gentity count and put them in their own array. This would shave about 80 entities of mp_tram.
 	+ As for network optimizations, maybe move non toggled speakers clientsided as well?

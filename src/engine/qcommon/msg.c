@@ -606,13 +606,7 @@ char           *MSG_ReadString( msg_t *msg )
 		{
 			break;
 		}
-/*
-		// translate all fmt spec to avoid crash bugs
-		if ( c == '%' )
-		{
-			c = '.';
-		}
-*/
+
 		string[ l ] = c;
 		l++;
 	}
@@ -638,13 +632,7 @@ char           *MSG_ReadBigString( msg_t *msg )
 		{
 			break;
 		}
-/*
-		// translate all fmt spec to avoid crash bugs
-		if ( c == '%' )
-		{
-			c = '.';
-		}
-*/
+
 		string[ l ] = c;
 		l++;
 	}
@@ -670,13 +658,7 @@ char           *MSG_ReadStringLine( msg_t *msg )
 		{
 			break;
 		}
-/*
-		// translate all fmt spec to avoid crash bugs
-		if ( c == '%' )
-		{
-			c = '.';
-		}
-*/
+
 		string[ l ] = c;
 		l++;
 	}
@@ -930,6 +912,12 @@ void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to )
 	to->forwardmove = MSG_ReadDelta( msg, from->forwardmove, 8 );
 	to->rightmove = MSG_ReadDelta( msg, from->rightmove, 8 );
 	to->upmove = MSG_ReadDelta( msg, from->upmove, 8 );
+	if ( to->forwardmove == -128 )
+		to->forwardmove = -127;
+	if ( to->rightmove == -128 )
+		to->rightmove = -127;
+	if ( to->upmove == -128 )
+		to->upmove = -127;
 	for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
 	{
 		MSG_WriteDelta( msg, from->buttons[i], to->buttons[i], 8 );
@@ -1021,6 +1009,12 @@ void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 		to->forwardmove = MSG_ReadDeltaKey( msg, key, from->forwardmove, 8 );
 		to->rightmove = MSG_ReadDeltaKey( msg, key, from->rightmove, 8 );
 		to->upmove = MSG_ReadDeltaKey( msg, key, from->upmove, 8 );
+		if ( to->forwardmove == -128 )
+			to->forwardmove = -127;
+		if ( to->rightmove == -128 )
+			to->rightmove = -127;
+		if ( to->upmove == -128 )
+			to->upmove = -127;
 		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
 		{
 			to->buttons[i] = MSG_ReadDeltaKey( msg, key, from->buttons[i], 8 );
@@ -1185,8 +1179,8 @@ static int QDECL qsort_entitystatefields( const void *a, const void *b )
 
 void MSG_PrioritiseEntitystateFields( void )
 {
-	int fieldorders[ sizeof( entityStateFields ) / sizeof( entityStateFields[ 0 ] ) ];
-	int numfields = sizeof( entityStateFields ) / sizeof( entityStateFields[ 0 ] );
+	int fieldorders[ ARRAY_LEN( entityStateFields ) ];
+	int numfields = ARRAY_LEN( entityStateFields );
 	int i;
 
 	for ( i = 0; i < numfields; i++ )
@@ -1232,7 +1226,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 	float      fullFloat;
 	int        *fromF, *toF;
 
-	numFields = sizeof( entityStateFields ) / sizeof( entityStateFields[ 0 ] );
+	numFields = ARRAY_LEN( entityStateFields );
 
 	// all fields should be 32 bits to avoid any compiler packing issues
 	// the "number" field is not part of the field list
@@ -1449,7 +1443,7 @@ void MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, in
 		return;
 	}
 
-	numFields = sizeof( entityStateFields ) / sizeof( entityStateFields[ 0 ] );
+	numFields = ARRAY_LEN( entityStateFields );
 	lc = MSG_ReadByte( msg );
 
 	if ( lc > numFields || lc < 0 )
@@ -1776,8 +1770,8 @@ static int QDECL qsort_playerstatefields( const void *a, const void *b )
 
 void MSG_PrioritisePlayerStateFields( void )
 {
-	int fieldorders[ sizeof( playerStateFields ) / sizeof( playerStateFields[ 0 ] ) ];
-	int numfields = sizeof( playerStateFields ) / sizeof( playerStateFields[ 0 ] );
+	int fieldorders[ ARRAY_LEN( playerStateFields ) ];
+	int numfields = ARRAY_LEN( playerStateFields );
 	int i;
 
 	for ( i = 0; i < numfields; i++ )
@@ -1856,7 +1850,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 //bani - appears to have been debugging left in
 //  c = msg->cursize;
 
-	numFields = sizeof( playerStateFields ) / sizeof( playerStateFields[ 0 ] );
+	numFields = ARRAY_LEN( playerStateFields );
 
 	lc = 0;
 
@@ -2023,7 +2017,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		}
 		else
 		{
-			MSG_WriteBits( msg, 0, 1 );  // no change to persistant
+			MSG_WriteBits( msg, 0, 1 );  // no change to persistent
 		}
 
 		if ( miscbits )
@@ -2338,7 +2332,7 @@ void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *t
 		print = 0;
 	}
 
-	numFields = sizeof( playerStateFields ) / sizeof( playerStateFields[ 0 ] );
+	numFields = ARRAY_LEN( playerStateFields );
 	lc = MSG_ReadByte( msg );
 
 	if ( lc > numFields || lc < 0 )
@@ -2427,7 +2421,7 @@ void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *t
 			}
 		}
 
-		// parse persistant stats
+		// parse persistent stats
 		if ( MSG_ReadBits( msg, 1 ) )
 		{
 			LOG( "PS_PERSISTANT" );

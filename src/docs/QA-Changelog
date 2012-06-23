@@ -24,7 +24,7 @@ Server can redirect clients to other servers when full, eg sv_fullmsg "ET://host
 
 Server will switch to GT_WOLF if "map" can't start a campaign.
 
-/demo can now specify .dm_83 extension explicitly, and will try dm_83 and dm_84 if extension isnt specified.
+/demo can now specify .dm_83 extension explicitly, and will try dm_83 and dm_84 if extension isn't specified.
 
 Abbreviated snapshots are now sent when clients aren't fully connected. Saves bandwidth on map rotations.
 
@@ -86,7 +86,7 @@ Dynamite on movers should no longer trigger objectives.
 "configstring > max_configstrings" connect bug fixed.
 Binocs are no longer allowed while using mounted mobile MG42 or mortar.
 Satchel detonator didn't work right when spectating.
-The annoying prediction error that occurs when a constructible is finished building is fixed.
+The annoying prediction error that occurrs when a constructible is finished building is fixed.
 Level 3 engineering used wrong charge for landmines.
 Field ops incorrectly used medic charge time for ammo packs.
 Prediction error when cratering is fixed.
@@ -111,15 +111,15 @@ Zoom exploit fixed (http://bani.anime.net/banimod/forums/viewtopic.php?t=1661&st
 Security hole allowing clients to override ip.
 Spectator/limbo cameras would slowly 'drift' and never reach 0 velocity.
 Download redirection notices would print repeatedly in server console.
-LMS sometimes didnt show who drew first blood.
-LMS sometimes didnt show how many wins each team has.
+LMS sometimes didn't show who drew first blood.
+LMS sometimes didn't show how many wins each team has.
 Players who connect after a vote is called got stuck with a vote on their screen through the whole round
 In Fuel Dump you could plant dynamite and it says "base fortification", but destroys Fuel Dump.
 pmove and game disagreed about weapon charge usage.
 Weird radar dynamite bug (both sides could plant dynamite near the truck for no apparent reason, and get XP for defusing it).
-When all of your team's mines are in use, you couldnt disarm enemy landmines.
+When all of your team's mines are in use, you couldn't disarm enemy landmines.
 Team landmine count was wrong (you could plant 11 by triggering 10th and planting 11th) and borked defusing team landmines)
-Dynamite mis-announcements (announcement planting dynamite near goldrush tank barrier 2, but it doesnt get destroyed).
+Dynamite mis-announcements (announcement planting dynamite near goldrush tank barrier 2, but it doesn't get destroyed).
 Players could block dynamite from destroying constructible objectives.
 Client would lose prone state after packet loss.
 Winning team was cheated of a win when they eliminated opposition <3 sec before round end, and then died themselves.
@@ -129,12 +129,12 @@ Akimbo weapons and deployed mobile MG42 ignored cg_autoreload.
 Maxlives adjuster misbehaved on timelimit 0.
 "Killed by <name>" in endround scoreboard (from quake3) removed.
 Unused cg_specswing cvar removed.
-Crosshair names randomly didnt work (tunnels in oasis, crypt in resurrection).
+Crosshair names randomly didn't work (tunnels in oasis, crypt in resurrection).
 g_{axies,allies}mapxp overflowed on long campaigns and crashed the server.
-Static mg42s didn't hurt props (eg the mg42 outside allied spawn couldnt damage the wooden fence).
+Static MG42s didn't hurt props (eg., the MG42 outside the allied spawn couldn't damage the wooden fence).
 Bogus 'complaint dismissed' message when player disconnects.
 Clients could /userinfo and nuke their userinfo from console (among other things).
-Fixed mg42s werent antilagged.
+Fixed MG42s weren't antilagged.
 Riflegrenade-through-teamdoor exploit fixed.
 Intermission ready was broken (match_readypercent now applies to intermissions).
 Intermission ready should not wait on spectators.
@@ -156,14 +156,14 @@ Some minor fixes to Linux keyhandling:
 	Capslock, kp_numlock, and kp_equals are all usable in Linux now
 	F13-F15 will work if the user's keyboard/X mapping sends them
 	Ctrl-` for the mini-console works.
-The disguised name and normal name are no longer both shown when moving the crosshair over a disguised covert ops while spectating.
+The disguised name and real name are no longer both shown when moving the crosshair over a disguised covert ops player while spectating.
 It should be possible to kick/mute/referee/etc. players with >32-character names.
 Weapon heat no longer sometimes flashes back down to 0 when maxed out.
 Missing obituaries added for the following means of death:
 	telefrag*, laser*, lava*, pineapple grenade (suicide), flamethrower
 	(suicide), rifle grenade (suicide), landmine (suicide), satchel
 	charge (suicide), construction (suicide), mortar (suicide),
-	airstrike tag (suicide), airstrike tag (normal death.)
+	airstrike tag.
 	Items with a * aren't reproducable in stock maps.
 Team kills with akimbo weapons should now cause an appropriate loss of skill points.
 mounted machineguns fired too low
@@ -222,8 +222,8 @@ Example code can be found in cg_limbopanel.c at the bottom of CG_DrawPlayerHead(
 Dynamic shaders:
 cgame may build shader scripts on the fly, via code.
 Use trap_R_LoadDynamicShader( shadername, shadertext ) to load a new shader into memory.
-The loaded shader can then be referenced with trap_R_RegisterShader() and used as if it
-were a normal shader. Combined with trap_R_RemapShader(), cgame can replace any shader.
+The loaded shader can then be referenced with trap_R_RegisterShader().
+Combined with trap_R_RemapShader(), the cgame can replace any shader.
 trap_R_LoadDynamicShader( "shadername", NULL ) unloads the dynamic shader "shadername".
 trap_R_LoadDynamicShader( NULL, NULL ) unloads all dynamic shaders.
 Example code can be found in cg_main.c, look for #ifdef TEST_API_DYNAMICSHADER
@@ -235,7 +235,7 @@ qagame and cgame are responsible for managing retransmissions.
 Sending a message overwrites the outgoing message buffer.
 Once the message has been sent (unreliably), the message buffer is cleared.
 The message is sent with trap_SendMessage, and its status can be read
-with trap_MessageStatus.  When the cgame and/or qagame recieve a
+with trap_MessageStatus().  When the cgame and/or qagame receive a
 message, they get a *_MESSAGERECEIVED event to vmMain, which has a
 timestamp and the message that was sent during that snapshot.
 
@@ -254,16 +254,16 @@ messageStatus_t trap_MessageStatus( /* server: int clientNum */ );
 /* qagame */
 int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 );
 	command == GAME_MESSAGERECEIVED
-	(int)clientNum = arg0: clientNum message was recieved from
-	(char*)buffer = arg1: pointer to the message recieved (temporary)
-	(int)buflen = arg2: length of message recieved
+	(int)clientNum = arg0: clientNum message was received from
+	(char*)buffer = arg1: pointer to the message received (temporary)
+	(int)buflen = arg2: length of message received
 	(int)commandTime = arg3: timestamp of message (from client)
 
 /* cgame */
 int vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6 );
 	command == CG_MESSAGERECEIVED
-	(char*)buffer = arg0: pointer to the message recieved (temporary)
-	(int)buflen = arg1: length of message recieved
+	(char*)buffer = arg0: pointer to the message received (temporary)
+	(int)buflen = arg1: length of message received
 	(int)commandTime = arg2: timestamp of message (from server)
 
 Fixed the Com_BitSet() with ridiculous bit number in the anim condition code.

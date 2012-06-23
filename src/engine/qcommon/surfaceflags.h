@@ -77,7 +77,7 @@ Maryland 20850 USA.
 #define SURF_LADDER               0x00000008
 #define SURF_NOIMPACT             0x00000010 // don't make missile explosions
 #define SURF_NOMARKS              0x00000020 // don't leave missile marks
-#define SURF_SPLASH               0x00000040 // out of surf's, so replacing unused 'SURF_FLESH' - and as SURF_CERAMIC wasn't used, it's now SURF_SPLASH
+#define SURF_SPLASH               0x00000040 // out of surfaces, so replacing unused 'SURF_FLESH' - and as SURF_CERAMIC wasn't used, it's now SURF_SPLASH
 #define SURF_NODRAW               0x00000080 // don't generate a drawsurface at all
 #define SURF_HINT                 0x00000100 // make a primary bsp splitter
 #define SURF_SKIP                 0x00000200 // completely ignore, allowing non-closed brushes
@@ -92,12 +92,12 @@ Maryland 20850 USA.
 #define SURF_WOOD                 0x00040000
 #define SURF_GRASS                0x00080000
 #define SURF_GRAVEL               0x00100000
-#define SURF_GLASS                0x00200000 // out of surf's, so replacing unused 'SURF_SMGROUP'
+#define SURF_GLASS                0x00200000 // out of surfaces, so replacing unused 'SURF_SMGROUP'
 #define SURF_SNOW                 0x00400000
 #define SURF_ROOF                 0x00800000
 #define SURF_RUBBLE               0x01000000
 #define SURF_CARPET               0x02000000
-#define SURF_MONSTERSLICK         0x04000000 // slick surf that only affects ai's
+#define SURF_MONSTERSLICK         0x04000000 // slick surf that only affects AI-controlled entities
 
 #define SURF_MONSLICK_W           0x08000000
 #define SURF_MONSLICK_N           0x10000000

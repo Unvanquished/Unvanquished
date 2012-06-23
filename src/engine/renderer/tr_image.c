@@ -875,7 +875,7 @@ static void Upload32( unsigned *data,
 	scaledBuffer = R_GetImageBuffer( sizeof( unsigned ) * scaled_width * scaled_height, BUFFER_SCALED );
 
 	//
-	// scan the texture for each channel's max values
+	// scan the texture for each channel's max value
 	// and verify if the alpha channel is being used or not
 	//
 	c = width * height;
@@ -979,7 +979,7 @@ static void Upload32( unsigned *data,
 	}
 	else
 	{
-		// use the normal mip-mapping function to go down from here
+		// use the mip-mapping function to go down from here
 		while ( width > scaled_width || height > scaled_height )
 		{
 			R_MipMap( ( byte * ) data, width, height );
@@ -1506,7 +1506,6 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 
 				default:
 					ri.Error( ERR_DROP, "LoadBMP: illegal pixel_size '%d' in file '%s'\n", bmpHeader.bitsPerPixel, name );
-					break;
 			}
 		}
 	}
@@ -1831,7 +1830,6 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 
 					default:
 						ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
-						break;
 				}
 			}
 		}
@@ -1876,7 +1874,6 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 
 						default:
 							ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
-							break;
 					}
 
 					for ( j = 0; j < packetSize; j++ )
@@ -1936,7 +1933,6 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 							default:
 								ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size,
 								          name );
-								break;
 						}
 
 						column++;
@@ -1969,7 +1965,7 @@ breakOut:
 	ri.FS_FreeFile( buffer );
 }
 
-static void R_JPGErrorExit( j_common_ptr cinfo )
+static void NORETURN R_JPGErrorExit( j_common_ptr cinfo )
 {
 	char buffer[ JMSG_LENGTH_MAX ];
 
@@ -2573,7 +2569,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 
 	if ( pic == NULL )
 	{
-		// if we dont get a successful load
+		// if we don't get a successful load
 // TTimo: Duane changed to _DEBUG in all cases
 // I'd still want that code in the release builds on linux
 // (possibly for mod authors)
@@ -2831,7 +2827,7 @@ static void R_CreateFogImage( void )
 	tr.fogImage = R_CreateImage( "*fog", ( byte * ) data, FOG_S, FOG_T, qfalse, qfalse, GL_CLAMP );
 	ri.Hunk_FreeTempMemory( data );
 
-	// ydnar: the following lines are unecessary for new GL_CLAMP_TO_EDGE fog
+	// ydnar: the following lines are unnecessary for new GL_CLAMP_TO_EDGE fog
 #ifndef IPHONE
 	borderColor[ 0 ] = 1.0;
 	borderColor[ 1 ] = 1.0;
@@ -3240,7 +3236,7 @@ static void png_user_warning_fn( png_structp png_ptr, png_const_charp warning_me
 	ri.Printf( PRINT_WARNING, "libpng warning: %s\n", warning_message );
 }
 
-static void png_user_error_fn( png_structp png_ptr, png_const_charp error_message )
+static void NORETURN png_user_error_fn( png_structp png_ptr, png_const_charp error_message )
 {
 	ri.Printf( PRINT_ERROR, "libpng error: %s\n", error_message );
 	longjmp( png_jmpbuf( png_ptr ), 0 );
@@ -3292,7 +3288,7 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 
 	/*
 	 * Set error handling if you are using the setjmp/longjmp method (this is
-	 * the normal method of doing things with libpng).  REQUIRED unless you
+	 * the common method of doing things with libpng).  REQUIRED unless you
 	 * set up your own error handlers in the png_create_read_struct() earlier.
 	 */
 	if ( setjmp( png_jmpbuf( png ) ) )
@@ -4426,7 +4422,6 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	if ( DDSGetInfo( ( ddsBuffer_t * ) buffer, &w, &h, &pf ) )
 	{
 		ri.Error( ERR_DROP, "LoadDDS: Invalid DDS texture '%s'\n", name );
-		return;
 	}
 
 	// only certain types of dds textures are supported
@@ -4434,7 +4429,6 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	{
 		ri.Error( ERR_DROP, "LoadDDS: Only DDS texture formats ARGB8888, DXT1, DXT3, and DXT5 are supported (%d) '%s'\n", pf,
 		          name );
-		return;
 	}
 
 	// create image pixel buffer

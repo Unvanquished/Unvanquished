@@ -202,7 +202,7 @@ void AAS_DumpAASData( void ) {
 	( *aasworld ).loaded = false;
 } //end of the function AAS_DumpAASData
 //===========================================================================
-// allocate memory and read a lump of a AAS file
+// allocate memory and read a lump of an AAS file
 //
 // Parameter:				-
 // Returns:					-

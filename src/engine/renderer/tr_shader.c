@@ -1345,7 +1345,6 @@ static void ParseTexMod( char *_text, shaderStage_t *stage )
 	if ( stage->bundle[ 0 ].numTexMods == TR_MAX_TEXMODS )
 	{
 		ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'\n", shader.name );
-		return;
 	}
 
 	tmi = &stage->bundle[ 0 ].texMods[ stage->bundle[ 0 ].numTexMods ];
@@ -3013,7 +3012,7 @@ surfaceparm <name>
 static void ParseSurfaceParm( char **text )
 {
 	char *token;
-	int  numInfoParms = sizeof( infoParms ) / sizeof( infoParms[ 0 ] );
+	int  numInfoParms = ARRAY_LEN( infoParms );
 	int  i;
 
 	token = COM_ParseExt( text, qfalse );
@@ -3694,7 +3693,7 @@ static void ComputeStageIteratorFunc( void )
 	if ( shader.isSky )
 	{
 		shader.optimalStageIteratorFunc = RB_StageIteratorSky;
-		goto done;
+		return;
 	}
 
 	if ( r_ignoreFastPath->integer )
@@ -3726,7 +3725,7 @@ static void ComputeStageIteratorFunc( void )
 							if ( !shader.numDeforms )
 							{
 								shader.optimalStageIteratorFunc = RB_StageIteratorVertexLitTexture;
-								goto done;
+								return;
 							}
 						}
 					}
@@ -3751,16 +3750,13 @@ static void ComputeStageIteratorFunc( void )
 						if ( shader.multitextureEnv )
 						{
 							shader.optimalStageIteratorFunc = RB_StageIteratorLightmappedMultitexture;
-							goto done;
+							return;
 						}
 					}
 				}
 			}
 		}
 	}
-
-done:
-	return;
 }
 
 typedef struct
@@ -3982,7 +3978,6 @@ static void FixRenderCommandList( int newShader )
 						curCmd = ( const void * )( sp_cmd + 1 );
 						break;
 					}
-					break;
 
 				case RC_DRAW_SURFS:
 					{
@@ -4009,10 +4004,10 @@ static void FixRenderCommandList( int newShader )
 								                     QSORT_FRONTFACE_SHIFT )
 								                 | dlightMap;
 							}
-
-							curCmd = ( const void * )( ds_cmd + 1 );
-							break;
 						}
+
+						curCmd = ( const void * )( ds_cmd + 1 );
+						break;
 					}
 
 				case RC_DRAW_BUFFER:
@@ -4044,7 +4039,7 @@ static void FixRenderCommandList( int newShader )
 SortNewShader
 
 Positions the most recently created shader in the tr.sortedShaders[]
-array so that the shader->sort key is sorted reletive to the other
+array so that the shader->sort key is sorted relative to the other
 shaders.
 
 Sets shader->sortedIndex
@@ -4163,7 +4158,7 @@ static shader_t *GeneratePermanentShader( void )
 VertexLightingCollapse
 
 If vertex lighting is enabled, only render a single
-pass, trying to guess which is the correct one to best aproximate
+pass, trying to guess which is the correct one to best approximate
 what it is supposed to look like.
 =================
 */
@@ -4242,7 +4237,7 @@ static void VertexLightingCollapse( void )
 			stages[ 0 ] = stages[ 1 ];
 		}
 
-		// if we were in a cross-fade cgen, hack it to normal
+		// if we were in a cross-fade cgen, apply a hack
 		if ( stages[ 0 ].rgbGen == CGEN_ONE_MINUS_ENTITY || stages[ 1 ].rgbGen == CGEN_ONE_MINUS_ENTITY )
 		{
 			stages[ 0 ].rgbGen = CGEN_IDENTITY_LIGHTING;
@@ -4529,7 +4524,7 @@ static shader_t *FinishShader( void )
 			int blendDstBits = pStage->stateBits & GLS_DSTBLEND_BITS;
 
 			// fog color adjustment only works for blend modes that have a contribution
-			// that aproaches 0 as the modulate values aproach 0 --
+			// that approaches 0 as the modulate values approach 0 --
 			// GL_ONE, GL_ONE
 			// GL_ZERO, GL_ONE_MINUS_SRC_COLOR
 			// GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
@@ -4587,12 +4582,12 @@ static shader_t *FinishShader( void )
 	// if we are using permedia hw, never use a lightmap texture
 	//
 	// NERVE - SMF - temp fix, terrain is having problems with lighting collapse
-	if ( 0 && ( stage > 1 && ( glConfig.hardwareType == GLHW_PERMEDIA2 ) ) )
-	{
-		VertexLightingCollapse();
-		stage = 1;
-		hasLightmapStage = qfalse;
-	}
+	//if ( stage > 1 && ( glConfig.hardwareType == GLHW_PERMEDIA2 ) )
+	//{
+	//	VertexLightingCollapse();
+	//	stage = 1;
+	//	hasLightmapStage = qfalse;
+	//}
 
 	//
 	// look for multitexture potential
@@ -4613,7 +4608,7 @@ static shader_t *FinishShader( void )
 	//
 	shader.numUnfoggedPasses = stage;
 
-	// fogonly shaders don't have any normal passes
+	// fogonly shaders don't have any stage passes
 	if ( stage == 0 )
 	{
 		shader.sort = SS_FOG;
@@ -4726,7 +4721,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 		dptr = dptr->next;
 	}
 
-	//cant add a new one with empty shadertext
+	//can't add a new one with empty shadertext
 	if ( !shadertext || !strlen( shadertext ) )
 	{
 		ri.Printf( PRINT_WARNING, "%s new shader %s has NULL shadertext!\n", func_err, shadername );
@@ -4842,7 +4837,7 @@ static char    *FindShaderInShaderText( const char *shadername )
 
 			checksum = generateHashValue( shadername );
 
-			// if it's known, skip straight to it's position
+			// if it's known, skip straight to its position
 			pShaderString = &shaderChecksumLookup[ checksum ];
 
 			while ( pShaderString && pShaderString->pStr )
@@ -5013,18 +5008,18 @@ be defined for every single image used in the game, three default
 shader behaviors can be auto-created for any image:
 
 If lightmapIndex == LIGHTMAP_NONE, then the image will have
-dynamic diffuse lighting applied to it, as apropriate for most
+dynamic diffuse lighting applied to it, as appropriate for most
 entity skin surfaces.
 
 If lightmapIndex == LIGHTMAP_2D, then the image will be used
 for 2D rendering unless an explicit shader is found
 
 If lightmapIndex == LIGHTMAP_BY_VERTEX, then the image will use
-the vertex rgba modulate values, as apropriate for misc_model
+the vertex rgba modulate values, as appropriate for misc_model
 pre-lit surfaces.
 
 Other lightmapIndex values will have a lightmap stage created
-and src*dest blending applied with the texture, as apropriate for
+and src*dest blending applied with the texture, as appropriate for
 most world construction surfaces.
 
 ===============
@@ -5130,7 +5125,7 @@ shader_t       *R_FindShader( const char *name, int lightmapIndex, qboolean mipR
 		stages[ i ].bundle[ 0 ].texMods = texMods[ i ];
 	}
 
-	// FIXME: set these "need" values apropriately
+	// FIXME: set these "need" values appropriately
 	shader.needsNormal = qtrue;
 	shader.needsST1 = qtrue;
 	shader.needsST2 = qtrue;
@@ -5249,7 +5244,7 @@ qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image
 		stages[ i ].bundle[ 0 ].texMods = texMods[ i ];
 	}
 
-	// FIXME: set these "need" values apropriately
+	// FIXME: set these "need" values appropriately
 	shader.needsNormal = qtrue;
 	shader.needsST1 = qtrue;
 	shader.needsST2 = qtrue;
@@ -5531,17 +5526,17 @@ static void BuildShaderChecksumLookup( void )
 			break;
 		}
 
-		// Gordon: NOTE this is WRONG, need to either unget the {, or as i'm gonna do, assume the shader section follows, if it doesnt, it's b0rked anyway
+		// Gordon: NOTE: this is WRONG, need to either unget the {, or as i'm gonna do, assume the shader section follows, if it doesn't, it's b0rked anyway
 
 		/*    if (!Q_stricmp( token, "{" )) {
-		                        // Gordon: ok, lets try the unget method
+		                        // Gordon: ok, let's try the unget method
 		                        COM_RestoreParseSession( &p );
 		                        // skip braced section
 		                        SkipBracedSection( &p );
 		                        continue;
 		                }*/
 
-		// get it's checksum
+		// get its checksum
 		checksum = generateHashValue( token );
 
 //      Com_Printf( "Shader Found: %s\n", token );
@@ -5881,7 +5876,7 @@ void R_PurgeLightmapShaders( void )
 	int      j, b, i = 0;
 	shader_t *sh, *shPrev, *next;
 
-	for ( i = 0; i < sizeof( backupHashTable ) / sizeof( backupHashTable[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( backupHashTable ); i++ )
 	{
 		sh = backupHashTable[ i ];
 

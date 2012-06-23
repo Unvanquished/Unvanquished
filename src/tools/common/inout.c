@@ -49,7 +49,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "libxml/parser.h"
 #include "libxml/tree.h"
 
-// utf8 conversion
+// UTF-8 conversion
 #include <glib/gconvert.h>
 #include <glib/gmem.h>
 
@@ -123,7 +123,7 @@ void xml_SendNode(xmlNodePtr node)
 #if 0
 		// NOTE: the NMSG_WriteString is limited to MAX_NETMESSAGE
 		// we will need to split into chunks
-		// (we could also go lower level, in the end it's using send and receiv which are not size limited)
+		// (we could also go lower level, in the end it's using send and receive which are not size limited)
 		//++timo FIXME: MAX_NETMESSAGE is not exactly the max size we can stick in the message
 		//  there's some tweaking to do in l_net for that .. so let's give us a margin for now
 
@@ -290,7 +290,7 @@ void FPrintf(int flag, char *buf)
 	if(flag == SYS_NOXML)
 		return;
 
-	// ouput an XML file of the run
+	// output an XML file of the run
 	// use the DOM interface to build a tree
 	/*
 	   <message level='flag'>
@@ -327,7 +327,7 @@ void DumpXML()
 }
 #endif
 
-void Sys_FPrintf(int flag, const char *format, ...)
+void PRINTF_LIKE(2) Sys_FPrintf(int flag, const char *format, ...)
 {
 	char            out_buffer[4096];
 	va_list         argptr;
@@ -342,7 +342,7 @@ void Sys_FPrintf(int flag, const char *format, ...)
 	FPrintf(flag, out_buffer);
 }
 
-void Sys_Printf(const char *format, ...)
+void PRINTF_LIKE(1) Sys_Printf(const char *format, ...)
 {
 	char            out_buffer[4096];
 	va_list         argptr;
@@ -361,7 +361,7 @@ Error
 For abnormal program terminations
 =================
 */
-void Error(const char *error, ...)
+void PRINTF_LIKE(1) NORETURN Error(const char *error, ...)
 {
 	char            out_buffer[4096];
 	char            tmp[4096];

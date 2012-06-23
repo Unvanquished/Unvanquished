@@ -616,7 +616,7 @@ void ProcessWorldModel(void)
 	for(i = 0; i < numEntities && emitFlares; i++)
 	{
 		entity_t       *light, *target;
-		const char     *value, *flareShader;
+		const char     *flareShader;
 		vec3_t          origin, targetOrigin, normal, color;
 		int             lightStyle;
 
@@ -661,7 +661,7 @@ void ProcessWorldModel(void)
 		}
 	}
 
-	/* add references to the final drawsurfs in the apropriate clusters */
+	/* add references to the final drawsurfs in the appropriate clusters */
 	FilterDrawsurfsIntoTree(e, tree);
 
 	/* match drawsurfaces back to original brushsides (sof2) */
@@ -753,7 +753,7 @@ void ProcessSubModel(void)
 	FixMetaTJunctions();
 	MergeMetaTriangles();
 
-	/* add references to the final drawsurfs in the apropriate clusters */
+	/* add references to the final drawsurfs in the appropriate clusters */
 	FilterDrawsurfsIntoTree(e, tree);
 
 	/* match drawsurfaces back to original brushsides (sof2) */
@@ -1185,7 +1185,7 @@ int BSPMain(int argc, char **argv)
 	/* ydnar: cloned brush model entities */
 	SetCloneModelNumbers();
 
-	/* set light styles from targetted light entities */
+	/* set light styles from targeted light entities */
 	//% Tr3B: SetLightStyles();
 
 	/* process in game advertisements */

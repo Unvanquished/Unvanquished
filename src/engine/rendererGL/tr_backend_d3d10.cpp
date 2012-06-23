@@ -172,7 +172,7 @@ extern "C" {
 			}
 
 			// change the tess parameters if needed
-			// a "entityMergable" shader is a shader that can have surfaces from seperate
+			// an "entityMergable" shader is a shader that can have surfaces from separate
 			// entities merged into a single batch, like smoke and blood puff sprites
 			if ( shader != oldShader || lightmapNum != oldLightmapNum || ( entity != oldEntity && !shader->entityMergable ) )
 			{
@@ -568,7 +568,7 @@ extern "C" {
 
 		R_SyncRenderThread();
 
-		// we definately want to sync every frame for the cinematics
+		// we definitely want to sync every frame for the cinematics
 #if defined( USE_D3D10 )
 		// TODO
 #else

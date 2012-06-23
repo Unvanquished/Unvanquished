@@ -46,8 +46,6 @@ Maryland 20850 USA.
 #include "../client/client.h"
 #include "../sys/sys_local.h"
 
-#define ARRAYLEN(x) ( sizeof( x ) / sizeof( x[ 0 ] ))
-
 #ifdef MACOS_X_ACCELERATION_HACK
 #       include <IOKit/IOTypes.h>
 #       include <IOKit/hidsystem/IOHIDLib.h>
@@ -1021,7 +1019,7 @@ IN_JoyMove
 */
 static void IN_JoyMove( void )
 {
-	qboolean     joy_pressed[ ARRAYLEN( joy_keys ) ];
+	qboolean     joy_pressed[ ARRAY_LEN( joy_keys ) ];
 	unsigned int axes = 0;
 	unsigned int hats = 0;
 	int          total = 0;
@@ -1081,9 +1079,9 @@ static void IN_JoyMove( void )
 
 	if ( total > 0 )
 	{
-		if ( total > ARRAYLEN( stick_state.buttons ) )
+		if ( total > ARRAY_LEN( stick_state.buttons ) )
 		{
-			total = ARRAYLEN( stick_state.buttons );
+			total = ARRAY_LEN( stick_state.buttons );
 		}
 
 		for ( i = 0; i < total; i++ )
@@ -1355,7 +1353,7 @@ IN_Xbox360ControllerMove
 */
 static void IN_Xbox360ControllerMove( void )
 {
-	qboolean     joy_pressed[ ARRAYLEN( joy_keys ) ];
+	qboolean     joy_pressed[ ARRAY_LEN( joy_keys ) ];
 	unsigned int axes = 0;
 	unsigned int hat = 0;
 	int          total = 0;
@@ -1380,9 +1378,9 @@ static void IN_Xbox360ControllerMove( void )
 
 	if ( total > 0 )
 	{
-		if ( total > ARRAYLEN( stick_state.buttons ) )
+		if ( total > ARRAY_LEN( stick_state.buttons ) )
 		{
-			total = ARRAYLEN( stick_state.buttons );
+			total = ARRAY_LEN( stick_state.buttons );
 		}
 
 		for ( i = 0; i < total; i++ )
@@ -1792,7 +1790,6 @@ void IN_Init( void )
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
 		Com_Error( ERR_FATAL, "IN_Init called before SDL_Init( SDL_INIT_VIDEO )\n" );
-		return;
 	}
 
 	Com_DPrintf( "\n------- Input Initialization -------\n" );

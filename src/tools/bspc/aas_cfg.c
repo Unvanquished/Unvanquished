@@ -137,7 +137,7 @@ void DefaultCfg( void ) {
 	  //
 	cfg.numbboxes = 2;
 	//bbox 0
-	cfg.bboxes[0].presencetype = PRESENCE_NORMAL;
+	cfg.bboxes[0].presencetype = PRESENCE_STAND;
 	cfg.bboxes[0].flags = 0;
 	cfg.bboxes[0].mins[0] = -18;
 	cfg.bboxes[0].mins[1] = -18;
@@ -155,7 +155,7 @@ void DefaultCfg( void ) {
 	cfg.bboxes[1].maxs[1] = 18;
 	cfg.bboxes[1].maxs[2] = 24;
 	//
-	cfg.allpresencetypes = PRESENCE_NORMAL | PRESENCE_CROUCH;
+	cfg.allpresencetypes = PRESENCE_STAND | PRESENCE_CROUCH;
 	cfg.phys_gravitydirection[0]    = 0;
 	cfg.phys_gravitydirection[1]    = 0;
 	cfg.phys_gravitydirection[2]    = -1;
@@ -184,7 +184,7 @@ void DefaultCfg( void ) {
 	  //
 	cfg.numbboxes = 2;
 	//bbox 0
-	cfg.bboxes[0].presencetype = PRESENCE_NORMAL;
+	cfg.bboxes[0].presencetype = PRESENCE_STAND;
 	cfg.bboxes[0].flags = 0;
 	cfg.bboxes[0].mins[0] = -15;
 	cfg.bboxes[0].mins[1] = -15;
@@ -202,7 +202,7 @@ void DefaultCfg( void ) {
 	cfg.bboxes[1].maxs[1] = 15;
 	cfg.bboxes[1].maxs[2] = 16;
 	//
-	cfg.allpresencetypes = PRESENCE_NORMAL | PRESENCE_CROUCH;
+	cfg.allpresencetypes = PRESENCE_STAND | PRESENCE_CROUCH;
 	cfg.phys_gravitydirection[0]    = 0;
 	cfg.phys_gravitydirection[1]    = 0;
 	cfg.phys_gravitydirection[2]    = -1;
@@ -218,7 +218,7 @@ void DefaultCfg( void ) {
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-char    * QDECL va( char *format, ... ) {
+char    * QDECL PRINTF_LIKE(1) va( char *format, ... ) {
 	va_list argptr;
 	static char string[2][32000];       // in case va is called by nested functions
 	static int index = 0;

@@ -1191,7 +1191,7 @@ typedef struct wav_hdr_s
 	unsigned short BitsPerSample; // little endian
 
 	unsigned int   Subchunk2ID; // big endian
-	unsigned int   Subchunk2Size; // little indian ;)
+	unsigned int   Subchunk2Size; // little endian
 
 	unsigned int   NumSamples;
 } wav_hdr_t;
@@ -1382,7 +1382,6 @@ void CL_PlayDemo_f( void )
 	if ( !clc.demofile )
 	{
 		Com_Error( ERR_DROP, "couldn't open %s", name );
-		return;
 	}
 
 	Q_strncpyz( clc.demoName, Cmd_Argv( 1 ), sizeof( clc.demoName ) );
@@ -1895,7 +1894,7 @@ void CL_OpenUrl_f( void )
 
 		u = url;
 
-		for ( i = 0; i < lengthof( allowPrefixes ); i++ )
+		for ( i = 0; i < ARRAY_LEN( allowPrefixes ); i++ )
 		{
 			const char *p = allowPrefixes[ i ];
 			size_t     len = strlen( p );
@@ -1907,7 +1906,7 @@ void CL_OpenUrl_f( void )
 			}
 		}
 
-		if ( i == lengthof( allowPrefixes ) )
+		if ( i == ARRAY_LEN( allowPrefixes ) )
 		{
 			/*
 			        This really won't ever hit because of the "" at the end
@@ -1918,7 +1917,7 @@ void CL_OpenUrl_f( void )
 			return;
 		}
 
-		for ( i = 0; i < lengthof( allowDomains ); i++ )
+		for ( i = 0; i < ARRAY_LEN( allowDomains ); i++ )
 		{
 			size_t     len;
 			const char *d = allowDomains[ i ];
@@ -1937,7 +1936,7 @@ void CL_OpenUrl_f( void )
 			}
 		}
 
-		if ( i == lengthof( allowDomains ) )
+		if ( i == ARRAY_LEN( allowDomains ) )
 		{
 			Com_Printf("%s", _( "Invalid domain.\n" ));
 			return;
@@ -2331,7 +2330,7 @@ void CL_Connect_f( void )
 	Cvar_Set( "cl_currentServerAddress", server );
 	Cvar_Set( "cl_currentServerIP", serverString );
 
-	// Gordon: um, couldnt this be handled
+	// Gordon: um, couldn't this be handled?
 	// NERVE - SMF - reset some cvars
 	Cvar_Set( "mp_playerType", "0" );
 	Cvar_Set( "mp_currentPlayerType", "0" );
@@ -2493,7 +2492,7 @@ void CL_Vid_Restart_f( void )
 	cls.soundRegistered = qfalse;
 	autoupdateChecked = qfalse;
 
-	// unpause so the cgame definately gets a snapshot and renders a frame
+	// unpause so the cgame definitely gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
 
 	// if not running a server clear the whole hunk
@@ -3022,7 +3021,7 @@ Resend a connect message if the last one has timed out
 */
 void CL_CheckForResend( void )
 {
-	int  port, i;
+	int  port;
 	char info[ MAX_INFO_STRING ];
 	char data[ MAX_INFO_STRING ];
 	char pkt[ 1024 + 1 ]; // EVEN BALANCE - T.RAY
@@ -3710,7 +3709,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 
 	// DHM - Nerve
 
-	// NERVE - SMF - bugfix, make this compare first n chars so it doesnt bail if token is parsed incorrectly
+	// NERVE - SMF - bugfix, make this compare first n chars so it doesn't bail if token is parsed incorrectly
 	// echo request from server
 	if ( !Q_strncmp( c, "getserversResponse", 18 ) )
 	{
@@ -4025,7 +4024,7 @@ void CL_Frame( int msec )
 		{
 			CL_TakeVideoFrame();
 
-			// fixed time for next frame'
+			// fixed time for next frame
 			msec = ( int ) ceil( ( 1000.0f / cl_aviFrameRate->value ) * com_timescale->value );
 
 			if ( msec == 0 )
@@ -4141,7 +4140,6 @@ static void CL_Cache_UsedFile_f( void )
 	if ( Cmd_Argc() < 2 )
 	{
 		Com_Error( ERR_DROP, "usedfile without enough parameters\n" );
-		return;
 	}
 
 	strcpy( groupStr, Cmd_Argv( 1 ) );
@@ -4168,7 +4166,6 @@ static void CL_Cache_UsedFile_f( void )
 	if ( i == CACHE_NUMGROUPS )
 	{
 		Com_Error( ERR_DROP, "usedfile without a valid cache group\n" );
-		return;
 	}
 
 	// see if it's already there
@@ -4213,7 +4210,6 @@ static void CL_Cache_SetIndex_f( void )
 	if ( Cmd_Argc() < 2 )
 	{
 		Com_Error( ERR_DROP, "setindex needs an index\n" );
-		return;
 	}
 
 	cacheIndex = atoi( Cmd_Argv( 1 ) );
@@ -4275,7 +4271,7 @@ CL_RefPrintf
 DLL glue
 ================
 */
-void QDECL __attribute__( ( format( printf, 2, 3 ) ) ) CL_RefPrintf( int print_level, const char *fmt, ... )
+void QDECL PRINTF_LIKE(2) CL_RefPrintf( int print_level, const char *fmt, ... )
 {
 	va_list argptr;
 	char    msg[ MAXPRINTMSG ];
@@ -4615,7 +4611,6 @@ CL_RefTagFree
 void CL_RefTagFree( void )
 {
 	Z_FreeTags( TAG_RENDERER );
-	return;
 }
 
 int CL_ScaledMilliseconds( void )
@@ -4770,7 +4765,7 @@ void CL_InitRef( const char *renderer )
 
 	re = *ret;
 
-	// unpause so the cgame definately gets a snapshot and renders a frame
+	// unpause so the cgame definitely gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
 }
 
@@ -5095,7 +5090,7 @@ void CL_Init( void )
 	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "snaps", "120", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );  // temp until we have an skeletal american model
+//  Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );  // temp until we have a skeletal american model
 //  Arnout - no need // Cvar_Get ("model", "multi", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Arnout - no need // Cvar_Get ("head", "default", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Arnout - no need // Cvar_Get ("color", "4", CVAR_USERINFO | CVAR_ARCHIVE );
@@ -5530,14 +5525,12 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 
 	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );
 
-	if ( strlen( info ) )
+	if ( info[ 0 ] )
 	{
-		if ( info[ strlen( info ) - 1 ] != '\n' )
-		{
-			strncat( info, "\n", sizeof( info ) );
-		}
-
-		Com_Printf( "%s: %s", NET_AdrToStringwPort( from ), info );
+		if ( info[ strlen( info ) - 1 ] == '\n' )
+			Com_Printf( "%s: %s", NET_AdrToStringwPort( from ), info );
+		else
+			Com_Printf( "%s: %s\n", NET_AdrToStringwPort( from ), info );
 	}
 }
 
@@ -5667,7 +5660,7 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 	// if this server status request has the same address
 	if ( NET_CompareAdr( to, serverStatus->address ) )
 	{
-		// if we recieved an response for this server status request
+		// if we received a response for this server status request
 		if ( !serverStatus->pending )
 		{
 			Q_strncpyz( serverStatusString, serverStatus->string, maxLen );

@@ -605,10 +605,9 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 	{
 		GLSL_PrintShaderSource( shader );
 		GLSL_PrintInfoLog( shader, qfalse );
-		ri.Error( ERR_DROP, "Couldn't compile %s", filename );
 		ri.FS_FreeFile( mainBuffer );
 		free( libsBuffer );
-		return;
+		ri.Error( ERR_DROP, "Couldn't compile %s", filename );
 	}
 
 	GLSL_PrintInfoLog( shader, qtrue );
@@ -4688,7 +4687,7 @@ void Tess_StageIteratorDebug()
 	Tess_DrawElements();
 }
 
-static ID_INLINE GLenum RB_StencilOp( int op )
+static INLINE GLenum RB_StencilOp( int op )
 {
 	switch( op & STO_MASK ) {
 	case STO_KEEP:

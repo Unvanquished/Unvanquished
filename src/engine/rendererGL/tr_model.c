@@ -427,7 +427,7 @@ static qboolean R_LoadMDX( model_t *mod, void *buffer, const char *mod_name )
 R_XMLError
 =================
 */
-void __attribute__( ( format( printf, 2, 3 ) ) ) R_XMLError( void *ctx, const char *fmt, ... )
+void PRINTF_LIKE(2) R_XMLError( void *ctx, const char *fmt, ... )
 {
 	va_list     argptr;
 	static char msg[ 4096 ];

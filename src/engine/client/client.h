@@ -153,7 +153,7 @@ typedef struct
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
-	usercmd_t cmds[ CMD_BACKUP ]; // each mesage will send several old cmds
+	usercmd_t cmds[ CMD_BACKUP ]; // each message will send several old cmds
 	int       cmdNumber; // incremented each frame, because multiple
 	// frames may need to be packed into a single packet
 
@@ -605,8 +605,6 @@ void        CL_InitRef( const char *renderer );
 
 int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
 
-// -NERVE - SMF
-
 void CL_OpenURL( const char *url );  // TTimo
 
 void CL_Record( const char *name );
@@ -702,7 +700,7 @@ qboolean CL_UpdateVisiblePings_f( int source );
 #define NUM_CON_TIMES    4
 
 //#define       CON_TEXTSIZE    32768
-#define     CON_TEXTSIZE 65536 // (SA) DM want's more console...
+#define     CON_TEXTSIZE 65536 // (SA) DM wants more console...
 #define     CON_LINECOUNT  512
 
 #define     CONSOLE_FONT_VPADDING 0.3
@@ -728,7 +726,7 @@ typedef struct
 
 	float    xadjust; // for wide aspect screens
 
-	float    displayFrac; // aproaches finalFrac at scr_conspeed
+	float    displayFrac; // approaches finalFrac at scr_conspeed
 	float    finalFrac; // 0.0 to 1.0 lines of console to display
 	float    desiredFrac; // ydnar: for variable console heights
 

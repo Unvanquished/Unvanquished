@@ -393,7 +393,7 @@ static gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
 G_SelectAlienLockSpawnPoint
 
 Try to find a spawn point for alien intermission otherwise
-use normal intermission spawn.
+use spectator intermission spawn.
 ============
 */
 gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
@@ -419,7 +419,7 @@ gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 G_SelectHumanLockSpawnPoint
 
 Try to find a spawn point for human intermission otherwise
-use normal intermission spawn.
+use spectator intermission spawn.
 ============
 */
 gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
@@ -510,7 +510,6 @@ static void SpawnCorpse( gentity_t *ent )
 	VectorCopy( ent->s.apos.trBase, body->s.angles );
 	body->s.eFlags = EF_DEAD;
 	body->s.eType = ET_CORPSE;
-	body->s.number = body - g_entities;
 	body->timestamp = level.time;
 	body->s.event = 0;
 	body->r.contents = CONTENTS_CORPSE;
@@ -608,7 +607,7 @@ G_SetClientViewAngle
 
 ==================
 */
-void G_SetClientViewAngle( gentity_t *ent, vec3_t angle )
+void G_SetClientViewAngle( gentity_t *ent, const vec3_t angle )
 {
 	int i;
 
@@ -1415,9 +1414,9 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 ===========
 ClientBegin
 
-called when a client has finished connecting, and is ready
-to be placed into the level.  This will happen every level load,
-and on transition between teams, but doesn't happen on respawns
+Called when a client has finished connecting, and is ready
+to be placed into the level. This will happen on every
+level load and level restart, but doesn't happen on respawns.
 ============
 */
 void ClientBegin( int clientNum )
@@ -1496,10 +1495,10 @@ ClientSpawn
 
 Called every time a client is placed fresh in the world:
 after the first ClientBegin, and after each respawn
-Initializes all non-persistant parts of playerState
+Initializes all non-persistent parts of playerState
 ============
 */
-void ClientSpawn( gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles )
+void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles )
 {
 	int                index;
 	vec3_t             spawn_origin, spawn_angles;
@@ -1579,7 +1578,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles
 		if ( spawn == NULL )
 		{
 			G_Error( "ClientSpawn: spawn is NULL\n" );
-			return;
 		}
 
 		spawnPoint = spawn;
@@ -1604,7 +1602,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles
 	flags = ( ent->client->ps.eFlags & EF_TELEPORT_BIT ) ^ EF_TELEPORT_BIT;
 	G_UnlaggedClear( ent );
 
-	// clear everything but the persistant data
+	// clear everything but the persistent data
 
 	saved = client->pers;
 	savedSess = client->sess;
@@ -1644,7 +1642,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
 	ent->takedamage = qtrue;
-	ent->inuse = qtrue;
 	ent->classname = "player";
 	ent->r.contents = CONTENTS_BODY;
 	ent->clipmask = MASK_PLAYERSOLID;
@@ -1804,7 +1801,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, vec3_t origin, vec3_t angles
 	else
 	{
 		// fire the targets of the spawn point
-		if ( !spawn )
+		if ( !spawn && spawnPoint )
 		{
 			G_UseTargets( spawnPoint, ent );
 		}
@@ -1895,7 +1892,6 @@ void ClientDisconnect( int clientNum )
 	             ent->client->pers.ip.str, ent->client->pers.guid, ent->client->pers.netname );
 
 	trap_UnlinkEntity( ent );
-	ent->s.modelindex = 0;
 	ent->inuse = qfalse;
 	ent->classname = "disconnected";
 	ent->client->pers.connected = CON_DISCONNECTED;

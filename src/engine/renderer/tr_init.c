@@ -40,7 +40,6 @@ glconfig_t  glConfig;
 glconfig2_t glConfig2;
 glstate_t   glState;
 
-int         maxAnisotropy = 0;
 float       displayAspect = 0.0f;
 
 static void GfxInfo_f( void );
@@ -439,7 +438,7 @@ static const vidmode_t r_vidModes[] =
 	{ "2048x1536",         2048, 1536, 1 },
 	{ "2560x1600 (16:10)", 2560, 1600, 1 },
 };
-static const int s_numVidModes = ( sizeof( r_vidModes ) / sizeof( r_vidModes[ 0 ] ) );
+static const int s_numVidModes = ARRAY_LEN( r_vidModes );
 
 qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode )
 {
@@ -1673,7 +1672,7 @@ extern "C" {
 #ifndef REF_HARD_LINKED
 // this is only here so the functions in q_shared.c and bg_*.c can link
 
-void QDECL Com_Printf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -1685,7 +1684,7 @@ void QDECL Com_Printf( const char *msg, ... )
 	ri.Printf( PRINT_ALL, "%s", text );
 }
 
-void QDECL Com_DPrintf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -1697,7 +1696,7 @@ void QDECL Com_DPrintf( const char *msg, ... )
 	ri.Printf( PRINT_DEVELOPER, "%s", text );
 }
 
-void QDECL Com_Error( int level, const char *error, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];

@@ -633,7 +633,7 @@ entityDef func_door
 {   
 	"editor_color"				"0 .5 .8"
 	
-	"editor_usage"				"Normal sliding door entity. By default, the door will activate when player walks close to it or when damage is inflicted to it."
+	"editor_usage"				"Sliding door entity. By default, the door will activate when player walks close to it or when damage is inflicted to it."
 	
 	"editor_float movedir"		"-(up = -1, down = -2)- Determines the direction in which the button will move."
 	"editor_float speed"		"Speed of button's displacement."
@@ -1057,7 +1057,7 @@ entityDef target_speaker
 	"editor_maxs"					"8 8 8"
 	"editor_material"				"textures/common/speaker"
 	
-	"editor_usage"					"Formerly target_speaker. Sound generating entity that plays .wav files. Normal non-looping sounds play each time the target_speaker is triggered. Looping sounds can be set to play by themselves (no activating trigger) or be toggled on/off by a trigger."
+	"editor_usage"					"Formerly target_speaker. Sound-generating entity that plays audio files. One-time sounds play each time the target_speaker is triggered. Looping sounds can be set to play by themselves (no activating trigger) or be toggled on/off by a trigger."
 	"editor_displayFolder"			"Sound"
 	
 	"editor_snd s_sound"			"path/name of .wav or .ogg file to play (eg. sound/world/growl1.wav)."

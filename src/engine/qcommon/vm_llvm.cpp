@@ -98,6 +98,8 @@ static void *VM_LookupSym( const std::string& symbol )
 	return NULL;
 }
 
+typedef void (*dllEntry_t)(intptr_t (*)(intptr_t, ...));
+
 void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	char name[MAX_QPATH];
 	char filename[MAX_QPATH];
@@ -168,8 +170,7 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	}
 
 	Function *func = module->getFunction("dllEntry");
-	void (*dllEntry) (intptr_t(*syscallptr) (intptr_t, ...)) =
-		(void (*)(intptr_t(*syscallptr) (intptr_t,...)))engine->getPointerToFunction(func);
+	dllEntry_t dllEntry = (dllEntry_t)engine->getPointerToFunction(func);
 
 
 	dllEntry(systemcalls);

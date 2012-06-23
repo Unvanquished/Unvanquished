@@ -79,13 +79,13 @@ static unsigned int Sv_AddressHash (const struct sockaddr_in* address)
 ====================
 Sv_RemoveAndGetNextPtr
 
-Remove a server from the list and returns its "next" pointer
+Remove a server from the list and return its "next" pointer
 ====================
 */
 static server_t* Sv_RemoveAndGetNextPtr (server_t* sv, server_t** prev)
 {
 	nb_servers--;
-	MsgPrint (MSG_NORMAL,
+	MsgPrint (MSG_INFO,
 	          "%s:%hu timed out; %u servers currently registered\n",
 	          inet_ntoa (sv->address.sin_addr), ntohs (sv->address.sin_port),
 			  nb_servers);
@@ -200,7 +200,7 @@ static void Sv_InsertAddrmapIntoList (addrmap_t* new_map)
 	new_map->next = *prev;
 	*prev = new_map;
 
-	MsgPrint (MSG_NORMAL, "Address \"%s\" mapped to \"%s\" (%s:%hu)\n",
+	MsgPrint (MSG_INFO, "Address \"%s\" mapped to \"%s\" (%s:%hu)\n",
 			  new_map->from_string, new_map->to_string,
 			  inet_ntoa (new_map->to.sin_addr), ntohs (new_map->to.sin_port));
 }
@@ -385,7 +385,7 @@ qboolean Sv_Init (void)
 	}
 	last_alloc = max_nb_servers - 1;
 	memset (servers, 0, array_size);
-	MsgPrint (MSG_NORMAL, "%u server records allocated\n", max_nb_servers);
+	MsgPrint (MSG_INFO, "%u server records allocated\n", max_nb_servers);
 
 	// Allocate "hash_table" and clean it
 	array_size = hash_table_size * sizeof (hash_table[0]);
@@ -398,7 +398,7 @@ qboolean Sv_Init (void)
 		return qfalse;
 	}
 	memset (hash_table, 0, array_size);
-	MsgPrint (MSG_NORMAL,
+	MsgPrint (MSG_INFO,
 			  "Hash table allocated (%u entries)\n", hash_table_size);
 
 	return qtrue;
@@ -487,7 +487,7 @@ server_t* Sv_GetByAddr (const struct sockaddr_in* address, qboolean add_it)
 	hash_table[hash] = sv;
 	nb_servers++;
 
-	MsgPrint (MSG_NORMAL,
+	MsgPrint (MSG_INFO,
 			  "New server added: %s; %u servers are currently registered\n",
 			  peer_address, nb_servers);
 	MsgPrint (MSG_DEBUG,

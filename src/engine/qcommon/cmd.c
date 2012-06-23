@@ -1105,7 +1105,7 @@ void Cmd_UndelayAll_f( void )
 ===============
 Cmd_Delay_f
 
-Delays a comand
+Delays a command
 ===============
 */
 void Cmd_Delay_f( void )
@@ -1690,8 +1690,8 @@ const char *Cmd_Cmd_FromNth( int count )
 Cmd_TokenizeString
 
 Parses the given string into command line tokens.
-The text is copied to a seperate buffer and 0 characters
-are inserted in the apropriate place, The argv array
+The text is copied to a separate buffer and 0 characters
+are inserted in the appropriate place. The argv array
 will point into this temporary buffer.
 ============
 */
@@ -2429,7 +2429,6 @@ void Cmd_ExecuteString( const char *text )
 	}
 
 	// send it as a server command if we are connected
-	// this will usually result in a chat message
 	CL_ForwardCommandToServer( text );
 }
 

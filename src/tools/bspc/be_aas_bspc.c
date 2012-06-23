@@ -58,24 +58,6 @@ extern qboolean capsule_collision;
 botlib_import_t botimport;
 clipHandle_t worldmodel;
 
-void Error( char *error, ... );
-
-//===========================================================================
-//
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
-//===========================================================================
-void AAS_Error( char *fmt, ... ) {
-	va_list argptr;
-	char text[1024];
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
-	va_end( argptr );
-
-	Error( text );
-} //end of the function AAS_Error
 //===========================================================================
 //
 // Parameter:				-
@@ -159,7 +141,7 @@ void *BotImport_GetMemory( int size ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void BotImport_Print( int type, char *fmt, ... ) {
+void PRINTF_LIKE(2) BotImport_Print( int type, char *fmt, ... ) {
 	va_list argptr;
 	char buf[1024];
 
@@ -211,7 +193,7 @@ void BotImport_BSPModelMinsMaxsOrigin( int modelnum, vec3_t angles, vec3_t outmi
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void Com_DPrintf( char *fmt, ... ) {
+void PRINTF_LIKE(1) Com_DPrintf( char *fmt, ... ) {
 	va_list argptr;
 	char buf[1024];
 

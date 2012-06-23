@@ -106,7 +106,7 @@ int NonConvex( tmp_face_t *face1, tmp_face_t *face2, int side1, int side2 ) {
 //===========================================================================
 // try to merge the areas at both sides of the given face
 //
-// Parameter:				seperatingface		: face that seperates two areas
+// Parameter:				separatingface		: face that separates two areas
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
@@ -141,9 +141,9 @@ int AAS_TryMergeFaceAreas( tmp_face_t *seperatingface ) {
 			 face1->backarea != tmparea1 ) {
 			Error( "face does not belong to area1" );
 		}
-		//just continue if the face is seperating the two areas
+		//just continue if the face is separating the two areas
 		//NOTE: a result of this is that ground and gap areas can
-		//      be merged if the seperating face is the gap
+		//      be merged if the separating face is the gap
 		if ( ( face1->frontarea == tmparea1 &&
 			   face1->backarea == tmparea2 ) ||
 			 ( face1->frontarea == tmparea2 &&
@@ -164,9 +164,9 @@ int AAS_TryMergeFaceAreas( tmp_face_t *seperatingface ) {
 				 face2->backarea != tmparea2 ) {
 				Error( "face does not belong to area2" );
 			}
-			//just continue if the face is seperating the two areas
+			//just continue if the face is separating the two areas
 			//NOTE: a result of this is that ground and gap areas can
-			//      be merged if the seperating face is the gap
+			//      be merged if the separating face is the gap
 			if ( ( face2->frontarea == tmparea1 &&
 				   face2->backarea == tmparea2 ) ||
 				 ( face2->frontarea == tmparea2 &&
@@ -184,8 +184,8 @@ int AAS_TryMergeFaceAreas( tmp_face_t *seperatingface ) {
 			}
 		} //end for
 	} //end for
-	  //if one area has gap faces (that aren't seperating the two areas)
-	  //and the other has ground faces (that aren't seperating the two areas),
+	  //if one area has gap faces (that aren't separating the two areas)
+	  //and the other has ground faces (that aren't separating the two areas),
 	  //the areas can't be merged
 	if ( ( ( area1faceflags & FACE_GROUND ) && ( area2faceflags & FACE_GAP ) ) ||
 		 ( ( area2faceflags & FACE_GROUND ) && ( area1faceflags & FACE_GAP ) ) ) {
@@ -205,13 +205,13 @@ int AAS_TryMergeFaceAreas( tmp_face_t *seperatingface ) {
 	newarea->modelnum = tmparea1->modelnum;
 	newarea->tmpfaces = NULL;
 
-	//add all the faces (except the seperating ones) from the first area
+	//add all the faces (except the separating ones) from the first area
 	//to the new area
 	for ( face1 = tmparea1->tmpfaces; face1; face1 = nextface1 )
 	{
 		side1 = ( face1->frontarea != tmparea1 );
 		nextface1 = face1->next[side1];
-		//don't add seperating faces
+		//don't add separating faces
 		if ( ( face1->frontarea == tmparea1 &&
 			   face1->backarea == tmparea2 ) ||
 			 ( face1->frontarea == tmparea2 &&
@@ -222,13 +222,13 @@ int AAS_TryMergeFaceAreas( tmp_face_t *seperatingface ) {
 		AAS_RemoveFaceFromArea( face1, tmparea1 );
 		AAS_AddFaceSideToArea( face1, side1, newarea );
 	} //end for
-	  //add all the faces (except the seperating ones) from the second area
+	  //add all the faces (except the separating ones) from the second area
 	  //to the new area
 	for ( face2 = tmparea2->tmpfaces; face2; face2 = nextface2 )
 	{
 		side2 = ( face2->frontarea != tmparea2 );
 		nextface2 = face2->next[side2];
-		//don't add seperating faces
+		//don't add separating faces
 		if ( ( face2->frontarea == tmparea1 &&
 			   face2->backarea == tmparea2 ) ||
 			 ( face2->frontarea == tmparea2 &&
@@ -418,7 +418,7 @@ void AAS_MergeAreas( void ) {
 						}
 					} //end if
 
-					// if the critical types are different, dont merge
+					// if the critical types are different, don't merge
 					if (    ( AAS_GroundArea( tmparea ) != AAS_GroundArea( othertmparea ) )
 							||  ( AAS_LadderArea( tmparea ) != AAS_LadderArea( othertmparea ) )
 							||  ( ( tmparea->contents & AREACONTENTS_MOVER ) != ( othertmparea->contents & AREACONTENTS_MOVER ) )

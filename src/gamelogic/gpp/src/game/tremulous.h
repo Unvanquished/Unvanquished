@@ -502,12 +502,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define BSUIT_POISON_PROTECTION       3
 #define BSUIT_PCLOUD_PROTECTION       3000
 
-#define MGCLIP_PRICE                  0
-
-#define CGAMMO_PRICE                  0
-
-#define GAS_PRICE                     0
-
 #define MEDKIT_POISON_IMMUNITY_TIME   2000 // Added two second poison immunity from medkit.
 #define MEDKIT_STARTUP_TIME           4000
 #define MEDKIT_STARTUP_SPEED          5
@@ -520,7 +514,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * _SPLASHDAMGE   - the amount of damage caused by this buildable when it blows up
  * _SPLASHRADIUS  - the radius around which it does this damage
  *
- * REACTOR_BASESIZE - the maximum distance a buildable can be from an reactor
+ * REACTOR_BASESIZE - the maximum distance a buildable can be from a reactor
  * REPEATER_BASESIZE - the maximum distance a buildable can be from a repeater
  * HUMAN_BHLTH_MODIFIER - overall health modifier for coarse tuning
  *

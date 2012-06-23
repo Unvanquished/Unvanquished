@@ -103,7 +103,7 @@ void R_Fog( glfog_t *curfog )
 		return;
 	}
 
-	//----(SA) assme values of '0' for these parameters means 'use default'
+	//----(SA) assume values of '0' for these parameters means 'use default'
 	if ( !curfog->density )
 	{
 		curfog->density = 1;
@@ -1056,36 +1056,36 @@ void R_SetupProjection( void )
 	{
 		tr.viewParms.projectionMatrix[ 0 ] = 0;
 		tr.viewParms.projectionMatrix[ 4 ] = -2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 8 ] = ( ymax + ymin ) / height; // normally 0
+		tr.viewParms.projectionMatrix[ 8 ] = ( ymax + ymin ) / height; // ie., 0
 		tr.viewParms.projectionMatrix[ 12 ] = 0;
 
 		tr.viewParms.projectionMatrix[ 1 ] = 2 * zNear / width;
 		tr.viewParms.projectionMatrix[ 5 ] = 0;
-		tr.viewParms.projectionMatrix[ 9 ] = ( xmax + xmin ) / width; // normally 0
+		tr.viewParms.projectionMatrix[ 9 ] = ( xmax + xmin ) / width; // ie., 0
 		tr.viewParms.projectionMatrix[ 13 ] = 0;
 	}
 	else if ( glConfig.vidRotation == 180 )
 	{
 		tr.viewParms.projectionMatrix[ 0 ] = -2 * zNear / width;
 		tr.viewParms.projectionMatrix[ 4 ] = 0;
-		tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // normally 0
+		tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // ie., 0
 		tr.viewParms.projectionMatrix[ 12 ] = 0;
 
 		tr.viewParms.projectionMatrix[ 1 ] = 0;
 		tr.viewParms.projectionMatrix[ 5 ] = -2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // normally 0
+		tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // ie., 0
 		tr.viewParms.projectionMatrix[ 13 ] = 0;
 	}
 	else if ( glConfig.vidRotation == 270 )
 	{
 		tr.viewParms.projectionMatrix[ 0 ] = 0;
 		tr.viewParms.projectionMatrix[ 4 ] = 2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 8 ] = ( ymax + ymin ) / height; // normally 0
+		tr.viewParms.projectionMatrix[ 8 ] = ( ymax + ymin ) / height; // ie., 0
 		tr.viewParms.projectionMatrix[ 12 ] = 0;
 
 		tr.viewParms.projectionMatrix[ 1 ] = -2 * zNear / width;
 		tr.viewParms.projectionMatrix[ 5 ] = 0;
-		tr.viewParms.projectionMatrix[ 9 ] = ( xmax + xmin ) / width; // normally 0
+		tr.viewParms.projectionMatrix[ 9 ] = ( xmax + xmin ) / width; // ie., 0
 		tr.viewParms.projectionMatrix[ 13 ] = 0;
 	}
 	else
@@ -1093,12 +1093,12 @@ void R_SetupProjection( void )
 	{
 		tr.viewParms.projectionMatrix[ 0 ] = 2 * zNear / width;
 		tr.viewParms.projectionMatrix[ 4 ] = 0;
-		tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // normally 0
+		tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // ie., 0
 		tr.viewParms.projectionMatrix[ 12 ] = 0;
 
 		tr.viewParms.projectionMatrix[ 1 ] = 0;
 		tr.viewParms.projectionMatrix[ 5 ] = 2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // normally 0
+		tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // ie., 0
 		tr.viewParms.projectionMatrix[ 13 ] = 0;
 	}
 
@@ -1637,7 +1637,7 @@ DRAWSURF SORTING
 R_Radix
 ===============
 */
-static ID_INLINE void R_Radix( int byte, int size, drawSurf_t *source, drawSurf_t *dest )
+static INLINE void R_Radix( int byte, int size, drawSurf_t *source, drawSurf_t *dest )
 {
 	int           count[ 256 ] = { 0 };
 	int           index[ 256 ];
@@ -1914,7 +1914,6 @@ void R_AddEntitySurfaces( void )
 
 						default:
 							ri.Error( ERR_DROP, "R_AddEntitySurfaces: Bad modeltype" );
-							break;
 					}
 				}
 

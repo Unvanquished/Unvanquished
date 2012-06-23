@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // cg_servercmds.c -- reliably sequenced text commands sent by the server
-// these are processed at snapshot transition time, so there will definately
+// these are processed at snapshot transition time, so there will definitely
 // be a valid snapshot this frame
 
 #include "cg_local.h"
@@ -613,7 +613,7 @@ void CG_Menu( int menu, int arg )
 			type = DT_COMMAND;
 			break;
 
-		case MN_CMD_LIVING:
+		case MN_CMD_ALIVE:
 			//longMsg   = "You must be living to perform this action.";
 			shortMsg = _("Must be living to use this command");
 			type = DT_COMMAND;
@@ -1436,9 +1436,8 @@ static void CG_ServerCommand( void )
 		return;
 	}
 
-	command = bsearch( cmd, svcommands, sizeof( svcommands ) /
-	                   sizeof( svcommands[ 0 ] ), sizeof( svcommands[ 0 ] ),
-	                   cmdcmp );
+	command = bsearch( cmd, svcommands, ARRAY_LEN( svcommands ),
+	                   sizeof( svcommands[ 0 ] ), cmdcmp );
 
 	if ( command )
 	{

@@ -69,7 +69,7 @@ The "base path" is the path to the directory holding all the game directories an
 the executable.  It defaults to ".", but can be overridden with a "+set fs_basepath c:\quake3"
 command line to allow code debugging in a different directory.  Basepath cannot
 be modified at all after startup.  Any files that are created (demos, screenshots,
-etc) will be created reletive to the base path, so base path should usually be writable.
+etc) will be created relative to the base path, so base path should usually be writable.
 
 The "cd path" is the path to an alternate hierarchy that will be searched if a file
 is not located in the base path.  A user can do a partial install that copies some
@@ -103,7 +103,7 @@ filesystem functions.
 
 To save disk space and speed loading, directory trees can be collapsed into zip files.
 The files use a ".pk3" extension to prevent users from unzipping them accidentally, but
-otherwise the are simply normal uncompressed zip files.  A game directory can have multiple
+otherwise the are simply zip files.  A game directory can have multiple
 zip files of the form "pak0.pk3", "pak1.pk3", etc.  Zip files are searched in decending order
 from the highest number to the lowest, and will always take precedence over the filesystem.
 This allows a pk3 distributed as a patch to override all existing data.
@@ -132,7 +132,7 @@ File search order: when FS_FOpenFileRead gets called it will go through the fs_s
 structure and stop on the first successful hit. fs_searchpaths is built with successive
 calls to FS_AddGameDirectory
 
-Additionaly, we search in several subdirectories:
+Additionally, we search in several subdirectories:
 current game is the current mode
 base game is a variable to allow mods based on other mods
 (such as baseq3 + missionpack content combination in a mod for instance)
@@ -312,7 +312,7 @@ typedef struct
 static fileHandleData_t fsh[ MAX_FILE_HANDLES ];
 
 // TTimo - show_bug.cgi?id=540
-// wether we did a reorder on the current search path when joining the server
+// whether we did a reorder on the current search path when joining the server
 static qboolean fs_reordered;
 
 // never load anything from pk3 files that are not present at the server when pure
@@ -363,7 +363,7 @@ qboolean FS_PakIsPure( pack_t *pack )
 		{
 			// FIXME: also use hashed file names
 			// NOTE TTimo: a pk3 with same checksum but different name would be validated too
-			//   I don't see this as allowing for any exploit, it would only happen if the client does manips of it's file names 'not a bug'
+			//   I don't see this as allowing for any exploit, it would only happen if the client does manips of its file names (not a bug)
 			if ( pack->checksum == fs_serverPaks[ i ] )
 			{
 				return qtrue; // on the approved list
@@ -447,7 +447,6 @@ static fileHandle_t FS_HandleForFile( void )
 	}
 
 	Com_Error( ERR_DROP, "FS_HandleForFile: none free" );
-	return 0;
 }
 
 static FILE *FS_FileForHandle( fileHandle_t f )
@@ -949,7 +948,7 @@ FS_FCloseFile
 
 If the FILE pointer is an open pak file, leave it open.
 
-For some reason, other dll's can't just cal fclose()
+For some reason, other DLLs can't just call fclose()
 on files returned by FS_FOpenFile...
 ==============
 */
@@ -1173,7 +1172,7 @@ fileHandle_t FS_FOpenFileUpdate( const char *filename, int *length )
 ===========
 FS_FilenameCompare
 
-Ignore case and seprator char distinctions
+Ignore case and separator char distinctions
 ===========
 */
 qboolean FS_FilenameCompare( const char *s1, const char *s2 )
@@ -1663,7 +1662,7 @@ NOTE TTimo:
         on linux it can be in fs_homepath/<fs_game>/ or fs_basepath/<fs_game>/
   the dll is extracted to fs_homepath (== fs_basepath on win32) if needed
 
-  the return value doesn't tell wether file was extracted or not, it just says wether it's ok to continue
+  the return value doesn't tell whether file was extracted or not, it just says whether it's ok to continue
   (i.e. either the right file was extracted successfully, or it was already present)
 
   cvar_lastVersion is the optional name of a CVAR_ARCHIVE used to store the wolf version for the last extracted .so
@@ -1687,7 +1686,7 @@ qboolean FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, const 
 	// read in compressed file
 	srcLength = FS_ReadFile( filename, ( void ** ) &srcData );
 
-	// if its not in the pak, we bail
+	// if it's not in the pak, we bail
 	if ( srcLength == -1 )
 	{
 		return qfalse;
@@ -1859,7 +1858,7 @@ int FS_DeleteDir( char *dirname, qboolean nonEmpty, qboolean recursive )
 /*
 ==============
 FS_OSStatFile
-Test an file given OS path:
+Test a file given OS path:
 returns -1 if not found
 returns 1 if directory
 returns 0 otherwise
@@ -2116,7 +2115,7 @@ int FS_Write( const void *buffer, int len, fileHandle_t h )
 	return len;
 }
 
-void QDECL FS_Printf( fileHandle_t h, const char *fmt, ... )
+void QDECL PRINTF_LIKE(2) FS_Printf( fileHandle_t h, const char *fmt, ... )
 {
 	va_list argptr;
 	char    msg[ MAXPRINTMSG ];
@@ -2143,7 +2142,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 	if ( !fs_searchpaths )
 	{
 		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
-		return -1;
 	}
 
 	if ( fsh[ f ].streamed )
@@ -2164,7 +2162,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 		{
 			Com_Error( ERR_FATAL, "Negative offsets and FS_SEEK_END not implemented "
 			           "for FS_Seek on pk3 file contents\n" );
-			return -1;
 		}
 
 		switch ( origin )
@@ -2183,12 +2180,9 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 
 				FS_Read( buffer, remainder, f );
 				return offset;
-				break;
 
 			default:
 				Com_Error( ERR_FATAL, "Bad origin in FS_Seek\n" );
-				return -1;
-				break;
 		}
 	}
 	else
@@ -2211,9 +2205,7 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 				break;
 
 			default:
-				_origin = SEEK_CUR;
 				Com_Error( ERR_FATAL, "Bad origin in FS_Seek\n" );
-				break;
 		}
 
 		return fseek( file, offset, _origin );
@@ -2509,7 +2501,7 @@ void FS_FreeFile( void *buffer )
 ============
 FS_WriteFile
 
-Filename are reletive to the quake search path
+Filename are relative to the quake search path
 ============
 */
 void FS_WriteFile( const char *qpath, const void *buffer, int size )
@@ -2729,7 +2721,7 @@ static int FS_AddFileToList( char *name, char *list[ MAX_FOUND_FILES ], int nfil
 	{
 		if ( !Q_stricmp( name, list[ i ] ) )
 		{
-			return nfiles; // allready in list
+			return nfiles; // already in the list
 		}
 	}
 
@@ -3157,7 +3149,7 @@ int FS_GetModList( char *listbuf, int bufsize )
 			path = FS_BuildOSPath( fs_basepath->string, name, "" );
 			nPaks = 0;
 			pPaks = Sys_ListFiles( path, ".pk3", NULL, &nPaks, qfalse );
-			Sys_FreeFileList( pPaks );  // we only use Sys_ListFiles to check wether .pk3 files are present
+			Sys_FreeFileList( pPaks );  // we only use Sys_ListFiles to check whether .pk3 files are present
 
 			/* try on home path */
 			if ( nPaks <= 0 )
@@ -3288,7 +3280,7 @@ void FS_ConvertPath( char *s )
 ===========
 FS_PathCmp
 
-Ignore case and seprator char distinctions
+Ignore case and separator char distinctions
 ===========
 */
 int FS_PathCmp( const char *s1, const char *s2 )
@@ -3566,7 +3558,6 @@ void FS_Which_f( void )
 	}
 
 	Com_Printf(_( "File not found: \"%s\"\n"), filename );
-	return;
 }
 
 //===========================================================================
@@ -4452,8 +4443,8 @@ const char *FS_ReferencedPakNames( void )
 
 	info[ 0 ] = 0;
 
-	// we want to return ALL pk3's from the fs_game path
-	// and referenced one's from baseq3
+	// we want to return all pk3s from the fs_game path
+	// and referenced ones from baseq3
 	for ( search = fs_searchpaths; search; search = search->next )
 	{
 		// is the element a pak file?
@@ -4582,15 +4573,15 @@ static const char *pak_checksums = "-137448799 131270674 125907563 -1023558518 7
 static const char *pak_names = "mp_pak4 mp_pak3 mp_pak2 mp_pak1 mp_pak0 pak0";
 
 /*
-this is the pure checksum string for a constant value of fs_checksumFeed we have choosen (see SV_SpawnServer)
+this is the pure checksum string for a constant value of fs_checksumFeed we have chosen (see SV_SpawnServer)
 to obtain the new string for a different fs_checksumFeed value, run a regular server and enable the relevant
 verbosity code in SV_SpawnServer and FS_LoadedPakPureChecksums (the full server version of course)
 
-NOTE: if you have an mp_bin in the middle, you need to take out it's checksum
+NOTE: if you have an mp_bin in the middle, you need to take out its checksum
   (we keep mp_bin out of the faked stuff because we don't want to have to update those feeds too often heh)
 
 once you have the clear versions, you can shift them by commenting out the code chunk in FS_RandChecksumFeed
-you need to use the right line in FS_LoadedPakPureChecksums wether you are running on clear strings, or shifted ones
+you need to use the right line in FS_LoadedPakPureChecksums whether you are running on clear strings, or shifted ones
 */
 
 /*
@@ -4876,8 +4867,8 @@ const char *FS_ReferencedPakNames( void )
 
 	info[ 0 ] = 0;
 
-	// we want to return ALL pk3's from the fs_game path
-	// and referenced one's from baseq3
+	// we want to return all pk3s from the fs_game path
+	// and referenced ones from baseq3
 	for ( search = fs_searchpaths; search; search = search->next )
 	{
 		// is the element a pak file?
@@ -5071,10 +5062,7 @@ is resetting due to a game change
 */
 void FS_InitFilesystem( void )
 {
-	// allow command line parms to override our defaults
-	// we have to specially handle this, because normal command
-	// line variable sets don't happen until after the filesystem
-	// has already been initialized
+	// allow command line arguments to override the following fs_* variables
 	Com_StartupVariable( "fs_basepath" );
 	Com_StartupVariable( "fs_buildpath" );
 	Com_StartupVariable( "fs_buildgame" );
@@ -5082,8 +5070,9 @@ void FS_InitFilesystem( void )
 	Com_StartupVariable( "fs_game" );
 	Com_StartupVariable( "fs_copyfiles" );
 	Com_StartupVariable( "fs_restrict" );
+	// other command line variable settings don't happen
+	// until after the filesystem has been initialized
 
-	// try to start up normally
 	FS_Startup( BASEGAME );
 
 	// if we can't find default.cfg, assume that the paths are
@@ -5121,7 +5110,6 @@ void FS_Restart( int checksumFeed )
 	// clear pak references
 	FS_ClearPakReferences( 0 );
 
-	// try to start up normally
 	FS_Startup( BASEGAME );
 
 	// if we can't find default.cfg, assume that the paths are
@@ -5141,7 +5129,6 @@ void FS_Restart( int checksumFeed )
 			Cvar_Set( "fs_restrict", "0" );
 			FS_Restart( checksumFeed );
 			Com_Error( ERR_DROP, "Invalid game folder\n" );
-			return;
 		}
 
 		// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
@@ -5272,7 +5259,6 @@ int     FS_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode )
 
 		default:
 			Com_Error( ERR_FATAL, "FSH_FOpenFile: bad mode" );
-			return -1;
 	}
 
 	if ( !f )
@@ -5390,7 +5376,7 @@ unsigned int FS_ChecksumOSPath( char *OSPath )
 
 	fclose( f );
 
-	// Com_BlockChecksum returns an indian-dependent value
+	// Com_BlockChecksum returns an endian-dependent value
 	// (better fix would have to be doing the LittleLong inside that function..)
 	checksum = LittleLong( Com_BlockChecksum( buf, len ) );
 

@@ -39,8 +39,8 @@ void                               trap_QuoteString( const char *, char *, int )
 static const buildableAttributes_t bg_buildableList[] =
 {
 	{
-		BA_A_SPAWN, //int       buildNum;
-		"eggpod", //char      *buildName;
+		BA_A_SPAWN, //int       number;
+		"eggpod", //char      *name;
 		"Egg", //char      *humanName;
 		"The most basic alien structure. It allows aliens to spawn "
 		"and protect the Overmind. Without any of these, the Overmind "
@@ -49,7 +49,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		ASPAWN_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		ASPAWN_HEALTH, //int       health;
 		ASPAWN_REGEN, //int       regenRate;
 		ASPAWN_SPLASHDAMAGE, //int       splashDamage;
@@ -74,8 +74,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		ASPAWN_VALUE, //int       value;
 	},
 	{
-		BA_A_OVERMIND, //int       buildNum;
-		"overmind", //char      *buildName;
+		BA_A_OVERMIND, //int       number;
+		"overmind", //char      *name;
 		"Overmind", //char      *humanName;
 		"A collective consciousness that controls all the alien structures "
 		"in its vicinity. It must be protected at all costs, since its "
@@ -84,7 +84,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		OVERMIND_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		OVERMIND_HEALTH, //int       health;
 		OVERMIND_REGEN, //int       regenRate;
 		OVERMIND_SPLASHDAMAGE, //int       splashDamage;
@@ -109,8 +109,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		OVERMIND_VALUE, //int       value;
 	},
 	{
-		BA_A_BARRICADE, //int       buildNum;
-		"barricade", //char      *buildName;
+		BA_A_BARRICADE, //int       number;
+		"barricade", //char      *name;
 		"Barricade", //char      *humanName;
 		"Used to obstruct corridors and doorways, hindering humans from "
 		"threatening the spawns and Overmind. Barricades will shrink "
@@ -119,7 +119,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		BARRICADE_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		BARRICADE_HEALTH, //int       health;
 		BARRICADE_REGEN, //int       regenRate;
 		BARRICADE_SPLASHDAMAGE, //int       splashDamage;
@@ -144,8 +144,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		BARRICADE_VALUE, //int       value;
 	},
 	{
-		BA_A_ACIDTUBE, //int       buildNum;
-		"acid_tube", //char      *buildName;
+		BA_A_ACIDTUBE, //int       number;
+		"acid_tube", //char      *name;
 		"Acid Tube", //char      *humanName;
 		"Ejects lethal poisonous acid at an approaching human. These "
 		"are highly effective when used in conjunction with a trapper "
@@ -154,7 +154,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		ACIDTUBE_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		ACIDTUBE_HEALTH, //int       health;
 		ACIDTUBE_REGEN, //int       regenRate;
 		ACIDTUBE_SPLASHDAMAGE, //int       splashDamage;
@@ -179,8 +179,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		ACIDTUBE_VALUE, //int       value;
 	},
 	{
-		BA_A_TRAPPER, //int       buildNum;
-		"trapper", //char      *buildName;
+		BA_A_TRAPPER, //int       number;
+		"trapper", //char      *name;
 		"Trapper", //char      *humanName;
 		"Fires a blob of adhesive spit at any non-alien in its line of "
 		"sight. This hinders their movement, making them an easy target "
@@ -189,7 +189,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		TRAPPER_BP, //int       buildPoints;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages //NEEDS ADV BUILDER SO S2 AND UP
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages; //NEEDS ADV BUILDER SO S2 AND UP
 		TRAPPER_HEALTH, //int       health;
 		TRAPPER_REGEN, //int       regenRate;
 		TRAPPER_SPLASHDAMAGE, //int       splashDamage;
@@ -214,8 +214,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		TRAPPER_VALUE, //int       value;
 	},
 	{
-		BA_A_BOOSTER, //int       buildNum;
-		"booster", //char      *buildName;
+		BA_A_BOOSTER, //int       number;
+		"booster", //char      *name;
 		"Booster", //char      *humanName;
 		"Laces the attacks of any alien that touches it with a poison "
 		"that will gradually deal damage to any humans exposed to it. "
@@ -225,7 +225,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		BOOSTER_BP, //int       buildPoints;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		BOOSTER_HEALTH, //int       health;
 		BOOSTER_REGEN, //int       regenRate;
 		BOOSTER_SPLASHDAMAGE, //int       splashDamage;
@@ -250,8 +250,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		BOOSTER_VALUE, //int       value;
 	},
 	{
-		BA_A_HIVE, //int       buildNum;
-		"hive", //char      *buildName;
+		BA_A_HIVE, //int       number;
+		"hive", //char      *name;
 		"Hive", //char      *humanName;
 		"Houses millions of tiny insectoid aliens. When a human "
 		"approaches this structure, the insectoids attack.",
@@ -259,7 +259,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		HIVE_BP, //int       buildPoints;
-		( 1 << S3 ), //int  stages
+		( 1 << S3 ), //int  stages;
 		HIVE_HEALTH, //int       health;
 		HIVE_REGEN, //int       regenRate;
 		HIVE_SPLASHDAMAGE, //int       splashDamage;
@@ -284,8 +284,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		HIVE_VALUE, //int       value;
 	},
 	{
-		BA_H_SPAWN, //int       buildNum;
-		"telenode", //char      *buildName;
+		BA_H_SPAWN, //int       number;
+		"telenode", //char      *name;
 		"Telenode", //char      *humanName;
 		"The most basic human structure. It provides a means for humans "
 		"to enter the battle arena. Without any of these the humans "
@@ -294,7 +294,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		HSPAWN_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		HSPAWN_HEALTH, //int       health;
 		0, //int       regenRate;
 		HSPAWN_SPLASHDAMAGE, //int       splashDamage;
@@ -319,8 +319,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		HSPAWN_VALUE, //int       value;
 	},
 	{
-		BA_H_MGTURRET, //int       buildNum;
-		"mgturret", //char      *buildName;
+		BA_H_MGTURRET, //int       number;
+		"mgturret", //char      *name;
 		"Machinegun Turret", //char      *humanName;
 		"Automated base defense that is effective against large targets "
 		"but slow to begin firing. Should always be "
@@ -329,7 +329,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		MGTURRET_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		MGTURRET_HEALTH, //int       health;
 		0, //int       regenRate;
 		MGTURRET_SPLASHDAMAGE, //int       splashDamage;
@@ -354,8 +354,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		MGTURRET_VALUE, //int       value;
 	},
 	{
-		BA_H_TESLAGEN, //int       buildNum;
-		"tesla", //char      *buildName;
+		BA_H_TESLAGEN, //int       number;
+		"tesla", //char      *name;
 		"Tesla Generator", //char      *humanName;
 		"A structure equipped with a strong electrical attack that fires "
 		"instantly and always hits its target. It is effective against smaller "
@@ -364,7 +364,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		TESLAGEN_BP, //int       buildPoints;
-		( 1 << S3 ), //int       stages
+		( 1 << S3 ), //int       stages;
 		TESLAGEN_HEALTH, //int       health;
 		0, //int       regenRate;
 		TESLAGEN_SPLASHDAMAGE, //int       splashDamage;
@@ -389,8 +389,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		TESLAGEN_VALUE, //int       value;
 	},
 	{
-		BA_H_ARMOURY, //int       buildNum;
-		"arm", //char      *buildName;
+		BA_H_ARMOURY, //int       number;
+		"arm", //char      *name;
 		"Armoury", //char      *humanName;
 		"An essential part of the human base, providing a means "
 		"to upgrade the basic human equipment. A range of upgrades "
@@ -399,7 +399,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		ARMOURY_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		ARMOURY_HEALTH, //int       health;
 		0, //int       regenRate;
 		ARMOURY_SPLASHDAMAGE, //int       splashDamage;
@@ -424,8 +424,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		ARMOURY_VALUE, //int       value;
 	},
 	{
-		BA_H_DCC, //int       buildNum;
-		"dcc", //char      *buildName;
+		BA_H_DCC, //int       number;
+		"dcc", //char      *name;
 		"Defence Computer", //char      *humanName;
 		"A structure that enables self-repair functionality in "
 		"human structures. Each Defence Computer built increases "
@@ -434,7 +434,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		DC_BP, //int       buildPoints;
-		( 1 << S2 ) | ( 1 << S3 ), //int       stages
+		( 1 << S2 ) | ( 1 << S3 ), //int       stages;
 		DC_HEALTH, //int       health;
 		0, //int       regenRate;
 		DC_SPLASHDAMAGE, //int       splashDamage;
@@ -459,8 +459,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		DC_VALUE, //int       value;
 	},
 	{
-		BA_H_MEDISTAT, //int       buildNum;
-		"medistat", //char      *buildName;
+		BA_H_MEDISTAT, //int       number;
+		"medistat", //char      *name;
 		"Medistation", //char      *humanName;
 		"A structure that automatically restores "
 		"the health and stamina of any human that stands on it. "
@@ -470,7 +470,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		MEDISTAT_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		MEDISTAT_HEALTH, //int       health;
 		0, //int       regenRate;
 		MEDISTAT_SPLASHDAMAGE, //int       splashDamage;
@@ -495,8 +495,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		MEDISTAT_VALUE, //int       value;
 	},
 	{
-		BA_H_REACTOR, //int       buildNum;
-		"reactor", //char      *buildName;
+		BA_H_REACTOR, //int       number;
+		"reactor", //char      *name;
 		"Reactor", //char      *humanName;
 		"All structures except the telenode rely on a reactor to operate. "
 		"The reactor provides power for all the human structures either "
@@ -505,7 +505,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		REACTOR_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		REACTOR_HEALTH, //int       health;
 		0, //int       regenRate;
 		REACTOR_SPLASHDAMAGE, //int       splashDamage;
@@ -530,8 +530,8 @@ static const buildableAttributes_t bg_buildableList[] =
 		REACTOR_VALUE, //int       value;
 	},
 	{
-		BA_H_REPEATER, //int       buildNum;
-		"repeater", //char      *buildName;
+		BA_H_REPEATER, //int       number;
+		"repeater", //char      *name;
 		"Repeater", //char      *humanName;
 		"A power distributor that transmits power from the reactor "
 		"to remote locations, so that bases may be built far "
@@ -540,7 +540,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
 		REPEATER_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		REPEATER_HEALTH, //int       health;
 		0, //int       regenRate;
 		REPEATER_SPLASHDAMAGE, //int       splashDamage;
@@ -566,7 +566,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	}
 };
 
-int                                bg_numBuildables = sizeof( bg_buildableList ) / sizeof( bg_buildableList[ 0 ] );
+int                                bg_numBuildables = ARRAY_LEN( bg_buildableList );
 
 static const buildableAttributes_t nullBuildable = { 0 };
 
@@ -893,15 +893,15 @@ void BG_InitBuildableConfigs( void )
 static const classAttributes_t bg_classList[] =
 {
 	{
-		PCL_NONE, //int     classnum;
-		"spectator", //char    *className;
+		PCL_NONE, //int     number;
+		"spectator", //char    *name;
 		"",
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		0, //int     health;
 		0.0f, //float   fallDamage;
 		0.0f, //float   regenRate;
 		0, //int     abilities;
-		WP_NONE, //weapon_t  startWeapon
+		WP_NONE, //weapon_t  startWeapon;
 		0.0f, //float   buildDist;
 		90, //int     fov;
 		0.000f, //float   bob;
@@ -919,16 +919,16 @@ static const classAttributes_t bg_classList[] =
 		0 //int     value;
 	},
 	{
-		PCL_ALIEN_BUILDER0, //int     classnum;
-		"builder", //char    *className;
+		PCL_ALIEN_BUILDER0, //int     number;
+		"builder", //char    *name;
 		"Responsible for building and maintaining all the alien structures. "
 		"Has a weak melee slash attack.",
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		ABUILDER_HEALTH, //int     health;
 		0.2f, //float   fallDamage;
 		ABUILDER_REGEN, //float   regenRate;
 		SCA_TAKESFALLDAMAGE | SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
-		WP_ABUILD, //weapon_t  startWeapon
+		WP_ABUILD, //weapon_t  startWeapon;
 		95.0f, //float   buildDist;
 		110, //int     fov;
 		0.001f, //float   bob;
@@ -946,17 +946,17 @@ static const classAttributes_t bg_classList[] =
 		ABUILDER_VALUE //int     value;
 	},
 	{
-		PCL_ALIEN_BUILDER0_UPG, //int     classnum;
-		"builderupg", //char    *classname;
+		PCL_ALIEN_BUILDER0_UPG, //int     number;
+		"builderupg", //char    *name;
 		"Similar to the base Granger, except that in addition to "
 		"being able to build structures it has a spit attack "
 		"that slows victims and the ability to crawl on walls.",
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		ABUILDER_UPG_HEALTH, //int     health;
 		0.2f, //float   fallDamage;
 		ABUILDER_UPG_REGEN, //float   regenRate;
 		SCA_TAKESFALLDAMAGE | SCA_FOVWARPS | SCA_WALLCLIMBER | SCA_ALIENSENSE, //int     abilities;
-		WP_ABUILD2, //weapon_t  startWeapon
+		WP_ABUILD2, //weapon_t  startWeapon;
 		105.0f, //float   buildDist;
 		110, //int     fov;
 		0.001f, //float   bob;
@@ -974,16 +974,16 @@ static const classAttributes_t bg_classList[] =
 		ABUILDER_UPG_VALUE //int     value;
 	},
 	{
-		PCL_ALIEN_LEVEL0, //int     classnum;
-		"level0", //char    *classname;
+		PCL_ALIEN_LEVEL0, //int     number;
+		"level0", //char    *name;
 		"Has a lethal reflexive bite and the ability to crawl on "
 		"walls and ceilings.",
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL0_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL0_REGEN, //float   regenRate;
 		SCA_WALLCLIMBER | SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
-		WP_ALEVEL0, //weapon_t  startWeapon
+		WP_ALEVEL0, //weapon_t  startWeapon;
 		0.0f, //float   buildDist;
 		140, //int     fov;
 		0.0f, //float   bob;
@@ -1001,18 +1001,18 @@ static const classAttributes_t bg_classList[] =
 		LEVEL0_VALUE //int     value;
 	},
 	{
-		PCL_ALIEN_LEVEL1, //int     classnum;
-		"level1", //char    *classname;
+		PCL_ALIEN_LEVEL1, //int     number;
+		"level1", //char    *name;
 		"A support class able to crawl on walls and ceilings. Its melee "
 		"attack is most effective when combined with the ability to grab "
 		"and hold its victims in place. Provides a weak healing aura "
 		"that accelerates the healing rate of nearby aliens.",
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL1_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL1_REGEN, //float   regenRate;
 		SCA_FOVWARPS | SCA_WALLCLIMBER | SCA_ALIENSENSE, //int     abilities;
-		WP_ALEVEL1, //weapon_t  startWeapon
+		WP_ALEVEL1, //weapon_t  startWeapon;
 		0.0f, //float   buildDist;
 		120, //int     fov;
 		0.001f, //float   bob;
@@ -1030,18 +1030,18 @@ static const classAttributes_t bg_classList[] =
 		LEVEL1_VALUE //int     value;
 	},
 	{
-		PCL_ALIEN_LEVEL1_UPG, //int     classnum;
-		"level1upg", //char    *classname;
+		PCL_ALIEN_LEVEL1_UPG, //int     number;
+		"level1upg", //char    *name;
 		"In addition to the basic Basilisk abilities, the Advanced "
 		"Basilisk sprays a poisonous gas which disorients any "
 		"nearby humans. Has a strong healing aura that "
 		"that accelerates the healing rate of nearby aliens.",
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL1_UPG_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL1_UPG_REGEN, //float   regenRate;
 		SCA_FOVWARPS | SCA_WALLCLIMBER | SCA_ALIENSENSE, //int     abilities;
-		WP_ALEVEL1_UPG, //weapon_t  startWeapon
+		WP_ALEVEL1_UPG, //weapon_t  startWeapon;
 		0.0f, //float   buildDist;
 		120, //int     fov;
 		0.001f, //float   bob;
@@ -1059,16 +1059,16 @@ static const classAttributes_t bg_classList[] =
 		LEVEL1_UPG_VALUE //int     value;
 	},
 	{
-		PCL_ALIEN_LEVEL2, //int     classnum;
-		"level2", //char    *classname;
+		PCL_ALIEN_LEVEL2, //int     number;
+		"level2", //char    *name;
 		"Has a melee attack and the ability to jump off walls. This "
 		"allows the Marauder to gather great speed in enclosed areas.",
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL2_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL2_REGEN, //float   regenRate;
 		SCA_WALLJUMPER | SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
-		WP_ALEVEL2, //weapon_t  startWeapon
+		WP_ALEVEL2, //weapon_t  startWeapon;
 		0.0f, //float   buildDist;
 		90, //int     fov;
 		0.001f, //float   bob;
@@ -1086,16 +1086,16 @@ static const classAttributes_t bg_classList[] =
 		LEVEL2_VALUE //int     value;
 	},
 	{
-		PCL_ALIEN_LEVEL2_UPG, //int     classnum;
-		"level2upg", //char    *classname;
+		PCL_ALIEN_LEVEL2_UPG, //int     number;
+		"level2upg", //char    *name;
 		"The Advanced Marauder has all the abilities of the basic Marauder "
 		"with the addition of an area effect electric shock attack.",
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL2_UPG_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL2_UPG_REGEN, //float   regenRate;
 		SCA_WALLJUMPER | SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
-		WP_ALEVEL2_UPG, //weapon_t  startWeapon
+		WP_ALEVEL2_UPG, //weapon_t  startWeapon;
 		0.0f, //float   buildDist;
 		90, //int     fov;
 		0.001f, //float   bob;
@@ -1113,17 +1113,17 @@ static const classAttributes_t bg_classList[] =
 		LEVEL2_UPG_VALUE //int     value;
 	},
 	{
-		PCL_ALIEN_LEVEL3, //int     classnum;
-		"level3", //char    *classname;
+		PCL_ALIEN_LEVEL3, //int     number;
+		"level3", //char    *name;
 		"Possesses a melee attack and the pounce ability, which may "
 		"be used as both an attack and a means to reach remote "
 		"locations inaccessible from the ground.",
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL3_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL3_REGEN, //float   regenRate;
 		SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
-		WP_ALEVEL3, //weapon_t  startWeapon
+		WP_ALEVEL3, //weapon_t  startWeapon;
 		0.0f, //float   buildDist;
 		110, //int     fov;
 		0.0005f, //float   bob;
@@ -1141,17 +1141,17 @@ static const classAttributes_t bg_classList[] =
 		LEVEL3_VALUE //int     value;
 	},
 	{
-		PCL_ALIEN_LEVEL3_UPG, //int     classnum;
-		"level3upg", //char    *classname;
+		PCL_ALIEN_LEVEL3_UPG, //int     number;
+		"level3upg", //char    *name;
 		"In addition to the basic Dragoon abilities, the Advanced "
 		"Dragoon has 3 barbs which may be used to attack humans "
 		"from a distance.",
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL3_UPG_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL3_UPG_REGEN, //float   regenRate;
 		SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
-		WP_ALEVEL3_UPG, //weapon_t  startWeapon
+		WP_ALEVEL3_UPG, //weapon_t  startWeapon;
 		0.0f, //float   buildDist;
 		110, //int     fov;
 		0.0005f, //float   bob;
@@ -1169,18 +1169,18 @@ static const classAttributes_t bg_classList[] =
 		LEVEL3_UPG_VALUE //int     value;
 	},
 	{
-		PCL_ALIEN_LEVEL4, //int     classnum;
-		"level4", //char    *classname;
+		PCL_ALIEN_LEVEL4, //int     number;
+		"level4", //char    *name;
 		"A large alien with a strong melee attack, this class can "
 		"also charge at enemy humans and structures, inflicting "
 		"great damage. Any humans or their structures caught under "
 		"a falling Tyrant will be crushed by its weight.",
-		( 1 << S3 ), //int  stages
+		( 1 << S3 ), //int  stages;
 		LEVEL4_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL4_REGEN, //float   regenRate;
 		SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
-		WP_ALEVEL4, //weapon_t  startWeapon
+		WP_ALEVEL4, //weapon_t  startWeapon;
 		0.0f, //float   buildDist;
 		90, //int     fov;
 		0.001f, //float   bob;
@@ -1198,15 +1198,15 @@ static const classAttributes_t bg_classList[] =
 		LEVEL4_VALUE //int     value;
 	},
 	{
-		PCL_HUMAN, //int     classnum;
-		"human_base", //char    *classname;
+		PCL_HUMAN, //int     number;
+		"human_base", //char    *name;
 		"",
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		100, //int     health;
 		1.0f, //float   fallDamage;
 		0.0f, //float   regenRate;
 		SCA_TAKESFALLDAMAGE | SCA_CANUSELADDERS, //int     abilities;
-		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon
+		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon;
 		110.0f, //float   buildDist;
 		90, //int     fov;
 		0.002f, //float   bob;
@@ -1224,16 +1224,15 @@ static const classAttributes_t bg_classList[] =
 		ALIEN_CREDITS_PER_KILL //int     value;
 	},
 	{
-		PCL_HUMAN_BSUIT, //int     classnum;
-		"human_bsuit", //char    *classname;
+		PCL_HUMAN_BSUIT, //int     number;
+		"human_bsuit", //char    *name;
 		"",
-		( 1 << S3 ), //int  stages
+		( 1 << S3 ), //int  stages;
 		100, //int     health;
 		1.0f, //float   fallDamage;
 		0.0f, //float   regenRate;
-		SCA_TAKESFALLDAMAGE |
-		SCA_CANUSELADDERS, //int     abilities;
-		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon
+		SCA_TAKESFALLDAMAGE | SCA_CANUSELADDERS, //int     abilities;
+		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon;
 		110.0f, //float   buildDist;
 		90, //int     fov;
 		0.002f, //float   bob;
@@ -1252,7 +1251,7 @@ static const classAttributes_t bg_classList[] =
 	}
 };
 
-int                            bg_numClasses = sizeof( bg_classList ) / sizeof( bg_classList[ 0 ] );
+int                            bg_numClasses = ARRAY_LEN( bg_classList );
 
 static const classAttributes_t nullClass = { 0 };
 
@@ -1822,11 +1821,11 @@ void BG_InitClassConfigs( void )
 static const weaponAttributes_t bg_weapons[] =
 {
 	{
-		WP_ALEVEL0, //int       weaponNum;
+		WP_ALEVEL0, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"level0", //char      *weaponName;
+		"level0", //char      *name;
 		"Bite", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -1847,11 +1846,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_ALEVEL1, //int       weaponNum;
+		WP_ALEVEL1, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"level1", //char      *weaponName;
+		"level1", //char      *name;
 		"Claws", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -1872,11 +1871,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_ALEVEL1_UPG, //int       weaponNum;
+		WP_ALEVEL1_UPG, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"level1upg", //char      *weaponName;
+		"level1upg", //char      *name;
 		"Claws Upgrade", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -1897,11 +1896,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_ALEVEL2, //int       weaponNum;
+		WP_ALEVEL2, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"level2", //char      *weaponName;
+		"level2", //char      *name;
 		"Bite", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -1922,11 +1921,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_ALEVEL2_UPG, //int       weaponNum;
+		WP_ALEVEL2_UPG, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"level2upg", //char      *weaponName;
+		"level2upg", //char      *name;
 		"Zap", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -1947,11 +1946,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_ALEVEL3, //int       weaponNum;
+		WP_ALEVEL3, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"level3", //char      *weaponName;
+		"level3", //char      *name;
 		"Pounce", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -1972,11 +1971,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_ALEVEL3_UPG, //int       weaponNum;
+		WP_ALEVEL3_UPG, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"level3upg", //char      *weaponName;
+		"level3upg", //char      *name;
 		"Pounce (upgrade)", //char      *humanName;
 		"",
 		3, //int       maxAmmo;
@@ -1997,11 +1996,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_ALEVEL4, //int       weaponNum;
+		WP_ALEVEL4, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"level4", //char      *weaponName;
+		"level4", //char      *name;
 		"Charge", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -2022,11 +2021,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_BLASTER, //int       weaponNum;
+		WP_BLASTER, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		0, //int       slots;
-		"blaster", //char      *weaponName;
+		"blaster", //char      *name;
 		"Blaster", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -2047,11 +2046,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_MACHINEGUN, //int       weaponNum;
+		WP_MACHINEGUN, //int       number;
 		RIFLE_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"rifle", //char      *weaponName;
+		"rifle", //char      *name;
 		"Rifle", //char      *humanName;
 		"Basic weapon. Cased projectile weapon, with a slow clip based "
 		"reload system.",
@@ -2073,11 +2072,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_PAIN_SAW, //int       weaponNum;
+		WP_PAIN_SAW, //int       number;
 		PAINSAW_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"psaw", //char      *weaponName;
+		"psaw", //char      *name;
 		"Pain Saw", //char      *humanName;
 		"Similar to a chainsaw, but instead of a chain it has an "
 		"electric arc capable of dealing a great deal of damage at "
@@ -2100,11 +2099,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_SHOTGUN, //int       weaponNum;
+		WP_SHOTGUN, //int       number;
 		SHOTGUN_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"shotgun", //char      *weaponName;
+		"shotgun", //char      *name;
 		"Shotgun", //char      *humanName;
 		"Close range weapon that is useful against larger foes. "
 		"It has a slow repeat rate, but can be devastatingly "
@@ -2127,11 +2126,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_LAS_GUN, //int       weaponNum;
+		WP_LAS_GUN, //int       number;
 		LASGUN_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"lgun", //char      *weaponName;
+		"lgun", //char      *name;
 		"Las Gun", //char      *humanName;
 		"Slightly more powerful than the basic rifle, rapidly fires "
 		"small packets of energy.",
@@ -2153,11 +2152,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_MASS_DRIVER, //int       weaponNum;
+		WP_MASS_DRIVER, //int       number;
 		MDRIVER_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"mdriver", //char      *weaponName;
+		"mdriver", //char      *name;
 		"Mass Driver", //char      *humanName;
 		"A portable particle accelerator which causes minor nuclear "
 		"reactions at the point of impact. It has a very large "
@@ -2180,11 +2179,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_CHAINGUN, //int       weaponNum;
+		WP_CHAINGUN, //int       number;
 		CHAINGUN_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"chaingun", //char      *weaponName;
+		"chaingun", //char      *name;
 		"Chaingun", //char      *humanName;
 		"Belt drive, cased projectile weapon. It has a high repeat "
 		"rate but a wide firing angle and is therefore relatively "
@@ -2207,11 +2206,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_FLAMER, //int       weaponNum;
+		WP_FLAMER, //int       number;
 		FLAMER_PRICE, //int       price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"flamer", //char      *weaponName;
+		"flamer", //char      *name;
 		"Flame Thrower", //char      *humanName;
 		"Sprays fire at its target. It is powered by compressed "
 		"gas. The relatively low rate of fire means this weapon is most "
@@ -2234,11 +2233,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_PULSE_RIFLE, //int       weaponNum;
+		WP_PULSE_RIFLE, //int       number;
 		PRIFLE_PRICE, //int       price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"prifle", //char      *weaponName;
+		"prifle", //char      *name;
 		"Pulse Rifle", //char      *humanName;
 		"An energy weapon that fires rapid pulses of concentrated energy.",
 		PRIFLE_CLIPS, //int       maxAmmo;
@@ -2259,11 +2258,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_LUCIFER_CANNON, //int       weaponNum;
+		WP_LUCIFER_CANNON, //int       number;
 		LCANNON_PRICE, //int       price;
-		( 1 << S3 ), //int  stages
+		( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"lcannon", //char      *weaponName;
+		"lcannon", //char      *name;
 		"Lucifer Cannon", //char      *humanName;
 		"Blaster technology scaled up to deliver devastating power. "
 		"Primary fire must be charged before firing. It has a quick "
@@ -2286,11 +2285,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_GRENADE, //int       weaponNum;
+		WP_GRENADE, //int       number;
 		GRENADE_PRICE, //int       price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_NONE, //int       slots;
-		"grenade", //char      *weaponName;
+		"grenade", //char      *name;
 		"Grenade", //char      *humanName;
 		"",
 		1, //int       maxAmmo;
@@ -2311,11 +2310,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_LOCKBLOB_LAUNCHER, //int       weaponNum;
+		WP_LOCKBLOB_LAUNCHER, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"lockblob", //char      *weaponName;
+		"lockblob", //char      *name;
 		"Lock Blob", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -2336,11 +2335,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_HIVE, //int       weaponNum;
+		WP_HIVE, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"hive", //char      *weaponName;
+		"hive", //char      *name;
 		"Hive", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -2361,11 +2360,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_TESLAGEN, //int       weaponNum;
+		WP_TESLAGEN, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"teslagen", //char      *weaponName;
+		"teslagen", //char      *name;
 		"Tesla Generator", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -2386,11 +2385,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_MGTURRET, //int       weaponNum;
+		WP_MGTURRET, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"mgturret", //char      *weaponName;
+		"mgturret", //char      *name;
 		"Machinegun Turret", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -2411,11 +2410,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_HUMANS //team_t    team;
 	},
 	{
-		WP_ABUILD, //int       weaponNum;
+		WP_ABUILD, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"abuild", //char      *weaponName;
+		"abuild", //char      *name;
 		"Alien build weapon", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -2436,11 +2435,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_ABUILD2, //int       weaponNum;
+		WP_ABUILD2, //int       number;
 		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"abuildupg", //char      *weaponName;
+		"abuildupg", //char      *name;
 		"Alien build weapon2", //char      *humanName;
 		"",
 		0, //int       maxAmmo;
@@ -2461,11 +2460,11 @@ static const weaponAttributes_t bg_weapons[] =
 		TEAM_ALIENS //team_t    team;
 	},
 	{
-		WP_HBUILD, //int       weaponNum;
+		WP_HBUILD, //int       number;
 		HBUILD_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_WEAPON, //int       slots;
-		"ckit", //char      *weaponName;
+		"ckit", //char      *name;
 		"Construction Kit", //char      *humanName;
 		"Used for building structures. This includes "
 		"spawns, power and basic defense. More structures become "
@@ -2489,7 +2488,7 @@ static const weaponAttributes_t bg_weapons[] =
 	}
 };
 
-int                             bg_numWeapons = sizeof( bg_weapons ) / sizeof( bg_weapons[ 0 ] );
+int                             bg_numWeapons = ARRAY_LEN( bg_weapons );
 
 static const weaponAttributes_t nullWeapon = { 0 };
 
@@ -2541,121 +2540,121 @@ qboolean BG_WeaponAllowedInStage( weapon_t weapon, stage_t stage )
 static const upgradeAttributes_t bg_upgrades[] =
 {
 	{
-		UP_LIGHTARMOUR, //int   upgradeNum;
+		UP_LIGHTARMOUR, //int   number;
 		LIGHTARMOUR_PRICE, //int   price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_TORSO | SLOT_ARMS | SLOT_LEGS, //int   slots;
-		"larmour", //char  *upgradeName;
+		"larmour", //char  *name;
 		"Light Armour", //char  *humanName;
 		"Protective armour that helps to defend against light alien melee "
 		"attacks.",
 		"icons/iconu_larmour",
-		qtrue, //qboolean purchasable
-		qfalse, //qboolean usable
+		qtrue, //qboolean purchasable;
+		qfalse, //qboolean usable;
 		TEAM_HUMANS //team_t  team;
 	},
 	{
-		UP_HELMET, //int   upgradeNum;
+		UP_HELMET, //int   number;
 		HELMET_PRICE, //int   price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_HEAD, //int   slots;
-		"helmet", //char  *upgradeName;
+		"helmet", //char  *name;
 		"Helmet", //char  *humanName;
 		"In addition to protecting your head, the helmet provides a "
 		"scanner indicating the presence of any friendly or hostile "
 		"lifeforms and structures in your immediate vicinity.",
 		"icons/iconu_helmet",
-		qtrue, //qboolean purchasable
-		qfalse, //qboolean usable
+		qtrue, //qboolean purchasable;
+		qfalse, //qboolean usable;
 		TEAM_HUMANS //team_t  team;
 	},
 	{
-		UP_MEDKIT, //int   upgradeNum;
+		UP_MEDKIT, //int   number;
 		MEDKIT_PRICE, //int   price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_NONE, //int   slots;
-		"medkit", //char  *upgradeName;
+		"medkit", //char  *name;
 		"Medkit", //char  *humanName;
 		"",
 		"icons/iconu_atoxin",
-		qfalse, //qboolean purchasable
-		qtrue, //qboolean usable
+		qfalse, //qboolean purchasable;
+		qtrue, //qboolean usable;
 		TEAM_HUMANS //team_t  team;
 	},
 	{
-		UP_BATTPACK, //int   upgradeNum;
+		UP_BATTPACK, //int   number;
 		BATTPACK_PRICE, //int   price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_BACKPACK, //int   slots;
-		"battpack", //char  *upgradeName;
+		"battpack", //char  *name;
 		"Battery Pack", //char  *humanName;
 		"Back-mounted battery pack that permits storage of one and a half "
 		"times the normal energy capacity for energy weapons.",
 		"icons/iconu_battpack",
-		qtrue, //qboolean purchasable
-		qfalse, //qboolean usable
+		qtrue, //qboolean purchasable;
+		qfalse, //qboolean usable;
 		TEAM_HUMANS //team_t  team;
 	},
 	{
-		UP_JETPACK, //int   upgradeNum;
+		UP_JETPACK, //int   number;
 		JETPACK_PRICE, //int   price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_BACKPACK, //int   slots;
-		"jetpack", //char  *upgradeName;
+		"jetpack", //char  *name;
 		"Jet Pack", //char  *humanName;
 		"Back-mounted jet pack that enables the user to fly to remote "
 		"locations. It is very useful against alien spawns in hard "
 		"to reach spots.",
 		"icons/iconu_jetpack",
-		qtrue, //qboolean purchasable
-		qtrue, //qboolean usable
+		qtrue, //qboolean purchasable;
+		qtrue, //qboolean usable;
 		TEAM_HUMANS //team_t  team;
 	},
 	{
-		UP_BATTLESUIT, //int   upgradeNum;
+		UP_BATTLESUIT, //int   number;
 		BSUIT_PRICE, //int   price;
-		( 1 << S3 ), //int  stages
+		( 1 << S3 ), //int  stages;
 		SLOT_HEAD | SLOT_TORSO | SLOT_ARMS | SLOT_LEGS | SLOT_BACKPACK, //int   slots;
-		"bsuit", //char  *upgradeName;
+		"bsuit", //char  *name;
 		"Battlesuit", //char  *humanName;
 		"A full body armour that is highly effective at repelling alien attacks. "
 		"It allows the user to enter hostile situations with a greater degree "
 		"of confidence.",
 		"icons/iconu_bsuit",
-		qtrue, //qboolean purchasable
-		qfalse, //qboolean usable
+		qtrue, //qboolean purchasable;
+		qfalse, //qboolean usable;
 		TEAM_HUMANS //team_t  team;
 	},
 	{
-		UP_GRENADE, //int   upgradeNum;
+		UP_GRENADE, //int   number;
 		GRENADE_PRICE, //int   price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_NONE, //int   slots;
-		"gren", //char  *upgradeName;
+		"gren", //char  *name;
 		"Grenade", //char  *humanName;
 		"A small incendinary device ideal for damaging tightly packed "
 		"alien structures. Has a five second timer.",
 		0,
-		qtrue, //qboolean purchasable
-		qtrue, //qboolean usable
+		qtrue, //qboolean purchasable;
+		qtrue, //qboolean usable;
 		TEAM_HUMANS //team_t  team;
 	},
 	{
-		UP_AMMO, //int   upgradeNum;
+		UP_AMMO, //int   number;
 		0, //int   price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		SLOT_NONE, //int   slots;
-		"ammo", //char  *upgradeName;
+		"ammo", //char  *name;
 		"Ammunition", //char  *humanName;
 		"Ammunition for the currently held weapon.",
 		0,
-		qtrue, //qboolean purchasable
-		qfalse, //qboolean usable
+		qtrue, //qboolean purchasable;
+		qfalse, //qboolean usable;
 		TEAM_HUMANS //team_t  team;
 	}
 };
 
-int                              bg_numUpgrades = sizeof( bg_upgrades ) / sizeof( bg_upgrades[ 0 ] );
+int                              bg_numUpgrades = ARRAY_LEN( bg_upgrades );
 
 static const upgradeAttributes_t nullUpgrade = { 0 };
 
@@ -2763,7 +2762,6 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 
 		default:
 			Com_Error( ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
-			break;
 	}
 }
 
@@ -2821,7 +2819,6 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 
 		default:
 			Com_Error( ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
-			break;
 	}
 }
 
@@ -2894,7 +2891,7 @@ static const char *const eventnames[] =
 	"EV_DEATH3",
 	"EV_OBITUARY",
 
-	"EV_GIB_PLAYER", // gib a previously living player
+	"EV_GIB_PLAYER",
 
 	"EV_BUILD_CONSTRUCT",
 	"EV_BUILD_DESTROY",
@@ -2933,7 +2930,7 @@ BG_EventName
 */
 const char *BG_EventName( int num )
 {
-	if ( num < 0 || num >= sizeof( eventnames ) / sizeof( char * ) )
+	if ( num < 0 || num >= ARRAY_LEN( eventnames ) )
 	{
 		return "UNKNOWN";
 	}
@@ -3754,7 +3751,6 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count )
 
 			default:
 				Com_Error( ERR_FATAL, "Entity index %d not handled", i );
-				break;
 		}
 	}
 }
@@ -3823,7 +3819,6 @@ int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count )
 
 			default:
 				Com_Error( ERR_FATAL, "Entity index %d not handled", i );
-				break;
 		}
 
 		*entityNum &= GENTITYNUM_MASK;

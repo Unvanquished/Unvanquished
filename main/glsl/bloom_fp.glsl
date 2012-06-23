@@ -61,8 +61,8 @@ void	main()
 	// scale by the screen non-power-of-two-adjust
 	st *= r_NPOTScale;
 
-	// we use the Normal-gauss distribution formula
-	// f(x) being the formula, we used f(0.5)-f(-0.5); f(1.5)-f(0.5)...
+	// we use the Gaussian distribution: with f being the cumulative
+	//  distribution function, we use f(0.5)-f(-0.5), f(1.5)-f(0.5), etc.
 
 	#if 0
 	float gaussFact[3] = float[3](1.0, 2.0, 1.0);

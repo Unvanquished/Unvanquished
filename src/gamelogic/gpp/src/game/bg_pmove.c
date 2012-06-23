@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // bg_pmove.c -- both games player movement code
-// takes a playerstate and a usercmd as input and returns a modifed playerstate
+// takes a playerstate and a usercmd as input and returns a modified playerstate
 
 #include "../../../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
@@ -584,8 +584,7 @@ static float PM_CmdScale( usercmd_t *cmd )
 ================
 PM_SetMovementDir
 
-Determine the rotation of the legs reletive
-to the facing dir
+Determine the rotation of the legs relative to the facing dir
 ================
 */
 static void PM_SetMovementDir( void )
@@ -831,10 +830,7 @@ static qboolean PM_CheckWallJump( void )
 	     !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
 	     trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
 	{
-		if ( !VectorCompare( trace.plane.normal, pm->ps->grapplePoint ) )
-		{
-			VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
-		}
+		VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
 	}
 	else
 	{
@@ -1413,7 +1409,6 @@ static void PM_JetPackMove( void )
 	vec3_t wishdir;
 	float  scale;
 
-	//normal slowdown
 	PM_Friction();
 
 	scale = PM_CmdScale( &pm->cmd );
@@ -1469,7 +1464,6 @@ static void PM_FlyMove( void )
 	vec3_t wishdir;
 	float  scale;
 
-	// normal slowdown
 	PM_Friction();
 
 	scale = PM_CmdScale( &pm->cmd );
@@ -2024,7 +2018,7 @@ static void PM_NoclipMove( void )
 ================
 PM_FootstepForSurface
 
-Returns an event number apropriate for the groundsurface
+Returns an event number appropriate for the groundsurface
 ================
 */
 static int PM_FootstepForSurface( void )
@@ -2587,10 +2581,11 @@ static void PM_GroundClimbTrace( void )
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
 			vec3_t  forward, rotated, angles;
-			vec3_t  surfNormal = {0,0,-1};
 
 			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
 				VectorCopy(pm->ps->grapplePoint,surfNormal);
+			else
+				VectorSet( surfNormal, 0, 0, -1 );
 
 			//only correct if we were on a ceiling
 			if(surfNormal[2] < 0)
@@ -3255,7 +3250,7 @@ static void PM_Footsteps( void )
 	old = pm->ps->bobCycle;
 	pm->ps->bobCycle = ( int )( old + bobmove * pml.msec ) & 255;
 
-	// if we just crossed a cycle boundary, play an apropriate footstep event
+	// if we just crossed a cycle boundary, play an appropriate footstep event
 	if ( ( ( old + 64 ) ^ ( pm->ps->bobCycle + 64 ) ) & 128 )
 	{
 		if ( pm->waterlevel == 0 )
@@ -3439,7 +3434,7 @@ static void PM_TorsoAnimation( void )
 ==============
 PM_Weapon
 
-Generates weapon events and modifes the weapon counter
+Generates weapon events and modifies the weapon counter
 ==============
 */
 static void PM_Weapon( void )
@@ -4345,7 +4340,7 @@ void PmoveSingle( pmove_t *pmove )
 	pm = pmove;
 
 	// this counter lets us debug movement problems with a journal
-	// by setting a conditional breakpoint fot the previous frame
+	// by setting a conditional breakpoint for the previous frame
 	c_pmove++;
 
 	// clear results

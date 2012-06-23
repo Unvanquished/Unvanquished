@@ -1549,7 +1549,7 @@ static int AddMetaTriangleToSurface(mapDrawSurface_t * ds, metaTriangle_t * tri,
 	   ds->numIndexes > 0 && VectorLength(ds->lightmapAxis) > 0.0f &&
 	   (VectorCompare(ds->mins, mins) == qfalse || VectorCompare(ds->maxs, maxs) == qfalse))
 	{
-		/* set maximum size before lightmap scaling (normally 2032 units) */
+		/* set maximum size before lightmap scaling (usually 2032 units) */
 		/* 2004-02-24: scale lightmap test size by 2 to catch larger brush faces */
 		/* 2004-04-11: reverting to actual lightmap size */
 		lmMax = (ds->sampleSize * (ds->shaderInfo->lmCustomWidth - 1));

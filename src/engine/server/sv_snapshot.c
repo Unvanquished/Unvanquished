@@ -39,7 +39,7 @@ Maryland 20850 USA.
 
 Delta encode a client frame onto the network channel
 
-A normal server packet will look like:
+A server packet will look something like:
 
 4 sequence number (high bit set if an oversize fragment)
 <optional reliable commands>
@@ -505,7 +505,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 		}
 
 		// if we haven't found it to be visible,
-		// check overflow clusters that coudln't be stored
+		// check the overflow clusters that couldn't be stored
 		if ( i == svEnt->numClusters )
 		{
 			if ( svEnt->lastCluster )
@@ -613,7 +613,7 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 		// add it
 		SV_AddEntToSnapshot( playerEnt, svEnt, ent, eNums );
 
-		// if its a portal entity, add everything visible from its camera position
+		// if it's a portal entity, add everything visible from its camera position
 		if ( ent->r.svFlags & SVF_PORTAL )
 		{
 			if ( ent->s.generic1 )
@@ -901,7 +901,6 @@ void SV_SendMessageToClient( msg_t *msg, client_t *client )
 		return;
 	}
 
-	// normal rate / snapshotMsec calculation
 	rateMsec = SV_RateMsec( client, msg->cursize );
 
 	// TTimo - during a download, ignore the snapshotMsec
@@ -1010,8 +1009,8 @@ void SV_SendClientSnapshot( client_t *client )
 	// build the snapshot
 	SV_BuildClientSnapshot( client );
 
-	// bots need to have their snapshots build, but
-	// the query them directly without needing to be sent
+	// bots need to have their snapshots built, but
+	// those are queried directly without needing to be sent
 	if ( client->gentity && client->gentity->r.svFlags & SVF_BOT )
 	{
 		return;

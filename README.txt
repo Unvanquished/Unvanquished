@@ -9,7 +9,7 @@ Dependencies
     - libjpeg (DO NOT USE VERSION 6)
     - libcurl
     - libsdl
-    - OpenAL
+    - OpenAL (optional)
     - libwebp (optional)
     - libxvid (optional)
     - Newton (provided)
@@ -19,15 +19,16 @@ Dependencies
 Build Instructions
 ------------------
 
-    Visual Studio
+    Visual Studio (CMake is required to build
     -------------
-    Open Daemon.sln in src/engine/
-    Pick which configuration you want to build.
-    Click "Build"
+    Execute either Visual_Studio32.bat or Visual_Studio64.bat
+    Navigate to Unvanquished/build-32 or Unvanquished/build-64
+    Open Daemon.sln
 
     Linux  (CMake is required to build.)
     -----
-    ccmake .
+    mkdir build && cd build (from Unvanquished root directory)
+    ccmake ..
     Press 'c'
     Fill in the blanks for any libraries that you cannot find.
     Press 'c' and then 'g'

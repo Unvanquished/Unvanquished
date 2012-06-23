@@ -43,7 +43,7 @@ void Use_Target_Delay( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 void SP_target_delay( gentity_t *ent )
 {
-	// check delay for backwards compatability
+	// check delay for backwards compatibility
 	if ( !G_SpawnFloat( "delay", "0", &ent->wait ) )
 	{
 		G_SpawnFloat( "wait", "1", &ent->wait );
@@ -133,7 +133,7 @@ void SP_target_print( gentity_t *ent )
 A global sound will play full volume throughout the level.
 Activator sounds will play on the player that activated the target.
 Global and activator sounds can't be combined with looping.
-Normal sounds play each time the target is used.
+One-time sounds play each time the target is used.
 Looped sounds will be toggled by use functions.
 Multiple identical looping sounds will just increase volume without any speed cost.
 "wait" : Seconds between auto triggerings, 0 = don't auto trigger
@@ -155,7 +155,7 @@ void Use_Target_Speaker( gentity_t *ent, gentity_t *other, gentity_t *activator 
 	}
 	else
 	{
-		// normal sound
+		// one-time sound
 		if ( ent->spawnflags & 8 && activator )
 		{
 			G_AddEvent( activator, EV_GENERAL_SOUND, ent->noise_index );
@@ -184,8 +184,8 @@ void SP_target_speaker( gentity_t *ent )
 		G_Error( "target_speaker without a noise key at %s", vtos( ent->s.origin ) );
 	}
 
-	// force all client reletive sounds to be "activator" speakers that
-	// play on the entity that activates it
+	// force all client-relative sounds to be "activator" speakers that
+	// play on the entity that activates the speaker
 	if ( s[ 0 ] == '*' )
 	{
 		ent->spawnflags |= 8;
@@ -247,7 +247,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 		return;
 	}
 
-	TeleportPlayer( activator, dest->s.origin, dest->s.angles );
+	TeleportPlayer( activator, dest->s.origin, dest->s.angles, 400.0f );
 }
 
 /*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8)

@@ -226,8 +226,6 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 					// Scan the buildables in the reactor zone
 					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
 					{
-						gentity_t *powerEntity;
-
 						if ( ent2->s.eType != ET_BUILDABLE )
 						{
 							continue;
@@ -238,9 +236,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							continue;
 						}
 
-						powerEntity = ent2->parentNode;
-
-						if ( powerEntity && powerEntity->s.modelindex == BA_H_REACTOR && ( powerEntity == ent ) )
+						if ( ent2->parentNode == ent )
 						{
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
@@ -282,8 +278,6 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 					// Scan the buildables in the repeater zone
 					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
 					{
-						gentity_t *powerEntity;
-
 						if ( ent2->s.eType != ET_BUILDABLE )
 						{
 							continue;
@@ -294,9 +288,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							continue;
 						}
 
-						powerEntity = ent2->parentNode;
-
-						if ( powerEntity && powerEntity->s.modelindex == BA_H_REPEATER && ( powerEntity == ent ) )
+						if ( ent2->parentNode == ent )
 						{
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
@@ -723,7 +715,7 @@ qboolean G_FindCreep( gentity_t *self )
 		return qtrue;
 	}
 
-	//if self does not have a parentNode or it's parentNode is invalid find a new one
+	//if self does not have a parentNode or its parentNode is invalid find a new one
 	if ( self->client || self->parentNode == NULL || !self->parentNode->inuse ||
 	     self->parentNode->health <= 0 )
 	{
@@ -1727,7 +1719,6 @@ void ATrapper_FindEnemy( gentity_t *ent, int range )
 	int       start;
 
 	// iterate through entities
-	// note that if we exist then level.num_entities != 0
 	start = rand() / ( RAND_MAX / MAX_CLIENTS + 1 );
 
 	for ( i = start; i < MAX_CLIENTS + start; i++ )
@@ -1868,7 +1859,6 @@ think function
 */
 void HSpawn_Disappear( gentity_t *self )
 {
-	self->s.eFlags |= EF_NODRAW; //don't draw the model once its destroyed
 	self->timestamp = level.time;
 	G_QueueBuildPoints( self );
 	G_RewardAttackers( self );
@@ -3187,7 +3177,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	// Check if this buildable is touching any triggers
 	G_BuildableTouchTriggers( ent );
 
-	// Fall back on normal physics routines
+	// Fall back on generic physics routines
 	G_Physics( ent, msec );
 }
 
@@ -3396,7 +3386,7 @@ static int G_CompareBuildablesForRemoval( const void *a, const void *b )
 	}
 
 	// Resort to preference list
-	for ( i = 0; i < sizeof( precedence ) / sizeof( precedence[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( precedence ); i++ )
 	{
 		if ( buildableA->s.modelindex == precedence[ i ] )
 		{
@@ -3587,7 +3577,6 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 	else
 	{
 		Com_Error( ERR_FATAL, "team is %d\n", team );
-		return IBE_NONE;
 	}
 
 	// Simple non-marking case
@@ -3692,7 +3681,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 			continue;
 		}
 
-		// Don't allow a power source to be replaced by a dependant
+		// Don't allow a power source to be replaced by a dependent
 		if ( team == TEAM_HUMANS &&
 		     G_PowerEntityForPoint( origin ) == ent &&
 		     buildable != BA_H_REPEATER &&
@@ -4043,7 +4032,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 
 				default:
 					Com_Error( ERR_FATAL, "No reason for denying build of %d\n", buildable );
-					break;
 			}
 		}
 	}
@@ -4294,7 +4282,6 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			break;
 	}
 
-	built->s.number = built - g_entities;
 	built->r.contents = CONTENTS_BODY;
 	built->clipmask = MASK_PLAYERSOLID;
 	built->enemy = NULL;
@@ -4533,7 +4520,7 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 ============
 G_SpawnBuildableThink
 
-Complete spawning a buildable using it's placeholder
+Complete spawning a buildable using its placeholder
 ============
 */
 static void G_SpawnBuildableThink( gentity_t *ent )
@@ -4796,7 +4783,6 @@ static void G_LayoutBuildItem( buildable_t buildable, vec3_t origin,
 	gentity_t *builder;
 
 	builder = G_Spawn();
-	builder->client = 0;
 	VectorCopy( origin, builder->s.pos.trBase );
 	VectorCopy( angles, builder->s.angles );
 	VectorCopy( origin2, builder->s.origin2 );
@@ -5066,7 +5052,6 @@ void G_BuildLogRevert( int id )
 		{
 			gentity_t *builder = G_Spawn();
 
-			builder->client = NULL;
 			VectorCopy( log->origin, builder->s.pos.trBase );
 			VectorCopy( log->angles, builder->s.angles );
 			VectorCopy( log->origin2, builder->s.origin2 );

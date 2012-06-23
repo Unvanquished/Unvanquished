@@ -219,7 +219,7 @@ static void HandleGetServers (const char* msg, const struct sockaddr_in* addr)
 	// In this case, the message comes from a DarkPlaces-compatible client
 	protocol = atoi (msg);
 
-	MsgPrint (MSG_NORMAL, "%s ---> getservers( protocol version %d )\n",
+	MsgPrint (MSG_INFO, "%s ---> getservers( protocol version %d )\n",
 			peer_address, protocol );
 
 	no_empty = (strstr (msg, "empty") == NULL);
@@ -510,7 +510,7 @@ void HandleMessage (const char* msg, size_t length,
 {
 	server_t* server;
 
-	// If it's an heartbeat
+	// If it's a heartbeat
 	if (!strncmp (S2M_HEARTBEAT, msg, strlen (S2M_HEARTBEAT)))
 	{
 		char gameId [64];
@@ -568,7 +568,7 @@ void HandleMessage (const char* msg, size_t length,
     if( crt_time - server->lastGameStat > MIN_GAMESTAT_DELAY )
       HandleGameStat( msg + strlen( S2M_GAMESTAT ), address );
     else
-      MsgPrint( MSG_NORMAL, "%s flooding GAMESTAT messages\n", peer_address );
+      MsgPrint( MSG_INFO, "%s flooding GAMESTAT messages\n", peer_address );
     server->lastGameStat = crt_time;
   }
 }

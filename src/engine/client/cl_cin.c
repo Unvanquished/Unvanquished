@@ -92,8 +92,8 @@ static unsigned short vq8[ 256 * 256 * 4 ];
 
 typedef enum
 {
-  FT_ROQ = 0, // normal roq (vq3 stuff)
-  FT_OGM // ogm(ogg wrapper, vorbis audio, xvid/theora video) for WoP
+  FT_ROQ = 0, // roq (vq3 stuff)
+  FT_OGM // ogm (ogg wrapper, vorbis audio, xvid/theora video) for WoP
 } filetype_t;
 
 typedef struct
@@ -183,7 +183,6 @@ static int CIN_HandleForVideo( void )
 	}
 
 	Com_Error( ERR_DROP, "CIN_HandleForVideo: none free" );
-	return -1;
 }
 
 extern int CL_ScaledMilliseconds( void );
@@ -788,7 +787,7 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags )
 		if ( !cinTable[ currentHandle ].smootheddouble )
 		{
 //
-// normal height
+// base height
 //
 			if ( cinTable[ currentHandle ].samplesPerPixel == 2 )
 			{
@@ -1530,14 +1529,14 @@ static void RoQ_init( void )
 *
 ******************************************************************************/
 
-//FIXME: this isn't realy a "roq-shutdown" (it's more a CIN-shutdown, beside the file-closing)
+//FIXME: this isn't really a "ROQ shutdown" function (it's more like a "CIN shutdown" function, beside the file closing)
 static void RoQShutdown( void )
 {
 	const char *s;
 
 	if ( !cinTable[ currentHandle ].buf )
 	{
-		//FIXME: there could be something that should be "shutdowned" even if we don't have a output frame (at least in the ogm code)
+		//FIXME: there could be something that should be "shutdowned" even if we don't have an output frame (at least in the ogm code)
 		return;
 	}
 

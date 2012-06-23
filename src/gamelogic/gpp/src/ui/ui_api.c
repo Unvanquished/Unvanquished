@@ -50,9 +50,10 @@ void trap_Cvar_CopyValue_i( const char *in_var, const char *out_var )
 
 //00.
 //Com_Error(ERR_DROP, "%s", (char *)VMA(1));
-void trap_Error( const char *string )
+void NORETURN trap_Error( const char *string )
 {
 	syscall( UI_ERROR, string );
+	exit(1); // silence warning
 }
 
 //01.
@@ -650,7 +651,7 @@ void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int po
 
 //93.
 //return Parse_AddGlobalDefine(VMA(1));
-int trap_Parse_AddGlobalDefine( char *define )
+int trap_Parse_AddGlobalDefine( const char *define )
 {
 	return syscall( UI_PARSE_ADD_GLOBAL_DEFINE, define );
 }
@@ -685,7 +686,7 @@ int trap_Parse_SourceFileAndLine( int handle, char *filename, int *line )
 
 //98.
 //return botlib_export->PC_AddGlobalDefine(VMA(1));
-int trap_PC_AddGlobalDefine( char *define )
+int trap_PC_AddGlobalDefine( const char *define )
 {
 	return syscall( UI_PARSE_ADD_GLOBAL_DEFINE, define );
 }

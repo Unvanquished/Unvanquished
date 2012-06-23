@@ -595,7 +595,7 @@ void SV_ClearServer( void )
 ================
 SV_TouchCGame
 
-  touch cgame so that a pure client can load it if it's in a seperate pk3
+  touch cgame so that a pure client can load it if it's in a separate pk3
 ================
 */
 void SV_TouchCGame( void )
@@ -727,7 +727,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	sv.checksumFeed = ( ( ( int ) rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
 
 	// DO_LIGHT_DEDICATED
-	// only comment out when you need a new pure checksum string and it's associated random feed
+	// only comment out when you need a new pure checksum string and its associated random feed
 	//Com_DPrintf("SV_SpawnServer checksum feed: %p\n", sv.checksumFeed);
 
 #else // DO_LIGHT_DEDICATED implementation below
@@ -862,7 +862,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 		Cvar_Set( "sv_pakNames", p );
 
 		// if a dedicated pure server we need to touch the cgame because it could be in a
-		// seperate pk3 file and the client will need to load the latest cgame.qvm
+		// separate pk3 file and the client will need to load the latest cgame.qvm
 		if ( com_dedicated->integer )
 		{
 			SV_TouchCGame();

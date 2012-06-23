@@ -382,7 +382,7 @@ quakefile_t *FindQuakeFilesInPak( char *pakfile, char *filter ) {
 		} //end for
 		FreeMemory( idpackfiles );
 	} //end if
-	else //its a Sin pack file
+	else //it's a Sin pack file
 	{
 		//number of dir entries in the pak file
 		numpackdirs = LittleLong( packheader.dirlen ) / sizeof( dsinpackfile_t );

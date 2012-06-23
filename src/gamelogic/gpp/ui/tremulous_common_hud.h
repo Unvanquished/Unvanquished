@@ -38,7 +38,7 @@ itemDef
 	textalign ALIGN_LEFT
 	textvalign VALIGN_CENTER
 	textscale 0.3
-	textstyle ITEM_TEXTSTYLE_NORMAL
+	textstyle ITEM_TEXTSTYLE_PLAIN
 	ownerdraw CG_TUTORIAL
 }
 
@@ -55,7 +55,7 @@ itemDef
 	textalign ALIGN_RIGHT
 	textvalign VALIGN_CENTER
 	textscale 0.3
-	textstyle ITEM_TEXTSTYLE_NORMAL
+	textstyle ITEM_TEXTSTYLE_PLAIN
 	ownerdraw CG_FPS
 }
 
@@ -72,7 +72,7 @@ itemDef
 	textalign ALIGN_RIGHT
 	textvalign VALIGN_CENTER
 	textscale 0.3
-	textstyle ITEM_TEXTSTYLE_NORMAL
+	textstyle ITEM_TEXTSTYLE_PLAIN
 	ownerdraw CG_TIMER
 }
 
@@ -119,7 +119,7 @@ itemDef
 	textalign ALIGN_RIGHT
 	textvalign VALIGN_CENTER
 	textscale 0.3
-	textstyle ITEM_TEXTSTYLE_NORMAL
+	textstyle ITEM_TEXTSTYLE_PLAIN
 	ownerdraw CG_CLOCK
 }
 
@@ -178,7 +178,7 @@ itemDef
 	textalign ALIGN_LEFT
 	textvalign VALIGN_CENTER
 	textscale 0.4
-	textstyle ITEM_TEXTSTYLE_NORMAL
+	textstyle ITEM_TEXTSTYLE_PLAIN
 	ownerdraw CG_SNAPSHOT
 }
 

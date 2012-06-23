@@ -11,26 +11,33 @@ endif()
 
 include( CMakeDependentOption )
 
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
-set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "" )
-set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "" )
-set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "" )
-set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "" )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "" )
+# This line has to appear before 'PROJECT' in order to be able to disable incremental linking
+set( MSVC_INCREMENTAL_DEFAULT ON )
+
+project( Daemon C CXX ASM )
+
+if( MSVC )
+  set( CMAKE_C_FLAGS "" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_DEBUG "" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_RELEASE "" CACHE STRING "" )
+  set( CMAKE_CONFIGURATION_TYPES Release;Debug CACHE STRING "Available build configurations" FORCE )
+else()
+  set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "" )
+endif()
 set( CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_MINSIZEREL ${CMAKE_C_FLAGS_MINSIZEREL} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO} CACHE STRING "" )
 set( CMAKE_BUILD_TYPE Release CACHE STRING "Build configuration (Debug, Release, RelWithDebInfo, MinSizeRel)" )
-
-# This line has to appear before 'PROJECT' in order to be able to disable incremental linking
-set( MSVC_INCREMENTAL_DEFAULT ON )
-
-project( Daemon C CXX ASM )
 set( CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER} )
 set( CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT} )
 set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
+set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 # Options
 option( BUILD_CLIENT         "Build Daemon client"                         1 )
@@ -172,13 +179,18 @@ if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
   endif()
 endif()
 
-if( NOT GIT_DESCRIBE STREQUAL GIT_DESCRIBE_REPORT )
-  if( GIT_DESCRIBE_REPORT )
-    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "#define GIT_VERSION \"${GIT_DESCRIBE_REPORT}\"" )
-  else()
-    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" )
+if( GIT_DESCRIBE_REPORT )
+  set( DESIRED_GIT_VERSION_H_CONTENTS "#define GIT_VERSION \"${GIT_DESCRIBE_REPORT}\"\n" )
+endif()
+set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by git" FORCE )
+
+if( EXISTS "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" )
+  file( READ "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" ACTUAL_GIT_VERSION_H_CONTENTS )
+  if( NOT "${ACTUAL_GIT_VERSION_H_CONTENTS}" STREQUAL "${DESIRED_GIT_VERSION_H_CONTENTS}" )
+    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "${DESIRED_GIT_VERSION_H_CONTENTS}" )
   endif()
-  set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by git" FORCE )
+else()
+  file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "${DESIRED_GIT_VERSION_H_CONTENTS}" )
 endif()
 
 include_directories( "${CMAKE_BINARY_DIR}/CMakeFiles" )
@@ -331,11 +343,13 @@ macro( try_linker_flag PROP FLAG )
   set( ${PROP}_CACHED TRUE CACHE INTERNAL "Set if linker option ${FLAG} has been checked for." )
 endmacro()
 
-# Can we get rid of unneeded external libraries?
-try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
+if( NOT MSVC )
+  # Can we get rid of unneeded external libraries?
+  try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
 
-# If we can, fail if there are unresolved symbols
-try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
+  # If we can, fail if there are unresolved symbols
+  try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
+endif()
 
 if( ENABLE_FSTACKPROT )
   try_linker_flag( HAVE_FSTACKPROT "-fstack-protector --param=ssp-buffer-size=4" )
@@ -565,6 +579,11 @@ else()
     ${MOUNT_DIR}/engine/sys/con_log.c
     ${MOUNT_DIR}/engine/sys/con_${CONSOLE}.c
   )
+endif()
+
+# Append Visual Studio specific files to SDLBASELIST
+if( MSVC )
+  set( SDLBASELIST ${SDLBASELIST} ${MOUNT_DIR}/engine/sys/sys_sysinfo.c )
 endif()
 
 if( USE_CURSES )
@@ -1186,7 +1205,6 @@ function( GAMELIB )
       add_custom_command( OUTPUT ${QVM_COMPONENT}.asm
         COMMAND lcc -target bytecode ${QVM_CPP_OPTIONS} ${QVM_FILE}
         DEPENDS lcc rcc cpp ${QVM_FILE}
-        MAIN_DEPENDENCY ${QVM_COMPONENT}.asm
         IMPLICIT_DEPENDS C ${QVM_FILE}
         WORKING_DIRECTORY ${QVM_DIR}
       )
@@ -1266,7 +1284,7 @@ if( BUILD_OLD_RENDERER )
   # Setup target renderer
   add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
   set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
-  if( NOT WIN32 AND NOT (${BUILD_ARCH} STREQUAL "i386") )
+  if( NOT (WIN32 AND (${BUILD_ARCH} STREQUAL "i386")) )
     set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" )
   else()
     set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGLx86" )
@@ -1309,7 +1327,7 @@ if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
   add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
   set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
-  if( NOT WIN32 AND NOT (${BUILD_ARCH} STREQUAL "i386") )
+  if( NOT (WIN32 AND (${BUILD_ARCH} STREQUAL "i386")) )
     set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
   else()
     set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3x86" )
@@ -1357,6 +1375,9 @@ if( USE_GLSL_OPTIMIZER )
   include_directories( ${LIB_DIR}/glsl-optimizer/src/mesa )
   include_directories( ${LIB_DIR}/glsl-optimizer/src/mapi )
   include_directories( ${LIB_DIR}/glsl-optimizer/src/glsl )
+  if( MSVC )
+    include_directories( ${LIB_DIR}/glsl-optimizer/include/c99 )
+  endif()
 
   add_library( glcpp-library ${GLCPPLIST} )
   set_target_properties( glcpp-library PROPERTIES COMPILE_FLAGS "-fPIC" )

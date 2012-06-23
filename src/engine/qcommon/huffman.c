@@ -42,7 +42,7 @@ Maryland 20850 USA.
 static int bloc = 0;
 
 //bani - optimized version
-//clears data along the way so we dont have to memset() it ahead of time
+//clears data along the way so we don't have to memset() it ahead of time
 void Huff_putBit( int bit, byte *fout, int *offset )
 {
 	int x, y;
@@ -85,7 +85,7 @@ int Huff_getBit( byte *fin, int *offset )
 }
 
 //bani - optimized version
-//clears data along the way so we dont have to memset() it ahead of time
+//clears data along the way so we don't have to memset() it ahead of time
 static void add_bit( char bit, byte *fout )
 {
 	int x, y;
@@ -521,7 +521,7 @@ void Huff_Decompress( msg_t *mbuf, int offset )
 		ch = 0;
 
 		// don't overflow reading from the messages
-		// FIXME: would it be better to have a overflow check in get_bit ?
+		// FIXME: would it be better to have an overflow check in get_bit ?
 		if ( ( bloc >> 3 ) > size )
 		{
 			seq[ j ] = 0;

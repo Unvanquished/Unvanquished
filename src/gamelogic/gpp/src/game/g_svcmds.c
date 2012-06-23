@@ -678,7 +678,7 @@ qboolean  ConsoleCommand( void )
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	command = bsearch( cmd, svcmds, sizeof( svcmds ) / sizeof( struct svcmd ),
+	command = bsearch( cmd, svcmds, ARRAY_LEN( svcmds ),
 	                   sizeof( struct svcmd ), cmdcmp );
 
 	if ( !command )
@@ -710,7 +710,7 @@ void G_RegisterCommands( void )
 {
 	int i;
 
-	for ( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( svcmds ); i++ )
 	{
 		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
 		{
@@ -727,7 +727,7 @@ void G_UnregisterCommands( void )
 {
 	int i;
 
-	for ( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( svcmds ); i++ )
 	{
 		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
 		{

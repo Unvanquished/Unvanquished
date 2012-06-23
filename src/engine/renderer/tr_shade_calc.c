@@ -156,7 +156,7 @@ void RB_CalcDeformVertexes( deformStage_t *ds )
 		// get the world up vector in local coordinates
 		if ( backEnd.currentEntity->e.hModel )
 		{
-			// world surfaces dont have an axis
+			// world surfaces don't have an axis
 			VectorRotate( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
 		}
 		else
@@ -437,7 +437,7 @@ void GlobalVectorToLocal( const vec3_t in, vec3_t out )
 =====================
 AutospriteDeform
 
-Assuming all the triangles for this shader are independant
+Assuming all the triangles for this shader are independent
 quads, rebuild them as forward facing sprites
 =====================
 */
@@ -907,7 +907,7 @@ void RB_CalcModulateAlphasByFog( unsigned char *colors )
 
 	for ( i = 0; i < tess.numVertexes; i++, colors += 4 )
 	{
-		//% float f = 1.0 - R_FogFactor( texCoords[i][0], texCoords[i][1] );'
+		//% float f = 1.0 - R_FogFactor( texCoords[i][0], texCoords[i][1] );
 		if ( texCoords[ i ][ 0 ] <= 0.0f || texCoords[ i ][ 1 ] <= 0.0f )
 		{
 			continue;

@@ -229,7 +229,7 @@ void Tree_Print_r( node_t *node, int depth ) {
 	Tree_Print_r( node->children[1], depth + 1 );
 } //end of the function Tree_Print_r
 //===========================================================================
-// NODES THAT DON'T SEPERATE DIFFERENT CONTENTS CAN BE PRUNED
+// NODES THAT DON'T SEPARATE DIFFERENT CONTENTS CAN BE PRUNED
 //
 // Parameter:			-
 // Returns:				-

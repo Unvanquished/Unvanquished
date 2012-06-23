@@ -50,7 +50,7 @@ static bind_t bindings[] =
 	{ "weapnext",       "Next Upgrade",                                { -1, -1 } }
 };
 
-static const int numBindings = sizeof( bindings ) / sizeof( bind_t );
+static const int numBindings = ARRAY_LEN( bindings );
 
 /*
 =================

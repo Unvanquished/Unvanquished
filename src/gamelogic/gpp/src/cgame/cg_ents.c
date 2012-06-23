@@ -734,8 +734,8 @@ static void CG_LightFlare( centity_t *cent )
 	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, es->angles2,
 	          entityNum, MASK_SHOT );
 
-	//if there is no los between the view and the flare source
-	//it definately cannot be seen
+	//if there is no LOS between the view and the flare source
+	//it definitely cannot be seen
 	if ( tr.fraction < 1.0f || tr.allsolid )
 	{
 		return;
@@ -1226,7 +1226,6 @@ static void CG_AddCEntity( centity_t *cent )
 	{
 		default:
 			CG_Error( "Bad entity type: %i\n", cent->currentState.eType );
-			break;
 
 		case ET_INVISIBLE:
 		case ET_PUSH_TRIGGER:

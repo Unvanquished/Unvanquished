@@ -311,7 +311,7 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 
-	TeleportPlayer( other, dest->s.origin, dest->s.angles );
+	TeleportPlayer( other, dest->s.origin, dest->s.angles, 400.0f );
 }
 
 /*
@@ -329,7 +329,7 @@ Allows client side prediction of teleportation events.
 Must point at a target_position, which will be the teleport destination.
 
 If spectator is set, only spectators can use this teleport
-Spectator teleporters are not normally placed in the editor, but are created
+Spectator teleporters are not usually placed in the editor, but are created
 automatically near doors to allow spectators to move through them
 */
 void SP_trigger_teleport( gentity_t *self )
@@ -682,7 +682,7 @@ trigger_buildable_touch
 void trigger_buildable_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
 	//only triggered by buildables
-	if ( !other || other->s.eType != ET_BUILDABLE )
+	if ( other->s.eType != ET_BUILDABLE )
 	{
 		return;
 	}

@@ -1062,7 +1062,6 @@ void GLShader::CompileGPUShader( GLuint program, const char *programName, const 
 		PrintShaderSource( shader );
 		PrintInfoLog( shader, qfalse );
 		ri.Error( ERR_DROP, "Couldn't compile %s %s", ( shaderType == GL_VERTEX_SHADER ? "vertex shader" : "fragment shader" ), programName );
-		return;
 	}
 
 	//PrintInfoLog(shader, qtrue);

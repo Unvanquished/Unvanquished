@@ -53,7 +53,7 @@
   Oct-2009 - Mathias Svensson - Fixed problem if uncompressed size was > 4G and compressed size was <4G
                                 should only read the compressed/uncompressed size from the Zip64 format if
                                 the size from normal header was 0xFFFFFFFF
-  Oct-2009 - Mathias Svensson - Applied some bug fixes from paches recived from Gilles Vollant
+  Oct-2009 - Mathias Svensson - Applied some bug fixes from paches received from Gilles Vollant
         Oct-2009 - Mathias Svensson - Applied support to unzip files with compression mathod BZIP2 (bzip2 lib is required)
                                 Patch created by Daniel Borca
 
@@ -710,11 +710,11 @@ local ZPOS64_T unz64local_SearchCentralDir64( const zlib_filefunc64_32_def *pzli
 
 /*
   Open a Zip file. path contain the full pathname (by example,
-     on a Windows NT computer "c:\\test\\zlib114.zip" or on an Unix computer
+     on a Windows NT computer "c:\\test\\zlib114.zip" or on a Unix computer
      "zlib/zlib114.zip".
      If the zipfile cannot be opened (file doesn't exist or in not valid), the
        return value is NULL.
-     Else, the return value is a unzFile Handle, usable with other function
+     Else, the return value is an unzFile Handle, usable with other function
        of this unzip package.
 */
 local unzFile unzOpenInternal( const void *path,

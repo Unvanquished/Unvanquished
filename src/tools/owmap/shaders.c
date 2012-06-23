@@ -1059,7 +1059,7 @@ static void ParseShaderFile(const char *filename)
 					if(!strcmp(token, "}"))
 						break;
 
-					/* only care about images if we don't have a editor/light image */
+					/* only care about images if we don't have an editor/light image */
 					if(si->editorImagePath[0] == '\0' && si->lightImagePath[0] == '\0' && si->implicitImagePath[0] == '\0')
 					{
 						/* digest any images */
@@ -1318,10 +1318,8 @@ static void ParseShaderFile(const char *filename)
 				sun_t          *sun;
 				qboolean        ext;
 
-
 				/* ydnar: extended sun directive? */
-				if(!Q_stricmp(token, "q3map_sunext"))
-					ext = qtrue;
+				ext = !Q_stricmp(token, "q3map_sunExt");
 
 				/* allocate sun */
 				sun = safe_malloc(sizeof(*sun));
