@@ -81,7 +81,7 @@
       type ITEM_TYPE_TEXT
       text "Unvanquished (C) 2011-2012 Unvanquished Development"
       style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       textscale .25
       rect 0 450 640 10
       textalign ALIGN_CENTER
