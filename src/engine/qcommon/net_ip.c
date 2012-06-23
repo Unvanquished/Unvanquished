@@ -851,6 +851,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 	}
 
 	if ( ( ip_socket == INVALID_SOCKET && to.type == NA_IP ) ||
+	     ( ip_socket == INVALID_SOCKET && to.type == NA_BROADCAST ) ||
 	     ( ip6_socket == INVALID_SOCKET && to.type == NA_IP6 ) ||
 	     ( ip6_socket == INVALID_SOCKET && to.type == NA_MULTICAST6 ) )
 	{
