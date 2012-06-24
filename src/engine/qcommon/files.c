@@ -48,8 +48,7 @@ Maryland 20850 USA.
 
 #ifdef _WIN32
 #include <direct.h>
-#endif
-#if defined __linux__ || defined __FreeBSD__
+#else
 #include <unistd.h>
 #endif
 
