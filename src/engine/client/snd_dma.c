@@ -82,7 +82,6 @@ static  sfx_t         *sfxHash[ LOOP_HASH ];
 
 //cvar_t                *s_volume;
 //cvar_t                *s_testsound;
-//cvar_t                *s_khz;
 //cvar_t                *s_show;
 //cvar_t                *s_mixahead;
 //cvar_t                *s_mixPreStep;
@@ -134,6 +133,7 @@ void S_Base_SoundInfo_f( void )
 
 	Com_Printf( "----------------------\n" );
 }
+
 /*
 ================
 S_ChannelFree

@@ -177,7 +177,6 @@ extern  portable_samplepair_t s_rawsamples[ MAX_RAW_SAMPLES ];
 
 extern cvar_t                 *s_volume;
 extern cvar_t                 *s_nosound;
-extern cvar_t                 *s_khz;
 extern cvar_t                 *s_show;
 extern cvar_t                 *s_mixahead;
 extern cvar_t                 *s_mixPreStep;

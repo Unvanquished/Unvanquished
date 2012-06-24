@@ -32,7 +32,6 @@ static soundInterface_t si;
 
 cvar_t                *s_volume;
 cvar_t                *s_testsound;
-cvar_t                *s_khz;
 cvar_t                *s_show;
 cvar_t                *s_mixahead;
 cvar_t                *s_mixPreStep;
@@ -388,7 +387,6 @@ void S_Init( void )
 		s_musicVolume = Cvar_Get( "s_musicvolume", "0.25", CVAR_ARCHIVE );
 		s_separation = Cvar_Get( "s_separation", "0.5", CVAR_ARCHIVE );
 		s_doppler = Cvar_Get( "s_doppler", "1", CVAR_ARCHIVE );
-		s_khz = Cvar_Get( "s_khz", "22", CVAR_ARCHIVE );
 		s_mixahead = Cvar_Get( "s_mixahead", "0.2", CVAR_ARCHIVE );
 
 		s_mixPreStep = Cvar_Get( "s_mixPreStep", "0.05", CVAR_ARCHIVE );
