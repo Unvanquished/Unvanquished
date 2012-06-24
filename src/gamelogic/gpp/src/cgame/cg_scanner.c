@@ -180,8 +180,8 @@ static void CG_DrawBlips( rectDef_t *rect, vec3_t origin, vec4_t colour, qhandle
 	trap_R_SetColor( NULL );
 }
 
-#define BLIPX2 ( 24.0f * cgDC.aspectScale )
-#define BLIPY2 24.0f
+#define BLIPX2 ( 36.0f * cgDC.aspectScale )
+#define BLIPY2 36.0f
 
 /*
 =============
