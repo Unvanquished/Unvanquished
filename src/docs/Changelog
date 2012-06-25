@@ -2789,7 +2789,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 21-05-2003
 			Arnout <rr2do2@splashdamage.com>
 	+ Changed model shadow code to use the right lightmap index on shader lookup.
-	+ ATVI Wolfenstein XP #4203 : Fixed render backend crash caused by remapshader not being set to NULL on a sucessful R_FindCachedShader.
+	+ ATVI Wolfenstein XP #4203 : Fixed renderer backend crash caused by remapshader not being set to NULL on a successful R_FindCachedShader().
 	+ ATVI Wolfenstein XP #4188 : Fixed G_shuffleTeams not using the right clientnumber for cleanup operations.
 
 ---------------- BUILD 2.52.1 - 2.52 (etmain)
@@ -2799,7 +2799,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed shader caching memory leaks
 		- shaders with lightmaps being backed up, not grabbed from cache because they had lightmaps, then never being purged
 		- similar story for all shaders with "*BLEH" in them
-		- Purging these from cache imediately after backup now
+		- Purging these from cache immediately after backup now
 	+ More fixes for the above, works fine with map changes now too, forcefully purges anything it can find that's left over, 
 		not relying on teh counter anymore, as places weren't updating it, and it was generally silly...
 
@@ -3255,7 +3255,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added __DATE__ to GAME_VERSION for release builds.
 	+ Removed lodbias setting not loading high polygon models. As we hardly use any lods, this is not really an issue. We need it as
 		we want to load all lods of the hudhead at all times.
-	+ Fixed range for Do_Activate_f being 256 instead of 96. Fixes telepatic door opening.
+	+ Changed range in Do_Activate_f() from 256 to 96. Fixes telepathic door opening.
 	+ Upped version number to ET 2.43b.
 	+ ATVI Wolfenstein XP #3537 : New shader from Randy fixes this.
 	+ Panzerfaust now has a radius damage range of 300 instead of 400.
@@ -4269,7 +4269,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed Goldrush tank no longer being destoyed at map start
 	+ Fixed health/ammo cabinets not distributing health properly, then reverted to original designed
 	+ Removed various outdated script commands
-	+ Fixed props (chairs for example) continually relinking themselves, causing unneccesarily high cpu usage
+	+ Fixed props (chairs for example) repeatedly relinking themselves, causing unnecessarily high CPU usage
 	+ Fixed all explosions being small and having wrong explosion audio
 	+ Removed outdated weapon stats entries
 	+ Added player debriefing mockup
@@ -5651,7 +5651,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 		- Panzerfaust will shoot the weapon at a location or target of your choice
 		- Flamethrower and Mobile MG42 will cause the bot to cover the area you target
 			with that weapon.
-	+ Bots no longer update their cursor icons, which was unneccessary, since they have
+	+ Bots no longer update their cursor icons, which was unnecessary, since they have
 		no UI.
 	+ Added 1st pass at end stats screen - if you create a trigger
 		classname = multiple_trigger
@@ -8575,7 +8575,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed prone hands to only appear when moving through user input.
 	+ Changed GPG40 to show correct third person model.
 	+ Fixed GPG40 and M7 not being classed as explosive damage to constructibles.
-	+ Fixed "death" scripped being called for constructibles with desstages from the G_Damage function.
+	+ Fixed "death" script being called for constructibles with destruction stages from G_Damage().
 	+ Fixed constructible being destroyed potentially freeing lots of entities.
 	
 			Gordon	<djbob@splashdamage.com>
@@ -8891,7 +8891,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 20-06-2002
 			Arnout	<rr2do2@splashdamage.com>
-	+ Fixed crash in SV_SendClientMessages related to bots (game would cash every time a map was loaded while you were already in another map).
+	+ Fixed a crash in SV_SendClientMessages() related to bots (the game module would crash every time a map was loaded while you were already in another map).
 	+ Upped MAX_SHADERS to 8192 to deal with q3map2.
 
 			Gordon	<djbob@splashdamage.com>

@@ -443,7 +443,7 @@ void Cbuf_Execute( void );
 // Do not call inside a command function, or current args will be destroyed.
 
 void Cdelay_Frame (void);
-//Check if a delayed command have to be executed and decreases the remaining
+//Checks if a delayed command has to be executed and decreases the remaining
 //delay time for all of them
 
 //===========================================================================

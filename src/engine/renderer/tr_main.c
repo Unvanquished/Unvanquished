@@ -826,7 +826,7 @@ void R_SetFrameFog( void )
 	else
 	{
 		// probably usually not necessary to copy the whole thing.
-		// potential FIXME: since this is the most common occurance, diff first and only set changes
+		// potential FIXME: since this is the most common occurrence, diff first and only set changes
 		memcpy( &glfogsettings[ FOG_CURRENT ], &glfogsettings[ FOG_TARGET ], sizeof( glfog_t ) );
 	}
 
