@@ -1186,10 +1186,17 @@ function( GAMELIB )
         WORKING_DIRECTORY ${QVM_DIR}
       )
     endforeach()
-
+    
+    # Ensure qvms end up in the correct folder for VS or Xcode projects
+    if( XCODE_VERSION OR MSVC )
+      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm )
+    else()
+      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm )
+    endif()
+    
     add_custom_command(
       OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm
-      COMMAND asm -o ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
+      COMMAND asm -o ${QVM_OUTPUT} ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
       DEPENDS asm ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
     )
 
