@@ -14,8 +14,6 @@ include( CMakeDependentOption )
 # This line has to appear before 'PROJECT' in order to be able to disable incremental linking
 set( MSVC_INCREMENTAL_DEFAULT ON )
 
-project( Daemon C CXX ASM )
-
 if( MSVC )
   set( CMAKE_C_FLAGS "" CACHE STRING "" )
   set( CMAKE_C_FLAGS_DEBUG "" CACHE STRING "" )
@@ -38,6 +36,8 @@ set( CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER} )
 set( CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT} )
 set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
+
+project( Daemon C CXX ASM )
 
 # Options
 option( BUILD_CLIENT         "Build Daemon client"                         1 )
