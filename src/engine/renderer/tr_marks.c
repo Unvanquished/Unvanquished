@@ -527,7 +527,7 @@ int R_OldMarkFragments( int numPoints, const vec3_t *points, const vec3_t projec
 			{
 				for ( j = 0; j < 3; j++ )
 				{
-					v = surf->points[ 0 ] + VERTEXSIZE * indexes[ k + j ];;
+					v = surf->points[ 0 ] + VERTEXSIZE * indexes[ k + j ];
 					VectorMA( v, MARKER_OFFSET, surf->plane.normal, clipPoints[ 0 ][ j ] );
 				}
 
@@ -1017,7 +1017,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 				{
 					for ( j = 0; j < 3; j++ )
 					{
-						v = surf->points[ 0 ] + VERTEXSIZE * indexes[ k + j ];;
+						v = surf->points[ 0 ] + VERTEXSIZE * indexes[ k + j ];
 						VectorMA( v, MARKER_OFFSET, surf->plane.normal, clipPoints[ 0 ][ j ] );
 					}
 
