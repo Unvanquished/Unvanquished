@@ -1216,7 +1216,7 @@ static unsigned long myAddr;
 
 ERROR_STRUCT    errlist[] = {
 	{EACCES, "EACCES - The address is protected, user is not root"},
-	{EAGAIN, "EAGAIN - Operation on non-blocking socket that cannot return immediatly"},
+	{EAGAIN, "EAGAIN - Operation on non-blocking socket that cannot return immediately"},
 	{EBADF, "EBADF - sockfd is not a valid descriptor"},
 	{EFAULT, "EFAULT - The parameter is not in a writable part of the user address space"},
 	{EINVAL, "EINVAL - The socket is already bound to an address"},

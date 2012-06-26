@@ -754,7 +754,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 				for ( i = 0; i < length; i += 1024 )
 				{
 					Q_strncpyz( msgPart, newSource + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_WARNING, "%s\n", msgPart );
+					ri.Printf( PRINT_WARNING, "%s", msgPart );
 				}
 
 				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
@@ -771,7 +771,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 				for ( i = 0; i < length; i += 1024 )
 				{
 					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_ALL, "%s\n", msgPart );
+					ri.Printf( PRINT_ALL, "%s", msgPart );
 				}
 
 				ri.Printf( PRINT_ALL, "^1Couldn't optimize %s\n", filename );

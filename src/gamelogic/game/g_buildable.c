@@ -4566,7 +4566,7 @@ void G_LayoutSave( const char *name )
 
 	if ( !map[ 0 ] )
 	{
-		G_Printf( "LayoutSave( ): no map is loaded\n" );
+		G_Printf( "layoutsave: mapname is null\n" );
 		return;
 	}
 

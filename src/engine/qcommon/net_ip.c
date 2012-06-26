@@ -1721,7 +1721,7 @@ void NET_OpenIP( void )
 
 		if ( ip6_socket == INVALID_SOCKET )
 		{
-			Com_Printf(_( "WARNING: Couldn't bind to a v6 ip address.\n" ));
+			Com_Printf(_( "WARNING: Couldn't bind to an IPv6 address.\n" ));
 		}
 	}
 
@@ -1753,7 +1753,7 @@ void NET_OpenIP( void )
 
 		if ( ip_socket == INVALID_SOCKET )
 		{
-			Com_Printf(_( "WARNING: Couldn't bind to a v4 ip address.\n" ));
+			Com_Printf(_( "WARNING: Couldn't bind to an IPv4 address.\n" ));
 		}
 	}
 }

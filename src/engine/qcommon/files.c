@@ -1199,7 +1199,7 @@ fileHandle_t FS_FCreateOpenPipeFile( const char *filename ) {
 	
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 	
 	f = FS_HandleForFile();

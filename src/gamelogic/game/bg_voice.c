@@ -118,7 +118,7 @@ static voice_t *BG_VoiceList( void )
 			Com_Printf( S_COLOR_YELLOW "WARNING: BG_VoiceList(): detected "
 			            "an invalid .voice file \"%s\" in directory listing.  You have "
 			            "probably named one or more .voice files with outrageously long "
-			            "names.  gjbs", filePtr );
+			            "names.\n", filePtr );
 			break;
 		}
 

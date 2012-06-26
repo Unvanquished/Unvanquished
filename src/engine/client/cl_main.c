@@ -2234,7 +2234,7 @@ static void CL_GenerateRSAKey( void )
 	
 	if ( !f )
 	{
-		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n" ), RSAKEY_FILE );
+		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled" ), RSAKEY_FILE );
 		return;
 	}
 	
@@ -2245,7 +2245,7 @@ static void CL_GenerateRSAKey( void )
 	return;
 	
 	keygen_error:
-	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
+	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled" ) );
 	Crypto_Shutdown();
 }
 
