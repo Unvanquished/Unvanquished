@@ -265,8 +265,6 @@ typedef struct
 	e_status( *CIN_RunCinematic )( int handle );
 
 	long( *ftol )( float f );
-	const char      *( *Con_GetText )( int console );
-	void ( *HTTP_PostBug )( const char *fileName );
 
 	// XreaL BEGIN
 	void            *( *Sys_GetSystemHandles )( void );

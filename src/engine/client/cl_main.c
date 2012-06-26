@@ -4258,7 +4258,6 @@ void CL_InitRef( const char *renderer )
 	ri.IN_Restart = IN_Restart;
 
 	ri.ftol = Q_ftol;
-	ri.Con_GetText = Con_GetText;
 
 	ri.Sys_GLimpSafeInit = Sys_GLimpSafeInit;
 	ri.Sys_GLimpInit = Sys_GLimpInit;
