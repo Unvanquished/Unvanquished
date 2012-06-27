@@ -123,6 +123,7 @@ cvar_t *r_logFile;
 cvar_t *r_stencilbits;
 cvar_t *r_depthbits;
 cvar_t *r_colorbits;
+cvar_t *r_alphabits;
 cvar_t *r_stereo;
 cvar_t *r_primitives;
 cvar_t *r_texturebits;
@@ -295,7 +296,7 @@ static void InitOpenGL( void )
 	// GLimp_Init directly or indirectly references the following cvars:
 	//      - r_fullscreen
 	//      - r_mode
-	//      - r_(color|depth|stencil)bits
+	//      - r_(color|depth|stencil|alpha)bits
 	//      - r_ignorehwgamma
 	//      - r_gamma
 	//
@@ -1132,6 +1133,7 @@ void R_Register( void )
 	r_detailTextures = ri.Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_texturebits = ri.Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_colorbits = ri.Cvar_Get( "r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
+	r_alphabits = ri.Cvar_Get( "r_alphabits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_stereo = ri.Cvar_Get( "r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_stencilbits = ri.Cvar_Get( "r_stencilbits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );

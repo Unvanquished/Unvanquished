@@ -783,7 +783,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 {
 	const char  *glstring;
 	int         sdlcolorbits;
-	int         colorbits, depthbits, stencilbits;
+	int         colorbits, alphabits, depthbits, stencilbits;
 	int         tcolorbits, tdepthbits, tstencilbits;
 	int         samples;
 	int         i = 0;
@@ -872,6 +872,13 @@ retry:
 	if ( ( !colorbits ) || ( colorbits >= 32 ) )
 	{
 		colorbits = 24;
+	}
+
+	alphabits = r_alphabits->integer;
+
+	if ( alphabits < 0 )
+	{
+		alphabits = 0;
 	}
 
 	if ( !r_depthbits->integer )
@@ -980,6 +987,7 @@ retry:
 		SDL_GL_SetAttribute( SDL_GL_RED_SIZE, sdlcolorbits );
 		SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, sdlcolorbits );
 		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, sdlcolorbits );
+		SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, alphabits );
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, tdepthbits );
 		SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, tstencilbits );
 		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, samples ? 1 : 0 );

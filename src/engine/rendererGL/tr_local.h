@@ -4103,6 +4103,7 @@ extern "C" {
 	extern cvar_t *r_stencilbits; // number of desired stencil bits
 	extern cvar_t *r_depthbits; // number of desired depth bits
 	extern cvar_t *r_colorbits; // number of desired color bits, only relevant for fullscreen
+	extern cvar_t *r_alphabits; // number of desired depth bits
 	extern cvar_t *r_stereo; // desired pixelformat stereo flag
 
 	extern cvar_t *r_ext_multisample;  // desired number of MSAA samples
