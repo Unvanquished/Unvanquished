@@ -1308,15 +1308,103 @@ CG_PrintTR_f
 =================
 */
 static void CG_PrintTR_f( void )
-{	
-	char str[10][ MAX_TOKEN_CHARS ];
-	int         i;
+{
+	char        str[ MAX_STRING_CHARS ];
+	char        buf[ MAX_STRING_CHARS ];
+	const char  *in;
+	char        number[2];
+	int         i=0, j=0, num=-1;
+	
+	Q_strncpyz( buf, CG_Argv( 1 ), sizeof( buf ) );
+	in = buf;
 	memset( &str, 0, sizeof( str ) );
-	for( i = 0; i<10; i++ )
+
+	while( *in )
 	{
-		Q_strncpyz( str[i], CG_Argv( i+1 ), sizeof( str[i] ) );
+		if( *in == '$' )
+		{
+			in++;
+			while( *in )
+			{
+				if( *in == '$' )
+				{
+					str[ i++ ] = *in;
+					in++;
+					break;
+				}
+				
+				if( isdigit( *in ) )
+				{
+					number[ j++ ] = *in;
+					in++;
+					
+					if( *in == 't' && *(in+1) == '$' )
+					{
+						int num = atoi( number );
+						if( num <= 0 || num > 99 )
+						{
+							in += 2;
+							break;
+						}
+
+						i += strlen( _( CG_Argv( num + 1 ) ) );
+
+						if( i >= MAX_STRING_CHARS )
+						{
+							Com_Printf( "%s", str );
+							memset( &str, 0, sizeof( str ) );
+							i = strlen( _( CG_Argv( num + 1 ) ) );
+						}
+						
+						Q_strcat( str, sizeof( str ), _( CG_Argv( num + 1 ) ) );
+						in += 2;
+						j = 0;
+						
+						break;
+					}
+					else if( *in == '$' )
+					{
+						int num = atoi( number );
+						if( num <= 0 || num > 99 )
+						{
+							in++;
+							break;
+						}
+						i += strlen( CG_Argv( num + 1 ) );
+						
+						if( i >= MAX_STRING_CHARS )
+						{
+							Com_Printf( "%s", str );
+							memset( &str, 0, sizeof( str ) );
+							i = strlen( _( CG_Argv( num + 1 ) ) );
+						}
+						
+						Q_strcat( str, sizeof( str ), CG_Argv( num + 1 ) );
+						in++;
+						j = 0;
+						
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			if( i < MAX_STRING_CHARS )
+			{
+				str[ i++ ] = *in;
+				in++;
+			}
+			else
+			{
+				Com_Printf( "%s", str );
+				memset( &str, 0, sizeof( str ) );
+				i = 0;
+			}
+		}
 	}
-	Com_Printf( _(str[0]), str[1], str[2], str[3], str[4], str[5], str[6], str[7], str[8], str[9] );
+	
+	Com_Printf( "%s", str );
 }
 
 /*
@@ -1421,7 +1509,7 @@ static const consoleCommand_t svcommands[] =
 CG_ServerCommand
 
 The string has been tokenized and can be retrieved with
-Cmd_Argc() / Cmd_Argv()
+CG_Argc() / CG_Argv()
 =================
 */
 static void CG_ServerCommand( void )

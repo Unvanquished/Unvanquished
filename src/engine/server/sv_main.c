@@ -1686,19 +1686,109 @@ int SV_LoadTag( const char *mod_name )
 	return ++sv.num_tagheaders;
 }
 
+/*
+========================
+ SV_PrintTranslatedText
+========================
+ */
+
 void SV_PrintTranslatedText( const char *text )
 {
-	char str[10][ MAX_TOKEN_CHARS ];
-	int         i;
-	
-	memset( &str, 0, sizeof( str ) );
+	char        str[ MAX_STRING_CHARS ];
+	const char  *in;
+	char        number[3];
+	int         i=0, j=0, num=-1;
+
 	Cmd_TokenizeString( text );
-	
-	for( i = 0; i<10; i++ )
+	in = Cmd_Argv( 1 );
+	memset( &str, 0, sizeof( str ) );
+	while( *in )
 	{
-		Q_strncpyz( str[i], Cmd_Argv( i+1 ), sizeof( str[i] ) );
+		if( *in == '$' )
+		{
+			in++;
+			while( *in )
+			{
+				if( *in == '$' )
+				{
+					str[ i++ ] = *in;
+					in++;
+					break;
+				}
+				
+				if( isdigit( *in ) )
+				{
+					number[ j++ ] = *in;
+					in++;
+
+					if( *in == 't' && *(in+1) == '$' )
+					{
+						int num = atoi( number );
+						if( num <= 0 || num > 99 )
+						{
+							in++;
+							break;
+						}
+
+						i += strlen( Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
+
+						if( i >= MAX_STRING_CHARS )
+						{
+							Com_Printf( "%s", str );
+							memset( &str, 0, sizeof( str ) );
+							i = strlen( Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
+						}
+
+						Q_strcat( str, sizeof( str ), Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
+						in += 2;
+						j = 0;
+							
+						break;
+					}
+					else if( *in == '$' )
+					{
+						int num = atoi( number );
+						if( num <= 0 || num > 99 )
+						{
+							in++;
+							break;
+						}
+						i += strlen( Cmd_Argv( num + 1 ) );
+
+						if( i >= MAX_STRING_CHARS )
+						{
+							Com_Printf( "%s", str );
+							memset( &str, 0, sizeof( str ) );
+							i = strlen( Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
+						}
+
+						Q_strcat( str, sizeof( str ), Cmd_Argv( num + 1 ) );
+						in++;
+						j = 0;
+
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			if( i < MAX_STRING_CHARS )
+			{
+				str[ i++ ] = *in;
+				in++;
+			}
+			else
+			{
+				Com_Printf( "%s", str );
+				memset( &str, 0, sizeof( str ) );
+				i = 0;
+			}
+		}
 	}
-	Com_Printf( Trans_GettextGame(str[0]), str[1], str[2], str[3], str[4], str[5], str[6], str[7], str[8], str[9] );
+
+	Com_Printf( "%s", str );
 }
+
 
 //============================================================================

@@ -1070,7 +1070,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		}
 		else if ( !G_admin_name_check( ent, newname, err, sizeof( err ) ) )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "print_tr \"%s\n\"", Quote( err ) ) );
+			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( "$1t$ $2$\n" ), Quote( err ), Quote( newname ) ) );
 			revertName = qtrue;
 		}
 
