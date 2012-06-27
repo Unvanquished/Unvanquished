@@ -652,9 +652,10 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 		*key = 0;
 	}
 
-	if ( IN_IsConsoleKey( *key, *buf ) )
+	if ( IN_IsConsoleKey( *key, *buf ) && !keys[ K_ALT ].down)
 	{
 		// Console keys can't be bound or generate characters
+		// (but allow Alt+key for text input)
 		*key = K_CONSOLE;
 		*buf = '\0';
 	}
