@@ -127,7 +127,7 @@ CG_DrawBlips
 Draw blips and stalks for the human scanner
 =============
 */
-static void CG_DrawBlips( rectDef_t *rect, vec3_t origin, vec4_t colour )
+static void CG_DrawBlips( rectDef_t *rect, vec3_t origin, vec4_t colour, qhandle_t shader )
 {
 	vec3_t drawOrigin;
 	vec3_t up = { 0, 0, 1 };
@@ -176,12 +176,12 @@ static void CG_DrawBlips( rectDef_t *rect, vec3_t origin, vec4_t colour )
 
 	CG_DrawPic( rect->x + ( rect->w / 2 ) - ( BLIPX / 2 ) - drawOrigin[ 0 ],
 	            rect->y + ( rect->h / 2 ) - ( BLIPY / 2 ) + drawOrigin[ 1 ] - drawOrigin[ 2 ],
-	            BLIPX, BLIPY, cgs.media.scannerBlipShader );
+	            BLIPX, BLIPY, shader );
 	trap_R_SetColor( NULL );
 }
 
-#define BLIPX2 ( 24.0f * cgDC.aspectScale )
-#define BLIPY2 24.0f
+#define BLIPX2 ( 36.0f * cgDC.aspectScale )
+#define BLIPY2 36.0f
 
 /*
 =============
@@ -190,7 +190,7 @@ CG_DrawDir
 Draw dot marking the direction to an enemy
 =============
 */
-static void CG_DrawDir( rectDef_t *rect, vec3_t origin, vec4_t colour )
+static void CG_DrawDir( rectDef_t *rect, vec3_t origin, vec4_t colour, qhandle_t shader )
 {
 	vec3_t        drawOrigin;
 	vec3_t        noZOrigin;
@@ -228,7 +228,7 @@ static void CG_DrawDir( rectDef_t *rect, vec3_t origin, vec4_t colour )
 	trap_R_SetColor( colour );
 	CG_DrawPic( rect->x + ( rect->w / 2 ) - ( BLIPX2 / 2 ) - drawOrigin[ 0 ] * ( rect->w / 2 ),
 	            rect->y + ( rect->h / 2 ) - ( BLIPY2 / 2 ) + drawOrigin[ 1 ] * ( rect->h / 2 ),
-	            BLIPX2, BLIPY2, cgs.media.scannerBlipShader );
+	            BLIPX2, BLIPY2, shader ); // cgs.media.scannerBlipShader
 	trap_R_SetColor( NULL );
 }
 
@@ -242,8 +242,9 @@ void CG_AlienSense( rectDef_t *rect )
 	int    i;
 	vec3_t origin;
 	vec3_t relOrigin;
-	vec4_t buildable = { 1.0f, 0.0f, 0.0f, 0.7f };
-	vec4_t client = { 0.0f, 0.0f, 1.0f, 0.7f };
+	vec4_t  color_human = { 0.04f, 0.71f, 0.88f, 1.0f };
+	vec4_t  color_alien = { 0.75f, 0.00f, 0.00f, 1.0f };
+	double  length;
 
 	VectorCopy( entityPositions.origin, origin );
 
@@ -252,10 +253,12 @@ void CG_AlienSense( rectDef_t *rect )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanBuildablePos[ i ], origin, relOrigin );
+		length = VectorLength( relOrigin );
 
-		if ( VectorLength( relOrigin ) < ALIENSENSE_RANGE )
+		if ( length < ALIENSENSE_RANGE )
 		{
-			CG_DrawDir( rect, relOrigin, buildable );
+			color_human[3] = 1.f - length / ALIENSENSE_RANGE;
+			CG_DrawDir( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
 		}
 	}
 
@@ -264,10 +267,41 @@ void CG_AlienSense( rectDef_t *rect )
 	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.humanClientPos[ i ], origin, relOrigin );
+		length = VectorLength( relOrigin );
 
-		if ( VectorLength( relOrigin ) < ALIENSENSE_RANGE )
+		if ( length < ALIENSENSE_RANGE )
 		{
-			CG_DrawDir( rect, relOrigin, client );
+			color_human[3] = 1.f - length / ALIENSENSE_RANGE;
+			CG_DrawDir( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
+		}
+	}
+
+	//draw alien buildables
+	for ( i = 0; i < entityPositions.numAlienBuildables; i++ )
+	{
+		VectorClear( relOrigin );
+		VectorSubtract( entityPositions.alienBuildablePos[ i ], origin, relOrigin );
+		length = VectorLength( relOrigin );
+
+		if ( length < ALIENSENSE_RANGE )
+		{
+			color_alien[3] = 1.f - length / ALIENSENSE_RANGE;
+			CG_DrawDir( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
+		}
+	}
+
+	//draw alien clients
+	for ( i = 0; i < entityPositions.numAlienClients; i++ )
+	{ 
+		VectorClear( relOrigin );
+		VectorSubtract( entityPositions.alienClientPos[ i ], origin, relOrigin );
+
+		length = VectorLength( relOrigin );
+
+		if ( length < ALIENSENSE_RANGE )
+		{
+			color_alien[3] = 1.f - length / ALIENSENSE_RANGE;
+			CG_DrawDir( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
 		}
 	}
 }
@@ -284,16 +318,14 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 	vec3_t relOrigin;
 	vec4_t hIabove;
 	vec4_t hIbelow;
-	vec4_t aIabove = { 1.0f, 0.0f, 0.0f, 0.75f };
-	vec4_t aIbelow = { 1.0f, 0.0f, 0.0f, 0.5f };
-
-	Vector4Copy( color, hIabove );
-	hIabove[ 3 ] *= 1.5f;
-	Vector4Copy( color, hIbelow );
+	vec4_t  color_human = { 0.04f, 0.71f, 0.88f, 1.0f };
+	vec4_t  color_alien = { 0.75f, 0.00f, 0.00f, 1.0f };
 
 	VectorCopy( entityPositions.origin, origin );
 
 	//draw human buildables below scanner plane
+	color_human[3] = color[3];
+
 	for ( i = 0; i < entityPositions.numHumanBuildables; i++ )
 	{
 		VectorClear( relOrigin );
@@ -301,11 +333,13 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
-			CG_DrawBlips( rect, relOrigin, hIbelow );
+			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
 		}
 	}
 
 	//draw alien buildables below scanner plane
+	color_alien[3] = color[3];
+
 	for ( i = 0; i < entityPositions.numAlienBuildables; i++ )
 	{
 		VectorClear( relOrigin );
@@ -313,11 +347,13 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
-			CG_DrawBlips( rect, relOrigin, aIbelow );
+			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
 		}
 	}
 
 	//draw human clients below scanner plane
+	color_human[3] = color[3];
+
 	for ( i = 0; i < entityPositions.numHumanClients; i++ )
 	{
 		VectorClear( relOrigin );
@@ -325,11 +361,12 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
-			CG_DrawBlips( rect, relOrigin, hIbelow );
+			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
 		}
 	}
 
-	//draw alien buildables below scanner plane
+	//draw alien clients below scanner plane
+	color_alien[3] = color[3];
 	for ( i = 0; i < entityPositions.numAlienClients; i++ )
 	{
 		VectorClear( relOrigin );
@@ -337,7 +374,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
-			CG_DrawBlips( rect, relOrigin, aIbelow );
+			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
 		}
 	}
 
@@ -349,6 +386,8 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 	}
 
 	//draw human buildables above scanner plane
+	color_human[3] *= 1.5f;
+
 	for ( i = 0; i < entityPositions.numHumanBuildables; i++ )
 	{
 		VectorClear( relOrigin );
@@ -356,11 +395,13 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			CG_DrawBlips( rect, relOrigin, hIabove );
+			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
 		}
 	}
 
 	//draw alien buildables above scanner plane
+	color_alien[3] *= 1.5f;
+
 	for ( i = 0; i < entityPositions.numAlienBuildables; i++ )
 	{
 		VectorClear( relOrigin );
@@ -368,11 +409,13 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			CG_DrawBlips( rect, relOrigin, aIabove );
+			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
 		}
 	}
 
 	//draw human clients above scanner plane
+	color_human[3] *= 1.5f;
+
 	for ( i = 0; i < entityPositions.numHumanClients; i++ )
 	{
 		VectorClear( relOrigin );
@@ -380,11 +423,13 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			CG_DrawBlips( rect, relOrigin, hIabove );
+			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
 		}
 	}
 
 	//draw alien clients above scanner plane
+	color_alien[3] *= 1.5f;
+
 	for ( i = 0; i < entityPositions.numAlienClients; i++ )
 	{
 		VectorClear( relOrigin );
@@ -392,7 +437,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			CG_DrawBlips( rect, relOrigin, aIabove );
+			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
 		}
 	}
 }

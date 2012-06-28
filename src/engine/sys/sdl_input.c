@@ -326,6 +326,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
     keyNum_t *key, qboolean down )
 {
 	static unsigned char buf[ 5 ] = {0};
+	qboolean             delete = qfalse;
 
 	*buf = '\0';
 	*key = 0;
@@ -621,6 +622,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 				{
 					// ctrl-h
 					*buf = CTRL( 'h' );
+					delete = qtrue;
 					break;
 				}
 
@@ -650,12 +652,17 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 		*key = 0;
 	}
 
-	if ( IN_IsConsoleKey( *key, *buf ) )
+	if ( IN_IsConsoleKey( *key, *buf ) && !keys[ K_ALT ].down)
 	{
 		// Console keys can't be bound or generate characters
+		// (but allow Alt+key for text input)
 		*key = K_CONSOLE;
 		*buf = '\0';
 	}
+	else if ( delete )
+	{
+		*buf = CTRL( 'h' );
+	}		
 	else
 	{
 		memcpy( buf, Q_UTF8Encode( keysym->unicode ), sizeof( buf ) );

@@ -14,8 +14,6 @@ include( CMakeDependentOption )
 # This line has to appear before 'PROJECT' in order to be able to disable incremental linking
 set( MSVC_INCREMENTAL_DEFAULT ON )
 
-project( Daemon C CXX ASM )
-
 if( MSVC )
   set( CMAKE_C_FLAGS "" CACHE STRING "" )
   set( CMAKE_C_FLAGS_DEBUG "" CACHE STRING "" )
@@ -38,6 +36,8 @@ set( CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER} )
 set( CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT} )
 set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
+
+project( Daemon C CXX ASM )
 
 # Options
 option( BUILD_CLIENT         "Build Daemon client"                         1 )
@@ -1209,10 +1209,17 @@ function( GAMELIB )
         WORKING_DIRECTORY ${QVM_DIR}
       )
     endforeach()
-
+    
+    # Ensure qvms end up in the correct folder for VS or Xcode projects
+    if( XCODE_VERSION OR MSVC )
+      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm )
+    else()
+      set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm )
+    endif()
+    
     add_custom_command(
       OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm
-      COMMAND asm -o ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
+      COMMAND asm -o ${QVM_OUTPUT} ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
       DEPENDS asm ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
     )
 

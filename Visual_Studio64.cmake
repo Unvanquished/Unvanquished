@@ -37,6 +37,7 @@ file( COPY
   ${LIB_DIR}/libogg/libs/win64/release/libogg.dll
   ${LIB_DIR}/libtheora/libs/win64/release/libtheora.dll
   ${LIB_DIR}/libbz2/libs/x64/libbz2.dll
+  ${LIB_DIR}/freetype/lib/x64/freetype.dll
   DESTINATION Release
 )
   
@@ -50,5 +51,6 @@ file( COPY
   ${LIB_DIR}/libogg/libs/win64/debug/libogg.dll
   ${LIB_DIR}/libtheora/libs/win64/debug/libtheora.dll
   ${LIB_DIR}/libbz2/libs/x64/libbz2.dll
+  ${LIB_DIR}/freetype/lib/x64/freetype.dll
   DESTINATION Debug
 )

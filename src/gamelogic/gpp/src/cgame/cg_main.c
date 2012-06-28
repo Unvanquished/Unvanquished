@@ -1094,6 +1094,8 @@ static void CG_RegisterGraphics( void )
 	cgs.media.creepShader = trap_R_RegisterShader( "creep" );
 
 	cgs.media.scannerBlipShader = trap_R_RegisterShader( "gfx/2d/blip" );
+	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader( "gfx/2d/blip_bldg" );
+
 	cgs.media.scannerLineShader = trap_R_RegisterShader( "gfx/2d/stalk" );
 
 	cgs.media.teamOverlayShader = trap_R_RegisterShader( "gfx/2d/teamoverlay" );
