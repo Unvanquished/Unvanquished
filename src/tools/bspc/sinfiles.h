@@ -152,7 +152,7 @@ typedef struct
 } sin_dplane_t;
 
 
-// contents flags are seperate bits
+// contents flags are separate bits
 // a given brush can contribute multiple content bits
 // multiple brushes can be in a single leaf
 

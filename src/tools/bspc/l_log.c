@@ -130,7 +130,7 @@ void Log_UnifyEndOfLine( char *buf ) {
 // Returns:				-
 // Changes Globals:		-
 //===========================================================================
-void Log_Print( char *fmt, ... ) {
+void PRINTF_LIKE(1) Log_Print( char *fmt, ... ) {
 	va_list ap;
 	char buf[2048];
 
@@ -158,7 +158,7 @@ void Log_Print( char *fmt, ... ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void Log_Write( char *fmt, ... ) {
+void PRINTF_LIKE(1) Log_Write( char *fmt, ... ) {
 	va_list ap;
 	char buf[2048];
 
@@ -178,7 +178,7 @@ void Log_Write( char *fmt, ... ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void Log_WriteTimeStamped( char *fmt, ... ) {
+void PRINTF_LIKE(1) Log_WriteTimeStamped( char *fmt, ... ) {
 	va_list ap;
 
 	if ( !logfile.fp ) {

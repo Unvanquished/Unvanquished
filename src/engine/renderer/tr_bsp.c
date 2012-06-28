@@ -720,7 +720,7 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, msurface_t *surf, i
 	}
 	else
 	{
-		// Gordon: OPT: removed the littlefloats from when they aint needed
+		// Gordon: OPT: removed the littlefloats from when they aren't needed
 		for ( i = 0; i < numVerts; i++ )
 		{
 			for ( j = 0; j < 3; j++ )
@@ -3202,7 +3202,7 @@ void RE_LoadWorldMap( const char *name )
 
 	if ( tr.worldMapLoaded )
 	{
-		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map\n" );
+		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map" );
 	}
 
 	// set default sun direction to be used if it isn't

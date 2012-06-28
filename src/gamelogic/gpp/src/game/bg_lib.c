@@ -74,8 +74,8 @@ static const char rcsid[] =
 static char *med3( char *, char *, char *, cmp_t * );
 static void swapfunc( char *, char *, int, int );
 
-#ifndef min
-#define min(a, b) (( a ) < ( b ) ? ( a ) : ( b ))
+#ifndef MIN
+#define MIN(a, b) (( a ) < ( b ) ? ( a ) : ( b ))
 #endif
 
 /*
@@ -222,9 +222,9 @@ loop:
 	}
 
 	pn = ( char * ) a + n * es;
-	r = min( pa - ( char * ) a, pb - pa );
+	r = MIN( pa - ( char * ) a, pb - pa );
 	vecswap( a, pb - r, r );
-	r = min( pd - pc, pn - pd - es );
+	r = MIN( pd - pc, pn - pd - es );
 	vecswap( pb, pn - r, r );
 
 	if ( ( r = pb - pa ) > es )
@@ -310,7 +310,7 @@ char *strrchr( const char *string, int c )
 	int  i, length = strlen( string );
 	char *p;
 
-	for ( i = length - 1; i >= 0; i-- )
+	for ( i = length /*sic*/; i >= 0; i-- )
 	{
 		p = ( char * ) &string[ i ];
 
@@ -335,7 +335,7 @@ char *strchr( const char *string, int c )
 		string++;
 	}
 
-	return ( char * ) 0;
+	return c == '\0' ? ( char * ) string : ( char * ) 0;
 }
 
 char *strstr( const char *string, const char *strCharSet )
@@ -1710,7 +1710,7 @@ double strtod( const char *nptr, char **endptr )
 		return inf.f;
 	}
 
-	// normal numeric parsing
+	// real numeric parsing
 	// sign
 	if ( *nptr == '-' )
 	{
@@ -2389,8 +2389,8 @@ unsigned int _hextoi( const char **stringPtr )
  *  Brandon Long <blong@fiction.net> 9/15/96 for mutt 0.43
  *  This was ugly.  It is still ugly.  I opted out of floating point
  *  numbers, but the formatter understands just about everything
- *  from the normal C string format, at least as far as I can tell from
- *  the Solaris 2.5 printf(3S) man page.
+ *  from the standard C string formatting, at least as far as I can
+ *  tell from the Solaris 2.5 printf(3S) man page.
  *
  *  Brandon Long <blong@fiction.net> 10/22/97 for mutt 0.87.1
  *    Ok, added some minimal floating point support, which means this
@@ -2448,7 +2448,7 @@ unsigned int _hextoi( const char **stringPtr )
 #endif
 
 static int dopr( char *buffer, size_t maxlen, const char *format,
-                 va_list args );
+                 va_list args ) VPRINTF_LIKE(3);
 static int fmtstr( char *buffer, size_t *currlen, size_t maxlen,
                    char *value, int flags, int min, int max );
 static int fmtint( char *buffer, size_t *currlen, size_t maxlen,
@@ -2489,7 +2489,7 @@ static int dopr_outch( char *buffer, size_t *currlen, size_t maxlen, char c );
 
 #define char_to_int(p) ( p - '0' )
 
-static int dopr( char *buffer, size_t maxlen, const char *format, va_list args )
+static int VPRINTF_LIKE(3) dopr( char *buffer, size_t maxlen, const char *format, va_list args )
 {
 	char    ch;
 	LLONG   value;
@@ -3302,12 +3302,12 @@ static int dopr_outch( char *buffer, size_t *currlen, size_t maxlen, char c )
 	return 1;
 }
 
-int Q_vsnprintf( char *str, size_t length, const char *fmt, va_list args )
+int VPRINTF_LIKE(3) Q_vsnprintf( char *str, size_t length, const char *fmt, va_list args )
 {
 	return dopr( str, length, fmt, args );
 }
 
-int Q_snprintf( char *str, size_t length, const char *fmt, ... )
+int PRINTF_LIKE(3) Q_snprintf( char *str, size_t length, const char *fmt, ... )
 {
 	va_list ap;
 	int     retval;
@@ -3320,7 +3320,7 @@ int Q_snprintf( char *str, size_t length, const char *fmt, ... )
 }
 
 /* this is really crappy */
-int sscanf( const char *buffer, const char *fmt, ... )
+int __attribute__((__format__(__scanf__, 2, 3))) sscanf( const char *buffer, const char *fmt, ... )
 {
 	int     cmd;
 	va_list ap;

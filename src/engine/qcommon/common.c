@@ -67,7 +67,7 @@ int demo_protocols[] = { 66, 67, 68, 0 };
 int                 com_argc;
 char                *com_argv[ MAX_NUM_ARGVS + 1 ];
 
-jmp_buf             abortframe; // an ERR_DROP occured, exit the entire frame
+jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire frame
 
 FILE                *debuglogfile;
 static fileHandle_t logfile;
@@ -76,9 +76,7 @@ fileHandle_t        com_journalDataFile; // config files are written here
 
 cvar_t              *com_crashed = NULL; // ydnar: set in case of a crash, prevents CVAR_UNSAFE variables from being set from a cfg
 
-//bani - explicit NULL to make win32 teh happy
-
-cvar_t *com_ignorecrash = NULL; // bani - let experienced users ignore crashes, explicit NULL to make win32 teh happy
+cvar_t *com_ignorecrash = NULL; // bani - let experienced users ignore crashes, explicit NULL to make win32 happy
 cvar_t *com_pid; // bani - process id
 
 cvar_t *com_viewlog;
@@ -191,12 +189,12 @@ void Com_EndRedirect( void )
 Com_Printf
 
 Both client and server can use this, and it will output
-to the apropriate place.
+to the appropriate place.
 
 A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 =============
 */
-int QDECL Com_VPrintf( const char *fmt, va_list argptr )
+int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 {
 	char            msg[ MAXPRINTMSG ];
 	static qboolean opening_qconsole = qfalse;
@@ -270,7 +268,7 @@ int QDECL Com_VPrintf( const char *fmt, va_list argptr )
 	return strlen( msg );
 }
 
-void QDECL Com_Printf( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 {
 	va_list argptr;
 
@@ -286,7 +284,7 @@ Com_DPrintf
 A Com_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void QDECL Com_DPrintf( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *fmt, ... )
 {
 	va_list argptr;
 	char    msg[ MAXPRINTMSG ];
@@ -308,11 +306,11 @@ void QDECL Com_DPrintf( const char *fmt, ... )
 Com_Error
 
 Both client and server can use this, and it will
-do the apropriate things.
+do the appropriate things.
 =============
 */
 // *INDENT-OFF*
-void QDECL Com_Error( int code, const char *fmt, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 {
 	va_list    argptr;
 	static int lastErrorTime;
@@ -443,10 +441,10 @@ void CL_ShutdownCGame( void );
 Com_Quit_f
 
 Both client and server can use this, and it will
-do the apropriate things.
+do the appropriate things.
 =============
 */
-void Com_Quit_f( void )
+void NORETURN Com_Quit_f( void )
 {
 	// don't try to shutdown if we are in a recursive error
 	if ( !com_errorEntered )
@@ -475,7 +473,7 @@ void Com_Quit_f( void )
 
 COMMAND LINE FUNCTIONS
 
-+ characters seperate the commandLine string into multiple console
++ characters separate the commandLine string into multiple console
 command lines.
 
 All of these are valid:
@@ -512,8 +510,8 @@ void Com_ParseCommandLine( char *commandLine )
 			inq = !inq;
 		}
 
-		// look for a + seperating character
-		// if commandLine came from a file, we might have real line seperators
+		// look for a + separating character
+		// if commandLine came from a file, we might have real line separators
 		if ( *commandLine == '+' || *commandLine == '\n' || *commandLine == '\r' )
 		{
 			if ( com_numConsoleLines == MAX_CONSOLE_LINES )
@@ -599,7 +597,7 @@ void Com_StartupVariable( const char *match )
 Com_AddStartupCommands
 
 Adds command line parameters as script statements
-Commands are seperated by + signs
+Commands are separated by + signs
 
 Returns qtrue if any late commands were added, which
 will keep the demoloop from immediately starting
@@ -1333,17 +1331,17 @@ void Z_CheckHeap( void )
 
 		if ( ( byte * ) block + block->size != ( byte * ) block->next )
 		{
-			Com_Error( ERR_FATAL, "Z_CheckHeap: block size does not touch the next block\n" );
+			Com_Error( ERR_FATAL, "Z_CheckHeap: block size does not touch the next block" );
 		}
 
 		if ( block->next->prev != block )
 		{
-			Com_Error( ERR_FATAL, "Z_CheckHeap: next block doesn't have proper back link\n" );
+			Com_Error( ERR_FATAL, "Z_CheckHeap: next block doesn't have proper back link" );
 		}
 
 		if ( !block->tag && !block->next->tag )
 		{
-			Com_Error( ERR_FATAL, "Z_CheckHeap: two consecutive free blocks\n" );
+			Com_Error( ERR_FATAL, "Z_CheckHeap: two consecutive free blocks" );
 		}
 	}
 }
@@ -1838,8 +1836,6 @@ void Com_InitSmallZoneMemory( void )
 	}
 
 	Z_ClearZone( smallzone, s_smallZoneTotal );
-
-	return;
 }
 
 void Com_InitZoneMemory( void )
@@ -1987,7 +1983,7 @@ void Com_InitHunkMemory( void )
 
 	// make sure the file system has allocated and "not" freed any temp blocks
 	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redunant routines in the file system utilizing different
+	// by the file system without redundant routines in the file system utilizing different
 	// memory systems
 	if ( FS_LoadStack() != 0 )
 	{
@@ -2255,7 +2251,7 @@ void           *Hunk_AllocateTempMemory( int size )
 
 	// return a Z_Malloc'd block if the hunk has not been initialized
 	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redunant routines in the file system utilizing different
+	// by the file system without redundant routines in the file system utilizing different
 	// memory systems
 	if ( s_hunkData == NULL )
 	{
@@ -2312,7 +2308,7 @@ void Hunk_FreeTempMemory( void *buf )
 
 	// free with Z_Free if the hunk has not been initialized
 	// this allows the config and product id files ( journal files too ) to be loaded
-	// by the file system without redunant routines in the file system utilizing different
+	// by the file system without redundant routines in the file system utilizing different
 	// memory systems
 	if ( s_hunkData == NULL )
 	{
@@ -2370,59 +2366,6 @@ void Hunk_ClearTempMemory( void )
 	{
 		hunk_temp->temp = hunk_temp->permanent;
 	}
-}
-
-/*
-=================
-Hunk_Trash
-=================
-*/
-void Hunk_Trash( void )
-{
-	return;
-
-#if 0
-	int  length, i, rnd;
-	char *buf, value;
-
-	if ( s_hunkData == NULL )
-	{
-		return;
-	}
-
-#ifdef _DEBUG
-	Com_Error( ERR_DROP, "hunk trashed\n" );
-	return;
-#endif
-
-	Cvar_Set( "com_jp", "1" );
-	Hunk_SwapBanks();
-
-	if ( hunk_permanent == &hunk_low )
-	{
-		buf = ( void * )( s_hunkData + hunk_permanent->permanent );
-	}
-	else
-	{
-		buf = ( void * )( s_hunkData + s_hunkTotal - hunk_permanent->permanent );
-	}
-
-	length = hunk_permanent->permanent;
-
-	if ( length > 0x7FFFF )
-	{
-		//randomly trash data within buf
-		rnd = random() * ( length - 0x7FFFF );
-		value = 31;
-
-		for ( i = 0; i < 0x7FFFF; i++ )
-		{
-			value *= 109;
-			buf[ rnd + i ] ^= value;
-		}
-	}
-
-#endif // 0
 }
 
 /*
@@ -2607,7 +2550,7 @@ sysEvent_t Com_GetSystemEvent( void )
 		netadr_t *buf;
 		int      len;
 
-		// copy out to a seperate buffer for qeueing
+		// copy out to a separate buffer for queuing
 		len = sizeof( netadr_t ) + netmsg.cursize;
 		buf = Z_Malloc( len );
 		*buf = adr;
@@ -2844,7 +2787,6 @@ int Com_EventLoop( void )
 			default:
 				// bk001129 - was ev.evTime
 				Com_Error( ERR_FATAL, "Com_EventLoop: bad event type %i", ev.evType );
-				break;
 
 			case SE_NONE:
 				break;
@@ -2938,8 +2880,6 @@ int Com_EventLoop( void )
 			Z_Free( ev.evPtr );
 		}
 	}
-
-	return 0; // never reached
 }
 
 /*
@@ -2978,7 +2918,7 @@ Just throw a fatal error to
 test error shutdown procedures
 =============
 */
-static void Com_Error_f( void )
+static void NORETURN Com_Error_f( void )
 {
 	if ( Cmd_Argc() > 1 )
 	{
@@ -3031,9 +2971,10 @@ Com_Crash_f
 A way to force a bus error for development reasons
 =================
 */
-static void Com_Crash_f( void )
+static void NORETURN Com_Crash_f( void )
 {
 	* ( volatile int * ) 0 = 0x12345678;
+	exit( 1 ); // silence warning
 }
 
 // TTimo: centralizing the cl_cdkey stuff after I discovered a buffer overflow problem with the dedicated server version
@@ -3069,7 +3010,7 @@ void Com_SetRecommended()
 }
 
 // Arnout: gameinfo, to let the engine know which gametypes are SP and if we should use profiles.
-// This can't be dependant on gamecode as we sometimes need to know about it when no game-modules
+// This can't be dependent on the game code as we sometimes need to know about it when no game modules
 // are loaded
 gameInfo_t com_gameInfo;
 
@@ -3362,22 +3303,20 @@ void Com_Init( char *commandLine )
 			{
 				char *defaultProfile = NULL;
 
-				FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile );
-
-				if ( defaultProfile )
+				if( FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile ) > 0 )
 				{
-					char *text_p = defaultProfile;
-					char *token = COM_Parse( &text_p );
+					Q_CleanStr( defaultProfile );
+					Q_CleanDirName( defaultProfile );
 
-					if ( token && *token )
+					if ( defaultProfile )
 					{
-						Cvar_Set( "cl_defaultProfile", token );
-						Cvar_Set( "cl_profile", token );
+						Cvar_Set( "cl_defaultProfile", defaultProfile );
+						Cvar_Set( "cl_profile", defaultProfile );
+
+						FS_FreeFile( defaultProfile );
+
+						cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
 					}
-
-					FS_FreeFile( defaultProfile );
-
-					cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
 				}
 			}
 
@@ -3402,6 +3341,7 @@ void Com_Init( char *commandLine )
 
 				// exec the config
 				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+				Cbuf_AddText( va( "exec profiles/%s/autoexec.cfg\n", cl_profileStr ) );
 			}
 		}
 		else
@@ -3410,7 +3350,7 @@ void Com_Init( char *commandLine )
 		}
 	}
 
-	Cbuf_AddText( "exec autoexec.cfg\n" );
+	
 
 	// ydnar: reset crashed state
 	Cbuf_AddText( "set com_crashed 0\n" );
@@ -3421,7 +3361,7 @@ void Com_Init( char *commandLine )
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 
-#if DEDICATED
+#ifdef DEDICATED
 	// TTimo: default to internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
@@ -3439,7 +3379,7 @@ void Com_Init( char *commandLine )
 	//
 	// init commands and vars
 	//
-	// Gordon: no need to latch this in ET, our recoil is framerate independant
+	// Gordon: no need to latch this in ET, our recoil is framerate-independent
 	com_maxfps = Cvar_Get( "com_maxfps", "125", CVAR_ARCHIVE /*|CVAR_LATCH */ );
 //  com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE); // Gordon: no longer used?
 

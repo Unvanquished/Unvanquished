@@ -202,7 +202,7 @@ void AAS_DumpAASData( void ) {
 	( *aasworld ).loaded = false;
 } //end of the function AAS_DumpAASData
 //===========================================================================
-// allocate memory and read a lump of a AAS file
+// allocate memory and read a lump of an AAS file
 //
 // Parameter:				-
 // Returns:					-
@@ -215,7 +215,7 @@ char *AAS_LoadAASLump( FILE *fp, int offset, int length, void *buf ) {
 	} //end if
 	  //seek to the data
 	if ( fseek( fp, offset, SEEK_SET ) ) {
-		AAS_Error( "can't seek to lump\n" );
+		AAS_Error( "can't seek to lump" );
 		AAS_DumpAASData();
 		fclose( fp );
 		return 0;
@@ -226,7 +226,7 @@ char *AAS_LoadAASLump( FILE *fp, int offset, int length, void *buf ) {
 	}
 	//read the data
 	if ( fread( (char *) buf, 1, length, fp ) != length ) {
-		AAS_Error( "can't read lump\n" );
+		AAS_Error( "can't read lump" );
 		FreeMemory( buf );
 		AAS_DumpAASData();
 		fclose( fp );
@@ -265,32 +265,32 @@ qboolean AAS_LoadAASFile( char *filename, int fpoffset, int fplength ) {
 	//open the file
 	fp = fopen( filename, "rb" );
 	if ( !fp ) {
-		AAS_Error( "can't open %s\n", filename );
+		AAS_Error( "can't open %s", filename );
 		return false;
 	} //end if
 	  //seek to the correct position (in the pak file)
 	if ( fseek( fp, fpoffset, SEEK_SET ) ) {
-		AAS_Error( "can't seek to file %s\n" );
+		AAS_Error( "can't seek to file %s" );
 		fclose( fp );
 		return false;
 	} //end if
 	  //read the header
 	if ( fread( &header, sizeof( aas_header_t ), 1, fp ) != 1 ) {
-		AAS_Error( "can't read header of file %s\n", filename );
+		AAS_Error( "can't read header of file %s", filename );
 		fclose( fp );
 		return false;
 	} //end if
 	  //check header identification
 	header.ident = LittleLong( header.ident );
 	if ( header.ident != AASID ) {
-		AAS_Error( "%s is not an AAS file\n", filename );
+		AAS_Error( "%s is not an AAS file", filename );
 		fclose( fp );
 		return false;
 	} //end if
 	  //check the version
 	header.version = LittleLong( header.version );
 	if ( header.version != AASVERSION ) {
-		AAS_Error( "%s is version %i, not %i\n", filename, header.version, AASVERSION );
+		AAS_Error( "%s is version %i, not %i", filename, header.version, AASVERSION );
 		fclose( fp );
 		return false;
 	} //end if

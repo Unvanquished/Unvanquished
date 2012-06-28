@@ -148,7 +148,7 @@ qboolean WriteBSPBrush( FILE *fp, bspbrush_t *brush ) {
 	// write brush sides
 	for ( sn = 0; sn < brush->numsides; sn++ ) {
 		s = brush->sides + sn;
-		// always take the first plane, then flip the points if necesary
+		// always take the first plane, then flip the points if necessary
 		plane = &mapplanes[s->planenum & ~1];
 		w = BaseWindingForPlane( plane->normal, plane->dist );
 
@@ -1349,7 +1349,7 @@ qboolean CheckPlaneAgainstVolume( int pnum, node_t *node ) {
 	return good;
 } //end of the function CheckPlaneAgaintsVolume
 //===========================================================================
-// Using a hueristic, choses one of the sides out of the brushlist
+// Using a heuristic, chooses one of the sides out of the brushlist
 // to partition the brushes with.
 // Returns NULL if there are no valid planes to split with..
 //
@@ -1410,10 +1410,10 @@ side_t *SelectSplitSide( bspbrush_t *brushes, node_t *node ) {
 				}
 #endif
 				if ( side->texinfo == TEXINFO_NODE ) {
-					continue;   // allready a node splitter
+					continue;   // already a node splitter
 				}
 				if ( side->flags & SFL_TESTED ) {
-					continue;   // we allready have metrics for this plane
+					continue;   // we already have metrics for this plane
 				}
 //				if (side->surf & SURF_SKIP)
 //					continue;	// skip surfaces are never chosen
@@ -1475,7 +1475,7 @@ side_t *SelectSplitSide( bspbrush_t *brushes, node_t *node ) {
 #endif
 
 				// save off the side test so we don't need
-				// to recalculate it when we actually seperate
+				// to recalculate it when we actually separate
 				// the brushes
 				if ( value > bestvalue ) {
 					bestvalue = value;
@@ -1495,7 +1495,7 @@ side_t *SelectSplitSide( bspbrush_t *brushes, node_t *node ) {
 				}
 			}
 			if ( pass > 0 ) {
-				node->detail_seperator = true;              // not needed for vis
+				node->detail_separator = true;              // not needed for vis
 			}
 			break;
 		}
@@ -2045,7 +2045,7 @@ void SplitBrushList( bspbrush_t *brushes,
 
 		newbrush = CopyBrush( brush );
 
-		// if the planenum is actualy a part of the brush
+		// if the planenum is actually a part of the brush
 		// find the plane and flag it as used so it won't be tried
 		// as a splitter again
 		if ( sides & PSIDE_FACING ) {

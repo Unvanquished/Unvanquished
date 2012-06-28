@@ -184,7 +184,7 @@ colorRangeDef_t;
 // FIXME: consolidate all of the common stuff in one structure for menus and items
 // THINKABOUTME: is there any compelling reason not to have items contain items
 // and do away with a menu per say.. major issue is not being able to dynamically allocate
-// and destroy stuff.. Another point to consider is adding an alloc free call for vm's and have
+// and destroy stuff.. Another point to consider is adding an alloc free call for VMs and have
 // the engine just allocate the pool for it based on a cvar
 // many of the vars are re-used for different item types, as such they are not always named appropriately
 // the benefits of c++ in DOOM will greatly help crap like this
@@ -298,7 +298,7 @@ typedef struct itemDef_s
 	float           textalignx; // ( optional ) text alignment x coord
 	float           textaligny; // ( optional ) text alignment x coord
 	float           textscale; // scale percentage from 72pts
-	int             textStyle; // ( optional ) style, normal and shadowed are it for now
+	int             textStyle; // ( optional ) style, plain and shadowed are it for now
 	const char      *text; // display text
 	void            *parent; // menu owner
 	qhandle_t       asset; // handle to asset
@@ -449,8 +449,8 @@ typedef struct
 	void ( *getBindingBuf )( int keynum, char *buf, int buflen );
 	void ( *setBinding )( int keynum, const char *binding );
 	void ( *executeText )( int exec_when, const char *text );
-	void ( *Error )( int level, const char *error, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
-	void ( *Print )( const char *msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+	void ( *Error )( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
+	void ( *Print )( const char *msg, ... ) PRINTF_LIKE(1);
 	void ( *Pause )( qboolean b );
 	int ( *ownerDrawWidth )( int ownerDraw, float scale );
 	const char *( *ownerDrawText )( int ownerDraw );
@@ -570,7 +570,7 @@ float       UI_Text_LineHeight( float scale );
 qboolean    UI_Text_IsEmoticon( const char *s, qboolean *escaped, int *length, qhandle_t *h, int *width );
 void        UI_EscapeEmoticons( char *dest, const char *src, int destsize );
 glyphInfo_t *UI_Glyph( const fontMetrics_t *, const char *str );
-int         trap_Parse_AddGlobalDefine( char *define );
+int         trap_Parse_AddGlobalDefine( const char *define );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );
 int         trap_Parse_ReadToken( int handle, pc_token_t *pc_token );

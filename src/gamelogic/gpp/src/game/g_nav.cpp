@@ -668,7 +668,7 @@ void BotSteer(gentity_t *self, vec3_t target) {
 	float length = VectorNormalize(aimVec);
 
 	const int ip0 = 0;
-	const int ip1 = min(1,self->botMind->numCorners - 1);
+	const int ip1 = MIN(1,self->botMind->numCorners - 1);
 	vec3_t p0,p1;
 	vec3_t selfPos;
 	VectorCopy(self->s.origin,selfPos);

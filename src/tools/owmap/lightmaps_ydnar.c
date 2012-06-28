@@ -801,7 +801,7 @@ qboolean AddSurfaceToRawLightmap(int num, rawLightmap_t * lm)
 	/* check for bogus axis */
 	if(faxis[axisNum] == 0.0f)
 	{
-		Sys_Printf("WARNING: ProjectSurfaceLightmap: Chose a 0 valued axis\n");
+		Sys_Printf("WARNING: ProjectSurfaceLightmap: A 0-valued axis was encountered\n");
 		lm->w = lm->h = 0;
 		return qfalse;
 	}
@@ -2070,7 +2070,7 @@ static void FindOutLightmaps(rawLightmap_t * lm)
 			}
 		}
 
-		/* try normal placement algorithm */
+		/* try the general placement algorithm */
 		if(ok == qfalse)
 		{
 			/* reset origin */
@@ -2698,7 +2698,7 @@ void StoreSurfaceLightmaps(void)
 								if(sx < 0 || sx >= lm->w || (sx == x && sy == y))
 									continue;
 
-								/* get neighbor's particulars */
+								/* get the neighbor's particulars */
 								luxel = SUPER_LUXEL(lightmapNum, sx, sy);
 								if(luxel[3] < 0.0f)
 									continue;
@@ -3485,6 +3485,8 @@ void StoreSurfaceLightmaps(void)
 			   else
 			   csi = CustomShader(info->si, "q3map_styleMarker", styleStages);
 			 */
+			/* WRONG! csi is left uninitialized. wtf? setting to NULL... */
+			csi = NULL;
 
 			/* emit remap command */
 			//% EmitVertexRemapShader( csi->shader, info->si->shader );
@@ -3516,7 +3518,7 @@ void StoreSurfaceLightmaps(void)
 			//% Sys_Printf( ")\n" );
 		}
 
-		/* use the normal plain-jane shader */
+		/* use the plain-jane shader */
 		else
 			ds->shaderNum =
 				EmitShader(info->si->shader, &bspShaders[ds->shaderNum].contentFlags, &bspShaders[ds->shaderNum].surfaceFlags);

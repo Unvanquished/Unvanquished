@@ -229,7 +229,7 @@ void Tree_Print_r( node_t *node, int depth ) {
 	Tree_Print_r( node->children[1], depth + 1 );
 } //end of the function Tree_Print_r
 //===========================================================================
-// NODES THAT DON'T SEPERATE DIFFERENT CONTENTS CAN BE PRUNED
+// NODES THAT DON'T SEPARATE DIFFERENT CONTENTS CAN BE PRUNED
 //
 // Parameter:			-
 // Returns:				-
@@ -255,7 +255,7 @@ void Tree_PruneNodes_r( node_t *node ) {
 	if ( ( node->children[0]->contents & CONTENTS_SOLID )
 		 && ( node->children[1]->contents & CONTENTS_SOLID ) ) {
 		if ( node->faces ) {
-			Error( "node->faces seperating CONTENTS_SOLID" );
+			Error( "node->faces separating CONTENTS_SOLID" );
 		}
 		if ( node->children[0]->faces || node->children[1]->faces ) {
 			Error( "!node->faces with children" );
@@ -263,7 +263,7 @@ void Tree_PruneNodes_r( node_t *node ) {
 		// FIXME: free stuff
 		node->planenum = PLANENUM_LEAF;
 		node->contents = CONTENTS_SOLID;
-		node->detail_seperator = false;
+		node->detail_separator = false;
 
 		if ( node->brushlist ) {
 			Error( "PruneNodes: node->brushlist" );

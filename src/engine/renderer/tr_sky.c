@@ -700,7 +700,7 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], qboolea
 
 			if ( tess.numVertexes >= tess.maxShaderVerts )
 			{
-				ri.Error( ERR_DROP, "tess.maxShaderVerts(%i) hit in FillCloudySkySide()\n", tess.maxShaderVerts );
+				ri.Error( ERR_DROP, "tess.maxShaderVerts(%i) hit in FillCloudySkySide()", tess.maxShaderVerts );
 			}
 		}
 	}
@@ -740,7 +740,7 @@ static void FillCloudBox( const shader_t *shader, int stage )
 		int   s, t;
 		float MIN_T;
 
-		if ( 1 )
+		//if ( 1 )
 		{
 			// FIXME? shader->sky.fullClouds )
 			MIN_T = -HALF_SKY_SUBDIVISIONS;
@@ -751,7 +751,7 @@ static void FillCloudBox( const shader_t *shader, int stage )
 				continue;
 			}
 		}
-		else
+		/*else
 		{
 			switch ( i )
 			{
@@ -771,7 +771,7 @@ static void FillCloudBox( const shader_t *shader, int stage )
 					MIN_T = -HALF_SKY_SUBDIVISIONS;
 					break;
 			}
-		}
+		}*/
 
 		sky_mins[ 0 ][ i ] = floor( sky_mins[ 0 ][ i ] * HALF_SKY_SUBDIVISIONS ) / HALF_SKY_SUBDIVISIONS;
 		sky_mins[ 1 ][ i ] = floor( sky_mins[ 1 ][ i ] * HALF_SKY_SUBDIVISIONS ) / HALF_SKY_SUBDIVISIONS;
@@ -866,7 +866,7 @@ void R_BuildCloudData( shaderCommands_t *input )
 	if ( input->shader->sky.cloudHeight )
 	{
 		// ok, this is really wierd. it's iterating through shader stages here,
-		// which is unecessary for a multi-stage sky shader, as far as i can tell
+		// which is unnecessary for a multi-stage sky shader, as far as i can tell
 		// nuking this
 #if 0
 		for ( i = 0; i < MAX_SHADER_STAGES; i++ )
@@ -1057,7 +1057,7 @@ void RB_DrawSun( void )
 	{
 		// draw flare effect
 		// (SA) FYI:    This is cheezy and was only a test so far.
-		//              If we decide to use the flare business I will /definatly/ improve all this
+		//              If we decide to use the flare business, I will /definitely/ improve all this
 
 		// get a point a little closer
 		dist = dist * 0.7;
@@ -1084,7 +1084,7 @@ void RB_DrawSun( void )
 		RB_EndSurface();
 	}
 
-	// back to normal depth range
+	// back to standard depth range
 	glDepthRange( 0.0, 1.0 );
 	glPopMatrix();
 }
@@ -1187,7 +1187,7 @@ void RB_StageIteratorSky( void )
 
 	// Rafael - end
 
-	// back to normal depth range
+	// back to standard depth range
 	glDepthRange( 0.0, 1.0 );
 
 	backEnd.refdef.rdflags &= ~RDF_DRAWINGSKY;

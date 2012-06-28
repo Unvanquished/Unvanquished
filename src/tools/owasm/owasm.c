@@ -224,7 +224,7 @@ int	HashString( char *s ) {
 CodeError
 ============
 */
-void CodeError( char *fmt, ... ) {
+void PRINTF_LIKE(1) CodeError( char *fmt, ... ) {
 	va_list		argptr;
 
 	errorCount++;
@@ -286,7 +286,7 @@ void DefineSymbol( char *sym, int value ) {
   // as a security, bail out if vmMain entry point is not first
   if (!Q_stricmp(sym, "vmMain"))
     if (value)
-      Error( "vmMain must be the first symbol in the qvm (got offset %d)\n", value );
+      Error( "vmMain must be the first symbol in the qvm (got offset %d)", value );
 
 	// add the file prefix to local symbols to guarantee unique
 	if ( sym[0] == '$' ) {
@@ -998,7 +998,7 @@ int main( int argc, char **argv ) {
 //	_chdir( "/quake3/jccode/cgame/lccout" );	// hack for vc profiler
 
 	if ( argc < 2 ) {
-		Error( "usage: owasm [-o output] <files> or owasm -f <listfile>\n" );
+		Error( "usage: owasm [-o output] <files> or owasm -f <listfile>" );
 	}
 
 	start = I_FloatTime ();

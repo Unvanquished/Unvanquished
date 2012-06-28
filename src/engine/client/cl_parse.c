@@ -552,7 +552,6 @@ void CL_ParseSnapshot( msg_t *msg )
 	if ( len > sizeof( newSnap.areamask ) )
 	{
 		Com_Error( ERR_DROP, "CL_ParseSnapshot: Invalid size %d for areamask.", len );
-		return;
 	}
 
 	MSG_ReadData( msg, &newSnap.areamask, len );
@@ -931,7 +930,6 @@ void CL_ParseDownload( msg_t *msg )
 		if ( clc.downloadSize < 0 )
 		{
 			Com_Error( ERR_DROP, "%s", MSG_ReadString( msg ) );
-			return;
 		}
 	}
 
@@ -940,7 +938,6 @@ void CL_ParseDownload( msg_t *msg )
 	if ( size < 0 || size > sizeof( data ) )
 	{
 		Com_Error( ERR_DROP, "CL_ParseDownload: Invalid size %d for download chunk.", size );
-		return;
 	}
 
 	MSG_ReadData( msg, data, size );
@@ -1185,7 +1182,6 @@ void CL_ParseVoip( msg_t *msg )
 
 	for ( i = 0; i < frames; i++ )
 	{
-		char      encoded[ 256 ];
 		const int len = MSG_ReadByte( msg );
 
 		if ( len < 0 )
@@ -1331,7 +1327,6 @@ void CL_ParseServerMessage( msg_t *msg )
 		if ( msg->readcount > msg->cursize )
 		{
 			Com_Error( ERR_DROP, "CL_ParseServerMessage: read past end of server message" );
-			break;
 		}
 
 		cmd = MSG_ReadByte( msg );
@@ -1374,8 +1369,7 @@ void CL_ParseServerMessage( msg_t *msg )
 		switch ( cmd )
 		{
 			default:
-				Com_Error( ERR_DROP, "CL_ParseServerMessage: Illegible server message %d\n", cmd );
-				break;
+				Com_Error( ERR_DROP, "CL_ParseServerMessage: Illegible server message %d", cmd );
 
 			case svc_nop:
 				break;

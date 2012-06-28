@@ -507,8 +507,6 @@ static void CM_SetBorderInward( cFacet_t *facet, cTriangleSoup_t *triSoup, int i
 
 		default:
 			Com_Error( ERR_FATAL, "CM_SetBorderInward: bad parameter %i", which );
-			numPoints = 0;
-			break;
 	}
 
 	for ( k = 0; k < facet->numBorders; k++ )
@@ -698,7 +696,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 				continue;
 			}
 
-			// see if the plane is allready present
+			// see if the plane is already present
 			for ( i = 0; i < facet->numBorders; i++ )
 			{
 				if ( CM_PlaneEqual( &planes[ facet->borderPlanes[ i ] ], plane, &flipped ) )
@@ -793,7 +791,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 					continue;
 				}
 
-				// see if the plane is allready present
+				// see if the plane is already present
 				for ( i = 0; i < facet->numBorders; i++ )
 				{
 					if ( CM_PlaneEqual( &planes[ facet->borderPlanes[ i ] ], plane, &flipped ) )

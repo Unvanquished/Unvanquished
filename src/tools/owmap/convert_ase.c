@@ -452,7 +452,7 @@ int ConvertBSPToASE(char *bspName)
 	/* open it */
 	f = fopen(name, "wb");
 	if(f == NULL)
-		Error("Open failed on %s\n", name);
+		Error("Open failed on %s", name);
 
 	/* print header */
 	fprintf(f, "*3DSMAX_ASCIIEXPORT\t200\r\n");

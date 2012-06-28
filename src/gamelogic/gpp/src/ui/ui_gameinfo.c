@@ -194,7 +194,7 @@ void UI_LoadArenas( void )
 
 	if ( UI_OutOfMemory() )
 	{
-		trap_Print( S_COLOR_YELLOW "WARNING: not anough memory in pool to load all arenas\n" );
+		trap_Print( S_COLOR_YELLOW "WARNING: not enough memory in pool to load all arenas\n" );
 	}
 
 	for ( n = 0; n < ui_numArenas; n++ )

@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define OPSTACK_MASK ( OPSTACK_SIZE - 1 )
 
 // don't change
-// Hardcoded in q3asm an reserved at end of bss
+// Hardcoded in q3asm and reserved at end of bss
 #define PROGRAM_STACK_SIZE 0x10000
 #define PROGRAM_STACK_MASK ( PROGRAM_STACK_SIZE - 1 )
 
@@ -151,7 +151,7 @@ struct vm_s
 {
 	// DO NOT MOVE OR CHANGE THESE WITHOUT CHANGING THE VM_OFFSET_* DEFINES
 	// USED BY THE ASM CODE
-	int      programStack; // the vm may be recursively entered
+	int      programStack; // the VM may be recursively entered
 	intptr_t ( *systemCall )( intptr_t *parms );
 
 	//------------------------------------

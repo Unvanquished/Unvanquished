@@ -544,7 +544,7 @@ static void RadSubdivideDiffuseLight(int lightmapNum, bspDrawSurface_t * ds, raw
 	/* bouncing light? */
 	if(!bouncing)
 	{
-		/* handle first-pass lights in normal q3a style */
+		/* handle first-pass lights in q3a style */
 		value = si->value;
 		light->photons = value * area * areaScale;
 		light->add = value * formFactorValueScale * areaScale;

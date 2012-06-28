@@ -763,6 +763,8 @@ SURFACES
 // NOTE: also mirror changes to max2skl.c - Arnout: not anymore
 typedef enum
 {
+  SF_MIN = -1, // partially ensures that sizeof(surfaceType_t) == sizeof(int)
+
   SF_BAD,
   SF_SKIP, // ignore
   SF_FACE,
@@ -782,7 +784,7 @@ typedef enum
   SF_DECAL, // ydnar: decal surfaces
 
   SF_NUM_SURFACE_TYPES,
-  SF_MAX = 0xffffffff // ensures that sizeof( surfaceType_t ) == sizeof( int )
+  SF_MAX = 0x7fffffff // partially (together, fully) ensures that sizeof(surfaceType_t) == sizeof(int)
 } surfaceType_t;
 
 typedef struct drawSurf_s
@@ -858,7 +860,7 @@ typedef struct srfFlare_s
 	vec3_t        color;
 } srfFlare_t;
 
-// ydnar: normal map drawsurfaces must match this header
+// ydnar: plain map drawsurfaces must match this header
 typedef struct srfGeneric_s
 {
 	surfaceType_t surfaceType;
@@ -1255,7 +1257,7 @@ typedef struct
 
 typedef struct
 {
-	vec3_t bounds[ 2 ]; // bounds of all surfaces of all LOD's for this frame
+	vec3_t bounds[ 2 ]; // bounds of all surfaces of all LODs for this frame
 	float  *components; // numAnimatedComponents many
 } md5Frame_t;
 
@@ -1443,7 +1445,7 @@ typedef struct
 	int   msec; // total msec for backend run
 } backEndCounters_t;
 
-// all state modified by the back end is seperated
+// all state modified by the back end is separated
 // from the front end state
 typedef struct
 {
@@ -1616,6 +1618,8 @@ extern cvar_t *r_texturebits; // number of desired texture bits
 // 16 = use 16-bit textures
 // 32 = use 32-bit textures
 // all else = error
+
+extern cvar_t *r_ext_multisample;  // desired number of MSAA samples
 
 extern cvar_t *r_measureOverdraw; // enables stencil buffer overdraw measurement
 
@@ -2176,7 +2180,7 @@ void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *vert
 // done.
 void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer );
 
-// ydnar: modified dlight system to support seperate radius & intensity
+// ydnar: modified dlight system to support separate radius & intensity
 // void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b, int overdraw );
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader,
                          int flags );

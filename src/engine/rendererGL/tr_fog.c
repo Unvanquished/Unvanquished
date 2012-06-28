@@ -64,7 +64,7 @@ void RB_Fog( glfog_t *curfog )
 		return;
 	}
 
-	//----(SA) assme values of '0' for these parameters means 'use default'
+	//----(SA) assume values of '0' for these parameters means 'use default'
 	if ( !curfog->density )
 	{
 		curfog->density = 1;

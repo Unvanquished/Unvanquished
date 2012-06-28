@@ -378,7 +378,6 @@ char *CON_Input( void )
 									CON_Show();
 									CON_FlushIn();
 									return NULL;
-									break;
 
 								case 'C':
 									return NULL;

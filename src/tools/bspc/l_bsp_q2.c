@@ -841,7 +841,7 @@ int Q2_CopyLump( int lump, void *dest, int size, int maxsize ) {
 	}
 
 	if ( ( length / size ) > maxsize ) {
-		Error( "Q2_LoadBSPFile: exceeded max size for lump %d size %d > maxsize %d\n", lump, ( length / size ), maxsize );
+		Error( "Q2_LoadBSPFile: exceeded max size for lump %d size %d > maxsize %d", lump, ( length / size ), maxsize );
 	}
 
 	memcpy( dest, (byte *)header + ofs, length );
@@ -867,7 +867,7 @@ void Q2_LoadBSPFile( char *filename, int offset, int length ) {
 		( (int *)header )[i] = LittleLong( ( (int *)header )[i] );
 
 	if ( header->ident != IDBSPHEADER ) {
-		Error( "%s is not a IBSP file", filename );
+		Error( "%s is not an IBSP file", filename );
 	}
 	if ( header->version != BSPVERSION ) {
 		Error( "%s is version %i, not %i", filename, header->version, BSPVERSION );
@@ -928,7 +928,7 @@ void    Q2_LoadBSPFileTexinfo( char *filename ) {
 		( (int *)header )[i] = LittleLong( ( (int *)header )[i] );
 
 	if ( header->ident != IDBSPHEADER ) {
-		Error( "%s is not a IBSP file", filename );
+		Error( "%s is not an IBSP file", filename );
 	}
 	if ( header->version != BSPVERSION ) {
 		Error( "%s is version %i, not %i", filename, header->version, BSPVERSION );

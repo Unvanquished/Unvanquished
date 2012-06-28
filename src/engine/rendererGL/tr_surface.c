@@ -2262,8 +2262,6 @@ static void Tess_SurfaceEntity( surfaceType_t *surfType )
 			Tess_SurfaceAxis();
 			break;
 	}
-
-	return;
 }
 
 static void Tess_SurfaceBad( surfaceType_t *surfType )

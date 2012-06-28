@@ -880,7 +880,7 @@ static void CG_DrawPlayerAmmoValue( rectDef_t *rect, vec4_t color )
 		}
 
 		CG_AlignText( rect, text, scale, 0.0f, 0.0f, ALIGN_RIGHT, VALIGN_CENTER, &tx, &ty );
-		UI_Text_Paint( tx + 1, ty, scale, color, text, 0, ITEM_TEXTSTYLE_NORMAL );
+		UI_Text_Paint( tx + 1, ty, scale, color, text, 0, ITEM_TEXTSTYLE_PLAIN );
 		trap_R_SetColor( NULL );
 	}
 }
@@ -970,7 +970,7 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 		}
 
 		CG_AlignText( rect, text, scale, 0.0f, 0.0f, ALIGN_RIGHT, VALIGN_CENTER, &tx, &ty );
-		UI_Text_Paint( tx + 1, ty, scale, color, text, 0, ITEM_TEXTSTYLE_NORMAL );
+		UI_Text_Paint( tx + 1, ty, scale, color, text, 0, ITEM_TEXTSTYLE_PLAIN );
 		trap_R_SetColor( NULL );
 	}
 }
@@ -1514,7 +1514,7 @@ static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, v
 	if ( fraction < 1.0f )
 	{
 		UI_Text_Paint( text_x + tx, text_y + ty, scale, white,
-		               s, 0, ITEM_TEXTSTYLE_NORMAL );
+		               s, 0, ITEM_TEXTSTYLE_PLAIN );
 	}
 	else
 	{
@@ -1747,7 +1747,6 @@ float CG_GetValue( int ownerDraw )
 
 		case CG_PLAYER_HEALTH:
 			return ps->stats[ STAT_HEALTH ];
-			break;
 
 		default:
 			break;
@@ -2799,19 +2798,22 @@ static void CG_DrawLagometer( rectDef_t *rect, float text_x, float text_y,
 
 	Vector4Copy( textColor, adjustedColor );
 	adjustedColor[ 3 ] = 0.5f;
-	UI_Text_Paint( ax, ay, scale, adjustedColor, ping, 0, ITEM_TEXTSTYLE_NORMAL );
+	UI_Text_Paint( ax, ay, scale, adjustedColor, ping, 0, ITEM_TEXTSTYLE_PLAIN );
 
 	CG_DrawDisconnect();
 }
 
-#define SPEEDOMETER_NUM_SAMPLES 160
+#define SPEEDOMETER_NUM_SAMPLES 4096
+#define SPEEDOMETER_NUM_DISPLAYED_SAMPLES 160
 #define SPEEDOMETER_DRAW_TEXT   0x1
 #define SPEEDOMETER_DRAW_GRAPH  0x2
 #define SPEEDOMETER_IGNORE_Z    0x4
 float speedSamples[ SPEEDOMETER_NUM_SAMPLES ];
+int speedSampleTimes[ SPEEDOMETER_NUM_SAMPLES ];
 // array indices
 int   oldestSpeedSample = 0;
 int   maxSpeedSample = 0;
+int   maxSpeedSampleInWindow = 0;
 
 /*
 ===================
@@ -2824,6 +2826,8 @@ void CG_AddSpeed( void )
 {
 	float  speed;
 	vec3_t vel;
+	int    windowTime;
+	qboolean newSpeedGteMaxSpeed, newSpeedGteMaxSpeedInWindow;
 
 	VectorCopy( cg.snap->ps.velocity, vel );
 
@@ -2834,17 +2838,31 @@ void CG_AddSpeed( void )
 
 	speed = VectorLength( vel );
 
-	if ( speed > speedSamples[ maxSpeedSample ] )
+	windowTime = cg_maxSpeedTimeWindow.integer;
+	if ( windowTime < 0 )
+	{
+		windowTime = 0;
+	}
+	else if ( windowTime > SPEEDOMETER_NUM_SAMPLES * 1000 )
+	{
+		windowTime = SPEEDOMETER_NUM_SAMPLES * 1000;
+	}
+
+	if ( ( newSpeedGteMaxSpeed = ( speed >= speedSamples[ maxSpeedSample ] ) ) )
 	{
 		maxSpeedSample = oldestSpeedSample;
-		speedSamples[ oldestSpeedSample++ ] = speed;
-		oldestSpeedSample %= SPEEDOMETER_NUM_SAMPLES;
-		return;
+	}
+
+	if ( ( newSpeedGteMaxSpeedInWindow = ( speed >= speedSamples[ maxSpeedSampleInWindow ] ) ) )
+	{
+		maxSpeedSampleInWindow = oldestSpeedSample;
 	}
 
 	speedSamples[ oldestSpeedSample ] = speed;
 
-	if ( maxSpeedSample == oldestSpeedSample++ )
+	speedSampleTimes[ oldestSpeedSample ] = cg.time;
+
+	if ( !newSpeedGteMaxSpeed && maxSpeedSample == oldestSpeedSample )
 	{
 		// if old max was overwritten find a new one
 		int i;
@@ -2858,7 +2876,28 @@ void CG_AddSpeed( void )
 		}
 	}
 
-	oldestSpeedSample %= SPEEDOMETER_NUM_SAMPLES;
+	if ( !newSpeedGteMaxSpeedInWindow && ( maxSpeedSampleInWindow == oldestSpeedSample ||
+	     cg.time - speedSampleTimes[ maxSpeedSampleInWindow ] > windowTime ) )
+	{
+		int i;
+		do
+		{
+			maxSpeedSampleInWindow = ( maxSpeedSampleInWindow + 1 ) % SPEEDOMETER_NUM_SAMPLES;
+		} while( cg.time - speedSampleTimes[ maxSpeedSampleInWindow ] > windowTime );
+		for ( i = maxSpeedSampleInWindow; ; i = ( i + 1 ) % SPEEDOMETER_NUM_SAMPLES )
+		{
+			if ( speedSamples[ i ] > speedSamples[ maxSpeedSampleInWindow ] )
+			{
+				maxSpeedSampleInWindow = i;
+			}
+			if ( i == oldestSpeedSample )
+			{
+				break;
+			}
+		}
+	}
+
+	oldestSpeedSample = ( oldestSpeedSample + 1 ) % SPEEDOMETER_NUM_SAMPLES;
 }
 
 #define SPEEDOMETER_MIN_RANGE 900
@@ -2893,9 +2932,10 @@ static void CG_DrawSpeedGraph( rectDef_t *rect, vec4_t foreColor,
 
 	Vector4Copy( foreColor, color );
 
-	for ( i = 1; i < SPEEDOMETER_NUM_SAMPLES; i++ )
+	for ( i = 1; i < SPEEDOMETER_NUM_DISPLAYED_SAMPLES; i++ )
 	{
-		val = speedSamples[( oldestSpeedSample + i ) % SPEEDOMETER_NUM_SAMPLES ];
+		val = speedSamples[ ( oldestSpeedSample + i + SPEEDOMETER_NUM_SAMPLES -
+		                      SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
 
 		if ( val < SPEED_MED )
 		{
@@ -2913,8 +2953,8 @@ static void CG_DrawSpeedGraph( rectDef_t *rect, vec4_t foreColor,
 
 		trap_R_SetColor( color );
 		top = rect->y + ( 1 - val / max ) * rect->h;
-		CG_DrawPic( rect->x + ( i / ( float ) SPEEDOMETER_NUM_SAMPLES ) * rect->w, top,
-		            rect->w / ( float ) SPEEDOMETER_NUM_SAMPLES, val * rect->h / max,
+		CG_DrawPic( rect->x + ( i / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) * rect->w, top,
+		            rect->w / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES, val * rect->h / max,
 		            cgs.media.whiteShader );
 	}
 
@@ -2948,21 +2988,17 @@ static void CG_DrawSpeedText( rectDef_t *rect, float text_x, float text_y,
 
 		val = VectorLength( vel );
 	}
-	else if ( oldestSpeedSample == 0 )
-	{
-		val = speedSamples[ SPEEDOMETER_NUM_SAMPLES - 1 ];
-	}
 	else
 	{
-		val = speedSamples[ oldestSpeedSample - 1 ];
+		val = speedSamples[ ( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
 	}
 
-	Com_sprintf( speedstr, sizeof( speedstr ), "%d", ( int ) val );
+	Com_sprintf( speedstr, sizeof( speedstr ), "%d %d", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val );
 
 	UI_Text_Paint(
 	  rect->x + ( rect->w - UI_Text_Width( speedstr, scale ) ) / 2.0f,
 	  rect->y + ( rect->h + UI_Text_Height( speedstr, scale ) ) / 2.0f,
-	  scale, color, speedstr, 0, ITEM_TEXTSTYLE_NORMAL );
+	  scale, color, speedstr, 0, ITEM_TEXTSTYLE_PLAIN );
 }
 
 /*
@@ -3037,8 +3073,7 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 
 	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
-		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d\n", weapon );
-		return;
+		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
 	}
 
 	if ( !cg_weapons[ weapon ].registered )
@@ -3251,7 +3286,7 @@ static void CG_DrawLocation( rectDef_t *rect, float scale, int textalign, vec4_t
 	if ( UI_Text_Width( location, scale ) < rect->w )
 	{
 		CG_AlignText( rect, location, scale, 0.0f, 0.0f, textalign, VALIGN_CENTER, &tx, &ty );
-		UI_Text_Paint( tx, ty, scale, color, location, 0, ITEM_TEXTSTYLE_NORMAL );
+		UI_Text_Paint( tx, ty, scale, color, location, 0, ITEM_TEXTSTYLE_PLAIN );
 	}
 	else
 	{
@@ -3369,7 +3404,6 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 
 			default:
 				CG_Error( "CG_DrawStack: valign value %d not recognised", valign );
-				return;
 		}
 	}
 	else
@@ -3393,7 +3427,6 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 
 			default:
 				CG_Error( "CG_DrawStack: align value %d not recognised", align );
-				return;
 		}
 	}
 
@@ -4318,16 +4351,16 @@ static void CG_DrawVote( team_t team )
 	s = va( "%sVOTE(%i): %s",
 	        team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ] );
 
-	UI_Text_Paint( 8, 300 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_NORMAL );
+	UI_Text_Paint( 8, 300 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_PLAIN );
 
 	s = va( "  Called by: \"%s\"", cgs.voteCaller[ team ] );
 
-	UI_Text_Paint( 8, 320 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_NORMAL );
+	UI_Text_Paint( 8, 320 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_PLAIN );
 
 	s = va( "  %s[check]:%i %s[cross]:%i",
 	        yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
-	UI_Text_Paint( 8, 340 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_NORMAL );
+	UI_Text_Paint( 8, 340 + offset, 0.3f, white, s, 0, ITEM_TEXTSTYLE_PLAIN );
 }
 
 static qboolean CG_DrawScoreboard( void )

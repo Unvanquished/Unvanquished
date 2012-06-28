@@ -38,7 +38,7 @@ Maryland 20850 USA.
 cvar_t         *sv_voip;
 #endif
 
-serverStatic_t svs; // persistant server info
+serverStatic_t svs; // persistent server info
 server_t       sv; // local server
 vm_t           *gvm = NULL; // game virtual machine // bk001212 init
 
@@ -99,7 +99,7 @@ cvar_t *sv_wwwDownload; // server does a www dl redirect
 cvar_t *sv_wwwBaseURL; // base URL for redirect
 
 // tell clients to perform their downloads while disconnected from the server
-// this gets you a better throughput, but you loose the ability to control the download usage
+// this gets you a better throughput, but you lose the ability to control the download usage
 cvar_t *sv_wwwDlDisconnected;
 cvar_t *sv_wwwFallbackURL; // URL to send to if an http/ftp fails or is refused client side
 
@@ -209,7 +209,7 @@ the client game module: "cp", "print", "chat", etc
 A NULL client will broadcast to all clients
 =================
 */
-void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... )
+void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, ... )
 {
 	va_list  argptr;
 	byte     message[ MAX_MSGLEN ];
@@ -382,7 +382,7 @@ void SV_MasterHeartbeat( const char *hbname )
 		Com_Printf( "Sending heartbeat to %s\n", sv_master[ i ]->string );
 
 		// this command should be changed if the server info / status format
-		// ever incompatably changes
+		// ever incompatibly changes
 
 		if ( adr[ i ][ 0 ].type != NA_BAD )
 		{
@@ -453,7 +453,7 @@ void SV_MasterGameCompleteStatus()
 
 		Com_Printf( "Sending gameCompleteStatus to %s\n", sv_master[ i ]->string );
 		// this command should be changed if the server info / status format
-		// ever incompatably changes
+		// ever incompatibly changes
 		SVC_GameCompleteStatus( adr[ i ] );
 	}
 }
@@ -467,7 +467,7 @@ Informs all masters that this server is going down
 */
 void SV_MasterShutdown( void )
 {
-	// send a hearbeat right now
+	// send a heartbeat right now
 	svs.nextHeartbeatTime = -9999;
 	SV_MasterHeartbeat( HEARTBEAT_DEAD );  // NERVE - SMF - changed to flatline
 
@@ -1271,7 +1271,7 @@ If a packet has not been received from a client for timeout->integer
 seconds, drop the conneciton.  Server time is used instead of
 realtime to avoid dropping the local client while debugging.
 
-When a client is normally dropped, the client_t goes into a zombie state
+When a client is dropped, the client_t goes into a zombie state
 for a few seconds to make sure any final reliable message gets resent
 if necessary
 ==================
@@ -1639,10 +1639,8 @@ int SV_LoadTag( const char *mod_name )
 
 	if ( sv.num_tagheaders >= MAX_TAG_FILES )
 	{
-		Com_Error( ERR_DROP, "MAX_TAG_FILES reached\n" );
-
 		FS_FreeFile( buffer );
-		return 0;
+		Com_Error( ERR_DROP, "MAX_TAG_FILES reached" );
 	}
 
 	LL( pinmodel->ident );
@@ -1656,10 +1654,8 @@ int SV_LoadTag( const char *mod_name )
 
 	if ( sv.num_tags + pinmodel->numTags >= MAX_SERVER_TAGS )
 	{
-		Com_Error( ERR_DROP, "MAX_SERVER_TAGS reached\n" );
-
 		FS_FreeFile( buffer );
-		return qfalse;
+		Com_Error( ERR_DROP, "MAX_SERVER_TAGS reached" );
 	}
 
 	// swap all the tags

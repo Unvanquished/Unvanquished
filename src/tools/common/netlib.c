@@ -61,7 +61,7 @@ int             WINS_SetSocketPort(struct sockaddr_s *addr, int port);
 #define qfalse	0
 
 #ifdef _DEBUG
-void WinPrint(char *str, ...)
+void PRINTF_LIKE(1) WinPrint(char *str, ...)
 {
 	va_list         argptr;
 	char            text[4096];
@@ -73,7 +73,7 @@ void WinPrint(char *str, ...)
 	printf(text);
 }
 #else
-void WinPrint(char *str, ...)
+void PRINTF_LIKE(1) WinPrint(char *str, ...)
 {
 }
 #endif
@@ -607,9 +607,9 @@ ERROR_STRUCT    errlist[] = {
 };
 
 #ifdef _DEBUG
-void            WinPrint(char *str, ...);
+void WinPrint(char *str, ...) PRINTF_LIKE(1);
 #else
-void            WinPrint(char *str, ...);
+void WinPrint(char *str, ...) PRINTF_LIKE(1);
 #endif
 
 char           *WINS_ErrorMessage(int error)
@@ -1305,7 +1305,7 @@ int WINS_Init(void)
 //      Cvar_Set ("hostname", buff);
 	}
 
-	//++timo WTF is that net_controlsocket? it's sole purpose is to retrieve the local IP?
+	//++timo WTF is that net_controlsocket? its sole purpose is to retrieve the local IPA?
 	if((net_controlsocket = WINS_OpenSocket(0)) == SOCKET_ERROR)
 		WinError("WINS_Init: Unable to open control socket\n");
 

@@ -38,11 +38,23 @@ Maryland 20850 USA.
 
 #include "../qcommon/cm_public.h"
 
-//bani
 #if defined __GNUC__ || defined __clang__
-#define _attribute( x ) __attribute__( x )
+#define NORETURN __attribute__((__noreturn__))
+#define UNUSED __attribute__((__unused__))
+#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
+#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
+#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
+#define ALIGNED(a) __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define _attribute( x )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED(a)
+#define ALWAYS_INLINE
+#define __attribute__(x)
 #endif
 
 //#define PRE_RELEASE_DEMO
@@ -201,7 +213,7 @@ void       NET_Restart_f( void );
 void       NET_Config( qboolean enableNetworking );
 
 void       NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to );
-void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) __attribute__( ( format( printf, 3, 4 ) ) );
+void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) PRINTF_LIKE(3);
 void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
 qboolean   NET_CompareAdr( netadr_t a, netadr_t b );
@@ -417,7 +429,7 @@ void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const
 intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
 
 #define VMA(x) VM_ArgPtr(args[ x ])
-static ID_INLINE float _vmf( intptr_t x )
+static INLINE float _vmf( intptr_t x )
 {
 	floatint_t fi;
 	fi.i = ( int ) x;
@@ -460,7 +472,7 @@ void Cbuf_Execute( void );
 
 // Pulls off \n terminated lines of text from the command buffer and sends
 // them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Normally called once per frame, but may be explicitly invoked.
+// Called on a per-frame basis, but may also be explicitly invoked.
 // Do not call inside a command function, or current args will be destroyed.
 
 //===========================================================================
@@ -580,7 +592,7 @@ void Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultVa
 
 void Cvar_Update( vmCvar_t *vmCvar );
 
-// updates an interpreted modules' version of a cvar
+// updates a module's version of a cvar
 
 void Cvar_Set( const char *var_name, const char *value );
 
@@ -609,9 +621,11 @@ char *Cvar_VariableString( const char *var_name );
 void Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
 // returns an empty string if not defined
+
 void Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
-// Gordon: returns the latched value if there is one, else the normal one, empty string if not defined as usual
+// returns the latched value if there is one, and the current value otherwise
+// (an empty string in case the cvar does not exist)
 
 int  Cvar_Flags( const char *var_name );
 void Cvar_CommandCompletion( void ( *callback )( const char *s ) );
@@ -649,7 +663,7 @@ void       Cvar_Restart_f( void );
 
 extern int cvar_modifiedFlags;
 
-// whenever a cvar is modifed, its flags will be OR'd into this, so
+// whenever a cvar is modified, its flags will be OR'd into this, so
 // a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
 // etc, variables have been modified since the last check.  The bit
 // can then be cleared to allow another change detection.
@@ -660,7 +674,7 @@ extern int cvar_modifiedFlags;
 FILESYSTEM
 
 No stdio calls should be used by any part of the game, because
-we need to deal with all sorts of directory and seperator char
+we need to deal with all sorts of directory and separator char
 issues.
 ==============================================================
 */
@@ -716,7 +730,7 @@ int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 
-// will properly create any needed paths and deal with seperater character issues
+// will properly create any needed paths and deal with separator character issues
 
 int          FS_filelength( fileHandle_t f );
 fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
@@ -792,7 +806,7 @@ int FS_FTell( fileHandle_t f );
 
 void       FS_Flush( fileHandle_t f );
 
-void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
+void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) PRINTF_LIKE(2);
 
 // like fprintf
 
@@ -984,13 +998,13 @@ void       Com_BeginRedirect( char *buffer, int buffersize, void ( *flush )( cha
 void       Com_EndRedirect( void );
 
 // *INDENT-OFF*
-int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) _attribute( ( format( printf, 1, 0 ) ) );    // conforms to vprintf prototype for print callback passing
-void QDECL Com_Printf( const char *fmt, ... ) _attribute( ( format( printf, 1, 2 ) ) );    // this one calls to Com_VPrintf now
-void QDECL Com_DPrintf( const char *fmt, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-void QDECL Com_Error( int code, const char *fmt, ... ) _attribute( ( format( printf, 2, 3 ) ) );
+int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) VPRINTF_LIKE(1);    // conforms to vprintf prototype for print callback passing
+void QDECL Com_Printf( const char *fmt, ... ) PRINTF_LIKE(1);    // this one calls to Com_VPrintf now
+void QDECL Com_DPrintf( const char *fmt, ... ) PRINTF_LIKE(1);
+void QDECL Com_Error( int code, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN;
 
 // *INDENT-ON*
-void       Com_Quit_f( void );
+void       Com_Quit_f( void ) NORETURN;
 int        Com_EventLoop( void );
 int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
@@ -1274,7 +1288,7 @@ typedef enum
   SE_NONE = 0, // evTime is still valid
   SE_KEY, // evValue is a key code, evValue2 is the down flag
   SE_CHAR, // evValue is an ascii char
-  SE_MOUSE, // evValue and evValue2 are reletive signed x / y moves
+  SE_MOUSE, // evValue and evValue2 are relative, signed x / y moves
   SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
 #if IPHONE
   SE_ACCEL, // iPhone accelerometer
@@ -1327,8 +1341,8 @@ void                  *Sys_GetSystemHandles( void );
 
 char                  *Sys_GetCurrentUser( void );
 
-void QDECL            Sys_Error( const char *error, ... ) __attribute__(( format( printf, 1, 2 ), noreturn ));
-void                  Sys_Quit( void ) __attribute__((noreturn));
+void QDECL            Sys_Error( const char *error, ... ) PRINTF_LIKE(1) NORETURN;
+void                  Sys_Quit( void ) NORETURN;
 char                  *Sys_GetClipboardData( clipboard_t clip );  // note that this isn't journaled...
 
 void                  Sys_Print( const char *msg );
@@ -1492,7 +1506,7 @@ extern huffman_t clientHuffTables;
 #define CL_ENCODE_START 12
 #define CL_DECODE_START 4
 
-int  Parse_AddGlobalDefine( char *string );
+int  Parse_AddGlobalDefine( const char *string );
 int  Parse_LoadSourceHandle( const char *filename );
 int  Parse_FreeSourceHandle( int handle );
 int  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );

@@ -1508,7 +1508,7 @@ int ConvertBSPMain(int argc, char **argv)
 		return 0;
 	}
 
-	/* normal convert */
+	/* other convert */
 	return convertFunc(source);
 }
 

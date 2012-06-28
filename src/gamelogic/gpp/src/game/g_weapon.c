@@ -1424,7 +1424,7 @@ qboolean CheckPounceAttack( gentity_t *ent )
 		return qfalse;
 	}
 
-	// In case the goon lands on his target, he get's one shot after landing
+	// In case the goon lands on his target, he gets one shot after landing
 	payload = ent->client->pmext.pouncePayload;
 
 	if ( !( ent->client->ps.pm_flags & PMF_CHARGE ) )

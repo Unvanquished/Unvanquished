@@ -600,10 +600,10 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 	VectorSet(mins, -width, -width, -height);
 	VectorSubtract(targetPos,muzzle,forward);
 	VectorNormalize(forward);
-	VectorScale(forward,max(range,secondaryRange),end);
+	VectorScale(forward,MAX(range,secondaryRange),end);
 	trap_Trace(&trace,muzzle,mins,maxs,targetPos,self->s.number,MASK_SHOT);
 
-	if(trace.entityNum < ENTITYNUM_MAX_NORMAL && Distance(muzzle,trace.endpos) <= max(range,secondaryRange)) {
+	if(trace.entityNum < ENTITYNUM_MAX_NORMAL && Distance(muzzle,trace.endpos) <= MAX(range,secondaryRange)) {
 		trap_Trace(&trace,muzzle,mins,maxs,end,self->s.number,MASK_SHOT);
 
 		if(BotGetTeam(self) != BotGetTeam(&g_entities[trace.entityNum])

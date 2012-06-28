@@ -127,6 +127,7 @@ extern "C" {
 	cvar_t      *r_stencilbits;
 	cvar_t      *r_depthbits;
 	cvar_t      *r_colorbits;
+	cvar_t      *r_ext_multisample;
 	cvar_t      *r_stereo;
 
 	cvar_t      *r_drawBuffer;
@@ -526,7 +527,7 @@ extern "C" {
 		{ "2048x1536",         2048, 1536, 1 },
 		{ "2560x1600 (16:10)", 2560, 1600, 1 },
 	};
-	static const int s_numVidModes = ( sizeof( r_vidModes ) / sizeof( r_vidModes[ 0 ] ) );
+	static const int s_numVidModes = ARRAY_LEN( r_vidModes );
 
 	qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode )
 	{
@@ -1395,6 +1396,7 @@ extern "C" {
 		r_stereo = ri.Cvar_Get( "r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_stencilbits = ri.Cvar_Get( "r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH );
 		r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
+		r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_mode = ri.Cvar_Get( "r_mode", "6", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER );
 		r_fullscreen = ri.Cvar_Get( "r_fullscreen", "0", CVAR_ARCHIVE | CVAR_LATCH );
@@ -1811,7 +1813,7 @@ extern "C" {
 				D3D10_DRIVER_TYPE_HARDWARE,
 				D3D10_DRIVER_TYPE_REFERENCE,
 			};
-			UINT                 numDriverTypes = sizeof( driverTypes ) / sizeof( driverTypes[ 0 ] );
+			UINT                 numDriverTypes = ARRAY_LEN( driverTypes );
 
 			GLimp_Init();
 
@@ -1870,7 +1872,7 @@ extern "C" {
 					{
 						const bool isPerfHUD = wcscmp( adaptDesc.Description, L"NVIDIA PerfHUD" ) == 0;
 
-						// Select the first adapter in normal circumstances or the PerfHUD one if it exists.
+						// Select the PerfHUD adapter if it exists, and the first adapter otherwise.
 						if ( nAdapter == 0 || isPerfHUD )
 						{
 							selectedAdapter = adapter;
@@ -1987,7 +1989,7 @@ extern "C" {
 			{
 				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D10_INPUT_PER_VERTEX_DATA, 0 },
 			};
-			UINT                     numElements = sizeof( layout ) / sizeof( layout[ 0 ] );
+			UINT                     numElements = ARRAY_LEN( layout );
 
 			// create the input layout
 			D3D10_PASS_DESC          PassDesc;
@@ -2437,7 +2439,7 @@ extern "C" {
 #if defined( __cplusplus )
 	extern "C" {
 #endif
-		void QDECL Com_Printf( const char *msg, ... )
+		void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 		{
 			va_list argptr;
 			char    text[ 1024 ];
@@ -2449,7 +2451,7 @@ extern "C" {
 			ri.Printf( PRINT_ALL, "%s", text );
 		}
 
-		void QDECL Com_DPrintf( const char *msg, ... )
+		void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *msg, ... )
 		{
 			va_list argptr;
 			char    text[ 1024 ];
@@ -2461,7 +2463,7 @@ extern "C" {
 			ri.Printf( PRINT_DEVELOPER, "%s", text );
 		}
 
-		void QDECL Com_Error( int level, const char *error, ... )
+		void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
 		{
 			va_list argptr;
 			char    text[ 1024 ];

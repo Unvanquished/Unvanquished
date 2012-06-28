@@ -902,7 +902,7 @@ void LoadPortals(char *name)
 	{
 		f = fopen(name, "r");
 		if(!f)
-			Error("LoadPortals: couldn't read %s\n", name);
+			Error("LoadPortals: couldn't read %s", name);
 	}
 
 	if(fscanf(f, "%79s\n%i\n%i\n%i\n", magic, &portalclusters, &numportals, &numfaces) != 4)

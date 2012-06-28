@@ -879,7 +879,7 @@ void Sys_ShowConsole( int visLevel, qboolean quitOnClose )
 			break;
 
 		default:
-			Sys_Error( "Invalid visLevel %d sent to Sys_ShowConsole\n", visLevel );
+			Sys_Error( "Invalid visLevel %d sent to Sys_ShowConsole", visLevel );
 			break;
 	}
 }

@@ -275,7 +275,7 @@ static void CM_SetGridWrapWidth( cGrid_t *grid )
 CM_SubdivideGridColumns
 
 Adds columns as necessary to the grid until
-all the aproximating points are within SUBDIVIDE_DISTANCE
+all the approximating points are within SUBDIVIDE_DISTANCE
 from the true curve
 =================
 */
@@ -286,11 +286,11 @@ static void CM_SubdivideGridColumns( cGrid_t *grid )
 	for ( i = 0; i < grid->width - 2; )
 	{
 		// grid->points[i][x] is an interpolating control point
-		// grid->points[i+1][x] is an aproximating control point
+		// grid->points[i+1][x] is an approximating control point
 		// grid->points[i+2][x] is an interpolating control point
 
 		//
-		// first see if we can collapse the aproximating collumn away
+		// first see if we can collapse the approximating column away
 		//
 		for ( j = 0; j < grid->height; j++ )
 		{
@@ -346,7 +346,7 @@ static void CM_SubdivideGridColumns( cGrid_t *grid )
 
 		grid->width += 2;
 
-		// the new aproximating point at i+1 may need to be removed
+		// the new approximating point at i+1 may need to be removed
 		// or subdivided farther, so don't advance i
 	}
 }
@@ -716,7 +716,6 @@ static int CM_EdgePlaneNum( cGrid_t *grid, int gridPlanes[ MAX_GRID_SIZE ][ MAX_
 	}
 
 	Com_Error( ERR_DROP, "CM_EdgePlaneNum: bad k" );
-	return -1;
 }
 
 /*
@@ -757,8 +756,6 @@ static void CM_SetBorderInward( cFacet_t *facet, cGrid_t *grid, int gridPlanes[ 
 
 		default:
 			Com_Error( ERR_FATAL, "CM_SetBorderInward: bad parameter" );
-			numPoints = 0;
-			break;
 	}
 
 	for ( k = 0; k < facet->numBorders; k++ )
@@ -954,7 +951,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 				continue;
 			}
 
-			// see if the plane is allready present
+			// see if the plane is already present
 			for ( i = 0; i < facet->numBorders; i++ )
 			{
 				if ( CM_PlaneEqual( &planes[ facet->borderPlanes[ i ] ], plane, &flipped ) )
@@ -1048,7 +1045,7 @@ static void CM_AddFacetBevels( cFacet_t *facet )
 					continue;
 				}
 
-				// see if the plane is allready present
+				// see if the plane is already present
 				for ( i = 0; i < facet->numBorders; i++ )
 				{
 					if ( CM_PlaneEqual( &planes[ facet->borderPlanes[ i ] ], plane, &flipped ) )
@@ -1270,7 +1267,7 @@ static void CM_SurfaceCollideFromGrid( cGrid_t *grid, cSurfaceCollide_t *sc )
 			}
 			else
 			{
-				// two seperate triangles
+				// two separate triangles
 				facet->surfacePlane = gridPlanes[ i ][ j ][ 0 ];
 				facet->numBorders = 3;
 				facet->borderPlanes[ 0 ] = borders[ EN_TOP ];
@@ -1400,7 +1397,7 @@ cSurfaceCollide_t *CM_GeneratePatchCollide( int width, int height, vec3_t *point
 	CM_RemoveDegenerateColumns( &grid );
 
 	// we now have a grid of points exactly on the curve
-	// the aproximate surface defined by these points will be
+	// the approximate surface defined by these points will be
 	// collided against
 	sc = Hunk_Alloc( sizeof( *sc ), h_high );
 	ClearBounds( sc->bounds[ 0 ], sc->bounds[ 1 ] );

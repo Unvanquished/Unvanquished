@@ -337,7 +337,6 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 	}
 	else
 	{
-		// normal
 		VectorAdd( origin, gEnt->r.mins, gEnt->r.absmin );
 		VectorAdd( origin, gEnt->r.maxs, gEnt->r.absmax );
 	}
@@ -456,7 +455,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 
 AREA QUERY
 
-Fills in a list of all entities who's absmin / absmax intersects the given
+Fills in a list of all entities whose absmin / absmax intersects the given
 bounds.  This does NOT mean that they actually touch in the case of bmodels.
 ============================================================================
 */

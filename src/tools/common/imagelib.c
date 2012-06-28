@@ -200,7 +200,7 @@ byte           *LBMRLEDecompress(byte * source, byte * unpacked, int bpwidth)
 	} while(count < bpwidth);
 
 	if(count > bpwidth)
-		Error("Decompression exceeded width!\n");
+		Error("Decompression exceeded width!");
 
 
 	return source;
@@ -223,7 +223,7 @@ void LoadLBM(const char *filename, byte ** picture, byte ** palette)
 	int             formtype, formlength;
 	int             chunktype, chunklength;
 
-// qiet compiler warnings
+	// quiet compiler warnings
 	picbuffer = NULL;
 	cmapbuffer = NULL;
 
@@ -237,7 +237,7 @@ void LoadLBM(const char *filename, byte ** picture, byte ** palette)
 //
 	LBM_P = LBMbuffer;
 	if(*(int *)LBMbuffer != LittleLong(FORMID))
-		Error("No FORM ID at start of file!\n");
+		Error("No FORM ID at start of file!");
 
 	LBM_P += 4;
 	formlength = BigLong(*(int *)LBM_P);
@@ -247,7 +247,7 @@ void LoadLBM(const char *filename, byte ** picture, byte ** palette)
 	formtype = LittleLong(*(int *)LBM_P);
 
 	if(formtype != ILBMID && formtype != PBMID)
-		Error("Unrecognized form type: %c%c%c%c\n", formtype & 0xff, (formtype >> 8) & 0xff, (formtype >> 16) & 0xff,
+		Error("Unrecognized form type: %c%c%c%c", formtype & 0xff, (formtype >> 8) & 0xff, (formtype >> 16) & 0xff,
 			  (formtype >> 24) & 0xff);
 
 	LBM_P += 4;
@@ -951,17 +951,17 @@ void LoadTGABuffer(byte * buffer, byte ** pic, int *width, int *height)
 
 	if(targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3)
 	{
-		Error("LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported\n");
+		Error("LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported");
 	}
 
 	if(targa_header.colormap_type != 0)
 	{
-		Error("LoadTGA: colormaps not supported\n");
+		Error("LoadTGA: colormaps not supported");
 	}
 
 	if((targa_header.pixel_size != 32 && targa_header.pixel_size != 24) && targa_header.image_type != 3)
 	{
-		Error("LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
+		Error("LoadTGA: Only 32 or 24 bit images supported (no colormaps)");
 	}
 
 	columns = targa_header.width;
@@ -1022,7 +1022,7 @@ void LoadTGABuffer(byte * buffer, byte ** pic, int *width, int *height)
 						*pixbuf++ = alphabyte;
 						break;
 					default:
-						//Error("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
+						//Error("LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 						break;
 				}
 			}
@@ -1061,7 +1061,7 @@ void LoadTGABuffer(byte * buffer, byte ** pic, int *width, int *height)
 							alphabyte = *buf_p++;
 							break;
 						default:
-							//Error("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
+							//Error("LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 							break;
 					}
 
@@ -1255,7 +1255,7 @@ JPG LOADING
 =========================================================
 */
 
-static void JPGErrorExit(j_common_ptr cinfo)
+static void NORETURN JPGErrorExit(j_common_ptr cinfo)
 {
 	char            buffer[JMSG_LENGTH_MAX];
 
@@ -1264,7 +1264,7 @@ static void JPGErrorExit(j_common_ptr cinfo)
 	/* Let the memory manager delete any temp files before we die */
 	jpeg_destroy(cinfo);
 
-	Sys_FPrintf(SYS_ERR, "libjpeg error: %s\n", buffer);
+	Error("libjpeg error: %s", buffer);
 }
 
 static void JPGOutputMessage(j_common_ptr cinfo)
@@ -1385,7 +1385,7 @@ void LoadJPGBuffer(const char *filename, byte * fbuffer, int fbufferSize, byte *
 
 	if(!cinfo.output_width || !cinfo.output_height || ((pixelcount * 4) / cinfo.output_width) / 4 != cinfo.output_height || pixelcount > 0x1FFFFFFF || cinfo.output_components > 4)	// 4*1FFFFFFF == 0x7FFFFFFC < 0x7FFFFFFF
 	{
-		Error("LoadJPG( '%s' ) invalid image size: %dx%d*4=%d, components: %d\n", filename,
+		Error("LoadJPG( '%s' ) invalid image size: %dx%d*4=%d, components: %d", filename,
 				 cinfo.output_width, cinfo.output_height, pixelcount * 4, cinfo.output_components);
 	}
 
@@ -1502,7 +1502,7 @@ static void png_user_warning_fn(png_structp png_ptr, png_const_charp warning_mes
 	Sys_FPrintf(SYS_WRN, "libpng warning: %s\n", warning_message);
 }
 
-static void png_user_error_fn(png_structp png_ptr, png_const_charp error_message)
+static void NORETURN png_user_error_fn(png_structp png_ptr, png_const_charp error_message)
 {
 	Sys_FPrintf(SYS_ERR, "libpng error: %s\n", error_message);
 	longjmp(png_jmpbuf(png_ptr), 0);
@@ -1551,7 +1551,7 @@ void LoadPNGBuffer(byte * data, byte ** pic, int *width, int *height)
 
 	//
 	// Set error handling if you are using the setjmp/longjmp method (this is
-	// the normal method of doing things with libpng).  REQUIRED unless you
+	// the common method of doing things with libpng).  REQUIRED unless you
 	// set up your own error handlers in the png_create_read_struct() earlier.
 	//
 	if(setjmp(png_jmpbuf(png)))

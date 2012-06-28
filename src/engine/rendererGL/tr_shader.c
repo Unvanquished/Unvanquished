@@ -1344,8 +1344,7 @@ static qboolean ParseTexMod( char **text, shaderStage_t *stage )
 
 	if ( stage->bundle[ 0 ].numTexMods == TR_MAX_TEXMODS )
 	{
-		ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'\n", shader.name );
-		return qfalse;
+		ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'", shader.name );
 	}
 
 	tmi = &stage->bundle[ 0 ].texMods[ stage->bundle[ 0 ].numTexMods ];
@@ -2620,8 +2619,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 
 			if ( stage->bundle[ 0 ].numTexMods == TR_MAX_TEXMODS )
 			{
-				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'\n", shader.name );
-				return qfalse;
+				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'", shader.name );
 			}
 
 			tmi = &stage->bundle[ 0 ].texMods[ stage->bundle[ 0 ].numTexMods ];
@@ -2639,8 +2637,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 
 			if ( stage->bundle[ 0 ].numTexMods == TR_MAX_TEXMODS )
 			{
-				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'\n", shader.name );
-				return qfalse;
+				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'", shader.name );
 			}
 
 			tmi = &stage->bundle[ 0 ].texMods[ stage->bundle[ 0 ].numTexMods ];
@@ -2658,8 +2655,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 
 			if ( stage->bundle[ 0 ].numTexMods == TR_MAX_TEXMODS )
 			{
-				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'\n", shader.name );
-				return qfalse;
+				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'", shader.name );
 			}
 
 			tmi = &stage->bundle[ 0 ].texMods[ stage->bundle[ 0 ].numTexMods ];
@@ -2677,8 +2673,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 
 			if ( stage->bundle[ 0 ].numTexMods == TR_MAX_TEXMODS )
 			{
-				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'\n", shader.name );
-				return qfalse;
+				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'", shader.name );
 			}
 
 			tmi = &stage->bundle[ 0 ].texMods[ stage->bundle[ 0 ].numTexMods ];
@@ -2696,8 +2691,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 
 			if ( stage->bundle[ 0 ].numTexMods == TR_MAX_TEXMODS )
 			{
-				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'\n", shader.name );
-				return qfalse;
+				ri.Error( ERR_DROP, "ERROR: too many tcMod stages in shader '%s'", shader.name );
 			}
 
 			tmi = &stage->bundle[ 0 ].texMods[ stage->bundle[ 0 ].numTexMods ];
@@ -3427,7 +3421,7 @@ surfaceparm <name>
 */
 static qboolean SurfaceParm( const char *token )
 {
-	int numInfoParms = sizeof( infoParms ) / sizeof( infoParms[ 0 ] );
+	int numInfoParms = ARRAY_LEN( infoParms );
 	int i;
 
 	for ( i = 0; i < numInfoParms; i++ )
@@ -5150,7 +5144,7 @@ static void FixRenderCommandList( int newShader )
 SortNewShader
 
 Positions the most recently created shader in the tr.sortedShaders[]
-array so that the shader->sort key is sorted reletive to the other
+array so that the shader->sort key is sorted relative to the other
 shaders.
 
 Sets shader->sortedIndex
@@ -5478,7 +5472,7 @@ static shader_t *FinishShader( void )
 			int blendDstBits = pStage->stateBits & GLS_DSTBLEND_BITS;
 
 			// fog color adjustment only works for blend modes that have a contribution
-			// that aproaches 0 as the modulate values aproach 0 --
+			// that approaches 0 as the modulate values approach 0 --
 			// GL_ONE, GL_ONE
 			// GL_ZERO, GL_ONE_MINUS_SRC_COLOR
 			// GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
@@ -5549,7 +5543,7 @@ static shader_t *FinishShader( void )
 	// look for multitexture potential
 	CollapseStages();
 
-	// fogonly shaders don't have any normal passes
+	// fogonly shaders don't have any stage passes
 	if ( shader.numStages == 0 && !shader.isSky )
 	{
 		shader.sort = SS_FOG;
@@ -5656,7 +5650,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 		dptr = dptr->next;
 	}
 
-	//cant add a new one with empty shadertext
+	//can't add a new one with empty shadertext
 	if ( !shadertext || !strlen( shadertext ) )
 	{
 		ri.Printf( PRINT_WARNING, "%s new shader %s has NULL shadertext!\n", func_err, shadername );
@@ -5668,7 +5662,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 
 	if ( !dptr )
 	{
-		Com_Error( ERR_FATAL, "Couldn't allocate struct for dynamic shader %s\n", shadername );
+		Com_Error( ERR_FATAL, "Couldn't allocate struct for dynamic shader %s", shadername );
 	}
 
 	if ( lastdptr )
@@ -5680,7 +5674,7 @@ qboolean RE_LoadDynamicShader( const char *shadername, const char *shadertext )
 
 	if ( !dptr->shadertext )
 	{
-		Com_Error( ERR_FATAL, "Couldn't allocate buffer for dynamic shader %s\n", shadername );
+		Com_Error( ERR_FATAL, "Couldn't allocate buffer for dynamic shader %s", shadername );
 	}
 
 	Q_strncpyz( dptr->shadertext, shadertext, strlen( shadertext ) + 1 );
@@ -5872,11 +5866,11 @@ If type == SHADER_2D, then the image will be used
 for 2D rendering unless an explicit shader is found
 
 If type == SHADER_3D_DYNAMIC, then the image will have
-dynamic diffuse lighting applied to it, as apropriate for most
+dynamic diffuse lighting applied to it, as appropriate for most
 entity skin surfaces.
 
 If type == SHADER_3D_STATIC, then the image will use
-the vertex rgba modulate values, as apropriate for misc_model
+the vertex rgba modulate values, as appropriate for misc_model
 pre-lit surfaces.
 ===============
 */
@@ -6585,7 +6579,7 @@ static void ScanAndLoadGuideFiles( void )
 
 			if ( Q_stricmp( token, "guide" ) && Q_stricmp( token, "inlineGuide" ) )
 			{
-				COM_ParseWarning( "expected guide or inlineGuide found '%s'\n", token );
+				COM_ParseWarning( "expected guide or inlineGuide found '%s'", token );
 				break;
 			}
 
@@ -6603,7 +6597,7 @@ static void ScanAndLoadGuideFiles( void )
 
 			if ( Q_stricmp( token, "(" ) )
 			{
-				COM_ParseWarning( "expected ( found '%s'\n", token );
+				COM_ParseWarning( "expected ( found '%s'", token );
 				break;
 			}
 
@@ -6624,7 +6618,7 @@ static void ScanAndLoadGuideFiles( void )
 
 			if ( Q_stricmp( token, ")" ) )
 			{
-				COM_ParseWarning( "expected ) found '%s'\n", token );
+				COM_ParseWarning( "expected ) found '%s'", token );
 				break;
 			}
 
@@ -6676,7 +6670,7 @@ static void ScanAndLoadGuideFiles( void )
 
 			if ( Q_stricmp( token, "guide" ) && Q_stricmp( token, "inlineGuide" ) )
 			{
-				COM_ParseWarning( "expected guide or inlineGuide found '%s'\n", token );
+				COM_ParseWarning( "expected guide or inlineGuide found '%s'", token );
 				break;
 			}
 
@@ -6694,7 +6688,7 @@ static void ScanAndLoadGuideFiles( void )
 
 			if ( Q_stricmp( token, "(" ) )
 			{
-				COM_ParseWarning( "expected ( found '%s'\n", token );
+				COM_ParseWarning( "expected ( found '%s'", token );
 				break;
 			}
 
@@ -6715,7 +6709,7 @@ static void ScanAndLoadGuideFiles( void )
 
 			if ( Q_stricmp( token, ")" ) )
 			{
-				COM_ParseWarning( "expected ) found '%s'\n", token );
+				COM_ParseWarning( "expected ) found '%s'", token );
 				break;
 			}
 
@@ -6904,7 +6898,7 @@ static void ScanAndLoadShaderFiles( void )
 			if ( Q_stricmp( token, "(" ) )
 			{
 				ri.Printf( PRINT_WARNING, "expected ( found '%s'\n", token );
-				//COM_ParseWarning("expected ( found '%s'\n", token);
+				//COM_ParseWarning("expected ( found '%s'", token);
 				break;
 			}
 
@@ -6926,7 +6920,7 @@ static void ScanAndLoadShaderFiles( void )
 			if ( Q_stricmp( token, ")" ) )
 			{
 				ri.Printf( PRINT_WARNING, "expected ( found '%s'\n", token );
-				//COM_ParseWarning("expected ) found '%s'\n", token);
+				//COM_ParseWarning("expected ) found '%s'", token);
 				break;
 			}
 		}
@@ -7060,7 +7054,7 @@ static void ScanAndLoadShaderFiles( void )
 			if ( Q_stricmp( token, "(" ) )
 			{
 				ri.Printf( PRINT_WARNING, "expected ( found '%s'\n", token );
-				//COM_ParseWarning("expected ( found '%s'\n", token);
+				//COM_ParseWarning("expected ( found '%s'", token);
 				break;
 			}
 
@@ -7082,7 +7076,7 @@ static void ScanAndLoadShaderFiles( void )
 			if ( Q_stricmp( token, ")" ) )
 			{
 				ri.Printf( PRINT_WARNING, "expected ( found '%s'\n", token );
-				//COM_ParseWarning("expected ) found '%s'\n", token);
+				//COM_ParseWarning("expected ) found '%s'", token);
 				break;
 			}
 		}

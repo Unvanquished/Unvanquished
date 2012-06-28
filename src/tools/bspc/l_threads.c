@@ -178,7 +178,7 @@ void ThreadLock( void ) {
 	} //end if
 	EnterCriticalSection( &crit );
 	if ( enter ) {
-		Error( "Recursive ThreadLock\n" );
+		Error( "Recursive ThreadLock" );
 	}
 	enter = 1;
 } //end of the function ThreadLock
@@ -194,7 +194,7 @@ void ThreadUnlock( void ) {
 		return;
 	} //end if
 	if ( !enter ) {
-		Error( "ThreadUnlock without lock\n" );
+		Error( "ThreadUnlock without lock" );
 	}
 	enter = 0;
 	LeaveCriticalSection( &crit );
@@ -347,7 +347,7 @@ void AddThread( void ( *func )(int) ) {
 		  //allocate new thread
 		thread = GetMemory( sizeof( thread_t ) );
 		if ( !thread ) {
-			Error( "can't allocate memory for thread\n" );
+			Error( "can't allocate memory for thread" );
 		}
 
 		//
@@ -510,7 +510,7 @@ void ThreadLock( void ) {
 		pthread_mutex_lock( my_mutex );
 	} //end if
 	if ( enter ) {
-		Error( "Recursive ThreadLock\n" );
+		Error( "Recursive ThreadLock" );
 	}
 	enter = 1;
 } //end of the function ThreadLock
@@ -526,7 +526,7 @@ void ThreadUnlock( void ) {
 		return;
 	} //end if
 	if ( !enter ) {
-		Error( "ThreadUnlock without lock\n" );
+		Error( "ThreadUnlock without lock" );
 	}
 	enter = 0;
 	if ( my_mutex ) {
@@ -677,7 +677,7 @@ void AddThread( void ( *func )(int) ) {
 		  //allocate new thread
 		thread = GetMemory( sizeof( thread_t ) );
 		if ( !thread ) {
-			Error( "can't allocate memory for thread\n" );
+			Error( "can't allocate memory for thread" );
 		}
 		//
 		thread->threadid = currentthreadid;
@@ -838,7 +838,7 @@ void ThreadLock( void ) {
 	} //end if
 	pthread_mutex_lock( &my_mutex );
 	if ( enter ) {
-		Error( "Recursive ThreadLock\n" );
+		Error( "Recursive ThreadLock" );
 	}
 	enter = 1;
 } //end of the function ThreadLock
@@ -854,7 +854,7 @@ void ThreadUnlock( void ) {
 		return;
 	} //end if
 	if ( !enter ) {
-		Error( "ThreadUnlock without lock\n" );
+		Error( "ThreadUnlock without lock" );
 	}
 	enter = 0;
 	pthread_mutex_unlock( &my_mutex );
@@ -1003,7 +1003,7 @@ void AddThread( void ( *func )(int) ) {
 		  //allocate new thread
 		thread = GetMemory( sizeof( thread_t ) );
 		if ( !thread ) {
-			Error( "can't allocate memory for thread\n" );
+			Error( "can't allocate memory for thread" );
 		}
 		//
 		thread->threadid = currentthreadid;
@@ -1274,7 +1274,7 @@ void AddThread( void ( *func )(int) ) {
 		  //allocate new thread
 		thread = GetMemory( sizeof( thread_t ) );
 		if ( !thread ) {
-			Error( "can't allocate memory for thread\n" );
+			Error( "can't allocate memory for thread" );
 		}
 		//
 		thread->threadid = currentthreadid;

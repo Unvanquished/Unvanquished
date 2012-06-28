@@ -409,7 +409,7 @@ void ClipWindingEpsilon( winding_t *in, vec3_t normal, vec_t dist,
 		return;
 	}
 
-	maxpts = in->numpoints + 4;   // cant use counts[0]+2 because
+	maxpts = in->numpoints + 4;   // can't use counts[0]+2 because
 								  // of fp grouping errors
 
 	*front = f = AllocWinding( maxpts );
@@ -519,7 +519,7 @@ void ChopWindingInPlace( winding_t **inout, vec3_t normal, vec_t dist, vec_t eps
 		return;     // inout stays the same
 
 	}
-	maxpts = in->numpoints + 4;   // cant use counts[0]+2 because
+	maxpts = in->numpoints + 4;   // can't use counts[0]+2 because
 								  // of fp grouping errors
 
 	f = AllocWinding( maxpts );
@@ -630,13 +630,13 @@ void CheckWinding( winding_t *w ) {
 
 		j = i + 1 == w->numpoints ? 0 : i + 1;
 
-		// check the point is on the face plane
+		// check that the point is on the face plane
 		d = DotProduct( p1, facenormal ) - facedist;
 		if ( d < -ON_EPSILON || d > ON_EPSILON ) {
 			Error( "CheckWinding: point off plane" );
 		}
 
-		// check the edge isnt degenerate
+		// check that the edge isn't degenerate
 		p2 = w->p[j];
 		VectorSubtract( p2, p1, dir );
 
@@ -874,7 +874,7 @@ winding_t *MergeWindings( winding_t *w1, winding_t *w2, vec3_t planenormal ) {
 				sides[j] = SIDE_BACK;
 			} else { sides[j] = SIDE_FRONT;}
 		} //end for
-		  //remove all unnecesary points
+		  //remove all unnecessary points
 		for ( j = 0; j < numpoints; )
 		{
 			if ( sides[j] == SIDE_BACK
@@ -977,14 +977,14 @@ int WindingError( winding_t *w ) {
 
 		j = i + 1 == w->numpoints ? 0 : i + 1;
 
-		// check the point is on the face plane
+		// check that the point is on the face plane
 		d = DotProduct( p1, facenormal ) - facedist;
 		if ( d < -ON_EPSILON || d > ON_EPSILON ) {
 			sprintf( windingerror, "winding point %d off plane", i );
 			return WE_POINTOFFPLANE;
 		} //end if
 
-		// check the edge isnt degenerate
+		// check that the edge isn't degenerate
 		p2 = w->p[j];
 		VectorSubtract( p2, p1, dir );
 
@@ -1146,7 +1146,7 @@ int PointOnWinding( winding_t *w, vec3_t normal, float dist, vec3_t point, int *
 #define NORMAL_EPSILON  0.0001
 #define DIST_EPSILON    0.02
 
-int FindPlaneSeperatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_t normal, float *dist, vec3_t* points ) {
+int FindPlaneSeparatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_t normal, float *dist, vec3_t* points ) {
 	int i, i2, j, j2, n;
 	int sides1[3], sides2[3];
 	float dist1, dist2, dot, diff;
@@ -1158,7 +1158,7 @@ int FindPlaneSeperatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_
 
 		VectorSubtract( w1->p[i2], w1->p[i], v1 );
 		if ( VectorLength( v1 ) < 0.1 ) {
-			//Log_Write("FindPlaneSeperatingWindings: winding1 with degenerate edge\r\n");
+			//Log_Write("FindPlaneSeparatingWindings: winding1 with degenerate edge\r\n");
 			continue;
 		}
 
@@ -1171,7 +1171,7 @@ int FindPlaneSeperatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_
 
 			VectorSubtract( w2->p[j2], w2->p[j], v2 );
 			if ( VectorLength( v2 ) < 0.1 ) {
-				//Log_Write("FindPlaneSeperatingWindings: winding2 with degenerate edge\r\n");
+				//Log_Write("FindPlaneSeparatingWindings: winding2 with degenerate edge\r\n");
 				continue;
 			}
 
@@ -1200,7 +1200,7 @@ int FindPlaneSeperatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_
 				continue;
 			}
 
-			//check on which side of the seperating plane the points of
+			//check on which side of the separating plane the points of
 			//the first winding are
 			sides1[0] = sides1[1] = sides1[2] = 0;
 			for ( n = 0; n < w1->numpoints; n++ ) {
@@ -1214,7 +1214,7 @@ int FindPlaneSeperatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_
 				}
 			}
 
-			//check on which side of the seperating plane the points of
+			//check on which side of the separating plane the points of
 			//the second winding are
 			sides2[0] = sides2[1] = sides2[2] = 0;
 			for ( n = 0; n < w2->numpoints; n++ ) {
@@ -1231,22 +1231,22 @@ int FindPlaneSeperatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_
 
 			//if the first winding has points at both sides
 			if ( sides1[0] && sides1[1] ) {
-				Log_Write( "FindPlaneSeperatingWindings: winding1 non-convex\r\n" );
+				Log_Write( "FindPlaneSeparatingWindings: winding1 non-convex\r\n" );
 				continue;
 			}
 
 			//if the second winding has points at both sides
 			if ( sides2[0] && sides2[1] ) {
-				Log_Write( "FindPlaneSeperatingWindings: winding2 non-convex\r\n" );
+				Log_Write( "FindPlaneSeparatingWindings: winding2 non-convex\r\n" );
 				continue;
 			}
 
 			if ( ( !sides1[0] && !sides1[1] ) || ( !sides2[0] && !sides2[1] ) ) {
-				//don't use one of the winding planes as the seperating plane
+				//don't use one of the winding planes as the separating plane
 				continue;
 			}
 
-			//the windings must be at different sides of the seperating plane
+			//the windings must be at different sides of the separating plane
 			if ( ( !sides1[0] && !sides2[1] ) || ( !sides1[1] && !sides2[0] ) ) {
 				VectorCopy( normal1, normal );
 				*dist = dist1;
@@ -1261,7 +1261,7 @@ int FindPlaneSeperatingWindings( winding_t *w1, winding_t *w2, vec3_t dir, vec3_
 		}
 	}
 	return false;
-} //end of the function FindPlaneSeperatingWindings
+} //end of the function FindPlaneSeparatingWindings
 //===========================================================================
 //
 // Parameter:				-
@@ -1339,36 +1339,36 @@ winding_t *AAS_MergeWindings(winding_t *w1, winding_t *w2, vec3_t windingnormal)
 	int newnumpoints;
 	int keep[2];
 
-	if (!FindPlaneSeperatingWindings(w1, w2, windingnormal, normal, &dist)) return NULL;
+	if (!FindPlaneSeparatingWindings(w1, w2, windingnormal, normal, &dist)) return NULL;
 
 	//for both windings
 	for (n = 0; n < 2; n++)
 	{
 		if (n == 0) winding = w1;
 		else winding = w2;
-		//get the points of the winding which are on the seperating plane
+		//get the points of the winding which are on the separating plane
 		for (i = 0; i < winding->numpoints; i++)
 		{
 			dot = DotProduct(winding->p[i], normal) - dist;
 			if (dot > -ON_EPSILON && dot < ON_EPSILON)
 			{
-				//don't allow more than 64 points on the seperating plane
-				if (numpoints[n] >= 64) Error("AAS_MergeWindings: more than 64 points on seperating plane\n");
+				//don't allow more than 64 points on the separating plane
+				if (numpoints[n] >= 64) Error("AAS_MergeWindings: more than 64 points on separating plane");
 				points[n][numpoints[n]++] = i;
 			} //end if
 		} //end for
-		//there must be at least two points of each winding on the seperating plane
+		//there must be at least two points of each winding on the separating plane
 		if (numpoints[n] < 2) return NULL;
 	} //end for
 
-	//if the first point of winding1 (which is on the seperating plane) is unequal
-	//to the last point of winding2 (which is on the seperating plane)
+	//if the first point of winding1 (which is on the separating plane) is unequal
+	//to the last point of winding2 (which is on the separating plane)
 	if (!EqualVertexes(w1->p[points[0][0]], w2->p[points[1][numpoints[1]-1]]))
 	{
 		return NULL;
 	} //end if
-	//if the last point of winding1 (which is on the seperating plane) is unequal
-	//to the first point of winding2 (which is on the seperating plane)
+	//if the last point of winding1 (which is on the separating plane) is unequal
+	//to the first point of winding2 (which is on the separating plane)
 	if (!EqualVertexes(w1->p[points[0][numpoints[0]-1]], w2->p[points[1][0]]))
 	{
 		return NULL;
@@ -1377,7 +1377,7 @@ winding_t *AAS_MergeWindings(winding_t *w1, winding_t *w2, vec3_t windingnormal)
 	// check slope of connected lines
 	// if the slopes are colinear, the point can be removed
 	//
-	//first point of winding1 which is on the seperating plane
+	//first point of winding1 which is on the separating plane
 	p1 = points[0][0];
 	//point before p1
 	p2 = (p1 + w1->numpoints - 1) % w1->numpoints;
@@ -1385,7 +1385,7 @@ winding_t *AAS_MergeWindings(winding_t *w1, winding_t *w2, vec3_t windingnormal)
 	CrossProduct(windingnormal, delta, normal);
 	VectorNormalize(normal, normal);
 
-	//last point of winding2 which is on the seperating plane
+	//last point of winding2 which is on the separating plane
 	p1 = points[1][numpoints[1]-1];
 	//point after p1
 	p2 = (p1 + 1) % w2->numpoints;
@@ -1394,7 +1394,7 @@ winding_t *AAS_MergeWindings(winding_t *w1, winding_t *w2, vec3_t windingnormal)
 	if (dot > CONTINUOUS_EPSILON) return NULL; //merging would create a non-convex polygon
 	keep[0] = (qboolean)(dot < -CONTINUOUS_EPSILON);
 
-	//first point of winding2 which is on the seperating plane
+	//first point of winding2 which is on the separating plane
 	p1 = points[1][0];
 	//point before p1
 	p2 = (p1 + w2->numpoints - 1) % w2->numpoints;
@@ -1402,7 +1402,7 @@ winding_t *AAS_MergeWindings(winding_t *w1, winding_t *w2, vec3_t windingnormal)
 	CrossProduct(windingnormal, delta, normal);
 	VectorNormalize(normal, normal);
 
-	//last point of winding1 which is on the seperating plane
+	//last point of winding1 which is on the separating plane
 	p1 = points[0][numpoints[0]-1];
 	//point after p1
 	p2 = (p1 + 1) % w1->numpoints;
@@ -1424,14 +1424,14 @@ winding_t *AAS_MergeWindings(winding_t *w1, winding_t *w2, vec3_t windingnormal)
 		if (n == 0) winding = w1;
 		else winding = w2;
 		//copy the points of the winding starting with the last point on the
-		//seperating plane and ending before the first point on the seperating plane
+		//separating plane and ending before the first point on the separating plane
 		for (i = points[n][numpoints[n]-1]; i != points[n][0]; i = (i+1)%winding->numpoints)
 		{
 			if (k >= newnumpoints)
 			{
 				Log_Print("numpoints[0] = %d\n", numpoints[0]);
 				Log_Print("numpoints[1] = %d\n", numpoints[1]);
-				Error("AAS_MergeWindings: k = %d >= newnumpoints = %d\n", k, newnumpoints);
+				Error("AAS_MergeWindings: k = %d >= newnumpoints = %d", k, newnumpoints);
 			} //end if
 			VectorCopy(winding->p[i], neww->p[k]);
 			k++;

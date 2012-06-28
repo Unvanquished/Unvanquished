@@ -190,7 +190,7 @@ void Con_ToggleConsole_f( void )
 		{
 			con.desiredFrac = 1.0;
 		}
-		// normal half-screen console
+		// half-screen console
 		else
 		{
 			con.desiredFrac = 0.5;
@@ -216,7 +216,7 @@ const char *Con_GetText( int console )
 Con_Clear
 ================
 */
-static ID_INLINE void Con_Clear( void )
+static INLINE void Con_Clear( void )
 {
 	int i;
 	conChar_t fill = { '\0', ColorIndex( CONSOLE_COLOR ) };
@@ -379,7 +379,7 @@ void Con_Grep_f( void )
 				char *nb;
 				// allocate in 16K chunks - more than adequate
 				pbAlloc = ( pbLength + i + 1 + 16383) & ~16383;
-				*nb = Z_Malloc( pbAlloc );
+				nb = Z_Malloc( pbAlloc );
 				strcpy( nb, printbuf );
 				Z_Free( printbuf );
 				printbuf = nb;
@@ -931,7 +931,7 @@ void Con_DrawSolidConsole( float frac )
 			}
 			else
 			{
-				// This will be overwrote, so ill just abuse it here, no need to define another array
+				// This will be overwritten, so i'll just abuse it here, no need to define another array
 				color[ 0 ] = scr_conColorRed->value;
 				color[ 1 ] = scr_conColorGreen->value;
 				color[ 2 ] = scr_conColorBlue->value;
@@ -1065,7 +1065,6 @@ void Con_DrawSolidConsole( float frac )
 
 	for ( i = 0; i < rows; i++, y -= charHeight, row-- )
 	{
-		float currentWidthLocation = cl_conXOffset->integer;
 		conChar_t *text;
 
 		if ( row < 0 )
@@ -1080,6 +1079,8 @@ void Con_DrawSolidConsole( float frac )
 		}
 
 		text = con.text + CON_LINE( row );
+
+		currentWidthLocation = cl_conXOffset->integer;
 
 		for ( x = 0; x < con.linewidth && text[x].ch; ++x )
 		{

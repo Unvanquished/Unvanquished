@@ -139,7 +139,6 @@ qboolean CG_AttachmentDir( attachment_t *a, vec3_t v )
 	{
 		case AT_STATIC:
 			return qfalse;
-			break;
 
 		case AT_TAG:
 			if ( !a->tagValid )
@@ -208,7 +207,6 @@ qboolean CG_AttachmentAxis( attachment_t *a, vec3_t axis[ 3 ] )
 	{
 		case AT_STATIC:
 			return qfalse;
-			break;
 
 		case AT_TAG:
 			if ( !a->tagValid )
@@ -231,7 +229,6 @@ qboolean CG_AttachmentAxis( attachment_t *a, vec3_t axis[ 3 ] )
 
 		case AT_PARTICLE:
 			return qfalse;
-			break;
 
 		default:
 			CG_Printf( S_COLOR_RED "ERROR: Invalid attachmentType_t in attachment\n" );

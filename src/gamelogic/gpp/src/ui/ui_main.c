@@ -40,7 +40,7 @@ static const char *const netSources[] =
 	"Favorites"
 };
 
-static const int  numNetSources = sizeof( netSources ) / sizeof( const char * );
+static const int  numNetSources = ARRAY_LEN( netSources );
 
 static const char *const netnames[] =
 {
@@ -110,7 +110,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &ui_browserShowEmpty,    "ui_browserShowEmpty",         "1",                         CVAR_ARCHIVE              },
 
 	{ &ui_dedicated,           "ui_dedicated",                "0",                         CVAR_ARCHIVE              },
-	{ &ui_netSource,           "ui_netSource",                "0",                         CVAR_ARCHIVE              },
+	{ &ui_netSource,           "ui_netSource",                "1",                         CVAR_ARCHIVE              },
 	{ &ui_selectedMap,         "ui_selectedMap",              "0",                         CVAR_ARCHIVE              },
 	{ &ui_lastServerRefresh_0, "ui_lastServerRefresh_0",      "",                          CVAR_ARCHIVE              },
 	{ &ui_lastServerRefresh_1, "ui_lastServerRefresh_1",      "",                          CVAR_ARCHIVE              },
@@ -140,7 +140,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &ui_helpFiles,           "ui_helpFiles",                "ui/menu/help/help.txt",     CVAR_ARCHIVE              }
 };
 
-static const int           cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[ 0 ] );
+static const int           cvarTableSize = ARRAY_LEN( cvarTable );
 
 static char                translated_yes[ 4 ], translated_no[ 4 ];
 
@@ -222,6 +222,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 		case UI_DRAW_CONNECT_SCREEN:
 			UI_DrawConnectScreen( arg0 );
 			return 0;
+
+		default:
+			trap_Error( va( "vmMain(): unknown ui command %i", command ) );
 	}
 
 	return -1;
@@ -1713,7 +1716,7 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 
 	if ( !handle )
 	{
-		trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!\n", menuFile ) );
+		trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", menuFile ) );
 	}
 
 	if ( reset )
@@ -2980,24 +2983,28 @@ static void UI_LoadProfiles()
 
 		if ( dirptr[ 0 ] && Q_stricmp( dirptr, "." ) && Q_stricmp( dirptr, ".." ) )
 		{
-			int             handle;
-			pc_token_t      token;
+			int  handle;
+			char token[ 40 ];
 
-			if ( !( handle = trap_PC_LoadSource( va( "profiles/%s/profile.dat", dirptr ) ) ) )
+			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", dirptr ), &handle, FS_READ ) == -1 )
 			{
 				dirptr += dirlen;
 				continue;
 			}
 
-			if ( !trap_PC_ReadToken( handle, &token ) )
+			memset( token, 0, sizeof( token ) );
+
+			trap_FS_Read( token, sizeof( token ) - 1, handle );
+			Q_CleanStr( token );
+			Q_CleanDirName( token );
+
+			if ( !token[ 0 ] )
 			{
-				trap_PC_FreeSource( handle );
-				dirptr += dirlen;
-				continue;
+				strcpy( token, "UnnamedPlayer" );
 			}
 
-			uiInfo.profileList[ uiInfo.profileCount ].name = String_Alloc( token.string );
-			trap_PC_FreeSource( handle );
+			uiInfo.profileList[ uiInfo.profileCount ].name = String_Alloc( token );
+			trap_FS_FCloseFile( handle );
 
 			uiInfo.profileList[ uiInfo.profileCount ].dir = String_Alloc( dirptr );
 			uiInfo.profileCount++;
@@ -3006,7 +3013,7 @@ static void UI_LoadProfiles()
 			   int j;
 
 			   uiInfo.profileIndex = 0;
-			   trap_Cvar_Set( "ui_profile", token.string );
+			   trap_Cvar_Set( "ui_profile", token );
 
 			   for( j = 0; j < Menu_Count(); j++ ) {
 			   Menu_SetFeederSelection( Menu_Get(j), FEEDER_PROFILES, 0, NULL );
@@ -3014,16 +3021,14 @@ static void UI_LoadProfiles()
 			   } */
 			if ( uiInfo.profileIndex == -1 )
 			{
-				Q_CleanStr( token.string );
-				Q_CleanDirName( token.string );
+				Q_CleanStr( token );
+				Q_CleanDirName( token );
 
-				if ( !Q_stricmp( token.string, cl_profile.string ) )
+				if ( !Q_stricmp( token, cl_profile.string ) )
 				{
 					int             j;
 
 					uiInfo.profileIndex = i;
-					trap_Cvar_Set( "ui_profile", uiInfo.profileList[ 0 ].name );
-					trap_Cvar_Update( &ui_profile );
 
 					for ( j = 0; j < Menu_Count(); j++ )
 					{
@@ -3046,8 +3051,6 @@ static void UI_LoadProfiles()
 		int             j;
 
 		uiInfo.profileIndex = 0;
-		trap_Cvar_Set( "ui_profile", uiInfo.profileList[ 0 ].name );
-		trap_Cvar_Update( &ui_profile );
 
 		for ( j = 0; j < Menu_Count(); j++ )
 		{
@@ -3247,7 +3250,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
-			case 1: // normal
+			case 1: // intermediate
 				trap_Cvar_SetValue( "r_subdivisions", 12 );
 				trap_Cvar_SetValue( "r_vertexlight", 0 );
 				trap_Cvar_SetValue( "r_lodbias", 0 );
@@ -3310,7 +3313,6 @@ static void UI_Update( const char *name )
 static void UI_RunMenuScript( char **args )
 {
 	const char *name, *name2;
-	char buff[ 1024 ];
 	const char *cmd;
 
 	if ( String_Parse( args, &name ) )
@@ -3643,6 +3645,7 @@ static void UI_RunMenuScript( char **args )
 			if ( uiInfo.serverStatus.currentServer >= 0 &&
 			     uiInfo.serverStatus.currentServer < uiInfo.serverStatus.numDisplayServers )
 			{
+				char buff[ 1024 ];
 				trap_LAN_GetServerAddressString( ui_netSource.integer,
 				                                 uiInfo.serverStatus.displayServers[ uiInfo.serverStatus.currentServer ],
 				                                 buff, 1024 );
@@ -3719,21 +3722,17 @@ static void UI_RunMenuScript( char **args )
 			};
 			int i;
 
-			for ( i = 0; i < sizeof( voteInfo ) / sizeof( voteInfo[0] ); ++i )
+			for ( i = 0; i < ARRAY_LEN( voteInfo ); ++i )
 			{
 				if ( Q_stricmp( name + 4, voteInfo[i].vote ) == 0 )
 				{
-					char rawbuffer[ MAX_CVAR_VALUE_STRING ];
 					char *buffer = "";
 
 					if ( voteInfo[i].reason )
 					{
-						trap_Cvar_VariableStringBuffer( "ui_reason", buffer, sizeof( buffer ) );
-						buffer = Quote( buffer );
-					}
-					else
-					{
-						buffer = "";
+						char rawbuffer[ MAX_CVAR_VALUE_STRING ];
+						trap_Cvar_VariableStringBuffer( "ui_reason", rawbuffer, sizeof( rawbuffer ) );
+						buffer = Quote( rawbuffer );
 					}
 
 					switch ( voteInfo[i].type )
@@ -3787,6 +3786,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			if ( ui_netSource.integer != AS_FAVORITES )
 			{
+				char buff[ MAX_STRING_CHARS ];
 				char name[ MAX_NAME_LENGTH ];
 				char addr[ MAX_NAME_LENGTH ];
 				int res;
@@ -3836,20 +3836,28 @@ static void UI_RunMenuScript( char **args )
 
 			  trap_Cvar_Set( "cl_profile", cl_profile.string );
 			  if( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", cl_profile.string ), &f, FS_WRITE ) >= 0 ) {
-			  trap_FS_Write( va( "\"%s\"", ui_profile.string ), strlen(ui_profile.string) + 2, f );
+			  trap_FS_Write( ui_profile.string, strlen(ui_profile.string), f );
 			  trap_FS_FCloseFile( f );
 			  } */
 			Q_strncpyz( buff, ui_profile.string, sizeof( buff ) );
-			Q_CleanStr( buff );
-			Q_CleanDirName( buff );
-
-			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", buff ), &f, FS_WRITE ) >= 0 )
+			if( buff[0] )
 			{
-				trap_FS_Write( va( "\"%s\"", ui_profile.string ), strlen( ui_profile.string ) + 2, f );
-				trap_FS_FCloseFile( f );
-			}
+				Q_CleanStr( buff );
+				Q_CleanDirName( buff );
 
-			trap_Cvar_Set( "name", ui_profile.string );
+				if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", buff ), &f, FS_WRITE ) >= 0 )
+				{
+					trap_FS_Write( ui_profile.string, strlen( ui_profile.string ), f );
+					trap_FS_FCloseFile( f );
+				}
+
+				trap_Cvar_Set( "name", ui_profile.string );
+			}
+			else
+			{
+				trap_Cvar_Set( "com_errorMessage", "You did not enter a profile!" );
+				Menus_ActivateByName( "error_popmenu" );
+			}
 		}
 		else if ( Q_stricmp( name, "clearPID" ) == 0 )
 		{
@@ -3864,23 +3872,26 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "applyProfile" ) == 0 )
 		{
-			Q_strncpyz( cl_profile.string, ui_profile.string, sizeof( cl_profile.string ) );
+			Q_strncpyz( cl_profile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_profile.string );
 			Q_CleanDirName( cl_profile.string );
 			trap_Cvar_Set( "cl_profile", cl_profile.string );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec profiles/%s/autogen.cfg\n", cl_profile.string ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec profiles/%s/autoexec.cfg\n", cl_profile.string ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 		}
 		else if ( Q_stricmp( name, "setDefaultProfile" ) == 0 )
 		{
 			fileHandle_t    f;
 
-			Q_strncpyz( cl_defaultProfile.string, ui_profile.string, sizeof( cl_profile.string ) );
+			Q_strncpyz( cl_defaultProfile.string, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( cl_profile.string ) );
 			Q_CleanStr( cl_defaultProfile.string );
 			Q_CleanDirName( cl_defaultProfile.string );
 			trap_Cvar_Set( "cl_defaultProfile", cl_defaultProfile.string );
 
 			if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
 			{
-				trap_FS_Write( va( "\"%s\"", cl_defaultProfile.string ), strlen( cl_defaultProfile.string ) + 2, f );
+				trap_FS_Write( cl_defaultProfile.string, strlen( cl_defaultProfile.string ), f );
 				trap_FS_FCloseFile( f );
 			}
 		}
@@ -3888,7 +3899,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			char            buff[ MAX_CVAR_VALUE_STRING ];
 
-			Q_strncpyz( buff, ui_profile.string, sizeof( buff ) );
+			Q_strncpyz( buff, uiInfo.profileList[ uiInfo.profileIndex ].name, sizeof( buff ) );
 			Q_CleanStr( buff );
 			Q_CleanDirName( buff );
 
@@ -3904,7 +3915,7 @@ static void UI_RunMenuScript( char **args )
 
 					if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
 					{
-						trap_FS_Write( va( "\"%s\"", cl_profile.string ), strlen( cl_profile.string ) + 2, f );
+						trap_FS_Write( cl_profile.string, strlen( cl_profile.string ), f );
 						trap_FS_FCloseFile( f );
 					}
 				}
@@ -3935,7 +3946,7 @@ static void UI_RunMenuScript( char **args )
 
 			if ( trap_FS_FOpenFile( va( "profiles/%s/profile.dat", buff ), &f, FS_WRITE ) >= 0 )
 			{
-				trap_FS_Write( va( "\"%s\"", ui_renameprofileto ), strlen( ui_renameprofileto ) + 2, f );
+				trap_FS_Write( ui_renameprofileto, strlen( ui_renameprofileto ), f );
 				trap_FS_FCloseFile( f );
 			}
 
@@ -3989,7 +4000,7 @@ static void UI_RunMenuScript( char **args )
 
 					if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
 					{
-						trap_FS_Write( va( "\"%s\"", buff ), strlen( buff ) + 2, f );
+						trap_FS_Write( buff, strlen( buff ), f );
 						trap_FS_FCloseFile( f );
 					}
 				}
@@ -4011,6 +4022,7 @@ static void UI_RunMenuScript( char **args )
 		{
 			if ( ui_netSource.integer == AS_FAVORITES )
 			{
+				char buff[ MAX_STRING_CHARS ];
 				char addr[ MAX_NAME_LENGTH ];
 				trap_LAN_GetServerInfo( ui_netSource.integer,
 				                        uiInfo.serverStatus.displayServers[ uiInfo.serverStatus.currentServer ],
@@ -4229,6 +4241,10 @@ static int UI_FeederCount( int feederID )
 	else if ( feederID == FEEDER_TREMHUMANBUILD )
 	{
 		return uiInfo.humanBuildCount;
+	}
+	else if ( feederID == FEEDER_PROFILES )
+	{
+		return uiInfo.profileCount;
 	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
@@ -4556,6 +4572,13 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			return uiInfo.humanBuildList[ index ].text;
 		}
 	}
+	else if ( feederID == FEEDER_PROFILES )
+	{
+		if( index >= 0 && index < uiInfo.profileCount )
+		{
+			return uiInfo.profileList[ index ].name;
+		}
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		static char resolution[ MAX_STRING_CHARS ];
@@ -4736,6 +4759,10 @@ static void UI_FeederSelection( int feederID, int index )
 	{
 		uiInfo.humanBuildIndex = index;
 	}
+	else if ( feederID == FEEDER_PROFILES )
+	{
+		uiInfo.profileIndex = index;
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		if ( index >= 0 && index < uiInfo.numResolutions )
@@ -4915,7 +4942,6 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.drawSides = &UI_DrawSides;
 	uiInfo.uiDC.drawTopBottom = &UI_DrawTopBottom;
 	uiInfo.uiDC.clearScene = &trap_R_ClearScene;
-	uiInfo.uiDC.drawSides = &UI_DrawSides;
 	uiInfo.uiDC.addRefEntityToScene = &trap_R_AddRefEntityToScene;
 	uiInfo.uiDC.renderScene = &trap_R_RenderScene;
 	uiInfo.uiDC.registerFont = &trap_R_RegisterFont;
@@ -5112,10 +5138,9 @@ void UI_SetActiveMenu( uiMenuCommand_t menu )
 				trap_Key_SetCatcher( KEYCATCH_UI );
 				Menus_CloseAll();
 				Menus_ActivateByName( "main" );
-				trap_Cvar_VariableStringBuffer( "name", buf, sizeof( buf ) );
-				if( !buf[ 0 ] || !Q_stricmp( buf, "UnnamedPlayer" ) )
+				if( !cl_profile.string[0] )
 				{
-					Menus_ActivateByName( "simple_options" );
+					Menus_ActivateByName( "profile_firstrun" );
 				}
 				buf[ 0 ] = '\0';
 				trap_Cvar_VariableStringBuffer( "com_errorMessage", buf, sizeof( buf ) );

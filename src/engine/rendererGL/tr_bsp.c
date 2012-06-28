@@ -424,7 +424,7 @@ static int QDECL LightmapNameCompare( const void *a, const void *b )
 /* standard conversion from rgbe to float pixels */
 /* note: Ward uses ldexp(col+0.5,exp-(128+8)).  However we wanted pixels */
 /*       in the range [0,1] to map back into the range [0,1].            */
-static ID_INLINE void rgbe2float( float *red, float *green, float *blue, unsigned char rgbe[ 4 ] )
+static INLINE void rgbe2float( float *red, float *green, float *blue, unsigned char rgbe[ 4 ] )
 {
 	float e;
 	float f;
@@ -494,8 +494,7 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 
 	if ( !buffer )
 	{
-		ri.Error( ERR_DROP, "LoadRGBE: '%s' not found\n", name );
-		return;
+		ri.Error( ERR_DROP, "LoadRGBE: '%s' not found", name );
 	}
 
 	buf_p = buffer;
@@ -615,12 +614,12 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 
 	if ( !formatFound )
 	{
-		ri.Error( ERR_DROP, "LoadRGBE: %s has no format\n", name );
+		ri.Error( ERR_DROP, "LoadRGBE: %s has no format", name );
 	}
 
 	if ( !w || !h )
 	{
-		ri.Error( ERR_DROP, "LoadRGBE: %s has an invalid image size\n", name );
+		ri.Error( ERR_DROP, "LoadRGBE: %s has an invalid image size", name );
 	}
 
 	*pic = Com_Allocate( w * h * 3 * sizeof( float ) );
@@ -936,7 +935,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					if ( glConfig2.generateMipmapAvailable )
 					{
-						//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);    // make sure its nice
+						//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);    // make sure it's nice
 						glTexParameteri( image->type, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
 						glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
 					}
@@ -6122,7 +6121,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 
 		if ( j == 0 )
 		{
-			out->volumeIBO = volumeIBO = R_CreateIBO2( va( "staticBspNode_IBO %i", j ), tess.numIndexes / 3, triangles, VBO_USAGE_STATIC );
+			out->volumeIBO = volumeIBO = R_CreateIBO2( "staticBspNode_IBO", tess.numIndexes / 3, triangles, VBO_USAGE_STATIC );
 		}
 		else
 		{
@@ -10124,7 +10123,7 @@ void R_BuildCubeMaps( void )
 
 #if 0
 
-	// write buffer if theres any still unwritten
+	// flush the buffer if there's any still unwritten content
 	if ( fileBufX != 0 || fileBufY != 0 )
 	{
 		fileName = va( "maps/%s/cm_%04d.png", s_worldData.baseName, fileCount );
@@ -10224,7 +10223,7 @@ void RE_LoadWorldMap( const char *name )
 
 	if ( tr.worldMapLoaded )
 	{
-		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map\n" );
+		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map" );
 	}
 
 	ri.Printf( PRINT_ALL, "----- RE_LoadWorldMap( %s ) -----\n", name );

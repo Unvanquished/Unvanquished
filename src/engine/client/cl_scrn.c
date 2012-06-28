@@ -593,7 +593,7 @@ void SCR_DrawVoipSender( void )
 {
 	char string[ 256 ];
 
-	// Little bit of a hack here, but its the only thing i could come up with :
+	// Little bit of a hack here, but it's the only thing i could come up with
 	if ( cls.voipTime > cls.realtime )
 	{
 		if ( !cl_voipShowSender->integer )
@@ -631,7 +631,7 @@ void SCR_DrawVoipSender( void )
 		{
 			SCR_DrawStringExt( 320 - strlen( string ) * -9, 100, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
-		else if ( cl_voipSenderPos->integer == 3 ) // Top center, below VOIP bar when its displayed
+		else if ( cl_voipSenderPos->integer == 3 ) // Top center, below VOIP bar when it's displayed
 		{
 			SCR_DrawStringExt( 320 - strlen( string ) * 4, 30, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
@@ -764,7 +764,6 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 		{
 			default:
 				Com_Error( ERR_FATAL, "SCR_DrawScreenField: bad cls.state" );
-				break;
 
 			case CA_CINEMATIC:
 				SCR_DrawCinematic();
@@ -784,14 +783,6 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				VM_Call( uivm, UI_REFRESH, cls.realtime );
 				VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, qfalse );
 				break;
-
-				// Ridah, if the cgame is valid, fall through to there
-				if ( !cls.cgameStarted || !com_sv_running->integer )
-				{
-					// connecting clients will only show the connection dialog
-					VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, qfalse );
-					break;
-				}
 
 			case CA_LOADING:
 			case CA_PRIMED:

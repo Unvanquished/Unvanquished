@@ -773,7 +773,7 @@ static qboolean R_MDC_ConvertMD3( model_t *mod, int lod, const char *mod_name )
 	mdc = ri.Hunk_Alloc( mdcHeader.ofsEnd, h_low );
 	mod->model.mdc[ lod ] = mdc;
 
-	// we have the memory allocated, so lets fill it in
+	// we have the memory allocated, so let's fill it in
 
 	// header info
 	*mdc = mdcHeader;
@@ -871,7 +871,7 @@ static qboolean R_MDC_ConvertMD3( model_t *mod, int lod, const char *mod_name )
 				       ( mdcXyzCompressed_t * )( ( byte * ) cSurf + cSurf->ofsXyzCompressed +
 				                                 sizeof( mdcXyzCompressed_t ) * cSurf->numVerts * c ) ) )
 				{
-					ri.Error( ERR_DROP, "R_MDC_ConvertMD3: tried to compress an unsuitable frame\n" );
+					ri.Error( ERR_DROP, "R_MDC_ConvertMD3: tried to compress an unsuitable frame" );
 				}
 
 				frameCompFrames[ f ] = c;
@@ -1650,7 +1650,7 @@ static qboolean R_LoadMDM( model_t *mod, void *buffer, const char *mod_name )
 
 	/*  mdm->skel = RE_RegisterModel(mdm->bonesfile);
 	        if ( !mdm->skel ) {
-	                ri.Error (ERR_DROP, "R_LoadMDM: %s skeleton not found\n", mdm->bonesfile );
+	                ri.Error (ERR_DROP, "R_LoadMDM: %s skeleton not found", mdm->bonesfile );
 	        }
 
 	        if ( mdm->numFrames < 1 ) {
@@ -2563,8 +2563,8 @@ void R_Hunk_Reset( void )
 //=============================================================================
 // Ridah, model caching
 
-// TODO: convert the Hunk_Alloc's in the model loading to malloc's, so we don't have
-// to move so much memory around during transitions
+// TODO: convert the Hunk_Alloc() calls in the model loading code to malloc() calls,
+// so that we don't have to move so much memory around during transitions
 
 static model_t backupModels[ MAX_MOD_KNOWN ];
 static int     numBackupModels = 0;
@@ -2882,7 +2882,6 @@ qboolean R_FindCachedModel( const char *name, model_t *newmod )
 
 				default:
 					return qfalse;
-					break; // MOD_BAD MOD_BRUSH
 			}
 
 			mod->type = MOD_BAD; // don't try and purge it later

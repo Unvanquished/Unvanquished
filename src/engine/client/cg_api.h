@@ -293,7 +293,7 @@ typedef enum
 //  void (*CG_EventHandling)(int type, qboolean fForced);
 
   CG_GET_TAG,
-//  qboolean CG_GetTag( int clientNum, char *tagname, orientation_t *or );
+//  qboolean CG_GetTag( int clientNum, const char *tagname, orientation_t *or );
 
   CG_CHECKEXECKEY,
 
@@ -314,7 +314,7 @@ typedef enum
 } cgameExport_t;
 
 void            trap_Print( const char *fmt );
-void            trap_Error( const char *fmt );
+void            trap_Error( const char *string ) NORETURN;
 int             trap_Milliseconds( void );
 void            trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
 void            trap_Cvar_Update( vmCvar_t *vmCvar );
@@ -432,7 +432,7 @@ void            trap_Key_SetCatcher( int catcher );
 int             trap_Key_GetKey( const char *binding );
 qboolean        trap_Key_GetOverstrikeMode( void );
 void            trap_Key_SetOverstrikeMode( qboolean state );
-int             trap_PC_AddGlobalDefine( char *define );
+int             trap_PC_AddGlobalDefine( const char *define );
 int             trap_PC_LoadSource( const char *filename );
 int             trap_PC_FreeSource( int handle );
 int             trap_PC_ReadToken( int handle, pc_token_t *pc_token );
@@ -458,7 +458,7 @@ void            trap_UI_Popup( int arg0 );
 void            trap_UI_ClosePopup( const char *arg0 );
 void            trap_Key_GetBindingBuf( int keynum, char *buf, int buflen );
 void            trap_Key_SetBinding( int keynum, const char *binding );
-int             trap_Parse_AddGlobalDefine( char *define );
+int             trap_Parse_AddGlobalDefine( const char *define );
 int             trap_Parse_LoadSource( const char *filename );
 int             trap_Parse_FreeSource( int handle );
 int             trap_Parse_ReadToken( int handle, pc_token_t *pc_token );

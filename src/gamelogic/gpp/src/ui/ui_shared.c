@@ -52,12 +52,15 @@ scrollInfo_t;
 
 static scrollInfo_t scrollInfo;
 
-static qboolean shift = qfalse, ctrl = qfalse;
+typedef enum {
+	MOD_SHIFT, MOD_CTRL, MOD_ALT, MOD_COMMAND, MOD_MODE, MOD_SUPER
+} modkeys_t;
+static unsigned char mods[6] = { 0 };
+static const int     modkeys[6] = { K_SHIFT, K_CTRL, K_ALT, K_COMMAND, K_MODE, K_SUPER };
 
 // prevent compiler warnings
 void voidFunction( void *var )
 {
-	return;
 }
 
 qboolean voidFunction2( itemDef_t *var1, int var2 )
@@ -91,8 +94,8 @@ static int                lastListBoxClickTime = 0;
 itemDataType_t            Item_DataType( itemDef_t *item );
 void                      Item_RunScript( itemDef_t *item, const char *s );
 void                      Item_SetupKeywordHash( void );
-static ID_INLINE qboolean Item_IsEditField( itemDef_t *item );
-static ID_INLINE qboolean Item_IsListBox( itemDef_t *item );
+static INLINE qboolean Item_IsEditField( itemDef_t *item );
+static INLINE qboolean Item_IsListBox( itemDef_t *item );
 static void               Item_ListBox_SetStartPos( itemDef_t *item, int startPos );
 void                      Menu_SetupKeywordHash( void );
 int                       BindingIDFromName( const char *name );
@@ -374,7 +377,7 @@ void String_Init( void )
 PC_SourceWarning
 =================
 */
-void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceWarning( int handle, char *format, ... )
+void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 {
 	int         line;
 	char        filename[ 128 ];
@@ -397,7 +400,7 @@ void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceWarning( int handle, c
 PC_SourceError
 =================
 */
-void __attribute__( ( format( printf, 2, 3 ) ) ) PC_SourceError( int handle, char *format, ... )
+void PRINTF_LIKE(2) PC_SourceError( int handle, char *format, ... )
 {
 	int         line;
 	char        filename[ 128 ];
@@ -499,7 +502,7 @@ OpPrec
 Return a value reflecting operator precedence
 =================
 */
-static ID_INLINE int OpPrec( char op )
+static INLINE int OpPrec( char op )
 {
 	switch ( op )
 	{
@@ -715,7 +718,6 @@ static qboolean PC_Expression_Parse( int handle, float *f )
 
 				default:
 					Com_Error( ERR_FATAL, "Unknown operator '%c' in postfix string", op );
-					return qfalse;
 			}
 
 			PUSH_VAL( stack, result );
@@ -770,7 +772,7 @@ qboolean PC_Float_Parse( int handle, float *f )
 
 	if ( token.type != TT_NUMBER )
 	{
-		PC_SourceError( handle, "expected float but found %s\n", token.string );
+		PC_SourceError( handle, "expected float but found %s", token.string );
 		return qfalse;
 	}
 
@@ -895,7 +897,7 @@ qboolean PC_Int_Parse( int handle, int *i )
 
 	if ( token.type != TT_NUMBER )
 	{
-		PC_SourceError( handle, "expected integer but found %s\n", token.string );
+		PC_SourceError( handle, "expected integer but found %s", token.string );
 		return qfalse;
 	}
 
@@ -1794,7 +1796,7 @@ void Menus_CloseAll( void )
 	{
 		for ( i = openMenuCount; i > 0; i-- )
 		{
-			Menus_Close( menuStack[ i ] );
+			Menus_Close( menuStack[ i - 1 ] );
 		}
 
 		openMenuCount = 0;
@@ -2107,12 +2109,12 @@ glyphInfo_t *UI_Glyph( const fontMetrics_t *font, const char *str )
 	return UI_GlyphCP( font, Q_UTF8CodePoint( str ) );
 }
 
-static ID_INLINE float UI_EmoticonHeight( const fontMetrics_t *font, float scale )
+static INLINE float UI_EmoticonHeight( const fontMetrics_t *font, float scale )
 {
 	return UI_GlyphCP( font, '[' )->height * scale * font->glyphScale;
 }
 
-static ID_INLINE float UI_EmoticonWidth( const fontMetrics_t *font, float scale )
+static INLINE float UI_EmoticonWidth( const fontMetrics_t *font, float scale )
 {
 	return UI_EmoticonHeight( font, scale ) * DC->aspectScale;
 }
@@ -2245,7 +2247,7 @@ static float UI_Parse_Indent( const char **text )
 	return pixels;
 }
 
-static ID_INLINE const fontMetrics_t *UI_FontForScale( float scale )
+static INLINE const fontMetrics_t *UI_FontForScale( float scale )
 {
 	if ( scale <= DC->smallFontScale )
 	{
@@ -2733,7 +2735,7 @@ void UI_Text_Paint_Limit( float *maxX, float x, float y, float scale,
                           vec4_t color, const char *text, float adjust )
 {
 	UI_Text_Paint_Generic( x, y, scale, adjust,
-	                       text, color, ITEM_TEXTSTYLE_NORMAL,
+	                       text, color, ITEM_TEXTSTYLE_PLAIN,
 	                       0, 0, 0, maxX, -1, 0 );
 }
 
@@ -2780,7 +2782,7 @@ static const commandDef_t commandList[] =
 	{ "transition",      &Script_Transition      }, // group/name
 };
 
-static const size_t scriptCommandCount = sizeof( commandList ) / sizeof( commandDef_t );
+static const size_t scriptCommandCount = ARRAY_LEN( commandList );
 
 // despite what lcc thinks, we do not get cmdcmp here
 static int commandComp( const void *a, const void *b )
@@ -2876,14 +2878,12 @@ qboolean Item_EnableShowViaCvar( itemDef_t *item, int flag )
 				}
 			}
 		}
-
-		return ( item->cvarFlags & flag ) ? qfalse : qtrue;
 	}
 
 	return qtrue;
 }
 
-// will optionaly set focus to this item
+// will optionally set focus to this item
 qboolean Item_SetFocus( itemDef_t *item, float x, float y )
 {
 	int         i;
@@ -3853,7 +3853,7 @@ static void UI_Paste( itemDef_t *item, char *buf, clipboard_t clip )
 	clipIndex = 0;
 	clipLength = strlen( clipText );
 
-	max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+	max = MIN( editPtr->maxChars, MAX_EDITFIELD - 1 );
 	max = max ? max : MAX_EDITFIELD - 1;
 
 	// overstrike
@@ -4023,10 +4023,19 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 			else
 			{
 				const char *str = Q_UTF8Unstore( chr );
-				int index = ui_CursorToOffset( buff, item->cursorPos );
-				int width = Q_UTF8Width( str );
-				int oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? Q_UTF8Width( buff + index ) : 0;
-				int max = min( editPtr->maxChars, MAX_EDITFIELD - 1 );
+				int        index, width, oldWidth, max;
+
+				if ( (unsigned int)( Q_UTF8CodePoint( str ) - 0xF700 ) < 0x200u ) 
+				{
+					// Filter out Mac cursor keys etc.
+					releaseFocus = qfalse;
+					goto exit;
+				}
+
+				index = ui_CursorToOffset( buff, item->cursorPos );
+				width = Q_UTF8Width( str );
+				oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? Q_UTF8Width( buff + index ) : 0;
+				max = MIN( editPtr->maxChars, MAX_EDITFIELD - 1 );
 				max = max ? max : MAX_EDITFIELD - 1;
 
 				if ( len + width - oldWidth > max )
@@ -4045,7 +4054,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				item->cursorPos++;
 			}
 		}
-		else
+		else if ( !mods[ MOD_ALT ] && !mods[ MOD_COMMAND ] && !mods[ MOD_MODE ] && !mods[ MOD_SUPER ] )
 		{
 			switch ( key )
 			{
@@ -4064,7 +4073,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_RIGHTARROW:
 				case K_KP_RIGHTARROW:
-					if ( ctrl )
+					if ( mods[ MOD_CTRL ] )
 					{
 						int index = ui_CursorToOffset( buff, item->cursorPos );
 
@@ -4089,7 +4098,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_LEFTARROW:
 				case K_KP_LEFTARROW:
-					if ( ctrl )
+					if ( mods[ MOD_CTRL ] )
 					{
 						int index = ui_CursorToOffset( buff, item->cursorPos );
 
@@ -4126,7 +4135,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				case K_INS:
 				case K_KP_INS:
-					if ( shift )
+					if ( mods[ MOD_SHIFT ] )
 					{
 						UI_Paste( item, buff, SELECTION_PRIMARY );
 						DC->setCVar( item->cvar, buff );
@@ -4195,7 +4204,7 @@ exit:
 
 	if ( releaseFocus )
 	{
-		ctrl = qfalse;
+		mods[1] = qfalse;
 	}
 
 	return !releaseFocus;
@@ -4829,14 +4838,13 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 		Item_RunScript( &it, menu->onKEY[ key ] );
 	}
 
-	if ( key == K_SHIFT )
+	for ( i = 0; i < 6; ++i )
 	{
-		// inc if down, dec if up, but don't let it go negative
-		shift += down ? 1 : shift ? -1 : 0;
-	}
-	else if ( key == K_CTRL )
-	{
-		ctrl += down ? 1 : ctrl ? -1 : 0;
+		if ( key == modkeys[ i ] )
+		{
+			mods[ i ] += down ? 1 : mods[ i ] ? -1 : 0;
+			break;
+		}
 	}
 
 // KTW: Draggable Windows
@@ -4954,7 +4962,7 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 			break;
 
 		case K_TAB:
-			if ( shift )
+			if ( mods[ MOD_SHIFT ] )
 			{
 				Menu_SetPrevCursorItem( menu );
 				break;
@@ -5354,7 +5362,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 	}
 
 	// terminate the string, making sure that we don't overflow the buffer
-	out[ paint > sizeof( out ) ? sizeof( out ) - 1 : paint ] = '\0';
+	out[ paint > sizeof( out ) - 1 ? sizeof( out ) - 1 : paint ] = '\0';
 	return out;
 }
 
@@ -5364,31 +5372,33 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 
 typedef struct
 {
-	char      text[ MAX_WRAP_TEXT *MAX_WRAP_LINES ]; //FIXME: augment with hash?
+	char      text[ MAX_WRAP_TEXT * MAX_WRAP_LINES ];
 	rectDef_t rect;
 	float     scale;
 	char      lines[ MAX_WRAP_LINES ][ MAX_WRAP_TEXT ];
 	float     lineCoords[ MAX_WRAP_LINES ][ 2 ];
 	int       numLines;
-}
-
-wrapCache_t;
+} wrapCache_t;
 
 static wrapCache_t wrapCache[ MAX_WRAP_CACHE ];
+static qboolean    cacheCreationFailed = qfalse;
 static int         cacheWriteIndex = 0;
 static int         cacheReadIndex = 0;
 static int         cacheReadLineNum = 0;
 
-static void UI_CreateCacheEntry( const char *text, rectDef_t *rect, float scale )
+static void UI_CreateCacheEntry( const char *text, const rectDef_t *rect, float scale )
 {
 	wrapCache_t *cacheEntry = &wrapCache[ cacheWriteIndex ];
 
-	Q_strncpyz( cacheEntry->text, text, sizeof( cacheEntry->text ) );
-	cacheEntry->rect.x = rect->x;
-	cacheEntry->rect.y = rect->y;
-	cacheEntry->rect.w = rect->w;
-	cacheEntry->rect.h = rect->h;
-	cacheEntry->scale = scale;
+	if ( strlen( text ) >= sizeof( cacheEntry->text ) )
+	{
+		cacheCreationFailed = qtrue;
+		return;
+	}
+
+	strcpy( cacheEntry->text, text );
+	cacheEntry->rect     = *rect;
+	cacheEntry->scale    = scale;
 	cacheEntry->numLines = 0;
 }
 
@@ -5396,38 +5406,45 @@ static void UI_AddCacheEntryLine( const char *text, float x, float y )
 {
 	wrapCache_t *cacheEntry = &wrapCache[ cacheWriteIndex ];
 
-	if ( cacheEntry->numLines >= MAX_WRAP_LINES )
+	if ( cacheCreationFailed )
 	{
 		return;
 	}
 
-	Q_strncpyz( cacheEntry->lines[ cacheEntry->numLines ], text,
-	            sizeof( cacheEntry->lines[ 0 ] ) );
+	if ( cacheEntry->numLines >= MAX_WRAP_LINES ||
+	     strlen( text ) >= sizeof( cacheEntry->lines[ 0 ] ) )
+	{
+		cacheCreationFailed = qtrue;
+		return;
+	}
 
+	strcpy( cacheEntry->lines[ cacheEntry->numLines ], text );
 	cacheEntry->lineCoords[ cacheEntry->numLines ][ 0 ] = x;
-
 	cacheEntry->lineCoords[ cacheEntry->numLines ][ 1 ] = y;
-
 	cacheEntry->numLines++;
 }
 
 static void UI_FinishCacheEntry( void )
 {
-	cacheWriteIndex = ( cacheWriteIndex + 1 ) % MAX_WRAP_CACHE;
+	if ( cacheCreationFailed )
+	{
+		wrapCache[ cacheWriteIndex ].text[ 0 ] = '\0';
+		wrapCache[ cacheWriteIndex ].numLines = 0;
+		cacheCreationFailed = qfalse;
+	}
+	else
+	{
+		cacheWriteIndex = ( cacheWriteIndex + 1 ) % MAX_WRAP_CACHE;
+	}
 }
 
-static qboolean UI_CheckWrapCache( const char *text, rectDef_t *rect, float scale )
+static qboolean UI_CheckWrapCache( const char *text, const rectDef_t *rect, float scale )
 {
 	int i;
 
 	for ( i = 0; i < MAX_WRAP_CACHE; i++ )
 	{
 		wrapCache_t *cacheEntry = &wrapCache[ i ];
-
-		if ( strcmp( text, cacheEntry->text ) )
-		{
-			continue;
-		}
 
 		if ( rect->x != cacheEntry->rect.x ||
 		     rect->y != cacheEntry->rect.y ||
@@ -5437,20 +5454,22 @@ static qboolean UI_CheckWrapCache( const char *text, rectDef_t *rect, float scal
 			continue;
 		}
 
+		if ( strcmp( text, cacheEntry->text ) )
+		{
+			continue;
+		}
+
 		if ( cacheEntry->scale != scale )
 		{
 			continue;
 		}
 
-		// This is a match
 		cacheReadIndex = i;
-
 		cacheReadLineNum = 0;
 
 		return qtrue;
 	}
 
-	// No match - wrap isn't cached
 	return qfalse;
 }
 
@@ -5464,9 +5483,7 @@ static qboolean UI_NextWrapLine( const char **text, float *x, float *y )
 	}
 
 	*text = cacheEntry->lines[ cacheReadLineNum ];
-
 	*x = cacheEntry->lineCoords[ cacheReadLineNum ][ 0 ];
-
 	*y = cacheEntry->lineCoords[ cacheReadLineNum ][ 1 ];
 
 	cacheReadLineNum++;
@@ -5997,7 +6014,7 @@ static bind_t g_bindings[] =
 	{ "messagemode4",   -1,                 -1,            -1, -1 }
 };
 
-static const int g_bindCount = sizeof( g_bindings ) / sizeof( bind_t );
+static const int g_bindCount = ARRAY_LEN( g_bindings );
 
 /*
 =================
@@ -6410,16 +6427,16 @@ void Item_Model_Paint( itemDef_t *item )
 	origin[ 1 ] = 0.5 * ( mins[ 1 ] + maxs[ 1 ] );
 
 	// calculate distance so the model nearly fills the box
-	if ( qtrue )
+	//if ( qtrue )
 	{
 		float len = 0.5 * ( maxs[ 2 ] - mins[ 2 ] );
 		origin[ 0 ] = len / 0.268; // len / tan( fov/2 )
 		//origin[0] = len / tan(w/2);
 	}
-	else
-	{
-		origin[ 0 ] = item->textscale;
-	}
+	//else
+	//{
+	//	origin[ 0 ] = item->textscale;
+	//}
 
 	refdef.fov_x = ( modelPtr->fov_x ) ? modelPtr->fov_x : w;
 	refdef.fov_y = ( modelPtr->fov_y ) ? modelPtr->fov_y : h;
@@ -6664,7 +6681,7 @@ void Item_ComboBox_Paint( itemDef_t *item )
 
 	Item_ListBoxRow_Paint( item, item->cursorPos, 0, qfalse, qtrue );
 
-	if ( g_comboBoxItem != NULL )
+	if ( g_comboBoxItem != NULL && g_comboBoxItem == item )
 	{
 		qboolean cast = Item_ComboBox_MaybeCastToListBox( item );
 		Item_Paint( item );
@@ -7566,7 +7583,7 @@ itemDataType_t Item_DataType( itemDef_t *item )
 Item_IsEditField
 ===============
 */
-static ID_INLINE qboolean Item_IsEditField( itemDef_t *item )
+static INLINE qboolean Item_IsEditField( itemDef_t *item )
 {
 	switch ( item->type )
 	{
@@ -7585,7 +7602,7 @@ static ID_INLINE qboolean Item_IsEditField( itemDef_t *item )
 Item_IsListBox
 ===============
 */
-static ID_INLINE qboolean Item_IsListBox( itemDef_t *item )
+static INLINE qboolean Item_IsListBox( itemDef_t *item )
 {
 	switch ( item->type )
 	{
@@ -8319,7 +8336,7 @@ qboolean ItemParse_cvarStrList( itemDef_t *item, int handle )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu item\n" );
+			PC_SourceError( handle, "end of file inside menu item" );
 			return qfalse;
 		}
 
@@ -8379,7 +8396,7 @@ qboolean ItemParse_cvarFloatList( itemDef_t *item, int handle )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu item\n" );
+			PC_SourceError( handle, "end of file inside menu item" );
 			return qfalse;
 		}
 
@@ -8620,7 +8637,7 @@ qboolean Item_Parse( int handle, itemDef_t *item )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu item\n" );
+			PC_SourceError( handle, "end of file inside menu item" );
 			return qfalse;
 		}
 
@@ -8670,7 +8687,7 @@ qboolean Item_Parse( int handle, itemDef_t *item )
 }
 
 // Item_InitControls
-// init's special control types
+// initializes special control types
 void Item_InitControls( itemDef_t *item )
 {
 	if ( item == NULL )
@@ -9202,7 +9219,7 @@ qboolean Menu_Parse( int handle, menuDef_t *menu )
 
 		if ( !trap_Parse_ReadToken( handle, &token ) )
 		{
-			PC_SourceError( handle, "end of file inside menu\n" );
+			PC_SourceError( handle, "end of file inside menu" );
 			return qfalse;
 		}
 

@@ -63,7 +63,7 @@ vm_t       *currentVM = NULL;
 vm_t       *lastVM = NULL;
 int        vm_debugLevel;
 
-// used by Com_Error to get rid of running vm's before longjmp
+// used by Com_Error to get rid of running VMs before longjmp
 static int forced_unload;
 
 #define MAX_VM 3
@@ -94,10 +94,9 @@ VM_Init
 */
 void VM_Init( void )
 {
-	// NOTE to myself
-	// vm_* 0 means .dll files are used (windows)
-	// vm_* 1 means .so files are used (mac, linux)
-	// vm_* 2 (default) means qvm files are used.
+	// vm_* 0 means native libraries (.so, .dll, etc.) are used
+	// vm_* 1 means virtual machines (.qvm, etc.) are used through an interpreter
+	// vm_* 2 means virtual machines are used with JIT compiling
 	Cvar_Get( "vm_cgame", "0", CVAR_ARCHIVE );
 	Cvar_Get( "vm_game", "0", CVAR_ARCHIVE );
 	Cvar_Get( "vm_ui", "0", CVAR_ARCHIVE );
@@ -395,9 +394,9 @@ static void VM_InitSanity( vm_t *vm )
 }
 
 #ifdef _DEBUG
-#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]\n", (c), (n) );
+#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]", (c), (n) );
 #else
-#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm.\n" );
+#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm." );
 #endif
 
 void VM_SetSanity( vm_t* vm, intptr_t call )
@@ -432,8 +431,6 @@ void VM_SetSanity( vm_t* vm, intptr_t call )
 
 void VM_CheckSanity( vm_t *vm, intptr_t call )
 {
-	int which = vm - vmTable;
-
 	if ( vm->dataMask && memcmp( vm->dataBase + vm->dataMask + 1, vm->sanity, sizeof( vm->sanity ) ) )
 	{
 		VM_Insanity( call, vm->name );
@@ -679,7 +676,7 @@ vm_t *VM_Restart( vm_t *vm )
 {
 	vmHeader_t *header;
 
-	// DLL's can't be restarted in place
+	// DLLs can't be restarted in place
 	if ( vm->dllHandle
 #if USE_LLVM
 	     || vm->llvmModuleProvider
@@ -1043,7 +1040,7 @@ intptr_t        QDECL VM_Call( vm_t *vm, int callnum, ... )
 	}
 	else
 	{
-#if id386 || idsparc // i386/sparc calling convention doesn't need conversion
+#if ( id386 || idsparc ) && !defined __clang__ // calling convention doesn't need conversion in some cases
 #ifndef NO_VM_COMPILED
 
 		if ( vm->compiled )
@@ -1260,7 +1257,7 @@ void VM_CheckBlock( intptr_t buf, size_t n, const char *fail )
 	if ( dataMask &&
 	     ( ( buf & dataMask ) != buf || ( ( buf + n ) & dataMask ) != buf + n ) )
 	{
-		Com_Error( ERR_DROP, "%s out of range! [%lx, %lx, %lx]", fail, buf, n, dataMask );
+		Com_Error( ERR_DROP, "%s out of range! [%lx, %lx, %lx]", fail, (unsigned long)buf, (unsigned long)n, (unsigned long)dataMask );
 	}
 }
 

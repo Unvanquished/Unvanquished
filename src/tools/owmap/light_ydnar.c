@@ -508,7 +508,7 @@ static qboolean CalcTangentVectors(int numVerts, bspDrawVert_t ** dv, vec3_t * s
 
 /*
 PerturbNormal()
-perterbs the normal by the shader's normalmap in tangent space
+perturbs the normal by the shader's normalmap in tangent space
 */
 
 static void PerturbNormal(bspDrawVert_t * dv, shaderInfo_t * si, vec3_t pNormal, vec3_t stv[3], vec3_t ttv[3])
@@ -1847,7 +1847,7 @@ static qboolean SubmapRawLuxel(rawLightmap_t * lm, int x, int y, float bx, float
 	}
 	else
 	{
-		Error("Spurious lightmap S vector\n");
+		Error("Spurious lightmap S vector");
 	}
 
 	VectorSubtract(origin2, origin, originVecs[0]);
@@ -2490,27 +2490,27 @@ void IlluminateRawLightmap(int rawLightmapNum)
 			}
 
 			/* tertiary pass, apply dirt map (ambient occlusion) */
-			if(0 && dirty)
+			/*if(dirty)
 			{
-				/* walk luxels */
+				/ * walk luxels * /
 				for(y = 0; y < lm->sh; y++)
 				{
 					for(x = 0; x < lm->sw; x++)
 					{
-						/* get cluster  */
+						/ * get cluster  * /
 						cluster = SUPER_CLUSTER(x, y);
 						if(*cluster < 0)
 							continue;
 
-						/* get particulars */
+						/ * get particulars * /
 						lightLuxel = LIGHT_LUXEL(x, y);
 						dirt = SUPER_DIRT(x, y);
 
-						/* scale light value */
+						/ * scale light value * /
 						VectorScale(lightLuxel, *dirt, lightLuxel);
 					}
 				}
-			}
+			}*/
 
 			/* allocate sampling lightmap storage */
 			if(lm->superLuxels[lightmapNum] == NULL)
@@ -2597,7 +2597,7 @@ void IlluminateRawLightmap(int rawLightmapNum)
 							luxel[2] -= averageColor[2] / samples;
 						}
 
-						/* handle normal light */
+						/* handle positive light */
 						else
 						{
 							luxel[0] += averageColor[0] / samples;
@@ -2635,7 +2635,7 @@ void IlluminateRawLightmap(int rawLightmapNum)
 						if(trace.light->flags & LIGHT_NEGATIVE)
 							VectorSubtract(luxel, lightLuxel, luxel);
 
-						/* handle normal light */
+						/* handle positive light */
 						else
 							VectorAdd(luxel, lightLuxel, luxel);
 
@@ -2782,7 +2782,7 @@ void IlluminateRawLightmap(int rawLightmapNum)
 						if(sx < 0 || sx >= lm->sw || (sx == x && sy == y))
 							continue;
 
-						/* get neighbor's particulars */
+						/* get the neighbor's particulars */
 						cluster2 = SUPER_CLUSTER(sx, sy);
 						luxel2 = SUPER_LUXEL(lightmapNum, sx, sy);
 						deluxel2 = SUPER_DELUXEL(sx, sy);

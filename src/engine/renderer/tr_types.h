@@ -192,7 +192,7 @@ typedef struct
 	vec3_t    origin; // also used as MODEL_BEAM's "from"
 	int       frame; // also used as MODEL_BEAM's diameter
 	qhandle_t frameModel;
-	int       torsoFrame; // skeletal torso can have frame independant of legs frame
+	int       torsoFrame; // skeletal torso can have frame independent of legs frame
 	qhandle_t torsoFrameModel;
 
 	// previous data for frame interpolation
@@ -467,7 +467,6 @@ typedef struct
 	int      vidWidth, vidHeight;
 	// aspect is the screen's physical width / height, which may be different
 	// than scrWidth / scrHeight if the pixels are non-square
-	// normal screens should be 4/3, but wide aspect monitors may be 16/9
 	float windowAspect;
 
 	int   displayFrequency;

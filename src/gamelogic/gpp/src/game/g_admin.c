@@ -12,7 +12,7 @@ and Travis Maurer.
 The functionality of this code mimics the behaviour of the currently
 inactive project shrubet (http://www.etstats.com/shrubet/index.php?ver=2)
 by Ryan Mannion.   However, shrubet was a closed-source project and
-none of it's code has been copied, only it's functionality.
+none of its code has been copied, only its functionality.
 
 Daemon is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
@@ -310,7 +310,7 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	}
 };
 
-static const size_t adminNumCmds = sizeof( g_admin_cmds ) / sizeof( g_admin_cmds[ 0 ] );
+static const size_t adminNumCmds = ARRAY_LEN( g_admin_cmds );
 
 static int        admin_level_maxname = 0;
 g_admin_level_t   *g_admin_levels = NULL;
@@ -3082,7 +3082,7 @@ qboolean G_admin_warn( gentity_t *ent )
 
 	if( trap_Argc() < 3 )
 	{
-		ADMP( va( "^3warn: ^7usage: warn [name|slot#] [reason]\n" ) );
+		ADMP( "^3warn: ^7usage: warn [name|slot#] [reason]\n" );
 		return qfalse;
 	}
 
@@ -3653,7 +3653,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 	}
 	else
 	{
-		//!adminhelp param
+		// /adminhelp param
 		char          param[ MAX_ADMIN_CMD_LEN ];
 		g_admin_cmd_t *admincmd;
 		qboolean      denied = qfalse;

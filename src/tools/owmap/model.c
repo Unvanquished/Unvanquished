@@ -66,8 +66,7 @@ void PicoPrintFunc(int level, const char *str)
 			break;
 
 		case PICO_FATAL:
-			Error("ERROR: %s\n", str);
-			break;
+			Error("ERROR: %s", str);
 	}
 }
 
@@ -493,7 +492,7 @@ void InsertModel(char *name, int skin, int frame, matrix_t transform, matrix_t n
 				dv->st[1] = DotProduct(si->vecs[1], dv->xyz);
 			}
 
-			/* normal texture coordinates */
+			/* direct texture coordinates */
 			else
 			{
 				st = PicoGetSurfaceST(surface, 0, i);

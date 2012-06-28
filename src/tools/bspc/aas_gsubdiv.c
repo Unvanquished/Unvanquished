@@ -240,7 +240,7 @@ void AAS_SplitArea( tmp_area_t *tmparea, int planenum, tmp_area_t **frontarea, t
 		Log_Print("\nface splits = %d\nground splits = %d\n", facesplits, groundsplits);
 		if (epsilonface) Log_Print("aaahh epsilon face\n");
 #endif //DEBUG*/
-		Error( "AAS_SplitArea: no split winding when splitting area %d\n", tmparea->areanum );
+		Error( "AAS_SplitArea: no split winding when splitting area %d", tmparea->areanum );
 	} //end if
 	  //create a split face
 	splitface = AAS_AllocTmpFace();
@@ -397,8 +397,8 @@ int AAS_FindBestAreaSplitPlane( tmp_area_t *tmparea, vec3_t normal, float *dist 
 				continue;
 			}
 
-			//find a plane seperating the windings of the faces
-			if ( !FindPlaneSeperatingWindings( face1->winding, face2->winding, invgravity, tmpnormal, &tmpdist, points ) ) {
+			//find a plane separating the windings of the faces
+			if ( !FindPlaneSeparatingWindings( face1->winding, face2->winding, invgravity, tmpnormal, &tmpdist, points ) ) {
 				continue;
 			}
 
@@ -563,7 +563,7 @@ tmp_node_t *AAS_LadderSubdivideArea_r( tmp_node_t *tmpnode ) {
 		return tmpnode;
 	}
 	//must be possible to stand in the area
-	if ( !( tmparea->presencetype & PRESENCE_NORMAL ) ) {
+	if ( !( tmparea->presencetype & PRESENCE_STAND ) ) {
 		return tmpnode;
 	}
 	//

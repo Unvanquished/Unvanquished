@@ -123,6 +123,13 @@ vmCvar_t           g_pulseHalfLifeTime;
 vmCvar_t           g_pulseFullPowerTime;
 vmCvar_t           g_flameFadeout;
 
+vmCvar_t           g_alienAnticampBonusMax;
+vmCvar_t           g_alienAnticampBonus1;
+vmCvar_t           g_alienAnticampRange;
+vmCvar_t           g_humanAnticampBonusMax;
+vmCvar_t           g_humanAnticampBonus1;
+vmCvar_t           g_humanAnticampRange;
+
 vmCvar_t           g_unlagged;
 
 vmCvar_t           g_disabledEquipment;
@@ -219,6 +226,9 @@ vmCvar_t g_bot_buildLayout;
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
 static char        cv_humanMaxStage[ MAX_CVAR_VALUE_STRING ];
 static char        cv_alienMaxStage[ MAX_CVAR_VALUE_STRING ];
+static char        cv_humanRepeaterBuildPoints[ MAX_CVAR_VALUE_STRING ];
+static char        cv_humanBuildPoints[ MAX_CVAR_VALUE_STRING ];
+static char        cv_alienBuildPoints[ MAX_CVAR_VALUE_STRING ];
 
 static cvarTable_t gameCvarTable[] =
 {
@@ -294,11 +304,11 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_alienBuildPoints,            "g_alienBuildPoints",            DEFAULT_ALIEN_BUILDPOINTS,          0,                                               0, qfalse           },
+	{ &g_alienBuildPoints,            "g_alienBuildPoints",            DEFAULT_ALIEN_BUILDPOINTS,          0,                                               0, qfalse, cv_alienBuildPoints},
 	{ &g_alienBuildQueueTime,         "g_alienBuildQueueTime",         DEFAULT_ALIEN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanBuildPoints,            "g_humanBuildPoints",            DEFAULT_HUMAN_BUILDPOINTS,          0,                                               0, qfalse           },
+	{ &g_humanBuildPoints,            "g_humanBuildPoints",            DEFAULT_HUMAN_BUILDPOINTS,          0,                                               0, qfalse, cv_humanBuildPoints},
 	{ &g_humanBuildQueueTime,         "g_humanBuildQueueTime",         DEFAULT_HUMAN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanRepeaterBuildPoints,    "g_humanRepeaterBuildPoints",    DEFAULT_HUMAN_REPEATER_BUILDPOINTS, CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_humanRepeaterBuildPoints,    "g_humanRepeaterBuildPoints",    DEFAULT_HUMAN_REPEATER_BUILDPOINTS, CVAR_ARCHIVE,                                    0, qfalse, cv_humanRepeaterBuildPoints},
 	{ &g_humanRepeaterMaxZones,       "g_humanRepeaterMaxZones",       DEFAULT_HUMAN_REPEATER_MAX_ZONES,   CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanRepeaterBuildQueueTime, "g_humanRepeaterBuildQueueTime", DEFAULT_HUMAN_REPEATER_QUEUE_TIME,  CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
@@ -319,6 +329,13 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_pulseHalfLifeTime,           "g_pulseHalfLifeTime",           "768",                              CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pulseFullPowerTime,          "g_pulseFullPowerTime",          "0"  ,                              CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_flameFadeout,                "g_flameFadeout",                "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
+
+	{ &g_alienAnticampBonusMax,       "g_alienAnticampBonusMax",       "1",                                0,                                               0, qfalse           },
+	{ &g_alienAnticampBonus1,         "g_alienAnticampBonus1",         "0.3",                              0,                                               0, qfalse           },
+	{ &g_alienAnticampRange,          "g_alienAnticampRange",          "600",                              0,                                               0, qfalse           },
+	{ &g_humanAnticampBonusMax,       "g_humanAnticampBonusMax",       "1",                                0,                                               0, qfalse           },
+	{ &g_humanAnticampBonus1,         "g_humanAnticampBonus1",         "0.3",                              0,                                               0, qfalse           },
+	{ &g_humanAnticampRange,          "g_humanAnticampRange",          "800",                              0,                                               0, qfalse           },
 
 	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
 
@@ -408,7 +425,7 @@ static cvarTable_t gameCvarTable[] =
 	// </bot stuff>
 };
 
-static int         gameCvarTableSize = sizeof( gameCvarTable ) / sizeof( gameCvarTable[ 0 ] );
+static int         gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
 void               G_InitGame( int levelTime, int randomSeed, int restart );
 void               G_RunFrame( int levelTime );
@@ -469,12 +486,19 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 
 		case GAME_CONSOLE_COMMAND:
 			return ConsoleCommand();
+
+		case GAME_MESSAGERECEIVED:
+			// ignored
+			return 0;
+
+		default:
+			G_Error( "vmMain(): unknown game command %i", command );
 	}
 
 	return -1;
 }
 
-void QDECL G_Printf( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) G_Printf( const char *fmt, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -486,7 +510,7 @@ void QDECL G_Printf( const char *fmt, ... )
 	trap_Print( text );
 }
 
-void QDECL G_Error( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) NORETURN G_Error( const char *fmt, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -518,13 +542,8 @@ void G_FindTeams( void )
 	c = 0;
 	c2 = 0;
 
-	for ( i = 1, e = g_entities + i; i < level.num_entities; i++, e++ )
+	for ( i = MAX_CLIENTS, e = g_entities + i; i < level.num_entities; i++, e++ )
 	{
-		if ( !e->inuse )
-		{
-			continue;
-		}
-
 		if ( !e->team )
 		{
 			continue;
@@ -541,11 +560,6 @@ void G_FindTeams( void )
 
 		for ( j = i + 1, e2 = e + 1; j < level.num_entities; j++, e2++ )
 		{
-			if ( !e2->inuse )
-			{
-				continue;
-			}
-
 			if ( !e2->team )
 			{
 				continue;
@@ -787,6 +801,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// range are NEVER anything but clients
 	level.num_entities = MAX_CLIENTS;
 
+	for( i = 0; i < MAX_CLIENTS; i++ )
+		g_entities[ i ].classname = "clientslot";
+
 	// let the server system know where the entites are
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
 	                     &level.clients[ 0 ].ps, sizeof( level.clients[ 0 ] ) );
@@ -940,7 +957,7 @@ void G_ShutdownGame( int restart )
 
 //===================================================================
 
-void QDECL Com_Error( int level, const char *error, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -949,10 +966,10 @@ void QDECL Com_Error( int level, const char *error, ... )
 	Q_vsnprintf( text, sizeof( text ), error, argptr );
 	va_end( argptr );
 
-	G_Error( "%s", text );
+	trap_Error( text );
 }
 
-void QDECL Com_Printf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -961,7 +978,7 @@ void QDECL Com_Printf( const char *msg, ... )
 	Q_vsnprintf( text, sizeof( text ), msg, argptr );
 	va_end( argptr );
 
-	G_Printf( "%s", text );
+	trap_Print( text );
 }
 
 /*
@@ -1355,7 +1372,6 @@ void G_CalculateBuildPoints( void )
 {
 	int              i;
 	buildable_t      buildable;
-	buildPointZone_t *zone;
 
 	// BP queue updates
 	while ( level.alienBuildPointQueue > 0 &&
@@ -1490,7 +1506,7 @@ void G_CalculateBuildPoints( void )
 
 		if ( ent->usesBuildPointZone && level.buildPointZones[ ent->buildPointZone ].active )
 		{
-			zone = &level.buildPointZones[ ent->buildPointZone ];
+			buildPointZone_t *zone = &level.buildPointZones[ ent->buildPointZone ];
 
 			if ( G_TimeTilSuddenDeath() > 0 )
 			{
@@ -1534,6 +1550,8 @@ void G_CalculateStages( void )
 	int        alienNextStageThreshold, humanNextStageThreshold;
 	static int lastAlienStageModCount = 1;
 	static int lastHumanStageModCount = 1;
+	static int alienTriggerStage = 0;
+	static int humanTriggerStage = 0;
 
 	if ( alienPlayerCountMod < 0.1f )
 	{
@@ -1587,7 +1605,10 @@ void G_CalculateStages( void )
 
 	if ( g_alienStage.modificationCount > lastAlienStageModCount )
 	{
-		G_Checktrigger_stages( TEAM_ALIENS, g_alienStage.integer );
+		while ( alienTriggerStage < MIN( g_alienStage.integer, S3 ) )
+		{
+			G_Checktrigger_stages( TEAM_ALIENS, ++alienTriggerStage );
+		}
 
 		if ( g_alienStage.integer == S2 )
 		{
@@ -1603,7 +1624,10 @@ void G_CalculateStages( void )
 
 	if ( g_humanStage.modificationCount > lastHumanStageModCount )
 	{
-		G_Checktrigger_stages( TEAM_HUMANS, g_humanStage.integer );
+		while ( humanTriggerStage < MIN( g_humanStage.integer, S3 ) )
+		{
+			G_Checktrigger_stages( TEAM_HUMANS, ++humanTriggerStage );
+		}
 
 		if ( g_humanStage.integer == S2 )
 		{
@@ -1862,7 +1886,6 @@ void MoveClientToIntermission( gentity_t *ent )
 	ent->client->ps.eFlags = 0;
 	ent->s.eFlags = 0;
 	ent->s.eType = ET_GENERAL;
-	ent->s.modelindex = 0;
 	ent->s.loopSound = 0;
 	ent->s.event = 0;
 	ent->r.contents = 0;
@@ -2003,7 +2026,7 @@ void ExitLevel( void )
 		cl->ps.persistant[ PERS_SCORE ] = 0;
 	}
 
-	// we need to do this here before chaning to CON_CONNECTING
+	// we need to do this here before changing to CON_CONNECTING
 	G_WriteSessionData();
 
 	// change all client states to connecting, so the early players into the
@@ -2057,7 +2080,7 @@ G_LogPrintf
 Print to the logfile with a time stamp if it is open, and to the server console
 =================
 */
-void QDECL G_LogPrintf( const char *fmt, ... )
+void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 {
 	va_list argptr;
 	char    string[ 1024 ], decolored[ 1024 ];

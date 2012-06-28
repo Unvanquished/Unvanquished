@@ -131,7 +131,7 @@ static char *opnames[ 256 ] =
 
 //FIXME: these, um... look the same to me
 #if defined( __GNUC__ )
-static ID_INLINE unsigned int loadWord( void *addr )
+static INLINE unsigned int loadWord( void *addr )
 {
 	unsigned int word;
 
@@ -140,7 +140,7 @@ static ID_INLINE unsigned int loadWord( void *addr )
 }
 
 #else
-static ID_INLINE unsigned int __lwbrx( register void *addr,
+static INLINE unsigned int __lwbrx( register void *addr,
                                        register int offset )
 {
 	register unsigned int word;
@@ -153,7 +153,7 @@ static ID_INLINE unsigned int __lwbrx( register void *addr,
 #endif
 
 #else
-static ID_INLINE int loadWord( void *addr )
+static INLINE int loadWord( void *addr )
 {
 	int word;
 	memcpy( &word, addr, 4 );
@@ -567,7 +567,7 @@ nextInstruction2:
 //VM_LogSyscalls( (int *)&image[ programStack + 4 ] );
 					{
 						VM_SetSanity( vm, ~programCounter );
-						// the vm has ints on the stack, we expect
+						// the VM has ints on the stack, we expect
 						// pointers so we might have to convert it
 						if ( sizeof( intptr_t ) != sizeof( int ) )
 						{
@@ -628,7 +628,6 @@ nextInstruction2:
 				else if ( ( unsigned ) programCounter >= vm->instructionCount )
 				{
 					Com_Error( ERR_DROP, "VM program counter out of range in OP_CALL" );
-					return 0;
 				}
 				else
 				{
@@ -704,7 +703,6 @@ nextInstruction2:
 				else if ( ( unsigned ) programCounter >= vm->codeLength )
 				{
 					Com_Error( ERR_DROP, "VM program counter out of range in OP_LEAVE" );
-					return 0;
 				}
 
 				goto nextInstruction;
@@ -719,7 +717,6 @@ nextInstruction2:
 				if ( ( unsigned ) r0 >= vm->instructionCount )
 				{
 					Com_Error( ERR_DROP, "VM program counter out of range in OP_JUMP" );
-					return 0;
 				}
 
 				programCounter = vm->instructionPointers[ r0 ];

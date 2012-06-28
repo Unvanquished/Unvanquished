@@ -79,11 +79,11 @@ static int  bufIndex;
 SafeFS_Write
 ===============
 */
-static ID_INLINE void SafeFS_Write( const void *buffer, int len, fileHandle_t f )
+static INLINE void SafeFS_Write( const void *buffer, int len, fileHandle_t f )
 {
 	if ( FS_Write( buffer, len, f ) < len )
 	{
-		Com_Error( ERR_DROP, "Failed to write avi file\n" );
+		Com_Error( ERR_DROP, "Failed to write avi file" );
 	}
 }
 
@@ -92,7 +92,7 @@ static ID_INLINE void SafeFS_Write( const void *buffer, int len, fileHandle_t f 
 WRITE_STRING
 ===============
 */
-static ID_INLINE void WRITE_STRING( const char *s )
+static INLINE void WRITE_STRING( const char *s )
 {
 	Com_Memcpy( &buffer[ bufIndex ], s, strlen( s ) );
 	bufIndex += strlen( s );
@@ -103,7 +103,7 @@ static ID_INLINE void WRITE_STRING( const char *s )
 WRITE_4BYTES
 ===============
 */
-static ID_INLINE void WRITE_4BYTES( int x )
+static INLINE void WRITE_4BYTES( int x )
 {
 	buffer[ bufIndex + 0 ] = ( byte )( ( x >> 0 ) & 0xFF );
 	buffer[ bufIndex + 1 ] = ( byte )( ( x >> 8 ) & 0xFF );
@@ -117,7 +117,7 @@ static ID_INLINE void WRITE_4BYTES( int x )
 WRITE_2BYTES
 ===============
 */
-static ID_INLINE void WRITE_2BYTES( int x )
+static INLINE void WRITE_2BYTES( int x )
 {
 	buffer[ bufIndex + 0 ] = ( byte )( ( x >> 0 ) & 0xFF );
 	buffer[ bufIndex + 1 ] = ( byte )( ( x >> 8 ) & 0xFF );
@@ -129,7 +129,7 @@ static ID_INLINE void WRITE_2BYTES( int x )
 WRITE_1BYTES
 ===============
 */
-static ID_INLINE void WRITE_1BYTES( int x )
+static INLINE void WRITE_1BYTES( int x )
 {
 	buffer[ bufIndex ] = x;
 	bufIndex += 1;
@@ -140,11 +140,11 @@ static ID_INLINE void WRITE_1BYTES( int x )
 START_CHUNK
 ===============
 */
-static ID_INLINE void START_CHUNK( const char *s )
+static INLINE void START_CHUNK( const char *s )
 {
 	if ( afd.chunkStackTop == MAX_RIFF_CHUNKS )
 	{
-		Com_Error( ERR_DROP, "ERROR: Top of chunkstack breached\n" );
+		Com_Error( ERR_DROP, "ERROR: Top of chunkstack breached" );
 	}
 
 	afd.chunkStack[ afd.chunkStackTop ] = bufIndex;
@@ -158,13 +158,13 @@ static ID_INLINE void START_CHUNK( const char *s )
 END_CHUNK
 ===============
 */
-static ID_INLINE void END_CHUNK( void )
+static INLINE void END_CHUNK( void )
 {
 	int endIndex = bufIndex;
 
 	if ( afd.chunkStackTop <= 0 )
 	{
-		Com_Error( ERR_DROP, "ERROR: Bottom of chunkstack breached\n" );
+		Com_Error( ERR_DROP, "ERROR: Bottom of chunkstack breached" );
 	}
 
 	afd.chunkStackTop--;

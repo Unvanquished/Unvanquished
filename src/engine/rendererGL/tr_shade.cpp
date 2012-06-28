@@ -605,10 +605,9 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 	{
 		GLSL_PrintShaderSource( shader );
 		GLSL_PrintInfoLog( shader, qfalse );
-		ri.Error( ERR_DROP, "Couldn't compile %s", filename );
 		ri.FS_FreeFile( mainBuffer );
 		free( libsBuffer );
-		return;
+		ri.Error( ERR_DROP, "Couldn't compile %s", filename );
 	}
 
 	GLSL_PrintInfoLog( shader, qtrue );
@@ -772,7 +771,7 @@ static void GLSL_InitGPUShader( shaderProgram_t *program, const char *name, int 
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "GLSL_InitGPUShader: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "GLSL_InitGPUShader: \"%s\" is too long", name );
 	}
 
 	Q_strncpyz( program->name, name, sizeof( program->name ) );
@@ -802,12 +801,12 @@ static void GLSL_InitGPUShader2(shaderProgram_t * program,
 
         if(strlen(vertexMainShader) >= MAX_QPATH)
         {
-                ri.Error(ERR_DROP, "GLSL_InitGPUShader2: \"%s\" is too long\n", vertexMainShader);
+                ri.Error(ERR_DROP, "GLSL_InitGPUShader2: \"%s\" is too long", vertexMainShader);
         }
 
         if(strlen(fragmentMainShader) >= MAX_QPATH)
         {
-                ri.Error(ERR_DROP, "GLSL_InitGPUShader2: \"%s\" is too long\n", fragmentMainShader);
+                ri.Error(ERR_DROP, "GLSL_InitGPUShader2: \"%s\" is too long", fragmentMainShader);
         }
 
         Q_strncpyz(program->name, fragmentMainShader, sizeof(program->name));
@@ -839,12 +838,12 @@ void GLSL_InitGPUShader3(shaderProgram_t * program,
 
         if(strlen(vertexMainShader) >= MAX_QPATH)
         {
-                ri.Error(ERR_DROP, "GLSL_InitGPUShader3: \"%s\" is too long\n", vertexMainShader);
+                ri.Error(ERR_DROP, "GLSL_InitGPUShader3: \"%s\" is too long", vertexMainShader);
         }
 
         if(strlen(fragmentMainShader) >= MAX_QPATH)
         {
-                ri.Error(ERR_DROP, "GLSL_InitGPUShader3: \"%s\" is too long\n", fragmentMainShader);
+                ri.Error(ERR_DROP, "GLSL_InitGPUShader3: \"%s\" is too long", fragmentMainShader);
         }
 
         Q_strncpyz(program->name, fragmentMainShader, sizeof(program->name));
@@ -4688,7 +4687,7 @@ void Tess_StageIteratorDebug()
 	Tess_DrawElements();
 }
 
-static ID_INLINE GLenum RB_StencilOp( int op )
+static INLINE GLenum RB_StencilOp( int op )
 {
 	switch( op & STO_MASK ) {
 	case STO_KEEP:

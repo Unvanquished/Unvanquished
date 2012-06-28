@@ -140,7 +140,7 @@
 
     itemDef
     {
-      name normal
+      name general
       type ITEM_TYPE_NUMERICFIELD
       text "Time Limit:"
       cvar "timelimit"
@@ -209,7 +209,7 @@
 
     itemDef
     {
-      name normal
+      name general
       type ITEM_TYPE_YESNO
       text "Pure Server:"
       cvar "sv_pure"
@@ -228,7 +228,7 @@
 
     itemDef
     {
-      name normal
+      name general
       type ITEM_TYPE_MULTI
       text "Dedicated:"
       // dedicated is a special cvar in that as soon as it is set,

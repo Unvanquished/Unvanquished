@@ -1369,7 +1369,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 			else if ( glConfig2.generateMipmapAvailable )
 			{
 				// raynorpat: if hardware mipmap generation is available, use it
-				//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);  // make sure its nice
+				//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);  // make sure it's nice
 				glTexParameteri( image->type, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
 				glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
 			}
@@ -1527,7 +1527,7 @@ image_t        *R_AllocImage( const char *name, qboolean linkIntoHashTable )
 //  if(strlen(name) >= MAX_QPATH)
 	if ( strlen( name ) >= 1024 )
 	{
-		ri.Error( ERR_DROP, "R_AllocImage: \"%s\" image name is too long\n", name );
+		ri.Error( ERR_DROP, "R_AllocImage: \"%s\" image name is too long", name );
 		return NULL;
 	}
 
@@ -2040,7 +2040,7 @@ static const imageExtToLoaderMap_t imageLoaders[] =
 //	{"hdr", LoadRGBE}  // RGBE just sucks
 };
 
-static int                   numImageLoaders = sizeof( imageLoaders ) / sizeof( imageLoaders[ 0 ] );
+static int                   numImageLoaders = ARRAY_LEN( imageLoaders );
 
 /*
 =================
@@ -2370,7 +2370,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	return image;
 }
 
-static ID_INLINE void SwapPixel( byte *inout, int x, int y, int x2, int y2, int width, int height )
+static INLINE void SwapPixel( byte *inout, int x, int y, int x2, int y2, int width, int height )
 {
 	byte color[ 4 ];
 	byte color2[ 4 ];

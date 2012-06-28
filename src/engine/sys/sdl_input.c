@@ -46,8 +46,6 @@ Maryland 20850 USA.
 #include "../client/client.h"
 #include "../sys/sys_local.h"
 
-#define ARRAYLEN(x) ( sizeof( x ) / sizeof( x[ 0 ] ))
-
 #ifdef MACOS_X_ACCELERATION_HACK
 #       include <IOKit/IOTypes.h>
 #       include <IOKit/hidsystem/IOHIDLib.h>
@@ -328,6 +326,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
     keyNum_t *key, qboolean down )
 {
 	static unsigned char buf[ 5 ] = {0};
+	qboolean             delete = qfalse;
 
 	*buf = '\0';
 	*key = 0;
@@ -623,6 +622,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 				{
 					// ctrl-h
 					*buf = CTRL( 'h' );
+					delete = qtrue;
 					break;
 				}
 
@@ -652,12 +652,17 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 		*key = 0;
 	}
 
-	if ( IN_IsConsoleKey( *key, *buf ) )
+	if ( IN_IsConsoleKey( *key, *buf ) && !keys[ K_ALT ].down)
 	{
 		// Console keys can't be bound or generate characters
+		// (but allow Alt+key for text input)
 		*key = K_CONSOLE;
 		*buf = '\0';
 	}
+	else if ( delete )
+	{
+		*buf = CTRL( 'h' );
+	}		
 	else
 	{
 		memcpy( buf, Q_UTF8Encode( keysym->unicode ), sizeof( buf ) );
@@ -1021,7 +1026,7 @@ IN_JoyMove
 */
 static void IN_JoyMove( void )
 {
-	qboolean     joy_pressed[ ARRAYLEN( joy_keys ) ];
+	qboolean     joy_pressed[ ARRAY_LEN( joy_keys ) ];
 	unsigned int axes = 0;
 	unsigned int hats = 0;
 	int          total = 0;
@@ -1081,9 +1086,9 @@ static void IN_JoyMove( void )
 
 	if ( total > 0 )
 	{
-		if ( total > ARRAYLEN( stick_state.buttons ) )
+		if ( total > ARRAY_LEN( stick_state.buttons ) )
 		{
-			total = ARRAYLEN( stick_state.buttons );
+			total = ARRAY_LEN( stick_state.buttons );
 		}
 
 		for ( i = 0; i < total; i++ )
@@ -1355,7 +1360,7 @@ IN_Xbox360ControllerMove
 */
 static void IN_Xbox360ControllerMove( void )
 {
-	qboolean     joy_pressed[ ARRAYLEN( joy_keys ) ];
+	qboolean     joy_pressed[ ARRAY_LEN( joy_keys ) ];
 	unsigned int axes = 0;
 	unsigned int hat = 0;
 	int          total = 0;
@@ -1380,9 +1385,9 @@ static void IN_Xbox360ControllerMove( void )
 
 	if ( total > 0 )
 	{
-		if ( total > ARRAYLEN( stick_state.buttons ) )
+		if ( total > ARRAY_LEN( stick_state.buttons ) )
 		{
-			total = ARRAYLEN( stick_state.buttons );
+			total = ARRAY_LEN( stick_state.buttons );
 		}
 
 		for ( i = 0; i < total; i++ )
@@ -1791,8 +1796,7 @@ void IN_Init( void )
 
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
-		Com_Error( ERR_FATAL, "IN_Init called before SDL_Init( SDL_INIT_VIDEO )\n" );
-		return;
+		Com_Error( ERR_FATAL, "IN_Init called before SDL_Init( SDL_INIT_VIDEO )" );
 	}
 
 	Com_DPrintf( "\n------- Input Initialization -------\n" );

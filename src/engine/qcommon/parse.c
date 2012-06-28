@@ -296,7 +296,7 @@ punctuation_t   Default_Punctuations[] =
 	{ "<",  P_LOGIC_LESS,       NULL },
 	//reference operator
 	{ ".",  P_REF,              NULL },
-	//seperators
+	//separators
 	{ ",",  P_COMMA,            NULL },
 	{ ";",  P_SEMICOLON,        NULL },
 	//label indication
@@ -374,7 +374,7 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 Parse_ScriptError
 ===============
 */
-static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_ScriptError( script_t *script, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_ScriptError( script_t *script, char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -392,7 +392,7 @@ static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_ScriptError(
 Parse_ScriptWarning
 ===============
 */
-static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_ScriptWarning( script_t *script, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_ScriptWarning( script_t *script, char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1083,7 +1083,7 @@ static int Parse_ReadScriptToken( script_t *script, token_t *token )
 	{
 		if ( !Parse_ReadString( script, token, '\"' ) ) { return 0; }
 	}
-	//if an literal
+	//if there is a literal
 	else if ( *script->script_p == '\'' )
 	{
 		//if (!Parse_ReadLiteral(script, token)) return 0;
@@ -1200,7 +1200,7 @@ static script_t *Parse_LoadScriptFile( const char *filename )
 Parse_LoadScriptMemory
 ===============
 */
-static script_t *Parse_LoadScriptMemory( char *ptr, int length, char *name )
+static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char *name )
 {
 	void     *buffer;
 	script_t *script;
@@ -1250,7 +1250,7 @@ static void Parse_FreeScript( script_t *script )
 Parse_SourceError
 ===============
 */
-static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_SourceError( source_t *source, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_SourceError( source_t *source, char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1266,7 +1266,7 @@ static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_SourceError(
 Parse_SourceWarning
 ===============
 */
-static __attribute__( ( format( printf, 2, 3 ) ) ) void QDECL Parse_SourceWarning( source_t *source, char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_SourceWarning( source_t *source, char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1359,7 +1359,7 @@ static token_t *Parse_CopyToken( token_t *token )
 //  t = freetokens;
 	if ( !t )
 	{
-		Com_Error( ERR_FATAL, "out of token space\n" );
+		Com_Error( ERR_FATAL, "out of token space" );
 		return NULL;
 	}
 
@@ -1991,7 +1991,7 @@ static void Parse_ConvertPath( char *path )
 {
 	char *ptr;
 
-	//remove double path seperators
+	//remove double path separators
 	for ( ptr = path; *ptr; )
 	{
 		if ( ( *ptr == '\\' || *ptr == '/' ) &&
@@ -2005,7 +2005,7 @@ static void Parse_ConvertPath( char *path )
 		}
 	}
 
-	//set OS dependent path seperators
+	//set OS-dependent path separators
 	for ( ptr = path; *ptr; )
 	{
 		if ( *ptr == '/' || *ptr == '\\' ) { *ptr = PATH_SEP; }
@@ -2144,7 +2144,7 @@ static int Parse_OperatorPriority( int op )
 #define MAX_OPERATORS 64
 #define AllocValue(val)                 \
         if (numvalues >= MAX_VALUES) {            \
-    Parse_SourceError(source, "out of value space\n");    \
+    Parse_SourceError(source, "out of value space");    \
     error = 1;                    \
     break;                      \
   }                         \
@@ -2154,7 +2154,7 @@ static int Parse_OperatorPriority( int op )
 //
 #define AllocOperator(op)               \
         if (numoperators >= MAX_OPERATORS) {        \
-    Parse_SourceError(source, "out of operator space\n"); \
+    Parse_SourceError(source, "out of operator space"); \
     error = 1;                    \
     break;                      \
   }                         \
@@ -2344,7 +2344,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 						     t->subtype == P_BIN_AND || t->subtype == P_BIN_OR ||
 						     t->subtype == P_BIN_XOR )
 						{
-							Parse_SourceError( source, "illigal operator %s on floating point operands\n", t->string );
+							Parse_SourceError( source, "illegal operator %s on floating point operands", t->string );
 							error = 1;
 							break;
 						}
@@ -2530,7 +2530,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 			case P_DIV:
 				if ( !v2->intvalue || !v2->floatvalue )
 				{
-					Parse_SourceError( source, "divide by zero in #if/#elif\n" );
+					Parse_SourceError( source, "divide by zero in #if/#elif" );
 					error = 1;
 					break;
 				}
@@ -2542,7 +2542,7 @@ static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long 
 			case P_MOD:
 				if ( !v2->intvalue )
 				{
-					Parse_SourceError( source, "divide by zero in #if/#elif\n" );
+					Parse_SourceError( source, "divide by zero in #if/#elif" );
 					error = 1;
 					break;
 				}
@@ -3341,7 +3341,7 @@ static int Parse_ReadDollarDirective( source_t *source )
 		return qfalse;
 	}
 
-	//if if is a name
+	//if it's a name
 	if ( token.type == TT_NAME )
 	{
 		//find the precompiler directive
@@ -3678,7 +3678,7 @@ static int Parse_ReadDirective( source_t *source )
 		return qfalse;
 	}
 
-	//if if is a name
+	//if it's a name
 	if ( token.type == TT_NAME )
 	{
 		//find the precompiler directive
@@ -3726,7 +3726,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 
 	if ( newtoken.type != TT_PUNCTUATION || newtoken.subtype != P_BRACEOPEN )
 	{
-		Parse_SourceError( source, "Found %s when expecting {\n",
+		Parse_SourceError( source, "Found %s when expecting {",
 		                   newtoken.string );
 		return qfalse;
 	}
@@ -3761,7 +3761,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 		// ... but not for it to do anything else
 		if ( name.type != TT_NAME )
 		{
-			Parse_SourceError( source, "Found %s when expecting identifier\n",
+			Parse_SourceError( source, "Found %s when expecting identifier",
 			                   name.string );
 			return qfalse;
 		}
@@ -3773,7 +3773,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 
 		if ( newtoken.type != TT_PUNCTUATION )
 		{
-			Parse_SourceError( source, "Found %s when expecting , or = or }\n",
+			Parse_SourceError( source, "Found %s when expecting , or = or }",
 			                   newtoken.string );
 			return qfalse;
 		}
@@ -3802,7 +3802,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 
 			if ( newtoken.type != TT_NUMBER || !( newtoken.subtype & TT_INTEGER ) )
 			{
-				Parse_SourceError( source, "Found %s when expecting integer\n",
+				Parse_SourceError( source, "Found %s when expecting integer",
 				                   newtoken.string );
 				return qfalse;
 			}
@@ -3811,7 +3811,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 			if ( neg == -1 && ( newtoken.subtype & TT_UNSIGNED ) )
 			{
 				Parse_SourceWarning( source, "Value in enumeration is negative and "
-				                     "unsigned\n" );
+				                     "unsigned" );
 			}
 
 			// set the new define value
@@ -3826,7 +3826,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 		if ( newtoken.type != TT_PUNCTUATION || ( newtoken.subtype != P_COMMA &&
 		     newtoken.subtype != P_BRACECLOSE ) )
 		{
-			Parse_SourceError( source, "Found %s when expecting , or }\n",
+			Parse_SourceError( source, "Found %s when expecting , or }",
 			                   newtoken.string );
 			return qfalse;
 		}
@@ -3834,7 +3834,7 @@ static qboolean Parse_ReadEnumeration( source_t *source )
 		if ( !Parse_AddDefineToSourceFromString( source, va( "%s %d\n", name.string,
 		     value ) ) )
 		{
-			Parse_SourceWarning( source, "Couldn't add define to source: %s = %d\n",
+			Parse_SourceWarning( source, "Couldn't add define to source: %s = %d",
 			                     name.string, value );
 			return qfalse;
 		}
@@ -3917,7 +3917,7 @@ static int Parse_ReadToken( source_t *source, token_t *token )
 
 					if ( strlen( token->string ) + strlen( newtoken.string + 1 ) + 1 >= MAX_TOKEN_CHARS )
 					{
-						Parse_SourceError( source, "string longer than MAX_TOKEN_CHARS %d\n", MAX_TOKEN_CHARS );
+						Parse_SourceError( source, "string longer than MAX_TOKEN_CHARS %d", MAX_TOKEN_CHARS );
 						return qfalse;
 					}
 
@@ -3961,7 +3961,7 @@ static int Parse_ReadToken( source_t *source, token_t *token )
 Parse_DefineFromString
 ===============
 */
-static define_t *Parse_DefineFromString( char *string )
+static define_t *Parse_DefineFromString( const char *string )
 {
 	script_t *script;
 	source_t src;
@@ -4032,7 +4032,7 @@ Parse_AddGlobalDefine
 adds or overrides a global define that will be added to all opened sources
 ===============
 */
-int Parse_AddGlobalDefine( char *string )
+int Parse_AddGlobalDefine( const char *string )
 {
 	define_t *define, *prev, *curr;
 

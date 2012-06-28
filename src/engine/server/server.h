@@ -180,9 +180,9 @@ typedef struct client_s
 	char           userinfo[ MAX_INFO_STRING ]; // name, etc
 
 	char           reliableCommands[ MAX_RELIABLE_COMMANDS ][ MAX_STRING_CHARS ];
-	int            reliableSequence; // last added reliable message, not necesarily sent or acknowledged yet
+	int            reliableSequence; // last added reliable message, not necessarily sent or acknowledged yet
 	int            reliableAcknowledge; // last acknowledged reliable message
-	int            reliableSent; // last sent reliable message, not necesarily acknowledged yet
+	int            reliableSent; // last sent reliable message, not necessarily acknowledged yet
 	int            messageAcknowledge;
 
 	int            binaryMessageLength;
@@ -213,7 +213,7 @@ typedef struct client_s
 	int           downloadSendTime; // time we last got an ack from the client
 
 	// www downloading
-	qboolean bDlOK; // passed from cl_wwwDownload CVAR_USERINFO, wether this client supports www dl
+	qboolean bDlOK; // passed from cl_wwwDownload CVAR_USERINFO, whether this client supports www dl
 	char     downloadURL[ MAX_OSPATH ]; // the URL we redirected the client to
 	qboolean bWWWDl; // we have a www download going
 	qboolean bWWWing; // the client is doing an ftp/http download
@@ -346,7 +346,7 @@ typedef struct
 
 //=============================================================================
 
-extern serverStatic_t svs; // persistant server info across maps
+extern serverStatic_t svs; // persistent server info across maps
 extern server_t       sv; // cleared each map
 extern vm_t           *gvm; // game virtual machine
 
@@ -413,7 +413,7 @@ extern cvar_t *sv_wwwDownload; // general flag to enable/disable www download re
 extern cvar_t *sv_wwwBaseURL; // the base URL of all the files
 
 // tell clients to perform their downloads while disconnected from the server
-// this gets you a better throughput, but you loose the ability to control the download usage
+// this gets you a better throughput, but you lose the ability to control the download usage
 extern cvar_t *sv_wwwDlDisconnected;
 extern cvar_t *sv_wwwFallbackURL;
 
@@ -435,7 +435,7 @@ extern cvar_t *sv_voip;
 // sv_main.c
 //
 void       SV_FinalCommand( char *cmd, qboolean disconnect );  // ydnar: added disconnect flag so map changes can use this function as well
-void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
+void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) PRINTF_LIKE(2);
 
 void       SV_AddOperatorCommands( void );
 void       SV_RemoveOperatorCommands( void );
@@ -531,7 +531,7 @@ void           SV_InitGameProgs( void );
 void           SV_ShutdownGameProgs( void );
 void           SV_RestartGameProgs( void );
 qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
-qboolean       SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation_t *ort );
+qboolean       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
 int            SV_LoadTag( const char *mod_name );
 qboolean       SV_GameIsSinglePlayer( void );
 qboolean       SV_GameIsCoop( void );
@@ -571,7 +571,7 @@ void SV_LinkEntity( sharedEntity_t *ent );
 
 // Needs to be called any time an entity changes origin, mins, maxs,
 // or solid.  Automatically unlinks if needed.
-// sets ent->v.absmin and ent->v.absmax
+// sets ent->r.absmin and ent->r.absmax
 // sets ent->leafnums[] for pvs determination even if the entity
 // is not solid
 
@@ -603,7 +603,7 @@ void SV_Trace( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, c
 // if the starting point is in a solid, it will be allowed to move out
 // to an open area
 
-// passEntityNum is explicitly excluded from clipping checks (normally ENTITYNUM_NONE)
+// passEntityNum, if isn't ENTITYNUM_NONE, will be explicitly excluded from clipping checks
 
 void SV_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, traceType_t type );
 

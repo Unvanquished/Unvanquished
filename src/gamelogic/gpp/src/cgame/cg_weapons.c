@@ -43,7 +43,6 @@ void CG_RegisterUpgrade( int upgradeNum )
 	if ( upgradeNum <= UP_NONE || upgradeNum >= UP_NUM_UPGRADES )
 	{
 		CG_Error( "CG_RegisterUpgrade: out of range: %d", upgradeNum );
-		return;
 	}
 
 	upgradeInfo = &cg_upgrades[ upgradeNum ];
@@ -1005,7 +1004,6 @@ void CG_RegisterWeapon( int weaponNum )
 	if ( weaponNum <= WP_NONE || weaponNum >= WP_NUM_WEAPONS )
 	{
 		CG_Error( "CG_RegisterWeapon: out of range: %d", weaponNum );
-		return;
 	}
 
 	weaponInfo = &cg_weapons[ weaponNum ];
@@ -1244,7 +1242,7 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	}
 
 	// gun angles from bobbing
-	// bob amount is class dependant
+	// bob amount is class-dependent
 	bob = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob;
 
 	if ( bob != 0 )
@@ -2248,7 +2246,6 @@ void CG_FireWeapon( centity_t *cent, weaponMode_t weaponMode )
 	if ( weaponNum >= WP_NUM_WEAPONS )
 	{
 		CG_Error( "CG_FireWeapon: ent->weapon >= WP_NUM_WEAPONS" );
-		return;
 	}
 
 	wi = &cg_weapons[ weaponNum ];
@@ -2334,7 +2331,7 @@ void CG_MissileHitWall( weapon_t weaponNum, weaponMode_t weaponMode, int clientN
 	}
 	else
 	{
-		//normal sound
+		//generic sound
 		for ( c = 0; c < 4; c++ )
 		{
 			if ( !weapon->wim[ weaponMode ].impactSound[ c ] )

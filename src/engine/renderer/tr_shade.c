@@ -1135,7 +1135,7 @@ static void ComputeColors( shaderStage_t *pStage )
 
 				if ( backEnd.currentEntity->e.hModel )
 				{
-					// world surfaces dont have an axis
+					// world surfaces don't have an axis
 					VectorRotate( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
 				}
 				else
@@ -1417,9 +1417,8 @@ static void ComputeTexCoords( shaderStage_t *pStage )
 					break;
 
 				default:
-					ri.Error( ERR_DROP, "ERROR: unknown texmod '%d' in shader '%s'\n", pStage->bundle[ b ].texMods[ tm ].type,
+					ri.Error( ERR_DROP, "ERROR: unknown texmod '%d' in shader '%s'", pStage->bundle[ b ].texMods[ tm ].type,
 					          tess.shader->name );
-					break;
 			}
 		}
 	}
@@ -1484,7 +1483,7 @@ void SetIteratorFog( void )
 /*
 ** RB_SetStencil
 */
-static ID_INLINE GLenum RB_StencilOp( int op )
+static INLINE GLenum RB_StencilOp( int op )
 {
 	switch( op & STO_MASK ) {
 	case STO_KEEP:

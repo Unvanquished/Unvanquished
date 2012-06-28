@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // bg_pmove.c -- both games player movement code
-// takes a playerstate and a usercmd as input and returns a modifed playerstate
+// takes a playerstate and a usercmd as input and returns a modified playerstate
 
 #include "../../../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
@@ -234,33 +234,10 @@ PM_ClipVelocity
 Slide off of the impacting surface
 ==================
 */
-void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out, float overbounce )
+void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out )
 {
-	float backoff;
-	float change;
-	int   i;
-
-	backoff = DotProduct( in, normal );
-
-	//Com_Printf( "%1.0f ", backoff );
-
-	if ( backoff < 0 )
-	{
-		backoff *= overbounce;
-	}
-	else
-	{
-		backoff /= overbounce;
-	}
-
-	for ( i = 0; i < 3; i++ )
-	{
-		change = normal[ i ] * backoff;
-		//Com_Printf( "%1.0f ", change );
-		out[ i ] = in[ i ] - change;
-	}
-
-	//Com_Printf( "   " );
+	float t = -DotProduct( in, normal );
+	VectorMA( in, t, normal, out );
 }
 
 /*
@@ -413,7 +390,7 @@ This allows the clients to use axial -127 to 127 values for all directions
 without getting a sqrt(2) distortion in speed.
 ============
 */
-static float PM_CmdScale( usercmd_t *cmd )
+static float PM_CmdScale( usercmd_t *cmd, qboolean zFlight )
 {
 	int   max;
 	float total;
@@ -477,10 +454,11 @@ static float PM_CmdScale( usercmd_t *cmd )
 			modifier *= HUMAN_SIDE_MODIFIER;
 		}
 
-		//must have have stamina to jump
-		if ( pm->ps->stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+		if ( !zFlight )
 		{
-			cmd->upmove = 0;
+			//must have have stamina to jump
+			if ( pm->ps->stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+				cmd->upmove = 0;
 		}
 
 		//slow down once stamina depletes
@@ -541,30 +519,19 @@ static float PM_CmdScale( usercmd_t *cmd )
 		modifier = 0.0f;
 	}
 
-	if ( pm->ps->pm_type != PM_SPECTATOR && pm->ps->pm_type != PM_NOCLIP )
-	{
-		if ( BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude == 0.0f )
-		{
-			cmd->upmove = 0;
-		}
-
-		//prevent speed distortions for non ducking classes
-		if ( !( pm->ps->pm_flags & PMF_DUCKED ) && pm->ps->pm_type != PM_JETPACK && cmd->upmove < 0 )
-		{
-			cmd->upmove = 0;
-		}
-	}
-
 	max = abs( cmd->forwardmove );
 
 	if ( abs( cmd->rightmove ) > max )
 	{
 		max = abs( cmd->rightmove );
 	}
+	total = cmd->forwardmove * cmd->forwardmove + cmd->rightmove * cmd->rightmove;
 
-	if ( abs( cmd->upmove ) > max )
+	if ( zFlight )
 	{
-		max = abs( cmd->upmove );
+		if ( abs( cmd->upmove ) > max )
+			max = abs( cmd->upmove );
+		total += cmd->upmove * cmd->upmove;
 	}
 
 	if ( !max )
@@ -572,8 +539,7 @@ static float PM_CmdScale( usercmd_t *cmd )
 		return 0;
 	}
 
-	total = sqrt( cmd->forwardmove * cmd->forwardmove
-	              + cmd->rightmove * cmd->rightmove + cmd->upmove * cmd->upmove );
+	total = sqrt( total );
 
 	scale = ( float ) pm->ps->speed * max / ( 127.0 * total ) * modifier;
 
@@ -584,8 +550,7 @@ static float PM_CmdScale( usercmd_t *cmd )
 ================
 PM_SetMovementDir
 
-Determine the rotation of the legs reletive
-to the facing dir
+Determine the rotation of the legs relative to the facing dir
 ================
 */
 static void PM_SetMovementDir( void )
@@ -667,6 +632,27 @@ static void PM_CheckCharge( void )
 	else
 	{
 		pm->ps->pm_flags &= ~PMF_CHARGE;
+	}
+}
+
+/*
+=============
+PM_CheckWaterPounce
+=============
+*/
+static void PM_CheckWaterPounce( void )
+{
+	if ( pm->ps->weapon != WP_ALEVEL3 &&
+	     pm->ps->weapon != WP_ALEVEL3_UPG )
+	{
+		return;
+	}
+
+	// We were pouncing, but we've landed into water
+	if ( ( pm->waterlevel > 1 ) && ( pm->ps->pm_flags & PMF_CHARGE ) )
+	{
+		pm->ps->pm_flags &= ~PMF_CHARGE;
+		pm->ps->weaponTime += LEVEL3_POUNCE_REPEAT;
 	}
 }
 
@@ -810,10 +796,7 @@ static qboolean PM_CheckWallJump( void )
 	     !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
 	     trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
 	{
-		if ( !VectorCompare( trace.plane.normal, pm->ps->grapplePoint ) )
-		{
-			VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
-		}
+		VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
 	}
 	else
 	{
@@ -840,8 +823,6 @@ static qboolean PM_CheckWallJump( void )
 	if ( pm->ps->pm_flags & PMF_JUMP_HELD &&
 	     pm->ps->grapplePoint[ 2 ] == 1.0f )
 	{
-		// clear upmove so cmdscale doesn't lower running speed
-		pm->cmd.upmove = 0;
 		return qfalse;
 	}
 
@@ -982,18 +963,11 @@ static qboolean PM_CheckJump( void )
 
 	//can't jump whilst grabbed
 	if ( pm->ps->pm_type == PM_GRABBED )
-	{
-		pm->cmd.upmove = 0;
 		return qfalse;
-	}
 
 	// must wait for jump to be released
 	if ( pm->ps->pm_flags & PMF_JUMP_HELD )
-	{
-		// clear upmove so cmdscale doesn't lower running speed
-		pm->cmd.upmove = 0;
 		return qfalse;
-	}
 
 	//don't allow walljump for a short while after jumping from the ground
 	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
@@ -1297,6 +1271,9 @@ static void PM_WaterMove( void )
 	float  scale;
 	float  vel;
 
+	// if pouncing, stop
+	PM_CheckWaterPounce();
+
 	if ( PM_CheckWaterJump() )
 	{
 		PM_WaterJumpMove();
@@ -1328,7 +1305,7 @@ static void PM_WaterMove( void )
 #endif
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd );
+	scale = PM_CmdScale( &pm->cmd, qtrue );
 
 	//
 	// user intentions
@@ -1364,8 +1341,7 @@ static void PM_WaterMove( void )
 	{
 		vel = VectorLength( pm->ps->velocity );
 		// slide along the ground plane
-		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-		                 pm->ps->velocity, OVERCLIP );
+		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 
 		VectorNormalize( pm->ps->velocity );
 		VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
@@ -1389,10 +1365,9 @@ static void PM_JetPackMove( void )
 	vec3_t wishdir;
 	float  scale;
 
-	//normal slowdown
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd );
+	scale = PM_CmdScale( &pm->cmd, qtrue );
 
 	// user intentions
 	for ( i = 0; i < 2; i++ )
@@ -1445,10 +1420,9 @@ static void PM_FlyMove( void )
 	vec3_t wishdir;
 	float  scale;
 
-	// normal slowdown
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd );
+	scale = PM_CmdScale( &pm->cmd, qtrue );
 
 	//
 	// user intentions
@@ -1500,7 +1474,7 @@ static void PM_AirMove( void )
 	smove = pm->cmd.rightmove;
 
 	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd );
+	scale = PM_CmdScale( &cmd, qfalse );
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
@@ -1531,8 +1505,7 @@ static void PM_AirMove( void )
 	// slide along the steep plane
 	if ( pml.groundPlane )
 	{
-		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-		                 pm->ps->velocity, OVERCLIP );
+		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 	}
 
 	PM_StepSlideMove( qtrue, qfalse );
@@ -1584,14 +1557,14 @@ static void PM_ClimbMove( void )
 	smove = pm->cmd.rightmove;
 
 	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd );
+	scale = PM_CmdScale( &cmd, qfalse );
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
 
 	// project the forward and right directions onto the ground plane
-	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward, OVERCLIP );
-	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right, OVERCLIP );
+	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward );
+	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right );
 	//
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
@@ -1652,8 +1625,7 @@ static void PM_ClimbMove( void )
 	vel = VectorLength( pm->ps->velocity );
 
 	// slide along the ground plane
-	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-	                 pm->ps->velocity, OVERCLIP );
+	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 
 	// don't decrease velocity when going up or down a slope
 	VectorNormalize( pm->ps->velocity );
@@ -1716,7 +1688,7 @@ static void PM_WalkMove( void )
 	smove = pm->cmd.rightmove;
 
 	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd );
+	scale = PM_CmdScale( &cmd, qfalse );
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
@@ -1726,8 +1698,8 @@ static void PM_WalkMove( void )
 	pml.right[ 2 ] = 0;
 
 	// project the forward and right directions onto the ground plane
-	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward, OVERCLIP );
-	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right, OVERCLIP );
+	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward );
+	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right );
 	//
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
@@ -1794,8 +1766,7 @@ static void PM_WalkMove( void )
 	}
 
 	// slide along the ground plane
-	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-	                 pm->ps->velocity, OVERCLIP );
+	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 
 	// don't do anything if standing still
 	if ( !pm->ps->velocity[ 0 ] && !pm->ps->velocity[ 1 ] )
@@ -1826,7 +1797,7 @@ static void PM_LadderMove( void )
 
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd );
+	scale = PM_CmdScale( &pm->cmd, qtrue );
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -1851,8 +1822,7 @@ static void PM_LadderMove( void )
 		vel = VectorLength( pm->ps->velocity );
 
 		// slide along the ground plane
-		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal,
-		                 pm->ps->velocity, OVERCLIP );
+		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 
 		VectorNormalize( pm->ps->velocity );
 		VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
@@ -1972,7 +1942,7 @@ static void PM_NoclipMove( void )
 	}
 
 	// accelerate
-	scale = PM_CmdScale( &pm->cmd );
+	scale = PM_CmdScale( &pm->cmd, qtrue );
 
 	fmove = pm->cmd.forwardmove;
 	smove = pm->cmd.rightmove;
@@ -2000,7 +1970,7 @@ static void PM_NoclipMove( void )
 ================
 PM_FootstepForSurface
 
-Returns an event number apropriate for the groundsurface
+Returns an event number appropriate for the groundsurface
 ================
 */
 static int PM_FootstepForSurface( void )
@@ -2563,10 +2533,11 @@ static void PM_GroundClimbTrace( void )
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
 			vec3_t  forward, rotated, angles;
-			vec3_t  surfNormal = {0,0,-1};
 
 			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
 				VectorCopy(pm->ps->grapplePoint,surfNormal);
+			else
+				VectorSet( surfNormal, 0, 0, -1 );
 
 			//only correct if we were on a ceiling
 			if(surfNormal[2] < 0)
@@ -3231,7 +3202,7 @@ static void PM_Footsteps( void )
 	old = pm->ps->bobCycle;
 	pm->ps->bobCycle = ( int )( old + bobmove * pml.msec ) & 255;
 
-	// if we just crossed a cycle boundary, play an apropriate footstep event
+	// if we just crossed a cycle boundary, play an appropriate footstep event
 	if ( ( ( old + 64 ) ^ ( pm->ps->bobCycle + 64 ) ) & 128 )
 	{
 		if ( pm->waterlevel == 0 )
@@ -3415,7 +3386,7 @@ static void PM_TorsoAnimation( void )
 ==============
 PM_Weapon
 
-Generates weapon events and modifes the weapon counter
+Generates weapon events and modifies the weapon counter
 ==============
 */
 static void PM_Weapon( void )
@@ -4321,7 +4292,7 @@ void PmoveSingle( pmove_t *pmove )
 	pm = pmove;
 
 	// this counter lets us debug movement problems with a journal
-	// by setting a conditional breakpoint fot the previous frame
+	// by setting a conditional breakpoint for the previous frame
 	c_pmove++;
 
 	// clear results
@@ -4629,10 +4600,5 @@ void Pmove( pmove_t *pmove )
 
 		pmove->cmd.serverTime = pmove->ps->commandTime + msec;
 		PmoveSingle( pmove );
-
-		if ( pmove->ps->pm_flags & PMF_JUMP_HELD )
-		{
-			pmove->cmd.upmove = 20;
-		}
 	}
 }

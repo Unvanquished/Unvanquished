@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #define	BASEDIRNAME	"xreal"		// assumed to have a 2 or 3 following
-#define PATHSEPERATOR   '/'
+#define PATHSEPARATOR   '/'
 
 #ifdef SAFE_MALLOC
 void           *safe_malloc(size_t size)
@@ -222,7 +222,6 @@ void SetQdirFromPath(const char *path)
 				c++;
 			}
 			Error("No gamedir in %s", path);
-			return;
 		}
 	}
 	Error("SetQdirFromPath: no '%s' in %s", BASEDIRNAME, path);
@@ -582,7 +581,7 @@ returns -1 on failure or if the buffer would be overflowed.
 copied over from common.c implementation
 ============
 */
-__attribute__((format(printf, 3, 0))) int Q_vsnprintf(char *dest, int size, const char *fmt, va_list argptr)
+int VPRINTF_LIKE(3) Q_vsnprintf(char *dest, int size, const char *fmt, va_list argptr)
 {
 	int             ret;
 
@@ -603,7 +602,7 @@ __attribute__((format(printf, 3, 0))) int Q_vsnprintf(char *dest, int size, cons
 	return ret;
 }
 
-void Com_sprintf(char *dest, int size, const char *fmt, ...)
+void PRINTF_LIKE(3) Com_sprintf(char *dest, int size, const char *fmt, ...)
 {
 	int             ret;
 	va_list         argptr;
@@ -626,7 +625,7 @@ varargs versions of all text functions.
 FIXME: make this buffer size safe someday
 ============
 */
-char           *va(char *format, ...)
+char * PRINTF_LIKE(1) va(char *format, ...)
 {
 	va_list         argptr;
 	static char     string[2][32000];	// in case va is called by nested functions
@@ -855,7 +854,7 @@ void DefaultExtension(char *path, const char *extension)
 	char           *src;
 
 //
-// if path doesnt have a .EXT, append extension
+// if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
 	src = path + strlen(path) - 1;

@@ -85,7 +85,7 @@ typedef enum {qfalse, qtrue}    qboolean;
 #define qfalse  false
 #endif //BSPC
 
-int Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr );
+int Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr ) VPRINTF_LIKE(3);
 
 #define PUNCTABLE
 
@@ -143,7 +143,7 @@ punctuation_t default_punctuations[] =
 	{"<",P_LOGIC_LESS, NULL},
 	//reference operator
 	{".",P_REF, NULL},
-	//seperators
+	//separators
 	{",",P_COMMA, NULL},
 	{";",P_SEMICOLON, NULL},
 	//label indication
@@ -231,7 +231,7 @@ char *PunctuationFromNum( script_t *script, int num ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL ScriptError( script_t *script, char *str, ... ) {
+void QDECL PRINTF_LIKE(2) ScriptError( script_t *script, char *str, ... ) {
 	char text[1024];
 	va_list ap;
 
@@ -258,7 +258,7 @@ void QDECL ScriptError( script_t *script, char *str, ... ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL ScriptWarning( script_t *script, char *str, ... ) {
+void QDECL PRINTF_LIKE(2) ScriptWarning( script_t *script, char *str, ... ) {
 	char text[1024];
 	va_list ap;
 
@@ -887,7 +887,7 @@ int PS_ReadToken( script_t *script, token_t *token ) {
 			return 0;
 		}
 	} //end if
-	  //if an literal
+	//if there is a literal
 	else if ( *script->script_p == '\'' ) {
 		//if (!PS_ReadLiteral(script, token)) return 0;
 		if ( !PS_ReadString( script, token, '\'' ) ) {
@@ -1176,7 +1176,7 @@ long double ReadSignedFloat( script_t *script ) {
 		PS_ExpectTokenType( script, TT_NUMBER, 0, &token );
 	} //end if
 	else if ( token.type != TT_NUMBER ) {
-		ScriptError( script, "expected float value, found %s\n", token.string );
+		ScriptError( script, "expected float value, found %s", token.string );
 	} //end else if
 	return sign * token.floatvalue;
 } //end of the function ReadSignedFloat
@@ -1196,7 +1196,7 @@ signed long int ReadSignedInt( script_t *script ) {
 		PS_ExpectTokenType( script, TT_NUMBER, TT_INTEGER, &token );
 	} //end if
 	else if ( token.type != TT_NUMBER || token.subtype == TT_FLOAT ) {
-		ScriptError( script, "expected integer value, found %s\n", token.string );
+		ScriptError( script, "expected integer value, found %s", token.string );
 	} //end else if
 	return sign * token.intvalue;
 } //end of the function ReadSignedInt
@@ -1377,7 +1377,7 @@ script_t *LoadScriptFile( char *filename ) {
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-script_t *LoadScriptMemory( char *ptr, int length, char *name ) {
+script_t *LoadScriptMemory( const char *ptr, int length, const char *name ) {
 	void *buffer;
 	script_t *script;
 
@@ -1439,7 +1439,7 @@ Q_vsnPrintf: always append a trailing '\0', returns number of characters written
 returns -1 on failure or if the buffer would be overflowed.
 ============
 */
-int Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr ) {
+int VPRINTF_LIKE(3) Q_vsnprintf( char *dest, int size, const char *fmt, va_list argptr ) {
 	int ret;
 
 #ifdef _WIN32

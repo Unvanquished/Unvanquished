@@ -186,7 +186,7 @@ void R_IssueRenderCommands( qboolean runPerformanceCounters )
 	}
 
 	// at this point, the back end thread is idle, so it is ok
-	// to look at it's performance counters
+	// to look at its performance counters
 	if ( runPerformanceCounters )
 	{
 		R_PerformanceCounters();
@@ -761,7 +761,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 
 		if ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
-			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (0x%x)!\n", err );
+			ri.Error( ERR_FATAL, "RE_BeginFrame() - glGetError() failed (0x%x)!", err );
 		}
 	}
 

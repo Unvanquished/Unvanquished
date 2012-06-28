@@ -848,10 +848,10 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 	if ( to.type != NA_BROADCAST && to.type != NA_IP && to.type != NA_IP6 && to.type != NA_MULTICAST6 )
 	{
 		Com_Error( ERR_FATAL, "Sys_SendPacket: bad address type" );
-		return;
 	}
 
 	if ( ( ip_socket == INVALID_SOCKET && to.type == NA_IP ) ||
+	     ( ip_socket == INVALID_SOCKET && to.type == NA_BROADCAST ) ||
 	     ( ip6_socket == INVALID_SOCKET && to.type == NA_IP6 ) ||
 	     ( ip6_socket == INVALID_SOCKET && to.type == NA_MULTICAST6 ) )
 	{
@@ -905,7 +905,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to )
 			return;
 		}
 
-		Com_Printf( "NET_SendPacket: %s\n", NET_ErrorString() );
+		Com_Printf( "Sys_SendPacket: %s\n", NET_ErrorString() );
 	}
 }
 
@@ -1279,7 +1279,7 @@ void NET_JoinMulticast6( void )
 	{
 		if ( ( multicast6_socket = NET_IP6Socket( net_mcast6addr->string, ntohs( boundto.sin6_port ), NULL, &err ) ) == INVALID_SOCKET )
 		{
-			// If the OS does not support binding to multicast addresses, like WinXP, at least try with the normal file descriptor.
+			// If the OS does not support binding to multicast addresses, like Windows XP, at least try with a non-multicast socket.
 			multicast6_socket = ip6_socket;
 		}
 	}
@@ -1995,7 +1995,7 @@ void NET_Sleep( int msec )
 	struct timeval timeout;
 
 	fd_set         fdset;
-	int            highestfd = -1;
+	SOCKET         highestfd = INVALID_SOCKET;
 
 	if ( !com_dedicated->integer )
 	{
@@ -2025,7 +2025,7 @@ void NET_Sleep( int msec )
 	{
 		FD_SET( ip6_socket, &fdset );
 
-		if ( ip6_socket > highestfd )
+		if ( highestfd == INVALID_SOCKET || ip6_socket > highestfd )
 		{
 			highestfd = ip6_socket;
 		}

@@ -848,7 +848,7 @@ qboolean AAS_GetFace(winding_t *w, plane_t *p, int side, int *facenum)
 	numedges = w->numpoints;
 	for (i = 0; i < w->numpoints; i++)
 	{
-		if (i >= 1024) Error("AAS_GetFace: more than %d edges\n", 1024);
+		if (i >= 1024) Error("AAS_GetFace: more than %d edges", 1024);
 		foundedges &= AAS_GetEdge(w->p[i], w->p[(i+1 >= w->numpoints ? 0 : i+1)], &edges[i]);
 	} //end for
 

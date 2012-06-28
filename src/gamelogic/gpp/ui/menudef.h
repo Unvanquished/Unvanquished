@@ -43,7 +43,7 @@ enum
 
 enum
 {
-  ITEM_TEXTSTYLE_NORMAL, // normal text
+  ITEM_TEXTSTYLE_PLAIN, // plain
   ITEM_TEXTSTYLE_BLINK, // fast blinking
   ITEM_TEXTSTYLE_PULSE, // slow pulsing
   ITEM_TEXTSTYLE_SHADOWED, // drop shadow (need a color for this)
@@ -52,6 +52,7 @@ enum
   ITEM_TEXTSTYLE_SHADOWEDMORE, // drop shadow (need a color for this)
   ITEM_TEXTSTYLE_NEON // glow (need a color for this)
 };
+#define ITEM_TEXTSTYLE_NORMAL ITEM_TEXTSTYLE_PLAIN // deprecated, provided for compatibility
 
 enum
 {

@@ -83,8 +83,6 @@ extern "C" {
 #define MAX_TEAMNAME 32
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
-#define DEMOEXT      "dm_" // standard demo extension
-
 #if defined _WIN32 && !defined __GNUC__
 
 #pragma warning(disable : 4018) // signed/unsigned mismatch
@@ -109,7 +107,7 @@ extern "C" {
 #pragma warning(disable : 4711) // selected for automatic inline expansion
 #pragma warning(disable : 4220) // varargs matches remaining parameters
 #pragma warning(disable : 4706) // assignment within conditional expression // cs: probably should correct all of these at some point
-#pragma warning(disable : 4005) // macro redefination
+#pragma warning(disable : 4005) // macro redefinition
 #pragma warning(disable : 4996) // This function or variable may be unsafe. Consider using 'function_s' instead
 #pragma warning(disable : 4075) // initializers put in unrecognized initialization area
 #pragma warning(disable : 4355) // 'this': used in member initializer list
@@ -206,17 +204,28 @@ extern int memcmp( void *, void *, size_t );
 #include "q_platform.h"
 
 // not VM - we can have static inline
-#define STATIC_INLINE static ID_INLINE __attribute__(( always_inline ))
+#define STATIC_INLINE static INLINE ALWAYS_INLINE
 #define IFDECLARE
 #define Q3_VM_INSTANTIATE
 #endif
 
-#if defined __GNUC__ || defined __clang__ && !defined(Q3_VM)
-#define _attribute( x ) __attribute__( x )
+#if defined __GNUC__ || defined __clang__
+#define NORETURN __attribute__((__noreturn__))
+#define UNUSED __attribute__((__unused__))
+#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
+#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
+#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
+#define ALIGNED(a) __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define _attribute( x )
-#define __attribute( x )
-#define __attribute__( x )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED(a)
+#define ALWAYS_INLINE
+#define __attribute__(x)
 #endif
 
 //bani
@@ -226,7 +235,7 @@ extern int memcmp( void *, void *, size_t );
 #elif ( defined __SUNPRO_C )
 #define Q_EXPORT __global
 #elif (( __GNUC__ >= 3 ) && ( !__EMX__ ) && ( !sun ))
-#define Q_EXPORT __attribute__(( visibility("default")))
+#define Q_EXPORT __attribute__((__visibility__("default")))
 #else
 #define Q_EXPORT
 #endif
@@ -249,24 +258,6 @@ extern int memcmp( void *, void *, size_t );
 	typedef int fileHandle_t;
 	typedef int clipHandle_t;
 
-//#define SND_NORMAL      0x000 // (default) Allow sound to be cut off only by the same sound on this channel
-#define     SND_OKTOCUT        0x001 // Allow sound to be cut off by any following sounds on this channel
-#define     SND_REQUESTCUT     0x002 // Allow sound to be cut off by following sounds on this channel only for sounds who request cutoff
-#define     SND_CUTOFF         0x004 // Cut off sounds on this channel that are marked 'SND_REQUESTCUT'
-#define     SND_CUTOFF_ALL     0x008 // Cut off all sounds on this channel
-#define     SND_NOCUT          0x010 // Don't cut off.  Always let finish (overridden by SND_CUTOFF_ALL)
-#define     SND_NO_ATTENUATION 0x020 // don't attenuate (even though the sound is in voice channel, for example)
-
-#if defined( _MSC_VER )
-#define ALIGN(x) __declspec(align(x));
-#elif defined( __GNUC__ )
-#define ALIGN(x) __attribute__(( aligned(x)))
-#else
-#define ALIGN(x)
-#endif
-
-#define lengthof( a )           ( sizeof( ( a ) ) / sizeof( ( a )[ 0 ] ))
-
 #define PAD(x,y)                ((( x ) + ( y ) - 1 ) & ~(( y ) - 1 ))
 #define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
 #define PADP(base, alignment)   ((void *) PAD((intptr_t) ( base ), ( alignment )))
@@ -287,17 +278,7 @@ extern int memcmp( void *, void *, size_t );
 #define MIN_QINT ( -MAX_QINT - 1 )
 
 #ifndef BIT
-#define BIT(x) ( 1 << x )
-#endif
-
-// TTimo gcc: was missing, added from Q3 source
-#ifndef max
-#define max( x, y ) ( ( ( x ) > ( y ) ) ? ( x ) : ( y ) )
-#define min( x, y ) ( ( ( x ) < ( y ) ) ? ( x ) : ( y ) )
-#endif
-
-#ifndef sign
-#define sign( f ) ( ( f > 0 ) ? 1 : ( ( f < 0 ) ? -1 : 0 ) )
+#define BIT(x) ( 1 << ( x ) )
 #endif
 
 // RF, this is just here so different elements of the engine can be aware of this setting as it changes
@@ -325,7 +306,7 @@ extern int memcmp( void *, void *, size_t );
 // with very long names
 #define MAX_NAME_LENGTH    36 // max length of a client name
 
-#define MAX_SAY_TEXT       150
+#define MAX_SAY_TEXT       400
 
 #define MAX_BINARY_MESSAGE 32768 // max length of binary message
 
@@ -342,7 +323,7 @@ extern int memcmp( void *, void *, size_t );
 	  EXEC_NOW, // don't return until completed, a VM should NEVER use this,
 	  // because some commands might cause the VM to be unloaded...
 	  EXEC_INSERT, // insert at current position, but don't run yet
-	  EXEC_APPEND // add to end of the command buffer (normal case)
+	  EXEC_APPEND // add to end of the command buffer
 	} cbufExec_t;
 
 //
@@ -487,7 +468,7 @@ extern int memcmp( void *, void *, size_t );
 #define M_ROOT3 1.732050808f
 #endif
 
-#define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x )))
+#define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x ) ) )
 
 #if defined ( IPHONE )
 #define UNIMPL()     Com_Printf("%s(): Unimplemented\n", __FUNCTION__)
@@ -629,7 +610,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 // Hex Color string support
 #define gethex( ch )                  ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
 #define ishex( ch )                   ( ( ch ) && ( ( ( ch ) >= '0' && ( ch ) <= '9' ) || ( ( ch ) >= 'A' && ( ch ) <= 'F' ) || ( ( ch ) >= 'a' && ( ch ) <= 'f' ) ) )
-// check if it's format rrggbb r,g,b e {0..9} U {A...F}
+// check whether in the rrggbb format, r,g,b e {0,...,9} U {A,...,F}
 #define Q_IsHexColorString( p )       ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
 #define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
 
@@ -888,7 +869,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	{
 		float v[ 3 ];
 	} vec3struct_t;
-#define VectorCopy( a,b ) *(vec3struct_t *)b = *(vec3struct_t *)a
+#define VectorCopy( a,b ) ( *(vec3struct_t *)( b ) = *(vec3struct_t *)( a ) )
 #endif
 #endif
 
@@ -913,7 +894,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define SnapVector( v )              do { v[ 0 ] = ( (int)( v[ 0 ] ) ); v[ 1 ] = ( (int)( v[ 1 ] ) ); v[ 2 ] = ( (int)( v[ 2 ] ) ); } while ( 0 )
 
-// just in case you do't want to use the macros
+// just in case you don't want to use the macros
 	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );
 	void     _VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out );
 	void     _VectorAdd( const vec3_t veca, const vec3_t vecb, vec3_t out );
@@ -1392,8 +1373,8 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	char       *COM_ParseExt( char **data_p, qboolean allowLineBreak );
 	int        COM_Compress( char *data_p );
-	void       COM_ParseError( char *format, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-	void       COM_ParseWarning( char *format, ... ) _attribute( ( format( printf, 1, 2 ) ) );
+	void       COM_ParseError( char *format, ... ) PRINTF_LIKE(1);
+	void       COM_ParseWarning( char *format, ... ) PRINTF_LIKE(1);
 
 	int        Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] );
 
@@ -1442,7 +1423,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	void      Parse2DMatrix( char **buf_p, int y, int x, float *m );
 	void      Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
 
-	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) __attribute__( ( format( printf, 3, 4 ) ) );
+	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) PRINTF_LIKE(3);
 
 // mode parm for FS_FOpenFile
 	typedef enum
@@ -1495,7 +1476,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #endif
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-int rint( double x );
+double rint( double x );
 #endif
 
 // buffer size safe library replacements
@@ -1505,7 +1486,7 @@ int rint( double x );
 
 #else
 #define         Q_strncpyz(string1,string2,length) Q_strncpyzDebug( string1, string2, length, __FILE__, __LINE__ )
-	void     Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line ) __attribute__( ( nonnull ) );
+	void     Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line ) __attribute__((__nonnull__));
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
@@ -1545,7 +1526,7 @@ char *Q_UTF8Unstore( int e );
 //=============================================
 
 // 64-bit integers for global rankings interface
-// implemented as a struct for qvm compatibility
+// implemented as a struct for QVM compatibility
 	typedef struct
 	{
 		byte b0;
@@ -1573,7 +1554,7 @@ char *Q_UTF8Unstore( int e );
 	*/
 	float           *tv( float x, float y, float z );
 
-	char     *QDECL va( const char *format, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+	char     *QDECL va( const char *format, ... ) PRINTF_LIKE(1);
 
 //=============================================
 
@@ -1589,9 +1570,9 @@ char *Q_UTF8Unstore( int e );
 	void       Info_NextPair( const char **s, char *key, char *value );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-	void QDECL Com_Error( int level, const char *error, ... ) _attribute( ( format( printf, 2, 3 ) ) );
-	void QDECL Com_Printf( const char *msg, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-	void QDECL Com_DPrintf( const char *msg, ... ) _attribute( ( format( printf, 1, 2 ) ) );
+	void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
+	void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
+	void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 
 	/*
 	==========================================================
@@ -1639,7 +1620,7 @@ char *Q_UTF8Unstore( int e );
 #define CVAR_SHADER              2048 // tell renderer to recompile shaders.
 
 #define CVAR_UNSAFE              4096 // ydnar: unsafe system cvars (renderer, sound settings, anything that might cause a crash)
-#define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: WONT automatically send this to clients, but server browsers will see it
+#define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: won't automatically send this to clients, but server browsers will see it
 #define CVAR_NONEXISTENT         0xFFFFFFFF // Cvar doesn't exist.
 
 // nothing outside the Cvar_*() functions should modify these fields!
@@ -1861,7 +1842,7 @@ char *Q_UTF8Unstore( int e );
 #define ENTITYNUM_WORLD          ( MAX_GENTITIES - 2 )
 #define ENTITYNUM_MAX_NORMAL     ( MAX_GENTITIES - 2 )
 
-#define MAX_MODELS               256 // these are sent over the net as 8 bits (Gordon: upped to 9 bits, erm actually it was already at 9 bits, wtf? NEVAR TRUST GAMECODE COMMENTS, comments are evil :E, lets hope it doesnt horribly break anything....)
+#define MAX_MODELS               256 // these are sent over the net as 8 bits (Gordon: upped to 9 bits, erm actually it was already at 9 bits, wtf? NEVAR TRUST GAMECODE COMMENTS, comments are evil :E, let's hope it doesn't horribly break anything....)
 #define MAX_SOUNDS               256 // so they cannot be blindly increased
 #define MAX_CS_SKINS             64
 #define MAX_CSSTRINGS            32
@@ -1934,7 +1915,7 @@ char *Q_UTF8Unstore( int e );
 // will occur
 
 // you can't add anything to this without modifying the code in msg.c
-// (Gordon: unless it doesnt need transmitted over the network, in which case it should prolly go in the new pmext struct anyway)
+// (Gordon: unless it doesn't need transmission over the network, in which case it should probably go into the new pmext struct anyway)
 
 // playerState_t is a full superset of entityState_t as it is used by players,
 // so if a playerState_t is transmitted, the entityState_t can be fully derived
@@ -1973,7 +1954,7 @@ char *Q_UTF8Unstore( int e );
 		int torsoTimer; // don't change low priority animations until this runs out
 		int torsoAnim; // mask off ANIM_TOGGLEBIT
 
-		int movementDir; // a number 0 to 7 that represents the reletive angle
+		int movementDir; // a number 0 to 7 that represents the relative angle
 		// of movement to the view angle (axial and diagonals)
 		// when at rest, the value will remain unchanged
 		// used to twist the legs during strafing
@@ -2048,7 +2029,7 @@ char *Q_UTF8Unstore( int e );
 		// So to use persistent variables here, which don't need to come from the server,
 		// we could use a marker variable, and use that to store everything after it
 		// before we read in the new values for the predictedPlayerState, then restore them
-		// after copying the structure recieved from the server.
+		// after copying the structure received from the server.
 
 		// Arnout: use the pmoveExt_t structure in bg_public.h to store this kind of data now (presistant on client, not network transmitted)
 
@@ -2063,7 +2044,7 @@ char *Q_UTF8Unstore( int e );
 		int jumpTime; // used in MP to prevent jump accel
 		// jpw
 
-		int      weapAnim; // mask off ANIM_TOGGLEBIT                    //----(SA)  added   // Arnout : DOES get send over the network
+		int      weapAnim; // mask off ANIM_TOGGLEBIT                    //----(SA)  added   // Arnout: does get sent over the network
 
 		qboolean releasedFire;
 
@@ -2240,7 +2221,7 @@ char *Q_UTF8Unstore( int e );
 	  TR_GRAVITY_FLOAT, // super low grav with no gravity acceleration (floating feathers/fabric/leaves/...)
 	  TR_GRAVITY_PAUSED, //----(SA)  has stopped, but will still do a short trace to see if it should be switched back to TR_GRAVITY
 	  TR_ACCELERATE,
-	  TR_DECCELERATE,
+	  TR_DECELERATE,
 	  TR_BUOYANCY,
 	  // Gordon
 	  TR_SPLINE,
@@ -2387,7 +2368,7 @@ char *Q_UTF8Unstore( int e );
 		int          otherEntityNum; // shotgun sources, etc
 		int          otherEntityNum2;
 
-		int          groundEntityNum; // -1 = in air
+		int          groundEntityNum; // ENTITYNUM_NONE = in air
 
 		int          constantLight; // r + (g<<8) + (b<<16) + (intensity<<24)
 		int          dl_intensity; // used for coronas

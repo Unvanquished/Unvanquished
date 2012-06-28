@@ -49,7 +49,7 @@ VBO_t          *R_CreateVBO( const char *name, byte *vertexes, int vertexesSize,
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateVBO: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateVBO: \"%s\" is too long", name );
 	}
 
 	// make sure the render thread is stopped
@@ -129,7 +129,7 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateVBO2: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateVBO2: \"%s\" is too long", name );
 	}
 
 	// make sure the render thread is stopped
@@ -165,15 +165,14 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 	// since this is all float, point tmp directly into data
 	// 2-entry -> { memb[0], memb[1], 0, 1 }
 	// 3-entry -> { memb[0], memb[1], memb[2], 1 }
-#define VERTEXSIZE(memb) ( sizeof( verts->memb ) / sizeof( verts->memb[ 0 ] ) )
 #define VERTEXCOPY(memb) \
 	do { \
 		vec_t *tmp = (vec_t *) ( data + dataOfs ); \
 		for ( i = 0; i < numVertexes; i++ ) \
 		{ \
-			for ( j = 0; j < VERTEXSIZE( memb ); j++ ) { *tmp++ = verts[ i ].memb[ j ]; } \
-			if ( VERTEXSIZE( memb ) < 3 ) { *tmp++ = 0; } \
-			if ( VERTEXSIZE( memb ) < 4 ) { *tmp++ = 1; } \
+			for ( j = 0; j < ARRAY_LEN( verts->memb ); j++ ) { *tmp++ = verts[ i ].memb[ j ]; } \
+			if ( ARRAY_LEN( verts->memb ) < 3 ) { *tmp++ = 0; } \
+			if ( ARRAY_LEN( verts->memb ) < 4 ) { *tmp++ = 1; } \
 		} \
 		dataOfs += i * sizeof( vec4_t ); \
 	} while ( 0 )
@@ -285,7 +284,7 @@ IBO_t          *R_CreateIBO( const char *name, byte *indexes, int indexesSize, v
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateIBO: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateIBO: \"%s\" is too long", name );
 	}
 
 	// make sure the render thread is stopped
@@ -350,7 +349,7 @@ IBO_t          *R_CreateIBO2( const char *name, int numTriangles, srfTriangle_t 
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateIBO2: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateIBO2: \"%s\" is too long", name );
 	}
 
 	// make sure the render thread is stopped
@@ -405,7 +404,6 @@ void R_BindVBO( VBO_t *vbo )
 	{
 		//R_BindNullVBO();
 		ri.Error( ERR_DROP, "R_BindNullVBO: NULL vbo" );
-		return;
 	}
 
 	if ( r_logFile->integer )
@@ -460,7 +458,6 @@ void R_BindIBO( IBO_t *ibo )
 	{
 		//R_BindNullIBO();
 		ri.Error( ERR_DROP, "R_BindIBO: NULL ibo" );
-		return;
 	}
 
 	if ( r_logFile->integer )

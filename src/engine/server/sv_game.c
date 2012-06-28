@@ -43,16 +43,6 @@ Maryland 20850 USA.
 void            CMod_PhysicsAddEntity( sharedEntity_t *gEnt );
 void            CMod_PhysicsAddStatic( const sharedEntity_t *gEnt );
 
-void SV_GameError( const char *string )
-{
-	Com_Error( ERR_DROP, "%s", string );
-}
-
-void SV_GamePrint( const char *string )
-{
-	Com_Printf( "%s", string );
-}
-
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
 int SV_NumForGentity( sharedEntity_t *ent )
@@ -384,14 +374,11 @@ static void SV_SendBinaryMessage( int cno, char *buf, int buflen )
 	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
 		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno );
-		return;
 	}
 
 	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
 	{
 		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen );
-		svs.clients[ cno ].binaryMessageLength = 0;
-		return;
 	}
 
 	svs.clients[ cno ].binaryMessageLength = buflen;
@@ -485,7 +472,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0;
 
 		case G_MILLISECONDS:
 			return Sys_Milliseconds();
@@ -757,8 +743,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}
-
-	return -1;
 }
 
 /*
@@ -816,7 +800,7 @@ static void SV_InitGameVM( qboolean restart )
 ===================
 SV_RestartGameProgs
 
-Called on a map_restart, but not on a normal map change
+Called on a map_restart, but not on a map change
 ===================
 */
 void SV_RestartGameProgs( void )
@@ -848,7 +832,7 @@ void SV_RestartGameProgs( void )
 ===============
 SV_InitGameProgs
 
-Called on a normal map change, not on a map_restart
+Called on a map change, not on a map_restart
 ===============
 */
 void SV_InitGameProgs( void )
@@ -913,9 +897,9 @@ SV_GetTag
   return qfalse if unable to retrieve tag information for this client
 ====================
 */
-extern qboolean CL_GetTag( int clientNum, char *tagname, orientation_t * or );
+extern qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or );
 
-qboolean SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation_t * or )
+qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t * or )
 {
 	int i;
 
@@ -935,7 +919,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation
 		}
 	}
 
-	// Gordon: lets try and remove the inconsitancy between ded/non-ded servers...
+	// Gordon: let's try and remove the inconsistency between ded/non-ded servers...
 	// Gordon: bleh, some code in clientthink_real really relies on this working on player models...
 #ifndef DEDICATED // TTimo: dedicated only binary defines DEDICATED
 

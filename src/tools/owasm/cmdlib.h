@@ -59,7 +59,7 @@ typedef unsigned char byte;
 #define	MAX_OS_PATH		1024
 #define MEM_BLOCKSIZE 4096
 
-// the dec offsetof macro doesnt work very well...
+// the dec offsetof macro doesn't work very well...
 #define myoffsetof(type,identifier) ((size_t)&((type *)0)->identifier)
 
 
@@ -90,7 +90,7 @@ char *ExpandPathAndArchive( const char *path );
 
 double I_FloatTime( void );
 
-void	Error( const char *error, ... ) __attribute__((format(printf, 1, 2)));
+void	Error( const char *error, ... ) PRINTF_LIKE(1) NORETURN;
 int		CheckParm( const char *check );
 
 FILE	*SafeOpenWrite( const char *filename );
@@ -143,8 +143,8 @@ extern	char			archivedir[1024];
 
 
 extern	qboolean verbose;
-void qprintf( const char *format, ... ) __attribute__((format(printf, 1, 2)));
-void _printf( const char *format, ... ) __attribute__((format(printf, 1, 2)));
+void qprintf( const char *format, ... ) PRINTF_LIKE(1);
+void _printf( const char *format, ... ) PRINTF_LIKE(1);
 
 void ExpandWildcards( int *argc, char ***argv );
 

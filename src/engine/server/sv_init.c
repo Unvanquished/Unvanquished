@@ -100,7 +100,7 @@ void SV_SetConfigstringNoUpdate( int index, const char *val )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i", index );
 	}
 
 	if ( !val )
@@ -123,7 +123,7 @@ void SV_SetConfigstring( int index, const char *val )
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_SetConfigstring: bad index %i", index );
 	}
 
 	if ( !val )
@@ -243,7 +243,7 @@ void SV_GetConfigstring( int index, char *buffer, int bufferSize )
 
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "SV_GetConfigstring: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_GetConfigstring: bad index %i", index );
 	}
 
 	if ( !sv.configstrings[ index ] )
@@ -265,7 +265,7 @@ void SV_SetUserinfo( int index, const char *val )
 {
 	if ( index < 0 || index >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_SetUserinfo: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_SetUserinfo: bad index %i", index );
 	}
 
 	if ( !val )
@@ -292,7 +292,7 @@ void SV_GetUserinfo( int index, char *buffer, int bufferSize )
 
 	if ( index < 0 || index >= sv_maxclients->integer )
 	{
-		Com_Error( ERR_DROP, "SV_GetUserinfo: bad index %i\n", index );
+		Com_Error( ERR_DROP, "SV_GetUserinfo: bad index %i", index );
 	}
 
 	Q_strncpyz( buffer, svs.clients[ index ].userinfo, bufferSize );
@@ -595,7 +595,7 @@ void SV_ClearServer( void )
 ================
 SV_TouchCGame
 
-  touch cgame so that a pure client can load it if it's in a seperate pk3
+  touch cgame so that a pure client can load it if it's in a separate pk3
 ================
 */
 void SV_TouchCGame( void )
@@ -727,7 +727,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	sv.checksumFeed = ( ( ( int ) rand() << 16 ) ^ rand() ) ^ Sys_Milliseconds();
 
 	// DO_LIGHT_DEDICATED
-	// only comment out when you need a new pure checksum string and it's associated random feed
+	// only comment out when you need a new pure checksum string and its associated random feed
 	//Com_DPrintf("SV_SpawnServer checksum feed: %p\n", sv.checksumFeed);
 
 #else // DO_LIGHT_DEDICATED implementation below
@@ -862,7 +862,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 		Cvar_Set( "sv_pakNames", p );
 
 		// if a dedicated pure server we need to touch the cgame because it could be in a
-		// seperate pk3 file and the client will need to load the latest cgame.qvm
+		// separate pk3 file and the client will need to load the latest cgame.qvm
 		if ( com_dedicated->integer )
 		{
 			SV_TouchCGame();

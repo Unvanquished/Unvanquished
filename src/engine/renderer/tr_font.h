@@ -67,9 +67,9 @@ Maryland 20850 USA.
 // 1. delete the fontImage_x_xx.png files and fontImage_xx.dat files from the fonts path.
 // 2. in a ui script, specificy a font, smallFont, and bigFont keyword with font name and
 //    point size. the original TrueType fonts must exist in fonts at this point.
-// 3. run the game, you should see things normally.
+// 3. run the game. you should see things.
 // 4. Exit the game and there will be three dat files and at least three PNG files. The
-//    PNG's are in 256x256 pages so if it takes three images to render a 24 point font you
+//    PNGs are in 256x256 pages so if it takes three images to render a 24 point font you
 //    will end up with fontImage_0_24.tga through fontImage_2_24.tga
 // 5. In future runs of the game, the system looks for these images and data files when a
 //    specific point sized font is rendered and loads them for use.
@@ -121,7 +121,7 @@ void R_GetGlyphInfo( FT_GlyphSlot glyph, int *left, int *right, int *width, int 
 	*top = _CEIL( glyph->metrics.horiBearingY + 1);
 	*bottom = _FLOOR( glyph->metrics.horiBearingY - glyph->metrics.height - 1);
 	*height = _TRUNC( *top - *bottom );
-	*pitch = ( qtrue ? ( *width + 3 ) & - 4 : ( *width + 7 ) >> 3 );
+	*pitch = ( *width + 3 ) & - 4; // ( qtrue ? ( *width + 3 ) & - 4 : ( *width + 7 ) >> 3 );
 }
 
 FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
@@ -786,6 +786,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 	}
 
 	fallback = NULL;
+	fallbackData = NULL;
 
 	if ( fallbackName )
 	{

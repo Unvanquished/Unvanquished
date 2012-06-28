@@ -211,12 +211,12 @@ constants
 /* vis */
 #define	VIS_HEADER_SIZE			8
 
-#define SEPERATORCACHE			/* seperator caching helps a bit */
+#define SEPARATORCACHE			/* separator caching helps a bit */
 
 #define	PORTALFILE				"PRT1"
 
 #define	MAX_PORTALS				0x20000	/* same as MAX_MAP_PORTALS */
-#define MAX_SEPERATORS			MAX_POINTS_ON_WINDING
+#define MAX_SEPARATORS			MAX_POINTS_ON_WINDING
 #define	MAX_POINTS_ON_FIXED_WINDING	24	/* ydnar: increased this from 12 at the expense of more memory */
 #define	MAX_PORTALS_ON_LEAF		1024
 
@@ -872,7 +872,7 @@ typedef struct side_s
 	int             compileFlags;	/* from shaderInfo */
 	int             value;		/* from shaderInfo */
 
-	qboolean        visible;	/* choose visble planes first */
+	qboolean        visible;	/* choose visible planes first */
 	qboolean        bevel;		/* don't ever use for bsp splitting, and don't bother making windings for it */
 	qboolean        culled;		/* ydnar: face culling */
 }
@@ -1294,9 +1294,9 @@ typedef struct pstack_s
 
 	visPlane_t      portalplane;
 	int             depth;
-#ifdef SEPERATORCACHE
-	visPlane_t      seperators[2][MAX_SEPERATORS];
-	int             numseperators[2];
+#ifdef SEPARATORCACHE
+	visPlane_t      separators[2][MAX_SEPARATORS];
+	int             numseparators[2];
 #endif
 }
 pstack_t;

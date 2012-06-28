@@ -261,7 +261,6 @@ static void SV_Map_f( void )
 #else
 					Com_Error( ERR_DROP, "Insufficient free disk space.\n\nPlease free at least 5mb of free space on game drive." );
 #endif
-					return;
 				}
 			}
 
@@ -424,7 +423,7 @@ static qboolean SV_TransitionGameState( gamestate_t new_gs, gamestate_t old_gs, 
 		}
 	}
 
-	// check if its a valid state transition
+	// check if it's a valid state transition
 	if ( !SV_CheckTransitionGameState( new_gs, old_gs ) )
 	{
 		return qfalse;
@@ -578,7 +577,7 @@ static void SV_MapRestart_f( void )
 	sv.serverId = com_frameTime;
 	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
 
-	// reset all the vm data in place without changing memory allocation
+	// reset all the VM data in place without changing memory allocation
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
 	// had been changed from their default values will generate broadcast updates
 	sv.state = SS_LOADING;
@@ -596,7 +595,7 @@ static void SV_MapRestart_f( void )
 	}
 
 	// create a baseline for more efficient communications
-	// Gordon: meh, this wont work here as the client doesn't know it has happened
+	// Gordon: meh, this won't work here as the client doesn't know it has happened
 //  SV_CreateBaseline ();
 
 	sv.state = SS_GAME;
@@ -617,7 +616,7 @@ static void SV_MapRestart_f( void )
 		{
 			if ( SV_GameIsSinglePlayer() || SV_GameIsCoop() )
 			{
-				continue; // dont carry across bots in single player
+				continue; // don't carry across bots in single player
 			}
 
 			isBot = qtrue;
@@ -671,7 +670,7 @@ void SV_LoadGame_f( void )
 	int  size;
 	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
-	// dont allow command if another loadgame is pending
+	// don't allow command if another loadgame is pending
 	if ( Cvar_VariableIntegerValue( "savegame_loading" ) )
 	{
 		return;
@@ -1258,7 +1257,8 @@ static void SV_Systeminfo_f( void )
 ===========
 SV_DumpUser_f
 
-Examine all a users info strings FIXME: move to game
+Examine a user's userinfo string
+FIXME: move to game
 ===========
 */
 static void SV_DumpUser_f( void )

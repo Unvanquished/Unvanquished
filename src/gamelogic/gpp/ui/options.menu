@@ -54,7 +54,7 @@
       style WINDOW_STYLE_EMPTY
       text "Name:"
       cvar "name"
-      maxchars 26
+      maxchars 31
       rect X Y W ELEM_H
       textalign ALIGN_RIGHT
       textalignx TOFF_X
@@ -69,7 +69,7 @@
       type ITEM_TYPE_MULTI
       text "Video Quality:"
       cvar "ui_glCustom"
-      cvarFloatList { "High Quality" 0 "Normal" 1 "Fast" 2 "Fastest" 3 "Custom" 4 }
+      cvarFloatList { "High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4 }
       rect X (Y+(ELEM_H+ELEM_GAP)) W ELEM_H
       textalign ALIGN_RIGHT
       textalignx TOFF_X
@@ -262,7 +262,7 @@
       text "For further options please use the in-game options menu"
       type ITEM_TYPE_TEXT
       style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       textscale .25
       rect 0 (H-60) W 10
       textalign ALIGN_CENTER
