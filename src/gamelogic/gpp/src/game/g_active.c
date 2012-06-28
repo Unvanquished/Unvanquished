@@ -640,8 +640,8 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 			if( strchr( g_inactivity.string, 's' ) )
 			{
 				trap_SendServerCommand( -1,
-				                        va( "print_tr %s %s %s", N_("\"$1$^7 moved from $2$ to spectators due to inactivity\n\""),
-				                            Quote( client->pers.netname ), BG_TeamName( client->pers.teamSelection ) ) );
+				                        va( "print_tr %s %s %s", QQ( N_("$1$^7 moved from $2$ to spectators due to inactivity\n") ),
+				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->pers.teamSelection ) ) ) );
 				G_LogPrintf( "Inactivity: %d", (int)( client - level.clients ) );
 				G_ChangeTeam( ent, TEAM_NONE );
 			}

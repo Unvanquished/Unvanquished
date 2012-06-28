@@ -566,7 +566,7 @@ void G_UpdateCvars( void )
 
 				if ( cv->trackChange )
 				{
-					trap_SendServerCommand( -1, va( "print_tr \"%s\" \"%s\" \"%s\"", N_("Server: \"%s\" changed to \"%s\"\n"),
+					trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("Server: $1$ changed to $2$\n") ),
 					                                Quote( cv->cvarName ), Quote( cv->vmCvar->string ) ) );
 				}
 
@@ -1334,7 +1334,7 @@ void G_CalculateBuildPoints( void )
 	{
 		trap_SendServerCommand( -1, va( "cp \"Sudden Death in %d seconds!\"",
 		                                ( int )( G_TimeTilSuddenDeath() / 1000 ) ) );
-		trap_SendServerCommand( -1, va( "print_tr \"%s\" \"%d\"", N_("Sudden Death will begin in %s seconds.\n"),
+		trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Sudden Death will begin in $1$ seconds.\n") ),
 		                                ( int )( G_TimeTilSuddenDeath() / 1000 ) ) );
 		level.suddenDeathWarning = TW_IMMINENT;
 	}
@@ -2540,12 +2540,12 @@ void G_CheckVote( team_t team )
 
 	if ( pass )
 	{
-		cmd = va( "print_tr \"%s\" \"%d\" \"%d\"", ( team == TEAM_NONE ) ? N_("Vote passed (%s - %s)") : N_("Team vote passed (%s – %s)"),
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ - $2$)") ) : QQ( N_("Team vote passed ($1$ – $2$)") ),
 		            level.voteYes[ team ], level.voteNo[ team ] );
 	}
 	else
 	{
-		cmd = va( "print_tr \"%s\" \"%d\" \"%d\" \"%.0f\"", ( team == TEAM_NONE ) ? N_("Vote failed (%d - %d; %.0f%% needed)") : N_("Team vote failed (%d – %d; %.0f%% needed)"),
+		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ - $2$; $3$% needed)") ) : QQ( N_("Team vote failed ($1$ – $2$; $3$% needed)") ),
 		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
 	}
 
@@ -2726,7 +2726,7 @@ void G_RunFrame( int levelTime )
 
 			if ( level.pausedTime >= 110000  && level.pausedTime <= 119000 )
 			{
-				trap_SendServerCommand( -1, va( "print_tr \"%s\" \"%d\"", N_("Server: Game will auto-unpause in %s seconds\n"),
+				trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Server: Game will auto-unpause in $1$ seconds\n") ),
 				                                ( int )( ( float )( 120000 - level.pausedTime ) / 1000.0f ) ) );
 			}
 		}

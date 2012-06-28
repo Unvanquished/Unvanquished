@@ -457,7 +457,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 		else if ( g_showKillerHP.integer )
 		{
-			trap_SendServerCommand( self - g_entities, va( "print_tr \"%s\" \"%s\" \"%3i", N_("Your killer, \"%s\"^7, had %s HP.\n"),
+			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^7, had $2$ HP.\n") ),
 			                        Quote( killerName ),
 			                        attacker->health ) );
 		}

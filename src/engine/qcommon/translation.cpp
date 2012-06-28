@@ -101,6 +101,15 @@ extern "C" void Trans_UpdateLanguage_f( void )
 	trans_dict = trans_manager.get_dictionary( lang );
 	trans_dictgame = trans_managergame.get_dictionary( lang );
 	Com_Printf(_( "Switched language to %s\n"), lang.get_name().c_str() );
+
+#ifndef DEDICATED
+	// update the default console keys string
+	extern cvar_t *cl_consoleKeys; // should really #include client.h
+	Z_Free( cl_consoleKeys->resetString );
+	const char *default_consoleKeys = _("~ ` 0x7e 0x60");
+	cl_consoleKeys->resetString = (char *) Z_Malloc( strlen( default_consoleKeys ) + 1 );
+	strcpy( cl_consoleKeys->resetString, default_consoleKeys );
+#endif
 }
 
 /*

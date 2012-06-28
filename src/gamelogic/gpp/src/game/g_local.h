@@ -751,7 +751,7 @@ void     G_StopFromFollowing( gentity_t *ent );
 void     G_FollowLockView( gentity_t *ent );
 qboolean G_FollowNewClient( gentity_t *ent, int dir );
 void     G_ToggleFollow( gentity_t *ent );
-qboolean G_MatchOnePlayer( const int *plist, int found, char *err, int len );
+int      G_MatchOnePlayer( const int *plist, int found, char *err, int len );
 int      G_ClientNumberFromString( const char *s, char *err, int len );
 int      G_ClientNumbersFromString( const char *s, int *plist, int max );
 char     *ConcatArgs( int start );

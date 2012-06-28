@@ -1050,7 +1050,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		     g_minNameChangePeriod.value * 1000 )
 		{
 			trap_SendServerCommand( ent - g_entities, va(
-			                          "print_tr \"%s\" \"%d\"", N_("Name change spam protection (g_minNameChangePeriod = %s)\n"),
+			                          "print_tr %s %d", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$)\n") ),
 			                          g_minNameChangePeriod.integer ) );
 			revertName = qtrue;
 		}
@@ -1058,14 +1058,14 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		          client->pers.namelog->nameChanges >= g_maxNameChanges.integer )
 		{
 			trap_SendServerCommand( ent - g_entities, va(
-			                          "print_tr \"%s\" \"%d\"", N_("Maximum name changes reached (g_maxNameChanges = %s)\n"),
+			                          "print_tr %s %d", QQ( N_("Maximum name changes reached (g_maxNameChanges = $1$)\n") ),
 			                          g_maxNameChanges.integer ) );
 			revertName = qtrue;
 		}
 		else if ( !forceName && client->pers.namelog->muted )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr \"%s\"", N_("You cannot change your name while you are muted\n") ) );
+			                        va( "print_tr %s", QQ( N_("You cannot change your name while you are muted\n") ) ) );
 			revertName = qtrue;
 		}
 		else if ( !G_admin_name_check( ent, newname, err, sizeof( err ) ) )
@@ -1387,7 +1387,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		trap_SendServerCommand( -1, va( "print_tr \"%s\" \"%s\"", N_("%s^7 connected\n"),
+		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
 		                                Quote( client->pers.netname ) ) );
 	}
 
@@ -1467,7 +1467,7 @@ void ClientBegin( int clientNum )
 	// locate ent at a spawn point
 	ClientSpawn( ent, NULL, NULL, NULL );
 
-	trap_SendServerCommand( -1, va( "print_tr \"%s\" \"%s\"", N_("%s^7 entered the game\n"), Quote( client->pers.netname ) ) );
+	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 entered the game\n") ), Quote( client->pers.netname ) ) );
 
 	G_namelog_restore( client );
 
