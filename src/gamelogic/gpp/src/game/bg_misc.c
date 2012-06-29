@@ -4336,10 +4336,7 @@ Substring
 char *Substring( const char *in, int start, int count )
 {
 	static char buffer[ MAX_STRING_CHARS ];
-
-	char *buf = buffer;
-	const char *begin = in + start;
-	const char *end = begin + count;
+	char        *buf = buffer;
 
 	memset( &buffer, 0, sizeof( buffer ) );
 
