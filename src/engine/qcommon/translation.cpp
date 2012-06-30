@@ -197,11 +197,13 @@ extern "C" void Trans_Init( void )
 	Cvar_Set( "trans_encodings", encList );
 	Com_Printf(_( "Loaded %lu language(s)\n"), langs.size() );
 	Cmd_AddCommand( "updatelanguage", Trans_UpdateLanguage_f );
-	
-	lang = Trans_ReturnLanguage( language->string );
-	trans_dict = trans_manager.get_dictionary( lang );
-	trans_dictgame = trans_managergame.get_dictionary( lang );
-	enabled = true;
+	if( langs.size() )
+	{
+		lang = Trans_ReturnLanguage( language->string );
+		trans_dict = trans_manager.get_dictionary( lang );
+		trans_dictgame = trans_managergame.get_dictionary( lang );
+		enabled = true;
+	}
 }
 
 extern "C" const char* Trans_Gettext( const char *msgid )
