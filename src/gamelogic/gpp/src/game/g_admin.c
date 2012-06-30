@@ -2483,7 +2483,7 @@ qboolean G_admin_ban( gentity_t *ent )
 
 	if ( G_AddressParse( search, &ip ) )
 	{
-		int max = ip.type == IPv4 ? 32 : 128;
+		int max = ip.type == IPv4 ? 32 : 64;
 		int min = ent ? max / 2 : 1;
 
 		if ( ip.mask < min || ip.mask > max )
@@ -2717,7 +2717,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 
 	if ( secs[ 0 ] == '/' )
 	{
-		int max = ban->ip.type == IPv6 ? 128 : 32;
+		int max = ban->ip.type == IPv6 ? 64 : 32;
 		int min = ent ? max / 2 : 1;
 		mask = atoi( secs + 1 );
 
@@ -2797,7 +2797,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 			p = ban->ip.str + strlen( ban->ip.str );
 		}
 
-		if ( mask == ( ban->ip.type == IPv6 ? 128 : 32 ) )
+		if ( mask == ( ban->ip.type == IPv6 ? 64 : 32 ) )
 		{
 			*p = '\0';
 		}

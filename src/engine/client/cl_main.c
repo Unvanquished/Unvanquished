@@ -2437,6 +2437,150 @@ void CL_ResetPureClientAtServer( void )
 }
 
 /*
+============
+CL_GenerateGUIDKey
+============
+*/
+static void CL_GenerateGUIDKey( void )
+{
+	int           len = 0;
+	unsigned char buff[ 2048 ];
+	
+	if( cl_profile->string[ 0 ] )
+	{
+		len = FS_ReadFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), NULL );
+	}
+	else
+	{
+		len = FS_ReadFile( GUIDKEY_FILE, NULL );
+	}
+	if ( len >= ( int ) sizeof( buff ) )
+	{
+		Com_Printf( "%s", _( "Daemon GUID public-key found.\n" ) );
+		return;
+	}
+	else
+	{
+		int i;
+		srand( time( 0 ) );
+		
+		for ( i = 0; i < sizeof( buff ) - 1; i++ )
+		{
+			buff[ i ] = ( unsigned char )( rand() % 255 );
+		}
+		
+		buff[ i ] = 0;
+		Com_Printf( "%s", _( "Daemon GUID public-key generated\n" ) );
+		if( cl_profile->string[ 0 ] )
+		{
+			FS_WriteFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), buff, sizeof( buff ) );
+		}
+		else
+		{
+			FS_WriteFile( GUIDKEY_FILE, buff, sizeof( buff ) );
+		}
+	}
+}
+
+/*
+===============
+CL_GenerateRSAKey
+
+Check if the RSAKey file contains a valid RSA keypair
+If not then generate a new keypair
+===============
+*/
+static void CL_GenerateRSAKey( void )
+{
+	#ifdef USE_CRYPTO
+	int                  len;
+	fileHandle_t         f;
+	void                 *buf;
+	struct nettle_buffer key_buffer;
+	
+	int                  key_buffer_len = 0;
+	
+	rsa_public_key_init( &public_key );
+	rsa_private_key_init( &private_key );
+	
+	if( cl_profile->string[ 0 ] )
+	{
+		len = FS_FOpenFileRead( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ), &f, qtrue );
+	}
+	else
+	{
+		len = FS_FOpenFileRead( RSAKEY_FILE, &f, qtrue );
+	}
+	if ( !f || len < 1 )
+	{
+		Com_Printf( "%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
+		goto new_key;
+	}
+	
+	buf = Z_TagMalloc( len, TAG_CRYPTO );
+	FS_Read( buf, len, f );
+	FS_FCloseFile( f );
+	
+	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
+	{
+		Com_Printf( "%s", _( "Invalid RSA keypair in RSAKey, regenerating\n" ) );
+		Z_Free( buf );
+		goto new_key;
+	}
+	
+	Z_Free( buf );
+	Com_Printf( "%s", _( "Daemon RSA public-key found.\n" ) );
+	return;
+	
+	new_key:
+	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
+	
+	if ( !rsa_generate_keypair( &public_key, &private_key, NULL, qnettle_random, NULL, NULL, RSA_KEY_LENGTH, 0 ) )
+	{
+		goto keygen_error;
+	}
+	
+	qnettle_buffer_init( &key_buffer, &key_buffer_len );
+	
+	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
+	{
+		goto keygen_error;
+	}
+	if( cl_profile->string[ 0 ] )
+	{
+		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
+	}
+	else
+	{
+		f = FS_FOpenFileWrite( RSAKEY_FILE );
+	}
+	
+	if ( !f )
+	{
+		Com_Printf( _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n" ), RSAKEY_FILE );
+		Cvar_Set( "cl_pubkeyID", "0" );
+		Crypto_Shutdown();
+		return;
+	}
+	
+	FS_Write( key_buffer.contents, key_buffer.size, f );
+	nettle_buffer_clear( &key_buffer );
+	FS_FCloseFile( f );
+	Com_Printf( "%s", _( "Daemon RSA public-key generated\n" ) );
+	return;
+	
+	keygen_error:
+	Com_Printf( "%s", _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
+	Cvar_Set( "cl_pubkeyID", "0" );
+	Crypto_Shutdown();
+	#else
+	Com_DPrintf( "%s", _( "RSA support is disabled\n" ) );
+	return;
+	#endif
+}
+
+
+/*
 =================
 CL_Vid_Restart_f
 
@@ -2510,6 +2654,20 @@ void CL_Vid_Restart_f( void )
 	// startup all the client stuff
 	CL_StartHunkUsers();
 
+	if( Cvar_VariableIntegerValue( "cl_newProfile" ) )
+	{
+		CL_GenerateGUIDKey();
+		
+		if ( cl_pubkeyID->integer )
+		{
+			CL_GenerateRSAKey();
+		}
+		
+		Cvar_Get( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
+		GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
+
+		Cvar_Set( "cl_newProfile", "0" );
+	}
 #ifdef _WIN32
 	Sys_In_Restart_f(); // fretn
 #endif
@@ -4826,124 +4984,6 @@ void CL_singlePlayLink_f( void )
 //===========================================================================================
 
 /*
-============
-CL_GenerateGUIDKey
-============
-*/
-static void CL_GenerateGUIDKey( void )
-{
-	int           len = 0;
-	unsigned char buff[ 2048 ];
-
-	len = FS_ReadFile( GUIDKEY_FILE, NULL );
-
-	if ( len >= ( int ) sizeof( buff ) )
-	{
-		Com_Printf("%s", _( "Daemon GUID public key found.\n" ));
-		return;
-	}
-	else
-	{
-		int i;
-		srand( time( 0 ) );
-
-		for ( i = 0; i < sizeof( buff ) - 1; i++ )
-		{
-			buff[ i ] = ( unsigned char )( rand() % 255 );
-		}
-
-		buff[ i ] = 0;
-		Com_Printf("%s", _( "Daemon GUID public key generated\n" ));
-		FS_WriteFile( GUIDKEY_FILE, buff, sizeof( buff ) );
-	}
-}
-
-/*
-===============
-CL_GenerateRSAKey
-
-Check if the RSAKey file contains a valid RSA keypair
-If not then generate a new keypair
-===============
-*/
-static void CL_GenerateRSAKey( void )
-{
-#ifdef USE_CRYPTO
-	int                  len;
-	fileHandle_t         f;
-	void                 *buf;
-	struct nettle_buffer key_buffer;
-
-	int                  key_buffer_len = 0;
-
-	rsa_public_key_init( &public_key );
-	rsa_private_key_init( &private_key );
-
-	len = FS_SV_FOpenFileRead( RSAKEY_FILE, &f );
-
-	if ( !f || len < 1 )
-	{
-		Com_Printf("%s", _( "Daemon RSA public key file not found. Regenerating\n" ));
-		goto new_key;
-	}
-
-	buf = Z_TagMalloc( len, TAG_CRYPTO );
-	FS_Read( buf, len, f );
-	FS_FCloseFile( f );
-
-	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
-	{
-		Com_Printf("%s", _( "Invalid RSA key pair in RSAKey. Regenerating\n" ));
-		Z_Free( buf );
-		goto new_key;
-	}
-
-	Z_Free( buf );
-	Com_Printf("%s", _( "Daemon RSA public key found.\n" ));
-	return;
-
-new_key:
-	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
-
-	if ( !rsa_generate_keypair( &public_key, &private_key, NULL, qnettle_random, NULL, NULL, RSA_KEY_LENGTH, 0 ) )
-	{
-		goto keygen_error;
-	}
-
-	qnettle_buffer_init( &key_buffer, &key_buffer_len );
-
-	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
-	{
-		goto keygen_error;
-	}
-
-	f = FS_SV_FOpenFileWrite( RSAKEY_FILE );
-
-	if ( !f )
-	{
-		Com_Printf(_( "Daemon RSA public key: could not open %s for write, RSA support will be disabled\n"), RSAKEY_FILE );
-		Cvar_Set( "cl_pubkeyID", "0" );
-		Crypto_Shutdown();
-		return;
-	}
-
-	FS_Write( key_buffer.contents, key_buffer.size, f );
-	nettle_buffer_clear( &key_buffer );
-	FS_FCloseFile( f );
-	Com_Printf("%s", _( "Daemon RSA public key generated\n" ));
-	return;
-
-keygen_error:
-	Com_Printf("%s", _( "Error generating RSA key pair, RSA support will be disabled\n" ));
-	Cvar_Set( "cl_pubkeyID", "0" );
-	Crypto_Shutdown();
-#else
-	Com_DPrintf("%s", _( "RSA support is disabled\n" ));
-	return;
-#endif
-}
-
-/*
 ====================
 CL_Init
 ====================
@@ -5240,7 +5280,8 @@ void CL_Init( void )
 		CL_GenerateRSAKey();
 	}
 
-	Cvar_Get( "cl_guid", Com_MD5File( GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
+	Cvar_Get( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
+	                                                           GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
 
 	// DHM - Nerve
 	autoupdateChecked = qfalse;
