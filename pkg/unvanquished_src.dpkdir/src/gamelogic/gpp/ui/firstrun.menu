@@ -93,6 +93,7 @@
         uiScript loadProfiles ;
         uiScript setDefaultProfile ;
         uiScript applyProfile ;
+        setcvar cl_newProfile 1
       }
     }
   }
