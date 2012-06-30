@@ -4870,8 +4870,14 @@ static void CL_GenerateGUIDKey( void )
 	int           len = 0;
 	unsigned char buff[ 2048 ];
 
-	len = FS_ReadFile( GUIDKEY_FILE, NULL );
-
+	if( cl_profile->string[ 0 ] )
+	{
+		len = FS_ReadFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), NULL );
+	}
+	else
+	{
+		len = FS_ReadFile( GUIDKEY_FILE, NULL );
+	}
 	if ( len >= ( int ) sizeof( buff ) )
 	{
 		Com_Printf( "Daemon GUID public-key found.\n" );
@@ -4889,7 +4895,14 @@ static void CL_GenerateGUIDKey( void )
 
 		buff[ i ] = 0;
 		Com_Printf( "Daemon GUID public-key generated\n" );
-		FS_WriteFile( GUIDKEY_FILE, buff, sizeof( buff ) );
+		if( cl_profile->string[ 0 ] )
+		{
+			FS_WriteFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), buff, sizeof( buff ) );
+		}
+		else
+		{
+			FS_WriteFile( GUIDKEY_FILE, buff, sizeof( buff ) );
+		}
 	}
 }
 
@@ -4914,8 +4927,14 @@ static void CL_GenerateRSAKey( void )
 	rsa_public_key_init( &public_key );
 	rsa_private_key_init( &private_key );
 
-	len = FS_SV_FOpenFileRead( RSAKEY_FILE, &f );
-
+	if( cl_profile->string[ 0 ] )
+	{
+		len = FS_FOpenFileRead( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ), &f, qtrue );
+	}
+	else
+	{
+		len = FS_FOpenFileRead( RSAKEY_FILE, &f, qtrue );
+	}
 	if ( !f || len < 1 )
 	{
 		Com_Printf( "Daemon RSA public-key file not found, regenerating\n" );
@@ -4951,8 +4970,14 @@ new_key:
 	{
 		goto keygen_error;
 	}
-
-	f = FS_SV_FOpenFileWrite( RSAKEY_FILE );
+	if( cl_profile->string[ 0 ] )
+	{
+		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
+	}
+	else
+	{
+		f = FS_FOpenFileWrite( RSAKEY_FILE );
+	}
 
 	if ( !f )
 	{
