@@ -212,59 +212,6 @@ char *Sys_ConsoleInput( void )
 
 /*
 =================
-Sys_PIDFileName
-=================
-*/
-static char *Sys_PIDFileName( void )
-{
-	return va( "%s/%s", Sys_TempPath(), PID_FILENAME );
-}
-
-/*
-=================
-Sys_WritePIDFile
-
-Return qtrue if there is an existing stale PID file
-=================
-*/
-qboolean Sys_WritePIDFile( void )
-{
-	char     *pidFile = Sys_PIDFileName();
-	FILE     *f;
-	qboolean stale = qfalse;
-
-	// First, check if the pid file is already there
-	if ( ( f = fopen( pidFile, "r" ) ) != NULL )
-	{
-		char pidBuffer[ 64 ] = { 0 };
-		int  pid;
-
-		fread( pidBuffer, sizeof( char ), sizeof( pidBuffer ) - 1, f );
-		fclose( f );
-
-		pid = atoi( pidBuffer );
-
-		if ( !Sys_PIDIsRunning( pid ) )
-		{
-			stale = qtrue;
-		}
-	}
-
-	if ( ( f = fopen( pidFile, "w" ) ) != NULL )
-	{
-		fprintf( f, "%d", Sys_PID() );
-		fclose( f );
-	}
-	else
-	{
-		Com_Printf( S_COLOR_YELLOW "Couldn't write %s.\n", pidFile );
-	}
-
-	return stale;
-}
-
-/*
-=================
 Sys_Exit
 
 Single exit point (regular exit or in case of error)
@@ -277,12 +224,6 @@ static void NORETURN Sys_Exit( int exitCode )
 #ifndef DEDICATED
 	SDL_Quit();
 #endif
-
-	if ( exitCode < 2 )
-	{
-		// regular exit
-		remove( Sys_PIDFileName() );
-	}
 
 	exit( exitCode );
 }
