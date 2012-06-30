@@ -1699,7 +1699,9 @@ void SV_PrintTranslatedText( const char *text )
 	char        number[3];
 	int         i=0, j=0, num=-1;
 
+	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
+
 	in = Cmd_Argv( 1 );
 	memset( &str, 0, sizeof( str ) );
 	while( *in )
@@ -1788,6 +1790,7 @@ void SV_PrintTranslatedText( const char *text )
 	}
 
 	Com_Printf( "%s", str );
+	Cmd_RestoreCmdContext();
 }
 
 
