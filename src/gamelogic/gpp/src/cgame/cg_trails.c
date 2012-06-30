@@ -781,7 +781,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			if ( btb->numSegments >= MAX_TRAIL_BEAM_NODES )
 			{
 				btb->numSegments = MAX_TRAIL_BEAM_NODES - 1;
-				CG_Printf( S_COLOR_YELLOW "WARNING: too many segments in trail beam\n" );
+				CG_Printf( "%s", _( "^3WARNING: too many segments in trail beam\n" ));
 			}
 
 			continue;
@@ -864,7 +864,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				if ( Q_stricmp( token, "}" ) )
 				{
-					CG_Printf( S_COLOR_RED "ERROR: missing '}'\n" );
+					CG_Printf( "%s", _( "^1ERROR: missing '}'\n" ));
 					break;
 				}
 
@@ -892,19 +892,19 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 					if ( Q_stricmp( token, "}" ) )
 					{
-						CG_Printf( S_COLOR_RED "ERROR: missing '}'\n" );
+						CG_Printf( "%s", _( "^1ERROR: missing '}'\n" ));
 						break;
 					}
 				}
 				else
 				{
-					CG_Printf( S_COLOR_RED "ERROR: missing '{'\n" );
+					CG_Printf( "%s", _( "^1ERROR: missing '{'\n" ));
 					break;
 				}
 			}
 			else
 			{
-				CG_Printf( S_COLOR_RED "ERROR: missing '{'\n" );
+				CG_Printf( "%s", _( "^1ERROR: missing '{'\n" ));
 				break;
 			}
 
@@ -999,7 +999,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				}
 				else
 				{
-					CG_Printf( S_COLOR_RED "ERROR: unknown textureType clamp \"%s\"\n", token );
+					CG_Printf( _( S_COLOR_RED  "ERROR: unknown textureType clamp \"%s\"\n"), token );
 					break;
 				}
 
@@ -1014,7 +1014,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			}
 			else
 			{
-				CG_Printf( S_COLOR_RED "ERROR: unknown textureType \"%s\"\n", token );
+				CG_Printf(_( "^1ERROR: unknown textureType \"%s\"\n"), token );
 				break;
 			}
 
@@ -1030,7 +1030,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			if ( btb->numJitters == MAX_TRAIL_BEAM_JITTERS )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: too many jitters\n" );
+				CG_Printf( "%s", _( "^1ERROR: too many jitters\n" ));
 				break;
 			}
 
@@ -1068,7 +1068,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		}
 		else
 		{
-			CG_Printf( S_COLOR_RED "ERROR: unknown token '%s' in trail beam\n", token );
+			CG_Printf( _( S_COLOR_RED  "ERROR: unknown token '%s' in trail beam\n"), token );
 			return qfalse;
 		}
 	}
@@ -1125,18 +1125,18 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 
 			if ( !CG_ParseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ], text_p ) )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: failed to parse trail beam\n" );
+				CG_Printf( "%s", _( "^1ERROR: failed to parse trail beam\n" ));
 				return qfalse;
 			}
 
 			if ( bts->numBeams == MAX_BEAMS_PER_SYSTEM )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: trail system has > %d beams\n", MAX_BEAMS_PER_SYSTEM );
+				CG_Printf( _( "^1ERROR: trail system has > %d beams\n"), MAX_BEAMS_PER_SYSTEM );
 				return qfalse;
 			}
 			else if ( numBaseTrailBeams == MAX_BASETRAIL_BEAMS )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: maximum number of trail beams (%d) reached\n",
+				CG_Printf( _( "^1ERROR: maximum number of trail beams (%d) reached\n"),
 				           MAX_BASETRAIL_BEAMS );
 				return qfalse;
 			}
@@ -1174,14 +1174,14 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 		{
 			if ( cg_debugTrails.integer >= 1 )
 			{
-				CG_Printf( "Parsed trail system %s\n", name );
+				CG_Printf(_( "Parsed trail system %s\n"), name );
 			}
 
 			return qtrue; //reached the end of this trail system
 		}
 		else
 		{
-			CG_Printf( S_COLOR_RED "ERROR: unknown token '%s' in trail system %s\n", token, bts->name );
+			CG_Printf( _( S_COLOR_RED  "ERROR: unknown token '%s' in trail system %s\n"), token, bts->name );
 			return qfalse;
 		}
 	}
@@ -1218,8 +1218,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( S_COLOR_RED "ERROR: trail file %s is %s\n", fileName,
-		           len == 0 ? "empty" : "too long" );
+		CG_Printf( len ? _( S_COLOR_RED  "ERROR: trail file %s is too long\n") : _( S_COLOR_RED  "ERROR: trail file %s is empty\n"), fileName );
 		return qfalse;
 	}
 
@@ -1249,7 +1248,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 				{
 					if ( !Q_stricmp( baseTrailSystems[ i ].name, tsName ) )
 					{
-						CG_Printf( S_COLOR_RED "ERROR: a trail system is already named %s\n", tsName );
+						CG_Printf( _( S_COLOR_RED  "ERROR: a trail system is already named %s\n"), tsName );
 						return qfalse;
 					}
 				}
@@ -1258,7 +1257,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 
 				if ( !CG_ParseTrailSystem( &baseTrailSystems[ numBaseTrailSystems ], &text_p, tsName ) )
 				{
-					CG_Printf( S_COLOR_RED "ERROR: %s: failed to parse trail system %s\n", fileName, tsName );
+					CG_Printf( _( S_COLOR_RED  "ERROR: %s: failed to parse trail system %s\n"), fileName, tsName );
 					return qfalse;
 				}
 
@@ -1267,7 +1266,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 
 				if ( numBaseTrailSystems == MAX_BASETRAIL_SYSTEMS )
 				{
-					CG_Printf( S_COLOR_RED "ERROR: maximum number of trail systems (%d) reached\n",
+					CG_Printf( _( S_COLOR_RED  "ERROR: maximum number of trail systems (%d) reached\n"),
 					           MAX_BASETRAIL_SYSTEMS );
 					return qfalse;
 				}
@@ -1280,7 +1279,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 			}
 			else
 			{
-				CG_Printf( S_COLOR_RED "ERROR: unamed trail system\n" );
+				CG_Printf( "%s", _( "^1ERROR: unnamed trail system\n" ));
 				return qfalse;
 			}
 		}
@@ -1292,7 +1291,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 		}
 		else
 		{
-			CG_Printf( S_COLOR_RED "ERROR: trail system already named\n" );
+			CG_Printf( "%s", _( "^1ERROR: trail system already named\n" ));
 			return qfalse;
 		}
 	}
@@ -1340,7 +1339,7 @@ void CG_LoadTrailSystems( void )
 		fileLen = strlen( filePtr );
 		strcpy( fileName, "scripts/" );
 		strcat( fileName, filePtr );
-		CG_Printf( "...loading '%s'\n", fileName );
+		CG_Printf(_( "…loading '%s'\n"), fileName );
 		CG_ParseTrailFile( fileName );
 	}
 }
@@ -1379,7 +1378,7 @@ qhandle_t CG_RegisterTrailSystem( const char *name )
 
 			if ( cg_debugTrails.integer >= 1 )
 			{
-				CG_Printf( "Registered trail system %s\n", name );
+				CG_Printf(_( "Registered trail system %s\n"), name );
 			}
 
 			bts->registered = qtrue;
@@ -1389,7 +1388,7 @@ qhandle_t CG_RegisterTrailSystem( const char *name )
 		}
 	}
 
-	CG_Printf( S_COLOR_RED "ERROR: failed to register trail system %s\n", name );
+	CG_Printf( _( S_COLOR_RED  "ERROR: failed to register trail system %s\n"), name );
 	return 0;
 }
 
@@ -1423,7 +1422,7 @@ static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
 
 			if ( cg_debugTrails.integer >= 1 )
 			{
-				CG_Printf( "TB %s created\n", ts->class->name );
+				CG_Printf(_( "TB %s created\n"), ts->class->name );
 			}
 
 			return tb;
@@ -1453,7 +1452,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 
 	if ( !bts->registered )
 	{
-		CG_Printf( S_COLOR_RED "ERROR: a trail system has not been registered yet\n" );
+		CG_Printf( "%s", _( "^1ERROR: a trail system has not been registered yet\n" ));
 		return NULL;
 	}
 
@@ -1479,7 +1478,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 
 			if ( cg_debugTrails.integer >= 1 )
 			{
-				CG_Printf( "TS %s created\n", bts->name );
+				CG_Printf(_( "TS %s created\n"), bts->name );
 			}
 
 			return ts;
@@ -1617,7 +1616,7 @@ static void CG_GarbageCollectTrailSystems( void )
 
 			if ( cg_debugTrails.integer >= 1 )
 			{
-				CG_Printf( "TS %s expired (born %d, lives %d, now %d)\n",
+				CG_Printf(_( "TS %s expired (born %d, lives %d, now %d)\n"),
 				           ts->class->name, ts->birthTime, ts->class->lifeTime,
 				           cg.time );
 			}
@@ -1625,7 +1624,7 @@ static void CG_GarbageCollectTrailSystems( void )
 
 		if ( cg_debugTrails.integer >= 1 && !ts->valid )
 		{
-			CG_Printf( "TS %s garbage collected\n", ts->class->name );
+			CG_Printf(_( "TS %s garbage collected\n"), ts->class->name );
 		}
 	}
 }

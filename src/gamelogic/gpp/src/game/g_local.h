@@ -51,6 +51,15 @@ typedef struct gclient_s gclient_t;
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
 #define FL_FORCE_GESTURE           0x00008000 // spawn point just for bots
 
+// localisation
+#if 0
+#	define _(text)              gettext( text )
+#	define N_(one, many, count) ngettext( (one), (many), (count) )
+#else
+#	define N_(text)              text
+#	define P_(one, many, count) ( (count) == 1 ? (one) : (many) )
+#endif
+
 // movers are things like doors, plats, buttons, etc
 typedef enum
 {
@@ -915,7 +924,7 @@ void     G_StopFromFollowing( gentity_t *ent );
 void     G_FollowLockView( gentity_t *ent );
 qboolean G_FollowNewClient( gentity_t *ent, int dir );
 void     G_ToggleFollow( gentity_t *ent );
-qboolean G_MatchOnePlayer( const int *plist, int found, char *err, int len );
+int      G_MatchOnePlayer( const int *plist, int found, char *err, int len );
 int      G_ClientNumberFromString( const char *s, char *err, int len );
 int      G_ClientNumbersFromString( const char *s, int *plist, int max );
 char     *ConcatArgs( int start );

@@ -772,19 +772,20 @@ void G_PrintCurrentRotation( gentity_t *ent )
 
 	if ( mapRotation == NULL )
 	{
-		trap_SendServerCommand( ent - g_entities, "print \"^3listrotation^3: ^7there is no active map rotation on this server\n\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("^3listrotation: ^7there is no active map rotation on this server\n") "\"" );
 		return;
 	}
 
 	if ( mapRotation->numNodes == 0 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print \"^3listrotation^3: ^7there are no maps in the active map rotation\n\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("^3listrotation: ^7there are no maps in the active map rotation\n") "\"" );
 		return;
 	}
 
 	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
 
 	ADMBP_begin();
+	ADMBP( "\"" );
 	ADMBP( va( "%s:\n", mapRotation->name ) );
 
 	while ( ( node = mapRotation->nodes[ i++ ] ) )
@@ -843,7 +844,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	{
 		ADMBP( va( "^7The next map has been set to %s\n", g_nextMap.string ) );
 	}
-
+	ADMBP( "\"" );
 	ADMBP_end();
 }
 

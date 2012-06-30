@@ -103,6 +103,10 @@ void SV_GameSendServerCommand( int clientNum, const char *text )
 	{
 		SV_SendServerCommand( NULL, "%s", text );
 	}
+	else if ( clientNum == -2 )
+	{
+		SV_PrintTranslatedText( text );
+	}
 	else
 	{
 		if ( clientNum < 0 || clientNum >= sv_maxclients->integer )

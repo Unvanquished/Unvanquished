@@ -81,7 +81,7 @@ static void *VM_LookupSym( const std::string& symbol )
 	};
 
 	if ( com_developer->integer ) {
-		Com_Printf( "LLVM: Look up symbol %s\n", symbol.c_str() );
+		Com_Printf(_( "LLVM: Look up symbol %s\n"), symbol.c_str() );
 	}
 
 	// our symbols
@@ -94,7 +94,7 @@ static void *VM_LookupSym( const std::string& symbol )
 	// return Sys_LoadFunction( NULL, symbol.c_str() );
 
 	// this is about to crash and burn, so report the symbol
-	Com_Printf( "LLVM: ^3Unparsed symbol %s^7\n", symbol.c_str() );
+	Com_Printf(_( "LLVM: ^3Unparsed symbol %s^7\n"), symbol.c_str() );
 	return NULL;
 }
 
@@ -119,7 +119,7 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	int len = FS_ReadFile( filename, (void **)&bytes );
 
 	if ( !bytes ) {
-		Com_Printf( "Couldn't load llvm file: %s\n", filename );
+		Com_Printf(_( "Couldn't load llvm file: %s\n"), filename );
 		return NULL;
 	}
 
@@ -129,7 +129,7 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	FS_FreeFile( bytes );
 
 	if ( !module ) {
-		Com_Printf( "Couldn't parse llvm file: %s: %s\n", filename, error.c_str() );
+		Com_Printf(_( "Couldn't parse llvm file: %s: %s\n"), filename, error.c_str() );
 		return NULL;
 	}
 
@@ -160,7 +160,7 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 		 * its default to false at some point in the future.  */
 		engine = ExecutionEngine::create( module, false, &str, CodeGenOpt::Default, false );
 		if ( !engine ) {
-			Com_Printf("Couldn't create ExecutionEngine: %s\n", str.c_str());
+			Com_Printf_(("Couldn't create ExecutionEngine: %s\n"), str.c_str());
 			return NULL;
 		}
 		engine->DisableSymbolSearching();
@@ -181,7 +181,7 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	vm->entryPoint = fp;
 
 	if ( com_developer->integer ) {
-		Com_Printf("Loaded LLVM %s with module==%p\n", name, module);
+		Com_Printf_(("Loaded LLVM %s with module==%p\n"), name, module);
 	}
 
 	return module;
@@ -189,16 +189,16 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 
 void VM_UnloadLLVM( void *llvmModule ) {
 	if ( !llvmModule ) {
-		Com_Printf( "VM_UnloadLLVM called with NULL pointer\n" );
+		Com_Printf(_( "VM_UnloadLLVM called with NULL pointer\n" ));
 		return;
 	}
 
 	if ( com_developer->integer ) {
-		Com_Printf( "Unloading LLVM with module==%p\n", llvmModule );
+		Com_Printf(_( "Unloading LLVM with module==%p\n"), llvmModule );
 	}
 
 	if ( !engine->removeModule( (Module *)llvmModule ) ) {
-		Com_Printf( "Couldn't remove llvm\n" );
+		Com_Printf(_( "Couldn't remove llvm\n" ));
 		return;
 	}
 	delete (Module *)llvmModule;

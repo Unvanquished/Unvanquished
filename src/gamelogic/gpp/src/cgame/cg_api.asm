@@ -155,7 +155,6 @@ equ trap_Parse_ReadToken                  -391
 equ trap_Parse_SourceFileAndLine          -392
 equ trap_Key_KeynumToStringBuf            -393
 equ trap_Key_KeysForBinding               -394
-equ trap_CG_TranslateString               -395
 equ trap_S_FadeAllSound                   -396
 equ trap_R_inPVS                          -397
 equ trap_GetHunkData                      -398
@@ -180,6 +179,7 @@ equ trap_CompleteCallback                 -416
 equ trap_RegisterButtonCommands           -417
 equ trap_GetClipboardData                 -418
 equ trap_QuoteString                      -419
+equ trap_Gettext                          -420
 equ trap_R_Glyph                          -421
 equ trap_R_GlyphChar                      -422
 equ trap_R_UnregisterFont                 -423

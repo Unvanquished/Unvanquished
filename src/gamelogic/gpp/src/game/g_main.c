@@ -640,7 +640,7 @@ void G_UpdateCvars( void )
 
 				if ( cv->trackChange )
 				{
-					trap_SendServerCommand( -1, va( "print \"Server: \"%s\" changed to \"%s\"\n\"",
+					trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("Server: $1$ changed to $2$\n") ),
 					                                Quote( cv->cvarName ), Quote( cv->vmCvar->string ) ) );
 				}
 
@@ -1397,7 +1397,7 @@ void G_CalculateBuildPoints( void )
 	{
 		G_LogPrintf( "Beginning Sudden Death\n" );
 		trap_SendServerCommand( -1, "cp \"Sudden Death!\"" );
-		trap_SendServerCommand( -1, "print \"Beginning Sudden Death.\n\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Beginning Sudden Death.\n") "\"" );
 		level.suddenDeathWarning = TW_PASSED;
 		G_ClearDeconMarks();
 
@@ -1415,7 +1415,7 @@ void G_CalculateBuildPoints( void )
 	{
 		trap_SendServerCommand( -1, va( "cp \"Sudden Death in %d seconds!\"",
 		                                ( int )( G_TimeTilSuddenDeath() / 1000 ) ) );
-		trap_SendServerCommand( -1, va( "print \"Sudden Death will begin in %d seconds.\n\"",
+		trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Sudden Death will begin in $1$ seconds.\n") ),
 		                                ( int )( G_TimeTilSuddenDeath() / 1000 ) ) );
 		level.suddenDeathWarning = TW_IMMINENT;
 	}
@@ -2457,7 +2457,7 @@ void CheckExitRules( void )
 		if ( level.time - level.startTime >= level.timelimit * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
-			trap_SendServerCommand( -1, "print \"Timelimit hit\n\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit\n") "\"" );
 			trap_SetConfigstring( CS_WINNER, "Stalemate" );
 			LogExit( "Timelimit hit." );
 			G_MapLog_Result( 't' );
@@ -2485,7 +2485,7 @@ void CheckExitRules( void )
 	{
 		//humans win
 		level.lastWin = TEAM_HUMANS;
-		trap_SendServerCommand( -1, "print \"Humans win\n\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win\n") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
 		LogExit( "Humans win." );
 		G_MapLog_Result( 'h' );
@@ -2497,7 +2497,7 @@ void CheckExitRules( void )
 	{
 		//aliens win
 		level.lastWin = TEAM_ALIENS;
-		trap_SendServerCommand( -1, "print \"Aliens win\n\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win\n") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Aliens Win" );
 		LogExit( "Aliens win." );
 		G_MapLog_Result( 'a' );
@@ -2594,7 +2594,7 @@ void G_CheckVote( team_t team )
 {
 	float    votePassThreshold = ( float ) level.voteThreshold[ team ] / 100.0f;
 	qboolean pass = qfalse;
-	char     *cmd, msg[ 256 ];
+	char     *cmd;
 	int      i;
 
 	if ( level.voteExecuteTime[ team ] &&
@@ -2640,18 +2640,14 @@ void G_CheckVote( team_t team )
 
 	if ( pass )
 	{
-		Q_snprintf( msg, sizeof (msg),
-		            ( team == TEAM_NONE ) ? "Vote passed (%d - %d)" : "Team vote passed (%d - %d)",
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ - $2$)") ) : QQ( N_("Team vote passed ($1$ – $2$)") ),
 		            level.voteYes[ team ], level.voteNo[ team ] );
 	}
 	else
 	{
-		Q_snprintf( msg, sizeof (msg),
-		            ( team == TEAM_NONE ) ? "Vote failed (%d - %d; %.0f%% needed)" : "Team vote failed (%d - %d; %.0f%% needed)",
+		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ - $2$; $3$% needed)") ) : QQ( N_("Team vote failed ($1$ – $2$; $3$% needed)") ),
 		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
 	}
-
-	cmd = va( "print %s\"\n\"", Quote( msg ) );
 
 	if ( team == TEAM_NONE )
 	{
@@ -2838,7 +2834,7 @@ void G_RunFrame( int levelTime )
 
 			if ( level.pausedTime >= 110000  && level.pausedTime <= 119000 )
 			{
-				trap_SendServerCommand( -1, va( "print \"Server: Game will auto-unpause in %d seconds\n\"",
+				trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Server: Game will auto-unpause in $1$ seconds\n") ),
 				                                ( int )( ( float )( 120000 - level.pausedTime ) / 1000.0f ) ) );
 			}
 		}
@@ -2854,7 +2850,7 @@ void G_RunFrame( int levelTime )
 
 		if ( level.pausedTime > 120000 )
 		{
-			trap_SendServerCommand( -1, "print \"Server: The game has been unpaused automatically (2 minute max)\n\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_("Server: The game has been unpaused automatically (2 minute max)\n") "\"" );
 			trap_SendServerCommand( -1, "cp \"The game has been unpaused!\"" );
 			level.pausedTime = 0;
 		}

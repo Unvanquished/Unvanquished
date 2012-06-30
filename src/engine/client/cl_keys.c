@@ -843,7 +843,7 @@ static void PrintMatches( const char *s )
 {
 	if ( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
 	{
-		Com_Printf( "  ^9%s^0\n", s );
+		Com_Printf("  ^9%s^0\n", s );
 	}
 }
 
@@ -852,7 +852,7 @@ static void PrintCvarMatches( const char *s )
 {
 	if ( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
 	{
-		Com_Printf( "  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) );
+		Com_Printf("  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) );
 	}
 }
 
@@ -1373,7 +1373,7 @@ void Key_Unbind_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "unbind <key> : remove commands from a key\n" );
+		Com_Printf("%s", _( "unbind <key> : remove commands from a key\n" ));
 		return;
 	}
 
@@ -1381,7 +1381,7 @@ void Key_Unbind_f( void )
 
 	if ( b == -1 )
 	{
-		Com_Printf( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
+		Com_Printf(_( "\"%s\" isn't a valid key\n"), Cmd_Argv( 1 ) );
 		return;
 	}
 
@@ -1421,7 +1421,7 @@ void Key_Bind_f( void )
 
 	if ( c < 2 )
 	{
-		Com_Printf( "bind <key> [command] : attach a command to a key\n" );
+		Com_Printf("%s", _( "bind <key> [command] : attach a command to a key\n" ));
 		return;
 	}
 	else if ( c > 2 )
@@ -1434,7 +1434,7 @@ void Key_Bind_f( void )
 
 	if ( b == -1 )
 	{
-		Com_Printf( "\"%s\" isn't a valid key\n", key );
+		Com_Printf(_( "\"%s\" isn't a valid key\n"), key );
 		return;
 	}
 
@@ -1446,7 +1446,7 @@ void Key_Bind_f( void )
 		}
 		else
 		{
-			Com_Printf( "\"%s\" is not bound\n", key );
+			Com_Printf(_( "\"%s\" is not bound\n"), key );
 		}
 
 		return;
@@ -1480,7 +1480,7 @@ void Key_EditBind_f( void )
 
 	if ( b != 2 )
 	{
-		Com_Printf( "editbind <key> : edit a key binding (in the in-game console)" );
+		Com_Printf( "%s", _( "editbind <key> : edit a key binding (in the in-game console)" ));
 		return;
 	}
 
@@ -1489,7 +1489,7 @@ void Key_EditBind_f( void )
 
 	if ( b == -1 )
 	{
-		Com_Printf( "\"%s\" isn't a valid key\n", key );
+		Com_Printf(_( "\"%s\" isn't a valid key\n"), key );
 		return;
 	}
 
@@ -1515,7 +1515,7 @@ void Key_WriteBindings( fileHandle_t f )
 {
 	int i;
 
-	FS_Printf( f, "unbindall\n" );
+	FS_Printf( f,"%s", "unbindall\n" );
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{

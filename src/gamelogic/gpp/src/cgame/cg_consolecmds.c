@@ -117,7 +117,7 @@ static void CG_ScoresDown_f( void )
 		{
 			if ( cg_debugRandom.integer )
 			{
-				CG_Printf( "CG_ScoresDown_f: scores out of date\n" );
+				CG_Printf( "%s", _( "CG_ScoresDown_f: scores out of date\n" ));
 			}
 
 			cg.showScores = qtrue;
@@ -178,7 +178,7 @@ void CG_ClientList_f( void )
 		count++;
 	}
 
-	Com_Printf( "Listed %2d clients\n", count );
+	Com_Printf(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
 }
 
 static void CG_ReloadHUD_f( void )

@@ -141,10 +141,6 @@ cvar_t *cl_trn;
 cvar_t *cl_missionStats;
 cvar_t *cl_waitForFire;
 
-// NERVE - SMF - localization
-cvar_t *cl_language;
-cvar_t *cl_debugTranslation;
-
 // -NERVE - SMF
 // DHM - Nerve :: Auto-Update
 cvar_t *cl_updateavailable;
@@ -327,13 +323,13 @@ void CL_UpdateVoipIgnore( const char *idstr, qboolean ignore )
 			clc.voipIgnore[ id ] = ignore;
 			CL_AddReliableCommand( va( "voip %s %d",
 			                           ignore ? "ignore" : "unignore", id ) );
-			Com_Printf( "VoIP: %s ignoring player #%d\n",
+			Com_Printf(_( "VoIP: %s ignoring player #%d\n"),
 			            ignore ? "Now" : "No longer", id );
 			return;
 		}
 	}
 
-	Com_Printf( "VoIP: invalid player ID#\n" );
+	Com_Printf("%s", _( "VoIP: invalid player ID#\n" ));
 }
 
 static
@@ -351,7 +347,7 @@ void CL_UpdateVoipGain( const char *idstr, float gain )
 		if ( ( id >= 0 ) && ( id < MAX_CLIENTS ) )
 		{
 			clc.voipGain[ id ] = gain;
-			Com_Printf( "VoIP: player #%d gain now set to %f\n", id, gain );
+			Com_Printf(_( "VoIP: player #%d gain now set to %f\n"), id, gain );
 		}
 	}
 }
@@ -376,7 +372,7 @@ void CL_Voip_f( void )
 
 	if ( reason != NULL )
 	{
-		Com_Printf( "VoIP: command ignored: %s\n", reason );
+		Com_Printf(_( "VoIP: command ignored: %s\n"), reason );
 		return;
 	}
 
@@ -400,36 +396,36 @@ void CL_Voip_f( void )
 		{
 			if ( id >= 0 && id < MAX_CLIENTS )
 			{
-				Com_Printf( "VoIP: current gain for player #%d "
-				            "is %f\n", id, clc.voipGain[ id ] );
+				Com_Printf(_( "VoIP: current gain for player #%d "
+				            "is %f\n"), id, clc.voipGain[ id ] );
 			}
 			else
 			{
-				Com_Printf( "VoIP: invalid player ID#\n" );
+				Com_Printf("%s", _( "VoIP: invalid player ID#\n" ));
 			}
 		}
 		else
 		{
-			Com_Printf( "usage: voip gain <playerID#> [value]\n" );
+			Com_Printf("%s", _( "usage: voip gain <playerID#> [value]\n" ));
 		}
 	}
 	else if ( strcmp( cmd, "muteall" ) == 0 )
 	{
-		Com_Printf( "VoIP: muting incoming voice\n" );
+		Com_Printf("%s", _( "VoIP: muting incoming voice\n" ));
 		CL_AddReliableCommand( "voip muteall" );
 		clc.voipMuteAll = qtrue;
 	}
 	else if ( strcmp( cmd, "unmuteall" ) == 0 )
 	{
-		Com_Printf( "VoIP: unmuting incoming voice\n" );
+		Com_Printf("%s", _( "VoIP: unmuting incoming voice\n" ));
 		CL_AddReliableCommand( "voip unmuteall" );
 		clc.voipMuteAll = qfalse;
 	}
 	else
 	{
-		Com_Printf( "usage: voip [un]ignore <playerID#>\n"
+		Com_Printf( "%s", _( "usage: voip [un]ignore <playerID#>\n"
 		            "       voip [un]muteall\n"
-		            "       voip gain <playerID#> [value]\n" );
+		            "       voip gain <playerID#> [value]\n" ) );
 	}
 }
 
@@ -529,9 +525,9 @@ void CL_VoipParseTargets( void )
 
 		if ( val < 0 || val >= MAX_CLIENTS )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: VoIP "
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: VoIP "
 			            "target %d is not a valid client "
-			            "number\n", val );
+			            "number\n"), val );
 
 			continue;
 		}
@@ -847,7 +843,7 @@ void CL_StopRecord_f( void )
 
 	if ( !clc.demorecording )
 	{
-		Com_Printf( "Not recording a demo.\n" );
+		Com_Printf("%s", _( "Not recording a demo.\n" ));
 		return;
 	}
 
@@ -862,7 +858,7 @@ void CL_StopRecord_f( void )
 	Cvar_Set( "cl_demorecording", "0" );  // fretn
 	Cvar_Set( "cl_demofilename", "" );  // bani
 	Cvar_Set( "cl_demooffset", "0" );  // bani
-	Com_Printf( "Stopped demo.\n" );
+	Com_Printf("%s", _( "Stopped demo.\n" ));
 }
 
 /*
@@ -900,19 +896,19 @@ void CL_Record_f( void )
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Com_Printf( "record <demoname>\n" );
+		Com_Printf("%s", _( "record <demoname>\n" ));
 		return;
 	}
 
 	if ( clc.demorecording )
 	{
-		Com_Printf( "Already recording.\n" );
+		Com_Printf("%s", _( "Already recording.\n" ));
 		return;
 	}
 
 	if ( cls.state != CA_ACTIVE )
 	{
-		Com_Printf( "You must be in a level to record.\n" );
+		Com_Printf("%s", _( "You must be in a level to record.\n" ));
 		return;
 	}
 
@@ -920,7 +916,7 @@ void CL_Record_f( void )
 	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
 	if ( NET_IsLocalAddress( clc.serverAddress ) && !Cvar_VariableValue( "g_synchronousClients" ) )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: You should set 'g_synchronousClients 1' for smoother demo recording\n" );
+		Com_Printf( S_COLOR_YELLOW"%s", _( "WARNING: You should set 'g_synchronousClients 1' for smoother demo recording\n" ));
 	}
 
 	if ( Cmd_Argc() == 2 )
@@ -963,12 +959,12 @@ void CL_Record( const char *name )
 
 	// open the demo file
 
-	Com_Printf( "recording to %s.\n", name );
+	Com_Printf(_( "recording to %s.\n"), name );
 	clc.demofile = FS_FOpenFileWrite( name );
 
 	if ( !clc.demofile )
 	{
-		Com_Printf( "ERROR: couldn't open.\n" );
+		Com_Printf("%s", _( "ERROR: couldn't open.\n" ));
 		return;
 	}
 
@@ -1068,7 +1064,7 @@ void CL_DemoCompleted( void )
 
 		if ( time > 0 )
 		{
-			Com_Printf( "%i frames, %3.1f seconds: %3.1f fps\n", clc.timeDemoFrames,
+			Com_Printf(_( "%i frames, %3.1fs: %3.1f fps\n"), clc.timeDemoFrames,
 			            time / 1000.0, clc.timeDemoFrames * 1000.0 / time );
 		}
 	}
@@ -1143,7 +1139,7 @@ void CL_ReadDemoMessage( void )
 
 	if ( r != buf.cursize )
 	{
-		Com_Printf( "Demo file was truncated.\n" );
+		Com_Printf("%s", _( "Demo file was truncated.\n" ));
 		CL_DemoCompleted();
 		return;
 	}
@@ -1244,13 +1240,13 @@ void CL_WriteWaveOpen()
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Com_Printf( "wav_record <wavname>\n" );
+		Com_Printf("%s", _( "wav_record <wavname>\n" ));
 		return;
 	}
 
 	if ( clc.waverecording )
 	{
-		Com_Printf( "Already recording a wav file\n" );
+		Com_Printf("%s", _( "Already recording a wav file\n" ));
 		return;
 	}
 
@@ -1283,12 +1279,12 @@ void CL_WriteWaveOpen()
 		}
 	}
 
-	Com_Printf( "recording to %s.\n", name );
+	Com_Printf(_( "recording to %s.\n"), name );
 	clc.wavefile = FS_FOpenFileWrite( name );
 
 	if ( !clc.wavefile )
 	{
-		Com_Printf( "ERROR: couldn't open %s for writing.\n", name );
+		Com_Printf(_( "ERROR: couldn't open %s for writing.\n"), name );
 		return;
 	}
 
@@ -1304,7 +1300,7 @@ void CL_WriteWaveOpen()
 
 void CL_WriteWaveClose()
 {
-	Com_Printf( "Stopped recording\n" );
+	Com_Printf("%s", _( "Stopped recording\n" ));
 
 	hdr.Subchunk2Size = hdr.NumSamples * hdr.NumChannels * ( hdr.BitsPerSample / 8 );
 	hdr.ChunkSize = 36 + hdr.Subchunk2Size;
@@ -1351,7 +1347,7 @@ void CL_PlayDemo_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "playdemo <demoname>\n" );
+		Com_Printf("%s", _( "playdemo <demoname>\n" ));
 		return;
 	}
 
@@ -1716,7 +1712,7 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	if ( cl_useMumble->integer && mumble_islinked() )
 	{
-		Com_Printf( "Mumble: Unlinking from Mumble application\n" );
+		Com_Printf("%s", _( "Mumble: Unlinking from Mumble application\n" ));
 		mumble_unlink();
 	}
 
@@ -1851,7 +1847,7 @@ void CL_ForwardCommandToServer( const char *string )
 
 	if ( clc.demoplaying || cls.state < CA_CONNECTED || cmd[ 0 ] == '+' || cmd[ 0 ] == '\0' )
 	{
-		Com_Printf( "Unknown command \"%s\"\n", cmd );
+		Com_Printf(_( "Unknown command \"%s\"\n"), cmd );
 		return;
 	}
 
@@ -1876,7 +1872,7 @@ void CL_OpenUrl_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "Usage: openurl <url>\n" );
+		Com_Printf("%s", _( "Usage: openurl <url>\n" ));
 		return;
 	}
 
@@ -1917,7 +1913,7 @@ void CL_OpenUrl_f( void )
 			        of the allowedPrefixes array. As I said above, placeholder
 			        code: fix it later!
 			*/
-			Com_Printf( "Invalid URL prefix.\n" );
+			Com_Printf("%s", _( "Invalid URL prefix.\n" ));
 			return;
 		}
 
@@ -1942,7 +1938,7 @@ void CL_OpenUrl_f( void )
 
 		if ( i == ARRAY_LEN( allowDomains ) )
 		{
-			Com_Printf( "Invalid domain.\n" );
+			Com_Printf("%s", _( "Invalid domain.\n" ));
 			return;
 		}
 
@@ -1958,7 +1954,7 @@ void CL_OpenUrl_f( void )
 			       ( url[ i ] == ';' ) // ; char
 			     ) )
 			{
-				Com_Printf( "Invalid URL\n" );
+				Com_Printf("%s", _( "Invalid URL\n" ));
 				return;
 			}
 		}
@@ -1966,7 +1962,7 @@ void CL_OpenUrl_f( void )
 
 	if ( !Sys_OpenUrl( url ) )
 	{
-		Com_Printf( "System error opening URL\n" );
+		Com_Printf("%s", _( "System error opening URL\n" ));
 	}
 }
 
@@ -1985,13 +1981,13 @@ void CL_RequestMotd( void )
 		return;
 	}
 
-	Com_DPrintf( "Resolving %s\n", MASTER_SERVER_NAME );
+	Com_DPrintf(_( "Resolving %s\n"), MASTER_SERVER_NAME );
 
 	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &cls.updateServer,
 	                          NA_UNSPEC ) )
 	{
 		case 0:
-			Com_Printf( "Couldn't resolve master address\n" );
+			Com_Printf("%s", _( "Couldn't resolve master address\n" ));
 			return;
 
 		case 2:
@@ -2001,7 +1997,7 @@ void CL_RequestMotd( void )
 			break;
 	}
 
-	Com_DPrintf( "%s resolved to %s\n", MASTER_SERVER_NAME,
+	Com_DPrintf(_( "%s resolved to %s\n"), MASTER_SERVER_NAME,
 	             NET_AdrToStringwPort( cls.updateServer ) );
 
 	info[ 0 ] = 0;
@@ -2064,16 +2060,16 @@ void CL_RequestAuthorization( void )
 
 	if ( !cls.authorizeServer.port )
 	{
-		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
+		Com_Printf(_( "Resolving %s\n"), AUTHORIZE_SERVER_NAME );
 
 		if ( !NET_StringToAdr( AUTHORIZE_SERVER_NAME, &cls.authorizeServer, NA_IP ) )
 		{
-			Com_Printf( "Couldn't resolve address\n" );
+			Com_Printf("%s", _( "Couldn't resolve address\n" ));
 			return;
 		}
 
 		cls.authorizeServer.port = BigShort( PORT_AUTHORIZE );
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+		Com_Printf(_( "%s resolved to %i.%i.%i.%i:%i\n"), AUTHORIZE_SERVER_NAME,
 		            cls.authorizeServer.ip[ 0 ], cls.authorizeServer.ip[ 1 ],
 		            cls.authorizeServer.ip[ 2 ], cls.authorizeServer.ip[ 3 ], BigShort( cls.authorizeServer.port ) );
 	}
@@ -2134,7 +2130,7 @@ void CL_ForwardToServer_f( void )
 {
 	if ( cls.state != CA_ACTIVE || clc.demoplaying )
 	{
-		Com_Printf( "Not connected to a server.\n" );
+		Com_Printf("%s", _( "Not connected to a server.\n" ));
 		return;
 	}
 
@@ -2182,7 +2178,7 @@ void CL_Setenv_f( void )
 		}
 		else
 		{
-			Com_Printf( "%s undefined\n", Cmd_Argv( 1 ) );
+			Com_Printf(_( "%s undefined\n"), Cmd_Argv( 1 ) );
 		}
 	}
 }
@@ -2214,7 +2210,7 @@ void CL_Reconnect_f( void )
 {
 	if ( !strlen( cls.servername ) || !strcmp( cls.servername, "localhost" ) )
 	{
-		Com_Printf( "Can't reconnect to localhost.\n" );
+		Com_Printf("%s", _( "Can't reconnect to localhost.\n" ));
 		return;
 	}
 
@@ -2236,7 +2232,7 @@ void CL_Connect_f( void )
 
 	if ( argc != 2 && argc != 3 )
 	{
-		Com_Printf( "usage: connect [-4|-6] server\n" );
+		Com_Printf("%s", _( "usage: connect [-4|-6] server\n" ));
 		return;
 	}
 
@@ -2256,7 +2252,7 @@ void CL_Connect_f( void )
 		}
 		else
 		{
-			Com_Printf( "warning: only -4 or -6 as address type understood.\n" );
+			Com_Printf("%s", _( "warning: only -4 or -6 as address type understood.\n" ));
 		}
 
 		server = Cmd_Argv( 2 );
@@ -2291,7 +2287,7 @@ void CL_Connect_f( void )
 
 	if ( !NET_StringToAdr( cls.servername, &clc.serverAddress, family ) )
 	{
-		Com_Printf( "Bad server address\n" );
+		Com_Printf("%s", _( "Bad server address\n" ));
 		cls.state = CA_DISCONNECTED;
 		Cvar_Set( "ui_connecting", "0" );
 		return;
@@ -2304,7 +2300,7 @@ void CL_Connect_f( void )
 
 	serverString = NET_AdrToStringwPort( clc.serverAddress );
 
-	Com_Printf( "%s resolved to %s\n", cls.servername, serverString );
+	Com_Printf(_( "%s resolved to %s\n"), cls.servername, serverString );
 
 	// if we aren't playing on a lan, we needto authenticate
 	// with the cd key
@@ -2358,8 +2354,8 @@ void CL_Rcon_f( void )
 
 	if ( !rcon_client_password->string )
 	{
-		Com_Printf( "You must set 'rconPassword' before\n"
-		            "issuing an rcon command.\n" );
+		Com_Printf( "%s", _( "You must set 'rconPassword' before\n"
+		            "issuing an rcon command.\n" ));
 		return;
 	}
 
@@ -2385,9 +2381,9 @@ void CL_Rcon_f( void )
 	{
 		if ( !strlen( rconAddress->string ) )
 		{
-			Com_Printf( "You must either be connected,\n"
+			Com_Printf( "%s", _( "You must either be connected,\n"
 			            "or set the 'rconAddress' cvar\n"
-			            "to issue rcon commands\n" );
+			            "to issue rcon commands\n" ));
 
 			return;
 		}
@@ -2439,6 +2435,150 @@ void CL_ResetPureClientAtServer( void )
 {
 	CL_AddReliableCommand( "vdr" );
 }
+
+/*
+============
+CL_GenerateGUIDKey
+============
+*/
+static void CL_GenerateGUIDKey( void )
+{
+	int           len = 0;
+	unsigned char buff[ 2048 ];
+	
+	if( cl_profile->string[ 0 ] )
+	{
+		len = FS_ReadFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), NULL );
+	}
+	else
+	{
+		len = FS_ReadFile( GUIDKEY_FILE, NULL );
+	}
+	if ( len >= ( int ) sizeof( buff ) )
+	{
+		Com_Printf( "%s", _( "Daemon GUID public-key found.\n" ) );
+		return;
+	}
+	else
+	{
+		int i;
+		srand( time( 0 ) );
+		
+		for ( i = 0; i < sizeof( buff ) - 1; i++ )
+		{
+			buff[ i ] = ( unsigned char )( rand() % 255 );
+		}
+		
+		buff[ i ] = 0;
+		Com_Printf( "%s", _( "Daemon GUID public-key generated\n" ) );
+		if( cl_profile->string[ 0 ] )
+		{
+			FS_WriteFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), buff, sizeof( buff ) );
+		}
+		else
+		{
+			FS_WriteFile( GUIDKEY_FILE, buff, sizeof( buff ) );
+		}
+	}
+}
+
+/*
+===============
+CL_GenerateRSAKey
+
+Check if the RSAKey file contains a valid RSA keypair
+If not then generate a new keypair
+===============
+*/
+static void CL_GenerateRSAKey( void )
+{
+	#ifdef USE_CRYPTO
+	int                  len;
+	fileHandle_t         f;
+	void                 *buf;
+	struct nettle_buffer key_buffer;
+	
+	int                  key_buffer_len = 0;
+	
+	rsa_public_key_init( &public_key );
+	rsa_private_key_init( &private_key );
+	
+	if( cl_profile->string[ 0 ] )
+	{
+		len = FS_FOpenFileRead( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ), &f, qtrue );
+	}
+	else
+	{
+		len = FS_FOpenFileRead( RSAKEY_FILE, &f, qtrue );
+	}
+	if ( !f || len < 1 )
+	{
+		Com_Printf( "%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
+		goto new_key;
+	}
+	
+	buf = Z_TagMalloc( len, TAG_CRYPTO );
+	FS_Read( buf, len, f );
+	FS_FCloseFile( f );
+	
+	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
+	{
+		Com_Printf( "%s", _( "Invalid RSA keypair in RSAKey, regenerating\n" ) );
+		Z_Free( buf );
+		goto new_key;
+	}
+	
+	Z_Free( buf );
+	Com_Printf( "%s", _( "Daemon RSA public-key found.\n" ) );
+	return;
+	
+	new_key:
+	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
+	
+	if ( !rsa_generate_keypair( &public_key, &private_key, NULL, qnettle_random, NULL, NULL, RSA_KEY_LENGTH, 0 ) )
+	{
+		goto keygen_error;
+	}
+	
+	qnettle_buffer_init( &key_buffer, &key_buffer_len );
+	
+	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
+	{
+		goto keygen_error;
+	}
+	if( cl_profile->string[ 0 ] )
+	{
+		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
+	}
+	else
+	{
+		f = FS_FOpenFileWrite( RSAKEY_FILE );
+	}
+	
+	if ( !f )
+	{
+		Com_Printf( _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n" ), RSAKEY_FILE );
+		Cvar_Set( "cl_pubkeyID", "0" );
+		Crypto_Shutdown();
+		return;
+	}
+	
+	FS_Write( key_buffer.contents, key_buffer.size, f );
+	nettle_buffer_clear( &key_buffer );
+	FS_FCloseFile( f );
+	Com_Printf( "%s", _( "Daemon RSA public-key generated\n" ) );
+	return;
+	
+	keygen_error:
+	Com_Printf( "%s", _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
+	Cvar_Set( "cl_pubkeyID", "0" );
+	Crypto_Shutdown();
+	#else
+	Com_DPrintf( "%s", _( "RSA support is disabled\n" ) );
+	return;
+	#endif
+}
+
 
 /*
 =================
@@ -2514,6 +2654,20 @@ void CL_Vid_Restart_f( void )
 	// startup all the client stuff
 	CL_StartHunkUsers();
 
+	if( Cvar_VariableIntegerValue( "cl_newProfile" ) )
+	{
+		CL_GenerateGUIDKey();
+		
+		if ( cl_pubkeyID->integer )
+		{
+			CL_GenerateRSAKey();
+		}
+		
+		Cvar_Get( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
+		GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
+
+		Cvar_Set( "cl_newProfile", "0" );
+	}
 #ifdef _WIN32
 	Sys_In_Restart_f(); // fretn
 #endif
@@ -2584,7 +2738,7 @@ CL_PK3List_f
 */
 void CL_OpenedPK3List_f( void )
 {
-	Com_Printf( "Opened PK3 Names: %s\n", FS_LoadedPakNames() );
+	Com_Printf(_( "Opened PK3 Names: %s\n"), FS_LoadedPakNames() );
 }
 
 /*
@@ -2594,7 +2748,7 @@ CL_PureList_f
 */
 void CL_ReferencedPK3List_f( void )
 {
-	Com_Printf( "Referenced PK3 Names: %s\n", FS_ReferencedPakNames() );
+	Com_Printf(_( "Referenced PK3 Names: %s\n"), FS_ReferencedPakNames() );
 }
 
 /*
@@ -2609,7 +2763,7 @@ void CL_Configstrings_f( void )
 
 	if ( cls.state != CA_ACTIVE )
 	{
-		Com_Printf( "Not connected to a server.\n" );
+		Com_Printf("%s", _( "Not connected to a server.\n" ));
 		return;
 	}
 
@@ -2633,12 +2787,12 @@ CL_Clientinfo_f
 */
 void CL_Clientinfo_f( void )
 {
-	Com_Printf( "--------- Client Information ---------\n" );
-	Com_Printf( "state: %i\n", cls.state );
-	Com_Printf( "Server: %s\n", cls.servername );
-	Com_Printf( "User info settings:\n" );
+	Com_Printf("%s", _( "--------- Client Information ---------\n" ));
+	Com_Printf(_( "state: %i\n"), cls.state );
+	Com_Printf(_( "Server: %s\n"), cls.servername );
+	Com_Printf("%s", _( "User info settings:\n" ));
 	Info_Print( Cvar_InfoString( CVAR_USERINFO ) );
-	Com_Printf( "--------------------------------------\n" );
+	Com_Printf("%s", _( "--------------------------------------\n" ));
 }
 
 /*
@@ -2651,7 +2805,7 @@ void CL_WavRecord_f( void )
 {
 	if ( clc.wavefile )
 	{
-		Com_Printf( "Already recording a wav file\n" );
+		Com_Printf("%s", _( "Already recording a wav file\n" ));
 		return;
 	}
 
@@ -2668,7 +2822,7 @@ void CL_WavStopRecord_f( void )
 {
 	if ( !clc.wavefile )
 	{
-		Com_Printf( "Not recording a wav file\n" );
+		Com_Printf("%s", _( "Not recording a wav file\n" ));
 		return;
 	}
 
@@ -2696,7 +2850,7 @@ void CL_Video_f( void )
 
 	if ( !clc.demoplaying )
 	{
-		Com_Printf( "The video command can only be used when playing back demos\n" );
+		Com_Printf("%s", _( "The video command can only be used when playing back demos\n" ));
 		return;
 	}
 
@@ -2732,7 +2886,7 @@ void CL_Video_f( void )
 
 		if ( i > 9999 )
 		{
-			Com_Printf( S_COLOR_RED "ERROR: no free file names to create video\n" );
+			Com_Printf( S_COLOR_RED"%s", _( "ERROR: no free file names to create video\n" ));
 			return;
 		}
 	}
@@ -2999,7 +3153,7 @@ void CL_InitDownloads( void )
 		if ( cl_allowDownload->integer && FS_ComparePaks( clc.downloadList, sizeof( clc.downloadList ), qtrue ) )
 		{
 			// this gets printed to UI, i18n
-			Com_Printf( CL_TranslateStringBuf( "Need paks: %s\n" ), clc.downloadList );
+			Com_Printf(_( "Need paks: %s\n"), clc.downloadList );
 
 			if ( *clc.downloadList )
 			{
@@ -3252,8 +3406,7 @@ void CL_PrintPacket( netadr_t from, msg_t *msg )
 	else if ( !Q_stricmpn( s, "[err_prot]", 10 ) )
 	{
 		Q_strncpyz( clc.serverMessage, s + 10, sizeof( clc.serverMessage ) );
-		// Cvar_Set("com_errorMessage", CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
-		Com_Error( ERR_DROP, "%s", CL_TranslateStringBuf( PROTOCOL_MISMATCH_ERROR_LONG ) );
+		Com_Error( ERR_DROP, "%s", PROTOCOL_MISMATCH_ERROR_LONG );
 	}
 	else if ( !Q_stricmpn( s, "[err_update]", 12 ) )
 	{
@@ -3272,7 +3425,7 @@ void CL_PrintPacket( netadr_t from, msg_t *msg )
 		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 	}
 
-	Com_Printf( "%s\n", clc.serverMessage );
+	Com_Printf("%s\n", clc.serverMessage );
 }
 
 /*
@@ -3343,7 +3496,7 @@ int CL_GSRSequenceInformation( byte **data )
 	{
 		// Assume we sent two getservers and somehow they changed in
 		// between - only use the results that arrive later
-		Com_DPrintf( "Master changed its mind about packet count!\n" );
+		Com_DPrintf("%s", "Master changed its mind about packet count!\n" );
 		cls.receivedMasterPackets = 0;
 		cls.numglobalservers = 0;
 		cls.numGlobalServerAddresses = 0;
@@ -3380,7 +3533,7 @@ void CL_GSRFeaturedLabel( byte **data, char *buf, int size )
 		}
 		else if ( l == &buf[ size - 1 ] )
 		{
-			Com_DPrintf( S_COLOR_YELLOW "Warning: "
+			Com_DPrintf( "%s", S_COLOR_YELLOW  "Warning: "
 			             "CL_GSRFeaturedLabel: overflow\n" );
 		}
 
@@ -3556,7 +3709,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 	cls.numglobalservers = count;
 	total = count + cls.numGlobalServerAddresses;
 
-	Com_Printf( "%d servers parsed (total %d)\n", numservers, total );
+	Com_Printf(_( "%d servers parsed (total %d)\n"), numservers, total );
 }
 
 /*
@@ -3587,7 +3740,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		if ( cls.state != CA_CONNECTING )
 		{
-			Com_Printf( "Unwanted challenge response received.  Ignored.\n" );
+			Com_Printf("%s", _( "Unwanted challenge response received.  Ignored.\n" ));
 		}
 		else
 		{
@@ -3621,20 +3774,20 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		if ( cls.state >= CA_CONNECTED )
 		{
-			Com_Printf( "Dup connect received.  Ignored.\n" );
+			Com_Printf("%s", _( "Dup connect received. Ignored.\n" ));
 			return;
 		}
 
 		if ( cls.state != CA_CHALLENGING )
 		{
-			Com_Printf( "connectResponse packet while not connecting.  Ignored.\n" );
+			Com_Printf("%s", _( "connectResponse packet while not connecting. Ignored.\n" ));
 			return;
 		}
 
 		if ( !NET_CompareAdr( from, clc.serverAddress ) )
 		{
-			Com_Printf( "connectResponse from a different address.  Ignored.\n" );
-			Com_Printf( "%s should have been %s\n", NET_AdrToString( from ),
+			Com_Printf("%s", _( "connectResponse from a different address. Ignored.\n" ));
+			Com_Printf(_( "%s should have been %s\n"), NET_AdrToString( from ),
 			            NET_AdrToStringwPort( clc.serverAddress ) );
 			return;
 		}
@@ -3758,7 +3911,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 
 	if ( msg->cursize < 4 )
 	{
-		Com_Printf( "%s: Runt packet\n", NET_AdrToStringwPort( from ) );
+		Com_Printf(_( "%s: Runt packet\n"), NET_AdrToStringwPort( from ) );
 		return;
 	}
 
@@ -3767,8 +3920,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 	//
 	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) )
 	{
-		Com_DPrintf( "%s:sequenced packet without connection\n"
-		             , NET_AdrToStringwPort( from ) );
+		Com_DPrintf( _("%s: sequenced packet without connection\n"), NET_AdrToStringwPort( from ) );
 		// FIXME: send a client disconnect?
 		return;
 	}
@@ -3927,7 +4079,7 @@ void CL_WWWDownload( void )
 			if ( strlen( clc.redirectedList ) + strlen( cls.originalDownloadName ) + 1 >= sizeof( clc.redirectedList ) )
 			{
 				// just to be safe
-				Com_Printf( "ERROR: redirectedList overflow (%s)\n", clc.redirectedList );
+				Com_Printf(_( "ERROR: redirectedList overflow (%s)\n"), clc.redirectedList );
 			}
 			else
 			{
@@ -3944,7 +4096,7 @@ void CL_WWWDownload( void )
 			// but in this case we can't get anything from server
 			// if we just reconnect it's likely we'll get the same disconnected download message, and error out again
 			// this may happen for a regular dl or an auto update
-			const char *error = va( "Download failure while getting '%s'\n", cls.downloadName );  // get the msg before clearing structs
+			const char *error = va( _("Download failure while getting '%s'\n"), cls.downloadName );  // get the msg before clearing structs
 
 			cls.bWWWDlDisconnected = qfalse; // need clearing structs before ERR_DROP, or it goes into endless reload
 			CL_ClearStaticDownload();
@@ -3953,7 +4105,7 @@ void CL_WWWDownload( void )
 		else
 		{
 			// see CL_ParseDownload, same abort strategy
-			Com_Printf( "Download failure while getting '%s'\n", cls.downloadName );
+			Com_Printf(_( "Download failure while getting '%s'\n"), cls.downloadName );
 			CL_AddReliableCommand( "wwwdl fail" );
 			clc.bWWWDlAborting = qtrue;
 		}
@@ -3978,18 +4130,18 @@ qboolean CL_WWWBadChecksum( const char *pakname )
 {
 	if ( strstr( clc.redirectedList, va( "@%s", pakname ) ) )
 	{
-		Com_Printf( "WARNING: file %s obtained through download redirect has wrong checksum\n", pakname );
-		Com_Printf( "         this likely means the server configuration is broken\n" );
+		Com_Printf(_( "WARNING: file %s obtained through download redirect has wrong checksum\n"
+		              "         this likely means the server configuration is broken\n" ), pakname );
 
 		if ( strlen( clc.badChecksumList ) + strlen( pakname ) + 1 >= sizeof( clc.badChecksumList ) )
 		{
-			Com_Printf( "ERROR: badChecksumList overflowed (%s)\n", clc.badChecksumList );
+			Com_Printf(_( "ERROR: badChecksumList overflowed (%s)\n"), clc.badChecksumList );
 			return qfalse;
 		}
 
 		strcat( clc.badChecksumList, "@" );
 		strcat( clc.badChecksumList, pakname );
-		Com_DPrintf( "bad checksums: %s\n", clc.badChecksumList );
+		Com_DPrintf(_( "bad checksums: %s\n"), clc.badChecksumList );
 		return qtrue;
 	}
 
@@ -4440,7 +4592,7 @@ void CL_CheckAutoUpdate( void )
 	// Resolve update server
 	if ( !NET_StringToAdr( cls.autoupdateServerNames[ 0 ], &cls.autoupdateServer, NA_IP ) )
 	{
-		Com_DPrintf( "Failed to resolve any Auto-update servers.\n" );
+		Com_DPrintf("%s", _( "Failed to resolve any auto-update servers.\n" ));
 
 		cls.autoUpdateServerChecked[ 0 ] = qtrue;
 
@@ -4499,11 +4651,11 @@ qboolean CL_NextUpdateServer( void )
 
 	servername = cls.autoupdateServerNames[ cls.autoupdatServerIndex ];
 
-	Com_DPrintf( "Resolving AutoUpdate Server... " );
+	Com_DPrintf("%s", _( "Resolving auto-update server… " ));
 
 	if ( !NET_StringToAdr( servername, &cls.autoupdateServer, NA_IP ) )
 	{
-		Com_DPrintf( "Couldn't resolve address, trying next one..." );
+		Com_DPrintf("%s", _( "Couldn't resolve address, trying next one…" ));
 
 		cls.autoUpdateServerChecked[ cls.autoupdatServerIndex ] = qtrue;
 
@@ -4534,7 +4686,7 @@ void CL_GetAutoUpdate( void )
 		return;
 	}
 
-	Com_DPrintf( "Connecting to auto-update server...\n" );
+	Com_DPrintf("%s", _( "Connecting to auto-update server…\n" ));
 
 	S_StopAllSounds(); // NERVE - SMF
 
@@ -4565,7 +4717,7 @@ void CL_GetAutoUpdate( void )
 
 	if ( cls.autoupdateServer.type == NA_BAD )
 	{
-		Com_Printf( "Bad server address\n" );
+		Com_Printf("%s", _( "Bad server address\n" ));
 		cls.state = CA_DISCONNECTED;
 		Cvar_Set( "ui_connecting", "0" );
 		return;
@@ -4649,22 +4801,22 @@ void CL_InitRef( const char *renderer )
 	char        fn[ 1024 ];
 	Q_strncpyz( fn, Sys_Cwd(), sizeof( fn ) );
 
-	Com_Printf( "----- Initializing Renderer ----\n" );
+	Com_Printf("%s", _( "----- Initializing Renderer ----\n" ));
 
 #if !defined( REF_HARD_LINKED )
 
 	Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, fn, renderer );
 
-	Com_Printf( "Loading \"%s\"...", dllName );
+	Com_Printf(_( "Loading \"%s\"…"), dllName );
 
 	if ( ( rendererLib = Sys_LoadLibrary( dllName ) ) == 0 )
 	{
-		Com_Printf( "failed:\n\"%s\"\n", Sys_LibraryError() );
+		Com_Printf(_( "failed:\n\"%s\"\n"), Sys_LibraryError() );
 
 		//fall back to default
 		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "rendererGL" ARCH_STRING DLL_EXT, fn );
 
-		Com_Printf( "Loading \"%s\"...", dllName );
+		Com_Printf(_( "Loading \"%s\"…"), dllName );
 
 		if ( ( rendererLib = Sys_LoadLibrary( dllName ) ) == 0 )
 		{
@@ -4672,7 +4824,7 @@ void CL_InitRef( const char *renderer )
 		}
 	}
 
-	Com_Printf( "done\n" );
+	Com_Printf("%s", _( "done\n" ));
 
 	GetRefAPI = Sys_LoadFunction( rendererLib, "GetRefAPI" );
 
@@ -4759,7 +4911,7 @@ void CL_InitRef( const char *renderer )
 	ri.Sys_GLimpSafeInit = Sys_GLimpSafeInit;
 	ri.Sys_GLimpInit = Sys_GLimpInit;
 
-	Com_Printf( "Calling GetRefAPI...\n" );
+	Com_Printf("%s", _( "Calling GetRefAPI…\n" ));
 	ret = GetRefAPI( REF_API_VERSION, &ri );
 
 	Com_Printf( "-------------------------------\n" );
@@ -4829,154 +4981,7 @@ void CL_singlePlayLink_f( void )
 
 #endif
 
-#if !defined( __MACOS__ )
-void CL_SaveTranslations_f( void )
-{
-	CL_SaveTransTable( "scripts/translation.lang", qfalse );
-}
-
-void CL_SaveNewTranslations_f( void )
-{
-	char fileName[ 512 ];
-
-	if ( Cmd_Argc() != 2 )
-	{
-		Com_Printf( "usage: SaveNewTranslations <filename>\n" );
-		return;
-	}
-
-	strcpy( fileName, va( "translations/%s.lang", Cmd_Argv( 1 ) ) );
-
-	CL_SaveTransTable( fileName, qtrue );
-}
-
-void CL_LoadTranslations_f( void )
-{
-	CL_ReloadTranslation();
-}
-
-// -NERVE - SMF
-#endif
-
 //===========================================================================================
-
-/*
-============
-CL_GenerateGUIDKey
-============
-*/
-static void CL_GenerateGUIDKey( void )
-{
-	int           len = 0;
-	unsigned char buff[ 2048 ];
-
-	len = FS_ReadFile( GUIDKEY_FILE, NULL );
-
-	if ( len >= ( int ) sizeof( buff ) )
-	{
-		Com_Printf( "Daemon GUID public-key found.\n" );
-		return;
-	}
-	else
-	{
-		int i;
-		srand( time( 0 ) );
-
-		for ( i = 0; i < sizeof( buff ) - 1; i++ )
-		{
-			buff[ i ] = ( unsigned char )( rand() % 255 );
-		}
-
-		buff[ i ] = 0;
-		Com_Printf( "Daemon GUID public-key generated\n" );
-		FS_WriteFile( GUIDKEY_FILE, buff, sizeof( buff ) );
-	}
-}
-
-/*
-===============
-CL_GenerateRSAKey
-
-Check if the RSAKey file contains a valid RSA keypair
-If not then generate a new keypair
-===============
-*/
-static void CL_GenerateRSAKey( void )
-{
-#ifdef USE_CRYPTO
-	int                  len;
-	fileHandle_t         f;
-	void                 *buf;
-	struct nettle_buffer key_buffer;
-
-	int                  key_buffer_len = 0;
-
-	rsa_public_key_init( &public_key );
-	rsa_private_key_init( &private_key );
-
-	len = FS_SV_FOpenFileRead( RSAKEY_FILE, &f );
-
-	if ( !f || len < 1 )
-	{
-		Com_Printf( "Daemon RSA public-key file not found, regenerating\n" );
-		goto new_key;
-	}
-
-	buf = Z_TagMalloc( len, TAG_CRYPTO );
-	FS_Read( buf, len, f );
-	FS_FCloseFile( f );
-
-	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
-	{
-		Com_Printf( "Invalid RSA keypair in RSAKey, regenerating\n" );
-		Z_Free( buf );
-		goto new_key;
-	}
-
-	Z_Free( buf );
-	Com_Printf( "Daemon RSA public-key found.\n" );
-	return;
-
-new_key:
-	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
-
-	if ( !rsa_generate_keypair( &public_key, &private_key, NULL, qnettle_random, NULL, NULL, RSA_KEY_LENGTH, 0 ) )
-	{
-		goto keygen_error;
-	}
-
-	qnettle_buffer_init( &key_buffer, &key_buffer_len );
-
-	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
-	{
-		goto keygen_error;
-	}
-
-	f = FS_SV_FOpenFileWrite( RSAKEY_FILE );
-
-	if ( !f )
-	{
-		Com_Printf( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n", RSAKEY_FILE );
-		Cvar_Set( "cl_pubkeyID", "0" );
-		Crypto_Shutdown();
-		return;
-	}
-
-	FS_Write( key_buffer.contents, key_buffer.size, f );
-	nettle_buffer_clear( &key_buffer );
-	FS_FCloseFile( f );
-	Com_Printf( "Daemon RSA public-key generated\n" );
-	return;
-
-keygen_error:
-	Com_Printf( "Error generating RSA keypair, RSA support will be disabled\n" );
-	Cvar_Set( "cl_pubkeyID", "0" );
-	Crypto_Shutdown();
-#else
-	Com_DPrintf( "RSA support is disabled\n" );
-	return;
-#endif
-}
 
 /*
 ====================
@@ -4985,7 +4990,7 @@ CL_Init
 */
 void CL_Init( void )
 {
-	Com_Printf( "----- Client Initialization -----\n" );
+	Com_Printf("%s", _( "----- Client Initialization -----\n" ));
 
 	Con_Init();
 
@@ -5098,7 +5103,7 @@ void CL_Init( void )
 	cl_motdString = Cvar_Get( "cl_motdString", "", CVAR_ROM );
 
 	// ~ and `, as keys and characters
-	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", "~ ` 0x7e 0x60", CVAR_ARCHIVE );
+	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", _("~ ` 0x7e 0x60"), CVAR_ARCHIVE );
 
 	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16", CVAR_ARCHIVE | CVAR_LATCH );
@@ -5165,9 +5170,10 @@ void CL_Init( void )
 	//  you don't, you don't need VoIP.  :)
 	if ( ( cl_voip->integer ) && ( Cvar_VariableIntegerValue( "rate" ) < 25000 ) )
 	{
-		Com_Printf( S_COLOR_YELLOW "Your network rate is too slow for VoIP.\n" );
-		Com_Printf( "Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n" );
-		Com_Printf( "Until then, VoIP is disabled.\n" );
+		Com_Printf( S_COLOR_YELLOW"%s",
+		            _( "Your network rate is too slow for VoIP.\n"
+		               "Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
+		               "Until then, VoIP is disabled.\n" ));
 		Cvar_Set( "cl_voip", "0" );
 	}
 
@@ -5184,11 +5190,6 @@ void CL_Init( void )
 
 	cl_missionStats = Cvar_Get( "g_missionStats", "0", CVAR_ROM );
 	cl_waitForFire = Cvar_Get( "cl_waitForFire", "0", CVAR_ROM );
-
-	// NERVE - SMF - localization
-	cl_language = Cvar_Get( "cl_language", "0", CVAR_ARCHIVE );
-	cl_debugTranslation = Cvar_Get( "cl_debugTranslation", "0", 0 );
-	// -NERVE - SMF
 
 	// DHM - Nerve :: Auto-update
 	cl_updateavailable = Cvar_Get( "cl_updateavailable", "0", CVAR_ROM );
@@ -5248,10 +5249,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "updatescreen", SCR_UpdateScreen );
 	// done.
 
-	Cmd_AddCommand( "SaveTranslations", CL_SaveTranslations_f );  // NERVE - SMF - localization
-	Cmd_AddCommand( "SaveNewTranslations", CL_SaveNewTranslations_f );  // NERVE - SMF - localization
-	Cmd_AddCommand( "LoadTranslations", CL_LoadTranslations_f );  // NERVE - SMF - localization
-
 	// NERVE - SMF - don't do this in multiplayer
 	// RF, add this command so clients can't bind a key to send client damage commands to the server
 //  Cmd_AddCommand ("cld", CL_ClientDamageCommand );
@@ -5283,15 +5280,14 @@ void CL_Init( void )
 		CL_GenerateRSAKey();
 	}
 
-	Cvar_Get( "cl_guid", Com_MD5File( GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
+	Cvar_Get( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
+	                                                           GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
 
 	// DHM - Nerve
 	autoupdateChecked = qfalse;
 	autoupdateStarted = qfalse;
 
-	CL_InitTranslation(); // NERVE - SMF - localization
-
-	Com_Printf( "----- Client Initialization Complete -----\n" );
+	Com_Printf("%s", _( "----- Client Initialization Complete -----\n" ));
 }
 
 /*
@@ -5310,7 +5306,7 @@ void CL_Shutdown( void )
 		return;
 	}
 
-	Com_Printf( "----- CL_Shutdown -----\n" );
+	Com_Printf("%s", _( "----- CL_Shutdown -----\n" ));
 
 	if ( recursive )
 	{
@@ -5380,7 +5376,7 @@ void CL_Shutdown( void )
 
 	memset( &cls, 0, sizeof( cls ) );
 
-	Com_Printf( "-----------------------\n" );
+	Com_Printf("%s", _( "-----------------------\n" ));
 
 }
 
@@ -5540,7 +5536,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 
 	if ( i == MAX_OTHER_SERVERS )
 	{
-		Com_DPrintf( "MAX_OTHER_SERVERS hit, dropping infoResponse\n" );
+		Com_DPrintf("MAX_OTHER_SERVERS hit, dropping infoResponse\n" );
 		return;
 	}
 
@@ -5778,7 +5774,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 
 	if ( serverStatus->print )
 	{
-		Com_Printf( "Server settings:\n" );
+		Com_Printf("%s", _( "Server settings:\n" ));
 
 		// print cvars
 		while ( *s )
@@ -5813,11 +5809,11 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 
 				if ( i )
 				{
-					Com_Printf( "%s\n", info );
+					Com_Printf("%s\n", info );
 				}
 				else
 				{
-					Com_Printf( "%-24s", info );
+					Com_Printf("%-24s", info );
 				}
 			}
 		}
@@ -5828,8 +5824,8 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg )
 
 	if ( serverStatus->print )
 	{
-		Com_Printf( "\nPlayers:\n" );
-		Com_Printf( "num: score: ping: name:\n" );
+		Com_Printf("%s", _( "\nPlayers:\n" ));
+		Com_Printf("%s", _( "num: score: ping: name:\n" ));
 	}
 
 	for ( i = 0, s = MSG_ReadStringLine( msg ); *s; s = MSG_ReadStringLine( msg ), i++ )
@@ -5885,7 +5881,7 @@ void CL_LocalServers_f( void )
 	int      i, j;
 	netadr_t to;
 
-	Com_Printf( "Scanning for servers on the local network...\n" );
+	Com_Printf("%s", _( "Scanning for servers on the local network…\n" ));
 
 	// reset the list, waiting for response
 	cls.numlocalservers = 0;
@@ -5938,7 +5934,7 @@ void CL_GlobalServers_f( void )
 
 	if ( ( count = Cmd_Argc() ) < 2 || ( masterNum = atoi( Cmd_Argv( 1 ) ) ) < 0 || masterNum > MAX_MASTER_SERVERS - 1 )
 	{
-		Com_Printf( "usage: globalservers <master# 0-%d> [protocol] [keywords]\n", MAX_MASTER_SERVERS - 1 );
+		Com_Printf(_( "usage: globalservers <master# 0-%d> [protocol] [keywords]\n"), MAX_MASTER_SERVERS - 1 );
 		return;
 	}
 
@@ -5947,7 +5943,7 @@ void CL_GlobalServers_f( void )
 
 	if ( !*masteraddress )
 	{
-		Com_Printf( "CL_GlobalServers_f: Error: No master server address given.\n" );
+		Com_Printf("%s", _( "CL_GlobalServers_f: Error: No master server address given.\n" ));
 		return;
 	}
 
@@ -5958,7 +5954,7 @@ void CL_GlobalServers_f( void )
 
 	if ( !i )
 	{
-		Com_Printf( "CL_GlobalServers_f: Error: could not resolve address of master %s\n", masteraddress );
+		Com_Printf(_( "CL_GlobalServers_f: Error: could not resolve address of master %s\n"), masteraddress );
 		return;
 	}
 	else if ( i == 2 )
@@ -5966,7 +5962,7 @@ void CL_GlobalServers_f( void )
 		to.port = BigShort( PORT_MASTER );
 	}
 
-	Com_Printf( "Requesting servers from master %s...\n", masteraddress );
+	Com_Printf(_( "Requesting servers from master %s…\n"), masteraddress );
 
 	cls.numglobalservers = -1;
 	cls.pingUpdateSource = AS_GLOBAL;
@@ -6004,7 +6000,7 @@ void CL_GlobalServers_f( void )
 
 	if ( ( count = Cmd_Argc() ) < 3 || ( masterNum = atoi( Cmd_Argv( 1 ) ) ) < 0 || masterNum > MAX_MASTER_SERVERS - 1 )
 	{
-		Com_Printf( "usage: globalservers <master# 0-%d> <protocol> [keywords]\n", MAX_MASTER_SERVERS - 1 );
+		Com_Printf(_( "usage: globalservers <master# 0-%d> <protocol> [keywords]\n"), MAX_MASTER_SERVERS - 1 );
 		return;
 	}
 
@@ -6013,7 +6009,7 @@ void CL_GlobalServers_f( void )
 
 	if ( !*masteraddress )
 	{
-		Com_Printf( "CL_GlobalServers_f: Error: No master server address given.\n" );
+		Com_Printf("%s", _( "CL_GlobalServers_f: Error: No master server address given.\n" ));
 		return;
 	}
 
@@ -6024,7 +6020,7 @@ void CL_GlobalServers_f( void )
 
 	if ( !i )
 	{
-		Com_Printf( "CL_GlobalServers_f: Error: could not resolve address of master %s\n", masteraddress );
+		Com_Printf(_( "CL_GlobalServers_f: Error: could not resolve address of master %s\n"), masteraddress );
 		return;
 	}
 	else if ( i == 2 )
@@ -6032,7 +6028,7 @@ void CL_GlobalServers_f( void )
 		to.port = BigShort( PORT_MASTER );
 	}
 
-	Com_Printf( "Requesting servers from master %s...\n", masteraddress );
+	Com_Printf(_( "Requesting servers from master %s…\n"), masteraddress );
 
 	cls.numglobalservers = -1;
 	cls.pingUpdateSource = AS_GLOBAL;
@@ -6269,7 +6265,7 @@ void CL_Ping_f( void )
 
 	if ( argc != 2 && argc != 3 )
 	{
-		Com_Printf( "usage: ping [-4|-6] server\n" );
+		Com_Printf("%s", _( "usage: ping [-4|-6] server\n" ));
 		return;
 	}
 
@@ -6289,7 +6285,7 @@ void CL_Ping_f( void )
 		}
 		else
 		{
-			Com_Printf( "warning: only -4 or -6 as address type understood.\n" );
+			Com_Printf("%s", _( "warning: only -4 or -6 as address type understood.\n" ));
 		}
 
 		server = Cmd_Argv( 2 );
@@ -6469,8 +6465,8 @@ void CL_ServerStatus_f( void )
 	{
 		if ( cls.state != CA_ACTIVE || clc.demoplaying )
 		{
-			Com_Printf( "Not connected to a server.\n" );
-			Com_Printf( "usage: serverstatus [-4|-6] server\n" );
+			Com_Printf("%s", _( "Not connected to a server.\n" ));
+			Com_Printf("%s", _( "usage: serverstatus [-4|-6] server\n" ));
 			return;
 		}
 
@@ -6497,7 +6493,7 @@ void CL_ServerStatus_f( void )
 			}
 			else
 			{
-				Com_Printf( "warning: only -4 or -6 as address type understood.\n" );
+				Com_Printf("%s", _( "warning: only -4 or -6 as address type understood.\n" ));
 			}
 
 			server = Cmd_Argv( 2 );
@@ -6529,733 +6525,6 @@ void CL_ShowIP_f( void )
 	Sys_ShowIP();
 }
 
-// NERVE - SMF - Localization code
-#define FILE_HASH_SIZE   1024
-#define MAX_VA_STRING    32000
-#define MAX_TRANS_STRING 4096
-
-typedef struct trans_s
-{
-	char           original[ MAX_TRANS_STRING ];
-	char           translated[ MAX_LANGUAGES ][ MAX_TRANS_STRING ];
-	struct trans_s *next;
-
-	float          x_offset;
-	float          y_offset;
-	qboolean       fromFile;
-} trans_t;
-
-static trans_t *transTable[ FILE_HASH_SIZE ];
-
-/*
-=======================
-AllocTrans
-=======================
-*/
-static trans_t *AllocTrans( char *original, char *translated[ MAX_LANGUAGES ] )
-{
-	trans_t *t;
-	int     i;
-
-	t = malloc( sizeof( trans_t ) );
-	memset( t, 0, sizeof( trans_t ) );
-
-	if ( original )
-	{
-		strncpy( t->original, original, MAX_TRANS_STRING );
-	}
-
-	if ( translated )
-	{
-		for ( i = 0; i < MAX_LANGUAGES; i++ )
-		{
-			strncpy( t->translated[ i ], translated[ i ], MAX_TRANS_STRING );
-		}
-	}
-
-	return t;
-}
-
-/*
-=======================
-generateHashValue
-=======================
-*/
-static long generateHashValue( const char *fname )
-{
-	int  i;
-	long hash;
-	char letter;
-
-	hash = 0;
-	i = 0;
-
-	while ( fname[ i ] != '\0' )
-	{
-		letter = tolower( fname[ i ] );
-		hash += ( long )( letter ) * ( i + 119 );
-		i++;
-	}
-
-	hash &= ( FILE_HASH_SIZE - 1 );
-	return hash;
-}
-
-/*
-=======================
-LookupTrans
-=======================
-*/
-static trans_t *LookupTrans( char *original, char *translated[ MAX_LANGUAGES ], qboolean isLoading )
-{
-	trans_t *t, *newt, *prev = NULL;
-	long    hash;
-
-	hash = generateHashValue( original );
-
-	for ( t = transTable[ hash ]; t; prev = t, t = t->next )
-	{
-		if ( !Q_stricmp( original, t->original ) )
-		{
-			if ( isLoading )
-			{
-				Com_DPrintf( S_COLOR_YELLOW "WARNING: Duplicate string found: \"%s\"\n", original );
-			}
-
-			return t;
-		}
-	}
-
-	newt = AllocTrans( original, translated );
-
-	if ( prev )
-	{
-		prev->next = newt;
-	}
-	else
-	{
-		transTable[ hash ] = newt;
-	}
-
-	if ( cl_debugTranslation->integer >= 1 && !isLoading )
-	{
-		Com_Printf( "Missing translation: \'%s\'\n", original );
-	}
-
-	// see if we want to save out the translation table everytime a string is added
-	if ( cl_debugTranslation->integer == 2 && !isLoading )
-	{
-		CL_SaveTransTable( "new", qtrue );
-	}
-
-	return newt;
-}
-
-/*
-=======================
-CL_SaveTransTable
-=======================
-*/
-void CL_SaveTransTable( const char *fileName, qboolean newOnly )
-{
-	int          bucketlen, bucketnum, maxbucketlen, avebucketlen;
-	int          untransnum, transnum;
-	const char   *buf;
-	fileHandle_t f;
-	trans_t      *t;
-	int          i, j, len;
-
-	if ( cl.corruptedTranslationFile )
-	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: Cannot save corrupted translation file. Please reload first." );
-		return;
-	}
-
-	FS_FOpenFileByMode( fileName, &f, FS_WRITE );
-
-	bucketnum = 0;
-	maxbucketlen = 0;
-	avebucketlen = 0;
-	transnum = 0;
-	untransnum = 0;
-
-	// write out version, if one
-	if ( strlen( cl.translationVersion ) )
-	{
-		buf = va( "#version\t\t\"%s\"\n", cl.translationVersion );
-	}
-	else
-	{
-		buf = va( "#version\t\t\"1.0 01/01/01\"\n" );
-	}
-
-	len = strlen( buf );
-	FS_Write( buf, len, f );
-
-	// write out translated strings
-	for ( j = 0; j < 2; j++ )
-	{
-		for ( i = 0; i < FILE_HASH_SIZE; i++ )
-		{
-			t = transTable[ i ];
-
-			if ( !t || ( newOnly && t->fromFile ) )
-			{
-				continue;
-			}
-
-			bucketlen = 0;
-
-			for ( ; t; t = t->next )
-			{
-				bucketlen++;
-
-				if ( strlen( t->translated[ 0 ] ) )
-				{
-					if ( j )
-					{
-						continue;
-					}
-
-					transnum++;
-				}
-				else
-				{
-					if ( !j )
-					{
-						continue;
-					}
-
-					untransnum++;
-				}
-
-				buf = va( "{\n\tenglish\t\t\"%s\"\n", t->original );
-				len = strlen( buf );
-				FS_Write( buf, len, f );
-
-				buf = va( "\tfrench\t\t\"%s\"\n", t->translated[ LANGUAGE_FRENCH ] );
-				len = strlen( buf );
-				FS_Write( buf, len, f );
-
-				buf = va( "\tgerman\t\t\"%s\"\n", t->translated[ LANGUAGE_GERMAN ] );
-				len = strlen( buf );
-				FS_Write( buf, len, f );
-
-				buf = va( "\titalian\t\t\"%s\"\n", t->translated[ LANGUAGE_ITALIAN ] );
-				len = strlen( buf );
-				FS_Write( buf, len, f );
-
-				buf = va( "\tspanish\t\t\"%s\"\n", t->translated[ LANGUAGE_SPANISH ] );
-				len = strlen( buf );
-				FS_Write( buf, len, f );
-
-				buf = "}\n";
-				len = strlen( buf );
-				FS_Write( buf, len, f );
-			}
-
-			if ( bucketlen > maxbucketlen )
-			{
-				maxbucketlen = bucketlen;
-			}
-
-			if ( bucketlen )
-			{
-				bucketnum++;
-				avebucketlen += bucketlen;
-			}
-		}
-	}
-
-	Com_Printf( "Saved translation table.\nTotal = %i, Translated = %i, Untranslated = %i, aveblen = %2.2f, maxblen = %i\n",
-	            transnum + untransnum, transnum, untransnum, ( float ) avebucketlen / bucketnum, maxbucketlen );
-
-	FS_FCloseFile( f );
-}
-
-/*
-=======================
-CL_CheckTranslationString
-
-NERVE - SMF - compare formatting characters
-=======================
-*/
-qboolean CL_CheckTranslationString( char *original, char *translated )
-{
-	char format_org[ 128 ], format_trans[ 128 ];
-	int  len, i;
-
-	memset( format_org, 0, 128 );
-	memset( format_trans, 0, 128 );
-
-	// generate formatting string for original
-	len = strlen( original );
-
-	for ( i = 0; i < len; i++ )
-	{
-		if ( original[ i ] != '%' )
-		{
-			continue;
-		}
-
-		strcat( format_org, va( "%c%c ", '%', original[ i + 1 ] ) );
-	}
-
-	// generate formatting string for translated
-	len = strlen( translated );
-
-	if ( !len )
-	{
-		return qtrue;
-	}
-
-	for ( i = 0; i < len; i++ )
-	{
-		if ( translated[ i ] != '%' )
-		{
-			continue;
-		}
-
-		strcat( format_trans, va( "%c%c ", '%', translated[ i + 1 ] ) );
-	}
-
-	// compare
-	len = strlen( format_org );
-
-	if ( len != strlen( format_trans ) )
-	{
-		return qfalse;
-	}
-
-	for ( i = 0; i < len; i++ )
-	{
-		if ( format_org[ i ] != format_trans[ i ] )
-		{
-			return qfalse;
-		}
-	}
-
-	return qtrue;
-}
-
-/*
-=======================
-CL_LoadTransTable
-=======================
-*/
-void CL_LoadTransTable( const char *fileName )
-{
-	char         translated[ MAX_LANGUAGES ][ MAX_VA_STRING ];
-	char         original[ MAX_VA_STRING ];
-	qboolean     aborted;
-	char         *text;
-	fileHandle_t f;
-	char         *text_p;
-	char         *token;
-	int          len, i;
-	trans_t      *t;
-	int          count;
-
-	count = 0;
-	aborted = qfalse;
-	cl.corruptedTranslationFile = qfalse;
-
-	len = FS_FOpenFileByMode( fileName, &f, FS_READ );
-
-	if ( len <= 0 )
-	{
-		return;
-	}
-
-	// Gordon: shouldn't this be a z_malloc or something?
-	text = malloc( len + 1 );
-
-	if ( !text )
-	{
-		return;
-	}
-
-	FS_Read( text, len, f );
-	text[ len ] = 0;
-	FS_FCloseFile( f );
-
-	// parse the text
-	text_p = text;
-
-	do
-	{
-		token = COM_Parse( &text_p );
-
-		if ( Q_stricmp( "{", token ) )
-		{
-			// parse version number
-			if ( !Q_stricmp( "#version", token ) )
-			{
-				token = COM_Parse( &text_p );
-				strcpy( cl.translationVersion, token );
-				continue;
-			}
-
-			break;
-		}
-
-		// english
-		token = COM_Parse( &text_p );
-
-		if ( Q_stricmp( "english", token ) )
-		{
-			aborted = qtrue;
-			break;
-		}
-
-		token = COM_Parse( &text_p );
-		strcpy( original, token );
-
-		if ( cl_debugTranslation->integer == 3 )
-		{
-			Com_Printf( "%i Loading: \"%s\"\n", count, original );
-		}
-
-		// french
-		token = COM_Parse( &text_p );
-
-		if ( Q_stricmp( "french", token ) )
-		{
-			aborted = qtrue;
-			break;
-		}
-
-		token = COM_Parse( &text_p );
-		strcpy( translated[ LANGUAGE_FRENCH ], token );
-
-		if ( !CL_CheckTranslationString( original, translated[ LANGUAGE_FRENCH ] ) )
-		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
-			aborted = qtrue;
-			break;
-		}
-
-		// german
-		token = COM_Parse( &text_p );
-
-		if ( Q_stricmp( "german", token ) )
-		{
-			aborted = qtrue;
-			break;
-		}
-
-		token = COM_Parse( &text_p );
-		strcpy( translated[ LANGUAGE_GERMAN ], token );
-
-		if ( !CL_CheckTranslationString( original, translated[ LANGUAGE_GERMAN ] ) )
-		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
-			aborted = qtrue;
-			break;
-		}
-
-		// italian
-		token = COM_Parse( &text_p );
-
-		if ( Q_stricmp( "italian", token ) )
-		{
-			aborted = qtrue;
-			break;
-		}
-
-		token = COM_Parse( &text_p );
-		strcpy( translated[ LANGUAGE_ITALIAN ], token );
-
-		if ( !CL_CheckTranslationString( original, translated[ LANGUAGE_ITALIAN ] ) )
-		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
-			aborted = qtrue;
-			break;
-		}
-
-		// spanish
-		token = COM_Parse( &text_p );
-
-		if ( Q_stricmp( "spanish", token ) )
-		{
-			aborted = qtrue;
-			break;
-		}
-
-		token = COM_Parse( &text_p );
-		strcpy( translated[ LANGUAGE_SPANISH ], token );
-
-		if ( !CL_CheckTranslationString( original, translated[ LANGUAGE_SPANISH ] ) )
-		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: Translation formatting doesn't match up with English version!\n" );
-			aborted = qtrue;
-			break;
-		}
-
-		// do lookup
-		t = LookupTrans( original, NULL, qtrue );
-
-		if ( t )
-		{
-			t->fromFile = qtrue;
-
-			for ( i = 0; i < MAX_LANGUAGES; i++ )
-			{
-				strncpy( t->translated[ i ], translated[ i ], MAX_TRANS_STRING );
-			}
-		}
-
-		token = COM_Parse( &text_p );
-
-		// set offset if we have one
-		if ( !Q_stricmp( "offset", token ) )
-		{
-			token = COM_Parse( &text_p );
-			t->x_offset = atof( token );
-
-			token = COM_Parse( &text_p );
-			t->y_offset = atof( token );
-
-			token = COM_Parse( &text_p );
-		}
-
-		if ( Q_stricmp( "}", token ) )
-		{
-			aborted = qtrue;
-			break;
-		}
-
-		count++;
-	}
-	while ( token );
-
-	if ( aborted )
-	{
-		int i, line = 1;
-
-		for ( i = 0; i < len && ( text + i ) < text_p; i++ )
-		{
-			if ( text[ i ] == '\n' )
-			{
-				line++;
-			}
-		}
-
-		Com_Printf( S_COLOR_YELLOW "WARNING: Problem loading %s on line %i\n", fileName, line );
-		cl.corruptedTranslationFile = qtrue;
-	}
-	else
-	{
-		Com_Printf( "Loaded %i translation strings from %s\n", count, fileName );
-	}
-
-	// cleanup
-	free( text );
-}
-
-/*
-=======================
-CL_ReloadTranslation
-=======================
-*/
-void CL_ReloadTranslation()
-{
-	char **fileList;
-	int  numFiles, i;
-
-	for ( i = 0; i < FILE_HASH_SIZE; i++ )
-	{
-		if ( transTable[ i ] )
-		{
-			free( transTable[ i ] );
-		}
-	}
-
-	memset( transTable, 0, sizeof( trans_t * ) * FILE_HASH_SIZE );
-	CL_LoadTransTable( "scripts/translation.lang" );
-
-	fileList = FS_ListFiles( "translations", ".lang", &numFiles );
-
-	for ( i = 0; i < numFiles; i++ )
-	{
-		CL_LoadTransTable( va( "translations/%s", fileList[ i ] ) );
-	}
-}
-
-/*
-=======================
-CL_InitTranslation
-=======================
-*/
-void CL_InitTranslation()
-{
-	char **fileList;
-	int  numFiles, i;
-
-	memset( transTable, 0, sizeof( trans_t * ) * FILE_HASH_SIZE );
-	CL_LoadTransTable( "scripts/translation.lang" );
-
-	fileList = FS_ListFiles( "translations", ".lang", &numFiles );
-
-	for ( i = 0; i < numFiles; i++ )
-	{
-		CL_LoadTransTable( va( "translations/%s", fileList[ i ] ) );
-	}
-}
-
-/*
-=======================
-CL_TranslateString
-=======================
-*/
-void CL_TranslateString( const char *string, char *dest_buffer )
-{
-	int      i, count, currentLanguage;
-	trans_t  *t;
-	qboolean newline = qfalse;
-	char     *buf;
-
-	if ( !cl_language )
-	{
-		strcpy( dest_buffer, string );
-		return;
-	}
-
-	buf = dest_buffer;
-	currentLanguage = cl_language->integer - 1;
-
-	// early bail if we only want english or bad language type
-	if ( !string )
-	{
-		strcpy( buf, "(null)" );
-		return;
-	}
-	else if ( currentLanguage < 0 || currentLanguage >= MAX_LANGUAGES || !strlen( string ) )
-	{
-		strcpy( buf, string );
-		return;
-	}
-
-	// ignore newlines
-	if ( string[ strlen( string ) - 1 ] == '\n' )
-	{
-		newline = qtrue;
-	}
-
-	for ( i = 0, count = 0; string[ i ] != '\0'; i++ )
-	{
-		if ( string[ i ] != '\n' )
-		{
-			buf[ count++ ] = string[ i ];
-		}
-	}
-
-	buf[ count ] = '\0';
-
-	t = LookupTrans( buf, NULL, qfalse );
-
-	if ( t && strlen( t->translated[ currentLanguage ] ) )
-	{
-		int offset = 0;
-
-		if ( cl_debugTranslation->integer >= 1 )
-		{
-			buf[ 0 ] = '^';
-			buf[ 1 ] = '1';
-			buf[ 2 ] = '[';
-			offset = 3;
-		}
-
-		strcpy( buf + offset, t->translated[ currentLanguage ] );
-
-		if ( cl_debugTranslation->integer >= 1 )
-		{
-			int len2 = strlen( buf );
-
-			buf[ len2 ] = ']';
-			buf[ len2 + 1 ] = '^';
-			buf[ len2 + 2 ] = '7';
-			buf[ len2 + 3 ] = '\0';
-		}
-
-		if ( newline )
-		{
-			int len2 = strlen( buf );
-
-			buf[ len2 ] = '\n';
-			buf[ len2 + 1 ] = '\0';
-		}
-	}
-	else
-	{
-		int offset = 0;
-
-		if ( cl_debugTranslation->integer >= 1 )
-		{
-			buf[ 0 ] = '^';
-			buf[ 1 ] = '1';
-			buf[ 2 ] = '[';
-			offset = 3;
-		}
-
-		strcpy( buf + offset, string );
-
-		if ( cl_debugTranslation->integer >= 1 )
-		{
-			int      len2 = strlen( buf );
-			qboolean addnewline = qfalse;
-
-			if ( buf[ len2 - 1 ] == '\n' )
-			{
-				len2--;
-				addnewline = qtrue;
-			}
-
-			buf[ len2 ] = ']';
-			buf[ len2 + 1 ] = '^';
-			buf[ len2 + 2 ] = '7';
-			buf[ len2 + 3 ] = '\0';
-
-			if ( addnewline )
-			{
-				buf[ len2 + 3 ] = '\n';
-				buf[ len2 + 4 ] = '\0';
-			}
-		}
-	}
-}
-
-/*
-=======================
-CL_TranslateStringBuf
-TTimo - handy, stores in a static buf, converts \n to chr(13)
-=======================
-*/
-const char     *CL_TranslateStringBuf( const char *string )
-{
-	char        *p;
-	int         i, l;
-	static char buf[ MAX_VA_STRING ];
-
-	CL_TranslateString( string, buf );
-
-	while ( ( p = strstr( buf, "\\n" ) ) != NULL )
-	{
-		*p = '\n';
-		p++;
-		// Com_Memcpy(p, p+1, strlen(p) ); b0rks on win32
-		l = strlen( p );
-
-		for ( i = 0; i < l; i++ )
-		{
-			*p = * ( p + 1 );
-			p++;
-		}
-	}
-
-	return buf;
-}
-
 /*
 =======================
 CL_OpenURLForCvar
@@ -7265,7 +6534,7 @@ void CL_OpenURL( const char *url )
 {
 	if ( !url || !strlen( url ) )
 	{
-		Com_Printf( "%s", CL_TranslateStringBuf( "invalid/empty URL\n" ) );
+		Com_Printf("%s", _( "invalid/empty URL\n" ));
 		return;
 	}
 

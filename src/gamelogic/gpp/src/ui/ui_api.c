@@ -56,7 +56,7 @@ void NORETURN trap_Error( const char *string )
 }
 
 //01.
-//Com_Printf("%s", (char *)VMA(1));
+//Com_Printf_(("%s"), (char *)VMA(1));
 void trap_Print( const char *string )
 {
 	syscall( UI_PRINT, string );
@@ -354,7 +354,7 @@ sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 
 	if ( i == 0 )
 	{
-		Com_Printf( "^1Warning: Failed to load sound: %s\n", sample );
+		Com_Printf(_( "^1Warning: Failed to load sound: %s\n"), sample );
 	}
 
 #endif
@@ -802,13 +802,6 @@ qboolean trap_GetLimboString( int index, char *buf )
 	return syscall( UI_CL_GETLIMBOSTRING, index, buf );
 }
 
-//115.
-//CL_TranslateString(VMA(1), VMA(2));
-void trap_TranslateString( const char *string, char *buf )
-{
-	syscall( UI_CL_TRANSLATE_STRING, string, buf );
-}
-
 //116.
 //CL_CheckAutoUpdate();
 void trap_CheckAutoUpdate( void )
@@ -898,3 +891,9 @@ void trap_QuoteString( const char *str, char *buffer, int size )
 }
 
 #endif
+
+//128.
+void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
+{
+	syscall( UI_GETTEXT, buffer, msgid, bufferLength );
+}

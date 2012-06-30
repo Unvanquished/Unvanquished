@@ -457,7 +457,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 		else if ( g_showKillerHP.integer )
 		{
-			trap_SendServerCommand( self - g_entities, va( "print \"Your killer, \"%s\"^7, had %3i HP.\n\"",
+			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^7, had $2$ HP.\n") ),
 			                        Quote( killerName ),
 			                        attacker->health ) );
 		}
@@ -1829,9 +1829,9 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	{
 		// model name shouldn't need quoting
 		G_TeamCommand( actor->client->ps.stats[ STAT_TEAM ],
-		               va( "print \"%s ^3%s^7 by \"%s\"\n\"",
+		               va( "print_tr \"%s\" \"%s\" \"%s\"", mod == MOD_DECONSTRUCT ? N_("%s ^3DECONSTRUCTED^7 by \"%s\"\n") :
+						   N_("%s ^3DESTROYED^7 by \"%s\"\n"),
 		                   BG_Buildable( self->s.modelindex )->humanName,
-		                   mod == MOD_DECONSTRUCT ? "DECONSTRUCTED" : "DESTROYED",
 		                   Quote( actor->client->pers.netname ) ) );
 	}
 }

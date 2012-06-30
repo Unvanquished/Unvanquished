@@ -577,7 +577,7 @@ int FS_CreatePath( const char *OSPath_ )
 	// FIXME: is c: allowed???
 	if ( strstr( OSPath, ".." ) || strstr( OSPath, "::" ) )
 	{
-		Com_Printf( "WARNING: refusing to create relative path \"%s\"\n", OSPath );
+		Com_Printf(_( "WARNING: refusing to create relative path \"%s\"\n"), OSPath );
 		return qtrue;
 	}
 
@@ -608,11 +608,11 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 	int  len;
 	byte *buf;
 
-	Com_Printf( "copy %s to %s\n", fromOSPath, toOSPath );
+	Com_Printf(_( "copy %s to %s\n"), fromOSPath, toOSPath );
 
 	if ( strstr( fromOSPath, "journal.dat" ) || strstr( fromOSPath, "journaldata.dat" ) )
 	{
-		Com_Printf( "Ignoring journal files\n" );
+		Com_Printf(_( "Ignoring journal files\n" ));
 		return;
 	}
 
@@ -776,7 +776,7 @@ fileHandle_t FS_SV_FOpenFileWrite( const char *filename )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf( "FS_SV_FOpenFileWrite: %s\n", ospath );
+		Com_Printf(_( "FS_SV_FOpenFileWrite: %s\n"), ospath );
 	}
 
 	if ( FS_CreatePath( ospath ) )
@@ -831,7 +831,7 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf( "FS_SV_FOpenFileRead (fs_homepath): %s\n", ospath );
+		Com_Printf(_( "FS_SV_FOpenFileRead (fs_homepath): %s\n"), ospath );
 	}
 
 	fsh[ f ].handleFiles.file.o = fopen( ospath, "rb" );
@@ -848,7 +848,7 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 
 			if ( fs_debug->integer )
 			{
-				Com_Printf( "FS_SV_FOpenFileRead (fs_basepath): %s\n", ospath );
+				Com_Printf(_( "FS_SV_FOpenFileRead (fs_basepath): %s\n"), ospath );
 			}
 
 			fsh[ f ].handleFiles.file.o = fopen( ospath, "rb" );
@@ -896,7 +896,7 @@ void FS_SV_Rename( const char *from, const char *to )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf( "FS_SV_Rename: %s --> %s\n", from_ospath, to_ospath );
+		Com_Printf(_( "FS_SV_Rename: %s --> %s\n"), from_ospath, to_ospath );
 	}
 
 	if ( rename( from_ospath, to_ospath ) )
@@ -930,7 +930,7 @@ void FS_Rename( const char *from, const char *to )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf( "FS_Rename: %s --> %s\n", from_ospath, to_ospath );
+		Com_Printf(_( "FS_Rename: %s --> %s\n"), from_ospath, to_ospath );
 	}
 
 	if ( rename( from_ospath, to_ospath ) )
@@ -1008,7 +1008,7 @@ fileHandle_t FS_FOpenFileWrite( const char *filename )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf( "FS_FOpenFileWrite: %s\n", ospath );
+		Com_Printf(_( "FS_FOpenFileWrite: %s\n"), ospath );
 	}
 
 	if ( FS_CreatePath( ospath ) )
@@ -1061,7 +1061,7 @@ fileHandle_t FS_FOpenFileAppend( const char *filename )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf( "FS_FOpenFileAppend: %s\n", ospath );
+		Com_Printf(_( "FS_FOpenFileAppend: %s\n"), ospath );
 	}
 
 	if ( FS_CreatePath( ospath ) )
@@ -1103,7 +1103,7 @@ int FS_FOpenFileDirect( const char *filename, fileHandle_t *f )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf( "FS_FOpenFileDirect: %s\n", ospath );
+		Com_Printf(_( "FS_FOpenFileDirect: %s\n"), ospath );
 	}
 
 	// enabling the following line causes a recursive function call loop
@@ -1146,7 +1146,7 @@ fileHandle_t FS_FOpenFileUpdate( const char *filename, int *length )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf( "FS_FOpenFileWrite: %s\n", ospath );
+		Com_Printf(_( "FS_FOpenFileWrite: %s\n"), ospath );
 	}
 
 	if ( FS_CreatePath( ospath ) )
@@ -1447,11 +1447,11 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 					// for OS client/server interoperability, we expect binaries for .so and .dll to be in the same pk3
 					// so that when we reference the DLL files on any platform, this covers everyone else
 
-#if 0 // TTimo: use that stuff for shifted strings
-					Com_Printf( "SYS_DLLNAME_QAGAME + %d: '%s'\n", SYS_DLLNAME_QAGAME_SHIFT, FS_ShiftStr( "qagame_mp_x86.dll" /*"qagame.mp.i386.so"*/, SYS_DLLNAME_QAGAME_SHIFT ) );
-					Com_Printf( "SYS_DLLNAME_CGAME + %d: '%s'\n", SYS_DLLNAME_CGAME_SHIFT, FS_ShiftStr( "cgame_mp_x86.dll" /*"cgame.mp.i386.so"*/, SYS_DLLNAME_CGAME_SHIFT ) );
-					Com_Printf( "SYS_DLLNAME_UI + %d: '%s'\n", SYS_DLLNAME_UI_SHIFT, FS_ShiftStr( "ui_mp_x86.dll" /*"ui.mp.i386.so"*/, SYS_DLLNAME_UI_SHIFT ) );
-#endif
+// #if 0 // TTimo: use that stuff for shifted strings
+// 					Com_Printf(_( "SYS_DLLNAME_QAGAME + %d: '%s'\n", SYS_DLLNAME_QAGAME_SHIFT, FS_ShiftStr( "qagame_mp_x86.dll" /*"qagame.mp.i386.so"*)/, SYS_DLLNAME_QAGAME_SHIFT ) );
+// 					Com_Printf(_( "SYS_DLLNAME_CGAME + %d: '%s'\n", SYS_DLLNAME_CGAME_SHIFT, FS_ShiftStr( "cgame_mp_x86.dll" /*"cgame.mp.i386.so"*)/, SYS_DLLNAME_CGAME_SHIFT ) );
+// 					Com_Printf(_( "SYS_DLLNAME_UI + %d: '%s'\n", SYS_DLLNAME_UI_SHIFT, FS_ShiftStr( "ui_mp_x86.dll" /*"ui.mp.i386.so"*)/, SYS_DLLNAME_UI_SHIFT ) );
+// #endif
 
 					// qagame dll
 					if ( !( pak->referenced & FS_QAGAME_REF ) && !Q_stricmp( filename, "vm/qagame.qvm" ) )
@@ -1508,7 +1508,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 					if ( fs_debug->integer )
 					{
-						Com_Printf( "FS_FOpenFileRead: %s (found in '%s')\n",
+						Com_Printf(_( "FS_FOpenFileRead: %s (found in '%s')\n"),
 						            filename, pak->pakFilename );
 					}
 
@@ -1526,7 +1526,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 					        f = FS_FOpenFileWrite( filename );
 					        if ( !f ) {
-					                Com_Printf( "FS_FOpenFileRead Failed to open %s for copying\n", filename );
+					                Com_Printf(_( "FS_FOpenFileRead Failed to open %s for copying\n"), filename );
 					        } else {
 					                srcData = Hunk_AllocateTempMemory( len) ;
 					                FS_Read( srcData, len, *file );
@@ -1611,7 +1611,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 			if ( fs_debug->integer )
 			{
-				Com_Printf( "FS_FOpenFileRead: %s (found in '%s/%s')\n", filename,
+				Com_Printf(_( "FS_FOpenFileRead: %s (found in '%s/%s')\n"), filename,
 				            dir->path, dir->gamedir );
 			}
 
@@ -1741,7 +1741,7 @@ qboolean FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, const 
 
 		if ( !f )
 		{
-			Com_Printf( "Failed to open %s\n", filename );
+			Com_Printf(_( "Failed to open %s\n"), filename );
 			return qfalse;
 		}
 
@@ -2091,14 +2091,14 @@ int FS_Write( const void *buffer, int len, fileHandle_t h )
 			}
 			else
 			{
-				Com_Printf( "FS_Write: 0 bytes written (%d attempted)\n", block );
+				Com_Printf(_( "FS_Write: 0 bytes written (%d attempted)\n"), block );
 				return 0;
 			}
 		}
 
 		if ( written < 0 )
 		{
-			Com_Printf( "FS_Write: %d bytes written (%d attempted)\n", written, block );
+			Com_Printf(_( "FS_Write: %d bytes written (%d attempted)\n"), written, block ); // FIXME PLURAL
 			return 0;
 		}
 
@@ -2521,7 +2521,7 @@ void FS_WriteFile( const char *qpath, const void *buffer, int size )
 
 	if ( !f )
 	{
-		Com_Printf( "Failed to open %s\n", qpath );
+		Com_Printf(_( "Failed to open %s\n"), qpath );
 		return;
 	}
 
@@ -3229,7 +3229,7 @@ void FS_Dir_f( void )
 
 	if ( Cmd_Argc() < 2 || Cmd_Argc() > 3 )
 	{
-		Com_Printf( "usage: dir <directory> [extension]\n" );
+		Com_Printf(_( "usage: dir <directory> [extension]\n" ));
 		return;
 	}
 
@@ -3244,7 +3244,7 @@ void FS_Dir_f( void )
 		extension = Cmd_Argv( 2 );
 	}
 
-	Com_Printf( "Directory of %s %s\n", path, extension );
+	Com_Printf(_( "Directory of %s %s\n"), path, extension );
 	Com_Printf( "---------------\n" );
 
 	dirnames = FS_ListFiles( path, extension, &ndirs );
@@ -3377,8 +3377,8 @@ void FS_NewDir_f( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf( "usage: fdir <filter>\n" );
-		Com_Printf( "example: fdir *q3dm*.bsp\n" );
+		Com_Printf(_( "usage: fdir <filter>\n" ));
+		Com_Printf(_( "example: fdir *q3dm*.bsp\n" ));
 		return;
 	}
 
@@ -3396,7 +3396,7 @@ void FS_NewDir_f( void )
 		Com_Printf( "%s\n", dirnames[ i ] );
 	}
 
-	Com_Printf( "%d files listed\n", ndirs );
+	Com_Printf(_( "%d files listed\n"), ndirs );
 	FS_FreeFileList( dirnames );
 }
 
@@ -3411,24 +3411,24 @@ void FS_Path_f( void )
 	searchpath_t *s;
 	int          i;
 
-	Com_Printf( "Current search path:\n" );
+	Com_Printf(_( "Current search path:\n" ));
 
 	for ( s = fs_searchpaths; s; s = s->next )
 	{
 		if ( s->pack )
 		{
-			//      Com_Printf( "%s %X (%i files)\n", s->pack->pakFilename, s->pack->checksum, s->pack->numfiles );
-			Com_Printf( "%s (%i files)\n", s->pack->pakFilename, s->pack->numfiles );
+			//      Com_Printf(_( "%s %X (%i files)\n"), s->pack->pakFilename, s->pack->checksum, s->pack->numfiles );
+			Com_Printf(_( "%s (%i files)\n"), s->pack->pakFilename, s->pack->numfiles );
 
 			if ( fs_numServerPaks )
 			{
 				if ( !FS_PakIsPure( s->pack ) )
 				{
-					Com_Printf( "    not on the pure list\n" );
+					Com_Printf(_( "    not on the pure list\n" ));
 				}
 				else
 				{
-					Com_Printf( "    on the pure list\n" );
+					Com_Printf(_( "    on the pure list\n" ));
 				}
 			}
 		}
@@ -3463,7 +3463,7 @@ void FS_TouchFile_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "Usage: touchFile <file>\n" );
+		Com_Printf(_( "Usage: touchFile <file>\n" ));
 		return;
 	}
 
@@ -3497,7 +3497,7 @@ void FS_Which_f( void )
 
 	if ( !filename[ 0 ] )
 	{
-		Com_Printf( "Usage: which <file>\n" );
+		Com_Printf(_( "Usage: which <file>\n" ));
 		return;
 	}
 
@@ -3528,7 +3528,7 @@ void FS_Which_f( void )
 				if ( !FS_FilenameCompare( pakFile->name, filename ) )
 				{
 					// found it!
-					Com_Printf( "File \"%s\" found in \"%s\"\n", filename, pak->pakFilename );
+					Com_Printf(_( "File \"%s\" found in \"%s\"\n"), filename, pak->pakFilename );
 					return;
 				}
 
@@ -3551,12 +3551,12 @@ void FS_Which_f( void )
 			fclose( temp );
 			Com_sprintf( buf, sizeof( buf ), "%s/%s", dir->path, dir->gamedir );
 			FS_ReplaceSeparators( buf );
-			Com_Printf( "File \"%s\" found at \"%s\"\n", filename, buf );
+			Com_Printf(_( "File \"%s\" found at \"%s\"\n"), filename, buf );
 			return;
 		}
 	}
 
-	Com_Printf( "File not found: \"%s\"\n", filename );
+	Com_Printf(_( "File not found: \"%s\"\n"), filename );
 }
 
 //===========================================================================
@@ -3895,7 +3895,7 @@ qboolean FS_VerifyOfficialPaks( void )
 		{
 			if ( officialpaks[ i ].ok != qtrue )
 			{
-				Com_Printf( "ERROR: Missing/corrupt official pak file %s\n", officialpaks[ i ].pakname );
+				Com_Printf(_( "ERROR: Missing/corrupt official pak file %s\n"), officialpaks[ i ].pakname );
 			}
 		}
 
@@ -4028,7 +4028,7 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring )
 
 	if ( *neededpaks )
 	{
-		Com_Printf( "Need paks: %s\n", neededpaks );
+		Com_Printf(_( "Need paks: %s\n"), neededpaks );
 		return qtrue;
 	}
 
@@ -4262,7 +4262,7 @@ static void FS_Startup( const char *gameName )
 	}
 
 #endif
-	Com_Printf( "%d files in pk3 files\n", fs_packFiles );
+	Com_Printf(_( "%d files in pk3 files\n"), fs_packFiles );
 }
 
 /*
@@ -4654,7 +4654,7 @@ int FS_RandChecksumFeed()
 	int i;
 	for(i=0;i<5;i++)
 	{
-	  Com_Printf("FS_RandChecksumFeed: %s\n", FS_ShiftStr(pak_purechecksums[i], 13+i));
+	  Com_Printf_(("FS_RandChecksumFeed: %s\n"), FS_ShiftStr(pak_purechecksums[i], 13+i));
 	}
 	*/
 	if ( feed_index == -1 )
@@ -5080,7 +5080,7 @@ void FS_InitFilesystem( void )
 	// Arnout: we want the nice error message here as well
 	if ( FS_ReadFile( "default.cfg", NULL ) <= 0 )
 	{
-		Com_Error( ERR_FATAL, "Couldn't load default.cfg - I am missing essential files - verify your installation?" );
+		Com_Error( ERR_FATAL, "Couldn't load default.cfg - I am missing essential files – verify your installation?" );
 	}
 
 	Q_strncpyz( lastValidBase, fs_basepath->string, sizeof( lastValidBase ) );
@@ -5131,7 +5131,7 @@ void FS_Restart( int checksumFeed )
 		}
 
 		// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
-		Com_Error( ERR_FATAL, "Couldn't load default.cfg - I am missing essential files - verify your installation?" );
+		Com_Error( ERR_FATAL, "Couldn't load default.cfg - I am missing essential files – verify your installation?" );
 	}
 
 	// bk010116 - new check before safeMode
@@ -5148,7 +5148,7 @@ void FS_Restart( int checksumFeed )
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
 #ifndef _DEBUG
-					Com_Printf( "^3WARNING: profile.pid found for profile '%s' - system settings will revert to defaults\n", cl_profileStr );
+					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"), cl_profileStr );
 					// ydnar: set crashed state
 					Cbuf_AddText( "set com_crashed 1\n" );
 #endif
@@ -5157,7 +5157,7 @@ void FS_Restart( int checksumFeed )
 				// bani - write a new one
 				if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
-					Com_Printf( "^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr );
+					Com_Printf(_( "^3WARNING: couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
 				}
 
 				// exec the config

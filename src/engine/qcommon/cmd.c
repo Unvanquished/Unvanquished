@@ -193,7 +193,7 @@ void Cbuf_AddText( const char *text )
 
 	if ( cmd_text.cursize + l >= cmd_text.maxsize )
 	{
-		Com_Printf( "Cbuf_AddText: overflow\n" );
+		Com_Printf(_( "Cbuf_AddText: overflow\n" ));
 		return;
 	}
 
@@ -218,7 +218,7 @@ void Cbuf_InsertText( const char *text )
 
 	if ( len + cmd_text.cursize > cmd_text.maxsize )
 	{
-		Com_Printf( "Cbuf_InsertText overflowed\n" );
+		Com_Printf(_( "Cbuf_InsertText overflowed\n" ));
 		return;
 	}
 
@@ -407,11 +407,11 @@ void Cmd_Exec_f( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf( "exec <filename> (args) : execute a script file\n" );
+		Com_Printf(_( "exec <filename> (args) : execute a script file\n" ));
 		return;
 	}
 
-	Com_Printf( "execing %s\n", Cmd_Argv( 1 ) );
+	Com_Printf(_( "execing %s\n"), Cmd_Argv( 1 ) );
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
@@ -440,7 +440,7 @@ void Cmd_Exec_f( void )
 
 	if ( !success )
 	{
-		Com_Printf( "couldn't exec %s\n", Cmd_Argv( 1 ) );
+		Com_Printf(_( "couldn't exec %s\n"), Cmd_Argv( 1 ) );
 	}
 }
 
@@ -457,7 +457,7 @@ void Cmd_Vstr_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "vstr <variablename> : execute a variable command\n" );
+		Com_Printf(_( "vstr <variablename> : execute a variable command\n" ));
 		return;
 	}
 
@@ -471,9 +471,9 @@ Helper functions for Cmd_If_f & Cmd_ModCase_f
 ===============
 */
 #ifdef DEDICATED
-static const char modifierList[] = "not supported in the dedicated server";
+static const char modifierList[] = N_("not supported in the dedicated server");
 #else
-static const char modifierList[] = "shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt";
+static const char modifierList[] = N_("shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt");
 
 static const struct
 {
@@ -544,7 +544,7 @@ static modifierMask_t getModifierMask( const char *mods )
 
 				if ( ( mask.down & mask.up ) & modifierKeys[ i ].bit )
 				{
-					Com_Printf( "can't have %s both pressed and not pressed\n", modifierKeys[ i ].name );
+					Com_Printf(_( "can't have %s both pressed and not pressed\n"), modifierKeys[ i ].name );
 					return none;
 				}
 
@@ -565,7 +565,7 @@ static modifierMask_t getModifierMask( const char *mods )
 
 		if ( !modifierKeys[ i ].bit )
 		{
-			Com_Printf( "unknown modifier key name in \"%s\"\n", mods );
+			Com_Printf(_( "unknown modifier key name in \"%s\"\n"), mods );
 			return none;
 		}
 	}
@@ -629,7 +629,7 @@ void Cmd_ModCase_f( void )
 
 	if ( argc < 3 )
 	{
-		Com_Printf( "modcase <modifiers> <command> [<modifiers> <command>] ... [<command>]\n" );
+		Com_Printf(_( "modcase <modifiers> <command> [<modifiers> <command>] … [<command>]\n" ));
 		return;
 	}
 
@@ -717,7 +717,7 @@ void Cmd_If_f( void )
 		case 3:
 			vt = Cmd_Argv( 2 );
 #ifdef DEDICATED
-			Com_Printf( "if <modifiers>... is not supported on the server -- assuming true.\n" );
+			Com_Printf(_( "if <modifiers>… is not supported on the server – assuming true.\n" ));
 			v = vt;
 #else
 			v = Cmd_Argv( 1 );
@@ -761,18 +761,18 @@ void Cmd_If_f( void )
 			}
 			else
 			{
-				Com_Printf( "invalid operator in if command. valid operators are = != < > >= <=\n" );
+				Com_Printf(_( "invalid operator in if command. valid operators are = != < > >= <=\n" ));
 				return;
 			}
 
 			break;
 
 		default:
-			Com_Printf( "if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first two values and executes <cmdthen> if true, <cmdelse> if false\n"
+			Com_Printf(_( "if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first two values and executes <cmdthen> if true, <cmdelse> if false\n"
 			            "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
 			            "-- modifiers are %s\n"
-			            "-- commands are cvar names unless prefixed with / or \\\n",
-			            modifierList );
+			            "-- commands are cvar names unless prefixed with / or \\\n"),
+			            _(modifierList) );
 			return;
 	}
 
@@ -818,7 +818,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" );
+			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
 			return;
 		}
 	}
@@ -844,7 +844,7 @@ void Cmd_Math_f( void )
 		{
 			if ( atof( v1 ) == 0.f )
 			{
-				Com_Printf( "Cannot divide by 0!\n" );
+				Com_Printf(_( "Cannot divide by 0!\n" ));
 				return;
 			}
 
@@ -852,7 +852,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" );
+			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
 			return;
 		}
 	}
@@ -879,7 +879,7 @@ void Cmd_Math_f( void )
 		{
 			if ( atof( v2 ) == 0.f )
 			{
-				Com_Printf( "Cannot divide by 0!\n" );
+				Com_Printf(_( "Cannot divide by 0!\n" ));
 				return;
 			}
 
@@ -887,13 +887,13 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" );
+			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
 			return;
 		}
 	}
 	else
 	{
-		Com_Printf( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" );
+		Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
 		return;
 	}
 }
@@ -941,13 +941,13 @@ void Cmd_Strcmp_f( void )
 		}
 		else
 		{
-			Com_Printf( "invalid operator in strcmp command. valid operators are = != \n" );
+			Com_Printf(_( "invalid operator in strcmp command. valid operators are = != \n" ));
 			return;
 		}
 	}
 	else
 	{
-		Com_Printf( "strcmp <string1> <operator> <string2> <cmdthen> (<cmdelse>) : compares the first two strings and executes <cmdthen> if true, <cmdelse> if false\n" );
+		Com_Printf(_( "strcmp <string1> <operator> <string2> <cmdthen> (<cmdelse>) : compares the first two strings and executes <cmdthen> if true, <cmdelse> if false\n" ));
 		return;
 	}
 
@@ -968,7 +968,7 @@ void Cmd_Concat_f( void )
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf( "concat <variableToSet> <variable1> ... <variableN> : concatenates variable1 to variableN and sets the result to variableToSet\n" );
+		Com_Printf(_( "concat <variableToSet> <variable1> … <variableN> : concatenates variable1 to variableN and sets the result to variableToSet\n" ));
 		return;
 	}
 
@@ -995,7 +995,7 @@ void Cmd_Calc_f( void )
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf( "calc <number> <function> <number>, accepted functions: +, -, /, */x\n" );
+		Com_Printf(_( "calc <number> <function> <number>, accepted functions: +, -, /, */x\n" ));
 		return;
 	}
 
@@ -1022,7 +1022,7 @@ void Cmd_Calc_f( void )
 	{
 		if ( atof( arg2 ) == 0.f )
 		{
-			Com_Printf( "Cannot divide by zero!\n" );
+			Com_Printf(_( "Cannot divide by 0!\n" ));
 			return;
 		}
 
@@ -1038,7 +1038,7 @@ void Cmd_Calc_f( void )
 	}
 
 	// Invalid function, help the poor guy out
-	Com_Printf( "calc <number> <function> <number>, accepted functions: +, -, /, */x\n" );
+	Com_Printf(_( "calc <number> <function> <number>, accepted functions: +, -, /, */x\n" ));
 }
 
 /*
@@ -1068,7 +1068,7 @@ void Cmd_Undelay_f( void )
 	// Check if the call is valid
 	if ( Cmd_Argc() < 1 )
 	{
-		Com_Printf( "undelay <name> (command)\nremoves all commands with <name> in them.\nif (command) is specified, the removal will be limited only to delays whose commands contain (command).\n" );
+		Com_Printf(_( "undelay <name> (command)\nremoves all commands with <name> in them.\nif (command) is specified, the removal will be limited only to delays whose commands contain (command).\n" ));
 		return;
 	}
 
@@ -1117,7 +1117,7 @@ void Cmd_Delay_f( void )
 	// Check if the call is valid
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf( "delay (name) <delay in milliseconds> <command>\ndelay <delay in frames>f <command>\nexecutes <command> after the delay\n" );
+		Com_Printf(_( "delay (name) <delay in milliseconds> <command>\ndelay <delay in frames>f <command>\nexecutes <command> after the delay\n" ));
 		return;
 	}
 
@@ -1139,7 +1139,7 @@ void Cmd_Delay_f( void )
 
 	if ( delay < 1 )
 	{
-		Com_Printf( "delay: the delay must be a positive integer" );
+		Com_Printf(_( "delay: the delay must be a positive integer" ));
 		return;
 	}
 
@@ -1155,7 +1155,7 @@ void Cmd_Delay_f( void )
 
 	if ( !availiable_cmd )
 	{
-		Com_Printf( "WARNING: Maximum amount of delayed commands reached." );
+		Com_Printf(_( "WARNING: Maximum amount of delayed commands reached." ));
 		return;
 	}
 
@@ -1198,7 +1198,7 @@ void Cmd_Random_f( void )
 	}
 	else
 	{
-		Com_Printf( "random <variableToSet> <value1> <value2>\n" );
+		Com_Printf(_( "random <variableToSet> <value1> <value2>\n" ));
 	}
 }
 
@@ -1296,11 +1296,11 @@ void Cmd_AliasList_f( void )
 			continue;
 		}
 
-		Com_Printf( "%s ==> %s\n", alias->name, alias->exec );
+		Com_Printf( "%s ⇒ %s\n", alias->name, alias->exec );
 		i++;
 	}
 
-	Com_Printf( "%i aliases\n", i );
+	Com_Printf("%i aliases\n", i );
 }
 
 /*
@@ -1342,7 +1342,7 @@ void Cmd_UnAlias_f( void )
 	// Get args
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf( "unalias <name> : delete an alias\n" );
+		Com_Printf(_( "unalias <name> : delete an alias\n" ));
 		return;
 	}
 
@@ -1389,8 +1389,8 @@ void Cmd_Alias_f( void )
 	// Get args
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf( "alias <name> : show an alias\n" );
-		Com_Printf( "alias <name> <exec> : create an alias\n" );
+		Com_Printf(_( "alias <name> : show an alias\n" ));
+		Com_Printf(_( "alias <name> <exec> : create an alias\n" ));
 		return;
 	}
 
@@ -1413,7 +1413,7 @@ void Cmd_Alias_f( void )
 		// Crude protection from infinite loops
 		if ( !Q_stricmp( Cmd_Argv( 2 ), name ) )
 		{
-			Com_Printf( "Can't make an alias to itself\n" );
+			Com_Printf(_( "Can't make an alias to itself\n" ));
 			return;
 		}
 
@@ -1422,7 +1422,7 @@ void Cmd_Alias_f( void )
 
 		if ( cmd && cmd->function != Cmd_RunAlias_f )
 		{
-			Com_Printf( "Can't override a builtin function with an alias\n" );
+			Com_Printf(_( "Can't override a builtin function with an alias\n" ));
 			return;
 		}
 
@@ -1448,11 +1448,11 @@ void Cmd_Alias_f( void )
 	// Show the alias
 	if ( !alias )
 	{
-		Com_Printf( "Alias %s does not exist\n", name );
+		Com_Printf(_( "Alias %s does not exist\n"), name );
 	}
 	else if ( Cmd_Argc() == 2 )
 	{
-		Com_Printf( "%s ==> %s\n", alias->name, alias->exec );
+		Com_Printf( "%s ⇒ %s\n", alias->name, alias->exec );
 	}
 
 	// update autogen.cfg
@@ -2186,7 +2186,7 @@ void Cmd_AddCommand( const char *cmd_name, xcommand_t function )
 		// allow completion-only commands to be silently doubled
 		if ( function != NULL )
 		{
-			Com_Printf( "Cmd_AddCommand: %s already defined\n", cmd_name );
+			Com_Printf(_( "Cmd_AddCommand: %s already defined\n"), cmd_name );
 		}
 
 		return;
@@ -2258,7 +2258,7 @@ qboolean Cmd_AddButtonCommand( const char *cmd_name, int parameter )
 
 fail:
 	Z_Free( prefixed_name );
-	Com_Printf( "Cmd_AddButtonCommand: +/-%s already defined\n", cmd_name );
+	Com_Printf(_( "Cmd_AddButtonCommand: +/-%s already defined\n"), cmd_name );
 	return qfalse;
 }
 #endif
@@ -2465,7 +2465,7 @@ void Cmd_List_f( void )
 		i++;
 	}
 
-	Com_Printf( "%i commands\n", i );
+	Com_Printf(_( "%i commands\n"), i );
 }
 
 /*

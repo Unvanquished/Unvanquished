@@ -119,6 +119,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SLIDER_THUMB_HEIGHT 20.0f
 #define NUM_CROSSHAIRS      10
 
+// localisation
+#if 0
+#	define _(text)              gettext( text )
+#	define N_(one, many, count) ngettext( (one), (many), (count) )
+#else
+#	define _(text)              Gettext(text)
+#	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
+#endif
+
 typedef struct
 {
 	const char *command;
@@ -444,7 +453,6 @@ typedef struct
 	qhandle_t ( *feederItemImage )( int feederID, int index );
 	void ( *feederSelection )( int feederID, int index );
 	int ( *feederInitialise )( int feederID );
-	const char *( *translateString )( const char *string );
 	void ( *keynumToStringBuf )( int keynum, char *buf, int buflen );
 	void ( *getBindingBuf )( int keynum, char *buf, int buflen );
 	void ( *setBinding )( int keynum, const char *binding );
@@ -589,5 +597,5 @@ void       UI_R_UnregisterFont( fontHandle_t );
 
 int ui_CursorToOffset( const char *buf, int cursor );
 int ui_OffsetToCursor( const char *buf, int offset );
-
+const char *Gettext( const char *msgid ) __attribute__((format_arg(1)));
 #endif

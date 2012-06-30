@@ -496,3 +496,4 @@ void            trap_RegisterButtonCommands( const char *cmds );
 
 void            trap_GetClipboardData( char *, int, clipboard_t );
 void            trap_QuoteString( const char *, char*, int );
+void            trap_Gettext( char *buffer, const char *msgid, int bufferLength );

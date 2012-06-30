@@ -113,7 +113,7 @@ void SV_SectorList_f( void )
 			c++;
 		}
 
-		Com_Printf( "sector %i: %i entities\n", i, c );
+		Com_Printf(_( "sector %i: %i entities\n"), i, c );
 	}
 }
 
@@ -225,7 +225,7 @@ void SV_UnlinkEntity( sharedEntity_t *gEnt )
 		}
 	}
 
-	Com_Printf( "WARNING: SV_UnlinkEntity: not found in worldSector\n" );
+	Com_Printf(_( "WARNING: SV_UnlinkEntity: not found in worldSector\n" ));
 }
 
 /*
@@ -503,7 +503,7 @@ void SV_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 
 		if ( ap->count == ap->maxcount )
 		{
-			Com_Printf( "SV_AreaEntities: MAXCOUNT\n" );
+			Com_Printf(_( "SV_AreaEntities: MAXCOUNT\n" ));
 			return;
 		}
 

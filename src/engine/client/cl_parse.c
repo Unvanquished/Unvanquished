@@ -528,17 +528,17 @@ void CL_ParseSnapshot( msg_t *msg )
 		if ( !old->valid )
 		{
 			// should never happen
-			Com_Printf( "Delta from invalid frame (not supposed to happen!).\n" );
+			Com_Printf( "%s", _( "Delta from invalid frame (not supposed to happen!).\n" ));
 		}
 		else if ( old->messageNum != newSnap.deltaNum )
 		{
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
-			Com_DPrintf( "Delta frame too old.\n" );
+			Com_DPrintf("%s", _( "Delta frame too old.\n" ));
 		}
 		else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES - 128 )
 		{
-			Com_DPrintf( "Delta parseEntitiesNum too old.\n" );
+			Com_DPrintf("%s", _( "Delta parseEntitiesNum too old.\n" ));
 		}
 		else
 		{
@@ -840,7 +840,7 @@ void CL_ParseDownload( msg_t *msg )
 
 	if ( !*cls.downloadTempName )
 	{
-		Com_Printf( "Server sending download, but no download was requested\n" );
+		Com_Printf("%s", _( "Server sending download, but no download was requested\n" ));
 		CL_AddReliableCommand( "stopdl" );
 		return;
 	}
@@ -870,14 +870,14 @@ void CL_ParseDownload( msg_t *msg )
 			}
 
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
-			Com_DPrintf( "Server redirected download: %s\n", cls.downloadName );
+			Com_DPrintf(_( "Server redirected download: %s\n"), cls.downloadName );
 			clc.bWWWDl = qtrue; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
 
 			// make sure the server is not trying to redirect us again on a bad checksum
 			if ( strstr( clc.badChecksumList, va( "@%s", cls.originalDownloadName ) ) )
 			{
-				Com_Printf( "refusing redirect to %s by server (bad checksum)\n", cls.downloadName );
+				Com_Printf(_( "refusing redirect to %s by server (bad checksum)\n"), cls.downloadName );
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = qtrue;
 				return;
@@ -896,7 +896,7 @@ void CL_ParseDownload( msg_t *msg )
 				// we count on server sending us a gamestate to start up clean again
 				CL_AddReliableCommand( "wwwdl fail" );
 				clc.bWWWDlAborting = qtrue;
-				Com_Printf( "Failed to initialize download for '%s'\n", cls.downloadName );
+				Com_Printf(_( "Failed to initialize download for '%s'\n"), cls.downloadName );
 			}
 
 			// Check for a disconnected download
@@ -944,7 +944,7 @@ void CL_ParseDownload( msg_t *msg )
 
 	if ( clc.downloadBlock != block )
 	{
-		Com_DPrintf( "CL_ParseDownload: Expected block %d, got %d\n", clc.downloadBlock, block );
+		Com_DPrintf(_( "CL_ParseDownload: Expected block %d, got %d\n"), clc.downloadBlock, block );
 		return;
 	}
 
@@ -955,7 +955,7 @@ void CL_ParseDownload( msg_t *msg )
 
 		if ( !clc.download )
 		{
-			Com_Printf( "Could not create %s\n", cls.downloadTempName );
+			Com_Printf(_( "Could not create %s\n"), cls.downloadTempName );
 			CL_AddReliableCommand( "stopdl" );
 			CL_NextDownload();
 			return;
@@ -1301,7 +1301,7 @@ void CL_ParseServerMessage( msg_t *msg )
 
 	if ( cl_shownet->integer == 1 )
 	{
-		Com_Printf( "%i ", msg->cursize );
+		Com_Printf("%i ", msg->cursize );
 	}
 	else if ( cl_shownet->integer >= 2 )
 	{

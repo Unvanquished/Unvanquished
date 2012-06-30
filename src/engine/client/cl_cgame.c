@@ -41,6 +41,8 @@ Maryland 20850 USA.
 #include "../qcommon/crypto.h"
 #endif
 
+#define __(x) Trans_GettextGame(x)
+
 extern qboolean        loadCamera( int camNum, const char *name );
 extern void            startCamera( int camNum, int time );
 extern qboolean        getCameraInfo( int camNum, int time, vec3_t *origin, vec3_t *angles, float *fov );
@@ -402,7 +404,7 @@ rescan:
 		// NERVE - SMF - allow server to indicate why they were disconnected
 		if ( argc >= 2 )
 		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server Disconnected - %s", Cmd_Argv( 1 ) );
+			Com_Error( ERR_SERVERDISCONNECT, "Server Disconnected – %s", Cmd_Argv( 1 ) );
 		}
 		else
 		{
@@ -490,7 +492,7 @@ rescan:
 
 		if ( argc == 1 )
 		{
-			Com_Printf( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" );
+			Com_Printf("%s", _( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" ));
 			return qfalse;
 		}
 
@@ -1244,10 +1246,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_GetBindingByString( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
 
-		case CG_TRANSLATE_STRING:
-			CL_TranslateString( VMA( 1 ), VMA( 2 ) );
-			return 0;
-
 		case CG_S_FADEALLSOUNDS:
 			// FIXME
 			//S_FadeAllSounds(VMF(1), args[2], args[3]);
@@ -1348,7 +1346,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETTEXT:
-			strncpy( VMA(1), VMA(2), args[3] );
+			strncpy( VMA(1), __(VMA(2)), args[3] );
 			return 0;
 
 		case CG_R_GLYPH:
@@ -1536,7 +1534,7 @@ void CL_InitCGame( void )
 
 	t2 = Sys_Milliseconds();
 
-	Com_Printf( "CL_InitCGame: %5.2f seconds\n", ( t2 - t1 ) / 1000.0 );
+	Com_Printf( "CL_InitCGame: %5.2fs\n", ( t2 - t1 ) / 1000.0 );
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading
@@ -1708,7 +1706,7 @@ void CL_AdjustTimeDelta( void )
 
 	if ( cl_showTimeDelta->integer )
 	{
-		Com_Printf( "%i ", cl.serverTimeDelta );
+		Com_Printf("%i ", cl.serverTimeDelta );
 	}
 }
 
@@ -1754,7 +1752,7 @@ void CL_FirstSnapshot( void )
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
-		Com_Printf( "Mumble: Linking to Mumble application %s\n", ret == 0 ? "ok" : "failed" );
+		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application okay\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
 	}
 
 #endif

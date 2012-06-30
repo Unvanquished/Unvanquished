@@ -61,26 +61,26 @@ void SV_ResolveowHubHost( void )
 
 	if ( host && host[ 0 ] )
 	{
-		Com_Printf( "Resolving |ET:XReaL| Hub %s.\n", host );
+		Com_Printf(_( "Resolving |ET:XReaL| Hub %s.\n"), host );
 		result = NET_StringToAdr( host, address, NA_UNSPEC );
 
 		switch ( result )
 		{
 			case 0:
-				Com_Printf( "Completely failed to resolve %s.\n", host );
+				Com_Printf(_( "Completely failed to resolve %s.\n"), host );
 				break;
 
 			case 1:
-				Com_Printf( "Resolved %s to %s.\n", host, NET_AdrToStringwPort( *address ) );
+				Com_Printf(_( "Resolved %s to %s.\n"), host, NET_AdrToStringwPort( *address ) );
 				break;
 
 			case 2:
-				Com_Printf( "Failed to resolve a port for %s.\n", host );
+				Com_Printf(_( "Failed to resolve a port for %s.\n"), host );
 				address->type = NA_BAD;
 				break;
 
 			default:
-				Com_Printf( "Unknown error %d from NET_StringToAdr()!\n", result );
+				Com_Printf(_( "Unknown error %d from NET_StringToAdr()!\n"), result );
 				break;
 		}
 	}
@@ -637,8 +637,8 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	// shut down the existing game if it is running
 	SV_ShutdownGameProgs();
 
-	Com_Printf( "------ Server Initialization ------\n" );
-	Com_Printf( "Server: %s\n", server );
+	Com_Printf(_( "------ Server Initialization ------\n" ));
+	Com_Printf(_( "Server: %s\n"), server );
 
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
@@ -855,7 +855,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 
 		if ( strlen( p ) == 0 )
 		{
-			Com_Printf( "WARNING: sv_pure set but no PK3 files loaded\n" );
+			Com_Printf(_( "WARNING: sv_pure set but no PK3 files loaded\n" ));
 		}
 
 		p = FS_LoadedPakNames();
@@ -904,7 +904,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 
 	Cvar_Set( "sv_serverRestarting", "0" );
 
-	Com_Printf( "-----------------------------------\n" );
+	Com_Printf(_( "-----------------------------------\n" ));
 }
 
 /*
@@ -1102,7 +1102,7 @@ void SV_Shutdown( char *finalmsg )
 		return;
 	}
 
-	Com_Printf( "----- Server Shutdown -----\n" );
+	Com_Printf(_( "----- Server Shutdown -----\n" ));
 
 	NET_LeaveMulticast6();
 
@@ -1137,7 +1137,7 @@ void SV_Shutdown( char *finalmsg )
 
 	Cvar_Set( "sv_running", "0" );
 
-	Com_Printf( "---------------------------\n" );
+	Com_Printf(_( "---------------------------\n" ));
 
 	// disconnect any local clients
 	CL_Disconnect( qfalse );

@@ -580,15 +580,15 @@ void CheckTeamStatus( void )
 		if ( level.numAlienSpawns > 0 &&
 		     level.numHumanClients - level.numAlienClients > 2 )
 		{
-			trap_SendServerCommand( -1, "print \"Teams are imbalanced. "
-			                        "Humans have more players.\n\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
+			                        "Humans have more players.\n") "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
 		else if ( level.numHumanSpawns > 0 &&
 		          level.numAlienClients - level.numHumanClients > 2 )
 		{
-			trap_SendServerCommand( -1, "print \"Teams are imbalanced. "
-			                        "Aliens have more players.\n\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
+			                        "Aliens have more players.\n") "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
 		else

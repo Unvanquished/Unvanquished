@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ADMBP(x)      G_admin_buffer_print(ent, x)
 #define ADMBP_begin() G_admin_buffer_begin()
 #define ADMBP_end()   G_admin_buffer_end(ent)
+#define QQ(s)         "\"" s "\""
 
 #define MAX_ADMIN_FLAG_LEN   20
 #define MAX_ADMIN_FLAGS      1024
@@ -229,7 +230,7 @@ void            G_admin_buffer_print( gentity_t *ent, const char *m );
 void            G_admin_buffer_begin( void );
 void            G_admin_buffer_end( gentity_t *ent );
 
-void            G_admin_duration( int secs, char *duration, int dursize );
+void            G_admin_duration( int secs, char *time, int timesize, char *duration, int dursize );
 void            G_admin_cleanup( void );
 
 #endif /* ifndef _G_ADMIN_H */

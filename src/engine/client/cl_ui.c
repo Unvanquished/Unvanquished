@@ -34,6 +34,9 @@ Maryland 20850 USA.
 
 #include "client.h"
 
+#define __(x) Trans_GettextGame(x)
+
+
 vm_t                   *uivm;
 
 // ydnar: can we put this in a header, pls?
@@ -142,7 +145,7 @@ qboolean GetNews( qboolean begin )
 	if ( begin ) // if not already using curl, start the download
 	{
 		CL_RequestMotd();
-		Cvar_Set( "cl_newsString", "Retrieving..." );
+		Cvar_Set( "cl_newsString", "Retrieving…" );
 	}
 
 	if ( Cvar_VariableString( "cl_newsString" ) [ 0 ] == 'R' )
@@ -1443,11 +1446,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
 
-		case UI_CL_TRANSLATE_STRING:
-			CL_TranslateString( VMA( 1 ), VMA( 2 ) );
-			return 0;
-			// -NERVE - SMF
-
 			// DHM - Nerve
 		case UI_CHECKAUTOUPDATE:
 			CL_CheckAutoUpdate();
@@ -1492,7 +1490,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 #endif
 		case UI_GETTEXT:
 			VM_CheckBlock( args[1], args[3], "UIGETTEXT" );
-			Q_strncpyz( VMA(1), VMA(2), args[3] );
+			Q_strncpyz( VMA(1), __(VMA(2)), args[3] );
 			return 0;
 
 		case UI_R_GLYPH:

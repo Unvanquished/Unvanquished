@@ -470,7 +470,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 	{
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf( "origin delta: %.2f  ", VectorLength( delta ) );
+			CG_Printf(_( "origin delta: %.2f  "), VectorLength( delta ) );
 		}
 
 		return 2;
@@ -482,7 +482,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 	{
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf( "velocity delta: %.2f  ", VectorLength( delta ) );
+			CG_Printf(_( "velocity delta: %.2f  "), VectorLength( delta ) );
 		}
 
 		return 3;
@@ -693,7 +693,7 @@ void CG_PredictPlayerState( void )
 		// special check for map_restart
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf( "exceeded PACKET_BACKUP on commands\n" );
+			CG_Printf( "%s", _( "exceeded PACKET_BACKUP on commands\n" ));
 		}
 
 		return;
@@ -790,7 +790,7 @@ void CG_PredictPlayerState( void )
 				{
 					if ( cg_showmiss.integer )
 					{
-						CG_Printf( "errorcode %d at %d\n", errorcode, cg.time );
+						CG_Printf(_( "error code %d at %d\n"), errorcode, cg.time );
 					}
 
 					break;
@@ -867,7 +867,7 @@ void CG_PredictPlayerState( void )
 
 				if ( cg_showmiss.integer )
 				{
-					CG_Printf( "PredictionTeleport\n" );
+					CG_Printf( "%s", _( "PredictionTeleport\n" ));
 				}
 
 				cg.thisFrameTeleport = qfalse;
@@ -882,7 +882,7 @@ void CG_PredictPlayerState( void )
 				{
 					if ( !VectorCompare( oldPlayerState.origin, adjusted ) )
 					{
-						CG_Printf( "prediction error\n" );
+						CG_Printf( "%s", _( "prediction error\n" ));
 					}
 				}
 
@@ -893,7 +893,7 @@ void CG_PredictPlayerState( void )
 				{
 					if ( cg_showmiss.integer )
 					{
-						CG_Printf( "Prediction miss: %f\n", len );
+						CG_Printf(_( "Prediction miss: %f\n"), len );
 					}
 
 					if ( cg_errorDecay.integer )
@@ -911,7 +911,7 @@ void CG_PredictPlayerState( void )
 
 						if ( f > 0 && cg_showmiss.integer )
 						{
-							CG_Printf( "Double prediction decay: %f\n", f );
+							CG_Printf(_( "Double prediction decay: %f\n"), f );
 						}
 
 						VectorScale( cg.predictedError, f, cg.predictedError );

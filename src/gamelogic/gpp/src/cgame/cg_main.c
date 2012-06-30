@@ -717,7 +717,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				}
 				else
 				{
-					Com_Printf( S_COLOR_YELLOW "WARNING: unknown buildable or group: %s\n", p );
+					Com_Printf( _( S_COLOR_YELLOW  "WARNING: unknown buildable or group: %s\n"), p );
 				}
 			}
 
@@ -1654,12 +1654,12 @@ void CG_ParseMenu( const char *menuFile )
 		}
 
 		//if ( Q_stricmp( token, "{" ) ) {
-		//  Com_Printf( "Missing { in menu file\n" );
+		//  Com_Printf(_( "Missing { in menu file\n" ));
 		//  break;
 		//}
 
 		//if ( menuCount == MAX_MENUS ) {
-		//  Com_Printf( "Too many menus!\n" );
+		//  Com_Printf(_( "Too many menus!\n" ));
 		//  break;
 		//}
 
@@ -1736,7 +1736,7 @@ void CG_LoadMenus( const char *menuFile )
 
 	if ( !f )
 	{
-		Com_Printf( S_COLOR_YELLOW "menu file not found: %s, using default\n", menuFile );
+		Com_Printf( _( S_COLOR_YELLOW  "menu file not found: %s, using default\n"), menuFile );
 		len = trap_FS_FOpenFile( "ui/hud.txt", &f, FS_READ );
 
 		if ( !f )
@@ -1792,7 +1792,7 @@ void CG_LoadMenus( const char *menuFile )
 		}
 	}
 
-	Com_Printf( "UI menu load time = %d milli seconds\n", trap_Milliseconds() - start );
+	Com_Printf(_( "UI menu load time = %dms\n"), trap_Milliseconds() - start );
 }
 
 static qboolean CG_OwnerDrawHandleKey( int ownerDraw, int key )
@@ -2377,7 +2377,7 @@ static char *CG_VoIPString( void )
 
 			if ( slen + nlen + 1 >= sizeof( voipString ) )
 			{
-				CG_Printf( S_COLOR_YELLOW "WARNING: voipString overflowed\n" );
+				CG_Printf( "%s", _( "^3WARNING: voipString overflowed\n" ));
 				break;
 			}
 

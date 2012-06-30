@@ -184,14 +184,14 @@ void SV_AddServerCommand( client_t *client, const char *cmd )
 	// doesn't cause a recursive drop client
 	if ( client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS + 1 )
 	{
-		Com_Printf( "===== pending server commands =====\n" );
+		Com_Printf(_( "===== pending server commands =====\n" ));
 
 		for ( i = client->reliableAcknowledge + 1; i <= client->reliableSequence; i++ )
 		{
-			Com_Printf( "cmd %5d: %s\n", i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
+			Com_Printf(_( "cmd %5d: %s\n"), i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
 		}
 
-		Com_Printf( "cmd %5d: %s\n", i, cmd );
+		Com_Printf(_( "cmd %5d: %s\n"), i, cmd );
 		SV_DropClient( client, "Server command overflow" );
 		return;
 	}
@@ -232,13 +232,19 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		SV_AddServerCommand( cl, ( char * ) message );
 		return;
 	}
+	
+	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr ", 9 ) )
+	{
+		SV_PrintTranslatedText( ( const char * ) message );
+	}
 
 	// hack to echo broadcast prints to console
-	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print", 5 ) )
+	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print ", 6 ) )
 	{
 		Com_Printf( "broadcast: %s\n", SV_ExpandNewlines( ( char * ) message ) );
 	}
 
+	
 	// send the data to all relevent clients
 	for ( j = 0, client = svs.clients; j < sv_maxclients->integer; j++, client++ )
 	{
@@ -328,7 +334,7 @@ void SV_MasterHeartbeat( const char *hbname )
 
 			if ( netenabled & NET_ENABLEV4 )
 			{
-				Com_Printf( "Resolving %s (IPv4)\n", sv_master[ i ]->string );
+				Com_Printf(_( "Resolving %s (IPv4)\n"), sv_master[ i ]->string );
 				res = NET_StringToAdr( sv_master[ i ]->string, &adr[ i ][ 0 ], NA_IP );
 
 				if ( res == 2 )
@@ -339,17 +345,17 @@ void SV_MasterHeartbeat( const char *hbname )
 
 				if ( res )
 				{
-					Com_Printf( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( adr[ i ][ 0 ] ) );
+					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( adr[ i ][ 0 ] ) );
 				}
 				else
 				{
-					Com_Printf( "%s has no IPv4 address.\n", sv_master[ i ]->string );
+					Com_Printf(_( "%s has no IPv4 address.\n"), sv_master[ i ]->string );
 				}
 			}
 
 			if ( netenabled & NET_ENABLEV6 )
 			{
-				Com_Printf( "Resolving %s (IPv6)\n", sv_master[ i ]->string );
+				Com_Printf(_( "Resolving %s (IPv6)\n"), sv_master[ i ]->string );
 				res = NET_StringToAdr( sv_master[ i ]->string, &adr[ i ][ 1 ], NA_IP6 );
 
 				if ( res == 2 )
@@ -360,11 +366,11 @@ void SV_MasterHeartbeat( const char *hbname )
 
 				if ( res )
 				{
-					Com_Printf( "%s resolved to %s\n", sv_master[ i ]->string, NET_AdrToStringwPort( adr[ i ][ 1 ] ) );
+					Com_Printf(_( "%s resolved to %s\n"), sv_master[ i ]->string, NET_AdrToStringwPort( adr[ i ][ 1 ] ) );
 				}
 				else
 				{
-					Com_Printf( "%s has no IPv6 address.\n", sv_master[ i ]->string );
+					Com_Printf(_( "%s has no IPv6 address.\n"), sv_master[ i ]->string );
 				}
 			}
 
@@ -372,14 +378,14 @@ void SV_MasterHeartbeat( const char *hbname )
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Com_Printf( "Couldn't resolve address: %s\n", sv_master[ i ]->string );
+				Com_Printf(_( "Couldn't resolve address: %s\n"), sv_master[ i ]->string );
 				Cvar_Set( sv_master[ i ]->name, "" );
 				sv_master[ i ]->modified = qfalse;
 				continue;
 			}
 		}
 
-		Com_Printf( "Sending heartbeat to %s\n", sv_master[ i ]->string );
+		Com_Printf(_( "Sending heartbeat to %s\n"), sv_master[ i ]->string );
 
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
@@ -429,13 +435,13 @@ void SV_MasterGameCompleteStatus()
 		{
 			sv_master[ i ]->modified = qfalse;
 
-			Com_Printf( "Resolving %s\n", sv_master[ i ]->string );
+			Com_Printf(_( "Resolving %s\n"), sv_master[ i ]->string );
 
 			if ( !NET_StringToAdr( sv_master[ i ]->string, &adr[ i ], NA_IP ) )
 			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
-				Com_Printf( "Couldn't resolve address: %s\n", sv_master[ i ]->string );
+				Com_Printf(_( "Couldn't resolve address: %s\n"), sv_master[ i ]->string );
 				Cvar_Set( sv_master[ i ]->name, "" );
 				sv_master[ i ]->modified = qfalse;
 				continue;
@@ -446,12 +452,12 @@ void SV_MasterGameCompleteStatus()
 				adr[ i ].port = BigShort( PORT_MASTER );
 			}
 
-			Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", sv_master[ i ]->string,
+			Com_Printf(_( "%s resolved to %i.%i.%i.%i:%i\n"), sv_master[ i ]->string,
 			            adr[ i ].ip[ 0 ], adr[ i ].ip[ 1 ], adr[ i ].ip[ 2 ], adr[ i ].ip[ 3 ],
 			            BigShort( adr[ i ].port ) );
 		}
 
-		Com_Printf( "Sending gameCompleteStatus to %s\n", sv_master[ i ]->string );
+		Com_Printf(_( "Sending gameCompleteStatus to %s\n"), sv_master[ i ]->string );
 		// this command should be changed if the server info / status format
 		// ever incompatibly changes
 		SVC_GameCompleteStatus( adr[ i ] );
@@ -493,12 +499,12 @@ void SV_MasterGameStat( const char *data )
 		return; // only dedicated servers send stats
 	}
 
-	Com_Printf( "Resolving %s\n", MASTER_SERVER_NAME );
+	Com_Printf(_( "Resolving %s\n"), MASTER_SERVER_NAME );
 
 	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &adr, NA_UNSPEC ) )
 	{
 		case 0:
-			Com_Printf( "Couldn't resolve master address: %s\n", MASTER_SERVER_NAME );
+			Com_Printf(_( "Couldn't resolve master address: %s\n"), MASTER_SERVER_NAME );
 			return;
 
 		case 2:
@@ -508,10 +514,10 @@ void SV_MasterGameStat( const char *data )
 			break;
 	}
 
-	Com_Printf( "%s resolved to %s\n", MASTER_SERVER_NAME,
+	Com_Printf(_( "%s resolved to %s\n"), MASTER_SERVER_NAME,
 	            NET_AdrToStringwPort( adr ) );
 
-	Com_Printf( "Sending gamestat to %s\n", MASTER_SERVER_NAME );
+	Com_Printf(_( "Sending gamestat to %s\n"), MASTER_SERVER_NAME );
 	NET_OutOfBandPrint( NS_SERVER, adr, "gamestat %s", data );
 }
 
@@ -920,7 +926,7 @@ qboolean SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastGlobalLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Com_Printf( "Detected flood of getinfo/getstatus connectionless packets\n" );
+			Com_Printf(_( "Detected flood of getinfo/getstatus connectionless packets\n" ));
 			lastGlobalLogTime = svs.time;
 		}
 
@@ -931,7 +937,7 @@ qboolean SV_CheckDRDoS( netadr_t from )
 	{
 		if ( lastSpecificLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
-			Com_Printf( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet\n",
+			Com_Printf(_( "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus connectionless packet\n"),
 			            exactFrom.ip[ 0 ], exactFrom.ip[ 1 ], exactFrom.ip[ 2 ], exactFrom.ip[ 3 ] );
 			lastSpecificLogTime = svs.time;
 		}
@@ -983,12 +989,12 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 	if ( !strlen( sv_rconPassword->string ) || strcmp( Cmd_Argv( 1 ), sv_rconPassword->string ) )
 	{
 		valid = qfalse;
-		Com_Printf( "Bad rcon from %s:\n%s\n", NET_AdrToString( from ), Cmd_Argv( 2 ) );
+		Com_Printf(_( "Bad rcon from %s:\n%s\n"), NET_AdrToString( from ), Cmd_Argv( 2 ) );
 	}
 	else
 	{
 		valid = qtrue;
-		Com_Printf( "Rcon from %s:\n%s\n", NET_AdrToString( from ), Cmd_Argv( 2 ) );
+		Com_Printf(_( "Rcon from %s:\n%s\n"), NET_AdrToString( from ), Cmd_Argv( 2 ) );
 	}
 
 	// start redirecting all print outputs to the packet
@@ -1003,11 +1009,11 @@ void SVC_RemoteCommand( netadr_t from, msg_t *msg )
 
 	if ( !strlen( sv_rconPassword->string ) )
 	{
-		Com_Printf( "No rconpassword set on the server.\n" );
+		Com_Printf(_( "No rconpassword set on the server.\n" ));
 	}
 	else if ( !valid )
 	{
-		Com_Printf( "Bad rconpassword.\n" );
+		Com_Printf(_( "Bad rconpassword.\n" ));
 	}
 	else
 	{
@@ -1166,7 +1172,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 		// port assignments
 		if ( cl->netchan.remoteAddress.port != from.port )
 		{
-			Com_Printf( "SV_PacketEvent: fixing up a translated port\n" );
+			Com_Printf(_( "SV_PacketEvent: fixing up a translated port\n" ));
 			cl->netchan.remoteAddress.port = from.port;
 		}
 
@@ -1538,7 +1544,7 @@ void SV_Frame( int msec )
 		svs.currentFrameIndex++;
 
 		//if( svs.currentFrameIndex % 50 == 0 )
-		//  Com_Printf( "currentFrameIndex: %i\n", svs.currentFrameIndex );
+		//  Com_Printf(_( "currentFrameIndex: %i\n"), svs.currentFrameIndex );
 
 		if ( svs.currentFrameIndex == SERVER_PERFORMANCECOUNTER_FRAMES )
 		{
@@ -1570,7 +1576,7 @@ void SV_Frame( int msec )
 				svs.serverLoad = ( averageFrameTime / ( float ) frameMsec ) * 100;
 			}
 
-			//Com_Printf( "serverload: %i (%i/%i)\n", svs.serverLoad, averageFrameTime, frameMsec );
+			//Com_Printf(_( "serverload: %i (%i/%i)\n"), svs.serverLoad, averageFrameTime, frameMsec );
 
 			svs.totalFrameTime = 0;
 			svs.currentFrameIndex = 0;
@@ -1632,7 +1638,7 @@ int SV_LoadTag( const char *mod_name )
 
 	if ( version != TAG_VERSION )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: SV_LoadTag: %s has wrong version (%i should be %i)\n", mod_name, version,
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: SV_LoadTag: %s has wrong version (%i should be %i)\n"), mod_name, version,
 		            TAG_VERSION );
 		return 0;
 	}
@@ -1679,5 +1685,110 @@ int SV_LoadTag( const char *mod_name )
 	FS_FreeFile( buffer );
 	return ++sv.num_tagheaders;
 }
+
+/*
+========================
+ SV_PrintTranslatedText
+========================
+ */
+
+void SV_PrintTranslatedText( const char *text )
+{
+	char        str[ MAX_STRING_CHARS ];
+	const char  *in;
+	char        number[3];
+	int         i=0, j=0, num=-1;
+
+	Cmd_TokenizeString( text );
+	in = Cmd_Argv( 1 );
+	memset( &str, 0, sizeof( str ) );
+	while( *in )
+	{
+		if( *in == '$' )
+		{
+			in++;
+			while( *in )
+			{
+				if( *in == '$' )
+				{
+					str[ i++ ] = *in;
+					in++;
+					break;
+				}
+				
+				if( isdigit( *in ) )
+				{
+					number[ j++ ] = *in;
+					in++;
+
+					if( *in == 't' && *(in+1) == '$' )
+					{
+						int num = atoi( number );
+						if( num <= 0 || num > 99 )
+						{
+							in++;
+							break;
+						}
+
+						i += strlen( Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
+
+						if( i >= MAX_STRING_CHARS )
+						{
+							Com_Printf( "%s", str );
+							memset( &str, 0, sizeof( str ) );
+							i = strlen( Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
+						}
+
+						Q_strcat( str, sizeof( str ), Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
+						in += 2;
+						j = 0;
+							
+						break;
+					}
+					else if( *in == '$' )
+					{
+						int num = atoi( number );
+						if( num <= 0 || num > 99 )
+						{
+							in++;
+							break;
+						}
+						i += strlen( Cmd_Argv( num + 1 ) );
+
+						if( i >= MAX_STRING_CHARS )
+						{
+							Com_Printf( "%s", str );
+							memset( &str, 0, sizeof( str ) );
+							i = strlen( Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
+						}
+
+						Q_strcat( str, sizeof( str ), Cmd_Argv( num + 1 ) );
+						in++;
+						j = 0;
+
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			if( i < MAX_STRING_CHARS )
+			{
+				str[ i++ ] = *in;
+				in++;
+			}
+			else
+			{
+				Com_Printf( "%s", str );
+				memset( &str, 0, sizeof( str ) );
+				i = 0;
+			}
+		}
+	}
+
+	Com_Printf( "%s", str );
+}
+
 
 //============================================================================

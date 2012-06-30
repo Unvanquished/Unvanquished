@@ -471,7 +471,7 @@ extern int memcmp( void *, void *, size_t );
 #define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x ) ) )
 
 #if defined ( IPHONE )
-#define UNIMPL()     Com_Printf("%s(): Unimplemented\n", __FUNCTION__)
+#define UNIMPL()     Com_Printf_(("%s(): Unimplemented\n"), __FUNCTION__)
 #endif
 
 // angle indexes

@@ -45,7 +45,7 @@ void trap_SyscallABIVersion( int major, int minor )
 }
 
 //00.
-//Com_Printf("%s", (char *)VMA(1));
+//Com_Printf_(("%s"), (char *)VMA(1));
 void trap_Print( const char *fmt )
 {
 	syscall( CG_PRINT, fmt );
@@ -965,14 +965,14 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 }
 
 //132.
-//Com_Printf("%s%i\n", (char *)VMA(1), args[2]);
+//Com_Printf_(("%s%i\n"), (char *)VMA(1), args[2]);
 void testPrintInt( char *string, int i )
 {
 	syscall( TRAP_TESTPRINTINT, string, i );
 }
 
 //133.
-//Com_Printf("%s%f\n", (char *)VMA(1), VMF(2));
+//Com_Printf_(("%s%f\n"), (char *)VMA(1), VMF(2));
 void testPrintFloat( char *string, float f )
 {
 	syscall( TRAP_TESTPRINTFLOAT, string, PASSFLOAT( f ) );
@@ -1098,13 +1098,6 @@ void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 void trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 )
 {
 	syscall( CG_KEY_BINDINGTOKEYS, binding, key1, key2 );
-}
-
-//150.
-//CL_TranslateString(VMA(1), VMA(2));
-void trap_CG_TranslateString( const char *string, char *buf )
-{
-	syscall( CG_TRANSLATE_STRING, string, buf );
 }
 
 //151.
@@ -1291,4 +1284,10 @@ void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
 void trap_QuoteString( const char *str, char *buffer, int size )
 {
 	syscall( CG_QUOTESTRING, str, buffer, size );
+}
+
+//179.
+void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
+{
+	syscall( CG_GETTEXT, buffer, msgid, bufferLength );
 }

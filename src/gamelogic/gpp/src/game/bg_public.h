@@ -39,15 +39,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CROUCH_VIEWHEIGHT  12
 #define DEAD_VIEWHEIGHT    4 // height from ground
 
-// localisation
-#if 0
-#	define _(text)              gettext( text )
-#	define N_(one, many, count) ngettext( (one), (many), (count) )
-#else
-#	define _(text)              (text)
-#	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
-#endif
-
 // QVM-specific
 #ifdef Q3_VM
 #define QVM_STATIC static
@@ -1284,7 +1275,8 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
 
 int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 
-char *BG_TeamName( team_t team );
+const char *BG_TeamName( team_t team );
+const char *BG_TeamNamePlural( team_t team );
 
 typedef struct
 {
@@ -1293,3 +1285,4 @@ typedef struct
 int cmdcmp( const void *a, const void *b );
 
 char *Quote( const char *str );
+char *Substring( const char *in, int start, int count );

@@ -326,16 +326,16 @@ const char *String_Alloc( const char *p )
 void String_Report( void )
 {
 	float f;
-	Com_Printf( "Memory/String Pool Info\n" );
+	Com_Printf("%s", _( "Memory/String Pool Info\n" ));
 	Com_Printf( "----------------\n" );
 	f = strPoolIndex;
 	f /= STRING_POOL_SIZE;
 	f *= 100;
-	Com_Printf( "String Pool is %.1f%% full, %i bytes out of %i used.\n", f, strPoolIndex, STRING_POOL_SIZE );
+	Com_Printf(_( "String Pool is %.1f%% full, %i bytes out of %i used.\n"), f, strPoolIndex, STRING_POOL_SIZE );
 	f = allocPoint;
 	f /= MEM_POOL_SIZE;
 	f *= 100;
-	Com_Printf( "Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, allocPoint, MEM_POOL_SIZE );
+	Com_Printf(_( "Memory Pool is %.1f%% full, %i bytes out of %i used.\n"), f, allocPoint, MEM_POOL_SIZE );
 }
 
 /*
@@ -392,7 +392,7 @@ void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( S_COLOR_YELLOW "WARNING: %s, line %d: %s\n", filename, line, string );
+	Com_Printf( _( S_COLOR_YELLOW  "WARNING: %s, line %d: %s\n"), filename, line, string );
 }
 
 /*
@@ -415,7 +415,7 @@ void PRINTF_LIKE(2) PC_SourceError( int handle, char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( S_COLOR_RED "ERROR: %s, line %d: %s\n", filename, line, string );
+	Com_Printf( _( S_COLOR_RED  "ERROR: %s, line %d: %s\n"), filename, line, string );
 }
 
 /*
@@ -997,6 +997,21 @@ qboolean PC_String_Parse( int handle, const char **out )
 
 	return qtrue;
 }
+
+qboolean PC_String_ParseTranslate( int handle, const char **out )
+{
+	pc_token_t token;
+
+	if ( !trap_Parse_ReadToken( handle, &token ) )
+	{
+		return qfalse;
+	}
+
+	* ( out ) = String_Alloc( _(token.string) );
+
+	return qtrue;
+}
+
 
 /*
 ================
@@ -5864,7 +5879,7 @@ void Item_YesNo_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + 8, item->textRect.y, item->textscale, newColor,
-		               ( value != 0 ) ? DC->translateString( "Yes" ) : DC->translateString( "No" ), 0, item->textStyle );
+		               ( value != 0 ) ? "Yes" : "No", 0, item->textStyle );
 	}
 	else
 	{
@@ -6162,7 +6177,7 @@ void BindingFromName( const char *cvar )
 			{
 				DC->keynumToStringBuf( b2, g_nameBind2, 32 );
 				Q_strupr( g_nameBind2 );
-				Q_strcat( g_nameBind1, 32, DC->translateString( " or " ) );
+				Q_strcat( g_nameBind1, 32, " or " );
 				strcat( g_nameBind1, g_nameBind2 );
 			}
 
@@ -7649,7 +7664,7 @@ qboolean ItemParse_focusSound( itemDef_t *item, int handle )
 // text <string>
 qboolean ItemParse_text( itemDef_t *item, int handle )
 {
-	if ( !PC_String_Parse( handle, &item->text ) )
+	if ( !PC_String_ParseTranslate( handle, &item->text ) )
 	{
 		return qfalse;
 	}
@@ -9607,4 +9622,12 @@ void UI_R_UnregisterFont( fontHandle_t font )
 
   if( engineState & 0x02 )
     trap_R_UnregisterFont( font );
+}
+
+const char *Gettext( const char *msgid )
+{
+	static char buffer[ 32000 ];
+	char *buf = buffer;
+	trap_Gettext( buf, msgid, sizeof( buffer ) );
+	return buf;
 }

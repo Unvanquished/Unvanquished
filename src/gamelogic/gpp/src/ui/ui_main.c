@@ -230,27 +230,6 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 	return -1;
 }
 
-#define MAX_VA_STRING 32000 // FIXME?
-
-static const char *UI_TranslateString( const char *string )
-{
-#ifdef LOCALIZATION_SUPPORT
-	static char staticbuf[ 2 ][ MAX_VA_STRING ];
-	static int  bufcount = 0;
-	char        *buf;
-
-	buf = staticbuf[ bufcount++ % 2 ];
-
-	trap_TranslateString( string, buf );
-	return buf;
-#else
-	return string;
-#endif
-}
-#ifndef LOCALIZATION_SUPPORT
-#define UI_TranslateString(x) (x)
-#endif
-
 void AssetCache( void )
 {
 	int i;
@@ -778,7 +757,7 @@ static void UI_BuildFindPlayerList( qboolean force )
 		uiInfo.numFoundPlayerServers = 1;
 		Com_sprintf( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ],
 		             sizeof( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ] ),
-		             "searching %d...", uiInfo.pendingServerStatus.num );
+		             "searching %d…", uiInfo.pendingServerStatus.num );
 		numFound = 0;
 		numTimeOuts++;
 	}
@@ -849,7 +828,7 @@ static void UI_BuildFindPlayerList( qboolean force )
 
 				Com_sprintf( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ],
 				             sizeof( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ] ),
-				             "searching %d/%d...", numFound, uiInfo.pendingServerStatus.num );
+				             "searching %d/%d…", numFound, uiInfo.pendingServerStatus.num );
 				// retrieved the server status so reuse this spot
 				uiInfo.pendingServerStatus.server[ i ].valid = qfalse;
 			}
@@ -891,7 +870,7 @@ static void UI_BuildFindPlayerList( qboolean force )
 				uiInfo.pendingServerStatus.num++;
 				Com_sprintf( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ],
 				             sizeof( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ] ),
-				             "searching %d/%d...", numFound, uiInfo.pendingServerStatus.num );
+				             "searching %d/%d…", numFound, uiInfo.pendingServerStatus.num );
 			}
 		}
 	}
@@ -1123,15 +1102,15 @@ static void UI_StopServerRefresh( void )
 	}
 
 	uiInfo.serverStatus.refreshActive = qfalse;
-	Com_Printf( "%d servers listed in browser with %d players.\n",
+	Com_Printf(_( "%d servers listed in browser with %d players.\n"),
 	            uiInfo.serverStatus.numDisplayServers,
 	            uiInfo.serverStatus.numPlayersOnServers );
 	count = trap_LAN_GetServerCount( ui_netSource.integer );
 
 	if ( count - uiInfo.serverStatus.numDisplayServers > 0 )
 	{
-		Com_Printf( "%d servers not listed due to packet loss, invalid info,"
-		            " or pings higher than %d\n",
+		Com_Printf(_( "%d servers not listed due to packet loss, invalid info,"
+		            " or pings higher than %d\n"),
 		            count - uiInfo.serverStatus.numDisplayServers,
 		            ( int ) trap_Cvar_VariableValue( "cl_maxPing" ) );
 	}
@@ -1567,7 +1546,7 @@ qboolean UI_ParseMenu( const char *menuFile )
 
 	if ( !handle )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: Menu file %s not found\n",
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Menu file %s not found\n"),
 		            menuFile );
 		return qfalse;
 	}
@@ -1582,12 +1561,12 @@ qboolean UI_ParseMenu( const char *menuFile )
 		}
 
 		//if( Q_stricmp( token, "{" ) ) {
-		//  Com_Printf( "Missing { in menu file\n" );
+		//  Com_Printf("%s", _( "Missing { in menu file\n" ));
 		//  break;
 		//}
 
 		//if( menuCount == MAX_MENUS ) {
-		//  Com_Printf( "Too many menus!\n" );
+		//  Com_Printf("%s", _( "Too many menus!\n" ));
 		//  break;
 		//}
 
@@ -1757,7 +1736,7 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 		}
 	}
 
-	Com_Printf( "UI menu file '%s' loaded in %d msec\n", menuFile, trap_Milliseconds() - start );
+	Com_Printf(_( "UI menu file '%s' loaded in %d msec\n"), menuFile, trap_Milliseconds() - start );
 
 	trap_Parse_FreeSource( handle );
 }
@@ -1774,7 +1753,7 @@ void UI_LoadHelp( const char *helpFile )
 
 	if ( !handle )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: help file '%s' not found!\n",
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: help file '%s' not found!\n"),
 		            helpFile );
 		return;
 	}
@@ -1782,8 +1761,8 @@ void UI_LoadHelp( const char *helpFile )
 	if ( !trap_Parse_ReadToken( handle, &token ) ||
 	     token.string[ 0 ] == 0 || token.string[ 0 ] != '{' )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: help file '%s' does not start with "
-		            "'{'\n", helpFile );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: help file '%s' does not start with "
+		            "'{'\n"), helpFile );
 		return;
 	}
 
@@ -1824,7 +1803,7 @@ void UI_LoadHelp( const char *helpFile )
 
 	trap_Parse_FreeSource( handle );
 
-	Com_Printf( "UI help file '%s' loaded in %d msec (%d infopanes)\n",
+	Com_Printf(_( "UI help file '%s' loaded in %d msec (%d infopanes)\n"),
 	            helpFile, trap_Milliseconds() - start, uiInfo.helpCount );
 }
 
@@ -2096,11 +2075,11 @@ static const char *UI_OwnerDrawText( int ownerDraw )
 		case UI_KEYBINDSTATUS:
 			if ( Display_KeyBindPending() )
 			{
-				s = UI_TranslateString( "Waiting for new key... Press ESCAPE to cancel" );
+				s = "Waiting for new key… Press ESCAPE to cancel";
 			}
 			else
 			{
-				s = UI_TranslateString( "Press ENTER or CLICK to change, Press BACKSPACE to clear" );
+				s = "Press ENTER or CLICK to change, Press BACKSPACE to clear";
 			}
 
 			break;
@@ -2126,7 +2105,7 @@ static const char *UI_OwnerDrawText( int ownerDraw )
 			}
 			else
 			{
-				s = va( UI_TranslateString( "Refresh Time: %s" ), UI_Cvar_VariableString( va( "ui_lastServerRefresh_%i", ui_netSource.integer ) ) );
+				s = va( "Refresh Time: %s", UI_Cvar_VariableString( va( "ui_lastServerRefresh_%i", ui_netSource.integer ) ) );
 			}
 
 			break;
@@ -3805,17 +3784,17 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s", UI_TranslateString( "Favorite already in list\n" ) );
+						Com_Printf( "%s", _( "Favorite already in list\n" ));
 					}
 					else if ( res == -1 )
 					{
 						// list full
-						Com_Printf( "%s", UI_TranslateString( "Favorite list full\n" ) );
+						Com_Printf( "%s", _( "Favorite list full\n" ));
 					}
 					else
 					{
 						// successfully added
-						Com_Printf( UI_TranslateString( "Added favorite server %s\n" ), addr );
+						Com_Printf(_( "Added favorite server %s\n"), addr );
 					}
 				}
 			}
@@ -4055,17 +4034,17 @@ static void UI_RunMenuScript( char **args )
 					if ( res == 0 )
 					{
 						// server already in the list
-						Com_Printf( "%s", UI_TranslateString( "Favorite already in list\n" ) );
+						Com_Printf( "%s", _("Favorite already in list\n" ));
 					}
 					else if ( res == -1 )
 					{
 						// list full
-						Com_Printf( "Favorite list full\n" );
+						Com_Printf("%s", _( "Favorite list full\n" ));
 					}
 					else
 					{
 						// successfully added
-						Com_Printf( "Added favorite server %s\n", addr );
+						Com_Printf(_( "Added favorite server %s\n"), addr );
 					}
 				}
 			}
@@ -4136,7 +4115,7 @@ static void UI_RunMenuScript( char **args )
 		}
 		else
 		{
-			Com_Printf( "unknown UI script %s\n", name );
+			Com_Printf(_( "unknown UI script %s\n"), name );
 		}
 	}
 }
@@ -4241,6 +4220,10 @@ static int UI_FeederCount( int feederID )
 	else if ( feederID == FEEDER_TREMHUMANBUILD )
 	{
 		return uiInfo.humanBuildCount;
+	}
+	else if ( feederID == FEEDER_LANGUAGES )
+	{
+		return uiInfo.numLanguages;
 	}
 	else if ( feederID == FEEDER_PROFILES )
 	{
@@ -4413,7 +4396,7 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 				case SORT_PING:
 					if ( ping <= 0 )
 					{
-						return "...";
+						return "…";
 					}
 					else
 					{
@@ -4570,6 +4553,13 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 		if ( index >= 0 && index < uiInfo.humanBuildCount )
 		{
 			return uiInfo.humanBuildList[ index ].text;
+		}
+	}
+	else if ( feederID == FEEDER_LANGUAGES )
+	{
+		if ( index >= 0 && index < uiInfo.numLanguages )
+		{
+			return uiInfo.languages[ index ].name;
 		}
 	}
 	else if ( feederID == FEEDER_PROFILES )
@@ -4759,6 +4749,11 @@ static void UI_FeederSelection( int feederID, int index )
 	{
 		uiInfo.humanBuildIndex = index;
 	}
+	else if ( feederID == FEEDER_LANGUAGES )
+	{
+		trap_Cvar_Set( "language", uiInfo.languages[ index ].lang );
+		uiInfo.languageIndex = index;
+	}
 	else if ( feederID == FEEDER_PROFILES )
 	{
 		uiInfo.profileIndex = index;
@@ -4797,6 +4792,22 @@ static int UI_FeederInitialise( int feederID )
 		}
 
 		return uiInfo.numResolutions;
+	}
+	
+	if ( feederID == FEEDER_LANGUAGES )
+	{
+		int i;
+		char lang[25];
+		
+		trap_Cvar_VariableStringBuffer( "language", lang, sizeof( lang ) );
+		
+		for ( i = 0; i < uiInfo.numLanguages; i++ )
+		{
+			if( !Q_stricmp( lang, uiInfo.languages[ i ].lang ) )
+			{
+				return i;
+			}
+		}
 	}
 
 	return 0;
@@ -4899,6 +4910,62 @@ void UI_ParseResolutions( void )
 
 /*
 =================
+UI_ParseLanguages
+=================
+*/
+void UI_ParseLanguages( void )
+{
+	char        buf[ MAX_STRING_CHARS ], temp[ MAX_TOKEN_CHARS ];
+	int         index = 0, lang = 0;
+	qboolean    quoted = qfalse;
+	char        *p;
+	
+	trap_Cvar_VariableStringBuffer( "trans_languages", buf, sizeof( buf ) );
+	p = buf;
+	memset( &temp, 0, sizeof( temp ) );
+	while( p && *p )
+	{
+		if( *p == '"' && quoted )
+		{
+			uiInfo.languages[ lang++ ].name = String_Alloc( temp );
+			quoted = qfalse;
+			index = 0;
+		}
+			
+		else if( *p == '"' || quoted )
+		{
+			if( !quoted ) { p++; }
+			quoted = qtrue;
+			temp[ index++ ] = *p;
+		}
+		p++;
+	}
+	trap_Cvar_VariableStringBuffer( "trans_encodings", buf, sizeof( buf ) );
+	p = buf;
+	memset( &temp, 0, sizeof( temp ) );
+	lang = 0;
+	while( p && *p )
+	{
+		if( *p == '"' && quoted )
+		{
+			uiInfo.languages[ lang++ ].lang = String_Alloc( temp );
+			quoted = qfalse;
+			index = 0;
+		}
+			
+		else if( *p == '"' || quoted )
+		{
+			if( !quoted ) { p++; }
+			quoted = qtrue;
+			temp[ index++ ] = *p;
+		}
+		p++;
+	}
+	
+	uiInfo.numLanguages = lang;
+}
+/*
+=================
 UI_Init
 =================
 */
@@ -4980,7 +5047,6 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.uiDC.stopCinematic = &UI_StopCinematic;
 	uiInfo.uiDC.drawCinematic = &UI_DrawCinematic;
 	uiInfo.uiDC.runCinematicFrame = &UI_RunCinematicFrame;
-	uiInfo.uiDC.translateString = &UI_TranslateString;
 
 	Init_Display( &uiInfo.uiDC );
 
@@ -5007,11 +5073,8 @@ void UI_Init( qboolean inGameLoad )
 	uiInfo.serverStatus.currentServerCinematic = -1;
 	uiInfo.previewMovie = -1;
 
-	// init Yes/No once for cl_language -> server browser (punkbuster)
-	Q_strncpyz( translated_yes, DC->translateString( "Yes" ), sizeof( translated_yes ) );
-	Q_strncpyz( translated_no, DC->translateString( "NO" ), sizeof( translated_no ) );
-
 	UI_ParseResolutions();
+	UI_ParseLanguages();
 }
 
 /*
@@ -5452,7 +5515,7 @@ void UI_DrawConnectScreen( qboolean overlay )
 	if ( !Q_stricmp( cstate.servername, "localhost" ) )
 	{
 		Text_PaintCenter( centerPoint, yStart + 48, scale, colorWhite,
-		                  "Starting up...", ITEM_TEXTSTYLE_SHADOWEDMORE );
+		                  "Starting up…", ITEM_TEXTSTYLE_SHADOWEDMORE );
 	}
 	else
 	{
@@ -5479,11 +5542,11 @@ void UI_DrawConnectScreen( qboolean overlay )
 	switch ( cstate.connState )
 	{
 		case CA_CONNECTING:
-			s = va( "Awaiting connection...%i", cstate.connectPacketCount );
+			s = va( "Awaiting connection…%i", cstate.connectPacketCount );
 			break;
 
 		case CA_CHALLENGING:
-			s = va( "Awaiting challenge...%i", cstate.connectPacketCount );
+			s = va( "Awaiting challenge…%i", cstate.connectPacketCount );
 			break;
 
 		case CA_CONNECTED:
@@ -5499,7 +5562,7 @@ void UI_DrawConnectScreen( qboolean overlay )
 				}
 			}
 
-			s = "Awaiting gamestate...";
+			s = "Awaiting gamestate…";
 			break;
 
 		case CA_LOADING:
@@ -5627,4 +5690,12 @@ void UI_UpdateNews( qboolean begin )
 	{
 		uiInfo.newsInfo.refreshActive = qfalse;
 	}
+}
+
+const char *gettext( const char *msgid )
+{
+	QVM_STATIC char buffer[ 32000 ];
+	char *buf = buffer;
+	trap_Gettext( buf, msgid, sizeof( buffer ) );
+	return buf;
 }

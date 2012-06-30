@@ -1063,7 +1063,7 @@ void MSG_ReportChangeVectors_f( void )
 	{
 		if ( pcount[ i ] )
 		{
-			Com_Printf( "%d used %d\n", i, pcount[ i ] );
+			Com_Printf(_( "%d used %d\n"), i, pcount[ i ] );
 		}
 	}
 }
@@ -1190,7 +1190,7 @@ void MSG_PrioritiseEntitystateFields( void )
 
 	qsort( fieldorders, numfields, sizeof( int ), qsort_entitystatefields );
 
-	Com_Printf( "Entitystate fields in order of priority\n" );
+	Com_Printf(_( "Entitystate fields in order of priority\n" ));
 	Com_Printf( "netField_t entityStateFields[] = {\n" );
 
 	for ( i = 0; i < numfields; i++ )
@@ -1296,7 +1296,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 
 	oldsize += numFields;
 
-//  Com_Printf( "Delta for ent %i: ", to->number );
+//  Com_Printf(_( "Delta for ent %i: "), to->number );
 
 	for ( i = 0, field = entityStateFields; i < lc; i++, field++ )
 	{
@@ -1335,7 +1335,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 					MSG_WriteBits( msg, 0, 1 );
 					MSG_WriteBits( msg, trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS );
 //                  if ( print ) {
-//                      Com_Printf( "%s:%i ", field->name, trunc );
+//                      Com_Printf(_( "%s:%i "), field->name, trunc );
 //                  }
 				}
 				else
@@ -1344,7 +1344,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 					MSG_WriteBits( msg, 1, 1 );
 					MSG_WriteBits( msg, *toF, 32 );
 //                  if ( print ) {
-//                      Com_Printf( "%s:%f ", field->name, *(float *)toF );
+//                      Com_Printf(_( "%s:%f "), field->name, *(float *)toF );
 //                  }
 				}
 			}
@@ -1361,13 +1361,13 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 				// integer
 				MSG_WriteBits( msg, *toF, field->bits );
 //              if ( print ) {
-//                  Com_Printf( "%s:%i ", field->name, *toF );
+//                  Com_Printf(_( "%s:%i "), field->name, *toF );
 //              }
 			}
 		}
 	}
 
-//  Com_Printf( "\n" );
+//  Com_Printf(_( "\n" ));
 
 	/*
 	        c = msg->cursize - c;
@@ -1378,7 +1378,7 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 	                } else {
 	                        endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS;
 	                }
-	                Com_Printf( " (%i bits)\n", endBit - startBit  );
+	                Com_Printf(_( " (%i bits)\n"), endBit - startBit  );
 	        }
 	*/
 }
@@ -1781,7 +1781,7 @@ void MSG_PrioritisePlayerStateFields( void )
 
 	qsort( fieldorders, numfields, sizeof( int ), qsort_playerstatefields );
 
-	Com_Printf( "Playerstate fields in order of priority\n" );
+	Com_Printf(_( "Playerstate fields in order of priority\n" ));
 	Com_Printf( "netField_t playerStateFields[] = {\n" );
 
 	for ( i = 0; i < numfields; i++ )
@@ -1899,7 +1899,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 				MSG_WriteBits( msg, 0, 1 );
 				MSG_WriteBits( msg, trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS );
 //              if ( print ) {
-//                  Com_Printf( "%s:%i ", field->name, trunc );
+//                  Com_Printf(_( "%s:%i "), field->name, trunc );
 //              }
 			}
 			else
@@ -1908,7 +1908,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 				MSG_WriteBits( msg, 1, 1 );
 				MSG_WriteBits( msg, *toF, 32 );
 //              if ( print ) {
-//                  Com_Printf( "%s:%f ", field->name, *(float *)toF );
+//                  Com_Printf(_( "%s:%f "), field->name, *(float *)toF );
 //              }
 			}
 		}
@@ -1917,7 +1917,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 			// integer
 			MSG_WriteBits( msg, *toF, field->bits );
 //          if ( print ) {
-//              Com_Printf( "%s:%i ", field->name, *toF );
+//              Com_Printf(_( "%s:%i "), field->name, *toF );
 //          }
 		}
 	}

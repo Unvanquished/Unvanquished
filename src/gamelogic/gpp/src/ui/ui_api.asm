@@ -122,7 +122,6 @@ equ trap_CIN_DrawCinematic                -359
 equ trap_CIN_SetExtents                   -360
 equ trap_R_RemapShader                    -361
 equ trap_GetLimboString                   -362
-equ trap_TranslateString                  -363
 equ trap_CheckAutoUpdate                  -364
 equ trap_GetAutoUpdate                    -365
 equ trap_openURL                          -366
@@ -134,6 +133,7 @@ equ trap_R_BlendSkeleton                  -371
 equ trap_R_BoneIndex                      -372
 equ trap_R_AnimNumFrames                  -373
 equ trap_R_AnimFrameRate                  -374
+equ trap_Gettext                          -375
 equ trap_R_Glyph                          -376
 equ trap_R_GlyphChar                      -377
 equ trap_R_UnregisterFont                 -378

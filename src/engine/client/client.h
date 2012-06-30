@@ -38,8 +38,8 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "keys.h"
-#include "snd_public.h"
 #include "../../gamelogic/gpp/src/game/bg_public.h" // FIXME
+#include "snd_public.h"
 
 #include "../client/ui_api.h"
 #include "../client/cg_api.h"
@@ -177,10 +177,6 @@ typedef struct
 	entityState_t entityBaselines[ MAX_GENTITIES ]; // for delta compression when not in previous frame
 
 	entityState_t parseEntities[ MAX_PARSE_ENTITIES ];
-
-	qboolean      corruptedTranslationFile;
-	char          translationVersion[ MAX_STRING_TOKENS ];
-	// -NERVE - SMF
 
 	qboolean cameraMode;
 } clientActive_t;
@@ -523,9 +519,6 @@ extern cvar_t *cl_missionStats;
 extern cvar_t *cl_waitForFire;
 extern cvar_t *cl_altTab;
 
-// NERVE - SMF - localization
-extern cvar_t *cl_language;
-
 // -NERVE - SMF
 
 extern cvar_t  *cl_profile;
@@ -611,15 +604,6 @@ void        CL_ShutdownRef( void );
 void        CL_InitRef( const char *renderer );
 
 int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
-
-// NERVE - SMF - localization
-void        CL_InitTranslation();
-void        CL_SaveTransTable( const char *fileName, qboolean newOnly );
-void        CL_ReloadTranslation();
-void        CL_TranslateString( const char *string, char *dest_buffer );
-const char  *CL_TranslateStringBuf( const char *string ) __attribute__((__format_arg__(1)));    // TTimo
-
-// -NERVE - SMF
 
 void CL_OpenURL( const char *url );  // TTimo
 

@@ -26,6 +26,9 @@ else()
   set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "" )
 endif()
+
+project( Daemon C CXX ASM )
+
 set( CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG} CACHE STRING "" )
 set( CMAKE_CXX_FLAGS_MINSIZEREL ${CMAKE_C_FLAGS_MINSIZEREL} CACHE STRING "" )
@@ -37,7 +40,6 @@ set( CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT} )
 set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
-project( Daemon C CXX ASM )
 
 # Options
 option( BUILD_CLIENT         "Build Daemon client"                         1 )
@@ -481,6 +483,7 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/net_chan.c
   ${MOUNT_DIR}/engine/qcommon/net_ip.c
   ${MOUNT_DIR}/engine/qcommon/parse.c
+  ${MOUNT_DIR}/engine/qcommon/translation.cpp
   ${MOUNT_DIR}/engine/qcommon/unzip.c
   ${MOUNT_DIR}/engine/qcommon/ioapi.c
   ${MOUNT_DIR}/engine/qcommon/vm.c
@@ -1051,6 +1054,28 @@ set( Q3ASM_LIST
   ${MOUNT_DIR}/tools/lcc/asm/cmdlib.c
 )
 
+set( TINYGETTEXT_LIST
+  ${MOUNT_DIR}/libs/tinygettext/dictionary_manager.hpp
+  ${MOUNT_DIR}/libs/tinygettext/file_system.hpp
+  ${MOUNT_DIR}/libs/tinygettext/iconv.cpp
+  ${MOUNT_DIR}/libs/tinygettext/plural_forms.hpp
+  ${MOUNT_DIR}/libs/tinygettext/tinygettext.cpp
+  ${MOUNT_DIR}/libs/tinygettext/tinygettext.hpp
+  ${MOUNT_DIR}/libs/tinygettext/dictionary.cpp
+  ${MOUNT_DIR}/libs/tinygettext/dictionary.hpp
+  ${MOUNT_DIR}/libs/tinygettext/dictionary_manager.cpp
+  ${MOUNT_DIR}/libs/tinygettext/iconv.hpp
+  ${MOUNT_DIR}/libs/tinygettext/language.cpp
+  ${MOUNT_DIR}/libs/tinygettext/language.hpp
+  ${MOUNT_DIR}/libs/tinygettext/log.cpp
+  ${MOUNT_DIR}/libs/tinygettext/log.hpp
+  ${MOUNT_DIR}/libs/tinygettext/log_stream.hpp
+  ${MOUNT_DIR}/libs/tinygettext/plural_forms.cpp
+  ${MOUNT_DIR}/libs/tinygettext/po_parser.cpp
+  ${MOUNT_DIR}/libs/tinygettext/po_parser.hpp
+  ${MOUNT_DIR}/libs/findlocale/findlocale.c
+)
+
 ####################
 # End of file list #
 ####################
@@ -1433,7 +1458,7 @@ endif()
 if( BUILD_CLIENT )
   # Setup target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
-    ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST}
+    ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
     ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
@@ -1601,7 +1626,7 @@ if( BUILD_SERVER )
   # Setup the target Server
   add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
-    ${MOUNT_DIR}/engine/null/null_client.c
+    ${MOUNT_DIR}/engine/null/null_client.c ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC} )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )

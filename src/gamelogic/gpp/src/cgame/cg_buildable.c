@@ -191,7 +191,7 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( "File %s is %s\n", filename, len == 0 ? "empty" : "too long" );
+		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
 		return qfalse;
 	}
 
@@ -261,7 +261,7 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
-		CG_Printf( "Error parsing animation file: %s\n", filename );
+		CG_Printf(_( "Error parsing animation file: %s\n"), filename );
 		return qfalse;
 	}
 
@@ -299,7 +299,7 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( "File %s is %s\n", filename, len == 0 ? "empty" : "too long" );
+		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
 		return qfalse;
 	}
 
@@ -334,7 +334,7 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
-		CG_Printf( "Error parsing sound file: %s\n", filename );
+		CG_Printf(_( "Error parsing sound file: %s\n"), filename );
 		return qfalse;
 	}
 
@@ -352,7 +352,7 @@ static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		Com_Printf(_( "Failed to load animation file %s\n"), filename );
 		return qfalse;
 	}
 
@@ -548,7 +548,7 @@ void CG_InitBuildables( void )
 
 			if ( !CG_ParseBuildableAnimationFile( filename, i ) )
 			{
-				Com_Printf( S_COLOR_YELLOW "WARNING: failed to load animation file %s\n", filename );
+				Com_Printf( _( S_COLOR_YELLOW  "WARNING: failed to load animation file %s\n"), filename );
 			}
 		}
 
@@ -557,7 +557,7 @@ void CG_InitBuildables( void )
 
 		if ( !CG_ParseBuildableSoundFile( filename, i ) )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: failed to load sound file %s\n", filename );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: failed to load sound file %s\n"), filename );
 		}
 
 		//sounds
@@ -742,7 +742,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 			{
 				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 				{
-					CG_Printf( "Can't build old buildable bSkeleton\n" );
+					CG_Printf( "%s", _( "Can't build old buildable bSkeleton\n" ));
 					return;
 				}
 			}
@@ -780,7 +780,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 		{
 			if ( cg_debugRandom.integer )
 			{
-				CG_Printf( "Sound for animation %d for a %s\n",
+				CG_Printf(_( "Sound for animation %d for a %s\n"),
 				           newAnimation, BG_Buildable( buildable )->humanName );
 			}
 
@@ -912,7 +912,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 		{
 			if ( !trap_R_BuildSkeleton( &bSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
 			{
-				CG_Printf( "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n" );
+				CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n" ));
 			}
 
 			if ( oldbSkeleton.type != SK_INVALID && oldbSkeleton.numBones == bSkeleton.numBones )
@@ -922,7 +922,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 				{
 					if ( !trap_R_BlendSkeleton( &bSkeleton, &oldbSkeleton, lf->blendlerp ) )
 					{
-						CG_Printf( "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n" );
+						CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n" ));
 						return;
 					}
 				}
@@ -1348,7 +1348,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		}
 		else
 		{
-			Com_Printf( "CG_BuildableStatusParse: unknown token %s in %s\n",
+			Com_Printf(_( "CG_BuildableStatusParse: unknown token %s in %s\n"),
 			            token.string, filename );
 			bs->loaded = qfalse;
 			trap_Parse_FreeSource( handle );
