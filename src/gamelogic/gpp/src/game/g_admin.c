@@ -4587,14 +4587,15 @@ qboolean G_admin_buildlog( gentity_t *ent )
 		           "" ) );
 	}
 
-	ADMBP( va( "\"%s\" \"%d\" \"%d\" \"%d\" \"%d\" \"%d\" \"%s\"",QQ( N_("^3buildlog: ^7showing %d build logs %d - %d of %d – %d.  %s\n") ),
+	ADMBP( "\"" );
+	ADMBP_end();
+
+	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing %d build logs $1$ - $2$ of $3$ – $4$.  $5$\n") ),
 	           printed, start + MAX_CLIENTS, i + MAX_CLIENTS - 1,
 	           level.buildId + MAX_CLIENTS - level.numBuildLogs,
 	           level.buildId + MAX_CLIENTS - 1,
 	           i < level.buildId ? va( "run 'buildlog %s%s%d' to see more",
 	                                   search, search[ 0 ] ? " " : "", i + MAX_CLIENTS ) : "" ) );
-	ADMBP( "\"" );
-	ADMBP_end();
 	return qtrue;
 }
 
@@ -4635,8 +4636,8 @@ qboolean G_admin_revert( gentity_t *ent )
 	                  sizeof( time ), duration, sizeof( duration ) );
 	admin_log( arg );
 	AP( va( "print_tr %s %s %d %s %s", ( level.buildId - id ) > 1 ?
-		QQ( N_("^3revert: ^7$1$^7 reverted $2$ changes over the past $3$$4$\n") ) :
-		QQ( N_("^3revert: ^7$1$^7 reverted $2$ change over the past $3$$4$\n") ),
+		QQ( N_("^3revert: ^7$1$^7 reverted $2$ changes over the past $3$ $4t$\n") ) :
+		QQ( N_("^3revert: ^7$1$^7 reverted $2$ change over the past $3$ $4t$\n") ),
 		G_quoted_admin_name( ent ),
 	    level.buildId - id,
 	    time, duration ) );
