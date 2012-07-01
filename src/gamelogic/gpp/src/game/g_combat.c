@@ -1829,8 +1829,8 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	{
 		// model name shouldn't need quoting
 		G_TeamCommand( actor->client->ps.stats[ STAT_TEAM ],
-		               va( "print_tr \"%s\" \"%s\" \"%s\"", mod == MOD_DECONSTRUCT ? N_("%s ^3DECONSTRUCTED^7 by \"%s\"\n") :
-						   N_("%s ^3DESTROYED^7 by \"%s\"\n"),
+		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? N_("$1$ ^3DECONSTRUCTED^7 by $2$\n") :
+						   N_("$1$ ^3DESTROYED^7 by $2$\n"),
 		                   BG_Buildable( self->s.modelindex )->humanName,
 		                   Quote( actor->client->pers.netname ) ) );
 	}
