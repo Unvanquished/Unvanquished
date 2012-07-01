@@ -65,6 +65,7 @@ int demo_protocols[] = { 66, 67, 68, 0 };
 #define DEF_COMZONEMEGS_S         XSTRING(DEF_COMZONEMEGS)
 
 #define _(x) Trans_Gettext(x)
+#define C_(x, y) Trans_Pgettext(x, y)
 
 int                 com_argc;
 char                *com_argv[ MAX_NUM_ARGVS + 1 ];

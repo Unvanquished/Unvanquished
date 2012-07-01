@@ -1516,10 +1516,12 @@ void Com_GetHunkInfo( int *hunkused, int *hunkexpected );
 void Com_RandomBytes( byte *string, int len );
 
 #define _(x) Trans_Gettext(x)
+#define C_(x, y) Trans_Pgettext(x, y)
 #define N_(x) (x)
 
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));
+const char* Trans_Pgettext( const char *msgctxt, const char *msgid ) __attribute__((format_arg(1)));
 const char* Trans_GettextGame( const char *msgid ) __attribute__((format_arg(1)));
 
 #endif // _QCOMMON_H_
