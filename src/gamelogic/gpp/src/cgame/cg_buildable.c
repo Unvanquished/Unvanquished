@@ -1892,6 +1892,11 @@ void CG_Buildable( centity_t *cent )
 		}
 	}
 
+	if( cg_drawBBOX.integer )
+	{
+		CG_DrawBoundingBox( ent.origin, mins, maxs );
+	}
+
 	//offset on the Z axis if required
 	VectorMA( ent.origin, BG_BuildableConfig( es->modelindex )->zOffset, surfNormal, ent.origin );
 
