@@ -411,10 +411,6 @@ extern "C" {
 		R_InitCommandBuffers();
 		GL_CheckErrors();
 
-		// print info
-		GfxInfo_f();
-		GL_CheckErrors();
-
 		// set default state
 		GL_SetDefaultState();
 		GL_CheckErrors();
@@ -2122,6 +2118,10 @@ extern "C" {
 			glGenQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 		}
 
+		GL_CheckErrors();
+
+		// print info
+		GfxInfo_f();
 		GL_CheckErrors();
 
 		ri.Printf( PRINT_DEVELOPER, "----- finished R_Init -----\n" );
