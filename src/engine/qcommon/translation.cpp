@@ -97,6 +97,7 @@ Language Trans_ReturnLanguage( const char *lang )
 
 extern "C" void Trans_UpdateLanguage_f( void )
 {
+	if( !enabled) ) { return; }
 	Language lang = Trans_ReturnLanguage( language->string );
 	trans_dict = trans_manager.get_dictionary( lang );
 	trans_dictgame = trans_managergame.get_dictionary( lang );
