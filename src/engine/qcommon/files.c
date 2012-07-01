@@ -315,7 +315,7 @@ static fileHandleData_t fsh[ MAX_FILE_HANDLES ];
 static qboolean fs_reordered;
 
 // never load anything from pk3 files that are not present at the server when pure
-// ex: when fs_numServerPaks != 0, FS_FOpenFileRead won't load anything outside of pk3 except .cfg .menu .game .dat
+// ex: when fs_numServerPaks != 0, FS_FOpenFileRead won't load anything outside of pk3 except .cfg .menu .game .dat .po
 static int  fs_numServerPaks;
 static int  fs_serverPaks[ MAX_SEARCH_PATHS ]; // checksums
 static char *fs_serverPakNames[ MAX_SEARCH_PATHS ]; // pk3 names
@@ -1438,7 +1438,8 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						     strstr( filename, "levelshots" ) == NULL &&
 						     Q_stricmp( filename + l - 4, ".bot" ) != 0 &&
 						     Q_stricmp( filename + l - 6, ".arena" ) != 0 &&
-						     Q_stricmp( filename + l - 5, ".menu" ) != 0 )
+						     Q_stricmp( filename + l - 5, ".menu" ) != 0 &&
+						     Q_stricmp( filename + l - 3, ".po" ) != 0 )
 						{
 							pak->referenced |= FS_GENERAL_REF;
 						}
@@ -1573,6 +1574,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 				     && Q_stricmp( filename + l - 4, ".dat" )  // for journal files
 				     && Q_stricmp( filename + l - 8, "bots.txt" )
 				     && Q_stricmp( filename + l - 8, ".botents" )
+				     && Q_stricmp( filename + l - 3, ".po" )
 #ifdef __MACOS__
 				     // even when pure is on, let the server game be loaded
 				     && Q_stricmp( filename, "qagame_mac" )
@@ -1601,6 +1603,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			     && Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
 			     && Q_stricmp( filename + l - 4, ".dat" )
 			     && Q_stricmp( filename + l - 8, ".botents" )
+			     && Q_stricmp( filename + l - 3, ".po" )
 			     /*&& !strstr( filename, "botfiles" )*/ ) // RF, need this for dev
 			{
 				fs_fakeChkSum = random();
