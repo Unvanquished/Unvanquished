@@ -107,10 +107,10 @@ extern int errno;
 #endif
 
 #ifndef ALLOC
-# define ALLOC(size) ( malloc(size))
+# define ALLOC(size) ( Z_Malloc(size) )
 #endif
 #ifndef TRYFREE
-# define TRYFREE(p)  { if (p) { free(p); } }
+# define TRYFREE(p)  { if (p) { Z_Free(p); } }
 #endif
 
 #define SIZECENTRALDIRITEM ( 0x2e )
