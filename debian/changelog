@@ -1,3 +1,9 @@
+unvanquished (0.5.0-2) unstable; urgency=low
+
+  * The migration script didn't migrate all needed files...
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 02 Jul 2012 14:51:08 +0100
+
 unvanquished (0.5.0-1) unstable; urgency=low
 
   * Release of alpha 5.

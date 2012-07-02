@@ -9,7 +9,9 @@ export LANG=C
 
 NAME="$(sed -e '/^seta name /! d; s/^seta name //; s/\^[0-:<-o]//g; s/[^0-9A-Za-z]//g; q' ~/.Unvanquished/main/autogen.cfg)"
 mkdir -p ~/.Unvanquished/main/profiles/"$NAME"
-cp -al ~/.Unvanquished/main/*.cfg ~/.Unvanquished/main/profiles/"$NAME"/
+cp -al ~/.Unvanquished/pubkey \
+       ~/.Unvanquished/main/guid \
+       ~/.Unvanquished/main/*.cfg ~/.Unvanquished/main/profiles/"$NAME"/
 echo "$NAME" >~/.Unvanquished/main/profiles/"$NAME"/profile.dat
 echo "$NAME" >~/.Unvanquished/main/profiles/defaultprofile.dat
 
