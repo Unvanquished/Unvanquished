@@ -464,13 +464,13 @@ void CG_InitBuildables( void )
 
 			//Register the rest of the buildable animations
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT1,
-			                                     "construct", qtrue, qfalse, qfalse ) )
+			                                     "construct", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_CONSTRUCT1 ] = bi->animations[ BANIM_IDLE1 ];
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT2,
-			                                     "construct2", qtrue, qfalse, qfalse ) )
+			                                     "construct2", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_CONSTRUCT2 ] = bi->animations[ BANIM_IDLE1 ];
 			}
@@ -488,19 +488,19 @@ void CG_InitBuildables( void )
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK1,
-			                                     "attack", qtrue, qfalse, qfalse ) )
+			                                     "attack", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_ATTACK1 ] = bi->animations[ BANIM_IDLE1 ];
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK2,
-			                                     "attack2", qtrue, qfalse, qfalse ) )
+			                                     "attack2", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_ATTACK2 ] = bi->animations[ BANIM_IDLE1 ];
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_SPAWN1,
-			                                     "spawn", qtrue, qfalse, qfalse ) )
+			                                     "spawn", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_SPAWN1 ] = bi->animations[ BANIM_IDLE1 ];
 			}
@@ -512,7 +512,7 @@ void CG_InitBuildables( void )
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN1,
-			                                     "pain", qtrue, qfalse, qfalse ) )
+			                                     "pain", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_PAIN1 ] = bi->animations[ BANIM_IDLE1 ];
 			}
@@ -530,7 +530,7 @@ void CG_InitBuildables( void )
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY2,
-			                                     "destroy2", qtrue, qfalse, qfalse ) )
+			                                     "destroy2", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_DESTROY2 ] = bi->animations[ BANIM_IDLE1 ];
 			}
@@ -1890,6 +1890,11 @@ void CG_Buildable( centity_t *cent )
 			VectorCopy( surfNormal, cent->buildableCache.cachedNormal );
 			cent->buildableCache.cachedType = es->modelindex;
 		}
+	}
+
+	if( cg_drawBBOX.integer )
+	{
+		CG_DrawBoundingBox( ent.origin, mins, maxs );
 	}
 
 	//offset on the Z axis if required
