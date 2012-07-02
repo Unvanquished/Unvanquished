@@ -1382,7 +1382,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	}
 
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\"\n",
-	             clientNum, client->pers.ip.str, client->pers.guid,
+	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
 	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
 
