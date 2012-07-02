@@ -1446,8 +1446,8 @@ void Cmd_VSay_f( gentity_t *ent )
 	if ( !track )
 	{
 		trap_SendServerCommand( ent - g_entities, va("print_tr %s %s %s %d %d %d %d %s",
-		                          N_("$1$: no available track for command '$2$', team $3$, "
-		                          "class $4$, weapon $5$, and enthusiasm $6$ in voice '$7$'\n"),
+		                          QQ( N_("$1$: no available track for command '$2$', team $3$, "
+		                          "class $4$, weapon $5$, and enthusiasm $6$ in voice '$7$'\n") ),
 		                          vsay, Quote( voiceCmd ), ent->client->pers.teamSelection,
 		                          ent->client->pers.classSelection, weapon,
 		                          ( int ) ent->client->voiceEnthusiasm, Quote( voiceName ) ) );
