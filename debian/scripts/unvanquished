@@ -1,3 +1,4 @@
 #! /bin/sh
 cd /usr/lib/games/unvanquished
+unvanquished-migrate-profile
 exec ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished "$@"

@@ -1,8 +1,10 @@
-unvanquished (0.5.0-0) unstable; urgency=low
+unvanquished (0.5.0-1) unstable; urgency=low
 
-  * Git snapshot.
+  * Release of alpha 5.
+  * Added a helper script for profile migration.
+    This is run automatically when you run Unvanquished.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 02 Jul 2012 01:41:21 +0100
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 02 Jul 2012 03:09:37 +0100
 
 unvanquished (0.4.0-2) unstable; urgency=low
 
