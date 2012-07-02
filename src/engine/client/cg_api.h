@@ -243,7 +243,8 @@ typedef enum cgameImport_s
   CG_GETTEXT,
   CG_R_GLYPH,
   CG_R_GLYPHCHAR,
-  CG_R_UREGISTERFONT
+  CG_R_UREGISTERFONT,
+  CG_PGETTEXT
 } cgameImport_t;
 
 typedef enum
@@ -497,3 +498,4 @@ void            trap_RegisterButtonCommands( const char *cmds );
 void            trap_GetClipboardData( char *, int, clipboard_t );
 void            trap_QuoteString( const char *, char*, int );
 void            trap_Gettext( char *buffer, const char *msgid, int bufferLength );
+void            trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength );

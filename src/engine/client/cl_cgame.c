@@ -42,6 +42,7 @@ Maryland 20850 USA.
 #endif
 
 #define __(x) Trans_GettextGame(x)
+#define C__(x, y) Trans_PgettextGame(x, y)
 
 extern qboolean        loadCamera( int camNum, const char *name );
 extern void            startCamera( int camNum, int time );
@@ -1347,6 +1348,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_GETTEXT:
 			strncpy( VMA(1), __(VMA(2)), args[3] );
+			return 0;
+
+		case CG_PGETTEXT:
+			strncpy( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
 			return 0;
 
 		case CG_R_GLYPH:
