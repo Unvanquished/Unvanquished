@@ -897,9 +897,3 @@ void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
 {
 	syscall( UI_GETTEXT, buffer, msgid, bufferLength );
 }
-
-//129.
-void trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength )
-{
-	syscall( UI_PGETTEXT, buffer, ctxt, msgid, bufferLength );
-}

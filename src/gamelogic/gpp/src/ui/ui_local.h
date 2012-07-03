@@ -49,7 +49,6 @@ void UI_UpdateCvars( void );
 void UI_DrawConnectScreen( qboolean overlay );
 
 const char *gettext( const char *msgid );
-const char *pgettext( const char *ctxt, const char *msgid );
 
 extern vmCvar_t ui_chatPromptColours;
 
