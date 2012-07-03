@@ -4863,6 +4863,7 @@ void G_admin_buffer_print( gentity_t *ent, const char *m )
 	{
 		ADMP( g_bfb );
 		g_bfb[ 0 ] = '\0';
+		Q_strcat( g_bfb, sizeof( g_bfb ), "\"" );
 	}
 
 	Q_strcat( g_bfb, sizeof( g_bfb ), m );

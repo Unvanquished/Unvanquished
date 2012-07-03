@@ -1,8 +1,33 @@
-unvanquished (0.4.0-0) unstable; urgency=low
+unvanquished (0.5.0-0) unstable; urgency=low
 
   * Git snapshot.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 01 Jun 2012 00:25:16 +0100
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 02 Jul 2012 01:41:21 +0100
+
+unvanquished (0.4.0-2) unstable; urgency=low
+
+  * QVM restart was broken, affecting at least /restart.
+  * Use xz to compress the .debs.
+  * Add a NEWS file, which should have been in -1.
+  * Do a little more cleanup.
+  * Move the dependency on curl to unvanquished-common.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 03 Jun 2012 01:03:37 +0100
+
+unvanquished (0.4.0-1) unstable; urgency=low
+
+  * Release of alpha 4.
+  * Change of address...
+  * Various packaging issues are fixed:
+    - downloaded data is now in /var/games/unvanquished;
+    - postinst & prerm scripts are set -e and don't contain absolute paths;
+    - launcher scripts no longer have .sh in their names;
+    - unvanquished-dbg depends on either unvanquished or unvanquished-server
+      and belongs in section contrib/debug;
+    - unvanquished-server depends on adduser.
+  * .pk3 downloading is now done in unvanquished-common.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 01 Jun 2012 20:49:29 +0100
 
 unvanquished (0.3.5-3) unstable; urgency=low
 
