@@ -1286,5 +1286,3 @@ int cmdcmp( const void *a, const void *b );
 
 char *Quote( const char *str );
 char *Substring( const char *in, int start, int count );
-
-const char *Trans_GenderContext( gender_t gender );
