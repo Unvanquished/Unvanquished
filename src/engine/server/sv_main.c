@@ -1696,7 +1696,7 @@ void SV_PrintTranslatedText( const char *text )
 {
 	char        str[ MAX_STRING_CHARS ];
 	const char  *in;
-	char        number[3];
+	char        number[2];
 	int         i=0, j=0, num=-1;
 
 	Cmd_SaveCmdContext();
