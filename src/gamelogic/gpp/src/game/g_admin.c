@@ -3708,7 +3708,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 			denied = qtrue;
 		}
 
-		ADMBP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not hace permission to use '$1$'") ) :
+		ADMBP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not have permission to use '$1$'") ) :
 		QQ( N_("^3adminhelp: ^7no help found for '$1$'") ), param ) );
 		ADMBP_end();
 		return qfalse;
