@@ -4702,7 +4702,7 @@ qboolean G_admin_l1( gentity_t *ent )
 		return qfalse;
 	}
 
-	if ( !a || a->level != 0 )
+	if ( a && a->level != 0 )
 	{
 		ADMP( QQ( N_("^3l1: ^7your intended victim is not level 0\n") ) );
 		return qfalse;
