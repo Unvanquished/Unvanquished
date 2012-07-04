@@ -2959,7 +2959,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 	}
 	else
 	{
-		strcpy( duration, "this game" );
+		strcpy( time, "this game" );
 		spec->expires = -1;
 	}
 
@@ -2975,7 +2975,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 	}
 	else
 	{
-		AP( va( "print_tr %s %s %s %s %s", QQ( N_("3speclock: ^7$1$^7 blocked team-change for $2$^7 for $3$$4t$\n") ),
+		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock: ^7$1$^7 blocked team-change for $2$^7 for $3$$4t$\n") ),
 		        G_quoted_admin_name( ent ),
 		        Quote( vic->client->pers.netname ), Quote( time ), duration ) );
 	}
@@ -4313,7 +4313,7 @@ qboolean G_admin_lock( gentity_t *ent )
 
 	if ( fail )
 	{
-		ADMP( va( "%s %s %s", lock ? QQ( N_("3$1$: ^7the $2$ team is already locked\n") ) :
+		ADMP( va( "%s %s %s", lock ? QQ( N_("^3$1$: ^7the $2$ team is already locked\n") ) :
 			QQ( N_("^3$1$: ^7the $2$ team is not currently locked\n") ), command, BG_TeamName( team ) ) );
 		return qfalse;
 	}
@@ -4590,7 +4590,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	ADMBP( "\"" );
 	ADMBP_end();
 
-	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing %d build logs $1$ - $2$ of $3$ – $4$.  $5$\n") ),
+	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing $1$ build logs $2$ - $3$ of $4$ – $5$.  $6$\n") ),
 	           printed, start + MAX_CLIENTS, i + MAX_CLIENTS - 1,
 	           level.buildId + MAX_CLIENTS - level.numBuildLogs,
 	           level.buildId + MAX_CLIENTS - 1,
