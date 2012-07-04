@@ -3302,39 +3302,6 @@ void CL_DisconnectPacket( netadr_t from )
 	}
 }
 
-char *str_replace( const char *string, const char *substr, const char *replacement )
-{
-	char *tok = NULL;
-	char *newstr = NULL;
-	char *oldstr = NULL;
-
-	/* if either substr or replacement is NULL, duplicate string a let caller handle it */
-	if ( substr == NULL || replacement == NULL ) { return strdup( string ); }
-
-	newstr = strdup( string );
-
-	while ( ( tok = strstr( newstr, substr ) ) )
-	{
-		oldstr = newstr;
-		newstr = malloc( strlen( oldstr ) - strlen( substr ) + strlen( replacement ) + 1 );
-
-		/*failed to alloc mem, free old string and return NULL */
-		if ( newstr == NULL )
-		{
-			free( oldstr );
-			return NULL;
-		}
-
-		memcpy( newstr, oldstr, tok - oldstr );
-		memcpy( newstr + ( tok - oldstr ), replacement, strlen( replacement ) );
-		memcpy( newstr + ( tok - oldstr ) + strlen( replacement ), tok + strlen( substr ), strlen( oldstr ) - strlen( substr ) - ( tok - oldstr ) );
-		memset( newstr + strlen( oldstr ) - strlen( substr ) + strlen( replacement ), 0, 1 );
-		free( oldstr );
-	}
-
-	return newstr;
-}
-
 /*
 ===================
 CL_MotdPacket
@@ -3344,7 +3311,8 @@ CL_MotdPacket
 void CL_MotdPacket( netadr_t from, const char *info )
 {
 	const char *v;
-	char *w;
+	char w[BIG_INFO_VALUE];
+	char *ptr;
 
 	// if not from our server, ignore it
 	if ( !NET_CompareAdr( from, cls.updateServer ) )
@@ -3371,11 +3339,18 @@ void CL_MotdPacket( netadr_t from, const char *info )
 	}
 
 	v = Info_ValueForKey( info, "motd" );
-	w = str_replace( v, "|", "\n" );
+	strcpy(w,v);
+	ptr = w;
+
+	//replace all | with \n
+	while ( *ptr ) {
+		if( *ptr == '|' )
+			*ptr = '\n';
+		ptr++;
+	}
 
 	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
 	Cvar_Set( "cl_newsString", w );
-	free( w );
 }
 
 /*
