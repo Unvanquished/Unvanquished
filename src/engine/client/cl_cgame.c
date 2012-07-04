@@ -1399,9 +1399,7 @@ void CL_UpdateLevelHunkUsage( void )
 	{
 		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
 		buf = ( char * ) Z_Malloc( len + 1 );
-		memset( buf, 0, len + 1 );
 		outbuf = ( char * ) Z_Malloc( len + 1 );
-		memset( outbuf, 0, len + 1 );
 
 		FS_Read( ( void * ) buf, len, handle );
 		FS_FCloseFile( handle );
@@ -1443,6 +1441,8 @@ void CL_UpdateLevelHunkUsage( void )
 				}
 				else
 				{
+					Z_Free( buf );
+					Z_Free( outbuf );
 					Com_Error( ERR_DROP, "hunkusage.dat file is corrupt" );
 				}
 			}
@@ -1452,6 +1452,8 @@ void CL_UpdateLevelHunkUsage( void )
 
 		if ( handle < 0 )
 		{
+			Z_Free( buf );
+			Z_Free( outbuf );
 			Com_Error( ERR_DROP, "cannot create %s", memlistfile );
 		}
 
@@ -1460,6 +1462,8 @@ void CL_UpdateLevelHunkUsage( void )
 
 		if ( FS_Write( ( void * ) outbuf, len, handle ) != len )
 		{
+			Z_Free( buf );
+			Z_Free( outbuf );
 			Com_Error( ERR_DROP, "cannot write to %s", memlistfile );
 		}
 
