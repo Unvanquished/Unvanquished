@@ -3671,13 +3671,13 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		qboolean      denied = qfalse;
 
 		trap_Argv( 1, param, sizeof( param ) );
-		ADMBP_begin();
-		ADMBP( "\"" );
 
 		if ( ( c = G_admin_command( param ) ) )
 		{
 			if ( G_admin_permission( ent, c->flag ) )
 			{
+				ADMBP_begin();
+				ADMBP( "\"" );
 				ADMBP( N_( "^3adminhelp: ^7help for '$1$':\n"
 							" ^3Description: ^7$2t$\n"
 							" ^3Syntax: ^7$3$\n"
@@ -3695,6 +3695,8 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, admincmd->flag ) )
 			{
+				ADMBP_begin();
+				ADMBP( "\"" );
 				ADMBP( N_( "^3adminhelp: ^7help for '$1$':\n"
 							" ^3Description: ^7$2t$\n"
 							" ^3Syntax: ^7$1$ $3t$\n"
@@ -3708,9 +3710,8 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 			denied = qtrue;
 		}
 
-		ADMBP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not hace permission to use '$1$'") ) :
+		ADMP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not have permission to use '$1$'") ) :
 		QQ( N_("^3adminhelp: ^7no help found for '$1$'") ), param ) );
-		ADMBP_end();
 		return qfalse;
 	}
 }
