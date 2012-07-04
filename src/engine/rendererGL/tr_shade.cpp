@@ -143,6 +143,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 		if ( !libBuffer )
 		{
+			free( libsBuffer );
 			ri.Error( ERR_DROP, "Couldn't load %s", filename );
 		}
 
@@ -174,6 +175,7 @@ static void GLSL_LoadGPUShader( GLhandleARB program, const char *name, const cha
 
 	if ( !mainBuffer )
 	{
+		free( libsBuffer );
 		ri.Error( ERR_DROP, "Couldn't load %s", filename );
 	}
 
