@@ -4416,7 +4416,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 
 	if ( !count )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3No player matching ^7\'$1$^7\' ^3to send message to.\n") ),
+		ADMP( va( "%s %s", QQ( N_("^3No player matching ^7 '$1$^7' ^3to send message to.\n") ),
 		          Quote( name ) ) );
 	}
 	else
