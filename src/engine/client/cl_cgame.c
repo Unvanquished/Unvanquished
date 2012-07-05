@@ -391,7 +391,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 	if ( cl_showServerCommands->integer )
 	{
 		// NERVE - SMF
-		Com_DPrintf( "serverCommand: %i : %s\n", serverCommandNumber, s );
+		Com_Printf( "serverCommand: %i : %s\n", serverCommandNumber, s );
 	}
 
 rescan:
@@ -414,13 +414,13 @@ rescan:
 
 	if ( !strcmp( cmd, "bcs0" ) )
 	{
-		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv( 1 ), Cmd_Argv( 2 ) );
+		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s %s", Cmd_Argv( 1 ), Cmd_QuoteString( Cmd_Argv( 2 ) ) );
 		return qfalse;
 	}
 
 	if ( !strcmp( cmd, "bcs1" ) )
 	{
-		s = Cmd_Argv( 2 );
+		s = Cmd_QuoteString( Cmd_Argv( 2 ) );
 
 		if ( strlen( bigConfigString ) + strlen( s ) >= BIG_INFO_STRING )
 		{
@@ -433,7 +433,7 @@ rescan:
 
 	if ( !strcmp( cmd, "bcs2" ) )
 	{
-		s = Cmd_Argv( 2 );
+		s = Cmd_QuoteString( Cmd_Argv( 2 ) );
 
 		if ( strlen( bigConfigString ) + strlen( s ) + 1 >= BIG_INFO_STRING )
 		{

@@ -756,6 +756,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			if ( !vboTriangles.currentElements )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadMD5: could not add triangles to a remaining VBO surfaces for model '%s'\n", modName );
+				Com_DestroyGrowList( &vboTriangles );
 				break;
 			}
 
