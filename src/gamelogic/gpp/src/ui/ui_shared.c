@@ -9632,6 +9632,6 @@ const char *Gettext( const char *msgid )
 	
 	index = ( index + 1 ) & 3;
 	buf = buffer[ index ];
-	trap_Gettext( buf, msgid, sizeof( buffer ) );
+	trap_Gettext( buf, msgid, sizeof( buffer[ 0 ] ) );
 	return buf;
 }
