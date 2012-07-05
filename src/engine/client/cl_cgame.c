@@ -391,7 +391,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 	if ( cl_showServerCommands->integer )
 	{
 		// NERVE - SMF
-		Com_DPrintf( "serverCommand: %i : %s\n", serverCommandNumber, s );
+		Com_Printf( "serverCommand: %i : %s\n", serverCommandNumber, s );
 	}
 
 rescan:
