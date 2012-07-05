@@ -282,24 +282,24 @@ static void MakeMeshTangentVectors( int width, int height, srfVert_t ctrl[ MAX_G
 {
 	int              i, j;
 	srfVert_t        *dv[ 3 ];
-	static srfVert_t ctrl2[ MAX_GRID_SIZE * MAX_GRID_SIZE ];
 	srfTriangle_t    *tri;
+	srfVert_t        *ctrl2[ MAX_GRID_SIZE * MAX_GRID_SIZE ];
 
 	// FIXME: use more elegant way
+	// Could also forgo the pointer array altogether and use i = index % width and j = (index - i)/ width
 	for ( i = 0; i < width; i++ )
 	{
 		for ( j = 0; j < height; j++ )
 		{
-			dv[ 0 ] = &ctrl2[ j * width + i ];
-			*dv[ 0 ] = ctrl[ j ][ i ];
+			ctrl2[ j * width + i ] = &ctrl[ j ][ i ];
 		}
 	}
 
 	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
 	{
-		dv[ 0 ] = &ctrl2[ tri->indexes[ 0 ] ];
-		dv[ 1 ] = &ctrl2[ tri->indexes[ 1 ] ];
-		dv[ 2 ] = &ctrl2[ tri->indexes[ 2 ] ];
+		dv[ 0 ] = ctrl2[ tri->indexes[ 0 ] ];
+		dv[ 1 ] = ctrl2[ tri->indexes[ 1 ] ];
+		dv[ 2 ] = ctrl2[ tri->indexes[ 2 ] ];
 
 		R_CalcTangentVectors( dv );
 	}
@@ -344,7 +344,7 @@ static void MakeMeshTangentVectors( int width, int height, srfVert_t ctrl[ MAX_G
 	}
 
 #endif
-
+	/*
 	for ( i = 0; i < width; i++ )
 	{
 		for ( j = 0; j < height; j++ )
@@ -355,7 +355,7 @@ static void MakeMeshTangentVectors( int width, int height, srfVert_t ctrl[ MAX_G
 			VectorCopy( dv[ 0 ]->tangent, dv[ 1 ]->tangent );
 			VectorCopy( dv[ 0 ]->binormal, dv[ 1 ]->binormal );
 		}
-	}
+	}*/
 }
 
 static int MakeMeshTriangles( int width, int height, srfVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ],
@@ -700,7 +700,7 @@ void R_FreeSurfaceGridMesh( srfGridMesh_t *grid )
 R_SubdividePatchToGrid
 =================
 */
-srfGridMesh_t  *R_SubdividePatchToGrid( int width, int height, srfVert_t points[ MAX_PATCH_SIZE *MAX_PATCH_SIZE ] )
+srfGridMesh_t  *R_SubdividePatchToGrid( int width, int height, srfVert_t points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ] )
 {
 	int                  i, j, k, l;
 	srfVert_t            prev, next, mid;
