@@ -1696,7 +1696,6 @@ void SV_PrintTranslatedText( const char *text )
 {
 	char        str[ MAX_STRING_CHARS ];
 	const char  *in;
-	char        number[2];
 	int         i=0, j=0, num=-1;
 
 	Cmd_SaveCmdContext();
@@ -1708,7 +1707,8 @@ void SV_PrintTranslatedText( const char *text )
 	{
 		if( *in == '$' )
 		{
-			in++;
+			const char *number = ++in;
+
 			while( *in )
 			{
 				if( *in == '$' )
@@ -1720,7 +1720,6 @@ void SV_PrintTranslatedText( const char *text )
 				
 				if( isdigit( *in ) )
 				{
-					number[ j++ ] = *in;
 					in++;
 
 					if( *in == 't' && *(in+1) == '$' )
