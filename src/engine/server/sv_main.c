@@ -241,7 +241,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 	// hack to echo broadcast prints to console
 	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print ", 6 ) )
 	{
-		Com_Printf( "broadcast: %s\n", SV_ExpandNewlines( ( char * ) message ) );
+		Com_Printf( "%s", Cmd_UnquoteString( ( char * ) message + 6 ) );
 	}
 
 	
@@ -1696,7 +1696,6 @@ void SV_PrintTranslatedText( const char *text )
 {
 	char        str[ MAX_STRING_CHARS ];
 	const char  *in;
-	char        number[3];
 	int         i=0, j=0, num=-1;
 
 	Cmd_SaveCmdContext();
@@ -1708,7 +1707,8 @@ void SV_PrintTranslatedText( const char *text )
 	{
 		if( *in == '$' )
 		{
-			in++;
+			const char *number = ++in;
+
 			while( *in )
 			{
 				if( *in == '$' )
@@ -1720,7 +1720,6 @@ void SV_PrintTranslatedText( const char *text )
 				
 				if( isdigit( *in ) )
 				{
-					number[ j++ ] = *in;
 					in++;
 
 					if( *in == 't' && *(in+1) == '$' )

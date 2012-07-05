@@ -57,6 +57,7 @@ bool              enabled = false;
 int               modificationCount=0;
 
 #define _(x) Trans_Gettext(x)
+#define C_(x, y) Trans_Pgettext(x, y)
 
 /*
 ====================
@@ -211,6 +212,12 @@ extern "C" const char* Trans_Gettext( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
 	return trans_dict.translate( std::string( msgid ) ).c_str();
+}
+
+extern "C" const char* Trans_Pgettext( const char *msgctxt, const char *msgid )
+{
+	if ( !enabled ) { return msgid; }
+	return trans_dict.translate_ctxt( std::string( msgctxt ), std::string( msgid ) ).c_str();
 }
 
 extern "C" const char* Trans_GettextGame( const char *msgid )

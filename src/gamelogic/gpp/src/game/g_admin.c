@@ -2959,7 +2959,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 	}
 	else
 	{
-		strcpy( duration, "this game" );
+		strcpy( time, "this game" );
 		spec->expires = -1;
 	}
 
@@ -2975,7 +2975,7 @@ qboolean G_admin_speclock( gentity_t *ent )
 	}
 	else
 	{
-		AP( va( "print_tr %s %s %s %s %s", QQ( N_("3speclock: ^7$1$^7 blocked team-change for $2$^7 for $3$$4t$\n") ),
+		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock: ^7$1$^7 blocked team-change for $2$^7 for $3$$4t$\n") ),
 		        G_quoted_admin_name( ent ),
 		        Quote( vic->client->pers.netname ), Quote( time ), duration ) );
 	}
@@ -3671,13 +3671,13 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		qboolean      denied = qfalse;
 
 		trap_Argv( 1, param, sizeof( param ) );
-		ADMBP_begin();
-		ADMBP( "\"" );
 
 		if ( ( c = G_admin_command( param ) ) )
 		{
 			if ( G_admin_permission( ent, c->flag ) )
 			{
+				ADMBP_begin();
+				ADMBP( "\"" );
 				ADMBP( N_( "^3adminhelp: ^7help for '$1$':\n"
 							" ^3Description: ^7$2t$\n"
 							" ^3Syntax: ^7$3$\n"
@@ -3695,6 +3695,8 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, admincmd->flag ) )
 			{
+				ADMBP_begin();
+				ADMBP( "\"" );
 				ADMBP( N_( "^3adminhelp: ^7help for '$1$':\n"
 							" ^3Description: ^7$2t$\n"
 							" ^3Syntax: ^7$1$ $3t$\n"
@@ -3708,9 +3710,8 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 			denied = qtrue;
 		}
 
-		ADMBP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not hace permission to use '$1$'") ) :
+		ADMP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not have permission to use '$1$'") ) :
 		QQ( N_("^3adminhelp: ^7no help found for '$1$'") ), param ) );
-		ADMBP_end();
 		return qfalse;
 	}
 }
@@ -4313,7 +4314,7 @@ qboolean G_admin_lock( gentity_t *ent )
 
 	if ( fail )
 	{
-		ADMP( va( "%s %s %s", lock ? QQ( N_("3$1$: ^7the $2$ team is already locked\n") ) :
+		ADMP( va( "%s %s %s", lock ? QQ( N_("^3$1$: ^7the $2$ team is already locked\n") ) :
 			QQ( N_("^3$1$: ^7the $2$ team is not currently locked\n") ), command, BG_TeamName( team ) ) );
 		return qfalse;
 	}
@@ -4590,7 +4591,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	ADMBP( "\"" );
 	ADMBP_end();
 
-	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing %d build logs $1$ - $2$ of $3$ – $4$.  $5$\n") ),
+	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing $1$ build logs $2$ - $3$ of $4$ – $5$.  $6$\n") ),
 	           printed, start + MAX_CLIENTS, i + MAX_CLIENTS - 1,
 	           level.buildId + MAX_CLIENTS - level.numBuildLogs,
 	           level.buildId + MAX_CLIENTS - 1,
@@ -4702,7 +4703,7 @@ qboolean G_admin_l1( gentity_t *ent )
 		return qfalse;
 	}
 
-	if ( !a || a->level != 0 )
+	if ( a && a->level != 0 )
 	{
 		ADMP( QQ( N_("^3l1: ^7your intended victim is not level 0\n") ) );
 		return qfalse;
@@ -4857,6 +4858,7 @@ void G_admin_buffer_print( gentity_t *ent, const char *m )
 	{
 		ADMP( g_bfb );
 		g_bfb[ 0 ] = '\0';
+		Q_strcat( g_bfb, sizeof( g_bfb ), "\"" );
 	}
 
 	Q_strcat( g_bfb, sizeof( g_bfb ), m );

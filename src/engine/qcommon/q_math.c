@@ -528,9 +528,10 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 	float  zrot[ 3 ][ 3 ];
 	float  tmpmat[ 3 ][ 3 ];
 	float  rot[ 3 ][ 3 ];
-	int    i;
-	vec3_t vr, vup, vf;
+	vec3_t vf;
 	float  rad;
+	float c, s;
+	int i;
 
 	vf[ 0 ] = dir[ 0 ];
 	vf[ 1 ] = dir[ 1 ];
@@ -543,38 +544,34 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 		return;
 	}
 
-	PerpendicularVector( vr, dir );
-	CrossProduct( vr, vf, vup );
+	//make a new axis and place directly into the inverse matrix
+	PerpendicularVector( im[ 0 ], dir );
+	CrossProduct( im[ 0 ], vf, im[ 1 ] );
+	VectorCopy(vf, im[ 2 ]);
 
-	m[ 0 ][ 0 ] = vr[ 0 ];
-	m[ 1 ][ 0 ] = vr[ 1 ];
-	m[ 2 ][ 0 ] = vr[ 2 ];
+	//transpose the matrix
+	m[ 0 ][ 0 ] = im[ 0 ][ 0 ];
+	m[ 1 ][ 0 ] = im[ 0 ][ 1 ];
+	m[ 2 ][ 0 ] = im[ 0 ][ 2 ];
 
-	m[ 0 ][ 1 ] = vup[ 0 ];
-	m[ 1 ][ 1 ] = vup[ 1 ];
-	m[ 2 ][ 1 ] = vup[ 2 ];
+	m[ 0 ][ 1 ] = im[ 1 ][ 0 ];
+	m[ 1 ][ 1 ] = im[ 1 ][ 1 ];
+	m[ 2 ][ 1 ] = im[ 1 ][ 2 ];
 
-	m[ 0 ][ 2 ] = vf[ 0 ];
-	m[ 1 ][ 2 ] = vf[ 1 ];
-	m[ 2 ][ 2 ] = vf[ 2 ];
+	m[ 0 ][ 2 ] = im[ 2 ][ 0 ];
+	m[ 1 ][ 2 ] = im[ 2 ][ 1 ];
+	m[ 2 ][ 2 ] = im[ 2 ][ 2 ];
 
-	memcpy( im, m, sizeof( im ) );
-
-	im[ 0 ][ 1 ] = m[ 1 ][ 0 ];
-	im[ 0 ][ 2 ] = m[ 2 ][ 0 ];
-	im[ 1 ][ 0 ] = m[ 0 ][ 1 ];
-	im[ 1 ][ 2 ] = m[ 2 ][ 1 ];
-	im[ 2 ][ 0 ] = m[ 0 ][ 2 ];
-	im[ 2 ][ 1 ] = m[ 1 ][ 2 ];
-
-	memset( zrot, 0, sizeof( zrot ) );
-	zrot[ 0 ][ 0 ] = zrot[ 1 ][ 1 ] = zrot[ 2 ][ 2 ] = 1.0F;
+	AxisCopy(axisDefault, zrot);
 
 	rad = DEG2RAD( degrees );
-	zrot[ 0 ][ 0 ] = cos( rad );
-	zrot[ 0 ][ 1 ] = sin( rad );
-	zrot[ 1 ][ 0 ] = -sin( rad );
-	zrot[ 1 ][ 1 ] = cos( rad );
+
+	c = cos( rad );
+	s = sin( rad );
+	zrot[ 0 ][ 0 ] = c;
+	zrot[ 0 ][ 1 ] = s;
+	zrot[ 1 ][ 0 ] = -s;
+	zrot[ 1 ][ 1 ] = c;
 
 	AxisMultiply( m, zrot, tmpmat );
 	AxisMultiply( tmpmat, im, rot );
@@ -1581,11 +1578,13 @@ vec_t VectorNormalize( vec3_t v )
 	float length, ilength;
 
 	length = v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ];
-	length = sqrt( length );
 
 	if ( length )
 	{
-		ilength = 1 / length;
+		/* writing it this way allows gcc to recognize that rsqrt can be used */
+	 	ilength = 1/(float)sqrt (length);
+		/* sqrt(length) = length * (1 / sqrt(length)) */
+		length *= ilength;
 		v[ 0 ] *= ilength;
 		v[ 1 ] *= ilength;
 		v[ 2 ] *= ilength;
@@ -1614,11 +1613,13 @@ vec_t VectorNormalize2( const vec3_t v, vec3_t out )
 	float length, ilength;
 
 	length = v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ];
-	length = sqrt( length );
 
 	if ( length )
 	{
-		ilength = 1 / length;
+		/* writing it this way allows gcc to recognize that rsqrt can be used */
+	 	ilength = 1/(float)sqrt (length);
+		/* sqrt(length) = length * (1 / sqrt(length)) */
+		length *= ilength;
 		out[ 0 ] = v[ 0 ] * ilength;
 		out[ 1 ] = v[ 1 ] * ilength;
 		out[ 2 ] = v[ 2 ] * ilength;
