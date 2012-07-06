@@ -249,12 +249,6 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 
 	ent = SV_SvEntityForGentity( gEnt );
 
-	// Ridah, sanity check for possible currentOrigin being reset bug
-	if ( !gEnt->r.bmodel && VectorCompare( gEnt->r.currentOrigin, vec3_origin ) )
-	{
-		Com_DPrintf( "WARNING: BBOX entity is being linked at world origin, this is probably a bug\n" );
-	}
-
 	if ( ent->worldSector )
 	{
 		SV_UnlinkEntity( gEnt );  // unlink from old position
