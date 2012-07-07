@@ -214,16 +214,22 @@ extern "C" const char* Trans_Gettext( const char *msgid )
 	return trans_dict.translate( std::string( msgid ) ).c_str();
 }
 
-extern "C" const char* Trans_Pgettext( const char *msgctxt, const char *msgid )
+extern "C" const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
 	if ( !enabled ) { return msgid; }
-	return trans_dict.translate_ctxt( std::string( msgctxt ), std::string( msgid ) ).c_str();
+	return trans_dict.translate_ctxt( std::string( ctxt ), std::string( msgid ) ).c_str();
 }
 
 extern "C" const char* Trans_GettextGame( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
 	return trans_dictgame.translate( std::string( msgid ) ).c_str();
+}
+
+extern "C" const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
+{
+	if( !enabled ) { return msgid; }
+	return trans_dictgame.translate_ctxt( std::string( ctxt ), std::string( msgid ) ).c_str();
 }
 
 extern "C" const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )

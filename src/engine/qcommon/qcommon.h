@@ -1521,7 +1521,8 @@ void Com_RandomBytes( byte *string, int len );
 
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));
-const char* Trans_Pgettext( const char *msgctxt, const char *msgid ) __attribute__((format_arg(1)));
+const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
 const char* Trans_GettextGame( const char *msgid ) __attribute__((format_arg(1)));
+const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
 
 #endif // _QCOMMON_H_

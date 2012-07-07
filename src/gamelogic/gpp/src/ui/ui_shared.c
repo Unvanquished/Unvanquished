@@ -9635,3 +9635,11 @@ const char *Gettext( const char *msgid )
 	trap_Gettext( buf, msgid, sizeof( buffer[ 0 ] ) );
 	return buf;
 }
+
+const char *Pgettext( const char *ctxt, const char *msgid )
+{
+	static char buffer[ 32000 ];
+	char *buf = buffer;
+	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
+	return buf;
+}

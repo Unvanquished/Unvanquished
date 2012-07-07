@@ -125,6 +125,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #	define N_(one, many, count) ngettext( (one), (many), (count) )
 #else
 #	define _(text)              Gettext(text)
+#	define C_(ctxt, text)       Pgettext(ctxt, text)
+#	define G_(text)             Pgettext( Trans_GenderContext( gender ), text)
 #	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
 #endif
 
@@ -598,4 +600,5 @@ void       UI_R_UnregisterFont( fontHandle_t );
 int ui_CursorToOffset( const char *buf, int cursor );
 int ui_OffsetToCursor( const char *buf, int offset );
 const char *Gettext( const char *msgid ) __attribute__((format_arg(1)));
+const char *Pgettext( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
 #endif
