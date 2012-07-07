@@ -51,7 +51,7 @@ option( BUILD_MASTER         "Build master server"                         1 )
 option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
 
 option( ENABLE_W_ALL         "Use -Wall"                                   0 )
-option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
+option( ENABLE_WARNINGS      "Enable security & code-checking warning options" 1 )
 option( ENABLE_HARDENING     "Enable security hardening options"            1 )
 
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
@@ -84,6 +84,8 @@ cmake_dependent_option( GAME_LIB_LLVM        "Use LLVM, not shared libs, for gam
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
 cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"             1 USE_CODEC_VORBIS 0 )
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
+
+cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                                 0 ENABLE_W_ALL     0 )
 
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
@@ -291,6 +293,9 @@ endmacro()
 
 # Various warnings
 if( ENABLE_W_ALL )
+  try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
+endif()
+if( ENABLE_W_EXTRA )
   try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
 endif()
 if( ENABLE_WARNINGS )
