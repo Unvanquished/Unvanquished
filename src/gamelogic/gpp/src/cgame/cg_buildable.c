@@ -828,6 +828,9 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	{
 		animation_t *anim = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT1 ];
 
+		// Change the animation in the lerpFrame so that md5s will use it too.
+		cent->lerpFrame.animation = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT1 ];
+
 		//so that when animation starts for real it has sensible numbers
 		cent->lerpFrame.oldFrameTime =
 		  cent->lerpFrame.frameTime =
@@ -1947,8 +1950,11 @@ void CG_Buildable( centity_t *cent )
 
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
-		vec3_t Scale;
-		Scale[0] = Scale[1] = Scale[2] = scale;
+		vec3_t    Scale;
+		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
+		
+		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
+		       scale * ( float )( ( float ) (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime );
 		memcpy( &ent.skeleton, &bSkeleton, sizeof( refSkeleton_t ) );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		memcpy( &ent.skeleton.bounds[ 0 ], &mins, sizeof( vec3_t ) );
