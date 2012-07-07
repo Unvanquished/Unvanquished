@@ -156,13 +156,10 @@ extern "C" void Trans_Init( void )
 	for( i = 0; i < numPoFiles; i++ )
 	{
 		int ret;
-		Dictionary *dict1;
-		Dictionary *dict2;
 		char *buffer, language[ 6 ];
 		
 		if( FS_ReadFile( va( "translation/client/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
 		{
-			dict1 = new Dictionary();
 			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
 			std::stringstream ss( buffer );
 			trans_manager.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
@@ -175,7 +172,6 @@ extern "C" void Trans_Init( void )
 		
 		if( FS_ReadFile( va( "translation/game/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
 		{
-			dict2 = new Dictionary();
 			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
 			std::stringstream ss( buffer );
 			trans_managergame.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
