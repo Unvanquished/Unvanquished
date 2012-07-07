@@ -1882,7 +1882,7 @@ static void reportHardwareType( qboolean force )
 		"generic", "Voodoo", "Riva 128", "Rage Pro", "Permedia 2",
 		"ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
 	};
-	if (glConfig.hardwareType > GLDRV_UNKNOWN && glConfig.driverType < ARRAY_LEN( hardware ) )
+	if (glConfig.hardwareType > GLHW_UNKNOWN && glConfig.driverType < ARRAY_LEN( hardware ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
 		           force ? "User has forced" : "Detected",

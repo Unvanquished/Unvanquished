@@ -1080,6 +1080,9 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 		case SAY_RAW:
 			CG_Printf( "%s\n", text );
 			break;
+
+                case SAY_DEFAULT:
+                        break;
 	}
 
 	switch ( mode )

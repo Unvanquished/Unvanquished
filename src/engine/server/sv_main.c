@@ -1696,7 +1696,7 @@ void SV_PrintTranslatedText( const char *text )
 {
 	char        str[ MAX_STRING_CHARS ];
 	const char  *in;
-	int         i=0, j=0, num=-1;
+	int         i = 0;
 
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
@@ -1742,7 +1742,6 @@ void SV_PrintTranslatedText( const char *text )
 
 						Q_strcat( str, sizeof( str ), Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
 						in += 2;
-						j = 0;
 							
 						break;
 					}
@@ -1765,7 +1764,6 @@ void SV_PrintTranslatedText( const char *text )
 
 						Q_strcat( str, sizeof( str ), Cmd_Argv( num + 1 ) );
 						in++;
-						j = 0;
 
 						break;
 					}
