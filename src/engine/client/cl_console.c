@@ -380,19 +380,20 @@ void Con_Grep_f( void )
 				// allocate in 16K chunks - more than adequate
 				pbAlloc = ( pbLength + i + 1 + 16383) & ~16383;
 				nb = Z_Malloc( pbAlloc );
-				strcpy( nb, printbuf );
-				Z_Free( printbuf );
+				if( printbuf ) 
+				{
+					strcpy( nb, printbuf );
+					Z_Free( printbuf );
+				}
 				printbuf = nb;
 			}
-
-			strcpy( printbuf + pbLength, buffer );
-			pbLength += strlen( buffer );
+			Q_strcat( printbuf, pbAlloc, buffer );
+			pbLength += i;
 		}
 	}
-
-	if ( printbuf )
+	if( printbuf ) 
 	{
-		Com_Printf( "%s", printbuf );
+		Com_Printf( printbuf );
 		Z_Free( printbuf );
 	}
 }
