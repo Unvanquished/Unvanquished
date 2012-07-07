@@ -121,7 +121,7 @@ static void CG_Creep( centity_t *cent )
 
 		if ( msec >= 0 && msec < scaleUpTime )
 		{
-			frac = ( float ) msec / scaleUpTime;
+			frac = ( float ) sin ( 0.5f * msec / scaleUpTime * M_PI );
 		}
 		else
 		{
@@ -1954,7 +1954,7 @@ void CG_Buildable( centity_t *cent )
 		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
 		
 		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
-		       scale * ( float )( ( float ) (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime );
+		       scale * (float) sin ( 0.5f * (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
