@@ -9564,7 +9564,7 @@ int UI_GetChatColour( int which, int team )
 	}
 }
 
-void UI_R_GlyphChar( const fontHandle_t font, int ch, glyphInfo_t *glyph )
+void UI_R_GlyphChar( fontHandle_t font, int ch, glyphInfo_t *glyph )
 {
   static int engineState = 0;
 
