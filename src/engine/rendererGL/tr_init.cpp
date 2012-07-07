@@ -1320,6 +1320,12 @@ extern "C" {
 		if ( glConfig.hardwareType == GLHW_ATI_DX10 )
 		{
 			ri.Printf( PRINT_ALL, "Using ATI DirectX 10 hardware features\n" );
+
+			if ( glConfig.driverType == GLDRV_MESA )
+			{
+				ri.Printf( PRINT_ALL, "^3NOT using GPU vertex skinning – known to be broken with Radeon HD and Mesa\n" );
+				glConfig2.vboVertexSkinningAvailable = qfalse;
+			}
 		}
 
 		if ( glConfig.hardwareType == GLHW_NV_DX10 )
