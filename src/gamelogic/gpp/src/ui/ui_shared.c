@@ -9632,14 +9632,6 @@ const char *Gettext( const char *msgid )
 	
 	index = ( index + 1 ) & 3;
 	buf = buffer[ index ];
-	trap_Gettext( buf, msgid, sizeof( buffer ) );
-	return buf;
-}
-
-const char *Pgettext( const char *ctxt, const char *msgid )
-{
-	static char buffer[ 32000 ];
-	char *buf = buffer;
-	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
+	trap_Gettext( buf, msgid, sizeof( buffer[ 0 ] ) );
 	return buf;
 }

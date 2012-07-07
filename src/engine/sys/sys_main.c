@@ -225,6 +225,7 @@ static void NORETURN Sys_Exit( int exitCode )
 	SDL_Quit();
 #endif
 
+	Sys_PlatformExit();
 	exit( exitCode );
 }
 

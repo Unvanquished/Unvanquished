@@ -5699,13 +5699,3 @@ const char *gettext( const char *msgid )
 	trap_Gettext( buf, msgid, sizeof( buffer ) );
 	return buf;
 }
-
-// TMP
-const char *pgettext( const char *ctxt, const char *msgid )
-{
-	QVM_STATIC char buffer[ 32000 ];
-	char *buf = buffer;
-	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
-	return buf;
-}
-

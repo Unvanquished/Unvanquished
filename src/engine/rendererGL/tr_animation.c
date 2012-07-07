@@ -601,6 +601,8 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 			if ( ( extraAnim = R_AllocAnimation() ) == NULL )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadPSA: R_AllocAnimation() failed for '%s'\n", name );
+				FreeMemStream( stream );
+				Com_DestroyGrowList( &extraAnims );
 				return qfalse;
 			}
 
@@ -623,6 +625,8 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 
 		if ( animInfo->numBones != numReferenceBones )
 		{
+			FreeMemStream( stream );
+			Com_DestroyGrowList( &extraAnims );
 			ri.Error( ERR_DROP, "R_LoadPSA: axAnimationInfo_t contains different number than reference bones exist: %i != %i for anim '%s'", animInfo->numBones, numReferenceBones, name );
 		}
 
@@ -678,6 +682,7 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSA: '%s' has wrong chunk indent ('%s' should be '%s')\n", name, chunkHeader.ident, "ANIMKEYS" );
 		FreeMemStream( stream );
+		Com_DestroyGrowList( &extraAnims );
 		return qfalse;
 	}
 
@@ -685,6 +690,7 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSA: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", name, chunkHeader.dataSize, ( int ) sizeof( axAnimationKey_t ) );
 		FreeMemStream( stream );
+		Com_DestroyGrowList( &extraAnims );
 		return qfalse;
 	}
 

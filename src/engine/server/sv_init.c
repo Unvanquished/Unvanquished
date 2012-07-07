@@ -147,7 +147,7 @@ void SV_UpdateConfigStrings( void )
 {
 	int      len, i, index;
 	client_t *client;
-	int      maxChunkSize = MAX_STRING_CHARS - 24;
+	int      maxChunkSize = MAX_STRING_CHARS - 64;
 
 	for ( index = 0; index < MAX_CONFIGSTRINGS; index++ )
 	{
