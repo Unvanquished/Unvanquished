@@ -736,7 +736,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	{
 		if ( bSkeleton.type != SK_INVALID )
 		{
-			memcpy( &oldbSkeleton, &bSkeleton, sizeof( refSkeleton_t ) );
+			oldbSkeleton = bSkeleton;
 
 			if ( lf->old_animation != NULL )
 			{
@@ -1955,10 +1955,10 @@ void CG_Buildable( centity_t *cent )
 		
 		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
 		       scale * ( float )( ( float ) (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime );
-		memcpy( &ent.skeleton, &bSkeleton, sizeof( refSkeleton_t ) );
+		ent.skeleton = bSkeleton;
 		CG_TransformSkeleton( &ent.skeleton, Scale );
-		memcpy( &ent.skeleton.bounds[ 0 ], &mins, sizeof( vec3_t ) );
-		memcpy( &ent.skeleton.bounds[ 1 ], &maxs, sizeof( vec3_t ) );
+		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
+		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
 	}
 
 	//add to refresh list

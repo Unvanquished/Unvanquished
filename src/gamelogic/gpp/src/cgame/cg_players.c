@@ -581,10 +581,10 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		}
 
 		// crouch backward animation
-		memcpy( &animations[ LEGS_BACKCR ], &animations[ LEGS_WALKCR ], sizeof( animation_t ) );
+		animations[ LEGS_BACKCR ] = animations[ LEGS_WALKCR ];
 		animations[ LEGS_BACKCR ].reversed = qtrue;
 		// walk backward animation
-		memcpy( &animations[ LEGS_BACKWALK ], &animations[ LEGS_WALK ], sizeof( animation_t ) );
+		animations[ LEGS_BACKWALK ] = animations[ LEGS_WALK ];
 		animations[ LEGS_BACKWALK ].reversed = qtrue;
 		// flag moving fast
 		animations[ FLAG_RUN ].firstFrame = 0;
@@ -674,7 +674,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		}
 
 		// walk backward animation
-		memcpy( &animations[ NSPA_WALKBACK ], &animations[ NSPA_WALK ], sizeof( animation_t ) );
+		animations[ NSPA_WALKBACK ] = animations[ NSPA_WALK ];
 		animations[ NSPA_WALKBACK ].reversed = qtrue;
 	}
 
@@ -1548,7 +1548,7 @@ static void CG_SetPlayerLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, i
 		lf->blendlerp = 1.0f - lf->blendlerp; // use old blending for smooth blending between two blended animations
 	}
 
-	memcpy( &oldSkeleton, &skeleton, sizeof( refSkeleton_t ) );
+	oldSkeleton = skeleton;
 
 	//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
 	if ( lf->old_animation != NULL && skeleton.numBones == oldSkeleton.numBones )
@@ -1658,7 +1658,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 			lf->blendlerp = 1.0f - lf->blendlerp; // use old blending for smooth blending between two blended animations
 		}
 
-		memcpy( &oldSkeleton, &skeleton, sizeof( refSkeleton_t ) );
+		oldSkeleton = skeleton;
 
 		//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
 
@@ -1713,7 +1713,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 			if ( !lf->animation )
 			{
-				memcpy( &oldSkeleton, &skeleton, sizeof( refSkeleton_t ) );
+				oldSkeleton = skeleton;
 			}
 
 			animChanged = qtrue;
@@ -1868,7 +1868,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 		if ( !lf->animation )
 		{
-			memcpy( &oldSkeleton, &skeleton, sizeof( refSkeleton_t ) );
+			oldSkeleton = skeleton;
 		}
 
 		animChanged = qtrue;
@@ -2064,7 +2064,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 		if( ( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) <= NSPA_TURN &&
 			( cent->pe.nonseg.animationNumber & ~ANIM_TOGGLEBIT ) != NSPA_GESTURE )
 		{
-			memcpy( &cent->pe.legs, &cent->pe.nonseg, sizeof( lerpFrame_t ) );
+			cent->pe.legs = cent->pe.nonseg;
 		}
 	}
 	else
@@ -3495,8 +3495,7 @@ void CG_Player( centity_t *cent )
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			// copy legs skeleton to have a base
-			memcpy( &body.skeleton, &skeleton, sizeof( refSkeleton_t ) );
-
+			body.skeleton = skeleton;
 			if ( skeleton.numBones != skeleton.numBones )
 			{
 				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
@@ -3581,15 +3580,14 @@ void CG_Player( centity_t *cent )
 		}
 		else
 		{
-			memcpy( &body.skeleton, &skeleton, sizeof( refSkeleton_t ) );
+			body.skeleton = skeleton;
 		}
 
 		// transform relative bones to absolute ones required for vertex skinning and tag attachments
 		CG_TransformSkeleton( &body.skeleton, ci->modelScale );
 
-		memcpy( &body.skeleton.bounds[ 0 ], &mins, sizeof( vec3_t ) );
-		memcpy( &body.skeleton.bounds[ 1 ], &maxs, sizeof( vec3_t ) );
-
+		VectorCopy( mins, body.skeleton.bounds[ 0 ]);
+		VectorCopy( maxs, body.skeleton.bounds[ 1 ]);
 		// add body to renderer
 
 #if 0
@@ -3991,10 +3989,10 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
-		memcpy( &legs.skeleton, &skeleton, sizeof( refSkeleton_t ) );
+		legs.skeleton = skeleton;
 		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
-		memcpy( &legs.skeleton.bounds[ 0 ], &deadZ, sizeof( vec3_t ) );
-		memcpy( &legs.skeleton.bounds[ 1 ], &deadMax, sizeof( vec3_t ) );
+		VectorCopy( deadZ, legs.skeleton.bounds[ 0 ]);
+		VectorCopy( deadMax, legs.skeleton.bounds[ 1 ]);
 	}
 
 	//
