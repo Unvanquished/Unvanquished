@@ -1315,7 +1315,7 @@ static void CG_PrintTR_f( void )
 	char        number[2];
 	int         i=0, j=0, num=-1;
 	
-	Q_strncpyz( buf, CG_Argv( 1 ), sizeof( buf ) );
+	Q_strncpyz( buf, _( CG_Argv( 1 ) ), sizeof( buf ) );
 	in = buf;
 	memset( &str, 0, sizeof( str ) );
 

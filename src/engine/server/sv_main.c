@@ -1700,8 +1700,8 @@ void SV_PrintTranslatedText( const char *text )
 
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
-
-	in = Cmd_Argv( 1 );
+	
+	in = Trans_GettextGame( Cmd_Argv( 1 ) );
 	memset( &str, 0, sizeof( str ) );
 	while( *in )
 	{
