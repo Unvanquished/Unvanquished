@@ -393,7 +393,7 @@ void Con_Grep_f( void )
 	}
 	if( printbuf ) 
 	{
-		Com_Printf( printbuf );
+		Com_Printf( "%s", printbuf );
 		Z_Free( printbuf );
 	}
 }
