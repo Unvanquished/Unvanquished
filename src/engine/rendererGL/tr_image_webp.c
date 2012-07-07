@@ -57,6 +57,7 @@ void LoadWEBP( const char *filename, unsigned char **pic, int *width, int *heigh
 	/* validate data and query image size */
 	if ( !WebPGetInfo( fbuffer.b, len, width, height ) )
 	{
+		ri.FS_FreeFile( fbuffer.v );
 		return;
 	}
 

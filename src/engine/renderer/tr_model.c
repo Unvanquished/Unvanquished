@@ -327,6 +327,7 @@ qhandle_t RE_RegisterModel( const char *name )
 		// Ridah, mesh compression
 		if ( ident != MD3_IDENT && ident != MDC_IDENT )
 		{
+			ri.FS_FreeFile( buf );
 			ri.Printf( PRINT_WARNING, "RE_RegisterModel: unknown fileid for %s\n", name );
 			goto fail;
 		}
@@ -2923,7 +2924,6 @@ void R_LoadCacheModels( void )
 		return;
 	}
 
-	buf = ri.Hunk_AllocateTempMemory( len );
 	ri.FS_ReadFile( "model.cache", &buf );
 	pString = buf;
 
@@ -2933,7 +2933,7 @@ void R_LoadCacheModels( void )
 		RE_RegisterModel( name );
 	}
 
-	ri.Hunk_FreeTempMemory( buf );
+	ri.FS_FreeFile( buf );
 }
 
 // done.

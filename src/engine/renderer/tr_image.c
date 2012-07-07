@@ -1564,6 +1564,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	if ( pcx->manufacturer != 0x0a
 	     || pcx->version != 5 || pcx->encoding != 1 || pcx->bits_per_pixel != 8 || xmax >= 1024 || ymax >= 1024 )
 	{
+		ri.FS_FreeFile( pcx );
 		ri.Printf( PRINT_ALL, "Bad pcx file %s (%i x %i) (%i x %i)\n", filename, xmax + 1, ymax + 1, pcx->xmax, pcx->ymax );
 		return;
 	}
@@ -1749,16 +1750,19 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 
 	if ( targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported" );
 	}
 
 	if ( targa_header.colormap_type != 0 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: colormaps not supported" );
 	}
 
 	if ( ( targa_header.pixel_size != 32 && targa_header.pixel_size != 24 ) && targa_header.image_type != 3 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)" );
 	}
 
@@ -1829,6 +1833,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 						break;
 
 					default:
+						ri.FS_FreeFile( buffer );
 						ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 				}
 			}
@@ -1873,6 +1878,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 							break;
 
 						default:
+							ri.FS_FreeFile( buffer );
 							ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 					}
 
@@ -1931,6 +1937,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 								break;
 
 							default:
+								ri.FS_FreeFile( buffer );
 								ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size,
 								          name );
 						}
@@ -4421,12 +4428,14 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	// get dds info
 	if ( DDSGetInfo( ( ddsBuffer_t * ) buffer, &w, &h, &pf ) )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadDDS: Invalid DDS texture '%s'", name );
 	}
 
 	// only certain types of dds textures are supported
 	if ( pf != DDS_PF_ARGB8888 && pf != DDS_PF_DXT1 && pf != DDS_PF_DXT3 && pf != DDS_PF_DXT5 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadDDS: Only DDS texture formats ARGB8888, DXT1, DXT3, and DXT5 are supported (%d) '%s'", pf,
 		          name );
 	}
@@ -4871,7 +4880,6 @@ void R_LoadCacheImages( void )
 		return;
 	}
 
-	buf = ri.Hunk_AllocateTempMemory( len );
 	ri.FS_ReadFile( "image.cache", &buf );
 	pString = buf;
 
@@ -4888,7 +4896,7 @@ void R_LoadCacheImages( void )
 		R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ], parms[ 3 ] );
 	}
 
-	ri.Hunk_FreeTempMemory( buf );
+	ri.FS_FreeFile( buf );
 }
 
 // done.

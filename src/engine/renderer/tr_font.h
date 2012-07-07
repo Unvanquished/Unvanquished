@@ -585,6 +585,7 @@ static int RE_LoadFontFile( const char *name, void **buffer )
 
 			if ( !fontData[ i ].data )
 			{
+				ri.FS_FreeFile( tmp );
 				return 0;
 			}
 
