@@ -855,6 +855,7 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 
 	glGetProgramiv( program, GL_LINK_STATUS, &success );
 
+	ri.FS_FreeFile( binary );
 	// Did it work?
 	if( !success )
 	{
