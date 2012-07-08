@@ -44,9 +44,6 @@ Maryland 20850 USA.
 #define BOX_MODEL_HANDLE     511
 #define CAPSULE_MODEL_HANDLE 510
 
-// enable to make the collision detection a bunch faster
-#define MRE_OPTIMIZE
-
 typedef struct cbrushedge_s
 {
 	vec3_t p0;
@@ -206,9 +203,7 @@ extern int       c_pointcontents;
 extern int       c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces;
 extern cvar_t    *cm_noAreas;
 extern cvar_t    *cm_noCurves;
-extern cvar_t    *cm_playerCurveClip;
 extern cvar_t    *cm_forceTriangles;
-extern cvar_t    *cm_optimize;
 
 // cm_test.c
 
@@ -243,13 +238,6 @@ typedef struct
 	sphere_t    sphere; // sphere for oriendted capsule collision
 	biSphere_t  biSphere;
 	qboolean    testLateralCollision; // whether or not to test for lateral collision
-#ifdef MRE_OPTIMIZE
-	cplane_t    tracePlane1;
-	cplane_t    tracePlane2;
-	float       traceDist1;
-	float       traceDist2;
-	vec3_t      dir;
-#endif
 } traceWork_t;
 
 typedef struct leafList_s

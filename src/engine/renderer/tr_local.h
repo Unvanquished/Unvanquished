@@ -75,7 +75,6 @@ typedef struct
 	int         ambientLightInt; // 32 bit rgba packed
 	vec3_t      directedLight;
 	int         entityLightInt[ ENTITY_LIGHT_STEPS ];
-	float       brightness;
 } trRefEntity_t;
 
 typedef struct

@@ -2516,9 +2516,6 @@ void           *R_Hunk_Begin( void )
 
 void           *R_Hunk_Alloc( int size )
 {
-#ifdef _WIN32
-	void *buf;
-#endif
 
 	//Com_Printf("R_Hunk_Alloc(%d)\n", size);
 
