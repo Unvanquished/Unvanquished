@@ -507,6 +507,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	// no glyphs? just return
 	if ( !rendered )
 	{
+		ri.Free( out );
 		font->glyphBlock[ chunk ] = nullGlyphs;
 		return;
 	}
@@ -548,6 +549,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	{
 		RE_StoreImage( font, chunk, page, lastStart, 256, out, yOut + maxHeight + 1 );
 	}
+	ri.Free( out );
 }
 
 static int RE_LoadFontFile( const char *name, void **buffer )
