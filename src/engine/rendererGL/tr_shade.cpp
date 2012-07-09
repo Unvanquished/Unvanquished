@@ -1231,6 +1231,18 @@ void GLSL_ShutdownGPUShaders( void )
 		gl_deferredLightingShader_omniXYZ = NULL;
 	}
 
+	if( gl_deferredLightingShader_projXYZ ) 
+	{
+		delete gl_deferredLightingShader_projXYZ;
+		gl_deferredLightingShader_projXYZ = NULL;
+	}
+
+	if( gl_deferredLightingShader_directionalSun )
+	{
+		delete gl_deferredLightingShader_directionalSun;
+		gl_deferredLightingShader_directionalSun = NULL;
+	}
+
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
 	if ( tr.depthToColorShader.program )

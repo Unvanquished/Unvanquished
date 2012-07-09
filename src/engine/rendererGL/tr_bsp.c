@@ -914,6 +914,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					if ( !image )
 					{
+						Com_Dealloc( hdrImage );
 						break;
 					}
 
