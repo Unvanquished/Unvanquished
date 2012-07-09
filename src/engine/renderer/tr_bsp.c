@@ -160,7 +160,7 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	float  maxIntensity = 0;
 	double sumIntensity = 0;
 
-	if ( r_lightmap->integer > 1 )
+	if ( r_showLightMaps->integer > 1 )
 	{
 		// color code by intensity as development tool (FIXME: check range)
 		for ( j = 0; j < width * height; j++ )
@@ -189,7 +189,7 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 
 			HSVtoRGB( intensity, 1.00, 0.50, out );
 
-			if ( r_lightmap->integer == 3 )
+			if ( r_showLightMaps->integer == 3 )
 			{
 				// Arnout: artists wanted the colours to be inversed
 				( *pic_out ) [ j * 4 + 0 ] = out[ 2 ] * 255;
@@ -285,7 +285,7 @@ static void R_LoadLightmaps( lump_t *l )
 		tr.lightmaps[ i ] = R_CreateImage( va( "*lightmap%d", i ), image, LIGHTMAP_SIZE, LIGHTMAP_SIZE, qfalse, qfalse, GL_CLAMP );
 	}
 
-	if ( r_lightmap->integer > 1 )
+	if ( r_showLightMaps->integer > 1 )
 	{
 		ri.Printf( PRINT_ALL, "Brightest lightmap value: %d\n", ( int )( maxIntensity * 255 ) );
 	}

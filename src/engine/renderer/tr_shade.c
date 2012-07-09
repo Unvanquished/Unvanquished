@@ -563,7 +563,7 @@ static void DrawMultitextured( shaderCommands_t *input, int stage )
 	glEnable( GL_TEXTURE_2D );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-	if ( r_lightmap->integer )
+	if ( r_showLightMaps->integer )
 	{
 		GL_TexEnv( GL_REPLACE );
 	}
@@ -1660,7 +1660,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 			}
 			//----(SA)  end
 			// ydnar: lightmap stages should be GL_ONE GL_ZERO so they can be seen
-			else if ( r_lightmap->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )
+			else if ( r_showLightMaps->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )
 			{
 				unsigned int stateBits;
 
@@ -1690,7 +1690,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 		}
 
 		// allow skipping out to show just lightmaps during development
-		if ( r_lightmap->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )
+		if ( r_showLightMaps->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )
 		{
 			break;
 		}
@@ -1972,7 +1972,7 @@ void RB_StageIteratorLightmappedMultitexture( void )
 	GL_SelectTexture( 1 );
 	glEnable( GL_TEXTURE_2D );
 
-	if ( r_lightmap->integer )
+	if ( r_showLightMaps->integer )
 	{
 		GL_TexEnv( GL_REPLACE );
 	}
