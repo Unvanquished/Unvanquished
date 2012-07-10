@@ -52,8 +52,11 @@ Maryland 20850 USA.
 #include <fcntl.h>
 #include <fenv.h>
 
+
+#ifndef DEDICATED
 #include <SDL.h>
 #include <SDL_syswm.h>
+#endif
 
 qboolean    stdinIsATTY;
 
