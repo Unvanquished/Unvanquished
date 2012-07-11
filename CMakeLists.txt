@@ -502,7 +502,7 @@ if( MSVC )
   if( ${BUILD_ARCH} STREQUAL "i386" )
     set( ASM_APP ml )
   else()
-    set( ASM_APP ml64 )
+    set( ASM_APP ml64 -D idx64=1 )
   endif()
   set( QCOMMONLIST ${QCOMMONLIST} ftola.obj snapvector.obj )
   # Work around - bugs in cmake prevent adding asm files to target in VS projects

@@ -30,8 +30,9 @@ set( OPENAL_INCLUDE_DIR ${LIB_DIR}/openal/include CACHE STRING "OpenAL include d
 # Release
 file( COPY
   ${LIB_DIR}/libpng/libs/win64/libpng14-14.dll
-  ${LIB_DIR}/zlibwapi/lib/x64/zlibwapi.dll
   ${LIB_DIR}/curl-7.21.6/lib/win64/release/libcurl.dll
+  ${LIB_DIR}/zlibwapi/lib/x64/zlib1.dll
+  ${LIB_DIR}/zlibwapi/lib/x64/zlibwapi.dll
   ${LIB_DIR}/libvorbis/libs/x64/Release/libvorbis.dll
   ${LIB_DIR}/libvorbis/libs/x64/Release/libvorbisfile.dll
   ${LIB_DIR}/libogg/libs/win64/release/libogg.dll
@@ -44,6 +45,7 @@ file( COPY
 # Debug
 file( COPY
   ${LIB_DIR}/libpng/libs/win64/libpng14-14.dll
+  ${LIB_DIR}/zlibwapi/lib/x64/zlib1.dll
   ${LIB_DIR}/zlibwapi/lib/x64/zlibwapi.dll
   ${LIB_DIR}/curl-7.21.6/lib/win64/debug/libcurld.dll
   ${LIB_DIR}/libvorbis/libs/x64/Debug/libvorbis.dll
