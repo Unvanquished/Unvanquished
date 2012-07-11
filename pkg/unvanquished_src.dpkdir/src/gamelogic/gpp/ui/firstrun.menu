@@ -86,7 +86,7 @@
 
     itemDef
     {
-      text "APPLY"
+      text "CREATE"
       type ITEM_TYPE_BUTTON
       textscale .25
       style WINDOW_STYLE_EMPTY
