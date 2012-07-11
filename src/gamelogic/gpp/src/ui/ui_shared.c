@@ -2224,13 +2224,16 @@ qboolean UI_Text_IsEmoticon( const char *s, qboolean *escaped,
 
 static float UI_Parse_Indent( const char **text )
 {
-	char       indentWidth[ 32 ];
+	char       indentWidth[ 32 ] = "";
 	char       *indentWidthPtr;
 	const char *p = *text;
 	int        numDigits;
 	float      pixels;
-
+#if defined(__GNUC__) || defined(__clang__) || defined( Q3_VM ) // Stop crashes on visual studio compiled dlls with unicode characters.
 	while ( isdigit( *p ) || *p == '.' )
+#else
+	while ( iswdigit( *p ) || *p == '.' )
+#endif
 	{
 		p++;
 	}
