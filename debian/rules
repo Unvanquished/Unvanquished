@@ -23,22 +23,25 @@ override_dh_auto_configure:
 		 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		 -DCMAKE_SKIP_RPATH=ON \
 		 -DNO_UNTRUSTED_PLUGINS=ON \
-		 $(shell test -f /usr/include/xvid.f || echo -DUSE_CIN_XVID=OFF) \
+		 -DGAME_QVM=OFF \
+		 $(shell test -f /usr/include/xvid.h || echo -DUSE_CIN_XVID=OFF) \
 		 $(shell test -d /usr/include/webp || echo -DUSE_WEBP=OFF)
 
 override_dh_auto_install:
 
 override_dh_install:
 	dh_install
-	sed -i -e 's/@ARCH@/'${DEB_HOST_GNU_CPU}'/' debian/unvanquished/usr/games/unvanquished*.sh
-	rename 's/\.*$$//' debian/unvanquished/usr/lib/games/unvanquished/daemon*
+	rename "s/daemon/unvanquished/; s%\\.[^./]+$$%%" '{}' ';' debian/unvanquished*/usr/lib/games/unvanquished/daemon*
 
 override_dh_strip:
 	dh_strip --dbg-package=unvanquished-dbg
 
 override_dh_auto_clean:
 	dh_auto_clean
-	rm -rf CMakeFiles
+	rm -rf CMakeFiles lcc/CMakeFiles src/tests/CMakeFiles
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
 
 override_dh_installexamples:
 override_dh_installman:
@@ -49,7 +52,6 @@ override_dh_installemacsen:
 override_dh_installifupdown:
 override_dh_installinfo:
 override_dh_pysupport:
-override_dh_installinit:
 override_dh_installmime:
 override_dh_installmodules:
 override_dh_installlogcheck:

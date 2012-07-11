@@ -38,7 +38,7 @@ SKINS
 CommaParse
 
 This is unfortunate, but the skin files aren't
-compatable with our normal parsing rules.
+compatible with our engine's main script/source parsing rules.
 ==================
 */
 static char    *CommaParse( char **data_p )
@@ -225,7 +225,7 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 
 			surf = bmodel->firstSurface + surfnum;
 
-			// RF, check for null shader (can happen on func_explosive's with botclips attached)
+			// RF, check for null shader (can happen on func_explosive entities with botclips attached)
 			if ( !surf->shader )
 			{
 				return 0;
@@ -405,7 +405,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 		surf = skin->surfaces[ skin->numSurfaces ] = ri.Hunk_Alloc( sizeof( *skin->surfaces[ 0 ] ), h_low );
 		Q_strncpyz( surf->name, surfName, sizeof( surf->name ) );
 
-		// RB: bspSurface not not have ::hash yet
+		// RB: bspSurface_t does not have ::hash yet
 //		surf->hash = Com_HashKey(surf->name, sizeof(surf->name));
 		surf->shader = R_FindShader( token, SHADER_3D_DYNAMIC, qtrue );
 		skin->numSurfaces++;

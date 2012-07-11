@@ -41,6 +41,8 @@ cvar_t        *cvar_vars;
 cvar_t        *cvar_cheats;
 int           cvar_modifiedFlags;
 
+#define _(x) Trans_Gettext(x)
+
 #define MAX_CVARS 2048
 cvar_t        cvar_indexes[ MAX_CVARS ];
 int           cvar_numIndexes;
@@ -275,34 +277,6 @@ void Cvar_CommandCompletion( void ( *callback )( const char *s ) )
 
 /*
 ============
-Cvar_ClearForeignCharacters
-some cvar values need to be safe from foreign characters
-============
-*/
-char           *Cvar_ClearForeignCharacters( const char *value )
-{
-	static char clean[ MAX_CVAR_VALUE_STRING ];
-	int         i, j;
-
-	j = 0;
-
-	for ( i = 0; value[ i ] != '\0'; i++ )
-	{
-		//if( !(value[i] & 128) )
-		if ( ( ( byte * ) value ) [ i ] != 0xFF && ( ( ( byte * ) value ) [ i ] <= 127 || ( ( byte * ) value ) [ i ] >= 161 ) )
-		{
-			clean[ j ] = value[ i ];
-			j++;
-		}
-	}
-
-	clean[ j ] = '\0';
-
-	return clean;
-}
-
-/*
-============
 Cvar_Get
 
 If the variable already exists, the value will not be set unless CVAR_ROM
@@ -321,7 +295,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 
 	if ( !Cvar_ValidateString( var_name ) )
 	{
-		Com_Printf( "invalid cvar name string: %s\n", var_name );
+		Com_Printf(_( "invalid cvar name string: %s\n"), var_name );
 		var_name = "BADNAME";
 	}
 
@@ -329,7 +303,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 
 	if ( !Cvar_ValidateString( var_value ) )
 	{
-		Com_Printf( "invalid cvar value string: %s\n", var_value );
+		Com_Printf(_( "invalid cvar value string: %s\n"), var_value );
 		var_value = "BADVALUE";
 	}
 
@@ -378,11 +352,11 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 		}
 
 		// TTimo
-		// if CVAR_USERINFO was toggled on for an existing cvar, check wether the value needs to be cleaned from foreigh characters
+		// if CVAR_USERINFO was toggled on for an existing cvar, check whether the value needs to be cleaned from foreign characters
 		// (for instance, seta name "name-with-foreign-chars" in the config file, and toggle to CVAR_USERINFO happens later in CL_Init)
 		if ( flags & CVAR_USERINFO )
 		{
-			char *cleaned = Cvar_ClearForeignCharacters( var->string );  // NOTE: it is probably harmless to call Cvar_Set2 in all cases, but I don't want to risk it
+			const char *cleaned = Com_ClearForeignCharacters( var->string );  // NOTE: it is probably harmless to call Cvar_Set2 in all cases, but I don't want to risk it
 
 			if ( strcmp( var->string, cleaned ) )
 			{
@@ -408,7 +382,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 	//
 	if ( cvar_numIndexes >= MAX_CVARS )
 	{
-		Com_Error( ERR_FATAL, "MAX_CVARS (%d) hit -- too many cvars!", MAX_CVARS );
+		Com_Error( ERR_FATAL, "MAX_CVARS (%d) hit – too many cvars!", MAX_CVARS );
 	}
 
 	var = &cvar_indexes[ cvar_numIndexes ];
@@ -439,11 +413,8 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 Cvar_Set2
 ============
 */
-#define FOREIGN_MSG "Foreign characters are not allowed in userinfo variables.\n"
-#ifndef DEDICATED
-const char *CL_TranslateStringBuf( const char *string );
+#define FOREIGN_MSG "Only printable ASCII characters are allowed in userinfo variables.\n"
 
-#endif
 cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean force )
 {
 	cvar_t *var;
@@ -459,7 +430,7 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 
 	if ( !Cvar_ValidateString( var_name ) )
 	{
-		Com_Printf( "invalid cvar name string: %s\n", var_name );
+		Com_Printf(_( "invalid cvar name string: %s\n"), var_name );
 		var_name = "BADNAME";
 	}
 
@@ -490,16 +461,12 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 
 	if ( var->flags & CVAR_USERINFO )
 	{
-		char *cleaned = Cvar_ClearForeignCharacters( value );
+		const char *cleaned = Com_ClearForeignCharacters( value );
 
 		if ( strcmp( value, cleaned ) )
 		{
-#ifdef DEDICATED
 			Com_Printf( FOREIGN_MSG );
-#else
-			Com_Printf( "%s", CL_TranslateStringBuf( FOREIGN_MSG ) );
-#endif
-			Com_Printf( "Using %s instead of %s\n", cleaned, value );
+			Com_Printf(_( "Using %s instead of %s\n"), cleaned, value );
 			return Cvar_Set2( var_name, cleaned, force );
 		}
 	}
@@ -527,31 +494,31 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 		// ydnar: don't set unsafe variables when com_crashed is set
 		if ( ( var->flags & CVAR_UNSAFE ) && com_crashed != NULL && com_crashed->integer )
 		{
-			Com_Printf( "%s is unsafe. Check com_crashed.\n", var_name );
+			Com_Printf( _("%s is unsafe. Check com_crashed.\n"), var_name );
 			return var;
 		}
 
 		if ( var->flags & CVAR_ROM )
 		{
-			Com_Printf( "%s is read only.\n", var_name );
+			Com_Printf( _("%s is read only.\n"), var_name );
 			return var;
 		}
 
 		if ( var->flags & CVAR_INIT )
 		{
-			Com_Printf( "%s is write protected.\n", var_name );
+			Com_Printf( _("%s is write protected.\n"), var_name );
 			return var;
 		}
 
 		if ( ( var->flags & CVAR_CHEAT ) && !cvar_cheats->integer )
 		{
-			Com_Printf( "%s is cheat protected.\n", var_name );
+			Com_Printf( _("%s is cheat protected.\n"), var_name );
 			return var;
 		}
 
 		if ( var->flags & CVAR_SHADER )
 		{
-			Com_Printf( "%s will be changed upon recompiling shaders.\n", var_name );
+			Com_Printf( _("%s will be changed upon recompiling shaders.\n"), var_name );
 			Cvar_Set( "r_recompileShaders", "1" );
 		}
 
@@ -574,7 +541,7 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 				}
 			}
 
-			Com_Printf( "%s will be changed upon restarting.\n", var_name );
+			Com_Printf( _("%s will be changed upon restarting.\n"), var_name );
 			var->latchedString = CopyString( value );
 			var->modified = qtrue;
 			var->modificationCount++;
@@ -626,6 +593,86 @@ void Cvar_SetLatched( const char *var_name, const char *value )
 {
 	Cvar_Set2( var_name, value, qfalse );
 }
+
+ /*
+ ============
+Cvar_SetIFlag
+
+Sets the cvar by the name that begins with a backslash to "1".  This creates a
+cvar that can be set by the engine but not by the sure, and can be read by
+interpreted modules.
+============
+*/
+void Cvar_SetIFlag( const char *var_name )
+{
+	cvar_t *var;
+	long hash;
+	int index;
+
+	if ( !var_name ) {
+		Com_Error( ERR_FATAL, "Cvar_SetIFlag: NULL parameter" );
+	}
+
+  if ( *var_name != '\\' ) {
+		Com_Error( ERR_FATAL, "Cvar_SetIFlag: var_name must begin with a '\\'" );
+  }
+
+  /*
+  if ( Cvar_FindVar( var_name ) ) {
+		Com_Error( ERR_FATAL, "Cvar_SetIFlag: %s already exists.", var_name );
+  }
+  */
+
+	if ( !Cvar_ValidateString( var_name + 1 ) ) {
+		Com_Printf(_("invalid cvar name string: %s\n"), var_name );
+		var_name = "BADNAME";
+	}
+
+	// find a free cvar
+	for(index = 0; index < MAX_CVARS; index++)
+	{
+		if(!cvar_indexes[index].name)
+			break;
+	}
+
+	if(index >= MAX_CVARS)
+	{
+		if(!com_errorEntered)
+			Com_Error(ERR_FATAL, "Error: Too many cvars, cannot create a new one!");
+
+		return;
+	}
+
+	var = &cvar_indexes[index];
+
+	if(index >= cvar_numIndexes)
+		cvar_numIndexes = index + 1;
+
+	var->name = CopyString (var_name);
+	var->string = CopyString ("1");
+	var->modified = qtrue;
+	var->modificationCount = 1;
+	var->value = atof (var->string);
+	var->integer = atoi(var->string);
+	var->resetString = CopyString( "1" );
+	var->validate = qfalse;
+
+	// link the variable in
+	var->next = cvar_vars;
+
+	cvar_vars = var;
+
+	var->flags = CVAR_INIT;
+	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
+	cvar_modifiedFlags |= var->flags;
+
+	hash = generateHashValue(var_name);
+
+	var->hashNext = hashTable[hash];
+
+	hashTable[hash] = var;
+}
+
 
 /*
 ============
@@ -725,11 +772,11 @@ qboolean Cvar_Command( void )
 	// perform a variable print or set
 	if ( Cmd_Argc() == 1 )
 	{
-		Com_Printf( "\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n", v->name, v->string, v->resetString );
+		Com_Printf( _("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n"), v->name, v->string, v->resetString );
 
 		if ( v->latchedString )
 		{
-			Com_Printf( "latched: \"%s\"\n", v->latchedString );
+			Com_Printf( _("latched: \"%s\"\n"), v->latchedString );
 		}
 
 		return qtrue;
@@ -757,7 +804,7 @@ void Cvar_Toggle_f( void )
 
 	if ( c < 2 )
 	{
-		Com_Printf( "usage: toggle <variable> [<value> ...]\n" );
+		Com_Printf("%s", _("usage: toggle <variable> [<value> …]\n") );
 		return;
 	}
 
@@ -800,7 +847,7 @@ void Cvar_Cycle_f( void )
 
 	if ( Cmd_Argc() < 4 || Cmd_Argc() > 5 )
 	{
-		Com_Printf( "usage: cycle <variable> <start> <end> [step]\n" );
+		Com_Printf(_( "usage: cycle <variable> <start> <end> [step]\n" ));
 		return;
 	}
 
@@ -861,7 +908,7 @@ void Cvar_Set_f( void )
 
 	if ( c < 3 )
 	{
-		Com_Printf( "usage: set <variable> <value> [unsafe]\n" );
+		Com_Printf(_( "usage: set <variable> <value> [unsafe]\n" ));
 		return;
 	}
 
@@ -873,7 +920,7 @@ void Cvar_Set_f( void )
 
 		if ( com_crashed != NULL && com_crashed->integer )
 		{
-			Com_Printf( "%s is unsafe. Check com_crashed.\n", Cmd_Argv( 1 ) );
+			Com_Printf(_( "%s is unsafe. Check com_crashed.\n"), Cmd_Argv( 1 ) );
 			return;
 		}
 	}
@@ -918,7 +965,7 @@ void Cvar_Set_f( void )
 		end[ 1 ] = 0; // end of string :-)
 	}
 
-	Cvar_Set2( Cmd_Argv( 1 ), Com_UnquoteStr( value ), qfalse );
+	Cvar_Set2( Cmd_Argv( 1 ), Cmd_UnquoteString( value ), qfalse );
 	free( value );
 }
 
@@ -935,7 +982,7 @@ void Cvar_SetU_f( void )
 
 	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
 	{
-		Com_Printf( "usage: setu <variable> <value> [unsafe]\n" );
+		Com_Printf(_( "usage: setu <variable> <value> [unsafe]\n" ));
 		return;
 	}
 
@@ -963,7 +1010,7 @@ void Cvar_SetS_f( void )
 
 	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
 	{
-		Com_Printf( "usage: sets <variable> <value> [unsafe]\n" );
+		Com_Printf(_( "usage: sets <variable> <value> [unsafe]\n" ));
 		return;
 	}
 
@@ -991,7 +1038,7 @@ void Cvar_SetA_f( void )
 
 	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
 	{
-		Com_Printf( "usage: seta <variable> <value> [unsafe]\n" );
+		Com_Printf(_( "usage: seta <variable> <value> [unsafe]\n" ));
 		return;
 	}
 
@@ -1015,7 +1062,7 @@ void Cvar_Reset_f( void )
 {
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "usage: reset <variable>\n" );
+		Com_Printf(_( "usage: reset <variable>\n" ));
 		return;
 	}
 
@@ -1047,7 +1094,7 @@ void Cvar_WriteVariables( fileHandle_t f )
 			// write the latched value, even if it hasn't taken effect yet
 			Com_sprintf( buffer, sizeof( buffer ), "seta %s %s%s\n",
 			             var->name,
-			             Com_QuoteStr( var->latchedString ? var->latchedString : var->string ),
+			             Cmd_QuoteString( var->latchedString ? var->latchedString : var->string ),
 			             ( var->flags & CVAR_UNSAFE ) ? " unsafe" : "" );
 
 			FS_Printf( f, "%s", buffer );
@@ -1062,20 +1109,21 @@ Cvar_List_f
 */
 void Cvar_List_f( void )
 {
-	cvar_t *var;
-	int    i;
-	char   *match;
+	cvar_t   *var;
+	int      i = 0;
+	char     *match = NULL;
+	qboolean raw = qfalse;
 
 	if ( Cmd_Argc() > 1 )
 	{
 		match = Cmd_Argv( 1 );
-	}
-	else
-	{
-		match = NULL;
-	}
 
-	i = 0;
+		if ( !Q_stricmp( match, "-raw" ) )
+		{
+			raw = qtrue;
+			match = ( Cmd_Argc() > 2 ) ? Cmd_Argv( 2 ) : NULL;
+		}
+	}
 
 	for ( var = cvar_vars; var; var = var->next, i++ )
 	{
@@ -1147,11 +1195,32 @@ void Cvar_List_f( void )
 			Com_Printf( " " );
 		}
 
-		Com_Printf( " %s \"%s\"\n", var->name, var->string );
+		if ( raw )
+		{
+			char *index;;
+
+			Com_Printf( " %s \"", var->name );
+
+			for ( index = var->string; ; )
+			{
+				char *hat = strchr( index, '^' );
+
+				if ( !hat ) break;
+
+				Com_Printf( "%.*s", (int)( hat + 1 - index ), index );
+				index = hat + 1;
+			}
+
+			Com_Printf( "%s\"\n", index );
+		}
+		else
+		{
+			Com_Printf( " %s \"%s\"\n", var->name, var->string );
+		}
 	}
 
-	Com_Printf( "\n%i total cvars\n", i );
-	Com_Printf( "%i cvar indexes\n", cvar_numIndexes );
+	Com_Printf(_( "\n%i total cvars\n"), i );
+	Com_Printf(_( "%i cvar indexes\n"), cvar_numIndexes );
 }
 
 /*

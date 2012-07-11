@@ -34,18 +34,14 @@ Maryland 20850 USA.
 
 // cl_cgame.c  -- client system interaction with client game
 
-#ifdef _MSC_VER
-#include "../../libs/msinttypes/inttypes.h"
-#else
-#include <inttypes.h>
-#endif
-
 #include "client.h"
 #include "libmumblelink.h"
 
 #ifdef USE_CRYPTO
 #include "../qcommon/crypto.h"
 #endif
+
+#define __(x) Trans_GettextGame(x)
 
 extern qboolean        loadCamera( int camNum, const char *name );
 extern void            startCamera( int camNum, int time );
@@ -269,16 +265,6 @@ void CL_AddCgameCommand( const char *cmdName )
 	Cmd_SetCommandCompletionFunc( cmdName, CL_CompleteCgameCommand );
 }
 
-/*
-==============
-CL_CgameError
-==============
-*/
-void CL_CgameError( const char *string )
-{
-	Com_Error( ERR_DROP, "%s", string );
-}
-
 qboolean CL_CGameCheckKeyExec( int key )
 {
 	if ( cgvm )
@@ -298,9 +284,9 @@ CL_ConfigstringModified
 */
 void CL_ConfigstringModified( void )
 {
-	char        *old, *s;
+	const char  *old, *s;
 	int         i, index;
-	char        *dup;
+	const char  *dup;
 	gameState_t oldGs;
 	int         len;
 
@@ -313,7 +299,8 @@ void CL_ConfigstringModified( void )
 
 //  s = Cmd_Argv(2);
 	// get everything after "cs <num>"
-	s = Cmd_ArgsFrom( 2 );
+	//s = Cmd_ArgsFrom( 2 );
+	s = Cmd_Argv( 2 );
 
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
 
@@ -375,7 +362,7 @@ Set up argc/argv for the given command
 */
 qboolean CL_GetServerCommand( int serverCommandNumber )
 {
-	char        *s;
+	const char  *s;
 	char        *cmd;
 	static char bigConfigString[ BIG_INFO_STRING ];
 	int         argc;
@@ -391,13 +378,11 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 		}
 
 		Com_Error( ERR_DROP, "CL_GetServerCommand: a reliable command was cycled out" );
-		return qfalse;
 	}
 
 	if ( serverCommandNumber > clc.serverCommandSequence )
 	{
 		Com_Error( ERR_DROP, "CL_GetServerCommand: requested a command not received" );
-		return qfalse;
 	}
 
 	s = clc.serverCommands[ serverCommandNumber & ( MAX_RELIABLE_COMMANDS - 1 ) ];
@@ -406,7 +391,7 @@ qboolean CL_GetServerCommand( int serverCommandNumber )
 	if ( cl_showServerCommands->integer )
 	{
 		// NERVE - SMF
-		Com_DPrintf( "serverCommand: %i : %s\n", serverCommandNumber, s );
+		Com_Printf( "serverCommand: %i : %s\n", serverCommandNumber, s );
 	}
 
 rescan:
@@ -419,23 +404,23 @@ rescan:
 		// NERVE - SMF - allow server to indicate why they were disconnected
 		if ( argc >= 2 )
 		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server Disconnected - %s", Cmd_Argv( 1 ) );
+			Com_Error( ERR_SERVERDISCONNECT, "Server Disconnected – %s", Cmd_Argv( 1 ) );
 		}
 		else
 		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected\n" );
+			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected" );
 		}
 	}
 
 	if ( !strcmp( cmd, "bcs0" ) )
 	{
-		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv( 1 ), Cmd_Argv( 2 ) );
+		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s %s", Cmd_Argv( 1 ), Cmd_QuoteString( Cmd_Argv( 2 ) ) );
 		return qfalse;
 	}
 
 	if ( !strcmp( cmd, "bcs1" ) )
 	{
-		s = Cmd_Argv( 2 );
+		s = Cmd_QuoteString( Cmd_Argv( 2 ) );
 
 		if ( strlen( bigConfigString ) + strlen( s ) >= BIG_INFO_STRING )
 		{
@@ -448,7 +433,7 @@ rescan:
 
 	if ( !strcmp( cmd, "bcs2" ) )
 	{
-		s = Cmd_Argv( 2 );
+		s = Cmd_QuoteString( Cmd_Argv( 2 ) );
 
 		if ( strlen( bigConfigString ) + strlen( s ) + 1 >= BIG_INFO_STRING )
 		{
@@ -507,7 +492,7 @@ rescan:
 
 		if ( argc == 1 )
 		{
-			Com_Printf( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" );
+			Com_Printf("%s", _( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" ));
 			return qfalse;
 		}
 
@@ -600,8 +585,6 @@ static void CL_SendBinaryMessage( const char *buf, int buflen )
 	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
 	{
 		Com_Error( ERR_DROP, "CL_SendBinaryMessage: bad length %i", buflen );
-		clc.binaryMessageLength = 0;
-		return;
 	}
 
 	clc.binaryMessageLength = buflen;
@@ -712,7 +695,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0;
 
 		case CG_MILLISECONDS:
 			return Sys_Milliseconds();
@@ -730,10 +712,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_CVAR_VARIABLESTRINGBUFFER:
+			VM_CheckBlock( args[2], args[3], "CVARVSB" );
 			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_CVAR_LATCHEDVARIABLESTRINGBUFFER:
+			VM_CheckBlock( args[2], args[3], "CVARLVSB" );
 			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -741,15 +725,18 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return Cmd_Argc();
 
 		case CG_ARGV:
+			VM_CheckBlock( args[2], args[3], "ARGV" );
 			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_ARGS:
+			VM_CheckBlock( args[1], args[2], "ARGS" );
 			Cmd_ArgsBuffer( VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_LITERAL_ARGS:
 			// FIXME
+			VM_CheckBlock( args[1], args[2], "LARGS" );
 			Cmd_LiteralArgsBuffer( VMA( 1 ), args[ 2 ] );
 //                      Cmd_ArgsBuffer(VMA(1), args[2]);
 			return 0;
@@ -764,10 +751,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case CG_FS_READ:
+			VM_CheckBlock( args[1], args[2], "FSREAD" );
 			FS_Read2( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case CG_FS_WRITE:
+			VM_CheckBlock( args[1], args[2], "FSWRITE" );
 			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case CG_FS_FCLOSEFILE:
@@ -775,6 +764,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_FS_GETFILELIST:
+			VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case CG_FS_DELETEFILE:
@@ -984,7 +974,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 #endif // IPHONE
 
 		case CG_R_REGISTERFONT:
-			re.RegisterFont( VMA( 1 ), args[ 2 ], VMA( 3 ) );
+			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
 		case CG_R_REGISTERSHADERNOMIP:
@@ -1025,7 +1015,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_ADDPOLYBUFFERTOSCENE:
 			re.AddPolyBufferToScene( VMA( 1 ) );
-			break;
+			return 0;
 
 		case CG_R_ADDLIGHTTOSCENE:
 			re.AddLightToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), args[ 7 ], args[ 8 ] );
@@ -1149,42 +1139,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_SetOverstrikeMode( args[ 1 ] );
 			return 0;
 
-		case CG_MEMSET:
-			// we cannot return server-address to QVM !
-			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
-			return args[ 1 ];
-
-		case CG_MEMCPY:
-			// we cannot return server-address to QVM !
-			memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return args[ 1 ];
-
-		case CG_STRNCPY:
-			// we cannot return server-address to QVM !
-			strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return args[ 1 ];
-
-		case CG_SIN:
-			return FloatAsInt( sin( VMF( 1 ) ) );
-
-		case CG_COS:
-			return FloatAsInt( cos( VMF( 1 ) ) );
-
-		case CG_ATAN2:
-			return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
-
-		case CG_SQRT:
-			return FloatAsInt( sqrt( VMF( 1 ) ) );
-
-		case CG_FLOOR:
-			return FloatAsInt( floor( VMF( 1 ) ) );
-
-		case CG_CEIL:
-			return FloatAsInt( ceil( VMF( 1 ) ) );
-
-		case CG_ACOS:
-			return FloatAsInt( Q_acos( VMF( 1 ) ) );
-
 		case CG_S_STOPBACKGROUNDTRACK:
 			S_StopBackgroundTrack();
 			return 0;
@@ -1217,14 +1171,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
 
-		case CG_TESTPRINTINT:
-			Com_Printf( "%s%" PRIiPTR "\n", ( char * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case CG_TESTPRINTFLOAT:
-			Com_Printf( "%s%f\n", ( char * ) VMA( 1 ), VMF( 2 ) );
-			return 0;
-
 		case CG_LOADCAMERA:
 			//return loadCamera(args[1], VMA(2));
 			return 0;
@@ -1249,6 +1195,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GET_ENTITY_TOKEN:
+			VM_CheckBlock( args[1], args[2], "GETET" );
 			return re.GetEntityToken( VMA( 1 ), args[ 2 ] );
 
 		case CG_INGAME_POPUP:
@@ -1267,6 +1214,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_GETBINDINGBUF:
+			VM_CheckBlock( args[2], args[3], "KEYGBB" );
 			Key_GetBindingBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -1290,15 +1238,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return Parse_SourceFileAndLine( args[ 1 ], VMA( 2 ), VMA( 3 ) );
 
 		case CG_KEY_KEYNUMTOSTRINGBUF:
+			VM_CheckBlock( args[2], args[3], "KEYNTSB" );
 			Key_KeynumToStringBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_KEY_BINDINGTOKEYS:
 			Key_GetBindingByString( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
-			return 0;
-
-		case CG_TRANSLATE_STRING:
-			CL_TranslateString( VMA( 1 ), VMA( 2 ) );
 			return 0;
 
 		case CG_S_FADEALLSOUNDS:
@@ -1320,7 +1265,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 			//zinx - binary channel
 		case CG_SENDMESSAGE:
-			CL_SendBinaryMessage( VMA( 1 ), args[ 2 ] );
+			VM_CheckBlock( args[1], args[2], "SENDM" );
+ 			CL_SendBinaryMessage( VMA( 1 ), args[ 2 ] );
 			return 0;
 
 		case CG_MESSAGESTATUS:
@@ -1345,7 +1291,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_GETDEMONAME:
+			VM_CheckBlock( args[1], args[2], "GETDM" );
 			CL_DemoName( VMA( 1 ), args[ 2 ] );
+			return 0;
 
 		case CG_R_LIGHTFORPOINT:
 			return re.LightForPoint( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
@@ -1376,6 +1324,43 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return re.AnimFrameRate( args[ 1 ] );
 #endif
 
+		case CG_REGISTER_BUTTON_COMMANDS:
+			CL_RegisterButtonCommands( VMA( 1 ) );
+			return 0;
+
+		case CG_GETCLIPBOARDDATA:
+			VM_CheckBlock( args[1], args[2], "GETCLIP" );
+
+			if ( cl_allowPaste->integer )
+			{
+				CL_GetClipboardData( VMA(1), args[2], args[3] );
+			}
+			else
+			{
+				( (char *) VMA( 1 ) )[0] = '\0';
+			}
+			return 0;
+
+		case CG_QUOTESTRING:
+			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return 0;
+
+		case CG_GETTEXT:
+			strncpy( VMA(1), __(VMA(2)), args[3] );
+			return 0;
+
+		case CG_R_GLYPH:
+			re.GlyphVM( args[1], VMA(2), VMA(3) );
+			return 0;
+
+		case CG_R_GLYPHCHAR:
+			re.GlyphCharVM( args[1], args[2], VMA(3) );
+			return 0;
+
+		case CG_R_UREGISTERFONT:
+			re.UnregisterFontVM( args[1] );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}
@@ -1387,9 +1372,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 ====================
 CL_UpdateLevelHunkUsage
 
-  This updates the "hunkusage.dat" file with the current map and it's hunk usage count
+  This updates the "hunkusage.dat" file with the current map and its hunk usage count
 
-  This is used for level loading, so we can show a percentage bar dependant on the amount
+  This is used for level loading, so we can show a percentage bar dependent on the amount
   of hunk memory allocated so far
 
   This will be slightly inaccurate if some settings like sound quality are changed, but these
@@ -1414,9 +1399,7 @@ void CL_UpdateLevelHunkUsage( void )
 	{
 		// the file exists, so read it in, strip out the current entry for this map, and save it out, so we can append the new value
 		buf = ( char * ) Z_Malloc( len + 1 );
-		memset( buf, 0, len + 1 );
 		outbuf = ( char * ) Z_Malloc( len + 1 );
-		memset( outbuf, 0, len + 1 );
 
 		FS_Read( ( void * ) buf, len, handle );
 		FS_FCloseFile( handle );
@@ -1458,7 +1441,9 @@ void CL_UpdateLevelHunkUsage( void )
 				}
 				else
 				{
-					Com_Error( ERR_DROP, "hunkusage.dat file is corrupt\n" );
+					Z_Free( buf );
+					Z_Free( outbuf );
+					Com_Error( ERR_DROP, "hunkusage.dat file is corrupt" );
 				}
 			}
 		}
@@ -1467,7 +1452,9 @@ void CL_UpdateLevelHunkUsage( void )
 
 		if ( handle < 0 )
 		{
-			Com_Error( ERR_DROP, "cannot create %s\n", memlistfile );
+			Z_Free( buf );
+			Z_Free( outbuf );
+			Com_Error( ERR_DROP, "cannot create %s", memlistfile );
 		}
 
 		// input file is parsed, now output to the new file
@@ -1475,7 +1462,9 @@ void CL_UpdateLevelHunkUsage( void )
 
 		if ( FS_Write( ( void * ) outbuf, len, handle ) != len )
 		{
-			Com_Error( ERR_DROP, "cannot write to %s\n", memlistfile );
+			Z_Free( buf );
+			Z_Free( outbuf );
+			Com_Error( ERR_DROP, "cannot write to %s", memlistfile );
 		}
 
 		FS_FCloseFile( handle );
@@ -1489,7 +1478,7 @@ void CL_UpdateLevelHunkUsage( void )
 
 	if ( handle < 0 )
 	{
-		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full\n" );
+		Com_Error( ERR_DROP, "cannot write to hunkusage.dat, check disk full" );
 	}
 
 	Com_sprintf( outstr, sizeof( outstr ), "%s %i\n", cl.mapname, memusage );
@@ -1549,7 +1538,7 @@ void CL_InitCGame( void )
 
 	t2 = Sys_Milliseconds();
 
-	Com_Printf( "CL_InitCGame: %5.2f seconds\n", ( t2 - t1 ) / 1000.0 );
+	Com_Printf( "CL_InitCGame: %5.2fs\n", ( t2 - t1 ) / 1000.0 );
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading
@@ -1721,7 +1710,7 @@ void CL_AdjustTimeDelta( void )
 
 	if ( cl_showTimeDelta->integer )
 	{
-		Com_Printf( "%i ", cl.serverTimeDelta );
+		Com_Printf("%i ", cl.serverTimeDelta );
 	}
 }
 
@@ -1767,7 +1756,7 @@ void CL_FirstSnapshot( void )
 	if ( ( cl_useMumble->integer ) && !mumble_islinked() )
 	{
 		int ret = mumble_link( CLIENT_WINDOW_TITLE );
-		Com_Printf( "Mumble: Linking to Mumble application %s\n", ret == 0 ? "ok" : "failed" );
+		Com_Printf("%s", ret == 0 ? _("Mumble: Linking to Mumble application okay\n") : _( "Mumble: Linking to Mumble application failed\n" ) );
 	}
 
 #endif
@@ -1943,13 +1932,11 @@ void CL_SetCGameTime( void )
 	}
 
 	// if we are playing a demo back, we can just keep reading
-	// messages from the demo file until the cgame definately
+	// messages from the demo file until the cgame definitely
 	// has valid snapshots to interpolate between
 
 	// a timedemo will always use a deterministic set of time samples
-	// no matter what speed machine it is run on,
-	// while a normal demo may have different time samples
-	// each time it is played back
+	// no matter what speed machine it is run on
 	if ( cl_timedemo->integer )
 	{
 		if ( !clc.timeDemoStart )
@@ -1963,7 +1950,7 @@ void CL_SetCGameTime( void )
 
 	while ( cl.serverTime >= cl.snap.serverTime )
 	{
-		// feed another messag, which should change
+		// feed another message, which should change
 		// the contents of cl.snap
 		CL_ReadDemoMessage();
 
@@ -1980,12 +1967,15 @@ void CL_SetCGameTime( void )
 CL_GetTag
 ====================
 */
-qboolean CL_GetTag( int clientNum, char *tagname, orientation_t * or )
+qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or )
 {
 	if ( !cgvm )
 	{
 		return qfalse;
 	}
 
-	return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
+	// the current design of CG_GET_TAG is inappropriate for modules in sandboxed formats
+	//  (the direct pointer method to pass the tag name would work only with modules in native format)
+	//return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
+	return qfalse;
 }

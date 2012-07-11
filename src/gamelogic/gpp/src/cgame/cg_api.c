@@ -39,8 +39,13 @@ static int FloatAsInt( float f )
 
 #define PASSFLOAT( x ) FloatAsInt( x )
 
+void trap_SyscallABIVersion( int major, int minor )
+{
+        syscall( TRAP_VERSION, major, minor );
+}
+
 //00.
-//Com_Printf("%s", (char *)VMA(1));
+//Com_Printf_(("%s"), (char *)VMA(1));
 void trap_Print( const char *fmt )
 {
 	syscall( CG_PRINT, fmt );
@@ -48,9 +53,10 @@ void trap_Print( const char *fmt )
 
 //01.
 //Com_Error(ERR_DROP, "%s", (char *)VMA(1));
-void trap_Error( const char *fmt )
+void NORETURN trap_Error( const char *fmt )
 {
 	syscall( CG_ERROR, fmt );
+	exit(1); // silence warning
 }
 
 //02.
@@ -519,12 +525,12 @@ qhandle_t trap_R_RegisterShader( const char *name )
 
 //65.
 //re.RegisterFont(VMA(1), args[2], VMA(3));
-void trap_R_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
+void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
 {
 	//CG_DrawInformation(qtrue);
 
 	trap_PumpEventLoop();
-	syscall( CG_R_REGISTERFONT, fontName, pointSize, font );
+	syscall( CG_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
 
 //66.
@@ -855,7 +861,7 @@ void trap_Key_SetOverstrikeMode( qboolean state )
 
 //117
 //return botlib_export->PC_AddGlobalDefine(VMA(1));
-int trap_PC_AddGlobalDefine( char *define )
+int trap_PC_AddGlobalDefine( const char *define )
 {
 	return syscall( CG_PC_ADD_GLOBAL_DEFINE, define );
 }
@@ -959,17 +965,17 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 }
 
 //132.
-//Com_Printf("%s%i\n", (char *)VMA(1), args[2]);
+//Com_Printf_(("%s%i\n"), (char *)VMA(1), args[2]);
 void testPrintInt( char *string, int i )
 {
-	syscall( CG_TESTPRINTINT, string, i );
+	syscall( TRAP_TESTPRINTINT, string, i );
 }
 
 //133.
-//Com_Printf("%s%f\n", (char *)VMA(1), VMF(2));
+//Com_Printf_(("%s%f\n"), (char *)VMA(1), VMF(2));
 void testPrintFloat( char *string, float f )
 {
-	syscall( CG_TESTPRINTFLOAT, string, PASSFLOAT( f ) );
+	syscall( TRAP_TESTPRINTFLOAT, string, PASSFLOAT( f ) );
 }
 
 //134.
@@ -1047,7 +1053,7 @@ void trap_Key_SetBinding( int keynum, const char *binding )
 
 //143.
 //return Parse_AddGlobalDefine(VMA(1));
-int trap_Parse_AddGlobalDefine( char *define )
+int trap_Parse_AddGlobalDefine( const char *define )
 {
 	return syscall( CG_PARSE_ADD_GLOBAL_DEFINE, define );
 }
@@ -1092,13 +1098,6 @@ void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 void trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 )
 {
 	syscall( CG_KEY_BINDINGTOKEYS, binding, key1, key2 );
-}
-
-//150.
-//CL_TranslateString(VMA(1), VMA(2));
-void trap_CG_TranslateString( const char *string, char *buf )
-{
-	syscall( CG_TRANSLATE_STRING, string, buf );
 }
 
 //151.
@@ -1248,4 +1247,47 @@ int trap_R_AnimFrameRate( qhandle_t hAnim )
 void trap_CompleteCallback( const char *complete )
 {
 	syscall( CG_COMPLETE_CALLBACK, complete );
+}
+
+//173.
+void trap_RegisterButtonCommands( const char *cmds )
+{
+	syscall( CG_REGISTER_BUTTON_COMMANDS, cmds );
+}
+
+//174.
+void trap_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
+{
+  syscall( CG_R_GLYPH, font, str, glyph );
+}
+
+//175.
+void trap_R_GlyphChar( fontHandle_t font, int ch, glyphInfo_t *glyph )
+{
+  syscall( CG_R_GLYPHCHAR, font, ch, glyph );
+}
+
+//176.
+void trap_R_UnregisterFont( fontHandle_t font )
+{
+  syscall( CG_R_UREGISTERFONT, font );
+}
+
+//177.
+//GetClipboardData(VMA(1), args[2], args[3]);
+void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
+{
+	syscall( CG_GETCLIPBOARDDATA, buf, bufsize, clip );
+}
+
+//178.
+void trap_QuoteString( const char *str, char *buffer, int size )
+{
+	syscall( CG_QUOTESTRING, str, buffer, size );
+}
+
+//179.
+void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
+{
+	syscall( CG_GETTEXT, buffer, msgid, bufferLength );
 }

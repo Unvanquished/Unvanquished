@@ -96,8 +96,8 @@ typedef struct
 // Imported functions
 typedef struct
 {
-	void ( QDECL *Printf )( int printLevel, const char *fmt, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
-	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
+	void ( QDECL *Printf )( int printLevel, const char *fmt, ... ) PRINTF_LIKE(2);
+	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN;
 	int ( *Milliseconds )( void );
 #ifdef HUNK_DEBUG
 	void     *( *Hunk_AllocDebug )( int size, ha_pref pref, char *label, char *file, int line );

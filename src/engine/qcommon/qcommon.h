@@ -38,11 +38,23 @@ Maryland 20850 USA.
 
 #include "../qcommon/cm_public.h"
 
-//bani
 #if defined __GNUC__ || defined __clang__
-#define _attribute( x ) __attribute__( x )
+#define NORETURN __attribute__((__noreturn__))
+#define UNUSED __attribute__((__unused__))
+#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
+#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
+#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
+#define ALIGNED(a) __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define _attribute( x )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED(a)
+#define ALWAYS_INLINE
+#define __attribute__(x)
 #endif
 
 //#define PRE_RELEASE_DEMO
@@ -201,7 +213,7 @@ void       NET_Restart_f( void );
 void       NET_Config( qboolean enableNetworking );
 
 void       NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to );
-void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) __attribute__( ( format( printf, 3, 4 ) ) );
+void QDECL NET_OutOfBandPrint( netsrc_t net_socket, netadr_t adr, const char *format, ... ) PRINTF_LIKE(3);
 void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len );
 
 qboolean   NET_CompareAdr( netadr_t a, netadr_t b );
@@ -282,7 +294,7 @@ You or the server may be running older versions of the game. Press the auto-upda
  button if it appears on the Main Menu screen."
 
 #define GAMENAME_STRING "unv"
-#define PROTOCOL_VERSION 84
+#define PROTOCOL_VERSION 85
 
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
@@ -378,6 +390,8 @@ VIRTUAL MACHINE
 ==============================================================
 */
 
+// See also vm_traps.h for syscalls common to all VMs
+
 typedef struct vm_s vm_t;
 
 typedef enum
@@ -388,25 +402,6 @@ typedef enum
 #endif
   VMI_COMPILED
 } vmInterpret_t;
-
-typedef enum
-{
-  TRAP_MEMSET = 300,
-  TRAP_MEMCPY,
-  TRAP_STRNCPY,
-  TRAP_SIN,
-  TRAP_COS,
-  TRAP_ATAN2,
-  TRAP_SQRT,
-  TRAP_MATRIXMULTIPLY,
-  TRAP_ANGLEVECTORS,
-  TRAP_PERPENDICULARVECTOR,
-  TRAP_FLOOR,
-  TRAP_CEIL,
-
-  TRAP_TESTPRINTINT,
-  TRAP_TESTPRINTFLOAT
-} sharedTraps_t;
 
 void VM_Init( void );
 
@@ -428,8 +423,13 @@ void           VM_Debug( int level );
 void           *VM_ArgPtr( intptr_t intValue );
 void           *VM_ExplicitArgPtr( vm_t *vm, intptr_t intValue );
 
+void VM_CheckBlock( intptr_t buf, size_t n, const char *fail );
+void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail );
+
+intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
+
 #define VMA(x) VM_ArgPtr(args[ x ])
-static ID_INLINE float _vmf( intptr_t x )
+static INLINE float _vmf( intptr_t x )
 {
 	floatint_t fi;
 	fi.i = ( int ) x;
@@ -472,7 +472,7 @@ void Cbuf_Execute( void );
 
 // Pulls off \n terminated lines of text from the command buffer and sends
 // them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Normally called once per frame, but may be explicitly invoked.
+// Called on a per-frame basis, but may also be explicitly invoked.
 // Do not call inside a command function, or current args will be destroyed.
 
 //===========================================================================
@@ -485,10 +485,14 @@ then searches for a command or variable that matches the first token.
 */
 
 typedef void ( *xcommand_t )( void );
+typedef void ( *xcommand_arg_t )( int );
 
 void Cmd_Init( void );
 
-void Cmd_AddCommand( const char *cmd_name, xcommand_t function );
+void     Cmd_AddCommand( const char *cmd_name, xcommand_t function );
+#ifndef DEDICATED
+qboolean Cmd_AddButtonCommand( const char *cmd_name, int parameter );
+#endif
 
 // called by the init functions of other parts of the program to
 // register commands and functions to call for them.
@@ -519,9 +523,16 @@ void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
 char *Cmd_Args( void );
 char *Cmd_ArgsFrom( int arg );
 void Cmd_ArgsBuffer( char *buffer, int bufferLength );
-char *Cmd_Cmd( void );
-char *Cmd_Cmd_FromNth( int );
-char *Cmd_EscapeString( const char *in );
+const char *Cmd_Cmd( void );
+const char *Cmd_Cmd_FromNth( int );
+
+// these all share an output buffer
+const char *Cmd_EscapeString( const char *in );
+const char *Cmd_QuoteString( const char *in );
+const char *Cmd_UnquoteString( const char *in );
+const char *Cmd_DequoteString( const char *in ); // FIXME QUOTING INFO
+
+void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL
@@ -581,11 +592,16 @@ void Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultVa
 
 void Cvar_Update( vmCvar_t *vmCvar );
 
-// updates an interpreted modules' version of a cvar
+// updates a module's version of a cvar
 
 void Cvar_Set( const char *var_name, const char *value );
 
 // will create the variable with no flags if it doesn't exist
+
+void Cvar_SetIFlag( const char *var_name );
+
+// sets the cvar by the name that begins with a backslash to "1"
+
 
 void Cvar_SetLatched( const char *var_name, const char *value );
 
@@ -605,9 +621,11 @@ char *Cvar_VariableString( const char *var_name );
 void Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
 // returns an empty string if not defined
+
 void Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
-// Gordon: returns the latched value if there is one, else the normal one, empty string if not defined as usual
+// returns the latched value if there is one, and the current value otherwise
+// (an empty string in case the cvar does not exist)
 
 int  Cvar_Flags( const char *var_name );
 void Cvar_CommandCompletion( void ( *callback )( const char *s ) );
@@ -645,7 +663,7 @@ void       Cvar_Restart_f( void );
 
 extern int cvar_modifiedFlags;
 
-// whenever a cvar is modifed, its flags will be OR'd into this, so
+// whenever a cvar is modified, its flags will be OR'd into this, so
 // a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
 // etc, variables have been modified since the last check.  The bit
 // can then be cleared to allow another change detection.
@@ -656,7 +674,7 @@ extern int cvar_modifiedFlags;
 FILESYSTEM
 
 No stdio calls should be used by any part of the game, because
-we need to deal with all sorts of directory and seperator char
+we need to deal with all sorts of directory and separator char
 issues.
 ==============================================================
 */
@@ -712,7 +730,7 @@ int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 
-// will properly create any needed paths and deal with seperater character issues
+// will properly create any needed paths and deal with separator character issues
 
 int          FS_filelength( fileHandle_t f );
 fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
@@ -751,12 +769,13 @@ int FS_Read( void *buffer, int len, fileHandle_t f );
 
 // properly handles partial reads and reads from other dlls
 
-void FS_FCloseFile( fileHandle_t f );
+int FS_FCloseFile( fileHandle_t f ); // !0 on error (but errno isn't valid)
 
 // note: you can't just fclose from another DLL, due to MS libc issues
 
 long FS_ReadFileDir( const char *qpath, void *searchPath, void **buffer );
 int  FS_ReadFile( const char *qpath, void **buffer );
+int  FS_ReadFileCheck( const char *qpath, void **buffer );
 
 // returns the length of the file
 // a null buffer will just return the file length without loading
@@ -787,7 +806,7 @@ int FS_FTell( fileHandle_t f );
 
 void       FS_Flush( fileHandle_t f );
 
-void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
+void QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) PRINTF_LIKE(2);
 
 // like fprintf
 
@@ -841,10 +860,9 @@ void       FS_Rename( const char *from, const char *to );
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 void       FS_BuildOSHomePath( char *ospath, int size, const char *qpath );
 
-#if !defined( DEDICATED )
 extern int cl_connectedToPureServer;
+#if !defined( NO_UNTRUSTED_PLUGINS )
 qboolean   FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, const char *filename );
-
 #endif
 
 #if defined( DO_LIGHT_DEDICATED )
@@ -918,6 +936,11 @@ void Field_CompleteDelay( void );
 void Field_CompleteCommand( char *cmd,
                             qboolean doCommands, qboolean doCvars );
 
+// code point count <-> UTF-8 byte count
+int Field_OffsetToCursor( field_t *edit, int offset );
+int Field_CursorToOffset( field_t *edit );
+int Field_ScrollToOffset( field_t *edit );
+
 /*
 ==============================================================
 
@@ -975,13 +998,13 @@ void       Com_BeginRedirect( char *buffer, int buffersize, void ( *flush )( cha
 void       Com_EndRedirect( void );
 
 // *INDENT-OFF*
-int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) _attribute( ( format( printf, 1, 0 ) ) );    // conforms to vprintf prototype for print callback passing
-void QDECL Com_Printf( const char *fmt, ... ) _attribute( ( format( printf, 1, 2 ) ) );    // this one calls to Com_VPrintf now
-void QDECL Com_DPrintf( const char *fmt, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-void QDECL Com_Error( int code, const char *fmt, ... ) _attribute( ( format( printf, 2, 3 ) ) );
+int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) VPRINTF_LIKE(1);    // conforms to vprintf prototype for print callback passing
+void QDECL Com_Printf( const char *fmt, ... ) PRINTF_LIKE(1);    // this one calls to Com_VPrintf now
+void QDECL Com_DPrintf( const char *fmt, ... ) PRINTF_LIKE(1);
+void QDECL Com_Error( int code, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN;
 
 // *INDENT-ON*
-void       Com_Quit_f( void );
+void       Com_Quit_f( void ) NORETURN;
 int        Com_EventLoop( void );
 int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
@@ -1156,7 +1179,7 @@ void     CL_Frame( int msec );
 qboolean CL_GameCommand( void );
 void     CL_KeyEvent( int key, qboolean down, unsigned time );
 
-void     CL_CharEvent( int key );
+void     CL_CharEvent( const char *key );
 
 // char events are for field typing, not game control
 
@@ -1265,7 +1288,7 @@ typedef enum
   SE_NONE = 0, // evTime is still valid
   SE_KEY, // evValue is a key code, evValue2 is the down flag
   SE_CHAR, // evValue is an ascii char
-  SE_MOUSE, // evValue and evValue2 are reletive signed x / y moves
+  SE_MOUSE, // evValue and evValue2 are relative, signed x / y moves
   SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
 #if IPHONE
   SE_ACCEL, // iPhone accelerometer
@@ -1318,9 +1341,9 @@ void                  *Sys_GetSystemHandles( void );
 
 char                  *Sys_GetCurrentUser( void );
 
-void QDECL            Sys_Error( const char *error, ... ) __attribute__(( format( printf, 1, 2 ), noreturn ));
-void                  Sys_Quit( void ) __attribute__((noreturn));
-char                  *Sys_GetClipboardData( void );  // note that this isn't journaled...
+void QDECL            Sys_Error( const char *error, ... ) PRINTF_LIKE(1) NORETURN;
+void                  Sys_Quit( void ) NORETURN;
+char                  *Sys_GetClipboardData( clipboard_t clip );  // note that this isn't journaled...
 
 void                  Sys_Print( const char *msg );
 
@@ -1483,7 +1506,7 @@ extern huffman_t clientHuffTables;
 #define CL_ENCODE_START 12
 #define CL_DECODE_START 4
 
-int  Parse_AddGlobalDefine( char *string );
+int  Parse_AddGlobalDefine( const char *string );
 int  Parse_LoadSourceHandle( const char *filename );
 int  Parse_FreeSourceHandle( int handle );
 int  Parse_ReadTokenHandle( int handle, pc_token_t *pc_token );
@@ -1491,5 +1514,14 @@ int  Parse_SourceFileAndLine( int handle, char *filename, int *line );
 
 void Com_GetHunkInfo( int *hunkused, int *hunkexpected );
 void Com_RandomBytes( byte *string, int len );
+
+#define _(x) Trans_Gettext(x)
+#define C_(x, y) Trans_Pgettext(x, y)
+#define N_(x) (x)
+
+void Trans_Init( void );
+const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));
+const char* Trans_Pgettext( const char *msgctxt, const char *msgid ) __attribute__((format_arg(1)));
+const char* Trans_GettextGame( const char *msgid ) __attribute__((format_arg(1)));
 
 #endif // _QCOMMON_H_

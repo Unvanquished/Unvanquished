@@ -238,7 +238,7 @@ void LoadBSPFile(const char *filename)
 
 	if(header->ident != BSP_IDENT)
 	{
-		Error("%s is not a IBSP file", filename);
+		Error("%s is not an IBSP file", filename);
 	}
 	if(header->version != BSP_VERSION)
 	{

@@ -44,7 +44,7 @@ static void png_user_warning_fn( png_structp png_ptr, png_const_charp warning_me
 	ri.Printf( PRINT_WARNING, "libpng warning: %s\n", warning_message );
 }
 
-static void png_user_error_fn( png_structp png_ptr, png_const_charp error_message )
+static void NORETURN png_user_error_fn( png_structp png_ptr, png_const_charp error_message )
 {
 	ri.Printf( PRINT_ERROR, "libpng error: %s\n", error_message );
 	longjmp( png_jmpbuf( png_ptr ), 0 );
@@ -96,7 +96,7 @@ void LoadPNG( const char *name, byte **pic, int *width, int *height, byte alphaB
 
 	/*
 	 * Set error handling if you are using the setjmp/longjmp method (this is
-	 * the normal method of doing things with libpng).  REQUIRED unless you
+	 * the common method of doing things with libpng).  REQUIRED unless you
 	 * set up your own error handlers in the png_create_read_struct() earlier.
 	 */
 	if ( setjmp( png_jmpbuf( png ) ) )
@@ -258,16 +258,24 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 
 	png_set_write_fn( png, buffer, png_write_data, png_flush_data );
 
-	if ( numBytes == 4 )
+	switch ( numBytes )
 	{
+	default:
 		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
 		              PNG_FILTER_TYPE_DEFAULT );
-	}
-	else
-	{
-		// should be 3
+		break;
+	case 3:
 		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
 		              PNG_FILTER_TYPE_DEFAULT );
+		break;
+	case 2:
+		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_GA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+		              PNG_FILTER_TYPE_DEFAULT );
+		break;
+	case 1:
+		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+		              PNG_FILTER_TYPE_DEFAULT );
+		break;
 	}
 
 	// write the file header information

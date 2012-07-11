@@ -43,16 +43,6 @@ Maryland 20850 USA.
 void            CMod_PhysicsAddEntity( sharedEntity_t *gEnt );
 void            CMod_PhysicsAddStatic( const sharedEntity_t *gEnt );
 
-void SV_GameError( const char *string )
-{
-	Com_Error( ERR_DROP, "%s", string );
-}
-
-void SV_GamePrint( const char *string )
-{
-	Com_Printf( "%s", string );
-}
-
 // these functions must be used instead of pointer arithmetic, because
 // the game allocates gentities with private information after the server shared part
 int SV_NumForGentity( sharedEntity_t *ent )
@@ -112,6 +102,10 @@ void SV_GameSendServerCommand( int clientNum, const char *text )
 	if ( clientNum == -1 )
 	{
 		SV_SendServerCommand( NULL, "%s", text );
+	}
+	else if ( clientNum == -2 )
+	{
+		SV_PrintTranslatedText( text );
 	}
 	else
 	{
@@ -384,14 +378,11 @@ static void SV_SendBinaryMessage( int cno, char *buf, int buflen )
 	if ( cno < 0 || cno >= sv_maxclients->integer )
 	{
 		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad client %i", cno );
-		return;
 	}
 
 	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
 	{
 		Com_Error( ERR_DROP, "SV_SendBinaryMessage: bad length %i", buflen );
-		svs.clients[ cno ].binaryMessageLength = 0;
-		return;
 	}
 
 	svs.clients[ cno ].binaryMessageLength = buflen;
@@ -465,14 +456,6 @@ void SV_UpdateSharedConfig( unsigned int port, const char *rconpass )
 
 //==============================================
 
-static int FloatAsInt( float f )
-{
-	floatint_t fi;
-
-	fi.f = f;
-	return fi.i;
-}
-
 extern int S_RegisterSound( const char *name, qboolean compressed );
 extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
@@ -493,7 +476,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
-			return 0;
 
 		case G_MILLISECONDS:
 			return Sys_Milliseconds();
@@ -514,10 +496,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return Cvar_VariableIntegerValue( ( const char * ) VMA( 1 ) );
 
 		case G_CVAR_VARIABLE_STRING_BUFFER:
+		        VM_CheckBlock( args[2], args[3], "CVARVSB" );
 			Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_CVAR_LATCHEDVARIABLESTRINGBUFFER:
+		        VM_CheckBlock( args[2], args[3], "CVARLVSB" );
 			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -525,6 +509,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return Cmd_Argc();
 
 		case G_ARGV:
+		        VM_CheckBlock( args[2], args[3], "ARGV" );
 			Cmd_ArgvBuffer( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -536,10 +521,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 
 		case G_FS_READ:
+		        VM_CheckBlock( args[1], args[2], "FSREAD" );
 			FS_Read2( VMA( 1 ), args[ 2 ], args[ 3 ] );
 			return 0;
 
 		case G_FS_WRITE:
+		        VM_CheckBlock( args[1], args[2], "FSWRITE" );
 			return FS_Write( VMA( 1 ), args[ 2 ], args[ 3 ] );
 
 		case G_FS_RENAME:
@@ -551,6 +538,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_FS_GETFILELIST:
+		        VM_CheckBlock( args[3], args[4], "FSGFL" );
 			return FS_GetFileList( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case G_LOCATE_GAME_DATA:
@@ -574,6 +562,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_ENTITIES_IN_BOX:
+		        VM_CheckBlock( args[3], args[4] * sizeof( int ), "ENTIB" );
 			return SV_AreaEntities( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[ 4 ] );
 
 		case G_ENTITY_CONTACT:
@@ -608,6 +597,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_GET_CONFIGSTRING:
+		        VM_CheckBlock( args[2], args[3], "GETCS" );
 			SV_GetConfigstring( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
@@ -621,10 +611,12 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_GET_USERINFO:
+		        VM_CheckBlock( args[2], args[3], "GETUI" );
 			SV_GetUserinfo( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_GET_SERVERINFO:
+		        VM_CheckBlock( args[2], args[3], "GETSI" );
 			SV_GetServerinfo( VMA( 1 ), args[ 2 ] );
 			return 0;
 
@@ -647,6 +639,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case BOT_GET_CONSOLE_MESSAGE:
+		        VM_CheckBlock( args[2], args[3], "BOTGCM" );
 			return SV_BotGetConsoleMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );
 
 		case G_GET_USERCMD:
@@ -654,6 +647,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_GET_ENTITY_TOKEN:
+		        VM_CheckBlock( args[1], args[2], "GETET" );
 			{
 				const char *s;
 
@@ -735,99 +729,24 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 #endif
 			return 0;
 
-		case TRAP_MEMSET:
-			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
-			return 0;
-
-		case TRAP_MEMCPY:
-			memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case TRAP_STRNCPY:
-			return ( intptr_t ) strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-
-		case TRAP_SIN:
-			return FloatAsInt( sin( VMF( 1 ) ) );
-
-		case TRAP_COS:
-			return FloatAsInt( cos( VMF( 1 ) ) );
-
-		case TRAP_ATAN2:
-			return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
-
-		case TRAP_SQRT:
-			return FloatAsInt( sqrt( VMF( 1 ) ) );
-
-		case TRAP_MATRIXMULTIPLY:
-			AxisMultiply( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
-			return 0;
-
-		case TRAP_ANGLEVECTORS:
-			AngleVectors( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
-			return 0;
-
-		case TRAP_PERPENDICULARVECTOR:
-			PerpendicularVector( VMA( 1 ), VMA( 2 ) );
-			return 0;
-
-		case TRAP_FLOOR:
-			return FloatAsInt( floor( VMF( 1 ) ) );
-
-		case TRAP_CEIL:
-			return FloatAsInt( ceil( VMF( 1 ) ) );
-
 		case G_SENDMESSAGE:
+		        VM_CheckBlock( args[2], args[3], "SENDM" );
 			SV_SendBinaryMessage( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case G_MESSAGESTATUS:
 			return SV_BinaryMessageStatus( args[ 1 ] );
 
-#if defined( ET_MYSQL )
-
-		case G_SQL_RUNQUERY:
-			return D_RunQuery( VMA( 1 ) );
-
-		case G_SQL_FINISHQUERY:
-			D_FinishQuery( args[ 1 ] );
-			return 0;
-
-		case G_SQL_NEXTROW:
-			return D_NextRow( args[ 1 ] );
-
-		case G_SQL_ROWCOUNT:
-			return D_RowCount( args[ 1 ] );
-
-		case G_SQL_GETFIELDBYID:
-			D_GetFieldByID( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case G_SQL_GETFIELDBYNAME:
-			D_GetFieldByName( args[ 1 ], VMA( 2 ), VMA( 3 ), args[ 4 ] );
-			return 0;
-
-		case G_SQL_GETFIELDBYID_INT:
-			return D_GetFieldByID_int( args[ 1 ], args[ 2 ] );
-
-		case G_SQL_GETFIELDBYNAME_INT:
-			return D_GetFieldByName_int( args[ 1 ], VMA( 2 ) );
-
-		case G_SQL_FIELDCOUNT:
-			return D_FieldCount( args[ 1 ] );
-
-		case G_SQL_CLEANSTRING:
-			D_CleanString( VMA( 1 ), VMA( 2 ), args[ 3 ] );
-			return 0;
-#endif
-
 		case G_RSA_GENMSG:
 			return SV_RSAGenMsg( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+
+                case G_QUOTESTRING:
+			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return 0;
 
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}
-
-	return -1;
 }
 
 /*
@@ -885,7 +804,7 @@ static void SV_InitGameVM( qboolean restart )
 ===================
 SV_RestartGameProgs
 
-Called on a map_restart, but not on a normal map change
+Called on a map_restart, but not on a map change
 ===================
 */
 void SV_RestartGameProgs( void )
@@ -917,7 +836,7 @@ void SV_RestartGameProgs( void )
 ===============
 SV_InitGameProgs
 
-Called on a normal map change, not on a map_restart
+Called on a map change, not on a map_restart
 ===============
 */
 void SV_InitGameProgs( void )
@@ -982,9 +901,9 @@ SV_GetTag
   return qfalse if unable to retrieve tag information for this client
 ====================
 */
-extern qboolean CL_GetTag( int clientNum, char *tagname, orientation_t * or );
+extern qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or );
 
-qboolean SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation_t * or )
+qboolean SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t * or )
 {
 	int i;
 
@@ -1004,7 +923,7 @@ qboolean SV_GetTag( int clientNum, int tagFileNumber, char *tagname, orientation
 		}
 	}
 
-	// Gordon: lets try and remove the inconsitancy between ded/non-ded servers...
+	// Gordon: let's try and remove the inconsistency between ded/non-ded servers...
 	// Gordon: bleh, some code in clientthink_real really relies on this working on player models...
 #ifndef DEDICATED // TTimo: dedicated only binary defines DEDICATED
 

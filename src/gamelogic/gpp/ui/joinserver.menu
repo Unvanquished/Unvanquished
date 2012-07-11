@@ -1,4 +1,5 @@
 #include "ui/menudef.h"
+#include "ui/main.h"
 
 {
 
@@ -53,8 +54,7 @@
     rect 0 0 W H
     focusColor 1 .75 0 1
     outOfBoundsClick
-    style WINDOW_STYLE_EMPTY
-    aspectBias ASPECT_NONE
+    TITLE_BACKGROUND
     onOpen
     {
       uiScript InitServerList 3;
@@ -67,16 +67,7 @@
 
     onEsc { uiScript closeJoin }
 
-    itemDef
-    {
-      name background
-      rect 0 0 W H
-      style WINDOW_STYLE_FILLED
-      backcolor 0 0 0 1
-      visible MENU_TRUE
-      decoration
-    }
-
+    TITLE_LAYOUT
 
     //  VIEW OPTIONS  //
 
@@ -201,7 +192,7 @@
       type ITEM_TYPE_TEXT
       text "[official] = Official Server\n[featured] = Featured Server"
       style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       textscale .25
       wrapped
       rect (TOP_X+(2*TOPBUTT_W)) (TOP_Y+TOPBUTT_H) (TOPBUTT_W) (TOPBUTT_H)
@@ -242,7 +233,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   0.5 0.5 0.5 1
+      bordercolor   1 1 1 1
       forecolor     1   1   1   1
       backcolor     0   0   0   0
       outlinecolor  0.1 0.1 0.1 0.5
@@ -286,7 +277,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   0.5 0.5 0.5 1
+      bordercolor   1 1 1 1
       forecolor     1   1   1   1
       backcolor     0   0   0   0
       outlinecolor  0.1 0.1 0.1 0.5
@@ -330,7 +321,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   0.5 0.5 0.5 1
+      bordercolor   1 1 1 1
       forecolor     1   1   1   1
       backcolor     0   0   0   0
       outlinecolor  0.1 0.1 0.1 0.5
@@ -374,7 +365,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   0.5 0.5 0.5 1
+      bordercolor   1 1 1 1
       forecolor     1   1   1   1
       backcolor     0   0   0   0
       outlinecolor  0.1 0.1 0.1 0.5
@@ -418,7 +409,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   0.5 0.5 0.5 1
+      bordercolor   1 1 1 1
       forecolor     1   1   1   1
       backcolor     0.3 1   1   0.3
       outlinecolor  0.1 0.1 0.1 0.5
@@ -463,7 +454,7 @@
       elementtype LISTBOX_TEXT
       feeder FEEDER_SERVERS
       border WINDOW_BORDER_FULL
-      bordercolor   0.5 0.5 0.5 1
+      bordercolor   1 1 1 1
       forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.3 0.3 0.4

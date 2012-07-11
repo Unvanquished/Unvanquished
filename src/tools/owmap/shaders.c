@@ -525,7 +525,7 @@ shaderInfo_t   *CustomShader(shaderInfo_t * si, char *find, char *replace)
 
 	/* error check */
 	if((strlen(mapName) + 1 + 32) > MAX_QPATH)
-		Error("Custom shader name length (%d) exceeded. Shorten your map name.\n", MAX_QPATH);
+		Error("Custom shader name length (%d) exceeded. Shorten your map name.", MAX_QPATH);
 
 	/* do some bad find-replace */
 	s = strstr(srcShaderText, find);
@@ -1025,7 +1025,7 @@ static void ParseShaderFile(const char *filename)
 				//% if( VectorLength( si->vecs[ 0 ] ) )
 				//%     Sys_Printf( "%s\n", shaderText );
 			}
-	
+
 			/* ydnar: clear shader text buffer */
 			shaderText[0] = '\0';
 		}
@@ -1059,7 +1059,7 @@ static void ParseShaderFile(const char *filename)
 					if(!strcmp(token, "}"))
 						break;
 
-					/* only care about images if we don't have a editor/light image */
+					/* only care about images if we don't have an editor/light image */
 					if(si->editorImagePath[0] == '\0' && si->lightImagePath[0] == '\0' && si->implicitImagePath[0] == '\0')
 					{
 						/* digest any images */
@@ -1318,10 +1318,8 @@ static void ParseShaderFile(const char *filename)
 				sun_t          *sun;
 				qboolean        ext;
 
-
 				/* ydnar: extended sun directive? */
-				if(!Q_stricmp(token, "q3map_sunext"))
-					ext = qtrue;
+				ext = !Q_stricmp(token, "q3map_sunExt");
 
 				/* allocate sun */
 				sun = safe_malloc(sizeof(*sun));

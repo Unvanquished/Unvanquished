@@ -113,7 +113,7 @@ void SV_SectorList_f( void )
 			c++;
 		}
 
-		Com_Printf( "sector %i: %i entities\n", i, c );
+		Com_Printf(_( "sector %i: %i entities\n"), i, c );
 	}
 }
 
@@ -225,7 +225,7 @@ void SV_UnlinkEntity( sharedEntity_t *gEnt )
 		}
 	}
 
-	Com_Printf( "WARNING: SV_UnlinkEntity: not found in worldSector\n" );
+	Com_Printf(_( "WARNING: SV_UnlinkEntity: not found in worldSector\n" ));
 }
 
 /*
@@ -248,12 +248,6 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 	svEntity_t    *ent;
 
 	ent = SV_SvEntityForGentity( gEnt );
-
-	// Ridah, sanity check for possible currentOrigin being reset bug
-	if ( !gEnt->r.bmodel && VectorCompare( gEnt->r.currentOrigin, vec3_origin ) )
-	{
-		Com_DPrintf( "WARNING: BBOX entity is being linked at world origin, this is probably a bug\n" );
-	}
 
 	if ( ent->worldSector )
 	{
@@ -337,7 +331,6 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 	}
 	else
 	{
-		// normal
 		VectorAdd( origin, gEnt->r.mins, gEnt->r.absmin );
 		VectorAdd( origin, gEnt->r.maxs, gEnt->r.absmax );
 	}
@@ -456,7 +449,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 
 AREA QUERY
 
-Fills in a list of all entities who's absmin / absmax intersects the given
+Fills in a list of all entities whose absmin / absmax intersects the given
 bounds.  This does NOT mean that they actually touch in the case of bmodels.
 ============================================================================
 */
@@ -504,7 +497,7 @@ void SV_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 
 		if ( ap->count == ap->maxcount )
 		{
-			Com_Printf( "SV_AreaEntities: MAXCOUNT\n" );
+			Com_Printf(_( "SV_AreaEntities: MAXCOUNT\n" ));
 			return;
 		}
 

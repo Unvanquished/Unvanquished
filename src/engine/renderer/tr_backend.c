@@ -235,8 +235,7 @@ void GL_TexEnv( int env )
 			break;
 
 		default:
-			ri.Error( ERR_DROP, "GL_TexEnv: invalid env '%d' passed\n", env );
-			break;
+			ri.Error( ERR_DROP, "GL_TexEnv: invalid env '%d' passed", env );
 	}
 }
 
@@ -319,8 +318,7 @@ void GL_State( unsigned long stateBits )
 
 				default:
 					srcFactor = GL_ONE; // to get warning to shut up
-					ri.Error( ERR_DROP, "GL_State: invalid src blend state bits\n" );
-					break;
+					ri.Error( ERR_DROP, "GL_State: invalid src blend state bits" );
 			}
 
 			switch ( stateBits & GLS_DSTBLEND_BITS )
@@ -359,8 +357,7 @@ void GL_State( unsigned long stateBits )
 
 				default:
 					dstFactor = GL_ONE; // to get warning to shut up
-					ri.Error( ERR_DROP, "GL_State: invalid dst blend state bits\n" );
-					break;
+					ri.Error( ERR_DROP, "GL_State: invalid dst blend state bits" );
 			}
 
 			glEnable( GL_BLEND );
@@ -794,7 +791,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
 
 		//
 		// change the tess parameters if needed
-		// a "entityMergable" shader is a shader that can have surfaces from seperate
+		// an "entityMergable" shader is a shader that can have surfaces from separate
 		// entities merged into a single batch, like smoke and blood puff sprites
 		if ( shader != oldShader || fogNum != oldFogNum || dlighted != oldDlighted
 		     || ( entityNum != oldEntityNum && !shader->entityMergable ) )
@@ -1001,7 +998,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 
 	R_SyncRenderThread();
 
-	// we definately want to sync every frame for the cinematics
+	// we definitely want to sync every frame for the cinematics
 	glFinish();
 
 	start = end = 0;

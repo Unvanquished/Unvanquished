@@ -1,13 +1,14 @@
 #include "ui/menudef.h"
+#include "ui/main.h"
 
 {
   assetGlobalDef
   {
-    font "fonts/roboto.ttf" 30        // font
-    smallFont "fonts/roboto.ttf" 20        // font
-    bigFont "fonts/roboto.ttf" 40        // font
+    font "fonts/DejaVuSansCondensed.ttf" 30        // font
+    smallFont "fonts/DejaVuSansCondensed.ttf" 20        // font
+    bigFont "fonts/DejaVuSansCondensed.ttf" 40        // font
     cursor "ui/assets/3_cursor3"      // cursor
-    gradientBar "ui/assets/gradientbar2.tga"  // gradient bar
+    gradient_100_50Bar "ui/assets/gradientbar2.tga"  // gradient bar
     itemFocusSound "sound/misc/menu2.wav"   // sound for item getting focus (via keyboard or mouse )
 
     fadeClamp 1.0         // sets the fadeup alpha
@@ -17,155 +18,62 @@
     shadowColor 0.1 0.1 0.1 0.25      // shadow color
   }
 
+
+
+
+
   menuDef
   {
     name main
     fullScreen MENU_TRUE
     rect 0 0 640 480        // Size and position of the menu
     visible MENU_TRUE       // Visible on open
-    focusColor 1 .75 0 1        // Menu focus color for text and items
-    background "ui/assets/mainmenu.jpg"
-    aspectBias ASPECT_NONE
+    focusColor 1 1 1 1        // Menu focus color for text and items
+    TITLE_BACKGROUND
 
     onOpen { uiScript stopRefresh ; playlooped "sound/ui/heartbeat.ogg" }
     onESC { open quit_popmenu }
 
-   itemDef
+    itemDef
     {
-      name splashmodel
-      rect 0 0 640 480
-      type ITEM_TYPE_MODEL
-      style WINDOW_STYLE_EMPTY
-      asset_model "models/splash/splash_screen.md3"
-      model_fovx 32.0
-      model_fovy 24.0
-      model_angle 180
+      name buttonbg
+      type ITEM_TYPE_TEXT
+      style WINDOW_STYLE_SHADER
+      rect 234 89 150 330
+      background "ui/assets/button_bg.png"
       visible MENU_TRUE
       decoration
+      nostretch
     }
-
-#define X      536
-#define Y      20
-#define W      64
-#define ELEM_H 20
-
     itemDef
     {
-      name mainmenu
-      text "Play"
-      type ITEM_TYPE_BUTTON
-      style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
-      rect X Y W ELEM_H
-      textalign ALIGN_RIGHT
-      textscale .416
-      forecolor 1 1 1 1
+      name logo
+      type ITEM_TYPE_TEXT
+      style WINDOW_STYLE_SHADER
+      rect 200 60 237 150
+      background "ui/assets/logo.png"
       visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav";
-        open joinserver
-      }
+      decoration
+      nostretch
     }
 
-//     itemDef
-//     {
-//       name mainmenu
-//       text "News"
-//       type ITEM_TYPE_BUTTON
-//       style WINDOW_STYLE_EMPTY
-//       textstyle ITEM_TEXTSTYLE_NORMAL
-//       textscale .416
-//       rect X (Y+(1*ELEM_H)) W ELEM_H
-//       textalign ALIGN_RIGHT
-//       backcolor 0 0 0 0
-//       forecolor 1 1 1 1
-//       visible MENU_TRUE
-//       action
-//       {
-//         play "sound/misc/menu1.wav";
-//         open news_menu
-//       }
-//     }
 
-    itemDef
-    {
-      name mainmenu
-      text "Options"
-      type ITEM_TYPE_BUTTON
-      style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
-      textscale .416
-      rect X (Y+(1*ELEM_H)) W ELEM_H
-      textalign ALIGN_RIGHT
-      backcolor 0 0 0 0
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav";
-        open simple_options
-      }
-    }
 
-    itemDef
-    {
-      name mainmenu
-      text "Demos"
-      type ITEM_TYPE_BUTTON
-      style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
-      textscale .416
-      rect X (Y+(2*ELEM_H)) W ELEM_H
-      textalign ALIGN_RIGHT
-      backcolor 0 0 0 0
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav";
-        open demo
-      }
-    }
+#define X      234
+#define Y      210
+#define W      150
+#define ELEM_H 24
+#define ELEM_O 5
+#define ALIGNY -5
 
-    itemDef
-    {
-      name mainmenu
-      text "Mods"
-      type ITEM_TYPE_BUTTON
-      style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
-      textscale .416
-      rect X (Y+(3*ELEM_H)) W ELEM_H
-      textalign ALIGN_RIGHT
-      backcolor 0 0 0 0
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav";
-        open mod
-      }
-    }
-
-    itemDef
-    {
-      name mainmenu
-      text "Quit"
-      type ITEM_TYPE_BUTTON
-      style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
-      rect X (Y+(4*ELEM_H)) W ELEM_H
-      textscale .416
-      textalign ALIGN_RIGHT
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav";
-        open quit_popmenu
-      }
-    }
+	MMBUTTON( "Play", open joinserver, 0 )
+// 	MMBUTTON( "News", open news_menu, 1 )
+	MMBUTTON( "Profiles", open profiles, 1 )
+	MMBUTTON( "Options", open simple_options, 2 )
+	MMBUTTON( "Mods", open mod, 3 )
+	MMBUTTON( "Quit", open quit_popmenu, 4 )
+	
+	TITLE_LAYOUT
 
     itemDef
     {
@@ -173,7 +81,7 @@
       type ITEM_TYPE_TEXT
       text "Unvanquished (C) 2011-2012 Unvanquished Development"
       style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       textscale .25
       rect 0 450 640 10
       textalign ALIGN_CENTER

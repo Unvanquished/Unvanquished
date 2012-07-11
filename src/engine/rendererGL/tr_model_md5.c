@@ -152,7 +152,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 
 		if ( bone->parentIndex >= md5->numBones )
 		{
-			ri.Error( ERR_DROP, "R_LoadMD5: '%s' has bone '%s' with bad parent index %i while numBones is %i\n", modName,
+			ri.Error( ERR_DROP, "R_LoadMD5: '%s' has bone '%s' with bad parent index %i while numBones is %i", modName,
 			          bone->name, bone->parentIndex, md5->numBones );
 		}
 
@@ -756,6 +756,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			if ( !vboTriangles.currentElements )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadMD5: could not add triangles to a remaining VBO surfaces for model '%s'\n", modName );
+				Com_DestroyGrowList( &vboTriangles );
 				break;
 			}
 

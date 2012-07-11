@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ void ConvertPath( char *path ) {
 	while ( *path )
 	{
 		if ( *path == '/' || *path == '\\' ) {
-			*path = PATHSEPERATOR_CHAR;
+			*path = PATHSEPARATOR_CHAR;
 		}
 		path++;
 	} //end while
@@ -110,14 +110,14 @@ void ConvertPath( char *path ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void AppendPathSeperator( char *path, int length ) {
+void AppendPathSeparator( char *path, int length ) {
 	int pathlen = strlen( path );
 
 	if ( strlen( path ) && length - pathlen > 1 && path[pathlen - 1] != '/' && path[pathlen - 1] != '\\' ) {
-		path[pathlen] = PATHSEPERATOR_CHAR;
+		path[pathlen] = PATHSEPARATOR_CHAR;
 		path[pathlen + 1] = '\0';
 	} //end if
-} //end of the function AppenPathSeperator
+} //end of the function AppendPathSeparator
 //===========================================================================
 // returns pointer to file handle
 // sets offset to and length of 'filename' in the pak file
@@ -204,11 +204,11 @@ qboolean FindQuakeFile2( char *basedir, char *gamedir, char *filename, foundfile
 		filedir[0] = 0;
 		if ( basedir && strlen( basedir ) ) {
 			strncpy( filedir, basedir, MAX_PATH );
-			AppendPathSeperator( filedir, MAX_PATH );
+			AppendPathSeparator( filedir, MAX_PATH );
 		} //end if
 		if ( strlen( gamedirs[dir] ) ) {
 			strncat( filedir, gamedirs[dir], MAX_PATH - strlen( filedir ) );
-			AppendPathSeperator( filedir, MAX_PATH );
+			AppendPathSeparator( filedir, MAX_PATH );
 		} //end if
 		strncat( filedir, filename, MAX_PATH - strlen( filedir ) );
 		ConvertPath( filedir );
@@ -225,11 +225,11 @@ qboolean FindQuakeFile2( char *basedir, char *gamedir, char *filename, foundfile
 			filedir[0] = 0;
 			if ( basedir && strlen( basedir ) ) {
 				strncpy( filedir, basedir, MAX_PATH );
-				AppendPathSeperator( filedir, MAX_PATH );
+				AppendPathSeparator( filedir, MAX_PATH );
 			} //end if
 			if ( strlen( gamedirs[dir] ) ) {
 				strncat( filedir, gamedirs[dir], MAX_PATH - strlen( filedir ) );
-				AppendPathSeperator( filedir, MAX_PATH );
+				AppendPathSeparator( filedir, MAX_PATH );
 			} //end if
 			sprintf( &filedir[strlen( filedir )], "pak%d.pak\0", i );
 			if ( !access( filedir, 0x04 ) ) {

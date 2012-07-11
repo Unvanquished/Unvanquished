@@ -75,7 +75,6 @@ typedef struct
 	int         ambientLightInt; // 32 bit rgba packed
 	vec3_t      directedLight;
 	int         entityLightInt[ ENTITY_LIGHT_STEPS ];
-	float       brightness;
 } trRefEntity_t;
 
 typedef struct
@@ -763,6 +762,8 @@ SURFACES
 // NOTE: also mirror changes to max2skl.c - Arnout: not anymore
 typedef enum
 {
+  SF_MIN = -1, // partially ensures that sizeof(surfaceType_t) == sizeof(int)
+
   SF_BAD,
   SF_SKIP, // ignore
   SF_FACE,
@@ -782,7 +783,7 @@ typedef enum
   SF_DECAL, // ydnar: decal surfaces
 
   SF_NUM_SURFACE_TYPES,
-  SF_MAX = 0xffffffff // ensures that sizeof( surfaceType_t ) == sizeof( int )
+  SF_MAX = 0x7fffffff // partially (together, fully) ensures that sizeof(surfaceType_t) == sizeof(int)
 } surfaceType_t;
 
 typedef struct drawSurf_s
@@ -858,7 +859,7 @@ typedef struct srfFlare_s
 	vec3_t        color;
 } srfFlare_t;
 
-// ydnar: normal map drawsurfaces must match this header
+// ydnar: plain map drawsurfaces must match this header
 typedef struct srfGeneric_s
 {
 	surfaceType_t surfaceType;
@@ -1255,7 +1256,7 @@ typedef struct
 
 typedef struct
 {
-	vec3_t bounds[ 2 ]; // bounds of all surfaces of all LOD's for this frame
+	vec3_t bounds[ 2 ]; // bounds of all surfaces of all LODs for this frame
 	float  *components; // numAnimatedComponents many
 } md5Frame_t;
 
@@ -1443,7 +1444,7 @@ typedef struct
 	int   msec; // total msec for backend run
 } backEndCounters_t;
 
-// all state modified by the back end is seperated
+// all state modified by the back end is separated
 // from the front end state
 typedef struct
 {
@@ -1617,6 +1618,8 @@ extern cvar_t *r_texturebits; // number of desired texture bits
 // 32 = use 32-bit textures
 // all else = error
 
+extern cvar_t *r_ext_multisample;  // desired number of MSAA samples
+
 extern cvar_t *r_measureOverdraw; // enables stencil buffer overdraw measurement
 
 extern cvar_t *r_lodbias; // push/pull LOD transitions
@@ -1689,7 +1692,7 @@ extern cvar_t *r_textureAnisotropy;
 extern cvar_t *r_offsetFactor;
 extern cvar_t *r_offsetUnits;
 
-extern cvar_t *r_lightmap; // render lightmaps only
+extern cvar_t *r_showLightMaps; // render lightmaps only
 extern cvar_t *r_uiFullScreen; // ui is running fullscreen
 
 extern cvar_t *r_logFile; // number of frames to emit GL logs
@@ -1746,6 +1749,8 @@ extern cvar_t *r_bonesDebug;
 extern cvar_t *r_wolffog;
 
 // done
+
+extern cvar_t *r_fontScale;
 
 extern cvar_t *r_highQualityVideo;
 
@@ -1878,6 +1883,9 @@ image_t  *R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicm
 
 image_t  *R_CreateImage( const char *name, const byte *pic, int width, int height, qboolean mipmap, qboolean allowPicmip,
                          int wrapClampMode );
+image_t  *R_CreateGlyph( const char *name, const byte *pic, int width, int height );
+void     R_FreeImage( image_t *image );
+void     R_FreeImages( void );
 qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode );
 
 void     R_SetColorMappings( void );
@@ -2171,7 +2179,7 @@ void RE_AddPolysToScene( qhandle_t hShader, int numVerts, const polyVert_t *vert
 // done.
 void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer );
 
-// ydnar: modified dlight system to support seperate radius & intensity
+// ydnar: modified dlight system to support separate radius & intensity
 // void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b, int overdraw );
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader,
                          int flags );
@@ -2472,7 +2480,14 @@ int        RE_BoneIndex( qhandle_t hModel, const char *boneName );
 // font stuff
 void       R_InitFreeType();
 void       R_DoneFreeType();
-void       RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
+void       RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
+void       RE_UnregisterFont( fontInfo_t *font );
+void       RE_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);
+void       RE_GlyphChar(fontInfo_t *font, int ch, glyphInfo_t *glyph);
+void       RE_RegisterFontVM( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
+void       RE_UnregisterFontVM( fontHandle_t );
+void       RE_GlyphVM( fontHandle_t, const char *str, glyphInfo_t *glyph);
+void       RE_GlyphCharVM( fontHandle_t, int ch, glyphInfo_t *glyph);
 
 // Ridah, caching system
 // NOTE: to disable this for development, set "r_cache 0" in autoexec.cfg
@@ -2535,10 +2550,12 @@ void R_MDC_DecodeXyzCompressed( mdcXyzCompressed_t *xyzComp, vec3_t out, vec3_t 
 
 #else // optimized version
 #define R_MDC_DecodeXyzCompressed( ofsVec, out, normal ) \
+do { \
         ( out )[ 0 ] = ( (float)( ( ofsVec ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
         ( out )[ 1 ] = ( (float)( ( ofsVec >> 8 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
         ( out )[ 2 ] = ( (float)( ( ofsVec >> 16 ) & 255 ) - MDC_MAX_OFS ) * MDC_DIST_SCALE; \
-        VectorCopy( ( r_anormals )[ ( ofsVec >> 24 ) ], normal );
+        VectorCopy( ( r_anormals )[ ( ofsVec >> 24 ) ], normal ); \
+} while ( 0 )
 #endif
 
 void R_AddMDCSurfaces( trRefEntity_t *ent );

@@ -1508,7 +1508,7 @@ int ConvertBSPMain(int argc, char **argv)
 		return 0;
 	}
 
-	/* normal convert */
+	/* other convert */
 	return convertFunc(source);
 }
 
@@ -1580,21 +1580,21 @@ void WriteMapFileDoom3(char *filename)
 
 					vec3_t			texX,texY;
 					vec3_t			proj;
-					
+
 					// ST of (0,0) (1,0) (0,1)
 					vec_t			ST[3][5]; // [ point index ] [ xyz ST ]
-					
-					
+
+
 					#if 0 //def _DEBUG
 					if ( f->plane.normal[0]==0.0f && f->plane.normal[1]==0.0f && f->plane.normal[2]==0.0f )
 					{
 						Sys_Printf("Warning : f->plane.normal is (0,0,0) in FaceToBrushPrimitFace\n");
 					}
 					#endif
-					
+
 					// compute axis base
 					ComputeAxisBase(mapplanes[side->planenum].normal, texX, texY);
-					
+
 					// compute projection vector
 					VectorCopy(mapplanes[side->planenum].normal, proj);
 					VectorScale(proj, mapplanes[side->planenum].dist, proj);
@@ -1616,7 +1616,7 @@ void WriteMapFileDoom3(char *filename)
 					VectorCopy(proj,ST[0]);
 					ST[0][3] = DotProduct(ST[0], STfromXYZ[0]) + STfromXYZ[0][3];
 					ST[0][4] = DotProduct(ST[0], STfromXYZ[1]) + STfromXYZ[1][3];
-					
+
 					VectorCopy(texX,ST[1]);
 					VectorAdd(ST[1],proj,ST[1]);
 					ST[1][3] = DotProduct(ST[1], STfromXYZ[0]) + STfromXYZ[0][3];
@@ -1626,7 +1626,7 @@ void WriteMapFileDoom3(char *filename)
 					VectorAdd(ST[2],proj,ST[2]);
 					ST[2][3] = DotProduct(ST[2], STfromXYZ[0]) + STfromXYZ[0][3];
 					ST[2][4] = DotProduct(ST[2], STfromXYZ[1]) + STfromXYZ[1][3];
-					
+
 					// compute texture matrix
 					texMat[0][2] = ST[0][3];
 					texMat[1][2] = ST[0][4];
@@ -1803,7 +1803,7 @@ int ConvertMapMain(int argc, char **argv)
 		numMapEntities++;
 	}
 	*/
-	
+
 	StripExtension(source);
 	DefaultExtension(source, "_converted.map");
 	Sys_Printf("Writing %s\n", source);

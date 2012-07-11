@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 
 // NULL for everyone
-void QDECL __attribute__( ( format( printf, 2, 3 ) ) ) PrintMsg( gentity_t *ent, const char *fmt, ... )
+void QDECL PRINTF_LIKE(2) PrintMsg( gentity_t *ent, const char *fmt, ... )
 {
 	char    msg[ 1024 ];
 	va_list argptr;
@@ -32,7 +32,7 @@ void QDECL __attribute__( ( format( printf, 2, 3 ) ) ) PrintMsg( gentity_t *ent,
 
 	va_start( argptr, fmt );
 
-	if ( Q_vsnprintf( msg, sizeof( msg ), fmt, argptr ) > sizeof( msg ) )
+	if ( Q_vsnprintf( msg, sizeof( msg ), fmt, argptr ) >= sizeof( msg ) )
 	{
 		G_Error( "PrintMsg overrun" );
 	}
@@ -45,7 +45,7 @@ void QDECL __attribute__( ( format( printf, 2, 3 ) ) ) PrintMsg( gentity_t *ent,
 		*p = '\'';
 	}
 
-	trap_SendServerCommand( ( ( ent == NULL ) ? -1 : ent - g_entities ), va( "print \"%s\"", msg ) );
+	trap_SendServerCommand( ( ( ent == NULL ) ? -1 : ent - g_entities ), va( "print %s", Quote( msg ) ) );
 }
 
 /*
@@ -319,6 +319,16 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 		           HUMAN_MAX_CREDITS / ALIEN_MAX_CREDITS + 0.5f );
 	}
 
+	if ( !g_cheats.integer )
+	{
+		if ( ent->client->noclip )
+		{
+			ent->client->noclip = qfalse;
+			ent->r.contents = ent->client->cliprcontents;
+		}
+		ent->flags &= ~( FL_GODMODE | FL_NOTARGET );
+	}
+
 	// Copy credits to ps for the client
 	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit;
 
@@ -491,7 +501,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 
 		j = strlen( entry );
 
-		if ( stringlength + j > sizeof( string ) )
+		if ( stringlength + j >= sizeof( string ) )
 		{
 			break;
 		}
@@ -570,15 +580,15 @@ void CheckTeamStatus( void )
 		if ( level.numAlienSpawns > 0 &&
 		     level.numHumanClients - level.numAlienClients > 2 )
 		{
-			trap_SendServerCommand( -1, "print \"Teams are imbalanced. "
-			                        "Humans have more players.\n\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
+			                        "Humans have more players.\n") "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
 		else if ( level.numHumanSpawns > 0 &&
 		          level.numAlienClients - level.numHumanClients > 2 )
 		{
-			trap_SendServerCommand( -1, "print \"Teams are imbalanced. "
-			                        "Aliens have more players.\n\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
+			                        "Aliens have more players.\n") "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
 		else

@@ -39,13 +39,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CROUCH_VIEWHEIGHT  12
 #define DEAD_VIEWHEIGHT    4 // height from ground
 
-// localisation
-#if 0
-#	define _(text)              gettext( text )
-#	define N_(one, many, count) ngettext( (one), (many), (count) )
+// QVM-specific
+#ifdef Q3_VM
+#define QVM_STATIC static
 #else
-#	define _(text)              (text)
-#	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
+#define QVM_STATIC
 #endif
 
 // player teams
@@ -97,10 +95,7 @@ enum
 
   CS_MAX = CS_LOCATIONS + MAX_LOCATIONS
 };
-
-#if CS_MAX > MAX_CONFIGSTRINGS
-#error overflow: CS_MAX > MAX_CONFIGSTRINGS
-#endif
+// CS_MAX had better not be greater than MAX_CONFIGSTRINGS !
 
 typedef enum
 {
@@ -126,7 +121,7 @@ typedef enum
   PM_NOCLIP, // noclip movement
   PM_SPECTATOR, // still run into walls
   PM_JETPACK, // jetpack physics
-  PM_GRABBED, // like dead, but for when the player is still live
+  PM_GRABBED, // like dead, but for when the player is still alive
   PM_DEAD, // no acceleration or turning, but free falling
   PM_FREEZE, // stuck in place with no control
   PM_INTERMISSION // no movement or status bar
@@ -263,7 +258,7 @@ typedef enum
 
 #define SB_VALID_TOGGLEBIT  0x00002000
 
-// player_state->persistant[] indexes
+// player_state->persistent[] indexes
 // these fields are the only part of player_state that isn't
 // cleared on respawn
 typedef enum
@@ -435,14 +430,9 @@ typedef enum
   BA_NUM_BUILDABLES
 } buildable_t;
 
-// reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
-#define PLAYEREVENT_DENIEDREWARD   0x0001
-#define PLAYEREVENT_GAUNTLETREWARD 0x0002
-#define PLAYEREVENT_HOLYSHIT       0x0004
-
 // entityState_t->event values
-// entity events are for effects that take place reletive
-// to an existing entities origin.  Very network efficient.
+// entity events are for effects that take place relative
+// to an existing entity's origin.  Very network efficient.
 
 // two bits at the top of the entityState->event field
 // will be incremented with each change in the event so
@@ -526,7 +516,7 @@ typedef enum
   EV_DEATH3,
   EV_OBITUARY,
 
-  EV_GIB_PLAYER, // gib a previously living player
+  EV_GIB_PLAYER,
 
   EV_BUILD_CONSTRUCT,
   EV_BUILD_DESTROY,
@@ -577,7 +567,7 @@ typedef enum
   MN_CMD_SPEC,
   MN_CMD_ALIEN,
   MN_CMD_HUMAN,
-  MN_CMD_LIVING,
+  MN_CMD_ALIVE,
 
   //alien stuff
   MN_A_CLASS,
@@ -720,6 +710,7 @@ typedef enum
   NSPA_ATTACK2,
   NSPA_ATTACK3,
 
+
   NSPA_PAIN1,
   NSPA_PAIN2,
 
@@ -856,7 +847,8 @@ typedef enum
   SAY_AREA_TEAM,
   SAY_ADMINS,
   SAY_ADMINS_PUBLIC,
-  SAY_RAW
+  SAY_RAW,
+  SAY_DEFAULT
 } saymode_t;
 
 // means of death
@@ -1283,10 +1275,14 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
 
 int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 
-char *BG_TeamName( team_t team );
+const char *BG_TeamName( team_t team );
+const char *BG_TeamNamePlural( team_t team );
 
 typedef struct
 {
 	const char *name;
 } dummyCmd_t;
 int cmdcmp( const void *a, const void *b );
+
+char *Quote( const char *str );
+char *Substring( const char *in, int start, int count );

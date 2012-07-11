@@ -31,6 +31,7 @@ extern "C" {
 #ifdef USE_LLVM
 
 #include "vm_llvm.h"
+#include "../sys/sys_loadlib.h"
 #include <stdint.h>
 #include <ctype.h>
 #include <llvm/Module.h>
@@ -54,6 +55,51 @@ extern "C" {
 
 static ExecutionEngine *engine = NULL;
 
+static void *VM_LookupSym( const std::string& symbol )
+{
+#define EXPORTFUNC(fn) { #fn, (void *) fn }
+	static const struct {
+		const char *name;
+		void       *func;
+	} lookup[] = {
+		EXPORTFUNC( Q_snprintf ),
+		EXPORTFUNC( Q_strncpyz ),
+		EXPORTFUNC( Q_vsnprintf ),
+		EXPORTFUNC( atan2 ),
+		EXPORTFUNC( ceil ),
+		EXPORTFUNC( cos ),
+		EXPORTFUNC( floor ),
+		EXPORTFUNC( floorf ),
+		EXPORTFUNC( memcpy ),
+		EXPORTFUNC( memmove ),
+		EXPORTFUNC( memset ),
+		EXPORTFUNC( powf ),
+		EXPORTFUNC( realloc ), // FIXME - don't really want this one exported
+		EXPORTFUNC( sin ),
+		EXPORTFUNC( strncpy ),
+		{}
+	};
+
+	if ( com_developer->integer ) {
+		Com_Printf(_( "LLVM: Look up symbol %s\n"), symbol.c_str() );
+	}
+
+	// our symbols
+	for (int i = 0; lookup[ i ].name; ++i) {
+		if ( symbol == lookup[ i ].name ) {
+			return lookup[ i ].func;
+		}
+	}
+
+	// return Sys_LoadFunction( NULL, symbol.c_str() );
+
+	// this is about to crash and burn, so report the symbol
+	Com_Printf(_( "LLVM: ^3Unparsed symbol %s^7\n"), symbol.c_str() );
+	return NULL;
+}
+
+typedef void (*dllEntry_t)(intptr_t (*)(intptr_t, ...));
+
 void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	char name[MAX_QPATH];
 	char filename[MAX_QPATH];
@@ -66,12 +112,14 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	Com_sprintf( filename, sizeof(filename), "vm/%s_64.bc", name );
 #elif defined(__i386__) || defined(_WIN32)
 	Com_sprintf( filename, sizeof(filename), "vm/%s_32.bc", name );
+#else
+	Com_sprintf( filename, sizeof(filename), "vm/%s.bc", name );
 #endif
 
 	int len = FS_ReadFile( filename, (void **)&bytes );
 
 	if ( !bytes ) {
-		Com_Printf( "Couldn't load llvm file: %s\n", filename );
+		Com_Printf(_( "Couldn't load llvm file: %s\n"), filename );
 		return NULL;
 	}
 
@@ -81,7 +129,7 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	FS_FreeFile( bytes );
 
 	if ( !module ) {
-		Com_Printf( "Couldn't parse llvm file: %s: %s\n", filename, error.c_str() );
+		Com_Printf(_( "Couldn't parse llvm file: %s: %s\n"), filename, error.c_str() );
 		return NULL;
 	}
 
@@ -112,16 +160,17 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 		 * its default to false at some point in the future.  */
 		engine = ExecutionEngine::create( module, false, &str, CodeGenOpt::Default, false );
 		if ( !engine ) {
-			Com_Printf("Couldn't create ExecutionEngine: %s\n", str.c_str());
+			Com_Printf_(("Couldn't create ExecutionEngine: %s\n"), str.c_str());
 			return NULL;
 		}
+		engine->DisableSymbolSearching();
+		engine->InstallLazyFunctionCreator( VM_LookupSym );
 	} else {
 		engine->addModule( module );
 	}
 
 	Function *func = module->getFunction("dllEntry");
-	void (*dllEntry) (intptr_t(*syscallptr) (intptr_t, ...)) =
-		(void (*)(intptr_t(*syscallptr) (intptr_t,...)))engine->getPointerToFunction(func);
+	dllEntry_t dllEntry = (dllEntry_t)engine->getPointerToFunction(func);
 
 
 	dllEntry(systemcalls);
@@ -132,7 +181,7 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 	vm->entryPoint = fp;
 
 	if ( com_developer->integer ) {
-		Com_Printf("Loaded LLVM %s with module==%p\n", name, module);
+		Com_Printf_(("Loaded LLVM %s with module==%p\n"), name, module);
 	}
 
 	return module;
@@ -140,16 +189,16 @@ void *VM_LoadLLVM( vm_t *vm, intptr_t (*systemcalls)(intptr_t, ...) ) {
 
 void VM_UnloadLLVM( void *llvmModule ) {
 	if ( !llvmModule ) {
-		Com_Printf( "VM_UnloadLLVM called with NULL pointer\n" );
+		Com_Printf(_( "VM_UnloadLLVM called with NULL pointer\n" ));
 		return;
 	}
 
 	if ( com_developer->integer ) {
-		Com_Printf( "Unloading LLVM with module==%p\n", llvmModule );
+		Com_Printf(_( "Unloading LLVM with module==%p\n"), llvmModule );
 	}
 
 	if ( !engine->removeModule( (Module *)llvmModule ) ) {
-		Com_Printf( "Couldn't remove llvm\n" );
+		Com_Printf(_( "Couldn't remove llvm\n" ));
 		return;
 	}
 	delete (Module *)llvmModule;

@@ -42,7 +42,7 @@ JPEG LOADING
 =========================================================
 */
 
-static void R_JPGErrorExit( j_common_ptr cinfo )
+static void NORETURN R_JPGErrorExit( j_common_ptr cinfo )
 {
 	char buffer[ JMSG_LENGTH_MAX ];
 

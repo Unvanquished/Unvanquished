@@ -35,15 +35,16 @@
     itemDef
     {
       name window
-      rect 0 0 W H
-      style WINDOW_STYLE_FILLED
-      backcolor 0 0 0 1
+      rect -50 0 (W+100) H
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/vertgrad.tga"
+      forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
 
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       borderSize 1.0
-      borderColor 0.5 0.5 0.5 1
+      borderColor 1 1 1 1
     }
 
     itemDef
@@ -57,8 +58,8 @@
       textscale .33
       elementtype LISTBOX_TEXT
       feeder FEEDER_TREMALIENUPGRADE
-      border WINDOW_BORDER_FULL
-      bordercolor   0.5 0.5 0.5 0.5
+      border WINDOW_BORDER_KCGRADIENT
+      bordercolor   1   1   1   1
       forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
@@ -75,7 +76,7 @@
     {
       name infopane
       ownerdraw UI_AUPGRADEINFOPANE
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       style WINDOW_STYLE_EMPTY
       rect INFO_X INFO_Y INFO_W INFO_H
       textscale .33
@@ -83,8 +84,8 @@
       textvalign VALIGN_TOP
       textalignx INFO_TOFF
       textaligny INFO_TOFF
-      border WINDOW_BORDER_FULL
-      bordercolor   0.5 0.5 0.5 0.5
+      border WINDOW_BORDER_KCGRADIENT
+      bordercolor   1   1   1   1
       forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5

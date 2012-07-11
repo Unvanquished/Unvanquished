@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "vm_local.h"
+#include "vm_traps.h"
 
 //#define DEBUG_VM
 #ifdef DEBUG_VM
@@ -130,7 +131,7 @@ static char *opnames[ 256 ] =
 
 //FIXME: these, um... look the same to me
 #if defined( __GNUC__ )
-static ID_INLINE unsigned int loadWord( void *addr )
+static INLINE unsigned int loadWord( void *addr )
 {
 	unsigned int word;
 
@@ -139,7 +140,7 @@ static ID_INLINE unsigned int loadWord( void *addr )
 }
 
 #else
-static ID_INLINE unsigned int __lwbrx( register void *addr,
+static INLINE unsigned int __lwbrx( register void *addr,
                                        register int offset )
 {
 	register unsigned int word;
@@ -152,7 +153,7 @@ static ID_INLINE unsigned int __lwbrx( register void *addr,
 #endif
 
 #else
-static ID_INLINE int loadWord( void *addr )
+static INLINE int loadWord( void *addr )
 {
 	int word;
 	memcpy( &word, addr, 4 );
@@ -449,7 +450,7 @@ nextInstruction2:
 
 		if ( vm_debugLevel > 1 )
 		{
-			Com_Printf( "%s %s\n", DEBUGSTR, opnames[ opcode ] );
+			Com_Printf(_( "%s %s\n"), DEBUGSTR, opnames[ opcode ] );
 		}
 
 		profileSymbol->profileCount++;
@@ -551,7 +552,7 @@ nextInstruction2:
 
 					if ( vm_debugLevel )
 					{
-						Com_Printf( "%s---> systemcall(%i)\n", DEBUGSTR, -1 - programCounter );
+						Com_Printf(_( "%s---> systemcall(%i)\n"), DEBUGSTR, -1 - programCounter );
 					}
 
 #endif
@@ -565,7 +566,8 @@ nextInstruction2:
 
 //VM_LogSyscalls( (int *)&image[ programStack + 4 ] );
 					{
-						// the vm has ints on the stack, we expect
+						VM_SetSanity( vm, ~programCounter );
+						// the VM has ints on the stack, we expect
 						// pointers so we might have to convert it
 						if ( sizeof( intptr_t ) != sizeof( int ) )
 						{
@@ -578,13 +580,29 @@ nextInstruction2:
 								argarr[ i ] = * ( ++imagePtr );
 							}
 
-							r = vm->systemCall( argarr );
+							if ( programCounter < -FIRST_VM_SYSCALL )
+							{
+								r = vm->systemCall( argarr );
+							}
+							else
+							{
+								r = VM_SystemCall( argarr ); // all VMs
+							}
 						}
 						else
 						{
 							intptr_t *argptr = ( intptr_t * ) &image[ programStack + 4 ];
-							r = vm->systemCall( argptr );
+							if ( programCounter < -FIRST_VM_SYSCALL )
+							{
+								r = vm->systemCall( argptr );
+							}
+							else
+							{
+								r = VM_SystemCall( argptr ); // all VMs
+							}
 						}
+
+						VM_CheckSanity( vm, ~programCounter );
 					}
 
 #ifdef DEBUG_VM
@@ -602,7 +620,7 @@ nextInstruction2:
 
 					if ( vm_debugLevel )
 					{
-						Com_Printf( "%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
+						Com_Printf(_( "%s<--- %s\n"), DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
 					}
 
 #endif
@@ -610,7 +628,6 @@ nextInstruction2:
 				else if ( ( unsigned ) programCounter >= vm->instructionCount )
 				{
 					Com_Error( ERR_DROP, "VM program counter out of range in OP_CALL" );
-					return 0;
 				}
 				else
 				{
@@ -643,7 +660,7 @@ nextInstruction2:
 
 				if ( vm_debugLevel )
 				{
-					Com_Printf( "%s---> %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter - 5 ) );
+					Com_Printf(_( "%s---> %s\n"), DEBUGSTR, VM_ValueToSymbol( vm, programCounter - 5 ) );
 
 					if ( vm->breakFunction && programCounter - 5 == vm->breakFunction )
 					{
@@ -673,7 +690,7 @@ nextInstruction2:
 				if ( vm_debugLevel )
 				{
 //				vm->callLevel--;
-					Com_Printf( "%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
+					Com_Printf(_( "%s<--- %s\n"), DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
 				}
 
 #endif
@@ -686,7 +703,6 @@ nextInstruction2:
 				else if ( ( unsigned ) programCounter >= vm->codeLength )
 				{
 					Com_Error( ERR_DROP, "VM program counter out of range in OP_LEAVE" );
-					return 0;
 				}
 
 				goto nextInstruction;
@@ -701,7 +717,6 @@ nextInstruction2:
 				if ( ( unsigned ) r0 >= vm->instructionCount )
 				{
 					Com_Error( ERR_DROP, "VM program counter out of range in OP_JUMP" );
-					return 0;
 				}
 
 				programCounter = vm->instructionPointers[ r0 ];

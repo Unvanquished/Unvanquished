@@ -30,11 +30,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ADMBP(x)      G_admin_buffer_print(ent, x)
 #define ADMBP_begin() G_admin_buffer_begin()
 #define ADMBP_end()   G_admin_buffer_end(ent)
+#define QQ(s)         "\"" s "\""
 
 #define MAX_ADMIN_FLAG_LEN   20
 #define MAX_ADMIN_FLAGS      1024
 #define MAX_ADMIN_CMD_LEN    20
 #define MAX_ADMIN_BAN_REASON 100
+
+#define MAX_ADMIN_EXPIRED_BANS   64
+#define G_ADMIN_BAN_EXPIRED(b,t) ( (b)->expires != 0 && (b)->expires <= (t) )
+#define G_ADMIN_BAN_STALE(b,t)   ( (b)->expires != 0 && (b)->expires + ( g_adminRetainExpiredBans.integer ? 86400 : 0 ) <= (t) )
 
 /*
  * IMMUNITY - cannot be vote kicked, vote muted
@@ -47,9 +52,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * CANPERMBAN - does not need to specify a duration for a ban
  * ACTIVITY - inactivity rules do not apply to them
  * IMMUTABLE - admin commands cannot be used on them
- * INCOGNITO - does not show up as an admin in !listplayers
+ * INCOGNITO - does not show up as an admin in /listplayers
  * ALLFLAGS - all flags (including command flags) apply to this player
- * ADMINCHAT - receieves and can send /a admin messages
+ * ADMINCHAT - receives and can send /a admin messages
  */
 #define ADMF_IMMUNITY        "IMMUNITY"
 #define ADMF_NOCENSORFLOOD   "NOCENSORFLOOD"
@@ -68,16 +73,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_ADMIN_LISTITEMS  20
 #define MAX_ADMIN_SHOWBANS   10
 
-// important note: QVM does not seem to allow a single char to be a
-// member of a struct at init time.  flag has been converted to char*
 typedef struct
 {
 	const char *keyword;
 	qboolean  ( *handler )( gentity_t *ent );
 	qboolean   silent;
 	const char *flag;
-	const char *function; // used for !help
-	const char *syntax; // used for !help
+	const char *function; // used for /help
+	const char *syntax; // used for /help
 }
 
 g_admin_cmd_t;
@@ -131,6 +134,7 @@ typedef struct
 typedef struct g_admin_ban
 {
 	struct g_admin_ban *next;
+	int                id;
 
 	char               name[ MAX_NAME_LENGTH ];
 	char               guid[ 33 ];
@@ -207,6 +211,7 @@ qboolean        G_admin_endvote( gentity_t *ent );
 qboolean        G_admin_spec999( gentity_t *ent );
 qboolean        G_admin_rename( gentity_t *ent );
 qboolean        G_admin_restart( gentity_t *ent );
+qboolean        G_admin_timelimit( gentity_t *ent );
 qboolean        G_admin_nextmap( gentity_t *ent );
 qboolean        G_admin_namelog( gentity_t *ent );
 qboolean        G_admin_lock( gentity_t *ent );
@@ -224,7 +229,7 @@ void            G_admin_buffer_print( gentity_t *ent, const char *m );
 void            G_admin_buffer_begin( void );
 void            G_admin_buffer_end( gentity_t *ent );
 
-void            G_admin_duration( int secs, char *duration, int dursize );
+void            G_admin_duration( int secs, char *time, int timesize, char *duration, int dursize );
 void            G_admin_cleanup( void );
 
 #endif /* ifndef _G_ADMIN_H */

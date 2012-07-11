@@ -79,11 +79,11 @@ static int  bufIndex;
 SafeFS_Write
 ===============
 */
-static ID_INLINE void SafeFS_Write( const void *buffer, int len, fileHandle_t f )
+static INLINE void SafeFS_Write( const void *buffer, int len, fileHandle_t f )
 {
 	if ( FS_Write( buffer, len, f ) < len )
 	{
-		Com_Error( ERR_DROP, "Failed to write avi file\n" );
+		Com_Error( ERR_DROP, "Failed to write avi file" );
 	}
 }
 
@@ -92,7 +92,7 @@ static ID_INLINE void SafeFS_Write( const void *buffer, int len, fileHandle_t f 
 WRITE_STRING
 ===============
 */
-static ID_INLINE void WRITE_STRING( const char *s )
+static INLINE void WRITE_STRING( const char *s )
 {
 	Com_Memcpy( &buffer[ bufIndex ], s, strlen( s ) );
 	bufIndex += strlen( s );
@@ -103,7 +103,7 @@ static ID_INLINE void WRITE_STRING( const char *s )
 WRITE_4BYTES
 ===============
 */
-static ID_INLINE void WRITE_4BYTES( int x )
+static INLINE void WRITE_4BYTES( int x )
 {
 	buffer[ bufIndex + 0 ] = ( byte )( ( x >> 0 ) & 0xFF );
 	buffer[ bufIndex + 1 ] = ( byte )( ( x >> 8 ) & 0xFF );
@@ -117,7 +117,7 @@ static ID_INLINE void WRITE_4BYTES( int x )
 WRITE_2BYTES
 ===============
 */
-static ID_INLINE void WRITE_2BYTES( int x )
+static INLINE void WRITE_2BYTES( int x )
 {
 	buffer[ bufIndex + 0 ] = ( byte )( ( x >> 0 ) & 0xFF );
 	buffer[ bufIndex + 1 ] = ( byte )( ( x >> 8 ) & 0xFF );
@@ -129,7 +129,7 @@ static ID_INLINE void WRITE_2BYTES( int x )
 WRITE_1BYTES
 ===============
 */
-static ID_INLINE void WRITE_1BYTES( int x )
+static INLINE void WRITE_1BYTES( int x )
 {
 	buffer[ bufIndex ] = x;
 	bufIndex += 1;
@@ -140,11 +140,11 @@ static ID_INLINE void WRITE_1BYTES( int x )
 START_CHUNK
 ===============
 */
-static ID_INLINE void START_CHUNK( const char *s )
+static INLINE void START_CHUNK( const char *s )
 {
 	if ( afd.chunkStackTop == MAX_RIFF_CHUNKS )
 	{
-		Com_Error( ERR_DROP, "ERROR: Top of chunkstack breached\n" );
+		Com_Error( ERR_DROP, "ERROR: Top of chunkstack breached" );
 	}
 
 	afd.chunkStack[ afd.chunkStackTop ] = bufIndex;
@@ -158,13 +158,13 @@ static ID_INLINE void START_CHUNK( const char *s )
 END_CHUNK
 ===============
 */
-static ID_INLINE void END_CHUNK( void )
+static INLINE void END_CHUNK( void )
 {
 	int endIndex = bufIndex;
 
 	if ( afd.chunkStackTop <= 0 )
 	{
-		Com_Error( ERR_DROP, "ERROR: Bottom of chunkstack breached\n" );
+		Com_Error( ERR_DROP, "ERROR: Bottom of chunkstack breached" );
 	}
 
 	afd.chunkStackTop--;
@@ -349,7 +349,7 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 	// Don't start if a framerate has not been chosen
 	if ( cl_aviFrameRate->integer <= 0 )
 	{
-		Com_Printf( S_COLOR_RED "cl_aviFrameRate must be >= 1\n" );
+		Com_Printf( "%s", _( S_COLOR_RED  "cl_aviFrameRate must be ≥ 1\n" ));
 		return qfalse;
 	}
 
@@ -403,7 +403,7 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 			suggestRate--;
 		}
 
-		Com_Printf( S_COLOR_YELLOW "WARNING: cl_aviFrameRate is not a divisor " "of the audio rate, suggest %d\n", suggestRate );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: cl_aviFrameRate is not a divisor of the audio rate, suggest %d\n"), suggestRate );
 	}
 
 	if ( !Cvar_VariableIntegerValue( "s_initsound" ) )
@@ -424,8 +424,7 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 	else
 	{
 		afd.audio = qfalse;
-		Com_Printf( S_COLOR_YELLOW "WARNING: Audio capture is not supported "
-		            "with OpenAL. Set s_useOpenAL to 0 for audio capture\n" );
+		Com_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 for audio capture\n") );
 	}
 
 	// This doesn't write a real header, but allocates the
@@ -556,7 +555,7 @@ void CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size )
 
 	if ( bytesInBuffer + size > PCM_BUFFER_SIZE )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: Audio capture buffer overflow -- truncating\n" );
+		Com_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: Audio capture buffer overflow – truncating\n" ));
 		size = PCM_BUFFER_SIZE - bytesInBuffer;
 	}
 
@@ -685,7 +684,7 @@ qboolean CL_CloseAVI( void )
 	Z_Free( afd.eBuffer );
 	FS_FCloseFile( afd.f );
 
-	Com_Printf( "Wrote %d:%d frames to %s\n", afd.numVideoFrames, afd.numAudioFrames, afd.fileName );
+	Com_Printf(_( "Wrote %d:%d frames to %s\n"), afd.numVideoFrames, afd.numAudioFrames, afd.fileName );
 
 	return qtrue;
 }

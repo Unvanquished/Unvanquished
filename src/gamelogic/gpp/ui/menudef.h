@@ -43,7 +43,7 @@ enum
 
 enum
 {
-  ITEM_TEXTSTYLE_NORMAL, // normal text
+  ITEM_TEXTSTYLE_PLAIN, // plain
   ITEM_TEXTSTYLE_BLINK, // fast blinking
   ITEM_TEXTSTYLE_PULSE, // slow pulsing
   ITEM_TEXTSTYLE_SHADOWED, // drop shadow (need a color for this)
@@ -52,6 +52,7 @@ enum
   ITEM_TEXTSTYLE_SHADOWEDMORE, // drop shadow (need a color for this)
   ITEM_TEXTSTYLE_NEON // glow (need a color for this)
 };
+#define ITEM_TEXTSTYLE_NORMAL ITEM_TEXTSTYLE_PLAIN // deprecated, provided for compatibility
 
 enum
 {
@@ -115,7 +116,8 @@ enum
   FEEDER_IGNORE_LIST, // ignored players
   FEEDER_HELP_LIST, // help topics
   FEEDER_RESOLUTIONS, // display resolutions
-  FEEDER_PROFILES // Profiles
+  FEEDER_PROFILES, // Profiles
+  FEEDER_LANGUAGES // Languages
 };
 
 // display flags
@@ -227,5 +229,10 @@ enum
   UI_HBUILDINFOPANE,
   UI_HELPINFOPANE
 };
+
+// Define some colors
+#define MENU_TEAL       0 .1 .2
+#define MENU_TEAL_TRANS MENU_TEAL .9
+
 
 #endif

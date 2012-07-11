@@ -59,7 +59,7 @@ struct src_s
 	int         isActive; // Is this source currently in use?
 	int         isLocked; // This is locked (un-allocatable)
 	int         isLooping; // Is this a looping effect (attached to an entity)
-	int         isTracking; // Is this object tracking it's owner
+	int         isTracking; // Is this object tracking its owner?
 
 	qboolean    local; // Is this local (relative to the cam)
 };
@@ -334,7 +334,7 @@ void al_src_unlock( srcHandle_t src )
 // Entity position management
 void SndAl_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
-	if ( entityNum < 0 || entityNum > MAX_GENTITIES )
+	if ( entityNum < 0 || entityNum >= MAX_GENTITIES )
 	{
 		si.Error( ERR_DROP, "S_UpdateEntityPosition: bad entitynum %i", entityNum );
 	}

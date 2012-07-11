@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/vm_traps.h"
 #include "../renderer/tr_types.h"
 
 #define CGAME_IMPORT_API_VERSION 3
@@ -68,9 +69,9 @@ typedef enum cgameEvent_e
   CGAME_EVENT_MULTIVIEW
 } cgameEvent_t;
 
-typedef enum
+typedef enum cgameImport_s
 {
-  CG_PRINT,
+  CG_PRINT = FIRST_VM_SYSCALL,
   CG_ERROR,
   CG_MILLISECONDS,
   CG_CVAR_REGISTER,
@@ -137,14 +138,14 @@ typedef enum
   CG_R_REGISTERSHADER,
   CG_R_REGISTERFONT,
   CG_R_REGISTERSHADERNOMIP,
-#if defined( USE_REFLIGHT )
+//#if defined( USE_REFLIGHT )
   CG_R_REGISTERSHADERLIGHTATTENUATION,
-#endif
+//#endif
   CG_R_CLEARSCENE,
   CG_R_ADDREFENTITYTOSCENE,
-#if defined( USE_REFLIGHT )
+//#if defined( USE_REFLIGHT )
   CG_R_ADDREFLIGHTSTOSCENE,
-#endif
+//#endif
   CG_R_ADDPOLYTOSCENE,
   CG_R_ADDPOLYSTOSCENE,
   CG_R_ADDPOLYBUFFERTOSCENE,
@@ -181,16 +182,6 @@ typedef enum
   CG_KEY_GETKEY,
   CG_KEY_GETOVERSTRIKEMODE,
   CG_KEY_SETOVERSTRIKEMODE,
-  CG_MEMSET,
-  CG_MEMCPY,
-  CG_STRNCPY,
-  CG_SIN,
-  CG_COS,
-  CG_ATAN2,
-  CG_SQRT,
-  CG_FLOOR,
-  CG_CEIL,
-  CG_ACOS,
   CG_PC_ADD_GLOBAL_DEFINE,
   CG_PC_LOAD_SOURCE,
   CG_PC_FREE_SOURCE,
@@ -206,8 +197,6 @@ typedef enum
   CG_CIN_DRAWCINEMATIC,
   CG_CIN_SETEXTENTS,
   CG_R_REMAP_SHADER,
-  CG_TESTPRINTINT,
-  CG_TESTPRINTFLOAT,
   CG_LOADCAMERA,
   CG_STARTCAMERA,
   CG_STOPCAMERA,
@@ -238,7 +227,7 @@ typedef enum
   CG_GETDEMONAME,
   CG_R_LIGHTFORPOINT,
   CG_S_SOUNDDURATION,
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
+//#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
   CG_R_REGISTERANIMATION,
   CG_R_CHECKSKELETON,
   CG_R_BUILDSKELETON,
@@ -246,8 +235,15 @@ typedef enum
   CG_R_BONEINDEX,
   CG_R_ANIMNUMFRAMES,
   CG_R_ANIMFRAMERATE,
-#endif
-  CG_COMPLETE_CALLBACK
+//#endif
+  CG_COMPLETE_CALLBACK,
+  CG_REGISTER_BUTTON_COMMANDS,
+  CG_GETCLIPBOARDDATA,
+  CG_QUOTESTRING,
+  CG_GETTEXT,
+  CG_R_GLYPH,
+  CG_R_GLYPHCHAR,
+  CG_R_UREGISTERFONT
 } cgameImport_t;
 
 typedef enum
@@ -297,7 +293,7 @@ typedef enum
 //  void (*CG_EventHandling)(int type, qboolean fForced);
 
   CG_GET_TAG,
-//  qboolean CG_GetTag( int clientNum, char *tagname, orientation_t *or );
+//  qboolean CG_GetTag( int clientNum, const char *tagname, orientation_t *or );
 
   CG_CHECKEXECKEY,
 
@@ -318,7 +314,7 @@ typedef enum
 } cgameExport_t;
 
 void            trap_Print( const char *fmt );
-void            trap_Error( const char *fmt );
+void            trap_Error( const char *string ) NORETURN;
 int             trap_Milliseconds( void );
 void            trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
 void            trap_Cvar_Update( vmCvar_t *vmCvar );
@@ -390,7 +386,11 @@ qhandle_t       trap_R_RegisterSkin( const char *name );
 qboolean        trap_R_GetSkinModel( qhandle_t skinid, const char *type, char *name );
 qhandle_t       trap_R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );
 qhandle_t       trap_R_RegisterShader( const char *name );
-void            trap_R_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
+void            trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
+void            trap_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
+void            trap_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
+void            trap_R_UnregisterFont( fontHandle_t );
+
 qhandle_t       trap_R_RegisterShaderNoMip( const char *name );
 qhandle_t       trap_R_RegisterShaderLightAttenuation( const char *name );
 void            trap_R_ClearScene( void );
@@ -432,7 +432,7 @@ void            trap_Key_SetCatcher( int catcher );
 int             trap_Key_GetKey( const char *binding );
 qboolean        trap_Key_GetOverstrikeMode( void );
 void            trap_Key_SetOverstrikeMode( qboolean state );
-int             trap_PC_AddGlobalDefine( char *define );
+int             trap_PC_AddGlobalDefine( const char *define );
 int             trap_PC_LoadSource( const char *filename );
 int             trap_PC_FreeSource( int handle );
 int             trap_PC_ReadToken( int handle, pc_token_t *pc_token );
@@ -458,7 +458,7 @@ void            trap_UI_Popup( int arg0 );
 void            trap_UI_ClosePopup( const char *arg0 );
 void            trap_Key_GetBindingBuf( int keynum, char *buf, int buflen );
 void            trap_Key_SetBinding( int keynum, const char *binding );
-int             trap_Parse_AddGlobalDefine( char *define );
+int             trap_Parse_AddGlobalDefine( const char *define );
 int             trap_Parse_LoadSource( const char *filename );
 int             trap_Parse_FreeSource( int handle );
 int             trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
@@ -491,3 +491,9 @@ int             trap_R_AnimFrameRate( qhandle_t hAnim );
 
 #endif
 void            trap_CompleteCallback( const char *complete );
+
+void            trap_RegisterButtonCommands( const char *cmds );
+
+void            trap_GetClipboardData( char *, int, clipboard_t );
+void            trap_QuoteString( const char *, char*, int );
+void            trap_Gettext( char *buffer, const char *msgid, int bufferLength );

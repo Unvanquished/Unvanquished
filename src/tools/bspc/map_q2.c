@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -691,7 +691,7 @@ void Q2_PushNodeStack( int num ) {
 	nodestacksize++;
 	//
 	if ( nodestackptr >= &nodestack[NODESTACKSIZE] ) {
-		Error( "Q2_PushNodeStack: stack overflow\n" );
+		Error( "Q2_PushNodeStack: stack overflow" );
 	} //end if
 } //end of the function Q2_PushNodeStack
 //===========================================================================
@@ -1113,7 +1113,7 @@ void TestExpandBrushes( void ) {
 	Log_Print( "writing %s\n", name );
 	f = fopen( name, "wb" );
 	if ( !f ) {
-		Error( "Can't write %s\n", name );
+		Error( "Can't write %s", name );
 	}
 
 	fprintf( f, "{\n\"classname\" \"worldspawn\"\n" );

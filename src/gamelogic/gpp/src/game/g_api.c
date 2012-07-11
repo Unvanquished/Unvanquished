@@ -17,7 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-===========================================================================
+=============================================================
+==============
 */
 
 #include "g_local.h"
@@ -32,10 +33,14 @@ void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
 
 int PASSFLOAT( float x )
 {
-	float floatTemp;
+	floatint_t fi;
+	fi.f = x;
+	return fi.i;
+}
 
-	floatTemp = x;
-	return * ( int * ) &floatTemp;
+void trap_SyscallABIVersion( int major, int minor )
+{
+        syscall( TRAP_VERSION, major, minor );
 }
 
 //00.
@@ -47,9 +52,10 @@ void trap_Print( const char *fmt )
 
 //01.
 //Com_Error(ERR_DROP, "%s", (char *)VMA(1));
-void trap_Error( const char *fmt )
+void NORETURN trap_Error( const char *fmt )
 {
 	syscall( G_ERROR, fmt );
+	exit(1); // silence warning
 }
 
 //02.
@@ -342,7 +348,6 @@ qboolean trap_AreasConnected( int area1, int area2 )
 void trap_UpdateSharedConfig( unsigned int port, const char *rconpass )
 {
 	syscall( G_UPDATE_SHARED_CONFIG, port, rconpass );
-	return;
 }
 
 //41.
@@ -384,7 +389,6 @@ int trap_RealTime( qtime_t *qtime )
 void trap_SnapVector( float *v )
 {
 	syscall( G_SNAPVECTOR, v );
-	return;
 }
 
 //47.
@@ -392,7 +396,6 @@ void trap_SnapVector( float *v )
 void trap_SendGameStat( const char *data )
 {
 	syscall( G_SEND_GAMESTAT, data );
-	return;
 }
 
 //48.
@@ -411,7 +414,7 @@ void trap_RemoveCommand( const char *cmdName )
 
 //50.
 //return SV_GetTag(args[1], args[2], VMA(3), VMA(4));
-qboolean trap_GetTag( int clientNum, int tagFileNumber, char *tagName, orientation_t *ori )
+qboolean trap_GetTag( int clientNum, int tagFileNumber, const char *tagName, orientation_t *ori )
 {
 	return syscall( G_GETTAG, clientNum, tagFileNumber, tagName, ori );
 }
@@ -547,86 +550,15 @@ messageStatus_t trap_MessageStatus( int clientNum )
 	return syscall( G_MESSAGESTATUS, clientNum );
 }
 
-#if defined( ET_MYSQL )
-//76.
-//return OW_RunQuery( VMA(1) );
-int trap_SQL_RunQuery( const char *query )
-{
-	return syscall( G_SQL_RUNQUERY, query );
-}
-
-//77.
-//OW_FinishQuery( args[1] );
-void trap_SQL_FinishQuery( int queryid )
-{
-	syscall( G_SQL_FINISHQUERY, queryid );
-	return;
-}
-
-//78.
-//return OW_NextRow( args[1] );
-qboolean trap_SQL_NextRow( int queryid )
-{
-	return syscall( G_SQL_NEXTROW, queryid );
-}
-
-//79.
-//return OW_RowCount( args[1] );
-int trap_SQL_RowCount( int queryid )
-{
-	return syscall( G_SQL_ROWCOUNT, queryid );
-}
-
-//80.
-//OW_GetFieldByID( args[1], args[2], VMA(3), args[4]  );
-void trap_SQL_GetFieldbyID( int queryid, int fieldid, char *buffer, int len )
-{
-	syscall( G_SQL_GETFIELDBYID, queryid, fieldid, buffer, len );
-	return;
-}
-
-//81
-//OW_GetFieldByName( args[1], VMA(2), VMA(3), args[4] );
-void trap_SQL_GetFieldbyName( int queryid, const char *name, char *buffer, int len )
-{
-	syscall( G_SQL_GETFIELDBYNAME, queryid, name, buffer, len );
-	return;
-}
-
-//82.
-//return OW_GetFieldByID_int( args[1], args[2] );
-int trap_SQL_GetFieldbyID_int( int queryid, int fieldid )
-{
-	return syscall( G_SQL_GETFIELDBYID_INT, queryid, fieldid );
-}
-
-//83.
-//return OW_GetFieldByName_int( args[1], VMA(2) );
-int trap_SQL_GetFieldbyName_int( int queryid, const char *name )
-{
-	return syscall( G_SQL_GETFIELDBYNAME_INT, queryid, name );
-}
-
-//84.
-//return OW_FieldCount( args[1] );
-int trap_SQL_FieldCount( int queryid )
-{
-	return syscall( G_SQL_FIELDCOUNT, queryid );
-}
-
-//85.
-//OW_CleanString( VMA(1), VMA(2), args[3] );
-void trap_SQL_CleanString( const char *in, char *out, int len )
-{
-	syscall( G_SQL_CLEANSTRING, in, out, len );
-	return;
-}
-
-#endif
-
 //86.
 //return SV_RSAGenMsg( VMA(1), VMA(2), VMA(3) );
 int trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted )
 {
 	return syscall( G_RSA_GENMSG, public_key, cleartext, encrypted );
+}
+
+//87.
+void trap_QuoteString( const char *str, char *buffer, int size )
+{
+	syscall( G_QUOTESTRING, str, buffer, size );
 }

@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -609,7 +609,7 @@ int AAS_TransformPlane( int planenum, vec3_t origin, vec3_t angles ) {
 	return FindFloatPlane( normal, newdist, 0, NULL );
 } //end of the function AAS_TransformPlane
 //===========================================================================
-// this function sets the func_rotating_door in it's final position
+// this function sets the func_rotating_door to its final position
 //
 // Parameter:				-
 // Returns:					-
@@ -689,7 +689,7 @@ void AAS_PositionBrush( entity_t *mapent, mapbrush_t *brush ) {
 		}
 	}
 
-	// RF, disabled for Wolf, we dont use trigger_hurt for lava
+	// RF, disabled for Wolf, we don't use trigger_hurt for lava
 	//if it's a trigger hurt
 	//if (!strcmp("trigger_hurt", ValueForKey(mapent, "classname")))
 	//{
@@ -728,7 +728,7 @@ void AAS_PositionBrush( entity_t *mapent, mapbrush_t *brush ) {
 	} //end if
 	  // RF
 	else if ( !strcmp( "func_explosive", ValueForKey( mapent, "classname" ) ) ) {
-		// Gordon: only if the noaasblock flag isnt set
+		// Gordon: only if the noaasblock flag isn't set
 		if ( !( atoi( ValueForKey( mapent, "spawnflags" ) ) & 16 ) ) {
 			//set mover contents
 			brush->contents = CONTENTS_MOVER;
@@ -875,7 +875,7 @@ void AAS_CreateMapBrushes( mapbrush_t *brush, entity_t *mapent, int addbevels ) 
 		{
 			bboxbrushes[i] = AAS_CopyMapBrush( brush, mapent );
 		} //end for
-		  //expand every brush for it's bounding box and create windings
+		  //expand every brush for its bounding box and create windings
 		for ( i = 0; i < cfg.numbboxes; i++ )
 		{
 			AAS_ExpandMapBrush( bboxbrushes[i], cfg.bboxes[i].mins, cfg.bboxes[i].maxs );

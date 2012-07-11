@@ -90,7 +90,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;..\..\libs\glew\include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;..\..\libs\libwebp\Include;%(AdditionalIncludeDirectories);..\libs\glsl-optimizer\include\c99;..\libs\glsl-optimizer\include;..\libs\glsl-optimizer\src\mesa;..\libs\glsl-optimizer\src\glsl;..\libs\glsl-optimizer\src\getopt;..\libs\glsl-optimizer\src\mapi</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\libs\libsdl\include;..\..\libs\zlibwapi\include;..\..\libs\glew\include;..\..\libs\openexr;..\..\libs\jpeg;..\..\libs\libpng;..\..\libs\freetype\include\;..\..\libs\freetype\include\freetype2;..\..\libs\libwebp\Include;..\..\libs\glsl-optimizer\include\c99;..\..\libs\glsl-optimizer\include;..\..\libs\glsl-optimizer\src\mesa;..\..\libs\glsl-optimizer\src\glsl;..\..\libs\glsl-optimizer\src\getopt;..\..\libs\glsl-optimizer\src\mapi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_GLSL_OPTIMIZER;_DEBUG;WIN32;_WINDOWS;BUILD_FREETYPE;FT_FREETYPE_H;USE_XREAL_RENDERER;USE_WEBP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -440,6 +440,7 @@
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\standalone_scaffolding.h" />
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\strtod.h" />
     <ClInclude Include="..\..\libs\glsl-optimizer\src\glsl\s_expression.h" />
+    <ClInclude Include="..\renderer\tr_font.h" />
     <ClInclude Include="gl_shader.h" />
     <ClInclude Include="..\..\..\etmain\src\game\q_shared.h" />
     <ClInclude Include="tr_image.h" />

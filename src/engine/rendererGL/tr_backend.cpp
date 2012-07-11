@@ -551,8 +551,7 @@ void GL_State( uint32_t stateBits )
 
 				default:
 					srcFactor = GL_ONE; // to get warning to shut up
-					ri.Error( ERR_DROP, "GL_State: invalid src blend state bits\n" );
-					break;
+					ri.Error( ERR_DROP, "GL_State: invalid src blend state bits" );
 			}
 
 			switch ( stateBits & GLS_DSTBLEND_BITS )
@@ -591,8 +590,7 @@ void GL_State( uint32_t stateBits )
 
 				default:
 					dstFactor = GL_ONE; // to get warning to shut up
-					ri.Error( ERR_DROP, "GL_State: invalid dst blend state bits\n" );
-					break;
+					ri.Error( ERR_DROP, "GL_State: invalid dst blend state bits" );
 			}
 
 			glEnable( GL_BLEND );
@@ -1083,7 +1081,6 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 	if ( !glState.currentVBO )
 	{
 		ri.Error( ERR_FATAL, "GL_VertexAttribPointers: no VBO bound" );
-		return;
 	}
 
 	if ( r_logFile->integer )
@@ -1429,7 +1426,7 @@ static void RB_RenderDrawSurfaces( bool opaque, bool depthFill, renderDrawSurfac
 		}
 
 		// change the tess parameters if needed
-		// a "entityMergable" shader is a shader that can have surfaces from seperate
+		// an "entityMergable" shader is a shader that can have surfaces from separate
 		// entities merged into a single batch, like smoke and blood puff sprites
 		if ( shader != oldShader || lightmapNum != oldLightmapNum || fogNum != oldFogNum || ( entity != oldEntity && !shader->entityMergable ) )
 		{
@@ -1570,7 +1567,7 @@ static void RB_RenderOpaqueSurfacesIntoDepth( bool onlyWorld )
 		}
 
 		// change the tess parameters if needed
-		// a "entityMergable" shader is a shader that can have surfaces from seperate
+		// an "entityMergable" shader is a shader that can have surfaces from separate
 		// entities merged into a single batch, like smoke and blood puff sprites
 		//if(shader != oldShader || lightmapNum != oldLightmapNum || (entity != oldEntity && !shader->entityMergable))
 
@@ -3605,7 +3602,7 @@ static void RB_RenderDrawSurfacesIntoGeometricBuffer()
 		        }
 
 		        // change the tess parameters if needed
-		        // a "entityMergable" shader is a shader that can have surfaces from seperate
+		        // an "entityMergable" shader is a shader that can have surfaces from separate
 		        // entities merged into a single batch, like smoke and blood puff sprites
 		        if(shader != oldShader || (entity != oldEntity && !shader->entityMergable))
 		        {
@@ -3630,7 +3627,7 @@ static void RB_RenderDrawSurfacesIntoGeometricBuffer()
 			}
 
 			// change the tess parameters if needed
-			// a "entityMergable" shader is a shader that can have surfaces from seperate
+			// an "entityMergable" shader is a shader that can have surfaces from separate
 			// entities merged into a single batch, like smoke and blood puff sprites
 			if ( shader != oldShader || ( entity != oldEntity && !shader->entityMergable ) )
 			{
@@ -9984,7 +9981,7 @@ static void RB_RenderDebugUtils()
 		{
 			gridPoint = &tr.world->lightGridData[ j ];
 
-			if ( VectorDistanceSquared( gridPoint->origin, backEnd.viewParms.orientation.origin ) > SQR( 1024 ) )
+			if ( VectorDistanceSquared( gridPoint->origin, backEnd.viewParms.orientation.origin ) > Square( 1024 ) )
 			{
 				continue;
 			}
@@ -10421,13 +10418,13 @@ static void RB_RenderDebugUtils()
 		GL_Bind( tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-		GL_CheckErrors();              
+		GL_CheckErrors();
 
 		Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, NULL, qtrue, qfalse, -1, 0 );
 
 		for ( i = 0, dp = backEnd.refdef.decalProjectors; i < backEnd.refdef.numDecalProjectors; i++, dp++ )
 		{
-			if ( VectorDistanceSquared( dp->center, backEnd.viewParms.orientation.origin ) > SQR( 1024 ) )
+			if ( VectorDistanceSquared( dp->center, backEnd.viewParms.orientation.origin ) > Square( 1024 ) )
 			{
 				continue;
 			}
@@ -11183,7 +11180,7 @@ static void RB_RenderView( void )
 		glReadPixels( 0, 0, tr.refdef.pixelTargetWidth, tr.refdef.pixelTargetHeight, GL_RGBA, GL_UNSIGNED_BYTE, tr.refdef.pixelTarget );
 #else
 		// Bugfix: drivers absolutely hate running in high res and using glReadPixels near the top or bottom edge.
-		// Soo.. lets do it in the middle.
+		// Sooo... let's do it in the middle.
 		glReadPixels( glConfig.vidWidth / 2, glConfig.vidHeight / 2, tr.refdef.pixelTargetWidth, tr.refdef.pixelTargetHeight, GL_RGBA,
 		              GL_UNSIGNED_BYTE, tr.refdef.pixelTarget );
 #endif
@@ -11228,7 +11225,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 
 	R_SyncRenderThread();
 
-	// we definately want to sync every frame for the cinematics
+	// we definitely want to sync every frame for the cinematics
 	glFinish();
 
 	start = end = 0;

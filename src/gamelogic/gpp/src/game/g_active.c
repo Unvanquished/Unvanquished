@@ -77,7 +77,7 @@ void P_DamageFeedback( gentity_t *player )
 		client->ps.damageYaw = angles[ YAW ] / 360.0 * 256;
 	}
 
-	// play an apropriate pain sound
+	// play an appropriate pain sound
 	if ( ( level.time > player->pain_debounce_time ) && !( player->flags & FL_GODMODE ) )
 	{
 		player->pain_debounce_time = level.time + 700;
@@ -135,7 +135,7 @@ void P_WorldEffects( gentity_t *ent )
 					ent->damage = 15;
 				}
 
-				// play a gurp sound instead of a normal pain sound
+				// play a gurp sound instead of a general pain sound
 				if ( ent->health <= ent->damage )
 				{
 					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "*drown.wav" ) );
@@ -149,7 +149,7 @@ void P_WorldEffects( gentity_t *ent )
 					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "sound/player/gurp2.wav" ) );
 				}
 
-				// don't play a normal pain sound
+				// don't play a general pain sound
 				ent->pain_debounce_time = level.time + 200;
 
 				G_Damage( ent, NULL, NULL, NULL, NULL,
@@ -375,6 +375,12 @@ void  G_TouchTriggers( gentity_t *ent )
 		return;
 	}
 
+	// noclipping clients don't activate triggers!
+	if ( ent->client->noclip )
+	{
+		return;
+	}
+
 	// dead clients don't activate triggers!
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 )
 	{
@@ -450,8 +456,6 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	int       clientNum;
 	qboolean  attack1, attack3, following, queued;
 
-	usercmd_t old;
-
 	client = ent->client;
 
 	usercmdCopyButtons( client->oldbuttons, client->buttons );
@@ -509,6 +513,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		}
 
 		client->pers.classSelection = PCL_NONE;
+		client->pers.humanItemSelection = WP_NONE;
 		client->ps.stats[ STAT_CLASS ] = PCL_NONE;
 		client->ps.pm_flags &= ~PMF_QUEUED;
 		queued = qfalse;
@@ -635,8 +640,8 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 			if( strchr( g_inactivity.string, 's' ) )
 			{
 				trap_SendServerCommand( -1,
-				                        va( "print \"%s^7 moved from %s to spectators due to inactivity\n\"",
-				                            client->pers.netname, BG_TeamName( client->pers.teamSelection ) ) );
+				                        va( "print_tr %s %s %s", QQ( N_("$1$^7 moved from $2$ to spectators due to inactivity\n") ),
+				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->pers.teamSelection ) ) ) );
 				G_LogPrintf( "Inactivity: %d", (int)( client - level.clients ) );
 				G_ChangeTeam( ent, TEAM_NONE );
 			}
@@ -653,8 +658,7 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 		{
 			client->inactivityWarning = qtrue;
 			trap_SendServerCommand( client - level.clients,
-			                        va( "cp \"Ten seconds until inactivity %s!\n\"",
-			                            strchr( g_inactivity.string, 's' ) ? "spectate" : "drop" ) );
+			                        va( "cp %s", strchr( g_inactivity.string, 's' ) ? N_("\"Ten seconds until inactivity spectate!\n\"") : N_("\"Ten seconds until inactivity drop!\n\"") ) );
 		}
 	}
 
@@ -768,6 +772,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				{
 					vec3_t forward, aimDir, normal;
 					vec3_t dummy, dummy2;
+					int dummy3;
 					int dist;
 
 					BG_GetClientNormal( &client->ps,normal );
@@ -778,7 +783,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 					dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
 					if ( G_CanBuild( ent, client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT,
-					                 dist, dummy, dummy2 ) == IBE_NONE )
+					                 dist, dummy, dummy2, &dummy3 ) == IBE_NONE )
 					{
 						client->ps.stats[ STAT_BUILDABLE ] |= SB_VALID_TOGGLEBIT;
 					}
@@ -1062,7 +1067,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				mins[ 0 ] = mins[ 1 ] = 0.0f;
 				VectorAdd( client->ps.origin, mins, point );
 
-				ent->pain_debounce_time = level.time + 200; // no normal pain sound
+				ent->pain_debounce_time = level.time + 200; // no general pain sound
 				G_Damage( ent, NULL, NULL, dir, point, damage, DAMAGE_NO_LOCDAMAGE, MOD_FALLING );
 				break;
 
@@ -1903,10 +1908,7 @@ void ClientThink_real( gentity_t *ent )
 
 	// moved from after Pmove -- potentially the cause of
 	// future triggering bugs
-	if ( !ent->client->noclip )
-	{
-		G_TouchTriggers( ent );
-	}
+	G_TouchTriggers( ent );
 
 	Pmove( &pm );
 
@@ -2109,7 +2111,6 @@ void ClientThink_real( gentity_t *ent )
 
 	if ( ent->suicideTime > 0 && ent->suicideTime < level.time )
 	{
-		ent->flags &= ~FL_GODMODE;
 		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
 		player_die( ent, ent, ent, 100000, MOD_SUICIDE );
 

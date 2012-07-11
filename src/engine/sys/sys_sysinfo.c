@@ -65,7 +65,7 @@ static qboolean PrintCpuInfoFromRegistry( void )
 
 	numPrinted = 0;
 
-	for ( i = 0; name_buf_len = lengthof( name_buf ),
+	for ( i = 0; name_buf_len = ARRAY_LEN( name_buf ),
 	      RegEnumKeyEx( kCpus, i, name_buf, &name_buf_len,
 	                    NULL, NULL, NULL, NULL ) == ERROR_SUCCESS; i++ )
 	{

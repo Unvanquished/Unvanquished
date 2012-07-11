@@ -38,11 +38,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #if defined __GNUC__ || defined __clang__
-#define _attribute( x ) __attribute__( x )
+#define NORETURN __attribute__((__noreturn__))
+#define UNUSED __attribute__((__unused__))
+#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
+#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
+#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
+#define ALIGNED(a) __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define _attribute( x )
-#define __attribute( x )
-#define __attribute__( x )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED(a)
+#define ALWAYS_INLINE
+#define __attribute__(x)
 #endif
 
 #include <stdio.h>
@@ -73,7 +84,7 @@ typedef unsigned char byte;
 
 #define MEM_BLOCKSIZE 4096
 
-// the dec offsetof macro doesnt work very well...
+// the dec offsetof macro doesn't work very well...
 #define myoffsetof(type,identifier) ((size_t)&((type *)0)->identifier)
 
 #define SAFE_MALLOC
@@ -89,10 +100,10 @@ extern int      myargc;
 extern char   **myargv;
 
 // *INDENT-OFF*
-void 			Com_sprintf(char *dest, int size, const char *fmt, ...) __attribute__((format(printf, 3, 4)));
+void 			Com_sprintf(char *dest, int size, const char *fmt, ...) PRINTF_LIKE(3);
 // *INDENT-ON*
 
-char           *va(char *format, ...) __attribute__((format(printf, 1, 2)));
+char           *va(char *format, ...) PRINTF_LIKE(1);
 char           *strlower(char *in);
 int             Q_strncasecmp(const char *s1, const char *s2, int n);
 int             Q_stricmp(const char *s1, const char *s2);
@@ -118,7 +129,7 @@ void            ExpandWildcards(int *argc, char ***argv);
 
 double          I_FloatTime(void);
 
-void            Error(const char *error, ...) __attribute__((format(printf, 1, 2)));
+void            Error(const char *error, ...) PRINTF_LIKE(1) NORETURN;
 int             CheckParm(const char *check);
 
 FILE           *SafeOpenWrite(const char *filename);

@@ -45,14 +45,14 @@ int         trap_S_SoundDuration( sfxHandle_t handle );
 BG_VoiceParseError
 ============
 */
-static void BG_VoiceParseError( fileHandle_t handle, char *err )
+static void NORETURN BG_VoiceParseError( fileHandle_t handle, char *err )
 {
 	int  line;
 	char filename[ MAX_QPATH ];
 
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 	trap_Parse_FreeSource( handle );
-	Com_Error( ERR_FATAL, "%s on line %d of %s\n", err, line, filename );
+	Com_Error( ERR_FATAL, "%s on line %d of %s", err, line, filename );
 }
 
 /*
@@ -393,7 +393,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 
 				trap_Parse_SourceFileAndLine( handle, filename, &line );
 				Com_Error( ERR_FATAL, "BG_VoiceParse(): "
-				           "parse error on line %d of %s\n", line, filename );
+				           "parse error on line %d of %s", line, filename );
 			}
 		}
 
@@ -404,7 +404,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 
 			trap_Parse_SourceFileAndLine( handle, filename, &line );
 			Com_Error( ERR_FATAL, "BG_VoiceParse(): "
-			           "command \"%s\" exceeds MAX_VOICE_CMD_LEN (%d) on line %d of %s\n",
+			           "command \"%s\" exceeds MAX_VOICE_CMD_LEN (%d) on line %d of %s",
 			           token.string, MAX_VOICE_CMD_LEN, line, filename );
 		}
 
@@ -476,7 +476,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 	{
 		if ( debugLevel > 0 )
 		{
-			Com_Printf( "voice \"%s\"\n", voice->name );
+			Com_Printf( "voice %s\n", Quote( voice->name ) );
 		}
 
 		voiceCmd = voice->cmds;

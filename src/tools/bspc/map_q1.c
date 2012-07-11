@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -1012,7 +1012,7 @@ void Q1_FixContentsTextures( bspbrush_t *brushlist ) {
 		  {
 			  if (Q1_TextureContents(map_texinfo[texinfonum].texture) != brush->side)
 			  {
-				  Error("brush contents %d with wrong contents textures %s\n", brush->side,
+				  Error("brush contents %d with wrong contents textures %s", brush->side,
 							  Q1_TextureContents(map_texinfo[texinfonum].texture));
 			  } //end if
 		  } //end for
@@ -1108,7 +1108,7 @@ void Q1_CreateMapBrushes( entity_t *mapent, int modelnum ) {
 
 	//create brushes from the model BSP tree
 	brushlist = Q1_CreateBrushesFromBSP( modelnum );
-	//texture the brushes and split them when necesary
+	//texture the brushes and split them when necessary
 	brushlist = Q1_TextureBrushes( brushlist, modelnum );
 	//fix the contents textures of all brushes
 	Q1_FixContentsTextures( brushlist );

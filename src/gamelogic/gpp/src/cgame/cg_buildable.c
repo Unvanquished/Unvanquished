@@ -44,6 +44,9 @@ static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 static sfxHandle_t defaultAlienSounds[ MAX_BUILDABLE_ANIMATIONS ];
 static sfxHandle_t defaultHumanSounds[ MAX_BUILDABLE_ANIMATIONS ];
 
+static refSkeleton_t bSkeleton;
+static refSkeleton_t oldbSkeleton;
+
 /*
 ===================
 CG_AlienBuildableExplosion
@@ -118,14 +121,14 @@ static void CG_Creep( centity_t *cent )
 
 		if ( msec >= 0 && msec < scaleUpTime )
 		{
-			frac = ( float ) msec / scaleUpTime;
+			frac = ( float ) sin ( 0.5f * msec / scaleUpTime * M_PI );
 		}
 		else
 		{
 			frac = 1.0f;
 		}
 	}
-	else if ( time < 0 )
+	else
 	{
 		msec = cg.time + time;
 
@@ -188,7 +191,7 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( "File %s is %s\n", filename, len == 0 ? "empty" : "too long" );
+		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
 		return qfalse;
 	}
 
@@ -258,7 +261,7 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
-		CG_Printf( "Error parsing animation file: %s\n", filename );
+		CG_Printf(_( "Error parsing animation file: %s\n"), filename );
 		return qfalse;
 	}
 
@@ -296,7 +299,7 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( "File %s is %s\n", filename, len == 0 ? "empty" : "too long" );
+		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
 		return qfalse;
 	}
 
@@ -331,7 +334,7 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 
 	if ( i != MAX_BUILDABLE_ANIMATIONS )
 	{
-		CG_Printf( "Error parsing sound file: %s\n", filename );
+		CG_Printf(_( "Error parsing sound file: %s\n"), filename );
 		return qfalse;
 	}
 
@@ -349,7 +352,7 @@ static qboolean CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		Com_Printf(_( "Failed to load animation file %s\n"), filename );
 		return qfalse;
 	}
 
@@ -461,13 +464,13 @@ void CG_InitBuildables( void )
 
 			//Register the rest of the buildable animations
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT1,
-			                                     "construct", qtrue, qfalse, qfalse ) )
+			                                     "construct", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_CONSTRUCT1 ] = bi->animations[ BANIM_IDLE1 ];
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT2,
-			                                     "construct2", qtrue, qfalse, qfalse ) )
+			                                     "construct2", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_CONSTRUCT2 ] = bi->animations[ BANIM_IDLE1 ];
 			}
@@ -485,19 +488,19 @@ void CG_InitBuildables( void )
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK1,
-			                                     "attack", qtrue, qfalse, qfalse ) )
+			                                     "attack", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_ATTACK1 ] = bi->animations[ BANIM_IDLE1 ];
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK2,
-			                                     "attack2", qtrue, qfalse, qfalse ) )
+			                                     "attack2", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_ATTACK2 ] = bi->animations[ BANIM_IDLE1 ];
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_SPAWN1,
-			                                     "spawn", qtrue, qfalse, qfalse ) )
+			                                     "spawn", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_SPAWN1 ] = bi->animations[ BANIM_IDLE1 ];
 			}
@@ -509,7 +512,7 @@ void CG_InitBuildables( void )
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN1,
-			                                     "pain", qtrue, qfalse, qfalse ) )
+			                                     "pain", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_PAIN1 ] = bi->animations[ BANIM_IDLE1 ];
 			}
@@ -527,7 +530,7 @@ void CG_InitBuildables( void )
 			}
 
 			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY2,
-			                                     "destroy2", qtrue, qfalse, qfalse ) )
+			                                     "destroy2", qfalse, qfalse, qfalse ) )
 			{
 				bi->animations[ BANIM_DESTROY2 ] = bi->animations[ BANIM_IDLE1 ];
 			}
@@ -545,7 +548,7 @@ void CG_InitBuildables( void )
 
 			if ( !CG_ParseBuildableAnimationFile( filename, i ) )
 			{
-				Com_Printf( S_COLOR_YELLOW "WARNING: failed to load animation file %s\n", filename );
+				Com_Printf( _( S_COLOR_YELLOW  "WARNING: failed to load animation file %s\n"), filename );
 			}
 		}
 
@@ -554,7 +557,7 @@ void CG_InitBuildables( void )
 
 		if ( !CG_ParseBuildableSoundFile( filename, i ) )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: failed to load sound file %s\n", filename );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: failed to load sound file %s\n"), filename );
 		}
 
 		//sounds
@@ -731,15 +734,15 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		if ( lf->skeleton.type != SK_INVALID )
+		if ( bSkeleton.type != SK_INVALID )
 		{
-			memcpy( &lf->oldSkeleton, &lf->skeleton, sizeof( refSkeleton_t ) );
+			oldbSkeleton = bSkeleton;
 
 			if ( lf->old_animation != NULL )
 			{
-				if ( !trap_R_BuildSkeleton( &lf->oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 				{
-					CG_Printf( "Can't build old buildable skeleton\n" );
+					CG_Printf( "%s", _( "Can't build old buildable bSkeleton\n" ));
 					return;
 				}
 			}
@@ -777,7 +780,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 		{
 			if ( cg_debugRandom.integer )
 			{
-				CG_Printf( "Sound for animation %d for a %s\n",
+				CG_Printf(_( "Sound for animation %d for a %s\n"),
 				           newAnimation, BG_Buildable( buildable )->humanName );
 			}
 
@@ -824,6 +827,9 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	if ( !( es->eFlags & EF_B_SPAWNED ) )
 	{
 		animation_t *anim = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT1 ];
+
+		// Change the animation in the lerpFrame so that md5s will use it too.
+		cent->lerpFrame.animation = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT1 ];
 
 		//so that when animation starts for real it has sensible numbers
 		cent->lerpFrame.oldFrameTime =
@@ -907,19 +913,19 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 
 		if ( lf->animation && lf->animation->handle )
 		{
-			if ( !trap_R_BuildSkeleton( &lf->skeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
+			if ( !trap_R_BuildSkeleton( &bSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
 			{
-				CG_Printf( "CG_RunBuildableLerpFrame: Can't build lf->skeleton\n" );
+				CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n" ));
 			}
 
-			if ( lf->oldSkeleton.type != SK_INVALID )
+			if ( oldbSkeleton.type != SK_INVALID && oldbSkeleton.numBones == bSkeleton.numBones )
 			{
 				// lerp between old and new animation if possible
-				if ( lf->blendlerp > 0.0f )
+				if ( lf->blendlerp > 0.0f && oldbSkeleton.numBones == bSkeleton.numBones )
 				{
-					if ( !trap_R_BlendSkeleton( &lf->skeleton, &lf->oldSkeleton, lf->blendlerp ) )
+					if ( !trap_R_BlendSkeleton( &bSkeleton, &oldbSkeleton, lf->blendlerp ) )
 					{
-						CG_Printf( "CG_RunBuildableLerpFrame: Can't blend lf->skeleton\n" );
+						CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n" ));
 						return;
 					}
 				}
@@ -1076,7 +1082,8 @@ void CG_GhostBuildable( buildable_t buildable )
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		vec3_t Scale = { scale, scale, scale };
+		vec3_t Scale;
+		Scale[0] = Scale[1] = Scale[2] = scale;
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 	}
@@ -1344,7 +1351,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		}
 		else
 		{
-			Com_Printf( "CG_BuildableStatusParse: unknown token %s in %s\n",
+			Com_Printf(_( "CG_BuildableStatusParse: unknown token %s in %s\n"),
 			            token.string, filename );
 			bs->loaded = qfalse;
 			trap_Parse_FreeSource( handle );
@@ -1863,7 +1870,9 @@ void CG_Buildable( centity_t *cent )
 		// seeing as buildables rarely move, we cache the results and recalculate
 		// only if the buildable moves or changes orientation
 		if ( VectorCompare( cent->buildableCache.cachedOrigin, cent->lerpOrigin ) &&
-		     VectorCompare( cent->buildableCache.cachedNormal, surfNormal ) )
+		     VectorCompare( cent->buildableCache.cachedAngles, cent->lerpAngles ) &&
+		     VectorCompare( cent->buildableCache.cachedNormal, surfNormal ) &&
+		     cent->buildableCache.cachedType == es->modelindex )
 		{
 			VectorCopy( cent->buildableCache.axis[ 0 ], ent.axis[ 0 ] );
 			VectorCopy( cent->buildableCache.axis[ 1 ], ent.axis[ 1 ] );
@@ -1880,8 +1889,15 @@ void CG_Buildable( centity_t *cent )
 			VectorCopy( ent.axis[ 2 ], cent->buildableCache.axis[ 2 ] );
 			VectorCopy( ent.origin, cent->buildableCache.origin );
 			VectorCopy( cent->lerpOrigin, cent->buildableCache.cachedOrigin );
+			VectorCopy( cent->lerpAngles, cent->buildableCache.cachedAngles );
 			VectorCopy( surfNormal, cent->buildableCache.cachedNormal );
+			cent->buildableCache.cachedType = es->modelindex;
 		}
+	}
+
+	if( cg_drawBBOX.integer )
+	{
+		CG_DrawBoundingBox( ent.origin, mins, maxs );
 	}
 
 	//offset on the Z axis if required
@@ -1934,9 +1950,15 @@ void CG_Buildable( centity_t *cent )
 
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
-		vec3_t Scale = { scale, scale, scale };
-		memcpy( &ent.skeleton, &cent->lerpFrame.skeleton, sizeof( refSkeleton_t ) );
+		vec3_t    Scale;
+		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
+		
+		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
+		       scale * (float) sin ( 0.5f * (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime * M_PI );
+		ent.skeleton = bSkeleton;
 		CG_TransformSkeleton( &ent.skeleton, Scale );
+		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
+		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
 	}
 
 	//add to refresh list

@@ -44,8 +44,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DLLEXPORT __declspec(dllexport)
 #define DLLLOCAL
 #elif ( __GNUC__ >= 4 ) && defined __ELF__
-#define DLLEXPORT __attribute__ (( visibility("default")))
-#define DLLLOCAL  __attribute__ (( visibility("hidden")))
+#define DLLEXPORT __attribute__((__visibility__("default")))
+#define DLLLOCAL  __attribute__((__visibility__("hidden")))
 #else
 #define DLLEXPORT
 #define DLLLOCAL
@@ -94,7 +94,7 @@ void     al_buf_shutdown( void );
 sfxHandle_t al_buf_register( const char *filename );
 
 // Set up a sound effect for usage
-// This reloads the sound effect if necessary, and keeps track of it's usage
+// This reloads the sound effect if necessary, and keeps track of its usage
 void     al_buf_use( sfxHandle_t sfx );
 
 // Internal use - actually allocates and deallocates the buffers

@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // cg_playerstate.c -- this file acts on changes in a new playerState_t
-// With normal play, this will be done after local prediction, but when
-// following another player or playing back a demo, it will be checked
-// when the snapshot transitions like all the other entities
+// Changes will be checked after local prediction; also,
+// when following another player or playing back a demo,
+// changes will be checked when the snapshot transitions
 
 #include "cg_local.h"
 
@@ -252,7 +252,7 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps )
 
 				if ( cg_showmiss.integer )
 				{
-					CG_Printf( "WARNING: changed predicted event\n" );
+					CG_Printf( "%s", _( "^4WARNING: changed predicted event\n" ));
 				}
 			}
 		}

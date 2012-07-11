@@ -136,6 +136,115 @@ static const char *const modNames[] =
 
 /*
 ==================
+G_CamperRewardBonus
+
+Function to compute additional reward bonus for the attacker if this killed
+entity was a player near one of his/her defensive structures.
+Returns a factor for multiplying the reward.
+==================
+*/
+float G_CamperRewardBonus(  gentity_t *self )
+{
+	int       maxCounted = 10;
+	float     bonusMax = 2.0f; // Must positive!
+	float     bonus1 = 1.0f; // Must positive!
+	int       maxDistance = 0;
+
+	float     multiplier = 0.0;
+	float     mod = 1.0;
+
+	vec3_t    temp_v;
+	gentity_t *ent;
+	int       i;
+	int       team = self->client->ps.stats[ STAT_TEAM ];
+	int       defences = 0;
+	int       distance = 0;
+	float     value = 0.0f;
+
+	// exclude builders:
+	switch( BG_GetPlayerWeapon( &self->client->ps ) )
+	{
+	case WP_ABUILD:
+	case WP_ABUILD2:
+	case WP_HBUILD:
+		return 1.0f;
+	default:
+		;
+	}
+
+	if ( team == TEAM_ALIENS )
+	{
+		bonusMax = g_alienAnticampBonusMax.value;
+		bonus1 = g_alienAnticampBonus1.value;
+		maxDistance = g_alienAnticampRange.integer;
+	}
+	else if ( team == TEAM_HUMANS )
+	{
+		bonusMax = g_humanAnticampBonusMax.value;
+		bonus1 = g_humanAnticampBonus1.value;
+		maxDistance = g_humanAnticampRange.integer;
+	}
+
+	if ( bonusMax <= 0.01f )
+	{
+		return 1.0f;
+	}
+
+	// Ensures that the denominator is positive:
+	bonus1 = MAX(bonus1, bonusMax / (maxCounted - 1));
+	// Ensures that the numerator is non-negative:
+	bonus1 = MIN(bonus1, bonusMax);
+	mod = (bonusMax - bonus1) / (bonus1 - bonusMax / maxCounted);
+	multiplier = bonus1 * (1 + mod);
+
+	// Look for buildables,
+	for( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	{
+		if ( ent->s.eType != ET_BUILDABLE ||
+		     !ent->spawned ||
+		     ent->health <= 0 )
+		{
+			continue;
+		}
+
+		// and filter the defensive ones in the victim's team:
+		switch (ent->s.modelindex)
+		{
+		case BA_A_HIVE:
+		case BA_A_ACIDTUBE:
+			if ( team == TEAM_ALIENS ) break; else continue;
+		case BA_H_TESLAGEN:
+		case BA_H_MGTURRET:
+			if ( team == TEAM_HUMANS ) break; else continue;
+		default:
+			continue;
+		}
+
+		VectorSubtract( self->client->ps.origin, ent->s.origin, temp_v );
+		distance = VectorLength( temp_v );
+		if ( distance < maxDistance )
+		{
+			if ( ++defences >= maxCounted )
+			{
+				break;
+			}
+		}
+	}
+
+	if ( defences > 0 )
+	{
+		value = 1.0f + multiplier * (defences / (defences + mod));
+		value = MAX( value, 0.0f );
+		G_LogPrintf( "Anti-camper bonus for killing %s^7 near %d defences: %d%%\n",
+		             self->client->pers.netname, defences, (int)(value * 100.0f) );
+		return value;
+	}
+
+	return 1.0f;
+}
+
+/*
+==================
 G_RewardAttackers
 
 Function to distribute rewards to entities that killed this one.
@@ -170,6 +279,7 @@ float G_RewardAttackers( gentity_t *self )
 	if ( self->client )
 	{
 		value = BG_GetValueOfPlayer( &self->client->ps );
+		value *= G_CamperRewardBonus( self );
 		team = self->client->pers.teamSelection;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
 	}
@@ -294,7 +404,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		killerName = "<world>";
 	}
 
-	if ( meansOfDeath < 0 || meansOfDeath >= sizeof( modNames ) / sizeof( modNames[ 0 ] ) )
+	if ( meansOfDeath < 0 || meansOfDeath >= ARRAY_LEN( modNames ) )
 	{
 		// fall back on the number
 		obit = va( "%d", meansOfDeath );
@@ -347,8 +457,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		}
 		else if ( g_showKillerHP.integer )
 		{
-			trap_SendServerCommand( self - g_entities, va( "print \"Your killer, %s^7, had %3i HP.\n\"",
-			                        killerName,
+			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^7, had $2$ HP.\n") ),
+			                        Quote( killerName ),
 			                        attacker->health ) );
 		}
 	}
@@ -398,7 +508,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	self->takedamage = qfalse; // can still be gibbed
 
 	self->s.weapon = WP_NONE;
-	self->r.contents = CONTENTS_CORPSE;
+	if ( self->client->noclip )
+	{
+		self->client->cliprcontents = CONTENTS_CORPSE;
+	}
+	else
+	{
+		self->r.contents = CONTENTS_CORPSE;
+	}
 
 	self->s.angles[ PITCH ] = 0;
 	self->s.angles[ ROLL ] = 0;
@@ -419,7 +536,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	memset( self->client->ps.misc, 0, sizeof( self->client->ps.misc ) );
 
 	{
-		// normal death
 		static int i;
 
 		if ( !( self->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
@@ -1054,7 +1170,7 @@ dflags    these flags are used to control how T_Damage works
   DAMAGE_RADIUS     damage was indirect (from a nearby explosion)
   DAMAGE_NO_ARMOR     armor does not protect from this damage
   DAMAGE_NO_KNOCKBACK   do not affect velocity, just view angles
-  DAMAGE_NO_PROTECTION  kills godmode, armor, everything
+  DAMAGE_NO_PROTECTION  kills everything except godmode
 ============
 */
 
@@ -1190,6 +1306,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
+	// check for godmode
+	if ( targ->flags & FL_GODMODE )
+	{
+		return;
+	}
+
 	// don't do friendly fire on movement attacks
 	if ( ( mod == MOD_LEVEL4_TRAMPLE || mod == MOD_LEVEL3_POUNCE ||
 	       mod == MOD_LEVEL4_CRUSH ) &&
@@ -1250,12 +1372,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				level.humanBaseAttackTimer = level.time + DC_ATTACK_PERIOD;
 				G_BroadcastEvent( EV_DCC_ATTACK, 0 );
 			}
-		}
-
-		// check for godmode
-		if ( targ->flags & FL_GODMODE )
-		{
-			return;
 		}
 	}
 
@@ -1712,9 +1828,9 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	     BG_Buildable( self->s.modelindex )->team )
 	{
 		G_TeamCommand( actor->client->ps.stats[ STAT_TEAM ],
-		               va( "print \"%s ^3%s^7 by %s\n\"",
-		                   BG_Buildable( self->s.modelindex )->humanName,
-		                   mod == MOD_DECONSTRUCT ? "DECONSTRUCTED" : "DESTROYED",
-		                   actor->client->pers.netname ) );
+		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^7 by $2$\n") ) :
+						   QQ( N_("$1$ ^3DESTROYED^7 by $2$\n") ),
+		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),
+		                   Quote( actor->client->pers.netname ) ) );
 	}
 }

@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
   SESSION DATA
 
-Session data is the only data that stays persistant across level loads
+Session data is the only data that stays persistent across level loads
 and tournament restarts.
 =======================================================================
 */
@@ -96,7 +96,7 @@ G_InitSessionData
 Called on a first-time connect
 ================
 */
-void G_InitSessionData( gclient_t *client, char *userinfo )
+void G_InitSessionData( gclient_t *client, const char *userinfo )
 {
 	clientSession_t *sess;
 	const char      *value;

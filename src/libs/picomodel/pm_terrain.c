@@ -212,7 +212,7 @@ void _terrain_load_tga_buffer( unsigned char *buffer, unsigned char **pic, int *
 								alphabyte = *buf_p++;
 								break;
 						default:
-							//Error("LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
+							//Error("LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 							break;
 					}
 	

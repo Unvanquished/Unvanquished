@@ -13,7 +13,7 @@
     Oct-2009 - Defined ZPOS64_T to fpos_t on windows and u_int64_t on linux. (might need to find a better why for this)
     Oct-2009 - Change to fseeko64, ftello64 and fopen64 so large files would work on linux.
                More if/def section may be needed to support other platforms
-    Oct-2009 - Defined fxxxx64 calls to normal fopen/ftell/fseek so they would compile on windows.
+    Oct-2009 - Defined fxxxx64 to fopen/ftell/fseek, so the calls would compile on windows.
                           (but you should use iowin32.c for windows instead)
 
 */
@@ -80,7 +80,7 @@
 #include "mz64conf.h"
 #endif
 
-/* a type choosen by DEFINE */
+/* a type chosen by DEFINE */
 #ifdef HAVE_64BIT_INT_CUSTOM
 typedef  64BIT_INT_CUSTOM_TYPE ZPOS64_T;
 #else

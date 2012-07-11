@@ -636,9 +636,9 @@ fixedWinding_t *TryMergeWinding(fixedWinding_t * f1, fixedWinding_t * f2, vec3_t
 
 	//
 	// find a common edge
-	//  
+	//
 	p1 = p2 = NULL;				// stop compiler warning
-	j = 0;						// 
+	j = 0;						//
 
 	for(i = 0; i < f1->numpoints; i++)
 	{
@@ -902,7 +902,7 @@ void LoadPortals(char *name)
 	{
 		f = fopen(name, "r");
 		if(!f)
-			Error("LoadPortals: couldn't read %s\n", name);
+			Error("LoadPortals: couldn't read %s", name);
 	}
 
 	if(fscanf(f, "%79s\n%i\n%i\n%i\n", magic, &portalclusters, &numportals, &numfaces) != 4)

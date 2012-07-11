@@ -62,13 +62,13 @@ int UI_ParseInfos( char *buf, int max, char *infos[] )
 
 		if ( strcmp( token, "{" ) )
 		{
-			Com_Printf( "Missing { in info file\n" );
+			Com_Printf("%s", _( "Missing { in info file\n" ));
 			break;
 		}
 
 		if ( count == max )
 		{
-			Com_Printf( "Max infos exceeded\n" );
+			Com_Printf("%s", _( "Max infos exceeded\n" ));
 			break;
 		}
 
@@ -80,7 +80,7 @@ int UI_ParseInfos( char *buf, int max, char *infos[] )
 
 			if ( !token[ 0 ] )
 			{
-				Com_Printf( "Unexpected end of info file\n" );
+				Com_Printf("%s", _( "Unexpected end of info file\n" ));
 				break;
 			}
 
@@ -194,7 +194,7 @@ void UI_LoadArenas( void )
 
 	if ( UI_OutOfMemory() )
 	{
-		trap_Print( S_COLOR_YELLOW "WARNING: not anough memory in pool to load all arenas\n" );
+		trap_Print( S_COLOR_YELLOW "WARNING: not enough memory in pool to load all arenas\n" );
 	}
 
 	for ( n = 0; n < ui_numArenas; n++ )

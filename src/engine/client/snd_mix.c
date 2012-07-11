@@ -130,7 +130,6 @@ void S_TransferPaintBuffer( int endtime )
 	if ( s_testsound->integer )
 	{
 		int i;
-		int count;
 
 		// write a fixed sine wave
 		count = ( endtime - s_paintedtime );
@@ -618,7 +617,7 @@ void S_PaintChannels( int endtime )
 
 	snd_vol = s_volume->value * 255;
 
-//Com_Printf ("%i to %i\n", s_paintedtime, endtime);
+//Com_Printf ( "%i to %i\n", s_paintedtime, endtime);
 	while ( s_paintedtime < endtime )
 	{
 		// if paintbuffer is smaller than DMA buffer

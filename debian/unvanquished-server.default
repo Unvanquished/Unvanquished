@@ -1,0 +1,15 @@
+# Defaults for unvanquished-server initscript
+# sourced by /etc/init.d/unvanquished-server
+# installed at /etc/default/unvanquished-server by the maintainer scripts
+
+# set to 1 to enable
+START_DAEMON=0
+
+# DNS name or IP address of your internet interface.
+# Change it if you're setting up an internet server.
+NET_IP="localhost"
+
+# Additional options that are passed to the Daemon.
+# Add "+set dedicated 2" if you want your server advertised on the public
+# server list.
+DAEMON_OPTS="+set net_ip ${NET_IP}"

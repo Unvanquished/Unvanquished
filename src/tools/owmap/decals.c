@@ -505,13 +505,13 @@ void ProcessDecals(void)
 
 						/* planar? (nuking this optimization as it doesn't work on non-rectangular quads) */
 						plane[0] = 0.0f;	/* stupid msvc */
-						if(0 && PlaneFromPoints(plane, dv[0]->xyz, dv[1]->xyz, dv[2]->xyz, qtrue) &&
+						/*if(PlaneFromPoints(plane, dv[0]->xyz, dv[1]->xyz, dv[2]->xyz, qtrue) &&
 						   fabs(DotProduct(dv[1]->xyz, plane) - plane[3]) <= PLANAR_EPSILON)
 						{
-							/* make a quad projector */
+							/ * make a quad projector * /
 							MakeDecalProjector(p->shaderInfo, projection, distance, 4, dv);
 						}
-						else
+						else*/
 						{
 							/* make first triangle */
 							MakeDecalProjector(p->shaderInfo, projection, distance, 3, dv);

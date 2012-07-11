@@ -76,21 +76,21 @@ void	main()
 							var_Tangent.y, var_Binormal.y, var_Normal.y,
 							var_Tangent.z, var_Binormal.z, var_Normal.z	);
 	}
-	
+
 	// compute view direction in tangent space
 	vec3 V = normalize(objectToTangentMatrix * (u_ViewOrigin - var_Position));
-	
+
 	vec2 texDiffuse = var_TexDiffuseNormal.st;
 	vec2 texNormal = var_TexDiffuseNormal.pq;
 	vec2 texSpecular = var_TexSpecular.st;
 
 #if defined(USE_PARALLAX_MAPPING)
-	
+
 	// ray intersect in view direction
-	
+
 	// size and start position of search in texture space
 	vec2 S = V.xy * -u_DepthScale / V.z;
-		
+
 #if 0
 	vec2 texOffset = vec2(0.0);
 	for(int i = 0; i < 4; i++) {
@@ -100,11 +100,11 @@ void	main()
 	}
 #else
 	float depth = RayIntersectDisplaceMap(texNormal, S, u_NormalMap);
-	
+
 	// compute texcoords offset
 	vec2 texOffset = S * depth;
 #endif
-	
+
 	texDiffuse.st += texOffset;
 	texNormal.st += texOffset;
 	texSpecular.st += texOffset;
@@ -112,7 +112,7 @@ void	main()
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
-	
+
 #if defined(USE_ALPHA_TESTING)
 	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
 	{
@@ -145,10 +145,10 @@ void	main()
 	// compute light direction in tangent space
 	vec3 L = normalize(objectToTangentMatrix * var_LightDirection);
 #endif
- 
+
  	// compute half angle in tangent space
 	vec3 H = normalize(L + V);
-	
+
 	// compute the light term
 #if defined(r_WrapAroundLighting)
 	float NL = clamp(dot(N, L) + u_LightWrapAround, 0.0, 1.0) / clamp(1.0 + u_LightWrapAround, 0.0, 1.0);
@@ -156,15 +156,15 @@ void	main()
 	float NL = clamp(dot(N, L), 0.0, 1.0);
 #endif
 	vec3 light = var_LightColor.rgb * NL;
-	
+
 	// compute the specular term
 	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb * var_LightColor.rgb * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
-	
+
 	// compute final color
 	vec4 color = vec4(diffuse.rgb, var_LightColor.a);
 	color.rgb *= light;
 	color.rgb += specular;
-	
+
 #if defined(r_DeferredShading)
 	gl_FragData[0] = color; 								// var_Color;
 	gl_FragData[1] = vec4(diffuse.rgb, var_LightColor.a);	// vec4(var_Color.rgb, 1.0 - var_Color.a);
@@ -192,7 +192,7 @@ void	main()
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
-	
+
 #if defined(USE_ALPHA_TESTING)
 	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
 	{
@@ -218,11 +218,11 @@ void	main()
 	// gl_FragColor = vec4(vec3(diffuse.a, diffuse.a, diffuse.a), 1.0);
 	// gl_FragColor = vec4(vec3(var_LightColor.a, var_LightColor.a, var_LightColor.a), 1.0);
 	// gl_FragColor = var_LightColor;
-	
+
 #if 0 //defined(r_ShowTerrainBlends)
 	color = vec4(vec3(var_LightColor.a), 1.0);
 #endif
-	
+
 #if defined(r_DeferredShading)
 	gl_FragData[0] = color;
 	gl_FragData[1] = vec4(diffuse.rgb, var_LightColor.a);
@@ -236,7 +236,7 @@ void	main()
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
-	
+
 #if defined(USE_ALPHA_TESTING)
 	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
 	{
@@ -267,21 +267,21 @@ void	main()
 	{
 		N = normalize(var_Normal);
 	}
-	
+
 	vec3 L = normalize(var_LightDirection);
-	
+
 	// compute the light term
 #if defined(r_WrapAroundLighting)
 	float NL = clamp(dot(N, L) + u_LightWrapAround, 0.0, 1.0) / clamp(1.0 + u_LightWrapAround, 0.0, 1.0);
 #else
 	float NL = clamp(dot(N, L), 0.0, 1.0);
 #endif
-	
+
 	vec3 light = var_LightColor.rgb * NL;
-	
+
 	vec4 color = vec4(diffuse.rgb * light, var_LightColor.a);
 	// vec4 color = vec4(vec3(NL, NL, NL), diffuse.a);
-	
+
 #if defined(r_DeferredShading)
 	gl_FragData[0] = color; 								// var_Color;
 	gl_FragData[1] = vec4(diffuse.rgb, var_LightColor.a);	// vec4(var_Color.rgb, 1.0 - var_Color.a);
@@ -290,8 +290,8 @@ void	main()
 #else
 	gl_FragColor = color;
 #endif
-	
-	
+
+
 #endif // USE_NORMAL_MAPPING
 
 #if 0

@@ -563,7 +563,7 @@ static void DrawMultitextured( shaderCommands_t *input, int stage )
 	glEnable( GL_TEXTURE_2D );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-	if ( r_lightmap->integer )
+	if ( r_showLightMaps->integer )
 	{
 		GL_TexEnv( GL_REPLACE );
 	}
@@ -1135,7 +1135,7 @@ static void ComputeColors( shaderStage_t *pStage )
 
 				if ( backEnd.currentEntity->e.hModel )
 				{
-					// world surfaces dont have an axis
+					// world surfaces don't have an axis
 					VectorRotate( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
 				}
 				else
@@ -1417,9 +1417,8 @@ static void ComputeTexCoords( shaderStage_t *pStage )
 					break;
 
 				default:
-					ri.Error( ERR_DROP, "ERROR: unknown texmod '%d' in shader '%s'\n", pStage->bundle[ b ].texMods[ tm ].type,
+					ri.Error( ERR_DROP, "ERROR: unknown texmod '%d' in shader '%s'", pStage->bundle[ b ].texMods[ tm ].type,
 					          tess.shader->name );
-					break;
 			}
 		}
 	}
@@ -1484,7 +1483,7 @@ void SetIteratorFog( void )
 /*
 ** RB_SetStencil
 */
-static ID_INLINE GLenum RB_StencilOp( int op )
+static INLINE GLenum RB_StencilOp( int op )
 {
 	switch( op & STO_MASK ) {
 	case STO_KEEP:
@@ -1661,7 +1660,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 			}
 			//----(SA)  end
 			// ydnar: lightmap stages should be GL_ONE GL_ZERO so they can be seen
-			else if ( r_lightmap->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )
+			else if ( r_showLightMaps->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )
 			{
 				unsigned int stateBits;
 
@@ -1691,7 +1690,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 		}
 
 		// allow skipping out to show just lightmaps during development
-		if ( r_lightmap->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )
+		if ( r_showLightMaps->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )
 		{
 			break;
 		}
@@ -1973,7 +1972,7 @@ void RB_StageIteratorLightmappedMultitexture( void )
 	GL_SelectTexture( 1 );
 	glEnable( GL_TEXTURE_2D );
 
-	if ( r_lightmap->integer )
+	if ( r_showLightMaps->integer )
 	{
 		GL_TexEnv( GL_REPLACE );
 	}

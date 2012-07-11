@@ -451,7 +451,7 @@ qboolean R_LoadMDM( model_t *mod, void *buffer, const char *modName )
 
 	/*  mdm->skel = RE_RegisterModel(mdm->bonesfile);
 	        if ( !mdm->skel ) {
-	                ri.Error (ERR_DROP, "R_LoadMDM: %s skeleton not found\n", mdm->bonesfile );
+	                ri.Error (ERR_DROP, "R_LoadMDM: %s skeleton not found", mdm->bonesfile );
 	        }
 
 	        if ( mdm->numFrames < 1 ) {

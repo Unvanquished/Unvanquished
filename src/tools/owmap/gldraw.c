@@ -84,7 +84,7 @@ static void Draw_BeginScene(void)
 		drawVideo = SDL_GetVideoInfo();
 		if(!drawVideo)
 		{
-			Error("Couldn't get video information: %s\n", SDL_GetError());
+			Error("Couldn't get video information: %s", SDL_GetError());
 		}
 
 		// Set the minimum requirements for the OpenGL window
@@ -94,9 +94,9 @@ static void Draw_BeginScene(void)
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-		/* Note the SDL_DOUBLEBUF flag is not required to enable double 
-		 * buffering when setting an OpenGL video mode. 
-		 * Double buffering is enabled or disabled using the 
+		/* Note the SDL_DOUBLEBUF flag is not required to enable double
+		 * buffering when setting an OpenGL video mode.
+		 * Double buffering is enabled or disabled using the
 		 * SDL_GL_DOUBLEBUFFER attribute.
 		 */
 
@@ -104,12 +104,12 @@ static void Draw_BeginScene(void)
 		if(!drawScreen)
 		{
 			SDL_Quit();
-			Error("Couldn't set GL video mode: %s\n", SDL_GetError());
+			Error("Couldn't set GL video mode: %s", SDL_GetError());
 		}
 
 		if(SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1) < 0)
 		{
-			Error("Unable to guarantee accelerated " "visual with libSDL < 1.2.10\n");
+			Error("Unable to guarantee accelerated " "visual with libSDL < 1.2.10");
 		}
 
 		SDL_WM_SetCaption("OWMap", "owmap");

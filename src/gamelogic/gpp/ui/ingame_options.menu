@@ -51,15 +51,16 @@
     itemDef
     {
       name window
-      rect 0 0 W H
-      style WINDOW_STYLE_FILLED
-      backcolor 0 0 0 0.875
+      rect -40 0 (W+100) H
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/vertgrad.tga"
+      forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
 
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       borderSize 1.0
-      borderColor 0.5 0.5 0.5 1
+      borderColor 1 1 1 1
     }
 
     //Section menus
@@ -360,7 +361,7 @@
       type ITEM_TYPE_MULTI
       text "Crosshair Size:"
       cvar "cg_crosshairSize"
-      cvarFloatList { "Normal" 1 "Small" 0.75 "Tiny" 0.5 "Huge" 1.25 }
+      cvarFloatList { "Intermediate" 1 "Small" 0.75 "Tiny" 0.5 "Huge" 1.25 }
       rect CONTENT_X (CONTENT_Y+(2*ELEM_H)) CONTENT_W ELEM_H
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
@@ -1495,6 +1496,26 @@
         play "sound/misc/menu1.wav";
       }
     }
+	
+	itemDef
+	{
+	  name communication
+	  group optionsGrp
+	  type ITEM_TYPE_BIND
+	  text "Voice Say Menu:"
+	  cvar "menu vsay_top"
+	  rect SCONTENT_X (SCONTENT_Y+(9*ELEM_H)) SCONTENT_W ELEM_H
+	  textalign ALIGN_RIGHT
+	  textvalign VALIGN_CENTER
+	  textalignx SCONTENT_OFF
+	  textscale .25
+	  forecolor 1 1 1 1
+	  visible MENU_FALSE
+	  action
+	  {
+	    play "sound/misc/menu1.wav";
+	  }
+	}
 
 //////// MISC
 
@@ -1654,7 +1675,7 @@
       type ITEM_TYPE_MULTI
       text "Quality:"
       cvar "ui_glCustom"
-      cvarFloatList { "High Quality" 0 "Normal" 1 "Fast" 2 "Fastest" 3 "Custom" 4 }
+      cvarFloatList { "High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4 }
       rect SCONTENT_X (SCONTENT_Y+(0*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
@@ -1718,9 +1739,9 @@
       elementtype LISTBOX_TEXT
       feeder FEEDER_RESOLUTIONS
       border WINDOW_BORDER_FULL
-      borderColor 0.5 0.5 0.5 1
+      borderColor 1 1 1 1
       forecolor 1 1 1 1
-      backcolor 0 0 0 1
+      backcolor MENU_TEAL_TRANS
       outlinecolor 0.1 0.1 0.1 0.5
       visible MENU_TRUE
       doubleclick
@@ -1779,7 +1800,7 @@
       group optionsGrp
       type ITEM_TYPE_MULTI
       text "Lighting:"
-      cvar "r_vertexlight"
+      cvar "r_vertexLighting"
       cvarFloatList { "Light Map (high)" 0 "Vertex (low)" 1  }
       rect SCONTENT_X (SCONTENT_Y+(5*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
@@ -1825,7 +1846,7 @@
       type ITEM_TYPE_MULTI
       text "Texture Detail:"
       cvar "r_picmip"
-      cvarFloatList { "Low" 2 "Normal" 1 "High" 0 }
+      cvarFloatList { "Low" 2 "Intermediate" 1 "High" 0 }
       rect SCONTENT_X (SCONTENT_Y+(7*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER

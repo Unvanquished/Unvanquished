@@ -65,7 +65,7 @@ static client_t *SV_GetPlayerByName( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf( "No player specified.\n" );
+		Com_Printf(_( "No player specified.\n" ));
 		return NULL;
 	}
 
@@ -93,7 +93,7 @@ static client_t *SV_GetPlayerByName( void )
 		}
 	}
 
-	Com_Printf( "Player %s is not on the server\n", s );
+	Com_Printf(_( "Player %s is not on the server\n"), s );
 
 	return NULL;
 }
@@ -122,7 +122,7 @@ static client_t *SV_GetPlayerByNum( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf( "No player specified.\n" );
+		Com_Printf(_( "No player specified.\n" ));
 		return NULL;
 	}
 
@@ -132,7 +132,7 @@ static client_t *SV_GetPlayerByNum( void )
 	{
 		if ( s[ i ] < '0' || s[ i ] > '9' )
 		{
-			Com_Printf( "Bad slot number: %s\n", s );
+			Com_Printf(_( "Bad slot number: %s\n"), s );
 			return NULL;
 		}
 	}
@@ -141,7 +141,7 @@ static client_t *SV_GetPlayerByNum( void )
 
 	if ( idnum < 0 || idnum >= sv_maxclients->integer )
 	{
-		Com_Printf( "Bad client slot: %i\n", idnum );
+		Com_Printf(_( "Bad client slot: %i\n"), idnum );
 		return NULL;
 	}
 
@@ -149,7 +149,7 @@ static client_t *SV_GetPlayerByNum( void )
 
 	if ( cl->state <= CS_ZOMBIE )
 	{
-		Com_Printf( "Client %i is not active\n", idnum );
+		Com_Printf(_( "Client %i is not active\n"), idnum );
 		return NULL;
 	}
 
@@ -190,7 +190,7 @@ static void SV_Map_f( void )
 	{
 		if ( !Q_stricmp( Cmd_Argv( 0 ), "spdevmap" ) || !Q_stricmp( Cmd_Argv( 0 ), "spmap" ) )
 		{
-			Com_Printf( "Single Player is not enabled.\n" );
+			Com_Printf(_( "Single Player is not enabled.\n" ));
 			return;
 		}
 	}
@@ -236,11 +236,10 @@ static void SV_Map_f( void )
 
 			if ( size < 0 )
 			{
-				Com_Printf( "Can't find savegame %s\n", savemap );
+				Com_Printf(_( "Can't find savegame %s\n"), savemap );
 				return;
 			}
 
-			//buffer = Hunk_AllocateTempMemory(size);
 			FS_ReadFile( savemap, ( void ** ) &buffer );
 
 			if ( Q_stricmp( savemap, va( "%scurrent.sav", savedir ) ) != 0 )
@@ -252,7 +251,7 @@ static void SV_Map_f( void )
 
 				if ( csize != size )
 				{
-					Hunk_FreeTempMemory( buffer );
+					FS_FreeFile( buffer );
 					FS_Delete( va( "%scurrent.sav", savedir ) );
 // TTimo
 #ifdef __linux__
@@ -261,7 +260,6 @@ static void SV_Map_f( void )
 #else
 					Com_Error( ERR_DROP, "Insufficient free disk space.\n\nPlease free at least 5mb of free space on game drive." );
 #endif
-					return;
 				}
 			}
 
@@ -282,7 +280,7 @@ static void SV_Map_f( void )
 				svs.time = savegameTime;
 			}
 
-			Hunk_FreeTempMemory( buffer );
+			FS_FreeFile( buffer );
 		}
 		else
 		{
@@ -304,7 +302,7 @@ static void SV_Map_f( void )
 
 	if ( FS_ReadFile( expanded, NULL ) == -1 )
 	{
-		Com_Printf( "Can't find map %s\n", expanded );
+		Com_Printf(_( "Can't find map %s\n"), expanded );
 
 		return;
 	}
@@ -424,7 +422,7 @@ static qboolean SV_TransitionGameState( gamestate_t new_gs, gamestate_t old_gs, 
 		}
 	}
 
-	// check if its a valid state transition
+	// check if it's a valid state transition
 	if ( !SV_CheckTransitionGameState( new_gs, old_gs ) )
 	{
 		return qfalse;
@@ -475,7 +473,7 @@ static void SV_MapRestart_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Com_Printf(_( "Server is not running.\n" ));
 		return;
 	}
 
@@ -519,7 +517,7 @@ static void SV_MapRestart_f( void )
 	{
 		char mapname[ MAX_QPATH ];
 
-		Com_Printf( "sv_maxclients variable change -- restarting.\n" );
+		Com_Printf(_( "sv_maxclients variable change – restarting.\n" ));
 		// restart the map the slow way
 		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
@@ -549,7 +547,7 @@ static void SV_MapRestart_f( void )
 
 		if ( size < 0 )
 		{
-			Com_Printf( "Can't find savegame %s\n", savemap );
+			Com_Printf(_( "Can't find savegame %s\n"), savemap );
 			return;
 		}
 
@@ -578,7 +576,7 @@ static void SV_MapRestart_f( void )
 	sv.serverId = com_frameTime;
 	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
 
-	// reset all the vm data in place without changing memory allocation
+	// reset all the VM data in place without changing memory allocation
 	// note that we do NOT set sv.state = SS_LOADING, so configstrings that
 	// had been changed from their default values will generate broadcast updates
 	sv.state = SS_LOADING;
@@ -596,7 +594,7 @@ static void SV_MapRestart_f( void )
 	}
 
 	// create a baseline for more efficient communications
-	// Gordon: meh, this wont work here as the client doesn't know it has happened
+	// Gordon: meh, this won't work here as the client doesn't know it has happened
 //  SV_CreateBaseline ();
 
 	sv.state = SS_GAME;
@@ -617,7 +615,7 @@ static void SV_MapRestart_f( void )
 		{
 			if ( SV_GameIsSinglePlayer() || SV_GameIsCoop() )
 			{
-				continue; // dont carry across bots in single player
+				continue; // don't carry across bots in single player
 			}
 
 			isBot = qtrue;
@@ -641,7 +639,7 @@ static void SV_MapRestart_f( void )
 
 			if ( ( !SV_GameIsSinglePlayer() ) || ( !isBot ) )
 			{
-				Com_Printf( "SV_MapRestart_f(%d): dropped client %i - denied!\n", delay, i );  // bk010125
+				Com_Printf(_( "SV_MapRestart_f(%d): dropped client %i – denied!\n"), delay, i );  // bk010125
 			}
 
 			continue;
@@ -671,7 +669,7 @@ void SV_LoadGame_f( void )
 	int  size;
 	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
-	// dont allow command if another loadgame is pending
+	// don't allow command if another loadgame is pending
 	if ( Cvar_VariableIntegerValue( "savegame_loading" ) )
 	{
 		return;
@@ -688,7 +686,7 @@ void SV_LoadGame_f( void )
 
 	if ( !filename[ 0 ] )
 	{
-		Com_Printf( "You must specify a savegame to load\n" );
+		Com_Printf(_( "You must specify a savegame to load\n" ));
 		return;
 	}
 
@@ -724,11 +722,10 @@ void SV_LoadGame_f( void )
 
 	if ( size < 0 )
 	{
-		Com_Printf( "Can't find savegame %s\n", filename );
+		Com_Printf(_( "Can't find savegame %s\n"), filename );
 		return;
 	}
 
-	//buffer = Hunk_AllocateTempMemory(size);
 	FS_ReadFile( filename, ( void ** ) &buffer );
 
 	// read the mapname, if it is the same as the current map, then do a fast load
@@ -746,8 +743,7 @@ void SV_LoadGame_f( void )
 				FS_WriteFile( va( "%scurrent.sav", savedir ), buffer, size );
 			}
 
-			Hunk_FreeTempMemory( buffer );
-
+			FS_FreeFile( buffer );
 			Cvar_Set( "savegame_loading", "2" );  // 2 means it's a restart, so stop rendering until we are loaded
 			// set the filename
 			Cvar_Set( "savegame_filename", filename );
@@ -757,18 +753,17 @@ void SV_LoadGame_f( void )
 			return;
 		}
 	}
-
-	Hunk_FreeTempMemory( buffer );
+	FS_FreeFile( buffer );
 
 	// otherwise, do a slow load
 	if ( Cvar_VariableIntegerValue( "sv_cheats" ) )
 	{
-		Cbuf_ExecuteText( EXEC_APPEND, va( "spdevmap %s", filename ) );
+		Cbuf_ExecuteText( EXEC_APPEND, va( "spdevmap %s", Cmd_QuoteString( filename ) ) );
 	}
 	else
 	{
 		// no cheats
-		Cbuf_ExecuteText( EXEC_APPEND, va( "spmap %s", filename ) );
+		Cbuf_ExecuteText( EXEC_APPEND, va( "spmap %s", Cmd_QuoteString( filename ) ) );
 	}
 }
 
@@ -791,12 +786,12 @@ static void SV_Kick_f( void ) {
 
         // make sure server is running
         if ( !com_sv_running->integer ) {
-                Com_Printf( "Server is not running.\n" );
+                Com_Printf(_( "Server is not running.\n" ));
                 return;
         }
 
         if ( Cmd_Argc() < 2 || Cmd_Argc() > 3 ) {
-                Com_Printf ("Usage: kick <player name> [timeout]\n");
+                Com_Printf "%s", _(("Usage: kick <player name> [timeout]\n"));
                 return;
         }
 
@@ -869,13 +864,13 @@ static void SV_Ban_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Com_Printf(_( "Server is not running.\n" ));
 		return;
 	}
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "Usage: banUser <player name>\n" );
+		Com_Printf(_( "Usage: banUser <player name>\n" ));
 		return;
 	}
 
@@ -895,16 +890,16 @@ static void SV_Ban_f( void )
 	// look up the authorize server's IP
 	if ( !svs.authorizeAddress.ip[ 0 ] && svs.authorizeAddress.type != NA_BAD )
 	{
-		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
+		Com_Printf(_( "Resolving %s\n"), AUTHORIZE_SERVER_NAME );
 
 		if ( !NET_StringToAdr( AUTHORIZE_SERVER_NAME, &svs.authorizeAddress ) )
 		{
-			Com_Printf( "Couldn't resolve address\n" );
+			Com_Printf(_( "Couldn't resolve address\n" ));
 			return;
 		}
 
 		svs.authorizeAddress.port = BigShort( PORT_AUTHORIZE );
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+		Com_Printf(_( "%s resolved to %i.%i.%i.%i:%i\n"), AUTHORIZE_SERVER_NAME,
 		            svs.authorizeAddress.ip[ 0 ], svs.authorizeAddress.ip[ 1 ],
 		            svs.authorizeAddress.ip[ 2 ], svs.authorizeAddress.ip[ 3 ],
 		            BigShort( svs.authorizeAddress.port ) );
@@ -916,7 +911,7 @@ static void SV_Ban_f( void )
 		NET_OutOfBandPrint( NS_SERVER, svs.authorizeAddress,
 		                    "banUser %i.%i.%i.%i", cl->netchan.remoteAddress.ip[ 0 ], cl->netchan.remoteAddress.ip[ 1 ],
 		                    cl->netchan.remoteAddress.ip[ 2 ], cl->netchan.remoteAddress.ip[ 3 ] );
-		Com_Printf( "%s was banned from coming back\n", cl->name );
+		Com_Printf(_( "%s was banned from coming back\n"), cl->name );
 	}
 }
 
@@ -935,13 +930,13 @@ static void SV_BanNum_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Com_Printf(_( "Server is not running.\n" ));
 		return;
 	}
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "Usage: banClient <client number>\n" );
+		Com_Printf(_( "Usage: banClient <client number>\n" ));
 		return;
 	}
 
@@ -961,16 +956,16 @@ static void SV_BanNum_f( void )
 	// look up the authorize server's IP
 	if ( !svs.authorizeAddress.ip[ 0 ] && svs.authorizeAddress.type != NA_BAD )
 	{
-		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
+		Com_Printf(_( "Resolving %s\n"), AUTHORIZE_SERVER_NAME );
 
 		if ( !NET_StringToAdr( AUTHORIZE_SERVER_NAME, &svs.authorizeAddress ) )
 		{
-			Com_Printf( "Couldn't resolve address\n" );
+			Com_Printf(_( "Couldn't resolve address\n" ));
 			return;
 		}
 
 		svs.authorizeAddress.port = BigShort( PORT_AUTHORIZE );
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
+		Com_Printf(_( "%s resolved to %i.%i.%i.%i:%i\n"), AUTHORIZE_SERVER_NAME,
 		            svs.authorizeAddress.ip[ 0 ], svs.authorizeAddress.ip[ 1 ],
 		            svs.authorizeAddress.ip[ 2 ], svs.authorizeAddress.ip[ 3 ],
 		            BigShort( svs.authorizeAddress.port ) );
@@ -982,7 +977,7 @@ static void SV_BanNum_f( void )
 		NET_OutOfBandPrint( NS_SERVER, svs.authorizeAddress,
 		                    "banUser %i.%i.%i.%i", cl->netchan.remoteAddress.ip[ 0 ], cl->netchan.remoteAddress.ip[ 1 ],
 		                    cl->netchan.remoteAddress.ip[ 2 ], cl->netchan.remoteAddress.ip[ 3 ] );
-		Com_Printf( "%s was banned from coming back\n", cl->name );
+		Com_Printf(_( "%s was banned from coming back\n"), cl->name );
 	}
 }
 
@@ -1056,12 +1051,12 @@ static void SV_KickNum_f( void ) {
 
         // make sure server is running
         if ( !com_sv_running->integer ) {
-                Com_Printf( "Server is not running.\n" );
+                Com_Printf(_( "Server is not running.\n" ));
                 return;
         }
 
         if ( Cmd_Argc() < 2 || Cmd_Argc() > 3 ) {
-                Com_Printf ("Usage: kicknum <client number> [timeout]\n");
+                Com_Printf "%s", _(("Usage: kicknum <client number> [timeout]\n"));
                 return;
         }
 
@@ -1105,7 +1100,7 @@ static void SV_Status_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Com_Printf(_( "Server is not running.\n" ));
 		return;
 	}
 
@@ -1118,13 +1113,13 @@ static void SV_Status_f( void )
 
 	avg = 1000 * svs.stats.latched_active / STATFRAMES;
 
-	Com_Printf( "cpu utilization  : %3i%%\n", ( int ) cpu );
-	Com_Printf( "avg response time: %i ms\n", ( int ) avg );
+	Com_Printf(_( "cpu utilization  : %3i%%\n"), ( int ) cpu );
+	Com_Printf(_( "avg response time: %i ms\n"), ( int ) avg );
 
-	Com_Printf( "map: %s\n", sv_mapname->string );
+	Com_Printf(_( "map: %s\n"), sv_mapname->string );
 
-	Com_Printf( "num score ping name            lastmsg address               qport rate\n" );
-	Com_Printf( "--- ----- ---- --------------- ------- --------------------- ----- -----\n" );
+	Com_Printf(_( "num score ping name            lastmsg address               qport rate\n" ));
+	Com_Printf(_( "--- ----- ---- --------------- ------- --------------------- ----- -----\n" ));
 
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
@@ -1193,7 +1188,7 @@ static void SV_ConSay_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Com_Printf(_( "Server is not running.\n" ));
 		return;
 	}
 
@@ -1213,7 +1208,7 @@ static void SV_ConSay_f( void )
 
 	strcat( text, p );
 
-	SV_SendServerCommand( NULL, "chat \"%s\"", text );
+	SV_SendServerCommand( NULL, "chat %s", Cmd_QuoteString( text ) );
 }
 
 /*
@@ -1237,7 +1232,7 @@ Examine the serverinfo string
 */
 static void SV_Serverinfo_f( void )
 {
-	Com_Printf( "Server info settings:\n" );
+	Com_Printf(_( "Server info settings:\n" ));
 	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
 }
 
@@ -1250,7 +1245,7 @@ Examine or change the serverinfo string
 */
 static void SV_Systeminfo_f( void )
 {
-	Com_Printf( "System info settings:\n" );
+	Com_Printf(_( "System info settings:\n" ));
 	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
 }
 
@@ -1258,7 +1253,8 @@ static void SV_Systeminfo_f( void )
 ===========
 SV_DumpUser_f
 
-Examine all a users info strings FIXME: move to game
+Examine a user's userinfo string
+FIXME: move to game
 ===========
 */
 static void SV_DumpUser_f( void )
@@ -1268,13 +1264,13 @@ static void SV_DumpUser_f( void )
 	// make sure server is running
 	if ( !com_sv_running->integer )
 	{
-		Com_Printf( "Server is not running.\n" );
+		Com_Printf(_( "Server is not running.\n" ));
 		return;
 	}
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf( "Usage: info <userid>\n" );
+		Com_Printf(_( "Usage: info <userid>\n" ));
 		return;
 	}
 
@@ -1285,8 +1281,8 @@ static void SV_DumpUser_f( void )
 		return;
 	}
 
-	Com_Printf( "userinfo\n" );
-	Com_Printf( "--------\n" );
+	Com_Printf(_( "userinfo\n" ));
+	Com_Printf(_( "--------\n" ));
 	Info_Print( cl->userinfo );
 }
 

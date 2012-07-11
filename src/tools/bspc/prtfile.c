@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ void WritePortalFile_r( node_t *node ) {
 	vec_t dist;
 
 	// decision node
-	if ( node->planenum != PLANENUM_LEAF && !node->detail_seperator ) {
+	if ( node->planenum != PLANENUM_LEAF && !node->detail_separator ) {
 		WritePortalFile_r( node->children[0] );
 		WritePortalFile_r( node->children[1] );
 		return;
@@ -141,7 +141,7 @@ NumberLeafs_r
 void NumberLeafs_r( node_t *node ) {
 	portal_t    *p;
 
-	if ( node->planenum != PLANENUM_LEAF && !node->detail_seperator ) { // decision node
+	if ( node->planenum != PLANENUM_LEAF && !node->detail_separator ) { // decision node
 		node->cluster = -99;
 		NumberLeafs_r( node->children[0] );
 		NumberLeafs_r( node->children[1] );
@@ -180,9 +180,9 @@ CreateVisPortals_r
 ================
 */
 void CreateVisPortals_r( node_t *node ) {
-	// stop as soon as we get to a detail_seperator, which
+	// stop as soon as we get to a detail_separator, which
 	// means that everything below is in a single cluster
-	if ( node->planenum == PLANENUM_LEAF || node->detail_seperator ) {
+	if ( node->planenum == PLANENUM_LEAF || node->detail_separator ) {
 		return;
 	}
 
@@ -215,7 +215,7 @@ void FinishVisPortals_r( node_t *node ) {
 		return;
 	}
 
-	if ( node->detail_seperator ) {
+	if ( node->detail_separator ) {
 		FinishVisPortals2_r( node );
 		return;
 	}

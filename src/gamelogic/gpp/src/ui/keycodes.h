@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // these are the key numbers that should be passed to KeyEvent
 //
 
-// normal keys should be passed as lowercased ascii
+// when applicable, keys should be passed as lowercased ASCII
 
 typedef enum
 {
@@ -301,5 +301,6 @@ typedef enum
 // to avoid duplicating the paths, the char events are just
 // distinguished by or'ing in K_CHAR_FLAG (ugly)
 #define K_CHAR_FLAG 1024
+#define K_CHAR_BIT 11
 
 #endif

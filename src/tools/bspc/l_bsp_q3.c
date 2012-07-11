@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -652,7 +652,7 @@ void    Q3_LoadBSPFile( struct quakefile_s *qf ) {
 	Q3_SwapBlock( (int *)header, sizeof( *header ) );
 
 	if ( header->ident != Q3_BSP_IDENT ) {
-		Error( "%s is not a IBSP file", qf->filename );
+		Error( "%s is not an IBSP file", qf->filename );
 	}
 	if ( header->version != Q3_BSP_VERSION ) {
 		Error( "%s is version %i, not %i", qf->filename, header->version, Q3_BSP_VERSION );

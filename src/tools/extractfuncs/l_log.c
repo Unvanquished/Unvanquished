@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ void Log_Shutdown( void ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void Log_Print( char *fmt, ... ) {
+void PRINTF_LIKE(1) Log_Print( char *fmt, ... ) {
 	va_list ap;
 #ifdef WINBSPC
 	char buf[2048];
@@ -141,7 +141,7 @@ void Log_Print( char *fmt, ... ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void Log_Write( char *fmt, ... ) {
+void PRINTF_LIKE(1) Log_Write( char *fmt, ... ) {
 	va_list ap;
 
 	if ( !logfile.fp ) {
@@ -158,7 +158,7 @@ void Log_Write( char *fmt, ... ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void Log_WriteTimeStamped( char *fmt, ... ) {
+void PRINTF_LIKE(1) Log_WriteTimeStamped( char *fmt, ... ) {
 	va_list ap;
 
 	if ( !logfile.fp ) {

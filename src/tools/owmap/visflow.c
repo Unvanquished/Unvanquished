@@ -50,12 +50,12 @@ several games based on the Quake III Arena engine, in the form of "Q3Map2."
   for p2 = all other portals in leaf
 	get sperating planes
 	for all portals that might be seen by p2
-		mark as unseen if not present in seperating plane
+		mark as unseen if not present in separating plane
 	flood fill a new mightsee
 	save as passagemightsee
 
 
-  void CalcMightSee (leaf_t *leaf, 
+  void CalcMightSee (leaf_t *leaf,
 */
 
 int CountBits(byte * bits, int numbits)
@@ -122,7 +122,7 @@ void FreeStackWinding(fixedWinding_t * w, pstack_t * stack)
 		return;					// not from local
 
 	if(stack->freewindings[i])
-		Error("FreeStackWinding: allready free");
+		Error("FreeStackWinding: already free");
 	stack->freewindings[i] = 1;
 }
 
@@ -236,11 +236,11 @@ fixedWinding_t *VisChopWinding(fixedWinding_t * in, pstack_t * stack, visPlane_t
 
 /*
 ==============
-ClipToSeperators
+ClipToSeparators
 
 Source, pass, and target are an ordering of portals.
 
-Generates seperating planes canidates by taking two points from source and one
+Generates separating plane candidates by taking two points from source and one
 point from pass, and clips target by them.
 
 If target is totally clipped away, that portal can not be seen through.
@@ -250,7 +250,7 @@ order goes source, pass, target.  If the order goes pass, source, target then
 flipclip should be set.
 ==============
 */
-fixedWinding_t *ClipToSeperators(fixedWinding_t * source, fixedWinding_t * pass, fixedWinding_t * target, qboolean flipclip,
+fixedWinding_t *ClipToSeparators(fixedWinding_t * source, fixedWinding_t * pass, fixedWinding_t * target, qboolean flipclip,
 								 pstack_t * stack)
 {
 	int             i, j, k, l;
@@ -261,7 +261,7 @@ fixedWinding_t *ClipToSeperators(fixedWinding_t * source, fixedWinding_t * pass,
 	int             counts[3];
 	qboolean        fliptest;
 
-	// check all combinations   
+	// check all combinations
 	for(i = 0; i < source->numpoints; i++)
 	{
 		l = (i + 1) % source->numpoints;
@@ -294,7 +294,7 @@ fixedWinding_t *ClipToSeperators(fixedWinding_t * source, fixedWinding_t * pass,
 			plane.dist = DotProduct(pass->points[j], plane.normal);
 
 			//
-			// find out which side of the generated seperating plane has the
+			// find out which side of the generated separating plane has the
 			// source portal
 			//
 #if 1
@@ -333,7 +333,7 @@ fixedWinding_t *ClipToSeperators(fixedWinding_t * source, fixedWinding_t * pass,
 #if 1
 			//
 			// if all of the pass portal points are now on the positive side,
-			// this is the seperating plane
+			// this is the separating plane
 			//
 			counts[0] = counts[1] = counts[2] = 0;
 			for(k = 0; k < pass->numpoints; k++)
@@ -349,10 +349,10 @@ fixedWinding_t *ClipToSeperators(fixedWinding_t * source, fixedWinding_t * pass,
 					counts[2]++;
 			}
 			if(k != pass->numpoints)
-				continue;		// points on negative side, not a seperating plane
+				continue;		// points on negative side, not a separating plane
 
 			if(!counts[0])
-				continue;		// planar with seperating plane
+				continue;		// planar with separating plane
 #else
 			k = (j + 1) % pass->numpoints;
 			d = DotProduct(pass->points[k], plane.normal) - plane.dist;
@@ -372,22 +372,22 @@ fixedWinding_t *ClipToSeperators(fixedWinding_t * source, fixedWinding_t * pass,
 				plane.dist = -plane.dist;
 			}
 
-#ifdef SEPERATORCACHE
-			stack->seperators[flipclip][stack->numseperators[flipclip]] = plane;
-			if(++stack->numseperators[flipclip] >= MAX_SEPERATORS)
-				Error("MAX_SEPERATORS");
+#ifdef SEPARATORCACHE
+			stack->separators[flipclip][stack->numseparators[flipclip]] = plane;
+			if(++stack->numseparators[flipclip] >= MAX_SEPARATORS)
+				Error("MAX_SEPARATORS");
 #endif
 			//MrE: fast check first
 			d = DotProduct(stack->portal->origin, plane.normal) - plane.dist;
-			//if completely at the back of the seperator plane
+			//if completely at the back of the separator plane
 			if(d < -stack->portal->radius)
 				return NULL;
-			//if completely on the front of the seperator plane
+			//if completely on the front of the separator plane
 			if(d > stack->portal->radius)
 				break;
 
 			//
-			// clip target by the seperating plane
+			// clip target by the separating plane
 			//
 			target = VisChopWinding(target, stack, &plane);
 			if(!target)
@@ -430,15 +430,15 @@ void RecursiveLeafFlow(int leafnum, threaddata_t * thread, pstack_t * prevstack)
 	stack.portal = NULL;
 	stack.depth = prevstack->depth + 1;
 
-#ifdef SEPERATORCACHE
-	stack.numseperators[0] = 0;
-	stack.numseperators[1] = 0;
+#ifdef SEPARATORCACHE
+	stack.numseparators[0] = 0;
+	stack.numseparators[1] = 0;
 #endif
 
 	might = (long *)stack.mightsee;
 	vis = (long *)thread->base->portalvis;
 
-	// check all portals for flowing into other leafs   
+	// check all portals for flowing into other leafs
 	for(i = 0; i < leaf->numportals; i++)
 	{
 		p = leaf->portals[i];
@@ -452,12 +452,12 @@ void RecursiveLeafFlow(int leafnum, threaddata_t * thread, pstack_t * prevstack)
 		   pstack_t *s;
 
 		   s = &thread->pstack_head;
-		   for (j = 0; s->next && j < sizeof(portaltrace)/sizeof(int) - 1; j++, s = s->next)
+		   for (j = 0; s->next && j < ARRAY_LEN(portaltrace) - 1; j++, s = s->next)
 		   {
 		   if (s->portal->num != portaltrace[j])
 		   break;
 		   }
-		   if (j >= sizeof(portaltrace)/sizeof(int) - 1)
+		   if (j >= ARRAY_LEN(portaltrace) - 1)
 		   {
 		   if (p->num == portaltrace[j])
 		   n = 0; //traced through all the portals
@@ -470,7 +470,7 @@ void RecursiveLeafFlow(int leafnum, threaddata_t * thread, pstack_t * prevstack)
 			continue;			// can't possibly see it
 		}
 
-		// if the portal can't see anything we haven't allready seen, skip it
+		// if the portal can't see anything we haven't already seen, skip it
 		if(p->status == stat_done)
 		{
 			test = (long *)p->portalvis;
@@ -576,44 +576,44 @@ void RecursiveLeafFlow(int leafnum, threaddata_t * thread, pstack_t * prevstack)
 			continue;
 		}
 
-#ifdef SEPERATORCACHE
-		if(stack.numseperators[0])
+#ifdef SEPARATORCACHE
+		if(stack.numseparators[0])
 		{
-			for(n = 0; n < stack.numseperators[0]; n++)
+			for(n = 0; n < stack.numseparators[0]; n++)
 			{
-				stack.pass = VisChopWinding(stack.pass, &stack, &stack.seperators[0][n]);
+				stack.pass = VisChopWinding(stack.pass, &stack, &stack.separators[0][n]);
 				if(!stack.pass)
 					break;		// target is not visible
 			}
-			if(n < stack.numseperators[0])
+			if(n < stack.numseparators[0])
 				continue;
 		}
 		else
 		{
-			stack.pass = ClipToSeperators(prevstack->source, prevstack->pass, stack.pass, qfalse, &stack);
+			stack.pass = ClipToSeparators(prevstack->source, prevstack->pass, stack.pass, qfalse, &stack);
 		}
 #else
-		stack.pass = ClipToSeperators(stack.source, prevstack->pass, stack.pass, qfalse, &stack);
+		stack.pass = ClipToSeparators(stack.source, prevstack->pass, stack.pass, qfalse, &stack);
 #endif
 		if(!stack.pass)
 			continue;
 
-#ifdef SEPERATORCACHE
-		if(stack.numseperators[1])
+#ifdef SEPARATORCACHE
+		if(stack.numseparators[1])
 		{
-			for(n = 0; n < stack.numseperators[1]; n++)
+			for(n = 0; n < stack.numseparators[1]; n++)
 			{
-				stack.pass = VisChopWinding(stack.pass, &stack, &stack.seperators[1][n]);
+				stack.pass = VisChopWinding(stack.pass, &stack, &stack.separators[1][n]);
 				if(!stack.pass)
 					break;		// target is not visible
 			}
 		}
 		else
 		{
-			stack.pass = ClipToSeperators(prevstack->pass, prevstack->source, stack.pass, qtrue, &stack);
+			stack.pass = ClipToSeparators(prevstack->pass, prevstack->source, stack.pass, qtrue, &stack);
 		}
 #else
-		stack.pass = ClipToSeperators(prevstack->pass, stack.source, stack.pass, qtrue, &stack);
+		stack.pass = ClipToSeparators(prevstack->pass, stack.source, stack.pass, qtrue, &stack);
 #endif
 		if(!stack.pass)
 			continue;
@@ -703,7 +703,7 @@ void RecursivePassageFlow(vportal_t * portal, threaddata_t * thread, pstack_t * 
 
 	passage = portal->passages;
 	nextpassage = passage;
-	// check all portals for flowing into other leafs   
+	// check all portals for flowing into other leafs
 	for(i = 0; i < leaf->numportals; i++, passage = nextpassage)
 	{
 		p = leaf->portals[i];
@@ -805,7 +805,7 @@ void PassageFlow(int portalnum)
 	/*
 	   c_can = CountBits (p->portalvis, numportals*2);
 
-	   Sys_FPrintf (SYS_VRB,"portal:%4i  mightsee:%4i  cansee:%4i (%i chains)\n", 
+	   Sys_FPrintf (SYS_VRB,"portal:%4i  mightsee:%4i  cansee:%4i (%i chains)\n",
 	   (int)(p - portals),  c_might, c_can, data.c_chains);
 	 */
 }
@@ -838,16 +838,16 @@ void RecursivePassagePortalFlow(vportal_t * portal, threaddata_t * thread, pstac
 	stack.portal = NULL;
 	stack.depth = prevstack->depth + 1;
 
-#ifdef SEPERATORCACHE
-	stack.numseperators[0] = 0;
-	stack.numseperators[1] = 0;
+#ifdef SEPARATORCACHE
+	stack.numseparators[0] = 0;
+	stack.numseparators[1] = 0;
 #endif
 
 	vis = (long *)thread->base->portalvis;
 
 	passage = portal->passages;
 	nextpassage = passage;
-	// check all portals for flowing into other leafs   
+	// check all portals for flowing into other leafs
 	for(i = 0; i < leaf->numportals; i++, passage = nextpassage)
 	{
 		p = leaf->portals[i];
@@ -971,44 +971,44 @@ void RecursivePassagePortalFlow(vportal_t * portal, threaddata_t * thread, pstac
 			continue;
 		}
 
-#ifdef SEPERATORCACHE
-		if(stack.numseperators[0])
+#ifdef SEPARATORCACHE
+		if(stack.numseparators[0])
 		{
-			for(n = 0; n < stack.numseperators[0]; n++)
+			for(n = 0; n < stack.numseparators[0]; n++)
 			{
-				stack.pass = VisChopWinding(stack.pass, &stack, &stack.seperators[0][n]);
+				stack.pass = VisChopWinding(stack.pass, &stack, &stack.separators[0][n]);
 				if(!stack.pass)
 					break;		// target is not visible
 			}
-			if(n < stack.numseperators[0])
+			if(n < stack.numseparators[0])
 				continue;
 		}
 		else
 		{
-			stack.pass = ClipToSeperators(prevstack->source, prevstack->pass, stack.pass, qfalse, &stack);
+			stack.pass = ClipToSeparators(prevstack->source, prevstack->pass, stack.pass, qfalse, &stack);
 		}
 #else
-		stack.pass = ClipToSeperators(stack.source, prevstack->pass, stack.pass, qfalse, &stack);
+		stack.pass = ClipToSeparators(stack.source, prevstack->pass, stack.pass, qfalse, &stack);
 #endif
 		if(!stack.pass)
 			continue;
 
-#ifdef SEPERATORCACHE
-		if(stack.numseperators[1])
+#ifdef SEPARATORCACHE
+		if(stack.numseparators[1])
 		{
-			for(n = 0; n < stack.numseperators[1]; n++)
+			for(n = 0; n < stack.numseparators[1]; n++)
 			{
-				stack.pass = VisChopWinding(stack.pass, &stack, &stack.seperators[1][n]);
+				stack.pass = VisChopWinding(stack.pass, &stack, &stack.separators[1][n]);
 				if(!stack.pass)
 					break;		// target is not visible
 			}
 		}
 		else
 		{
-			stack.pass = ClipToSeperators(prevstack->pass, prevstack->source, stack.pass, qtrue, &stack);
+			stack.pass = ClipToSeparators(prevstack->pass, prevstack->source, stack.pass, qtrue, &stack);
 		}
 #else
-		stack.pass = ClipToSeperators(prevstack->pass, stack.source, stack.pass, qtrue, &stack);
+		stack.pass = ClipToSeparators(prevstack->pass, stack.source, stack.pass, qtrue, &stack);
 #endif
 		if(!stack.pass)
 			continue;
@@ -1069,7 +1069,7 @@ void PassagePortalFlow(int portalnum)
 	/*
 	   c_can = CountBits (p->portalvis, numportals*2);
 
-	   Sys_FPrintf (SYS_VRB,"portal:%4i  mightsee:%4i  cansee:%4i (%i chains)\n", 
+	   Sys_FPrintf (SYS_VRB,"portal:%4i  mightsee:%4i  cansee:%4i (%i chains)\n",
 	   (int)(p - portals),  c_might, c_can, data.c_chains);
 	 */
 }
@@ -1172,21 +1172,21 @@ fixedWinding_t *PassageChopWinding(fixedWinding_t * in, fixedWinding_t * out, vi
 
 /*
 ===============
-AddSeperators
+AddSeparators
 ===============
 */
-int AddSeperators(fixedWinding_t * source, fixedWinding_t * pass, qboolean flipclip, visPlane_t * seperators, int maxseperators)
+int AddSeparators(fixedWinding_t * source, fixedWinding_t * pass, qboolean flipclip, visPlane_t * separators, int maxseparators)
 {
 	int             i, j, k, l;
 	visPlane_t      plane;
 	vec3_t          v1, v2;
 	float           d;
 	vec_t           length;
-	int             counts[3], numseperators;
+	int             counts[3], numseparators;
 	qboolean        fliptest;
 
-	numseperators = 0;
-	// check all combinations   
+	numseparators = 0;
+	// check all combinations
 	for(i = 0; i < source->numpoints; i++)
 	{
 		l = (i + 1) % source->numpoints;
@@ -1219,7 +1219,7 @@ int AddSeperators(fixedWinding_t * source, fixedWinding_t * pass, qboolean flipc
 			plane.dist = DotProduct(pass->points[j], plane.normal);
 
 			//
-			// find out which side of the generated seperating plane has the
+			// find out which side of the generated separating plane has the
 			// source portal
 			//
 #if 1
@@ -1258,7 +1258,7 @@ int AddSeperators(fixedWinding_t * source, fixedWinding_t * pass, qboolean flipc
 #if 1
 			//
 			// if all of the pass portal points are now on the positive side,
-			// this is the seperating plane
+			// this is the separating plane
 			//
 			counts[0] = counts[1] = counts[2] = 0;
 			for(k = 0; k < pass->numpoints; k++)
@@ -1274,10 +1274,10 @@ int AddSeperators(fixedWinding_t * source, fixedWinding_t * pass, qboolean flipc
 					counts[2]++;
 			}
 			if(k != pass->numpoints)
-				continue;		// points on negative side, not a seperating plane
+				continue;		// points on negative side, not a separating plane
 
 			if(!counts[0])
-				continue;		// planar with seperating plane
+				continue;		// planar with separating plane
 #else
 			k = (j + 1) % pass->numpoints;
 			d = DotProduct(pass->points[k], plane.normal) - plane.dist;
@@ -1297,14 +1297,14 @@ int AddSeperators(fixedWinding_t * source, fixedWinding_t * pass, qboolean flipc
 				plane.dist = -plane.dist;
 			}
 
-			if(numseperators >= maxseperators)
-				Error("max seperators");
-			seperators[numseperators] = plane;
-			numseperators++;
+			if(numseparators >= maxseparators)
+				Error("max separators");
+			separators[numseparators] = plane;
+			numseparators++;
 			break;
 		}
 	}
-	return numseperators;
+	return numseparators;
 }
 
 /*
@@ -1318,12 +1318,12 @@ MrE: create passages from one portal to all the portals in the leaf the portal l
 */
 void CreatePassages(int portalnum)
 {
-	int             i, j, k, n, numseperators, numsee;
+	int             i, j, k, n, numseparators, numsee;
 	float           d;
 	vportal_t      *portal, *p, *target;
 	leaf_t         *leaf;
 	passage_t      *passage, *lastpassage;
-	visPlane_t      seperators[MAX_SEPERATORS * 2];
+	visPlane_t      separators[MAX_SEPARATORS * 2];
 	fixedWinding_t *w;
 	fixedWinding_t  in, out, *res;
 
@@ -1350,10 +1350,10 @@ void CreatePassages(int portalnum)
 
 		passage = (passage_t *) safe_malloc(sizeof(passage_t) + portalbytes);
 		memset(passage, 0, sizeof(passage_t) + portalbytes);
-		numseperators = AddSeperators(portal->winding, target->winding, qfalse, seperators, MAX_SEPERATORS * 2);
-		numseperators +=
-			AddSeperators(target->winding, portal->winding, qtrue, &seperators[numseperators],
-						  MAX_SEPERATORS * 2 - numseperators);
+		numseparators = AddSeparators(portal->winding, target->winding, qfalse, separators, MAX_SEPARATORS * 2);
+		numseparators +=
+			AddSeparators(target->winding, portal->winding, qtrue, &separators[numseparators],
+						  MAX_SEPARATORS * 2 - numseparators);
 
 		passage->next = NULL;
 		if(lastpassage)
@@ -1373,26 +1373,26 @@ void CreatePassages(int portalnum)
 				continue;
 			if(!(portal->portalflood[j >> 3] & (1 << (j & 7))))
 				continue;
-			for(k = 0; k < numseperators; k++)
+			for(k = 0; k < numseparators; k++)
 			{
 				//
-				d = DotProduct(p->origin, seperators[k].normal) - seperators[k].dist;
-				//if completely at the back of the seperator plane
+				d = DotProduct(p->origin, separators[k].normal) - separators[k].dist;
+				//if completely at the back of the separator plane
 				if(d < -p->radius + ON_EPSILON)
 					break;
 				w = p->winding;
 				for(n = 0; n < w->numpoints; n++)
 				{
-					d = DotProduct(w->points[n], seperators[k].normal) - seperators[k].dist;
-					//if at the front of the seperator
+					d = DotProduct(w->points[n], separators[k].normal) - separators[k].dist;
+					//if at the front of the separator
 					if(d > ON_EPSILON)
 						break;
 				}
-				//if no points are at the front of the seperator
+				//if no points are at the front of the separator
 				if(n >= w->numpoints)
 					break;
 			}
-			if(k < numseperators)
+			if(k < numseparators)
 				continue;
 
 			/* explitive deleted */
@@ -1406,7 +1406,7 @@ void CreatePassages(int portalnum)
 				memcpy(&in, p->winding, sizeof(fixedWinding_t));
 
 
-			for(k = 0; k < numseperators; k++)
+			for(k = 0; k < numseparators; k++)
 			{
 				/* ydnar: this is a shitty crutch */
 				if(in.numpoints > MAX_POINTS_ON_FIXED_WINDING)
@@ -1415,7 +1415,7 @@ void CreatePassages(int portalnum)
 					in.numpoints = MAX_POINTS_ON_FIXED_WINDING;
 				}
 
-				res = PassageChopWinding(&in, &out, &seperators[k]);
+				res = PassageChopWinding(&in, &out, &separators[k]);
 				if(res == &out)
 					memcpy(&in, &out, sizeof(fixedWinding_t));
 
@@ -1423,7 +1423,7 @@ void CreatePassages(int portalnum)
 				if(res == NULL)
 					break;
 			}
-			if(k < numseperators)
+			if(k < numseparators)
 				continue;
 			passage->cansee[j >> 3] |= (1 << (j & 7));
 			numsee++;
@@ -1461,7 +1461,7 @@ void PassageMemory(void)
 /*
 ===============================================================================
 
-This is a rough first-order aproximation that is used to trivially reject some
+This is a rough first-order approximation that is used to trivially reject some
 of the final calculations.
 
 
@@ -1473,7 +1473,7 @@ typedef struct passage_s
 {
 	struct passage_s	*next;
 	struct portal_s		*to;
-	stryct sep_s		*seperators;
+	struct sep_s		*separators;
 	byte				*mightsee;
 } passage_t;
 
@@ -1484,7 +1484,7 @@ typedef struct portal_s
 } portal_s;
 
 leaf = portal->leaf
-clear 
+clear
 for all portals
 
 
@@ -1495,7 +1495,7 @@ calc portal visibility
 
 
 for a portal to be visible to a passage, it must be on the front of
-all seperating planes, and both portals must be behind the new portal
+all separating planes, and both portals must be behind the new portal
 
 ===============================================================================
 */
@@ -1628,7 +1628,7 @@ void BasePortalVis(int portalnum)
 /*
 ===============================================================================
 
-This is a second order aproximation 
+This is a second-order approximation
 
 Calculates portalvis bit vector
 

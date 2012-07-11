@@ -41,7 +41,7 @@ Maryland 20850 USA.
 
 #define MARKER_OFFSET     0 // 1
 
-// Ridah, just make these global to prevent having to add more paramaters, which add overhead
+// Ridah, just make these globals to prevent having to add more parameters, which would add overhead
 static vec3_t bestnormal;
 static float  bestdist;
 
@@ -425,7 +425,7 @@ int R_OldMarkFragments( int numPoints, const vec3_t *points, const vec3_t projec
 					// LOD is not taken into account, not such a big deal though.
 					//
 					// It's probably much nicer to chop the grid itself and deal
-					// with this grid as a normal SF_GRID surface so LOD will
+					// with this chopped grid as an SF_GRID surface, so LOD will
 					// be applied. However the LOD of that chopped grid must
 					// be synced with the LOD of the original curve.
 					// One way to do this; the chopped grid shares vertices with
@@ -775,7 +775,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 					// LOD is not taken into account, not such a big deal though.
 					//
 					// It's probably much nicer to chop the grid itself and deal
-					// with this grid as a normal SF_GRID surface so LOD will
+					// with this chopped grid as an SF_GRID surface, so LOD will
 					// be applied. However the LOD of that chopped grid must
 					// be synced with the LOD of the original curve.
 					// One way to do this; the chopped grid shares vertices with
@@ -971,10 +971,10 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 
 					if ( oldNumPoints != returnedPoints )
 					{
-						// flag this surface as already having computed ST's
+						// flag this surface as already having computed STs
 						fragmentBuffer[ returnedFragments - 1 ].numPoints *= -1;
 
-						// Ridah, calculate ST's
+						// Ridah, calculate STs
 						for ( j = 0; j < ( returnedPoints - oldNumPoints ); j++ )
 						{
 							VectorSubtract( ( float * ) pointBuffer + 5 * ( oldNumPoints + j ), newCenter, delta );

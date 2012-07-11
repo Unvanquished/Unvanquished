@@ -81,7 +81,7 @@ find $PACKAGE \( -name '.*' -o -name '*~' -o -name '*.orig' -o -name '*.rej' \) 
 
 # purge all but *required* libraries
 test "$STRIP_SOURCES" = '' ||
-  rm -rf $(ls -1d $PACKAGE/src/libs/* | grep -v '/\(cpuinfo\|openexr\|picomodel\)')
+  rm -rf $(ls -1d $PACKAGE/src/libs/* | grep -v '/\(cpuinfo\|openexr\|picomodel\|glsl-optimizer\|findlocale\|tinygettext\)')
 
 # purge binaries
 test "$STRIP_BINARIES" = '' || {

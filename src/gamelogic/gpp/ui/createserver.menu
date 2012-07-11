@@ -1,4 +1,5 @@
 #include "ui/menudef.h"
+#include "ui/main.h"
 
 {
   \\ Server Creation \\
@@ -40,8 +41,7 @@
     rect 0 0 W H
     focusColor 1 .75 0 1
     outOfBoundsClick
-    style WINDOW_STYLE_EMPTY
-    aspectBias ASPECT_NONE
+    TITLE_BACKGROUND
 
     onOpen
     {
@@ -57,15 +57,7 @@
       close createserver
     }
 
-    itemDef
-    {
-      name background
-      rect 0 0 W H
-      style WINDOW_STYLE_FILLED
-      backcolor 0 0 0 1
-      visible MENU_TRUE
-      decoration
-    }
+    TITLE_LAYOUT
 
     // map selection
 
@@ -80,6 +72,17 @@
       visible MENU_TRUE
     }
 
+   itemDef
+   {
+       name maplistbg
+       rect MAPS_X MAPS_Y (MAPS_W+30) MAPS_H
+       style WINDOW_STYLE_SHADER
+       background "ui/assets/vertgrad.tga"
+       forecolor MENU_TEAL_TRANS
+       visible MENU_TRUE
+       decoration
+   }
+
     itemDef
     {
       name maplist
@@ -91,8 +94,8 @@
       textscale .33
       elementtype LISTBOX_TEXT
       feeder FEEDER_MAPS
-      border WINDOW_BORDER_FULL
-      bordercolor   0.5 0.5 0.5 1
+      border WINDOW_BORDER_KCGRADIENT
+      bordercolor   1 1 1 1
       forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
@@ -108,14 +111,15 @@
     {
       name window
       rect OPTIONS_X OPTIONS_Y OPTIONS_W OPTIONS_H
-      style WINDOW_STYLE_FILLED
-      backcolor 0 0 0 1
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/vertgrad.tga"
+      forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
 
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       borderSize 1.0
-      borderColor 0.5 0.5 0.5 1
+      borderColor 1 1 1 1
     }
 
     itemDef
@@ -136,7 +140,7 @@
 
     itemDef
     {
-      name normal
+      name general
       type ITEM_TYPE_NUMERICFIELD
       text "Time Limit:"
       cvar "timelimit"
@@ -205,7 +209,7 @@
 
     itemDef
     {
-      name normal
+      name general
       type ITEM_TYPE_YESNO
       text "Pure Server:"
       cvar "sv_pure"
@@ -224,7 +228,7 @@
 
     itemDef
     {
-      name normal
+      name general
       type ITEM_TYPE_MULTI
       text "Dedicated:"
       // dedicated is a special cvar in that as soon as it is set,

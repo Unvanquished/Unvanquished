@@ -301,7 +301,7 @@ static void Svcmd_LayoutLoad_f( void )
 
 	if ( trap_Argc() < 2 )
 	{
-		G_Printf( "usage: layoutload <name> ...\n" );
+		G_Printf( "usage: layoutload <name> …\n" );
 		return;
 	}
 
@@ -329,12 +329,12 @@ static void Svcmd_AdmitDefeat_f( void )
 	if ( team == TEAM_ALIENS )
 	{
 		G_TeamCommand( TEAM_ALIENS, "cp \"Hivemind Link Broken\" 1" );
-		trap_SendServerCommand( -1, "print \"Alien team has admitted defeat\n\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Alien team has admitted defeat\n") "\"" );
 	}
 	else if ( team == TEAM_HUMANS )
 	{
 		G_TeamCommand( TEAM_HUMANS, "cp \"Life Support Terminated\" 1" );
-		trap_SendServerCommand( -1, "print \"Human team has admitted defeat\n\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Human team has admitted defeat\n") "\"" );
 	}
 	else
 	{
@@ -369,7 +369,7 @@ static void Svcmd_TeamWin_f( void )
 
 static void Svcmd_Evacuation_f( void )
 {
-	trap_SendServerCommand( -1, "print \"Evacuation ordered\n\"" );
+	trap_SendServerCommand( -1, "print_tr \"" N_("Evacuation ordered\n") "\"" );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
 	LogExit( "Evacuation." );
@@ -400,6 +400,7 @@ static void Svcmd_TeamMessage_f( void )
 {
 	char   teamNum[ 2 ];
 	team_t team;
+	char   *arg;
 
 	if ( trap_Argc() < 3 )
 	{
@@ -416,8 +417,9 @@ static void Svcmd_TeamMessage_f( void )
 		return;
 	}
 
-	G_TeamCommand( team, va( "chat -1 %d \"%s\"", SAY_TEAM, ConcatArgs( 2 ) ) );
-	G_LogPrintf( "SayTeam: -1 \"console\": %s\n", ConcatArgs( 2 ) );
+	arg = ConcatArgs( 2 );
+	G_TeamCommand( team, va( "chat -1 %d %s", SAY_TEAM, Quote( arg ) ) );
+	G_LogPrintf( "SayTeam: -1 \"console\": %s\n", arg );
 }
 
 static void Svcmd_CenterPrint_f( void )
@@ -428,7 +430,7 @@ static void Svcmd_CenterPrint_f( void )
 		return;
 	}
 
-	trap_SendServerCommand( -1, va( "cp \"%s\"", ConcatArgs( 1 ) ) );
+	trap_SendServerCommand( -1, va( "cp %s", Quote( ConcatArgs( 1 ) ) ) );
 }
 
 static void Svcmd_EjectClient_f( void )
@@ -541,7 +543,7 @@ static void Svcmd_Pr_f( void )
 		return;
 	}
 
-	trap_SendServerCommand( cl, va( "print \"%s\n\"", ConcatArgs( 2 ) ) );
+	trap_SendServerCommand( cl, va( "print %s\\\n", Quote( ConcatArgs( 2 ) ) ) );
 }
 
 static void Svcmd_PrintQueue_f( void )
@@ -676,7 +678,7 @@ qboolean  ConsoleCommand( void )
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	command = bsearch( cmd, svcmds, sizeof( svcmds ) / sizeof( struct svcmd ),
+	command = bsearch( cmd, svcmds, ARRAY_LEN( svcmds ),
 	                   sizeof( struct svcmd ), cmdcmp );
 
 	if ( !command )
@@ -708,7 +710,7 @@ void G_RegisterCommands( void )
 {
 	int i;
 
-	for ( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( svcmds ); i++ )
 	{
 		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
 		{
@@ -725,7 +727,7 @@ void G_UnregisterCommands( void )
 {
 	int i;
 
-	for ( i = 0; i < sizeof( svcmds ) / sizeof( svcmds[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( svcmds ); i++ )
 	{
 		if ( svcmds[ i ].dedicated && !g_dedicated.integer )
 		{

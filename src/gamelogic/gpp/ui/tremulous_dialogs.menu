@@ -30,14 +30,15 @@
     {
       name window
       rect 0 0 W H
-      style WINDOW_STYLE_FILLED
-      backcolor 0 0 0 1
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/vertgrad.tga"
+      forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
 
-      border WINDOW_BORDER_FULL
+      border WINDOW_BORDER_KCGRADIENT
       borderSize 1.0
-      borderColor 0.5 0.5 0.5 1
+      borderColor 1 1 1 1
     }
 
     itemDef
@@ -45,7 +46,7 @@
       name default_dialog
       text "Error"
       type ITEM_TYPE_TEXT
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       style WINDOW_STYLE_EMPTY
       rect BORDER BORDER INFO_W BUTT_H
       textalign ALIGN_CENTER
@@ -60,7 +61,7 @@
     itemDef
     {
       name default_dialog
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       type ITEM_TYPE_TEXT
       style WINDOW_STYLE_EMPTY
       rect INFO_X INFO_Y INFO_W INFO_H

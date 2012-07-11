@@ -43,10 +43,10 @@ void	main()
 #endif
 
 	vec4 color = texture2D(u_ColorMap, var_Tex);
-	
+
 	color *= var_Color;
 	gl_FragColor = color;
-	
+
 #if 0
 	gl_FragColor = vec4(vec3(1.0, 0.0, 0.0), color.a);
 #endif

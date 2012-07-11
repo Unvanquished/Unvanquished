@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #define OPSTACK_MASK ( OPSTACK_SIZE - 1 )
 
 // don't change
-// Hardcoded in q3asm an reserved at end of bss
+// Hardcoded in q3asm and reserved at end of bss
 #define PROGRAM_STACK_SIZE 0x10000
 #define PROGRAM_STACK_MASK ( PROGRAM_STACK_SIZE - 1 )
 
@@ -151,7 +151,7 @@ struct vm_s
 {
 	// DO NOT MOVE OR CHANGE THESE WITHOUT CHANGING THE VM_OFFSET_* DEFINES
 	// USED BY THE ASM CODE
-	int      programStack; // the vm may be recursively entered
+	int      programStack; // the VM may be recursively entered
 	intptr_t ( *systemCall )( intptr_t *parms );
 
 	//------------------------------------
@@ -198,6 +198,10 @@ struct vm_s
 	char              fqpath[ MAX_QPATH + 1 ];
 	// for qmv modules
 	void              *qvmModuleProvider;
+
+	byte              sanity[ 16 ];
+	qboolean          versionChecked;
+	qboolean          clean;
 };
 
 extern  vm_t *currentVM;
@@ -215,3 +219,8 @@ const char   *VM_ValueToSymbol( vm_t *vm, int value );
 void         VM_LogSyscalls( int *args );
 
 void         VM_BlockCopy( unsigned int dest, unsigned int src, size_t n );
+
+#define VM_DATA_PADDING 32768
+
+void         VM_SetSanity( vm_t *, intptr_t call );
+void         VM_CheckSanity( vm_t *, intptr_t call );

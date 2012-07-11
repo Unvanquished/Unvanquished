@@ -57,7 +57,7 @@ If you have questions concerning this license or the applicable additional terms
 #define MAX_MAP_BOUNDS      ( 128 * 1024 )    // (SA) (9/17/01) new map dimensions (from Q3TA)
 #define BOGUS_RANGE         ( MAX_MAP_BOUNDS + 128 )    //somewhere outside the map
 
-#define TEXINFO_NODE        -1      //side is allready on a node
+#define TEXINFO_NODE        -1      //side is already on a node
 #define PLANENUM_LEAF       -1      //used for leaf nodes
 #define MAXEDGES            20      //maximum number of face edges
 #define MAX_NODE_BRUSHES    8       //maximum brushes in a node
@@ -161,7 +161,7 @@ typedef struct node_s
 	bspbrush_t      *volume;        // one for each leaf/node
 
 	// nodes only
-	qboolean detail_seperator;              // a detail brush caused the split
+	qboolean detail_separator;              // a detail brush caused the split
 	side_t          *side;      // the side that created the node
 	struct node_s   *children[2];
 	face_t          *faces;

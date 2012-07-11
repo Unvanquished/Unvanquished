@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -848,7 +848,7 @@ qboolean AAS_GetFace(winding_t *w, plane_t *p, int side, int *facenum)
 	numedges = w->numpoints;
 	for (i = 0; i < w->numpoints; i++)
 	{
-		if (i >= 1024) Error("AAS_GetFace: more than %d edges\n", 1024);
+		if (i >= 1024) Error("AAS_GetFace: more than %d edges", 1024);
 		foundedges &= AAS_GetEdge(w->p[i], w->p[(i+1 >= w->numpoints ? 0 : i+1)], &edges[i]);
 	} //end for
 

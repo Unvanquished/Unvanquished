@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -211,7 +211,7 @@ int c_tinyportals;
 //===========================================================================
 void AddPortalToNodes( portal_t *p, node_t *front, node_t *back ) {
 	if ( p->nodes[0] || p->nodes[1] ) {
-		Error( "AddPortalToNode: allready included" );
+		Error( "AddPortalToNode: already included" );
 	}
 
 	p->nodes[0] = front;
@@ -276,15 +276,15 @@ void RemovePortalFromNode( portal_t *portal, node_t *l ) {
 		for ( i = 0; i < n; i++ )
 		{
 			if ( p == portals[i] ) {
-				Error( "RemovePortalFromNode: circular linked\n" );
+				Error( "RemovePortalFromNode: circular linked" );
 			}
 		} //end for
 		if ( p->nodes[0] != l && p->nodes[1] != l ) {
-			Error( "RemovePortalFromNodes: portal does not belong to node\n" );
+			Error( "RemovePortalFromNodes: portal does not belong to node" );
 		} //end if
 		portals[n] = p;
 		s = ( p->nodes[1] == l );
-//		if (++n >= 4096) Error("RemovePortalFromNode: more than 4096 portals\n");
+//		if (++n >= 4096) Error("RemovePortalFromNode: more than 4096 portals");
 	} //end for
 //#endif
 } //end of the function RemovePortalFromNode
@@ -776,10 +776,10 @@ void FloodPortals_r( node_t *node, int dist ) {
 	Log_Print( "\r%6d", ++numrec );
 
 	if ( node->occupied ) {
-		Error( "FloodPortals_r: node already occupied\n" );
+		Error( "FloodPortals_r: node already occupied" );
 	}
 	if ( !node ) {
-		Error( "FloodPortals_r: NULL node\n" );
+		Error( "FloodPortals_r: NULL node" );
 	} //end if*/
 	node->occupied = dist;
 
@@ -815,7 +815,7 @@ qboolean PlaceOccupant( node_t *headnode, vec3_t origin, entity_t *occupant ) {
 	while ( node->planenum != PLANENUM_LEAF )
 	{
 		if ( node->planenum < 0 || node->planenum > nummapplanes ) {
-			Error( "PlaceOccupant: invalid node->planenum\n" );
+			Error( "PlaceOccupant: invalid node->planenum" );
 		} //end if
 		plane = &mapplanes[node->planenum];
 		d = DotProduct( origin, plane->normal ) - plane->dist;
@@ -823,7 +823,7 @@ qboolean PlaceOccupant( node_t *headnode, vec3_t origin, entity_t *occupant ) {
 			node = node->children[0];
 		} else { node = node->children[1];}
 		if ( !node ) {
-			Error( "PlaceOccupant: invalid child %d\n", d < 0 );
+			Error( "PlaceOccupant: invalid child %d", d < 0 );
 		} //end if
 	} //end while
 	  //don't start in solid
@@ -1004,7 +1004,7 @@ void FloodAreas_r( node_t *node ) {
 		b = node->brushlist;
 		e = &entities[b->original->entitynum];
 
-		// if the current area has allready touched this
+		// if the current area has already touched this
 		// portal, we are done
 		if ( e->portalareas[0] == c_areas || e->portalareas[1] == c_areas ) {
 			return;
@@ -1025,7 +1025,7 @@ void FloodAreas_r( node_t *node ) {
 	} //end if
 
 	if ( node->area ) {
-		return;     // allready got it
+		return;     // already got it
 	}
 	node->area = c_areas;
 
@@ -1060,7 +1060,7 @@ void FindAreas_r( node_t *node ) {
 	}
 
 	if ( node->area ) {
-		return;     // allready got it
+		return;     // already got it
 
 	}
 	if ( node->contents & CONTENTS_SOLID ) {
@@ -1100,7 +1100,7 @@ void SetAreaPortalAreas_r( node_t *node ) {
 
 	if ( node->contents == CONTENTS_AREAPORTAL ) {
 		if ( node->area ) {
-			return;     // allready set
+			return;     // already set
 
 		}
 		b = node->brushlist;

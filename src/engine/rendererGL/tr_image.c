@@ -1363,13 +1363,13 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 		{
 			if ( glConfig.driverType == GLDRV_OPENGL3 || glConfig2.framebufferObjectAvailable )
 			{
-				glGenerateMipmap( image->type );
+				glGenerateMipmapEXT( image->type );
 				glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
 			}
 			else if ( glConfig2.generateMipmapAvailable )
 			{
 				// raynorpat: if hardware mipmap generation is available, use it
-				//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);  // make sure its nice
+				//glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);  // make sure it's nice
 				glTexParameteri( image->type, GL_GENERATE_MIPMAP_SGIS, GL_TRUE );
 				glTexParameteri( image->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );  // default to trilinear
 			}
@@ -1527,7 +1527,7 @@ image_t        *R_AllocImage( const char *name, qboolean linkIntoHashTable )
 //  if(strlen(name) >= MAX_QPATH)
 	if ( strlen( name ) >= 1024 )
 	{
-		ri.Error( ERR_DROP, "R_AllocImage: \"%s\" image name is too long\n", name );
+		ri.Error( ERR_DROP, "R_AllocImage: \"%s\" image name is too long", name );
 		return NULL;
 	}
 
@@ -1599,6 +1599,50 @@ image_t        *R_CreateImage( const char *name,
 	//GL_Unbind();
 	glBindTexture( image->type, 0 );
 #endif
+
+	return image;
+}
+
+/*
+================
+R_CreateGlyph
+================
+*/
+image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height )
+{
+	image_t *image = R_AllocImage( name, qtrue );
+
+	if ( !image )
+	{
+		return NULL;
+	}
+
+	image->type = GL_TEXTURE_2D;
+	image->width = width;
+	image->height = height;
+	image->bits = IF_NOPICMIP;
+	image->filterType = FT_LINEAR;
+	image->wrapType = WT_CLAMP;
+
+	GL_Bind( image );
+
+	image->uploadWidth = width;
+	image->uploadHeight = height;
+	image->internalFormat = GL_LUMINANCE_ALPHA;
+
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pic );
+
+	GL_CheckErrors();
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+	GL_CheckErrors();
+
+	glBindTexture( GL_TEXTURE_2D, 0 );
 
 	return image;
 }
@@ -1996,7 +2040,7 @@ static const imageExtToLoaderMap_t imageLoaders[] =
 //	{"hdr", LoadRGBE}  // RGBE just sucks
 };
 
-static int                   numImageLoaders = sizeof( imageLoaders ) / sizeof( imageLoaders[ 0 ] );
+static int                   numImageLoaders = ARRAY_LEN( imageLoaders );
 
 /*
 =================
@@ -2326,7 +2370,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	return image;
 }
 
-static ID_INLINE void SwapPixel( byte *inout, int x, int y, int x2, int y2, int width, int height )
+static INLINE void SwapPixel( byte *inout, int x, int y, int x2, int y2, int width, int height )
 {
 	byte color[ 4 ];
 	byte color2[ 4 ];

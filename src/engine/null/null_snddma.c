@@ -73,10 +73,9 @@ void SNDDMA_Activate( void )
 }
 
 // show_bug.cgi?id=574
-int S_GetSoundLength( sfxHandle_t sfxHandle )
+int NORETURN S_GetSoundLength( sfxHandle_t sfxHandle )
 {
-	Com_Error( ERR_DROP, "null_snddma.c: S_GetSoundLength\n" );
-	return 0;
+	Com_Error( ERR_DROP, "null_snddma.c: S_GetSoundLength" );
 }
 
 void S_UpdateThread( void )

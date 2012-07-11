@@ -45,7 +45,7 @@
       name human_dialog
       text "Error"
       type ITEM_TYPE_TEXT
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       style WINDOW_STYLE_EMPTY
       rect BORDER BORDER INFO_W BUTT_H
       textalign ALIGN_CENTER
@@ -61,7 +61,7 @@
     {
       name human_dialog
       type ITEM_TYPE_TEXT
-      textstyle ITEM_TEXTSTYLE_NORMAL
+      textstyle ITEM_TEXTSTYLE_PLAIN
       style WINDOW_STYLE_EMPTY
       rect INFO_X INFO_Y INFO_W INFO_H
       cvar "ui_dialog"

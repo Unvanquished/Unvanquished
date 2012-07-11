@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 
 #define BASEDIRNAME "wolf"
-#define PATHSEPERATOR   '/'
+#define PATHSEPARATOR   '/'
 
 // set these before calling CheckParm
 int myargc;
@@ -134,7 +134,7 @@ Error
 For abnormal program terminations in windowed apps
 =================
 */
-void Error( char *error, ... ) {
+void PRINTF_LIKE(1) NORETURN Error( char *error, ... ) {
 	va_list argptr;
 	char text[1024];
 	char text2[1024];
@@ -155,7 +155,7 @@ void Error( char *error, ... ) {
 	exit( 1 );
 } //end of the function Error
 
-void Warning( char *szFormat, ... ) {
+void PRINTF_LIKE(1) Warning( char *szFormat, ... ) {
 	char szBuffer[256];
 	va_list argptr;
 
@@ -177,7 +177,7 @@ Error
 For abnormal program terminations in console apps
 =================
 */
-void Error( char *error, ... ) {
+void PRINTF_LIKE(1) NORETURN Error( char *error, ... ) {
 	va_list argptr;
 	char text[1024];
 
@@ -192,7 +192,7 @@ void Error( char *error, ... ) {
 	exit( 1 );
 } //end of the function Error
 
-void Warning( char *warning, ... ) {
+void PRINTF_LIKE(1) Warning( char *warning, ... ) {
 	va_list argptr;
 	char text[1024];
 
@@ -209,7 +209,7 @@ void Warning( char *warning, ... ) {
 //only printf if in verbose mode
 qboolean verbose = true;
 
-void qprintf( char *format, ... ) {
+void PRINTF_LIKE(1) qprintf( char *format, ... ) {
 	va_list argptr;
 #ifdef WINBSPC
 	char buf[2048];
@@ -229,7 +229,7 @@ void qprintf( char *format, ... ) {
 	va_end( argptr );
 } //end of the function qprintf
 
-void Com_Error( int level, char *error, ... ) {
+void PRINTF_LIKE(2) NORETURN Com_Error( int level, char *error, ... ) {
 	va_list argptr;
 	char text[1024];
 
@@ -237,9 +237,9 @@ void Com_Error( int level, char *error, ... ) {
 	Q_vsnprintf( text, sizeof( text ), error, argptr );
 	va_end( argptr );
 	Error( text );
-} //end of the funcion Com_Error
+} //end of the function Com_Error
 
-void Com_Printf( const char *fmt, ... ) {
+void PRINTF_LIKE(1) Com_Printf( const char *fmt, ... ) {
 	va_list argptr;
 	char text[1024];
 
@@ -247,7 +247,7 @@ void Com_Printf( const char *fmt, ... ) {
 	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
 	va_end( argptr );
 	Log_Print( text );
-} //end of the funcion Com_Printf
+} //end of the function Com_Printf
 
 /*
 
@@ -723,12 +723,12 @@ void    SaveFile( char *filename, void *buffer, int count ) {
 void DefaultExtension( char *path, char *extension ) {
 	char    *src;
 //
-// if path doesnt have a .EXT, append extension
+// if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
 	src = path + strlen( path ) - 1;
 
-	while ( *src != PATHSEPERATOR && src != path )
+	while ( *src != PATHSEPARATOR && src != path )
 	{
 		if ( *src == '.' ) {
 			return;                 // it has an extension
@@ -743,7 +743,7 @@ void DefaultExtension( char *path, char *extension ) {
 void DefaultPath( char *path, char *basepath ) {
 	char temp[128];
 
-	if ( path[0] == PATHSEPERATOR ) {
+	if ( path[0] == PATHSEPARATOR ) {
 		return;                   // absolute path location
 	}
 	strcpy( temp,path );
@@ -756,7 +756,7 @@ void    StripFilename( char *path ) {
 	int length;
 
 	length = strlen( path ) - 1;
-	while ( length > 0 && path[length] != PATHSEPERATOR )
+	while ( length > 0 && path[length] != PATHSEPARATOR )
 		length--;
 	path[length] = 0;
 }

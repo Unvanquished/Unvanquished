@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/vm_traps.h"
+#include "../qcommon/vm_traps.h"
 
 #define GAME_API_VERSION          9
 
@@ -42,7 +44,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SVF_SELF_PORTAL           0x00008000
 #define SVF_SELF_PORTAL_EXCLUSIVE 0x00010000
 #define SVF_RIGID_BODY            0x00020000 // ignored by the engine
-#define SVF_USE_CURRENT_ORIGIN    0x00040000 // ignored by the engine
 
 typedef struct
 {
@@ -71,9 +72,6 @@ typedef struct
 	vec3_t currentOrigin;
 	vec3_t currentAngles;
 
-	// Creation time, for entities which need it
-	int    startTime;
-
 	// when a trace call is made and the specified pass entity isn't none,
 	//  then a given entity will be excluded from testing if:
 	// - the given entity is the pass entity (use case: don't interact with self),
@@ -85,9 +83,6 @@ typedef struct
 	//   ( ent->s.number == passEntityNum || ent->r.ownerNum == passEntityNum ||
 	//     ( ent->r.ownerNum != ENTITYNUM_NONE && ent->r.ownerNum == entities[passEntityNum].r.ownerNum ) ) )
 	int      ownerNum;
-	int      eventTime;
-
-	int      worldflags;
 
 	qboolean snapshotCallback;
 } entityShared_t;
@@ -100,9 +95,9 @@ typedef struct
 } sharedEntity_t;
 
 // game-module-to-engine calls
-typedef enum
+typedef enum gameImport_s
 {
-  G_PRINT,
+  G_PRINT = FIRST_VM_SYSCALL,
   G_ERROR,
   G_MILLISECONDS,
   G_CVAR_REGISTER,
@@ -166,19 +161,8 @@ typedef enum
   G_ADD_PHYSICS_STATIC,
   G_SENDMESSAGE,
   G_MESSAGESTATUS,
-#ifdef ET_MYSQL
-  G_SQL_RUNQUERY,
-  G_SQL_FINISHQUERY,
-  G_SQL_NEXTROW,
-  G_SQL_ROWCOUNT,
-  G_SQL_GETFIELDBYID,
-  G_SQL_GETFIELDBYNAME,
-  G_SQL_GETFIELDBYID_INT,
-  G_SQL_GETFIELDBYNAME_INT,
-  G_SQL_FIELDCOUNT,
-  G_SQL_CLEANSTRING,
-#endif
-  G_RSA_GENMSG // ( const char *public_key, char *cleartext, char *encrypted )
+  G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
+  G_QUOTESTRING
 } gameImport_t;
 
 // engine-to-game-module calls

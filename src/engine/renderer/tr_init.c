@@ -40,7 +40,6 @@ glconfig_t  glConfig;
 glconfig2_t glConfig2;
 glstate_t   glState;
 
-int         maxAnisotropy = 0;
 float       displayAspect = 0.0f;
 
 static void GfxInfo_f( void );
@@ -127,11 +126,12 @@ cvar_t *r_colorbits;
 cvar_t *r_stereo;
 cvar_t *r_primitives;
 cvar_t *r_texturebits;
+cvar_t *r_ext_multisample;
 
 cvar_t *r_drawBuffer;
 cvar_t *r_glDriver;
 cvar_t *r_glIgnoreWicked3D;
-cvar_t *r_lightmap;
+cvar_t *r_showLightMaps;
 cvar_t *r_uiFullScreen;
 cvar_t *r_shadows;
 cvar_t *r_portalsky; //----(SA)  added
@@ -203,6 +203,8 @@ cvar_t *r_bonesDebug;
 cvar_t *r_wolffog;
 
 // done
+
+cvar_t *r_fontScale;
 
 cvar_t         *r_highQualityVideo;
 cvar_t         *r_rmse;
@@ -436,7 +438,7 @@ static const vidmode_t r_vidModes[] =
 	{ "2048x1536",         2048, 1536, 1 },
 	{ "2560x1600 (16:10)", 2560, 1600, 1 },
 };
-static const int s_numVidModes = ( sizeof( r_vidModes ) / sizeof( r_vidModes[ 0 ] ) );
+static const int s_numVidModes = ARRAY_LEN( r_vidModes );
 
 qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode )
 {
@@ -452,18 +454,18 @@ qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode )
 		return qfalse;
 	}
 
-	if ( mode == -2 ) 
+	if ( mode == -2 )
 	{
 		// Must set width and height to display size before calling this function!
 		*windowAspect = ( float ) *width / *height;
-	} 
+	}
 	else if ( mode == -1 )
 	{
 		*width = r_customwidth->integer;
 		*height = r_customheight->integer;
 		*windowAspect = r_customaspect->value;
-	} 
-	else 
+	}
+	else
 	{
 		vm = &r_vidModes[ mode ];
 
@@ -1144,6 +1146,7 @@ void R_Register( void )
 	r_stencilbits = ri.Cvar_Get( "r_stencilbits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 #endif
 	r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
+	r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "0", CVAR_ARCHIVE | CVAR_LATCH );  // Arnout: disable overbrightbits by default
 	AssertCvarRange( r_overBrightBits, 0, 1, qtrue );  // ydnar: limit to overbrightbits 1 (sorry 1337 players)
 	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH );  // ydnar: use hw gamma by default
@@ -1229,6 +1232,8 @@ void R_Register( void )
 	r_printShaders = ri.Cvar_Get( "r_printShaders", "0", 0 );
 	r_saveFontData = ri.Cvar_Get( "r_saveFontData", "0", 0 );
 
+	r_fontScale = ri.Cvar_Get( "r_fontScale", "36", CVAR_ARCHIVE | CVAR_LATCH);
+
 	// Ridah
 	// TTimo show_bug.cgi?id=440
 	//   with r_cache enabled, non-win32 OSes were leaking 24Mb per R_Init..
@@ -1252,7 +1257,7 @@ void R_Register( void )
 	r_nocurves = ri.Cvar_Get( "r_nocurves", "0", CVAR_CHEAT );
 	r_drawworld = ri.Cvar_Get( "r_drawworld", "1", CVAR_CHEAT );
 	r_drawfoliage = ri.Cvar_Get( "r_drawfoliage", "1", CVAR_CHEAT );  // ydnar
-	r_lightmap = ri.Cvar_Get( "r_lightmap", "0", CVAR_CHEAT );  // DHM - NERVE :: cheat protect
+	r_showLightMaps = ri.Cvar_Get( "r_showLightMaps", "0", CVAR_CHEAT );  // DHM - NERVE :: cheat protect
 	r_portalOnly = ri.Cvar_Get( "r_portalOnly", "0", CVAR_CHEAT );
 
 	r_flareSize = ri.Cvar_Get( "r_flareSize", "40", CVAR_CHEAT );
@@ -1568,6 +1573,13 @@ extern "C" {
 		re.RegisterShaderLightAttenuation = NULL;
 #endif
 		re.RegisterFont = RE_RegisterFont;
+		re.Glyph = RE_Glyph;
+		re.GlyphChar = RE_GlyphChar;
+		re.UnregisterFont = RE_UnregisterFont;
+		re.RegisterFontVM = RE_RegisterFontVM;
+		re.GlyphVM = RE_GlyphVM;
+		re.GlyphCharVM = RE_GlyphCharVM;
+		re.UnregisterFontVM = RE_UnregisterFontVM;
 		re.LoadWorld = RE_LoadWorldMap;
 //----(SA) added
 		re.GetSkinModel = RE_GetSkinModel;
@@ -1660,7 +1672,7 @@ extern "C" {
 #ifndef REF_HARD_LINKED
 // this is only here so the functions in q_shared.c and bg_*.c can link
 
-void QDECL Com_Printf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -1672,7 +1684,7 @@ void QDECL Com_Printf( const char *msg, ... )
 	ri.Printf( PRINT_ALL, "%s", text );
 }
 
-void QDECL Com_DPrintf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_DPrintf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -1684,7 +1696,7 @@ void QDECL Com_DPrintf( const char *msg, ... )
 	ri.Printf( PRINT_DEVELOPER, "%s", text );
 }
 
-void QDECL Com_Error( int level, const char *error, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];

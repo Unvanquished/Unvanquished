@@ -37,6 +37,7 @@ Maryland 20850 USA.
 // *INDENT-OFF*
 
 #include "vm_local.h"
+#include "vm_traps.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -193,8 +194,6 @@ static int Hex( int c )
 
 	VMFREE_BUFFERS();
 	Com_Error( ERR_DROP, "Hex: bad char '%c'", c );
-
-	return 0;
 }
 
 static void EmitString( const char *string )
@@ -435,10 +434,9 @@ Error handler for jump/call to invalid instruction number
 =================
 */
 
-static void ErrJump( void )
+static void NORETURN ErrJump( void )
 {
 	Com_Error( ERR_DROP, "program tried to execute code outside VM" );
-	exit( 1 );
 }
 
 /*
@@ -499,7 +497,7 @@ static void DoSyscall( void )
 		int      index;
 		intptr_t args[ 11 ];
 #endif
-
+		VM_SetSanity( savedVM, ~syscallNum );
 		data = ( int * )( savedVM->dataBase + programStack + 4 );
 
 #if idx64
@@ -510,11 +508,27 @@ static void DoSyscall( void )
 			args[ index ] = data[ index ];
 		}
 
-		opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( args );
+		if ( args[ 0 ] < FIRST_VM_SYSCALL )
+		{
+			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( args ); // Common
+		}
+		else
+		{
+			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( args ); // VM-specific
+		}
 #else
 		data[ 0 ] = ~syscallNum;
-		opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data );
+
+		if ( data[ 0 ] < FIRST_VM_SYSCALL )
+		{
+			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( data ); // Common
+		}
+		else
+		{
+			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data ); // VM-specific
+		}
 #endif
+		VM_CheckSanity( savedVM, ~syscallNum );
 	}
 	else
 	{
@@ -522,7 +536,6 @@ static void DoSyscall( void )
 		{
 			case VM_JMP_VIOLATION:
 					ErrJump();
-				break;
 
 			case VM_BLOCK_COPY:
 					if ( opStackOfs < 1 )
@@ -535,7 +548,6 @@ static void DoSyscall( void )
 
 			default:
 					Com_Error( ERR_DROP, "Unknown VM operation %d", syscallNum );
-				break;
 		}
 	}
 
@@ -1878,7 +1890,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 	Z_Free( code );
 	Z_Free( buf );
 	Z_Free( jused );
-	Com_Printf( "VM file %s compiled to %i bytes of code\n", vm->name, compiledOfs );
+	Com_Printf(_( "VM file %s compiled to %i bytes of code\n"), vm->name, compiledOfs );
 
 	vm->destroy = VM_Destroy_Compiled;
 

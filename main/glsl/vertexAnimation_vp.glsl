@@ -37,7 +37,7 @@ void VertexAnimation_P_N(	vec4 fromPosition, vec4 toPosition,
 							inout vec4 position, inout vec3 normal)
 {
 	position = InterpolatePosition(fromPosition, toPosition, frac);
-			
+
 	normal = InterpolateNormal(fromNormal, toNormal, frac);
 }
 
@@ -49,7 +49,7 @@ void VertexAnimation_P_TBN(	vec4 fromPosition, vec4 toPosition,
 							inout vec4 position, inout vec3 tangent, inout vec3 binormal, inout vec3 normal)
 {
 	position = InterpolatePosition(fromPosition, toPosition, frac);
-			
+
 	tangent = InterpolateNormal(fromTangent, toTangent, frac);
 	binormal = InterpolateNormal(fromBinormal, toBinormal, frac);
 	normal = InterpolateNormal(fromNormal, toNormal, frac);

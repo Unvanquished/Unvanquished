@@ -183,7 +183,7 @@ static qboolean R_LoadMD5Anim( skelAnimation_t *skelAnim, void *buffer, int buff
 
 		if ( channel->parentIndex >= anim->numChannels )
 		{
-			ri.Error( ERR_DROP, "RE_RegisterAnimation: '%s' has channel '%s' with bad parent index %i while numBones is %i\n",
+			ri.Error( ERR_DROP, "RE_RegisterAnimation: '%s' has channel '%s' with bad parent index %i while numBones is %i",
 			          name, channel->name, channel->parentIndex, anim->numChannels );
 		}
 
@@ -601,6 +601,8 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 			if ( ( extraAnim = R_AllocAnimation() ) == NULL )
 			{
 				ri.Printf( PRINT_WARNING, "R_LoadPSA: R_AllocAnimation() failed for '%s'\n", name );
+				FreeMemStream( stream );
+				Com_DestroyGrowList( &extraAnims );
 				return qfalse;
 			}
 
@@ -623,6 +625,8 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 
 		if ( animInfo->numBones != numReferenceBones )
 		{
+			FreeMemStream( stream );
+			Com_DestroyGrowList( &extraAnims );
 			ri.Error( ERR_DROP, "R_LoadPSA: axAnimationInfo_t contains different number than reference bones exist: %i != %i for anim '%s'", animInfo->numBones, numReferenceBones, name );
 		}
 
@@ -678,6 +682,7 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSA: '%s' has wrong chunk indent ('%s' should be '%s')\n", name, chunkHeader.ident, "ANIMKEYS" );
 		FreeMemStream( stream );
+		Com_DestroyGrowList( &extraAnims );
 		return qfalse;
 	}
 
@@ -685,6 +690,7 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSA: '%s' has wrong chunk dataSize ('%i' should be '%i')\n", name, chunkHeader.dataSize, ( int ) sizeof( axAnimationKey_t ) );
 		FreeMemStream( stream );
+		Com_DestroyGrowList( &extraAnims );
 		return qfalse;
 	}
 
@@ -897,12 +903,12 @@ R_CullMD5
 static void R_CullMD5( trRefEntity_t *ent )
 {
 	int        i;
-	md5Model_t *model;
+	float      boundsRadius;
 
 	if ( ent->e.skeleton.type == SK_INVALID )
 	{
 		// no properly set skeleton so use the bounding box by the model instead by the animations
-		model = tr.currentModel->md5;
+		md5Model_t *model = tr.currentModel->md5;;
 
 		VectorCopy( model->bounds[ 0 ], ent->localBounds[ 0 ] );
 		VectorCopy( model->bounds[ 1 ], ent->localBounds[ 1 ] );
@@ -912,12 +918,14 @@ static void R_CullMD5( trRefEntity_t *ent )
 		// copy a bounding box in the current coordinate system provided by skeleton
 		for ( i = 0; i < 3; i++ )
 		{
-			ent->localBounds[ 0 ][ i ] = ent->e.skeleton.bounds[ 0 ][ i ] * ent->e.skeleton.scale[ i ];
-			ent->localBounds[ 1 ][ i ] = ent->e.skeleton.bounds[ 1 ][ i ] * ent->e.skeleton.scale[ i ];
+			ent->localBounds[ 0 ][ i ] = ent->e.skeleton.bounds[ 0 ][ i ];
+			ent->localBounds[ 1 ][ i ] = ent->e.skeleton.bounds[ 1 ][ i ];
 		}
 	}
 
-	switch ( R_CullLocalBox( ent->localBounds ) )
+	boundsRadius = RadiusFromBounds( ent->localBounds[ 0 ], ent->localBounds[ 1 ] );
+
+	switch ( R_CullPointAndRadius( ent->e.origin, boundsRadius ) )
 	{
 		case CULL_IN:
 			tr.pc.c_box_cull_md5_in++;

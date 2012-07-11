@@ -34,11 +34,11 @@ char	outputFilename[MAX_OS_PATH];
 #define	ZERO_PAGE_SIZE	0		// 256
 
 typedef enum {
-	OP_UNDEF, 
+	OP_UNDEF,
 
-	OP_IGNORE, 
+	OP_IGNORE,
 
-	OP_BREAK, 
+	OP_BREAK,
 
 	OP_ENTER,
 	OP_LEAVE,
@@ -224,7 +224,7 @@ int	HashString( char *s ) {
 CodeError
 ============
 */
-void CodeError( char *fmt, ... ) {
+void PRINTF_LIKE(1) CodeError( char *fmt, ... ) {
 	va_list		argptr;
 
 	errorCount++;
@@ -280,13 +280,13 @@ void DefineSymbol( char *sym, int value ) {
 	if ( passNumber == 1 ) {
 		return;
 	}
-  
+
   // TTimo
   // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=381
   // as a security, bail out if vmMain entry point is not first
   if (!Q_stricmp(sym, "vmMain"))
     if (value)
-      Error( "vmMain must be the first symbol in the qvm (got offset %d)\n", value );
+      Error( "vmMain must be the first symbol in the qvm (got offset %d)", value );
 
 	// add the file prefix to local symbols to guarantee unique
 	if ( sym[0] == '$' ) {
@@ -412,10 +412,10 @@ Parse a token out of linebuffer
 qboolean Parse( void ) {
 	int		c;
 	int		len;
-	
+
 	len = 0;
 	token[0] = 0;
-	
+
 	// skip whitespace
 	while ( lineBuffer[ lineParseOffset ] <= ' ' ) {
 		if ( lineBuffer[ lineParseOffset ] == 0 ) {
@@ -429,7 +429,7 @@ qboolean Parse( void ) {
 	if ( c == ';' ) {
 		return qfalse;
 	}
-	
+
 
 	// parse a regular word
 	do {
@@ -438,7 +438,7 @@ qboolean Parse( void ) {
 		lineParseOffset++;
 		c = lineBuffer[ lineParseOffset ];
 	} while (c>32);
-	
+
 	token[len] = 0;
 	return qtrue;
 }
@@ -636,7 +636,7 @@ void AssembleLine( void ) {
 		return;
 	}
 
-	// pop is needed to discard the return value of 
+	// pop is needed to discard the return value of
 	// a function
 	if ( !strncmp( token, "pop", 3 ) ) {
 		EmitByte( &segment[CODESEG], OP_POP );
@@ -998,7 +998,7 @@ int main( int argc, char **argv ) {
 //	_chdir( "/quake3/jccode/cgame/lccout" );	// hack for vc profiler
 
 	if ( argc < 2 ) {
-		Error( "usage: owasm [-o output] <files> or owasm -f <listfile>\n" );
+		Error( "usage: owasm [-o output] <files> or owasm -f <listfile>" );
 	}
 
 	start = I_FloatTime ();
@@ -1006,7 +1006,7 @@ int main( int argc, char **argv ) {
 
 	// default filename is "owasm"
 	strcpy( outputFilename, "owasm" );
-	numAsmFiles = 0;	
+	numAsmFiles = 0;
 
 	for ( i = 1 ; i < argc ; i++ ) {
 		if ( argv[i][0] != '-' ) {

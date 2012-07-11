@@ -82,7 +82,7 @@ int             c_totalVerts;
 int             c_natural, c_rotate, c_cant;
 
 // these should be whatever epsilon we actually expect,
-// plus SNAP_INT_TO_FLOAT 
+// plus SNAP_INT_TO_FLOAT
 #define	LINE_POSITION_EPSILON	0.25
 #define	POINT_ON_LINE_EPSILON	0.25
 
@@ -680,7 +680,7 @@ void FixTJunctions(entity_t * ent)
 
 	/* meta mode has its own t-junction code (currently not as good as this code) */
 	//% if( meta )
-	//%     return; 
+	//%     return;
 
 	/* note it */
 	Sys_FPrintf(SYS_VRB, "--- FixTJunctions ---\n");

@@ -45,13 +45,13 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.3.0"
+#define PRODUCT_VERSION         "0.5.1"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.2.5"
+#define ENGINE_VERSION          "0.5.1"
 
-#ifdef SVN_VERSION
-# define Q3_VERSION             PRODUCT_NAME " " SVN_VERSION
+#ifdef GIT_VERSION
+# define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION" " GIT_VERSION
 #else
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION
 #endif
@@ -81,8 +81,7 @@ extern "C" {
 
 #define NEW_ANIMS
 #define MAX_TEAMNAME 32
-
-#define DEMOEXT      "dm_" // standard demo extension
+#define UNNAMED_PLAYER "UnnamedPlayer"
 
 #if defined _WIN32 && !defined __GNUC__
 
@@ -108,7 +107,7 @@ extern "C" {
 #pragma warning(disable : 4711) // selected for automatic inline expansion
 #pragma warning(disable : 4220) // varargs matches remaining parameters
 #pragma warning(disable : 4706) // assignment within conditional expression // cs: probably should correct all of these at some point
-#pragma warning(disable : 4005) // macro redefination
+#pragma warning(disable : 4005) // macro redefinition
 #pragma warning(disable : 4996) // This function or variable may be unsafe. Consider using 'function_s' instead
 #pragma warning(disable : 4075) // initializers put in unrecognized initialization area
 #pragma warning(disable : 4355) // 'this': used in member initializer list
@@ -145,9 +144,23 @@ extern "C" {
 
 #ifdef Q3_VM
 
-#include "bg_lib.h"
+#include "../../gamelogic/gpp/src/game/bg_lib.h"
 
 	typedef int intptr_t;
+
+#include "../../engine/qcommon/q_platform.h"
+
+#define STATIC_INLINE
+
+#ifdef Q3_VM_INSTANTIATE
+#define IFDECLARE
+#else
+#define IFDECLARE ;
+#endif
+
+#ifdef USE_LLVM
+extern int memcmp( void *, void *, size_t );
+#endif
 
 #else
 
@@ -188,16 +201,31 @@ extern "C" {
 #include <stdint.h>
 #endif
 
-#endif
-
 #include "q_platform.h"
 
+// not VM - we can have static inline
+#define STATIC_INLINE static INLINE ALWAYS_INLINE
+#define IFDECLARE
+#define Q3_VM_INSTANTIATE
+#endif
+
 #if defined __GNUC__ || defined __clang__
-#define _attribute( x ) __attribute__( x )
+#define NORETURN __attribute__((__noreturn__))
+#define UNUSED __attribute__((__unused__))
+#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
+#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
+#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
+#define ALIGNED(a) __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE __attribute__((__always_inline__))
 #else
-#define _attribute( x )
-#define __attribute( x )
-#define __attribute__( x )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED(a)
+#define ALWAYS_INLINE
+#define __attribute__(x)
 #endif
 
 //bani
@@ -207,7 +235,7 @@ extern "C" {
 #elif ( defined __SUNPRO_C )
 #define Q_EXPORT __global
 #elif (( __GNUC__ >= 3 ) && ( !__EMX__ ) && ( !sun ))
-#define Q_EXPORT __attribute__(( visibility("default")))
+#define Q_EXPORT __attribute__((__visibility__("default")))
 #else
 #define Q_EXPORT
 #endif
@@ -230,24 +258,6 @@ extern "C" {
 	typedef int fileHandle_t;
 	typedef int clipHandle_t;
 
-//#define SND_NORMAL      0x000 // (default) Allow sound to be cut off only by the same sound on this channel
-#define     SND_OKTOCUT        0x001 // Allow sound to be cut off by any following sounds on this channel
-#define     SND_REQUESTCUT     0x002 // Allow sound to be cut off by following sounds on this channel only for sounds who request cutoff
-#define     SND_CUTOFF         0x004 // Cut off sounds on this channel that are marked 'SND_REQUESTCUT'
-#define     SND_CUTOFF_ALL     0x008 // Cut off all sounds on this channel
-#define     SND_NOCUT          0x010 // Don't cut off.  Always let finish (overridden by SND_CUTOFF_ALL)
-#define     SND_NO_ATTENUATION 0x020 // don't attenuate (even though the sound is in voice channel, for example)
-
-#if defined( _MSC_VER )
-#define ALIGN(x) __declspec(align(x));
-#elif defined( __GNUC__ )
-#define ALIGN(x) __attribute__(( aligned(x)))
-#else
-#define ALIGN(x)
-#endif
-
-#define lengthof( a )           ( sizeof( ( a ) ) / sizeof( ( a )[ 0 ] ))
-
 #define PAD(x,y)                ((( x ) + ( y ) - 1 ) & ~(( y ) - 1 ))
 #define PADLEN(base, alignment) ( PAD(( base ), ( alignment )) - ( base ))
 #define PADP(base, alignment)   ((void *) PAD((intptr_t) ( base ), ( alignment )))
@@ -264,17 +274,7 @@ extern "C" {
 #define MIN_QINT ( -MAX_QINT - 1 )
 
 #ifndef BIT
-#define BIT(x) ( 1 << x )
-#endif
-
-// TTimo gcc: was missing, added from Q3 source
-#ifndef max
-#define max( x, y ) ( ( ( x ) > ( y ) ) ? ( x ) : ( y ) )
-#define min( x, y ) ( ( ( x ) < ( y ) ) ? ( x ) : ( y ) )
-#endif
-
-#ifndef sign
-#define sign( f ) ( ( f > 0 ) ? 1 : ( ( f < 0 ) ? -1 : 0 ) )
+#define BIT(x) ( 1 << ( x ) )
 #endif
 
 // RF, this is just here so different elements of the engine can be aware of this setting as it changes
@@ -302,7 +302,7 @@ extern "C" {
 // with very long names
 #define MAX_NAME_LENGTH    36 // max length of a client name
 
-#define MAX_SAY_TEXT       150
+#define MAX_SAY_TEXT       400
 
 #define MAX_BINARY_MESSAGE 32768 // max length of binary message
 
@@ -319,7 +319,7 @@ extern "C" {
 	  EXEC_NOW, // don't return until completed, a VM should NEVER use this,
 	  // because some commands might cause the VM to be unloaded...
 	  EXEC_INSERT, // insert at current position, but don't run yet
-	  EXEC_APPEND // add to end of the command buffer (normal case)
+	  EXEC_APPEND // add to end of the command buffer
 	} cbufExec_t;
 
 //
@@ -464,10 +464,10 @@ extern "C" {
 #define M_ROOT3 1.732050808f
 #endif
 
-#define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x )))
+#define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x ) ) )
 
 #if defined ( IPHONE )
-#define UNIMPL()     Com_Printf("%s(): Unimplemented\n", __FUNCTION__)
+#define UNIMPL()     Com_Printf_(("%s(): Unimplemented\n"), __FUNCTION__)
 #endif
 
 // angle indexes
@@ -541,7 +541,6 @@ extern "C" {
 #define FRAMETIME        100 // msec
 
 #define Q_COLOR_ESCAPE   '^'
-#define Q_IsColorString( p ) ( p && *( p ) == Q_COLOR_ESCAPE && *( ( p ) + 1 ) && *( ( p ) + 1 ) != Q_COLOR_ESCAPE && *( ( p ) + 1 ) != '\n' )
 
 #define COLOR_BLACK      '0'
 #define COLOR_RED        '1'
@@ -588,6 +587,15 @@ extern "C" {
 #define S_COLOR_MDPURPLE "^C"
 #define S_COLOR_NULL     "^*"
 
+STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
+{
+	return ( p && p[0] == Q_COLOR_ESCAPE &&
+	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
+	       ) ? qtrue : qfalse;
+}
+#endif
+
 #define INDENT_MARKER    '\v'
 
 	extern vec4_t g_color_table[ 32 ];
@@ -598,7 +606,7 @@ extern "C" {
 // Hex Color string support
 #define gethex( ch )                  ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
 #define ishex( ch )                   ( ( ch ) && ( ( ( ch ) >= '0' && ( ch ) <= '9' ) || ( ( ch ) >= 'A' && ( ch ) <= 'F' ) || ( ( ch ) >= 'a' && ( ch ) <= 'f' ) ) )
-// check if it's format rrggbb r,g,b e {0..9} U {A...F}
+// check whether in the rrggbb format, r,g,b e {0,...,9} U {A,...,F}
 #define Q_IsHexColorString( p )       ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
 #define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
 
@@ -673,7 +681,8 @@ extern "C" {
 	#endif
 	*/
 
-	static ID_INLINE long XreaL_Q_ftol( float f )
+	STATIC_INLINE long XreaL_Q_ftol( float f ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 #if id386_sse && defined( _MSC_VER )
 		static int tmp;
@@ -684,8 +693,10 @@ extern "C" {
 		return ( long ) f;
 #endif
 	}
+#endif
 
-	static ID_INLINE float Q_rsqrt( float number )
+	STATIC_INLINE float Q_rsqrt( float number ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		float y;
 
@@ -742,8 +753,10 @@ extern "C" {
 #endif
 		return y;
 	}
+#endif
 
-	static ID_INLINE float Q_fabs( float x )
+	STATIC_INLINE float Q_fabs( float x ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 #if idppc && defined __GNUC__
 		float abs_x;
@@ -758,6 +771,7 @@ extern "C" {
 		return tmp.f;
 #endif
 	}
+#endif
 
 #define SQRTFAST( x ) ( 1.0f / Q_rsqrt( x ) )
 
@@ -774,7 +788,7 @@ extern "C" {
 #endif
 
 #ifdef _MSC_VER
-	ID_INLINE long lrintf( float f )
+	STATIC_INLINE long lrintf( float f )
 	{
 #ifdef _M_X64
 		return ( long )( ( f > 0.0f ) ? ( f + 0.5f ) : ( f - 0.5f ) );
@@ -793,9 +807,9 @@ extern "C" {
 
 #endif
 
-	static ID_INLINE float Q_recip( float in )
-	{
 #if id386_3dnow && defined __GNUC__ && 0
+	STATIC_INLINE float Q_recip( float in )
+	{
 		vec_t out;
 
 		femms();
@@ -807,10 +821,10 @@ extern "C" {
 
 		femms();
 		return out;
-#else
-		return ( float )( 1.0f / in );
-#endif
 	}
+#else
+	#define Q_recip(x) ( 1.0f / (x) )
+#endif
 
 	byte         ClampByte( int i );
 	signed char  ClampChar( int i );
@@ -851,7 +865,7 @@ extern "C" {
 	{
 		float v[ 3 ];
 	} vec3struct_t;
-#define VectorCopy( a,b ) *(vec3struct_t *)b = *(vec3struct_t *)a;
+#define VectorCopy( a,b ) ( *(vec3struct_t *)( b ) = *(vec3struct_t *)( a ) )
 #endif
 #endif
 
@@ -874,9 +888,9 @@ extern "C" {
 
 #define DotProduct4(x, y)            (( x )[ 0 ] * ( y )[ 0 ] + ( x )[ 1 ] * ( y )[ 1 ] + ( x )[ 2 ] * ( y )[ 2 ] + ( x )[ 3 ] * ( y )[ 3 ] )
 
-#define SnapVector( v )              { v[ 0 ] = ( (int)( v[ 0 ] ) ); v[ 1 ] = ( (int)( v[ 1 ] ) ); v[ 2 ] = ( (int)( v[ 2 ] ) ); }
+#define SnapVector( v )              do { v[ 0 ] = ( (int)( v[ 0 ] ) ); v[ 1 ] = ( (int)( v[ 1 ] ) ); v[ 2 ] = ( (int)( v[ 2 ] ) ); } while ( 0 )
 
-// just in case you do't want to use the macros
+// just in case you don't want to use the macros
 	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );
 	void     _VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out );
 	void     _VectorAdd( const vec3_t veca, const vec3_t vecb, vec3_t out );
@@ -903,7 +917,8 @@ extern "C" {
 	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
 	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
 
-	static ID_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] )
+	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		VectorSet( corners[ 0 ], mins[ 0 ], maxs[ 1 ], maxs[ 2 ] );
 		VectorSet( corners[ 1 ], maxs[ 0 ], maxs[ 1 ], maxs[ 2 ] );
@@ -914,10 +929,12 @@ extern "C" {
 		VectorSet( corners[ 6 ], maxs[ 0 ], mins[ 1 ], mins[ 2 ] );
 		VectorSet( corners[ 7 ], mins[ 0 ], mins[ 1 ], mins[ 2 ] );
 	}
+#endif
 
 	int VectorCompare( const vec3_t v1, const vec3_t v2 );
 
-	static ID_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 )
+	STATIC_INLINE int Vector4Compare( const vec4_t v1, const vec4_t v2 ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		if ( v1[ 0 ] != v2[ 0 ] || v1[ 1 ] != v2[ 1 ] || v1[ 2 ] != v2[ 2 ] || v1[ 3 ] != v2[ 3 ] )
 		{
@@ -926,20 +943,23 @@ extern "C" {
 
 		return 1;
 	}
+#endif
 
-	static ID_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out )
+	STATIC_INLINE void VectorLerp( const vec3_t from, const vec3_t to, float frac, vec3_t out ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		out[ 0 ] = from[ 0 ] + ( ( to[ 0 ] - from[ 0 ] ) * frac );
 		out[ 1 ] = from[ 1 ] + ( ( to[ 1 ] - from[ 1 ] ) * frac );
 		out[ 2 ] = from[ 2 ] + ( ( to[ 2 ] - from[ 2 ] ) * frac );
 	}
+#endif
 
 #define VectorLerp4( f, s, e, r ) (( r )[ 0 ] = ( s )[ 0 ] + ( f ) * (( e )[ 0 ] - ( s )[ 0 ] ), \
                                    ( r )[ 1 ] = ( s )[ 1 ] + ( f ) * (( e )[ 1 ] - ( s )[ 1 ] ), \
                                    ( r )[ 2 ] = ( s )[ 2 ] + ( f ) * (( e )[ 2 ] - ( s )[ 2 ] ))
 
-	static ID_INLINE int VectorCompareEpsilon(
-	  const vec3_t v1, const vec3_t v2, float epsilon )
+	STATIC_INLINE int VectorCompareEpsilon( const vec3_t v1, const vec3_t v2, float epsilon ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		vec3_t d;
 
@@ -955,6 +975,7 @@ extern "C" {
 
 		return 1;
 	}
+#endif
 
 	vec_t VectorLength( const vec3_t v );
 	vec_t VectorLengthSquared( const vec3_t v );
@@ -971,9 +992,11 @@ extern "C" {
 
 	int   NearestPowerOfTwo( int val );
 	int   Q_log2( int val );
-
+#ifdef Q3_VM
+#define Q_acos(c) acos(c)
+#else
 	float Q_acos( float c );
-
+#endif
 	int   Q_isnan( float x );
 
 	int   Q_rand( int *seed );
@@ -985,10 +1008,7 @@ extern "C" {
 
 	void vectoangles( const vec3_t value1, vec3_t angles );
 
-	static ID_INLINE void VectorToAngles( const vec3_t value1, vec3_t angles )
-	{
-		vectoangles( value1, angles );
-	}
+#define VectorToAngles(value1, angles) vectoangles( (value1), (angles) )
 
 	float vectoyaw( const vec3_t vec );
 
@@ -1022,12 +1042,7 @@ extern "C" {
 	float AngleBetweenVectors( const vec3_t a, const vec3_t b );
 	void  AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
 
-	static ID_INLINE void AnglesToVector( const vec3_t angles, vec3_t out )
-	{
-		AngleVectors( angles, out, NULL, NULL );
-	}
-
-	void  VectorToAngles( const vec3_t value1, vec3_t angles );
+#define AnglesToVector(angles, out) AngleVectors( (angles), (out), NULL, NULL )
 
 	vec_t PlaneNormalize( vec4_t plane );  // returns normal length
 
@@ -1139,10 +1154,12 @@ extern "C" {
 	void     MatrixScaleTranslateToUnitCube( matrix_t m, const vec3_t mins, const vec3_t maxs );
 	void     MatrixCrop( matrix_t m, const vec3_t mins, const vec3_t maxs );
 
-	static ID_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m )
+	STATIC_INLINE void AnglesToMatrix( const vec3_t angles, matrix_t m ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		MatrixFromAngles( m, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
+#endif
 
 //=============================================
 
@@ -1153,16 +1170,18 @@ extern "C" {
 
 #define QuatCompare(a,b)   (( a )[ 0 ] == ( b )[ 0 ] && ( a )[ 1 ] == ( b )[ 1 ] && ( a )[ 2 ] == ( b )[ 2 ] && ( a )[ 3 ] == ( b )[ 3 ] )
 
-	static ID_INLINE void QuatClear( quat_t q )
+	STATIC_INLINE void QuatClear( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		q[ 0 ] = 0;
 		q[ 1 ] = 0;
 		q[ 2 ] = 0;
 		q[ 3 ] = 1;
 	}
+#endif
 
 	/*
-	static ID_INLINE int QuatCompare(const quat_t a, const quat_t b)
+	STATIC_INLINE int QuatCompare(const quat_t a, const quat_t b)
 	{
 	        if(a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3])
 	        {
@@ -1172,7 +1191,8 @@ extern "C" {
 	}
 	*/
 
-	static ID_INLINE void QuatCalcW( quat_t q )
+	STATIC_INLINE void QuatCalcW( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 #if 1
 		vec_t term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
@@ -1190,35 +1210,44 @@ extern "C" {
 		q[ 3 ] = sqrt( fabs( 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] ) ) );
 #endif
 	}
+#endif
 
-	static ID_INLINE void QuatInverse( quat_t q )
+	STATIC_INLINE void QuatInverse( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 	}
+#endif
 
-	static ID_INLINE void QuatAntipodal( quat_t q )
+	STATIC_INLINE void QuatAntipodal( quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		q[ 0 ] = -q[ 0 ];
 		q[ 1 ] = -q[ 1 ];
 		q[ 2 ] = -q[ 2 ];
 		q[ 3 ] = -q[ 3 ];
 	}
+#endif
 
-	static ID_INLINE vec_t QuatLength( const quat_t q )
+	STATIC_INLINE vec_t QuatLength( const quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		return ( vec_t ) sqrt( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ] );
 	}
+#endif
 
 	vec_t QuatNormalize( quat_t q );
 
 	void  QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll );
 
-	static ID_INLINE void AnglesToQuat( const vec3_t angles, quat_t q )
+	STATIC_INLINE void AnglesToQuat( const vec3_t angles, quat_t q ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		QuatFromAngles( q, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 	}
+#endif
 
 	void QuatFromMatrix( quat_t q, const matrix_t m );
 	void QuatToVectorsFLU( const quat_t quat, vec3_t forward, vec3_t left, vec3_t up );
@@ -1309,9 +1338,8 @@ extern "C" {
 #define MIN(x,y) (( x ) < ( y ) ? ( x ) : ( y ))
 #endif
 
-#ifdef _MSC_VER
-	float rint( float v );
-
+#if defined( _MSC_VER ) || defined( Q3_VM )
+	float rintf( float v );
 #endif
 
 //=============================================
@@ -1341,8 +1369,8 @@ extern "C" {
 
 	char       *COM_ParseExt( char **data_p, qboolean allowLineBreak );
 	int        COM_Compress( char *data_p );
-	void       COM_ParseError( char *format, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-	void       COM_ParseWarning( char *format, ... ) _attribute( ( format( printf, 1, 2 ) ) );
+	void       COM_ParseError( char *format, ... ) PRINTF_LIKE(1);
+	void       COM_ParseWarning( char *format, ... ) PRINTF_LIKE(1);
 
 	int        Com_ParseInfos( char *buf, int max, char infos[][ MAX_INFO_STRING ] );
 
@@ -1391,7 +1419,7 @@ extern "C" {
 	void      Parse2DMatrix( char **buf_p, int y, int x, float *m );
 	void      Parse3DMatrix( char **buf_p, int z, int y, int x, float *m );
 
-	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) __attribute__( ( format( printf, 3, 4 ) ) );
+	int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... ) PRINTF_LIKE(3);
 
 // mode parm for FS_FOpenFile
 	typedef enum
@@ -1413,8 +1441,7 @@ extern "C" {
 
 	int        Com_HexStrToInt( const char *str );
 
-	const char *Com_QuoteStr( const char *str );
-	const char *Com_UnquoteStr( const char *str );
+	const char *Com_ClearForeignCharacters( const char *str );
 
 //=============================================
 
@@ -1444,6 +1471,10 @@ extern "C" {
 #define Q_putenv putenv
 #endif
 
+#if defined(_WIN32) && !defined(__MINGW32__)
+double rint( double x );
+#endif
+
 // buffer size safe library replacements
 // NOTE : had problem with loading QVM modules
 #ifndef _DEBUG
@@ -1451,7 +1482,7 @@ extern "C" {
 
 #else
 #define         Q_strncpyz(string1,string2,length) Q_strncpyzDebug( string1, string2, length, __FILE__, __LINE__ )
-	void     Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line ) __attribute__( ( nonnull ) );
+	void     Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line ) __attribute__((__nonnull__));
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
@@ -1479,6 +1510,7 @@ extern "C" {
 //=============================================
 
 int Q_UTF8Width( const char *str );
+int Q_UTF8WidthCP( int ch );
 int Q_UTF8Strlen( const char *str );
 int Q_UTF8PrintStrlen( const char *str );
 qboolean Q_UTF8ContByte( char c );
@@ -1490,7 +1522,7 @@ char *Q_UTF8Unstore( int e );
 //=============================================
 
 // 64-bit integers for global rankings interface
-// implemented as a struct for qvm compatibility
+// implemented as a struct for QVM compatibility
 	typedef struct
 	{
 		byte b0;
@@ -1518,7 +1550,7 @@ char *Q_UTF8Unstore( int e );
 	*/
 	float           *tv( float x, float y, float z );
 
-	char     *QDECL va( const char *format, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+	char     *QDECL va( const char *format, ... ) PRINTF_LIKE(1);
 
 //=============================================
 
@@ -1534,9 +1566,9 @@ char *Q_UTF8Unstore( int e );
 	void       Info_NextPair( const char **s, char *key, char *value );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-	void QDECL Com_Error( int level, const char *error, ... ) _attribute( ( format( printf, 2, 3 ) ) );
-	void QDECL Com_Printf( const char *msg, ... ) _attribute( ( format( printf, 1, 2 ) ) );
-	void QDECL Com_DPrintf( const char *msg, ... ) _attribute( ( format( printf, 1, 2 ) ) );
+	void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
+	void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
+	void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 
 	/*
 	==========================================================
@@ -1584,7 +1616,7 @@ char *Q_UTF8Unstore( int e );
 #define CVAR_SHADER              2048 // tell renderer to recompile shaders.
 
 #define CVAR_UNSAFE              4096 // ydnar: unsafe system cvars (renderer, sound settings, anything that might cause a crash)
-#define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: WONT automatically send this to clients, but server browsers will see it
+#define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: won't automatically send this to clients, but server browsers will see it
 #define CVAR_NONEXISTENT         0xFFFFFFFF // Cvar doesn't exist.
 
 // nothing outside the Cvar_*() functions should modify these fields!
@@ -1648,7 +1680,11 @@ char *Q_UTF8Unstore( int e );
 	==============================================================
 	*/
 
+#ifdef Q3_VM
+#include "../../engine/qcommon/surfaceflags.h"
+#else
 #include "surfaceflags.h" // shared with the q3map utility
+#endif
 
 // plane types are used to speed some tests
 // 0-2 are axial planes
@@ -1668,7 +1704,7 @@ char *Q_UTF8Unstore( int e );
 #define PlaneTypeForNormal( x ) ( x[ 0 ] == 1.0 ? PLANE_X : ( x[ 1 ] == 1.0 ? PLANE_Y : ( x[ 2 ] == 1.0 ? PLANE_Z : ( x[ 0 ] == 0.f && x[ 1 ] == 0.f && x[ 2 ] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL ) ) ) )
 
 	/*
-	static ID_INLINE int PlaneTypeForNormal(vec3_t normal)
+	STATIC_INLINE int PlaneTypeForNormal(vec3_t normal)
 	{
 	        if(normal[0] == 1.0)
 	                return PLANE_X;
@@ -1746,6 +1782,11 @@ char *Q_UTF8Unstore( int e );
 #define KEYCATCH_MESSAGE 0x0004
 #define KEYCATCH_CGAME   0x0008
 
+#define KEYEVSTATE_DOWN 0
+#define KEYEVSTATE_CHAR 1
+#define KEYEVSTATE_BIT  2
+#define KEYEVSTATE_SUP  3
+
 // sound channels
 // channel 0 never willingly overrides
 // other channels will allways override a playing sound on that channel
@@ -1797,7 +1838,7 @@ char *Q_UTF8Unstore( int e );
 #define ENTITYNUM_WORLD          ( MAX_GENTITIES - 2 )
 #define ENTITYNUM_MAX_NORMAL     ( MAX_GENTITIES - 2 )
 
-#define MAX_MODELS               256 // these are sent over the net as 8 bits (Gordon: upped to 9 bits, erm actually it was already at 9 bits, wtf? NEVAR TRUST GAMECODE COMMENTS, comments are evil :E, lets hope it doesnt horribly break anything....)
+#define MAX_MODELS               256 // these are sent over the net as 8 bits (Gordon: upped to 9 bits, erm actually it was already at 9 bits, wtf? NEVAR TRUST GAMECODE COMMENTS, comments are evil :E, let's hope it doesn't horribly break anything....)
 #define MAX_SOUNDS               256 // so they cannot be blindly increased
 #define MAX_CS_SKINS             64
 #define MAX_CSSTRINGS            32
@@ -1870,7 +1911,7 @@ char *Q_UTF8Unstore( int e );
 // will occur
 
 // you can't add anything to this without modifying the code in msg.c
-// (Gordon: unless it doesnt need transmitted over the network, in which case it should prolly go in the new pmext struct anyway)
+// (Gordon: unless it doesn't need transmission over the network, in which case it should probably go into the new pmext struct anyway)
 
 // playerState_t is a full superset of entityState_t as it is used by players,
 // so if a playerState_t is transmitted, the entityState_t can be fully derived
@@ -1909,7 +1950,7 @@ char *Q_UTF8Unstore( int e );
 		int torsoTimer; // don't change low priority animations until this runs out
 		int torsoAnim; // mask off ANIM_TOGGLEBIT
 
-		int movementDir; // a number 0 to 7 that represents the reletive angle
+		int movementDir; // a number 0 to 7 that represents the relative angle
 		// of movement to the view angle (axial and diagonals)
 		// when at rest, the value will remain unchanged
 		// used to twist the legs during strafing
@@ -1984,7 +2025,7 @@ char *Q_UTF8Unstore( int e );
 		// So to use persistent variables here, which don't need to come from the server,
 		// we could use a marker variable, and use that to store everything after it
 		// before we read in the new values for the predictedPlayerState, then restore them
-		// after copying the structure recieved from the server.
+		// after copying the structure received from the server.
 
 		// Arnout: use the pmoveExt_t structure in bg_public.h to store this kind of data now (presistant on client, not network transmitted)
 
@@ -1999,7 +2040,7 @@ char *Q_UTF8Unstore( int e );
 		int jumpTime; // used in MP to prevent jump accel
 		// jpw
 
-		int      weapAnim; // mask off ANIM_TOGGLEBIT                    //----(SA)  added   // Arnout : DOES get send over the network
+		int      weapAnim; // mask off ANIM_TOGGLEBIT                    //----(SA)  added   // Arnout: does get sent over the network
 
 		qboolean releasedFire;
 
@@ -2057,19 +2098,14 @@ char *Q_UTF8Unstore( int e );
 #define BUTTON_SPRINT       5
 #define BUTTON_ACTIVATE     6
 #define BUTTON_ANY          7  // if any key is pressed
-/*
-#define BUTTON_USE_EVOLVE   ?? // base only
-#define BUTTON_GETFLAG      ?? // base only
-*/
 #define BUTTON_ATTACK2      8
-#define BUTTON_ZOOM         9  // etmain only
+//                          9
 //                          10
-#define BUTTON_RELOAD       11 // etmain only
-#define BUTTON_LEANLEFT     12 // etmain only
-#define BUTTON_LEANRIGHT    13 // etmain only
-#define BUTTON_DROP         14 // etmain only
+//                          11
+//                          12
+//                          13
+//                          14
 #define BUTTON_DODGE        15
-#define BUTTON_PRONE        BUTTON_DODGE // etmain only
 
 #define MOVE_RUN          120 // if forwardmove or rightmove are >= MOVE_RUN,
 // then BUTTON_WALKING should be set
@@ -2082,7 +2118,7 @@ char *Q_UTF8Unstore( int e );
 	  DT_MOVERIGHT,
 	  DT_FORWARD,
 	  DT_BACK,
-	  DT_LEANLEFT,
+	  DT_LEANLEFT,   // etmain
 	  DT_LEANRIGHT,
 	  DT_UP,
 	  DT_NUM
@@ -2109,27 +2145,36 @@ char *Q_UTF8Unstore( int e );
 	} usercmd_t;
 
 // Some functions for buttons manipulation & testing
-	static inline __attribute__(( always_inline )) void usercmdPressButton( byte *buttons, int bit )
+	STATIC_INLINE void usercmdPressButton( byte *buttons, int bit ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		buttons[bit / 8] |= 1 << ( bit & 7 );
 	}
+#endif
 
-	static inline __attribute__(( always_inline )) void usercmdReleaseButton( byte *buttons, int bit )
+	STATIC_INLINE void usercmdReleaseButton( byte *buttons, int bit ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		buttons[bit / 8] &= ~( 1 << ( bit & 7 ) );
 	}
+#endif
 
-	static inline __attribute__(( always_inline )) void usercmdClearButtons( byte *buttons )
+	STATIC_INLINE void usercmdClearButtons( byte *buttons ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		memset( buttons, 0, USERCMD_BUTTONS / 8 );
 	}
+#endif
 
-	static inline __attribute__(( always_inline )) void usercmdCopyButtons( byte *dest, const byte *source )
+	STATIC_INLINE void usercmdCopyButtons( byte *dest, const byte *source ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		memcpy( dest, source, USERCMD_BUTTONS / 8 );
 	}
+#endif
 
-	static inline __attribute__(( always_inline )) void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld )
+	STATIC_INLINE void usercmdLatchButtons( byte *dest, const byte *srcNew, const byte *srcOld ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		int i;
 		for ( i = 0; i < USERCMD_BUTTONS / 8; ++i )
@@ -2137,16 +2182,21 @@ char *Q_UTF8Unstore( int e );
 			 dest[i] |= srcNew[i] & ~srcOld[i];
 		}
 	}
+#endif
 
-	static inline __attribute__(( always_inline )) qboolean usercmdButtonPressed( const byte *buttons, int bit )
+	STATIC_INLINE qboolean usercmdButtonPressed( const byte *buttons, int bit ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		return ( buttons[bit / 8] & ( 1 << ( bit & 7 ) ) ) ? qtrue : qfalse;
 	}
+#endif
 
-	static inline __attribute__(( always_inline )) qboolean usercmdButtonsDiffer( const byte *a, const byte *b )
+	STATIC_INLINE qboolean usercmdButtonsDiffer( const byte *a, const byte *b ) IFDECLARE
+#ifdef Q3_VM_INSTANTIATE
 	{
 		return memcmp( a, b, USERCMD_BUTTONS / 8 ) ? qtrue : qfalse;
 	}
+#endif
 
 //===================================================================
 
@@ -2167,7 +2217,7 @@ char *Q_UTF8Unstore( int e );
 	  TR_GRAVITY_FLOAT, // super low grav with no gravity acceleration (floating feathers/fabric/leaves/...)
 	  TR_GRAVITY_PAUSED, //----(SA)  has stopped, but will still do a short trace to see if it should be switched back to TR_GRAVITY
 	  TR_ACCELERATE,
-	  TR_DECCELERATE,
+	  TR_DECELERATE,
 	  TR_BUOYANCY,
 	  // Gordon
 	  TR_SPLINE,
@@ -2314,7 +2364,7 @@ char *Q_UTF8Unstore( int e );
 		int          otherEntityNum; // shotgun sources, etc
 		int          otherEntityNum2;
 
-		int          groundEntityNum; // -1 = in air
+		int          groundEntityNum; // ENTITYNUM_NONE = in air
 
 		int          constantLight; // r + (g<<8) + (b<<16) + (intensity<<24)
 		int          dl_intensity; // used for coronas
@@ -2375,6 +2425,14 @@ char *Q_UTF8Unstore( int e );
 	  CA_CINEMATIC // playing a cinematic or a static pic, not connected to a server
 	} connstate_t;
 
+// clipboard
+	typedef enum
+	{
+		SELECTION_PRIMARY,
+		SELECTION_SECONDARY,
+		SELECTION_CLIPBOARD
+	} clipboard_t;
+
 // font support
 
 #define GLYPH_START     0
@@ -2382,29 +2440,49 @@ char *Q_UTF8Unstore( int e );
 #define GLYPH_CHARSTART 32
 #define GLYPH_CHAREND   127
 #define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
-	typedef struct
-	{
-		int       height; // number of scan lines
-		int       top; // top of glyph in buffer
-		int       bottom; // bottom of glyph in buffer
-		int       pitch; // width for copying
-		int       xSkip; // x adjustment
-		int       imageWidth; // width of actual image
-		int       imageHeight; // height of actual image
-		float     s; // x offset in image where glyph starts
-		float     t; // y offset in image where glyph starts
-		float     s2;
-		float     t2;
-		qhandle_t glyph; // handle to the shader with the glyph
-		char      shaderName[ 32 ];
-	} glyphInfo_t;
+typedef struct
+{
+	int       height; // number of scan lines
+	int       top; // top of glyph in buffer
+	int       bottom; // bottom of glyph in buffer
+	int       pitch; // width for copying
+	int       xSkip; // x adjustment
+	int       imageWidth; // width of actual image
+	int       imageHeight; // height of actual image
+	float     s; // x offset in image where glyph starts
+	float     t; // y offset in image where glyph starts
+	float     s2;
+	float     t2;
+	qhandle_t glyph; // handle to the shader with the glyph
+	char      shaderName[ 32 ];
+} glyphInfo_t;
 
-	typedef struct
-	{
-		glyphInfo_t glyphs [ GLYPHS_PER_FONT ];
-		float       glyphScale;
-		char        name[ MAX_QPATH ];
-	} fontInfo_t;
+typedef int fontHandle_t;
+
+#ifndef Q3_VM
+
+typedef glyphInfo_t glyphBlock_t[256];
+
+typedef struct
+{
+	void         *face, *faceData, *fallback, *fallbackData;
+	glyphInfo_t  *glyphBlock[0x110000 / 256]; // glyphBlock_t
+	int           pointSize;
+	int           height;
+	float         glyphScale;
+	char          name[ MAX_QPATH ];
+} fontInfo_t;
+
+#endif
+
+typedef struct
+{
+	fontHandle_t  handle;
+	qboolean      isBitmap;
+	int           pointSize;
+	int           height;
+	float         glyphScale;
+} fontMetrics_t;
 
 #define Square( x ) ( ( x ) * ( x ) )
 
@@ -2522,8 +2600,6 @@ char *Q_UTF8Unstore( int e );
 	char     *Com_ClientListString( const clientList_t *list );
 	void     Com_ClientListParse( clientList_t *list, const char *s );
 
-#define SQR( a ) ( ( a ) * ( a ) )
-
 	enum
 	{
 	  AUTHORIZE_BAD,
@@ -2534,10 +2610,6 @@ char *Q_UTF8Unstore( int e );
 	  AUTHORIZE_ACCOUNTINFO,
 	  AUTHORIZE_UNAVAILABLE,
 	};
-
-#if defined ( ET_SQL )
-# define ET_MYSQL 1
-#endif
 
 	/* This should not be changed because this value is
 	* expected to be the same on the client and on the server */

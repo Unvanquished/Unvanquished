@@ -130,7 +130,7 @@ void RecordGameStat( const char *address, const char *dataText )
 		MsgPrint( MSG_DEBUG, "tdb_store failed\n" );
 
   tdb_close( tctx );
-	MsgPrint( MSG_NORMAL, "Recorded game stat from %s\n", address );
+	MsgPrint( MSG_INFO, "Recorded game stat from %s\n", address );
 }
 
 #endif

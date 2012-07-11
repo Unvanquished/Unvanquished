@@ -118,7 +118,7 @@ static void CON_HistPrev( void )
 	pos = ( qconsole_history_pos < 1 ) ?
 	      ( QCONSOLE_HISTORY - 1 ) : ( qconsole_history_pos - 1 );
 
-	// don' t allow looping through history
+	// don't allow looping through history
 	if ( pos == qconsole_history_oldest )
 	{
 		return;

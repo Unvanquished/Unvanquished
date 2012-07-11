@@ -71,7 +71,14 @@ typedef struct
 #if defined( USE_REFLIGHT )
 	qhandle_t ( *RegisterShaderLightAttenuation )( const char *name );
 #endif
-	void ( *RegisterFont )( const char *fontName, int pointSize, fontInfo_t *font );
+	void   ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
+	void   ( *UnregisterFont )( fontInfo_t *font );
+	void   ( *RegisterFontVM )( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
+	void   ( *UnregisterFontVM )( fontHandle_t font );
+	void   ( *Glyph )( fontInfo_t *font, const char *str, glyphInfo_t *glyph );
+	void   ( *GlyphChar )( fontInfo_t *font, int ch, glyphInfo_t *glyph );
+	void   ( *GlyphVM )( fontHandle_t font, const char *ch, glyphInfo_t *glyph );
+	void   ( *GlyphCharVM )( fontHandle_t font, int ch, glyphInfo_t *glyph );
 
 	void ( *LoadWorld )( const char *name );
 	qboolean( *GetSkinModel )( qhandle_t skinid, const char *type, char *name );                  //----(SA) added
@@ -187,10 +194,10 @@ typedef struct
 typedef struct
 {
 	// print message on the local console
-	void ( QDECL *Printf )( int printLevel, const char *fmt, ... ) _attribute( ( format( printf, 2, 3 ) ) );
+	void ( QDECL *Printf )( int printLevel, const char *fmt, ... ) PRINTF_LIKE(2);
 
 	// abort the game
-	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) _attribute( ( format( printf, 2, 3 ) ) );
+	void ( QDECL *Error )( int errorLevel, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN;
 
 	// milliseconds should only be used for profiling, never
 	// for anything game related.  Get time from the refdef
@@ -229,6 +236,7 @@ typedef struct
 	char            *( *Cmd_Argv )( int i );
 
 	void ( *Cmd_ExecuteText )( int exec_when, const char *text );
+	const char *( *Cmd_QuoteString )( const char *text );
 
 	int ( *Cvar_VariableIntegerValue )( const char *var_name );
 
@@ -245,6 +253,11 @@ typedef struct
 	void ( *FS_FreeFileList )( char **filelist );
 	void ( *FS_WriteFile )( const char *qpath, const void *buffer, int size );
 	qboolean( *FS_FileExists )( const char *file );
+	int ( *FS_Seek )( fileHandle_t f, long offset, int origin );
+	int ( *FS_FTell )( fileHandle_t f );
+	int ( *FS_Read )( void *buffer, int len, fileHandle_t f );
+	int ( *FS_FCloseFile )( fileHandle_t f );
+	int ( *FS_FOpenFileRead )( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
 
 	// cinematic stuff
 	void ( *CIN_UploadCinematic )( int handle );

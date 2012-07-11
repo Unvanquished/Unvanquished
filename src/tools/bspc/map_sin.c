@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -496,7 +496,7 @@ qboolean	Sin_ParseMapEntity (void)
 			  printf ("Surface script: %s\n", surfacefile);
 			  if (!ParseSurfaceFile(surfacefile))
 			   {
-				 Error ("Script file not found: %s\n", surfacefile);
+				 Error ("Script file not found: %s", surfacefile);
 			   }
 			}
 #endif
@@ -805,7 +805,7 @@ void Sin_PushNodeStack( int num ) {
 	nodestacksize++;
 	//
 	if ( nodestackptr >= &nodestack[NODESTACKSIZE] ) {
-		Error( "Sin_PushNodeStack: stack overflow\n" );
+		Error( "Sin_PushNodeStack: stack overflow" );
 	} //end if
 } //end of the function Sin_PushNodeStack
 //===========================================================================

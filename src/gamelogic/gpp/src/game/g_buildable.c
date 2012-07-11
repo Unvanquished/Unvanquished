@@ -84,7 +84,7 @@ gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
 		VectorSet( cmins, -MAX_ALIEN_BBOX, -MAX_ALIEN_BBOX, -MAX_ALIEN_BBOX );
 		VectorSet( cmaxs,  MAX_ALIEN_BBOX,  MAX_ALIEN_BBOX,  MAX_ALIEN_BBOX );
 
-		displacement = ( maxs[ 2 ] + MAX_ALIEN_BBOX ) * M_ROOT3;
+		displacement = ( maxs[ 2 ] + MAX_ALIEN_BBOX ) * M_ROOT3 + 1.0f;
 		VectorMA( origin, displacement, normal, localOrigin );
 	}
 	else if ( spawn == BA_H_SPAWN )
@@ -226,8 +226,6 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 					// Scan the buildables in the reactor zone
 					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
 					{
-						gentity_t *powerEntity;
-
 						if ( ent2->s.eType != ET_BUILDABLE )
 						{
 							continue;
@@ -238,9 +236,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							continue;
 						}
 
-						powerEntity = ent2->parentNode;
-
-						if ( powerEntity && powerEntity->s.modelindex == BA_H_REACTOR && ( powerEntity == ent ) )
+						if ( ent2->parentNode == ent )
 						{
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
@@ -282,8 +278,6 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 					// Scan the buildables in the repeater zone
 					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
 					{
-						gentity_t *powerEntity;
-
 						if ( ent2->s.eType != ET_BUILDABLE )
 						{
 							continue;
@@ -294,9 +288,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							continue;
 						}
 
-						powerEntity = ent2->parentNode;
-
-						if ( powerEntity && powerEntity->s.modelindex == BA_H_REPEATER && ( powerEntity == ent ) )
+						if ( ent2->parentNode == ent )
 						{
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
@@ -718,12 +710,12 @@ qboolean G_FindCreep( gentity_t *self )
 	vec3_t    temp_v;
 
 	//don't check for creep if flying through the air
-	if ( self->s.groundEntityNum == -1 )
+	if ( !self->client && self->s.groundEntityNum == ENTITYNUM_NONE )
 	{
 		return qtrue;
 	}
 
-	//if self does not have a parentNode or it's parentNode is invalid find a new one
+	//if self does not have a parentNode or its parentNode is invalid find a new one
 	if ( self->client || self->parentNode == NULL || !self->parentNode->inuse ||
 	     self->parentNode->health <= 0 )
 	{
@@ -1032,7 +1024,7 @@ void ASpawn_Think( gentity_t *self )
 	if ( self->spawned )
 	{
 		//only suicide if at rest
-		if ( self->s.groundEntityNum )
+		if ( self->s.groundEntityNum != ENTITYNUM_NONE )
 		{
 			if ( ( ent = G_CheckSpawnPoint( self->s.number, self->s.origin,
 			                                self->s.origin2, BA_A_SPAWN, NULL ) ) != NULL )
@@ -1727,7 +1719,6 @@ void ATrapper_FindEnemy( gentity_t *ent, int range )
 	int       start;
 
 	// iterate through entities
-	// note that if we exist then level.num_entities != 0
 	start = rand() / ( RAND_MAX / MAX_CLIENTS + 1 );
 
 	for ( i = start; i < MAX_CLIENTS + start; i++ )
@@ -1868,7 +1859,6 @@ think function
 */
 void HSpawn_Disappear( gentity_t *self )
 {
-	self->s.eFlags |= EF_NODRAW; //don't draw the model once its destroyed
 	self->timestamp = level.time;
 	G_QueueBuildPoints( self );
 	G_RewardAttackers( self );
@@ -1961,7 +1951,7 @@ void HSpawn_Think( gentity_t *self )
 	if ( self->spawned )
 	{
 		//only suicide if at rest
-		if ( self->s.groundEntityNum )
+		if ( self->s.groundEntityNum != ENTITYNUM_NONE )
 		{
 			if ( ( ent = G_CheckSpawnPoint( self->s.number, self->s.origin,
 			                                self->s.origin2, BA_H_SPAWN, NULL ) ) != NULL )
@@ -3187,7 +3177,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	// Check if this buildable is touching any triggers
 	G_BuildableTouchTriggers( ent );
 
-	// Fall back on normal physics routines
+	// Fall back on generic physics routines
 	G_Physics( ent, msec );
 }
 
@@ -3396,7 +3386,7 @@ static int G_CompareBuildablesForRemoval( const void *a, const void *b )
 	}
 
 	// Resort to preference list
-	for ( i = 0; i < sizeof( precedence ) / sizeof( precedence[ 0 ] ); i++ )
+	for ( i = 0; i < ARRAY_LEN( precedence ); i++ )
 	{
 		if ( buildableA->s.modelindex == precedence[ i ] )
 		{
@@ -3517,7 +3507,7 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 				}
 			}
 
-			Q_strcat( readable, rsize, va( "%s", BG_Buildable( i )->humanName ) );
+			Q_strcat( readable, rsize, BG_Buildable( i )->humanName );
 
 			if ( removalCounts[ i ] > 1 )
 			{
@@ -3586,8 +3576,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 	}
 	else
 	{
-		Com_Error( ERR_FATAL, "team is %d\n", team );
-		return IBE_NONE;
+		Com_Error( ERR_FATAL, "team is %d", team );
 	}
 
 	// Simple non-marking case
@@ -3692,7 +3681,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 			continue;
 		}
 
-		// Don't allow a power source to be replaced by a dependant
+		// Don't allow a power source to be replaced by a dependent
 		if ( team == TEAM_HUMANS &&
 		     G_PowerEntityForPoint( origin ) == ent &&
 		     buildable != BA_H_REPEATER &&
@@ -3898,7 +3887,8 @@ G_CanBuild
 Checks to see if a buildable can be built
 ================
 */
-itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal )
+itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance,
+                             vec3_t origin, vec3_t normal, int *groundEntNum )
 {
 	vec3_t           angles;
 	vec3_t           entity_origin;
@@ -3921,7 +3911,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	trap_Trace( &tr3, ps->origin, NULL, NULL, entity_origin, ent->s.number, MASK_PLAYERSOLID );
 
 	VectorCopy( entity_origin, origin );
-
+	*groundEntNum = tr1.entityNum;
 	VectorCopy( tr1.plane.normal, normal );
 	minNormal = BG_Buildable( buildable )->minNormal;
 	invert = BG_Buildable( buildable )->invertNormal;
@@ -4042,8 +4032,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 					break;
 
 				default:
-					Com_Error( ERR_FATAL, "No reason for denying build of %d\n", buildable );
-					break;
+					Com_Error( ERR_FATAL, "No reason for denying build of %d", buildable );
 			}
 		}
 	}
@@ -4136,15 +4125,12 @@ Spawns a buildable
 ================
 */
 static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
-                           const vec3_t origin, const vec3_t normal, const vec3_t angles )
+                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
 	gentity_t  *built;
-	vec3_t     localOrigin;
 	char       readable[ MAX_STRING_CHARS ];
 	char       buildnums[ MAX_STRING_CHARS ];
 	buildLog_t *log;
-
-	VectorCopy( origin, localOrigin );
 
 	if ( builder->client )
 	{
@@ -4167,13 +4153,6 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	built->s.modelindex = buildable;
 	built->buildableTeam = built->s.modelindex2 = BG_Buildable( buildable )->team;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
-
-	// when building the initial layout, spawn the entity slightly off its
-	// target surface so that it can be "dropped" onto it
-	if ( !builder->client )
-	{
-		VectorMA( localOrigin, 1.0f, normal, localOrigin );
-	}
 
 	built->health = 1;
 
@@ -4294,7 +4273,6 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			break;
 	}
 
-	built->s.number = built - g_entities;
 	built->r.contents = CONTENTS_BODY;
 	built->clipmask = MASK_PLAYERSOLID;
 	built->enemy = NULL;
@@ -4309,10 +4287,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		built->builtBy = -1;
 	}
 
-	G_SetOrigin( built, localOrigin );
-
-	// gently nudge the buildable onto the surface :)
-	VectorScale( normal, -50.0f, built->s.pos.trDelta );
+	G_SetOrigin( built, origin );
 
 	// set turret angles
 	VectorCopy( builder->s.angles2, built->s.angles2 );
@@ -4321,10 +4296,16 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	built->s.angles[ PITCH ] = 0.0f;
 	built->s.angles2[ YAW ] = angles[ YAW ];
 	built->s.angles2[ PITCH ] = MGTURRET_VERTICALCAP;
-	built->s.pos.trType = BG_Buildable( buildable )->traj;
-	built->s.pos.trTime = level.time;
 	built->physicsBounce = BG_Buildable( buildable )->bounce;
-	built->s.groundEntityNum = -1;
+
+	built->s.groundEntityNum = groundEntNum;
+	if ( groundEntNum == ENTITYNUM_NONE )
+	{
+		built->s.pos.trType = BG_Buildable( buildable )->traj;
+		built->s.pos.trTime = level.time;
+		// gently nudge the buildable onto the surface :)
+		VectorScale( normal, -50.0f, built->s.pos.trDelta );
+	}
 
 	built->s.generic1 = MAX( built->health, 0 );
 
@@ -4355,12 +4336,14 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 	if ( builder && builder->client )
 	{
+	        // readable and the model name shouldn't need quoting
 		G_TeamCommand( builder->client->ps.stats[ STAT_TEAM ],
-		               va( "print \"%s ^2built^7 by %s%s%s\n\"",
-		                   BG_Buildable( built->s.modelindex )->humanName,
-		                   builder->client->pers.netname,
-		                   ( readable[ 0 ] ) ? "^7, ^3replacing^7 " : "",
-		                   readable ) );
+		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
+						QQ( N_("$1$ ^2built^7 by $2$^7, ^3replacing^7 $3$\n") ) :
+						QQ( N_("$1$ ^2built^7 by $2$$3$\n") ),
+		                   Quote( BG_Buildable( built->s.modelindex )->humanName ),
+		                   Quote( builder->client->pers.netname ),
+		                   Quote( readable ) ) );
 		G_LogPrintf( "Construct: %d %d %s%s: %s" S_COLOR_WHITE " is building "
 		             "%s%s%s\n",
 		             ( int )( builder - g_entities ),
@@ -4392,6 +4375,7 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 {
 	float  dist;
 	vec3_t origin, normal;
+	int    groundEntNum;
 	vec3_t forward, aimDir;
 
 	BG_GetClientNormal( &ent->client->ps, normal);
@@ -4400,10 +4384,10 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	VectorNormalize( forward );
 	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
-	switch ( G_CanBuild( ent, buildable, dist, origin, normal ) )
+	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase );
+			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
 			return qtrue;
 
 		case IBE_NOALIENBP:
@@ -4493,7 +4477,8 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 
-	built = G_Build( ent, buildable, ent->s.pos.trBase, normal, ent->s.angles );
+	built = G_Build( ent, buildable, ent->s.pos.trBase,
+	                 normal, ent->s.angles, ENTITYNUM_NONE );
 
 	built->takedamage = qtrue;
 	built->spawned = qtrue; //map entities are already spawned
@@ -4531,7 +4516,7 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 ============
 G_SpawnBuildableThink
 
-Complete spawning a buildable using it's placeholder
+Complete spawning a buildable using its placeholder
 ============
 */
 static void G_SpawnBuildableThink( gentity_t *ent )
@@ -4794,7 +4779,6 @@ static void G_LayoutBuildItem( buildable_t buildable, vec3_t origin,
 	gentity_t *builder;
 
 	builder = G_Spawn();
-	builder->client = 0;
 	VectorCopy( origin, builder->s.pos.trBase );
 	VectorCopy( angles, builder->s.angles );
 	VectorCopy( origin2, builder->s.origin2 );
@@ -5064,7 +5048,6 @@ void G_BuildLogRevert( int id )
 		{
 			gentity_t *builder = G_Spawn();
 
-			builder->client = NULL;
 			VectorCopy( log->origin, builder->s.pos.trBase );
 			VectorCopy( log->angles, builder->s.angles );
 			VectorCopy( log->origin2, builder->s.origin2 );
@@ -5172,10 +5155,16 @@ void G_UpdateBuildableRangeMarkers( void )
 				weaponDisplays = ( BG_InventoryContainsWeapon( WP_HBUILD, client->ps.stats ) ||
 				                   client->ps.weapon == WP_ABUILD || client->ps.weapon == WP_ABUILD2 );
 			}
+			else
+			{
+			        weaponDisplays = 0; // bTeam != TEAM_NONE, but the compiler doesn't know that
+			}
 
 			wantsToSee = !!( client->pers.buildableRangeMarkerMask & ( 1 << bType ) );
 
-			if ( ( team == bTeam && weaponDisplays ) && wantsToSee )
+			if ( wantsToSee &&
+			     ( ( team == TEAM_NONE && ( client->pers.buildableRangeMarkerMask & ( 1 << BA_NONE ) ) ) ||
+			       ( team == bTeam && weaponDisplays ) ) )
 			{
 				if ( i >= 32 )
 				{

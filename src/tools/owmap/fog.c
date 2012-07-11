@@ -78,7 +78,7 @@ void SplitMeshByPlane(mesh_t * in, vec3_t normal, float dist, mesh_t ** front, m
 	mesh_t         *f, *b;
 	int             i;
 	float           frac;
-	int             frontAprox, backAprox;
+	int             frontApprox, backApprox;
 
 	for(i = 0; i < 2; i++)
 	{
@@ -181,11 +181,11 @@ void SplitMeshByPlane(mesh_t * in, vec3_t normal, float dist, mesh_t ** front, m
 	if(!(f->width & 1))
 	{
 		f->width++;
-		frontAprox = 1;
+		frontApprox = 1;
 	}
 	else
 	{
-		frontAprox = 0;
+		frontApprox = 0;
 	}
 	if(f->width > MAX_PATCH_SIZE)
 	{
@@ -199,11 +199,11 @@ void SplitMeshByPlane(mesh_t * in, vec3_t normal, float dist, mesh_t ** front, m
 	if(!(b->width & 1))
 	{
 		b->width++;
-		backAprox = 1;
+		backApprox = 1;
 	}
 	else
 	{
-		backAprox = 0;
+		backApprox = 0;
 	}
 	if(b->width > MAX_PATCH_SIZE)
 	{
@@ -234,7 +234,7 @@ void SplitMeshByPlane(mesh_t * in, vec3_t normal, float dist, mesh_t ** front, m
 			}
 			else
 			{
-				b->verts[h * b->width + w - split + backAprox] = in->verts[h * in->width + w];
+				b->verts[h * b->width + w - split + backApprox] = in->verts[h * in->width + w];
 			}
 		}
 	}
@@ -251,15 +251,15 @@ void SplitMeshByPlane(mesh_t * in, vec3_t normal, float dist, mesh_t ** front, m
 		/* interpolate */
 		//% for( i = 0; i < 10; i++ )
 		//%     dv->xyz[ i ] = v1->xyz[ i ] + frac * (v2->xyz[ i ] - v1->xyz[ i ]);
-		//% dv->xyz[10] = 0;    // set all 4 colors to 0 
+		//% dv->xyz[10] = 0;    // set all 4 colors to 0
 		LerpDrawVertAmount(v1, v2, frac, dv);
 
-		if(frontAprox)
+		if(frontApprox)
 		{
 			f->verts[h * f->width + split + 2] = *dv;
 		}
 		b->verts[h * b->width] = *dv;
-		if(backAprox)
+		if(backApprox)
 		{
 			b->verts[h * b->width + 1] = *dv;
 		}
@@ -328,7 +328,7 @@ qboolean ChopPatchSurfaceByBrush(entity_t * e, mapDrawSurface_t * ds, brush_t * 
 		}
 	}
 
-	/* all of outside fragments become seperate drawsurfs */
+	/* all of outside fragments become separate drawsurfs */
 	numFogPatchFragments += numOutside;
 	for(i = 0; i < numOutside; i++)
 	{
@@ -479,7 +479,7 @@ qboolean ChopFaceSurfaceByBrush(entity_t * e, mapDrawSurface_t * ds, brush_t * b
 
 	/* fixme: celshaded surface fragment errata */
 
-	/* all of outside fragments become seperate drawsurfs */
+	/* all of outside fragments become separate drawsurfs */
 	numFogFragments += numOutside;
 	s = ds->sideRef->side;
 	for(i = 0; i < numOutside; i++)

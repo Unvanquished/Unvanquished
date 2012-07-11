@@ -22,8 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../../../../engine/client/ui_api.h"
 
-#define MAX_VA_STRING 32000
-
 static intptr_t ( QDECL *syscall )( intptr_t arg, ... ) = ( intptr_t ( QDECL * )( intptr_t, ... ) ) - 1;
 
 void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
@@ -33,10 +31,14 @@ void dllEntry( intptr_t ( QDECL *syscallptr )( intptr_t arg, ... ) )
 
 int PASSFLOAT( float x )
 {
-	float floatTemp;
+	floatint_t fi;
+	fi.f = x;
+	return fi.i;
+}
 
-	floatTemp = x;
-	return * ( int * ) &floatTemp;
+void trap_SyscallABIVersion( int major, int minor )
+{
+        syscall( TRAP_VERSION, major, minor );
 }
 
 void trap_Cvar_CopyValue_i( const char *in_var, const char *out_var )
@@ -47,13 +49,14 @@ void trap_Cvar_CopyValue_i( const char *in_var, const char *out_var )
 
 //00.
 //Com_Error(ERR_DROP, "%s", (char *)VMA(1));
-void trap_Error( const char *string )
+void NORETURN trap_Error( const char *string )
 {
 	syscall( UI_ERROR, string );
+	exit(1); // silence warning
 }
 
 //01.
-//Com_Printf("%s", (char *)VMA(1));
+//Com_Printf_(("%s"), (char *)VMA(1));
 void trap_Print( const char *string )
 {
 	syscall( UI_PRINT, string );
@@ -91,9 +94,9 @@ void trap_Cvar_Set( const char *var_name, const char *value )
 //return FloatAsInt(Cvar_VariableValue(VMA(1)));
 float trap_Cvar_VariableValue( const char *var_name )
 {
-	int temp;
-	temp = syscall( UI_CVAR_VARIABLEVALUE, var_name );
-	return ( * ( float * ) &temp );
+	floatint_t fi;
+	fi.i = syscall( UI_CVAR_VARIABLEVALUE, var_name );
+	return fi.f;
 }
 
 //07.
@@ -339,19 +342,19 @@ void trap_UpdateScreen( void )
 //return re.LerpTag(VMA(1), VMA(2), VMA(3), args[4]);
 int trap_CM_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex )
 {
-	return syscall( UI_CM_LERPTAG, tag, refent, tagName, 0 );  // NEFVE - SMF - fixed
+	return syscall( UI_CM_LERPTAG, tag, refent, tagName, startIndex );  // NEFVE - SMF - fixed
 }
 
 //42.
 //return S_RegisterSound(VMA(1), args[2]);
 sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 {
-	int i = syscall( UI_S_REGISTERSOUND, sample, qfalse /* compressed */ );
+	int i = syscall( UI_S_REGISTERSOUND, sample, compressed );
 #ifdef DEBUG
 
 	if ( i == 0 )
 	{
-		Com_Printf( "^1Warning: Failed to load sound: %s\n", sample );
+		Com_Printf(_( "^1Warning: Failed to load sound: %s\n"), sample );
 	}
 
 #endif
@@ -450,10 +453,10 @@ void trap_Key_SetCatcher( int catcher )
 }
 
 //56.
-//GetClipboardData(VMA(1), args[2]);
-void trap_GetClipboardData( char *buf, int bufsize )
+//GetClipboardData(VMA(1), args[2], args[3]);
+void trap_GetClipboardData( char *buf, int bufsize, clipboard_t clip )
 {
-	syscall( UI_GETCLIPBOARDDATA, buf, bufsize );
+	syscall( UI_GETCLIPBOARDDATA, buf, bufsize, clip );
 }
 
 //57.
@@ -640,50 +643,14 @@ void trap_SetCDKey( char *buf )
 
 //83.
 //re.RegisterFont(VMA(1), args[2], VMA(3));
-void trap_R_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font )
+void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
 {
-	syscall( UI_R_REGISTERFONT, fontName, pointSize, font );
+	syscall( UI_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
-
-//84.
-//UI_MEMSET
-//return (intptr_t)memset( VMA( 1 ), args[2], args[3] );
-
-//85.
-//UI_MEMCPY
-//return (intptr_t)memcpy( VMA( 1 ), VMA( 2 ), args[3] );
-
-//86.
-//UI_STRNCPY
-//return (intptr_t)strncpy( VMA( 1 ), VMA( 2 ), args[3] );
-
-//87.
-//UI_SIN
-//return FloatAsInt(sin(VMF(1)));
-
-//88.
-//UI_COS
-//return FloatAsInt(cos(VMF(1)));
-
-//89.
-//UI_ATAN2
-//return FloatAsInt(atan2(VMF(1), VMF(2)));
-
-//90.
-//UI_SQRT
-//return FloatAsInt(sqrt(VMF(1)));
-
-//91.
-//UI_FLOOR
-//return FloatAsInt(floor(VMF(1)));
-
-//92.
-//UI_CEIL
-//return FloatAsInt(ceil(VMF(1)));
 
 //93.
 //return Parse_AddGlobalDefine(VMA(1));
-int trap_Parse_AddGlobalDefine( char *define )
+int trap_Parse_AddGlobalDefine( const char *define )
 {
 	return syscall( UI_PARSE_ADD_GLOBAL_DEFINE, define );
 }
@@ -718,9 +685,9 @@ int trap_Parse_SourceFileAndLine( int handle, char *filename, int *line )
 
 //98.
 //return botlib_export->PC_AddGlobalDefine(VMA(1));
-int trap_PC_AddGlobalDefine( char *define )
+int trap_PC_AddGlobalDefine( const char *define )
 {
-	return syscall( UI_PC_ADD_GLOBAL_DEFINE, define );
+	return syscall( UI_PARSE_ADD_GLOBAL_DEFINE, define );
 }
 
 //99.
@@ -734,28 +701,28 @@ int trap_PC_RemoveAllGlobalDefines( void )
 //return botlib_export->PC_LoadSourceHandle(VMA(1));
 int trap_PC_LoadSource( const char *filename )
 {
-	return syscall( UI_PC_LOAD_SOURCE, filename );
+	return syscall( UI_PARSE_LOAD_SOURCE, filename );
 }
 
 //101.
 //return botlib_export->PC_FreeSourceHandle(args[1]);
 int trap_PC_FreeSource( int handle )
 {
-	return syscall( UI_PC_FREE_SOURCE, handle );
+	return syscall( UI_PARSE_FREE_SOURCE, handle );
 }
 
 //102.
 //return botlib_export->PC_ReadTokenHandle(args[1], VMA(2));
 int trap_PC_ReadToken( int handle, pc_token_t *pc_token )
 {
-	return syscall( UI_PC_READ_TOKEN, handle, pc_token );
+	return syscall( UI_PARSE_READ_TOKEN, handle, pc_token );
 }
 
 //103.
 //return botlib_export->PC_SourceFileAndLine(args[1], VMA(2), VMA(3));
 int trap_PC_SourceFileAndLine( int handle, char *filename, int *line )
 {
-	return syscall( UI_PC_SOURCE_FILE_AND_LINE, handle, filename, line );
+	return syscall( UI_PARSE_SOURCE_FILE_AND_LINE, handle, filename, line );
 }
 
 //104.
@@ -835,24 +802,6 @@ qboolean trap_GetLimboString( int index, char *buf )
 	return syscall( UI_CL_GETLIMBOSTRING, index, buf );
 }
 
-//115.
-//CL_TranslateString(VMA(1), VMA(2));
-char *trap_TranslateString( const char *string )
-{
-	static char staticbuf[ 2 ][ MAX_VA_STRING ];
-	static int  bufcount = 0;
-	char        *buf;
-
-	buf = staticbuf[ bufcount++ % 2 ];
-
-#ifdef LOCALIZATION_SUPPORT
-	syscall( UI_CL_TRANSLATE_STRING, string, buf );
-#else
-	Q_strncpyz( buf, string, MAX_VA_STRING );
-#endif // LOCALIZATION_SUPPORT
-	return buf;
-}
-
 //116.
 //CL_CheckAutoUpdate();
 void trap_CheckAutoUpdate( void )
@@ -917,4 +866,34 @@ int trap_R_AnimFrameRate( qhandle_t hAnim )
 	return syscall( UI_R_ANIMFRAMERATE, hAnim );
 }
 
+//125.
+void trap_R_Glyph( fontHandle_t font, const char *str, glyphInfo_t *glyph )
+{
+  syscall( UI_R_GLYPH, font, str, glyph );
+}
+
+//126.
+void trap_R_GlyphChar( fontHandle_t font, int ch, glyphInfo_t *glyph )
+{
+  syscall( UI_R_GLYPHCHAR, font, ch, glyph );
+}
+
+//127.
+void trap_R_UnregisterFont( fontHandle_t font )
+{
+  syscall( UI_R_UREGISTERFONT, font );
+}
+
+//127.
+void trap_QuoteString( const char *str, char *buffer, int size )
+{
+	syscall( UI_QUOTESTRING, str, buffer, size );
+}
+
 #endif
+
+//128.
+void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
+{
+	syscall( UI_GETTEXT, buffer, msgid, bufferLength );
+}

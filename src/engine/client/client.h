@@ -38,8 +38,8 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "keys.h"
-#include "snd_public.h"
 #include "../../gamelogic/gpp/src/game/bg_public.h" // FIXME
+#include "snd_public.h"
 
 #include "../client/ui_api.h"
 #include "../client/cg_api.h"
@@ -153,7 +153,7 @@ typedef struct
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber-1] is the last
 	// properly generated command
-	usercmd_t cmds[ CMD_BACKUP ]; // each mesage will send several old cmds
+	usercmd_t cmds[ CMD_BACKUP ]; // each message will send several old cmds
 	int       cmdNumber; // incremented each frame, because multiple
 	// frames may need to be packed into a single packet
 
@@ -177,10 +177,6 @@ typedef struct
 	entityState_t entityBaselines[ MAX_GENTITIES ]; // for delta compression when not in previous frame
 
 	entityState_t parseEntities[ MAX_PARSE_ENTITIES ];
-
-	qboolean      corruptedTranslationFile;
-	char          translationVersion[ MAX_STRING_TOKENS ];
-	// -NERVE - SMF
 
 	qboolean cameraMode;
 } clientActive_t;
@@ -421,6 +417,7 @@ typedef struct
 	qhandle_t   consoleShader;
 	qhandle_t   consoleShader2; // NERVE - SMF - merged from WolfSP
 	qboolean    useLegacyConsoleFont;
+	qboolean    useLegacyConsoleFace;
 	fontInfo_t  consoleFont;
 
 	// www downloading
@@ -522,9 +519,6 @@ extern cvar_t *cl_missionStats;
 extern cvar_t *cl_waitForFire;
 extern cvar_t *cl_altTab;
 
-// NERVE - SMF - localization
-extern cvar_t *cl_language;
-
 // -NERVE - SMF
 
 extern cvar_t  *cl_profile;
@@ -539,6 +533,8 @@ extern  cvar_t *cl_consolePrompt;
 extern cvar_t  *cl_aviFrameRate;
 extern cvar_t  *cl_aviMotionJpeg;
 // XreaL END
+
+extern cvar_t  *cl_allowPaste;
 
 extern cvar_t  *cl_pubkeyID;
 
@@ -577,6 +573,8 @@ void        CL_FlushMemory( void );
 void        CL_ShutdownAll( void );
 void        CL_AddReliableCommand( const char *cmd );
 
+void        CL_RegisterButtonCommands( const char *cmdList );
+
 void        CL_StartHunkUsers( void );
 
 void        CL_CheckAutoUpdate( void );
@@ -606,15 +604,6 @@ void        CL_ShutdownRef( void );
 void        CL_InitRef( const char *renderer );
 
 int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
-
-// NERVE - SMF - localization
-void        CL_InitTranslation();
-void        CL_SaveTransTable( const char *fileName, qboolean newOnly );
-void        CL_ReloadTranslation();
-void        CL_TranslateString( const char *string, char *dest_buffer );
-const char  *CL_TranslateStringBuf( const char *string ) __attribute__( ( format_arg( 1 ) ) );    // TTimo
-
-// -NERVE - SMF
 
 void CL_OpenURL( const char *url );  // TTimo
 
@@ -650,25 +639,8 @@ typedef enum
   KB_MLOOK,
   KB_VOIPRECORD,
 
-  // these must be last and must match ordering in cl_input.c
-  // (there's a translation table in CL_CmdButtons)
-  KB_BUTTONS,
-  KB_TALKING = KB_BUTTONS, // set when console or chat is open
-  KB_WALKING, // set when the player is walking
-  KB_ANY,     // set when any key is pressed
-  KB_ATTACK,
-  KB_SECATTACK,
-  KB_USEITEM,
-  KB_TAUNT,
-  KB_SPRINT,
-  KB_ACTIVATE,
-  KB_DODGE,
-  KB_ZOOM,
-  KB_RELOAD,
-  KB_LEANLEFT,
-  KB_LEANRIGHT,
-
-  NUM_BUTTONS
+  KB_BUTTONS, // must be second-last
+  NUM_BUTTONS = KB_BUTTONS + USERCMD_BUTTONS
 } kbuttons_t;
 
 void CL_ClearKeys( void );
@@ -686,8 +658,8 @@ void IN_Help( void );
 //----(SA)
 
 float    CL_KeyState( kbutton_t *key );
-int      Key_StringToKeynum( char *str );
-char     *Key_KeynumToString( int keynum );
+int      Key_StringToKeynum( const char *str );
+const char *Key_KeynumToString( int keynum );
 
 //cl_irc.c
 void     CL_IRCSetup( void );
@@ -728,14 +700,23 @@ qboolean CL_UpdateVisiblePings_f( int source );
 #define NUM_CON_TIMES    4
 
 //#define       CON_TEXTSIZE    32768
-#define     CON_TEXTSIZE 65536 // (SA) DM want's more console...
+#define     CON_TEXTSIZE 65536 // (SA) DM wants more console...
+#define     CON_LINECOUNT  512
+
+#define     CONSOLE_FONT_VPADDING 0.3
+
+typedef struct
+{
+	int ch :24;
+	int ink :8;
+} conChar_t;
 
 typedef struct
 {
 	qboolean initialized;
 
-	char     text[ CON_TEXTSIZE ];
-	char     tcolor[ CON_TEXTSIZE ];
+	conChar_t text[ CON_TEXTSIZE ];
+
 	int      current; // line where next message will be printed
 	int      x; // offset in current line for next print
 	int      display; // bottom of console displays this line
@@ -745,7 +726,7 @@ typedef struct
 
 	float    xadjust; // for wide aspect screens
 
-	float    displayFrac; // aproaches finalFrac at scr_conspeed
+	float    displayFrac; // approaches finalFrac at scr_conspeed
 	float    finalFrac; // 0.0 to 1.0 lines of console to display
 	float    desiredFrac; // ydnar: for variable console heights
 
@@ -798,9 +779,11 @@ void  SCR_DrawNamedPic( float x, float y, float width, float height, const char 
 void  SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noColorEscape );  // draws a string with embedded color control characters with fade
 void  SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean noColorEscape );  // ignores embedded color control characters
 void  SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, qboolean forceColor, qboolean noColorEscape );
-void  SCR_DrawSmallChar( int x, int y, const char *s );
+void  SCR_DrawSmallUnichar( int x, int y, int ch );
 void  SCR_DrawConsoleFontChar( float x, float y, const char *s );
+void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );
 float SCR_ConsoleFontCharWidth( const char *s );
+float SCR_ConsoleFontUnicharWidth( int ch );
 float SCR_ConsoleFontCharHeight( void );
 float SCR_ConsoleFontStringWidth( const char *s, int len );
 
@@ -886,3 +869,4 @@ qboolean CL_VideoRecording( void );
 //
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd( void );
+void CL_GetClipboardData( char *, int, clipboard_t );

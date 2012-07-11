@@ -51,7 +51,7 @@ frame.
 //#define DBG_PROFILE_BONES
 
 //-----------------------------------------------------------------------------
-// Static Vars, ugly but easiest (and fastest) means of seperating RB_SurfaceAnim
+// Static vars: ugly, but the easiest (and fastest) means of separating RB_SurfaceAnim
 // and R_CalcBones
 
 static float                    frontlerp, backlerp;
@@ -477,56 +477,56 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t *ent )
 	}
 }
 
-static ID_INLINE void LocalMatrixTransformVector( vec3_t in, vec3_t mat[ 3 ], vec3_t out )
+static INLINE void LocalMatrixTransformVector( vec3_t in, vec3_t mat[ 3 ], vec3_t out )
 {
 	out[ 0 ] = in[ 0 ] * mat[ 0 ][ 0 ] + in[ 1 ] * mat[ 0 ][ 1 ] + in[ 2 ] * mat[ 0 ][ 2 ];
 	out[ 1 ] = in[ 0 ] * mat[ 1 ][ 0 ] + in[ 1 ] * mat[ 1 ][ 1 ] + in[ 2 ] * mat[ 1 ][ 2 ];
 	out[ 2 ] = in[ 0 ] * mat[ 2 ][ 0 ] + in[ 1 ] * mat[ 2 ][ 1 ] + in[ 2 ] * mat[ 2 ][ 2 ];
 }
 
-static ID_INLINE void LocalMatrixTransformVectorTranslate( vec3_t in, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
+static INLINE void LocalMatrixTransformVectorTranslate( vec3_t in, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
 {
 	out[ 0 ] = in[ 0 ] * mat[ 0 ][ 0 ] + in[ 1 ] * mat[ 0 ][ 1 ] + in[ 2 ] * mat[ 0 ][ 2 ] + tr[ 0 ];
 	out[ 1 ] = in[ 0 ] * mat[ 1 ][ 0 ] + in[ 1 ] * mat[ 1 ][ 1 ] + in[ 2 ] * mat[ 1 ][ 2 ] + tr[ 1 ];
 	out[ 2 ] = in[ 0 ] * mat[ 2 ][ 0 ] + in[ 1 ] * mat[ 2 ][ 1 ] + in[ 2 ] * mat[ 2 ][ 2 ] + tr[ 2 ];
 }
 
-static ID_INLINE void LocalScaledMatrixTransformVector( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t out )
+static INLINE void LocalScaledMatrixTransformVector( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t out )
 {
 	out[ 0 ] = ( 1.0f - s ) * in[ 0 ] + s * ( in[ 0 ] * mat[ 0 ][ 0 ] + in[ 1 ] * mat[ 0 ][ 1 ] + in[ 2 ] * mat[ 0 ][ 2 ] );
 	out[ 1 ] = ( 1.0f - s ) * in[ 1 ] + s * ( in[ 0 ] * mat[ 1 ][ 0 ] + in[ 1 ] * mat[ 1 ][ 1 ] + in[ 2 ] * mat[ 1 ][ 2 ] );
 	out[ 2 ] = ( 1.0f - s ) * in[ 2 ] + s * ( in[ 0 ] * mat[ 2 ][ 0 ] + in[ 1 ] * mat[ 2 ][ 1 ] + in[ 2 ] * mat[ 2 ][ 2 ] );
 }
 
-static ID_INLINE void LocalScaledMatrixTransformVectorTranslate( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
+static INLINE void LocalScaledMatrixTransformVectorTranslate( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
 {
 	out[ 0 ] = ( 1.0f - s ) * in[ 0 ] + s * ( in[ 0 ] * mat[ 0 ][ 0 ] + in[ 1 ] * mat[ 0 ][ 1 ] + in[ 2 ] * mat[ 0 ][ 2 ] + tr[ 0 ] );
 	out[ 1 ] = ( 1.0f - s ) * in[ 1 ] + s * ( in[ 0 ] * mat[ 1 ][ 0 ] + in[ 1 ] * mat[ 1 ][ 1 ] + in[ 2 ] * mat[ 1 ][ 2 ] + tr[ 1 ] );
 	out[ 2 ] = ( 1.0f - s ) * in[ 2 ] + s * ( in[ 0 ] * mat[ 2 ][ 0 ] + in[ 1 ] * mat[ 2 ][ 1 ] + in[ 2 ] * mat[ 2 ][ 2 ] + tr[ 2 ] );
 }
 
-static ID_INLINE void LocalScaledMatrixTransformVectorFullTranslate( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
+static INLINE void LocalScaledMatrixTransformVectorFullTranslate( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
 {
 	out[ 0 ] = ( 1.0f - s ) * in[ 0 ] + s * ( in[ 0 ] * mat[ 0 ][ 0 ] + in[ 1 ] * mat[ 0 ][ 1 ] + in[ 2 ] * mat[ 0 ][ 2 ] ) + tr[ 0 ];
 	out[ 1 ] = ( 1.0f - s ) * in[ 1 ] + s * ( in[ 0 ] * mat[ 1 ][ 0 ] + in[ 1 ] * mat[ 1 ][ 1 ] + in[ 2 ] * mat[ 1 ][ 2 ] ) + tr[ 1 ];
 	out[ 2 ] = ( 1.0f - s ) * in[ 2 ] + s * ( in[ 0 ] * mat[ 2 ][ 0 ] + in[ 1 ] * mat[ 2 ][ 1 ] + in[ 2 ] * mat[ 2 ][ 2 ] ) + tr[ 2 ];
 }
 
-static ID_INLINE void LocalAddScaledMatrixTransformVectorFullTranslate( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
+static INLINE void LocalAddScaledMatrixTransformVectorFullTranslate( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
 {
 	out[ 0 ] += s * ( in[ 0 ] * mat[ 0 ][ 0 ] + in[ 1 ] * mat[ 0 ][ 1 ] + in[ 2 ] * mat[ 0 ][ 2 ] ) + tr[ 0 ];
 	out[ 1 ] += s * ( in[ 0 ] * mat[ 1 ][ 0 ] + in[ 1 ] * mat[ 1 ][ 1 ] + in[ 2 ] * mat[ 1 ][ 2 ] ) + tr[ 1 ];
 	out[ 2 ] += s * ( in[ 0 ] * mat[ 2 ][ 0 ] + in[ 1 ] * mat[ 2 ][ 1 ] + in[ 2 ] * mat[ 2 ][ 2 ] ) + tr[ 2 ];
 }
 
-static ID_INLINE void LocalAddScaledMatrixTransformVectorTranslate( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
+static INLINE void LocalAddScaledMatrixTransformVectorTranslate( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t tr, vec3_t out )
 {
 	out[ 0 ] += s * ( in[ 0 ] * mat[ 0 ][ 0 ] + in[ 1 ] * mat[ 0 ][ 1 ] + in[ 2 ] * mat[ 0 ][ 2 ] + tr[ 0 ] );
 	out[ 1 ] += s * ( in[ 0 ] * mat[ 1 ][ 0 ] + in[ 1 ] * mat[ 1 ][ 1 ] + in[ 2 ] * mat[ 1 ][ 2 ] + tr[ 1 ] );
 	out[ 2 ] += s * ( in[ 0 ] * mat[ 2 ][ 0 ] + in[ 1 ] * mat[ 2 ][ 1 ] + in[ 2 ] * mat[ 2 ][ 2 ] + tr[ 2 ] );
 }
 
-static ID_INLINE void LocalAddScaledMatrixTransformVector( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t out )
+static INLINE void LocalAddScaledMatrixTransformVector( vec3_t in, float s, vec3_t mat[ 3 ], vec3_t out )
 {
 	out[ 0 ] += s * ( in[ 0 ] * mat[ 0 ][ 0 ] + in[ 1 ] * mat[ 0 ][ 1 ] + in[ 2 ] * mat[ 0 ][ 2 ] );
 	out[ 1 ] += s * ( in[ 0 ] * mat[ 1 ][ 0 ] + in[ 1 ] * mat[ 1 ][ 1 ] + in[ 2 ] * mat[ 1 ][ 2 ] );
@@ -538,7 +538,7 @@ static float sp, sy, cp, cy, sr, cr;
 
 //static float    sr, cr;// TTimo: unused
 
-static ID_INLINE void LocalAngleVector( vec3_t angles, vec3_t forward )
+static INLINE void LocalAngleVector( vec3_t angles, vec3_t forward )
 {
 	LAVangle = angles[ YAW ] * ( M_PI * 2 / 360 );
 	sy = sin( LAVangle );
@@ -552,7 +552,7 @@ static ID_INLINE void LocalAngleVector( vec3_t angles, vec3_t forward )
 	forward[ 2 ] = -sp;
 }
 
-static ID_INLINE void LocalVectorMA( vec3_t org, float dist, vec3_t vec, vec3_t out )
+static INLINE void LocalVectorMA( vec3_t org, float dist, vec3_t vec, vec3_t out )
 {
 	out[ 0 ] = org[ 0 ] + dist * vec[ 0 ];
 	out[ 1 ] = org[ 1 ] + dist * vec[ 1 ];
@@ -561,7 +561,7 @@ static ID_INLINE void LocalVectorMA( vec3_t org, float dist, vec3_t vec, vec3_t 
 
 #define ANGLES_SHORT_TO_FLOAT( pf, sh ) { *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); }
 
-static ID_INLINE void SLerp_Normal( vec3_t from, vec3_t to, float tt, vec3_t out )
+static INLINE void SLerp_Normal( vec3_t from, vec3_t to, float tt, vec3_t out )
 {
 	float ft = 1.0 - tt;
 
@@ -579,7 +579,7 @@ static ID_INLINE void SLerp_Normal( vec3_t from, vec3_t to, float tt, vec3_t out
 #define SIN_TABLE( i ) tr.sinTable[ ( i ) >> FUNCTABLE_SHIFT ];
 #define COS_TABLE( i ) tr.sinTable[ ( ( ( i ) >> FUNCTABLE_SHIFT ) + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ];
 
-static ID_INLINE void LocalIngleVector( int ingles[ 3 ], vec3_t forward )
+static INLINE void LocalIngleVector( int ingles[ 3 ], vec3_t forward )
 {
 	sy = SIN_TABLE( ingles[ YAW ] & 65535 );
 	cy = COS_TABLE( ingles[ YAW ] & 65535 );
@@ -628,7 +628,7 @@ static void InglesToAxis( int ingles[ 3 ], vec3_t axis[ 3 ] )
 ===============================================================================
 */
 
-static ID_INLINE void Matrix4Multiply( const vec4_t a[ 4 ], const vec4_t b[ 4 ], vec4_t dst[ 4 ] )
+static INLINE void Matrix4Multiply( const vec4_t a[ 4 ], const vec4_t b[ 4 ], vec4_t dst[ 4 ] )
 {
 	dst[ 0 ][ 0 ] = a[ 0 ][ 0 ] * b[ 0 ][ 0 ] + a[ 0 ][ 1 ] * b[ 1 ][ 0 ] + a[ 0 ][ 2 ] * b[ 2 ][ 0 ] + a[ 0 ][ 3 ] * b[ 3 ][ 0 ];
 	dst[ 0 ][ 1 ] = a[ 0 ][ 0 ] * b[ 0 ][ 1 ] + a[ 0 ][ 1 ] * b[ 1 ][ 1 ] + a[ 0 ][ 2 ] * b[ 2 ][ 1 ] + a[ 0 ][ 3 ] * b[ 3 ][ 1 ];
@@ -653,7 +653,7 @@ static ID_INLINE void Matrix4Multiply( const vec4_t a[ 4 ], const vec4_t b[ 4 ],
 
 // TTimo: const usage would require an explicit cast, non ANSI C
 // see unix/const-arg.c
-static ID_INLINE void Matrix4MultiplyInto3x3AndTranslation( /*const */ vec4_t a[ 4 ], /*const */ vec4_t b[ 4 ], vec3_t dst[ 3 ], vec3_t t )
+static INLINE void Matrix4MultiplyInto3x3AndTranslation( /*const */ vec4_t a[ 4 ], /*const */ vec4_t b[ 4 ], vec3_t dst[ 3 ], vec3_t t )
 {
 	dst[ 0 ][ 0 ] = a[ 0 ][ 0 ] * b[ 0 ][ 0 ] + a[ 0 ][ 1 ] * b[ 1 ][ 0 ] + a[ 0 ][ 2 ] * b[ 2 ][ 0 ] + a[ 0 ][ 3 ] * b[ 3 ][ 0 ];
 	dst[ 0 ][ 1 ] = a[ 0 ][ 0 ] * b[ 0 ][ 1 ] + a[ 0 ][ 1 ] * b[ 1 ][ 1 ] + a[ 0 ][ 2 ] * b[ 2 ][ 1 ] + a[ 0 ][ 3 ] * b[ 3 ][ 1 ];
@@ -671,7 +671,7 @@ static ID_INLINE void Matrix4MultiplyInto3x3AndTranslation( /*const */ vec4_t a[
 	t[ 2 ] = a[ 2 ][ 0 ] * b[ 0 ][ 3 ] + a[ 2 ][ 1 ] * b[ 1 ][ 3 ] + a[ 2 ][ 2 ] * b[ 2 ][ 3 ] + a[ 2 ][ 3 ] * b[ 3 ][ 3 ];
 }
 
-static ID_INLINE void Matrix4Transpose( const vec4_t matrix[ 4 ], vec4_t transpose[ 4 ] )
+static INLINE void Matrix4Transpose( const vec4_t matrix[ 4 ], vec4_t transpose[ 4 ] )
 {
 	int i, j;
 
@@ -684,7 +684,7 @@ static ID_INLINE void Matrix4Transpose( const vec4_t matrix[ 4 ], vec4_t transpo
 	}
 }
 
-static ID_INLINE void Matrix4FromAxis( const vec3_t axis[ 3 ], vec4_t dst[ 4 ] )
+static INLINE void Matrix4FromAxis( const vec3_t axis[ 3 ], vec4_t dst[ 4 ] )
 {
 	int i, j;
 
@@ -702,7 +702,7 @@ static ID_INLINE void Matrix4FromAxis( const vec3_t axis[ 3 ], vec4_t dst[ 4 ] )
 	dst[ 3 ][ 3 ] = 1;
 }
 
-static ID_INLINE void Matrix4FromScaledAxis( const vec3_t axis[ 3 ], const float scale, vec4_t dst[ 4 ] )
+static INLINE void Matrix4FromScaledAxis( const vec3_t axis[ 3 ], const float scale, vec4_t dst[ 4 ] )
 {
 	int i, j;
 
@@ -725,7 +725,7 @@ static ID_INLINE void Matrix4FromScaledAxis( const vec3_t axis[ 3 ], const float
 	dst[ 3 ][ 3 ] = 1;
 }
 
-static ID_INLINE void Matrix4FromTranslation( const vec3_t t, vec4_t dst[ 4 ] )
+static INLINE void Matrix4FromTranslation( const vec3_t t, vec4_t dst[ 4 ] )
 {
 	int i, j;
 
@@ -753,7 +753,7 @@ static ID_INLINE void Matrix4FromTranslation( const vec3_t t, vec4_t dst[ 4 ] )
 // can put an axis rotation followed by a translation directly into one matrix
 // TTimo: const usage would require an explicit cast, non ANSI C
 // see unix/const-arg.c
-static ID_INLINE void Matrix4FromAxisPlusTranslation( /*const */ vec3_t axis[ 3 ], const vec3_t t, vec4_t dst[ 4 ] )
+static INLINE void Matrix4FromAxisPlusTranslation( /*const */ vec3_t axis[ 3 ], const vec3_t t, vec4_t dst[ 4 ] )
 {
 	int i, j;
 
@@ -774,7 +774,7 @@ static ID_INLINE void Matrix4FromAxisPlusTranslation( /*const */ vec3_t axis[ 3 
 // can put a scaled axis rotation followed by a translation directly into one matrix
 // TTimo: const usage would require an explicit cast, non ANSI C
 // see unix/const-arg.c
-static ID_INLINE void Matrix4FromScaledAxisPlusTranslation( /*const */ vec3_t axis[ 3 ], const float scale, const vec3_t t, vec4_t dst[ 4 ] )
+static INLINE void Matrix4FromScaledAxisPlusTranslation( /*const */ vec3_t axis[ 3 ], const float scale, const vec3_t t, vec4_t dst[ 4 ] )
 {
 	int i, j;
 
@@ -797,7 +797,7 @@ static ID_INLINE void Matrix4FromScaledAxisPlusTranslation( /*const */ vec3_t ax
 	dst[ 3 ][ 3 ] = 1;
 }
 
-static ID_INLINE void Matrix4FromScale( const float scale, vec4_t dst[ 4 ] )
+static INLINE void Matrix4FromScale( const float scale, vec4_t dst[ 4 ] )
 {
 	int i, j;
 
@@ -819,7 +819,7 @@ static ID_INLINE void Matrix4FromScale( const float scale, vec4_t dst[ 4 ] )
 	dst[ 3 ][ 3 ] = 1;
 }
 
-static ID_INLINE void Matrix4TransformVector( const vec4_t m[ 4 ], const vec3_t src, vec3_t dst )
+static INLINE void Matrix4TransformVector( const vec4_t m[ 4 ], const vec3_t src, vec3_t dst )
 {
 	dst[ 0 ] = m[ 0 ][ 0 ] * src[ 0 ] + m[ 0 ][ 1 ] * src[ 1 ] + m[ 0 ][ 2 ] * src[ 2 ] + m[ 0 ][ 3 ];
 	dst[ 1 ] = m[ 1 ][ 0 ] * src[ 0 ] + m[ 1 ][ 1 ] * src[ 1 ] + m[ 1 ][ 2 ] * src[ 2 ] + m[ 1 ][ 3 ];
@@ -834,7 +834,7 @@ static ID_INLINE void Matrix4TransformVector( const vec4_t m[ 4 ], const vec3_t 
 ===============================================================================
 */
 
-static ID_INLINE void Matrix3Transpose( const vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
+static INLINE void Matrix3Transpose( const vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
 {
 	int i, j;
 
@@ -1582,7 +1582,7 @@ static void R_CalcBones( const refEntity_t *refent, int *boneList, int numBones 
 			// multiply matrices to create one matrix to do all calculations
 			Matrix4MultiplyInto3x3AndTranslation( m2, m1, bonePtr->matrix, bonePtr->translation );
 
-			/*} else {  // tag's require special handling
+			/*} else {  // tags require special handling
 
 			   // rotate each of the axis by the torsoAngles
 			   LocalScaledMatrixTransformVector( bonePtr->matrix[0], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[0] );
@@ -2102,7 +2102,7 @@ void RB_MDM_SurfaceAnim( mdmSurface_t *surface )
 
 	if ( r_bonesDebug->integer > 1 )
 	{
-		// dont draw the actual surface
+		// don't draw the actual surface
 		tess.numIndexes = oldIndexes;
 		tess.numVertexes = baseVertex;
 		return;

@@ -41,7 +41,7 @@ vec2 WarpDepth(float depth)
     depth = 2.0 * depth - 1.0;
     float pos =  exp( r_EVSMExponents.x * depth);
     float neg = -exp(-r_EVSMExponents.y * depth);
-	
+
     return vec2(pos, neg);
 }
 
@@ -86,7 +86,7 @@ void	main()
 	}
 #endif
 
-	
+
 #if defined(VSM)
 
 	float distance;
@@ -96,11 +96,11 @@ void	main()
 #else
 	distance = length(var_Position - u_LightOrigin) / u_LightRadius;
 #endif
-	
+
 	float distanceSquared = distance * distance;
 
 	// shadowmap can be float RGBA or luminance alpha so store distanceSquared into alpha
-	
+
 #if defined(VSM_CLAMP)
 	// convert to [0,1] color space
 	gl_FragColor = vec4(distance, 0.0 , 0.0, distanceSquared) * 0.5 + 0.5;
@@ -109,7 +109,7 @@ void	main()
 #endif
 
 #elif defined(EVSM) || defined(ESM)
-	
+
 	float distance;
 #if defined(LIGHT_DIRECTIONAL)
 	{
@@ -123,7 +123,7 @@ void	main()
 		distance = (length(var_Position - u_LightOrigin) / u_LightRadius); // * r_ShadowMapDepthScale;
 	}
 #endif
-	
+
 #if defined(EVSM)
 #if !defined(r_EVSMPostProcess)
 	gl_FragColor = ShadowDepthToEVSM(distance);
@@ -133,7 +133,7 @@ void	main()
 #else
 	gl_FragColor = vec4(0.0, 0.0, 0.0, distance);
 #endif // defined(EVSM)
-	
+
 #else
 	gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
 #endif

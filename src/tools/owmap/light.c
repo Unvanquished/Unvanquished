@@ -1800,8 +1800,8 @@ void SetupGrid(void)
 	numBSPGridPoints = numRawGridPoints;
 	rawGridSize = numRawGridPoints * sizeof(*rawGridPoints);
 	bspGridSize = numBSPGridPoints * sizeof(*bspGridPoints);
-	Sys_Printf("%9u x %u B = rawGridSize = (%.2fMB)\n", numRawGridPoints, sizeof(*rawGridPoints), (float)rawGridSize / (1024.0f * 1024.0f));
-	Sys_Printf("%9u x %u B = bspGridSize = (%.2fMB)\n", numBSPGridPoints, sizeof(*bspGridPoints), (float)bspGridSize / (1024.0f * 1024.0f));
+	Sys_Printf("%9u x %u B = rawGridSize = (%.2fMB)\n", (unsigned int)numRawGridPoints, (unsigned int)sizeof(*rawGridPoints), (float)rawGridSize / (1024.0f * 1024.0f));
+	Sys_Printf("%9u x %u B = bspGridSize = (%.2fMB)\n", (unsigned int)numBSPGridPoints, (unsigned int)sizeof(*bspGridPoints), (float)bspGridSize / (1024.0f * 1024.0f));
 
 	/* allocate lightgrid */
 	rawGridPoints = safe_malloc(rawGridSize);
@@ -1826,7 +1826,7 @@ void SetupGrid(void)
 	}
 
 	/* note it */
-	Sys_Printf("%9u grid points\n", numRawGridPoints);
+	Sys_Printf("%9u grid points\n", (unsigned int)numRawGridPoints);
 }
 
 
@@ -1918,7 +1918,7 @@ void LightWorld(void)
 		inGrid = qtrue;
 		RunThreadsOnIndividual(numRawGridPoints, qtrue, TraceGrid);
 		inGrid = qfalse;
-		Sys_Printf("%d x %d x %d = %d grid\n", gridBounds[0], gridBounds[1], gridBounds[2], numBSPGridPoints);
+		Sys_Printf("%d x %d x %d = %d grid\n", gridBounds[0], gridBounds[1], gridBounds[2], (int)numBSPGridPoints);
 
 		/* ydnar: emit statistics on light culling */
 		Sys_FPrintf(SYS_VRB, "%9d grid points envelope culled\n", gridEnvelopeCulled);
@@ -2068,21 +2068,21 @@ int LightMain(int argc, char **argv)
 	/* set standard game flags */
 	wolfLight = game->wolfLight;
 	if(wolfLight == qtrue)
-		Sys_Printf(" lightning model: wolf\n");
+		Sys_Printf(" lighting model: wolf\n");
 	else
-		Sys_Printf(" lightning model: quake3\n");
+		Sys_Printf(" lighting model: quake3\n");
 
 	lmCustomSize = game->lightmapSize;
 	Sys_Printf(" lightmap size: %d x %d pixels\n", lmCustomSize, lmCustomSize);
 
 	lightmapGamma = game->lightmapGamma;
-	Sys_Printf(" lightning gamma: %f\n", lightmapGamma);
+	Sys_Printf(" lighting gamma: %f\n", lightmapGamma);
 
 	lightmapCompensate = game->lightmapCompensate;
-	Sys_Printf(" lightning compensation: %f\n", lightmapCompensate);
+	Sys_Printf(" lighting compensation: %f\n", lightmapCompensate);
 
 	lightmapExposure = game->lightmapExposure;
-	Sys_Printf(" lightning exposure: %f\n", lightmapExposure);
+	Sys_Printf(" lighting exposure: %f\n", lightmapExposure);
 
 	gridScale = game->gridScale;
 	Sys_Printf(" lightgrid scale: %f\n", gridScale);
@@ -2170,7 +2170,7 @@ int LightMain(int argc, char **argv)
 		else if(!strcmp(argv[i], "-gridscale"))
 		{
 			f = atof(argv[i + 1]);
-			Sys_Printf("Grid lightning scaled by %f\n", f);
+			Sys_Printf("Grid lighting scaled by %f\n", f);
 			gridScale *= f;
 			i++;
 		}
@@ -2178,7 +2178,7 @@ int LightMain(int argc, char **argv)
 		else if(!strcmp(argv[i], "-gridambientscale"))
 		{
 			f = atof(argv[i + 1]);
-			Sys_Printf("Grid ambient lightning scaled by %f\n", f);
+			Sys_Printf("Grid ambient lighting scaled by %f\n", f);
 			gridAmbientScale *= f;
 			i++;
 		}
@@ -2283,7 +2283,7 @@ int LightMain(int argc, char **argv)
 			if(lightSamplesSearchBoxSize > 4)
 				lightSamplesSearchBoxSize = 4;	/* more makes no sense */
 			else if(lightSamplesSearchBoxSize != 1)
-				Sys_Printf("Adaptive supersampling uses %i times the normal search box size\n", lightSamplesSearchBoxSize);
+				Sys_Printf("Adaptive supersampling uses a search box size multiplier of %i\n", lightSamplesSearchBoxSize);
 			i++;
 		}
 
@@ -2846,13 +2846,13 @@ int LightMain(int argc, char **argv)
 	if(value[0] != '1')
 		LoadMapFile(mapSource, qtrue);
 
-	/* Tr3B: tell the .bsp wether we have deluxe mapping support or not */
+	/* Tr3B: tell the .bsp whether we have deluxe mapping support or not */
 	if(deluxemap)
 		SetKeyValue(&entities[0], "deluxeMapping", "1");
 	else
 		SetKeyValue(&entities[0], "deluxeMapping", "0");
 
-	/* Tr3B: tell the .bsp wether we have HDR light mapping support or not */
+	/* Tr3B: tell the .bsp whether we have HDR light mapping support or not */
 	/*
 	if(hdr)
 		SetKeyValue(&entities[0], "hdrRGBE", "1");

@@ -1065,7 +1065,7 @@ static void LerpMeshVertexes( md3Surface_t *surf, float backlerp )
 //          VectorNormalize (outNormal);
 		}
 
-		// ydnar: unecessary because of lat/lng lerping
+		// ydnar: unnecessary because of lat/lng lerping
 		//% VectorArrayNormalize((vec4_t *)tess.normal[tess.numVertexes].v, numVerts);
 	}
 }
@@ -1820,8 +1820,6 @@ void RB_SurfaceEntity( surfaceType_t *surfType )
 			RB_SurfaceAxis();
 			break;
 	}
-
-	return;
 }
 
 void RB_SurfaceBad( surfaceType_t *surfType )
@@ -1901,7 +1899,7 @@ void RB_SurfaceFlare( srfFlare_t *surf )
 
 void RB_SurfaceDisplayList( srfDisplayList_t *surf )
 {
-	// all apropriate state must be set in RB_BeginSurface
+	// all appropriate state must be set in RB_BeginSurface()
 	// this isn't implemented yet...
 	glCallList( surf->listNum );
 }
@@ -1983,7 +1981,6 @@ void RB_SurfaceDecal( srfDecal_t *srf )
 
 void RB_SurfaceSkip( void *surf )
 {
-	return;
 }
 
 void ( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] )( void * ) =

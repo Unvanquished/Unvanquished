@@ -140,7 +140,7 @@ void *codec_load( const char *filename, snd_info_t *info )
 
 	if ( !codec )
 	{
-		Com_Printf( "Unknown extension for %s\n", filename );
+		Com_Printf(_( "Unknown extension for %s\n"), filename );
 		return NULL;
 	}
 
@@ -159,7 +159,7 @@ snd_stream_t *codec_open( const char *filename )
 
 	if ( !codec )
 	{
-		Com_Printf( "Unknown extension for %s\n", filename );
+		Com_Printf(_( "Unknown extension for %s\n"), filename );
 		return NULL;
 	}
 
@@ -193,7 +193,7 @@ snd_stream_t *codec_util_open( const char *filename, snd_codec_t *codec )
 
 	if ( !hnd )
 	{
-		Com_Printf( "Can't read sound file %s\n", filename );
+		Com_Printf(_( "Can't read sound file %s\n"), filename );
 		return NULL;
 	}
 

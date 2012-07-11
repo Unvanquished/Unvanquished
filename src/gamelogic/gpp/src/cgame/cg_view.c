@@ -98,7 +98,7 @@ void CG_TestModel_f( void )
 
 	if ( !cg.testModelEntity.hModel )
 	{
-		CG_Printf( "Can't register model\n" );
+		CG_Printf( "%s", _( "Can't register model\n" ));
 		return;
 	}
 
@@ -180,11 +180,11 @@ static void CG_AddTestModel( void )
 
 	if ( !cg.testModelEntity.hModel )
 	{
-		CG_Printf( "Can't register model\n" );
+		CG_Printf( "%s", _( "Can't register model\n" ));
 		return;
 	}
 
-	// if testing a gun, set the origin reletive to the view origin
+	// if testing a gun, set the origin relative to the view origin
 	if ( cg.testGun )
 	{
 		VectorCopy( cg.refdef.vieworg, cg.testModelEntity.origin );
@@ -656,7 +656,7 @@ void CG_OffsetFirstPersonView( void )
 	angles[ ROLL ] -= delta * cg_runroll.value;
 
 	// add angles based on bob
-	// bob amount is class dependant
+	// bob amount is class-dependent
 
 	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 	{
@@ -1185,7 +1185,6 @@ CG_smoothWWTransitions
 static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t out )
 {
 	vec3_t   surfNormal, rotAxis, temp;
-	vec3_t   refNormal = { 0.0f, 0.0f,  1.0f };
 	int      i;
 	float    stLocal, sFraction, rotAngle;
 	float    smoothTime, timeMod;
@@ -1354,7 +1353,7 @@ static int CG_CalcViewValues( void )
 	cg.xyspeed = sqrt( ps->velocity[ 0 ] * ps->velocity[ 0 ] +
 	                   ps->velocity[ 1 ] * ps->velocity[ 1 ] );
 
-	// the bob velocity should't get too fast to avoid jerking
+	// to avoid jerking, the bob velocity shouldn't be too high
 	if ( cg.xyspeed > 300.0f )
 	{
 		cg.xyspeed = 300.0f;
@@ -1428,7 +1427,7 @@ static int CG_CalcViewValues( void )
 		CG_OffsetFirstPersonView();
 	}
 
-	// position eye reletive to origin
+	// position eye relative to origin
 	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );
 
 	if ( cg.hyperspace )

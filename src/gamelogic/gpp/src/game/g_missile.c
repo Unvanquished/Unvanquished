@@ -68,14 +68,15 @@ Reduce the power of e.g. a luciball relative to time spent travelling.
 ================
 */
 typedef enum {
-	PR_INVERSE_SQUARE, // params: full power time, half-life time
+	PR_INVERSE_SQUARE, // params: 'full power' time, 'half-life' time
+	                   // (reality: starts falling off before so that we approximate a smooth curve)
 	PR_COSINE,         // params: lifetime, unused (but >0)
 	PR_END             // unused; here so that we can have the comma above for C89
 } powerReduce_t;
 
-static inline void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
+static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
 {
-	int lifetime = level.time - self->r.startTime;
+	int lifetime = level.time - self->startTime;
 	float travelled;
 	float divider = 1;
 
@@ -85,21 +86,27 @@ static inline void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int
 		return;
 	}
 
-
 	switch ( type )
 	{
 	case PR_INVERSE_SQUARE:
-		if ( travelled > halfLife )
+		travelled = lifetime + fullPower - halfLife;
+		if ( travelled > halfLife * 1.25 ) // approx. point at which the two graphs meet
 		{
-			travelled = lifetime + fullPower - halfLife;
 			divider = Q_rsqrt( travelled / halfLife );
+		}
+		else if ( travelled >= 0 )
+		{
+			divider = travelled / halfLife;
+			divider = cos( divider * divider / 3.375 );
 		}
 		break;
 
 	case PR_COSINE:
-		travelled = lifetime;;
+		travelled = lifetime;
 		divider = MAX( 0.0, cos( travelled * M_PI / 2.0 / ( fullPower + 1 ) ) );
 		break;
+
+	case PR_END:; // compiler, do shut up :-)
 	}
 
 	self->damage *= divider;
@@ -115,7 +122,7 @@ G_DoMissileTimePowerReduce
 Called on missile explosion or impact if the missile is otherwise not specially handled
 ================
 */
-static inline G_DoMissileTimePowerReduce( gentity_t *ent )
+static void G_DoMissileTimePowerReduce( gentity_t *ent )
 {
 	if ( !strcmp( ent->classname, "lcannon" ) )
 	{
@@ -328,7 +335,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 
 	ent->freeAfterEvent = qtrue;
 
-	// change over to a normal entity right at the point of impact
+	// change over to a general entity right at the point of impact
 	ent->s.eType = ET_GENERAL;
 
 	SnapVectorTowards( trace->endpos, ent->s.pos.trBase );  // save net bandwidth
@@ -460,7 +467,6 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->nextthink = level.time + FLAMER_LIFETIME;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_FLAMER;
 	bolt->s.generic1 = self->s.generic1; //weaponMode
 	bolt->r.ownerNum = self->s.number;
@@ -483,7 +489,7 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->r.startTime = level.time; // for power fall-off
+	bolt->startTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -508,7 +514,6 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_BLASTER;
 	bolt->s.generic1 = self->s.generic1; //weaponMode
 	bolt->r.ownerNum = self->s.number;
@@ -554,7 +559,6 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_PULSE_RIFLE;
 	bolt->s.generic1 = self->s.generic1; //weaponMode
 	bolt->r.ownerNum = self->s.number;
@@ -576,7 +580,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->r.startTime = level.time; // for power fall-off
+	bolt->startTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -612,7 +616,6 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_LUCIFER_CANNON;
 	bolt->s.generic1 = self->s.generic1; //weaponMode
 	bolt->r.ownerNum = self->s.number;
@@ -647,7 +650,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->r.startTime = level.time; // for power fall-off
+	bolt->startTime = level.time; // for power fall-off
 
 //	Com_Printf("Luciball power = %d, speed = %d/s.\n", damage, speed);
 	return bolt;
@@ -671,7 +674,6 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->nextthink = level.time + 5000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_GRENADE;
 	bolt->s.eFlags = EF_BOUNCE_HALF;
 	bolt->s.generic1 = WPM_PRIMARY; //weaponMode
@@ -788,7 +790,6 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->think = AHive_SearchAndDestroy;
 	bolt->s.eType = ET_MISSILE;
 	bolt->s.eFlags |= EF_BOUNCE | EF_NO_BOUNCE_SOUND;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_HIVE;
 	bolt->s.generic1 = WPM_PRIMARY; //weaponMode
 	bolt->r.ownerNum = self->s.number;
@@ -830,7 +831,6 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->nextthink = level.time + 15000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_LOCKBLOB_LAUNCHER;
 	bolt->s.generic1 = WPM_PRIMARY; //weaponMode
 	bolt->r.ownerNum = self->s.number;
@@ -869,7 +869,6 @@ gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->nextthink = level.time + 15000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_ABUILD2;
 	bolt->s.generic1 = self->s.generic1; //weaponMode
 	bolt->r.ownerNum = self->s.number;
@@ -909,7 +908,6 @@ gentity_t *fire_paraLockBlob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->nextthink = level.time + 15000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_LOCKBLOB_LAUNCHER;
 	bolt->s.generic1 = self->s.generic1; //weaponMode
 	bolt->r.ownerNum = self->s.number;
@@ -947,7 +945,6 @@ gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->nextthink = level.time + 3000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
-	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_ALEVEL3_UPG;
 	bolt->s.generic1 = self->s.generic1; //weaponMode
 	bolt->r.ownerNum = self->s.number;

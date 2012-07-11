@@ -46,8 +46,6 @@ Maryland 20850 USA.
 #include "../client/client.h"
 #include "../sys/sys_local.h"
 
-#define ARRAYLEN(x) ( sizeof( x ) / sizeof( x[ 0 ] ))
-
 #ifdef MACOS_X_ACCELERATION_HACK
 #       include <IOKit/IOTypes.h>
 #       include <IOKit/hidsystem/IOHIDLib.h>
@@ -168,8 +166,19 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 		} u;
 	} consoleKey_t;
 
+	static const struct {
+		char name[8];
+		int  key;
+	} modMap[] = {
+		{ "shift", K_SHIFT },
+		{ "ctrl",  K_CTRL  },
+		{ "alt",   K_ALT   },
+		{ "super", K_SUPER },
+	};
+
 	static consoleKey_t consoleKeys[ MAX_CONSOLE_KEYS ];
 	static int          numConsoleKeys = 0;
+	static int          ifMod, unlessMod = 0;
 	int                 i;
 
 	// Only parse the variable when it changes
@@ -180,6 +189,7 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 		cl_consoleKeys->modified = qfalse;
 		text_p = cl_consoleKeys->string;
 		numConsoleKeys = 0;
+		ifMod = unlessMod = 0;
 
 		while ( numConsoleKeys < MAX_CONSOLE_KEYS )
 		{
@@ -193,7 +203,27 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 				break;
 			}
 
-			if ( strlen( token ) == 4 )
+			if ( token[ 0 ] == '+' && token[ 1 ] )
+			{
+				for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+				{
+					if ( !Q_stricmp( token + 1, modMap[i].name ) )
+					{
+						ifMod |= 1 << i;
+					}
+				}
+			}
+			else if ( token[ 0 ] == '-' && token[ 1 ] )
+			{
+				for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+				{
+					if ( !Q_stricmp( token + 1, modMap[i].name ) )
+					{
+						unlessMod |= 1 << i;
+					}
+				}
+			}
+			else if ( strlen( token ) == 4 )
 			{
 				charCode = Com_HexStrToInt( token );
 			}
@@ -216,6 +246,41 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 			}
 
 			numConsoleKeys++;
+		}
+
+		// if MOD is requested pressed and released, clear released
+		unlessMod &= ~ifMod;
+	}
+
+	// require a +MOD, if there are any, to be pressed
+	if ( ifMod )
+	{
+		qboolean flag = qfalse;
+
+		for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+		{
+			if ( ( ifMod & 1 << i ) && keys[ modMap[i].key ].down )
+			{
+				flag = qtrue;
+				break;
+			}
+		}
+
+		if ( !flag )
+		{
+			return qfalse;
+		}
+	}
+
+	// require all -MOD not to be pressed
+	if ( unlessMod )
+	{
+		for ( i = 0; i < ARRAY_LEN( modMap ); ++i )
+		{
+			if ( ( unlessMod & 1 << i ) && keys[ modMap[i].key ].down )
+			{
+				return qfalse;
+			}
 		}
 	}
 
@@ -260,7 +325,8 @@ IN_TranslateSDLToQ3Key
 static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
     keyNum_t *key, qboolean down )
 {
-	static unsigned char buf[ 2 ] = { '\0', '\0' };
+	static unsigned char buf[ 5 ] = {0};
+	qboolean             delete = qfalse;
 
 	*buf = '\0';
 	*key = 0;
@@ -556,6 +622,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 				{
 					// ctrl-h
 					*buf = CTRL( 'h' );
+					delete = qtrue;
 					break;
 				}
 
@@ -585,17 +652,20 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 		*key = 0;
 	}
 
-	if ( IN_IsConsoleKey( *key, *buf ) )
+	if ( IN_IsConsoleKey( *key, *buf ) && !keys[ K_ALT ].down)
 	{
 		// Console keys can't be bound or generate characters
+		// (but allow Alt+key for text input)
 		*key = K_CONSOLE;
 		*buf = '\0';
 	}
-
-	// Don't allow extended ASCII to generate characters
-	if ( *buf & 0x80 )
+	else if ( delete )
 	{
-		*buf = '\0';
+		*buf = CTRL( 'h' );
+	}		
+	else
+	{
+		memcpy( buf, Q_UTF8Encode( keysym->unicode ), sizeof( buf ) );
 	}
 
 	return ( char * ) buf;
@@ -956,7 +1026,7 @@ IN_JoyMove
 */
 static void IN_JoyMove( void )
 {
-	qboolean     joy_pressed[ ARRAYLEN( joy_keys ) ];
+	qboolean     joy_pressed[ ARRAY_LEN( joy_keys ) ];
 	unsigned int axes = 0;
 	unsigned int hats = 0;
 	int          total = 0;
@@ -1016,9 +1086,9 @@ static void IN_JoyMove( void )
 
 	if ( total > 0 )
 	{
-		if ( total > ARRAYLEN( stick_state.buttons ) )
+		if ( total > ARRAY_LEN( stick_state.buttons ) )
 		{
-			total = ARRAYLEN( stick_state.buttons );
+			total = ARRAY_LEN( stick_state.buttons );
 		}
 
 		for ( i = 0; i < total; i++ )
@@ -1290,7 +1360,7 @@ IN_Xbox360ControllerMove
 */
 static void IN_Xbox360ControllerMove( void )
 {
-	qboolean     joy_pressed[ ARRAYLEN( joy_keys ) ];
+	qboolean     joy_pressed[ ARRAY_LEN( joy_keys ) ];
 	unsigned int axes = 0;
 	unsigned int hat = 0;
 	int          total = 0;
@@ -1315,9 +1385,9 @@ static void IN_Xbox360ControllerMove( void )
 
 	if ( total > 0 )
 	{
-		if ( total > ARRAYLEN( stick_state.buttons ) )
+		if ( total > ARRAY_LEN( stick_state.buttons ) )
 		{
-			total = ARRAYLEN( stick_state.buttons );
+			total = ARRAY_LEN( stick_state.buttons );
 		}
 
 		for ( i = 0; i < total; i++ )
@@ -1547,14 +1617,16 @@ static void IN_ProcessEvents( void )
 			case SDL_KEYDOWN:
 				character = IN_TranslateSDLToQ3Key( &e.key.keysym, &key, qtrue );
 
+				if( character && *character )
+				{
+					void *buf = Z_Malloc( 5 );
+					memcpy( buf, character, 5 );
+					Com_QueueEvent( 0, SE_CHAR, 5, 0, 0, buf );
+				}
+
 				if ( key )
 				{
 					Com_QueueEvent( 0, SE_KEY, key, qtrue, 0, NULL );
-				}
-
-				if ( character )
-				{
-					Com_QueueEvent( 0, SE_CHAR, *character, 0, 0, NULL );
 				}
 
 				break;
@@ -1635,10 +1707,6 @@ static void IN_ProcessEvents( void )
 					Cvar_Set( "r_customheight", height );
 					Cvar_Set( "r_mode", "-1" );
 
-					/* wait until user stops dragging for 1 second, so
-					   we aren't constantly recreating the GL context while
-					   he tries to drag...*/
-					vidRestartTime = Sys_Milliseconds() + 1000;
 				}
 				break;
 
@@ -1728,8 +1796,7 @@ void IN_Init( void )
 
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
-		Com_Error( ERR_FATAL, "IN_Init called before SDL_Init( SDL_INIT_VIDEO )\n" );
-		return;
+		Com_Error( ERR_FATAL, "IN_Init called before SDL_Init( SDL_INIT_VIDEO )" );
 	}
 
 	Com_DPrintf( "\n------- Input Initialization -------\n" );

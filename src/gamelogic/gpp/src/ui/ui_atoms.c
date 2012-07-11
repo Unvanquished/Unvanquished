@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 qboolean m_entersound; // after a frame, so caching won't disrupt the sound
 
-void QDECL Com_Error( int level, const char *error, ... )
+void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -42,7 +42,7 @@ void QDECL Com_Error( int level, const char *error, ... )
 	trap_Error( text );
 }
 
-void QDECL Com_Printf( const char *msg, ... )
+void QDECL PRINTF_LIKE(1) Com_Printf( const char *msg, ... )
 {
 	va_list argptr;
 	char    text[ 1024 ];
@@ -87,7 +87,7 @@ char *UI_Argv( int arg )
 	return buffer;
 }
 
-char *UI_ConcatArgs( int arg, char *buf, int len )
+static char *UI_ConcatArgs( int arg, char *buf, int len )
 {
 	char *p;
 	int  c;
@@ -161,6 +161,14 @@ static void UI_CloseMenus_f( void )
 static void UI_MessageMode_f( void )
 {
 	char *arg = UI_Argv( 0 );
+	int             chatColour;
+	int             team;
+	uiClientState_t cs;
+	char            info[ MAX_INFO_STRING ];
+
+	trap_GetClientState( &cs );
+	trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
+	team = atoi( Info_ValueForKey( info, "t" ) );
 
 	trap_Cvar_Set( "ui_sayBuffer", "" );
 
@@ -172,6 +180,7 @@ static void UI_MessageMode_f( void )
 			uiInfo.chatTeam = qfalse;
 			uiInfo.chatAdmin = qfalse;
 			uiInfo.chatIRC = qfalse;
+			chatColour = ui_chatPromptColours.integer ? SAY_ALL : SAY_DEFAULT;
 			break;
 
 		case '2':
@@ -179,6 +188,7 @@ static void UI_MessageMode_f( void )
 			uiInfo.chatTeam = qtrue;
 			uiInfo.chatAdmin = qfalse;
 			uiInfo.chatIRC = qfalse;
+			chatColour = ui_chatPromptColours.integer ? SAY_TEAM : SAY_DEFAULT;
 			break;
 
 		case '3':
@@ -186,6 +196,7 @@ static void UI_MessageMode_f( void )
 			uiInfo.chatTeam = qfalse;
 			uiInfo.chatAdmin = qtrue;
 			uiInfo.chatIRC = qfalse;
+			chatColour = ui_chatPromptColours.integer ? SAY_ADMINS : SAY_DEFAULT;
 			break;
 
 		case '4':
@@ -193,9 +204,11 @@ static void UI_MessageMode_f( void )
 			uiInfo.chatTeam = qfalse;
 			uiInfo.chatAdmin = qfalse;
 			uiInfo.chatIRC = qtrue;
+			chatColour = ui_chatPromptColours.integer ? SAY_RAW : SAY_DEFAULT;
 			break;
 	}
 
+	memcpy( g_color_table + 11, g_color_table + UI_GetChatColour( chatColour, team ), sizeof( g_color_table[ 0 ] ) );
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	Menus_CloseByName( "say" );
 	Menus_CloseByName( "say_team" );
@@ -222,11 +235,12 @@ static void UI_MessageMode_f( void )
 
 static void UI_Me_f( void )
 {
-	char buf[ MAX_SAY_TEXT - 4 ];
+	char buf[ MAX_SAY_TEXT ];
 
-	UI_ConcatArgs( 1, buf, sizeof( buf ) );
+	strcpy( buf, "/me " );
+	UI_ConcatArgs( 1, buf + 4, sizeof( buf ) - 4 );
 
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say \"/me %s\"", buf ) );
+	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s", Quote( buf ) ) );
 }
 
 static const struct uicmd
@@ -255,7 +269,7 @@ UI_ConsoleCommand
 qboolean UI_ConsoleCommand( int realTime )
 {
 	struct uicmd *cmd = bsearch( UI_Argv( 0 ), commands,
-	                             sizeof( commands ) / sizeof( commands[ 0 ] ), sizeof( commands[ 0 ] ),
+	                             ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
 	                             cmdcmp );
 
 	uiInfo.uiDC.frameTime = realTime - uiInfo.uiDC.realTime;

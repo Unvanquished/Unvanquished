@@ -48,6 +48,10 @@ void UI_RegisterCvars( void );
 void UI_UpdateCvars( void );
 void UI_DrawConnectScreen( qboolean overlay );
 
+const char *gettext( const char *msgid );
+
+extern vmCvar_t ui_chatPromptColours;
+
 // new ui stuff
 #define MAX_MAPS                128
 #define MAX_ADDRESSLENGTH       64
@@ -205,6 +209,14 @@ resolution_t;
 
 typedef struct
 {
+	const char *name;
+	const char *lang;
+}
+
+language_t;
+
+typedef struct
+{
 	displayContextDef_t uiDC;
 
 	int                 playerCount;
@@ -300,6 +312,10 @@ typedef struct
 	resolution_t          resolutions[ MAX_RESOLUTIONS ];
 	int                   numResolutions;
 	int                   resolutionIndex;
+	
+	int                   numLanguages;
+	language_t            languages[ 50 ];
+	int                   languageIndex;
 
 	qboolean              inGameLoad;
 

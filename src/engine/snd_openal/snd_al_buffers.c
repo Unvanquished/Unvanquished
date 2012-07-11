@@ -83,7 +83,6 @@ sfxHandle_t al_buf_find_free()
 
 	// Shit...
 	si.Error( ERR_FATAL, "al_buf_find_free: No free sound handles" );
-	return -1;
 }
 
 // Find a sound effect if loaded, set up a handle otherwise
@@ -126,8 +125,6 @@ sfxHandle_t al_buf_find( const char *filename )
 // Called at init, shutdown
 qboolean al_buf_init( void )
 {
-	sfxHandle_t default_sfx;
-
 	if ( al_buffer_inited )
 	{
 		return qtrue;
@@ -214,7 +211,7 @@ static void al_buf_use_default( sfxHandle_t sfx )
 {
 	if ( sfx == default_sfx )
 	{
-		si.Error( ERR_FATAL, "Can't load default sound effect %s\n", knownSfx[ sfx ].filename );
+		si.Error( ERR_FATAL, "Can't load default sound effect %s", knownSfx[ sfx ].filename );
 	}
 
 	si.Printf( PRINT_ALL, "Warning: Using default sound for %s\n", knownSfx[ sfx ].filename );

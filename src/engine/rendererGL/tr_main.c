@@ -2770,7 +2770,6 @@ void R_AddEntitySurfaces( void )
 
 						default:
 							ri.Error( ERR_DROP, "R_AddEntitySurfaces: Bad modeltype" );
-							break;
 					}
 				}
 
@@ -2868,7 +2867,6 @@ void R_AddEntityInteractions( trRefLight_t *light )
 
 						default:
 							ri.Error( ERR_DROP, "R_AddEntityInteractions: Bad modeltype" );
-							break;
 					}
 				}
 

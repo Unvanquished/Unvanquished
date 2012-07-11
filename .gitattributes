@@ -1,0 +1,6 @@
+*					text=auto
+
+*.sh					eol=lf
+*.pl					eol=lf
+*.vcxproj				eol=crlf
+*.vcxproj.filter			eol=crlf

@@ -133,7 +133,7 @@ static void AddLightGridLumps(FILE * file, rbspHeader_t * header)
 	numGridArray = numBSPGridPoints;
 
 	/* for each bsp grid point, find an approximate twin */
-	Sys_Printf("Storing lightgrid: %d points\n", numBSPGridPoints);
+	Sys_Printf("Storing lightgrid: %d points\n", (int)numBSPGridPoints);
 	for(i = 0; i < numGridArray; i++)
 	{
 		/* get points */

@@ -50,6 +50,7 @@ int qmin( int x, int y )
 
 #endif
 
+#ifndef Q3_VM
 /*
 ============================================================================
 
@@ -58,7 +59,7 @@ GROWLISTS
 ============================================================================
 */
 
-// malloc / free all in one place for debugging
+// Com_Allocate / free all in one place for debugging
 //extern          "C" void *Com_Allocate(int bytes);
 //extern          "C" void Com_Dealloc(void *ptr);
 
@@ -154,7 +155,7 @@ memStream_t *AllocMemStream( byte *buffer, int bufSize )
 		return NULL;
 	}
 
-	s = Com_Allocate( sizeof( memStream_t ) );
+	s = (memStream_t*)Com_Allocate( sizeof( memStream_t ) );
 
 	if ( s == NULL )
 	{
@@ -267,7 +268,7 @@ float MemStreamGetFloat( memStream_t *s )
 
 	return LittleFloat( c.f );
 }
-
+#endif
 //=============================================================================
 
 float Com_Clamp( float min, float max, float value )
@@ -419,6 +420,11 @@ const char     *COM_GetExtension( const char *name )
 
 	length = strlen( name ) - 1;
 	i = length;
+
+	if ( !i )
+	{
+		return "";
+	}
 
 	while ( name[ i ] != '.' )
 	{
@@ -806,7 +812,7 @@ char *COM_Parse( char **data_p )
 	return COM_ParseExt( data_p, qtrue );
 }
 
-void COM_ParseError( char *format, ... )
+void PRINTF_LIKE(1) COM_ParseError( char *format, ... )
 {
 	va_list     argptr;
 	static char string[ 4096 ];
@@ -818,7 +824,7 @@ void COM_ParseError( char *format, ... )
 	Com_Printf( S_COLOR_RED "ERROR: %s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
-void COM_ParseWarning( char *format, ... )
+void PRINTF_LIKE(1) COM_ParseWarning( char *format, ... )
 {
 	va_list     argptr;
 	static char string[ 4096 ];
@@ -1701,6 +1707,7 @@ int Com_HexStrToInt( const char *str )
 	return -1;
 }
 
+#ifndef Q3_VM
 /*
 ===================
 Com_QuoteStr
@@ -1724,7 +1731,7 @@ const char *Com_QuoteStr( const char *str )
 	{
 		free( buf );
 		buflen = 2 * length + 3;
-		buf = malloc( buflen );
+		buf = (char*)Com_Allocate( buflen );
 	}
 
 	ptr = buf;
@@ -1778,7 +1785,7 @@ const char *Com_UnquoteStr( const char *str )
 	{
 		length = end + 1 - str;
 		free( buf );
-		buf = malloc( length + 1 );
+		buf = (char*)Com_Allocate( length + 1 );
 		strncpy( buf, str, length );
 		buf[ length ] = 0;
 		return buf;
@@ -1791,7 +1798,7 @@ const char *Com_UnquoteStr( const char *str )
 	}
 
 	free( buf );
-	buf = malloc( end + 1 - str );
+	buf = (char*)Com_Allocate( end + 1 - str );
 	ptr = buf;
 
 	// Copy, unquoting as we go
@@ -1811,6 +1818,66 @@ const char *Com_UnquoteStr( const char *str )
 	return buf;
 }
 
+
+/*
+============
+Com_ClearForeignCharacters
+some cvar values need to be safe from foreign characters
+============
+*/
+const char *Com_ClearForeignCharacters( const char *str )
+{
+	static char *clean = NULL; // much longer than needed
+	int          i, j, size;
+
+	free( clean );
+	size = strlen( str );
+	clean = (char*)Com_Allocate ( size + 1 ); // guaranteed sufficient
+
+	i = j = 0;
+
+	while ( str[ i ] != '\0' )
+	{
+		int c = str[i] & 0xFF;
+		if ( c < 0x80 )
+		{
+			if ( j == size )                 break; // out of buffer space
+			clean[ j++ ] = str[ i++ ];
+		}
+		else if ( c >= 0xC2 && c <= 0xF4 )
+		{
+			int u, width = Q_UTF8Width( str + i );
+
+			if ( j + width > size )          break; // out of buffer space
+
+			if ( width == 1 )                continue; // should be multibyte
+
+			u = Q_UTF8CodePoint( str + i );
+
+			// Filtering out...
+			if ( Q_UTF8WidthCP( u ) != width ) continue; // over-long form
+			if ( u == 0xFEFF || u == 0xFFFE )  continue; // BOM
+			if ( u >= 0x80 && u < 0xA0 )       continue; // undefined (from ISO8859-1)
+			if ( u >= 0xD800 && u < 0xE000 )   continue; // UTF-16 surrogate halves
+			if ( u >= 0x110000 )               continue; // out of range
+
+			// width is in the range 1..4
+			switch ( width )
+			{
+			case 4: clean[ j++ ] = str[ i++ ];
+			case 3: clean[ j++ ] = str[ i++ ];
+			case 2: clean[ j++ ] = str[ i++ ];
+			case 1: clean[ j++ ] = str[ i++ ];
+			}
+		}
+		// else invalid
+	}
+
+	clean[ j ] = '\0';
+
+	return clean;
+}
+#endif
 /*
 ============================================================================
 
@@ -2337,6 +2404,10 @@ int Q_PrintStrlen( const char *string )
 			p += 2;
 			continue;
 		}
+		if ( *p == Q_COLOR_ESCAPE && p[1] == Q_COLOR_ESCAPE )
+		{
+			++p;
+		}
 
 		p++;
 		len++;
@@ -2398,7 +2469,7 @@ char *Q_CleanDirName( char *dirname )
 	s = dirname;
 	d = dirname;
 
-	// clear trailing .'s
+	// clear trailing '.'s
 	while ( *s == '.' )
 	{
 		s++;
@@ -2434,7 +2505,7 @@ int Q_CountChar( const char *string, char tocount )
 	return count;
 }
 
-int QDECL Com_sprintf( char *dest, int size, const char *fmt, ... )
+int QDECL PRINTF_LIKE(3) Com_sprintf( char *dest, int size, const char *fmt, ... )
 {
 	int     len;
 	va_list argptr;
@@ -2489,6 +2560,15 @@ int Q_UTF8Width( const char *str )
   return s - (const unsigned char *)str + 1;
 }
 
+int Q_UTF8WidthCP( int ch )
+{
+	if ( ch <=   0x007F ) { return 1; }
+	if ( ch <=   0x07FF ) { return 2; }
+	if ( ch <=   0xFFFF ) { return 3; }
+	if ( ch <= 0x10FFFF ) { return 4; }
+	return 0;
+}
+
 int Q_UTF8Strlen( const char *str )
 {
   int l = 0;
@@ -2513,6 +2593,10 @@ int Q_UTF8PrintStrlen( const char *str )
     {
       str += 2;
       continue;
+    }
+    if( *str == Q_COLOR_ESCAPE && str[1] == Q_COLOR_ESCAPE )
+    {
+      ++str;
     }
 
     l++;
@@ -2659,7 +2743,15 @@ char *Q_UTF8Encode( unsigned long codepoint )
 // s needs to have at least sizeof(int) allocated
 int Q_UTF8Store( const char *s )
 {
-#ifdef Q3_BIG_ENDIAN
+#ifdef Q3_VM
+	int i = 0;
+	int r = 0;
+	while ( s[ i ] )
+	{
+		r |= ( s[ i ] & 0xFF ) << ( i * 3 );
+		++i;
+	}
+#elif defined Q3_BIG_ENDIAN
   int r = *(int *)s, i;
   unsigned char *p = (unsigned char *) &r;
   for( i = 0; i < sizeof(r) / 2; i++ )
@@ -2668,10 +2760,15 @@ int Q_UTF8Store( const char *s )
     p[sizeof(r) - 1 - i] ^= p[i];
     p[i] ^= p[sizeof(r) - 1 - i];
   }
-  return r;
 #else
-  return *(int *)s;
+  int r = *(int *)s;
+  // don't assume that s is NUL-padded to four bytes
+  if ( ( r & 0x000000FF ) == 0 ) { return 0; }
+  if ( ( r & 0x0000FF00 ) == 0 ) { return r & 0x000000FF; }
+  if ( ( r & 0x00FF0000 ) == 0 ) { return r & 0x0000FFFF; }
+  if ( ( r & 0xFF000000 ) == 0 ) { return r & 0x00FFFFFF; }
 #endif
+  return r;
 }
 
 char *Q_UTF8Unstore( int e )
@@ -2680,7 +2777,15 @@ char *Q_UTF8Unstore( int e )
   static int index = 0;
   char *buf = sbuf[index++ & 1];
 
-#ifdef Q3_BIG_ENDIAN
+#ifdef Q3_VM
+	int i = 0;
+	while ( e )
+	{
+		buf[ i++ ] = (char) e;
+		e >>= 8;
+	}
+	buf[ i ] = 0;
+#elif defined Q3_BIG_ENDIAN
   int i;
   unsigned char *p = (unsigned char *) buf;
   *(int *)buf = e;
@@ -2709,7 +2814,7 @@ Ridah, modified this into a circular list, to further prevent stepping on
 previous strings
 ============
 */
-char     *QDECL va( const char *format, ... )
+char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 {
 	va_list     argptr;
 #define MAX_VA_STRING 32000
@@ -2720,12 +2825,12 @@ char     *QDECL va( const char *format, ... )
 	int         len;
 
 	va_start( argptr, format );
-	vsprintf( temp_buffer, format, argptr );
+	Q_vsnprintf( temp_buffer, sizeof( temp_buffer ), format, argptr );
 	va_end( argptr );
 
 	if ( ( len = strlen( temp_buffer ) ) >= MAX_VA_STRING )
 	{
-		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()\n" );
+		Com_Error( ERR_DROP, "Attempted to overrun string in call to va()" );
 	}
 
 	if ( len + index >= MAX_VA_STRING - 1 )
@@ -3118,7 +3223,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value )
 
 	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
-	if ( strlen( newi ) + strlen( s ) > MAX_INFO_STRING )
+	if ( strlen( newi ) + strlen( s ) >= MAX_INFO_STRING )
 	{
 		Com_Printf( "Info string length exceeded\n" );
 		return;
@@ -3170,7 +3275,7 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value )
 
 	Com_sprintf( newi, sizeof( newi ), "\\%s\\%s", key, value );
 
-	if ( strlen( newi ) + strlen( s ) > BIG_INFO_STRING )
+	if ( strlen( newi ) + strlen( s ) >= BIG_INFO_STRING )
 	{
 		Com_Printf( "BIG Info string length exceeded\n" );
 		return;
@@ -3290,7 +3395,7 @@ void Com_ClientListParse( clientList_t *list, const char *s )
 		return;
 	}
 
-	sscanf( s, "%x%x", &list->hi, &list->lo );
+	sscanf( s, "%8x%8x", &list->hi, &list->lo );
 }
 
 /*
@@ -3316,7 +3421,7 @@ void Q_ParseNewlines( char *dest, const char *src, int destsize )
 }
 
 #ifdef _MSC_VER
-float rint( float v )
+float rintf( float v )
 {
 	if ( v >= 0.5f ) { return ceilf( v ); }
 	else { return floorf( v ); }

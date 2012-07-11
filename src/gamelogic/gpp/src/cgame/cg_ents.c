@@ -425,7 +425,7 @@ static void CG_LaunchMissile( centity_t *cent )
 
 	weapon = es->weapon;
 
-	if ( weapon > WP_NUM_WEAPONS )
+	if ( weapon >= WP_NUM_WEAPONS )
 	{
 		weapon = WP_NONE;
 	}
@@ -475,7 +475,7 @@ static void CG_Missile( centity_t *cent )
 
 	weapon = es->weapon;
 
-	if ( weapon > WP_NUM_WEAPONS )
+	if ( weapon >= WP_NUM_WEAPONS )
 	{
 		weapon = WP_NONE;
 	}
@@ -734,8 +734,8 @@ static void CG_LightFlare( centity_t *cent )
 	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, es->angles2,
 	          entityNum, MASK_SHOT );
 
-	//if there is no los between the view and the flare source
-	//it definately cannot be seen
+	//if there is no LOS between the view and the flare source
+	//it definitely cannot be seen
 	if ( tr.fraction < 1.0f || tr.allsolid )
 	{
 		return;
@@ -1137,7 +1137,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 
 	if ( cg_debugPVS.integer )
 	{
-		CG_Printf( "Entity %d entered PVS\n", cent->currentState.number );
+		CG_Printf(_( "Entity %d entered PVS\n"), cent->currentState.number );
 	}
 
 	switch ( es->eType )
@@ -1182,7 +1182,7 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 
 	if ( cg_debugPVS.integer )
 	{
-		CG_Printf( "Entity %d left PVS\n", cent->currentState.number );
+		CG_Printf(_( "Entity %d left PVS\n"), cent->currentState.number );
 	}
 
 	switch ( es->eType )
@@ -1225,8 +1225,7 @@ static void CG_AddCEntity( centity_t *cent )
 	switch ( cent->currentState.eType )
 	{
 		default:
-			CG_Error( "Bad entity type: %i\n", cent->currentState.eType );
-			break;
+			CG_Error( "Bad entity type: %i", cent->currentState.eType );
 
 		case ET_INVISIBLE:
 		case ET_PUSH_TRIGGER:
@@ -1403,7 +1402,6 @@ void CG_AddPacketEntities( void )
 
 			switch ( es->eType )
 			{
-				case ET_BUILDABLE:
 				case ET_MISSILE:
 				case ET_CORPSE:
 					x = ( es->solid & 255 );

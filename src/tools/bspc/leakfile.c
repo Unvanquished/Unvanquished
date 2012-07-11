@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ void LeakFile( tree_t *tree ) {
 	qprintf( "%s\n", filename );
 	linefile = fopen( filename, "w" );
 	if ( !linefile ) {
-		Error( "Couldn't open %s\n", filename );
+		Error( "Couldn't open %s", filename );
 	}
 
 	count = 0;

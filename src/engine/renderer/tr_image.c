@@ -875,7 +875,7 @@ static void Upload32( unsigned *data,
 	scaledBuffer = R_GetImageBuffer( sizeof( unsigned ) * scaled_width * scaled_height, BUFFER_SCALED );
 
 	//
-	// scan the texture for each channel's max values
+	// scan the texture for each channel's max value
 	// and verify if the alpha channel is being used or not
 	//
 	c = width * height;
@@ -979,7 +979,7 @@ static void Upload32( unsigned *data,
 	}
 	else
 	{
-		// use the normal mip-mapping function to go down from here
+		// use the mip-mapping function to go down from here
 		while ( width > scaled_width || height > scaled_height )
 		{
 			R_MipMap( ( byte * ) data, width, height );
@@ -1079,14 +1079,14 @@ This is the only way any image_t are created
 image_t        *R_CreateImage( const char *name, const byte *pic, int width, int height,
                                qboolean mipmap, qboolean allowPicmip, int glWrapClampMode )
 {
-	image_t  *image;
+	image_t  *image = NULL;
 	qboolean isLightmap = qfalse;
 	long     hash;
 	qboolean noCompress = qfalse;
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateImage: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateImage: \"%s\" is too long", name );
 	}
 
 	if ( !strncmp( name, "*lightmap", 9 ) )
@@ -1134,7 +1134,7 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 
 	if ( tr.numImages == MAX_DRAWIMAGES )
 	{
-		ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
+		ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit" );
 	}
 
 	// Ridah
@@ -1214,6 +1214,111 @@ image_t        *R_CreateImage( const char *name, const byte *pic, int width, int
 
 	return image;
 }
+
+/*
+================
+R_CreateGlyph
+================
+*/
+image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height )
+{
+	image_t  *image = NULL;
+	long     hash;
+	qboolean noCompress = qfalse;
+
+	if ( strlen( name ) >= MAX_QPATH )
+	{
+		ri.Error( ERR_DROP, "R_CreateImage: \"%s\" is too long", name );
+	}
+
+	if ( r_ext_compressed_textures->integer == 2 && ( tr.allowCompress != qtrue ) )
+	{
+		noCompress = qtrue;
+	}
+	else if ( r_ext_compressed_textures->integer == 1 && ( tr.allowCompress < 0 ) )
+	{
+		noCompress = qtrue;
+	}
+
+	if ( tr.numImages == MAX_DRAWIMAGES )
+	{
+		ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit" );
+	}
+
+	image = tr.images[ tr.numImages ] = R_CacheImageAlloc( sizeof( image_t ) );
+
+	glGenTextures( 1, &image->texnum );
+
+	tr.numImages++;
+
+	image->mipmap = qfalse;
+	image->allowPicmip = qfalse;
+
+	strcpy( image->imgName, name );
+
+	image->width = width;
+	image->height = height;
+	image->wrapClampMode = GL_CLAMP_TO_EDGE;
+
+	image->TMU = 0;
+
+	if ( glActiveTextureARB )
+	{
+		GL_SelectTexture( image->TMU );
+	}
+
+	GL_Bind( image );
+
+	glTexImage2D( GL_TEXTURE_2D, 0, noCompress ? GL_LUMINANCE_ALPHA : GL_COMPRESSED_LUMINANCE_ALPHA,
+	              width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, pic );
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
+
+	GL_CheckErrors();
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+	glBindTexture( GL_TEXTURE_2D, 0 );
+
+	hash = GenerateImageHashValue( name );
+	image->next = r_imageHashTable[ hash ];
+	r_imageHashTable[ hash ] = image;
+
+	image->hash = hash;
+
+	return image;
+}
+
+
+
+
+void R_FreeImage( image_t *image )
+{
+	int i;
+
+	for ( i=0; i < tr.numImages ; i++ ) {
+		if ( tr.images[ i ] == image ) {
+			free( image );
+			tr.images[ i ] = NULL;
+			return;
+		}
+	}
+
+	ri.Printf( PRINT_ALL, "R_FreeImage: image not found\n" );
+}
+
+void R_FreeImages( void )
+{
+	int i;
+
+	for ( i=0; i < tr.numImages ; i++ ) {
+		free( tr.images[ i ] );
+		tr.images[ i ] = NULL;
+	}
+}
+
 
 /*
 =========================================================
@@ -1307,22 +1412,22 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 
 	if ( bmpHeader.id[ 0 ] != 'B' && bmpHeader.id[ 1 ] != 'M' )
 	{
-		ri.Error( ERR_DROP, "LoadBMP: only Windows-style BMP files supported (%s)\n", name );
+		ri.Error( ERR_DROP, "LoadBMP: only Windows-style BMP files supported (%s)", name );
 	}
 
 	if ( bmpHeader.fileSize != length )
 	{
-		ri.Error( ERR_DROP, "LoadBMP: header size does not match file size (%lu vs. %d) (%s)\n", bmpHeader.fileSize, length, name );
+		ri.Error( ERR_DROP, "LoadBMP: header size does not match file size (%lu vs. %d) (%s)", bmpHeader.fileSize, length, name );
 	}
 
 	if ( bmpHeader.compression != 0 )
 	{
-		ri.Error( ERR_DROP, "LoadBMP: only uncompressed BMP files supported (%s)\n", name );
+		ri.Error( ERR_DROP, "LoadBMP: only uncompressed BMP files supported (%s)", name );
 	}
 
 	if ( bmpHeader.bitsPerPixel < 8 )
 	{
-		ri.Error( ERR_DROP, "LoadBMP: monochrome and 4-bit BMP files not supported (%s)\n", name );
+		ri.Error( ERR_DROP, "LoadBMP: monochrome and 4-bit BMP files not supported (%s)", name );
 	}
 
 	columns = bmpHeader.width;
@@ -1400,8 +1505,7 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 					break;
 
 				default:
-					ri.Error( ERR_DROP, "LoadBMP: illegal pixel_size '%d' in file '%s'\n", bmpHeader.bitsPerPixel, name );
-					break;
+					ri.Error( ERR_DROP, "LoadBMP: illegal pixel_size '%d' in file '%s'", bmpHeader.bitsPerPixel, name );
 			}
 		}
 	}
@@ -1460,6 +1564,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	if ( pcx->manufacturer != 0x0a
 	     || pcx->version != 5 || pcx->encoding != 1 || pcx->bits_per_pixel != 8 || xmax >= 1024 || ymax >= 1024 )
 	{
+		ri.FS_FreeFile( pcx );
 		ri.Printf( PRINT_ALL, "Bad pcx file %s (%i x %i) (%i x %i)\n", filename, xmax + 1, ymax + 1, pcx->xmax, pcx->ymax );
 		return;
 	}
@@ -1645,17 +1750,20 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 
 	if ( targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3 )
 	{
-		ri.Error( ERR_DROP, "LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported\n" );
+		ri.FS_FreeFile( buffer );
+		ri.Error( ERR_DROP, "LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported" );
 	}
 
 	if ( targa_header.colormap_type != 0 )
 	{
-		ri.Error( ERR_DROP, "LoadTGA: colormaps not supported\n" );
+		ri.FS_FreeFile( buffer );
+		ri.Error( ERR_DROP, "LoadTGA: colormaps not supported" );
 	}
 
 	if ( ( targa_header.pixel_size != 32 && targa_header.pixel_size != 24 ) && targa_header.image_type != 3 )
 	{
-		ri.Error( ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n" );
+		ri.FS_FreeFile( buffer );
+		ri.Error( ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)" );
 	}
 
 	columns = targa_header.width;
@@ -1725,8 +1833,8 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 						break;
 
 					default:
-						ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
-						break;
+						ri.FS_FreeFile( buffer );
+						ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 				}
 			}
 		}
@@ -1770,8 +1878,8 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 							break;
 
 						default:
-							ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size, name );
-							break;
+							ri.FS_FreeFile( buffer );
+							ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 					}
 
 					for ( j = 0; j < packetSize; j++ )
@@ -1829,9 +1937,9 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 								break;
 
 							default:
-								ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'\n", targa_header.pixel_size,
+								ri.FS_FreeFile( buffer );
+								ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size,
 								          name );
-								break;
 						}
 
 						column++;
@@ -1864,7 +1972,7 @@ breakOut:
 	ri.FS_FreeFile( buffer );
 }
 
-static void R_JPGErrorExit( j_common_ptr cinfo )
+static void NORETURN R_JPGErrorExit( j_common_ptr cinfo )
 {
 	char buffer[ JMSG_LENGTH_MAX ];
 
@@ -2415,7 +2523,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	// Ridah, caching
 	if ( r_cacheGathering->integer )
 	{
-		ri.Cmd_ExecuteText( EXEC_NOW, va( "cache_usedfile image %s %i %i %i\n", name, mipmap, allowPicmip, glWrapClampMode ) );
+		ri.Cmd_ExecuteText( EXEC_NOW, va( "cache_usedfile image %s %i %i %i\n", ri.Cmd_QuoteString( name ), mipmap, allowPicmip, glWrapClampMode ) );
 	}
 
 	//
@@ -2468,7 +2576,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 
 	if ( pic == NULL )
 	{
-		// if we dont get a successful load
+		// if we don't get a successful load
 // TTimo: Duane changed to _DEBUG in all cases
 // I'd still want that code in the release builds on linux
 // (possibly for mod authors)
@@ -2726,7 +2834,7 @@ static void R_CreateFogImage( void )
 	tr.fogImage = R_CreateImage( "*fog", ( byte * ) data, FOG_S, FOG_T, qfalse, qfalse, GL_CLAMP );
 	ri.Hunk_FreeTempMemory( data );
 
-	// ydnar: the following lines are unecessary for new GL_CLAMP_TO_EDGE fog
+	// ydnar: the following lines are unnecessary for new GL_CLAMP_TO_EDGE fog
 #ifndef IPHONE
 	borderColor[ 0 ] = 1.0;
 	borderColor[ 1 ] = 1.0;
@@ -3135,7 +3243,7 @@ static void png_user_warning_fn( png_structp png_ptr, png_const_charp warning_me
 	ri.Printf( PRINT_WARNING, "libpng warning: %s\n", warning_message );
 }
 
-static void png_user_error_fn( png_structp png_ptr, png_const_charp error_message )
+static void NORETURN png_user_error_fn( png_structp png_ptr, png_const_charp error_message )
 {
 	ri.Printf( PRINT_ERROR, "libpng error: %s\n", error_message );
 	longjmp( png_jmpbuf( png_ptr ), 0 );
@@ -3187,7 +3295,7 @@ static void LoadPNG( const char *name, byte **pic, int *width, int *height, byte
 
 	/*
 	 * Set error handling if you are using the setjmp/longjmp method (this is
-	 * the normal method of doing things with libpng).  REQUIRED unless you
+	 * the common method of doing things with libpng).  REQUIRED unless you
 	 * set up your own error handlers in the png_create_read_struct() earlier.
 	 */
 	if ( setjmp( png_jmpbuf( png ) ) )
@@ -3349,16 +3457,24 @@ void SavePNG( const char *name, const byte *pic, int width, int height, int numB
 
 	png_set_write_fn( png, buffer, png_write_data, png_flush_data );
 
-	if ( numBytes == 4 )
+	switch ( numBytes )
 	{
+	default:
 		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
 		              PNG_FILTER_TYPE_DEFAULT );
-	}
-	else
-	{
-		// should be 3
+		break;
+	case 3:
 		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
 		              PNG_FILTER_TYPE_DEFAULT );
+		break;
+	case 2:
+		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_GA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+		              PNG_FILTER_TYPE_DEFAULT );
+		break;
+	case 1:
+		png_set_IHDR( png, info, width, height, 8, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+		              PNG_FILTER_TYPE_DEFAULT );
+		break;
 	}
 
 	// write the file header information
@@ -4312,16 +4428,16 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	// get dds info
 	if ( DDSGetInfo( ( ddsBuffer_t * ) buffer, &w, &h, &pf ) )
 	{
-		ri.Error( ERR_DROP, "LoadDDS: Invalid DDS texture '%s'\n", name );
-		return;
+		ri.FS_FreeFile( buffer );
+		ri.Error( ERR_DROP, "LoadDDS: Invalid DDS texture '%s'", name );
 	}
 
 	// only certain types of dds textures are supported
 	if ( pf != DDS_PF_ARGB8888 && pf != DDS_PF_DXT1 && pf != DDS_PF_DXT3 && pf != DDS_PF_DXT5 )
 	{
-		ri.Error( ERR_DROP, "LoadDDS: Only DDS texture formats ARGB8888, DXT1, DXT3, and DXT5 are supported (%d) '%s'\n", pf,
+		ri.FS_FreeFile( buffer );
+		ri.Error( ERR_DROP, "LoadDDS: Only DDS texture formats ARGB8888, DXT1, DXT3, and DXT5 are supported (%d) '%s'", pf,
 		          name );
-		return;
 	}
 
 	// create image pixel buffer
@@ -4447,7 +4563,7 @@ qboolean R_TouchImage( image_t *inImage )
 			// add it to the current images
 			if ( tr.numImages == MAX_DRAWIMAGES )
 			{
-				ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
+				ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit" );
 			}
 
 			tr.images[ tr.numImages ] = bImage;
@@ -4633,7 +4749,7 @@ image_t        *R_FindCachedImage( const char *name, int hash )
 			// add it to the current images
 			if ( tr.numImages == MAX_DRAWIMAGES )
 			{
-				ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n" );
+				ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit" );
 			}
 
 			R_TouchImage( bImage );
@@ -4733,7 +4849,7 @@ void R_FindFreeTexnum( image_t *inImage )
 	}
 	else
 	{
-		ri.Error( ERR_DROP, "R_FindFreeTexnum: MAX_DRAWIMAGES hit\n" );
+		ri.Error( ERR_DROP, "R_FindFreeTexnum: MAX_DRAWIMAGES hit" );
 	}
 }
 
@@ -4764,7 +4880,6 @@ void R_LoadCacheImages( void )
 		return;
 	}
 
-	buf = ri.Hunk_AllocateTempMemory( len );
 	ri.FS_ReadFile( "image.cache", &buf );
 	pString = buf;
 
@@ -4781,7 +4896,7 @@ void R_LoadCacheImages( void )
 		R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ], parms[ 3 ] );
 	}
 
-	ri.Hunk_FreeTempMemory( buf );
+	ri.FS_FreeFile( buf );
 }
 
 // done.

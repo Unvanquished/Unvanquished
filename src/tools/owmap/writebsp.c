@@ -223,7 +223,7 @@ int EmitDrawNode_r(node_t * node)
 
 	//
 	// recursively output the other nodes
-	//  
+	//
 	for(i = 0; i < 2; i++)
 	{
 		if(node->children[i]->planenum == PLANENUM_LEAF)
@@ -642,7 +642,7 @@ void EndModel(entity_t * e, node_t * headnode)
 		qboolean noVerts = qtrue;
 
 		//Sys_FPrintf(SYS_STD, "calculating BSP bounds from draw surfaces for entity '%s' with model '%s'\n", name, model);
-		
+
 		for(i = mod->firstBSPSurface; i < numBSPDrawSurfaces; i++)
 		{
 			ds = &bspDrawSurfaces[i];

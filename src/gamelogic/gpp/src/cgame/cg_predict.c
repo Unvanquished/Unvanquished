@@ -98,6 +98,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	trace_t       trace;
 	entityState_t *ent;
 	clipHandle_t  cmodel;
+	vec3_t        tmins, tmaxs;
 	vec3_t        bmins, bmaxs;
 	vec3_t        origin, angles;
 	centity_t     *cent;
@@ -112,6 +113,15 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	{
 		j = cg_numSolidEntities;
 	}
+
+	// calculate bounding box of the trace
+	ClearBounds( tmins, tmaxs );
+	AddPointToBounds( start, tmins, tmaxs );
+	AddPointToBounds( end, tmins, tmaxs );
+	if( mins )
+		VectorAdd( mins, tmins, tmins );
+	if( maxs )
+		VectorAdd( maxs, tmaxs, tmaxs );
 
 	for ( i = 0; i < j; i++ )
 	{
@@ -155,9 +165,15 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 				BG_ClassBoundingBox( ( ent->misc >> 8 ) & 0xFF, bmins, bmaxs, NULL, NULL, NULL );
 			}
 
+			VectorAdd( cent->lerpOrigin, bmins, bmins );
+			VectorAdd( cent->lerpOrigin, bmaxs, bmaxs );
+
+			if( !BoundsIntersect( bmins, bmaxs, tmins, tmaxs ) )
+				continue;
+
 			cmodel = trap_CM_TempBoxModel( bmins, bmaxs );
 			VectorCopy( vec3_origin, angles );
-			VectorCopy( cent->lerpOrigin, origin );
+			VectorCopy( vec3_origin, origin );
 		}
 
 		if ( collisionType == TT_CAPSULE )
@@ -454,7 +470,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 	{
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf( "origin delta: %.2f  ", VectorLength( delta ) );
+			CG_Printf(_( "origin delta: %.2f  "), VectorLength( delta ) );
 		}
 
 		return 2;
@@ -466,7 +482,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 	{
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf( "velocity delta: %.2f  ", VectorLength( delta ) );
+			CG_Printf(_( "velocity delta: %.2f  "), VectorLength( delta ) );
 		}
 
 		return 3;
@@ -677,7 +693,7 @@ void CG_PredictPlayerState( void )
 		// special check for map_restart
 		if ( cg_showmiss.integer )
 		{
-			CG_Printf( "exceeded PACKET_BACKUP on commands\n" );
+			CG_Printf( "%s", _( "exceeded PACKET_BACKUP on commands\n" ));
 		}
 
 		return;
@@ -774,7 +790,7 @@ void CG_PredictPlayerState( void )
 				{
 					if ( cg_showmiss.integer )
 					{
-						CG_Printf( "errorcode %d at %d\n", errorcode, cg.time );
+						CG_Printf(_( "error code %d at %d\n"), errorcode, cg.time );
 					}
 
 					break;
@@ -851,7 +867,7 @@ void CG_PredictPlayerState( void )
 
 				if ( cg_showmiss.integer )
 				{
-					CG_Printf( "PredictionTeleport\n" );
+					CG_Printf( "%s", _( "PredictionTeleport\n" ));
 				}
 
 				cg.thisFrameTeleport = qfalse;
@@ -866,7 +882,7 @@ void CG_PredictPlayerState( void )
 				{
 					if ( !VectorCompare( oldPlayerState.origin, adjusted ) )
 					{
-						CG_Printf( "prediction error\n" );
+						CG_Printf( "%s", _( "prediction error\n" ));
 					}
 				}
 
@@ -877,7 +893,7 @@ void CG_PredictPlayerState( void )
 				{
 					if ( cg_showmiss.integer )
 					{
-						CG_Printf( "Prediction miss: %f\n", len );
+						CG_Printf(_( "Prediction miss: %f\n"), len );
 					}
 
 					if ( cg_errorDecay.integer )
@@ -895,7 +911,7 @@ void CG_PredictPlayerState( void )
 
 						if ( f > 0 && cg_showmiss.integer )
 						{
-							CG_Printf( "Double prediction decay: %f\n", f );
+							CG_Printf(_( "Double prediction decay: %f\n"), f );
 						}
 
 						VectorScale( cg.predictedError, f, cg.predictedError );

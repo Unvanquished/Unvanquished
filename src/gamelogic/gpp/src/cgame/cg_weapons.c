@@ -25,6 +25,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+static refSkeleton_t gunSkeleton;
+static refSkeleton_t oldGunSkeleton;
+
 /*
 =================
 CG_RegisterUpgrade
@@ -40,14 +43,13 @@ void CG_RegisterUpgrade( int upgradeNum )
 	if ( upgradeNum <= UP_NONE || upgradeNum >= UP_NUM_UPGRADES )
 	{
 		CG_Error( "CG_RegisterUpgrade: out of range: %d", upgradeNum );
-		return;
 	}
 
 	upgradeInfo = &cg_upgrades[ upgradeNum ];
 
 	if ( upgradeInfo->registered )
 	{
-		CG_Printf( "CG_RegisterUpgrade: already registered: (%d) %s\n", upgradeNum,
+		CG_Printf(_( "CG_RegisterUpgrade: already registered: (%d) %s\n"), upgradeNum,
 		           BG_Upgrade( upgradeNum )->name );
 		return;
 	}
@@ -56,7 +58,7 @@ void CG_RegisterUpgrade( int upgradeNum )
 
 	if ( !BG_Upgrade( upgradeNum )->name[ 0 ] )
 	{
-		CG_Error( "Couldn't find upgrade %i", upgradeNum );
+		CG_Error( _("Couldn't find upgrade %i"), upgradeNum );
 	}
 
 	upgradeInfo->humanName = BG_Upgrade( upgradeNum )->humanName;
@@ -134,7 +136,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->missileModel )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: missile model not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: missile model not found %s\n"), token );
 			}
 
 			continue;
@@ -170,7 +172,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->missileSprite )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: missile sprite not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: missile sprite not found %s\n"), token );
 			}
 
 			continue;
@@ -249,7 +251,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->missileParticleSystem )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: missile particle system not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: missile particle system not found %s\n"), token );
 			}
 
 			continue;
@@ -267,7 +269,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->missileTrailSystem )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: missile trail system not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: missile trail system not found %s\n"), token );
 			}
 
 			continue;
@@ -285,7 +287,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->muzzleParticleSystem )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: muzzle particle system not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: muzzle particle system not found %s\n"), token );
 			}
 
 			continue;
@@ -303,7 +305,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->impactParticleSystem )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: impact particle system not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: impact particle system not found %s\n"), token );
 			}
 
 			continue;
@@ -338,7 +340,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->impactMark )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: impact mark shader not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: impact mark shader not found %s\n"), token );
 			}
 
 			continue;
@@ -587,7 +589,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 		}
 		else
 		{
-			CG_Printf( S_COLOR_RED "ERROR: unknown token '%s' in weapon section\n", token );
+			CG_Printf( _( S_COLOR_RED  "ERROR: unknown token '%s' in weapon section\n"), token );
 			return qfalse;
 		}
 	}
@@ -604,7 +606,7 @@ static qboolean CG_RegisterWeaponAnimation( animation_t *anim, const char *filen
 
 	if ( !anim->handle )
 	{
-		Com_Printf( "Failed to load animation file %s\n", filename );
+		Com_Printf(_( "Failed to load animation file %s\n"), filename );
 		return qfalse;
 	}
 
@@ -664,7 +666,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( "File %s is %s\n", filename, len == 0 ? "empty" : "too long" );
+		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
 		return qfalse;
 	}
 
@@ -699,12 +701,12 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 		{
 			if ( weaponMode == WPM_NONE )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: weapon mode section started without a declaration\n" );
+				CG_Printf( "%s", _( "^1ERROR: weapon mode section started without a declaration\n" ));
 				return qfalse;
 			}
 			else if ( !CG_ParseWeaponModeSection( &wi->wim[ weaponMode ], &text_p ) )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: failed to parse weapon mode section\n" );
+				CG_Printf( "%s", _( "^1ERROR: failed to parse weapon mode section\n" ));
 				return qfalse;
 			}
 
@@ -778,21 +780,18 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 
 			if ( !wi->weaponModel )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: weapon model not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: weapon model not found %s\n"), token );
 			}
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_flash.md3" );
 			wi->flashModel = trap_R_RegisterModel( path );
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_barrel.md3" );
 			wi->barrelModel = trap_R_RegisterModel( path );
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_hand.md3" );
 			wi->handsModel = trap_R_RegisterModel( path );
 
@@ -813,17 +812,15 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 
 			if ( !wi->weaponModel3rdPerson )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: 3rd person weapon "
-				           "model not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: 3rd person weapon "
+				           "model not found %s\n"), token );
 			}
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_flash.md3" );
 			wi->flashModel3rdPerson = trap_R_RegisterModel( path );
 
-			strcpy( path, token );
-			COM_StripExtension( path, path );
+			COM_StripExtension( token, path );
 			strcat( path, "_barrel.md3" );
 			wi->barrelModel3rdPerson = trap_R_RegisterModel( path );
 
@@ -855,7 +852,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 
 			if ( !wi->weaponIcon )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: weapon icon not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: weapon icon not found %s\n"), token );
 			}
 
 			continue;
@@ -890,7 +887,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 
 			if ( !wi->crossHair )
 			{
-				CG_Printf( S_COLOR_RED "ERROR: weapon crosshair not found %s\n", token );
+				CG_Printf( _( S_COLOR_RED  "ERROR: weapon crosshair not found %s\n"), token );
 			}
 
 			continue;
@@ -903,6 +900,15 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 		}
 		else if ( !Q_stricmp( token, "rotation" ) )
 		{
+			if ( !cg_highPolyWeaponModels.integer )
+			{
+				for ( i = 0; i < 3; i++ )
+				{
+					token = COM_ParseExt2( &text_p, qfalse );
+				}
+				continue;
+			}
+
 			for ( i = 0; i < 3; i++ )
 			{
 				token = COM_ParseExt2( &text_p, qfalse );
@@ -919,6 +925,14 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 		}
 		else if ( !Q_stricmp( token, "posOffs" ) )
 		{
+			if ( !cg_highPolyWeaponModels.integer )
+			{
+				for ( i = 0; i < 3; i++ )
+				{
+					token = COM_ParseExt2( &text_p, qfalse );
+				}
+				continue;
+			}
 			for ( i = 0; i < 3; i++ )
 			{
 				token = COM_ParseExt2( &text_p, qfalse );
@@ -935,12 +949,24 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 		}
 		else if ( !Q_stricmp( token, "rotationBone" ) )
 		{
+			if ( !cg_highPolyWeaponModels.integer )
+			{
+				token = COM_Parse2( &text_p );
+				continue;
+			}
+
 			token = COM_Parse2( &text_p );
 			Q_strncpyz( wi->rotationBone, token, sizeof( wi->rotationBone ) );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "modelScale" ) )
 		{
+			if ( !cg_highPolyWeaponModels.integer )
+			{
+				token = COM_ParseExt2( &text_p, qfalse );
+				continue;
+			}
+
 			for ( i = 0; i < 3; i++ )
 			{
 				token = COM_ParseExt2( &text_p, qfalse );
@@ -956,7 +982,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 			continue;
 		}
 
-		Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+		Com_Printf( _( S_COLOR_RED  "ERROR: unknown token '%s'\n"), token );
 		return qfalse;
 	}
 
@@ -978,14 +1004,13 @@ void CG_RegisterWeapon( int weaponNum )
 	if ( weaponNum <= WP_NONE || weaponNum >= WP_NUM_WEAPONS )
 	{
 		CG_Error( "CG_RegisterWeapon: out of range: %d", weaponNum );
-		return;
 	}
 
 	weaponInfo = &cg_weapons[ weaponNum ];
 
 	if ( weaponInfo->registered )
 	{
-		CG_Printf( "CG_RegisterWeapon: already registered: (%d) %s\n", weaponNum,
+		CG_Printf(_( "CG_RegisterWeapon: already registered: (%d) %s\n"), weaponNum,
 		           BG_Weapon( weaponNum )->name );
 		return;
 	}
@@ -1003,7 +1028,7 @@ void CG_RegisterWeapon( int weaponNum )
 
 	if ( !CG_ParseWeaponFile( path, weaponInfo ) )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: failed to parse %s\n", path );
+		Com_Printf( _( S_COLOR_RED  "ERROR: failed to parse %s\n"), path );
 	}
 
 	// calc midpoint for rotation
@@ -1073,11 +1098,11 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 		CG_Printf( "Anim: %i\n", newAnimation );
 	}
 
-	if ( &cg_weapons[ weapon ].md5 && lf->oldSkeleton.type != SK_INVALID )
+	if ( &cg_weapons[ weapon ].md5 && oldGunSkeleton.type != SK_INVALID )
 	{
-		if ( !trap_R_BuildSkeleton( &lf->oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
 		{
-			CG_Printf( "CG_SetWeaponLerpFrameAnimation: can't build old skeleton\n" );
+			CG_Printf( "%s", _( "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton\n" ));
 			return;
 		}
 	}
@@ -1136,17 +1161,17 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 			lf->blendtime = cg.time + 10;
 		}
 
-		if ( !trap_R_BuildSkeleton( &lf->skeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &gunSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
 		{
-			CG_Printf( "CG_RunWeaponLerpFrame: Can't build lf->skeleton\n" );
+			CG_Printf( "%s", _( "CG_RunWeaponLerpFrame: Can't build lf->gunSkeleton\n" ));
 		}
 
 		// lerp between old and new animation if possible
-		if ( lf->blendlerp > 0.0f )
+		if ( lf->blendlerp > 0.0f && gunSkeleton.numBones == oldGunSkeleton.numBones )
 		{
-			if ( !trap_R_BlendSkeleton( &lf->skeleton, &lf->oldSkeleton, lf->blendlerp ) )
+			if ( !trap_R_BlendSkeleton( &gunSkeleton, &oldGunSkeleton, lf->blendlerp ) )
 			{
-				CG_Printf( "CG_RunWeaponLerpFrame: Can't blend lf->skeleton\n" );
+				CG_Printf( "%s", _( "CG_RunWeaponLerpFrame: Can't blend lf->gunSkeleton\n" ));
 				return;
 			}
 		}
@@ -1217,7 +1242,7 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles )
 	}
 
 	// gun angles from bobbing
-	// bob amount is class dependant
+	// bob amount is class-dependent
 	bob = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob;
 
 	if ( bob != 0 )
@@ -1303,11 +1328,16 @@ The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
 */
+#ifdef Q3_VM
+static refEntity_t gun, barrel, flash; // here to keep locals below 32K
+#endif
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent )
 {
+#ifndef Q3_VM
 	refEntity_t  gun;
 	refEntity_t  barrel;
 	refEntity_t  flash;
+#endif
 	vec3_t       angles;
 	weapon_t     weaponNum;
 	weaponMode_t weaponMode;
@@ -1338,8 +1368,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	if ( !weapon->registered )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: CG_AddPlayerWeapon: weapon %d (%s) "
-		            "is not registered\n", weaponNum, BG_Weapon( weaponNum )->name );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_AddPlayerWeapon: weapon %d (%s) "
+		            "is not registered\n"), weaponNum, BG_Weapon( weaponNum )->name );
 		return;
 	}
 
@@ -1424,7 +1454,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
 		CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
 
-		memcpy( &gun.skeleton, &cent->pe.weapon.skeleton, sizeof( refSkeleton_t ) );
+		gun.skeleton = gunSkeleton;
 
 		if ( weapon->rotationBone[ 0 ] && ps )
 		{
@@ -1433,7 +1463,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 			if ( boneIndex < 0 )
 			{
-				Com_Printf( S_COLOR_YELLOW "WARNING: Cannot find bone index %s, using root bone\n",
+				Com_Printf( _( S_COLOR_YELLOW  "WARNING: Cannot find bone index %s, using root bone\n"),
 				            weapon->rotationBone );
 				weapon->rotationBone[ 0 ] = '\0'; // avoid repeated warnings
 				boneIndex = 0;
@@ -1623,8 +1653,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	if ( !wi->registered )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: CG_AddViewWeapon: weapon %d (%s) "
-		            "is not registered\n", weapon, BG_Weapon( weapon )->name );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_AddViewWeapon: weapon %d (%s) "
+		            "is not registered\n"), weapon, BG_Weapon( weapon )->name );
 		return;
 	}
 
@@ -1865,8 +1895,8 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 
 		if ( !cg_weapons[ i ].registered )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: CG_DrawItemSelect: weapon %d (%s) "
-			            "is not registered\n", i, BG_Weapon( i )->name );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_DrawItemSelect: weapon %d (%s) "
+			            "is not registered\n"), i, BG_Weapon( i )->name );
 			continue;
 		}
 
@@ -1896,8 +1926,8 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 
 		if ( !cg_upgrades[ i ].registered )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: CG_DrawItemSelect: upgrade %d (%s) "
-			            "is not registered\n", i, BG_Upgrade( i )->name );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_DrawItemSelect: upgrade %d (%s) "
+			            "is not registered\n"), i, BG_Upgrade( i )->name );
 			continue;
 		}
 
@@ -2010,7 +2040,7 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 			{
 				w = UI_Text_Width( name, scale );
 				x = rect->x + rect->w / 2;
-				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, 0, textStyle );
+				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, textStyle );
 			}
 		}
 	}
@@ -2023,7 +2053,7 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 			{
 				w = UI_Text_Width( name, scale );
 				x = rect->x + rect->w / 2;
-				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, 0, textStyle );
+				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, textStyle );
 			}
 		}
 	}
@@ -2216,7 +2246,6 @@ void CG_FireWeapon( centity_t *cent, weaponMode_t weaponMode )
 	if ( weaponNum >= WP_NUM_WEAPONS )
 	{
 		CG_Error( "CG_FireWeapon: ent->weapon >= WP_NUM_WEAPONS" );
-		return;
 	}
 
 	wi = &cg_weapons[ weaponNum ];
@@ -2302,7 +2331,7 @@ void CG_MissileHitWall( weapon_t weaponNum, weaponMode_t weaponMode, int clientN
 	}
 	else
 	{
-		//normal sound
+		//generic sound
 		for ( c = 0; c < 4; c++ )
 		{
 			if ( !weapon->wim[ weaponMode ].impactSound[ c ] )

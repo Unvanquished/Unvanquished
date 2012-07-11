@@ -46,7 +46,14 @@ and one exported function: Perform
 
 */
 
+#ifdef _MSC_VER
+#include "../../libs/msinttypes/inttypes.h"
+#else
+#include <inttypes.h>
+#endif
+
 #include "vm_local.h"
+#include "vm_traps.h"
 
 #ifdef USE_LLVM
 #include "vm_llvm.h"
@@ -56,7 +63,7 @@ vm_t       *currentVM = NULL;
 vm_t       *lastVM = NULL;
 int        vm_debugLevel;
 
-// used by Com_Error to get rid of running vm's before longjmp
+// used by Com_Error to get rid of running VMs before longjmp
 static int forced_unload;
 
 #define MAX_VM 3
@@ -87,10 +94,9 @@ VM_Init
 */
 void VM_Init( void )
 {
-	// NOTE to myself
-	// vm_* 0 means .dll files are used (windows)
-	// vm_* 1 means .so files are used (mac, linux)
-	// vm_* 2 (default) means qvm files are used.
+	// vm_* 0 means native libraries (.so, .dll, etc.) are used
+	// vm_* 1 means virtual machines (.qvm, etc.) are used through an interpreter
+	// vm_* 2 means virtual machines are used with JIT compiling
 	Cvar_Get( "vm_cgame", "0", CVAR_ARCHIVE );
 	Cvar_Get( "vm_game", "0", CVAR_ARCHIVE );
 	Cvar_Get( "vm_ui", "0", CVAR_ARCHIVE );
@@ -291,7 +297,7 @@ void VM_LoadSymbols( vm_t *vm )
 
 	if ( !mapfile.c )
 	{
-		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
+		Com_Printf(_( "Couldn't load symbol file: %s\n"), symbols );
 		return;
 	}
 
@@ -324,7 +330,7 @@ void VM_LoadSymbols( vm_t *vm )
 
 		if ( !token[ 0 ] )
 		{
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
+			Com_Printf(_( "WARNING: incomplete line at end of file\n" ));
 			break;
 		}
 
@@ -334,7 +340,7 @@ void VM_LoadSymbols( vm_t *vm )
 
 		if ( !token[ 0 ] )
 		{
-			Com_Printf( "WARNING: incomplete line at end of file\n" );
+			Com_Printf(_( "WARNING: incomplete line at end of file\n" ));
 			break;
 		}
 
@@ -357,8 +363,78 @@ void VM_LoadSymbols( vm_t *vm )
 	}
 
 	vm->numSymbols = count;
-	Com_Printf( "%i symbols parsed from %s\n", count, symbols );
+	Com_Printf(_( "%i symbols parsed from %s\n"), count, symbols );
 	FS_FreeFile( mapfile.v );
+}
+
+/*
+============
+VM_InitSanity
+VM_SetSanity
+VM_CheckSanity
+
+Overflow? We should be safe where there are bounds checks, but not all are
+checked. What isn't should be caught here (if there's a write).
+============
+*/
+static void VM_InitSanity( vm_t *vm )
+{
+	if ( vm->dataMask )
+	{
+		int i;
+
+		for ( i = 1; i < sizeof( vm->sanity ); ++i )
+		{
+			vm->dataBase[ vm->dataMask + 1 + i ] =
+			  vm->sanity[ i ] = 1 + ( rand () % 255 );
+		}
+	}
+
+	vm->versionChecked = qfalse;
+}
+
+#ifdef _DEBUG
+#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]", (c), (n) );
+#else
+#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm." );
+#endif
+
+void VM_SetSanity( vm_t* vm, intptr_t call )
+{
+	if ( !vm->versionChecked && call != TRAP_VERSION )
+	{
+		Com_Error( ERR_DROP, "VM code must invoke a version check" );
+	}
+	else if ( call == TRAP_VERSION )
+	{
+		vm->versionChecked = qtrue;
+	}
+
+	if ( vm->dataMask )
+	{
+		int i = rand();
+
+		if ( i % sizeof( vm->sanity ) )
+		{
+			vm->dataBase[ vm->dataMask + 1 + ( i % sizeof( vm->sanity ) ) ] =
+			  vm->sanity[ i % sizeof( vm->sanity ) ] ^=
+			    (byte) ( i / sizeof( vm->sanity ) ) ^
+			    (byte) ( i / sizeof( vm->sanity ) / 257 );
+
+			if ( !vm->clean )
+			{
+				VM_Insanity( call, vm->name );
+			}
+		}
+	}
+}
+
+void VM_CheckSanity( vm_t *vm, intptr_t call )
+{
+	if ( vm->dataMask && memcmp( vm->dataBase + vm->dataMask + 1, vm->sanity, sizeof( vm->sanity ) ) )
+	{
+		VM_Insanity( call, vm->name );
+	}
 }
 
 /*
@@ -401,6 +477,7 @@ Dlls will call this directly
 */
 intptr_t QDECL VM_DllSyscall( intptr_t arg, ... )
 {
+	intptr_t ret;
 #if !id386 || defined( IPHONE ) || defined __clang__
 	// rcg010206 - see commentary above
 	intptr_t args[ 16 ];
@@ -418,10 +495,30 @@ intptr_t QDECL VM_DllSyscall( intptr_t arg, ... )
 
 	va_end( ap );
 
-	return currentVM->systemCall( args );
-#else // original id code
-	return currentVM->systemCall( &arg );
+	VM_SetSanity( currentVM, arg );
+
+	if ( arg < FIRST_VM_SYSCALL )
+	{
+		ret = VM_SystemCall( args ); // all VMs
+	}
+	else
+	{
+		ret = currentVM->systemCall( args );
+	}
+#else // original id code (almost)
+	VM_SetSanity( currentVM, arg );
+
+	if ( arg < FIRST_VM_SYSCALL )
+	{
+		ret = VM_SystemCall( &arg ); // all VMs
+	}
+	else
+	{
+		ret = currentVM->systemCall( &arg );
+	}
 #endif
+	VM_CheckSanity( currentVM, arg );
+	return ret;
 }
 
 /*
@@ -444,22 +541,25 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	// load the image
 	Com_sprintf( filename, sizeof( filename ), "vm/%s.qvm", vm->name );
-	Com_Printf( "Loading vm file %s...\n", filename );
-	FS_ReadFile( filename, &header.v );
+	Com_Printf(_( "Loading vm file %s…\n"), filename );
+
+	i = FS_ReadFileCheck( filename, &header.v );
 
 	if ( !header.h )
 	{
-		Com_Printf( "Failed.\n" );
+		Com_Printf(_( "Failed.\n" ));
 		VM_Free( vm );
 		return NULL;
 	}
+
+	vm->clean = i >= 0;
 
 	// show where the qvm was loaded from
 	Cmd_ExecuteString( va( "which %s\n", filename ) );
 
 	if ( LittleLong( header.h->vmMagic ) == VM_MAGIC_VER2 )
 	{
-		Com_Printf( "...which has vmMagic VM_MAGIC_VER2\n" );
+		Com_Printf(_( "…which has vmMagic VM_MAGIC_VER2\n" ));
 
 		// byte swap the header
 		for ( i = 0; i < sizeof( vmHeader_t ) / 4; i++ )
@@ -518,12 +618,12 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	if ( alloc )
 	{
 		// allocate zero filled space for initialized and uninitialized data
-		vm->dataBase = Hunk_Alloc( dataLength, h_high );
+		vm->dataBase = Hunk_Alloc( dataLength + VM_DATA_PADDING, h_high );
 		vm->dataMask = dataLength - 1;
 	}
 	else
 	{
-		// clear the data
+		// clear the data (and only the data - need to keep the sanity check)
 		Com_Memset( vm->dataBase, 0, dataLength );
 	}
 
@@ -540,7 +640,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	if ( header.h->vmMagic == VM_MAGIC_VER2 )
 	{
 		vm->numJumpTableTargets = header.h->jtrgLength >> 2;
-		Com_Printf( "Loading %d jump table targets\n", vm->numJumpTableTargets );
+		Com_Printf(_( "Loading %d jump table targets\n"), vm->numJumpTableTargets );
 
 		if ( alloc )
 		{
@@ -576,7 +676,7 @@ vm_t *VM_Restart( vm_t *vm )
 {
 	vmHeader_t *header;
 
-	// DLL's can't be restarted in place
+	// DLLs can't be restarted in place
 	if ( vm->dllHandle
 #if USE_LLVM
 	     || vm->llvmModuleProvider
@@ -626,6 +726,11 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	vm_t       *vm;
 	vmHeader_t *header;
 	int        i, remaining;
+	qboolean   onlyQVM = !!Cvar_VariableValue( "sv_pure" );
+
+#ifdef DEDICATED
+	onlyQVM &= strcmp( module, "qagame" );
+#endif
 
 	if ( !module || !module[ 0 ] || !systemCalls )
 	{
@@ -663,7 +768,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	Q_strncpyz( vm->name, module, sizeof( vm->name ) );
 	vm->systemCall = systemCalls;
 
-	if ( interpret == VMI_NATIVE )
+	if ( interpret == VMI_NATIVE && !onlyQVM )
 	{
 		// try to load as a system dll
 		vm->dllHandle = Sys_LoadDll( module, vm->fqpath, &vm->entryPoint, VM_DllSyscall );
@@ -674,23 +779,26 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 			return vm;
 		}
 
-		Com_Printf( "Failed loading dll, trying next\n" );
+		Com_Printf(_( "Failed loading dll, trying next\n" ));
 #if USE_LLVM
 		interpret = VMI_BYTECODE;
 #endif
 	}
 
 #if USE_LLVM
-	// try to load the LLVM
-	Com_Printf( "Loading llvm file %s.\n", vm->name );
-	vm->llvmModuleProvider = VM_LoadLLVM( vm, VM_DllSyscall );
-
-	if ( vm->llvmModuleProvider )
+	if ( !onlyQVM )
 	{
-		return vm;
-	}
+		// try to load the LLVM
+		Com_Printf(_( "Loading llvm file %s.\n"), vm->name );
+		vm->llvmModuleProvider = VM_LoadLLVM( vm, VM_DllSyscall );
 
-	Com_Printf( "Failed to load llvm, looking for qvm.\n" );
+		if ( vm->llvmModuleProvider )
+		{
+			return vm;
+		}
+
+		Com_Printf(_( "Failed to load llvm, looking for qvm.\n" ));
+	}
 #endif // USE_LLVM
 
 	// load the image
@@ -714,7 +822,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 
 	if ( interpret >= VMI_COMPILED )
 	{
-		Com_Printf( "Architecture doesn't have a bytecode compiler, using interpreter\n" );
+		Com_Printf(_( "Architecture doesn't have a bytecode compiler, using interpreter\n" ));
 		interpret = VMI_BYTECODE;
 	}
 
@@ -744,7 +852,9 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	vm->programStack = vm->dataMask + 1;
 	vm->stackBottom = vm->programStack - PROGRAM_STACK_SIZE;
 
-	Com_Printf( "%s loaded in %d bytes on the hunk\n", module, remaining - Hunk_MemoryRemaining() );
+	Com_Printf(_( "%s loaded in %d bytes on the hunk\n"), module, remaining - Hunk_MemoryRemaining() );
+
+	VM_InitSanity( vm );
 
 	return vm;
 }
@@ -930,7 +1040,7 @@ intptr_t        QDECL VM_Call( vm_t *vm, int callnum, ... )
 	}
 	else
 	{
-#if id386 || idsparc // i386/sparc calling convention doesn't need conversion
+#if ( id386 || idsparc ) && !defined __clang__ // calling convention doesn't need conversion in some cases
 #ifndef NO_VM_COMPILED
 
 		if ( vm->compiled )
@@ -1068,7 +1178,7 @@ void VM_VmInfo_f( void )
 	vm_t *vm;
 	int  i;
 
-	Com_Printf( "Registered virtual machines:\n" );
+	Com_Printf(_( "Registered virtual machines:\n" ));
 
 	for ( i = 0; i < MAX_VM; i++ )
 	{
@@ -1136,22 +1246,143 @@ void VM_LogSyscalls( int *args )
 
 /*
 =================
+VM_CheckBlock
+Address+offset validation
+=================
+*/
+void VM_CheckBlock( intptr_t buf, size_t n, const char *fail )
+{
+	intptr_t dataMask = currentVM->dataMask;
+
+	if ( dataMask &&
+	     ( ( buf & dataMask ) != buf || ( ( buf + n ) & dataMask ) != buf + n ) )
+	{
+		Com_Error( ERR_DROP, "%s out of range! [%lx, %lx, %lx]", fail, (unsigned long)buf, (unsigned long)n, (unsigned long)dataMask );
+	}
+}
+
+void VM_CheckBlockPair( intptr_t dest, intptr_t src, size_t dn, size_t sn, const char *fail )
+{
+	intptr_t dataMask = currentVM->dataMask;
+
+	if ( dataMask &&
+	     ( ( dest & dataMask ) != dest
+	       || ( src & dataMask ) != src
+	       || ( ( dest + dn ) & dataMask ) != dest + dn
+	       || ( ( src + sn ) & dataMask ) != src + sn ) )
+	{
+		Com_Error( ERR_DROP, "%s out of range!", fail );
+	}
+}
+
+/*
+=================
 VM_BlockCopy
 Executes a block copy operation within currentVM data space
 =================
 */
-
 void VM_BlockCopy( unsigned int dest, unsigned int src, size_t n )
 {
-	unsigned int dataMask = currentVM->dataMask;
+	VM_CheckBlockPair( dest, src, n, n, "OP_BLOCK_COPY" );
+	Com_Memcpy( currentVM->dataBase + dest, currentVM->dataBase + src, n );
+}
 
-	if ( ( dest & dataMask ) != dest
-	     || ( src & dataMask ) != src
-	     || ( ( dest + n ) & dataMask ) != dest + n
-	     || ( ( src + n ) & dataMask ) != src + n )
+/*
+=================
+VM_SystemCall
+System calls common to all VMs
+=================
+*/
+static int FloatAsInt( float f )
+{
+	floatint_t fi;
+
+	fi.f = f;
+	return fi.i;
+}
+
+intptr_t VM_SystemCall( intptr_t *args )
+{
+	switch( args[ 0 ] )
 	{
-		Com_Error( ERR_DROP, "OP_BLOCK_COPY out of range!" );
+		case TRAP_MEMSET:
+			VM_CheckBlock( args[ 1 ], args[ 3 ], "MEMSET" );
+			memset( VMA( 1 ), args[ 2 ], args[ 3 ] );
+			return 0;
+
+		case TRAP_MEMCPY:
+			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], args[ 3 ], "MEMCPY" );
+			memcpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+			return 0;
+
+		case TRAP_MEMCMP:
+			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], args[ 3 ], "MEMCMP" );
+			return memcmp( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+
+		case TRAP_STRNCPY:
+			VM_CheckBlockPair( args[ 1 ], args[ 2 ], args[ 3 ], strlen( VMA( 2 ) ) + 1, "STRNCPY" );
+			return ( intptr_t ) strncpy( VMA( 1 ), VMA( 2 ), args[ 3 ] );
+
+		case TRAP_SIN:
+			return FloatAsInt( sin( VMF( 1 ) ) );
+
+		case TRAP_COS:
+			return FloatAsInt( cos( VMF( 1 ) ) );
+
+		case TRAP_TAN:
+			return FloatAsInt( tan( VMF( 1 ) ) );
+
+		case TRAP_ASIN:
+			return FloatAsInt( asin( VMF( 1 ) ) );
+
+//		case TRAP_ACOS:
+//			return FloatAsInt( Q_acos( VMF( 1 ) ) );
+
+		case TRAP_ATAN:
+			return FloatAsInt( atan( VMF( 1 ) ) );
+
+		case TRAP_ATAN2:
+			return FloatAsInt( atan2( VMF( 1 ), VMF( 2 ) ) );
+
+		case TRAP_SQRT:
+			return FloatAsInt( sqrt( VMF( 1 ) ) );
+
+		case TRAP_FLOOR:
+			return FloatAsInt( floor( VMF( 1 ) ) );
+
+		case TRAP_CEIL:
+			return FloatAsInt( ceil( VMF( 1 ) ) );
+
+		case TRAP_MATRIXMULTIPLY:
+			AxisMultiply( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			return 0;
+
+		case TRAP_ANGLEVECTORS:
+			AngleVectors( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ) );
+			return 0;
+
+		case TRAP_PERPENDICULARVECTOR:
+			PerpendicularVector( VMA( 1 ), VMA( 2 ) );
+			return 0;
+
+		case TRAP_TESTPRINTINT:
+			Com_Printf( "%s%" PRIiPTR "\n", ( char * ) VMA( 1 ), args[ 2 ] );
+			return 0;
+
+		case TRAP_TESTPRINTFLOAT:
+			Com_Printf( "%s%f\n", ( char * ) VMA( 1 ), VMF( 2 ) );
+			return 0;
+
+		case TRAP_VERSION:
+			if ( args[ 1 ] != SYSCALL_ABI_VERSION_MAJOR || args[ 2 ] > SYSCALL_ABI_VERSION_MINOR )
+			{
+				Com_Error( ERR_DROP, "Syscall ABI mismatch" );
+			}
+			return 0;
+
+		default:
+			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}
 
-	Com_Memcpy( currentVM->dataBase + dest, currentVM->dataBase + src, n );
+	return -1;
 }

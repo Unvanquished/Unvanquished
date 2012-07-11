@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #define	BASEDIRNAME	"openwolf"		// assumed to have a 2 or 3 following
-#define PATHSEPERATOR   '/'
+#define PATHSEPARATOR   '/'
 
 // set these before calling CheckParm
 int myargc;
@@ -118,7 +118,7 @@ Error
 For abnormal program terminations in windowed apps
 =================
 */
-void Error( const char *error, ... )
+void PRINTF_LIKE(1) NORETURN Error( const char *error, ... )
 {
 	va_list argptr;
 	char	text[1024];
@@ -145,7 +145,7 @@ Error
 For abnormal program terminations in console apps
 =================
 */
-void Error( const char *error, ...)
+void PRINTF_LIKE(1) NORETURN Error( const char *error, ...)
 {
 	va_list argptr;
 
@@ -162,7 +162,7 @@ void Error( const char *error, ...)
 
 // only printf if in verbose mode
 qboolean verbose = qfalse;
-void qprintf( const char *format, ... ) {
+void PRINTF_LIKE(1) qprintf( const char *format, ... ) {
 	va_list argptr;
 
 	if (!verbose)
@@ -180,7 +180,7 @@ qboolean lookedForServer = qfalse;
 UINT wm_BroadcastCommand = -1;
 #endif
 
-void _printf( const char *format, ... ) {
+void PRINTF_LIKE(1) _printf( const char *format, ... ) {
 	va_list argptr;
   char text[4096];
 #ifdef WIN32
@@ -262,7 +262,7 @@ void SetQdirFromPath( const char *path )
 			qprintf ("qdir: %s\n", qdir);
 			for ( i = 0; i < strlen( qdir ); i++ )
 			{
-				if ( qdir[i] == '\\' ) 
+				if ( qdir[i] == '\\' )
 					qdir[i] = '/';
 			}
 
@@ -275,7 +275,7 @@ void SetQdirFromPath( const char *path )
 
 					for ( i = 0; i < strlen( gamedir ); i++ )
 					{
-						if ( gamedir[i] == '\\' ) 
+						if ( gamedir[i] == '\\' )
 							gamedir[i] = '/';
 					}
 
@@ -374,9 +374,9 @@ I_FloatTime
 double I_FloatTime (void)
 {
 	time_t	t;
-	
+
 	time (&t);
-	
+
 	return t;
 #if 0
 // more precise, less portable
@@ -385,13 +385,13 @@ double I_FloatTime (void)
 	static int		secbase;
 
 	gettimeofday(&tp, &tzp);
-	
+
 	if (!secbase)
 	{
 		secbase = tp.tv_sec;
 		return tp.tv_usec/1000000.0;
 	}
-	
+
 	return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
 #endif
 }
@@ -440,10 +440,10 @@ returns -1 if not present
 int	FileTime (const char *path)
 {
 	struct	stat	buf;
-	
+
 	if (stat (path,&buf) == -1)
 		return -1;
-	
+
 	return buf.st_mtime;
 }
 
@@ -460,13 +460,13 @@ char *COM_Parse (char *data)
 {
 	int		c;
 	int		len;
-	
+
 	len = 0;
 	com_token[0] = 0;
-	
+
 	if (!data)
 		return NULL;
-		
+
 // skip whitespace
 skipwhite:
 	while ( (c = *data) <= ' ')
@@ -478,7 +478,7 @@ skipwhite:
 		}
 		data++;
 	}
-	
+
 // skip // comments
 	if (c=='/' && data[1] == '/')
 	{
@@ -486,7 +486,7 @@ skipwhite:
 			data++;
 		goto skipwhite;
 	}
-	
+
 
 // handle quoted strings specially
 	if (c == '\"')
@@ -524,7 +524,7 @@ skipwhite:
 	if (c=='{' || c=='}'|| c==')'|| c=='(' || c=='\'' || c==':')
 			break;
 	} while (c>32);
-	
+
 	com_token[len] = 0;
 	return data;
 }
@@ -533,7 +533,7 @@ skipwhite:
 int Q_strncasecmp (const char *s1, const char *s2, int n)
 {
 	int		c1, c2;
-	
+
 	do
 	{
 		c1 = *s1++;
@@ -541,7 +541,7 @@ int Q_strncasecmp (const char *s1, const char *s2, int n)
 
 		if (!n--)
 			return 0;		// strings are equal until end point
-		
+
 		if (c1 != c2)
 		{
 			if (c1 >= 'a' && c1 <= 'z')
@@ -552,7 +552,7 @@ int Q_strncasecmp (const char *s1, const char *s2, int n)
 				return -1;		// strings not equal
 		}
 	} while (c1);
-	
+
 	return 0;		// strings are equal
 }
 
@@ -580,7 +580,7 @@ char *strlower (char *start)
 	in = start;
 	while (*in)
 	{
-		*in = tolower(*in); 
+		*in = tolower(*in);
 		in++;
 	}
 	return start;
@@ -796,7 +796,7 @@ void DefaultExtension (char *path, const char *extension)
 {
 	char    *src;
 //
-// if path doesnt have a .EXT, append extension
+// if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
 	src = path + strlen(path) - 1;
@@ -816,7 +816,7 @@ void DefaultPath (char *path, const char *basepath)
 {
 	char    temp[128];
 
-	if (path[0] == PATHSEPERATOR)
+	if (path[0] == PATHSEPARATOR)
 		return;                   // absolute path location
 	strcpy (temp,path);
 	strcpy (path,basepath);
@@ -829,7 +829,7 @@ void    StripFilename (char *path)
 	int             length;
 
 	length = strlen(path)-1;
-	while (length > 0 && path[length] != PATHSEPERATOR)
+	while (length > 0 && path[length] != PATHSEPARATOR)
 		length--;
 	path[length] = 0;
 }
@@ -882,7 +882,7 @@ void ExtractFileBase (const char *path, char *dest)
 //
 // back up until a \ or the start
 //
-	while (src != path && *(src-1) != PATHSEPERATOR)
+	while (src != path && *(src-1) != PATHSEPARATOR)
 		src--;
 
 	while (*src && *src != '.')
@@ -1006,13 +1006,13 @@ int    BigLong (int l)
 float	LittleFloat (float l)
 {
 	union {byte b[4]; float f;} in, out;
-	
+
 	in.f = l;
 	out.b[0] = in.b[3];
 	out.b[1] = in.b[2];
 	out.b[2] = in.b[1];
 	out.b[3] = in.b[0];
-	
+
 	return out.f;
 }
 
@@ -1061,13 +1061,13 @@ int    LittleLong (int l)
 float	BigFloat (float l)
 {
 	union {byte b[4]; float f;} in, out;
-	
+
 	in.f = l;
 	out.b[0] = in.b[3];
 	out.b[1] = in.b[2];
 	out.b[2] = in.b[1];
 	out.b[3] = in.b[0];
-	
+
 	return out.f;
 }
 

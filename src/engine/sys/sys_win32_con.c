@@ -879,7 +879,7 @@ void Sys_ShowConsole( int visLevel, qboolean quitOnClose )
 			break;
 
 		default:
-			Sys_Error( "Invalid visLevel %d sent to Sys_ShowConsole\n", visLevel );
+			Sys_Error( "Invalid visLevel %d sent to Sys_ShowConsole", visLevel );
 			break;
 	}
 }
@@ -955,6 +955,11 @@ void Conbuf_AppendText( const char *pMsg )
 		}
 		else
 		{
+			if ( msg[ i ] == Q_COLOR_ESCAPE && msg[ i + 1 ] == Q_COLOR_ESCAPE )
+			{
+				++i;
+			}
+
 			*b = msg[ i ];
 			b++;
 		}

@@ -863,6 +863,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	int         sdlcolorbits;
 	int         colorbits, depthbits, stencilbits;
 	int         tcolorbits, tdepthbits, tstencilbits;
+	int         samples;
 	int         i = 0;
 	SDL_Surface *vidscreen = NULL;
 	Uint32      flags = SDL_OPENGL;
@@ -903,18 +904,18 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 			ri.Printf( PRINT_ALL, "Cannot estimate display aspect, assuming 1.333\n" );
 		}
 	}
-	if ( videoInfo->current_h > 0 ) 
+	if ( videoInfo->current_h > 0 )
 	{
 		glConfig.vidWidth = videoInfo->current_w;
 		glConfig.vidHeight = videoInfo->current_h;
-	} 
-	else 
+	}
+	else
 	{
 		glConfig.vidWidth = 480;
 		glConfig.vidHeight = 640;
 		ri.Printf( PRINT_ALL, "Cannot determine display resolution, assuming 640x480\n" );
 	}
-	
+
 	ri.Printf( PRINT_ALL, "...setting mode %d:", mode );
 
 	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) )
@@ -940,23 +941,24 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		glConfig.isFullscreen = qfalse;
 	}
 
-	colorbits = r_colorbits->value;
+	colorbits = r_colorbits->integer;
 
 	if ( ( !colorbits ) || ( colorbits >= 32 ) )
 	{
 		colorbits = 24;
 	}
 
-	if ( !r_depthbits->value )
+	if ( !r_depthbits->integer )
 	{
 		depthbits = 24;
 	}
 	else
 	{
-		depthbits = r_depthbits->value;
+		depthbits = r_depthbits->integer;
 	}
 
-	stencilbits = r_stencilbits->value;
+	stencilbits = r_stencilbits->integer;
+	samples = r_ext_multisample->integer;
 
 	for ( i = 0; i < 16; i++ )
 	{
@@ -1054,6 +1056,8 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, sdlcolorbits );
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, tdepthbits );
 		SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, tstencilbits );
+		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, samples ? 1 : 0 );
+		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, samples );
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 		if ( SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, r_swapInterval->integer ) < 0 )
@@ -1216,12 +1220,12 @@ static void GLimp_XreaLInitExtensions( void )
 			}
 			else
 			{
-				ri.Error( ERR_FATAL, "...not using GL_ARB_multitexture, < 2 texture units\n" );
+				ri.Error( ERR_FATAL, "...not using GL_ARB_multitexture, < 2 texture units" );
 			}
 		}
 		else
 		{
-			ri.Error( ERR_FATAL, "...GL_ARB_multitexture not found\n" );
+			ri.Error( ERR_FATAL, "...GL_ARB_multitexture not found" );
 		}
 	}
 
@@ -1232,7 +1236,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_depth_texture not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_depth_texture not found" );
 	}
 
 	// GL_ARB_texture_cube_map
@@ -1243,7 +1247,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_texture_cube_map not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_texture_cube_map not found" );
 	}
 
 	GL_CheckErrors();
@@ -1255,7 +1259,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_vertex_program not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_vertex_program not found" );
 	}
 
 	// GL_ARB_vertex_buffer_object
@@ -1265,7 +1269,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_vertex_buffer_object not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_vertex_buffer_object not found" );
 	}
 
 	// GL_ARB_occlusion_query
@@ -1299,7 +1303,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_shader_objects not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_shader_objects not found" );
 	}
 
 	// GL_ARB_vertex_shader
@@ -1334,7 +1338,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_vertex_shader not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_vertex_shader not found" );
 	}
 
 	GL_CheckErrors();
@@ -1346,7 +1350,7 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 	else
 	{
-		ri.Error( ERR_FATAL, "...GL_ARB_fragment_shader not found\n" );
+		ri.Error( ERR_FATAL, "...GL_ARB_fragment_shader not found" );
 	}
 
 	// GL_ARB_shading_language_100
@@ -1864,7 +1868,7 @@ static void reportDriverType( qboolean force )
 	static const char *const drivers[] = {
 		"integrated", "stand-alone", "Voodoo", "OpenGL 3+", "Mesa"
 	};
-	if (glConfig.driverType > GLDRV_UNKNOWN && glConfig.driverType < sizeof( drivers ) / sizeof( drivers[0] ) )
+	if (glConfig.driverType > GLDRV_UNKNOWN && glConfig.driverType < ARRAY_LEN( drivers ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics driver class '%s'\n",
 		           force ? "User has forced" : "Detected",
@@ -1878,7 +1882,7 @@ static void reportHardwareType( qboolean force )
 		"generic", "Voodoo", "Riva 128", "Rage Pro", "Permedia 2",
 		"ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
 	};
-	if (glConfig.hardwareType > GLDRV_UNKNOWN && glConfig.driverType < sizeof( hardware ) / sizeof( hardware[0] ) )
+	if (glConfig.hardwareType > GLHW_UNKNOWN && glConfig.driverType < ARRAY_LEN( hardware ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
 		           force ? "User has forced" : "Detected",

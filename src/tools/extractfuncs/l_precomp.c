@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ Q_strncpyz
 Safe strncpy that ensures a trailing zero
 =============
 */
-extern void Error( char *error, ... );
+extern void Error( char *error, ... ) PRINTF_LIKE(1) NORETURN;
 void Q_strncpyz( char *dest, const char *src, int destsize ) {
 	if ( !src ) {
 		Error( "Q_strncpyz: NULL src" );
@@ -220,7 +220,7 @@ define_t *globaldefines;
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-void QDECL SourceError( source_t *source, char *str, ... ) {
+void QDECL PRINTF_LIKE(2) SourceError( source_t *source, char *str, ... ) {
 	char text[1024];
 	va_list ap;
 
@@ -243,7 +243,7 @@ void QDECL SourceError( source_t *source, char *str, ... ) {
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-void QDECL SourceWarning( source_t *source, char *str, ... ) {
+void QDECL PRINTF_LIKE(2) SourceWarning( source_t *source, char *str, ... ) {
 	char text[1024];
 	va_list ap;
 
@@ -359,12 +359,12 @@ token_t *PC_CopyToken( token_t *token ) {
 //	t = freetokens;
 	if ( !t ) {
 #ifdef BSPC
-		Error( "out of token space\n" );
+		Error( "out of token space" );
 #else
 #ifdef SCREWUP
-		Error( "out of token space\n" );
+		Error( "out of token space" );
 #else
-		Com_Error( ERR_FATAL, "out of token space\n" );
+		Com_Error( ERR_FATAL, "out of token space" );
 #endif
 #endif
 		return NULL;
@@ -1013,7 +1013,7 @@ int PC_ExpandDefineIntoSource( source_t *source, define_t *define ) {
 void PC_ConvertPath( char *path ) {
 	char *ptr;
 
-	//remove double path seperators
+	//remove double path separators
 	for ( ptr = path; *ptr; )
 	{
 		if ( ( *ptr == '\\' || *ptr == '/' ) &&
@@ -1025,11 +1025,11 @@ void PC_ConvertPath( char *path ) {
 			ptr++;
 		} //end else
 	} //end while
-	  //set OS dependent path seperators
+	//set OS-dependent path separators
 	for ( ptr = path; *ptr; )
 	{
 		if ( *ptr == '/' || *ptr == '\\' ) {
-			*ptr = PATHSEPERATOR_CHAR;
+			*ptr = PATHSEPARATOR_CHAR;
 		}
 		ptr++;
 	} //end while
@@ -1376,7 +1376,7 @@ int PC_Directive_define( source_t *source ) {
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-define_t *PC_DefineFromString( char *string ) {
+define_t *PC_DefineFromString( const char *string ) {
 	script_t *script;
 	source_t src;
 	token_t *t;
@@ -1458,7 +1458,7 @@ int PC_AddDefine( source_t *source, char *string ) {
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_AddGlobalDefine( char *string ) {
+int PC_AddGlobalDefine( const char *string ) {
 	define_t *define;
 
 	define = PC_DefineFromString( string );
@@ -1715,7 +1715,7 @@ int PC_OperatorPriority( int op ) {
 #define MAX_OPERATORS   64
 #define AllocValue( val )								  \
 	if ( numvalues >= MAX_VALUES ) {					  \
-		SourceError( source, "out value space\n" );		\
+		SourceError( source, "out value space" );		\
 		error = 1;										\
 		break;											\
 	}													\
@@ -1725,7 +1725,7 @@ int PC_OperatorPriority( int op ) {
 //
 #define AllocOperator( op )								  \
 	if ( numoperators >= MAX_OPERATORS ) {				  \
-		SourceError( source, "out operator space\n" );	\
+		SourceError( source, "out operator space" );	\
 		error = 1;										\
 		break;											\
 	}													\
@@ -1879,7 +1879,7 @@ int PC_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intva
 					 t->subtype == P_RSHIFT || t->subtype == P_LSHIFT ||
 					 t->subtype == P_BIN_AND || t->subtype == P_BIN_OR ||
 					 t->subtype == P_BIN_XOR ) {
-					SourceError( source, "illigal operator %s on floating point operands\n", t->string );
+					SourceError( source, "illegal operator %s on floating point operands", t->string );
 					error = 1;
 					break;
 				}     //end if
@@ -2586,7 +2586,7 @@ int PC_ReadDirective( source_t *source ) {
 		SourceError( source, "found # at end of line" );
 		return qfalse;
 	} //end if
-	  //if if is a name
+	//if it's a name
 	if ( token.type == TT_NAME ) {
 		//find the precompiler directive
 		for ( i = 0; directives[i].name; i++ )
@@ -2688,7 +2688,7 @@ int PC_ReadDollarDirective( source_t *source ) {
 		SourceError( source, "found $ at end of line" );
 		return qfalse;
 	} //end if
-	  //if if is a name
+	//if it's a name
 	if ( token.type == TT_NAME ) {
 		//find the precompiler directive
 		for ( i = 0; dollardirectives[i].name; i++ )
@@ -3028,10 +3028,10 @@ void PC_UnreadToken( source_t *source, token_t *token ) {
 //============================================================================
 void PC_SetIncludePath( source_t *source, char *path ) {
 	strncpy( source->includepath, path, _MAX_PATH );
-	//add trailing path seperator
+	//add trailing path separator
 	if ( source->includepath[strlen( source->includepath ) - 1] != '\\' &&
 		 source->includepath[strlen( source->includepath ) - 1] != '/' ) {
-		strcat( source->includepath, PATHSEPERATOR_STR );
+		strcat( source->includepath, PATHSEPARATOR_STR );
 	} //end if
 } //end of the function PC_SetIncludePath
 //============================================================================

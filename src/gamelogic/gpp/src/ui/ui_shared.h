@@ -119,6 +119,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SLIDER_THUMB_HEIGHT 20.0f
 #define NUM_CROSSHAIRS      10
 
+// localisation
+#if 0
+#	define _(text)              gettext( text )
+#	define N_(one, many, count) ngettext( (one), (many), (count) )
+#else
+#	define _(text)              Gettext(text)
+#	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
+#endif
+
 typedef struct
 {
 	const char *command;
@@ -184,7 +193,7 @@ colorRangeDef_t;
 // FIXME: consolidate all of the common stuff in one structure for menus and items
 // THINKABOUTME: is there any compelling reason not to have items contain items
 // and do away with a menu per say.. major issue is not being able to dynamically allocate
-// and destroy stuff.. Another point to consider is adding an alloc free call for vm's and have
+// and destroy stuff.. Another point to consider is adding an alloc free call for VMs and have
 // the engine just allocate the pool for it based on a cvar
 // many of the vars are re-used for different item types, as such they are not always named appropriately
 // the benefits of c++ in DOOM will greatly help crap like this
@@ -298,7 +307,7 @@ typedef struct itemDef_s
 	float           textalignx; // ( optional ) text alignment x coord
 	float           textaligny; // ( optional ) text alignment x coord
 	float           textscale; // scale percentage from 72pts
-	int             textStyle; // ( optional ) style, normal and shadowed are it for now
+	int             textStyle; // ( optional ) style, plain and shadowed are it for now
 	const char      *text; // display text
 	void            *parent; // menu owner
 	qhandle_t       asset; // handle to asset
@@ -347,8 +356,8 @@ typedef struct
 	const char *onOpen; // run when the menu is first opened
 	const char *onClose; // run when the menu is closed
 	const char *onESC; // run when the menu is closed
+	const char *onKEY[ MAX_KEYS ]; // run when key is pressed
 	const char *soundName; // background loop sound for menu
-
 	vec4_t     focusColor; // focus color for items
 	vec4_t     disableColor; // focus color for items
 	itemDef_t  *items[ MAX_MENUITEMS ]; // items this menu contains
@@ -361,9 +370,7 @@ typedef struct
 	const char  *fontStr;
 	const char  *cursorStr;
 	const char  *gradientStr;
-	fontInfo_t  textFont;
-	fontInfo_t  smallFont;
-	fontInfo_t  bigFont;
+	fontMetrics_t textFont, smallFont, bigFont;
 	qhandle_t   cursor;
 	qhandle_t   gradientBar;
 	qhandle_t   scrollBarArrowUp;
@@ -389,6 +396,7 @@ typedef struct
 	vec4_t      shadowColor;
 	float       shadowFadeClamp;
 	qboolean    fontRegistered;
+	qboolean    dynFontRegistered;
 	emoticon_t  emoticons[ MAX_EMOTICONS ];
 	int         emoticonCount;
 }
@@ -419,7 +427,11 @@ typedef struct
 	void ( *clearScene )( void );
 	void ( *addRefEntityToScene )( const refEntity_t *re );
 	void ( *renderScene )( const refdef_t *fd );
-	void ( *registerFont )( const char *pFontname, int pointSize, fontInfo_t *font );
+	void ( *registerFont )( const char *pFontname, const char *pFallback, int pointSize, fontMetrics_t *out );
+	void ( *glyph )( fontHandle_t, const char *str, glyphInfo_t *glyph );
+	void ( *glyphChar )( fontHandle_t, int ch, glyphInfo_t *glyph );
+	void ( *freeCachedGlyphs )( fontHandle_t );
+
 	void ( *ownerDrawItem )( float x, float y, float w, float h, float text_x,
 	                         float text_y, int ownerDraw, int ownerDrawFlags,
 	                         int align, int textalign, int textvalign,
@@ -431,7 +443,7 @@ typedef struct
 	void ( *getCVarString )( const char *cvar, char *buffer, int bufsize );
 	float( *getCVarValue )( const char *cvar );
 	void ( *setCVar )( const char *cvar, const char *value );
-	void ( *drawTextWithCursor )( float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style );
+	void ( *drawTextWithCursor )( float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int clipped, int style );
 	void ( *setOverstrikeMode )( qboolean b );
 	qboolean( *getOverstrikeMode )( void );
 	void ( *startLocalSound )( sfxHandle_t sfx, int channelNum );
@@ -441,13 +453,12 @@ typedef struct
 	qhandle_t ( *feederItemImage )( int feederID, int index );
 	void ( *feederSelection )( int feederID, int index );
 	int ( *feederInitialise )( int feederID );
-	char *( *translateString )( const char *string );
 	void ( *keynumToStringBuf )( int keynum, char *buf, int buflen );
 	void ( *getBindingBuf )( int keynum, char *buf, int buflen );
 	void ( *setBinding )( int keynum, const char *binding );
 	void ( *executeText )( int exec_when, const char *text );
-	void ( *Error )( int level, const char *error, ... ) __attribute__( ( format( printf, 2, 3 ) ) );
-	void ( *Print )( const char *msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+	void ( *Error )( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
+	void ( *Print )( const char *msg, ... ) PRINTF_LIKE(1);
 	void ( *Pause )( qboolean b );
 	int ( *ownerDrawWidth )( int ownerDraw, float scale );
 	const char *( *ownerDrawText )( int ownerDraw );
@@ -492,7 +503,7 @@ void                Menu_Init( menuDef_t *menu );
 void                Item_Init( itemDef_t *item );
 void                Menu_PostParse( menuDef_t *menu );
 menuDef_t           *Menu_GetFocused( void );
-void                Menu_HandleKey( menuDef_t *menu, int key, qboolean down );
+void                Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down );
 void                Menu_HandleMouseMove( menuDef_t *menu, float x, float y );
 void                Menu_ScrollFeeder( menuDef_t *menu, int feeder, qboolean down );
 qboolean            Float_Parse( char **p, float *f );
@@ -525,7 +536,7 @@ int                 Display_CursorType( int x, int y );
 qboolean            Display_KeyBindPending( void );
 menuDef_t           *Menus_FindByName( const char *p );
 void                Menus_CloseByName( const char *p );
-void                Display_HandleKey( int key, qboolean down, int x, int y );
+void                Display_HandleKey( int key, int chr, qboolean down, int x, int y );
 void                LerpColor( vec4_t a, vec4_t b, vec4_t c, float t );
 void                Menus_CloseAll( void );
 void                Menu_Update( menuDef_t *menu );
@@ -542,6 +553,7 @@ void        UI_RemoveCaptureFunc( void );
 void        *UI_Alloc( int size );
 void        UI_InitMemory( void );
 qboolean    UI_OutOfMemory( void );
+void        UIS_Shutdown( void );
 
 void        Controls_GetConfig( void );
 void        Controls_SetConfig( qboolean restart );
@@ -555,17 +567,18 @@ const char  *Item_Text_Wrap( const char *text, float scale, float width );
 void        UI_DrawTextBlock( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                               float scale, int textalign, int textvalign,
                               int textStyle, const char *text );
-void        UI_Text_Paint( float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style );
+void        UI_Text_Paint( float x, float y, float scale, vec4_t color, const char *text, float adjust, int style );
 void        UI_Text_Paint_Limit( float *maxX, float x, float y, float scale,
-                                 vec4_t color, const char *text, float adjust, int limit );
+                                 vec4_t color, const char *text, float adjust );
 float       UI_Text_Width( const char *text, float scale );
 float       UI_Text_Height( const char *text, float scale );
 float       UI_Text_EmWidth( float scale );
 float       UI_Text_EmHeight( float scale );
+float       UI_Text_LineHeight( float scale );
 qboolean    UI_Text_IsEmoticon( const char *s, qboolean *escaped, int *length, qhandle_t *h, int *width );
 void        UI_EscapeEmoticons( char *dest, const char *src, int destsize );
-
-int         trap_Parse_AddGlobalDefine( char *define );
+glyphInfo_t *UI_Glyph( const fontMetrics_t *, const char *str );
+int         trap_Parse_AddGlobalDefine( const char *define );
 int         trap_Parse_LoadSource( const char *filename );
 int         trap_Parse_FreeSource( int handle );
 int         trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
@@ -573,6 +586,16 @@ int         trap_Parse_SourceFileAndLine( int handle, char *filename, int *line 
 
 void        BindingFromName( const char *cvar );
 
+int         UI_GetChatColour( int mode, int team );
+
 extern char g_nameBind1[ 32 ];
 extern char g_nameBind2[ 32 ];
+
+void       UI_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
+void       UI_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
+void       UI_R_UnregisterFont( fontHandle_t );
+
+int ui_CursorToOffset( const char *buf, int cursor );
+int ui_OffsetToCursor( const char *buf, int offset );
+const char *Gettext( const char *msgid ) __attribute__((format_arg(1)));
 #endif

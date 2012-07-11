@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../ui/ui_shared.h"
 
 // The entire cgame module is unloaded and reloaded on each level change,
-// so there is NO persistant data between levels on the client side.
+// so there is no persistent data between levels on the client side.
 // If you absolutely need something stored, it can either be kept
 // by the server in the server stored userinfos, or stashed in a cvar.
 
@@ -80,7 +80,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef enum
 {
-  FOOTSTEP_NORMAL,
+  FOOTSTEP_GENERAL,
   FOOTSTEP_FLESH,
   FOOTSTEP_METAL,
   FOOTSTEP_SPLASH,
@@ -111,11 +111,9 @@ typedef enum
 // The current lerp will finish out, then it will lerp to the new animation
 typedef struct
 {
-	refSkeleton_t oldSkeleton;
 	int           oldFrame;
 	int           oldFrameTime; // time when ->oldFrame was exactly on
 
-	refSkeleton_t skeleton;
 	int           frame;
 	int           frameTime; // time when ->frame will be exactly on
 
@@ -143,9 +141,9 @@ typedef struct
 
 // debugging values:
 
-int   debug_anim_current;
-int   debug_anim_old;
-float debug_anim_blend;
+extern int   debug_anim_current;
+extern int   debug_anim_old;
+extern float debug_anim_blend;
 
 //======================================================================
 
@@ -220,7 +218,9 @@ typedef enum
   PMT_STATIC_TRANSFORM,
   PMT_TAG,
   PMT_CENT_ANGLES,
-  PMT_NORMAL
+  PMT_NORMAL,
+  PMT_LAST_NORMAL,
+  PMT_OPPORTUNISTIC_NORMAL
 } pMoveType_t;
 
 typedef enum
@@ -371,6 +371,9 @@ typedef struct particleSystem_s
 	//for PMT_NORMAL
 	qboolean normalValid;
 	vec3_t   normal;
+	//for PMT_LAST_NORMAL and PMT_OPPORTUNISTIC_NORMAL
+	qboolean lastNormalIsCurrent;
+	vec3_t   lastNormal;
 
 	int      charge;
 } particleSystem_t;
@@ -395,6 +398,8 @@ typedef struct particle_s
 {
 	baseParticle_t    *class;
 	particleEjector_t *parent;
+
+	particleSystem_t  *childParticleSystem;
 
 	int               birthTime;
 	int               lifeTime;
@@ -562,10 +567,6 @@ typedef struct trailBeam_s
 // player entities need to track more information
 // than any other type of entity.
 
-// note that not every player entity is a client entity,
-// because corpses after respawn are outside the normal
-// client numbering range
-
 // smoothing of view and model for WW transitions
 #define   MAXSMOOTHS 32
 
@@ -599,19 +600,21 @@ typedef struct lightFlareStatus_s
 	float    lastRadius; //caching of likely flare radius
 	float    lastRatio; //caching of likely flare ratio
 	int      lastTime; //last time flare was visible/occluded
-	qboolean status; //flare is visble?
+	qboolean status; //flare is visible?
 } lightFlareStatus_t;
 
 typedef struct buildableStatus_s
 {
 	int      lastTime; // Last time status was visible
-	qboolean visible; // Status is visble?
+	qboolean visible; // Status is visible?
 } buildableStatus_t;
 
 typedef struct buildableCache_s
 {
-	vec3_t cachedOrigin; // If either the cached entity origin or the
-	vec3_t cachedNormal; // cached surfNormal change the cache is invalid
+	vec3_t cachedOrigin; // If any of the values differ from their
+	vec3_t cachedAngles; //  cached versions, then the cache is invalid
+	vec3_t cachedNormal;
+	buildable_t cachedType;
 	vec3_t axis[ 3 ];
 	vec3_t origin;
 } buildableCache_t;
@@ -656,7 +659,7 @@ typedef struct centity_s
 
 	lerpFrame_t           lerpFrame;
 
-	buildableAnimNumber_t buildableAnim; //persistant anim number
+	buildableAnimNumber_t buildableAnim; //persistent anim number
 	buildableAnimNumber_t oldBuildableAnim; //to detect when new anims are set
 	qboolean              buildableIdleAnim; //to check if new idle anim
 	particleSystem_t      *buildablePS;
@@ -732,7 +735,7 @@ typedef struct
 {
 	qboolean infoValid;
 
-	char     name[ MAX_QPATH ];
+	char     name[ MAX_NAME_LENGTH ];
 	team_t   team;
 
 	int      score; // updated by score servercmds
@@ -774,11 +777,11 @@ typedef struct
 
 	sfxHandle_t sounds[ MAX_CUSTOM_SOUNDS ];
 
-	char        firstTorsoBoneName[ MAX_QPATH ];
-	char        lastTorsoBoneName[ MAX_QPATH ];
+	int         firstTorsoBone;
+	int         lastTorsoBone;
 
-	char        torsoControlBoneName[ MAX_QPATH ];
-	char        neckControlBoneName[ MAX_QPATH ];
+	int         torsoControlBone;
+	int         neckControlBone;
 	vec3_t      modelScale;
 
 	qhandle_t   bodyModel;
@@ -1095,7 +1098,7 @@ typedef struct
 
 	int itemPickup;
 	int itemPickupTime;
-	int itemPickupBlendTime; // the pulse around the crosshair is timed seperately
+	int itemPickupBlendTime; // the pulse around the crosshair is timed separately
 
 	int weaponSelectTime;
 	int weaponAnimation;
@@ -1225,6 +1228,7 @@ typedef struct
 
 	qhandle_t scannerShader;
 	qhandle_t scannerBlipShader;
+	qhandle_t scannerBlipBldgShader;
 	qhandle_t scannerLineShader;
 
 	qhandle_t teamOverlayShader;
@@ -1549,6 +1553,7 @@ extern  vmCvar_t            cg_thirdPersonRange;
 extern  vmCvar_t            cg_stereoSeparation;
 extern  vmCvar_t            cg_lagometer;
 extern  vmCvar_t            cg_drawSpeed;
+extern  vmCvar_t            cg_maxSpeedTimeWindow;
 extern  vmCvar_t            cg_synchronousClients;
 extern  vmCvar_t            cg_stats;
 extern  vmCvar_t            cg_paused;
@@ -1593,6 +1598,7 @@ extern  vmCvar_t            cg_rangeMarkerLineOpacity;
 extern  vmCvar_t            cg_rangeMarkerLineThickness;
 extern  vmCvar_t            cg_rangeMarkerForBlueprint;
 extern  vmCvar_t            cg_rangeMarkerBuildableTypes;
+extern  vmCvar_t            cg_rangeMarkerWhenSpectating;
 extern  vmCvar_t            cg_binaryShaderScreenScale;
 
 extern  vmCvar_t            cg_painBlendUpRate;
@@ -1642,8 +1648,8 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 
-void QDECL CG_Printf( const char *msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
-void QDECL CG_Error( const char *msg, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
+void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
+void QDECL CG_Error( const char *msg, ... ) PRINTF_LIKE(1) NORETURN;
 
 void       CG_StartMusic( void );
 int        CG_PlayerCount( void );
@@ -1653,7 +1659,7 @@ void       CG_UpdateCvars( void );
 int        CG_CrosshairPlayer( void );
 int        CG_LastAttacker( void );
 void       CG_LoadMenus( const char *menuFile );
-void       CG_KeyEvent( int key, qboolean down );
+void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );
 void       CG_EventHandling( int type );
 void       CG_SetScoreSelection( void *menu );
@@ -1924,6 +1930,7 @@ qboolean         CG_IsParticleSystemInfinite( particleSystem_t *ps );
 qboolean         CG_IsParticleSystemValid( particleSystem_t **ps );
 
 void             CG_SetParticleSystemNormal( particleSystem_t *ps, vec3_t normal );
+void             CG_SetParticleSystemLastNormal( particleSystem_t *ps, const vec3_t normal );
 
 void             CG_AddParticles( void );
 
@@ -1973,5 +1980,5 @@ typedef enum
   DT_INTERACTIVE, // team, class, armoury
   DT_ARMOURYEVOLVE, // Insufficient funds et al
   DT_BUILD, // build errors
-  DT_COMMAND, // You must be living/human/spec etc.
+  DT_COMMAND, // You must be alive/human/spec/etc.
 } dialogType_t;

@@ -32,10 +32,11 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifdef USING_CMAKE
+#include "git_version.h"
+#endif
+
 #include <CPUInfo.h>
-// the CPUInfo.h implemntation of lengthof is unsafe, so use the one
-// from q_shared.h
-#undef lengthof
 
 #include <signal.h>
 #include <stdlib.h>
@@ -211,65 +212,12 @@ char *Sys_ConsoleInput( void )
 
 /*
 =================
-Sys_PIDFileName
-=================
-*/
-static char *Sys_PIDFileName( void )
-{
-	return va( "%s/%s", Sys_TempPath(), PID_FILENAME );
-}
-
-/*
-=================
-Sys_WritePIDFile
-
-Return qtrue if there is an existing stale PID file
-=================
-*/
-qboolean Sys_WritePIDFile( void )
-{
-	char     *pidFile = Sys_PIDFileName();
-	FILE     *f;
-	qboolean stale = qfalse;
-
-	// First, check if the pid file is already there
-	if ( ( f = fopen( pidFile, "r" ) ) != NULL )
-	{
-		char pidBuffer[ 64 ] = { 0 };
-		int  pid;
-
-		fread( pidBuffer, sizeof( char ), sizeof( pidBuffer ) - 1, f );
-		fclose( f );
-
-		pid = atoi( pidBuffer );
-
-		if ( !Sys_PIDIsRunning( pid ) )
-		{
-			stale = qtrue;
-		}
-	}
-
-	if ( ( f = fopen( pidFile, "w" ) ) != NULL )
-	{
-		fprintf( f, "%d", Sys_PID() );
-		fclose( f );
-	}
-	else
-	{
-		Com_Printf( S_COLOR_YELLOW "Couldn't write %s.\n", pidFile );
-	}
-
-	return stale;
-}
-
-/*
-=================
 Sys_Exit
 
 Single exit point (regular exit or in case of error)
 =================
 */
-static void __attribute__((noreturn)) Sys_Exit( int exitCode )
+static void NORETURN Sys_Exit( int exitCode )
 {
 	CON_Shutdown();
 
@@ -277,12 +225,7 @@ static void __attribute__((noreturn)) Sys_Exit( int exitCode )
 	SDL_Quit();
 #endif
 
-	if ( exitCode < 2 )
-	{
-		// Normal exit
-		remove( Sys_PIDFileName() );
-	}
-
+	Sys_PlatformExit();
 	exit( exitCode );
 }
 
@@ -291,7 +234,7 @@ static void __attribute__((noreturn)) Sys_Exit( int exitCode )
 Sys_Quit
 =================
 */
-void Sys_Quit( void )
+void NORETURN Sys_Quit( void )
 {
 	Sys_Exit( 0 );
 }
@@ -412,6 +355,11 @@ void Sys_AnsiColorPrint( const char *msg )
 				break;
 			}
 
+			if ( *msg == Q_COLOR_ESCAPE && msg[1] == Q_COLOR_ESCAPE )
+			{
+				++msg;
+			}
+
 			buffer[ length ] = *msg;
 			length++;
 			msg++;
@@ -442,7 +390,7 @@ void Sys_Print( const char *msg )
 Sys_Error
 =================
 */
-void Sys_Error( const char *error, ... )
+void PRINTF_LIKE(1) NORETURN Sys_Error( const char *error, ... )
 {
 #if defined ( IPHONE )
 	NSString *errorString;
@@ -483,7 +431,7 @@ errorString = [[[ NSString alloc ] initWithFormat: [ NSString stringWithCString:
 Sys_Warn
 =================
 */
-void __attribute__( ( format( printf, 1, 2 ) ) ) Sys_Warn( char *warning, ... )
+void PRINTF_LIKE(1) Sys_Warn( char *warning, ... )
 {
 #if defined ( IPHONE )
 	NSString *warningString;
@@ -634,8 +582,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	gamedir = Cvar_VariableString( "fs_game" );
 	libpath = Cvar_VariableString( "fs_libpath" );
 
-#ifndef DEDICATED
-
+#if !defined( NO_UNTRUSTED_PLUGINS )
 	// if the server is pure, extract the dlls from the mp_bin.pk3 so
 	// that they can be referenced
 	if ( Cvar_VariableValue( "sv_pure" ) && Q_stricmp( name, "qagame" ) )
@@ -643,12 +590,9 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 		FS_CL_ExtractFromPakFile( homepath, gamedir, fname );
 	}
 
-#endif
-
-#ifdef NO_UNTRUSTED_PLUGINS
-	libHandle = NULL;
-#else
 	libHandle = Sys_TryLibraryLoad( homepath, gamedir, fname, fqpath );
+#else
+	libHandle = NULL;
 #endif
 
 	if ( !libHandle && libpath && libpath[0] )
@@ -684,11 +628,11 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 		if ( !dllEntry )
 		{
-			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%s\" !\n", name, Sys_LibraryError() );
+			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%s\" !", name, Sys_LibraryError() );
 		}
 		else
 		{
-			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%s\" !\n", name, Sys_LibraryError() );
+			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%s\" !", name, Sys_LibraryError() );
 		}
 
 #else
@@ -754,7 +698,7 @@ void Sys_ParseArgs( int argc, char **argv )
 Sys_SigHandler
 =================
 */
-void Sys_SigHandler( int signal )
+void NORETURN Sys_SigHandler( int signal )
 {
 	static qboolean signalcaught = qfalse;
 
@@ -961,7 +905,5 @@ int main( int argc, char **argv )
 		IN_Frame();
 		Com_Frame();
 	}
-
-	return 0;
 #endif
 }

@@ -3,5 +3,5 @@
 	section="Games/Action" \
 	title="Unvanquished" \
 	longtitle="Destroy the enemy and their base" \
-	command="/usr/games/unvanquished.sh" \
+	command="/usr/games/unvanquished" \
 	icon="/usr/share/icons/hicolor/128x128/apps/unvanquished.png"

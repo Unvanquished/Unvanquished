@@ -80,8 +80,6 @@ byte      *cmod_base;
 cvar_t    *cm_noAreas;
 cvar_t    *cm_noCurves;
 cvar_t    *cm_forceTriangles;
-cvar_t    *cm_playerCurveClip;
-cvar_t    *cm_optimize;
 #endif
 
 cmodel_t  box_model;
@@ -714,7 +712,7 @@ void CMod_LoadEntityString( lump_t *l )
 
 		if ( !*token )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: unexpected end of entities string while parsing worldspawn\n" );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: unexpected end of entities string while parsing worldspawn\n" ));
 			break;
 		}
 
@@ -743,14 +741,14 @@ void CMod_LoadEntityString( lump_t *l )
 		// check for per-poly collision support
 		if ( !Q_stricmp( keyname, "perPolyCollision" ) && !Q_stricmp( value, "1" ) )
 		{
-			Com_Printf( "map features per poly collision detection\n" );
+			Com_Printf(_( "map features per poly collision detection\n" ));
 			cm.perPolyCollision = qtrue;
 			continue;
 		}
 
 		if ( !Q_stricmp( keyname, "classname" ) && Q_stricmp( value, "worldspawn" ) )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: expected worldspawn found '%s'\n", value );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: expected worldspawn, found '%s'\n"), value );
 			break;
 		}
 	}
@@ -1038,8 +1036,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	cm_noAreas = Cvar_Get( "cm_noAreas", "0", CVAR_CHEAT );
 	cm_noCurves = Cvar_Get( "cm_noCurves", "0", CVAR_CHEAT );
 	cm_forceTriangles = Cvar_Get( "cm_forceTriangles", "0", CVAR_CHEAT | CVAR_LATCH );
-	cm_playerCurveClip = Cvar_Get( "cm_playerCurveClip", "1", CVAR_ARCHIVE | CVAR_CHEAT );
-	cm_optimize = Cvar_Get( "cm_optimize", "1", CVAR_CHEAT );
 #endif
 	Com_DPrintf( "CM_LoadMap( %s, %i )\n", name, clientload );
 

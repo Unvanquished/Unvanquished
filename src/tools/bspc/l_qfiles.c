@@ -2,9 +2,9 @@
 ===========================================================================
 
 Wolfenstein: Enemy Territory GPL Source Code
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).  
+This file is part of the Wolfenstein: Enemy Territory GPL Source Code (Wolf ET Source Code).
 
 Wolf ET Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -382,7 +382,7 @@ quakefile_t *FindQuakeFilesInPak( char *pakfile, char *filter ) {
 		} //end for
 		FreeMemory( idpackfiles );
 	} //end if
-	else //its a Sin pack file
+	else //it's a Sin pack file
 	{
 		//number of dir entries in the pak file
 		numpackdirs = LittleLong( packheader.dirlen ) / sizeof( dsinpackfile_t );
@@ -462,7 +462,7 @@ quakefile_t *FindQuakeFilesWithPakFilter( char *pakfilter, char *filter ) {
 		{
 			_splitpath( pakfilter, pakfile, NULL, NULL, NULL );
 			_splitpath( pakfilter, NULL, &pakfile[strlen( pakfile )], NULL, NULL );
-			AppendPathSeperator( pakfile, _MAX_PATH );
+			AppendPathSeparator( pakfile, _MAX_PATH );
 			strcat( pakfile, filedata.cFileName );
 			_stat( pakfile, &statbuf );
 #else
@@ -475,7 +475,7 @@ quakefile_t *FindQuakeFilesWithPakFilter( char *pakfilter, char *filter ) {
 			//if the file with .pak or .pk3 is a folder
 			if ( statbuf.st_mode & S_IFDIR ) {
 				strcpy( filename, pakfilter );
-				AppendPathSeperator( filename, _MAX_PATH );
+				AppendPathSeparator( filename, _MAX_PATH );
 				strcat( filename, filter );
 				qf = FindQuakeFilesWithPakFilter( NULL, filename );
 				if ( lastqf ) {
@@ -526,7 +526,7 @@ quakefile_t *FindQuakeFilesWithPakFilter( char *pakfilter, char *filter ) {
 		{
 			_splitpath( filter, filename, NULL, NULL, NULL );
 			_splitpath( filter, NULL, &filename[strlen( filename )], NULL, NULL );
-			AppendPathSeperator( filename, _MAX_PATH );
+			AppendPathSeparator( filename, _MAX_PATH );
 			strcat( filename, filedata.cFileName );
 #else
 		glob( filter, 0, NULL, &globbuf );

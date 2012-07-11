@@ -48,7 +48,7 @@ qboolean R_CheckFBO( const FBO_t *fbo )
 		return qtrue;
 	}
 
-	// an error occured
+	// an error occurred
 	switch ( code )
 	{
 		case GL_FRAMEBUFFER_COMPLETE_EXT:
@@ -116,7 +116,7 @@ FBO_t          *R_CreateFBO( const char *name, int width, int height )
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		ri.Error( ERR_DROP, "R_CreateFBO: \"%s\" is too long\n", name );
+		ri.Error( ERR_DROP, "R_CreateFBO: \"%s\" is too long", name );
 	}
 
 	if ( width <= 0 || width > glConfig2.maxRenderbufferSize )
@@ -789,7 +789,7 @@ void R_InitFBOs( void )
 				R_AttachFBOTextureDepth( tr.sunShadowMapFBOImage[ i ]->texnum );
 
 				/*
-				Since we dont have a color attachment the framebuffer will be considered incomplete.
+				Since we don't have a color attachment, the framebuffer will be considered incomplete.
 				Consequently, we must inform the driver that we do not wish to render to the color buffer.
 				We do this with a call to set the draw-buffer and read-buffer to GL_NONE:
 				*/
