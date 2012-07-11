@@ -74,6 +74,7 @@ cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvan
                                                                         "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
 
 cmake_dependent_option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                           1 BUILD_NEW_RENDERER             0 )
+cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 BUILD_CLIENT                   0 )
 
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
@@ -1616,7 +1617,6 @@ if( BUILD_SERVER )
   endif()
 
   # The following section finds the REQUIRED dependencies and makes them available to the target
-  find_package( SDL REQUIRED )
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
   find_package( CURL REQUIRED )
@@ -1630,8 +1630,8 @@ if( BUILD_SERVER )
     target_link_libraries( server ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-  target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
+  target_link_libraries( server ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
 
   # The following section finds the OPTIONAL dependencies and makes them available to the target
 
@@ -1657,6 +1657,13 @@ if( BUILD_SERVER )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BZIP2 )
     include_directories( ${BZIP2_INCLUDE_DIR} )
     target_link_libraries( server ${BZIP2_LIBRARY} )
+  endif()
+
+  if( USE_SDL_ICONV )
+    find_package( SDL REQUIRED )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
+    include_directories( ${SDL_INCLUDE_DIR} )
+    target_link_libraries( server ${SDL_LIBRARY} )
   endif()
 
   if( GAME_LIB_LLVM )
