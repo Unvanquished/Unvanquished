@@ -1619,7 +1619,6 @@ if( BUILD_SERVER )
   # The following section finds the REQUIRED dependencies and makes them available to the target
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
-  find_package( CURL REQUIRED )
 
   if( USE_INTERNAL_CRYPTO )
     # BEFORE is required to prevent system headers from being used
@@ -1630,8 +1629,8 @@ if( BUILD_SERVER )
     target_link_libraries( server ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-  target_link_libraries( server ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} )
+  target_link_libraries( server ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} )
 
   # The following section finds the OPTIONAL dependencies and makes them available to the target
 
@@ -1698,10 +1697,9 @@ if( BUILD_DAEMONMAP )
   find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
-  find_package( ZLIB REQUIRED )
   find_package( GLib2 REQUIRED )
-  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${GLIB_LIBRARIES} )
-  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS} )
+  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
 endif()
 
 #####################
