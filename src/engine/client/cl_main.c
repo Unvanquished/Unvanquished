@@ -2663,8 +2663,8 @@ void CL_Vid_Restart_f( void )
 			CL_GenerateRSAKey();
 		}
 		
-		Cvar_Get( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
-		GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
+		Cvar_Set( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
+		GUIDKEY_FILE, 0 ) );
 
 		Cvar_Set( "cl_newProfile", "0" );
 	}

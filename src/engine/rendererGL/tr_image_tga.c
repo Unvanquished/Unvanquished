@@ -74,16 +74,19 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaB
 
 	if ( targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported (%s)", name );
 	}
 
 	if ( targa_header.colormap_type != 0 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: colormaps not supported (%s)", name );
 	}
 
 	if ( ( targa_header.pixel_size != 32 && targa_header.pixel_size != 24 ) && targa_header.image_type != 3 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps) (%s)", name );
 	}
 
@@ -103,6 +106,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaB
 
 	if ( !columns || !rows || numPixels > 0x7FFFFFFF || numPixels / columns / 4 != rows )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: %s has an invalid image size", name );
 	}
 
@@ -160,6 +164,8 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaB
 						break;
 
 					default:
+						ri.Free( targa_rgba );
+						ri.FS_FreeFile( buffer );
 						ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 				}
 			}
@@ -204,6 +210,8 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaB
 							break;
 
 						default:
+							ri.Free( targa_rgba );
+							ri.FS_FreeFile( buffer );
 							ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 					}
 
@@ -262,6 +270,8 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height, byte alphaB
 								break;
 
 							default:
+								ri.Free( targa_rgba );
+								ri.FS_FreeFile( buffer );
 								ri.Error( ERR_DROP,
 								          "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 						}

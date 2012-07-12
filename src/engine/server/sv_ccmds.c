@@ -240,7 +240,6 @@ static void SV_Map_f( void )
 				return;
 			}
 
-			//buffer = Hunk_AllocateTempMemory(size);
 			FS_ReadFile( savemap, ( void ** ) &buffer );
 
 			if ( Q_stricmp( savemap, va( "%scurrent.sav", savedir ) ) != 0 )
@@ -252,7 +251,7 @@ static void SV_Map_f( void )
 
 				if ( csize != size )
 				{
-					Hunk_FreeTempMemory( buffer );
+					FS_FreeFile( buffer );
 					FS_Delete( va( "%scurrent.sav", savedir ) );
 // TTimo
 #ifdef __linux__
@@ -281,7 +280,7 @@ static void SV_Map_f( void )
 				svs.time = savegameTime;
 			}
 
-			Hunk_FreeTempMemory( buffer );
+			FS_FreeFile( buffer );
 		}
 		else
 		{
@@ -727,7 +726,6 @@ void SV_LoadGame_f( void )
 		return;
 	}
 
-	//buffer = Hunk_AllocateTempMemory(size);
 	FS_ReadFile( filename, ( void ** ) &buffer );
 
 	// read the mapname, if it is the same as the current map, then do a fast load
@@ -745,8 +743,7 @@ void SV_LoadGame_f( void )
 				FS_WriteFile( va( "%scurrent.sav", savedir ), buffer, size );
 			}
 
-			Hunk_FreeTempMemory( buffer );
-
+			FS_FreeFile( buffer );
 			Cvar_Set( "savegame_loading", "2" );  // 2 means it's a restart, so stop rendering until we are loaded
 			// set the filename
 			Cvar_Set( "savegame_filename", filename );
@@ -756,8 +753,7 @@ void SV_LoadGame_f( void )
 			return;
 		}
 	}
-
-	Hunk_FreeTempMemory( buffer );
+	FS_FreeFile( buffer );
 
 	// otherwise, do a slow load
 	if ( Cvar_VariableIntegerValue( "sv_cheats" ) )

@@ -362,7 +362,7 @@ Set up argc/argv for the given command
 */
 qboolean CL_GetServerCommand( int serverCommandNumber )
 {
-	char        *s;
+	const char  *s;
 	char        *cmd;
 	static char bigConfigString[ BIG_INFO_STRING ];
 	int         argc;

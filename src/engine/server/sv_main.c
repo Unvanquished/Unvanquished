@@ -235,13 +235,13 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 	
 	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr ", 9 ) )
 	{
-		SV_PrintTranslatedText( ( const char * ) message );
+		SV_PrintTranslatedText( ( const char * ) message, qtrue );
 	}
 
 	// hack to echo broadcast prints to console
 	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print ", 6 ) )
 	{
-		Com_Printf( "%s", Cmd_UnquoteString( ( char * ) message + 6 ) );
+		Com_Printf( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
 	}
 
 	
@@ -1638,6 +1638,7 @@ int SV_LoadTag( const char *mod_name )
 
 	if ( version != TAG_VERSION )
 	{
+		FS_FreeFile( buffer );
 		Com_Printf( _( S_COLOR_YELLOW  "WARNING: SV_LoadTag: %s has wrong version (%i should be %i)\n"), mod_name, version,
 		            TAG_VERSION );
 		return 0;
@@ -1692,16 +1693,16 @@ int SV_LoadTag( const char *mod_name )
 ========================
  */
 
-void SV_PrintTranslatedText( const char *text )
+void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 {
 	char        str[ MAX_STRING_CHARS ];
 	const char  *in;
-	int         i=0, j=0, num=-1;
+	int         i = 0;
 
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
-
-	in = Cmd_Argv( 1 );
+	
+	in = Trans_GettextGame( Cmd_Argv( 1 ) );
 	memset( &str, 0, sizeof( str ) );
 	while( *in )
 	{
@@ -1742,7 +1743,6 @@ void SV_PrintTranslatedText( const char *text )
 
 						Q_strcat( str, sizeof( str ), Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
 						in += 2;
-						j = 0;
 							
 						break;
 					}
@@ -1765,7 +1765,6 @@ void SV_PrintTranslatedText( const char *text )
 
 						Q_strcat( str, sizeof( str ), Cmd_Argv( num + 1 ) );
 						in++;
-						j = 0;
 
 						break;
 					}
@@ -1788,7 +1787,10 @@ void SV_PrintTranslatedText( const char *text )
 		}
 	}
 
-	Com_Printf( "%s", str );
+	Com_Printf( "%s%s",
+		broadcast ? "Broadcast: " : "",
+		str );
+
 	Cmd_RestoreCmdContext();
 }
 

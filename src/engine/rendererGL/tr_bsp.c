@@ -614,11 +614,13 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 
 	if ( !formatFound )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadRGBE: %s has no format", name );
 	}
 
 	if ( !w || !h )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadRGBE: %s has an invalid image size", name );
 	}
 
@@ -912,6 +914,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					if ( !image )
 					{
+						Com_Dealloc( hdrImage );
 						break;
 					}
 
@@ -10295,6 +10298,7 @@ void RE_LoadWorldMap( const char *name )
 
 	if ( i != BSP_VERSION && i != BSP_VERSION_Q3 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "RE_LoadWorldMap: %s has wrong version number (%i should be %i for ET or %i for Q3)",
 		          name, i, BSP_VERSION, BSP_VERSION_Q3 );
 	}

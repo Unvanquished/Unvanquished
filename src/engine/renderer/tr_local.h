@@ -75,7 +75,6 @@ typedef struct
 	int         ambientLightInt; // 32 bit rgba packed
 	vec3_t      directedLight;
 	int         entityLightInt[ ENTITY_LIGHT_STEPS ];
-	float       brightness;
 } trRefEntity_t;
 
 typedef struct
@@ -1693,7 +1692,7 @@ extern cvar_t *r_textureAnisotropy;
 extern cvar_t *r_offsetFactor;
 extern cvar_t *r_offsetUnits;
 
-extern cvar_t *r_lightmap; // render lightmaps only
+extern cvar_t *r_showLightMaps; // render lightmaps only
 extern cvar_t *r_uiFullScreen; // ui is running fullscreen
 
 extern cvar_t *r_logFile; // number of frames to emit GL logs

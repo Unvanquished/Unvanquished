@@ -107,6 +107,7 @@ DictionaryManager::get_dictionary(const Language& language)
     Dictionary* dict = new Dictionary(charset);
 
     dictionaries[language] = dict;
+    return *dict;
   }
 
 }

@@ -1454,7 +1454,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
 		CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
 
-		memcpy( &gun.skeleton, &gunSkeleton, sizeof( refSkeleton_t ) );
+		gun.skeleton = gunSkeleton;
 
 		if ( weapon->rotationBone[ 0 ] && ps )
 		{

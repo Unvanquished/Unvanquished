@@ -139,7 +139,8 @@
       {
         play "sound/misc/menu1.wav";
         close profiles;
-        uiScript applyProfile
+        uiScript applyProfile ;
+        setcvar cl_newProfile 1 ;
       }
     }
 

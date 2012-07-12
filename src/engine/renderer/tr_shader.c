@@ -6128,7 +6128,6 @@ void R_LoadCacheShaders( void )
 		return;
 	}
 
-	buf = ri.Hunk_AllocateTempMemory( len );
 	ri.FS_ReadFile( "shader.cache", &buf );
 	pString = buf;
 
@@ -6138,7 +6137,7 @@ void R_LoadCacheShaders( void )
 		RE_RegisterModel( name );
 	}
 
-	ri.Hunk_FreeTempMemory( buf );
+	ri.FS_FreeFile( buf );
 }
 
 // done.

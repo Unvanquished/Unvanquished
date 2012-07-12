@@ -121,7 +121,7 @@ static void CG_Creep( centity_t *cent )
 
 		if ( msec >= 0 && msec < scaleUpTime )
 		{
-			frac = ( float ) msec / scaleUpTime;
+			frac = ( float ) sin ( 0.5f * msec / scaleUpTime * M_PI );
 		}
 		else
 		{
@@ -736,7 +736,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	{
 		if ( bSkeleton.type != SK_INVALID )
 		{
-			memcpy( &oldbSkeleton, &bSkeleton, sizeof( refSkeleton_t ) );
+			oldbSkeleton = bSkeleton;
 
 			if ( lf->old_animation != NULL )
 			{
@@ -827,6 +827,9 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	if ( !( es->eFlags & EF_B_SPAWNED ) )
 	{
 		animation_t *anim = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT1 ];
+
+		// Change the animation in the lerpFrame so that md5s will use it too.
+		cent->lerpFrame.animation = &cg_buildables[ es->modelindex ].animations[ BANIM_CONSTRUCT1 ];
 
 		//so that when animation starts for real it has sensible numbers
 		cent->lerpFrame.oldFrameTime =
@@ -1947,12 +1950,15 @@ void CG_Buildable( centity_t *cent )
 
 	if ( cg_buildables[ es->modelindex ].md5 )
 	{
-		vec3_t Scale;
-		Scale[0] = Scale[1] = Scale[2] = scale;
-		memcpy( &ent.skeleton, &bSkeleton, sizeof( refSkeleton_t ) );
+		vec3_t    Scale;
+		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
+		
+		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
+		       scale * (float) sin ( 0.5f * (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime * M_PI );
+		ent.skeleton = bSkeleton;
 		CG_TransformSkeleton( &ent.skeleton, Scale );
-		memcpy( &ent.skeleton.bounds[ 0 ], &mins, sizeof( vec3_t ) );
-		memcpy( &ent.skeleton.bounds[ 1 ], &maxs, sizeof( vec3_t ) );
+		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
+		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
 	}
 
 	//add to refresh list

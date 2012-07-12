@@ -3216,7 +3216,7 @@ static void UI_Update( const char *name )
 		{
 			case 0: // high quality
 				trap_Cvar_SetValue( "r_subdivisions", 4 );
-				trap_Cvar_SetValue( "r_vertexlight", 0 );
+				trap_Cvar_SetValue( "r_vertexlighting", 0 );
 				trap_Cvar_SetValue( "r_lodbias", 0 );
 				trap_Cvar_SetValue( "r_colorbits", 32 );
 				trap_Cvar_SetValue( "r_depthbits", 24 );
@@ -3231,7 +3231,7 @@ static void UI_Update( const char *name )
 
 			case 1: // intermediate
 				trap_Cvar_SetValue( "r_subdivisions", 12 );
-				trap_Cvar_SetValue( "r_vertexlight", 0 );
+				trap_Cvar_SetValue( "r_vertexlighting", 0 );
 				trap_Cvar_SetValue( "r_lodbias", 0 );
 				trap_Cvar_SetValue( "r_colorbits", 0 );
 				trap_Cvar_SetValue( "r_depthbits", 24 );
@@ -3246,7 +3246,7 @@ static void UI_Update( const char *name )
 
 			case 2: // fast
 				trap_Cvar_SetValue( "r_subdivisions", 8 );
-				trap_Cvar_SetValue( "r_vertexlight", 0 );
+				trap_Cvar_SetValue( "r_vertexlighting", 0 );
 				trap_Cvar_SetValue( "r_lodbias", 1 );
 				trap_Cvar_SetValue( "r_colorbits", 0 );
 				trap_Cvar_SetValue( "r_depthbits", 0 );
@@ -3261,7 +3261,7 @@ static void UI_Update( const char *name )
 
 			case 3: // fastest
 				trap_Cvar_SetValue( "r_subdivisions", 20 );
-				trap_Cvar_SetValue( "r_vertexlight", 1 );
+				trap_Cvar_SetValue( "r_vertexlighting", 1 );
 				trap_Cvar_SetValue( "r_lodbias", 2 );
 				trap_Cvar_SetValue( "r_colorbits", 16 );
 				trap_Cvar_SetValue( "r_depthbits", 16 );

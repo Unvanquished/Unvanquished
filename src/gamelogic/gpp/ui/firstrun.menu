@@ -15,11 +15,6 @@
     {
 		uiScript loadProfiles
 	}
-    onEsc
-    {
-      play "sound/misc/menu1.wav";
-      close profile_firstrun
-    }
 
     itemDef
     {
@@ -36,8 +31,22 @@
       borderColor 1 1 1 1
     }
 
+	itemDef
+    {
+      text "Create a Profile"
+      type ITEM_TYPE_TEXT
+      style WINDOW_STYLE_EMPTY
+      textstyle ITEM_TEXTSTYLE_PLAIN
+      textscale .4
+      rect 0 5 W 20
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      decoration
+    }		
+    
 	CVAR( "Profile Name:", "ui_profile", 0, 39 )
-	CVAR( "Name:", "name", 1, 31 )
 	MULTI( "Video Quality:", "ui_glCustom", 
 		{ "High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4 },
 		play "sound/misc/menu1.wav" ; uiScript update "ui_glCustom" ,
@@ -77,7 +86,7 @@
 
     itemDef
     {
-      text "APPLY"
+      text "CREATE"
       type ITEM_TYPE_BUTTON
       textscale .25
       style WINDOW_STYLE_EMPTY

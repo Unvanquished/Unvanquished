@@ -2114,7 +2114,7 @@ qboolean G_admin_setlevel( gentity_t *ent )
 		}
 	}
 
-	if ( l->level && G_IsUnnamed( vic->client->pers.netname ) )
+	if ( l->level && vic && G_IsUnnamed( vic->client->pers.netname ) )
 	{
 		ADMP( QQ( N_("^3setlevel: ^7your intended victim has the default name\n") ) );
 		return qfalse;
@@ -4715,7 +4715,7 @@ qboolean G_admin_l1( gentity_t *ent )
 		return qfalse;
 	}
 
-	if ( G_IsUnnamed( vic->client->pers.netname ) )
+	if ( vic && G_IsUnnamed( vic->client->pers.netname ) )
 	{
 		ADMP( QQ( N_("^3l1: ^7your intended victim has the default name\n") ) );
 		return qfalse;
