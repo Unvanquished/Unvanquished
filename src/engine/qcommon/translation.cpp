@@ -44,10 +44,8 @@ extern "C"
 #include <iostream>
 
 using namespace tinygettext;
-#if !defined(__GNUC__) && !defined(__clang__)
-// Ugly char buffer for MSVC
-char gettextbuffer[ MAX_STRING_CHARS ];
-#endif
+// Ugly char buffer
+static char gettextbuffer[ MAX_STRING_CHARS ];
 
 DictionaryManager trans_manager;
 DictionaryManager trans_managergame;
@@ -212,54 +210,34 @@ extern "C" void Trans_Init( void )
 extern "C" const char* Trans_Gettext( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-#if !defined(__GNUC__) && !defined(__clang__)
 	Q_strncpyz( gettextbuffer, trans_dict.translate( msgid ).c_str(), sizeof( gettextbuffer ) );
 	return gettextbuffer;
-#else
-	return trans_dict.translate( msgid ).c_str();
-#endif
 }
 
 extern "C" const char* Trans_Pgettext( const char *msgctxt, const char *msgid )
 {
 	if ( !enabled ) { return msgid; }
-#if !defined(__GNUC__) && !defined(__clang__)
 	Q_strncpyz( gettextbuffer, trans_dict.translate_ctxt( msgctxt, msgid ).c_str(), sizeof( gettextbuffer ) );
 	return gettextbuffer;
-#else
-	return trans_dict.translate_ctxt( msgctxt,  msgid ).c_str();
-#endif
 }
 
 extern "C" const char* Trans_GettextGame( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-#if !defined(__GNUC__) && !defined(__clang__)
 	Q_strncpyz( gettextbuffer, trans_dictgame.translate( msgid ).c_str(), sizeof( gettextbuffer ) );
 	return gettextbuffer;
-#else
-	return trans_dictgame.translate( msgid ).c_str();
-#endif
 }
 
 extern "C" const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
 {
 	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-#if !defined(__GNUC__) && !defined(__clang__)
 	Q_strncpyz( gettextbuffer, trans_dict.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer ) );
 	return gettextbuffer;
-#else
-	return trans_dict.translate_plural( msgid, msgid_plural, num ).c_str();
-#endif
 }
 
 extern "C" const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num )
 {
 	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-#if !defined(__GNUC__) && !defined(__clang__)
 	Q_strncpyz( gettextbuffer, trans_dictgame.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer ) );
 	return gettextbuffer;
-#else
-	return trans_dictgame.translate_plural( msgid, msgid_plural, num ).c_str();
-#endif
 }
