@@ -185,6 +185,16 @@ qboolean G_NavLoad(dtNavMeshCreateParams *navParams, class_t classt) {
 	Com_Printf(" done.\n");
 	return qtrue;
 }
+
+void freeNavParams(dtNavMeshCreateParams *navParams) {
+	free((void*)navParams->verts);
+	free((void*)navParams->polys);
+	free((void*)navParams->polyAreas);
+	free((void*)navParams->polyFlags);
+	free((void*)navParams->detailMeshes);
+	free((void*)navParams->detailVerts);
+	free((void*)navParams->detailTris);
+}
 extern "C" void G_NavMeshInit() {
 	Com_Printf("==== Bot Navigation Initialization ==== \n");
 	memset(navMeshes,0,sizeof(*navMeshes));
@@ -205,6 +215,8 @@ extern "C" void G_NavMeshInit() {
 			Com_Printf ("Could not build Detour Navigation Mesh Data for class %s\n",BG_Class((class_t)i)->name);
 			return;
 		}
+
+		freeNavParams( &navParams );
 
 		navMeshes[i] = dtAllocNavMesh();
 
