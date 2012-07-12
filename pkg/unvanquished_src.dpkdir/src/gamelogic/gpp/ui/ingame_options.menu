@@ -1800,7 +1800,7 @@
       group optionsGrp
       type ITEM_TYPE_MULTI
       text "Lighting:"
-      cvar "r_vertexlight"
+      cvar "r_vertexLighting"
       cvarFloatList { "Light Map (high)" 0 "Vertex (low)" 1  }
       rect SCONTENT_X (SCONTENT_Y+(5*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_RIGHT
