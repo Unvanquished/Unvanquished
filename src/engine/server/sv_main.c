@@ -1696,13 +1696,15 @@ int SV_LoadTag( const char *mod_name )
 void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 {
 	char        str[ MAX_STRING_CHARS ];
+	char        buf[ MAX_STRING_CHARS ];
 	const char  *in;
 	int         i = 0;
 
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
 	
-	in = Trans_GettextGame( Cmd_Argv( 1 ) );
+	Q_strncpyz( buf, Trans_GettextGame( Cmd_Argv( 1 ) ), sizeof( buf ) );
+	in = buf;
 	memset( &str, 0, sizeof( str ) );
 	while( *in )
 	{
