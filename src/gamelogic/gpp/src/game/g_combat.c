@@ -235,7 +235,7 @@ float G_CamperRewardBonus(  gentity_t *self )
 	{
 		value = 1.0f + multiplier * (defences / (defences + mod));
 		value = MAX( value, 0.0f );
-		G_LogPrintf( "Anti-camper bonus for killing %s^7 near %d defences: %d%%\n",
+		G_LogPrintf( "Anti-camper bonus for killing %s near %d defences: %d%%\n",
 		             self->client->pers.netname, defences, (int)(value * 100.0f) );
 		return value;
 	}
