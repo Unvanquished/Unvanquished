@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # Retrieve Unvanquished resources from Sourceforge
 # Arguments:
 # 1. Destination directory
@@ -51,6 +51,8 @@ download ()
   echo '[32mDownloaded.[m'
 }
 
+test -f "$CACHE/md5sums" && mv -f "$CACHE/md5sums" "$CACHE/md5sums.old"
+
 # Get the md5sum checksums
 download "$CACHE" md5sums
 
@@ -70,6 +72,20 @@ echo "[33mDownloading missing or updated files...[m"
   while read i; do
     download "$DEST_DIR" "$(basename "$i")"
   done
+
+if test -f "$CACHE/md5sums.old"; then
+  echo "[33mRemoving previously referenced files...[m"
+  # Remove files listed in the old md5sums file
+  set +e
+  diff <(cut -d' ' -f3 "$CACHE/md5sums.old") <(cut -d' ' -f3 "$CACHE/md5sums") | sed -e '/^< /! d; /\// d; s/^< //'
+  set -e
+  diff <(cut -d' ' -f3 "$CACHE/md5sums.old") <(cut -d' ' -f3 "$CACHE/md5sums") |
+    sed -e '/^< /! d; /[/.]/ d; s/^< //' |
+    while read i; do
+      echo " $i"
+      rm "$DEST_DIR/$i"
+    done
+fi
 
 # All done :-)
 echo '[1;32mFinished.[m'
