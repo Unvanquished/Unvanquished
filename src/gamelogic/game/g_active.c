@@ -2234,7 +2234,11 @@ void ClientEndFrame( gentity_t *ent )
 		ent->client->ps.eFlags &= ~EF_CONNECTION;
 	}
 
-	ent->client->ps.stats[ STAT_HEALTH ] = ent->health; // FIXME: get rid of ent->health...
+	if( ent->client->ps.stats[ STAT_HEALTH ] != ent->health )
+	{
+		ent->client->ps.stats[ STAT_HEALTH ] = ent->health; // FIXME: get rid of ent->health...
+		ent->client->pers.infoChangeTime = level.time;
+	}
 
 	// respawn if dead
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 && level.time >= ent->client->respawnTime )

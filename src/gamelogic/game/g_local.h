@@ -311,7 +311,7 @@ typedef struct
 	char              netname[ MAX_NAME_LENGTH ];
 	int               enterTime; // level.time the client entered the game
 	int               location; // player locations
-	qboolean          teamInfo; // send team overlay updates?
+	int               teamInfo; // level.time of team overlay update (disabled = 0)
 	float             flySpeed; // for spectator/noclip moves
 	qboolean          disableBlueprintErrors; // should the buildable blueprint never be hidden from the players?
 
@@ -343,8 +343,9 @@ typedef struct
 	char     voice[ MAX_VOICE_NAME_LEN ];
 	qboolean useUnlagged;
 	int      pubkey_authenticated; // -1 = does not have pubkey, 0 = not authenticated, 1 = authenticated
-	// keep track of other players' info for tinfo
-	char cinfo[ MAX_CLIENTS ][ 16 ];
+
+	// level.time when teamoverlay info changed so we know to tell other players.
+	int                 infoChangeTime;
 } clientPersistant_t;
 
 #define MAX_UNLAGGED_MARKERS 256

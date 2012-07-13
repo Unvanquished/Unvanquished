@@ -3025,10 +3025,13 @@ void Cmd_Buy_f( gentity_t *ent )
 	else
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
+		return;
 	}
 
 	//update ClientInfo
 	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+	ent->client->pers.infoChangeTime = level.time;
+
 	return;
 
 cant_buy:
@@ -3244,10 +3247,12 @@ void Cmd_Sell_f( gentity_t *ent )
 	else
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
+		return;
 	}
 
 	//update ClientInfo
 	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+	ent->client->pers.infoChangeTime = level.time;
 }
 
 /*
