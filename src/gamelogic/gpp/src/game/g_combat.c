@@ -136,115 +136,6 @@ static const char *const modNames[] =
 
 /*
 ==================
-G_CamperRewardBonus
-
-Function to compute additional reward bonus for the attacker if this killed
-entity was a player near one of his/her defensive structures.
-Returns a factor for multiplying the reward.
-==================
-*/
-float G_CamperRewardBonus(  gentity_t *self )
-{
-	int       maxCounted = 10;
-	float     bonusMax = 2.0f; // Must positive!
-	float     bonus1 = 1.0f; // Must positive!
-	int       maxDistance = 0;
-
-	float     multiplier = 0.0;
-	float     mod = 1.0;
-
-	vec3_t    temp_v;
-	gentity_t *ent;
-	int       i;
-	int       team = self->client->ps.stats[ STAT_TEAM ];
-	int       defences = 0;
-	int       distance = 0;
-	float     value = 0.0f;
-
-	// exclude builders:
-	switch( BG_GetPlayerWeapon( &self->client->ps ) )
-	{
-	case WP_ABUILD:
-	case WP_ABUILD2:
-	case WP_HBUILD:
-		return 1.0f;
-	default:
-		;
-	}
-
-	if ( team == TEAM_ALIENS )
-	{
-		bonusMax = g_alienAnticampBonusMax.value;
-		bonus1 = g_alienAnticampBonus1.value;
-		maxDistance = g_alienAnticampRange.integer;
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		bonusMax = g_humanAnticampBonusMax.value;
-		bonus1 = g_humanAnticampBonus1.value;
-		maxDistance = g_humanAnticampRange.integer;
-	}
-
-	if ( bonusMax <= 0.01f )
-	{
-		return 1.0f;
-	}
-
-	// Ensures that the denominator is positive:
-	bonus1 = MAX(bonus1, bonusMax / (maxCounted - 1));
-	// Ensures that the numerator is non-negative:
-	bonus1 = MIN(bonus1, bonusMax);
-	mod = (bonusMax - bonus1) / (bonus1 - bonusMax / maxCounted);
-	multiplier = bonus1 * (1 + mod);
-
-	// Look for buildables,
-	for( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( ent->s.eType != ET_BUILDABLE ||
-		     !ent->spawned ||
-		     ent->health <= 0 )
-		{
-			continue;
-		}
-
-		// and filter the defensive ones in the victim's team:
-		switch (ent->s.modelindex)
-		{
-		case BA_A_HIVE:
-		case BA_A_ACIDTUBE:
-			if ( team == TEAM_ALIENS ) break; else continue;
-		case BA_H_TESLAGEN:
-		case BA_H_MGTURRET:
-			if ( team == TEAM_HUMANS ) break; else continue;
-		default:
-			continue;
-		}
-
-		VectorSubtract( self->client->ps.origin, ent->s.origin, temp_v );
-		distance = VectorLength( temp_v );
-		if ( distance < maxDistance )
-		{
-			if ( ++defences >= maxCounted )
-			{
-				break;
-			}
-		}
-	}
-
-	if ( defences > 0 )
-	{
-		value = 1.0f + multiplier * (defences / (defences + mod));
-		value = MAX( value, 0.0f );
-		G_LogPrintf( "Anti-camper bonus for killing %s near %d defences: %d%%\n",
-		             self->client->pers.netname, defences, (int)(value * 100.0f) );
-		return value;
-	}
-
-	return 1.0f;
-}
-
-/*
-==================
 G_RewardAttackers
 
 Function to distribute rewards to entities that killed this one.
@@ -279,7 +170,6 @@ float G_RewardAttackers( gentity_t *self )
 	if ( self->client )
 	{
 		value = BG_GetValueOfPlayer( &self->client->ps );
-		value *= G_CamperRewardBonus( self );
 		team = self->client->pers.teamSelection;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
 	}
