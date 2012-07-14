@@ -7,6 +7,9 @@
 # /usr/lib/games/unvanquished/main
 # /var/cache/games/unvanquished
 
+# Requirements: GNU coreutils, grep, sed, diff; curl.
+# (On GNU/Linux, only curl is likely missing by default.)
+
 set -e
 
 # Download from here
