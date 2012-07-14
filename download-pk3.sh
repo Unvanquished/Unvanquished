@@ -12,6 +12,14 @@ set -e
 # Download from here
 BASE_URL='http://downloads.sourceforge.net/project/unvanquished/Assets/'
 
+case "$1" in
+  --help|-h|-\?)
+    echo "$0: download Unvanquished game files"
+    echo "Usage: $0 DESTINATION_DIR [CACHE_DIR]"
+    exit 0
+    ;;
+esac
+
 # Paths passed to script
 DEST_DIR="${1:-.}"
 CACHE="${2:-${DEST_DIR}}"
