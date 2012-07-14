@@ -85,8 +85,9 @@ if test -f "$CACHE/md5sums.old"; then
   echo "[33mRemoving previously referenced files...[m"
   # Remove files listed in the old md5sums file
   diff <(cut -d' ' -f3 "$CACHE/md5sums.old") <(cut -d' ' -f3 "$CACHE/md5sums") |
-    sed -e '/^< /! d; /[\\/]/ d; s/^< //' |
+    sed -e '/^< /! d; s/^< //' |
     while read i; do
+      i="$(basename "$i")"
       echo " $i"
       rm -f "$DEST_DIR/$i"
     done
