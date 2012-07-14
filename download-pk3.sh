@@ -21,7 +21,7 @@ CACHE="${2:-${DEST_DIR}}"
 cleanup ()
 {
   test "$?" = 0 || echo '[1;31mFAILED.[m'
-  rm -f "$CACHE/"*.tmp "$DEST_DIR/"*.tmp
+  rm -f -- "$CACHE/"*.tmp "$DEST_DIR/"*.tmp
 }
 trap cleanup EXIT
 
@@ -29,7 +29,7 @@ echo "[1;32mCache directory:    [33m$CACHE
 [1;32mDownload directory: [33m$DEST_DIR[m"
 
 # Create directories if needed
-mkdir -p "$DEST_DIR" "$CACHE"
+mkdir -p -- "$DEST_DIR" "$CACHE"
 
 # Canonicalise the pathnames
 CURDIR="$PWD"
@@ -76,14 +76,11 @@ echo "[33mDownloading missing or updated files...[m"
 if test -f "$CACHE/md5sums.old"; then
   echo "[33mRemoving previously referenced files...[m"
   # Remove files listed in the old md5sums file
-  set +e
-  diff <(cut -d' ' -f3 "$CACHE/md5sums.old") <(cut -d' ' -f3 "$CACHE/md5sums") | sed -e '/^< /! d; /\// d; s/^< //'
-  set -e
   diff <(cut -d' ' -f3 "$CACHE/md5sums.old") <(cut -d' ' -f3 "$CACHE/md5sums") |
-    sed -e '/^< /! d; /[/.]/ d; s/^< //' |
+    sed -e '/^< /! d; /[\\/]/ d; s/^< //' |
     while read i; do
       echo " $i"
-      rm "$DEST_DIR/$i"
+      rm -f "$DEST_DIR/$i"
     done
 fi
 
