@@ -225,7 +225,6 @@ extern short *sfxScratchBuffer;
 extern sfx_t *sfxScratchPointer;
 extern int   sfxScratchIndex;
 
-void         SOrig_Init( void );
 void         SOrig_Shutdown( void );
 void         SOrig_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
 void         SOrig_StartLocalSound( sfxHandle_t sfx, int channelNum );
@@ -259,3 +258,61 @@ void         SOrig_MasterGain( float gain );
 #endif
 
 int SOrig_GetCurrentSoundTime( void );
+
+
+
+// Interface between daemon sound "api" and the sound backend
+typedef struct
+{
+	void (*Shutdown)(void);
+	void (*StartSound)( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
+	void (*StartSoundEx)( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
+	void (*StartLocalSound)( sfxHandle_t sfx, int channelNum );
+	void (*StartBackgroundTrack)( const char *intro, const char *loop );
+	void (*StopBackgroundTrack)( void );
+	void (*RawSamples)(int stream, int samples, int rate, int width, int channels, const byte *data, float volume, int entityNum);
+	void (*StopAllSounds)( void );
+	void (*ClearLoopingSounds)( qboolean killall );
+	void (*AddLoopingSound)( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
+	void (*AddRealLoopingSound)( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
+	void (*StopLoopingSound)(int entityNum );
+	void (*Respatialize)( int entityNum, const vec3_t origin, vec3_t axis[3], int inwater );
+	void (*UpdateEntityPosition)( int entityNum, const vec3_t origin );
+	void (*Update)( void );
+	void (*DisableSounds)( void );
+	void (*BeginRegistration)( void );
+	sfxHandle_t (*RegisterSound)( const char *sample, qboolean compressed );
+	void (*ClearSoundBuffer)( void );
+	void (*SoundInfo)( void );
+	void (*SoundList)( void );
+#ifdef USE_VOIP
+	void (*StartCapture)( void );
+	int (*AvailableCaptureSamples)( void );
+	void (*Capture)( int samples, byte *data );
+	void (*StopCapture)( void );
+	void (*MasterGain)( float gain );
+#endif
+	int (*SoundDuration) ( sfxHandle_t handle );
+	int (*GetVoiceAmplitude) ( int entnum );
+	int (*GetSoundLength)( sfxHandle_t sfxHandle );
+	int (*GetCurrentSoundTime) ( void );
+} soundInterface_t;
+
+qboolean S_AL_Init( soundInterface_t *si );
+void     SOrig_Init( soundInterface_t *si );
+
+typedef enum
+{
+	SRCPRI_AMBIENT = 0,	// Ambient sound effects
+	SRCPRI_ENTITY,			// Entity sound effects
+	SRCPRI_ONESHOT,			// One-shot sounds
+	SRCPRI_LOCAL,				// Local sounds
+	SRCPRI_STREAM				// Streams (music, cutscenes)
+} alSrcPriority_t;
+
+typedef int srcHandle_t;
+
+extern cvar_t *s_musicVolume;
+extern cvar_t *s_doppler;
+
+#define MAX_RAW_STREAMS (MAX_CLIENTS * 2 + 1)
