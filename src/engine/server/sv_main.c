@@ -235,13 +235,13 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 	
 	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr ", 9 ) )
 	{
-		SV_PrintTranslatedText( ( const char * ) message );
+		SV_PrintTranslatedText( ( const char * ) message, qtrue );
 	}
 
 	// hack to echo broadcast prints to console
 	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print ", 6 ) )
 	{
-		Com_Printf( "%s", Cmd_UnquoteString( ( char * ) message + 6 ) );
+		Com_Printf( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
 	}
 
 	
@@ -1693,16 +1693,18 @@ int SV_LoadTag( const char *mod_name )
 ========================
  */
 
-void SV_PrintTranslatedText( const char *text )
+void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 {
 	char        str[ MAX_STRING_CHARS ];
+	char        buf[ MAX_STRING_CHARS ];
 	const char  *in;
 	int         i = 0;
 
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
 	
-	in = Trans_GettextGame( Cmd_Argv( 1 ) );
+	Q_strncpyz( buf, Trans_GettextGame( Cmd_Argv( 1 ) ), sizeof( buf ) );
+	in = buf;
 	memset( &str, 0, sizeof( str ) );
 	while( *in )
 	{
@@ -1787,7 +1789,10 @@ void SV_PrintTranslatedText( const char *text )
 		}
 	}
 
-	Com_Printf( "%s", str );
+	Com_Printf( "%s%s",
+		broadcast ? "Broadcast: " : "",
+		str );
+
 	Cmd_RestoreCmdContext();
 }
 

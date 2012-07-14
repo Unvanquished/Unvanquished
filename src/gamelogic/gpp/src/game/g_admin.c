@@ -3702,7 +3702,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 							" ^3Syntax: ^7$1$ $3t$\n"
 							" ^3Flag: ^7'$4$'\n" ) );
 				ADMBP( "\" " );
-				ADMBP( va( "%s %s %s %s", admincmd->keyword, Quote( admincmd->function ), Quote( admincmd->syntax ), Quote( admincmd->flag ) ) );
+				ADMBP( va( "%s %s %s %s", admincmd->keyword, Quote( admincmd->function ), Quote( admincmd->syntax ), Quote( admincmd->flag ? admincmd->flag : "<none>" ) ) );
 				ADMBP_end();
 				return qtrue;
 			}
