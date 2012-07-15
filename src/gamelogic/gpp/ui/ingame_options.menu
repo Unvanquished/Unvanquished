@@ -1950,11 +1950,32 @@
     {
       name ghardware
       group optionsGrp
+      type ITEM_TYPE_MULTI
+      text "Multisampling:"
+      cvar "r_ext_multisample"
+      cvarFloatList { "No" 0 "2x" 2 "4x" 4 "6x" 6 }
+      rect SCONTENT_X (SCONTENT_Y+(12*ELEM_H)) SCONTENT_W ELEM_H
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textalignx SCONTENT_OFF
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+      }
+    }
+
+    itemDef
+    {
+      name ghardware
+      group optionsGrp
       type ITEM_TYPE_BUTTON
       text "APPLY"
       textscale .25
       style WINDOW_STYLE_EMPTY
-      rect SCONTENT_X (SCONTENT_Y+(13*ELEM_H)) SCONTENT_W ELEM_H
+      rect SCONTENT_X (SCONTENT_Y+(14*ELEM_H)) SCONTENT_W ELEM_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       forecolor 1 1 1 1
