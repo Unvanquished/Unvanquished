@@ -80,8 +80,6 @@ static cvar_t *in_xbox360Controller = NULL;
 static cvar_t *in_xbox360ControllerAvailable = NULL;
 static cvar_t *in_xbox360ControllerDebug = NULL;
 
-static int    vidRestartTime = 0;
-
 #define CTRL(a) (( a ) - 'a' + 1 )
 
 /*
@@ -1775,13 +1773,6 @@ void IN_Frame( void )
 	else
 	{
 		IN_ActivateMouse();
-	}
-
-	/* in case we had to delay actual restart of video system... */
-	if ( ( vidRestartTime != 0 ) && ( vidRestartTime < Sys_Milliseconds() ) )
-	{
-		vidRestartTime = 0;
-		Cbuf_AddText( "vid_restart\n" );
 	}
 }
 
