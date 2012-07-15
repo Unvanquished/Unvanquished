@@ -519,6 +519,7 @@ typedef struct
 	qboolean framebufferBlitAvailable;
 
 	qboolean generateMipmapAvailable;
+	qboolean getProgramBinaryAvailable;
 } glconfig2_t;
 // XreaL END
 

@@ -797,7 +797,7 @@ void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) con
 	GLvoid  *binary;
 
 	// Don't even try if the necessary functions aren't available
-	if( !GLEW_ARB_get_program_binary )
+	if( !glConfig2.getProgramBinaryAvailable )
 	{
 		return;
 	}
