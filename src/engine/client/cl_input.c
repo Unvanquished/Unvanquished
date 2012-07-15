@@ -70,8 +70,6 @@ static kbuttons_t dtmapping[] =
 	KB_MOVERIGHT, // DT_MOVERIGHT
 	KB_FORWARD, // DT_FORWARD
 	KB_BACK, // DT_BACK
-	-1, // DT_LEANLEFT
-	-1, // DT_LEANRIGHT
 	KB_UP // DT_UP
 };
 
