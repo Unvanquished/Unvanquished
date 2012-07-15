@@ -1847,7 +1847,6 @@ void S_Base_Init( soundInterface_t *si )
 	si->StartBackgroundTrack = S_Base_StartBackgroundTrack;
 	si->StopBackgroundTrack = S_Base_StopBackgroundTrack;
 	si->RawSamples = S_Base_RawSamples;
-	si->StopAllSounds = S_Base_StopAllSounds;
 	si->ClearLoopingSounds = S_Base_ClearLoopingSounds;
 	si->AddLoopingSound = S_Base_AddLoopingSound;
 	si->AddRealLoopingSound = S_Base_AddRealLoopingSound;

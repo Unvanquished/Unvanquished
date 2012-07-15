@@ -106,14 +106,6 @@ void S_RawSamples( int stream, int samples, int rate, int width, int channels,
 	}
 }
 
-void S_StopAllSounds( void )
-{
-	if( si.StopAllSounds )
-	{
-		si.StopAllSounds( );
-	}
-}
-
 void S_ClearLoopingSounds( qboolean killall )
 {
 	if( si.ClearLoopingSounds )
@@ -188,7 +180,7 @@ void S_BeginRegistration( void )
 
 sfxHandle_t S_RegisterSound( const char *sample, qboolean compressed )
 {
-	if ( si.RegisterSound )
+	if( si.RegisterSound )
 	{
 		return si.RegisterSound( sample, compressed );
 	}
@@ -231,7 +223,7 @@ int S_GetVoiceAmplitude( int entnum )
 }
 int S_GetSoundLength( sfxHandle_t sfxHandle )
 {
-	if ( si.GetSoundLength )
+	if( si.GetSoundLength )
 	{
 		return si.GetSoundLength( sfxHandle );
 	}
@@ -244,7 +236,7 @@ int S_GetSoundLength( sfxHandle_t sfxHandle )
 #ifdef USE_VOIP
 void S_StartCapture( void )
 {
-	if ( si.StartCapture )
+	if( si.StartCapture )
 	{
 		si.StartCapture( );
 	}
@@ -272,7 +264,7 @@ void S_Capture( int samples, byte *data )
 
 void S_StopCapture( void )
 {
-	if ( si.StopCapture )
+	if( si.StopCapture )
 	{
 		si.StopCapture( );
 	}
@@ -280,7 +272,7 @@ void S_StopCapture( void )
 
 void S_MasterGain( float gain )
 {
-	if ( si.MasterGain )
+	if( si.MasterGain )
 	{
 		si.MasterGain( gain );
 	}
@@ -300,6 +292,44 @@ int S_GetCurrentSoundTime( void )
 	}
 }
 
+
+void S_Play_f( void )
+{
+	if ( si.Play_f )
+	{
+		si.Play_f( );
+	}
+}
+
+void S_Music_f( void )
+{
+	if( si.Music_f )
+	{
+		si.Music_f( );
+	}
+}
+
+void S_SoundInfo_f( void )
+{
+	if ( si.SoundInfo_f )
+	{
+		si.SoundInfo_f( );
+	}
+}
+void  S_SoundList_f( void )
+{
+	if ( si.SoundList_f )
+	{
+		si.SoundList_f( );
+	}
+}
+void S_StopAllSounds( void )
+{
+	if ( si.StopAllSounds )
+	{
+		si.StopAllSounds( );
+	}
+}
 
 
 void S_Init( void )
@@ -346,11 +376,11 @@ void S_Init( void )
 			Com_Printf( "Using OpenAL sound backend\n" );
 		}
 
-		Cmd_AddCommand( "play", si.Play_f );
-		Cmd_AddCommand( "music", si.Music_f );
-		Cmd_AddCommand( "s_list", si.SoundList_f );
-		Cmd_AddCommand( "s_info", si.SoundInfo_f );
-		Cmd_AddCommand( "s_stop", si.StopAllSounds );
+		Cmd_AddCommand( "play", S_Play_f );
+		Cmd_AddCommand( "music", S_Music_f );
+		Cmd_AddCommand( "s_list", S_SoundList_f );
+		Cmd_AddCommand( "s_info", S_SoundInfo_f );
+		Cmd_AddCommand( "s_stop", S_StopAllSounds );
 	}
 	Com_Printf( "------------------------------------\n" );
 }
