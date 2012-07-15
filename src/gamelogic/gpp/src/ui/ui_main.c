@@ -3226,6 +3226,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
 				trap_Cvar_SetValue( "cg_shadows", 1 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 1 );
+				trap_Cvar_SetValue( "r_ext_multisample", 6 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
@@ -3241,6 +3242,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_ext_multisample", 4 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
@@ -3256,6 +3258,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_ext_multisample", 2 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 
@@ -3271,6 +3274,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_ext_multisample", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 		}
