@@ -43,8 +43,6 @@ cvar_t                *s_doppler;
 
 void S_Shutdown( void )
 {
-	Com_Printf( "Calling Shutdown\n" );
-
 	if( si.Shutdown )
 	{
 		si.Shutdown( );
@@ -61,7 +59,6 @@ void S_Shutdown( void )
 
 void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
 {
-	Com_Printf( "Calling StartSound\n" );
 	if( si.StartSound )
 	{
 		si.StartSound( origin, entnum, entchannel, sfx );
@@ -70,7 +67,6 @@ void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
 
 void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
 {
-	Com_Printf( "Calling StartSoundEx\n" );
 	if( si.StartSoundEx )
 	{
 		si.StartSoundEx( origin, entnum, entchannel, sfx );
@@ -79,7 +75,6 @@ void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx 
 
 void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 {
-	Com_Printf( "Calling StartLocalSound\n" );
 	if( si.StartLocalSound )
 	{
 		si.StartLocalSound( sfx, channelNum );
@@ -88,7 +83,6 @@ void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 
 void S_StartBackgroundTrack( const char *intro, const char *loop )
 {
-	Com_Printf( "Calling StartBackgroundTrack\n" );
 	if( si.StartBackgroundTrack )
 	{
 		si.StartBackgroundTrack( intro, loop );
@@ -97,7 +91,6 @@ void S_StartBackgroundTrack( const char *intro, const char *loop )
 
 void S_StopBackgroundTrack( void )
 {
-	Com_Printf( "Calling StopBackgroundTrack\n" );
 	if( si.StopBackgroundTrack )
 	{
 		si.StopBackgroundTrack( );
@@ -107,7 +100,6 @@ void S_StopBackgroundTrack( void )
 void S_RawSamples( int stream, int samples, int rate, int width, int channels,
                    const byte *data, float volume, int entityNum )
 {
-	Com_Printf( "Calling RawSamples\n" );
 	if( si.RawSamples )
 	{
 		si.RawSamples( stream, samples, rate, width, channels, data, volume, entityNum );
@@ -116,7 +108,6 @@ void S_RawSamples( int stream, int samples, int rate, int width, int channels,
 
 void S_StopAllSounds( void )
 {
-	Com_Printf( "Calling StopAllSounds\n" );
 	if( si.StopAllSounds )
 	{
 		si.StopAllSounds( );
@@ -125,7 +116,6 @@ void S_StopAllSounds( void )
 
 void S_ClearLoopingSounds( qboolean killall )
 {
-	//Com_Printf( "Calling ClearLoopingSounds\n" );
 	if( si.ClearLoopingSounds )
 	{
 		si.ClearLoopingSounds( killall );
@@ -134,7 +124,6 @@ void S_ClearLoopingSounds( qboolean killall )
 
 void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
 {
-	//Com_Printf( "Calling AddLoopingSounds\n" );
 	if( si.AddLoopingSound )
 	{
 		si.AddLoopingSound( entityNum,  origin, velocity, sfx );
@@ -143,7 +132,6 @@ void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocit
 
 void S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
 {
-	Com_Printf( "Calling AddRealLoopingSound\n" );
 	if( si.AddRealLoopingSound )
 	{
 		si.AddRealLoopingSound( entityNum, origin, velocity, sfx );
@@ -152,7 +140,6 @@ void S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t vel
 
 void S_StopLoopingSound( int entityNum )
 {
-	Com_Printf( "Calling StopLoopingSound\n" );
 	if( si.StopLoopingSound )
 	{
 		si.StopLoopingSound( entityNum );
@@ -161,7 +148,6 @@ void S_StopLoopingSound( int entityNum )
 
 void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater )
 {
-	//Com_Printf( "Calling Respatialize\n" );
 	if( si.Respatialize )
 	{
 		si.Respatialize( entityNum, origin, axis, inwater );
@@ -170,7 +156,6 @@ void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int i
 
 void S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 {
-	//Com_Printf( "Calling UpdateEntityPosition\n" );
 	if( si.UpdateEntityPosition )
 	{
 		si.UpdateEntityPosition( entityNum, origin );
@@ -179,7 +164,6 @@ void S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 
 void S_Update( void )
 {
-	//Com_Printf( "Calling Update\n" );
 	if( si.Update )
 	{
 		si.Update( );
@@ -188,7 +172,6 @@ void S_Update( void )
 
 void S_DisableSounds( void )
 {
-	Com_Printf( "Calling DisableSounds\n" );
 	if( si.DisableSounds )
 	{
 		si.DisableSounds( );
@@ -197,7 +180,6 @@ void S_DisableSounds( void )
 
 void S_BeginRegistration( void )
 {
-	Com_Printf( "Calling BeginRegistration\n" );
 	if( si.BeginRegistration )
 	{
 		si.BeginRegistration( );
@@ -206,7 +188,6 @@ void S_BeginRegistration( void )
 
 sfxHandle_t S_RegisterSound( const char *sample, qboolean compressed )
 {
-	Com_Printf( "Calling RegisterSound\n" );
 	if ( si.RegisterSound )
 	{
 		return si.RegisterSound( sample, compressed );
@@ -219,7 +200,6 @@ sfxHandle_t S_RegisterSound( const char *sample, qboolean compressed )
 
 void S_ClearSoundBuffer( void )
 {
-	Com_Printf( "Calling ClearSoundBuffer\n" );
 	if( si.ClearSoundBuffer )
 	{
 		si.ClearSoundBuffer( );
@@ -228,7 +208,6 @@ void S_ClearSoundBuffer( void )
 
 int S_SoundDuration( sfxHandle_t handle )
 {
-	Com_Printf( "Calling SoundDuration\n" );
 	if( si.SoundDuration )
 	{
 		return si.SoundDuration( handle );
@@ -241,7 +220,6 @@ int S_SoundDuration( sfxHandle_t handle )
 
 int S_GetVoiceAmplitude( int entnum )
 {
-	Com_Printf( "Calling GetVoiceAmplitude\n" );
 	if ( si.GetVoiceAmplitude )
 	{
 		return si.GetVoiceAmplitude( entnum );
@@ -253,7 +231,6 @@ int S_GetVoiceAmplitude( int entnum )
 }
 int S_GetSoundLength( sfxHandle_t sfxHandle )
 {
-	Com_Printf( "Calling GetSoundLength\n" );
 	if ( si.GetSoundLength )
 	{
 		return si.GetSoundLength( sfxHandle );
@@ -267,7 +244,6 @@ int S_GetSoundLength( sfxHandle_t sfxHandle )
 #ifdef USE_VOIP
 void S_StartCapture( void )
 {
-	Com_Printf( "Calling StartCapture\n" );
 	if ( si.StartCapture )
 	{
 		si.StartCapture( );
@@ -276,7 +252,6 @@ void S_StartCapture( void )
 
 int S_AvailableCaptureSamples( void )
 {
-	Com_Printf( "Calling AvailableCaptureSamples\n" );
 	if ( si.AvailableCaptureSamples )
 	{
 		return si.AvailableCaptureSamples( );
@@ -289,7 +264,6 @@ int S_AvailableCaptureSamples( void )
 
 void S_Capture( int samples, byte *data )
 {
-	Com_Printf( "Calling Capture\n" );
 	if ( si.Capture )
 	{
 		si.Capture( samples, data );
@@ -298,7 +272,6 @@ void S_Capture( int samples, byte *data )
 
 void S_StopCapture( void )
 {
-	Com_Printf( "Calling Stop Capture\n" );
 	if ( si.StopCapture )
 	{
 		si.StopCapture( );
@@ -307,7 +280,6 @@ void S_StopCapture( void )
 
 void S_MasterGain( float gain )
 {
-	Com_Printf( "Calling MasterGain\n" );
 	if ( si.MasterGain )
 	{
 		si.MasterGain( gain );
@@ -318,7 +290,6 @@ void S_MasterGain( float gain )
 
 int S_GetCurrentSoundTime( void )
 {
-	Com_Printf( "Calling GetCurrentSoundTime\n" );
 	if( si.GetCurrentSoundTime )
 	{
 		return si.GetCurrentSoundTime( );
