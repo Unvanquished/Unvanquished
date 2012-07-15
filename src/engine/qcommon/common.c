@@ -3326,7 +3326,7 @@ void Com_Init( char *commandLine )
 				// bani - check existing pid file and make sure it's ok
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
-#ifndef _DEBUG
+#if 0
 					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"),
 					            cl_profileStr );
 					// ydnar: set crashed state

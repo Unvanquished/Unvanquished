@@ -70,8 +70,6 @@ static kbuttons_t dtmapping[] =
 	KB_MOVERIGHT, // DT_MOVERIGHT
 	KB_FORWARD, // DT_FORWARD
 	KB_BACK, // DT_BACK
-	-1, // DT_LEANLEFT
-	-1, // DT_LEANRIGHT
 	KB_UP // DT_UP
 };
 
@@ -414,13 +412,18 @@ void CL_KeyMove( usercmd_t *cmd )
 			{
 				cl.doubleTap.pressedTime[ i ] = com_frameTime;
 			}
-			else if ( !key_down && !cl.doubleTap.releasedTime[ i ]
-			          && ( com_frameTime - cl.doubleTap.pressedTime[ i ] ) < ( cl_doubletapdelay->integer + cls.frametime ) )
+			else if ( !key_down &&
+			          cl.doubleTap.pressedTime[ i ] &&
+			          !cl.doubleTap.releasedTime[ i ] &&
+			          com_frameTime - cl.doubleTap.pressedTime[ i ] < cl_doubletapdelay->integer + cls.frametime )
 			{
 				cl.doubleTap.releasedTime[ i ] = com_frameTime;
 			}
-			else if ( key_down && ( com_frameTime - cl.doubleTap.pressedTime[ i ] ) < ( cl_doubletapdelay->integer + cls.frametime )
-			          && ( com_frameTime - cl.doubleTap.releasedTime[ i ] ) < ( cl_doubletapdelay->integer + cls.frametime ) )
+			else if ( key_down &&
+			          cl.doubleTap.pressedTime[ i ] &&
+			          cl.doubleTap.releasedTime[ i ] &&
+			          com_frameTime - cl.doubleTap.pressedTime[ i ] < cl_doubletapdelay->integer + cls.frametime &&
+			          com_frameTime - cl.doubleTap.releasedTime[ i ] < cl_doubletapdelay->integer + cls.frametime )
 			{
 				cl.doubleTap.pressedTime[ i ] = cl.doubleTap.releasedTime[ i ] = 0;
 				cmd->doubleTap = i;

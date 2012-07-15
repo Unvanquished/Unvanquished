@@ -320,7 +320,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_noVoiceText,                 "cg_noVoiceText",                 "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawSurfNormal,              "cg_drawSurfNormal",              "0",            CVAR_CHEAT                   },
 	{ &cg_drawBBOX,                    "cg_drawBBOX",                    "0",            CVAR_CHEAT                   },
-	{ &cg_wwSmoothTime,                "cg_wwSmoothTime",                "300",          CVAR_ARCHIVE                 },
+	{ &cg_wwSmoothTime,                "cg_wwSmoothTime",                "150",          CVAR_ARCHIVE                 },
 	{ NULL,                            "cg_wwFollow",                    "1",            CVAR_ARCHIVE | CVAR_USERINFO },
 	{ NULL,                            "cg_wwToggle",                    "1",            CVAR_ARCHIVE | CVAR_USERINFO },
 	{ NULL,                            "cg_disableBlueprintErrors",      "0",            CVAR_ARCHIVE | CVAR_USERINFO },

@@ -4461,7 +4461,6 @@ qboolean CL_InitRenderer( void )
 
 	cls.whiteShader = re.RegisterShader( "white" );
 	cls.consoleShader = re.RegisterShader( "console" );
-	cls.consoleShader2 = re.RegisterShader( "console2" );
 
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 	g_consoleField.widthInChars = g_console_field_width;
@@ -5055,11 +5054,7 @@ void CL_Init( void )
 	cl_recoilPitch = Cvar_Get( "cg_recoilPitch", "0", CVAR_ROM );
 
 	cl_bypassMouseInput = Cvar_Get( "cl_bypassMouseInput", "0", 0 );  //CVAR_ROM );          // NERVE - SMF
-#ifndef MACOS_X
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", CVAR_ARCHIVE );  // Arnout: double tap
-#else
-	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "100", CVAR_ARCHIVE );  // Arnout: double tap
-#endif
 	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
 	m_yaw = Cvar_Get( "m_yaw", "0.022", CVAR_ARCHIVE );
 	m_forward = Cvar_Get( "m_forward", "0.25", CVAR_ARCHIVE );

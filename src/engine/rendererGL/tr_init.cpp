@@ -2225,7 +2225,7 @@ extern "C" {
 #endif
 
 			GLimp_Shutdown();
-
+			ri.Tag_Free();
 #if defined( USE_D3D10 )
 
 			if ( dx.d3dDevice )

@@ -7,10 +7,21 @@
 # /usr/lib/games/unvanquished/main
 # /var/cache/games/unvanquished
 
+# Requirements: GNU coreutils, grep, sed, diff; curl.
+# (On GNU/Linux, only curl is likely missing by default.)
+
 set -e
 
 # Download from here
 BASE_URL='http://downloads.sourceforge.net/project/unvanquished/Assets/'
+
+case "$1" in
+  --help|-h|-\?)
+    echo "$0: download Unvanquished game files"
+    echo "Usage: $0 DESTINATION_DIR [CACHE_DIR]"
+    exit 0
+    ;;
+esac
 
 # Paths passed to script
 DEST_DIR="${1:-.}"
@@ -21,7 +32,7 @@ CACHE="${2:-${DEST_DIR}}"
 cleanup ()
 {
   test "$?" = 0 || echo '[1;31mFAILED.[m'
-  rm -f "$CACHE/"*.tmp "$DEST_DIR/"*.tmp
+  rm -f -- "$CACHE/"*.tmp "$DEST_DIR/"*.tmp
 }
 trap cleanup EXIT
 
@@ -29,7 +40,7 @@ echo "[1;32mCache directory:    [33m$CACHE
 [1;32mDownload directory: [33m$DEST_DIR[m"
 
 # Create directories if needed
-mkdir -p "$DEST_DIR" "$CACHE"
+mkdir -p -- "$DEST_DIR" "$CACHE"
 
 # Canonicalise the pathnames
 CURDIR="$PWD"
@@ -76,14 +87,12 @@ echo "[33mDownloading missing or updated files...[m"
 if test -f "$CACHE/md5sums.old"; then
   echo "[33mRemoving previously referenced files...[m"
   # Remove files listed in the old md5sums file
-  set +e
-  diff <(cut -d' ' -f3 "$CACHE/md5sums.old") <(cut -d' ' -f3 "$CACHE/md5sums") | sed -e '/^< /! d; /\// d; s/^< //'
-  set -e
   diff <(cut -d' ' -f3 "$CACHE/md5sums.old") <(cut -d' ' -f3 "$CACHE/md5sums") |
-    sed -e '/^< /! d; /[/.]/ d; s/^< //' |
+    sed -e '/^< /! d; s/^< //' |
     while read i; do
+      i="$(basename "$i")"
       echo " $i"
-      rm "$DEST_DIR/$i"
+      rm -f "$DEST_DIR/$i"
     done
 fi
 

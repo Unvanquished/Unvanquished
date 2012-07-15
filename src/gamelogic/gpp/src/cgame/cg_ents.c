@@ -308,7 +308,8 @@ static void CG_EntityEffects( centity_t *cent )
 		g = ( cl >> 8 ) & 255;
 		b = ( cl >> 16 ) & 255;
 		i = ( ( cl >> 24 ) & 255 ) * 4;
-		trap_R_AddLightToScene( cent->lerpOrigin, i, i, r, g, b, 0, 0 );
+
+		trap_R_AddAdditiveLightToScene( cent->lerpOrigin, i, r, g, b );
 	}
 
 	if ( CG_IsTrailSystemValid( &cent->muzzleTS ) )
