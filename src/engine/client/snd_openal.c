@@ -585,7 +585,7 @@ Set gain to given value.
 
 static void S_AL_Gain(ALuint source, float gainval)
 {
-    qalSourcef(source, AL_GAIN, gainval);
+	qalSourcef(source, AL_GAIN, gainval);
 }
 
 /*
@@ -761,9 +761,9 @@ static void S_AL_SrcSetup(srcHandle_t src, sfxHandle_t sfx, alSrcPriority_t prio
 	// Set up OpenAL source
 	if(sfx >= 0)
 	{
-        	// Mark the SFX as used, and grab the raw AL buffer
-        	S_AL_BufferUse(sfx);
-        	qalSourcei(curSource->alSource, AL_BUFFER, S_AL_BufferGet(sfx));
+		// Mark the SFX as used, and grab the raw AL buffer
+		S_AL_BufferUse(sfx);
+		qalSourcei(curSource->alSource, AL_BUFFER, S_AL_BufferGet(sfx));
 	}
 
 	qalSourcef(curSource->alSource, AL_PITCH, 1.0f);
@@ -1556,15 +1556,15 @@ void S_AL_SrcUpdate( void )
 
 		if(!curSource->isStream)
 		{
-        		// Check if it's done, and flag it
-	        	qalGetSourcei(curSource->alSource, AL_SOURCE_STATE, &state);
-	        	if(state == AL_STOPPED)
-        		{
-	        		curSource->isPlaying = qfalse;
-		        	S_AL_SrcKill(i);
-		        	continue;
-        		}
-                }
+			// Check if it's done, and flag it
+			qalGetSourcei(curSource->alSource, AL_SOURCE_STATE, &state);
+			if(state == AL_STOPPED)
+			{
+				curSource->isPlaying = qfalse;
+				S_AL_SrcKill(i);
+				continue;
+			}
+		}
 
 		// Query relativity of source, don't move if it's true
 		qalGetSourcei(curSource->alSource, AL_SOURCE_RELATIVE, &state);
@@ -1573,7 +1573,7 @@ void S_AL_SrcUpdate( void )
 		if(curSource->isTracking && !state)
 		{
 			qalSourcefv(curSource->alSource, AL_POSITION, entityList[entityNum].origin);
- 			S_AL_ScaleGain(curSource, entityList[entityNum].origin);
+			S_AL_ScaleGain(curSource, entityList[entityNum].origin);
 		}
 	}
 }
@@ -1616,55 +1616,59 @@ S_AL_AllocateStreamChannel
 */
 static void S_AL_AllocateStreamChannel(int stream, int entityNum)
 {
-        srcHandle_t cursrc;
-        ALuint alsrc;
-        
+	srcHandle_t cursrc;
+	ALuint alsrc;
+
 	if ((stream < 0) || (stream >= MAX_RAW_STREAMS))
 		return;
 
-        if(entityNum >= 0)
-        {
-                // This is a stream that tracks an entity
-        	// Allocate a streamSource at normal priority
-        	cursrc = S_AL_SrcAlloc(SRCPRI_ENTITY, entityNum, 0);
-        	if(cursrc < 0)
-	        	return;
+	if(entityNum >= 0)
+	{
+		// This is a stream that tracks an entity
+		// Allocate a streamSource at normal priority
+		cursrc = S_AL_SrcAlloc(SRCPRI_ENTITY, entityNum, 0);
+		if(cursrc < 0)
+		{
+			return;
+		}
 
-        	S_AL_SrcSetup(cursrc, -1, SRCPRI_ENTITY, entityNum, 0, qfalse);
-        	alsrc = S_AL_SrcGet(cursrc);
-        	srcList[cursrc].isTracking = qtrue;
-        	srcList[cursrc].isStream = qtrue;
-        }
-        else
-        {
-                // Unspatialized stream source
+		S_AL_SrcSetup(cursrc, -1, SRCPRI_ENTITY, entityNum, 0, qfalse);
+		alsrc = S_AL_SrcGet(cursrc);
+		srcList[cursrc].isTracking = qtrue;
+		srcList[cursrc].isStream = qtrue;
+	}
+	else
+	{
+		// Unspatialized stream source
 
-        	// Allocate a streamSource at high priority
-        	cursrc = S_AL_SrcAlloc(SRCPRI_STREAM, -2, 0);
-        	if(cursrc < 0)
-	        	return;
+		// Allocate a streamSource at high priority
+		cursrc = S_AL_SrcAlloc(SRCPRI_STREAM, -2, 0);
+		if(cursrc < 0)
+		{
+			return;
+		}
 
-        	alsrc = S_AL_SrcGet(cursrc);
+		alsrc = S_AL_SrcGet(cursrc);
 
-        	// Lock the streamSource so nobody else can use it, and get the raw streamSource
-        	S_AL_SrcLock(cursrc);
-        
-        	// make sure that after unmuting the S_AL_Gain in S_Update() does not turn
-        	// volume up prematurely for this source
-        	srcList[cursrc].scaleGain = 0.0f;
+		// Lock the streamSource so nobody else can use it, and get the raw streamSource
+		S_AL_SrcLock(cursrc);
 
-        	// Set some streamSource parameters
-        	qalSourcei (alsrc, AL_BUFFER,          0            );
-        	qalSourcei (alsrc, AL_LOOPING,         AL_FALSE     );
-        	qalSource3f(alsrc, AL_POSITION,        0.0, 0.0, 0.0);
-        	qalSource3f(alsrc, AL_VELOCITY,        0.0, 0.0, 0.0);
-        	qalSource3f(alsrc, AL_DIRECTION,       0.0, 0.0, 0.0);
-        	qalSourcef (alsrc, AL_ROLLOFF_FACTOR,  0.0          );
-        	qalSourcei (alsrc, AL_SOURCE_RELATIVE, AL_TRUE      );
-        }
+		// make sure that after unmuting the S_AL_Gain in S_Update() does not turn
+		// volume up prematurely for this source
+		srcList[cursrc].scaleGain = 0.0f;
 
-        streamSourceHandles[stream] = cursrc;
-       	streamSources[stream] = alsrc;
+		// Set some streamSource parameters
+		qalSourcei (alsrc, AL_BUFFER,          0            );
+		qalSourcei (alsrc, AL_LOOPING,         AL_FALSE     );
+		qalSource3f(alsrc, AL_POSITION,        0.0, 0.0, 0.0);
+		qalSource3f(alsrc, AL_VELOCITY,        0.0, 0.0, 0.0);
+		qalSource3f(alsrc, AL_DIRECTION,       0.0, 0.0, 0.0);
+		qalSourcef (alsrc, AL_ROLLOFF_FACTOR,  0.0          );
+		qalSourcei (alsrc, AL_SOURCE_RELATIVE, AL_TRUE      );
+	}
+
+	streamSourceHandles[stream] = cursrc;
+	streamSources[stream] = alsrc;
 }
 
 /*
@@ -1722,9 +1726,9 @@ void S_AL_RawSamples(int stream, int samples, int rate, int width, int channels,
 
 	if(entityNum < 0)
 	{
-        	// Volume
-        	S_AL_Gain (streamSources[stream], volume * s_volume->value * s_alGain->value);
-        }
+		// Volume
+		S_AL_Gain (streamSources[stream], volume * s_volume->value * s_alGain->value);
+	}
 }
 
 /*
