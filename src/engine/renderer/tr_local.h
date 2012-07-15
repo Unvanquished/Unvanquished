@@ -1625,6 +1625,8 @@ extern cvar_t *r_measureOverdraw; // enables stencil buffer overdraw measurement
 extern cvar_t *r_lodbias; // push/pull LOD transitions
 extern cvar_t *r_lodscale;
 
+extern cvar_t *r_lightScale; // Dynamic light intensity for Q3A compatibility
+
 extern cvar_t *r_primitives; // "0" = based on compiled vertex array existance
 
 // "1" = glDrawElemet tristrips
@@ -2183,7 +2185,8 @@ void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer );
 // void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b, int overdraw );
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader,
                          int flags );
-
+// Compatibility function
+void RE_AddLightToSceneQ3A( const vec3_t org, float radius, float r, float g, float b );
 //----(SA)
 void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
 
