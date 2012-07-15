@@ -372,7 +372,7 @@ void S_Init( void )
 		if( !started )
 		{
 			Com_Printf( "Using builtin sound backend\n" );
-			SOrig_Init( &si );
+			S_Base_Init( &si );
 		}
 		else
 		{
