@@ -1996,13 +1996,11 @@ void S_AL_StartBackgroundTrack( const char *intro, const char *loop )
 	int i;
 	qboolean issame;
 
-	Com_Printf( "S_AL_StartBackgroundTrack()_debug: Arrived in function\n" );
 	// Stop any existing music that might be playing
 	S_AL_StopBackgroundTrack();
 
 	if((!intro || !*intro) && (!loop || !*loop))
 	{
-		Com_Printf( "S_AL_StartBackgroundTrack()_debug: Bad Input\n" );
 		return;
 	}
 
@@ -2010,11 +2008,8 @@ void S_AL_StartBackgroundTrack( const char *intro, const char *loop )
 	S_AL_MusicSourceGet();
 	if(musicSourceHandle == -1)
 	{
-		Com_Printf( "S_AL_StartBackgroundTrack()_debug: Couldn't get musicSourceHandle\n" );
 		return;
 	}
-
-	Com_Printf( "S_AL_StartBackgroundTrack()_debug: Allocated musicSourceHandle\n" );
 
 	if (!loop || !*loop)
 	{
@@ -2043,14 +2038,12 @@ void S_AL_StartBackgroundTrack( const char *intro, const char *loop )
 	{
 		S_AL_CloseMusicFiles();
 		S_AL_MusicSourceFree();
-		Com_Printf( "S_AL_StartBackgroundTrack()_debug: no mus stream\n" );
 		return;
 	}
 
 	// Generate the musicBuffers
 	qalGenBuffers(NUM_MUSIC_BUFFERS, musicBuffers);
 	
-	Com_Printf( "S_AL_StartBackgroundTrack()_debug: Generated Music Buffers\n" );
 	// Queue the musicBuffers up
 	for(i = 0; i < NUM_MUSIC_BUFFERS; i++)
 	{
@@ -2059,19 +2052,13 @@ void S_AL_StartBackgroundTrack( const char *intro, const char *loop )
 
 	qalSourceQueueBuffers(musicSource, NUM_MUSIC_BUFFERS, musicBuffers);
 
-	Com_Printf( "S_AL_StartBackgroundTrack()_debug: qalSourceQueue\n" );
-
 	// Set the initial gain property
 	S_AL_Gain(musicSource, s_alGain->value * s_musicVolume->value);
-	
-	Com_Printf( "S_AL_StartBackgroundTrack()_debug: Gain Set\n" );
 
 	// Start playing
 	qalSourcePlay(musicSource);
 
 	musicPlaying = qtrue;
-
-	Com_Printf( "S_AL_StartBackgroundTrack()_debug: Sound apparently started\n" );
 }
 
 /*

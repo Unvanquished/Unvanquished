@@ -319,8 +319,6 @@ void S_Init( void )
 	{
 		codec_init();
 
-		Com_Printf( "S_Init()_debug: cvars starting" );
-
 		s_volume = Cvar_Get( "s_volume", "0.8", CVAR_ARCHIVE );
 		s_musicVolume = Cvar_Get( "s_musicvolume", "0.25", CVAR_ARCHIVE );
 		s_separation = Cvar_Get( "s_separation", "0.5", CVAR_ARCHIVE );
@@ -331,8 +329,6 @@ void S_Init( void )
 		s_mixPreStep = Cvar_Get( "s_mixPreStep", "0.05", CVAR_ARCHIVE );
 		s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
 		s_testsound = Cvar_Get( "s_testsound", "0", CVAR_CHEAT );
-
-		Com_Printf( "S_Init()_debug: cvars done" );
 
 		cv = Cvar_Get( "s_usemodule", "1", CVAR_ARCHIVE );
 		if( cv->integer )
