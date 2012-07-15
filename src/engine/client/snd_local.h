@@ -180,7 +180,7 @@ extern cvar_t                 *s_nosound;
 extern cvar_t                 *s_khz;
 extern cvar_t                 *s_show;
 extern cvar_t                 *s_mixahead;
-
+extern cvar_t                 *s_mixPreStep;
 extern cvar_t                 *s_testsound;
 extern cvar_t                 *s_separation;
 
@@ -271,7 +271,6 @@ typedef struct
 	void (*StartBackgroundTrack)( const char *intro, const char *loop );
 	void (*StopBackgroundTrack)( void );
 	void (*RawSamples)(int stream, int samples, int rate, int width, int channels, const byte *data, float volume, int entityNum);
-	void (*StopAllSounds)( void );
 	void (*ClearLoopingSounds)( qboolean killall );
 	void (*AddLoopingSound)( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
 	void (*AddRealLoopingSound)( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
@@ -283,8 +282,6 @@ typedef struct
 	void (*BeginRegistration)( void );
 	sfxHandle_t (*RegisterSound)( const char *sample, qboolean compressed );
 	void (*ClearSoundBuffer)( void );
-	void (*SoundInfo)( void );
-	void (*SoundList)( void );
 #ifdef USE_VOIP
 	void (*StartCapture)( void );
 	int (*AvailableCaptureSamples)( void );
@@ -296,6 +293,13 @@ typedef struct
 	int (*GetVoiceAmplitude) ( int entnum );
 	int (*GetSoundLength)( sfxHandle_t sfxHandle );
 	int (*GetCurrentSoundTime) ( void );
+
+	//commands
+	void (*Play_f) ( void );
+	void (*Music_f) ( void );
+	void (*SoundList_f) ( void );
+	void (*SoundInfo_f) ( void );
+	void (*StopAllSounds) ( void );
 } soundInterface_t;
 
 qboolean S_AL_Init( soundInterface_t *si );

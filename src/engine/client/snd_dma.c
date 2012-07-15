@@ -38,10 +38,6 @@ Maryland 20850 USA.
 #include "snd_codec.h"
 #include "client.h"
 
-void         S_Play_f( void );
-void         S_SoundList_f( void );
-void         S_Music_f( void );
-
 void         S_Update_();
 void         SOrig_StopAllSounds( void );
 void         S_UpdateBackgroundTrack( void );
@@ -84,15 +80,15 @@ int                   s_numSfx = 0;
 #define         LOOP_HASH 128
 static  sfx_t         *sfxHash[ LOOP_HASH ];
 
-cvar_t                *s_volume;
-cvar_t                *s_testsound;
-cvar_t                *s_khz;
-cvar_t                *s_show;
-cvar_t                *s_mixahead;
-cvar_t                *s_mixPreStep;
-cvar_t                *s_musicVolume;
-cvar_t                *s_separation;
-cvar_t                *s_doppler;
+//cvar_t                *s_volume;
+//cvar_t                *s_testsound;
+//cvar_t                *s_khz;
+//cvar_t                *s_show;
+//cvar_t                *s_mixahead;
+//cvar_t                *s_mixPreStep;
+//cvar_t                *s_musicVolume;
+//cvar_t                *s_separation;
+//cvar_t                *s_doppler;
 
 static loopSound_t    loopSounds[ MAX_GENTITIES ];
 static  channel_t     *freelist = NULL;
@@ -104,7 +100,7 @@ portable_samplepair_t s_rawsamples[ MAX_RAW_SAMPLES ];
 // User-setable variables
 // ====================================================================
 
-void S_SoundInfo_f( void )
+void S_Base_SoundInfo_f( void )
 {
 	Com_Printf("%s", _( "----- Sound Info -----\n" ));
 
@@ -190,82 +186,6 @@ void S_ChannelSetup()
 	Com_DPrintf("%s", _( "Channel memory manager started\n" ));
 }
 
-/*
-================
-S_Init
-================
-*/
-void SOrig_Init( soundInterface_t *si )
-{
-	qboolean r;
-
-	si->Shutdown = SOrig_Shutdown;
-	si->StartSound = SOrig_StartSound;
-	si->StartSoundEx = SOrig_StartSound;
-	si->StartLocalSound = SOrig_StartLocalSound;
-	si->StartBackgroundTrack = SOrig_StartBackgroundTrack;
-	si->StopBackgroundTrack = SOrig_StopBackgroundTrack;
-	si->RawSamples = SOrig_RawSamples;
-	si->StopAllSounds = SOrig_StopAllSounds;
-	si->ClearLoopingSounds = SOrig_ClearLoopingSounds;
-	si->AddLoopingSound = SOrig_AddLoopingSound;
-	si->AddRealLoopingSound = SOrig_AddRealLoopingSound;
-	si->StopLoopingSound = SOrig_StopLoopingSound;
-	si->Respatialize = SOrig_Respatialize;
-	si->UpdateEntityPosition = SOrig_UpdateEntityPosition;
-	si->Update = SOrig_Update;
-	si->DisableSounds = SOrig_DisableSounds;
-	si->BeginRegistration = SOrig_BeginRegistration;
-	si->RegisterSound = SOrig_RegisterSound;
-	si->ClearSoundBuffer = SOrig_ClearSoundBuffer;
-	si->SoundDuration = SOrig_SoundDuration;
-	si->GetVoiceAmplitude = SOrig_GetVoiceAmplitude;
-	si->GetSoundLength = SOrig_GetSoundLength;
-#ifdef USE_VOIP
-	si->StartCapture = SOrig_StartCapture;
-	si->AvailableCaptureSamples =SOrig_AvailableCaptureSamples;
-	si->Capture = SOrig_Capture;
-	si->StopCapture = SOrig_StopCapture;
-	si->MasterGain = SOrig_MasterGain;
-#endif
-	si->GetCurrentSoundTime = SOrig_GetCurrentSoundTime;
-
-	s_volume = Cvar_Get( "s_volume", "0.8", CVAR_ARCHIVE );
-	s_musicVolume = Cvar_Get( "s_musicvolume", "0.25", CVAR_ARCHIVE );
-	s_separation = Cvar_Get( "s_separation", "0.5", CVAR_ARCHIVE );
-	s_doppler = Cvar_Get( "s_doppler", "1", CVAR_ARCHIVE );
-	s_khz = Cvar_Get( "s_khz", "22", CVAR_ARCHIVE );
-	s_mixahead = Cvar_Get( "s_mixahead", "0.2", CVAR_ARCHIVE );
-
-	s_mixPreStep = Cvar_Get( "s_mixPreStep", "0.05", CVAR_ARCHIVE );
-	s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
-	s_testsound = Cvar_Get( "s_testsound", "0", CVAR_CHEAT );
-
-	Cmd_AddCommand( "play", S_Play_f );
-	Cmd_AddCommand( "music", S_Music_f );
-	Cmd_AddCommand( "s_list", S_SoundList_f );
-	Cmd_AddCommand( "s_info", S_SoundInfo_f );
-	Cmd_AddCommand( "s_stop", S_StopAllSounds );
-
-	r = SNDDMA_Init();
-
-	if ( r )
-	{
-		s_soundStarted = 1;
-		s_soundMuted = 1;
-//		s_numSfx = 0;
-
-		Com_Memset( sfxHash, 0, sizeof( sfx_t * ) * LOOP_HASH );
-
-		s_soundtime = 0;
-		s_paintedtime = 0;
-
-		SOrig_StopAllSounds();
-
-		S_SoundInfo_f();
-	}
-}
-
 // =======================================================================
 // Shutdown sound engine
 // =======================================================================
@@ -280,12 +200,6 @@ void SOrig_Shutdown( void )
 	SNDDMA_Shutdown();
 
 	s_soundStarted = 0;
-
-	Cmd_RemoveCommand( "play" );
-	Cmd_RemoveCommand( "music" );
-	Cmd_RemoveCommand( "stopsound" );
-	Cmd_RemoveCommand( "soundlist" );
-	Cmd_RemoveCommand( "soundinfo" );
 }
 
 // =======================================================================
@@ -1587,7 +1501,7 @@ console functions
 ===============================================================================
 */
 
-void S_Play_f( void )
+void S_Base_Play_f( void )
 {
 	int         i;
 	sfxHandle_t h;
@@ -1617,7 +1531,7 @@ void S_Play_f( void )
 	}
 }
 
-void S_Music_f( void )
+void S_Base_Music_f( void )
 {
 	int c;
 
@@ -1639,7 +1553,7 @@ void S_Music_f( void )
 	}
 }
 
-void S_SoundList_f( void )
+void S_Base_SoundList_f( void )
 {
 	int   i, size, total;
 	sfx_t *sfx;
@@ -1917,3 +1831,66 @@ void SOrig_MasterGain( float val )
 #endif
 
 
+/*
+================
+S_Init
+================
+*/
+void SOrig_Init( soundInterface_t *si )
+{
+	qboolean r;
+
+	si->Shutdown = SOrig_Shutdown;
+	si->StartSound = SOrig_StartSound;
+	si->StartSoundEx = SOrig_StartSound;
+	si->StartLocalSound = SOrig_StartLocalSound;
+	si->StartBackgroundTrack = SOrig_StartBackgroundTrack;
+	si->StopBackgroundTrack = SOrig_StopBackgroundTrack;
+	si->RawSamples = SOrig_RawSamples;
+	si->StopAllSounds = SOrig_StopAllSounds;
+	si->ClearLoopingSounds = SOrig_ClearLoopingSounds;
+	si->AddLoopingSound = SOrig_AddLoopingSound;
+	si->AddRealLoopingSound = SOrig_AddRealLoopingSound;
+	si->StopLoopingSound = SOrig_StopLoopingSound;
+	si->Respatialize = SOrig_Respatialize;
+	si->UpdateEntityPosition = SOrig_UpdateEntityPosition;
+	si->Update = SOrig_Update;
+	si->DisableSounds = SOrig_DisableSounds;
+	si->BeginRegistration = SOrig_BeginRegistration;
+	si->RegisterSound = SOrig_RegisterSound;
+	si->ClearSoundBuffer = SOrig_ClearSoundBuffer;
+	si->SoundDuration = SOrig_SoundDuration;
+	si->GetVoiceAmplitude = SOrig_GetVoiceAmplitude;
+	si->GetSoundLength = SOrig_GetSoundLength;
+#ifdef USE_VOIP
+	si->StartCapture = SOrig_StartCapture;
+	si->AvailableCaptureSamples =SOrig_AvailableCaptureSamples;
+	si->Capture = SOrig_Capture;
+	si->StopCapture = SOrig_StopCapture;
+	si->MasterGain = SOrig_MasterGain;
+#endif
+	si->GetCurrentSoundTime = SOrig_GetCurrentSoundTime;
+	si->Play_f = S_Base_Play_f;
+	si->Music_f = S_Base_Music_f;
+	si->SoundList_f = S_Base_SoundList_f;
+	si->SoundInfo_f = S_Base_SoundInfo_f;
+	si->StopAllSounds = SOrig_StopAllSounds;
+
+	r = SNDDMA_Init();
+
+	if ( r )
+	{
+		s_soundStarted = 1;
+		s_soundMuted = 1;
+//		s_numSfx = 0;
+
+		Com_Memset( sfxHash, 0, sizeof( sfx_t * ) * LOOP_HASH );
+
+		s_soundtime = 0;
+		s_paintedtime = 0;
+
+		SOrig_StopAllSounds();
+
+		S_Base_SoundInfo_f();
+	}
+}
