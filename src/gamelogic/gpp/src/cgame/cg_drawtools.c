@@ -565,38 +565,37 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 CG_DrawRangeMarker
 ================
 */
-void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, float range,
-                         qboolean drawSurface, qboolean drawIntersection, qboolean drawFrontline,
-                         const vec3_t rgb, float surfaceOpacity, float lineOpacity, float lineThickness )
+void CG_DrawRangeMarker( rangeMarkerType_t rmType, const vec3_t origin, float range, const vec3_t angles,
+                         const vec3_t rgb )
 {
-	if ( drawSurface )
+	if ( cg_rangeMarkerDrawSurface.integer )
 	{
 		qhandle_t pcsh;
-		vec4_t    rgba;
-
+		vec4_t rgba;
 		pcsh = cgs.media.plainColorShader;
-		VectorCopy( rgb, rgba );
-		rgba[ 3 ] = surfaceOpacity;
-
-		if ( rmType == 0 )
+		VectorCopy(rgb, rgba);
+		rgba[ 3 ] = Com_Clamp( 0.1f, 1.0f, cg_rangeMarkerSurfaceOpacity.value );
+		switch( rmType )
 		{
-			CG_DrawSphere( origin, range, pcsh, rgba );
-		}
-		else if ( rmType == 1 )
-		{
-			CG_DrawSphericalCone( origin, angles, range, qfalse, pcsh, rgba );
-		}
-		else if ( rmType == 2 )
-		{
-			CG_DrawSphericalCone( origin, angles, range, qtrue, pcsh, rgba );
+			case RMT_SPHERE:
+				CG_DrawSphere( origin, range, pcsh, rgba );
+				break;
+			case RMT_CONE_64:
+				CG_DrawSphericalCone( origin, angles, range, qfalse, pcsh, rgba );
+				break;
+			case RMT_CONE_240:
+				CG_DrawSphericalCone( origin, angles, range, qtrue, pcsh, rgba );
+				break;
 		}
 	}
 
-	if ( drawIntersection || drawFrontline )
+	if ( cg_rangeMarkerDrawIntersection.integer || cg_rangeMarkerDrawFrontline.integer )
 	{
 		const cgMediaBinaryShader_t *mbsh;
 		cgBinaryShaderSetting_t     *bshs;
 		int                         i;
+		float lineThickness = Com_Clamp( 0.1f, 1.0f, cg_rangeMarkerLineThickness.value );
+		float lineOpacity   = Com_Clamp( 0.1f, 1.0f, cg_rangeMarkerLineOpacity.value );
 
 		if ( cg.numBinaryShadersUsed >= NUM_BINARY_SHADERS )
 		{
@@ -605,11 +604,11 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 
 		mbsh = &cgs.media.binaryShaders[ cg.numBinaryShadersUsed ];
 
-		if ( rmType == 0 )
+		if ( rmType == RMT_SPHERE )
 		{
 			if ( range > lineThickness / 2 )
 			{
-				if ( drawIntersection )
+				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
 					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, NULL );
 				}
@@ -617,20 +616,20 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, NULL );
 			}
 
-			if ( drawIntersection )
+			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
 				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, NULL );
 			}
 
 			CG_DrawSphere( origin, range + lineThickness / 2, mbsh->f1, NULL );
 		}
-		else if ( rmType == 1 || rmType == 2 )
+		else
 		{
 			qboolean t2;
 			float    f, r;
 			vec3_t   forward, tip;
 
-			t2 = ( rmType == 2 );
+			t2 = ( rmType == RMT_CONE_240 );
 			f = lineThickness * ( t2 ? 0.26f : 0.8f );
 			r = f + lineThickness * ( t2 ? 0.23f : 0.43f );
 			AngleVectors( angles, forward, NULL, NULL );
@@ -639,7 +638,7 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 			{
 				VectorMA( origin, f, forward, tip );
 
-				if ( drawIntersection )
+				if ( cg_rangeMarkerDrawIntersection.integer )
 				{
 					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, NULL );
 				}
@@ -649,7 +648,7 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 
 			VectorMA( origin, -f, forward, tip );
 
-			if ( drawIntersection )
+			if ( cg_rangeMarkerDrawIntersection.integer )
 			{
 				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, NULL );
 			}
@@ -664,8 +663,8 @@ void CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, f
 			bshs->color[ i ] = 255 * lineOpacity * rgb[ i ];
 		}
 
-		bshs->drawIntersection = drawIntersection;
-		bshs->drawFrontline = drawFrontline;
+		bshs->drawIntersection = !!cg_rangeMarkerDrawIntersection.integer;
+		bshs->drawFrontline = !!cg_rangeMarkerDrawFrontline.integer;
 
 		++cg.numBinaryShadersUsed;
 	}

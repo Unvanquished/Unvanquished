@@ -602,7 +602,7 @@ void CG_InitBuildables( void )
 CG_BuildableRangeMarkerProperties
 ================
 */
-qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, int *rmType, float *range, vec3_t rgb )
+qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarkerType_t *rmType, float *range, vec3_t rgb )
 {
 	shaderColorEnum_t shc;
 
@@ -664,15 +664,15 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, int *rmType, f
 
 	if ( bType == BA_A_TRAPPER )
 	{
-		*rmType = 1;
+		*rmType = RMT_CONE_64;
 	}
 	else if ( bType == BA_H_MGTURRET )
 	{
-		*rmType = 2;
+		*rmType = RMT_CONE_240;
 	}
 	else
 	{
-		*rmType = 0;
+		*rmType = RMT_SPHERE;
 	}
 
 	VectorCopy( cg_shaderColors[ shc ], rgb );
@@ -1000,14 +1000,11 @@ CG_GhostBuildableRangeMarker
 */
 static void CG_GhostBuildableRangeMarker( buildable_t buildable, const vec3_t origin, const vec3_t normal )
 {
-	qboolean drawS, drawI, drawF;
-	float    so, lo, th;
-	int      rmType;
+	rangeMarkerType_t   rmType;
 	float    range;
 	vec3_t   rgb;
 
-	if ( CG_GetRangeMarkerPreferences( &drawS, &drawI, &drawF, &so, &lo, &th ) &&
-	     CG_GetBuildableRangeMarkerProperties( buildable, &rmType, &range, rgb ) )
+	if ( CG_GetBuildableRangeMarkerProperties( buildable, &rmType, &range, rgb ) )
 	{
 		vec3_t localOrigin, angles;
 
@@ -1020,13 +1017,9 @@ static void CG_GhostBuildableRangeMarker( buildable_t buildable, const vec3_t or
 			VectorCopy( origin, localOrigin );
 		}
 
-		if ( rmType > 0 )
-		{
-			vectoangles( normal, angles );
-		}
+		vectoangles( normal, angles );
 
-		CG_DrawRangeMarker( rmType, localOrigin, ( rmType > 0 ? angles : NULL ),
-		                    range, drawS, drawI, drawF, rgb, so, lo, th );
+		CG_DrawRangeMarker( rmType, localOrigin, range, angles, rgb );
 	}
 }
 
