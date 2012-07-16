@@ -729,6 +729,7 @@ int          FS_GetFileList( const char *path, const char *extension, char *list
 int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
+fileHandle_t FS_FOpenFileAppend( const char *filename );
 
 // will properly create any needed paths and deal with separator character issues
 
