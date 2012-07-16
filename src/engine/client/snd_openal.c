@@ -127,7 +127,6 @@ static void S_AL_ClearError( qboolean quiet )
 
 //===========================================================================
 
-
 typedef struct alSfx_s
 {
 	char			filename[MAX_QPATH];
@@ -2376,8 +2375,8 @@ int S_AL_GetVoiceAmplitude( int entnum )
 }
 int S_AL_GetSoundLength( sfxHandle_t sfxHandle )
 {
-    return 0;
 }
+
 int S_AL_GetCurrentSoundTime( void )
 {
     return 0;
