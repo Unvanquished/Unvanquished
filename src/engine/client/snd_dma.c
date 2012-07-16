@@ -1493,66 +1493,6 @@ void S_Update_( void )
 	lastTime = thisTime;
 }
 
-/*
-===============================================================================
-
-console functions
-
-===============================================================================
-*/
-
-void S_Base_Play_f( void )
-{
-	int         i;
-	sfxHandle_t h;
-	char        name[ 256 ];
-
-	i = 1;
-
-	while ( i < Cmd_Argc() )
-	{
-		if ( !Q_strrchr( Cmd_Argv( i ), '.' ) )
-		{
-			Com_sprintf( name, sizeof( name ), "%s.wav", Cmd_Argv( 1 ) );
-		}
-		else
-		{
-			Q_strncpyz( name, Cmd_Argv( i ), sizeof( name ) );
-		}
-
-		h = S_Base_RegisterSound( name, qfalse );
-
-		if ( h )
-		{
-			S_Base_StartLocalSound( h, CHAN_LOCAL_SOUND );
-		}
-
-		i++;
-	}
-}
-
-void S_Base_Music_f( void )
-{
-	int c;
-
-	c = Cmd_Argc();
-
-	if ( c == 2 )
-	{
-		S_Base_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 1 ) );
-		s_backgroundLoop[ 0 ] = 0;
-	}
-	else if ( c == 3 )
-	{
-		S_Base_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 2 ) );
-	}
-	else
-	{
-		Com_Printf("%s", _( "music <musicfile> [loopfile]\n" ));
-		return;
-	}
-}
-
 void S_Base_SoundList_f( void )
 {
 	int   i, size, total;
@@ -1613,6 +1553,7 @@ void S_Base_StartBackgroundTrack( const char *intro, const char *loop )
 
 	if ( !loop || !loop[ 0 ] )
 	{
+
 		loop = intro;
 	}
 
@@ -1623,7 +1564,14 @@ void S_Base_StartBackgroundTrack( const char *intro, const char *loop )
 		return;
 	}
 
-	Q_strncpyz( s_backgroundLoop, loop, sizeof( s_backgroundLoop ) );
+	if ( loop )
+	{
+		Q_strncpyz( s_backgroundLoop, loop, sizeof( s_backgroundLoop ) );
+	}
+	else
+	{
+		s_backgroundLoop[ 0 ] = 0;
+	}
 
 	// close the background track, but DON'T reset s_rawend
 	// if restarting the same back ground track
@@ -1869,8 +1817,6 @@ void S_Base_Init( soundInterface_t *si )
 	si->MasterGain = S_Base_MasterGain;
 #endif
 	si->GetCurrentSoundTime = S_Base_GetCurrentSoundTime;
-	si->Play_f = S_Base_Play_f;
-	si->Music_f = S_Base_Music_f;
 	si->SoundList_f = S_Base_SoundList_f;
 	si->SoundInfo_f = S_Base_SoundInfo_f;
 	si->StopAllSounds = S_Base_StopAllSounds;

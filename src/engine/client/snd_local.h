@@ -295,8 +295,6 @@ typedef struct
 	int (*GetCurrentSoundTime) ( void );
 
 	//commands
-	void (*Play_f) ( void );
-	void (*Music_f) ( void );
 	void (*SoundList_f) ( void );
 	void (*SoundInfo_f) ( void );
 	void (*StopAllSounds) ( void );

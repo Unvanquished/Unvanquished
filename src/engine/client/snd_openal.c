@@ -2633,8 +2633,6 @@ qboolean S_AL_Init( soundInterface_t *si )
 	si->GetVoiceAmplitude = S_AL_GetVoiceAmplitude;
 	si->GetSoundLength = S_AL_GetSoundLength;
 	si->GetCurrentSoundTime = S_AL_GetCurrentSoundTime;
-	si->Play_f = NULL;//S_Base_Play_f;
-	si->Music_f = NULL;//S_Base_Music_f;
 	si->SoundList_f = S_AL_SoundList;
 	si->SoundInfo_f = S_AL_SoundInfo;
 	si->StopAllSounds = S_AL_StopAllSounds;

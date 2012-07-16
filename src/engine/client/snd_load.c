@@ -292,23 +292,6 @@ int S_GetCurrentSoundTime( void )
 	}
 }
 
-
-void S_Play_f( void )
-{
-	if ( si.Play_f )
-	{
-		si.Play_f( );
-	}
-}
-
-void S_Music_f( void )
-{
-	if( si.Music_f )
-	{
-		si.Music_f( );
-	}
-}
-
 void S_SoundInfo_f( void )
 {
 	if ( si.SoundInfo_f )
@@ -328,6 +311,59 @@ void S_StopAllSounds( void )
 	if ( si.StopAllSounds )
 	{
 		si.StopAllSounds( );
+	}
+}
+
+
+
+void S_Play_f( void )
+{
+	int         i;
+	sfxHandle_t h;
+	char        name[ 256 ];
+
+	i = 1;
+
+	while ( i < Cmd_Argc() )
+	{
+		if ( !Q_strrchr( Cmd_Argv( i ), '.' ) )
+		{
+			Com_sprintf( name, sizeof( name ), "%s.wav", Cmd_Argv( 1 ) );
+		}
+		else
+		{
+			Q_strncpyz( name, Cmd_Argv( i ), sizeof( name ) );
+		}
+
+		h = S_RegisterSound( name, qfalse );
+
+		if ( h )
+		{
+			S_StartLocalSound( h, CHAN_LOCAL_SOUND );
+		}
+
+		i++;
+	}
+}
+
+void S_Music_f( void )
+{
+	int c;
+
+	c = Cmd_Argc();
+
+	if ( c == 2 )
+	{
+		S_StartBackgroundTrack( Cmd_Argv( 1 ), NULL );
+	}
+	else if ( c == 3 )
+	{
+		S_StartBackgroundTrack( Cmd_Argv( 1 ), Cmd_Argv( 2 ) );
+	}
+	else
+	{
+		Com_Printf( "music <musicfile> [loopfile]\n" );
+		return;
 	}
 }
 
