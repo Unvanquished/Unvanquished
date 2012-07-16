@@ -2365,24 +2365,42 @@ void S_AL_Shutdown( void )
 	QAL_Shutdown();
 }
 
-int S_AL_SoundDuration( sfxHandle_t handle )
+int S_AL_SoundDuration( sfxHandle_t sfxHandle )
 {
-    return 0;
+	int duration = 0;
+
+	if (sfxHandle < 0 || sfxHandle >= numSfx)
+	{
+		Com_Printf(S_COLOR_RED "ERROR: S_AL_CheckInput: handle %i out of range\n", sfxHandle);
+		return qtrue;
+	}
+
+	qalGetSourcei( sfxHandle, AL_SEC_OFFSET, &duration );
+	return duration;
 }
-int S_AL_GetVoiceAmplitude( int entnum )
-{
-    return 0;
-}
+
 int S_AL_GetSoundLength( sfxHandle_t sfxHandle )
 {
+	int id = 0;
+	int size = 0;
+	int freq = 0;
+	int channels = 0;
+	int bits = 0;
+	int length = 0;
+	if (sfxHandle < 0 || sfxHandle >= numSfx)
+	{
+		Com_Printf(S_COLOR_RED "ERROR: S_AL_CheckInput: handle %i out of range\n", sfxHandle);
+		return qtrue;
+	}
+
+	qalGetSourcei( sfxHandle, AL_BUFFER, &id);
+	qalGetBufferi( id, AL_SIZE, &size);
+	qalGetBufferi( id, AL_FREQUENCY, &freq);
+	qalGetBufferi( id, AL_CHANNELS, &channels);
+	qalGetBufferi( id, AL_BITS, &bits);
+
+	length = ( int ) ( ( float ) size/ ( freq *channels * ( bits / 8 ) ) );
 }
-
-int S_AL_GetCurrentSoundTime( void )
-{
-    return 0;
-}
-
-
 
 #endif
 
@@ -2629,9 +2647,9 @@ qboolean S_AL_Init( soundInterface_t *si )
 	si->MasterGain = S_AL_MasterGain;
 #endif
 	si->SoundDuration = S_AL_SoundDuration;
-	si->GetVoiceAmplitude = S_AL_GetVoiceAmplitude;
+	si->GetVoiceAmplitude = S_Base_GetVoiceAmplitude;
 	si->GetSoundLength = S_AL_GetSoundLength;
-	si->GetCurrentSoundTime = S_AL_GetCurrentSoundTime;
+	si->GetCurrentSoundTime = NULL;
 	si->SoundList_f = S_AL_SoundList;
 	si->SoundInfo_f = S_AL_SoundInfo;
 	si->StopAllSounds = S_AL_StopAllSounds;

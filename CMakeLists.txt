@@ -548,7 +548,7 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/snd_codec_wav.c
   ${MOUNT_DIR}/engine/client/snd_dma.c
   ${MOUNT_DIR}/engine/client/snd_openal.c
-  ${MOUNT_DIR}/engine/client/snd_load.c
+  ${MOUNT_DIR}/engine/client/snd_main.c
   ${MOUNT_DIR}/engine/client/snd_mem.c
   ${MOUNT_DIR}/engine/client/snd_mix.c
   ${MOUNT_DIR}/engine/client/snd_wavelet.c
