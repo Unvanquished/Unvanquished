@@ -1484,6 +1484,13 @@ typedef enum
   SHC_NUM_SHADER_COLORS
 } shaderColorEnum_t;
 
+typedef enum
+{
+	RMT_SPHERE,
+	RMT_CONE_64,
+	RMT_CONE_240,
+} rangeMarkerType_t;
+
 #define BLOOD_VIEW 1
 #define CORE_HUD   1
 
@@ -1667,9 +1674,6 @@ void       CG_BuildSpectatorString( void );
 qboolean   CG_FileExists( const char *filename );
 void       CG_RemoveNotifyLine( void );
 void       CG_AddNotifyText( void );
-qboolean   CG_GetRangeMarkerPreferences( qboolean *drawSurface, qboolean *drawIntersection,
-    qboolean *drawFrontline, float *surfaceOpacity,
-    float *lineOpacity, float *lineThickness );
 void       CG_UpdateBuildableRangeMarkerMask( void );
 
 //
@@ -1715,9 +1719,8 @@ char     CG_GetColorCharForHealth( int clientnum );
 void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const float *shaderRGBA );
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
                                qboolean a240, int customShader, const float *shaderRGBA );
-void     CG_DrawRangeMarker( int rmType, const vec3_t origin, const float *angles, float range,
-                             qboolean drawSurface, qboolean drawIntersection, qboolean drawFrontline,
-                             const vec3_t rgb, float surfaceOpacity, float lineOpacity, float lineThickness );
+void     CG_DrawRangeMarker( rangeMarkerType_t rmType, const vec3_t origin, float range, const vec3_t angles,
+                             const vec3_t rgb );
 
 //
 // cg_draw.c
@@ -1767,7 +1770,7 @@ void     CG_DrawBuildableStatus( void );
 void     CG_InitBuildables( void );
 void     CG_HumanBuildableExplosion( vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
-qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, int *rmType, float *range, vec3_t rgb );
+qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarkerType_t *rmType, float *range, vec3_t rgb );
 
 //
 // cg_animation.c

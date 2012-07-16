@@ -757,7 +757,7 @@ void CG_UpdateCvars( void )
 		}
 	}
 
-	// check for modications here
+	// check for modifications here
 
 	CG_SetUIVars();
 	CG_UpdateBuildableRangeMarkerMask();
@@ -2420,39 +2420,3 @@ const vec3_t cg_shaderColors[ SHC_NUM_SHADER_COLORS ] =
 	{ 0.625f, 0.375f,   0.4f     }, // pink
 	{ 0.313f, 0.313f,   0.313f   } // grey
 };
-
-/*
-================
-CG_RangeMarkerPreferences
-================
-*/
-qboolean CG_GetRangeMarkerPreferences( qboolean *drawSurface, qboolean *drawIntersection,
-                                       qboolean *drawFrontline, float *surfaceOpacity,
-                                       float *lineOpacity, float *lineThickness )
-{
-	*drawSurface = !!cg_rangeMarkerDrawSurface.integer;
-	*drawIntersection = !!cg_rangeMarkerDrawIntersection.integer;
-	*drawFrontline = !!cg_rangeMarkerDrawFrontline.integer;
-	*surfaceOpacity = cg_rangeMarkerSurfaceOpacity.value;
-	*lineOpacity = cg_rangeMarkerLineOpacity.value;
-	*lineThickness = cg_rangeMarkerLineThickness.value;
-
-	if ( ( *drawSurface && *surfaceOpacity > 0.0f ) ||
-	     ( ( *drawIntersection || *drawFrontline ) && *lineOpacity > 0.0f &&
-	       *lineThickness > 0.0f && cg_binaryShaderScreenScale.value > 0.0f ) )
-	{
-		if ( *surfaceOpacity > 1.0f )
-		{
-			*surfaceOpacity = 1.0f;
-		}
-
-		if ( *lineOpacity > 1.0f )
-		{
-			*lineOpacity = 1.0f;
-		}
-
-		return qtrue;
-	}
-
-	return qfalse;
-}

@@ -94,7 +94,7 @@ cvar_t *com_maxfps;
 cvar_t *com_timedemo;
 cvar_t *com_sv_running;
 cvar_t *com_cl_running;
-cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print
+cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print, 3 = append + flush
 cvar_t *com_showtrace;
 cvar_t *com_version;
 
@@ -249,7 +249,15 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 			time( &aclock );
 			newtime = localtime( &aclock );
 
-			logfile = FS_FOpenFileWrite( "etconsole.log" );
+			if ( com_logfile->integer != 3 )
+			{
+				logfile = FS_FOpenFileWrite( "etconsole.log" );
+			}
+			else
+			{
+				logfile = FS_FOpenFileAppend( "etconsole.log" );
+			}
+
 			Com_Printf(_( "logfile opened on %s\n"), asctime( newtime ) );
 
 			if ( com_logfile->integer > 1 )
