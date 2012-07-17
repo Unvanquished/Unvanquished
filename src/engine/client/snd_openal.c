@@ -2367,21 +2367,14 @@ void S_AL_Shutdown( void )
 
 int S_AL_SoundDuration( sfxHandle_t sfxHandle )
 {
-	int duration = 0;
-
-	if (sfxHandle < 0 || sfxHandle >= numSfx)
-	{
-		Com_Printf(S_COLOR_RED "ERROR: S_AL_CheckInput: handle %i out of range\n", sfxHandle);
-		return qtrue;
-	}
-
-	qalGetSourcei( sfxHandle, AL_SEC_OFFSET, &duration );
-	return duration;
+	//fixme: added by dushan but appears to return an uninitialized variable in both snd_dma.c
+	//and previous openal interface
+	return 0;
 }
 
 int S_AL_GetSoundLength( sfxHandle_t sfxHandle )
 {
-	int id = 0;
+	ALuint id = 0;
 	int size = 0;
 	int freq = 0;
 	int channels = 0;
@@ -2393,13 +2386,19 @@ int S_AL_GetSoundLength( sfxHandle_t sfxHandle )
 		return qtrue;
 	}
 
-	qalGetSourcei( sfxHandle, AL_BUFFER, &id);
+	id = S_AL_BufferGet( sfxHandle );
 	qalGetBufferi( id, AL_SIZE, &size);
 	qalGetBufferi( id, AL_FREQUENCY, &freq);
 	qalGetBufferi( id, AL_CHANNELS, &channels);
 	qalGetBufferi( id, AL_BITS, &bits);
 
 	length = ( int ) ( ( float ) size/ ( freq *channels * ( bits / 8 ) ) );
+}
+
+int S_AL_GetCurrentSoundtime( )
+{
+	//fixme to be like snd_dma.c?
+	return Sys_Milliseconds( );
 }
 
 #endif
@@ -2649,7 +2648,7 @@ qboolean S_AL_Init( soundInterface_t *si )
 	si->SoundDuration = S_AL_SoundDuration;
 	si->GetVoiceAmplitude = S_Base_GetVoiceAmplitude;
 	si->GetSoundLength = S_AL_GetSoundLength;
-	si->GetCurrentSoundTime = NULL;
+	si->GetCurrentSoundTime = S_AL_GetCurrentSoundtime;
 	si->SoundList_f = S_AL_SoundList;
 	si->SoundInfo_f = S_AL_SoundInfo;
 	si->StopAllSounds = S_AL_StopAllSounds;
