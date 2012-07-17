@@ -423,7 +423,7 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 {
 	bspModel_t *bspModel;
 	model_t    *pModel;
-	int        i;
+	unsigned int i;
 	vec3_t     v;
 	vec3_t     transformed;
 	vec3_t     boundsCenter;
@@ -478,7 +478,6 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 
 	if ( r_vboModels->integer && bspModel->numVBOSurfaces )
 	{
-		int          i;
 		srfVBOMesh_t *vboSurface;
 
 		for ( i = 0; i < bspModel->numVBOSurfaces; i++ )
