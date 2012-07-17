@@ -184,6 +184,8 @@ protected:
 public:
 	virtual const char *GetName() const = 0;
 	virtual void      UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const = 0;
+
+	virtual ~GLUniform() {}
 };
 
 class GLCompileMacro
@@ -270,6 +272,8 @@ public:
 	{
 		return _bit;
 	}
+
+	virtual ~GLCompileMacro() {}
 };
 
 class GLCompileMacro_USE_ALPHA_TESTING :

@@ -4384,16 +4384,22 @@ qboolean G_admin_builder( gentity_t *ent )
 		{
 			log = &level.buildLog[( level.buildId - i - 1 ) % MAX_BUILDLOG ];
 
-			if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex )
+			if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex && log->time == traceEnt->s.time )
 			{
 				break;
 			}
-
 		}
 
-		builder = traceEnt->builtBy >= 0 ? level.clients[ traceEnt->builtBy ].pers.namelog->name[ log->actor->nameOffset ] : "<world>";
+		if ( traceEnt->builtBy >= 0 && log->actor  )
+		{
+			builder = log->actor->name[ log->actor->nameOffset ];
+		}
+		else
+		{
+			builder = "<world>";
+		}
 
-		if ( i < level.numBuildLogs && G_admin_permission( ent, "buildlog" ) )
+		if ( traceEnt->builtBy >= 0 && i < level.numBuildLogs && G_admin_permission( ent, "buildlog" ) )
 		{
 			ADMP( va( "%s %s %s %d", QQ( N_("^3builder: ^7$1$ built by $2$^7, buildlog #$3$\n") ),
 				  Quote( BG_Buildable( log->modelindex )->humanName ), Quote( builder ), MAX_CLIENTS + level.buildId - i - 1 ) );
